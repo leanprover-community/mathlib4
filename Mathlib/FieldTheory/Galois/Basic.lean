@@ -8,6 +8,7 @@ module
 public import Mathlib.FieldTheory.Fixed
 public import Mathlib.FieldTheory.Normal.Closure
 public import Mathlib.FieldTheory.PrimitiveElement
+public import Mathlib.FieldTheory.SeparableDegree
 public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 
 /-!
@@ -502,67 +503,28 @@ theorem of_card_aut_eq_finrank [FiniteDimensional F E]
 variable {F} {E}
 variable {p : F[X]}
 
-theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.IsSplittingField F E]
-    (hp : p.Separable) (K : Type*) [Field K] [Algebra F K] [Algebra K E] [IsScalarTower F K E]
-    {x : E} (hx : x ∈ p.aroots E) :
-    Nat.card (K⟮x⟯.restrictScalars F →ₐ[F] E) = Nat.card (K →ₐ[F] E) * finrank K K⟮x⟯ := by
-  have h : IsIntegral K x := (isIntegral_of_noetherian (IsNoetherian.iff_fg.2 hFE) x).tower_top
-  have h1 : p ≠ 0 := fun hp => by
-    rw [hp, Polynomial.aroots_zero] at hx
-    exact Multiset.notMem_zero x hx
-  have h2 : minpoly K x ∣ p.map (algebraMap F K) := by
-    apply minpoly.dvd
-    rw [Polynomial.aeval_def, Polynomial.eval₂_map, ← Polynomial.eval_map, ←
-      IsScalarTower.algebraMap_eq]
-    exact (Polynomial.mem_roots (Polynomial.map_ne_zero h1)).mp hx
-  let key_equiv : (K⟮x⟯.restrictScalars F →ₐ[F] E) ≃
-      Σ f : K →ₐ[F] E, @AlgHom K K⟮x⟯ E _ _ _ _ (RingHom.toAlgebra f) := by
-    change (K⟮x⟯ →ₐ[F] E) ≃ Σ f : K →ₐ[F] E, _
-    exact algHomEquivSigma
-  haveI : ∀ f : K →ₐ[F] E, Finite (@AlgHom K K⟮x⟯ E _ _ _ _ (RingHom.toAlgebra f)) := fun f => by
-    have := Finite.of_equiv _ key_equiv
-    apply Finite.of_injective (Sigma.mk f) fun _ _ H => eq_of_heq (Sigma.ext_iff.mp H).2
-  have : FiniteDimensional F K := FiniteDimensional.left F K E
-  rw [Nat.card_congr key_equiv, Nat.card_sigma, IntermediateField.adjoin.finrank h,
-    Nat.card_eq_fintype_card]
-  apply Finset.sum_const_nat
-  intro f _
-  rw [← @IntermediateField.card_algHom_adjoin_integral K _ E _ _ x E _ (RingHom.toAlgebra f) h]
-  · exact Polynomial.Separable.of_dvd ((Polynomial.separable_map (algebraMap F K)).mpr hp) h2
-  · apply sp.splits.of_dvd (Polynomial.map_ne_zero h1)
-    rwa [← f.comp_algebraMap, ← p.map_map, RingHom.algebraMap_toAlgebra, Polynomial.map_dvd_map']
+open Polynomial in
+/-- If `p` is a separable polynomial with splitting field `E` over `F`, then `E / F` is a
+separable extension. -/
+theorem _root_.Algebra.IsSeparable.of_separable_splitting_field [sp : p.IsSplittingField F E]
+    (hp : p.Separable) : Algebra.IsSeparable F E := by
+  suffices h : Algebra.IsSeparable F (⊤ : IntermediateField F E) by
+    exact h.of_equiv_equiv (RingEquiv.refl F) topEquiv.toRingEquiv (by ext; simp)
+  rw [← (isSplittingField_iff_intermediateField.mp sp).2]
+  apply IntermediateField.induction_on_adjoin_finset _ (fun K => Algebra.IsSeparable F K)
+  · exact inferInstance
+  · intro K x _ hK
+    have hxsep : IsSeparable F x :=
+      hp.of_dvd (minpoly.dvd F x (aeval_eq_zero_of_mem_rootSet (Finset.mem_coe.mpr ‹_›)))
+    haveI : Algebra.IsSeparable (↥K) (↥K)⟮x⟯ := by
+      rw [isSeparable_adjoin_simple_iff_isSeparable]
+      exact hxsep.tower_top (↥K)
+    exact Algebra.IsSeparable.trans F K (↥K)⟮x⟯
 
 theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separable) :
-    IsGalois F E := by
-  haveI hFE : FiniteDimensional F E := Polynomial.IsSplittingField.finiteDimensional E p
-  letI := Classical.decEq E
-  let s := p.rootSet E
-  have adjoin_root : IntermediateField.adjoin F s = ⊤ := by
-    apply IntermediateField.toSubalgebra_injective
-    rw [IntermediateField.top_toSubalgebra, ← top_le_iff, ← sp.adjoin_rootSet]
-    apply IntermediateField.algebra_adjoin_le_adjoin
-  let P : IntermediateField F E → Prop := fun K => Nat.card (K →ₐ[F] E) = finrank F K
-  suffices P (IntermediateField.adjoin F s) by
-    rw [adjoin_root] at this
-    apply of_card_aut_eq_finrank
-    rw [← Eq.trans this (LinearEquiv.finrank_eq IntermediateField.topEquiv.toLinearEquiv)]
-    exact Nat.card_congr ((algEquivEquivAlgHom F E).toEquiv.trans
-      (IntermediateField.topEquiv.symm.arrowCongr AlgEquiv.refl))
-  apply IntermediateField.induction_on_adjoin_finset _ P
-  · have key := IntermediateField.card_algHom_adjoin_integral F (K := E)
-      (show IsIntegral F (0 : E) from isIntegral_zero)
-    rw [IsSeparable, minpoly.zero, Polynomial.natDegree_X] at key
-    specialize key Polynomial.separable_X (Polynomial.Splits.X.map (algebraMap F E))
-    rw [← @Subalgebra.finrank_bot F E _ _ _, ← IntermediateField.bot_toSubalgebra] at key
-    refine Eq.trans ?_ key
-    apply Nat.card_congr
-    rw [IntermediateField.adjoin_zero]
-  intro K x hx hK
-  simp only [P] at *
-  rw [of_separable_splitting_field_aux hp K (Multiset.mem_toFinset.mp hx), hK, finrank_mul_finrank]
-  symm
-  refine LinearEquiv.finrank_eq ?_
-  rfl
+    IsGalois F E :=
+  { to_isSeparable := Algebra.IsSeparable.of_separable_splitting_field hp,
+    to_normal := Normal.of_isSplittingField p }
 
 /-- Equivalent characterizations of a Galois extension of finite degree. -/
 theorem tfae [FiniteDimensional F E] : List.TFAE [
