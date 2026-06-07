@@ -425,10 +425,10 @@ variable (G) in
 the map `x ⊗ₜ[𝕜] y ↦ f(x) ⊗ₜ[𝕜] y`. -/
 noncomputable def rTensor (f : E →L[𝕜] F) : (E ⊗[𝕜] G) →L[𝕜] (F ⊗[𝕜] G) :=
   (f.toLinearMap.rTensor G).mkContinuous ‖f‖ fun x ↦ by
-    obtain ⟨n, e, g, hx ⟩ := exists_sum_tmul_eq x
+    obtain ⟨n, e, g, hx⟩ := exists_sum_tmul_eq x
     obtain ⟨c, hc_supp, hc⟩ := Submodule.mem_span_set.mp
       ((span_tmul_eq_top 𝕜 E G) ▸ Submodule.mem_top (x := x))
-    obtain ⟨m, A, hA⟩  := Matrix.posSemidef_iff_eq_sum_vecMulVec.mp
+    obtain ⟨m, A, hA⟩ := Matrix.posSemidef_iff_eq_sum_vecMulVec.mp
       (Matrix.posSemidef_opNorm_smul_gram_sub_gram e f)
     apply (sq_le_sq₀ (norm_nonneg _) (by positivity)).mp
     simp_rw [sub_eq_iff_eq_add', ← sub_eq_iff_eq_add, ← Matrix.ext_iff, Matrix.sub_apply,
@@ -475,22 +475,22 @@ variable (E) in
 lemma lTensor_tmul (g : G →L[𝕜] H) (m : E) (n : G) : g.lTensor E (m ⊗ₜ n) = m ⊗ₜ g n := rfl
 
 variable (E) in
-theorem comm_comp_lTensor_comp_comm_eq (g : G →L[𝕜] H) :
+theorem commIsometry_comp_lTensor_comp_commIsometry_eq (g : G →L[𝕜] H) :
     commIsometry 𝕜 H E ∘L g.rTensor E ∘L commIsometry 𝕜 E G = g.lTensor E :=
   rfl
 
 variable (G) in
-theorem comm_comp_rTensor_comp_comm_eq (f : E →L[𝕜] F) :
+theorem commIsometry_comp_rTensor_comp_commIsometry_eq (f : E →L[𝕜] F) :
     commIsometry 𝕜 G F ∘L f.lTensor G ∘L commIsometry 𝕜 E G = f.rTensor G := by
   ext; simp [lTensor_def]
 
 variable (G) in
-theorem lTensor_comp_comm (f : E →L[𝕜] F) :
+theorem lTensor_comp_commIsometry  (f : E →L[𝕜] F) :
     f.lTensor G ∘L commIsometry 𝕜 E G = commIsometry 𝕜 F G ∘L f.rTensor G := by
   ext; simp [lTensor_def]
 
 variable (E) in
-theorem rTensor_comp_comm (g : G →L[𝕜] H) :
+theorem rTensor_comp_commIsometry  (g : G →L[𝕜] H) :
     g.rTensor E ∘L commIsometry 𝕜 E G = commIsometry 𝕜 E H ∘L g.lTensor E := by
   ext; simp [lTensor_def]
 
@@ -571,16 +571,16 @@ open LinearMap
 
 @[simp] theorem adjoint_map [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] [FiniteDimensional 𝕜 G]
     [FiniteDimensional 𝕜 H] (f : E →ₗ[𝕜] F) (g : G →ₗ[𝕜] H) :
-    adjoint (map f g) = map (adjoint f) (adjoint g) :=
+    (map f g).adjoint = map f.adjoint g.adjoint :=
   ext' fun _ _ => by simp [TensorProduct.ext_iff_inner_right, adjoint_inner_left]
 
 @[simp] theorem _root_.LinearMap.adjoint_rTensor [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
     [FiniteDimensional 𝕜 G] (f : E →ₗ[𝕜] F) :
-    adjoint (f.rTensor G) = f.adjoint.rTensor G := by simp [rTensor]
+    (f.rTensor G).adjoint = f.adjoint.rTensor G := by simp [rTensor]
 
 @[simp] theorem _root_.LinearMap.adjoint_lTensor [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
     [FiniteDimensional 𝕜 G] (f : E →ₗ[𝕜] F) :
-    adjoint (f.lTensor G) = f.adjoint.lTensor G := by simp [lTensor]
+    (f.lTensor G).adjoint = f.adjoint.lTensor G := by simp [lTensor]
 
 /-- Given `x, y : E ⊗ (F ⊗ G)`, `x = y` iff `⟪x, a ⊗ₜ (b ⊗ₜ c)⟫ = ⟪y, a ⊗ₜ (b ⊗ₜ c)⟫` for all
 `a, b, c`.
