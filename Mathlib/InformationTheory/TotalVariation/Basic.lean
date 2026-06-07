@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 
 import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
+import Mathlib.MeasureTheory.Measure.Sub
 
 /-!
 # Total variation distance between finite measures
@@ -66,6 +67,14 @@ lemma vecTVDist_triangle (μ ν ξ : VectorMeasure 𝓧 M) :
   _ = ((μ - ν) + (ν - ξ)).variation Set.univ := by simp [vecTVDist]
   _ ≤ vecTVDist μ ν + vecTVDist ν ξ := VectorMeasure.variation_add_le _
 
+lemma vecTVDist_zero_right (μ : VectorMeasure 𝓧 M) : vecTVDist μ 0 = μ.variation Set.univ := by
+  simp only [vecTVDist, sub_zero]
+
+lemma vecTVDist_zero_left (ν : VectorMeasure 𝓧 M) : vecTVDist 0 ν = ν.variation Set.univ := by
+  rw [vecTVDist_comm, vecTVDist_zero_right]
+
+lemma vecTVDist_eq_sub_zero : vecTVDist μ ν = vecTVDist (μ - ν) 0 := by simp [vecTVDist]
+
 end VectorMeasure
 
 section Measure
@@ -115,6 +124,23 @@ lemma tvDist_zero_right (μ : Measure 𝓧) [IsFiniteMeasure μ] : tvDist μ 0 =
 lemma tvDist_zero_left (ν : Measure 𝓧) [IsFiniteMeasure ν] : tvDist 0 ν = ν.real Set.univ := by
   rw [tvDist_comm, tvDist_zero_right]
 
+lemma tvDist_of_ge (hμν : ν ≤ μ) : tvDist μ ν = μ.real Set.univ - ν.real Set.univ := by
+  calc tvDist μ ν
+  _ = tvDist (μ - ν) 0 := by
+    simp only [tvDist_eq_iSup_finPartition_abs, measureReal_zero, Pi.zero_apply, sub_zero]
+    congr with P
+    congr with s
+    congr 1
+    simp only [Measure.real]
+    rw [Measure.sub_apply s.2 hμν, ENNReal.toReal_sub_of_le (hμν s) (by simp)]
+  _ = (μ - ν).real Set.univ := by simp [tvDist_zero_right]
+  _ = μ.real Set.univ - ν.real Set.univ := by
+    rw [Measure.real, Measure.sub_apply .univ hμν, ENNReal.toReal_sub_of_le (hμν .univ) (by simp)]
+    rfl
+
+lemma tvDist_of_le (hμν : μ ≤ ν) : tvDist μ ν = ν.real Set.univ - μ.real Set.univ := by
+  rw [tvDist_comm, tvDist_of_ge hμν]
+
 lemma vecTVDist_toSignedMeasure_lt_top (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     vecTVDist μ.toSignedMeasure ν.toSignedMeasure < ∞ := by
   rw [vecTVDist_toSignedMeasure_eq_iSup_finPartition_abs]
@@ -133,10 +159,7 @@ lemma tvDist_triangle (μ ν ξ : Measure 𝓧)
     [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure ξ] :
     tvDist μ ξ ≤ tvDist μ ν + tvDist ν ξ := by
   unfold tvDist
-  rw [← ENNReal.toReal_add]
-  rotate_left
-  · exact vecTVDist_toSignedMeasure_ne_top _ _
-  · exact vecTVDist_toSignedMeasure_ne_top _ _
+  rw [← ENNReal.toReal_add (by simp) (by simp)]
   gcongr
   · simp
   exact vecTVDist_triangle _ _ _
