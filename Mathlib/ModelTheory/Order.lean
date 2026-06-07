@@ -135,7 +135,7 @@ language. -/
 @[simps] def orderLHom : Language.order →ᴸ L where
   onRelation | _, .le => leSymb
 
-@[simp]
+@[simp, nolint simpNF]
 theorem orderLHom_leSymb :
     (orderLHom L).onRelation leSymb = (leSymb : L.Relations 2) :=
   rfl

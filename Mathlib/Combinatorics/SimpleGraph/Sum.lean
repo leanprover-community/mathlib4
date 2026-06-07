@@ -6,7 +6,7 @@ Authors: Iván Renison
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Basic
-public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 public import Mathlib.Combinatorics.SimpleGraph.Maps
 
 /-!
@@ -150,6 +150,24 @@ def edgeSetSumEquiv : (G ⊕g H).edgeSet ≃ G.edgeSet ⊕ H.edgeSet where
       e.fromRelNdrec (sym := H.symm) he (fun u v h ↦ ⟨s(.inr u, .inr v), h⟩) <| by simp
   left_inv := by rintro ⟨⟨u | u, v | v⟩, h⟩ <;> first | contradiction | rfl
   right_inv := by rintro (⟨⟨u, v⟩, h⟩ | ⟨⟨u, v⟩, h⟩) <;> rfl
+
+lemma not_adj_sum_inl_inr (v w) : ¬(G ⊕g H).Adj (.inl v) (.inr w) := by simp
+
+lemma not_reachable_sum_inl_inr (v w) : ¬(G ⊕g H).Reachable (.inl v) (.inr w) := by
+  rintro ⟨p⟩
+  have hs : ∀ x : V ⊕ W, x ∉ Set.range .inl ↔ x ∈ Set.range .inr := by simp
+  obtain ⟨⟨d, hadj⟩, _, hd1, hd2⟩ := p.exists_boundary_dart (Set.range .inl) (by simp) (by simp)
+  simp only [hs] at hadj hd1 hd2
+  obtain ⟨v', hv'⟩ := hd1
+  obtain ⟨w', hw'⟩ := hd2
+  rw [← hv', ← hw'] at hadj
+  exact not_adj_sum_inl_inr _ _ hadj
+
+lemma not_preconnected_sum [Nonempty V] [Nonempty W] : ¬(G ⊕g H).Preconnected :=
+  fun h ↦ not_reachable_sum_inl_inr (Classical.arbitrary _) (Classical.arbitrary _) (h ..)
+
+lemma not_connected_sum [Nonempty V] [Nonempty W] : ¬(G ⊕g H).Connected := by
+  simp [connected_iff, not_preconnected_sum]
 
 lemma Reachable.sum_sup_edge (hv : G.Reachable v v') (hw : H.Reachable w w') :
     (G.sum H ⊔ edge (.inl v) (.inr w)).Reachable (.inl v') (.inr w') :=
