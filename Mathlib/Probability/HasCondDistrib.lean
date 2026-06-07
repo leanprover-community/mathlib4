@@ -35,8 +35,7 @@ variable {Ω 𝓧 𝓨 𝓩 : Type*} {mΩ : MeasurableSpace Ω}
 
 /-- Predicate stating that the conditional distribution of `Y` given `X` under the measure `P`
 is equal to the kernel `κ`. -/
-def HasCondDistrib (Y : Ω → 𝓨) (X : Ω → 𝓧) (κ : Kernel 𝓧 𝓨)
-    (P : Measure Ω) : Prop :=
+def HasCondDistrib (Y : Ω → 𝓨) (X : Ω → 𝓧) (κ : Kernel 𝓧 𝓨) (P : Measure Ω) : Prop :=
   HasLaw (fun ω ↦ (X ω, Y ω)) ((P.map X) ⊗ₘ κ) P
 
 lemma HasCondDistrib.aemeasurable_fst (h : HasCondDistrib Y X κ P) :
