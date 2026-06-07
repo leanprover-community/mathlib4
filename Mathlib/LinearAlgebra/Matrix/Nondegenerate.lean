@@ -46,24 +46,26 @@ structure Nondegenerate (M : Matrix m n R) : Prop where
 
 end Finite
 
-variable {m n R : Type*} [CommRing R] [Fintype m] [Fintype n] {M : Matrix m n R}
+variable {m n R : Type*} [CommRing R] {M : Matrix m n R}
 
-lemma separatingRight_def : M.SeparatingRight ↔ (∀ w, (∀ v, v ⬝ᵥ M *ᵥ w = 0) → w = 0) := by
+lemma separatingRight_def [Fintype m] [Fintype n] :
+    M.SeparatingRight ↔ (∀ w, (∀ v, v ⬝ᵥ M *ᵥ w = 0) → w = 0) := by
   refine forall_congr' fun w ↦ ⟨fun hM hw ↦ hM ?_, fun hM hw ↦ hM ?_⟩ <;>
   convert! hw
 
-lemma separatingLeft_def : M.SeparatingLeft ↔ (∀ v, (∀ w, v ⬝ᵥ M *ᵥ w = 0) → v = 0) := by
+lemma separatingLeft_def [Fintype m] [Fintype n] :
+    M.SeparatingLeft ↔ (∀ v, (∀ w, v ⬝ᵥ M *ᵥ w = 0) → v = 0) := by
   refine forall_congr' fun v ↦ ⟨fun hM hv ↦ hM ?_, fun hM hv ↦ hM ?_⟩ <;>
   convert! hv
 
-lemma nondegenerate_def : M.Nondegenerate ↔
-   (∀ v, (∀ w, v ⬝ᵥ M *ᵥ w = 0) → v = 0) ∧ (∀ w, (∀ v, v ⬝ᵥ M *ᵥ w = 0) → w = 0) := by
+lemma nondegenerate_def [Fintype m] [Fintype n] :
+    M.Nondegenerate ↔
+      (∀ v, (∀ w, v ⬝ᵥ M *ᵥ w = 0) → v = 0) ∧ (∀ w, (∀ v, v ⬝ᵥ M *ᵥ w = 0) → w = 0) := by
   constructor
   · exact fun h ↦ ⟨separatingLeft_def.mp h.1, separatingRight_def.mp h.2⟩
   · exact fun h ↦ ⟨separatingLeft_def.mpr h.1, separatingRight_def.mpr h.2⟩
 
-omit [Fintype n] in
-theorem separatingLeft_iff_forall_vecMul_eq_zero [Finite n] :
+theorem separatingLeft_iff_forall_vecMul_eq_zero [Fintype m] [Finite n] :
     M.SeparatingLeft ↔ ∀ v, v ᵥ* M = 0 → v = 0 := by
   have := Fintype.ofFinite n
   rw [separatingLeft_def]
@@ -71,8 +73,7 @@ theorem separatingLeft_iff_forall_vecMul_eq_zero [Finite n] :
   · simp [dotProduct_mulVec, hv]
   · classical simpa using! hw <| Pi.single i 1
 
-omit [Fintype m] in
-theorem separatingRight_iff_forall_mulVec_eq_zero [Finite m] :
+theorem separatingRight_iff_forall_mulVec_eq_zero [Finite m] [Fintype n] :
     M.SeparatingRight ↔ ∀ v, M *ᵥ v = 0 → v = 0 := by
   have := Fintype.ofFinite m
   rw [separatingRight_def]
@@ -80,22 +81,19 @@ theorem separatingRight_iff_forall_mulVec_eq_zero [Finite m] :
   · simp [hv]
   · classical simpa using hw <| Pi.single i 1
 
-omit [Fintype n] in
-theorem SeparatingLeft.eq_zero_of_vecMul_eq_zero [Finite n] (hM : M.SeparatingLeft) {v : m → R}
-    (hv : v ᵥ* M = 0) : v = 0 :=
+theorem SeparatingLeft.eq_zero_of_vecMul_eq_zero [Fintype m] [Finite n] (hM : M.SeparatingLeft)
+    {v : m → R} (hv : v ᵥ* M = 0) : v = 0 :=
   separatingLeft_iff_forall_vecMul_eq_zero.mp hM v hv
 
-omit [Fintype m] in
-theorem SeparatingRight.eq_zero_of_mulVec_eq_zero [Finite m] (hM : M.SeparatingRight) {v : n → R}
-    (hv : M *ᵥ v = 0) : v = 0 :=
+theorem SeparatingRight.eq_zero_of_mulVec_eq_zero [Finite m] [Fintype n] (hM : M.SeparatingRight)
+    {v : n → R} (hv : M *ᵥ v = 0) : v = 0 :=
   separatingRight_iff_forall_mulVec_eq_zero.mp hM v hv
 
-theorem nondegenerate_iff_forall_mulVec_and_vecMul_eq_zero :
+theorem nondegenerate_iff_forall_mulVec_and_vecMul_eq_zero [Fintype m] [Fintype n] :
     M.Nondegenerate ↔ (∀ v, v ᵥ* M = 0 → v = 0) ∧ (∀ v, M *ᵥ v = 0 → v = 0) := by
   rw [nondegenerate_iff, separatingLeft_iff_forall_vecMul_eq_zero,
     separatingRight_iff_forall_mulVec_eq_zero]
 
-omit [Fintype m] [Fintype n] in
 @[simp]
 theorem separatingLeft_transpose_iff [Finite m] [Finite n] :
     Mᵀ.SeparatingLeft ↔ M.SeparatingRight := by
@@ -105,7 +103,6 @@ theorem separatingLeft_transpose_iff [Finite m] [Finite n] :
 
 alias ⟨_, SeparatingRight.transpose⟩ := separatingLeft_transpose_iff
 
-omit [Fintype m] [Fintype n] in
 @[simp]
 theorem separatingRight_transpose_iff [Finite m] [Finite n] :
     Mᵀ.SeparatingRight ↔ M.SeparatingLeft := by
@@ -115,13 +112,14 @@ theorem separatingRight_transpose_iff [Finite m] [Finite n] :
 
 alias ⟨_, SeparatingLeft.transpose⟩ := separatingRight_transpose_iff
 
-omit [Fintype m] [Fintype n] in
 @[simp]
 theorem nondegenerate_transpose_iff [Finite m] [Finite n] : Mᵀ.Nondegenerate ↔ M.Nondegenerate := by
   rw [nondegenerate_iff, nondegenerate_iff, separatingLeft_transpose_iff,
     separatingRight_transpose_iff, and_comm]
 
 alias ⟨_, Nondegenerate.transpose⟩ := nondegenerate_transpose_iff
+
+variable [Fintype m] [Fintype n]
 
 /-- If `M` is nondegenerate and `w * M * v = 0` for all `w`, then `v = 0`. -/
 theorem Nondegenerate.eq_zero_of_ortho (hM : Nondegenerate M) {v : m → R}
