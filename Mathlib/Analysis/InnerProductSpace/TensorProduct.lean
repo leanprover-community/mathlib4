@@ -56,8 +56,6 @@ open scoped TensorProduct
 
 namespace TensorProduct
 
-/-- The inner product on tensor products is given by a bilinear map, where
-on pure tensors: `⟪a ⊗ₜ b, c ⊗ₜ d⟫ = ⟪a, c⟫ * ⟪b, d⟫`. -/
 instance instInner : Inner 𝕜 (E ⊗[𝕜] F) where
   inner x y :=
     ((lift <| mapBilinear (.id 𝕜) E F 𝕜 𝕜).compr₂ (.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜)) x y
