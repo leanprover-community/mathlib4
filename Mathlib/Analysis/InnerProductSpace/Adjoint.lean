@@ -47,8 +47,6 @@ adjoint
 
 -/
 
-@[expose] public section
-
 noncomputable section
 
 open Module RCLike
@@ -75,7 +73,7 @@ variable [CompleteSpace E] [CompleteSpace G]
 /-- The adjoint, as a continuous conjugate-linear map. This is only meant as an auxiliary
 definition for the main definition `adjoint`, where this is bundled as a conjugate-linear isometric
 equivalence. -/
-noncomputable def adjointAux : (E →L[𝕜] F) →L⋆[𝕜] F →L[𝕜] E :=
+def adjointAux : (E →L[𝕜] F) →L⋆[𝕜] F →L[𝕜] E :=
   (ContinuousLinearMap.compSL _ _ _ _ _ ((toDual 𝕜 E).symm : StrongDual 𝕜 E →L⋆[𝕜] E)).comp
     (toSesqForm : (E →L[𝕜] F) →L[𝕜] F →L⋆[𝕜] StrongDual 𝕜 E)
 
@@ -109,6 +107,8 @@ theorem adjointAux_norm (A : E →L[𝕜] F) : ‖adjointAux A‖ = ‖A‖ := b
     refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun x => ?_
     rw [adjointAux_apply, LinearIsometryEquiv.norm_map]
     exact toSesqForm_apply_norm_le
+
+public section
 
 /-- The adjoint of a bounded operator `A` from a Hilbert space `E` to another Hilbert space `F`,
   denoted as `A†`. -/
@@ -175,13 +175,16 @@ lemma adjoint_id : (.id 𝕜 E)† = .id 𝕜 E := by simp
 lemma adjoint_one : (1 : E →L[𝕜] E)† = 1 := by simp
 
 theorem _root_.Submodule.adjoint_subtypeL (U : Submodule 𝕜 E) [CompleteSpace U] :
-    U.subtypeL† = U.orthogonalProjection := by
+    U.subtypeL† = U.orthogonalProjectionOnto := by
   symm
   simp [eq_adjoint_iff]
 
-theorem _root_.Submodule.adjoint_orthogonalProjection (U : Submodule 𝕜 E) [CompleteSpace U] :
-    (U.orthogonalProjection : E →L[𝕜] U)† = U.subtypeL := by
+theorem _root_.Submodule.adjoint_orthogonalProjectionOnto (U : Submodule 𝕜 E) [CompleteSpace U] :
+    (U.orthogonalProjectionOnto : E →L[𝕜] U)† = U.subtypeL := by
   rw [← U.adjoint_subtypeL, adjoint_adjoint]
+
+@[deprecated (since := "2026-05-05")] alias _root_.Submodule.adjoint_orthogonalProjection :=
+  Submodule.adjoint_orthogonalProjectionOnto
 
 theorem orthogonal_ker (T : E →L[𝕜] F) :
     T.kerᗮ = T†.range.topologicalClosure := by
@@ -318,7 +321,11 @@ lemma _root_.InnerProductSpace.rankOne_comp {E G : Type*} [SeminormedAddCommGrou
     rankOne 𝕜 x y ∘L f = rankOne 𝕜 x (adjoint f y) := by
   simp_rw [rankOne_def', comp_assoc, innerSL_apply_comp]
 
+end
+
 end ContinuousLinearMap
+
+@[expose] public section
 
 /-! ### Self-adjoint operators -/
 
