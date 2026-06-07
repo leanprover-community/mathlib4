@@ -84,7 +84,7 @@ variable [CommSemiring R] [Ring A] [Bialgebra R A] {a b : A}
 
 /-- Primitive elements in a bialgebra are stable under negation. -/
 lemma IsPrimitiveElem.neg (ha : IsPrimitiveElem R a) : IsPrimitiveElem R (-a) where
-  counit_eq_zero := by simpa [ha, neg_add_cancel] using (map_add (counit (R := R)) (-a) a).symm
+  counit_eq_zero := by simpa [ha] using (map_add (counit (R := R)) (-a) a).symm
   comul_eq_tmul_add_tmul := by rw [map_neg, ha.comul_eq_tmul_add_tmul, neg_add, neg_tmul, tmul_neg]
 
 /-- Primitive elements in a bialgebra are stable under subtraction. -/
@@ -94,8 +94,7 @@ lemma IsPrimitiveElem.sub (ha : IsPrimitiveElem R a) (hb : IsPrimitiveElem R b) 
 /-- The commutator `[a, b] = a * b - b * a` of two primitive elements is primitive. -/
 lemma IsPrimitiveElem.commutator (ha : IsPrimitiveElem R a) (hb : IsPrimitiveElem R b) :
     IsPrimitiveElem R (a * b - b * a) where
-  counit_eq_zero := by
-    simpa [ha, hb, sub_add_cancel] using (map_add (counit (R := R)) (a * b - b * a) (b * a)).symm
+  counit_eq_zero := by simpa [ha] using (map_add (counit (R := R)) (a * b - b * a) (b * a)).symm
   comul_eq_tmul_add_tmul := by simp [ha, hb, add_mul, mul_add, sub_tmul, tmul_sub]; abel
 
 end Ring

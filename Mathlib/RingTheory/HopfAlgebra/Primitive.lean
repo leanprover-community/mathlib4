@@ -31,9 +31,8 @@ section Ring
 variable [Ring A] [HopfAlgebra R A] {a : A}
 
 /-- The antipode of a Hopf algebra sends primitive elements to their negation. -/
-@[simp] theorem IsPrimitiveElem.antipode_eq_neg (ha : IsPrimitiveElem R a) : antipode R a = -a :=
-  eq_neg_of_add_eq_zero_left <| by
-    simpa [ha] using mul_antipode_rTensor_comul_apply (R := R) a
+@[simp] theorem IsPrimitiveElem.antipode_eq_neg (ha : IsPrimitiveElem R a) : antipode R a = -a := by
+  simpa [ha, eq_neg_iff_add_eq_zero] using mul_antipode_rTensor_comul_apply (R := R) a
 
 /-- The antipode preserves primitivity. -/
 protected lemma IsPrimitiveElem.antipode (ha : IsPrimitiveElem R a) :
