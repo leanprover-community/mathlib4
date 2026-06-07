@@ -446,12 +446,12 @@ section universePolymorphic
 
 universe u v w w'
 
-axiom MyCard : Type u
+axiom Cardinal : Type u
 
-axiom liftEq : MyCard.{u} → MyCard.{v} → Prop
-axiom liftLE : MyCard.{u} → MyCard.{v} → Prop
+axiom liftEq : Cardinal.{u} → Cardinal.{v} → Prop
+axiom liftLE : Cardinal.{u} → Cardinal.{v} → Prop
 
-variable {a : MyCard.{u}} {b : MyCard.{v}} {c : MyCard.{w}} {d : MyCard.{w'}}
+variable {a : Cardinal.{u}} {b : Cardinal.{v}} {c : Cardinal.{w}} {d : Cardinal.{w'}}
 
 @[gcongr]
 axiom liftLE_imp_liftLE_of_liftLE_of_liftLE (h₁ : liftLE a b) (h₂ : liftLE c d) :
