@@ -15,6 +15,10 @@ This should be kept in sync with Finsupp where possible.
 
 @[expose] public section
 
+theorem Function.Injective.subsingleton_fiber {α β} {f : α → β} (h : f.Injective) (b : β) :
+    {a | f a = b}.Subsingleton := by
+  unfold Set.Subsingleton; grind
+
 namespace DFinsupp
 
 variable {ι α β γ : Type*} {M : β → Type*} {N : Type*}
@@ -30,22 +34,22 @@ For a `b : β` outside the range of `f`, it is zero. -/
 def embDomain (f : α ↪ β) (v : Π₀ a, M (f a)) : Π₀ b, M b where
   toFun b :=
     let eval (s : Multiset α) :=
-      match s.findX? (fun a => f a = b) (fun _ _ hx hy => by grind) with
-      | some a => a.2 ▸ v a.1
+      match h : s.find? (fun a => f a = b) (f.injective.subsingleton_fiber _) with
+      | some a => s.find?_some _ _ h ▸ v a
       | none => 0
     v.support'.lift
       (eval ·.1)
       (fun ⟨s₁, hs₁⟩ ⟨s₂, hs₂⟩ => by
         let p := fun a => f a = b
-        have hp : {x | p x}.Subsingleton := fun _ _ hx hy => by grind
+        have hp : {x | p x}.Subsingleton := f.injective.subsingleton_fiber _
         dsimp only
         by_cases h : ∃ a, f a = b
         · rcases h with ⟨a, rfl⟩
           have h_eq (s) (hs : ∀ i, i ∈ s ∨ v i = 0) : eval s = v a := by
             dsimp [eval]
             by_cases ha : a ∈ s
-            · have h_find : s.findX? p hp = some ⟨a, rfl⟩ := (Multiset.mem_findX?_iff p hp).mpr ha
-              rw [h_find]
+            · have h_find : s.find? p hp = some a := by grind
+              grind
             · grind
           rw [h_eq s₁ hs₁, h_eq s₂ hs₂]
         · push Not at h
@@ -56,7 +60,6 @@ def embDomain (f : α ↪ β) (v : Π₀ a, M (f a)) : Π₀ b, M b where
       induction v.support' using Trunc.induction_on with | _ s =>
       cases s with | _ s hs =>
       simp only [Multiset.mem_map, toFun_eq_coe, Trunc.lift_mk]
-      have hp : {x | f x = i}.Subsingleton := fun _ _ hx hy => by grind
       by_cases hi : ∃ a, f a = i
       · rcases hi with ⟨a, rfl⟩
         by_cases ha : a ∈ s_outer
@@ -76,11 +79,11 @@ lemma embDomain_apply_self (f : α ↪ β) (v : Π₀ a, M (f a)) (a : α) :
   cases s_inner with | _ s hs =>
   have hp : {x | f x = f a}.Subsingleton := fun _ _ hx hy => by grind
   by_cases ha : a ∈ s
-  · have h_find : s.findX? _ hp = some ⟨a, rfl⟩ := (Multiset.mem_findX?_iff _ hp).mpr ha
-    rw [h_find]
-  · match hf : s.findX? _ hp with
-    | some ⟨x, hx⟩ => grind
-    | none => exact (hs a).resolve_left ha |>.symm
+  · have h_find : s.find? _ hp = some a := by grind
+    grind
+  · split
+    · grind
+    · exact (hs a).resolve_left ha |>.symm
 
 lemma embDomain_notin_range (f : α ↪ β) (v : Π₀ a, M (f a)) {b : β} (hb : b ∉ Set.range f) :
     embDomain f v b = 0 := by
@@ -382,7 +385,6 @@ theorem equivCongrLeft_symm_eq_mapDomain (f : β ≃ α) (l : Π₀ a, M (f.symm
   ext x
   simp [equivCongrLeft]
   grind
-
 
 end MapDomain
 

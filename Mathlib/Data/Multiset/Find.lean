@@ -11,25 +11,20 @@ public import Mathlib.Data.Set.Subsingleton
 /-!
 # Finding subsingleton elements within multisets
 
-This module provides `Multiset.findX? s p ⋯`.
+This module provides `Multiset.find? s p ⋯`
 -/
 
 @[expose] public section
-
-/-- A version of `List.find?` that returns a proof. -/
-abbrev _root_.List.findX? {α : Type*} (p : α → Prop) [DecidablePred p] (l : List α) :
-    Option {x // p x} :=
-  l.findSome? (fun x => if h : p x then some ⟨x, h⟩ else none)
 
 namespace Multiset
 variable {α : Type*} (p : α → Prop) [DecidablePred p] (hp : {x | p x}.Subsingleton)
 
 
-/-- `s.findX? p ⋯` finds the subsingleton element of `s` satisfing the condition `p`, if one exists.
+/-- `s.find? p ⋯` finds the subsingleton element of `s` satisfing the condition `p`, if one exists.
 
 This is like `Multiset.chooseX`, but `Option`-valued. -/
-def findX? (s : Multiset α) : Option {a : α // p a} :=
-  Quotient.recOn s (List.findX? p) fun l₁ l₂ h => by
+def find? (s : Multiset α) : Option α :=
+  Quotient.recOn s (List.find? p) fun l₁ l₂ h => by
     induction h with
     | nil => rfl
     | cons x _ ih =>
@@ -41,49 +36,57 @@ def findX? (s : Multiset α) : Option {a : α // p a} :=
       simp only [quot_mk_to_coe, eq_rec_constant] at *
       exact ih1.trans ih2
 
+
 @[simp, grind =]
-theorem findX?_coe (l : List α) :
-    (l : Multiset α).findX? p hp = l.findX? (fun a => p a) := rfl
+theorem find?_coe (l : List α) :
+    (l : Multiset α).find? p hp = l.find? (fun a => p a) := rfl
+
+theorem find?_some {a : α} {s : Multiset α} :
+    s.find? p hp = some a → p a := by
+  induction s using Quotient.inductionOn with | _ l
+  simp only [quot_mk_to_coe, find?_coe _ hp]
+  simpa using l.find?_some  (p := (p ·))
 
 @[simp]
-theorem find?_zero : (0 : Multiset α).findX? p hp = none := rfl
+theorem find?_zero : (0 : Multiset α).find? p hp = none := rfl
 
 @[simp]
-theorem findX?_cons (a : α) (s : Multiset α) :
-    (cons a s).findX? p hp = if h : p a then some ⟨a, h⟩ else s.findX? p hp := by
+theorem find?_cons (a : α) (s : Multiset α) :
+    (cons a s).find? p hp = if p a then some a else s.find? p hp := by
   induction s using Quotient.inductionOn
   simp only [quot_mk_to_coe, cons_coe]
   grind
 
 @[simp]
-theorem findX?_singleton (a : α) :
-    ({a} : Multiset α).findX? p hp = if h : p a then some ⟨a, h⟩ else none :=
-  findX?_cons _ _ _ _
+theorem find?_singleton (a : α) :
+    ({a} : Multiset α).find? p hp = if p a then some a else none :=
+  find?_cons _ _ _ _
 
 @[simp]
-theorem findX?_add (s t : Multiset α) :
-    (s + t).findX? p hp = (s.findX? p hp <|> t.findX? p hp) := by
+theorem find?_add (s t : Multiset α) :
+    (s + t).find? p hp = (s.find? p hp <|> t.find? p hp) := by
   induction s using Multiset.induction_on with
   | empty => simp
   | cons x s ih =>
-    rw [cons_add, findX?_cons, ih, findX?_cons]
+    rw [cons_add, find?_cons, ih, find?_cons]
     split_ifs <;> simp
 
-@[simp]
-theorem mem_findX?_iff {a : {a : α // p a}} {s : Multiset α} :
-    a ∈ s.findX? p hp ↔ a.1 ∈ s := by
+@[simp, grind =]
+theorem find?_eq_some_iff {a : α} {s : Multiset α} :
+    s.find? p hp = some a ↔ a ∈ s ∧ p a := by
   induction s using Multiset.induction_on with
   | empty => simp
   | cons x s ih =>
-    rw [findX?_cons]
+    rw [find?_cons]
     dsimp [Set.Subsingleton] at hp
     grind
 
-
--- theorem findX?_eq_choose {s : Multiset α} (hp : ∃! x, x ∈ s ∧ p x):
---     s.findX? p (by grind) = some ⟨s.choose p hp, s.choose_property p hp⟩ := by
---   ext
---   refine mem_findX?_iff _ _ |>.trans ?_
---   simp [Subtype.ext_iff, choose_eq]
+/-- Note that we cannot derive `hp` from `hp'` or vice versa, as the former allos no such `x`,
+while the latter only requires uniqueness within the set. -/
+theorem find?_eq_choose {s : Multiset α} (hp' : ∃! x, x ∈ s ∧ p x) :
+    s.find? p hp = some (s.choose p hp') := by
+  ext a
+  refine find?_eq_some_iff _ _ |>.trans ?_
+  simp only [Option.some.injEq, choose_eq_iff]
 
 end Multiset
