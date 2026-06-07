@@ -222,8 +222,7 @@ instance lawfulMonad : LawfulMonad (PFun α) := LawfulMonad.mk'
   (id_map := fun f => DFunLike.ext _ _ fun a => by dsimp [Functor.map, PFun.map]; cases f a; rfl)
   (pure_bind := fun x f => DFunLike.ext _ _ fun _ => Part.bind_some _ (f x))
   (bind_assoc := fun f g k =>
-    DFunLike.ext _ _ fun a =>
-      (f a).bind_assoc (fun b => g b a) fun b => k b a)
+    DFunLike.ext _ _ fun a => (f a).bind_assoc (fun b => g b a) fun b => k b a)
 
 theorem pure_defined (p : Set α) (x : β) : p ⊆ (@PFun.pure α _ x).Dom :=
   p.subset_univ

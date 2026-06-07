@@ -89,21 +89,18 @@ def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
   map_id _ :=
     PFun.ext fun _ b =>
       PFun.mem_toSubtype_iff (b := b).trans (Subtype.coe_inj.trans Part.mem_some_iff.symm)
-  map_comp {X} {Y} {Z} f g := (show
+  map_comp {X} {Y} {Z} f g := show
+      PFun.mk (PFun.toSubtype (fun x => x ≠ Z.point) (g.toFun ∘ f.toFun) ∘
+        (Subtype.val : {x : X // x ≠ X.point} → X)) =
       (PFun.mk (PFun.toSubtype (fun x => x ≠ Z.point) g.toFun ∘
         (Subtype.val : {y : Y // y ≠ Y.point} → Y))).comp
         (PFun.mk (PFun.toSubtype (fun x => x ≠ Y.point) f.toFun ∘
-          (Subtype.val : {x : X // x ≠ X.point} → X))) =
-      PFun.mk (PFun.toSubtype (fun x => x ≠ Z.point) (g.toFun ∘ f.toFun) ∘
-        (Subtype.val : {x : X // x ≠ X.point} → X)) by
-    ext ⟨a, ha⟩ ⟨c, hc⟩
+          (Subtype.val : {x : X // x ≠ X.point} → X))) by
+    ext ⟨a, _⟩ ⟨c, hc⟩
     simp only [PFun.comp_apply, PFun.mk_apply, Function.comp_apply,
       Part.mem_bind_iff, PFun.mem_toSubtype_iff]
-    constructor
-    · rintro ⟨b, hb_eq, h_final⟩
-      rw [← hb_eq]; exact h_final
-    · intro h
-      exact ⟨⟨f.toFun a, fun h_eq => hc (h ▸ h_eq ▸ g.map_point)⟩, rfl, h⟩).symm
+    refine ⟨fun h => ⟨⟨f.toFun a, fun heq => hc ((heq ▸ h).trans g.map_point)⟩, rfl, h⟩,
+      fun ⟨_, hb, h⟩ => hb ▸ h⟩
 
 open Classical in
 /-- The functor which maps undefined values to a new point. This makes the maps total and creates
@@ -121,7 +118,7 @@ noncomputable def partialFunToPointed : PartialFun ⥤ Pointed where
   map_comp f g := Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => by
     dsimp [CategoryStruct.comp, Pointed.Hom.comp]
     rw [Option.elim'_eq_elim]
-    convert! Part.bind_toOption g.toFun (f.toFun a)
+    exact Part.bind_toOption g.toFun (f.toFun a)
 
 /-- The equivalence induced by `PartialFunToPointed` and `PointedToPartialFun`.
 `Part.equivOption` made functorial. -/
