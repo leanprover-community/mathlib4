@@ -253,16 +253,6 @@ theorem card_lt_of_injective_of_notMem (f : α → β) (h : Function.Injective f
       Finset.card_lt_univ_of_notMem (x := b) <| by
         rwa [← mem_coe, coe_map, coe_univ, Set.image_univ]
 
-/-- Given an injective map `f : α → β` for finite sets `s ⊂ α` and `t ⊂ β` such that `t` has
-    cardinality one more than `s`, there exists a unique element of `t` not in `f(s)`. -/
-theorem existsUnique_mem_codomain_notMem_image_of_injective_of_card_eq_add_one {α β : Type*}
-    {s : Finset α} {t : Finset β} [DecidableEq β]
-    (f : α → β) (hf : f.Injective) (hf' : Set.MapsTo f s t) (h : #t = #s + 1) :
-    ∃! x, x ∈ t ∧ x ∉ s.image f := by
-  have : #(t \ s.image f) = 1 := by
-    grind [card_sdiff_of_subset hf'.finsetImage_subset, card_image_of_injective _ hf]
-  simpa [card_eq_one_iff_existsUnique] using this
-
 /-- Given an injective map `f : α → β` such that `β` has cardinality one more
 than `α`, there exists a unique element of `β` not in the image of `f`. -/
 theorem existsUnique_notMem_image_of_injective_of_card_eq_add_one [DecidableEq β]
