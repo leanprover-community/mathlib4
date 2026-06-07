@@ -257,14 +257,6 @@ theorem continuousOn_cfc_setProd {s : Set 𝕜} (hs : IsCompact s) :
     (fun f hf ↦ continuousOn_cfc A hs ((toFun {s}) f) hf)
     (fun a ⟨_, ha'⟩ ↦ lipschitzOnWith_cfc_fun_of_subset a ha')
 
-@[nontriviality, simp]
-theorem cfc_of_subsingleton {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R]
-    [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
-    [TopologicalSpace A] [Algebra R A] [ContinuousFunctionalCalculus R A p]
-    [Subsingleton A] (f : R → R) (a : A) :
-    cfc f a = 0 :=
-  Subsingleton.elim ..
-
 open UniformOnFun in
 theorem continuousOn_cfc_setProd_nhdsSet [CompleteSpace A] {s : Set 𝕜} :
     ContinuousOn (fun fa : (𝕜 →ᵤ[{t | IsCompact t ∧ t ⊆ s}] 𝕜) × A ↦ cfc (toFun {s} fa.1) fa.2)
