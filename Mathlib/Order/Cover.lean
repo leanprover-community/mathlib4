@@ -736,15 +736,36 @@ end Pi
 
 namespace WithTop
 
+section LT
+
+variable [LT α] {a b : α}
+
+@[to_dual (attr := simp, norm_cast)]
+lemma coe_covBy_coe : (a : WithTop α) ⋖ b ↔ a ⋖ b := by
+  simp [CovBy, WithTop.forall]
+
+@[to_dual (attr := simp) not_bot_covBy]
+theorem not_covBy_top [NoMaxOrder α] {a : WithTop α} : ¬ a ⋖ ⊤ := by
+  unfold CovBy
+  push Not
+  intro ha
+  obtain ⟨a, rfl⟩ := ne_top_iff_exists.mp <| WithTop.lt_top_iff_ne_top.mp ha
+  have ⟨b, hab⟩ := NoMaxOrder.exists_gt a
+  exact ⟨b, coe_lt_coe.mpr hab, coe_lt_top b⟩
+
+@[to_dual (attr := simp) not_covBy_bot]
+theorem not_top_covBy {a : WithTop α} : ¬⊤ ⋖ a :=
+  mt CovBy.lt a.not_top_lt
+
+end LT
+
+section Preorder
+
 variable [Preorder α] {a b : α}
 
 @[to_dual (attr := simp, norm_cast)]
 lemma coe_wcovBy_coe : (a : WithTop α) ⩿ b ↔ a ⩿ b := by
   simp [WCovBy, WithTop.forall]
-
-@[to_dual (attr := simp, norm_cast)]
-lemma coe_covBy_coe {α} [LT α] {a b : α} : (a : WithTop α) ⋖ b ↔ a ⋖ b := by
-  simp [CovBy, WithTop.forall]
 
 @[to_dual bot_covBy_iff]
 theorem covBy_top_iff {a : WithTop α} : a ⋖ ⊤ ↔ ∃ b : α, a = b ∧ IsMax b := by
@@ -764,26 +785,15 @@ lemma coe_covBy_top : (a : WithTop α) ⋖ ⊤ ↔ IsMax a := by
 lemma coe_wcovBy_top : (a : WithTop α) ⩿ ⊤ ↔ IsMax a := by
   simp only [wcovBy_iff_Ioo_eq, ← image_coe_Ioi, le_top, image_eq_empty, true_and, Ioi_eq_empty_iff]
 
-@[to_dual (attr := simp) not_bot_covBy]
-theorem not_covBy_top {α} [LT α] [NoMaxOrder α] {a : WithTop α} : ¬ a ⋖ ⊤ := by
-  unfold CovBy
-  push Not
-  intro ha
-  obtain ⟨a, rfl⟩ := ne_top_iff_exists.mp <| WithTop.lt_top_iff_ne_top.mp ha
-  have ⟨b, hab⟩ := NoMaxOrder.exists_gt a
-  exact ⟨b, coe_lt_coe.mpr hab, coe_lt_top b⟩
-
 @[to_dual not_bot_wcovBy]
 theorem not_coe_wcovBy_top [NoMaxOrder α] {a : α} : ¬(a : WithTop α) ⩿ ⊤ := by
   simp
 
-@[to_dual (attr := simp) not_covBy_bot]
-theorem not_top_covBy {α} [LT α] {a : WithTop α} : ¬⊤ ⋖ a :=
-  mt CovBy.lt a.not_top_lt
-
 @[to_dual not_wcovBy_bot]
 theorem not_top_wcovBy_coe {a : α} : ¬⊤ ⩿ (a : WithTop α) := by
   simp
+
+end Preorder
 
 end WithTop
 
