@@ -13,7 +13,7 @@ public import Mathlib.Data.ULift
 /-!
 # `ULift` instances for module and multiplicative actions
 
-This file defines instances for module, mul_action and related structures on `ULift` types.
+This file defines instances for `Module`, `MulAction` and related structures on `ULift` types.
 
 (Recall `ULift α` is just a "copy" of a type `α` in a higher universe.)
 

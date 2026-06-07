@@ -5,11 +5,9 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 public import Mathlib.CategoryTheory.Generator.Basic
 public import Mathlib.CategoryTheory.Limits.ConeCategory
 public import Mathlib.CategoryTheory.Limits.Constructions.WeaklyInitial
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Subobject.Comma
 
 /-!
@@ -69,6 +67,7 @@ section GeneralAdjointFunctorTheorem
 variable {D : Type u₁} [Category.{v₁} D]
 variable (G : D ⥤ C)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `G : D ⥤ C` is a right adjoint it satisfies the solution set condition. -/
 theorem solutionSetCondition_of_isRightAdjoint [G.IsRightAdjoint] : SolutionSetCondition.{w} G := by
   intro A

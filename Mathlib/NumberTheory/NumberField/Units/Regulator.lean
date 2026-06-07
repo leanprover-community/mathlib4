@@ -48,6 +48,7 @@ open MeasureTheory NumberField.InfinitePlace Module Submodule
 
 variable [NumberField K]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /--
 An `equiv` between `Fin (rank K)`, used to index the family of units, and `{w // w ≠ w₀}`
@@ -99,6 +100,7 @@ theorem finiteIndex_iff_sup_torsion_finiteIndex (s : Subgroup (𝓞 K)ˣ) :
   rw [Subgroup.relIndex_sup_left]
   exact Subgroup.FiniteIndex.index_ne_zero
 
+set_option backward.isDefEq.respectTransparency false in
 open Subgroup in
 /--
 A family of units is of maximal rank iff the index of the subgroup it generates has finite index.
@@ -202,7 +204,7 @@ theorem abs_det_eq_abs_det (u : Fin (rank K) → (𝓞 K)ˣ)
     (of fun i w ↦ (mult (f w) : ℝ) * ((f w) (u i)).log) ?_ 0 (f.symm w₂)
   · rw [← det_reindex_self e₁, ← det_reindex_self g]
     · rw [Units.smul_def, abs_zsmul, Int.abs_negOnePow, one_smul] at h
-      convert h
+      convert! h
       · ext; simp only [ne_eq, reindex_apply, submatrix_apply, of_apply, Equiv.apply_symm_apply,
           Equiv.trans_apply, Fin.succAbove_zero, id_eq, finSuccEquiv_succ,
           Equiv.optionSubtype_symm_apply_apply_coe, f]
@@ -266,7 +268,7 @@ def regulator : ℝ := ZLattice.covolume (unitLattice K)
 theorem isMaxRank_fundSystem :
     IsMaxRank (fundSystem K) := by
   classical
-  convert ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K)).linearIndependent
+  convert! ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K)).linearIndependent
   rw [logEmbedding_fundSystem, Basis.ofZLatticeBasis_apply]
 
 open scoped Classical in

@@ -354,7 +354,7 @@ variable (V)
 /-- The identity as a continuous normed group hom. -/
 @[simps!]
 def id : NormedAddGroupHom V V :=
-  (AddMonoidHom.id V).mkNormedAddGroupHom 1 (by simp [le_refl])
+  (AddMonoidHom.id V).mkNormedAddGroupHom 1 (by simp)
 
 /-- The norm of the identity is at most `1`. It is in fact `1`, except when the norm of every
 element vanishes, where it is `0`. (Since we are working with seminorms this can happen even if the
@@ -369,13 +369,6 @@ theorem norm_id [NontrivialTopology V] : ‖id V‖ = 1 :=
     let ⟨x, hx⟩ := exists_norm_ne_zero V
     have := (id V).ratio_le_opNorm x
     rwa [id_apply, div_self hx] at this
-
-/-- If there is an element with norm different from `0`, then the norm of the identity equals `1`.
-(Since we are working with seminorms supposing that the space is non-trivial is not enough.) -/
-@[deprecated norm_id (since := "2025-09-03")]
-theorem norm_id_of_nontrivial_seminorm (h : ∃ x : V, ‖x‖ ≠ 0) : ‖id V‖ = 1 :=
-  have : NontrivialTopology V := .of_exists_norm_ne_zero h
-  norm_id V
 
 theorem coe_id : (NormedAddGroupHom.id V : V → V) = _root_.id :=
   rfl

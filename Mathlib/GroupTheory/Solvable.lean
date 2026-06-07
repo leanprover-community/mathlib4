@@ -29,6 +29,8 @@ the derived series of a group.
 
 open Subgroup
 
+open scoped commutatorElement
+
 variable {G G' : Type*} [Group G] [Group G'] {f : G →* G'}
 
 section derivedSeries
@@ -137,7 +139,7 @@ theorem solvable_of_ker_le_range {G' G'' : Type*} [Group G'] [Group G''] (f : G'
 
 theorem solvable_of_solvable_injective (hf : Function.Injective f) [IsSolvable G'] :
     IsSolvable G :=
-  solvable_of_ker_le_range (1 : G' →* G) f ((f.ker_eq_bot_iff.mpr hf).symm ▸ bot_le)
+  solvable_of_ker_le_range (1 : G' →* G) f ((f.ker_eq_bot hf).symm ▸ bot_le)
 
 instance subgroup_solvable_of_solvable (H : Subgroup G) [IsSolvable G] : IsSolvable H :=
   solvable_of_solvable_injective H.subtype_injective
@@ -181,7 +183,7 @@ theorem isSolvable_iff_commutator_lt [WellFoundedLT (Subgroup G)] :
   · infer_instance
   · obtain ⟨n, hn⟩ := hH ⁅H, H⁆ (h H h')
     use n + 1
-    rw [← (map_injective (subtype_injective _)).eq_iff, Subgroup.map_bot] at hn ⊢
+    rw [← map_subtype_inj, Subgroup.map_bot] at hn ⊢
     rw [← hn]
     clear hn
     induction n with

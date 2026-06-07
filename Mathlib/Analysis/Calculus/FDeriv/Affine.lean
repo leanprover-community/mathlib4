@@ -25,7 +25,7 @@ public section
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  (f : E →ᴬ[𝕜] F) {x : E} {s : Set E} {L : Filter E}
+  (f : E →ᴬ[𝕜] F) {x : E} {s : Set E} {L : Filter (E × E)}
 
 namespace ContinuousAffineMap
 
@@ -33,14 +33,13 @@ namespace ContinuousAffineMap
 ### Continuous affine maps
 -/
 
-@[fun_prop]
-protected theorem hasStrictFDerivAt {x : E} : HasStrictFDerivAt f f.contLinear x := by
-  rw [f.decomp]
-  simpa using f.contLinear.hasStrictFDerivAt.add (hasStrictFDerivAt_const (f 0) x)
+protected theorem hasFDerivAtFilter : HasFDerivAtFilter f f.contLinear L := by
+  refine .of_isLittleOTVS <| .congr_left (.zero _ _) ?_
+  simp [(vsub_eq_sub _ _).symm.trans (f.contLinear_map_vsub _ _).symm]
 
-protected theorem hasFDerivAtFilter : HasFDerivAtFilter f f.contLinear x L := by
-  rw [f.decomp]
-  simpa using f.contLinear.hasFDerivAtFilter.add (hasFDerivAtFilter_const (f 0) x L)
+@[fun_prop]
+protected theorem hasStrictFDerivAt {x : E} : HasStrictFDerivAt f f.contLinear x :=
+  f.hasFDerivAtFilter
 
 @[fun_prop]
 protected theorem hasFDerivWithinAt : HasFDerivWithinAt f f.contLinear s x :=

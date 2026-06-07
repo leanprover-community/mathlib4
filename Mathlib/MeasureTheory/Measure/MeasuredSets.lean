@@ -44,7 +44,7 @@ instance : SetLike (MeasuredSets μ) α where
   coe s := s.1
   coe_injective' := Subtype.coe_injective
 
-instance : PseudoEMetricSpace (MeasuredSets μ) where
+noncomputable instance : PseudoEMetricSpace (MeasuredSets μ) where
   edist s t := μ ((s : Set α) ∆ t)
   edist_self := by simp
   edist_comm := by grind
@@ -63,7 +63,7 @@ lemma MeasuredSets.continuous_measure : Continuous (fun (s : MeasuredSets μ) �
   rw [one_mul, ← tsub_le_iff_left]
   exact sub_le_edist s t
 
-instance [IsFiniteMeasure μ] : PseudoMetricSpace (MeasuredSets μ) :=
+noncomputable instance [IsFiniteMeasure μ] : PseudoMetricSpace (MeasuredSets μ) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun s t ↦ μ.real ((s : Set α) ∆ t)) (fun s t ↦ ENNReal.toReal_nonneg)
     (fun s t ↦ by simp [Measure.real, MeasuredSets.edist_def])
@@ -187,7 +187,7 @@ lemma dense_of_generateFrom_isSetRing [IsFiniteMeasure μ]
   rcases exists_measure_symmDiff_lt_of_generateFrom_isSetRing hC h'C h s.2 εpos with ⟨t, tC, ht⟩
   have t_meas : MeasurableSet t := by rw [h]; exact measurableSet_generateFrom tC
   refine ⟨⟨t, t_meas⟩, ?_, tC⟩
-  simpa [MeasuredSets.edist_def] using ht
+  simpa [MeasuredSets.edist_def] using! ht
 
 /-- Given a semiring of sets `C` covering the space modulo `0` and generating the measurable space
 structure, finite unions of elements of `C` are dense among measurable sets. -/
@@ -199,7 +199,7 @@ lemma dense_of_generateFrom_isSetSemiring [IsFiniteMeasure μ]
   rintro s ε εpos
   rcases exists_measure_symmDiff_lt_of_generateFrom_isSetSemiring hC h'C h s.2 εpos
     with ⟨t, tC, ht⟩
-  refine ⟨⟨t, ?_⟩, by simpa [MeasuredSets.edist_def] using ht, tC⟩
+  refine ⟨⟨t, ?_⟩, by simpa [MeasuredSets.edist_def] using! ht, tC⟩
   rw [h]
   exact measurableSet_generateFrom_of_mem_supClosure tC
 

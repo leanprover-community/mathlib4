@@ -94,7 +94,7 @@ theorem indicator_mem_restrictDegree (c : σ → K) :
   trans
   · refine Finset.sum_eq_single n ?_ ?_
     · intro b _ ne
-      simp [Multiset.count_singleton, ne, if_neg (Ne.symm _)]
+      simp [ne, eqComm]
     · intro h; exact (h <| Finset.mem_univ _).elim
   · rw [Multiset.count_singleton_self, mul_one]
 
@@ -206,6 +206,7 @@ open Classical in
 theorem finrank_R [Fintype σ] : Module.finrank K (R σ K) = Fintype.card (σ → K) :=
   Module.finrank_eq_of_rank_eq (rank_R σ K)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem range_evalᵢ [Finite σ] : range (evalᵢ σ K) = ⊤ := by
   rw [evalᵢ, LinearMap.range_comp, range_subtype]
   exact map_restrict_dom_evalₗ K σ

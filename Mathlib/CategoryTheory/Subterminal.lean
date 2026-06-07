@@ -84,6 +84,7 @@ theorem isSubterminal_of_isTerminal {T : C} (hT : IsTerminal T) : IsSubterminal 
 theorem isSubterminal_of_terminal [HasTerminal C] : IsSubterminal (⊤_ C) := fun _ _ _ => by
   subsingleton
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `A` is subterminal, its diagonal morphism is an isomorphism.
 The converse of `isSubterminal_of_isIso_diag`.
 -/
@@ -93,6 +94,7 @@ theorem IsSubterminal.isIso_diag (hA : IsSubterminal A) [HasBinaryProduct A A] :
         rw [IsSubterminal.def] at hA
         cat_disch⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the diagonal morphism of `A` is an isomorphism, then it is subterminal.
 The converse of `isSubterminal.isIso_diag`.
 -/

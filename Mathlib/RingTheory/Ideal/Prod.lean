@@ -146,7 +146,7 @@ theorem prod_eq_top_iff {I : Ideal R} {J : Ideal S} :
 theorem isPrime_of_isPrime_prod_top {I : Ideal R} (h : (Ideal.prod I (⊤ : Ideal S)).IsPrime) :
     I.IsPrime := by
   constructor
-  · contrapose! h
+  · contrapose h
     rw [h, prod_top_top, isPrime_iff]
     simp
   · intro x y hxy
