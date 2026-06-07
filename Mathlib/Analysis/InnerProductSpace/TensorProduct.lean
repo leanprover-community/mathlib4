@@ -449,7 +449,7 @@ noncomputable def rTensor (f : E →L[𝕜] F) :
 
 @[simp]
 lemma rTensor_apply (f : E →L[𝕜] F) (x : E ⊗ G) :
-    f.rTensor G x = (map f.toLinearMap LinearMap.id) x := rfl
+    f.rTensor G x = f.toLinearMap.rTensor G x := rfl
 
 lemma rTensor_tmul (f : E →L[𝕜] F) (m : E) (n : G) :
     f.rTensor G (m ⊗ₜ n) = f m ⊗ₜ n := rfl
@@ -507,7 +507,7 @@ lemma lTensor_apply (g : G →L[𝕜] H) (x : E ⊗ G) :
   simp only [lTensor_def, coe_comp', ContinuousLinearEquiv.coe_coe,
     LinearIsometryEquiv.coe_toContinuousLinearEquiv, Function.comp_apply, commIsometry_apply,
     rTensor_apply]
-  simp_rw [← LinearMap.lTensor_def, ← LinearMap.rTensor_def]
+  simp_rw [← LinearMap.lTensor_def]
   exact LinearMap.congr_fun (LinearMap.comm_comp_rTensor_comp_comm_eq g.toLinearMap (Q:=E)) x
 
 variable (E) in
