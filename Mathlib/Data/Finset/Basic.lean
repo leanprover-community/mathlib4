@@ -570,7 +570,7 @@ theorem choose_property (hp : ∃! a, a ∈ l ∧ p a) : p (l.choose p hp) :=
 grind_pattern choose_property => l.choose p hp
 
 theorem choose_eq_iff (hp : ∃! a, a ∈ l ∧ p a) {a : α} : choose p l hp = a ↔ a ∈ l ∧ p a :=
-  ⟨fun h => h ▸ choose_spec p l hp, hp.unique (choose_spec p l hp)⟩
+  l.val.choose_eq_iff _ hp
 
 end Choose
 
