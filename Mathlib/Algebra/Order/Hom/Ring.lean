@@ -378,10 +378,7 @@ variable {α}
 protected def symm (e : α ≃+*o β) : β ≃+*o α :=
   ⟨e.toRingEquiv.symm, by
     intro a b
-    rw [← map_le_map_iff e]
-    congr! 1
-    · exact e.1.apply_symm_apply a
-    · exact e.1.apply_symm_apply b⟩
+    erw [← map_le_map_iff e, e.1.apply_symm_apply, e.1.apply_symm_apply]⟩
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : α ≃+*o β) : β → α :=
