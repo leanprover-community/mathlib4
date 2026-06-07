@@ -1,5 +1,6 @@
 module
 
+import ImportGraph.Lean.Environment
 import MathlibTest.UnusedInstancesInType.Basic
 import Mathlib.Data.Fintype.EquivFin
 

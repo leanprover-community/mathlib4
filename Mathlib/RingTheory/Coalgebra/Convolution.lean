@@ -43,7 +43,7 @@ suppress_compilation
 open Coalgebra TensorProduct WithConv
 open scoped RingTheory.LinearMap
 
-variable {R A B C : Type*} [CommSemiring R]
+variable {R A B C ι : Type*} [CommSemiring R]
 
 namespace LinearMap
 section NonUnitalNonAssocSemiring
@@ -62,7 +62,7 @@ lemma convMul_def (f g : WithConv (C →ₗ[R] A)) :
 lemma convMul_apply (f g : WithConv (C →ₗ[R] A)) (c : C) :
     (f * g) c = mul' R A (.map f.ofConv g.ofConv (comul c)) := rfl
 
-lemma _root_.Coalgebra.Repr.convMul_apply {a : C} (𝓡 : Coalgebra.Repr R a)
+lemma _root_.Coalgebra.Repr.convMul_apply {a : C} (𝓡 : Coalgebra.Repr R a ι)
     (f g : WithConv (C →ₗ[R] A)) : (f * g) a = ∑ i ∈ 𝓡.index, f (𝓡.left i) * g (𝓡.right i) := by
   simp [convMul_def, ← 𝓡.eq]
 
@@ -78,7 +78,6 @@ instance convNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (WithConv (C 
     toConv (toSpanSingleton R A x) * toConv (toSpanSingleton R A y) =
       toConv (toSpanSingleton R A (x * y)) := by ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.TensorProduct.map_convMul_map {D : Type*} [AddCommMonoid B] [Module R B]
     [CoalgebraStruct R B] [NonUnitalNonAssocSemiring D] [Module R D] [SMulCommClass R D D]
     [IsScalarTower R D D] {f h : WithConv (C →ₗ[R] A)} {g k : WithConv (B →ₗ[R] D)} :

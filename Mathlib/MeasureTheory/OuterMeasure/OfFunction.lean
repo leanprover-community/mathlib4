@@ -57,10 +57,9 @@ variable {α : Type*}
 protected def ofFunction (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0) : OuterMeasure α :=
   let μ s := ⨅ (f : ℕ → Set α) (_ : s ⊆ ⋃ i, f i), ∑' i, m (f i)
   { measureOf := μ
-    empty :=
-      le_antisymm
-        ((iInf_le_of_le fun _ => ∅) <| iInf_le_of_le (empty_subset _) <| by simp [m_empty])
-        (zero_le _)
+    empty := by
+      rw [← nonpos_iff_eq_zero]
+      exact (iInf_le_of_le fun _ => ∅) <| iInf_le_of_le (empty_subset _) <| by simpa
     mono := fun {_ _} hs => iInf_mono fun _ => iInf_mono' fun hb => ⟨hs.trans hb, le_rfl⟩
     iUnion_nat := fun s _ =>
       ENNReal.le_of_forall_pos_le_add <| by
@@ -114,7 +113,7 @@ theorem ofFunction_eq_iInf_mem {P : Set α → Prop} (m_top : ∀ s, ¬ P s → 
     by_cases ht : ∀ i, P (t i)
     · exact iInf_le_of_le ht (iInf_le_of_le ht_subset le_rfl)
     · simp only [ht, not_false_eq_true, iInf_neg, top_le_iff]
-      push_neg at ht
+      push Not at ht
       obtain ⟨i, hti_notMem⟩ := ht
       have hfi_top : m (t i) = ∞ := m_top _ hti_notMem
       exact ENNReal.tsum_eq_top_of_eq_top ⟨i, hfi_top⟩
@@ -182,7 +181,7 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
     _ = ∑' i : ↑(I s ∪ I t), μ (f i) :=
       (ENNReal.summable.tsum_union_disjoint (f := fun i => μ (f i)) hd ENNReal.summable).symm
     _ ≤ ∑' i, μ (f i) :=
-      (ENNReal.summable.tsum_le_tsum_of_inj (↑) Subtype.coe_injective (fun _ _ => zero_le _)
+      (ENNReal.summable.tsum_le_tsum_of_inj (↑) Subtype.coe_injective (fun _ _ => zero_le)
         (fun _ => le_rfl) ENNReal.summable)
     _ ≤ ∑' i, m (f i) := ENNReal.tsum_le_tsum fun i => ofFunction_le _
 
@@ -283,7 +282,6 @@ theorem le_boundedBy' {μ : OuterMeasure α} :
   intro s
   rcases s.eq_empty_or_nonempty with h | h <;> simp [h]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem boundedBy_top : boundedBy (⊤ : Set α → ℝ≥0∞) = ⊤ := by
   rw [eq_top_iff, le_boundedBy']

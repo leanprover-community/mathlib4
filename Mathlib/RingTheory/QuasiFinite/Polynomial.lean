@@ -17,7 +17,6 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 
 namespace Polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.WeaklyQuasiFiniteAt.finite_locoalization in
 lemma not_weaklyQuasiFiniteAt (P : Ideal R[X]) [P.IsPrime] : ¬ Algebra.WeaklyQuasiFiniteAt R P := by
   intro H
@@ -39,13 +38,15 @@ lemma not_weaklyQuasiFiniteAt (P : Ideal R[X]) [P.IsPrime] : ¬ Algebra.WeaklyQu
 lemma not_quasiFiniteAt (P : Ideal R[X]) [P.IsPrime] : ¬ Algebra.QuasiFiniteAt R P :=
   fun _ ↦ not_weaklyQuasiFiniteAt P inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_under_lt_comap_of_weaklyQuasiFiniteAt
     (f : R[X] →ₐ[R] S) (P : Ideal S) [P.IsPrime] [Algebra.WeaklyQuasiFiniteAt R P] :
     (P.under R).map C < P.comap (f : R[X] →+* S) := by
   algebraize [f.toRingHom]
   refine lt_of_le_of_ne (Ideal.map_le_iff_le_comap.mpr ?_) fun e ↦ ?_
   · rw [Ideal.comap_comap, ← algebraMap_eq, f.comp_algebraMap]
+  let := Localization.AtPrime.algebraOfLiesOver (P.under R) (P.under R[X])
+  let := Localization.AtPrime.algebraOfLiesOver (P.under R[X]) P
+  let := Localization.AtPrime.algebraOfLiesOver (P.under R) P
   have : Module.Finite (Ideal.under R P).ResidueField P.ResidueField :=
     Algebra.WeaklyQuasiFiniteAt.finite_residueField ..
   have : Module.Finite (P.under R).ResidueField (P.under R[X]).ResidueField :=
@@ -72,7 +73,7 @@ lemma not_ker_le_map_C_of_surjective_of_weaklyQuasiFiniteAt
   have H' : (RingHom.ker f).map (mapRingHom (algebraMap R p.ResidueField)) = ⊥ := by
     rw [← le_bot_iff, Ideal.map_le_iff_le_comap]
     intro x hx
-    simpa [Polynomial.ext_iff, Ideal.mem_map_C_iff] using H hx
+    simpa [Polynomial.ext_iff, Ideal.mem_map_C_iff] using! H hx
   let g' : p.ResidueField[X] ≃ₐ[p.ResidueField] p.Fiber S :=
     .trans ((AlgEquiv.quotientBot _ _).symm.trans (Ideal.quotientEquivAlgOfEq _ H'.symm))
       (Polynomial.fiberEquivQuotient f hf _).symm

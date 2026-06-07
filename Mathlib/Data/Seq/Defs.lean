@@ -33,7 +33,7 @@ functions defined in this file.
 
 There are also a number of operations and predicates on sequences mirroring those on lists:
 `Seq.map`, `Seq.zip`, `Seq.zipWith`, `Seq.unzip`, `Seq.fold`, `Seq.update`, `Seq.drop`,
-`Seq.splitAt`, `Seq.append`, `Seq.join`, `Seq.enum`, `Seq.Pairwire`,
+`Seq.splitAt`, `Seq.append`, `Seq.join`, `Seq.enum`, `Seq.Pairwise`,
 as well as a cases principle `Seq.recOn` which allows one to reason about
 sequences by cases (`nil` and `cons`).
 
@@ -208,9 +208,7 @@ theorem destruct_cons (a : α) : ∀ s, destruct (cons a s) = some (a, s)
 theorem destruct_eq_none {s : Seq α} : destruct s = none → s = nil := by
   dsimp [destruct]
   rcases f0 : get? s 0 <;> intro h
-  · apply Subtype.ext
-    funext n
-    induction n with | zero => exact f0 | succ n IH => exact s.2 IH
+  · exact get?_zero_eq_none.mp f0
   · contradiction
 
 theorem destruct_eq_cons {s : Seq α} {a s'} : destruct s = some (a, s') → s = cons a s' := by

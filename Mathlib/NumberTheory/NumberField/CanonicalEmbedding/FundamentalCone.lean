@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.Ideal.IsPrincipal
 public import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
-public import Mathlib.RingTheory.ClassGroup
+public import Mathlib.RingTheory.ClassGroup.Basic
 
 /-!
 # Fundamental Cone
@@ -130,8 +130,6 @@ theorem logMap_apply_of_norm_eq_one (hx : mixedEmbedding.norm x = 1)
     logMap x w = mult w.val * Real.log (normAtPlace w x) := by
   rw [logMap_apply, hx, Real.log_one, zero_mul, sub_zero]
 
-@[deprecated (since := "2025-11-15")] alias logMap_apply_of_norm_one := logMap_apply_of_norm_eq_one
-
 @[simp]
 theorem logMap_eq_logEmbedding (u : (𝓞 K)ˣ) :
     logMap (mixedEmbedding K u) = logEmbedding K (Additive.ofMul u) := by
@@ -222,11 +220,10 @@ theorem smul_mem_of_mem (hx : x ∈ fundamentalCone K) (hc : c ≠ 0) :
   · rw [Set.mem_setOf_eq, mixedEmbedding.norm_smul, mul_eq_zero, not_or]
     exact ⟨pow_ne_zero _ (abs_ne_zero.mpr hc), hx.2⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem smul_mem_iff_mem (hc : c ≠ 0) :
     c • x ∈ fundamentalCone K ↔ x ∈ fundamentalCone K := by
   refine ⟨fun h ↦ ?_, fun h ↦ smul_mem_of_mem h hc⟩
-  convert smul_mem_of_mem h (inv_ne_zero hc)
+  convert! smul_mem_of_mem h (inv_ne_zero hc)
   rw [eq_inv_smul_iff₀ hc]
 
 theorem exists_unit_smul_mem (hx : mixedEmbedding.norm x ≠ 0) :
@@ -246,7 +243,6 @@ theorem torsion_smul_mem_of_mem (hx : x ∈ fundamentalCone K) {ζ : (𝓞 K)ˣ}
   · rw [Set.mem_setOf_eq, unitSMul_smul, map_mul, norm_unit, one_mul]
     exact hx.2
 
-set_option backward.isDefEq.respectTransparency false in
 theorem unit_smul_mem_iff_mem_torsion (hx : x ∈ fundamentalCone K) (u : (𝓞 K)ˣ) :
     u • x ∈ fundamentalCone K ↔ u ∈ torsion K := by
   classical
@@ -547,7 +543,7 @@ def idealSetEquivNorm (n : ℕ) :
   calc
     _ ≃ {a : {a : integerSet K // (preimageOfMemIntegerSet a).1 ∈ J.1} //
             mixedEmbedding.norm a.1.1 = n} := by
-        convert (Equiv.subtypeEquivOfSubtype (idealSetEquiv K J).symm).symm using 3
+        convert! (Equiv.subtypeEquivOfSubtype (idealSetEquiv K J).symm).symm using 3
         rw [idealSetEquiv_symm_apply]
     _ ≃ {a : integerSet K // (preimageOfMemIntegerSet a).1 ∈ J.1 ∧
           mixedEmbedding.norm a.1 = n} := Equiv.subtypeSubtypeEquivSubtypeInter
@@ -560,7 +556,7 @@ def idealSetEquivNorm (n : ℕ) :
         (Equiv.subtypeEquivRight (fun _ ↦ by simp [and_comm]))).symm
     _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1 ∧ absNorm I.1 = n} × (torsion K) //
           J.1 ∣ I.1.1} := by
-      convert Equiv.subtypeEquivOfSubtype (p := fun I ↦ J.1 ∣ I.1) (integerSetEquivNorm K n)
+      convert! Equiv.subtypeEquivOfSubtype (p := fun I ↦ J.1 ∣ I.1) (integerSetEquivNorm K n)
       rw [integerSetEquivNorm_apply_fst, dvd_span_singleton]
     _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1 ∧ absNorm I.1 = n} // J.1 ∣ I.1} ×
         (torsion K) := Equiv.prodSubtypeFstEquivSubtypeProd

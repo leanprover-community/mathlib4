@@ -55,7 +55,7 @@ in this file, whereas the other, `Real.exists_convs_eq_rat` defined in the file
 ## Implementation notes
 
 We use the namespace `Real` for the results on real numbers and `Rat` for the results
-on rational numbers. We introduce a secondary namespace `real.contfrac_legendre`
+on rational numbers. We introduce a secondary namespace `Real.ContfracLegendre`
 to separate off a definition and some technical auxiliary lemmas used in the proof
 of Legendre's Theorem. For remarks on the proof of Legendre's Theorem, see below.
 
@@ -111,7 +111,7 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     rw [cast_add, ← sub_sub, sub_mul, cast_one, one_mul, abs_le]
     refine
       ⟨le_sub_iff_add_le.mpr ?_, sub_le_iff_le_add.mpr <| le_of_lt <| (hfu m).trans <| lt_one_add _⟩
-    simpa only [neg_add_cancel_comm_assoc] using hf'
+    simpa only [neg_add_cancel_comm_assoc] using! hf'
   · have hD : #(Ico (0 : ℤ) n) < #D := by rw [card_Icc, card_Ico]; exact lt_add_one n
     have hfu' : ∀ m, f m ≤ n := fun m => lt_add_one_iff.mp (floor_lt.mpr (mod_cast hfu m))
     have hwd : ∀ m : ℤ, m ∈ D → f m ∈ Ico (0 : ℤ) n := fun x hx =>
@@ -124,7 +124,7 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     refine
       ⟨⌊ξ * y⌋ - ⌊ξ * x⌋, y - x, sub_pos_of_lt x_lt_y,
         sub_le_iff_le_add.mpr <| le_add_of_le_of_nonneg (mem_Icc.mp hy).2 (mem_Icc.mp hx).1, ?_⟩
-    convert_to |fract (ξ * y) * (n + 1) - fract (ξ * x) * (n + 1)| ≤ 1
+    convert_to! |fract (ξ * y) * (n + 1) - fract (ξ * x) * (n + 1)| ≤ 1
     · congr; push_cast; simp only [fract]; ring
     exact (abs_sub_lt_one_of_floor_eq_floor hxy.symm).le
 
@@ -149,7 +149,7 @@ theorem exists_rat_abs_sub_le_and_den_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
   obtain ⟨j, k, hk₀, hk₁, h⟩ := exists_int_int_abs_mul_sub_le ξ n_pos
   have hk₀' : (0 : ℝ) < k := Int.cast_pos.mpr hk₀
   have hden : ((j / k : ℚ).den : ℤ) ≤ k := by
-    convert le_of_dvd hk₀ (Rat.den_dvd j k)
+    convert! le_of_dvd hk₀ (Rat.den_dvd j k)
     exact Rat.intCast_div_eq_divInt _ _
   refine ⟨j / k, ?_, Nat.cast_le.mp (hden.trans hk₁)⟩
   rw [← div_div, le_div_iff₀ (Nat.cast_pos.mpr <| Rat.pos _ : (0 : ℝ) < _)]
@@ -171,7 +171,6 @@ i.e., fractions `x/y` in lowest terms such that `|ξ - x/y| < 1/y^2`.
 
 open Set
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given any rational approximation `q` to the irrational real number `ξ`, there is
 a good rational approximation `q'` such that `|ξ - q'| < |ξ - q|`. -/
 theorem exists_rat_abs_sub_lt_and_lt_of_irrational {ξ : ℝ} (hξ : Irrational ξ) (q : ℚ) :
@@ -220,7 +219,6 @@ approximations.
 
 open Set
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `ξ` is rational, then the good rational approximations to `ξ` have bounded
 numerator and denominator. -/
 theorem den_le_and_le_num_le_of_sub_lt_one_div_den_sq {ξ q : ℚ}
@@ -282,7 +280,7 @@ theorem Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational (ξ : ℝ) :
     ⟨fun h => (irrational_iff_ne_rational ξ).mpr fun a b _ => ?_,
       Real.infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational⟩
   contrapose! h
-  convert Rat.finite_rat_abs_sub_lt_one_div_den_sq ((a : ℚ) / b) with q
+  convert! Rat.finite_rat_abs_sub_lt_one_div_den_sq ((a : ℚ) / b) with q
   rw [h, (by (push_cast; rfl) : (1 : ℝ) / (q.den : ℝ) ^ 2 = (1 / (q.den : ℚ) ^ 2 : ℚ))]
   norm_cast
 
@@ -337,7 +335,6 @@ theorem convergent_succ (ξ : ℝ) (n : ℕ) :
     ξ.convergent (n + 1) = ⌊ξ⌋ + ((fract ξ)⁻¹.convergent n)⁻¹ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- All convergents of `0` are zero. -/
 @[simp]
 theorem convergent_of_zero (n : ℕ) : convergent 0 n = 0 := by
@@ -346,7 +343,6 @@ theorem convergent_of_zero (n : ℕ) : convergent 0 n = 0 := by
   | succ n ih =>
     simp only [ih, convergent_succ, floor_zero, cast_zero, fract_zero, add_zero, inv_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `ξ` is an integer, all its convergents equal `ξ`. -/
 @[simp]
 theorem convergent_of_int {ξ : ℤ} (n : ℕ) : convergent ξ n = ξ := by
@@ -404,7 +400,6 @@ private theorem aux₁ : 0 < fract ξ := by
   norm_cast at H
   linarith only [hv, H]
 
-set_option backward.isDefEq.respectTransparency false in
 -- An auxiliary lemma for the inductive step.
 private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
   obtain ⟨hcop, _, h⟩ := h
@@ -439,7 +434,6 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
       simp only [isCoprime_zero_left, isCoprime_self, isUnit_iff] at huv_cop
       rcases huv_cop with huv_cop | huv_cop <;> linarith only [hv, huv_cop]
 
-set_option backward.isDefEq.respectTransparency false in
 -- The key step: the relevant inequality persists in the inductive step.
 private theorem aux₃ :
     |(fract ξ)⁻¹ - v / (u - ⌊ξ⌋ * v)| < (((u : ℝ) - ⌊ξ⌋ * v) * (2 * (u - ⌊ξ⌋ * v) - 1))⁻¹ := by
@@ -508,7 +502,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
     rcases le_or_gt (u : ℝ) ξ with ht | ht
     · use 0
       rw [convergent_zero, Rat.coe_int_inj, eq_comm, floor_eq_iff]
-      convert And.intro ht (sub_lt_iff_lt_add'.mp (abs_lt.mp h₂).2) <;> norm_num
+      convert! And.intro ht (sub_lt_iff_lt_add'.mp (abs_lt.mp h₂).2) <;> norm_num
     · replace h₁ := lt_sub_iff_add_lt'.mp (h₁ rfl)
       have hξ₁ : ⌊ξ⌋ = u - 1 := by
         rw [floor_eq_iff, cast_sub, cast_one, sub_add_cancel]
@@ -521,7 +515,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
             one_add_one_eq_two, inv_lt_comm₀ (fract_pos.mpr Hξ) zero_lt_two]
           refine ⟨(fract_lt_one ξ).le, ?_⟩
           rw [fract, hξ₁, cast_sub, cast_one, lt_sub_iff_add_lt', sub_add]
-          convert h₁ using 1
+          convert! h₁ using 1
           rw [sub_eq_add_neg]
           norm_num
         use 1
@@ -537,7 +531,6 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
       (mod_cast toNat_of_nonneg huv₀.le : ((u - ⌊ξ⌋ * v).toNat : ℚ) = u - ⌊ξ⌋ * v),
       cast_natCast, inv_div, sub_div, mul_div_cancel_right₀ _ Hv, add_sub_cancel]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The main result, *Legendre's Theorem* on rational approximation:
 if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
 then `q` is a convergent of the continued fraction expansion of `ξ`.
@@ -547,7 +540,7 @@ theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ
   refine q.num_div_den ▸ exists_rat_eq_convergent' ⟨?_, fun hd => ?_, ?_⟩
   · exact isCoprime_iff_nat_coprime.mpr (natAbs_natCast q.den ▸ q.reduced)
   · rw [← q.den_eq_one_iff.mp (Nat.cast_eq_one.mp hd)] at h
-    simpa only [Rat.den_intCast, Nat.cast_one, one_pow, mul_one] using (abs_lt.mp h).1
+    simpa only [Rat.den_intCast, Nat.cast_one, one_pow, mul_one] using! (abs_lt.mp h).1
   · obtain ⟨hq₀, hq₁⟩ := aux₀ (Nat.cast_pos.mpr q.pos)
     replace hq₁ := mul_pos hq₀ hq₁
     have hq₂ : (0 : ℝ) < 2 * (q.den * q.den) := mul_pos zero_lt_two (mul_pos hq₀ hq₀)

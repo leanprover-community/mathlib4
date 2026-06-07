@@ -148,6 +148,9 @@ theorem eq_zero_rpow_iff {x : ℝ} {a : ℝ} : a = 0 ^ x ↔ x ≠ 0 ∧ a = 0 �
 theorem rpow_one (x : ℝ) : x ^ (1 : ℝ) = x := by simp [rpow_def]
 
 @[simp]
+theorem pi_rpow_one {α : Type*} (f : α → ℝ) : f ^ (1 : ℝ) = f := by ext; simp
+
+@[simp]
 theorem one_rpow (x : ℝ) : (1 : ℝ) ^ x = 1 := by simp [rpow_def]
 
 theorem zero_rpow_le_one (x : ℝ) : (0 : ℝ) ^ x ≤ 1 := by
@@ -229,8 +232,9 @@ theorem le_rpow_add {x : ℝ} (hx : 0 ≤ x) (y z : ℝ) : x ^ y * x ^ z ≤ x ^
   · by_cases h : y + z = 0
     · simp only [H.symm, h, rpow_zero]
       calc
-        (0 : ℝ) ^ y * 0 ^ z ≤ 1 * 1 :=
-          mul_le_mul (zero_rpow_le_one y) (zero_rpow_le_one z) (zero_rpow_nonneg z) zero_le_one
+        (0 : ℝ) ^ y * 0 ^ z ≤ 1 * 1 := by
+          gcongr
+          exacts [zero_rpow_nonneg z, zero_rpow_le_one y, zero_rpow_le_one z]
         _ = 1 := by simp
     · simp [rpow_add', ← H, h]
   · simp [rpow_add pos]
@@ -288,7 +292,6 @@ theorem ofReal_cpow_of_nonpos {x : ℝ} (hx : x ≤ 0) (y : ℂ) :
     log, norm_neg, arg_ofReal_of_neg hlt, ← ofReal_neg, arg_ofReal_of_nonneg (neg_nonneg.2 hx),
     ofReal_zero, zero_mul, add_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cpow_ofReal (x : ℂ) (y : ℝ) :
     x ^ (y : ℂ) = ↑(‖x‖ ^ y) * (Real.cos (arg x * y) + Real.sin (arg x * y) * I) := by
   rcases eq_or_ne x 0 with rfl | hx
@@ -310,7 +313,6 @@ theorem norm_cpow_of_ne_zero {z : ℂ} (hz : z ≠ 0) (w : ℂ) :
   rw [cpow_def_of_ne_zero hz, norm_exp, mul_re, log_re, log_im, Real.exp_sub,
     Real.rpow_def_of_pos (norm_pos_iff.mpr hz)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_cpow_of_imp {z w : ℂ} (h : z = 0 → w.re = 0 → w = 0) :
     ‖z ^ w‖ = ‖z‖ ^ w.re / Real.exp (arg z * im w) := by
   rcases ne_or_eq z 0 with (hz | rfl) <;> [exact norm_cpow_of_ne_zero hz w; rw [norm_zero]]
@@ -319,7 +321,6 @@ theorem norm_cpow_of_imp {z w : ℂ} (h : z = 0 → w.re = 0 → w = 0) :
   · rw [Real.zero_rpow hw, zero_div, zero_cpow, norm_zero]
     exact ne_of_apply_ne re hw
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_cpow_le (z w : ℂ) : ‖z ^ w‖ ≤ ‖z‖ ^ w.re / Real.exp (arg z * im w) := by
   by_cases! h : z = 0 → w.re = 0 → w = 0
   · exact (norm_cpow_of_imp h).le
@@ -429,7 +430,7 @@ lemma rpow_add_natCast {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℕ) : x ^ (y + n
   simpa using rpow_add_intCast hx y n
 
 lemma rpow_sub_intCast {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℤ) : x ^ (y - n) = x ^ y / x ^ n := by
-  simpa using rpow_add_intCast hx y (-n)
+  simpa using! rpow_add_intCast hx y (-n)
 
 lemma rpow_sub_natCast {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℕ) : x ^ (y - n) = x ^ y / x ^ n := by
   simpa using rpow_sub_intCast hx y n
@@ -521,7 +522,7 @@ lemma rpow_intCast_mul (hx : 0 ≤ x) (n : ℤ) (z : ℝ) : x ^ (n * z) = (x ^ n
 lemma rpow_mul_intCast (hx : 0 ≤ x) (y : ℝ) (n : ℤ) : x ^ (y * n) = (x ^ y) ^ n := by
   rw [rpow_mul hx, rpow_intCast]
 
-/-! Note: lemmas about `(∏ i ∈ s, f i ^ r)` such as `Real.finset_prod_rpow` are proved
+/-! Note: lemmas about `(∏ i ∈ s, f i ^ r)` such as `Real.finsetProd_rpow` are proved
 in `Mathlib/Analysis/SpecialFunctions/Pow/NNReal.lean` instead. -/
 
 /-!
@@ -529,7 +530,6 @@ in `Mathlib/Analysis/SpecialFunctions/Pow/NNReal.lean` instead. -/
 -/
 
 
-set_option backward.isDefEq.respectTransparency false in
 @[gcongr, bound]
 theorem rpow_lt_rpow (hx : 0 ≤ x) (hxy : x < y) (hz : 0 < z) : x ^ z < y ^ z := by
   rw [le_iff_eq_or_lt] at hx; rcases hx with hx | hx
@@ -565,7 +565,7 @@ lemma rpow_le_rpow_of_nonpos (hx : 0 < x) (hxy : x ≤ y) (hz : z ≤ 0) : y ^ z
   all_goals positivity
 
 theorem rpow_lt_rpow_iff (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z < y ^ z ↔ x < y :=
-  ⟨lt_imp_lt_of_le_imp_le fun h => rpow_le_rpow hy h (le_of_lt hz), fun h => rpow_lt_rpow hx h hz⟩
+  ⟨lt_imp_lt_of_le_imp_le fun h ↦ by gcongr, fun h ↦ by gcongr⟩
 
 theorem rpow_le_rpow_iff (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z ≤ y ^ z ↔ x ≤ y :=
   le_iff_le_iff_lt_iff_lt.2 <| rpow_lt_rpow_iff hy hx hz
@@ -605,7 +605,6 @@ theorem rpow_inv_le_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) :
     x ^ z⁻¹ ≤ y ↔ y ^ z ≤ x := by
   rw [← rpow_le_rpow_iff_of_neg hy _ hz, rpow_inv_rpow _ hz.ne] <;> positivity
 
-set_option backward.isDefEq.respectTransparency false in
 theorem rpow_lt_rpow_of_exponent_lt (hx : 1 < x) (hyz : y < z) : x ^ y < x ^ z := by
   repeat' rw [rpow_def_of_pos (lt_trans zero_lt_one hx)]
   rw [exp_lt_exp]; exact mul_lt_mul_of_pos_left hyz (log_pos hx)
@@ -613,23 +612,16 @@ theorem rpow_lt_rpow_of_exponent_lt (hx : 1 < x) (hyz : y < z) : x ^ y < x ^ z :
 @[gcongr]
 theorem rpow_le_rpow_of_exponent_le (hx : 1 ≤ x) (hyz : y ≤ z) : x ^ y ≤ x ^ z := by
   repeat' rw [rpow_def_of_pos (lt_of_lt_of_le zero_lt_one hx)]
-  rw [exp_le_exp]; exact mul_le_mul_of_nonneg_left hyz (log_nonneg hx)
-
-@[deprecated (since := "2025-10-28")] alias rpow_lt_rpow_of_exponent_neg :=
-  rpow_lt_rpow_of_neg
+  rw [exp_le_exp]; gcongr; exact log_nonneg hx
 
 theorem strictAntiOn_rpow_Ioi_of_exponent_neg {r : ℝ} (hr : r < 0) :
     StrictAntiOn (fun (x : ℝ) => x ^ r) (Set.Ioi 0) :=
   fun _ ha _ _ hab => rpow_lt_rpow_of_neg ha hab hr
 
-@[deprecated (since := "2025-10-28")] alias rpow_le_rpow_of_exponent_nonpos :=
-  rpow_le_rpow_of_nonpos
-
 theorem antitoneOn_rpow_Ioi_of_exponent_nonpos {r : ℝ} (hr : r ≤ 0) :
     AntitoneOn (fun (x : ℝ) => x ^ r) (Set.Ioi 0) :=
   fun _ ha _ _ hab => rpow_le_rpow_of_nonpos ha hab hr
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem rpow_le_rpow_left_iff (hx : 1 < x) : x ^ y ≤ x ^ z ↔ y ≤ z := by
   have x_pos : 0 < x := lt_trans zero_lt_one hx
@@ -665,14 +657,14 @@ theorem rpow_lt_one {x z : ℝ} (hx1 : 0 ≤ x) (hx2 : x < 1) (hz : 0 < z) : x ^
 
 theorem rpow_le_one {x z : ℝ} (hx1 : 0 ≤ x) (hx2 : x ≤ 1) (hz : 0 ≤ z) : x ^ z ≤ 1 := by
   rw [← one_rpow z]
-  exact rpow_le_rpow hx1 hx2 hz
+  gcongr
 
 theorem rpow_lt_one_of_one_lt_of_neg {x z : ℝ} (hx : 1 < x) (hz : z < 0) : x ^ z < 1 := by
-  convert rpow_lt_rpow_of_exponent_lt hx hz
+  convert! rpow_lt_rpow_of_exponent_lt hx hz
   exact (rpow_zero x).symm
 
 theorem rpow_le_one_of_one_le_of_nonpos {x z : ℝ} (hx : 1 ≤ x) (hz : z ≤ 0) : x ^ z ≤ 1 := by
-  convert rpow_le_rpow_of_exponent_le hx hz
+  convert! rpow_le_rpow_of_exponent_le hx hz
   exact (rpow_zero x).symm
 
 theorem one_lt_rpow {x z : ℝ} (hx : 1 < x) (hz : 0 < z) : 1 < x ^ z := by
@@ -681,16 +673,16 @@ theorem one_lt_rpow {x z : ℝ} (hx : 1 < x) (hz : 0 < z) : 1 < x ^ z := by
 
 theorem one_le_rpow {x z : ℝ} (hx : 1 ≤ x) (hz : 0 ≤ z) : 1 ≤ x ^ z := by
   rw [← one_rpow z]
-  exact rpow_le_rpow zero_le_one hx hz
+  gcongr
 
 theorem one_lt_rpow_of_pos_of_lt_one_of_neg (hx1 : 0 < x) (hx2 : x < 1) (hz : z < 0) :
     1 < x ^ z := by
-  convert rpow_lt_rpow_of_exponent_gt hx1 hx2 hz
+  convert! rpow_lt_rpow_of_exponent_gt hx1 hx2 hz
   exact (rpow_zero x).symm
 
 theorem one_le_rpow_of_pos_of_le_one_of_nonpos (hx1 : 0 < x) (hx2 : x ≤ 1) (hz : z ≤ 0) :
     1 ≤ x ^ z := by
-  convert rpow_le_rpow_of_exponent_ge hx1 hx2 hz
+  convert! rpow_le_rpow_of_exponent_ge hx1 hx2 hz
   exact (rpow_zero x).symm
 
 theorem rpow_lt_one_iff_of_pos (hx : 0 < x) : x ^ y < 1 ↔ 1 < x ∧ y < 0 ∨ x < 1 ∧ 0 < y := by
@@ -706,7 +698,6 @@ theorem rpow_lt_one_iff' {x y : ℝ} (hx : 0 ≤ x) (hy : 0 < y) :
     x ^ y < 1 ↔ x < 1 := by
   rw [← Real.rpow_lt_rpow_iff hx zero_le_one hy, Real.one_rpow]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem one_lt_rpow_iff_of_pos (hx : 0 < x) : 1 < x ^ y ↔ 1 < x ∧ 0 < y ∨ x < 1 ∧ y < 0 := by
   rw [rpow_def_of_pos hx, one_lt_exp_iff, mul_pos_iff, log_pos_iff hx.le, log_neg_iff hx]
 
@@ -736,8 +727,8 @@ theorem rpow_le_rpow_of_exponent_ge' (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hz : 0 ≤
 lemma rpow_max {x y p : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hp : 0 ≤ p) :
     (max x y) ^ p = max (x ^ p) (y ^ p) := by
   rcases le_total x y with hxy | hxy
-  · rw [max_eq_right hxy, max_eq_right (rpow_le_rpow hx hxy hp)]
-  · rw [max_eq_left hxy, max_eq_left (rpow_le_rpow hy hxy hp)]
+  · rw [max_eq_right hxy, max_eq_right (by gcongr)]
+  · rw [max_eq_left hxy, max_eq_left (by gcongr)]
 
 theorem self_le_rpow_of_le_one (h₁ : 0 ≤ x) (h₂ : x ≤ 1) (h₃ : y ≤ 1) : x ≤ x ^ y := by
   simpa only [rpow_one]
@@ -967,7 +958,6 @@ lemma norm_natCast_cpow_le_norm_natCast_cpow_iff {n : ℕ} (hn : 1 < n) {w z : �
   simp_rw [norm_natCast_cpow_of_pos (Nat.zero_lt_of_lt hn),
     Real.rpow_le_rpow_left_iff (Nat.one_lt_cast.mpr hn)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma norm_log_natCast_le_rpow_div (n : ℕ) {ε : ℝ} (hε : 0 < ε) : ‖log n‖ ≤ n ^ ε / ε := by
   rcases n.eq_zero_or_pos with rfl | h
   · rw [Nat.cast_zero, Nat.cast_zero, log_zero, norm_zero, Real.zero_rpow hε.ne', zero_div]
@@ -1059,62 +1049,11 @@ theorem IsInt.rpow_eq_inv_pow {b : ℝ} {n : ℕ} (h : IsInt b (.negOfNat n)) (a
     a ^ b = (a ^ n)⁻¹ := by
   rw [h.1, Real.rpow_intCast, Int.negOfNat_eq, zpow_neg, Int.ofNat_eq_natCast, zpow_natCast]
 
-@[deprecated IsNat.rpow_eq_pow (since := "2025-10-21")]
-theorem isNat_rpow_pos {a b : ℝ} {nb ne : ℕ}
-    (pb : IsNat b nb) (pe' : IsNat (a ^ nb) ne) :
-    IsNat (a ^ b) ne := by
-  rwa [pb.out, rpow_natCast]
-
-@[deprecated IsInt.rpow_eq_inv_pow (since := "2025-10-21")]
-theorem isNat_rpow_neg {a b : ℝ} {nb ne : ℕ}
-    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsNat (a ^ (Int.negOfNat nb)) ne) :
-    IsNat (a ^ b) ne := by
-  rwa [pb.out, Real.rpow_intCast]
-
-@[deprecated IsNat.rpow_eq_pow (since := "2025-10-21")]
-theorem isInt_rpow_pos {a b : ℝ} {nb ne : ℕ}
-    (pb : IsNat b nb) (pe' : IsInt (a ^ nb) (Int.negOfNat ne)) :
-    IsInt (a ^ b) (Int.negOfNat ne) := by
-  rwa [pb.out, rpow_natCast]
-
-@[deprecated IsInt.rpow_eq_inv_pow (since := "2025-10-21")]
-theorem isInt_rpow_neg {a b : ℝ} {nb ne : ℕ}
-    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsInt (a ^ (Int.negOfNat nb)) (Int.negOfNat ne)) :
-    IsInt (a ^ b) (Int.negOfNat ne) := by
-  rwa [pb.out, Real.rpow_intCast]
-
-@[deprecated IsNat.rpow_eq_pow (since := "2025-10-21")]
-theorem isNNRat_rpow_pos {a b : ℝ} {nb : ℕ}
-    {num den : ℕ}
-    (pb : IsNat b nb) (pe' : IsNNRat (a ^ nb) num den) :
-    IsNNRat (a ^ b) num den := by
-  rwa [pb.out, rpow_natCast]
-
-@[deprecated IsNat.rpow_eq_pow (since := "2025-10-21")]
-theorem isRat_rpow_pos {a b : ℝ} {nb : ℕ}
-    {num : ℤ} {den : ℕ}
-    (pb : IsNat b nb) (pe' : IsRat (a ^ nb) num den) :
-    IsRat (a ^ b) num den := by
-  rwa [pb.out, rpow_natCast]
-
-@[deprecated IsInt.rpow_eq_inv_pow (since := "2025-10-21")]
-theorem isNNRat_rpow_neg {a b : ℝ} {nb : ℕ}
-    {num den : ℕ}
-    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsNNRat (a ^ (Int.negOfNat nb)) num den) :
-    IsNNRat (a ^ b) num den := by
-  rwa [pb.out, Real.rpow_intCast]
-
-@[deprecated IsInt.rpow_eq_inv_pow (since := "2025-10-21")]
-theorem isRat_rpow_neg {a b : ℝ} {nb : ℕ}
-    {num : ℤ} {den : ℕ}
-    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsRat (a ^ (Int.negOfNat nb)) num den) :
-    IsRat (a ^ b) num den := by
-  rwa [pb.out, Real.rpow_intCast]
-
 /-- Given proofs
 - that `a` is a natural number `m`
 - that `b` is a nonnegative rational number `n / d`
 - that `r ^ d = m ^ n` (written as `r ^ d = k`, `m ^ n = l`, `k = l`)
+
 prove that `a ^ b = r`.
 -/
 theorem IsNat.rpow_isNNRat {a b : ℝ} {m n d r : ℕ} (ha : IsNat a m) (hb : IsNNRat b n d)
@@ -1143,6 +1082,7 @@ open Lean in
 /-- Given proofs
 - that `a` is a natural number `na`;
 - that `b` is a nonnegative rational number `nb / db`;
+
 returns a tuple of
 - a natural number `r` (result);
 - the same number, as an expression;

@@ -29,8 +29,6 @@ open Equiv Fintype Function
 
 open Finset (range sum_const)
 
-open Set (Iic)
-
 namespace Imo1987Q1
 
 /-- The set of pairs `(x : α, σ : Perm α)` such that `σ x = x` is equivalent to the set of pairs
@@ -55,7 +53,7 @@ fixed points. -/
 def fiber (k : ℕ) : Set (Perm α) :=
   {σ : Perm α | card (fixedPoints σ) = k}
 
-instance {k : ℕ} : Fintype (fiber α k) := by unfold fiber; infer_instance
+instance {k : ℕ} : Fintype (fiber α k) := inferInstanceAs <| Fintype (setOf _)
 
 @[simp]
 theorem mem_fiber {σ : Perm α} {k : ℕ} : σ ∈ fiber α k ↔ card (fixedPoints σ) = k :=
@@ -87,7 +85,7 @@ def fixedPointsEquiv' :
 theorem main_fintype : ∑ k ∈ range (card α + 1), k * p α k = card α * (card α - 1)! := by
   have A : ∀ (k) (σ : fiber α k), card (fixedPoints (↑σ : Perm α)) = k := fun k σ => σ.2
   simpa [A, ← Fin.sum_univ_eq_sum_range, -card_ofFinset, Finset.card_univ, card_fixed_points,
-    mul_comm] using card_congr (fixedPointsEquiv' α)
+    mul_comm] using! card_congr (fixedPointsEquiv' α)
 
 /-- Main statement for permutations of `Fin n`, a version that works for `n = 0`. -/
 theorem main₀ (n : ℕ) : ∑ k ∈ range (n + 1), k * p (Fin n) k = n * (n - 1)! := by

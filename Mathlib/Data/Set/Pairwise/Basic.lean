@@ -65,9 +65,9 @@ theorem Pairwise.disjoint_extend_bot [PartialOrder γ] [OrderBot γ]
   intro b₁ b₂ hne
   rcases em (∃ a₁, e a₁ = b₁) with ⟨a₁, rfl⟩ | hb₁
   · rcases em (∃ a₂, e a₂ = b₂) with ⟨a₂, rfl⟩ | hb₂
-    · simpa only [onFun, he.extend_apply] using hf (ne_of_apply_ne e hne)
-    · simpa only [onFun, extend_apply' _ _ _ hb₂] using disjoint_bot_right
-  · simpa only [onFun, extend_apply' _ _ _ hb₁] using disjoint_bot_left
+    · simpa only [onFun, he.extend_apply] using! hf (ne_of_apply_ne e hne)
+    · simpa only [onFun, extend_apply' _ _ _ hb₂] using! disjoint_bot_right
+  · simpa only [onFun, extend_apply' _ _ _ hb₁] using! disjoint_bot_left
 
 namespace Set
 
@@ -76,6 +76,12 @@ theorem Pairwise.mono (h : t ⊆ s) (hs : s.Pairwise r) : t.Pairwise r :=
 
 theorem Pairwise.mono' (H : r ≤ p) (hr : s.Pairwise r) : s.Pairwise p :=
   hr.imp H
+
+theorem Pairwise.inter_left (hs : s.Pairwise r) (t : Set α) : (s ∩ t).Pairwise r :=
+  hs.mono Set.inter_subset_left
+
+theorem Pairwise.inter_right (hs : s.Pairwise r) (t : Set α) : (t ∩ s).Pairwise r :=
+  hs.mono Set.inter_subset_right
 
 theorem pairwise_top (s : Set α) : s.Pairwise ⊤ :=
   pairwise_of_forall s _ fun _ _ => trivial
@@ -240,6 +246,10 @@ theorem pairwiseDisjoint_empty : (∅ : Set ι).PairwiseDisjoint f :=
 theorem pairwiseDisjoint_singleton (i : ι) (f : ι → α) : PairwiseDisjoint {i} f :=
   pairwise_singleton i _
 
+@[simp]
+lemma pairwiseDisjoint_singleton' (s : Set ι) :
+    s.PairwiseDisjoint (singleton : ι → Set ι) := by intro; grind
+
 theorem pairwiseDisjoint_insert {i : ι} :
     (insert i s).PairwiseDisjoint f ↔
       s.PairwiseDisjoint f ∧ ∀ j ∈ s, i ≠ j → Disjoint (f i) (f j) :=
@@ -377,7 +387,6 @@ theorem pairwiseDisjoint_image_left_iff {f : α → β → γ} {s : Set α} {t :
     rintro _ ⟨⟨a, ha, hab⟩, b, hb, rfl⟩
     exact h (congr_arg Prod.snd <| ht (mk_mem_prod ha hx) (mk_mem_prod hb hy) hab)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_ne_mem_inter_of_not_pairwiseDisjoint
     {f : ι → Set α} (h : ¬ s.PairwiseDisjoint f) :
     ∃ i ∈ s, ∃ j ∈ s, i ≠ j ∧ ∃ x : α, x ∈ f i ∩ f j := by
@@ -397,7 +406,6 @@ lemma exists_lt_mem_inter_of_not_pairwiseDisjoint [LinearOrder ι]
   · exact ⟨i, hi, j, hj, h_lt, x, hx₁, hx₂⟩
   · exact ⟨j, hj, i, hi, h_lt, x, hx₂, hx₁⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma pairwiseDisjoint_singleton_iff_injOn {f : ι → α} :
     s.PairwiseDisjoint (fun i ↦ ({f i} : Set α)) ↔ s.InjOn f := by
   simp [PairwiseDisjoint, InjOn, Set.Pairwise, not_imp_not]

@@ -184,7 +184,6 @@ theorem not_intervalIntegrable_of_sub_inv_isBigO_punctured {f : ℝ → F} {a b 
     (A.mono fun x hx => hx.differentiableAt) B
     (hf.congr' (A.mono fun x hx => hx.deriv.symm) EventuallyEq.rfl) hne hc
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The function `fun x => (x - c)⁻¹` is integrable on `a..b` if and only if
 `a = b` or `c ∉ [a, b]`. -/
 @[simp]

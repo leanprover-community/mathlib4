@@ -56,7 +56,6 @@ lemma xSeq_tendsto (y : ℝ) : Tendsto (xSeq y) atTop (𝓝 0) := by
 ## `T` is closed
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The closure of the topologist's sine curve `S` is the set `T`. -/
 lemma closure_S : closure S = T := by
   ext ⟨x, y⟩
@@ -83,7 +82,7 @@ lemma closure_S : closure S = T := by
       have : ContinuousAt (fun x ↦ sin x⁻¹) x :=
         continuous_sin.continuousAt.comp <| continuousAt_inv₀ h.ne'
       refine tendsto_nhds_unique ?_ hf_lim.2
-      convert this.tendsto.comp hf_lim.1 with n
+      convert! this.tendsto.comp hf_lim.1 with n
       obtain ⟨y, hy⟩ := hf_mem n
       simp [← hy.2]
   · -- Show that every `p ∈ T` is the limit of a sequence in `S`.
@@ -103,7 +102,6 @@ lemma isClosed_T : IsClosed T := by simpa only [← closure_S] using isClosed_cl
 ## `T` is connected
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `T` is connected, being the closure of the set `S` (which is obviously connected since it
 is a continuous image of the positive real line). -/
 theorem isConnected_T : IsConnected T := by
@@ -154,7 +152,6 @@ lemma exists_mem_Ioc_of_y {y : ℝ} (hy : y ∈ Icc (-1) 1) {a : ℝ} (ha : 0 < 
   rw [dist_eq, sub_zero, abs_of_pos (xSeq_pos _ N)] at h_dist
   linarith
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The set `T` is not path-connected. -/
 theorem not_isPathConnected_T : ¬ IsPathConnected T := by
   -- **Step 1**:
@@ -175,7 +172,7 @@ theorem not_isPathConnected_T : ¬ IsPathConnected T := by
   -- connected subset of `ℝ` is an interval, we have `[0, a] ⊂ x(p([t0, t1]))`.
   obtain ⟨t₁, ht₁⟩ : ∃ t₁, t₀ < t₁ ∧ dist t₀ t₁ < δ := by
     refine exists_unitInterval_gt (lt_of_le_of_ne (unitInterval.le_one t₀) fun ht₀' ↦ ?_) hδ
-    have w_x_path : (p 1).1 = 1 := by simp [w]
+    have w_x_path : (p 1).1 = 1 := by rw [Path.target p, w]
     have x_eq_zero : (p 1).1 = 0 := by rwa [ht₀'] at h_pt₀_x
     linarith
   let a := (p t₁).1
@@ -184,7 +181,7 @@ theorem not_isPathConnected_T : ¬ IsPathConnected T := by
       refine (h_pathConn.somePath_mem t₁).elim id fun ⟨y, hy⟩ ↦ ?_
       have : (p t₁).1 = 0 := by simp only [p, ← hy.2]
       exact ((show t₁ ≤ t₀ from le_sSup this).not_gt ht₁.1).elim
-    simpa only [a, ← hx_eq] using hxI
+    simpa only [a, ← hx_eq] using! hxI
   have intervalAZeroSubOfT₀T₁Xcoord : Icc 0 a ⊆ (fun t ↦ (p t).1) '' Icc t₀ t₁ :=
     (isPreconnected_Icc.image _ <| xcoord_pathContinuous.continuousOn).Icc_subset
       (show 0 ∈ (fun t ↦ (p t).1) '' Icc t₀ t₁ from ⟨t₀, ⟨le_rfl, ht₁.1.le⟩, ‹_›⟩)

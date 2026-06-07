@@ -69,7 +69,6 @@ theorem target (F : Homotopy p₀ p₁) (t : I) : F (t, 1) = x₁ :=
   calc F (t, 1) = p₀ 1 := ContinuousMap.HomotopyRel.eq_fst _ _ (.inr rfl)
   _ = x₁ := p₀.target
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Evaluating a path homotopy at an intermediate point, giving us a `Path`.
 -/
 @[simps]
@@ -151,7 +150,6 @@ section
 
 variable {p₀ q₀ : Path x₀ x₁} {p₁ q₁ : Path x₁ x₂}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Suppose `p₀` and `q₀` are paths from `x₀` to `x₁`, `p₁` and `q₁` are paths from `x₁` to `x₂`.
 Furthermore, suppose `F : Homotopy p₀ q₀` and `G : Homotopy p₁ q₁`. Then we can define a homotopy
 from `p₀.trans p₁` to `q₀.trans q₁`.
@@ -179,14 +177,12 @@ theorem hcomp_apply (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (x : I × 
           ⟨2 * x.2 - 1, unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, x.2.2.2⟩⟩ :=
   show ite _ _ _ = _ by split_ifs <;> exact Path.extend_apply _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hcomp_half (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (t : I) :
     F.hcomp G (t, ⟨1 / 2, by norm_num, by norm_num⟩) = x₁ :=
   show ite _ _ _ = _ by norm_num
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Suppose `p` is a path, then we have a homotopy from `p` to `p.reparam f` by the convexity of `I`.
 -/
@@ -388,16 +384,10 @@ def trans (P₀ : Path.Homotopic.Quotient x₀ x₁) (P₁ : Path.Homotopic.Quot
     Path.Homotopic.Quotient x₀ x₂ :=
   Quotient.map₂ Path.trans (fun (_ : Path x₀ x₁) _ hp (_ : Path x₁ x₂) _ hq => hcomp hp hq) P₀ P₁
 
-@[deprecated (since := "2025-11-13")]
-noncomputable alias _root_.Path.Homotopic.Quotient.comp := Quotient.trans
-
 @[simp, grind =]
 theorem mk_trans (P₀ : Path x₀ x₁) (P₁ : Path x₁ x₂) :
     mk (P₀.trans P₁) = Quotient.trans (mk P₀) (mk P₁) :=
   rfl
-
-@[deprecated (since := "2025-11-13")]
-noncomputable alias _root_.Path.Homotopic.comp_lift := Quotient.mk_trans
 
 /-- The image of a path homotopy class `P₀` under a map `f`.
 This is `Path.map` descended to the quotient. -/
@@ -406,22 +396,16 @@ def map (P₀ : Path.Homotopic.Quotient x₀ x₁) (f : C(X, Y)) :
   _root_.Quotient.map
     (fun q : Path x₀ x₁ => q.map f.continuous) (fun _ _ h => Path.Homotopic.map h f) P₀
 
-@[deprecated (since := "2025-11-13")]
-noncomputable alias _root_.Path.Homotopic.Quotient.mapFn := Quotient.map
-
 theorem mk_map (P₀ : Path x₀ x₁) (f : C(X, Y)) : mk (P₀.map f.continuous) = map (mk P₀) f :=
   rfl
-
-@[deprecated (since := "2025-11-13")]
-noncomputable alias _root_.Path.Homotopic.map_lift := Quotient.mk_map
 
 end Quotient
 
 -- Porting note: we didn't previously need the `α := ...` and `β := ...` hints.
 theorem hpath_hext {p₁ : Path x₀ x₁} {p₂ : Path x₂ x₃} (hp : ∀ t, p₁ t = p₂ t) :
     HEq (α := Path.Homotopic.Quotient _ _) ⟦p₁⟧ (β := Path.Homotopic.Quotient _ _) ⟦p₂⟧ := by
-  obtain rfl : x₀ = x₂ := by convert hp 0 <;> simp
-  obtain rfl : x₁ = x₃ := by convert hp 1 <;> simp
+  obtain rfl : x₀ = x₂ := by convert! hp 0 <;> simp
+  obtain rfl : x₁ = x₃ := by convert! hp 1 <;> simp
   rw [heq_iff_eq]; congr; ext t; exact hp t
 
 end Homotopic

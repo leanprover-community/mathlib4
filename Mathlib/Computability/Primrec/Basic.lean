@@ -140,6 +140,7 @@ instance (priority := 10) ofDenumerable (α) [Denumerable α] : Primcodable α :
   ⟨Nat.Primrec.succ.of_eq <| by simp⟩
 
 /-- Builds a `Primcodable` instance from an equivalence to a `Primcodable` type. -/
+@[implicit_reducible]
 def ofEquiv (α) {β} [Primcodable α] (e : β ≃ α) : Primcodable β :=
   { __ := Encodable.ofEquiv α e
     prim := (Primcodable.prim α).of_eq fun n => by
@@ -365,7 +366,7 @@ theorem right : Primrec₂ fun (_ : α) (b : β) => b :=
 theorem natPair : Primrec₂ Nat.pair := by simp [Primrec₂, Primrec]; constructor
 
 theorem unpaired {f : ℕ → ℕ → α} : Primrec (Nat.unpaired f) ↔ Primrec₂ f :=
-  ⟨fun h => by simpa using h.comp natPair, fun h => h.comp Primrec.unpair⟩
+  ⟨fun h => by simpa using! h.comp natPair, fun h => h.comp Primrec.unpair⟩
 
 theorem unpaired' {f : ℕ → ℕ → ℕ} : Nat.Primrec (Nat.unpaired f) ↔ Primrec₂ f :=
   Primrec.nat_iff.symm.trans unpaired
@@ -407,7 +408,7 @@ theorem Primrec₂.comp₂ {f : γ → δ → σ} {g : α → β → γ} {h : α
 
 protected lemma PrimrecPred.decide {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) :
     Primrec (fun a => decide (p a)) := by
-  convert hp.choose_spec
+  convert! hp.choose_spec
 
 lemma Primrec.primrecPred {p : α → Prop} [DecidablePred p]
     (hp : Primrec (fun a => decide (p a))) : PrimrecPred p :=
@@ -572,7 +573,6 @@ theorem option_getD : Primrec₂ (@Option.getD α) :=
 theorem option_getD_default [Inhabited α] : Primrec (fun o : Option α => o.getD default) :=
   option_getD.comp .id (const default)
 
-set_option linter.deprecated false in
 @[deprecated option_getD_default (since := "2026-01-05")]
 theorem option_iget [Inhabited α] : Primrec (@Option.iget α _) :=
   option_getD_default
@@ -582,7 +582,7 @@ theorem option_isSome : Primrec (@Option.isSome α) :=
 
 theorem bind_decode_iff {f : α → β → Option σ} :
     (Primrec₂ fun a n => (@decode β _ n).bind (f a)) ↔ Primrec₂ f :=
-  ⟨fun h => by simpa [encodek] using h.comp fst ((@Primrec.encode β _).comp snd), fun h =>
+  ⟨fun h => by simpa [encodek] using! h.comp fst ((@Primrec.encode β _).comp snd), fun h =>
     option_bind (Primrec.decode.comp snd) <| h.comp (fst.comp fst) snd⟩
 
 theorem map_decode_iff {f : α → β → σ} :
@@ -687,8 +687,6 @@ theorem dom_finite [Finite α] (f : α → σ) : Primrec f :=
     refine ((list_getElem?₁ (l.map f)).comp (list_idxOf₁ l)).of_eq fun a => ?_
     rw [List.getElem?_map, List.getElem?_idxOf (m a), Option.map_some]
 
-@[deprecated (since := "2025-08-23")] alias dom_fintype := dom_finite
-
 /-- A function is `PrimrecBounded` if its size is bounded by a primitive recursive function -/
 def PrimrecBounded (f : α → β) : Prop :=
   ∃ g : α → ℕ, Primrec g ∧ ∀ x, encode (f x) ≤ g x
@@ -708,7 +706,6 @@ theorem of_graph {f : α → ℕ} (h₁ : PrimrecBounded f)
   refine (nat_findGreatest pg h₂).of_eq fun n => ?_
   exact (Nat.findGreatest_spec (P := fun b => f n = b) (hg n) rfl).symm
 
-set_option backward.isDefEq.respectTransparency false in
 -- We show that division is primitive recursive by showing that the graph is
 theorem nat_div : Primrec₂ ((· / ·) : ℕ → ℕ → ℕ) := by
   refine of_graph ⟨_, fst, fun p => Nat.div_le_self _ _⟩ ?_
@@ -765,7 +762,7 @@ instance sum : Primcodable (α ⊕ β) :=
                 to₂ <| nat_double.comp (Primrec.encode.comp snd)))).of_eq
         fun n =>
         show _ = encode (decodeSum n) by
-          simp only [decodeSum, Nat.boddDiv2_eq]
+          simp only [decodeSum]
           cases Nat.bodd n <;> simp
           · cases @decode α _ n.div2 <;> rfl
           · cases @decode β _ n.div2 <;> rfl⟩
@@ -813,6 +810,7 @@ variable {α : Type*} [Primcodable α]
 open Primrec
 
 /-- A subtype of a primitive recursive predicate is `Primcodable`. -/
+@[implicit_reducible]
 def subtype {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) : Primcodable (Subtype p) :=
   ⟨have : Primrec fun n => (@decode α _ n).bind fun a => Option.guard p a :=
     option_bind .decode (option_guard (hp.comp snd).primrecRel snd)
@@ -823,7 +821,11 @@ def subtype {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) : Primcodab
       by_cases h : p a <;> simp [h]; rfl⟩
 
 instance fin {n} : Primcodable (Fin n) :=
-  @ofEquiv _ _ (subtype <| nat_lt.comp .id (const n)) Fin.equivSubtype
+  letI : Primcodable { i : ℕ // i < n } := subtype <| nat_lt.comp .id (const n)
+  ofEquiv { i : ℕ // i < n } Fin.equivSubtype
+
+example (n) : (fin (n := n)).toEncodable = Fin.encodable n := by
+  with_reducible_and_instances rfl
 
 section ULower
 
@@ -840,7 +842,7 @@ theorem mem_range_encode : PrimrecPred (fun n => n ∈ Set.range (encode : α �
   this.of_eq fun _ => decode₂_ne_none_iff
 
 instance ulower : Primcodable (ULower α) :=
-  Primcodable.subtype mem_range_encode
+  fast_instance% Primcodable.subtype mem_range_encode
 
 end ULower
 
@@ -852,7 +854,6 @@ namespace Primrec
 variable {α : Type*} {β : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem subtype_val {p : α → Prop} [DecidablePred p] {hp : PrimrecPred p} :
     haveI := Primcodable.subtype hp
     Primrec (@Subtype.val α p) := by
@@ -884,14 +885,14 @@ theorem option_get {f : α → Option β} {h : ∀ a, (f a).isSome} :
 
 theorem ulower_down : Primrec (ULower.down : α → ULower α) :=
   letI : ∀ a, Decidable (a ∈ Set.range (encode : α → ℕ)) := decidableRangeEncode _
-  subtype_mk .encode
+  subtype_mk .encode (hp := Primcodable.mem_range_encode)
 
 theorem ulower_up : Primrec (ULower.up : ULower α → α) :=
   letI : ∀ a, Decidable (a ∈ Set.range (encode : α → ℕ)) := decidableRangeEncode _
-  option_get (Primrec.decode₂.comp subtype_val)
+  option_get (Primrec.decode₂.comp (subtype_val (hp := Primcodable.mem_range_encode)))
 
 theorem fin_val_iff {n} {f : α → Fin n} : (Primrec fun a => (f a).1) ↔ Primrec f := by
-  letI : Primcodable { a // id a < n } := Primcodable.subtype (nat_lt.comp .id (const _))
+  letI : Primcodable { a // a < n } := Primcodable.subtype (nat_lt.comp .id (const _))
   exact (Iff.trans (by rfl) subtype_val_iff).trans (of_equiv_iff _)
 
 theorem fin_val {n} : Primrec (fun (i : Fin n) => (i : ℕ)) :=

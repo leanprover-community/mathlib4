@@ -88,7 +88,6 @@ variable {R X}
 theorem Rel.addLeft (a : lib R X) {b c : lib R X} (h : Rel R X b c) : Rel R X (a + b) (a + c) := by
   rw [add_comm _ b, add_comm _ c]; exact h.add_right _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Rel.neg {a b : lib R X} (h : Rel R X a b) : Rel R X (-a) (-b) := by
   simpa only [neg_one_smul] using h.smul (-1)
 
@@ -182,7 +181,6 @@ def of : X → FreeLieAlgebra R X := fun x => Quot.mk _ (lib.of R x)
 
 variable {L : Type w} [LieRing L] [LieAlgebra R L]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary definition used to construct the equivalence `lift` below. -/
 def liftAux (f : X → CommutatorRing L) :=
   lib.lift R f
@@ -199,7 +197,6 @@ theorem liftAux_map_mul (f : X → L) (a b : lib R X) :
     liftAux R f (a * b) = ⁅liftAux R f a, liftAux R f b⁆ :=
   map_mul _ a b
 
-set_option backward.isDefEq.respectTransparency false in
 theorem liftAux_spec (f : X → L) (a b : lib R X) (h : FreeLieAlgebra.Rel R X a b) :
     liftAux R f a = liftAux R f b := by
   induction h with
@@ -211,7 +208,6 @@ theorem liftAux_spec (f : X → L) (a b : lib R X) (h : FreeLieAlgebra.Rel R X a
   | mul_left c' _ h₂ => simp only [liftAux_map_mul, h₂]
   | mul_right c' _ h₂ => simp only [liftAux_map_mul, h₂]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The quotient map as a `NonUnitalAlgHom`. -/
 def mk : lib R X →ₙₐ[R] CommutatorRing (FreeLieAlgebra R X) where
   toFun := Quot.mk (Rel R X)

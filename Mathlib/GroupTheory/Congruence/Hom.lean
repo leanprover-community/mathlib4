@@ -47,6 +47,7 @@ an additive congruence relation. -/]
 def mkMulHom (c : Con M) : MulHom M c.Quotient where
   toFun := (↑)
   map_mul' _ _ := rfl
+
 /-- The kernel of a multiplicative homomorphism as a congruence relation. -/
 @[to_additive /-- The kernel of an additive homomorphism as an additive congruence relation. -/]
 def ker (f : F) : Con M where
@@ -99,7 +100,6 @@ theorem mapOfSurjective_eq_mapGen {c : Con M} {f : F} (h : ker f ≤ c) (hf : Su
     c.mapGen f = c.mapOfSurjective f h hf := by
   rw [← conGen_of_con (c.mapOfSurjective f h hf)]; rfl
 
-set_option backward.proofsInPublic true in
 /-- Given a congruence relation `c` on a type `M` with a multiplication, the order-preserving
 bijection between the set of congruence relations containing `c` and the congruence relations
 on the quotient of `M` by `c`. -/
@@ -120,10 +120,10 @@ def correspondence {c : Con M} : { d // c ≤ d } ≃o Con c.Quotient where
           d.1.trans (d.1.symm <| d.2 <| c.eq.1 hx) <| d.1.trans H <| d.2 <| c.eq.1 hy,
           fun h => ⟨_, _, h, rfl, rfl⟩⟩
   right_inv d :=
-    ext fun x y =>
-      ⟨fun ⟨_, _, H, hx, hy⟩ =>
-        hx ▸ hy ▸ H,
-        Con.induction_on₂ x y fun w z h => ⟨w, z, h, rfl, rfl⟩⟩
+    Con.ext fun x y ↦ by
+      refine ⟨?_, Con.induction_on₂ x y fun w z h => ⟨w, z, h, rfl, rfl⟩⟩
+      rintro ⟨a, b, H, rfl, rfl⟩
+      exact H
   map_rel_iff' {s t} := by
     constructor
     · intro h x y hs
