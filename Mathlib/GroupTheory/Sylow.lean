@@ -737,6 +737,33 @@ theorem card_eq_multiplicity [Finite G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow
   rw [heq, ← hp.out.pow_dvd_iff_dvd_ordProj (show Nat.card G ≠ 0 from Nat.card_pos.ne'), ← heq]
   exact P.1.card_subgroup_dvd_card
 
+variable (G) in
+theorem _root_.Group.natCard_dvd_univ_prod_orderOf [Fintype G] :
+    Nat.card G ∣ ∏ g : G, orderOf g := by
+  refine Nat.factorization_prime_le_iff_dvd Nat.card_pos.ne' ?_ |>.mp fun p hp ↦ ?_
+  · exact prod_ne_zero_iff.mpr fun g _ ↦ orderOf_ne_zero_iff.mpr <| isOfFinOrder_of_finite g
+  have H := Classical.arbitrary <| Sylow p G
+  rw [Nat.factorization_prod_apply fun g _ ↦ orderOf_ne_zero_iff.mpr <| isOfFinOrder_of_finite g]
+  suffices Nat.card H - 1 ≤ ∑ g : G, (orderOf g).factorization p by
+    grw [← this, H.card_eq_multiplicity (hp := ⟨hp⟩),
+      ← Nat.le_sub_one_of_lt <| Nat.lt_pow_self hp.one_lt]
+  have := Fintype.ofFinite
+  grw [← sum_le_sum_of_subset (H \ {1} : Set G).toFinset.subset_univ,
+    ← card_nsmul_le_sum _ _ 1 fun g hg ↦ ?_]
+  · simp [← SetLike.coe_sort_coe]
+  simp_rw [Set.mem_toFinset, Set.mem_diff, Set.mem_singleton_iff] at hg
+  have ⟨k, hk⟩ := IsPGroup.iff_orderOf (hp := ⟨hp⟩).mp H.isPGroup' ⟨g, hg.left⟩
+  have : k ≠ 0 := by rintro rfl; simp_all
+  simp [← orderOf_mk g hg.left, hk, hp.factorization_self, Nat.one_le_iff_ne_zero.mpr this]
+
+variable (G) in
+theorem _root_.Group.natCard_dvd_exponent_pow [Finite G] :
+    Nat.card G ∣ Monoid.exponent G ^ Nat.card G := by
+  have := Fintype.ofFinite G
+  apply dvd_trans <| Group.natCard_dvd_univ_prod_orderOf G
+  rw [Nat.card_eq_fintype_card, ← card_univ, ← Finset.prod_const]
+  exact Finset.prod_dvd_prod_of_dvd _ _ fun g _ ↦ Monoid.order_dvd_exponent g
+
 /-- If `G` has a normal Sylow `p`-subgroup, then it is the only Sylow `p`-subgroup. -/
 @[implicit_reducible]
 noncomputable def unique_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
