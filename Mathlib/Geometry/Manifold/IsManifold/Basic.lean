@@ -314,7 +314,7 @@ lemma _root_.Convex.convex_isRCLikeNormedField [NormedSpace ℝ E] [h : IsRCLike
   letI := NormedSpace.restrictScalars ℝ 𝕜 E
   simp only [Convex, StarConvex] at hs ⊢
   intro u hu v hv a b ha hb hab
-  convert hs hu hv ha hb hab using 2
+  convert! hs hu hv ha hb hab using 2
   · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜), ← @algebraMap_smul (R := ℝ) (A := 𝕜)]
   · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜), ← @algebraMap_smul (R := ℝ) (A := 𝕜)]
 
@@ -344,7 +344,7 @@ theorem convex_range [NormedSpace ℝ E] : Convex ℝ (range I) := by
     simp only [h, ↓reduceDIte, toPartialEquiv_coe] at W
     simp only [Convex, StarConvex] at W ⊢
     intro u hu v hv a b ha hb hab
-    convert W hu hv ha hb hab using 2
+    convert! W hu hv ha hb hab using 2
     · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜)]
       rfl
     · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜)]

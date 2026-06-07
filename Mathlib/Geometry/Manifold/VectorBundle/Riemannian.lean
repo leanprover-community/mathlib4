@@ -101,7 +101,7 @@ is a Riemannian bundle. -/
 instance : IsContMDiffRiemannianBundle IB n F₁ (Bundle.Trivial B F₁) := by
   refine ⟨fun x ↦ innerSL ℝ, fun x ↦ ?_, fun x v w ↦ rfl⟩
   simp only [contMDiffAt_section]
-  convert contMDiffAt_const (c := innerSL ℝ)
+  convert! contMDiffAt_const (c := innerSL ℝ)
   ext v w
   simp [hom_trivializationAt_apply, inCoordinates]
 
@@ -123,7 +123,7 @@ lemma ContMDiffWithinAt.inner_bundle
     (hw : ContMDiffWithinAt IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (w m : TotalSpace F E)) s x) :
     ContMDiffWithinAt IM 𝓘(ℝ) n (fun m ↦ ⟪v m, w m⟫) s x := by
   rcases h.exists_contMDiff with ⟨g, g_smooth, hg⟩
-  have hb : ContMDiffWithinAt IM IB n b s x := by
+  have hb : CMDiffAt[s] n b x := by
     simp only [contMDiffWithinAt_totalSpace] at hv
     exact hv.1
   simp only [hg]

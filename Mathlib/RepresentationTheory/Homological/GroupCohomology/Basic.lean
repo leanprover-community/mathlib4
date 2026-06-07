@@ -98,6 +98,7 @@ def d [Monoid G] (A : Rep k G) (n : ℕ) :
 
 variable [Group G] (A : Rep k G) (n : ℕ)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem d_eq :
     d A n =
@@ -123,7 +124,6 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
   CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
     (fun n => inhomogeneousCochains.d A n) fun n => by
     classical
-    simp only
     rw [d_eq, d_eq]
     slice_lhs 3 4 => rw [Iso.hom_inv_id]
     slice_lhs 2 4 => rw [Category.id_comp, ((barComplex k G).linearYonedaObj k A).d_comp_d]
@@ -138,6 +138,7 @@ theorem inhomogeneousCochains.d_def (n : ℕ) :
     (inhomogeneousCochains A).d n (n + 1) = d A n := by
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 theorem inhomogeneousCochains.d_comp_d :
     d A n ≫ d A (n + 1) = 0 := by
   simpa [CochainComplex.of.d] using (inhomogeneousCochains A).d_comp_d n (n + 1) (n + 2)

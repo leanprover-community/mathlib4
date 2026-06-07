@@ -104,7 +104,7 @@ jobs:
 
       - if: ${{ ! steps.inputs.outputs.mOrD == '' }}
         name: Check whether user is part of mathlib-reviewers team
-        uses: tspascoal/get-user-teams-membership@818140d631d5f29f26b151afbe4179f87d9ceb5e # v4.0.1
+        uses: tspascoal/get-user-teams-membership@b2546c5affc730fd8e3d8483ae9ad3621938c2f9 # v4.0.2
         id: actorTeams
         with:
           organization: leanprover-community # optional. Default value ${{ github.repository_owner }}
@@ -115,7 +115,7 @@ jobs:
 
       - name: Checkout local actions
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1
@@ -165,7 +165,7 @@ jobs:
       - name: Send message on Zulip
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
         continue-on-error: true
-        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+        uses: zulip/github-actions-zulip/send-message@bd8ec52de371d139ae8313661b7d8318c19266aa # v2.0.1
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
@@ -196,7 +196,7 @@ jobs:
       - name: Add comment to PR
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
         continue-on-error: true
-        uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
+        uses: GrantBirki/comment@3439715f0cf3b8fc29bf47be0e3226679c06c41a # v3.0.0
         with:
           # if a comment triggers the action, then `issue.number` is set
           # if a review or review comment triggers the action, then `pull_request.number` is set
