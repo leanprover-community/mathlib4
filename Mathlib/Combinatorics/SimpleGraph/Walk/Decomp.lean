@@ -66,7 +66,7 @@ lemma takeUntil_eq_take (p : G.Walk u v) (h : w ∈ p.support) :
     simp only [takeUntil, eq_mpr_eq_cast, support_nil, getVert_nil, take, support_copy]
     grind [mem_support_nil_iff, support_nil]
   | cons hadj p ih =>
-    grind [takeUntil, support, copy_rfl_rfl, take_support_eq_support_take_succ]
+    grind [takeUntil, support, copy_rfl_rfl, support_take]
 
 lemma length_takeUntil (p : G.Walk u v) (h : w ∈ p.support) :
     (p.takeUntil w h).length = p.support.idxOf w := by
@@ -187,7 +187,7 @@ theorem dropUntil_copy {u v w v' w'} (p : G.Walk v w) (hv : v = v') (hw : w = w'
 
 theorem support_takeUntil_prefix_support (p : G.Walk v w) (h : u ∈ p.support) :
     (p.takeUntil u h).support <+: p.support := by
-  grw [takeUntil_eq_take, support_copy, take_support_eq_support_take_succ, List.take_prefix]
+  grw [takeUntil_eq_take, support_copy, support_take, List.take_prefix]
 
 theorem support_takeUntil_subset_support (p : G.Walk v w) (h : u ∈ p.support) :
     (p.takeUntil u h).support ⊆ p.support :=
@@ -304,13 +304,17 @@ lemma length_takeUntil_lt_length {u v w : V} {p : G.Walk v w} (h : u ∈ p.suppo
 
 @[deprecated (since := "2026-05-25")] alias length_takeUntil_lt := length_takeUntil_lt_length
 
+lemma length_dropUntil_lt_length {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (huv : u ≠ v) :
+    (p.dropUntil u h).length < p.length := by
+  grind [length_dropUntil, cons_tail_support]
+
 lemma takeUntil_takeUntil {w x : V} (p : G.Walk u v) (hw : w ∈ p.support)
     (hx : x ∈ (p.takeUntil w hw).support) :
     (p.takeUntil w hw).takeUntil x hx =
       p.takeUntil x (p.support_takeUntil_subset_support hw hx) := by
   simp_rw [← takeUntil_append_of_mem_left _ (p.dropUntil w hw) hx, take_spec]
 
-lemma notMem_support_takeUntil_support_takeUntil_subset_support {p : G.Walk u v} {x : V} (h : x ≠ w)
+lemma notMem_support_takeUntil_support_takeUntil_subset {p : G.Walk u v} {x : V} (h : x ≠ w)
     (hw : w ∈ p.support) (hx : x ∈ (p.takeUntil w hw).support) :
     w ∉ (p.takeUntil x (p.support_takeUntil_subset_support hw hx)).support := by
   rw [← takeUntil_takeUntil p hw hx]
@@ -322,10 +326,6 @@ lemma notMem_support_takeUntil_support_takeUntil_subset_support {p : G.Walk u v}
     exact length_takeUntil_lt_length _ h
   simp only [takeUntil_takeUntil] at h1 h2
   lia
-
-@[deprecated (since := "2026-05-25")]
-alias notMem_support_takeUntil_support_takeUntil_subset :=
-  notMem_support_takeUntil_support_takeUntil_subset_support
 
 /-- Rotate a loop walk such that it is centered at the given vertex. -/
 def rotate (c : G.Walk v v) (u : V) (h : u ∈ c.support) : G.Walk u u :=

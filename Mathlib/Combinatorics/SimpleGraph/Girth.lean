@@ -25,7 +25,7 @@ cycle, they give `0` or `∞` respectively if the graph is acyclic.
 @[expose] public section
 
 namespace SimpleGraph
-variable {α : Type*} {G : SimpleGraph α}
+variable {α β : Type*} {G : SimpleGraph α} {G' : SimpleGraph β}
 
 section egirth
 
@@ -70,7 +70,7 @@ lemma three_le_egirth : 3 ≤ G.egirth := by
 lemma Walk.not_nil_of_length_eq_egirth {a} {w : G.Walk a a} (hwg : w.length = G.egirth) :
     ¬ w.Nil := by
   intro hnil
-  simp only [nil_iff_length_eq.mp hnil, ENat.coe_zero] at hwg
+  simp only [length_eq_zero_iff.mpr hnil, ENat.coe_zero] at hwg
   have := hwg ▸ G.three_le_egirth
   simp at this
 
@@ -80,11 +80,23 @@ lemma Walk.IsTrail.isCycle_of_length_eq_egirth {a} {w : G.Walk a a} (hw : w.IsTr
   by_contra h
   have hn : ¬w.Nil := w.not_nil_of_length_eq_egirth hwg
   let w' := w.cycleBypass
-  have hw'c : w'.IsCycle := hw.isCycle_cycleBypass (nil_iff_eq_nil.not.mp hn)
+  have hw'c : w'.IsCycle := hw.isCycle_cycleBypass (eq_nil_iff_nil.not.mpr hn)
   have hw' : w'.length < w.length :=
     hw.length_cycleBypass_lt_iff_not_isCycle_and_not_nil.mpr ⟨h, hn⟩
   have hwg' : w'.length < G.egirth := hwg ▸ ENat.coe_lt_coe.mpr hw'
   exact not_le_of_gt hwg' (egirth_le_length hw'c)
+
+@[gcongr only]
+lemma IsContained.egirth_le (h : G ⊑ G') : G'.egirth ≤ G.egirth := by
+  by_cases hacyc : G.IsAcyclic
+  · simp [hacyc.egirth_eq_top]
+  obtain ⟨a, w, hw, hwl⟩ := exists_egirth_eq_length.mpr hacyc
+  rw [hwl, ← w.length_map h.some.toHom]
+  exact egirth_le_length <| hw.map h.some.injective
+
+@[gcongr only]
+lemma Iso.egirth_eq (f : G ≃g G') : G.egirth = G'.egirth :=
+  le_antisymm f.isContained'.egirth_le f.isContained.egirth_le
 
 end egirth
 
@@ -125,10 +137,15 @@ lemma exists_girth_eq_length :
 lemma Walk.IsCircuit.isCycle_of_length_eq_girth {a} {w : G.Walk a a} (hw : w.IsCircuit)
     (hwg : w.length = G.girth) : w.IsCycle :=
   have hwg' : w.length = G.egirth := by
-    refine ((ENat.toNat_eq_iff ?_).mp hwg.symm).symm
-    simp only [ne_eq, length_eq_zero_iff]
-    exact nil_iff_eq_nil.not.mp hw.not_nil
+    refine ((ENat.toNat_eq_iff (?_)).mp hwg.symm).symm
+    exact length_eq_zero_iff.not.mpr hw.not_nil
   hw.isTrail.isCycle_of_length_eq_egirth hwg'
+
+lemma IsContained.girth_le (h : G ⊑ G') (hG : ¬G.IsAcyclic) : G'.girth ≤ G.girth :=
+  ENat.toNat_le_toNat h.egirth_le <| egirth_eq_top.not.mpr hG
+
+lemma Iso.girth_eq (f : G ≃g G') : G.girth = G'.girth := by
+  simp [girth, f.egirth_eq]
 
 end girth
 

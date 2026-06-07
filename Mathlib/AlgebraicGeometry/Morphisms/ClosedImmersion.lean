@@ -171,7 +171,6 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsClosedImmersion f] :
     exact ((ConcreteCategory.isIso_iff_bijective _).mp this).1
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The category of closed subschemes is contravariantly equivalent
 to the lattice of ideal sheaves. -/
 noncomputable

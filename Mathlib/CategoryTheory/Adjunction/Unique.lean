@@ -56,7 +56,6 @@ theorem unit_leftAdjointUniq_hom_app
   rw [← unit_leftAdjointUniq_hom adj1 adj2]; rfl
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem leftAdjointUniq_hom_counit {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G) :
     whiskerLeft G (leftAdjointUniq adj1 adj2).hom ≫ adj2.counit = adj1.counit := by

@@ -392,18 +392,15 @@ theorem nfp_zero_left (a) : nfp 0 a = a := by
   · rw [Function.iterate_succ']
     simp
 
-set_option linter.deprecated false in
 @[deprecated "do not depend on the junk values of `nfp`" (since := "2026-05-13")]
 theorem nfp_zero : nfp 0 = id := by
   ext
   exact nfp_zero_left _
 
-set_option linter.deprecated false in
 @[deprecated "do not depend on the junk values of `deriv`" (since := "2026-05-13")]
 theorem deriv_zero : deriv 0 = id :=
   deriv_eq_id_of_nfp_eq_id nfp_zero
 
-set_option linter.deprecated false in
 @[deprecated "do not depend on the junk values of `deriv`" (since := "2026-05-13")]
 theorem deriv_zero_left (a) : deriv 0 a = a := by
   rw [deriv_zero, id_eq]
