@@ -694,8 +694,12 @@ lemma Homeomorph.chartedSpace_trans_mem_maximalAtlas (φ : M ≃ₜ N) :
     (by rw [OpenPartialHomeomorph.ofSet_trans])) (restr_mem_maximalAtlas _
     (IsManifold.chart_mem_maximalAtlas _) hs)
 
+/--
+The push-forward of a `ChartedSpace` along a homeomorphism `f : M ≃ₜ N` is a manifold, if `M`
+is a manifold.
+-/
 @[implicit_reducible]
-def Diffeomorph.isManifold (φ : M ≃ₜ N) :
+def Homeomorph.isManifold (φ : M ≃ₜ N) :
   haveI := φ.chartedSpace H;
   IsManifold I n N :=
   letI := φ.chartedSpace H
