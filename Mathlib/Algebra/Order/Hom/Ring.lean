@@ -375,13 +375,7 @@ variable {α}
 
 /-- The inverse of an ordered ring isomorphism as an ordered ring isomorphism. -/
 @[symm]
-protected def symm (e : α ≃+*o β) : β ≃+*o α :=
-  ⟨e.toRingEquiv.symm, by
-    intro a b
-    rw [← map_le_map_iff e]
-    congr! 1
-    · exact e.1.apply_symm_apply a
-    · exact e.1.apply_symm_apply b⟩
+protected def symm (e : α ≃+*o β) : β ≃+*o α := ⟨e.toRingEquiv.symm, by simp [← e.map_le_map_iff']⟩
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : α ≃+*o β) : β → α :=
