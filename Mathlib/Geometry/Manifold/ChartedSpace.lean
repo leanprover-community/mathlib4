@@ -593,15 +593,6 @@ def IsLocalHomeomorph.chartedSpace
 
 end IsLocalHomeomorph
 
-/-- Given a homeomorphism `f : M' ≃ₜ M`, endow `M'` with a `ChartedSpace` structure by pulling back
-the `ChartedSpace` structure from `M`. -/
-@[implicit_reducible]
-def Homeomorph.chartedSpace {f : M' ≃ₜ M} : ChartedSpace H M' where
-  atlas := {(f.transOpenPartialHomeomorph (chartAt H (f q))) | q : M'}
-  chartAt q := (f.transOpenPartialHomeomorph (chartAt H (f q)))
-  mem_chart_source q := by simp
-  chart_mem_atlas := by simp
-
 end Constructions
 
 end ChartedSpace

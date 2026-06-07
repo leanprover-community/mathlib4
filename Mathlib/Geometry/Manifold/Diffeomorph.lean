@@ -671,37 +671,42 @@ end disjointUnion
 
 end Constructions
 
-section IsManifold
-
-variable [ChartedSpace H M'] [IsManifold I n M]
-
-#where
-/-- Given a diffeomorphism `f : M' ≃ₘ^n⟮I, I'⟯ M` and given that the `atlas` on `M'` is induced by
-`f` (the corresponding `ChartedSpace` instance is defined at `Homeomorph.chartedSpace`), prove that
-`M'` is a Manifold with respect to `I`.
--/
-@[implicit_reducible]
-def isManifold (f : Diffeomorph I I M' M n)
-    (h : atlas H M' = {(f.toHomeomorph.transOpenPartialHomeomorph (chartAt H (f q))) | q : M'})
-    : IsManifold I n M' where
-  compatible := by
-    intro e e' he he'
-    rw [h] at he he'
-    have test := he.out.choose_spec
-    obtain ⟨w, h_2⟩ := he
-    obtain ⟨w_3, h_3⟩ := he'.out
-    subst h_2 h_3
-    have h1 : f.toHomeomorph.toOpenPartialHomeomorph.symm ≫ₕ
-        f.toHomeomorph.toOpenPartialHomeomorph = OpenPartialHomeomorph.ofSet univ (by simp) := by
-      ext i <;> simp
-    simpa [Homeomorph.transOpenPartialHomeomorph_eq_trans,
-      OpenPartialHomeomorph.trans_symm_eq_symm_trans_symm f.toHomeomorph.toOpenPartialHomeomorph
-          (chartAt H (f w)),
-      ← OpenPartialHomeomorph.trans_assoc _ _ (chartAt _ _), OpenPartialHomeomorph.trans_assoc, h1,
-      OpenPartialHomeomorph.ofSet_univ_eq_refl, OpenPartialHomeomorph.trans_refl]
-    using StructureGroupoid.compatible (contDiffGroupoid n I)
-                  (chart_mem_atlas _ _) (chart_mem_atlas _ _)
-
-end IsManifold
-
 end Diffeomorph
+
+variable [instM : IsManifold I n M]
+
+lemma Homeomorph.chartedSpace_trans_mem_maximalAtlas (φ : M ≃ₜ N) :
+  haveI := φ.chartedSpace H
+  ∀ e ∈ atlas H N, φ.toOpenPartialHomeomorph.trans e ∈ IsManifold.maximalAtlas I n M :=
+  letI := φ.chartedSpace H
+  by
+   intro e he
+   simp only [atlas, ChartedSpace.atlas, mem_setOf_eq] at he
+   rcases he with ⟨q, he⟩
+   have h {x : M} : ∃ s, ∃ hs, (φ.toOpenPartialHomeomorph ≫ₕ
+        φ.isLocalHomeomorph.localInverseAt x).EqOnSource (.ofSet s hs) := by
+     simpa [OpenPartialHomeomorph.EqOnSource, EqOn, OpenPartialHomeomorph.open_source] using
+      fun _ hx ↦ φ.bijective.injective <| IsLocalHomeomorph.apply_localInverseAt_of_mem _ hx
+   rcases h with ⟨s, hs, h⟩
+   rw [← he, ← OpenPartialHomeomorph.trans_assoc]
+   exact StructureGroupoid.mem_maximalAtlas_of_eqOnSource (Setoid.trans
+    (OpenPartialHomeomorph.EqOnSource.trans' h (OpenPartialHomeomorph.eqOnSource_refl _))
+    (by rw [OpenPartialHomeomorph.ofSet_trans])) (restr_mem_maximalAtlas _
+    (IsManifold.chart_mem_maximalAtlas _) hs)
+
+@[implicit_reducible]
+def Diffeomorph.isManifold (φ : M ≃ₜ N) :
+  haveI a := φ.chartedSpace H;
+  IsManifold I n N :=
+  letI := φ.chartedSpace H
+  {
+    compatible {e e'} he he' := by
+      have : _ ∈ contDiffGroupoid n I := IsManifold.compatible_of_mem_maximalAtlas
+        (φ.chartedSpace_trans_mem_maximalAtlas e he) (φ.chartedSpace_trans_mem_maximalAtlas e' he')
+      have aux : φ.toOpenPartialHomeomorph.symm ≫ₕ φ.toOpenPartialHomeomorph = .refl N := by
+        ext x <;> simp
+      convert this
+      rw [OpenPartialHomeomorph.trans_symm_eq_symm_trans_symm, OpenPartialHomeomorph.trans_assoc,
+        ← OpenPartialHomeomorph.trans_assoc φ.toOpenPartialHomeomorph.symm, aux,
+        OpenPartialHomeomorph.refl_trans]
+  }
