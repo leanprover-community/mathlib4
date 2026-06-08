@@ -44,7 +44,7 @@ namespace Compacts
 
 instance : SetLike (Compacts α) α where
   coe := Compacts.carrier
-  coe_injective' s t h := by cases s; cases t; congr
+  coe_injective s t h := by cases s; cases t; congr
 
 instance : PartialOrder (Compacts α) := .ofSetLike (Compacts α) α
 
@@ -285,7 +285,7 @@ namespace NonemptyCompacts
 
 instance : SetLike (NonemptyCompacts α) α where
   coe s := s.carrier
-  coe_injective' s t h := by
+  coe_injective s t h := by
     obtain ⟨⟨_, _⟩, _⟩ := s
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
@@ -522,7 +522,7 @@ namespace PositiveCompacts
 
 instance : SetLike (PositiveCompacts α) α where
   coe s := s.carrier
-  coe_injective' s t h := by
+  coe_injective s t h := by
     obtain ⟨⟨_, _⟩, _⟩ := s
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
@@ -652,7 +652,7 @@ namespace CompactOpens
 
 instance : SetLike (CompactOpens α) α where
   coe s := s.carrier
-  coe_injective' s t h := by
+  coe_injective s t h := by
     obtain ⟨⟨_, _⟩, _⟩ := s
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
