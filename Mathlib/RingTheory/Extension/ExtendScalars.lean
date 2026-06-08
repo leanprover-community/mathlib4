@@ -45,6 +45,7 @@ def extendScalars {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R
 
 /-- The canonical homomorphism from `P` to `P.extendScalars` induced by the identity map
 on the underlying presentation rings. -/
+@[simps!]
 noncomputable
 def toExtendScalars {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S]
     (P : Extension.{w} R S) : P.Hom P.extendScalars :=
@@ -59,6 +60,7 @@ def cotangentExtendScalarsEquiv {R : Type u} {S : Type v} [CommRing R] [CommRing
     P.extendScalars.Cotangent ≃ₗ[S] P.Cotangent :=
   LinearEquiv.refl _ _
 
+@[simp]
 lemma cotangentExtendScalarsEquiv_symm_toLinearMap (P : Extension.{w} R S) :
     P.cotangentExtendScalarsEquiv.symm.toLinearMap = Cotangent.map P.toExtendScalars := by
   ext x
@@ -75,6 +77,7 @@ theorem H1Cotangent.map_toExtendScalar_injective (P : Extension.{w} R S) :
 /-- The canonical homomorphism of extensions from the universal presentation `R[S] → S`
 (given by `Generators.self R S`) to the extension `P`. It maps the generator corresponding
 to `s : S` to `P.σ s`. -/
+@[simps!]
 noncomputable
 def defaultHom (P : Extension.{w} R S) : (Generators.self R S).toExtension.Hom P :=
   letI : Algebra (MvPolynomial S R) S := (Generators.self R S).algebra
