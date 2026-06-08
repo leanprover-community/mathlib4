@@ -75,6 +75,31 @@ lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {
       simp only [sup_set_eq_biUnion, id_eq]
       exact hs.diff <| .biUnion (Finset.countable_toSet _) (by simp)
 
+/-- Measure version of `preVariation.exists_Finpartition_sum_gt`. -/
+lemma exists_lt_sum_of_lt_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s)
+    {a : ℝ≥0∞} (ha : a < μ.variation s) :
+    ∃ (P : Finset (Set X)), (∀ t ∈ P, t ⊆ s) ∧ ((P : Set (Set X)).PairwiseDisjoint id) ∧
+      (∀ t ∈ P, MeasurableSet t) ∧ a < ∑ p ∈ P, ‖μ p‖ₑ := by
+  simp only [variation_apply, preVariation, ennrealToMeasure_apply hs, ennrealPreVariation_apply]
+    at ha ⊢
+  obtain ⟨P, hP⟩ : ∃ P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet),
+      a < ∑ p ∈ P.parts, (fun x ↦ ‖μ x‖ₑ) p :=
+    preVariation.exists_Finpartition_sum_gt (‖μ ·‖ₑ) _ ha
+  refine ⟨P.parts.map (Function.Embedding.subtype _), ?_, ?_, ?_, ?_⟩
+  · simp only [mem_map, Function.Embedding.subtype_apply, Subtype.exists, exists_and_right,
+      exists_eq_right, forall_exists_index]
+    intro t ht h't
+    exact P.le h't
+  · intro i hi  j hj hij
+    simp only [coe_map, Function.Embedding.subtype_apply, Set.mem_image, SetLike.mem_coe,
+      Subtype.exists, exists_and_right, exists_eq_right] at hi hj
+    rcases hi with ⟨h'i, i_mem⟩
+    rcases hj with ⟨h'j, j_mem⟩
+    exact (disjoint_subtype_iff (fun _ _ hs ht ↦ hs.inter ht) _).1
+      (P.disjoint i_mem j_mem (by simpa using hij))
+  · simp +contextual
+  · rwa [Finset.sum_map]
+
 /-- Measure version of `preVariation.exists_Finpartition_sum_ge'`. -/
 lemma exists_variation_le_add' (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s)
     {ε : ℝ≥0∞} (hε : 0 < ε) (hμ : μ.variation s ≠ ∞) :
