@@ -151,7 +151,7 @@ theorem Isometry.map_euclideanHausdorffMeasure {f : X → Y} {d : ℕ} (hf : Iso
 ### Applying scalers to `μHE[d]`
 -/
 
-open Pointwise in
+open scoped Pointwise in
 theorem MeasureTheory.Measure.euclideanHausdorffMeasure_smul₀ {𝕜 : Type*} {E : Type*}
     [NormedAddCommGroup E] [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
     [MeasurableSpace E] [BorelSpace E] (d : ℕ) {r : 𝕜} (hr : r ≠ 0) (s : Set E) :
@@ -202,7 +202,7 @@ theorem InnerProductSpace.euclideanHausdorffMeasure_eq_volume :
 /-!
 ### `μHE[d]` on an affine space matches the volume measure on the associated inner product space.
 -/
-/- We may want to endow an affine space with a `MeasureSpace` that transfers `volume` from its
+/-- We may want to endow an affine space with a `MeasureSpace` that transfers `volume` from its
 associated inner product space. If it is implemented, we can unify this lemma with the previous one.
 -/
 theorem EuclideanGeometry.euclideanHausdorffMeasure_eq (p : P) :
@@ -251,7 +251,6 @@ instance [AddGroup X] [IsIsometricVAdd Xᵃᵒᵖ X] (d : ℕ) :
 ### Integration formula for `μHE[d]`
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A measurable equivalence between an affine space and its orthogonal decomposition by a base
 point and a direction. We show that this is measure preserving between `μHE[finrank ℝ V]` and
 `volume` at `Submodule.measurePreserving_measurableEquivProd`.
@@ -267,7 +266,7 @@ noncomputable def Submodule.measurableEquivProd (s : Submodule ℝ V) (p : P) : 
 @[simp]
 theorem Submodule.measurableEquivProd_apply (s : Submodule ℝ V) (p q : P) :
     s.measurableEquivProd p q =
-    (s.orthogonalProjection (q -ᵥ p), sᗮ.orthogonalProjection (q -ᵥ p)) := by
+    (s.orthogonalProjectionOnto (q -ᵥ p), sᗮ.orthogonalProjectionOnto (q -ᵥ p)) := by
   simp [measurableEquivProd]
 
 @[simp]
@@ -275,14 +274,12 @@ theorem Submodule.measurableEquivProd_symm_apply (s : Submodule ℝ V) (p : P) (
     (s.measurableEquivProd p).symm q = (q.1.val + q.2.val) +ᵥ p := by
   simp [measurableEquivProd]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Submodule.measurePreserving_measurableEquivProd (s : Submodule ℝ V) (p : P) :
     MeasurePreserving (s.measurableEquivProd p) μHE[finrank ℝ V] := by
   refine (measurePreserving_vaddConst _).symm.trans ?_
   refine s.orthogonalDecomposition.measurePreserving.trans ?_
   exact WithLp.volume_preserving_ofLp _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The $n$-dimensional volume of an object in an $n$-dimensional space is equal to the integral
 of the volume of $(n-d)$-dimensional cross-section along an orthogonal $d$-dimensional subspace.
 This is an analogue to `MeasureTheory.Measure.prod_apply`. -/
@@ -318,7 +315,6 @@ theorem AffineSubspace.euclideanHausdorffMeasure_eq_lintegral (s : AffineSubspac
   ext y
   simp [u, vadd_vadd, add_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The $n$-dimensional volume of an object in an $n$-dimensional space is equal to the integral
 of the volume of $(n-1)$-dimensional orthogonal cross-section along a line defined by a direction
 vector. This is a special case of `AffineSubspace.euclideanHausdorffMeasure_eq_lintegral` with a

@@ -23,7 +23,7 @@ This file builds on `Mathlib/Algebra/Order/GroupWithZero/Unbundled/Defs.lean` by
 lemmas that do not immediately follow from the typeclass specifications.
 -/
 
-@[expose] public section
+public section
 
 open Function
 
@@ -1366,9 +1366,9 @@ section PosMulStrictMono
 variable [PosMulStrictMono G₀] [MulPosMono G₀]
 
 lemma zpow_left_injOn₀ : ∀ {n : ℤ}, n ≠ 0 → {a | 0 ≤ a}.InjOn fun a : G₀ ↦ a ^ n
-  | (n + 1 : ℕ), _ => by simpa using mod_cast (pow_left_strictMonoOn₀ n.succ_ne_zero).injOn
+  | (n + 1 : ℕ), _ => by simpa using! mod_cast (pow_left_strictMonoOn₀ n.succ_ne_zero).injOn
   | .negSucc n, _ => by
-    simpa using inv_injective.comp_injOn (pow_left_strictMonoOn₀ n.succ_ne_zero).injOn
+    simpa using! inv_injective.comp_injOn (pow_left_strictMonoOn₀ n.succ_ne_zero).injOn
 
 lemma zpow_left_inj₀ (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) :
     a ^ n = b ^ n ↔ a = b := (zpow_left_injOn₀ hn).eq_iff ha hb

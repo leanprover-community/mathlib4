@@ -173,12 +173,12 @@ noncomputable def prodEquiv : ToType (X₁ ⨯ X₂) ≃ ToType X₁ × ToType X
 @[simp]
 lemma prodEquiv_apply_fst (x : ToType (X₁ ⨯ X₂)) :
     (prodEquiv X₁ X₂ x).fst = (Limits.prod.fst : X₁ ⨯ X₂ ⟶ X₁) x := by
-  simpa using congr_hom (prodComparison_fst (forget C) X₁ X₂) x
+  simpa using! congr_hom (prodComparison_fst (forget C) X₁ X₂) x
 
 @[simp]
 lemma prodEquiv_apply_snd (x : ToType (X₁ ⨯ X₂)) :
     (prodEquiv X₁ X₂ x).snd = (Limits.prod.snd : X₁ ⨯ X₂ ⟶ X₂) x := by
-  simpa using congr_hom (prodComparison_snd (forget C) X₁ X₂) x
+  simpa using! congr_hom (prodComparison_snd (forget C) X₁ X₂) x
 
 @[simp]
 lemma prodEquiv_symm_apply_fst (x : ToType X₁ × ToType X₂) :
@@ -207,7 +207,7 @@ elements in `X₁` and `X₂`. -/
 noncomputable def pullbackEquiv :
     ToType (pullback f₁ f₂) ≃ { p : ToType X₁ × ToType X₂ // f₁ p.1 = f₂ p.2 } :=
   (PreservesPullback.iso (forget C) f₁ f₂ ≪≫
-    Types.pullbackIsoPullback (TypeCat.ofHom f₁) (TypeCat.ofHom f₂)).toEquiv
+    Types.pullbackIsoPullback (↾f₁) (↾f₂)).toEquiv
 
 /-- Constructor for elements in a pullback in a concrete category. -/
 noncomputable def pullbackMk (x₁ : ToType X₁) (x₂ : ToType X₂) (h : f₁ x₁ = f₂ x₂) :
@@ -223,13 +223,13 @@ lemma pullbackMk_surjective (x : ToType (pullback f₁ f₂)) :
 lemma pullbackMk_fst (x₁ : ToType X₁) (x₂ : ToType X₂) (h : f₁ x₁ = f₂ x₂) :
     pullback.fst f₁ f₂ (pullbackMk f₁ f₂ x₁ x₂ h) = x₁ :=
   (congr_hom (PreservesPullback.iso_inv_fst (forget C) f₁ f₂) _).trans
-    (congr_hom (Types.pullbackIsoPullback_inv_fst (TypeCat.ofHom f₁) (TypeCat.ofHom f₂)) _)
+    (congr_hom (Types.pullbackIsoPullback_inv_fst (↾f₁) (↾f₂)) _)
 
 @[simp]
 lemma pullbackMk_snd (x₁ : ToType X₁) (x₂ : ToType X₂) (h : f₁ x₁ = f₂ x₂) :
     pullback.snd f₁ f₂ (pullbackMk f₁ f₂ x₁ x₂ h) = x₂ :=
   (congr_hom (PreservesPullback.iso_inv_snd (forget C) f₁ f₂) _).trans
-    (congr_hom (Types.pullbackIsoPullback_inv_snd (TypeCat.ofHom f₁) (TypeCat.ofHom f₂)) _)
+    (congr_hom (Types.pullbackIsoPullback_inv_snd (↾f₁) (↾f₂)) _)
 
 end Pullbacks
 
@@ -266,6 +266,7 @@ section Multiequalizer
 variable {FC : C → C → Type*} {CC : C → Type s} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
 variable [ConcreteCategory.{s} C FC]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem multiequalizer_ext {J : MulticospanShape.{w, w'}}
     {I : MulticospanIndex J C} [HasMultiequalizer I]
@@ -278,7 +279,7 @@ theorem multiequalizer_ext {J : MulticospanShape.{w, w'}}
       ConcreteCategory.comp_apply]
     simp [h]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- An auxiliary equivalence to be used in `multiequalizerEquiv` below. -/
 def multiequalizerEquivAux {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C) :
     (I.multicospan ⋙ forget C).sections ≃
@@ -296,11 +297,11 @@ def multiequalizerEquivAux {J : MulticospanShape.{w, w'}} (I : MulticospanIndex 
         | WalkingMulticospan.right b => I.fst b (x.1 _)
       property := by
         rintro (a | b) (a' | b') (f | f | f)
-        · simp
+        · simp only [WalkingMulticospan.Hom.id_eq_id, Functor.map_id]; rfl
         · rfl
         · dsimp
           exact (x.2 b').symm
-        · simp }
+        · simp only [WalkingMulticospan.Hom.id_eq_id, Functor.map_id]; rfl }
   left_inv := by
     intro x; ext (a | b)
     · rfl

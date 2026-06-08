@@ -134,7 +134,7 @@ theorem IsOpen.ite' (hs : IsOpen s) (hs' : IsOpen s')
     (ht : ∀ x ∈ frontier t, x ∈ s ↔ x ∈ s') : IsOpen (t.ite s s') := by
   classical
     simp only [isOpen_iff_continuous_mem, Set.ite] at *
-    convert
+    convert!
       continuous_piecewise (fun x hx => propext (ht x hx)) hs.continuousOn hs'.continuousOn using 2
     rename_i x
     by_cases hx : x ∈ t <;> simp [hx]

@@ -118,8 +118,8 @@ theorem rpow_add_le_mul_rpow_add_rpow (z₁ z₂ : ℝ≥0) {p : ℝ} (hp : 1 �
     (z₁ + z₂) ^ p ≤ (2 : ℝ≥0) ^ (p - 1) * (z₁ ^ p + z₂ ^ p) := by
   rcases eq_or_lt_of_le hp with (rfl | h'p)
   · simp only [rpow_one, sub_self, rpow_zero, one_mul]; rfl
-  convert rpow_arith_mean_le_arith_mean2_rpow (1 / 2) (1 / 2) (2 * z₁) (2 * z₂) (add_halves 1) hp
-    using 1
+  convert!
+    rpow_arith_mean_le_arith_mean2_rpow (1 / 2) (1 / 2) (2 * z₁) (2 * z₂) (add_halves 1) hp using 1
   · simp only [one_div, inv_mul_cancel_left₀, Ne, two_ne_zero,
       not_false_iff]
   · have A : p - 1 ≠ 0 := ne_of_gt (sub_pos.2 h'p)
@@ -254,9 +254,9 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ 
         (fun i => (z i).toNNReal) ?_ hp
     -- verify the hypothesis `∑ i ∈ s, (w i).toNNReal = 1`, using `∑ i ∈ s, w i = 1` .
     have h_sum_nnreal : ∑ i ∈ s, w i = ↑(∑ i ∈ s, (w i).toNNReal) := by
-      rw [coe_finset_sum]
-      refine sum_congr rfl fun i hi => (coe_toNNReal ?_).symm
-      refine (lt_top_of_sum_ne_top ?_ hi).ne
+      push_cast
+      congr! with i hi
+      refine (coe_toNNReal (lt_top_of_sum_ne_top ?_ hi).ne).symm
       exact hw'.symm ▸ ENNReal.one_ne_top
     rwa [← coe_inj, ← h_sum_nnreal]
 
@@ -271,8 +271,9 @@ theorem rpow_arith_mean_le_arith_mean2_rpow (w₁ w₂ z₁ z₂ : ℝ≥0∞) (
 /-- Unweighted mean inequality, version for two elements of `ℝ≥0∞` and real exponents. -/
 theorem rpow_add_le_mul_rpow_add_rpow (z₁ z₂ : ℝ≥0∞) {p : ℝ} (hp : 1 ≤ p) :
     (z₁ + z₂) ^ p ≤ (2 : ℝ≥0∞) ^ (p - 1) * (z₁ ^ p + z₂ ^ p) := by
-  convert rpow_arith_mean_le_arith_mean2_rpow (1 / 2) (1 / 2) (2 * z₁) (2 * z₂)
-      (ENNReal.add_halves 1) hp using 1
+  convert!
+    rpow_arith_mean_le_arith_mean2_rpow (1 / 2) (1 / 2) (2 * z₁) (2 * z₂) (ENNReal.add_halves 1) hp
+      using 1
   · simp [← mul_assoc, ENNReal.inv_mul_cancel two_ne_zero ofNat_ne_top]
   · simp only [mul_rpow_of_nonneg _ _ (zero_le_one.trans hp), rpow_sub _ _ two_ne_zero ofNat_ne_top,
       ENNReal.div_eq_inv_mul, rpow_one, mul_one]
@@ -316,5 +317,56 @@ theorem rpow_add_le_add_rpow {p : ℝ} (a b : ℝ≥0∞) (hp : 0 ≤ p) (hp1 : 
   rw [one_div_one, one_div] at h
   repeat' rw [ENNReal.rpow_one] at h
   exact (ENNReal.le_rpow_inv_iff hp_pos).mp h
+
+/-- A constant for the inequality `‖f + g‖_{L^p} ≤ C * (‖f‖_{L^p} + ‖g‖_{L^p})`. It is equal to `1`
+for `p ≥ 1` or `p = 0`, and `2^(1/p-1)` in the more tricky interval `(0, 1)`. -/
+@[expose] noncomputable def LpAddConst (p : ℝ≥0∞) : ℝ≥0∞ :=
+  if p ∈ Set.Ioo (0 : ℝ≥0∞) 1 then (2 : ℝ≥0∞) ^ (1 / p.toReal - 1) else 1
+
+theorem LpAddConst_of_one_le {p : ℝ≥0∞} (hp : 1 ≤ p) : LpAddConst p = 1 := by
+  rw [LpAddConst, if_neg]
+  intro h
+  exact lt_irrefl _ (h.2.trans_le hp)
+
+theorem LpAddConst_zero : LpAddConst 0 = 1 := by
+  rw [LpAddConst, if_neg]
+  intro h
+  exact lt_irrefl _ h.1
+
+theorem LpAddConst_lt_top (p : ℝ≥0∞) : LpAddConst p < ∞ := by
+  rw [LpAddConst]
+  split_ifs with h
+  · apply ENNReal.rpow_lt_top_of_nonneg _ ENNReal.ofNat_ne_top
+    rw [one_div, sub_nonneg, ← ENNReal.toReal_inv, ← ENNReal.toReal_one]
+    exact ENNReal.toReal_mono (by simpa using h.1.ne') (ENNReal.one_le_inv.2 h.2.le)
+  · exact ENNReal.one_lt_top
+
+/-- Variant of `ENNReal.rpow_add_le_mul_rpow_add_rpow` using `LpAddConst` as the constant,
+valid for all `0 ≤ p` (not just `1 ≤ p`). -/
+theorem rpow_add_le_mul_rpow_add_rpow' (z₁ z₂ : ℝ≥0∞) {p : ℝ} (hp : 0 ≤ p) :
+    (z₁ + z₂) ^ p ≤ LpAddConst (ENNReal.ofReal p)⁻¹ * (z₁ ^ p + z₂ ^ p) := by
+  by_cases h : 1 < p
+  · have hmem : (ENNReal.ofReal p)⁻¹ ∈ Set.Ioo (0 : ℝ≥0∞) 1 := by
+      constructor
+      · simp
+      · rwa [ENNReal.inv_lt_one, one_lt_ofReal]
+    rw [show LpAddConst (ENNReal.ofReal p)⁻¹ =
+        (2 : ℝ≥0∞) ^ (1 / ((ENNReal.ofReal p)⁻¹).toReal - 1) from by
+      rw [LpAddConst, if_pos hmem]]
+    simp only [ENNReal.toReal_inv, div_inv_eq_mul, one_mul]
+    rw [ENNReal.toReal_ofReal hp]
+    exact rpow_add_le_mul_rpow_add_rpow _ _ h.le
+  · have hp1 : p ≤ 1 := not_lt.mp h
+    rw [LpAddConst_of_one_le (ENNReal.one_le_inv.mpr (ENNReal.ofReal_le_one.mpr hp1)), one_mul]
+    exact rpow_add_le_add_rpow _ _ hp hp1
+
+/-- Variant of `ENNReal.rpow_add_le_mul_rpow_add_rpow'` with `p : ℝ≥0∞`. -/
+theorem rpow_add_le_mul_rpow_add_rpow'' (z₁ z₂ : ℝ≥0∞) {p : ℝ≥0∞} :
+    (z₁ + z₂) ^ p.toReal⁻¹ ≤
+      LpAddConst p * (z₁ ^ p.toReal⁻¹ + z₂ ^ p.toReal⁻¹) := by
+  by_cases p_zero : p = 0
+  · simp [p_zero, LpAddConst_zero]
+  convert! rpow_add_le_mul_rpow_add_rpow' z₁ z₂ (p := p.toReal⁻¹) (by positivity) using 1
+  rw [← ENNReal.toReal_inv, ENNReal.ofReal_toReal (by simpa), inv_inv]
 
 end ENNReal

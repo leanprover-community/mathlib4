@@ -131,6 +131,10 @@ lemma IsOfFinOrder.eq_one' [IsMulTorsionFree G] {a : G} (ha : IsOfFinOrder a) :
   contrapose! ha
   apply not_isOfFinOrder_of_isMulTorsionFree ha
 
+@[to_additive]
+lemma isOfFinOrder_iff_eq_one [IsMulTorsionFree G] (a : G) : IsOfFinOrder a ↔ a = 1 :=
+  ⟨IsOfFinOrder.eq_one', fun h => h.symm ▸ IsOfFinOrder.one⟩
+
 /-- Elements of finite order are of finite order in submonoids. -/
 @[to_additive /-- Elements of finite order are of finite order in submonoids. -/]
 theorem Submonoid.isOfFinOrder_coe {H : Submonoid G} {x : H} :
@@ -194,7 +198,7 @@ protected lemma IsOfFinOrder.orderOf_pos (h : IsOfFinOrder x) : 0 < orderOf x :=
 
 @[to_additive (attr := simp) addOrderOf_nsmul_eq_zero]
 theorem pow_orderOf_eq_one (x : G) : x ^ orderOf x = 1 := by
-  convert Eq.trans _ (isPeriodicPt_minimalPeriod (x * ·) 1)
+  convert! Eq.trans _ (isPeriodicPt_minimalPeriod (x * ·) 1)
   rw [orderOf, mul_left_iterate_apply_one]
 
 @[to_additive]
@@ -278,7 +282,7 @@ theorem orderOf_pow_dvd (n : ℕ) : orderOf (x ^ n) ∣ orderOf x := by
 @[to_additive]
 lemma pow_injOn_Iio_orderOf : (Set.Iio <| orderOf x).InjOn (x ^ ·) := by
   simpa only [mul_left_iterate_apply_one]
-    using iterate_injOn_Iio_minimalPeriod (f := (x * ·)) (x := 1)
+    using! iterate_injOn_Iio_minimalPeriod (f := (x * ·)) (x := 1)
 
 @[to_additive]
 protected lemma IsOfFinOrder.mem_powers_iff_mem_range_orderOf [DecidableEq G]
@@ -907,6 +911,14 @@ lemma not_isMulTorsionFree_iff_isOfFinOrder :
 lemma zpowers_mabs [LinearOrder G] [IsOrderedMonoid G] (g : G) : zpowers |g|ₘ = zpowers g := by
   rcases mabs_cases g with h | h <;> simp only [h, zpowers_inv]
 
+@[to_additive]
+lemma IsMulTorsionFree.orderOf_le_one [IsMulTorsionFree G] (g : G) :
+    orderOf g ≤ 1 := by
+  obtain rfl | ha := eq_or_ne g 1
+  · simp
+  · rw [ne_eq, ← isOfFinOrder_iff_eq_one, ← orderOf_eq_zero_iff] at ha
+    simp [ha]
+
 end CommGroup
 
 section FiniteMonoid
@@ -1151,7 +1163,7 @@ nonrec lemma Subgroup.orderOf_dvd_natCard {G : Type*} [Group G] (s : Subgroup G)
 @[to_additive]
 lemma Subgroup.orderOf_le_card {G : Type*} [Group G] (s : Subgroup G) (hs : (s : Set G).Finite)
     {x} (hx : x ∈ s) : orderOf x ≤ Nat.card s :=
-  le_of_dvd (Nat.card_pos_iff.2 <| ⟨s.coe_nonempty.to_subtype, hs.to_subtype⟩) <|
+  le_of_dvd (Nat.card_pos_iff.2 <| ⟨(OneMemClass.coe_nonempty s).to_subtype, hs.to_subtype⟩) <|
     s.orderOf_dvd_natCard hx
 
 @[to_additive]
@@ -1205,12 +1217,10 @@ noncomputable def powCoprime {G : Type*} [Group G] (h : (Nat.card G).Coprime n) 
   invFun g := g ^ (Nat.card G).gcdB n
   left_inv g := by
     have key := congr_arg (g ^ ·) ((Nat.card G).gcd_eq_gcd_ab n)
-    dsimp only at key
     rwa [zpow_add, zpow_mul, zpow_mul, zpow_natCast, zpow_natCast, zpow_natCast, h.gcd_eq_one,
       pow_one, pow_card_eq_one', one_zpow, one_mul, eq_comm] at key
   right_inv g := by
     have key := congr_arg (g ^ ·) ((Nat.card G).gcd_eq_gcd_ab n)
-    dsimp only at key
     rwa [zpow_add, zpow_mul, zpow_mul', zpow_natCast, zpow_natCast, zpow_natCast, h.gcd_eq_one,
       pow_one, pow_card_eq_one', one_zpow, one_mul, eq_comm] at key
 
@@ -1362,6 +1372,10 @@ theorem IsOfFinOrder.snd (hx : IsOfFinOrder x) : IsOfFinOrder x.2 :=
 @[to_additive IsOfFinAddOrder.prod_mk]
 theorem IsOfFinOrder.prod_mk : IsOfFinOrder a → IsOfFinOrder b → IsOfFinOrder (a, b) := by
   simpa only [← orderOf_pos_iff, Prod.orderOf] using Nat.lcm_pos
+
+@[to_additive IsOfFinAddOrder.prod_iff]
+theorem IsOfFinOrder.prod_iff : IsOfFinOrder x ↔ IsOfFinOrder x.1 ∧ IsOfFinOrder x.2 :=
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ .prod_mk h.1 h.2⟩
 
 @[to_additive]
 lemma Prod.orderOf_mk : orderOf (a, b) = Nat.lcm (orderOf a) (orderOf b) :=
