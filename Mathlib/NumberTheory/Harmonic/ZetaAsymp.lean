@@ -473,5 +473,5 @@ theorem deriv_riemannZeta_zero :
   convert! h₄ using 1
   rw [completedRiemannZeta₀_zero, hasDerivAt_Gamma_one.deriv, show 4 * (π : ℂ) = 2 * 2 * π by ring]
   open ComplexOrder in
-  repeat rw [log_mul (by positivity) (by positivity) (by simp [Complex.arg]; grind [Real.pi_pos])]
+  repeat rw [log_mul (by positivity) (by positivity) (by simp [arg, LT.lt.le, Real.pi_pos])]
   ring
