@@ -304,4 +304,116 @@ theorem kernel_ofKernel : kernel (OfKernel K) = K := by
   simp [kernel, adjoint_inner_left, -inner_kerFun, -kerFun_inner,
     coeCLM, OfKernel.kerFun, inner_H₀_def, RKHS.kerFun]
 
+instance : Fact (kernel H).PosSemidef := ⟨posSemidef_kernel H⟩
+
+variable (H) in
+private def ofH₀ : H₀ (kernel H) →ₗᵢ[𝕜] H := {
+  Finsupp.linearCombination 𝕜 (fun (xv : X × V) => RKHS.kerFun H xv.1 xv.2) with
+  norm_map' := by
+    intro f
+    simp_rw [norm_eq_sqrt_re_inner (𝕜:=𝕜), inner_H₀_def, Finsupp.linearCombination_apply,
+      Finsupp.sum, sum_inner, inner_sum, inner_smul_left, inner_smul_right, kernel_inner, mul_assoc]
+    simp
+}
+
+variable (H) in
+private lemma ofH₀_uniformContinuous : UniformContinuous (ofH₀ H) :=
+  (ofH₀ H).isometry.uniformContinuous
+
+def RKHSEquivOfKernel : H ≃ₗᵢ[𝕜] OfKernel (kernel H) := by
+  have h_iso := Isometry.completion_extension (ofH₀ H).isometry
+  have h_lin := UniformSpace.Completion.isLinearMap_extension (ofH₀_uniformContinuous H)
+  let ofOfKernel : OfKernel (kernel H) →ₗᵢ[𝕜] H := {
+    toFun := UniformSpace.Completion.extension (ofH₀ H)
+    map_add' := h_lin.map_add
+    map_smul' := h_lin.map_smul
+    norm_map' x := by
+      have h := h_iso.dist_eq x 0
+      have h' := h_lin.map_zero
+      simp_all
+  }
+  have h_surj : Function.Surjective ofOfKernel := by
+    apply Set.range_eq_univ.mp
+    have h_sub : Set.range (ofH₀ H) ⊆ Set.range ⇑ofOfKernel := by
+      rintro _ ⟨f, rfl⟩
+      exact ⟨(f : OfKernel (kernel H)),
+        UniformSpace.Completion.extension_coe (ofH₀_uniformContinuous H) f⟩
+    have h_dense : Dense (Set.range (ofH₀ H)) := by
+      convert dense_iff_topologicalClosure_eq_top.mpr (kerFun_dense H)
+      simp only [LinearIsometry.coe_mk, ofH₀]
+      rw [← LinearMap.coe_range, Finsupp.range_linearCombination, SetLike.coe_set_eq]
+      congr 1
+      ext
+      refine ⟨
+        fun ⟨⟨x, v⟩, h⟩ ↦ ⟨x, v, h⟩,
+        fun ⟨x, v, h⟩ ↦ ⟨⟨x, v⟩, h⟩
+      ⟩
+    rw [ofOfKernel.isometry.isClosedEmbedding.isClosed_range.closure_eq.symm,
+      (h_dense.mono h_sub).closure_eq]
+  exact (LinearIsometryEquiv.ofSurjective ofOfKernel h_surj).symm
+
+
+lemma RKHSEquivOfKernel_symm (g : OfKernel (kernel H)) : RKHSEquivOfKernel.symm g =
+    UniformSpace.Completion.extension (α:= H₀ (kernel H))
+      ((Finsupp.linearCombination 𝕜 (fun (xv : X × V) => (RKHS.kerFun H xv.1) xv.2))) g := by
+  simp [RKHSEquivOfKernel]; rfl
+
+@[simp]
+theorem RKHSEquivOfKernel_apply_symm_apply (g : OfKernel (kernel H)) :
+    RKHSEquivOfKernel ((RKHSEquivOfKernel (H := H)).symm g) = g :=
+  (RKHSEquivOfKernel (H := H)).apply_symm_apply g
+
+@[simp]
+theorem RKHSEquivOfKernel_symm_apply_apply (g : H) :
+    (RKHSEquivOfKernel (H := H)).symm (RKHSEquivOfKernel g) = g :=
+  (RKHSEquivOfKernel (H := H)).symm_apply_apply g
+
+lemma kerFun_eq_coe'_single (x : X) (v : V) : kerFun (OfKernel K) x v =
+    UniformSpace.Completion.coe' (Finsupp.single (x, v) 1 : H₀ K) := by
+  simp [RKHS.kerFun, coeCLM, kerFunAux]
+
+lemma RKHSEquivOfKernel_kerFun_eq_coe'_single (x : X) (v : V) : RKHSEquivOfKernel (kerFun H x v) =
+    UniformSpace.Completion.coe' (α:=H₀ (kernel H)) (Finsupp.single (x, v) 1) := by
+  apply Eq.symm
+  apply (RKHSEquivOfKernel.symm_apply_eq).mp
+  have h_uni : UniformContinuous
+      (Finsupp.linearCombination 𝕜 (fun (xv : X × V) => RKHS.kerFun H xv.1 xv.2)) :=
+    (ofH₀_uniformContinuous H)
+  simp_rw [LinearIsometryEquiv.coe_symm_toLinearEquiv, RKHSEquivOfKernel_symm]
+  rw [UniformSpace.Completion.extension_coe h_uni _, Finsupp.linearCombination_single, one_smul]
+
+lemma RKHSEquivOfKernel_kerFun_eq (x : X) (v : V) : RKHSEquivOfKernel (kerFun H x v) =
+    kerFun (OfKernel (kernel H)) x v := by
+  rw [RKHSEquivOfKernel_kerFun_eq_coe'_single, kerFun_eq_coe'_single]
+
+lemma RKHSEquivOfKernel_symm_kerFun_eq (x : X) (v : V) :
+    RKHSEquivOfKernel.symm (kerFun (OfKernel (kernel H)) x v) = (kerFun H x v) := by
+  rw [← RKHSEquivOfKernel_kerFun_eq, LinearIsometryEquiv.symm_apply_apply]
+
+@[simp]
+theorem norm_RKHSEquivOfKernel_apply (g : H) :
+    ‖RKHSEquivOfKernel g‖ = ‖g‖ :=
+  LinearIsometryEquiv.norm_map _ _
+
+@[simp]
+theorem norm_RKHSEquivOfKernel_symm_apply (g : OfKernel (kernel H)) :
+    ‖RKHSEquivOfKernel.symm g‖ = ‖g‖ :=
+  LinearIsometryEquiv.norm_map _ _
+
+@[simp]
+theorem RKHSEquivOfKernel_add (x y : H) :
+    RKHSEquivOfKernel (x + y) =
+    RKHSEquivOfKernel x + RKHSEquivOfKernel y :=
+  map_add (RKHSEquivOfKernel (H := H)).toLinearIsometry x y
+
+@[simp]
+theorem RKHSEquivOfKernel_smul (c : 𝕜) (x : H) :
+    RKHSEquivOfKernel (c • x) = c • RKHSEquivOfKernel x :=
+  map_smul (RKHSEquivOfKernel (H := H)).toLinearIsometry c x
+
+@[simp]
+theorem RKHSEquivOfKernel_zero :
+    RKHSEquivOfKernel (0 : H) = 0 :=
+  map_zero (RKHSEquivOfKernel (H := H)).toLinearIsometry
+
 end RKHS.OfKernel
