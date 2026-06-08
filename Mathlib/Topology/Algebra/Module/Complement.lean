@@ -171,7 +171,6 @@ theorem projectionOntoL_apply_left (h : IsTopCompl p q) (x : p) :
     p.projectionOntoL q h x = x :=
   projectionOnto_apply_left h.isCompl x
 
-@[simp]
 theorem coe_projectionOntoL (h : IsTopCompl p q) :
     ⇑(p.projectionOntoL q h) = p.projectionOnto q h.isCompl :=
   rfl
