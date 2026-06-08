@@ -88,7 +88,7 @@ instance : Inhabited (AddContent G C) :=
 
 instance : FunLike (AddContent G C) (Set α) G where
   coe m s := m.toFun s
-  coe_injective' m m' _ := by
+  coe_injective m m' _ := by
     cases m
     cases m'
     congr
