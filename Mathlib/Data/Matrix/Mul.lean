@@ -737,6 +737,9 @@ theorem mulVec_eq_sum [Fintype n] (v : n → α) (M : Matrix m n α) :
     M *ᵥ v = ∑ i, MulOpposite.op (v i) • Mᵀ i :=
   (Finset.sum_fn ..).symm
 
+lemma mulVec_apply [Fintype n] {M : Matrix m n α} {x : n → α} {i : m} :
+    (M *ᵥ x) i = ∑ j : n, M i j * x j := rfl
+
 theorem mulVec_diagonal [Fintype m] [DecidableEq m] (v w : m → α) (x : m) :
     (diagonal v *ᵥ w) x = v x * w x :=
   diagonal_dotProduct v w x

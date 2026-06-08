@@ -7,54 +7,6 @@ import Mathlib.RingTheory.SimpleRing.Principal
 
 open Matrix SymplecticGroup
 
-theorem SymplecticGroup.fromBlocks_mem_iff
-  {l k : Type*} [DecidableEq l] [Fintype l] [CommRing k]
-  {P Q R S : Matrix l l k} :
-  fromBlocks P Q R S ∈ symplecticGroup l k ↔
-    Pᵀ * R = Rᵀ * P ∧
-    Qᵀ * S = Sᵀ * Q ∧
-    Pᵀ * S - Rᵀ * Q = 1 := by
-  constructor <;> intro h
-  · have h_final : fromBlocks (Rᵀ * P - Pᵀ * R) (Rᵀ * Q - Pᵀ * S)
-      (Sᵀ * P - Qᵀ * R) (Sᵀ * Q - Qᵀ * S) = J l k := by
-      convert_to (fromBlocks Pᵀ Rᵀ Qᵀ Sᵀ) * J l k * (fromBlocks P Q R S) = _
-      · simp only [sub_eq_add_neg, fromBlocks_multiply, mul_zero, mul_one, zero_add, mul_neg,
-        add_zero, neg_mul, J]
-      · rw [← fromBlocks_transpose]
-        exact mem_iff.1 (transpose_mem h)
-    obtain ⟨h_eq1, h_eq2, _, h_eq3⟩ := fromBlocks_inj.1 h_final
-    refine ⟨(sub_eq_zero.1 h_eq1).symm, (sub_eq_zero.1 h_eq3).symm, ?_⟩
-    rw [sub_eq_iff_comm, sub_neg_eq_add] at h_eq2
-    rw [← h_eq2, sub_eq_iff_eq_add']
-  · refine mem_iff'.mpr ?_
-    simp only [fromBlocks_transpose, J, fromBlocks_multiply, mul_zero, mul_one,
-      zero_add, mul_neg, add_zero, neg_mul, ← sub_eq_add_neg, fromBlocks_inj, sub_eq_zero]
-    refine ⟨h.1.symm, ?_, ?_, h.2.1.symm⟩
-    · rw [← h.2.2, neg_sub]
-    · have := congrArg transpose h.2.2
-      rwa [transpose_sub, transpose_mul, transpose_mul, transpose_one] at this
-
-theorem SymplecticGroup.det_one_if_fromBlocks_invertible
-    {l k : Type*} [DecidableEq l] [Fintype l] [CommRing k]
-    {P Q R S : Matrix l l k} [Invertible P]
-    (hA : fromBlocks P Q R S ∈ symplecticGroup l k) :
-    (fromBlocks P Q R S).det = 1 := by
-  have h_block := fromBlocks_mem_iff.1 hA
-  rw [det_fromBlocks₁₁ P Q R S, invOf_eq_nonsing_inv,
-    ← P.det_transpose, ← det_mul, mul_sub, ← mul_assoc, ← mul_assoc,
-    h_block.1, mul_assoc Rᵀ, mul_inv_of_invertible, mul_one, h_block.2.2,
-    det_one]
-
-lemma Matrix.J_map {l R S : Type*} [DecidableEq l] [Fintype l] [CommRing R] [CommRing S]
-    (f : R →+* S) : f.mapMatrix (J l R) = J l S := by
-  unfold J
-  rw [RingHom.mapMatrix_apply, fromBlocks_map, Matrix.map_zero f f.map_zero,
-    Matrix.map_one f f.map_zero f.map_one, Matrix.map_neg f f.map_neg,
-    Matrix.map_one f f.map_zero f.map_one]
-
-lemma Matrix.mulVec_apply {m n R : Type*} [Fintype n] [NonUnitalNonAssocSemiring R]
-  (M : Matrix m n R) (x : n → R) (i : m) : (M *ᵥ x) i = ∑ j : n, M i j * x j := rfl
-
 lemma Matrix.exists_rank_normal_form {l k : Type*} [DecidableEq l] [Fintype l] [Field k]
   (M : Matrix l l k) :
   ∃ (V U : Matrix l l k) (s : Finset l),
@@ -90,24 +42,6 @@ lemma Matrix.exists_rank_normal_form {l k : Type*} [DecidableEq l] [Fintype l] [
   · simpa using (hS_unit.mul (isUnit_nonsing_inv_det _ hA_unit))
   · rw [hM_eq, mul_assoc, mul_assoc _ B, mul_nonsing_inv _ hB_unit, mul_one,
     ← mul_assoc, mul_assoc _ A⁻¹, nonsing_inv_mul _ hA_unit, mul_one, h2]
-
-lemma Matrix.lift_symmetric
-    {l R S : Type*} [DecidableEq l] [Fintype l] [Semiring R] [Semiring S]
-    (f : R →+* S) (hf : Function.Surjective f)
-    (Y : Matrix l l S) (hY : Yᵀ = Y) :
-    ∃ (X : Matrix l l R), Xᵀ = X ∧ f.mapMatrix X = Y := by
-  choose s hs using hf
-  have _ : LinearOrder l := (Cardinal.exists_ord_eq_type_lt l).choose
-  set X : Matrix l l R := fun i j ↦ if i ≤ j then s (Y i j) else s (Y j i) with X_def
-  refine ⟨X, ?_, ?_⟩ <;> ext i j
-  · simp only [X_def, transpose_apply]
-    split_ifs with h1 h2 h3
-    · rw [le_antisymm h1 h2]
-    · rfl
-    · rfl
-    · tauto
-  · have h3 : Y j i = Y i j := ((fun _ ↦ ext_iff.2 hY i j) ∘ Y i) i
-    simp only [X_def, RingHom.mapMatrix_apply, map_apply, h3, ite_self, hs]
 
 namespace SymplecticMatrixDet
 
@@ -283,10 +217,10 @@ theorem exists_symmetric_shear_making_P_invertible
   obtain ⟨Xbar, hXbar_symm, hXbar_det⟩ := field_exists_symmetric_X_invertible_sum h_rank <| by
     change f.mapMatrix Pᵀ * f.mapMatrix R = f.mapMatrix Rᵀ * f.mapMatrix P
     rw [← map_mul, (fromBlocks_mem_iff.1 hA).1, map_mul]
-  obtain ⟨X, hX_symm, hX_lift⟩ := lift_symmetric f
-    IsLocalRing.residue_surjective Xbar hXbar_symm
+  obtain ⟨X, hX_symm, hX_lift⟩ := IsSymm.lift
+    IsLocalRing.residue_surjective hXbar_symm
   refine ⟨X, hX_symm, (IsLocalRing.residue_ne_zero_iff_isUnit _).1 ?_⟩
-  rw [RingHom.map_det, map_add, map_mul, hX_lift]
+  rw [RingHom.map_det, map_add, map_mul, RingHom.mapMatrix_apply _ X, hX_lift]
   exact hXbar_det.ne_zero
 
 /-- Over any local ring, every symplectic matrix has determinant 1.
@@ -329,16 +263,6 @@ theorem symplectic_det_one_local_ring
 
 end SymplecticMatrixDet
 
-/-- The symplectic condition is preserved under ring homomorphisms. -/
-lemma symplecticGroup_map
-    {l R S : Type*} [DecidableEq l] [Fintype l] [CommRing R] [CommRing S]
-    (f : R →+* S) {A : Matrix (l ⊕ l) (l ⊕ l) R}
-    (hA : A ∈ symplecticGroup l R) :
-    f.mapMatrix A ∈ symplecticGroup l S := by
-  rw [SymplecticGroup.mem_iff] at hA ⊢
-  rw [← J_map f, ← map_mul, RingHom.mapMatrix_apply, RingHom.mapMatrix_apply,
-    ← transpose_map, ← Matrix.map_mul, hA]; rfl
-
 /-- **Symplectic matrices have determinant 1.** For any commutative ring `R`
 and `2n × 2n` symplectic matrix `A` over `R`, `A.det = 1`. -/
 theorem symplectic_matrix_det_main_statement
@@ -347,4 +271,4 @@ theorem symplectic_matrix_det_main_statement
     A.det = 1 := by
   refine sub_eq_zero.1 <| eq_zero_of_localization (A.det - 1) fun J _ ↦ ?_
   rw [map_sub, RingHom.map_det, SymplecticMatrixDet.symplectic_det_one_local_ring
-    <| symplecticGroup_map (algebraMap R (Localization.AtPrime J)) hA, map_one, sub_self]
+    <| SymplecticGroup.map_mem (algebraMap R (Localization.AtPrime J)) hA, map_one, sub_self]

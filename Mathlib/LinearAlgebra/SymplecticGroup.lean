@@ -6,6 +6,7 @@ Authors: Matej Penciak, Moritz Doll, Fabien Clery
 module
 
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+public import Mathlib.LinearAlgebra.Matrix.SchurComplement
 
 /-!
 # The Symplectic Group
@@ -38,6 +39,14 @@ section JMatrixLemmas
 /-- The matrix defining the canonical skew-symmetric bilinear form. -/
 def J : Matrix (l ⊕ l) (l ⊕ l) R :=
   Matrix.fromBlocks 0 (-1) 1 0
+
+@[simp]
+theorem J_map {S : Type*} [Fintype l] [CommRing S]
+    (f : R →+* S) : f.mapMatrix (J l R) = J l S := by
+  unfold J
+  rw [RingHom.mapMatrix_apply, fromBlocks_map, Matrix.map_zero f f.map_zero,
+    Matrix.map_one f f.map_zero f.map_one, Matrix.map_neg f f.map_neg,
+    Matrix.map_one f f.map_zero f.map_one]
 
 @[simp]
 theorem J_transpose : (J l R)ᵀ = -J l R := by
@@ -147,6 +156,13 @@ theorem transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGrou
       rw [mul_nonsing_inv_cancel_left _ _ huAT, nonsing_inv_mul_cancel_right _ _ huA]
     _ = J l R := by simp [J_inv]
 
+theorem map_mem {S : Type*} [CommRing S]
+    (f : R →+* S) (hA : A ∈ symplecticGroup l R) :
+    f.mapMatrix A ∈ symplecticGroup l S := by
+  rw [SymplecticGroup.mem_iff] at hA ⊢
+  rw [← J_map _ _ f, ← map_mul, RingHom.mapMatrix_apply, RingHom.mapMatrix_apply,
+    ← transpose_map, ← Matrix.map_mul, hA]; rfl
+
 @[simp]
 theorem transpose_mem_iff : Aᵀ ∈ symplecticGroup l R ↔ A ∈ symplecticGroup l R :=
   ⟨fun hA => by simpa using transpose_mem hA, transpose_mem⟩
@@ -185,5 +201,39 @@ instance : Group (symplecticGroup l R) :=
       apply Subtype.ext
       simp only [Submonoid.coe_one, Submonoid.coe_mul, Matrix.neg_mul, coe_inv]
       exact inv_left_mul_aux A.2 }
+
+theorem fromBlocks_mem_iff {A B C D : Matrix l l R} :
+  fromBlocks A B C D ∈ symplecticGroup l R ↔
+    Aᵀ * C = Cᵀ * A ∧
+    Bᵀ * D = Dᵀ * B ∧
+    Aᵀ * D - Cᵀ * B = 1 := by
+  constructor <;> intro h
+  · have h_final : fromBlocks (Cᵀ * A - Aᵀ * C) (Cᵀ * B - Aᵀ * D)
+      (Dᵀ * A - Bᵀ * C) (Dᵀ * B - Bᵀ * D) = J l R:= by
+      convert_to (fromBlocks Aᵀ Cᵀ Bᵀ Dᵀ) * J l R * (fromBlocks A B C D) = _
+      · simp only [sub_eq_add_neg, fromBlocks_multiply, mul_zero, mul_one, zero_add, mul_neg,
+        add_zero, neg_mul, J]
+      · rw [← fromBlocks_transpose]
+        exact mem_iff.1 (transpose_mem h)
+    obtain ⟨h_eq1, h_eq2, _, h_eq3⟩ := fromBlocks_inj.1 h_final
+    refine ⟨(sub_eq_zero.1 h_eq1).symm, (sub_eq_zero.1 h_eq3).symm, ?_⟩
+    rw [sub_eq_iff_comm, sub_neg_eq_add] at h_eq2
+    rw [← h_eq2, sub_eq_iff_eq_add']
+  · refine mem_iff'.mpr ?_
+    simp only [fromBlocks_transpose, J, fromBlocks_multiply, mul_zero, mul_one,
+      zero_add, mul_neg, add_zero, neg_mul, ← sub_eq_add_neg, fromBlocks_inj, sub_eq_zero]
+    refine ⟨h.1.symm, ?_, ?_, h.2.1.symm⟩
+    · rw [← h.2.2, neg_sub]
+    · have := congrArg transpose h.2.2
+      rwa [transpose_sub, transpose_mul, transpose_mul, transpose_one] at this
+
+theorem det_one_if_fromBlocks_invertible
+    {A B C D : Matrix l l R} [Invertible A]
+    (hA : fromBlocks A B C D ∈ symplecticGroup l R) :
+    (fromBlocks A B C D).det = 1 := by
+  have h_block := fromBlocks_mem_iff.1 hA
+  rw [det_fromBlocks₁₁, invOf_eq_nonsing_inv, ← A.det_transpose, ← det_mul,
+    mul_sub, ← mul_assoc, ← mul_assoc, h_block.1, mul_assoc Cᵀ,
+    mul_inv_of_invertible, mul_one, h_block.2.2, det_one]
 
 end SymplecticGroup

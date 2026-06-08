@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Matrix.Basic
 public import Mathlib.Data.Matrix.Block
+public import Mathlib.SetTheory.Ordinal.Basic
 
 /-!
 # Symmetric matrices
@@ -80,6 +81,20 @@ theorem IsSymm.pow [CommSemiring α] [Fintype n] [DecidableEq n] {A : Matrix n n
 @[simp]
 theorem IsSymm.map {A : Matrix n n α} (h : A.IsSymm) (f : α → β) : (A.map f).IsSymm := by
   rw [IsSymm, ← transpose_map, h.eq]
+
+theorem IsSymm.lift {f : α → β} (hf : Function.Surjective f)
+    {A : Matrix m m β} (h : A.IsSymm) :
+    ∃ (B : Matrix m m α), B.IsSymm ∧ B.map f = A := by
+  choose s hs using hf
+  have _ : LinearOrder m := (Cardinal.exists_ord_eq_type_lt m).choose
+  refine ⟨fun i j ↦ if i ≤ j then s (A i j) else s (A j i), ?_, ?_⟩ <;> ext i j
+  · rw [transpose_apply]
+    split_ifs with h1 h2 h3
+    · rw [le_antisymm h1 h2]
+    · rfl
+    · rfl
+    · exact (h1 (Std.le_of_not_ge h3)).elim
+  · rw [map_apply, h.apply, ite_self, hs]
 
 @[simp]
 theorem isSymm_map_iff {A : Matrix n n α} {f : α → β} (hf : f.Injective) :
