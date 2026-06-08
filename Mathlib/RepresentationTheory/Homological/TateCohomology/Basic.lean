@@ -197,6 +197,8 @@ noncomputable abbrev δ {S : ShortComplex (Rep R G)} (hS : S.ShortExact) (n : �
     tateCohomology S.X₃ n ⟶ tateCohomology S.X₁ (n + 1) :=
   (map_tateComplexFunctor_shortExact hS).δ n (n + 1) rfl
 
+/-- This and `δ_map` are the preliminary results for the long exact sequence in Tate cohomology
+  induced by a short exact sequence of `G`-reps. -/
 lemma map_δ {S : ShortComplex (Rep R G)} (hS : S.ShortExact) (n : ℤ) :
     (tateCohomologyFunctor n).map S.g ≫ δ hS n = 0 :=
   (map_tateComplexFunctor_shortExact hS).comp_δ _ _ _
