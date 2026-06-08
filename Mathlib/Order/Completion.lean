@@ -72,6 +72,7 @@ theorem ext' {A B : DedekindCut α} (h : A.right = B.right) : A = B := Concept.e
 theorem upperBounds_left (A : DedekindCut α) : upperBounds A.left = A.right :=
   A.upperPolar_extent
 
+@[simp]
 theorem lowerBounds_right (A : DedekindCut α) : lowerBounds A.right = A.left :=
   A.lowerPolar_intent
 
