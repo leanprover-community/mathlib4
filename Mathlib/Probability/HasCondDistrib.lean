@@ -41,9 +41,11 @@ is equal to the kernel `κ`. -/
 def HasCondDistrib (Y : Ω → 𝓨) (X : Ω → 𝓧) (κ : Kernel 𝓧 𝓨) (P : Measure Ω) : Prop :=
   HasLaw (fun ω ↦ (X ω, Y ω)) ((P.map X) ⊗ₘ κ) P
 
+@[fun_prop]
 lemma HasCondDistrib.aemeasurable_fst (h : HasCondDistrib Y X κ P) :
     AEMeasurable X P := h.aemeasurable.fst
 
+@[fun_prop]
 lemma HasCondDistrib.aemeasurable_snd (h : HasCondDistrib Y X κ P) :
     AEMeasurable Y P := h.aemeasurable.snd
 
@@ -54,21 +56,18 @@ lemma HasLaw.prod_of_hasCondDistrib {Q : Measure 𝓧} [IsSFiniteKernel κ]
 lemma HasCondDistrib.hasLaw_of_const {P : Measure Ω} [IsProbabilityMeasure P]
     {Q : Measure 𝓨} [SFinite Q]
     (h : HasCondDistrib Y X (Kernel.const 𝓧 Q) P) :
-    HasLaw Y Q P := by
-  refine ⟨h.aemeasurable_snd, ?_⟩
-  have h_snd : (P.map (fun ω ↦ (X ω, Y ω))).snd = Q := by
-    rw [h.map_eq, Measure.snd_compProd]
-    simp [Measure.map_apply_of_aemeasurable h.aemeasurable_fst]
-  rwa [Measure.snd_map_prodMk₀ h.aemeasurable_fst] at h_snd
+    HasLaw Y Q P where
+  map_eq := by
+    have h_snd : (P.map (fun ω ↦ (X ω, Y ω))).snd = Q := by
+      rw [h.map_eq, Measure.snd_compProd]
+      simp [Measure.map_apply_of_aemeasurable h.aemeasurable_fst]
+    rwa [Measure.snd_map_prodMk₀ h.aemeasurable_fst] at h_snd
 
 variable [SFinite P] [IsSFiniteKernel κ]
 
 lemma HasCondDistrib.comp (h : HasCondDistrib Y X κ P) {f : 𝓨 → 𝓩} (hf : Measurable f) :
     HasCondDistrib (fun ω ↦ f (Y ω)) X (κ.map f) P where
-  aemeasurable := by have := h.aemeasurable_fst; have := h.aemeasurable_snd; fun_prop
   map_eq := by
-    have hX : AEMeasurable X P := h.aemeasurable_fst
-    have hY : AEMeasurable Y P := h.aemeasurable_snd
     calc P.map (fun ω ↦ (X ω, f (Y ω)))
     _ = (P.map (fun ω ↦ (X ω, Y ω))).map (Prod.map id f) := by
       rw [AEMeasurable.map_map_of_aemeasurable (by fun_prop) (by fun_prop)]
@@ -90,22 +89,20 @@ lemma HasCondDistrib.snd {Y : Ω → 𝓨 × 𝓩} {κ : Kernel 𝓧 (𝓨 × �
 
 lemma HasCondDistrib.comp_right {f : 𝓩 → 𝓧}
     {hf : Measurable f} {Z : Ω → 𝓩} (h : HasCondDistrib Y Z (κ.comap f hf) P) :
-    HasCondDistrib Y (f ∘ Z) κ P := by
-  have hY : AEMeasurable Y P := h.aemeasurable_snd
-  have hZ : AEMeasurable Z P := h.aemeasurable_fst
-  refine ⟨by fun_prop, ?_⟩
-  calc P.map (fun a ↦ ((f ∘ Z) a, Y a))
-  _ = (P.map (fun a ↦ (Z a, Y a))).map (Prod.map f id) := by
-      rw [AEMeasurable.map_map_of_aemeasurable (by fun_prop) (hZ.prodMk hY)]
-      rfl
-  _ = (P.map Z ⊗ₘ κ.comap f hf).map (Prod.map f id) := by rw [h.map_eq]
-  _ = (P.map Z).map f ⊗ₘ κ := by
-      ext s hs
-      rw [Measure.map_apply (by fun_prop) hs, Measure.compProd_apply (by measurability),
-          Measure.compProd_apply hs, lintegral_map (Kernel.measurable_kernel_prodMk_left hs) hf]
-      rfl
-  _ = P.map (f ∘ Z) ⊗ₘ κ := by
-      rw [AEMeasurable.map_map_of_aemeasurable hf.aemeasurable hZ]
+    HasCondDistrib Y (f ∘ Z) κ P where
+  map_eq := by
+    calc P.map (fun a ↦ ((f ∘ Z) a, Y a))
+    _ = (P.map (fun a ↦ (Z a, Y a))).map (Prod.map f id) := by
+        rw [AEMeasurable.map_map_of_aemeasurable (by fun_prop) (by fun_prop)]
+        rfl
+    _ = (P.map Z ⊗ₘ κ.comap f hf).map (Prod.map f id) := by rw [h.map_eq]
+    _ = (P.map Z).map f ⊗ₘ κ := by
+        ext s hs
+        rw [Measure.map_apply (by fun_prop) hs, Measure.compProd_apply (by measurability),
+            Measure.compProd_apply hs, lintegral_map (Kernel.measurable_kernel_prodMk_left hs) hf]
+        rfl
+    _ = P.map (f ∘ Z) ⊗ₘ κ := by
+        rw [AEMeasurable.map_map_of_aemeasurable hf.aemeasurable (by fun_prop)]
 
 lemma HasCondDistrib.measurableEquiv_comp_right (h : HasCondDistrib Y X κ P) (f : 𝓧 ≃ᵐ 𝓩) :
     HasCondDistrib Y (f ∘ X) (κ.comap f.symm (by fun_prop) : Kernel 𝓩 𝓨) P := by
@@ -116,7 +113,6 @@ lemma HasCondDistrib.of_compProd {Z : Ω → 𝓩} {η : Kernel (𝓧 × 𝓨) �
     (h : HasCondDistrib (fun a ↦ (Y a, Z a)) X (κ ⊗ₖ η) P) :
     HasCondDistrib Z (fun a ↦ (X a, Y a)) η P := by
   have hZ : AEMeasurable Z P := h.aemeasurable_snd.snd
-  have hX : AEMeasurable X P := h.aemeasurable_fst
   have hY : AEMeasurable Y P := h.aemeasurable_snd.fst
   refine ⟨by fun_prop, ?_⟩
   calc P.map (fun a ↦ ((X a, Y a), Z a))
