@@ -545,8 +545,16 @@ variable {F : Type*} [Field F]
 
 open MatrixGroups
 
-/-- Diagonal element `D(a)` in `SL ι F` when `card ι = 2`: the matrix
-`diagonal (k ↦ if k = i₁ then a else a⁻¹)`. -/
+/-- An element in SLₙ(F) induced by a diagonal matrix `1` on any other entries and `a`, `a⁻¹` on
+  positition `i` and `j` respectively where `i ≠ j`. -/
+noncomputable def diag2n {ι : Type*} [Fintype ι] [DecidableEq ι] {i j : ι} (hij : i ≠ j) (a : F)
+    (ha : a ≠ 0) : SpecialLinearGroup ι F :=
+  ⟨diagonal (fun k ↦ if k = i then a else if k = j then a⁻¹ else 1), by
+    simp [Finset.prod_ite, hij.symm, Finset.card_eq_one (s := {x : ι | x = i}).2 ⟨i, by grind⟩,
+      mul_inv_cancel₀ ha]⟩
+
+/-- An element in SL₂(F) induced by a diagonal matrix with `a`, `a⁻¹` on
+  positition `0` and `1` respectively. -/
 noncomputable def diag2 (a : F) (ha : a ≠ 0) : SL(2, F) :=
   ⟨diagonal (fun i ↦ match i with | 0 => a | 1 => a⁻¹), by simp [mul_inv_cancel₀ ha]⟩
 
