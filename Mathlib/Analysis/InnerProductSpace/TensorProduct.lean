@@ -524,8 +524,13 @@ theorem rTensor_comp_commIsometry (g : E →L[𝕜] F) :
 @[simp] lemma toLinearMap_lTensor (g : E →L[𝕜] F) :
     (g.lTensor G).toLinearMap = g.toLinearMap.lTensor G := by ext; simp
 
+@[simp] lemma _root_.LinearIsometry.toLinearMap_toContinuousLinearMap {R R₂ E E₂ : Type*}
+    [Semiring R] [Semiring R₂] {σ₁₂ : R →+* R₂} [SeminormedAddCommGroup E]
+    [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] (f : E →ₛₗᵢ[σ₁₂] E₂) :
+    f.toContinuousLinearMap.toLinearMap = f.toLinearMap := rfl
+
 @[simp] lemma _root_.LinearIsometry.toContinuousLinearMap_lTensor (g : E →ₗᵢ[𝕜] F) :
-    (g.lTensor G).toContinuousLinearMap = g.toContinuousLinearMap.lTensor G := by ext; simp; rfl
+    (g.lTensor G).toContinuousLinearMap = g.toContinuousLinearMap.lTensor G := by ext; simp
 
 theorem norm_lTensor_le (g : E →L[𝕜] F) : ‖g.lTensor G‖ ≤ ‖g‖ := by
   simp_rw [lTensor_def, ← LinearIsometryEquiv.toContinuousLinearMap_toLinearIsometry]
@@ -602,8 +607,7 @@ lemma mapL_smul_right (r : 𝕜) (f : E →L[𝕜] F) (g : G →L[𝕜] H) :
 @[simp] lemma toContinuousLinearMap_mapIsometry (f : E →ₗᵢ[𝕜] F) (g : G →ₗᵢ[𝕜] H) :
     (mapIsometry f g).toContinuousLinearMap =
       mapL f.toContinuousLinearMap g.toContinuousLinearMap := by
-  ext; simp; rfl
-
+  ext; simp
 section comp
 
 variable {A B : Type*} [NormedAddCommGroup A] [InnerProductSpace 𝕜 A] [NormedAddCommGroup B]
