@@ -143,10 +143,10 @@ lemma reps_entries_le_m' {A : Δ m} (h : A ∈ reps m) (i j : Fin 2) :
   have h1 : 0 < |A.1 1 1| := (abs_nonneg _).trans_lt h11
   have h2 : 0 < |A.1 0 0| := abs_pos.mpr h00.ne'
   fin_cases i <;> fin_cases j
-  · simpa only [← abs_mul, A_c_eq_zero h10] using (le_mul_iff_one_le_right h2).mpr h1
-  · simpa only [← abs_mul, A_c_eq_zero h10] using h11.le.trans (le_mul_of_one_le_left h1.le h2)
+  · simpa only [← abs_mul, A_c_eq_zero h10] using! (le_mul_iff_one_le_right h2).mpr h1
+  · simpa only [← abs_mul, A_c_eq_zero h10] using! h11.le.trans (le_mul_of_one_le_left h1.le h2)
   · simp_all
-  · simpa only [← abs_mul, A_c_eq_zero h10] using (le_mul_iff_one_le_left h1).mpr h2
+  · simpa only [← abs_mul, A_c_eq_zero h10] using! (le_mul_iff_one_le_left h1).mpr h2
 
 @[simp]
 lemma reps_zero_empty : reps 0 = ∅ := by
@@ -164,7 +164,6 @@ noncomputable instance repsFintype (k : ℤ) : Fintype (reps k) := by
   ext i j
   simpa only [Subtype.mk.injEq] using congrFun₂ h i j
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma S_smul_four (A : Δ m) : S • S • S • S • A = A := by
   simp only [smul_def, ← mul_assoc, S_mul_S_eq, neg_mul, one_mul, mul_neg, neg_neg, Subtype.coe_eta]

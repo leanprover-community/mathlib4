@@ -101,12 +101,12 @@ theorem cycleOf_apply_apply_zpow_self (f : Perm α) [DecidableRel f.SameCycle] (
 @[simp]
 theorem cycleOf_apply_apply_pow_self (f : Perm α) [DecidableRel f.SameCycle] (x : α) (k : ℕ) :
     cycleOf f x ((f ^ k) x) = (f ^ (k + 1) : Perm α) x := by
-  convert cycleOf_apply_apply_zpow_self f x k using 1
+  convert! cycleOf_apply_apply_zpow_self f x k using 1
 
 @[simp]
 theorem cycleOf_apply_apply_self (f : Perm α) [DecidableRel f.SameCycle] (x : α) :
     cycleOf f x (f x) = f (f x) := by
-  convert cycleOf_apply_apply_pow_self f x 1 using 1
+  convert! cycleOf_apply_apply_pow_self f x 1 using 1
 
 @[simp]
 theorem cycleOf_apply_self (f : Perm α) [DecidableRel f.SameCycle] (x : α) : cycleOf f x x = f x :=
@@ -177,7 +177,7 @@ theorem cycleOf_mul_of_apply_right_eq_self [DecidableRel f.SameCycle]
     rw [cycleOf_apply_apply_zpow_self]
     simp [h.mul_zpow, zpow_apply_eq_self_of_apply_eq_self hx]
   · rw [cycleOf_apply_of_not_sameCycle hxy, cycleOf_apply_of_not_sameCycle]
-    contrapose! hxy
+    contrapose hxy
     obtain ⟨z, rfl⟩ := hxy
     refine ⟨z, ?_⟩
     simp [h.mul_zpow, zpow_apply_eq_self_of_apply_eq_self hx]
@@ -438,7 +438,7 @@ theorem mem_list_cycles_iff {α : Type*} [Finite α] {l : List (Perm α)}
       have key : ∀ x ∈ σ.support ∩ τ.support, σ x = τ x := by
         intro x hx
         rw [h x (mem_support.mp (mem_of_mem_inter_left hx)), hτl x (mem_of_mem_inter_right hx)]
-      convert hτ
+      convert! hτ
       refine h3.eq_on_support_inter_nonempty_congr (h1 _ hτ) key ?_ ha
       exact key a (mem_inter_of_mem ha hτa)
 
@@ -552,7 +552,7 @@ theorem cycleOf_mem_cycleFactorsFinset_iff {f : Perm α} {x : α} :
   rw [mem_cycleFactorsFinset_iff]
   constructor
   · rintro ⟨hc, _⟩
-    contrapose! hc
+    contrapose hc
     rw [notMem_support, ← cycleOf_eq_one_iff] at hc
     simp [hc]
   · intro hx

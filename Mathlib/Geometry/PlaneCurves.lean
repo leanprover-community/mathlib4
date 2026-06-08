@@ -60,7 +60,7 @@ lemma orientedCurvature_eq : orientedCurvature c t = !![deriv c t 0, deriv c t 1
     iteratedDeriv 2 c t 0, iteratedDeriv 2 c t 1].det / (‖deriv c t‖ ^ 3) := rfl
 
 /-- Normal vector at a point of a plane curve.
-This definition is only meaningful when `c` is differentiable at `t` with non-zero derivative; 
+This definition is only meaningful when `c` is differentiable at `t` with non-zero derivative;
 otherwise it has junk value `!₂[0, 0]`. -/
 def normal (c : ℝ → EuclideanSpace ℝ (Fin 2)) (t : ℝ) :
     EuclideanSpace ℝ (Fin 2) := ‖deriv c t‖⁻¹ • !₂[-(deriv c t 1), deriv c t 0]

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.RelClasses
 public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.Bounds.Defs
 
 /-!
 # Bounded and unbounded sets
@@ -14,6 +15,12 @@ We prove miscellaneous lemmas about bounded and unbounded sets. Many of these ar
 the same ideas, or similar results with a few minor differences. The file is divided into these
 different general ideas.
 -/
+
+deprecated_module "Use the following replacements:
+- `BddAbove` for `Set.Bounded (· ≤ ·)`
+- `BddBelow` for `Set.Bounded (· ≥ ·)`
+- `IsCofinal` for `Set.Unbounded (· < ·)` in a linear order
+- `IsCoinitial` for `Set.Unbounded (· > ·)` in a linear order" (since := "2026-04-16")
 
 public section
 
@@ -277,7 +284,7 @@ theorem bounded_le_inter_lt [LinearOrder α] (a : α) :
 
 theorem unbounded_le_inter_lt [LinearOrder α] (a : α) :
     Unbounded (· ≤ ·) (s ∩ { b | a < b }) ↔ Unbounded (· ≤ ·) s := by
-  convert @unbounded_le_inter_not_le _ s _ a
+  convert! @unbounded_le_inter_not_le _ s _ a
   exact lt_iff_not_ge
 
 theorem bounded_le_inter_le [LinearOrder α] (a : α) :
@@ -305,12 +312,12 @@ theorem unbounded_lt_inter_not_lt [SemilatticeSup α] (a : α) :
 
 theorem bounded_lt_inter_le [LinearOrder α] (a : α) :
     Bounded (· < ·) (s ∩ { b | a ≤ b }) ↔ Bounded (· < ·) s := by
-  convert @bounded_lt_inter_not_lt _ s _ a
+  convert! @bounded_lt_inter_not_lt _ s _ a
   exact not_lt.symm
 
 theorem unbounded_lt_inter_le [LinearOrder α] (a : α) :
     Unbounded (· < ·) (s ∩ { b | a ≤ b }) ↔ Unbounded (· < ·) s := by
-  convert @unbounded_lt_inter_not_lt _ s _ a
+  convert! @unbounded_lt_inter_not_lt _ s _ a
   exact not_lt.symm
 
 theorem bounded_lt_inter_lt [LinearOrder α] [NoMaxOrder α] (a : α) :
