@@ -113,7 +113,7 @@ theorem coe_continuous_linearProjOfClosedCompl (h : IsCompl p q) (hp : IsClosed 
     (hq : IsClosed (q : Set E)) :
     (p.linearProjOfClosedCompl q h hp hq : E →ₗ[𝕜] p) = p.projectionOnto q h := rfl
 
-@[deprecated "Use `toLinearMap_projectionOntoL` instead" (since := "2026-06-07")]
+@[deprecated "Use `coe_prodEquivOfIsTopCompl` instead" (since := "2026-06-07")]
 theorem coe_continuous_linearProjOfClosedCompl' (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
     ⇑(p.linearProjOfClosedCompl q h hp hq) = p.projectionOnto q h := rfl
