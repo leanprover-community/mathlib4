@@ -450,7 +450,7 @@ lemma range_liftBaseChange_map_le :
   rintro ⟨x, _⟩
   obtain ⟨⟨(x : P.Ring), x_in⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
   ext; suffices (Q.ofComp P).toAlgHom ((Q.toComp P).toAlgHom x) ∈ Q.toExtension.ker ^ 2 by
-    simpa [-toExtension_Ring, Ideal.toCotangent_eq_zero]
+    simpa [Ideal.toCotangent_eq_zero]
   rw [← Generators.ker, Generators.ker_eq_ker_aeval_val] at x_in
   change aeval P.val x = 0 at x_in
   rw [toComp_toAlgHom, toAlgHom_ofComp_rename, Generators.algebraMap_eq, RingHom.coe_coe,
