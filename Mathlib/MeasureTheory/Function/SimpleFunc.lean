@@ -58,7 +58,7 @@ variable [MeasurableSpace α]
 
 instance instFunLike : FunLike (α →ₛ β) α β where
   coe := toFun
-  coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
+  coe_injective | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
 theorem coe_injective ⦃f g : α →ₛ β⦄ (H : (f : α → β) = g) : f = g := DFunLike.ext' H
 
@@ -675,7 +675,7 @@ lemma mk_le_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' ≤ mk g hg hg' �
 lemma mk_lt_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' < mk g hg hg' ↔ f < g := Iff.rfl
 
 open scoped Classical in
-@[gcongr]
+@[gcongr only]
 lemma piecewise_mono (hf : ∀ a ∈ s, f₁ a ≤ f₂ a) (hg : ∀ a ∉ s, g₁ a ≤ g₂ a) :
     piecewise s hs f₁ g₁ ≤ piecewise s hs f₂ g₂ := Set.piecewise_mono hf hg
 
