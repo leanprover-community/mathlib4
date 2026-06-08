@@ -78,7 +78,7 @@ variable (c t) in
 -/
 theorem inner_deriv_normal_eq_zero : inner ℝ (deriv c t) (normal c t) = 0 := by
   rw [normal_eq, real_inner_smul_right]
-  simp [PiLp.inner_apply, real_inner_eq_re_inner, mul_comm]
+  simp [PiLp.inner_apply, mul_comm]
 
 /-- The `normal` vector at point with a non-zero derivative of a plane curve has length 1 (is a unit
 vector). -/
