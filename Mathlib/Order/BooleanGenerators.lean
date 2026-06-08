@@ -113,11 +113,11 @@ lemma mem_of_isAtom_of_le_sSup_atoms (hS : BooleanGenerators S) (a : α) (ha : I
   obtain ⟨T, hT, rfl⟩ := hS.atomistic a haS
   obtain rfl | ⟨a, haT⟩ := T.eq_empty_or_nonempty
   · simp only [sSup_empty] at ha
-    exact (ha.1 rfl).elim
+    exact (ha.ne_bot rfl).elim
   suffices sSup T = a from this ▸ hT haT
   have : a ≤ sSup T := le_sSup haT
   rwa [ha.le_iff_eq, eq_comm] at this
-  exact (hS.isAtom a (hT haT)).1
+  exact (hS.isAtom a (hT haT)).ne_bot
 
 lemma sSup_inter (hS : BooleanGenerators S) {T₁ T₂ : Set α} (hT₁ : T₁ ⊆ S) (hT₂ : T₂ ⊆ S) :
     sSup (T₁ ∩ T₂) = (sSup T₁) ⊓ (sSup T₂) := by

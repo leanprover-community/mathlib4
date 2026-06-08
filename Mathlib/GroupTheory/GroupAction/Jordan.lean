@@ -67,7 +67,7 @@ theorem normalClosure_of_stabilizer_eq_top (hsn' : 2 < ENat.card α)
   have hGa : IsCoatom (stabilizer G a) := by
     rw [isCoatom_stabilizer_iff_preprimitive]
     exact isPreprimitive_of_is_two_pretransitive hG'
-  apply hGa.right
+  refine (hGa.isMax_of_gt ?_).eq_top
   -- Remains to prove: (stabilizer G a) < Subgroup.normalClosure (stabilizer G a)
   constructor
   · apply le_normalClosure

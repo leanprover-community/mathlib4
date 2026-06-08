@@ -222,19 +222,20 @@ theorem IsProper.ne_top (_ : IsProper I) : I ≠ ⊤ :=
   fun h ↦ IsProper.ne_univ <| congr_arg SetLike.coe h
 
 theorem _root_.IsCoatom.isProper (hI : IsCoatom I) : IsProper I :=
-  isProper_of_ne_top hI.1
+  isProper_of_ne_top hI.ne_top
 
 theorem isProper_iff_ne_top : IsProper I ↔ I ≠ ⊤ :=
   ⟨fun h ↦ h.ne_top, fun h ↦ isProper_of_ne_top h⟩
 
-theorem IsMaximal.isCoatom (_ : IsMaximal I) : IsCoatom I :=
-  ⟨IsMaximal.toIsProper.ne_top, fun _ h ↦ ext <| IsMaximal.maximal_proper h⟩
+theorem IsMaximal.isCoatom (h : IsMaximal I) : IsCoatom I :=
+  isCoatom_iff_ge_of_le.2 ⟨h.ne_top, fun _ hJt hJl => Classical.byContradiction fun hlJ =>
+    hJt (Ideal.ext (h.maximal_proper (lt_of_le_not_ge hJl hlJ)))⟩
 
 theorem IsMaximal.isCoatom' [IsMaximal I] : IsCoatom I :=
   IsMaximal.isCoatom ‹_›
 
 theorem _root_.IsCoatom.isMaximal (hI : IsCoatom I) : IsMaximal I :=
-  { IsCoatom.isProper hI with maximal_proper := fun _ hJ ↦ by simp [hI.2 _ hJ] }
+  { IsCoatom.isProper hI with maximal_proper := fun _ hJ ↦ by simp [(hI.isMax_of_gt hJ).eq_top] }
 
 theorem isMaximal_iff_isCoatom : IsMaximal I ↔ IsCoatom I :=
   ⟨fun h ↦ h.isCoatom, fun h ↦ IsCoatom.isMaximal h⟩

@@ -65,7 +65,7 @@ instance neBot (f : Ultrafilter α) : NeBot (f : Filter α) :=
   f.neBot'
 
 protected theorem isAtom (f : Ultrafilter α) : IsAtom (f : Filter α) :=
-  ⟨f.neBot.ne, fun _ hgf => by_contra fun hg => hgf.ne <| f.unique hgf.le ⟨hg⟩⟩
+  isAtom_iff_le_of_ge.2 ⟨f.neBot.ne, fun g hgb hg => f.le_of_le g ⟨hgb⟩ hg⟩
 
 @[simp, norm_cast]
 theorem mem_coe : s ∈ (f : Filter α) ↔ s ∈ f :=
@@ -129,7 +129,7 @@ def ofComplNotMemIff (f : Filter α) (h : ∀ s, sᶜ ∉ f ↔ s ∈ f) : Ultra
 /-- If `f : Filter α` is an atom, then it is an ultrafilter. -/
 def ofAtom (f : Filter α) (hf : IsAtom f) : Ultrafilter α where
   toFilter := f
-  neBot' := ⟨hf.1⟩
+  neBot' := ⟨hf.ne_bot⟩
   le_of_le g hg := (isAtom_iff_le_of_ge.1 hf).2 g hg.ne
 
 theorem nonempty_of_mem (hs : s ∈ f) : s.Nonempty :=
