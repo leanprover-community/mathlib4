@@ -216,8 +216,8 @@ def contains [BEq α] (t : BinaryTree α) (a : α) : Bool := match t with
   | l △[b] r => a == b || l.contains a || r.contains a
 
 /-- `contains` is sound and complete with respect to `Mem`. -/
-theorem contains_iff [BEq α] [LawfulBEq α]
-  (a : α) (t : BinaryTree α) : t.contains a = true ↔ a ∈ t := by
+theorem contains_iff_mem [BEq α] [LawfulBEq α] (a : α) (t : BinaryTree α) :
+    t.contains a = true ↔ a ∈ t := by
   fun_induction contains
   · simp_all only [Bool.false_eq_true, false_iff]
     false_or_by_contra
