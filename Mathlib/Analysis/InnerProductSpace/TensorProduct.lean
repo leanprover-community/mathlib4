@@ -429,10 +429,10 @@ the map `x ⊗ₜ[𝕜] y ↦ f(x) ⊗ₜ[𝕜] y`. -/
 noncomputable def rTensor (f : E →L[𝕜] F) : (E ⊗[𝕜] G) →L[𝕜] (F ⊗[𝕜] G) :=
   (f.toLinearMap.rTensor G).mkContinuous ‖f‖ fun x ↦ by
     /-
-    Any tensor `x` can be written as a linear combination of pure tensors, `x= ∑ e n ⊗ₜ g n`. This
+    Any tensor `x` can be written as a linear combination of pure tensors, `x = ∑ e n ⊗ₜ g n`. This
     induces three Gram matrices, one based on `e`, one on `f ∘ e`  and one on `g`. Up to a constant,
     the `e`-based Gram matrix is larger than the `f ∘ e`-based one. This implies the existence of
-    a matrix, whose form is used to show that `‖f‖^2 * ‖x‖^2 - ‖f x‖^2` is a sum of nonnegative
+    a matrix, whose form is used to show that `‖f‖ ^ 2 * ‖x‖ ^ 2 - ‖f x‖ ^ 2` is a sum of nonnegative
     terms.
     -/
     obtain ⟨n, e, g, hx⟩ := exists_sum_tmul_eq x
