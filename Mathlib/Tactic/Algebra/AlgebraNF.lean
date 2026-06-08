@@ -16,10 +16,7 @@ The defnitions in this file are currently only used by `polynomial_nf` in
 
 public meta section
 
-open Lean hiding Module
-open Meta Elab Qq Mathlib.Tactic Mathlib.Meta AtomM
-open NormNum hiding Result
-open Mathlib.Tactic.Ring hiding ExSum ExProd ExBase
+open Lean Meta Qq Mathlib.Tactic.Ring
 
 namespace Mathlib.Tactic.Algebra
 
