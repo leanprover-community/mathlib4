@@ -29,18 +29,17 @@ variable {K : Type*} [Field K] [NumberField K]
 
 namespace FiniteAdeleRing
 
-open RingOfIntegers.HeightOneSpectrum IsDedekindDomain HeightOneSpectrum FiniteAdeleRing
+open IsDedekindDomain HeightOneSpectrum FiniteAdeleRing
 
 theorem mulSupport_finite (x : (FiniteAdeleRing (𝓞 K) K)ˣ) :
     (Function.mulSupport fun v ↦ ‖x.1 v‖).Finite := by
-  simpa [Function.mulSupport, Valued.toNormedField.norm_eq_one_iff] using
-    FiniteAdeleRing.unitsEquiv_finite_valued_eq_one x
+  simp only [Function.mulSupport, ne_eq, Valued.toNormedField.norm_eq_one_iff]
+  exact FiniteAdeleRing.unitsEquiv_finite_valued_eq_one x
 
 private theorem hasProd_subset_valued_lt_one (x : FiniteAdeleRing (𝓞 K) K) :
     HasProd (fun v : {v | 1 < Valued.v (x v)} ↦ ‖x v‖)
       (∏ᶠ v : {v | 1 < Valued.v (x v)}, ‖x v‖) := by
-  have : {v | 1 < Valued.v (x v)}.Finite := by simpa [mem_adicCompletionIntegers] using x.2
-  have : Fintype _ := Set.Finite.fintype this
+  have : Fintype _ := (finite_valued_one_lt x).fintype
   rw [finprod_eq_prod_of_fintype]
   exact hasProd_fintype _
 
@@ -48,7 +47,7 @@ open Filter HeightOneSpectrum Valued in
 private theorem hasProd_zero_subset_one_lt_valued {x : FiniteAdeleRing (𝓞 K) K} (hx : ¬IsUnit x)
     (hx₀ : ∀ v, x v ≠ 0) : HasProd (fun v : {v | Valued.v (x v) < 1} ↦ ‖x v‖) 0 :=
   have hx := infinite_valued_ne_one_of_not_isUnit (by simpa using hx₀) hx
-  have hx_prop : {v | 1 < Valued.v (x v)}.Finite := by simpa [mem_adicCompletionIntegers] using x.2
+  have hx_prop : {v | 1 < Valued.v (x v)}.Finite := finite_valued_one_lt x
   have hx_inf : {v | Valued.v (x v) < 1}.Infinite := (hx.diff hx_prop).mono (by grind)
   have : atTop.Tendsto (fun s : Finset {v | Valued.v (x v) < 1} ↦ (∏ v ∈ s, ‖x v‖)⁻¹) atTop := by
     have h_le (S : Finset {v | Valued.v (x v) < 1}) : 2 ^ S.card ≤ (∏ v ∈ S, ‖x v‖)⁻¹ := by
