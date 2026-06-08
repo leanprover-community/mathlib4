@@ -7,12 +7,11 @@ module
 
 public import Mathlib.Tactic.Algebra.Basic
 
-
-
 /-! # The `algebra_nf` tactic
 
+This file contains helper functions for the (currently unimplemented) `algebra_nf` tactic.
 
-
+The defnitions in this file are currently only used by `polynomial_nf` in
 -/
 
 public meta section
@@ -57,8 +56,6 @@ def cleanupConsts (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result :=
     (congrTheorems := ← getSimpCongrTheorems)
   pure <| ←
     r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
-
-
 
 /-- The core of `algebra_nf with R` - normalize the expression `e` over the base ring `R`
 Also used internally in `polynomial_nf`. -/

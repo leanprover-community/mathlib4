@@ -85,8 +85,9 @@ open Tactic
 /-- `polynomial` solves equalities of `Polynomial`s and similar types.
 
 Given a goal which is an equality in `Polynomial R` with a commutative ring `R`, `polynomial`
-expands out the brackets on both sides of the equation and combines the coefficients of equal
-monomials. It then closes the goal if both sides contain the same terms and fails otherwise.
+turns both sides of the equation into a normal form by expanding out the brackets. It then closes
+the goal if both sides contain the same terms and fails otherwise. `polynomial_nf` normalizes all
+subexpressions at a given location.
 
 Variants of `polynomial` include:
 * `polynomial`: normalize both sides of an equation and close the goal if they are equal
