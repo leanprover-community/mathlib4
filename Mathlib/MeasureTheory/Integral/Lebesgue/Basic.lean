@@ -194,31 +194,6 @@ theorem exists_simpleFunc_forall_lintegral_sub_lt_of_pos {f : α → ℝ≥0∞}
   simp only [add_apply, sub_apply, add_tsub_eq_max]
   rfl
 
-theorem eexists_simpleFunc_forall_lintegral_sub_lt_of_pos {f : α → ℝ≥0∞} (h : ∫⁻ x, f x ∂μ ≠ ∞)
-    {ε : ℝ≥0∞} (hε : ε ≠ 0) :
-    ∃ φ : α →ₛ ℝ≥0,
-      (∀ x, ↑(φ x) ≤ f x) ∧
-        ∀ ψ : α →ₛ ℝ≥0, (∀ x, ↑(ψ x) ≤ f x) → (map (↑) (ψ - φ)).lintegral μ < ε := by
-  rw [lintegral_eq_nnreal] at h
-  have : ⨆ φ, ⨆ (_ : ∀ (x : α), ↑(φ x) ≤ f x), (SimpleFunc.map ofNNReal φ).lintegral μ
-      < ⨆ i, (⨆ (_ : ∀ (x : α), ↑(i x) ≤ f x), (SimpleFunc.map ofNNReal i).lintegral μ + ε) := by
-    convert! ENNReal.lt_add_right h hε
-    conv_rhs => rw [← iSup_univ, ENNReal.biSup_add univ_nonempty]
-    simp only [mem_univ, iSup_pos]
-    congr! 1
-    ext x
-    rw [iSup_pos (by sorry)]
-    simp_rw [biSup_addÄ]
-    simp
-  simp_rw [lt_iSup_iff, iSup_lt_iff, iSup_le_iff] at this
-  rcases this with ⟨φ, hle : ∀ x, ↑(φ x) ≤ f x, b, hbφ, hb⟩
-  refine ⟨φ, hle, fun ψ hψ => ?_⟩
-  have : (map (↑) φ).lintegral μ ≠ ∞ := ne_top_of_le_ne_top h (by exact le_iSup₂ (α := ℝ≥0∞) φ hle)
-  rw [← ENNReal.add_lt_add_iff_left this, ← add_lintegral, ← SimpleFunc.map_add @ENNReal.coe_add]
-  refine (hb _ fun x => le_trans ?_ (max_le (hle x) (hψ x))).trans_lt hbφ
-  simp only [add_apply, sub_apply, add_tsub_eq_max]
-  rfl
-
 theorem iSup_lintegral_le {ι : Sort*} (f : ι → α → ℝ≥0∞) :
     ⨆ i, ∫⁻ a, f i a ∂μ ≤ ∫⁻ a, ⨆ i, f i a ∂μ := by
   simp only [← iSup_apply]
