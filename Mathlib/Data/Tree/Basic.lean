@@ -211,9 +211,9 @@ theorem mem_singleton_iff (a x : ℕ) : a ∈ ((nil △[x] nil)) ↔ a = x := by
     apply Mem.node
 
 /-- In a binary tree, `contains` operation traverses over the tree and make equality check. -/
-def contains [BEq α] (t : BinaryTree α) (a : α) :  Bool := match t with
-  | .nil        => false
-  | l △[b] r => a == b || l.contains a  || r.contains a
+def contains [BEq α] (t : BinaryTree α) (a : α) : Bool := match t with
+  | .nil => false
+  | l △[b] r => a == b || l.contains a || r.contains a
 
 /-- `contains` is sound and complete with respect to `Mem`. -/
 theorem contains_iff [BEq α] [LawfulBEq α]
