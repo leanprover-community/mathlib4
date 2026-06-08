@@ -191,6 +191,28 @@ instance [P.IsRegular] : (P.ofIso e hA).IsRegular where
     refine hP.false ⟨fun n ↦ ⟨_, (f n).2⟩, fun n ↦ ?_⟩
     simpa [← P.ofIso_ancestralRel_iff e hA] using hf n
 
+@[simp]
+lemma ofIso_index (x : P.II) {d : ℕ} (hd : x.1.dim = d) [P.IsProper] :
+    ((P.ofIso e hA).isUniquelyCodimOneFace ⟨(N.orderIsoOfIso e hA).symm x, by simp⟩).index hd =
+      (isUniquelyCodimOneFace P x).index hd := by
+  rw [← (P.isUniquelyCodimOneFace x).index_of_iso e.symm hd]
+  refine
+    S.IsUniquelyCodimOneFace.index.congr_simp rfl ?_ (isUniquelyCodimOneFace (P.ofIso e hA) _) _
+  erw [P.ofIso_p e hA x]
+  rfl
+
+instance [P.IsProper] [P.IsInner] : (P.ofIso e hA).IsInner where
+  ne_zero := by
+    rintro ⟨b, hb⟩ d hd
+    obtain ⟨a, rfl⟩ := (N.orderIsoOfIso e hA).symm.surjective b
+    simp only [ofIso_II, Set.mem_preimage, OrderIso.apply_symm_apply] at hb
+    simpa only [P.ofIso_index e hA ⟨a, hb⟩ hd] using IsInner.ne_zero ⟨a, hb⟩ hd
+  ne_last := by
+    rintro ⟨b, hb⟩ d hd
+    obtain ⟨a, rfl⟩ := (N.orderIsoOfIso e hA).symm.surjective b
+    simp only [ofIso_II, Set.mem_preimage, OrderIso.apply_symm_apply] at hb
+    simpa only [P.ofIso_index e hA ⟨a, hb⟩ hd] using IsInner.ne_last ⟨a, hb⟩ hd
+
 end Pairing
 
 end SSet.Subcomplex
