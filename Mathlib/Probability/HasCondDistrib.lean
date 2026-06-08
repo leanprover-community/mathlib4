@@ -66,8 +66,8 @@ variable [SFinite P] [IsSFiniteKernel κ]
 
 lemma HasCondDistrib.comp_left (h : HasCondDistrib Y X κ P) {f : 𝓨 → 𝓩} (hf : Measurable f) :
     HasCondDistrib (f ∘ Y) X (κ.map f) P where
-  map_eq := by
-    calc P.map (fun ω ↦ (X ω, f (Y ω)))
+  map_eq := calc
+    P.map (fun ω ↦ (X ω, f (Y ω)))
     _ = (P.map (fun ω ↦ (X ω, Y ω))).map (Prod.map id f) := by
       rw [AEMeasurable.map_map_of_aemeasurable (by fun_prop) (by fun_prop)]
       congr
@@ -78,19 +78,19 @@ lemma HasCondDistrib.fst {Y : Ω → 𝓨 × 𝓩} {κ : Kernel 𝓧 (𝓨 × �
     (h : HasCondDistrib Y X κ P) :
     HasCondDistrib (fun ω ↦ (Y ω).1) X κ.fst P := by
   rw [Kernel.fst_eq]
-  exact HasCondDistrib.comp_left h measurable_fst
+  exact h.comp_left measurable_fst
 
 lemma HasCondDistrib.snd {Y : Ω → 𝓨 × 𝓩} {κ : Kernel 𝓧 (𝓨 × 𝓩)} [IsSFiniteKernel κ]
     (h : HasCondDistrib Y X κ P) :
     HasCondDistrib (fun ω ↦ (Y ω).2) X κ.snd P := by
   rw [Kernel.snd_eq]
-  exact HasCondDistrib.comp_left h measurable_snd
+  exact h.comp_left measurable_snd
 
 lemma HasCondDistrib.comp_right {f : 𝓩 → 𝓧}
     {hf : Measurable f} {Z : Ω → 𝓩} (h : HasCondDistrib Y Z (κ.comap f hf) P) :
     HasCondDistrib Y (f ∘ Z) κ P where
-  map_eq := by
-    calc P.map (fun a ↦ ((f ∘ Z) a, Y a))
+  map_eq := calc
+    P.map (fun a ↦ ((f ∘ Z) a, Y a))
     _ = (P.map (fun a ↦ (Z a, Y a))).map (Prod.map f id) := by
         rw [AEMeasurable.map_map_of_aemeasurable (by fun_prop) (by fun_prop)]
         rfl
@@ -104,7 +104,7 @@ lemma HasCondDistrib.comp_right {f : 𝓩 → 𝓧}
         rw [AEMeasurable.map_map_of_aemeasurable hf.aemeasurable (by fun_prop)]
 
 lemma HasCondDistrib.measurableEquiv_comp_right (h : HasCondDistrib Y X κ P) (f : 𝓧 ≃ᵐ 𝓩) :
-    HasCondDistrib Y (f ∘ X) (κ.comap f.symm (by fun_prop) : Kernel 𝓩 𝓨) P := by
+    HasCondDistrib Y (f ∘ X) (κ.comap f.symm f.symm.measurable) P := by
   apply HasCondDistrib.comp_right (hf := f.measurable)
   simpa [← Kernel.comap_comp_right]
 
