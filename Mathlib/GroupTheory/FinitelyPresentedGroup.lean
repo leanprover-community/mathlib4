@@ -104,7 +104,7 @@ instance : AddGroup.IsFinitelyPresented ℤ :=
     (FreeAddGroup.addEquivIntOfUnique : FreeAddGroup Unit ≃+ ℤ) inferInstance
 
 open QuotientGroup in
-/-- The coproduct of finitely presented groups is finitely presented -/
+/-- The free product of finitely presented groups is finitely presented -/
 instance [hg : IsFinitelyPresented G] [hh : IsFinitelyPresented H] :
     IsFinitelyPresented (Monoid.Coprod G H) := by
   obtain ⟨ng, φg, hφgsurj, setg, hsetgfin, setgker⟩ := hg
