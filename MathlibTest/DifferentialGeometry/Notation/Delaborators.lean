@@ -25,7 +25,7 @@ variable
 #guard_msgs in
 #check MDifferentiable I I f
 
-/-- info: MDiffAt (T% v) : Prop -/
+/-- info: MDiff (T% v) : Prop -/
 #guard_msgs in
 #check MDiff (T% v)
 

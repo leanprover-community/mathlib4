@@ -70,7 +70,7 @@ namespace Opens
 
 instance : SetLike (Opens α) α where
   coe := Opens.carrier
-  coe_injective' := fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr
+  coe_injective := fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr
 
 instance : PartialOrder (Opens α) := fast_instance% .ofSetLike (Opens α) α
 
@@ -329,7 +329,7 @@ theorem IsBasis.isCompact_open_iff_eq_finite_iUnion {ι : Type*} (b : ι → Ope
     (hb : IsBasis (Set.range b)) (hb' : ∀ i, IsCompact (b i : Set α)) (U : Set α) :
     IsCompact U ∧ IsOpen U ↔ ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by
   apply isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis fun i : ι => (b i).1
-  · convert (config := { transparency := .default }) hb
+  · convert! (config := { transparency := .default }) hb
     ext
     simp
   · exact hb'
@@ -351,14 +351,14 @@ lemma IsBasis.le_iff {α} {t₁ t₂ : TopologicalSpace α}
 lemma isBasis_sigma {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i)]
     {B : ∀ i, Set (Opens (α i))} (hB : ∀ i, IsBasis (B i)) :
     IsBasis (⋃ i : ι, (fun U ↦ ⟨Sigma.mk i '' U.1, isOpenMap_sigmaMk _ U.2⟩) '' B i) := by
-  convert TopologicalSpace.IsTopologicalBasis.sigma hB
+  convert! TopologicalSpace.IsTopologicalBasis.sigma hB
   simp only [IsBasis, Set.image_iUnion, ← Set.image_comp]
   simp
 
 lemma IsBasis.of_isInducing {B : Set (Opens β)} (H : IsBasis B) {f : α → β} (h : IsInducing f) :
     IsBasis { ⟨f ⁻¹' U, U.2.preimage h.continuous⟩ | U ∈ B } := by
   simp only [IsBasis] at H ⊢
-  convert H.isInducing h
+  convert! H.isInducing h
   ext; simp
 
 @[simp]
@@ -448,7 +448,7 @@ theorem toOpens_injective : Injective (toOpens : OpenNhdsOf x → Opens α)
 
 instance : SetLike (OpenNhdsOf x) α where
   coe U := U.1
-  coe_injective' := SetLike.coe_injective.comp toOpens_injective
+  coe_injective := SetLike.coe_injective.comp toOpens_injective
 
 instance : PartialOrder (OpenNhdsOf x) := fast_instance% .ofSetLike (OpenNhdsOf x) α
 
