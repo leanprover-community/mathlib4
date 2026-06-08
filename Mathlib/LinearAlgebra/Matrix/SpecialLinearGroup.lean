@@ -543,7 +543,7 @@ open MatrixGroups
 /-- Diagonal element `D(a)` in `SL ι F` when `card ι = 2`: the matrix
 `diagonal (k ↦ if k = i₁ then a else a⁻¹)`. -/
 noncomputable def diag2 (a : F) (ha : a ≠ 0) : SL(2, F) :=
-  ⟨diagonal (fun i ↦ match i with | 0 => a|1 => a⁻¹), by simp [mul_inv_cancel₀ ha]⟩
+  ⟨diagonal (fun i ↦ match i with | 0 => a | 1 => a⁻¹), by simp [mul_inv_cancel₀ ha]⟩
 
 lemma diag2_coe (a : F) (ha : a ≠ 0) :
     (diag2 a ha).1 = diagonal (fun i ↦ match i with | 0 => a|1 => a⁻¹) := rfl
