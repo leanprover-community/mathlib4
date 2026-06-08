@@ -7,7 +7,7 @@ open Lake DSL
 -/
 
 require "leanprover-community" / "batteries" @ git "v4.31.0-rc1"
-require "leanprover-community" / "Qq" @ git "v4.31.0-rc1"
+require Qq from git "https://github.com/thorimur/quote4" @ "d68581ce83fa1fd1edf200a918ad8574e0b72d3a"
 require "leanprover-community" / "aesop" @ git "v4.31.0-rc1"
 require "leanprover-community" / "proofwidgets" @ git "v0.0.100"
   with NameMap.empty.insert `errorOnBuild
