@@ -79,7 +79,7 @@ theorem mem_range {f : G →* N} {y : N} : y ∈ f.range ↔ ∃ x, f x = y :=
 theorem range_eq_map (f : G →* N) : f.range = (⊤ : Subgroup G).map f := by ext; simp
 
 @[to_additive (attr := simp)]
-theorem comap_range (f : G →* N) : f.range.comap f = ⊤ := by
+theorem comap_range_self (f : G →* N) : f.range.comap f = ⊤ := by
   ext
   simp
 
@@ -407,7 +407,7 @@ theorem map_eq_bot_iff_of_injective {f : G →* N} (hf : Function.Injective f) :
     H.map f = ⊥ ↔ H = ⊥ := by rw [map_eq_bot_iff, f.ker_eq_bot hf, le_bot_iff]
 
 @[to_additive (attr := simp)]
-theorem map_ker (f : G →* N) : f.ker.map f = ⊥ := by
+theorem map_ker_self (f : G →* N) : f.ker.map f = ⊥ := by
   rw [map_eq_bot_iff]
 
 open MonoidHom
