@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Joël Riou. All rights reserved.
+Copyright (c) 2026 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou, Jack McKoen
+Authors: Jack McKoen, Joël Riou
 -/
 module
 
@@ -28,6 +28,17 @@ over `X₁ ⟶[SSet] B` is also an inner fibration. In particular, if `A : SSet`
 and `X` is a quasi-category, then the internal hom `A ⟶[SSet] X` is also a quasi-category.
 
 For implementation details, see `SSet/AnodyneExtensions/PushoutProduct`.
+
+## References
+
+- [Jack McKoen, *A Formalization of Functor Quasi-Categories in Lean 4*][mckoen2026]
+
+## Note
+
+The result that the internal hom into a quasi-category is also a quasi-category was first
+formalized by Jack McKoen for his master's thesis, following an approach outlined on
+Kerodon (https://kerodon.net/tag/0066). Specifically, this approach hinges on the lemma
+https://kerodon.net/tag/0079 which is avoided in the mathlib implementation.
 
 -/
 
@@ -147,7 +158,7 @@ instance (A : SSet.{u}) : Quasicategory ((ihom A).obj (⊤_ _)) := by
       terminalIsTerminal _
   infer_instance
 
-instance {A X : SSet.{u}} [Quasicategory X] : Quasicategory ((ihom A).obj X) := by
-  exact quasicategory_of_innerFibration ((ihom A).map (terminal.from X))
+instance {A X : SSet.{u}} [Quasicategory X] : Quasicategory ((ihom A).obj X) :=
+  quasicategory_of_innerFibration ((ihom A).map (terminal.from X))
 
 end SSet
