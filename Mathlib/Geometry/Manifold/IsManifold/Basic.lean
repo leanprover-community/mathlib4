@@ -1014,7 +1014,6 @@ lemma chartedSpace_trans_mem_maximalAtlas (φ : M ≃ₜ N) :
 
 end Homeomorph
 
-
 theorem OpenPartialHomeomorph.isManifold_singleton
     {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω}
