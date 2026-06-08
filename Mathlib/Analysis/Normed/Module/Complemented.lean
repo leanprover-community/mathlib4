@@ -18,7 +18,7 @@ A submodule `p` of a topological module `E` over `R` is called *complemented*
 
 The main result of this file is that, in a Banach space, two submodules `p` and `q` are topological
 complements (`Submodule.IsTopCompl`) if and only if they are algebraic complements (`IsCompl`) and
-both are closed (`Submodule.isTopCompl_iff_isCompl_isClosed_isClosed`). As a consequence, a closed
+both are closed (`Submodule.isTopCompl_iff_isCompl_isClosed`). As a consequence, a closed
 subspace of a Banach space is complemented if and only if it admits a closed algebraic complement.
 
 ## Tags
