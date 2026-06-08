@@ -6,7 +6,7 @@ Authors: Anne Baanen, Wen Yang
 module
 
 public import Mathlib.Data.Fintype.Parity
-public import Mathlib.Data.Matrix.Action
+public import Mathlib.LinearAlgebra.Matrix.Action
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Matrix.Transvection
