@@ -81,19 +81,15 @@ theorem merge' {f g : α →. σ} (hf : Partrec f) (hg : Partrec g) :
     obtain ⟨n, hn, hx⟩ := h'
     have h_split := (H (encode a)).1 n hn
     simp only [PFun.mk_apply, decode₂_encode, coe_some, Part.bind_some, Part.mem_map_iff] at h_split
-    obtain ⟨a', ha, rfl⟩ | ⟨a', ha, rfl⟩ := h_split
-    · simp only [encodek, coe_some, Part.mem_some_iff] at hx
-      obtain rfl := hx
-      exact Or.inl ha
-    · simp only [encodek, coe_some, Part.mem_some_iff] at hx
-      obtain rfl := hx
-      exact Or.inr ha
+    obtain ⟨a', ha, rfl⟩ | ⟨a', ha, rfl⟩ := h_split <;>
+      simp only [encodek, coe_some, Part.mem_some_iff] at hx <;> subst x
+    · exact Or.inl ha
+    · exact Or.inr ha
   refine ⟨this, ⟨fun h => (this _ ⟨h, rfl⟩).imp Exists.fst Exists.fst, ?_⟩⟩
   intro h
   simp only [k', PFun.mk_apply, bind_dom]
-  have hk_dom : (k (encode a)).Dom := by
-    apply (H (encode a)).2.mpr
-    simpa [PFun.mk_apply, decode₂_encode, Part.bind_some] using h
+  have hk_dom : (k (encode a)).Dom :=
+    (H (encode a)).2.mpr (by simpa [PFun.mk_apply, decode₂_encode, Part.bind_some] using h)
   exists hk_dom
   have h_mem := (H (encode a)).1 _ ⟨hk_dom, rfl⟩
   simp only [PFun.mk_apply, decode₂_encode, coe_some, Part.bind_some, Part.mem_map_iff] at h_mem
