@@ -78,7 +78,6 @@ infixr:25 " →*₀ " => MonoidWithZeroHom
 
 /-- Turn an element of a type `F` satisfying `MonoidWithZeroHomClass F α β` into an actual
 `MonoidWithZeroHom`. -/
-@[coe]
 def MonoidWithZeroHom.ofClass [FunLike F α β] [MonoidWithZeroHomClass F α β]
     (f : F) : α →*₀ β := { (f : α →* β), (f : ZeroHom α β) with }
 
