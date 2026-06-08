@@ -459,7 +459,7 @@ theorem deriv_riemannZeta_zero :
       (.div (hasDerivAt_id 0) (.sub (hasDerivAt_const 0 1) (hasDerivAt_id 0)) (by simp))
   have h₂ : HasDerivAt ((fun x : ℂ => 2) * fun (x : ℂ) => (π : ℂ) ^ (-x / 2)) _ 0 :=
     .mul (hasDerivAt_const 0 2) <|
-    .cpow (hasDerivAt_const 0 _) (.div_const (.neg <| hasDerivAt_id 0) 2) (by simp; positivity)
+    .cpow (hasDerivAt_const 0 _) (.div_const (.neg <| hasDerivAt_id 0) 2) (by simp [Real.pi_pos])
   have h₃ : HasDerivAt (Gamma ∘ fun x => x / 2 + 1) (deriv Gamma (0 / 2 + 1) * (1 / 2 + 0)) 0 := by
     refine (differentiableAt_Gamma _ ?_).hasDerivAt.comp 0 ?_
     · simp only [zero_div]
