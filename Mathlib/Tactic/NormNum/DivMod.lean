@@ -49,8 +49,8 @@ partial def evalIntDiv : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℤ))) (b : Q(ℤ)) ← whnfR e | failure
   -- We assert that the default instance for `HDiv` is `Int.div` when the first parameter is `ℤ`.
   guard <|← withNewMCtxDepth <| isDefEq f q(HDiv.hDiv (α := ℤ))
-  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℤ := ⟨⟩
-  haveI' : $e =Q ($a / $b) := ⟨⟩
+  have : u =QL 0 := ⟨⟩; have : $α =Q ℤ := ⟨⟩
+  have : $e =Q ($a / $b) := ⟨⟩
   let rℤ : Q(Ring ℤ) := q(Int.instRing)
   let ⟨za, na, pa⟩ ← (← derive a).toInt rℤ
   match ← derive (u := .zero) b with
@@ -108,8 +108,8 @@ partial def evalIntMod : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℤ))) (b : Q(ℤ)) ← whnfR e | failure
   -- We assert that the default instance for `HMod` is `Int.mod` when the first parameter is `ℤ`.
   guard <|← withNewMCtxDepth <| isDefEq f q(HMod.hMod (α := ℤ))
-  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℤ := ⟨⟩
-  haveI' : $e =Q ($a % $b) := ⟨⟩
+  have : u =QL 0 := ⟨⟩; have : $α =Q ℤ := ⟨⟩
+  have : $e =Q ($a % $b) := ⟨⟩
   let rℤ : Q(Ring ℤ) := q(Int.instRing)
   let some ⟨za, na, pa⟩ := (← derive a).toInt rℤ | failure
   go a na za pa b (← derive (u := .zero) b)
@@ -160,8 +160,8 @@ attribute [local instance] monadLiftOptionMetaM in
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num (_ : ℤ) ∣ _] def evalIntDvd : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℤ))) (b : Q(ℤ)) ← whnfR e | failure
-  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q Prop := ⟨⟩
-  haveI' : $e =Q ($a ∣ $b) := ⟨⟩
+  have : u =QL 0 := ⟨⟩; have : $α =Q Prop := ⟨⟩
+  have : $e =Q ($a ∣ $b) := ⟨⟩
   -- We assert that the default instance for `Dvd` is `Int.dvd` when the first parameter is `ℕ`.
   guard <|← withNewMCtxDepth <| isDefEq f q(Dvd.dvd (α := ℤ))
   let rℤ : Q(Ring ℤ) := q(Int.instRing)
@@ -170,7 +170,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   if zb % za == 0 then
     let zc := zb / za
     have c := mkRawIntLit zc
-    haveI' : Int.mul $na $c =Q $nb := ⟨⟩
+    have : Int.mul $na $c =Q $nb := ⟨⟩
     return .isTrue q(isInt_dvd_true $pa $pb (.refl $nb))
   else
     have : Q(Int.emod $nb $na != 0) := (q(Eq.refl true) : Expr)

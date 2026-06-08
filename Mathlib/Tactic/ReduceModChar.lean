@@ -81,8 +81,8 @@ mutual
     let .isNat sα na pa ← normIntNumeral' n n' pn a _ instCharP | failure
     let ⟨nb, pb⟩ ← Mathlib.Meta.NormNum.deriveNat b q(Nat.instAddMonoidWithOne)
     guard <|← withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))
-    haveI' : $e =Q $a ^ $b := ⟨⟩
-    haveI' : $f =Q HPow.hPow := ⟨⟩
+    have : $e =Q $a ^ $b := ⟨⟩
+    have : $f =Q HPow.hPow := ⟨⟩
     have ⟨c, r⟩ := evalNatPowMod na nb n'
     assumeInstancesCommute
     return .isNat sα c q(CharP.isNat_pow (f := $f) $instCharP (.refl $f) $pa $pb $pn $r)

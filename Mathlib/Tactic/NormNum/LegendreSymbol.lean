@@ -372,9 +372,9 @@ def evalJacobiSym : NormNumExt where eval {u α} e := do
     let .app (.app _ (a : Q(ℤ))) (b : Q(ℕ)) ← Meta.whnfR e | failure
     let ⟨ea, pa⟩ ← deriveInt a _
     let ⟨eb, pb⟩ ← deriveNat b _
-    haveI' : u =QL 0 := ⟨⟩ haveI' : $α =Q ℤ := ⟨⟩
+    have : u =QL 0 := ⟨⟩ have : $α =Q ℤ := ⟨⟩
     have ⟨er, pr⟩ := proveJacobiSym ea eb
-    haveI' : $e =Q jacobiSym $a $b := ⟨⟩
+    have : $e =Q jacobiSym $a $b := ⟨⟩
     return .isInt _ er er.intLit! q(isInt_jacobiSym $pa $pb $pr)
 
 /-- This is the `norm_num` plug-in that evaluates Jacobi symbols on natural numbers. -/
@@ -383,9 +383,9 @@ def evalJacobiSymNat : NormNumExt where eval {u α} e := do
     let .app (.app _ (a : Q(ℕ))) (b : Q(ℕ)) ← Meta.whnfR e | failure
     let ⟨ea, pa⟩ ← deriveNat a _
     let ⟨eb, pb⟩ ← deriveNat b _
-    haveI' : u =QL 0 := ⟨⟩ haveI' : $α =Q ℤ := ⟨⟩
+    have : u =QL 0 := ⟨⟩ have : $α =Q ℤ := ⟨⟩
     have ⟨er, pr⟩ := proveJacobiSymNat ea eb
-    haveI' : $e =Q jacobiSymNat $a $b := ⟨⟩
+    have : $e =Q jacobiSymNat $a $b := ⟨⟩
     return .isInt _ er er.intLit!  q(isInt_jacobiSymNat $pa $pb $pr)
 
 /-- This is the `norm_num` plug-in that evaluates Legendre symbols. -/
@@ -395,9 +395,9 @@ def evalLegendreSym : NormNumExt where eval {u α} e := do
       failure
     let ⟨ea, pa⟩ ← deriveInt a _
     let ⟨ep, pp⟩ ← deriveNat p _
-    haveI' : u =QL 0 := ⟨⟩ haveI' : $α =Q ℤ := ⟨⟩
+    have : u =QL 0 := ⟨⟩ have : $α =Q ℤ := ⟨⟩
     have ⟨er, pr⟩ := proveJacobiSym ea ep
-    haveI' : $e =Q legendreSym $p $a := ⟨⟩
+    have : $e =Q legendreSym $p $a := ⟨⟩
     return .isInt _ er er.intLit!
       q(LegendreSym.to_jacobiSym $p $fp $a $er (isInt_jacobiSym $pa $pp $pr))
 

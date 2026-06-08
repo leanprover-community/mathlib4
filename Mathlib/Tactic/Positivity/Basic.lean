@@ -61,7 +61,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity ite _ _ _] def evalIte : PositivityExt where eval {u α} zα pα e := do
   let .app (.app (.app (.app f (p : Q(Prop))) (_ : Q(Decidable $p))) (a : Q($α))) (b : Q($α))
     ← whnfR e | throwError "not ite"
-  haveI' : $e =Q ite $p $a $b := ⟨⟩
+  have : $e =Q ite $p $a $b := ⟨⟩
   let ra ← core zα pα a; let rb ← core zα pα b
   guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(ite (α := $α))
   match ra, rb with
@@ -311,23 +311,23 @@ meta def evalPow : PositivityExt where eval {u α} zα pα e := do
     let some n := (b.getRevArg! 1).rawNatLit? | throwError "not a ^ n where n is a literal"
     guard (n % 2 = 0)
     have m : Q(ℕ) := mkRawNatLit (n / 2)
-    haveI' : $b =Q 2 * $m := ⟨⟩
+    have : $b =Q 2 * $m := ⟨⟩
     let _a ← synthInstanceQ q(Ring $α)
     let _a ← synthInstanceQ q(LinearOrder $α)
     let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
     assumeInstancesCommute
-    haveI' : $e =Q $a ^ $b := ⟨⟩
+    have : $e =Q $a ^ $b := ⟨⟩
     pure (.nonnegative q((even_two_mul $m).pow_nonneg $a))
   orElse result do
     let ra ← core zα pα a
     let ofNonneg (pa : Q(0 ≤ $a)) (_rα : Q(Semiring $α)) (_oα : Q(IsOrderedRing $α)) :
         MetaM (Strictness zα pα e) := do
-      haveI' : $e =Q $a ^ $b := ⟨⟩
+      have : $e =Q $a ^ $b := ⟨⟩
       assumeInstancesCommute
       pure (.nonnegative q(pow_nonneg $pa $b))
     let ofNonzero (pa : Q($a ≠ 0)) (_rα : Q(Semiring $α)) (_oα : Q(IsOrderedRing $α)) :
         MetaM (Strictness zα pα e) := do
-      haveI' : $e =Q $a ^ $b := ⟨⟩
+      have : $e =Q $a ^ $b := ⟨⟩
       assumeInstancesCommute
       let _a ← synthInstanceQ q(NoZeroDivisors $α)
       pure (.nonzero q(pow_ne_zero $b $pa))
@@ -337,7 +337,7 @@ meta def evalPow : PositivityExt where eval {u α} zα pα e := do
         let _a ← synthInstanceQ q(Semiring $α)
         let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
         assumeInstancesCommute
-        haveI' : $e =Q $a ^ $b := ⟨⟩
+        have : $e =Q $a ^ $b := ⟨⟩
         pure (.positive q(pow_pos $pa $b))
       catch e : Exception =>
         trace[Tactic.positivity.failure] "{e.toMessageData}"
