@@ -29,6 +29,7 @@ TODO: write a better predicate. -/
 def isPartOfMathlibCache (mod : Name) : Bool := #[
   `Mathlib,
   `Batteries,
+  `BatteriesRecycling,
   `Aesop,
   `Cli,
   `ImportGraph,
