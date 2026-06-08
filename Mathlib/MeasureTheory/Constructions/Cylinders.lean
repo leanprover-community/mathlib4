@@ -74,7 +74,7 @@ theorem squareCylinders_eq_iUnion_image' (C : ∀ i, Set (Set (α i))) (hC : ∀
     refine pi_image_eq_of_subset hC (subset_univ s)
   simp_rw [← mem_image, h]
 
-def squareCylinders_subset_of_or_univ (C : ∀ i, Set (Set (α i))) :
+lemma squareCylinders_subset_of_or_univ (C : ∀ i, Set (Set (α i))) :
     squareCylinders C ⊆ (univ.pi '' univ.pi (fun i ↦ insert univ (C i))) := by
   classical
   intro x hx
