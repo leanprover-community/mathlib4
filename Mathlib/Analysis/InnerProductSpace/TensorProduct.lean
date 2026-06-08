@@ -432,8 +432,8 @@ noncomputable def rTensor (f : E →L[𝕜] F) : (E ⊗[𝕜] G) →L[𝕜] (F �
     Any tensor `x` can be written as a linear combination of pure tensors, `x = ∑ e n ⊗ₜ g n`. This
     induces three Gram matrices, one based on `e`, one on `f ∘ e`  and one on `g`. Up to a constant,
     the `e`-based Gram matrix is larger than the `f ∘ e`-based one. This implies the existence of
-    a matrix, whose form is used to show that `‖f‖ ^ 2 * ‖x‖ ^ 2 - ‖f x‖ ^ 2` is a sum of nonnegative
-    terms.
+    a matrix, whose form is used to show that `‖f‖ ^ 2 * ‖x‖ ^ 2 - ‖f x‖ ^ 2` is a sum of
+    nonnegative terms.
     -/
     obtain ⟨n, e, g, hx⟩ := exists_sum_tmul_eq x
     obtain ⟨c, hc_supp, hc⟩ := Submodule.mem_span_set.mp
@@ -523,11 +523,6 @@ theorem rTensor_comp_commIsometry (g : E →L[𝕜] F) :
 
 @[simp] lemma toLinearMap_lTensor (g : E →L[𝕜] F) :
     (g.lTensor G).toLinearMap = g.toLinearMap.lTensor G := by ext; simp
-
-@[simp] lemma _root_.LinearIsometry.toLinearMap_toContinuousLinearMap {R R₂ E E₂ : Type*}
-    [Semiring R] [Semiring R₂] {σ₁₂ : R →+* R₂} [SeminormedAddCommGroup E]
-    [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] (f : E →ₛₗᵢ[σ₁₂] E₂) :
-    f.toContinuousLinearMap.toLinearMap = f.toLinearMap := rfl
 
 @[simp] lemma _root_.LinearIsometry.toContinuousLinearMap_lTensor (g : E →ₗᵢ[𝕜] F) :
     (g.lTensor G).toContinuousLinearMap = g.toContinuousLinearMap.lTensor G := by ext; simp
