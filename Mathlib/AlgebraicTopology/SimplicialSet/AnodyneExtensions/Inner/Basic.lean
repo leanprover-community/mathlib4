@@ -100,7 +100,7 @@ lemma innerAnodyneExtensions_eq_retracts_transfiniteCompositionsOfShape :
 /-- In the category of simplicial sets, a strong *inner* anodyne extension is a morphism
 which belongs to the closure of *inner* horn inclusions by pushouts, coproducts,
 transfinite compositions (but not by retracts). We define this class here
-by saying that `f : X ⟶ Y` is a strong anodyne extension if `f` is a monomorphism
+by saying that `f : X ⟶ Y` is a strong inner anodyne extension if `f` is a monomorphism
 and there exists a regular, *inner* pairing (in the sense of Moss) for the subcomplex
 `Subcomplex.range f` of `Y`. -/
 def strongInnerAnodyneExtensions : MorphismProperty SSet.{u} :=
@@ -117,18 +117,7 @@ lemma Subcomplex.Pairing.strongInnerAnodyneExtensions {X : SSet.{u}} {A : X.Subc
     (P : A.Pairing) [h₁ : P.IsRegular] [h₂ : P.IsInner] :
     strongInnerAnodyneExtensions A.ι :=
   ⟨inferInstance, Pairing.ofIso P (Iso.refl _)
-    (by simp only [Iso.refl_hom, preimage_id, Subfunctor.range_ι]), inferInstance, {
-      ne_zero := by
-        intro ⟨b, hb⟩ d hd
-        let e : A.N ≃o (range A.ι).N := (N.orderIsoOfIso (Iso.refl _) (by simp)).symm
-        obtain ⟨a, rfl⟩ := e.surjective b
-        exact h₂.ne_zero ⟨a, hb⟩ hd
-      ne_last := by
-        intro ⟨b, hb⟩ d hd
-        obtain ⟨a, rfl⟩ := (N.orderIsoOfIso (Iso.refl _)
-          (show A.preimage (Iso.refl X).hom = range A.ι by simp)).symm.surjective b
-        simp only [ofIso_II, Set.mem_preimage, OrderIso.apply_symm_apply] at hb
-        exact h₂.ne_last ⟨a, hb⟩ hd}⟩
+    (by simp only [Iso.refl_hom, preimage_id, Subfunctor.range_ι]), inferInstance, inferInstance⟩
 
 lemma strongInnerAnodyneExtensions_ι_iff {X : SSet.{u}} (A : X.Subcomplex) :
     strongInnerAnodyneExtensions A.ι ↔ ∃ (P : A.Pairing) (_ : P.IsRegular), P.IsInner :=
@@ -137,7 +126,7 @@ lemma strongInnerAnodyneExtensions_ι_iff {X : SSet.{u}} (A : X.Subcomplex) :
         ∃ (B : X.Subcomplex) (P : B.Pairing) (h : P.IsRegular), P.IsInner ∧ B = A := by
       obtain ⟨_, P₁, _, P₂⟩ := hA
       exact ⟨_, P₁, inferInstance, ⟨P₂, by simp⟩⟩
-    refine ⟨P, ⟨inferInstance, inferInstance⟩⟩,
+    exact ⟨P, ⟨inferInstance, inferInstance⟩⟩,
   fun ⟨P, ⟨_, _⟩⟩ ↦ P.strongInnerAnodyneExtensions⟩
 
 lemma Subcomplex.Pairing.innerAnodyneExtensions {X : SSet.{u}} {A : X.Subcomplex}
@@ -148,12 +137,21 @@ lemma Subcomplex.Pairing.innerAnodyneExtensions {X : SSet.{u}} {A : X.Subcomplex
       refine (?_ : (_ : MorphismProperty _) ≤ _ ) _
         (P.rankFunction.relativeCellComplex.attachCells j hj).pushouts_coproducts
       simp only [pushouts_le_iff, coproducts_le_iff]
-      intro _ _ _ ⟨c⟩
-      apply innerAnodyneExtensions.horn_ι
-      · rw [Fin.pos_iff_ne_zero]
-        exact IsInner.ne_zero c.s rfl
-      · rw [Fin.lt_last_iff_ne_last]
-        exact IsInner.ne_last c.s rfl⟩
+      rintro _ _ _ ⟨c⟩
+      have h0 := Fin.pos_iff_ne_zero.mpr (IsInner.ne_zero c.s rfl)
+      have hn := Fin.lt_last_iff_ne_last.mpr (IsInner.ne_last c.s rfl)
+      have : NeZero c.dim := ⟨by grind⟩
+      exact .horn_ι h0 hn⟩
+
+instance : strongInnerAnodyneExtensions.{u}.RespectsIso where
+  precomp e _ f hf := by
+    obtain ⟨_, P, hP, hP'⟩ := hf
+    refine ⟨inferInstance, P.ofIso (Iso.refl _) ?_, inferInstance, inferInstance⟩
+    simp [Subcomplex.range_comp, Subcomplex.range_eq_top e, Subcomplex.image_top]
+  postcomp e _ f hf := by
+    obtain ⟨_, P, hP, hP'⟩ := hf
+    refine ⟨inferInstance, P.ofIso (asIso e).symm ?_, inferInstance, inferInstance⟩
+    simp [Subcomplex.preimage_inv, Subcomplex.range_comp]
 
 lemma strongInnerAnodyneExtensions_le_innerAnodyneExtensions :
     strongInnerAnodyneExtensions.{u} ≤ innerAnodyneExtensions := by

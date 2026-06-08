@@ -106,14 +106,14 @@ namespace GenLoop
 
 instance instFunLike : FunLike (Ω^ N X x) (I^N) X where
   coe f := f.1
-  coe_injective' := fun ⟨⟨f, _⟩, _⟩ ⟨⟨g, _⟩, _⟩ _ ↦ by congr
+  coe_injective := fun ⟨⟨f, _⟩, _⟩ ⟨⟨g, _⟩, _⟩ _ ↦ by congr
 
 @[simp]
 theorem coe_coe (f : Ω^ N X x) : ⇑(f : C(I^N, X)) = f := rfl
 
 @[ext]
 theorem ext (f g : Ω^ N X x) (H : ∀ y, f y = g y) : f = g :=
-  DFunLike.coe_injective' (funext H)
+  DFunLike.coe_injective (funext H)
 
 @[simp]
 theorem mk_apply (f : C(I^N, X)) (H y) : (⟨f, H⟩ : Ω^ N X x) y = f y :=
