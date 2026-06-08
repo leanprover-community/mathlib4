@@ -477,7 +477,7 @@ noncomputable def valueGroup₀_equiv_extensionValuation :
     ·
       have h0 : v.extension ((algebraMap K (Completion K)) x) = 0 := by
         simpa [ha0, v.extension_eq_zero_iff, map_eq_zero] using hx
-      
+
       simp [h0, reduceDIte, v.extension_eq_zero_iff, map_eq_zero,
         left_eq_dite_iff, WithZero.zero_ne_coe, imp_false, not_not] at this
       simp [ha0, ← hy, this]
