@@ -22,11 +22,11 @@ flat extension of an integral domain.
 
 ## Main results
 
-* `Ideal.sum_ramification_inerta_eq_finrank`: Let `R` be an integral domain, let `S` be a finite
+* `Ideal.sum_ramification_inertia_eq_finrank`: Let `R` be an integral domain, let `S` be a finite
   flat `R`-algebra, and let `p` be a prime ideal of `R`. Then the sum over all prime ideals `q` of
   `S` lying over `p` of the ramification index of `q` times the inertia degree of `q` equals the
   rank of `S` as an `R`-module.
-* `Ideal.sum_ramification_inerta_eq_card`: Let `S/R` be a finite flat extension of integral domains,
+* `Ideal.sum_ramification_inertia_eq_card`: Let `S/R` be a finite flat extension of domains,
   and let `p` be prime ideal of `R`. Assume that `R` is the invariant subring of a finite group `G`
   acting on `S`. Then the sum over all prime ideals `q` of `S` lying over `p` of the ramification
   index of `q` times the inertia degree of `q` equals the cardinality of `G`.
@@ -37,72 +37,6 @@ flat extension of an integral domain.
 
 section
 
-namespace Localization
-
-open AtPrime
-
-variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C] [Algebra A B] [Algebra A C]
-  (p : Ideal A) (q : Ideal B) (r : Ideal C) [p.IsPrime] [q.IsPrime] [r.IsPrime]
-  [q.LiesOver p] [Algebra (Localization.AtPrime p) (Localization.AtPrime q)] [IsLiesOverAlgebra p q]
-  [r.LiesOver p] [Algebra (Localization.AtPrime p) (Localization.AtPrime r)] [IsLiesOverAlgebra p r]
-
--- PRed
-noncomputable def localAlgEquiv' (f : B ≃ₐ[A] C) (h : q = r.comap f) :
-    Localization.AtPrime q ≃ₐ[Localization.AtPrime p] Localization.AtPrime r where
-  __ := localAlgEquiv q r f h
-  commutes' := by
-    let Ap := Localization.AtPrime p
-    let f := (localAlgEquiv q r f h).toAlgHom.comp (IsScalarTower.toAlgHom A Ap _)
-    let g := IsScalarTower.toAlgHom A Ap (Localization.AtPrime r)
-    have : f.toRingHom.comp (algebraMap A Ap) = g.toRingHom.comp (algebraMap A Ap) := by simp
-    suffices f = g by rwa [DFunLike.ext_iff] at this
-    apply Localization.algHom_ext
-    rwa [DFunLike.ext_iff] at this ⊢
-
-end Localization
-
-namespace Ideal
-
-open Localization.AtPrime
-
-variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C] [Algebra A B] [Algebra A C]
-  (p : Ideal A) (q : Ideal B) (r : Ideal C) [p.IsPrime] [q.IsPrime] [r.IsPrime]
-  [q.LiesOver p] [Algebra (Localization.AtPrime p) (Localization.AtPrime q)] [IsLiesOverAlgebra p q]
-  [r.LiesOver p] [Algebra (Localization.AtPrime p) (Localization.AtPrime r)] [IsLiesOverAlgebra p r]
-
-noncomputable def residueFieldRingEquiv (f : B ≃+* C) (h : q = r.comap f) :
-    q.ResidueField ≃+* r.ResidueField :=
-  IsLocalRing.ResidueField.mapEquiv (Localization.localRingEquiv q r f h)
-
-noncomputable def residueFieldAlgEquiv (f : B ≃ₐ[A] C) (h : q = r.comap f) :
-    q.ResidueField ≃ₐ[A] r.ResidueField :=
-  IsLocalRing.ResidueField.mapAlgEquiv (Localization.localAlgEquiv q r f h)
-
-noncomputable def residueFieldAlgEquiv' (f : B ≃ₐ[A] C) (h : q = r.comap f) :
-    q.ResidueField ≃ₐ[p.ResidueField] r.ResidueField :=
-  IsLocalRing.ResidueField.mapAlgEquiv' (Localization.localAlgEquiv' p q r f h)
-
-end Ideal
-
-namespace Ideal
-
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] (q : Ideal B) [q.IsPrime]
-  {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
-
-open Pointwise in
-theorem inertiaDeg'_smul (g : G) (q : Ideal B) : (g • q).inertiaDeg' A = q.inertiaDeg' A := by
-  by_cases hq : q.IsPrime; swap
-  · rw [inertiaDeg'_of_not_isPrime, inertiaDeg'_of_not_isPrime] <;> simpa
-  · let p := q.under A
-    let f₀ := MulSemiringAction.toAlgAut G A B g
-    let := Localization.AtPrime.algebraOfLiesOver p q
-    let := Localization.AtPrime.algebraOfLiesOver p (g • q)
-    rw [inertiaDeg'_eq p q, inertiaDeg'_eq p (g • q)]
-    let e₂ := Ideal.residueFieldAlgEquiv' p (g • q) q f₀.symm (comap_symm f₀.toRingEquiv).symm
-    exact e₂.toLinearEquiv.finrank_eq
-
-end Ideal
-
 namespace Ideal
 
 variable {R : Type*} [CommRing R] (p : Ideal R) [p.IsPrime] (S : Type*) [CommRing S] [Algebra R S]
@@ -112,6 +46,7 @@ theorem sum_ramification_inertia_eq_finrank_fiber
     [Algebra.QuasiFinite R S] [Flat R S] [Fintype (p.primesOver S)] :
     ∑ q : p.primesOver S, q.1.ramificationIdx' R * q.1.inertiaDeg' R =
       finrank p.ResidueField (p.Fiber S) := by
+  let := Fintype.ofFinite (PrimeSpectrum (p.Fiber S))
   rw [IsArtinianRing.finrank_eq_sum_primeSpectrum, ← (primesOverOrderIsoFiber R S p).symm.sum_comp]
   apply Finset.sum_congr rfl
   intro q _
@@ -135,7 +70,7 @@ theorem sum_ramification_inertia_eq_finrank_fiber
 /-- Let `R` be an integral domain, let `S` be a finite flat `R`-algebra, and let `p` be a prime
 ideal of `R`. Then the sum over all prime ideals `q` of `S` lying over `p` of the ramification
 index of `q` times the inertia degree of `q` equals the rank of `S` as an `R`-module. -/
-theorem sum_ramification_inerta_eq_finrank
+theorem sum_ramification_inertia_eq_finrank
     [IsDomain R] [Module.Finite R S] [Module.Flat R S] [Fintype (p.primesOver S)] :
     ∑ q : p.primesOver S, q.1.ramificationIdx' R * q.1.inertiaDeg' R = Module.finrank R S := by
   rw [sum_ramification_inertia_eq_finrank_fiber, finrank_fiber_eq_finrank]
