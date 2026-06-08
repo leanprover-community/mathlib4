@@ -20,10 +20,6 @@ an abbreviation for `Concept α α (· ≤ ·)`. This means we don't need to rep
 complete lattice; instead, the file simply proves that any order embedding into another complete
 lattice factors through it.
 
-## Todo
-
-- Build the order isomorphism `DedekindCut ℚ ≃o EReal`.
-
 ## Tags
 
 Dedekind completion, Dedekind cut
@@ -57,6 +53,16 @@ abbrev left (A : DedekindCut α) : Set α := A.extent
 
 /-- The right set of a Dedekind cut. This is an alias for `Concept.intent`. -/
 abbrev right (A : DedekindCut α) : Set α := A.intent
+
+theorem left_mk (leftSet rightSet : Set α)
+  (upperPolar_extent : upperPolar (· ≤ ·) leftSet = rightSet)
+  (lowerPolar_intent : lowerPolar (· ≤ ·) rightSet = leftSet) :
+  left (mk leftSet rightSet upperPolar_extent lowerPolar_intent) = leftSet := rfl
+
+theorem right_mk (leftSet rightSet : Set α)
+  (upperPolar_extent : upperPolar (· ≤ ·) leftSet = rightSet)
+  (lowerPolar_intent : lowerPolar (· ≤ ·) rightSet = leftSet) :
+  right (mk leftSet rightSet upperPolar_extent lowerPolar_intent) = rightSet := rfl
 
 /-- See `DedekindCut.ext'` for a version using the right set instead. -/
 @[ext] theorem ext {A B : DedekindCut α} (h : A.left = B.left) : A = B := Concept.ext h

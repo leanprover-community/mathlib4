@@ -1,0 +1,100 @@
+/-
+Copyright (c) 2026 Eric Paul. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Eric Paul
+-/
+module
+
+public import Mathlib.Data.EReal.Basic
+public import Mathlib.Order.Completion
+
+import Mathlib.Tactic.Order
+
+/-!
+# The Dedekind completion of the rationals
+
+In Mathlib, the real numbers are defined via equivalence classes of Cauchy sequences.
+A popular alternative is to instead define them in terms of Dedekind cuts.
+This file indirectly formalizes that construction, by proving that the Dedekind completion
+of the rationals is order isomorphic to the extended reals.
+-/
+
+@[expose] public section
+
+namespace EReal
+
+open DedekindCut Concept Order
+
+@[simp]
+theorem upperBounds_setOf_ratCast_le (x : EReal) :
+    upperBounds {q : ℚ | (q : ℝ) ≤ x} = {q : ℚ | x ≤ (q : ℝ)} := by
+  ext y
+  constructor
+  · refine fun hy ↦ le_of_forall_rat_lt_imp_le fun q hq ↦ ?_
+    simpa using hy hq.le
+  · intro hy z hz
+    simpa using le_trans (b := x) hz hy
+
+@[simp]
+theorem lowerBounds_setOf_le_ratCast (x : EReal) :
+    lowerBounds {q : ℚ | x ≤ (q : ℝ)} = {q : ℚ | (q : ℝ) ≤ x} := by
+  ext y
+  constructor
+  · refine fun hy ↦ le_of_forall_lt_rat_imp_le fun q hq ↦ ?_
+    simpa using hy hq.le
+  · intro hy z hz
+    simpa using le_trans (b := x) hy hz
+
+/-- The Dedekind completion of the rationals is order isomorphic to the extended reals. -/
+public noncomputable def dedekindCutOrderIso : DedekindCut ℚ ≃o EReal where
+  toFun := factorEmbedding (Rat.castOrderEmbedding.trans Real.coeOrderEmbedding)
+  invFun x := {
+    extent := {q : ℚ | (q : ℝ) ≤ x}
+    intent := {q : ℚ | x ≤ (q : ℝ)}
+    upperPolar_extent := by simp
+    lowerPolar_intent := by simp
+  }
+  left_inv x := by
+    ext z
+    simp only [factorEmbedding_apply, sSup_image, left_mk, Set.mem_setOf_eq]
+    constructor
+    · intro z_le_sup
+      simp_rw [← x.lowerBounds_right, ← x.upperBounds_left, mem_lowerBounds, mem_upperBounds]
+      intro r hr
+      simp only [le_iSup_iff, iSup_le_iff] at z_le_sup
+      exact_mod_cast z_le_sup (r : ℝ) fun t ht => by simp [hr t ht]
+    · exact (le_iSup₂_of_le z · le_rfl)
+  right_inv x := by
+    apply sSup_eq_of_forall_le_of_forall_lt_exists_gt
+    · simp [left_mk]
+    · simp only [Set.mem_image, exists_exists_and_eq_and]
+      intro w w_lt_x
+      obtain ⟨r, w_lt_r, r_lt_x⟩ := exists_rat_btwn_of_lt w_lt_x
+      exact ⟨r, r_lt_x.le, w_lt_r⟩
+  map_rel_iff' := by simp
+
+@[simp]
+theorem left_dedekindCutOrderIso_symm_apply (x : EReal) :
+  (dedekindCutOrderIso.symm x).left = {q : ℚ | (q : ℝ) ≤ x} := rfl
+
+@[simp]
+theorem right_dedekindCutOrderIso_symm_apply (x : EReal) :
+  (dedekindCutOrderIso.symm x).right = {q : ℚ | x ≤ (q : ℝ)} := rfl
+
+theorem dedekindCutOrderIso_apply_eq_sSup (A : DedekindCut ℚ) :
+  dedekindCutOrderIso A = sSup ((fun q : ℚ ↦ ((q : ℝ) : EReal)) '' A.left) := rfl
+
+theorem dedekindCutOrderIso_apply_eq_sInf (A : DedekindCut ℚ) :
+    dedekindCutOrderIso A = sInf ((fun q : ℚ ↦ ((q : ℝ) : EReal)) '' A.right) := by
+  simp only [dedekindCutOrderIso_apply_eq_sSup, sSup_image, sInf_image]
+  apply le_antisymm
+  · simp [← upperBounds_left, mem_upperBounds]
+  · by_contra!
+    simp_rw [lt_iInf_iff, le_iInf_iff, iSup_lt_iff, iSup_le_iff] at this
+    obtain ⟨b, ⟨c, c_lt_b, left_lt_c⟩, b_le_right⟩ := this
+    obtain ⟨q, sup_lt_q, q_lt_b⟩ := exists_rat_btwn_of_lt c_lt_b
+    apply (b_le_right q _).not_gt q_lt_b
+    rw [← upperBounds_left]
+    exact fun t ht ↦ mod_cast (left_lt_c t ht).trans sup_lt_q.le
+
+end EReal
