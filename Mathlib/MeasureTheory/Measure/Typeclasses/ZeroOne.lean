@@ -15,17 +15,12 @@ We introduce the typeclass `IsZeroOneMeasure` for measures that only take the va
 
 ## Main definitions
 
-* `IsZeroOneMeasure`: a measure is a zero-one measure if it only takes the values `0`
-  or `1`.
+* `IsZeroOneMeasure`: a measure is a zero-one measure if it only takes the values `0` or `1`.
 
 ## Main statements
 
-* `exists_eq_dirac`: in a countably separated measurable space, a zero-one measure that is not
-  the zero measure is a Dirac measure.
-* `exists_eq_dirac'`: same result in a countably generated measurable space.
-
-The common property of the two types of spaces in those results is that there exists a
-countable family of sets that generates the atoms of the measurable space.
+* `exists_eq_dirac`: in a measurable space with countably separated atoms, a zero-one measure
+  that is not the zero measure is a Dirac measure.
 
 -/
 
@@ -97,12 +92,15 @@ lemma measure_inter_eq_prod {s t : Set α} (hs : MeasurableSet s) (ht : Measurab
   cases μ.zero_one s <;> cases μ.zero_one t <;> cases μ.zero_one (s ∩ t)
   all_goals try simp_all [measure_inter_eq_one]
 
-/-- If there is a countable family of sets that generates the atoms of the measurable space, then
-a zero-one measure that is not the zero measure is a Dirac measure. -/
-lemma exists_eq_dirac_of_measurableAtom_eq_iInter [NeZero μ] [∀ (A : Set α), DecidablePred (· ∈ A)]
-    {A : ℕ → Set α} (hA : ∀ n, MeasurableSet (A n))
-    (hA_atom : ∀ x, measurableAtom x = ⋂ n, if x ∈ A n then A n else (A n)ᶜ) :
+/-- In a measurable space with countably separated atoms, a zero-one measure that is not
+the zero measure is a Dirac measure. -/
+lemma exists_eq_dirac [NeZero μ] [MeasurableSpace.CountablySeparatedAtoms α] :
     ∃ x₀, μ = Measure.dirac x₀ := by
+  classical
+  let A := MeasurableSpace.atomGeneratingSet α
+  have hA : ∀ n, MeasurableSet (A n) := MeasurableSpace.measurableSet_atomGeneratingSet
+  have hA_atom x : measurableAtom x = ⋂ n, if x ∈ A n then A n else (A n)ᶜ :=
+    MeasurableSpace.measurableAtom_eq_iInter x
   let B := fun n => if h : μ (A n) = 1 then A n else (A n)ᶜ
   have mBn : MeasurableSet (⋂ n, B n) := by
     refine MeasurableSet.iInter fun n ↦ ?_
@@ -135,30 +133,6 @@ lemma exists_eq_dirac_of_measurableAtom_eq_iInter [NeZero μ] [∀ (A : Set α),
     · rw [subset_compl_comm, hB_atom]
       exact measurableAtom_subset hs.compl (by grind)
     · rwa [prob_compl_eq_zero_iff mBn]
-
-/-- In a countably generated measurable space, a zero-one measure that is not the zero measure is
-a Dirac measure. -/
-theorem exists_eq_dirac' [MeasurableSpace.CountablyGenerated α] [NeZero μ] :
-    ∃ x₀, μ = Measure.dirac x₀ := by
-  let A := MeasurableSpace.natGeneratingSequence α
-  have hAm : ∀ n, MeasurableSet (A n) := MeasurableSpace.measurableSet_natGeneratingSequence
-  classical
-  refine exists_eq_dirac_of_measurableAtom_eq_iInter hAm fun x ↦ ?_
-  exact MeasurableSpace.measurableAtom_eq_countablyGeneratedAtom_natGeneratingSequence x
-
-/-- In a countably separated measurable space, a zero-one measure that is not the zero measure is
-a Dirac measure. -/
-theorem exists_eq_dirac [MeasurableSpace.CountablySeparated α] [NeZero μ] :
-    ∃ x₀, μ = Measure.dirac x₀ := by
-  obtain ⟨A, hAm, hAsep⟩ := exists_seq_separating (α := α) MeasurableSet.univ univ
-  classical
-  refine exists_eq_dirac_of_measurableAtom_eq_iInter hAm fun x ↦ ?_
-  have := MeasurableSpace.measurableSingletonClass_of_countablySeparated (α := α)
-  rw [measurableAtom_of_measurableSingletonClass]
-  ext y
-  simp only [mem_iInter, mem_singleton_iff]
-  specialize hAsep x (mem_univ x) y (mem_univ y)
-  grind
 
 end IsZeroOneMeasure
 

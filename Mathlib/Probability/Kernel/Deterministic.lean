@@ -25,10 +25,8 @@ properties about them.
 
 * `isDeterministic_iff_isZeroOneMeasure`: a finite kernel is deterministic if and
   only if it is a zero-one measure for every input.
-* `IsDeterministic.exists_eq_deterministic`: in a countably separated measurable space,
+* `IsDeterministic.exists_eq_deterministic`: in a measurable space with countably separated atoms,
   a deterministic Markov kernel is a Dirac kernel of some measurable function.
-  See also `IsDeterministic.exists_eq_deterministic'` for the same result in a countably generated
-  measurable space.
 * `comp_parallelComp_comp_copy`: if the composition of two Markov kernels `η ∘ₖ κ` is
   deterministic, the distribution over both `η ∘ₖ κ` and `κ` can be obtained by computing `η ∘ₖ κ`
   and `κ` independently. This corresponds to the equation of a Positive Markov category.
@@ -105,16 +103,9 @@ lemma isDeterministic_iff_isZeroOneMeasure (κ : Kernel α β) [IsFiniteKernel �
 instance (κ : Kernel α β) [IsFiniteKernel κ] [IsDeterministic κ] : ∀ a, IsZeroOneMeasure (κ a) :=
   (isDeterministic_iff_isZeroOneMeasure κ).mp ‹_›
 
-/-- In a countably generated measurable space, a deterministic Markov kernel is a Dirac kernel
-of one measurable function. -/
-theorem IsDeterministic.exists_eq_deterministic' [MeasurableSpace.CountablyGenerated β]
-    (κ : Kernel α β) [IsMarkovKernel κ] [IsDeterministic κ] :
-    ∃ (f : α → β) (hf : Measurable f), κ = deterministic f hf :=
-  exists_eq_deterministic_of_forall_eq_dirac (fun _ ↦ exists_eq_dirac')
-
-/-- In a countably separated measurable space, a deterministic Markov kernel is a Dirac kernel
-of one measurable function. -/
-theorem IsDeterministic.exists_eq_deterministic [MeasurableSpace.CountablySeparated β]
+/-- In a measurable space with countably separated atoms, a deterministic Markov kernel is
+a Dirac kernel of one measurable function. -/
+theorem IsDeterministic.exists_eq_deterministic [MeasurableSpace.CountablySeparatedAtoms β]
     (κ : Kernel α β) [IsMarkovKernel κ] [IsDeterministic κ] :
     ∃ (f : α → β) (hf : Measurable f), κ = deterministic f hf :=
   exists_eq_deterministic_of_forall_eq_dirac (fun _ ↦ exists_eq_dirac)
