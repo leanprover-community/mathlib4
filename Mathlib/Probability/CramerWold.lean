@@ -30,62 +30,53 @@ variable {Ω : Type*} [MeasurableSpace Ω] {P : ProbabilityMeasure Ω}
   {Ω' : Type*} [MeasurableSpace Ω'] {Q : ProbabilityMeasure Ω'}
   {X : Ω' → E} {Xn : ℕ → Ω → E}
 
--- 1. Basic measurability lemmas updated for E
-lemma aemeasurable_dotProduct {n : ℕ} {μ : Measure Ω} (hX : Measurable (Xn n)) (t : E) :
-  AEMeasurable (fun ω : Ω => ⟪(Xn n) ω, t⟫) μ :=
-  (Measurable.inner_const hX).aemeasurable
+lemma aemeasurable_dotProduct {α : Type*} [MeasurableSpace α] {μ : Measure α}
+  {Y : α → E} (hY : Measurable Y) (t : E) :
+  AEMeasurable (fun ω : α => ⟪Y ω, t⟫) μ :=
+  (Measurable.inner_const hY).aemeasurable
 
-lemma aemeasurable_dotProduct' {μ : Measure Ω'} (hX : Measurable X) (t : E) :
-  AEMeasurable (fun ω : Ω' => ⟪X ω, t⟫) μ :=
-  (Measurable.inner_const hX).aemeasurable
+lemma charFun_map_eq_integral_map_inner {α : Type*} [MeasurableSpace α]
+  (μ : ProbabilityMeasure α) {Y : α → E} (hY : Measurable Y) (t : E) :
+  charFun (↑(μ.map hY.aemeasurable)) t =
+    ∫ (ω : ℝ), innerProbChar (1 : ℝ) ω ∂(↑(μ.map (aemeasurable_dotProduct hY t))) := by
+  simp_rw [charFun_eq_integral_innerProbChar]
+  simp only [toMeasure_map]
+  erw [MeasureTheory.integral_map (aemeasurable_dotProduct hY t)
+    (innerProbChar (1 : ℝ)).continuous.stronglyMeasurable.aestronglyMeasurable]
+  rw [MeasureTheory.integral_map hY.aemeasurable
+    (innerProbChar t).continuous.stronglyMeasurable.aestronglyMeasurable]
+  apply integral_congr_ae
+  apply Filter.Eventually.of_forall
+  intro ω
+  simp only [innerProbChar_apply, real_inner_comm]
+  have H : ⟪t, Y ω⟫ • (1 : ℝ) = ⟪t, Y ω⟫ := by simp
+  conv_rhs => rw [← H]
+  rw [inner_smul_left]
+  simp
 
--- 2. 1D weak convergence implies charFun convergence
-lemma charFun_tendsto_if_inner_tendsto (hX : Measurable X) (hXn : ∀ n, Measurable (Xn n))
+lemma tendsto_charFun_of_tendsto_inner (hX : Measurable X) (hXn : ∀ n, Measurable (Xn n))
   (hconv : ∀ t : E, Tendsto (fun n : ℕ => P.map (aemeasurable_dotProduct (hXn n) t))
-    atTop (𝓝 (Q.map (aemeasurable_dotProduct' hX t)))) :
+    atTop (𝓝 (Q.map (aemeasurable_dotProduct hX t)))) :
   ∀ t : E, Tendsto (fun n ↦ charFun (P.map (hXn n).aemeasurable) t)
     atTop (𝓝 (charFun (Q.map hX.aemeasurable) t)) := by
   intro t
   let f : ℝ →ᵇ ℂ := innerProbChar (1 : ℝ)
   convert (ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto ℂ).mp (hconv t) f using 1
   · ext n
-    simp_rw [f, charFun_eq_integral_innerProbChar]
-    simp only [toMeasure_map]
-    erw [MeasureTheory.integral_map (aemeasurable_dotProduct (hXn n) t)
-      (innerProbChar (1 : ℝ)).continuous.stronglyMeasurable.aestronglyMeasurable]
-    rw [MeasureTheory.integral_map (Measurable.aemeasurable (hXn n))
-      (innerProbChar t).continuous.stronglyMeasurable.aestronglyMeasurable]
-    apply integral_congr_ae
-    apply Filter.Eventually.of_forall
-    intro ω
-    simp only [innerProbChar_apply, real_inner_comm]
-    have H : ⟪t, Xn n ω⟫ • (1 : ℝ) = ⟪t, Xn n ω⟫ := by simp
-    conv_rhs => rw [← H]
-    rw [inner_smul_left]
-    simp
-  · simp_rw [f, charFun_eq_integral_innerProbChar]
-    simp only [toMeasure_map]
-    erw [MeasureTheory.integral_map (aemeasurable_dotProduct' hX t)
-      (innerProbChar (1 : ℝ)).continuous.stronglyMeasurable.aestronglyMeasurable]
-    rw [MeasureTheory.integral_map hX.aemeasurable
-      (innerProbChar t).continuous.stronglyMeasurable.aestronglyMeasurable]
-    congr 1
-    apply integral_congr_ae
-    apply Filter.Eventually.of_forall
-    intro ω
-    simp only [innerProbChar_apply, real_inner_comm]
-    have H : ⟪t, X ω⟫ • (1 : ℝ) = ⟪t, X ω⟫ := by simp
-    conv_rhs => rw [← H]
-    rw [inner_smul_left]
-    simp
+    exact charFun_map_eq_integral_map_inner P (hXn n) t
+  · exact congr_arg 𝓝 (charFun_map_eq_integral_map_inner Q hX t)
 
--- 3. The final Cramér-Wold theorem using Lévy Convergence
-theorem cramerWold (hX : Measurable X) (hXn : ∀ n, Measurable (Xn n)) :
+/-- **Cramér-Wold device**
+
+Convergence in distribution of all 1-dimensional scalar projections of a sequence of
+random variables in a finite-dimensional real inner product space implies the
+convergence in distribution of the sequence itself. -/
+theorem tendsto_map_of_tendsto_map_inner (hX : Measurable X) (hXn : ∀ n, Measurable (Xn n)) :
   (∀ t : E, Tendsto (fun n : ℕ => P.map (aemeasurable_dotProduct (hXn n) t))
-  atTop (𝓝 (Q.map (aemeasurable_dotProduct' hX t)))) →
+  atTop (𝓝 (Q.map (aemeasurable_dotProduct hX t)))) →
   (Tendsto (fun n : ℕ => P.map (hXn n).aemeasurable) atTop (𝓝 (Q.map hX.aemeasurable))) := by
   intro h
   apply ProbabilityMeasure.tendsto_iff_tendsto_charFun.mpr
-  exact charFun_tendsto_if_inner_tendsto hX hXn h
+  exact tendsto_charFun_of_tendsto_inner hX hXn h
 
 end
