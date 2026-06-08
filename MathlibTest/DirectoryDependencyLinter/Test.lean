@@ -8,21 +8,21 @@ import Mathlib.Util.AssertNoSorry
 import Qq
 
 /--
+warning: The module doc-string for a file should be the first command after the imports.
+Please, add a module doc-string (`/-! ... -/`) before `example :=
+  trivial`.
+
+Note: This linter can be disabled with `set_option linter.style.header false`
+---
 warning: Module MathlibTest.DirectoryDependencyLinter.Test depends on Mathlib.Util.AssertNoSorry,
 but is only allowed to import modules starting with one of [Mathlib.Lean].
 Note: module Mathlib.Util.AssertNoSorry is directly imported by this module
 
 Note: This linter can be disabled with `set_option linter.directoryDependency false`
----
-warning: The module doc-string for a file should be the first command after the imports.
-Please, add a module doc-string before `/-!# Tests for the `directoryDependency` linter
--/
-`.
-
-Note: This linter can be disabled with `set_option linter.style.header false`
 -/
 #guard_msgs in
 set_option linter.style.header true in
+example := trivial
 
 /-!
 # Tests for the `directoryDependency` linter
