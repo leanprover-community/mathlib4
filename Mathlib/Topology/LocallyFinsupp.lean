@@ -124,7 +124,7 @@ injective.
 -/
 instance [Zero Y] : FunLike (locallyFinsuppWithin U Y) X Y where
   coe D := D.toFun
-  coe_injective' := fun ⟨_, _, _⟩ ⟨_, _, _⟩ ↦ by simp
+  coe_injective := fun ⟨_, _, _⟩ ⟨_, _, _⟩ ↦ by simp
 
 @[simp]
 lemma toFun_eq_coe [Zero Y] (c : locallyFinsuppWithin U Y) : c.toFun = ⇑c := rfl

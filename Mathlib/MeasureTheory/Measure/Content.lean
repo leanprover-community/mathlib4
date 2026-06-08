@@ -87,7 +87,7 @@ namespace Content
 
 instance : FunLike (Content G) (Compacts G) ℝ≥0∞ where
   coe μ s := μ.toFun s
-  coe_injective' := by
+  coe_injective := by
     rintro ⟨μ, _, _⟩ ⟨v, _, _⟩ h; congr!; ext s : 1; exact ENNReal.coe_injective <| congr_fun h s
 
 variable (μ : Content G)

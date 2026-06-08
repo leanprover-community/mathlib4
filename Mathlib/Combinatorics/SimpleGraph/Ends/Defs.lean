@@ -52,7 +52,7 @@ theorem ComponentCompl.supp_inj {C D : G.ComponentCompl K} : C.supp = D.supp ↔
 
 instance ComponentCompl.setLike : SetLike (G.ComponentCompl K) V where
   coe := ComponentCompl.supp
-  coe_injective' _ _ := ComponentCompl.supp_inj.mp
+  coe_injective _ _ := ComponentCompl.supp_inj.mp
 
 instance : PartialOrder (G.ComponentCompl K) := .ofSetLike (G.ComponentCompl K) V
 

@@ -91,7 +91,7 @@ namespace SchwartzMap
 
 instance instFunLike : FunLike 𝓢(E, F) E F where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 /-- All derivatives of a Schwartz function are rapidly decaying. -/
 theorem decay (f : 𝓢(E, F)) (k n : ℕ) :

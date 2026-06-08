@@ -122,7 +122,7 @@ theorem coe_injective : Function.Injective ((↑) : (M₁ →SL[σ₁₂] M₂) 
 
 instance funLike : FunLike (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
   coe f := f.toLinearMap
-  coe_injective' _ _ h := coe_injective (DFunLike.coe_injective h)
+  coe_injective _ _ h := coe_injective (DFunLike.coe_injective h)
 
 instance continuousSemilinearMapClass :
     ContinuousSemilinearMapClass (M₁ →SL[σ₁₂] M₂) σ₁₂ M₁ M₂ where

@@ -323,7 +323,7 @@ theorem mem_iff' {a b c : α} : Sym2.Mem a s(b, c) ↔ a = b ∨ a = c :=
 
 instance : SetLike (Sym2 α) α where
   coe z := { x | z.Mem x }
-  coe_injective' z z' h := by
+  coe_injective z z' h := by
     simp only [Set.ext_iff, Set.mem_setOf_eq] at h
     obtain ⟨x, y⟩ := z
     obtain ⟨x', y'⟩ := z'

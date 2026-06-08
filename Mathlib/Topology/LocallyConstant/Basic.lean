@@ -213,7 +213,7 @@ instance [Inhabited Y] : Inhabited (LocallyConstant X Y) :=
 
 instance : FunLike (LocallyConstant X Y) X Y where
   coe := LocallyConstant.toFun
-  coe_injective' := by rintro ⟨_, _⟩ ⟨_, _⟩ _; congr
+  coe_injective := by rintro ⟨_, _⟩ ⟨_, _⟩ _; congr
 
 /-- See Note [custom simps projections]. -/
 def Simps.apply (f : LocallyConstant X Y) : X → Y := f

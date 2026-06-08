@@ -151,7 +151,7 @@ namespace ContDiffMapSupportedIn
 instance toContDiffMapSupportedInClass :
     ContDiffMapSupportedInClass 𝓓^{n}_{K}(E, F) E F n K where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
   map_contDiff f := f.contDiff'
   map_zero_on_compl f := f.zero_on_compl'
 

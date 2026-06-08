@@ -322,7 +322,7 @@ variable [LE α] {s t : Flag α} {a : α}
 
 instance : SetLike (Flag α) α where
   coe := carrier
-  coe_injective' s t h := by
+  coe_injective s t h := by
     cases s
     cases t
     congr

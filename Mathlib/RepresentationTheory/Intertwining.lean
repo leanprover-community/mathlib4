@@ -64,7 +64,7 @@ lemma toFun_injective : Function.Injective fun f : IntertwiningMap ρ σ ↦ f.t
 
 instance : FunLike (IntertwiningMap ρ σ) V W where
   coe f := f.toFun
-  coe_injective' := toFun_injective ρ σ
+  coe_injective := toFun_injective ρ σ
 
 instance : LinearMapClass (IntertwiningMap ρ σ) A V W where
   map_add f := f.map_add

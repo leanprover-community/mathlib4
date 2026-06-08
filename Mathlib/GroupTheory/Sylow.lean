@@ -68,7 +68,7 @@ theorem ext {P Q : Sylow p G} (h : (P : Subgroup G) = Q) : P = Q := by cases P; 
 
 instance : SetLike (Sylow p G) G where
   coe := (↑)
-  coe_injective' _ _ h := ext (SetLike.coe_injective h)
+  coe_injective _ _ h := ext (SetLike.coe_injective h)
 
 instance : PartialOrder (Sylow p G) := .ofSetLike (Sylow p G) G
 

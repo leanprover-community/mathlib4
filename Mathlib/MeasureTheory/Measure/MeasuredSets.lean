@@ -42,7 +42,7 @@ def MeasuredSets (μ : Measure α) : Type _ := {s : Set α // MeasurableSet s}
 
 instance : SetLike (MeasuredSets μ) α where
   coe s := s.1
-  coe_injective' := Subtype.coe_injective
+  coe_injective := Subtype.coe_injective
 
 noncomputable instance : PseudoEMetricSpace (MeasuredSets μ) where
   edist s t := μ ((s : Set α) ∆ t)

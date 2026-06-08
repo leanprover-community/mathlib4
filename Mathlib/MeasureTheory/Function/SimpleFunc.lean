@@ -58,7 +58,7 @@ variable [MeasurableSpace α]
 
 instance instFunLike : FunLike (α →ₛ β) α β where
   coe := toFun
-  coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
+  coe_injective | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
 theorem coe_injective ⦃f g : α →ₛ β⦄ (H : (f : α → β) = g) : f = g := DFunLike.ext' H
 

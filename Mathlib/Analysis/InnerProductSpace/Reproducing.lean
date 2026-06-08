@@ -64,7 +64,7 @@ Each element of a reproducing kernel Hilbert space may be coerced into a functio
 -/
 instance instFunLike : FunLike H X V where
   coe f := coeCLM 𝕜 f
-  coe_injective' := coeCLM_injective
+  coe_injective := coeCLM_injective
 
 @[ext]
 lemma ext {f g : H} (h : ∀ x, f x = g x) : f = g := DFunLike.ext _ _ h

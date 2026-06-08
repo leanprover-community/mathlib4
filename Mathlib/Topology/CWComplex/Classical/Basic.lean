@@ -617,7 +617,7 @@ variable [RelCWComplex C D]
 
 instance : SetLike (Subcomplex C) X where
   coe E := E.carrier
-  coe_injective' E F h := by
+  coe_injective E F h := by
     obtain ⟨E, _, _, hE⟩ := E
     obtain ⟨F, _, _, hF⟩ := F
     congr
