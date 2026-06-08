@@ -62,6 +62,7 @@ variable {A' : Type u₄} [Category.{v₄} A']
 variable {B' : Type u₅} [Category.{v₅} B']
 variable {T' : Type u₆} [Category.{v₆} T']
 
+set_option linter.translate.warnInvalid false in
 /-- The objects of the comma category are triples of an object `left : A`, an object
 `right : B` and a morphism `hom : L.obj left ⟶ R.obj right`. -/
 @[to_dual self (reorder := A B, 2 4, L R), wikidata Q1780005]
@@ -73,10 +74,8 @@ structure Comma (L : A ⥤ T) (R : B ⥤ T) : Type max u₁ u₂ v₃ where
   /-- A morphism from `L.obj left` to `R.obj right` -/
   hom : L.obj left ⟶ R.obj right
 
-set_option linter.translateOverwrite false
-
 attribute [to_dual existing right] Comma.left
-attribute [to_dual self] Comma.mk
+attribute [to_dual self] Comma.hom Comma.mk
 
 -- Satisfying the inhabited linter
 instance Comma.inhabited [Inhabited T] : Inhabited (Comma (𝟭 T) (𝟭 T)) where
@@ -87,6 +86,7 @@ instance Comma.inhabited [Inhabited T] : Inhabited (Comma (𝟭 T) (𝟭 T)) whe
 
 variable {L : A ⥤ T} {R : B ⥤ T}
 
+set_option linter.translate.warnInvalid false in
 /-- A morphism between two objects in the comma category is a commutative square connecting the
 morphisms coming from the two objects using morphisms in the image of the functors `L` and `R`.
 -/

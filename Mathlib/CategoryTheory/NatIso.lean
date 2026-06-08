@@ -173,6 +173,7 @@ theorem isIso_inv_app (α : F ⟶ G) [IsIso α] (X) : (inv α).app X = inv (α.a
 theorem inv_map_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
     inv ((F.map e.inv).app Z) = (F.map e.hom).app Z := by cat_disch
 
+set_option linter.translate.warnInvalid false in
 /-- Construct a natural isomorphism between functors by giving object level isomorphisms,
 and checking naturality only in the forward direction.
 -/
@@ -190,11 +191,9 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
         simp only [Iso.inv_hom_id_assoc, Iso.hom_inv_id, assoc, comp_id] at h
         exact h }
 
-set_option linter.translateOverwrite false in
 set_option linter.existingAttributeWarning false in
 attribute [to_dual existing ofComponents'_inv_app] ofComponents_hom_app
 
-set_option linter.translateOverwrite false in
 set_option linter.existingAttributeWarning false in
 attribute [to_dual existing ofComponents'_hom_app] ofComponents_inv_app
 

@@ -969,7 +969,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
     else
       pure reorder'
   let univReorder := guessUnivReorder reorder srcDecl
-  if cfg.self && reorder.isEmpty then
+  if lint && cfg.self && reorder.isEmpty then
     Linter.logLintIf linter.translateRedundant cfg.ref m!"\
       `{t.attrName} self` is redundant when none of the arguments are reordered.\n\
       Please remove the attribute, or provide an explicit `(reorder := ...)` argument.\n\
@@ -994,7 +994,7 @@ def insertTranslationChecked (t : TranslateData) (src tgt : Name) (cfg : Config)
     insertTranslation t src tgt reorder relevantArg cfg.ref
   catch ex =>
     Linter.logLintIf linter.translate.warnInvalid cfg.ref m!"\
-      @[{t.attrName}] would like to add a translation from `{.ofConstName src}` to \
+      @[{t.attrName}] tried to add a translation from `{.ofConstName src}` to \
       `{.ofConstName tgt}`, but this is not valid. Error:\n\n{ex.toMessageData}"
 
 /-- `translateLemmas` runs `runAttr` on all elements of `names` and adds translations between
