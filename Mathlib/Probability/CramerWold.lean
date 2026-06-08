@@ -41,7 +41,7 @@ lemma charFun_map_eq_integral_map_inner {α : Type*} [MeasurableSpace α]
     ∫ (ω : ℝ), innerProbChar (1 : ℝ) ω ∂(↑(μ.map (aemeasurable_dotProduct hY t))) := by
   simp_rw [charFun_eq_integral_innerProbChar]
   simp only [toMeasure_map]
-  erw [MeasureTheory.integral_map (aemeasurable_dotProduct hY t)
+  rw [MeasureTheory.integral_map (aemeasurable_dotProduct hY t)
     (innerProbChar (1 : ℝ)).continuous.stronglyMeasurable.aestronglyMeasurable]
   rw [MeasureTheory.integral_map hY.aemeasurable
     (innerProbChar t).continuous.stronglyMeasurable.aestronglyMeasurable]
