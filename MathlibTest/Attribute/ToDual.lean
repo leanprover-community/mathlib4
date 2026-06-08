@@ -431,8 +431,7 @@ to_dual_name_hint LeftMono FooBar
 #guard_msgs in
 #eval return GuessName.guessName (data.guessNameExt.getState (← getEnv)) "leftMono"
 
-to_dual_name_hint Left Right
-to_dual_name_hint Epi Mono
+to_dual_name_hint Left Right, Epi Mono
 
 /-- info: "right_epi" -/
 #guard_msgs in
