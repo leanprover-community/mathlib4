@@ -305,17 +305,16 @@ def headerTestFiles : NameSet := .ofList [
   `MathlibTest.DirectoryDependencyLinter.Test]
 
 @[inherit_doc Mathlib.Linter.linter.style.header]
-def headerLinter : Linter where run stx := do
+def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless getLinterValue linter.style.header (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
   let map ← getFileMap
   let s := ParseImports.main map.source (ParseImports.whitespace map.source {})
-  unless stx.getPos?.isEqSome s.pos do
+  unless (← read).cmdPos == s.pos do
     return
   let mainModule ← getMainModule
-  stx |> withSetOptionIn fun stx => do
   -- check again after `withSetOptionIn`
   unless getLinterValue linter.style.header (← getLinterOptions) do
     return
