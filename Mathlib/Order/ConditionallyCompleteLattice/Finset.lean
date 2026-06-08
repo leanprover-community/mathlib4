@@ -206,15 +206,40 @@ theorem sup'_id_eq_csSup (s : Finset α) (hs) : s.sup' hs id = sSup s := by
 theorem inf'_id_eq_csInf (s : Finset α) (hs) : s.inf' hs id = sInf s :=
   sup'_id_eq_csSup (α := αᵒᵈ) _ hs
 
-variable [Fintype ι] [Nonempty ι]
-
-lemma sup'_univ_eq_ciSup (f : ι → α) : univ.sup' univ_nonempty f = ⨆ i, f i := by
+lemma sup'_univ_eq_ciSup [Fintype ι] [Nonempty ι] (f : ι → α) :
+    univ.sup' univ_nonempty f = ⨆ i, f i := by
   simp [sup'_eq_csSup_image, iSup]
 
-lemma inf'_univ_eq_ciInf (f : ι → α) : univ.inf' univ_nonempty f = ⨅ i, f i := by
+lemma inf'_univ_eq_ciInf [Fintype ι] [Nonempty ι] (f : ι → α) :
+    univ.inf' univ_nonempty f = ⨅ i, f i := by
   simp [inf'_eq_csInf_image, iInf]
 
+lemma inf'_eq_ciInf {s : Finset ι} (hs : s.Nonempty) (f : ι → α) :
+    s.inf' hs f = ⨅ i : s, f i := by
+  rw [inf'_eq_csInf_image]
+  congr; ext x; simp [Set.mem_image, Set.mem_range]
+
 end ConditionallyCompleteLattice
+
+section ConditionallyCompleteLinearOrder
+
+variable [ConditionallyCompleteLinearOrder α]
+
+lemma inf'_eq_of_forall_le_of_exists_le {s : Finset ι} (hs : s.Nonempty) (f : ι → α) (y : α)
+    (h_le : ∀ i ∈ s, y ≤ f i) (h_exists : ∃ i ∈ s, f i = y) :
+    s.inf' hs f = y := by
+  apply le_antisymm
+  · obtain ⟨i, hi_mem, hi_eq⟩ := h_exists
+    rw [← hi_eq]
+    exact inf'_le f hi_mem
+  · exact (le_inf'_iff hs f).mpr h_le
+
+lemma inf'_mono_subset {s t : Finset ι} (h : s ⊆ t) (f : ι → α) {hs : s.Nonempty}
+    {ht : t.Nonempty} :
+    t.inf' ht f ≤ s.inf' hs f :=
+  (le_inf'_iff hs f).2 fun _ hi => inf'_le f (h hi)
+
+end ConditionallyCompleteLinearOrder
 
 section ConditionallyCompleteLinearOrderBot
 variable [ConditionallyCompleteLinearOrderBot α]

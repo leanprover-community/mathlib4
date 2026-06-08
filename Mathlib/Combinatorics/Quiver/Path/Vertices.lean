@@ -50,10 +50,6 @@ lemma mem_vertices_cons {a b c : V} (p : Path a b)
   simp only [vertices_cons]
   simp_all only [concat_eq_append, mem_append, mem_cons, not_mem_nil, or_false]
 
-lemma verticesSet_nil {a : V} : {v | v ∈ (nil : Path a a).vertices} = {a} := by
-  simp only [vertices_nil, mem_singleton, Set.ext_iff, Set.mem_singleton_iff]
-  exact fun x ↦ Set.mem_setOf
-
 /-- The length of vertices list equals path length plus one -/
 @[simp]
 lemma vertices_length {V : Type*} [Quiver V] {a b : V} (p : Path a b) :
@@ -117,11 +113,6 @@ lemma vertices_comp {a b c : V} (p : Path a b) (q : Path b c) :
 @[simp] lemma length_eq_zero_iff {a : V} (p : Path a a) :
     p.length = 0 ↔ p = Path.nil := by
   cases p <;> tauto
-
-lemma vertices_comp_get_length_eq {a b c : V} (p₁ : Path a c) (p₂ : Path c b)
-    (h : p₁.length < (p₁.comp p₂).vertices.length := by simp) :
-    (p₁.comp p₂).vertices.get ⟨p₁.length, h⟩ = c := by
-  simp
 
 @[simp]
 lemma vertices_toPath {i j : V} (e : i ⟶ j) :

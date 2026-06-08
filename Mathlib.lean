@@ -3594,8 +3594,11 @@ public import Mathlib.Combinatorics.Quiver.Basic
 public import Mathlib.Combinatorics.Quiver.Cast
 public import Mathlib.Combinatorics.Quiver.ConnectedComponent
 public import Mathlib.Combinatorics.Quiver.Covering
+public import Mathlib.Combinatorics.Quiver.Induced
 public import Mathlib.Combinatorics.Quiver.Path
+public import Mathlib.Combinatorics.Quiver.Path.Cycle
 public import Mathlib.Combinatorics.Quiver.Path.Decomposition
+public import Mathlib.Combinatorics.Quiver.Path.Replicate
 public import Mathlib.Combinatorics.Quiver.Path.Vertices
 public import Mathlib.Combinatorics.Quiver.Path.Weight
 public import Mathlib.Combinatorics.Quiver.Prefunctor
@@ -5123,6 +5126,7 @@ public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.LinearAlgebra.Matrix.Orthogonal
 public import Mathlib.LinearAlgebra.Matrix.Permanent
 public import Mathlib.LinearAlgebra.Matrix.Permutation
+public import Mathlib.LinearAlgebra.Matrix.PerronFrobenius.CollatzWielandt
 public import Mathlib.LinearAlgebra.Matrix.Polynomial
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 public import Mathlib.LinearAlgebra.Matrix.ProjectiveSpecialLinearGroup

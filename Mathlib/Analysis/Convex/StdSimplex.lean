@@ -106,6 +106,21 @@ lemma stdSimplex_fin_two :
 
 end OrderedSemiring
 
+section LinearOrderedSemiring
+
+variable {𝕜 ι : Type*} [Semiring 𝕜] [LinearOrder 𝕜] [Fintype ι] [Nontrivial 𝕜]
+
+/-- A point in the standard simplex has a positive coordinate. -/
+lemma exists_pos_of_mem_stdSimplex {f : ι → 𝕜} (hf : f ∈ stdSimplex 𝕜 ι) :
+    ∃ i, 0 < f i := by
+  by_contra h
+  push Not at h
+  have hsum : ∑ i, f i = 0 :=
+    Finset.sum_eq_zero fun i _ => le_antisymm (h i) (hf.1 i)
+  exact zero_ne_one (by rw [← hf.2, hsum])
+
+end LinearOrderedSemiring
+
 section OrderedRing
 
 variable (𝕜) [Ring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
