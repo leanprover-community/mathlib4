@@ -34,12 +34,7 @@ theorem SymplecticGroup.fromBlocks_mem_iff
     · have := congrArg transpose h.2.2
       rwa [transpose_sub, transpose_mul, transpose_mul, transpose_one] at this
 
-namespace SymplecticMatrixDet
-
-/-- If the top-left n×n block P of a symplectic matrix A is invertible, then det(A) = 1.
-    Proof: use the Schur complement formula and the block condition Pᵀ S - Rᵀ Q = 1
-    to show det(S - R * P⁻¹ * Q) = det(P)⁻¹, hence det(A) = det(P) * det(P)⁻¹ = 1. -/
-theorem symplectic_det_one_when_P_invertible
+theorem SymplecticGroup.det_one_if_fromBlocks_invertible
     {l k : Type*} [DecidableEq l] [Fintype l] [CommRing k]
     {P Q R S : Matrix l l k} [Invertible P]
     (hA : fromBlocks P Q R S ∈ symplecticGroup l k) :
@@ -50,30 +45,32 @@ theorem symplectic_det_one_when_P_invertible
     h_block.1, mul_assoc Rᵀ, mul_inv_of_invertible, mul_one, h_block.2.2,
     det_one]
 
-/-- Multiplying a symplectic matrix by the symmetric shear on the left:
-    L_X * A = [[P + X*R, Q + X*S], [R, S]] -/
-theorem shear_mul_symplectic_blocks
-    {l R : Type*} [DecidableEq l] [Fintype l] [CommRing R]
-    {P Q Rmat S X : Matrix l l R} :
-    fromBlocks 1 X 0 1 * fromBlocks P Q Rmat S =
-    fromBlocks (P + X * Rmat) (Q + X * S) Rmat S := by
-  simp [fromBlocks_multiply]
+lemma Matrix.J_map {l R S : Type*} [DecidableEq l] [Fintype l] [CommRing R] [CommRing S]
+    (f : R →+* S) : f.mapMatrix (J l R) = J l S := by
+  unfold J
+  rw [RingHom.mapMatrix_apply, fromBlocks_map, Matrix.map_zero f f.map_zero,
+    Matrix.map_one f f.map_zero f.map_one, Matrix.map_neg f f.map_neg,
+    Matrix.map_one f f.map_zero f.map_one]
 
-lemma round1_rank_normal_form {l k : Type*} [DecidableEq l] [Fintype l] [Field k]
+lemma Matrix.mulVec_apply {m n R : Type*} [Fintype n] [NonUnitalNonAssocSemiring R]
+  (M : Matrix m n R) (x : n → R) (i : m) : (M *ᵥ x) i = ∑ j : n, M i j * x j := rfl
+
+lemma Matrix.exists_rank_normal_form {l k : Type*} [DecidableEq l] [Fintype l] [Field k]
   (M : Matrix l l k) :
   ∃ (V U : Matrix l l k) (s : Finset l),
     IsUnit V.det ∧ IsUnit U.det ∧
     V * M * U = diagonal (fun i : l ↦ if i ∈ s then 1 else 0) := by
   classical
   obtain ⟨L, L', D, hM_eq⟩ := Pivot.exists_list_transvec_mul_diagonal_mul_list_transvec M
-  let A_left : Matrix l l k := (List.map TransvectionStruct.toMatrix L).prod
-  let B_right : Matrix l l k := (List.map TransvectionStruct.toMatrix L').prod
-  have hA_left_unit : IsUnit A_left.det := by
-    rw [TransvectionStruct.det_toMatrix_prod L]; exact isUnit_one
-  have hB_right_unit : IsUnit B_right.det := by
-    rw [TransvectionStruct.det_toMatrix_prod L']; exact isUnit_one
+  set A := (List.map TransvectionStruct.toMatrix L).prod
+  set B := (List.map TransvectionStruct.toMatrix L').prod
   set E : l → k := fun i ↦ if D i = 0 then 1 else (D i)⁻¹ with E_def
-  set S : Matrix l l k := diagonal E with S_def
+  set S := diagonal E with S_def
+  set s : Finset l := Finset.filter (fun i : l ↦ D i ≠ 0) Finset.univ with s_def
+  have hA_unit : IsUnit A.det := by
+    rw [TransvectionStruct.det_toMatrix_prod L]; exact isUnit_one
+  have hB_unit : IsUnit B.det := by
+    rw [TransvectionStruct.det_toMatrix_prod L']; exact isUnit_one
   have hE_ne_zero (i : l) : E i ≠ 0 := by
     by_cases h : D i = 0
     · simp only [E_def, if_pos h, ne_eq, one_ne_zero, not_false_eq_true]
@@ -81,8 +78,7 @@ lemma round1_rank_normal_form {l k : Type*} [DecidableEq l] [Fintype l] [Field k
   have hS_unit : IsUnit S.det := by
     rw [det_diagonal]
     exact IsUnit.mk0 _ <| Finset.prod_ne_zero_iff.2 fun i _ ↦ hE_ne_zero i
-  set s : Finset l := Finset.filter (fun i : l ↦ D i ≠ 0) Finset.univ with s_def
-  have h2 : S * diagonal D = diagonal (fun i : l ↦ if i ∈ s then (1 : k) else 0) := by
+  have h2 : S * diagonal D = diagonal (fun i : l ↦ if i ∈ s then 1 else 0) := by
     ext i j
     simp only [E_def, mul_diagonal, diagonal_apply, ite_mul, one_mul, zero_mul, ne_eq,
       Finset.mem_filter, Finset.mem_univ, true_and, ite_not, S_def, s_def]
@@ -90,35 +86,51 @@ lemma round1_rank_normal_form {l k : Type*} [DecidableEq l] [Fintype l] [Field k
     · rw [← h1, h2]
     · rw [← h1, inv_mul_cancel₀ h2]
     · rfl
-  refine ⟨S * A_left⁻¹, B_right⁻¹, s, ?_, isUnit_nonsing_inv_det _ hB_right_unit, ?_⟩
-  · simpa using (hS_unit.mul (isUnit_nonsing_inv_det _ hA_left_unit))
-  · rw [hM_eq, mul_assoc, mul_assoc _ B_right, mul_nonsing_inv _ hB_right_unit, mul_one,
-    ← mul_assoc, mul_assoc _ A_left⁻¹, nonsing_inv_mul _ hA_left_unit, mul_one, h2]
+  refine ⟨S * A⁻¹, B⁻¹, s, ?_, isUnit_nonsing_inv_det _ hB_unit, ?_⟩
+  · simpa using (hS_unit.mul (isUnit_nonsing_inv_det _ hA_unit))
+  · rw [hM_eq, mul_assoc, mul_assoc _ B, mul_nonsing_inv _ hB_unit, mul_one,
+    ← mul_assoc, mul_assoc _ A⁻¹, nonsing_inv_mul _ hA_unit, mul_one, h2]
+
+lemma Matrix.lift_symmetric
+    {l R S : Type*} [DecidableEq l] [Fintype l] [Semiring R] [Semiring S]
+    (f : R →+* S) (hf : Function.Surjective f)
+    (Y : Matrix l l S) (hY : Yᵀ = Y) :
+    ∃ (X : Matrix l l R), Xᵀ = X ∧ f.mapMatrix X = Y := by
+  choose s hs using hf
+  have _ : LinearOrder l := (Cardinal.exists_ord_eq_type_lt l).choose
+  set X : Matrix l l R := fun i j ↦ if i ≤ j then s (Y i j) else s (Y j i) with X_def
+  refine ⟨X, ?_, ?_⟩ <;> ext i j
+  · simp only [X_def, transpose_apply]
+    split_ifs with h1 h2 h3
+    · rw [le_antisymm h1 h2]
+    · rfl
+    · rfl
+    · tauto
+  · have h3 : Y j i = Y i j := ((fun _ ↦ ext_iff.2 hY i j) ∘ Y i) i
+    simp only [X_def, RingHom.mapMatrix_apply, map_apply, h3, ite_self, hs]
+
+namespace SymplecticMatrixDet
 
 lemma round1_transfer_rank {l k : Type*} [DecidableEq l] [Fintype l] [Field k]
-  {P R P1 R1 : Matrix l l k}
+  {P R : Matrix l l k}
   {U V : Matrix l l k}
   (hU : IsUnit U.det) (hV : IsUnit V.det)
-  (hP1 : P1 = (Vᵀ)⁻¹ * P * U)
-  (hR1 : R1 = V * R * U)
   (h_rank : ∀ (x : l → k), (P *ᵥ x = 0) → (R *ᵥ x = 0) → x = 0) :
-  ∀ (x : l → k), (P1 *ᵥ x = 0) → (R1 *ᵥ x = 0) → x = 0 := by
+  ∀ (x : l → k), ((Vᵀ⁻¹ * P * U) *ᵥ x = 0) → ((V * R * U) *ᵥ x = 0) → x = 0 := by
   intro x h1 h2
   refine mulVec_injective_of_isUnit ((isUnit_iff_isUnit_det U).2 hU) ?_
   rw [mulVec_zero]
   refine h_rank (U *ᵥ x) ?_ ?_
   · rw [mulVec_mulVec, ← one_mul (P * U), ← mul_nonsing_inv _ (isUnit_det_transpose _ hV),
-      mul_assoc, ← mul_assoc _ P, ← hP1, ← mulVec_mulVec, h1, mulVec_zero]
+      mul_assoc, ← mul_assoc _ P, ← mulVec_mulVec, h1, mulVec_zero]
   · rw [mulVec_mulVec, ← one_mul (R * U), ← nonsing_inv_mul _ hV,
-      mul_assoc, ← mul_assoc _ R, ← hR1, ← mulVec_mulVec, h2, mulVec_zero]
+      mul_assoc, ← mul_assoc _ R, ← mulVec_mulVec, h2, mulVec_zero]
 
 lemma round1_transfer_symm {l k : Type*} [DecidableEq l] [Fintype l] [CommRing k]
-  {P R P1 R1 U V : Matrix l l k} (hV : IsUnit V.det)
-  (hP1 : P1 = (Vᵀ)⁻¹ * P * U)
-  (hR1 : R1 = V * R * U)
+  {P R U V : Matrix l l k} (hV : IsUnit V.det)
   (h_symm : Pᵀ * R = Rᵀ * P) :
-  P1ᵀ * R1 = R1ᵀ * P1 := by
-  rw [hR1, hP1, transpose_mul, transpose_mul, transpose_mul, transpose_mul,
+  (Vᵀ⁻¹ * P * U)ᵀ * (V * R * U) = (V * R * U)ᵀ * (Vᵀ⁻¹ * P * U) := by
+  rw [transpose_mul, transpose_mul, transpose_mul, transpose_mul,
     transpose_nonsing_inv, transpose_transpose]
   convert_to Uᵀ * (Pᵀ * (V⁻¹ * V) * R * U) = Uᵀ * (Rᵀ * (Vᵀ * Vᵀ⁻¹) * P * U)
   · ac_rfl
@@ -128,12 +140,11 @@ lemma round1_transfer_symm {l k : Type*} [DecidableEq l] [Fintype l] [CommRing k
 
 lemma round1_core_entrywise {l k : Type*} [DecidableEq l] [Fintype l] [Field k]
   {P1 : Matrix l l k} {s : Finset l}
-  (hR1 : let R1 : Matrix l l k := Matrix.diagonal (fun i : l ↦ if i ∈ s then (1 : k) else 0)
+  (hR1 : let R1 : Matrix l l k := diagonal (fun i : l ↦ if i ∈ s then 1 else 0)
     P1ᵀ * R1 = R1 * P1) :
   (∀ (i j : l), i ∈ s → j ∉ s → P1 i j = 0) ∧
   (∀ (i j : l), i ∈ s → j ∈ s → P1 i j = P1 j i) := by
-  have h_main1 : ∀ (i j : l), (if j ∈ s then P1 j i else 0) = (if i ∈ s then P1 i j else 0) := by
-    intro i j
+  have h_main1 (i j : l) : (if j ∈ s then P1 j i else 0) = (if i ∈ s then P1 i j else 0) := by
     convert ext_iff.2 hR1 i j
     · simp only [mul_diagonal, transpose_apply, mul_ite, mul_one, mul_zero]
     · simp only [diagonal_mul, ite_mul, one_mul, zero_mul]
@@ -142,9 +153,6 @@ lemma round1_core_entrywise {l k : Type*} [DecidableEq l] [Fintype l] [Field k]
     rwa [if_pos hi, if_neg hj] at this
   · have := (h_main1 i j).symm
     rwa [if_pos hj, if_pos hi] at this
-
-lemma _root_.Matrix.mulVec_apply {m n R : Type*} [Finite m] [Fintype n] [Semiring R]
-  (M : Matrix m n R) (x : n → R) (i : m) : (M *ᵥ x) i = ∑ j : n, M i j * x j := rfl
 
 lemma round1_main_step {l k : Type*} [DecidableEq l] [Fintype l] [Field k]
   {P1 : Matrix l l k} {s : Finset l}
@@ -211,7 +219,7 @@ theorem field_exists_symmetric_X_invertible_sum
     (h_rank : ∀ (x : l → k), (P *ᵥ x = 0) → (R *ᵥ x = 0) → x = 0)
     (h_symm : Pᵀ * R = Rᵀ * P) :
     ∃ (X : Matrix l l k), Xᵀ = X ∧ IsUnit (P + X * R).det := by
-  rcases round1_rank_normal_form (M := R) with ⟨V, U, s, hV, hU, hR1_eq⟩
+  rcases exists_rank_normal_form (M := R) with ⟨V, U, s, hV, hU, hR1_eq⟩
   set R1 := V * R * U with R1_def
   set D := diagonal (fun i ↦ if i ∈ s then 1 else 0) with D_def
   set P1 := Vᵀ⁻¹ * P * U with P1_def
@@ -219,10 +227,10 @@ theorem field_exists_symmetric_X_invertible_sum
       (∀ (i j : l), i ∈ s → j ∈ s → P1 i j = P1 j i) := by
     refine round1_core_entrywise ?_
     have h_symm1 : P1ᵀ * R1 = R1ᵀ * P1 :=
-      round1_transfer_symm hV rfl rfl h_symm
+      round1_transfer_symm hV h_symm
     rwa [hR1_eq, diagonal_transpose] at h_symm1
   obtain ⟨X1, hX1_symm, hM1⟩ := round1_main_step h_main1.1 h_main1.2 <| fun x hP1x hDx ↦
-    round1_transfer_rank hU hV rfl rfl h_rank x hP1x (hR1_eq ▸ hDx : R1 *ᵥ x = 0)
+    round1_transfer_rank hU hV h_rank x hP1x (hR1_eq ▸ hDx : R1 *ᵥ x = 0)
   refine ⟨Vᵀ * X1 * V, ?_, ?_⟩
   · rw [transpose_mul, transpose_mul, hX1_symm, transpose_transpose, mul_assoc]
   · convert_to IsUnit (Vᵀ * (P1 + X1 * R1) * U⁻¹).det
@@ -232,24 +240,6 @@ theorem field_exists_symmetric_X_invertible_sum
     rw [det_mul, det_mul]
     exact IsUnit.mul (IsUnit.mul (det_transpose V ▸ hV) (by rwa [hR1_eq]))
       (isUnit_nonsing_inv_det U hU)
-
-lemma lift_symmetric_matrix
-    {l R S : Type*} [DecidableEq l] [Fintype l] [Semiring R] [Semiring S]
-    (f : R →+* S) (hf : Function.Surjective f)
-    (Y : Matrix l l S) (hY : Yᵀ = Y) :
-    ∃ (X : Matrix l l R), Xᵀ = X ∧ f.mapMatrix X = Y := by
-  choose s hs using hf
-  have _ : LinearOrder l := (Cardinal.exists_ord_eq_type_lt l).choose
-  set X : Matrix l l R := fun i j ↦ if i ≤ j then s (Y i j) else s (Y j i) with X_def
-  refine ⟨X, ?_, ?_⟩ <;> ext i j
-  · simp only [X_def, transpose_apply]
-    split_ifs with h1 h2 h3
-    · rw [le_antisymm h1 h2]
-    · rfl
-    · rfl
-    · tauto
-  · have h3 : Y j i = Y i j := ((fun _ ↦ ext_iff.2 hY i j) ∘ Y i) i
-    simp only [X_def, RingHom.mapMatrix_apply, map_apply, h3, ite_self, hs]
 
 /-- Over a local ring R, there exists a symmetric X such that P + X*Rmat is invertible.
     Proof:
@@ -293,7 +283,7 @@ theorem exists_symmetric_shear_making_P_invertible
   obtain ⟨Xbar, hXbar_symm, hXbar_det⟩ := field_exists_symmetric_X_invertible_sum h_rank <| by
     change f.mapMatrix Pᵀ * f.mapMatrix R = f.mapMatrix Rᵀ * f.mapMatrix P
     rw [← map_mul, (fromBlocks_mem_iff.1 hA).1, map_mul]
-  obtain ⟨X, hX_symm, hX_lift⟩ := lift_symmetric_matrix f
+  obtain ⟨X, hX_symm, hX_lift⟩ := lift_symmetric f
     IsLocalRing.residue_surjective Xbar hXbar_symm
   refine ⟨X, hX_symm, (IsLocalRing.residue_ne_zero_iff_isUnit _).1 ?_⟩
   rw [RingHom.map_det, map_add, map_mul, hX_lift]
@@ -321,34 +311,30 @@ theorem symplectic_det_one_local_ring
     ext i j; cases i <;> cases j <;> rfl
   rcases exists_symmetric_shear_making_P_invertible (hA_blocks ▸ hA) with ⟨X, hX_symm, hP_isUnit⟩
   set Lx : Matrix (l ⊕ l) (l ⊕ l) D := fromBlocks 1 X 0 1 with Lx_def
+  have Lx_mul : Lx * fromBlocks P Q R S =
+      fromBlocks (P + X * R) (Q + X * S) R S := by
+    simp only [Lx_def, fromBlocks_multiply, one_mul, zero_mul, zero_add]
   set A' : Matrix (l ⊕ l) (l ⊕ l) D := Lx * A with A'_def
   have h_fromBlocks2_in : fromBlocks (P + X * R) (Q + X * S) R S ∈ symplecticGroup l D := by
-    rw [← shear_mul_symplectic_blocks, ← hA_blocks, ← A'_def]
+    rw [← Lx_mul, ← hA_blocks, ← A'_def]
     refine (symplecticGroup l D).mul_mem ?_ hA
     rw [SymplecticGroup.mem_iff, fromBlocks_transpose, hX_symm, Lx_def]
     simp only [J, fromBlocks_multiply, mul_zero, mul_one, zero_add, mul_neg, add_zero, neg_zero,
       transpose_one, transpose_zero, neg_mul, one_mul, add_neg_cancel, zero_mul]
-  letI : Invertible (P + X * R) := (P + X * R).invertibleOfIsUnitDet hP_isUnit
+  have _ : Invertible (P + X * R) := (P + X * R).invertibleOfIsUnitDet hP_isUnit
   have h_main : A'.det = 1 := by
-    rw [A'_def, hA_blocks, shear_mul_symplectic_blocks]
-    exact symplectic_det_one_when_P_invertible h_fromBlocks2_in
+    rw [A'_def, hA_blocks, Lx_mul]
+    exact det_one_if_fromBlocks_invertible h_fromBlocks2_in
   rwa [det_mul, det_fromBlocks_zero₂₁ 1 X 1, det_one, one_mul, one_mul] at h_main
 
 end SymplecticMatrixDet
-
-lemma _root_.Matrix.J_map {l R S : Type*} [DecidableEq l] [Fintype l] [CommRing R] [CommRing S]
-    (f : R →+* S) : f.mapMatrix (J l R) = J l S := by
-  unfold J
-  rw [RingHom.mapMatrix_apply, fromBlocks_map, Matrix.map_zero f f.map_zero,
-    Matrix.map_one f f.map_zero f.map_one, Matrix.map_neg f f.map_neg,
-    Matrix.map_one f f.map_zero f.map_one]
 
 /-- The symplectic condition is preserved under ring homomorphisms. -/
 lemma symplecticGroup_map
     {l R S : Type*} [DecidableEq l] [Fintype l] [CommRing R] [CommRing S]
     (f : R →+* S) {A : Matrix (l ⊕ l) (l ⊕ l) R}
-    (hA : A ∈ Matrix.symplecticGroup l R) :
-    f.mapMatrix A ∈ Matrix.symplecticGroup l S := by
+    (hA : A ∈ symplecticGroup l R) :
+    f.mapMatrix A ∈ symplecticGroup l S := by
   rw [SymplecticGroup.mem_iff] at hA ⊢
   rw [← J_map f, ← map_mul, RingHom.mapMatrix_apply, RingHom.mapMatrix_apply,
     ← transpose_map, ← Matrix.map_mul, hA]; rfl
@@ -357,7 +343,7 @@ lemma symplecticGroup_map
 and `2n × 2n` symplectic matrix `A` over `R`, `A.det = 1`. -/
 theorem symplectic_matrix_det_main_statement
     {l R : Type*} [DecidableEq l] [Fintype l] [CommRing R]
-    {A : Matrix (l ⊕ l) (l ⊕ l) R} (hA : A ∈ Matrix.symplecticGroup l R) :
+    {A : Matrix (l ⊕ l) (l ⊕ l) R} (hA : A ∈ symplecticGroup l R) :
     A.det = 1 := by
   refine sub_eq_zero.1 <| eq_zero_of_localization (A.det - 1) fun J _ ↦ ?_
   rw [map_sub, RingHom.map_det, SymplecticMatrixDet.symplectic_det_one_local_ring
