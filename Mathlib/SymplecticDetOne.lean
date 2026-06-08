@@ -1,4 +1,9 @@
-import Mathlib
+import Mathlib.Algebra.Lie.OfAssociative
+import Mathlib.LinearAlgebra.SymplecticGroup
+import Mathlib.RingTheory.Henselian
+import Mathlib.RingTheory.PicardGroup
+import Mathlib.RingTheory.RegularLocalRing.Defs
+import Mathlib.RingTheory.SimpleRing.Principal
 
 namespace SymplecticMatrixDet
 
@@ -43,21 +48,6 @@ theorem symplectic_det_one_when_P_invertible
     h_block.1, mul_assoc Rᵀ, mul_inv_of_invertible, mul_one, h_block.2.2,
     det_one]
 
-/-- The symmetric shear matrix L_X = [[I, X], [0, I]] is symplectic when X is symmetric. -/
-theorem symmetric_shear_is_symplectic
-    {l R : Type*} [DecidableEq l] [Fintype l] [CommRing R]
-    {X : Matrix l l R} (hX : X.transpose = X) :
-    fromBlocks 1 X 0 1 ∈ symplecticGroup l R := by
-  rw [SymplecticGroup.mem_iff, fromBlocks_transpose, hX]
-  simp [fromBlocks_multiply, J]
-
-/-- det(L_X) = 1 for the symmetric shear L_X = [[I, X], [0, I]]. -/
-theorem symmetric_shear_det_one
-    {l R : Type*} [DecidableEq l] [Fintype l] [CommRing R]
-    {X : Matrix l l R} :
-    (fromBlocks 1 X 0 1).det = 1 := by
-  rw [Matrix.det_fromBlocks_zero₂₁ 1 X 1, det_one, one_mul]
-
 /-- Multiplying a symplectic matrix by the symmetric shear on the left:
     L_X * A = [[P + X*R, Q + X*S], [R, S]] -/
 theorem shear_mul_symplectic_blocks
@@ -66,7 +56,6 @@ theorem shear_mul_symplectic_blocks
     fromBlocks 1 X 0 1 * fromBlocks P Q Rmat S =
     fromBlocks (P + X * Rmat) (Q + X * S) Rmat S := by
   simp [fromBlocks_multiply]
-
 
 lemma round1_rank_normal_form {l k : Type*} [DecidableEq l] [Fintype l] [Field k]
   (M : Matrix l l k) :
@@ -329,16 +318,19 @@ theorem symplectic_det_one_local_ring
   have hA_blocks : A = fromBlocks P Q R S := by
     ext i j; cases i <;> cases j <;> rfl
   rcases exists_symmetric_shear_making_P_invertible (hA_blocks ▸ hA) with ⟨X, hX_symm, hP_isUnit⟩
-  let Lx : Matrix (l ⊕ l) (l ⊕ l) D := fromBlocks 1 X 0 1
+  set Lx : Matrix (l ⊕ l) (l ⊕ l) D := fromBlocks 1 X 0 1 with Lx_def
   set A' : Matrix (l ⊕ l) (l ⊕ l) D := Lx * A with A'_def
   have h_fromBlocks2_in : fromBlocks (P + X * R) (Q + X * S) R S ∈ symplecticGroup l D := by
     rw [← shear_mul_symplectic_blocks, ← hA_blocks, ← A'_def]
-    exact (symplecticGroup l D).mul_mem (symmetric_shear_is_symplectic hX_symm) hA
+    refine (symplecticGroup l D).mul_mem ?_ hA
+    rw [SymplecticGroup.mem_iff, fromBlocks_transpose, hX_symm, Lx_def]
+    simp only [J, fromBlocks_multiply, mul_zero, mul_one, zero_add, mul_neg, add_zero, neg_zero,
+      transpose_one, transpose_zero, neg_mul, one_mul, add_neg_cancel, zero_mul]
   letI : Invertible (P + X * R) := (P + X * R).invertibleOfIsUnitDet hP_isUnit
   have h_main : A'.det = 1 := by
     rw [A'_def, hA_blocks, shear_mul_symplectic_blocks]
     exact symplectic_det_one_when_P_invertible h_fromBlocks2_in
-  rwa [det_mul, symmetric_shear_det_one, one_mul] at h_main
+  rwa [det_mul, det_fromBlocks_zero₂₁ 1 X 1, det_one, one_mul, one_mul] at h_main
 
 end SymplecticMatrixDet
 
