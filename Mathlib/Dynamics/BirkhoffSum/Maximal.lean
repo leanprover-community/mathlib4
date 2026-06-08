@@ -10,8 +10,6 @@ import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.Algebra.Order.Group.PartialSups
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.RCLike.Lemmas
-import Mathlib.Data.Real.StarOrdered
 public import Mathlib.Dynamics.BirkhoffSum.Average
 public import Mathlib.Dynamics.BirkhoffSum.Measurable
 public import Mathlib.Dynamics.BirkhoffSum.Integrable
