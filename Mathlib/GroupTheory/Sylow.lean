@@ -738,7 +738,7 @@ theorem card_eq_multiplicity [Finite G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow
   exact P.1.card_subgroup_dvd_card
 
 variable (G) in
-theorem _root_.Group.natCard_dvd_univ_prod_orderOf [Fintype G] :
+theorem _root_.Group.card_dvd_prod_orderOf [Fintype G] :
     Nat.card G ∣ ∏ g : G, orderOf g := by
   refine Nat.factorization_prime_le_iff_dvd Nat.card_pos.ne' ?_ |>.mp fun p hp ↦ ?_
   · exact prod_ne_zero_iff.mpr fun g _ ↦ orderOf_ne_zero_iff.mpr <| isOfFinOrder_of_finite g
