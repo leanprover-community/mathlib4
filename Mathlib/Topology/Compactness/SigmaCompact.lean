@@ -350,7 +350,7 @@ protected theorem isCompact (n : ℕ) : IsCompact (K n) :=
 theorem subset_interior_succ (n : ℕ) : K n ⊆ interior (K (n + 1)) :=
   K.subset_interior_succ' n
 
-@[mono]
+@[gcongr, mono]
 protected theorem subset ⦃m n : ℕ⦄ (h : m ≤ n) : K m ⊆ K n :=
   OrderHomClass.mono K h
 

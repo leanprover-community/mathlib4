@@ -1,11 +1,12 @@
 /-
-Copyright (c) 2023 Sebastian Zimmer. All rights reserved.
+Copyright (c) 2025 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
+Authors: Jovan Gerbscheid, Sebastian Zimmer, Mario Carneiro, Heather Macbeth
 -/
 module
 
 public meta import Lean.Elab.Tactic.Rewrite
+public meta import Lean.Elab.ConfigEval
 public import Mathlib.Tactic.GRewrite.Core
 
 /-!
@@ -21,25 +22,85 @@ This file defines the tactics that use the backend defined in `Mathlib.Tactic.GR
 
 -/
 
-public meta section
+meta section
 
-namespace Mathlib.Tactic
+namespace Mathlib.Tactic.GRewrite
 
 open Lean Meta Elab Parser Tactic
+
+/-- Return the union of `lctx₁` and `lctx₂`. -/
+def mergeLCtx (lctx₁ lctx₂ : LocalContext) : LocalContext :=
+  lctx₂.foldl (init := lctx₁) fun lctx decl ↦
+    if lctx.contains decl.fvarId then
+      lctx
+    else
+      lctx.addDecl decl
+
+/-- Merge `lctx` into the local contexts in `tree`.
+This is used to let `tree` know about bound variables that the term has been unified with. -/
+partial def updateInfoTree (lctx : LocalContext) (tree : InfoTree) : InfoTree :=
+  match tree with
+  | .context i tree => .context i (updateInfoTree lctx tree)
+  | .node i children =>
+    let i := match i with
+      | .ofTermInfo i => .ofTermInfo { i with lctx := mergeLCtx lctx i.lctx }
+      | .ofFieldInfo i => .ofFieldInfo { i with lctx := mergeLCtx lctx i.lctx }
+      | .ofMacroExpansionInfo i => .ofMacroExpansionInfo { i with lctx := mergeLCtx lctx i.lctx }
+      | _ => i
+    .node i (children.map (updateInfoTree lctx))
+  | _ => tree
+
+/-- Analogous to `finishElabRewrite`. -/
+def finishElabGRewrite (r : GRewriteResult) : MetaM GRewriteResult := do
+  let mvarIds ← r.mvarIds.filterM (not <$> ·.isAssigned)
+  mvarIds.forM fun newMVarId => newMVarId.withContext do
+    if ← Meta.isProp (← newMVarId.getType) then
+      newMVarId.setKind .syntheticOpaque
+  return { r with mvarIds }
+
+/-- Mostly analogous to `elabRewrite`. -/
+def elabGRewrite (mvarId : MVarId) (e : Expr) (stx : Syntax) (forwardImp symm : Bool)
+    (config : GRewrite.Config) : TacticM GRewriteResult := do
+  let treesSaved ← getResetInfoTrees
+  let r ← Term.withSynthesize do
+    let mvarCounterSaved := (← getMCtx).mvarCounter
+    let thm ← elabTerm stx none true
+    if thm.hasSyntheticSorry then
+      throwAbortTactic
+    unless ← occursCheck mvarId thm do
+      throwErrorAt stx
+        "Occurs check failed: Expression{indentExpr thm}\ncontains the goal {Expr.mvar mvarId}"
+    let mvarIds ← getMVarsNoDelayed thm
+    let mctx ← getMCtx
+    let mvarIds := mvarIds.filter fun mvarId ↦ mvarCounterSaved ≤ (mctx.getDecl mvarId).index
+    let lctx ← getLCtx
+    let mvarIds ← mvarIds.mapM fun mvarId ↦ do
+      let mut fvarIds := #[]
+      for decl in (← mvarId.getDecl).lctx do
+        unless lctx.contains decl.fvarId do
+          fvarIds := fvarIds.push decl
+      return (mvarId, fvarIds)
+    let r ← mvarId.grewrite e thm mvarIds
+      (forwardImp := forwardImp) (symm := symm) (config := config)
+    let mctx ← getMCtx
+    let mvarIds := r.mvarIds.filter fun mvarId => mvarCounterSaved ≤ (mctx.getDecl mvarId).index
+    return { r with mvarIds }
+  let s ← getInfoState
+  let trees := s.trees.map (·.substitute s.assignment)
+  let trees := match r.lctx? with
+    | some lctx => trees.map (updateInfoTree lctx)
+    | none => trees
+  modifyInfoState fun s => { s with trees := treesSaved ++ trees }
+  finishElabGRewrite r
 
 /-- Apply the `grewrite` tactic to the current goal. -/
 def grewriteTarget (stx : Syntax) (symm : Bool) (config : GRewrite.Config) : TacticM Unit := do
   let goal ← getMainGoal
-  Term.withSynthesize <| goal.withContext do
-    let e ← elabTerm stx none true
-    if e.hasSyntheticSorry then
-      throwAbortTactic
-    let goal ← getMainGoal
-    let target ← goal.getType
-    let r ← goal.grewrite target e (forwardImp := false) (symm := symm) (config := config)
-    let mvarNew ← mkFreshExprSyntheticOpaqueMVar r.eNew (← goal.getTag)
-    goal.assign (mkApp r.impProof mvarNew)
-    replaceMainGoal (mvarNew.mvarId! :: r.mvarIds)
+  let r ← goal.withContext do
+    elabGRewrite goal (← goal.getType) stx (forwardImp := false) (symm := symm) (config := config)
+  let mvarNew ← mkFreshExprSyntheticOpaqueMVar r.eNew (← goal.getTag)
+  goal.assign (r.impProof.app mvarNew)
+  replaceMainGoal (mvarNew.mvarId! :: r.mvarIds)
 
 /-- Apply the `grewrite` tactic to a local hypothesis. -/
 def grewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : GRewrite.Config) :
@@ -47,13 +108,9 @@ def grewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : G
   -- Note: we cannot execute `replace` inside `Term.withSynthesize`.
   -- See issues https://github.com/leanprover-community/mathlib4/issues/2711 and https://github.com/leanprover-community/mathlib4/issues/2727.
   let goal ← getMainGoal
-  let r ← Term.withSynthesize <| withMainContext do
-    let e ← elabTerm stx none true
-    if e.hasSyntheticSorry then
-      throwAbortTactic
-    let localDecl ← fvarId.getDecl
-    goal.grewrite localDecl.type e (forwardImp := true) (symm := symm) (config := config)
-  let proof := .app (r.impProof) (.fvar fvarId)
+  let r ← withMainContext do
+    elabGRewrite (← getMainGoal) (← fvarId.getType) stx symm (forwardImp := true) (config := config)
+  let proof := r.impProof.app (.fvar fvarId)
   let { mvarId, .. } ← goal.replace fvarId proof r.eNew
   replaceMainGoal (mvarId :: r.mvarIds)
 
@@ -95,7 +152,8 @@ interprets `· → ·` as a relation instead of adding the hypothesis as a side 
 -/
 syntax (name := grewriteSeq) "grewrite" optConfig rwRuleSeq (location)? : tactic
 
-@[tactic grewriteSeq, inherit_doc grewriteSeq] def evalGRewriteSeq : Tactic := fun stx => do
+@[tactic grewriteSeq, inherit_doc grewriteSeq]
+public def evalGRewriteSeq : Tactic := fun stx => do
   let cfg ← elabGRewriteConfig stx[1]
   let loc := expandOptLocation stx[3]
   withRWRulesSeq stx[0] stx[2] fun symm term => do
@@ -180,7 +238,7 @@ used. This provides a convenient way to unfold `e`.
   `apply_rewrite (transparency := default) [e₁, ..., eₙ]`.
 * `apply_rewrite [e₁, ..., eₙ] at l` rewrites at the location(s) `l`.
 -/
-macro "apply_rewrite" c:optConfig s:rwRuleSeq loc:(location)? : tactic => do
+macro "apply_rewrite" c:optConfig s:rwRuleSeq loc:(location)? : tactic =>
   `(tactic| grewrite $[$(getConfigItems c)]* +implicationHyp $s:rwRuleSeq $(loc)?)
 
 /--
@@ -199,7 +257,7 @@ used. This provides a convenient way to unfold `e`.
   `apply_rw (transparency := default) [e₁, ..., eₙ]`.
 * `apply_rw [e₁, ..., eₙ] at l` rewrites at the location(s) `l`.
 -/
-macro (name := applyRwSeq) "apply_rw " c:optConfig s:rwRuleSeq loc:(location)? : tactic => do
+macro (name := applyRwSeq) "apply_rw " c:optConfig s:rwRuleSeq loc:(location)? : tactic =>
   `(tactic| grw $[$(getConfigItems c)]* +implicationHyp $s:rwRuleSeq $(loc)?)
 
 /--
@@ -230,8 +288,9 @@ inequalities.
   * `nth_grewrite +implicationHyp n₁ ... nₖ [e₁, ..., eₙ]` interprets `· → ·` as a relation.
 * `nth_grewrite n₁ ... nₖ [e₁, ..., eₙ] at l` rewrites at the location(s) `l`.
 -/
-macro "nth_grewrite" c:optConfig ppSpace nums:(num)+ s:rwRuleSeq loc:(location)? : tactic => do
-  `(tactic| grewrite $[$(getConfigItems c)]* (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
+macro "nth_grewrite" c:optConfig ppSpace nums:(num)+ s:rwRuleSeq loc:(location)? : tactic =>
+  `(tactic|
+    grewrite $[$(getConfigItems c)]* +useKAbstract (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
 
 /--
 `nth_grw n₁ ... nₖ [e₁, ..., eₙ]` is a variant of `grw` that for each expression `eᵢ : R aᵢ bᵢ` only
@@ -260,7 +319,8 @@ inequalities.
   * `nth_grw +implicationHyp n₁ ... nₖ [e₁, ..., eₙ]` interprets `· → ·` as a relation.
 * `nth_grw n₁ ... nₖ [e₁, ..., eₙ] at l` rewrites at the location(s) `l`.
 -/
-macro "nth_grw" c:optConfig ppSpace nums:(num)+ s:rwRuleSeq loc:(location)? : tactic => do
-  `(tactic| grw $[$(getConfigItems c)]* (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
+macro "nth_grw" c:optConfig ppSpace nums:(num)+ s:rwRuleSeq loc:(location)? : tactic =>
+  `(tactic|
+    grw $[$(getConfigItems c)]* +useKAbstract (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
 
-end Mathlib.Tactic
+end Mathlib.Tactic.GRewrite

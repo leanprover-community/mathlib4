@@ -30,7 +30,7 @@ Related files are:
   `Sigma.Lex` where all summands are the same
 -/
 
-@[expose] public section
+public section
 
 
 namespace Sigma

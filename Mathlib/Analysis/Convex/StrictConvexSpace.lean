@@ -54,7 +54,7 @@ formulated only for the case `𝕜 = ℝ`.
 convex, strictly convex
 -/
 
-@[expose] public section
+public section
 
 open Convex Pointwise Set Metric
 

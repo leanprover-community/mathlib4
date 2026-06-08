@@ -6,6 +6,7 @@ Authors: Michael Rothgang, Ben Eltschig
 module
 
 public import Mathlib.Geometry.Manifold.LocalDiffeomorph
+public import Mathlib.Geometry.Manifold.Notation
 
 import Mathlib.Analysis.Calculus.LocalExtr.Basic
 import Mathlib.Analysis.LocallyConvex.Separation
@@ -351,7 +352,7 @@ variable
 /-- If a function `f` is differentiable at `x` with surjective `mfderiv I I' f x` and `x` is an
 interior point with respect to `I`, `f x` must be an interior point with respect to `I'`. -/
 lemma MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv {f : M → N} {x : M}
-    (hf : MDifferentiableAt I I' f x) (hf' : Surjective (mfderiv I I' f x))
+    (hf : MDiffAt f x) (hf' : Surjective (mfderiv% f x))
     (hx : I.IsInteriorPoint x) : I'.IsInteriorPoint (f x) := by
   -- Since p-adic manifolds don't have boundary, WLOG `𝕜` is `ℝ` or `ℂ` and `E` is normed over `ℝ`.
   wlog _ : IsRCLikeNormedField 𝕜
@@ -362,7 +363,7 @@ lemma MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv {f : M → N} {x :
   -- Write everything in terms of extended charts around `x` and `f x`.
   simp only [mfderiv, hf, ite_true] at hf'
   have hf'' := hf.differentiableWithinAt_writtenInExtChartAt.differentiableAt <| by
-    simpa [← mem_interior_iff_mem_nhds] using hx
+    simpa [← mem_interior_iff_mem_nhds] using! hx
   rw [fderivWithin_eq_fderiv (I.uniqueDiffOn _ <| by simp) hf''] at hf'
   /- Since `writtenInExtChartAt I I' x f` is differentiable with surjective differential at `x`
   over `𝕜`, it also is so over `ℝ`. -/
@@ -375,7 +376,7 @@ lemma MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv {f : M → N} {x :
   a closed convex set with nonempty interior (`I'.range`), it must send `x` to that interior. -/
   have := hf''.mem_interior_convex_of_surjective_fderiv (Filter.inter_mem ?_ ?_) I'.convex_range
     I'.isClosed_range I'.nonempty_interior (writtenInExtChartAt_mapsTo.mono_right ?_) hf'
-  · simpa using this
+  · simpa using! this
   · rw [← nhdsWithin_eq_nhds.2 (mem_interior_iff_mem_nhds.1 hx)]
     exact extChartAt_target_mem_nhdsWithin x
   · exact extChartAt_preimage_mem_nhds <| hf.continuousAt.preimage_mem_nhds <|
@@ -399,12 +400,12 @@ lemma IsLocalDiffeomorphAt.isBoundaryPoint_iff (hn : n ≠ 0) {f : M → N} {x :
 lemma IsLocalDiffeomorphOn.preimage_interior_inter (hn : n ≠ 0) {f : M → N} {s : Set M}
     (hf : IsLocalDiffeomorphOn I I' n f s) : f ⁻¹' I'.interior N ∩ s = I.interior M ∩ s := by
   ext x
-  simpa using fun hx ↦ ((hf ⟨x, hx⟩).isInteriorPoint_iff hn).symm
+  simpa using! fun hx ↦ ((hf ⟨x, hx⟩).isInteriorPoint_iff hn).symm
 
 lemma IsLocalDiffeomorphOn.preimage_boundary_inter (hn : n ≠ 0) {f : M → N} {s : Set M}
     (hf : IsLocalDiffeomorphOn I I' n f s) : f ⁻¹' I'.boundary N ∩ s = I.boundary M ∩ s := by
   ext x
-  simpa using fun hx ↦ ((hf ⟨x, hx⟩).isBoundaryPoint_iff hn).symm
+  simpa using! fun hx ↦ ((hf ⟨x, hx⟩).isBoundaryPoint_iff hn).symm
 
 lemma IsLocalDiffeomorph.preimage_interior (hn : n ≠ 0) {f : M → N}
     (hf : IsLocalDiffeomorph I I' n f) : f ⁻¹' I'.interior N = I.interior M := by
@@ -456,7 +457,7 @@ open TopologicalSpace
 lemma isInteriorPoint_iff_isInteriorPoint_val {u : Opens M} {x : u} :
     I.IsInteriorPoint x ↔ I.IsInteriorPoint x.1 := by
   simpa [I.isInteriorPoint_iff, u.chartAt_eq,
-    OpenPartialHomeomorph.subtypeRestr, mem_interior_iff_mem_nhds] using
+    OpenPartialHomeomorph.subtypeRestr, mem_interior_iff_mem_nhds] using!
     fun _ _ ↦ (chartAt H x.1).extend_preimage_mem_nhds (mem_chart_source H x.1) (u.2.mem_nhds x.2)
 
 /-- For `u : Opens M`, `x : u` is a boundary point iff `x.val : M` is. -/
