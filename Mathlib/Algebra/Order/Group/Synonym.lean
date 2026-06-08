@@ -191,14 +191,23 @@ end Monoid
 
 namespace Lex
 
+set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive] instance [One α] : One (Lex α) := inferInstanceAs <| One α
+
+set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive] instance [Mul α] : Mul (Lex α) := inferInstanceAs <| Mul α
+
+set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive] instance [Inv α] : Inv (Lex α) := inferInstanceAs <| Inv α
+
+set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive] instance [Div α] : Div (Lex α) := inferInstanceAs <| Div α
 
+set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive (attr := to_additive) (reorder := 1 2) instSMul]
 instance [Pow α β] : Pow (Lex α) β := inferInstanceAs <| Pow α β
 
+set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive (attr := to_additive) (reorder := 1 2) instSMul']
 instance [Pow α β] : Pow α (Lex β) := inferInstanceAs <| Pow α β
 
@@ -340,23 +349,23 @@ end Monoid
 
 namespace Colex
 
-set_option backward.inferInstanceAs.wrap.instances false
+set_option backward.inferInstanceAs.wrap.instances false in
+@[to_additive] instance [One α] : One (Colex α) := inferInstanceAs <| One α
 
-@[to_additive]
-instance [One α] : One (Colex α) := inferInstanceAs <| One α
+set_option backward.inferInstanceAs.wrap.instances false in
+@[to_additive] instance [Mul α] : Mul (Colex α) := inferInstanceAs <| Mul α
 
-@[to_additive]
-instance [Mul α] : Mul (Colex α) := inferInstanceAs <| Mul α
+set_option backward.inferInstanceAs.wrap.instances false in
+@[to_additive] instance [Inv α] : Inv (Colex α) := inferInstanceAs <| Inv α
 
-@[to_additive]
-instance [Inv α] : Inv (Colex α) := inferInstanceAs <| Inv α
+set_option backward.inferInstanceAs.wrap.instances false in
+@[to_additive] instance [Div α] : Div (Colex α) := inferInstanceAs <| Div α
 
-@[to_additive]
-instance [Div α] : Div (Colex α) := inferInstanceAs <| Div α
-
+set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive (attr := to_additive) (reorder := 1 2) instSMul]
 instance [Pow α β] : Pow (Colex α) β := inferInstanceAs <| Pow α β
 
+set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive (attr := to_additive) (reorder := 1 2) instSMul']
 instance [Pow α β] : Pow α (Colex β) := inferInstanceAs <| Pow α β
 
