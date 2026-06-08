@@ -233,7 +233,7 @@ instance sdiv : SDiv (Set α) (Set β) where sdiv := image2 (· /ₛ ·)
 @[to_additive (attr := simp)]
 lemma image2_sdiv : image2 (· /ₛ ·) s t = s /ₛ t := rfl
 
-@[to_additive]
+@[to_additive Set.image_vsub_prod]
 lemma image_sdiv_prod : (fun x : β × β ↦ x.fst /ₛ x.snd) '' s ×ˢ t = s /ₛ t := image_prod _
 
 @[to_additive]
