@@ -11,7 +11,7 @@ even if we set `doc.verso` to `true. -/
 
 /--
 warning: The module doc-string for a file should be the first command after the imports.
-Please, add a module doc-string before `def foo :=
+Please, add a module doc-string (`/-! ... -/`) before `def foo :=
   37`.
 
 Note: This linter can be disabled with `set_option linter.style.header false`
