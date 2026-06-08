@@ -21,11 +21,11 @@ flat extension of an integral domain.
 
 ## Main results
 
-* `Ideal.sum_ramification_inerta_eq_finrank`: Let `R` be an integral domain, let `S` be a finite
+* `Ideal.sum_ramification_inertia_eq_finrank`: Let `R` be an integral domain, let `S` be a finite
   flat `R`-algebra, and let `p` be a prime ideal of `R`. Then the sum over all prime ideals `q` of
   `S` lying over `p` of the ramification index of `q` times the inertia degree of `q` equals the
   rank of `S` as an `R`-module.
-* `Ideal.sum_ramification_inerta_eq_card`: Let `S/R` be a finite flat extension of integral domains,
+* `Ideal.sum_ramification_inertia_eq_card`: Let `S/R` be a finite flat extension of domains,
   and let `p` be prime ideal of `R`. Assume that `R` is the invariant subring of a finite group `G`
   acting on `S`. Then the sum over all prime ideals `q` of `S` lying over `p` of the ramification
   index of `q` times the inertia degree of `q` equals the cardinality of `G`.
@@ -45,6 +45,7 @@ theorem sum_ramification_inertia_eq_finrank_fiber
     [Algebra.QuasiFinite R S] [Flat R S] [Fintype (p.primesOver S)] :
     ∑ q : p.primesOver S, q.1.ramificationIdx' R * q.1.inertiaDeg' R =
       finrank p.ResidueField (p.Fiber S) := by
+  let := Fintype.ofFinite (PrimeSpectrum (p.Fiber S))
   rw [IsArtinianRing.finrank_eq_sum_primeSpectrum, ← (primesOverOrderIsoFiber R S p).symm.sum_comp]
   apply Finset.sum_congr rfl
   intro q _
@@ -68,7 +69,7 @@ theorem sum_ramification_inertia_eq_finrank_fiber
 /-- Let `R` be an integral domain, let `S` be a finite flat `R`-algebra, and let `p` be a prime
 ideal of `R`. Then the sum over all prime ideals `q` of `S` lying over `p` of the ramification
 index of `q` times the inertia degree of `q` equals the rank of `S` as an `R`-module. -/
-theorem sum_ramification_inerta_eq_finrank
+theorem sum_ramification_inertia_eq_finrank
     [IsDomain R] [Module.Finite R S] [Module.Flat R S] [Fintype (p.primesOver S)] :
     ∑ q : p.primesOver S, q.1.ramificationIdx' R * q.1.inertiaDeg' R = Module.finrank R S := by
   rw [sum_ramification_inertia_eq_finrank_fiber, finrank_fiber_eq_finrank]
@@ -82,6 +83,6 @@ theorem sum_ramification_inertia_eq_card
     {G : Type*} [Group G] [MulSemiringAction G S] [IsGaloisGroup G R S] :
     ∑ q : p.primesOver S, q.1.ramificationIdx' R * q.1.inertiaDeg' R = Nat.card G := by
   let := IsGaloisGroup.finite G R S
-  rw [sum_ramification_inerta_eq_finrank, IsGaloisGroup.card_eq_finrank' G R S]
+  rw [sum_ramification_inertia_eq_finrank, IsGaloisGroup.card_eq_finrank' G R S]
 
 end Ideal
