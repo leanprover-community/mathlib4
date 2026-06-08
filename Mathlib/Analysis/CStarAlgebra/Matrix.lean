@@ -317,7 +317,11 @@ lemma l2_opNorm_eq_pi_norm {A : Matrix n n 𝕜} (hA : A.IsHermitian) (f : C((sp
     rfl
 
 set_option backward.isDefEq.respectTransparency false in
-instance : IsometricContinuousFunctionalCalculus ℝ (Matrix n n 𝕜) IsSelfAdjoint where
+/-- The isometric continuous functional calculus on `Matrix n n 𝕜` arising from the operator norm
+given by the identification with (continuous) linear endomorphisms of `EuclideanSpace 𝕜 n`. -/
+@[instance_reducible]
+def instIsometricContinuousFunctionalCalculus :
+    IsometricContinuousFunctionalCalculus ℝ (Matrix n n 𝕜) IsSelfAdjoint where
   predicate_zero := by simp
   spectrum_nonempty := ContinuousFunctionalCalculus.spectrum_nonempty
   exists_cfc_of_predicate := ContinuousFunctionalCalculus.exists_cfc_of_predicate
@@ -328,6 +332,9 @@ instance : IsometricContinuousFunctionalCalculus ℝ (Matrix n n 𝕜) IsSelfAdj
     simp only [IsHermitian.cfcAux_apply, Unitary.conjStarAlgAut_apply, l2_opNorm_unitary_conj,
       l2_opNorm_diagonal]
     exact l2_opNorm_eq_pi_norm hA f
+
+scoped[Matrix.Norms.L2Operator] attribute [instance]
+  Matrix.instIsometricContinuousFunctionalCalculus
 
 end Matrix
 
