@@ -18,12 +18,18 @@ public import Mathlib.Dynamics.BirkhoffSum.Integrable
 # Maximal ergodic theorem.
 
 We prove the maximal ergodic theorem for a measure-preserving map `f` and an integrable function
-`g`. The maximal ergodic operator `birkhoffAverageSup f g x` is defined as the supremum of the
-Birkhoff averages of `g` over all `n`. Moreover, we show some results about the auxiliary definition
-`birkhoffMax f g n`, defined as the maximum of the Birkhoff sums ranging between `0` and `n`.
+`g`.
+
+## Main definitions
+
+* `birkhoffSumSup f g`: the supremum of the Birkhoff sums of `g` along orbits of `f`.
+* `birkhoffAverageSup f g`: the maximal ergodic operator, defined as the supremum of the
+  Birkhoff averages of `g` along orbits of `f`.
 
 ## Main results
 
+* `setIntegral_birkhoffSumSup_nonneg`: for a measure-preserving `f`, the integral of an integrable
+  `g` over the set where `birkhoffSumSup f g` is positive is non-negative.
 * `distribution_birkhoffAverageSup_le_integral`: the cumulative distribution function of
   `birkhoffAverageSup` at `a` is less than or equal to the integral of `g` on the set where
   `a < birkhoffAverageSup f g x`.
@@ -38,7 +44,6 @@ variable {α M : Type*} {f : α → α} {g : α → M} {n : ℕ} {x : α}
 @[expose]
 public section BirkhoffMax
 
-/-- The maximum of `birkhoffSum f g i` for `i` ranging from `0` to `n`. -/
 def birkhoffMax [AddCommMonoid M] [SemilatticeSup M]
     (f : α → α) (g : α → M) : ℕ →o (α → M) :=
   partialSups (birkhoffSum f g)
@@ -142,7 +147,9 @@ end MeasurePreserving
 
 noncomputable section BirkhoffSup
 
-def birkhoffSumSup (f : α → α) (g : α → ℝ) (x : α) : EReal :=
+/-- The supremum of the Birkhoff sums of `g` along orbits of `f`. -/
+@[expose]
+public def birkhoffSumSup (f : α → α) (g : α → ℝ) (x : α) : EReal :=
   ⨆ n, ↑(birkhoffSum f g n x)
 
 lemma birkhoffSumSup_eq_iSup_birkhoffMax :
@@ -210,7 +217,8 @@ lemma tendsto_setIntegral_birkhoffMax_support :
   · intro i j hij x
     grind [birkhoffMax_nonneg, (birkhoffMax f g).mono hij x, Function.mem_support]
 
-theorem setIntegral_birkhoffSumSup_nonneg :
+/-- The integral of `g` over the set where `birkhoffSumSup f g` is positive is non-negative. -/
+public theorem setIntegral_birkhoffSumSup_nonneg :
     0 ≤ ∫ x in {x | 0 < birkhoffSumSup f g x}, g x ∂μ := by
   apply ge_of_tendsto' (tendsto_setIntegral_birkhoffMax_support μ hf hg)
   intro n
