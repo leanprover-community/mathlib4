@@ -70,7 +70,7 @@ namespace Opens
 
 instance : SetLike (Opens α) α where
   coe := Opens.carrier
-  coe_injective' := fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr
+  coe_injective := fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr
 
 instance : PartialOrder (Opens α) := fast_instance% .ofSetLike (Opens α) α
 
@@ -448,7 +448,7 @@ theorem toOpens_injective : Injective (toOpens : OpenNhdsOf x → Opens α)
 
 instance : SetLike (OpenNhdsOf x) α where
   coe U := U.1
-  coe_injective' := SetLike.coe_injective.comp toOpens_injective
+  coe_injective := SetLike.coe_injective.comp toOpens_injective
 
 instance : PartialOrder (OpenNhdsOf x) := fast_instance% .ofSetLike (OpenNhdsOf x) α
 

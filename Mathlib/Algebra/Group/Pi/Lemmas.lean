@@ -12,6 +12,8 @@ public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Data.Set.Piecewise
 public import Mathlib.Logic.Pairwise
 
+import Mathlib.Util.Delaborators
+
 /-!
 # Extra lemmas about products of monoids and groups
 
@@ -27,7 +29,7 @@ universe u v w
 
 variable {ι α : Type*}
 variable {I : Type u}
-variable {f : I → Type v} {M : ι → Type*}
+variable {f : I → Type v} {M N : ι → Type*}
 
 variable (i : I)
 
@@ -64,64 +66,40 @@ end MulHom
 
 section MulHom
 
+variable [(i : I) → Mul (f i)]
+
 /-- A family of MulHom's `f a : γ →ₙ* β a` defines a MulHom `MulHom.pi f : γ →ₙ* Π a, β a`
 given by `MulHom.pi f x b = f b x`. -/
 @[to_additive (attr := simps)
   /-- A family of AddHom's `f a : γ → β a` defines an AddHom `AddHom.pi f : γ → Π a, β a` given by
   `AddHom.pi f x b = f b x`. -/]
-def MulHom.pi {γ : Type w} [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i) : γ →ₙ* ∀ i, f i where
+def MulHom.pi {γ : Type w} [Mul γ] (g : ∀ i, γ →ₙ* f i) : γ →ₙ* ∀ i, f i where
   toFun x i := g i x
   map_mul' x y := funext fun i => (g i).map_mul x y
 
 @[deprecated (since := "2026-05-29")] alias Pi.addHom := AddHom.pi
-@[to_additive existing (attr := deprecated "MulHom.pi" (since := "2026-05-29"))] alias
+@[to_additive existing (attr := deprecated MulHom.pi (since := "2026-05-29"))] alias
   Pi.mulHom := MulHom.pi
 
 @[deprecated (since := "2026-05-29")] alias Pi.addHom_apply := AddHom.pi_apply
-@[to_additive existing (attr := deprecated "MulHom.pi_apply" (since := "2026-05-29"))] alias
+@[to_additive existing (attr := deprecated MulHom.pi_apply (since := "2026-05-29"))] alias
   Pi.mulHom_apply := MulHom.pi_apply
 
 @[to_additive]
-theorem MulHom.injective_pi {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i)
+theorem MulHom.pi_injective {γ : Type w} [Nonempty I] [Mul γ] (g : ∀ i, γ →ₙ* f i)
     (hg : ∀ i, Function.Injective (g i)) : Function.Injective (MulHom.pi g) := fun _ _ h =>
   let ⟨i⟩ := ‹Nonempty I›
   hg i ((funext_iff.mp h :) i)
 
+@[deprecated (since := "2026-05-29")] alias AddHom.injective_pi := AddHom.pi_injective
+@[to_additive existing (attr := deprecated MulHom.pi_injective (since := "2026-05-29"))] alias
+  MulHom.injective_pi := MulHom.pi_injective
+
 @[deprecated (since := "2026-05-29")] alias Pi.addHom_injective := AddHom.injective_pi
-@[to_additive existing (attr := deprecated "MulHom.injective_pi" (since := "2026-05-29"))] alias
-  Pi.mulHom_injective := MulHom.injective_pi
-
-/-- A family of monoid homomorphisms `f a : γ →* β a` defines a monoid homomorphism
-`Pi.monoidHom f : γ →* Π a, β a` given by `Pi.monoidHom f x b = f b x`. -/
-@[to_additive (attr := simps)
-  /-- A family of additive monoid homomorphisms `f a : γ →+ β a` defines a monoid homomorphism
-  `Pi.addMonoidHom f : γ →+ Π a, β a` given by `Pi.addMonoidHom f x b = f b x`. -/]
-def MonoidHom.pi {γ : Type w} [∀ i, MulOneClass (f i)] [MulOneClass γ] (g : ∀ i, γ →* f i) :
-    γ →* ∀ i, f i :=
-  { MulHom.pi fun i => (g i).toMulHom with
-    toFun := fun x i => g i x
-    map_one' := funext fun i => (g i).map_one }
-
-@[deprecated (since := "2026-05-29")] alias Pi.addMonoidHom := AddMonoidHom.pi
-@[to_additive existing (attr := deprecated "MonoidHom.pi" (since := "2026-05-29"))] alias
-  Pi.monoidHom := MonoidHom.pi
-
-@[deprecated (since := "2026-05-29")] alias Pi.addMonoidHom_apply := AddMonoidHom.pi_apply
-@[to_additive existing (attr := deprecated "MonoidHom.pi_apply" (since := "2026-05-29"))] alias
-  Pi.monoidHom_apply := MonoidHom.pi_apply
-
-@[to_additive]
-theorem MonoidHom.injective_pi {γ : Type w} [Nonempty I] [∀ i, MulOneClass (f i)] [MulOneClass γ]
-    (g : ∀ i, γ →* f i) (hg : ∀ i, Function.Injective (g i)) :
-    Function.Injective (MonoidHom.pi g) :=
-  MulHom.injective_pi (fun i => (g i).toMulHom) hg
-
-@[deprecated (since := "2026-05-29")] alias Pi.addMonoidHom_injective := AddMonoidHom.injective_pi
-@[to_additive existing (attr := deprecated "MonoidHom.injective_pi" (since := "2026-05-29"))] alias
-  Pi.monoidHom_injective := MonoidHom.injective_pi
+@[to_additive existing (attr := deprecated MulHom.pi_injective (since := "2026-05-29"))] alias
+  Pi.mulHom_injective := MulHom.pi_injective
 
 variable (f)
-variable [(i : I) → Mul (f i)]
 
 /-- Evaluation of functions into an indexed collection of semigroups at a point is a semigroup
 homomorphism.
@@ -132,6 +110,17 @@ This is `Function.eval i` as a `MulHom`. -/
 def Pi.evalMulHom (i : I) : (∀ i, f i) →ₙ* f i where
   toFun g := g i
   map_mul' _ _ := Pi.mul_apply _ _ i
+
+/-- A family of MulHom's `f i : M i →ₙ* N i` defines a MulHom
+`MulHom.piMap f : (Π i, M i) →ₙ* (Π i, N i)`
+given by `MulHom.piMap f x i = f i x`. This is `Pi.map` for `MulHom`s. -/
+@[to_additive (attr := simps!)
+  /-- A family of AddHom's `f i : M i →ₙ+ N i` defines an AddHom
+  `AddHom.piMap f : (Π i, M i) →ₙ+ (Π i, N i)`
+  given by `AddHom.piMap f x i = f i x`. This is `Pi.map` for `AddHom`s. -/]
+def MulHom.piMap [Π i, Mul (M i)] [Π i, Mul (N i)] (g : Π i, M i →ₙ* N i) :
+    (Π i, M i) →ₙ* (Π i, N i) :=
+  .pi fun i ↦ (g i).comp (Pi.evalMulHom M i)
 
 /-- `Function.const` as a `MulHom`. -/
 @[to_additive (attr := simps) /-- `Function.const` as an `AddHom`. -/]
@@ -164,8 +153,42 @@ end MulHom
 
 section MonoidHom
 
-variable (f)
 variable [(i : I) → MulOneClass (f i)]
+
+/-- A family of monoid homomorphisms `f a : γ →* β a` defines a monoid homomorphism
+`Pi.monoidHom f : γ →* Π a, β a` given by `Pi.monoidHom f x b = f b x`. -/
+@[to_additive (attr := simps)
+  /-- A family of additive monoid homomorphisms `f a : γ →+ β a` defines a monoid homomorphism
+  `Pi.addMonoidHom f : γ →+ Π a, β a` given by `Pi.addMonoidHom f x b = f b x`. -/]
+def MonoidHom.pi {γ : Type w} [MulOneClass γ] (g : ∀ i, γ →* f i) :
+    γ →* ∀ i, f i :=
+  { MulHom.pi fun i => (g i).toMulHom with
+    toFun := fun x i => g i x
+    map_one' := funext fun i => (g i).map_one }
+
+@[deprecated (since := "2026-05-29")] alias Pi.addMonoidHom := AddMonoidHom.pi
+@[to_additive existing (attr := deprecated MonoidHom.pi (since := "2026-05-29"))] alias
+  Pi.monoidHom := MonoidHom.pi
+
+@[deprecated (since := "2026-05-29")] alias Pi.addMonoidHom_apply := AddMonoidHom.pi_apply
+@[to_additive existing (attr := deprecated MonoidHom.pi_apply (since := "2026-05-29"))] alias
+  Pi.monoidHom_apply := MonoidHom.pi_apply
+
+@[to_additive]
+theorem MonoidHom.pi_injective {γ : Type w} [Nonempty I] [MulOneClass γ]
+    (g : ∀ i, γ →* f i) (hg : ∀ i, Function.Injective (g i)) :
+    Function.Injective (MonoidHom.pi g) :=
+  MulHom.pi_injective (fun i => (g i).toMulHom) hg
+
+@[deprecated (since := "2026-05-29")] alias AddMonoidHom.injective_pi := AddMonoidHom.pi_injective
+@[to_additive existing (attr := deprecated MonoidHom.pi_injective (since := "2026-05-29"))] alias
+  MonoidHom.injective_pi := MonoidHom.pi_injective
+
+@[deprecated (since := "2026-05-29")] alias Pi.addMonoidHom_injective := AddMonoidHom.pi_injective
+@[to_additive existing (attr := deprecated MonoidHom.pi_injective (since := "2026-05-29"))] alias
+  Pi.monoidHom_injective := MonoidHom.pi_injective
+
+variable (f)
 
 /-- Evaluation of functions into an indexed collection of monoids at a point is a monoid
 homomorphism.
@@ -180,6 +203,17 @@ def Pi.evalMonoidHom (i : I) : (∀ i, f i) →* f i where
 
 @[simp, norm_cast]
 lemma Pi.coe_evalMonoidHom (i : I) : ⇑(evalMonoidHom f i) = Function.eval i := rfl
+
+/-- A family of monoid homomorphisms `f i : M i →* N i` defines a monoid homomorphism
+`MonoidHom.piMap f : (Π i, M i) →* (Π i, N i)`
+given by `MonoidHom.piMap f x i = f i x`. This is `Pi.map` for `MonoidHom`s. -/
+@[to_additive (attr := simps!)
+  /-- A family of additive monoid homomorphisms `f i : M i →+ N i` defines an additive monoid
+  homomorphism  `AddMonoidHom.piMap f : (Π i, M i) →+ (Π i, N i)`
+  given by `AddMonoidHom.piMap f x i = f i x`. This is `Pi.map` for `AddMonoidHom`s. -/]
+def MonoidHom.piMap [Π i, MulOneClass (M i)] [Π i, MulOneClass (N i)] (g : Π i, M i →* N i) :
+    (Π i, M i) →* (Π i, N i) :=
+  .pi fun i ↦ (g i).comp (Pi.evalMonoidHom M i)
 
 /-- `Function.const` as a `MonoidHom`. -/
 @[to_additive (attr := simps) /-- `Function.const` as an `AddMonoidHom`. -/]
