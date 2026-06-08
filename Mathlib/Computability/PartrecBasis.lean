@@ -50,8 +50,8 @@ theorem to_part {n f} (pf : @Partrec' n f) : Partrec f := by
   | comp _ _ _ hf hg => exact (Partrec.vector_mOfFn hg).bind (hf.comp snd)
   | rfind _ hf =>
     exact _root_.Partrec.rfind <|
-       (Primrec.eq.decide.comp _root_.Primrec.id (α := ℕ)
-        (_root_.Primrec.const 0)).to_comp.comp (hf.comp (vector_cons.comp snd fst))
+      (Primrec.eq.decide.comp _root_.Primrec.id (_root_.Primrec.const 0)).to_comp.comp
+        (hf.comp (vector_cons.comp snd fst))
 
 theorem of_eq {n} {f g : List.Vector ℕ n →. ℕ} (hf : Partrec' f) (H : ∀ i, f i = g i) :
     Partrec' g :=
@@ -110,8 +110,7 @@ theorem rfindOpt {n} {f : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec' (n + 
   ((rfind <|
         (of_prim (Primrec.nat_sub.comp (_root_.Primrec.const 1) Primrec.vector_head)).comp₁
           (PFun.lift fun n => 1 - n) hf).bind
-    ((prim Nat.Primrec'.pred).comp₁ (PFun.lift Nat.pred) hf)).of_eq
-    fun v => Part.ext fun b => by
+    ((prim Nat.Primrec'.pred).comp₁ (PFun.lift Nat.pred) hf)).of_eq fun v => Part.ext fun b => by
       simp only [Nat.rfindOpt, Nat.sub_eq_zero_iff_le, PFun.coe_mk, PFun.lift_apply,
         Part.mem_bind_iff, Part.mem_some_iff, Part.mem_coe, Option.mem_def]
       refine exists_congr fun a =>
@@ -136,7 +135,7 @@ theorem of_part : ∀ {n f}, Partrec f → @Partrec' n f :=
         simp [g, encodek, Part.map_id']
     fun f hf => by
     obtain ⟨c, rfl⟩ := exists_code.1 hf
-    simpa [eval_eq_rfindOpt, PFun.coe_mk] using
+    simpa [eval_eq_rfindOpt] using
       rfindOpt <|
         of_prim <|
           Primrec.encode_iff.2 <|
@@ -158,8 +157,7 @@ theorem part_iff₂ {f : ℕ → ℕ →. ℕ} :
     (@Partrec' 2 (PFun.mk fun v => f v.head v.tail.head)) ↔ Partrec₂ f :=
   part_iff.trans
     ⟨fun h =>
-      (h.comp <| vector_cons.comp fst <| vector_cons.comp snd (const nil)).of_eq
-        fun v => by simp,
+      (h.comp <| vector_cons.comp fst <| vector_cons.comp snd (const nil)).of_eq fun v => by simp,
       fun h => h.comp vector_head (vector_head.comp vector_tail)⟩
 
 theorem vec_iff {m n f} : @Vec m n f ↔ Computable f :=
