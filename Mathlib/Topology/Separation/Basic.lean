@@ -804,6 +804,7 @@ theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Sp
     rw [mk_eq_mk, inseparable_iff_specializes_and]
     exact ⟨xspecy, yspecx⟩
 
+omit [TopologicalSpace X] in
 theorem CofiniteTopology.continuous_of_finite_preimage_singleton [TopologicalSpace Y]
     [T1Space Y] {f : Y → CofiniteTopology X} (h : ∀ a, (f ⁻¹' {a}).Finite) : Continuous f := by
   refine continuous_iff_isClosed.mpr fun s hs ↦ ?_
@@ -811,6 +812,7 @@ theorem CofiniteTopology.continuous_of_finite_preimage_singleton [TopologicalSpa
   · simp only [preimage_univ, isClosed_univ]
   · exact (hs.preimage' fun b _ ↦ h b).isClosed
 
+omit [TopologicalSpace X] in
 theorem CofiniteTopology.continuous_of_injective [TopologicalSpace Y] [T1Space Y]
     {f : Y → CofiniteTopology X} (h : Injective f) : Continuous f :=
   continuous_of_finite_preimage_singleton fun _ ↦ (subsingleton_singleton.preimage h).finite
