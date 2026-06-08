@@ -331,7 +331,8 @@ instance {x : X} {v : V} : IsFiniteMeasure (VectorMeasure.dirac x v).variation :
   simp only [variation_dirac, enorm_eq_nnnorm, Measure.coe_nnreal_smul]
   infer_instance
 
-@[simp] lemma variation_toSignedMeasure {μ : Measure X} [IsFiniteMeasure μ] :
+@[simp] lemma _root_.MeasureTheory.Measure.variation_toSignedMeasure
+    {μ : Measure X} [IsFiniteMeasure μ] :
     μ.toSignedMeasure.variation = μ := by
   apply le_antisymm
   · apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
@@ -339,6 +340,67 @@ instance {x : X} {v : V} : IsFiniteMeasure (VectorMeasure.dirac x v).variation :
   · apply Measure.le_iff.2 (fun s hs ↦ ?_)
     apply le_trans ?_ (enorm_measure_le_variation _ _)
     simp [Measure.toSignedMeasure_apply, hs, Measure.real, Real.enorm_eq_ofReal]
+
+/-- For a signed measure, the variation is realized by the norm of the measure of a single set, up
+to a factor of `2` and an arbitrarily small error. -/
+lemma _root_.MeasureTheory.SignedMeasure.exists_subset_lt_enorm_apply_of_lt_variation
+    (μ : SignedMeasure X) {s : Set X} (hs : MeasurableSet s)
+    {a : ℝ≥0∞} (ha : a < μ.variation s) :
+    ∃ t ⊆ s, MeasurableSet t ∧ a < 2 * ‖μ t‖ₑ := by
+  /- One may almost realize the variation through a partition into finitely many sets.
+  As their measures are real numbers, we can group together those of positive measure, and
+  also those of negative measure. This gives two measurable sets. Among these two, the one with the
+  largest measure in absolute value satisfies the result. -/
+  obtain ⟨P, Ps, P_disj, P_meas, hP⟩ : ∃ (P : Finset (Set X)), (∀ t ∈ P, t ⊆ s) ∧
+    ((P : Set (Set X)).PairwiseDisjoint id) ∧
+    (∀ t ∈ P, MeasurableSet t) ∧ a < ∑ p ∈ P, ‖μ p‖ₑ := exists_lt_sum_of_lt_variation _ hs ha
+  have I : (∑ p ∈ P.filter (fun p ↦ 0 ≤ μ p), ‖μ p‖ₑ) =
+      ‖μ (⋃ p ∈ P.filter (fun p ↦ 0 ≤ μ p), p)‖ₑ := by
+    simp only [Real.norm_eq_abs, enorm_eq_nnnorm,
+      ← ENNReal.ofNNReal_finsetSum, ENNReal.coe_inj, ← NNReal.coe_inj,
+      NNReal.coe_sum, coe_nnnorm, Real.norm_eq_abs]
+    have A : ∑ x ∈ P with 0 ≤ μ x, |μ x| = μ (⋃ x ∈ P.filter (fun x ↦ 0 ≤ μ x), x) := calc
+      _ = ∑ x ∈ P with 0 ≤ μ x, μ x := by
+        apply Finset.sum_congr rfl (fun p hp ↦ ?_)
+        simp only [Finset.mem_filter] at hp
+        simp [hp]
+      _ = μ (⋃ x ∈ P.filter (fun x ↦ 0 ≤ μ x), x) := by
+        rw [of_biUnion_finset]
+        · apply P_disj.subset (by grind)
+        · grind
+    rw [A, abs_of_nonneg]
+    rw [← A]
+    exact Finset.sum_nonneg (fun p hp ↦ by positivity)
+  have J : (∑ p ∈ P.filter (fun p ↦ ¬ 0 ≤ μ p), ‖μ p‖ₑ) =
+      ‖μ (⋃ p ∈ P.filter (fun p ↦ ¬ 0 ≤ μ p), p)‖ₑ := by
+    simp only [not_le, enorm_eq_nnnorm, ← ENNReal.ofNNReal_finsetSum,
+      ENNReal.coe_inj, ← NNReal.coe_inj, NNReal.coe_sum, coe_nnnorm, Real.norm_eq_abs]
+    have A : ∑ x ∈ P with μ x < 0, |μ x| = - μ (⋃ x ∈ P.filter (fun x ↦ μ x < 0), x) := calc
+      ∑ x ∈ P with μ x < 0, |μ x|
+      _ = ∑ x ∈ P with μ x < 0, -μ x := by
+        refine Finset.sum_congr rfl (fun p hp ↦ ?_)
+        simp only [Finset.mem_filter] at hp
+        simp [hp.2.le]
+      _ = -μ (⋃ x ∈ P.filter (fun x ↦ μ x < 0), x) := by
+        rw [of_biUnion_finset]
+        · simp
+        · apply P_disj.subset (by grind)
+        · grind
+    rw [A, abs_of_nonpos]
+    rw [← neg_nonneg, ← A]
+    exact Finset.sum_nonneg (fun p hp ↦ by positivity)
+  simp_rw [two_mul]
+  rw [← Finset.sum_filter_add_sum_filter_not _ (fun p ↦ 0 ≤ μ p), I, J] at hP
+  rcases le_total (‖μ (⋃ p ∈ P.filter (fun p ↦ ¬ 0 ≤ μ p), p)‖ₑ)
+    (‖μ (⋃ p ∈ P.filter (fun p ↦ 0 ≤ μ p), p)‖ₑ) with h | h
+  · refine ⟨⋃ p ∈ P.filter (fun p ↦ 0 ≤ μ p), p, ?_, ?_, ?_⟩
+    · simp; grind
+    · exact Finset.measurableSet_biUnion _ (by grind)
+    · exact hP.trans_le (by gcongr)
+  · refine ⟨⋃ p ∈ P.filter (fun p ↦ ¬ 0 ≤ μ p), p, ?_, ?_, ?_⟩
+    · simp; grind
+    · exact Finset.measurableSet_biUnion _ (by grind)
+    · exact hP.trans_le (by gcongr)
 
 end NormedAddCommGroup
 
