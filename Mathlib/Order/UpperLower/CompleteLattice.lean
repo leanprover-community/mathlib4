@@ -336,9 +336,9 @@ def map (f : α ≃o β) : UpperSet α ≃o UpperSet β where
   map_rel_iff' := image_subset_image_iff f.injective
 
 -- `simps` could generate these theorems, but `to_dual` is not happy with those versions.
-@[to_dual]
+@[to_dual (attr := simp)]
 theorem coe_map_apply (f : α ≃o β) (s : UpperSet α) : map f s = f '' s := rfl
-@[to_dual]
+@[to_dual (attr := simp)]
 theorem coe_map_symm_apply (f : α ≃o β) (s : UpperSet β) : (map f).symm s = f ⁻¹' s := rfl
 
 @[to_dual (attr := simp)]
