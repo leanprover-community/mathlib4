@@ -86,11 +86,11 @@ variable {K : Type*} [Field K] [NumberField K]
 
 namespace AdeleRing
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isUnit_iff {x : AdeleRing (𝓞 K) K} :
     IsUnit x ↔ (∀ v, x.1 v ≠ 0) ∧ (∀ v, x.2 v ≠ 0) ∧
       ∀ᶠ v in Filter.cofinite, Valued.v (x.2 v) = 1 := by
-  rw [Prod.isUnit_iff, Pi.isUnit_iff, FiniteAdeleRing.isUnit_iff]
+  erw [Prod.isUnit_iff, Pi.isUnit_iff]
+  rw [FiniteAdeleRing.isUnit_iff]
   simp_rw [isUnit_iff_ne_zero]
 
 instance : Norm (AdeleRing (𝓞 K) K) where norm x := ‖x.1‖ * ‖x.2‖
