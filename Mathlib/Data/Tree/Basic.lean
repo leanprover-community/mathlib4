@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Util.CompileInductive
+import Batteries.Tactic.Alias
 
 /-!
 # BinaryTree
@@ -28,12 +29,27 @@ containing value `a` and two children `l` and `r`.
 @[expose] public section
 
 
-/-- A binary BinaryTree with values stored in non-leaf nodes. -/
+/-- A binary tree with values stored in non-leaf nodes. -/
 inductive BinaryTree.{u} (α : Type u) : Type u
   | nil : BinaryTree α
   | node (value : α) (left : BinaryTree α) (right : BinaryTree α) : BinaryTree α
   deriving DecidableEq, Repr
 compile_inductive% BinaryTree
+
+@[deprecated (since := "2026-06-07"), reducible]
+alias Tree := BinaryTree
+
+set_option linter.deprecated false in
+/-- **Alias** of `BinaryTree.nil`. -/
+@[deprecated BinaryTree.nil (since := "2026-06-07")]
+abbrev Tree.nil.{u} {α : Type u} : Tree α := BinaryTree.nil
+
+set_option linter.deprecated false in
+/-- **Alias** of `BinaryTree.node`. -/
+@[deprecated BinaryTree.node (since := "2026-06-07")]
+abbrev Tree.node.{u} {α : Type u}
+    (value : α) (left : Tree α) (right : Tree α) : Tree α :=
+  BinaryTree.node value left right
 
 namespace BinaryTree
 
@@ -46,14 +62,22 @@ instance : Inhabited (BinaryTree α) :=
 
 
 /--
-Do an action for every node of the BinaryTree.
-Actions are taken in node -> left subBinaryTree -> right subBinaryTree recursive order.
+Do an action for every node of the tree.
+Actions are taken in node -> left subtree -> right subtree recursive order.
 This function is the `traverse` function for the `Traversable BinaryTree` instance.
 -/
-def traverse {m : Type* → Type*} [Applicative m] {α β} (f : α → m β)
-: BinaryTree α → m (BinaryTree β)
+def traverse
+    {m : Type* → Type*} [Applicative m] {α β} (f : α → m β) :
+    BinaryTree α → m (BinaryTree β)
   | .nil => pure nil
   | .node a l r => .node <$> f a <*> traverse f l <*> traverse f r
+
+set_option linter.deprecated false in
+/-- **Alias** of `BinaryTree.traverse`. -/
+@[deprecated BinaryTree.traverse (since := "2026-06-07")]
+abbrev _root_.Tree.traverse {m : Type* → Type*} [Applicative m] {α β} (f : α → m β)
+(t : Tree α) : m (Tree β) :=
+  BinaryTree.traverse f t
 
 /-- Apply a function to each value in the BinaryTree.
 This is the `map` function for the `BinaryTree` functor.
@@ -61,6 +85,11 @@ This is the `map` function for the `BinaryTree` functor.
 def map {β} (f : α → β) : BinaryTree α → BinaryTree β
   | nil => nil
   | node a l r => node (f a) (map f l) (map f r)
+
+set_option linter.deprecated false in
+/-- **Alias** of `BinaryTree.map`. -/
+@[deprecated BinaryTree.map (since := "2026-06-07")]
+abbrev _root_.Tree.map {α β} (f : α → β) (t : Tree α) : Tree β := BinaryTree.map f t
 
 theorem id_map (t : BinaryTree α) : t.map id = t := by
   induction t with
@@ -73,8 +102,9 @@ theorem comp_map {β γ : Type*} (f : α → β) (g : β → γ) (t : BinaryTree
   | nil => rw [map, map, map]
   | node v l r hl hr => rw [map, map, map, hl, hr, Function.comp_apply]
 
-theorem traverse_pure (t : BinaryTree α) {m : Type u → Type*} [Applicative m] [LawfulApplicative m]
-: t.traverse (pure : α → m α) = pure t := by
+theorem traverse_pure (t : BinaryTree α) {m : Type u → Type*}
+    [Applicative m] [LawfulApplicative m] :
+    t.traverse (pure : α → m α) = pure t := by
   induction t with
   | nil => rw [traverse]
   | node v l r hl hr =>
@@ -86,17 +116,32 @@ def numNodes : BinaryTree α → ℕ
   | nil => 0
   | node _ a b => a.numNodes + b.numNodes + 1
 
-/-- The number of leaves of a binary BinaryTree -/
+set_option linter.deprecated false in
+/-- **Alias** of `BinaryTree.numNodes`. -/
+@[deprecated BinaryTree.numNodes (since := "2026-06-07")]
+abbrev _root_.Tree.numNodes {α} (t : Tree α) : ℕ := BinaryTree.numNodes t
+
+/-- The number of leaves of a binary tree -/
 @[simp]
 def numLeaves : BinaryTree α → ℕ
   | nil => 1
   | node _ a b => a.numLeaves + b.numLeaves
 
-/-- The height - length of the longest path from the root - of a binary BinaryTree -/
+set_option linter.deprecated false in
+/-- **Alias** of `BinaryTree.numLeaves`. -/
+@[deprecated BinaryTree.numLeaves (since := "2026-06-07")]
+abbrev _root_.Tree.numLeaves {α} (t : Tree α) : ℕ := BinaryTree.numLeaves t
+
+/-- The height - length of the longest path from the root - of a binary tree -/
 @[simp]
 def height : BinaryTree α → ℕ
   | nil => 0
   | node _ a b => max a.height b.height + 1
+
+set_option linter.deprecated false in
+/-- **Alias** of `BinaryTree.height`. -/
+@[deprecated BinaryTree.height (since := "2026-06-07")]
+abbrev _root_.Tree.height {α} (t : Tree α) : ℕ := BinaryTree.height t
 
 theorem numLeaves_eq_numNodes_succ (x : BinaryTree α) : x.numLeaves = x.numNodes + 1 := by
   induction x <;> simp [*, Nat.add_comm, Nat.add_assoc, Nat.add_left_comm]
@@ -117,11 +162,21 @@ def left : BinaryTree α → BinaryTree α
   | nil => nil
   | node _ l _r => l
 
-/-- The right child of the BinaryTree, or `nil` if the BinaryTree is `nil` -/
+set_option linter.deprecated false in
+/-- **Alias** of `BinaryTree.left`. -/
+@[deprecated BinaryTree.left (since := "2026-06-07")]
+abbrev _root_.Tree.left {α} (t : Tree α) : Tree α := BinaryTree.left t
+
+/-- The right child of the tree, or `nil` if the tree is `nil` -/
 @[simp]
 def right : BinaryTree α → BinaryTree α
   | nil => nil
   | node _ _l r => r
+
+set_option linter.deprecated false in
+/-- **Alias** of `BinaryTree.right`. -/
+@[deprecated BinaryTree.right (since := "2026-06-07")]
+abbrev _root_.Tree.right {α} (t : Tree α) : Tree α := BinaryTree.right t
 
 /-- A node with `Unit` data -/
 scoped infixr:65 " △ " => BinaryTree.node ()
@@ -224,10 +279,16 @@ def unitRecOn {motive : BinaryTree Unit → Sort*} (t : BinaryTree Unit) (base :
     (ind : ∀ x y, motive x → motive y → motive (x △ y)) : motive t :=
   t.recOn base fun _u ↦ ind
 
+set_option linter.deprecated false in
+/-- **Alias** of `BinaryTree.unitRecOn`. -/
+@[deprecated BinaryTree.unitRecOn (since := "2026-06-07")]
+abbrev _root_.Tree.unitRecOn {motive : Tree Unit → Sort*} (t : Tree Unit) (base : motive nil)
+    (ind : ∀ x y, motive x → motive y → motive (x △ y)) : motive t :=
+  BinaryTree.unitRecOn t base ind
+
 theorem left_node_right_eq_self : ∀ {x : BinaryTree Unit} (_hx : x ≠ nil), x.left △ x.right = x
   | nil, h => by trivial
   | node _ _ _, _ => rfl  -- Porting note: `a △ b` no longer works in pattern matching
-
 
 /-- Inorder traversal into a list: left → node → right. -/
 def toListInOrder : BinaryTree α → List α

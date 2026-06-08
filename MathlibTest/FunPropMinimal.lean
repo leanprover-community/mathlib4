@@ -42,7 +42,7 @@ set_option linter.unusedVariables false
 @[fun_prop] theorem Con_apply (x : α) : Con (fun f : α → β => f x) := silentSorry
 @[fun_prop] theorem Con_applyDep (x : α) : Con (fun f : (x' : α) → E x' => f x) := silentSorry
 @[fun_prop] theorem Con_comp (f : β → γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x => f (g x)) := silentSorry
--- @[fun_prop] theorem Con_let (f : α → β → γ) (g : α → β) (hf : Con (fun (x,y) => f x y)) (hg : Con g) : Con (fun x => let y:= g x; f x y) := silentSorry
+-- @[fun_prop] theorem Con_let (f : α → β → γ) (g : α → β) (hf : Con (fun (x,y) => f x y)) (hg : Con g) : Con (fun x => let y := g x; f x y) := silentSorry
 @[fun_prop] theorem Con_pi (f : β → (i : α) → (E i)) (hf : ∀ i, Con (fun x => f x i)) : Con (fun x i => f x i) := silentSorry
 
 -- Lin is missing `const` theorem
@@ -112,7 +112,7 @@ instance : CoeFun (α ->> β) (fun _ => α → β) where
 
 instance : FunLike (α -o β) α β where
   coe f := f.toFun
-  coe_injective' := silentSorry
+  coe_injective := silentSorry
 
 #eval Lean.Elab.Command.liftTermElabM do
   Lean.Meta.registerCoercion ``ConHom.toFun
@@ -481,12 +481,12 @@ theorem Dif_Con [Add 𝕜] (f : α → β) (hf : Dif 𝕜 f) : Con f := silentSo
 
 def f4 (a : α) := a
 
-example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch:=aesop)
+example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch := aesop)
 
 @[fun_prop]
 theorem f4_dif : Dif Nat (f4 : α → α) := silentSorry
 
-example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch:=aesop)
+example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch := aesop)
 
 
 -- Test abbrev transparency
@@ -708,7 +708,7 @@ structure FooHom (α : Type*) where
 
 instance : FunLike (FooHom α) α (α → α) where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[fun_prop]
 theorem con_foohom' {β : Type*} {f : β → FooHom α} (hf : Con f) {g₁ : β → α} (hg₁ : Con g₁)
@@ -834,3 +834,20 @@ example : MDifferentiable Space.mwc Space.mwc (fun x : Space ↦ x + x + x) := b
   fun_prop (disch := apply_rules [Space.mwc])
 
 end MDifferentiableMock
+
+section DependentCompositionalForm
+
+-- These examples involving dependent types used to be incorrectly detected as uncurried forms
+
+@[fun_prop]
+theorem Con_subtype_mk {p : β → Prop} {f : α → β} (h : Con f) (hp : ∀ x, p (f x)) :
+  Con fun x => (⟨f x, hp x⟩ : Subtype p) := silentSorry
+
+example : Con fun x => (⟨x, trivial⟩ : {x : α // True}) := by fun_prop
+
+@[fun_prop]
+theorem Con_imp {p q : α → Prop} : Con (fun x => p x → q x) := silentSorry
+
+example {p : α → Prop} : Con (fun x => True → p x) := by fun_prop
+
+end DependentCompositionalForm

@@ -51,8 +51,9 @@ lemma isNilpotent_tensor_residueField_iff
   simp only [Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply,
     Algebra.coe_lmul_eq_mul, Algebra.TensorProduct.comm_tmul]
   rw [← IsNilpotent.map_iff (Algebra.lmul_injective (R := I.ResidueField)),
-    LinearMap.isNilpotent_iff_charpoly, ← Algebra.baseChange_lmul, LinearMap.charpoly_baseChange]
-  simp_rw [this, ← ((LinearMap.mul R A) f).charpoly_natDegree]
+    LinearMap.isNilpotent_iff_charpoly, ← Algebra.baseChange_lmul, LinearMap.charpoly_baseChange,
+    this]
+  simp_rw [← ((LinearMap.mul R A) f).charpoly_natDegree]
   constructor
   · intro e i hi
     replace e := congr(($e).coeff i)
@@ -207,7 +208,7 @@ lemma mem_image_comap_C_basicOpen (f : MvPolynomial σ R) (x : PrimeSpectrum R) 
     ext
     · simp [scalarRTensorAlgEquiv, e, coeff_map,
         Algebra.smul_def, apply_ite (f := algebraMap _ _)]
-    · simp [e, scalarRTensorAlgEquiv, coeff_map, coeff_X']
+    · simp [e, scalarRTensorAlgEquiv, coeff_map, coeff_X]
   · simp [MvPolynomial.ext_iff, coeff_map]
 
 lemma image_comap_C_basicOpen (f : MvPolynomial σ R) :

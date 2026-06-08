@@ -221,7 +221,7 @@ theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H}
   grind
 
 theorem Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) := by
-  simpa using Pairwise.filter p
+  simpa using! Pairwise.filter p
 
 @[simp]
 theorem nodup_reverse {l : List α} : Nodup (reverse l) ↔ Nodup l :=
@@ -230,6 +230,9 @@ theorem nodup_reverse {l : List α} : Nodup (reverse l) ↔ Nodup l :=
 theorem nodup_concat (l : List α) (u : α) : (l.concat u).Nodup ↔ u ∉ l ∧ l.Nodup := by
   rw [← nodup_reverse]
   simp
+
+@[simp, grind ←] protected lemma Nodup.tail {l : List α} (h : Nodup l) : Nodup l.tail :=
+  l.tail_sublist.nodup h
 
 lemma nodup_tail_reverse (l : List α) (h : l[0]? = l.getLast?) :
     Nodup l.reverse.tail ↔ Nodup l.tail := by

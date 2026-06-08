@@ -173,7 +173,7 @@ theorem t2Space_iff_of_isOpenQuotientMap [TopologicalSpace Y] {π : X → Y}
   replace h := IsOpenQuotientMap.prodMap h h
   refine ⟨fun H ↦ H.preimage h.continuous, fun H ↦ ?_⟩
   simp_rw [← isOpen_compl_iff] at H ⊢
-  convert h.isOpenMap _ H
+  convert! h.isOpenMap _ H
   exact (h.surjective.image_preimage _).symm
 
 theorem tendsto_nhds_unique [T2Space X] {f : Y → X} {l : Filter Y} {a b : X} [NeBot l]

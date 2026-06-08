@@ -122,7 +122,7 @@ theorem coe_injective : Function.Injective ((↑) : (M₁ →SL[σ₁₂] M₂) 
 
 instance funLike : FunLike (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
   coe f := f.toLinearMap
-  coe_injective' _ _ h := coe_injective (DFunLike.coe_injective h)
+  coe_injective _ _ h := coe_injective (DFunLike.coe_injective h)
 
 instance continuousSemilinearMapClass :
     ContinuousSemilinearMapClass (M₁ →SL[σ₁₂] M₂) σ₁₂ M₁ M₂ where
@@ -521,7 +521,7 @@ variable {R E F : Type*} [Semiring R]
 /-- `g ∘ f = id` as `ContinuousLinearMap`s implies `g ∘ f = id` as functions. -/
 lemma leftInverse_of_comp {f : E →L[R] F} {g : F →L[R] E}
     (hinv : g ∘L f = .id R E) : Function.LeftInverse g f := by
-  simpa [← Function.rightInverse_iff_comp] using congr(⇑$hinv)
+  simpa [← Function.rightInverse_iff_comp] using! congr(⇑$hinv)
 
 /-- `f ∘ g = id` as `ContinuousLinearMap`s implies `f ∘ g = id` as functions. -/
 lemma rightInverse_of_comp {f : E →L[R] F} {g : F →L[R] E}
@@ -702,7 +702,7 @@ instance completeSpace_ker {M' : Type*} [UniformSpace M'] [CompleteSpace M']
 
 instance completeSpace_eqLocus {M' : Type*} [UniformSpace M'] [CompleteSpace M']
     [AddCommMonoid M'] [Module R₁ M'] [T2Space M₂]
-    (f g : M' →SL[σ₁₂] M₂) : CompleteSpace (LinearMap.eqLocus f g) :=
+    (f g : M' →SL[σ₁₂] M₂) : CompleteSpace (f.toLinearMap.eqLocus g.toLinearMap) :=
   IsClosed.completeSpace_coe (hs := isClosed_eq (map_continuous f) (map_continuous g))
 
 section
@@ -750,6 +750,7 @@ section ToSpanSingleton
 variable (R₁)
 variable [ContinuousSMul R₁ M₁]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given an element `x` of a topological space `M` over a semiring `R`, the natural continuous
 linear map from `R` to `M` by taking multiples of `x`. -/
 def toSpanSingleton (x : M₁) : R₁ →L[R₁] M₁ where
@@ -1079,7 +1080,9 @@ variable (R S M : Type*) [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M
   [SMulCommClass R S M] [TopologicalSpace M] [ContinuousAdd M] [ContinuousConstSMul S M]
   [TopologicalSpace R] [ContinuousSMul R M]
 
-/-- `ContinuousLinearMap.toSpanSingleton` as a linear equivalence. -/
+/-- `ContinuousLinearMap.toSpanSingleton` as a linear equivalence. See
+`ContinuousLinearMap.toSpanSingletonLIE` for the isometric version
+and `ContinuousLinearMap.toSpanSingletonCLE` for the continuous version. -/
 @[simps -fullyApplied]
 def toSpanSingletonLE : M ≃ₗ[S] (R →L[R] M) where
   toFun := toSpanSingleton R
