@@ -5,34 +5,36 @@ import Mathlib.RingTheory.PicardGroup
 import Mathlib.RingTheory.RegularLocalRing.Defs
 import Mathlib.RingTheory.SimpleRing.Principal
 
+open Matrix SymplecticGroup
+
+theorem SymplecticGroup.fromBlocks_mem_iff
+  {l k : Type*} [DecidableEq l] [Fintype l] [CommRing k]
+  {P Q R S : Matrix l l k} :
+  fromBlocks P Q R S ∈ symplecticGroup l k ↔
+    Pᵀ * R = Rᵀ * P ∧
+    Qᵀ * S = Sᵀ * Q ∧
+    Pᵀ * S - Rᵀ * Q = 1 := by
+  constructor <;> intro h
+  · have h_final : fromBlocks (Rᵀ * P - Pᵀ * R) (Rᵀ * Q - Pᵀ * S)
+      (Sᵀ * P - Qᵀ * R) (Sᵀ * Q - Qᵀ * S) = J l k := by
+      convert_to (fromBlocks Pᵀ Rᵀ Qᵀ Sᵀ) * J l k * (fromBlocks P Q R S) = _
+      · simp only [sub_eq_add_neg, fromBlocks_multiply, mul_zero, mul_one, zero_add, mul_neg,
+        add_zero, neg_mul, J]
+      · rw [← fromBlocks_transpose]
+        exact mem_iff.1 (transpose_mem h)
+    obtain ⟨h_eq1, h_eq2, _, h_eq3⟩ := fromBlocks_inj.1 h_final
+    refine ⟨(sub_eq_zero.1 h_eq1).symm, (sub_eq_zero.1 h_eq3).symm, ?_⟩
+    rw [sub_eq_iff_comm, sub_neg_eq_add] at h_eq2
+    rw [← h_eq2, sub_eq_iff_eq_add']
+  · refine mem_iff'.mpr ?_
+    simp only [fromBlocks_transpose, J, fromBlocks_multiply, mul_zero, mul_one,
+      zero_add, mul_neg, add_zero, neg_mul, ← sub_eq_add_neg, fromBlocks_inj, sub_eq_zero]
+    refine ⟨h.1.symm, ?_, ?_, h.2.1.symm⟩
+    · rw [← h.2.2, neg_sub]
+    · have := congrArg transpose h.2.2
+      rwa [transpose_sub, transpose_mul, transpose_mul, transpose_one] at this
+
 namespace SymplecticMatrixDet
-
-open Matrix
-
-/-- Given A ∈ symplecticGroup l R, write A = fromBlocks P Q R S and extract
-    the block conditions:
-    (1) Pᵀ * R = Rᵀ * P
-    (2) Qᵀ * S = Sᵀ * Q
-    (3) Pᵀ * S - Rᵀ * Q = 1 -/
-theorem symplectic_block_conditions
-    {l k : Type*} [DecidableEq l] [Fintype l] [CommRing k]
-    {P Q R S : Matrix l l k}
-    (hA : fromBlocks P Q R S ∈ symplecticGroup l k) :
-    (Pᵀ * R = Rᵀ * P) ∧
-    (Qᵀ * S = Sᵀ * Q) ∧
-    (Pᵀ * S - Rᵀ * Q = 1) := by
-  have h_main : (fromBlocks Pᵀ Rᵀ Qᵀ Sᵀ) * (fromBlocks 0 (-1) 1 0) * (fromBlocks P Q R S) =
-      (fromBlocks 0 (-1) 1 0) := by
-    rw [← fromBlocks_transpose]
-    exact SymplecticGroup.mem_iff.1 (SymplecticGroup.transpose_mem hA)
-  have h_final : fromBlocks (Rᵀ * P - Pᵀ * R) (Rᵀ * Q - Pᵀ * S)
-      (Sᵀ * P - Qᵀ * R) (Sᵀ * Q - Qᵀ * S) = fromBlocks 0 (-1) 1 0 := by
-    simpa only [sub_eq_add_neg, fromBlocks_inj, fromBlocks_multiply, mul_zero, mul_one, zero_add,
-      mul_neg, add_zero, neg_mul] using h_main
-  obtain ⟨h_eq1, h_eq2, _, h_eq3⟩ := fromBlocks_inj.1 h_final
-  refine ⟨(sub_eq_zero.1 h_eq1).symm, (sub_eq_zero.1 h_eq3).symm, ?_⟩
-  rw [sub_eq_iff_comm, sub_neg_eq_add] at h_eq2
-  rw [← h_eq2, sub_eq_iff_eq_add']
 
 /-- If the top-left n×n block P of a symplectic matrix A is invertible, then det(A) = 1.
     Proof: use the Schur complement formula and the block condition Pᵀ S - Rᵀ Q = 1
@@ -42,7 +44,7 @@ theorem symplectic_det_one_when_P_invertible
     {P Q R S : Matrix l l k} [Invertible P]
     (hA : fromBlocks P Q R S ∈ symplecticGroup l k) :
     (fromBlocks P Q R S).det = 1 := by
-  have h_block := symplectic_block_conditions hA
+  have h_block := fromBlocks_mem_iff.1 hA
   rw [det_fromBlocks₁₁ P Q R S, invOf_eq_nonsing_inv,
     ← P.det_transpose, ← det_mul, mul_sub, ← mul_assoc, ← mul_assoc,
     h_block.1, mul_assoc Rᵀ, mul_inv_of_invertible, mul_one, h_block.2.2,
@@ -290,7 +292,7 @@ theorem exists_symmetric_shear_making_P_invertible
     · exact congrFun ((mulVec_injective_iff_isUnit).2 h15' (A'.mulVec_zero.symm ▸ h_v0)) _
   obtain ⟨Xbar, hXbar_symm, hXbar_det⟩ := field_exists_symmetric_X_invertible_sum h_rank <| by
     change f.mapMatrix Pᵀ * f.mapMatrix R = f.mapMatrix Rᵀ * f.mapMatrix P
-    rw [← map_mul, (symplectic_block_conditions hA).1, map_mul]
+    rw [← map_mul, (fromBlocks_mem_iff.1 hA).1, map_mul]
   obtain ⟨X, hX_symm, hX_lift⟩ := lift_symmetric_matrix f
     IsLocalRing.residue_surjective Xbar hXbar_symm
   refine ⟨X, hX_symm, (IsLocalRing.residue_ne_zero_iff_isUnit _).1 ?_⟩
@@ -333,8 +335,6 @@ theorem symplectic_det_one_local_ring
   rwa [det_mul, det_fromBlocks_zero₂₁ 1 X 1, det_one, one_mul, one_mul] at h_main
 
 end SymplecticMatrixDet
-
-open Matrix
 
 lemma _root_.Matrix.J_map {l R S : Type*} [DecidableEq l] [Fintype l] [CommRing R] [CommRing S]
     (f : R →+* S) : f.mapMatrix (J l R) = J l S := by
