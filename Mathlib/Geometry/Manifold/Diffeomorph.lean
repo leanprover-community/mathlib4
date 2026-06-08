@@ -673,44 +673,20 @@ end Constructions
 
 end Diffeomorph
 
-variable [instM : IsManifold I n M]
-
-lemma Homeomorph.chartedSpace_trans_mem_maximalAtlas (φ : M ≃ₜ N) :
-  haveI := φ.chartedSpace H
-  ∀ e ∈ atlas H N, φ.toOpenPartialHomeomorph.trans e ∈ IsManifold.maximalAtlas I n M :=
-  letI := φ.chartedSpace H
-  by
-   intro e he
-   simp only [atlas, ChartedSpace.atlas, mem_setOf_eq] at he
-   rcases he with ⟨q, he⟩
-   have h {x : M} : ∃ s, ∃ hs, (φ.toOpenPartialHomeomorph ≫ₕ
-        φ.isLocalHomeomorph.localInverseAt x).EqOnSource (.ofSet s hs) := by
-     simpa [OpenPartialHomeomorph.EqOnSource, EqOn, OpenPartialHomeomorph.open_source] using
-      fun _ hx ↦ φ.bijective.injective <| IsLocalHomeomorph.apply_localInverseAt_of_mem _ hx
-   rcases h with ⟨s, hs, h⟩
-   rw [← he, ← OpenPartialHomeomorph.trans_assoc]
-   exact StructureGroupoid.mem_maximalAtlas_of_eqOnSource (Setoid.trans
-    (OpenPartialHomeomorph.EqOnSource.trans' h (OpenPartialHomeomorph.eqOnSource_refl _))
-    (by rw [OpenPartialHomeomorph.ofSet_trans])) (restr_mem_maximalAtlas _
-    (IsManifold.chart_mem_maximalAtlas _) hs)
-
 /--
 The push-forward of a `ChartedSpace` along a homeomorphism `f : M ≃ₜ N` is a manifold, if `M`
 is a manifold.
 -/
 @[implicit_reducible]
-def Homeomorph.isManifold (φ : M ≃ₜ N) :
-  haveI := φ.chartedSpace H;
+def Homeomorph.isManifold [IsManifold I n M] (φ : M ≃ₜ N) :
+  letI := φ.chartedSpace H;
   IsManifold I n N :=
-  letI := φ.chartedSpace H
-  {
-    compatible {e e'} he he' := by
+    letI := φ.chartedSpace H;
+  { compatible {e e'} he he' := by
       have : _ ∈ contDiffGroupoid n I := IsManifold.compatible_of_mem_maximalAtlas
         (φ.chartedSpace_trans_mem_maximalAtlas e he) (φ.chartedSpace_trans_mem_maximalAtlas e' he')
-      have aux : φ.toOpenPartialHomeomorph.symm ≫ₕ φ.toOpenPartialHomeomorph = .refl N := by
-        ext x <;> simp
       convert this
-      rw [OpenPartialHomeomorph.trans_symm_eq_symm_trans_symm, OpenPartialHomeomorph.trans_assoc,
-        ← OpenPartialHomeomorph.trans_assoc φ.toOpenPartialHomeomorph.symm, aux,
-        OpenPartialHomeomorph.refl_trans]
+      simp [OpenPartialHomeomorph.trans_symm_eq_symm_trans_symm, OpenPartialHomeomorph.trans_assoc,
+        ← OpenPartialHomeomorph.trans_assoc φ.toOpenPartialHomeomorph.symm,
+        ]
   }

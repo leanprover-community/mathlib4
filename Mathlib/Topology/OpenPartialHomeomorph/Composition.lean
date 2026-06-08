@@ -227,4 +227,14 @@ theorem trans_transOpenPartialHomeomorph (e : X ≃ₜ Y) (e' : Y ≃ₜ Z)
   simp only [transOpenPartialHomeomorph_eq_trans, OpenPartialHomeomorph.trans_assoc,
     trans_toOpenPartialHomeomorph]
 
+@[simp]
+lemma toOpenPartialHomeomorph_symm_trans_self (e : X ≃ₜ Y) :
+  e.toOpenPartialHomeomorph.symm.trans  e.toOpenPartialHomeomorph = .refl Y := by
+  simp [← symm_toOpenPartialHomeomorph, ← trans_toOpenPartialHomeomorph]
+
+@[simp]
+lemma toOpenPartialHomeomorph_trans_symm_self (e : X ≃ₜ Y) :
+  e.toOpenPartialHomeomorph.trans  e.toOpenPartialHomeomorph.symm = .refl X := by
+  simp [← symm_toOpenPartialHomeomorph, ← trans_toOpenPartialHomeomorph]
+
 end Homeomorph

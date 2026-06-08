@@ -318,3 +318,14 @@ lemma injOn_localInverseAt_target : (hf.localInverseAt x).target.InjOn f := by
     hf.apply_localInverseAt_of_mem hf.apply_self_mem_localInverseAt_source
 
 end IsLocalHomeomorph
+
+namespace Homeomorph
+
+lemma toOpenPartialHomeomorph_trans_localInverseAt (φ : X ≃ₜ Y) (m : X) :
+    (φ.toOpenPartialHomeomorph.trans  (φ.isLocalHomeomorph.localInverseAt m)).EqOnSource
+    (.ofSet (φ ⁻¹' (φ.isLocalHomeomorph.localInverseAt m).source)
+    (by simpa using OpenPartialHomeomorph.open_source _)) := by
+  simpa [OpenPartialHomeomorph.EqOnSource, Set.EqOn, OpenPartialHomeomorph.open_source]
+  using fun _ hx ↦ φ.bijective.injective <| IsLocalHomeomorph.apply_localInverseAt_of_mem _ hx
+
+end Homeomorph
