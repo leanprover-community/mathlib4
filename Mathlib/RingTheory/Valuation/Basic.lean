@@ -1068,7 +1068,6 @@ section Monoid
 variable [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
   (v : AddValuation R Γ₀)
 
-/-- A valuation is coerced to the underlying function `R → Γ₀`. -/
 instance : FunLike (AddValuation R Γ₀) R Γ₀ :=
   inferInstanceAs <| FunLike (Valuation R <| Multiplicative Γ₀ᵒᵈ) R <| Multiplicative Γ₀ᵒᵈ
 

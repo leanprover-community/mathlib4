@@ -28,7 +28,7 @@ instance instEquivLike : EquivLike (MyIso A B) A B where
   inv f := f.invFun
   left_inv f := f.left_inv
   right_inv f := f.right_inv
-  coe_injective f g h₁ h₂ := by cases f; cases g; congr; exact EquivLike.coe_injective _ _ h₁ h₂
+  coe_injective' f g h₁ h₂ := by cases f; cases g; congr; exact EquivLike.coe_injective' _ _ h₁ h₂
 
 @[ext] theorem ext {f g : MyIso A B} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g h
 
@@ -101,7 +101,7 @@ instance : EquivLike (CoolerIso A B) A B where
   inv f := f.invFun
   left_inv f := f.left_inv
   right_inv f := f.right_inv
-  coe_injective f g h₁ h₂ := by cases f; cases g; congr; exact EquivLike.coe_injective _ _ h₁ h₂
+  coe_injective' f g h₁ h₂ := by cases f; cases g; congr; exact EquivLike.coe_injective' _ _ h₁ h₂
 
 instance : CoolerIsoClass (CoolerIso A B) A B where
   map_op f := f.map_op'
@@ -132,7 +132,7 @@ instead of linearly increasing the work per `MyIso`-related declaration.
 injective coercion to bijections between `α` and `β`.
 
 Note that this does not directly extend `FunLike`, nor take `FunLike` as a parameter,
-so we can state `coe_injective` in a nicer way.
+so we can state `coe_injective'` in a nicer way.
 
 This typeclass is used in the definition of the isomorphism (or equivalence) typeclasses,
 such as `ZeroEquivClass`, `MulEquivClass`, `MonoidEquivClass`, ....
