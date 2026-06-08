@@ -144,7 +144,7 @@ public meta section
 namespace Mathlib.Tactic.GCongr
 open Lean Meta
 
-/-- `GCongrKey` is the key used in the hashmap for looking up `gcongr` lemmas. -/
+/-- `GCongrKey` is the key used in the dictionary for looking up `gcongr` lemmas. -/
 structure GCongrKey where
   /-- The name of the relation. For example, `a + b ≤ a + c` has ``relName := `LE.le``. -/
   relName : Name
@@ -177,7 +177,7 @@ structure GCongrHyp where
 /-- Structure recording the data for a "generalized congruence" (`gcongr`) lemma. -/
 structure GCongrLemma where
   /-- The keys under which the lemma is stored. This is usually one key,
-  but for strict `gcongr` lemmas, this stores two keys, for the LHS and RHS key respectively. -/
+  but for `gcongr strict` lemmas, this stores two keys, for the LHS and RHS respectively. -/
   keys : List GCongrKey
   /-- The name of the lemma. -/
   declName : Name
@@ -203,7 +203,7 @@ abbrev GCongrLemmas := Std.TreeMap GCongrKey (List GCongrLemma)
 def GCongrLemma.prioLE (a b : GCongrLemma) : Bool :=
   (compare a.prio b.prio).then (compare b.numVarying a.numVarying) |>.isLE
 
-/-- Insert a `GCongrLemma` in a collection of lemmas, making sure that the lemmas are sorted. -/
+/-- Insert a `GCongrLemma` in a collection of lemmas, making sure they are sorted by priority. -/
 def addGCongrLemmaEntry (m : GCongrLemmas) (l : GCongrLemma) : GCongrLemmas :=
   l.keys.foldl (init := m) fun m key ↦ m.alter key fun
     | none    => [l]
@@ -221,18 +221,18 @@ initialize gcongrExt : SimpleScopedEnvExtension GCongrLemma GCongrLemmas ←
     initial := {}
   }
 
-/-- Return the `gcongr` lemmas whose conclusion has the shape `rel (lhs ..) (rhs ..)`,
+/-- Return the `gcongr` lemmas whose conclusion has the shape `relName (lhs ..) (rhs ..)`,
 where `arity` is the number of arguments in `..`. This is used by the `gcongr` tactic. -/
 def findGCongrLemmas? (relName lhs rhs : Name) (arity : Nat) : CoreM (List GCongrLemma) := do
   let lemmas := gcongrExt.getState (← getEnv)
-  let some lemmas := lemmas.get? { relName, head := rhs, arity } | return []
-  let keys := if lhs == rhs then [{ relName, head := lhs, arity }] else
-    [{ relName, head := lhs, arity }, { relName, head := rhs, arity }]
+  let key := { relName, head := lhs, arity }
+  let some lemmas := lemmas.get? key | return []
+  let keys := if lhs == rhs then [key] else [key, { key with head := rhs }]
   return lemmas.filter (·.keys == keys)
 
-/-- Get the `gcongr` lemmas whose conclusion has the shape `rel (head ..) _`, if `forward := true`,
-or `rel _ (head ..)`, if `forward := false`. `arity` is the number of arguments in `..`.
-This is used by the `grw` tactic. -/
+/-- Get the `gcongr` lemmas whose conclusion has the shape
+`relName (head ..) _`, if `forward := true`, or `rel _ (head ..)`, if `forward := false`.
+`arity` is the number of arguments in `..`. This is used by the `grw` tactic. -/
 def findGCongrLemmas?' (relName head : Name) (forward : Bool) (arity : Nat) :
     CoreM (List GCongrLemma) := do
   let lemmas := gcongrExt.getState (← getEnv)
@@ -359,7 +359,7 @@ def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio 
 /-- Attribute marking "generalized congruence" (`gcongr`) lemmas.  Such lemmas must have a
 conclusion of a form such as `f x₁ y z₁ ∼ f x₂ y z₂`; that is, a relation between the application of
 a function to two argument lists, in which the "varying argument" pairs (here `x₁`/`x₂` and
-`z₁`/`z₂`) are all free variables.
+`z₁`/`z₂`) are all free variables. These lemmas are used by the `gcongr` and `grw` tactics.
 
 The antecedents of such a lemma are classified as generating "main goals" if they are of the form
 `x₁ ≈ x₂` for some "varying argument" pair `x₁`/`x₂` (and a possibly different relation `≈` to `∼`),
@@ -373,9 +373,10 @@ However, if a more specific lemma has fewer side conditions, it should also be t
 For example, `mul_le_mul_of_nonneg_right` and `mul_le_mul_of_nonneg_left` are both tagged.
 
 * `gcongr only` relaxes some checks that ensure that the lemma is suitable for use in `grw`.
-  Such lemmas ca be used by the `gcongr` tactic, but not by `grw`.
+  So, a lemma tagged `gcongr only` is not used by `grw`, but it may still be used by `gcongr`.
 * `gcongr strict` is for lemmas where the conclusion relates two different constants,
-  instead of a constant with itself. A notable use of `gcongr only` is on `lt_of_lt_of_le`,
+  instead of a constant with itself. This can be used to give `grw` special support for rewriting
+  with strict inequality (`<`). For example, `gcongr strict` is used on `lt_of_lt_of_le`,
   which has the conclusion `b ≤ c → a < c` that relates `LE.le` with `LT.lt`.
 -/
 syntax (name := gcongrAttr) "gcongr" (&" strict")? (&" only")? (prio)? : attr
