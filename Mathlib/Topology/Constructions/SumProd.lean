@@ -627,10 +627,7 @@ variable {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
 set_option backward.defeqAttrib.useBackward true in
 /-- Product of two homeomorphisms. -/
 def prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X × Y ≃ₜ X' × Y' where
-  toFun  := Function.prod (⇑h₁ ∘ Prod.fst) (⇑h₂ ∘ Prod.snd)
-  invFun := Function.prod (⇑h₁.symm ∘ Prod.fst) (⇑h₂.symm ∘ Prod.snd)
-  left_inv _ := by simp
-  right_inv _ := by simp
+  toEquiv := h₁.toEquiv.prodCongr h₂.toEquiv
 
 @[simp]
 theorem prodCongr_symm (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') :

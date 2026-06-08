@@ -39,6 +39,16 @@ open Set Topology Filter
 
 variable {X Y W Z : Type*}
 
+universe u v w
+
+structure EquivClass (F : Type u → Type u → Type w) where
+  coe {X : Type u} {Y : Type u} : F X Y → X → Y
+  inv {X : Type u} {Y : Type u} : F X Y → Y → X
+  left_inv {X : Type u} {Y : Type u} : ∀ e : F X Y, Function.LeftInverse (inv e) (coe e)
+  right_inv {X : Type u} {Y : Type u} : ∀ e : F X Y, Function.RightInverse (inv e) (coe e)
+  coe_injective' {X : Type u} {Y : Type u} : ∀ e g : F X Y, coe e = coe g → inv e = inv g → e = g
+  symm {X : Type u} {Y : Type u}  : F X Y → F Y X
+
 /-- Homeomorphism between `X` and `Y`, also called topological isomorphism -/
 structure Homeomorph (X : Type*) (Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
     extends X ≃ Y where
@@ -61,6 +71,14 @@ theorem toEquiv_injective : Function.Injective (toEquiv : X ≃ₜ Y → X ≃ Y
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
 instance : EquivLike (X ≃ₜ Y) X Y where
+  coe h := h.toEquiv
+  inv h := h.toEquiv.symm
+  left_inv h := h.left_inv
+  right_inv h := h.right_inv
+  coe_injective' _ _ H _ := toEquiv_injective <| DFunLike.ext' H
+
+instance : EquivClass
+  (fun (X Y : Type u) /- [TopologicalSpace X] [TopologicalSpace Y] -/ ↦ (X ≃ₜ Y)) where
   coe h := h.toEquiv
   inv h := h.toEquiv.symm
   left_inv h := h.left_inv
