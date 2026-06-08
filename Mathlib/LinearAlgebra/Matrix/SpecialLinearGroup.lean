@@ -521,6 +521,11 @@ lemma transvection_inv (i j : ι) (hij : i ≠ j) (b : F) :
     (transvection i j hij b)⁻¹ = transvection i j hij (-b) :=
   inv_eq_of_mul_eq_one_left (by rw [← transvection_mul_neg i j hij (-b), neg_neg])
 
+lemma transvection_add (i j : ι) (hij : i ≠ j) (b₁ b₂ : F) :
+    transvection i j hij (b₁ + b₂) = transvection i j hij b₁ * transvection i j hij b₂ :=
+  Subtype.ext <| by simp [transvection_coe, mul_add, add_mul,
+    single_mul_single_of_ne _ _ _ _ hij.symm, single_add, add_assoc]
+
 lemma transvection_mem_center_iff (i j : ι) (hij : i ≠ j) (b : F) :
     transvection i j hij b ∈ Subgroup.center (SpecialLinearGroup ι F) ↔ b = 0 := by
   refine ⟨fun h ↦ ?_, fun hb ↦ ?_⟩
@@ -571,7 +576,7 @@ open scoped commutatorElement
 
 lemma commutator_diag2_transvection (a : F) (ha : a ≠ 0) (b c : F)
     (hc : c = b * (a ^ 2 - 1)) : ⁅diag2 a ha, SpecialLinearGroup.transvection 0 1 zero_ne_one b⁆ =
-    (transvection 0 1 zero_ne_one c : SL(2, F)) := by
+    (SpecialLinearGroup.transvection 0 1 zero_ne_one c : SL(2, F)) := by
   rw [commutatorElement_def, diag2_inv a ha, SpecialLinearGroup.transvection_inv 0 1 zero_ne_one b]
   refine Subtype.ext <| Matrix.ext fun i j ↦ ?_
   fin_cases i <;> fin_cases j
