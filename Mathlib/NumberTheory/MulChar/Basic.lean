@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.CharP.Basic
 public import Mathlib.Algebra.CharP.Lemmas
-public import Mathlib.Data.Fintype.Units
+public import Mathlib.Algebra.GroupWithZero.Units.Fintype
 public import Mathlib.GroupTheory.OrderOfElement
 
 /-!
@@ -208,6 +208,14 @@ theorem equivToUnitHom_symm_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : equivToUnitHom.s
 @[simp]
 lemma coe_toMonoidHom (χ : MulChar R R')
     (x : R) : χ.toMonoidHom x = χ x := rfl
+
+theorem apply_ne_zero_iff [Nontrivial R'] {χ : MulChar R R'} {a : R} :
+    χ a ≠ 0 ↔ IsUnit a :=
+  ⟨by simpa using (map_nonunit χ).mt, fun h ↦ (h.map χ).ne_zero⟩
+
+theorem apply_eq_zero_iff [Nontrivial R'] {χ : MulChar R R'} {a : R} :
+    χ a = 0 ↔ ¬ IsUnit a := by
+  simpa using χ.apply_ne_zero_iff.not
 
 /-!
 ### Commutative group structure on multiplicative characters
