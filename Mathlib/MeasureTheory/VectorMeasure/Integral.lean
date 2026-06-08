@@ -643,7 +643,7 @@ theorem exists_ne_zero_of_integral_ne_zero
   rcases subsingleton_or_nontrivial G with h'G | h'G
   · apply Subsingleton.elim
   rw [integral_eq_setToFun, MeasureTheory.integral_eq_setToFun]
-  simp only [variation_transpose_lsmul_flip, variation_toSignedMeasure]
+  simp only [variation_transpose_lsmul_flip, Measure.variation_toSignedMeasure]
   apply setToFun_congr_left' _ _ (fun s hs h's ↦ ?_)
   simp only [transpose, ContinuousLinearMap.flip_flip, mapRange_apply,
     Measure.toSignedMeasure_apply, hs, ↓reduceIte, LinearMap.toAddMonoidHom_coe,
