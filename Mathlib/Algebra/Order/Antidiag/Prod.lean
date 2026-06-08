@@ -109,7 +109,7 @@ theorem swap_mem_mulAntidiagonal [CommMonoid A] [HasMulAntidiagonal A] {n : A} {
     xy.swap ∈ mulAntidiagonal n ↔ xy ∈ mulAntidiagonal n := by
   simp [mul_comm]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) map_prodComm_antidiagonal]
 theorem map_prodComm_mulAntidiagonal [CommMonoid A] [HasMulAntidiagonal A] {n : A} :
     (mulAntidiagonal n).map (Equiv.prodComm A A) = mulAntidiagonal n :=
   Finset.ext fun ⟨a, b⟩ => by simp [mul_comm]
