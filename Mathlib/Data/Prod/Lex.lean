@@ -33,6 +33,12 @@ Related files are:
 * `Data.Pi.Lex`: Lexicographic order on `Πₗ i, α i`.
 * `Data.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
 * `Data.Sigma.Order`: Lexicographic order on `Σ i, α i`.
+
+# TODO
+
+Some lemmas could be automatically generated with `to_dual`.
+See [https://github.com/leanprover-community/mathlib4/pull/37939#discussion_r3367855484]
+
 -/
 
 @[expose] public section

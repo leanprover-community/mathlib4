@@ -24,6 +24,10 @@ lattice factors through it.
 
 - Build the order isomorphism `DedekindCut ℚ ≃o EReal`.
 
+- Make the `to_dual` tactic work so that some lemmas are created automatically, eg
+  `DedekindCut.le_principal_iff` from `DedekindCut.principal_le_iff`.
+  See [https://github.com/leanprover-community/mathlib4/pull/37939#discussion_r3328958630]
+
 ## Tags
 
 Dedekind completion, Dedekind cut
@@ -86,7 +90,7 @@ theorem image_right_subset_upperBounds {f : α → β} (hf : Monotone f)
 though it is injective only on partial orders. -/
 def principal (a : α) : DedekindCut α :=
   (Concept.ofObject _ a).copy (Iic a) (Ici a)
-    (by ext; simpa [mem_lowerPolar_iff] using forall_ge_iff_le.symm)
+    (by ext; simpa [mem_lowerPolar_iff] using! forall_ge_iff_le.symm)
     (by ext; simp)
 
 @[simp] theorem left_principal (a : α) : (principal a).left = Iic a := rfl
@@ -115,7 +119,6 @@ theorem principal_le_principal {a b : α} : principal a ≤ principal b ↔ a �
 @[simp]
 theorem principal_lt_principal {a b : α} : principal a < principal b ↔ a < b := by
   simp [lt_iff_le_not_ge]
-
 
 /-- We can never have a computable decidable instance, for the same reason we can't on `Set α`. -/
 noncomputable instance : DecidableLE (DedekindCut α) :=
