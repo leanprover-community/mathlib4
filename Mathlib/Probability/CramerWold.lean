@@ -29,18 +29,14 @@ variable {Ω : Type*} [MeasurableSpace Ω] {P : ProbabilityMeasure Ω}
   {Ω' : Type*} [MeasurableSpace Ω'] {Q : ProbabilityMeasure Ω'}
   {X : Ω' → E} {Xn : ℕ → Ω → E}
 
-lemma aemeasurable_dotProduct {α : Type*} [MeasurableSpace α] {μ : Measure α}
-  {Y : α → E} (hY : Measurable Y) (t : E) :
-  AEMeasurable (fun ω : α => ⟪Y ω, t⟫) μ :=
-  (Measurable.inner_const hY).aemeasurable
-
 lemma charFun_map_eq_integral_map_inner {α : Type*} [MeasurableSpace α]
   (μ : ProbabilityMeasure α) {Y : α → E} (hY : Measurable Y) (t : E) :
   charFun (↑(μ.map hY.aemeasurable)) t =
-    ∫ (ω : ℝ), innerProbChar (1 : ℝ) ω ∂(↑(μ.map (aemeasurable_dotProduct hY t))) := by
+    ∫ (ω : ℝ), innerProbChar (1 : ℝ) ω ∂((μ.map (hY.inner_const (c := t)).aemeasurable).toMeasure)
+      := by
   simp_rw [charFun_eq_integral_innerProbChar]
   simp only [toMeasure_map]
-  rw [MeasureTheory.integral_map (aemeasurable_dotProduct hY t)
+  rw [MeasureTheory.integral_map (hY.inner_const (c := t)).aemeasurable
     (innerProbChar (1 : ℝ)).continuous.stronglyMeasurable.aestronglyMeasurable]
   rw [MeasureTheory.integral_map hY.aemeasurable
     (innerProbChar t).continuous.stronglyMeasurable.aestronglyMeasurable]
@@ -54,8 +50,8 @@ lemma charFun_map_eq_integral_map_inner {α : Type*} [MeasurableSpace α]
   simp
 
 lemma tendsto_charFun_of_tendsto_inner (hX : Measurable X) (hXn : ∀ n, Measurable (Xn n))
-  (hconv : ∀ t : E, Tendsto (fun n : ℕ => P.map (aemeasurable_dotProduct (hXn n) t))
-    atTop (𝓝 (Q.map (aemeasurable_dotProduct hX t)))) :
+  (hconv : ∀ t : E, Tendsto (fun n : ℕ => P.map ((hXn n).inner_const (c := t)).aemeasurable)
+    atTop (𝓝 (Q.map (hX.inner_const (c := t)).aemeasurable : ProbabilityMeasure ℝ))) :
   ∀ t : E, Tendsto (fun n ↦ charFun (P.map (hXn n).aemeasurable) t)
     atTop (𝓝 (charFun (Q.map hX.aemeasurable) t)) := by
   intro t
@@ -71,8 +67,8 @@ Convergence in distribution of all 1-dimensional scalar projections of a sequenc
 random variables in a finite-dimensional real inner product space implies the
 convergence in distribution of the sequence itself. -/
 theorem tendsto_map_of_tendsto_map_inner (hX : Measurable X) (hXn : ∀ n, Measurable (Xn n)) :
-  (∀ t : E, Tendsto (fun n : ℕ => P.map (aemeasurable_dotProduct (hXn n) t))
-  atTop (𝓝 (Q.map (aemeasurable_dotProduct hX t)))) →
+  (∀ t : E, Tendsto (fun n : ℕ => P.map ((hXn n).inner_const (c := t)).aemeasurable)
+  atTop (𝓝 (Q.map (hX.inner_const (c := t)).aemeasurable : ProbabilityMeasure ℝ))) →
   (Tendsto (fun n : ℕ => P.map (hXn n).aemeasurable) atTop (𝓝 (Q.map hX.aemeasurable))) := by
   intro h
   apply ProbabilityMeasure.tendsto_iff_tendsto_charFun.mpr
