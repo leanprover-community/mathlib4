@@ -45,6 +45,12 @@ def treesOfNumNodesEq : ℕ → Finset (BinaryTree Unit)
     · simp_wf; have := fst_le ijh.2; lia
     · simp_wf; have := snd_le ijh.2; lia
 
+set_option linter.deprecated false in
+/-- **Alias** of `BinaryTree.treesOfNumNodesEq`. -/
+@[deprecated BinaryTree.getOrElse (since := "2026-06-07")]
+abbrev _root_.Tree.treesOfNumNodesEq : ℕ → Finset (Tree Unit) :=
+  BinaryTree.treesOfNumNodesEq
+
 @[simp]
 theorem treesOfNumNodesEq_zero : treesOfNumNodesEq 0 = {nil} := by rw [treesOfNumNodesEq]
 
