@@ -134,10 +134,6 @@ lemma restrictAppIso_smul_Spec {S : CommRingCat.{u}} (f : R ⟶ S)
     simp [Iso.cancel_iso_inv_left, Hom.app_eq_appLE]
     rfl
   rw [this]
-set_option linter.dupNamespace false in
-
-@[deprecated (since := "2026-06-04")]
-alias Scheme.Modules.restrictAppIso_smul_Spec := restrictAppIso_smul_Spec
 
 set_option linter.dupNamespace false in
 @[deprecated (since := "2026-06-04")]
