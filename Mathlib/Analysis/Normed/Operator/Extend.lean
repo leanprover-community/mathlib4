@@ -195,7 +195,7 @@ theorem extendOfNorm_eq (h_dense : DenseRange e) (h_norm : ∃ C, ∀ x, ‖f x�
     (x : E) : f.extendOfNorm e (e x) = f x := by
   have := (f.compLeftInverse e).extend_eq (e := (LinearMap.range e).subtypeL)
     (by simpa using! h_dense) isUniformEmbedding_subtype_val.isUniformInducing
-  convert this ⟨e x, LinearMap.mem_range_self e x⟩
+  convert! this ⟨e x, LinearMap.mem_range_self e x⟩
   exact (compLeftInverse_apply_of_bdd _ _ h_norm _ _ rfl).symm
 
 theorem norm_extendOfNorm_apply_le (h_dense : DenseRange e) (C : ℝ)
