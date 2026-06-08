@@ -93,8 +93,14 @@ theorem star_inj [InvolutiveStar R] {x y : R} : star x = star y ↔ x = y :=
   star_injective.eq_iff
 
 /-- `star` as an equivalence when it is involutive. -/
+@[simps! apply]
 protected def Equiv.Perm.star [InvolutiveStar R] : Equiv.Perm R :=
   star_involutive.toPerm _
+
+@[simp]
+theorem Equiv.Perm.symm_star [InvolutiveStar R] :
+    (Equiv.Perm.star : R ≃ R).symm = Equiv.Perm.star :=
+  rfl
 
 theorem eq_star_of_eq_star [InvolutiveStar R] {r s : R} (h : r = star s) : s = star r := by
   simp [h]
@@ -232,11 +238,20 @@ export StarAddMonoid (star_add)
 attribute [simp] star_add
 
 /-- `star` as an `AddEquiv` -/
-@[simps apply]
-def starAddEquiv [AddMonoid R] [StarAddMonoid R] : R ≃+ R :=
-  { InvolutiveStar.star_involutive.toPerm star with
-    toFun := star
-    map_add' := star_add }
+@[simps! apply]
+def starAddEquiv [AddMonoid R] [StarAddMonoid R] : R ≃+ R where
+  toEquiv := Equiv.Perm.star
+  map_add' := star_add
+
+@[simp]
+theorem toEquiv_starAddEquiv [AddMonoid R] [StarAddMonoid R] :
+    (starAddEquiv : R ≃+ R) = (Equiv.Perm.star : R ≃ R) :=
+  rfl
+
+@[simp]
+theorem symm_starAddEquiv [AddMonoid R] [StarAddMonoid R] :
+    (starAddEquiv : R ≃+ R).symm = starAddEquiv :=
+  rfl
 
 variable (R) in
 @[simp]
