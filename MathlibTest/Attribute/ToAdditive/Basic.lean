@@ -95,6 +95,8 @@ class my_has_scalar (M : Type u) (α : Type v) where
   smul : M → α → α
 
 instance : my_has_scalar Nat Nat := ⟨fun a b => a * b⟩
+
+set_option linter.translate.warnInvalid false in
 attribute [to_additive (reorder := α β) my_has_scalar] my_has_pow
 /--
 error: `to_additive` validation failed: expected
@@ -103,7 +105,7 @@ but 'Test.my_has_scalar.smul' has type
   {M : Type u} → {α : Type v} → [self : my_has_scalar M α] → M → α → α
 -/
 #guard_msgs in
-attribute [to_additive existing] my_has_pow.pow
+attribute [to_additive existing smul] my_has_pow.pow
 /--
 error: `to_additive` validation failed: expected
   {β : Type u} → {α : Type v} → [self : my_has_scalar β α] → α → β → α
@@ -111,8 +113,8 @@ but 'Test.my_has_scalar.smul' has type
   {M : Type u} → {α : Type v} → [self : my_has_scalar M α] → M → α → α
 -/
 #guard_msgs in
-attribute [to_additive existing (reorder := α β)] my_has_pow.pow
-attribute [to_additive existing (reorder := α β, 4 5)] my_has_pow.pow
+attribute [to_additive existing (reorder := α β) smul] my_has_pow.pow
+attribute [to_additive existing (reorder := α β, 4 5) smul] my_has_pow.pow
 
 @[to_additive bar1]
 def foo1 {α : Type u} [my_has_pow α ℕ] (x : α) (n : ℕ) : α := @my_has_pow.pow α ℕ _ x n
@@ -130,12 +132,14 @@ def foo2 {α} [my_has_pow α ℕ] (x : α) (n : ℕ) (m : PLift ℤ) : α := x ^
 theorem foo2_works : foo2 2 3 (PLift.up 2) = Nat.pow 2 5 := by decide
 theorem bar2_works : bar2 2 3 (PLift.up 2) = 2 * 5 := by decide
 
+set_option linter.translate.warnInvalid false in
 @[to_additive bar3]
 def foo3 {α} [my_has_pow α ℕ] (x : α) : ℕ → α := @my_has_pow.pow α ℕ _ x
 
 theorem foo3_works : foo3 2 3 = Nat.pow 2 3 := by decide
 theorem bar3_works : bar3 2 3 = 2 * 3 := by decide
 
+set_option linter.translate.warnInvalid false in
 @[to_additive bar4]
 def foo4 {α : Type u} : Type v → Type (max u v) := @my_has_pow α
 
@@ -145,6 +149,7 @@ lemma foo4_test {α β : Type u} : @foo4 α β = @my_has_pow α β := rfl
 @[to_additive bar5]
 def foo5 {α} [my_has_pow α ℕ] [my_has_pow ℕ ℤ] : True := True.intro
 
+set_option linter.translate.warnInvalid false in
 @[to_additive bar6]
 def foo6 {α} [my_has_pow α ℕ] : α → ℕ → α := @my_has_pow.pow α ℕ _
 
@@ -250,9 +255,9 @@ run_cmd do
 /- Test on inductive types -/
 inductive AddInd : ℕ → Prop where
   | basic : AddInd 2
-  | zero : AddInd 0
+  | zero : AddInd 1
 
-@[to_additive]
+@[to_additive (relevant_arg := _)]
 inductive MulInd : ℕ → Prop where
   | basic : MulInd 2
   | one : MulInd 1
@@ -387,12 +392,15 @@ def reorderMulThree {α : Type _} [Mul α] (x y z : α) : α := x * y * z
 def reorderMulThree' {α : Type _} [Mul α] (x y z : α) : α := x * y * z
 
 /-! Test `(reorder := ...)` when the proof needs to be eta-expanded. -/
+set_option linter.translate.warnInvalid false in
 @[to_additive (reorder := 3 4 5)]
 alias reorderMulThree_alias := reorderMulThree
 
+set_option linter.translate.warnInvalid false in
 @[to_additive (reorder := 3 4 2)]
 alias reorderMulThree_alias' := reorderMulThree
 
+set_option linter.translate.warnInvalid false in
 @[to_additive (reorder := 3 4 5)]
 def reorderMulThree_alias'' {α : Type _} [Mul α] (x y : α) : α → α := reorderMulThree x y
 
@@ -529,6 +537,7 @@ end Test
 insert_to_additive_translation localize add_localize
 
 @[to_additive] def localize.r := Nat
+set_option linter.translateOverwrite false in
 @[to_additive add_localize] def localize := Nat
 @[to_additive] def localize.s := Nat
 
@@ -597,6 +606,7 @@ elab "unfold%" e:term : term => do
   let e ← Elab.Term.elabTerm e none
   Meta.unfoldDefinition e
 
+set_option linter.translate.warnInvalid false in
 @[to_additive]
 def myPow {α β : Type} [i : Pow α β] (a : α) := unfold% i.1 a
 
@@ -904,6 +914,15 @@ warning: `to_additive` determined that `(relevant_arg := 2)` is the right option
 You may remove the option.
 
 Note: This linter can be disabled with `set_option linter.translateRelevantArg false`
+---
+warning: @[to_additive] would like to add a translation from `monoidAlgebraFoo₂.eq_1` to `addMonoidAlgebraFoo₂.eq_1`, but this is not valid. Error:
+
+`to_additive` validation failed: expected
+  ∀ {k G : Type} [inst : Inhabited k], monoidAlgebraFoo₂ = ({ x := fun x => default }, 2)
+but 'addMonoidAlgebraFoo₂.eq_1' has type
+  ∀ {k G : Type} [inst : Inhabited k], addMonoidAlgebraFoo₂ = ({ x := fun x => default }, 2)
+
+Note: This linter can be disabled with `set_option linter.translate.warnInvalid false`
 -/
 #guard_msgs in
 @[to_additive (dont_translate := k) (relevant_arg := k)]
