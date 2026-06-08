@@ -147,14 +147,14 @@ instance : (tateComplexFunctor (R := R) (G := G)).PreservesZeroMorphisms where
 
 /-- The natural isomorphism between the `n`-th index of the Tate complex and inhomogeneous
   `n`-cochains for `0 ≤ n`. -/
-def tateComplex.eval_nonneg (n : ℕ) :
+def tateComplex.evalNonneg (n : ℕ) :
     tateComplexFunctor R G ⋙ HomologicalComplex.eval (ModuleCat R) (ComplexShape.up ℤ) n ≅
     cochainsFunctor R G ⋙ HomologicalComplex.eval (ModuleCat R) (ComplexShape.up ℕ) n :=
   .refl _
 
 /-- The natural isomorphism between the `n`-th index of the Tate complex and inhomogeneous
   `n`-chains for `n < 0`. -/
-def tateComplex.eval_neg (n : ℕ) : tateComplexFunctor R G ⋙ HomologicalComplex.eval (ModuleCat R)
+def tateComplex.evalNeg (n : ℕ) : tateComplexFunctor R G ⋙ HomologicalComplex.eval (ModuleCat R)
     (ComplexShape.up ℤ) (.negSucc n) ≅ chainsFunctor R G ⋙
     HomologicalComplex.eval (ModuleCat R) (ComplexShape.down ℕ) n :=
   .refl _
@@ -169,9 +169,9 @@ lemma map_tateComplexFunctor_shortExact {S : ShortComplex (Rep R G)} (hS : S.Sho
     (S.map (tateComplexFunctor R G)).ShortExact := by
   simp only [HomologicalComplex.shortExact_iff_degreewise_shortExact , ← ShortComplex.map_comp]
   rintro (_ | _)
-  · exact ShortComplex.shortExact_of_iso (ShortComplex.mapNatIso _ (tateComplex.eval_nonneg _).symm)
+  · exact ShortComplex.shortExact_of_iso (ShortComplex.mapNatIso _ (tateComplex.evalNonneg _).symm)
       <| map_cochainsFunctor_eval_shortExact hS _
-  · exact ShortComplex.shortExact_of_iso (ShortComplex.mapNatIso _ (tateComplex.eval_neg _).symm)
+  · exact ShortComplex.shortExact_of_iso (ShortComplex.mapNatIso _ (tateComplex.evalNeg _).symm)
       <| map_chainsFunctor_eval_shortExact hS _
 
 set_option backward.defeqAttrib.useBackward true in
