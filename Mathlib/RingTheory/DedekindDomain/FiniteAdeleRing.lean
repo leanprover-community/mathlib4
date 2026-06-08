@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 public import Mathlib.RingTheory.DedekindDomain.Factorization
 public import Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace
 public import Mathlib.Topology.Algebra.RestrictedProduct.Units
-public import Mathlib.Topology.Algebra.RestrictedProduct.Units
 
 /-!
 # The finite adèle ring of a Dedekind domain
