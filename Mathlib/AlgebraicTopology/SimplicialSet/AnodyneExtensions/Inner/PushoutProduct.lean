@@ -43,21 +43,13 @@ open modelCategoryQuillen
 
 namespace prodStdSimplex
 
-lemma strongInnerAnodyneExtensions_unionProd_ι {m : ℕ} (k : Fin m) (n : ℕ) :
-    strongInnerAnodyneExtensions (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc.succ] ∂Δ[n]).ι :=
-  (pairing k.castSucc.succ n).strongInnerAnodyneExtensions
-
-lemma innerAnodyneExtensions_unionProd_ι {m : ℕ} (k : Fin m) (n : ℕ) :
-    innerAnodyneExtensions (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc.succ] ∂Δ[n]).ι :=
-  (pairing k.castSucc.succ n).innerAnodyneExtensions
-
-lemma innerAnodyneExtensions_unionProd_ι' {m : ℕ} (k : Fin (m + 2)) (h0 : 0 < k)
+lemma innerAnodyneExtensions_unionProd_ι {m : ℕ} (k : Fin (m + 2)) (h0 : 0 < k)
     (hn : k < Fin.last (m + 1)) (n : ℕ) :
     innerAnodyneExtensions (Subcomplex.unionProd.{u} Λ[m + 1, k] ∂Δ[n]).ι := by
   obtain ⟨k, rfl⟩ := Fin.eq_castSucc_of_ne_last (Fin.ne_last_of_lt hn)
   obtain ⟨k, rfl⟩ := Fin.eq_succ_of_ne_zero
     (Fin.ne_zero_of_lt (show 0 < k from Fin.val_pos_iff.mp h0))
-  exact innerAnodyneExtensions_unionProd_ι k n
+  exact (pairing k.castSucc.succ n).innerAnodyneExtensions
 
 end prodStdSimplex
 
@@ -87,7 +79,7 @@ lemma innerFibration_pullbackObjObjπ [Mono i] [InnerFibration p]
   rw [← internalHomAdjunction₂.hasLiftingProperty_iff
     (Subcomplex.unionProd.pushoutObjObj.{u} _ _),
     Subcomplex.unionProd.pushoutObjObj_ι]
-  exact prodStdSimplex.innerAnodyneExtensions_unionProd_ι' k h0 hn n _ hp
+  exact prodStdSimplex.innerAnodyneExtensions_unionProd_ι k h0 hn n _ hp
 
 lemma innerAnodyneExtensions_pushoutObjObjι
     (sq₁₂ : (curriedTensor _).PushoutObjObj i j) [Mono i] (hj : innerAnodyneExtensions j) :
