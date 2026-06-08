@@ -553,13 +553,17 @@ noncomputable def diag2n {ι : Type*} [Fintype ι] [DecidableEq ι] {i j : ι} (
     simp [Finset.prod_ite, hij.symm, Finset.card_eq_one (s := {x : ι | x = i}).2 ⟨i, by grind⟩,
       mul_inv_cancel₀ ha]⟩
 
+lemma diag2n_coe {ι : Type*} [Fintype ι] [DecidableEq ι] {i j : ι} (hij : i ≠ j) (a : F)
+    (ha : a ≠ 0) : (diag2n hij a ha).1 = diagonal (fun k ↦
+      if k = i then a else if k = j then a⁻¹ else 1) := rfl
+
 /-- An element in SL₂(F) induced by a diagonal matrix with `a`, `a⁻¹` on
   positition `0` and `1` respectively. -/
-noncomputable def diag2 (a : F) (ha : a ≠ 0) : SL(2, F) :=
-  ⟨diagonal (fun i ↦ match i with | 0 => a | 1 => a⁻¹), by simp [mul_inv_cancel₀ ha]⟩
+noncomputable abbrev diag2 (a : F) (ha : a ≠ 0) : SL(2, F) :=
+  diag2n zero_ne_one a ha
 
 lemma diag2_coe (a : F) (ha : a ≠ 0) :
-    (diag2 a ha).1 = diagonal (fun i ↦ match i with | 0 => a|1 => a⁻¹) := rfl
+    (diag2 a ha).1 = diagonal (fun i ↦ match i with | 0 => a|1 => a⁻¹) := by simp [diag2n_coe]
 
 lemma diag2_mulVec_single_i₁ (a : F) (ha : a ≠ 0) :
     (diag2 a ha).1 *ᵥ (Pi.single 0 (1 : F)) = a • Pi.single 0 (1 : F) := by
