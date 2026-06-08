@@ -474,8 +474,7 @@ theorem comap_eq_ker {f : G →* N} {H : Subgroup N} : H.comap f = f.ker ↔ Dis
 @[to_additive]
 theorem comap_eq_ker_of_surjective {f : G →* N} (hf : Surjective f) {H : Subgroup N} :
     H.comap f = f.ker ↔ H = ⊥ := by
-  rw [← comap_bot]
-  exact comap_injective hf |>.eq_iff
+  rw [comap_eq_ker, f.range_eq_top_of_surjective hf, disjoint_top]
 
 @[to_additive]
 theorem comap_map_eq_self {f : G →* N} {H : Subgroup G} (h : f.ker ≤ H) :
