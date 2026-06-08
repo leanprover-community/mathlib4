@@ -84,6 +84,10 @@ To elaborate config options for `convert`, use `Convert.elabConfig` which choose
 between `Convert.CheapConfig` and `Convert.ExpensiveConfig` based on other flags.
 -/
 structure Convert.CheapConfig extends Congr!.Config where
+  /-- Solve instance equality at the pre-step, since there are no cases where doing so at the
+  post-step solves more goals, and doing this earlier means less work for the congruence algorithm.
+  -/
+  preTransparency := .instances
   postTransparency := .reducible
 
 /-- Internal elaborator for `Convert.CheapConfig`: use `Convert.elabConfig` instead. -/
