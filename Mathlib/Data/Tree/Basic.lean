@@ -130,7 +130,6 @@ set_option linter.deprecated false in
 @[deprecated BinaryTree.numLeaves (since := "2026-06-07")]
 abbrev _root_.Tree.numLeaves {α} (t : Tree α) : ℕ := BinaryTree.numLeaves t
 
-
 /-- The height - length of the longest path from the root - of a binary tree -/
 @[simp]
 def height : BinaryTree α → ℕ
