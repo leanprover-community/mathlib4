@@ -100,7 +100,7 @@ namespace Copy
 
 instance : FunLike (Copy A B) α β where
   coe f := DFunLike.coe f.toHom
-  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; congr!
+  coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; congr!
 
 lemma injective (f : Copy A B) : Injective f.toHom := f.injective'
 
