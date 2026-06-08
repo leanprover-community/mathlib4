@@ -199,6 +199,15 @@ theorem coeFn_add (f g : Lp E p μ) : ⇑(f + g) =ᵐ[μ] f + g :=
 theorem coeFn_sub (f g : Lp E p μ) : ⇑(f - g) =ᵐ[μ] f - g :=
   AEEqFun.coeFn_sub _ _
 
+theorem coeFn_finsetSum {ι : Type*} (s : Finset ι) (f : ι → Lp E p μ) :
+    ⇑(∑ i ∈ s, f i) =ᵐ[μ] ∑ i ∈ s, ⇑(f i) := by
+  simp [AEEqFun.coeFn_finsetSum]
+
+theorem coeFn_fun_finsetSum {ι : Type*} (s : Finset ι) (f : ι → Lp E p μ) :
+    ⇑(∑ i ∈ s, f i) =ᵐ[μ] fun x ↦ ∑ i ∈ s, f i x := by
+  grw [coeFn_finsetSum]
+  filter_upwards with x using by simp
+
 theorem const_mem_Lp (α) {_ : MeasurableSpace α} (μ : Measure α) (c : E) [IsFiniteMeasure μ] :
     @AEEqFun.const α _ _ μ _ c ∈ Lp E p μ :=
   (memLp_const c).eLpNorm_mk_lt_top
@@ -380,7 +389,7 @@ instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E
         add_le' := fun f g => by
           suffices ‖f + g‖ₑ ≤ ‖f‖ₑ + ‖g‖ₑ by
             -- Squeezed for performance reasons
-            simpa only [ge_iff_le, enorm, ← ENNReal.coe_add, ENNReal.coe_le_coe] using this
+            simpa only [ge_iff_le, enorm, ← ENNReal.coe_add, ENNReal.coe_le_coe] using! this
           simp only [Lp.enorm_def]
           exact (eLpNorm_congr_ae (AEEqFun.coeFn_add _ _)).trans_le
             (eLpNorm_add_le (Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _) hp.out)
