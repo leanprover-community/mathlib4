@@ -8,6 +8,8 @@ module
 public import Mathlib.MeasureTheory.Measure.Dirac
 public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
+import Mathlib.SetTheory.Cardinal.NatCard
+
 /-!
 # Counting measure
 
@@ -17,6 +19,14 @@ and prove basic properties of this measure.
 -/
 
 @[expose] public section
+
+namespace ENNReal
+
+@[simp]
+lemma toReal_enatCard (α : Type*) [Finite α] : ENNReal.toReal (ENat.card α) = Nat.card α := by
+  simp [ENat.card_eq_coe_natCard]
+
+end ENNReal
 
 open Set
 open scoped ENNReal Finset
@@ -162,6 +172,12 @@ instance count.isFiniteMeasure [Finite α] :
 
 @[simp]
 lemma count_univ : count (univ : Set α) = ENat.card α := by simp [count_apply .univ, encard_univ]
+
+@[simp] lemma count_real_univ [Finite α] : count.real (.univ : Set α) = Nat.card α := by
+  simp [Measure.real]
+
+instance neZero_count [Nonempty α] : NeZero (count : Measure α) where
+  out := by rintro h; simpa using congr($h .univ)
 
 lemma _root_.Subsingleton.count_eq_dirac [Subsingleton α] (i : α) :
     count = dirac i := by
