@@ -35,7 +35,7 @@ initialize_simps_projections BooleanSubalgebra (carrier → coe, as_prefix coe)
 
 instance instSetLike : SetLike (BooleanSubalgebra α) α where
   coe L := L.carrier
-  coe_injective' L M h := by obtain ⟨⟨_, _⟩, _⟩ := L; congr
+  coe_injective L M h := by obtain ⟨⟨_, _⟩, _⟩ := L; congr
 
 instance : PartialOrder (BooleanSubalgebra α) := .ofSetLike (BooleanSubalgebra α) α
 
