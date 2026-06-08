@@ -571,7 +571,7 @@ open scoped commutatorElement
 
 lemma commutator_diag2_transvection (a : F) (ha : a ≠ 0) (b c : F)
     (hc : c = b * (a ^ 2 - 1)) : ⁅diag2 a ha, SpecialLinearGroup.transvection 0 1 zero_ne_one b⁆ =
-    (SpecialLinearGroup.transvection 0 1 zero_ne_one c : SL(2, F)) := by
+    (transvection 0 1 zero_ne_one c : SL(2, F)) := by
   rw [commutatorElement_def, diag2_inv a ha, SpecialLinearGroup.transvection_inv 0 1 zero_ne_one b]
   refine Subtype.ext <| Matrix.ext fun i j ↦ ?_
   fin_cases i <;> fin_cases j
