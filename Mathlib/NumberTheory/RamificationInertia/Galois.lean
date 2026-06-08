@@ -160,9 +160,8 @@ theorem ramificationIdxIn_eq_ramificationIdx :
   exact ramificationIdx_eq_of_isGaloisGroup p h.choose P G
 
 include G in
-theorem ramificationIdxIn_ne_zero [Module.Finite A B] {p : Ideal A} [p.IsPrime]
-    [Nonempty (primesOver p B)] : p.ramificationIdxIn B ≠ 0 := by
-  have : Algebra.IsIntegral A B := IsGaloisGroup.isInvariant.isIntegral A B G
+theorem ramificationIdxIn_ne_zero [Module.Finite A B] [FaithfulSMul A B] {p : Ideal A} [p.IsPrime] :
+    p.ramificationIdxIn B ≠ 0 := by
   obtain ⟨P⟩ := (inferInstance : Nonempty (primesOver p B))
   rw [ramificationIdxIn_eq_ramificationIdx p P G]
   exact (P.1.ramificationIdx'_pos A).ne'
@@ -177,8 +176,7 @@ theorem inertiaDegIn_eq_inertiaDeg :
   exact inertiaDeg_eq_of_isGaloisGroup p h.choose P G
 
 include G in
-theorem inertiaDegIn_ne_zero {p : Ideal A} [p.IsPrime] [Nonempty (primesOver p B)]
-    [Module.Finite A B] :
+theorem inertiaDegIn_ne_zero [Module.Finite A B] [FaithfulSMul A B] {p : Ideal A} [p.IsPrime] :
     inertiaDegIn p B ≠ 0 := by
   obtain ⟨P⟩ := (inferInstance : Nonempty (primesOver p B))
   rw [inertiaDegIn_eq_inertiaDeg p P G]

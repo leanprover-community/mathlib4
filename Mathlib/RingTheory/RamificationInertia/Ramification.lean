@@ -192,5 +192,3 @@ theorem ramificationIdx'_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMu
 end
 
 end Ideal
-
-#min_imports
