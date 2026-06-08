@@ -64,19 +64,17 @@ Do an action for every node of the tree.
 Actions are taken in node -> left subtree -> right subtree recursive order.
 This function is the `traverse` function for the `Traversable BinaryTree` instance.
 -/
-def traverse {m : Type* → Type*} [Applicative m] {α β} (f : α → m β)
-: BinaryTree α → m (BinaryTree β)
+def traverse
+    {m : Type* → Type*} [Applicative m] {α β} (f : α → m β) :
+    BinaryTree α → m (BinaryTree β)
   | .nil => pure nil
   | .node a l r => .node <$> f a <*> traverse f l <*> traverse f r
 
-/--
-Do an action for every node of the tree.
-Actions are taken in node -> left subtree -> right subtree recursive order.
-This function is the `traverse` function for the `Traversable BinaryTree` instance.
--/
+set_option linter.deprecated false in
+/-- **Alias** of `BinaryTree.traverse`. -/
 @[deprecated BinaryTree.traverse (since := "2026-06-07")]
 abbrev _root_.Tree.traverse {m : Type* → Type*} [Applicative m] {α β} (f : α → m β)
-(t : BinaryTree α) : m (BinaryTree β) :=
+(t : Tree α) : m (Tree β) :=
   BinaryTree.traverse f t
 
 /-- Apply a function to each value in the BinaryTree.
