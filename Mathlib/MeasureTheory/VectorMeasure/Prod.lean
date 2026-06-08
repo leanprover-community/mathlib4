@@ -12,6 +12,8 @@ public import Mathlib.MeasureTheory.VectorMeasure.Variation.Semivariation
 # Product of vector measures
 -/
 
+public section
+
 open Filter Function MeasureTheory RCLike Set TopologicalSpace Topology
 open scoped ENNReal NNReal Finset
 
@@ -24,10 +26,6 @@ variable {ι X Y E F G : Type*} {mX : MeasurableSpace X} {mY : MeasurableSpace Y
 
 namespace MeasureTheory.VectorMeasure
 
-omit [NormedSpace ℝ E] in
-theorem vectorMeasure_if {x : Y} {t : Set Y} {s : Set X} [Decidable (x ∈ t)] :
-    μ (if x ∈ t then s else ∅) = indicator t (fun _ => μ s) x := by split_ifs with h <;> simp [h]
-
 open scoped Classical in
 /-- The product of two vector measures `μ` and `ν` with respect to a continuous bilinear map `B`,
 giving mass `B (μ s) (ν s)` to a measurable set `s`.
@@ -35,7 +33,7 @@ If such a measure does not exist, we use the junk value `0`. -/
 noncomputable def prod (μ : VectorMeasure X E) (ν : VectorMeasure Y F) (B : E →L[ℝ] F →L[ℝ] G) :
     VectorMeasure (X × Y) G :=
   if h : ∃ ρ : VectorMeasure (X × Y) G, ∀ (s : Set X) (t : Set Y),
-    MeasurableSet s →MeasurableSet t → ρ (s ×ˢ t) = B (μ s) (ν t) then h.choose
+    MeasurableSet s → MeasurableSet t → ρ (s ×ˢ t) = B (μ s) (ν t) then h.choose
   else 0
 
 /-- Two vector measures `μ` and `ν` have a product with respect to `B` if there exists a
@@ -79,7 +77,7 @@ theorem stronglyMeasurable_vectorMeasure_prodMk_left {s : Set (X × Y)}
   | basic s hs =>
     obtain ⟨s, hs, t, -, rfl⟩ := hs
     classical
-    simpa [mk_preimage_prod_right_eq_if, vectorMeasure_if] using
+    simpa [mk_preimage_prod_right_eq_if, of_if] using
       stronglyMeasurable_const.indicator hs
   | compl s hs ihs =>
     simp_rw [preimage_compl, VectorMeasure.of_compl (measurable_prodMk_left hs)]
@@ -136,7 +134,7 @@ instance [CompleteSpace G] [IsFiniteMeasure (μ.transpose B.flip).variation] : H
     classical
     refine ⟨prodOfIsFiniteMeasureLeft μ ν B, fun s t hs ht ↦ ?_⟩
     simp only [prodOfIsFiniteMeasureLeft, hs.prod ht, ↓reduceIte, mk_preimage_prod_right_eq_if,
-      vectorMeasure_if, integral_indicator hs, setIntegral_const, ContinuousLinearMap.flip_apply]
+      of_if, integral_indicator hs, setIntegral_const, ContinuousLinearMap.flip_apply]
 
 instance [CompleteSpace G] [h : IsFiniteMeasure (ν.transpose B).variation] : HasProd μ ν B := by
   rw [← B.flip_flip] at h ⊢

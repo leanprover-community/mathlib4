@@ -135,6 +135,10 @@ theorem hasSum_of_disjoint_iUnion (hm : ∀ i, MeasurableSet (f i)) (hd : Pairwi
   · simp [Function.apply_extend MeasurableSet, Function.comp_def, hm]
   · exact hd.disjoint_extend_bot (he.factorsThrough _)
 
+theorem of_if {ι : Type*} {x : ι} {B : Set ι} {A : Set α} [Decidable (x ∈ B)] :
+    v (if x ∈ B then A else ∅) = indicator B (fun _ => v A) x := by
+  split_ifs with h <;> simp [h]
+
 variable [T2Space M]
 
 theorem of_disjoint_iUnion (hm : ∀ i, MeasurableSet (f i)) (hd : Pairwise (Disjoint on f)) :
