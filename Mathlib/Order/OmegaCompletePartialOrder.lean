@@ -303,6 +303,8 @@ lemma ωScottContinuous_iff_map_ωSup_of_orderHom {f : α →o β} :
 alias ⟨ωScottContinuous.map_ωSup_of_orderHom, ωScottContinuous.of_map_ωSup_of_orderHom⟩ :=
   ωScottContinuous_iff_map_ωSup_of_orderHom
 
+-- Allow `to_fun` to eta-expand `g ∘ f`. Ideally, `Function.comp_def` would be a global pull lemma
+-- instead, which is not supported yet: see https://github.com/leanprover-community/mathlib4/issues/40183.
 attribute [local push ←] Function.comp_def
 attribute [local push] Function.const_def
 
