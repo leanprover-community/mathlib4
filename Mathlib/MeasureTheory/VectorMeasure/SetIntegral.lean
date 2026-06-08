@@ -327,15 +327,17 @@ theorem setIntegral_eq_integral_of_forall_compl_eq_zero (hs : MeasurableSet s)
     ∫ᵛ x in s, f x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] :=
   setIntegral_eq_integral_of_ae_compl_eq_zero hs (Eventually.of_forall h)
 
-theorem setIntegral_const [CompleteSpace G] [IsFiniteMeasure ((μ.restrict s).transpose B).variation]
+theorem setIntegral_const [CompleteSpace G] [IsFiniteMeasure ((μ.transpose B).variation.restrict s)]
     (c : E) : ∫ᵛ _ in s, c ∂[B; μ] = B c (μ s) := by
   by_cases hs : MeasurableSet s
-  · rw [integral_const, restrict_apply _ hs MeasurableSet.univ, univ_inter]
+  · have : IsFiniteMeasure ((μ.restrict s).transpose B).variation := by
+      rwa [transpose_restrict, variation_restrict hs]
+    rw [integral_const, restrict_apply _ hs MeasurableSet.univ, univ_inter]
   · simp [setIntegral_eq_zero_of_not_measurableSet hs, μ.not_measurable' hs]
 
 @[simp]
 theorem integral_indicator_const [CompleteSpace G]
-    (e : E) ⦃s : Set X⦄ [IsFiniteMeasure ((μ.restrict s).transpose B).variation]
+    (e : E) ⦃s : Set X⦄ [IsFiniteMeasure ((μ.transpose B).variation.restrict s)]
     (s_meas : MeasurableSet s) :
     ∫ᵛ x, s.indicator (fun _ : X ↦ e) x ∂[B; μ] = B e (μ s) := by
   rw [integral_indicator s_meas, ← setIntegral_const]

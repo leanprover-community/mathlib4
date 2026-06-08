@@ -44,6 +44,29 @@ class HasProd (μ : VectorMeasure X E) (ν : VectorMeasure Y F) (B : E →L[ℝ]
   out : ∃ ρ : VectorMeasure (X × Y) G, ∀ (s : Set X) (t : Set Y),
     MeasurableSet s → MeasurableSet t → ρ (s ×ˢ t) = B (μ s) (ν t)
 
+@[simp] lemma prod_apply [h : HasProd μ ν B] {s : Set X} {t : Set Y} :
+    μ.prod ν B (s ×ˢ t) = B (μ s) (ν t) := by
+  rcases eq_or_ne s ∅ with rfl | hs
+  · simp
+  rcases eq_or_ne t ∅ with rfl | ht
+  · simp
+  by_cases h's : MeasurableSet s; swap
+  · simp only [h's, not_false_eq_true, not_measurable, _root_.map_zero,
+      ContinuousLinearMap.zero_apply]
+    rw [not_measurable]
+    simp [measurableSet_prod, hs, ht, h's]
+  by_cases h't : MeasurableSet t; swap
+  · simp only [h't, not_false_eq_true, not_measurable, _root_.map_zero]
+    rw [not_measurable]
+    simp [measurableSet_prod, hs, ht, h't]
+  simpa [prod, h.out] using h.out.choose_spec s t h's h't
+
+lemma HasProd.flip [HasProd μ ν B] : HasProd ν μ B.flip where
+  out := by
+    refine ⟨(μ.prod ν B).map Prod.swap, fun s t hs ht ↦ ?_⟩
+    rw [map_apply _ (by fun_prop) (hs.prod ht)]
+    simp
+
 omit [NormedSpace ℝ F] in
 /-- If `ν` is a vector measure, and `s ⊆ X × Y` is measurable, then `x ↦ ν { y | (x, y) ∈ s }` is
 a strongly measurable function. -/
@@ -105,40 +128,13 @@ noncomputable def naiveProd (μ : VectorMeasure X E) (ν : VectorMeasure Y F) (B
       · exact fun i ↦ measurable_prodMk_left (f_meas i)
       · exact fun i j hij ↦ (f_disj hij).preimage _
 
-instance [IsFiniteMeasure (μ.transpose B.flip).variation] : HasProd μ ν B where
+instance [CompleteSpace G] [IsFiniteMeasure (μ.transpose B.flip).variation] : HasProd μ ν B where
   out := by
     classical
     refine ⟨naiveProd μ ν B, fun s t hs ht ↦ ?_⟩
-    simp only [naiveProd, hs.prod ht, ↓reduceIte]
-    simp_rw [mk_preimage_prod_right_eq_if, vectorMeasure_if, integral_indicator hs]
-    rw [setIntegral_const]
+    simp only [naiveProd, hs.prod ht, ↓reduceIte, mk_preimage_prod_right_eq_if, vectorMeasure_if,
+      integral_indicator hs, setIntegral_const, ContinuousLinearMap.flip_apply]
 
-
-
-
-
-#exit
-
-      simp_rw [S, mk_preimage_prod_right_eq_if, measure_if,
-        lintegral_indicator (measurableSet_toMeasurable _ _), lintegral_const,
-        restrict_apply_univ, mul_comm]
-    _ = μ s * ν t := by rw [measure_toMeasurable, measure_toMeasurable]
-
-
-
-lemma prod_apply {μ : VectorMeasure X E} {ν : VectorMeasure Y F} [h : HasProd μ ν B] {s : Set X} {t : Set Y} :
-    μ.prod ν B (s ×ˢ t) = B (μ s) (ν t) := by
-  rcases eq_or_ne s ∅ with rfl | hs
-  · simp
-  rcases eq_or_ne t ∅ with rfl | ht
-  · simp
-  by_cases h's : MeasurableSet s; swap
-  · simp only [h's, not_false_eq_true, not_measurable, _root_.map_zero,
-      ContinuousLinearMap.zero_apply]
-    rw [not_measurable]
-    simp [measurableSet_prod, hs, ht, h's]
-  by_cases h't : MeasurableSet t; swap
-  · simp only [h't, not_false_eq_true, not_measurable, _root_.map_zero]
-    rw [not_measurable]
-    simp [measurableSet_prod, hs, ht, h't]
-  simpa [prod, h.out] using h.out.choose_spec s t h's h't
+instance [CompleteSpace G] [h : IsFiniteMeasure (ν.transpose B).variation] : HasProd μ ν B := by
+  rw [← B.flip_flip] at h ⊢
+  apply HasProd.flip
