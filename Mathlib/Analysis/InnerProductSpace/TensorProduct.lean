@@ -34,6 +34,8 @@ inner product spaces.
 * `TensorProduct.commIsometry`: the linear isometry version of `TensorProduct.comm`.
 * `TensorProduct.lidIsometry`: the linear isometry version of `TensorProduct.lid`.
 * `TensorProduct.assocIsometry`: the linear isometry version of `TensorProduct.assoc`.
+* `TensorProduct.mapL`: the continuous version of `TensorProduct.map f g` when
+  `f` and `g` are continuous linear maps.
 * `OrthonormalBasis.tensorProduct`: the orthonormal basis of the tensor product of two orthonormal
   bases.
 
