@@ -139,9 +139,9 @@ def toOrderMonoidWithZeroHom (f : α →+*o β) : α →*₀o β :=
 
 instance : FunLike (α →+*o β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f; cases g; congr
-    exact DFunLike.coe_injective' h
+    exact DFunLike.coe_injective h
 
 instance : OrderHomClass (α →+*o β) α β where
   map_rel f _ _ h := f.monotone' h
