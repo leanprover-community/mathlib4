@@ -450,7 +450,7 @@ lemma range_liftBaseChange_map_le :
   rintro ⟨x, _⟩
   obtain ⟨⟨(x : P.Ring), x_in⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
   ext; suffices (Q.ofComp P).toAlgHom ((Q.toComp P).toAlgHom x) ∈ Q.toExtension.ker ^ 2 by
-    simpa [-toExtension_Ring, Ideal.toCotangent_eq_zero]
+    simpa [Ideal.toCotangent_eq_zero]
   rw [← Generators.ker, Generators.ker_eq_ker_aeval_val] at x_in
   change aeval P.val x = 0 at x_in
   rw [toComp_toAlgHom, toAlgHom_ofComp_rename, Generators.algebraMap_eq, RingHom.coe_coe,
@@ -527,7 +527,7 @@ lemma H1Cotangent.exact_δ_mapBaseChange : Function.Exact (δ R S T) (mapBaseCha
 
 /-- Given algebras `R → S → T` and `T` flat over `S`,
 `T ⊗[S] H₁(L_{S/R}) → H₁(L_{T/R}) → H₁(L_{T/S})` is exact. -/
--- #TODO : Generalize the flatness assumption to vanishings of `Tor` modules
+-- #TODO : Generalize the flatness assumption to vanishings conditions on `Tor` modules
 lemma H1Cotangent.exact_liftBaseChange_map_map_of_flat [Module.Flat S T] :
     Function.Exact ((map R R S T).liftBaseChange T) (map R S T T) :=
   Generators.H1Cotangent.exact_liftBaseChange_map_map_of_flat'

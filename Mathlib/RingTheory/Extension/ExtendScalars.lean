@@ -140,10 +140,9 @@ theorem cotangentComplex_comp_coe_h1CotangentEquivCotangent (P : Extension R S) 
   have hu : u.1 = MvPolynomial.C x := rfl
   rw [← Generators.H1Cotangent.δAux_C (Generators.self P.Ring S), ← hu,
     ← Generators.H1Cotangent.δ_eq_δAux _ (Generators.self R P.Ring) u (by
-      simp [u, -Generators.toExtension_Ring]), H1Cotangent.δ, LinearMap.comp_apply]
+      simp [u]), H1Cotangent.δ, LinearMap.comp_apply]
   apply DFunLike.congr_arg; ext
-  simpa [-Generators.toExtension_Ring, u, -extendScalars_Ring] using
-    DFunLike.congr_arg _ (by ext; rfl)
+  simpa [u] using DFunLike.congr_arg _ (by ext; rfl)
 
 theorem coe_h1CotangentEquivCotangent_comp_map (P : Extension R S) :
     P.h1CotangentEquivCotangent.toLinearMap.comp (Algebra.H1Cotangent.map R P.Ring S S) =

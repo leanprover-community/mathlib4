@@ -349,8 +349,7 @@ theorem residue_comp_pullbackFst_surjective_of_isSeparable [IsLocalRing Λ] [Mod
       exact isUnit_aeval_derivative_of_isSeparable
         (Algebra.IsSeparable.isSeparable (ResidueField Λ) x) map_q
         (by rwa [← AlgHom.comp_apply, f.residue_comp])
-  apply Algebra.adjoin_eq_top_of_primitive_element (Algebra.IsAlgebraic.isAlgebraic x) at hx
-  simp only [SetLike.ext_iff, Algebra.mem_top, iff_true] at hx
+  rw [IntermediateField.adjoin_eq_top_iff, Algebra.eq_top_iff] at hx
   intro y
   suffices ∃ a, (∃ x, f.toAlgHom a = g.toAlgHom x) ∧ A.residue a = y by simpa
   obtain ⟨r, hr⟩ := Algebra.adjoin_eq_exists_aeval (ResidueField Λ) x ⟨y, hx y⟩

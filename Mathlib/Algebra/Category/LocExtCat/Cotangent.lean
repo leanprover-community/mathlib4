@@ -75,8 +75,8 @@ lemma equivCotangent_symm_apply (e : A ≅ B) (x : B.Cotangent) :
     (equivCotangent e).symm x = mapCotangent e.inv x := rfl
 
 private lemma comap_hom_toRingHom_ker_eq (I : Ideal A) [Nontrivial (A ⧸ I)] :
-    Ideal.comap (Hom.hom (A.toOfQuot I)).toRingHom (A.ofQuot I).ker =
-      RingHom.ker (Hom.hom (A.toOfQuot I)).toRingHom ⊔ A.ker := by
+    Ideal.comap (A.toOfQuot I).hom.toRingHom (A.ofQuot I).ker =
+      RingHom.ker (A.toOfQuot I).hom.toRingHom ⊔ A.ker := by
   simp only [ker_extension]
   have : IsLocalRing (A ⧸ I) := .of_surjective' _ Ideal.Quotient.mk_surjective
   have : IsLocalHom (Ideal.Quotient.mk I) := Ideal.Quotient.mk_surjective.isLocalHom
