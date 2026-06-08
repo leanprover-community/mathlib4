@@ -375,10 +375,7 @@ variable {α}
 
 /-- The inverse of an ordered ring isomorphism as an ordered ring isomorphism. -/
 @[symm]
-protected def symm (e : α ≃+*o β) : β ≃+*o α :=
-  ⟨e.toRingEquiv.symm, by
-    intro a b
-    erw [← map_le_map_iff e, e.1.apply_symm_apply, e.1.apply_symm_apply]⟩
+protected def symm (e : α ≃+*o β) : β ≃+*o α := ⟨e.toRingEquiv.symm, by simp [← e.map_le_map_iff']⟩
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : α ≃+*o β) : β → α :=
@@ -435,10 +432,10 @@ section Preorder
 variable {R S : Type*} [Mul R] [Add R] [Mul S] [Add S] [Preorder R] [Preorder S]
 
 theorem lt_symm_apply (e : R ≃+*o S) {x : R} {y : S} : x < e.symm y ↔ e x < y := by
-  simpa using e.toOrderIso.lt_symm_apply
+  simpa using! e.toOrderIso.lt_symm_apply
 
 theorem symm_apply_lt (e : R ≃+*o S) {x : R} {y : S} : e.symm y < x ↔ y < e x := by
-  simpa using e.toOrderIso.symm_apply_lt
+  simpa using! e.toOrderIso.symm_apply_lt
 
 end Preorder
 
@@ -463,7 +460,7 @@ theorem coe_toOrderRingHom_refl : (OrderRingIso.refl α : α →+*o α) = OrderR
   rfl
 
 theorem toOrderRingHom_injective : Injective (toOrderRingHom : α ≃+*o β → α →+*o β) :=
-  fun f g h => DFunLike.coe_injective <| by convert DFunLike.ext'_iff.1 h using 0
+  fun f g h => DFunLike.coe_injective <| by convert! DFunLike.ext'_iff.1 h using 0
 
 end NonAssocSemiring
 
