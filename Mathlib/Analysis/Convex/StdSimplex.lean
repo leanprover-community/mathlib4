@@ -416,4 +416,10 @@ theorem barycenter_eq_centerMass [DecidableEq X] :
 
 end Barycenter
 
+section AffineSimplex
+
+
+
+end AffineSimplex
+
 end stdSimplex

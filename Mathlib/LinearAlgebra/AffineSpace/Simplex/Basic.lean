@@ -447,6 +447,18 @@ lemma setInterior_restrict (I : Set k) {n : ℕ} (s : Simplex k P n) {S : Affine
     ← (s.restrict S hS).setInterior_map I S.subtype_injective]
   rfl
 
+lemma setInterior_eq_of_range_eq [Nontrivial k] (I : Set k) {m n : ℕ} (s : Simplex k P m)
+    (t : Simplex k P n) (h : Set.range s.points = Set.range t.points) :
+    s.setInterior I = t.setInterior I := by
+  set e : Fin (m + 1) ≃ Fin (n + 1) := (Equiv.ofInjective s.points s.independent.injective).trans
+    ((Equiv.setCongr h).trans (Equiv.ofInjective t.points t.independent.injective).symm) with he
+  have hst : s = t.reindex e.symm := by
+    ext i
+    rw [reindex_points, Function.comp_apply, Equiv.symm_symm, he, Equiv.trans_apply,
+      Equiv.trans_apply, Equiv.apply_ofInjective_symm t.independent.injective]
+    rfl
+  rw [hst, setInterior_reindex]
+
 section PartialOrder
 variable [PartialOrder k]
 
@@ -507,6 +519,10 @@ lemma closedInterior_subset_affineSpan {n : ℕ} {s : Simplex k P n} :
     s.closedInterior ⊆ affineSpan k (Set.range s.points) := by
   rintro p ⟨w, hw, hi, rfl⟩
   exact affineCombination_mem_affineSpan_of_nonempty hw _
+
+lemma closedInterior_eq_of_range_eq [Nontrivial k] {m n : ℕ} (s : Simplex k P m) (t : Simplex k P n)
+    (h : Set.range s.points = Set.range t.points) : s.closedInterior = t.closedInterior :=
+  setInterior_eq_of_range_eq _ s t h
 
 @[simp] lemma interior_eq_empty (s : Simplex k P 0) : s.interior = ∅ := by
   ext p
@@ -653,6 +669,14 @@ theorem disjoint_interior_closedInterior_face [Nontrivial k] [ZeroLEOneClass k] 
   grind [affineCombination_mem_interior_iff, affineCombination_mem_closedInterior_face_iff_mem_Icc,
     eq_affineCombination_of_mem_affineSpan_of_fintype]
 
+lemma affineCombination_mem_closedInterior_faceOpposite_iff [IsOrderedAddMonoid k] {n : ℕ}
+    [NeZero n] (s : Simplex k P n) {w : Fin (n + 1) → k} (hw : ∑ i, w i = 1) {i : Fin (n + 1)} :
+    Finset.univ.affineCombination k s.points w ∈ (s.faceOpposite i).closedInterior ↔
+      (∀ j, 0 ≤ w j) ∧ w i = 0 := by
+  rw [faceOpposite, s.affineCombination_mem_closedInterior_face_iff_nonneg _ hw]
+  simp only [Finset.mem_compl, Finset.mem_singleton]
+  grind
+
 @[simp]
 theorem point_mem_closedInterior_faceOpposite_iff [Nontrivial k] [ZeroLEOneClass k] {n : ℕ}
     [NeZero n] (s : Simplex k P n) {i j : Fin (n + 1)} :
@@ -676,13 +700,84 @@ theorem disjoint_interior_closedInterior_faceOpposite [Nontrivial k] [ZeroLEOneC
 
 end PartialOrder
 
+section Surface
+variable [PartialOrder k]
+
+/-- The surface of a simplex is the union of the closed interiors of the faces opposite each
+vertex. This is the boundary of the simplex relative to its affine span. -/
+protected def surface {n : ℕ} [NeZero n] (s : Simplex k P n) : Set P :=
+  ⋃ i : Fin (n + 1), (s.faceOpposite i).closedInterior
+
+lemma surface_eq_iUnion_closedInterior_faceOpposite {n : ℕ} [NeZero n] (s : Simplex k P n) :
+    s.surface = ⋃ i : Fin (n + 1), (s.faceOpposite i).closedInterior :=
+  rfl
+
+lemma mem_surface_iff {n : ℕ} [NeZero n] {s : Simplex k P n} {p : P} :
+    p ∈ s.surface ↔ ∃ i, p ∈ (s.faceOpposite i).closedInterior :=
+  Set.mem_iUnion
+
+lemma closedInterior_faceOpposite_subset_surface {n : ℕ} [NeZero n] (s : Simplex k P n)
+    (i : Fin (n + 1)) : (s.faceOpposite i).closedInterior ⊆ s.surface :=
+  Set.subset_iUnion (fun i ↦ (s.faceOpposite i).closedInterior) i
+
+lemma surface_subset_closedInterior [ZeroLEOneClass k] {n : ℕ} [NeZero n] (s : Simplex k P n) :
+    s.surface ⊆ s.closedInterior :=
+  Set.iUnion_subset s.closedInterior_faceOpposite_subset_closedInterior
+
+lemma surface_subset_affineSpan {n : ℕ} [NeZero n] {s : Simplex k P n} :
+    s.surface ⊆ affineSpan k (Set.range s.points) :=
+  Set.iUnion_subset fun i ↦ closedInterior_subset_affineSpan.trans (s.affineSpan_faceOpposite_le i)
+
+lemma affineCombination_mem_surface_iff [IsOrderedAddMonoid k] {n : ℕ} [NeZero n]
+    (s : Simplex k P n) {w : Fin (n + 1) → k} (hw : ∑ i, w i = 1) :
+    Finset.univ.affineCombination k s.points w ∈ s.surface ↔
+      (∀ j, 0 ≤ w j) ∧ ∃ i, w i = 0 := by
+  simp_rw [mem_surface_iff, s.affineCombination_mem_closedInterior_faceOpposite_iff hw,
+    exists_and_left]
+
+lemma point_mem_surface [Nontrivial k] [ZeroLEOneClass k] {n : ℕ} [NeZero n] (s : Simplex k P n)
+    (i : Fin (n + 1)) : s.points i ∈ s.surface := by
+  haveI : Nontrivial (Fin (n + 1)) := Fin.nontrivial_iff_two_le.mpr (by have := NeZero.ne n; omega)
+  obtain ⟨j, hj⟩ := exists_ne i
+  exact s.closedInterior_faceOpposite_subset_surface j
+    (s.point_mem_closedInterior_faceOpposite_iff.mpr hj.symm)
+
+lemma disjoint_interior_surface [Nontrivial k] [ZeroLEOneClass k] {n : ℕ} [NeZero n]
+    (s : Simplex k P n) : Disjoint s.interior s.surface :=
+  Set.disjoint_iUnion_right.mpr s.disjoint_interior_closedInterior_faceOpposite
+
+lemma surface_map {n : ℕ} [NeZero n] (s : Simplex k P n) {f : P →ᵃ[k] P₂}
+    (hf : Function.Injective f) : (s.map f hf).surface = f '' s.surface := by
+  simp_rw [surface_eq_iUnion_closedInterior_faceOpposite, faceOpposite_map, closedInterior_map,
+    Set.image_iUnion]
+
+lemma surface_restrict {n : ℕ} [NeZero n] (s : Simplex k P n) {S : AffineSubspace k P}
+    (hS : affineSpan k (Set.range s.points) ≤ S) :
+    letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).surface = S.subtype ⁻¹' s.surface := by
+  letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  simp_rw [surface_eq_iUnion_closedInterior_faceOpposite, faceOpposite_restrict,
+    closedInterior_restrict, Set.preimage_iUnion]
+
+@[simp] lemma surface_reindex [Nontrivial k] {m n : ℕ} [NeZero n] [NeZero m] (s : Simplex k P n)
+    (e : Fin (n + 1) ≃ Fin (m + 1)) : (s.reindex e).surface = s.surface := by
+  ext p
+  simp_rw [mem_surface_iff]
+  refine ⟨fun ⟨i, hi⟩ ↦ ⟨e.symm i, ?_⟩, fun ⟨i, hi⟩ ↦ ⟨e i, ?_⟩⟩
+  · rwa [closedInterior_eq_of_range_eq _ (s.faceOpposite (e.symm i))
+      (s.range_faceOpposite_reindex e i)] at hi
+  · rwa [closedInterior_eq_of_range_eq _ ((s.reindex e).faceOpposite (e i))
+      (by rw [s.range_faceOpposite_reindex e (e i), Equiv.symm_apply_apply])] at hi
+
+end Surface
+
 section LinearOrder
 variable [LinearOrder k]
 
 /-- The closed interior is the union of the open interior and the surface. -/
-theorem closedInterior_eq_interior_union [IsOrderedAddMonoid k] [ZeroLEOneClass k] {n : ℕ}
+theorem closedInterior_eq_interior_union_surface [IsOrderedAddMonoid k] [ZeroLEOneClass k] {n : ℕ}
     [NeZero n] (s : Simplex k P n) :
-    s.closedInterior = s.interior ∪ ⋃ i : Fin (n + 1), (s.faceOpposite i).closedInterior := by
+    s.closedInterior = s.interior ∪ s.surface := by
   apply Set.Subset.antisymm
   · intro p hp
     obtain hp' := Set.mem_of_mem_of_subset hp s.closedInterior_subset_affineSpan
@@ -705,11 +800,13 @@ theorem closedInterior_eq_interior_union [IsOrderedAddMonoid k] [ZeroLEOneClass 
   · refine Set.union_subset s.interior_subset_closedInterior (Set.iUnion_subset fun i ↦ ?_)
     exact s.closedInterior_faceOpposite_subset_closedInterior i
 
+/-- The closed interior with the open interior removed gives the surface. -/
 theorem closedInterior_diff_interior [Nontrivial k] [IsOrderedAddMonoid k] [ZeroLEOneClass k]
     {n : ℕ} [NeZero n] (s : Simplex k P n) :
-    s.closedInterior \ s.interior = ⋃ i : Fin (n + 1), (s.faceOpposite i).closedInterior := by
-  simpa [closedInterior_eq_interior_union] using
-    fun i ↦ (s.disjoint_interior_closedInterior_faceOpposite i).symm
+    s.closedInterior \ s.interior = s.surface := by
+  simpa [s.surface_eq_iUnion_closedInterior_faceOpposite,
+    closedInterior_eq_interior_union_surface] using
+      fun i ↦ (s.disjoint_interior_closedInterior_faceOpposite i).symm
 
 end LinearOrder
 
