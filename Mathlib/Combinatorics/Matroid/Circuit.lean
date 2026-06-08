@@ -580,7 +580,7 @@ lemma isCocircuit_iff_minimal :
 /-- A cocircuit is a minimal set whose complement is nonspanning. -/
 lemma isCocircuit_iff_minimal_compl_nonspanning :
     M.IsCocircuit K ↔ Minimal (fun X ↦ ¬ M.Spanning (M.E \ X)) K := by
-  convert isCocircuit_iff_minimal with K
+  convert! isCocircuit_iff_minimal with K
   rw [spanning_iff_exists_isBase_subset]
   simp_rw [not_exists, subset_diff, not_and, not_disjoint_iff_nonempty_inter, ← and_imp,
     and_iff_left_of_imp IsBase.subset_ground, inter_comm K]

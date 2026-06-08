@@ -84,7 +84,7 @@ lemma klDiv_self (μ : Measure α) [SigmaFinite μ] : klDiv μ μ = 0 := by
 
 @[simp]
 lemma klDiv_zero_left [IsFiniteMeasure ν] : klDiv 0 ν = ν univ := by
-  convert klDiv_of_ac_of_integrable (Measure.AbsolutelyContinuous.zero _) integrable_zero_measure
+  convert! klDiv_of_ac_of_integrable (Measure.AbsolutelyContinuous.zero _) integrable_zero_measure
   simp
 
 @[simp]
@@ -176,7 +176,6 @@ lemma toReal_klDiv_eq_integral_klFun (h : μ ≪ ν) :
     · rw [klDiv_of_not_integrable h_int, ENNReal.toReal_top]
     · rwa [integrable_klFun_rnDeriv_iff h]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toReal_klDiv_smul_left (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) (c : ℝ≥0) :
     (klDiv (c • μ) ν).toReal =
       c * (klDiv μ ν).toReal + (1 - c) * ν.real univ + c * log c * μ.real univ := by
@@ -194,7 +193,6 @@ lemma toReal_klDiv_smul_left (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν)
   simp [h_smul]
   ring
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toReal_klDiv_smul_right_eq_smul_left (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ)
     (c : ℝ≥0) :
     (klDiv μ (c • ν)).toReal = c * (klDiv (c⁻¹ • μ) ν).toReal := by
@@ -227,7 +225,6 @@ lemma toReal_klDiv_smul_right (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν
   simp only [NNReal.coe_inv, log_inv, mul_neg, neg_mul, ← sub_eq_add_neg]
   field_simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toReal_klDiv_smul_same (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) (c : ℝ≥0) :
     (klDiv (c • μ) (c • ν)).toReal = c * (klDiv μ ν).toReal := by
   by_cases hc : c = 0
@@ -240,7 +237,6 @@ lemma toReal_klDiv_smul_same (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν)
 
 end Real
 
-set_option backward.isDefEq.respectTransparency false in
 lemma klDiv_smul_right_eq_smul_left [IsFiniteMeasure μ] [IsFiniteMeasure ν] {c : ℝ≥0} (hc : c ≠ 0) :
     klDiv μ (c • ν) = c * klDiv (c⁻¹ • μ) ν := by
   have hc' : (c : ℝ≥0∞) ≠ 0 := by simpa
@@ -287,7 +283,6 @@ lemma klDiv_smul_right_eq_smul_left [IsFiniteMeasure μ] [IsFiniteMeasure ν] {c
   rw [ENNReal.ofReal_toReal]
   exact klDiv_ne_top (hμν.smul_left _) h_int_left
 
-set_option backward.isDefEq.respectTransparency false in
 lemma klDiv_smul_same [IsFiniteMeasure μ] [IsFiniteMeasure ν] (c : ℝ≥0) :
     klDiv (c • μ) (c • ν) = c * klDiv μ ν := by
   by_cases hc : c = 0
@@ -338,7 +333,7 @@ lemma integral_llr_add_mul_log_nonneg (hμν : μ ≪ ν) (h_int : Integrable (l
     exact h_int.sub (integrable_const _)
   rw [integral_congr_ae (llr_smul_right hμν (ν univ)⁻¹ (by simp) (by simp [hν])),
     integral_sub h_int (integrable_const _), integral_const, smul_eq_mul] at h
-  simpa using h
+  simpa using! h
 
 lemma mul_klFun_le_toReal_klDiv (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
     ν.real univ * klFun (μ.real univ / ν.real univ) ≤ (klDiv μ ν).toReal := by

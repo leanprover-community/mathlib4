@@ -23,7 +23,7 @@ This file builds on `Mathlib/Algebra/Order/GroupWithZero/Unbundled/Defs.lean` by
 lemmas that do not immediately follow from the typeclass specifications.
 -/
 
-@[expose] public section
+public section
 
 open Function
 
@@ -201,6 +201,17 @@ theorem mul_eq_mul_iff_eq_and_eq_of_pos' [PosMulStrictMono α] [MulPosStrictMono
   · exact (mul_lt_mul_of_pos_right hab c0).trans_le (mul_le_mul_of_nonneg_left hcd b0.le)
   · exact (mul_le_mul_of_nonneg_right hab c0.le).trans_lt (mul_lt_mul_of_pos_left hcd b0)
 
+theorem eq_and_eq_of_pos_of_le_of_mul_le_mul [PosMulReflectLE α] [MulPosReflectLE α]
+    [PosMulMono α] [MulPosMono α] (ha : 0 < a) (hc : 0 < c) (hab : a ≤ b) (hcd : c ≤ d)
+    (h : b * d ≤ a * c) : a = b ∧ c = d := by
+  refine ⟨le_antisymm hab ?_, le_antisymm hcd ?_⟩
+  · grw [hcd] at h
+    · exact le_of_mul_le_mul_of_pos_right h <| hc.trans_le hcd
+    · exact ha.le
+  · grw [hab] at h
+    · exact le_of_mul_le_mul_of_pos_left h <| ha.trans_le hab
+    · exact hc.le
+
 end PartialOrder
 
 section LinearOrder
@@ -376,7 +387,8 @@ lemma pow_right_anti₀ [PosMulMono M₀] (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) : 
   antitone_nat_of_succ_le fun n ↦ by
     have : ZeroLEOneClass M₀ := ⟨ha₀.trans ha₁⟩
     rw [← mul_one (a ^ n), pow_succ]
-    exact mul_le_mul_of_nonneg_left ha₁ (pow_nonneg ha₀ n)
+    gcongr
+    exact pow_nonneg ha₀ n
 
 lemma pow_le_pow_of_le_one [PosMulMono M₀] (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) {m n : ℕ}
     (hmn : m ≤ n) : a ^ n ≤ a ^ m := pow_right_anti₀ ha₀ ha₁ hmn
@@ -1186,7 +1198,7 @@ lemma div_le_one_of_le₀ [ZeroLEOneClass G₀] (h : a ≤ b) (hb : 0 ≤ b) : a
 @[mono, gcongr, bound]
 lemma div_le_div_of_nonneg_right (hab : a ≤ b) (hc : 0 ≤ c) : a / c ≤ b / c := by
   rw [div_eq_mul_inv a c, div_eq_mul_inv b c]
-  exact mul_le_mul_of_nonneg_right hab (Right.inv_nonneg.2 hc)
+  gcongr; exact Right.inv_nonneg.2 hc
 
 @[gcongr, bound]
 lemma div_lt_div_of_pos_right (h : a < b) (hc : 0 < c) : a / c < b / c := by
@@ -1272,8 +1284,8 @@ lemma div_lt_div_of_pos_left (ha : 0 < a) (hc : 0 < c) (h : c < b) : a / b < a /
 @[mono, gcongr, bound]
 lemma div_le_div₀ (hc : 0 ≤ c) (hac : a ≤ c) (hd : 0 < d) (hdb : d ≤ b) : a / b ≤ c / d := by
   rw [div_eq_mul_inv, div_eq_mul_inv]
-  exact mul_le_mul hac ((inv_le_inv₀ (hd.trans_le hdb) hd).2 hdb)
-    (inv_nonneg.2 <| hd.le.trans hdb) hc
+  gcongr
+  exacts [inv_nonneg.2 <| hd.le.trans hdb, hc, hd]
 
 @[gcongr]
 lemma div_lt_div₀ (hac : a < c) (hdb : d ≤ b) (hc : 0 ≤ c) (hd : 0 < d) : a / b < c / d := by
@@ -1365,9 +1377,9 @@ section PosMulStrictMono
 variable [PosMulStrictMono G₀] [MulPosMono G₀]
 
 lemma zpow_left_injOn₀ : ∀ {n : ℤ}, n ≠ 0 → {a | 0 ≤ a}.InjOn fun a : G₀ ↦ a ^ n
-  | (n + 1 : ℕ), _ => by simpa using mod_cast (pow_left_strictMonoOn₀ n.succ_ne_zero).injOn
+  | (n + 1 : ℕ), _ => by simpa using! mod_cast (pow_left_strictMonoOn₀ n.succ_ne_zero).injOn
   | .negSucc n, _ => by
-    simpa using inv_injective.comp_injOn (pow_left_strictMonoOn₀ n.succ_ne_zero).injOn
+    simpa using! inv_injective.comp_injOn (pow_left_strictMonoOn₀ n.succ_ne_zero).injOn
 
 lemma zpow_left_inj₀ (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) :
     a ^ n = b ^ n ↔ a = b := (zpow_left_injOn₀ hn).eq_iff ha hb

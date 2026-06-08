@@ -75,7 +75,7 @@ lemma toEnd_pow_apply_mem {χ₁ χ₂ : H → R} {x : L} {m : M}
   | zero => simpa using hm
   | succ n IH =>
     simp only [pow_succ', Module.End.mul_apply, toEnd_apply_apply]
-    convert lie_mem_genWeightSpace_of_mem_genWeightSpace hx IH using 2
+    convert! lie_mem_genWeightSpace_of_mem_genWeightSpace hx IH using 2
     rw [succ_nsmul, ← add_assoc, add_comm (n • _)]
 
 lemma mem_biSup_genWeightSpace_of {s : Set (H → R)} (hs : ∀ᵉ (χ₁ ∈ s) (χ₂ ∈ s), χ₁ + χ₂ ∈ s)
@@ -309,7 +309,7 @@ lemma mem_corootSpace' {x : H} :
     exists_and_right, exists_eq_right, mem_setOf_eq, s]
   refine ⟨fun ⟨_, y, hy, z, hz, hyz⟩ ↦ ⟨y, hy, z, hz, hyz⟩,
     fun ⟨y, hy, z, hz, hyz⟩ ↦ ⟨?_, y, hy, z, hz, hyz⟩⟩
-  convert
+  convert!
     (rootSpaceProduct R L H α (-α) 0 (add_neg_cancel α) (⟨y, hy⟩ ⊗ₜ[R] ⟨z, hz⟩)).property using 0
   simp [hyz]
 

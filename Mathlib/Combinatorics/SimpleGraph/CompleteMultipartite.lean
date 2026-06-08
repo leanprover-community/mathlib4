@@ -5,7 +5,7 @@ Authors: John Talbot, Lian Bremner Tattersall
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Turan
@@ -438,7 +438,7 @@ def ofCopy (f : Copy (completeEquipartiteGraph r t) G) : G.CompleteEquipartiteSu
       rw [← h₁', ← h₂']
       apply f.toHom.map_adj
       simp_rw [completeEquipartiteGraph_adj]
-      contrapose! hne with heq
+      contrapose hne with heq
       simp_rw [← h₁, ← h₂, heq]
 
 end CompleteEquipartiteSubgraph

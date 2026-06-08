@@ -37,8 +37,10 @@ quotients in the sense that `Φ.quotient ⋙ Ψ.r` is the zero object.
 
 ## Tags
 
-category_theory, preradical, colon, pullback, torsion theory
+category theory, preradical, colon, pullback, torsion theory
 -/
+
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -75,6 +77,7 @@ noncomputable def shortComplex : ShortComplex (C ⥤ C) where
   f := Φ.ι
   g := Φ.π
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Mono Φ.shortComplex.f := by dsimp; infer_instance
 instance : Epi Φ.shortComplex.g := by dsimp; infer_instance
 
@@ -166,7 +169,6 @@ lemma toColon_hom_left_app_colonπ_app (X : C) :
     (toColon Φ Ψ).hom.left.app X ≫ (colonπ Φ Ψ).app X = 0 :=
   NatTrans.congr_app (toColon_hom_left_colonπ Φ Ψ) X
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toColon_hom_left_app_colon_ι_app (X : C) :
     (Φ.toColon Ψ).hom.left.app X ≫ (Φ.colon Ψ).ι.app X = Φ.ι.app X := by

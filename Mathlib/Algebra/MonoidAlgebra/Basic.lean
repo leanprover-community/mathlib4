@@ -93,6 +93,7 @@ end NonUnitalNonAssocAlgebra
 section Algebra
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Monoid M] [Monoid N]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The instance `Algebra R A[M]` whenever we have `Algebra R A`.
 
 In particular this provides the instance `Algebra R R[M]`. -/
@@ -143,6 +144,18 @@ variable (R M) in
 def uniqueAlgEquiv [Unique M] : A[M] ≃ₐ[R] A where
   toRingEquiv := uniqueRingEquiv _
   commutes' r := by simp [Unique.eq_default]
+
+variable (R M) in
+@[to_additive (attr := simp)]
+lemma toRingEquiv_uniqueAlgEquiv [Unique M] :
+    RingEquivClass.toRingEquiv (uniqueAlgEquiv R (A := A) M) =
+      uniqueRingEquiv (R := A) M := rfl
+
+variable (R M) in
+@[to_additive (attr := simp)]
+lemma toRingEquiv_symm_uniqueAlgEquiv [Unique M] :
+    RingEquivClass.toRingEquiv (uniqueAlgEquiv R (A := A) M).symm =
+      (uniqueRingEquiv (R := A) M).symm := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 variable (R) in
@@ -333,7 +346,7 @@ def domCongrAut : MulAut M →* A[M] ≃ₐ[R] A[M] where
 
 variable (R) in
 /-- Nested monoid algebras can be taken in an arbitrary order. -/
-@[to_additive (dont_translate := R)
+@[to_additive
 /-- Nested monoid algebras can be taken in an arbitrary order. -/]
 def commAlgEquiv : A[M][N] ≃ₐ[R] A[N][M] :=
   (curryAlgEquiv _).symm.trans <| .trans (domCongr _ _ <| .prodComm ..) (curryAlgEquiv _)
@@ -345,6 +358,16 @@ lemma symm_commAlgEquiv : (commAlgEquiv R : A[M][N] ≃ₐ[R] A[N][M]).symm = co
 lemma commAlgEquiv_single_single (m : M) (n : N) (a : A) :
     commAlgEquiv R (single m <| single n a) = single n (single m a) :=
   commRingEquiv_single_single ..
+
+@[to_additive (dont_translate := A) (attr := simp)]
+lemma commAlgEquiv_single_one (m : M) :
+    commAlgEquiv R (single m (1 : A[N])) = single 1 (single m 1) := commRingEquiv_single_one ..
+
+-- We want this lemma to be tried before `commAlgEquiv_single_single`.
+@[to_additive (dont_translate := A) (attr := simp high)]
+lemma commAlgEquiv_single_one_single (m : M) :
+    commAlgEquiv R (single 1 <| single m 1) = (single m (1 : A[N])) :=
+  commRingEquiv_single_one_single ..
 
 end lift
 
@@ -634,10 +657,10 @@ lemma algHom_ext_iff {φ₁ φ₂ : R[M] →ₐ[R] A} : (∀ x, φ₁ (single x 
 variable (R A) in
 /-- `AddMonoidAlgebra.domCongr` as an `AddMonoidHom` from `AddAut`. -/
 @[simps]
-def domCongrAut : AddAut M →* A[M] ≃ₐ[R] A[M] where
-  toFun := AddMonoidAlgebra.domCongr R A
-  map_one' := by ext; simp [AddAut.one_def]
-  map_mul' _ _ := by ext; simp [AddAut.mul_def]
+def domCongrAut : AddAut M →+ Additive (A[M] ≃ₐ[R] A[M]) where
+  toFun f := .ofMul (AddMonoidAlgebra.domCongr R A f)
+  map_zero' := by ext; simp [AddAut.zero_def]
+  map_add' _ _ := by ext; simp [AddAut.add_def]
 
 end lift
 

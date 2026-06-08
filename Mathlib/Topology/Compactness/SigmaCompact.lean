@@ -333,7 +333,7 @@ namespace CompactExhaustion
 
 instance : FunLike (CompactExhaustion X) ℕ (Set X) where
   coe := toFun
-  coe_injective' | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
+  coe_injective | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
 
 instance : RelHomClass (CompactExhaustion X) LE.le HasSubset.Subset where
   map_rel f _ _ h := monotone_nat_of_le_succ
@@ -350,7 +350,7 @@ protected theorem isCompact (n : ℕ) : IsCompact (K n) :=
 theorem subset_interior_succ (n : ℕ) : K n ⊆ interior (K (n + 1)) :=
   K.subset_interior_succ' n
 
-@[mono]
+@[gcongr, mono]
 protected theorem subset ⦃m n : ℕ⦄ (h : m ≤ n) : K m ⊆ K n :=
   OrderHomClass.mono K h
 
