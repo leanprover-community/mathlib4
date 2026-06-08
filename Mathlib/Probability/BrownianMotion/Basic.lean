@@ -45,8 +45,8 @@ weak Markov property: if `B` is a pre-Brownian motion and `t₀ : ℝ≥0`, then
   covariance is a pre-Brownian motion.
 * `HasIndepIncrements.isPreBrownianReal_of_hasLaw`: A stochastic process `X` with independent
   increments and such that for all `t`, `X t` has law `gaussianReal 0 t` is a pre-Brownian motion.
-* `IsPreBrownian.indepFun_shift`: The weak Markov property: If `B` is a pre-Brownian motion, then
-  `B (t₀ + t) - B t₀` is a pre-Brownian motion which is independent from `(B t, t ≤ t₀)`.
+* `IsPreBrownianReal.indepFun_shift`: The weak Markov property: If `B` is a pre-Brownian motion,
+  then `B (t₀ + t) - B t₀` is a pre-Brownian motion which is independent from `(B t, t ≤ t₀)`.
 
 ## Tags
 
@@ -77,6 +77,7 @@ structure IsPreBrownianReal (X : ℝ≥0 → Ω → ℝ) (P : Measure Ω := by v
   mk' ::
   hasLaw : ∀ I : Finset ℝ≥0, HasLaw (fun ω ↦ I.restrict (X · ω)) (projectiveFamily I) P
 
+/- A modification of a pre-Brownian is pre-Brownian. -/
 lemma IsPreBrownianReal.congr {C : ℝ≥0 → Ω → ℝ} (hB : IsPreBrownianReal B P)
     (h : ∀ t, B t =ᵐ[P] C t) :
     IsPreBrownianReal C P where
@@ -96,6 +97,12 @@ lemma IsPreBrownianReal.hasLaw_eval (hB : IsPreBrownianReal B P) (t : ℝ≥0) :
     HasLaw (B t) (gaussianReal 0 t) P :=
   (measurePreserving_eval_projectiveFamily ⟨t, by simp⟩).hasLaw.comp (hB.hasLaw {t})
 
+lemma IsPreBrownianReal.eval_zero_ae_eq_zero (hB : IsPreBrownianReal B P) :
+    ∀ᵐ ω ∂P, B 0 ω = 0 := by
+  have := hB.hasLaw_eval 0
+  rw [gaussianReal_zero_var] at this
+  exact this.ae_eq_of_dirac
+
 lemma IsPreBrownianReal.hasLaw_sub (hB : IsPreBrownianReal B P) (s t : ℝ≥0) :
     HasLaw (B s - B t) (gaussianReal 0 (nndist s.1 t.1)) P :=
   (measurePreserving_eval_sub_eval_projectiveFamily
@@ -110,8 +117,10 @@ lemma IsPreBrownianReal.integrable_eval (hB : IsPreBrownianReal B P) (t : ℝ≥
 
 lemma IsPreBrownianReal.covariance_eval (hB : IsPreBrownianReal B P) (s t : ℝ≥0) :
     cov[B s, B t; P] = min s t := by
-  convert (hB.hasLaw {s, t}).covariance_comp
-    (f := Function.eval ⟨s, by simp⟩) (g := Function.eval ⟨t, by simp⟩) ?_ ?_
+  convert (hB.hasLaw {s, t}).covariance_fun_comp
+    (f := Function.eval ⟨s, by simp⟩) (g := fun x ↦ x ⟨t, by simp⟩) ?_ ?_
+  · simp
+  · simp
   · rw [covariance_eval_projectiveFamily]
   all_goals exact Measurable.aemeasurable (by fun_prop)
 
@@ -180,11 +189,14 @@ has law `gaussianReal 0 t` is a pre-Brownian motion. -/
 theorem HasIndepIncrements.isPreBrownianReal_of_hasLaw
     (law : ∀ t, HasLaw (X t) (gaussianReal 0 t) P) (incr : HasIndepIncrements X P) :
     IsPreBrownianReal X P := by
+  have h0 : ∀ᵐ ω ∂P, X 0 ω = 0 := by
+      apply HasLaw.ae_eq_of_dirac
+      rw [← gaussianReal_zero_var]
+      exact law 0
   refine IsGaussianProcess.isPreBrownianReal_of_covariance ?_ (fun t ↦ ?_) (fun s t hst ↦ ?_)
-  · exact incr.isGaussianProcess (fun t ↦ (law t).hasGaussianLaw)
-      (law 0).ae_eq_const_of_gaussianReal
+  · exact incr.isGaussianProcess (fun t ↦ (law t).hasGaussianLaw) h0
   · rw [(law t).integral_eq, integral_id_gaussianReal]
-  have h1 := incr.indepFun_eval_sub zero_le hst (law 0).ae_eq_const_of_gaussianReal
+  have h1 := incr.indepFun_eval_sub zero_le hst h0
   have := (law 0).isProbabilityMeasure
   have h2 : X t = X t - X s + X s := by simp
   rw [h2, covariance_add_right, h1.covariance_eq_zero, covariance_self, (law s).variance_eq,
@@ -204,7 +216,6 @@ lemma IsPreBrownianReal.neg (hB : IsPreBrownianReal B P) : IsPreBrownianReal (-B
   simp
   grind
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `B` is a pre-Brownian motion and `c > 0`, then
 `t ↦ (√c)⁻¹ B (c t)` is a pre-Brownian motion. -/
 lemma IsPreBrownianReal.smul (hB : IsPreBrownianReal B P) {c : ℝ≥0} (hc : c ≠ 0) :
@@ -315,7 +326,7 @@ lemma IsBrownianReal.shift (hB : IsBrownianReal B P) (t₀ : ℝ≥0) :
 
 lemma IsBrownianReal.tendsto_nhds_zero (hB : IsBrownianReal B P) :
     ∀ᵐ ω ∂P, Filter.Tendsto (B · ω) (𝓝 0) (𝓝 0) := by
-  filter_upwards [hB.cont, (hB.hasLaw_eval 0).ae_eq_const_of_gaussianReal] with ω h1 h2
+  filter_upwards [hB.cont, hB.eval_zero_ae_eq_zero] with ω h1 h2
   convert h1.tendsto 0
   exact h2.symm
 
