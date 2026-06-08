@@ -6,7 +6,7 @@ Authors: Dominic Steinitz
 
 import Mathlib
 import Mathlib.Geometry.Manifold.Algebra.ExpLie
-import Mathlib.Geometry.Manifold.Algebra.PrincipalGBundlePrelude
+import Mathlib.Geometry.Manifold.Algebra.SmoothRightGAction
 
 /-!
 # Principal Bundles
