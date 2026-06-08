@@ -110,6 +110,7 @@ public import Mathlib.Algebra.Category.CommAlgCat.Basic
 public import Mathlib.Algebra.Category.CommAlgCat.FiniteType
 public import Mathlib.Algebra.Category.CommAlgCat.Monoidal
 public import Mathlib.Algebra.Category.CommBialgCat
+public import Mathlib.Algebra.Category.CommHopfAlgCat
 public import Mathlib.Algebra.Category.ContinuousCohomology.Basic
 public import Mathlib.Algebra.Category.FGModuleCat.Abelian
 public import Mathlib.Algebra.Category.FGModuleCat.Basic
