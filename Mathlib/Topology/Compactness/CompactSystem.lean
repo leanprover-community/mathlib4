@@ -220,10 +220,9 @@ namespace IsCompactSystem
 
 variable {ι : Type*} {α : ι → Type*}
 
-theorem pi (C : (i : ι) → Set (Set (α i))) (hC : ∀ i, IsCompactSystem (C i)) :
+theorem pi {C : (i : ι) → Set (Set (α i))} (hC : ∀ i, IsCompactSystem (C i)) :
     IsCompactSystem (univ.pi '' univ.pi C) := by
   intro S hS h_empty
-  change ∀ i, S i ∈ univ.pi '' univ.pi C at hS
   simp only [mem_image, mem_pi, mem_univ, forall_const] at hS
   choose x hx1 hx2 using hS
   simp_rw [← hx2] at h_empty ⊢
@@ -231,7 +230,7 @@ theorem pi (C : (i : ι) → Set (Set (α i))) (hC : ∀ i, IsCompactSystem (C i
   obtain ⟨i, hi⟩ := h_empty
   let y := fun b ↦ x b i
   have hy (b : ℕ) : y b ∈ C i := by simpa [y] using hx1 b i
-  have ⟨n, hn⟩ := (hC i) y hy hi
+  have ⟨n, hn⟩ := hC i y hy hi
   use n
   simp_rw [dissipate, ← hx2] at hn ⊢
   rw [biInter_univ_pi_eq_empty_iff x]
@@ -254,16 +253,17 @@ def compactClosedSquareCylinders : Set (Set (Π i, α i)) :=
 /-- Products of compact and closed sets form a compact system. -/
 theorem IsCompactSystem.compactClosedPi :
     IsCompactSystem (univ.pi '' univ.pi (fun i ↦ { t : Set (α i) | IsCompact t ∧ IsClosed t })) :=
-    IsCompactSystem.pi _ fun _ ↦ isCompactSystem_isCompact_isClosed (α _)
+    IsCompactSystem.pi fun i ↦ isCompactSystem_isCompact_isClosed (α i)
 
 theorem IsCompactSystem.compactClosedOrUnivPi :
     IsCompactSystem (univ.pi '' univ.pi (fun i ↦ insert univ { t :
     Set (α i) | IsCompact t ∧ IsClosed t })) :=
-  IsCompactSystem.pi _ fun i ↦ isCompactSystem_insert_univ_isCompact_isClosed (α i)
+  IsCompactSystem.pi fun i ↦ isCompactSystem_insert_univ_isCompact_isClosed (α i)
 
 /-- Compact and closed square cylinders are a compact system. -/
 theorem isCompactSystem.compactClosedSquareCylinders :
     IsCompactSystem (compactClosedSquareCylinders α) :=
-  IsCompactSystem.compactClosedOrUnivPi.mono (MeasureTheory.squareCylinders_subset_of_or_univ _)
+  IsCompactSystem.compactClosedOrUnivPi.mono
+    (MeasureTheory.squareCylinders_subset_image_pi_insert_univ _)
 
 end ClosedCompactSquareCylinders
