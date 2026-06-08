@@ -1551,6 +1551,7 @@ public import Mathlib.AlgebraicTopology.SimplicialObject.Op
 public import Mathlib.AlgebraicTopology.SimplicialObject.Split
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Inner.Basic
+public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Inner.PushoutProduct
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.IsUniquelyCodimOneFace
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Pairing
@@ -3623,21 +3624,27 @@ public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Cayley
 public import Mathlib.Combinatorics.SimpleGraph.Circulant
 public import Mathlib.Combinatorics.SimpleGraph.Clique
+public import Mathlib.Combinatorics.SimpleGraph.Coloring
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.Constructions
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.EdgeLabeling
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
+public import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Finite
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Represents
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkDecomp
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.Dart
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
 public import Mathlib.Combinatorics.SimpleGraph.Density
 public import Mathlib.Combinatorics.SimpleGraph.Diam
+public import Mathlib.Combinatorics.SimpleGraph.EdgeLabeling
 public import Mathlib.Combinatorics.SimpleGraph.Ends.Defs
 public import Mathlib.Combinatorics.SimpleGraph.Ends.Properties
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
@@ -3690,6 +3697,13 @@ public import Mathlib.Combinatorics.SimpleGraph.Walk.Maps
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Operations
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Subwalks
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Traversal
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Counting
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Decomp
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Maps
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Operations
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Subwalks
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Traversal
 public import Mathlib.Combinatorics.Tiling.Tile
 public import Mathlib.Combinatorics.Young.SemistandardTableau
 public import Mathlib.Combinatorics.Young.YoungDiagram
@@ -5398,6 +5412,7 @@ public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 public import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Basic
 public import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Continuous
 public import Mathlib.MeasureTheory.Function.LpSpace.Indicator
+public import Mathlib.MeasureTheory.Function.LpSpace.InfiniteSum
 public import Mathlib.MeasureTheory.Function.Piecewise
 public import Mathlib.MeasureTheory.Function.SimpleFunc
 public import Mathlib.MeasureTheory.Function.SimpleFuncDense
@@ -5965,6 +5980,7 @@ public import Mathlib.Order.ConditionallyCompletePartialOrder.Defs
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
 public import Mathlib.Order.Copy
 public import Mathlib.Order.CountableDenseLinearOrder
+public import Mathlib.Order.CountableSupClosed
 public import Mathlib.Order.Cover
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Order.Defs.PartialOrder
@@ -6198,6 +6214,7 @@ public import Mathlib.Order.WithBotTop
 public import Mathlib.Order.Zorn
 public import Mathlib.Order.ZornAtoms
 public import Mathlib.Probability.BorelCantelli
+public import Mathlib.Probability.BrownianMotion.Basic
 public import Mathlib.Probability.BrownianMotion.GaussianProjectiveFamily
 public import Mathlib.Probability.CDF
 public import Mathlib.Probability.CentralLimitTheorem
@@ -6573,6 +6590,7 @@ public import Mathlib.RingTheory.HahnSeries.Summable
 public import Mathlib.RingTheory.HahnSeries.Valuation
 public import Mathlib.RingTheory.Henselian
 public import Mathlib.RingTheory.HopfAlgebra.Basic
+public import Mathlib.RingTheory.HopfAlgebra.Convolution
 public import Mathlib.RingTheory.HopfAlgebra.GroupLike
 public import Mathlib.RingTheory.HopfAlgebra.MonoidAlgebra
 public import Mathlib.RingTheory.HopfAlgebra.TensorProduct
@@ -6880,6 +6898,7 @@ public import Mathlib.RingTheory.QuotSMulTop
 public import Mathlib.RingTheory.Radical
 public import Mathlib.RingTheory.Radical.Basic
 public import Mathlib.RingTheory.Radical.NatInt
+public import Mathlib.RingTheory.RamificationInertia.Basic
 public import Mathlib.RingTheory.RamificationInertia.Inertia
 public import Mathlib.RingTheory.RamificationInertia.Ramification
 public import Mathlib.RingTheory.ReesAlgebra
@@ -7021,6 +7040,7 @@ public import Mathlib.RingTheory.Valuation.AlgebraInstances
 public import Mathlib.RingTheory.Valuation.Archimedean
 public import Mathlib.RingTheory.Valuation.Basic
 public import Mathlib.RingTheory.Valuation.Discrete.Basic
+public import Mathlib.RingTheory.Valuation.Discrete.IsDiscreteValuationRing
 public import Mathlib.RingTheory.Valuation.Discrete.RankOne
 public import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
 public import Mathlib.RingTheory.Valuation.ExtendToLocalization
@@ -7970,6 +7990,7 @@ public import Mathlib.Topology.Order.Bornology
 public import Mathlib.Topology.Order.Category.AlexDisc
 public import Mathlib.Topology.Order.Category.FrameAdjunction
 public import Mathlib.Topology.Order.Compact
+public import Mathlib.Topology.Order.Completion
 public import Mathlib.Topology.Order.CountableSeparating
 public import Mathlib.Topology.Order.DenselyOrdered
 public import Mathlib.Topology.Order.ExtendFrom
