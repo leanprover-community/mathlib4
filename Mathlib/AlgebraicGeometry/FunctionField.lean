@@ -19,7 +19,7 @@ This is a field when the scheme is integral.
   function field. This map is injective.
 -/
 
-@[expose] public section
+public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -70,10 +70,10 @@ theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenI
     [hX : IrreducibleSpace X] [IrreducibleSpace Y] :
     f (genericPoint X) = genericPoint Y := by
   apply ((genericPoint_spec Y).eq _).symm
-  convert (genericPoint_spec X).image f.continuous
+  convert! (genericPoint_spec X).image f.continuous
   symm
   rw [← Set.univ_subset_iff]
-  convert subset_closure_inter_of_isPreirreducible_of_isOpen _ f.isOpenEmbedding.isOpen_range _
+  convert! subset_closure_inter_of_isPreirreducible_of_isOpen _ f.isOpenEmbedding.isOpen_range _
   · rw [Set.univ_inter, Set.image_univ]
   · apply PreirreducibleSpace.isPreirreducible_univ (X := Y)
   · exact ⟨_, trivial, Set.mem_range_self hX.2.some⟩
@@ -96,6 +96,7 @@ noncomputable instance (R : CommRingCat.{u}) [IsDomain R] :
   -- TODO: can we write this normally after the refactor finishes?
   RingHom.toAlgebra <| by apply CommRingCat.Hom.hom; apply StructureSheaf.toStalk
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
     genericPoint (Spec R) = (⊥ : PrimeSpectrum R) := by
@@ -107,7 +108,7 @@ theorem genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
 
 instance functionField_isFractionRing_of_affine (R : CommRingCat.{u}) [IsDomain R] :
     IsFractionRing R (Spec R).functionField := by
-  convert StructureSheaf.IsLocalization.to_stalk R (genericPoint (Spec R))
+  convert! StructureSheaf.IsLocalization.to_stalk R (genericPoint (Spec R))
   delta IsFractionRing IsLocalization.AtPrime
   -- Porting note: `congr` does not work for `Iff`
   apply Eq.to_iff
@@ -120,17 +121,19 @@ instance {X : Scheme} [IsIntegral X] {U : X.Opens} [Nonempty U] :
     IsIntegral U :=
   isIntegral_of_isOpenImmersion U.ι
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : X.Opens}
     (hU : IsAffineOpen U) [h : Nonempty U] :
     hU.primeIdealOf
         ⟨genericPoint X,
           ((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using h)⟩ =
       genericPoint (Spec Γ(X, U)) := by
-  haveI : IsAffine _ := hU
   delta IsAffineOpen.primeIdealOf
-  convert
+  convert!
     genericPoint_eq_of_isOpenImmersion
       (U.toScheme.isoSpec.hom ≫ Spec.map (X.presheaf.map (eqToHom U.isOpenEmbedding_obj_top).op))
+        -- Porting note: this was `ext1`
+
   -- Porting note: this was `ext1`
   apply Subtype.ext
   exact (genericPoint_eq_of_isOpenImmersion U.ι).symm
@@ -138,13 +141,12 @@ theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : 
 theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : X.Opens)
     (hU : IsAffineOpen U) [Nonempty U] :
     IsFractionRing Γ(X, U) X.functionField := by
-  haveI : IsAffine _ := hU
-  haveI : IsIntegral U :=
-    @isIntegral_of_isAffine_of_isDomain _ _ _ (by rw [Scheme.Opens.toScheme_presheaf_obj,
-      U.ι.image_top_eq_opensRange, U.opensRange_ι]; infer_instance)
   delta IsFractionRing Scheme.functionField
-  convert hU.isLocalization_stalk ⟨genericPoint X,
-    (((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using ‹Nonempty U›))⟩ using 1
+  convert!
+    hU.isLocalization_stalk
+      ⟨genericPoint X,
+        (((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using ‹Nonempty U›))⟩
+    using 1
   rw [hU.primeIdealOf_genericPoint, genericPoint_eq_bot_of_affine]
   ext; exact mem_nonZeroDivisors_iff_ne_zero
 

@@ -102,6 +102,7 @@ theorem AddSubgroup.index_eq_natAbs_det {E : Type*} [AddCommGroup E] {ι : Type*
   have : Module.Finite ℤ E := Module.Finite.of_basis bE
   (Submodule.natAbs_det_basis_change bE N.toIntSubmodule bN).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem AddSubgroup.relIndex_eq_natAbs_det {E : Type*} [AddCommGroup E]
     (L₁ L₂ : AddSubgroup E) (H : L₁ ≤ L₂) {ι : Type*} [DecidableEq ι] [Fintype ι]
     (b₁ : Basis ι ℤ L₁.toIntSubmodule) (b₂ : Basis ι ℤ L₂.toIntSubmodule) :

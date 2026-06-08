@@ -30,7 +30,7 @@ def ResidueField :=
 deriving CommRing, Inhabited
 
 noncomputable instance ResidueField.field : Field (ResidueField R) :=
-  Ideal.Quotient.field (maximalIdeal R)
+  fast_instance% Ideal.Quotient.field (maximalIdeal R)
 
 /-- The quotient map from a local ring to its residue field. -/
 def residue : R →+* ResidueField R :=

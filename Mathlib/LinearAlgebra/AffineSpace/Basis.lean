@@ -71,7 +71,7 @@ lemma AffineIndependent.injOn_affineCombination_fintypeAffineCoords [Fintype ι]
 
 variable (ι k) in
 /-- The space of coordinates for affine combinations indexed by a general type. -/
-def finsuppAffineCoords : AffineSubspace k (ι →₀ k) :=
+noncomputable def finsuppAffineCoords : AffineSubspace k (ι →₀ k) :=
   (affineSpan k {(1 : k)}).comap (Finsupp.linearCombination k (1 : ι → k)).toAffineMap
 
 lemma mem_finsuppAffineCoords_iff_linearCombination {w : ι →₀ k} :
@@ -106,7 +106,7 @@ instance : Inhabited (AffineBasis PUnit k PUnit) :=
 
 instance instFunLike : FunLike (AffineBasis ι k P) ι P where
   coe := AffineBasis.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[ext]
 theorem ext {b₁ b₂ : AffineBasis ι k P} (h : (b₁ : ι → P) = b₂) : b₁ = b₂ :=
@@ -219,7 +219,7 @@ theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : ∑ i, b.coord i q = 1 := 
     rw [b.tot]
     exact AffineSubspace.mem_top k V q
   obtain ⟨w, hw, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype hq
-  convert hw
+  convert! hw
   exact b.coord_apply_combination_of_mem (Finset.mem_univ _) hw
 
 @[simp]

@@ -21,7 +21,7 @@ if `Y ⟶ S` is surjective on stalks, then for every `X ⟶ S`, `X ×ₛ Y` is a
 `X × Y` (Cartesian product as topological spaces) with the induced topology.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory CategoryTheory.Limits Topology
 
@@ -76,6 +76,7 @@ lemma Spec_iff {R S : CommRingCat.{u}} {φ : R ⟶ S} :
 instance : HasRingHomProperty @SurjectiveOnStalks RingHom.SurjectiveOnStalks :=
   eq_stalkwise ▸ .stalkwise RingHom.surjective_respectsIso
 
+set_option backward.isDefEq.respectTransparency false in
 variable {f} in
 lemma iff_of_isAffine [IsAffine X] [IsAffine Y] :
     SurjectiveOnStalks f ↔ RingHom.SurjectiveOnStalks (f.app ⊤).hom := by
@@ -103,6 +104,8 @@ lemma mono_of_injective [SurjectiveOnStalks f] (hf : Function.Injective f) : Mon
   · exact hf
   · exact fun x ↦ ConcreteCategory.epi_of_surjective _ (f.stalkMap_surjective x)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- If `Y ⟶ S` is surjective on stalks, then for every `X ⟶ S`, `X ×ₛ Y` is a subset of
 `X × Y` (Cartesian product as topological spaces) with the induced topology. -/
 lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [SurjectiveOnStalks g] :
@@ -119,9 +122,10 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
     obtain ⟨ψ, rfl⟩ : ∃ ψ, Spec.map ψ = g' := ⟨_, Spec.map_preimage _⟩
     algebraize [φ.hom, ψ.hom]
     rw [HasRingHomProperty.Spec_iff (P := @SurjectiveOnStalks)] at H
-    convert ((iX.isOpenEmbedding.prodMap iY.isOpenEmbedding).isEmbedding.comp
-      (PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks R A B H)).comp
-      (Scheme.homeoOfIso (pullbackSpecIso R A B)).isEmbedding
+    convert!
+      ((iX.isOpenEmbedding.prodMap iY.isOpenEmbedding).isEmbedding.comp
+            (PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks R A B H)).comp
+        (Scheme.homeoOfIso (pullbackSpecIso R A B)).isEmbedding
     ext1 x
     obtain ⟨x, rfl⟩ := (Scheme.homeoOfIso (pullbackSpecIso R A B).symm).surjective x
     simp only [Scheme.homeoOfIso_apply, Function.comp_apply]
@@ -192,7 +196,7 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
         ((𝒲 i.1).f i.2.2 ≫ (𝒰.pullback₁ g).f i.1)
         (𝒰.f i.1) (by simp [pullback.condition]) (by simp [pullback.condition])
         inferInstance inferInstance inferInstance
-    convert this using 7
+    convert! this using 7
     apply pullback.hom_ext <;>
       simp [𝓤, Scheme.Cover.pullbackHom]
 

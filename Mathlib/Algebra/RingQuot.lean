@@ -177,11 +177,10 @@ instance : NatCast (RingQuot r) :=
   ⟨fun ⟨a⟩ n ↦ ⟨Quot.lift (fun a ↦ Quot.mk (RingQuot.Rel r) (a ^ n))
     (fun a b (h : Rel r a b) ↦ by
       -- note we can't define a `Rel.pow` as `Rel` isn't reflexive so `Rel r 1 1` isn't true
-      dsimp only
       induction n with
       | zero => rw [pow_zero, pow_zero]
       | succ n ih =>
-        simpa [pow_succ, (· * ·), instMul, Quot.map₂_mk, mk.injEq] using
+        simpa +instances [pow_succ, (· * ·), instMul, Quot.map₂_mk, mk.injEq] using
           congr_arg₂ (fun x y ↦ (⟨x⟩ : RingQuot r) * ⟨y⟩) ih (Quot.sound h))
     a⟩⟩
 
@@ -281,8 +280,8 @@ instance instMonoidWithZero (r : R → R → Prop) : MonoidWithZero (RingQuot r)
     simp only [pow_quot, mul_quot, pow_succ]
 
 instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
-  natCast_zero := by simp [instNatCast, natCast, ← zero_quot]
-  natCast_succ := by simp [instNatCast, natCast, ← one_quot, add_quot]
+  natCast_zero := by simp +instances [instNatCast, natCast, ← zero_quot]
+  natCast_succ := by simp +instances [instNatCast, natCast, ← one_quot, add_quot]
   left_distrib := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp only [mul_quot, add_quot, left_distrib]

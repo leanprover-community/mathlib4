@@ -37,6 +37,7 @@ section
 
 variable {P X Y Z : C} (f : P ⟶ X) (g : P ⟶ Y)
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 The map of a binary fan is a limit iff the fork consisting of the mapped morphisms is a limit. This
 essentially lets us commute `BinaryFan.mk` with `Functor.mapCone`.
@@ -45,7 +46,7 @@ def isLimitMapConeBinaryFanEquiv :
     IsLimit (G.mapCone (BinaryFan.mk f g)) ≃ IsLimit (BinaryFan.mk (G.map f) (G.map g)) :=
   (IsLimit.postcomposeHomEquiv (diagramIsoPair _) _).symm.trans
     (IsLimit.equivIsoLimit
-      (Cones.ext (Iso.refl _)
+      (Cone.ext (Iso.refl _)
         (by rintro (_ | _) <;> simp)))
 
 /-- The property of preserving products expressed in terms of binary fans. -/
@@ -130,6 +131,7 @@ section
 
 variable {P X Y Z : C} (f : X ⟶ P) (g : Y ⟶ P)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The map of a binary cofan is a colimit iff
 the cofork consisting of the mapped morphisms is a colimit.
 This essentially lets us commute `BinaryCofan.mk` with `Functor.mapCocone`.
@@ -139,7 +141,7 @@ def isColimitMapCoconeBinaryCofanEquiv :
     ≃ IsColimit (BinaryCofan.mk (G.map f) (G.map g)) :=
   (IsColimit.precomposeHomEquiv (diagramIsoPair _).symm _).symm.trans
     (IsColimit.equivIsoColimit
-      (Cocones.ext (Iso.refl _)
+      (Cocone.ext (Iso.refl _)
         (by rintro (_ | _) <;> simp)))
 
 /-- The property of preserving coproducts expressed in terms of binary cofans. -/

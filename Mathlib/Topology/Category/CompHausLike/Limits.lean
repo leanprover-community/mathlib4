@@ -60,7 +60,7 @@ variable [HasExplicitFiniteCoproduct X]
 The coproduct of a finite family of objects in `CompHaus`, constructed as the disjoint
 union with its usual topology.
 -/
-def finiteCoproduct : CompHausLike P := CompHausLike.of P (Σ (a : α), X a)
+abbrev finiteCoproduct : CompHausLike P := CompHausLike.of P (Σ (a : α), X a)
 
 /--
 The inclusion of one of the factors into the explicit finite coproduct.
@@ -100,7 +100,7 @@ abbrev finiteCoproduct.cofan : Limits.Cofan X :=
 
 /-- The explicit finite coproduct cocone is a colimit cocone. -/
 def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cofan X) :=
-  mkCofanColimit _
+  Cofan.IsColimit.mk _
     (fun s ↦ desc _ fun a ↦ s.inj a)
     (fun _ _ ↦ ι_desc _ _ _)
     fun _ _ hm ↦ finiteCoproduct.hom_ext _ _ _ fun a ↦
@@ -156,12 +156,14 @@ lemma finiteCoproduct.isOpenEmbedding_ι (a : α) :
     IsOpenEmbedding (finiteCoproduct.ι X a) :=
   .sigmaMk (σ := fun a ↦ X a)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion maps into the abstract finite coproduct are open embeddings. -/
 lemma Sigma.isOpenEmbedding_ι (a : α) :
     IsOpenEmbedding (Sigma.ι X a) := by
   refine IsOpenEmbedding.of_comp _ (homeoOfIso ((colimit.isColimit _).coconePointUniqueUpToIso
     (finiteCoproduct.isColimit X))).isOpenEmbedding ?_
-  convert finiteCoproduct.isOpenEmbedding_ι X a
+  convert! finiteCoproduct.isOpenEmbedding_ι X a
   ext x
   change (Sigma.ι X a ≫ _) x = _
   simp

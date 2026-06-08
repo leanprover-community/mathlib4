@@ -182,6 +182,7 @@ theorem cons_mem_acceptsFrom {S : Set σ} {a : α} {x : List α} :
     a :: x ∈ M.acceptsFrom S ↔ x ∈ M.acceptsFrom (M.stepSet S a) := by
   simp [mem_acceptsFrom]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 theorem cons_preimage_acceptsFrom {S : Set σ} {a : α} :
     (a :: ·) ⁻¹' M.acceptsFrom S = M.acceptsFrom (M.stepSet S a) := by
@@ -193,6 +194,7 @@ theorem append_mem_acceptsFrom {S : Set σ} {x y : List α} :
     x ++ y ∈ M.acceptsFrom S ↔ y ∈ M.acceptsFrom (M.evalFrom S x) := by
   simp [mem_acceptsFrom]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 theorem append_preimage_acceptsFrom {S : Set σ} {x : List α} :
     (x ++ ·) ⁻¹' M.acceptsFrom S = M.acceptsFrom (M.evalFrom S x) := by
@@ -210,6 +212,7 @@ theorem acceptsFrom_union {S T : Set σ} :
     · right; tauto
   · rintro (⟨s, hs, h⟩ | ⟨s, hs, h⟩) <;> exists s <;> tauto
 
+set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 @[simp]
 theorem acceptsFrom_iUnion {ι : Sort*} (s : ι → Set σ) :

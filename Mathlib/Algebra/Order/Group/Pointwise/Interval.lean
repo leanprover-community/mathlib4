@@ -179,7 +179,7 @@ lemma inv_Ioo (a b : α) : (Ioo a b)⁻¹ = Ioo b⁻¹ a⁻¹ := by simp [← Io
 
 @[to_additive (attr := simp)]
 theorem preimage_const_mul_Ici : (fun x => a * x) ⁻¹' Ici b = Ici (b / a) :=
-  ext fun _x => (div_le_iff_le_mul').symm
+  ext fun _x => div_le_iff_le_mul'.symm
 
 @[to_additive (attr := simp)]
 theorem preimage_const_mul_Ioi : (fun x => a * x) ⁻¹' Ioi b = Ioi (b / a) :=
@@ -535,19 +535,19 @@ variable {G₀ : Type*} [GroupWithZero G₀] [PartialOrder G₀] [MulPosReflectL
 
 @[simp]
 theorem preimage_mul_const_Iic₀ (a : G₀) (h : 0 < c) : (· * c) ⁻¹' Iic a = Iic (a / c) := by
-  simpa only [division_def] using (OrderIso.mulRight₀ c h).preimage_Iic a
+  simpa only [division_def] using! (OrderIso.mulRight₀ c h).preimage_Iic a
 
 @[simp]
 theorem preimage_mul_const_Ici₀ (a : G₀) (h : 0 < c) : (· * c) ⁻¹' Ici a = Ici (a / c) := by
-  simpa only [division_def] using (OrderIso.mulRight₀ c h).preimage_Ici a
+  simpa only [division_def] using! (OrderIso.mulRight₀ c h).preimage_Ici a
 
 @[simp]
 theorem preimage_mul_const_Ioi₀ (a : G₀) (h : 0 < c) : (· * c) ⁻¹' Ioi a = Ioi (a / c) := by
-  simpa only [division_def] using (OrderIso.mulRight₀ c h).preimage_Ioi a
+  simpa only [division_def] using! (OrderIso.mulRight₀ c h).preimage_Ioi a
 
 @[simp]
 theorem preimage_mul_const_Iio₀ (a : G₀) (h : 0 < c) : (· * c) ⁻¹' Iio a = Iio (a / c) := by
-  simpa only [division_def] using (OrderIso.mulRight₀ c h).preimage_Iio a
+  simpa only [division_def] using! (OrderIso.mulRight₀ c h).preimage_Iio a
 
 @[simp]
 theorem preimage_mul_const_Icc₀ (a b : G₀) (h : 0 < c) :
@@ -707,28 +707,28 @@ variable {K : Type*} [DivisionSemiring K] [PartialOrder K] [PosMulReflectLT K]
 @[simp]
 theorem image_affine_Icc' (h : 0 < a) (b c d : K) :
     (a * · + b) '' Icc c d = Icc (a * c + b) (a * d + b) := by
-  suffices (· + b) '' ((a * ·) '' Icc c d) = Icc (a * c + b) (a * d + b) by
+  suffices (· + b) '' (a * ·) '' Icc c d = Icc (a * c + b) (a * d + b) by
     rwa [Set.image_image] at this
   rw [image_mul_left_Icc' h, image_add_const_Icc]
 
 @[simp]
 theorem image_affine_Ico (h : 0 < a) (b c d : K) :
     (a * · + b) '' Ico c d = Ico (a * c + b) (a * d + b) := by
-  suffices (· + b) '' ((a * ·) '' Ico c d) = Ico (a * c + b) (a * d + b) by
+  suffices (· + b) '' (a * ·) '' Ico c d = Ico (a * c + b) (a * d + b) by
     rwa [Set.image_image] at this
   rw [image_mul_left_Ico h, image_add_const_Ico]
 
 @[simp]
 theorem image_affine_Ioc (h : 0 < a) (b c d : K) :
     (a * · + b) '' Ioc c d = Ioc (a * c + b) (a * d + b) := by
-  suffices (· + b) '' ((a * ·) '' Ioc c d) = Ioc (a * c + b) (a * d + b) by
+  suffices (· + b) '' (a * ·) '' Ioc c d = Ioc (a * c + b) (a * d + b) by
     rwa [Set.image_image] at this
   rw [image_mul_left_Ioc h, image_add_const_Ioc]
 
 @[simp]
 theorem image_affine_Ioo (h : 0 < a) (b c d : K) :
     (a * · + b) '' Ioo c d = Ioo (a * c + b) (a * d + b) := by
-  suffices (· + b) '' ((a * ·) '' Ioo c d) = Ioo (a * c + b) (a * d + b) by
+  suffices (· + b) '' (a * ·) '' Ioo c d = Ioo (a * c + b) (a * d + b) by
     rwa [Set.image_image] at this
   rw [image_mul_left_Ioo h, image_add_const_Ioo]
 

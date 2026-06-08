@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.CharP.Basic
 public import Mathlib.Algebra.CharP.Lemmas
-public import Mathlib.Data.Fintype.Units
+public import Mathlib.Algebra.GroupWithZero.Units.Fintype
 public import Mathlib.GroupTheory.OrderOfElement
 
 /-!
@@ -38,6 +38,8 @@ multiplicative character
 -/
 
 @[expose] public section
+
+open scoped Ring
 
 
 /-!
@@ -207,6 +209,14 @@ theorem equivToUnitHom_symm_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : equivToUnitHom.s
 lemma coe_toMonoidHom (χ : MulChar R R')
     (x : R) : χ.toMonoidHom x = χ x := rfl
 
+theorem apply_ne_zero_iff [Nontrivial R'] {χ : MulChar R R'} {a : R} :
+    χ a ≠ 0 ↔ IsUnit a :=
+  ⟨by simpa using (map_nonunit χ).mt, fun h ↦ (h.map χ).ne_zero⟩
+
+theorem apply_eq_zero_iff [Nontrivial R'] {χ : MulChar R R'} {a : R} :
+    χ a = 0 ↔ ¬ IsUnit a := by
+  simpa using χ.apply_ne_zero_iff.not
+
 /-!
 ### Commutative group structure on multiplicative characters
 
@@ -282,7 +292,7 @@ noncomputable instance hasInv : Inv (MulChar R R') :=
   ⟨inv⟩
 
 /-- The inverse of a multiplicative character `χ`, applied to `a`, is the inverse of `χ a`. -/
-theorem inv_apply_eq_inv (χ : MulChar R R') (a : R) : χ⁻¹ a = Ring.inverse (χ a) :=
+theorem inv_apply_eq_inv (χ : MulChar R R') (a : R) : χ⁻¹ a = (χ a)⁻¹ʳ :=
   Eq.refl <| inv χ a
 
 /-- The inverse of a multiplicative character `χ`, applied to `a`, is the inverse of `χ a`.
@@ -294,7 +304,7 @@ theorem inv_apply_eq_inv' {R' : Type*} [CommGroupWithZero R'] (χ : MulChar R R'
 /-- When the domain has a zero, then the inverse of a multiplicative character `χ`,
 applied to `a`, is `χ` applied to the inverse of `a`. -/
 theorem inv_apply {R : Type*} [CommMonoidWithZero R] (χ : MulChar R R') (a : R) :
-    χ⁻¹ a = χ (Ring.inverse a) := by
+    χ⁻¹ a = χ a⁻¹ʳ := by
   by_cases ha : IsUnit a
   · rw [inv_apply_eq_inv]
     have h := IsUnit.map χ ha
@@ -353,8 +363,8 @@ lemma equivToUnitHom_mul_apply (χ₁ χ₂ : MulChar R R') (a : Rˣ) :
 
 /-- The equivalence between multiplicative characters and homomorphisms of unit groups
 as a multiplicative equivalence. -/
-noncomputable
-def mulEquivToUnitHom : MulChar R R' ≃* (Rˣ →* R'ˣ) :=
+@[simps! apply symm_apply]
+noncomputable def mulEquivToUnitHom : MulChar R R' ≃* (Rˣ →* R'ˣ) :=
   { equivToUnitHom with
     map_mul' := by
       intro χ ψ
@@ -363,8 +373,15 @@ def mulEquivToUnitHom : MulChar R R' ≃* (Rˣ →* R'ˣ) :=
         MonoidHom.mul_apply, Units.val_mul]
   }
 
-end Group
+/--
+The restriction of a `MulChar` to a submonoid.
+-/
+@[simps! apply]
+noncomputable def restrict {S : Type*} [SetLike S R] [SubmonoidClass S R] (T : S)
+    (χ : MulChar R R') : MulChar T R' :=
+  ofUnitHom <| χ.toUnitHom.comp <| Units.map (SubmonoidClass.subtype T)
 
+end Group
 
 /-!
 ### Properties of multiplicative characters
@@ -387,6 +404,10 @@ lemma eq_one_iff {χ : MulChar R R'} : χ = 1 ↔ ∀ a : Rˣ, χ a = 1 := by
 
 lemma ne_one_iff {χ : MulChar R R'} : χ ≠ 1 ↔ ∃ a : Rˣ, χ a ≠ 1 := by
   simp only [Ne, eq_one_iff, not_forall]
+
+theorem restrict_eq_one_iff {S : Type*} [SetLike S R] [SubmonoidClass S R] {T : S}
+    {χ : MulChar R R'} : χ.restrict T = 1 ↔ ∀ x : Tˣ, χ x = 1 := by
+  simp [eq_one_iff]
 
 end nontrivial
 
