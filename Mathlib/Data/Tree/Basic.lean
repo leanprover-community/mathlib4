@@ -46,8 +46,8 @@ abbrev Tree.nil.{u} {α : Type u} : Tree α := BinaryTree.nil
 set_option linter.deprecated false in
 /-- **Alias** of `BinaryTree.node`. -/
 @[deprecated BinaryTree.node (since := "2026-06-07")]
-abbrev Tree.node.{u} {α : Type u} (value : α) (left : Tree α) (right : Tree α)
-: Tree α :=
+abbrev Tree.node.{u} {α : Type u}
+    (value : α) (left : Tree α) (right : Tree α) : Tree α :=
   BinaryTree.node value left right
 
 namespace BinaryTree
