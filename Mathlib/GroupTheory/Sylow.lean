@@ -756,14 +756,6 @@ theorem _root_.Group.natCard_dvd_univ_prod_orderOf [Fintype G] :
   have : k ≠ 0 := by rintro rfl; simp_all
   simp [← orderOf_mk g hg.left, hk, hp.factorization_self, Nat.one_le_iff_ne_zero.mpr this]
 
-variable (G) in
-theorem _root_.Group.natCard_dvd_exponent_pow [Finite G] :
-    Nat.card G ∣ Monoid.exponent G ^ Nat.card G := by
-  have := Fintype.ofFinite G
-  apply dvd_trans <| Group.natCard_dvd_univ_prod_orderOf G
-  rw [Nat.card_eq_fintype_card, ← card_univ, ← Finset.prod_const]
-  exact Finset.prod_dvd_prod_of_dvd _ _ fun g _ ↦ Monoid.order_dvd_exponent g
-
 /-- If `G` has a normal Sylow `p`-subgroup, then it is the only Sylow `p`-subgroup. -/
 @[implicit_reducible]
 noncomputable def unique_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
