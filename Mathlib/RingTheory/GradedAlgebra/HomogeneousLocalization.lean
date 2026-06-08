@@ -830,7 +830,7 @@ lemma val_awayMap_eq_aux (a) : (awayMap 𝒜 hg hx a).val = awayMapAux 𝒜 ⟨_
   let e := RingEquiv.ofLeftInverse (f := algebraMap (Away 𝒜 x) (Localization.Away x))
     (h := (val_injective _).hasLeftInverse.choose_spec)
   dsimp [awayMap]
-  convert_to (e (e.symm ⟨awayMapAux 𝒜 (f := f) ⟨_, hx⟩ a,
+  convert_to! (e (e.symm ⟨awayMapAux 𝒜 (f := f) ⟨_, hx⟩ a,
     range_awayMapAux_subset 𝒜 hg hx ⟨_, rfl⟩⟩)).1 = _
   rw [e.apply_symm_apply]
 

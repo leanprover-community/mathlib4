@@ -414,7 +414,7 @@ theorem Convex.smul_preimage (hs : Convex 𝕜 s) (c : 𝕜) : Convex 𝕜 ((fun
 
 theorem Convex.affinity (hs : Convex 𝕜 s) (z : E) (c : 𝕜) :
     Convex 𝕜 ((fun x => z + c • x) '' s) := by
-  simpa only [← image_smul, ← image_vadd, image_image] using (hs.smul c).vadd z
+  simpa only [← image_smul, ← image_vadd, image_image] using! (hs.smul c).vadd z
 
 end AddCommMonoid
 
@@ -447,7 +447,7 @@ theorem convex_vadd (a : E) : Convex 𝕜 (a +ᵥ s) ↔ Convex 𝕜 s :=
 
 /-- Affine subspaces are convex. -/
 theorem AffineSubspace.convex (Q : AffineSubspace 𝕜 E) : Convex 𝕜 (Q : Set E) :=
-  fun x hx y hy a b _ _ hab ↦ by simpa [Convex.combo_eq_smul_sub_add hab] using Q.2 _ hy hx hx
+  fun x hx y hy a b _ _ hab ↦ by simpa [Convex.combo_eq_smul_sub_add hab] using! Q.2 _ hy hx hx
 
 /-- The preimage of a convex set under an affine map is convex. -/
 theorem Convex.affine_preimage (f : E →ᵃ[𝕜] F) {s : Set F} (hs : Convex 𝕜 s) : Convex 𝕜 (f ⁻¹' s) :=

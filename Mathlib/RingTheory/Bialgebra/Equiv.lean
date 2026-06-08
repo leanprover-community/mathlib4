@@ -124,7 +124,7 @@ instance : EquivLike (A ≃ₐc[R] B) A B where
 
 instance : FunLike (A ≃ₐc[R] B) A B where
   coe := DFunLike.coe
-  coe_injective' := DFunLike.coe_injective
+  coe_injective := DFunLike.coe_injective
 
 instance : BialgEquivClass (A ≃ₐc[R] B) R A B where
   map_add := (·.map_add')
@@ -217,7 +217,7 @@ initialize_simps_projections BialgEquiv (toFun → apply, invFun → symm_apply)
 
 variable (A R) in
 /-- The identity map is a bialgebra equivalence. -/
-@[refl, simps!]
+@[refl, simps! apply]
 def refl : A ≃ₐc[R] A :=
   { CoalgEquiv.refl R A, BialgHom.id R A with }
 
@@ -257,7 +257,7 @@ theorem coe_symm_toEquiv : ⇑e.toEquiv.symm = e.symm :=
 variable {e₁₂ : A ≃ₐc[R] B} {e₂₃ : B ≃ₐc[R] C}
 
 /-- Bialgebra equivalences are transitive. -/
-@[trans, simps!]
+@[trans, simps! apply]
 def trans (e₁₂ : A ≃ₐc[R] B) (e₂₃ : B ≃ₐc[R] C) : A ≃ₐc[R] C :=
   { (e₁₂ : A ≃ₗc[R] B).trans (e₂₃ : B ≃ₗc[R] C), (e₁₂ : A ≃* B).trans (e₂₃ : B ≃* C) with }
 
