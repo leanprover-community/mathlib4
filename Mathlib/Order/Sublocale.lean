@@ -241,6 +241,9 @@ instance Sublocale.instCoframe : Order.Coframe (Sublocale X) :=
 
 section Open
 
+/--
+The open `Nucleus` corresponding to an element of the frame `X`.
+-/
 abbrev Nucleus.Open (U : X) : Nucleus X where
   toFun x := U ⇨ x
   map_inf' _ _ := himp_inf_distrib _ _ _
