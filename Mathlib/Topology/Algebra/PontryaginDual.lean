@@ -73,6 +73,14 @@ deriving instance
   [DiscreteTopology A] → CompactSpace _
 for PontryaginDual A
 
+@[simp]
+theorem map_pow (ψ : PontryaginDual A) (a : A) (n : ℕ) : ψ (a ^ n) = ψ a ^ n :=
+  _root_.map_pow (ψ : A →ₜ* Circle) a n
+
+@[simp]
+theorem one_apply (a : A) : (1 : PontryaginDual A) a = 1 :=
+  rfl
+
 /-- A discrete monoid has compact Pontryagin dual. -/
 add_decl_doc instLocallyCompactSpacePontryaginDual
 
@@ -85,18 +93,15 @@ instance [CompactSpace A] : DiscreteTopology (PontryaginDual A) := by
       (Circle.isOpen_centeredArc (π / 2)))
   have hVeq : V = ({1} : Set (PontryaginDual A)) := by
     ext ψ
-    refine ⟨fun hψ ↦ ?_, fun hψ ↦ ?_⟩
-    · rw [Set.mem_singleton_iff]
-      apply ContinuousMonoidHom.ext
+    rw [Set.mem_singleton_iff]
+    refine ⟨fun hψ ↦ ?_, ?_⟩
+    · apply ContinuousMonoidHom.ext
       intro a
       refine Circle.eq_one_of_forall_pow_mem_centeredArc_pi_div_two fun n hn ↦ ?_
       change ((ψ : A →ₜ* Circle) a) ^ n ∈ Circle.centeredArc (π / 2)
-      rw [← map_pow (ψ : A →ₜ* Circle) a n]
+      rw [← PontryaginDual.map_pow ψ a n]
       exact hψ (Set.mem_univ (a ^ n))
-    · rw [Set.mem_singleton_iff] at hψ
-      subst ψ
-      intro _ _
-      change (1 : Circle) ∈ Circle.centeredArc (π / 2)
+    · rintro rfl _ _
       rw [Circle.mem_centeredArc (by linarith [pi_pos])]
       simp [pi_pos]
   exact discreteTopology_of_isOpen_singleton_one (by simpa [hVeq] using hVopen)
