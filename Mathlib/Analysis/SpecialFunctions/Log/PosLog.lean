@@ -118,6 +118,18 @@ lemma posLog_le_posLog (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
   have : 1 ≤ |x ^ n| := by simp_all [one_le_pow₀, hx.le]
   simp [posLog_eq_log this, posLog_eq_log hx.le]
 
+/-- The function `log⁺` is continuous. -/
+@[fun_prop] theorem continuous_posLog : Continuous log⁺ := by
+  rw [continuous_iff_continuousAt]
+  intro x
+  by_cases hx : x = 0
+  · apply ContinuousAt.congr (f := fun _ ↦ 0) (by fun_prop)
+    filter_upwards [Metric.ball_mem_nhds _ zero_lt_one] with y hy
+    rw [eq_comm, posLog_eq_zero_iff y]
+    simp_all [le_of_lt]
+  unfold posLog
+  fun_prop
+
 /-!
 ## Estimates for Products
 -/
