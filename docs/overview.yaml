@@ -583,14 +583,16 @@ Data structures:
 
   Maps:
     key-value map: 'AList'
-    red-black map: 'Batteries.RBMap'
+    # deprecated in https://github.com/leanprover-community/batteries/pull/1792
+    # red-black map: 'Batteries.RBMap'
     hash map: 'Std.HashMap'
     finitely supported function: 'Finsupp'
     finite map: 'Finmap'
 
   Trees:
     tree: 'Tree'
-    red-black tree: 'Batteries.RBSet'
+    # deprecated in https://github.com/leanprover-community/batteries/pull/1792
+    # red-black tree: 'Batteries.RBSet'
     size-balanced binary search tree: 'Ordnode'
     W type: 'WType'
 
