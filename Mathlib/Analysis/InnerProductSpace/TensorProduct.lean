@@ -373,20 +373,41 @@ variable (𝕜 E) in
 noncomputable def lidIsometry : 𝕜 ⊗[𝕜] E ≃ₗᵢ[𝕜] E :=
   TensorProduct.lid 𝕜 E |>.isometryOfInner inner_lid_lid
 
-@[simp] lemma lidIsometry_apply (x : 𝕜 ⊗[𝕜] E) :
-    lidIsometry 𝕜 E x = TensorProduct.lid 𝕜 E x := rfl
-@[simp] lemma lidIsometry_symm_apply (x : E) :
-    (lidIsometry 𝕜 E).symm x = 1 ⊗ₜ x := rfl
+@[simp] lemma lidIsometry_apply (x : 𝕜 ⊗[𝕜] E) : lidIsometry 𝕜 E x = TensorProduct.lid 𝕜 E x := rfl
+@[simp] lemma lidIsometry_symm_apply (x : E) : (lidIsometry 𝕜 E).symm x = 1 ⊗ₜ x := rfl
+lemma toContinuousLinearMap_symm_lidIsometry : (lidIsometry 𝕜 E).symm = mkL 𝕜 𝕜 E 1 := rfl
+@[simp] lemma toLinearEquiv_lidIsometry : lidIsometry 𝕜 E = TensorProduct.lid 𝕜 E := rfl
+@[simp] lemma norm_lid (x) : ‖TensorProduct.lid 𝕜 E x‖ = ‖x‖ := (lidIsometry 𝕜 E).norm_map x
+@[simp] lemma nnnorm_lid (x) : ‖TensorProduct.lid 𝕜 E x‖₊ = ‖x‖₊ := lidIsometry 𝕜 E |>.nnnorm_map x
 
-@[simp] lemma toLinearEquiv_lidIsometry :
-    (lidIsometry 𝕜 E).toLinearEquiv = TensorProduct.lid 𝕜 E := rfl
-
-@[simp] lemma norm_lid (x : 𝕜 ⊗[𝕜] E) :
-    ‖TensorProduct.lid 𝕜 E x‖ = ‖x‖ := lidIsometry 𝕜 E |>.norm_map x
-@[simp] lemma nnnorm_lid (x : 𝕜 ⊗[𝕜] E) :
-    ‖TensorProduct.lid 𝕜 E x‖₊ = ‖x‖₊ := lidIsometry 𝕜 E |>.nnnorm_map x
 @[simp] lemma enorm_lid (x : 𝕜 ⊗[𝕜] E) :
     ‖TensorProduct.lid 𝕜 E x‖ₑ = ‖x‖ₑ := lidIsometry 𝕜 E |>.toLinearIsometry.enorm_map x
+
+@[simp] theorem inner_rid_rid (x y : E ⊗[𝕜] 𝕜) :
+    inner 𝕜 (TensorProduct.rid 𝕜 E x) (TensorProduct.rid 𝕜 E y) = inner 𝕜 x y := by
+  simp [← lid_comm]
+
+variable (𝕜 E) in
+/-- The linear isometry equivalence version of `TensorProduct.rid`. -/
+noncomputable def ridIsometry : E ⊗[𝕜] 𝕜 ≃ₗᵢ[𝕜] E :=
+  TensorProduct.rid 𝕜 E |>.isometryOfInner inner_rid_rid
+
+@[simp] lemma toLinearEquiv_ridIsometry : ridIsometry 𝕜 E = TensorProduct.rid 𝕜 E := rfl
+@[simp] lemma ridIsometry_apply (x) : ridIsometry 𝕜 E x = TensorProduct.rid 𝕜 E x := rfl
+@[simp] lemma symm_ridIsometry_apply (x) : (ridIsometry 𝕜 E).symm x = x ⊗ₜ 1 := rfl
+lemma toContinuousLinearMap_symm_ridIsometry : (ridIsometry 𝕜 E).symm = (mkL 𝕜 E 𝕜).flip 1 := rfl
+lemma lidIsometry_eq_ridIsometry : lidIsometry 𝕜 𝕜 = ridIsometry 𝕜 𝕜 := by ext; simp [lid_eq_rid]
+@[simp] lemma norm_rid (x) : ‖TensorProduct.rid 𝕜 E x‖ = ‖x‖ := (ridIsometry 𝕜 E).norm_map x
+@[simp] lemma nnnorm_rid (x) : ‖TensorProduct.rid 𝕜 E x‖₊ = ‖x‖₊ := by simp [← NNReal.coe_inj]
+
+@[simp] lemma enorm_rid (x) : ‖TensorProduct.rid 𝕜 E x‖ₑ = ‖x‖ₑ :=
+  ridIsometry 𝕜 E |>.toLinearIsometry.enorm_map x
+
+@[simp] lemma commIsometry_trans_lidIsometry :
+    (commIsometry 𝕜 E 𝕜).trans (lidIsometry 𝕜 E) = ridIsometry 𝕜 E := by ext; simp
+
+@[simp] lemma commIsometry_trans_ridIsometry :
+    (commIsometry 𝕜 𝕜 E).trans (ridIsometry 𝕜 E) = lidIsometry 𝕜 E := by ext; simp
 
 @[simp] theorem inner_assoc_assoc (x y : E ⊗[𝕜] F ⊗[𝕜] G) :
     inner 𝕜 (TensorProduct.assoc 𝕜 E F G x) (TensorProduct.assoc 𝕜 E F G y) = inner 𝕜 x y :=
