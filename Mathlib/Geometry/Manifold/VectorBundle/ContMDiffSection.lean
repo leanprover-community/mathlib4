@@ -301,7 +301,7 @@ variable {I} {n} {F} {V}
 
 instance : DFunLike Cₛ^n⟮I; F, V⟯ M V where
   coe := ContMDiffSection.toFun
-  coe_injective' := by rintro ⟨⟩ ⟨⟩ h; congr
+  coe_injective := by rintro ⟨⟩ ⟨⟩ h; congr
 
 variable {s t : Cₛ^n⟮I; F, V⟯}
 
