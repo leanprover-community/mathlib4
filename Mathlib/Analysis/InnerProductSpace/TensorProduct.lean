@@ -373,10 +373,14 @@ variable (𝕜 E) in
 noncomputable def lidIsometry : 𝕜 ⊗[𝕜] E ≃ₗᵢ[𝕜] E :=
   TensorProduct.lid 𝕜 E |>.isometryOfInner inner_lid_lid
 
+@[simp] lemma toLinearEquiv_lidIsometry :
+    (lidIsometry 𝕜 E).toLinearEquiv = TensorProduct.lid 𝕜 E := rfl
+
+lemma toContinuousLinearMap_symm_lidIsometry :
+    (lidIsometry 𝕜 E).symm.toContinuousLinearEquiv.toContinuousLinearMap = mkL 𝕜 𝕜 E 1 := rfl
+
 @[simp] lemma lidIsometry_apply (x : 𝕜 ⊗[𝕜] E) : lidIsometry 𝕜 E x = TensorProduct.lid 𝕜 E x := rfl
 @[simp] lemma lidIsometry_symm_apply (x : E) : (lidIsometry 𝕜 E).symm x = 1 ⊗ₜ x := rfl
-lemma toContinuousLinearMap_symm_lidIsometry : (lidIsometry 𝕜 E).symm = mkL 𝕜 𝕜 E 1 := rfl
-@[simp] lemma toLinearEquiv_lidIsometry : lidIsometry 𝕜 E = TensorProduct.lid 𝕜 E := rfl
 @[simp] lemma norm_lid (x) : ‖TensorProduct.lid 𝕜 E x‖ = ‖x‖ := (lidIsometry 𝕜 E).norm_map x
 @[simp] lemma nnnorm_lid (x) : ‖TensorProduct.lid 𝕜 E x‖₊ = ‖x‖₊ := lidIsometry 𝕜 E |>.nnnorm_map x
 
@@ -392,10 +396,14 @@ variable (𝕜 E) in
 noncomputable def ridIsometry : E ⊗[𝕜] 𝕜 ≃ₗᵢ[𝕜] E :=
   TensorProduct.rid 𝕜 E |>.isometryOfInner inner_rid_rid
 
-@[simp] lemma toLinearEquiv_ridIsometry : ridIsometry 𝕜 E = TensorProduct.rid 𝕜 E := rfl
+@[simp] lemma toLinearEquiv_ridIsometry :
+    (ridIsometry 𝕜 E).toLinearEquiv = TensorProduct.rid 𝕜 E := rfl
+
+lemma toContinuousLinearMap_symm_ridIsometry :
+    (ridIsometry 𝕜 E).symm.toContinuousLinearEquiv.toContinuousLinearMap = (mkL 𝕜 E 𝕜).flip 1 := rfl
+
 @[simp] lemma ridIsometry_apply (x) : ridIsometry 𝕜 E x = TensorProduct.rid 𝕜 E x := rfl
 @[simp] lemma symm_ridIsometry_apply (x) : (ridIsometry 𝕜 E).symm x = x ⊗ₜ 1 := rfl
-lemma toContinuousLinearMap_symm_ridIsometry : (ridIsometry 𝕜 E).symm = (mkL 𝕜 E 𝕜).flip 1 := rfl
 lemma lidIsometry_eq_ridIsometry : lidIsometry 𝕜 𝕜 = ridIsometry 𝕜 𝕜 := by ext; simp [lid_eq_rid]
 @[simp] lemma norm_rid (x) : ‖TensorProduct.rid 𝕜 E x‖ = ‖x‖ := (ridIsometry 𝕜 E).norm_map x
 @[simp] lemma nnnorm_rid (x) : ‖TensorProduct.rid 𝕜 E x‖₊ = ‖x‖₊ := by simp [← NNReal.coe_inj]
