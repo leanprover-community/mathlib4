@@ -162,7 +162,8 @@ is equal to `exp (-1)`. -/
 theorem generator_eq_exp_neg_one_of_mem_range (hπ : exp (-1) ∈ Set.range v) :
     hv.generator = Units.mk0 (exp (-1 : ℤ) : ℤᵐ⁰) (by simp) := by
   rw [← Valuation.IsRankOneDiscrete.valueGroup_genLTOne_eq_generator]
-  suffices Units.mk0 (exp (-1)) (by simp) = (Subgroup.genLTOne (valueGroup v)) by simp [← this]
+  suffices Units.mk0 (exp (-1)) (by simp) = (Subgroup.genLTOne (valueGroup (.ofClass v))) by
+    simp [← this]
   apply Subgroup.genLTOne_unique
   · exact compareOfLessAndEq_eq_lt.mp rfl
   · ext n

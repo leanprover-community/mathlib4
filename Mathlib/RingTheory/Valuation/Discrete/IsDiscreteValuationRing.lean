@@ -45,7 +45,8 @@ def maximalIdeal : HeightOneSpectrum A where
 
 instance isRankOneDiscrete :
     IsRankOneDiscrete ((maximalIdeal A).valuation K) := by
-  have : Nontrivial ↥(valueGroup (valuation K (maximalIdeal A))) := by
+  have : Nontrivial (valueGroup
+      (.ofClass (valuation K (maximalIdeal A)))) := by
     let v := (maximalIdeal A).valuation K
     let π := valuation_exists_uniformizer K (maximalIdeal A) |>.choose
     have hπ : v π = ↑(ofAdd (-1 : ℤ)) :=
@@ -54,8 +55,8 @@ instance isRankOneDiscrete :
     use Units.mk0 (v π) (by simp [hπ])
     constructor
     · apply mem_valueGroup
-      simp only [Units.val_mk0, Set.mem_range]
       use π
+      simp [v]
     · simpa [hπ] using not_eq_of_beq_eq_false rfl
   infer_instance
 
