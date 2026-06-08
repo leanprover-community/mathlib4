@@ -174,13 +174,13 @@ lemma IsPreBrownianReal.hasIndepIncrements (hB : IsPreBrownianReal B P) :
     fun i j hij ↦ ?_
   rw [covariance_fun_sub_fun_sub]
   · simp_rw [hB.covariance_fun_eval]
-    wlog h' : i < j generalizing i j
+    wlog h : i < j generalizing i j
     · simp_rw [← this j i hij.symm (by grind), min_comm]
       grind
-    have h1 : i.succ ≤ j.succ := Fin.strictMono_succ h' |>.le
+    have h1 : i.succ ≤ j.succ := Fin.strictMono_succ h |>.le
     have h2 : i.castSucc ≤ j.succ := Fin.le_of_lt h1
     have h3 : i.castSucc ≤ j.castSucc := Fin.le_castSucc_iff.mpr h1
-    rw [min_eq_left (ht h1), min_eq_left (ht h'), min_eq_left (ht h2), min_eq_left (ht h3)]
+    rw [min_eq_left (ht h1), min_eq_left (ht h), min_eq_left (ht h2), min_eq_left (ht h3)]
     simp
   all_goals exact (hB.isGaussianProcess.hasGaussianLaw_eval _).memLp_two
 
