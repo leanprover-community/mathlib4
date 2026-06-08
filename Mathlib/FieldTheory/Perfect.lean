@@ -347,6 +347,11 @@ theorem Algebra.IsAlgebraic.perfectField {K L : Type*} [Field K] [Field L] [Alge
   obtain ⟨_, _, hi, h⟩ := hf.exists_dvd_monic_irreducible_of_isIntegral (K := K)
   exact (PerfectField.separable_of_irreducible hi).map |>.of_dvd h⟩
 
+theorem PerfectField.of_ringEquiv {K L : Type*} [Field K] [Field L] (h : K ≃+* L) [PerfectField K] :
+    PerfectField L := by
+  let := h.toRingHom.toAlgebra
+  exact Algebra.IsAlgebraic.perfectField (K := K)
+
 namespace Polynomial
 
 variable {R : Type*} [CommRing R] [IsDomain R] (p n : ℕ) [ExpChar R p] (f : R[X])
