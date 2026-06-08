@@ -16,10 +16,9 @@ random variables in a finite-dimensional real inner product space is equivalent
 to convergence in distribution of all their 1-dimensional scalar projections.
 -/
 
-open Mathlib MeasureTheory ProbabilityTheory Topology Filter Vector Complex
-open BoundedContinuousFunction Finset RealInnerProductSpace ProbabilityMeasure Measurable
+open MeasureTheory Filter Complex BoundedContinuousFunction RealInnerProductSpace ProbabilityMeasure
 
-open scoped NNReal Topology
+open scoped Topology
 
 public noncomputable section
 
