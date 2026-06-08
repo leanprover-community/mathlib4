@@ -42,7 +42,7 @@ noncomputable def prod (μ : VectorMeasure X E) (ν : VectorMeasure Y F) (B : E 
 measure giving mass `B (μ s) (ν t)` to any measurable product `s × t`.
 This is satisfied whenever `μ` or `ν` has finite variation. -/
 class HasProd (μ : VectorMeasure X E) (ν : VectorMeasure Y F) (B : E →L[ℝ] F →L[ℝ] G) where
-  out : ∃ ρ : VectorMeasure (X × Y) G, ∀ (s : Set X) (t : Set Y),
+  exists_prod : ∃ ρ : VectorMeasure (X × Y) G, ∀ (s : Set X) (t : Set Y),
     MeasurableSet s → MeasurableSet t → ρ (s ×ˢ t) = B (μ s) (ν t)
 
 @[simp] lemma prod_apply [h : HasProd μ ν B] {s : Set X} {t : Set Y} :
@@ -60,10 +60,10 @@ class HasProd (μ : VectorMeasure X E) (ν : VectorMeasure Y F) (B : E →L[ℝ]
   · simp only [h't, not_false_eq_true, not_measurable, _root_.map_zero]
     rw [not_measurable]
     simp [measurableSet_prod, hs, ht, h't]
-  simpa [prod, h.out] using h.out.choose_spec s t h's h't
+  simpa [prod, h.exists_prod] using h.exists_prod.choose_spec s t h's h't
 
 lemma HasProd.flip [HasProd μ ν B] : HasProd ν μ B.flip where
-  out := by
+  exists_prod := by
     refine ⟨(μ.prod ν B).map Prod.swap, fun s t hs ht ↦ ?_⟩
     rw [map_apply _ (by fun_prop) (hs.prod ht)]
     simp
@@ -92,27 +92,29 @@ theorem stronglyMeasurable_vectorMeasure_prodMk_left {s : Set (X × Y)}
     apply StronglyMeasurable.hasSum ihf this
 
 open scoped Classical in
-/-- The naive product of two vector measures, obtained by integrating the measure of the fibers,
-as in the definition of the product of positive measures. -/
-noncomputable def naiveProd (μ : VectorMeasure X E) (ν : VectorMeasure Y F) (B : E →L[ℝ] F →L[ℝ] G)
+/-- The product of two vector measures when the first one has finite variation, obtained by
+integrating the measure of the fibers, as in the definition of the product of positive measures.
+*Do not use*: This is only used to instantiate the typeclass `HasProd`. Instead, use `μ.prod ν B`,
+which uses the typeclass instance. -/
+noncomputable def prodOfIsFiniteMeasureLeft
+    (μ : VectorMeasure X E) (ν : VectorMeasure Y F) (B : E →L[ℝ] F →L[ℝ] G)
     [IsFiniteMeasure (μ.transpose B.flip).variation] :
     VectorMeasure (X × Y) G where
   measureOf' s := if MeasurableSet s then ∫ᵛ x, ν (Prod.mk x ⁻¹' s) ∂[B.flip; μ] else 0
   empty' := by simp
   not_measurable' := by simp +contextual
   m_iUnion' f f_meas f_disj := by
-    obtain ⟨C, hC⟩ : ∃ C, ∀ (t : Set Y), ‖ν t‖ ≤ C := sorry
-    simp only [f_meas, ↓reduceIte, implies_true, MeasurableSet.iUnion, preimage_iUnion]
-    simp only [HasSum, SummationFilter.unconditional_filter]
+    simp only [f_meas, ↓reduceIte, implies_true, MeasurableSet.iUnion, preimage_iUnion,
+      HasSum, SummationFilter.unconditional_filter]
     have A (a : Finset ℕ) : ∑ y ∈ a, ∫ᵛ x, ν (Prod.mk x ⁻¹' f y) ∂[B.flip; μ]
         = ∫ᵛ x, ∑ y ∈ a, ν (Prod.mk x ⁻¹' f y) ∂[B.flip; μ] := by
       rw [integral_finsetSum]
       intro i hi
-      refine Integrable.of_bound (μ := (μ.transpose B.flip).variation) ?_ C ?_
+      refine Integrable.of_bound (μ := (μ.transpose B.flip).variation) ?_ ν.bound ?_
       · exact (stronglyMeasurable_vectorMeasure_prodMk_left (f_meas i)).aestronglyMeasurable
-      · exact Eventually.of_forall (fun x ↦ hC _)
+      · exact Eventually.of_forall (fun x ↦ norm_apply_le_bound)
     simp_rw [A]
-    apply tendsto_integral_filter_of_dominated_convergence (bound := fun x ↦ C)
+    apply tendsto_integral_filter_of_dominated_convergence (bound := fun x ↦ ν.bound)
     · apply Eventually.of_forall (fun a ↦ ?_)
       apply StronglyMeasurable.aestronglyMeasurable
       apply Finset.stronglyMeasurable_fun_sum _ (fun i hi ↦ ?_)
@@ -120,7 +122,7 @@ noncomputable def naiveProd (μ : VectorMeasure X E) (ν : VectorMeasure Y F) (B
     · filter_upwards with a
       filter_upwards with x
       rw [← VectorMeasure.of_biUnion_finset]
-      · apply hC
+      · apply norm_apply_le_bound
       · exact fun i hi j hj hij ↦ (f_disj hij).preimage _
       · exact fun i hi ↦ measurable_prodMk_left (f_meas i)
     · apply integrable_const
@@ -130,12 +132,14 @@ noncomputable def naiveProd (μ : VectorMeasure X E) (ν : VectorMeasure Y F) (B
       · exact fun i j hij ↦ (f_disj hij).preimage _
 
 instance [CompleteSpace G] [IsFiniteMeasure (μ.transpose B.flip).variation] : HasProd μ ν B where
-  out := by
+  exists_prod := by
     classical
-    refine ⟨naiveProd μ ν B, fun s t hs ht ↦ ?_⟩
-    simp only [naiveProd, hs.prod ht, ↓reduceIte, mk_preimage_prod_right_eq_if, vectorMeasure_if,
-      integral_indicator hs, setIntegral_const, ContinuousLinearMap.flip_apply]
+    refine ⟨prodOfIsFiniteMeasureLeft μ ν B, fun s t hs ht ↦ ?_⟩
+    simp only [prodOfIsFiniteMeasureLeft, hs.prod ht, ↓reduceIte, mk_preimage_prod_right_eq_if,
+      vectorMeasure_if, integral_indicator hs, setIntegral_const, ContinuousLinearMap.flip_apply]
 
 instance [CompleteSpace G] [h : IsFiniteMeasure (ν.transpose B).variation] : HasProd μ ν B := by
   rw [← B.flip_flip] at h ⊢
   apply HasProd.flip
+
+end MeasureTheory.VectorMeasure

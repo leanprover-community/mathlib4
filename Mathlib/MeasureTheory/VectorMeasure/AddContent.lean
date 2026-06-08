@@ -384,10 +384,8 @@ theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
           (measurableSet_generateFrom hs)
       · exact (integrable_const 1).indicator (h'C s hs)
     rw [this, integral_indicator (measurableSet_generateFrom hs)]
-    have : IsFiniteMeasure
-        ((m'.restrict s).transpose (ContinuousLinearMap.lsmul ℝ ℝ)).variation := by
-      apply isFiniteMeasure_of_le (μ := μ')
-      grw [transpose_restrict, variation_restrict_le, Measure.restrict_le_self, m'_le]
+    have : IsFiniteMeasure (m'.transpose (ContinuousLinearMap.lsmul ℝ ℝ)).variation :=
+      isFiniteMeasure_of_le _ m'_le
     simp only [Pi.one_apply, setIntegral_const]
     simp [m'C s hs]
   · by_cases hs : MeasurableSet s; swap

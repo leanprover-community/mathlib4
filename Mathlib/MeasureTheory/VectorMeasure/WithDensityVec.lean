@@ -195,9 +195,9 @@ lemma variation_withDensity' [CompleteSpace G]
       · simp
       simp only [Finset.mem_sigma] at hi
       have pmeas : MeasurableSet p := Pmeas i _ hi.2
-      have : IsFiniteMeasure (((μ.restrict s).restrict p).transpose B).variation := by
+      have : IsFiniteMeasure (((μ.restrict s).transpose B).variation.restrict p) := by
         constructor
-        rw [restrict_restrict _ pmeas hs, transpose_restrict, variation_restrict (pmeas.inter hs),
+        rw [transpose_restrict, variation_restrict hs, Measure.restrict_restrict pmeas,
           MeasureTheory.Measure.restrict_apply_univ]
         apply lt_of_le_of_lt ?_ (g.integrable_iff.1 (memLp_one_iff_integrable.1 gmem) i h'i)
         exact measure_mono (inter_subset_left.trans (Pg i _ hi.2))
@@ -332,7 +332,7 @@ lemma variation_withDensity [CompleteSpace G]
 
 /-- The variation of a vecture measure with density `f` with respect to a positive measure `μ`
 is the measure with density `‖f‖ₑ` with respect to `μ`. -/
-lemma variation_withDensityᵥ [CompleteSpace E]
+lemma _root_.MeasureTheory.Measure.variation_withDensityᵥ [CompleteSpace E]
     {μ : Measure X} {f : X → E} (hf : Integrable f μ) :
     (μ.withDensityᵥ f).variation = μ.withDensity (fun x ↦ ‖f x‖ₑ) := by
   /- We deduce this statement from the statement `variation_withDensity` for vector measures
@@ -345,7 +345,7 @@ lemma variation_withDensityᵥ [CompleteSpace E]
       (ContinuousLinearMap.lsmul ℝ ℝ).flip := by
     apply Integrable.mono_measure _ (variation_transpose_le _ _)
     apply Integrable.smul_measure_nnreal
-    simp only [variation_toSignedMeasure]
+    simp only [Measure.variation_toSignedMeasure]
     apply Integrable.of_bound (C := 1)
     · apply AEStronglyMeasurable.mono_ac (withDensity_absolutelyContinuous _ _)
       exact hf.aestronglyMeasurable.norm.inv₀.smul hf.aestronglyMeasurable
@@ -364,7 +364,7 @@ lemma variation_withDensityᵥ [CompleteSpace E]
     rw [mul_inv_cancel₀, one_smul]
     simpa using hx
   rw [this, variation_withDensity I (by simp [nnnorm_smul, mul_comm]),
-    variation_transpose_eq _ _ (by simp [nnnorm_smul, mul_comm]), variation_toSignedMeasure,
+    variation_transpose_eq _ _ (by simp [nnnorm_smul, mul_comm]), Measure.variation_toSignedMeasure,
     ← withDensity_mul₀ hf.aestronglyMeasurable.enorm]; swap
   · exact (hf.aestronglyMeasurable.norm.inv₀.smul hf.aestronglyMeasurable).enorm
   congr with x
