@@ -590,7 +590,7 @@ Data structures:
     finite map: 'Finmap'
 
   Trees:
-    tree: 'Tree'
+    tree: 'BinaryTree'
     # deprecated in https://github.com/leanprover-community/batteries/pull/1792
     # red-black tree: 'Batteries.RBSet'
     size-balanced binary search tree: 'Ordnode'
