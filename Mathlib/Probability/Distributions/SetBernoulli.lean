@@ -11,6 +11,8 @@ public import Mathlib.Probability.ProductMeasure
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
 import Mathlib.Probability.Independence.InfinitePi
 
+import Mathlib.MeasureTheory.MeasurableSpace.NCard
+
 /-!
 # Product of bernoulli distributions on a set
 
