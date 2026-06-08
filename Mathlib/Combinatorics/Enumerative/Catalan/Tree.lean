@@ -47,7 +47,7 @@ def treesOfNumNodesEq : ℕ → Finset (BinaryTree Unit)
 
 set_option linter.deprecated false in
 /-- **Alias** of `BinaryTree.treesOfNumNodesEq`. -/
-@[deprecated BinaryTree.getOrElse (since := "2026-06-07")]
+@[deprecated BinaryTree.treesOfNumNodesEq (since := "2026-06-07")]
 abbrev _root_.Tree.treesOfNumNodesEq : ℕ → Finset (Tree Unit) :=
   BinaryTree.treesOfNumNodesEq
 
