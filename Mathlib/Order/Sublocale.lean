@@ -257,8 +257,7 @@ def Sublocale.Open : FrameHom X (Sublocale X) where
   toFun U := Nucleus.Open U |>.toSublocale
   map_inf' a b := by
     simp_rw [toSublocale_eq_nucleusIsoSublocale, ← map_inf, ← toDual_sup]
-    congr
-    refine le_antisymm (fun i ↦ ?_) ?_
+    refine congrArg _ <| congrArg _ <| le_antisymm (fun i ↦ ?_) ?_
     · rw [← sSup_pair, ← sInf_upperBounds_eq_sSup, Nucleus.sInf_apply]
       simp only [Nucleus.coe_mk, InfHom.coe_mk, upperBounds_insert, upperBounds_singleton,
         Ici_inter_Ici, mem_Ici, sup_le_iff, le_iInf_iff, and_imp]
@@ -278,8 +277,5 @@ def Sublocale.Open : FrameHom X (Sublocale X) where
     simp_rw [toSublocale_eq_nucleusIsoSublocale, h]
     congr
     ext i
-    simp only [Nucleus.coe_mk, himp_eq_sSup, InfHom.coe_mk, Nucleus.sInf_apply, mem_image,
-      iInf_exists]
-    apply le_antisymm
-    · simp_all [inf_sSup_eq]
-    · simp [iInf_le_iff, le_sSup_iff, upperBounds, inf_sSup_eq]
+    simp only [Nucleus.coe_mk, himp_eq_sSup, InfHom.coe_mk, Nucleus.sInf_apply, le_antisymm_iff]
+    simp_all [inf_sSup_eq, iInf_le_iff, le_sSup_iff, upperBounds, inf_sSup_eq]
