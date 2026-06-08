@@ -50,8 +50,6 @@ open CategoryTheory MonoidalCategory MonoidalClosed Simplicial HomotopicalAlgebr
 
 namespace SSet
 
-open modelCategoryQuillen
-
 namespace prodStdSimplex
 
 lemma innerAnodyneExtensions_unionProd_ι {m : ℕ} (k : Fin (m + 2)) (h0 : 0 < k)
