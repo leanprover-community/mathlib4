@@ -24,24 +24,24 @@ open Lean Lean.Meta Lean.Elab Term
 
 public meta section
 
-/-- Attribute for identifying `polynomial` preprocessing extensions. These serve the purpose of
-removing any definitions specific to polynomials that `algebra` can't handle.
-e.g. `Polynomial.C` and `Polynomial.map` -/
+/-- `polynomial_pre` marks a theorem to be used by the `polynomial` tactic as a preprocessing lemma.
+These serve the purpose of removing any definitions specific to polynomials that `algebra` can't
+handle. e.g. `Polynomial.C` and `Polynomial.map` -/
 initialize polynomialPreExt : SimpExtension ←
   registerSimpAttr `polynomial_pre "\
     The `polynomial_pre` simp attribute uses preprocessing lemmas \
     to turn specialized functions into `algebraMap`s"
 
-/-- Attribute for identifying `polynomial` postprocessing extensions. Used only by polynomial_nf.
-These serve the purpose of rewriting expressions in `algebra` normal form into a more readable form.
-e.g. `a • X` -> `algebraMap _ _ a * X` -> `C a * X`. -/
+/-- `polynomial_post` marks a theorem to be used by the `polynomial_nf` tactic as a postprocessing
+lemma. Used only by polynomial_nf. These serve the purpose of rewriting expressions in `algebra`
+normal form into a more readable form. e.g. `a • X` -> `algebraMap _ _ a * X` -> `C a * X`. -/
 initialize polynomialPostExt : SimpExtension ←
   registerSimpAttr `polynomial_post "\
     The `polynomial_post` simp attribute uses postprocessing lemmas \
     to turn `algebraMap`s into more specialized functions."
 
-/-- Attribute for identifying `polynomial` extensions. Used to tag procedures that infer the base
-ring of polynomial-like types. -/
+/-- `polynomial_infer_base` marks a procedure used by the `polynomial` tactic to infer
+the base ring of polynomial-like types. -/
 syntax (name := PolyInferBaseAttr) "polynomial_infer_base" : attr
 
 /-- An extension for `polynomial`. -/

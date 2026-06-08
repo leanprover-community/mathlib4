@@ -9,6 +9,7 @@ module
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Coeff
 public import Mathlib.Tactic.Algebra.Basic
+public import Mathlib.Tactic.Algebra.AlgebraNF
 public import Mathlib.Tactic.Polynomial.Core
 
 /-!
@@ -20,7 +21,7 @@ To add support for a new polynomial-like type, one needs to do three things:
 ```
 @[polynomial_infer_base]
 def polynomialInferBase : PolynomialExt where
-  infer := fun e ↦ do
+  infer e := do
   match_expr e with
   | Polynomial R _ => pure R
   | _ => failure
@@ -40,7 +41,7 @@ namespace Mathlib.Tactic.Polynomial
 /-- Infer base ring for `Polynomial R` -/
 @[polynomial_infer_base]
 def polynomialInferBase : PolynomialExt where
-  infer := fun e ↦ do
+  infer e := do
   match_expr e with
   | Polynomial R _ => pure R
   | _ => failure
@@ -55,7 +56,7 @@ attribute [polynomial_post] mul_one Algebra.smul_def Polynomial.algebraMap_eq
 theorem monomial_eq_smul (a : R) (n : ℕ) : Polynomial.monomial n a = a • (.X ^ n) := by
   rw [← Polynomial.C_mul_X_pow_eq_monomial, Polynomial.smul_eq_C_mul]
 
--- polynomial_pre contains a lemma sending C -> algebraMap, so C is not simp normal form.
+-- `polynomial_pre` contains a lemma sending `C -> algebraMap`, so `C` is not simp normal form.
 @[polynomial_pre]
 theorem map_algebraMap (r : R) :
     Polynomial.map (algebraMap R A) (algebraMap R (Polynomial R) r) =
@@ -74,12 +75,10 @@ attribute [polynomial_pre] Polynomial.C_eq_algebraMap
 indexed by finsupps, making it difficult to turn into the appropriate normal form. -/
 /-- Run the `polynomial_pre` simpset to turn nonstandard spellings of `algebraMap` such as
 `Polynomial.C` into `algebraMap` -/
-def preprocess (mvarId : MVarId) : MetaM MVarId := do
+def preprocess (e : Expr) : MetaM Simp.Result := do
   let preThms ← polynomialPreExt.getTheorems
   let ctx ← Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[preThms])
-  let (some r, _) ← simpTarget mvarId ctx (simprocs := #[]) |
-    throwError "internal error in polynomial tactic: preprocessing should not close goals"
-  return r
+  pure (← Simp.main e ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
 
 open Tactic
 
@@ -88,14 +87,29 @@ open Tactic
 Given a goal which is an equality in `Polynomial R` with a commutative ring `R`, `polynomial`
 expands out the brackets on both sides of the equation and combines the coefficients of equal
 monomials. It then closes the goal if both sides contain the same terms and fails otherwise.
+
+Variants of `polynomial` include:
+* `polynomial`: normalize both sides of an equation and close the goal if they are equal
+* `polynomial!`: run `polynomial` at default transparency
+* `polynomial_nf`: normalize all subexpression of the goal
+* `polynomial_nf at h₁ h₂ ⊢`: normalize all subexpressions at hypotheses `h₁` `h₁` and the goal
+* `polynomial_nf at *`: normalize all subexpressions of all local hypotheses and the goal
+* `polynomial_nf!`: run `polynomial_nf` at default transparency
+
+The `polynomial` tactic can be extended to work with algebras other than `Polynomial` using the
+attributes `polynomial_infer_base`, `polynomial_pre` and `polynomial_post`. This is only possible
+if the base ring can be inferred from the structure of the type.
+
 Examples:
 
 ```
 example (a : ℚ) : (X + C a) * (X - C a) = X^2 + C (a^2) := by polynomial
+
+example {P : ℚ[X] → Prop} (h : P (X ^ 2 + X + C 4⁻¹)) : P ((X + C 2⁻¹) ^ 2) := by
+  polynomial_nf at h ⊢
+  exact h
 ```
 
-The `polynomial` tactic can be extended to work with algebras other than `Polynomial`, as long as
-the base ring can be inferred from the structure of the type.
 -/
 elab (name := polynomial) "polynomial" tk:"!"? : tactic =>
   withMainContext do
@@ -107,9 +121,15 @@ elab (name := polynomial) "polynomial" tk:"!"? : tactic =>
       β ← Polynomial.inferBase α
     catch _ =>
       throwError "polynomial failed: not an equality of (mv)polynomials"
-    let g ← Algebra.preprocess (← Polynomial.preprocess g)
+    let some g ← transformAtTarget (fun e _ ↦ Polynomial.preprocess e) "polynomial" .silent g
+      default | done
+    let some g ← transformAtTarget (fun e _ ↦ Algebra.preprocess e) "polynomial" .silent g
+      default | done
     AtomM.run (if tk.isSome then .default else .reducible)
       (Algebra.proveEq (some (← getLevelQ' β)) g)
+
+@[tactic_alt polynomial]
+macro "polynomial!" : tactic => `(tactic| polynomial !)
 
 /-- A cleanup routine, which simplifies normalized expressions to a more human-friendly format.
 This is the `algebra_nf` cleanup routine with a little extra work to turn scalar multiplication
@@ -132,18 +152,14 @@ def evalExprPoly (e : Expr) : AtomM Simp.Result := do
   let mut R : Expr := default
   try R ← inferBase α
   catch _ => throwError "not a polynomial"
+  let r₁ ← Polynomial.preprocess e
+  let r₂ ← Algebra.preprocess r₁.expr
   let ⟨_, R'⟩ ← getLevelQ' R
-  evalExpr R' e
+  let r₃ ← evalExpr R' r₂.expr
+  (← r₁.mkEqTrans r₂).mkEqTrans r₃
 
-/-- Simplification tactic for polynomials over commutative (semi)rings, which rewrites all
-polynomial expressions into normal form.
-
-See also:
-* `polynomial` for proving equality of polynomials without producing side goals.
-* `match_coefficients` for creating side goals equating matching coefficients. -/
-elab (name := polynomialNF) "polynomial_nf" tk:"!"? loc:(location)?  : tactic => withMainContext do
-  liftMetaTactic' Polynomial.preprocess
-  liftMetaTactic' Algebra.preprocess
+@[tactic_alt polynomial]
+elab (name := polynomialNF) "polynomial_nf" tk:"!"? loc:(location)? : tactic => withMainContext do
   let mut cfg := {}
   if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
@@ -151,6 +167,12 @@ elab (name := polynomialNF) "polynomial_nf" tk:"!"? loc:(location)?  : tactic =>
   let m := AtomM.recurse s cfg.toConfig (wellBehavedDischarge := true) (evalExprPoly) (cleanup cfg)
   transformAtLocation (m ·) "polynomial_nf" loc cfg.ifUnchanged false
 
+@[tactic_alt polynomial]
+macro "polynomial_nf!" loc:(location)? : tactic =>
+  `(tactic| polynomial_nf ! $(loc)?)
+
 end Mathlib.Tactic.Polynomial
+
+open Polynomial
 
 end

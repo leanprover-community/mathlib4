@@ -112,8 +112,7 @@ theorem algebraMap_eq : algebraMap R (MvPolynomial σ R) = C :=
   rfl
 
 @[polynomial_pre]
-theorem C_eq_algebraMap :
-    MvPolynomial.C = algebraMap R (MvPolynomial σ R) :=
+theorem C_eq_algebraMap : MvPolynomial.C = algebraMap R (MvPolynomial σ R) :=
   rfl
 
 variable {R σ}
@@ -1077,7 +1076,7 @@ open Mathlib.Tactic.Polynomial in
 /-- Infer base ring for `MvPolynomial _ R`. Used by the `polynomial` tactic. -/
 @[polynomial_infer_base]
 def mvPolynomialInferBaseImpl : PolynomialExt where
-  infer := fun e ↦ do
+  infer e := do
   match_expr e with
   | MvPolynomial _ R _ => pure R
   | _ => failure
