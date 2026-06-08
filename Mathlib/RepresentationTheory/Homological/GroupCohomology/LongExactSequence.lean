@@ -21,10 +21,12 @@ complexes
 Since the cohomology of `inhomogeneousCochains Xᵢ` is the group cohomology of `Xᵢ`, this allows us
 to specialize API about long exact sequences to group cohomology.
 
-## Main Results
+## Main Definitions
 
 * `groupCohomology.δ hX i j hij`: the connecting homomorphism `Hⁱ(G, X₃) ⟶ Hʲ(G, X₁)` associated
   to an exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of representations.
+
+## Main Statements
 
 * `groupCohomology.δ_naturality`: naturality of the connecting homomorphism.
 

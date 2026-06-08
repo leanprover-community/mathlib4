@@ -174,6 +174,7 @@ lemma map_tateComplexFunctor_shortExact {S : ShortComplex (Rep R G)} (hS : S.Sho
   · exact ShortComplex.shortExact_of_iso (ShortComplex.mapNatIso _ (tateComplex.eval_neg _).symm)
       <| map_chainsFunctor_eval_shortExact hS _
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (tateComplexFunctor R G).Additive where
   map_add {_ _ _ _} := by ext (i | i) <;> { dsimp [tateComplex]; ext; rfl }
 
