@@ -191,8 +191,6 @@ end Monoid
 
 namespace Lex
 
-set_option backward.inferInstanceAs.wrap.instances false
-
 @[to_additive] instance [One α] : One (Lex α) := inferInstanceAs <| One α
 @[to_additive] instance [Mul α] : Mul (Lex α) := inferInstanceAs <| Mul α
 @[to_additive] instance [Inv α] : Inv (Lex α) := inferInstanceAs <| Inv α
