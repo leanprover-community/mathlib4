@@ -97,7 +97,7 @@ instance [NormedField A] [CompletableTopField A] :
 
 end Algebra
 
-theorem isLinearMap_extension (𝕜 E F : Type*) [RCLike 𝕜] [UniformSpace E] [AddCommGroup E]
+theorem isLinearMap_extension {𝕜 E F : Type*} [RCLike 𝕜] [UniformSpace E] [AddCommGroup E]
     [Module 𝕜 E] [ContinuousAdd E] [UniformContinuousConstSMul 𝕜 E] [IsUniformAddGroup E]
     [UniformSpace F] [AddCommGroup F] [Module 𝕜 F] [T2Space F] [ContinuousAdd F] [CompleteSpace F]
     [ContinuousConstSMul 𝕜 F] [IsUniformAddGroup F] {f : E →ₗ[𝕜] F} (hf : UniformContinuous f) :
