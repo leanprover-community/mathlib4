@@ -153,16 +153,21 @@ protected theorem measurableSet_u {p : X × Set X} (hp : p ∈ h.index) :
     MeasurableSet (h.covering p) :=
   v.measurableSet p.1 _ (h.covering_mem_family hp)
 
-theorem measure_le_tsum_of_absolutelyContinuous [SecondCountableTopology X] {ρ : Measure X}
-    (hρ : ρ ≪ μ) : ρ s ≤ ∑' p : h.index, ρ (h.covering p) :=
+theorem outerMeasure_le_tsum_of_null_imp_null [SecondCountableTopology X] {ρ : OuterMeasure X}
+    (hρ : ∀ t, MeasurableSet t → μ t = 0 → ρ t = 0) : ρ s ≤ ∑' p : h.index, ρ (h.covering p) :=
   calc
     ρ s ≤ ρ ((s \ ⋃ p ∈ h.index, h.covering p) ∪ ⋃ p ∈ h.index, h.covering p) :=
       measure_mono (by simp only [subset_union_left, diff_union_self])
-    _ ≤ ρ (s \ ⋃ p ∈ h.index, h.covering p) + ρ (⋃ p ∈ h.index, h.covering p) :=
-      (measure_union_le _ _)
-    _ = ∑' p : h.index, ρ (h.covering p) := by
-      rw [hρ h.measure_diff_biUnion, zero_add,
-        measure_biUnion h.index_countable h.covering_disjoint fun x hx => h.measurableSet_u hx]
+    _ ≤ ρ (toMeasurable μ (s \ ⋃ p ∈ h.index, h.covering p)) + ρ (⋃ p ∈ h.index, h.covering p) := by
+      grw [← subset_toMeasurable, measure_union_le]
+    _ ≤ ∑' p : h.index, ρ (h.covering p) := by
+      rw [hρ _ (measurableSet_toMeasurable _ _), zero_add]
+      · apply measure_biUnion_le _ h.index_countable
+      · rw [measure_toMeasurable, h.measure_diff_biUnion]
+
+theorem measure_le_tsum_of_absolutelyContinuous [SecondCountableTopology X] {ρ : Measure X}
+    (hρ : ρ ≪ μ) : ρ s ≤ ∑' p : h.index, ρ (h.covering p) :=
+  h.outerMeasure_le_tsum_of_null_imp_null fun _t _ hμt ↦ hρ hμt
 
 theorem measure_le_tsum [SecondCountableTopology X] : μ s ≤ ∑' x : h.index, μ (h.covering x) :=
   h.measure_le_tsum_of_absolutelyContinuous Measure.AbsolutelyContinuous.rfl
