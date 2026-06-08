@@ -695,7 +695,7 @@ theorem stepNormal_eval (c v) : eval step (stepNormal c Cont.halt v) = Cfg.halt 
 theorem stepRet_eval {k v} : eval step (stepRet k v) = Cfg.halt <$> k.eval v := by
   induction k generalizing v with
   | halt =>
-    rw [Cont.eval, PFun.id_apply, Part.map_eq_map, Part.map_some]
+    simp only [Cont.eval, PFun.id_apply]
     exact Part.eq_some_iff.2 (mem_eval.2 ⟨ReflTransGen.refl, rfl⟩)
   | cons₁ fs as k IH =>
     rw [Cont.eval, PFun.mk_apply, stepRet, code_is_ok]

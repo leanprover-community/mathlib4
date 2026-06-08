@@ -28,13 +28,13 @@ open Vector Part
 
 /-- A simplified basis for `Partrec`. -/
 inductive Partrec' : ∀ {n}, (List.Vector ℕ n →. ℕ) → Prop
-  | prim {n f} : @Primrec' n f → @Partrec' n (PFun.lift f)
+  | prim {n f} : @Primrec' n f → @Partrec' n f
   | comp {m n f} (g : Fin n → List.Vector ℕ m →. ℕ) :
     Partrec' f → (∀ i, Partrec' (g i)) →
       Partrec' (PFun.mk fun v => (List.Vector.mOfFn fun i => g i v) >>= f)
   | rfind {n} {f : List.Vector ℕ (n + 1) → ℕ} :
-    @Partrec' (n + 1) (PFun.lift f) →
-      Partrec' (PFun.mk fun v => Nat.rfind (PFun.lift fun n => decide (f (n ::ᵥ v) = 0)))
+    @Partrec' (n + 1) f →
+      Partrec' (PFun.mk fun v => Nat.rfind fun n => decide (f (n ::ᵥ v) = 0))
 
 end Nat
 
@@ -76,7 +76,7 @@ protected theorem bind {n f g} (hf : @Partrec' n f) (hg : @Partrec' (n + 1) g) :
     fun v => by simp [mOfFn, Part.bind_assoc, pure]
 
 protected theorem map {n f} {g : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec' n f)
-    (hg : @Partrec' (n + 1) (PFun.lift g)) :
+    (hg : @Partrec' (n + 1) g) :
     @Partrec' n (PFun.mk fun v => (f v).map fun a => g (a ::ᵥ v)) := by
   simpa [(Part.bind_some_eq_map _ _).symm] using hf.bind hg
 
@@ -89,7 +89,7 @@ nonrec theorem Vec.prim {n m f} (hf : @Nat.Primrec'.Vec n m f) : Vec f := fun i 
 
 protected theorem nil {n} : @Vec n 0 fun _ => nil := fun i => i.elim0
 
-protected theorem cons {n m} {f : List.Vector ℕ n → ℕ} {g} (hf : @Partrec' n (PFun.lift f))
+protected theorem cons {n m} {f : List.Vector ℕ n → ℕ} {g} (hf : @Partrec' n f)
     (hg : @Vec n m g) : Vec fun v => f v ::ᵥ g v := fun i =>
   Fin.cases (by simpa using hf) (fun i => by simp only [hg i, get_cons_succ]) i
 
@@ -101,16 +101,16 @@ theorem comp' {n m f g} (hf : @Partrec' m f) (hg : @Vec n m g) :
   (hf.comp _ hg).of_eq fun v => by simp
 
 theorem comp₁ {n} (f : ℕ →. ℕ) {g : List.Vector ℕ n → ℕ}
-    (hf : @Partrec' 1 (PFun.mk fun v => f v.head))
-    (hg : @Partrec' n (PFun.lift g)) : @Partrec' n (PFun.mk fun v => f (g v)) := by
+    (hf : @Partrec' 1 (PFun.mk fun v => f v.head)) (hg : @Partrec' n g) :
+    @Partrec' n (PFun.mk fun v => f (g v)) := by
   simpa using hf.comp' (Partrec'.cons hg Partrec'.nil)
 
-theorem rfindOpt {n} {f : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec' (n + 1) (PFun.lift f)) :
+theorem rfindOpt {n} {f : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec' (n + 1) f) :
     @Partrec' n (PFun.mk fun v => Nat.rfindOpt fun a => ofNat (Option ℕ) (f (a ::ᵥ v))) :=
   ((rfind <|
         (of_prim (Primrec.nat_sub.comp (_root_.Primrec.const 1) Primrec.vector_head)).comp₁
-          (PFun.lift fun n => 1 - n) hf).bind
-    ((prim Nat.Primrec'.pred).comp₁ (PFun.lift Nat.pred) hf)).of_eq fun v => Part.ext fun b => by
+          (fun n => 1 - n) hf).bind
+    ((prim Nat.Primrec'.pred).comp₁ Nat.pred hf)).of_eq fun v => Part.ext fun b => by
       simp only [Nat.rfindOpt, Nat.sub_eq_zero_iff_le, PFun.coe_mk, PFun.lift_apply,
         Part.mem_bind_iff, Part.mem_some_iff, Part.mem_coe, Option.mem_def]
       refine exists_congr fun a =>
