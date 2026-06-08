@@ -5,6 +5,7 @@ Authors: Jon Bannon, Jireh Loreaux
 -/
 module
 
+public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-!
@@ -21,11 +22,11 @@ eigenspace, eigenvector, eigenvalue, spectrum, matrix
 
 public section
 
-section SpectrumDiagonal
+open Matrix Module End
 
 variable {R n M : Type*} [DecidableEq n] [Fintype n]
 
-open Matrix Module End
+section SpectrumDiagonal
 
 section NontrivialCommRing
 
@@ -78,6 +79,13 @@ namespace Matrix
 
 variable [CommRing R] [AddCommGroup M] [Module R M] (d : n → R) {μ : R} (b : Basis n R M)
 
+lemma _root_.Module.End.HasEigenvalue.nonempty
+    {A : Matrix n n R} {μ : R} (hμ : HasEigenvalue A.toLin' μ) :
+    Nonempty n := by
+  rw [hasEigenvalue_iff] at hμ
+  contrapose! hμ
+  exact Submodule.eq_bot_of_subsingleton
+
 @[simp]
 lemma iSup_eigenspace_toLin_diagonal_eq_top :
     ⨆ μ, eigenspace ((diagonal d).toLin b b) μ = ⊤ := by
@@ -128,6 +136,14 @@ theorem spectrum_toLin (A : Matrix n n R) (b : Basis n R M) :
 @[simp]
 theorem spectrum_toLin' (A : Matrix n n R) : spectrum R A.toLin' = spectrum R A :=
   AlgEquiv.spectrum_eq Matrix.toLinAlgEquiv' A
+
+@[simp]
+lemma hasEigenvalue_toLin'_transpose_iff [IsDomain R] {A : Matrix n n R} {μ : R} :
+    HasEigenvalue Aᵀ.toLin' μ ↔ HasEigenvalue A.toLin' μ := by
+  have aux : toLin' Aᵀ - μ • 1 = toLin' (A - μ • 1)ᵀ := by ext; simp
+  have aux' : toLin' A - μ • 1 = toLin' (A - μ • 1) := by ext; simp
+  simp only [hasEigenvalue_iff, eigenspace_def, aux, aux', ← LinearMap.det_eq_zero_iff_ker_ne_bot,
+    LinearMap.det_toLin', Matrix.det_transpose]
 
 end Matrix
 
