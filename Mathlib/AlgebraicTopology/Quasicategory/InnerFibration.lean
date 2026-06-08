@@ -99,4 +99,20 @@ lemma quasicategory_of_innerFibration
 instance {X : SSet} [Quasicategory X] : InnerFibration (terminal.from X) := by
   rwa [← quasicategory_iff_innerFibration]
 
+@[deprecated quasicategory_iff_of_isTerminal (since := "2026-06-08")]
+lemma quasicategory_of_from_innerFibrations (S : SSet) {X : SSet} (t : Limits.IsTerminal X)
+    (h : innerFibrations (t.from S)) : Quasicategory S :=
+  quasicategory_of_hasLiftingProperty S t (fun h0 hn ↦ h _ (horn_ι_mem_innerHornInclusions h0 hn))
+
+@[deprecated quasicategory_iff_of_isTerminal (since := "2026-06-08")]
+lemma Quasicategory.from_innerFibrations (S : SSet) [Quasicategory S]
+    {X : SSet} (t : Limits.IsTerminal X) : innerFibrations (t.from S) :=
+  fun _ _ _ ⟨_, h0, hn⟩ ↦ hasLiftingProperty S t h0 hn
+
+@[deprecated (since := "2026-06-08")]
+alias quasicategory_iff_from_innerFibration := quasicategory_iff_innerFibration
+
+@[deprecated (since := "2026-06-08")]
+alias quasicategory_of_innerFibration_quasicategory := quasicategory_of_innerFibration
+
 end SSet

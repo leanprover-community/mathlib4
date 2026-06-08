@@ -155,6 +155,16 @@ def ofIso : B.Pairing where
   p := ((Subcomplex.N.orderIsoOfIso e hA).subtypeEquiv (by simp)).trans
     (P.p.trans ((Subcomplex.N.orderIsoOfIso e hA).symm.subtypeEquiv (by simp)))
 
+/-- A unification hint for the type (I) simplices of `Pairing.ofIso`. -/
+unif_hint ofIso_I_eq_preimage {X : SSet.{u}} {A : X.Subcomplex} (P : A.Pairing)
+    {Y : SSet.{u}} {B : Y.Subcomplex} (e : Y ≅ X) (hA : A.preimage e.hom = B) where
+  ⊢ (P.ofIso e hA).I ≟ (N.orderIsoOfIso e hA) ⁻¹' P.I
+
+/-- A unification hint for the type (II) simplices of `Pairing.ofIso`. -/
+unif_hint ofIso_II_eq_preimage {X : SSet.{u}} {A : X.Subcomplex} (P : A.Pairing)
+    {Y : SSet.{u}} {B : Y.Subcomplex} (e : Y ≅ X) (hA : A.preimage e.hom = B) where
+  ⊢ (P.ofIso e hA).II ≟ (N.orderIsoOfIso e hA) ⁻¹' P.II
+
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma ofIso_p (x : P.II) :
@@ -191,14 +201,13 @@ instance [P.IsRegular] : (P.ofIso e hA).IsRegular where
     refine hP.false ⟨fun n ↦ ⟨_, (f n).2⟩, fun n ↦ ?_⟩
     simpa [← P.ofIso_ancestralRel_iff e hA] using hf n
 
-set_option pp.proofs true in
 @[simp]
 lemma ofIso_index (x : P.II) {d : ℕ} (hd : x.1.dim = d) [P.IsProper] :
     ((P.ofIso e hA).isUniquelyCodimOneFace ⟨(N.orderIsoOfIso e hA).symm x, by simp⟩).index hd =
       (isUniquelyCodimOneFace P x).index hd := by
   rw [← (P.isUniquelyCodimOneFace x).index_of_iso e.symm hd]
-  congr 1
-  erw [P.ofIso_p e hA x]
+  congr
+  rw [P.ofIso_p e hA x]
   rfl
 
 instance [P.IsProper] [P.IsInner] : (P.ofIso e hA).IsInner where

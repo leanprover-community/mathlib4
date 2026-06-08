@@ -126,7 +126,7 @@ lemma strongInnerAnodyneExtensions_ι_iff {X : SSet.{u}} (A : X.Subcomplex) :
         ∃ (B : X.Subcomplex) (P : B.Pairing) (h : P.IsRegular), P.IsInner ∧ B = A := by
       obtain ⟨_, P₁, _, P₂⟩ := hA
       exact ⟨_, P₁, inferInstance, ⟨P₂, by simp⟩⟩
-    refine ⟨P, ⟨inferInstance, inferInstance⟩⟩,
+    exact ⟨P, ⟨inferInstance, inferInstance⟩⟩,
   fun ⟨P, ⟨_, _⟩⟩ ↦ P.strongInnerAnodyneExtensions⟩
 
 lemma Subcomplex.Pairing.innerAnodyneExtensions {X : SSet.{u}} {A : X.Subcomplex}
