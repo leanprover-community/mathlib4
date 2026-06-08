@@ -281,8 +281,7 @@ private lemma instances (hp : p ≠ ⊥) :
   have inst₃ : Module.IsTorsionFree A 𝓞D := Module.IsTorsionFree.of_faithfulSMul _ _ B
   have inst₄ : IsGaloisGroup Gal(L/K) A B := .of_isFractionRing _ _ _ K L
   have inst₅ : IsGaloisGroup (stabilizer Gal(L/K) P) 𝓞D B := .of_isFractionRing _ _ _ D L
-  have h𝓟 := Ideal.ne_bot_of_liesOver_of_ne_bot hp 𝓟D
-  exact ⟨inst₁, inst₂, inst₃, inst₄, inst₅, h𝓟⟩
+  exact ⟨inst₁, inst₂, inst₃, inst₄, inst₅, Ideal.ne_bot_of_liesOver_of_ne_bot hp 𝓟D⟩
 
 variable [FiniteDimensional K L] [Ring.HasFiniteQuotients A] [𝓟D.IsMaximal] [P.IsMaximal]
   [p.IsMaximal]
