@@ -315,9 +315,6 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless (← read).cmdPos == s.pos do
     return
   let mainModule ← getMainModule
-  -- check again after `withSetOptionIn`
-  unless getLinterValue linter.style.header (← getLinterOptions) do
-    return
   if Parser.isTerminalCommand stx ||
     -- Deprecated module files are exempt from all header style checks (copyright, doc-string,
     -- directory dependency, etc.) since they are just import-redirect stubs.
