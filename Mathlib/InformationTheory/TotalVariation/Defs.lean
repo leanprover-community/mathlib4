@@ -11,12 +11,13 @@ import Mathlib.MeasureTheory.Measure.Sub
 import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 
 /-!
-# Total variation distance between finite measures
+# Total variation distance
 
-TODO
+We define the total variation distance between two vector measures `μ, ν` as
+`(μ - ν).variation Set.univ`. Then, for two finite measures, we define the total variation distance
+between them as the vector total variation distance between the corresponding signed measures.
 
-Note that with this definition, the total variation distance between two mutually singular
-probability measures is equal to `2`, which is the maximum possible value for this distance.
+Note that with this definition, the total variation distance takes values in `[0, 2]`.
 Some authors prefer to define the total variation distance as half of the value defined here,
 so that it takes values in `[0, 1]`.
 

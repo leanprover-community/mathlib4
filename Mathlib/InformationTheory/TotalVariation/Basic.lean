@@ -18,11 +18,12 @@ import Mathlib.MeasureTheory.Integral.Bochner.Set
 /-!
 # Properties of the total variation distance
 
-TODO
+We prove properties of the total variation distance, in particular alternative formulas for it.
 
 ## Main statements
 
-* `todo`
+* `tvDist_eq_integral_abs_rnDeriv_add_singularPart`: the total variation distance satisfies the
+  formula `tvDist μ ν = ∫ x, |1 - (μ.rnDeriv ν x).toReal| ∂ν + (μ.singularPart ν).real Set.univ`.
 
 -/
 
@@ -35,10 +36,7 @@ open scoped ENNReal
 namespace InformationTheory
 
 variable {𝓧 : Type*} {m𝓧 : MeasurableSpace 𝓧}
-
-section Measure
-
-variable {μ ν : Measure 𝓧} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+  {μ ν : Measure 𝓧} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 
 lemma tvDist_of_mutuallySingular (hμν : μ ⟂ₘ ν) :
     tvDist μ ν = μ.real Set.univ + ν.real Set.univ := by
@@ -49,27 +47,6 @@ lemma tvDist_eq_of_isHahnDecomposition {s : Set 𝓧} (h : IsHahnDecomposition �
     tvDist μ ν = ν.real s - μ.real s + (μ.real sᶜ - ν.real sᶜ) := by
   rw [← tvDist_restrict_add_compl h.measurableSet, tvDist_of_le h.le_on, tvDist_of_ge h.ge_on_compl]
   simp
-
-lemma setLIntegral_withDensity_le_one_le {μ : Measure 𝓧} (f : 𝓧 → ℝ≥0∞) (s : Set 𝓧) :
-    ∫⁻ x in s ∩ {x | f x ≤ 1}, f x ∂μ ≤ μ (s ∩ {x | f x ≤ 1}) := by
-  calc ∫⁻ x in s ∩ {x | f x ≤ 1}, f x ∂μ
-  _ ≤ ∫⁻ x in s ∩ {x | f x ≤ 1}, 1 ∂μ := setLIntegral_mono measurable_const (by grind)
-  _ = μ (s ∩ {x | f x ≤ 1}) := by simp
-
-lemma IsHahnDecomposition_withDensity_le_one {μ : Measure 𝓧} {f : 𝓧 → ℝ≥0∞} (hf : Measurable f) :
-    IsHahnDecomposition (μ.withDensity f) μ {x | f x ≤ 1} := by
-  constructor
-  · exact measurableSet_le hf measurable_const
-  · refine Measure.le_intro fun t ht _ ↦ ?_
-    rw [Measure.restrict_apply ht, Measure.restrict_apply ht,
-      withDensity_apply _ (ht.inter (measurableSet_le hf measurable_const))]
-    exact setLIntegral_withDensity_le_one_le f t
-  · refine Measure.le_intro fun t ht _ ↦ ?_
-    rw [Measure.restrict_apply ht, Measure.restrict_apply ht,
-      withDensity_apply _ (ht.inter (measurableSet_le hf measurable_const).compl)]
-    calc μ (t ∩ {x | f x ≤ 1}ᶜ)
-    _ = ∫⁻ x in t ∩ {x | f x ≤ 1}ᶜ, 1 ∂μ := by simp
-    _ ≤ ∫⁻ x in t ∩ {x | f x ≤ 1}ᶜ, f x ∂μ := setLIntegral_mono hf (by grind)
 
 lemma tvDist_withDensity_self_eq_integral {f : 𝓧 → ℝ≥0∞} (hf : Measurable f)
     (hf_top : ∀ᵐ x ∂μ, f x ≠ ∞)
@@ -137,21 +114,12 @@ lemma tvDist_add_of_ac_of_mutuallySingular {μ' : Measure 𝓧} [IsFiniteMeasure
     simp [hμ_eq_zero]
   simp [hμ_eq, hμ_eq_zero]
 
-theorem tvDist_eq_integral_abs_rnDeriv :
+theorem tvDist_eq_integral_abs_rnDeriv_add_singularPart :
     tvDist μ ν = ∫ x, |1 - (μ.rnDeriv ν x).toReal| ∂ν + (μ.singularPart ν).real Set.univ := by
   have : tvDist μ ν = tvDist (ν.withDensity (μ.rnDeriv ν) + μ.singularPart ν) ν := by
     simp_rw [Measure.rnDeriv_add_singularPart μ ν]
   rw [this, tvDist_add_of_ac_of_mutuallySingular
     (withDensity_absolutelyContinuous ν (μ.rnDeriv ν)) (μ.mutuallySingular_singularPart ν),
     tvDist_withDensity_self_eq_integral (by fun_prop) (μ.rnDeriv_ne_top ν)]
-
-lemma tvDist_eq_integral_abs_sub {ξ : Measure 𝓧} (hμξ : μ ≪ ξ) (hνξ : ν ≪ ξ) :
-    tvDist μ ν = ∫ x, |((μ.rnDeriv ξ) x).toReal - ((ν.rnDeriv ξ) x).toReal| ∂ξ := by
-  calc tvDist μ ν
-  _ = ∫ x, |1 - (μ.rnDeriv ν x).toReal| ∂ν + (μ.singularPart ν).real Set.univ :=
-    tvDist_eq_integral_abs_rnDeriv
-  _ = ∫ x, |((μ.rnDeriv ξ) x).toReal - ((ν.rnDeriv ξ) x).toReal| ∂ξ := sorry
-
-end Measure
 
 end InformationTheory
