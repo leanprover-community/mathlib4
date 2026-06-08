@@ -83,7 +83,7 @@ theorem sum_ramification_inertia_eq_card
     [IsDomain R] [IsDomain S] [Module.Finite R S] [Module.Flat R S] [Fintype (p.primesOver S)]
     {G : Type*} [Group G] [MulSemiringAction G S] [IsGaloisGroup G R S] :
     ∑ q : p.primesOver S, q.1.ramificationIdx' R * q.1.inertiaDeg' R = Nat.card G := by
-  rw [sum_ramification_inerta_eq_finrank, IsGaloisGroup.card_eq_finrank' G R S]
+  rw [sum_ramification_inertia_eq_finrank, IsGaloisGroup.card_eq_finrank' G R S]
 
 /-- Let `S/R` be a finite flat extension of integral domains, and let `p` be prime ideal of `R`.
 Assume that `R` is the invariant subring of a finite group `G` acting on `S`. Then the sum over

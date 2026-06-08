@@ -41,15 +41,26 @@ example :
   let := IsGaloisGroup.smulCommClassQuotient G A B C H
   exact IsGaloisGroup.quotient G A B C H
 
-example {G G' : Type*} [Group G] [Group G'] (H : Subgroup G) (f : G →* G') :
+theorem foo₃ {G G' : Type*} [Group G] [Group G'] (H : Subgroup G) (f : G →* G') :
     Nat.card (H ⊓ f.ker :) * Nat.card (H.map f) = Nat.card H := by
   have := f.restrict H
   have := Subgroup.index_ker (f.restrict H)
   rw [MonoidHom.restrict_range, MonoidHom.ker_restrict] at this
   sorry
 
+lemma card_inertia_eq_ramificationIdxIn {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    [IsDomain R] [IsDomain S] [Module.Finite R S] [Module.Flat R S]
+    (p : Ideal R) (P : Ideal S) [P.LiesOver p] [p.IsPrime] [P.IsPrime]
+    [PerfectField p.ResidueField]
+    (G : Type*) [Group G] [MulSemiringAction G S] [IsGaloisGroup G R S] :
+    Nat.card (P.inertia G) = Ideal.ramificationIdxIn p S := by
+  sorry
+
 include A in
-theorem foo₂ :
+theorem foo₂ [IsDomain A] [IsDomain B]
+    [Module.Finite A B] [Module.Finite A C] [Module.Finite B C]
+    [Module.Flat A B] [Module.Flat A C] [Module.Flat B C]
+    [q.IsPrime] [r.IsPrime] [PerfectField (r.under A).ResidueField] [PerfectField q.ResidueField] :
     letI := IsGaloisGroup.mulSemiringActionQuotient G B C H
     q.inertia (G ⧸ H) = (r.inertia G).map (QuotientGroup.mk' H) := by
   symm
@@ -62,7 +73,29 @@ theorem foo₂ :
     rw [← IsGaloisGroup.algebraMap_smulOfNormal G B C H g b, ← map_sub] at hg
     rwa [← Ideal.mem_under, ← Ideal.over_def r q] at hg
   · apply Nat.le_of_dvd Nat.card_pos
-    -- idea: use formula for cardinality of inertia (assuming finite + flat)
+    let p := r.under A
+    have : q.LiesOver p := by
+      rw [Ideal.liesOver_iff, Ideal.over_def r q, Ideal.under_under]
+    let := IsGaloisGroup.mulSemiringActionQuotient G B C H
+    let : MulSemiringAction G B := IsGaloisGroup.mulSemiringActionOfNormal G B C H
+    let : SMulCommClass (G ⧸ H) A B := IsGaloisGroup.smulCommClassQuotient G A B C H
+    have : IsGaloisGroup (G ⧸ H) A B := IsGaloisGroup.quotient G A B C H
+    have := foo₃ (r.inertia G) (QuotientGroup.mk' H)
+    simp only [QuotientGroup.ker_mk'] at this
+    have h1 := card_inertia_eq_ramificationIdxIn p r G
+    have h2 := card_inertia_eq_ramificationIdxIn p q (G ⧸ H)
+    have h3 := card_inertia_eq_ramificationIdxIn q r H
+    rw [h2]
+    rw [h1] at this
+    have key : Nat.card ↥(r.inertia G ⊓ H) = Nat.card ↥(r.inertia H) := by
+      have : (r.inertia G).subgroupOf H = r.inertia H :=
+        AddSubgroup.subgroupOf_inertia r.toAddSubgroup H
+      rw [← this]
+      transitivity (Nat.card <| ((r.inertia G).subgroupOf H).map H.subtype)
+      · simp
+      · apply Subgroup.card_map_of_injective
+        exact H.subtype_injective
+    rw [key, h3] at this
     sorry
 
 end
@@ -173,6 +206,9 @@ theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finit
   have : Algebra.IsIntegral R S := IsGaloisGroup.isInvariant.isIntegral R S H
   obtain ⟨mS, hmS, hmRS⟩ := Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain (R := R) (S := S) mR (by simp)
   replace hmRS : mS.LiesOver mR := ⟨hmRS.symm⟩
+  have : Module.Finite R S := sorry
+  have : Module.Flat R S := sorry -- this is a problem...
+  have : PerfectField mR.ResidueField := sorry
   rw [foo₂ ℤ R S G H mR mS, Subgroup.map_eq_bot_iff, QuotientGroup.ker_mk']
   apply le_iSup_of_le ⟨mS, hmS⟩
   rfl
