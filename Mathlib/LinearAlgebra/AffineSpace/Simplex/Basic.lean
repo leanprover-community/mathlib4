@@ -800,6 +800,9 @@ theorem closedInterior_eq_interior_union_surface [IsOrderedAddMonoid k] [ZeroLEO
   · refine Set.union_subset s.interior_subset_closedInterior (Set.iUnion_subset fun i ↦ ?_)
     exact s.closedInterior_faceOpposite_subset_closedInterior i
 
+@[deprecated "use `closedInterior_eq_interior_union_surface` instead" (since := "2026-06-08")]
+alias closedInterior_eq_interior_union := closedInterior_eq_interior_union_surface
+
 /-- The closed interior with the open interior removed gives the surface. -/
 theorem closedInterior_diff_interior [Nontrivial k] [IsOrderedAddMonoid k] [ZeroLEOneClass k]
     {n : ℕ} [NeZero n] (s : Simplex k P n) :
