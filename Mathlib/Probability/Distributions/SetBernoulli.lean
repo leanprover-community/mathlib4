@@ -139,7 +139,7 @@ lemma map_ncard_setBernoulli_real_singleton {u : Set ι} (hu : u.Finite) (p : I)
   have h1 s (hs : s ∈ this.toFinset) :
       setBer(u, p).real {s} = p ^ k * (1 - p) ^ (u.ncard - k) := by
     simp only [Set.mem_singleton_iff, Set.Finite.mem_toFinset, Set.mem_setOf_eq] at hs
-    rw [setBernoulli_real_singleton _ hs.1 hu, Set.ncard_diff' hs.1 hu, hs.2]
+    rw [setBernoulli_real_singleton _ hs.1 hu, Set.ncard_sdiff' hs.1 hu, hs.2]
   rw [Finset.sum_congr rfl h1, Finset.sum_const, nsmul_eq_mul, mul_assoc,
     ← Set.ncard_eq_toFinset_card _ _]
   simp [Set.ncard_powerset_ncard, hu]
