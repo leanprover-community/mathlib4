@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Archimedean.Submonoid
 public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 public import Mathlib.RingTheory.DedekindDomain.Factorization
 public import Mathlib.RingTheory.Valuation.Archimedean
 public import Mathlib.RingTheory.Valuation.Discrete.RankOne
