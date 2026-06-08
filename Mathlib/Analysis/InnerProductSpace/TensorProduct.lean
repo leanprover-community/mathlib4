@@ -477,6 +477,7 @@ theorem norm_rTensor_le (f : E →L[𝕜] F) : ‖f.rTensor G‖ ≤ ‖f‖ :=
 @[simp] lemma rTensor_one : (1 : E →L[𝕜] E).rTensor G = 1 := rTensor_id _
 @[simp] lemma rTensor_zero : (0 : E →L[𝕜] F).rTensor G = 0 := by ext; simp
 @[simp] lemma rTensor_neg (f : E →L[𝕜] F) : (-f).rTensor G = -f.rTensor G := by ext; simp
+
 @[simp] lemma rTensor_sub (f₁ f₂ : E →L[𝕜] F) :
     (f₁ - f₂).rTensor G = f₁.rTensor G - f₂.rTensor G := by ext; simp
 
@@ -541,6 +542,7 @@ theorem norm_lTensor_le (g : E →L[𝕜] F) : ‖g.lTensor G‖ ≤ ‖g‖ := 
 @[simp] lemma lTensor_one : (1 : E →L[𝕜] E).lTensor G = 1 := lTensor_id _
 @[simp] lemma lTensor_zero : (0 : E →L[𝕜] F).lTensor G = 0 := by ext; simp
 @[simp] lemma lTensor_neg (f : E →L[𝕜] F) : (-f).lTensor G = -f.lTensor G := by ext; simp
+
 @[simp] lemma lTensor_sub (f₁ f₂ : E →L[𝕜] F) :
     (f₁ - f₂).lTensor G = f₁.lTensor G - f₂.lTensor G := by ext; simp
 
