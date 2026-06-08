@@ -156,12 +156,12 @@ def ofIso : B.Pairing where
     (P.p.trans ((Subcomplex.N.orderIsoOfIso e hA).symm.subtypeEquiv (by simp)))
 
 /-- A unification hint for the type (I) simplices of `Pairing.ofIso`. -/
-unif_hint ofIsoIEqPreimage {X : SSet.{u}} {A : X.Subcomplex} (P : A.Pairing)
+unif_hint {X : SSet.{u}} {A : X.Subcomplex} (P : A.Pairing)
     {Y : SSet.{u}} {B : Y.Subcomplex} (e : Y ≅ X) (hA : A.preimage e.hom = B) where
   ⊢ (P.ofIso e hA).I ≟ (N.orderIsoOfIso e hA) ⁻¹' P.I
 
 /-- A unification hint for the type (II) simplices of `Pairing.ofIso`. -/
-unif_hint ofIsoIIEqPreimage {X : SSet.{u}} {A : X.Subcomplex} (P : A.Pairing)
+unif_hint {X : SSet.{u}} {A : X.Subcomplex} (P : A.Pairing)
     {Y : SSet.{u}} {B : Y.Subcomplex} (e : Y ≅ X) (hA : A.preimage e.hom = B) where
   ⊢ (P.ofIso e hA).II ≟ (N.orderIsoOfIso e hA) ⁻¹' P.II
 
