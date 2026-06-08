@@ -75,17 +75,14 @@ lemma findAtom_ne_bot {r : α} :
 
 lemma isAtom_findAtom {r : α} (hr : r ≠ ⊥) :
     IsAtom (findAtom r) := by
-  constructor
-  · simp [hr]
-  · intro b hb
-    apply Order.le_pred_of_lt at hb
-    simpa using hb
+  rw [← bot_covBy_iff, ← pred_findAtom r]
+  exact Order.pred_covBy_of_not_isMin fun h => hr (findAtom_eq_bot.1 (h.eq_bot))
 
 @[simp]
 lemma isAtom_findAtom_iff {r : α} :
     IsAtom (findAtom r) ↔ r ≠ ⊥ where
   mpr := isAtom_findAtom
-  mp h nh := by simp only [nh, findAtom_bot] at h; exact h.1 rfl
+  mp h nh := by simp only [nh, findAtom_bot] at h; exact h.ne_bot rfl
 
 end DecidableEq
 
@@ -180,7 +177,7 @@ variable {t : RootedTree}
 lemma SubRootedTree.root_ne_bot_of_mem_subtrees (r : SubRootedTree t) (hr : r ∈ t.subtrees) :
     r.root ≠ ⊥ := by
   simp only [RootedTree.subtrees, Set.mem_setOf_eq] at hr
-  exact hr.1
+  exact hr.ne_bot
 
 lemma RootedTree.mem_subtrees_disjoint_iff {t₁ t₂ : SubRootedTree t}
     (ht₁ : t₁ ∈ t.subtrees) (ht₂ : t₂ ∈ t.subtrees) (v₁ v₂ : t) (h₁ : v₁ ∈ t₁)
@@ -202,7 +199,7 @@ lemma RootedTree.mem_subtrees_disjoint_iff {t₁ t₂ : SubRootedTree t}
     · simp_all [RootedTree.subtrees, IsAtom.lt_iff]
     rw [le_inf_iff] at oh
     ext
-    simpa only [ht₂.le_iff_eq ht₁.1, ht₁.le_iff_eq ht₂.1, eq_comm, or_self] using
+    simpa only [ht₂.le_iff_eq ht₁.ne_bot, ht₁.le_iff_eq ht₂.ne_bot, eq_comm, or_self] using
       le_total_of_directed oh.2 h₂
 
 lemma RootedTree.subtrees_disjoint : t.subtrees.PairwiseDisjoint ((↑) : _ → Set t) := by

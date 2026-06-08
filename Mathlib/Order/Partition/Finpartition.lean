@@ -226,14 +226,14 @@ instance instNonempty : Nonempty (Finpartition a) := by
 -- See note [reducible non-instances]
 /-- There's a unique partition of an atom. -/
 abbrev _root_.IsAtom.uniqueFinpartition (ha : IsAtom a) : Unique (Finpartition a) where
-  default := indiscrete ha.1
+  default := indiscrete ha.ne_bot
   uniq P := by
     have h : ∀ b ∈ P.parts, b = a := fun _ hb ↦
       (ha.le_iff.mp <| P.le hb).resolve_left (P.ne_bot hb)
     ext b
     refine Iff.trans ⟨h b, ?_⟩ mem_singleton.symm
     rintro rfl
-    obtain ⟨c, hc⟩ := P.parts_nonempty ha.1
+    obtain ⟨c, hc⟩ := P.parts_nonempty ha.ne_bot
     simp_rw [← h c hc]
     exact hc
 

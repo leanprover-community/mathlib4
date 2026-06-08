@@ -47,4 +47,4 @@ theorem Order.radical_nongenerating [IsCoatomic α] {a : α} (h : a ⊔ radical 
     have q : a ⊔ radical α ≤ m := sup_le le (radical_le_coatom c)
     -- Now note that `a ⊔ radical α ≤ m` since both `a ≤ m` and `radical α ≤ m`.
     rw [h, top_le_iff] at q
-    simpa using c.1 q
+    simpa using c.ne_top q

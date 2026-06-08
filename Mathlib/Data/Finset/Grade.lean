@@ -137,7 +137,7 @@ lemma covBy_iff_exists_erase : s ⋖ t ↔ ∃ a ∈ t, t.erase a = s := by
 end DecidableEq
 
 @[simp] lemma isAtom_singleton (a : α) : IsAtom ({a} : Finset α) :=
-  ⟨singleton_ne_empty a, fun _ ↦ eq_empty_of_ssubset_singleton⟩
+  bot_covBy_iff.1 (by simp)
 
 protected lemma isAtom_iff : IsAtom s ↔ ∃ a, s = {a} := by
   simp [← bot_covBy_iff, covBy_iff_exists_cons, eq_comm]

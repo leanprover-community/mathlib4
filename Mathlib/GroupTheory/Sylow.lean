@@ -785,7 +785,7 @@ theorem normal_of_all_max_subgroups_normal [Finite G]
       · exact heq
       · haveI := hnc _ hK
         have hPK : P ≤ K := le_trans le_normalizer hNK
-        refine (hK.1 ?_).elim
+        refine (hK.ne_top ?_).elim
         rw [← sup_of_le_right hNK, P.normalizer_sup_eq_top' hPK])
 
 theorem normal_of_normalizerCondition (hnc : NormalizerCondition G) {p : ℕ} [Fact p.Prime]
