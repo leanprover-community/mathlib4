@@ -204,7 +204,7 @@ lemma covariance_sub_sub [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 
 lemma covariance_fun_sub_fun_sub [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ)
     (hZ : MemLp Z 2 μ) (hT : MemLp T 2 μ) :
     cov[fun ω ↦ X ω - Y ω, fun ω ↦ Z ω - T ω; μ] =
-    cov[X, Z; μ] - cov[X, T; μ] - cov[Y, Z; μ] + cov[Y, T; μ] :=
+      cov[X, Z; μ] - cov[X, T; μ] - cov[Y, Z; μ] + cov[Y, T; μ] :=
   covariance_sub_sub hX hY hZ hT
 
 @[simp]
