@@ -152,7 +152,7 @@ def semilatticeInfOfIsLimitBinaryFan
   inf X Y := (c X Y).pt
   inf_le_left X Y := leOfHom (c X Y).fst
   inf_le_right X Y := leOfHom (c X Y).snd
-  le_inf _ _ _ le_fst le_snd := leOfHom <| (h _ _).lift (BinaryFan.mk le_fst.hom le_snd.hom)
+  le_inf _ _ _ le_fst le_snd := leOfHom <| BinaryFan.IsLimit.lift (h _ _) le_fst.hom le_snd.hom
 
 variable (C) in
 /-- If a partial order has binary products, then it is an inf-semilattice -/
@@ -170,7 +170,7 @@ def semilatticeSupOfIsColimitBinaryCofan
   sup X Y := (c X Y).pt
   le_sup_left X Y := leOfHom (c X Y).inl
   le_sup_right X Y := leOfHom (c X Y).inr
-  sup_le _ _ _ le_inl le_inr := leOfHom <| (h _ _).desc (BinaryCofan.mk le_inl.hom le_inr.hom)
+  sup_le _ _ _ le_inl le_inr := leOfHom <| BinaryCofan.IsColimit.desc (h _ _) le_inl.hom le_inr.hom
 
 variable (C) in
 /-- If a partial order has binary coproducts, then it is a sup-semilattice -/

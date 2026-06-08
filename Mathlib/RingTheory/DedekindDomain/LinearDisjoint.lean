@@ -76,6 +76,8 @@ variable [IsDomain A] [IsDedekindDomain B] [IsDedekindDomain R₁] [IsDedekindDo
     [IsFractionRing B L] [IsFractionRing R₁ F₁] [IsFractionRing R₂ F₂] [IsIntegrallyClosed A]
     [IsIntegralClosure B R₁ L] [IsTorsionFree R₁ B] [IsTorsionFree R₂ B]
 
+set_option linter.overlappingInstances false
+
 namespace IsDedekindDomain
 
 theorem differentIdeal_dvd_map_differentIdeal [Algebra.IsIntegral R₂ B]
@@ -228,8 +230,9 @@ noncomputable def ofIsCoprimeDifferentIdeal (h₁ : F₁.LinearDisjoint F₂)
     apply map_injective_of_injective (f := (IsScalarTower.toAlgHom R₁ B L).toLinearMap)
       (FaithfulSMul.algebraMap_injective B L)
     rw [map_span, ← Set.range_comp]
-    convert Module.Basis.ofIsCoprimeDifferentIdeal_aux A B R₁ R₂ h₁ h₂ h₃ b₂
-      (b.localizationLocalization_span K A⁰ F₂)
+    convert!
+      Module.Basis.ofIsCoprimeDifferentIdeal_aux A B R₁ R₂ h₁ h₂ h₃ b₂
+        (b.localizationLocalization_span K A⁰ F₂)
     · ext
       simp [b₂, v, ← IsScalarTower.algebraMap_apply]
     · ext; simp

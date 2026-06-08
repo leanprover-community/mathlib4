@@ -295,7 +295,7 @@ theorem innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_group :
       exists_continuous_one_zero_of_isCompact_of_isGδ L_comp L_Gδ isClosed_empty
         (disjoint_empty L)
     exact ⟨f, f_cont, f_comp, Lf⟩
-  · convert hr using 1
+  · convert! hr using 1
     apply measure_congr
     exact everywherePosSubset_ae_eq_of_measure_ne_top K_closed.measurableSet
       K_comp.measure_lt_top.ne
