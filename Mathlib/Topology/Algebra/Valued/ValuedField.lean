@@ -9,6 +9,7 @@ public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 public import Mathlib.Topology.Algebra.WithZeroTopology
 public import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.Topology.Algebra.ValuativeRel.Completion
 
 /-!
 # Valued fields and their completions
@@ -43,83 +44,7 @@ variable {K : Type*} [DivisionRing K] {Γ₀ : Type*} [LinearOrderedCommGroupWit
 
 section ValuationTopologicalDivisionRing
 
-section InversionEstimate
-
-variable (v : Valuation K Γ₀)
-
--- The following is the main technical lemma ensuring that inversion is continuous
--- in the topology induced by a valuation on a division ring (i.e. the next instance)
--- and the fact that a valued field is completable
--- [BouAC, VI.5.1 Lemme 1]
-theorem Valuation.inversion_estimate {x y : K} {γ : Γ₀ˣ} (y_ne : y ≠ 0)
-    (h : v (x - y) < min (γ * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) < γ := by
-  have hyp1 : v (x - y) < γ * (v y * v y) := lt_of_lt_of_le h (min_le_left _ _)
-  have hyp1' : v (x - y) * (v y * v y)⁻¹ < γ := mul_inv_lt_of_lt_mul₀ hyp1
-  have hyp2 : v (x - y) < v y := lt_of_lt_of_le h (min_le_right _ _)
-  have key : v x = v y := Valuation.map_eq_of_sub_lt v hyp2
-  have x_ne : x ≠ 0 := by
-    intro h
-    apply y_ne
-    rw [h, v.map_zero] at key
-    exact v.zero_iff.1 key.symm
-  have decomp : x⁻¹ - y⁻¹ = x⁻¹ * (y - x) * y⁻¹ := by
-    rw [mul_sub_left_distrib, sub_mul, mul_assoc, show y * y⁻¹ = 1 from mul_inv_cancel₀ y_ne,
-      show x⁻¹ * x = 1 from inv_mul_cancel₀ x_ne, mul_one, one_mul]
-  calc
-    v (x⁻¹ - y⁻¹) = v (x⁻¹ * (y - x) * y⁻¹) := by rw [decomp]
-    _ = v x⁻¹ * (v <| y - x) * v y⁻¹ := by repeat' rw [Valuation.map_mul]
-    _ = (v x)⁻¹ * (v <| y - x) * (v y)⁻¹ := by rw [map_inv₀, map_inv₀]
-    _ = (v <| y - x) * (v y * v y)⁻¹ := by rw [mul_assoc, mul_comm, key, mul_assoc, mul_inv_rev]
-    _ = (v <| y - x) * (v y * v y)⁻¹ := rfl
-    _ = (v <| x - y) * (v y * v y)⁻¹ := by rw [Valuation.map_sub_swap]
-    _ < γ := hyp1'
-
-theorem Valuation.inversion_estimate' {x y r s : K} (y_ne : y ≠ 0) (hr : r ≠ 0) (hs : s ≠ 0)
-    (h : v (x - y) < min ((v s / v r) * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) * v r < v s := by
-  have hr' : 0 < v r := by simp [zero_lt_iff, hr]
-  let γ : Γ₀ˣ := .mk0 (v s / v r) (by simp [hs, hr])
-  calc
-    v (x⁻¹ - y⁻¹) * v r < γ * v r := by gcongr; exact Valuation.inversion_estimate v y_ne h
-    _ = v s := div_mul_cancel₀ _ (by simpa)
-
-end InversionEstimate
-
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
-
-namespace IsValuativeTopology
--- a separated file called ValuativeRel.Completion
-open ValuativeRel Valuation
-
-variable [ValuativeRel K] [TopologicalSpace K] [IsValuativeTopology K]
-
-/-- The topology coming from a valuation on a division ring makes it a topological division ring
-[BouAC, VI.5.1 middle of Proposition 1] -/
-instance (priority := 100) isTopologicalDivisionRing :
-    IsTopologicalDivisionRing K :=
-  { (by infer_instance : IsTopologicalRing K) with
-    continuousAt_inv₀ x x_ne s s_in := by
-      obtain ⟨γ, hs⟩ := (valuation K).mem_nhds_iff.mp s_in; clear s_in
-      rw [mem_map, (valuation K).mem_nhds_iff]
-      let γ' := Units.mk0 ((restrict₀ _) x) ((valuation K).restrict.ne_zero_iff.mpr x_ne)
-      use min (γ * (γ' * γ')) γ'
-      intro y y_in
-      apply hs
-      simp only [mem_setOf_eq, Units.min_val, Units.val_mul] at y_in
-      exact inversion_estimate _ x_ne y_in }
-
-/-- A valued division ring is separated. -/
-instance (priority := 100) t2Space : T2Space K := by
-  apply IsTopologicalAddGroup.t2Space_of_zero_sep
-  intro x x_ne
-  refine ⟨{ k | valuation K k < valuation K x }, ?_, fun h => lt_irrefl (valuation K x) h⟩
-  rw [(valuation K).mem_nhds_iff]
-  set γ' := Units.mk0 (restrict₀ _ x) ((valuation K).restrict.ne_zero_iff.mpr x_ne) with hdef
-  exact ⟨γ', fun y hy => by
-    simp only [restrict_lt_iff_lt_embedding, hdef, sub_zero, Units.val_mk0,
-      mem_setOf_eq, embedding_restrict₀] at hy
-    simpa using hy⟩
-
-end IsValuativeTopology
 
 section Valued
 
@@ -197,50 +122,6 @@ end Valued
 end ValuationTopologicalDivisionRing
 
 end DivisionRing
-
-namespace IsValuativeTopology
-
-open ValuativeRel Valuation MonoidWithZeroHom Filter UniformSpace WithZeroTopology
-
-variable {K : Type*} [Field K] [ValuativeRel K] [UniformSpace K] [IsValuativeTopology K]
-  [IsUniformAddGroup K]
-
-set_option backward.isDefEq.respectTransparency false in
-/-- A valued field is completable. -/
-instance (priority := 100) : CompletableTopField K where
-  __ := (inferInstance : T0Space K)
-  nice F hF h0 := by
-    have : ∃ γ₀ : (ValueGroup₀ (.ofClass (valuation K)))ˣ, ∃ M ∈ F,
-        ∀ x ∈ M, (γ₀.1) ≤ (valuation K).restrict x := by
-      rcases inf_eq_bot_iff.mp h0 with ⟨U, U_in, M, M_in, H⟩
-      rcases ((valuation K).mem_nhds_zero_iff _).mp U_in with ⟨γ₀, hU⟩
-      refine ⟨γ₀, M, M_in, fun x xM ↦ le_of_not_gt (fun hyp ↦ ?_)⟩
-      have : x ∈ U ∩ M := ⟨hU hyp, xM⟩
-      rwa [H] at this
-    rcases this with ⟨γ₀, M₀, M₀_in, H₀⟩
-    rw [(valuation K).cauchy_iff] at hF ⊢
-    refine ⟨hF.1.map _, fun γ ↦ ?_⟩
-    rcases hF.2 (min (γ * γ₀ * γ₀) γ₀) with ⟨M₁, M₁_in, H₁⟩
-    refine ⟨(fun x : K => x⁻¹) '' (M₀ ∩ M₁), ?_, ?_⟩
-    · rw [mem_map]
-      exact mem_of_superset (inter_mem M₀_in M₁_in) (subset_preimage_image _ _)
-    · rintro _ ⟨x, ⟨x_in₀, x_in₁⟩, rfl⟩ _ ⟨y, ⟨_, y_in₁⟩, rfl⟩
-      apply inversion_estimate
-      · exact (valuation K).restrict.ne_zero_iff.mp fun h ↦ by simpa [h] using H₀ x x_in₀
-      · refine lt_of_lt_of_le (H₁ x x_in₁ y y_in₁) ?_
-        grw [Units.min_val, mul_assoc, Units.val_mul, Units.val_mul, H₀ x x_in₀]
-
--- extends valuative relation
--- IsValuativeTopology
--- IsUniformAddGroup is in mathlib
--- Valuatin extends to completion (general)
--- compatible
-
-/-- The extension of the valuation of a valued field to the completion of the field. -/
-noncomputable def extensionFun : Completion K → ValueGroupWithZero K :=
-  Completion.isDenseInducing_coe.extend (valuation K)
-
-end IsValuativeTopology
 
 namespace Valued
 
