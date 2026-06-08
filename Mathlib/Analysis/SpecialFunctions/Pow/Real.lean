@@ -430,7 +430,7 @@ lemma rpow_add_natCast {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℕ) : x ^ (y + n
   simpa using rpow_add_intCast hx y n
 
 lemma rpow_sub_intCast {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℤ) : x ^ (y - n) = x ^ y / x ^ n := by
-  simpa using rpow_add_intCast hx y (-n)
+  simpa using! rpow_add_intCast hx y (-n)
 
 lemma rpow_sub_natCast {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℕ) : x ^ (y - n) = x ^ y / x ^ n := by
   simpa using rpow_sub_intCast hx y n
@@ -660,11 +660,11 @@ theorem rpow_le_one {x z : ℝ} (hx1 : 0 ≤ x) (hx2 : x ≤ 1) (hz : 0 ≤ z) :
   gcongr
 
 theorem rpow_lt_one_of_one_lt_of_neg {x z : ℝ} (hx : 1 < x) (hz : z < 0) : x ^ z < 1 := by
-  convert rpow_lt_rpow_of_exponent_lt hx hz
+  convert! rpow_lt_rpow_of_exponent_lt hx hz
   exact (rpow_zero x).symm
 
 theorem rpow_le_one_of_one_le_of_nonpos {x z : ℝ} (hx : 1 ≤ x) (hz : z ≤ 0) : x ^ z ≤ 1 := by
-  convert rpow_le_rpow_of_exponent_le hx hz
+  convert! rpow_le_rpow_of_exponent_le hx hz
   exact (rpow_zero x).symm
 
 theorem one_lt_rpow {x z : ℝ} (hx : 1 < x) (hz : 0 < z) : 1 < x ^ z := by
@@ -677,12 +677,12 @@ theorem one_le_rpow {x z : ℝ} (hx : 1 ≤ x) (hz : 0 ≤ z) : 1 ≤ x ^ z := b
 
 theorem one_lt_rpow_of_pos_of_lt_one_of_neg (hx1 : 0 < x) (hx2 : x < 1) (hz : z < 0) :
     1 < x ^ z := by
-  convert rpow_lt_rpow_of_exponent_gt hx1 hx2 hz
+  convert! rpow_lt_rpow_of_exponent_gt hx1 hx2 hz
   exact (rpow_zero x).symm
 
 theorem one_le_rpow_of_pos_of_le_one_of_nonpos (hx1 : 0 < x) (hx2 : x ≤ 1) (hz : z ≤ 0) :
     1 ≤ x ^ z := by
-  convert rpow_le_rpow_of_exponent_ge hx1 hx2 hz
+  convert! rpow_le_rpow_of_exponent_ge hx1 hx2 hz
   exact (rpow_zero x).symm
 
 theorem rpow_lt_one_iff_of_pos (hx : 0 < x) : x ^ y < 1 ↔ 1 < x ∧ y < 0 ∨ x < 1 ∧ 0 < y := by
