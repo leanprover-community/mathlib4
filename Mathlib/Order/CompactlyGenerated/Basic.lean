@@ -223,9 +223,8 @@ theorem WellFoundedGT.isSupFiniteCompact [WellFoundedGT α] :
 theorem IsSupFiniteCompact.isSupClosedCompact (h : IsSupFiniteCompact α) :
     IsSupClosedCompact α := by
   intro s hne hsc; obtain ⟨t, ht₁, ht₂⟩ := h s; clear h
-  rcases t.eq_empty_or_nonempty with h | h
-  · subst h
-    rw [Finset.sup_empty] at ht₂
+  rcases t.eq_empty_or_nonempty with rfl | h
+  · rw [Finset.sup_empty] at ht₂
     rw [ht₂]
     simp [eq_singleton_bot_of_sSup_eq_bot_of_nonempty ht₂ hne]
   · rw [ht₂]

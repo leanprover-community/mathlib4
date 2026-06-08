@@ -24,7 +24,7 @@ cycle, they give `0` or `∞` respectively if the graph is acyclic.
 @[expose] public section
 
 namespace SimpleGraph
-variable {α : Type*} {G : SimpleGraph α}
+variable {α β : Type*} {G : SimpleGraph α} {G' : SimpleGraph β}
 
 section egirth
 
@@ -61,11 +61,22 @@ lemma exists_egirth_eq_length :
       ← exists_prop, Subtype.exists', Sigma.exists', eq_comm] at h ⊢
     exact ciInf_mem _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma three_le_egirth : 3 ≤ G.egirth := by
   simpa using fun _ _ a ↦ Walk.IsCycle.three_le_length a
 
 @[simp] lemma egirth_bot : egirth (⊥ : SimpleGraph α) = ⊤ := by simp
+
+@[gcongr only]
+lemma IsContained.egirth_le (h : G ⊑ G') : G'.egirth ≤ G.egirth := by
+  by_cases hacyc : G.IsAcyclic
+  · simp [hacyc.egirth_eq_top]
+  obtain ⟨a, w, hw, hwl⟩ := exists_egirth_eq_length.mpr hacyc
+  rw [hwl, ← w.length_map h.some.toHom]
+  exact egirth_le_length <| hw.map h.some.injective
+
+@[gcongr only]
+lemma Iso.egirth_eq (f : G ≃g G') : G.egirth = G'.egirth :=
+  le_antisymm f.isContained'.egirth_le f.isContained.egirth_le
 
 end egirth
 
@@ -102,6 +113,12 @@ lemma exists_girth_eq_length :
 
 @[simp] lemma girth_bot : girth (⊥ : SimpleGraph α) = 0 := by
   simp [girth]
+
+lemma IsContained.girth_le (h : G ⊑ G') (hG : ¬G.IsAcyclic) : G'.girth ≤ G.girth :=
+  ENat.toNat_le_toNat h.egirth_le <| egirth_eq_top.not.mpr hG
+
+lemma Iso.girth_eq (f : G ≃g G') : G.girth = G'.girth := by
+  simp [girth, f.egirth_eq]
 
 end girth
 
