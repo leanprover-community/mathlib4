@@ -595,6 +595,7 @@ def Homeomorph.ofCofinite (f : CofiniteTopology X ≃ CofiniteTopology Y) :
   continuous_toFun := CofiniteTopology.continuous_of_injective f.injective
   continuous_invFun := CofiniteTopology.continuous_of_injective f.symm.injective
 
+omit [TopologicalSpace X] [TopologicalSpace Y] in
 theorem Equiv.isHomeomorph_of_cofinite (f : CofiniteTopology X ≃ CofiniteTopology Y) :
     IsHomeomorph f :=
   (Homeomorph.ofCofinite f).isHomeomorph
