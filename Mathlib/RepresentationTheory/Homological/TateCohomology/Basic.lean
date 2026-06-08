@@ -31,6 +31,14 @@ cochain complex using the norm map.
 * `tateCohomologyFunctor`: the functor taking a representation of `G` to its `n`-th Tate
   cohomology group.
 
+* `isoGroupCohomology`: the isomorphism between the `n`-th Tate cohomology and
+  `n`-th group cohomology for `n : ℕ` non-zero.
+
+## Main Results
+
+* `δ_naturality`: the naturality of the connecting homomorphism in the long exact sequence of Tate
+  cohomology.
+
 ## Tags
 
 Tate cohomology, homological algebra
@@ -51,9 +59,6 @@ open CategoryTheory groupCohomology groupHomology
 `m ↦ ∑ g : G, M.ρ g m`. -/
 def Rep.tateNorm (M : Rep R G) : (inhomogeneousChains M).X 0 ⟶ (inhomogeneousCochains M).X 0 :=
   (chainsIso₀ M).hom ≫ M.norm.toModuleCatHom ≫ (cochainsIso₀ M).inv
-
-lemma tateNorm_hom_apply (M : Rep R G) (x : (Fin 0 → G) →₀ ↑M.V) (y : Fin 0 → G) :
-    M.tateNorm.hom x y = (cochainsIso₀ M).inv.hom (M.ρ.norm <| (chainsIso₀ M).hom.hom x) y := rfl
 
 lemma Rep.tateNorm_eq (M : Rep R G) :
     M.tateNorm = ModuleCat.ofHom (Finsupp.lsum R fun _ ↦ LinearMap.pi fun _ ↦ M.ρ.norm) := by
@@ -97,18 +102,6 @@ lemma tateComplex_d_ofNat (M : Rep R G) (n : ℕ) :
 lemma tateComplex_d_neg (M : Rep R G) (n : ℕ) :
     (tateComplex M).d (-(n + 2 : ℤ)) (-(n + 1 : ℤ)) = (inhomogeneousChains M).d (n + 1) n := rfl
 
-@[reassoc]
-lemma tateComplex.norm_comm {A B : Rep R G} (φ : A ⟶ B) : φ ≫ B.norm = A.norm ≫ φ := by
-  ext
-  simp [Rep.norm_comm]
-
-@[reassoc]
-lemma tateComplex.norm_hom_comm {A B : Rep R G} (φ : A ⟶ B) :
-    φ.toModuleCatHom ≫ B.norm.toModuleCatHom = A.norm.toModuleCatHom ≫ φ.toModuleCatHom := by
-  rw [← ModuleCat.ofHom_comp, ← Representation.IntertwiningMap.comp_toLinearMap,
-    ← Rep.hom_comp, A.norm_comm φ]
-  simp
-
 /-- The chain map on the Tate complex induced by a morphism of representations. -/
 @[reducible]
 def tateComplex.map {X Y : Rep R G} (φ : X ⟶ Y) : tateComplex X ⟶ tateComplex Y := by
@@ -117,7 +110,7 @@ def tateComplex.map {X Y : Rep R G} (φ : X ⟶ Y) : tateComplex X ⟶ tateCompl
   simp [Rep.tateNorm_eq, Representation.norm, Rep.hom_comm_apply]
 
 @[simp]
-lemma tateComplex.map_zero {X Y : Rep R G} : tateComplex.map (X := X) (Y := Y) 0 = 0 := by cat_disch
+lemma tateComplex.map_zero {X Y : Rep R G} : tateComplex.map (0 : X ⟶ Y) = 0 := by cat_disch
 
 set_option backward.isDefEq.respectTransparency false in
 lemma tateComplex.map_add {X Y : Rep R G} (f g : X ⟶ Y) : tateComplex.map (f + g) =
@@ -182,11 +175,10 @@ lemma map_tateComplexFunctor_shortExact {S : ShortComplex (Rep R G)} (hS : S.Sho
       <| map_chainsFunctor_eval_shortExact hS _
 
 instance : (tateComplexFunctor R G).Additive where
-  map_add {_ _} := tateComplex.map_add _ _
+  map_add := tateComplex.map_add ..
 
-/-
-The next two statements say that `tateComplexFunctor` is an exact functor.
--/
+/-- The next two statements say that `tateComplexFunctor` is an exact functor from `Rep R G` to
+  `CochainComplex (ModuleCat R) ℤ`. -/
 instance preservesFiniteLimits_tateComplexFunctor :
     Limits.PreservesFiniteLimits (tateComplexFunctor R G) :=
   (((tateComplexFunctor R G).exact_tfae.out 0 3 rfl rfl).mp
