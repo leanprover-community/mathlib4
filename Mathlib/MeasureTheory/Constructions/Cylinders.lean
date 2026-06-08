@@ -76,20 +76,11 @@ theorem squareCylinders_eq_iUnion_image' (C : ∀ i, Set (Set (α i))) (hC : ∀
 
 lemma squareCylinders_subset_of_or_univ (C : ∀ i, Set (Set (α i))) :
     squareCylinders C ⊆ (univ.pi '' univ.pi (fun i ↦ insert univ (C i))) := by
-  classical
   intro x hx
-  simp only [squareCylinders, mem_pi, mem_univ, forall_const, mem_setOf_eq] at hx
   obtain ⟨s, t, ⟨ht, hx⟩⟩ := hx
-  simp only [mem_image, mem_pi, mem_univ, mem_insert_iff, forall_const]
-  use fun i ↦ (if (i ∈ s) then (t i) else univ)
-  refine ⟨?_, ?_⟩
-  · intro i
-    by_cases h : i ∈ s
-    · right
-      simp [h, ht]
-    · left
-      simp [h]
-  · exact hx ▸ univ_pi_ite s t
+  classical
+  use fun i ↦ if i ∈ s then t i else univ
+  grind
 
 theorem isPiSystem_squareCylinders {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (C i))
     (hC_univ : ∀ i, univ ∈ C i) :

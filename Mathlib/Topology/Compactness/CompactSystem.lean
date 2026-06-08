@@ -187,34 +187,32 @@ section pi
 
 namespace Set
 
-variable {ι : Type*} {α : ι → Type*}
+variable {ι β : Type*} {α : ι → Type*}
 
 /- In a product space, the intersection of square cylinders is empty iff there is a coordinate `i`
 such that the projections to `i` have empty intersection. -/
-theorem iInter_pi_empty_iff {β : Type*} (s : β → Set ι) (t : β → (i : ι) → Set (α i)) :
-   (⋂ b, ((s b).pi (t b)) = ∅) ↔ (∃ i : ι, ⋂ (b : β) (_: i ∈ s b), (t b i) = ∅):= by
+theorem iInter_pi_eq_empty_iff (s : β → Set ι) (t : β → (i : ι) → Set (α i)) :
+    ⋂ b, (s b).pi (t b) = ∅ ↔ ∃ i, ⋂ (b : β) (_: i ∈ s b), t b i = ∅ := by
   rw [iInter_eq_empty_iff, not_iff_not.symm]
-  push_neg
+  push Not
   simp only [Set.mem_pi, Set.nonempty_iInter, mem_iInter]
   refine ⟨fun ⟨x, hx⟩ i ↦ ?_, fun h ↦ ?_⟩
   · refine ⟨x i, fun j hi ↦ hx j i hi⟩
   · choose x hx using h
     refine ⟨x, fun i j hj ↦ hx j i hj⟩
 
-theorem iInter_univ_pi_empty_iff {β : Type*} (t : β → (i : ι) → Set (α i)) :
-   ( ⋂ b, (univ.pi (t b)) = ∅) ↔ (∃ i : ι, ⋂ (b : β), (t b i) = ∅):= by
-  rw [iInter_pi_empty_iff]
+theorem iInter_univ_pi_eq_empty_iff (t : β → (i : ι) → Set (α i)) :
+    ⋂ b, univ.pi (t b) = ∅ ↔ ∃ i, ⋂ b, t b i = ∅ := by
+  rw [iInter_pi_eq_empty_iff]
   simp only [mem_univ, iInter_true]
 
-theorem biInter_univ_pi_empty_iff {β : Type*} (t : β → (i : ι) → Set (α i)) (p : β → Prop) :
-   ( ⋂ (b : β), ⋂ (_ : p b), (univ.pi (t b)) = ∅) ↔
-      (∃ i : ι, ⋂ (b : β), ⋂ (_ : p b), (t b i) = ∅) := by
-  have h :  ⋂ (b : β), ⋂ (_ : p b), (univ.pi (t b)) =
-      ⋂ (b : { (b' : β) | p b' }), (univ.pi (t b.val)) := by
-    exact biInter_eq_iInter p fun x h ↦ univ.pi (t x)
-  have h' (i : ι) :  ⋂ (b : β), ⋂ (_ : p b), t b i =  ⋂ (b : { (b' : β) | p b' }), t b.val i := by
-    exact biInter_eq_iInter p fun x h ↦ t x i
-  simp_rw [h, h', iInter_univ_pi_empty_iff]
+theorem biInter_univ_pi_eq_empty_iff (t : β → (i : ι) → Set (α i)) (p : β → Prop) :
+    ⋂ (b : β) (_ : p b), univ.pi (t b) = ∅ ↔ ∃ i, ⋂ (b : β) (_ : p b), t b i = ∅ := by
+  have h : ⋂ (b : β) (_ : p b), univ.pi (t b) = ⋂ b : {b' | p b'}, univ.pi (t b.val) :=
+    biInter_eq_iInter p fun x h ↦ univ.pi (t x)
+  have h' i :  ⋂ (b : β) (_ : p b), t b i = ⋂ b : {b' | p b'}, t b.val i :=
+    biInter_eq_iInter p fun x h ↦ t x i
+  simp_rw [h, h', iInter_univ_pi_eq_empty_iff]
 
 end Set
 
@@ -229,16 +227,14 @@ theorem pi (C : (i : ι) → Set (Set (α i))) (hC : ∀ i, IsCompactSystem (C i
   simp only [mem_image, mem_pi, mem_univ, forall_const] at hS
   choose x hx1 hx2 using hS
   simp_rw [← hx2] at h_empty ⊢
-  simp_rw [iInter_univ_pi_empty_iff x] at h_empty
+  simp_rw [iInter_univ_pi_eq_empty_iff x] at h_empty
   obtain ⟨i, hi⟩ := h_empty
-  let y := (fun b ↦ x b i)
-  have hy (b : ℕ) : y b ∈ C i := by
-    simp only [y]
-    exact hx1 b i
+  let y := fun b ↦ x b i
+  have hy (b : ℕ) : y b ∈ C i := by simpa [y] using hx1 b i
   have ⟨n, hn⟩ := (hC i) y hy hi
   use n
   simp_rw [dissipate, ← hx2] at hn ⊢
-  rw [biInter_univ_pi_empty_iff x]
+  rw [biInter_univ_pi_eq_empty_iff x]
   use i
 
 end IsCompactSystem
@@ -247,30 +243,27 @@ end pi
 
 section ClosedCompactSquareCylinders
 
-variable {ι : Type*} {α : ι → Type*}
+variable {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i)]
 
-variable [∀ i, TopologicalSpace (α i)]
-
-variable (α)
+variable (α) in
 /-- The set of sets of the form `s.pi t`, where `s : Finset ι` and `t i` is both,
 closed and compact, for all `i ∈ s`. -/
 def compactClosedSquareCylinders : Set (Set (Π i, α i)) :=
-  MeasureTheory.squareCylinders (fun i ↦ { t : Set (α i) | IsCompact t ∧ IsClosed t })
+  MeasureTheory.squareCylinders fun i ↦ { t : Set (α i) | IsCompact t ∧ IsClosed t }
 
 /-- Products of compact and closed sets form a compact system. -/
 theorem IsCompactSystem.compactClosedPi :
     IsCompactSystem (univ.pi '' univ.pi (fun i ↦ { t : Set (α i) | IsCompact t ∧ IsClosed t })) :=
-    IsCompactSystem.pi _ (fun _ ↦ isCompactSystem_isCompact_isClosed (α _))
+    IsCompactSystem.pi _ fun _ ↦ isCompactSystem_isCompact_isClosed (α _)
 
 theorem IsCompactSystem.compactClosedOrUnivPi :
     IsCompactSystem (univ.pi '' univ.pi (fun i ↦ insert univ { t :
     Set (α i) | IsCompact t ∧ IsClosed t })) :=
-  IsCompactSystem.pi _ (fun i ↦ isCompactSystem_insert_univ_isCompact_isClosed (α i))
+  IsCompactSystem.pi _ fun i ↦ isCompactSystem_insert_univ_isCompact_isClosed (α i)
 
 /-- Compact and closed square cylinders are a compact system. -/
 theorem isCompactSystem.compactClosedSquareCylinders :
     IsCompactSystem (compactClosedSquareCylinders α) :=
-    IsCompactSystem.mono (IsCompactSystem.compactClosedOrUnivPi _)
-    (MeasureTheory.squareCylinders_subset_of_or_univ _)
+  IsCompactSystem.compactClosedOrUnivPi.mono (MeasureTheory.squareCylinders_subset_of_or_univ _)
 
 end ClosedCompactSquareCylinders
