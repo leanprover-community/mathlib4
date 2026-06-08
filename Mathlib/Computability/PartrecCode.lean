@@ -53,31 +53,26 @@ theorem rfind' {f : ℕ →. ℕ} (hf : Nat.Partrec f) :
       (PFun.mk <| Nat.unpaired fun a m =>
         (Nat.rfind (PFun.mk fun n =>
           (fun x => decide (x = 0)) <$> f (Nat.pair a (n + m)))).map (· + m)) := by
-  let F : ℕ → ℕ →. ℕ := fun a => PFun.mk fun m =>
+  exact (@Partrec₂.unpaired' fun a => PFun.mk fun m =>
     (Nat.rfind (PFun.mk fun n =>
-      (fun x => decide (x = 0)) <$> f (Nat.pair a (n + m)))).map (· + m)
-  exact (@Partrec₂.unpaired' F).mpr <| by
+      (fun x => decide (x = 0)) <$> f (Nat.pair a (n + m)))).map (· + m)).mpr <| by
     let G : ℕ → ℕ →. ℕ := fun x => PFun.mk fun y =>
       f (Nat.pair (Nat.unpair x).1 (y + (Nat.unpair x).2))
-    have h_inner :
-        Nat.Partrec (PFun.mk fun a => Nat.rfind (PFun.mk fun n =>
-          (fun x => decide (x = 0)) <$>
-          Nat.unpaired (fun x y => (G x) y) (Nat.pair a n))) :=
-      Nat.Partrec.rfind <| (@Partrec₂.unpaired' G).mpr <|
-        (Partrec.nat_iff.mpr hf).comp <|
-          (Primrec₂.pair.comp
-            (_root_.Primrec.fst.comp <| _root_.Primrec.unpair.comp _root_.Primrec.fst)
-            (Primrec.nat_add.comp _root_.Primrec.snd <|
-              _root_.Primrec.snd.comp <| _root_.Primrec.unpair.comp _root_.Primrec.fst)).to_comp
-    let H : ℕ → ℕ →. ℕ := fun a => PFun.mk fun b =>
-      Nat.rfind (PFun.mk fun n =>
-        (fun x => decide (x = 0)) <$> f (Nat.pair a (n + b)))
-    have h1 : Partrec₂ H :=
-      (@Partrec₂.unpaired' H).mp <| h_inner.of_eq fun p => by
-        simp [H, G, Nat.unpaired]
-    exact (Partrec.map h1
+    have h1 :
+        Partrec₂ (fun a => PFun.mk fun b =>
+          Nat.rfind (PFun.mk fun n =>
+            (fun x => decide (x = 0)) <$> f (Nat.pair a (n + b)))) :=
+      Partrec₂.unpaired'.mp <|
+        (Nat.Partrec.rfind <| (@Partrec₂.unpaired' G).mpr <|
+          (Partrec.nat_iff.mpr hf).comp <|
+            (Primrec₂.pair.comp
+              (_root_.Primrec.fst.comp <| _root_.Primrec.unpair.comp _root_.Primrec.fst)
+              (Primrec.nat_add.comp _root_.Primrec.snd <|
+                _root_.Primrec.snd.comp <| _root_.Primrec.unpair.comp _root_.Primrec.fst)).to_comp
+          ).of_eq fun p => by simp [G, Nat.unpaired]
+    exact Partrec.map h1
       (Primrec.nat_add.comp _root_.Primrec.snd <|
-        _root_.Primrec.snd.comp _root_.Primrec.fst).to_comp.to₂).of_eq fun _ => rfl
+        _root_.Primrec.snd.comp _root_.Primrec.fst).to_comp.to₂
 
 /-- Code for partial recursive functions from ℕ to ℕ.
 See `Nat.Partrec.Code.eval` for the interpretation of these constructors.
@@ -539,9 +534,8 @@ theorem smn :
 /-- A function is partial recursive if and only if there is a code implementing it. Therefore,
 `eval` is a **universal partial recursive function**. -/
 theorem exists_code {f : ℕ →. ℕ} : Nat.Partrec f ↔ ∃ c : Code, eval c = f := by
-  constructor
-  · intro h
-    induction h with
+  refine ⟨fun h => ?_, ?_⟩
+  · induction h with
     | zero => exact ⟨zero, rfl⟩
     | succ => exact ⟨succ, rfl⟩
     | left => exact ⟨left, rfl⟩
@@ -1013,7 +1007,7 @@ such that `c` and `f c` have the same evaluation.
 -/
 theorem fixed_point {f : Code → Code} (hf : Computable f) : ∃ c : Code, eval (f c) = eval c :=
   let g : ℕ → ℕ →. ℕ := fun x => PFun.mk fun y =>
-  eval (ofNat Code x) x >>= fun b => eval (ofNat Code b) y
+    eval (ofNat Code x) x >>= fun b => eval (ofNat Code b) y
   have : Partrec₂ g :=
     (eval_part.comp ((Computable.ofNat _).comp fst) fst).bind
       (eval_part.comp ((Computable.ofNat _).comp snd) (snd.comp fst)).to₂
