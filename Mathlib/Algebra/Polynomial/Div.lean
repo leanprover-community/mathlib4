@@ -265,7 +265,7 @@ theorem dvd_modByMonic_sub (p q : R[X]) : q ∣ (p %ₘ q - p) := by
   · simp [modByMonic_eq_sub_mul_div]
   · simp [modByMonic_eq_of_not_monic, h]
 
-theorem dvd_modByMonic_iff_dvd : q ∣ p %ₘ q ↔ q ∣ p := by
+@[simp] theorem dvd_modByMonic_iff_dvd : q ∣ p %ₘ q ↔ q ∣ p := by
   simpa using dvd_iff_dvd_of_dvd_sub <| dvd_modByMonic_sub p q
 
 theorem divByMonic_eq_zero_iff [Nontrivial R] (hq : Monic q) : p /ₘ q = 0 ↔ degree p < degree q :=
