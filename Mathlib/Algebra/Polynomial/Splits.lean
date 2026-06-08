@@ -436,7 +436,7 @@ theorem splits_X_sub_C_mul_iff {a : R} : Splits ((X - C a) * f) ↔ Splits f := 
   rw [mul_left_cancel₀ (X_sub_C_ne_zero _) this]
   aesop
 
-theorem splits_mul_iff (hf₀ : f ≠ 0) (hg₀ : g ≠ 0) :
+theorem splits_mul (hf₀ : f ≠ 0) (hg₀ : g ≠ 0) :
     Splits (f * g) ↔ Splits f ∧ Splits g := by
   refine ⟨fun h ↦ ?_, and_imp.mpr .mul⟩
   generalize hp : f * g = p at *
@@ -458,16 +458,24 @@ theorem splits_mul_iff (hf₀ : f ≠ 0) (hg₀ : g ≠ 0) :
     have := ih (by aesop) hg₀ (f * g) rfl (splits_X_sub_C_mul_iff.mp h) hn
     aesop
 
-@[simp] lemma splits_mul : (f * g).Splits ↔ (f.Splits ∨ g = 0) ∧ (g.Splits ∨ f = 0) where
-  mp hpq := by grind [splits_mul_iff]
+@[deprecated (since := "2026-06-08")] alias splits_mul_iff := splits_mul
+
+lemma splits_mul' : (f * g).Splits ↔ (f.Splits ∨ g = 0) ∧ (g.Splits ∨ f = 0) where
+  mp hpq := by grind [splits_mul]
   mpr := by rintro ⟨hp | rfl, hq | rfl⟩ <;> simp [*]
 
-@[simp high] lemma splits_X_mul : (X * f).Splits ↔ f.Splits := by simp
-@[simp high] lemma splits_mul_X : (f * X).Splits ↔ f.Splits := by simp [mul_comm f]
+lemma splits_mul_iff_left (hg₀ : g ≠ 0) (hg : g.Splits) : (f * g).Splits ↔ f.Splits := by
+  simp [splits_mul', *]
+
+lemma splits_mul_iff_right (hf₀ : f ≠ 0) (hg : f.Splits) : (f * g).Splits ↔ g.Splits := by
+  simp [splits_mul', *]
+
+@[simp] lemma splits_X_mul : (X * f).Splits ↔ f.Splits := by simp [splits_mul']
+@[simp] lemma splits_mul_X : (f * X).Splits ↔ f.Splits := by simp [mul_comm f]
 
 theorem Splits.of_dvd (hg : Splits g) (hg₀ : g ≠ 0) (hfg : f ∣ g) : Splits f := by
   obtain ⟨g, rfl⟩ := hfg
-  exact ((splits_mul_iff (by simp_all) (by simp_all)).mp hg).1
+  exact ((splits_mul (by simp_all) (by simp_all)).mp hg).1
 
 @[deprecated (since := "2025-11-27")]
 alias Splits.splits_of_dvd := Splits.of_dvd
@@ -649,7 +657,7 @@ theorem Splits.of_natDegree_eq_two {x : R} (h₁ : f.natDegree = 2) (h₂ : f.ev
     Splits f := by
   have h : (f /ₘ (X - C x)).natDegree = 1 := by
     rw [natDegree_divByMonic f (monic_X_sub_C x), h₁, natDegree_X_sub_C]
-  rw [← mul_divByMonic_eq_iff_isRoot.mpr h₂, splits_mul_iff (X_sub_C_ne_zero x) (by aesop)]
+  rw [← mul_divByMonic_eq_iff_isRoot.mpr h₂, splits_mul (X_sub_C_ne_zero x) (by aesop)]
   exact ⟨Splits.X_sub_C x, Splits.of_natDegree_eq_one h⟩
 
 theorem Splits.of_degree_eq_two {x : R} (h₁ : f.degree = 2) (h₂ : f.eval x = 0) : Splits f :=
@@ -714,7 +722,7 @@ alias splits_of_natDegree_le_one := Splits.of_natDegree_le_one
 alias splits_of_natDegree_eq_one := Splits.of_natDegree_eq_one
 
 @[deprecated (since := "2025-11-25")]
-alias splits_of_splits_mul' := splits_mul_iff
+alias splits_of_splits_mul' := splits_mul
 
 @[deprecated "Use `Polynomial.map_map` instead." (since := "2025-11-24")]
 theorem splits_map_iff {L : Type*} [CommRing L] (i : K →+* L) (j : L →+* F) {f : K[X]} :
@@ -783,7 +791,7 @@ alias splits_iff := splits_iff_splits
 alias Splits.def := splits_iff_splits
 
 @[deprecated (since := "2025-11-25")]
-alias splits_of_splits_mul := splits_mul_iff
+alias splits_of_splits_mul := splits_mul
 
 @[deprecated (since := "2025-11-25")]
 alias splits_of_splits_of_dvd := Splits.of_dvd
