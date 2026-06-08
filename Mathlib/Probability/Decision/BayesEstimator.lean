@@ -68,8 +68,7 @@ lemma avgRisk_eq_lintegral_posterior_prod
     (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧) [IsFiniteKernel P]
     (κ : Kernel 𝓧 𝓨) [IsSFiniteKernel κ] (π : Measure Θ) [IsFiniteMeasure π] :
     avgRisk ℓ P κ π = ∫⁻ θy, ℓ θy.1 θy.2 ∂(((P†π) ×ₖ κ) ∘ₘ (P ∘ₘ π)) := by
-  simp only [avgRisk]
-  rw [← Measure.lintegral_compProd (f := fun θy ↦ ℓ θy.1 θy.2) (by fun_prop)]
+  rw [avgRisk, ← Measure.lintegral_compProd (f := fun θy ↦ ℓ θy.1 θy.2) (by fun_prop)]
   congr
   calc π ⊗ₘ (κ ∘ₖ P) = (Kernel.id ∥ₖ κ) ∘ₘ (π ⊗ₘ P) := Measure.parallelComp_comp_compProd.symm
   _ = (Kernel.id ∥ₖ κ) ∘ₘ ((P†π) ×ₖ Kernel.id) ∘ₘ P ∘ₘ π := by rw [posterior_prod_id_comp]
@@ -116,7 +115,7 @@ structure IsArgminEstimator {𝓨 : Type*} [MeasurableSpace 𝓨]
   property : ∀ᵐ x ∂(P ∘ₘ π), ∫⁻ θ, ℓ θ (f x) ∂(P†π) x = ⨅ y, ∫⁻ θ, ℓ θ y ∂(P†π) x
 
 /-- Given an argmin estimator `f`, we can define a deterministic kernel. -/
-noncomputable
+protected noncomputable
 abbrev IsArgminEstimator.kernel (h : IsArgminEstimator ℓ P π f) : Kernel 𝓧 𝓨 :=
   Kernel.deterministic f h.measurable
 
@@ -128,7 +127,7 @@ lemma IsArgminEstimator.avgRisk_eq_lintegral_iInf (hf : IsArgminEstimator ℓ P 
   rw [avgRisk_eq_lintegral_lintegral_lintegral hl]
   refine lintegral_congr_ae ?_
   filter_upwards [hf.property] with x hx
-  rwa [Kernel.deterministic_apply, lintegral_dirac' _ (by fun_prop)]
+  rwa [Kernel.lintegral_deterministic' _ (by fun_prop)]
 
 /-- An argmin estimator is a Bayes estimator: that is, it minimizes the Bayesian risk. -/
 lemma IsArgminEstimator.isBayesEstimator (hf : IsArgminEstimator ℓ P π f)
@@ -159,8 +158,7 @@ lemma isArgminEstimator_argminEstimator (h : HasArgminEstimator ℓ P π) :
 
 /-- If the estimation problem admits an argmin estimator, then the Bayesian risk
 attains the risk lower bound `∫⁻ x, ⨅ y, ∫⁻ θ, ℓ θ y ∂((P†π) x) ∂(P ∘ₘ π)`. -/
-lemma bayesRisk_eq_of_hasArgminEstimator
-    (hl : Measurable (Function.uncurry ℓ)) (h : HasArgminEstimator ℓ P π) :
+lemma bayesRisk_eq (hl : Measurable (Function.uncurry ℓ)) (h : HasArgminEstimator ℓ P π) :
     bayesRisk ℓ P π = ∫⁻ x, ⨅ y, ∫⁻ θ, ℓ θ y ∂((P†π) x) ∂(P ∘ₘ π) := by
   rw [← h.isArgminEstimator_argminEstimator.isBayesEstimator hl,
     h.isArgminEstimator_argminEstimator.avgRisk_eq_lintegral_iInf hl]
