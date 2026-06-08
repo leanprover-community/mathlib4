@@ -40,6 +40,12 @@ namespace PlaneCurve
 
 variable {I : Set ℝ} {c : ℝ → EuclideanSpace ℝ (Fin 2)} {t : ℝ}
 
+/-- The unit tangent vector of a parametrized curve `γ` in ℝⁿ at time `t`, that is the derivative of
+`γ` at time `t` normalized. This definition is meaningful only when `γ` is differentiable at `t` and
+has a non-zero derivative at `t`. -/
+def unitTangent {n : ℕ} (γ : ℝ → EuclideanSpace ℝ (Fin n)) (t : ℝ) : EuclideanSpace ℝ (Fin n) :=
+  ‖deriv γ t‖⁻¹ • (deriv γ t)
+
 /-- Oriented curvature of a plane curve `c` at `t`.
 This curvature expresses a direction / orientation in the following way:
 Denote `v = deriv c t`, `a = iteratedDeriv 2 c t`, `n = normal c t` and `κ = orientedCurvature c t`.
