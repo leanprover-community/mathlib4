@@ -46,7 +46,7 @@ theorem ofDigits_eq_sum_mapIdx (b : ℕ) (L : List ℕ) :
       Or.inl hl
 
 /-- The positional-value representation: `n` equals the sum `∑ aᵢ · bⁱ` where the `aᵢ`
-are the base-`b` digits of `n`, computed via `List.mapIdx`. -/
+are the base-`b` digits of `n`. -/
 theorem eq_mapIdx_digits_sum (b n : ℕ) :
     n = (List.mapIdx (fun i a ↦ a * b ^ i) (digits b n)).sum := by
   convert ofDigits_eq_sum_mapIdx b (digits b n)
@@ -429,6 +429,8 @@ theorem digitsAppend_eq_digits_iff {b l n : ℕ} (hn : n ≠ 0) (p : digitsAppen
     rw [List.getLast_append_right, List.getLast_replicate]
     rwa [ne_eq, List.replicate_eq_nil_iff]
 
+/-- The positional-value formula holds for `digitsAppend`: `n` equals the sum `∑ aᵢ · bⁱ`
+where the `aᵢ` are the base-`b` digits of `n`. -/
 theorem eq_mapIdx_digitsAppend_sum (b l n : ℕ) :
     n = (List.mapIdx (fun i a ↦ a * b ^ i) (digitsAppend b l n)).sum := by
   rw [digitsAppend, List.mapIdx_append, List.sum_append, List.mapIdx_replicate]
