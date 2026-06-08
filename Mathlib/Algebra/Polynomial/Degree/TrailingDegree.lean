@@ -94,7 +94,6 @@ theorem trailingDegree_eq_natTrailingDegree (hp : p ≠ 0) :
     trailingDegree p = (natTrailingDegree p : ℕ∞) :=
   .symm <| ENat.coe_toNat <| mt trailingDegree_eq_top.1 hp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem trailingDegree_eq_iff_natTrailingDegree_eq {p : R[X]} {n : ℕ} (hp : p ≠ 0) :
     p.trailingDegree = n ↔ p.natTrailingDegree = n := by
   rw [trailingDegree_eq_natTrailingDegree hp, Nat.cast_inj]
@@ -159,7 +158,6 @@ theorem trailingDegree_ne_of_natTrailingDegree_ne {n : ℕ} :
     p.natTrailingDegree ≠ n → trailingDegree p ≠ n :=
   mt fun h => by rw [natTrailingDegree, h, ENat.toNat_coe]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem natTrailingDegree_le_of_trailingDegree_le {n : ℕ} {hp : p ≠ 0}
     (H : (n : ℕ∞) ≤ trailingDegree p) : n ≤ natTrailingDegree p := by
   rwa [trailingDegree_eq_natTrailingDegree hp, Nat.cast_le] at H
@@ -434,7 +432,7 @@ theorem ne_zero_of_trailingDegree_lt {n : ℕ∞} (h : trailingDegree p < n) : p
 
 lemma natTrailingDegree_eq_zero_of_constantCoeff_ne_zero (h : constantCoeff p ≠ 0) :
     p.natTrailingDegree = 0 :=
-  le_antisymm (natTrailingDegree_le_of_ne_zero h) zero_le'
+  eq_zero_of_nonpos (natTrailingDegree_le_of_ne_zero h)
 
 namespace Monic
 
@@ -447,7 +445,7 @@ lemma eq_X_pow_iff_natDegree_le_natTrailingDegree (h₁ : p.Monic) :
     rw [coeff_X_pow]
     obtain hn | rfl | hn := lt_trichotomy n p.natDegree
     · rw [if_neg hn.ne, coeff_eq_zero_of_lt_natTrailingDegree (hn.trans_le h)]
-    · simpa only [if_pos rfl] using h₁.leadingCoeff
+    · simpa only [if_pos rfl] using! h₁.leadingCoeff
     · rw [if_neg hn.ne', coeff_eq_zero_of_natDegree_lt hn]
 
 lemma eq_X_pow_iff_natTrailingDegree_eq_natDegree (h₁ : p.Monic) :

@@ -28,7 +28,7 @@ In this file we define `lipschitzGroup`, `pinGroup` and `spinGroup` and show the
 The definition of the Lipschitz group
 $\{ x \in \mathop{\mathcal{C}\ell} | x \text{ is invertible and } x v x^{-1} ∈ V \}$ is given by:
 
-* [fulton2004][], Chapter 20
+* [fulton2004], Chapter 20
 * https://en.wikipedia.org/wiki/Clifford_algebra#Lipschitz_group
 
 But they presumably form a group only in finite dimensions. So we define `lipschitzGroup` with
@@ -123,7 +123,6 @@ theorem involute_act_ι_mem_range_ι [Invertible (2 : R)]
     obtain ⟨y', hy'⟩ := hy z'
     simp_rw [← hz', ← hy', LinearMap.mem_range_self]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If x is in `lipschitzGroup Q`, then `(ι Q).range` is closed under twisted conjugation.
 The reverse statement presumably is true only in finite dimensions. -/
 theorem conjAct_smul_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzGroup Q)
@@ -137,7 +136,7 @@ theorem conjAct_smul_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzG
       refine Eq.trans_le ?_ this
       simp only [map_inv, smul_inv_smul]
   intro x hx
-  erw [Submodule.map_le_iff_le_comap]
+  rw [Submodule.pointwise_smul_def, Submodule.map_le_iff_le_comap]
   rintro _ ⟨m, rfl⟩
   exact conjAct_smul_ι_mem_range_ι hx _
 
@@ -190,7 +189,6 @@ theorem involute_act_ι_mem_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ 
     [Invertible (2 : R)] (y : M) : involute (Q := Q) ↑x * ι Q y * ↑x⁻¹ ∈ LinearMap.range (ι Q) :=
   lipschitzGroup.involute_act_ι_mem_range_ι (units_mem_lipschitzGroup hx) y
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If x is in `pinGroup Q`, then `(ι Q).range` is closed under twisted conjugation. The reverse
 statement presumably being true only in finite dimensions. -/
 theorem conjAct_smul_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ pinGroup Q)
@@ -228,7 +226,7 @@ See `star_mem` for only one direction. -/
 theorem star_mem_iff {x : CliffordAlgebra Q} : star x ∈ pinGroup Q ↔ x ∈ pinGroup Q := by
   refine ⟨?_, star_mem⟩
   intro hx
-  convert star_mem hx
+  convert! star_mem hx
   exact (star_star x).symm
 
 instance : Star (pinGroup Q) where
@@ -324,12 +322,11 @@ theorem conjAct_smul_ι_mem_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ 
     [Invertible (2 : R)] (y : M) : ConjAct.toConjAct x • ι Q y ∈ LinearMap.range (ι Q) :=
   lipschitzGroup.conjAct_smul_ι_mem_range_ι (units_mem_lipschitzGroup hx) y
 
-/- This is another version of `conjAct_smul_ι_mem_range_ι` which uses `involute`. -/
+/-- This is another version of `conjAct_smul_ι_mem_range_ι` which uses `involute`. -/
 theorem involute_act_ι_mem_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spinGroup Q)
     [Invertible (2 : R)] (y : M) : involute (Q := Q) ↑x * ι Q y * ↑x⁻¹ ∈ LinearMap.range (ι Q) :=
   lipschitzGroup.involute_act_ι_mem_range_ι (units_mem_lipschitzGroup hx) y
 
-set_option backward.isDefEq.respectTransparency false in
 /- If x is in `spinGroup Q`, then `(ι Q).range` is closed under twisted conjugation. The reverse
 statement presumably being true only in finite dimensions. -/
 theorem conjAct_smul_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spinGroup Q)
@@ -344,7 +341,6 @@ theorem star_mul_self_of_mem {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : 
 theorem mul_star_self_of_mem {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : x * star x = 1 :=
   hx.1.2.2
 
-set_option backward.isDefEq.respectTransparency false in
 /-- See `star_mem_iff` for both directions. -/
 theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : star x ∈ spinGroup Q := by
   rw [mem_iff] at hx ⊢
@@ -361,7 +357,7 @@ See `star_mem` for only one direction.
 theorem star_mem_iff {x : CliffordAlgebra Q} : star x ∈ spinGroup Q ↔ x ∈ spinGroup Q := by
   refine ⟨?_, star_mem⟩
   intro hx
-  convert star_mem hx
+  convert! star_mem hx
   exact (star_star x).symm
 
 instance : Star (spinGroup Q) where

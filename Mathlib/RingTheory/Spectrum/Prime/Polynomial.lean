@@ -25,7 +25,8 @@ Also see `AlgebraicGeometry/AffineSpace` for the affine space over arbitrary sch
 - `Polynomial.exists_image_comap_of_monic`:
   If `g : R[X]` is monic, the image of `Z(g) ∩ D(f) : Spec R[X]` in `Spec R` is compact open.
 - `Polynomial.isOpenMap_comap_C`: The structure map `Spec R[X] → Spec R` is an open map.
-- `MvPolynomial.isOpenMap_comap_C`: The structure map `Spec R[X̲] → Spec R` is an open map.
+- `MvPolynomial.isOpenMap_comap_C`:
+  The structure map `Spec (MvPolynomial σ R) → Spec R` is an open map.
 
 -/
 
@@ -35,9 +36,6 @@ open Polynomial TensorProduct PrimeSpectrum
 
 variable {R M A} [CommRing R] [AddCommGroup M] [Module R M] [CommRing A] [Algebra R A]
 
-#adaptation_note /-- The maxHeartbeats bump is required after leanprover/lean4#12564. -/
-set_option backward.isDefEq.respectTransparency false in
-set_option synthInstance.maxHeartbeats 40000 in -- see adaptation note
 /-- If `A` is a finite free `R`-algebra, then `f : A` is nilpotent on `κ(𝔭) ⊗ A` for some
 prime `𝔭 ◃ R` if and only if every non-leading coefficient of `charpoly(f)` is in `𝔭`. -/
 lemma isNilpotent_tensor_residueField_iff
@@ -53,8 +51,9 @@ lemma isNilpotent_tensor_residueField_iff
   simp only [Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply,
     Algebra.coe_lmul_eq_mul, Algebra.TensorProduct.comm_tmul]
   rw [← IsNilpotent.map_iff (Algebra.lmul_injective (R := I.ResidueField)),
-    LinearMap.isNilpotent_iff_charpoly, ← Algebra.baseChange_lmul, LinearMap.charpoly_baseChange]
-  simp_rw [this, ← ((LinearMap.mul R A) f).charpoly_natDegree]
+    LinearMap.isNilpotent_iff_charpoly, ← Algebra.baseChange_lmul, LinearMap.charpoly_baseChange,
+    this]
+  simp_rw [← ((LinearMap.mul R A) f).charpoly_natDegree]
   constructor
   · intro e i hi
     replace e := congr(($e).coeff i)
@@ -71,9 +70,7 @@ lemma isNilpotent_tensor_residueField_iff
 
 namespace PrimeSpectrum
 
-#adaptation_note /-- The maxHeartbeats bump is required after leanprover/lean4#12564. -/
 set_option backward.isDefEq.respectTransparency false in
-set_option synthInstance.maxHeartbeats 40000 in -- see adaptation note
 /-- Let `A` be an `R`-algebra.
 `𝔭 : Spec R` is in the image of `Z(I) ∩ D(f) ⊆ Spec S`
 if and only if `f` is not nilpotent on `κ(𝔭) ⊗ A ⧸ I`. -/
@@ -109,9 +106,6 @@ lemma mem_image_comap_zeroLocus_sdiff (f : A) (s : Set A) (x) :
     ext a
     exact congr(a ∈ $(Ideal.ker_algebraMap_residueField _))
 
-#adaptation_note /-- The maxHeartbeats bump is required after leanprover/lean4#12564. -/
-set_option backward.isDefEq.respectTransparency false in
-set_option synthInstance.maxHeartbeats 40000 in -- see adaptation note
 /-- Let `A` be an `R`-algebra.
 `𝔭 : Spec R` is in the image of `D(f) ⊆ Spec S`
 if and only if `f` is not nilpotent on `κ(𝔭) ⊗ A`. -/
@@ -127,7 +121,6 @@ lemma mem_image_comap_basicOpen (f : A) (x) :
     ← mem_image_comap_zeroLocus_sdiff f ∅ x, zeroLocus_empty, ← Set.compl_eq_univ_diff,
     basicOpen_eq_zeroLocus_compl]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `A` be an `R`-algebra. If `A ⧸ I` is finite free over `R`,
 then the image of `Z(I) ∩ D(f) ⊆ Spec S` in `Spec R` is compact open. -/
 lemma exists_image_comap_of_finite_of_free (f : A) (s : Set A)
@@ -145,7 +138,6 @@ end PrimeSpectrum
 
 namespace Polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_image_comap_C_basicOpen (f : R[X]) (x : PrimeSpectrum R) :
     x ∈ comap C '' basicOpen f ↔ ∃ i, f.coeff i ∉ x.asIdeal := by
   trans f.map (algebraMap R x.asIdeal.ResidueField) ≠ 0
@@ -153,11 +145,7 @@ lemma mem_image_comap_C_basicOpen (f : R[X]) (x : PrimeSpectrum R) :
     let e : R[X] ⊗[R] x.asIdeal.ResidueField ≃ₐ[R] x.asIdeal.ResidueField[X] :=
       (Algebra.TensorProduct.comm R _ _).trans (polyEquivTensor R x.asIdeal.ResidueField).symm
     rw [← IsNilpotent.map_iff e.injective, isNilpotent_iff_eq_zero]
-    change (e.toAlgHom.toRingHom).comp (algebraMap _ _) f = 0 ↔ Polynomial.mapRingHom _ f = 0
-    congr!
-    ext1
-    · ext; simp [e]
-    · simp [e]
+    simp [e]
   · simp [Polynomial.ext_iff]
 
 lemma image_comap_C_basicOpen (f : R[X]) :
@@ -207,7 +195,6 @@ namespace MvPolynomial
 
 variable {σ : Type*}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_image_comap_C_basicOpen (f : MvPolynomial σ R) (x : PrimeSpectrum R) :
     x ∈ comap (C (σ := σ)) '' basicOpen f ↔ ∃ i, f.coeff i ∉ x.asIdeal := by
   classical
@@ -221,7 +208,7 @@ lemma mem_image_comap_C_basicOpen (f : MvPolynomial σ R) (x : PrimeSpectrum R) 
     ext
     · simp [scalarRTensorAlgEquiv, e, coeff_map,
         Algebra.smul_def, apply_ite (f := algebraMap _ _)]
-    · simp [e, scalarRTensorAlgEquiv, coeff_map, coeff_X']
+    · simp [e, scalarRTensorAlgEquiv, coeff_map, coeff_X]
   · simp [MvPolynomial.ext_iff, coeff_map]
 
 lemma image_comap_C_basicOpen (f : MvPolynomial σ R) :

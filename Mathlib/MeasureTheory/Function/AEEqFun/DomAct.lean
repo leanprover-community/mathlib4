@@ -25,7 +25,7 @@ typeclass for quasi-measure-preserving actions yet.
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory
 

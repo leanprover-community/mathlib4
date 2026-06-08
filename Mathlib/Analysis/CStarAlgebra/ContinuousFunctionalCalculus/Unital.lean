@@ -142,6 +142,7 @@ goals, but it can be modified to become more sophisticated as the need arises.
 
 @[expose] public section
 
+open scoped Ring
 open Topology ContinuousMap
 
 section Basic
@@ -288,8 +289,7 @@ section cfcL
 noncomputable def cfcL {a : A} (ha : p a) : C(spectrum R a, R) →L[R] A :=
   { cfcHom ha with
     toFun := cfcHom ha
-    map_smul' := map_smul _
-    cont := by fun_prop }
+    map_smul' := map_smul _ }
 
 end cfcL
 
@@ -503,7 +503,7 @@ lemma cfc_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
   · have hsum : s.sum f = fun z => ∑ i ∈ s, f i z := by ext; simp
     have hf' : ContinuousOn (∑ i : s, f i) (spectrum R a) := by
       rw [sum_coe_sort s, hsum]
-      exact continuousOn_finset_sum s fun i hi => hf i hi
+      exact continuousOn_finsetSum s fun i hi => hf i hi
     rw [← sum_coe_sort s, ← sum_coe_sort s]
     rw [cfc_apply_pi _ a ha (fun ⟨i, hi⟩ => hf i hi), ← map_sum, cfc_apply _ a ha hf']
     congr 1
@@ -572,7 +572,7 @@ section Polynomial
 open Polynomial
 
 lemma cfc_eval_X (ha : p a := by cfc_tac) : cfc (X : R[X]).eval a = a := by
-  simpa using cfc_id R a
+  simpa using! cfc_id R a
 
 lemma cfc_eval_C (r : R) (a : A) (ha : p a := by cfc_tac) :
     cfc (C r).eval a = algebraMap R A r := by
@@ -610,7 +610,7 @@ lemma cfc_comp (g f : R → R) (a : A) (ha : p a := by cfc_tac)
     ext
     simp
   rw [cfc_apply .., cfc_apply f a,
-    cfc_apply _ _ (cfcHom_predicate (show p a from ha) _) (by convert hg), ← cfcHom_comp _ _]
+    cfc_apply _ _ (cfcHom_predicate (show p a from ha) _) (by convert! hg), ← cfcHom_comp _ _]
   swap
   · exact ContinuousMap.mk _ <| hf.restrict.codRestrict fun x ↦ by rw [sp_eq]; use x.1; simp
   · congr
@@ -730,12 +730,10 @@ lemma cfc_nonneg_of_predicate [LE A]
 variable (R) in
 /-- In an `R`-algebra with a continuous functional calculus, every element satisfying the predicate
 has nonempty `R`-spectrum. -/
+@[deprecated "Use `ContinuousFunctionalCalculus.spectrum_nonempty a ha` instead."
+  (since := "2026-03-08")]
 lemma CFC.spectrum_nonempty [Nontrivial A] (a : A) (ha : p a := by cfc_tac) :
-    (spectrum R a).Nonempty := by
-  by_contra! h
-  apply one_ne_zero (α := A)
-  rw [← cfc_one R a, ← cfc_zero R a]
-  exact cfc_congr fun x hx ↦ by simp_all
+    (spectrum R a).Nonempty := ContinuousFunctionalCalculus.spectrum_nonempty a ha
 
 end CFC
 
@@ -780,21 +778,27 @@ lemma cfcUnits_pow (hf' : ∀ x ∈ spectrum R a, f x ≠ 0) (n : ℕ)
 
 lemma cfc_inv (hf' : ∀ x ∈ spectrum R a, f x ≠ 0)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
-    cfc (fun x ↦ (f x)⁻¹) a = Ring.inverse (cfc f a) := by
+    cfc (fun x ↦ (f x)⁻¹) a = (cfc f a)⁻¹ʳ := by
   rw [← val_inv_cfcUnits f a hf', ← val_cfcUnits f a hf', Ring.inverse_unit]
 
 lemma cfc_inv_id (a : Aˣ) (ha : p a := by cfc_tac) :
     cfc (fun x ↦ x⁻¹ : R → R) (a : A) = a⁻¹ := by
   rw [← Ring.inverse_unit]
-  convert cfc_inv (id : R → R) (a : A) ?_
+  convert! cfc_inv (id : R → R) (a : A) ?_
   · exact (cfc_id R (a : A)).symm
   · rintro x hx rfl
     exact spectrum.zero_notMem R a.isUnit hx
 
+lemma cfc_ringInverse_id (ha_unit : IsUnit a) (ha : p a := by cfc_tac) :
+    cfc (fun x ↦ x⁻¹ : R → R) a = a⁻¹ʳ := by
+  rw [Ring.inverse_of_isUnit ha_unit]
+  change cfc (fun x ↦ x⁻¹ : R → R) (ha_unit.unit : A) = ha_unit.unit⁻¹
+  exact cfc_inv_id _ ha
+
 lemma cfc_map_div (f g : R → R) (a : A) (hg' : ∀ x ∈ spectrum R a, g x ≠ 0)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
     (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
-    cfc (fun x ↦ f x / g x) a = cfc f a * Ring.inverse (cfc g a) := by
+    cfc (fun x ↦ f x / g x) a = cfc f a * (cfc g a)⁻¹ʳ := by
   simp only [div_eq_mul_inv]
   rw [cfc_mul .., cfc_inv g a hg']
 
@@ -823,7 +827,7 @@ lemma cfcUnits_zpow (hf' : ∀ x ∈ spectrum R a, f x ≠ 0) (n : ℤ)
       cfcUnits (f ^ n) a (forall₂_imp (fun _ _ ↦ zpow_ne_zero n) hf')
         (hf.zpow₀ n (forall₂_imp (fun _ _ ↦ Or.inl) hf')) := by
   cases n with
-  | ofNat _ => simpa using cfcUnits_pow f a hf' _
+  | ofNat _ => simpa using! cfcUnits_pow f a hf' _
   | negSucc n =>
     simp only [zpow_negSucc, ← inv_pow]
     ext
@@ -879,6 +883,8 @@ lemma cfc_neg : cfc (fun x ↦ -(f x)) a = -(cfc f a) := by
     · simp [cfc_apply_of_not_predicate a ha]
     · rw [cfc_apply_of_not_continuousOn a hf, cfc_apply_of_not_continuousOn, neg_zero]
       exact fun hf_neg ↦ hf <| by simpa using hf_neg.neg
+
+lemma cfc_neg' : cfc (-f) = (-cfc f : A → A) := by ext1 a; exact cfc_neg f a
 
 lemma cfc_neg_id (ha : p a := by cfc_tac) : cfc (- · : R → R) a = -a := by
   rw [cfc_neg _ a, cfc_id' R a]

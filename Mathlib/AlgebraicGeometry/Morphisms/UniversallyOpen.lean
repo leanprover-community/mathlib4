@@ -21,7 +21,7 @@ base changes.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -124,7 +124,7 @@ lemma isOpenMap_of_generalizingMap [LocallyOfFinitePresentation f]
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
   algebraize [φ.hom]
-  convert PrimeSpectrum.isOpenMap_comap_of_hasGoingDown_of_finitePresentation
+  convert! PrimeSpectrum.isOpenMap_comap_of_hasGoingDown_of_finitePresentation
   · rwa [Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap]
   · apply (HasRingHomProperty.Spec_iff (P := @LocallyOfFinitePresentation)).mp inferInstance
 
@@ -137,7 +137,7 @@ lemma Flat.generalizingMap [Flat f] : GeneralizingMap f := by
   intro U V e
   algebraize [(f.appLE U V e).hom]
   apply Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap.mp
-  convert Algebra.HasGoingDown.of_flat
+  convert! Algebra.HasGoingDown.of_flat
   exact HasRingHomProperty.appLE @Flat f ‹_› U V e
 
 /-- A flat morphism, locally of finite presentation is universally open. -/
@@ -146,7 +146,6 @@ instance (priority := low) UniversallyOpen.of_flat [Flat f] [LocallyOfFinitePres
     UniversallyOpen f :=
   ⟨universally_mk' _ _ fun _ _ ↦ isOpenMap_of_generalizingMap _ (Flat.generalizingMap _)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 nonrec instance (priority := low) [IsIntegral Y] [Subsingleton Y] :
     UniversallyOpen f := by
   wlog hX : ∃ S, X = Spec S generalizing X
@@ -163,12 +162,12 @@ nonrec instance (priority := low) [IsIntegral Y] [Subsingleton Y] :
   · refine (IsZariskiLocalAtTarget.iff_of_openCover T.affineCover).mpr fun i ↦ ?_
     refine (MorphismProperty.cancel_left_of_respectsIso _
       ((pullbackRightPullbackFstIso ..).inv ≫ (pullbackSymmetry ..).hom) _).mp ?_
-    simpa [Scheme.Cover.pullbackHom] using this _ _ ⟨_, rfl⟩
+    simpa [Scheme.Cover.pullbackHom] using! this _ _ ⟨_, rfl⟩
   obtain ⟨R, rfl⟩ := hT
   obtain ⟨ψ, rfl⟩ := Spec.map_surjective g
   algebraize [φ.hom, ψ.hom]
   refine (MorphismProperty.cancel_left_of_respectsIso _ (pullbackSpecIso K R S).inv _).mp ?_
-  convert_to topologically _ (Spec.map <| CommRingCat.ofHom (algebraMap R (TensorProduct K R S)))
+  convert_to! topologically _ (Spec.map <| CommRingCat.ofHom (algebraMap R (TensorProduct K R S)))
   · exact pullbackSpecIso_inv_fst ..
   let := hK.toField
   exact PrimeSpectrum.isOpenMap_comap_algebraMap_tensorProduct_of_field

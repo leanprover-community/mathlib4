@@ -13,7 +13,7 @@ public import Mathlib.Order.Basic
 # Typeclass expressing `0 ≤ 1`.
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

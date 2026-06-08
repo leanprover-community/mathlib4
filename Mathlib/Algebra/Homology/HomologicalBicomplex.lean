@@ -110,7 +110,7 @@ end OfGradedObject
 
 /-- Constructor for a morphism `K ⟶ L` in the category `HomologicalComplex₂ C c₁ c₂` which
 takes as inputs a morphism `f : K.toGradedObject ⟶ L.toGradedObject` and
-the compatibilites with both horizontal and vertical differentials. -/
+the compatibilities with both horizontal and vertical differentials. -/
 @[simps!]
 def homMk {K L : HomologicalComplex₂ C c₁ c₂}
     (f : K.toGradedObject ⟶ L.toGradedObject)
@@ -164,6 +164,7 @@ lemma flip_flip (K : HomologicalComplex₂ C c₁ c₂) : K.flip.flip = K := rfl
 
 variable (C c₁ c₂)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Flipping a complex of complexes over the diagonal, as a functor. -/
 @[simps]
 def flipFunctor :
@@ -175,6 +176,7 @@ def flipFunctor :
           comm' := by intros; simp }
       comm' := by intros; ext; simp }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `HomologicalComplex₂.flipEquivalence`. -/
 @[simps!]
 def flipEquivalenceUnitIso :
@@ -183,6 +185,7 @@ def flipEquivalenceUnitIso :
     HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
     (by simp)) (by cat_disch)) (by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `HomologicalComplex₂.flipEquivalence`. -/
 @[simps!]
 def flipEquivalenceCounitIso :
@@ -191,6 +194,7 @@ def flipEquivalenceCounitIso :
     HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
     (by simp)) (by cat_disch)) (by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Flipping a complex of complexes over the diagonal, as an equivalence of categories. -/
 @[simps]
 def flipEquivalence :

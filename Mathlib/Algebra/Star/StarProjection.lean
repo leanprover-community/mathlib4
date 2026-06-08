@@ -18,7 +18,7 @@ In star-ordered rings, star projections are non-negative.
 (See `IsStarProjection.nonneg` in `Mathlib/Algebra/Order/Star/Basic.lean`.)
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*}
 

@@ -5,7 +5,7 @@ Authors: Boris Bilich, Alexei Piskunov, Jonathan Shneyer
 -/
 module
 
-public import Mathlib.RingTheory.ClassGroup
+public import Mathlib.RingTheory.ClassGroup.Basic
 
 /-!
 # The class group of a Unique Factorization Domain is trivial
@@ -15,7 +15,7 @@ which are known to be Normalized GCD Domains.
 
 ## Main result
 - `NormalizedGCDMonoid.subsingleton_classGroup` : the class group of a domain with
-normalizable gcd is trivial. This includes unique factorization domains.
+  normalizable gcd is trivial. This includes unique factorization domains.
 
 ## References
 
@@ -26,7 +26,7 @@ open scoped nonZeroDivisors
 
 open FractionalIdeal Ideal
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommRing R] [IsDomain R] [Nonempty (NormalizedGCDMonoid R)]
 namespace NormalizedGCDMonoid
@@ -38,7 +38,7 @@ lemma isPrincipal_of_exists_mul_ne_zero_isPrincipal
     Classical.choice (inferInstance : Nonempty (NormalizedGCDMonoid R))
   obtain ⟨K, hJK0, hK⟩ := hJ
   rcases hK.principal with ⟨x, hJK⟩
-  have hxmemJK : x ∈ J * K := by simp [hJK, mem_span_singleton_self]
+  have hxmemJK : x ∈ J * K := by simp [hJK]
   -- Shrink `K` to a finitely generated subideal `K'` witnessing `x ∈ J * K'`.
   have : ∃ T : Finset R, (T : Set R) ⊆ K ∧ x ∈ J * span T := by
     obtain ⟨S, T, hSJ, hTK, hx⟩ := Submodule.mem_span_mul_finite_of_mem_mul hxmemJK
@@ -62,7 +62,7 @@ lemma isPrincipal_of_exists_mul_ne_zero_isPrincipal
     obtain ⟨y, hyJ, rfl⟩ := (Ideal.mem_mul_span_singleton).1 hxJg
     rw [← span_singleton_mul_span_singleton, span_singleton_mul_left_inj] at this
     · exact ⟨y, this⟩
-    · contrapose! hx0
+    · contrapose hx0
       rw [hx0, mul_zero]
   -- Show `J * (g) ≤ (x)` by proving `x ∣ b * g` for all `b ∈ J`.
   refine le_antisymm
@@ -98,7 +98,6 @@ private theorem isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
           (fun t =>
             spanSingleton R⁰ ((algebraMap R (FractionRing R)) a) * I * t)
           h.symm
-      dsimp only at h
       rwa [mul_mul_mul_comm, ← spanSingleton_inv, ha0', one_mul, mul_assoc, hI, mul_one] at h
   refine isPrincipal_of_exists_mul_ne_zero_isPrincipal (J := I) ?_
   refine ⟨K, ?_, ?_⟩

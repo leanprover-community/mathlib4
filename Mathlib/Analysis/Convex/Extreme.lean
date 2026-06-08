@@ -144,7 +144,7 @@ theorem mem_extremePoints_iff_left : x ∈ A.extremePoints 𝕜 ↔
     x ∈ A ∧ ∀ x₁ ∈ A, ∀ x₂ ∈ A, x ∈ openSegment 𝕜 x₁ x₂ → x₁ = x :=
   .rfl
 
-/-- x is an extreme point to A iff {x} is an extreme set of A. -/
+/-- `x` is an extreme point to `A` iff `{x}` is an extreme set of `A`. -/
 @[simp] lemma isExtreme_singleton : IsExtreme 𝕜 A {x} ↔ x ∈ A.extremePoints 𝕜 := by
   simp [isExtreme_iff, extremePoints]
 
@@ -173,6 +173,10 @@ theorem IsExtreme.extremePoints_eq (hAB : IsExtreme 𝕜 A B) :
     B.extremePoints 𝕜 = B ∩ A.extremePoints 𝕜 :=
   Subset.antisymm (fun _ hx ↦ ⟨hx.1, hAB.extremePoints_subset_extremePoints hx⟩)
     (inter_extremePoints_subset_extremePoints_of_subset hAB.1)
+
+@[nontriviality]
+lemma Set.extremePoints_eq_self [Subsingleton E] (A : Set E) : Set.extremePoints 𝕜 A = A :=
+  subset_antisymm extremePoints_subset fun _ h ↦ ⟨h, fun _ _ _ _ _ ↦ Subsingleton.elim ..⟩
 
 end SMul
 
