@@ -37,7 +37,7 @@ end List
 namespace Multiset
 variable {α : Type*} (p : α → Prop) [DecidablePred p]
 
-/-- `s.find? p ⋯` finds the subsingleton element of `s` satisfing the condition `p`, if one exists.
+/-- `s.find? p ⋯` finds the subsingleton element of `s` satisfying the condition `p`, if one exists.
 
 This is the multiset version of `List.find?`,
 and is like `Multiset.choose`, but `Option`-valued. -/
