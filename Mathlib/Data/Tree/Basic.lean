@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Util.CompileInductive
+import Batteries.Tactic.Alias
 
 /-!
 # Binary tree
@@ -34,7 +35,7 @@ inductive BinaryTree.{u} (α : Type u) : Type u
   deriving DecidableEq, Repr
 compile_inductive% BinaryTree
 
-@[deprecated BinaryTree (since := "2026-06-07"), reducible]
+@[deprecated (since := "2026-06-07"), reducible]
 alias Tree := BinaryTree
 
 set_option linter.deprecated false in
