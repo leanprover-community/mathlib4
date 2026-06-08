@@ -49,12 +49,11 @@ lemma HasCondDistrib.aemeasurable_fst (h : HasCondDistrib Y X κ P) :
 lemma HasCondDistrib.aemeasurable_snd (h : HasCondDistrib Y X κ P) :
     AEMeasurable Y P := h.aemeasurable.snd
 
-lemma HasLaw.prod_of_hasCondDistrib {Q : Measure 𝓧} [IsSFiniteKernel κ]
+lemma HasLaw.prodMk_of_hasCondDistrib {Q : Measure 𝓧} [IsSFiniteKernel κ]
     (h1 : HasLaw X Q P) (h2 : HasCondDistrib Y X κ P) :
     HasLaw (fun ω ↦ (X ω, Y ω)) (Q ⊗ₘ κ) P := by rwa [← h1.map_eq]
 
-lemma HasCondDistrib.hasLaw_of_const {P : Measure Ω} [IsProbabilityMeasure P]
-    {Q : Measure 𝓨} [SFinite Q]
+lemma HasCondDistrib.hasLaw_of_const [IsProbabilityMeasure P] {Q : Measure 𝓨} [SFinite Q]
     (h : HasCondDistrib Y X (Kernel.const 𝓧 Q) P) :
     HasLaw Y Q P where
   map_eq := by
@@ -65,8 +64,8 @@ lemma HasCondDistrib.hasLaw_of_const {P : Measure Ω} [IsProbabilityMeasure P]
 
 variable [SFinite P] [IsSFiniteKernel κ]
 
-lemma HasCondDistrib.comp (h : HasCondDistrib Y X κ P) {f : 𝓨 → 𝓩} (hf : Measurable f) :
-    HasCondDistrib (fun ω ↦ f (Y ω)) X (κ.map f) P where
+lemma HasCondDistrib.comp_left (h : HasCondDistrib Y X κ P) {f : 𝓨 → 𝓩} (hf : Measurable f) :
+    HasCondDistrib (f ∘ Y) X (κ.map f) P where
   map_eq := by
     calc P.map (fun ω ↦ (X ω, f (Y ω)))
     _ = (P.map (fun ω ↦ (X ω, Y ω))).map (Prod.map id f) := by
@@ -79,13 +78,13 @@ lemma HasCondDistrib.fst {Y : Ω → 𝓨 × 𝓩} {κ : Kernel 𝓧 (𝓨 × �
     (h : HasCondDistrib Y X κ P) :
     HasCondDistrib (fun ω ↦ (Y ω).1) X κ.fst P := by
   rw [Kernel.fst_eq]
-  exact HasCondDistrib.comp h measurable_fst
+  exact HasCondDistrib.comp_left h measurable_fst
 
 lemma HasCondDistrib.snd {Y : Ω → 𝓨 × 𝓩} {κ : Kernel 𝓧 (𝓨 × 𝓩)} [IsSFiniteKernel κ]
     (h : HasCondDistrib Y X κ P) :
     HasCondDistrib (fun ω ↦ (Y ω).2) X κ.snd P := by
   rw [Kernel.snd_eq]
-  exact HasCondDistrib.comp h measurable_snd
+  exact HasCondDistrib.comp_left h measurable_snd
 
 lemma HasCondDistrib.comp_right {f : 𝓩 → 𝓧}
     {hf : Measurable f} {Z : Ω → 𝓩} (h : HasCondDistrib Y Z (κ.comap f hf) P) :
@@ -99,7 +98,7 @@ lemma HasCondDistrib.comp_right {f : 𝓩 → 𝓧}
     _ = (P.map Z).map f ⊗ₘ κ := by
         ext s hs
         rw [Measure.map_apply (by fun_prop) hs, Measure.compProd_apply (by measurability),
-            Measure.compProd_apply hs, lintegral_map (Kernel.measurable_kernel_prodMk_left hs) hf]
+          Measure.compProd_apply hs, lintegral_map (Kernel.measurable_kernel_prodMk_left hs) hf]
         rfl
     _ = P.map (f ∘ Z) ⊗ₘ κ := by
         rw [AEMeasurable.map_map_of_aemeasurable hf.aemeasurable (by fun_prop)]
