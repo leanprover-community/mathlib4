@@ -6,7 +6,9 @@ Authors: Michael Rothgang, Damiano Testa, Thomas R. Murrills
 module
 
 public meta import Lean.Elab.Command
+public meta import Lean.Elab.ParseImportsFast
 public meta import Std.Sync.Mutex
+public import Init
 public import Lean.Parser.Module
 public import Mathlib.Tactic.Linter.DirectoryDependency
 
