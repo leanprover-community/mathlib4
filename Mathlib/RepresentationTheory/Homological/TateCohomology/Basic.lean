@@ -119,6 +119,17 @@ def tateComplex.map {X Y : Rep R G} (φ : X ⟶ Y) : tateComplex X ⟶ tateCompl
 @[simp]
 lemma tateComplex.map_zero {X Y : Rep R G} : tateComplex.map (X := X) (Y := Y) 0 = 0 := by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
+lemma tateComplex.map_add {X Y : Rep R G} (f g : X ⟶ Y) : tateComplex.map (f + g) =
+    tateComplex.map f + tateComplex.map g := by
+  ext (i | i) : 1
+  · rfl
+  · ext1
+    simp only [CochainComplex.ConnectData.map_f, chainsMap_id_f_hom_eq_mapRange, Rep.add_hom,
+      Representation.IntertwiningMap.add_toLinearMap, HomologicalComplex.add_f_apply,
+      ModuleCat.hom_add]
+    ext; simp
+
 variable (R G) in
 /-- The functor taking a representation of `G` to its Tate complex. -/
 @[simps]
@@ -160,10 +171,6 @@ def tateComplex.evalNeg (n : ℕ) : tateComplexFunctor R G ⋙ HomologicalComple
   .refl _
 
 instance : (tateComplexFunctor R G).PreservesZeroMorphisms where
-  map_zero X Y := by
-    ext
-    dsimp [tateComplexFunctor]
-    cat_disch
 
 lemma map_tateComplexFunctor_shortExact {S : ShortComplex (Rep R G)} (hS : S.ShortExact) :
     (S.map (tateComplexFunctor R G)).ShortExact := by
@@ -174,9 +181,8 @@ lemma map_tateComplexFunctor_shortExact {S : ShortComplex (Rep R G)} (hS : S.Sho
   · exact ShortComplex.shortExact_of_iso (ShortComplex.mapNatIso _ (tateComplex.evalNeg _).symm)
       <| map_chainsFunctor_eval_shortExact hS _
 
-set_option backward.defeqAttrib.useBackward true in
 instance : (tateComplexFunctor R G).Additive where
-  map_add {_ _ _ _} := by ext (i | i) <;> { dsimp [tateComplex]; ext; rfl }
+  map_add {_ _} := tateComplex.map_add _ _
 
 /-
 The next two statements say that `tateComplexFunctor` is an exact functor.
