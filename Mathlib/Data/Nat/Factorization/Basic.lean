@@ -451,12 +451,6 @@ theorem factorization_eq_of_coprime_right {p a b : ℕ} (hab : Coprime a b)
   rw [mul_comm]
   exact factorization_eq_of_coprime_left (coprime_comm.mp hab) hpb
 
-theorem Prime.padicValNat_lt_self {p n : ℕ} (hp : p.Prime) (hn : n ≠ 0) : padicValNat p n < n :=
-  Nat.padicValNat_lt_self hp.one_lt hn
-
-theorem Prime.padicValNat_le_self {p : ℕ} (n : ℕ) (hp : p.Prime) : padicValNat p n ≤ n :=
-  Nat.padicValNat_le_self n hp.one_lt
-
 /-- Two positive naturals are equal if their prime padic valuations are equal -/
 theorem eq_iff_prime_padicValNat_eq (a b : ℕ) (ha : a ≠ 0) (hb : b ≠ 0) :
     a = b ↔ ∀ p : ℕ, p.Prime → padicValNat p a = padicValNat p b := by
@@ -508,7 +502,7 @@ theorem dvd_pow_self_iff {n k : ℕ} (hn : n ≠ 0) (hk : k ≠ 0) :
   simp_rw [← Nat.support_factorization] at h
   rw [Nat.factorization_pow, Finsupp.smul_apply]
   grw [← Nat.one_le_iff_ne_zero.mpr <| Finsupp.mem_support_iff.mp <| h hpn, smul_eq_mul, mul_one,
-    Nat.factorization_def n hp, hp.padicValNat_le_self]
+    Nat.factorization_def n hp, padicValNat_le_self]
   exact zero_le n
 
 theorem exists_dvd_pow_iff {n k : ℕ} (hn : n ≠ 0) (hk : k ≠ 0) :
