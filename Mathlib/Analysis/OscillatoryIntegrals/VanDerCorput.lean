@@ -51,7 +51,7 @@ open intervalIntegral Interval
 namespace VanDerCorput
 
 /-- The constant appearing in van der Corput's lemma. -/
-abbrev c (k : ℕ) : ℝ := 5 * 2 ^ (k - 1) - 2
+protected abbrev c (k : ℕ) : ℝ := 5 * 2 ^ (k - 1) - 2
 
 theorem c_pos (k : ℕ) : 0 < c k := by
   induction k with
