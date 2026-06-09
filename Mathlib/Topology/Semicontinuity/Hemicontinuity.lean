@@ -10,7 +10,7 @@ public import Mathlib.Topology.NhdsWithin
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Defs.Sequences
 public import Mathlib.Topology.UniformSpace.Closeds
-public import Mathlib.Topology.UniformSpace.Compact
+import Mathlib.Topology.UniformSpace.Compact
 public import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.Sequences
 
