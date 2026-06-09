@@ -49,11 +49,25 @@ open MulAction Subgroup
 
 variable {M G}
 
-instance [Group G] : Group (ConjAct G) := ‹Group G›
+/-- Canonical bijection between `ConjAct G` and `G`. Use instead the bundled version `ofConjAct`. -/
+def ofConjActEquiv : ConjAct G ≃ G := Equiv.refl G
 
-instance [DivInvMonoid G] : DivInvMonoid (ConjAct G) := ‹DivInvMonoid G›
+instance [One G] : One (ConjAct G) := ⟨ofConjActEquiv.symm (1 : G)⟩
 
-instance [Fintype G] : Fintype (ConjAct G) := ‹Fintype G›
+instance [Mul G] : Mul (ConjAct G) :=
+  ⟨fun x y ↦ ofConjActEquiv.symm (ofConjActEquiv x * ofConjActEquiv y)⟩
+
+instance [Inv G] : Inv (ConjAct G) :=
+  ⟨fun x ↦ ofConjActEquiv.symm (ofConjActEquiv x)⁻¹⟩
+
+instance [Div G] : Div (ConjAct G) :=
+  ⟨fun x y ↦ ofConjActEquiv.symm (ofConjActEquiv x / ofConjActEquiv y)⟩
+
+instance [DivInvMonoid G] : DivInvMonoid (ConjAct G) := inferInstanceAs <| DivInvMonoid G
+
+instance [Group G] : Group (ConjAct G) := inferInstanceAs <| Group G
+
+instance [Fintype G] : Fintype (ConjAct G) := inferInstanceAs <| Fintype G
 
 @[simp]
 theorem card [Fintype G] : Fintype.card (ConjAct G) = Fintype.card G :=
@@ -68,8 +82,7 @@ instance : Inhabited (ConjAct G) :=
 
 /-- Reinterpret `g : ConjAct G` as an element of `G`. -/
 def ofConjAct : ConjAct G ≃* G where
-  toFun := id
-  invFun := id
+  __ := ofConjActEquiv
   map_mul' := fun _ _ => rfl
 
 /-- Reinterpret `g : G` as an element of `ConjAct G`. -/
