@@ -24,13 +24,28 @@ This is a trivial corollary of `NumberField.not_dvd_discr_iff_forall_mem` and
 
 section
 
--- RingTheory.Ideal.Defs
+-- PRed
+open Pointwise in
+instance (G R : Type*) [Group G] [CommRing R] [MulSemiringAction G R] :
+    MulAction G (PrimeSpectrum R) where
+  smul g P := ⟨g • P, P.2.smul g⟩
+  mul_smul g h P := PrimeSpectrum.ext (mul_smul g h P.1)
+  one_smul P := PrimeSpectrum.ext (one_smul G P.1)
+
+-- PRed
+open Pointwise in
+@[simp]
+theorem PrimeSpectrum.asIdeal_smul (G R : Type*) [Group G] [CommRing R] [MulSemiringAction G R]
+    (g : G) (P : PrimeSpectrum R) : (g • P).asIdeal = g • P.asIdeal :=
+  rfl
+
+-- PRed
 theorem Ideal.coe_mem_inertia (G : Type*) [Group G] (H : Subgroup G) (h : H)
     (R : Type*) [CommRing R] (I : Ideal R) [MulSemiringAction G R] :
     ↑h ∈ I.inertia G ↔ h ∈ I.inertia H :=
   .rfl
 
--- RingTheory.Ideal.Over
+-- PRed
 open Pointwise in
 theorem Ideal.smul_under {G R S : Type*} [Group G] [CommRing R] [CommRing S] [Algebra R S]
     [MulSemiringAction G R] [MulSemiringAction G S] [SMulDistribClass G R S]
@@ -43,7 +58,7 @@ theorem Ideal.smul_under {G R S : Type*} [Group G] [CommRing R] [CommRing S] [Al
   ext
   simp [algebraMap.smul']
 
--- RingTheory.Ideal.Pointwise
+-- PRed
 open Pointwise in
 instance {α β γ : Type*} [Monoid α] [Monoid β] [Semiring γ] [SMul α β] [MulSemiringAction α γ]
     [MulSemiringAction β γ] [IsScalarTower α β γ] : IsScalarTower α β (Ideal γ) where
@@ -53,6 +68,7 @@ instance {α β γ : Type*} [Monoid α] [Monoid β] [Semiring γ] [SMul α β] [
     ext
     simp
 
+-- PRed
 open Pointwise in
 theorem Ideal.inertia_quotient (B C G : Type*) [Group G] (H : Subgroup G) [CommRing B] [CommRing C]
     [Algebra B C] [MulSemiringAction G C] [Algebra.IsInvariant B C H] [SMulCommClass H B C]
@@ -100,22 +116,6 @@ end
 section
 
 -- PRed
-instance {A B : Type*} [CommRing A] [CommRing B] (h : A ≃+* B) :
-    letI := h.toRingHom.toAlgebra
-    Module.Finite A B :=
-  h.finite
-
--- PRed
-theorem PerfectField.of_ringEquiv {K L : Type*} [Field K] [Field L] (h : K ≃+* L) [PerfectField K] :
-    PerfectField L := by
-  let := h.toRingHom.toAlgebra
-  exact Algebra.IsAlgebraic.perfectField (K := K)
-
--- PRed
-instance (R : Type*) [CommRing R] [IsDomain R] : IsFractionRing R (⊥ : Ideal R).ResidueField :=
-  IsLocalization.of_ringEquiv_left (RingEquiv.quotientBot R).symm
-    (MulEquivClass.map_nonZeroDivisors (RingEquiv.quotientBot R).symm) (by simp)
-
 instance (R : Type*) [CommRing R] [IsDomain R] [Ring.HasFiniteQuotients R]
     [PerfectField (FractionRing R)] (P : Ideal R) [P.IsPrime] : PerfectField P.ResidueField := by
   rcases eq_or_ne P ⊥ with rfl | hP
@@ -135,11 +135,13 @@ lemma card_inertia_eq_ramificationIdxIn {R S : Type*} [CommRing R] [CommRing S] 
     Nat.card (P.inertia G) = Ideal.ramificationIdxIn p S := by
   sorry
 
+-- PRed
 instance (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] [Algebra A B] [Algebra B C]
     [Algebra A C] [IsScalarTower A B C] (q : Ideal B) (r : Ideal C) [r.LiesOver q] :
     r.LiesOver (q.under A) :=
   Ideal.LiesOver.trans r q (q.under A)
 
+-- PRed
 instance (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] [Algebra A B] [Algebra B C]
     [Algebra A C] [IsScalarTower A B C] (q : Ideal B) (r : Ideal C) [r.LiesOver q] :
     q.LiesOver (r.under A) :=
@@ -148,13 +150,6 @@ instance (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] [Algebra A B] [A
 end
 
 section
-
-variable (A B C G : Type*) [Group G] (H : Subgroup G) [CommRing A] [CommRing B] [CommRing C]
-  [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
-  [MulSemiringAction G C] [IsGaloisGroup G A C] [IsGaloisGroup H B C]
-  (q : Ideal B) (r : Ideal C) [r.LiesOver q]
-
-variable [H.Normal] [FaithfulSMul B C] [FaithfulSMul A C] [IsDomain C] [Finite G]
 
 theorem foo₃ {G G' : Type*} [Group G] [Group G'] (H : Subgroup G) (f : G →* G') :
     Nat.card (f.ker ⊓ H : Subgroup G) * Nat.card (H.map f) = Nat.card H := by
@@ -239,6 +234,7 @@ variable (G A B C : Type*) [Group G]
     [CommRing A] [CommRing B] [CommRing C] [IsDomain C] [Algebra A B]
     [Algebra A C] [Algebra B C] [FaithfulSMul A C] [FaithfulSMul B C] [IsScalarTower A B C]
 
+open Pointwise in
 theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finite ℤ S]
     [IsDomain S] [FaithfulSMul ℤ S] [Group G] [MulSemiringAction G S] [IsGaloisGroup G ℤ S] :
     ⨆ m : PrimeSpectrum S, m.asIdeal.toAddSubgroup.inertia G = ⊤ := by
@@ -255,7 +251,21 @@ theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finit
   rw [Algebra.unramified_iff_forall]
   rintro ⟨mR, hmR⟩
   rw [← Ideal.ramificationIdx'_eq_one_iff]
-  have : H.Normal := sorry
+  have : H.Normal := by
+    rw [Subgroup.normal_iff_map_conj_eq]
+    intro g
+    let e : PrimeSpectrum S ≃ PrimeSpectrum S := MulAction.toPerm g
+    simp only [H]
+    rw [Subgroup.map_iSup]
+    conv_rhs => rw [← e.iSup_comp]
+    apply iSup_congr
+    intro P
+    ext x
+    simp [e, Ideal.mem_pointwise_smul_iff_inv_smul_mem]
+    simp_rw [mul_inv_eq_iff_eq_mul, ← eq_inv_mul_iff_mul_eq]
+    simp only [↓existsAndEq, and_true]
+    rw [← Equiv.forall_congr_right (MulAction.toPerm g⁻¹)]
+    simp [mul_smul, smul_sub]
   let := mulSemiringActionQuotient G R S H
   have : IsGaloisGroup (G ⧸ H) ℤ R := by
     let := mulSemiringActionOfNormal G R S H
