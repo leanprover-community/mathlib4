@@ -354,11 +354,12 @@ lemma smul_mul_assoc [Mul β] [SMul α β] [IsScalarTower α β β] (r : α) (x 
     r • x * y = r • (x * y) := smul_assoc r x y
 
 /-- Scalar variant of `mul_eq_one_symm`. -/
-@[to_additive /-- Scalar variant of `add_eq_zero_symm`. -/]
+@[to_additive]
 theorem mul_eq_smul_one_symm [Monoid β] [SMul α β] [IsScalarTower α β β]
     [SMulCommClass α β β] {a b : β} {c : α} (ha : IsLeftRegular a)
     (h : a * b = c • 1) : b * a = c • 1 :=
-  ha.mul_eq_of_comm h (by rw [smul_mul_assoc, one_mul, mul_smul_comm, mul_one])
+  ha.mul_eq_of_comm h <| show (c • 1) * a = a * (c • 1) by
+    rw [smul_mul_assoc, one_mul, mul_smul_comm, mul_one]
 
 /-- Note that the `IsScalarTower α β β` typeclass argument is usually satisfied by `Algebra α β`. -/
 @[to_additive]
