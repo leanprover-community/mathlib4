@@ -888,6 +888,38 @@ theorem neg_closedBall (p : Seminorm 𝕜 E) (r : ℝ) (x : E) :
   ext
   rw [Set.mem_neg, mem_closedBall, mem_closedBall, ← neg_add', sub_neg_eq_add, map_neg_eq_map]
 
+theorem ball_zero_absorbs_ball_zero (p : Seminorm 𝕜 E) {r₁ r₂ : ℝ} (hr₁ : 0 < r₁) :
+    Absorbs 𝕜 (p.ball 0 r₁) (p.ball 0 r₂) := by
+  rcases exists_pos_mul_lt hr₁ r₂ with ⟨r, hr₀, hr⟩
+  refine .of_norm ⟨r, hr₀, fun a har ha0 x hx => ?_⟩
+  rw [p.mem_ball_zero] at hx ⊢
+  grw [map_smul_eq_mul, har, hx, mul_comm]
+  assumption
+
+variable (p : Seminorm 𝕜 E) {r : ℝ} {x : E}
+
+/-- Seminorm-balls at the origin are absorbent. -/
+protected theorem absorbent_ball_zero (hr : 0 < r) : Absorbent 𝕜 (ball p (0 : E) r) :=
+  absorbent_iff_forall_absorbs_singleton.2 fun _ =>
+    (p.ball_zero_absorbs_ball_zero hr).mono_right <|
+      singleton_subset_iff.2 <| p.mem_ball_zero.2 <| lt_add_one _
+
+/-- Closed seminorm-balls at the origin are absorbent. -/
+protected theorem absorbent_closedBall_zero (hr : 0 < r) : Absorbent 𝕜 (closedBall p (0 : E) r) :=
+  (p.absorbent_ball_zero hr).mono (p.ball_subset_closedBall _ _)
+
+/-- Seminorm-balls containing the origin are absorbent. -/
+protected theorem absorbent_ball (hpr : p x < r) : Absorbent 𝕜 (ball p x r) := by
+  refine (p.absorbent_ball_zero <| sub_pos.2 hpr).mono fun y hy => ?_
+  rw [p.mem_ball_zero] at hy
+  exact p.mem_ball.2 ((map_sub_le_add p _ _).trans_lt <| add_lt_of_lt_sub_right hy)
+
+/-- Seminorm-balls containing the origin are absorbent. -/
+protected theorem absorbent_closedBall (hpr : p x < r) : Absorbent 𝕜 (closedBall p x r) := by
+  refine (p.absorbent_closedBall_zero <| sub_pos.2 hpr).mono fun y hy => ?_
+  rw [p.mem_closedBall_zero] at hy
+  exact p.mem_closedBall.2 ((map_sub_le_add p _ _).trans <| add_le_of_le_sub_right hy)
+
 end Module
 
 end AddCommGroup
@@ -941,36 +973,6 @@ theorem smul_closedBall_zero {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} (hk : 0 
   refine fun hx => ⟨k⁻¹ • x, ?_, ?_⟩
   · rwa [Seminorm.mem_closedBall_zero, map_smul_eq_mul, norm_inv, inv_mul_le_iff₀ hk]
   rw [← smul_assoc, smul_eq_mul, ← div_eq_mul_inv, div_self (norm_pos_iff.mp hk), one_smul]
-
-theorem ball_zero_absorbs_ball_zero (p : Seminorm 𝕜 E) {r₁ r₂ : ℝ} (hr₁ : 0 < r₁) :
-    Absorbs 𝕜 (p.ball 0 r₁) (p.ball 0 r₂) := by
-  rcases exists_pos_lt_mul hr₁ r₂ with ⟨r, hr₀, hr⟩
-  refine .of_norm ⟨r, fun a ha x hx => ?_⟩
-  rw [smul_ball_zero (norm_pos_iff.1 <| hr₀.trans_le ha), p.mem_ball_zero]
-  rw [p.mem_ball_zero] at hx
-  exact hx.trans (hr.trans_le <| by gcongr)
-
-/-- Seminorm-balls at the origin are absorbent. -/
-protected theorem absorbent_ball_zero (hr : 0 < r) : Absorbent 𝕜 (ball p (0 : E) r) :=
-  absorbent_iff_forall_absorbs_singleton.2 fun _ =>
-    (p.ball_zero_absorbs_ball_zero hr).mono_right <|
-      singleton_subset_iff.2 <| p.mem_ball_zero.2 <| lt_add_one _
-
-/-- Closed seminorm-balls at the origin are absorbent. -/
-protected theorem absorbent_closedBall_zero (hr : 0 < r) : Absorbent 𝕜 (closedBall p (0 : E) r) :=
-  (p.absorbent_ball_zero hr).mono (p.ball_subset_closedBall _ _)
-
-/-- Seminorm-balls containing the origin are absorbent. -/
-protected theorem absorbent_ball (hpr : p x < r) : Absorbent 𝕜 (ball p x r) := by
-  refine (p.absorbent_ball_zero <| sub_pos.2 hpr).mono fun y hy => ?_
-  rw [p.mem_ball_zero] at hy
-  exact p.mem_ball.2 ((map_sub_le_add p _ _).trans_lt <| add_lt_of_lt_sub_right hy)
-
-/-- Seminorm-balls containing the origin are absorbent. -/
-protected theorem absorbent_closedBall (hpr : p x < r) : Absorbent 𝕜 (closedBall p x r) := by
-  refine (p.absorbent_closedBall_zero <| sub_pos.2 hpr).mono fun y hy => ?_
-  rw [p.mem_closedBall_zero] at hy
-  exact p.mem_closedBall.2 ((map_sub_le_add p _ _).trans <| add_le_of_le_sub_right hy)
 
 @[simp]
 theorem smul_ball_preimage (p : Seminorm 𝕜 E) (y : E) (r : ℝ) (a : 𝕜) (ha : a ≠ 0) :
