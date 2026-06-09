@@ -214,7 +214,7 @@ end SplittingFieldAux
 def SplittingField (f : K[X]) :=
   MvPolynomial (SplittingFieldAux f.natDegree f) K ⧸
     RingHom.ker (MvPolynomial.aeval (R := K) id).toRingHom
-deriving Inhabited, CommRing, Algebra K
+deriving Inhabited, CommRing
 
 namespace SplittingField
 
