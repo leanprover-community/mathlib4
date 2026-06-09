@@ -120,14 +120,14 @@ theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
     refine ⟨ν' + (⊤ : Measure α).restrict sᶜ, ?_, ?_⟩
     · rw [mem_setOf_eq, add_right_comm, Measure.le_iff]
       intro t h_meas_t
-      repeat rw [← measure_inter_add_diff t h_meas_s]
+      repeat rw [← measure_inter_add_sdiff t h_meas_s]
       refine add_le_add ?_ ?_
       · rw [add_apply, add_apply]
         apply le_add_right _
         rw [← restrict_eq_self μ inter_subset_right,
           ← restrict_eq_self ν inter_subset_right]
         apply h_ν'_in
-      · rw [add_apply, restrict_apply (h_meas_t.diff h_meas_s), diff_eq, inter_assoc, inter_self,
+      · rw [add_apply, restrict_apply (h_meas_t.diff h_meas_s), sdiff_eq, inter_assoc, inter_self,
           ← add_apply]
         have h_mu_le_add_top : μ ≤ ν' + ν + ⊤ := by simp only [add_top, le_top]
         exact Measure.le_iff'.1 h_mu_le_add_top _
