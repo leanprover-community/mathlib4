@@ -127,6 +127,9 @@ instance : IsFractionRing (R ⧸ I) I.ResidueField where
     use 1
     simp [e]
 
+instance [Finite (R ⧸ I)] : Finite I.ResidueField :=
+  IsLocalization.finite (R ⧸ I) (nonZeroDivisors (R ⧸ I))
+
 lemma Ideal.bijective_algebraMap_quotient_residueField (I : Ideal R) [I.IsMaximal] :
     Function.Bijective (algebraMap (R ⧸ I) I.ResidueField) :=
   ⟨I.injective_algebraMap_quotient_residueField, IsFractionRing.surjective_iff_isField.mpr
