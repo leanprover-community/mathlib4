@@ -1,0 +1,104 @@
+name: Duplicate Declarations Report
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # Run at 06:00 UTC every Monday
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'if true, just generate the report; do not post a message to Zulip'
+        required: false
+        default: false
+        type: boolean
+jobs:
+  run-script:
+    name: Duplicate declarations report
+    runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
+
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+    - name: Configure Lean
+      uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
+      with:
+        auto-config: false
+        use-github-cache: false
+        use-mathlib-cache: false
+
+    - name: Retrieve the prebuilt Mathlib cache
+      run: |
+        printf $'::group::Running lake env\n'
+        lake env | tr ':' '\n'
+        echo "::endgroup::"
+        echo "::group::Retrieving the cache for Mathlib"
+        lake exe cache get Mathlib
+        echo "::endgroup::"
+
+    - name: Generate duplicate declarations report
+      id: report
+      env:
+        RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        EVENT_NAME: ${{ github.event_name }}
+      run: |
+        echo "::group::Running duplicate declarations report"
+        lake env lean scripts/dup_decls_report.lean 2>&1 | tee dup_decls_raw.txt
+        echo "::endgroup::"
+
+        # Strip the Lean position prefixes (e.g. `…dup_decls_report.lean:23:0: info: `) for a tidy artifact.
+        sed -E 's=^[^ ]*\.lean:[0-9]+:[0-9]+: (info|information): ==' dup_decls_raw.txt > dup_decls_report.txt
+
+        # Extract the per-category duplicate counts (printed in theorems/instances/defs order).
+        counts="$(grep -oE 'Number of duplicates: [0-9]+' dup_decls_report.txt | grep -oE '[0-9]+$' || true)"
+        thm="$(printf '%s\n' "$counts" | sed -n '1p')"
+        inst="$(printf '%s\n' "$counts" | sed -n '2p')"
+        def="$(printf '%s\n' "$counts" | sed -n '3p')"
+
+        # Build the Zulip summary message; the full listing is uploaded as an artifact below.
+        {
+          echo 'summary<<SUMMARY_EOF'
+          echo "**Duplicate declarations report (triggered by ${EVENT_NAME})**"
+          echo ''
+          echo "- Theorems: ${thm:-?} duplicate group(s)"
+          echo "- Instances: ${inst:-?} duplicate group(s)"
+          echo "- Defs: ${def:-?} duplicate group(s)"
+          echo ''
+          echo "The full report is attached as the \`dup-decls-report\` artifact on [this workflow run](${RUN_URL})."
+          echo 'SUMMARY_EOF'
+        } | tee -a "$GITHUB_OUTPUT"
+
+    - name: Upload the full report
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: dup-decls-report
+        path: |
+          dup_decls_report.txt
+          dup_decls_raw.txt
+        retention-days: 90
+
+    - name: Post summary to Zulip
+      if: ${{ toJson(inputs.dry_run) != 'true' }}
+      uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+      with:
+        api-key: ${{ secrets.ZULIP_API_KEY }}
+        email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+        organization-url: 'https://leanprover.zulipchat.com'
+        to: 'mathlib4'
+        type: 'stream'
+        topic: Duplicate declarations
+        content: ${{ steps.report.outputs.summary }}
+
+    - name: Send Zulip message (failure)
+      if: ${{ toJson(inputs.dry_run) != 'true' && failure() }}
+      uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+      with:
+        api-key: ${{ secrets.ZULIP_API_KEY }}
+        email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+        organization-url: 'https://leanprover.zulipchat.com'
+        to: 'mathlib4'
+        type: 'stream'
+        topic: Duplicate declarations
+        content: |
+          [`Duplicate declarations` workflow run failed](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+          triggered by: `${{ github.event_name }}`
