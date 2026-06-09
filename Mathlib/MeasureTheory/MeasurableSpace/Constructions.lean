@@ -50,7 +50,7 @@ theorem ENat.measurable_iff {α : Type*} [MeasurableSpace α] {f : α → ℕ∞
   cases n with
   | top =>
     apply MeasurableSet.compl_iff.mp
-    rw [← compl_compl (f ⁻¹' {⊤}), compl_compl, ← Set.preimage_compl, ← range_natCast_eq_top_compl,
+    rw [← compl_compl (f ⁻¹' {⊤}), compl_compl, ← preimage_compl, ← range_natCast_eq_top_compl,
       ← iUnion_singleton_eq_range, preimage_iUnion]
     exact MeasurableSet.iUnion h
   | coe n => exact h n
