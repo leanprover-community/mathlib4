@@ -107,6 +107,15 @@ lemma under_smul : (g • P : Ideal B).under A = P.under A := by
   ext a
   rw [mem_comap, mem_comap, mem_pointwise_smul_iff_inv_smul_mem, smul_algebraMap]
 
+@[simp]
+theorem smul_under [MulSemiringAction G A] [SMulDistribClass G A B] :
+    g • P.under A = (g • P).under A := by
+  conv_lhs => rw [pointwise_smul_eq_comap, ← comap_coe, under_def, comap_comap]
+  conv_rhs => rw [pointwise_smul_eq_comap, ← comap_coe, under_def, comap_comap]
+  congr
+  ext
+  simp [algebraMap.smul']
+
 variable (B) in
 theorem under_top : under A (⊤ : Ideal B) = ⊤ := comap_top
 
