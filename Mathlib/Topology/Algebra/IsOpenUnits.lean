@@ -51,6 +51,10 @@ lemma isOpenEmbedding_val : IsOpenEmbedding (Units.val : Mˣ → M) :=
 
 lemma isOpenMap_val : IsOpenMap (Units.val : Mˣ → M) := isOpenEmbedding_val.isOpenMap
 
+lemma isEmbedding_val : IsEmbedding (Units.val : Mˣ → M) := isOpenEmbedding_val.isEmbedding
+
+lemma isInducing_val : IsInducing (Units.val : Mˣ → M) := isOpenEmbedding_val.isInducing
+
 end Units
 
 /-- Transport an `IsOpenUnits`-instance along an isomorphism. -/
