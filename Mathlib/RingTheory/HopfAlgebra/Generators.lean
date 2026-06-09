@@ -5,8 +5,7 @@ Authors: Robert Hawkins
 -/
 module
 
-public import Mathlib.RingTheory.Bialgebra.Convolution
-public import Mathlib.RingTheory.HopfAlgebra.Basic
+public import Mathlib.RingTheory.HopfAlgebra.Convolution
 
 /-!
 # Constructing Hopf algebras from algebra generators
@@ -21,6 +20,8 @@ pointwise convolution inverses of multiplicative maps.
 * `HopfAlgebra.convMul_eq_one_of_adjoin_eq_top_left` and
   `HopfAlgebra.convMul_eq_one_of_adjoin_eq_top_right`: a pointwise one-sided convolution inverse of
   a multiplicative map on generators is a global one.
+* `HopfAlgebra.eq_antipode_of_convMul_id_eq_one` : a left convolution inverse of `id` is the
+  antipode.
 * `HopfAlgebra.eq_antipode_of_adjoin_eq_top` : a left convolution inverse of `id` on a generating
   set is the antipode.
 -/
@@ -124,6 +125,11 @@ end Construction
 
 section Uniqueness
 variable [Semiring A] [HopfAlgebra R A] {S₀ : A →ₗ[R] A} {s : Set A}
+
+/-- A left convolution inverse of the identity is the antipode. -/
+theorem eq_antipode_of_convMul_id_eq_one (h : toConv S₀ * toConv LinearMap.id = 1) :
+    S₀ = antipode R :=
+  toConv_injective (left_inv_eq_right_inv h id_mul_antipode)
 
 variable (S₀) in
 /-- A unital antimultiplicative map that is a left convolution inverse of the identity on an

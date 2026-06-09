@@ -331,7 +331,7 @@ theorem toNNReal_pow (a : ℝ≥0∞) (n : ℕ) : (a ^ n).toNNReal = a.toNNReal 
 
 /-- `ENNReal.toReal` as a `MonoidHom`. -/
 noncomputable def toRealHom : ℝ≥0∞ →*₀ ℝ :=
-  (NNReal.toRealHom : ℝ≥0 →*₀ ℝ).comp toNNRealHom
+  (.ofClass NNReal.toRealHom : ℝ≥0 →*₀ ℝ).comp toNNRealHom
 
 @[simp]
 theorem toReal_mul : (a * b).toReal = a.toReal * b.toReal :=
