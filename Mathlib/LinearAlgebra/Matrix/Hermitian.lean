@@ -192,7 +192,6 @@ theorem isHermitian_blockDiagonal_iff [DecidableEq n] {M : n → Matrix m m α} 
 
 /-- A diagonal matrix is Hermitian if the entries have the trivial `star` operation
 (such as on the reals). -/
-@[simp]
 theorem isHermitian_diagonal [TrivialStar α] [DecidableEq n] (v : n → α) :
     (diagonal v).IsHermitian :=
   isHermitian_diagonal_of_self_adjoint _ (IsSelfAdjoint.all _)

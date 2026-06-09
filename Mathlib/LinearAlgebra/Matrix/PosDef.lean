@@ -474,7 +474,7 @@ theorem of_toQuadraticForm' {R : Type*} [CommRing R] [PartialOrder R] [StarRing 
   refine of_dotProduct_mulVec_pos (by simpa) fun x hx ↦ ?_
   simpa [toQuadraticForm', toLinearMap₂'_apply'] using hMq x hx
 
-theorem toQuadraticForm'  {R : Type*} [CommRing R] [PartialOrder R] [StarRing R] [TrivialStar R]
+theorem toQuadraticForm' {R : Type*} [CommRing R] [PartialOrder R] [StarRing R] [TrivialStar R]
     [DecidableEq n] {M : Matrix n n R} (hM : M.PosDef) :
     M.toQuadraticForm'.PosDef := by
   intro x hx
