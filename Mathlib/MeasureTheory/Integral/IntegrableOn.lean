@@ -542,7 +542,7 @@ lemma integrableAtFilter_congr (h : f =ᵐ[μ] g) :
 lemma IntegrableAtFilter.congr'_enorm {g : α → ε'} (hf : IntegrableAtFilter f l μ)
     (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ a ∂μ, ‖f a‖ₑ = ‖g a‖ₑ) :
     IntegrableAtFilter g l μ :=
-  Exists.casesOn hf fun s hs ↦ ⟨s, hs.1, hs.2.congr'_enorm hg.restrict (ae_restrict_le h)⟩
+  let ⟨s, hs, hf⟩ := hf; ⟨s, hs, hf.congr'_enorm hg.restrict (ae_restrict_le h)⟩
 
 @[simp]
 lemma integrableAtFilter_zero : IntegrableAtFilter (0 : α → E) l μ :=
