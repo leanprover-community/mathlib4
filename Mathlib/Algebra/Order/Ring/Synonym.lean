@@ -23,65 +23,58 @@ variable {R : Type*}
 
 namespace OrderDual
 
-instance [h : Distrib R] : Distrib Rᵒᵈ where
-  left_distrib := h.left_distrib
-  right_distrib := h.right_distrib
+instance [Distrib R] : Distrib Rᵒᵈ := inferInstanceAs <| Distrib R
 
-instance [Mul R] [Add R] [h : LeftDistribClass R] : LeftDistribClass Rᵒᵈ where
-  left_distrib := h.left_distrib
+instance [Mul R] [Add R] [LeftDistribClass R] : LeftDistribClass Rᵒᵈ :=
+  inferInstanceAs <| LeftDistribClass R
 
-instance [Mul R] [Add R] [h : RightDistribClass R] : RightDistribClass Rᵒᵈ where
-  right_distrib := h.right_distrib
+instance [Mul R] [Add R] [RightDistribClass R] : RightDistribClass Rᵒᵈ :=
+  inferInstanceAs <| RightDistribClass R
 
-instance [h : NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring Rᵒᵈ where
-  zero_mul := h.zero_mul
-  mul_zero := h.mul_zero
+instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring Rᵒᵈ :=
+  inferInstanceAs <| NonUnitalNonAssocSemiring R
 
-instance [h : NatCast R] : NatCast Rᵒᵈ := h
+instance [NatCast R] : NatCast Rᵒᵈ := inferInstanceAs <| NatCast R
 
-instance [h : IntCast R] : IntCast Rᵒᵈ := h
+instance [IntCast R] : IntCast Rᵒᵈ := inferInstanceAs <| IntCast R
 
-instance [h : AddMonoidWithOne R] : AddMonoidWithOne Rᵒᵈ where
-  natCast_zero := h.natCast_zero
-  natCast_succ := h.natCast_succ
+instance [AddMonoidWithOne R] : AddMonoidWithOne Rᵒᵈ := inferInstanceAs <| AddMonoidWithOne R
 
-instance [h : AddCommMonoidWithOne R] : AddCommMonoidWithOne Rᵒᵈ where
+instance [AddCommMonoidWithOne R] : AddCommMonoidWithOne Rᵒᵈ :=
+  inferInstanceAs <| AddCommMonoidWithOne R
 
-instance [h : AddGroupWithOne R] : AddGroupWithOne Rᵒᵈ where
-  intCast_ofNat := h.intCast_ofNat
-  intCast_negSucc := h.intCast_negSucc
+instance [AddGroupWithOne R] : AddGroupWithOne Rᵒᵈ := inferInstanceAs <| AddGroupWithOne R
 
-instance [AddCommGroupWithOne R] : AddCommGroupWithOne Rᵒᵈ where
+instance [AddCommGroupWithOne R] : AddCommGroupWithOne Rᵒᵈ :=
+  inferInstanceAs <| AddCommGroupWithOne R
 
-instance [h : NonUnitalSemiring R] : NonUnitalSemiring Rᵒᵈ where
+instance [NonUnitalSemiring R] : NonUnitalSemiring Rᵒᵈ := inferInstanceAs <| NonUnitalSemiring R
 
-instance [h : NonAssocSemiring R] : NonAssocSemiring Rᵒᵈ where
+instance [NonAssocSemiring R] : NonAssocSemiring Rᵒᵈ := inferInstanceAs <| NonAssocSemiring R
 
-instance [h : Semiring R] : Semiring Rᵒᵈ where
+instance [Semiring R] : Semiring Rᵒᵈ := inferInstanceAs <| Semiring R
 
-instance [h : NonUnitalCommSemiring R] : NonUnitalCommSemiring Rᵒᵈ where
+instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring Rᵒᵈ :=
+  inferInstanceAs <| NonUnitalCommSemiring R
 
-instance [h : CommSemiring R] : CommSemiring Rᵒᵈ where
+instance [CommSemiring R] : CommSemiring Rᵒᵈ := inferInstanceAs <| CommSemiring R
 
-instance [Mul R] [h : HasDistribNeg R] : HasDistribNeg Rᵒᵈ where
-  neg_mul := h.neg_mul
-  mul_neg := h.mul_neg
+instance [Mul R] [HasDistribNeg R] : HasDistribNeg Rᵒᵈ := inferInstanceAs <| HasDistribNeg R
 
-instance [h : NonUnitalNonAssocRing R] : NonUnitalNonAssocRing Rᵒᵈ where
+instance [NonUnitalNonAssocRing R] : NonUnitalNonAssocRing Rᵒᵈ :=
+  inferInstanceAs <| NonUnitalNonAssocRing R
 
-instance [h : NonUnitalRing R] : NonUnitalRing Rᵒᵈ where
+instance [NonUnitalRing R] : NonUnitalRing Rᵒᵈ := inferInstanceAs <| NonUnitalRing R
 
-instance [h : NonAssocRing R] : NonAssocRing Rᵒᵈ where
+instance [NonAssocRing R] : NonAssocRing Rᵒᵈ := inferInstanceAs <| NonAssocRing R
 
-instance [h : Ring R] : Ring Rᵒᵈ where
+instance [Ring R] : Ring Rᵒᵈ := inferInstanceAs <| Ring R
 
-instance [h : NonUnitalCommRing R] : NonUnitalCommRing Rᵒᵈ where
+instance [NonUnitalCommRing R] : NonUnitalCommRing Rᵒᵈ := inferInstanceAs <| NonUnitalCommRing R
 
-instance [h : CommRing R] : CommRing Rᵒᵈ where
+instance [CommRing R] : CommRing Rᵒᵈ := inferInstanceAs <| CommRing R
 
-instance [Ring R] [h : IsDomain R] : IsDomain Rᵒᵈ where
-  mul_left_cancel_of_ne_zero := h.mul_left_cancel_of_ne_zero
-  mul_right_cancel_of_ne_zero := h.mul_right_cancel_of_ne_zero
+instance [Ring R] [IsDomain R] : IsDomain Rᵒᵈ := inferInstanceAs <| IsDomain R
 
 end OrderDual
 

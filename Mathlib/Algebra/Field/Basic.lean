@@ -294,28 +294,12 @@ end Function.Injective
 
 namespace OrderDual
 
-instance [h : RatCast K] : RatCast Kᵒᵈ := h
-instance [h : NNRatCast K] : NNRatCast Kᵒᵈ := h
-
-instance [h : DivisionSemiring K] : DivisionSemiring Kᵒᵈ where
-  nnratCast_def := h.nnratCast_def
-  nnqsmul := h.nnqsmul
-  nnqsmul_def := h.nnqsmul_def
-
-instance [h : DivisionRing K] : DivisionRing Kᵒᵈ where
-  mul_inv_cancel := h.mul_inv_cancel
-  inv_zero := h.inv_zero
-  nnratCast_def := h.nnratCast_def
-  nnqsmul := h.nnqsmul
-  nnqsmul_def := h.nnqsmul_def
-  ratCast_def := h.ratCast_def
-  qsmul := h.qsmul
-  qsmul_def := h.qsmul_def
-
-instance [Semifield K] : Semifield Kᵒᵈ where
-
-instance [Field K] : Field Kᵒᵈ where
-
+instance [RatCast K] : RatCast Kᵒᵈ := inferInstanceAs <| RatCast K
+instance [NNRatCast K] : NNRatCast Kᵒᵈ := inferInstanceAs <| NNRatCast K
+instance [DivisionSemiring K] : DivisionSemiring Kᵒᵈ := inferInstanceAs <| DivisionSemiring K
+instance [DivisionRing K] : DivisionRing Kᵒᵈ := inferInstanceAs <| DivisionRing K
+instance [Semifield K] : Semifield Kᵒᵈ := inferInstanceAs <| Semifield K
+instance [Field K] : Field Kᵒᵈ := inferInstanceAs <| Field K
 
 end OrderDual
 
