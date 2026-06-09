@@ -103,21 +103,18 @@ private theorem exists_le_abs_of_le_derivWithin
   by_cases hab : a = b
   · exact ⟨a, left_mem_uIcc, fun x hx ↦ by
       subst hab; rw [uIcc_self] at hx; simp [mem_singleton_iff.mp hx]⟩
+  have hφ' := hφ.continuousOn
+  have hφ'' := hφ.differentiableOn one_ne_zero
   have hud : UniqueDiffOn ℝ [[a, b]] := uniqueDiffOn_Icc (min_lt_max.mpr hab)
   have hmvt : ∀ x ∈ [[a, b]], ∀ y ∈ [[a, b]], x ≤ y → y - x ≤ φ y - φ x := by
-    have hg : MonotoneOn (fun x ↦ φ x - x) [[a, b]] := by
-      apply monotoneOn_of_deriv_nonneg (convex_uIcc (r := a) (s := b))
-        (hφ.continuousOn.sub continuousOn_id)
-        ((hφ.differentiableOn (by norm_num)).sub differentiableOn_id |>.mono interior_subset)
-      intro x hx
-      have hx' := interior_subset hx
-      have hda : DifferentiableAt ℝ φ x :=
-        ((hφ.differentiableOn (by norm_num)) x hx').differentiableAt
-          (Filter.mem_of_superset (isOpen_interior.mem_nhds hx) interior_subset)
-      change 0 ≤ deriv (φ - id) x
-      rw [deriv_sub hda differentiableAt_id, deriv_id', ← hda.derivWithin (hud x hx')]
-      linarith only [h x hx']
-    intro x hx y hy hxy; linarith only [hg hx hy hxy]
+    suffices hg : MonotoneOn (fun x ↦ φ x - x) [[a, b]] by
+      intro x hx y hy hxy; linarith only [hg hx hy hxy]
+    have := hφ''.mono interior_subset
+    refine monotoneOn_of_deriv_nonneg (convex_uIcc ..) (by fun_prop) (by fun_prop) fun x hx ↦ ?_
+    have hdx := this.differentiableAt <| isOpen_interior.mem_nhds hx
+    have hx' := interior_subset hx
+    rw [deriv_fun_sub hdx (by fun_prop), deriv_id'', ← hdx.derivWithin (hud x hx')]
+    linarith only [h x hx']
   have hmin_mem : min a b ∈ [[a, b]] := ⟨le_rfl, min_le_max⟩
   have hmax_mem : max a b ∈ [[a, b]] := ⟨min_le_max, le_rfl⟩
   rcases le_or_gt 0 (φ (min a b)) with hmin | hmin
