@@ -735,4 +735,39 @@ theorem diagonal_transvection_induction_of_det_ne_zero (P : Matrix n n 𝕜 → 
       exact ⟨by simp [QA.1, QB.1], hmul A B QA.1 QB.1 QA.2 QB.2⟩
   exact this.2
 
+theorem exists_rank_normal_form (M : Matrix n n 𝕜) :
+  ∃ (V U : Matrix n n 𝕜) (s : Finset n),
+    IsUnit V.det ∧ IsUnit U.det ∧
+    V * M * U = diagonal (fun i ↦ if i ∈ s then 1 else 0) := by
+  classical
+  obtain ⟨L, L', D, hM_eq⟩ := exists_list_transvec_mul_diagonal_mul_list_transvec M
+  set E := fun i ↦ if D i = 0 then 1 else (D i)⁻¹ with E_def
+  set s := Finset.filter (fun i ↦ D i ≠ 0) Finset.univ with s_def
+  have hAinv_unit : IsUnit (L.reverse.map (toMatrix ∘ .inv)).prod.det := by
+    rw [← List.map_map, det_toMatrix_prod]; exact isUnit_one
+  have hBinv_unit : IsUnit (L'.reverse.map (toMatrix ∘ .inv)).prod.det := by
+    rw [← List.map_map, det_toMatrix_prod]; exact isUnit_one
+  have hE_ne_zero (i : n) : E i ≠ 0 := by
+    by_cases h : D i = 0
+    · simp only [E_def, if_pos h, ne_eq, one_ne_zero, not_false_eq_true]
+    · simpa only [E_def, if_neg h, ne_eq, inv_eq_zero]
+  have hS_unit : IsUnit (diagonal E).det := by
+    rw [det_diagonal]
+    exact IsUnit.mk0 _ <| Finset.prod_ne_zero_iff.2 fun i _ ↦ hE_ne_zero i
+  have h2 : diagonal E * diagonal D = diagonal (fun i ↦ if i ∈ s then 1 else 0) := by
+    ext i j
+    simp only [E_def, mul_diagonal, diagonal_apply, ite_mul, one_mul, zero_mul, ne_eq,
+      Finset.mem_filter, Finset.mem_univ, true_and, ite_not, s_def]
+    split_ifs with h1 h2
+    · rw [← h1, h2]
+    · rw [← h1, inv_mul_cancel₀ h2]
+    · rfl
+  refine ⟨diagonal E * (L.reverse.map (toMatrix ∘ .inv)).prod,
+    (L'.reverse.map (toMatrix ∘ .inv)).prod, s, ?_, hBinv_unit, ?_⟩
+  · simpa only [det_mul, isUnit_iff_ne_zero, ne_eq, mul_eq_zero, not_or] using
+    (hS_unit.mul hAinv_unit)
+  · rw [hM_eq, mul_assoc, mul_assoc _ (L'.map toMatrix).prod, prod_mul_reverse_inv_prod, mul_one,
+      ← mul_assoc, mul_assoc _ (L.reverse.map (toMatrix ∘ .inv)).prod, reverse_inv_prod_mul_prod,
+      mul_one, h2]
+
 end Matrix

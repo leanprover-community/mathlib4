@@ -7,45 +7,9 @@ import Mathlib.RingTheory.SimpleRing.Principal
 
 open Matrix SymplecticGroup
 
-lemma Matrix.exists_rank_normal_form {l k : Type*} [DecidableEq l] [Fintype l] [Field k]
-  (M : Matrix l l k) :
-  ∃ (V U : Matrix l l k) (s : Finset l),
-    IsUnit V.det ∧ IsUnit U.det ∧
-    V * M * U = diagonal (fun i : l ↦ if i ∈ s then 1 else 0) := by
-  classical
-  obtain ⟨L, L', D, hM_eq⟩ := Pivot.exists_list_transvec_mul_diagonal_mul_list_transvec M
-  set A := (List.map TransvectionStruct.toMatrix L).prod
-  set B := (List.map TransvectionStruct.toMatrix L').prod
-  set E : l → k := fun i ↦ if D i = 0 then 1 else (D i)⁻¹ with E_def
-  set S := diagonal E with S_def
-  set s : Finset l := Finset.filter (fun i : l ↦ D i ≠ 0) Finset.univ with s_def
-  have hA_unit : IsUnit A.det := by
-    rw [TransvectionStruct.det_toMatrix_prod L]; exact isUnit_one
-  have hB_unit : IsUnit B.det := by
-    rw [TransvectionStruct.det_toMatrix_prod L']; exact isUnit_one
-  have hE_ne_zero (i : l) : E i ≠ 0 := by
-    by_cases h : D i = 0
-    · simp only [E_def, if_pos h, ne_eq, one_ne_zero, not_false_eq_true]
-    · simpa only [E_def, if_neg h, ne_eq, inv_eq_zero]
-  have hS_unit : IsUnit S.det := by
-    rw [det_diagonal]
-    exact IsUnit.mk0 _ <| Finset.prod_ne_zero_iff.2 fun i _ ↦ hE_ne_zero i
-  have h2 : S * diagonal D = diagonal (fun i : l ↦ if i ∈ s then 1 else 0) := by
-    ext i j
-    simp only [E_def, mul_diagonal, diagonal_apply, ite_mul, one_mul, zero_mul, ne_eq,
-      Finset.mem_filter, Finset.mem_univ, true_and, ite_not, S_def, s_def]
-    split_ifs with h1 h2
-    · rw [← h1, h2]
-    · rw [← h1, inv_mul_cancel₀ h2]
-    · rfl
-  refine ⟨S * A⁻¹, B⁻¹, s, ?_, isUnit_nonsing_inv_det _ hB_unit, ?_⟩
-  · simpa using (hS_unit.mul (isUnit_nonsing_inv_det _ hA_unit))
-  · rw [hM_eq, mul_assoc, mul_assoc _ B, mul_nonsing_inv _ hB_unit, mul_one,
-    ← mul_assoc, mul_assoc _ A⁻¹, nonsing_inv_mul _ hA_unit, mul_one, h2]
-
 namespace SymplecticMatrixDet
 
-lemma round1_transfer_rank {l k : Type*} [DecidableEq l] [Fintype l] [Field k]
+lemma round1_transfer_rank {l k : Type*} [DecidableEq l] [Fintype l] [CommRing k]
   {P R : Matrix l l k}
   {U V : Matrix l l k}
   (hU : IsUnit U.det) (hV : IsUnit V.det)
@@ -72,7 +36,7 @@ lemma round1_transfer_symm {l k : Type*} [DecidableEq l] [Fintype l] [CommRing k
   · rw [nonsing_inv_mul _ hV, mul_nonsing_inv _ (isUnit_det_transpose _ hV),
       mul_one, mul_one, h_symm]
 
-lemma round1_core_entrywise {l k : Type*} [DecidableEq l] [Fintype l] [Field k]
+lemma round1_core_entrywise {l k : Type*} [DecidableEq l] [Fintype l] [CommRing k]
   {P1 : Matrix l l k} {s : Finset l}
   (hR1 : let R1 : Matrix l l k := diagonal (fun i : l ↦ if i ∈ s then 1 else 0)
     P1ᵀ * R1 = R1 * P1) :
