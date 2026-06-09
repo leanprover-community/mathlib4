@@ -111,7 +111,7 @@ lemma sameRay_of_triangle_eq (h_eq : u = ∑ i ∈ s, v i) (h_sum : ‖u‖ = �
   obtain ⟨k, hk, hvi⟩ :=
     each_term_is_nonneg_real_multiple_of_sum_of_triangle_eq h_eq h_sum h_ne i hi
   rcases eq_or_lt_of_le hk with rfl | hk_pos
-  · simpa [hvi] using SameRay.zero_left u
+  · simp [hvi]
   · rw [hvi]
     exact SameRay.sameRay_pos_smul_left u hk_pos
 
