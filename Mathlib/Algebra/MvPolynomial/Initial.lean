@@ -69,7 +69,8 @@ theorem initialOf_def {p : MvPolynomial σ R} {i : σ} :
 @[simp] theorem initialOf_C (r : R) : (C r : MvPolynomial σ R).initialOf i = C r := by
   rw [C_apply, initialOf_monomial, Finsupp.erase_zero]
 
-@[simp] theorem initialOf_one : (1 : MvPolynomial σ R).initialOf i = 1 := by rw [← C_1, initialOf_C]
+@[simp] theorem initialOf_one : (1 : MvPolynomial σ R).initialOf i = 1 := by
+  rw [← C_1, initialOf_C]
 
 @[simp] theorem initialOf_mul_X_self : (p * X i).initialOf i = p.initialOf i := by
   by_cases p_zero : p = 0
@@ -132,9 +133,10 @@ theorem coeff_initialOf_eq_of_apply_eq_zero {s : σ →₀ ℕ} (h : s i = 0) :
   simpa [Finset.sum_filter, ← ite_and, this] using Eq.symm
 
 theorem coeff_initialOf_eq (s : σ →₀ ℕ) :
-    (p.initialOf i).coeff s = if s i = 0 then p.coeff (s.update i (p.degreeOf i)) else 0 :=
-  if hs : s i = 0 then if_pos hs ▸ coeff_initialOf_eq_of_apply_eq_zero i p hs
-  else if_neg hs ▸ coeff_initialOf_eq_of_apply_ne_zero i p hs
+    (p.initialOf i).coeff s = if s i = 0 then p.coeff (s.update i (p.degreeOf i)) else 0 := by
+  split_ifs with hs
+  · exact coeff_initialOf_eq_of_apply_eq_zero i p hs
+  exact coeff_initialOf_eq_of_apply_ne_zero i p hs
 
 lemma coeff_initialOf_eq_of_ne_zero {i : σ} {p : MvPolynomial σ R} {s : σ →₀ ℕ} :
     (p.initialOf i).coeff s ≠ 0 → (p.initialOf i).coeff s = p.coeff (s.update i (p.degreeOf i)) :=
@@ -161,14 +163,12 @@ theorem initialOf_eq_leadingCoeff [DecidableEq σ] {p : MvPolynomial σ R} {i : 
   by_cases hs : s i ≠ 0
   · suffices (rename Subtype.val
         ((optionEquivLeft R { b // b ≠ i }) ((rename ⇑f) p)).leadingCoeff).degreeOf i = 0 by
-      have hsc : (p.initialOf i).coeff s = 0 := by
-        apply notMem_support_iff.mp
-        apply p.degreeOf_initialOf_self i ▸ notMem_support_of_degreeOf_lt i
+      have hc {q : MvPolynomial σ R} (h : q.degreeOf i = 0) : q.coeff s = 0 := by
+        rw [← notMem_support_iff]
+        apply notMem_support_of_degreeOf_lt i
+        rw [h]
         exact Nat.zero_lt_of_ne_zero hs
-      rw [hsc]
-      apply Eq.symm <| notMem_support_iff.mp ?_
-      apply this ▸ notMem_support_of_degreeOf_lt i
-      exact Nat.zero_lt_of_ne_zero hs
+      rw [hc this, hc (p.degreeOf_initialOf_self i)]
     simp [degreeOf, degrees_rename_of_injective Subtype.val_injective]
   rw [not_ne_iff] at hs
   rw [Polynomial.leadingCoeff, ← degreeOf_eq_natDegree]
@@ -188,17 +188,22 @@ theorem initialOf_eq_leadingCoeff [DecidableEq σ] {p : MvPolynomial σ R} {i : 
   rw [← this, coeff_rename_mapDomain _ Subtype.val_injective, this,
     optionEquivLeft_coeff_coeff, ← coeff_rename_mapDomain _ f.symm.injective]
   simp only [rename_rename, ne_eq, Equiv.symm_comp_self, rename_id, AlgHom.coe_id, id_eq]
-  have (n : ℕ) : (s'.optionElim n).mapDomain f.symm = s.update i n := by
-    ext j
-    simp only [ne_eq, Finsupp.some, Finsupp.mapDomain_equiv_apply, Equiv.symm_symm,
-      Finsupp.optionElim_apply_eq_elim, Finsupp.update_apply, s', Option.elim]
-    have : f i = none := Equiv.optionSubtypeNe_symm_self i
-    split <;> expose_names
-    · have : j ≠ i := fun hj ↦ by absurd heq; rw [hj, this]; exact not_eq_of_beq_eq_false rfl
-      rw [if_neg this, Finsupp.comapDomain_apply, ← heq, Finsupp.mapDomain_apply f.injective]
-    have : j = i := by apply f.injective; rw [this, heq]
-    rw [if_pos this]
-  exact this _ ▸ coeff_initialOf_eq_of_apply_eq_zero i p hs
+  suffices ∀ (n : ℕ), (s'.optionElim n).mapDomain f.symm = s.update i n by
+    rw [this, coeff_initialOf_eq_of_apply_eq_zero i p hs]
+  intro n
+  ext j
+  simp only [ne_eq, Finsupp.some, Finsupp.mapDomain_equiv_apply, Equiv.symm_symm,
+    Finsupp.optionElim_apply_eq_elim, Finsupp.update_apply, s', Option.elim]
+  have : f i = none := Equiv.optionSubtypeNe_symm_self i
+  split <;> expose_names
+  · have : j ≠ i := fun hj ↦ by
+      absurd heq
+      rw [hj, this]
+      exact ne_of_beq_false rfl
+    rw [if_neg this, Finsupp.comapDomain_apply, ← heq, Finsupp.mapDomain_apply f.injective]
+  rw [if_pos]
+  apply f.injective
+  rw [this, heq]
 
 theorem vars_initialOf_subset : (p.initialOf i).vars ⊆ p.vars := by
   classical
@@ -239,16 +244,14 @@ theorem initialOf_add_eq_of_degreeOf_lt {i : σ} {p q : MvPolynomial σ R}
 theorem degreeOf_eq_of_initialOf_decomposition {i : σ} {p q r : MvPolynomial σ R} {d : ℕ}
     (q_ne : q ≠ 0) (hq : q.degreeOf i = 0) (hr : r.degreeOf i < d)
     (decomp : p = q * X i ^ d + r) : p.degreeOf i = d := by
-  haveI : Nontrivial R := have ⟨s, hs⟩ := ne_zero_iff.mp q_ne; ⟨q.coeff s, 0, hs⟩
-  have := degreeOf_mul_le i q (X i ^ d)
-  rw [hq, zero_add] at this
-  have := le_trans (degreeOf_add_le i (q * X i ^ d) r) (sup_le_sup_right this (r.degreeOf i))
-  rw [← decomp, degreeOf_X_self_pow, max_eq_left_of_lt hr] at this
-  apply le_antisymm this
+  apply le_antisymm
+  · haveI : Nontrivial R := have ⟨s, hs⟩ := ne_zero_iff.mp q_ne; ⟨q.coeff s, 0, hs⟩
+    rw [← max_eq_left_of_lt hr, decomp]
+    apply le_trans (degreeOf_add_le ..) (sup_le_sup_right ?_ _)
+    apply le_trans (degreeOf_mul_le ..)
+    rw [hq, zero_add, degreeOf_X_self_pow]
   have d_eq := degreeOf_mul_X_self_pow_eq_add_of_ne_zero i d q_ne
-  have : r.degreeOf i < (q * X i ^ d).degreeOf i :=
-    d_eq ▸ (lt_of_lt_of_le hr <| Nat.le_add_left d _)
-  rw [decomp, degreeOf_add_eq_of_degreeOf_lt this, d_eq]
+  rw [decomp, degreeOf_add_eq_of_degreeOf_lt (by grind), d_eq]
   exact Nat.le_add_left d _
 
 @[simp] theorem initialOf_initialOf_self : (p.initialOf i).initialOf i = p.initialOf i :=
@@ -258,28 +261,32 @@ theorem initialOf_eq_iff_degreeOf_eq_zero {i : σ} {p : MvPolynomial σ R} :
     p.degreeOf i = 0 ↔ p.initialOf i = p :=
   ⟨initialOf_eq_of_degreeOf_eq_zero, fun h ↦ by rw [h.symm, degreeOf_initialOf_self]⟩
 
-/-- Auxiliary decomposition lemma: `p` can be written as `initᵢ(p) * Xᵢ ^ degᵢ(p) + tail`. -/
-protected lemma _initialOf_decomposition :
-    let q := ∑ s ∈ p.support with s i ≠ p.degreeOf i, (monomial s) (p.coeff s)
-    q.degreeOf i ≤ p.degreeOf i - 1 ∧ p = p.initialOf i * X i ^ p.degreeOf i + q := by
+/-- `eraseInitOf i p` for a polynomial `p` is the sum of all terms in `p`
+whose degree in `i` is *not* equal to `p.degreeOf i`. -/
+noncomputable def eraseInitOf : MvPolynomial σ R :=
+  ∑ s ∈ p.support with s i ≠ p.degreeOf i, (monomial s) (p.coeff s)
+
+theorem degreeOf_eraseInitOf_lt : (p.eraseInitOf i).degreeOf i ≤ p.degreeOf i - 1 := by
+  set q := p.eraseInitOf i
+  have hq : q = ∑ s ∈ p.support with s i ≠ p.degreeOf i, (monomial s) (p.coeff s) := rfl
+  rw [degreeOf_eq_sup, Finset.sup_le_iff]
+  intro s hs
+  rw [hq,  mem_support_iff, coeff_sum, Finset.sum_filter] at hs
+  set f := fun t ↦ if t i ≠ p.degreeOf i then (monomial t (p.coeff t)).coeff s else 0 with hf
   classical
-  set q := ∑ s ∈ p.support with s i ≠ p.degreeOf i, (monomial s) (p.coeff s) with hq
-  simp only
-  constructor
-  · rw [degreeOf_eq_sup, Finset.sup_le_iff]
-    intro s hs
-    rw [hq,  mem_support_iff, coeff_sum, Finset.sum_filter] at hs
-    set f := fun t ↦ if t i ≠ p.degreeOf i then (monomial t (p.coeff t)).coeff s else 0 with hf
-    have hf : f = fun t ↦ if t = s then (if t i ≠ p.degreeOf i then (p.coeff t) else 0) else 0 :=
-      by ext t; simp only [hf, coeff_monomial]; rw [← ite_and]; simp only [and_comm, ite_and]
-    simp only [hf, ne_eq, Finset.sum_ite_eq', mem_support_iff, ite_eq_right_iff,
-      Classical.not_imp] at hs
-    have : s i ≤ p.degreeOf i := le_degreeOf_of_mem_support i <| mem_support_iff.mpr hs.1
-    by_cases d_zero : p.degreeOf i = 0
-    · rw [d_zero] at this ⊢
-      exact this
-    exact Nat.le_sub_one_of_lt <| lt_of_le_of_ne this hs.2.1
-  rw [initialOf_def, Finset.sum_mul, hq, Finset.sum_filter, Finset.sum_filter, X_pow_eq_monomial]
+  have hf : f = fun t ↦ if t = s then (if t i ≠ p.degreeOf i then (p.coeff t) else 0) else 0 := by
+    aesop
+  simp only [hf, ne_eq, Finset.sum_ite_eq', mem_support_iff, ite_eq_right_iff,
+    Classical.not_imp] at hs
+  have : s i ≤ p.degreeOf i := le_degreeOf_of_mem_support i <| mem_support_iff.mpr hs.1
+  grind
+
+/-- The fundamental decomposition of a polynomial with respect to a variable `i`.
+`p = initᵢ(p) * Xᵢ ^ degᵢ(p) + eraseInit`, where `degᵢ(eraseInit) < degᵢ(p)`. -/
+theorem initialOf_mul_X_pow_add_eraseInitOf :
+    p = p.initialOf i * X i ^ p.degreeOf i + p.eraseInitOf i := by
+  rw [initialOf_def, Finset.sum_mul, eraseInitOf, Finset.sum_filter, Finset.sum_filter,
+    X_pow_eq_monomial]
   simp only [monomial_mul, mul_one, ne_eq, ite_not, ← Finset.sum_add_distrib]
   nth_rw 1 [as_sum p]
   refine Finset.sum_congr rfl (fun s _ ↦ ?_)
@@ -287,33 +294,37 @@ protected lemma _initialOf_decomposition :
   · rw [← hs, Finsupp.erase_add_single, add_zero]
   rw [zero_add]
 
-/-- The fundamental decomposition of a polynomial with respect to a variable `i`.
-`p = initᵢ(p) * Xᵢ ^ degᵢ(p) + tail`, where `degᵢ(tail) < degᵢ(p)`. -/
-theorem initialOf_decomposition : ∃ q, q.degreeOf i ≤ p.degreeOf i - 1 ∧
-    p = p.initialOf i * X i ^ p.degreeOf i + q := ⟨_, p._initialOf_decomposition i⟩
-
 theorem initialOf_ne_zero {p : MvPolynomial σ R} : p ≠ 0 → p.initialOf i ≠ 0 := mt fun h ↦ by
-  obtain ⟨q, hq1, hq2⟩ := p.initialOf_decomposition i
+  rw [← h, initialOf_eq_of_degreeOf_eq_zero]
+  have hq1 := p.degreeOf_eraseInitOf_lt i
+  have hq2 := p.initialOf_mul_X_pow_add_eraseInitOf i
   rw [h, zero_mul, zero_add] at hq2
   rw [← hq2] at hq1
-  have : p.degreeOf i = 0 := by contrapose! hq1; exact Nat.sub_one_lt hq1
-  exact initialOf_eq_of_degreeOf_eq_zero this ▸ h
+  contrapose! hq1
+  exact Nat.sub_one_lt hq1
 
-theorem initialOf_ne_zero_of_degreeOf_ne_zero {i : σ} {p : MvPolynomial σ R} : p.degreeOf i ≠ 0 →
-    p.initialOf i ≠ 0 := fun h ↦ (initialOf_ne_zero i) (ne_zero_of_degreeOf_ne_zero h)
+theorem initialOf_ne_zero_of_degreeOf_ne_zero {i : σ} {p : MvPolynomial σ R}
+    (h : p.degreeOf i ≠ 0) : p.initialOf i ≠ 0 :=
+  initialOf_ne_zero i (ne_zero_of_degreeOf_ne_zero h)
 
 theorem degreeOf_add_lt_of_initialOf_cancel {i : σ} {p q : MvPolynomial σ R}
     (hd : p.degreeOf i = q.degreeOf i) (hi : p.initialOf i + q.initialOf i = 0) :
     (p + q).degreeOf i ≤ p.degreeOf i - 1 := by
-  obtain ⟨p', hp1, hp2⟩ := p.initialOf_decomposition i
-  obtain ⟨q', hq1, hq2⟩ := q.initialOf_decomposition i
-  set d := p.degreeOf i with hd'
+  have hp1 := p.degreeOf_eraseInitOf_lt i
+  have hp2 := p.initialOf_mul_X_pow_add_eraseInitOf i
+  have hq1 := q.degreeOf_eraseInitOf_lt i
+  have hq2 := q.initialOf_mul_X_pow_add_eraseInitOf i
+  set p' := p.eraseInitOf i
+  set q' := q.eraseInitOf i
+  set d := p.degreeOf i
   have : p' + q' = p + q :=
     calc p' + q' = (p.initialOf i + q.initialOf i) * X i ^ d + p' + q' := by simp [hi]
       _ = p.initialOf i * X i ^ d + p' + (q.initialOf i * X i ^ d + q') := by ring
       _ = p + q := by rw [← hp2, hd, ← hq2]
   rw [← this]
-  exact le_trans (degreeOf_add_le i p' q') <| max_le hp1 (hd ▸ hq1)
+  apply le_trans (degreeOf_add_le ..)
+  rw [← hd] at hq1
+  exact max_le hp1 hq1
 
 theorem initialOf_cancel_of_degreeOf_add_lt {i : σ} {p q : MvPolynomial σ R}
     (h : (p + q).degreeOf i < p.degreeOf i) : p.initialOf i + q.initialOf i = 0 := by
@@ -330,81 +341,6 @@ theorem initialOf_cancel_of_degreeOf_add_lt {i : σ} {p q : MvPolynomial σ R}
     refine notMem_support_iff.mp <| notMem_support_of_degreeOf_lt i ?_
     classical simpa only [Finsupp.update_apply]
   rw [add_zero]
-
-theorem initialOf_eq_of_initialOf_decomposition {i : σ} {p q r : MvPolynomial σ R} {d : ℕ}
-    (q_ne : q ≠ 0) (hq : q.degreeOf i = 0) (hr : r.degreeOf i < d)
-    (decomp : p = q * X i ^ d + r) : p.initialOf i = q := by
-  ext s
-  have d_eq : p.degreeOf i = d := degreeOf_eq_of_initialOf_decomposition q_ne hq hr decomp
-  simp only [coeff_initialOf_eq, d_eq]
-  split_ifs with hs
-  · suffices r.coeff (s + Finsupp.single i d) = 0 by
-      classical simp [decomp, X_pow_eq_monomial, coeff_mul_monomial',
-        Finsupp.update_eq_add_single hs, this]
-    refine notMem_support_iff.mp <| notMem_support_of_degreeOf_lt i ?_
-    simpa using Nat.lt_add_left (s i) hr
-  refine Eq.symm <| notMem_support_iff.mp <| notMem_support_of_degreeOf_lt i ?_
-  exact hq ▸ Nat.zero_lt_of_ne_zero hs
-
-theorem initialOf_add_of_degreeOf_eq_of_ne {p q : MvPolynomial σ R}
-    (hi : p.initialOf i + q.initialOf i ≠ 0) (h : q.degreeOf i = p.degreeOf i) :
-    (p + q).initialOf i = p.initialOf i + q.initialOf i := by
-  by_cases pd_zero : p.degreeOf i = 0
-  · have pI : p.initialOf i = p := initialOf_eq_of_degreeOf_eq_zero pd_zero
-    have qI : q.initialOf i = q := initialOf_eq_of_degreeOf_eq_zero <| h ▸ pd_zero
-    have := degreeOf_add_le i p q
-    simp only [pd_zero, h, max_self, nonpos_iff_eq_zero] at this
-    rw [initialOf_eq_of_degreeOf_eq_zero this, pI, qI]
-  obtain ⟨p', hp1, hp2⟩ := p.initialOf_decomposition i
-  obtain ⟨q', hq1, hq2⟩ := q.initialOf_decomposition i
-  have pd_zero : 0 < p.degreeOf i := Nat.zero_lt_of_ne_zero pd_zero
-  have hp1 : degreeOf i p' < degreeOf i p := Nat.lt_of_le_pred pd_zero hp1
-  have hq1 : degreeOf i q' < degreeOf i p := Nat.lt_of_le_pred pd_zero (h ▸ hq1)
-  have decomp : p + q = (p.initialOf i + q.initialOf i) * X i ^ p.degreeOf i + (p' + q') :=
-    by nth_rw 1 [hp2, hq2, h]; ring
-  have d_zero : (p.initialOf i + q.initialOf i).degreeOf i = 0 := by
-    refine Nat.eq_zero_of_le_zero <| le_trans (degreeOf_add_le ..) ?_
-    simp only [degreeOf_initialOf_self, max_self, le_refl]
-  have hlt : (p' + q').degreeOf i < p.degreeOf i :=
-      lt_of_le_of_lt (degreeOf_add_le ..) <| max_lt hp1 hq1
-  exact initialOf_eq_of_initialOf_decomposition hi d_zero hlt decomp
-
-variable (q) in
-theorem initialOf_mul_decomposition : ∃ r, r.degreeOf i ≤ p.degreeOf i + q.degreeOf i - 1
-    ∧ p * q = p.initialOf i * q.initialOf i * X i ^ (p.degreeOf i + q.degreeOf i) + r := by
-  by_cases this : p.degreeOf i = 0 ∨ q.degreeOf i = 0
-  · rcases this with h | h <;>
-    have {p q : MvPolynomial σ R} (h : q.degreeOf i = 0) :
-        ∃ r, r.degreeOf i ≤ p.degreeOf i + q.degreeOf i - 1
-          ∧ p * q = p.initialOf i * q.initialOf i * X i ^ (p.degreeOf i + q.degreeOf i) + r := by
-      obtain ⟨p', hp1, hp2⟩ := p.initialOf_decomposition i
-      rw [initialOf_eq_of_degreeOf_eq_zero h]
-      refine ⟨q * p', ?_, by nth_rw 1 [h, add_zero, hp2]; ring⟩
-      refine le_trans (degreeOf_mul_le ..) ?_
-      simpa [initialOf_eq_of_degreeOf_eq_zero, h] using hp1
-    · rw [add_comm, mul_comm, mul_comm (p.initialOf i)]
-      exact this h
-    exact this h
-  obtain ⟨p', hp1, hp2⟩ := p.initialOf_decomposition i
-  obtain ⟨q', hq1, hq2⟩ := q.initialOf_decomposition i
-  use q.initialOf i * X i ^ q.degreeOf i * p' + p.initialOf i * X i ^ p.degreeOf i * q' + p' * q'
-  refine ⟨?_, by nth_rw 1 [hp2, hq2]; ring⟩
-  have hp := Nat.zero_lt_of_ne_zero (not_or.mp this).1
-  have hq := Nat.zero_lt_of_ne_zero (not_or.mp this).2
-  have : (p' * q').degreeOf i ≤ p.degreeOf i + q.degreeOf i - 1 := by
-    refine le_trans (degreeOf_mul_le i p' q') <| le_trans (add_le_add hp1 hq1) ?_
-    simp [Nat.add_sub_assoc hq _]
-  refine le_trans (degreeOf_add_le ..) (max_le ?_ this)
-  refine le_trans (degreeOf_add_le ..) (max_le ?_ ?_)
-  <;> refine le_trans (degreeOf_mul_le i ..) ?_
-  · rw [add_comm (p.degreeOf i), Nat.add_sub_assoc hp _, Nat.succ_eq_add_one, zero_add]
-    apply add_le_add ?_ hp1
-    have : q.initialOf i ≠ 0 := initialOf_ne_zero_of_degreeOf_ne_zero <| Nat.ne_zero_of_lt hq
-    rw [degreeOf_mul_X_self_pow_eq_add_of_ne_zero _ _ this, degreeOf_initialOf_self, zero_add]
-  rw [Nat.add_sub_assoc hq _, Nat.succ_eq_add_one, zero_add]
-  apply add_le_add ?_ hq1
-  have : p.initialOf i ≠ 0 := initialOf_ne_zero_of_degreeOf_ne_zero <| Nat.ne_zero_of_lt hp
-  rw [degreeOf_mul_X_self_pow_eq_add_of_ne_zero _ _ this, degreeOf_initialOf_self, zero_add]
 
 end InitialOf
 
@@ -449,8 +385,8 @@ theorem initial_monomial {s : σ →₀ ℕ} (r : R) {c : σ} :
     s.support.max = c → (monomial s r).initial = monomial (s.erase c) r := fun hs ↦ by
   by_cases r_zero : r = 0
   · simp only [r_zero, initial, monomial_zero, reduceIte]
-  have : (monomial s r).vars.max = c := hs ▸ congrArg _ (vars_monomial r_zero)
-  rw [initial_of_max_vars_isSome' this, initialOf_monomial]
+  rw [initial_of_max_vars_isSome' ?_, initialOf_monomial]
+  rw [← hs, vars_monomial r_zero]
 
 @[simp] theorem initial_X_pow (i : σ) {k : ℕ} (hk : k ≠ 0) :
     (X i ^ k).initial = (1 : MvPolynomial σ R) := by
@@ -458,19 +394,21 @@ theorem initial_monomial {s : σ →₀ ℕ} (r : R) {c : σ} :
     rw [Finsupp.support_single _ hk]; exact rfl
   rw [X_pow_eq_monomial, initial_monomial 1 this, Finsupp.erase_single, monomial_zero', C_1]
 
-@[simp] theorem initial_X (i : σ) : (X i : MvPolynomial σ R).initial = 1 :=
-  pow_one (X i : MvPolynomial σ R) ▸ initial_X_pow i one_ne_zero
+@[simp] theorem initial_X (i : σ) : (X i : MvPolynomial σ R).initial = 1 := by
+  rw [← pow_one (X i : MvPolynomial σ R), initial_X_pow i one_ne_zero]
 
 theorem max_vars_initial_lt (hp : p.vars.max ≠ ⊥) :
     (initial p).vars.max < p.vars.max := by
   by_contra con
   have ⟨c, hc⟩ := WithBot.ne_bot_iff_exists.mp hp
   absurd p.degreeOf_initialOf_self c
-  rw [initial_of_max_vars_isSome' hc.symm] at con
-  have con : (p.initialOf c).vars.max = p.vars.max :=
-    eq_of_le_of_not_lt (Finset.max_mono <| vars_initialOf_subset c p) con
-  have con := Finset.mem_of_max (hc ▸ con)
-  simpa only [degreeOf, Multiset.count_ne_zero, vars_def, Multiset.mem_toFinset] using con
+  suffices c ∈ (p.initialOf c).vars by
+    simpa only [degreeOf, Multiset.count_ne_zero, vars_def, Multiset.mem_toFinset] using this
+  apply Finset.mem_of_max
+  rw [hc]
+  apply eq_of_le_of_not_lt (Finset.max_mono <| vars_initialOf_subset c p)
+  rw [← initial_of_max_vars_isSome' hc.symm]
+  exact con
 
 variable (p) (i) in
 theorem degreeOf_initial_le : p.initial.degreeOf i ≤ p.degreeOf i := by
@@ -479,7 +417,8 @@ theorem degreeOf_initial_le : p.initial.degreeOf i ≤ p.degreeOf i := by
   by_cases hc : p.vars.max = ⊥
   · simp only [initial_of_max_vars_eq_bot hp hc, degreeOf_one, zero_le]
   have ⟨c, hc⟩ :=  WithBot.ne_bot_iff_exists.mp hc
-  exact initial_of_max_vars_isSome' hc.symm ▸ p.degreeOf_initialOf_le c i
+  rw [initial_of_max_vars_isSome' hc.symm]
+  exact p.degreeOf_initialOf_le c i
 
 /-- The product of initials of a set of polynomials. -/
 noncomputable def initialProd (PS : Finset (MvPolynomial σ R)) : MvPolynomial σ R :=
@@ -516,10 +455,11 @@ variable {R σ : Type*} [CommRing R] {p q : MvPolynomial σ R}
   classical simp [initialOf_eq_leadingCoeff]
 
 theorem degreeOf_sub_lt_of_initialOf_eq {i : σ} (hi : p.initialOf i = q.initialOf i)
-    (hd : p.degreeOf i = q.degreeOf i) : (p - q).degreeOf i ≤ p.degreeOf i - 1 :=
+    (hd : p.degreeOf i = q.degreeOf i) : (p - q).degreeOf i ≤ p.degreeOf i - 1 := by
   have hi : p.initialOf i + (-q).initialOf i = 0 := by rw [initialOf_neg i, hi, add_neg_cancel]
   have hd : p.degreeOf i = (-q).degreeOf i := by rw [degreeOf_neg, hd]
-  sub_eq_add_neg p q ▸ degreeOf_add_lt_of_initialOf_cancel hd hi
+  rw [sub_eq_add_neg p q]
+  exact degreeOf_add_lt_of_initialOf_cancel hd hi
 
 theorem initialOf_eq_of_degreeOf_sub_lt {i : σ} {p q : MvPolynomial σ R}
     (h : (p - q).degreeOf i < p.degreeOf i) : p.initialOf i = q.initialOf i := by

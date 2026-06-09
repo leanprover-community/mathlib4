@@ -49,7 +49,7 @@ variable {S T : TriangularSet σ R} {p : MvPolynomial σ R} {m n : ℕ}
 
 noncomputable instance instFunLike : FunLike (TriangularSet σ R) ℕ (MvPolynomial σ R) where
   coe S n := S.toList[n]?.getD 0
-  coe_injective' := by
+  coe_injective := by
     rintro ⟨ls, hs1, hs2⟩ ⟨lt, ht1, ht2⟩ h
     congr
     apply List.ext_getElem? fun n ↦ ?_
@@ -202,7 +202,7 @@ theorem toList_nodup (S : TriangularSet σ R) : S.toList.Nodup := by
 
 instance instSetLike : SetLike (TriangularSet σ R) (MvPolynomial σ R) where
   coe := fun S ↦ {p | ∃ n < S.length, S n = p}
-  coe_injective' := by
+  coe_injective := by
     intro S T (h : (fun p ↦ ∃ n < S.length, S n = p) = (fun p ↦ ∃ n < T.length, T n = p))
     have h (p : MvPolynomial σ R) : p ∈ S.toList ↔ p ∈ T.toList := by
       rw [mem_toList_iff', mem_toList_iff']

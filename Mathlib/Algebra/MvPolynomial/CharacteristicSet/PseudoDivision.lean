@@ -6,7 +6,7 @@ Authors: Yuxuan Xiao
 module
 
 public import Mathlib.Algebra.MvPolynomial.Initial
-public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.Order
+public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.Rank
 public import Mathlib.Algebra.BigOperators.Fin
 
 /-!
