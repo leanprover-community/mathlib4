@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Hom
 public import Mathlib.Algebra.Ring.Action.Group
+public import Mathlib.Algebra.Ring.Aut
 
 /-!
 # Isomorphisms of `R`-algebras
@@ -631,15 +632,26 @@ def ofRingEquiv {f : A₁ ≃+* A₂} (hf : ∀ x, f (algebraMap R A₁ x) = alg
 
 end OfRingEquiv
 
-@[simps -isSimp one mul, stacks 09HR]
+instance : One (A₁ ≃ₐ[R] A₁) where one := refl
+instance : Mul (A₁ ≃ₐ[R] A₁) where mul ϕ ψ := ψ.trans ϕ
+instance : Inv (A₁ ≃ₐ[R] A₁) where inv := symm
+instance : Pow (A₁ ≃ₐ[R] A₁) Nat where
+  pow f n :=
+    { __ := f.toRingEquiv ^ n
+      commutes' r := Nat.rec rfl (fun n ih => (congrArg f^[n] (f.commutes r)).trans ih) n }
+instance : Pow (A₁ ≃ₐ[R] A₁) Int where
+  pow f n :=
+    { __ := f.toRingEquiv ^ n
+      commutes' := n.casesOn (fun n => (f ^ n).commutes) (fun n => ((f ^ (n + 1))⁻¹).commutes) }
+
+@[simps! -isSimp one mul, stacks 09HR]
 instance aut : Group (A₁ ≃ₐ[R] A₁) where
-  mul ϕ ψ := ψ.trans ϕ
   mul_assoc _ _ _ := rfl
-  one := refl
-  one_mul _ := ext fun _ => rfl
-  mul_one _ := ext fun _ => rfl
-  inv := symm
+  one_mul _ := rfl
+  mul_one _ := rfl
   inv_mul_cancel ϕ := ext <| symm_apply_apply ϕ
+  npow n f := f ^ n
+  zpow n f := f ^ n
 
 @[simp]
 theorem one_apply (x : A₁) : (1 : A₁ ≃ₐ[R] A₁) x = x :=

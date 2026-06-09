@@ -55,7 +55,6 @@ instance : Monoid (Function.End α) where
   mul_one _ := rfl
   one_mul _ := rfl
   npow n f := f^[n]
-  npow_succ _ _ := Function.iterate_succ _ _
 
 instance : Inhabited (Function.End α) := ⟨1⟩
 
@@ -69,7 +68,11 @@ instance instOne : One (Perm α) where one := Equiv.refl _
 instance instMul : Mul (Perm α) where mul f g := Equiv.trans g f
 instance instInv : Inv (Perm α) where inv := Equiv.symm
 instance instPowNat : Pow (Perm α) ℕ where
-  pow f n := ⟨f^[n], f.symm^[n], f.left_inv.iterate _, f.right_inv.iterate _⟩
+  pow f n := ⟨f^[n], Nat.repeat f.symm n,
+    Nat.rec Eq.refl (fun _ ih x =>
+      (congrArg f.symm (ih (f x))).trans (f.symm_apply_apply x)) n,
+    Nat.rec Eq.refl (fun n ih x =>
+      (congrArg f^[n] (f.apply_symm_apply (Nat.repeat f.symm n x))).trans (ih x)) n⟩
 
 instance permGroup : Group (Perm α) where
   mul_assoc _ _ _ := (trans_assoc _ _ _).symm
@@ -77,9 +80,7 @@ instance permGroup : Group (Perm α) where
   mul_one := refl_trans
   inv_mul_cancel := self_trans_symm
   npow n f := f ^ n
-  npow_succ _ _ := coe_fn_injective <| Function.iterate_succ _ _
   zpow := zpowRec fun n f ↦ f ^ n
-  zpow_succ' _ _ := coe_fn_injective <| Function.iterate_succ _ _
 
 @[simp]
 theorem default_eq : (default : Perm α) = 1 :=
@@ -423,7 +424,7 @@ set_option backward.privateInPublic true in
 private theorem zpow_aux (hf : ∀ x, p (f x) ↔ p x) : ∀ {n : ℤ} (x), p ((f ^ n) x) ↔ p x
   | Int.ofNat _ => pow_aux hf
   | Int.negSucc n => by
-    rw [zpow_negSucc]
+    rw [zpow_negSucc, ← inv_pow]
     exact pow_aux (inv_aux.1 hf)
 
 set_option backward.privateInPublic true in
@@ -635,6 +636,24 @@ namespace MulAut
 
 variable (M) [Mul M]
 
+@[to_additive]
+instance : One (MulAut M) where one := .refl _
+@[to_additive]
+instance : Mul (MulAut M) where mul g h := .trans h g
+@[to_additive]
+instance : Inv (MulAut M) where inv := .symm
+@[to_additive]
+instance : Pow (MulAut M) Nat where
+  pow f n :=
+    { toEquiv := f.toEquiv ^ n,
+      map_mul' := Nat.rec (fun _ _ => rfl)
+        (fun n ih x y => (congrArg f^[n] (map_mul f x y)).trans (ih (f x) (f y))) n }
+@[to_additive]
+instance : Pow (MulAut M) Int where
+  pow f n :=
+    { toEquiv := f.toEquiv ^ n,
+      map_mul' := n.casesOn (fun n => map_mul (f ^ n)) (fun n => map_mul (f ^ (n + 1))⁻¹) }
+
 /-- If `M` is a type with multiplicative, then multiplicative automorphisms of `M` have the
 structure of a group. -/
 @[to_additive /-- If `M` is a type with addition, then additive automorphisms of `M` have the
@@ -646,13 +665,12 @@ conjugation action `G →* MulAut G` would be impossible to `to_additive`-ize be
 additivization would require inserting `Additive` around `AddAut G` and dealing with these extra
 `Additive`s in the proof, but `to_additive` is unable to do this automatically. -/]
 instance : Group (MulAut M) where
-  mul g h := MulEquiv.trans h g
-  one := MulEquiv.refl _
-  inv := MulEquiv.symm
   mul_assoc _ _ _ := rfl
   one_mul _ := rfl
   mul_one _ := rfl
   inv_mul_cancel := MulEquiv.self_trans_symm
+  npow n f := f ^ n
+  zpow n f := f ^ n
 
 @[to_additive]
 instance : Inhabited (MulAut M) :=

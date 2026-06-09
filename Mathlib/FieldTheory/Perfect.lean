@@ -173,8 +173,7 @@ theorem iterateFrobeniusEquiv_one : iterateFrobeniusEquiv R p 1 = frobeniusEquiv
   RingEquiv.ext (iterateFrobeniusEquiv_one_apply R p)
 
 theorem iterateFrobeniusEquiv_eq_pow : iterateFrobeniusEquiv R p n = frobeniusEquiv R p ^ n :=
-  DFunLike.ext' <| show _ = ⇑(RingAut.toPerm _ _) by
-    rw [map_pow, Equiv.Perm.coe_pow]; exact (pow_iterate p n).symm
+  DFunLike.ext' (pow_iterate p n).symm
 
 theorem iterateFrobeniusEquiv_symm :
     (iterateFrobeniusEquiv R p n).symm = (frobeniusEquiv R p).symm ^ n := by

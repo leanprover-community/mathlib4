@@ -117,13 +117,15 @@ instance instInv : Inv (G ≃+c[a, a] G) := ⟨.symm⟩
 instance instDiv : Div (G ≃+c[a, a] G) := ⟨fun f g ↦ f * g⁻¹⟩
 
 instance instPowNat : Pow (G ≃+c[a, a] G) ℕ where
-  pow e n := ⟨e^n, (e.toAddConstMap^n).map_add_const'⟩
+  pow e n := ⟨e ^ n, (e.toAddConstMap ^ n).map_add_const'⟩
 
 instance instPowInt : Pow (G ≃+c[a, a] G) ℤ where
-  pow e n := ⟨e^n,
+  pow e n := ⟨e ^ n,
     match n with
-    | .ofNat n => (e^n).map_add_const'
-    | .negSucc n => (e.symm^(n + 1)).map_add_const'⟩
+    | .ofNat n => (e ^ n).map_add_const'
+    | .negSucc n => by
+      rw [zpow_negSucc, ← inv_pow]
+      exact (e.symm ^ (n + 1)).map_add_const'⟩
 
 instance instGroup : Group (G ≃+c[a, a] G) :=
   toEquiv_injective.group _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
