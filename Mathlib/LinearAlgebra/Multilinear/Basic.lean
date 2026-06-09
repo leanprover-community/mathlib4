@@ -107,7 +107,7 @@ variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, AddCommMonoid (M₁ i
 
 instance : FunLike (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; cases h; rfl
+  coe_injective f g h := by cases f; cases g; cases h; rfl
 
 initialize_simps_projections MultilinearMap (toFun → apply)
 
@@ -273,9 +273,9 @@ def ofSubsingleton [Subsingleton ι] (i : ι) :
   invFun f :=
     { toFun := fun x ↦ f fun _ ↦ x
       map_add' := fun x y ↦ by
-        simpa [update_eq_const_of_subsingleton] using f.map_update_add 0 i x y
+        simpa [update_eq_const_of_subsingleton] using! f.map_update_add 0 i x y
       map_smul' := fun c x ↦ by
-        simpa [update_eq_const_of_subsingleton] using f.map_update_smul 0 i c x }
+        simpa [update_eq_const_of_subsingleton] using! f.map_update_smul 0 i c x }
   right_inv f := by ext x; refine congr_arg f ?_; exact (eq_const_of_subsingleton _ _).symm
 
 variable (M₁) {M₂}

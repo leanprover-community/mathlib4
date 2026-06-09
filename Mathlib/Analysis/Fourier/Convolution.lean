@@ -41,7 +41,7 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
   [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
   [NormedSpace 𝕜 F₁] [NormedSpace 𝕜 F₂] [NormedSpace 𝕜 F₃]
 
-/- The norm of the integrant of the convolution is integrable if the functions are integrable
+/-- The norm of the integrant of the convolution is integrable if the functions are integrable
 and continuous. -/
 theorem integrable_prod_sub (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {f₁ : E → F₁} {f₂ : E → F₂}
     (hf₁ : Integrable f₁) (hf₂ : Integrable f₂) (hf₁' : Continuous f₁) (hf₂' : Continuous f₂) :

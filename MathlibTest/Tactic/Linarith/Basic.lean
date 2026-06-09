@@ -728,7 +728,6 @@ example (x : ℤ) : 0 ≤ x * wrapped x := by nlinarith
 def tightlyWrapped (z : ℤ) : ℤ := z
 /--
 error: linarith failed to find a contradiction
-case h
 x : ℤ
 a✝ : x * tightlyWrapped x < 0
 ⊢ False
