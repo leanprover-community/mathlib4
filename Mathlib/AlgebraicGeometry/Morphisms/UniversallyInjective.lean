@@ -20,8 +20,8 @@ We show that being universally injective is local at the target, and is stable u
 compositions and base changes.
 
 We also prove that universally injective is equivalent to being injective with
-purely inseparable residue field extensions (`AlgebraicGeometry.tfae_universallyInjective`,
-Stacks tag 01S4).
+purely inseparable residue field extensions (also known as a radical morphism), see
+`AlgebraicGeometry.tfae_universallyInjective` and Stacks tag 01S4.
 
 -/
 
