@@ -447,6 +447,10 @@ theorem coe_prodEquivOfIsTopCompl (h : IsTopCompl p q) :
     ⇑(prodEquivOfIsTopCompl p q h) = p.prodEquivOfIsCompl q h.isCompl :=
   rfl
 
+theorem coe_symm_prodEquivOfIsTopCompl (h : IsTopCompl p q) :
+    ⇑(prodEquivOfIsTopCompl p q h).symm = (p.prodEquivOfIsCompl q h.isCompl).symm :=
+  rfl
+
 @[simp]
 theorem prodEquivOfIsTopCompl_apply (h : IsTopCompl p q) (x : p × q) :
     prodEquivOfIsTopCompl p q h x = (x.1 : M) + x.2 :=
