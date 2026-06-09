@@ -613,7 +613,12 @@ For each main subgoal, also return whether the sides of the relation are swapped
 
 This function is used by both the `gcongr` and `grw` tactic.
 In the case of `grw`, one of the two sides of the goal is a metavariable that is filled in
-by this function. -/
+by this function.
+
+In the main subgoals, the forall binders are introduced. They are named using the `with` clause of
+`gcongr`, or otherwise using binder names in the goal. `grw` relies on these names to ensure that
+binder names are preserved in the goal.
+-/
 def applyGCongrLemma (g : MVarId) (lem : GCongr.GCongrLemma) :
     GCongrM (Array (MVarId × Bool) × Array MVarId) := do
   let const ← mkConstWithFreshMVarLevels lem.declName
