@@ -24,15 +24,13 @@ This is a trivial corollary of `NumberField.not_dvd_discr_iff_forall_mem` and
 
 section
 
-open Pointwise in
-instance {α β γ : Type*} [Monoid α] [Monoid β] [Semiring γ] [SMul α β] [MulSemiringAction α γ]
-    [MulSemiringAction β γ] [IsScalarTower α β γ] : IsScalarTower α β (Ideal γ) where
-  smul_assoc x y z := by
-    simp_rw [Ideal.pointwise_smul_def, Ideal.map_map]
-    congr
-    ext
-    simp
+-- RingTheory.Ideal.Defs
+theorem Ideal.coe_mem_inertia (G : Type*) [Group G] (H : Subgroup G) (h : H)
+    (R : Type*) [CommRing R] (I : Ideal R) [MulSemiringAction G R] :
+    ↑h ∈ I.inertia G ↔ h ∈ I.inertia H :=
+  .rfl
 
+-- RingTheory.Ideal.Over
 open Pointwise in
 theorem Ideal.smul_under {G R S : Type*} [Group G] [CommRing R] [CommRing S] [Algebra R S]
     [MulSemiringAction G R] [MulSemiringAction G S] [SMulDistribClass G R S]
@@ -45,13 +43,18 @@ theorem Ideal.smul_under {G R S : Type*} [Group G] [CommRing R] [CommRing S] [Al
   ext
   simp [algebraMap.smul']
 
-theorem Ideal.coe_mem_inertia (G : Type*) [Group G] (H : Subgroup G) (h : H)
-    (R : Type*) [CommRing R] (I : Ideal R) [MulSemiringAction G R] :
-    ↑h ∈ I.inertia G ↔ h ∈ I.inertia H :=
-  .rfl
+-- RingTheory.Ideal.Pointwise
+open Pointwise in
+instance {α β γ : Type*} [Monoid α] [Monoid β] [Semiring γ] [SMul α β] [MulSemiringAction α γ]
+    [MulSemiringAction β γ] [IsScalarTower α β γ] : IsScalarTower α β (Ideal γ) where
+  smul_assoc x y z := by
+    simp_rw [Ideal.pointwise_smul_def, Ideal.map_map]
+    congr
+    ext
+    simp
 
 open Pointwise in
-theorem foo₄ (B C G : Type*) [Group G] (H : Subgroup G) [CommRing B] [CommRing C]
+theorem Ideal.inertia_quotient (B C G : Type*) [Group G] (H : Subgroup G) [CommRing B] [CommRing C]
     [Algebra B C] [MulSemiringAction G C] [Algebra.IsInvariant B C H] [SMulCommClass H B C]
     [H.Normal] [MulSemiringAction (G ⧸ H) B]
     [MulSemiringAction G B] [IsScalarTower G (G ⧸ H) B] [SMulDistribClass G B C] [Finite H]
@@ -64,7 +67,7 @@ theorem foo₄ (B C G : Type*) [Group G] (H : Subgroup G) [CommRing B] [CommRing
     rwa [QuotientGroup.mk'_apply, MulAction.coe_quotient_smul, r.over_def q]
   · -- let `g : G ⧸ H` be an element of the inertia subgroup of `q`
     intro g hg
-    -- first we will find a lift `g' : G` in the decomposition subgroup of `r`
+    -- first we will find a lift in the decomposition subgroup of `r`
     have mem_decomposition : ∃ g' : MulAction.stabilizer G r, QuotientGroup.mk' H g' = g := by
       replace hg := Ideal.inertia_le_stabilizer q hg
       obtain ⟨g, rfl⟩ := QuotientGroup.mk'_surjective H g
@@ -72,7 +75,7 @@ theorem foo₄ (B C G : Type*) [Group G] (H : Subgroup G) [CommRing B] [CommRing
       have : (g • r).under B = r.under B := by rwa [← Ideal.smul_under, ← Ideal.over_def r q]
       obtain ⟨g', hg'⟩ := Algebra.IsInvariant.exists_smul_of_under_eq B C H (g • r) r this
       exact ⟨⟨g' * g, by simpa [mul_smul, eq_comm]⟩, by simp⟩
-    -- and now we must find a lift `g' : G` in the inertia subgroup of `r`
+    -- and now a further modification will give a lift in the inertia subgroup of `r`
     obtain ⟨g, rfl⟩ := mem_decomposition
     let φ : (C ⧸ r) ≃ₐ[B ⧸ q] (C ⧸ r) :=
     { __ := Ideal.Quotient.stabilizerHom r (r.under ℤ) G g
@@ -88,9 +91,8 @@ theorem foo₄ (B C G : Type*) [Group G] (H : Subgroup G) [CommRing B] [CommRing
     obtain ⟨g', hg'⟩ := Ideal.Quotient.stabilizerHom_surjective H q r φ
     let v := ⟨g', g'.2⟩⁻¹ * g
     refine ⟨v, ?_, by simp [v]⟩
-    rw [SetLike.mem_coe, Ideal.coe_mem_inertia]
-    rw [← Ideal.Quotient.ker_stabilizerHom r (r.under ℤ) G, MonoidHom.mem_ker,
-      map_mul, map_inv, inv_mul_eq_one]
+    rw [SetLike.mem_coe, Ideal.coe_mem_inertia, ← Ideal.Quotient.ker_stabilizerHom r (r.under ℤ) G,
+      MonoidHom.mem_ker, map_mul, map_inv, inv_mul_eq_one]
     rwa [AlgEquiv.ext_iff] at hg' ⊢
 
 end
@@ -267,7 +269,7 @@ theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finit
   obtain ⟨mS, hmS, hmRS⟩ := Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain (R := R) (S := S) mR (by simp)
   replace hmRS : mS.LiesOver mR := ⟨hmRS.symm⟩
   let := IsGaloisGroup.mulSemiringActionOfNormal G R S H
-  rw [foo₄ R S G H mR mS, Subgroup.map_eq_bot_iff, QuotientGroup.ker_mk']
+  rw [Ideal.inertia_quotient R S G H mR mS, Subgroup.map_eq_bot_iff, QuotientGroup.ker_mk']
   apply le_iSup_of_le ⟨mS, hmS⟩
   rfl
 
