@@ -413,8 +413,8 @@ theorem Dense.borel_eq_generateFrom_Ioc_mem_aux {α : Type*} [TopologicalSpace �
   · calc
       _ = OrderDual.ofDual '' (Ioo x y) := by
         ext
-        simp only [mem_Ioo, mem_image_equiv, OrderDual.ofDual_symm_eq]
-        tauto
+        simp only [mem_Ioo, mem_image_equiv, OrderDual.ofDual_symm_eq, OrderDual.toDual_of_op]
+        exact And.comm
       _ = _ := by rw [he, image_empty]
 
 theorem Dense.borel_eq_generateFrom_Ioc_mem {α : Type*} [TopologicalSpace α] [LinearOrder α]
@@ -506,8 +506,7 @@ theorem ext_of_Ioc' {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
   refine @ext_of_Ico' αᵒᵈ _ _ _ _ _ ‹_› _ μ ν ?_ ?_
   all_goals
     intro a b hab
-    rw [← OrderDual.toDual_of_op a, ← OrderDual.toDual_of_op b,
-      Ico_toDual (α := α)]
+    rw [← OrderDual.toDual_of_op a, ← OrderDual.toDual_of_op b, Ico_toDual]
   exacts [hμ hab, h hab]
 
 /-- Two measures which are finite on closed-open intervals are equal if they agree on all

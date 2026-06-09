@@ -149,7 +149,7 @@ theorem Ioo_ofDual {x y : αᵒᵈ} : Ioo (ofDual y) (ofDual x) = toDual ⁻¹' 
 theorem OrderDual.ofDual_Ioc_preimage_Ioc (a b : αᵒᵈ) :
     Ico a b = ⇑OrderDual.ofDual ⁻¹' Ioc (α := α) (↑b : α) a := by
   conv_lhs => rw [← OrderDual.toDual_of_op a, ← OrderDual.toDual_of_op b]
-  rw [Ico_toDual (α := α)]
+  exact Ico_toDual
 
 theorem OrderDual.ofDual_Ioo_preimage_Ioo (a b : αᵒᵈ) :
     Ioo a b = ⇑OrderDual.ofDual ⁻¹' Ioo (α := α) (↑b : α) a := by
