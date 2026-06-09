@@ -872,14 +872,9 @@ public import Mathlib.Algebra.MvPolynomial.Basic
 public import Mathlib.Algebra.MvPolynomial.Cardinal
 public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.AscendingSet
 public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.CharacteristicSet
-public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.Initial
-public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.MainDegree
 public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.Order
 public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.PseudoDivision
-public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.Reduce
-public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.StandardAscendingSet
 public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.TriangularSet
-public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.WeakAscendingSet
 public import Mathlib.Algebra.MvPolynomial.Coeff
 public import Mathlib.Algebra.MvPolynomial.Comap
 public import Mathlib.Algebra.MvPolynomial.CommRing
@@ -891,6 +886,7 @@ public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.Algebra.MvPolynomial.Eval
 public import Mathlib.Algebra.MvPolynomial.Expand
 public import Mathlib.Algebra.MvPolynomial.Funext
+public import Mathlib.Algebra.MvPolynomial.Initial
 public import Mathlib.Algebra.MvPolynomial.Invertible
 public import Mathlib.Algebra.MvPolynomial.Monad
 public import Mathlib.Algebra.MvPolynomial.Nilpotent

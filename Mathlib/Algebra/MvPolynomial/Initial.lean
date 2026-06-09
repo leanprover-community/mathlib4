@@ -49,7 +49,7 @@ variable (i j : σ) (p : MvPolynomial σ R)
 /-- The "initial" of a polynomial `p` with respect to a variable `i`.
 It is the coefficient of the highest power of `X i` appearing in `p`.
 More formally, it is the sum of terms in `p` whose degree in `i` equals `p.degreeOf i`,
-but with the variable `i` removed (set to 1). -/
+but with the variable `i` erased. -/
 noncomputable def initialOf : MvPolynomial σ R :=
   ∑ s ∈ p.support with s i = p.degreeOf i, monomial (s.erase i) (p.coeff s)
 

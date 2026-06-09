@@ -47,13 +47,6 @@ namespace TriangularSet
 variable {R σ : Type*} [CommSemiring R] [LinearOrder σ]
 variable {S T : TriangularSet σ R} {p : MvPolynomial σ R} {m n : ℕ}
 
-/-- Construct an triangular set from a list. -/
-def mk' {l : List (MvPolynomial σ R)} (hl1 : 0 ∉ l)
-    (hl2 : l.IsChain (·.vars.max < ·.vars.max)) : TriangularSet σ R where
-  toList := l
-  zero_notMem' := hl1
-  isChain_max_vars' := hl2
-
 noncomputable instance instFunLike : FunLike (TriangularSet σ R) ℕ (MvPolynomial σ R) where
   coe S n := S.toList[n]?.getD 0
   coe_injective' := by
@@ -284,11 +277,11 @@ theorem toFinset_eq_coe_set (S : TriangularSet σ R) : S.toFinset = (S : Set (Mv
 
 theorem length_le_of_subset : S ⊆ T → S.length ≤ T.length := fun h ↦ by
   rw [← card_toFinset, ← card_toFinset]
-  exact Finset.card_le_card <| Finset.coe_subset.mp (by simpa [toFinset_eq_coe_set] using h)
+  exact Finset.card_le_card <| Finset.coe_subset.mp (by simpa [toFinset_eq_coe_set])
 
 theorem length_lt_of_ssubset : S ⊂ T → S.length < T.length := fun h ↦ by
   rw [← card_toFinset, ← card_toFinset]
-  exact Finset.card_lt_card <| Finset.coe_ssubset.mp (by simpa [toFinset_eq_coe_set] using h)
+  exact Finset.card_lt_card <| Finset.coe_ssubset.mp (by simpa [toFinset_eq_coe_set])
 
 
 
@@ -462,7 +455,8 @@ theorem mem_concat_iff {p q : MvPolynomial σ R} (h : S.CanConcat p) :
 
 theorem coe_concat_eq_insert {p : MvPolynomial σ R} (h : S.CanConcat p) :
     S.concat p = (S : Set (MvPolynomial σ R)).insert p := Set.ext fun q ↦ by
-  simpa using mem_concat_iff h
+  simp only [SetLike.mem_coe, mem_concat_iff h]
+  rfl
 
 variable [DecidableEq R] {S T : TriangularSet σ R} {p q : MvPolynomial σ R}
 

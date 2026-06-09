@@ -5,7 +5,7 @@ Authors: Yuxuan Xiao
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.MainDegree
+public import Mathlib.Algebra.MvPolynomial.Variables
 public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.TriangularSet
 
 /-!
@@ -185,7 +185,7 @@ A more intuitive definition is `order_lt_iff`, `S < T` if one of the following t
    `S₀ ≈ T₀`, `S₁ ≈ T₁`, ..., `Sₖ₋₁ ≈ Tₖ₋₁` and `Sₖ < Tₖ`.
 2. `S.length > T.length` and `∀ i < T.length, Sᵢ ≈ Tᵢ` -/
 noncomputable def order (S : TriangularSet σ R) : Lex (ℕ → WithTop (WithBot σ ×ₗ ℕ)) :=
-  fun i ↦ if i < S.length then WithTop.some (S i).order else ⊤
+  toLex fun i ↦ if i < S.length then WithTop.some (S i).order else ⊤
 
 theorem order_def : S.order = fun i ↦ if i < S.length then WithTop.some (S i).order else ⊤ := rfl
 
@@ -426,7 +426,9 @@ theorem wellFoundedLT_mvPolynomial_of_wellFoundedLT :
   use fun n ↦ single' (hf2 n)
   intro n
   refine lt_def.mpr <| Or.inl ⟨0, ?_⟩
-  simpa [length_single'] using hf1 n
+  simp only [length_single', zero_lt_one, not_lt_zero, AntisymmRel.setoid_r, IsEmpty.forall_iff,
+    implies_true, and_true, true_and]
+  exact hf1 n
 
 theorem wellFoundedLT_variables_of_wellFoundedLT [Nontrivial R] :
     WellFoundedLT (TriangularSet σ R) → WellFoundedLT σ :=
@@ -466,7 +468,7 @@ theorem length_le [Fintype σ] : S.length ≤ Fintype.card σ + 1 := by
 
 /-- An auxiliary order mapping into a finite domain to prove well-foundedness. -/
 private noncomputable def _order [Fintype σ] (S : TriangularSet σ R) :
-  Lex (Fin (Fintype.card σ + 1) → WithTop (WithBot σ ×ₗ ℕ)) := fun i ↦ S.order i.1
+  Lex (Fin (Fintype.card σ + 1) → WithTop (WithBot σ ×ₗ ℕ)) := toLex fun i ↦ S.order i.1
 
 private theorem _order_def [Fintype σ] : S._order = fun i ↦ S.order i.1 := rfl
 
@@ -518,4 +520,5 @@ theorem Set.min_le (h : S'.Nonempty) : ∀ T ∈ S', min S' h ≤ T :=
   (Exists.choose_spec (has_min S' h)).2
 
 end WellFounded
+
 end TriangularSet
