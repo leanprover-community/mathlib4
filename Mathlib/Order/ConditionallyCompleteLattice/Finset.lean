@@ -150,10 +150,8 @@ theorem sSup_ne_top {α : Type*} [Nontrivial α] [CompleteLinearOrder α] {s : S
   exact (htop <| · ▸ hnonempty.csSup_mem hfin)
 
 theorem sInf_ne_bot {α : Type*} [Nontrivial α] [CompleteLinearOrder α] {s : Set α} (hfin : s.Finite)
-    (hbot : ⊥ ∉ s) : sInf s ≠ ⊥ := by
-  rcases s.eq_empty_or_nonempty with rfl | hnonempty
-  · simp
-  exact (hbot <| · ▸ hnonempty.csInf_mem hfin)
+    (hbot : ⊥ ∉ s) : sInf s ≠ ⊥ :=
+  sSup_ne_top (α := αᵒᵈ) hfin hbot
 
 theorem iSup_ne_top {ι α : Type*} {f : ι → α} [Finite ι] [Nontrivial α] [CompleteLinearOrder α]
     (h : ∀ x, f x ≠ ⊤) : iSup f ≠ ⊤ :=
@@ -161,7 +159,7 @@ theorem iSup_ne_top {ι α : Type*} {f : ι → α} [Finite ι] [Nontrivial α] 
 
 theorem iInf_ne_bot {ι α : Type*} {f : ι → α} [Finite ι] [Nontrivial α] [CompleteLinearOrder α]
     (h : ∀ x, f x ≠ ⊥) : iInf f ≠ ⊥ :=
-  sInf_ne_bot (Set.finite_range f) (by grind)
+  iSup_ne_top (α := αᵒᵈ) h
 
 section ListMultiset
 
