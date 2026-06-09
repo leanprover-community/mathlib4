@@ -8,7 +8,7 @@ module
 
 public import Mathlib.Algebra.Divisibility.Finite
 public import Mathlib.Algebra.Divisibility.Prod
-public import Mathlib.Data.Fintype.Units
+public import Mathlib.Algebra.GroupWithZero.Units.Fintype
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 
 /-!
