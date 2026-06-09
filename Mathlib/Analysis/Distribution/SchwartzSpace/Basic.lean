@@ -91,7 +91,7 @@ namespace SchwartzMap
 
 instance instFunLike : FunLike 𝓢(E, F) E F where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 /-- All derivatives of a Schwartz function are rapidly decaying. -/
 theorem decay (f : 𝓢(E, F)) (k n : ℕ) :
@@ -270,13 +270,13 @@ instance instNSMul : SMul ℕ 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
       smooth' := by exact (f.smooth _).const_smul c
-      decay' := by simpa [← Nat.cast_smul_eq_nsmul ℝ] using ((c : ℝ) • f).decay' }⟩
+      decay' := by simpa [← Nat.cast_smul_eq_nsmul ℝ] using! ((c : ℝ) • f).decay' }⟩
 
 instance instZSMul : SMul ℤ 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
       smooth' := by exact (f.smooth _).const_smul c
-      decay' := by simpa [← Int.cast_smul_eq_zsmul ℝ] using ((c : ℝ) • f).decay' }⟩
+      decay' := by simpa [← Int.cast_smul_eq_zsmul ℝ] using! ((c : ℝ) • f).decay' }⟩
 
 end SMul
 
@@ -1291,7 +1291,7 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
     gcongr
     refine eLpNormEssSup_le_of_ae_nnnorm_bound (ae_of_all μ fun x ↦ ?_)
     rw [← norm_toNNReal, Real.toNNReal_le_iff_le_coe]
-    simpa [norm_smul, abs_of_nonneg (h_one_add x).le] using
+    simpa [norm_smul, abs_of_nonneg (h_one_add x).le] using!
       one_add_le_sup_seminorm_apply (m := (k, 0)) (le_refl k) (le_refl 0) f x
   _ = _ := by
     rw [ENNReal.coe_mul, ENNReal.coe_toNNReal hk.ne]

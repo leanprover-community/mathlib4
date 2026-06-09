@@ -67,7 +67,6 @@ aim of reaching a contradiction (as then, no such partition can exist). We may f
   we have a contradiction (`no_spinalMap`), and therefore show that no spinal map exists.
 -/
 
-attribute [aesop norm 10 tactic] Lean.Elab.Tactic.Omega.omegaDefault
 attribute [aesop 2 simp] Set.subset_def Finset.subset_iff
 
 /-- A type synonym on ℕ³ on which we will construct Hollom's partial order P_5. -/
@@ -261,11 +260,13 @@ lemma line_injOn {C : Set Hollom} (n : ℕ) (hC : IsChain (· ≤ ·) C) (hCn : 
   induction hCn hx using induction_on_level with | h a b =>
   induction hCn hy using induction_on_level with | h c d =>
   have := hC.total hx hy
-  aesop
+  simp at *
+  lia
 
 lemma add_lt_add_of_lt {a b c d n : ℕ} (h : h(a, b, n) < h(c, d, n)) : a + b < c + d := by
   change embed n (a, b) < embed n (c, d) at h
-  aesop
+  simp at *
+  lia
 
 lemma line_mapsTo {x y : Hollom} (hxy : (ofHollom x).2.2 = (ofHollom y).2.2) :
     Set.MapsTo line (Set.Icc x y) (Set.Icc (line x) (line y)) := by
@@ -366,7 +367,7 @@ theorem no_infinite_antichain {A : Set Hollom} (hC : IsAntichain (· ≤ ·) A) 
     exact hC hcd hab (by simp; lia) (HollomOrder.twice this)
 
 private lemma triangle_finite (n : ℕ) : {x : ℕ × ℕ | x.1 + x.2 ≤ n}.Finite :=
-  (Set.finite_Iic (n, n)).subset <| by aesop
+  (Set.finite_Iic (n, n)).subset <| by simp [Set.subset_def]; lia
 
 variable {C : Set Hollom}
 
@@ -452,7 +453,7 @@ structure SpinalMap (C : Set α) where
 
 instance : FunLike (SpinalMap C) α α where
   coe := SpinalMap.toFun
-  coe_injective' | ⟨f, _, _, _⟩, ⟨g, _, _, _⟩, h => by simp_all only
+  coe_injective | ⟨f, _, _, _⟩, ⟨g, _, _, _⟩, h => by simp_all only
 
 /-! ### Basic lemmas for spinal maps -/
 namespace SpinalMap
@@ -593,7 +594,8 @@ lemma card_chainBetween {a b c d : ℕ} (hac : a ≤ c) (hbd : b ≤ d) :
 lemma chainBetween_subset {a b c d : ℕ} :
     chainBetween a b c d ⊆ Finset.Icc (a, b) (c, d) := by
   rw [chainBetween]
-  aesop (add simp Finset.subset_iff)
+  split_ifs <;> simp [Finset.subset_iff]
+  lia
 
 end make_chains
 
@@ -835,7 +837,7 @@ lemma square_subset_above (h : (C ∩ level n).Finite) :
   -- With this pair, we can use the "base" of the square as `max a b + 1`.
   rw [eventually_atTop]
   refine ⟨max a b + 1, ?_⟩
-  simp +contextual only [ge_iff_le, sup_le_iff, embed, RelEmbedding.coe_mk,
+  simp +contextual only [sup_le_iff, embed, RelEmbedding.coe_mk,
     Function.Embedding.coeFn_mk, Set.mem_inter_iff, and_imp, «forall», toHollom_mem_level_iff,
     Prod.forall, Set.subset_def, Set.mem_image, Set.mem_Ici, Prod.exists, Prod.mk_le_mk,
     Set.mem_setOf_eq, forall_exists_index, Prod.mk.injEq,
@@ -953,7 +955,7 @@ lemma square_subset_S_case_1 (h : (C ∩ level n).Finite) (h' : (C ∩ level (n 
   have : ∀ᶠ a in atTop, embed n '' .Ici (a, a) ⊆ {x | ∀ y ∈ C ∩ level (n + 1), x ≤ y ∨ y ≤ x} := by
     rw [eventually_atTop, level_eq]
     refine ⟨max b c, ?_⟩
-    simp only [ge_iff_le, sup_le_iff, embed, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk,
+    simp only [sup_le_iff, embed, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk,
       Set.mem_inter_iff, Set.mem_setOf_eq, and_imp, «forall», Prod.forall,
       Set.subset_def, Set.mem_image, Set.mem_Ici, Prod.exists, Prod.mk_le_mk, forall_exists_index,
       Prod.mk.injEq, Hollom.ext_iff]
@@ -978,7 +980,8 @@ lemma square_subset_S_case_2 (h : (C ∩ level n).Finite) (h' : (C ∩ level (n 
   rw [S, if_neg h']
   filter_upwards [eventually_ge_atTop (x0 n C + 1), eventually_ge_atTop (y0 n C + 1),
     square_subset_R h] with a hax hay haR
-  aesop (add simp embed_apply)
+  simp [Set.subset_def, embed_apply] at *
+  grind
 
 theorem square_subset_S (h : (C ∩ level n).Finite) :
     ∀ᶠ a in atTop, embed n '' Set.Ici (a, a) ⊆ S n C \ (C ∩ level n) :=

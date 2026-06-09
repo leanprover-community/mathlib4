@@ -72,6 +72,7 @@ def mkAlgHom : TensorAlgebra R L →ₐ[R] UniversalEnvelopingAlgebra R L :=
   RingQuot.mkAlgHom R (Rel R L)
 
 variable {L}
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- The natural Lie algebra morphism from a Lie algebra to its universal enveloping algebra. -/
 @[simps!]

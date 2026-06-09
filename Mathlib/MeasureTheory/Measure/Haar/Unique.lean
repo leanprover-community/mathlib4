@@ -885,8 +885,7 @@ Given two left-invariant measures which are finite
 on compacts and regular, they coincide up to a multiplicative constant. -/
 @[to_additive isAddLeftInvariant_eq_smul_of_regular]
 lemma isMulLeftInvariant_eq_smul_of_regular [LocallyCompactSpace G]
-    (μ' μ : Measure G) [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ']
-    [Regular μ] [Regular μ'] :
+    (μ' μ : Measure G) [IsHaarMeasure μ] [IsMulLeftInvariant μ'] [Regular μ] [Regular μ'] :
     μ' = haarScalarFactor μ' μ • μ := by
   have A : ∀ U, IsOpen U → μ' U = (haarScalarFactor μ' μ • μ) U := by
     intro U hU

@@ -68,7 +68,7 @@ variable (E 𝕜)
 /-- Conditional expectation of a function in L2 with respect to a sigma-algebra -/
 noncomputable def condExpL2 (hm : m ≤ m0) : (α →₂[μ] E) →L[𝕜] lpMeas E 𝕜 m 2 μ :=
   haveI : Fact (m ≤ m0) := ⟨hm⟩
-  (lpMeas E 𝕜 m 2 μ).orthogonalProjection
+  (lpMeas E 𝕜 m 2 μ).orthogonalProjectionOnto
 
 variable {E 𝕜}
 
@@ -87,7 +87,7 @@ theorem integrable_condExpL2_of_isFiniteMeasure (hm : m ≤ m0) [IsFiniteMeasure
 
 theorem norm_condExpL2_le_one (hm : m ≤ m0) : ‖@condExpL2 α E 𝕜 _ _ _ _ _ _ μ hm‖ ≤ 1 :=
   haveI : Fact (m ≤ m0) := ⟨hm⟩
-  Submodule.orthogonalProjection_norm_le _
+  Submodule.orthogonalProjectionOnto_norm_le _
 
 theorem norm_condExpL2_le (hm : m ≤ m0) (f : α →₂[μ] E) : ‖condExpL2 E 𝕜 hm f‖ ≤ ‖f‖ :=
   ((@condExpL2 _ E 𝕜 _ _ _ _ _ _ μ hm).le_opNorm f).trans
@@ -119,7 +119,7 @@ theorem condExpL2_indicator_of_measurable (hm : m ≤ m0) (hs : MeasurableSet[m]
     mem_lpMeas_indicatorConstLp hm hs hμs
   let ind := (⟨indicatorConstLp 2 (hm s hs) hμs c, h_mem⟩ : lpMeas E 𝕜 m 2 μ)
   have h_coe_ind : (ind : α →₂[μ] E) = indicatorConstLp 2 (hm s hs) hμs c := rfl
-  have h_orth_mem := Submodule.orthogonalProjection_mem_subspace_eq_self ind
+  have h_orth_mem := Submodule.orthogonalProjectionOnto_mem_subspace_eq_self ind
   rw [← h_coe_ind, h_orth_mem]
 
 theorem inner_condExpL2_eq_inner_fun (hm : m ≤ m0) (f g : α →₂[μ] E)

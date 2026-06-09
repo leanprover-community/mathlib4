@@ -362,7 +362,6 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
     have : k ∈ A := by
       simpa only [true_and, mem_univ, Classical.not_not, mem_diff] using
         Nat.notMem_of_lt_sInf hk
-    simp only [] at this
     simpa only [A, exists_prop, mem_iUnion, mem_singleton_iff, mem_closedBall, Subtype.exists,
       Subtype.coe_mk]
   choose! g hg using this
@@ -659,9 +658,10 @@ one is given a set of admissible closed balls centered at `x`, with arbitrarily 
 Then there exists a disjoint covering of almost all `s` by admissible closed balls centered at some
 points of `s`.
 This version requires that the underlying measure is finite, and that the space has the Besicovitch
-covering property (which is satisfied for instance by normed real vector spaces). It expresses the
-conclusion in a slightly awkward form (with a subset of `α × ℝ`) coming from the proof technique.
-For a version assuming that the measure is sigma-finite,
+covering property (which is satisfied for instance by finite-dimensional normed real vector spaces).
+It expresses the conclusion in a slightly awkward form (with a subset of `α × ℝ`) coming from the
+proof technique.
+For a version assuming that the measure is s-finite,
 see `exists_disjoint_closedBall_covering_ae_aux`.
 For a version giving the conclusion in a nicer form, see `exists_disjoint_closedBall_covering_ae`.
 -/
@@ -803,8 +803,9 @@ Assume that, for any `x` in a set `s`, one is given a set of admissible closed b
 `x`, with arbitrarily small radii. Then there exists a disjoint covering of almost all `s` by
 admissible closed balls centered at some points of `s`.
 
-This version requires the underlying measure to be sigma-finite, and the space to have the
-Besicovitch covering property (which is satisfied for instance by normed real vector spaces).
+This version requires the underlying measure to be s-finite, and the space to have the
+Besicovitch covering property (which is satisfied for instance by finite-dimensional
+normed real vector spaces).
 It expresses the conclusion in a slightly awkward form (with a subset of `α × ℝ`) coming from the
 proof technique.
 
@@ -920,14 +921,9 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
   let r x := if x ∈ s' then r1 x else r0 x
   have r_t0 : ∀ x ∈ t0, r x = r0 x := by
     intro x hx
-    have : x ∉ s' := by
-      simp only [s', not_exists, exists_prop, mem_iUnion, mem_closedBall, not_and, not_lt, not_le,
-        mem_diff, not_forall]
-      intro _
-      refine ⟨x, hx, ?_⟩
-      rw [dist_self]
-      exact (hr0 x hx).2.1.le
-    simp only [r, if_neg this]
+    have : x ∉ s' := fun hxs' ↦ hxs'.2 <| mem_iUnion₂.2
+      ⟨x, hx, mem_closedBall_self (hr0 x hx).2.1.le⟩
+    simp [r, this]
   -- the desired covering set is given by the union of the families constructed in the first and
   -- second steps.
   refine ⟨t0 ∪ ⋃ i : Fin N, ((↑) : s' → α) '' S i, r, ?_, ?_, ?_, ?_, ?_⟩
