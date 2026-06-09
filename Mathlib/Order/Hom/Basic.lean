@@ -223,7 +223,7 @@ variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
 
 instance : FunLike (α →o β) α β where
   coe := toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 instance : OrderHomClass (α →o β) α β where
   map_rel f _ _ h := f.monotone' h

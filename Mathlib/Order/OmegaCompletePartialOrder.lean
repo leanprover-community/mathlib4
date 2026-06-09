@@ -79,7 +79,7 @@ variable [Preorder α] [Preorder β] [Preorder γ]
 
 instance : FunLike (Chain α) ℕ α where
   coe c := c.toOrderHom
-  coe_injective' := by rintro ⟨f, hf⟩; congr!
+  coe_injective := by rintro ⟨f, hf⟩; congr!
 
 initialize_simps_projections Chain (toFun → apply)
 
@@ -495,7 +495,7 @@ attribute [nolint docBlame] ContinuousHom.toOrderHom
 
 instance : FunLike (α →𝒄 β) α β where
   coe f := f.toFun
-  coe_injective' := by rintro ⟨⟩ ⟨⟩ h; congr; exact DFunLike.ext' h
+  coe_injective := by rintro ⟨⟩ ⟨⟩ h; congr; exact DFunLike.ext' h
 
 instance : OrderHomClass (α →𝒄 β) α β where
   map_rel f _ _ h := f.mono h
