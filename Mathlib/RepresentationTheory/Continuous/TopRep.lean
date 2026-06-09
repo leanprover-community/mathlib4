@@ -24,7 +24,7 @@ their morphisms. -/
 structure TopRep (k : Type u) (G : Type v) [TopologicalSpace k] [Ring k]
     [IsTopologicalRing k] [Monoid G] where
   private mk ::
-  /-- the underlying type of an object in `Rep k G` -/
+  /-- the underlying type of an object in `TopRep k G` -/
   V : Type w
   [hV1 : AddCommGroup V]
   [hV2 : Module k V]
