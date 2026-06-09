@@ -44,6 +44,7 @@ variable (f x) in
 /-- A function is 'meromorphic in normal form' at `x` if it vanishes around `x`
 or if it can locally be written as `fun z ↦ (z - x) ^ n • g` where `g` is
 analytic and does not vanish at `x`. -/
+@[fun_prop]
 def MeromorphicNFAt :=
   f =ᶠ[𝓝 x] 0 ∨
     ∃ (n : ℤ) (g : 𝕜 → E), AnalyticAt 𝕜 g x ∧ g x ≠ 0 ∧ f =ᶠ[𝓝 x] (· - x) ^ n • g
@@ -366,6 +367,47 @@ theorem MeromorphicNFOn.div {f : 𝕜 → 𝕜} {g : 𝕜 → 𝕜} {x : 𝕜} (
     have hgInvAnalytic : AnalyticAt 𝕜 g⁻¹ x := hgAnalytic.inv hgne
     rwa [← meromorphicNFAt_mul_iff_left hgInvAnalytic (inv_ne_zero hgne)] at hf
   · grind [meromorphicNFAt_mul_iff_right, hg.inv]
+
+/--
+The composition of a meromorphic function in normal form and an analytic
+function is meromorphic in normal form.
+-/
+@[fun_prop]
+theorem MeromorphicNFAt.comp_analyticAt (hf : MeromorphicNFAt f (g x)) (hg : AnalyticAt 𝕜 g x) :
+    MeromorphicNFAt (f ∘ g) x := by
+  rcases hf with hf | ⟨n, q, hq_an, hq_ne, hf⟩
+  · exact Or.inl (hg.continuousAt.tendsto.eventually hf)
+  by_cases hord : analyticOrderAt (g · - g x) x = ⊤
+  · rw [analyticOrderAt_eq_top] at hord
+    by_cases h : f (g x) = 0
+    · apply Or.inl
+      filter_upwards [hord, hg.continuousAt.preimage_mem_nhds (hf.filter_mono (by simp))]
+        using by simp_all [sub_eq_zero]
+    · refine Or.inr ⟨0, fun _ ↦ f (g x), by fun_prop, h, ?_⟩
+      filter_upwards [hord, hg.continuousAt.preimage_mem_nhds (hf.filter_mono (by simp))]
+        using by simp_all [sub_eq_zero]
+  lift analyticOrderAt (g · - g x) x to ℕ using hord with m hm
+  obtain ⟨p, h₁p, h₂p, h₃p⟩ := (AnalyticAt.analyticOrderAt_eq_natCast (by fun_prop)).1 hm.symm
+  refine Or.inr ⟨n * m, fun z ↦ (p z) ^ n • q (g z), (h₁p.zpow h₂p).smul (by fun_prop), ?_⟩
+  simp_all only [ne_eq, smul_eq_mul, isUnit_iff_ne_zero, zpow_ne_zero n h₂p, not_false_eq_true,
+    IsUnit.smul_eq_zero, true_and]
+  filter_upwards [h₃p, hg.continuousAt.preimage_mem_nhds (hf.filter_mono (by simp))]
+    with a h₁a h₂a
+  simp_all only [Pi.smul_apply', Pi.pow_apply, Set.preimage_setOf_eq, Set.mem_setOf_eq,
+    Function.comp_apply, ← smul_assoc, mul_zpow, smul_eq_mul]
+  congr 2
+  rw [mul_comm, zpow_mul, zpow_natCast]
+
+/--
+A function is meromorphic in normal form at a point iff it is meromorphic in normal form after
+composition with an analytic function of nonvanishing derivative, such as translation.
+-/
+theorem meromorphicNFAt_comp_iff_of_deriv_ne_zero [CompleteSpace 𝕜] [CharZero 𝕜] {x : 𝕜}
+    {g : 𝕜 → 𝕜} (hg : AnalyticAt 𝕜 g x) (hg' : deriv g x ≠ 0) :
+    MeromorphicNFAt (f ∘ g) x ↔ MeromorphicNFAt f (g x) := by
+  simp [meromorphicNFAt_iff_analyticAt_or, analyticAt_comp_iff_of_deriv_ne_zero hg hg',
+    meromorphicAt_comp_iff_of_deriv_ne_zero hg hg',
+    meromorphicOrderAt_comp_of_deriv_ne_zero hg hg']
 
 /-!
 ### Continuous extension and conversion to normal form
