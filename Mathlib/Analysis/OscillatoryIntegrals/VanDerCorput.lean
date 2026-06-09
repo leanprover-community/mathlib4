@@ -28,11 +28,16 @@ in one real variable, following Stein.
 * `Oscillatory.norm_integral_exp_mul_I_le_of_order_one`:
   Vector-valued amplitude, first order case
 * `Oscillatory.norm_integral_exp_mul_I_le_of_order_one'`:
-  Scalar version, first order case
+  Scalar constant amplitude version, first order case
 * `Oscillatory.norm_integral_exp_mul_I_le_of_order_ge_two`:
   Vector-valued amplitude, higher-order case
 * `Oscillatory.norm_integral_exp_mul_I_le_of_order_ge_two'`:
-  Scalar version, higher-order case
+  Scalar constant amplitude version, higher-order case
+
+## Notes
+
+Following the standard argument, we first prove the constant amplitude cases
+and then extend to vector-valued versions.
 
 ## References
 
@@ -441,7 +446,7 @@ theorem norm_integral_exp_mul_I_le_of_order_ge_two' {k : ℕ} (hk : 2 ≤ k)
         · exact haux hc₂b fun hne ↦ hest_sub hc₂b (hc₂b_est hne)
       _ = _ := by
         push_cast
-        rw [hLδ, show |L| ^ (-(1 : ℝ) / (↑k + 1)) = δ by rfl, ← c_rec hk]
+        rw [hLδ, show |L| ^ (-(1 : ℝ) / (↑k + 1)) = δ by rfl, c_rec <|ne_zero_of_lt hk]
         ring
 
 end SpecialCase
