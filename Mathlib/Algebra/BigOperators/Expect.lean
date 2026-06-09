@@ -14,6 +14,8 @@ public import Mathlib.Data.Finset.Density
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
+import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
+
 /-!
 # Average over a finset
 
@@ -51,7 +53,7 @@ open Finset Function
 open Fintype (card)
 open scoped Pointwise
 
-variable {ι κ M N : Type*}
+variable {ι κ K M N : Type*}
 
 local notation a " /ℚ " q => (q : ℚ≥0)⁻¹ • a
 
@@ -351,6 +353,10 @@ end CommSemiring
 
 section Semifield
 variable [Semifield M] [CharZero M]
+
+@[simp]
+lemma expect_indicator_one [Fintype ι] (s : Finset ι) : 𝔼 i : ι, Set.indicator s 1 i = s.dens := by
+  classical simp [expect, sum_indicator_eq_sum_inter, dens, div_eq_inv_mul]
 
 lemma expect_boole_mul [Fintype ι] [Nonempty ι] [DecidableEq ι] (f : ι → M) (i : ι) :
     𝔼 j, ite (i = j) (Fintype.card ι : M) 0 * f j = f i := by
