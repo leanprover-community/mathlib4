@@ -105,6 +105,11 @@ instance (c : RingCon R) : Algebra α c.Quotient where
   commutes' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.commutes _ _
   smul_def' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.smul_def _ _
 
+@[simp, norm_cast]
+theorem coe_algebraMap (c : RingCon R) (s : α) :
+    (algebraMap α R s : c.Quotient) = algebraMap α c.Quotient s :=
+  rfl
+
 variable (α) in
 /-- The algebra morphism from `R` to the quotient by a ring congruence. -/
 @[simps!] def mkₐ (c : RingCon R) : R →ₐ[α] c.Quotient :=
@@ -113,11 +118,6 @@ variable (α) in
 theorem mkₐ_surjective (c : RingCon R) :
     Function.Surjective (c.mkₐ (α := α)) :=
   mk'_surjective c
-
-@[simp, norm_cast]
-theorem coe_algebraMap (c : RingCon R) (s : α) :
-    (algebraMap α R s : c.Quotient) = algebraMap α c.Quotient s :=
-  rfl
 
 end
 
