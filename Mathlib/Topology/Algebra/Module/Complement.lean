@@ -234,7 +234,6 @@ theorem coe_projectionOntoL_apply (h : IsTopCompl p q) (x : M) :
     (p.projectionOntoL q h x : M) = p.projectionL q h x :=
   rfl
 
-@[simp]
 theorem projectionL_apply_mem (h : IsTopCompl p q) (x : M) :
     p.projectionL q h x ∈ p :=
   SetLike.coe_mem _
@@ -285,7 +284,7 @@ lemma projectionL_eq_id_sub_projectionL [IsTopologicalAddGroup M] (h : IsTopComp
   ContinuousLinearMap.ext <| projectionL_eq_self_sub_projectionL h
 
 /-- The projection to `p` along `q` of `x` equals `x` if and only if `x ∈ p`. -/
-@[simp] lemma projectionL_eq_self_iff [ContinuousSub M] (h : IsTopCompl p q) (x : M) :
+lemma projectionL_eq_self_iff [ContinuousSub M] (h : IsTopCompl p q) (x : M) :
     p.projectionL q h x = x ↔ x ∈ p :=
   projection_eq_self_iff h.isCompl x
 
