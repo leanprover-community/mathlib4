@@ -38,7 +38,7 @@ public section
 
 namespace Int
 
-variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
+variable {α : Type*} [Field α] [LinearOrder α] [IsOrderedRing α] [FloorRing α]
 
 /-- The discrete (integer) form of Hermite's identity: the sum of `(m + i) / n` over a
 complete block `0 ≤ i < n` of consecutive shifts equals `m`, where `/` is Euclidean
