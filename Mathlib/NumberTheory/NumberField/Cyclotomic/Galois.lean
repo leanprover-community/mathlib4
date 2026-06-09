@@ -133,16 +133,6 @@ theorem mem_zpowers_galEquivZMod_of_mem_stabilizer {σ : Gal(K/ℚ)} (hσ : σ �
     ← h₀.eq_orderOf, ← ZMod.natCast_eq_natCast_iff', Nat.cast_pow, ← ZMod.coe_unitOfCoprime p hn,
     ← Units.val_pow_eq_pow_val, ZMod.natCast_zmod_val, ← Units.ext_iff, eq_comm] at hi
 
-instance {A B : Type*} [CommRing A] [CommRing B] (h : A ≃+* B) :
-    letI := h.toRingHom.toAlgebra
-    Module.Finite A B :=
-  h.finite
-
-theorem PerfectField.of_ringEquiv {K L : Type*} [Field K] [Field L] (h : K ≃+* L) [PerfectField K] :
-    PerfectField L := by
-  let := h.toRingHom.toAlgebra
-  exact Algebra.IsAlgebraic.perfectField (K := K)
-
 instance (R : Type*) [CommRing R] [IsDomain R] : IsFractionRing R (⊥ : Ideal R).ResidueField :=
   IsLocalization.of_ringEquiv_left (RingEquiv.quotientBot R).symm
     (MulEquivClass.map_nonZeroDivisors (RingEquiv.quotientBot R).symm) (by simp)

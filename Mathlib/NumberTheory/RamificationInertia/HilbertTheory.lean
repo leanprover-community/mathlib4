@@ -40,6 +40,7 @@ degree            ramif. index   inertia deg.
 
 @[expose] public section
 
+-- PRed
 instance (R : Type*) [CommRing R] (P : Ideal R) [P.IsPrime] [Finite (R ⧸ P)] :
     Finite P.ResidueField := by
   exact IsLocalization.finite (R ⧸ P) (nonZeroDivisors (R ⧸ P))
