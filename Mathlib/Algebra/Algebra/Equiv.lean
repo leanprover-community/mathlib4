@@ -101,7 +101,7 @@ instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
 /-- Helper instance since the coercion is not always found. -/
 instance : FunLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
   coe := DFunLike.coe
-  coe_injective' := DFunLike.coe_injective'
+  coe_injective := DFunLike.coe_injective
 
 instance : AlgEquivClass (A₁ ≃ₐ[R] A₂) R A₁ A₂ where
   map_add f := f.map_add'
@@ -339,6 +339,9 @@ theorem leftInverse_symm (e : A₁ ≃ₐ[R] A₂) : Function.LeftInverse e.symm
 
 theorem rightInverse_symm (e : A₁ ≃ₐ[R] A₂) : Function.RightInverse e.symm e :=
   e.right_inv
+
+lemma image_symm_eq_preimage (e : A₁ ≃ₐ[R] A₂) (s : Set A₂) : e.symm '' s = e ⁻¹' s :=
+  e.toLinearEquiv.image_symm_eq_preimage _
 
 end symm
 
