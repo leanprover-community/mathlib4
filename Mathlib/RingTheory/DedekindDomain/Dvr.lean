@@ -69,7 +69,8 @@ theorem Ring.DimensionLEOne.localization {R : Type*} (Rₘ : Type*) [CommRing R]
     [CommRing Rₘ] [Algebra R Rₘ] {M : Submonoid R} [IsLocalization M Rₘ] (hM : M ≤ R⁰)
     [h : Ring.DimensionLEOne R] : Ring.DimensionLEOne Rₘ := ⟨by
   intro p hp0 hpp
-  refine Ideal.isMaximal_def.mpr ⟨hpp.ne_top, Ideal.maximal_of_no_maximal fun P hpP hPm => ?_⟩
+  refine Ideal.isMaximal_def.mpr <| covBy_top_iff.1 ⟨lt_top_iff_ne_top.2 hpp.ne_top, fun J hJ =>
+    (Ideal.maximal_of_no_maximal (fun P hpP hPm => ?_) J hJ).not_lt⟩
   have hpP' : (⟨p, hpp⟩ : { p : Ideal Rₘ // p.IsPrime }) < ⟨P, hPm.isPrime⟩ := hpP
   rw [← (IsLocalization.orderIsoOfPrime M Rₘ).lt_iff_lt] at hpP'
   refine h.not_lt_lt ⊥ (p.under R) (P.under R) ⟨?_, hpP'⟩
