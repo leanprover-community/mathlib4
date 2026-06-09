@@ -117,9 +117,16 @@ This is a special case of `AlgHom.restrictScalars` that can be helpful in elabor
 def ofRestrictScalars (U : Subalgebra S A) (f : U →ₐ[S] B) : U.restrictScalars R →ₐ[R] B :=
   f.restrictScalars R
 
-instance restrictScalars.SMul {U : Subalgebra S A} : SMul S (U.restrictScalars R)  where
-  smul s := fun ⟨u, hu⟩ ↦
-    ⟨s • u, by simp only [mem_restrictScalars] at hu ⊢; apply smul_mem _ hu⟩
+instance restrictScalars.sMul {U : Subalgebra S A} : SMul S (U.restrictScalars R) where
+  smul s := fun u ↦
+    ⟨s • u.val, by
+      have hu := u.property
+      simp only [mem_restrictScalars] at hu ⊢
+      exact smul_mem _ hu _⟩
+
+example {U : Subalgebra S A} : restrictScalars.sMul S =
+    (Subalgebra.module' (U.restrictScalars S) |>.toSMul) := by
+  with_reducible_and_instances rfl
 
 instance restrictScalars.origAlgebra {U : Subalgebra S A} : Algebra S (U.restrictScalars R) where
   algebraMap := RingHom.codRestrict (algebraMap S A) (U.restrictScalars R) (by simp)
