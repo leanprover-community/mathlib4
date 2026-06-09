@@ -151,7 +151,7 @@ namespace ContDiffMapSupportedIn
 instance toContDiffMapSupportedInClass :
     ContDiffMapSupportedInClass 𝓓^{n}_{K}(E, F) E F n K where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
   map_contDiff f := f.contDiff'
   map_zero_on_compl f := f.zero_on_compl'
 
@@ -381,14 +381,14 @@ noncomputable def fderivLM :
     else 0
   map_add' f g := by
     split_ifs with hk
-    · have hk' : 0 < (n : ℕ∞ω) := mod_cast (ENat.add_one_pos.trans_le hk)
+    · have hk' : 0 < (n : ℕ∞ω) := mod_cast (add_pos_of_right zero_lt_one k).trans_le hk
       ext
       simp [fderiv_add (f.contDiff.differentiable hk'.ne').differentiableAt
                        (g.contDiff.differentiable hk'.ne').differentiableAt]
     · simp
   map_smul' c f := by
     split_ifs with hk
-    · have hk' : 0 < (n : ℕ∞ω) := mod_cast (ENat.add_one_pos.trans_le hk)
+    · have hk' : 0 < (n : ℕ∞ω) := mod_cast (add_pos_of_right zero_lt_one k).trans_le hk
       ext
       simp [fderiv_const_smul (f.contDiff.differentiable hk'.ne').differentiableAt]
     · simp
@@ -973,7 +973,7 @@ noncomputable def integralAgainstBilinCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F
     refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms ..)
       (norm_withSeminorms 𝕜 _) _
       (.of_real fun _ ↦ ⟨{0}, (∫ x in K, ‖φ x‖ ∂μ) * ‖B‖, fun f ↦ ?_⟩)
-    simpa using norm_integralAgainstBilinLM_le
+    simpa using! norm_integralAgainstBilinLM_le
 
 @[simp]
 lemma integralAgainstBilinCLM_apply {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
