@@ -50,7 +50,7 @@ def mkDeprecationStx (id : TSyntax `ident) (n : Name) (dat : Option String := no
   let dat := ←
     match dat with
       | none => do
-        return s!"{(← Std.Time.ZonedDateTime.now).toPlainDate}"
+        return s!"{← Std.Time.PlainDate.now}"
       | some s => return s
   let nd := mkNode `str #[mkAtom ("\"" ++ dat.trimAsciiEnd ++ "\"")]
   `(command| @[deprecated (since := $nd)] alias $(mkIdent n) := $id)
