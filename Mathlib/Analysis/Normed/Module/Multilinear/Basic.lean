@@ -266,7 +266,7 @@ theorem norm_image_sub_le_of_bound (f : MultilinearMap 𝕜 E G)
         · simp [h, -le_sup_iff, -sup_le_iff, sup_le_sup, norm_le_pi_norm]
       _ = ‖m₁ - m₂‖ * max ‖m₁‖ ‖m₂‖ ^ (Fintype.card ι - 1) := by
         rw [prod_update_of_mem (Finset.mem_univ _)]
-        simp [card_univ_diff]
+        simp [card_univ_sdiff]
   calc
     ‖f m₁ - f m₂‖ ≤ C * ∑ i, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ :=
       f.norm_image_sub_le_of_bound' hC H m₁ m₂
