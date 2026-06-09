@@ -37,6 +37,7 @@ namespace Pseudofunctor
 variable {B : Type u₁} {C : Type u₂} [Bicategory.{w₁, v₁} B]
   [Strict B] [Bicategory.{w₂, v₂} C] (F : B ⥤ᵖ C)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mapComp'_comp_id {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
     F.mapComp' f (𝟙 b₁) f = (ρ_ _).symm ≪≫ whiskerLeftIso _ (F.mapId b₁).symm := by
   ext
@@ -56,6 +57,7 @@ lemma mapComp'_comp_id_inv {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
     (F.mapComp' f (𝟙 b₁) f).inv = _ ◁ (F.mapId b₁).hom ≫ (ρ_ _).hom := by
   simp [mapComp'_comp_id]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mapComp'_id_comp {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
     F.mapComp' (𝟙 b₀) f f = (λ_ _).symm ≪≫ whiskerRightIso (F.mapId b₀).symm _ := by
   ext
@@ -81,6 +83,7 @@ variable {b₀ b₁ b₂ b₃ : B} (f₀₁ : b₀ ⟶ b₁)
   (f₁₂ : b₁ ⟶ b₂) (f₂₃ : b₂ ⟶ b₃) (f₀₂ : b₀ ⟶ b₂) (f₁₃ : b₁ ⟶ b₃) (f : b₀ ⟶ b₃)
   (h₀₂ : f₀₁ ≫ f₁₂ = f₀₂) (h₁₃ : f₁₂ ≫ f₂₃ = f₁₃)
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_app (attr := reassoc)]
 lemma mapComp'₀₁₃_hom_comp_whiskerLeft_mapComp'_hom (hf : f₀₁ ≫ f₁₃ = f) :
     (F.mapComp' f₀₁ f₁₃ f).hom ≫ F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃).hom =
@@ -89,6 +92,7 @@ lemma mapComp'₀₁₃_hom_comp_whiskerLeft_mapComp'_hom (hf : f₀₁ ≫ f₁
   subst h₀₂ h₁₃ hf
   simp [mapComp_assoc_right_hom, Strict.associator_eqToIso, mapComp']
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_app (attr := reassoc)]
 lemma mapComp'₀₁₃_inv_comp_mapComp'₀₂₃_hom (hf : f₀₁ ≫ f₁₃ = f) :
     (F.mapComp' f₀₁ f₁₃ f).inv ≫ (F.mapComp' f₀₂ f₂₃ f).hom =
@@ -114,6 +118,7 @@ lemma mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight (hf : f₀₂ ≫ f�
   rw [F.mapComp'₀₁₃_hom_comp_whiskerLeft_mapComp'_hom_assoc _ _ _ _ _ f h₀₂ h₁₃ (by cat_disch)]
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_app (attr := reassoc)]
 lemma mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv (hf : f₀₂ ≫ f₂₃ = f) :
     (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv ▷ F.map f₂₃ ≫ (F.mapComp' f₀₂ f₂₃ f).inv =
@@ -122,6 +127,7 @@ lemma mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv (hf : f₀₂ ≫ f₂₃ 
   rw [whiskerLeft_mapComp'_inv_comp_mapComp'₀₁₃_inv _ _ _ _ _ _ f h₀₂ h₁₃,
     Iso.hom_inv_id_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_app (attr := reassoc)]
 lemma mapComp'₀₁₃_inv (hf : f₀₁ ≫ f₁₃ = f) :
     (F.mapComp' f₀₁ f₁₃ f).inv =
@@ -137,6 +143,7 @@ lemma mapComp'₀₁₃_hom (hf : f₀₁ ≫ f₁₃ = f) :
   rw [← cancel_epi (F.mapComp' f₀₁ f₁₃ f).inv, Iso.inv_hom_id]
   simp [mapComp'₀₁₃_inv _ _ _ _ _ _ f h₀₂ h₁₃ hf]
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_app (attr := reassoc)]
 lemma mapComp'₀₂₃_hom (hf : f₀₂ ≫ f₂₃ = f) :
     (F.mapComp' f₀₂ f₂₃ f).hom =
@@ -152,6 +159,7 @@ lemma mapComp'₀₂₃_inv (hf : f₀₂ ≫ f₂₃ = f) :
   rw [← cancel_epi (F.mapComp' f₀₂ f₂₃ f).hom, Iso.hom_inv_id]
   simp [mapComp'₀₂₃_hom _ _ _ _ _ _ f h₀₂ h₁₃ hf]
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_app (attr := reassoc)]
 lemma mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom (hf : f₀₂ ≫ f₂₃ = f) :
     (F.mapComp' f₀₂ f₂₃ f).inv ≫ (F.mapComp' f₀₁ f₁₃ f).hom =

@@ -173,7 +173,7 @@ variable {Q Q' : QuadraticMap R M N}
 
 instance instFunLike : FunLike (QuadraticMap R M N) M N where
   coe := toFun
-  coe_injective' x y h := by cases x; cases y; congr
+  coe_injective x y h := by cases x; cases y; congr
 
 variable (Q)
 
@@ -605,7 +605,7 @@ def _root_.LinearMap.compQuadraticMap' [CommSemiring S] [Algebra S R] [Module S 
 maps on `M` into `P`.
 
 See `LinearMap.BilinMap.congr₂` for the bilinear map version. -/
-@[simps]
+@[simps apply]
 def _root_.LinearEquiv.congrQuadraticMap (e : N ≃ₗ[R] P) :
     QuadraticMap R M N ≃ₗ[R] QuadraticMap R M P where
   toFun Q := e.compQuadraticMap Q
@@ -906,6 +906,7 @@ theorem associated_apply (x y : M) :
     associatedHom S Q x y = ⅟(2 : Module.End R N) • (Q (x + y) - Q x - Q y) :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Twice the associated bilinear map of `Q` is the same as the polar of `Q`. -/
 @[simp] theorem two_nsmul_associated : 2 • associatedHom S Q = Q.polarBilin := by
   ext
@@ -1026,9 +1027,10 @@ theorem associated_linMulLin [Invertible (2 : R)] (f g : M →ₗ[R] R) :
 
 open LinearMap in
 @[simp]
-lemma associated_sq [Invertible (2 : R)] : associated (R := R) sq = mul R R :=
-  (associated_linMulLin (id) (id)).trans <|
-    by simp only [smul_add, invOf_two_smul_add_invOf_two_smul]; rfl
+lemma associated_sq [Invertible (2 : R)] : associated (R := R) sq = mul R R := by
+  rw [sq, associated_linMulLin]
+  simp only [smul_add, invOf_two_smul_add_invOf_two_smul]
+  rfl
 
 end Associated
 

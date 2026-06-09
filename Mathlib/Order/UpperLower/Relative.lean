@@ -159,13 +159,13 @@ lemma isLowerSet_subtype_iff_isRelLowerSet {s : Set { x // P x }} :
 
 instance : SetLike (RelUpperSet P) α where
   coe := RelUpperSet.carrier
-  coe_injective' s t h := by cases s; cases t; congr
+  coe_injective s t h := by cases s; cases t; congr
 
 instance : PartialOrder (RelUpperSet P) := .ofSetLike (RelUpperSet P) α
 
 instance : SetLike (RelLowerSet P) α where
   coe := RelLowerSet.carrier
-  coe_injective' s t h := by cases s; cases t; congr
+  coe_injective s t h := by cases s; cases t; congr
 
 lemma RelUpperSet.isRelUpperSet (u : RelUpperSet P) : IsRelUpperSet u P := u.isRelUpperSet'
 lemma RelLowerSet.isRelLowerSet (l : RelLowerSet P) : IsRelLowerSet l P := l.isRelLowerSet'

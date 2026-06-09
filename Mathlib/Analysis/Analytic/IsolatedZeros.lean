@@ -239,7 +239,7 @@ theorem eqOn_of_preconnected_of_frequently_eq (hf : AnalyticOnNhd 𝕜 f U) (hg 
     (hU : IsPreconnected U) (h₀ : z₀ ∈ U) (hfg : ∃ᶠ z in 𝓝[≠] z₀, f z = g z) : EqOn f g U := by
   have hfg' : ∃ᶠ z in 𝓝[≠] z₀, (f - g) z = 0 :=
     hfg.mono fun z h => by rw [Pi.sub_apply, h, sub_self]
-  simpa [sub_eq_zero] using fun z hz =>
+  simpa [sub_eq_zero] using! fun z hz =>
     (hf.sub hg).eqOn_zero_of_preconnected_of_frequently_eq_zero hU h₀ hfg' hz
 
 theorem eqOn_or_eventually_ne_of_preconnected (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
@@ -347,15 +347,10 @@ theorem AnalyticOnNhd.preimage_mem_codiscreteWithin {U : Set 𝕜} {s : Set E} {
     (hfU : AnalyticOnNhd 𝕜 f U) (h₂f : ∀ x ∈ U, ¬EventuallyConst f (𝓝 x))
     (hs : s ∈ codiscreteWithin (f '' U)) :
     f ⁻¹' s ∈ codiscreteWithin U := by
-  simp_rw [mem_codiscreteWithin, disjoint_principal_right, Set.compl_diff] at *
+  simp_rw [mem_codiscreteWithin, disjoint_principal_right, Set.compl_sdiff] at *
   intro x hx
   apply mem_of_superset ((hfU x hx).preimage_of_nhdsNE (h₂f x hx) (hs (f x) (by tauto)))
-  rw [preimage_union, preimage_compl]
-  apply union_subset_union_right (f ⁻¹' s)
-  intro x hx
-  push _ ∈ _ at hx ⊢
-  push Not at hx
-  tauto
+  grind
 
 /-- Preimages of codiscrete sets, filter version: if `f` is analytic on a neighbourhood of `U` and
 not locally constant, then the push-forward of the filter of sets codiscrete within `U` is less

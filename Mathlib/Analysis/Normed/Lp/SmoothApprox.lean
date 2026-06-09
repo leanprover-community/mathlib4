@@ -49,7 +49,7 @@ theorem exist_eLpNorm_sub_le_of_continuous (μ : Measure E := by volume_tac)
   by_cases hf : f =ᵐ[μ] 0
   -- We will need that the support is non-empty, so we treat the trivial case `f = 0` first.
   · use 0
-    simpa [HasCompactSupport.zero, eLpNorm_congr_ae hf] using contDiff_const
+    simpa [HasCompactSupport.zero, eLpNorm_congr_ae hf] using! contDiff_const
   have hs₁ : μ (tsupport f) ≠ ⊤ := h₁.measure_lt_top.ne
   have hs₂ : 0 < (μ <| tsupport f).toReal := by
     -- Since `f` is not the zero function `tsupport f` has positive measure
