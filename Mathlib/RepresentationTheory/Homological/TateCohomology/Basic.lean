@@ -34,6 +34,9 @@ cochain complex using the norm map.
 * `isoGroupCohomology`: the isomorphism between the `n`-th Tate cohomology and
   `n`-th group cohomology for `n : ℕ` non-zero.
 
+* `isoGroupHomology`: the isomorphism between the `-n-1`-th Tate cohomology and `n`-th group
+  homology for `n : ℕ` non-zero.
+
 ## Main Results
 
 * `δ_naturality`: the naturality of the connecting homomorphism in the long exact sequence of Tate
