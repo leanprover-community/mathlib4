@@ -320,7 +320,7 @@ protected def sumDiffSubset {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (·
   calc
     s ⊕ (t \ s : Set α) ≃ (s ∪ t \ s : Set α) :=
       (Equiv.Set.union disjoint_sdiff_self_right).symm
-    _ ≃ t := Equiv.setCongr (by simp [union_diff_self, union_eq_self_of_subset_left h])
+    _ ≃ t := Equiv.setCongr (by simp [union_sdiff_self, union_eq_self_of_subset_left h])
 
 @[simp]
 theorem sumDiffSubset_apply_inl {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (· ∈ s)] (x : s) :
@@ -329,7 +329,7 @@ theorem sumDiffSubset_apply_inl {α} {s t : Set α} (h : s ⊆ t) [DecidablePred
 
 @[simp]
 theorem sumDiffSubset_apply_inr {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (· ∈ s)]
-    (x : (t \ s : Set α)) : Equiv.Set.sumDiffSubset h (Sum.inr x) = inclusion diff_subset x :=
+    (x : (t \ s : Set α)) : Equiv.Set.sumDiffSubset h (Sum.inr x) = inclusion sdiff_subset x :=
   rfl
 
 theorem sumDiffSubset_symm_apply_of_mem {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (· ∈ s)]
@@ -348,7 +348,7 @@ protected def unionSumInter {α : Type u} (s t : Set α) [DecidablePred (· ∈ 
     (s ∪ t : Set α) ⊕ (s ∩ t : Set α) ≃ s ⊕ t :=
   calc
     (s ∪ t : Set α) ⊕ (s ∩ t : Set α)
-      ≃ (s ∪ t \ s : Set α) ⊕ (s ∩ t : Set α) := by rw [union_diff_self]
+      ≃ (s ∪ t \ s : Set α) ⊕ (s ∩ t : Set α) := by rw [union_sdiff_self]
     _ ≃ (s ⊕ (t \ s : Set α)) ⊕ (s ∩ t : Set α) :=
       sumCongr (Set.union disjoint_sdiff_self_right) (Equiv.refl _)
     _ ≃ s ⊕ ((t \ s : Set α) ⊕ (s ∩ t : Set α)) := sumAssoc _ _ _
@@ -359,7 +359,7 @@ protected def unionSumInter {α : Type u} (s t : Set α) [DecidablePred (· ∈ 
           exacts [fun x hx => hx.2, fun x hx => not_not_intro hx.1])
     _ ≃ s ⊕ t := by
       { rw [(_ : t \ s ∪ s ∩ t = t)]
-        rw [union_comm, inter_comm, inter_union_diff] }
+        rw [union_comm, inter_comm, inter_union_sdiff] }
 
 /-- Given an equivalence `e₀` between sets `s : Set α` and `t : Set β`, the set of equivalences
 `e : α ≃ β` such that `e ↑x = ↑(e₀ x)` for each `x : s` is equivalent to the set of equivalences
