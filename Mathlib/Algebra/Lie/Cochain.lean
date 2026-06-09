@@ -129,8 +129,8 @@ def d₂₃ : twoCochain R L M →ₗ[R] L →ₗ[R] L →ₗ[R] L →ₗ[R] M w
       map_smul' _ _ := by ext; abel_nf; simp }
     map_add' _ _ := by ext; simp; abel
     map_smul' _ _ := by ext; abel_nf; simp }
-  map_add' _ _ := by ext; simp [toFun]; abel
-  map_smul' _ _ := by ext; simp [toFun]; abel_nf; simp
+  map_add' _ _ := by ext; simp; abel
+  map_smul' _ _ := by ext; simp; abel_nf; simp
 
 @[simp]
 lemma d₂₃_apply (a : twoCochain R L M) (x y z : L) :
