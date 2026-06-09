@@ -175,7 +175,7 @@ theorem tangentConeAt_subset_zero [T2Space E] (hx : ¬AccPt x (𝓟 s)) : tangen
 
 theorem AccPt.of_mem_tangentConeAt_ne_zero [T2Space E] {y : E} (hy : y ∈ tangentConeAt 𝕜 s x)
     (hy₀ : y ≠ 0) : AccPt x (𝓟 s) := by
-  contrapose! hy₀
+  contrapose hy₀
   exact tangentConeAt_subset_zero hy₀ hy
 
 theorem UniqueDiffWithinAt.accPt [T2Space E] [Nontrivial E] (h : UniqueDiffWithinAt 𝕜 s x) :

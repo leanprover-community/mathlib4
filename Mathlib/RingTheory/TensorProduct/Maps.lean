@@ -79,6 +79,7 @@ variable [Semiring B] [Algebra R B]
 variable [Semiring C] [Algebra S C]
 variable [Semiring D] [Algebra R D]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- To check a linear map preserves multiplication, it suffices to check it on pure tensors. See
 `algHomOfLinearMapTensorProduct` for a bundled version. -/
 lemma _root_.LinearMap.map_mul_of_map_mul_tmul {f : A ⊗[R] B →ₗ[S] C}
@@ -136,8 +137,7 @@ def algEquivOfLinearEquivTripleTensorProduct (f : A ⊗[R] B ⊗[R] C ≃ₗ[R] 
     A ⊗[R] B ⊗[R] C ≃ₐ[R] D :=
   AlgEquiv.ofLinearEquiv f h_one <| f.map_mul_iff.2 <| by
     ext
-    dsimp
-    exact h_mul _ _ _ _ _ _
+    simpa using h_mul _ _ _ _ _ _
 
 @[simp]
 theorem algEquivOfLinearEquivTripleTensorProduct_apply (f h_mul h_one x) :
@@ -208,6 +208,14 @@ def liftEquiv : {fg : (A →ₐ[S] C) × (B →ₐ[R] C) // ∀ x y, Commute (fg
     ((Commute.one_right _).tmul (Commute.one_left _)).map f'⟩
   left_inv fg := by ext <;> simp
   right_inv f' := by ext <;> simp
+
+theorem restrictScalars_lift [CommSemiring R'] [Algebra R R'] [Algebra R' S]
+    [Algebra R' A] [IsScalarTower R R' A] [IsScalarTower R' S A]
+    [Algebra R' C] [IsScalarTower R R' C] [IsScalarTower R' S C]
+    (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : ∀ (x : A) (y : B), Commute (f x) (g y)) :
+    (Algebra.TensorProduct.lift f g hfg).restrictScalars R' =
+      Algebra.TensorProduct.lift (f.restrictScalars R') g hfg :=
+  rfl
 
 end lift
 
@@ -402,8 +410,11 @@ lemma commRight_tmul (s : S) (a : A) : commRight R S A (s ⊗ₜ a) = a ⊗ₜ s
 variable {S A} in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 @[simp]
-lemma Algebra.TensorProduct.commRight_symm_tmul (s : S) (a : A) :
+lemma commRight_symm_tmul (s : S) (a : A) :
     (commRight R S A).symm (a ⊗ₜ[R] s) = s ⊗ₜ a := rfl
+
+@[deprecated (since := "2026-05-24")]
+alias Algebra.TensorProduct.commRight_symm_tmul := commRight_symm_tmul
 
 end
 
@@ -805,6 +816,13 @@ def tensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
         baseChangeHom_apply, baseChange_eq_ltensor, Module.End.one_eq_id,
         lTensor_id, LinearMap.id_apply])
 
+/-- If `R →+* S` is surjective, the multiplication map `S ⊗[R] S →+* S` is an isomorphism. This
+is the algebraic version of closed immersions are monomorphisms. -/
+lemma mul'_bijective_of_surjective (h : Function.Surjective (algebraMap R A)) :
+    Function.Bijective (LinearMap.mul' R A) :=
+  have : TensorProduct.CompatibleSMul R A A A := .of_algebraMap_surjective _ _ h
+  (Algebra.TensorProduct.lmulEquiv R A).bijective
+
 end LinearMap
 
 namespace Module
@@ -844,3 +862,46 @@ variable {C : Subalgebra R A}
 
 lemma Subalgebra.tmul_mem_baseChange {x : A} (hx : x ∈ C) (b : B) : b ⊗ₜ[R] x ∈ C.baseChange B :=
   ⟨(b ⊗ₜ[R] ⟨x, hx⟩), rfl⟩
+
+section
+
+universe u₁ u₂ u₃ u₄ u₅
+
+variable (R S A B : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S]
+  [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Semiring B] [Algebra R B]
+
+attribute [local instance] ULift.algebra' in
+/-- `ULift` commutes with tensor products of algebras. -/
+def Algebra.TensorProduct.uliftEquiv :
+    ULift.{u₁} (A ⊗[R] B) ≃ₐ[S] ULift.{u₂} A ⊗[ULift.{u₃} R] ULift.{u₄} B :=
+  AlgEquiv.trans ULift.algEquiv
+    (.trans (congr ULift.algEquiv.symm ULift.algEquiv.symm) <|
+      Algebra.TensorProduct.equivOfCompatibleSMul _ _ _ _ _)
+
+variable {A B}
+
+@[simp]
+lemma Algebra.TensorProduct.uliftEquiv_tmul (a : A) (b : B) :
+    uliftEquiv R S A B ⟨a ⊗ₜ b⟩ = ⟨a⟩ ⊗ₜ ⟨b⟩ :=
+  rfl
+
+attribute [local instance] ULift.algebra' in
+@[simp]
+lemma Algebra.TensorProduct.down_uliftEquiv_symm_tmul (a : ULift A) (b : ULift B) :
+    ((uliftEquiv R S A B).symm (a ⊗ₜ b)).down = a.down ⊗ₜ b.down :=
+  rfl
+
+attribute [local instance] ULift.algebra' in
+lemma Algebra.TensorProduct.uliftEquiv_symm_tmul (a : ULift A) (b : ULift B) :
+    (uliftEquiv R S A B).symm (a ⊗ₜ b) = ⟨a.down ⊗ₜ b.down⟩ :=
+  rfl
+
+set_option backward.isDefEq.respectTransparency false in
+attribute [local instance] ULift.algebra' in
+lemma Algebra.TensorProduct.lmul'_ulift :
+    TensorProduct.lmul' (S := ULift.{u₂} S) (ULift.{u₁} R) =
+      (TensorProduct.lmul' (S := S) R).ulift.comp
+        (uliftEquiv _ _ _ _).symm.toAlgHom := by
+  ext <;> simp
+
+end

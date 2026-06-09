@@ -326,6 +326,7 @@ omit [EnoughInjectives C] in
 lemma shortExact [Mono f] : (ShortComplex.mk _ _ (cokernel.condition f)).ShortExact where
   exact := ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel f)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma exact_homologyShortComplex [Mono f] :
     (homologyShortComplex f n).Exact := by
   let T := ShortComplex.mk (homologyMap f n) (homologyMap (cokernel.π f) n)
@@ -370,6 +371,7 @@ lemma quasiIso_truncGEπ [Mono f] [Mono (homologyMap f n)] :
   rw [quasiIso_πTruncGE_iff]
   exact isGE_cokernel f n hf
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] HasDerivedCategory.standard in
 lemma quasiIsoAt_ι [Mono f] [Mono (homologyMap f n)] (q : ℤ) (hq : q ≤ n) :
     QuasiIsoAt (ι f n) q := by
@@ -497,6 +499,7 @@ sequence of morphisms `CofFibFactorizationQuasiIsoLE.toSequenceNext`. -/
 noncomputable def functor : ℕᵒᵖ ⥤ (cofFib f).FullSubcategory :=
   (Functor.ofSequence (fun q ↦ (CofFibFactorizationQuasiIsoLE.toSequenceNext f n₀ q).op)).leftOp
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isIso_functor_map_hom_h_f {q₁ q₂ : ℕ} (hq : q₁ ≤ q₂) (i : ℤ) (hi : i ≤ n₀ + q₁) :
     IsIso (((functor f n₀).map (homOfLE hq).op).hom.h.f i) := by
   wlog hq' : q₁ + 1 = q₂ generalizing q₁ q₂
@@ -566,6 +569,7 @@ lemma quasiIsoAt_midπ (q : ℕ) (i : ℤ) (h : i + 1 ≤ n₀ + q) :
     (isEventuallyConstantTo f n₀ _ _)
     (isEventuallyConstantTo f n₀ _ _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The first morphism `ι f n₀ : K ⟶ mid f n₀` of the factorization lemma `cm5a_cof`. -/
 noncomputable def ι : K ⟶ mid f n₀ :=
   limit.lift _ (Cone.mk _ { app q := ((functor f n₀).obj q).obj.ι })

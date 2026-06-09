@@ -39,7 +39,7 @@ def dualSubmodule (N : Submodule R M) : Submodule R M where
   add_mem' {a b} ha hb y hy := by simpa using add_mem (ha y hy) (hb y hy)
   zero_mem' y _ := by rw [B.zero_left]; exact zero_mem _
   smul_mem' r a ha y hy := by
-    convert (1 : Submodule R S).smul_mem r (ha y hy)
+    convert! (1 : Submodule R S).smul_mem r (ha y hy)
     rw [← IsScalarTower.algebraMap_smul S r a]
     simp only [algebraMap_smul, map_smul_of_tower, LinearMap.smul_apply]
 
