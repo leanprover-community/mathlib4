@@ -170,12 +170,13 @@ theorem comap_ne_bot_of_root_mem [IsDomain S] {r : S} (r_ne_zero : r ≠ 0) (hr 
   absurd (mem_bot.mp (eq_bot_iff.mp h mem)) hi
 
 theorem isMaximal_of_isIntegral_of_isMaximal_comap [Algebra R S] [Algebra.IsIntegral R S]
-    (I : Ideal S) [I.IsPrime] (hI : IsMaximal (I.comap (algebraMap R S))) : IsMaximal I :=
-  ⟨⟨mt comap_eq_top_iff.mpr hI.1.1, fun _ I_lt_J =>
+    (I : Ideal S) [I.IsPrime] (hI : IsMaximal (I.comap (algebraMap R S))) : IsMaximal I where
+  out := covBy_top_iff.1 ⟨lt_top_iff_ne_top.2 (mt comap_eq_top_iff.mpr hI.1.ne_top),
+    fun _ I_lt_J J_not_top =>
       let ⟨I_le_J, x, hxJ, hxI⟩ := SetLike.lt_iff_le_and_exists.mp I_lt_J
-      comap_eq_top_iff.1 <|
-        hI.1.2 _ (comap_lt_comap_of_integral_mem_sdiff I_le_J ⟨hxJ, hxI⟩
-          (Algebra.IsIntegral.isIntegral x))⟩⟩
+      J_not_top.ne <| comap_eq_top_iff.1 <|
+        (hI.1.isMax_of_gt (comap_lt_comap_of_integral_mem_sdiff I_le_J ⟨hxJ, hxI⟩
+          (Algebra.IsIntegral.isIntegral x))).eq_top⟩
 
 theorem isMaximal_of_isIntegral_of_isMaximal_comap' (f : R →+* S) (hf : f.IsIntegral) (I : Ideal S)
     [I.IsPrime] (hI : IsMaximal (I.comap f)) : IsMaximal I :=

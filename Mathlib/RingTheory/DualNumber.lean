@@ -132,11 +132,10 @@ lemma ideal_trichotomy [DivisionRing K] (I : Ideal K[ε]) :
     exact Ideal.mul_mem_left _ _ hyI
 
 lemma isMaximal_span_singleton_eps [DivisionRing K] :
-    (Ideal.span {ε} : Ideal K[ε]).IsMaximal := by
-  refine ⟨?_, fun I hI ↦ ?_⟩
-  · simp [ne_eq, Ideal.eq_top_iff_one, Ideal.mem_span_singleton', TrivSqZeroExt.ext_iff]
-  · rcases ideal_trichotomy I with rfl | rfl | rfl <;>
-    first | simp at hI | simp
+    (Ideal.span {ε} : Ideal K[ε]).IsMaximal where
+  out := isCoatom_iff_ge_of_le.2 ⟨mt (Ideal.eq_top_iff_one _).1
+      (mt Ideal.mem_span_singleton'.1 (by simp [TrivSqZeroExt.ext_iff]) ),
+      fun I ht hI => (ideal_trichotomy I).elim3 (·.trans_le bot_le) Eq.le (Not.elim ht)⟩
 
 lemma maximalIdeal_eq_span_singleton_eps [Field K] :
     IsLocalRing.maximalIdeal K[ε] = Ideal.span {ε} :=
