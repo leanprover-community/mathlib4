@@ -149,7 +149,7 @@ theorem norm_normAtAllPlaces (x : mixedSpace K) :
 
 theorem normAtAllPlaces_mem_fundamentalCone_iff {x : mixedSpace K} :
     mixedSpaceOfRealSpace (normAtAllPlaces x) ∈ fundamentalCone K ↔ x ∈ fundamentalCone K := by
-  simp_rw [fundamentalCone, Set.mem_diff, Set.mem_preimage, logMap_normAtAllPlaces,
+  simp_rw [fundamentalCone, Set.mem_sdiff, Set.mem_preimage, logMap_normAtAllPlaces,
     Set.mem_setOf_eq, norm_normAtAllPlaces]
 
 end normAtAllPlaces
@@ -867,7 +867,7 @@ theorem volume_interior_eq_volume_closure :
 open scoped Classical in
 theorem volume_frontier_normLeOne :
      volume (frontier (normLeOne K)) = 0 := by
-  rw [frontier, measure_diff, volume_interior_eq_volume_closure, tsub_self]
+  rw [frontier, measure_sdiff, volume_interior_eq_volume_closure, tsub_self]
   · exact interior_subset_closure
   · exact measurableSet_interior.nullMeasurableSet
   · refine lt_top_iff_ne_top.mp <| lt_of_le_of_lt (measure_mono interior_subset) ?_
