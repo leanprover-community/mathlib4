@@ -98,9 +98,6 @@ instance [Monoid A] : Subsingleton (HasMulAntidiagonal A) where
     congr with n xy
     rw [ha, hb]
 
-@[deprecated (since := "2026-06-08")]
-alias _root_.Finset.instSubsingletonHasAntidiagonal := HasAntidiagonal.instSubsingleton
-
 -- The goal of this lemma is to allow to rewrite mulAntidiagonal/antidiagonal
 -- when the decidability instances obfuscate Lean
 set_option linter.overlappingInstances false in
@@ -109,33 +106,21 @@ lemma congr (A : Type*) [Monoid A]
     [H1 : HasMulAntidiagonal A] [H2 : HasMulAntidiagonal A] :
     H1.mulAntidiagonal = H2.mulAntidiagonal := by congr!; subsingleton
 
-@[deprecated (since := "2026-06-08")]
-alias _root_.Finset.hasAntidiagonal_congr := HasAntidiagonal.congr
-
 @[to_additive]
 theorem swap_mem_mulAntidiagonal [CommMonoid A] [HasMulAntidiagonal A] {n : A} {xy : A × A} :
     xy.swap ∈ mulAntidiagonal n ↔ xy ∈ mulAntidiagonal n := by
   simp [mul_comm]
-
-@[deprecated (since := "2026-06-08")]
-alias _root_.Finset.swap_mem_antidiagonal := HasAntidiagonal.swap_mem_antidiagonal
 
 @[to_additive (attr := simp) map_prodComm_antidiagonal]
 theorem map_prodComm_mulAntidiagonal [CommMonoid A] [HasMulAntidiagonal A] {n : A} :
     (mulAntidiagonal n).map (Equiv.prodComm A A) = mulAntidiagonal n :=
   Finset.ext fun ⟨a, b⟩ => by simp [mul_comm]
 
-@[deprecated (since := "2026-06-08")]
-alias _root_.Finset.map_prodComm_antidiagonal := HasAntidiagonal.map_prodComm_antidiagonal
-
 /-- See also `Finset.map_prodComm_mulAntidiagonal`. -/
 @[to_additive (attr := simp)]
 theorem map_swap_mulAntidiagonal [CommMonoid A] [HasMulAntidiagonal A] {n : A} :
     (mulAntidiagonal n).map ⟨Prod.swap, Prod.swap_injective⟩ = mulAntidiagonal n :=
   map_prodComm_mulAntidiagonal
-
-@[deprecated (since := "2026-06-08")]
-alias _root_.Finset.map_swap_antidiagonal := HasAntidiagonal.map_swap_antidiagonal
 
 section CancelMonoid
 
@@ -154,9 +139,6 @@ theorem mulAntidiagonal_congr (hp : p ∈ mulAntidiagonal n) (hq : q ∈ mulAnti
   rw [mem_mulAntidiagonal] at hp hq
   rw [hq, ← h, hp]
 
-@[deprecated (since := "2026-06-08")]
-alias _root_.Finset.antidiagonal_congr := HasAntidiagonal.antidiagonal_congr
-
 /-- A point in the mulAntidiagonal is determined by its first co-ordinate (subtype version of
 `Finset.mulAntidiagonal_congr`). This lemma is used by the `ext` tactic. -/
 @[to_additive (attr := ext)
@@ -164,9 +146,6 @@ alias _root_.Finset.antidiagonal_congr := HasAntidiagonal.antidiagonal_congr
 `Finset.antidiagonal_congr`). This lemma is used by the `ext` tactic. -/]
 theorem mulAntidiagonal_subtype_ext {p q : mulAntidiagonal n} (h : p.val.1 = q.val.1) : p = q :=
   Subtype.ext ((mulAntidiagonal_congr p.prop q.prop).mpr h)
-
-@[deprecated (since := "2026-06-08")]
-alias _root_.Finset.antidiagonal_subtype_ext := HasAntidiagonal.antidiagonal_subtype_ext
 
 end CancelMonoid
 
@@ -184,9 +163,6 @@ lemma mulAntidiagonal_congr' (hp : p ∈ mulAntidiagonal n) (hq : q ∈ mulAntid
   rw [← Prod.swap_inj]
   exact mulAntidiagonal_congr (swap_mem_mulAntidiagonal.2 hp) (swap_mem_mulAntidiagonal.2 hq)
 
-@[deprecated (since := "2026-06-08")]
-alias _root_.Finset.antidiagonal_congr' := HasAntidiagonal.antidiagonal_congr'
-
 end CancelCommMonoid
 
 section CanonicallyOrderedMul
@@ -198,26 +174,17 @@ theorem mulAntidiagonal_one : mulAntidiagonal (1 : A) = {(1, 1)} := by
   ext ⟨x, y⟩
   simp
 
-@[deprecated (since := "2026-06-08")]
-alias _root_.Finset.antidiagonal_zero := HasAntidiagonal.antidiagonal_zero
-
 @[to_additive]
 theorem mulAntidiagonal.fst_le {n : A} {kl : A × A} (hlk : kl ∈ mulAntidiagonal n) : kl.1 ≤ n := by
   rw [le_iff_exists_mul]
   use kl.2
   rwa [mem_mulAntidiagonal, eq_comm] at hlk
 
-@[deprecated (since := "2026-06-08")]
-alias _root_.Finset.antidiagonal.fst_le := HasAntidiagonal.antidiagonal.fst_le
-
 @[to_additive]
 theorem mulAntidiagonal.snd_le {n : A} {kl : A × A} (hlk : kl ∈ mulAntidiagonal n) : kl.2 ≤ n := by
   rw [le_iff_exists_mul]
   use kl.1
   rwa [mem_mulAntidiagonal, eq_comm, mul_comm] at hlk
-
-@[deprecated (since := "2026-06-08")]
-alias _root_.Finset.antidiagonal.snd_le := HasAntidiagonal.antidiagonal.snd_le
 
 end CanonicallyOrderedMul
 
@@ -244,16 +211,10 @@ theorem filter_fst_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable
   · rintro ⟨h, rfl⟩
     exact add_tsub_cancel_of_le h
 
-@[deprecated (since := "2026-06-08")]
-alias _root_.Finset.filter_fst_eq_antidiagonal := filter_fst_eq_antidiagonal
-
 theorem filter_snd_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable (m ≤ n)] :
     {x ∈ antidiagonal n | x.snd = m} = if m ≤ n then {(n - m, m)} else ∅ := by
   rw [← map_swap_antidiagonal, filter_map]
   simp [filter_fst_eq_antidiagonal, apply_ite (Finset.map _)]
-
-@[deprecated (since := "2026-06-08")]
-alias _root_.Finset.filter_snd_eq_antidiagonal := HasAntidiagonal.filter_snd_eq_antidiagonal
 
 end OrderedSub
 
@@ -263,7 +224,7 @@ namespace HasMulAntidiagonal
 
 /-- The disjoint union of mulAntidiagonals `Σ (n : A), mulAntidiagonal n` is equivalent to the
   product `A × A`. This is such an equivalence, obtained by mapping `(n, (k, l))` to `(k, l)`. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simps) sigmaAntidiagonalEquivProd
 /-- The disjoint union of antidiagonals `Σ (n : A), antidiagonal n` is equivalent to the
   product `A × A`. This is such an equivalence, obtained by mapping `(n, (k, l))` to `(k, l)`. -/]
 def sigmaMulAntidiagonalEquivProd [Monoid A] [HasMulAntidiagonal A] :
@@ -274,9 +235,6 @@ def sigmaMulAntidiagonalEquivProd [Monoid A] [HasMulAntidiagonal A] :
     rintro ⟨n, ⟨k, l⟩, h⟩
     rw [mem_mulAntidiagonal] at h
     exact Sigma.subtype_ext h rfl
-
-@[deprecated (since := "2026-06-08")]
-alias _root_.Finset.sigmaAntidiagonalEquivSum := HasAntidiagonal.sigmaAntidiagonalEquivSum
 
 section
 
@@ -298,9 +256,6 @@ abbrev mulAntidiagonalOfLocallyFinite : HasMulAntidiagonal A where
     simp only [mem_filter, and_iff_right_iff_imp]
     intro h
     simp [← h]
-
-@[deprecated (since := "2026-06-08")]
-alias _root_.Finset.antidiagonalOfLocallyFinite := HasAntidiagonal.antidiagonalOfLocallyFinite
 
 end
 
