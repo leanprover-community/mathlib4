@@ -178,6 +178,7 @@ so that we can apply `gcongr` lemmas to it. -/
 def makeGCongrGoal (rel? : Option Expr) (e : Expr) (forward : Bool) : MetaM (Expr × Expr) := do
   if let some rel := rel? then
     let .forallE _ d₁ (.forallE _ d₂ _ _) _ ← whnf (← inferType rel) | throwFunctionExpected rel
+    if d₂.hasLooseBVars then throwError "grw: {d₂} has loose bound variables"
     if forward then
       let mvar ← mkFreshExprMVar d₂
       return (mvar, ← mkFreshExprMVar <| mkApp2 rel e mvar)
