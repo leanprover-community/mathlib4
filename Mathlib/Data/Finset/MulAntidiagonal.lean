@@ -108,28 +108,15 @@ theorem mulAntidiagonal_min_mul_min {α} [CommMonoid α] [LinearOrder α] [IsOrd
   · rintro ⟨rfl, rfl⟩
     exact ⟨hs.min_mem _, ht.min_mem _, rfl⟩
 
-@[deprecated (since := "2026-06-08")]
-alias addAntidiagonal := antidiagonal
-
-@[deprecated (since := "2026-06-08")]
-alias mem_addAntidiagonal := mem_antidiagonal
-
-@[deprecated (since := "2026-06-08")]
-alias addAntidiagonal_mono_left := antidiagonal_mono_left
-
-@[deprecated (since := "2026-06-08")]
-alias addAntidiagonal_mono_right := antidiagonal_mono_right
-
-@[deprecated (since := "2026-06-08")]
-alias swap_mem_addAntidiagonal := swap_mem_antidiagonal
-
+@[deprecated (since := "2026-06-08")] alias addAntidiagonal := antidiagonal
+@[deprecated (since := "2026-06-08")] alias mem_addAntidiagonal := mem_antidiagonal
+@[deprecated (since := "2026-06-08")] alias addAntidiagonal_mono_left := antidiagonal_mono_left
+@[deprecated (since := "2026-06-08")] alias addAntidiagonal_mono_right := antidiagonal_mono_right
+@[deprecated (since := "2026-06-08")] alias swap_mem_addAntidiagonal := swap_mem_antidiagonal
 @[deprecated (since := "2026-06-08")]
 alias support_addAntidiagonal_subset_add := support_antidiagonal_subset_add
-
 @[deprecated (since := "2026-06-08")]
 alias isPWO_support_addAntidiagonal := isPWO_support_antidiagonal
-
-@[deprecated (since := "2026-06-08")]
-alias addAntidiagonal_min_mul_min := antidiagonal_min_add_min
+@[deprecated (since := "2026-06-08")] alias addAntidiagonal_min_mul_min := antidiagonal_min_add_min
 
 end Finset
