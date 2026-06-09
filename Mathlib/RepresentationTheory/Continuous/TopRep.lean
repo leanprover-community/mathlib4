@@ -160,7 +160,7 @@ def TopRepIsoActionTop : TopRep.{w} k G ≌ Action (TopModuleCat.{w} k) G where
   unitIso := NatIso.ofComponents toActionFromAction
   counitIso := NatIso.ofComponents fromActionToAction
 
-instance : (toActionTopModFunc (k := k) (G := G)).IsEquivalence  :=
+instance : (toActionTopModFunc (k := k) (G := G)).IsEquivalence :=
   TopRepIsoActionTop (k := k) (G := G).isEquivalence_functor
 
 instance : (fromActionTopModFunc (k := k) (G := G)).IsEquivalence  :=
