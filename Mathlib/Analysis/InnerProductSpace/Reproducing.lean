@@ -312,7 +312,7 @@ private def ofH₀ : H₀ (kernel H) →ₗᵢ[𝕜] H := {
   Finsupp.linearCombination 𝕜 (fun (xv : X × V) => RKHS.kerFun H xv.1 xv.2) with
   norm_map' := by
     intro f
-    simp_rw [norm_eq_sqrt_re_inner (𝕜:=𝕜), inner_H₀_def, Finsupp.linearCombination_apply,
+    simp_rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜), inner_H₀_def, Finsupp.linearCombination_apply,
       Finsupp.sum, sum_inner, inner_sum, inner_smul_left, inner_smul_right, kernel_inner, mul_assoc]
     simp
 }
@@ -360,15 +360,13 @@ lemma RKHSEquivOfKernel_symm (g : OfKernel (kernel H)) : RKHSEquivOfKernel.symm 
       ((Finsupp.linearCombination 𝕜 (fun (xv : X × V) => (RKHS.kerFun H xv.1) xv.2))) g := by
   simp [RKHSEquivOfKernel]; rfl
 
-@[simp]
 theorem RKHSEquivOfKernel_apply_symm_apply (g : OfKernel (kernel H)) :
     RKHSEquivOfKernel ((RKHSEquivOfKernel (H := H)).symm g) = g :=
-  (RKHSEquivOfKernel (H := H)).apply_symm_apply g
+  LinearIsometryEquiv.apply_symm_apply _ _
 
-@[simp]
 theorem RKHSEquivOfKernel_symm_apply_apply (g : H) :
     (RKHSEquivOfKernel (H := H)).symm (RKHSEquivOfKernel g) = g :=
-  (RKHSEquivOfKernel (H := H)).symm_apply_apply g
+  LinearIsometryEquiv.symm_apply_apply _ _
 
 lemma kerFun_eq_coe'_single (x : X) (v : V) : kerFun (OfKernel K) x v =
     UniformSpace.Completion.coe' (Finsupp.single (x, v) 1 : H₀ K) := by
@@ -392,12 +390,10 @@ lemma RKHSEquivOfKernel_symm_kerFun_eq (x : X) (v : V) :
     RKHSEquivOfKernel.symm (kerFun (OfKernel (kernel H)) x v) = (kerFun H x v) := by
   rw [← RKHSEquivOfKernel_kerFun_eq, LinearIsometryEquiv.symm_apply_apply]
 
-@[simp]
 lemma norm_RKHSEquivOfKernel_apply (f : H) :
     ‖RKHSEquivOfKernel f‖ = ‖f‖ :=
   LinearIsometryEquiv.norm_map _ _
 
-@[simp]
 lemma norm_RKHSEquivOfKernel_symm_apply (g : OfKernel (kernel H)) :
     ‖RKHSEquivOfKernel.symm g‖ = ‖g‖ :=
   LinearIsometryEquiv.norm_map _ _
@@ -405,51 +401,47 @@ lemma norm_RKHSEquivOfKernel_symm_apply (g : OfKernel (kernel H)) :
 @[simp]
 lemma RKHSEquivOfKernel_zero :
     RKHSEquivOfKernel (0 : H) = 0 :=
-  map_zero RKHSEquivOfKernel.toLinearIsometry
+  map_zero _
 
 @[simp]
 lemma RKHSEquivOfKernel_add (f₁ f₂ : H) :
     RKHSEquivOfKernel (f₁ + f₂) = RKHSEquivOfKernel f₁ + RKHSEquivOfKernel f₂ :=
-  map_add RKHSEquivOfKernel.toLinearIsometry f₁ f₂
+  map_add _ _ _
 
 @[simp]
 lemma RKHSEquivOfKernel_neg (f₁ f₂ : H) :
     RKHSEquivOfKernel (f₁ - f₂) = RKHSEquivOfKernel f₁ - RKHSEquivOfKernel f₂ :=
-  map_sub RKHSEquivOfKernel.toLinearIsometry f₁ f₂
+  map_sub _ _ _
 
-@[simp]
 lemma RKHSEquivOfKernel_smul (c : 𝕜) (f : H) :
     RKHSEquivOfKernel (c • f) = c • RKHSEquivOfKernel f :=
-  map_smul RKHSEquivOfKernel.toLinearIsometry c f
+  map_smul _ _ _
 
-@[simp]
 lemma RKHSEquivOfKernel_sum {ι : Type*} (s : Finset ι) (f : ι → H) :
     RKHSEquivOfKernel (∑ i ∈ s, f i) = ∑ i ∈ s, RKHSEquivOfKernel (f i) :=
-  map_sum RKHSEquivOfKernel.toLinearIsometry f s
+  map_sum _ _ _
 
 @[simp]
 lemma RKHSEquivOfKernel_symm_zero :
     RKHSEquivOfKernel.symm (0 : OfKernel (kernel H)) = 0 :=
-  map_zero RKHSEquivOfKernel.symm.toLinearIsometry
+  map_zero _
 
 @[simp]
 lemma RKHSEquivOfKernel_symm_add (g₁ g₂ : OfKernel (kernel H)) :
     RKHSEquivOfKernel.symm (g₁ + g₂) = RKHSEquivOfKernel.symm g₁ + RKHSEquivOfKernel.symm g₂ :=
-  map_add RKHSEquivOfKernel.symm.toLinearIsometry g₁ g₂
+  map_add _ _ _
 
 @[simp]
 lemma RKHSEquivOfKernel_symm_neg (g₁ g₂ : OfKernel (kernel H)) :
     RKHSEquivOfKernel.symm (g₁ - g₂) = RKHSEquivOfKernel.symm g₁ - RKHSEquivOfKernel.symm g₂ :=
-  map_sub RKHSEquivOfKernel.symm.toLinearIsometry g₁ g₂
+  map_sub _ _ _
 
-@[simp]
 lemma RKHSEquivOfKernel_symm_smul (c : 𝕜) (g : OfKernel (kernel H)) :
     RKHSEquivOfKernel.symm (c • g) = c • RKHSEquivOfKernel.symm g :=
-  map_smul RKHSEquivOfKernel.symm.toLinearIsometry c g
+  map_smul _ _ _
 
-@[simp]
 lemma RKHSEquivOfKernel_symm_sum {ι : Type*} (s : Finset ι) (g : ι → OfKernel (kernel H)) :
     RKHSEquivOfKernel.symm (∑ i ∈ s, g i) = ∑ i ∈ s, RKHSEquivOfKernel.symm (g i) :=
-  map_sum RKHSEquivOfKernel.symm.toLinearIsometry g s
+  map_sum _ _ _
 
 end RKHS.OfKernel
