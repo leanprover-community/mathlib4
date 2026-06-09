@@ -206,7 +206,7 @@ lemma pos_or_neg_of_sum_smul_root_mem (f : ι → ℤ)
     have hf' : f ≠ 0 := by rintro rfl; exact P.ne_zero k <| by simp [hk]
     rcases b.root_mem_or_neg_mem k with hk' | hk' <;> rw [hk] at hk'
     · left; exact this f hk' hf₀ hf'
-    · right; simpa using this (-f) (by convert hk'; simp) (by simpa only [support_neg]) (by simpa)
+    · right; simpa using this (-f) (by convert! hk'; simp) (by simpa only [support_neg]) (by simpa)
   intro f hf hf₀ hf'
   let f' : b.support → ℤ := fun i ↦ f i
   replace hf : ∑ j, f' j • P.root j ∈ AddSubmonoid.closure (P.root '' b.support) := by
@@ -387,7 +387,7 @@ lemma height_eq_sum {i : ι} {f : ι → ℤ} (heq : P.root i = ∑ j ∈ b.supp
   have aux (j : b.support) := Fintype.linearIndependent_iffₛ.mp
       (b.linearIndepOn_root.restrict_scalars' ℤ) ((b.exists_root_eq_sum_int i).choose ∘ (↑))
       (f ∘ (↑)) (by simpa) j
-  simpa using aux ⟨j, hj⟩
+  simpa using! aux ⟨j, hj⟩
 
 lemma height_ne_zero (i : ι) :
     b.height i ≠ 0 := by

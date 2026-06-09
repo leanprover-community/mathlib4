@@ -90,13 +90,13 @@ def UniformConvergenceCLM [TopologicalSpace F] (_ : Set (Set E)) := E →SL[σ] 
 -- `notation:25 E " →SLᵤ[" σ ", " 𝔖 "] " F => UniformConvergenceCLM σ (E := E) F 𝔖`
 -- (probably because of `(E := E)` ?)
 
-@[inherit_doc]
+@[inherit_doc UniformConvergenceCLM]
 scoped[UniformConvergenceCLM]
-notation:25 E' " →SLᵤ[" σ ", " 𝔖 "] " F => UniformConvergenceCLM σ (E := E') F 𝔖
+notation3:25 E' " →SLᵤ[" σ ", " 𝔖 "] " F => UniformConvergenceCLM σ (E := E') F 𝔖
 
-@[inherit_doc]
+@[inherit_doc UniformConvergenceCLM]
 scoped[UniformConvergenceCLM]
-notation:25 E' " →Lᵤ[" R ", " 𝔖 "] " F => UniformConvergenceCLM (RingHom.id R) (E := E') F 𝔖
+notation3:25 E' " →Lᵤ[" R ", " 𝔖 "] " F => UniformConvergenceCLM (RingHom.id R) (E := E') F 𝔖
 
 namespace UniformConvergenceCLM
 
@@ -322,7 +322,7 @@ theorem isVonNBounded_iff {R : Type*} [NormedDivisionRing R]
   filter_upwards [h s hs hU, eventually_ne_cobounded 0] with c hc hc₀ f hf
   rw [mem_smul_set_iff_inv_smul_mem₀ hc₀]
   intro x hx
-  simpa only [mem_smul_set_iff_inv_smul_mem₀ hc₀] using hc (mem_image2_of_mem hf hx)
+  simpa only [mem_smul_set_iff_inv_smul_mem₀ hc₀] using! hc (mem_image2_of_mem hf hx)
 
 instance instUniformContinuousConstSMul (M : Type*)
     [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
@@ -378,8 +378,10 @@ theorem completeSpace [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul �
   apply IsClosed.isComplete
   have H₁ : IsClosed {f : E →ᵤ[𝔖] F | Continuous ((UniformOnFun.toFun 𝔖) f)} :=
     UniformOnFun.isClosed_setOf_continuous h𝔖
-  convert H₁.inter <| (LinearMap.isClosed_range_coe E F σ).preimage
-    (UniformOnFun.uniformContinuous_toFun h𝔖U).continuous
+  convert!
+    H₁.inter <|
+      (LinearMap.isClosed_range_coe E F σ).preimage
+        (UniformOnFun.uniformContinuous_toFun h𝔖U).continuous
   exact ContinuousLinearMap.range_coeFn_eq
 
 variable {𝔖₁ 𝔖₂ : Set (Set E)}

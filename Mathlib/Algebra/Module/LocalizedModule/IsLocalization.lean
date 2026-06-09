@@ -43,7 +43,7 @@ variable (A)
 the associated linear map `R →ₗ[R] A` is a localization of modules with respect to `S`. -/
 lemma isLocalizedModule_iff_isLocalization' :
     IsLocalizedModule S (Algebra.linearMap R A) ↔ IsLocalization S A := by
-  convert isLocalizedModule_iff_isLocalization (S := S) (A := R) (Aₛ := A)
+  convert! isLocalizedModule_iff_isLocalization (S := S) (A := R) (Aₛ := A)
   exact (Submonoid.map_id S).symm
 
 instance [IsLocalization S A] : IsLocalizedModule S (Algebra.linearMap R A) :=

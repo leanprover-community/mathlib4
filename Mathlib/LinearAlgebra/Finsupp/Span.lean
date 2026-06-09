@@ -128,7 +128,7 @@ theorem mem_sSup_iff_exists_finset {S : Set (Submodule R M)} {m : M} :
   · simp
   · suffices m ∈ ⨆ (i) (hi : i ∈ S) (_ : ⟨i, hi⟩ ∈ s), i by simpa
     rwa [iSup_subtype']
-  · have : ⨆ (i) (_ : i ∈ S ∧ i ∈ s), i = ⨆ (i) (_ : i ∈ s), i := by convert rfl; grind
+  · have : ⨆ (i) (_ : i ∈ S ∧ i ∈ s), i = ⨆ (i) (_ : i ∈ s), i := by convert! rfl; grind
     simpa only [Finset.mem_preimage, iSup_subtype, iSup_and', this]
 
 end Semiring

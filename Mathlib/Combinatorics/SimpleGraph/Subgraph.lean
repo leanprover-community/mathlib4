@@ -484,7 +484,7 @@ def completelyDistribLatticeMinimalAxioms : CompletelyDistribLattice.MinimalAxio
       fun G' hG' ↦
         ⟨Set.subset_iInter₂ fun _ hH => (hG' hH).1, fun _ _ hab =>
           ⟨fun _ hH => (hG' hH).2 hab, G'.adj_sub hab⟩⟩⟩
-  iInf_iSup_eq f := Subgraph.ext (by simpa using iInf_iSup_eq)
+  iInf_iSup_eq f := Subgraph.ext (by simpa using! iInf_iSup_eq)
     (by ext; simp [Classical.skolem])
 
 instance : CompletelyDistribLattice G.Subgraph :=
@@ -868,7 +868,6 @@ lemma adj_iff_of_neighborSet_equiv {v : V} {H : Subgraph G}
 
 end Subgraph
 
-@[simp]
 theorem card_neighborSet_toSubgraph (G H : SimpleGraph V) (h : H ≤ G)
     (v : V) [Fintype ↑((toSubgraph H h).neighborSet v)] [Fintype ↑(H.neighborSet v)] :
     Fintype.card ↑((toSubgraph H h).neighborSet v) = H.degree v := by
@@ -880,7 +879,7 @@ theorem card_neighborSet_toSubgraph (G H : SimpleGraph V) (h : H ≤ G)
 lemma degree_toSubgraph (G H : SimpleGraph V) (h : H ≤ G) {v : V}
     [Fintype ↑((toSubgraph H h).neighborSet v)] [Fintype ↑(H.neighborSet v)] :
     (toSubgraph H h).degree v = H.degree v := by
-  simp [Subgraph.degree]
+  simp [Subgraph.degree, card_neighborSet_toSubgraph]
 
 section MkProperties
 
@@ -1312,7 +1311,7 @@ theorem deleteVerts_le : G'.deleteVerts s ≤ G' := by
 @[gcongr, mono]
 theorem deleteVerts_mono {G' G'' : G.Subgraph} (h : G' ≤ G'') :
     G'.deleteVerts s ≤ G''.deleteVerts s :=
-  induce_mono h (Set.diff_subset_diff_left h.1)
+  induce_mono h (Set.sdiff_subset_sdiff_left h.1)
 
 @[mono]
 lemma deleteVerts_mono' {G' : SimpleGraph V} (u : Set V) (h : G ≤ G') :
@@ -1322,7 +1321,7 @@ lemma deleteVerts_mono' {G' : SimpleGraph V} (u : Set V) (h : G ≤ G') :
 
 @[gcongr, mono]
 theorem deleteVerts_anti {s s' : Set V} (h : s ⊆ s') : G'.deleteVerts s' ≤ G'.deleteVerts s :=
-  induce_mono (le_refl _) (Set.diff_subset_diff_right h)
+  induce_mono (le_refl _) (Set.sdiff_subset_sdiff_right h)
 
 @[simp]
 theorem deleteVerts_inter_verts_left_eq : G'.deleteVerts (G'.verts ∩ s) = G'.deleteVerts s := by
