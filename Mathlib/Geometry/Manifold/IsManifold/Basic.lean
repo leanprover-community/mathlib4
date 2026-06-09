@@ -999,18 +999,18 @@ variable {N M 𝕜 E H : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGro
 variable [TopologicalSpace N] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
 variable [TopologicalSpace M] [ChartedSpace H M] {n : ℕ∞ω} [IsManifold I n M]
 
-lemma chartedSpace_trans_mem_maximalAtlas (φ : M ≃ₜ N) :
-  letI := φ.chartedSpace H
-  ∀ e ∈ atlas H N, φ.toOpenPartialHomeomorph.trans e ∈ IsManifold.maximalAtlas I n M :=
-  fun e he ↦ by
-    simp only [atlas, ChartedSpace.atlas, mem_setOf_eq] at he
-    rcases he with ⟨q, he⟩
-    rw [← he, ← OpenPartialHomeomorph.trans_assoc]
-    exact StructureGroupoid.mem_maximalAtlas_of_eqOnSource (Setoid.trans
-      (OpenPartialHomeomorph.EqOnSource.trans' (φ.toOpenPartialHomeomorph_trans_localInverseAt _)
+open IsManifold in lemma chartedSpace_trans_mem_maximalAtlas (φ : M ≃ₜ N) :
+    letI := φ.chartedSpace H
+    ∀ e ∈ atlas H N, φ.toOpenPartialHomeomorph.trans e ∈ maximalAtlas I n M := fun e he ↦ by
+  simp only [atlas, ChartedSpace.atlas, mem_setOf_eq] at he
+  rcases he with ⟨q, he⟩
+  rw [← he, ← OpenPartialHomeomorph.trans_assoc]
+  exact StructureGroupoid.mem_maximalAtlas_of_eqOnSource
+    (Setoid.trans (OpenPartialHomeomorph.EqOnSource.trans'
+      (φ.toOpenPartialHomeomorph_trans_localInverseAt _)
       (OpenPartialHomeomorph.eqOnSource_refl _)) (by rw [OpenPartialHomeomorph.ofSet_trans]))
-      (restr_mem_maximalAtlas _ (IsManifold.chart_mem_maximalAtlas _)
-      (by simpa using OpenPartialHomeomorph.open_source _ ))
+    <| restr_mem_maximalAtlas _ (IsManifold.chart_mem_maximalAtlas _)
+      <| by simpa using OpenPartialHomeomorph.open_source _
 
 end Homeomorph
 

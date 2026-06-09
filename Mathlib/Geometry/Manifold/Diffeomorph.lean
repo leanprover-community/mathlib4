@@ -680,13 +680,11 @@ is a manifold.
 @[implicit_reducible]
 def Homeomorph.isManifold [IsManifold I n M] (φ : M ≃ₜ N) :
   letI := φ.chartedSpace H;
-  IsManifold I n N :=
-    letI := φ.chartedSpace H;
-  { compatible {e e'} he he' := by
+  IsManifold I n N  where
+    __ := φ.chartedSpace H
+    compatible {e e'} he he' := by
       have : _ ∈ contDiffGroupoid n I := IsManifold.compatible_of_mem_maximalAtlas
         (φ.chartedSpace_trans_mem_maximalAtlas e he) (φ.chartedSpace_trans_mem_maximalAtlas e' he')
       convert this
       simp [OpenPartialHomeomorph.trans_symm_eq_symm_trans_symm, OpenPartialHomeomorph.trans_assoc,
-        ← OpenPartialHomeomorph.trans_assoc φ.toOpenPartialHomeomorph.symm,
-        ]
-  }
+        ← OpenPartialHomeomorph.trans_assoc φ.toOpenPartialHomeomorph.symm]
