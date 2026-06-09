@@ -216,6 +216,10 @@ See also `Submodule.IsTopCompl.projectionOnto` for the same projection as an ele
 noncomputable def projectionL (h : IsTopCompl p q) : M →L[R] M :=
   p.subtypeL ∘L p.projectionOntoL q h
 
+theorem coe_projectionL (h : IsTopCompl p q) :
+    ⇑(p.projectionL q h) = p.projection q h.isCompl :=
+  rfl
+
 @[simp]
 theorem toLinearMap_projectionL (h : IsTopCompl p q) :
     p.projectionL q h = p.projection q h.isCompl :=
@@ -437,6 +441,10 @@ noncomputable def prodEquivOfIsTopCompl (h : IsTopCompl p q) : (p × q) ≃L[R] 
 @[simp]
 theorem toLinearEquiv_prodEquivOfIsTopCompl (h : IsTopCompl p q) :
     (prodEquivOfIsTopCompl p q h : (p × q) ≃ₗ[R] M) = p.prodEquivOfIsCompl q h.isCompl :=
+  rfl
+
+theorem coe_prodEquivOfIsTopCompl (h : IsTopCompl p q) :
+    ⇑(prodEquivOfIsTopCompl p q h) = p.prodEquivOfIsCompl q h.isCompl :=
   rfl
 
 @[simp]

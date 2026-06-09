@@ -98,12 +98,13 @@ theorem isTopCompl_iff_isCompl_isClosed :
     IsTopCompl p q ↔ IsCompl p q ∧ IsClosed (p : Set E) ∧ IsClosed (q : Set E) :=
   ⟨fun h ↦ ⟨h.isCompl, h.isClosed, h.isClosed'⟩, fun h ↦ h.1.isTopCompl_of_isClosed h.2.1 h.2.2⟩
 
-@[deprecated "Use `toLinearEquiv_prodEquivOfIsTopCompl` instead" (since := "2026-06-07")]
+@[deprecated "Use `coe_prodEquivOfIsTopCompl` instead" (since := "2026-06-07")]
 theorem coe_prodEquivOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
     ⇑(p.prodEquivOfClosedCompl q h hp hq) = p.prodEquivOfIsCompl q h := rfl
 
-@[deprecated "Use `toLinearEquiv_prodEquivOfIsTopCompl` instead" (since := "2026-06-07")]
+@[deprecated "Use `coe_prodEquivOfIsTopCompl` and `LinearEquiv.symm` instead"
+  (since := "2026-06-07")]
 theorem coe_prodEquivOfClosedCompl_symm (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
     ⇑(p.prodEquivOfClosedCompl q h hp hq).symm = (p.prodEquivOfIsCompl q h).symm := rfl
