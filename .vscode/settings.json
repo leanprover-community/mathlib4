@@ -20,18 +20,5 @@
   "files.readonlyInclude": {
     "**/.elan/**": true,
     "**/.lake/**": true
-  },
-  "workbench.colorCustomizations": {
-    "activityBar.background": "#610606",
-    "titleBar.activeBackground": "#880909",
-    "titleBar.activeForeground": "#FFFBFB",
-    "titleBar.inactiveBackground": "#610606",
-    "titleBar.inactiveForeground": "#FFFBFB",
-    "statusBar.background": "#610606",
-    "statusBar.foreground": "#FFFBFB",
-    "statusBar.debuggingBackground": "#610606",
-    "statusBar.debuggingForeground": "#FFFBFB",
-    "statusBar.noFolderBackground": "#610606",
-    "statusBar.noFolderForeground": "#FFFBFB"
   }
 }
