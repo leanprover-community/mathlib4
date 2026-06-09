@@ -24,30 +24,34 @@ This is a trivial corollary of `NumberField.not_dvd_discr_iff_forall_mem` and
 
 section
 
-variable (A B C G : Type*) [Group G] (H : Subgroup G) [CommRing A] [CommRing B] [CommRing C]
-  [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
-  [MulSemiringAction G C] [IsGaloisGroup G A C] [IsGaloisGroup H B C]
-  (q : Ideal B) (r : Ideal C) [r.LiesOver q]
+-- PRed
+instance {A B : Type*} [CommRing A] [CommRing B] (h : A ≃+* B) :
+    letI := h.toRingHom.toAlgebra
+    Module.Finite A B :=
+  h.finite
 
-theorem foo₁ : r.inertia H = (r.inertia G).subgroupOf H := rfl
+-- PRed
+theorem PerfectField.of_ringEquiv {K L : Type*} [Field K] [Field L] (h : K ≃+* L) [PerfectField K] :
+    PerfectField L := by
+  let := h.toRingHom.toAlgebra
+  exact Algebra.IsAlgebraic.perfectField (K := K)
 
-variable [H.Normal] [FaithfulSMul B C] [FaithfulSMul A C] [IsDomain C] [Finite G]
+-- PRed
+instance (R : Type*) [CommRing R] [IsDomain R] : IsFractionRing R (⊥ : Ideal R).ResidueField :=
+  IsLocalization.of_ringEquiv_left (RingEquiv.quotientBot R).symm
+    (MulEquivClass.map_nonZeroDivisors (RingEquiv.quotientBot R).symm) (by simp)
 
-example :
-    letI := IsGaloisGroup.mulSemiringActionQuotient G B C H
-    IsGaloisGroup (G ⧸ H) A B := by
-  let := IsGaloisGroup.mulSemiringActionQuotient G B C H
-  let := IsGaloisGroup.mulSemiringActionOfNormal G B C H
-  let := IsGaloisGroup.smulCommClassQuotient G A B C H
-  exact IsGaloisGroup.quotient G A B C H
+instance (R : Type*) [CommRing R] [IsDomain R] [Ring.HasFiniteQuotients R]
+    [PerfectField (FractionRing R)] (P : Ideal R) [P.IsPrime] : PerfectField P.ResidueField := by
+  rcases eq_or_ne P ⊥ with rfl | hP
+  · exact PerfectField.of_ringEquiv (FractionRing.algEquiv R (⊥ : Ideal R).ResidueField).toRingEquiv
+  · suffices Finite P.ResidueField from inferInstance
+    have : P.IsMaximal := ‹P.IsPrime›.isMaximal hP
+    have : Finite (R ⧸ P) := Ring.HasFiniteQuotients.finiteQuotient hP
+    let : Field (R ⧸ P) := Ideal.Quotient.field P
+    exact .of_equiv (R ⧸ P) (IsFractionRing.algEquiv (R ⧸ P) (R ⧸ P) P.ResidueField).toEquiv
 
-theorem foo₃ {G G' : Type*} [Group G] [Group G'] (H : Subgroup G) (f : G →* G') :
-    Nat.card (H ⊓ f.ker :) * Nat.card (H.map f) = Nat.card H := by
-  have := f.restrict H
-  have := Subgroup.index_ker (f.restrict H)
-  rw [MonoidHom.restrict_range, MonoidHom.ker_restrict] at this
-  sorry
-
+-- in the big refactor PR
 lemma card_inertia_eq_ramificationIdxIn {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     [IsDomain R] [IsDomain S] [Module.Finite R S] [Module.Flat R S]
     (p : Ideal R) (P : Ideal S) [P.LiesOver p] [p.IsPrime] [P.IsPrime]
@@ -56,47 +60,99 @@ lemma card_inertia_eq_ramificationIdxIn {R S : Type*} [CommRing R] [CommRing S] 
     Nat.card (P.inertia G) = Ideal.ramificationIdxIn p S := by
   sorry
 
+instance (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] [Algebra A B] [Algebra B C]
+    [Algebra A C] [IsScalarTower A B C] (q : Ideal B) (r : Ideal C) [r.LiesOver q] :
+    r.LiesOver (q.under A) :=
+  Ideal.LiesOver.trans r q (q.under A)
+
+instance (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] [Algebra A B] [Algebra B C]
+    [Algebra A C] [IsScalarTower A B C] (q : Ideal B) (r : Ideal C) [r.LiesOver q] :
+    q.LiesOver (r.under A) :=
+  Ideal.LiesOver.tower_bot r q (r.under A)
+
+end
+
+section
+
+variable (A B C G : Type*) [Group G] (H : Subgroup G) [CommRing A] [CommRing B] [CommRing C]
+  [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
+  [MulSemiringAction G C] [IsGaloisGroup G A C] [IsGaloisGroup H B C]
+  (q : Ideal B) (r : Ideal C) [r.LiesOver q]
+
+variable [H.Normal] [FaithfulSMul B C] [FaithfulSMul A C] [IsDomain C] [Finite G]
+
+theorem foo₃ {G G' : Type*} [Group G] [Group G'] (H : Subgroup G) (f : G →* G') :
+    Nat.card (f.ker ⊓ H : Subgroup G) * Nat.card (H.map f) = Nat.card H := by
+  rw [← Subgroup.subgroupOf_map_subtype, Subgroup.card_map_of_injective H.subtype_injective,
+    ← f.ker_restrict, ← f.restrict_range, ← Subgroup.index_ker, Subgroup.card_mul_index]
+
+open Pointwise in
 include A in
-theorem foo₂ [IsDomain A] [IsDomain B]
-    [Module.Finite A B] [Module.Finite A C] [Module.Finite B C]
-    [Module.Flat A B] [Module.Flat A C] [Module.Flat B C]
-    [q.IsPrime] [r.IsPrime] [PerfectField (r.under A).ResidueField] [PerfectField q.ResidueField] :
+theorem foo₄
+    [q.IsPrime] [r.IsPrime] :
     letI := IsGaloisGroup.mulSemiringActionQuotient G B C H
     q.inertia (G ⧸ H) = (r.inertia G).map (QuotientGroup.mk' H) := by
-  symm
-  apply Subgroup.eq_of_le_of_card_ge
-  · rintro - ⟨g, hg, rfl⟩
-    intro b
-    simp
+  have : IsDomain A := IsDomain.of_faithfulSMul A C
+  have : IsDomain B := IsDomain.of_faithfulSMul B C
+  let := IsGaloisGroup.mulSemiringActionQuotient G B C H
+  apply le_antisymm; swap
+  · rintro - ⟨g, hg, rfl⟩ b
     specialize hg (algebraMap B C b)
-    simp at hg
     rw [← IsGaloisGroup.algebraMap_smulOfNormal G B C H g b, ← map_sub] at hg
-    rwa [← Ideal.mem_under, ← Ideal.over_def r q] at hg
-  · apply Nat.le_of_dvd Nat.card_pos
-    let p := r.under A
-    have : q.LiesOver p := by
-      rw [Ideal.liesOver_iff, Ideal.over_def r q, Ideal.under_under]
-    let := IsGaloisGroup.mulSemiringActionQuotient G B C H
-    let : MulSemiringAction G B := IsGaloisGroup.mulSemiringActionOfNormal G B C H
-    let : SMulCommClass (G ⧸ H) A B := IsGaloisGroup.smulCommClassQuotient G A B C H
-    have : IsGaloisGroup (G ⧸ H) A B := IsGaloisGroup.quotient G A B C H
-    have := foo₃ (r.inertia G) (QuotientGroup.mk' H)
-    simp only [QuotientGroup.ker_mk'] at this
-    have h1 := card_inertia_eq_ramificationIdxIn p r G
-    have h2 := card_inertia_eq_ramificationIdxIn p q (G ⧸ H)
-    have h3 := card_inertia_eq_ramificationIdxIn q r H
-    rw [h2]
-    rw [h1] at this
-    have key : Nat.card ↥(r.inertia G ⊓ H) = Nat.card ↥(r.inertia H) := by
-      have : (r.inertia G).subgroupOf H = r.inertia H :=
-        AddSubgroup.subgroupOf_inertia r.toAddSubgroup H
-      rw [← this]
-      transitivity (Nat.card <| ((r.inertia G).subgroupOf H).map H.subtype)
-      · simp
-      · apply Subgroup.card_map_of_injective
-        exact H.subtype_injective
-    rw [key, h3] at this
-    sorry
+    rwa [Submodule.mem_toAddSubgroup, QuotientGroup.mk'_apply, r.over_def q, r.mem_under B]
+  · -- let `g : G ⧸ H` be an element of the inertia subgroup of `q`
+    intro g hg
+    -- first we will find a lift `g' : G` in the decomposition subgroup of `r`
+    have mem_decomposition : ∃ g' : MulAction.stabilizer G r, QuotientGroup.mk' H g' = g := by
+      obtain ⟨g, rfl⟩ := QuotientGroup.mk'_surjective H g
+      have : (g • r).under B = r.under B := by
+        replace hg := Ideal.inertia_le_stabilizer q hg
+        rw [MulAction.mem_stabilizer_iff] at hg
+        simp at hg
+        rw [← Ideal.over_def r q, ← hg, Ideal.over_def r q]
+        rw [Ideal.under_def, Ideal.pointwise_smul_eq_comap]
+        nth_rw 2 [← Ideal.comap_coe]
+        rw [Ideal.comap_comap, Ideal.pointwise_smul_eq_comap, Ideal.under_def]
+        nth_rw 2 [← Ideal.comap_coe]
+        rw [Ideal.comap_comap]
+        congr
+        ext x
+        let := IsGaloisGroup.mulSemiringActionOfNormal G B C H
+        have : SMulDistribClass G B C := IsGaloisGroup.smulDistribClass_smulOfNormal G B C H
+        simp [IsGaloisGroup.mulSemiringActionQuotient_smul_def]
+        change g⁻¹ • (algebraMap B C) x = (algebraMap B C) (↑(g⁻¹ : G) • x)
+        exact Eq.symm (algebraMap.coe_smul' g⁻¹ x C)
+      obtain ⟨g', hg'⟩ := Algebra.IsInvariant.exists_smul_of_under_eq B C H (g • r) r this
+      exact ⟨⟨g' * g, by simpa [mul_smul, eq_comm]⟩, by simp⟩
+    -- and now we must find a lift `g' : G` in the inertia subgroup of `r`
+    obtain ⟨g, rfl⟩ := mem_decomposition
+    let φ : (C ⧸ r) ≃ₐ[B ⧸ q] (C ⧸ r) :=
+    { __ := Ideal.Quotient.stabilizerHom r (r.under A) G g
+      commutes' := by
+        intro x
+        obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+        specialize hg x
+        simp
+        rw [IsScalarTower.algebraMap_apply B C (C ⧸ r), Ideal.Quotient.algebraMap_eq,
+          Ideal.Quotient.stabilizerHom_apply, Ideal.Quotient.eq]
+        simp [Ideal.over_def r q] at hg
+        convert hg
+        let := IsGaloisGroup.mulSemiringActionOfNormal G B C H
+        have : SMulDistribClass G B C := IsGaloisGroup.smulDistribClass_smulOfNormal G B C H
+        rw [IsGaloisGroup.mulSemiringActionQuotient_smul_def]
+        simp [Subgroup.smul_def] }
+    obtain ⟨g', hg'⟩ := Ideal.Quotient.stabilizerHom_surjective H q r φ
+    let v : MulAction.stabilizer G r := ⟨g', g'.2⟩⁻¹ * g
+    refine ⟨v, ?_, by simp [v]⟩
+    have := Ideal.Quotient.ker_stabilizerHom r (r.under A) G
+    rw [SetLike.ext_iff] at this
+    specialize this v
+    refine this.mp ?_
+    simp [v, inv_mul_eq_one]
+    ext x
+    change Ideal.Quotient.stabilizerHom r q H g' x = _
+    rw [hg']
+    rfl
 
 end
 
@@ -170,9 +226,6 @@ lemma NumberField.exists_not_isUnramifiedAt_int_of_isGalois [IsGalois ℚ K]
 
 open IsGaloisGroup NumberField -- probably should become a namespace
 
-instance {I : Ideal ℤ} [I.IsPrime] : PerfectField I.ResidueField :=
-  sorry
-
 section
 
 variable (G A B C : Type*) [Group G]
@@ -194,22 +247,21 @@ theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finit
       IsGaloisGroup.fixingSubgroup_range_algebraMap G ℤ R S H]
   rw [Algebra.unramified_iff_forall]
   rintro ⟨mR, hmR⟩
-  simp only
   rw [← Ideal.ramificationIdx'_eq_one_iff]
   have : H.Normal := sorry
   let := mulSemiringActionQuotient G R S H
   have : IsGaloisGroup (G ⧸ H) ℤ R := by
     let := mulSemiringActionOfNormal G R S H
     exact IsGaloisGroup.quotient G ℤ R S H
-  have : mR.ramificationIdx' ℤ = Nat.card (Ideal.inertia (G ⧸ H) mR) := sorry -- Flat over ℤ
+  have : mR.ramificationIdx' ℤ = Nat.card (Ideal.inertia (G ⧸ H) mR) := by
+    rw [card_inertia_eq_ramificationIdxIn (mR.under ℤ) mR (G ⧸ H)]
+    -- will be solved after the `ramificationIdxIn` refactor
+    sorry
   rw [this, Subgroup.card_eq_one]
   have : Algebra.IsIntegral R S := IsGaloisGroup.isInvariant.isIntegral R S H
   obtain ⟨mS, hmS, hmRS⟩ := Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain (R := R) (S := S) mR (by simp)
   replace hmRS : mS.LiesOver mR := ⟨hmRS.symm⟩
-  have : Module.Finite R S := sorry
-  have : Module.Flat R S := sorry -- this is a problem...
-  have : PerfectField mR.ResidueField := sorry
-  rw [foo₂ ℤ R S G H mR mS, Subgroup.map_eq_bot_iff, QuotientGroup.ker_mk']
+  rw [foo₄ ℤ R S G H mR mS, Subgroup.map_eq_bot_iff, QuotientGroup.ker_mk']
   apply le_iSup_of_le ⟨mS, hmS⟩
   rfl
 
