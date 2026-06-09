@@ -49,7 +49,8 @@ Furthermore, with this notation `φ^[n](a) = (ofAdd n) • a`, see `φ_iterate_a
 * `p.sum f` is `∑ n ∈ p.support, f n (p.coeff n)`, i.e., one sums the values of functions applied
   to coefficients of the polynomial `p`.
 * `SkewPolynomial.coeff p n` is the coefficient of `X ^ n` in `p`.
-* `SkewPolynomial.erase p n` is the skew polynomial `p` in which one removes the `c X ^ n` term.
+* `SkewPolynomial.erase p n` is the skew polynomial `p` in which one removes the monomial in
+  degree `n`.
 * `SkewPolynomial.update p n a` is the skew polynomial obtained by replacing the coefficient of
   degree `n` by a given value `a : R`.  If `a = 0`, this is equal to `p.erase n` If
   `p.natDegree < n` and `a ≠ 0`, this increases the degree of `p` to `n`.
@@ -172,7 +173,7 @@ def monomial : R →ₗ[R] SkewPolynomial R := lsingle R (ofAdd n)
 
 lemma monomial_zero_right : monomial n (0 : R) = 0 := single_zero _
 
-lemma monomial_zero_one [MulSemiringAction (Multiplicative ℕ) R] : monomial (0 : ℕ) (1 : R) = 1 :=
+lemma monomial_zero_one [MulSemiringAction (Multiplicative ℕ) R] : monomial 0 (1 : R) = 1 :=
   rfl
 
 lemma monomial_def (a : R) : monomial n a = single (ofAdd n) a := rfl
@@ -436,15 +437,15 @@ lemma eq_zero_of_eq_zero (h : (0 : R) = (1 : R)) (p : SkewPolynomial R) : p = 0 
 
 section Support
 
-lemma support_monomial (n) {a : R} (H : a ≠ 0) : (monomial n a).support = singleton n := by
+@[simp] lemma support_monomial (n) {a : R} (h : a ≠ 0) : (monomial n a).support = singleton n := by
   ext m
-  simp [monomial_def, support_eq_skewMonoidAlgebra_support, H]
+  simp [monomial_def, support_eq_skewMonoidAlgebra_support, h]
 
 lemma support_monomial' (n) {a : R} : (monomial n a).support ⊆ singleton n := by
   simp only [monomial_def, support_eq_skewMonoidAlgebra_support]
   refine Finset.subset_map_symm.mp SkewMonoidAlgebra.support_single_subset
 
-lemma support_C {a : R} (h : a ≠ 0) : (C a).support = singleton 0 := support_monomial 0 h
+@[simp] lemma support_C {a : R} (h : a ≠ 0) : (C a).support = singleton 0 := support_monomial 0 h
 
 lemma support_C_subset (a : R) : (C a).support ⊆ singleton 0 := support_monomial' 0
 
@@ -501,7 +502,7 @@ lemma smul_X_eq_monomial {n} [MulSemiringAction (Multiplicative ℕ) R] :
     a • X ^ n = monomial n (a : R) := by
   rw [eq_comm]
   calc monomial n a = monomial n (a * 1) := by simp only [mul_one]
-    _ = monomial n (a • 1) := by simp_all only [mul_one, smul_eq_mul]
+    _ = monomial n (a • 1) := by simp [mul_one, smul_eq_mul]
     _ = a • monomial n 1 := (SkewMonoidAlgebra.smul_single _ _ _).symm
     _ = a • X ^ n  := by rw [X_pow_eq_monomial]
 
@@ -524,52 +525,51 @@ lemma monomial_left_inj {R : Type*} [Semiring R] {a : R} (ha : a ≠ 0) {i j : �
 lemma nat_cast_mul {R : Type*} [Semiring R] (n : ℕ) (p : SkewPolynomial R)
     [MulSemiringAction (Multiplicative ℕ) R] : (n : SkewPolynomial R) * p = n • p :=
   (nsmul_eq_mul _ _).symm
-section sum
+section Sum
 
-lemma sum_eq_of_subset {S : Type*} [AddCommMonoid S] {p : SkewPolynomial R} (f : ℕ → R → S)
-    (hf : ∀ i, f i 0 = 0) {s : Finset ℕ} (hs : p.support ⊆ s) :
-    p.sum f = ∑ n ∈ s, f n (p.coeff n) := by
+variable {S : Type*} [AddCommMonoid S]
+
+lemma sum_eq_of_subset {p : SkewPolynomial R} (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0) {s : Finset ℕ}
+    (hs : p.support ⊆ s) : p.sum f = ∑ n ∈ s, f n (p.coeff n) := by
   rw [sum_def , Finset.sum_subset hs]
   intro _ _ hx
   simp only [mem_support_iff, ne_eq, not_not] at hx
   simp [hx, hf]
 
 @[simp]
-lemma sum_zero_index {S : Type*} [AddCommMonoid S] (f : ℕ → R → S) :
-    (0 : SkewPolynomial R).sum f = 0 := by
+lemma sum_zero_index (f : ℕ → R → S) : (0 : SkewPolynomial R).sum f = 0 := by
   simp [sum_def', zero_def]
 
 @[simp]
-lemma sum_X_index {S : Type*} [AddCommMonoid S] {f : ℕ → R → S} (hf : f 1 0 = 0) :
-    (X : SkewPolynomial R).sum f = f 1 1 :=
+lemma sum_X_index {f : ℕ → R → S} (hf : f 1 0 = 0) : (X : SkewPolynomial R).sum f = f 1 1 :=
   sum_monomial_index hf
 
-lemma sum_add_index {S : Type*} [AddCommMonoid S] (p q : SkewPolynomial R) (f : ℕ → R → S)
-    (hf : ∀ i, f i 0 = 0) (h_add : ∀ a b₁ b₂, f a (b₁ + b₂) = f a b₁ + f a b₂) :
+lemma sum_add_index (p q : SkewPolynomial R) (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0)
+    (h_add : ∀ a b₁ b₂, f a (b₁ + b₂) = f a b₁ + f a b₂) :
     (p + q).sum f = p.sum f + q.sum f := by
   simp only [sum_def']
   exact SkewMonoidAlgebra.sum_add_index (fun n _ ↦ hf (toAdd n)) (fun n _ ↦ h_add (toAdd n))
 
-lemma sum_add' {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (f g : ℕ → R → S) :
-    p.sum (f + g) = p.sum f + p.sum g := by simp [sum_def, Finset.sum_add_distrib]
+lemma sum_add' (p : SkewPolynomial R) (f g : ℕ → R → S) : p.sum (f + g) = p.sum f + p.sum g := by
+  simp [sum_def, Finset.sum_add_distrib]
 
-lemma sum_add {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (f g : ℕ → R → S) :
-    (p.sum fun n x => f n x + g n x) = p.sum f + p.sum g :=
+lemma sum_add (p : SkewPolynomial R) (f g : ℕ → R → S) :
+    (p.sum fun n x ↦ f n x + g n x) = p.sum f + p.sum g :=
   sum_add' _ _ _
 
-lemma sum_smul_index {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (b : R) (f : ℕ → R → S)
-    (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a => f n (b * a) :=
+lemma sum_smul_index (p : SkewPolynomial R) (b : R) (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0) :
+    (b • p).sum f = p.sum fun n a => f n (b * a) :=
   Finsupp.sum_smul_index hf
 
-lemma sum_smul_index' {S T : Type*} [DistribSMul T R] [AddCommMonoid S] (p : SkewPolynomial R)
-    (b : T) (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a => f n (b • a) :=
+lemma sum_smul_index' {T : Type*} [DistribSMul T R] (p : SkewPolynomial R) (b : T) (f : ℕ → R → S)
+    (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a => f n (b • a) :=
   Finsupp.sum_smul_index' hf
 
-protected lemma smul_sum {S T : Type*} [AddCommMonoid S] [DistribSMul T S] (p : SkewPolynomial R)
-    (b : T) (f : ℕ → R → S) : b • p.sum f = p.sum fun n a => b • f n a :=
+protected lemma smul_sum {T : Type*} [DistribSMul T S] (p : SkewPolynomial R) (b : T)
+    (f : ℕ → R → S) : b • p.sum f = p.sum fun n a => b • f n a :=
   Finsupp.smul_sum
 
-end sum
+end Sum
 
 lemma induction {motive : SkewPolynomial R → Prop} (p : SkewPolynomial R) (h0 : motive 0)
   (ha : ∀ (n : ℕ) (r : R) (q : SkewPolynomial R), n ∉ q.support → r ≠ 0 → motive q →
@@ -577,9 +577,8 @@ lemma induction {motive : SkewPolynomial R → Prop} (p : SkewPolynomial R) (h0 
   apply SkewMonoidAlgebra.induction <;> aesop
 
 @[simp]
-lemma coeff_add (p q : SkewPolynomial R) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q n := by
-  simp only [coeff]
-  exact SkewMonoidAlgebra.coeff_add p q n
+lemma coeff_add (p q : SkewPolynomial R) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q n :=
+  SkewMonoidAlgebra.coeff_add p q n
 
 end Semiring
 
@@ -588,11 +587,11 @@ section Ring
 variable [Ring R] {a b : R}
 
 lemma sum_neg {S : Type*} [Ring S] (p : SkewPolynomial R) (f : ℕ → R → S) :
-    (p.sum fun n x => - f n x) = - p.sum f := by
+    (p.sum fun n x ↦ - f n x) = - p.sum f := by
   simp [sum_def, Finset.sum_neg_distrib]
 
 lemma sum_sub {S : Type*} [Ring S] (p : SkewPolynomial R) (f g : ℕ → R → S) :
-    (p.sum fun n x => f n x - g n x) = p.sum f - p.sum g := by
+    (p.sum fun n x ↦ f n x - g n x) = p.sum f - p.sum g := by
   simp only [sub_eq_add_neg, sum_add, sum_neg]
 
 instance instRing [MulSemiringAction (Multiplicative ℕ) R] : Ring (SkewPolynomial R) :=
@@ -653,8 +652,7 @@ lemma support_erase (p : SkewPolynomial R) (n : ℕ) :
 
 lemma monomial_add_erase (p : SkewPolynomial R) (n : ℕ) :
     monomial n (coeff p n) + p.erase n = p := by
-  simp only [coeff, monomial_def, erase]
-  rw [SkewMonoidAlgebra.single_add_erase]
+  simp [coeff, monomial_def, erase, SkewMonoidAlgebra.single_add_erase]
 
 lemma coeff_erase (p : SkewPolynomial R) (n i : ℕ) :
     (p.erase n).coeff i = if i = n then 0 else p.coeff i := by
@@ -715,9 +713,7 @@ lemma update_zero_eq_erase (p : SkewPolynomial R) (n : ℕ) : p.update n 0 = p.e
 lemma support_update (p : SkewPolynomial R) (n : ℕ) (a : R) [DecidableEq R] :
     support (p.update n a) = if a = 0 then p.support.erase n else insert n p.support := by
   simp only [update_def, support_eq_skewMonoidAlgebra_support, SkewMonoidAlgebra.support_update]
-  split_ifs with ha
-  · simp
-  · simp
+  split_ifs <;> simp
 
 lemma support_update_zero (p : SkewPolynomial R) (n : ℕ) :
     support (p.update n 0) = p.support.erase n := by
