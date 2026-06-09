@@ -473,6 +473,9 @@ lemma splits_mul_iff_right (hf₀ : f ≠ 0) (hg : f.Splits) : (f * g).Splits �
 @[simp] lemma splits_X_mul : (X * f).Splits ↔ f.Splits := by simp [splits_mul']
 @[simp] lemma splits_mul_X : (f * X).Splits ↔ f.Splits := by simp [mul_comm f]
 
+alias ⟨Splits.of_X_mul, _⟩ := splits_X_mul
+alias ⟨Splits.of_mul_X, _⟩ := splits_mul_X
+
 theorem Splits.of_dvd (hg : Splits g) (hg₀ : g ≠ 0) (hfg : f ∣ g) : Splits f := by
   obtain ⟨g, rfl⟩ := hfg
   exact ((splits_mul (by simp_all) (by simp_all)).mp hg).1
