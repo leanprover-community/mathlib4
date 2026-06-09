@@ -97,7 +97,7 @@ example {C : Type u} [Category.{v} C] {FC : C → C → Type _} {CC : C → Type
 section Mon
 
 lemma bar' {M N K : MonCat} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f ≫ g = h) (x : M) :
-    g (f x) = h x := foo_apply w x
+    g (f x) = h x := by exact foo_apply w x
 
 lemma bar'' {M N K : MonCat} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f ≫ g = h) (x : M) :
     g (f x) = h x := by apply foo_apply w
@@ -201,7 +201,7 @@ example [Category C] {FC : C → C → Type _} {CC : C → Type _}
 section Mon
 
 lemma bar' {M N K : MonCat} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f ≫ g = h) (x : M) :
-    g (f x) = h x := foo_apply w x
+    g (f x) = h x := by exact foo_apply w x
 
 lemma bar'' {M N K : MonCat} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f ≫ g = h) (x : M) :
     g (f x) = h x := by apply foo_apply w

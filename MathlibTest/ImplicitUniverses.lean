@@ -11,7 +11,8 @@ of sort `Type (u_2 + 1)` but is expected to have type
 of sort `Type (u_1 + 1)`
 -/
 #guard_msgs in
-noncomputable example (_x _y : Type*) : sorry := _x = _y
+noncomputable example (_x _y : Type*) : sorry := by
+  exact _x = _y
 
 /--
 error: Type mismatch
@@ -23,7 +24,8 @@ of sort `Type 1` but is expected to have type
 of sort `Type u_1`
 -/
 #guard_msgs in
-noncomputable example (_x : Sort*) : sorry := _x = Prop
+noncomputable example (_x : Sort*) : sorry := by
+  exact _x = Prop
 
 /--
 error: Type mismatch
@@ -35,7 +37,8 @@ of sort `Type (u_2 + 1)` but is expected to have type
 of sort `Type (u_1 + 1)`
 -/
 #guard_msgs in
-noncomputable example : sorry := ∀ x y : Type*, x = y
+noncomputable example : sorry := by
+  exact ∀ x y : Type*, x = y
 
 /--
 error: Type mismatch
@@ -47,4 +50,5 @@ of sort `Type 1` but is expected to have type
 of sort `Type u_1`
 -/
 #guard_msgs in
-noncomputable example : sorry := ∀ x : Sort*, x = Prop
+noncomputable example : sorry := by
+  exact ∀ x : Sort*, x = Prop

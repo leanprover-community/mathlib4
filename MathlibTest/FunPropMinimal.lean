@@ -405,13 +405,13 @@ example : Nat.succ.Injective := by fun_prop
 -- todo: warning should not have mvar id in it
 -- /-- warning: `?m.71721` is not a `fun_prop` goal! -/
 -- #guard_msgs in
--- #check_failure (add_Con' (by fun_prop) : Con (fun x : α => (x + x) + (x + x)))
+-- #check_failure (by exact add_Con' (by fun_prop) : Con (fun x : α => (x + x) + (x + x)))
 
 example : Con fun ((x, _, _) : α × α × α) => x := by fun_prop
 example : Con fun ((_, x, _) : α × α × α) => x := by fun_prop
 example : Con fun ((_, _, x) : α × α × α) => x := by fun_prop
 
-example [Add α] : let f := ((fun x : α => x+x)); Con f := by
+example [Add α] : let f := (by exact (fun x : α => x+x)); Con f := by
   intro f;
   let F := fun x : α => x+x
   have : Con F := by fun_prop -- this used to be problematic

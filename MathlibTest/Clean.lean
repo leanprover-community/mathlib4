@@ -19,7 +19,7 @@ info: def Tests.x' : Id Nat :=
 -- def x : Id Nat := 1
 
 theorem withClean : 2 + 2 = 4 := clean% by exact id rfl
-theorem withoutClean : 2 + 2 = 4 := id rfl
+theorem withoutClean : 2 + 2 = 4 := by exact id rfl
 
 /--
 info: theorem Tests.withClean : 2 + 2 = 4 :=

@@ -197,7 +197,8 @@ structure F where
 -- Check that `where` fields allow empty lines.
 def F₀ : F where
 
-  a _ := ()
+  a _ := by
+    exact ()
 
   b := ()
 

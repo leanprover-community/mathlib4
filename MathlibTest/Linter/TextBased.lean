@@ -324,7 +324,7 @@ The 'λ' syntax is deprecated in mathlib4.
 Note: This linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
-example : ℕ → ℕ := λ n ↦ 3 * n + 1
+example : ℕ → ℕ := by exact λ n ↦ 3 * n + 1
 
 /--
 warning: declaration uses `sorry`
