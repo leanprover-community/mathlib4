@@ -128,11 +128,11 @@ instance of_completeSpace [Algebra.IsAlgebraic K L] : IsKrasner K L where
     -- this gives the result.
     have norm_iL (x : L) : ‖iL x‖ = ‖x‖ := norm_algebraMap' _ _
     suffices this : iL x ∈ K⟮iL y⟯ by
-      simpa [← Set.image_singleton, ← IntermediateField.adjoin_map] using this
+      simpa [← Set.image_singleton, ← IntermediateField.adjoin_map] using! this
     refine IsKrasner.krasner ((xsep.map _ iL.injective).of_dvd dvd_rfl) ?_ (yint.map iL) ?_
     · exact Polynomial.Splits.of_dvd (sp.of_isScalarTower C)
         (Polynomial.map_ne_zero (minpoly.ne_zero xsep.isIntegral))
-        (Polynomial.map_dvd _ (by simpa using minpoly.dvd_map_of_isScalarTower' K K C x))
+        (Polynomial.map_dvd _ (by simpa using! minpoly.dvd_map_of_isScalarTower' K K C x))
     · intros xC' hx' hne
       have : xC' ∈ (minpoly K x).rootSet C := by
         rwa [isConjRoot_iff_mem_minpoly_rootSet (xsep.isIntegral.map _),
@@ -140,6 +140,6 @@ instance of_completeSpace [Algebra.IsAlgebraic K L] : IsKrasner K L where
       simp only [← sp.image_rootSet iL, Set.mem_image] at this
       obtain ⟨c, hc, rfl⟩ := this
       rw [← isConjRoot_iff_mem_minpoly_rootSet xsep.isIntegral] at hc
-      simpa [norm_iL, ← map_sub] using kr c hc (fun h ↦ (iff_false_intro hne).mp (congrArg iL h))
+      simpa [norm_iL, ← map_sub] using! kr c hc (fun h ↦ (iff_false_intro hne).mp (congrArg iL h))
 
 end IsKrasner
