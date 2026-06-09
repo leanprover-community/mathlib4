@@ -26,25 +26,25 @@ variable {α β : Type*}
 
 namespace OrderDual
 
-set_option backward.inferInstanceAs.wrap.instances false in
-@[to_additive] instance [One α] : One αᵒᵈ := inferInstanceAs <| One α
+@[to_additive] instance [One α] : One αᵒᵈ where
+  one := toDual 1
 
-set_option backward.inferInstanceAs.wrap.instances false in
-@[to_additive] instance [Mul α] : Mul αᵒᵈ := inferInstanceAs <| Mul α
+@[to_additive] instance [Mul α] : Mul αᵒᵈ where
+  mul x y := toDual (ofDual x * ofDual y)
 
-set_option backward.inferInstanceAs.wrap.instances false in
-@[to_additive] instance [Inv α] : Inv αᵒᵈ := inferInstanceAs <| Inv α
+@[to_additive] instance [Inv α] : Inv αᵒᵈ where
+  inv x := toDual (ofDual x)⁻¹
 
-set_option backward.inferInstanceAs.wrap.instances false in
-@[to_additive] instance [Div α] : Div αᵒᵈ := inferInstanceAs <| Div α
+@[to_additive] instance [Div α] : Div αᵒᵈ where
+  div x y := toDual (ofDual x / ofDual y)
 
-set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive (attr := to_additive) (reorder := 1 2) OrderDual.instSMul]
-instance [Pow α β] : Pow αᵒᵈ β := inferInstanceAs <| Pow α β
+instance [Pow α β] : Pow αᵒᵈ β where
+  pow a b := toDual ((ofDual a) ^ b)
 
-set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive (attr := to_additive) (reorder := 1 2) OrderDual.instSMul']
-instance [Pow α β] : Pow α βᵒᵈ := inferInstanceAs <| Pow α β
+instance [Pow α β] : Pow α βᵒᵈ where
+  pow a b := a ^ (ofDual b)
 
 @[to_additive] instance [Semigroup α] : Semigroup αᵒᵈ := inferInstanceAs <| Semigroup α
 
