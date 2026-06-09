@@ -180,7 +180,7 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
         simp only [coe_nnreal_smul_apply, ← mul_assoc, mul_comm _ (ε : ℝ≥0∞)]
         rw [ENNReal.mul_inv_cancel (ENNReal.coe_pos.2 εpos).ne' ENNReal.coe_ne_top, one_mul]
       _ ≤ (ε : ℝ≥0∞)⁻¹ * ρ (s ∩ o) := by
-        gcongr
+        gcongr _ * ?_
         refine v.measure_le_of_frequently_le ρ smul_absolutelyContinuous _ ?_
         intro x hx
         rw [hs] at hx
@@ -493,7 +493,7 @@ theorem measure_limRatioMeas_top : μ {x | v.limRatioMeas hρ x = ∞} = 0 := by
   exact eventually_atTop.2 ⟨1, A⟩
 
 /-- The points with `v.limRatioMeas hρ x = 0` have measure `0` for `ρ`. -/
-theorem measure_limRatioMeas_zero : ρ {x | v.limRatioMeas hρ x = 0} = 0 := by
+theorem measure_limRatioMeas_zero : ρ (v.limRatioMeas hρ ⁻¹' {0}) = 0 := by
   refine measure_null_of_locally_null _ fun x _ => ?_
   obtain ⟨o, xo, o_open, μo⟩ : ∃ o : Set α, x ∈ o ∧ IsOpen o ∧ μ o < ∞ :=
     Measure.exists_isOpen_measure_lt_top μ x
@@ -533,16 +533,16 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
   -- unless you use the `(... :)` notation. Another fix is using `(2 : Nat)`, so this appears
   -- to be an unpleasant interaction with default instances.
   have A : ν (s ∩ f ⁻¹' {0}) ≤ ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' {0}) := by
-    apply le_trans _ (zero_le _)
+    apply zero_le.trans'
     have M : MeasurableSet (s ∩ f ⁻¹' {0}) := hs.inter (f_meas (measurableSet_singleton _))
     simp only [f, ν, nonpos_iff_eq_zero, M, withDensity_apply, lintegral_eq_zero_iff f_meas]
     apply (ae_restrict_iff' M).2
     exact Eventually.of_forall fun x hx => hx.2
   have B : ν (s ∩ f ⁻¹' {∞}) ≤ ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' {∞}) := by
-    apply le_trans (le_of_eq _) (zero_le _)
-    apply withDensity_absolutelyContinuous μ _
-    rw [← nonpos_iff_eq_zero]
-    exact (measure_mono inter_subset_right).trans (v.measure_limRatioMeas_top hρ).le
+    rw [withDensity_absolutelyContinuous μ]
+    · exact zero_le
+    · rw [← nonpos_iff_eq_zero]
+      exact (measure_mono inter_subset_right).trans (v.measure_limRatioMeas_top hρ).le
   have C :
     ∀ n : ℤ,
       ν (s ∩ f ⁻¹' Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))) ≤
@@ -599,11 +599,10 @@ theorem le_mul_withDensity {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
   let f := v.limRatioMeas hρ
   have f_meas : Measurable f := v.limRatioMeas_measurable hρ
   have A : ρ (s ∩ f ⁻¹' {0}) ≤ (t • ν) (s ∩ f ⁻¹' {0}) := by
-    refine le_trans (measure_mono inter_subset_right) (le_trans (le_of_eq ?_) (zero_le _))
-    exact v.measure_limRatioMeas_zero hρ
+    grw [measure_mono inter_subset_right, v.measure_limRatioMeas_zero hρ]
+    exact zero_le
   have B : ρ (s ∩ f ⁻¹' {∞}) ≤ (t • ν) (s ∩ f ⁻¹' {∞}) := by
-    apply le_trans (le_of_eq _) (zero_le _)
-    apply hρ
+    apply (hρ _).le.trans zero_le
     rw [← nonpos_iff_eq_zero]
     exact (measure_mono inter_subset_right).trans (v.measure_limRatioMeas_top hρ).le
   have C :
@@ -646,7 +645,7 @@ theorem withDensity_limRatioMeas_eq : μ.withDensity (v.limRatioMeas hρ) = ρ :
         ((t : ℝ≥0∞) ^ 2 * ρ s : ℝ≥0∞)) (𝓝[>] 1) (𝓝 ((1 : ℝ≥0∞) ^ 2 * ρ s)) := by
       refine ENNReal.Tendsto.mul ?_ ?_ tendsto_const_nhds ?_
       · exact ENNReal.Tendsto.pow (ENNReal.tendsto_coe.2 nhdsWithin_le_nhds)
-      · simp only [one_pow, true_or, Ne, not_false_iff, one_ne_zero]
+      · simp
       · simp only [one_pow, Ne, or_true, ENNReal.one_ne_top, not_false_iff]
     simp only [one_pow, one_mul] at this
     refine ge_of_tendsto this ?_
@@ -697,7 +696,7 @@ theorem ae_tendsto_rnDeriv :
   have C : ∀ᵐ x ∂μ, Tendsto (fun a => t a / μ a) (v.filterAt x) (𝓝 (t.rnDeriv μ x)) :=
     v.ae_tendsto_rnDeriv_of_absolutelyContinuous (withDensity_absolutelyContinuous _ _)
   filter_upwards [A, B, C] with _ Ax Bx Cx
-  convert Ax.add Cx using 1
+  convert! Ax.add Cx using 1
   · ext1 a
     conv_lhs => rw [eq_add]
     simp only [Pi.add_apply, coe_add, ENNReal.add_div]
@@ -757,12 +756,12 @@ theorem ae_tendsto_lintegral_div' {f : α → ℝ≥0∞} (hf : Measurable f) (h
 theorem ae_tendsto_lintegral_div {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (h'f : (∫⁻ y, f y ∂μ) ≠ ∞) :
     ∀ᵐ x ∂μ, Tendsto (fun a => (∫⁻ y in a, f y ∂μ) / μ a) (v.filterAt x) (𝓝 (f x)) := by
   have A : (∫⁻ y, hf.mk f y ∂μ) ≠ ∞ := by
-    convert h'f using 1
+    convert! h'f using 1
     apply lintegral_congr_ae
     exact hf.ae_eq_mk.symm
   filter_upwards [v.ae_tendsto_lintegral_div' hf.measurable_mk A, hf.ae_eq_mk] with x hx h'x
   rw [h'x]
-  convert hx using 1
+  convert! hx using 1
   ext1 a
   congr 1
   apply lintegral_congr_ae

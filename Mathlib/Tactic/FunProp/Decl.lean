@@ -51,7 +51,7 @@ initialize funPropDeclsExt : FunPropDeclsExt ←
     name := by exact decl_name%
     initial := {}
     addEntry := fun d e =>
-      {d with decls := d.decls.insertCore e.path e}
+      {d with decls := d.decls.insertKeyValue e.path e}
   }
 
 /-- Register new function property. -/
@@ -134,7 +134,7 @@ open Elab Term in
 /-- Turn tactic syntax into a discharger function. -/
 def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Expr) := fun e =>
   withTraceNode `Meta.Tactic.fun_prop
-    (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
+    (fun _ => do pure s!"discharging: {← ppExpr e}") do
     let mvar ← mkFreshExprSyntheticOpaqueMVar e `funProp.discharger
     let runTac? : TermElabM (Option Expr) :=
       try

@@ -18,16 +18,19 @@ instance on a tensor product of bialgebras, and the tensor product of two `Bialg
 
 -/
 
-@[expose] public section
+public noncomputable section
 
+open Coalgebra
 open scoped TensorProduct
 
 namespace Bialgebra.TensorProduct
 
 open Coalgebra.TensorProduct
 
-variable (R S A B C D : Type*) [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
-  [Bialgebra S A] [Bialgebra R B] [Algebra R A] [Algebra R S] [IsScalarTower R S A]
+variable {R S A B C D : Type*} [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
+
+section Heterogeneous
+variable (R S A B) [Bialgebra S A] [Bialgebra R B] [Algebra R A] [Algebra R S] [IsScalarTower R S A]
 
 lemma counit_eq_algHom_toLinearMap :
     Coalgebra.counit (R := S) (A := A ⊗[R] B) =
@@ -60,14 +63,13 @@ lemma comulAlgHom_def :
         (Algebra.TensorProduct.map (Bialgebra.comulAlgHom S A)
         (Bialgebra.comulAlgHom R B)) := rfl
 
-variable {R S A B C D}
+variable {R S A B}
 
 variable [Semiring C] [Semiring D] [Bialgebra S C]
   [Bialgebra R D] [Algebra R C] [IsScalarTower R S C]
 
 /-- The tensor product of two bialgebra morphisms as a bialgebra morphism. -/
-noncomputable def map (f : A →ₐc[S] C) (g : B →ₐc[R] D) :
-    A ⊗[R] B →ₐc[S] C ⊗[R] D :=
+@[expose] def map (f : A →ₐc[S] C) (g : B →ₐc[R] D) : A ⊗[R] B →ₐc[S] C ⊗[R] D :=
   { Coalgebra.TensorProduct.map (f : A →ₗc[S] C) (g : B →ₗc[R] D),
     Algebra.TensorProduct.map (f : A →ₐ[S] C) (g : B →ₐ[R] D) with }
 
@@ -88,9 +90,8 @@ theorem map_toAlgHom (f : A →ₐc[S] C) (g : B →ₐc[R] D) :
 
 variable (R S A C D) in
 /-- The associator for tensor products of R-bialgebras, as a bialgebra equivalence. -/
-protected noncomputable def assoc :
-    (A ⊗[S] C) ⊗[R] D ≃ₐc[S] A ⊗[S] (C ⊗[R] D) :=
-  { Coalgebra.TensorProduct.assoc R S A C D, Algebra.TensorProduct.assoc R S A C D with }
+@[expose] protected def assoc : (A ⊗[S] C) ⊗[R] D ≃ₐc[S] A ⊗[S] (C ⊗[R] D) :=
+  { Coalgebra.TensorProduct.assoc R S A C D, Algebra.TensorProduct.assoc R S S A C D with }
 
 @[simp]
 theorem assoc_tmul (x : A) (y : C) (z : D) :
@@ -110,12 +111,12 @@ theorem assoc_toCoalgEquiv :
 @[simp]
 theorem assoc_toAlgEquiv :
     (Bialgebra.TensorProduct.assoc R S A C D : _ ≃ₐ[S] _) =
-    Algebra.TensorProduct.assoc R S A C D := rfl
+    Algebra.TensorProduct.assoc R S S A C D := rfl
 
 variable (R B) in
 /-- The base ring is a left identity for the tensor product of bialgebras, up to
 bialgebra equivalence. -/
-protected noncomputable def lid : R ⊗[R] B ≃ₐc[R] B :=
+@[expose] protected def lid : R ⊗[R] B ≃ₐc[R] B :=
   { Coalgebra.TensorProduct.lid R B, Algebra.TensorProduct.lid R B with }
 
 @[simp]
@@ -138,7 +139,7 @@ theorem coalgebra_rid_eq_algebra_rid_apply (x : A ⊗[R] R) :
 variable (R S A) in
 /-- The base ring is a right identity for the tensor product of bialgebras, up to
 bialgebra equivalence. -/
-protected noncomputable def rid : A ⊗[R] R ≃ₐc[S] A where
+@[expose] protected def rid : A ⊗[R] R ≃ₐc[S] A where
   toCoalgEquiv := Coalgebra.TensorProduct.rid R S A
   map_mul' x y := by
     simp only [CoalgEquiv.toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe, AddHom.toFun_eq_coe,
@@ -161,7 +162,23 @@ theorem rid_tmul (r : R) (a : A) : Bialgebra.TensorProduct.rid R S A (a ⊗ₜ r
 @[simp]
 theorem rid_symm_apply (a : A) : (Bialgebra.TensorProduct.rid R S A).symm a = a ⊗ₜ 1 := rfl
 
+end Heterogeneous
+
+section Homogeneous
+variable (R S A B) [Bialgebra R A] [Bialgebra R B]
+
+set_option backward.defeqAttrib.useBackward true in
+/-- The tensor product of `R`-bialgebras is commutative, up to bialgebra isomorphism. -/
+@[expose] def comm : A ⊗[R] B ≃ₐc[R] B ⊗[R] A :=
+  .ofAlgEquiv (Algebra.TensorProduct.comm R A B) (by ext <;> simp) <| by
+    ext a <;>
+    · dsimp
+      rw [← (ℛ R a).eq]
+      simp [TensorProduct.tmul_sum, TensorProduct.sum_tmul, Algebra.TensorProduct.one_def]
+
+end Homogeneous
 end Bialgebra.TensorProduct
+
 namespace BialgHom
 
 variable {R A B C : Type*} [CommRing R] [Ring A] [Ring B] [Ring C]
@@ -170,11 +187,80 @@ variable {R A B C : Type*} [CommRing R] [Ring A] [Ring B] [Ring C]
 variable (A)
 
 /-- `lTensor A f : A ⊗ B →ₐc A ⊗ C` is the natural bialgebra morphism induced by `f : B →ₐc C`. -/
-noncomputable abbrev lTensor (f : B →ₐc[R] C) : A ⊗[R] B →ₐc[R] A ⊗[R] C :=
+abbrev lTensor (f : B →ₐc[R] C) : A ⊗[R] B →ₐc[R] A ⊗[R] C :=
   Bialgebra.TensorProduct.map (BialgHom.id R A) f
 
 /-- `rTensor A f : B ⊗ A →ₐc C ⊗ A` is the natural bialgebra morphism induced by `f : B →ₐc C`. -/
-noncomputable abbrev rTensor (f : B →ₐc[R] C) : B ⊗[R] A →ₐc[R] C ⊗[R] A :=
+abbrev rTensor (f : B →ₐc[R] C) : B ⊗[R] A →ₐc[R] C ⊗[R] A :=
   Bialgebra.TensorProduct.map f (BialgHom.id R A)
 
 end BialgHom
+
+namespace Bialgebra
+variable {R A B ι κ : Type*} [CommSemiring R]
+
+section Semiring
+variable [Semiring A] [Bialgebra R A] [Semiring B] [Bialgebra R B] {a : A} {b : B}
+
+variable (R A) in
+/-- Comultiplication as a bialgebra hom. -/
+@[expose] def comulBialgHom [IsCocomm R A] : A →ₐc[R] A ⊗[R] A where
+  __ := comulAlgHom R A
+  __ := comulCoalgHom R A
+
+lemma comm_comp_comulBialgHom [IsCocomm R A] :
+    (TensorProduct.comm R A A).toBialgHom.comp (comulBialgHom R A) = comulBialgHom R A := by
+  ext; exact comm_comul _ _
+
+variable (R A) in
+/-- Multiplication on a bialgebra as a coalgebra hom. -/
+@[expose]
+def mulCoalgHom : A ⊗[R] A →ₗc[R] A where
+  toLinearMap := .mul' R A
+  counit_comp := by ext; simp [mul_comm]
+  map_comp_comul := by
+    ext a b
+    simp [← (ℛ R a).eq, ← (ℛ R b).eq, TensorProduct.sum_tmul]
+    simp [TensorProduct.tmul_sum, Finset.sum_mul_sum]
+
+-- TODO: Generate this using `simps` once the coercion from `LinearMapClass` is gone.
+@[simp]
+lemma toLinearMap_mulCoalgHom : mulCoalgHom R A = LinearMap.mul' R A := rfl
+
+@[simp] lemma coe_mulCoalgHom : ⇑(mulCoalgHom R A) = LinearMap.mul' R A := rfl
+
+/-- Representations of `a` and `b` yield a representation of `a ⊗ b`. -/
+@[expose, simps]
+protected def _root_.Coalgebra.Repr.tmul (ℛa : Coalgebra.Repr R a ι) (ℛb : Coalgebra.Repr R b κ) :
+    Coalgebra.Repr R (a ⊗ₜ[R] b) (ι × κ) where
+  index := ℛa.index ×ˢ ℛb.index
+  left i := ℛa.left i.1 ⊗ₜ ℛb.left i.2
+  right i := ℛa.right i.1 ⊗ₜ ℛb.right i.2
+  eq := by
+    simp [← ℛa.eq, ← ℛb.eq, TensorProduct.sum_tmul ℛa.index, TensorProduct.tmul_sum,
+      ← Finset.sum_product']
+
+/-- Representations of `a` and `b` yield a representation of `a * b`. -/
+@[expose, simps! left right index] protected
+def _root_.Coalgebra.Repr.mul {b : A} (ℛ₁ : Coalgebra.Repr R a ι) (ℛ₂ : Coalgebra.Repr R b κ) :
+    Coalgebra.Repr R (a * b) (ι × κ) := (ℛ₁.tmul ℛ₂).induced (R := R) (mulCoalgHom R A)
+
+end Semiring
+
+section CommSemiring
+variable [CommSemiring A] [Bialgebra R A]
+
+variable (R A) in
+/-- Multiplication on a commutative bialgebra as a bialgebra hom. -/
+@[expose, simps toCoalgHom]
+def mulBialgHom : A ⊗[R] A →ₐc[R] A where
+  toCoalgHom := mulCoalgHom R A
+  __ := Algebra.TensorProduct.lmul' R
+
+@[simp]
+lemma mulBialgHom_toAlgHom : (mulBialgHom R A).toAlgHom = Algebra.TensorProduct.lmul' R := rfl
+
+@[simp] lemma coe_mulBialgHom : ⇑(mulBialgHom R A) = LinearMap.mul' R A := rfl
+
+end CommSemiring
+end Bialgebra

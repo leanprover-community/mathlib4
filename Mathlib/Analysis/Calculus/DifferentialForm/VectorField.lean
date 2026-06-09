@@ -16,25 +16,25 @@ In this file we prove the following formula and its corollaries.
 If `ω` is a differentiable `k`-form and `V i` are `k + 1` differentiable vector fields, then
 
 $$
-  dω(V_0(x), \dots, V_n(x)) =
-    \left(\sum_{i=0}^k (-1)^i • D_x(ω(x; V_0(x), \dots, \widehat{V_i(x)}, \dots, V_k(x)))(V_i(x)) +
-      \sum_{0 \le i < j\le k} (-1)^{i + j}
-        ω(x; [V_i, V_j](x), V_0(x), …, \widehat{V_i(x)}, …, \widehat{V_j(x)}, …, V_k(x)),
+  dω(V_0(x), \dots, V_n(x)) = \sum_{i=0}^k (-1)^i •
+      D_x\left(ω\big(x; V_0(x), \dots, \widehat{V_i(x)}, \dots, V_k(x)\big)\right)(V_i(x)) +
+    \sum_{0 \le i < j\le k} (-1)^{i + j}
+        ω\big(x; [V_i, V_j](x), V_0(x), …, \widehat{V_i(x)}, …, \widehat{V_j(x)}, …, V_k(x)\big),
 $$
-where $$[V_i, V_j]$$ is the commutator of the vector fields $$V_i$$ and $$V_j$$.
-As usual, $$\widehat{V_i(x)}$$ means that this item is removed from the sequence.
+where $[V_i, V_j]$ is the commutator of the vector fields $V_i$ and $V_j$.
+As usual, $\widehat{V_i(x)}$ means that this item is removed from the sequence.
 
 There is no convenient way to write the second term in Lean for `k = 0`,
 so we only state this theorem for `k = n + 1`,
 see `extDerivWithin_apply_vectorField` and `extDeriv_apply_vectorField`.
 
 In this case, we write the second term as a sum over `i j : Fin (n + 1)`, `i ≤ j`,
-where the indexes `(i, j)` in our sum currespond to `(i, j + 1)`
+where the indexes `(i, j)` in our sum correspond to `(i, j + 1)`
 (formally, `(Fin.castSucc i, Fin.succ j)`) in the formula above.
 For this reason, we have `-` before the sum in our formal statement.
 -/
 
-@[expose] public section
+public section
 
 open Filter ContinuousAlternatingMap Finset VectorField
 open scoped Topology
@@ -51,32 +51,32 @@ If `ω` is a differentiable `(n + 1)`-form and `V i` are `n + 2` differentiable 
 
 $$
   dω(V_0(x), \dots, V_{n + 1}(x)) =
-    \left(\sum_{i=0}^{n + 1}
-      (-1)^i • D_x(ω(x; V_0(x), \dots, \widehat{V_i(x)}, \dots, V_{n + 1}(x)))(V_i(x)) -
+    \sum_{i=0}^{n + 1} (-1)^i •
+      D_x\left(ω\big(x; V_0(x), \dots, \widehat{V_i(x)}, \dots, V_{n + 1}(x)\big)\right)(V_i(x)) -
       \sum_{0 \le i \le j\le n} (-1)^{i + j}
-        ω(x; [V_i, V_{j + 1}](x),
-          V_0(x), …, \widehat{V_i(x)}, …, \widehat{V_{j + 1}(x)}, …, V_k(x)),
+        ω\big(x; [V_i, V_{j + 1}](x),
+          V_0(x), …, \widehat{V_i(x)}, …, \widehat{V_{j + 1}(x)}, …, V_k(x)\big),
 $$
 
-where $$[V_i, V_{j + 1}]$$ is the commutator of the vector fields $$V_i$$ and $$V_{j + 1}$$.
-As usual, $$\widehat{V_i(x)}$$ means that this item is removed from the sequence.
+where $[V_i, V_{j + 1}]$ is the commutator of the vector fields $V_i$ and $V_{j + 1}$.
+As usual, $\widehat{V_i(x)}$ means that this item is removed from the sequence.
 
 In informal texts, this formula is usually written as
 
 $$
   dω(V_0(x), \dots, V_{n + 1}(x)) =
-    \left(\sum_{i=0}^{n + 1}
-      (-1)^i • D_x(ω(x; V_0(x), \dots, \widehat{V_i(x)}, \dots, V_{n + 1}(x)))(V_i(x)) -
+    \sum_{i=0}^{n + 1} (-1)^i •
+      D_x\left(ω\big(x; V_0(x), \dots, \widehat{V_i(x)}, \dots, V_{n + 1}(x)\big)\right)(V_i(x)) -
       \sum_{0 \le i < j\le n + 1} (-1)^{i + j}
-        ω(x; [V_i, V_j](x),
-          V_0(x), …, \widehat{V_i(x)}, …, \widehat{V_j(x)}, …, V_k(x)).
+        ω\big(x; [V_i, V_j](x),
+          V_0(x), …, \widehat{V_i(x)}, …, \widehat{V_j(x)}, …, V_k(x)\big).
 $$
 
 In the sum from our formalization,
 each index `(i, j)` corresponds to the index `(Fin.castSucc i, Fin.succ j)`
 in the sum used in informal texts.
 
-For this reason, `i + j` in our some has the opposite parity compared to informal texts,
+For this reason, `i + j` in our sum has the opposite parity compared to informal texts,
 which changes the sign before the sum from `+` to `-`.
 -/
 theorem extDerivWithin_apply_vectorField
@@ -112,32 +112,32 @@ If `ω` is a differentiable `(n + 1)`-form and `V i` are `n + 2` differentiable 
 
 $$
   dω(V_0(x), \dots, V_{n + 1}(x)) =
-    \left(\sum_{i=0}^{n + 1}
-      (-1)^i • D_x(ω(x; V_0(x), \dots, \widehat{V_i(x)}, \dots, V_{n + 1}(x)))(V_i(x)) -
+    \sum_{i=0}^{n + 1} (-1)^i •
+      D_x\left(ω\big(x; V_0(x), \dots, \widehat{V_i(x)}, \dots, V_{n + 1}(x)\big)\right)(V_i(x)) -
       \sum_{0 \le i \le j\le n} (-1)^{i + j}
-        ω(x; [V_i, V_{j + 1}](x),
-          V_0(x), …, \widehat{V_i(x)}, …, \widehat{V_{j + 1}(x)}, …, V_k(x)),
+        ω\big(x; [V_i, V_{j + 1}](x),
+          V_0(x), …, \widehat{V_i(x)}, …, \widehat{V_{j + 1}(x)}, …, V_k(x)\big),
 $$
 
-where $$[V_i, V_{j + 1}]$$ is the commutator of the vector fields $$V_i$$ and $$V_{j + 1}$$.
-As usual, $$\widehat{V_i(x)}$$ means that this item is removed from the sequence.
+where $[V_i, V_{j + 1}]$ is the commutator of the vector fields $V_i$ and $V_{j + 1}$.
+As usual, $\widehat{V_i(x)}$ means that this item is removed from the sequence.
 
 In informal texts, this formula is usually written as
 
 $$
   dω(V_0(x), \dots, V_{n + 1}(x)) =
-    \left(\sum_{i=0}^{n + 1}
-      (-1)^i • D_x(ω(x; V_0(x), \dots, \widehat{V_i(x)}, \dots, V_{n + 1}(x)))(V_i(x)) -
+    \sum_{i=0}^{n + 1} (-1)^i •
+      D_x\left(ω\big(x; V_0(x), \dots, \widehat{V_i(x)}, \dots, V_{n + 1}(x)\big)\right)(V_i(x)) -
       \sum_{0 \le i < j\le n + 1} (-1)^{i + j}
-        ω(x; [V_i, V_j](x),
-          V_0(x), …, \widehat{V_i(x)}, …, \widehat{V_j(x)}, …, V_k(x)).
+        ω\big(x; [V_i, V_j](x),
+          V_0(x), …, \widehat{V_i(x)}, …, \widehat{V_j(x)}, …, V_k(x)\big).
 $$
 
 In the sum from our formalization,
 each index `(i, j)` corresponds to the index `(Fin.castSucc i, Fin.succ j)`
 in the sum used in informal texts.
 
-For this reason, `i + j` in our some has the opposite parity compared to informal texts,
+For this reason, `i + j` in our sum has the opposite parity compared to informal texts,
 which changes the sign before the sum from `+` to `-`.
 -/
 theorem extDeriv_apply_vectorField {ω : E → E [⋀^Fin (n + 1)]→L[𝕜] F} {V : Fin (n + 2) → E → E}
@@ -153,12 +153,11 @@ theorem extDeriv_apply_vectorField {ω : E → E [⋀^Fin (n + 1)]→L[𝕜] F} 
   exact extDerivWithin_apply_vectorField hω hV (by simp)
 
 /-- Let `ω` be a differentiable `n`-form and `V i` be `n + 1` differentiable vector fields.
-If `V i` pairwise commute at `x`, i.e., $$[V_i, V_j](x) = 0$$ for all `i ≠ j`, then
+If `V i` pairwise commute at `x`, i.e., $[V_i, V_j](x) = 0$ for all `i ≠ j`, then
 
 $$
-  dω(V_0(x), \dots, V_{n + 1}(x)) =
-    \left(\sum_{i=0}^{n + 1}
-      (-1)^i • D_x(ω(x; V_0(x), \dots, \widehat{V_i(x)}, \dots, V_{n + 1}(x)))(V_i(x)).
+  dω(V_0(x), \dots, V_{n + 1}(x)) = \sum_{i=0}^{n + 1} (-1)^i •
+    D_x\left(ω\big(x; V_0(x), \dots, \widehat{V_i(x)}, \dots, V_{n + 1}(x)\big)\right)(V_i(x)).
 $$
 -/
 theorem extDerivWithin_apply_vectorField_of_pairwise_commute
@@ -179,12 +178,11 @@ theorem extDerivWithin_apply_vectorField_of_pairwise_commute
       simp
 
 /-- Let `ω` be a differentiable `n`-form and `V i` be `n + 1` differentiable vector fields.
-If `V i` pairwise commute at `x`, i.e., $$[V_i, V_j](x) = 0$$ for all `i ≠ j`, then
+If `V i` pairwise commute at `x`, i.e., $[V_i, V_j](x) = 0$ for all `i ≠ j`, then
 
 $$
-  dω(V_0(x), \dots, V_{n + 1}(x)) =
-    \left(\sum_{i=0}^{n + 1}
-      (-1)^i • D_x(ω(x; V_0(x), \dots, \widehat{V_i(x)}, \dots, V_{n + 1}(x)))(V_i(x)).
+  dω(V_0(x), \dots, V_{n + 1}(x)) = \sum_{i=0}^{n + 1} (-1)^i •
+    D_x\left(ω\big(x; V_0(x), \dots, \widehat{V_i(x)}, \dots, V_{n + 1}(x)\big)\right)(V_i(x)).
 $$
 -/
 theorem extDeriv_apply_vectorField_of_pairwise_commute

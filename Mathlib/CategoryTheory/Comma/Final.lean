@@ -31,7 +31,7 @@ and `A` and `B` are filtered.
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Lemma 3.4.3 -- 3.4.5
 -/
 
-@[expose] public section
+public section
 
 universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
@@ -48,6 +48,8 @@ variable {B : Type v₁} [Category.{v₁} B]
 variable {T : Type v₁} [Category.{v₁} T]
 variable (L : A ⥤ T) (R : B ⥤ T)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 private lemma final_fst_small [R.Final] : (fst L R).Final := by
   rw [Functor.final_iff_isIso_colimit_pre]
   intro G
@@ -56,7 +58,7 @@ private lemma final_fst_small [R.Final] : (fst L R).Final := by
     (Final.colimitIso (Grothendieck.pre (functor L) R) (grothendieckProj L ⋙ G)).symm ≪≫
     HasColimit.isoOfNatIso (Iso.refl _) ≪≫
     Final.colimitIso (grothendieckPrecompFunctorEquivalence L R).functor (fst L R ⋙ G)
-  convert i.isIso_inv
+  convert! i.isIso_inv
   apply colimit.hom_ext
   intro ⟨a, b, f⟩
   simp only [colimit.ι_pre, comp_obj, fst_obj, grothendieckPrecompFunctorEquivalence_functor,
@@ -106,6 +108,7 @@ instance isConnected_comma_of_initial [IsConnected B] [L.Initial] : IsConnected 
 
 end NonSmall
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Let the following diagram commute up to isomorphism:
 
 ```
@@ -150,6 +153,7 @@ variable {B : Type u₂} [Category.{v₂} B]
 variable {T : Type u₃} [Category.{v₃} T]
 variable (L : A ⥤ T) (R : B ⥤ T)
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] map_final in
 /-- Let `A` and `B` be filtered categories, `R : B ⥤ T` be final and `L : A ⥤ T`. Then, the
 comma category `Comma L R` is filtered. -/
@@ -172,6 +176,7 @@ lemma isCofiltered_of_initial [IsCofiltered A] [IsCofiltered B] [L.Initial] :
     IsCofiltered (Comma L R) :=
   IsCofiltered.of_equivalence (Comma.opEquiv _ _).symm
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] final_of_isFiltered_of_pUnit in
 /-- Let `A` and `B` be filtered categories, `R : B ⥤ T` be final and `R : A ⥤ T`. Then, the
 projection `snd L R : Comma L R ⥤ B` is final. -/

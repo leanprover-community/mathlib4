@@ -36,22 +36,22 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 variable {p q : Submodule R M}
 
-@[mono]
+@[gcongr, mono]
 theorem toAddSubmonoid_strictMono : StrictMono (toAddSubmonoid : Submodule R M → AddSubmonoid M) :=
   fun _ _ => id
 
 theorem toAddSubmonoid_le : p.toAddSubmonoid ≤ q.toAddSubmonoid ↔ p ≤ q :=
   Iff.rfl
 
-@[mono]
+@[gcongr, mono]
 theorem toAddSubmonoid_mono : Monotone (toAddSubmonoid : Submodule R M → AddSubmonoid M) :=
   toAddSubmonoid_strictMono.monotone
 
-@[mono]
+@[gcongr, mono]
 theorem toSubMulAction_strictMono :
     StrictMono (toSubMulAction : Submodule R M → SubMulAction R M) := fun _ _ => id
 
-@[mono]
+@[gcongr, mono]
 theorem toSubMulAction_mono : Monotone (toSubMulAction : Submodule R M → SubMulAction R M) :=
   toSubMulAction_strictMono.monotone
 
@@ -84,11 +84,6 @@ instance isCentralScalar [SMul S R] [SMul S M] [IsScalarTower S R M] [SMul Sᵐ�
 instance instIsTorsionFree [Module.IsTorsionFree R M] : Module.IsTorsionFree R p :=
   Subtype.coe_injective.moduleIsTorsionFree _ (by simp)
 
-instance noZeroSMulDivisors [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R p :=
-  ⟨fun {c} {x : p} h =>
-    have : c = 0 ∨ (x : M) = 0 := eq_zero_or_eq_zero_of_smul_eq_zero (congr_arg Subtype.val h)
-    this.imp_right (@Subtype.ext_iff _ _ x 0).mpr⟩
-
 section AddAction
 
 /-! ### Additive actions by `Submodule`s
@@ -103,7 +98,7 @@ These instances work particularly well in conjunction with `AddGroup.toAddAction
 variable {α β : Type*}
 
 instance [VAdd M α] : VAdd p α :=
-  p.toAddSubmonoid.vadd
+  AddSubmonoid.instVAddSubtypeMem p
 
 instance vaddCommClass [VAdd M β] [VAdd α β] [VAddCommClass M α β] : VAddCommClass p α β :=
   ⟨fun a => vadd_comm (a : M)⟩
@@ -128,10 +123,11 @@ variable (p p' : Submodule R M)
 variable {r : R} {x y : M}
 
 
-@[mono]
+@[gcongr, mono]
 theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Submodule R M → AddSubgroup M) :=
   fun _ _ => id
 
+@[gcongr]
 theorem toAddSubgroup_le : p.toAddSubgroup ≤ p'.toAddSubgroup ↔ p ≤ p' :=
   Iff.rfl
 
@@ -143,9 +139,6 @@ theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Submodule R M → AddSubg
 theorem toAddSubgroup_toAddSubmonoid (p : Submodule R M) :
     p.toAddSubgroup.toAddSubmonoid = p.toAddSubmonoid :=
   rfl
-
-@[gcongr]
-protected alias ⟨_, _root_.GCongr.Submodule.toAddSubgroup_le⟩ := Submodule.toAddSubgroup_le
 
 -- See `neg_coe_set`
 theorem neg_coe : -(p : Set M) = p :=

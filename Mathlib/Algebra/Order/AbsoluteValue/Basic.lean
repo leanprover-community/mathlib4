@@ -54,7 +54,7 @@ variable {R S : Type*} [Semiring R] [Semiring S] [PartialOrder S] (abv : Absolut
 
 instance funLike : FunLike (AbsoluteValue R S) R S where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
+  coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
 
 instance zeroHomClass : ZeroHomClass (AbsoluteValue R S) R S where
   map_zero f := (f.eq_zero' _).2 rfl
@@ -148,13 +148,13 @@ section Semiring
 section IsDomain
 
 -- all of these are true for `NoZeroDivisors S`; but it doesn't work smoothly with the
--- `IsDomain`/`CancelMonoidWithZero` API
+-- `IsDomain`/`IsCancelMulZero` API
 variable {R S : Type*} [Semiring R] [Semiring S] [PartialOrder S] (abv : AbsoluteValue R S)
 variable [IsDomain S] [Nontrivial R]
 
 @[simp]
 protected theorem map_one : abv 1 = 1 :=
-  abv.map_one_of_isLeftRegular (isRegular_of_ne_zero <| abv.ne_zero one_ne_zero).left
+  abv.map_one_of_isLeftRegular (IsRegular.of_ne_zero <| abv.ne_zero one_ne_zero).left
 
 instance monoidWithZeroHomClass : MonoidWithZeroHomClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.mulHomClass with
@@ -163,7 +163,7 @@ instance monoidWithZeroHomClass : MonoidWithZeroHomClass (AbsoluteValue R S) R S
 
 /-- Absolute values from a nontrivial `R` to a linear ordered ring preserve `*`, `0` and `1`. -/
 def toMonoidWithZeroHom : R →*₀ S :=
-  abv
+  .ofClass abv
 
 @[simp]
 theorem coe_toMonoidWithZeroHom : ⇑abv.toMonoidWithZeroHom = abv :=
@@ -217,7 +217,6 @@ section OrderedCommRing
 variable [CommRing S] [PartialOrder S] [IsOrderedRing S] [Ring R]
   (abv : AbsoluteValue R S) [NoZeroDivisors S]
 
-@[simp]
 protected theorem map_neg (a : R) : abv (-a) = abv a := by
   by_cases ha : a = 0; · simp [ha]
   refine
@@ -235,6 +234,11 @@ protected theorem le_add (a b : R) : abv a - abv b ≤ abv (a + b) := by
 @[bound]
 lemma sub_le_add (a b : R) : abv (a - b) ≤ abv a + abv b := by
   simpa only [← sub_eq_add_neg, AbsoluteValue.map_neg] using abv.add_le a (-b)
+
+instance addGroupSeminormClass : AddGroupSeminormClass (AbsoluteValue R S) R S where
+  toSubadditiveHomClass := AbsoluteValue.subadditiveHomClass
+  map_zero := AbsoluteValue.map_zero
+  map_neg_eq_map f a := AbsoluteValue.map_neg f a
 
 instance [Nontrivial R] [IsDomain S] : MulRingNormClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.subadditiveHomClass,
@@ -346,7 +350,7 @@ omit [IsOrderedRing S] in
 lemma not_isNontrivial_iff (v : AbsoluteValue R S) :
     ¬ v.IsNontrivial ↔ ∀ x ≠ 0, v x = 1 := by
   simp only [IsNontrivial]
-  push_neg
+  push Not
   rfl
 
 omit [IsOrderedRing S] in
@@ -532,7 +536,7 @@ variable {R : Type*} [Semiring R] [Nontrivial R] (abv : R → S) [IsAbsoluteValu
 omit [IsOrderedRing S] in
 theorem abv_one' : abv 1 = 1 :=
   (toAbsoluteValue abv).map_one_of_isLeftRegular <|
-    (isRegular_of_ne_zero <| (toAbsoluteValue abv).ne_zero one_ne_zero).left
+    (IsRegular.of_ne_zero <| (toAbsoluteValue abv).ne_zero one_ne_zero).left
 
 /-- An absolute value as a monoid with zero homomorphism, assuming the target is a semifield. -/
 def abvHom' : R →*₀ S where

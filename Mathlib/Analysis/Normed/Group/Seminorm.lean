@@ -179,7 +179,7 @@ variable [Group E] [Group F] [Group G] {p q : GroupSeminorm E}
 @[to_additive]
 instance funLike : FunLike (GroupSeminorm E) E ℝ where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[to_additive]
 instance groupSeminormClass : GroupSeminormClass (GroupSeminorm E) E ℝ where
@@ -319,7 +319,7 @@ theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
 
 @[to_additive]
 instance semilatticeSup : SemilatticeSup (GroupSeminorm E) :=
-  DFunLike.coe_injective.semilatticeSup _ coe_sup
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
 /-- Composition of a group seminorm with a monoid homomorphism as a group seminorm. -/
 @[to_additive /-- Composition of an additive group seminorm with an additive monoid homomorphism as
@@ -478,7 +478,7 @@ variable [AddGroup E] {p q : NonarchAddGroupSeminorm E}
 
 instance funLike : FunLike (NonarchAddGroupSeminorm E) E ℝ where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _, _⟩ := f; cases g; congr
+  coe_injective f g h := by obtain ⟨⟨_, _⟩, _, _⟩ := f; cases g; congr
 
 instance nonarchAddGroupSeminormClass :
     NonarchAddGroupSeminormClass (NonarchAddGroupSeminorm E) E where
@@ -587,7 +587,7 @@ theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
   rfl
 
 noncomputable instance : SemilatticeSup (NonarchAddGroupSeminorm E) :=
-  DFunLike.coe_injective.semilatticeSup _ coe_sup
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
 end AddGroup
 
@@ -723,7 +723,7 @@ variable [Group E] {p q : GroupNorm E}
 @[to_additive]
 instance funLike : FunLike (GroupNorm E) E ℝ where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨_, _, _, _⟩, _⟩ := f; cases g; congr
+  coe_injective f g h := by obtain ⟨⟨_, _, _, _⟩, _⟩ := f; cases g; congr
 
 @[to_additive]
 instance groupNormClass : GroupNormClass (GroupNorm E) E ℝ where
@@ -797,7 +797,7 @@ theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
 
 @[to_additive]
 instance : SemilatticeSup (GroupNorm E) :=
-  DFunLike.coe_injective.semilatticeSup _ coe_sup
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
 end Group
 
@@ -849,7 +849,7 @@ variable [AddGroup E] {p q : NonarchAddGroupNorm E}
 
 instance funLike : FunLike (NonarchAddGroupNorm E) E ℝ where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _, _⟩, _⟩ := f; cases g; congr
+  coe_injective f g h := by obtain ⟨⟨⟨_, _⟩, _, _⟩, _⟩ := f; cases g; congr
 
 instance nonarchAddGroupNormClass : NonarchAddGroupNormClass (NonarchAddGroupNorm E) E where
   map_add_le_max f := f.add_le_max'
@@ -899,7 +899,7 @@ theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
   rfl
 
 noncomputable instance : SemilatticeSup (NonarchAddGroupNorm E) :=
-  DFunLike.coe_injective.semilatticeSup _ coe_sup
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
 instance [DecidableEq E] : One (NonarchAddGroupNorm E) :=
   ⟨{ (1 : NonarchAddGroupSeminorm E) with

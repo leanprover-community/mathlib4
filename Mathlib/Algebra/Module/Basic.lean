@@ -7,10 +7,9 @@ module
 
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Group.Action.Pi
-public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Algebra.GroupWithZero.Action.Units
-public import Mathlib.Algebra.Module.NatInt
-public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Algebra.Ring.Invertible
 
 /-!
@@ -80,16 +79,16 @@ theorem inv_intCast_smul_eq {E : Type*} (R S : Type*) [AddCommGroup E] [Division
 /-- If `E` is a vector space over a division semiring `R` and has a monoid action by `α`, then that
 action commutes by scalar multiplication of inverses of natural numbers in `R`. -/
 theorem inv_natCast_smul_comm {α E : Type*} (R : Type*) [AddCommMonoid E] [DivisionSemiring R]
-    [Monoid α] [Module R E] [DistribMulAction α E] (n : ℕ) (s : α) (x : E) :
+    [Module R E] [DistribSMul α E] (n : ℕ) (s : α) (x : E) :
     (n⁻¹ : R) • s • x = s • (n⁻¹ : R) • x :=
-  (map_inv_natCast_smul (DistribMulAction.toAddMonoidHom E s) R R n x).symm
+  (map_inv_natCast_smul (DistribSMul.toAddMonoidHom E s) R R n x).symm
 
 /-- If `E` is a vector space over a division ring `R` and has a monoid action by `α`, then that
 action commutes by scalar multiplication of inverses of integers in `R` -/
 theorem inv_intCast_smul_comm {α E : Type*} (R : Type*) [AddCommGroup E] [DivisionRing R]
-    [Monoid α] [Module R E] [DistribMulAction α E] (n : ℤ) (s : α) (x : E) :
+    [Module R E] [DistribSMul α E] (n : ℤ) (s : α) (x : E) :
     (n⁻¹ : R) • s • x = s • (n⁻¹ : R) • x :=
-  (map_inv_intCast_smul (DistribMulAction.toAddMonoidHom E s) R R n x).symm
+  (map_inv_intCast_smul (DistribSMul.toAddMonoidHom E s) R R n x).symm
 
 namespace Function
 
@@ -103,12 +102,12 @@ lemma support_smul_subset_right [Zero M] [SMulZeroClass R M] (f : α → R) (g :
     support (f • g) ⊆ support g :=
   fun x hbf hf ↦ hbf <| by rw [Pi.smul_apply', hf, smul_zero]
 
-lemma support_const_smul_of_ne_zero [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M]
-    (c : R) (g : α → M) (hc : c ≠ 0) : support (c • g) = support g :=
-  ext fun x ↦ by simp only [hc, mem_support, Pi.smul_apply, Ne, smul_eq_zero, false_or]
+lemma support_const_smul_of_ne_zero [Semiring R] [IsDomain R] [AddCommMonoid M] [Module R M]
+    [Module.IsTorsionFree R M] (c : R) (g : α → M) (hc : c ≠ 0) : support (c • g) = support g :=
+  ext fun _ ↦ smul_ne_zero_iff_right hc
 
-lemma support_smul [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M] (f : α → R)
-    (g : α → M) : support (f • g) = support f ∩ support g :=
+lemma support_smul [Semiring R] [IsDomain R] [AddCommMonoid M] [Module R M]
+    [Module.IsTorsionFree R M] (f : α → R) (g : α → M) : support (f • g) = support f ∩ support g :=
   ext fun _ => smul_ne_zero_iff
 
 lemma support_const_smul_subset [Zero M] [SMulZeroClass R M] (a : R) (f : α → M) :

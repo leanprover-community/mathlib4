@@ -72,12 +72,7 @@ theorem antidiagonal_cons (a : α) (s) :
   Quotient.inductionOn s fun l ↦ by
     simp only [revzip, reverse_append, quot_mk_to_coe, coe_eq_coe, powersetAux'_cons, cons_coe,
       map_coe, antidiagonal_coe', coe_add]
-    rw [← zip_map, ← zip_map, zip_append, (_ : _ ++ _ = _)]
-    · congr
-      · simp only [List.map_id]
-      · rw [map_reverse]
-      · simp
-    · simp
+    rw [← zip_map, ← zip_map, zip_append, (_ : _ ++ _ = _)] <;> simp
 
 theorem antidiagonal_eq_map_powerset [DecidableEq α] (s : Multiset α) :
     s.antidiagonal = s.powerset.map fun t ↦ (s - t, t) := by

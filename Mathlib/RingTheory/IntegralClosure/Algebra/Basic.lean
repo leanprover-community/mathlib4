@@ -101,7 +101,7 @@ theorem isIntegral_of_smul_mem_submodule [IsDomain A] {M : Type*} [AddCommGroup 
       algebraMap_mem' := fun r n hn => (algebraMap_smul A r n).symm ▸ N.smul_mem r hn }
   let f : A' →ₐ[R] Module.End R N :=
     AlgHom.ofLinearMap
-      { toFun := fun x => (DistribMulAction.toLinearMap R M x).restrict x.prop
+      { toFun := fun x => (DistribSMul.toLinearMap R M x).restrict x.prop
         map_add' := by intro x y; ext; exact add_smul _ _ _
         map_smul' := by intro r s; ext; apply smul_assoc }
       (by ext; apply one_smul)
@@ -201,6 +201,13 @@ theorem IsIntegral.smul {R} [CommSemiring R] [Algebra R B] [Algebra S B] [Algebr
     [IsScalarTower R S B] {x : B} (r : R) (hx : IsIntegral S x) : IsIntegral S (r • x) :=
   .of_mem_of_fg _ hx.fg_adjoin_singleton _ <| by
     rw [← algebraMap_smul S]; apply Subalgebra.smul_mem; exact Algebra.subset_adjoin rfl
+
+theorem isIntegral_intCast (a : ℤ) : IsIntegral ℤ (a : B) :=
+  isIntegral_algebraMap
+
+theorem isIntegral_natCast (a : ℕ) : IsIntegral ℤ (a : B) := by
+  rw [← Int.cast_natCast]
+  exact isIntegral_intCast a
 
 variable (R A)
 

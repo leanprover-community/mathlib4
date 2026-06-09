@@ -127,7 +127,7 @@ theorem exists_mul_add_sub_mem_of_mem_jacobson {I : Ideal R} (r : R) (h : r ∈ 
 
 theorem exists_mul_sub_mem_of_sub_one_mem_jacobson {I : Ideal R} (r : R) (h : r - 1 ∈ jacobson I) :
     ∃ s, s * r - 1 ∈ I := by
-  convert exists_mul_add_sub_mem_of_mem_jacobson _ h
+  convert! exists_mul_add_sub_mem_of_mem_jacobson _ h
   simp
 
 /-- An ideal equals its Jacobson radical iff it is the intersection of a set of maximal ideals.
@@ -166,12 +166,12 @@ theorem eq_jacobson_iff_notMem :
   constructor
   · intro h x hx
     rw [← h, Ideal.jacobson, mem_sInf] at hx
-    push_neg at hx
+    push Not at hx
     exact hx
   · refine fun h => le_antisymm (fun x hx => ?_) le_jacobson
     contrapose hx
     rw [Ideal.jacobson, mem_sInf]
-    push_neg
+    push Not
     exact h x hx
 
 theorem map_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f) :
@@ -221,7 +221,7 @@ theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f
     haveI : J.IsMaximal := hJ.right
     exact sInf_le ⟨comap_mono hJ.left, comap_isMaximal_of_surjective _ hf⟩
 
-@[mono]
+@[gcongr, mono]
 theorem jacobson_mono {I J : Ideal R} : I ≤ J → I.jacobson ≤ J.jacobson := by
   intro h x hx
   rw [jacobson, mem_sInf] at hx ⊢
@@ -240,7 +240,7 @@ instance {I : Ideal R} [I.IsTwoSided] : I.jacobson.IsTwoSided where
     by_cases r𝔪 : r ∈ 𝔪
     · apply 𝔪.smul_mem _ r𝔪
     -- 𝔪₀ := { a : R | a*r ∈ 𝔪 }
-    let 𝔪₀ : Ideal R := Submodule.comap (DistribMulAction.toLinearMap R (S := Rᵐᵒᵖ) R (.op r)) 𝔪
+    let 𝔪₀ : Ideal R := Submodule.comap (DistribSMul.toLinearMap R (S := Rᵐᵒᵖ) R (.op r)) 𝔪
     suffices x ∈ 𝔪₀ by simpa [𝔪₀] using this
     have I𝔪₀ : I ≤ 𝔪₀ := fun i iI =>
       𝔪_mem.left (I.mul_mem_right _ iI)

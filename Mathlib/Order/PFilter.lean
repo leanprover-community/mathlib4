@@ -72,7 +72,9 @@ instance [Inhabited P] : Inhabited (PFilter P) := ⟨⟨default⟩⟩
 /-- A filter on `P` is a subset of `P`. -/
 instance : SetLike (PFilter P) P where
   coe F := toDual ⁻¹' F.dual.carrier
-  coe_injective' := fun ⟨_⟩ ⟨_⟩ h => congr_arg mk <| Ideal.ext h
+  coe_injective := fun ⟨_⟩ ⟨_⟩ h => congr_arg mk <| Ideal.ext h
+
+instance : PartialOrder (PFilter P) := .ofSetLike (PFilter P) P
 
 theorem isPFilter : IsPFilter (F : Set P) := F.dual.isIdeal
 
