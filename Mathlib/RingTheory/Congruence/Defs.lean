@@ -386,6 +386,8 @@ instance [CommRing R] (c : RingCon R) : CommRing c.Quotient := fast_instance%
 
 end Algebraic
 
+variable [NonAssocSemiring R] (c : RingCon R)
+
 /-- The natural homomorphism from a ring to its quotient by a ring congruence relation. -/
 @[simps]
 def mk' : R →+* c.Quotient where
