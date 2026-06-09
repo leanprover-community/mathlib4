@@ -925,7 +925,7 @@ This applies in particular to show that an additive Haar measure on a nontrivial
 finite-dimensional real vector space has no atom. -/]
 instance (priority := 100) IsHaarMeasure.noAtoms [IsTopologicalGroup G] [BorelSpace G] [T1Space G]
     [WeaklyLocallyCompactSpace G] [(𝓝[≠] (1 : G)).NeBot] (μ : Measure G) [μ.IsHaarMeasure] :
-    NoAtoms μ := by
+    NullSingletonClass μ := by
   cases eq_or_ne (μ 1) 0 with
   | inl h => constructor; simpa
   | inr h =>

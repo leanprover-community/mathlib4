@@ -432,7 +432,7 @@ theorem toFunctions_toMeasure [MeasurableSpace α] (μ : Measure α) [IsFiniteMe
 
 set_option backward.isDefEq.respectTransparency false in
 theorem toFunctions_toMeasure_continuousPart [MeasurableSpace α] [MeasurableSingletonClass α]
-    (μ : Measure α) [IsFiniteMeasure μ] [NoAtoms μ] (s : Set α) (hs : MeasurableSet s) :
+    (μ : Measure α) [IsFiniteMeasure μ] [NullSingletonClass μ] (s : Set α) (hs : MeasurableSet s) :
     μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure.continuousPart s = μ.real s := by
   let f := μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure
   change f (univ \ f.discreteSupport ∩ s) = μ.real s

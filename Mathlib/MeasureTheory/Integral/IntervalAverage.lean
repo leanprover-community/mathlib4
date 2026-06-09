@@ -80,7 +80,7 @@ theorem exists_eq_interval_average_of_measure
 /-- If `f : ℝ → ℝ` is continuous on `uIcc a b`, the interval has finite and nonzero `μ`-measure,
 and `μ` has no atoms, then `∃ c ∈ uIoo a b, f c = ⨍ x in Ι a b, f x ∂μ`. -/
 theorem exists_eq_interval_average_of_noAtoms
-    [NoAtoms μ] (hf : ContinuousOn f (uIcc a b)) (hμfin : μ (Ι a b) ≠ ⊤) (hμ0 : μ (Ι a b) ≠ 0) :
+    [NullSingletonClass μ] (hf : ContinuousOn f (uIcc a b)) (hμfin : μ (Ι a b) ≠ ⊤) (hμ0 : μ (Ι a b) ≠ 0) :
     ∃ c ∈ uIoo a b, f c = ⨍ x in Ι a b, f x ∂μ := by
   have hint : IntegrableOn f (Ι a b) μ := hf.integrableOn_of_subset_isCompact
     isCompact_uIcc measurableSet_uIoc uIoc_subset_uIcc hμfin

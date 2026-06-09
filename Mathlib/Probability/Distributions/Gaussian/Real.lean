@@ -230,7 +230,7 @@ instance instIsProbabilityMeasureGaussianReal (μ : ℝ) (v : ℝ≥0) :
     IsProbabilityMeasure (gaussianReal μ v) where
   measure_univ := by by_cases h : v = 0 <;> simp [gaussianReal_of_var_ne_zero, h]
 
-lemma noAtoms_gaussianReal {μ : ℝ} {v : ℝ≥0} (h : v ≠ 0) : NoAtoms (gaussianReal μ v) := by
+lemma noAtoms_gaussianReal {μ : ℝ} {v : ℝ≥0} (h : v ≠ 0) : NullSingletonClass (gaussianReal μ v) := by
   rw [gaussianReal_of_var_ne_zero _ h]
   infer_instance
 

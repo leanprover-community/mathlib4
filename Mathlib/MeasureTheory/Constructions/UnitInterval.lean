@@ -43,7 +43,7 @@ lemma volume_apply {s : Set I} : volume s = volume (Subtype.val '' s) :=
 lemma measurePreserving_coe : MeasurePreserving ((↑) : I → ℝ) volume (volume.restrict I) :=
   measurePreserving_subtype_coe measurableSet_Icc
 
-instance : NoAtoms (volume : Measure I) where
+instance : NullSingletonClass (volume : Measure I) where
   measure_singleton x := by simp [volume_apply]
 
 @[fun_prop]

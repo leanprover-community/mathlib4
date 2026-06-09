@@ -221,13 +221,13 @@ lemma eq_dirac_of_variance_eq_zero (h : ∀ L : StrongDual ℝ E, Var[L; μ] = 0
   simp
 
 /-- If a Gaussian measure is not a Dirac, then it has no atoms. -/
-lemma noAtoms (h : ∀ x, μ ≠ Measure.dirac x) : NoAtoms μ where
+lemma noAtoms (h : ∀ x, μ ≠ Measure.dirac x) : NullSingletonClass μ where
   measure_singleton x := by
     obtain ⟨L, hL⟩ : ∃ L : StrongDual ℝ E, Var[L; μ] ≠ 0 := by
       contrapose! h
       exact ⟨_, eq_dirac_of_variance_eq_zero h⟩
     have hL_zero : μ.map L {L x} = 0 := by
-      have : NoAtoms (μ.map L) := by
+      have : NullSingletonClass (μ.map L) := by
         rw [map_eq_gaussianReal L]
         refine noAtoms_gaussianReal ?_
         simp only [ne_eq, Real.toNNReal_eq_zero, not_le]
