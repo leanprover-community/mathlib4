@@ -112,7 +112,7 @@ The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep 
 @[simp] lemma hom_id : (𝟙 A : A ⟶ A).hom = .id (π₁ := A.ρ) := rfl
 
 /- Provided for rewriting. -/
-lemma id_apply (a : A) : (𝟙 A : A ⟶ A) a = a := rfl -- add `id_apply` as simp lemma!
+lemma id_apply (a : A) : (𝟙 A : A ⟶ A) a = a := rfl
 
 @[simp] lemma hom_comp (f : A ⟶ B) (g : B ⟶ C) : (f ≫ g).hom = g.hom.comp f.hom := rfl
 
