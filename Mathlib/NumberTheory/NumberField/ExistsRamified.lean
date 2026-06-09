@@ -21,18 +21,6 @@ This is a trivial corollary of `NumberField.not_dvd_discr_iff_forall_mem` and
 -/
 @[expose] public section
 
-
-instance (R : Type*) [CommRing R] [IsDomain R] [Ring.HasFiniteQuotients R]
-    [PerfectField (FractionRing R)] (P : Ideal R) [P.IsPrime] : PerfectField P.ResidueField := by
-  rcases eq_or_ne P ⊥ with rfl | hP
-  · sorry
-    -- exact PerfectField.of_ringEquiv (FractionRing.algEquiv R (⊥ : Ideal R).ResidueField).toRingEquiv
-  · suffices Finite P.ResidueField from inferInstance
-    have : P.IsMaximal := ‹P.IsPrime›.isMaximal hP
-    have : Finite (R ⧸ P) := Ring.HasFiniteQuotients.finiteQuotient hP
-    let : Field (R ⧸ P) := Ideal.Quotient.field P
-    exact .of_equiv (R ⧸ P) (IsFractionRing.algEquiv (R ⧸ P) (R ⧸ P) P.ResidueField).toEquiv
-
 open scoped NumberField nonZeroDivisors
 
 variable {K 𝒪 : Type*} [Field K] [NumberField K] [CommRing 𝒪] [Algebra 𝒪 K]

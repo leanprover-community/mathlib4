@@ -133,19 +133,6 @@ theorem mem_zpowers_galEquivZMod_of_mem_stabilizer {σ : Gal(K/ℚ)} (hσ : σ �
     ← h₀.eq_orderOf, ← ZMod.natCast_eq_natCast_iff', Nat.cast_pow, ← ZMod.coe_unitOfCoprime p hn,
     ← Units.val_pow_eq_pow_val, ZMod.natCast_zmod_val, ← Units.ext_iff, eq_comm] at hi
 
-instance (R : Type*) [CommRing R] [IsDomain R] : IsFractionRing R (⊥ : Ideal R).ResidueField :=
-  IsLocalization.of_ringEquiv_left (RingEquiv.quotientBot R).symm
-    (MulEquivClass.map_nonZeroDivisors (RingEquiv.quotientBot R).symm) (by simp)
-
-instance (R : Type*) [CommRing R] [IsDomain R] [Ring.HasFiniteQuotients R]
-    [PerfectField (FractionRing R)] (P : Ideal R) [P.IsPrime] : PerfectField P.ResidueField := by
-  rcases eq_or_ne P ⊥ with rfl | hP
-  · exact PerfectField.of_ringEquiv (FractionRing.algEquiv R (⊥ : Ideal R).ResidueField).toRingEquiv
-  · suffices Finite P.ResidueField from inferInstance
-    have : IsMaximal P := ‹P.IsPrime›.isMaximal hP
-    have : Finite (R ⧸ P) := Ring.HasFiniteQuotients.finiteQuotient hP
-    exact .of_equiv (R ⧸ P) (IsFractionRing.algEquiv (R ⧸ P) (R ⧸ P) P.ResidueField).toEquiv
-
 theorem galEquivZMod_stabilizer :
     (galEquivZMod n K).mapSubgroup (stabilizer Gal(K/ℚ) P) =
       Subgroup.zpowers (ZMod.unitOfCoprime p hn) := by
