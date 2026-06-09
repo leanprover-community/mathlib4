@@ -330,31 +330,23 @@ theorem center_eq_closure_of_even_ne_two (heven : Even n) (hn2 : n ≠ 2) :
   · -- `r i` is central iff `i = -i`, i.e. iff `i ∈ {0, m}`.
     constructor
     · intro hx
+      have hi : -i = i := by simpa using (sr.inj (hx (sr 0))).symm
+      -- `i = -i` forces `2 * i.val = n = 2 * m`, hence `i = m` (or `i = 0` when `n = 0`).
       have hii : i = 0 ∨ i = (m : ZMod n) := by
-        have hi : -i = i := by simpa using (sr.inj (hx (sr 0))).symm
-        rcases (ZMod.neg_eq_self_iff i).mp hi with h | h
-        · exact .inl h
-        · -- `2 * i.val = n = 2 * m`, hence `i = m` (or `i = 0` when `n = 0`).
-          rcases eq_or_ne n 0 with rfl | h0
-          · exact .inl ((ZMod.val_eq_zero i).mp (by omega))
-          · haveI : NeZero n := ⟨h0⟩
-            exact .inr (by rw [← ZMod.natCast_zmod_val i]; congr 1; omega)
-      rcases hii with rfl | rfl
-      · exact ⟨0, by simp⟩
-      · exact ⟨1, by simp⟩
-    · rintro ⟨k, hk⟩ g
+        have := (ZMod.neg_eq_self_iff i).mp hi
+        rcases eq_or_ne n 0 with rfl | h0
+        · grind [ZMod.val_eq_zero]
+        · have : NeZero n := ⟨h0⟩
+          grind [ZMod.natCast_zmod_val]
+      obtain rfl | rfl := hii
+      exacts [⟨0, by simp⟩, ⟨1, by simp⟩]
+    · -- `r (m * k)` commutes with everything since `(m + m) * k = 0`.
+      rintro ⟨k, hk⟩ g
       rw [← hk, r_zpow]
-      -- `r (m * k)` commutes with everything since `(m + m) * k = 0`.
-      rcases g with j | j
-      · rw [r_mul_r, r_mul_r, add_comm]
-      · simp only [sr_mul_r, r_mul_sr, sr.injEq]
-        rw [eq_sub_iff_add_eq, add_assoc, ← add_mul, hmm, zero_mul, add_zero]
+      rcases g with j | j <;> simp only [r_mul_r, sr_mul_r, r_mul_sr, sr.injEq, r.injEq] <;> grind
   · -- `sr i` is never central: it fails to commute with `r 1`, as `2 ≠ 0`.
-    constructor
-    · intro hx
-      have e : i - 1 = i + 1 := by simpa using sr.inj (hx (r 1))
-      grind
-    · rintro ⟨k, hk⟩
-      simp at hk
+    refine ⟨fun hx => ?_, fun ⟨k, hk⟩ => by simp at hk⟩
+    have e : i - 1 = i + 1 := by simpa using sr.inj (hx (r 1))
+    grind
 
 end DihedralGroup
