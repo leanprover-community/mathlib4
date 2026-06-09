@@ -684,7 +684,7 @@ theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ 
   simp only [le_fromEdgeSet_iff, edgeSet_fromEdgeSet]; grw [h]; exact sdiff_le
 
 @[simp] lemma disjoint_fromEdgeSet : Disjoint G (fromEdgeSet s) ↔ Disjoint G.edgeSet s := by
-  conv_rhs => rw [← Set.diff_union_inter s Sym2.diagSet]
+  conv_rhs => rw [← Set.sdiff_union_inter s Sym2.diagSet]
   rw [← disjoint_edgeSet, edgeSet_fromEdgeSet]
   grind [edgeSet_subset_compl_diagSet]
 

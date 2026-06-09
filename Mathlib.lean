@@ -6356,6 +6356,7 @@ public import Mathlib.RepresentationTheory.Character
 public import Mathlib.RepresentationTheory.Coinduced
 public import Mathlib.RepresentationTheory.Coinvariants
 public import Mathlib.RepresentationTheory.Continuous.Basic
+public import Mathlib.RepresentationTheory.Continuous.TopRep
 public import Mathlib.RepresentationTheory.Equiv
 public import Mathlib.RepresentationTheory.FDRep
 public import Mathlib.RepresentationTheory.FinGroupCharZero
@@ -6375,6 +6376,7 @@ public import Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSe
 public import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
 public import Mathlib.RepresentationTheory.Homological.GroupHomology.Shapiro
 public import Mathlib.RepresentationTheory.Homological.Resolution
+public import Mathlib.RepresentationTheory.Homological.TateCohomology.Basic
 public import Mathlib.RepresentationTheory.Induced
 public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RepresentationTheory.Invariants
