@@ -50,11 +50,9 @@ theorem ENat.measurable_iff {α : Type*} [MeasurableSpace α] {f : α → ℕ∞
   cases n with
   | top =>
     apply MeasurableSet.compl_iff.mp
-    convert! MeasurableSet.iUnion h
-    rw [← compl_compl (f ⁻¹' {⊤}), ← preimage_iUnion, compl_compl, iUnion_singleton_eq_range,
-      ← Set.preimage_compl]
-    ext
-    simp [ne_top_iff_exists]
+    rw [← compl_compl (f ⁻¹' {⊤}), compl_compl, ← Set.preimage_compl, ← range_natCast_eq_top_compl,
+      ← iUnion_singleton_eq_range, preimage_iUnion]
+    exact MeasurableSet.iUnion h
   | coe n => exact h n
 
 theorem measurable_unit [MeasurableSpace α] (f : Unit → α) : Measurable f :=
