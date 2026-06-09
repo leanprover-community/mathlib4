@@ -227,9 +227,9 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl {s : Set α}
     grind
   -- To prove that `stabilizer (alternatingGroup α) s` is maximal,
   -- we need to prove that it is `≠ ⊤`
-  use stabilizer_ne_top h0.nonempty h1
+  refine covBy_top_iff.1 ⟨lt_top_iff_ne_top.2 (stabilizer_ne_top h0.nonempty h1), fun G hG => ?_⟩
   -- … and that every strict over-subgroup `G` is equal to `⊤`
-  intro G hG
+  rw [lt_top_iff_ne_top, not_ne_iff]
   suffices IsPreprimitive G α from subgroup_eq_top_of_isPreprimitive hα G hG.le
   -- G acts transitively
   have := G.isPretransitive_of_stabilizer_lt hG

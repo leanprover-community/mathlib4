@@ -266,7 +266,8 @@ theorem exists_maximal_of_not_isField [Nontrivial R] (h : ¬ IsField R) :
     ∃ p : Ideal R, p ≠ ⊥ ∧ p.IsMaximal := by
   contrapose! h
   simp only [← bot_lt_iff_ne_bot] at h
-  refine isField_iff_maximal_bot.mpr ⟨⟨bot_ne_top, Ideal.maximal_of_no_maximal h⟩⟩
+  refine isField_iff_maximal_bot.mpr ⟨covBy_top_iff.1
+    ⟨bot_lt_top, fun p hp hpt => hpt.ne (Ideal.maximal_of_no_maximal h p hp)⟩⟩
 
 theorem not_isField_of_ne_of_ne [Nontrivial R] {I : Ideal R} (h_bot : I ≠ ⊥) (h_top : I ≠ ⊤) :
     ¬ IsField R := by
