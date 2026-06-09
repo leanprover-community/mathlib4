@@ -181,7 +181,7 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
         refine isPrime_of_isPrime_disjoint (powers y) _ I hIm.isPrime ?_
         rwa [disjoint_powers_iff_notMem_of_isPrime]
       have : J ≤ I.map (algebraMap R S) := map_under (Submonoid.powers y) S J ▸ map_mono hJI
-      exact absurd (h.1.2 _ (lt_of_le_of_ne this hJ)) hI_p.1
+      exact absurd (h.1.isMax_of_gt (lt_of_le_of_ne this hJ)).eq_top hI_p.1
   · simp only [Ideal.mem_comap, and_imp]
     exact (fun _ _ ↦ IsMaximal.of_isLocalization_of_disjoint (powers y))
 

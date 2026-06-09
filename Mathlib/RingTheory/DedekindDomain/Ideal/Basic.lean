@@ -138,13 +138,14 @@ theorem dimensionLEOne : DimensionLEOne A := by
   let := h.commGroupWithZero (K := FractionRing A)
   constructor
   rintro P P_ne hP
-  refine Ideal.isMaximal_def.mpr ⟨hP.ne_top, fun M hM => ?_⟩
+  refine Ideal.isMaximal_def.mpr (covBy_top_iff.mp ⟨lt_top_iff_ne_top.2 hP.ne_top, fun M hM => ?_⟩)
   -- We may assume `P` and `M` (as fractional ideals) are nonzero.
   have P'_ne : (P : FractionalIdeal A⁰ (FractionRing A)) ≠ 0 := coeIdeal_ne_zero.mpr P_ne
   have M'_ne : (M : FractionalIdeal A⁰ (FractionRing A)) ≠ 0 := coeIdeal_ne_zero.mpr hM.ne_bot
   -- In particular, we'll show `M⁻¹ * P ≤ P`
   suffices (M⁻¹ : FractionalIdeal A⁰ (FractionRing A)) * P ≤ P by
-    rw [eq_top_iff, ← coeIdeal_le_coeIdeal (FractionRing A), coeIdeal_top]
+    rw [lt_top_iff_ne_top, not_ne_iff, eq_top_iff,
+      ← coeIdeal_le_coeIdeal (FractionRing A), coeIdeal_top]
     calc
       (1 : FractionalIdeal A⁰ (FractionRing A)) = (↑M)⁻¹ * P * ((↑P)⁻¹ * M) := by
         simp [mul_assoc, *]
@@ -433,10 +434,10 @@ instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :
       intro P
       exact ⟨fun hirr => ⟨hirr.ne_zero, hirr.not_isUnit, fun I J => by
         have : P.IsMaximal := by
-          refine ⟨⟨mt Ideal.isUnit_iff.mpr hirr.not_isUnit, ?_⟩⟩
-          intro J hJ
+          refine ⟨covBy_top_iff.1 ⟨lt_top_iff_ne_top.2 (mt Ideal.isUnit_iff.mpr hirr.not_isUnit),
+            fun J hJ => ?_⟩⟩
           obtain ⟨_J_ne, H, hunit, P_eq⟩ := Ideal.dvdNotUnit_iff_lt.mpr hJ
-          exact Ideal.isUnit_iff.mp ((hirr.isUnit_or_isUnit P_eq).resolve_right hunit)
+          exact (Ideal.isUnit_iff.mp ((hirr.isUnit_or_isUnit P_eq).resolve_right hunit)).not_lt
         rw [Ideal.dvd_iff_le, Ideal.dvd_iff_le, Ideal.dvd_iff_le, SetLike.le_def, SetLike.le_def,
           SetLike.le_def]
         contrapose!
