@@ -73,6 +73,7 @@ When possible, instead of parametrizing results over `(f : ContinuousMap.Homotop
 you should parametrize over `{F : Type*} [HomotopyLike F f₀ f₁] (f : F)`.
 
 When you extend this structure, make sure to extend `ContinuousMap.HomotopyLike`. -/
+@[wikidata Q746083]
 structure Homotopy (f₀ f₁ : C(X, Y)) extends C(I × X, Y) where
   /-- value of the homotopy at 0 -/
   map_zero_left : ∀ x, toFun (0, x) = f₀ x

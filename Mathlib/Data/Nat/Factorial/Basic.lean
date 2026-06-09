@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Nat.Basic
 public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
@@ -31,6 +32,7 @@ see `Fintype.card_perm`.
 namespace Nat
 
 /-- `Nat.factorial n` is the factorial of `n`. -/
+@[wikidata Q120976]
 def factorial : ℕ → ℕ
   | 0 => 1
   | succ n => succ n * factorial n
