@@ -738,23 +738,17 @@ theorem card_eq_multiplicity [Finite G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow
   exact P.1.card_subgroup_dvd_card
 
 variable (G) in
-theorem _root_.Group.card_dvd_prod_orderOf [Fintype G] :
-    Nat.card G ∣ ∏ g : G, orderOf g := by
-  refine Nat.factorization_prime_le_iff_dvd Nat.card_pos.ne' ?_ |>.mp fun p hp ↦ ?_
-  · exact prod_ne_zero_iff.mpr fun g _ ↦ orderOf_ne_zero_iff.mpr <| isOfFinOrder_of_finite g
-  have H := Classical.arbitrary <| Sylow p G
-  rw [Nat.factorization_prod_apply fun g _ ↦ orderOf_ne_zero_iff.mpr <| isOfFinOrder_of_finite g]
-  suffices Nat.card H - 1 ≤ ∑ g : G, (orderOf g).factorization p by
-    grw [← this, H.card_eq_multiplicity (hp := ⟨hp⟩),
-      ← Nat.le_sub_one_of_lt <| Nat.lt_pow_self hp.one_lt]
-  have := Fintype.ofFinite
-  grw [← sum_le_sum_of_subset (H \ {1} : Set G).toFinset.subset_univ,
-    ← card_nsmul_le_sum _ _ 1 fun g hg ↦ ?_]
-  · simp [← SetLike.coe_sort_coe]
-  simp_rw [Set.mem_toFinset, Set.mem_diff, Set.mem_singleton_iff] at hg
-  have ⟨k, hk⟩ := IsPGroup.iff_orderOf (hp := ⟨hp⟩).mp H.isPGroup' ⟨g, hg.left⟩
-  have : k ≠ 0 := by rintro rfl; simp_all
-  simp [← orderOf_mk g hg.left, hk, hp.factorization_self, Nat.one_le_iff_ne_zero.mpr this]
+theorem _root_.Group.card_dvd_prod_orderOf [Fintype G] : Nat.card G ∣ ∏ g : G, orderOf g := by
+  classical
+  refine Nat.dvd_iff_prime_pow_dvd_dvd .. |>.mpr fun p k hp h ↦ ?_
+  have := Fact.mk hp
+  have ⟨H, hH⟩ := exists_subgroup_card_pow_prime p h
+  have (g : G) (hg : g ∈ (H \ {1} : Set G).toFinset) : p ∣ orderOf g := by
+    have ⟨hg, hg1⟩ : g ∈ H ∧ g ≠ 1 := by simpa using hg
+    simpa using IsPGroup.of_card hH |>.dvd_orderOf (g := ⟨g, hg⟩) <| by simpa
+  grw [← prod_dvd_prod_of_subset _ _ _ (H \ {1} : Set G).toFinset.subset_univ,
+    ← prod_dvd_prod_of_dvd _ _ this, prod_const, k.le_sub_one_of_lt <| k.lt_pow_self hp.one_lt]
+  simp [Finset.card_sdiff, ← Nat.card_eq_fintype_card, hH]
 
 /-- If `G` has a normal Sylow `p`-subgroup, then it is the only Sylow `p`-subgroup. -/
 @[implicit_reducible]
