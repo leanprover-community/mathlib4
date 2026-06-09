@@ -31,10 +31,6 @@ def mkOfAffineBasis [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 def mkOfBasis [Field k] [AddCommGroup V] [Module k V] (b : Basis (Fin n) k V) : Simplex k V n :=
   mk (Fin.cons 0 b) <| by
     rw [affineIndependent_iff_finrank_vectorSpan_eq k (Fin.cons 0 b) ?_]
-    -- have : False := by trivial
-    try
-      have : False := by trivial
-    have : True := by try try?
     sorry
 
 example : 1 + 1 = 2 := by
