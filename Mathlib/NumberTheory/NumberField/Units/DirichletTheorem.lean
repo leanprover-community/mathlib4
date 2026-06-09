@@ -453,6 +453,7 @@ instance : Monoid.FG (𝓞 K)ˣ := by
 theorem finrank_modTorsion : finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
   rw [← LinearEquiv.finrank_eq (logEmbeddingEquiv K).symm, unitLattice_rank]
 
+set_option linter.dupNamespace false in
 @[deprecated (since := "2026-06-05")]
 alias NumberField.Units.rank_modTorsion := finrank_modTorsion
 
