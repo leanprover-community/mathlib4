@@ -26,101 +26,86 @@ variable {α β : Type*}
 
 namespace OrderDual
 
-@[to_additive]
-instance [h : One α] : One αᵒᵈ := h
+set_option backward.inferInstanceAs.wrap.instances false in
+@[to_additive] instance [One α] : One αᵒᵈ := inferInstanceAs <| One α
 
-@[to_additive]
-instance [h : Mul α] : Mul αᵒᵈ := h
+set_option backward.inferInstanceAs.wrap.instances false in
+@[to_additive] instance [Mul α] : Mul αᵒᵈ := inferInstanceAs <| Mul α
 
-@[to_additive]
-instance [h : Inv α] : Inv αᵒᵈ := h
+set_option backward.inferInstanceAs.wrap.instances false in
+@[to_additive] instance [Inv α] : Inv αᵒᵈ := inferInstanceAs <| Inv α
 
-@[to_additive]
-instance [h : Div α] : Div αᵒᵈ := h
+set_option backward.inferInstanceAs.wrap.instances false in
+@[to_additive] instance [Div α] : Div αᵒᵈ := inferInstanceAs <| Div α
 
+set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive (attr := to_additive) (reorder := 1 2) OrderDual.instSMul]
-instance [h : Pow α β] : Pow αᵒᵈ β := h
+instance [Pow α β] : Pow αᵒᵈ β := inferInstanceAs <| Pow α β
 
+set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive (attr := to_additive) (reorder := 1 2) OrderDual.instSMul']
-instance [h : Pow α β] : Pow α βᵒᵈ := h
+instance [Pow α β] : Pow α βᵒᵈ := inferInstanceAs <| Pow α β
+
+@[to_additive] instance [Semigroup α] : Semigroup αᵒᵈ := inferInstanceAs <| Semigroup α
+
+@[to_additive] instance [CommSemigroup α] : CommSemigroup αᵒᵈ := inferInstanceAs <| CommSemigroup α
 
 @[to_additive]
-instance [h : Semigroup α] : Semigroup αᵒᵈ where
-  mul_assoc := h.mul_assoc
+instance [Mul α] [IsLeftCancelMul α] : IsLeftCancelMul αᵒᵈ :=
+  inferInstanceAs <| IsLeftCancelMul α
 
 @[to_additive]
-instance [h : CommSemigroup α] : CommSemigroup αᵒᵈ where
-  mul_comm := h.mul_comm
+instance [Mul α] [IsRightCancelMul α] : IsRightCancelMul αᵒᵈ :=
+  inferInstanceAs <| IsRightCancelMul α
 
 @[to_additive]
-instance [Mul α] [h : IsLeftCancelMul α] : IsLeftCancelMul αᵒᵈ where
-  mul_left_cancel := h.mul_left_cancel
+instance [Mul α] [IsCancelMul α] : IsCancelMul αᵒᵈ where
 
 @[to_additive]
-instance [Mul α] [h : IsRightCancelMul α] : IsRightCancelMul αᵒᵈ where
-  mul_right_cancel := h.mul_right_cancel
+instance [LeftCancelSemigroup α] : LeftCancelSemigroup αᵒᵈ where
 
 @[to_additive]
-instance [Mul α] [h : IsCancelMul α] : IsCancelMul αᵒᵈ where
+instance [RightCancelSemigroup α] : RightCancelSemigroup αᵒᵈ where
 
 @[to_additive]
-instance [h : LeftCancelSemigroup α] : LeftCancelSemigroup αᵒᵈ where
+instance [MulOneClass α] : MulOneClass αᵒᵈ := inferInstanceAs <| MulOneClass α
 
 @[to_additive]
-instance [h : RightCancelSemigroup α] : RightCancelSemigroup αᵒᵈ where
+instance [Monoid α] : Monoid αᵒᵈ := inferInstanceAs <| Monoid α
 
 @[to_additive]
-instance [h : MulOneClass α] : MulOneClass αᵒᵈ where
-  one_mul := h.one_mul
-  mul_one := h.mul_one
+instance [CommMonoid α] : CommMonoid αᵒᵈ := inferInstanceAs <| CommMonoid α
 
 @[to_additive]
-instance [h : Monoid α] : Monoid αᵒᵈ where
-  npow := h.npow
-  npow_succ := h.npow_succ
-  npow_zero := h.npow_zero
+instance [LeftCancelMonoid α] : LeftCancelMonoid αᵒᵈ := inferInstanceAs <| LeftCancelMonoid α
 
 @[to_additive]
-instance [h : CommMonoid α] : CommMonoid αᵒᵈ where
+instance [RightCancelMonoid α] : RightCancelMonoid αᵒᵈ := inferInstanceAs <| RightCancelMonoid α
 
 @[to_additive]
-instance [h : LeftCancelMonoid α] : LeftCancelMonoid αᵒᵈ where
+instance [CancelMonoid α] : CancelMonoid αᵒᵈ := inferInstanceAs <| CancelMonoid α
 
 @[to_additive]
-instance [h : RightCancelMonoid α] : RightCancelMonoid αᵒᵈ where
+instance [CancelCommMonoid α] : CancelCommMonoid αᵒᵈ := inferInstanceAs <| CancelCommMonoid α
 
 @[to_additive]
-instance [h : CancelMonoid α] : CancelMonoid αᵒᵈ where
+instance [InvolutiveInv α] : InvolutiveInv αᵒᵈ := inferInstanceAs <| InvolutiveInv α
 
 @[to_additive]
-instance [h : CancelCommMonoid α] : CancelCommMonoid αᵒᵈ where
+instance [DivInvMonoid α] : DivInvMonoid αᵒᵈ := inferInstanceAs <| DivInvMonoid α
 
 @[to_additive]
-instance [h : InvolutiveInv α] : InvolutiveInv αᵒᵈ where
-  inv_inv := h.inv_inv
+instance [DivisionMonoid α] : DivisionMonoid αᵒᵈ := inferInstanceAs <| DivisionMonoid α
 
 @[to_additive]
-instance [h : DivInvMonoid α] : DivInvMonoid αᵒᵈ where
-  div_eq_mul_inv := h.div_eq_mul_inv
-  zpow := h.zpow
-  zpow_zero' := h.zpow_zero'
-  zpow_succ' := h.zpow_succ'
-  zpow_neg' := h.zpow_neg'
+instance [DivisionCommMonoid α] : DivisionCommMonoid αᵒᵈ :=
+  inferInstanceAs <| DivisionCommMonoid α
 
 @[to_additive]
-instance [h : DivisionMonoid α] : DivisionMonoid αᵒᵈ where
-  mul_inv_rev := h.mul_inv_rev
-  inv_eq_of_mul := h.inv_eq_of_mul
+instance [Group α] : Group αᵒᵈ := inferInstanceAs <| Group α
 
 @[to_additive]
-instance [h : DivisionCommMonoid α] : DivisionCommMonoid αᵒᵈ where
-
-@[to_additive]
-instance [h : Group α] : Group αᵒᵈ where
-  inv_mul_cancel := h.inv_mul_cancel
-
-@[to_additive]
-instance [h : CommGroup α] : CommGroup αᵒᵈ where
+instance [CommGroup α] : CommGroup αᵒᵈ := inferInstanceAs <| CommGroup α
 
 end OrderDual
 

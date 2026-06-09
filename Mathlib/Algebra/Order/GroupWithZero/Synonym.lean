@@ -27,34 +27,30 @@ variable {α : Type*}
 
 namespace OrderDual
 
-instance [h : MulZeroClass α] : MulZeroClass αᵒᵈ where
-  zero_mul := h.zero_mul
-  mul_zero := h.mul_zero
+instance [MulZeroClass α] : MulZeroClass αᵒᵈ := inferInstanceAs <| MulZeroClass α
 
-instance [h : MulZeroOneClass α] : MulZeroOneClass αᵒᵈ where
+instance [MulZeroOneClass α] : MulZeroOneClass αᵒᵈ := inferInstanceAs <| MulZeroOneClass α
 
-instance [Mul α] [Zero α] [h : NoZeroDivisors α] : NoZeroDivisors αᵒᵈ where
-  eq_zero_or_eq_zero_of_mul_eq_zero := h.eq_zero_or_eq_zero_of_mul_eq_zero
+instance [Mul α] [Zero α] [NoZeroDivisors α] : NoZeroDivisors αᵒᵈ :=
+  inferInstanceAs <| NoZeroDivisors α
 
-instance [h : SemigroupWithZero α] : SemigroupWithZero αᵒᵈ where
+instance [SemigroupWithZero α] : SemigroupWithZero αᵒᵈ := inferInstanceAs <| SemigroupWithZero α
 
-instance [h : MonoidWithZero α] : MonoidWithZero αᵒᵈ where
+instance [MonoidWithZero α] : MonoidWithZero αᵒᵈ := inferInstanceAs <| MonoidWithZero α
 
-instance [Mul α] [Zero α] [h : IsLeftCancelMulZero α] : IsLeftCancelMulZero αᵒᵈ where
-  mul_left_cancel_of_ne_zero := h.mul_left_cancel_of_ne_zero
+instance [Mul α] [Zero α] [IsLeftCancelMulZero α] : IsLeftCancelMulZero αᵒᵈ :=
+  inferInstanceAs <| IsLeftCancelMulZero α
 
-instance [Mul α] [Zero α] [h : IsRightCancelMulZero α] : IsRightCancelMulZero αᵒᵈ where
-  mul_right_cancel_of_ne_zero := h.mul_right_cancel_of_ne_zero
+instance [Mul α] [Zero α] [IsRightCancelMulZero α] : IsRightCancelMulZero αᵒᵈ :=
+  inferInstanceAs <| IsRightCancelMulZero α
 
-instance [Mul α] [Zero α] [h : IsCancelMulZero α] : IsCancelMulZero αᵒᵈ where
+instance [Mul α] [Zero α] [IsCancelMulZero α] : IsCancelMulZero αᵒᵈ where
 
-instance [h : CommMonoidWithZero α] : CommMonoidWithZero αᵒᵈ where
+instance [CommMonoidWithZero α] : CommMonoidWithZero αᵒᵈ := inferInstanceAs <| CommMonoidWithZero α
 
-instance [h : GroupWithZero α] : GroupWithZero αᵒᵈ where
-  inv_zero := h.inv_zero
-  mul_inv_cancel := h.mul_inv_cancel
+instance [GroupWithZero α] : GroupWithZero αᵒᵈ := inferInstanceAs <| GroupWithZero α
 
-instance [h : CommGroupWithZero α] : CommGroupWithZero αᵒᵈ where
+instance [CommGroupWithZero α] : CommGroupWithZero αᵒᵈ := inferInstanceAs <| CommGroupWithZero α
 
 end OrderDual
 
