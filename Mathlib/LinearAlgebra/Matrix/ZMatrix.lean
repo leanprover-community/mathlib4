@@ -31,7 +31,7 @@ variable {ι R : Type*} [Fintype ι] [DecidableEq ι]
 
 include hA hD
 
-lemma diag_pos_of_mul_diagonal_posDef (i : ι) :
+public lemma diag_pos_of_mul_diagonal_posDef (i : ι) :
     0 < A i i := by
   rw [← mul_pos_iff_of_pos_right (hD i)]
   simpa using hA.2 (x := Finsupp.single i 1) (by simp)
@@ -41,7 +41,7 @@ lemma diag_pos_of_mul_diagonal_posDef (i : ι) :
 It is important because it applies to Cartan matrices, and shows that all (real) eigenvalues must
 be strictly less than 4 (a fact which is necessary in the proof of
 `RootPairing.GeckConstruction.instIsIrreducible`). -/
-lemma lt_two_mul_of_mul_diagonal_posDef_of_for_le_of_hasEigen
+public lemma lt_two_mul_of_mul_diagonal_posDef_of_for_le_of_hasEigen
     (μ ρ : R) (hμ : ∀ i j, A i j ≤ if i = j then μ else 0) (hρ : HasEigenvalue A.toLin' ρ) :
     ρ < 2 * μ := by
   by_contra! contra
