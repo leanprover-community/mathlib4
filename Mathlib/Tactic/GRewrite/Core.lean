@@ -177,8 +177,7 @@ def GRewriteLemma.apply (lem : GRewriteLemma) (goal : MVarId) (symm : Bool)
 so that we can apply `gcongr` lemmas to it. -/
 def makeGCongrGoal (rel? : Option Expr) (e : Expr) (forward : Bool) : MetaM (Expr × Expr) := do
   if let some rel := rel? then
-    let .forallE _ d₁ b _ ← whnf (← inferType rel) | throwFunctionExpected rel
-    let .forallE _ d₂ _ _ ← whnf b | throwFunctionExpected b
+    let .forallE _ d₁ (.forallE _ d₂ _ _) _ ← whnf (← inferType rel) | throwFunctionExpected rel
     if forward then
       let mvar ← mkFreshExprMVar d₂
       return (mvar, ← mkFreshExprMVar <| mkApp2 rel e mvar)
@@ -186,7 +185,7 @@ def makeGCongrGoal (rel? : Option Expr) (e : Expr) (forward : Bool) : MetaM (Exp
       let mvar ← mkFreshExprMVar d₁
       return (mvar, ← mkFreshExprMVar <| mkApp2 rel mvar e)
   else
-    let mvar ← mkFreshExprMVar (some (.sort 0))
+    let mvar ← mkFreshTypeMVar
     let target := if forward then .forallE `_a e mvar .default else .forallE `_a mvar e .default
     return (mvar, ← mkFreshExprMVar (some target))
 
