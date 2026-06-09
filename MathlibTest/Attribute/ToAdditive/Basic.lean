@@ -915,7 +915,7 @@ You may remove the option.
 
 Note: This linter can be disabled with `set_option linter.translateRelevantArg false`
 ---
-warning: @[to_additive] would like to add a translation from `monoidAlgebraFoo₂.eq_1` to `addMonoidAlgebraFoo₂.eq_1`, but this is not valid. Error:
+warning: @[to_additive] tried to add a translation from `monoidAlgebraFoo₂.eq_1` to `addMonoidAlgebraFoo₂.eq_1`, but this is not valid. Error:
 
 `to_additive` validation failed: expected
   ∀ {k G : Type} [inst : Inhabited k], monoidAlgebraFoo₂ = ({ x := fun x => default }, 2)
