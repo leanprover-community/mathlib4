@@ -105,7 +105,6 @@ lemma IsAtom.bot_lt (ha : IsAtom a) : ⊥ < a :=
 lemma IsAtom.ne_bot (ha : IsAtom a) : a ≠ ⊥ :=
   ha.bot_lt.ne'
 
-@[simp]
 theorem bot_covBy_iff : ⊥ ⋖ a ↔ IsAtom a := by
   refine ⟨fun h => ⟨⊥, h, fun _ _ => bot_le⟩, fun h => ⟨h.bot_lt, fun x hxb hxa => ?_⟩⟩
   obtain ⟨b, hba, hbb⟩ := h
@@ -226,7 +225,6 @@ lemma IsCoatom.lt_top (ha : IsCoatom a) : a < ⊤ :=
 lemma IsCoatom.ne_top (ha : IsCoatom a) : a ≠ ⊤ :=
   ha.lt_top.ne
 
-@[simp]
 theorem covBy_top_iff : a ⋖ ⊤ ↔ IsCoatom a :=
   (toDual_covBy_toDual_iff.symm.trans
     (@bot_covBy_iff αᵒᵈ _ a _)).trans isAtom_dual_iff_isCoatom
