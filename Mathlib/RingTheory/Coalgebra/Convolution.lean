@@ -195,7 +195,7 @@ instance convAlgebra [CommSemiring β] [Algebra β A] [SMulCommClass R β A] :
 @[simp]
 lemma convAlgebraMap_apply [CommSemiring β] [Algebra β A] [SMulCommClass R β A] (b : β) (c : C) :
     algebraMap β (WithConv (C →ₗ[R] A)) b c = b • algebraMap R A (counit c) := by
-  simp [Algebra.algebraMap_eq_smul_one, convOne_def, Algebra.linearMap]
+  simp [Algebra.algebraMap_eq_smul_one]
 
 end Semiring
 
