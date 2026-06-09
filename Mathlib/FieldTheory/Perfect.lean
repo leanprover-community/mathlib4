@@ -350,7 +350,7 @@ theorem Algebra.IsAlgebraic.perfectField (K : Type*) {L : Type*} [Field K] [Fiel
 theorem PerfectField.of_ringEquiv {K L : Type*} [Field K] [Field L] (h : K ≃+* L) [PerfectField K] :
     PerfectField L := by
   let := h.toRingHom.toAlgebra
-  exact Algebra.IsAlgebraic.perfectField
+  exact Algebra.IsAlgebraic.perfectField K
 
 namespace Polynomial
 
