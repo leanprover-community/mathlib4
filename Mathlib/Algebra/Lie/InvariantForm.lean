@@ -102,7 +102,7 @@ lemma orthogonal_disjoint
   rw [disjoint_iff, ← hI.lt_iff, lt_iff_le_and_ne]
   suffices ¬I ≤ orthogonal Φ hΦ_inv I by simpa
   intro contra
-  apply hI.1
+  apply hI.ne_bot
   rw [eq_bot_iff, ← lie_eq_self_of_isAtom_of_nonabelian I hI (hL I hI),
       LieSubmodule.lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le]
   rintro _ ⟨x, y, rfl⟩
@@ -181,7 +181,7 @@ decreasing_by
   apply finrank_lt_finrank_of_lt
   suffices ¬I ≤ J' by simpa
   intro hIJ'
-  apply hJ.1
+  apply hJ.ne_bot
   rw [eq_bot_iff]
   exact orthogonal_disjoint Φ hΦ_nondeg hΦ_inv hL J hJ le_rfl (hJI.trans hIJ')
 
