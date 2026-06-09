@@ -130,8 +130,6 @@ lemma leOnePart_eq_one : a⁻ᵐ = 1 ↔ 1 ≤ a := by simp [leOnePart_eq_one']
 @[to_additive (attr := simp) negPart_pos] lemma one_lt_leOnePart (ha : a < 1) : 1 < a⁻ᵐ := by
   rwa [leOnePart_eq_inv.2 ha.le, one_lt_inv']
 
-@[deprecated (since := "2025-10-25")] alias one_lt_ltOnePart := one_lt_leOnePart
-
 -- Bourbaki A.VI.12 Prop 9 a)
 @[to_additive (attr := simp)] lemma oneLePart_div_leOnePart (a : α) : a⁺ᵐ / a⁻ᵐ = a := by
   rw [div_eq_mul_inv, mul_inv_eq_iff_eq_mul, leOnePart_def, mul_sup, mul_one, mul_inv_cancel,
@@ -264,8 +262,6 @@ variable [MulLeftMono α]
 
 @[to_additive (attr := simp) negPart_pos_iff] lemma one_lt_leOnePart_iff : 1 < a⁻ᵐ ↔ a < 1 :=
   lt_iff_lt_of_le_iff_le <| (one_le_leOnePart _).ge_iff_eq'.trans leOnePart_eq_one
-
-@[deprecated (since := "2025-10-25")] alias one_lt_ltOnePart_iff := one_lt_leOnePart_iff
 
 variable [MulRightMono α]
 
