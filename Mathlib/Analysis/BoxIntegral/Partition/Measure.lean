@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Partition.Additive
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+module
+
+public import Mathlib.Analysis.BoxIntegral.Partition.Additive
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-!
 # Box-additive functions defined by measures
@@ -13,7 +15,7 @@ In this file we prove a few simple facts about rectangular boxes, partitions, an
 
 - given a box `I : Box ι`, its coercion to `Set (ι → ℝ)` and `I.Icc` are measurable sets;
 - if `μ` is a locally finite measure, then `(I : Set (ι → ℝ))` and `I.Icc` have finite measure;
-- if `μ` is a locally finite measure, then `fun J ↦ (μ J).toReal` is a box additive function.
+- if `μ` is a locally finite measure, then `fun J ↦ μ.real J` is a box additive function.
 
 For the last statement, we both prove it as a proposition and define a bundled
 `BoxIntegral.BoxAdditiveMap` function.
@@ -22,6 +24,8 @@ For the last statement, we both prove it as a proposition and define a bundled
 
 rectangular box, measure
 -/
+
+@[expose] public section
 
 open Set
 
@@ -74,9 +78,12 @@ end Box
 
 theorem Prepartition.measure_iUnion_toReal [Finite ι] {I : Box ι} (π : Prepartition I)
     (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] :
-    (μ π.iUnion).toReal = ∑ J ∈ π.boxes, (μ J).toReal := by
-  erw [← ENNReal.toReal_sum, π.iUnion_def, measure_biUnion_finset π.pairwiseDisjoint]
-  exacts [fun J _ => J.measurableSet_coe, fun J _ => (J.measure_coe_lt_top μ).ne]
+    μ.real π.iUnion = ∑ J ∈ π.boxes, μ.real J := by
+  simp only [measureReal_def]
+  rw [← ENNReal.toReal_sum (fun J _ => (J.measure_coe_lt_top μ).ne), π.iUnion_def]
+  simp only [← mem_boxes]
+  rw [measure_biUnion_finset π.pairwiseDisjoint]
+  exact fun J _ => J.measurableSet_coe
 
 end BoxIntegral
 
@@ -86,11 +93,11 @@ namespace MeasureTheory
 
 namespace Measure
 
-/-- If `μ` is a locally finite measure on `ℝⁿ`, then `fun J ↦ (μ J).toReal` is a box-additive
+/-- If `μ` is a locally finite measure on `ℝⁿ`, then `fun J ↦ μ.real J` is a box-additive
 function. -/
 @[simps]
 def toBoxAdditive [Finite ι] (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] : ι →ᵇᵃ[⊤] ℝ where
-  toFun J := (μ J).toReal
+  toFun J := μ.real J
   sum_partition_boxes' J _ π hπ := by rw [← π.measure_iUnion_toReal, hπ.iUnion_eq]
 
 end Measure
@@ -105,11 +112,12 @@ namespace Box
 
 variable [Fintype ι]
 
--- This is not a `simp` lemma because the left hand side simplifies already.
+-- This is not a `simp` lemma because the left-hand side simplifies already.
 -- See `volume_apply'` for the relevant `simp` lemma.
 theorem volume_apply (I : Box ι) :
     (volume : Measure (ι → ℝ)).toBoxAdditive I = ∏ i, (I.upper i - I.lower i) := by
-  rw [Measure.toBoxAdditive_apply, coe_eq_pi, Real.volume_pi_Ioc_toReal I.lower_le_upper]
+  rw [Measure.toBoxAdditive_apply, coe_eq_pi, measureReal_def,
+    Real.volume_pi_Ioc_toReal I.lower_le_upper]
 
 @[simp]
 theorem volume_apply' (I : Box ι) :
@@ -119,7 +127,7 @@ theorem volume_apply' (I : Box ι) :
 theorem volume_face_mul {n} (i : Fin (n + 1)) (I : Box (Fin (n + 1))) :
     (∏ j, ((I.face i).upper j - (I.face i).lower j)) * (I.upper i - I.lower i) =
       ∏ j, (I.upper j - I.lower j) := by
-  simp only [face_lower, face_upper, (· ∘ ·), Fin.prod_univ_succAbove _ i, mul_comm]
+  simp only [face_lower, face_upper, Fin.prod_univ_succAbove _ i, mul_comm]
 
 end Box
 

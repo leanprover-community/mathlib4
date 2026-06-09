@@ -3,10 +3,12 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.FinCategory.AsType
+module
+
+public import Mathlib.CategoryTheory.Limits.Creates
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.FinCategory.AsType
 
 /-!
 # Creation of finite limits
@@ -14,6 +16,8 @@ import Mathlib.CategoryTheory.FinCategory.AsType
 This file defines the classes `CreatesFiniteLimits`, `CreatesFiniteColimits`,
 `CreatesFiniteProducts` and `CreatesFiniteCoproducts`.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Limits
 
@@ -31,7 +35,7 @@ class CreatesFiniteLimits (F : C ⥤ D) where
   createsFiniteLimits :
     ∀ (J : Type) [SmallCategory J] [FinCategory J], CreatesLimitsOfShape J F := by infer_instance
 
-attribute [instance] CreatesFiniteLimits.createsFiniteLimits
+attribute [instance_reducible, instance] CreatesFiniteLimits.createsFiniteLimits
 
 noncomputable section
 
@@ -42,6 +46,7 @@ instance (priority := 100) createsLimitsOfShapeOfCreatesFiniteLimits (F : C ⥤ 
 
 -- Cannot be an instance because of unbound universe variables.
 /-- If `F` creates limits of any size, it creates finite limits. -/
+@[implicit_reducible]
 def CreatesLimitsOfSize.createsFiniteLimits (F : C ⥤ D)
     [CreatesLimitsOfSize.{w, w'} F] : CreatesFiniteLimits F where
   createsFiniteLimits J _ _ := createsLimitsOfShapeOfEquiv
@@ -55,7 +60,9 @@ instance (priority := 100) CreatesLimits.createsFiniteLimits (F : C ⥤ D)
     [CreatesLimits F] : CreatesFiniteLimits F :=
   CreatesLimitsOfSize.createsFiniteLimits F
 
+attribute [local instance] uliftCategory in
 /-- If `F` creates finite limits in any universe, then it creates finite limits. -/
+@[implicit_reducible]
 def createsFiniteLimitsOfCreatesFiniteLimitsOfSize (F : C ⥤ D)
     (h : ∀ (J : Type w) {_ : SmallCategory J} (_ : FinCategory J), CreatesLimitsOfShape J F) :
     CreatesFiniteLimits F where
@@ -68,6 +75,7 @@ instance compCreatesFiniteLimits (F : C ⥤ D) (G : D ⥤ E) [CreatesFiniteLimit
   createsFiniteLimits _ _ _ := compCreatesLimitsOfShape F G
 
 /-- Transfer creation of finite limits along a natural isomorphism in the functor. -/
+@[implicit_reducible]
 def createsFiniteLimitsOfNatIso {F G : C ⥤ D} {h : F ≅ G} [CreatesFiniteLimits F] :
     CreatesFiniteLimits G where
   createsFiniteLimits _ _ _ := createsLimitsOfShapeOfNatIso h
@@ -89,9 +97,17 @@ class CreatesFiniteProducts (F : C ⥤ D) where
   creates :
     ∀ (J : Type) [Fintype J], CreatesLimitsOfShape (Discrete J) F := by infer_instance
 
-attribute [instance] CreatesFiniteProducts.creates
+attribute [instance_reducible, instance] CreatesFiniteProducts.creates
 
 noncomputable section
+
+/-- The condition of `CreatesFiniteProducts` can be checked for finite types in an arbitrary
+universe. -/
+@[implicit_reducible]
+def CreatesFiniteProducts.mk' (F : C ⥤ D)
+    (H : ∀ (J : Type w) [Fintype J], CreatesLimitsOfShape (Discrete J) F) :
+    CreatesFiniteProducts F where
+  creates _ _ := createsLimitsOfShapeOfEquiv (Discrete.equivalence Equiv.ulift.{w}) F
 
 instance (priority := 100) createsLimitsOfShapeOfCreatesFiniteProducts (F : C ⥤ D)
     [CreatesFiniteProducts F] (J : Type w) [Finite J] : CreatesLimitsOfShape (Discrete J) F :=
@@ -103,6 +119,7 @@ instance compCreatesFiniteProducts (F : C ⥤ D) (G : D ⥤ E) [CreatesFinitePro
   creates _ _ := compCreatesLimitsOfShape _ _
 
 /-- Transfer creation of finite products along a natural isomorphism in the functor. -/
+@[implicit_reducible]
 def createsFiniteProductsOfNatIso {F G : C ⥤ D} {h : F ≅ G} [CreatesFiniteProducts F] :
     CreatesFiniteProducts G where
   creates _ _ := createsLimitsOfShapeOfNatIso h
@@ -119,7 +136,7 @@ class CreatesFiniteColimits (F : C ⥤ D) where
   createsFiniteColimits :
     ∀ (J : Type) [SmallCategory J] [FinCategory J], CreatesColimitsOfShape J F := by infer_instance
 
-attribute [instance] CreatesFiniteColimits.createsFiniteColimits
+attribute [instance_reducible, instance] CreatesFiniteColimits.createsFiniteColimits
 
 noncomputable section
 
@@ -130,6 +147,7 @@ instance (priority := 100) createsColimitsOfShapeOfCreatesFiniteColimits (F : C 
 
 -- Cannot be an instance because of unbound universe variables.
 /-- If `F` creates colimits of any size, it creates finite colimits. -/
+@[implicit_reducible]
 def CreatesColimitsOfSize.createsFiniteColimits (F : C ⥤ D)
     [CreatesColimitsOfSize.{w, w'} F] : CreatesFiniteColimits F where
   createsFiniteColimits J _ _ := createsColimitsOfShapeOfEquiv
@@ -143,7 +161,9 @@ instance (priority := 100) CreatesColimits.createsFiniteColimits (F : C ⥤ D)
     [CreatesColimits F] : CreatesFiniteColimits F :=
   CreatesColimitsOfSize.createsFiniteColimits F
 
+attribute [local instance] uliftCategory in
 /-- If `F` creates finite colimits in any universe, then it creates finite colimits. -/
+@[implicit_reducible]
 def createsFiniteColimitsOfCreatesFiniteColimitsOfSize (F : C ⥤ D)
     (h : ∀ (J : Type w) {_ : SmallCategory J} (_ : FinCategory J), CreatesColimitsOfShape J F) :
     CreatesFiniteColimits F where
@@ -156,6 +176,7 @@ instance compCreatesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [CreatesFiniteCol
   createsFiniteColimits _ _ _ := compCreatesColimitsOfShape F G
 
 /-- Transfer creation of finite colimits along a natural isomorphism in the functor. -/
+@[implicit_reducible]
 def createsFiniteColimitsOfNatIso {F G : C ⥤ D} {h : F ≅ G} [CreatesFiniteColimits F] :
     CreatesFiniteColimits G where
   createsFiniteColimits _ _ _ := createsColimitsOfShapeOfNatIso h
@@ -177,7 +198,7 @@ class CreatesFiniteCoproducts (F : C ⥤ D) where
   creates :
     ∀ (J : Type) [Fintype J], CreatesColimitsOfShape (Discrete J) F := by infer_instance
 
-attribute [instance] CreatesFiniteCoproducts.creates
+attribute [instance_reducible, instance] CreatesFiniteCoproducts.creates
 
 noncomputable section
 
@@ -191,6 +212,7 @@ instance compCreatesFiniteCoproducts (F : C ⥤ D) (G : D ⥤ E) [CreatesFiniteC
   creates _ _ := compCreatesColimitsOfShape _ _
 
 /-- Transfer creation of finite limits along a natural isomorphism in the functor. -/
+@[implicit_reducible]
 def createsFiniteCoproductsOfNatIso {F G : C ⥤ D} {h : F ≅ G} [CreatesFiniteCoproducts F] :
     CreatesFiniteCoproducts G where
   creates _ _ := createsColimitsOfShapeOfNatIso h

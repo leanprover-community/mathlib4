@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Group.Multiset
+module
+
+public import Mathlib.Algebra.Order.Group.Multiset
 
 /-!
 # Disjoint sum of multisets
@@ -16,12 +18,14 @@ with the `Multiset.sum` operation which computes the additive sum.
 * `Multiset.disjSum`: `s.disjSum t` is the disjoint sum of `s` and `t`.
 -/
 
+@[expose] public section
+
 
 open Sum
 
 namespace Multiset
 
-variable {α β : Type*} (s : Multiset α) (t : Multiset β)
+variable {α β γ : Type*} (s : Multiset α) (t : Multiset β)
 
 /-- Disjoint sum of multisets. -/
 def disjSum : Multiset (α ⊕ β) :=
@@ -87,5 +91,9 @@ protected theorem Nodup.disjSum (hs : s.Nodup) (ht : t.Nodup) : (s.disjSum t).No
   refine ((hs.map inl_injective).add_iff <| ht.map inr_injective).2 ?_
   rw [disjoint_map_map]
   exact fun _ _ _ _ ↦ inr_ne_inl.symm
+
+theorem map_disjSum (f : α ⊕ β → γ) :
+    (s.disjSum t).map f = s.map (f <| .inl ·) + t.map (f <| .inr ·) := by
+  simp_rw [disjSum, map_add, map_map, Function.comp_def]
 
 end Multiset

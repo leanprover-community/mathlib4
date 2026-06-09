@@ -3,64 +3,57 @@ Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
 -/
-import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Data.Nat.BinaryRec
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Zify
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.NatAntidiagonal
+public import Mathlib.Data.Nat.GCD.Basic
+public import Mathlib.Data.Nat.BinaryRec
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.Zify
+public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
-# Fibonacci Numbers
+# Fibonacci numbers
 
-This file defines the fibonacci series, proves results about it and introduces
-methods to compute it quickly.
--/
+This file defines the Fibonacci sequence as `F₀ = 0, F₁ = 1, Fₙ₊₂ = Fₙ + Fₙ₊₁`. Furthermore, it
+proves results about the sequence and introduces methods to compute it quickly.
 
-/-!
-# The Fibonacci Sequence
-
-## Summary
-
-Definition of the Fibonacci sequence `F₀ = 0, F₁ = 1, Fₙ₊₂ = Fₙ + Fₙ₊₁`.
-
-## Main Definitions
+## Main definitions
 
 - `Nat.fib` returns the stream of Fibonacci numbers.
 
-## Main Statements
+## Main statements
 
-- `Nat.fib_add_two`: shows that `fib` indeed satisfies the Fibonacci recurrence `Fₙ₊₂ = Fₙ + Fₙ₊₁.`.
+- `Nat.fib_add_two`: shows that `fib` indeed satisfies the Fibonacci recurrence `Fₙ₊₂ = Fₙ + Fₙ₊₁`.
 - `Nat.fib_gcd`: `fib n` is a strong divisibility sequence.
 - `Nat.fib_succ_eq_sum_choose`: `fib` is given by the sum of `Nat.choose` along an antidiagonal.
 - `Nat.fib_succ_eq_succ_sum`: shows that `F₀ + F₁ + ⋯ + Fₙ = Fₙ₊₂ - 1`.
 - `Nat.fib_two_mul` and `Nat.fib_two_mul_add_one` are the basis for an efficient algorithm to
-  compute `fib` (see `Nat.fastFib`). There are `bit0`/`bit1` variants of these can be used to
-  simplify `fib` expressions: `simp only [Nat.fib_bit0, Nat.fib_bit1, Nat.fib_bit0_succ,
-  Nat.fib_bit1_succ, Nat.fib_one, Nat.fib_two]`.
+  compute `fib` (see `Nat.fastFib`).
 
-## Implementation Notes
+## Implementation notes
 
 For efficiency purposes, the sequence is defined using `Stream.iterate`.
 
 ## Tags
 
-fib, fibonacci
+Fibonacci numbers, Fibonacci sequence
 -/
+
+@[expose] public section
 
 namespace Nat
 
 
 
-/-- Implementation of the fibonacci sequence satisfying
+/-- Implementation of the Fibonacci sequence satisfying
 `fib 0 = 0, fib 1 = 1, fib (n + 2) = fib n + fib (n + 1)`.
 
 *Note:* We use a stream iterator for better performance when compared to the naive recursive
 implementation.
 -/
-
 @[pp_nodot]
 def fib (n : ℕ) : ℕ :=
   ((fun p : ℕ × ℕ => (p.snd, p.fst + p.snd))^[n] (0, 1)).fst
@@ -77,7 +70,7 @@ theorem fib_one : fib 1 = 1 :=
 theorem fib_two : fib 2 = 1 :=
   rfl
 
-/-- Shows that `fib` indeed satisfies the Fibonacci recurrence `Fₙ₊₂ = Fₙ + Fₙ₊₁.` -/
+/-- Shows that `fib` indeed satisfies the Fibonacci recurrence `Fₙ₊₂ = Fₙ + Fₙ₊₁`. -/
 theorem fib_add_two {n : ℕ} : fib (n + 2) = fib n + fib (n + 1) := by
   simp [fib, Function.iterate_succ_apply']
 
@@ -86,7 +79,7 @@ lemma fib_add_one : ∀ {n}, n ≠ 0 → fib (n + 1) = fib (n - 1) + fib n
 
 theorem fib_le_fib_succ {n : ℕ} : fib n ≤ fib (n + 1) := by cases n <;> simp [fib_add_two]
 
-@[mono]
+@[gcongr, mono]
 theorem fib_mono : Monotone fib :=
   monotone_nat_of_le_succ fun _ => fib_le_fib_succ
 
@@ -115,15 +108,14 @@ lemma fib_strictMonoOn : StrictMonoOn fib (Set.Ici 2)
   | _m + 2, _, _n + 2, _, hmn => fib_add_two_strictMono <| lt_of_add_lt_add_right hmn
 
 lemma fib_lt_fib {m : ℕ} (hm : 2 ≤ m) : ∀ {n}, fib m < fib n ↔ m < n
-  | 0 => by simp [hm]
-  | 1 => by simp [hm]
+  | 0 => by simp
+  | 1 => by simp
   | n + 2 => fib_strictMonoOn.lt_iff_lt hm <| by simp
 
 theorem le_fib_self {n : ℕ} (five_le_n : 5 ≤ n) : n ≤ fib n := by
-  induction' five_le_n with n five_le_n IH
-  · -- 5 ≤ fib 5
-    rfl
-  · -- n + 1 ≤ fib (n + 1) for 5 ≤ n
+  induction five_le_n with
+  | refl => rfl -- 5 ≤ fib 5
+  | @step n five_le_n IH => -- n + 1 ≤ fib (n + 1) for 5 ≤ n
     rw [succ_le_iff]
     calc
       n ≤ fib n := IH
@@ -140,17 +132,18 @@ lemma le_fib_add_one : ∀ n, n ≤ fib n + 1
 /-- Subsequent Fibonacci numbers are coprime,
   see https://proofwiki.org/wiki/Consecutive_Fibonacci_Numbers_are_Coprime -/
 theorem fib_coprime_fib_succ (n : ℕ) : Nat.Coprime (fib n) (fib (n + 1)) := by
-  induction' n with n ih
-  · simp
-  · simp only [fib_add_two, coprime_add_self_right, Coprime, ih.symm]
+  induction n with
+  | zero => simp
+  | succ n ih => simp only [fib_add_two, coprime_add_self_right, Coprime, ih.symm]
 
 /-- See https://proofwiki.org/wiki/Fibonacci_Number_in_terms_of_Smaller_Fibonacci_Numbers -/
 theorem fib_add (m n : ℕ) : fib (m + n + 1) = fib m * fib n + fib (m + 1) * fib (n + 1) := by
-  induction' n with n ih generalizing m
-  · simp
-  · specialize ih (m + 1)
+  induction n generalizing m with
+  | zero => simp
+  | succ n ih =>
+    specialize ih (m + 1)
     rw [add_assoc m 1 n, add_comm 1 n] at ih
-    simp only [fib_add_two, succ_eq_add_one, ih]
+    simp only [fib_add_two, ih]
     ring
 
 theorem fib_two_mul (n : ℕ) : fib (2 * n) = fib n * (2 * fib (n + 1) - fib n) := by
@@ -184,7 +177,7 @@ Proved to be equal to `Nat.fib` in `Nat.fast_fib_eq`. -/
 def fastFib (n : ℕ) : ℕ :=
   (fastFibAux n).1
 
-theorem fast_fib_aux_bit_ff (n : ℕ) :
+theorem fastFibAux_bit_false (n : ℕ) :
     fastFibAux (bit false n) =
       let p := fastFibAux n
       (p.1 * (2 * p.2 - p.1), p.2 ^ 2 + p.1 ^ 2) := by
@@ -192,7 +185,9 @@ theorem fast_fib_aux_bit_ff (n : ℕ) :
   · rfl
   · simp
 
-theorem fast_fib_aux_bit_tt (n : ℕ) :
+@[deprecated (since := "2026-02-04")] alias fast_fib_aux_bit_ff := fastFibAux_bit_false
+
+theorem fastFibAux_bit_true (n : ℕ) :
     fastFibAux (bit true n) =
       let p := fastFibAux n
       (p.2 ^ 2 + p.1 ^ 2, p.2 * (2 * p.1 + p.2)) := by
@@ -200,15 +195,24 @@ theorem fast_fib_aux_bit_tt (n : ℕ) :
   · rfl
   · simp
 
-theorem fast_fib_aux_eq (n : ℕ) : fastFibAux n = (fib n, fib (n + 1)) := by
+@[deprecated (since := "2026-02-04")] alias fast_fib_aux_bit_tt := fastFibAux_bit_true
+
+theorem fastFibAux_eq (n : ℕ) : fastFibAux n = (fib n, fib (n + 1)) := by
   refine Nat.binaryRec ?_ ?_ n
   · simp [fastFibAux]
-  · rintro (_|_) n' ih <;>
-      simp only [fast_fib_aux_bit_ff, fast_fib_aux_bit_tt, congr_arg Prod.fst ih,
+  · rintro (_ | _) n' ih <;>
+      simp only [fastFibAux_bit_false, fastFibAux_bit_true, congr_arg Prod.fst ih,
         congr_arg Prod.snd ih, Prod.mk_inj] <;>
       simp [bit, fib_two_mul, fib_two_mul_add_one, fib_two_mul_add_two]
 
-theorem fast_fib_eq (n : ℕ) : fastFib n = fib n := by rw [fastFib, fast_fib_aux_eq]
+@[deprecated (since := "2026-02-04")] alias fast_fib_aux_eq := fastFibAux_eq
+
+theorem fastFib_eq (n : ℕ) : fastFib n = fib n := by rw [fastFib, fastFibAux_eq]
+
+@[deprecated (since := "2026-02-04")] alias fast_fib_eq := fastFib_eq
+
+@[csimp]
+theorem fib_eq_fastFib : fib = fastFib := by ext; rw [fastFib_eq]
 
 theorem gcd_fib_add_self (m n : ℕ) : gcd (fib m) (fib (n + m)) = gcd (fib m) (fib n) := by
   rcases Nat.eq_zero_or_pos n with rfl | h
@@ -240,7 +244,7 @@ theorem fib_gcd (m n : ℕ) : fib (gcd m n) = gcd (fib m) (fib n) := by
     rwa [gcd_fib_add_mul_self m (n % m) (n / m), gcd_comm (fib m) _]
 
 theorem fib_dvd (m n : ℕ) (h : m ∣ n) : fib m ∣ fib n := by
-  rwa [gcd_eq_left_iff_dvd, ← fib_gcd, gcd_eq_left_iff_dvd.mp]
+  rwa [← gcd_eq_left_iff_dvd, ← fib_gcd, gcd_eq_left_iff_dvd.mpr]
 
 theorem fib_succ_eq_sum_choose :
     ∀ n : ℕ, fib (n + 1) = ∑ p ∈ Finset.antidiagonal n, choose p.1 p.2 :=
@@ -249,9 +253,10 @@ theorem fib_succ_eq_sum_choose :
     simp [choose_succ_succ, Finset.sum_add_distrib, add_left_comm]
 
 theorem fib_succ_eq_succ_sum (n : ℕ) : fib (n + 1) = (∑ k ∈ Finset.range n, fib k) + 1 := by
-  induction' n with n ih
-  · simp
-  · calc
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    calc
       fib (n + 2) = fib n + fib (n + 1) := fib_add_two
       _ = (fib n + ∑ k ∈ Finset.range n, fib k) + 1 := by rw [ih, add_assoc]
       _ = (∑ k ∈ Finset.range (n + 1), fib k) + 1 := by simp [Finset.range_add_one]

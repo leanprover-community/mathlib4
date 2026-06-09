@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.PartOrd
-import Mathlib.Order.Hom.Lattice
+module
+
+public import Mathlib.Order.Category.PartOrd
+public import Mathlib.Order.Hom.Lattice
 
 /-!
 # The category of lattices
@@ -19,6 +21,8 @@ corresponds to `BddLat`.
 
 The free functor from `Lat` to `BddLat` is `X → WithTop (WithBot X)`.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -44,6 +48,7 @@ attribute [coe] Lat.carrier
 /-- Construct a bundled `Lat` from the underlying type and typeclass. -/
 abbrev of (X : Type*) [Lattice X] : Lat := ⟨X⟩
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `Lat R`. -/
 @[ext]
 structure Hom (X Y : Lat.{u}) where
@@ -51,11 +56,15 @@ structure Hom (X Y : Lat.{u}) where
   /-- The underlying `LatticeHom`. -/
   hom' : LatticeHom X Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category Lat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨LatticeHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory Lat (LatticeHom · ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
@@ -87,7 +96,7 @@ lemma coe_comp {X Y Z : Lat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) =
 
 @[simp]
 lemma forget_map {X Y : Lat} (f : X ⟶ Y) :
-    (forget Lat).map f = f := rfl
+    (forget Lat).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : Lat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -116,8 +125,8 @@ lemma hom_ext {X Y : Lat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[simp]
-lemma hom_ofHom {X Y : Type u} [Lattice X] [Lattice Y] (f : LatticeHom X Y) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {X Y : Type u} [Lattice X] [Lattice Y] (f : LatticeHom X Y) : (ofHom f).hom = f :=
+  rfl
 
 @[simp]
 lemma ofHom_hom {X Y : Lat} (f : X ⟶ Y) :

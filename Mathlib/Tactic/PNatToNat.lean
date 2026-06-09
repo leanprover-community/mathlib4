@@ -3,7 +3,12 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Data.PNat.Basic
+module
+
+import all Lean.Elab.Tactic.Induction
+public import Mathlib.Data.PNat.Basic
+public meta import Mathlib.Tactic.ToAdditive
+
 
 /-!
 # `pnat_to_nat`
@@ -17,11 +22,11 @@ The implementation follows these steps:
 
 -/
 
+public meta section
+
 namespace Mathlib.Tactic.PNatToNat
 
-open private getElimNameInfo generalizeTargets generalizeVars from Lean.Elab.Tactic.Induction
-
-open Lean Meta Elab Tactic Qq Mathlib.Tactic
+open Lean Meta Elab Tactic Qq
 
 /-- For each `x : PNat` in the context, add the hypothesis `0 < (↑x : ℕ)`. -/
 elab "pnat_positivity" : tactic => withMainContext do
@@ -32,9 +37,9 @@ elab "pnat_positivity" : tactic => withMainContext do
     let ctx ← getLCtx
     let alreadyDeclared := Option.isSome <| ← ctx.findDeclM? fun ldecl => do
       if ← isDefEq ldecl.type q(0 < PNat.val $declExpr) then
-        pure <| .some ()
+        pure <| some ()
       else
-        pure .none
+        pure none
     if alreadyDeclared then
       return g
     let (_, mvarIdNew) ← (← g.assert .anonymous q(0 < PNat.val $declExpr) pf).intro1P
@@ -57,10 +62,10 @@ lemma sub_coe (a b : PNat) : ((a - b : PNat) : Nat) = a.val - 1 - b.val + 1 := b
   cases a
   cases b
   simp only [PNat.mk_coe, _root_.PNat.sub_coe, ← _root_.PNat.coe_lt_coe]
-  split_ifs <;> omega
+  split_ifs <;> lia
 
 /-- `pnat_to_nat` shifts all `PNat`s in the context to `Nat`, rewriting propositions about them.
-A typical use case is `pnat_to_nat; omega`. -/
+A typical use case is `pnat_to_nat; lia`. -/
 macro "pnat_to_nat" : tactic => `(tactic| focus (
   pnat_positivity;
   simp only [pnat_to_nat_coe] at *)

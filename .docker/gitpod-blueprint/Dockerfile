@@ -10,7 +10,7 @@ FROM ubuntu:jammy
 USER root
 
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install sudo git curl git bash-completion texlive texlive-xetex latexmk graphviz graphviz-dev python3 python3-pip python3-requests -y && apt-get clean
+RUN apt-get update && apt-get install sudo git curl git bash-completion texlive texlive-xetex latexmk graphviz graphviz-dev tzdata python3 python3-pip python3-requests -y && apt-get clean
 
 RUN useradd -l -u 33333 -G sudo -md /home/gitpod -s /bin/bash -p gitpod gitpod \
     # passwordless sudo for users in the 'sudo' group
@@ -24,7 +24,7 @@ SHELL ["/bin/bash", "-c"]
 RUN { echo && echo "PS1='\[\033[01;32m\]\u\[\033[00m\] \[\033[01;34m\]\w\[\033[00m\]\$(__git_ps1 \" (%s)\") $ '" ; } >> .bashrc
 
 # install elan
-RUN curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
+RUN curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
 
 # install whichever toolchain mathlib is currently using
 RUN . ~/.profile && elan toolchain install $(curl https://raw.githubusercontent.com/leanprover-community/mathlib4/master/lean-toolchain)

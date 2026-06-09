@@ -3,20 +3,24 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Init
-import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.GCongr.CoreAttrs
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Data.Nat.Init
+public import Mathlib.Logic.Basic
+public import Mathlib.Logic.Nontrivial.Defs
+public import Mathlib.Order.Defs.LinearOrder
+public import Mathlib.Tactic.GCongr.Core
 
 /-!
 # Basic operations on the natural numbers
 
-This file builds on `Mathlib.Data.Nat.Init` by adding basic lemmas on natural numbers
+This file builds on `Mathlib/Data/Nat/Init.lean` by adding basic lemmas on natural numbers
 depending on Mathlib definitions.
 
 See note [foundational algebra order theory].
 -/
+
+public section
 
 /- We don't want to import the algebraic hierarchy in this file. -/
 assert_not_exists Monoid
@@ -34,21 +38,18 @@ instance instLinearOrder : LinearOrder ℕ where
   le_antisymm := @Nat.le_antisymm
   le_total := @Nat.le_total
   lt := Nat.lt
-  lt_iff_le_not_le := @Nat.lt_iff_le_not_le
-  decidableLT := inferInstance
-  decidableLE := inferInstance
-  decidableEq := inferInstance
+  lt_iff_le_not_ge := @Nat.lt_iff_le_and_not_ge
+  toDecidableLT := inferInstance
+  toDecidableLE := inferInstance
+  toDecidableEq := inferInstance
 
 -- Shortcut instances
 instance : Preorder ℕ := inferInstance
 instance : PartialOrder ℕ := inferInstance
-instance : Min ℕ := inferInstance
-instance : Max ℕ := inferInstance
-instance : Ord ℕ := inferInstance
 
 instance instNontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
 
-attribute [gcongr] Nat.succ_le_succ Nat.div_le_div_right Nat.div_le_div_left Nat.div_le_div
+attribute [gcongr] Nat.succ_le_succ Nat.div_le_div_right Nat.div_le_div
 
 /-! ### `succ`, `pred` -/
 
@@ -56,23 +57,11 @@ lemma succ_injective : Injective Nat.succ := @succ.inj
 
 /-! ### `div` -/
 
-protected lemma div_mul_div_le (a b c d : ℕ) :
-    (a / b) * (c / d) ≤ (a * c) / (b * d) := by
-  if hb : b = 0 then simp [hb] else
-  if hd : d = 0 then simp [hd] else
-  have hbd : b * d ≠ 0 := Nat.mul_ne_zero hb hd
-  rw [le_div_iff_mul_le (Nat.pos_of_ne_zero hbd)]
-  transitivity ((a / b) * b) * ((c / d) * d)
-  · apply Nat.le_of_eq; simp only [Nat.mul_assoc, Nat.mul_left_comm]
-  · apply Nat.mul_le_mul <;> apply div_mul_le_self
+protected theorem div_right_comm (a b c : ℕ) : a / b / c = a / c / b := by
+  rw [Nat.div_div_eq_div_mul, Nat.mul_comm, ← Nat.div_div_eq_div_mul]
 
 /-!
 ### `pow`
-
-#### TODO
-
-* Rename `Nat.pow_le_pow_of_le_left` to `Nat.pow_le_pow_left`, protect it, remove the alias
-* Rename `Nat.pow_le_pow_of_le_right` to `Nat.pow_le_pow_right`, protect it, remove the alias
 -/
 
 lemma pow_left_injective (hn : n ≠ 0) : Injective (fun a : ℕ ↦ a ^ n) := by
@@ -81,21 +70,9 @@ lemma pow_left_injective (hn : n ≠ 0) : Injective (fun a : ℕ ↦ a ^ n) := b
 protected lemma pow_right_injective (ha : 2 ≤ a) : Injective (a ^ ·) := by
   simp [Injective, le_antisymm_iff, Nat.pow_le_pow_iff_right ha]
 
-protected lemma pow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (pow_left_injective hn).eq_iff
-protected lemma pow_right_inj (ha : 2 ≤ a) : a ^ m = a ^ n ↔ m = n :=
-  (Nat.pow_right_injective ha).eq_iff
-
-@[simp] protected lemma pow_eq_one : a ^ n = 1 ↔ a = 1 ∨ n = 0 := by
-  obtain rfl | hn := eq_or_ne n 0
-  · simp
-  · simpa [hn] using Nat.pow_left_inj hn (b := 1)
-
-/-- For `a > 1`, `a ^ b = a` iff `b = 1`. -/
-lemma pow_eq_self_iff {a b : ℕ} (ha : 1 < a) : a ^ b = a ↔ b = 1 :=
-  (Nat.pow_right_injective ha).eq_iff' a.pow_one
-
-@[simp] protected lemma pow_le_one_iff (hn : n ≠ 0) : a ^ n ≤ 1 ↔ a ≤ 1 := by
-  rw [← not_lt, one_lt_pow_iff hn, not_lt]
+protected theorem pow_sub_one {x a : ℕ} (hx : x ≠ 0) (ha : a ≠ 0) :
+    x ^ (a - 1) = x ^ a / x := by
+  rw [← Nat.pow_div (one_le_iff_ne_zero.mpr ha) (Nat.pos_iff_ne_zero.mpr hx), Nat.pow_one]
 
 /-!
 ### Recursion and induction principles
@@ -142,17 +119,48 @@ lemma set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S �
 
 /-! ### `mod`, `dvd` -/
 
-attribute [simp] Nat.dvd_zero
-
--- TODO: update `Nat.dvd_sub` in core
-lemma dvd_sub' (h₁ : k ∣ m) (h₂ : k ∣ n) : k ∣ m - n := by
-  rcases le_total n m with H | H
-  · exact dvd_sub H h₁ h₂
-  · rw [Nat.sub_eq_zero_iff_le.mpr H]
-    exact Nat.dvd_zero k
-
 /-- `dvd` is injective in the left argument -/
 lemma dvd_left_injective : Function.Injective ((· ∣ ·) : ℕ → ℕ → Prop) := fun _ _ h =>
   dvd_right_iff_eq.mp fun a => iff_of_eq (congr_fun h a)
+
+@[simp]
+protected lemma dvd_sub_self_left {n m : ℕ} :
+    n ∣ n - m ↔ m = 0 ∨ n ≤ m := by
+  rcases le_or_gt n m with h | h
+  · simp [h]
+  · rcases eq_or_ne m 0 with rfl | hm
+    · simp
+    · simp only [hm, h.not_ge, or_self, iff_false]
+      refine not_dvd_of_pos_of_lt ?_ ?_ <;>
+      grind
+
+@[simp]
+protected lemma dvd_sub_self_right {n m : ℕ} :
+    n ∣ m - n ↔ n ∣ m ∨ m ≤ n := by
+  rcases le_or_gt m n with h | h
+  · simp [h]
+  · simp [dvd_sub_iff_left (le_of_lt h) (Nat.dvd_refl _), h.not_ge]
+
+/-! ### Miscellaneous -/
+
+lemma mul_le_pow {a : ℕ} (ha : a ≠ 1) (b : ℕ) :
+    a * b ≤ a ^ b := by
+  cases b with
+  | zero => exact Nat.zero_le _
+  | succ b =>
+      obtain rfl | ha0 : a = 0 ∨ a > 0 := a.eq_zero_or_pos
+      · rw [Nat.zero_mul]; exact Nat.zero_le _
+      · have ha1 : a > 1 := Nat.lt_of_le_of_ne ha0 ha.symm
+        rw [Nat.pow_succ']; exact Nat.mul_le_mul_left a (Nat.lt_pow_self ha1)
+
+lemma two_mul_sq_add_one_le_two_pow_two_mul (k : ℕ) : 2 * k ^ 2 + 1 ≤ 2 ^ (2 * k) := by
+  obtain rfl | hk : k = 0 ∨ k > 0 := k.eq_zero_or_pos
+  · decide
+  · have hk0 : 0 < 2 * k ^ 2 := Nat.mul_pos Nat.two_pos (Nat.pow_pos hk)
+    calc 2 * k ^ 2
+      _ < 2 * k ^ 2 + 2 * k ^ 2 := Nat.lt_add_of_pos_left hk0
+      _ = (2 * k) ^ 2 := by rw [Nat.mul_pow, ← Nat.add_mul]
+      _ ≤ (2 ^ k) ^ 2 := Nat.pow_le_pow_left (Nat.mul_le_pow (by decide : 2 ≠ 1) _) 2
+      _ = 2 ^ (2 * k) := (Nat.pow_mul' _ _ _).symm
 
 end Nat

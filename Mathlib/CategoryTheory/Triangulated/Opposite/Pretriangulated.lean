@@ -3,33 +3,40 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.Opposite.Triangle
-import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
+module
+
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Triangle
+public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 
 /-!
-# The (pre)triangulated structure on the opposite category
+# The pretriangulated structure on the opposite category
 
-In this file, we shall construct the (pre)triangulated structure
-on the opposite category `Cᵒᵖ` of a (pre)triangulated category `C`.
+In this file, we construct the pretriangulated structure
+on the opposite category `Cᵒᵖ` of a pretriangulated category `C`.
 
-The shift on `Cᵒᵖ` was constructed in ``CategoryTheory.Triangulated.Opposite.Basic`,
+The shift on `Cᵒᵖ` was constructed in `Mathlib.CategoryTheory.Triangulated.Opposite.Basic`,
 and is such that shifting by `n : ℤ` on `Cᵒᵖ` corresponds to the shift by
-`-n` on `C`. In `CategoryTheory.Triangulated.Opposite.Triangle`, we constructed
+`-n` on `C`. In `Mathlib.CategoryTheory.Triangulated.Opposite.Triangle`, we constructed
 an equivalence `(Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ`, called
-`CategoryTheory.Pretriangulated.triangleOpEquivalence`.
+`Mathlib.CategoryTheory.Pretriangulated.triangleOpEquivalence`.
 
 Here, we defined the notion of distinguished triangles in `Cᵒᵖ`, such that
 `triangleOpEquivalence` sends distinguished triangles in `C` to distinguished triangles
 in `Cᵒᵖ`. In other words, if `X ⟶ Y ⟶ Z ⟶ X⟦1⟧` is a distinguished triangle in `C`,
 then the triangle `op Z ⟶ op Y ⟶ op X ⟶ (op Z)⟦1⟧` that is deduced *without introducing signs*
 shall be a distinguished triangle in `Cᵒᵖ`. This is equivalent to the definition
-in [Verdiers's thesis, p. 96][verdier1996] which would require that the triangle
+in [Verdier's thesis, p. 96][verdier1996] which would require that the triangle
 `(op X)⟦-1⟧ ⟶ op Z ⟶ op Y ⟶ op X` (without signs) is *antidistinguished*.
+
+In the file `Mathlib.Triangulated.Opposite.Triangulated`, we show that `Cᵒᵖ` is
+triangulated if `C` is triangulated.
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -37,7 +44,7 @@ namespace CategoryTheory
 
 open Category Limits Preadditive ZeroObject
 
-variable (C : Type*) [Category C] [HasShift C ℤ] [HasZeroObject C] [Preadditive C]
+variable (C : Type*) [Category* C] [HasShift C ℤ] [HasZeroObject C] [Preadditive C]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
 
 namespace Pretriangulated
@@ -49,7 +56,7 @@ namespace Opposite
 /-- A triangle in `Cᵒᵖ` shall be distinguished iff it corresponds to a distinguished
 triangle in `C` via the equivalence `triangleOpEquivalence C : (Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ`. -/
 def distinguishedTriangles : Set (Triangle Cᵒᵖ) :=
-  fun T => ((triangleOpEquivalence C).inverse.obj T).unop ∈ distTriang C
+  {T | ((triangleOpEquivalence C).inverse.obj T).unop ∈ distTriang C}
 
 variable {C}
 
@@ -65,7 +72,7 @@ lemma mem_distinguishedTriangles_iff' (T : Triangle Cᵒᵖ) :
   rw [mem_distinguishedTriangles_iff]
   constructor
   · intro hT
-    exact ⟨_ ,hT, ⟨(triangleOpEquivalence C).counitIso.symm.app T⟩⟩
+    exact ⟨_, hT, ⟨(triangleOpEquivalence C).counitIso.symm.app T⟩⟩
   · rintro ⟨T', hT', ⟨e⟩⟩
     refine isomorphic_distinguished _ hT' _ ?_
     exact Iso.unop ((triangleOpEquivalence C).unitIso.app (Opposite.op T') ≪≫
@@ -78,6 +85,8 @@ lemma isomorphic_distinguished (T₁ : Triangle Cᵒᵖ)
   exact Pretriangulated.isomorphic_distinguished _ hT₁ _
     ((triangleOpEquivalence C).inverse.mapIso e).unop.symm
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Up to rotation, the contractible triangle `X ⟶ X ⟶ 0 ⟶ X⟦1⟧` for `X : Cᵒᵖ` corresponds
 to the contractible triangle for `X.unop` in `C`. -/
 @[simps!]
@@ -98,6 +107,8 @@ lemma contractible_distinguished (X : Cᵒᵖ) :
   exact ⟨_, inv_rot_of_distTriang _ (Pretriangulated.contractible_distinguished X.unop),
     ⟨contractibleTriangleIso X⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Isomorphism expressing a compatibility of the equivalence `triangleOpEquivalence C`
 with the rotation of triangles. -/
 noncomputable def rotateTriangleOpEquivalenceInverseObjRotateUnopIso (T : Triangle Cᵒᵖ) :
@@ -113,6 +124,8 @@ lemma rotate_distinguished_triangle (T : Triangle Cᵒᵖ) :
     ((triangleOpEquivalence C).inverse.obj (T.rotate)).unop]
   exact distinguished_iff_of_iso (rotateTriangleOpEquivalenceInverseObjRotateUnopIso T).symm
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma distinguished_cocone_triangle {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     ∃ (Z : Cᵒᵖ) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
       Triangle.mk f g h ∈ distinguishedTriangles C := by
@@ -124,6 +137,8 @@ lemma distinguished_cocone_triangle {X Y : Cᵒᵖ} (f : X ⟶ Y) :
   exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp)
     (Quiver.Hom.op_inj (by simp [shift_unop_opShiftFunctorEquivalence_counitIso_inv_app]))
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle Cᵒᵖ)
     (hT₁ : T₁ ∈ distinguishedTriangles C) (hT₂ : T₂ ∈ distinguishedTriangles C)
     (a : T₁.obj₁ ⟶ T₂.obj₁) (b : T₁.obj₂ ⟶ T₂.obj₂) (comm : T₁.mor₁ ≫ b = a ≫ T₂.mor₁) :
@@ -150,7 +165,7 @@ a pretriangulated category. It is a scoped instance, so that we need to
 to use it: the reason is that it relies on the definition of the shift
 on the opposite category `Cᵒᵖ`, for which it is unclear whether it should
 be a global instance or not. -/
-scoped instance : Pretriangulated Cᵒᵖ where
+noncomputable scoped instance : Pretriangulated Cᵒᵖ where
   distinguishedTriangles := distinguishedTriangles C
   isomorphic_distinguished := isomorphic_distinguished
   contractible_distinguished := contractible_distinguished
@@ -187,7 +202,7 @@ open Pretriangulated.Opposite Pretriangulated
 
 variable {C}
 
-lemma map_distinguished_op_exact {A : Type*} [Category A] [Abelian A] (F : Cᵒᵖ ⥤ A)
+lemma map_distinguished_op_exact {A : Type*} [Category* A] [Abelian A] (F : Cᵒᵖ ⥤ A)
     [F.IsHomological] (T : Triangle C) (hT : T ∈ distTriang C) :
     ((shortComplexOfDistTriangle T hT).op.map F).Exact :=
   F.map_distinguished_exact _ (op_distinguished T hT)

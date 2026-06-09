@@ -16,4 +16,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cross off any linked issue and PR references
-        uses: jonabc/sync-task-issues@v1
+        uses: jonabc/sync-task-issues@f1a0d76ebec6142f13e487525859ba25767adbc2 # v1.2.0

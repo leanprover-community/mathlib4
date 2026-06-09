@@ -3,9 +3,11 @@ Copyright (c) 2024 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.LinearAlgebra.Pi
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.LinearAlgebra.Pi
 
 /-!
 # Products of subalgebras
@@ -14,8 +16,10 @@ In this file we define the product of subalgebras as a subalgebra of the product
 
 ## Main definitions
 
- * `Subalgebra.pi`: the product of subalgebras.
+* `Subalgebra.pi`: the product of subalgebras.
 -/
+
+@[expose] public section
 
 open Algebra
 
@@ -40,5 +44,8 @@ lemma pi_top (s : Set ι) : pi s (fun i ↦ (⊤ : Subalgebra R (S i))) = ⊤ :=
   SetLike.coe_injective <| Set.pi_univ _
 
 @[gcongr] lemma pi_mono (h : ∀ i ∈ s, t₁ i ≤ t₂ i) : pi s t₁ ≤ pi s t₂ := Set.pi_mono h
+
+protected theorem center_pi : center R (Π i, S i) = pi .univ fun i ↦ center R (S i) :=
+  SetLike.coe_injective Set.center_pi
 
 end Subalgebra

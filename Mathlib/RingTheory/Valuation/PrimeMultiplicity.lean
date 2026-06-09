@@ -3,12 +3,16 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Chris Hughes
 -/
-import Mathlib.RingTheory.Multiplicity
-import Mathlib.RingTheory.Valuation.Basic
+module
+
+public import Mathlib.RingTheory.Multiplicity
+public import Mathlib.RingTheory.Valuation.Basic
 
 /-!
 # `multiplicity` of a prime in an integral domain as an additive valuation
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommRing R] [IsDomain R] {p : R}
 

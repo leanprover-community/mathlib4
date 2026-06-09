@@ -3,20 +3,24 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.RingTheory.LocalRing.Basic
+module
+
+public import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 
 # Maximal ideal of local rings
 
-We define the maximal ideal of a local ring as the ideal of all non units.
+We define the maximal ideal of a local ring as the ideal of all nonunits.
 
 ## Main definitions
 
 * `IsLocalRing.maximalIdeal`: The unique maximal ideal for a local rings. Its carrier set is the
-  set of non units.
+  set of nonunits.
 
 -/
+
+@[expose] public section
 
 namespace IsLocalRing
 
@@ -30,5 +34,3 @@ def maximalIdeal : Ideal R where
   smul_mem' _ _ := mul_mem_nonunits_right
 
 end IsLocalRing
-
-@[deprecated (since := "2024-11-11")] alias LocalRing.maximalIdeal := IsLocalRing.maximalIdeal

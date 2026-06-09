@@ -3,8 +3,10 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Center
-import Mathlib.Algebra.Group.Subsemigroup.Defs
+module
+
+public import Mathlib.Algebra.Group.Center
+public import Mathlib.Algebra.Group.Subsemigroup.Defs
 
 /-!
 # Centers of semigroups, as subsemigroups.
@@ -23,6 +25,8 @@ We provide `Submonoid.center`, `AddSubmonoid.center`, `Subgroup.center`, `AddSub
   [cabreragarciarodriguezpalacios2014]
 -/
 
+@[expose] public section
+
 assert_not_exists RelIso Finset
 
 /-! ### `Set.center` as a `Subsemigroup`. -/
@@ -34,18 +38,16 @@ section Mul
 variable [Mul M]
 
 /-- The center of a semigroup `M` is the set of elements that commute with everything in `M` -/
-@[to_additive
-      "The center of a semigroup `M` is the set of elements that commute with everything in `M`"]
+@[to_additive /-- The center of an additive semigroup `M` is the set of elements that commute with
+everything in `M` -/]
 def center : Subsemigroup M where
   carrier := Set.center M
   mul_mem' := Set.mul_mem_center
 
--- Porting note: `coe_center` is now redundant
-
 variable {M}
 
 /-- The center of a magma is commutative and associative. -/
-@[to_additive "The center of an additive magma is commutative and associative."]
+@[to_additive /-- The center of an additive magma is commutative and associative. -/]
 instance center.commSemigroup : CommSemigroup (center M) where
   mul_assoc _ b _ := Subtype.ext <| b.2.mid_assoc _ _
   mul_comm a _ := Subtype.ext <| a.2.comm _

@@ -3,9 +3,10 @@ Copyright (c) 2019 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kim Morrison
 -/
-import Mathlib.Init
-import Batteries.Data.Rat.Basic
-import Batteries.Tactic.Alias
+module
+
+public import Mathlib.Init
+public import Lean.ToExpr
 
 /-!
 # Additional operations on Expr and rational numbers
@@ -14,9 +15,11 @@ This file defines some operations involving `Expr` and rational numbers.
 
 ## Main definitions
 
- * `Lean.Expr.isExplicitNumber`: is an expression a number in normal form?
-   This includes natural numbers, integers and rationals.
+* `Lean.Expr.isExplicitNumber`: is an expression a number in normal form?
+  This includes natural numbers, integers and rationals.
 -/
+
+public section
 
 namespace Lean.Expr
 

@@ -3,7 +3,9 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplex
 
 /-!
 # Bicomplexes
@@ -21,10 +23,12 @@ which is obtained by exchanging the horizontal and vertical directions.
 
 -/
 
+@[expose] public section
+
 
 open CategoryTheory Limits
 
-variable (C : Type*) [Category C] [HasZeroMorphisms C]
+variable (C : Type*) [Category* C] [HasZeroMorphisms C]
   {I₁ I₂ : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂)
 
 /-- Given a category `C` and two complex shapes `c₁` and `c₂` on types `I₁` and `I₂`,
@@ -106,7 +110,7 @@ end OfGradedObject
 
 /-- Constructor for a morphism `K ⟶ L` in the category `HomologicalComplex₂ C c₁ c₂` which
 takes as inputs a morphism `f : K.toGradedObject ⟶ L.toGradedObject` and
-the compatibilites with both horizontal and vertical differentials. -/
+the compatibilities with both horizontal and vertical differentials. -/
 @[simps!]
 def homMk {K L : HomologicalComplex₂ C c₁ c₂}
     (f : K.toGradedObject ⟶ L.toGradedObject)
@@ -160,6 +164,7 @@ lemma flip_flip (K : HomologicalComplex₂ C c₁ c₂) : K.flip.flip = K := rfl
 
 variable (C c₁ c₂)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Flipping a complex of complexes over the diagonal, as a functor. -/
 @[simps]
 def flipFunctor :
@@ -171,22 +176,25 @@ def flipFunctor :
           comm' := by intros; simp }
       comm' := by intros; ext; simp }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `HomologicalComplex₂.flipEquivalence`. -/
 @[simps!]
 def flipEquivalenceUnitIso :
     𝟭 (HomologicalComplex₂ C c₁ c₂) ≅ flipFunctor C c₁ c₂ ⋙ flipFunctor C c₂ c₁ :=
   NatIso.ofComponents (fun K => HomologicalComplex.Hom.isoOfComponents (fun i₁ =>
     HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
-    (by simp)) (by aesop_cat)) (by aesop_cat)
+    (by simp)) (by cat_disch)) (by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `HomologicalComplex₂.flipEquivalence`. -/
 @[simps!]
 def flipEquivalenceCounitIso :
     flipFunctor C c₂ c₁ ⋙ flipFunctor C c₁ c₂ ≅ 𝟭 (HomologicalComplex₂ C c₂ c₁) :=
   NatIso.ofComponents (fun K => HomologicalComplex.Hom.isoOfComponents (fun i₂ =>
     HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
-    (by simp)) (by aesop_cat)) (by aesop_cat)
+    (by simp)) (by cat_disch)) (by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Flipping a complex of complexes over the diagonal, as an equivalence of categories. -/
 @[simps]
 def flipEquivalence :

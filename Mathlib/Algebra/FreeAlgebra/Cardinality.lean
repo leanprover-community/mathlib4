@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.FreeAlgebra
-import Mathlib.SetTheory.Cardinal.Free
+module
+
+public import Mathlib.Algebra.FreeAlgebra
+public import Mathlib.SetTheory.Cardinal.Free
 
 /-!
 # Cardinality of free algebras
@@ -12,6 +14,8 @@ import Mathlib.SetTheory.Cardinal.Free
 This file contains some results about the cardinality of `FreeAlgebra`,
 parallel to that of `MvPolynomial`.
 -/
+
+public section
 
 universe u v
 
@@ -27,13 +31,12 @@ variable (X : Type v)
 theorem cardinalMk_eq_max_lift [Nonempty X] [Nontrivial R] :
     #(FreeAlgebra R X) = Cardinal.lift.{v} #R ⊔ Cardinal.lift.{u} #X ⊔ ℵ₀ := by
   have hX := mk_freeMonoid X
-  haveI : Infinite (FreeMonoid X) := infinite_iff.2 (by simp [hX])
   rw [equivMonoidAlgebraFreeMonoid.toEquiv.cardinal_eq, MonoidAlgebra,
     mk_finsupp_lift_of_infinite, hX, lift_max, lift_aleph0, sup_comm, ← sup_assoc]
 
 @[simp]
 theorem cardinalMk_eq_lift [IsEmpty X] : #(FreeAlgebra R X) = Cardinal.lift.{v} #R := by
-  have := lift_mk_eq'.2 ⟨show (FreeMonoid X →₀ R) ≃ R from Equiv.finsuppUnique⟩
+  have := lift_mk_eq'.2 ⟨show (FreeMonoid X →₀ R) ≃ R from Finsupp.uniqueEquiv 1⟩
   rw [lift_id'.{u, v}, lift_umax] at this
   rwa [equivMonoidAlgebraFreeMonoid.toEquiv.cardinal_eq, MonoidAlgebra]
 

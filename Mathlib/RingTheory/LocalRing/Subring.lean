@@ -3,15 +3,19 @@ Copyright (c) 2025 Michal Staromiejski. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michal Staromiejski
 -/
-import Mathlib.Algebra.Ring.Subsemiring.Basic
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.RingTheory.LocalRing.Defs
+module
+
+public import Mathlib.Algebra.Ring.Subsemiring.Basic
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.RingTheory.LocalRing.Defs
 
 /-!
 # Subrings of local rings
 
 We prove basic properties of subrings of local rings.
 -/
+
+public section
 
 namespace IsLocalRing
 
@@ -30,7 +34,7 @@ theorem of_injective [IsLocalRing S] {f : R →+* S} (hf : Function.Injective f)
 
 /-- If in a sub(semi)ring `R` of a local (semi)ring `S` every element is either
 invertible or a zero divisor, then `R` is local. -/
-theorem of_subring [IsLocalRing S]  {R : Subsemiring S} (h : ∀ a, a ∈ R⁰ → IsUnit a) :
+theorem of_subring [IsLocalRing S] {R : Subsemiring S} (h : ∀ a, a ∈ R⁰ → IsUnit a) :
     IsLocalRing R :=
   of_injective R.subtype_injective h
 

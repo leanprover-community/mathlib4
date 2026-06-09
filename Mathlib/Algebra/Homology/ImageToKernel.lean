@@ -3,7 +3,9 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Subobject.Limits
+module
+
+public import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!
 # Image-to-kernel comparison maps
@@ -15,6 +17,8 @@ we have `image_le_kernel f g w : imageSubobject f ≤ kernelSubobject g`
 `imageToKernel f g w` is the corresponding morphism between objects in `C`.
 
 -/
+
+@[expose] public section
 
 universe v u w
 
@@ -47,22 +51,10 @@ theorem subobject_ofLE_as_imageToKernel (w : f ≫ g = 0) (h) :
     Subobject.ofLE (imageSubobject f) (kernelSubobject g) h = imageToKernel f g w :=
   rfl
 
-attribute [local instance] HasForget.instFunLike
-
--- Porting note: removed elementwise attribute which does not seem to be helpful here
--- a more suitable lemma is added below
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 theorem imageToKernel_arrow (w : f ≫ g = 0) :
     imageToKernel f g w ≫ (kernelSubobject g).arrow = (imageSubobject f).arrow := by
   simp [imageToKernel]
-
-@[simp]
-lemma imageToKernel_arrow_apply {FV : V → V → Type*} {CV : V → Type*}
-    [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)] [ConcreteCategory V FV] (w : f ≫ g = 0)
-    (x : ToType (Subobject.underlying.obj (imageSubobject f))) :
-    (kernelSubobject g).arrow (imageToKernel f g w x) =
-      (imageSubobject f).arrow x := by
-  rw [← ConcreteCategory.comp_apply, imageToKernel_arrow]
 
 -- This is less useful as a `simp` lemma than it initially appears,
 -- as it "loses" the information the morphism factors through the image.
@@ -86,7 +78,6 @@ theorem imageToKernel_zero_left [HasKernels V] [HasZeroObject V] {w} :
 theorem imageToKernel_zero_right [HasImages V] {w} :
     imageToKernel f (0 : B ⟶ C) w =
       (imageSubobject f).arrow ≫ inv (kernelSubobject (0 : B ⟶ C)).arrow := by
-  ext
   simp
 
 section

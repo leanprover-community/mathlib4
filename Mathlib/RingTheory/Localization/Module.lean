@@ -3,10 +3,12 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Anne Baanen
 -/
-import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Localization.Integer
-import Mathlib.LinearAlgebra.Basis.Basic
+module
+
+public import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.Localization.Integer
 
 /-!
 # Modules / vector spaces over localizations / fraction fields
@@ -15,14 +17,16 @@ This file contains some results about vector spaces over the field of fractions 
 
 ## Main results
 
- * `LinearIndependent.localization`: `b` is linear independent over a localization of `R`
-   if it is linear independent over `R` itself
- * `Basis.ofIsLocalizedModule` / `Basis.localizationLocalization`: promote an `R`-basis `b` of `A`
-   to an `Rₛ`-basis of `Aₛ`, where `Rₛ` and `Aₛ` are localizations of `R` and `A` at `s`
-   respectively
- * `LinearIndependent.iff_fractionRing`: `b` is linear independent over `R` iff it is
-   linear independent over `Frac(R)`
+* `LinearIndependent.localization`: `b` is linear independent over a localization of `R`
+  if it is linear independent over `R` itself
+* `Basis.ofIsLocalizedModule` / `Basis.localizationLocalization`: promote an `R`-basis `b` of `A`
+  to an `Rₛ`-basis of `Aₛ`, where `Rₛ` and `Aₛ` are localizations of `R` and `A` at `s`
+  respectively
+* `LinearIndependent.iff_fractionRing`: `b` is linear independent over `R` iff it is
+  linear independent over `Frac(R)`
 -/
+
+@[expose] public section
 
 
 open nonZeroDivisors
@@ -45,7 +49,7 @@ theorem span_eq_top_of_isLocalizedModule {v : Set M} (hv : span R v = ⊤) :
   obtain ⟨⟨m, s⟩, h⟩ := IsLocalizedModule.surj S f x
   rw [Submonoid.smul_def, ← algebraMap_smul Rₛ, ← Units.smul_isUnit (IsLocalization.map_units Rₛ s),
     eq_comm, ← inv_smul_eq_iff] at h
-  refine h ▸ smul_mem _ _  (span_subset_span R Rₛ _ ?_)
+  refine h ▸ smul_mem _ _ (span_subset_span R Rₛ _ ?_)
   rw [← LinearMap.coe_restrictScalars R, ← LinearMap.map_span, hv]
   exact mem_map_of_mem mem_top
 
@@ -67,45 +71,69 @@ theorem LinearIndependent.of_isLocalizedModule {ι : Type*} {v : ι → M}
   simpa only [map_mul, (IsLocalization.map_units Rₛ s).mul_right_inj, hfg.1 ⟨i, hi⟩, hfg.2 ⟨i, hi⟩,
     Algebra.smul_def, (IsLocalization.map_units Rₛ a).mul_right_inj] using this
 
+theorem LinearIndependent.of_isLocalizedModule_of_isRegular {ι : Type*} {v : ι → M}
+    (hv : LinearIndependent R v) (h : ∀ s : S, IsRegular (s : R)) : LinearIndependent R (f ∘ v) :=
+  hv.map_injOn _ <| by
+    rw [← Finsupp.range_linearCombination]
+    rintro _ ⟨_, r, rfl⟩ _ ⟨_, r', rfl⟩ eq
+    congr; ext i
+    have ⟨s, eq⟩ := IsLocalizedModule.exists_of_eq (S := S) eq
+    simp_rw [Submonoid.smul_def, ← map_smul] at eq
+    exact (h s).1 (DFunLike.congr_fun (hv eq) i)
+
 theorem LinearIndependent.localization [Module Rₛ M] [IsScalarTower R Rₛ M]
     {ι : Type*} {b : ι → M} (hli : LinearIndependent R b) :
     LinearIndependent Rₛ b := by
   have := isLocalizedModule_id S M Rₛ
   exact hli.of_isLocalizedModule Rₛ S .id
 
-section Basis
+include f in
+lemma IsLocalizedModule.linearIndependent_lift {ι} {v : ι → Mₛ} (hf : LinearIndependent R v) :
+    ∃ w : ι → M, LinearIndependent R w := by
+  cases isEmpty_or_nonempty ι
+  · exact ⟨isEmptyElim, linearIndependent_empty_type⟩
+  have inj := hf.smul_left_injective (Classical.arbitrary ι)
+  choose sec hsec using surj S f
+  use fun i ↦ (sec (v i)).1
+  rw [linearIndependent_iff'ₛ] at hf ⊢
+  intro t g g' eq i hit
+  refine (isRegular_of_smul_left_injective f inj (sec (v i)).2).2 <|
+    hf t (fun i ↦ _ * (sec (v i)).2) (fun i ↦ _ * (sec (v i)).2) ?_ i hit
+  simp_rw [mul_smul, ← Submonoid.smul_def, hsec, ← map_smul, ← map_sum, eq]
+
+namespace Module.Basis
 
 variable {ι : Type*} (b : Basis ι R M)
 
 /-- If `M` has an `R`-basis, then localizing `M` at `S` has a basis over `R` localized at `S`. -/
-noncomputable def Basis.ofIsLocalizedModule : Basis ι Rₛ Mₛ :=
+noncomputable def ofIsLocalizedModule : Basis ι Rₛ Mₛ :=
   .mk (b.linearIndependent.of_isLocalizedModule Rₛ S f) <| by
     rw [Set.range_comp, span_eq_top_of_isLocalizedModule Rₛ S _ b.span_eq]
 
 @[simp]
-theorem Basis.ofIsLocalizedModule_apply (i : ι) : b.ofIsLocalizedModule Rₛ S f i = f (b i) := by
+theorem ofIsLocalizedModule_apply (i : ι) : b.ofIsLocalizedModule Rₛ S f i = f (b i) := by
   rw [ofIsLocalizedModule, coe_mk, Function.comp_apply]
 
 @[simp]
-theorem Basis.ofIsLocalizedModule_repr_apply (m : M) (i : ι) :
+theorem ofIsLocalizedModule_repr_apply (m : M) (i : ι) :
     ((b.ofIsLocalizedModule Rₛ S f).repr (f m)) i = algebraMap R Rₛ (b.repr m i) := by
   suffices ((b.ofIsLocalizedModule Rₛ S f).repr.toLinearMap.restrictScalars R) ∘ₗ f =
       Finsupp.mapRange.linearMap (Algebra.linearMap R Rₛ) ∘ₗ b.repr.toLinearMap by
     exact DFunLike.congr_fun (LinearMap.congr_fun this m) i
-  refine Basis.ext b fun i ↦ ?_
+  refine ext b fun i ↦ ?_
   rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_restrictScalars,
     LinearEquiv.coe_coe, ← b.ofIsLocalizedModule_apply Rₛ S f, repr_self, LinearMap.coe_comp,
     Function.comp_apply, LinearEquiv.coe_coe, repr_self, Finsupp.mapRange.linearMap_apply,
     Finsupp.mapRange_single, Algebra.linearMap_apply, map_one]
 
-theorem Basis.ofIsLocalizedModule_span :
+theorem ofIsLocalizedModule_span :
     span R (Set.range (b.ofIsLocalizedModule Rₛ S f)) = LinearMap.range f := by
   calc span R (Set.range (b.ofIsLocalizedModule Rₛ S f))
     _ = span R (f '' (Set.range b)) := by congr; ext; simp
     _ = map f (span R (Set.range b)) := by rw [Submodule.map_span]
     _ = LinearMap.range f := by rw [b.span_eq, Submodule.map_top]
 
-end Basis
+end Module.Basis
 
 end IsLocalizedModule
 
@@ -123,46 +151,50 @@ open Submodule
 include S
 
 theorem LinearIndependent.localization_localization {ι : Type*} {v : ι → A}
-    (hv : LinearIndependent R v) : LinearIndependent Rₛ ((algebraMap A Aₛ) ∘ v) :=
+    (hv : LinearIndependent R v) : LinearIndependent Rₛ (algebraMap A Aₛ ∘ v) :=
   hv.of_isLocalizedModule Rₛ S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap
 
 theorem span_eq_top_localization_localization {v : Set A} (hv : span R v = ⊤) :
     span Rₛ (algebraMap A Aₛ '' v) = ⊤ :=
   span_eq_top_of_isLocalizedModule Rₛ S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap hv
 
+namespace Module.Basis
+
 /-- If `A` has an `R`-basis, then localizing `A` at `S` has a basis over `R` localized at `S`.
 
 A suitable instance for `[Algebra A Aₛ]` is `localizationAlgebra`.
 -/
-noncomputable def Basis.localizationLocalization {ι : Type*} (b : Basis ι R A) : Basis ι Rₛ Aₛ :=
+noncomputable def localizationLocalization {ι : Type*} (b : Basis ι R A) : Basis ι Rₛ Aₛ :=
   b.ofIsLocalizedModule Rₛ S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap
 
 @[simp]
-theorem Basis.localizationLocalization_apply {ι : Type*} (b : Basis ι R A) (i) :
+theorem localizationLocalization_apply {ι : Type*} (b : Basis ι R A) (i) :
     b.localizationLocalization Rₛ S Aₛ i = algebraMap A Aₛ (b i) :=
   b.ofIsLocalizedModule_apply Rₛ S _ i
 
 @[simp]
-theorem Basis.localizationLocalization_repr_algebraMap {ι : Type*} (b : Basis ι R A) (x i) :
+theorem localizationLocalization_repr_algebraMap {ι : Type*} (b : Basis ι R A) (x i) :
     (b.localizationLocalization Rₛ S Aₛ).repr (algebraMap A Aₛ x) i =
       algebraMap R Rₛ (b.repr x i) := b.ofIsLocalizedModule_repr_apply Rₛ S _ _ i
 
-theorem Basis.localizationLocalization_span {ι : Type*} (b : Basis ι R A) :
+theorem localizationLocalization_span {ι : Type*} (b : Basis ι R A) :
     Submodule.span R (Set.range (b.localizationLocalization Rₛ S Aₛ)) =
-      LinearMap.range (IsScalarTower.toAlgHom R A Aₛ) := b.ofIsLocalizedModule_span Rₛ S _
+      LinearMap.range (IsScalarTower.toAlgHom R A Aₛ : A →ₗ[R] Aₛ) :=
+  b.ofIsLocalizedModule_span Rₛ S _
 
+end Module.Basis
 end LocalizationLocalization
 
 
 section FractionRing
 
-variable (R K : Type*) [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
+variable (R K : Type*) [CommRing R] [CommRing K] [Algebra R K] [IsFractionRing R K]
 variable {V : Type*} [AddCommGroup V] [Module R V] [Module K V] [IsScalarTower R K V]
 
 theorem LinearIndependent.iff_fractionRing {ι : Type*} {b : ι → V} :
     LinearIndependent R b ↔ LinearIndependent K b :=
-  ⟨LinearIndependent.localization K R⁰,
-    LinearIndependent.restrict_scalars (smul_left_injective R one_ne_zero)⟩
+  ⟨.localization K R⁰,
+    .restrict_scalars <| (faithfulSMul_iff_injective_smul_one ..).mp inferInstance⟩
 
 end FractionRing
 
@@ -198,8 +230,8 @@ def LinearMap.extendScalarsOfIsLocalizationEquiv : (M →ₗ[R] N) ≃ₗ[A] (M 
   invFun := LinearMap.restrictScalars R
   map_add' := by intros; ext; simp
   map_smul' := by intros; ext; simp
-  left_inv := by intros _; ext; simp
-  right_inv := by intros _; ext; simp
+  left_inv := by intro _; ext; simp
+  right_inv := by intro _; ext; simp
 
 /-- An `R`-linear isomorphism between `S⁻¹R`-modules is actually `S⁻¹R`-linear. -/
 @[simps!]
@@ -300,4 +332,38 @@ lemma LocalizedModule.restrictScalars_map_eq {M' N' : Type*} [AddCommMonoid M'] 
   ext
   simp
 
+variable {S} in
+lemma LocalizedModule.coe_map_eq {M' N' : Type*} [AddCommMonoid M'] [AddCommMonoid N']
+    [Module R M'] [Module R N'] (g₁ : M →ₗ[R] M') (g₂ : N →ₗ[R] N')
+    [IsLocalizedModule S g₁] [IsLocalizedModule S g₂] (l : M →ₗ[R] N) :
+    ⇑(map S l) = (IsLocalizedModule.iso S g₂).symm ∘
+      IsLocalizedModule.map S g₁ g₂ l ∘ IsLocalizedModule.iso S g₁ := by
+  rw [← LinearMap.coe_restrictScalars R, restrictScalars_map_eq _ g₁ g₂ l]
+  simp
+
 end LocalizedModule
+
+namespace IsLocalizedModule
+
+variable {R M N M' N' : Type*} [CommSemiring R] {S : Submonoid R}
+  [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+  [AddCommMonoid M'] [Module R M'] [AddCommMonoid N'] [Module R N']
+  (g₁ : M →ₗ[R] M') (g₂ : N →ₗ[R] N')
+  [IsLocalizedModule S g₁] [IsLocalizedModule S g₂] {l : M →ₗ[R] N}
+
+lemma map_injective_iff_localizedModuleMap_injective :
+    Function.Injective (IsLocalizedModule.map S g₁ g₂ l) ↔
+      Function.Injective (LocalizedModule.map S l) := by
+  simp [LocalizedModule.coe_map_eq g₁ g₂]
+
+lemma map_surjective_iff_localizedModuleMap_surjective :
+    Function.Surjective (IsLocalizedModule.map S g₁ g₂ l) ↔
+      Function.Surjective (LocalizedModule.map S l) := by
+  simp [LocalizedModule.coe_map_eq g₁ g₂]
+
+lemma map_bijective_iff_localizedModuleMap_bijective :
+    Function.Bijective (IsLocalizedModule.map S g₁ g₂ l) ↔
+      Function.Bijective (LocalizedModule.map S l) := by
+  simp [LocalizedModule.coe_map_eq g₁ g₂]
+
+end IsLocalizedModule

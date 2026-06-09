@@ -3,11 +3,13 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Init
-import Lean.Meta.Eqns
-import Batteries.Lean.NameMapAttribute
-import Lean.Elab.Exception
-import Lean.Elab.InfoTree.Main
+module
+
+public import Mathlib.Init
+public meta import Lean.Meta.Eqns
+public meta import Batteries.Lean.NameMapAttribute
+public meta import Lean.Elab.Exception
+public meta import Lean.Elab.InfoTree.Main
 
 /-! # The `@[eqns]` attribute
 
@@ -29,6 +31,8 @@ theorem transpose_const {m n} (c : ℕ) :
   rw [transpose]
 ```
 -/
+
+public meta section
 open Lean Elab
 
 syntax (name := eqns) "eqns" (ppSpace ident)* : attr
@@ -39,9 +43,10 @@ initialize eqnsAttribute : NameMapExtension (Array Name) ←
     descr := "Overrides the equation lemmas for a declaration to the provided list"
     add   := fun
     | declName, `(attr| eqns $[$names]*) => do
-      if let some _ := Meta.eqnsExt.getState (← getEnv) |>.map.find? declName then
-        throwError "There already exist stored eqns for '{declName}'; registering new equations \
-          will not have the desired effect."
+      -- We used to be able to check here if equational lemmas have already been registered in
+      -- Leans `eqsnExt`, but that has been removed in https://github.com/leanprover-community/mathlib4/issues/8519, so no warning in that case.
+      -- Now we just hope that the `GetEqnsFn` registered below will always run before
+      -- Lean’s.
       names.mapM realizeGlobalConstNoOverloadWithInfo
     | _, _ => Lean.Elab.throwUnsupportedSyntax }
 

@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Indicator
-import Mathlib.MeasureTheory.OuterMeasure.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Indicator
+public import Mathlib.MeasureTheory.OuterMeasure.Basic
 
 /-!
 # Operations on outer measures
@@ -23,6 +25,8 @@ outer measure
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Set Function Filter
@@ -36,10 +40,10 @@ section Basic
 variable {α β : Type*} {m : OuterMeasure α}
 
 instance instZero : Zero (OuterMeasure α) :=
-  ⟨{  measureOf := fun _ => 0
+  ⟨{  measureOf _ := 0
       empty := rfl
-      mono := by intro _ _ _; exact le_refl 0
-      iUnion_nat := fun _ _ => zero_le _ }⟩
+      mono _ := le_rfl
+      iUnion_nat _ _ := zero_le }⟩
 
 @[simp]
 theorem coe_zero : ⇑(0 : OuterMeasure α) = 0 :=
@@ -51,7 +55,7 @@ instance instInhabited : Inhabited (OuterMeasure α) :=
 instance instAdd : Add (OuterMeasure α) :=
   ⟨fun m₁ m₂ =>
     { measureOf := fun s => m₁ s + m₂ s
-      empty := show m₁ ∅ + m₂ ∅ = 0 by simp [OuterMeasure.empty]
+      empty := show m₁ ∅ + m₂ ∅ = 0 by simp
       mono := fun {_ _} h => add_le_add (m₁.mono h) (m₂.mono h)
       iUnion_nat := fun s _ =>
         calc
@@ -76,12 +80,11 @@ instance instSMul : SMul R (OuterMeasure α) :=
     { measureOf := fun s => c • m s
       empty := by simp only [measure_empty]; rw [← smul_one_mul c]; simp
       mono := fun {s t} h => by
-        simp only
         rw [← smul_one_mul c, ← smul_one_mul c (m t)]
-        exact mul_left_mono (m.mono h)
+        exact mul_right_mono (m.mono h)
       iUnion_nat := fun s _ => by
         simp_rw [← smul_one_mul c (m _), ENNReal.tsum_mul_left]
-        exact mul_left_mono (measure_iUnion_le _) }⟩
+        exact mul_right_mono (measure_iUnion_le _) }⟩
 
 @[simp]
 theorem coe_smul (c : R) (m : OuterMeasure α) : ⇑(c • m) = c • ⇑m :=
@@ -140,9 +143,12 @@ instance instPartialOrder : PartialOrder (OuterMeasure α) where
   le_trans _ _ _ hab hbc s := le_trans (hab s) (hbc s)
   le_antisymm _ _ hab hba := ext fun s => le_antisymm (hab s) (hba s)
 
+instance instIsOrderedAddMonoid {α : Type*} : IsOrderedAddMonoid (OuterMeasure α) where
+  add_le_add_left _ _ h _ s := add_le_add_left (h s) _
+
 instance orderBot : OrderBot (OuterMeasure α) :=
   { bot := 0,
-    bot_le := fun a s => by simp only [coe_zero, Pi.zero_apply, coe_bot, zero_le] }
+    bot_le := fun a s => by simp only [coe_zero, Pi.zero_apply, zero_le] }
 
 theorem univ_eq_zero_iff (m : OuterMeasure α) : m univ = 0 ↔ m = 0 :=
   ⟨fun h => bot_unique fun s => (measure_mono <| subset_univ s).trans_eq h, fun h => h.symm ▸ rfl⟩
@@ -219,7 +225,7 @@ theorem map_map {β γ} (f : α → β) (g : β → γ) (m : OuterMeasure α) :
     map g (map f m) = map (g ∘ f) m :=
   ext fun _ => rfl
 
-@[mono]
+@[gcongr, mono]
 theorem map_mono {β} (f : α → β) : Monotone (map f) := fun _ _ h _ => h _
 
 @[simp]
@@ -238,7 +244,7 @@ instance instLawfulFunctor : LawfulFunctor OuterMeasure := by constructor <;> in
 def dirac (a : α) : OuterMeasure α where
   measureOf s := indicator s (fun _ => 1) a
   empty := by simp
-  mono {_ _} h := indicator_le_indicator_of_subset h (fun _ => zero_le _) a
+  mono {_ _} h := by grw [h]
   iUnion_nat s _ := calc
     indicator (⋃ n, s n) 1 a = ⨆ n, indicator (s n) 1 a :=
       indicator_iUnion_apply (M := ℝ≥0∞) rfl _ _ _
@@ -269,7 +275,7 @@ def comap {β} (f : α → β) : OuterMeasure β →ₗ[ℝ≥0∞] OuterMeasure
   toFun m :=
     { measureOf := fun s => m (f '' s)
       empty := by simp
-      mono := fun {_ _} h => m.mono <| image_subset f h
+      mono := fun {_ _} h => by gcongr
       iUnion_nat := fun s _ => by simpa only [image_iUnion] using measure_iUnion_le _ }
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -278,7 +284,7 @@ def comap {β} (f : α → β) : OuterMeasure β →ₗ[ℝ≥0∞] OuterMeasure
 theorem comap_apply {β} (f : α → β) (m : OuterMeasure β) (s : Set α) : comap f m s = m (f '' s) :=
   rfl
 
-@[mono]
+@[gcongr, mono]
 theorem comap_mono {β} (f : α → β) : Monotone (comap f) := fun _ _ h _ => h _
 
 @[simp]

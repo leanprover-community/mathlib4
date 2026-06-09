@@ -3,14 +3,19 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Gabriel Ebner, Floris van Doorn
 -/
-import Mathlib.Init
-import Lean.Elab.Tactic.Simp
+module
+
+public import Mathlib.Init
+public import Lean.Elab.Tactic.Simp
+public import Lean.Meta.DiscrTree
 
 /-!
 # Helper functions for using the simplifier.
 
 [TODO] Needs documentation, cleanup, and possibly reunification of `mkSimpContext'` with core.
 -/
+
+@[expose] public section
 
 open Lean Elab.Tactic
 
@@ -77,6 +82,20 @@ def Simp.Context.ofNames (lemmas : List Name := []) (simpOnly : Bool := false)
     (simpTheorems := #[← simpTheoremsOfNames lemmas simpOnly])
     (congrTheorems := ← Lean.Meta.getSimpCongrTheorems)
 
+-- adapted from `Lean.Elab.Tactic.mkSimpContext`
+/-- Construct a `Simp.Context`, following the same algorithm that would be done in a "simp" run:
+look up all the simp-lemmas in the library, and adjust (add/erase) as specified by the provided
+`simpArgs` list. -/
+def Simp.Context.ofArgs (args : TSyntax ``Parser.Tactic.simpArgs) (config : Simp.Config := {}) :
+    TacticM Simp.Context := do
+  let simpTheorems ← Meta.getSimpTheorems
+  let congrTheorems ← Meta.getSimpCongrTheorems
+  let ctx ← Simp.mkContext config
+     (simpTheorems := #[simpTheorems])
+     congrTheorems
+  let r ← elabSimpArgs args (eraseLocal := false) (kind := SimpKind.simp) (simprocs := {}) ctx
+  return r.ctx
+
 /-- Simplify an expression using only a list of lemmas specified by name. -/
 def simpOnlyNames (lemmas : List Name) (e : Expr) (config : Simp.Config := {}) :
     MetaM Simp.Result := do
@@ -122,13 +141,13 @@ def SimpTheorems.contains (d : SimpTheorems) (declName : Name) :=
 /-- Tests whether `decl` has `simp`-attribute `simpAttr`. Returns `false` is `simpAttr` is not a
 valid simp-attribute. -/
 def isInSimpSet (simpAttr decl : Name) : CoreM Bool := do
-  let .some simpDecl ← getSimpExtension? simpAttr | return false
+  let some simpDecl ← getSimpExtension? simpAttr | return false
   return (← simpDecl.getTheorems).contains decl
 
 /-- Returns all declarations with the `simp`-attribute `simpAttr`.
 Note: this also returns many auxiliary declarations. -/
 def getAllSimpDecls (simpAttr : Name) : CoreM (List Name) := do
-  let .some simpDecl ← getSimpExtension? simpAttr | return []
+  let some simpDecl ← getSimpExtension? simpAttr | return []
   let thms ← simpDecl.getTheorems
   return thms.toUnfold.toList ++ thms.lemmaNames.toList.filterMap fun
     | .decl decl => some decl
@@ -137,9 +156,35 @@ def getAllSimpDecls (simpAttr : Name) : CoreM (List Name) := do
 /-- Gets all simp-attributes given to declaration `decl`. -/
 def getAllSimpAttrs (decl : Name) : CoreM (Array Name) := do
   let mut simpAttrs := #[]
-  for (simpAttr, simpDecl) in (← simpExtensionMapRef.get).toList do
+  for (simpAttr, simpDecl) in ← simpExtensionMapRef.get do
     if (← simpDecl.getTheorems).contains decl then
       simpAttrs := simpAttrs.push simpAttr
   return simpAttrs
+
+/-- Run `e` while the entries in `declNames` are erased from the `simp` set, while preserving the
+rest of the `simp` configuration.
+
+Performance note: the code in `e` will be run with a new cache (which is discarded at the end of the
+function). The original cache is restored when this function returns.
+-/
+meta def Simp.withoutTheorems {α} (declNames : Array Name) (e : SimpM α) : SimpM α := do
+  let mut theorems ← getSimpTheorems
+  let mut procs ← getSimprocs
+  for name in declNames do
+    -- Erase all variants of the theorem, not just the forward post-proc.
+    theorems := theorems
+      |>.eraseTheorem (.decl name)
+      |>.eraseTheorem (.decl name (inv := true))
+      |>.eraseTheorem (.decl name (post := false))
+      |>.eraseTheorem (.decl name (inv := true) (post := false))
+    procs := procs.erase name
+  let oldMethods ← getMethods
+  let methods := mkMethods #[procs] oldMethods.discharge? oldMethods.wellBehavedDischarge
+  -- Preserve the cache, otherwise a deleted theorem might continue firing,
+  -- or conversely a failure inside `e` could be propagated outside.
+  withPreservedCache <| withSimpTheorems theorems do
+    let (x, s) ← e.run (← getContext) (← get) methods
+    set s
+    return x
 
 end Lean.Meta

@@ -3,8 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Geometry.Euclidean.Inversion.Basic
-import Mathlib.Geometry.Euclidean.PerpBisector
+module
+
+public import Mathlib.Geometry.Euclidean.Inversion.Basic
+public import Mathlib.Geometry.Euclidean.PerpBisector
 
 /-!
 # Image of a hyperplane under inversion
@@ -24,6 +26,8 @@ We also prove that the inversion sends an affine subspace passing through the ce
 inversion
 -/
 
+public section
+
 open Metric Function AffineMap Set AffineSubspace
 open scoped Topology
 
@@ -32,15 +36,14 @@ variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricS
 
 namespace EuclideanGeometry
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 /-- The inversion with center `c` and radius `R` maps a sphere passing through the center to a
 hyperplane. -/
 theorem inversion_mem_perpBisector_inversion_iff (hR : R ≠ 0) (hx : x ≠ c) (hy : y ≠ c) :
     inversion c R x ∈ perpBisector c (inversion c R y) ↔ dist x y = dist y c := by
   rw [mem_perpBisector_iff_dist_eq, dist_inversion_inversion hx hy, dist_inversion_center]
-  have hx' := dist_ne_zero.2 hx
-  have hy' := dist_ne_zero.2 hy
-  -- takes 300ms, but the "equivalent" simp call fails -> hard to speed up
-  field_simp [mul_assoc, mul_comm, hx, hx.symm, eq_comm]
+  simp [field, eq_comm, ↓hx, ↓hy]
 
 /-- The inversion with center `c` and radius `R` maps a sphere passing through the center to a
 hyperplane. -/

@@ -3,8 +3,7 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Alex Brodbelt
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Order.Field.GeomSum
 import Mathlib.Data.NNReal.Basic
 
 /-!
@@ -42,8 +41,9 @@ lemma le_avg : ∑ k ∈ range (n + 1), x k ≤ (∑ k ∈ range n, x k) * (1 + 
   rw [sum_range_succ, mul_one_add, add_le_add_iff_left, mul_one_div,
     le_div_iff₀ (mod_cast hn.bot_lt), mul_comm, ← nsmul_eq_mul]
   conv_lhs => rw [← card_range n, ← sum_const]
-  refine sum_le_sum fun k hk ↦ hx (le_of_lt ?_)
-  simpa using hk
+  gcongr with i hi
+  refine hx <| le_of_lt ?_
+  simpa using hi
 
 /-- The main inequality used for part a. -/
 lemma ineq (h0 : x 0 = 1) (hp : ∀ k, 0 < x k) :
@@ -57,11 +57,11 @@ lemma ineq (h0 : x 0 = 1) (hp : ∀ k, 0 < x k) :
       · exact sum_pos (fun k _ ↦ hp _) (nonempty_range_iff.2 hn)
     -- We move the fraction into the denominator.
     _ = (∑ k ∈ range n, x (k + 1) + 1) ^ 2 / ((∑ k ∈ range n, x (k + 1)) * (1 + 1 / n)) := by
-      field_simp
+      field
     -- We make use of the `le_avg` lemma.
     _ ≤ (∑ k ∈ range (n + 1), x k) ^ 2 / ∑ k ∈ range (n + 1), x (k + 1) := by
       gcongr
-      · exact sum_pos (fun k _ ↦ hp _) nonempty_range_succ
+      · exact sum_pos (fun k _ ↦ hp _) nonempty_range_add_one
       · exact add_nonneg (sum_nonneg fun k _ ↦ (hp _).le) zero_le_one
       · rw [sum_range_succ', h0]
       · exact le_avg hn (hx.comp_monotone @Nat.succ_le_succ)
@@ -74,7 +74,7 @@ end Imo1982Q3
 theorem imo1982_q3a (hx : Antitone x) (h0 : x 0 = 1) (hp : ∀ k, 0 < x k) :
     ∃ n : ℕ, 3.999 ≤ ∑ k ∈ range n, (x k) ^ 2 / x (k + 1) := by
   use 4000
-  convert Imo1982Q3.ineq (Nat.succ_ne_zero 3998) hx h0 hp
+  convert! Imo1982Q3.ineq (Nat.succ_ne_zero 3998) hx h0 hp
   norm_num
 
 /-- Part b of the problem is solved by `x k = (1 / 2) ^ k`. -/
@@ -88,6 +88,6 @@ theorem imo1982_q3b : ∃ x : ℕ → ℝ, Antitone x ∧ x 0 = 1 ∧ (∀ k, 0 
     simp_rw [← pow_mul, pow_succ, ← div_eq_mul_inv, div_div_eq_mul_div, mul_comm, mul_div_assoc,
       ← mul_sum, div_eq_mul_inv, this, ← two_add_two_eq_four, ← mul_two,
       mul_lt_mul_iff_of_pos_left two_pos]
-    convert NNReal.coe_lt_coe.2 <| geom_sum_lt (inv_ne_zero two_ne_zero) two_inv_lt_one n
+    convert! NNReal.coe_lt_coe.2 <| geom_sum_lt (inv_ne_zero two_ne_zero) two_inv_lt_one n
     · simp
     · norm_num

@@ -40,7 +40,7 @@ def edges : List (Verts × Verts) :=
 def adj (v w : Verts) : Bool := (v, w) ∈ edges || (w, v) ∈ edges
 
 /-- The Königsberg graph structure. While the Königsberg bridge problem
-is usually described using a multigraph, the we use a "mediant" construction
+is usually described using a multigraph, we use a "mediant" construction
 to transform it into a simple graph -- every edge in the multigraph is subdivided
 into a path of two edges. This construction preserves whether a graph is Eulerian.
 
@@ -52,9 +52,7 @@ def graph : SimpleGraph Verts where
   symm := by
     dsimp [Symmetric, adj]
     decide
-  loopless := by
-    dsimp [Irreflexive, adj]
-    decide
+  loopless := ⟨by decide⟩
 
 instance : DecidableRel graph.Adj := fun a b => inferInstanceAs <| Decidable (adj a b)
 

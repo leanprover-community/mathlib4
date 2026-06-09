@@ -3,8 +3,8 @@ Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
 -/
+import Mathlib.Analysis.Real.Sqrt
 import Mathlib.Data.Real.Basic
-import Mathlib.Data.Real.Sqrt
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.NumberTheory.PrimesCongruentOne
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
@@ -15,7 +15,7 @@ import Mathlib.Tactic.LinearCombination
 Prove that there exist infinitely many positive integers `n` such that `n^2 + 1` has a prime
 divisor which is greater than `2n + √(2n)`.
 
-# Solution
+## Solution
 We first prove the following lemma: for every prime `p > 20`, satisfying `p ≡ 1 [MOD 4]`,
 there exists `n ∈ ℕ` such that `p ∣ n^2 + 1` and `p > 2n + √(2n)`. Then the statement of the
 problem follows from the fact that there exist infinitely many primes `p ≡ 1 [MOD 4]`.
@@ -40,12 +40,12 @@ theorem p_lemma (p : ℕ) (hpp : Nat.Prime p) (hp_mod_4_eq_1 : p ≡ 1 [MOD 4]) 
   let n := Int.natAbs m
   have hnat₁ : p ∣ n ^ 2 + 1 := by
     refine Int.natCast_dvd_natCast.mp ?_
-    simp only [n, Int.natAbs_sq, Int.natCast_pow, Int.ofNat_succ, Int.natCast_dvd_natCast.mp]
+    simp only [n, Int.natAbs_sq, Int.natCast_pow, Int.natCast_succ]
     refine (ZMod.intCast_zmod_eq_zero_iff_dvd (m ^ 2 + 1) p).mp ?_
     simp only [m, Int.cast_pow, Int.cast_add, Int.cast_one, ZMod.coe_valMinAbs]
     rw [pow_two, ← hy]; exact neg_add_cancel 1
   have hnat₂ : n ≤ p / 2 := ZMod.natAbs_valMinAbs_le y
-  have hnat₃ : p ≥ 2 * n := by omega
+  have hnat₃ : 2 * n ≤ p := by lia
   set k : ℕ := p - 2 * n with hnat₄
   have hnat₅ : p ∣ k ^ 2 + 4 := by
     obtain ⟨x, hx⟩ := hnat₁
@@ -55,16 +55,16 @@ theorem p_lemma (p : ℕ) (hpp : Nat.Prime p) (hp_mod_4_eq_1 : p ≡ 1 [MOD 4]) 
       have hcast₂ : (n : ℤ) ^ 2 + 1 = p * x := by assumption_mod_cast
       linear_combination ((k : ℤ) + p - 2 * n) * hcast₁ + 4 * hcast₂
     assumption_mod_cast
-  have hnat₆ : k ^ 2 + 4 ≥ p := Nat.le_of_dvd (k ^ 2 + 3).succ_pos hnat₅
+  have hnat₆ : p ≤ k ^ 2 + 4 := Nat.le_of_dvd (k ^ 2 + 3).succ_pos hnat₅
   have hreal₁ : (k : ℝ) = p - 2 * n := by assumption_mod_cast
-  have hreal₂ : (p : ℝ) > 20 := by assumption_mod_cast
-  have hreal₃ : (k : ℝ) ^ 2 + 4 ≥ p := by assumption_mod_cast
-  have hreal₅ : (k : ℝ) > 4 := by
+  have hreal₂ : 20 < (p : ℝ) := by assumption_mod_cast
+  have hreal₃ : p ≤ (k : ℝ) ^ 2 + 4 := by assumption_mod_cast
+  have hreal₅ : 4 < (k : ℝ) := by
     refine lt_of_pow_lt_pow_left₀ 2 k.cast_nonneg ?_
     linarith only [hreal₂, hreal₃]
   have hreal₆ : (k : ℝ) > sqrt (2 * n) := by
     refine lt_of_pow_lt_pow_left₀ 2 k.cast_nonneg ?_
-    rw [sq_sqrt (mul_nonneg zero_le_two n.cast_nonneg)]
+    rw [sq_sqrt (by positivity)]
     linarith only [hreal₁, hreal₃, hreal₅]
   exact ⟨n, hnat₁, by linarith only [hreal₆, hreal₁]⟩
 

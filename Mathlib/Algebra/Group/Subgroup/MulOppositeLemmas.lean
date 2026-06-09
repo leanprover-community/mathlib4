@@ -3,10 +3,12 @@ Copyright (c) 2022 Alex Kontorovich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Eric Wieser
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.Group.Subgroup.MulOpposite
-import Mathlib.Algebra.Group.Submonoid.MulOpposite
-import Mathlib.Logic.Encodable.Basic
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Algebra.Group.Subgroup.MulOpposite
+public import Mathlib.Algebra.Group.Submonoid.MulOpposite
+public import Mathlib.Logic.Encodable.Basic
 
 /-!
 # Mul-opposite subgroups
@@ -20,11 +22,13 @@ subgroup, subgroups
 
 -/
 
+public section
+
 variable {ι : Sort*} {G : Type*} [Group G]
 
 namespace Subgroup
 
-/- We redeclare this instance to get keys
+/-- We redeclare this instance to get keys
 `SMul (@Subtype (MulOpposite _) (@Membership.mem (MulOpposite _)
   (Subgroup (MulOpposite _) _) _ (@Subgroup.op _ _ _))) _`
 compared to the keys for `Submonoid.smul`

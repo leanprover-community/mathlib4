@@ -3,18 +3,21 @@ Copyright (c) 2024 Jujian. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Jujian Zhang
 -/
+module
 
-import Mathlib.RingTheory.TwoSidedIdeal.Basic
-import Mathlib.RingTheory.TwoSidedIdeal.Lattice
+public import Mathlib.RingTheory.TwoSidedIdeal.Basic
+public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 
 /-!
 # Kernel of a ring homomorphism as a two-sided ideal
 
 In this file we define the kernel of a ring homomorphism `f : R → S` as a two-sided ideal of `R`.
 
-We put this in a separate file so that we could import it in `SimpleRing/Basic.lean` without
-importing any finiteness result.
+We put this in a separate file so that we could import it in
+`Mathlib/RingTheory/SimpleRing/Basic.lean` without importing any finiteness result.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -33,8 +36,8 @@ def ker : TwoSidedIdeal R :=
   .mk
   { r := fun x y ↦ f x = f y
     iseqv := by constructor <;> aesop
-    mul' := by intro; simp_all [map_add]
-    add' := by intro; simp_all [map_mul] }
+    mul' := by intro; simp_all
+    add' := by intro; simp_all }
 
 @[simp]
 lemma ker_ringCon {x y : R} : (ker f).ringCon x y ↔ f x = f y := Iff.rfl

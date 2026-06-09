@@ -3,8 +3,11 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
-import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+public import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
+public import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
 
 /-!
 # The real function `fun x ↦ x * log x + 1 - x`
@@ -24,7 +27,7 @@ extend to other finite measures: it is nonnegative and zero iff the two measures
 
 * `klFun`: the function `fun x : ℝ ↦ x * log x + 1 - x`.
 
-This is a continuous nonnegative, strictly convex function on [0,∞), with minimum value 0 at 1.
+This is a continuous nonnegative, strictly convex function on $[0,∞)$, with minimum value 0 at 1.
 
 ## Main statements
 
@@ -33,9 +36,11 @@ This is a continuous nonnegative, strictly convex function on [0,∞), with mini
   `llr μ ν` is integrable with respect to `μ`.
 * `integral_klFun_rnDeriv`: For two finite measures `μ ≪ ν` such that `llr μ ν` is integrable with
   respect to `μ`,
-  `∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν = ∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal`.
+  `∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν = ∫ x, llr μ ν x ∂μ + ν.real univ - μ.real univ`.
 
 -/
+
+@[expose] public section
 
 open Real MeasureTheory Filter Set
 
@@ -53,16 +58,16 @@ lemma klFun_zero : klFun 0 = 1 := by simp [klFun]
 
 lemma klFun_one : klFun 1 = 0 := by simp [klFun]
 
-/-- `klFun` is strictly convex on [0,∞). -/
+/-- `klFun` is strictly convex on $[0,∞)$. -/
 lemma strictConvexOn_klFun : StrictConvexOn ℝ (Ici 0) klFun :=
   (strictConvexOn_mul_log.add_convexOn (convexOn_const _ (convex_Ici _))).sub_concaveOn
     (concaveOn_id (convex_Ici _))
 
-/-- `klFun` is convex on [0,∞). -/
+/-- `klFun` is convex on $[0,∞)$. -/
 lemma convexOn_klFun : ConvexOn ℝ (Ici 0) klFun := strictConvexOn_klFun.convexOn
 
-/-- `klFun` is convex on (0,∞).
-This is an often useful consequence of `convexOn_klFun`, which states convexity on [0, ∞). -/
+/-- `klFun` is convex on $(0,∞)$.
+This is an often useful consequence of `convexOn_klFun`, which states convexity on $[0, ∞)$. -/
 lemma convexOn_Ioi_klFun : ConvexOn ℝ (Ioi 0) klFun :=
   convexOn_klFun.subset (Ioi_subset_Ici le_rfl) (convex_Ioi _)
 
@@ -71,18 +76,18 @@ lemma convexOn_Ioi_klFun : ConvexOn ℝ (Ioi 0) klFun :=
 lemma continuous_klFun : Continuous klFun := by unfold klFun; fun_prop
 
 /-- `klFun` is measurable. -/
-@[measurability, fun_prop]
+@[fun_prop]
 lemma measurable_klFun : Measurable klFun := continuous_klFun.measurable
 
 /-- `klFun` is strongly measurable. -/
-@[measurability]
+@[fun_prop]
 lemma stronglyMeasurable_klFun : StronglyMeasurable klFun := measurable_klFun.stronglyMeasurable
 
 section Derivatives
 
 /-- The derivative of `klFun` at `x ≠ 0` is `log x`. -/
 lemma hasDerivAt_klFun (hx : x ≠ 0) : HasDerivAt klFun (log x) x := by
-  convert ((hasDerivAt_mul_log hx).add (hasDerivAt_const x 1)).sub (hasDerivAt_id x) using 1
+  convert! ((hasDerivAt_mul_log hx).add (hasDerivAt_const x 1)).sub (hasDerivAt_id x) using 1
   ring
 
 lemma not_differentiableAt_klFun_zero : ¬ DifferentiableAt ℝ klFun 0 := by
@@ -101,12 +106,12 @@ lemma deriv_klFun : deriv klFun = log := by
 lemma not_differentiableWithinAt_klFun_Ioi_zero : ¬ DifferentiableWithinAt ℝ klFun (Ioi 0) 0 := by
   refine not_differentiableWithinAt_of_deriv_tendsto_atBot_Ioi _ ?_
   rw [deriv_klFun]
-  exact tendsto_log_nhdsWithin_zero_right
+  exact tendsto_log_nhdsGT_zero
 
 lemma not_differentiableWithinAt_klFun_Iio_zero : ¬ DifferentiableWithinAt ℝ klFun (Iio 0) 0 := by
   refine not_differentiableWithinAt_of_deriv_tendsto_atBot_Iio _ ?_
   rw [deriv_klFun]
-  exact tendsto_log_nhdsWithin_zero_left
+  exact tendsto_log_nhdsLT_zero
 
 /-- The right derivative of `klFun` is `log x`. This also holds at `x = 0` although `klFun` is not
 differentiable there since the default value of `derivWithin` in that case is 0. -/
@@ -165,14 +170,14 @@ lemma integrable_klFun_rnDeriv_iff (hμν : μ ≪ ν) :
     Integrable (fun x ↦ klFun (μ.rnDeriv ν x).toReal) ν ↔ Integrable (llr μ ν) μ := by
   suffices Integrable (fun x ↦ (μ.rnDeriv ν x).toReal * log (μ.rnDeriv ν x).toReal
       + (1 - (μ.rnDeriv ν x).toReal)) ν ↔ Integrable (llr μ ν) μ by
-    convert this using 3 with x
+    convert! this using 3 with x
     rw [klFun, add_sub_assoc]
   rw [integrable_add_iff_integrable_left', integrable_rnDeriv_mul_log_iff hμν]
   fun_prop
 
 lemma integral_klFun_rnDeriv (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
     ∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν
-      = ∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal := by
+      = ∫ x, llr μ ν x ∂μ + ν.real univ - μ.real univ := by
   unfold klFun
   rw [integral_sub, integral_add, integral_const, Measure.integral_toReal_rnDeriv hμν, smul_eq_mul,
     mul_one]

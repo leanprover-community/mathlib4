@@ -3,10 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Order.Fin.Basic
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Tactic.FinCases
+public import Mathlib.Order.Fin.Basic
+public import Mathlib.Data.Fintype.Basic
 
 /-!
 # The order isomorphism `Fin (n + 1) ≃o {i}ᶜ`
@@ -16,6 +16,8 @@ an order isomorphism `Fin (n + 1) ≃o ({i}ᶜ : Finset (Fin (n + 2)))`.
 
 -/
 
+@[expose] public section
+
 open Finset
 
 /-- Given `i : Fin (n + 2)`, this is the order isomorphism
@@ -23,8 +25,7 @@ between `Fin (n + 1)` and the finite set `{i}ᶜ`. -/
 noncomputable def Fin.succAboveOrderIso {n : ℕ} (i : Fin (n + 2)) :
     Fin (n + 1) ≃o ({i}ᶜ : Finset (Fin (n + 2))) where
   toEquiv :=
-    Equiv.ofBijective (f := fun a ↦ ⟨Fin.succAboveOrderEmb i a,
-        by simpa using Fin.succAbove_ne i a⟩) (by
+    Equiv.ofBijective (f := fun a ↦ ⟨Fin.succAboveOrderEmb i a, by simp⟩) (by
       constructor
       · intro a b h
         exact (Fin.succAboveOrderEmb i).injective (by simpa using h)

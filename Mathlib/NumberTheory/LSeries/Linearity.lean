@@ -3,8 +3,10 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.NumberTheory.LSeries.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.NumberTheory.LSeries.Basic
 
 /-!
 # Linearity of the L-series of `f` as a function of `f`
@@ -12,6 +14,8 @@ import Mathlib.NumberTheory.LSeries.Basic
 We show that the `LSeries` of `f : ℕ → ℂ` is a linear function of `f` (assuming convergence
 of both L-series when adding two functions).
 -/
+
+public section
 
 /-!
 ### Addition
@@ -30,7 +34,7 @@ lemma LSeries.term_add_apply (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
 lemma LSeriesHasSum.add {f g : ℕ → ℂ} {s a b : ℂ} (hf : LSeriesHasSum f s a)
     (hg : LSeriesHasSum g s b) :
     LSeriesHasSum (f + g) s (a + b) := by
-  simpa [LSeriesHasSum, term_add] using HasSum.add hf hg
+  simpa [LSeriesHasSum, term_add] using! HasSum.add hf hg
 
 lemma LSeriesSummable.add {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s)
     (hg : LSeriesSummable g s) :
@@ -40,7 +44,7 @@ lemma LSeriesSummable.add {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f 
 @[simp]
 lemma LSeries_add {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s) (hg : LSeriesSummable g s) :
     LSeries (f + g) s = LSeries f s + LSeries g s := by
-  simpa [LSeries, term_add] using tsum_add hf hg
+  simpa [LSeries, term_add] using hf.tsum_add hg
 
 /-!
 ### Negation
@@ -55,11 +59,11 @@ lemma LSeries.term_neg_apply (f : ℕ → ℂ) (s : ℂ) (n : ℕ) : term (-f) s
 
 lemma LSeriesHasSum.neg {f : ℕ → ℂ} {s a : ℂ} (hf : LSeriesHasSum f s a) :
     LSeriesHasSum (-f) s (-a) := by
-  simpa [LSeriesHasSum, term_neg] using HasSum.neg hf
+  simpa [LSeriesHasSum, term_neg] using! HasSum.neg hf
 
 lemma LSeriesSummable.neg {f : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s) :
     LSeriesSummable (-f) s := by
-  simpa [LSeriesSummable, term_neg] using Summable.neg hf
+  simpa [LSeriesSummable, term_neg] using! Summable.neg hf
 
 @[simp]
 lemma LSeriesSummable.neg_iff {f : ℕ → ℂ} {s : ℂ} :
@@ -84,7 +88,7 @@ lemma LSeries.term_sub_apply (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
 lemma LSeriesHasSum.sub {f g : ℕ → ℂ} {s a b : ℂ} (hf : LSeriesHasSum f s a)
     (hg : LSeriesHasSum g s b) :
     LSeriesHasSum (f - g) s (a - b) := by
-  simpa [LSeriesHasSum, term_sub] using HasSum.sub hf hg
+  simpa [LSeriesHasSum, term_sub] using! HasSum.sub hf hg
 
 lemma LSeriesSummable.sub {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s)
     (hg : LSeriesSummable g s) :
@@ -94,7 +98,7 @@ lemma LSeriesSummable.sub {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f 
 @[simp]
 lemma LSeries_sub {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s) (hg : LSeriesSummable g s) :
     LSeries (f - g) s = LSeries f s - LSeries g s := by
-  simpa [LSeries, term_sub] using tsum_sub hf hg
+  simpa [LSeries, term_sub] using hf.tsum_sub hg
 
 /-!
 ### Scalar multiplication
@@ -110,11 +114,11 @@ lemma LSeries.term_smul_apply (f : ℕ → ℂ) (c s : ℂ) (n : ℕ) :
 
 lemma LSeriesHasSum.smul {f : ℕ → ℂ} (c : ℂ) {s a : ℂ} (hf : LSeriesHasSum f s a) :
     LSeriesHasSum (c • f) s (c * a) := by
-  simpa [LSeriesHasSum, term_smul] using hf.const_smul c
+  simpa [LSeriesHasSum, term_smul] using! hf.const_smul c
 
 lemma LSeriesSummable.smul {f : ℕ → ℂ} (c : ℂ) {s : ℂ} (hf : LSeriesSummable f s) :
     LSeriesSummable (c • f) s := by
-  simpa [LSeriesSummable, term_smul] using hf.const_smul c
+  simpa [LSeriesSummable, term_smul] using! hf.const_smul c
 
 lemma LSeriesSummable.of_smul {f : ℕ → ℂ} {c s : ℂ} (hc : c ≠ 0) (hf : LSeriesSummable (c • f) s) :
     LSeriesSummable f s := by
@@ -138,11 +142,11 @@ variable {ι : Type*} (f : ι → ℕ → ℂ) (S : Finset ι) (s : ℂ)
 
 @[simp]
 lemma LSeries.term_sum_apply (n : ℕ) :
-    term (∑ i ∈ S, f i) s n  = ∑ i ∈ S, term (f i) s n := by
+    term (∑ i ∈ S, f i) s n = ∑ i ∈ S, term (f i) s n := by
   rcases eq_or_ne n 0 with hn | hn <;>
   simp [hn, Finset.sum_div]
 
-lemma LSeries.term_sum : term (∑ i ∈ S, f i) s  = ∑ i ∈ S, term (f i) s :=
+lemma LSeries.term_sum : term (∑ i ∈ S, f i) s = ∑ i ∈ S, term (f i) s :=
   funext fun _ ↦ by simp
 
 variable {f S s}
@@ -158,6 +162,6 @@ lemma LSeriesSummable.sum (hf : ∀ i ∈ S, LSeriesSummable (f i) s) :
 @[simp]
 lemma LSeries_sum (hf : ∀ i ∈ S, LSeriesSummable (f i) s) :
     LSeries (∑ i ∈ S, f i) s = ∑ i ∈ S, LSeries (f i) s := by
-  simpa [LSeries, term_sum] using tsum_finsetSum hf
+  simpa [LSeries, term_sum] using Summable.tsum_finsetSum hf
 
 end sum

@@ -3,21 +3,24 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init
-import Lean.Elab.Term
-import Lean.Elab.Tactic.Basic
-import Lean.Meta.Tactic.Assert
-import Lean.Meta.Tactic.Clear
-import Batteries.CodeAction -- to enable the hole code action
+module
+
+public import Mathlib.Init
+public import Lean.Elab.Term
+public import Lean.Elab.Tactic.Basic
+public import Lean.Meta.Tactic.Assert
+public import Lean.Meta.Tactic.Clear
 
 /-! ## Additional utilities in `Lean.MVarId` -/
+
+public section
 
 open Lean Meta
 
 namespace Lean.MVarId
 
 /-- Add the hypothesis `h : t`, given `v : t`, and return the new `FVarId`. -/
-def «let» (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
+def «let» (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := none) :
     MetaM (FVarId × MVarId) := do
   (← g.define h (← t.getDM (inferType v)) v).intro1P
 
@@ -80,24 +83,24 @@ variable {α : Type}
 -- making it quite painful to call `simp` from `MetaM`.
 def run_for (mvarId : MVarId) (x : TacticM α) : TermElabM (Option α × List MVarId) :=
   mvarId.withContext do
-   let pendingMVarsSaved := (← get).pendingMVars
-   modify fun s => { s with pendingMVars := [] }
-   let aux : TacticM (Option α × List MVarId) :=
-     /- Important: the following `try` does not backtrack the state.
-        This is intentional because we don't want to backtrack the error message
-        when we catch the "abort internal exception"
-        We must define `run` here because we define `MonadExcept` instance for `TacticM` -/
-     try
-       let a ← x
-       pure (a, ← getUnsolvedGoals)
-     catch ex =>
-       if isAbortTacticException ex then
-         pure (none, ← getUnsolvedGoals)
-       else
-         throw ex
-   try
-     aux.runCore' { elaborator := .anonymous } { goals := [mvarId] }
-   finally
-     modify fun s => { s with pendingMVars := pendingMVarsSaved }
+    let pendingMVarsSaved := (← get).pendingMVars
+    modify fun s => { s with pendingMVars := [] }
+    let aux : TacticM (Option α × List MVarId) :=
+      /- Important: the following `try` does not backtrack the state.
+          This is intentional because we don't want to backtrack the error message
+          when we catch the "abort internal exception"
+          We must define `run` here because we define `MonadExcept` instance for `TacticM` -/
+      try
+        let a ← x
+        pure (a, ← getUnsolvedGoals)
+      catch ex =>
+        if isAbortTacticException ex then
+          pure (none, ← getUnsolvedGoals)
+        else
+          throw ex
+    try
+      aux.runCore' { elaborator := .anonymous } { goals := [mvarId] }
+    finally
+      modify fun s => { s with pendingMVars := pendingMVarsSaved }
 
 end Lean.Elab.Tactic

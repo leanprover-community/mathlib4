@@ -3,8 +3,10 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Init
-import Batteries.Util.LibraryNote
+module
+
+public import Mathlib.Init
+public import Batteries.Util.LibraryNote
 
 /-!
 # Documentation concerning the continuous functional calculus
@@ -13,8 +15,10 @@ A library note giving advice on developing and using the continuous functional c
 as the organizational structure within Mathlib.
 -/
 
+public section
 
-library_note "continuous functional calculus" /--
+
+library_note «continuous functional calculus» /--
 # The continuous functional calculus
 
 In Mathlib, there are two classes --- `NonUnitalContinuousFunctionalCalculus` and
@@ -24,7 +28,7 @@ calculus. This allows us to reason about the continuous functional calculus in b
 non-unital algebras, using functions, `ℂ → ℂ`, `ℝ → ℝ`, or `ℝ≥0 → ℝ≥0`, as appropriate.
 
 These classes are designed to be used even in contexts where no norm is present, such as for
-`Matrix n n ℝ`, and indeed, an instance of `ContinuousFunctionalCalculus ℝ IsSelfAdjoint` already
+`Matrix n n ℝ`, and indeed, an instance of `ContinuousFunctionalCalculus ℝ A IsSelfAdjoint` already
 exists in this context. However, when a norm is present (i.e., in the context of C⋆-algebras), the
 continuous functional calculus is an isometry. In order not to lose this information, we provide
 two additional classes `IsometricNonUnitalContinuousFunctionalCalculus` and
@@ -78,14 +82,14 @@ context in which to develop the basic theory of positive and negative parts is:
 
 ```lean
 variable {A : Type*} [NonUnitalRing A] [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
-  [StarRing A] [TopologicalSpace A] [NonUnitalContinuousFunctionalCalculus ℝ IsSelfAdjoint]
+  [StarRing A] [TopologicalSpace A] [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 ```
 
 One pattern that should *never* be used is to directly assume `ContinuousFunctionalCalculus`
 (or the non-unital version) over the scalar ring `ℝ≥0`. Doing so only complicates the setup, for
 no benefit. Indeed, in practice the only available instance of
-`ContinuousFunctionalCalculus ℝ≥0 (0 ≤ ·)` is the one stemming from an instance over `ℝ`, along with
-`NonnegSpectrumClass ℝ A`, `PartialOrder A`, `StarOrderedRing A`. Therefore, directly assuming
+`ContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·)` is the one stemming from an instance over `ℝ`, along
+with `NonnegSpectrumClass ℝ A`, `PartialOrder A`, `StarOrderedRing A`. Therefore, directly assuming
 the `ℝ≥0` version makes Lean do more work in type class inference, and makes the structure of the
 source code less readable. Instead, the correct pattern is to assume the version over `ℝ`, and then
 add these extra three classes as needed to get the instance over `ℝ≥0`.
@@ -124,7 +128,7 @@ calculus despite the fact that the lemmas are about `cfcₙ`):
 
 ```lean
 variable {A : Type*} [Ring A] [Algebra ℝ A] [StarRing A] [TopologicalSpace A]
-  [ContinuousFunctionalCalculus ℝ IsSelfAdjoint]
+  [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 ```
 
 The only context in which general theory should be developed with a `NonUnitalCStarAlgebra` or
@@ -166,11 +170,11 @@ require manual intervention.
 
 The criterion for determining where to place files about general theory of functions pertaining to
 the continuous functional calculus is whether the import
-`Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic` is needed, which contains the
-instances of the continuous functional calculus for `CStarAlgebra`, and therefore pulls in many
+`Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Basic.lean` is needed, which contains
+the instances of the continuous functional calculus for `CStarAlgebra`, and therefore pulls in many
 imports. If this import is not needed, then the file should be placed in the directory
-`Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus`. If this import is needed, then
-the appropriate location is `Mathlib.Analysis.CStarAlgebra.SpecialFunctions`. If, as is often the
-case, some results need the import and others do not, there should be two files, one in each
-location.
+`Mathlib/Analysis/SpecialFunctions/ContinuousFunctionalCalculus/`. If this import is needed
+then the appropriate location is `Mathlib/Analysis/CStarAlgebra/SpecialFunctions/`.
+If, as is often the case, some results need the import and others do not, there should be two files,
+one in each location.
 -/

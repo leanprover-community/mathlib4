@@ -1,4 +1,5 @@
-import Mathlib.Data.Real.EReal
+module
+import Mathlib.Data.EReal.Basic
 import Mathlib.Order.LiminfLimsup
 
 open Filter

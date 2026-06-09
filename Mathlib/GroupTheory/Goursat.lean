@@ -3,9 +3,11 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Graph
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.GroupTheory.QuotientGroup.Defs
+module
+
+public import Mathlib.Algebra.Group.Graph
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
 # Goursat's lemma for subgroups
@@ -20,6 +22,8 @@ the graph of an isomorphism `G ⧸ G' ≃ H ⧸ H'`.
 respectively.
 -/
 
+@[expose] public section
+
 open Function Set
 
 namespace Subgroup
@@ -32,10 +36,10 @@ considered as a subgroup of `G`.
 
 This is the first subgroup appearing in Goursat's lemma. See `Subgroup.goursat`. -/
 @[to_additive
-"For `I` a subgroup of `G × H`, `I.goursatFst` is the kernel of the projection map `I → H`,
+/-- For `I` a subgroup of `G × H`, `I.goursatFst` is the kernel of the projection map `I → H`,
 considered as a subgroup of `G`.
 
-This is the first subgroup appearing in Goursat's lemma. See `AddSubgroup.goursat`."]
+This is the first subgroup appearing in Goursat's lemma. See `AddSubgroup.goursat`. -/]
 def goursatFst : Subgroup G :=
   ((MonoidHom.snd G H).comp I.subtype).ker.map ((MonoidHom.fst G H).comp I.subtype)
 
@@ -45,10 +49,10 @@ considered as a subgroup of `H`.
 
 This is the second subgroup appearing in Goursat's lemma. See `Subgroup.goursat`. -/
 @[to_additive
-"For `I` a subgroup of `G × H`, `I.goursatSnd` is the kernel of the projection map `I → G`,
+/-- For `I` a subgroup of `G × H`, `I.goursatSnd` is the kernel of the projection map `I → G`,
 considered as a subgroup of `H`.
 
-This is the second subgroup appearing in Goursat's lemma. See `AddSubgroup.goursat`."]
+This is the second subgroup appearing in Goursat's lemma. See `AddSubgroup.goursat`. -/]
 def goursatSnd : Subgroup H :=
   ((MonoidHom.fst G H).comp I.subtype).ker.map ((MonoidHom.snd G H).comp I.subtype)
 
@@ -71,7 +75,7 @@ lemma mk_goursatFst_eq_iff_mk_goursatSnd_eq {x y : G × H} (hx : x ∈ I) (hy : 
   have := normal_goursatFst hI₁
   have := normal_goursatSnd hI₂
   rw [eq_comm]
-  simp [QuotientGroup.eq_iff_div_mem]
+  simp only [QuotientGroup.eq_iff_div_mem, mem_goursatFst, mem_goursatSnd]
   constructor <;> intro h
   · simpa [Prod.mul_def, Prod.div_def] using div_mem (mul_mem h hx) hy
   · simpa [Prod.mul_def, Prod.div_def] using div_mem (mul_mem h hy) hx
@@ -90,13 +94,13 @@ graph of an isomorphism `G ⧸ M ≃ H ⧸ N'`.
 
 `G'` and `H'` can be explicitly constructed as `I.goursatFst` and `I.goursatSnd` respectively. -/
 @[to_additive
-"**Goursat's lemma** for a subgroup of a product with surjective projections.
+/-- **Goursat's lemma** for a subgroup of a product with surjective projections.
 
 If `I` is a subgroup of `G × H` which projects fully on both factors, then there exist normal
 subgroups `M ≤ G` and `N ≤ H` such that `G' × H' ≤ I` and the image of `I` in `G ⧸ M × H ⧸ N` is the
 graph of an isomorphism `G ⧸ M ≃ H ⧸ N'`.
 
-`G'` and `H'` can be explicitly constructed as `I.goursatFst` and `I.goursatSnd` respectively."]
+`G'` and `H'` can be explicitly constructed as `I.goursatFst` and `I.goursatSnd` respectively. -/]
 lemma goursat_surjective :
     have := normal_goursatFst hI₁
     have := normal_goursatSnd hI₂
@@ -116,11 +120,11 @@ If `I` is a subgroup of `G × H`, then there exist subgroups `G' ≤ G`, `H' ≤
 `M ⊴ G'` and `N ⊴ H'` such that `M × N ≤ I` and the image of `I` in `G' ⧸ M × H' ⧸ N` is the graph
 of an isomorphism `G' ⧸ M ≃ H' ⧸ N`. -/
 @[to_additive
-"**Goursat's lemma** for an arbitrary subgroup.
+/-- **Goursat's lemma** for an arbitrary subgroup.
 
 If `I` is a subgroup of `G × H`, then there exist subgroups `G' ≤ G`, `H' ≤ H` and normal subgroups
 `M ≤ G'` and `N ≤ H'` such that `M × N ≤ I` and the image of `I` in `G' ⧸ M × H' ⧸ N` is the graph
-of an isomorphism `G ⧸ G' ≃ H ⧸ H'`."]
+of an isomorphism `G ⧸ G' ≃ H ⧸ H'`. -/]
 lemma goursat :
     ∃ (G' : Subgroup G) (H' : Subgroup H) (M : Subgroup G') (N : Subgroup H') (_ : M.Normal)
       (_ : N.Normal) (e : G' ⧸ M ≃* H' ⧸ N),
@@ -139,7 +143,7 @@ lemma goursat :
   have hI₂' : Surjective (Prod.snd ∘ I'.subtype) := by
     simp only [← MonoidHom.coe_snd, ← MonoidHom.coe_comp, ← MonoidHom.range_eq_top,
       MonoidHom.range_comp, Subgroup.range_subtype, I']
-    simp only [← MonoidHom.range_comp, MonoidHom.fst_comp_prod, MonoidHom.range_eq_top]
+    simp only [← MonoidHom.range_comp, MonoidHom.range_eq_top]
     exact (MonoidHom.snd ..).subgroupMap_surjective I
   have := normal_goursatFst hI₁'
   have := normal_goursatSnd hI₂'
@@ -164,7 +168,7 @@ lemma goursat :
       rintro h₁ hgh₁ g₁ hg₁h g₂ h₂ hg₂h₂ hP hQ
       simp only [Subtype.ext_iff] at hP hQ
       rwa [← hP, ← hQ]
-  · convert goursatFst_prod_goursatSnd_le (P.prod Q).range
+  · convert! goursatFst_prod_goursatSnd_le (P.prod Q).range
     ext ⟨g, h⟩
     simp_rw [G', H', MonoidHom.mem_ker, MonoidHom.coe_prodMap, Prod.map_apply, Subgroup.mem_prod,
       Prod.one_eq_mk, Prod.ext_iff, ← MonoidHom.mem_ker, QuotientGroup.ker_mk']

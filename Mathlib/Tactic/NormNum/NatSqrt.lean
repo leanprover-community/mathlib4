@@ -3,12 +3,17 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Tactic.NormNum
+module
+
+public meta import Batteries.Data.Nat.Basic
+public import Mathlib.Tactic.NormNum
 
 /-! # `norm_num` extension for `Nat.sqrt`
 
 This module defines a `norm_num` extension for `Nat.sqrt`.
 -/
+
+public meta section
 
 namespace Tactic
 
@@ -29,8 +34,8 @@ theorem isNat_sqrt : {x nx z : ℕ} → IsNat x nx → Nat.sqrt nx = z → IsNat
 and an equality proof. Panics if `ex` isn't a natural number literal. -/
 def proveNatSqrt (ex : Q(ℕ)) : (ey : Q(ℕ)) × Q(Nat.sqrt $ex = $ey) :=
   match ex.natLit! with
-  | 0 => show (ey : Q(ℕ)) × Q(Nat.sqrt 0 = $ey) from ⟨mkRawNatLit 0, q(Nat.sqrt_zero)⟩
-  | 1 => show (ey : Q(ℕ)) × Q(Nat.sqrt 1 = $ey) from ⟨mkRawNatLit 1, q(Nat.sqrt_one)⟩
+  | 0 => have : $ex =Q nat_lit 0 := ⟨⟩; ⟨q(nat_lit 0), q(Nat.sqrt_zero)⟩
+  | 1 => have : $ex =Q nat_lit 1 := ⟨⟩; ⟨q(nat_lit 1), q(Nat.sqrt_one)⟩
   | x =>
     let y := Nat.sqrt x
     have ey : Q(ℕ) := mkRawNatLit y
@@ -43,7 +48,7 @@ def proveNatSqrt (ex : Q(ℕ)) : (ey : Q(ℕ)) × Q(Nat.sqrt $ex = $ey) :=
 @[norm_num Nat.sqrt _]
 def evalNatSqrt : NormNumExt where eval {_ _} e := do
   let .app _ (x : Q(ℕ)) ← Meta.whnfR e | failure
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨ex, p⟩ ← deriveNat x sℕ
   let ⟨ey, pf⟩ := proveNatSqrt ex
   let pf' : Q(IsNat (Nat.sqrt $x) $ey) := q(isNat_sqrt $p $pf)

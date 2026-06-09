@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Module.Presentation.Basic
-import Mathlib.Algebra.Module.FinitePresentation
+module
+
+public import Mathlib.Algebra.Module.Presentation.Basic
+public import Mathlib.Algebra.Module.FinitePresentation
 
 /-!
 # Characterization of finitely presented modules
@@ -13,6 +15,8 @@ A module is finitely presented (in the sense of `Module.FinitePresentation`) iff
 it admits a presentation with finitely many generators and relations.
 
 -/
+
+public section
 
 universe w₀ w₁ v u
 
@@ -43,7 +47,7 @@ lemma finitePresentation_iff_exists_presentation :
   · intro
     obtain ⟨G : Type w₀, _, var, hG⟩ :=
       Submodule.fg_iff_exists_finite_generating_family.1
-        (finite_def.1 (inferInstanceAs (Module.Finite A M)))
+        (finite_def.1 (inferInstance : Module.Finite A M))
     obtain ⟨R : Type w₁, _, relation, hR⟩ :=
       Submodule.fg_iff_exists_finite_generating_family.1
         (Module.FinitePresentation.fg_ker (Finsupp.linearCombination A var) (by

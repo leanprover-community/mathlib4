@@ -3,14 +3,18 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
-import Mathlib.Topology.Metrizable.Real
-import Mathlib.Topology.IndicatorConstPointwise
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
+public import Mathlib.Topology.Metrizable.Real
+public import Mathlib.Topology.IndicatorConstPointwise
 
 /-!
 # Measurable functions in (pseudo-)metrizable Borel spaces
 -/
+
+public section
 
 open Filter MeasureTheory TopologicalSpace Topology NNReal ENNReal MeasureTheory
 
@@ -38,7 +42,7 @@ theorem measurable_of_tendsto_metrizable' {ι} {f : ι → α → β} {g : α �
     exact ((continuous_infNndist_pt s).tendsto (g x)).comp (lim x)
   have h4s : g ⁻¹' s = (fun x => infNndist (g x) s) ⁻¹' {0} := by
     ext x
-    simp [h1s, ← h1s.mem_iff_infDist_zero h2s, ← NNReal.coe_eq_zero]
+    simp [← h1s.mem_iff_infDist_zero h2s, ← NNReal.coe_eq_zero]
   rw [h4s]
   exact this (measurableSet_singleton 0)
 
@@ -107,25 +111,17 @@ theorem measurable_limit_of_tendsto_metrizable_ae {ι} [Countable ι] [Nonempty 
   inhabit ι
   rcases eq_or_neBot L with (rfl | hL)
   · exact ⟨(hf default).mk _, (hf default).measurable_mk, Eventually.of_forall fun x => tendsto_bot⟩
-  let p : α → (ι → β) → Prop := fun x f' => ∃ l : β, Tendsto (fun n => f' n) L (𝓝 l)
-  have hp_mem : ∀ x ∈ aeSeqSet hf p, p x fun n => f n x := fun x hx =>
-    aeSeq.fun_prop_of_mem_aeSeqSet hf hx
-  have h_ae_eq : ∀ᵐ x ∂μ, ∀ n, aeSeq hf p n x = f n x := aeSeq.aeSeq_eq_fun_ae hf h_ae_tendsto
-  set f_lim : α → β := fun x => dite (x ∈ aeSeqSet hf p) (fun h => (hp_mem x h).choose)
-    fun _ => (⟨f default x⟩ : Nonempty β).some
-  have hf_lim : ∀ x, Tendsto (fun n => aeSeq hf p n x) L (𝓝 (f_lim x)) := by
-    intro x
-    simp only [aeSeq, f_lim]
-    split_ifs with h
-    · refine (hp_mem x h).choose_spec.congr fun n => ?_
-      exact (aeSeq.mk_eq_fun_of_mem_aeSeqSet hf h n).symm
-    · exact tendsto_const_nhds
-  have h_ae_tendsto_f_lim : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) L (𝓝 (f_lim x)) :=
-    h_ae_eq.mono fun x hx => (hf_lim x).congr hx
-  have h_f_lim_meas : Measurable f_lim :=
-    measurable_of_tendsto_metrizable' L (aeSeq.measurable hf p)
-      (tendsto_pi_nhds.mpr fun x => hf_lim x)
-  exact ⟨f_lim, h_f_lim_meas, h_ae_tendsto_f_lim⟩
+  set f_lim : α → β := fun x ↦
+    if h : ∃ l : β, Tendsto (fun n ↦ f n x) L (𝓝 l) then h.choose
+      else (⟨f default x⟩ : Nonempty β).some
+  have h_ae_tendsto_f_lim : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) L (𝓝 (f_lim x)) := by
+    filter_upwards [h_ae_tendsto] with x hx
+    simpa [f_lim, hx] using hx.choose_spec
+  have hf_lim : AEMeasurable f_lim μ :=
+    aemeasurable_of_tendsto_metrizable_ae L hf h_ae_tendsto_f_lim
+  refine ⟨hf_lim.mk f_lim, hf_lim.measurable_mk, ?_⟩
+  filter_upwards [h_ae_tendsto_f_lim, hf_lim.ae_eq_mk] with x hx h_eq
+  simpa [h_eq] using hx
 
 end Limits
 

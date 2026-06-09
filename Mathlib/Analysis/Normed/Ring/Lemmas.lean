@@ -3,11 +3,14 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Finset
-import Mathlib.Analysis.Normed.Group.Bounded
-import Mathlib.Analysis.Normed.Group.Int
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Analysis.Normed.Ring.Basic
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Finset
+public import Mathlib.Analysis.Normed.Group.Bounded
+public import Mathlib.Analysis.Normed.Group.Int
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Analysis.Normed.Ring.Basic
+public import Mathlib.Topology.MetricSpace.Dilation
 
 /-!
 # Normed rings
@@ -15,8 +18,7 @@ import Mathlib.Analysis.Normed.Ring.Basic
 In this file we continue building the theory of (semi)normed rings.
 -/
 
--- Guard against import creep.
-assert_not_exists RestrictScalars
+@[expose] public section
 
 variable {α : Type*} {β : Type*} {ι : Type*}
 
@@ -41,14 +43,14 @@ theorem Filter.isBoundedUnder_le_mul_tendsto_zero {f g : ι → α} {l : Filter 
 open Finset in
 /-- Non-unital seminormed ring structure on the product of finitely many non-unital seminormed
 rings, using the sup norm. -/
-instance Pi.nonUnitalSeminormedRing {π : ι → Type*} [Fintype ι]
-    [∀ i, NonUnitalSeminormedRing (π i)] : NonUnitalSeminormedRing (∀ i, π i) :=
+instance Pi.nonUnitalSeminormedRing {R : ι → Type*} [Fintype ι]
+    [∀ i, NonUnitalSeminormedRing (R i)] : NonUnitalSeminormedRing (∀ i, R i) :=
   { seminormedAddCommGroup, nonUnitalRing with
     norm_mul_le x y := NNReal.coe_mono <| calc
       (univ.sup fun i ↦ ‖x i * y i‖₊) ≤ univ.sup ((‖x ·‖₊) * (‖y ·‖₊)) :=
         sup_mono_fun fun _ _ ↦ nnnorm_mul_le _ _
       _ ≤ (univ.sup (‖x ·‖₊)) * univ.sup (‖y ·‖₊) :=
-        sup_mul_le_mul_sup_of_nonneg (fun _ _ ↦ zero_le _) fun _ _ ↦ zero_le _}
+        sup_mul_le_mul_sup_of_nonneg (fun _ _ ↦ zero_le) fun _ _ ↦ zero_le }
 
 end NonUnitalSeminormedRing
 
@@ -58,9 +60,26 @@ variable [SeminormedRing α]
 
 /-- Seminormed ring structure on the product of finitely many seminormed rings,
   using the sup norm. -/
-instance Pi.seminormedRing {π : ι → Type*} [Fintype ι] [∀ i, SeminormedRing (π i)] :
-    SeminormedRing (∀ i, π i) :=
+instance Pi.seminormedRing {R : ι → Type*} [Fintype ι] [∀ i, SeminormedRing (R i)] :
+    SeminormedRing (∀ i, R i) :=
   { Pi.nonUnitalSeminormedRing, Pi.ring with }
+
+lemma RingHom.isometry {𝕜₁ 𝕜₂ : Type*} [SeminormedRing 𝕜₁] [SeminormedRing 𝕜₂]
+    (σ : 𝕜₁ →+* 𝕜₂) [RingHomIsometric σ] :
+    Isometry σ := AddMonoidHomClass.isometry_of_norm _ fun _ => RingHomIsometric.norm_map
+
+/-- If `σ` and `σ'` are mutually inverse, then one is `RingHomIsometric` if the other is. Not an
+instance, as it would cause loops. -/
+lemma RingHomIsometric.inv {𝕜₁ 𝕜₂ : Type*} [SeminormedRing 𝕜₁] [SeminormedRing 𝕜₂]
+    (σ : 𝕜₁ →+* 𝕜₂) {σ' : 𝕜₂ →+* 𝕜₁} [RingHomInvPair σ σ'] [RingHomIsometric σ] :
+    RingHomIsometric σ' :=
+  ⟨fun {x} ↦ by rw [← RingHomIsometric.norm_map (σ := σ), RingHomInvPair.comp_apply_eq₂]⟩
+
+lemma tendsto_pow_cobounded_cobounded
+    [NormOneClass α] [NormMulClass α] {m : ℕ} (hm : m ≠ 0) :
+    Tendsto (· ^ m) (cobounded α) (cobounded α) := by
+  simpa [← tendsto_norm_atTop_iff_cobounded] using!
+    (tendsto_pow_atTop hm).comp (tendsto_norm_cobounded_atTop (E := α))
 
 end SeminormedRing
 
@@ -70,8 +89,8 @@ variable [NonUnitalNormedRing α]
 
 /-- Normed ring structure on the product of finitely many non-unital normed rings, using the sup
 norm. -/
-instance Pi.nonUnitalNormedRing {π : ι → Type*} [Fintype ι] [∀ i, NonUnitalNormedRing (π i)] :
-    NonUnitalNormedRing (∀ i, π i) :=
+instance Pi.nonUnitalNormedRing {R : ι → Type*} [Fintype ι] [∀ i, NonUnitalNormedRing (R i)] :
+    NonUnitalNormedRing (∀ i, R i) :=
   { Pi.nonUnitalSeminormedRing, Pi.normedAddCommGroup with }
 
 end NonUnitalNormedRing
@@ -81,8 +100,8 @@ section NormedRing
 variable [NormedRing α]
 
 /-- Normed ring structure on the product of finitely many normed rings, using the sup norm. -/
-instance Pi.normedRing {π : ι → Type*} [Fintype ι] [∀ i, NormedRing (π i)] :
-    NormedRing (∀ i, π i) :=
+instance Pi.normedRing {R : ι → Type*} [Fintype ι] [∀ i, NormedRing (R i)] :
+    NormedRing (∀ i, R i) :=
   { Pi.seminormedRing, Pi.normedAddCommGroup with }
 
 end NormedRing
@@ -93,8 +112,8 @@ variable [NonUnitalSeminormedCommRing α]
 
 /-- Non-unital seminormed commutative ring structure on the product of finitely many non-unital
 seminormed commutative rings, using the sup norm. -/
-instance Pi.nonUnitalSeminormedCommRing {π : ι → Type*} [Fintype ι]
-    [∀ i, NonUnitalSeminormedCommRing (π i)] : NonUnitalSeminormedCommRing (∀ i, π i) :=
+instance Pi.nonUnitalSeminormedCommRing {R : ι → Type*} [Fintype ι]
+    [∀ i, NonUnitalSeminormedCommRing (R i)] : NonUnitalSeminormedCommRing (∀ i, R i) :=
   { Pi.nonUnitalSeminormedRing, Pi.nonUnitalCommRing with }
 
 end NonUnitalSeminormedCommRing
@@ -105,8 +124,8 @@ variable [NonUnitalNormedCommRing α]
 
 /-- Normed commutative ring structure on the product of finitely many non-unital normed
 commutative rings, using the sup norm. -/
-instance Pi.nonUnitalNormedCommRing {π : ι → Type*} [Fintype ι]
-    [∀ i, NonUnitalNormedCommRing (π i)] : NonUnitalNormedCommRing (∀ i, π i) :=
+instance Pi.nonUnitalNormedCommRing {R : ι → Type*} [Fintype ι]
+    [∀ i, NonUnitalNormedCommRing (R i)] : NonUnitalNormedCommRing (∀ i, R i) :=
   { Pi.nonUnitalSeminormedCommRing, Pi.normedAddCommGroup with }
 
 end NonUnitalNormedCommRing
@@ -117,8 +136,8 @@ variable [SeminormedCommRing α]
 
 /-- Seminormed commutative ring structure on the product of finitely many seminormed commutative
 rings, using the sup norm. -/
-instance Pi.seminormedCommRing {π : ι → Type*} [Fintype ι] [∀ i, SeminormedCommRing (π i)] :
-    SeminormedCommRing (∀ i, π i) :=
+instance Pi.seminormedCommRing {R : ι → Type*} [Fintype ι] [∀ i, SeminormedCommRing (R i)] :
+    SeminormedCommRing (∀ i, R i) :=
   { Pi.nonUnitalSeminormedCommRing, Pi.ring with }
 
 end SeminormedCommRing
@@ -129,8 +148,8 @@ variable [NormedCommRing α]
 
 /-- Normed commutative ring structure on the product of finitely many normed commutative rings,
 using the sup norm. -/
-instance Pi.normedCommutativeRing {π : ι → Type*} [Fintype ι] [∀ i, NormedCommRing (π i)] :
-    NormedCommRing (∀ i, π i) :=
+instance Pi.normedCommutativeRing {R : ι → Type*} [Fintype ι] [∀ i, NormedCommRing (R i)] :
+    NormedCommRing (∀ i, R i) :=
   { Pi.seminormedCommRing, Pi.normedAddCommGroup with }
 
 end NormedCommRing
@@ -149,15 +168,11 @@ instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSem
             _ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ :=
               norm_add_le_of_le (norm_mul_le _ _) (norm_mul_le _ _)
         refine squeeze_zero (fun e => norm_nonneg _) this ?_
-        convert
+        convert!
           ((continuous_fst.tendsto x).norm.mul
                 ((continuous_snd.tendsto x).sub tendsto_const_nhds).norm).add
-            (((continuous_fst.tendsto x).sub tendsto_const_nhds).norm.mul _)
-        -- Porting note: `show` used to select a goal to work on
-        rotate_right
-        · show Tendsto _ _ _
-          exact tendsto_const_nhds
-        · simp⟩
+            (((continuous_fst.tendsto x).sub tendsto_const_nhds).norm.mul tendsto_const_nhds)
+        simp⟩
 
 -- see Note [lower instance priority]
 /-- A seminormed ring is a topological ring. -/
@@ -195,11 +210,13 @@ end SeparationQuotient
 namespace NNReal
 
 lemma lipschitzWith_sub : LipschitzWith 2 (fun (p : ℝ≥0 × ℝ≥0) ↦ p.1 - p.2) := by
-  rw [← isometry_subtype_coe.lipschitzWith_iff]
+  rw [← NNReal.isometry_coe.lipschitzWith_iff]
   have : Isometry (Prod.map ((↑) : ℝ≥0 → ℝ) ((↑) : ℝ≥0 → ℝ)) :=
-    isometry_subtype_coe.prod_map isometry_subtype_coe
-  convert (((LipschitzWith.prod_fst.comp this.lipschitz).sub
-    (LipschitzWith.prod_snd.comp this.lipschitz)).max_const 0)
+    NNReal.isometry_coe.prodMap NNReal.isometry_coe
+  convert!
+    (((LipschitzWith.prod_fst.comp this.lipschitz).sub
+          (LipschitzWith.prod_snd.comp this.lipschitz)).max_const
+      0)
   norm_num
 
 end NNReal
@@ -211,3 +228,47 @@ instance Int.instNormedCommRing : NormedCommRing ℤ where
 
 instance Int.instNormOneClass : NormOneClass ℤ :=
   ⟨by simp [← Int.norm_cast_real]⟩
+
+instance Int.instNormMulClass : NormMulClass ℤ :=
+  ⟨fun a b ↦ by simp [← Int.norm_cast_real, abs_mul]⟩
+
+section NonUnitalNormedRing
+variable [NonUnitalNormedRing α] [NormMulClass α] {a : α}
+
+lemma antilipschitzWith_mul_left {a : α} (ha : a ≠ 0) : AntilipschitzWith (‖a‖₊⁻¹) (a * ·) :=
+  AntilipschitzWith.of_le_mul_dist fun _ _ ↦ by simp [dist_eq_norm, ← mul_sub, ha]
+
+lemma antilipschitzWith_mul_right {a : α} (ha : a ≠ 0) : AntilipschitzWith (‖a‖₊⁻¹) (· * a) :=
+  AntilipschitzWith.of_le_mul_dist fun _ _ ↦ by simp [dist_eq_norm, ← sub_mul, mul_comm, ha]
+
+/-- Multiplication by a nonzero element `a` on the left, as a `Dilation` of a ring with a strictly
+multiplicative norm. -/
+@[simps!]
+def Dilation.mulLeft (a : α) (ha : a ≠ 0) : α →ᵈ α where
+  toFun b := a * b
+  edist_eq' := ⟨‖a‖₊, nnnorm_ne_zero_iff.2 ha, fun x y ↦ by
+    simp [edist_nndist, nndist_eq_nnnorm, ← mul_sub]⟩
+
+/-- Multiplication by a nonzero element `a` on the right, as a `Dilation` of a ring with a strictly
+multiplicative norm. -/
+@[simps!]
+def Dilation.mulRight (a : α) (ha : a ≠ 0) : α →ᵈ α where
+  toFun b := b * a
+  edist_eq' := ⟨‖a‖₊, nnnorm_ne_zero_iff.2 ha, fun x y ↦ by
+    simp [edist_nndist, nndist_eq_nnnorm, ← sub_mul, ← mul_comm (‖a‖₊)]⟩
+
+namespace Filter
+
+@[simp]
+lemma comap_mul_left_cobounded {a : α} (ha : a ≠ 0) :
+    comap (a * ·) (cobounded α) = cobounded α :=
+  Dilation.comap_cobounded (Dilation.mulLeft a ha)
+
+@[simp]
+lemma comap_mul_right_cobounded {a : α} (ha : a ≠ 0) :
+    comap (· * a) (cobounded α) = cobounded α :=
+  Dilation.comap_cobounded (Dilation.mulRight a ha)
+
+end Filter
+
+end NonUnitalNormedRing

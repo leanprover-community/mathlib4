@@ -3,8 +3,10 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.Topology.Perfect
-import Mathlib.Tactic.Peel
+module
+
+public import Mathlib.Topology.Perfect
+public import Mathlib.Tactic.Peel
 
 /-!
 # Derived set
@@ -13,6 +15,8 @@ This file defines the derived set of a set, the set of all `AccPt`s of its princ
 and proves some properties of it.
 
 -/
+
+@[expose] public section
 
 open Filter Topology
 
@@ -25,7 +29,7 @@ theorem AccPt.map {β : Type*} [TopologicalSpace β] {F : Filter X} {x : X}
   rw [Filter.map_inf hf2]
   gcongr
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hf1.continuousWithinAt
-  simpa [hf2.eq_iff] using eventually_mem_nhdsWithin
+  simpa [hf2.eq_iff] using! eventually_mem_nhdsWithin
 
 /--
 The derived set of a set is the set of all accumulation points of it.
@@ -48,7 +52,7 @@ theorem Continuous.image_derivedSet {β : Type*} [TopologicalSpace β] {A : Set 
   intro x hx
   simp only [Set.mem_image, mem_derivedSet] at hx
   obtain ⟨y, hy1, rfl⟩ := hx
-  convert hy1.map hf1.continuousAt hf2
+  convert! hy1.map hf1.continuousAt hf2
   simp
 
 lemma derivedSet_subset_closure (A : Set X) : derivedSet A ⊆ closure A :=
@@ -61,8 +65,12 @@ lemma isClosed_iff_derivedSet_subset (A : Set X) : IsClosed A ↔ derivedSet A �
     intro a ha
     by_contra! nh
     have : A = A \ {a} := by simp [nh]
-    rw [this, ← acc_principal_iff_cluster] at ha
+    rw [this, ← accPt_principal_iff_clusterPt] at ha
     exact nh (h ha)
+
+lemma closure_eq_self_union_derivedSet (A : Set X) : closure A = A ∪ derivedSet A := by
+  ext
+  simp [closure_eq_cluster_pts, clusterPt_principal]
 
 /-- In a `T1Space`, the `derivedSet` of the closure of a set is equal to the derived set of the
 set itself.

@@ -3,11 +3,13 @@ Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Algebra.Module.ZLattice.Basic
-import Mathlib.Analysis.InnerProductSpace.ProdL2
-import Mathlib.MeasureTheory.Measure.Haar.Unique
-import Mathlib.NumberTheory.NumberField.FractionalIdeal
-import Mathlib.NumberTheory.NumberField.Units.Basic
+module
+
+public import Mathlib.Algebra.Module.ZLattice.Basic
+public import Mathlib.Analysis.InnerProductSpace.ProdL2
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
+public import Mathlib.NumberTheory.NumberField.FractionalIdeal
+public import Mathlib.NumberTheory.NumberField.Units.Basic
 
 /-!
 # Canonical embedding of a number field
@@ -20,29 +22,33 @@ into the type `(K →+* ℂ) → ℂ` of `ℂ`-vectors indexed by the complex em
 ## Main definitions and results
 
 * `NumberField.canonicalEmbedding`: the ring homomorphism `K →+* ((K →+* ℂ) → ℂ)` defined by
-sending `x : K` to the vector `(φ x)` indexed by `φ : K →+* ℂ`.
+  sending `x : K` to the vector `(φ x)` indexed by `φ : K →+* ℂ`.
 
 * `NumberField.canonicalEmbedding.integerLattice.inter_ball_finite`: the intersection of the
-image of the ring of integers by the canonical embedding and any ball centered at `0` of finite
-radius is finite.
+  image of the ring of integers by the canonical embedding and any ball centered at `0` of finite
+  radius is finite.
 
 * `NumberField.mixedEmbedding`: the ring homomorphism from `K` to the mixed space
-`K →+* ({ w // IsReal w } → ℝ) × ({ w // IsComplex w } → ℂ)` that sends `x ∈ K` to `(φ_w x)_w`
-where `φ_w` is the embedding associated to the infinite place `w`. In particular, if `w` is real
-then `φ_w : K →+* ℝ` and, if `w` is complex, `φ_w` is an arbitrary choice between the two complex
-embeddings defining the place `w`.
+  `K →+* ({ w // IsReal w } → ℝ) × ({ w // IsComplex w } → ℂ)` that sends `x ∈ K` to `(φ_w x)_w`
+  where `φ_w` is the embedding associated to the infinite place `w`. In particular, if `w` is real
+  then `φ_w : K →+* ℝ` and, if `w` is complex, `φ_w` is an arbitrary choice between the two complex
+  embeddings defining the place `w`.
 
 ## Tags
 
 number field, infinite places
 -/
 
+@[expose] public section
+
+open Module
+
 variable (K : Type*) [Field K]
 
 namespace NumberField.canonicalEmbedding
 
 /-- The canonical embedding of a number field `K` of degree `n` into `ℂ^n`. -/
-def _root_.NumberField.canonicalEmbedding : K →+* ((K →+* ℂ) → ℂ) := Pi.ringHom fun φ => φ
+def _root_.NumberField.canonicalEmbedding : K →+* ((K →+* ℂ) → ℂ) := RingHom.pi fun φ => φ
 
 theorem _root_.NumberField.canonicalEmbedding_injective [NumberField K] :
     Function.Injective (NumberField.canonicalEmbedding K) := RingHom.injective _
@@ -55,7 +61,7 @@ theorem apply_at (φ : K →+* ℂ) (x : K) : (NumberField.canonicalEmbedding K 
 open scoped ComplexConjugate
 
 /-- The image of `canonicalEmbedding` lives in the `ℝ`-submodule of the `x ∈ ((K →+* ℂ) → ℂ)` such
-that `conj x_φ = x_(conj φ)` for all `∀ φ : K →+* ℂ`. -/
+that `conj x_φ = x_(conj φ)` for all `φ : K →+* ℂ`. -/
 theorem conj_apply {x : ((K →+* ℂ) → ℂ)} (φ : K →+* ℂ)
     (hx : x ∈ Submodule.span ℝ (Set.range (canonicalEmbedding K))) :
     conj (x φ) = x (ComplexEmbedding.conjugate φ) := by
@@ -73,11 +79,11 @@ theorem nnnorm_eq [NumberField K] (x : K) :
 
 theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
     ‖canonicalEmbedding K x‖ ≤ r ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
-  obtain hr | hr := lt_or_le r 0
+  obtain hr | hr := lt_or_ge r 0
   · obtain ⟨φ⟩ := (inferInstance : Nonempty (K →+* ℂ))
     refine iff_of_false ?_ ?_
-    · exact (hr.trans_le (norm_nonneg _)).not_le
-    · exact fun h => hr.not_le (le_trans (norm_nonneg _) (h φ))
+    · exact (hr.trans_le (norm_nonneg _)).not_ge
+    · exact fun h => hr.not_ge (le_trans (norm_nonneg _) (h φ))
   · lift r to NNReal using hr
     simp_rw [← coe_nnnorm, nnnorm_eq, NNReal.coe_le_coe, Finset.sup_le_iff, Finset.mem_univ,
       forall_true_left]
@@ -90,19 +96,17 @@ def integerLattice : Subring ((K →+* ℂ) → ℂ) :=
 
 theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
     ((integerLattice K : Set ((K →+* ℂ) → ℂ)) ∩ Metric.closedBall 0 r).Finite := by
-  obtain hr | _ := lt_or_le r 0
+  obtain hr | _ := lt_or_ge r 0
   · simp [Metric.closedBall_eq_empty.2 hr]
   · have heq : ∀ x, canonicalEmbedding K x ∈ Metric.closedBall 0 r ↔
         ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
       intro x; rw [← norm_le_iff, mem_closedBall_zero_iff]
-    convert (Embeddings.finite_of_norm_le K ℂ r).image (canonicalEmbedding K)
+    convert! (Embeddings.finite_of_norm_le K ℂ r).image (canonicalEmbedding K)
     ext; constructor
     · rintro ⟨⟨_, ⟨x, rfl⟩, rfl⟩, hx⟩
       exact ⟨x, ⟨SetLike.coe_mem x, fun φ => (heq _).mp hx φ⟩, rfl⟩
     · rintro ⟨x, ⟨hx1, hx2⟩, rfl⟩
       exact ⟨⟨x, ⟨⟨x, hx1⟩, rfl⟩, rfl⟩, (heq x).mpr hx2⟩
-
-open Module Fintype Module
 
 /-- A `ℂ`-basis of `ℂ^n` that is also a `ℤ`-basis of the `integerLattice`. -/
 noncomputable def latticeBasis [NumberField K] :
@@ -113,22 +117,20 @@ noncomputable def latticeBasis [NumberField K] :
   -- will imply the result.
     let B := Pi.basisFun ℂ (K →+* ℂ)
     let e : (K →+* ℂ) ≃ Free.ChooseBasisIndex ℤ (𝓞 K) :=
-      equivOfCardEq ((Embeddings.card K ℂ).trans (finrank_eq_card_basis (integralBasis K)))
+      Fintype.equivOfCardEq ((Embeddings.card K ℂ).trans (finrank_eq_card_basis (integralBasis K)))
     let M := B.toMatrix (fun i => canonicalEmbedding K (integralBasis K (e i)))
     suffices M.det ≠ 0 by
-      rw [← isUnit_iff_ne_zero, ← Basis.det_apply, ← is_basis_iff_det] at this
-      refine basisOfLinearIndependentOfCardEqFinrank
-        ((linearIndependent_equiv e.symm).mpr this.1) ?_
-      rw [← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank, finrank_fintype_fun_eq_card,
-        Embeddings.card]
+      rw [← isUnit_iff_ne_zero, ← Basis.det_apply, ← Basis.is_basis_iff_det] at this
+      exact (basisOfPiSpaceOfLinearIndependent this.1).reindex e
   -- In order to prove that the determinant is nonzero, we show that it is equal to the
   -- square of the discriminant of the integral basis and thus it is not zero
     let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
       RingHom.equivRatAlgHom
     rw [show M = N.transpose by { ext : 2; rfl }]
     rw [Matrix.det_transpose, ← pow_ne_zero_iff two_ne_zero]
-    convert (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
-      (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
+    convert!
+      (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
+        (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
     rw [← Algebra.discr_reindex ℚ (integralBasis K) e.symm]
     exact (Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two ℚ ℂ
       (fun i => integralBasis K (e i)) RingHom.equivRatAlgHom).symm
@@ -136,7 +138,7 @@ noncomputable def latticeBasis [NumberField K] :
 @[simp]
 theorem latticeBasis_apply [NumberField K] (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
     latticeBasis K i = (canonicalEmbedding K) (integralBasis K i) := by
-  simp only [latticeBasis, integralBasis_apply, coe_basisOfLinearIndependentOfCardEqFinrank,
+  simp [latticeBasis, integralBasis_apply, coe_basisOfPiSpaceOfLinearIndependent,
     Function.comp_apply, Equiv.apply_symm_apply]
 
 theorem mem_span_latticeBasis [NumberField K] {x : (K →+* ℂ) → ℂ} :
@@ -186,23 +188,18 @@ abbrev mixedSpace :=
 
 /-- The mixed embedding of a number field `K` into the mixed space of `K`. -/
 noncomputable def _root_.NumberField.mixedEmbedding : K →+* (mixedSpace K) :=
-  RingHom.prod (Pi.ringHom fun w => embedding_of_isReal w.prop)
-    (Pi.ringHom fun w => w.val.embedding)
+  RingHom.prod (RingHom.pi fun w => embedding_of_isReal w.prop)
+    (RingHom.pi fun w => w.val.embedding)
 
 @[simp]
 theorem mixedEmbedding_apply_isReal (x : K) (w : {w // IsReal w}) :
     (mixedEmbedding K x).1 w = embedding_of_isReal w.prop x := by
-  simp_rw [mixedEmbedding, RingHom.prod_apply, Pi.ringHom_apply]
+  simp_rw [mixedEmbedding, RingHom.prod_apply, RingHom.pi_apply]
 
 @[simp]
 theorem mixedEmbedding_apply_isComplex (x : K) (w : {w // IsComplex w}) :
     (mixedEmbedding K x).2 w = w.val.embedding x := by
-  simp_rw [mixedEmbedding, RingHom.prod_apply, Pi.ringHom_apply]
-
-@[deprecated (since := "2025-02-28")] alias mixedEmbedding_apply_ofIsReal :=
-  mixedEmbedding_apply_isReal
-@[deprecated (since := "2025-02-28")] alias mixedEmbedding_apply_ofIsComplex :=
-  mixedEmbedding_apply_isComplex
+  simp_rw [mixedEmbedding, RingHom.prod_apply, RingHom.pi_apply]
 
 instance [NumberField K] : Nontrivial (mixedSpace K) := by
   obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
@@ -215,7 +212,7 @@ instance [NumberField K] : Nontrivial (mixedSpace K) := by
 protected theorem finrank [NumberField K] : finrank ℝ (mixedSpace K) = finrank ℚ K := by
   classical
   rw [finrank_prod, finrank_pi, finrank_pi_fintype, Complex.finrank_real_complex, sum_const,
-    card_univ, ← nrRealPlaces, ← nrComplexPlaces, ← card_real_embeddings, Algebra.id.smul_eq_mul,
+    card_univ, ← nrRealPlaces, ← nrComplexPlaces, ← card_real_embeddings, smul_eq_mul,
     mul_comm, ← card_complex_embeddings, ← NumberField.Embeddings.card K ℂ,
     Fintype.card_subtype_compl, Nat.add_sub_of_le (Fintype.card_subtype_le _)]
 
@@ -250,8 +247,8 @@ volume zero. -/
 theorem volume_eq_zero (w : {w // IsReal w}) :
     volume ({x : mixedSpace K | x.1 w = 0}) = 0 := by
   let A : AffineSubspace ℝ (mixedSpace K) :=
-    Submodule.toAffineSubspace (Submodule.mk ⟨⟨{x | x.1 w = 0}, by aesop⟩, rfl⟩ (by aesop))
-  convert Measure.addHaar_affineSubspace volume A fun h ↦ ?_
+    Submodule.toAffineSubspace (Submodule.mk ⟨⟨{x | x.1 w = 0}, by simp_all⟩, rfl⟩ (by simp_all))
+  convert! Measure.addHaar_affineSubspace volume A fun h ↦ ?_
   simpa [A] using (h ▸ Set.mem_univ _ : 1 ∈ A)
 
 end Measure
@@ -279,7 +276,7 @@ theorem commMap_apply_of_isComplex (x : (K →+* ℂ) → ℂ) {w : InfinitePlac
 @[simp]
 theorem commMap_canonical_eq_mixed (x : K) :
     commMap K (canonicalEmbedding K x) = mixedEmbedding K x := by
-  simp only [canonicalEmbedding, commMap, LinearMap.coe_mk, AddHom.coe_mk, Pi.ringHom_apply,
+  simp only [canonicalEmbedding, commMap, LinearMap.coe_mk, AddHom.coe_mk, RingHom.pi_apply,
     mixedEmbedding, RingHom.prod_apply, Prod.mk.injEq]
   exact ⟨rfl, rfl⟩
 
@@ -330,7 +327,7 @@ theorem normAtPlace_nonneg (w : InfinitePlace K) (x : mixedSpace K) :
   split_ifs <;> exact norm_nonneg _
 
 theorem normAtPlace_neg (w : InfinitePlace K) (x : mixedSpace K) :
-    normAtPlace w (- x) = normAtPlace w x := by
+    normAtPlace w (-x) = normAtPlace w x := by
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   split_ifs <;> simp
 
@@ -358,15 +355,11 @@ theorem normAtPlace_apply_of_isComplex {w : InfinitePlace K} (hw : IsComplex w) 
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
     dif_neg (not_isReal_iff_isComplex.mpr hw)]
 
-@[deprecated (since := "2025-02-28")] alias normAtPlace_apply_isReal := normAtPlace_apply_of_isReal
-@[deprecated (since := "2025-02-28")] alias normAtPlace_apply_isComplex :=
-  normAtPlace_apply_of_isComplex
-
 @[simp]
 theorem normAtPlace_apply (w : InfinitePlace K) (x : K) :
     normAtPlace w (mixedEmbedding K x) = w x := by
   simp_rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, mixedEmbedding,
-    RingHom.prod_apply, Pi.ringHom_apply, norm_embedding_of_isReal, norm_embedding_eq, dite_eq_ite,
+    RingHom.prod_apply, RingHom.pi_apply, norm_embedding_of_isReal, norm_embedding_eq, dite_eq_ite,
     ite_id]
 
 theorem forall_normAtPlace_eq_zero_iff {x : mixedSpace K} :
@@ -377,18 +370,22 @@ theorem forall_normAtPlace_eq_zero_iff {x : mixedSpace K} :
     · exact norm_eq_zero.mp (normAtPlace_apply_of_isComplex w.prop _ ▸ h w.1)
   · simp_rw [h, map_zero, implies_true]
 
-@[deprecated (since := "2024-09-13")] alias normAtPlace_eq_zero := forall_normAtPlace_eq_zero_iff
-
 @[simp]
 theorem exists_normAtPlace_ne_zero_iff {x : mixedSpace K} :
     (∃ w, normAtPlace w x ≠ 0) ↔ x ≠ 0 := by
   rw [ne_eq, ← forall_normAtPlace_eq_zero_iff, not_forall]
 
+@[fun_prop]
+theorem continuous_normAtPlace (w : InfinitePlace K) :
+    Continuous (normAtPlace w) := by
+  simp_rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
+  split_ifs <;> fun_prop
+
 variable [NumberField K]
 
 open scoped Classical in
 theorem nnnorm_eq_sup_normAtPlace (x : mixedSpace K) :
-    ‖x‖₊ = univ.sup fun w ↦ ⟨normAtPlace w x, normAtPlace_nonneg w x⟩ := by
+    ‖x‖₊ = univ.sup fun w ↦ .mk (normAtPlace w x) (normAtPlace_nonneg w x) := by
   have :
       (univ : Finset (InfinitePlace K)) =
       (univ.image (fun w : {w : InfinitePlace K // IsReal w} ↦ w.1)) ∪
@@ -402,12 +399,13 @@ theorem nnnorm_eq_sup_normAtPlace (x : mixedSpace K) :
   · ext w
     simp [normAtPlace_apply_of_isComplex w.prop]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem norm_eq_sup'_normAtPlace (x : mixedSpace K) :
     ‖x‖ = univ.sup' univ_nonempty fun w ↦ normAtPlace w x := by
   rw [← coe_nnnorm, nnnorm_eq_sup_normAtPlace, ← sup'_eq_sup univ_nonempty, ← NNReal.val_eq_coe,
     ← OrderHom.Subtype.val_coe, map_finset_sup', OrderHom.Subtype.val_coe]
-  simp only [Function.comp_apply]
+  simp
 
 /-- The norm of `x` is `∏ w, (normAtPlace x) ^ mult w`. It is defined such that the norm of
 `mixedEmbedding K a` for `a : K` is equal to the absolute value of the norm of `a` over `ℚ`,
@@ -464,6 +462,13 @@ theorem norm_eq_zero_iff' {x : mixedSpace K} (hx : x ∈ Set.range (mixedEmbeddi
   rw [norm_eq_norm, Rat.cast_abs, abs_eq_zero, Rat.cast_eq_zero, Algebra.norm_eq_zero_iff,
     map_eq_zero]
 
+variable (K) in
+@[fun_prop]
+protected theorem continuous_norm : Continuous (mixedEmbedding.norm : (mixedSpace K) → ℝ) := by
+  refine continuous_finsetProd Finset.univ fun _ _ ↦ ?_
+  simp_rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dite_pow]
+  split_ifs <;> fun_prop
+
 end norm
 
 noncomputable section stdBasis
@@ -499,19 +504,13 @@ theorem stdBasis_apply_isComplex_snd (x : mixedSpace K)
     (w : {w : InfinitePlace K // IsComplex w}) :
     (stdBasis K).repr x (Sum.inr ⟨w, 1⟩) = (x.2 w).im := rfl
 
-@[deprecated (since := "2025-02-28")] alias stdBasis_apply_ofIsReal := stdBasis_apply_isReal
-@[deprecated (since := "2025-02-28")] alias stdBasis_apply_ofIsComplex_fst :=
-  stdBasis_apply_isComplex_fst
-@[deprecated (since := "2025-02-28")] alias stdBasis_apply_ofIsComplex_snd :=
-  stdBasis_apply_isComplex_snd
-
 variable (K)
 
 open scoped Classical in
 theorem fundamentalDomain_stdBasis :
     fundamentalDomain (stdBasis K) =
-        (Set.univ.pi fun _ => Set.Ico 0 1) ×ˢ
-        (Set.univ.pi fun _ => Complex.measurableEquivPi⁻¹' (Set.univ.pi fun _ => Set.Ico 0 1)) := by
+      (Set.univ.pi fun _ => Set.Ico 0 1) ×ˢ
+      (Set.univ.pi fun _ => Complex.measurableEquivPi ⁻¹' (Set.univ.pi fun _ => Set.Ico 0 1)) := by
   ext
   simp [stdBasis, mem_fundamentalDomain, Complex.measurableEquivPi]
 
@@ -558,12 +557,6 @@ theorem indexEquiv_apply_isComplex_fst (w : {w : InfinitePlace K // IsComplex w}
 theorem indexEquiv_apply_isComplex_snd (w : {w : InfinitePlace K // IsComplex w}) :
     (indexEquiv K) (Sum.inr ⟨w, 1⟩) = ComplexEmbedding.conjugate w.val.embedding := rfl
 
-@[deprecated (since := "2025-02-28")] alias indexEquiv_apply_ofIsReal := indexEquiv_apply_isReal
-@[deprecated (since := "2025-02-28")] alias indexEquiv_apply_ofIsComplex_fst :=
-  indexEquiv_apply_isComplex_fst
-@[deprecated (since := "2025-02-28")] alias indexEquiv_apply_ofIsComplex_snd :=
-  indexEquiv_apply_isComplex_snd
-
 variable (K)
 
 open scoped Classical in
@@ -572,7 +565,7 @@ element `x` of `(K →+* ℂ) → ℂ` fixed by the map `x_φ ↦ conj x_(conjug
 see `stdBasis_repr_eq_matrixToStdBasis_mul`. -/
 def matrixToStdBasis : Matrix (index K) (index K) ℂ :=
   fromBlocks (diagonal fun _ => 1) 0 0 <| reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _)
-    (blockDiagonal (fun _ => (2 : ℂ)⁻¹ • !![1, 1; - I, I]))
+    (blockDiagonal (fun _ => (2 : ℂ)⁻¹ • !![1, 1; -I, I]))
 
 open scoped Classical in
 theorem det_matrixToStdBasis :
@@ -583,7 +576,7 @@ theorem det_matrixToStdBasis :
           det_reindex_self, det_blockDiagonal]
   _ = ∏ _k : { w : InfinitePlace K // IsComplex w }, (2⁻¹ * Complex.I) := by
       refine prod_congr (Eq.refl _) (fun _ _ => ?_)
-      field_simp; ring
+      simp [field]; ring
   _ = (2⁻¹ * Complex.I) ^ Fintype.card {w : InfinitePlace K // IsComplex w} := by
       rw [prod_const, Fintype.card]
 
@@ -610,18 +603,18 @@ theorem stdBasis_repr_eq_matrixToStdBasis_mul (x : (K →+* ℂ) → ℂ)
   | inr c =>
     rcases c with ⟨w, j⟩
     fin_cases j
-    · simp only [Fin.zero_eta, Fin.isValue, id_eq, stdBasis_apply_isComplex_fst, re_eq_add_conj,
+    · simp only [Fin.zero_eta, Fin.isValue, stdBasis_apply_isComplex_fst, re_eq_add_conj,
         mul_neg, fromBlocks_apply₂₁, zero_apply, zero_mul, sum_const_zero, fromBlocks_apply₂₂,
         submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply, cons_val', cons_val_zero,
-        empty_val', cons_val_fin_one, ite_mul, cons_val_one, head_cons, sum_add_distrib, sum_ite_eq,
+        empty_val', cons_val_fin_one, ite_mul, cons_val_one, sum_add_distrib, sum_ite_eq,
         mem_univ, ↓reduceIte, ← hx (embedding w), zero_add]
-      field_simp
-    · simp only [Fin.mk_one, Fin.isValue, id_eq, stdBasis_apply_isComplex_snd, im_eq_sub_conj,
+      ring
+    · simp only [Fin.mk_one, Fin.isValue, stdBasis_apply_isComplex_snd, im_eq_sub_conj,
         mul_neg, fromBlocks_apply₂₁, zero_apply, zero_mul, sum_const_zero, fromBlocks_apply₂₂,
         submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply, cons_val', cons_val_zero,
-        empty_val', cons_val_fin_one, cons_val_one, head_fin_const, ite_mul, neg_mul, head_cons,
+        empty_val', cons_val_fin_one, cons_val_one, ite_mul, neg_mul,
         sum_add_distrib, sum_ite_eq, mem_univ, ↓reduceIte, ← hx (embedding w), zero_add]
-      ring_nf; field_simp
+      ring_nf; simp [field]
 
 end stdBasis
 
@@ -651,7 +644,7 @@ def latticeBasis :
     refine basisOfLinearIndependentOfCardEqFinrank this ?_
     rw [← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank, finrank_prod, finrank_pi,
       finrank_pi_fintype, Complex.finrank_real_complex, sum_const, card_univ, ← nrRealPlaces,
-      ← nrComplexPlaces, ← card_real_embeddings, Algebra.id.smul_eq_mul, mul_comm,
+      ← nrComplexPlaces, ← card_real_embeddings, smul_eq_mul, mul_comm,
       ← card_complex_embeddings, ← NumberField.Embeddings.card K ℂ, Fintype.card_subtype_compl,
       Nat.add_sub_of_le (Fintype.card_subtype_le _)]
 
@@ -720,10 +713,12 @@ theorem latticeBasis_repr_apply (x : K) (i : ChooseBasisIndex ℤ (𝓞 K)) :
 variable (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
 
 /-- The image of the fractional ideal `I` in the mixed space. -/
-abbrev idealLattice : Submodule ℤ (mixedSpace K) := LinearMap.range <|
+abbrev idealLattice (K : Type*) [Field K] (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
+    Submodule ℤ (mixedSpace K) := LinearMap.range <|
   (mixedEmbedding K).toIntAlgHom.toLinearMap ∘ₗ ((I : Submodule (𝓞 K) K).subtype.restrictScalars ℤ)
 
-theorem mem_idealLattice {x : mixedSpace K} :
+theorem mem_idealLattice (K : Type*) [Field K]
+    (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) {x : mixedSpace K} :
     x ∈ idealLattice K I ↔ ∃ y, y ∈ (I : Set K) ∧ mixedEmbedding K y = x := by
   simp [idealLattice]
 
@@ -757,7 +752,7 @@ def fractionalIdealLatticeBasis :
       fractionalIdeal_rank]
   refine Basis.reindex ?_ e
   suffices IsUnit ((latticeBasis K).det ((mixedEmbedding K) ∘ (basisOfFractionalIdeal K I) ∘ e)) by
-    rw [← is_basis_iff_det] at this
+    rw [← Basis.is_basis_iff_det] at this
     exact Basis.mk this.1 (by rw [this.2])
   rw [isUnit_iff_ne_zero, ne_eq, ← abs_eq_zero.not, det_basisOfFractionalIdeal_eq_norm,
     Rat.cast_eq_zero, FractionalIdeal.absNorm_eq_zero_iff]
@@ -812,26 +807,23 @@ namespace euclidean
 
 open MeasureTheory NumberField Submodule
 
-/-- The mixed space `ℝ^r₁ × ℂ^r₂`, with `(r₁, r₂)` the signature of `K`, as an Euclidean space. -/
+/-- The mixed space `ℝ^r₁ × ℂ^r₂`, with `(r₁, r₂)` the signature of `K`, as a Euclidean space. -/
 protected abbrev mixedSpace :=
     (WithLp 2 ((EuclideanSpace ℝ {w : InfinitePlace K // IsReal w}) ×
       (EuclideanSpace ℂ {w : InfinitePlace K // IsComplex w})))
 
 instance : Ring (euclidean.mixedSpace K) :=
-  have : Ring (EuclideanSpace ℝ {w : InfinitePlace K // IsReal w}) := Pi.ring
-  have : Ring (EuclideanSpace ℂ {w : InfinitePlace K // IsComplex w}) := Pi.ring
-  inferInstanceAs (Ring (_ × _))
-
-instance : MeasurableSpace (euclidean.mixedSpace K) := borel _
-
-instance : BorelSpace (euclidean.mixedSpace K) := ⟨rfl⟩
+  have : Ring (EuclideanSpace ℝ {w : InfinitePlace K // IsReal w}) := (WithLp.equiv 2 _).ring
+  have : Ring (EuclideanSpace ℂ {w : InfinitePlace K // IsComplex w}) := (WithLp.equiv 2 _).ring
+  (WithLp.equiv 2 _).ring
 
 variable [NumberField K]
 
 open Classical in
-/-- The continuous linear equivalence between the euclidean mixed space and the mixed space. -/
+/-- The continuous linear equivalence between the Euclidean mixed space and the mixed space. -/
 def toMixed : (euclidean.mixedSpace K) ≃L[ℝ] (mixedSpace K) :=
-  (WithLp.linearEquiv _ _ _).toContinuousLinearEquiv
+  (WithLp.linearEquiv _ _ _).trans
+    ((WithLp.linearEquiv _ _ _).prodCongr (WithLp.linearEquiv _ _ _)) |>.toContinuousLinearEquiv
 
 instance : Nontrivial (euclidean.mixedSpace K) := (toMixed K).toEquiv.nontrivial
 
@@ -840,7 +832,7 @@ protected theorem finrank :
   rw [LinearEquiv.finrank_eq (toMixed K).toLinearEquiv, mixedEmbedding.finrank]
 
 open Classical in
-/-- An orthonormal basis of the euclidean mixed space. -/
+/-- An orthonormal basis of the Euclidean mixed space. -/
 def stdOrthonormalBasis : OrthonormalBasis (index K) ℝ (euclidean.mixedSpace K) :=
   OrthonormalBasis.prod (EuclideanSpace.basisFun _ ℝ)
     ((Pi.orthonormalBasis fun _ ↦ Complex.orthonormalBasisOneI).reindex (Equiv.sigmaEquivProd _ _))
@@ -868,7 +860,7 @@ theorem volumePreserving_toMixed_symm :
   exact this.symm
 
 open Classical in
-/-- The image of ring of integers `𝓞 K` in the euclidean mixed space. -/
+/-- The image of ring of integers `𝓞 K` in the Euclidean mixed space. -/
 protected def integerLattice : Submodule ℤ (euclidean.mixedSpace K) :=
   ZLattice.comap ℝ (mixedEmbedding.integerLattice K) (toMixed K).toLinearMap
 
@@ -897,32 +889,26 @@ open Classical in
 swaps sign at places in `s` and leaves the rest unchanged. -/
 def negAt :
     mixedSpace K ≃L[ℝ] mixedSpace K :=
-  (piCongrRight fun w ↦ if w ∈ s then neg ℝ else ContinuousLinearEquiv.refl ℝ ℝ).prod
+  (piCongrRight fun w ↦ if w ∈ s then neg ℝ else ContinuousLinearEquiv.refl ℝ ℝ).prodCongr
     (ContinuousLinearEquiv.refl ℝ _)
 
 variable {s}
 
 @[simp]
 theorem negAt_apply_isReal_and_mem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∈ s) :
-    (negAt s x).1 w = - x.1 w := by
-  simp_rw [negAt, ContinuousLinearEquiv.prod_apply, piCongrRight_apply, if_pos hw,
+    (negAt s x).1 w = -x.1 w := by
+  simp_rw [negAt, prodCongr_apply, piCongrRight_apply, if_pos hw,
     ContinuousLinearEquiv.neg_apply]
 
 @[simp]
-theorem negAt_apply_isReal_and_not_mem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∉ s) :
+theorem negAt_apply_isReal_and_notMem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∉ s) :
     (negAt s x).1 w = x.1 w := by
-  simp_rw [negAt, ContinuousLinearEquiv.prod_apply, piCongrRight_apply, if_neg hw,
+  simp_rw [negAt, prodCongr_apply, piCongrRight_apply, if_neg hw,
     ContinuousLinearEquiv.refl_apply]
 
 @[simp]
 theorem negAt_apply_isComplex (x : mixedSpace K) (w : {w // IsComplex w}) :
     (negAt s x).2 w = x.2 w := rfl
-
-@[deprecated (since := "2025-02-28")] alias negAt_apply_of_isReal_and_mem :=
-  negAt_apply_isReal_and_mem
-@[deprecated (since := "2025-02-28")] alias negAt_apply_of_isReal_and_not_mem :=
-  negAt_apply_isReal_and_not_mem
-@[deprecated (since := "2025-02-28")] alias negAt_apply_of_isComplex := negAt_apply_isComplex
 
 @[simp]
 theorem negAt_apply_snd (x : mixedSpace K) :
@@ -931,9 +917,6 @@ theorem negAt_apply_snd (x : mixedSpace K) :
 theorem negAt_apply_norm_isReal (x : mixedSpace K) (w : {w // IsReal w}) :
     ‖(negAt s x).1 w‖ = ‖x.1 w‖ := by
   by_cases hw : w ∈ s <;> simp [hw]
-
-@[deprecated (since := "2025-02-28")] alias negAt_apply_abs_of_isReal := negAt_apply_norm_isReal
-@[deprecated (since := "2025-03-01")] alias negAt_apply_abs_isReal := negAt_apply_norm_isReal
 
 open MeasureTheory Classical in
 /-- `negAt` preserves the volume . -/
@@ -967,10 +950,12 @@ theorem negAt_symm :
     (negAt s).symm = negAt s := by
   ext x w
   · by_cases hw : w ∈ s
-    · simp_rw [negAt_apply_isReal_and_mem _ hw, negAt, prod_symm,
-        ContinuousLinearEquiv.prod_apply, piCongrRight_symm_apply, if_pos hw, symm_neg, neg_apply]
-    · simp_rw [negAt_apply_isReal_and_not_mem _ hw, negAt, prod_symm,
-        ContinuousLinearEquiv.prod_apply, piCongrRight_symm_apply, if_neg hw, refl_symm, refl_apply]
+    · simp_rw [negAt_apply_isReal_and_mem _ hw, negAt, prodCongr_symm,
+        prodCongr_apply, piCongrRight_symm_apply, if_pos hw, symm_neg,
+        neg_apply]
+    · simp_rw [negAt_apply_isReal_and_notMem _ hw, negAt, prodCongr_symm,
+        prodCongr_apply, piCongrRight_symm_apply, if_neg hw, refl_symm,
+        refl_apply]
   · rfl
 
 /-- For `x : mixedSpace K`, the set `signSet x` is the set of real places `w` s.t. `x w ≤ 0`. -/
@@ -981,16 +966,11 @@ theorem negAt_signSet_apply_isReal (x : mixedSpace K) (w : {w // IsReal w}) :
     (negAt (signSet x) x).1 w = ‖x.1 w‖ := by
   by_cases hw : x.1 w ≤ 0
   · rw [negAt_apply_isReal_and_mem _ hw, Real.norm_of_nonpos hw]
-  · rw [negAt_apply_isReal_and_not_mem _ hw, Real.norm_of_nonneg (lt_of_not_ge hw).le]
+  · rw [negAt_apply_isReal_and_notMem _ hw, Real.norm_of_nonneg (lt_of_not_ge hw).le]
 
 @[simp]
 theorem negAt_signSet_apply_isComplex (x : mixedSpace K) (w : {w // IsComplex w}) :
     (negAt (signSet x) x).2 w = x.2 w := rfl
-
-@[deprecated (since := "2025-02-28")] alias negAt_signSet_apply_of_isReal :=
-  negAt_signSet_apply_isReal
-@[deprecated (since := "2025-02-28")] alias negAt_signSet_apply_of_isComplex :=
-  negAt_signSet_apply_isComplex
 
 variable (A : Set (mixedSpace K)) {x : mixedSpace K}
 
@@ -998,7 +978,7 @@ variable (s) in
 /-- `negAt s A` is also equal to the preimage of `A` by `negAt s`. This fact is used to simplify
 some proofs. -/
 theorem negAt_preimage : negAt s ⁻¹' A = negAt s '' A := by
-  rw [ContinuousLinearEquiv.image_eq_preimage, negAt_symm]
+  rw [ContinuousLinearEquiv.image_eq_preimage_symm, negAt_symm]
 
 /-- The `plusPart` of a subset `A` of the `mixedSpace` is the set of points in `A` that are
 positive at all real places. -/
@@ -1010,10 +990,10 @@ theorem neg_of_mem_negA_plusPart (hx : x ∈ negAt s '' (plusPart A)) {w : {w //
   rw [negAt_apply_isReal_and_mem _ hw, neg_lt_zero]
   exact hy.2 w
 
-theorem pos_of_not_mem_negAt_plusPart (hx : x ∈ negAt s '' (plusPart A)) {w : {w // IsReal w}}
+theorem pos_of_notMem_negAt_plusPart (hx : x ∈ negAt s '' (plusPart A)) {w : {w // IsReal w}}
     (hw : w ∉ s) : 0 < x.1 w := by
   obtain ⟨y, hy, rfl⟩ := hx
-  rw [negAt_apply_isReal_and_not_mem _ hw]
+  rw [negAt_apply_isReal_and_notMem _ hw]
   exact hy.2 w
 
 open scoped Function in -- required for scoped `on` notation
@@ -1023,9 +1003,9 @@ theorem disjoint_negAt_plusPart : Pairwise (Disjoint on (fun s ↦ negAt s '' (p
   refine Set.disjoint_left.mpr fun _ hx hx' ↦ ?_
   obtain ⟨w, hw | hw⟩ : ∃ w, (w ∈ s ∧ w ∉ t) ∨ (w ∈ t ∧ w ∉ s) := Set.symmDiff_nonempty.mpr hst
   · exact lt_irrefl _ <|
-      (neg_of_mem_negA_plusPart A hx hw.1).trans (pos_of_not_mem_negAt_plusPart A hx' hw.2)
+      (neg_of_mem_negA_plusPart A hx hw.1).trans (pos_of_notMem_negAt_plusPart A hx' hw.2)
   · exact lt_irrefl _ <|
-      (neg_of_mem_negA_plusPart A hx' hw.1).trans (pos_of_not_mem_negAt_plusPart A hx hw.2)
+      (neg_of_mem_negA_plusPart A hx' hw.1).trans (pos_of_notMem_negAt_plusPart A hx hw.2)
 
 -- We will assume from now that `A` is symmetric at real places
 variable (hA : ∀ x, x ∈ A ↔ (fun w ↦ ‖x.1 w‖, x.2) ∈ A)
@@ -1034,13 +1014,13 @@ include hA in
 theorem mem_negAt_plusPart_of_mem (hx₁ : x ∈ A) (hx₂ : ∀ w, x.1 w ≠ 0) :
     x ∈ negAt s '' (plusPart A) ↔ (∀ w, w ∈ s → x.1 w < 0) ∧ (∀ w, w ∉ s → x.1 w > 0) := by
   refine ⟨fun hx ↦ ⟨fun _ hw ↦ neg_of_mem_negA_plusPart A hx hw,
-      fun _ hw ↦ pos_of_not_mem_negAt_plusPart A hx hw⟩,
+      fun _ hw ↦ pos_of_notMem_negAt_plusPart A hx hw⟩,
       fun ⟨h₁, h₂⟩ ↦
         ⟨(fun w ↦ ‖x.1 w‖, x.2), ⟨(hA x).mp hx₁, fun w ↦ norm_pos_iff.mpr (hx₂ w)⟩, ?_⟩⟩
   ext w
   · by_cases hw : w ∈ s
     · simp [negAt_apply_isReal_and_mem _ hw, abs_of_neg (h₁ w hw)]
-    · simp [negAt_apply_isReal_and_not_mem _ hw, abs_of_pos (h₂ w hw)]
+    · simp [negAt_apply_isReal_and_notMem _ hw, abs_of_pos (h₂ w hw)]
   · rfl
 
 include hA in
@@ -1053,7 +1033,7 @@ theorem iUnion_negAt_plusPart_union :
   rw [Set.mem_union, Set.mem_inter_iff, Set.mem_iUnion, Set.mem_iUnion]
   refine ⟨?_, fun h ↦ ?_⟩
   · rintro (⟨s, ⟨x, ⟨hx, _⟩, rfl⟩⟩ | h)
-    · simp_rw (config := {singlePass := true}) [hA, negAt_apply_norm_isReal, negAt_apply_snd]
+    · simp_rw +singlePass [hA, negAt_apply_norm_isReal, negAt_apply_snd]
       rwa [← hA]
     · exact h.left
   · obtain hx | hx := exists_or_forall_not (fun w ↦ x.1 w = 0)
@@ -1082,7 +1062,7 @@ theorem measurableSet_plusPart (hm : MeasurableSet A) :
   convert_to MeasurableSet (A ∩ (⋂ w, {x | 0 < x.1 w}))
   · ext; simp
   · refine hm.inter (MeasurableSet.iInter fun _ ↦ ?_)
-    exact measurableSet_lt measurable_const ((measurable_pi_apply _).comp' measurable_fst)
+    exact measurableSet_lt measurable_const (by fun_prop)
 
 variable (s) in
 theorem measurableSet_negAt_plusPart (hm : MeasurableSet A) :
@@ -1127,8 +1107,8 @@ variable {K}
 theorem realSpace.volume_eq_zero [NumberField K] (w : InfinitePlace K) :
     volume ({x : realSpace K | x w = 0}) = 0 := by
   let A : AffineSubspace ℝ (realSpace K) :=
-    Submodule.toAffineSubspace (Submodule.mk ⟨⟨{x | x w = 0}, by aesop⟩, rfl⟩ (by aesop))
-  convert Measure.addHaar_affineSubspace volume A fun h ↦ ?_
+    Submodule.toAffineSubspace (Submodule.mk ⟨⟨{x | x w = 0}, by simp_all⟩, rfl⟩ (by simp_all))
+  convert! Measure.addHaar_affineSubspace volume A fun h ↦ ?_
   simpa [A] using (h ▸ Set.mem_univ _ : 1 ∈ A)
 
 /--
@@ -1196,6 +1176,10 @@ abbrev normAtAllPlaces (x : mixedSpace K) : realSpace K :=
 theorem normAtAllPlaces_apply (x : mixedSpace K) (w : InfinitePlace K) :
     normAtAllPlaces x w = normAtPlace w x := rfl
 
+variable (K) in
+theorem continuous_normAtAllPlaces :
+    Continuous (normAtAllPlaces : mixedSpace K → realSpace K) := by fun_prop
+
 theorem normAtAllPlaces_nonneg (x : mixedSpace K) (w : InfinitePlace K) :
     0 ≤ normAtAllPlaces x w := normAtPlace_nonneg _ _
 
@@ -1203,6 +1187,10 @@ theorem normAtAllPlaces_mixedSpaceOfRealSpace {x : realSpace K} (hx : ∀ w, 0 �
     normAtAllPlaces (mixedSpaceOfRealSpace x) = x := by
   ext
   rw [normAtAllPlaces_apply, normAtPlace_mixedSpaceOfRealSpace (hx _)]
+
+theorem normAtAllPlaces_mixedEmbedding (x : K) (w : InfinitePlace K) :
+    normAtAllPlaces (mixedEmbedding K x) w = w x := by
+  rw [normAtAllPlaces_apply, normAtPlace_apply]
 
 theorem normAtAllPlaces_normAtAllPlaces (x : mixedSpace K) :
     normAtAllPlaces (mixedSpaceOfRealSpace (normAtAllPlaces x)) = normAtAllPlaces x :=
@@ -1217,10 +1205,10 @@ theorem normAtAllPlaces_norm_at_real_places (x : mixedSpace K) :
 
 theorem normAtComplexPlaces_normAtAllPlaces (x : mixedSpace K) :
     normAtComplexPlaces (mixedSpaceOfRealSpace (normAtAllPlaces x)) = normAtAllPlaces x :=
-   normAtComplexPlaces_mixedSpaceOfRealSpace fun _ _ ↦ (normAtAllPlaces_nonneg _ _)
+  normAtComplexPlaces_mixedSpaceOfRealSpace fun _ _ ↦ (normAtAllPlaces_nonneg _ _)
 
 theorem normAtAllPlaces_eq_of_normAtComplexPlaces_eq {x y : mixedSpace K}
-    (h: normAtComplexPlaces x = normAtComplexPlaces y) :
+    (h : normAtComplexPlaces x = normAtComplexPlaces y) :
     normAtAllPlaces x = normAtAllPlaces y := by
   ext w
   obtain hw | hw := isReal_or_isComplex w
@@ -1228,6 +1216,14 @@ theorem normAtAllPlaces_eq_of_normAtComplexPlaces_eq {x y : mixedSpace K}
       normAtComplexPlaces_apply_isReal ⟨w, hw⟩] using congr_arg (|·|) (congr_fun h w)
   · simpa [normAtAllPlaces_apply, normAtPlace_apply_of_isComplex hw,
       normAtComplexPlaces_apply_isComplex ⟨w, hw⟩] using congr_fun h w
+
+theorem normAtAllPlaces_image_preimage_of_nonneg {s : Set (realSpace K)}
+    (hs : ∀ x ∈ s, ∀ w, 0 ≤ x w) :
+    normAtAllPlaces '' normAtAllPlaces ⁻¹' s = s := by
+  rw [Set.image_preimage_eq_iff]
+  rintro x hx
+  refine ⟨mixedSpaceOfRealSpace x, funext fun w ↦ ?_⟩
+  rw [normAtAllPlaces_apply, normAtPlace_mixedSpaceOfRealSpace (hs x hx w)]
 
 end realSpace
 
