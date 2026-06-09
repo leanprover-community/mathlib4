@@ -1090,7 +1090,7 @@ instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final :=
   rintro ⟨d, f⟩
   let ⟨u, c, g⟩ : Nonempty (StructuredArrow d G) := inferInstance
   letI : Nonempty (StructuredArrow ⟨d, f⟩ (pre F G)) :=
-    ⟨u, ⟨c, (F.map g).toFunctor.obj f⟩, ⟨(g), (𝟙 _)⟩⟩
+    ⟨u, ⟨c, (F.map g).toFunctor.obj f⟩, ⟨g, 𝟙 _⟩⟩
   apply zigzag_isConnected
   rintro ⟨⟨⟨⟩⟩, ⟨bi, fi⟩, ⟨gbi, gfi⟩⟩ ⟨⟨⟨⟩⟩, ⟨bj, fj⟩, ⟨gbj, gfj⟩⟩
   dsimp +instances at fj fi gfi gbi gbj gfj

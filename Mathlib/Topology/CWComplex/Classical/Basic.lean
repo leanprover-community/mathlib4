@@ -318,7 +318,7 @@ lemma RelCWComplex.closure_openCell_eq_closedCell [RelCWComplex C D] [T2Space X]
   apply subset_antisymm (isClosed_closedCell.closure_subset_iff.2 (openCell_subset_closedCell n j))
   rw [closedCell, ← closure_ball 0 (one_ne_zero)]
   apply ContinuousOn.image_closure
-  rw [closure_ball 0 (one_ne_zero)]
+  rw [closure_ball 0 one_ne_zero]
   exact continuousOn n j
 
 lemma RelCWComplex.closed (C : Set X) {D : Set X} [RelCWComplex C D] [T2Space X] (A : Set X)

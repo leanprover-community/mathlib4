@@ -436,7 +436,7 @@ theorem unique_pEquivOn (hs : IsLowerSet s) {e₁ e₂ : PEquivOn f equivSucc s}
     obtain rfl | hj := ((lt_succ_iff_of_not_isMax nmax).mp hj).eq_or_lt
     · exact (compat₁ _ nmax x).trans (compat₂ _ nmax x).symm
     have hi : i ∈ s := hs (le_succ i) hi
-    rw [piLTProj_intro (f := e₁ _ x) (le_succ i) (hj),
+    rw [piLTProj_intro (f := e₁ _ x) (le_succ i) hj,
         ← nat₁ _ hi (le_succ i), ih, nat₂ _ hi (le_succ i)]
   · ext x j
     have ⟨k, hjk, hki⟩ := lim.mid j.2
@@ -472,7 +472,7 @@ noncomputable def pEquivOnGlue : PEquivOn f equivSucc (Iio i) where
       pEquivOn_apply_eq ((isLowerSet_Iio _).inter <| isLowerSet_Iio _)⟩
   nat j k hj hk h := by rw [piLTLim_symm_apply]; exacts [(e _).nat _ _ _, h.trans_lt (hi.mid _).2.1]
   compat hj := have k := hi.mid hj
-    by rw [piLTLim_symm_apply hi ⟨_, k.2.2⟩ (k.2.1)]; apply (e _).compat
+    by rw [piLTLim_symm_apply hi ⟨_, k.2.2⟩ k.2.1]; apply (e _).compat
 
 /-- Extend `pEquivOnGlue` by one step, obtaining a partial family over a right-closed interval. -/
 noncomputable def pEquivOnLim [InverseSystem f]

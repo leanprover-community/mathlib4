@@ -189,7 +189,7 @@ lemma mor_unique ⦃i : ι⦄ {Z : C} (q : Z ⟶ X i)
   dsimp at this
   rw [pullFunctorObjHom_eq _ _ _ _ _ (q ≫ f i) (a₁ ≫ p' j₁) (a₂ ≫ p' j₂) rfl,
     pullFunctorObjHom_eq _ _ _ _ _ (q ≫ f i) (a₁ ≫ p' j₁) (a₂ ≫ p' j₂) rfl,
-    map_eq_pullHom _ _ _ _ (rfl) rfl, map_eq_pullHom _ _ _ _ rfl rfl] at this
+    map_eq_pullHom _ _ _ _ rfl rfl, map_eq_pullHom _ _ _ _ rfl rfl] at this
   dsimp at this
   simp only [Category.assoc, Cat.Hom.hom_inv_id_toNatTrans_app_assoc, cancel_epi] at this
   simp only [← Category.assoc, cancel_mono] at this

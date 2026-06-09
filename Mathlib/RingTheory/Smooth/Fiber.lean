@@ -104,7 +104,7 @@ private lemma FormallySmooth.of_formallySmooth_residueField_tensor_aux
     exact .equiv e₁.symm
   have h₃ : 𝓂[Sp] ≤ RingHom.ker ψ := by
     intro x hx
-    obtain ⟨x, rfl⟩ := TensorProduct.mk_surjective _ _ _ (residue_surjective) x
+    obtain ⟨x, rfl⟩ := TensorProduct.mk_surjective _ _ _ residue_surjective x
     have : ¬IsUnit x := fun h ↦ hx <| h.map TensorProduct.includeRight
     simpa [ψ, Sp]
   /-

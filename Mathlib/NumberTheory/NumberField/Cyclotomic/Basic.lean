@@ -207,7 +207,7 @@ lemma card_quotient_toInteger_sub_one [NumberField K] {k : ℕ} [NeZero k]
 
 lemma toInteger_isPrimitiveRoot {k : ℕ} [NeZero k] (hζ : IsPrimitiveRoot ζ k) :
     IsPrimitiveRoot hζ.toInteger k :=
-  IsPrimitiveRoot.of_map_of_injective (hζ) RingOfIntegers.coe_injective
+  IsPrimitiveRoot.of_map_of_injective hζ RingOfIntegers.coe_injective
 
 variable [CharZero K]
 

@@ -447,7 +447,7 @@ instance : T2Space (T2Quotient X) := by
   rintro ⟨x⟩ ⟨y⟩ (h : ¬ T2Quotient.mk x = T2Quotient.mk y)
   obtain ⟨s, hs, hsxy⟩ : ∃ s, T2Space (Quotient s) ∧ Quotient.mk s x ≠ Quotient.mk s y := by
     simpa [T2Quotient.mk_eq, Quotient.eq] using h
-  exact separated_by_continuous (continuous_map_sInf (hs)) hsxy
+  exact separated_by_continuous (continuous_map_sInf hs) hsxy
 
 lemma compatible {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Space Y]
     {f : X → Y} (hf : Continuous f) : letI _ := t2Setoid X

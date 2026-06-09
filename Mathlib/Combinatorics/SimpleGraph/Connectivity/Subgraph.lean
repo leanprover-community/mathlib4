@@ -598,7 +598,7 @@ lemma induce_pair_connected_of_adj {u v : V} (huv : G.Adj u v) :
 lemma Subgraph.Connected.induce_verts {H : G.Subgraph} (h : H.Connected) :
     (G.induce H.verts).Connected := by
   rw [connected_induce_iff]
-  exact h.mono le_induce_top_verts (rfl)
+  exact h.mono le_induce_top_verts rfl
 
 lemma Walk.connected_induce_support {u v : V} (p : G.Walk u v) :
     (G.induce {v | v ∈ p.support}).Connected := by

@@ -195,7 +195,7 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
       rw [dsimp% show op f = f.op from rfl]
       rw [spine_map_vertex, spine_spineToSimplex_apply, spine_vertex]
       let α : strArrowMk₂ f hi ⟶ strArrowMk₂ (⦋0⦌.const ⦋n⦌ (f.toOrderHom k)) :=
-        StructuredArrow.homMk ((Hom.tr (⦋0⦌.const _ (k))).op) (by simp; rfl)
+        StructuredArrow.homMk ((Hom.tr (⦋0⦌.const _ k)).op) (by simp; rfl)
       exact ConcreteCategory.congr_hom (s.w α).symm x
     · dsimp only [spineEquiv, Equiv.coe_fn_mk, spine_arrow]
       rw [← Functor.map_comp_apply]
