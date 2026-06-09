@@ -112,8 +112,8 @@ variable {H : Subgroup G}
 section Normalizer
 
 @[to_additive]
-theorem normal_of_le_center (h : H ≤ Subgroup.center G) : H.Normal :=
-  ⟨ fun n hn g => by grind [(h hn).comm g, mul_assoc, mul_inv_cancel, mul_one] ⟩
+theorem normal_of_le_center (h : H ≤ Subgroup.center G) : H.Normal where
+  conj_mem n hn g := by simpa [← (h hn).comm g |>.eq]
 
 @[to_additive]
 instance instNormalCenter : (center G).Normal := normal_of_le_center le_rfl
