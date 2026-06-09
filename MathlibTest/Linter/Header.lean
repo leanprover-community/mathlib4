@@ -11,7 +11,7 @@ import /- -/ Mathlib.Tactic -- the `TextBased` linter does not flag this `broadI
 import Mathlib.Tactic.Have
 import Mathlib.Deprecated.Aliases
 
-/-
+/--
 warning: In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter (see e.g. https://github.com/leanprover-community/mathlib4/pull/13779). Please consider carefully if this import is useful and make sure to benchmark it. If this is fine, feel free to silence this linter.
 
 Note: This linter can be disabled with `set_option linter.style.header false`
