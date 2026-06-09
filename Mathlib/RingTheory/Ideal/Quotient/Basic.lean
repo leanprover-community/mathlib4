@@ -122,7 +122,7 @@ protected noncomputable abbrev groupWithZero [hI : I.IsMaximal] :
     mul_inv_cancel := fun a (ha : a ≠ 0) =>
       show a * dite _ _ _ = _ by rw [dif_neg ha]; exact Classical.choose_spec (exists_inv ha)
     inv_zero := dif_pos rfl
-    __ := Quotient.nontrivial_iff.mpr hI.out.1 }
+    __ := Quotient.nontrivial_iff.mpr hI.out.ne_top }
 
 /-- The quotient by a two-sided ideal that is maximal as a left ideal is a division ring.
 This is a `def` rather than `instance`, since users

@@ -397,8 +397,9 @@ def orderEmbeddingOfSurjective (hf : Function.Surjective f) : Ideal S ↪o Ideal
 
 theorem map_eq_top_or_isMaximal_of_surjective (hf : Function.Surjective f) {I : Ideal R}
     (H : IsMaximal I) : map f I = ⊤ ∨ IsMaximal (map f I) :=
-  or_iff_not_imp_left.2 fun ne_top ↦ ⟨⟨ne_top, fun _J hJ ↦ comap_injective_of_surjective f hf <|
-    H.1.2 _ (le_comap_map.trans_lt <| (orderEmbeddingOfSurjective f hf).strictMono hJ)⟩⟩
+  or_iff_not_imp_left.2 fun h => ⟨((gc_map_comap f).toGaloisInsertion fun b =>
+    (map_comap_of_surjective f hf b).ge).isCoatom_of_image
+      (H.eq_of_le (comap_ne_top f h) I.le_comap_map ▸ H.out)⟩
 
 end Surjective
 
@@ -602,19 +603,13 @@ def relIsoOfSurjective (hf : Function.Surjective f) :
 
 -- May not hold if `R` is a semiring: consider `ℕ →+* ZMod 2`.
 theorem comap_isMaximal_of_surjective (hf : Function.Surjective f) {K : Ideal S} [H : IsMaximal K] :
-    IsMaximal (comap f K) := by
-  refine ⟨⟨comap_ne_top _ H.1.1, fun J hJ => ?_⟩⟩
-  suffices map f J = ⊤ by
-    have := congr_arg (comap f) this
-    rw [comap_top, comap_map_of_surjective _ hf, eq_top_iff] at this
-    rw [eq_top_iff]
-    exact le_trans this (sup_le (le_of_eq rfl) (le_trans (comap_mono bot_le) (le_of_lt hJ)))
-  refine
-    H.1.2 (map f J)
-      (lt_of_le_of_ne (le_map_of_comap_le_of_surjective _ hf (le_of_lt hJ)) fun h =>
-        ne_of_lt hJ (_root_.trans (congr_arg (comap f) h) ?_))
-  rw [comap_map_of_surjective _ hf, sup_eq_left]
-  exact le_trans (comap_mono bot_le) (le_of_lt hJ)
+    IsMaximal (comap f K) where
+  out := covBy_top_iff.1 ⟨lt_top_iff_ne_top.2 (comap_ne_top f H.ne_top), fun q lt ↦ by
+    rw [lt_top_iff_ne_top, not_ne_iff, ← sup_eq_right.2 lt.le,
+      ← sup_eq_left.2 (comap_mono (f := f) bot_le), sup_right_comm,
+      ← comap_map_of_surjective f hf, map_sup, ← comap_top (f := f)]
+    refine congrArg (comap f) (H.out.isMax_of_gt ?_).eq_top
+    simpa only [map_comap_of_surjective f hf, left_lt_sup, map_le_iff_le_comap] using lt.not_ge⟩
 
 end Surjective
 
