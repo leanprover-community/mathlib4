@@ -248,8 +248,8 @@ public def CheckInstanceResult.toMessageData (name : Name) : CheckInstanceResult
 /--
 Check whether a named instance has leaky data-field binder types.
 
-An instance `foo : C args` is "canonical" if its body, when re-elaborated with the expected
-type `C args`, would produce a definitionally equal term at `.instances` transparency.
+An instance `foo : C args` is "canonical" if its body, when processed by `fast_instance%` with the
+expected type `C args`, would produce a definitionally equal term at `.instances` transparency.
 If not, some data field (e.g. `smul`) has a binder type (e.g. `M`) that differs from the
 expected type (e.g. `RestrictScalars R S M`) at instance transparency — a "leak" that causes
 `rw` failures with `set_option backward.isDefEq.respectTransparency true`.
@@ -264,33 +264,27 @@ public def checkInstance (name : Name) : MetaM CheckInstanceResult := do
     | return .unverifiable m!"unknown constant '{name}'"
   let some _ := info.value?
     | return .unverifiable m!"'{name}' has no definition (it is an axiom or opaque)"
-  -- Introduce the universally quantified type arguments as free variables,
-  -- so we can check the instance in a concrete context.
   forallTelescope info.type fun xs expectedType => do
     let instVal := mkAppN (.const name (info.levelParams.map mkLevelParam)) xs
-    -- Temporarily evict `name` from the instance discrimination tree so that
-    -- `trySynthInstance` won't trivially find the instance being checked, then run
-    -- constructor normalization to get the canonical form. Suppress the
-    -- `fast_instance_existing` linter, which is a user-style hint inappropriate for an
-    -- internal diagnostic.
-    -- If normalization fails (e.g. the instance doesn't reduce to a constructor application),
-    -- that itself is a sign the instance is not in verifiable canonical form.
     let normalized ← try
+        -- Silence `fast_instance_existing` because it is okay for `inferInstance` to succeed.
         withOptions (·.setBool `linter.fast_instance_existing false) <|
+          -- Temporarily evict `name` from the instance discrimination tree so that
+          -- `trySynthInstance` won't trivially find the instance being checked.
           withDisabledInstance name <| withNewMCtxDepth <|
             makeFastInstance instVal expectedType
       catch e =>
+        -- If normalization fails (e.g. the instance doesn't reduce to a constructor application),
+        -- that itself is a sign the instance is not in verifiable canonical form.
         return .unverifiable e.toMessageData
     -- Compare at instances transparency. At this level, the instance unfolds to its body,
     -- and we compare the actual body against the re-inferred canonical form. If they agree,
     -- all data-field binder types are correct. If not, some data field (e.g. `smul`) has a
     -- binder type (e.g. `M`) that differs from the expected type (e.g. `RestrictScalars R S M`)
-    -- at instances transparency — `RestrictScalars` is a `def`, not reducible/instance, so
-    -- `M` and `RestrictScalars R S M` are not defeq at `.instances`.
+    -- at instances transparency.
     let isCanonical ← withTransparency .instances <| isDefEq instVal normalized
     if isCanonical then
       return .canonical
-    -- Try to find the first specific binder type mismatch to help diagnose the leak.
     let mismatch ← try findFirstBinderMismatch instVal normalized catch _ => pure none
     -- Capture the local context now (we are still inside `MetaM`/`forallTelescope`) so the
     -- embedded `Expr`s in the `MessageData` render correctly when the result is logged later
