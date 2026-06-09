@@ -163,7 +163,7 @@ def TopRepIsoActionTop : TopRep.{w} k G ≌ Action (TopModuleCat.{w} k) G where
 instance : (toActionTopModFunc (k := k) (G := G)).IsEquivalence :=
   TopRepIsoActionTop (k := k) (G := G).isEquivalence_functor
 
-instance : (fromActionTopModFunc (k := k) (G := G)).IsEquivalence  :=
+instance : (fromActionTopModFunc (k := k) (G := G)).IsEquivalence :=
   TopRepIsoActionTop (k := k) (G := G).isEquivalence_inverse
 
 end equivAction
