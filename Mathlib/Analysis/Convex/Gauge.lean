@@ -198,8 +198,8 @@ theorem gauge_sum_le {ι : Type*} (hs : Convex ℝ s) (absorbs : Absorbent ℝ s
 
 theorem self_subset_gauge_le_one : s ⊆ { x | gauge s x ≤ 1 } := fun _ => gauge_le_one_of_mem
 
-theorem Convex.gauge_le (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s) (absorbs : Absorbent ℝ s) (a : ℝ) :
-    Convex ℝ { x | gauge s x ≤ a } := by
+theorem Convex.setOf_gauge_le (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s) (absorbs : Absorbent ℝ s)
+    (a : ℝ) : Convex ℝ { x | gauge s x ≤ a } := by
   by_cases ha : 0 ≤ a
   · rw [gauge_le_eq hs h₀ absorbs ha]
     exact convex_iInter fun i => convex_iInter fun _ => hs.smul _
@@ -290,6 +290,13 @@ theorem gauge_smul_left [Module α E] [SMulCommClass α ℝ ℝ] [IsScalarTower 
     rw [← neg_neg y]
     exact symmetric _ hy
 
+theorem Convex.inv_smul_mem (hs : Convex ℝ s) (h₀ : 0 ∈ s) (absorbs : Absorbent ℝ s)
+    (h : gauge s x < a) (ha : 0 < a) : (1 / a) • x ∈ s := by
+  apply gauge_lt_one_subset_self hs h₀ absorbs
+  rw [Set.mem_setOf_eq, gauge_smul_of_nonneg (by positivity), smul_eq_mul]
+  nth_rw 2 [show 1 = (1 / a) * a by field_simp]
+  gcongr
+
 end LinearOrderedField
 
 section RCLike
@@ -357,8 +364,8 @@ theorem interior_subset_gauge_lt_one (s : Set E) : interior s ⊆ { x | gauge s 
   rcases H₂.exists with ⟨r, hxr, hr₀, hr₁⟩
   exact (gauge_le_of_mem hr₀.le hxr).trans_lt hr₁
 
-theorem gauge_lt_one_eq_self_of_isOpen (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ : IsOpen s) :
-    { x | gauge s x < 1 } = s := by
+theorem setOf_gauge_lt_one_eq_self_of_isOpen (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s)
+    (hs₂ : IsOpen s) : { x | gauge s x < 1 } = s := by
   refine (gauge_lt_one_subset_self hs₁ ‹_› <| absorbent_nhds_zero <| hs₂.mem_nhds hs₀).antisymm ?_
   convert! interior_subset_gauge_lt_one s
   exact hs₂.interior_eq.symm
@@ -384,6 +391,30 @@ theorem mem_closure_of_gauge_le_one (hc : Convex ℝ s) (hs₀ : 0 ∈ s) (ha : 
   refine mem_closure_of_tendsto ?_ this
   exact Filter.Tendsto.mono_left (Continuous.tendsto' (by fun_prop) _ _ (one_smul _ _))
     inf_le_left
+
+theorem setOf_gauge_le_one_eq_self_of_isClosed (hs₁ : Convex ℝ s) (hs₀ : s ∈ 𝓝 0)
+    (hs₂ : IsClosed s) : { x | gauge s x ≤ 1 } = s := by
+  ext x
+  refine ⟨fun h ↦ ?_, gauge_le_one_of_mem⟩
+  exact hs₂.closure_eq ▸ mem_closure_of_gauge_le_one hs₁ (mem_of_mem_nhds hs₀)
+    (absorbent_nhds_zero hs₀) h
+
+theorem setOf_gauge_le_eq_smul_of_isClosed (hs₁ : Convex ℝ s) (hs₀ : s ∈ 𝓝 0)
+    (hs₂ : IsClosed s) (ha : 0 < a) : { x | gauge s x ≤ a } = a • s := by
+  ext x
+  nth_rw 2 [← setOf_gauge_le_one_eq_self_of_isClosed hs₁ hs₀ hs₂]
+  simp only [mem_setOf_eq]
+  constructor
+  · intro h
+    use a⁻¹ • x
+    simp only [mem_setOf_eq]
+    grw [smul_smul, gauge_smul_of_nonneg (by positivity), h, smul_eq_mul]
+    field_simp
+    simp
+  · rintro ⟨y, hy, rfl⟩
+    simp only [mem_setOf_eq] at hy
+    grw [gauge_smul_of_nonneg ha.le, smul_eq_mul, hy]
+    simp
 
 theorem mem_frontier_of_gauge_eq_one (hc : Convex ℝ s) (hs₀ : 0 ∈ s) (ha : Absorbent ℝ s)
     (h : gauge s x = 1) : x ∈ frontier s :=
@@ -446,15 +477,19 @@ is continuous. If the ambient space is a normed space, then `gauge s` is Lipschi
 theorem continuous_gauge (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) : Continuous (gauge s) :=
   continuous_iff_continuousAt.2 fun _ ↦ continuousAt_gauge hc hs₀
 
-theorem gauge_lt_one_eq_interior (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) :
+theorem setOf_gauge_lt_one_eq_interior (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) :
     { x | gauge s x < 1 } = interior s := by
   refine Subset.antisymm (fun x hx ↦ ?_) (interior_subset_gauge_lt_one s)
   rcases mem_openSegment_of_gauge_lt_one (absorbent_nhds_zero hs₀) hx with ⟨y, hys, hxy⟩
   exact hc.openSegment_interior_self_subset_interior (mem_interior_iff_mem_nhds.2 hs₀) hys hxy
 
+theorem setOf_gauge_lt_isOpen (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) (a : ℝ) :
+    IsOpen { x | gauge s x < a } :=
+  isOpen_Iio.preimage (continuous_gauge hc hs₀)
+
 theorem gauge_lt_one_iff_mem_interior (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) :
     gauge s x < 1 ↔ x ∈ interior s :=
-  Set.ext_iff.1 (gauge_lt_one_eq_interior hc hs₀) _
+  Set.ext_iff.1 (setOf_gauge_lt_one_eq_interior hc hs₀) _
 
 theorem gauge_le_one_iff_mem_closure (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) :
     gauge s x ≤ 1 ↔ x ∈ closure s :=
@@ -487,7 +522,7 @@ theorem gaugeSeminorm_lt_one_of_isOpen (hs : IsOpen s) {x : E} (hx : x ∈ s) :
 
 theorem gaugeSeminorm_ball_one (hs : IsOpen s) : (gaugeSeminorm hs₀ hs₁ hs₂).ball 0 1 = s := by
   rw [Seminorm.ball_zero_eq]
-  exact gauge_lt_one_eq_self_of_isOpen hs₁ hs₂.zero_mem hs
+  exact setOf_gauge_lt_one_eq_self_of_isOpen hs₁ hs₂.zero_mem hs
 
 end RCLike
 

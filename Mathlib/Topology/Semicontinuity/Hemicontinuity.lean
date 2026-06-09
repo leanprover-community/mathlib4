@@ -11,8 +11,10 @@ public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Defs.Sequences
 public import Mathlib.Topology.UniformSpace.Closeds
 public import Mathlib.Topology.UniformSpace.UniformConvergence
+public import Mathlib.Analysis.LocallyConvex.AbsConvex
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.Sequences
+import Mathlib.Analysis.Convex.Gauge
 
 /-! # Hemicontinuity
 
@@ -449,23 +451,6 @@ lemma hasOpenLowerSections_iff_isClosed_preimage_Iic :
   simp_rw [← isOpen_compl_iff]
   exact hasOpenLowerSections_iff_isOpen_compl_preimage_Iic_compl
 
-/-! ### Open Graphs -/
-
-/-- A lower hemicontinuous function intersected with a function with an open graph is lower
-hemicontinuous. -/
-lemma LowerHemicontinuous.inter_hasOpenCGraph [TopologicalSpace β]
-    (hf : LowerHemicontinuous f) (hg : HasOpenCGraph g) :
-    LowerHemicontinuous (fun x ↦ f x ∩ g x) := by
-  simp_rw [lowerHemicontinuous_iff_isOpen_inter_nonempty] at ⊢ hf
-  intro t ht
-  rw [isOpen_iff_forall_mem_open]
-  intro x ⟨y, ⟨hyf, hyg⟩, hyt⟩
-  obtain ⟨U, V, hU, hV, hxU, hyV, hUV⟩ := (isOpen_prod_iff.mp hg) x y hyg
-  refine ⟨U ∩ {x' | (f x' ∩ (t ∩ V)).Nonempty}, ?_, hU.inter (hf _ (ht.inter hV)),
-      ⟨hxU, y, hyf, hyt, hyV⟩⟩
-  intro x' ⟨hx'U, z, hzf, hzt, hzV⟩
-  exact ⟨z, ⟨hzf, hUV (Set.mk_mem_prod hx'U hzV)⟩, hzt⟩
-
 /-! ### Uniform Limits
 
 Like continuity, hemicontinuity is preserved under certain uniform limits, where the uniformity on
@@ -475,15 +460,15 @@ lower hemicontinuous and upper hemicontinuous limits.
 
 section limits
 
-variable {ι : Type*} {F : ι → α → Set β} {l : Filter ι} [NeBot l]
-variable [UniformSpace β]
+variable {ι : Type*} {F : ι → α → Set β} {l : Filter ι} [NeBot l] [UniformSpace β]
 open UniformSpace
+attribute [local instance] UniformSpace.hausdorff
 
 /-- A net of lower hemicontinuous set-valued functions converging uniformly on `s` (along a
 filter `l`) in the Hausdorff uniformity has a lower hemicontinuous limit on `s` -/
 theorem TendstoUniformlyOn.lowerHemicontinuousOn
-    (htendsto : @TendstoUniformlyOn _ _ _ (UniformSpace.hausdorff (α := β)) F f l s)
-    (hF : ∀ n, LowerHemicontinuousOn (F n) s) : LowerHemicontinuousOn f s := by
+    (htendsto : TendstoUniformlyOn F f l s) (hF : ∀ n, LowerHemicontinuousOn (F n) s) :
+    LowerHemicontinuousOn f s := by
   rw [lowerHemicontinuousOn_iff]
   intro x₀ hx₀s
   rw [lowerHemicontinuousWithinAt_iff]
@@ -513,9 +498,8 @@ theorem TendstoUniformlyOn.lowerHemicontinuousOn
 /-- A net of upper hemicontinuous compact-valued set-valued functions converging uniformly on `s`
 (along a filter `l`) in the Hausdorff uniformity has an upper hemicontinuous limit on `s` -/
 theorem TendstoUniformlyOn.upperHemicontinuousOn
-    (htendsto : @TendstoUniformlyOn _ _ _ (UniformSpace.hausdorff (α := β)) F f l s)
-    (hF : ∀ n, UpperHemicontinuousOn (F n) s) (hf_compact : ∀ x ∈ s, IsCompact (f x)) :
-    UpperHemicontinuousOn f s := by
+    (htendsto : TendstoUniformlyOn F f l s) (hF : ∀ n, UpperHemicontinuousOn (F n) s)
+    (hf_compact : ∀ x ∈ s, IsCompact (f x)) : UpperHemicontinuousOn f s := by
   rw [upperHemicontinuousOn_iff_forall_isOpen]
   intro x₀ hx₀s u hu hx₀u
   obtain ⟨W, hW, _, hWu⟩ := lebesgue_number_of_compact_open (hf_compact x₀ hx₀s) hu hx₀u
@@ -537,8 +521,7 @@ theorem TendstoUniformlyOn.upperHemicontinuousOn
 /-- A net of lower hemicontinuous set-valued functions converging uniformly (along a
 filter `l`) in the Hausdorff uniformity has a lower hemicontinuous limit -/
 theorem TendstoUniformly.lowerHemicontinuous
-    (htendsto : @TendstoUniformly _ _ _ (UniformSpace.hausdorff (α := β)) F f l)
-    (hF : ∀ n, LowerHemicontinuous (F n)) :
+    (htendsto : TendstoUniformly F f l) (hF : ∀ n, LowerHemicontinuous (F n)) :
     LowerHemicontinuous f := by
   rw [← lowerHemicontinuousOn_univ_iff]
   exact (@htendsto.tendstoUniformlyOn _ _ _ (UniformSpace.hausdorff (α := β)) F f Set.univ l)
@@ -547,11 +530,75 @@ theorem TendstoUniformly.lowerHemicontinuous
 /-- A net of upper hemicontinuous compact-valued set-valued functions converging uniformly
 (along a filter `l`) in the Hausdorff uniformity has an upper hemicontinuous limit -/
 theorem TendstoUniformly.upperHemicontinuous
-    (htendsto : @TendstoUniformly _ _ _ (UniformSpace.hausdorff (α := β)) F f l)
-    (hF : ∀ n, UpperHemicontinuous (F n)) (hf_compact : ∀ x, IsCompact (f x)) :
-    UpperHemicontinuous f := by
+    (htendsto : TendstoUniformly F f l) (hF : ∀ n, UpperHemicontinuous (F n))
+    (hf_compact : ∀ x, IsCompact (f x)) : UpperHemicontinuous f := by
   rw [← upperHemicontinuousOn_univ_iff]
   exact (@htendsto.tendstoUniformlyOn _ _ _ (UniformSpace.hausdorff (α := β)) F f Set.univ l)
     |>.upperHemicontinuousOn (fun n ↦ (hF n).upperHemicontinuousOn _) (fun x _ ↦ hf_compact x)
 
 end limits
+
+section intersections
+
+/-! ### Special Intersections -/
+
+/-- A lower hemicontinuous correspondence intersected with a correspondence with an open graph is
+lower hemicontinuous. -/
+lemma LowerHemicontinuous.inter_hasOpenCGraph [TopologicalSpace β] (hf : LowerHemicontinuous f)
+    (hg : HasOpenCGraph g) : LowerHemicontinuous (fun x ↦ f x ∩ g x) := by
+  simp_rw [lowerHemicontinuous_iff_isOpen_inter_nonempty] at ⊢ hf
+  intro t ht
+  rw [isOpen_iff_forall_mem_open]
+  intro x ⟨y, ⟨hyf, hyg⟩, hyt⟩
+  obtain ⟨U, V, hU, hV, hxU, hyV, hUV⟩ := (isOpen_prod_iff.mp hg) x y hyg
+  refine ⟨U ∩ {x' | (f x' ∩ (t ∩ V)).Nonempty}, ?_, hU.inter (hf _ (ht.inter hV)),
+      ⟨hxU, y, hyf, hyt, hyV⟩⟩
+  intro x' ⟨hx'U, z, hzf, hzt, hzV⟩
+  exact ⟨z, ⟨hzf, hUV (Set.mk_mem_prod hx'U hzV)⟩, hzt⟩
+
+variable [AddCommGroup β] [Module ℝ β] [UniformSpace β] [IsUniformAddGroup β]
+  [ContinuousSMul ℝ β] {K : Set β}
+
+attribute [local instance] UniformSpace.hausdorff
+
+/-- A lower hemicontinuous correspondence with star convex values about 0 intersected with an
+absolutely convex, compact neighborhood of zero is lower hemicontinuous. -/
+lemma LowerHemicontinuous.inter_isCompact_absConvex
+    (hf : LowerHemicontinuous f) (hK_compact : IsCompact K) (hK_convex : AbsConvex ℝ K)
+    (hK_nhd : K ∈ 𝓝 0) (hf_star : ∀ x, StarConvex ℝ 0 (f x)) :
+    LowerHemicontinuous (fun x ↦ f x ∩ K) := by
+  suffices TendstoUniformly (fun ε x ↦ f x ∩ {y | gauge K y < ε}) (fun x ↦ f x ∩ K) (𝓝[>] 1) by
+    exact this.lowerHemicontinuous fun _ ↦ hf.inter_hasOpenCGraph
+      (HasOpenCGraph.const (setOf_gauge_lt_isOpen hK_convex.convex hK_nhd _))
+  intro V hV
+  obtain ⟨U_base, hU_base, hU_sub⟩ := (mem_lift'_sets monotone_hausdorffEntourage).mp hV
+  obtain ⟨W, hW, hW_sub⟩ := (𝓝 (0 : β)).basis_sets.uniformity_of_nhds_zero.mem_iff.mp hU_base
+  have h_smul : ∀ᶠ t : ℝ in 𝓝 0, ∀ k ∈ K, t • k ∈ W :=
+    hK_compact.eventually_forall_of_forall_eventually fun k _ =>
+      (continuous_fst.smul continuous_snd).tendsto ((0 : ℝ), k) |>.eventually
+        (by simpa [zero_smul] using hW)
+  have h_tend : Tendsto (fun ε : ℝ => ε - 1) (𝓝[>] 1) (𝓝 0) := by
+    have hc : Continuous (fun ε : ℝ => ε - 1) := by fun_prop
+    simpa using (hc.tendsto 1).mono_left nhdsWithin_le_nhds
+  filter_upwards [h_tend.eventually h_smul, self_mem_nhdsWithin] with ε h_eps hε_gt x
+  apply hU_sub
+  apply monotone_hausdorffEntourage hW_sub
+  have hε_pos : (0 : ℝ) < ε := one_pos.trans hε_gt
+  refine ⟨?_, ?_⟩
+  · intro c ⟨hcf, hcK⟩
+    refine ⟨c, ⟨hcf, ?_⟩, by simp [mem_of_mem_nhds hW]⟩
+    grw [mem_setOf, gauge_le_one_of_mem hcK]
+    exact hε_gt
+  · intro b ⟨hbf, hbKs⟩
+    have h_c : (1 / ε) • b ∈ K := hK_convex.convex.inv_smul_mem (mem_of_mem_nhds hK_nhd)
+        (absorbent_nhds_zero hK_nhd) hbKs (by positivity)
+    refine ⟨(1 / ε) • b, ⟨?_, h_c⟩, ?_⟩
+    · rw [← mem_inv_smul_set_iff₀ (by positivity)]
+      exact (hf_star x).mem_smul hbf (by grind)
+    · simp only [Set.mem_setOf_eq, id]
+      rw [show b - (1 / ε) • b = (ε - 1) • ((1 / ε) • b) by
+        rw [smul_smul, show (ε - 1) * (1 / ε) = 1 - 1 / ε by
+          field_simp, sub_smul, one_smul]]
+      exact h_eps _ h_c
+
+end intersections
