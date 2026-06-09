@@ -471,4 +471,15 @@ instance : (free.{max v u} R).IsLeftAdjoint := ⟨_, ⟨freeAdj R⟩⟩
 
 end Adjunction
 
+variable {R} in
+/-- The ring isomorphism between the endomorphisms of an object `M` in `TopModuleCat R` and the
+continuous `R`-linear endomorphisms of `M`. -/
+@[simps]
+def endRingEquiv (M : TopModuleCat R) :
+    End M ≃+* (M →L[R] M) where
+  toFun := TopModuleCat.Hom.hom
+  invFun := TopModuleCat.ofHom
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
+
 end TopModuleCat
