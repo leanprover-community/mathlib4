@@ -474,7 +474,8 @@ end Adjunction
 variable {R} in
 /-- The ring isomorphism between the endomorphisms of an object `M` in `TopModuleCat R` and the
 continuous `R`-linear endomorphisms of `M`. -/
-abbrev _root_.TopModuleCat.endRingEquiv (M : TopModuleCat R) :
+@[simps]
+def endRingEquiv (M : TopModuleCat R) :
     End M ≃+* (M →L[R] M) where
   toFun := TopModuleCat.Hom.hom
   invFun := TopModuleCat.ofHom

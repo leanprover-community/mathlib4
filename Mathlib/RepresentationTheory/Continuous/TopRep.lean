@@ -97,8 +97,9 @@ variable {A B} in
 abbrev ofHom (f : ρ →ⁱL σ) : of ρ ⟶ of σ :=
   ConcreteCategory.ofHom (C := TopRep.{w} k G) f
 
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (f : Hom A B) := f.hom
+@[simp] lemma hom_ofHom (f : ρ →ⁱL σ) : (ofHom f).hom = f := rfl
+
+@[simp] lemma ofHom_hom (f : A ⟶ B) : ofHom f.hom = f := rfl
 
 variable {A B} in
 /-- The morphism of topological modules underlying a morphism in `TopRep k G`. -/
@@ -133,7 +134,7 @@ section equivAction
 `Action (TopModuleCat k) G`. -/
 def toActionTopModFunc : TopRep k G ⥤ Action (TopModuleCat k) G where
   obj X := ⟨.of k X.V, (TopModuleCat.endRingEquiv (.of k X.V)).symm.toMonoidHom.comp X.ρ⟩
-  map f := ⟨f.toTopModuleCatHom, fun g => by ext1; simp [f.hom.2 g]⟩
+  map f := ⟨f.toTopModuleCatHom, fun g => by ext1; simp [TopModuleCat.endRingEquiv, f.hom.2 g]⟩
 
 /-- The functor sending an object in `Action (TopModuleCat k) G` to the corresponding topological
 representation. -/
@@ -154,17 +155,17 @@ def fromActionToAction (X : Action (TopModuleCat.{w} k) G) :
   inv := ⟨𝟙 _, fun _ ↦ rfl⟩
 
 /-- The equivalence of categories between `TopRep k G` and `Action (TopModuleCat k) G`. -/
-def TopRepIsoActionTop : TopRep.{w} k G ≌ Action (TopModuleCat.{w} k) G where
+def TopRepEquivActionTop : TopRep.{w} k G ≌ Action (TopModuleCat.{w} k) G where
   functor := toActionTopModFunc
   inverse := fromActionTopModFunc
   unitIso := NatIso.ofComponents toActionFromAction
   counitIso := NatIso.ofComponents fromActionToAction
 
 instance : (toActionTopModFunc (k := k) (G := G)).IsEquivalence :=
-  TopRepIsoActionTop (k := k) (G := G).isEquivalence_functor
+  TopRepEquivActionTop (k := k) (G := G).isEquivalence_functor
 
 instance : (fromActionTopModFunc (k := k) (G := G)).IsEquivalence :=
-  TopRepIsoActionTop (k := k) (G := G).isEquivalence_inverse
+  TopRepEquivActionTop (k := k) (G := G).isEquivalence_inverse
 
 end equivAction
 
