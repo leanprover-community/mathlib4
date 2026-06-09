@@ -59,7 +59,7 @@ class _root_.AddAction.QuotientAction {G : Type u} (X : Type v) [AddGroup G] [Ad
   [AddAction X G] (H : AddSubgroup G) : Prop where
   /-- The action fulfils a normality condition on summands that lie in `H`.
     This ensures that the action descends to an action on the quotient `G ⧸ H`. -/
-  inv_mul_mem : ∀ (b : X) {a a' : G}, -a + a' ∈ H → -(b +ᵥ a) + (b +ᵥ a') ∈ H
+  inv_mul_mem : ∀ (x : X) {g g' : G}, -g + g' ∈ H → -(x +ᵥ g) + (x +ᵥ g') ∈ H
 
 attribute [to_additive] MulAction.QuotientAction
 
