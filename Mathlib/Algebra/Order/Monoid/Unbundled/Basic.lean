@@ -58,7 +58,7 @@ variable [LE α]
 -- Note: in this section, we use `@[gcongr high]` so that these lemmas have a higher priority than
 -- lemmas like `mul_le_mul_of_nonneg_left`, which have an extra side condition.
 
-@[to_additive (attr := gcongr high)]
+@[to_additive (attr := gcongr high - 1)]
 theorem mul_le_mul_right [MulLeftMono α] (bc : b ≤ c) (a : α) : a * b ≤ a * c :=
   CovariantClass.elim _ bc
 
@@ -69,7 +69,7 @@ alias mul_le_mul_left' := mul_le_mul_right
 theorem le_of_mul_le_mul_left' [MulLeftReflectLE α] (bc : a * b ≤ a * c) : b ≤ c :=
   MulLeftReflectLE.le_of_mul_le_mul_left' bc
 
-@[to_additive (attr := gcongr high)]
+@[to_additive (attr := gcongr high - 1)]
 theorem mul_le_mul_left [i : MulRightMono α] (bc : b ≤ c) (a : α) : b * a ≤ c * a :=
   i.elim a bc
 
