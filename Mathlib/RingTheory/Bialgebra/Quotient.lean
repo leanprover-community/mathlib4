@@ -5,79 +5,81 @@ Authors: Robert Hawkins
 -/
 module
 
-public import Mathlib.Algebra.RingQuot
 public import Mathlib.RingTheory.Bialgebra.Hom
 public import Mathlib.RingTheory.Coalgebra.Quotient
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
-# Bialgebra structure on `RingQuot`
+# Bialgebra structure on quotients by biideals
 
-When a relation `r : A → A → Prop` on an `R`-bialgebra `A` is compatible with the counit and
-comultiplication (`IsBialgebraRel`), the quotient `RingQuot r` inherits a bialgebra structure.
+A *biideal* of an `R`-bialgebra `A` is a two-sided ideal whose underlying `R`-submodule is a
+coideal. We express this with the existing mixins `I.IsTwoSided` and
+`IsCoideal (I.restrictScalars R)` rather than a new class, and show that the quotient `A ⧸ I`
+inherits a bialgebra structure.
 
-## Main definitions
-
-* `IsBialgebraRel R r` — the counit and comultiplication descend along `RingQuot.mkAlgHom R r`.
+We work over a `CommRing`/`Ring` rather than semirings since quotients by ideals require
+additive inverses.
 
 ## Main results
 
-* `Bialgebra R (RingQuot r)` instance from `[IsBialgebraRel R r]`.
+* `Bialgebra R (A ⧸ I)` instance when `[I.IsTwoSided]` and `[IsCoideal (I.restrictScalars R)]`.
 -/
 
 @[expose] public section
 
-open Bialgebra Coalgebra LinearMap RingQuot TensorProduct
+open Bialgebra Coalgebra LinearMap TensorProduct
 
-variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
-
-variable (R) in
-/-- The counit and comultiplication of `A` descend along `RingQuot.mkAlgHom R r`. -/
-@[mk_iff]
-class IsBialgebraRel (r : A → A → Prop) : Prop where
-  counit_rel : ∀ ⦃x y : A⦄, r x y → (counit x : R) = counit y
-  comul_rel : ∀ ⦃x y : A⦄, r x y →
-    Algebra.TensorProduct.map (mkAlgHom R r) (mkAlgHom R r) (comul x) =
-      Algebra.TensorProduct.map (mkAlgHom R r) (mkAlgHom R r) (comul y)
+variable {R A : Type*} [CommRing R] [Ring A] [Bialgebra R A]
+variable (I : Ideal A) [I.IsTwoSided] [IsCoideal (I.restrictScalars R)]
 
 namespace Bialgebra.Quotient
 
-variable (r : A → A → Prop) [IsBialgebraRel R r]
+/-- The counit on `A ⧸ I`, as an `R`-algebra homomorphism. -/
+noncomputable def counitAlgHom : (A ⧸ I) →ₐ[R] R :=
+  Ideal.Quotient.liftₐ I (Bialgebra.counitAlgHom R A) fun _ ha =>
+    IsCoideal.counit_eq_zero (I := I.restrictScalars R) ha
 
-/-- The counit on `RingQuot r`, as an `R`-algebra homomorphism. -/
-noncomputable def counitAlgHom : RingQuot r →ₐ[R] R :=
-  liftAlgHom R ⟨Bialgebra.counitAlgHom R A, IsBialgebraRel.counit_rel⟩
+/-- The comultiplication on `A ⧸ I`, as an `R`-algebra homomorphism. -/
+noncomputable def comulAlgHom : (A ⧸ I) →ₐ[R] (A ⧸ I) ⊗[R] (A ⧸ I) :=
+  Ideal.Quotient.liftₐ I
+    ((Algebra.TensorProduct.map (Ideal.Quotient.mkₐ R I) (Ideal.Quotient.mkₐ R I)).comp
+      (Bialgebra.comulAlgHom R A)) fun a ha => by
+    have key : (Ideal.Quotient.mkₐ R I).toLinearMap =
+        (Submodule.Quotient.restrictScalarsEquiv R I).toLinearMap ∘ₗ
+          (I.restrictScalars R).mkQ := rfl
+    have h0 : map (I.restrictScalars R).mkQ (I.restrictScalars R).mkQ (comul a) = 0 :=
+      IsCoideal.comul_eq_zero ha
+    change map (Ideal.Quotient.mkₐ R I).toLinearMap (Ideal.Quotient.mkₐ R I).toLinearMap
+      (comul a) = 0
+    rw [key, TensorProduct.map_comp, LinearMap.comp_apply, h0, _root_.map_zero]
 
-/-- The comultiplication on `RingQuot r`, as an `R`-algebra homomorphism. -/
-noncomputable def comulAlgHom : RingQuot r →ₐ[R] RingQuot r ⊗[R] RingQuot r :=
-  liftAlgHom R ⟨
-    (Algebra.TensorProduct.map (mkAlgHom R r) (mkAlgHom R r)).comp (Bialgebra.comulAlgHom R A),
-    IsBialgebraRel.comul_rel⟩
-
-lemma counit_comp_mkAlgHom : (counitAlgHom r).toLinearMap.comp (mkAlgHom R r).toLinearMap =
+lemma counit_comp_mkₐ : (counitAlgHom I).toLinearMap.comp (Ideal.Quotient.mkₐ R I).toLinearMap =
     (counit : A →ₗ[R] R) := by ext a; simp [counitAlgHom]
 
-lemma comul_comp_mkAlgHom : (comulAlgHom r).toLinearMap.comp (mkAlgHom R r).toLinearMap =
-    (map (mkAlgHom R r).toLinearMap (mkAlgHom R r).toLinearMap).comp comul := by
+lemma comul_comp_mkₐ :
+    (comulAlgHom (R := R) I).toLinearMap.comp (Ideal.Quotient.mkₐ R I).toLinearMap =
+      (map (Ideal.Quotient.mkₐ R I).toLinearMap (Ideal.Quotient.mkₐ R I).toLinearMap).comp
+        comul := by
   ext a; simp [comulAlgHom]; rfl
 
-/-- The bialgebra structure on `RingQuot r` when `r` is a bialgebra relation. -/
-noncomputable instance : Bialgebra R (RingQuot r) := by
-  refine Bialgebra.ofAlgHom (comulAlgHom r) (counitAlgHom r) ?_ ?_ ?_ <;>
-    refine ringQuot_ext' _ _ _ (AlgHom.toLinearMap_injective ?_)
-  · simp [coassoc_simps, comul_comp_mkAlgHom]
+/-- The bialgebra structure on `A ⧸ I` when `I` is a biideal. -/
+noncomputable instance : Bialgebra R (A ⧸ I) := by
+  refine Bialgebra.ofAlgHom (comulAlgHom I) (counitAlgHom I) ?_ ?_ ?_ <;>
+    refine Ideal.Quotient.algHom_ext R (AlgHom.toLinearMap_injective ?_)
+  · simp [coassoc_simps, comul_comp_mkₐ]
   all_goals simp only [coassoc_simps, AlgHom.comp_toLinearMap,
-    Algebra.TensorProduct.toLinearMap_map, comul_comp_mkAlgHom, counit_comp_mkAlgHom]
+    Algebra.TensorProduct.toLinearMap_map, comul_comp_mkₐ, counit_comp_mkₐ]
   · rw [CoassocSimps.map_counit_comp_comul_left]; rfl
   · rw [CoassocSimps.map_counit_comp_comul_right]; rfl
 
-@[simp] lemma counit_mkAlgHom (a : A) :
-    (counit : RingQuot r →ₗ[R] R) (mkAlgHom R r a) = counit a :=
-  LinearMap.congr_fun (counit_comp_mkAlgHom r) a
+@[simp] lemma counit_mk (a : A) :
+    (counit : (A ⧸ I) →ₗ[R] R) (Ideal.Quotient.mk I a) = counit a :=
+  LinearMap.congr_fun (counit_comp_mkₐ I) a
 
-@[simp] lemma comul_mkAlgHom (a : A) :
-    (comul : RingQuot r →ₗ[R] _) (mkAlgHom R r a) =
-      map (mkAlgHom R r).toLinearMap (mkAlgHom R r).toLinearMap (comul a) :=
-  LinearMap.congr_fun (comul_comp_mkAlgHom r) a
+@[simp] lemma comul_mk (a : A) :
+    (comul : (A ⧸ I) →ₗ[R] _) (Ideal.Quotient.mk I a) =
+      map (Ideal.Quotient.mkₐ R I).toLinearMap (Ideal.Quotient.mkₐ R I).toLinearMap (comul a) :=
+  LinearMap.congr_fun (comul_comp_mkₐ I) a
 
 end Bialgebra.Quotient
