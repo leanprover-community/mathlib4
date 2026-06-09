@@ -97,8 +97,8 @@ def orthogonalDecomposition : E ≃ₗᵢ[𝕜] WithLp 2 (K × Kᗮ) where
 @[simp]
 theorem orthogonalDecomposition_apply :
     K.orthogonalDecomposition x =
-      .toLp 2 (K.orthogonalProjection x, Kᗮ.orthogonalProjection x) := by
-  simp [orthogonalDecomposition, orthogonalProjection_apply_eq_linearProjOfIsCompl]
+      .toLp 2 (K.orthogonalProjectionOnto x, Kᗮ.orthogonalProjectionOnto x) := by
+  simp [orthogonalDecomposition, orthogonalProjectionOnto_apply_eq_projectionOnto]
 
 theorem toLinearEquiv_orthogonalDecomposition :
     K.orthogonalDecomposition.toLinearEquiv =
@@ -115,7 +115,7 @@ theorem toLinearEquiv_orthogonalDecomposition_symm :
 theorem coe_orthogonalDecomposition :
     (K.orthogonalDecomposition : E →L[𝕜] WithLp 2 (K × Kᗮ)) =
       (WithLp.prodContinuousLinearEquiv 2 𝕜 K Kᗮ).symm ∘L
-        K.orthogonalProjection.prod Kᗮ.orthogonalProjection := by
+        K.orthogonalProjectionOnto.prod Kᗮ.orthogonalProjectionOnto := by
   ext; simp
 
 theorem coe_orthogonalDecomposition_symm :
@@ -124,19 +124,19 @@ theorem coe_orthogonalDecomposition_symm :
   rfl
 
 theorem fst_orthogonalDecomposition_apply :
-    (K.orthogonalDecomposition x).fst = K.orthogonalProjection x := by
+    (K.orthogonalDecomposition x).fst = K.orthogonalProjectionOnto x := by
   simp
 
 theorem snd_orthogonalDecomposition_apply :
-    (K.orthogonalDecomposition x).snd = Kᗮ.orthogonalProjection x := by
+    (K.orthogonalDecomposition x).snd = Kᗮ.orthogonalProjectionOnto x := by
   simp
 
 theorem fstL_comp_coe_orthogonalDecomposition :
-    WithLp.fstL 2 𝕜 K Kᗮ ∘L K.orthogonalDecomposition = K.orthogonalProjection := by
+    WithLp.fstL 2 𝕜 K Kᗮ ∘L K.orthogonalDecomposition = K.orthogonalProjectionOnto := by
   ext; simp
 
 theorem sndL_comp_coe_orthogonalDecomposition :
-    WithLp.sndL 2 𝕜 K Kᗮ ∘L K.orthogonalDecomposition = Kᗮ.orthogonalProjection := by
+    WithLp.sndL 2 𝕜 K Kᗮ ∘L K.orthogonalDecomposition = Kᗮ.orthogonalProjectionOnto := by
   ext; simp
 
 /-- If a subspace `K` of an inner product space `E` admits an orthogonal projection, then the
@@ -145,8 +145,8 @@ def quotientEquivOrthogonal : (E ⧸ K) ≃ₗᵢ[𝕜] ↥Kᗮ where
   __ := K.quotientEquivOfIsCompl Kᗮ K.isCompl_orthogonal_of_hasOrthogonalProjection
   norm_map' y := by
     set f := K.quotientEquivOfIsCompl Kᗮ isCompl_orthogonal_of_hasOrthogonalProjection
-    rw [coe_norm, ← norm_orthogonalProjection_apply Kᗮ (f y).2, orthogonalProjection_orthogonal,
-      coe_norm, starProjection_minimal, eq_comm]
+    rw [coe_norm, ← norm_orthogonalProjectionOnto_apply Kᗮ (f y).2,
+      orthogonalProjectionOnto_orthogonal, coe_norm, starProjection_minimal, eq_comm]
     have h : ‖Quotient.mk (f y).val‖ = sInf ((fun (x : E) ↦ ‖(f y).val + x‖) '' K.toAddSubgroup) :=
       quotient_norm_mk_eq K.toAddSubgroup (f y).1
     convert! h using 2
