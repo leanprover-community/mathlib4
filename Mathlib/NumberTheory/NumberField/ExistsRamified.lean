@@ -25,17 +25,34 @@ This is a trivial corollary of `NumberField.not_dvd_discr_iff_forall_mem` and
 section
 
 open Pointwise in
-instance {α β γ : Type*} [Group α] [Group β] [CommRing γ] [MulAction α β] [MulSemiringAction α γ]
+instance {α β γ : Type*} [Monoid α] [Monoid β] [Semiring γ] [SMul α β] [MulSemiringAction α γ]
     [MulSemiringAction β γ] [IsScalarTower α β γ] : IsScalarTower α β (Ideal γ) where
   smul_assoc x y z := by
-    rw [Ideal.pointwise_smul_def, Ideal.pointwise_smul_def, Ideal.pointwise_smul_def, Ideal.map_map]
+    simp_rw [Ideal.pointwise_smul_def, Ideal.map_map]
     congr
     ext
     simp
 
 open Pointwise in
+theorem Ideal.smul_under {G R S : Type*} [Group G] [CommRing R] [CommRing S] [Algebra R S]
+    [MulSemiringAction G R] [MulSemiringAction G S] [SMulDistribClass G R S]
+    (g : G) (I : Ideal S) : g • I.under R = (g • I).under R := by
+  simp_rw [Ideal.pointwise_smul_eq_comap, Ideal.under_def]
+  nth_rw 1 [← Ideal.comap_coe]
+  nth_rw 4 [← Ideal.comap_coe]
+  simp_rw [Ideal.comap_comap]
+  congr
+  ext
+  simp [algebraMap.smul']
+
+theorem Ideal.coe_mem_inertia (G : Type*) [Group G] (H : Subgroup G) (h : H)
+    (R : Type*) [CommRing R] (I : Ideal R) [MulSemiringAction G R] :
+    ↑h ∈ I.inertia G ↔ h ∈ I.inertia H :=
+  .rfl
+
+open Pointwise in
 theorem foo₄ (B C G : Type*) [Group G] (H : Subgroup G) [CommRing B] [CommRing C]
-    [Algebra B C] [MulSemiringAction G C] [IsGaloisGroup H B C]
+    [Algebra B C] [MulSemiringAction G C] [Algebra.IsInvariant B C H] [SMulCommClass H B C]
     [H.Normal] [MulSemiringAction (G ⧸ H) B]
     [MulSemiringAction G B] [IsScalarTower G (G ⧸ H) B] [SMulDistribClass G B C] [Finite H]
     (q : Ideal B) (r : Ideal C) [r.LiesOver q] [r.IsPrime] :
@@ -52,45 +69,29 @@ theorem foo₄ (B C G : Type*) [Group G] (H : Subgroup G) [CommRing B] [CommRing
       replace hg := Ideal.inertia_le_stabilizer q hg
       obtain ⟨g, rfl⟩ := QuotientGroup.mk'_surjective H g
       rw [MulAction.mem_stabilizer_iff, QuotientGroup.mk'_apply, MulAction.coe_quotient_smul] at hg
-      have : (g • r).under B = r.under B := by
-        rw [← Ideal.over_def r q, ← hg, Ideal.over_def r q]
-        rw [Ideal.under_def, Ideal.pointwise_smul_eq_comap]
-        nth_rw 2 [← Ideal.comap_coe]
-        rw [Ideal.comap_comap, Ideal.pointwise_smul_eq_comap, Ideal.under_def]
-        nth_rw 2 [← Ideal.comap_coe]
-        rw [Ideal.comap_comap]
-        congr
-        ext x
-        simp [← algebraMap.smul']
+      have : (g • r).under B = r.under B := by rwa [← Ideal.smul_under, ← Ideal.over_def r q]
       obtain ⟨g', hg'⟩ := Algebra.IsInvariant.exists_smul_of_under_eq B C H (g • r) r this
       exact ⟨⟨g' * g, by simpa [mul_smul, eq_comm]⟩, by simp⟩
     -- and now we must find a lift `g' : G` in the inertia subgroup of `r`
     obtain ⟨g, rfl⟩ := mem_decomposition
     let φ : (C ⧸ r) ≃ₐ[B ⧸ q] (C ⧸ r) :=
     { __ := Ideal.Quotient.stabilizerHom r (r.under ℤ) G g
-      commutes' := by
-        intro x
+      commutes' x := by
         obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
         specialize hg x
-        simp
-        rw [IsScalarTower.algebraMap_apply B C (C ⧸ r), Ideal.Quotient.algebraMap_eq,
-          Ideal.Quotient.stabilizerHom_apply, Ideal.Quotient.eq]
-        simp [Ideal.over_def r q] at hg
-        convert hg
-        rw [← algebraMap.smul']
-        simp [Subgroup.smul_def] }
+        rw [Submodule.mem_toAddSubgroup, QuotientGroup.mk'_apply, MulAction.coe_quotient_smul,
+          Ideal.over_def r q, Ideal.mem_under, map_sub, algebraMap.smul'] at hg
+        rwa [AlgEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
+          Ideal.Quotient.algebraMap_mk_of_liesOver, Ideal.Quotient.mk_algebraMap,
+          IsScalarTower.algebraMap_apply B C (C ⧸ r), Ideal.Quotient.algebraMap_eq,
+          Ideal.Quotient.stabilizerHom_apply, Ideal.Quotient.eq] }
     obtain ⟨g', hg'⟩ := Ideal.Quotient.stabilizerHom_surjective H q r φ
-    let v : MulAction.stabilizer G r := ⟨g', g'.2⟩⁻¹ * g
+    let v := ⟨g', g'.2⟩⁻¹ * g
     refine ⟨v, ?_, by simp [v]⟩
-    have := Ideal.Quotient.ker_stabilizerHom r (r.under ℤ) G
-    rw [SetLike.ext_iff] at this
-    specialize this v
-    refine this.mp ?_
-    simp [v, inv_mul_eq_one]
-    ext x
-    change Ideal.Quotient.stabilizerHom r q H g' x = _
-    rw [hg']
-    rfl
+    rw [SetLike.mem_coe, Ideal.coe_mem_inertia]
+    rw [← Ideal.Quotient.ker_stabilizerHom r (r.under ℤ) G, MonoidHom.mem_ker,
+      map_mul, map_inv, inv_mul_eq_one]
+    rwa [AlgEquiv.ext_iff] at hg' ⊢
 
 end
 
