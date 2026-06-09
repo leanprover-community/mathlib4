@@ -96,7 +96,7 @@ Prefer `IsTop.eq_top` if `α` already has a top element. -/
 Prefer `IsBot.eq_bot` if `α` already has a bottom element. -/]
 protected def IsTop.rec [LE α] {motive : (x : α) → IsTop x → Sort*}
     (top : ∀ [OrderTop α], motive ⊤ isTop_top) (x : α) (hx : IsTop x) : motive x hx :=
-  @h { top := x, le_top a := hx a }
+  @top { top := x, le_top a := hx a }
 
 section Preorder
 
