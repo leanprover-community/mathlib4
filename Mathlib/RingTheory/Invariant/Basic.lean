@@ -549,6 +549,53 @@ lemma Ideal.Quotient.finite_of_isInvariant [P.IsMaximal] [Q.IsMaximal]
 
 end normal
 
+section quotient
+
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+  {G : Type*} [Group G] [MulSemiringAction G R] [MulSemiringAction G S] [SMulDistribClass G R S]
+  (H : Subgroup G) [H.Normal] [Finite H] [Algebra.IsInvariant R S H] [SMulCommClass H R S]
+  [MulSemiringAction (G ⧸ H) R] [IsScalarTower G (G ⧸ H) R]
+  (p : Ideal R) (q : Ideal S) [q.LiesOver p] [q.IsPrime]
+
+theorem Ideal.inertia_quotient : p.inertia (G ⧸ H) = (q.inertia G).map (QuotientGroup.mk' H) := by
+  apply le_antisymm
+  · -- let `g : G ⧸ H` be an element of the inertia subgroup of `p`
+    intro g hg
+    -- first we will find a lift in the decomposition subgroup of `q`
+    have mem_decomposition : ∃ g' : MulAction.stabilizer G q, QuotientGroup.mk' H g' = g := by
+      replace hg := Ideal.inertia_le_stabilizer p hg
+      obtain ⟨g, rfl⟩ := QuotientGroup.mk'_surjective H g
+      rw [MulAction.mem_stabilizer_iff, QuotientGroup.mk'_apply, MulAction.coe_quotient_smul] at hg
+      have : (g • q).under R = q.under R := by rwa [← Ideal.smul_under, ← Ideal.over_def q p]
+      obtain ⟨g', hg'⟩ := Algebra.IsInvariant.exists_smul_of_under_eq R S H (g • q) q this
+      exact ⟨⟨g' * g, by simpa [mul_smul, eq_comm]⟩, by simp⟩
+    -- and now a further modification will give a lift in the inertia subgroup of `q`
+    obtain ⟨g, rfl⟩ := mem_decomposition
+    let φ : (S ⧸ q) ≃ₐ[R ⧸ p] (S ⧸ q) :=
+    { __ := Ideal.Quotient.stabilizerHom q (q.under ℤ) G g
+      commutes' x := by
+        obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+        specialize hg x
+        rw [Submodule.mem_toAddSubgroup, QuotientGroup.mk'_apply, MulAction.coe_quotient_smul,
+          Ideal.over_def q p, Ideal.mem_under, map_sub, algebraMap.smul'] at hg
+        rwa [AlgEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
+          Ideal.Quotient.algebraMap_mk_of_liesOver, Ideal.Quotient.mk_algebraMap,
+          IsScalarTower.algebraMap_apply R S (S ⧸ q), Ideal.Quotient.algebraMap_eq,
+          Ideal.Quotient.stabilizerHom_apply, Ideal.Quotient.eq] }
+    obtain ⟨g', hg'⟩ := Ideal.Quotient.stabilizerHom_surjective H p q φ
+    let v := ⟨g', g'.2⟩⁻¹ * g
+    refine ⟨v, ?_, by simp [v]⟩
+    rw [SetLike.mem_coe, Ideal.coe_mem_inertia, ← Ideal.Quotient.ker_stabilizerHom q (q.under ℤ) G,
+      MonoidHom.mem_ker, map_mul, map_inv, inv_mul_eq_one]
+    rwa [AlgEquiv.ext_iff] at hg' ⊢
+  · rintro - ⟨g, hg, rfl⟩ x
+    specialize hg (algebraMap R S x)
+    rw [← algebraMap.smul', ← map_sub] at hg
+    rwa [QuotientGroup.mk'_apply, MulAction.coe_quotient_smul, q.over_def p]
+
+
+end quotient
+
 namespace IsFractionRing
 
 variable (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [Algebra A B] [Field K] [Field L]
