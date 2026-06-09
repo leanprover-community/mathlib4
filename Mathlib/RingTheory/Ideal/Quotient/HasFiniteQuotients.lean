@@ -90,13 +90,13 @@ theorem finite_cardQuot_le (B : ℕ) : {I : Ideal R | I.cardQuot ≤ B}.Finite :
   obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq R (B + 1)
   -- and consider the finite set `t` of nonzero differences
   let t := (s - s) \ {0}
-  refine Set.Finite.of_diff ?_ (Set.finite_singleton ⊥)
+  refine Set.Finite.of_sdiff ?_ (Set.finite_singleton ⊥)
   -- in a ring with finite quotients, each nonzero element is contained in only finitely many ideals
   -- so it is enough to show that each ideal `I` of norm at most `B` contains some element of `t`
   suffices {I | Submodule.cardQuot I ≤ B} \ {⊥} ⊆ ⋃ x ∈ t, {I | x ∈ I} from
     (t.finite_toSet.biUnion fun x hx ↦ finite_setOf_mem x (by grind)).subset this
   intro I hI
-  rw [Set.mem_diff, Set.mem_setOf, Submodule.cardQuot_apply] at hI
+  rw [Set.mem_sdiff, Set.mem_setOf, Submodule.cardQuot_apply] at hI
   simp_rw [Set.mem_iUnion, exists_prop, Set.mem_setOf_eq]
   -- `s` has cardinality `B + 1`, but the quotient `R ⧸ I` has cardinality at most `B`
   replace hs : (s.image (Ideal.Quotient.mk I)).card < s.card := by

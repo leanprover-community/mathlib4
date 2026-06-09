@@ -122,7 +122,7 @@ theorem IsChain.lt_of_le [PartialOrder α] {s : Set α} (h : IsChain (· ≤ ·)
   (h ha hb hne).imp hne.lt_of_le hne.lt_of_le'
 
 @[simp] protected theorem IsChain.diff {s t : Set α} (h : IsChain r s) : IsChain r (s \ t) :=
-  h.mono Set.diff_subset
+  h.mono Set.sdiff_subset
 
 theorem isChain_preimage_subtypeVal (s t : Set α) :
     @IsChain ↑s (r · ·) (s ↓∩ t) ↔ IsChain r (s ∩ t) := by
