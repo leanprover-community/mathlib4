@@ -65,7 +65,15 @@ theorem c_pos (k : ℕ) : 0 < c k := by
 theorem c_rec {k : ℕ} (hk : 1 ≤ k) : 2 * c k + 2 = c (k + 1) := by
   simp only [c, add_tsub_cancel_right]
   conv_rhs => rw [show k = (k - 1) + 1 by omega, pow_succ]
+theorem c_rec {k : ℕ} (hk : k ≠ 0) : c (k + 1) = 2 * c k + 2 := by
+  simp only [c, add_tsub_cancel_right]
+  conv_lhs => rw [show k = (k - 1) + 1 by lia]
   ring
+
+theorem c_pos : ∀ k : ℕ, 0 < c k
+| 0 => by norm_num
+| 1 => by norm_num
+| k + 2 => by rw [c_rec (by lia)]; positivity [c_pos (k + 1)]
 
 end VanDerCorput
 
