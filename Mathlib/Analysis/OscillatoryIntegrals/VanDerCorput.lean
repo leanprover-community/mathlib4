@@ -174,20 +174,23 @@ theorem norm_integral_exp_mul_I_le_of_order_one'
   have hnz2 {x : ℝ} (hx : x ∈ [[a, b]]) : (L : ℂ) * (φ' x) ^ 2 ≠ 0 := by simp [hL, hφ'_nz hx]
   have hasDerivAt_u : ∀ x ∈ [[a, b]], HasDerivWithinAt u (u' x) [[a, b]] x := by
     intro x hx
-    convert HasDerivWithinAt.div (hasDerivWithinAt_const ..)
+    convert HasDerivWithinAt.div (hasDerivWithinAt_const _ _ 1)
       (.mul (.mul (hasDerivWithinAt_const ..)
         (.ofReal_comp <| hasDerivAt_φ' _ hx))
         (hasDerivWithinAt_const ..)) (hnz1 hx) using 1
-    simp only [Pi.mul_apply, zero_mul, zero_add, mul_zero, add_zero, one_mul, zero_sub, mul_pow,
-      I_sq, mul_neg, mul_one, neg_div_neg_eq, u']
-    have := hφ'_nz hx
-    have : ofReal L ^ 2 * (φ' x) ^ 2 ≠ 0 := by norm_cast; positivity
-    field_simp
+    · rfl
+    · funext _; simp [u]
+    · have hL0 : (L : ℂ) ≠ 0 := by exact_mod_cast hL
+      have hφ0 : (φ' x : ℂ) ≠ 0 := by exact_mod_cast hφ'_nz hx
+      simp [u']
+      field_simp
+      simp [I_sq]
   have hasDerivAt_v : ∀ x ∈ [[a, b]], HasDerivWithinAt v (v' x) [[a, b]] x := by
     intro x hx
-    convert HasDerivWithinAt.cexp (.mul (.mul (hasDerivWithinAt_const ..)
-      (.ofReal_comp <| hasDerivAt_φ _ hx)) (hasDerivWithinAt_const ..)) using 1
-    simp [v']; ring
+    convert HasDerivWithinAt.cexp (.mul (.mul (hasDerivWithinAt_const _ _ (L : ℂ))
+      (.ofReal_comp <| hasDerivAt_φ _ hx)) (hasDerivWithinAt_const _ _ I)) using 1
+    · simp [v]
+    · simp [v']; ring
   have h1 : ∫ x in a..b, exp (L * φ x * I) = u b * v b - u a * v a - ∫ x in a..b, u' x * v x := by
     suffices h'' : ∀ x ∈ [[a, b]], exp (L * φ x * I) = u x * v' x by
       rw [integral_congr h'']
@@ -210,7 +213,10 @@ theorem norm_integral_exp_mul_I_le_of_order_one'
     intro x hx
     have hx' := uIoo_subset_uIcc_self hx
     have := ((hasDerivAt_φ' x hx').mono uIoo_subset_uIcc_self).hasDerivAt <| isOpen_Ioo.mem_nhds hx
-    convert HasDerivWithinAt.div (hasDerivWithinAt_const ..) this.hasDerivWithinAt ?_ using 1
+    convert HasDerivWithinAt.div (hasDerivWithinAt_const _ _ (-1)) this.hasDerivWithinAt ?_ using 1
+    · rfl
+    · rfl
+    · funext _; simp
     · simp
     · exact hφ'_nz hx'
   have hnorm_u'_eq : ∀ x ∈ [[a, b]], ‖u' x‖ = φ'' x / (φ' x) ^ 2 * |L|⁻¹ := by
@@ -375,7 +381,10 @@ theorem norm_integral_exp_mul_I_le_of_order_ge_two' {k : ℕ} (hk : 2 ≤ k)
         exact hmono_ab rfl (hαβ hx) (hαβ hy) hxy
       calc _ ≤ c 1 * |δ * L|⁻¹ := norm_integral_exp_mul_I_le_of_order_one'
               (hφδc.mono hαβ)
-              (fun x hx ↦ by simpa only [iteratedDerivWithin_one] using hψ_bd x hx)
+              (fun x hx ↦ by
+                simpa only [iteratedDerivWithin_one,
+                  show (fun y ↦ δ⁻¹ • φ y) = δ⁻¹ • φ by funext; simp]
+                    using hψ_bd x hx)
               hmono hδL_ne
         _ = _ := by
           congr 1; rw [abs_mul, abs_of_pos hδ_pos, mul_comm δ |L|,
