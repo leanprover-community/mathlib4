@@ -312,8 +312,7 @@ noncomputable def toKer (E : Extension R M L) :
   right_inv x := by simpa [Subtype.ext_iff] using! Equiv.apply_ofInjective_symm E.incl_injective _
 
 @[simp] lemma lie_toKer_apply (E : Extension R M L) (x : M) (y : E.L) :
-    ⁅y, (E.toKer x : E.L)⁆ = ⁅y, E.incl x⁆ := by
-  rfl
+    ⁅y, (E.toKer x : E.L)⁆ = ⁅y, E.incl x⁆ := rfl
 
 instance [IsLieAbelian M] (E : Extension R M L) : IsLieAbelian E.proj.ker :=
   (lie_abelian_iff_equiv_lie_abelian E.toKer.symm).mpr inferInstance

@@ -363,8 +363,7 @@ lemma FamilyOfElements.map_id (x : FamilyOfElements P R) :
 
 @[simp]
 lemma FamilyOfElements.map_comp (x : FamilyOfElements P R) (f : P ⟶ Q) (g : Q ⟶ U) :
-    (x.map f).map g = x.map (f ≫ g) := by
-  rfl
+    (x.map f).map g = x.map (f ≫ g) := rfl
 
 theorem FamilyOfElements.Compatible.map (f : P ⟶ Q) {x : FamilyOfElements P R}
     (h : x.Compatible) : (x.map f).Compatible := by

@@ -423,7 +423,7 @@ protected def seminorm (k n : ℕ) : Seminorm 𝕜 𝓢(E, F) :=
 
 Note that it is usually better to use `seminorm_le_bound` or `le_seminorm` instead of this lemma. -/
 theorem seminorm_apply {k n : ℕ} (f : 𝓢(E, F)) : SchwartzMap.seminorm 𝕜 k n f =
-    sInf { c | 0 ≤ c ∧ ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ c } := by rfl
+    sInf { c | 0 ≤ c ∧ ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ c } := rfl
 
 /-- If one controls the seminorm for every `x`, then one controls the seminorm. -/
 theorem seminorm_le_bound (k n : ℕ) (f : 𝓢(E, F)) {M : ℝ} (hMp : 0 ≤ M)
@@ -1160,7 +1160,7 @@ def integralCLM : 𝓢(D, V) →L[𝕜] V := by
 
 variable (𝕜) in
 @[simp]
-lemma integralCLM_apply (f : 𝓢(D, V)) : integralCLM 𝕜 μ f = ∫ x, f x ∂μ := by rfl
+lemma integralCLM_apply (f : 𝓢(D, V)) : integralCLM 𝕜 μ f = ∫ x, f x ∂μ := rfl
 
 end Integration
 

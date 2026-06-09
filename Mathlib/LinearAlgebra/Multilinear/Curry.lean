@@ -87,8 +87,7 @@ theorem MultilinearMap.curryLeft_apply (f : MultilinearMap R M M₂) (x : M 0)
 
 @[simp]
 theorem LinearMap.curry_uncurryLeft (f : M 0 →ₗ[R] MultilinearMap R (fun i :
-    Fin n => M i.succ) M₂) : f.uncurryLeft.curryLeft = f := by
-  rfl
+    Fin n => M i.succ) M₂) : f.uncurryLeft.curryLeft = f := rfl
 
 @[simp]
 theorem MultilinearMap.uncurry_curryLeft (f : MultilinearMap R M M₂) :

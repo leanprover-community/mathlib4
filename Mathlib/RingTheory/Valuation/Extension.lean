@@ -126,8 +126,7 @@ instance instAlgebraInteger : Algebra vR.integer vA.integer where
   smul_def' _ _ := Subtype.ext (Algebra.smul_def _ _)
 
 @[simp, norm_cast]
-theorem val_smul (r : vR.integer) (a : vA.integer) : ↑(r • a : vA.integer) = (r : R) • (a : A) := by
-  rfl
+theorem val_smul (r : vR.integer) (a : vA.integer) : ↑(r • a : vA.integer) = (r : R) • (a : A) := rfl
 
 @[simp]
 lemma mk_smul_mk (r : R) (hr) (a : A) (ha) :
@@ -136,8 +135,7 @@ lemma mk_smul_mk (r : R) (hr) (a : A) (ha) :
 
 @[simp, norm_cast]
 theorem val_algebraMap (r : vR.integer) :
-    ((algebraMap vR.integer vA.integer) r : A) = (algebraMap R A) (r : R) := by
-  rfl
+    ((algebraMap vR.integer vA.integer) r : A) = (algebraMap R A) (r : R) := rfl
 
 instance instIsScalarTowerInteger : IsScalarTower vR.integer vA.integer A where
   smul_assoc x y z := by

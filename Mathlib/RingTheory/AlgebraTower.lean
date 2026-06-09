@@ -76,8 +76,7 @@ alias algebraMapCoeffs_repr_apply_toFun := algebraMapCoeffs_repr_apply_apply
 
 @[simp]
 theorem algebraMapCoeffs_repr (m : M) :
-    (b.algebraMapCoeffs A h).repr m = (b.repr m).mapRange (algebraMap R A) (map_zero _) := by
-  rfl
+    (b.algebraMapCoeffs A h).repr m = (b.repr m).mapRange (algebraMap R A) (map_zero _) := rfl
 
 theorem algebraMapCoeffs_apply (i : ι) : b.algebraMapCoeffs A h i = b i :=
   b.mapCoeffs_apply _ _ _

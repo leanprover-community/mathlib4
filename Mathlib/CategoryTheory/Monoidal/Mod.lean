@@ -319,8 +319,7 @@ lemma hom_ext {M N : Mod D A} (f₁ f₂ : M ⟶ N) (h : f₁.hom = f₂.hom) :
   Hom.ext h
 
 @[to_additive (attr := simp)]
-theorem id_hom' (M : Mod D A) : (𝟙 M : M ⟶ M).hom = 𝟙 M.X := by
-  rfl
+theorem id_hom' (M : Mod D A) : (𝟙 M : M ⟶ M).hom = 𝟙 M.X := rfl
 
 @[to_additive (attr := simp)]
 theorem comp_hom' {M N K : Mod D A} (f : M ⟶ N) (g : N ⟶ K) :

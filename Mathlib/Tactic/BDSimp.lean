@@ -28,7 +28,7 @@ This tactic is a temporary workaround.
 the expected `.instances` transparency level. For example:
 ```lean
 @[expose] def two := 2
-@[defeq] lemma two_eq : two = 2 := by rfl
+@[defeq] lemma two_eq : two = 2 := rfl
 instance : NeZero two := inferInstanceAs (NeZero 2)
 
 example (x : Fin two) : x * 0 = 0 := by

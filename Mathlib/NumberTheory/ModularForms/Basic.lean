@@ -172,7 +172,7 @@ theorem CuspForm.ext {f g : CuspForm Γ k} (h : ∀ x, f x = g x) : f = g :=
 /-- Copy of a `ModularForm` with a new `toFun` equal to the old one, optionally transporting
 along an equality of subgroups. Useful to fix definitional equalities. -/
 protected def ModularForm.copy {Γ' : Subgroup (GL (Fin 2) ℝ)} (f : ModularForm Γ k) (f' : ℍ → ℂ)
-    (h : f' = ⇑f) (hΓ : Γ' = Γ := by rfl) : ModularForm Γ' k where
+    (h : f' = ⇑f) (hΓ : Γ' = Γ := rfl) : ModularForm Γ' k where
   toFun := f'
   slash_action_eq' A hA := h.symm ▸ f.slash_action_eq' A (hΓ ▸ hA)
   holo' := h.symm ▸ f.holo'
@@ -181,7 +181,7 @@ protected def ModularForm.copy {Γ' : Subgroup (GL (Fin 2) ℝ)} (f : ModularFor
 /-- Copy of a `CuspForm` with a new `toFun` equal to the old one, optionally transporting
 along an equality of subgroups. Useful to fix definitional equalities. -/
 protected def CuspForm.copy {Γ' : Subgroup (GL (Fin 2) ℝ)} (f : CuspForm Γ k) (f' : ℍ → ℂ)
-    (h : f' = ⇑f) (hΓ : Γ' = Γ := by rfl) : CuspForm Γ' k where
+    (h : f' = ⇑f) (hΓ : Γ' = Γ := rfl) : CuspForm Γ' k where
   toFun := f'
   slash_action_eq' A hA := h.symm ▸ f.slash_action_eq' A (hΓ ▸ hA)
   holo' := h.symm ▸ f.holo'
@@ -543,7 +543,7 @@ def mulModularForm [Γ.HasDetPlusMinusOne] {k₁ k₂ : ℤ} (f : CuspForm Γ k�
 /-- Cast for cusp forms, which is useful for avoiding `Heq`s. Optionally transports along
 an equality of subgroups. -/
 def mcast {a b : ℤ} {Γ Γ' : Subgroup (GL (Fin 2) ℝ)} (h : a = b) (f : CuspForm Γ a)
-    (hΓ : Γ' = Γ := by rfl) : CuspForm Γ' b where
+    (hΓ : Γ' = Γ := rfl) : CuspForm Γ' b where
   toFun := (f : ℍ → ℂ)
   slash_action_eq' A hA := h ▸ f.slash_action_eq' A (hΓ ▸ hA)
   holo' := f.holo'
@@ -559,7 +559,7 @@ section GradedRing
 an equality of subgroups. -/
 @[simps -fullyApplied coe]
 def mcast {a b : ℤ} {Γ Γ' : Subgroup (GL (Fin 2) ℝ)} (h : a = b) (f : ModularForm Γ a)
-    (hΓ : Γ' = Γ := by rfl) : ModularForm Γ' b where
+    (hΓ : Γ' = Γ := rfl) : ModularForm Γ' b where
   toFun := (f : ℍ → ℂ)
   slash_action_eq' A hA := h ▸ f.slash_action_eq' A (hΓ ▸ hA)
   holo' := f.holo'

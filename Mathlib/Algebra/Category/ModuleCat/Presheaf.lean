@@ -101,13 +101,11 @@ lemma hom_ext {f g : M₁ ⟶ M₂} (h : ∀ (X : Cᵒᵖ), f.app X = g.app X) :
     f = g := Hom.ext (by ext1; apply h)
 
 @[simp]
-lemma id_app (M : PresheafOfModules R) (X : Cᵒᵖ) : Hom.app (𝟙 M) X = 𝟙 _ := by
-  rfl
+lemma id_app (M : PresheafOfModules R) (X : Cᵒᵖ) : Hom.app (𝟙 M) X = 𝟙 _ := rfl
 
 @[simp]
 lemma comp_app {M₁ M₂ M₃ : PresheafOfModules R} (f : M₁ ⟶ M₂) (g : M₂ ⟶ M₃) (X : Cᵒᵖ) :
-    (f ≫ g).app X = f.app X ≫ g.app X := by
-  rfl
+    (f ≫ g).app X = f.app X ≫ g.app X := rfl
 
 lemma naturality_apply (f : M₁ ⟶ M₂) {X Y : Cᵒᵖ} (g : X ⟶ Y) (x : M₁.obj X) :
     Hom.app f Y (M₁.map g x) = M₂.map g (Hom.app f X x) :=

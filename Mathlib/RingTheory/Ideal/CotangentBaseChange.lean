@@ -58,8 +58,7 @@ def tensorCotangentHom :
 lemma tensorCotangentHom_tmul (t : T) (x : I) :
     tensorCotangentHom R T I (t ⊗ₜ[R] I.toCotangent x) =
       t • (I.map (Algebra.TensorProduct.includeRight.toRingHom : S →+* T ⊗[R] S)).toCotangent
-        ⟨1 ⊗ₜ x, Ideal.mem_map_of_mem _ x.2⟩ := by
-  rfl
+        ⟨1 ⊗ₜ x, Ideal.mem_map_of_mem _ x.2⟩ := rfl
 
 lemma tensorCotangentHom_surjective :
     Function.Surjective (I.tensorCotangentHom R T) := by

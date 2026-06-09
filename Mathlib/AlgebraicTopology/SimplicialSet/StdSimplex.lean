@@ -104,15 +104,13 @@ lemma objEquiv_symm_apply {n m : ℕ} (f : ⦋m⦌ ⟶ ⦋n⦌) (i : Fin (m + 1)
 lemma δ_objEquiv_symm_apply
     {n : ℕ} {m : SimplexCategory} (f : .mk (n + 1) ⟶ m) (i : Fin (n + 2)) :
     dsimp% (stdSimplex.obj _).δ i (objEquiv.symm f) =
-      (objEquiv (n := m) (m := op ⦋n⦌)).symm (SimplexCategory.δ i ≫ f) := by
-  rfl
+      (objEquiv (n := m) (m := op ⦋n⦌)).symm (SimplexCategory.δ i ≫ f) := rfl
 
 @[simp]
 lemma σ_objEquiv_symm_apply
     {n : ℕ} {m : SimplexCategory} (f : .mk n ⟶ m) (i : Fin (n + 1)) :
     dsimp% (stdSimplex.obj _).σ i (objEquiv.symm f) =
-      (objEquiv (n := m) (m := op ⦋n + 1⦌)).symm (SimplexCategory.σ i ≫ f) := by
-  rfl
+      (objEquiv (n := m) (m := op ⦋n + 1⦌)).symm (SimplexCategory.σ i ≫ f) := rfl
 
 /-- Constructor for simplices of the standard simplex which takes a `OrderHom` as an input. -/
 abbrev objMk {n : SimplexCategory} {m : SimplexCategoryᵒᵖ}
@@ -136,8 +134,7 @@ def asOrderHom {n} {m} (α : Δ[n].obj m) : OrderHom (Fin (m.unop.len + 1)) (Fin
 
 lemma map_apply {m₁ m₂ : SimplexCategoryᵒᵖ} (f : m₁ ⟶ m₂) {n : SimplexCategory}
     (x : (stdSimplex.{u}.obj n).obj m₁) :
-    (stdSimplex.{u}.obj n).map f x = objEquiv.symm (f.unop ≫ objEquiv x) := by
-  rfl
+    (stdSimplex.{u}.obj n).map f x = objEquiv.symm (f.unop ≫ objEquiv x) := rfl
 
 @[simp]
 lemma coe_asOrderHom_objEquiv_symm {n m : ℕ} (α : ⦋n⦌ ⟶ ⦋m⦌) :
@@ -210,8 +207,7 @@ lemma objEquiv_yonedaEquiv_id (n : ℕ) :
 lemma map_objEquiv_op_apply
     {X : SSet.{u}} {n : SimplexCategory} (x : X.obj (op n))
     {m : SimplexCategoryᵒᵖ} (y : (stdSimplex.obj n).obj m) :
-    dsimp% X.map (stdSimplex.objEquiv y).op x = (yonedaEquiv.symm x).app m y := by
-  rfl
+    dsimp% X.map (stdSimplex.objEquiv y).op x = (yonedaEquiv.symm x).app m y := rfl
 
 /-- The (degenerate) `m`-simplex in the standard simplex concentrated in vertex `k`. -/
 def const (n : ℕ) (k : Fin (n + 1)) (m : SimplexCategoryᵒᵖ) : Δ[n].obj m :=
@@ -313,8 +309,7 @@ lemma range_eq_ofSimplex {n : ℕ} (f : Δ[n] ⟶ X) :
 
 lemma yonedaEquiv_coe {A : X.Subcomplex} {n : SimplexCategory}
     (f : stdSimplex.obj n ⟶ A) :
-    (yonedaEquiv f).val = yonedaEquiv (f ≫ A.ι) := by
-  rfl
+    (yonedaEquiv f).val = yonedaEquiv (f ≫ A.ι) := rfl
 
 end Subcomplex
 

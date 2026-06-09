@@ -38,8 +38,7 @@ def rev : SimplexCategory ⥤ SimplexCategory where
 
 @[simp]
 lemma rev_map_apply {n m : SimplexCategory} (f : n ⟶ m) (i : Fin (n.len + 1)) :
-    (rev.map f).toOrderHom (a := n) (b := m) i = (f.toOrderHom i.rev).rev := by
-  rfl
+    (rev.map f).toOrderHom (a := n) (b := m) i = (f.toOrderHom i.rev).rev := rfl
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

@@ -98,7 +98,7 @@ protected def prod :
       rw [Set.iUnion_prod_of_monotone (OrderHomClass.mono K) (OrderHomClass.mono K'),
           K.iUnion_eq, K'.iUnion_eq] }
 
-protected theorem prod_apply (n : ℕ) : (K.prod K') n = K n ×ˢ K' n := by rfl
+protected theorem prod_apply (n : ℕ) : (K.prod K') n = K n ×ˢ K' n := rfl
 
 end prod
 

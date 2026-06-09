@@ -263,8 +263,7 @@ theorem coe_prod (K : Compacts α) (L : Compacts β) :
 
 @[simp]
 theorem toCloseds_prod [T2Space α] [T2Space β] (K : Compacts α) (L : Compacts β) :
-    (K ×ˢ L).toCloseds = K.toCloseds ×ˢ L.toCloseds := by
-  rfl
+    (K ×ˢ L).toCloseds = K.toCloseds ×ˢ L.toCloseds := rfl
 
 @[simp]
 theorem singleton_prod_singleton (x : α) (y : β) :
@@ -501,8 +500,7 @@ theorem toCompacts_prod (K : NonemptyCompacts α) (L : NonemptyCompacts β) :
 
 @[simp]
 theorem toCloseds_prod [T2Space α] [T2Space β] (K : NonemptyCompacts α) (L : NonemptyCompacts β) :
-    (K ×ˢ L).toCloseds = K.toCloseds ×ˢ L.toCloseds := by
-  rfl
+    (K ×ˢ L).toCloseds = K.toCloseds ×ˢ L.toCloseds := rfl
 
 @[simp]
 theorem singleton_prod_singleton (x : α) (y : β) :

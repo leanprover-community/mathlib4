@@ -199,8 +199,7 @@ instance [NegZeroClass R] : Neg (ArithmeticFunction R) where
   neg f := ⟨-f, by simp⟩
 
 @[simp]
-theorem neg_apply [NegZeroClass R] {f : ArithmeticFunction R} {n : ℕ} : (-f) n = -f n := by
-  rfl
+theorem neg_apply [NegZeroClass R] {f : ArithmeticFunction R} {n : ℕ} : (-f) n = -f n := rfl
 
 instance [AddGroup R] : AddGroup (ArithmeticFunction R) where
   neg_add_cancel _ := ext fun _ ↦ neg_add_cancel _
@@ -310,8 +309,7 @@ instance {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S] :
 -- `ArithmeticFunction R` on `ArithmeticFunction S`
 @[simp]
 theorem smul_map {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S]
-    (x : R) (f : ArithmeticFunction S) (n : ℕ) : (x • f) n = x • f n := by
-  rfl
+    (x : R) (f : ArithmeticFunction S) (n : ℕ) : (x • f) n = x • f n := rfl
 
 -- We can deduce the `Algebra` structure from the `Module` structure here due to the lack of
 -- a more natural definition of `algebraMap`.

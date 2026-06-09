@@ -99,12 +99,11 @@ noncomputable def cbmApplyMeasure (μ : VectorMeasure X F) (B : E →L[ℝ] F �
   map_smul' _ _ := map_smulₛₗ₂ ..
 
 lemma transpose_eq_cbmApplyMeasure (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) :
-    μ.transpose B = cbmApplyMeasure μ B := by rfl
+    μ.transpose B = cbmApplyMeasure μ B := rfl
 
 @[simp]
 theorem cbmApplyMeasure_apply (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) (s : Set X) (x : E) :
-    cbmApplyMeasure μ B s x = B x (μ s) := by
-  rfl
+    cbmApplyMeasure μ B s x = B x (μ s) := rfl
 
 theorem cbmApplyMeasure_union (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) {s t : Set X}
     (hs : MeasurableSet s) (ht : MeasurableSet t) (hdisj : Disjoint s t) :
@@ -275,7 +274,7 @@ notation3 "∫ᵛ "(...)" in "s", "r:60:(scoped f => f)" ∂<•"μ:70 =>
 variable {μ ν B}
 
 lemma integral_eq_setToFun : ∫ᵛ x, f x ∂[B; μ] = setToFun (μ.transpose B).variation (μ.transpose B)
-    (dominatedFinMeasAdditive_cbmApplyMeasure μ B) f := by rfl
+    (dominatedFinMeasAdditive_cbmApplyMeasure μ B) f := rfl
 
 theorem integral_of_not_completeSpace (hG : ¬CompleteSpace G) :
     ∫ᵛ x, f x ∂[B; μ] = 0 := by

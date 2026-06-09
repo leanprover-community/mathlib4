@@ -43,7 +43,7 @@ theorem Filter.Tendsto.integral_sub_linear_isLittleO_ae
     (h : Tendsto f (l ⊓ ae μ) (𝓝 b)) (hfm : StronglyMeasurableAtFilter f l μ)
     (hμ : μ.FiniteAtFilter l) {s : ι → Set X} {li : Filter ι} (hs : Tendsto s li l.smallSets)
     (m : ι → ℝ := fun i => μ.real (s i))
-    (hsμ : (fun i => μ.real (s i)) =ᶠ[li] m := by rfl) :
+    (hsμ : (fun i => μ.real (s i)) =ᶠ[li] m := rfl) :
     (fun i => (∫ x in s i, f x ∂μ) - m i • b) =o[li] m := by
   suffices
       (fun s => (∫ x in s, f x ∂μ) - μ.real s • b) =o[l.smallSets] fun s => μ.real s from
@@ -75,7 +75,7 @@ theorem ContinuousWithinAt.integral_sub_linear_isLittleO_ae [TopologicalSpace X]
     [IsLocallyFiniteMeasure μ] {x : X} {t : Set X} {f : X → E} (hx : ContinuousWithinAt f t x)
     (ht : MeasurableSet t) (hfm : StronglyMeasurableAtFilter f (𝓝[t] x) μ) {s : ι → Set X}
     {li : Filter ι} (hs : Tendsto s li (𝓝[t] x).smallSets) (m : ι → ℝ := fun i => μ.real (s i))
-    (hsμ : (fun i => μ.real (s i)) =ᶠ[li] m := by rfl) :
+    (hsμ : (fun i => μ.real (s i)) =ᶠ[li] m := rfl) :
     (fun i => (∫ x in s i, f x ∂μ) - m i • f x) =o[li] m :=
   haveI : (𝓝[t] x).IsMeasurablyGenerated := ht.nhdsWithin_isMeasurablyGenerated _
   (hx.mono_left inf_le_left).integral_sub_linear_isLittleO_ae hfm (μ.finiteAt_nhdsWithin x t) hs m
@@ -94,7 +94,7 @@ theorem ContinuousAt.integral_sub_linear_isLittleO_ae [TopologicalSpace X] [Open
     {μ : Measure X} [IsLocallyFiniteMeasure μ] {x : X}
     {f : X → E} (hx : ContinuousAt f x) (hfm : StronglyMeasurableAtFilter f (𝓝 x) μ) {s : ι → Set X}
     {li : Filter ι} (hs : Tendsto s li (𝓝 x).smallSets) (m : ι → ℝ := fun i => μ.real (s i))
-    (hsμ : (fun i => μ.real (s i)) =ᶠ[li] m := by rfl) :
+    (hsμ : (fun i => μ.real (s i)) =ᶠ[li] m := rfl) :
     (fun i => (∫ x in s i, f x ∂μ) - m i • f x) =o[li] m :=
   (hx.mono_left inf_le_left).integral_sub_linear_isLittleO_ae hfm (μ.finiteAt_nhds x) hs m hsμ
 
@@ -111,7 +111,7 @@ theorem ContinuousOn.integral_sub_linear_isLittleO_ae [TopologicalSpace X] [Open
     [IsLocallyFiniteMeasure μ] {x : X} {t : Set X} {f : X → E} (hft : ContinuousOn f t) (hx : x ∈ t)
     (ht : MeasurableSet t) {s : ι → Set X} {li : Filter ι} (hs : Tendsto s li (𝓝[t] x).smallSets)
     (m : ι → ℝ := fun i => μ.real (s i))
-    (hsμ : (fun i => μ.real (s i)) =ᶠ[li] m := by rfl) :
+    (hsμ : (fun i => μ.real (s i)) =ᶠ[li] m := rfl) :
     (fun i => (∫ x in s i, f x ∂μ) - m i • f x) =o[li] m :=
   (hft x hx).integral_sub_linear_isLittleO_ae ht
     ⟨t, self_mem_nhdsWithin, hft.aestronglyMeasurable ht⟩ hs m hsμ

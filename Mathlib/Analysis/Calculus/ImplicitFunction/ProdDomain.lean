@@ -71,18 +71,15 @@ def implicitFunctionDataOfProdDomain
 
 @[simp] theorem pt_implicitFunctionDataOfProdDomain
     (dfu : HasStrictFDerivAt f f'u u) (if₂u : (f'u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
-    (dfu.implicitFunctionDataOfProdDomain if₂u).pt = u := by
-  rfl
+    (dfu.implicitFunctionDataOfProdDomain if₂u).pt = u := rfl
 
 @[simp] theorem leftFun_implicitFunctionDataOfProdDomain
     (dfu : HasStrictFDerivAt f f'u u) (if₂u : (f'u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
-    (dfu.implicitFunctionDataOfProdDomain if₂u).leftFun = f := by
-  rfl
+    (dfu.implicitFunctionDataOfProdDomain if₂u).leftFun = f := rfl
 
 @[simp] theorem rightFun_implicitFunctionDataOfProdDomain
     (dfu : HasStrictFDerivAt f f'u u) (if₂u : (f'u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
-    (dfu.implicitFunctionDataOfProdDomain if₂u).rightFun = Prod.fst := by
-  rfl
+    (dfu.implicitFunctionDataOfProdDomain if₂u).rightFun = Prod.fst := rfl
 
 /-- Implicit function `ψ : E₁ → E₂` associated with the (uncurried) bivariate function
 `f : E₁ × E₂ → F` at `u : E₁ × E₂`. -/
@@ -94,8 +91,7 @@ noncomputable def implicitFunctionOfProdDomain
 theorem implicitFunctionOfProdDomain_def
     {dfu : HasStrictFDerivAt f f'u u} {if₂u : (f'u ∘L .inr 𝕜 E₁ E₂).IsInvertible} :
     dfu.implicitFunctionOfProdDomain if₂u =
-      fun x => ((dfu.implicitFunctionDataOfProdDomain if₂u).implicitFunction (f u) x).2 := by
-  rfl
+      fun x => ((dfu.implicitFunctionDataOfProdDomain if₂u).implicitFunction (f u) x).2 := rfl
 
 theorem eventually_apply_eq_iff_implicitFunctionOfProdDomain
     (dfu : HasStrictFDerivAt f f'u u) (if₂u : (f'u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :

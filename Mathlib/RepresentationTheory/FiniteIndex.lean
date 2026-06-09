@@ -228,8 +228,7 @@ lemma resIndAdjunction_homEquiv_symm_apply (A : Rep.{max w u v} k S)
     {B : Rep.{max w u v} k G}
     (f : B ⟶ (indFunctor k S.subtype).obj A) :
     ((resIndAdjunction k S).homEquiv _ _).symm f =
-      (resCoindHomEquiv.{max w u v} S.subtype B A).symm (f ≫ (indCoindIso.{max w u v} A).hom) := by
-  rfl
+      (resCoindHomEquiv.{max w u v} S.subtype B A).symm (f ≫ (indCoindIso.{max w u v} A).hom) := rfl
 
 variable (k S) in
 /-- Given a finite index subgroup `S ≤ G`, `Coind_S^G` is left adjoint to the restriction functor
@@ -248,8 +247,7 @@ theorem instIsLeftAdjointSubtypeMemSubgroupCoindFunctorSubtype :
 lemma coindResAdjunction_counit_app (B : Rep.{max w u v} k G) :
     (coindResAdjunction.{w, u, v} k S).counit.app B =
       (indCoindIso.{max w u v} (res S.subtype B)).inv ≫
-      (indResAdjunction k S.subtype).counit.app B := by
-  rfl
+      (indResAdjunction k S.subtype).counit.app B := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -263,8 +261,7 @@ lemma coindResAdjunction_unit_app (A : Rep.{max w u v} k S) :
 lemma coindResAdjunction_homEquiv_apply (A : Rep.{max w u v} k S)
     {B : Rep k G} (f : coind S.subtype A ⟶ B) :
     (coindResAdjunction k S).homEquiv _ _ f =
-      indResHomEquiv S.subtype A B ((indCoindIso.{max w u v} A).hom ≫ f) := by
-  rfl
+      indResHomEquiv S.subtype A B ((indCoindIso.{max w u v} A).hom ≫ f) := rfl
 
 lemma coindResAdjunction_homEquiv_symm_apply (A : Rep.{max w u v} k S)
     {B : Rep k G} (f : A ⟶ res S.subtype B) :

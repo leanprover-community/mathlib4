@@ -128,8 +128,7 @@ def prodFun (x : E) : F × G :=
   (φ.leftFun x, φ.rightFun x)
 
 @[simp]
-theorem prodFun_apply (x : E) : φ.prodFun x = (φ.leftFun x, φ.rightFun x) := by
-  rfl
+theorem prodFun_apply (x : E) : φ.prodFun x = (φ.leftFun x, φ.rightFun x) := rfl
 
 protected theorem hasStrictFDerivAt :
     HasStrictFDerivAt φ.prodFun
@@ -158,20 +157,16 @@ def implicitFunction : F → G → E :=
   Function.curry <| φ.toOpenPartialHomeomorph.symm
 
 theorem implicitFunction_def :
-    implicitFunction φ = Function.curry (φ.hasStrictFDerivAt.toOpenPartialHomeomorph _).symm := by
-  rfl
+    implicitFunction φ = Function.curry (φ.hasStrictFDerivAt.toOpenPartialHomeomorph _).symm := rfl
 
 lemma implicitFunction_apply {x : F} {y : G} :
-    φ.implicitFunction x y = φ.toOpenPartialHomeomorph.symm (x, y) := by
-  rfl
+    φ.implicitFunction x y = φ.toOpenPartialHomeomorph.symm (x, y) := rfl
 
 @[simp]
-theorem toOpenPartialHomeomorph_coe : ⇑φ.toOpenPartialHomeomorph = φ.prodFun := by
-  rfl
+theorem toOpenPartialHomeomorph_coe : ⇑φ.toOpenPartialHomeomorph = φ.prodFun := rfl
 
 theorem toOpenPartialHomeomorph_apply (x : E) :
-    φ.toOpenPartialHomeomorph x = (φ.leftFun x, φ.rightFun x) := by
-  rfl
+    φ.toOpenPartialHomeomorph x = (φ.leftFun x, φ.rightFun x) := rfl
 
 theorem pt_mem_toOpenPartialHomeomorph_source : φ.pt ∈ φ.toOpenPartialHomeomorph.source :=
   φ.hasStrictFDerivAt.mem_toOpenPartialHomeomorph_source
@@ -359,14 +354,12 @@ end Defs
 @[simp]
 theorem implicitToOpenPartialHomeomorphOfComplemented_fst (hf : HasStrictFDerivAt f f' a)
     (hf' : f'.range = ⊤) (hker : f'.ker.ClosedComplemented) (x : E) :
-    (hf.implicitToOpenPartialHomeomorphOfComplemented f f' hf' hker x).fst = f x := by
-  rfl
+    (hf.implicitToOpenPartialHomeomorphOfComplemented f f' hf' hker x).fst = f x := rfl
 
 theorem implicitToOpenPartialHomeomorphOfComplemented_apply (hf : HasStrictFDerivAt f f' a)
     (hf' : f'.range = ⊤) (hker : f'.ker.ClosedComplemented) (y : E) :
     hf.implicitToOpenPartialHomeomorphOfComplemented f f' hf' hker y =
-      (f y, Classical.choose hker (y - a)) := by
-  rfl
+      (f y, Classical.choose hker (y - a)) := rfl
 
 @[simp]
 theorem implicitToOpenPartialHomeomorphOfComplemented_apply_ker (hf : HasStrictFDerivAt f f' a)
@@ -478,8 +471,7 @@ variable {f f'}
 
 @[simp]
 theorem implicitToOpenPartialHomeomorph_fst (hf : HasStrictFDerivAt f f' a) (hf' : f'.range = ⊤)
-    (x : E) : (hf.implicitToOpenPartialHomeomorph f f' hf' x).fst = f x := by
-  rfl
+    (x : E) : (hf.implicitToOpenPartialHomeomorph f f' hf' x).fst = f x := rfl
 
 @[simp]
 theorem implicitToOpenPartialHomeomorph_apply_ker (hf : HasStrictFDerivAt f f' a)

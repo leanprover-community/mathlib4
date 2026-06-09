@@ -232,8 +232,7 @@ def mapId : map (𝟙 X) ≅ 𝟭 (Opens X) where
   hom := { app := fun U => eqToHom (map_id_obj U) }
   inv := { app := fun U => eqToHom (map_id_obj U).symm }
 
-theorem map_id_eq : map (𝟙 X) = 𝟭 (Opens X) := by
-  rfl
+theorem map_id_eq : map (𝟙 X) = 𝟭 (Opens X) := rfl
 
 end
 

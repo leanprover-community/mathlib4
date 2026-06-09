@@ -199,8 +199,7 @@ noncomputable def delta (x : E) : 𝓓'^{n}(Ω, ℝ) where
   cont := continuous_eval_const _
 
 @[simp]
-theorem delta_apply (x : E) (f : 𝓓^{n}(Ω, ℝ)) : delta x f = f x := by
-  rfl
+theorem delta_apply (x : E) (f : 𝓓^{n}(Ω, ℝ)) : delta x f = f x := rfl
 
 @[simp]
 theorem delta_eq_zero_of_notMem (x : E) (hx : x ∉ Ω) : (delta x : 𝓓'^{n}(Ω, ℝ)) = 0 := by

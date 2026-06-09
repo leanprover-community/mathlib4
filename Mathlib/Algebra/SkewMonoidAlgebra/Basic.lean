@@ -221,8 +221,7 @@ theorem coeff_add (p q : SkewMonoidAlgebra k G) (a : G) :
 
 @[simp]
 theorem coeff_smul {S} [SMulZeroClass S k] (r : S) (p : SkewMonoidAlgebra k G) (a : G) :
-    coeff (r • p) a = r • coeff p a := by
-  rfl
+    coeff (r • p) a = r • coeff p a := rfl
 
 end Coeff
 

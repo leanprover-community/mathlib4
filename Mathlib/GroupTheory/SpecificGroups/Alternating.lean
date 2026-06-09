@@ -417,8 +417,7 @@ theorem ofSubtype_inj {s : Finset α} {g h : alternatingGroup s} :
   ofSubtype_injective.eq_iff
 
 theorem coe_ofSubtype (s : Finset α) (k : alternatingGroup s) :
-    (ofSubtype s k : Equiv.Perm α) = Equiv.Perm.ofSubtype k.1 := by
-  rfl
+    (ofSubtype s k : Equiv.Perm α) = Equiv.Perm.ofSubtype k.1 := rfl
 
 theorem map_ofSubtype (s : Finset α) :
     (alternatingGroup s).map (Perm.ofSubtype : Perm s →* Perm α) =
@@ -428,8 +427,7 @@ theorem map_ofSubtype (s : Finset α) :
   grind [sign_ofSubtype, mem_alternatingGroup]
 
 theorem ofSubtype_comp_subtype (s : Finset α) : (alternatingGroup α).subtype.comp (ofSubtype s) =
-    Perm.ofSubtype.comp (alternatingGroup s).subtype := by
-  rfl
+    Perm.ofSubtype.comp (alternatingGroup s).subtype := rfl
 
 theorem range_ofSubtype (s : Finset α) : (ofSubtype s).range =
     (Perm.ofSubtype (p := (· ∈ s))).range.subgroupOf (alternatingGroup α) := by

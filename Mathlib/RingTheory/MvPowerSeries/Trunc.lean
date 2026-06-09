@@ -80,7 +80,7 @@ def truncFinset (R : Type*) [CommSemiring R] (s : Finset (σ →₀ ℕ)) :
     ext; simp [MvPolynomial.coeff_sum]
 
 theorem truncFinset_apply (p : MvPowerSeries σ R) :
-    truncFinset R s p = ∑ x ∈ s, MvPolynomial.monomial x (p.coeff x) := by rfl
+    truncFinset R s p = ∑ x ∈ s, MvPolynomial.monomial x (p.coeff x) := rfl
 
 @[grind =]
 theorem coeff_truncFinset_of_mem {x : σ →₀ ℕ} (p : MvPowerSeries σ R) (h : x ∈ s) :

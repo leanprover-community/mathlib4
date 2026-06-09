@@ -1307,14 +1307,12 @@ def submoduleMap (e : M ≃SL[σ₁₂] M₂) (p : Submodule R M) :
 
 @[simp]
 lemma submoduleMap_apply (e : M ≃SL[σ₁₂] M₂) (p : Submodule R M) (x : p) :
-    e.submoduleMap p x = e x := by
-  rfl
+    e.submoduleMap p x = e x := rfl
 
 @[simp]
 lemma submoduleMap_symm_apply (e : M ≃SL[σ₁₂] M₂) (p : Submodule R M)
     (x : p.map (e : M →ₛₗ[σ₁₂] M₂)) :
-    (e.submoduleMap p).symm x = e.symm x := by
-  rfl
+    (e.submoduleMap p).symm x = e.symm x := rfl
 
 /-- A continuous linear equivalence which maps a submodule of one module onto another,
 restricts to a continuous linear equivalence of the two submodules.
@@ -1345,8 +1343,7 @@ def ofSubmodule' (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂ M₂) :
 theorem ofSubmodule'_toContinuousLinearMap (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂ M₂) :
     (f.ofSubmodule' U).toContinuousLinearMap =
       (f.toContinuousLinearMap.comp ((U.comap f.toLinearMap).subtypeL)).codRestrict U
-        ((fun ⟨x, hx⟩ ↦ by simpa [Submodule.mem_comap])) := by
-  rfl
+        ((fun ⟨x, hx⟩ ↦ by simpa [Submodule.mem_comap])) := rfl
 
 @[simp]
 theorem ofSubmodule'_apply (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂ M₂)

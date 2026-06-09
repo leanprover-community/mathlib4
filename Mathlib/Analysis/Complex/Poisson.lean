@@ -37,7 +37,7 @@ noncomputable def herglotzRieszKernel (c w z : ℂ) : ℂ :=
   ((z - c) + (w - c)) / ((z - c) - (w - c))
 
 lemma herglotzRieszKernel_def (c w z : ℂ) :
-    herglotzRieszKernel c w z = ((z - c) + (w - c)) / ((z - c) - (w - c)) := by rfl
+    herglotzRieszKernel c w z = ((z - c) + (w - c)) / ((z - c) - (w - c)) := rfl
 
 lemma herglotzRieszKernel_fun_def (c w : ℂ) :
     herglotzRieszKernel c w = fun z ↦ ((z - c) + (w - c)) / ((z - c) - (w - c)) := by
@@ -55,7 +55,7 @@ noncomputable def poissonKernel (c w z : ℂ) : ℝ :=
   (‖z - c‖ ^ 2 - ‖w - c‖ ^ 2) / ‖(z - c) - (w - c)‖ ^ 2
 
 lemma poissonKernel_def (c w z : ℂ) :
-    poissonKernel c w z = (‖z - c‖ ^ 2 - ‖w - c‖ ^ 2) / ‖(z - c) - (w - c)‖ ^ 2 := by rfl
+    poissonKernel c w z = (‖z - c‖ ^ 2 - ‖w - c‖ ^ 2) / ‖(z - c) - (w - c)‖ ^ 2 := rfl
 
 private lemma poissonKernel_eq_re_herglotzRieszKernel_aux {a b : ℂ} :
     ((a + b) / (a - b)).re = (‖a‖ ^ 2 - ‖b‖ ^ 2) / ‖a - b‖ ^ 2 := by

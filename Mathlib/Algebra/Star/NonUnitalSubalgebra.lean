@@ -458,8 +458,7 @@ theorem mem_range_self (φ : F) (x : A) :
 @[simp, norm_cast]
 theorem coe_range (φ : F) :
     ((NonUnitalStarAlgHom.range φ : NonUnitalStarSubalgebra R B) : Set B) =
-    Set.range (φ : A → B) := by
-  rfl
+    Set.range (φ : A → B) := rfl
 
 theorem range_comp (f : A →⋆ₙₐ[R] B) (g : B →⋆ₙₐ[R] C) :
     NonUnitalStarAlgHom.range (g.comp f) = (NonUnitalStarAlgHom.range f).map g :=

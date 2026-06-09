@@ -192,7 +192,7 @@ theorem induction {C : TensorAlgebra R M → Prop}
       add_mem' := @add
       algebraMap_mem' := algebraMap }
   let of : M →ₗ[R] s := (TensorAlgebra.ι R).codRestrict (Subalgebra.toSubmodule s) ι
-  have of_apply {x : M} : of x = (TensorAlgebra.ι R) x := by rfl
+  have of_apply {x : M} : of x = (TensorAlgebra.ι R) x := rfl
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (TensorAlgebra R M) = s.val.comp (lift R of) := by
     ext

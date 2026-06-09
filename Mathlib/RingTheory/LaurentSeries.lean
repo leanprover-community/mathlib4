@@ -981,8 +981,7 @@ instance : TopologicalSpace (LaurentSeriesPkg K).space :=
 
 @[simp]
 theorem LaurentSeries_coe (x : K⟮X⟯) :
-    (LaurentSeriesPkg K).coe (WithVal.toVal _ x) = (x : K⸨X⸩) := by
-  rfl
+    (LaurentSeriesPkg K).coe (WithVal.toVal _ x) = (x : K⸨X⸩) := rfl
 
 /-- Reinterpret the extension of `coe : WithVal ((idealX K).valuation _) → K⸨X⸩` as a ring
 homomorphism -/

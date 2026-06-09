@@ -83,16 +83,13 @@ namespace ofBifunctor
 
 -- We use the following three defeq abuses, together with `F.flip.flip = F`
 example : (bifunctorComp₁₂ (curriedTensor C) (curriedTensor C)).flip =
-    (bifunctorComp₁₂ (curriedTensor C).flip (curriedTensor C)) := by
-  rfl
+    (bifunctorComp₁₂ (curriedTensor C).flip (curriedTensor C)) := rfl
 
 example : (bifunctorComp₂₃ (curriedTensor C) (curriedTensor C)).flip =
-    (bifunctorComp₂₃ (curriedTensor C) (curriedTensor C).flip).flip.flip₁₃ := by
-  rfl
+    (bifunctorComp₂₃ (curriedTensor C) (curriedTensor C).flip).flip.flip₁₃ := rfl
 
 example : (bifunctorComp₁₂ (curriedTensor C) (curriedTensor C)) =
-    (bifunctorComp₂₃ (curriedTensor C).flip (curriedTensor C)).flip.flip₂₃ := by
-  rfl
+    (bifunctorComp₂₃ (curriedTensor C).flip (curriedTensor C)).flip.flip₂₃ := rfl
 
 namespace Forward
 

@@ -516,7 +516,7 @@ def naive {v : ι → MvPolynomial σ R}
   relation := v
   span_range_relation_eq_ker := (Generators.ker_naive s hs).symm
 
-lemma naive_relation : (naive s hs).relation = v := by rfl
+lemma naive_relation : (naive s hs).relation = v := rfl
 
 @[simp] lemma naive_relation_apply (i : ι) : (naive s hs).relation i = v i := rfl
 

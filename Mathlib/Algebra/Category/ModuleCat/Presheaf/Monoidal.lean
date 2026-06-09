@@ -197,8 +197,7 @@ lemma leftUnitor_hom_app (X : Cᵒᵖ) :
 
 @[simp]
 lemma leftUnitor_inv_app (X : Cᵒᵖ) :
-    dsimp% (λ_ M₁).inv.app X = (leftUnitor (C := ModuleCat (R.obj X)) (M₁.obj X)).inv := by
-  rfl
+    dsimp% (λ_ M₁).inv.app X = (leftUnitor (C := ModuleCat (R.obj X)) (M₁.obj X)).inv := rfl
 
 @[simp]
 lemma rightUnitor_hom_app (X : Cᵒᵖ) :
@@ -225,8 +224,7 @@ lemma associator_inv_app (X : Cᵒᵖ) :
 @[simp]
 lemma braiding_hom_app (X : Cᵒᵖ) :
     dsimp% (braiding M₁ M₂).hom.app X =
-      (braiding (C := ModuleCat (R.obj X)) (M₁.obj X) (M₂.obj X)).hom := by
-  rfl
+      (braiding (C := ModuleCat (R.obj X)) (M₁.obj X) (M₂.obj X)).hom := rfl
 
 @[simp]
 lemma braiding_inv_app (X : Cᵒᵖ) :

@@ -217,7 +217,7 @@ theorem circleAverage_re_herglotzRieszKernel_mul_log {w ρ c : ℂ} {R : ℝ} (h
     arg 1; arg 1
     rw [add_zero, herglotzRieszKernel_add_const c w z]
   have : (fun z ↦ (herglotzRieszKernel 0 (w - c) z).re * log ‖z - (ρ - c)‖) =
-    (Complex.re ∘ herglotzRieszKernel 0 (w - c)) • (log ‖· - (ρ - c)‖) := by rfl
+    (Complex.re ∘ herglotzRieszKernel 0 (w - c)) • (log ‖· - (ρ - c)‖) := rfl
   rw [this, circleAverage_re_herglotzRieszKernel_mul_log₀ (by simp_all)
     (by simp_all [mem_ball_iff_norm.1 hw])]
   simp

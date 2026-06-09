@@ -212,8 +212,8 @@ def uliftFunctor : MonCat.{v} ⥤ MonCat.{max v u} where
   obj X := MonCat.of (ULift.{u, v} X)
   map {_ _} f := MonCat.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.hom.comp MulEquiv.ulift.toMonoidHom
-  map_id X := by rfl
-  map_comp {X Y Z} f g := by rfl
+  map_id _ := rfl
+  map_comp {_ _ _} _ _ := rfl
 
 end MonCat
 
@@ -410,8 +410,8 @@ def uliftFunctor : CommMonCat.{v} ⥤ CommMonCat.{max v u} where
   obj X := CommMonCat.of (ULift.{u, v} X)
   map {_ _} f := CommMonCat.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.hom.comp MulEquiv.ulift.toMonoidHom
-  map_id X := by rfl
-  map_comp {X Y Z} f g := by rfl
+  map_id _ := rfl
+  map_comp {_ _ _} _ _ := rfl
 
 end CommMonCat
 

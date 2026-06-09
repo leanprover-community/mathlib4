@@ -657,7 +657,7 @@ lemma comm_comp_lTensor (f : IntertwiningMap σ τ) :
 lemma comm_comp_rTensor (f : IntertwiningMap σ τ) :
     (comm τ ρ).comp (f.rTensor ρ) = (f.lTensor ρ).comp (comm σ ρ).toIntertwiningMap := by ext; simp
 
-lemma comm_symm : (comm σ ρ).symm = comm ρ σ := by rfl
+lemma comm_symm : (comm σ ρ).symm = comm ρ σ := rfl
 
 /-- The `Equiv` between representations induced from `TensorProduct.assoc`. -/
 def assoc : (tprod (tprod ρ σ) τ).Equiv (tprod ρ (tprod σ τ)) :=

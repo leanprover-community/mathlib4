@@ -69,7 +69,7 @@ theorem centroid_mem_affineSpan [CharZero k] {n : ℕ} (s : Simplex k P n) :
 
 /-- The centroid is equal to the affine combination of the points with `centroidWeights`. -/
 theorem centroid_eq_affineCombination (s : Simplex k P n) :
-    s.centroid = affineCombination k univ s.points (centroidWeights k univ) := by rfl
+    s.centroid = affineCombination k univ s.points (centroidWeights k univ) := rfl
 
 /-- The centroid of a simplex does not lie in the affine span of any proper subset of its
 vertices. -/
@@ -242,7 +242,7 @@ weights `1/n`. -/
 theorem faceOppositeCentroid_eq_affineCombination (s : Affine.Simplex k P n) (i : Fin (n + 1)) :
     s.faceOppositeCentroid i = ((affineCombination k {i}ᶜ s.points) fun _ ↦ (↑n)⁻¹) := by
   unfold faceOppositeCentroid
-  have : s.faceOpposite i = s.face (fs := {i}ᶜ) (by simp [card_compl, NeZero.one_le]) := by rfl
+  have : s.faceOpposite i = s.face (fs := {i}ᶜ) (by simp [card_compl, NeZero.one_le]) := rfl
   rw [this]
   unfold centroid
   rw [face_centroid_eq_centroid, centroid_def, centroidWeights_eq_const, card_compl]

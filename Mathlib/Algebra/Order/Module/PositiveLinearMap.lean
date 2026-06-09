@@ -131,13 +131,11 @@ instance : Add (E₁ →ₚ[R] E₂) where
 
 @[simp]
 lemma toLinearMap_add (f g : E₁ →ₚ[R] E₂) :
-    (f + g).toLinearMap = f.toLinearMap + g.toLinearMap := by
-  rfl
+    (f + g).toLinearMap = f.toLinearMap + g.toLinearMap := rfl
 
 @[simp]
 lemma add_apply (f g : E₁ →ₚ[R] E₂) (x : E₁) :
-    (f + g) x = f x + g x := by
-  rfl
+    (f + g) x = f x + g x := rfl
 
 instance : SMul ℕ (E₁ →ₚ[R] E₂) where
   smul n f := .mk (n • f.toLinearMap) fun x y h ↦ by

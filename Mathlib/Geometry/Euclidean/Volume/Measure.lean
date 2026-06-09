@@ -77,8 +77,7 @@ proof_wanted MeasureTheory.Measure.addHaarScalarFactor_hausdorffMeasure_eq (d : 
 
 theorem MeasureTheory.Measure.euclideanHausdorffMeasure_def (d : ℕ) :
     (μHE[d] : Measure X) =
-    addHaarScalarFactor (volume : Measure (EuclideanSpace ℝ (Fin d))) μH[d] • μH[d] := by
-  rfl
+    addHaarScalarFactor (volume : Measure (EuclideanSpace ℝ (Fin d))) μH[d] • μH[d] := rfl
 
 set_option backward.isDefEq.respectTransparency false in -- needed by simplifying `1 • _`
 /-- `μHE[0]` and `μH[0]` are equal. -/
@@ -347,6 +346,6 @@ theorem EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral (p : P) {v : V}
     let v' : (AffineSubspace.mk' p (ℝ ∙ v)).direction := ⟨v, by simp⟩
     suffices volume = ‖v'‖ₑ • volume.map f by simpa [v']
     exact volume_eq_of_finrank_eq_one hrank (by simpa [v'] using hv)
-  have hx (x : ℝ) : x • v +ᵥ p = g x := by rfl
+  have hx (x : ℝ) : x • v +ᵥ p = g x := rfl
   simp_rw [(AffineSubspace.mk' p (ℝ ∙ v)).euclideanHausdorffMeasure_eq_lintegral ht, hx,
     hm, lintegral_smul_measure, hg.lintegral_map, smul_eq_mul, hrank', AffineSubspace.direction_mk']

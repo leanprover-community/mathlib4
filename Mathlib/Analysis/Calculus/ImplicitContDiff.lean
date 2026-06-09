@@ -59,8 +59,7 @@ noncomputable def implicitFunction
 
 theorem implicitFunction_def
     (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
-    cdf.implicitFunction pn if₂ = (cdf.hasStrictFDerivAt pn).implicitFunctionOfProdDomain if₂ := by
-  rfl
+    cdf.implicitFunction pn if₂ = (cdf.hasStrictFDerivAt pn).implicitFunctionOfProdDomain if₂ := rfl
 
 /-- At the base point `u.1`, the implicit function evaluates to `u.2`. -/
 theorem implicitFunction_apply_self

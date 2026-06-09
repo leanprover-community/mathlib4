@@ -71,7 +71,7 @@ structure Algebra.Generators where
   but this causes a diamond if there is an existing instance. -/
   algebra : Algebra (MvPolynomial ι R) S := (aeval val).toAlgebra
   algebraMap_eq :
-    algebraMap (MvPolynomial ι R) S = aeval (R := R) val := by rfl
+    algebraMap (MvPolynomial ι R) S = aeval (R := R) val := rfl
 
 namespace Algebra.Generators
 

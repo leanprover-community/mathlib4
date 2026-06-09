@@ -45,8 +45,7 @@ lemma monotone_ofObjectProperty_right {Q' : ObjectProperty C} (h : Q ≤ Q') :
 
 lemma ofObjectProperty_inverseImage {D : Type*} [Category* D] (F : D ⥤ C) :
     ofObjectProperty (P.inverseImage F) (Q.inverseImage F) =
-    (ofObjectProperty P Q).inverseImage F := by
-  rfl
+    (ofObjectProperty P Q).inverseImage F := rfl
 
 lemma ofObjectProperty_map_le {D : Type*} [Category* D] (F : C ⥤ D) :
     (ofObjectProperty P Q).map F ≤ ofObjectProperty (P.map F) (Q.map F) := by
