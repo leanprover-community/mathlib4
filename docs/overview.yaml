@@ -588,7 +588,7 @@ Data structures:
     finite map: 'Finmap'
 
   Trees:
-    tree: 'Tree'
+    tree: 'BinaryTree'
     size-balanced binary search tree: 'Ordnode'
     W type: 'WType'
 
