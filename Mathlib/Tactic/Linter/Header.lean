@@ -310,7 +310,7 @@ def broadImportsCheck (imports : Array Syntax) (mainModule : Name) : CommandElab
     | `Mathlib.Tactic | `Lean | `Lean.Elab | `Std =>
       Linter.logLint linter.style.header i
         s!"Files in mathlib cannot import the whole `{i.getId}` folder. \
-        Doing so causes would cause imports to be unnecessarily slow."
+        Doing so would cause imports to be unnecessarily slow."
     | `Mathlib.Tactic.Replace =>
       if mainModule != `Mathlib.Tactic then
         Linter.logLint linter.style.header i
