@@ -291,12 +291,6 @@ lemma instCStarRing : CStarRing (Matrix n n 𝕜) where
 
 scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instCStarRing
 
-@[simp]
-lemma l2_opNorm_unitary_conj (U : unitary (Matrix n n 𝕜)) (A : Matrix n n 𝕜) :
-    ‖U * A * (star (U : Matrix n n 𝕜))‖ = ‖A‖ := by
-  simpa [mul_assoc, CStarRing.norm_coe_unitary_mul] using
-    CStarRing.norm_mul_coe_unitary A (star U)
-
 lemma l2_opNorm_eq_pi_norm {A : Matrix n n 𝕜} (hA : A.IsHermitian) (f : C((spectrum ℝ A), ℝ)) :
     ‖RCLike.ofReal (K := 𝕜) ∘ f ∘ fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalues_mem_spectrum_real i⟩‖
       = ‖f‖ := by
@@ -329,8 +323,8 @@ def instIsometricContinuousFunctionalCalculus :
     rw [← isHermitian_iff_isSelfAdjoint] at hA
     rw [IsHermitian.cfcHom_eq_cfcAux hA, AddMonoidHomClass.isometry_iff_norm]
     intro f
-    simp only [IsHermitian.cfcAux_apply, Unitary.conjStarAlgAut_apply, l2_opNorm_unitary_conj,
-      l2_opNorm_diagonal]
+    simp only [IsHermitian.cfcAux_apply, Unitary.conjStarAlgAut_apply, ← Unitary.coe_star,
+      CStarRing.norm_mul_coe_unitary, CStarRing.norm_coe_unitary_mul, l2_opNorm_diagonal]
     exact l2_opNorm_eq_pi_norm hA f
 
 scoped[Matrix.Norms.L2Operator] attribute [instance]
