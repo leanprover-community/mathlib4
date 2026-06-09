@@ -70,7 +70,12 @@ variable {M α : Type*} [TopologicalSpace M] [Zero M] [SMul M α] {s s₁ s₂ t
 
 protected lemma empty : Absorbs M s ∅ := by simp [Absorbs, mapsTo_empty]
 
-protected lemma eventually (h : Absorbs M s t) : ∀ᶠ a in 𝓝[≠] (0 : M), MapsTo (a • ·) t s := h
+theorem _root_.absorbs_iff_eventually_nhdsNE_zero :
+    Absorbs M s t ↔ ∀ᶠ c : M in 𝓝[≠] 0, MapsTo (c • ·) t s := .rfl
+
+protected alias ⟨eventually_nhdsNE_zero, _⟩ := absorbs_iff_eventually_nhdsNE_zero
+
+protected alias eventually := Absorbs.eventually_nhdsNE_zero
 
 -- TODO: deprecation
 --@[simp] lemma of_boundedSpace [BoundedSpace M] : Absorbs M s t := by simp [Absorbs]
@@ -172,22 +177,35 @@ section AddZeroNeg
 
 variable {M E : Type*} [TopologicalSpace M] [Zero M] {s t s₁ s₂ t₁ t₂ : Set E}
 
+theorem _root_.absorbs_iff_eventually_nhds_zero [Zero E] [SMulWithZero M E] (h₀ : 0 ∈ s) :
+    Absorbs M s t ↔ ∀ᶠ c : M in 𝓝 0, MapsTo (c • ·) t s := by
+  rw [← nhdsNE_sup_pure, eventually_sup, eventually_pure,
+    ← absorbs_iff_eventually_nhdsNE_zero, and_iff_left]
+  intro x _
+  simpa only [zero_smul]
+
+theorem eventually_nhds_zero [Zero E] [SMulWithZero M E] (h : Absorbs M s t) (h₀ : 0 ∈ s) :
+    ∀ᶠ c : M in 𝓝 0, MapsTo (c • ·) t s :=
+  (absorbs_iff_eventually_nhds_zero h₀).1 h
+
 protected lemma add [AddZeroClass E] [DistribSMul M E]
     (h₁ : Absorbs M s₁ t₁) (h₂ : Absorbs M s₂ t₂) : Absorbs M (s₁ + s₂) (t₁ + t₂) :=
-  h₂.mp <| h₁.eventually.mono fun x hx₁ hx₂ ↦ by rw [smul_add]; exact add_subset_add hx₁ hx₂
+  h₂.mp <| h₁.eventually.mono fun x hx₁ hx₂ ↦ by
+    simp_rw [mapsTo_iff_image_subset, image_smul, smul_add] at hx₁ hx₂ ⊢
+    exact add_subset_add hx₁ hx₂
 
 protected lemma zero [Zero E] [SMulZeroClass M E] {s : Set E} (hs : 0 ∈ s) : Absorbs M s 0 :=
-  Eventually.of_forall fun _ ↦ by rwa [smul_zero, zero_subset]
+  Eventually.of_forall fun _ ↦ by simp [mapsTo_iff_image_subset, hs]
 
 @[simp]
 lemma _root_.absorbs_zero_iff [NeBot (𝓝[≠] (0 : M))] [Zero E] [SMulZeroClass M E] {s : Set E} :
     Absorbs M s 0 ↔ 0 ∈ s := by
-  simp [Absorbs]
+  simp [Absorbs, mapsTo_iff_image_subset]
 
 @[simp]
 lemma _root_.absorbs_neg_neg [AddGroup E] [DistribSMul M E] :
     Absorbs M (-s) (-t) ↔ Absorbs M s t := by
-  simp [Absorbs]
+  simp [Absorbs, mapsTo_iff_image_subset]
 
 alias ⟨of_neg_neg, neg_neg⟩ := absorbs_neg_neg
 
@@ -202,7 +220,7 @@ protected theorem restrict_scalars
     [IsScalarTower M N α] [TopologicalSpace M] [TopologicalSpace N]
     {s t : Set α} (h : Absorbs N s t) (h_tendsto : Tendsto (· • 1 : M → N) (𝓝[≠] 0) (𝓝[≠] 0)) :
     Absorbs M s t :=
-  (h_tendsto.eventually h).mono <| fun x hx ↦ by rwa [smul_one_smul N x t] at hx
+  (h_tendsto.eventually h).mono <| fun x hx ↦ by simpa using hx
 
 end Absorbs
 
@@ -226,6 +244,12 @@ section SMul
 
 variable {M α : Type*} [Zero M] [SMul M α] [TopologicalSpace M] {s t : Set α}
 
+theorem _root_.absorbent_iff_eventually_nhdsNE_zero :
+    Absorbent M s ↔ ∀ x : α, ∀ᶠ c : M in 𝓝[≠] 0, c • x ∈ s :=
+  forall_congr' fun x ↦ by simp only [absorbs_iff_eventually_nhdsNE_zero, mapsTo_singleton]
+
+alias ⟨eventually_nhdsNE_zero, _⟩ := absorbent_iff_eventually_nhdsNE_zero
+
 protected theorem mono (ht : Absorbent M s) (hsub : s ⊆ t) : Absorbent M t := fun x ↦
   (ht x).mono_left hsub
 
@@ -239,16 +263,32 @@ theorem absorbs_finite (hs : Absorbent M s) (ht : t.Finite) : Absorbs M s t := b
 
 lemma _root_.absorbent_univ : Absorbent M (univ : Set α) := fun _ ↦ .univ
 
-lemma zero_mem {α} [NeBot (𝓝[≠] (0 : M))] [Zero α] [SMulZeroClass M α]
-    {s : Set α} (hs : Absorbent M s) : (0 : α) ∈ s :=
-  absorbs_zero_iff.1 (hs 0)
-
 end SMul
 
-theorem vadd_absorbs {M E : Type*} [Zero M] [AddZeroClass E] [DistribSMul M E] [TopologicalSpace M]
+section AddZeroNeg
+
+variable {M E : Type*} [TopologicalSpace M] [Zero M] {s t s₁ s₂ t₁ t₂ : Set E}
+
+lemma zero_mem [NeBot (𝓝[≠] (0 : M))] [Zero E] [SMulZeroClass M E]
+    {s : Set E} (hs : Absorbent M s) : (0 : E) ∈ s :=
+  absorbs_zero_iff.1 (hs 0)
+
+theorem vadd_absorbs [AddZeroClass E] [DistribSMul M E]
     {s₁ s₂ t : Set E} {x : E} (h₁ : Absorbent M s₁) (h₂ : Absorbs M s₂ t) :
     Absorbs M (s₁ + s₂) (x +ᵥ t) := by
   rw [← singleton_vadd]; exact (h₁ x).add h₂
+
+/-- Every neighbourhood of the origin is absorbent. -/
+theorem _root_.absorbent_nhds_zero [Zero E] [SMulWithZero M E] [TopologicalSpace E]
+    [ContinuousSMul M E] (hs : s ∈ 𝓝 (0 : E)) :
+    Absorbent M s := by
+  rw [absorbent_iff_eventually_nhdsNE_zero]
+  intro x
+  have : Tendsto (· • x) (𝓝 (0 : M)) (𝓝 0) :=
+    continuous_id.smul continuous_const |>.tendsto' _ _ (zero_smul _ _)
+  exact this.mono_left nhdsWithin_le_nhds hs
+
+end AddZeroNeg
 
 end Absorbent
 
@@ -260,8 +300,5 @@ variable {G₀ α E : Type*} [GroupWithZero G₀] [Bornology G₀] [MulAction G�
 --     Absorbent G₀ s ↔ ∀ x, ∀ᶠ c in cobounded G₀, c⁻¹ • x ∈ s :=
 --   forall_congr' fun x ↦ by simp only [absorbs_iff_eventually_cobounded_mapsTo, mapsTo_singleton]
 --
--- lemma Absorbent.zero_mem [NeBot (cobounded G₀)] [AddMonoid E] [DistribMulAction G₀ E]
---     {s : Set E} (hs : Absorbent G₀ s) : (0 : E) ∈ s :=
---   absorbs_zero_iff.1 (hs 0)
 
 end GroupWithZero
