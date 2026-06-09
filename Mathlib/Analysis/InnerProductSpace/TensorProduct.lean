@@ -495,13 +495,10 @@ the map `x ⊗ₜ[𝕜] y ↦ x ⊗ₜ[𝕜] g(y)`. -/
 noncomputable def lTensor (g : E →L[𝕜] F) : (G ⊗[𝕜] E) →L[𝕜] (G ⊗[𝕜] F) :=
   commIsometry 𝕜 F G ∘L g.rTensor G ∘L commIsometry 𝕜 G E
 
-lemma lTensor_def (g : E →L[𝕜] F) :
-    g.lTensor G = commIsometry 𝕜 F G ∘L g.rTensor G ∘L commIsometry 𝕜 G E := rfl
-
 variable {G} in
 @[simp] lemma lTensor_apply (g : G →L[𝕜] H) (x : E ⊗ G) :
     g.lTensor E x = g.toLinearMap.lTensor E x := by
-  simp [lTensor_def, ← LinearMap.comm_comp_rTensor_comp_comm_eq]
+  simp [lTensor, ← LinearMap.comm_comp_rTensor_comp_comm_eq]
 
 lemma lTensor_tmul (g : E →L[𝕜] F) (m : G) (n : E) : g.lTensor G (m ⊗ₜ n) = m ⊗ₜ g n := rfl
 
@@ -511,15 +508,15 @@ theorem commIsometry_comp_lTensor_comp_commIsometry_eq (g : E →L[𝕜] F) :
 
 theorem commIsometry_comp_rTensor_comp_commIsometry_eq (f : E →L[𝕜] F) :
     commIsometry 𝕜 G F ∘L f.lTensor G ∘L commIsometry 𝕜 E G = f.rTensor G := by
-  ext; simp [lTensor_def]
+  ext; simp [lTensor]
 
 theorem lTensor_comp_commIsometry (f : E →L[𝕜] F) :
     f.lTensor G ∘L commIsometry 𝕜 E G = commIsometry 𝕜 F G ∘L f.rTensor G := by
-  ext; simp [lTensor_def]
+  ext; simp [lTensor]
 
 theorem rTensor_comp_commIsometry (g : E →L[𝕜] F) :
     g.rTensor G ∘L commIsometry 𝕜 G E = commIsometry 𝕜 G F ∘L g.lTensor G := by
-  ext; simp [lTensor_def]
+  ext; simp [lTensor]
 
 @[simp] lemma toLinearMap_lTensor (g : E →L[𝕜] F) :
     (g.lTensor G).toLinearMap = g.toLinearMap.lTensor G := by ext; simp
@@ -528,7 +525,7 @@ theorem rTensor_comp_commIsometry (g : E →L[𝕜] F) :
     (g.lTensor G).toContinuousLinearMap = g.toContinuousLinearMap.lTensor G := by ext; simp
 
 theorem norm_lTensor_le (g : E →L[𝕜] F) : ‖g.lTensor G‖ ≤ ‖g‖ := by
-  simp_rw [lTensor_def, ← LinearIsometryEquiv.toContinuousLinearMap_toLinearIsometry]
+  simp_rw [lTensor, ← LinearIsometryEquiv.toContinuousLinearMap_toLinearIsometry]
   grw [opNorm_comp_le, opNorm_comp_le, LinearIsometry.norm_toContinuousLinearMap_le,
     LinearIsometry.norm_toContinuousLinearMap_le, mul_one, one_mul, norm_rTensor_le]
 
@@ -564,22 +561,20 @@ namespace TensorProduct
 noncomputable def mapL (f : E →L[𝕜] F) (g : G →L[𝕜] H) : (E ⊗[𝕜] G) →L[𝕜] (F ⊗[𝕜] H) :=
   f.rTensor H ∘L g.lTensor E
 
-lemma mapL_def (f : E →L[𝕜] F) (g : G →L[𝕜] H) : mapL f g = f.rTensor H ∘L g.lTensor E := rfl
-
 theorem norm_mapL_le (f : E →L[𝕜] F) (g : G →L[𝕜] H) : ‖mapL f g‖ ≤ ‖f‖ * ‖g‖ := by
-  grw [mapL_def, ContinuousLinearMap.opNorm_comp_le, ContinuousLinearMap.norm_rTensor_le,
+  grw [mapL, ContinuousLinearMap.opNorm_comp_le, ContinuousLinearMap.norm_rTensor_le,
     ContinuousLinearMap.norm_lTensor_le]
 
 @[simp] lemma mapL_apply (f : E →L[𝕜] F) (g : G →L[𝕜] H) (x) :
     mapL f g x = map f.toLinearMap g.toLinearMap x := by
-  simp [mapL_def, ← LinearMap.rTensor_comp_lTensor]
+  simp [mapL, ← LinearMap.rTensor_comp_lTensor]
 
 lemma mapL_tmul (f : E →L[𝕜] F) (g : G →L[𝕜] H) (m : E) (n : G) :
     mapL f g (m ⊗ₜ n) = f m ⊗ₜ g n := rfl
 
-@[simp] lemma mapL_zero_left (f : E →L[𝕜] F) : mapL (0 : G →L[𝕜] H) f = 0 := by simp [mapL_def]
-@[simp] lemma mapL_zero_right (f : E →L[𝕜] F) : mapL f (0 : G →L[𝕜] H) = 0 := by simp [mapL_def]
-@[simp] lemma mapL_id_id : mapL (.id 𝕜 E) (.id 𝕜 G) = .id 𝕜 _ := by simp [mapL_def]
+@[simp] lemma mapL_zero_left (f : E →L[𝕜] F) : mapL (0 : G →L[𝕜] H) f = 0 := by simp [mapL]
+@[simp] lemma mapL_zero_right (f : E →L[𝕜] F) : mapL f (0 : G →L[𝕜] H) = 0 := by simp [mapL]
+@[simp] lemma mapL_id_id : mapL (.id 𝕜 E) (.id 𝕜 G) = .id 𝕜 _ := by simp [mapL]
 
 lemma mapL_comp_commIsometry (f : E →L[𝕜] F) (g : G →L[𝕜] H) :
     mapL f g ∘L commIsometry 𝕜 G E = commIsometry 𝕜 H F ∘L mapL g f := by ext; simp [map_comm]
@@ -603,6 +598,7 @@ lemma mapL_smul_right (r : 𝕜) (f : E →L[𝕜] F) (g : G →L[𝕜] H) :
     (mapIsometry f g).toContinuousLinearMap =
       mapL f.toContinuousLinearMap g.toContinuousLinearMap := by
   ext; simp
+
 section comp
 
 variable {A B : Type*} [NormedAddCommGroup A] [InnerProductSpace 𝕜 A] [NormedAddCommGroup B]
@@ -633,17 +629,17 @@ end comp
 
 variable (G) in
 theorem _root_.ContinuousLinearMap.rTensor_eq_mapL (f : E →L[𝕜] F) :
-    f.rTensor G = mapL f (.id 𝕜 G) := by simp [mapL_def]
+    f.rTensor G = mapL f (.id 𝕜 G) := by simp [mapL]
 
 variable (E) in
 theorem _root_.ContinuousLinearMap.lTensor_eq_mapL (g : G →L[𝕜] H) :
-    g.lTensor E = mapL (.id 𝕜 E) g := by simp [mapL_def]
+    g.lTensor E = mapL (.id 𝕜 E) g := by simp [mapL]
 
 @[simp] lemma _root_.ContinuousLinearMap.lTensor_comp_rTensor (f : E →L[𝕜] F) (g : G →L[𝕜] H) :
     f.lTensor H ∘L g.rTensor E = mapL g f := by ext; simp [← LinearMap.lTensor_comp_rTensor]
 
 @[simp] lemma _root_.ContinuousLinearMap.rTensor_comp_lTensor (f : E →L[𝕜] F) (g : G →L[𝕜] H) :
-    f.rTensor H ∘L g.lTensor E = mapL f g := mapL_def _ _ |>.symm
+    f.rTensor H ∘L g.lTensor E = mapL f g := by ext; simp [← LinearMap.rTensor_comp_lTensor]
 
 @[simp] theorem adjoint_mapL [CompleteSpace E] [CompleteSpace G] [CompleteSpace (E ⊗[𝕜] G)]
     [CompleteSpace F] [CompleteSpace H] [CompleteSpace (F ⊗[𝕜] H)]
