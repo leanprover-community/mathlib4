@@ -39,6 +39,17 @@ and rings `R` equipped with the `I`-adic topology where `I ≤ J(R)`.
 class IsOpenUnits (M : Type*) [Monoid M] [TopologicalSpace M] : Prop where
   isOpenEmbedding_unitsVal : IsOpenEmbedding (Units.val : Mˣ → M)
 
+namespace Units
+
+variable {M : Type*} [Monoid M] [TopologicalSpace M] [IsOpenUnits M]
+
+lemma isOpenEmbedding_val : IsOpenEmbedding (Units.val : Mˣ → M) :=
+  IsOpenUnits.isOpenEmbedding_unitsVal
+
+lemma isOpenMap_val : IsOpenMap (Units.val : Mˣ → M) := isOpenEmbedding_val.isOpenMap
+
+end Units
+
 instance (priority := 900) (M : Type*) [Monoid M] [TopologicalSpace M] [DiscreteTopology M] :
     IsOpenUnits M where
   isOpenEmbedding_unitsVal :=
