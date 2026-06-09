@@ -205,6 +205,9 @@ partial def processGCongrHypothesisAux (goal : MVarId) (forward : Bool) (config 
   let (target, mvarApp) := if forward then (lhs, rhs) else (rhs, lhs)
   if let some (result, proof) ← grewriteCore relName rel? target forward config then
     mvarApp.withApp fun mvar xs ↦ do
+      /- Note: the names of the free variables `xs` end up in the new goal as lambda binders.
+      `applyGCongrLemma` ensures that these are the binder names that appear in the original goal.
+      As a result, when rewriting inside of `{x | p x}`, the binder name `x` is preserved. -/
       mvar.mvarId!.assign (← mkLambdaFVars xs result)
       goal.assign proof
       return true
