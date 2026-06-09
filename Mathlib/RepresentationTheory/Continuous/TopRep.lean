@@ -31,7 +31,7 @@ structure TopRep (k : Type u) (G : Type v) [TopologicalSpace k] [Ring k]
   [hV3 : TopologicalSpace V]
   [hV4 : IsTopologicalAddGroup V]
   [hV5 : ContinuousSMul k V]
-  /-- the underlying representation of an object in `TopRep k G` -/
+  /-- the underlying continuous representation of an object in `TopRep k G` -/
   ρ : ContRepresentation k G V
 
 namespace TopRep
@@ -89,11 +89,11 @@ instance : ConcreteCategory (TopRep.{w} k G) (fun A B ↦ A.ρ →ⁱL B.ρ) whe
   ofHom := Hom.mk
 
 variable {A B} in
-/-- Turn a morphism in `Rep` back into an `IntertwiningMap`. -/
+/-- Turn a morphism in `TopRep` back into an `IntertwiningMap`. -/
 abbrev Hom.hom (f : Hom A B) := ConcreteCategory.hom (C := TopRep k G) f
 
 variable {A B} in
-/-- Typecheck an `IntertwiningMap` as a morphism in `Rep`. -/
+/-- Typecheck an `IntertwiningMap` as a morphism in `TopRep`. -/
 abbrev ofHom (f : ρ →ⁱL σ) : of ρ ⟶ of σ :=
   ConcreteCategory.ofHom (C := TopRep.{w} k G) f
 
