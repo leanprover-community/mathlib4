@@ -422,7 +422,7 @@ lemma LowerHemicontinuousAt.of_sequences {x₀ : α} [(𝓝 x₀).IsCountablyGen
       ∀ y₀ ∈ f x₀, ∃ y : ℕ → β, (∀ n, y n ∈ f (x n)) ∧ Tendsto y atTop (𝓝 y₀)) :
     LowerHemicontinuousAt f x₀ := by
   rw [lowerHemicontinuousAt_iff]
-  rintro U hU ⟨y₀, hy₀f, hy₀U⟩
+  intro U hU ⟨y₀, hy₀f, hy₀U⟩
   by_contra hc
   rw [Filter.not_eventually] at hc
   obtain ⟨x, hx, hxU⟩ := exists_seq_forall_of_frequently hc
