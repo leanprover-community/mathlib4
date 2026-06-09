@@ -1,9 +1,0 @@
-{
-  "mcpServers": {
-    "quiver": {
-      "type": "stdio",
-      "command": "/Users/winstonyin/Documents/Lean/Quiver/.venv/bin/python",
-      "args": ["/Users/winstonyin/Documents/Lean/Quiver/mcp/mcp_server.py"]
-    }
-  }
-}
