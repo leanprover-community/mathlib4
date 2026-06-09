@@ -146,25 +146,29 @@ theorem of_union {A B : Set α} (h : Disjoint A B) (hA : MeasurableSet A) (hB : 
   rw [Set.union_eq_iUnion, of_disjoint_iUnion, tsum_fintype, Fintype.sum_bool, cond, cond]
   exacts [fun b => Bool.casesOn b hB hA, pairwise_disjoint_on_bool.2 h]
 
-theorem of_add_of_diff {A B : Set α} (hA : MeasurableSet A) (hB : MeasurableSet B) (h : A ⊆ B) :
+theorem of_add_of_sdiff {A B : Set α} (hA : MeasurableSet A) (hB : MeasurableSet B) (h : A ⊆ B) :
     v A + v (B \ A) = v B := by
-  rw [← of_union (@Set.disjoint_sdiff_right _ A B) hA (hB.diff hA), Set.union_diff_cancel h]
+  rw [← of_union (@Set.disjoint_sdiff_right _ A B) hA (hB.diff hA), Set.union_sdiff_cancel h]
 
-theorem of_diff {M : Type*} [AddCommGroup M] [TopologicalSpace M] [T2Space M]
+@[deprecated (since := "2026-06-03")] alias of_add_of_diff := of_add_of_sdiff
+
+theorem of_sdiff {M : Type*} [AddCommGroup M] [TopologicalSpace M] [T2Space M]
     {v : VectorMeasure α M} {A B : Set α} (hA : MeasurableSet A) (hB : MeasurableSet B)
     (h : A ⊆ B) : v (B \ A) = v B - v A := by
-  rw [← of_add_of_diff hA hB h, add_sub_cancel_left]
+  rw [← of_add_of_sdiff hA hB h, add_sub_cancel_left]
+
+@[deprecated (since := "2026-06-03")] alias of_diff := of_sdiff
 
 theorem of_compl {M : Type*} [AddCommGroup M] [TopologicalSpace M] [T2Space M]
     {v : VectorMeasure α M} {A : Set α} (hA : MeasurableSet A) :
     v Aᶜ = v univ - v A := by
-  simpa [compl_eq_univ_diff] using of_diff hA .univ (v := v) (subset_univ _)
+  simpa [compl_eq_univ_sdiff] using of_sdiff hA .univ (v := v) (subset_univ _)
 
-theorem of_diff_of_diff_eq_zero {A B : Set α} (hA : MeasurableSet A) (hB : MeasurableSet B)
+theorem of_sdiff_of_sdiff_eq_zero {A B : Set α} (hA : MeasurableSet A) (hB : MeasurableSet B)
     (h' : v (B \ A) = 0) : v (A \ B) + v B = v A := by
   symm
   calc
-    v A = v (A \ B ∪ A ∩ B) := by simp only [Set.diff_union_inter]
+    v A = v (A \ B ∪ A ∩ B) := by simp only [Set.sdiff_union_inter]
     _ = v (A \ B) + v (A ∩ B) := by
       rw [of_union]
       · rw [disjoint_comm]
@@ -176,7 +180,9 @@ theorem of_diff_of_diff_eq_zero {A B : Set α} (hA : MeasurableSet A) (hB : Meas
       · exact Set.disjoint_of_subset_left A.inter_subset_left disjoint_sdiff_self_right
       · exact hA.inter hB
       · exact hB.diff hA
-    _ = v (A \ B) + v B := by rw [Set.union_comm, Set.inter_comm, Set.diff_union_inter]
+    _ = v (A \ B) + v B := by rw [Set.union_comm, Set.inter_comm, Set.sdiff_union_inter]
+
+@[deprecated (since := "2026-06-03")] alias of_diff_of_diff_eq_zero := of_sdiff_of_sdiff_eq_zero
 
 theorem of_iUnion_nonneg {M : Type*} [TopologicalSpace M]
     [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
@@ -564,7 +570,7 @@ end
 
 section
 
-variable [MeasurableSpace α] [MeasurableSpace β]
+variable {mα : MeasurableSpace α} [MeasurableSpace β]
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
 variable (v : VectorMeasure α M)
 
@@ -640,7 +646,8 @@ theorem mapRange_add {v w : VectorMeasure α M} {f : M →+ N} (hf : Continuous 
 
 /-- Given a continuous `AddMonoidHom` `f : M → N`, `mapRangeHom` is the `AddMonoidHom` mapping the
 vector measure `v` on `M` to the vector measure `f ∘ v` on `N`. -/
-def mapRangeHom (f : M →+ N) (hf : Continuous f) : VectorMeasure α M →+ VectorMeasure α N where
+def mapRangeHom {α : Type*} [MeasurableSpace α] (f : M →+ N) (hf : Continuous f) :
+    VectorMeasure α M →+ VectorMeasure α N where
   toFun v := v.mapRange f hf
   map_zero' := mapRange_zero hf
   map_add' _ _ := mapRange_add hf
@@ -662,7 +669,8 @@ variable [ContinuousAdd M] [ContinuousAdd N]
 
 /-- Given a continuous linear map `f : M → N`, `mapRangeₗ` is the linear map mapping the
 vector measure `v` on `M` to the vector measure `f ∘ v` on `N`. -/
-def mapRangeₗ (f : M →ₗ[R] N) (hf : Continuous f) : VectorMeasure α M →ₗ[R] VectorMeasure α N where
+def mapRangeₗ {α : Type*} [MeasurableSpace α] (f : M →ₗ[R] N) (hf : Continuous f) :
+    VectorMeasure α M →ₗ[R] VectorMeasure α N where
   toFun v := v.mapRange f.toAddMonoidHom hf
   map_add' _ _ := mapRange_add hf
   map_smul' _ _ := mapRange_smul hf
@@ -748,6 +756,18 @@ theorem restrict_restrict {s t : Set α} (hs : MeasurableSet s) (ht : Measurable
   ext u hu
   simp [restrict_apply, hs, hu, ht, Set.inter_assoc]
 
+theorem restrict_map {f : α → β} (hf : Measurable f) {s : Set β} (hs : MeasurableSet s) :
+    (v.map f).restrict s = (v.restrict (f ⁻¹' s)).map f := by
+  ext t ht
+  simp [map_apply, hs, hf hs, restrict_apply, ht, hf, hf ht]
+
+theorem restrict_toSignedMeasure {μ : Measure α} [IsFiniteMeasure μ]
+    {s : Set α} (hs : MeasurableSet s) :
+    μ.toSignedMeasure.restrict s = (μ.restrict s).toSignedMeasure := by
+  ext t ht
+  rw [restrict_apply _ hs ht, Measure.toSignedMeasure_apply_measurable (ht.inter hs),
+    Measure.toSignedMeasure_apply_measurable ht, measureReal_restrict_apply ht]
+
 section ContinuousAdd
 
 variable [ContinuousAdd M]
@@ -760,7 +780,7 @@ theorem map_add (v w : VectorMeasure α M) (f : α → β) : (v + w).map f = v.m
 
 /-- `VectorMeasure.map` as an additive monoid homomorphism. -/
 @[simps]
-def mapGm (f : α → β) : VectorMeasure α M →+ VectorMeasure β M where
+def mapGm {α : Type*} [MeasurableSpace α] (f : α → β) : VectorMeasure α M →+ VectorMeasure β M where
   toFun v := v.map f
   map_zero' := map_zero f
   map_add' _ _ := map_add _ _ f
@@ -775,7 +795,8 @@ theorem restrict_add (v w : VectorMeasure α M) (i : Set α) :
 
 /-- `VectorMeasure.restrict` as an additive monoid homomorphism. -/
 @[simps]
-def restrictGm (i : Set α) : VectorMeasure α M →+ VectorMeasure α M where
+def restrictGm {α : Type*} [MeasurableSpace α] (i : Set α) :
+    VectorMeasure α M →+ VectorMeasure α M where
   toFun v := v.restrict i
   map_zero' := restrict_zero
   map_add' _ _ := restrict_add _ _ i
@@ -796,7 +817,7 @@ theorem restrict_add_restrict_compl (hi : MeasurableSet i) :
   · simp
   · exact disjoint_compl_right.inter_right' A |>.inter_left' A
 
-theorem restrict_inter_add_diff (hs : MeasurableSet s) (ht : MeasurableSet t) :
+theorem restrict_inter_add_sdiff (hs : MeasurableSet s) (ht : MeasurableSet t) :
     v.restrict (s ∩ t) + v.restrict (s \ t) = v.restrict s := by
   ext u hu
   simp only [add_apply, restrict_apply, hs, hu, hs.inter ht, hs.diff ht]
@@ -804,10 +825,12 @@ theorem restrict_inter_add_diff (hs : MeasurableSet s) (ht : MeasurableSet t) :
   congr
   grind
 
+@[deprecated (since := "2026-06-03")] alias restrict_inter_add_diff := restrict_inter_add_sdiff
+
 theorem restrict_union_add_inter (hs : MeasurableSet s) (ht : MeasurableSet t) :
     v.restrict (s ∪ t) + v.restrict (s ∩ t) = v.restrict s + v.restrict t := by
-  rw [← v.restrict_inter_add_diff (hs.union ht) ht, union_inter_cancel_right, union_diff_right,
-    ← v.restrict_inter_add_diff hs ht, add_comm, ← add_assoc, add_right_comm]
+  rw [← v.restrict_inter_add_sdiff (hs.union ht) ht, union_inter_cancel_right, union_sdiff_right,
+    ← v.restrict_inter_add_sdiff hs ht, add_comm, ← add_assoc, add_right_comm]
 
 theorem restrict_union (h : Disjoint s t) (hs : MeasurableSet s) (ht : MeasurableSet t) :
     v.restrict (s ∪ t) = v.restrict s + v.restrict t := by
@@ -1215,7 +1238,7 @@ theorem add_left [T2Space N] [ContinuousAdd M] (h₁ : v₁ ⟂ᵥ w) (h₂ : v�
   · rw [Set.compl_inter] at ht
     rw [(_ : t = uᶜ ∩ t ∪ vᶜ \ uᶜ ∩ t),
       of_union _ (hmu.compl.inter hmt) ((hmv.compl.diff hmu.compl).inter hmt), hu₂, hv₂, add_zero]
-    · exact Set.Subset.trans Set.inter_subset_left diff_subset
+    · exact Set.Subset.trans Set.inter_subset_left sdiff_subset
     · exact Set.inter_subset_left
     · exact disjoint_sdiff_self_right.mono Set.inter_subset_left Set.inter_subset_left
     · apply Set.Subset.antisymm <;> intro x hx
