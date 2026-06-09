@@ -195,6 +195,7 @@ namespace IsKilling
 
 variable [FiniteDimensional K L] (H : LieSubalgebra K L) [H.IsCartanSubalgebra]
 variable [IsKilling K L]
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- If a Lie algebra `L` has non-degenerate Killing form, the only element of a Cartan subalgebra
 whose adjoint action on `L` is nilpotent, is the zero element.

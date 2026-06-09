@@ -322,6 +322,8 @@ theorem abelian_radical_iff_solvable_is_abelian [IsNoetherian R L] :
     exact (LieIdeal.inclusion_injective h₂).isLieAbelian h₁
   · intro h; apply h; infer_instance
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 theorem ad_ker_eq_bot_of_hasTrivialRadical [HasTrivialRadical R L] : (ad R L).ker = ⊥ := by simp
 
 end LieAlgebra

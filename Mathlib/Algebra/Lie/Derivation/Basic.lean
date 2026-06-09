@@ -331,6 +331,8 @@ section
 
 variable (R L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-- The Lie algebra morphism from Lie derivations into linear endomorphisms. -/
 def toLinearMapLieHom : LieDerivation R L L →ₗ⁅R⁆ L →ₗ[R] L where
   toFun := toLinearMap
