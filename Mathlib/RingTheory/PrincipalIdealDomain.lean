@@ -321,14 +321,12 @@ namespace PrincipalIdealRing
 open IsPrincipalIdealRing
 
 theorem isMaximal_of_irreducible [CommSemiring R] [IsPrincipalIdealRing R] {p : R}
-    (hp : Irreducible p) : Ideal.IsMaximal (span R ({p} : Set R)) :=
-  ⟨⟨mt Ideal.span_singleton_eq_top.1 hp.1, fun I hI => by
-      rcases principal I with ⟨a, rfl⟩
-      rw [Ideal.submodule_span_eq, Ideal.span_singleton_eq_top]
-      rcases Ideal.span_singleton_le_span_singleton.1 (le_of_lt hI) with ⟨b, rfl⟩
-      refine (of_irreducible_mul hp).resolve_right (mt (fun hb => ?_) (not_le_of_gt hI))
-      rw [Ideal.submodule_span_eq, Ideal.submodule_span_eq,
-        Ideal.span_singleton_le_span_singleton, IsUnit.mul_right_dvd hb]⟩⟩
+    (hp : Irreducible p) : Ideal.IsMaximal (span R ({p} : Set R)) where
+  out := isCoatom_iff_ge_of_le.2 ⟨Ideal.span_singleton_ne_top hp.not_isUnit, fun I ht hI => by
+    obtain ⟨q, rfl⟩ := principal I
+    rw [Ideal.span_singleton_le_span_singleton] at hI ⊢
+    rw [ne_eq, Ideal.span_singleton_eq_top] at ht
+    exact ((hp.dvd_iff.1 hI).resolve_left ht).dvd⟩
 
 variable [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
 

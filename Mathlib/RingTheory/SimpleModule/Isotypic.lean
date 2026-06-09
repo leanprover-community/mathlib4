@@ -231,7 +231,7 @@ theorem Submodule.linearEquiv_of_sSup_eq_top [h : ∀ m : s, IsSimpleModule R m]
     (sSup_eq_iSup' s ▸ hs)
   have ⟨m, hm, _S, le, ⟨e⟩⟩ := N.le_linearEquiv_of_sSup_eq_top _ hs
   have := isSimpleModule_iff_isAtom.mp (IsSimpleModule.congr e.symm)
-  have := ((isSimpleModule_iff_isAtom.mp <| h ⟨m, hm⟩).le_iff_eq this.1).mp le
+  have := ((isSimpleModule_iff_isAtom.mp <| h ⟨m, hm⟩).le_iff_eq this.ne_bot).mp le
   ⟨m, hm, ⟨e.trans (.ofEq _ _ this)⟩⟩
 
 /-- If a simple module is contained in a sum of semisimple modules, it must be isomorphic
@@ -252,7 +252,7 @@ theorem Submodule.linearEquiv_of_le_sSup [simple : ∀ m : s, IsSimpleModule R m
     (hs : N ≤ sSup s) : ∃ S ∈ s, Nonempty (N ≃ₗ[R] S) :=
   have ⟨m, hm, _S, le, ⟨e⟩⟩ := N.le_linearEquiv_of_le_sSup _ hs
   have := isSimpleModule_iff_isAtom.mp (.congr e.symm)
-  have := ((isSimpleModule_iff_isAtom.mp <| simple ⟨m, hm⟩).le_iff_eq this.1).mp le
+  have := ((isSimpleModule_iff_isAtom.mp <| simple ⟨m, hm⟩).le_iff_eq this.ne_bot).mp le
   ⟨m, hm, ⟨e.trans (.ofEq _ _ this)⟩⟩
 
 end SimpleSubmodule
