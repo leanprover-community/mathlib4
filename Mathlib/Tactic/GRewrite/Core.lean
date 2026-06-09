@@ -178,6 +178,7 @@ so that we can apply `gcongr` lemmas to it. -/
 def makeGCongrGoal (rel? : Option Expr) (e : Expr) (forward : Bool) : MetaM (Expr × Expr) := do
   if let some rel := rel? then
     let .forallE _ d₁ (.forallE _ d₂ _ _) _ ← whnf (← inferType rel) | throwFunctionExpected rel
+    -- note that `@[gcongr]`'s checks should prevent this happening
     if d₂.hasLooseBVars then throwError "grw: {rel} is a dependent relation"
     if forward then
       let mvar ← mkFreshExprMVar d₂
