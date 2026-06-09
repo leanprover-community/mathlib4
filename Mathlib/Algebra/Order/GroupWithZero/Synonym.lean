@@ -57,22 +57,33 @@ end OrderDual
 /-! ### Lexicographic order -/
 
 
-instance [h : MulZeroClass α] : MulZeroClass (Lex α) := h
+namespace Lex
 
-instance [h : MulZeroOneClass α] : MulZeroOneClass (Lex α) := h
+instance [MulZeroClass α] : MulZeroClass (Lex α) := inferInstanceAs <| MulZeroClass α
 
-instance [Mul α] [Zero α] [h : NoZeroDivisors α] : NoZeroDivisors (Lex α) := h
+instance [MulZeroOneClass α] : MulZeroOneClass (Lex α) := inferInstanceAs <| MulZeroOneClass α
 
-instance [h : SemigroupWithZero α] : SemigroupWithZero (Lex α) := h
+instance [Mul α] [Zero α] [NoZeroDivisors α] : NoZeroDivisors (Lex α) :=
+  inferInstanceAs <| NoZeroDivisors α
 
-instance [h : MonoidWithZero α] : MonoidWithZero (Lex α) := h
+instance [SemigroupWithZero α] : SemigroupWithZero (Lex α) := inferInstanceAs <| SemigroupWithZero α
 
-instance [Mul α] [Zero α] [h : IsLeftCancelMulZero α] : IsLeftCancelMulZero (Lex α) := h
-instance [Mul α] [Zero α] [h : IsRightCancelMulZero α] : IsRightCancelMulZero (Lex α) := h
-instance [Mul α] [Zero α] [h : IsCancelMulZero α] : IsCancelMulZero (Lex α) := h
+instance [MonoidWithZero α] : MonoidWithZero (Lex α) := inferInstanceAs <| MonoidWithZero α
 
-instance [h : CommMonoidWithZero α] : CommMonoidWithZero (Lex α) := h
+instance [Mul α] [Zero α] [IsLeftCancelMulZero α] : IsLeftCancelMulZero (Lex α) :=
+  inferInstanceAs <| IsLeftCancelMulZero α
 
-instance [h : GroupWithZero α] : GroupWithZero (Lex α) := h
+instance [Mul α] [Zero α] [IsRightCancelMulZero α] : IsRightCancelMulZero (Lex α) :=
+  inferInstanceAs <| IsRightCancelMulZero α
 
-instance [h : CommGroupWithZero α] : CommGroupWithZero (Lex α) := h
+instance [Mul α] [Zero α] [IsCancelMulZero α] : IsCancelMulZero (Lex α) :=
+  inferInstanceAs <| IsCancelMulZero α
+
+instance [CommMonoidWithZero α] : CommMonoidWithZero (Lex α) :=
+  inferInstanceAs <| CommMonoidWithZero α
+
+instance [GroupWithZero α] : GroupWithZero (Lex α) := inferInstanceAs <| GroupWithZero α
+
+instance [CommGroupWithZero α] : CommGroupWithZero (Lex α) := inferInstanceAs <| CommGroupWithZero α
+
+end Lex
