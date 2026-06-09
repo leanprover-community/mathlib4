@@ -89,12 +89,15 @@ theorem insert_ae_eq_self (a : α) (s : Set α) : (insert a s : Set α) =ᵐ[μ]
 /-
 If a set has positive measure under an atomless measure, then it has an accumulation point.
 -/
-theorem exists_accPt_of_noAtoms {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
+theorem exists_accPt_of_nullSingletonClass {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
     {μ : Measure X} [NullSingletonClass μ] {E : Set X} [SeparableSpace E] (hE : 0 < μ E) :
     ∃ x, AccPt x (𝓟 E) := by
   by_contra! h
   haveI : DiscreteTopology E := discreteTopology_of_noAccPts fun x _ => h x
   exact hE.ne' <| (Set.countable_coe_iff.mp <| separableSpace_iff_countable.mp ‹_›).measure_zero μ
+
+@[deprecated (since := "2026-06-09")]
+alias exists_accPt_of_noAtoms := exists_accPt_of_nullSingletonClass
 
 section
 

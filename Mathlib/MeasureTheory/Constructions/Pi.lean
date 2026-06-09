@@ -517,16 +517,24 @@ end Intervals
 
 /-- If one of the measures `μ i` has no atoms, them `Measure.pi µ`
 has no atoms. The instance below assumes that all `μ i` have no atoms. -/
-theorem pi_noAtoms (i : ι) [NullSingletonClass (μ i)] : NullSingletonClass (Measure.pi μ) :=
+theorem pi_nullSingletonClass (i : ι) [NullSingletonClass (μ i)] :
+    NullSingletonClass (Measure.pi μ) :=
   ⟨fun x => flip measure_mono_null (pi_hyperplane μ i (x i)) (singleton_subset_iff.2 rfl)⟩
 
-instance pi_noAtoms' [h : Nonempty ι] [∀ i, NullSingletonClass (μ i)] : NullSingletonClass (Measure.pi μ) :=
-  h.elim fun i => pi_noAtoms i
+@[deprecated (since := "2026-06-09")]
+alias pi_noAtoms := pi_nullSingletonClass
+
+instance pi_nullSingletonClass' [h : Nonempty ι] [∀ i, NullSingletonClass (μ i)] :
+    NullSingletonClass (Measure.pi μ) :=
+  h.elim fun i => pi_nullSingletonClass i
+
+@[deprecated (since := "2026-06-09")]
+alias pi_noAtoms' := pi_nullSingletonClass'
 
 instance {α : ι → Type*} [Nonempty ι] [∀ i, MeasureSpace (α i)]
     [∀ i, SigmaFinite (volume : Measure (α i))] [∀ i, NullSingletonClass (volume : Measure (α i))] :
     NullSingletonClass (volume : Measure (∀ i, α i)) :=
-  pi_noAtoms'
+  pi_nullSingletonClass'
 
 instance pi.isLocallyFiniteMeasure
     [∀ i, TopologicalSpace (α i)] [∀ i, IsLocallyFiniteMeasure (μ i)] :

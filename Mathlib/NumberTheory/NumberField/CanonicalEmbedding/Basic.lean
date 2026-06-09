@@ -234,10 +234,11 @@ open Classical in
 instance : NullSingletonClass (volume : Measure (mixedSpace K)) := by
   obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
   by_cases hw : IsReal w
-  · have : NullSingletonClass (volume : Measure ({w : InfinitePlace K // IsReal w} → ℝ)) := pi_noAtoms ⟨w, hw⟩
+  · have : NullSingletonClass (volume : Measure ({w : InfinitePlace K // IsReal w} → ℝ)) :=
+      pi_nullSingletonClass ⟨w, hw⟩
     exact prod.instNullSingletonClass_fst
   · have : NullSingletonClass (volume : Measure ({w : InfinitePlace K // IsComplex w} → ℂ)) :=
-      pi_noAtoms ⟨w, not_isReal_iff_isComplex.mp hw⟩
+      pi_nullSingletonClass ⟨w, not_isReal_iff_isComplex.mp hw⟩
     exact prod.instNullSingletonClass_snd
 
 variable {K} in
