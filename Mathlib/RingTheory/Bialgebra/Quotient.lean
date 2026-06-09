@@ -19,8 +19,7 @@ coideal, then the quotient `A ⧸ I` inherits a bialgebra structure.
 ## Main definitions
 
 * `Bialgebra.Quotient.counitAlgHom` : the counit on `A ⧸ I`, as an `R`-algebra homomorphism.
-* `Bialgebra.Quotient.comulAlgHom` : the comultiplication on `A ⧸ I`, as an `R`-algebra
-  homomorphism.
+* `Bialgebra.Quotient.comulAlgHom` : comultiplication on `A ⧸ I` as an `R`-algebra homomorphism.
 
 ## Main results
 
