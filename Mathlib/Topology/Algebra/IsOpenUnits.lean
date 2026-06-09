@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.Group.Basic
 public import Mathlib.Topology.Algebra.GroupWithZero
 
@@ -16,7 +17,9 @@ We say that a topological monoid `M` has open units (`IsOpenUnits`) if `Mˣ` is 
 has the subspace topology (i.e. inverse is continuous).
 
 Typical examples include monoids with discrete topology, topological groups (or fields),
-and rings `R` equipped with the `I`-adic topology where `I ≤ J(R)` (`IsOpenUnits.of_isAdic`).
+complete normed rings (for example the ring `E →L[𝕜] E` of continuous linear endomorphisms of any
+Banach space `E`), and rings `R` equipped with the `I`-adic topology where `I ≤ J(R)`
+(`IsOpenUnits.of_isAdic`).
 
 A non-example is `𝔸ₖ`, because the topology on ideles is not the induced topology from adeles.
 
@@ -33,7 +36,7 @@ We say that a topological monoid `M` has open units if `Mˣ` is open in `M` and
 has the subspace topology (i.e. inverse is continuous).
 
 Typical examples include monoids with discrete topology, topological groups (or fields),
-and rings `R` equipped with the `I`-adic topology where `I ≤ J(R)`.
+complete normed rings, and rings `R` equipped with the `I`-adic topology where `I ≤ J(R)`.
 -/
 @[mk_iff]
 class IsOpenUnits (M : Type*) [Monoid M] [TopologicalSpace M] : Prop where
@@ -49,6 +52,15 @@ lemma isOpenEmbedding_val : IsOpenEmbedding (Units.val : Mˣ → M) :=
 lemma isOpenMap_val : IsOpenMap (Units.val : Mˣ → M) := isOpenEmbedding_val.isOpenMap
 
 end Units
+
+/-- Transport an `IsOpenUnits`-instance along an isomorphism. -/
+lemma ContinuousMulEquiv.isOpenUnits {M N : Type*} [TopologicalSpace M] [TopologicalSpace N]
+    [Monoid M] [Monoid N] (e : M ≃ₜ* N) [IsOpenUnits N] : IsOpenUnits M where
+  isOpenEmbedding_unitsVal := by
+    convert e.symm.isOpenEmbedding.comp <| IsOpenUnits.isOpenEmbedding_unitsVal.comp <|
+      e.isOpenEmbedding.units_map (f := e.toMonoidHom)
+    ext m
+    exact (e.symm_apply_apply m).symm
 
 instance (priority := 900) (M : Type*) [Monoid M] [TopologicalSpace M] [DiscreteTopology M] :
     IsOpenUnits M where
