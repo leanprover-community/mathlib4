@@ -50,34 +50,24 @@ open intervalIntegral Interval
 
 namespace VanDerCorput
 
-/-- The constant appearing in van der Corput's lemma. -/
+/-- The constant appearing in van der Corput's lemma. Note: `c 0` is a junk value. -/
 protected abbrev c (k : ℕ) : ℝ := 5 * 2 ^ (k - 1) - 2
 
-theorem c_pos (k : ℕ) : 0 < c k := by
-  induction k with
-  | zero => norm_num
-  | succ k hk =>
-    norm_num
-    have h : (2 ^ k : ℝ) ≥ 1 := by exact_mod_cast Nat.one_le_pow k 2 (by norm_num)
-    have := mul_le_mul_of_nonneg_left h (by norm_num : 0 ≤ (5 : ℝ))
-    exact lt_of_lt_of_le (by norm_num : (2 : ℝ) < 5 * 1) this
+open VanDerCorput (c)
 
-theorem c_rec {k : ℕ} (hk : 1 ≤ k) : 2 * c k + 2 = c (k + 1) := by
-  simp only [c, add_tsub_cancel_right]
-  conv_rhs => rw [show k = (k - 1) + 1 by omega, pow_succ]
-theorem c_rec {k : ℕ} (hk : k ≠ 0) : c (k + 1) = 2 * c k + 2 := by
+protected theorem c_rec {k : ℕ} (hk : k ≠ 0) : c (k + 1) = 2 * c k + 2 := by
   simp only [c, add_tsub_cancel_right]
   conv_lhs => rw [show k = (k - 1) + 1 by lia]
   ring
 
-theorem c_pos : ∀ k : ℕ, 0 < c k
+protected theorem c_pos : ∀ k : ℕ, 0 < c k
 | 0 => by norm_num
 | 1 => by norm_num
-| k + 2 => by rw [c_rec (by lia)]; positivity [c_pos (k + 1)]
+| k + 2 => by rw [VanDerCorput.c_rec (by lia)]; positivity [VanDerCorput.c_pos (k + 1)]
 
 end VanDerCorput
 
-open VanDerCorput
+open VanDerCorput (c c_pos c_rec)
 
 variable {a b : ℝ} {L : ℝ}
 variable {φ : ℝ → ℝ}
