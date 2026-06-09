@@ -459,16 +459,27 @@ lemma mem_subgroupOfCoprimeConductor [NeZero n] {d : ℕ} {χ : DirichletCharact
 variable (R) in
 /-- The annihilator of a set `H` of units mod `n`: the subgroup of Dirichlet characters
 of level `n` that send every element of `H` to `1`. -/
-def annihilator (H : Set (ZMod n)ˣ) :
-    Subgroup (DirichletCharacter R n) where
-  carrier := {χ | ∀ a ∈ H, χ a = 1}
-  mul_mem' hχ hψ a h := by rw [MulChar.mul_apply, hχ a h, hψ a h, one_mul]
-  one_mem' := by simp
-  inv_mem' hχ a h := by rw [MulChar.inv_apply_eq_inv, hχ a h, Ring.inverse_one]
+noncomputable def annihilator (H : Set (ZMod n)ˣ) :
+    Subgroup (DirichletCharacter R n) :=
+  ((MonoidHom.restrictHom (Subgroup.closure H) Rˣ).comp
+    MulChar.mulEquivToUnitHom.toMonoidHom).ker
 
 @[simp]
 theorem mem_annihilator_iff {H : Set (ZMod n)ˣ} {χ : DirichletCharacter R n} :
-    χ ∈ annihilator R H ↔ ∀ a ∈ H, χ a = 1 := Iff.rfl
+    χ ∈ annihilator R H ↔ ∀ a ∈ H, χ a = 1 := by
+  simp only [annihilator, MonoidHom.mem_ker, MonoidHom.comp_apply, MonoidHom.restrictHom_apply,
+    MulEquiv.coe_toMonoidHom, DFunLike.ext_iff, MonoidHom.restrict_apply, MonoidHom.one_apply,
+    Subtype.forall]
+  exact ⟨fun h a ha => by
+      simpa [mulEquivToUnitHom_apply, Units.ext_iff, Units.val_one, coe_equivToUnitHom]
+        using h a (Subgroup.subset_closure ha),
+    fun h a ha => by
+      have hH : H ⊆ ↑(MulChar.mulEquivToUnitHom χ).ker :=
+        fun x hx => MonoidHom.mem_ker.mpr (by
+          simpa [mulEquivToUnitHom_apply, Units.ext_iff, Units.val_one, coe_equivToUnitHom]
+            using h x hx)
+      exact MonoidHom.mem_ker.mp
+        ((Subgroup.closure_le (MulChar.mulEquivToUnitHom χ).ker).mpr hH ha)⟩
 
 variable (R n) in
 /-- The subgroup of Dirichlet characters of level `n` whose primitive character sends the prime `p`
@@ -488,9 +499,8 @@ theorem mem_subgroupOfPrimitiveMapToOne_iff [NeZero n] [Nontrivial R] (p : ℕ) 
     χ ∈ subgroupOfPrimitiveMapToOne R n p ↔ χ.primitiveCharacter p = 1 := by
   have : NeZero (n / p ^ n.factorization p) := ⟨(Nat.ordCompl_pos p (NeZero.ne n)).ne'⟩
   have hcop := Nat.coprime_ordCompl hp.out (NeZero.ne n)
-  rw [subgroupOfPrimitiveMapToOne]
-  simp only [Subgroup.mem_map, mem_annihilator_iff, Set.mem_singleton_iff, forall_eq,
-    ZMod.coe_unitOfCoprime]
+  simp only [subgroupOfPrimitiveMapToOne, Subgroup.mem_map, mem_annihilator_iff,
+    Set.mem_singleton_iff, forall_eq, ZMod.coe_unitOfCoprime]
   refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨ψ, hψ, rfl⟩
     rw [← Int.cast_natCast] at hψ ⊢
