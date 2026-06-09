@@ -31,14 +31,6 @@ variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F
 
 variable {f : E → F} {x y : E} {t : 𝕜} {n : ℕ}
 
-/-- The iterated derivative is given by the derivative of the `n-1` iterated derivative. -/
-theorem DifferentiableAt.iteratedFDeriv_succ_apply_left' {m : Fin (n + 1) → E}
-    (hf : DifferentiableAt 𝕜 (iteratedFDeriv 𝕜 n f) x) :
-    iteratedFDeriv 𝕜 (n + 1) f x m =
-    fderiv 𝕜 (fun y ↦ iteratedFDeriv 𝕜 n f y (Fin.tail m)) x (m 0) := by
-  convert iteratedFDeriv_succ_apply_left m
-  simp [fderiv_continuousMultilinear_apply_const hf]
-
 theorem DifferentiableAt.deriv_comp_add_smul (hf : DifferentiableAt 𝕜 f (x + t • y)) :
     deriv (fun (s : 𝕜) ↦ f (x + s • y)) t = fderiv 𝕜 f (x + t • y) y := by
   have hg : Differentiable 𝕜 (fun (s : 𝕜) ↦ (x + s • y)) := by fun_prop
