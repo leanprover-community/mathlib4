@@ -5,8 +5,10 @@ Authors: Matej Penciak, Moritz Doll, Fabien Clery
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+public import Mathlib.LinearAlgebra.Matrix.Transvection
 public import Mathlib.LinearAlgebra.Matrix.SchurComplement
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
 # The Symplectic Group
@@ -235,5 +237,191 @@ theorem det_one_if_fromBlocks_invertible
   rw [det_fromBlocks₁₁, invOf_eq_nonsing_inv, ← A.det_transpose, ← det_mul,
     mul_sub, ← mul_assoc, ← mul_assoc, h_block.1, mul_assoc Cᵀ,
     mul_inv_of_invertible, mul_one, h_block.2.2, det_one]
+
+section Determinant
+
+variable {A B C D U V : Matrix l l R}
+
+private lemma ker_inter_eq_bot_of_rank_normal_form
+  (hU : IsUnit U.det) (hV : IsUnit V.det)
+  (h_rank : ∀ (x : l → R), (A *ᵥ x = 0) → (C *ᵥ x = 0) → x = 0) :
+  ∀ (x : l → R), ((Vᵀ⁻¹ * A * U) *ᵥ x = 0) → ((V * C * U) *ᵥ x = 0) → x = 0 := by
+  intro x h1 h2
+  refine mulVec_injective_of_isUnit ((isUnit_iff_isUnit_det U).2 hU) ?_
+  rw [mulVec_zero]
+  refine h_rank (U *ᵥ x) ?_ ?_
+  · rw [mulVec_mulVec, ← one_mul (A * U), ← mul_nonsing_inv _ (isUnit_det_transpose _ hV),
+      mul_assoc, ← mul_assoc _ A, ← mulVec_mulVec, h1, mulVec_zero]
+  · rw [mulVec_mulVec, ← one_mul (C * U), ← nonsing_inv_mul _ hV,
+      mul_assoc, ← mul_assoc _ C, ← mulVec_mulVec, h2, mulVec_zero]
+
+private lemma symm_condition_of_rank_normal_form (hV : IsUnit V.det)
+  (h_symm : Aᵀ * C = Cᵀ * A) :
+    (Vᵀ⁻¹ * A * U)ᵀ * (V * C * U) = (V * C * U)ᵀ * (Vᵀ⁻¹ * A * U) := by
+  rw [transpose_mul, transpose_mul, transpose_mul, transpose_mul,
+    transpose_nonsing_inv, transpose_transpose]
+  convert_to Uᵀ * (Aᵀ * (V⁻¹ * V) * C * U) = Uᵀ * (Cᵀ * (Vᵀ * Vᵀ⁻¹) * A * U)
+  · ac_rfl
+  · ac_rfl
+  · rw [nonsing_inv_mul _ hV, mul_nonsing_inv _ (isUnit_det_transpose _ hV),
+      mul_one, mul_one, h_symm]
+
+private lemma eq_zero_and_symm_on_support_of_diagonal_symm {s : Finset l}
+  (hR1 : let E : Matrix l l R := diagonal (fun i : l ↦ if i ∈ s then 1 else 0)
+    Aᵀ * E = E * A) :
+  (∀ (i j : l), i ∈ s → j ∉ s → A i j = 0) ∧
+  (∀ (i j : l), i ∈ s → j ∈ s → A i j = A j i) := by
+  have h_main1 (i j : l) : (if j ∈ s then A j i else 0) = (if i ∈ s then A i j else 0) := by
+    convert ext_iff.2 hR1 i j
+    · simp only [mul_diagonal, transpose_apply, mul_ite, mul_one, mul_zero]
+    · simp only [diagonal_mul, ite_mul, one_mul, zero_mul]
+  constructor <;> intro i j hi hj
+  · have := (h_main1 i j).symm
+    rwa [if_pos hi, if_neg hj] at this
+  · have := (h_main1 i j).symm
+    rwa [if_pos hj, if_pos hi] at this
+
+private lemma exists_symmetric_X_invertible_add_mul_diagonal {R : Type*} [Field R] {s : Finset l}
+  {A : Matrix l l R} (h1 : ∀ (i j : l), i ∈ s → j ∉ s → A i j = 0)
+  (h2 : ∀ (i j : l), i ∈ s → j ∈ s → A i j = A j i)
+  (h_rank1 : ∀ (x : l → R), (A *ᵥ x = 0) →
+    ((diagonal (fun i : l ↦ if i ∈ s then 1 else 0)) *ᵥ x = 0) → x = 0) :
+  ∃ (X : Matrix l l R), Xᵀ = X ∧
+    IsUnit (A + X * (diagonal (fun i : l ↦ if i ∈ s then 1 else 0))).det := by
+  set D : Matrix l l R := diagonal (fun i : l ↦ if i ∈ s then 1 else 0) with D_def
+  set X : Matrix l l R := fun i j ↦
+    if i ∈ s ∧ j ∈ s then (if i = j then 1 else 0) - A i j else 0 with X1_def
+  have hX_symm : Xᵀ = X := by
+    ext i j
+    simp only [X1_def, transpose_apply, and_comm, eq_comm]
+    split_ifs with hif1 hif2
+    · rw [hif2]
+    · rw [h2 i j hif1.1 hif1.2]
+    · rfl
+  have hM1 : ∀ (i : l), i ∈ s → ∀ (j : l), (A + X * D) i j = if i = j then 1 else 0 := by
+    intro i hi j
+    simp only [X1_def, D_def, add_apply, mul_apply, diagonal_apply, mul_ite, mul_one, mul_zero,
+      Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte]
+    split
+    · next hj => rw [if_pos ⟨hi, hj⟩, add_sub_cancel]
+    · next hj => rw [h1 i j hi hj, if_neg (ne_of_mem_of_not_mem hi hj), add_zero]
+  set M := A + X * D with M_def
+  refine ⟨X, hX_symm, M.isUnit_iff_isUnit_det.1 <|
+    isUnit_toLin'_iff.1 <| M.toLin'.isUnit_iff_ker_eq_bot.2 <|
+      ker_toLin'_eq_bot_iff.2 <| fun x hx ↦ ?_⟩
+  have hDx : D *ᵥ x = 0 := by
+    ext i
+    convert_to (if i ∈ s then x i else 0) = _
+    · simp only [mulVec_apply, D_def, diagonal_apply, ite_mul, one_mul, zero_mul,
+        Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
+    · refine ite_eq_right_iff.2 fun hi ↦ ?_
+      simpa only [hM1 i hi, ite_mul, one_mul, zero_mul, Finset.sum_ite_eq,
+        Finset.mem_univ, ↓reduceIte] using (show ∑ j : l, M i j * x j = 0 from congrFun hx i)
+  have hAx : A *ᵥ x = 0 := by
+    convert_to A *ᵥ x + (X * D) *ᵥ x = 0
+    · rw [left_eq_add, (mulVec_mulVec ..).symm, hDx, mulVec_zero]
+    · rw [← add_mulVec, hx]
+  exact h_rank1 x hAx hDx
+
+private lemma exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot {R : Type*} [Field R]
+  {A C : Matrix l l R} (h_rank : ∀ (x : l → R), (A *ᵥ x = 0) → (C *ᵥ x = 0) → x = 0)
+  (h_symm : Aᵀ * C = Cᵀ * A) :
+    ∃ (X : Matrix l l R), Xᵀ = X ∧ IsUnit (A + X * C).det := by
+  rcases exists_rank_normal_form C with ⟨V, U, s, hV, hU, hR1_eq⟩
+  set C' := V * C * U with C'_def
+  set D := diagonal (fun i ↦ if i ∈ s then 1 else 0) with D_def
+  set A' := Vᵀ⁻¹ * A * U with A'_def
+  have h_main1 : (∀ (i j : l), i ∈ s → j ∉ s → A' i j = 0) ∧
+      (∀ (i j : l), i ∈ s → j ∈ s → A' i j = A' j i) := by
+    refine eq_zero_and_symm_on_support_of_diagonal_symm ?_
+    have h_symm1 : A'ᵀ * C' = C'ᵀ * A' :=
+      symm_condition_of_rank_normal_form hV h_symm
+    rwa [hR1_eq, diagonal_transpose] at h_symm1
+  obtain ⟨X, hX_symm, hM1⟩ := exists_symmetric_X_invertible_add_mul_diagonal
+    h_main1.1 h_main1.2 <| fun x hP1x hDx ↦
+      ker_inter_eq_bot_of_rank_normal_form hU hV h_rank x hP1x (hR1_eq ▸ hDx : C' *ᵥ x = 0)
+  refine ⟨Vᵀ * X * V, ?_, ?_⟩
+  · rw [transpose_mul, transpose_mul, hX_symm, transpose_transpose, mul_assoc]
+  · convert_to IsUnit (Vᵀ * (A' + X * C') * U⁻¹).det
+    · simp only [mul_assoc, mul_nonsing_inv_cancel_right U _ hU,
+      mul_nonsing_inv_cancel_left Vᵀ _ (isUnit_det_transpose V hV),
+      mul_add, add_mul, mul_assoc, A'_def, C'_def]
+    rw [det_mul, det_mul]
+    exact IsUnit.mul (IsUnit.mul (det_transpose V ▸ hV) (by rwa [hR1_eq]))
+      (isUnit_nonsing_inv_det U hU)
+
+private lemma exists_symmetric_X_isUnit_det_add_mul_of_symplectic [IsLocalRing R]
+    (hA : fromBlocks A B C D ∈ symplecticGroup l R) :
+    ∃ (X : Matrix l l R), Xᵀ = X ∧ IsUnit (A + X * C).det := by
+  set k := IsLocalRing.ResidueField R; set f := IsLocalRing.residue R
+  set A' := f.mapMatrix A; set B' := f.mapMatrix B
+  set C' := f.mapMatrix C; set D' := f.mapMatrix D
+  set F' := fromBlocks A' B' C' D' with F'_def
+  have h15' : IsUnit F' := by
+    refine F'.isUnit_iff_isUnit_det.2 ?_
+    convert (symplectic_det hA).map f
+    rw [RingHom.map_det, RingHom.mapMatrix_apply, Matrix.fromBlocks_map]; rfl
+  have h_rank (x : l → k) (hx1 : A' *ᵥ x = 0) (hx2 : C' *ᵥ x = 0) : x = 0 := by
+    set v : l ⊕ l → k := Sum.elim x (fun _ ↦ 0) with v_def
+    have h_v0 : F' *ᵥ v = 0 := by
+      ext s; cases s with
+      | inl i =>
+        rw [mulVec_apply, Fintype.sum_sum_type, Finset.sum_congr rfl fun _ _ ↦ rfl]
+        simp only [F'_def, fromBlocks, of_apply, Sum.elim_inl, v_def, Sum.elim_inr, mul_zero,
+          Finset.sum_const_zero, add_zero, Pi.zero_apply]
+        rw [← mulVec_apply, hx1, Pi.zero_apply]
+      | inr i =>
+        rw [mulVec_apply, Fintype.sum_sum_type, Finset.sum_congr rfl fun _ _ ↦ rfl]
+        simp only [F'_def, fromBlocks_apply₂₁, v_def, Sum.elim_inl, fromBlocks_apply₂₂,
+          Sum.elim_inr, mul_zero, Finset.sum_const_zero, add_zero, Pi.zero_apply]
+        rw [← mulVec_apply, hx2, Pi.zero_apply]
+    funext i
+    convert_to v (Sum.inl i) = _
+    · rw [v_def, Sum.elim_inl]
+    · exact congrFun (mulVec_injective_iff_isUnit.2 h15' (F'.mulVec_zero.symm ▸ h_v0)) _
+  obtain ⟨Xbar, hXbar_symm, hXbar_det⟩ :=
+    exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot h_rank <| by
+      change f.mapMatrix Aᵀ * f.mapMatrix C = f.mapMatrix Cᵀ * f.mapMatrix A
+      rw [← map_mul, (fromBlocks_mem_iff.1 hA).1, map_mul]
+  obtain ⟨X, hX_symm, hX_lift⟩ := IsSymm.lift IsLocalRing.residue_surjective hXbar_symm
+  refine ⟨X, hX_symm, (IsLocalRing.residue_ne_zero_iff_isUnit _).1 ?_⟩
+  rw [RingHom.map_det, map_add, map_mul, RingHom.mapMatrix_apply _ X, hX_lift]
+  exact hXbar_det.ne_zero
+
+/-- Over any local ring, every symplectic matrix has determinant 1. -/
+private lemma det_eq_one_of_isLocalRing [IsLocalRing R] {M : Matrix (l ⊕ l) (l ⊕ l) R}
+    (hM : M ∈ symplecticGroup l R) : M.det = 1 := by
+  let A : Matrix l l R := fun i j ↦ M (Sum.inl i) (Sum.inl j)
+  let B : Matrix l l R := fun i j ↦ M (Sum.inl i) (Sum.inr j)
+  let C : Matrix l l R := fun i j ↦ M (Sum.inr i) (Sum.inl j)
+  let D : Matrix l l R := fun i j ↦ M (Sum.inr i) (Sum.inr j)
+  have hM_blocks : M = fromBlocks A B C D := by
+    ext i j; cases i <;> cases j <;> rfl
+  obtain ⟨X, hX_symm, hA_isUnit⟩ := exists_symmetric_X_isUnit_det_add_mul_of_symplectic
+    <| hM_blocks ▸ hM
+  set Lx : Matrix (l ⊕ l) (l ⊕ l) R := fromBlocks 1 X 0 1 with Lx_def
+  have Lx_mul : Lx * fromBlocks A B C D =
+      fromBlocks (A + X * C) (B + X * D) C D := by
+    simp only [Lx_def, fromBlocks_multiply, one_mul, zero_mul, zero_add]
+  set M' : Matrix (l ⊕ l) (l ⊕ l) R := Lx * M with M'_def
+  have h_fromBlocks2_in : fromBlocks (A + X * C) (B + X * D) C D ∈ symplecticGroup l R := by
+    rw [← Lx_mul, ← hM_blocks, ← M'_def]
+    refine (symplecticGroup l R).mul_mem ?_ hM
+    rw [SymplecticGroup.mem_iff, fromBlocks_transpose, hX_symm, Lx_def]
+    simp only [J, fromBlocks_multiply, mul_zero, mul_one, zero_add, mul_neg, add_zero, neg_zero,
+      transpose_one, transpose_zero, neg_mul, one_mul, add_neg_cancel, zero_mul]
+  have _ : Invertible (A + X * C) := (A + X * C).invertibleOfIsUnitDet hA_isUnit
+  have h_main : M'.det = 1 := by
+    rw [M'_def, hM_blocks, Lx_mul, det_one_if_fromBlocks_invertible h_fromBlocks2_in]
+  rwa [det_mul, det_fromBlocks_zero₂₁ 1 X 1, det_one, one_mul, one_mul] at h_main
+
+/-- Symplectic matrices have determinant 1. -/
+theorem det_eq_one {M : Matrix (l ⊕ l) (l ⊕ l) R} (hM : M ∈ symplecticGroup l R) :
+    M.det = 1 := by
+  refine sub_eq_zero.1 <| eq_zero_of_localization _ fun J _ ↦ ?_
+  rw [map_sub, RingHom.map_det, det_eq_one_of_isLocalRing <|
+    map_mem (algebraMap R (Localization.AtPrime J)) hM, map_one, sub_self]
+
+end Determinant
 
 end SymplecticGroup
