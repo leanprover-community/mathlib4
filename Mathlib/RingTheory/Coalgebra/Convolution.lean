@@ -77,15 +77,11 @@ instance convNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (WithConv (C 
 
 instance [Monoid S] [DistribMulAction S A] [SMulCommClass R S A] [IsScalarTower S A A] :
     IsScalarTower S (WithConv (C →ₗ[R] A)) (WithConv (C →ₗ[R] A)) where
-  smul_assoc s f g := by
-    ext c
-    simp [(ℛ R c).convMul_apply, Finset.smul_sum, smul_mul_assoc]
+  smul_assoc s f g := by ext c; simp [(ℛ R c).convMul_apply, Finset.smul_sum, smul_mul_assoc]
 
 instance [Monoid S] [DistribMulAction S A] [SMulCommClass R S A] [SMulCommClass S A A] :
     SMulCommClass S (WithConv (C →ₗ[R] A)) (WithConv (C →ₗ[R] A)) where
-  smul_comm s f g := by
-    ext c
-    simp [(ℛ R c).convMul_apply, Finset.smul_sum, mul_smul_comm]
+  smul_comm s f g := by ext c; simp [(ℛ R c).convMul_apply, Finset.smul_sum, mul_smul_comm]
 
 @[simp] lemma toSpanSingleton_convMul_toSpanSingleton (x y : A) :
     toConv (toSpanSingleton R A x) * toConv (toSpanSingleton R A y) =
