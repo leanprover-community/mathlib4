@@ -176,7 +176,7 @@ def _root_.BinaryTree.toOrdNode : BinaryTree α → Ordnode α
   | .node x l r => .node' l.toOrdNode x r.toOrdNode
 
 @[simp]
-def size_toOrdNode (b : BinaryTree α) :
+theorem size_toOrdNode (b : BinaryTree α) :
     b.toOrdNode.size = b.numNodes := by
   induction b with simp [BinaryTree.toOrdNode, *]
 
