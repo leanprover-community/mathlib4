@@ -53,7 +53,6 @@ theorem ENat.measurable_iff {α : Type*} [MeasurableSpace α] {f : α → ℕ∞
     convert! MeasurableSet.iUnion h
     rw [← compl_compl (f ⁻¹' {⊤}), ← preimage_iUnion, compl_compl, iUnion_singleton_eq_range,
       ← Set.preimage_compl]
-    congr
     ext
     simp [ne_top_iff_exists]
   | coe n => exact h n
