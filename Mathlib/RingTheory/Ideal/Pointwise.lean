@@ -157,7 +157,7 @@ theorem IsPrime.smul_iff {I : Ideal R} (g : M) : (g • I).IsPrime ↔ I.IsPrime
   ⟨fun H ↦ inv_smul_smul g I ▸ H.smul g⁻¹, fun H ↦ H.smul g⟩
 
 theorem inertia_le_stabilizer {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAction M R] :
-    P.inertia M ≤ MulAction.stabilizer M P := by
+    inertia M P ≤ MulAction.stabilizer M P := by
   refine fun σ hσ ↦ SetLike.ext fun x ↦ ?_
   rw [Ideal.mem_pointwise_smul_iff_inv_smul_mem,
     ← P.add_mem_iff_left (a := x) ((inv_mem hσ) x), add_sub_cancel]
@@ -201,13 +201,13 @@ of `I` in `N`.
 -/
 def inertiaEquiv {R : Type*} [Ring R] [MulSemiringAction M R] [MulSemiringAction N R] (I : Ideal R)
     (e : M ≃* N) (he : ∀ (m : M) (x : R), (e m) • x = m • x) :
-    I.inertia M ≃* I.inertia N where
+    inertia M I ≃* inertia N I where
   toEquiv := Equiv.subtypeEquiv e fun _ ↦ by simp [he]
   map_mul' := by simp
 
 @[simp]
 theorem inertiaEquiv_apply_smul {R : Type*} [Ring R] [MulSemiringAction M R] [MulSemiringAction N R]
-    (I : Ideal R) (e : M ≃* N) (he : ∀ (m : M) (x : R), (e m) • x = m • x) (m : I.inertia M)
+    (I : Ideal R) (e : M ≃* N) (he : ∀ (m : M) (x : R), (e m) • x = m • x) (m : inertia M I)
     (x : R) :
     inertiaEquiv I e he m • x = m • x := by
   simp [inertiaEquiv, MulAction.subgroup_smul_def, ← he m x]
@@ -215,7 +215,7 @@ theorem inertiaEquiv_apply_smul {R : Type*} [Ring R] [MulSemiringAction M R] [Mu
 @[simp]
 theorem inertiaEquiv_symm_apply_smul {R : Type*} [Ring R] [MulSemiringAction M R]
     [MulSemiringAction N R] (I : Ideal R) (e : M ≃* N) (he : ∀ (m : M) (x : R), (e m) • x = m • x)
-    (n : I.inertia N) (x : R) :
+    (n : inertia N I) (x : R) :
     (inertiaEquiv I e he).symm n • x = n • x := by
   rw [← (inertiaEquiv I e he).apply_symm_apply n, inertiaEquiv_apply_smul,
     (inertiaEquiv I e he).apply_symm_apply]
