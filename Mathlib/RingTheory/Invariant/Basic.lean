@@ -593,7 +593,6 @@ theorem Ideal.inertia_quotient : p.inertia (G ⧸ H) = (q.inertia G).map (Quotie
     rw [← algebraMap.smul', ← map_sub] at hg
     rwa [QuotientGroup.mk'_apply, MulAction.coe_quotient_smul, q.over_def p]
 
-
 end quotient
 
 namespace IsFractionRing
