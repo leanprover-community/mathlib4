@@ -424,6 +424,19 @@ lemma spectrum_star_left_conjugate {a : A} {U : unitary A} :
 
 end UnitaryConjugate
 
+/-- In a ring without zero divisors and with trivial star, the only unitary elements are `1`
+and `-1`. -/
+theorem mem_iff_eq_one_or_eq_neg_one [Ring R] [StarRing R] [TrivialStar R] [NoZeroDivisors R]
+    {a : R} : a ∈ unitary R ↔ a = 1 ∨ a = -1 := by
+  simp [mem_iff, mul_self_eq_one_iff]
+
+/-- In a ring without zero divisors and with trivial star, the unitary elements are exactly `1`
+and `-1`. -/
+theorem coe_unitary_eq_insert_neg_one (R : Type*) [Ring R] [StarRing R] [TrivialStar R]
+    [NoZeroDivisors R] : (unitary R : Set R) = {1, -1} := by
+  ext a
+  simp [mem_iff_eq_one_or_eq_neg_one]
+
 end Unitary
 
 theorem IsStarProjection.two_mul_sub_one_mem_unitary {R : Type*} [Ring R] [StarRing R] {p : R}
