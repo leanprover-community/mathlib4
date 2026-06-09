@@ -10,20 +10,29 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.Complement
 
 /-!
-# Complemented subspaces of normed vector spaces
+# Complemented subspaces of Banach spaces
 
 A submodule `p` of a topological module `E` over `R` is called *complemented*
 (`Submodule.ClosedComplemented`) if there exists a continuous linear projection `f : E →ₗ[R] p`,
 `∀ x : p, f x = x`.
 
-The main result of this file is that, in a Banach space, two submodules `p` and `q` are topological
-complements (`Submodule.IsTopCompl`) if and only if they are algebraic complements (`IsCompl`) and
-both are closed (`Submodule.isTopCompl_iff_isCompl_isClosed`). As a consequence, a closed
-subspace of a Banach space is complemented if and only if it admits a closed algebraic complement.
+All results in this file rely on the open mapping theorem, hence the Banach space assumption.
+
+## Main results
+
+* `Submodule.isTopCompl_iff_isCompl_isClosed`: in a Banach space, two submodule are topological
+  complements (`Submodule.IsTopCompl`) if and only if they are algebraic complements (`IsCompl`)
+* `Submodule.closedCompleemented_iff_isClosed_exists_isClosed_isCompl`: in a Banach space. a
+  submodule is complemented if and only if it is closed and admits a closed algebraic complement.
+
+## TODO
+
+Generalize these results to metrizable complete topological vector space, once the open mapping
+theorem is available in that setting.
 
 ## Tags
 
-complemented subspace, normed vector space
+complemented subspace, Banach space
 -/
 
 @[expose] public section

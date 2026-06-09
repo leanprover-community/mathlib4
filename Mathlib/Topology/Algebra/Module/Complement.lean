@@ -171,6 +171,7 @@ theorem projectionOntoL_apply_left (h : IsTopCompl p q) (x : p) :
     p.projectionOntoL q h x = x :=
   projectionOnto_apply_left h.isCompl x
 
+@[simp]
 theorem coe_projectionOntoL (h : IsTopCompl p q) :
     ⇑(p.projectionOntoL q h) = p.projectionOnto q h.isCompl :=
   rfl
@@ -181,7 +182,6 @@ theorem range_projectionOntoL (h : IsTopCompl p q) : (p.projectionOntoL q h).ran
 theorem projectionOntoL_surjective (h : IsTopCompl p q) : Surjective (p.projectionOntoL q h) :=
   projectionOnto_surjective h.isCompl
 
-@[simp]
 theorem projectionOntoL_apply_eq_zero_iff (h : IsTopCompl p q) {x : M} :
     p.projectionOntoL q h x = 0 ↔ x ∈ q :=
   projectionOnto_apply_eq_zero_iff h.isCompl
@@ -189,7 +189,6 @@ theorem projectionOntoL_apply_eq_zero_iff (h : IsTopCompl p q) {x : M} :
 alias ⟨_, projectionOntoL_apply_eq_zero_of_mem_right⟩ :=
   projectionOntoL_apply_eq_zero_iff
 
-@[simp]
 theorem projectionOntoL_apply_right (h : IsTopCompl p q) (x : q) :
     p.projectionOntoL q h x = 0 :=
   projectionOntoL_apply_eq_zero_of_mem_right h x.2
@@ -216,6 +215,7 @@ See also `Submodule.IsTopCompl.projectionOnto` for the same projection as an ele
 noncomputable def projectionL (h : IsTopCompl p q) : M →L[R] M :=
   p.subtypeL ∘L p.projectionOntoL q h
 
+@[simp]
 theorem coe_projectionL (h : IsTopCompl p q) :
     ⇑(p.projectionL q h) = p.projection q h.isCompl :=
   rfl
@@ -239,7 +239,6 @@ theorem projectionL_apply_mem (h : IsTopCompl p q) (x : M) :
     p.projectionL q h x ∈ p :=
   SetLike.coe_mem _
 
-@[simp]
 theorem projectionL_apply_left (h : IsTopCompl p q) (x : p) :
     p.projectionL q h x = x :=
   projection_apply_left h.isCompl x
@@ -248,7 +247,6 @@ theorem range_projectionL (h : IsTopCompl p q) :
     (p.projectionL q h).range = p := by
   simp
 
-@[simp]
 theorem projectionL_apply_eq_zero_iff (h : IsTopCompl p q) {x : M} :
     p.projectionL q h x = 0 ↔ x ∈ q :=
   projection_apply_eq_zero_iff h.isCompl
@@ -256,7 +254,6 @@ theorem projectionL_apply_eq_zero_iff (h : IsTopCompl p q) {x : M} :
 alias ⟨_, projectionL_apply_eq_zero_of_mem_right⟩ :=
   projectionL_apply_eq_zero_iff
 
-@[simp]
 theorem projectionL_apply_right (h : IsTopCompl p q) (x : q) :
     p.projectionL q h x = 0 :=
   projectionL_apply_eq_zero_of_mem_right h x.2
