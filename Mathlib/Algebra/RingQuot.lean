@@ -6,7 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Algebra.Hom
-public import Mathlib.RingTheory.Congruence.Basic
+public import Mathlib.RingTheory.Congruence.Hom
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.Ideal.Span
 
@@ -32,29 +32,6 @@ variable {R : Type uR} [Semiring R]
 variable {S : Type uS} [CommSemiring S]
 variable {T : Type uT}
 variable {A : Type uA} [Semiring A] [Algebra S A]
-
-namespace RingCon
-
-instance (c : RingCon A) : Algebra S c.Quotient where
-  algebraMap := c.mk'.comp (algebraMap S A)
-  commutes' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.commutes _ _
-  smul_def' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.smul_def _ _
-
-variable (S) in
-/-- The algebra morphism from `A` to the quotient by a ring congruence. -/
-@[simps!] def mkₐ (c : RingCon A) : A →ₐ[S] c.Quotient :=
-  { mk' c with commutes' _ := rfl }
-
-theorem mkₐ_surjective (c : RingCon A) :
-    Function.Surjective (c.mkₐ (S := S)) :=
-  mk'_surjective c
-
-@[simp, norm_cast]
-theorem coe_algebraMap (c : RingCon A) (s : S) :
-    (algebraMap S A s : c.Quotient) = algebraMap S c.Quotient s :=
-  rfl
-
-end RingCon
 
 namespace RingQuot
 
@@ -170,44 +147,36 @@ theorem toQuot_bijective : Function.Bijective (RingQuot.toQuot : RingQuot r → 
 -- Has to be exposed, otherwise we get diamonds in ℕ-algebras
 /-- The `natCast` function for `RingQuot`. -/
 def natCast (n : ℕ) : RingQuot r :=
-  ⟨Quot.mk _ n⟩
+  ⟨n⟩
 
 instance : NatCast (RingQuot r) :=
   ⟨natCast r⟩
 
 @[no_expose] instance : Zero (RingQuot r) :=
-  ⟨⟨Quot.mk _ 0⟩⟩
+  ⟨⟨0⟩⟩
 
 @[no_expose] instance : One (RingQuot r) :=
-  ⟨⟨Quot.mk _ 1⟩⟩
+  ⟨⟨1⟩⟩
 
 @[no_expose] instance : Add (RingQuot r) :=
-  ⟨fun ⟨a⟩ ⟨b⟩ ↦ ⟨Quot.map₂ (· + ·) Rel.add_right Rel.add_left a b⟩⟩
+  ⟨fun ⟨a⟩ ⟨b⟩ ↦ ⟨a + b⟩⟩
 
 @[no_expose] instance : Mul (RingQuot r) :=
-  ⟨fun ⟨a⟩ ⟨b⟩ ↦ ⟨Quot.map₂ (· * ·) Rel.mul_right Rel.mul_left a b⟩⟩
+  ⟨fun ⟨a⟩ ⟨b⟩ ↦ ⟨a * b⟩⟩
 
 @[no_expose] instance : NatPow (RingQuot r) :=
-  ⟨fun ⟨a⟩ n ↦ ⟨Quot.lift (fun a ↦ Quot.mk (RingQuot.Rel r) (a ^ n))
-    (fun a b (h : Rel r a b) ↦ by
-      -- note we can't define a `Rel.pow` as `Rel` isn't reflexive so `Rel r 1 1` isn't true
-      induction n with
-      | zero => rw [pow_zero, pow_zero]
-      | succ n ih =>
-        simpa +instances [pow_succ, (· * ·), instMul, Quot.map₂_mk, mk.injEq] using
-          congr_arg₂ (fun x y ↦ (⟨x⟩ : RingQuot r) * ⟨y⟩) ih (Quot.sound h))
-    a⟩⟩
+  ⟨fun ⟨a⟩ n ↦ ⟨a ^ n⟩⟩
 
 @[no_expose] instance {R : Type uR} [Ring R] (r : R → R → Prop) : Neg (RingQuot r) :=
-  ⟨fun ⟨a⟩ ↦ ⟨Quot.map (fun a ↦ -a) Rel.neg a⟩⟩
+  ⟨fun ⟨a⟩ ↦ ⟨-a⟩⟩
 
 @[no_expose] instance {R : Type uR} [Ring R] (r : R → R → Prop) : Sub (RingQuot r) :=
-  ⟨fun ⟨a⟩ ⟨b⟩ ↦ ⟨Quot.map₂ Sub.sub Rel.sub_right Rel.sub_left a b⟩⟩
+  ⟨fun ⟨a⟩ ⟨b⟩ ↦ ⟨a - b⟩⟩
 
 -- Has to be exposed, as otherwise diamonds don't commute.
 /-- The `•` function for `RingQuot`. -/
 def smul [Algebra S R] (n : S) : RingQuot r → RingQuot r
-  | ⟨a⟩ => ⟨Quot.map (fun a ↦ n • a) (Rel.smul n) a⟩
+  | ⟨a⟩ => ⟨n • a⟩
 
 instance [Algebra S R] : SMul S (RingQuot r) :=
   ⟨smul r⟩
@@ -239,13 +208,42 @@ theorem smul_quot [Algebra S R] {n : S} {a : R} :
     (n • ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (n • a)⟩ :=
   (rfl)
 
+
+
+theorem mk_zero : (⟨0⟩ : RingQuot r) = 0 :=
+  (rfl)
+
+theorem mk_one : (⟨1⟩ : RingQuot r) = 1 :=
+  (rfl)
+
+theorem mk_add_mk {a b} : (⟨a⟩ + ⟨b⟩ : RingQuot r) = ⟨a + b⟩ :=
+  (rfl)
+
+theorem mk_mul_mk {a b} : (⟨a⟩ * ⟨b⟩ : RingQuot r) = ⟨a * b⟩ :=
+  (rfl)
+
+theorem mk_pow {a} {n : ℕ} : (⟨a⟩ ^ n : RingQuot r) = ⟨a ^ n⟩ :=
+  (rfl)
+
+theorem mk_neg {R : Type uR} [Ring R] (r : R → R → Prop) {a} :
+    (-⟨a⟩ : RingQuot r) = ⟨-a⟩ :=
+  (rfl)
+
+theorem mk_sub_mk {R : Type uR} [Ring R] (r : R → R → Prop) {a b} :
+    (⟨a⟩ - ⟨b⟩ : RingQuot r) = ⟨a - b⟩ :=
+  (rfl)
+
+theorem smul_mk [Algebra S R] {n : S} {a} :
+    (n • ⟨a⟩ : RingQuot r) = ⟨n • a⟩ :=
+  (rfl)
+
 /-- `RingQuot` is a wrapper around `(RingQuot.ringCon r).Quotient` -/
 @[simps]
 def ringEquivQuotient : RingQuot r ≃+* (RingQuot.ringCon r).Quotient where
   __ := equivQuotient r
   toFun := toQuot
-  map_mul' _ _ := congrArg _ <| mul_def _ _ _
-  map_add' _ _ := congrArg _ <| add_def _ _ _
+  map_mul' _ _ := congrArg _ <| mk_mul_mk _
+  map_add' _ _ := congrArg _ <| mk_add_mk _
 
 instance instIsScalarTower [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R]
     [IsScalarTower S T R] : IsScalarTower S T (RingQuot r) :=
@@ -257,25 +255,25 @@ instance instSMulCommClass [CommSemiring T] [Algebra S R] [Algebra T R] [SMulCom
 
 instance instAddCommMonoid (r : R → R → Prop) : AddCommMonoid (RingQuot r) := fast_instance%
   (mk_bijective r).surjective.addCommMonoid _
-    (zero_def _).symm
-    (fun _ _ => add_def _ _ _ |>.symm)
+    (mk_zero _)
+    (fun _ _ => mk_add_mk _ |>.symm)
     (fun _ _ => rfl)
 
 instance instMonoidWithZero (r : R → R → Prop) : MonoidWithZero (RingQuot r) := fast_instance%
   (mk_bijective r).surjective.monoidWithZero _
-    (zero_def _).symm
-    (one_def _).symm
-    (fun _ _ => mul_def _ _ _ |>.symm)
-    (fun _ _ => npow_def _ _ _ |>.symm)
+    (mk_zero _)
+    (mk_one _)
+    (fun _ _ => mk_mul_mk _ |>.symm)
+    (fun _ _ => mk_pow _ |>.symm)
 
 instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) := fast_instance%
   (mk_bijective r).surjective.semiring _
-    (zero_def _).symm
-    (one_def _).symm
-    (fun _ _ => add_def _ _ _ |>.symm)
-    (fun _ _ => mul_def _ _ _ |>.symm)
+    (mk_zero _)
+    (mk_one _)
+    (fun _ _ => mk_add_mk _ |>.symm)
+    (fun _ _ => mk_mul_mk _ |>.symm)
     (fun _ _ => rfl)
-    (fun _ _ => npow_def _ _ _ |>.symm)
+    (fun _ _ => mk_pow _ |>.symm)
     (fun _ => rfl)
 
 -- Has to be exposed, otherwise we get diamonds in ℤ-algebras.
@@ -288,40 +286,40 @@ instance {R : Type uR} [Ring R] (r : R → R → Prop) : IntCast (RingQuot r) :=
 
 instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) := fast_instance%
   (mk_bijective r).surjective.ring _
-    (zero_def _).symm
-    (one_def _).symm
-    (fun _ _ => add_def _ _ _ |>.symm)
-    (fun _ _ => mul_def _ _ _ |>.symm)
-    (fun _ => neg_def _ _ |>.symm)
-    (fun _ _ => sub_def _ _ _ |>.symm)
+    (mk_zero _)
+    (mk_one _)
+    (fun _ _ => mk_add_mk _ |>.symm)
+    (fun _ _ => mk_mul_mk _ |>.symm)
+    (fun _ => mk_neg _ |>.symm)
+    (fun _ _ => mk_sub_mk _ |>.symm)
     (fun _ _ => rfl)
     (fun _ _ => rfl)
-    (fun _ _ => npow_def _ _ _ |>.symm)
+    (fun _ _ => mk_pow _ |>.symm)
     (fun _ => rfl)
     (fun _ => rfl)
 
 instance instCommSemiring {R : Type uR} [CommSemiring R] (r : R → R → Prop) :
     CommSemiring (RingQuot r) := fast_instance%
   (mk_bijective r).surjective.commSemiring _
-    (zero_def _).symm
-    (one_def _).symm
-    (fun _ _ => add_def _ _ _ |>.symm)
-    (fun _ _ => mul_def _ _ _ |>.symm)
+    (mk_zero _)
+    (mk_one _)
+    (fun _ _ => mk_add_mk _ |>.symm)
+    (fun _ _ => mk_mul_mk _ |>.symm)
     (fun _ _ => rfl)
-    (fun _ _ => npow_def _ _ _ |>.symm)
+    (fun _ _ => mk_pow _ |>.symm)
     (fun _ => rfl)
 
 instance {R : Type uR} [CommRing R] (r : R → R → Prop) : CommRing (RingQuot r) := fast_instance%
   (mk_bijective r).surjective.commRing _
-    (zero_def _).symm
-    (one_def _).symm
-    (fun _ _ => add_def _ _ _ |>.symm)
-    (fun _ _ => mul_def _ _ _ |>.symm)
-    (fun _ => neg_def _ _ |>.symm)
-    (fun _ _ => sub_def _ _ _ |>.symm)
+    (mk_zero _)
+    (mk_one _)
+    (fun _ _ => mk_add_mk _ |>.symm)
+    (fun _ _ => mk_mul_mk _ |>.symm)
+    (fun _ => mk_neg _ |>.symm)
+    (fun _ _ => mk_sub_mk _ |>.symm)
     (fun _ _ => rfl)
     (fun _ _ => rfl)
-    (fun _ _ => npow_def _ _ _ |>.symm)
+    (fun _ _ => mk_pow _ |>.symm)
     (fun _ => rfl)
     (fun _ => rfl)
 
@@ -332,11 +330,11 @@ instance instAlgebra [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot 
   smul := (· • ·)
   algebraMap := .comp (ringEquivQuotient r).symm (algebraMap S (RingQuot.ringCon r).Quotient)
   commutes' r := by
-    rintro ⟨⟨a⟩⟩
-    simp [Algebra.commutes, mul_quot]
+    rintro ⟨a⟩
+    simp [Algebra.commutes, mk_mul_mk]
   smul_def' r := by
-    rintro ⟨⟨a⟩⟩
-    simp [smul_quot, Algebra.smul_def, mul_quot]
+    rintro ⟨a⟩
+    simp [smul_mk, Algebra.smul_def, mk_mul_mk]
 
 /-- The quotient map from a ring to its quotient, as a homomorphism of rings.
 -/
@@ -344,7 +342,8 @@ irreducible_def mkRingHom (r : R → R → Prop) : R →+* RingQuot r :=
   .comp (ringEquivQuotient r).symm (ringCon r).mk'
 
 theorem mkRingHom_rel {r : R → R → Prop} {x y : R} (w : r x y) : mkRingHom r x = mkRingHom r y := by
-  simpa [mkRingHom_def, ringCon] using .rel _ _ (Rel.of w)
+  suffices ringCon r x y by simpa [mkRingHom_def]
+  exact Relation.EqvGen.rel _ _ (Rel.of w)
 
 theorem mkRingHom_surjective (r : R → R → Prop) : Function.Surjective (mkRingHom r) := by
   rw [mkRingHom_def]
@@ -360,8 +359,8 @@ theorem ringQuot_ext [NonAssocSemiring T] {r : R → R → Prop} (f g : RingQuot
 variable [Semiring T]
 
 irreducible_def preLift {r : R → R → Prop} {f : R →+* T} (h : ∀ ⦃x y⦄, r x y → f x = f y) :
-  RingQuot r →+* T :=
-  .comp sorry (ringEquivQuotient r).toRingHom
+    RingQuot r →+* T :=
+  .comp (RingCon.lift) (ringEquivQuotient r).toRingHom
   -- { toFun := fun x ↦ Quot.lift f
   --       (by
   --         rintro _ _ r
