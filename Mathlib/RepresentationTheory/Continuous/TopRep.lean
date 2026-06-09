@@ -31,7 +31,7 @@ structure TopRep (k : Type u) (G : Type v) [TopologicalSpace k] [Ring k]
   [hV3 : TopologicalSpace V]
   [hV4 : IsTopologicalAddGroup V]
   [hV5 : ContinuousSMul k V]
-  /-- the underlying representation of an object in `Rep k G` -/
+  /-- the underlying representation of an object in `TopRep k G` -/
   ρ : ContRepresentation k G V
 
 namespace TopRep
