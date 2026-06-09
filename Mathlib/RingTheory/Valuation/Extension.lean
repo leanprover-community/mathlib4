@@ -126,7 +126,8 @@ instance instAlgebraInteger : Algebra vR.integer vA.integer where
   smul_def' _ _ := Subtype.ext (Algebra.smul_def _ _)
 
 @[simp, norm_cast]
-theorem val_smul (r : vR.integer) (a : vA.integer) : ↑(r • a : vA.integer) = (r : R) • (a : A) := rfl
+theorem val_smul (r : vR.integer) (a : vA.integer) : ↑(r • a : vA.integer) = (r : R) • (a : A) :=
+  rfl
 
 @[simp]
 lemma mk_smul_mk (r : R) (hr) (a : A) (ha) :

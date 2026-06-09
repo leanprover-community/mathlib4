@@ -157,7 +157,7 @@ We give schemes the specialization preorder by default.
 -/
 instance {X : Scheme.{u}} : Preorder X := specializationPreorder X
 
-lemma le_iff_specializes {X : Scheme.{u}} {a b : X} : a ≤ b ↔ b ⤳ a := rfl
+lemma le_iff_specializes {X : Scheme.{u}} {a b : X} : a ≤ b ↔ b ⤳ a := by rfl
 
 open Order in
 lemma height_of_isClosed {X : Scheme} {x : X} (hx : IsClosed {x}) : height x = 0 := by

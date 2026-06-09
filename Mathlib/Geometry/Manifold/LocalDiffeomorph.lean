@@ -236,11 +236,11 @@ at each `x ∈ M`. -/
 
 variable {I J n} in
 lemma isLocalDiffeomorphOn_iff {f : M → N} (s : Set M) :
-    IsLocalDiffeomorphOn I J n f s ↔ ∀ x : s, IsLocalDiffeomorphAt I J n f x := rfl
+    IsLocalDiffeomorphOn I J n f s ↔ ∀ x : s, IsLocalDiffeomorphAt I J n f x := by rfl
 
 variable {I J n} in
 lemma isLocalDiffeomorph_iff {f : M → N} :
-    IsLocalDiffeomorph I J n f ↔ ∀ x : M, IsLocalDiffeomorphAt I J n f x := rfl
+    IsLocalDiffeomorph I J n f ↔ ∀ x : M, IsLocalDiffeomorphAt I J n f x := by rfl
 
 variable {I J n} in
 theorem isLocalDiffeomorph_iff_isLocalDiffeomorphOn_univ {f : M → N} :
@@ -407,7 +407,7 @@ def Diffeomorph.mfderivToContinuousLinearEquiv
   (Φ.isLocalDiffeomorph x).mfderivToContinuousLinearEquiv hn
 
 lemma Diffeomorph.mfderivToContinuousLinearEquiv_coe (Φ : M ≃ₘ^n⟮I, J⟯ N) (hn : n ≠ 0) :
-    Φ.mfderivToContinuousLinearEquiv hn x = mfderiv% Φ x := rfl
+    Φ.mfderivToContinuousLinearEquiv hn x = mfderiv% Φ x := by rfl
 
 /-- If `f` is a `C^n` local diffeomorphism of Banach manifolds (`n ≠ 0`),
 each differential is a linear equivalence. -/

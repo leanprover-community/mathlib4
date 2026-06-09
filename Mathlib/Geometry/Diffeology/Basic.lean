@@ -178,7 +178,7 @@ class DiffeologicalSpace (X : Type*) where
       Set.preimage_sUnion ▸ isOpen_biUnion fun u hu ↦ hs u hu p hp }
   /-- The D-topology consists of exactly those sets whose preimages under plots are all open. -/
   isOpen_iff_preimages_plots {u : Set X} :
-    dTopology.IsOpen u ↔ ∀ {n : ℕ}, ∀ p ∈ plots n, IsOpen (p ⁻¹' u) := rfl
+    dTopology.IsOpen u ↔ ∀ {n : ℕ}, ∀ p ∈ plots n, IsOpen (p ⁻¹' u) := by rfl
 
 namespace Diffeology
 
@@ -307,7 +307,7 @@ structure CorePlotsOn (X : Type*) where
     isOpen_sUnion := fun _ hs _ p hp ↦
       Set.preimage_sUnion ▸ isOpen_biUnion fun u hu ↦ hs u hu p hp }
   isOpen_iff_preimages_plots {u : Set X} : dTopology.IsOpen u ↔
-    ∀ {n : ℕ}, ∀ p : 𝔼ⁿ → X, isPlot p → IsOpen (p ⁻¹' u) := rfl
+    ∀ {n : ℕ}, ∀ p : 𝔼ⁿ → X, isPlot p → IsOpen (p ⁻¹' u) := by rfl
 
 /-- Constructs a diffeology from plots defined on open subsets or ℝⁿ rather than ℝⁿ itself,
 organised in the form of the auxiliary `CorePlotsOn` structure.

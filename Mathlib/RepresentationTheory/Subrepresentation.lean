@@ -113,7 +113,7 @@ def asSubmodule (σ : Subrepresentation ρ) : Submodule A[G] ρ.asModule where
       exact σ.toSubmodule.smul_mem' a (σ.apply_mem_toSubmodule g hv)
 
 @[simp]
-lemma mem_asSubmodule_iff {σ : Subrepresentation ρ} {v : W} : v ∈ asSubmodule σ ↔ v ∈ σ := rfl
+lemma mem_asSubmodule_iff {σ : Subrepresentation ρ} {v : W} : v ∈ asSubmodule σ ↔ v ∈ σ := by rfl
 
 /-- A subrepresentation of `ofModule M` can be thought of as an `A[G]` submodule of `M`.
 -/
@@ -131,7 +131,7 @@ def asSubmodule' (σ : Subrepresentation (Representation.ofModule (k := A) (G :=
 
 @[simp]
 lemma mem_asSubmodule'_iff {σ : Subrepresentation (Representation.ofModule (k := A) (G := G) M)}
-    {m : M} : m ∈ asSubmodule' σ ↔ m ∈ σ := rfl
+    {m : M} : m ∈ asSubmodule' σ ↔ m ∈ σ := by rfl
 
 /-- A submodule of an `A[G]`-module `M` can be thought of as a subrepresentation of `ofModule M`.
 -/
@@ -144,7 +144,7 @@ def ofSubmodule (N : Submodule A[G] M) :
       Submodule.smul_of_tower_mem N (MonoidAlgebra.single g 1) hv
 
 @[simp]
-lemma mem_ofSubmodule_iff {N : Submodule A[G] M} {m : M} : m ∈ ofSubmodule N ↔ m ∈ N := rfl
+lemma mem_ofSubmodule_iff {N : Submodule A[G] M} {m : M} : m ∈ ofSubmodule N ↔ m ∈ N := by rfl
 
 set_option backward.isDefEq.respectTransparency false in
 /-- An `A[G]`-submodule of `ρ.asModule` can be thought of as a subrepresentation of `ρ`.
@@ -171,7 +171,7 @@ def subrepresentationSubmoduleOrderIso : Subrepresentation ρ ≃o Submodule A[G
   invFun := ofSubmodule'
   left_inv σ := rfl
   right_inv N := rfl
-  map_rel_iff' := rfl
+  map_rel_iff' := by rfl
 
 /-- An order-preserving equivalence between `A[G]`-submodules of an `A[G]`-module M and
 subrepresentations of `ρ`. -/
@@ -182,6 +182,6 @@ def submoduleSubrepresentationOrderIso : Submodule A[G] M ≃o
   invFun := asSubmodule'
   left_inv N := rfl
   right_inv σ := rfl
-  map_rel_iff' := rfl
+  map_rel_iff' := by rfl
 
 end Subrepresentation

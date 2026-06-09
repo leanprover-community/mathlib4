@@ -139,7 +139,7 @@ def map (N : G(k, (A ⊗[R] M); A)) : G(k, (B ⊗[R] M); B) :=
 theorem map_toSubmodule (N : G(k, A ⊗[R] M; A)) :
   letI : Algebra A B := f.toAlgebra
   letI : IsScalarTower R A B := IsScalarTower.of_algebraMap_eq' <| IsScalarTower.algebraMap_eq R A B
-  (map f N).toSubmodule = (baseChangeMkQ B N.toSubmodule).ker := rfl
+  (map f N).toSubmodule = (baseChangeMkQ B N.toSubmodule).ker := by rfl
 
 variable (k)
 

@@ -150,7 +150,7 @@ lemma span_degreeLT {m : ℕ} (hCoeff : ∀ i < m, IsUnit (S i).leadingCoeff) :
       rw_mod_cast [← head_degree_eq, hp]
       dsimp [head]
       nth_rw 2 [← S.natDegree_eq n]
-      rw [coeff_smul, coeff_smul, coeff_natDegree, smul_eq_mul, smul_eq_mul, rightinv, mul_one]
+      rw [coeff_natDegree, rightinv, mul_one]
     -- which we can now combine to show that `P - head` must have strictly lower degree,
     -- as its leading term has been cancelled, completing our proof.
     have tail_degree_lt := P.degree_sub_lt head_degree_eq p_ne_zero hPhead
