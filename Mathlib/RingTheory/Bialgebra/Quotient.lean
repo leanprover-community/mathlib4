@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.TensorProduct.Maps
 # Bialgebra structure on quotients
 
 If `I` is a two-sided ideal of an `R`-bialgebra `A` whose underlying `R`-submodule is a
-coideal (a *biideal*), then the quotient `A ⧸ I` inherits a bialgebra structure.
+coideal, then the quotient `A ⧸ I` inherits a bialgebra structure.
 
 ## Main definitions
 
