@@ -754,6 +754,8 @@ theorem support_monomial_subset (n) (a : R) : (monomial n a).support ⊆ singlet
   rw [← ofFinsupp_single, support]
   exact Finsupp.support_single_subset
 
+@[deprecated (since := "2026-06-09")] alias support_monomial' := support_monomial_subset
+
 @[simp]
 theorem support_C {a : R} (h : a ≠ 0) : (C a).support = singleton 0 :=
   support_monomial 0 h
@@ -768,6 +770,8 @@ theorem support_C_mul_X {c : R} (h : c ≠ 0) : Polynomial.support (C c * X) = s
 theorem support_C_mul_X_subset (c : R) : Polynomial.support (C c * X) ⊆ singleton 1 := by
   simpa only [C_mul_X_eq_monomial] using support_monomial_subset 1 c
 
+@[deprecated (since := "2026-06-09")] alias support_C_mul_X' := support_C_mul_X_subset
+
 @[simp]
 theorem support_C_mul_X_pow (n : ℕ) {c : R} (h : c ≠ 0) :
     Polynomial.support (C c * X ^ n) = singleton n := by
@@ -776,6 +780,8 @@ theorem support_C_mul_X_pow (n : ℕ) {c : R} (h : c ≠ 0) :
 theorem support_C_mul_X_pow_subset (n : ℕ) (c : R) :
     Polynomial.support (C c * X ^ n) ⊆ singleton n := by
   simpa only [C_mul_X_pow_eq_monomial] using support_monomial_subset n c
+
+@[deprecated (since := "2026-06-09")] alias support_C_mul_X_pow' := support_C_mul_X_pow_subset
 
 open Finset
 
@@ -786,6 +792,8 @@ theorem support_binomial_subset (k m : ℕ) (x y : R) :
       ((support_C_mul_X_pow_subset k x).trans (singleton_subset_iff.mpr (mem_insert_self k {m})))
       ((support_C_mul_X_pow_subset m y).trans
         (singleton_subset_iff.mpr (mem_insert_of_mem (mem_singleton_self m)))))
+
+@[deprecated (since := "2026-06-09")] alias support_binomial' := support_binomial_subset
 
 theorem support_trinomial_subset (k m n : ℕ) (x y z : R) :
     Polynomial.support (C x * X ^ k + C y * X ^ m + C z * X ^ n) ⊆ {k, m, n} :=
@@ -800,6 +808,8 @@ theorem support_trinomial_subset (k m n : ℕ) (x y z : R) :
       ((support_C_mul_X_pow_subset n z).trans
         (singleton_subset_iff.mpr (mem_insert_of_mem (mem_insert_of_mem (mem_singleton_self n))))))
 
+@[deprecated (since := "2026-06-09")] alias support_trinomial' := support_trinomial_subset
+
 end Fewnomials
 
 theorem X_pow_eq_monomial (n) : X ^ n = monomial n (1 : R) :=
@@ -813,16 +823,16 @@ theorem smul_X_eq_monomial {n} : a • X ^ n = monomial n (a : R) := by
   rw [X_pow_eq_monomial, smul_monomial, smul_eq_mul, mul_one]
 
 @[simp]
-theorem support_X_pow (H : ¬(1 : R) = 0) (n : ℕ) : (X ^ n : R[X]).support = singleton n := by
-  convert! support_monomial n H
+theorem support_X_pow [Nontrivial R] (n : ℕ) : (X ^ n : R[X]).support = singleton n := by
+  convert! support_monomial n (NeZero.out (n := (1 : R)))
   exact X_pow_eq_monomial n
 
 theorem support_X_empty (H : (1 : R) = 0) : (X : R[X]).support = ∅ := by
   rw [X, H, monomial_zero_right, support_zero]
 
 @[simp]
-theorem support_X (H : ¬(1 : R) = 0) : (X : R[X]).support = singleton 1 := by
-  rw [← pow_one X, support_X_pow H 1]
+theorem support_X [Nontrivial R] : (X : R[X]).support = singleton 1 := by
+  rw [← pow_one X, support_X_pow 1]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem monomial_left_inj {a : R} (ha : a ≠ 0) {i j : ℕ} :
@@ -891,10 +901,12 @@ theorem sum_add {S : Type*} [AddCommMonoid S] (p : R[X]) (f g : ℕ → R → S)
     (p.sum fun n x ↦ f n x + g n x) = p.sum f + p.sum g :=
   sum_add' _ _ _
 
+/-- See also `SkewPolynomial.sum_smul_index'` for a version using `smul` on the RHS. -/
 theorem sum_smul_index {S : Type*} [AddCommMonoid S] (p : R[X]) (b : R) (f : ℕ → R → S)
     (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a ↦ f n (b * a) :=
   Finsupp.sum_smul_index hf
 
+/-- See also `Polynomial.sum_smul_index` for a version using multiplication on the RHS. -/
 theorem sum_smul_index' {S T : Type*} [DistribSMul T R] [AddCommMonoid S] (p : R[X]) (b : T)
     (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a ↦ f n (b • a) :=
   Finsupp.sum_smul_index' hf

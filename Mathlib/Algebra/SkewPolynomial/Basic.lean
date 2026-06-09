@@ -509,18 +509,18 @@ lemma smul_X_eq_monomial {n} [MulSemiringAction (Multiplicative ℕ) R] :
     _ = a • X ^ n  := by rw [X_pow_eq_monomial]
 
 @[simp]
-lemma support_X_pow (H : ¬ (1 : R) = 0) (n : ℕ) [MulSemiringAction (Multiplicative ℕ) R] :
+lemma support_X_pow [Nontrivial R] (n : ℕ) [MulSemiringAction (Multiplicative ℕ) R] :
     (X ^ n : SkewPolynomial R).support = singleton n := by
-  convert support_monomial n H
+  convert support_monomial n (NeZero.out (n := (1 : R)))
   exact X_pow_eq_monomial n
 
 lemma support_X_empty (H : (1 : R) = 0) : (X : SkewPolynomial R).support = ∅ := by
   rw [X, H, monomial_zero_right, support_zero]
 
 @[simp]
-lemma support_X (H : ¬ (1 : R) = 0) [MulSemiringAction (Multiplicative ℕ) R] :
+lemma support_X [Nontrivial R] [MulSemiringAction (Multiplicative ℕ) R] :
     (X : SkewPolynomial R).support = singleton 1 := by
-  rw [← pow_one X, support_X_pow H 1]
+  rw [← pow_one X, support_X_pow 1]
 
 lemma monomial_left_inj {R : Type*} [Semiring R] {a : R} (ha : a ≠ 0) {i j : ℕ} :
     (monomial i a) = (monomial j a) ↔ i = j :=
@@ -561,10 +561,12 @@ lemma sum_add (p : SkewPolynomial R) (f g : ℕ → R → S) :
     (p.sum fun n x ↦ f n x + g n x) = p.sum f + p.sum g :=
   sum_add' _ _ _
 
+/-- See also `SkewPolynomial.sum_smul_index'` for a version using `smul` on the RHS. -/
 lemma sum_smul_index (p : SkewPolynomial R) (b : R) (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0) :
     (b • p).sum f = p.sum fun n a ↦ f n (b * a) :=
   Finsupp.sum_smul_index hf
 
+/-- See also `SkewPolynomial.sum_smul_index` for a version using multiplication on the RHS. -/
 lemma sum_smul_index' {T : Type*} [DistribSMul T R] (p : SkewPolynomial R) (b : T) (f : ℕ → R → S)
     (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a ↦ f n (b • a) :=
   Finsupp.sum_smul_index' hf
