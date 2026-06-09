@@ -430,7 +430,7 @@ noncomputable def rTensor (f : E →L[𝕜] F) : (E ⊗[𝕜] G) →L[𝕜] (F �
   (f.toLinearMap.rTensor G).mkContinuous ‖f‖ fun x ↦ by
     /-
     Any tensor `x` can be written as a linear combination of pure tensors, `x = ∑ e n ⊗ₜ g n`. This
-    induces three Gram matrices, one based on `e`, one on `f ∘ e`  and one on `g`. Up to a constant,
+    induces three Gram matrices, one based on `e`, one on `f ∘ e` and one on `g`. Up to a constant,
     the `e`-based Gram matrix is larger than the `f ∘ e`-based one. This implies the existence of
     a matrix, whose form is used to show that `‖f‖ ^ 2 * ‖x‖ ^ 2 - ‖f x‖ ^ 2` is a sum of
     nonnegative terms.
@@ -639,7 +639,7 @@ theorem _root_.ContinuousLinearMap.lTensor_eq_mapL (g : G →L[𝕜] H) :
     f.lTensor H ∘L g.rTensor E = mapL g f := by ext; simp [← LinearMap.lTensor_comp_rTensor]
 
 @[simp] lemma _root_.ContinuousLinearMap.rTensor_comp_lTensor (f : E →L[𝕜] F) (g : G →L[𝕜] H) :
-    f.rTensor H ∘L g.lTensor E = mapL f g := by ext; simp [← LinearMap.rTensor_comp_lTensor]
+    f.rTensor H ∘L g.lTensor E = mapL f g := rfl
 
 @[simp] theorem adjoint_mapL [CompleteSpace E] [CompleteSpace G] [CompleteSpace (E ⊗[𝕜] G)]
     [CompleteSpace F] [CompleteSpace H] [CompleteSpace (F ⊗[𝕜] H)]
