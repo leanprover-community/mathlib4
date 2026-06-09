@@ -24,6 +24,78 @@ This is a trivial corollary of `NumberField.not_dvd_discr_iff_forall_mem` and
 
 section
 
+open Pointwise in
+theorem foo₄ (B C G : Type*) [Group G] (H : Subgroup G) [CommRing B] [CommRing C]
+    [Algebra B C] [MulSemiringAction G C] [IsGaloisGroup H B C]
+    [H.Normal] [FaithfulSMul B C] [IsDomain C] [Finite H]
+    (q : Ideal B) (r : Ideal C) [r.LiesOver q] [r.IsPrime] :
+    letI := IsGaloisGroup.mulSemiringActionQuotient G B C H
+    q.inertia (G ⧸ H) = (r.inertia G).map (QuotientGroup.mk' H) := by
+  have : IsDomain B := IsDomain.of_faithfulSMul B C
+  let := IsGaloisGroup.mulSemiringActionQuotient G B C H
+  apply le_antisymm; swap
+  · rintro - ⟨g, hg, rfl⟩ b
+    specialize hg (algebraMap B C b)
+    rw [← IsGaloisGroup.algebraMap_smulOfNormal G B C H g b, ← map_sub] at hg
+    rwa [Submodule.mem_toAddSubgroup, QuotientGroup.mk'_apply, r.over_def q, r.mem_under B]
+  · -- let `g : G ⧸ H` be an element of the inertia subgroup of `q`
+    intro g hg
+    -- first we will find a lift `g' : G` in the decomposition subgroup of `r`
+    have mem_decomposition : ∃ g' : MulAction.stabilizer G r, QuotientGroup.mk' H g' = g := by
+      obtain ⟨g, rfl⟩ := QuotientGroup.mk'_surjective H g
+      have : (g • r).under B = r.under B := by
+        replace hg := Ideal.inertia_le_stabilizer q hg
+        rw [MulAction.mem_stabilizer_iff] at hg
+        simp at hg
+        rw [← Ideal.over_def r q, ← hg, Ideal.over_def r q]
+        rw [Ideal.under_def, Ideal.pointwise_smul_eq_comap]
+        nth_rw 2 [← Ideal.comap_coe]
+        rw [Ideal.comap_comap, Ideal.pointwise_smul_eq_comap, Ideal.under_def]
+        nth_rw 2 [← Ideal.comap_coe]
+        rw [Ideal.comap_comap]
+        congr
+        ext x
+        let := IsGaloisGroup.mulSemiringActionOfNormal G B C H
+        have : SMulDistribClass G B C := IsGaloisGroup.smulDistribClass_smulOfNormal G B C H
+        simp [IsGaloisGroup.mulSemiringActionQuotient_smul_def]
+        change g⁻¹ • (algebraMap B C) x = (algebraMap B C) (↑(g⁻¹ : G) • x)
+        exact Eq.symm (algebraMap.coe_smul' g⁻¹ x C)
+      obtain ⟨g', hg'⟩ := Algebra.IsInvariant.exists_smul_of_under_eq B C H (g • r) r this
+      exact ⟨⟨g' * g, by simpa [mul_smul, eq_comm]⟩, by simp⟩
+    -- and now we must find a lift `g' : G` in the inertia subgroup of `r`
+    obtain ⟨g, rfl⟩ := mem_decomposition
+    let φ : (C ⧸ r) ≃ₐ[B ⧸ q] (C ⧸ r) :=
+    { __ := Ideal.Quotient.stabilizerHom r (r.under ℤ) G g
+      commutes' := by
+        intro x
+        obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+        specialize hg x
+        simp
+        rw [IsScalarTower.algebraMap_apply B C (C ⧸ r), Ideal.Quotient.algebraMap_eq,
+          Ideal.Quotient.stabilizerHom_apply, Ideal.Quotient.eq]
+        simp [Ideal.over_def r q] at hg
+        convert hg
+        let := IsGaloisGroup.mulSemiringActionOfNormal G B C H
+        have : SMulDistribClass G B C := IsGaloisGroup.smulDistribClass_smulOfNormal G B C H
+        rw [IsGaloisGroup.mulSemiringActionQuotient_smul_def]
+        simp [Subgroup.smul_def] }
+    obtain ⟨g', hg'⟩ := Ideal.Quotient.stabilizerHom_surjective H q r φ
+    let v : MulAction.stabilizer G r := ⟨g', g'.2⟩⁻¹ * g
+    refine ⟨v, ?_, by simp [v]⟩
+    have := Ideal.Quotient.ker_stabilizerHom r (r.under ℤ) G
+    rw [SetLike.ext_iff] at this
+    specialize this v
+    refine this.mp ?_
+    simp [v, inv_mul_eq_one]
+    ext x
+    change Ideal.Quotient.stabilizerHom r q H g' x = _
+    rw [hg']
+    rfl
+
+end
+
+section
+
 -- PRed
 instance {A B : Type*} [CommRing A] [CommRing B] (h : A ≃+* B) :
     letI := h.toRingHom.toAlgebra
@@ -85,74 +157,6 @@ theorem foo₃ {G G' : Type*} [Group G] [Group G'] (H : Subgroup G) (f : G →* 
     Nat.card (f.ker ⊓ H : Subgroup G) * Nat.card (H.map f) = Nat.card H := by
   rw [← Subgroup.subgroupOf_map_subtype, Subgroup.card_map_of_injective H.subtype_injective,
     ← f.ker_restrict, ← f.restrict_range, ← Subgroup.index_ker, Subgroup.card_mul_index]
-
-open Pointwise in
-include A in
-theorem foo₄
-    [q.IsPrime] [r.IsPrime] :
-    letI := IsGaloisGroup.mulSemiringActionQuotient G B C H
-    q.inertia (G ⧸ H) = (r.inertia G).map (QuotientGroup.mk' H) := by
-  have : IsDomain A := IsDomain.of_faithfulSMul A C
-  have : IsDomain B := IsDomain.of_faithfulSMul B C
-  let := IsGaloisGroup.mulSemiringActionQuotient G B C H
-  apply le_antisymm; swap
-  · rintro - ⟨g, hg, rfl⟩ b
-    specialize hg (algebraMap B C b)
-    rw [← IsGaloisGroup.algebraMap_smulOfNormal G B C H g b, ← map_sub] at hg
-    rwa [Submodule.mem_toAddSubgroup, QuotientGroup.mk'_apply, r.over_def q, r.mem_under B]
-  · -- let `g : G ⧸ H` be an element of the inertia subgroup of `q`
-    intro g hg
-    -- first we will find a lift `g' : G` in the decomposition subgroup of `r`
-    have mem_decomposition : ∃ g' : MulAction.stabilizer G r, QuotientGroup.mk' H g' = g := by
-      obtain ⟨g, rfl⟩ := QuotientGroup.mk'_surjective H g
-      have : (g • r).under B = r.under B := by
-        replace hg := Ideal.inertia_le_stabilizer q hg
-        rw [MulAction.mem_stabilizer_iff] at hg
-        simp at hg
-        rw [← Ideal.over_def r q, ← hg, Ideal.over_def r q]
-        rw [Ideal.under_def, Ideal.pointwise_smul_eq_comap]
-        nth_rw 2 [← Ideal.comap_coe]
-        rw [Ideal.comap_comap, Ideal.pointwise_smul_eq_comap, Ideal.under_def]
-        nth_rw 2 [← Ideal.comap_coe]
-        rw [Ideal.comap_comap]
-        congr
-        ext x
-        let := IsGaloisGroup.mulSemiringActionOfNormal G B C H
-        have : SMulDistribClass G B C := IsGaloisGroup.smulDistribClass_smulOfNormal G B C H
-        simp [IsGaloisGroup.mulSemiringActionQuotient_smul_def]
-        change g⁻¹ • (algebraMap B C) x = (algebraMap B C) (↑(g⁻¹ : G) • x)
-        exact Eq.symm (algebraMap.coe_smul' g⁻¹ x C)
-      obtain ⟨g', hg'⟩ := Algebra.IsInvariant.exists_smul_of_under_eq B C H (g • r) r this
-      exact ⟨⟨g' * g, by simpa [mul_smul, eq_comm]⟩, by simp⟩
-    -- and now we must find a lift `g' : G` in the inertia subgroup of `r`
-    obtain ⟨g, rfl⟩ := mem_decomposition
-    let φ : (C ⧸ r) ≃ₐ[B ⧸ q] (C ⧸ r) :=
-    { __ := Ideal.Quotient.stabilizerHom r (r.under A) G g
-      commutes' := by
-        intro x
-        obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-        specialize hg x
-        simp
-        rw [IsScalarTower.algebraMap_apply B C (C ⧸ r), Ideal.Quotient.algebraMap_eq,
-          Ideal.Quotient.stabilizerHom_apply, Ideal.Quotient.eq]
-        simp [Ideal.over_def r q] at hg
-        convert hg
-        let := IsGaloisGroup.mulSemiringActionOfNormal G B C H
-        have : SMulDistribClass G B C := IsGaloisGroup.smulDistribClass_smulOfNormal G B C H
-        rw [IsGaloisGroup.mulSemiringActionQuotient_smul_def]
-        simp [Subgroup.smul_def] }
-    obtain ⟨g', hg'⟩ := Ideal.Quotient.stabilizerHom_surjective H q r φ
-    let v : MulAction.stabilizer G r := ⟨g', g'.2⟩⁻¹ * g
-    refine ⟨v, ?_, by simp [v]⟩
-    have := Ideal.Quotient.ker_stabilizerHom r (r.under A) G
-    rw [SetLike.ext_iff] at this
-    specialize this v
-    refine this.mp ?_
-    simp [v, inv_mul_eq_one]
-    ext x
-    change Ideal.Quotient.stabilizerHom r q H g' x = _
-    rw [hg']
-    rfl
 
 end
 
@@ -261,7 +265,7 @@ theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finit
   have : Algebra.IsIntegral R S := IsGaloisGroup.isInvariant.isIntegral R S H
   obtain ⟨mS, hmS, hmRS⟩ := Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain (R := R) (S := S) mR (by simp)
   replace hmRS : mS.LiesOver mR := ⟨hmRS.symm⟩
-  rw [foo₄ ℤ R S G H mR mS, Subgroup.map_eq_bot_iff, QuotientGroup.ker_mk']
+  rw [foo₄ R S G H mR mS, Subgroup.map_eq_bot_iff, QuotientGroup.ker_mk']
   apply le_iSup_of_le ⟨mS, hmS⟩
   rfl
 
