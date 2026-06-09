@@ -167,8 +167,7 @@ lemma hasStrictDerivAt_denom_zpow (g : GL (Fin 2) ℝ) (k : ℤ) (τ : ℍ) :
     simpa [denom] using
       ((hasStrictDerivAt_id (τ : ℂ)).const_mul (g 1 0 : ℂ)).add_const (g 1 1 : ℂ)
   have := (hasStrictDerivAt_zpow k (denom g τ) (Or.inl (denom_ne_zero g τ))).comp _ hd
-  convert this using 1
-  ring
+  simpa only [Function.comp_def, mul_right_comm] using this
 
 /-- Derivative of `z ↦ (denom g z) ^ k`:
 $\frac{d}{dz}[(cz+d)^k] = k \cdot c \cdot (cz+d)^{k-1}$. -/
