@@ -204,7 +204,7 @@ theorem infinite_iff_in_all_ranges {K : Finset V} (C : G.ComponentCompl K) :
   classical
     constructor
     · rintro Cinf L h
-      obtain ⟨v, ⟨vK, rfl⟩, vL⟩ := Set.Infinite.nonempty (Set.Infinite.diff Cinf L.finite_toSet)
+      obtain ⟨v, ⟨vK, rfl⟩, vL⟩ := Set.Infinite.nonempty (Set.Infinite.sdiff Cinf L.finite_toSet)
       exact ⟨componentComplMk _ vL, rfl⟩
     · rintro h Cfin
       obtain ⟨D, e⟩ := h (K ∪ Cfin.toFinset) Finset.subset_union_left
