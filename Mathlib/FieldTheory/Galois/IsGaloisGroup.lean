@@ -181,6 +181,13 @@ variable (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [MulSemiringAct
   [IsFractionRing A K] [IsFractionRing B L] [IsScalarTower A K L] [IsScalarTower A B L]
   [MulSemiringAction G L] [SMulDistribClass G B L]
 
+instance [IsGaloisGroup G A B] : IsGaloisGroup G (algebraMap A B).range B where
+  faithful := IsGaloisGroup.faithful A
+  commutes := ⟨fun g ⟨a', ⟨a, ha⟩⟩ b ↦ by simp [Subring.smul_def, ← ha]⟩
+  isInvariant := ⟨fun b hb ↦ by
+    obtain ⟨a, ha⟩ := Algebra.IsInvariant.isInvariant (A := A) b hb
+    exact ⟨⟨algebraMap A B a, ⟨a, rfl⟩⟩, ha⟩⟩
+
 /-- `IsGaloisGroup` for rings implies `IsGaloisGroup` for their fraction fields. -/
 theorem IsGaloisGroup.to_isFractionRing_of_isIntegral
     [Algebra.IsIntegral A B] [hGAB : IsGaloisGroup G A B] :
@@ -298,11 +305,14 @@ theorem card_eq_finrank [IsGaloisGroup G K L] : Nat.card G = Module.finrank K L 
 theorem finiteDimensional [Finite G] [IsGaloisGroup G K L] : FiniteDimensional K L :=
   FiniteDimensional.of_finrank_pos (card_eq_finrank G K L ▸ Nat.card_pos)
 
-protected theorem finite (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Module.Finite A B]
-    [IsDomain A] [IsDomain B] [FaithfulSMul A B] [MulSemiringAction G B] [IsGaloisGroup G A B] :
-    Finite G := by
+protected theorem finite (R B : Type*) [CommRing R] [CommRing B] [Algebra R B] [Module.Finite R B]
+  [IsDomain B] [MulSemiringAction G B] [IsGaloisGroup G R B] : Finite G := by
+  let A : Subring B := (algebraMap R B).range
   let := FractionRing.liftAlgebra A (FractionRing B)
   let := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
+  let : Algebra R A := (algebraMap R B).rangeRestrict.toAlgebra
+  have : IsScalarTower R A B := IsScalarTower.of_algebraMap_eq' rfl
+  have : Module.Finite A B := Module.Finite.of_restrictScalars_finite R A B
   have := IsGaloisGroup.to_isFractionRing_of_isIntegral G A B (FractionRing A) (FractionRing B)
   apply Nat.finite_of_card_ne_zero
   rw [card_eq_finrank G (FractionRing A) (FractionRing B)]
