@@ -71,7 +71,7 @@ structure IdealSheafData (X : Scheme.{u}) : Type u where
       ideal (X.affineBasicOpen f)
   /-- The support of an ideal sheaf. Use `IdealSheafData.support` instead for most occasions. -/
   supportSet : Set X := ⋂ U, X.zeroLocus (U := U.1) (ideal U)
-  supportSet_eq_iInter_zeroLocus : supportSet = ⋂ U, X.zeroLocus (U := U.1) (ideal U) := rfl
+  supportSet_eq_iInter_zeroLocus : supportSet = ⋂ U, X.zeroLocus (U := U.1) (ideal U) := by rfl
 
 namespace IdealSheafData
 

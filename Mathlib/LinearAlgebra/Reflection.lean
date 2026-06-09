@@ -181,7 +181,7 @@ variable {x y : M} {f g : Dual R M} (hf : f x = 2) (hg : g y = 2)
 
 /-- A formula for $(r_1 r_2)^m z$, where $m$ is a natural number and $z \in M$. -/
 lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M)
-    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := rfl) :
+    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :
     ((reflection hf * reflection hg) ^ m) z =
       z +
         ((S R ((m - 2) / 2)).eval t * ((S R ((m - 1) / 2)).eval t + (S R ((m - 3) / 2)).eval t)) •
@@ -230,7 +230,7 @@ lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M)
 
 /-- A formula for $(r_1 r_2)^m$, where $m$ is a natural number. -/
 lemma reflection_mul_reflection_pow (m : ℕ)
-    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := rfl) :
+    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :
     ((reflection hf * reflection hg) ^ m).toLinearMap =
       LinearMap.id (R := R) (M := M) +
         ((S R ((m - 2) / 2)).eval t * ((S R ((m - 1) / 2)).eval t + (S R ((m - 3) / 2)).eval t)) •
@@ -242,7 +242,7 @@ lemma reflection_mul_reflection_pow (m : ℕ)
 
 /-- A formula for $(r_1 r_2)^m z$, where $m$ is an integer and $z \in M$. -/
 lemma reflection_mul_reflection_zpow_apply (m : ℤ) (z : M)
-    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := rfl) :
+    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :
     ((reflection hf * reflection hg) ^ m) z =
       z +
         ((S R ((m - 2) / 2)).eval t * ((S R ((m - 1) / 2)).eval t + (S R ((m - 3) / 2)).eval t)) •
@@ -262,7 +262,7 @@ lemma reflection_mul_reflection_zpow_apply (m : ℤ) (z : M)
 
 /-- A formula for $(r_1 r_2)^m$, where $m$ is an integer. -/
 lemma reflection_mul_reflection_zpow (m : ℤ)
-    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := rfl) :
+    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :
     ((reflection hf * reflection hg) ^ m).toLinearMap =
       LinearMap.id (R := R) (M := M) +
         ((S R ((m - 2) / 2)).eval t * ((S R ((m - 1) / 2)).eval t + (S R ((m - 3) / 2)).eval t)) •
@@ -275,7 +275,7 @@ lemma reflection_mul_reflection_zpow (m : ℤ)
 /-- A formula for $(r_1 r_2)^m x$, where $m$ is an integer. This is the special case of
 `Module.reflection_mul_reflection_zpow_apply` with $z = x$. -/
 lemma reflection_mul_reflection_zpow_apply_self (m : ℤ)
-    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := rfl) :
+    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :
     ((reflection hf * reflection hg) ^ m) x =
       ((S R m).eval t + (S R (m - 1)).eval t) • x + ((S R (m - 1)).eval t * -g x) • y := by
   /- Even though this is a special case of `Module.reflection_mul_reflection_zpow_apply`, it is
@@ -308,14 +308,14 @@ lemma reflection_mul_reflection_zpow_apply_self (m : ℤ)
 /-- A formula for $(r_1 r_2)^m x$, where $m$ is a natural number. This is the special case of
 `Module.reflection_mul_reflection_pow_apply` with $z = x$. -/
 lemma reflection_mul_reflection_pow_apply_self (m : ℕ)
-    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := rfl) :
+    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :
     ((reflection hf * reflection hg) ^ m) x =
       ((S R m).eval t + (S R (m - 1)).eval t) • x + ((S R (m - 1)).eval t * -g x) • y :=
   mod_cast reflection_mul_reflection_zpow_apply_self hf hg m t ht
 
 /-- A formula for $r_2 (r_1 r_2)^m x$, where $m$ is an integer. -/
 lemma reflection_mul_reflection_mul_reflection_zpow_apply_self (m : ℤ)
-    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := rfl) :
+    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :
     (reflection hg * (reflection hf * reflection hg) ^ m) x =
       ((S R m).eval t + (S R (m - 1)).eval t) • x + ((S R m).eval t * -g x) • y := by
   rw [LinearEquiv.mul_apply, reflection_mul_reflection_zpow_apply_self hf hg m t ht]
@@ -326,7 +326,7 @@ lemma reflection_mul_reflection_mul_reflection_zpow_apply_self (m : ℤ)
 
 /-- A formula for $r_2 (r_1 r_2)^m x$, where $m$ is a natural number. -/
 lemma reflection_mul_reflection_mul_reflection_pow_apply_self (m : ℕ)
-    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := rfl) :
+    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :
     (reflection hg * (reflection hf * reflection hg) ^ m) x =
       ((S R m).eval t + (S R (m - 1)).eval t) • x + ((S R m).eval t * -g x) • y :=
   mod_cast reflection_mul_reflection_mul_reflection_zpow_apply_self hf hg m t ht
