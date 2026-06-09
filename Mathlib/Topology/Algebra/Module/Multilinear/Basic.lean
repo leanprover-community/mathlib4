@@ -77,7 +77,7 @@ theorem toMultilinearMap_injective :
 
 instance funLike : FunLike (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
   coe f := f.toFun
-  coe_injective' _ _ h := toMultilinearMap_injective <| MultilinearMap.coe_injective h
+  coe_injective _ _ h := toMultilinearMap_injective <| MultilinearMap.coe_injective h
 
 instance continuousMapClass :
     ContinuousMapClass (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where

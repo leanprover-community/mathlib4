@@ -558,8 +558,6 @@ def HomEquiv.fromRestriction {X : ModuleCat R} {Y : ModuleCat S}
       { toFun := fun s : S => g <| (s • y : Y)
         map_add' := fun s1 s2 : S => by simp [add_smul]
         map_smul' := fun r (s : S) => by
-          -- Porting note: dsimp clears out some rw's but less eager to apply others with Lean 4
-          -- dsimp
           rw [← g.hom.map_smul]
           simp [ModuleCat.restrictScalars.smul_def (M := ModuleCat.of S S), mul_smul] }
     map_add' (y1 y2 : Y) := (CoextendScalars.equiv _ _).injective <|

@@ -139,9 +139,9 @@ def toOrderMonoidWithZeroHom (f : α →+*o β) : α →*₀o β :=
 
 instance : FunLike (α →+*o β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f; cases g; congr
-    exact DFunLike.coe_injective' h
+    exact DFunLike.coe_injective h
 
 instance : OrderHomClass (α →+*o β) α β where
   map_rel f _ _ h := f.monotone' h
@@ -375,8 +375,7 @@ variable {α}
 
 /-- The inverse of an ordered ring isomorphism as an ordered ring isomorphism. -/
 @[symm]
-protected def symm (e : α ≃+*o β) : β ≃+*o α :=
-  ⟨e.toRingEquiv.symm, by simp [← e.map_le_map_iff']⟩
+protected def symm (e : α ≃+*o β) : β ≃+*o α := ⟨e.toRingEquiv.symm, by simp [← e.map_le_map_iff']⟩
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : α ≃+*o β) : β → α :=
