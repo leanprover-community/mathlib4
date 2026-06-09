@@ -56,8 +56,8 @@ theorem choose_le_centralBinom (r n : ℕ) : choose (2 * n) r ≤ centralBinom n
     (2 * n).choose r ≤ (2 * n).choose (2 * n / 2) := choose_le_middle r (2 * n)
     _ = (2 * n).choose n := by rw [Nat.mul_div_cancel_left n zero_lt_two]
 
-theorem centralBinom_monotone : Monotone centralBinom :=
-  fun n _ h ↦ (choose_le_choose n (mul_le_mul_left 2 h)).trans (choose_le_centralBinom _ _)
+theorem centralBinom_strictMono : StrictMono centralBinom :=
+  strictMono_nat_of_lt_succ (by grind [Nat.choose_pos, centralBinom])
 
 theorem two_le_centralBinom (n : ℕ) (n_pos : 0 < n) : 2 ≤ centralBinom n :=
   calc
