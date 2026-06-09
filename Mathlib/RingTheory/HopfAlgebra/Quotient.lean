@@ -12,12 +12,11 @@ public import Mathlib.RingTheory.HopfAlgebra.Basic
 # Hopf algebra structure on quotients by Hopf ideals
 
 A *Hopf ideal* of an `R`-Hopf algebra `A` is a biideal stable under the antipode. The quotient
-of `A` by a two-sided Hopf ideal inherits a Hopf algebra structure: the antipode descends
-through the module quotient, with no need to pass through the opposite algebra.
+by a Hopf ideal inherits a Hopf algebra structure.
 
 ## Main definitions
 
-* `Ideal.IsHopfIdeal R I` — `I` is a coideal (as an `R`-submodule) stable under the antipode.
+* `Ideal.IsHopfIdeal R I` : `I` is a coideal (as an `R`-submodule) stable under the antipode.
 
 ## Main results
 
@@ -28,19 +27,24 @@ through the module quotient, with no need to pass through the opposite algebra.
 
 open Bialgebra Coalgebra LinearMap TensorProduct
 
-variable {R A : Type*} [CommRing R] [Ring A] [HopfAlgebra R A]
+variable {R A : Type*} [CommRing R] [Ring A]
+
+section HopfAlgebraStruct
+
+variable [HopfAlgebraStruct R A]
 
 variable (R) in
-/-- An ideal of an `R`-Hopf algebra is a *Hopf ideal* if its underlying `R`-submodule is a
-coideal and it is stable under the antipode. -/
-class Ideal.IsHopfIdeal (I : Ideal A) : Prop extends IsCoideal (I.restrictScalars R) where
+/-- An ideal whose underlying `R`-submodule is a coideal and which is stable under the
+antipode (`S(I) ⊆ I`). Together with `I.IsTwoSided`, this makes `I` a *Hopf ideal*. -/
+@[mk_iff]
+class Ideal.IsHopfIdeal (I : Ideal A) : Prop extends (I.restrictScalars R).IsCoideal where
   antipode_mem : ∀ ⦃x : A⦄, x ∈ I → HopfAlgebra.antipode R x ∈ I
 
 namespace HopfAlgebra.Quotient
 
 variable (I : Ideal A) [I.IsTwoSided] [I.IsHopfIdeal R]
 
-noncomputable instance : HopfAlgebraStruct R (A ⧸ I) where
+instance : HopfAlgebraStruct R (A ⧸ I) where
   antipode := (Submodule.Quotient.restrictScalarsEquiv R I).toLinearMap ∘ₗ
     Submodule.mapQ (I.restrictScalars R) (I.restrictScalars R) (HopfAlgebra.antipode R)
       (fun _ hx => Ideal.IsHopfIdeal.antipode_mem (R := R) hx) ∘ₗ
@@ -52,12 +56,19 @@ lemma antipode_mk (a : A) :
       Ideal.Quotient.mk I (HopfAlgebra.antipode R a) :=
   rfl
 
-@[simp]
 lemma antipode_comp_mkₐ :
-    (HopfAlgebra.antipode R).comp (Ideal.Quotient.mkₐ R I).toLinearMap =
+    HopfAlgebra.antipode R ∘ₗ (Ideal.Quotient.mkₐ R I).toLinearMap =
       (Ideal.Quotient.mkₐ R I).toLinearMap ∘ₗ HopfAlgebra.antipode R := by ext; simp
 
-noncomputable instance : HopfAlgebra R (A ⧸ I) where
+end HopfAlgebra.Quotient
+
+end HopfAlgebraStruct
+
+namespace HopfAlgebra.Quotient
+
+variable [HopfAlgebra R A] (I : Ideal A) [I.IsTwoSided] [I.IsHopfIdeal R]
+
+instance : HopfAlgebra R (A ⧸ I) where
   mul_antipode_rTensor_comul := by
     refine LinearMap.ext fun x ↦ ?_
     obtain ⟨a, rfl⟩ := Ideal.Quotient.mk_surjective x
