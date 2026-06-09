@@ -171,31 +171,10 @@ theorem absorbs_iff_eventually_cobounded_mapsTo :
   rw [absorbs_iff_eventually_nhdsNE_zero, ← inv_cobounded₀, eventually_inv]
 
 theorem absorbs_iff_eventually_cobounded :
-    Absorbs 𝕜 s t ↔ ∀ᶠ c : 𝕜 in 𝓝[≠] 0, t ⊆ c • s := by
-  rw [absorbs_iff_eventually_cobounded_mapsTo, ← Filter.inv_cobounded₀]; rfl
-
-theorem absorbs_iff_eventually_nhdsNE_zero :
-    Absorbs 𝕜 s t ↔ ∀ᶠ c : 𝕜 in 𝓝[≠] 0, MapsTo (c • ·) t s := by
-  rw [absorbs_iff_eventually_cobounded_mapsTo, ← Filter.inv_cobounded₀]; rfl
-
-alias ⟨Absorbs.eventually_nhdsNE_zero, _⟩ := absorbs_iff_eventually_nhdsNE_zero
-
-theorem absorbent_iff_eventually_nhdsNE_zero :
-    Absorbent 𝕜 s ↔ ∀ x : E, ∀ᶠ c : 𝕜 in 𝓝[≠] 0, c • x ∈ s :=
-  forall_congr' fun x ↦ by simp only [absorbs_iff_eventually_nhdsNE_zero, mapsTo_singleton]
-
-alias ⟨Absorbent.eventually_nhdsNE_zero, _⟩ := absorbent_iff_eventually_nhdsNE_zero
-
-theorem absorbs_iff_eventually_nhds_zero (h₀ : 0 ∈ s) :
-    Absorbs 𝕜 s t ↔ ∀ᶠ c : 𝕜 in 𝓝 0, MapsTo (c • ·) t s := by
-  rw [← nhdsNE_sup_pure, Filter.eventually_sup, Filter.eventually_pure,
-    ← absorbs_iff_eventually_nhdsNE_zero, and_iff_left]
-  intro x _
-  simpa only [zero_smul]
-
-theorem Absorbs.eventually_nhds_zero (h : Absorbs 𝕜 s t) (h₀ : 0 ∈ s) :
-    ∀ᶠ c : 𝕜 in 𝓝 0, MapsTo (c • ·) t s :=
-  (absorbs_iff_eventually_nhds_zero h₀).1 h
+    Absorbs 𝕜 s t ↔ ∀ᶠ c in cobounded 𝕜, t ⊆ c • s := by
+  rw [absorbs_iff_eventually_cobounded_mapsTo]
+  exact eventually_congr <| (eventually_ne_cobounded 0).mono fun c hc ↦ by
+    rw [← preimage_smul_inv₀ hc]; rfl
 
 variable [NormedRing 𝕝] [Module 𝕜 𝕝] [NormSMulClass 𝕜 𝕝] [SMulWithZero 𝕝 E] [IsScalarTower 𝕜 𝕝 E]
   {a b : 𝕜} {x : E}
