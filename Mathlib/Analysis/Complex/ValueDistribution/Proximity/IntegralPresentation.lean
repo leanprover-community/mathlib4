@@ -98,17 +98,15 @@ private lemma integrable_integral_norm_cartanKernel (h : Meromorphic f) :
     Integrable (∫ α, ‖cartanKernel f R α ·‖ ∂(volume.restrict (Ioc 0 (2 * π))))
       (volume.restrict (Ioc 0 (2 * π))) := by
   let μ : Measure ℝ := volume.restrict (Ioc 0 (2 * π))
-  have h_meas_K : Measurable (fun p : ℝ × ℝ => cartanKernel f R p.1 p.2) :=
-    measurable_cartanKernel h.measurable
+  have h_meas_K : Measurable (fun a : ℝ × ℝ ↦ max (cartanKernel f R a.1 a.2) 0) := by fun_prop
   have h_int_posLog : Integrable (fun β ↦ log⁺ ‖f (circleMap 0 R β)‖) μ := by
-    have : CircleIntegrable (log⁺ ‖f ·‖) 0 R :=
-      h.meromorphicOn.circleIntegrable_posLog_norm
+    have : CircleIntegrable (log⁺ ‖f ·‖) 0 R := h.meromorphicOn.circleIntegrable_posLog_norm
     rwa [CircleIntegrable, intervalIntegrable_iff_integrableOn_Ioc_of_le two_pi_pos.le] at this
   have h_int_Bound : Integrable (fun β ↦ log⁺ ‖f (circleMap 0 R β)‖ + log 2) μ :=
     h_int_posLog.add (integrable_const _)
   have h_int_Term1 : Integrable (fun β ↦ ∫ α, max (cartanKernel f R α β) 0 ∂μ) μ := by
     apply Integrable.mono (h_int_Bound.const_mul (2 * π))
-      (h_meas_K.max measurable_const).stronglyMeasurable.integral_prod_left'.aestronglyMeasurable
+      h_meas_K.stronglyMeasurable.integral_prod_left'.aestronglyMeasurable
     filter_upwards with β
     have h_int_nonneg : 0 ≤ ∫ α, max (cartanKernel f R α β) 0 ∂μ := by positivity
     have h_bound_nonneg : 0 ≤ (2 * π) * (log⁺ ‖f (circleMap 0 R β)‖ + log 2) := by
