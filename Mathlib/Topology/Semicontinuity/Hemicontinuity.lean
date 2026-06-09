@@ -9,8 +9,10 @@ public import Mathlib.Topology.Semicontinuity.Defs
 public import Mathlib.Topology.NhdsWithin
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Defs.Sequences
+public import Mathlib.Topology.UniformSpace.Closeds
+public import Mathlib.Topology.UniformSpace.Compact
+public import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.Sequences
-import Mathlib.Topology.ContinuousOn
 
 /-! # Hemicontinuity
 
@@ -22,8 +24,12 @@ public section
 
 open Set Filter Topology
 
-variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+variable {α β : Type*} [TopologicalSpace α]
 variable {f g : α → Set β} {s : Set α} {x : α}
+
+section facts
+
+variable [TopologicalSpace β]
 
 /-! ### Basic facts -/
 
@@ -116,6 +122,11 @@ lemma isClosedMap_iff_upperHemicontinuous {f : α → β} :
   rw [isClosedMap_iff_kernImage, upperHemicontinuous_iff_isOpen_preimage_Iic]
   aesop
 
+lemma lowerHemicontinuous_iff_isOpen_inter_nonempty :
+    LowerHemicontinuous f ↔ ∀ u, IsOpen u → IsOpen {x | (f x ∩ u).Nonempty} := by
+  simp_rw [lowerHemicontinuous_iff, lowerHemicontinuousAt_iff, isOpen_iff_mem_nhds,
+    forall_comm (α := α), mem_setOf, Filter.Eventually]
+
 /-- A correspondence `f : α → Set β` is lower hemicontinuous if and only if its *lower inverse*
 (i.e., `u : Set β ↦ (f ⁻¹' (Iic uᶜ))ᶜ`, note that `f ⁻¹' (Iic u) = {x | (f x ∩ u).Nonempty}`)
 sends open sets to open sets. -/
@@ -123,8 +134,7 @@ lemma lowerHemicontinuous_iff_isOpen_compl_preimage_Iic_compl :
     LowerHemicontinuous f ↔ ∀ u, IsOpen u → IsOpen (f ⁻¹' (Iic uᶜ))ᶜ := by
   have (u : Set β) : (f ⁻¹' (Iic uᶜ))ᶜ = {x | (f x ∩ u).Nonempty} := by
     simp [Set.ext_iff, Iic, Set.mem_compl_iff, Set.not_subset, Set.Nonempty]
-  simp_rw [lowerHemicontinuous_iff, lowerHemicontinuousAt_iff, this, isOpen_iff_mem_nhds,
-    forall_comm (α := α), mem_setOf, Filter.Eventually]
+  simpa [this] using lowerHemicontinuous_iff_isOpen_inter_nonempty
 
 /-- A correspondence `f : α → Set β` is lower hemicontinuous if and only if its *upper inverse*
 (i.e., `u : Set β ↦ f ⁻¹' (Iic u)`, note that `f ⁻¹' (Iic u) = {x | f x ⊆ u}`) sends closed sets
@@ -141,13 +151,24 @@ lemma isOpenMap_iff_lowerHemicontinuous {f : α → β} :
   rw [isOpenMap_iff_kernImage, lowerHemicontinuous_iff_isClosed_preimage_Iic]
   aesop
 
-/-! ### Singleton maps -/
+section singleton_maps
+
+/-! ### Singleton maps
+
+Functions `f : α → β` are continuous if and only if they are lower hemicontinuous if and only if
+they are upper hemicontinuous. This is in the sense that the map `g : α → Set β` given by
+`g x = {f x}` is both lower or upper hemicontinuous.
+
+This section also provides dot notation to access this fact for continuous functions.
+-/
+
+variable {f : α → β} {s : Set α} {x : α}
 
 lemma upperHemicontinuous_singleton_id : UpperHemicontinuous ({·} : α → Set α) := by
   simp [upperHemicontinuous_iff, upperHemicontinuousAt_iff]
 
 @[simp]
-lemma upperHemicontinuousWithinAt_singleton_iff {f : α → β} {s : Set α} {x : α} :
+lemma upperHemicontinuousWithinAt_singleton_iff :
     UpperHemicontinuousWithinAt ({f ·}) s x ↔ ContinuousWithinAt f s x := by
   refine ⟨?_, fun hf ↦ upperHemicontinuous_singleton_id.upperHemicontinuousWithinAt _ _ |>.comp hf
     (mapsTo_image _ _)⟩
@@ -158,20 +179,79 @@ lemma upperHemicontinuousWithinAt_singleton_iff {f : α → β} {s : Set α} {x 
   exact mem_of_mem_nhds
 
 @[simp]
-lemma upperHemicontinuousAt_singleton_iff {f : α → β} {x : α} :
+lemma upperHemicontinuousAt_singleton_iff :
     UpperHemicontinuousAt ({f ·}) x ↔ ContinuousAt f x := by
   simp [← upperHemicontinuousWithinAt_univ_iff, continuousWithinAt_univ]
 
 @[simp]
-lemma upperHemicontinuousOn_singleton_iff {f : α → β} {s : Set α} :
+lemma upperHemicontinuousOn_singleton_iff :
     UpperHemicontinuousOn ({f ·}) s ↔ ContinuousOn f s :=
   forall₂_congr <| fun _ _ ↦ upperHemicontinuousWithinAt_singleton_iff
 
 @[simp]
-lemma upperHemicontinuous_singleton_iff {f : α → β} :
+lemma upperHemicontinuous_singleton_iff :
     UpperHemicontinuous ({f ·}) ↔ Continuous f := by
   simp [← upperHemicontinuousOn_univ_iff]
 
+lemma lowerHemicontinuous_singleton_id : LowerHemicontinuous ({·} : α → Set α) := by
+  intro x t ⟨ht, hne⟩
+  filter_upwards [ht.mem_nhds (Set.singleton_inter_nonempty.mp hne)] with x' hx'
+  exact ⟨ht, Set.singleton_inter_nonempty.mpr hx'⟩
+
+@[simp]
+lemma lowerHemicontinuousWithinAt_singleton_iff :
+    LowerHemicontinuousWithinAt ({f ·}) s x ↔ ContinuousWithinAt f s x := by
+  refine ⟨?_, fun hf ↦ (lowerHemicontinuous_singleton_id.lowerHemicontinuousWithinAt _ _).comp
+    hf (mapsTo_image _ _)⟩
+  simp only [lowerHemicontinuousWithinAt_iff, Set.singleton_inter_nonempty,
+    ContinuousWithinAt, tendsto_iff_forall_eventually_mem]
+  intro h t ht
+  obtain ⟨u, hut, huo, hux⟩ := mem_nhds_iff.mp ht
+  exact (h u huo hux).mono fun _ hx' ↦ hut hx'
+
+@[simp]
+lemma lowerHemicontinuousAt_singleton_iff : LowerHemicontinuousAt ({f ·}) x ↔ ContinuousAt f x := by
+  simp [← lowerHemicontinuousWithinAt_univ_iff, continuousWithinAt_univ]
+
+@[simp]
+lemma lowerHemicontinuousOn_singleton_iff : LowerHemicontinuousOn ({f ·}) s ↔ ContinuousOn f s :=
+  forall₂_congr <| fun _ _ ↦ lowerHemicontinuousWithinAt_singleton_iff
+
+@[simp]
+lemma lowerHemicontinuous_singleton_iff : LowerHemicontinuous ({f ·}) ↔ Continuous f := by
+  simp [← lowerHemicontinuousOn_univ_iff]
+
+lemma ContinuousWithinAt.upperHemicontinuousWithinAt (hf : ContinuousWithinAt f s x) :
+    UpperHemicontinuousWithinAt ({f ·}) s x :=
+  upperHemicontinuousWithinAt_singleton_iff.mpr hf
+
+lemma ContinuousWithinAt.lowerHemicontinuousWithinAt (hf : ContinuousWithinAt f s x) :
+    LowerHemicontinuousWithinAt ({f ·}) s x :=
+  lowerHemicontinuousWithinAt_singleton_iff.mpr hf
+
+lemma ContinuousAt.upperHemicontinuousAt (hf : ContinuousAt f x) :
+    UpperHemicontinuousAt ({f ·}) x :=
+  upperHemicontinuousAt_singleton_iff.mpr hf
+
+lemma ContinuousAt.lowerHemicontinuousAt (hf : ContinuousAt f x) :
+    LowerHemicontinuousAt ({f ·}) x :=
+  lowerHemicontinuousAt_singleton_iff.mpr hf
+
+lemma ContinuousOn.upperHemicontinuousOn (hf : ContinuousOn f s) :
+    UpperHemicontinuousOn ({f ·}) s :=
+  upperHemicontinuousOn_singleton_iff.mpr hf
+
+lemma ContinuousOn.lowerHemicontinuousOn (hf : ContinuousOn f s) :
+    LowerHemicontinuousOn ({f ·}) s :=
+  lowerHemicontinuousOn_singleton_iff.mpr hf
+
+lemma Continuous.upperHemicontinuous (hf : Continuous f) : UpperHemicontinuous ({f ·}) :=
+  upperHemicontinuous_singleton_iff.mpr hf
+
+lemma Continuous.lowerHemicontinuous (hf : Continuous f) : LowerHemicontinuous ({f ·}) :=
+  lowerHemicontinuous_singleton_iff.mpr hf
+
+end singleton_maps
 
 /-! ### Union and intersection, and post-composition with the preimage map -/
 
@@ -280,8 +360,7 @@ end Inducing
 
 The more general fact is that if `f` is upper hemicontinuous at `x₀` within `s`, and if
 `x₀` is a cluster point of `s ∩ {x | (f x).Nonempty}`, then `(f x₀).Nonempty`. -/
-lemma UpperHemicontinuous.isClosed_domain {α β : Type*} [TopologicalSpace α]
-    [TopologicalSpace β] {f : α → Set β} (hf : UpperHemicontinuous f) :
+lemma UpperHemicontinuous.isClosed_domain (hf : UpperHemicontinuous f) :
     IsClosed {x | (f x).Nonempty} := by
   simp only [← isOpen_compl_iff, compl_setOf, not_nonempty_iff_eq_empty, isOpen_iff_mem_nhds]
   intro x (hx : f x = ∅)
@@ -297,8 +376,7 @@ of sequences `x : ℕ → α` and `y : ℕ → β` such that `x` tends to `x₀`
 set containing all `f x'` for `x'` sufficiently close to `x`.
 
 This is a partial converse of `UpperHemicontinuousAt.mem_of_tendsto`. -/
-lemma UpperHemicontinuousAt.of_sequences {α β : Type*} [TopologicalSpace α]
-    [TopologicalSpace β] {f : α → Set β} {x₀ : α} [(𝓝 x₀).IsCountablyGenerated]
+lemma UpperHemicontinuousAt.of_sequences {x₀ : α} [(𝓝 x₀).IsCountablyGenerated]
     {K : Set β} (hK : IsSeqCompact K) (hf : ∀ᶠ x in 𝓝 x₀, f x ⊆ K)
     (h : ∀ x : ℕ → α, Tendsto x atTop (𝓝 x₀) →
       ∀ y : ℕ → β, (∀ n, y n ∈ f (x n)) → ∀ y₀, Tendsto y atTop (𝓝 y₀) → y₀ ∈ f x₀) :
@@ -319,9 +397,8 @@ closed, then for any sequences `x` and `y` (in `α` and `β`, respectively) tend
 respectively, if `y n ∈ f (x n)` frequently, then `y₀ ∈ f x₀`.
 
 This is a partial converse of `UpperHemicontinuousAt.of_sequences`. -/
-lemma UpperHemicontinuousAt.mem_of_tendsto {α β ι : Type*} [TopologicalSpace α]
-    [TopologicalSpace β] [RegularSpace β] {f : α → Set β} {x₀ : α} {l : Filter ι}
-    (hf : UpperHemicontinuousAt f x₀) (hf_closed : IsClosed (f x₀))
+lemma UpperHemicontinuousAt.mem_of_tendsto {ι : Type*} [RegularSpace β] {x₀ : α}
+    {l : Filter ι} (hf : UpperHemicontinuousAt f x₀) (hf_closed : IsClosed (f x₀))
     {x : ι → α} (hx : Tendsto x l (𝓝 x₀))
     {y : ι → β} (hy : ∃ᶠ n in l, y n ∈ f (x n)) {y₀ : β} (hy₀ : Tendsto y l (𝓝 y₀)) :
     y₀ ∈ f x₀ := by
@@ -335,3 +412,146 @@ lemma UpperHemicontinuousAt.mem_of_tendsto {α β ι : Type*} [TopologicalSpace 
   filter_upwards [hx (hf s hs)] with n hn hyn
   simp only [← subset_interior_iff_mem_nhdsSet, preimage_setOf_eq, mem_setOf_eq] at hn
   exact interior_subset <| hn hyn
+
+/-- **Sequential characterization of lower hemicontinuity**:
+A set-valued function `f : α → Set β` is lower hemicontinuous at `x₀ : α` if for every sequence
+`x : ℕ → α` tending to `x₀` and every `y₀ ∈ f x₀`, there exists a sequence `y : ℕ → β` with
+`y n ∈ f (x n)` for all `n` that tends to `y₀`. -/
+lemma LowerHemicontinuousAt.of_sequences {x₀ : α} [(𝓝 x₀).IsCountablyGenerated]
+    (h : ∀ x : ℕ → α, Tendsto x atTop (𝓝 x₀) →
+      ∀ y₀ ∈ f x₀, ∃ y : ℕ → β, (∀ n, y n ∈ f (x n)) ∧ Tendsto y atTop (𝓝 y₀)) :
+    LowerHemicontinuousAt f x₀ := by
+  rw [lowerHemicontinuousAt_iff]
+  rintro U hU ⟨y₀, hy₀f, hy₀U⟩
+  by_contra hc
+  rw [Filter.not_eventually] at hc
+  obtain ⟨x, hx, hxU⟩ := exists_seq_forall_of_frequently hc
+  obtain ⟨y, hy_mem, hy_lim⟩ := h x hx y₀ hy₀f
+  obtain ⟨n, hn⟩ := (hy_lim.eventually (hU.mem_nhds hy₀U)).exists
+  exact hxU n ⟨y n, hy_mem n, hn⟩
+
+end facts
+
+/-! ### Open lower sections -/
+
+/-- A correspondence `f : α → Set β` has open lower sections if and only if its *lower inverse*
+(i.e., `b : β ↦ (f ⁻¹' (Iic {b}ᶜ))ᶜ = {x | b ∈ f x}`) sends every point to an open set. -/
+lemma hasOpenLowerSections_iff_isOpen_compl_preimage_Iic_compl :
+    HasOpenLowerSections f ↔ ∀ b, IsOpen (f ⁻¹' (Iic {b}ᶜ))ᶜ := by
+  have h (b : β) : (f ⁻¹' (Iic {b}ᶜ))ᶜ = {x | b ∈ f x} := by
+    simp [Set.ext_iff, Iic, Set.mem_compl_iff]
+  simp_rw [h, hasOpenLowerSections_iff_isOpen]
+
+/-- A correspondence `f : α → Set β` has open lower sections if and only if its *upper inverse*
+(i.e., `b : β ↦ f ⁻¹' (Iic {b}ᶜ) = {x | b ∉ f x}`) sends every point to a closed set. -/
+lemma hasOpenLowerSections_iff_isClosed_preimage_Iic :
+    HasOpenLowerSections f ↔ ∀ b, IsClosed (f ⁻¹' (Iic {b}ᶜ)) := by
+  simp_rw [← isOpen_compl_iff]
+  exact hasOpenLowerSections_iff_isOpen_compl_preimage_Iic_compl
+
+/-! ### Open Graphs -/
+
+/-- A lower hemicontinuous function intersected with a function with an open graph is lower
+hemicontinuous. -/
+lemma LowerHemicontinuous.inter_hasOpenCGraph [TopologicalSpace β]
+    (hf : LowerHemicontinuous f) (hg : HasOpenCGraph g) :
+    LowerHemicontinuous (fun x ↦ f x ∩ g x) := by
+  simp_rw [lowerHemicontinuous_iff_isOpen_inter_nonempty] at ⊢ hf
+  intro t ht
+  rw [isOpen_iff_forall_mem_open]
+  intro x ⟨y, ⟨hyf, hyg⟩, hyt⟩
+  obtain ⟨U, V, hU, hV, hxU, hyV, hUV⟩ := (isOpen_prod_iff.mp hg) x y hyg
+  refine ⟨U ∩ {x' | (f x' ∩ (t ∩ V)).Nonempty}, ?_, hU.inter (hf _ (ht.inter hV)),
+      ⟨hxU, y, hyf, hyt, hyV⟩⟩
+  intro x' ⟨hx'U, z, hzf, hzt, hzV⟩
+  exact ⟨z, ⟨hzf, hUV (Set.mk_mem_prod hx'U hzV)⟩, hzt⟩
+
+/-! ### Uniform Limits
+
+Like continuity, hemicontinuity is preserved under certain uniform limits, where the uniformity on
+the target `Set β` is the Hausdorff uniformity. In this section, we prove this result for both
+lower hemicontinuous and upper hemicontinuous limits.
+-/
+
+section limits
+
+variable {ι : Type*} {F : ι → α → Set β} {l : Filter ι} [NeBot l]
+variable [UniformSpace β]
+open UniformSpace
+
+/-- A net of lower hemicontinuous set-valued functions converging uniformly on `s` (along a
+filter `l`) in the Hausdorff uniformity has a lower hemicontinuous limit on `s` -/
+theorem TendstoUniformlyOn.lowerHemicontinuousOn
+    (htendsto : @TendstoUniformlyOn _ _ _ (UniformSpace.hausdorff (α := β)) F f l s)
+    (hF : ∀ n, LowerHemicontinuousOn (F n) s) : LowerHemicontinuousOn f s := by
+  rw [lowerHemicontinuousOn_iff]
+  intro x₀ hx₀s
+  rw [lowerHemicontinuousWithinAt_iff]
+  intro V hV ⟨y₀, hy₀f, hy₀V⟩
+  -- Obtain entourages W, U ∈ 𝓤 β with U ○ U ○ U ⊆ W
+  obtain ⟨W, hW, hWsub⟩ := UniformSpace.mem_nhds_iff.mp (hV.mem_nhds hy₀V)
+  obtain ⟨U₁, hU₁, hU₁sym, hU₁comp⟩ := comp_symm_mem_uniformity_sets hW
+  obtain ⟨U, hU, hUsym, hUcomp⟩ := comp_symm_mem_uniformity_sets hU₁
+  have hU_le_U₁ : U ⊆ U₁ := fun _p hp => hUcomp ⟨_, refl_mem_uniformity hU, hp⟩
+  -- Eventually, ⟨f x, F N x⟩ ∈ hausdorffEntourage U for all x ∈ s
+  have hHU : hausdorffEntourage U ∈ @uniformity (Set β) (UniformSpace.hausdorff (α := β)) :=
+    (mem_lift'_sets monotone_hausdorffEntourage).mpr ⟨U, hU, le_refl _⟩
+  obtain ⟨N, hN⟩ := (htendsto (hausdorffEntourage U) hHU).exists
+  -- In which case, ⟨y₀, z₀⟩ ∈ U for some z₀ ∈ F N x₀
+  obtain ⟨z₀, hz₀FN, hz₀y₀⟩ :=
+    ((mem_hausdorffEntourage U (f x₀) (F N x₀)).mp (hN x₀ hx₀s)).1 hy₀f
+  -- By lower hemicontinuity, a ball around z₀ intersects all x in a neighborhood of x₀
+  obtain ⟨U', ⟨hU'mem, hU'open⟩, hU'sub⟩ := uniformity_hasBasis_open.mem_iff.mp hU
+  have hmeet₀ : (F N x₀ ∩ ball z₀ U').Nonempty := ⟨z₀, hz₀FN, mem_ball_self z₀ hU'mem⟩
+  have hSmeet : ∀ᶠ x in 𝓝[s] x₀, (F N x ∩ ball z₀ U').Nonempty :=
+    lowerHemicontinuousWithinAt_iff.mp (hF _ _ hx₀s) _ (isOpen_ball _ hU'open) hmeet₀
+  filter_upwards [hSmeet, self_mem_nhdsWithin] with x ⟨w, hwFN, hwball⟩ hx_s
+  obtain ⟨v, hvf, hvw⟩ := ((mem_hausdorffEntourage U (f x) (F N x)).mp (hN x hx_s)).2 hwFN
+  exact ⟨v, hvf, hWsub <| hU₁comp
+    ⟨w, hUcomp ⟨z₀, hz₀y₀, hU'sub hwball⟩, hU_le_U₁ (hUsym.symm _ _ hvw)⟩⟩
+
+/-- A net of upper hemicontinuous compact-valued set-valued functions converging uniformly on `s`
+(along a filter `l`) in the Hausdorff uniformity has an upper hemicontinuous limit on `s` -/
+theorem TendstoUniformlyOn.upperHemicontinuousOn
+    (htendsto : @TendstoUniformlyOn _ _ _ (UniformSpace.hausdorff (α := β)) F f l s)
+    (hF : ∀ n, UpperHemicontinuousOn (F n) s) (hf_compact : ∀ x ∈ s, IsCompact (f x)) :
+    UpperHemicontinuousOn f s := by
+  rw [upperHemicontinuousOn_iff_forall_isOpen]
+  intro x₀ hx₀s u hu hx₀u
+  obtain ⟨W, hW, _, hWu⟩ := lebesgue_number_of_compact_open (hf_compact x₀ hx₀s) hu hx₀u
+  obtain ⟨V₁, hV₁, hV₁sym, hV₁comp⟩ := comp_symm_mem_uniformity_sets hW
+  obtain ⟨U', ⟨hU'mem, hU'open⟩, hU'sub⟩ := uniformity_hasBasis_open.mem_iff.mp hV₁
+  have hHU' : hausdorffEntourage U' ∈ @uniformity _ (UniformSpace.hausdorff (α := β)) :=
+    (mem_lift'_sets monotone_hausdorffEntourage).mpr ⟨U', hU'mem, le_refl _⟩
+  obtain ⟨N, hN⟩ := (htendsto (hausdorffEntourage U') hHU').exists
+  have hFN_image := ((mem_hausdorffEntourage U' (f x₀) (F N x₀)).mp (hN x₀ hx₀s)).2
+  simp_rw [upperHemicontinuousOn_iff] at hF
+  have hFN_uhc : ∀ᶠ x in 𝓝[s] x₀, F N x ⊆ U'.image (f x₀) :=
+    (hF N x₀ hx₀s).forall_isOpen _ hU'open.relImage hFN_image
+  filter_upwards [hFN_uhc, self_mem_nhdsWithin] with x hFNx hx_s
+  intro y hy
+  obtain ⟨z, hzFN, hyz⟩ := ((mem_hausdorffEntourage U' (f x) (F N x)).mp (hN x hx_s)).1 hy
+  obtain ⟨y₀, hy₀f, hy₀z⟩ := hFNx hzFN
+  exact hWu y₀ hy₀f (hV₁comp ⟨z, hU'sub hy₀z, hV₁sym.symm _ _ (hU'sub hyz)⟩)
+
+/-- A net of lower hemicontinuous set-valued functions converging uniformly (along a
+filter `l`) in the Hausdorff uniformity has a lower hemicontinuous limit -/
+theorem TendstoUniformly.lowerHemicontinuous
+    (htendsto : @TendstoUniformly _ _ _ (UniformSpace.hausdorff (α := β)) F f l)
+    (hF : ∀ n, LowerHemicontinuous (F n)) :
+    LowerHemicontinuous f := by
+  rw [← lowerHemicontinuousOn_univ_iff]
+  exact (@htendsto.tendstoUniformlyOn _ _ _ (UniformSpace.hausdorff (α := β)) F f Set.univ l)
+    |>.lowerHemicontinuousOn (fun n ↦ (hF n).lowerHemicontinuousOn _)
+
+/-- A net of upper hemicontinuous compact-valued set-valued functions converging uniformly
+(along a filter `l`) in the Hausdorff uniformity has an upper hemicontinuous limit -/
+theorem TendstoUniformly.upperHemicontinuous
+    (htendsto : @TendstoUniformly _ _ _ (UniformSpace.hausdorff (α := β)) F f l)
+    (hF : ∀ n, UpperHemicontinuous (F n)) (hf_compact : ∀ x, IsCompact (f x)) :
+    UpperHemicontinuous f := by
+  rw [← upperHemicontinuousOn_univ_iff]
+  exact (@htendsto.tendstoUniformlyOn _ _ _ (UniformSpace.hausdorff (α := β)) F f Set.univ l)
+    |>.upperHemicontinuousOn (fun n ↦ (hF n).upperHemicontinuousOn _) (fun x _ ↦ hf_compact x)
+
+end limits
