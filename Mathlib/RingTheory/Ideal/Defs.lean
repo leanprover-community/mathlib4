@@ -148,7 +148,7 @@ theorem mul_sub_mul_mem [I.IsTwoSided]
 
 section inertia
 
-variable (I : Ideal α) (G : Type*) [Group G] [MulAction G α]
+variable (G : Type*) [Group G] [MulAction G α] (I : Ideal α)
 
 /-- The subgroup of elements `g` of `G` such that `∀ x, g • x - x ∈ I`. -/
 abbrev inertia : Subgroup G := I.toAddSubgroup.inertia G
