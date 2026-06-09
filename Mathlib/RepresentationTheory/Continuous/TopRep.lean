@@ -119,7 +119,6 @@ lemma id_apply (a : A) : (𝟙 A : A ⟶ A) a = a := rfl -- add `id_apply` as si
 /- Provided for rewriting. -/
 variable {A B C} in
 lemma comp_apply (f : A ⟶ B) (g : B ⟶ C) (a : A) : (f ≫ g) a = g (f a) := rfl
--- add `comp_apply` as simp lemma!
 
 variable {A B} in
 @[ext] lemma hom_ext {f g : A ⟶ B} (hf : f.hom = g.hom) : f = g := Hom.ext hf
