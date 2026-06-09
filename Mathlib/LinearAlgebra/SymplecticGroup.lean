@@ -229,18 +229,17 @@ theorem fromBlocks_mem_iff {A B C D : Matrix l l R} :
     · have := congrArg transpose h.2.2
       rwa [transpose_sub, transpose_mul, transpose_mul, transpose_one] at this
 
-theorem det_one_if_fromBlocks_invertible
-    {A B C D : Matrix l l R} [Invertible A]
+section Determinant
+
+variable {A B C D U V : Matrix l l R}
+
+private lemma det_one_if_fromBlocks_invertible [Invertible A]
     (hA : fromBlocks A B C D ∈ symplecticGroup l R) :
     (fromBlocks A B C D).det = 1 := by
   have h_block := fromBlocks_mem_iff.1 hA
   rw [det_fromBlocks₁₁, invOf_eq_nonsing_inv, ← A.det_transpose, ← det_mul,
     mul_sub, ← mul_assoc, ← mul_assoc, h_block.1, mul_assoc Cᵀ,
     mul_inv_of_invertible, mul_one, h_block.2.2, det_one]
-
-section Determinant
-
-variable {A B C D U V : Matrix l l R}
 
 private lemma ker_inter_eq_bot_of_rank_normal_form
   (hU : IsUnit U.det) (hV : IsUnit V.det)
@@ -419,8 +418,7 @@ private lemma det_eq_one_of_isLocalRing [IsLocalRing R] {M : Matrix (l ⊕ l) (l
 theorem det_eq_one {M : Matrix (l ⊕ l) (l ⊕ l) R} (hM : M ∈ symplecticGroup l R) :
     M.det = 1 := by
   refine sub_eq_zero.1 <| eq_zero_of_localization _ fun J _ ↦ ?_
-  rw [map_sub, RingHom.map_det, det_eq_one_of_isLocalRing <|
-    map_mem (algebraMap R (Localization.AtPrime J)) hM, map_one, sub_self]
+  rw [map_sub, RingHom.map_det, det_eq_one_of_isLocalRing <| map_mem _ hM, map_one, sub_self]
 
 end Determinant
 
