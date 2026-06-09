@@ -23,8 +23,8 @@ and prove basic properties of this measure.
 namespace ENNReal
 
 @[simp]
-lemma toReal_enatCard (α : Type*) [Finite α] : ENNReal.toReal (ENat.card α) = Nat.card α := by
-  simp [ENat.card_eq_coe_natCard]
+lemma toReal_enatCard (α : Type*) : ENNReal.toReal (ENat.card α) = Nat.card α := by
+  cases finite_or_infinite α <;> simp [ENat.card_eq_coe_natCard]
 
 end ENNReal
 
@@ -173,8 +173,7 @@ instance count.isFiniteMeasure [Finite α] :
 @[simp]
 lemma count_univ : count (univ : Set α) = ENat.card α := by simp [count_apply .univ, encard_univ]
 
-@[simp] lemma count_real_univ [Finite α] : count.real (.univ : Set α) = Nat.card α := by
-  simp [Measure.real]
+@[simp] lemma count_real_univ : count.real (.univ : Set α) = Nat.card α := by simp [Measure.real]
 
 instance neZero_count [Nonempty α] : NeZero (count : Measure α) where
   out := by rintro h; simpa using congr($h .univ)
