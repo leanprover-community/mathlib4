@@ -20,14 +20,14 @@ All results in this file rely on the open mapping theorem, hence the Banach spac
 
 ## Main results
 
-* `Submodule.isTopCompl_iff_isCompl_isClosed`: in a Banach space, two submodule are topological
+* `Submodule.isTopCompl_iff_isCompl_isClosed`: in a Banach space, two submodules are topological
   complements (`Submodule.IsTopCompl`) if and only if they are algebraic complements (`IsCompl`)
-* `Submodule.closedCompleemented_iff_isClosed_exists_isClosed_isCompl`: in a Banach space. a
+* `Submodule.closedComplemented_iff_isClosed_exists_isClosed_isCompl`: in a Banach space. a
   submodule is complemented if and only if it is closed and admits a closed algebraic complement.
 
 ## TODO
 
-Generalize these results to metrizable complete topological vector space, once the open mapping
+Generalize these results to metrizable complete topological vector spaces, once the open mapping
 theorem is available in that setting.
 
 ## Tags
