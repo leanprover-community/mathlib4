@@ -91,6 +91,8 @@ lemma id_apply (A : CommHopfAlgCat.{v} R) (a : A) : (𝟙 A : A ⟶ A) a = a := 
 /- Provided for rewriting. -/
 lemma comp_apply (f : A ⟶ B) (g : B ⟶ C) (a : A) : (f ≫ g) a = g (f a) := by simp
 
+@[ext] lemma hom_ext {f g : A ⟶ B} (hf : f.hom = g.hom) : f = g := Hom.ext hf
+
 @[simp] lemma hom_ofHom (f : X →ₐc[R] Y) : (ofHom f).hom = f := rfl
 @[simp] lemma ofHom_hom (f : A ⟶ B) : ofHom f.hom = f := rfl
 
@@ -107,8 +109,6 @@ lemma hom_inv_apply (e : A ≅ B) (x : B) : e.hom (e.inv x) = x := by simp
 instance : Inhabited (CommHopfAlgCat R) := ⟨of R R⟩
 
 lemma forget_obj (A : CommHopfAlgCat.{v} R) : (forget (CommHopfAlgCat.{v} R)).obj A = A := rfl
-
-lemma forget_map (f : A ⟶ B) : (forget (CommHopfAlgCat.{v} R)).map f = (f : _ → _) := rfl
 
 instance : CommRing ((forget (CommHopfAlgCat R)).obj A) := inferInstanceAs <| CommRing A
 
