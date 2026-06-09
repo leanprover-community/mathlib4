@@ -52,16 +52,17 @@ variable {M G}
 /-- Canonical bijection between `ConjAct G` and `G`. Use instead the bundled version `ofConjAct`. -/
 def ofConjActEquiv : ConjAct G ≃ G := Equiv.refl G
 
-instance [One G] : One (ConjAct G) := ⟨ofConjActEquiv.symm (1 : G)⟩
+instance [One G] : One (ConjAct G) where
+  one := ofConjActEquiv.symm (1 : G)
 
-instance [Mul G] : Mul (ConjAct G) :=
-  ⟨fun x y ↦ ofConjActEquiv.symm (ofConjActEquiv x * ofConjActEquiv y)⟩
+instance [Mul G] : Mul (ConjAct G) where
+  mul x y := ofConjActEquiv.symm (ofConjActEquiv x * ofConjActEquiv y)
 
-instance [Inv G] : Inv (ConjAct G) :=
-  ⟨fun x ↦ ofConjActEquiv.symm (ofConjActEquiv x)⁻¹⟩
+instance [Inv G] : Inv (ConjAct G) where
+  inv x := ofConjActEquiv.symm (ofConjActEquiv x)⁻¹
 
-instance [Div G] : Div (ConjAct G) :=
-  ⟨fun x y ↦ ofConjActEquiv.symm (ofConjActEquiv x / ofConjActEquiv y)⟩
+instance [Div G] : Div (ConjAct G) where
+  div x y := ofConjActEquiv.symm (ofConjActEquiv x / ofConjActEquiv y)
 
 instance [DivInvMonoid G] : DivInvMonoid (ConjAct G) := inferInstanceAs <| DivInvMonoid G
 
