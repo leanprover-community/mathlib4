@@ -356,7 +356,7 @@ def RKHSEquivOfKernel : H ≃ₗᵢ[𝕜] OfKernel (kernel H) := by
 
 
 lemma RKHSEquivOfKernel_symm (g : OfKernel (kernel H)) : RKHSEquivOfKernel.symm g =
-    UniformSpace.Completion.extension (α:= H₀ (kernel H))
+    UniformSpace.Completion.extension (α := H₀ (kernel H))
       ((Finsupp.linearCombination 𝕜 (fun (xv : X × V) => (RKHS.kerFun H xv.1) xv.2))) g := by
   simp [RKHSEquivOfKernel]; rfl
 
@@ -373,7 +373,7 @@ lemma kerFun_eq_coe'_single (x : X) (v : V) : kerFun (OfKernel K) x v =
   simp [RKHS.kerFun, coeCLM, kerFunAux]
 
 lemma RKHSEquivOfKernel_kerFun_eq_coe'_single (x : X) (v : V) : RKHSEquivOfKernel (kerFun H x v) =
-    UniformSpace.Completion.coe' (α:=H₀ (kernel H)) (Finsupp.single (x, v) 1) := by
+    UniformSpace.Completion.coe' (α := H₀ (kernel H)) (Finsupp.single (x, v) 1) := by
   apply Eq.symm
   apply (RKHSEquivOfKernel.symm_apply_eq).mp
   have h_uni : UniformContinuous
