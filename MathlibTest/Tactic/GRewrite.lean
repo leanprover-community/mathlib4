@@ -118,7 +118,7 @@ example (h₁ : W ⊂ Y) (h₂ : X ⊂ (W ∪ Z)) : X ⊂ (Y ∪ Z) := by
   guard_target =ₛ X ⊂ (W ∪ Z)
   exact h₂
 
--- Variable names are preserved:
+-- Binder names are preserved:
 /--
 trace: α : Type ?u.3
 X Y Z W : Set α
