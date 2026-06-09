@@ -226,6 +226,8 @@ deriving instance SMul S for SplittingField f
 variable {R : Type*} [CommSemiring R] [Algebra R K] in
 deriving instance Algebra R, IsScalarTower R K for SplittingField f
 
+instance : Algebra K f.SplittingField := inferInstance
+
 /-- The algebra equivalence with `SplittingFieldAux`,
 which we will use to construct the field structure. -/
 def algEquivSplittingFieldAux (f : K[X]) : SplittingField f ≃ₐ[K] SplittingFieldAux f.natDegree f :=
