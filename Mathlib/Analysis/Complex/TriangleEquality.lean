@@ -28,7 +28,7 @@ This generalizes `Complex.norm_add_eq_iff` to finite sums.
 See `Complex.norm_add_eq_iff` in `Mathlib/Analysis/Complex/Arg.lean` for the two-vector case.
 -/
 
-@[expose] public section
+public section
 
 namespace Complex
 
@@ -120,7 +120,7 @@ lemma aligned_of_triangle_eq (h_eq : u = ∑ i ∈ s, v i) (h_sum : ‖u‖ = �
     (h_ne : u ≠ 0) (i : ι) (hi : i ∈ s) (hvi : v i ≠ 0) :
     v i / (‖v i‖ : ℂ) = u / (‖u‖ : ℂ) := by
   have hray := sameRay_of_triangle_eq h_eq h_sum h_ne i hi
-  rw [div_norm_eq_inv_norm_smul hvi, div_norm_eq_inv_norm_smul h_ne,
+  rw [div_norm_eq_inv_norm_smul, div_norm_eq_inv_norm_smul,
     SameRay.inv_norm_smul_eq hvi h_ne hray]
 
 variable [Fintype n]

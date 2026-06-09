@@ -400,16 +400,16 @@ lemma eq_coe_re_of_mul_eq_norm_mul {w : ℂ} (h : re (z * star w) = ‖z‖ * �
   have hnorm : ‖z * star w‖ = ‖z‖ * ‖w‖ := by rw [Complex.norm_mul, star_def, norm_conj]
   exact eq_coe_re_of_norm_eq (hnorm.trans h.symm)
 
-/-- For `z ≠ 0`, `star z / ‖z‖` multiplies `z` to `‖z‖`. -/
-lemma unit_of_norm_div_star (hz : z ≠ 0) :
-    let u := star z / (‖z‖ : ℂ); z * u = (‖z‖ : ℂ) := by
-  intro u
-  have h₁ : (‖z‖ : ℂ) ≠ 0 := ofReal_ne_zero.mpr (norm_ne_zero_iff.mpr hz)
-  calc
-    z * u = z * (star z / (‖z‖ : ℂ)) := rfl
-    _ = (z * star z) / (‖z‖ : ℂ) := by simp [mul_div_assoc]
-    _ = (↑(‖z‖ ^ 2) : ℂ) / (‖z‖ : ℂ) := by
-      rw [star_def, mul_conj, normSq_eq_norm_sq, ofReal_pow]
-    _ = (‖z‖ : ℂ) := by simp [pow_two, h₁]
+/-- Multiplying `z` by `star z / ‖z‖` yields the norm of `z`. -/
+lemma mul_star_div_norm_eq_norm : z * (star z / (‖z‖ : ℂ)) = (‖z‖ : ℂ) := by
+  rcases eq_or_ne z 0 with rfl | hz
+  · simp
+  · have h₁ : (‖z‖ : ℂ) ≠ 0 := ofReal_ne_zero.mpr (norm_ne_zero_iff.mpr hz)
+    calc
+      z * (star z / (‖z‖ : ℂ))
+          = (z * star z) / (‖z‖ : ℂ) := by simp [mul_div_assoc]
+      _ = (↑(‖z‖ ^ 2) : ℂ) / (‖z‖ : ℂ) := by
+        rw [star_def, mul_conj, normSq_eq_norm_sq, ofReal_pow]
+      _ = (‖z‖ : ℂ) := by simp [pow_two, h₁]
 
 end Complex
