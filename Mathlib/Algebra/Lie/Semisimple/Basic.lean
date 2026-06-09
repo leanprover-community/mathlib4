@@ -174,7 +174,7 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
     -- We need to show that `J = ⊥`.
     -- Since `J` is an ideal of `L`, and `I` is an atom,
     -- it suffices to show that `J < I`.
-    apply hI.2
+    refine (hI.isMin_of_lt ?_).eq_bot
     rw [lt_iff_le_and_ne]
     constructor
     -- We know that `J ≤ I` since `J` is an ideal of `I`.

@@ -557,7 +557,7 @@ theorem finrank_span_singleton {v : V} (hv : v ≠ 0) : finrank K (K ∙ v) = 1 
 /-- A submodule over a division ring is an atom of the submodule lattice iff it has `finrank` 1. -/
 theorem Submodule.isAtom_iff_finrank_eq_one {S : Submodule K V} :
     IsAtom S ↔ finrank K S = 1 := by
-  refine ⟨fun hS ↦ ?_, fun hS ↦ ⟨by aesop, fun T hT ↦ ?_⟩⟩
+  refine ⟨fun hS ↦ ?_, fun hS ↦ isAtom_iff_le_of_ge.2 ⟨by aesop, fun T hb hT => ?_⟩⟩
   · obtain ⟨v : V, hv : v ∈ S, hv_ne : v ≠ 0⟩ := S.ne_bot_iff.mp hS.ne_bot
     suffices K ∙ v = S by rw [← this, finrank_span_singleton hv_ne]
     have : K ∙ v ≠ ⊥ := by
@@ -565,10 +565,9 @@ theorem Submodule.isAtom_iff_finrank_eq_one {S : Submodule K V} :
       exact ⟨v, mem_span_singleton_self v, hv_ne⟩
     rwa [← hS.le_iff_eq this, span_le, Set.singleton_subset_iff]
   · have : FiniteDimensional K S := .of_finrank_eq_succ hS
-    have : FiniteDimensional K T := .of_injective (inclusion hT.le) (inclusion_injective hT.le)
-    rw [← finrank_eq_zero (R := K)]
-    by_contra h
-    exact hT.ne <| eq_of_le_of_finrank_le hT.le <| by lia
+    have : FiniteDimensional K T := .of_injective (inclusion hT) (inclusion_injective hT)
+    rw [ne_eq, ← finrank_eq_zero (R := K)] at hb
+    exact (eq_of_le_of_finrank_le hT (by lia)).ge
 
 /-- In a one-dimensional space, any vector is a multiple of any nonzero vector -/
 lemma exists_smul_eq_of_finrank_eq_one
