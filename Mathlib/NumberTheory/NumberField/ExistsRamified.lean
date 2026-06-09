@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 public import Mathlib.NumberTheory.NumberField.Discriminant.Different
 public import Mathlib.NumberTheory.RamificationInertia.Galois
+public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
 public import Mathlib.RingTheory.Unramified.Dedekind
 
 /-!
@@ -19,6 +20,18 @@ This is a trivial corollary of `NumberField.not_dvd_discr_iff_forall_mem` and
 
 -/
 @[expose] public section
+
+
+instance (R : Type*) [CommRing R] [IsDomain R] [Ring.HasFiniteQuotients R]
+    [PerfectField (FractionRing R)] (P : Ideal R) [P.IsPrime] : PerfectField P.ResidueField := by
+  rcases eq_or_ne P ⊥ with rfl | hP
+  · sorry
+    -- exact PerfectField.of_ringEquiv (FractionRing.algEquiv R (⊥ : Ideal R).ResidueField).toRingEquiv
+  · suffices Finite P.ResidueField from inferInstance
+    have : P.IsMaximal := ‹P.IsPrime›.isMaximal hP
+    have : Finite (R ⧸ P) := Ring.HasFiniteQuotients.finiteQuotient hP
+    let : Field (R ⧸ P) := Ideal.Quotient.field P
+    exact .of_equiv (R ⧸ P) (IsFractionRing.algEquiv (R ⧸ P) (R ⧸ P) P.ResidueField).toEquiv
 
 open scoped NumberField nonZeroDivisors
 
@@ -83,7 +96,6 @@ lemma NumberField.exists_not_isUnramifiedAt_int_of_isGalois [IsGalois ℚ K]
     (map_dvd (algebraMap _ _) p.associated_natAbs.symm.dvd) (by simpa using hQ)
   have : .span {p} = Ideal.under ℤ Q :=
     ((Ideal.liesOver_span_iff Ideal.IsPrime.ne_top' this).mpr hQ).1
-  rwa [Algebra.isUnramifiedAt_iff_of_isDedekindDomain (by aesop),
-    ← Ideal.ramificationIdxIn_eq_ramificationIdx _ _ Gal(K/ℚ), ← this, ← hp,
-    Ideal.ramificationIdxIn_eq_ramificationIdx _ P Gal(K/ℚ),
-    ← Algebra.isUnramifiedAt_iff_of_isDedekindDomain (Ideal.IsMaximal.ne_bot_of_isIntegral_int _)]
+  rwa [← Ideal.ramificationIdx'_eq_one_iff,
+    ← Ideal.ramificationIdxIn_eq_ramificationIdx (Q.under ℤ) _ Gal(K/ℚ), ← this, ← hp,
+    Ideal.ramificationIdxIn_eq_ramificationIdx _ P Gal(K/ℚ), Ideal.ramificationIdx'_eq_one_iff]
