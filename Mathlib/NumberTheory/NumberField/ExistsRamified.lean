@@ -25,28 +25,34 @@ This is a trivial corollary of `NumberField.not_dvd_discr_iff_forall_mem` and
 section
 
 open Pointwise in
+instance {α β γ : Type*} [Group α] [Group β] [CommRing γ] [MulAction α β] [MulSemiringAction α γ]
+    [MulSemiringAction β γ] [IsScalarTower α β γ] : IsScalarTower α β (Ideal γ) where
+  smul_assoc x y z := by
+    rw [Ideal.pointwise_smul_def, Ideal.pointwise_smul_def, Ideal.pointwise_smul_def, Ideal.map_map]
+    congr
+    ext
+    simp
+
+open Pointwise in
 theorem foo₄ (B C G : Type*) [Group G] (H : Subgroup G) [CommRing B] [CommRing C]
     [Algebra B C] [MulSemiringAction G C] [IsGaloisGroup H B C]
-    [H.Normal] [FaithfulSMul B C] [IsDomain C] [Finite H]
+    [H.Normal] [MulSemiringAction (G ⧸ H) B]
+    [MulSemiringAction G B] [IsScalarTower G (G ⧸ H) B] [SMulDistribClass G B C] [Finite H]
     (q : Ideal B) (r : Ideal C) [r.LiesOver q] [r.IsPrime] :
-    letI := IsGaloisGroup.mulSemiringActionQuotient G B C H
     q.inertia (G ⧸ H) = (r.inertia G).map (QuotientGroup.mk' H) := by
-  have : IsDomain B := IsDomain.of_faithfulSMul B C
-  let := IsGaloisGroup.mulSemiringActionQuotient G B C H
   apply le_antisymm; swap
   · rintro - ⟨g, hg, rfl⟩ b
     specialize hg (algebraMap B C b)
-    rw [← IsGaloisGroup.algebraMap_smulOfNormal G B C H g b, ← map_sub] at hg
-    rwa [Submodule.mem_toAddSubgroup, QuotientGroup.mk'_apply, r.over_def q, r.mem_under B]
+    rw [← algebraMap.smul', ← map_sub] at hg
+    rwa [QuotientGroup.mk'_apply, MulAction.coe_quotient_smul, r.over_def q]
   · -- let `g : G ⧸ H` be an element of the inertia subgroup of `q`
     intro g hg
     -- first we will find a lift `g' : G` in the decomposition subgroup of `r`
     have mem_decomposition : ∃ g' : MulAction.stabilizer G r, QuotientGroup.mk' H g' = g := by
+      replace hg := Ideal.inertia_le_stabilizer q hg
       obtain ⟨g, rfl⟩ := QuotientGroup.mk'_surjective H g
+      rw [MulAction.mem_stabilizer_iff, QuotientGroup.mk'_apply, MulAction.coe_quotient_smul] at hg
       have : (g • r).under B = r.under B := by
-        replace hg := Ideal.inertia_le_stabilizer q hg
-        rw [MulAction.mem_stabilizer_iff] at hg
-        simp at hg
         rw [← Ideal.over_def r q, ← hg, Ideal.over_def r q]
         rw [Ideal.under_def, Ideal.pointwise_smul_eq_comap]
         nth_rw 2 [← Ideal.comap_coe]
@@ -55,11 +61,7 @@ theorem foo₄ (B C G : Type*) [Group G] (H : Subgroup G) [CommRing B] [CommRing
         rw [Ideal.comap_comap]
         congr
         ext x
-        let := IsGaloisGroup.mulSemiringActionOfNormal G B C H
-        have : SMulDistribClass G B C := IsGaloisGroup.smulDistribClass_smulOfNormal G B C H
-        simp [IsGaloisGroup.mulSemiringActionQuotient_smul_def]
-        change g⁻¹ • (algebraMap B C) x = (algebraMap B C) (↑(g⁻¹ : G) • x)
-        exact Eq.symm (algebraMap.coe_smul' g⁻¹ x C)
+        simp [← algebraMap.smul']
       obtain ⟨g', hg'⟩ := Algebra.IsInvariant.exists_smul_of_under_eq B C H (g • r) r this
       exact ⟨⟨g' * g, by simpa [mul_smul, eq_comm]⟩, by simp⟩
     -- and now we must find a lift `g' : G` in the inertia subgroup of `r`
@@ -75,9 +77,7 @@ theorem foo₄ (B C G : Type*) [Group G] (H : Subgroup G) [CommRing B] [CommRing
           Ideal.Quotient.stabilizerHom_apply, Ideal.Quotient.eq]
         simp [Ideal.over_def r q] at hg
         convert hg
-        let := IsGaloisGroup.mulSemiringActionOfNormal G B C H
-        have : SMulDistribClass G B C := IsGaloisGroup.smulDistribClass_smulOfNormal G B C H
-        rw [IsGaloisGroup.mulSemiringActionQuotient_smul_def]
+        rw [← algebraMap.smul']
         simp [Subgroup.smul_def] }
     obtain ⟨g', hg'⟩ := Ideal.Quotient.stabilizerHom_surjective H q r φ
     let v : MulAction.stabilizer G r := ⟨g', g'.2⟩⁻¹ * g
@@ -265,6 +265,7 @@ theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finit
   have : Algebra.IsIntegral R S := IsGaloisGroup.isInvariant.isIntegral R S H
   obtain ⟨mS, hmS, hmRS⟩ := Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain (R := R) (S := S) mR (by simp)
   replace hmRS : mS.LiesOver mR := ⟨hmRS.symm⟩
+  let := IsGaloisGroup.mulSemiringActionOfNormal G R S H
   rw [foo₄ R S G H mR mS, Subgroup.map_eq_bot_iff, QuotientGroup.ker_mk']
   apply le_iSup_of_le ⟨mS, hmS⟩
   rfl
