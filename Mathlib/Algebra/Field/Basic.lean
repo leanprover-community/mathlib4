@@ -311,11 +311,11 @@ end OrderDual
 
 namespace Lex
 
-instance instRatCast [RatCast K] : RatCast (Lex K) := ‹_›
-instance instDivisionSemiring [DivisionSemiring K] : DivisionSemiring (Lex K) := ‹_›
-instance instDivisionRing [DivisionRing K] : DivisionRing (Lex K) := ‹_›
-instance instSemifield [Semifield K] : Semifield (Lex K) := ‹_›
-instance instField [Field K] : Field (Lex K) := ‹_›
+instance [RatCast K] : RatCast (Lex K) := inferInstanceAs <| RatCast K
+instance [DivisionSemiring K] : DivisionSemiring (Lex K) := inferInstanceAs <| DivisionSemiring K
+instance [DivisionRing K] : DivisionRing (Lex K) := inferInstanceAs <| DivisionRing K
+instance [Semifield K] : Semifield (Lex K) := inferInstanceAs <| Semifield K
+instance [Field K] : Field (Lex K) := inferInstanceAs <| Field K
 
 end Lex
 
