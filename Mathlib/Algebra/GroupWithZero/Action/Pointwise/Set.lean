@@ -154,7 +154,7 @@ lemma smul_set_inter₀ (ha : a ≠ 0) : a • (s ∩ t) = a • s ∩ a • t :
   show Units.mk0 a ha • _ = _ from smul_set_inter
 
 lemma smul_set_sdiff₀ (ha : a ≠ 0) : a • (s \ t) = a • s \ a • t :=
-  image_diff (MulAction.injective₀ ha) _ _
+  image_sdiff (MulAction.injective₀ ha) _ _
 
 open scoped symmDiff in
 lemma smul_set_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=

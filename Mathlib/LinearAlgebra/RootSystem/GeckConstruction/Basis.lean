@@ -38,6 +38,8 @@ variable {ι K M N : Type*} [Fintype ι] [DecidableEq ι] [Field K] [CharZero K]
   {P : RootPairing ι K M N} [P.IsReduced] [P.IsCrystallographic] [P.IsIrreducible] [P.IsRootSystem]
   (b : P.Base)
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-- The Geck construction yields a basis of the Lie algebra it constructs. -/
 def basis :
     LieAlgebra.Basis b.support K (lieAlgebra b) where
