@@ -38,7 +38,8 @@ theorem DifferentiableAt.deriv_comp_add_smul (hf : DifferentiableAt 𝕜 f (x + 
     deriv (fun (s : 𝕜) ↦ f (x + s • y)) t = fderiv 𝕜 f (x + t • y) y := by
   have hg : Differentiable 𝕜 (fun (s : 𝕜) ↦ (x + s • y)) := by fun_prop
   convert fderiv_comp_deriv t hf hg.differentiableAt
-  simpa using (deriv_smul_const (x := t) differentiableAt_id y).symm
+  · simp
+  · simpa using (deriv_smul_const (x := t) differentiableAt_id y).symm
 
 theorem ContDiffAt.deriv_fderiv_add_smul (hf : ContDiffAt 𝕜 (n + 1) f (x + t • y)) :
     deriv (fun (s : 𝕜) ↦ iteratedFDeriv 𝕜 n f (x + s • y) (fun _ ↦ y)) t =
@@ -112,8 +113,9 @@ theorem map_add_eq_sum_add_integral_iteratedFDeriv (hf : ∀ (t : ℝ) (_ht : t 
         rw [Nat.factorial_succ]
         grind
       rw [this]
-      convert (((hasDerivAt_id t).const_sub 1).pow _).const_mul _
-      norm_cast
+      apply HasDerivAt.const_mul
+      convert ((hasDerivAt_id t).const_sub 1).pow (n + 1)
+      all_goals norm_cast
     have hu' : Continuous (u n) := by fun_prop
     set v := fun (k : ℕ) (t : ℝ) ↦ iteratedFDeriv ℝ k f (x + t • y) (fun _ ↦ y)
     have hv : ∀ (t : ℝ) (ht : t ∈ Set.uIcc 0 1), HasDerivAt (v (n + 1)) (v (n + 1 + 1) t) t := by
