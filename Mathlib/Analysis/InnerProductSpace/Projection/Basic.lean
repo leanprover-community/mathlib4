@@ -124,6 +124,18 @@ version is important as it satisfies `IsStarProjection`. -/
 def starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     E →L[𝕜] E := U.subtypeL ∘L U.orthogonalProjectionOnto
 
+/-- The orthogonal projection onto a complete subspace, as an
+unbundled function. This definition is only intended for use in
+setting up the bundled version `orthogonalProjection` and should not
+be used once that is defined. -/
+@[deprecated starProjection (since := "2026-06-10")] abbrev orthogonalProjectionFn
+    (x : E) : E := K.starProjection x
+
+set_option linter.deprecated false in
+@[deprecated "Please use `orthogonalProjectionOnto` and `starProjection`." (since := "2026-06-10")]
+theorem orthogonalProjectionFn_eq (v : E) :
+    K.orthogonalProjectionFn v = (K.orthogonalProjectionOnto v : E) := rfl
+
 lemma starProjection_apply (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (v : E) :
     U.starProjection v = U.orthogonalProjectionOnto v := rfl
 
@@ -139,11 +151,16 @@ lemma starProjection_apply_mem (U : Submodule 𝕜 E) [U.HasOrthogonalProjection
     U.starProjection x ∈ U := by
   simp only [starProjection_apply, SetLike.coe_mem]
 
+@[deprecated (since := "2026-06-10")] alias orthogonalProjectionFn_mem := starProjection_apply_mem
+
 /-- The characterization of the orthogonal projection. -/
 @[simp]
 theorem starProjection_inner_eq_zero (v w : E) (hw : w ∈ K) : ⟪v - K.starProjection v, w⟫ = 0 := by
   suffices v - K.projection Kᗮ K.isCompl_orthogonal v ∈ Kᗮ from inner_eq_zero_symm.mp <| this w hw
   simp [← projection_eq_self_sub_projection]
+
+@[deprecated (since := "2026-06-10")] alias orthogonalProjectionFn_inner_eq_zero :=
+  starProjection_inner_eq_zero
 
 /-- The difference of `v` from its orthogonal projection onto `K` is in `Kᗮ`. -/
 @[simp]
@@ -160,6 +177,9 @@ theorem eq_starProjection_of_mem_of_inner_eq_zero {u v : E} (hvm : v ∈ K)
   have houv : ⟪u - v - (u - K.starProjection u), K.starProjection u - v⟫ = 0 := by
     rw [inner_sub_left, starProjection_inner_eq_zero u _ hvs, hvo _ hvs, sub_zero]
   rwa [sub_sub_sub_cancel_left, inner_self_eq_zero, sub_eq_zero] at houv
+
+@[deprecated (since := "2026-06-10")] alias eq_orthogonalProjectionFn_of_mem_of_inner_eq_zero :=
+  eq_starProjection_of_mem_of_inner_eq_zero
 
 /-- A point in `K` with the orthogonality property (here characterized in terms of `Kᗮ`) must be the
 orthogonal projection. -/
@@ -631,8 +651,13 @@ lemma re_inner_starProjection_eq_normSq [K.HasOrthogonalProjection] (v : E) :
     re_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two,
     div_eq_iff (NeZero.ne' 2).symm, pow_two, add_sub_assoc, ← eq_sub_iff_add_eq', coe_norm,
     ← mul_sub_one, show (2 : ℝ) - 1 = 1 by norm_num, mul_one, sub_eq_iff_eq_add', norm_sub_rev]
-  simpa [← sq, ← starProjection_orthogonal_val, add_comm]
-    using K.norm_sq_eq_add_norm_sq_starProjection v
+  simpa [sq, add_comm] using K.norm_sq_eq_add_norm_sq_starProjection v
+
+@[deprecated "Use `re_inner_starProjection_eq_normSq`" (since := "2026-06-10")]
+theorem orthogonalProjectionFn_norm_sq [K.HasOrthogonalProjection] (v : E) :
+    ‖v‖ * ‖v‖ = ‖v - K.orthogonalProjectionFn v‖ * ‖v - K.orthogonalProjectionFn v‖ +
+      ‖K.orthogonalProjectionFn v‖ * ‖K.orthogonalProjectionFn v‖ := by
+  simpa [sq, add_comm] using K.norm_sq_eq_add_norm_sq_starProjection v
 
 lemma re_inner_starProjection_nonneg [K.HasOrthogonalProjection] (v : E) :
     0 ≤ re ⟪K.starProjection v, v⟫ := by
