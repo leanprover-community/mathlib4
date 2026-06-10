@@ -144,7 +144,7 @@ def toAdicCompletionAlgEquiv (σ R : Type*) [Finite σ] [CommRing R] :
   invFun := toAdicCompletionInv σ R
   left_inv _ := by
     ext; simp [coeff_toAdicCompletionInv, coeff_toAdicCompletion_val_apply_out]
-  right_inv _ := by ext; simpa using mk_truncTotal_toAdicCompletionInv
+  right_inv _ := by ext; simpa using! mk_truncTotal_toAdicCompletionInv
 
 @[simp]
 lemma toAdicCompletionAlgEquiv_apply (p : MvPowerSeries σ R) :

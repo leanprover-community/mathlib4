@@ -10,7 +10,7 @@ inputs:
     # Default pinned commit used by workflows unless they explicitly override.
     # Update this ref as needed to pick up changes to mathlib-ci scripts
     # This is also updated automatically by .github/workflows/update_dependencies.yml
-    default: aafe3df227b81f681afa3978f9eab0e2bbcd0582
+    default: 5aee9d4ce5a39050c72b4aa46015a824b0c189ac
   path:
     description: Checkout destination path.
     required: false
