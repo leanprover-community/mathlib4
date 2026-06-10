@@ -19,7 +19,7 @@ on elliptic curves,
 ```
   |h(P+Q) + h(P-Q) - 2*(h(P) + h(Q))| ≤ C
 ```
-whre `h` is the naïve height, `P` and `Q` are affine points on a `WeierstrassCurve` and `C`
+where `h` is the naïve height, `P` and `Q` are affine points on a `WeierstrassCurve` and `C`
 is some real constant depending only on the Weierstrass model.
 
 ### TODO
