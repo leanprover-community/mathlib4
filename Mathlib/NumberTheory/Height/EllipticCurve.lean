@@ -47,16 +47,10 @@ where `x = ![s, t, u]` and `F` acts on the coordinate vector. -/
 theorem abs_logHeight_addSubMap_sub_two_mul_logHeight_le :
     ∃ C, ∀ x : Fin 3 → K,
       |logHeight (fun i ↦ (addSubMap W i).eval x) - 2 * logHeight x| ≤ C := by
-  obtain ⟨C₁, hC₁⟩ : ∃ C₁, ∀ x : Fin 3 → K,
-      logHeight (fun i ↦ (addSubMap W i).eval x) ≤ C₁ + 2 * logHeight x :=
-    logHeight_eval_le' <| isHomogeneous_addSubMap W
-  obtain ⟨C₂, hC₂⟩ : ∃ C₂, ∀ x : Fin 3 → K,
-      logHeight (fun i ↦ (addSubMap W i).eval x) ≥ C₂ + 2 * logHeight x := by
-    have H (ij : Fin 3 × Fin 3) :
-        (C (↑W.Δ'⁻¹ : K) * addSubMapCoeff W ij).IsHomogeneous 2 :=
-      IsHomogeneous.C_mul (isHomogeneous_addSubMapCoeff W ij) _
-    obtain ⟨C₂, h⟩ := logHeight_eval_ge' H
-    exact ⟨C₂, fun x ↦ h _ <| addSubMapCoeff_condition W x⟩
+  obtain ⟨C₁, hC₁⟩ := logHeight_eval_le' <| isHomogeneous_addSubMap W
+  obtain ⟨C₂, h⟩ := logHeight_eval_ge' <|
+    fun ij ↦ IsHomogeneous.C_mul (isHomogeneous_addSubMapCoeff W ij) (↑W.Δ'⁻¹ : K)
+  have hC₂ := fun x ↦ h _ <| addSubMapCoeff_condition W x
   refine ⟨max C₁ (-C₂), fun x ↦ abs_sub_le_iff.mpr ⟨?_, ?_⟩⟩ <;> grind
 
 end WeierstrassCurve
