@@ -55,16 +55,6 @@ lemma integrable_cartanKernel_left (f : ℂ → ℂ) (R : ℝ) (β : ℝ) :
   apply (intervalIntegrable_iff_integrableOn_Ioc_of_le two_pi_pos.le).1
   simpa [cartanKernel, norm_sub_rev, CircleIntegrable] using circleIntegrable_log_norm_sub_const 1
 
-private lemma integral_norm_eq_two_mul_integral_max_sub
-    {α : Type*} [MeasurableSpace α] {μ : Measure α} {g : α → ℝ}
-    (hg : Integrable g μ) (hmax : Integrable (fun x ↦ max (g x) 0) μ) :
-    ∫ x, ‖g x‖ ∂μ = 2 * ∫ x, max (g x) 0 ∂μ - ∫ x, g x ∂μ := by
-  have h_eq : ∀ x, ‖g x‖ = 2 * max (g x) 0 - g x := by
-    intro x
-    grind [norm_eq_abs]
-  rw [integral_congr_ae (Eventually.of_forall h_eq), integral_sub (hmax.const_mul 2) hg,
-    integral_const_mul]
-
 /--
 If `f : ℂ → ℂ` is measurable, then the Cartan kernel of integration is measurable as a function in
 the two variables `α` and `β`.
@@ -81,10 +71,8 @@ private lemma integral_norm_cartanKernel_eq (f : ℂ → ℂ) (R β : ℝ) :
         (2 * π) * log⁺ ‖f (circleMap 0 R β)‖ := by
   let μ : Measure ℝ := volume.restrict (Ioc 0 (2 * π))
   calc ∫ α, ‖cartanKernel f R α β‖ ∂μ
-    _ = 2 * (∫ α, max (cartanKernel f R α β) 0 ∂μ) - ∫ α, cartanKernel f R α β ∂μ := by
-      have h_slice : Integrable (cartanKernel f R · β) μ :=
-        integrable_cartanKernel_left f R β
-      exact integral_norm_eq_two_mul_integral_max_sub h_slice (h_slice.sup (integrable_const 0))
+    _ = 2 * (∫ α, max (cartanKernel f R α β) 0 ∂μ) - ∫ α, cartanKernel f R α β ∂μ :=
+      integral_abs_eq_two_mul_integral_max_sub_integral (integrable_cartanKernel_left f R β)
     _ = 2 * (∫ α, max (cartanKernel f R α β) 0 ∂μ) - 2 * π * log⁺ ‖f (circleMap 0 R β)‖ := by
       congr
       set z := f (circleMap 0 R β)
