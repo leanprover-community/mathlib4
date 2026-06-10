@@ -51,7 +51,7 @@ theorem of_card_dvd_pow {n : ℕ} (hG : Nat.card G ∣ p ^ n) : IsPGroup p G := 
   grw [← orderOf_dvd_iff_pow_eq_one, ← hG, orderOf_dvd_natCard]
 
 theorem dvd_orderOf [Fact p.Prime] (hG : IsPGroup p G) {g : G} (hg : g ≠ 1) : p ∣ orderOf g := by
-  have ⟨k, hk⟩ := IsPGroup.iff_orderOf.mp hG g
+  have ⟨k, hk⟩ := hG.exists_orderOf_eq_pow g
   rw [hk]
   refine dvd_pow_self _ fun hk0 ↦ hg ?_
   rw [← orderOf_eq_one_iff, hk, hk0, pow_zero]
