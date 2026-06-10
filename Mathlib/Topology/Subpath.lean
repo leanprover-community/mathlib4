@@ -56,6 +56,11 @@ def subpath (γ : Path a b) (t₀ t₁ : I) : Path (γ t₀) (γ t₁) where
   source' := by simp
   target' := by simp
 
+@[simp]
+theorem subpath_apply (γ : Path a b) (t₀ t₁ t : I) :
+    γ.subpath t₀ t₁ t = γ (Icc.convexComb t₀ t₁ t) :=
+  rfl
+
 /-- Reversing `γ.subpath t₀ t₁` results in `γ.subpath t₁ t₀`. -/
 @[simp]
 theorem symm_subpath (γ : Path a b) (t₀ t₁ : I) : symm (γ.subpath t₀ t₁) = γ.subpath t₁ t₀ := by
@@ -223,6 +228,28 @@ theorem concat_subpath (γ : Path a b) (t : Fin (n + 1) → I) :
       (concat (γ ∘ t) (fun k ↦ γ.subpath (t k.castSucc) (t k.succ)))
       (γ.subpath (t 0) (t (last n))) :=
   ⟨Homotopy.concatSubpath γ t⟩
+
+namespace Quotient
+
+/-- Quotient classes of consecutive subpaths concatenate to the class of the overall subpath,
+with no ordering assumptions on the parameters. -/
+@[simp]
+theorem subpath_trans (γ : Path a b) (t₀ t₁ t₂ : I) :
+    (mk (γ.subpath t₀ t₁)).trans (mk (γ.subpath t₁ t₂)) = mk (γ.subpath t₀ t₂) := by
+  rw [← mk_trans, eq]
+  exact ⟨Homotopy.subpathTransSubpath γ t₀ t₁ t₂⟩
+
+@[simp]
+theorem subpath_self (γ : Path a b) (t : I) :
+    mk (γ.subpath t t) = refl (γ t) := by
+  rw [Path.subpath_self, mk_refl]
+
+@[simp]
+theorem subpath_zero_one (γ : Path a b) :
+    mk (γ.subpath 0 1) = (mk γ).cast γ.source γ.target := by
+  rw [Path.subpath_zero_one, mk_cast]
+
+end Quotient
 
 end Path.Homotopic
 

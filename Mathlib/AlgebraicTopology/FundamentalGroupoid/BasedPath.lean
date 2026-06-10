@@ -651,19 +651,19 @@ public theorem exists_open_nhds_pathComponent_preimage
     -- Rectangle homotopies on each segment.
     have h_rectangles : ∀ i : Fin (n' + 1),
         Path.Homotopic
-          ((α.toPath.subpathOn (part.t i.castSucc) (part.t i.succ)).trans (ρ i.succ))
+          ((α.toPath.subpath (part.t i.castSucc) (part.t i.succ)).trans (ρ i.succ))
           ((ρ i.castSucc).trans
-            (β.toPath.subpathOn (part.t i.castSucc) (part.t i.succ))) := by
+            (β.toPath.subpath (part.t i.castSucc) (part.t i.succ))) := by
       intro i
       have hab : (part.t i.castSucc : ℝ) ≤ part.t i.succ :=
         part.mono i.castSucc_lt_succ.le
       have hα_sub :
-          Set.range (α.toPath.subpathOn (part.t i.castSucc) (part.t i.succ)) ⊆ T.U i :=
-        hα_tube.subpathOn_range_subset i
+          Set.range (α.toPath.subpath (part.t i.castSucc) (part.t i.succ)) ⊆ T.U i :=
+        hα_tube.subpath_range_subset i
       have hβ_sub :
-          Set.range (β.toPath.subpathOn (part.t i.castSucc) (part.t i.succ)) ⊆ T.U i := by
+          Set.range (β.toPath.subpath (part.t i.castSucc) (part.t i.succ)) ⊆ T.U i := by
         rintro _ ⟨t, rfl⟩
-        simp only [Path.subpathOn_apply]
+        simp only [Path.subpath_apply]
         exact hβ_stays i _ ⟨Set.Icc.le_convexComb hab t, Set.Icc.convexComb_le hab t⟩
       have hρ_cast : Set.range (ρ i.castSucc) ⊆ T.U i := by
         refine (hρ_range _).trans ?_
