@@ -461,25 +461,29 @@ variable (R) in
 of level `n` that send every element of `H` to `1`. -/
 noncomputable def annihilator (H : Set (ZMod n)ˣ) :
     Subgroup (DirichletCharacter R n) :=
-  ((MonoidHom.restrictHom (Subgroup.closure H) Rˣ).comp
-    MulChar.mulEquivToUnitHom.toMonoidHom).ker
+  (MulChar.restrictHom ((Submonoid.closure H).map (Units.coeHom (ZMod n))) _).ker
+
+theorem mem_annihilator_iff_mem_closure {H : Set (ZMod n)ˣ} {χ : DirichletCharacter R n} :
+    χ ∈ annihilator R H ↔ ∀ x ∈ Submonoid.closure H, χ x = 1 := by
+  simp only [annihilator, MonoidHom.mem_ker, MulChar.restrictHom_apply, MulChar.restrict_eq_one_iff]
+  refine ⟨fun hχ x hx ↦ ?_, fun h u ↦ ?_⟩
+  · exact hχ <| (Submonoid.unitsEquivUnitsType _) <|
+      ⟨x, Submonoid.mem_units_of_val_mem_inv_val_mem _ ⟨x, hx, rfl⟩
+        ⟨x⁻¹, by simpa [← Subgroup.closure_toSubmonoid_of_finite] using hx, rfl⟩⟩
+  · obtain ⟨y, hy, hyu⟩ := Submonoid.mem_map.mp u.val.prop
+    exact hyu ▸ h _ hy
 
 @[simp]
 theorem mem_annihilator_iff {H : Set (ZMod n)ˣ} {χ : DirichletCharacter R n} :
     χ ∈ annihilator R H ↔ ∀ a ∈ H, χ a = 1 := by
-  simp only [annihilator, MonoidHom.mem_ker, MonoidHom.comp_apply, MonoidHom.restrictHom_apply,
-    MulEquiv.coe_toMonoidHom, DFunLike.ext_iff, MonoidHom.restrict_apply, MonoidHom.one_apply,
-    Subtype.forall]
-  exact ⟨fun h a ha => by
-      simpa [mulEquivToUnitHom_apply, Units.ext_iff, Units.val_one, coe_equivToUnitHom]
-        using h a (Subgroup.subset_closure ha),
-    fun h a ha => by
-      have hH : H ⊆ ↑(MulChar.mulEquivToUnitHom χ).ker :=
-        fun x hx => MonoidHom.mem_ker.mpr (by
-          simpa [mulEquivToUnitHom_apply, Units.ext_iff, Units.val_one, coe_equivToUnitHom]
-            using h x hx)
-      exact MonoidHom.mem_ker.mp
-        ((Subgroup.closure_le (MulChar.mulEquivToUnitHom χ).ker).mpr hH ha)⟩
+  rw [mem_annihilator_iff_mem_closure]
+  constructor
+  · intro h a ha; exact h a (Submonoid.subset_closure ha)
+  · intro h x hx
+    refine Submonoid.closure_induction ?_ ?_ ?_ hx
+    · exact h
+    · simp
+    · intro a b _ _ ha hb; simp [map_mul, ha, hb]
 
 variable (R n) in
 /-- The subgroup of Dirichlet characters of level `n` whose primitive character sends the prime `p`
