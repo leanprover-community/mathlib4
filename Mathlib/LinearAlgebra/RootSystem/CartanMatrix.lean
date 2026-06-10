@@ -177,7 +177,7 @@ lemma cartanMatrix_nondegenerate
 
 omit [Finite ι] [IsDomain R] in
 lemma cartanMatrix_mul_diagonal_eq [Fintype ι] [DecidableEq ι] [P.IsRootSystem] :
-    letI d : b.support → ℤ := fun i ↦ P.RootFormIn ℤ ⟨P.root i, by aesop⟩ ⟨P.root i, by aesop⟩
+    letI d : b.support → ℤ := fun i ↦ P.RootFormIn ℤ (P.rootSpanMem ℤ i) (P.rootSpanMem ℤ i)
     b.cartanMatrix * diagonal d =
       (2 : ℤ) • (P.posRootForm ℤ).posForm.toMatrix b.toWeightBasisInt := by
   ext i j
@@ -190,7 +190,7 @@ lemma cartanMatrix_mul_diagonal_eq [Fintype ι] [DecidableEq ι] [P.IsRootSystem
 lemma exists_cartanMatrix_mul_diagaonal_posDef [DecidableEq ι] [P.IsRootSystem] :
     ∃ d : b.support → ℤ, (∀ i, 0 < d i) ∧ (b.cartanMatrix * diagonal d).PosDef := by
   have _i : Fintype ι := Fintype.ofFinite ι
-  set d : b.support → ℤ := fun i ↦ P.RootFormIn ℤ ⟨P.root i, by aesop⟩ ⟨P.root i, by aesop⟩ with hd
+  set d : b.support → ℤ := fun i ↦ P.RootFormIn ℤ (P.rootSpanMem ℤ i) (P.rootSpanMem ℤ i) with hd
   refine ⟨d, fun i ↦ ?_, ?_⟩
   · rw [hd, ← posRootForm_eq]
     exact RootPositiveForm.zero_lt_posForm_apply_root _ _
@@ -200,6 +200,13 @@ lemma exists_cartanMatrix_mul_diagaonal_posDef [DecidableEq ι] [P.IsRootSystem]
       simpa only [posRootForm_eq, LinearMap.BilinForm.isSymm_iff] using P.rootFormIn_isSymm ℤ
     rw [← LinearMap.BilinForm.toQuadraticMap_posDef_iff_matrix _ _ aux]
     simpa using P.posRootForm_rootFormIn_posDef ℤ
+
+lemma exists_cartanMatrix_diagaonal_mul_posDef [DecidableEq ι] [P.IsRootSystem] :
+    ∃ d : b.support → ℤ, (∀ i, 0 < d i) ∧ (diagonal d * b.cartanMatrix).PosDef := by
+  obtain ⟨d, hd, hd'⟩ := b.flip.exists_cartanMatrix_mul_diagaonal_posDef
+  refine ⟨d, hd, ?_⟩
+  rw [← PosDef.transpose_iff] at hd'
+  aesop
 
 /-- A characterisation of the connectedness of the Dynkin diagram for irreducible root pairings. -/
 lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
