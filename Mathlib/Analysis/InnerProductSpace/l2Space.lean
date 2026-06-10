@@ -384,7 +384,7 @@ open Classical in
 /-- `b i` is the `i`th basis vector. -/
 instance instFunLike : FunLike (HilbertBasis ι 𝕜 E) ι E where
   coe b i := b.repr.symm (lp.single 2 i (1 : 𝕜))
-  coe_injective'
+  coe_injective
   | ⟨b₁⟩, ⟨b₂⟩, h => by
     congr
     apply LinearIsometryEquiv.symm_bijective.injective
