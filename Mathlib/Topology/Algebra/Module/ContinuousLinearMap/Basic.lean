@@ -465,7 +465,7 @@ theorem toLinearMap_sum {ι : Type*} (t : Finset ι) (f : ι → M₁ →SL[σ�
     ↑(∑ d ∈ t, f d) = (∑ d ∈ t, f d : M₁ →ₛₗ[σ₁₂] M₂) :=
   map_sum (AddMonoidHom.mk ⟨((↑) : (M₁ →SL[σ₁₂] M₂) → M₁ →ₛₗ[σ₁₂] M₂), rfl⟩ fun _ _ => rfl) _ _
 
-@[deprecated (since := "2026-05-20")] protected alias sum_apply := _root_.add_apply
+@[deprecated (since := "2026-05-20")] protected alias sum_apply := _root_.sum_apply
 
 @[deprecated (since := "2026-05-20")] protected alias coe_sum := toLinearMap_sum
 
