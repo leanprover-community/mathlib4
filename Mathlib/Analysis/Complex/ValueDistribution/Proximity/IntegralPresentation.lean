@@ -81,8 +81,11 @@ private lemma integral_norm_cartanKernel_eq (f : ℂ → ℂ) (R β : ℝ) :
         simp [circleAverage_def, field, cartanKernel, intervalIntegral.integral_of_le two_pi_pos.le]
       simp [norm_sub_rev]
 
-/- The `L¹` norms of the angular slices of the Cartan kernel form an integrable family. -/
-private lemma integrable_integral_norm_cartanKernel (h : Meromorphic f) :
+/-
+If `f : ℂ → ℂ` is meromorphic,, then the `L¹` norms of the angular slices of the Cartan kernel form
+an integrable family.
+-/
+lemma integrable_integral_norm_cartanKernel (h : Meromorphic f) :
     Integrable (∫ α, ‖cartanKernel f R α ·‖ ∂(volume.restrict (Ioc 0 (2 * π))))
       (volume.restrict (Ioc 0 (2 * π))) := by
   let μ : Measure ℝ := volume.restrict (Ioc 0 (2 * π))
