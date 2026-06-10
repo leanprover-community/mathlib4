@@ -54,10 +54,10 @@ noncomputable def addSubMapCoeff : Fin 3 × Fin 3 → MvPolynomial (Fin 3) R :=
         C (3 * W.b₄ ^ 2 * W.b₈ - 3 * W.b₄ * W.b₆ ^ 2) * t ^ 2 +
         C (3 * W.b₄ * W.b₆ * W.b₈ - 3 * W.b₆ ^ 3) * t * u,
       C (-W.b₂ * W.b₄ * W.b₈ + W.b₄ ^ 2 * W.b₆ + 5 * W.b₆ * W.b₈) * s ^ 2 +
-        C (2 * W.b₂ * W.b₆ * W.b₈ - 2 * W.b₄ * W.b₆^2 - 10 * W.b₈ ^ 2) * s * t  +
+        C (2 * W.b₂ * W.b₆ * W.b₈ - 2 * W.b₄ * W.b₆ ^ 2 - 10 * W.b₈ ^ 2) * s * t +
         C (-W.b₂ * W.b₈ ^ 2 + W.b₄ * W.b₆ * W.b₈) * s * u +
         C (3 * W.b₄ * W.b₆ * W.b₈ - 3 * W.b₆ ^ 3) * t ^ 2 +
-        C (3 * W.b₄ * W.b₈ ^ 2 -3 * W.b₆ ^ 2 * W.b₈) * t * u,
+        C (3 * W.b₄ * W.b₈ ^ 2 - 3 * W.b₆ ^ 2 * W.b₈) * t * u,
       C (W.b₂ * W.b₆ * W.b₈ - 8 * W.b₄ ^ 2 * W.b₈ + 7 * W.b₄ * W.b₆ ^ 2) * s ^ 2 +
         C (-6 * W.b₄ * W.b₆ * W.b₈ + 6 * W.b₆ ^ 3) * s * t +
         C (-8 * W.b₄ * W.b₈ ^ 2 + 8 * W.b₆ ^ 2 * W.b₈) * s * u],
@@ -69,7 +69,7 @@ noncomputable def addSubMapCoeff : Fin 3 × Fin 3 → MvPolynomial (Fin 3) R :=
         C (-12 * W.b₆ ^ 2) * s * u +
         C (-W.b₂ ^ 2 * W.b₈ + 9 * W.b₂ * W.b₄ * W.b₆ - 8 * W.b₄ ^ 3 - 27 * W.b₆ ^ 2) * t ^ 2 +
         C (4 * W.b₂ * W.b₄ * W.b₈ - 4 * W.b₂ * W.b₆ ^ 2 ) * t * u],
-    ![C (-12) * t ^ 2 + C (-4 * W.b₂) * t * u +  C (W.b₂ ^ 2 - 32 * W.b₄) * u ^ 2,
+    ![C (-12) * t ^ 2 + C (-4 * W.b₂) * t * u + C (W.b₂ ^ 2 - 32 * W.b₄) * u ^ 2,
       C 6 * s * t + C (-W.b₂) * s * u + C (-5 * W.b₄) * t * u + C (W.b₂ * W.b₄ - 27 * W.b₆) * u ^ 2,
       C (-8 * W.b₄) * s * u + C (-12 * W.b₆) * t * u + C (W.b₄ ^ 2 - 28 * W.b₈) * u ^ 2]].uncurry
 
@@ -82,7 +82,7 @@ noncomputable def bRelationCoeffs : Fin 3 → MvPolynomial (Fin 3) R :=
       C (-8 * W.b₄ * W.b₈) * s ^ 2 * u ^ 2 + C (3 * W.b₄ * W.b₈ - 3 * W.b₆ ^ 2) * s * t ^ 2 * u,
     C (-32 * W.b₄) * s * t ^ 2 * u + C (16 * W.b₆) * s * t * u ^ 2 + C (-16 * W.b₆) * t ^ 3 * u +
       C (-16 * W.b₈) * t ^ 2 * u ^ 2,
-    C (-28) * s * u ^ 3 + C 4 * t ^ 2 * u ^ 2 + C (-W.b₂) * t * u ^ 3 +  C (-8 * W.b₄) * u ^ 4]
+    C (-28) * s * u ^ 3 + C 4 * t ^ 2 * u ^ 2 + C (-W.b₂) * t * u ^ 3 + C (-8 * W.b₄) * u ^ 4]
 
 variable {a} in
 private lemma CXX {i : Fin 3} : (C a * X (R := R) i ^ 2).IsHomogeneous 2 :=
