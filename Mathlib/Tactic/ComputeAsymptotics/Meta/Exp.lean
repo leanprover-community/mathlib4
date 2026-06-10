@@ -86,13 +86,13 @@ partial def findPlaceAux (ms : MS) (h_trimmed : Q(MultiseriesExpansion.Trimmed $
       logBasis := _
       val := q($log_hd)
       -- f := q(Real.log ∘ $cur)
-      h_approx := q(LogBasis.WellFormed_cons_Approximates $h_logBasis)
-      h_sorted := q(LogBasis.WellFormed_cons_Sorted $h_logBasis)
+      h_approx := q(LogBasis.WellFormed_cons_approximates $h_logBasis)
+      h_sorted := q(LogBasis.WellFormed_cons_sorted $h_logBasis)
       h_basis := q($h_basis')
       h_logBasis := q(LogBasis.tail_WellFormed $h_logBasis)
     }
     let ⟨log_hd', h_log_hd_fun, h_log_hd_trimmed⟩ ← trimMS log_hd_ms
-    -- match ← MS.compare ms log_hd' h_trimmed q(LogBasis.WellFormed_cons_Trimmed $h_logBasis) with
+    -- match ← MS.compare ms log_hd' h_trimmed q(LogBasis.WellFormed_cons_trimmed $h_logBasis) with
     match ← MS.compare ms log_hd' h_trimmed h_log_hd_trimmed with
     | .gt h => -- `ms` grows faster than `log cur` => we stop here, `left` is maximal
       let h : Q((Real.log ∘ $cur) =o[atTop] $(ms.val).toFun) :=
@@ -306,10 +306,10 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(MultiseriesExpansion.Trimme
       h_basis := q($h_basis)
       logBasis := q($logBasis)
       h_logBasis := q(LogBasis.extendBasisMiddle_WellFormed $h_basis $ms.h_logBasis
-        (MultiseriesExpansion.neg_Sorted $G.h_sorted)
-        (MultiseriesExpansion.neg_Approximates $G.h_approx)
+        (MultiseriesExpansion.neg_sorted $G.h_sorted)
+        (MultiseriesExpansion.neg_approximates $G.h_approx)
         (MultiseriesExpansion.neg_log_exp_toFun $hGf)
-        (MultiseriesExpansion.neg_Trimmed $hG_trimmed))
+        (MultiseriesExpansion.neg_trimmed $hG_trimmed))
       n_id := q($new_n_id)
     }
     let new_idx := q(getInsertedIndex $left ($right_hd :: $right_tl) $expG)

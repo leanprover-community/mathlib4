@@ -32,7 +32,7 @@ inductive CheckZeroResult {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $basis
 | neq (h_ne_zero : Q(¬ MultiseriesExpansion.IsZero $ms))
 | eq (h_eq_zero : Q(MultiseriesExpansion.IsZero $ms))
 
-theorem const_not_zero_not_IsZero {ms : MultiseriesExpansion []} (h : ms.toReal ≠ 0) :
+theorem const_not_zero_not_isZero {ms : MultiseriesExpansion []} (h : ms.toReal ≠ 0) :
   ¬ MultiseriesExpansion.IsZero ms := by
   simpa
 
@@ -43,12 +43,12 @@ def checkZero {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $basis)) :
   | ~q(List.nil) =>
     match ← CompareReal.checkZero q(($ms).toReal) with
     | .eq h => return .eq q(MultiseriesExpansion.IsZero.const $h)
-    | .neq h => return .neq q(const_not_zero_not_IsZero $h)
+    | .neq h => return .neq q(const_not_zero_not_isZero $h)
   | ~q(List.cons $basis_hd $basis_tl) =>
     match ms with
     | ~q(MultiseriesExpansion.mk .nil $f) => return .eq q(MultiseriesExpansion.IsZero.nil $f)
     | ~q(MultiseriesExpansion.mk (.cons $exp $coef $tl) $f) =>
-      return .neq q(MultiseriesExpansion.cons_not_IsZero)
+      return .neq q(MultiseriesExpansion.cons_not_isZero)
     | _ => panic! "checkZero: unexpected ms"
   | _ => panic! "unexpected basis"
 
@@ -62,7 +62,7 @@ theorem approx_cons_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ �
     (MultiseriesExpansion.mk tl f).Approximates := by
   obtain ⟨h_coef, h_maj, h_tl⟩ := h_approx.elim_cons
   convert! h_tl.replaceFun _
-  replace h_zero := MultiseriesExpansion.IsZero_Approximates_zero h_zero h_coef'_approx
+  replace h_zero := MultiseriesExpansion.IsZero_approximates_zero h_zero h_coef'_approx
   rw [h_coef_fun] at h_zero
   simp only [MultiseriesExpansion.mk_toFun]
   grw [h_zero]

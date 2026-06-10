@@ -90,6 +90,7 @@ theorem zero_def {basis_hd basis_tl} :
     (0 : MultiseriesExpansion (basis_hd :: basis_tl)) = mk .nil (fun _ ↦ 0) :=
   rfl
 
+@[simp]
 theorem Multiseries.zero_def {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
     (0 : Multiseries basis_hd basis_tl) = .nil := rfl
 
@@ -115,10 +116,6 @@ theorem zero_toFun {basis : Basis} : (@zero basis).toFun = 0 := by
   | [] => rfl
   | List.cons _ _ => rfl
 
-@[simp]
-theorem zero_seq {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
-    (0 : Multiseries basis_hd basis_tl) = .nil := rfl
-
 theorem Multiseries.one_def {basis_hd basis_tl} :
     @Multiseries.one basis_hd basis_tl = Multiseries.cons 0 MultiseriesExpansion.one .nil := by
   simp [Multiseries.one, Multiseries.const_def, MultiseriesExpansion.one]
@@ -135,47 +132,47 @@ theorem one_seq {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
 
 mutual
 
-theorem Multiseries.const_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} :
+theorem Multiseries.const_sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} :
     (Multiseries.const basis_hd basis_tl c).Sorted := by
   simp only [Multiseries.const]
   apply Sorted.cons_nil
-  exact const_Sorted
+  exact const_sorted
 
 /-- Constants are well-ordered. -/
-theorem const_Sorted {basis : Basis} {c : ℝ} :
+theorem const_sorted {basis : Basis} {c : ℝ} :
     (const basis c).Sorted := by
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
     simp only [const, sorted_iff_seq_sorted, mk_seq]
-    apply Multiseries.const_Sorted
+    apply Multiseries.const_sorted
 
 end
 
 /-- Zero is well-ordered. -/
-theorem zero_Sorted {basis : Basis} : (0 : MultiseriesExpansion basis).Sorted := by
+theorem zero_sorted {basis : Basis} : (0 : MultiseriesExpansion basis).Sorted := by
   cases basis with
   | nil => constructor
   | cons => apply Sorted.nil
 
-theorem Multiseries.one_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
+theorem Multiseries.one_sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
     (Multiseries.one : Multiseries basis_hd basis_tl).Sorted :=
-  Multiseries.const_Sorted
+  Multiseries.const_sorted
 
 /-- `one` is Sorted. -/
-theorem one_Sorted {basis : Basis} : one.Sorted (basis := basis) :=
-  const_Sorted
+theorem one_sorted {basis : Basis} : one.Sorted (basis := basis) :=
+  const_sorted
 
 -- TODO : move it
 /-- Constant multiseries approximates constant function. -/
-theorem const_Approximates {c : ℝ} {basis : Basis} (h_basis : WellFormedBasis basis) :
+theorem const_approximates {c : ℝ} {basis : Basis} (h_basis : WellFormedBasis basis) :
     (const basis c).Approximates := by
   cases basis with
   | nil => simp
   | cons basis_hd basis_tl =>
     simp only [const, Multiseries.const]
     have ih : (const basis_tl c).Approximates := by
-      apply const_Approximates h_basis.tail
+      apply const_approximates h_basis.tail
     apply Approximates.cons ih
     · apply Majorized.const
       apply h_basis.tendsto_atTop
@@ -184,16 +181,16 @@ theorem const_Approximates {c : ℝ} {basis : Basis} (h_basis : WellFormedBasis 
 
 -- TODO : move it
 /-- `zero` approximates zero functions. -/
-theorem zero_Approximates {basis : Basis} :
+theorem zero_approximates {basis : Basis} :
     (@zero basis).Approximates := by
   cases basis with
   | nil => simp [zero]
   | cons => exact Approximates.nil (by rfl)
 
 /-- `one` approximates unit function. -/
-theorem one_Approximates {basis : Basis} (h_basis : WellFormedBasis basis) :
+theorem one_approximates {basis : Basis} (h_basis : WellFormedBasis basis) :
     (@one basis).Approximates :=
-  const_Approximates h_basis
+  const_approximates h_basis
 
 @[simp]
 theorem monomialRpow_toFun {basis : Basis} {n : Fin (List.length basis)} {r : ℝ} :
@@ -209,31 +206,31 @@ theorem monomialRpow_seq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ} {
 
 mutual
 
-theorem Multiseries.monomialRpow_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ} {r : ℝ} :
+theorem Multiseries.monomialRpow_sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ} {r : ℝ} :
     (@Multiseries.monomialRpow basis_hd basis_tl n r).Sorted := by
   cases n with
   | zero =>
     simp only [Multiseries.monomialRpow]
     apply Sorted.cons_nil
-    exact const_Sorted
+    exact const_sorted
   | succ m =>
     simp only [Multiseries.monomialRpow]
     apply Sorted.cons_nil
-    exact monomialRpow_Sorted
+    exact monomialRpow_sorted
 
 /-- `monomial` is well-ordered. -/
-theorem monomialRpow_Sorted {basis : Basis} {n : ℕ} {r : ℝ} :
+theorem monomialRpow_sorted {basis : Basis} {n : ℕ} {r : ℝ} :
     (monomialRpow basis n r).Sorted := by
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
     simp only [sorted_iff_seq_sorted, monomialRpow_seq]
-    apply Multiseries.monomialRpow_Sorted
+    apply Multiseries.monomialRpow_sorted
 
 end
 
 /-- `monomialRpow` approximates monomial function. -/
-theorem monomialRpow_Approximates {basis : Basis} {n : Fin (List.length basis)} {r : ℝ}
+theorem monomialRpow_approximates {basis : Basis} {n : Fin (List.length basis)} {r : ℝ}
     (h_basis : WellFormedBasis basis) :
     (monomialRpow basis n r).Approximates := by
   cases basis with
@@ -245,7 +242,7 @@ theorem monomialRpow_Approximates {basis : Basis} {n : Fin (List.length basis)} 
       simp only [Fin.coe_ofNat_eq_mod, Nat.zero_mod, Multiseries.monomialRpow,
         List.getElem_cons_zero]
       apply Approximates.cons
-      · exact one_Approximates h_basis.tail
+      · exact one_approximates h_basis.tail
       · apply Majorized.self
         apply h_basis.tendsto_atTop
         simp
@@ -253,7 +250,7 @@ theorem monomialRpow_Approximates {basis : Basis} {n : Fin (List.length basis)} 
     | succ m =>
       simp only [Fin.val_succ, Multiseries.monomialRpow, List.getElem_cons_succ]
       apply Approximates.cons
-      · exact monomialRpow_Approximates h_basis.tail
+      · exact monomialRpow_approximates h_basis.tail
       · apply h_basis.tail_pow_majorized_head
         simp
       · simp
@@ -277,18 +274,18 @@ theorem monomial_seq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ} :
     (monomial (basis_hd :: basis_tl) n).seq = Multiseries.monomial _ _ n :=
   monomialRpow_seq
 
-theorem Multiseries.monomial_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ} :
+theorem Multiseries.monomial_sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ} :
     (@Multiseries.monomial basis_hd basis_tl n).Sorted :=
-  Multiseries.monomialRpow_Sorted
+  Multiseries.monomialRpow_sorted
 
 /-- `monomial` is well-ordered. -/
-theorem monomial_Sorted {basis : Basis} {n : ℕ} : (monomial basis n).Sorted :=
-  monomialRpow_Sorted
+theorem monomial_sorted {basis : Basis} {n : ℕ} : (monomial basis n).Sorted :=
+  monomialRpow_sorted
 
 /-- `monomial` approximates monomial function. -/
-theorem monomial_Approximates {basis : Basis} {n : Fin (List.length basis)}
+theorem monomial_approximates {basis : Basis} {n : Fin (List.length basis)}
     (h_basis : WellFormedBasis basis) : (monomial basis n).Approximates :=
-  monomialRpow_Approximates h_basis
+  monomialRpow_approximates h_basis
 
 section BasisOperations
 
@@ -342,7 +339,7 @@ lemma Multiseries.map_leadingExp {basis_hd basis_hd' basis_tl basis_tl'}
     (ms.map (basis_hd' := basis_hd') f g).leadingExp = ms.leadingExp.map f := by
   cases ms <;> simp
 
-lemma Multiseries.map_id_Sorted {basis_hd basis_hd' basis_tl basis_tl'}
+lemma Multiseries.map_id_sorted {basis_hd basis_hd' basis_tl basis_tl'}
     {f : MultiseriesExpansion basis_tl → MultiseriesExpansion basis_tl'}
     {ms : Multiseries basis_hd basis_tl}
     (h_sorted : ms.Sorted)
@@ -361,7 +358,7 @@ lemma Multiseries.map_id_Sorted {basis_hd basis_hd' basis_tl basis_tl'}
   simp [h_eq, h_comp, motive]
   grind
 
-lemma map_id_Approximates {basis_hd basis_tl basis_tl'}
+lemma map_id_approximates {basis_hd basis_tl basis_tl'}
     {f : MultiseriesExpansion basis_tl → MultiseriesExpansion basis_tl'}
     {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
     (h_approx : ms.Approximates)
@@ -418,14 +415,14 @@ theorem Multiseries.updateBasis_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 set_option backward.isDefEq.respectTransparency false in
 mutual
 
-theorem Multiseries.updateBasis_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem Multiseries.updateBasis_sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (ex : BasisExtension basis_tl) {ms : Multiseries basis_hd basis_tl} (h_sorted : ms.Sorted) :
     (ms.updateBasis ex).Sorted := by
   simp only [Multiseries.updateBasis]
-  apply Multiseries.map_id_Sorted h_sorted
-  apply updateBasis_Sorted
+  apply Multiseries.map_id_sorted h_sorted
+  apply updateBasis_sorted
 
-theorem updateBasis_Sorted {basis : Basis} {ex : BasisExtension basis}
+theorem updateBasis_sorted {basis : Basis} {ex : BasisExtension basis}
     {ms : MultiseriesExpansion basis}
     (h_sorted : ms.Sorted) :
     (ms.updateBasis ex).Sorted := by
@@ -434,15 +431,15 @@ theorem updateBasis_Sorted {basis : Basis} {ex : BasisExtension basis}
   | insert f ex_tl =>
     simp only [updateBasis]
     apply Sorted.cons_nil
-    exact updateBasis_Sorted h_sorted
+    exact updateBasis_sorted h_sorted
   | @keep basis_hd basis_tl ex_tl =>
     simp only [sorted_iff_seq_sorted, updateBasis, mk_seq] at h_sorted ⊢
-    apply Multiseries.updateBasis_Sorted ex_tl h_sorted
+    apply Multiseries.updateBasis_sorted ex_tl h_sorted
 
 end
 
 set_option backward.isDefEq.respectTransparency false in
-theorem updateBasis_Approximates {basis : Basis} {ex : BasisExtension basis}
+theorem updateBasis_approximates {basis : Basis} {ex : BasisExtension basis}
     {ms : MultiseriesExpansion basis}
     (h_basis : WellFormedBasis ex.getBasis)
     (h_approx : ms.Approximates) :
@@ -451,14 +448,14 @@ theorem updateBasis_Approximates {basis : Basis} {ex : BasisExtension basis}
   | nil => simp
   | keep basis_hd ex_tl =>
     simp only [updateBasis, Multiseries.updateBasis]
-    apply map_id_Approximates h_approx
+    apply map_id_approximates h_approx
     · intro coef h_coef
-      apply updateBasis_Approximates h_basis.tail h_coef
+      apply updateBasis_approximates h_basis.tail h_coef
     · simp
   | insert g ex_tl =>
     simp only [updateBasis]
     apply Approximates.cons
-    · apply updateBasis_Approximates _ h_approx
+    · apply updateBasis_approximates _ h_approx
       exact BasisExtension.insert_tail_wellFormedBasis h_basis
     · simp only [BasisExtension.getBasis] at h_basis
       apply h_approx.coef_majorized_head
@@ -474,7 +471,7 @@ theorem extendBasisMiddle_toFun {left right : Basis} {b : ℝ → ℝ}
     (ms.extendBasisMiddle b).toFun = ms.toFun := by
   fun_cases extendBasisMiddle <;> rfl
 
-theorem extendBasisMiddle_Sorted {left right : Basis} {b : ℝ → ℝ}
+theorem extendBasisMiddle_sorted {left right : Basis} {b : ℝ → ℝ}
     {ms : MultiseriesExpansion (left ++ right)}
     (h_sorted : ms.Sorted) : (ms.extendBasisMiddle b).Sorted := by
   cases left with
@@ -485,11 +482,11 @@ theorem extendBasisMiddle_Sorted {left right : Basis} {b : ℝ → ℝ}
   | cons left_hd left_tl =>
   simp only [List.cons_append, extendBasisMiddle, List.append_eq, sorted_iff_seq_sorted,
     mk_seq]
-  apply Multiseries.map_id_Sorted
+  apply Multiseries.map_id_sorted
   · simpa using h_sorted
-  · apply extendBasisMiddle_Sorted
+  · apply extendBasisMiddle_sorted
 
-theorem extendBasisMiddle_Approximates {left right : Basis} {b : ℝ → ℝ}
+theorem extendBasisMiddle_approximates {left right : Basis} {b : ℝ → ℝ}
     {ms : MultiseriesExpansion (left ++ right)}
     (h_basis : WellFormedBasis (left ++ b :: right))
     (h_approx : ms.Approximates) :
@@ -503,9 +500,9 @@ theorem extendBasisMiddle_Approximates {left right : Basis} {b : ℝ → ℝ}
       simp
   | cons left_hd left_tl =>
   simp only [List.cons_append, extendBasisMiddle, List.append_eq]
-  apply map_id_Approximates h_approx
+  apply map_id_approximates h_approx
   · intro coef h_coef
-    apply extendBasisMiddle_Approximates h_basis.tail h_coef
+    apply extendBasisMiddle_approximates h_basis.tail h_coef
   · simp
 
 @[simp]
@@ -533,39 +530,39 @@ theorem Multiseries.extendBasisEnd_cons {basis_hd : ℝ → ℝ} {basis_tl : Bas
 
 mutual
 
-theorem Multiseries.extendBasisEnd_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ}
+theorem Multiseries.extendBasisEnd_sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ}
     {ms : Multiseries basis_hd basis_tl} (h_sorted : ms.Sorted) :
     (ms.extendBasisEnd f).Sorted := by
   simp only [Multiseries.extendBasisEnd]
-  apply Multiseries.map_id_Sorted h_sorted
-  apply extendBasisEnd_Sorted
+  apply Multiseries.map_id_sorted h_sorted
+  apply extendBasisEnd_sorted
 
-theorem extendBasisEnd_Sorted {basis : Basis} {b : ℝ → ℝ} {ms : MultiseriesExpansion basis}
+theorem extendBasisEnd_sorted {basis : Basis} {b : ℝ → ℝ} {ms : MultiseriesExpansion basis}
     (h_sorted : ms.Sorted) : (ms.extendBasisEnd b).Sorted := by
   cases basis with
   | nil =>
     simp only [extendBasisEnd]
-    exact const_Sorted
+    exact const_sorted
   | cons basis_hd basis_tl =>
     simp only [sorted_iff_seq_sorted, List.cons_append, List.append_eq,
       extendBasisEnd_seq] at *
-    exact Multiseries.extendBasisEnd_Sorted h_sorted
+    exact Multiseries.extendBasisEnd_sorted h_sorted
 
 end
 
-theorem extendBasisEnd_Approximates {basis : Basis} {b : ℝ → ℝ} {ms : MultiseriesExpansion basis}
+theorem extendBasisEnd_approximates {basis : Basis} {b : ℝ → ℝ} {ms : MultiseriesExpansion basis}
     (h_basis : WellFormedBasis (basis ++ [b]))
     (h_approx : ms.Approximates) :
     (ms.extendBasisEnd b).Approximates := by
   cases basis with
   | nil =>
     simp only [List.nil_append, extendBasisEnd]
-    apply const_Approximates h_basis
+    apply const_approximates h_basis
   | cons basis_hd basis_tl =>
   simp only [List.cons_append, extendBasisEnd, Multiseries.extendBasisEnd, List.append_eq]
-  apply map_id_Approximates h_approx
+  apply map_id_approximates h_approx
   · intro coef h_coef
-    apply extendBasisEnd_Approximates h_basis.tail h_coef
+    apply extendBasisEnd_approximates h_basis.tail h_coef
   · simp
 
 end BasisOperations

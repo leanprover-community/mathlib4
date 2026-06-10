@@ -25,7 +25,7 @@ inductive IsZero : {basis : Basis} → MultiseriesExpansion basis → Prop
 | nil {basis_hd} {basis_tl} (f) : @IsZero (basis_hd :: basis_tl) (mk .nil f)
 
 @[simp]
-theorem const_IsZero_iff {c : MultiseriesExpansion []} : IsZero c ↔ c.toReal = 0 := by
+theorem const_isZero_iff {c : MultiseriesExpansion []} : IsZero c ↔ c.toReal = 0 := by
   constructor <;> grind [IsZero]
 
 @[simp]
@@ -39,7 +39,7 @@ theorem IsZero_iff_seq_nil {basis_hd basis_tl} {ms : MultiseriesExpansion (basis
     simp [h]
 
 -- TODO: move
-theorem IsZero_Approximates_zero {basis : Basis} {ms : MultiseriesExpansion basis}
+theorem IsZero_approximates_zero {basis : Basis} {ms : MultiseriesExpansion basis}
     (h_zero : IsZero ms) (h_approx : ms.Approximates) :
     ms.toFun =ᶠ[atTop] 0 := by
   cases h_zero with
@@ -49,7 +49,7 @@ theorem IsZero_Approximates_zero {basis : Basis} {ms : MultiseriesExpansion basi
   | nil =>
     simpa using h_approx
 
-theorem cons_not_IsZero {basis_hd} {basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+theorem cons_not_isZero {basis_hd} {basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
     {tl : Multiseries basis_hd basis_tl} {f : ℝ → ℝ} :
     ¬ @IsZero (basis_hd :: basis_tl) (mk (.cons exp coef tl) f) := by
   simp
@@ -72,7 +72,7 @@ def Multiseries.Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (ms : Multiseries basis_hd basis_tl) : Prop :=
   (mk ms 0).Trimmed
 
-theorem Trimmed_iff_seq_Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem Trimmed_iff_seq_trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (ms : MultiseriesExpansion (basis_hd :: basis_tl)) :
     ms.Trimmed ↔ ms.seq.Trimmed where
   mp h := by
@@ -118,29 +118,29 @@ theorem Trimmed_cons {basis_hd} {basis_tl} {exp : ℝ} {coef : MultiseriesExpans
     {tl : Multiseries basis_hd basis_tl} {f : ℝ → ℝ}
     (h : Trimmed (mk (.cons exp coef tl) f)) :
     coef.Trimmed ∧ ¬ IsZero coef := by
-  simp only [Trimmed_iff_seq_Trimmed, mk_seq] at h
+  simp only [Trimmed_iff_seq_trimmed, mk_seq] at h
   exact Multiseries.Trimmed_cons h
 
 mutual
 
-theorem Multiseries.const_Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} (hc : c ≠ 0) :
+theorem Multiseries.const_trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} (hc : c ≠ 0) :
     (Multiseries.const basis_hd basis_tl c).Trimmed := by
   simp only [Multiseries.const]
   constructor
-  · exact const_Trimmed hc
+  · exact const_trimmed hc
   cases basis_tl <;> simp [const, Multiseries.const, ofReal, toReal, hc]
 
-theorem const_Trimmed {basis : Basis} {c : ℝ} (hc : c ≠ 0) : (const basis c).Trimmed := by
+theorem const_trimmed {basis : Basis} {c : ℝ} (hc : c ≠ 0) : (const basis c).Trimmed := by
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
   · constructor
-  simp only [const, Trimmed_iff_seq_Trimmed, mk_seq]
-  apply Multiseries.const_Trimmed hc
+  simp only [const, Trimmed_iff_seq_trimmed, mk_seq]
+  apply Multiseries.const_trimmed hc
 
 end
 
 mutual
 
-theorem Multiseries.monomialRpow_Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ}
+theorem Multiseries.monomialRpow_trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ}
     (h : n < (basis_hd :: basis_tl).length) {r : ℝ} :
     (@Multiseries.monomialRpow basis_hd basis_tl n r).Trimmed := by
   cases n with
@@ -148,35 +148,35 @@ theorem Multiseries.monomialRpow_Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Ba
     simp only [Multiseries.monomialRpow]
     apply Multiseries.Trimmed.cons
     · simp only [one]
-      apply MultiseriesExpansion.const_Trimmed (by simp)
+      apply MultiseriesExpansion.const_trimmed (by simp)
     · cases basis_tl <;> simp [MultiseriesExpansion.one, MultiseriesExpansion.const,
         MultiseriesExpansion.ofReal, MultiseriesExpansion.toReal, Multiseries.const]
   | succ m =>
     simp only [Multiseries.monomialRpow]
     apply Multiseries.Trimmed.cons
-    · apply monomialRpow_Trimmed (by simpa using h)
+    · apply monomialRpow_trimmed (by simpa using h)
     · cases basis_tl
       · simp at h
       cases m <;> simp [MultiseriesExpansion.monomialRpow, Multiseries.monomialRpow]
 
-theorem monomialRpow_Trimmed {basis : Basis} {n : ℕ} (h : n < basis.length) {r : ℝ} :
+theorem monomialRpow_trimmed {basis : Basis} {n : ℕ} (h : n < basis.length) {r : ℝ} :
     (monomialRpow basis n r).Trimmed := by
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
   · constructor
-  simp only [monomialRpow, List.getElem!_eq_getElem?_getD, Pi.default_def, Trimmed_iff_seq_Trimmed,
+  simp only [monomialRpow, List.getElem!_eq_getElem?_getD, Pi.default_def, Trimmed_iff_seq_trimmed,
     mk_seq]
-  exact Multiseries.monomialRpow_Trimmed h
+  exact Multiseries.monomialRpow_trimmed h
 
 end
 
-theorem Multiseries.monomial_Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ}
+theorem Multiseries.monomial_trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ}
     (h : n < (basis_hd :: basis_tl).length) :
     (@Multiseries.monomial basis_hd basis_tl n).Trimmed :=
-  Multiseries.monomialRpow_Trimmed h
+  Multiseries.monomialRpow_trimmed h
 
-theorem monomial_Trimmed {basis : Basis} {n : ℕ} (h : n < basis.length) :
+theorem monomial_trimmed {basis : Basis} {n : ℕ} (h : n < basis.length) :
     (monomial basis n).Trimmed :=
-  monomialRpow_Trimmed h
+  monomialRpow_trimmed h
 
 theorem extendBasisEnd_ne_zero {basis : Basis} {b : ℝ → ℝ} {ms : MultiseriesExpansion basis}
     (h : ¬ IsZero ms) : ¬ IsZero (ms.extendBasisEnd b) := by
@@ -188,7 +188,7 @@ theorem extendBasisEnd_ne_zero {basis : Basis} {b : ℝ → ℝ} {ms : Multiseri
 
 mutual
 
-theorem Multiseries.extendBasisEnd_Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {b : ℝ → ℝ}
+theorem Multiseries.extendBasisEnd_trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {b : ℝ → ℝ}
     {ms : Multiseries basis_hd basis_tl} (h_trimmed : ms.Trimmed) :
     (ms.extendBasisEnd b).Trimmed := by
   cases ms with
@@ -199,22 +199,22 @@ theorem Multiseries.extendBasisEnd_Trimmed {basis_hd : ℝ → ℝ} {basis_tl : 
   · cases basis_tl with
     | nil =>
       simp only [List.nil_append, extendBasisEnd]
-      apply const_Trimmed
+      apply const_trimmed
       simpa using (Trimmed_cons h_trimmed).right
-    | cons basis_tl_hd basis_tl_tl => exact extendBasisEnd_Trimmed (Trimmed_cons h_trimmed).left
+    | cons basis_tl_hd basis_tl_tl => exact extendBasisEnd_trimmed (Trimmed_cons h_trimmed).left
   · obtain _ | ⟨basis_tl_hd, basis_tl_tl⟩ := basis_tl
     · simp [extendBasisEnd, const, Multiseries.const]
     · exact extendBasisEnd_ne_zero (Trimmed_cons h_trimmed).right
 
-theorem extendBasisEnd_Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {b : ℝ → ℝ}
+theorem extendBasisEnd_trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {b : ℝ → ℝ}
     {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
     (h_trimmed : ms.Trimmed) : (ms.extendBasisEnd b).Trimmed := by
-  simp only [Trimmed_iff_seq_Trimmed, List.cons_append, List.append_eq, extendBasisEnd_seq] at *
-  apply Multiseries.extendBasisEnd_Trimmed h_trimmed
+  simp only [Trimmed_iff_seq_trimmed, List.cons_append, List.append_eq, extendBasisEnd_seq] at *
+  apply Multiseries.extendBasisEnd_trimmed h_trimmed
 
 end
 
-theorem extendBasisMiddle_Trimmed {left right_tl : Basis} {right_hd b : ℝ → ℝ}
+theorem extendBasisMiddle_trimmed {left right_tl : Basis} {right_hd b : ℝ → ℝ}
     {ms : MultiseriesExpansion (left ++ right_hd :: right_tl)}
     (h_trimmed : ms.Trimmed) (h_ne_zero : ¬ IsZero ms) : (ms.extendBasisMiddle b).Trimmed := by
   obtain _ | ⟨left_hd, left_tl⟩ := left
@@ -232,7 +232,7 @@ theorem extendBasisMiddle_Trimmed {left right_tl : Basis} {right_hd b : ℝ → 
       Multiseries.map_cons, id_eq, mk_toFun]
     apply Trimmed_cons at h_trimmed
     constructor
-    · exact extendBasisMiddle_Trimmed h_trimmed.left h_trimmed.right
+    · exact extendBasisMiddle_trimmed h_trimmed.left h_trimmed.right
     · obtain _ | ⟨left_tl_hd, left_tl_tl⟩ := left_tl
       · simp [extendBasisMiddle]
       · cases coef

@@ -241,43 +241,43 @@ end
 
 mutual
 
-theorem Multiseries.pow_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem Multiseries.pow_sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : Multiseries basis_hd basis_tl} {a : ℝ} (h_sorted : ms.Sorted) :
     (ms.pow a).Sorted := by
   cases ms with
   | nil =>
     simp only [Multiseries.pow, Multiseries.destruct_nil]
     split_ifs
-    · apply Multiseries.one_Sorted
+    · apply Multiseries.one_sorted
     · apply Sorted.nil
   | cons exp coef tl =>
     obtain ⟨h_coef, h_comp, h_tl⟩ := h_sorted.elim_cons
     simp only [Multiseries.pow, Multiseries.destruct_cons]
-    apply Multiseries.mulMonomial_Sorted
-    · apply Multiseries.powser_Sorted
-      · apply Multiseries.mulMonomial_Sorted
+    apply Multiseries.mulMonomial_sorted
+    · apply Multiseries.powser_sorted
+      · apply Multiseries.mulMonomial_sorted
         · exact h_tl
-        · apply inv_Sorted
+        · apply inv_sorted
           exact h_coef
       · simp only [Multiseries.mulMonomial_leadingExp]
         generalize tl.leadingExp = w at *
         cases w with
         | bot => simp [Ne.bot_lt']
         | coe => simpa [← WithBot.coe_add] using h_comp
-    · apply pow_Sorted
+    · apply pow_sorted
       exact h_coef
 
-theorem pow_Sorted {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℝ}
+theorem pow_sorted {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℝ}
     (h_sorted : ms.Sorted) : (ms.pow a).Sorted := by
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
     simp only [sorted_iff_seq_sorted, pow_seq] at *
-    apply Multiseries.pow_Sorted h_sorted
+    apply Multiseries.pow_sorted h_sorted
 
 end
 
-theorem pow_zero_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
+theorem pow_zero_approximates {basis : Basis} {ms : MultiseriesExpansion basis}
     (h_basis : WellFormedBasis basis) (h_sorted : ms.Sorted)
     (h_approx : ms.Approximates) (h_trimmed : ms.Trimmed) :
     (ms.pow 0).Approximates := by
@@ -289,7 +289,7 @@ theorem pow_zero_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
       apply Approximates.elim_nil at h_approx
       simp only [pow, mk_seq, Multiseries.pow, Multiseries.destruct_nil, ↓reduceIte, mk_toFun,
         Real.pi_rpow_zero]
-      convert one_Approximates h_basis
+      convert one_approximates h_basis
       simp [one, Multiseries.one]
       rfl
     | cons exp coef tl f =>
@@ -303,29 +303,29 @@ theorem pow_zero_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
         (powSeries 0)).mulMonomial (coef.pow 0) 0
       have h : ms.Approximates := by
         simp only [ms]
-        apply mulMonomial_Approximates h_basis
-        · apply powser_Approximates powSeries_convergent h_basis
+        apply mulMonomial_approximates h_basis
+        · apply powser_approximates powSeries_convergent h_basis
           · simp only [leadingExp_def, mulMonomial_seq, mk_seq, Multiseries.mulMonomial_leadingExp]
             generalize tl.leadingExp = w at h_comp
             cases w with
             | bot => simp [Ne.bot_lt']
             | coe => simpa [← WithBot.coe_add] using h_comp
           · simp only [sorted_iff_seq_sorted, mulMonomial_seq, mk_seq]
-            apply Multiseries.mulMonomial_Sorted h_tl_sorted
-            apply inv_Sorted h_coef_sorted
-          · apply mulMonomial_Approximates h_basis h_tl
-            apply inv_Approximates h_basis.tail h_coef_sorted h_coef h_coef_trimmed
-        · apply pow_zero_Approximates (h_basis.tail) h_coef_sorted h_coef h_coef_trimmed
+            apply Multiseries.mulMonomial_sorted h_tl_sorted
+            apply inv_sorted h_coef_sorted
+          · apply mulMonomial_approximates h_basis h_tl
+            apply inv_approximates h_basis.tail h_coef_sorted h_coef h_coef_trimmed
+        · apply pow_zero_approximates (h_basis.tail) h_coef_sorted h_coef h_coef_trimmed
       convert! h.replaceFun _
       simp [ms, powSeries_zero_toFun_eq]
 
-theorem pow_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℝ}
+theorem pow_approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℝ}
     (h_basis : WellFormedBasis basis) (h_sorted : ms.Sorted)
     (h_approx : ms.Approximates) (h_trimmed : ms.Trimmed) (h_pos : 0 < ms.leadingMonomial.coef) :
     (ms.pow a).Approximates := by
   by_cases ha : a = 0
   · rw [ha]
-    apply pow_zero_Approximates h_basis h_sorted h_approx h_trimmed
+    apply pow_zero_approximates h_basis h_sorted h_approx h_trimmed
   cases basis with
   | nil => simp
   | cons basis_hd basis_tl =>
@@ -350,19 +350,19 @@ theorem pow_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a : 
         (powSeries a)).mulMonomial (coef.pow a) (exp * a)
       have h : ms.Approximates := by
         simp only [ms]
-        apply mulMonomial_Approximates h_basis
-        · apply powser_Approximates powSeries_convergent h_basis
+        apply mulMonomial_approximates h_basis
+        · apply powser_approximates powSeries_convergent h_basis
           · simp only [leadingExp_def, mulMonomial_seq, mk_seq, Multiseries.mulMonomial_leadingExp]
             generalize tl.leadingExp = w at h_comp
             cases w with
             | bot => simp [Ne.bot_lt']
             | coe => simpa [← WithBot.coe_add] using h_comp
           · simp only [sorted_iff_seq_sorted, mulMonomial_seq, mk_seq]
-            apply Multiseries.mulMonomial_Sorted h_tl_sorted
-            apply inv_Sorted h_coef_sorted
-          · apply mulMonomial_Approximates h_basis h_tl
-            apply inv_Approximates h_basis.tail h_coef_sorted h_coef h_coef_trimmed
-        · apply pow_Approximates (h_basis.tail) h_coef_sorted h_coef h_coef_trimmed h_pos
+            apply Multiseries.mulMonomial_sorted h_tl_sorted
+            apply inv_sorted h_coef_sorted
+          · apply mulMonomial_approximates h_basis h_tl
+            apply inv_approximates h_basis.tail h_coef_sorted h_coef h_coef_trimmed
+        · apply pow_approximates (h_basis.tail) h_coef_sorted h_coef h_coef_trimmed h_pos
       convert! h.replaceFun _
       have h_tendsto_zero := tl_mulMonomial_coef_inv_neg_exp_toFun_tendsto_zero h_basis h_sorted
         h_approx h_trimmed
@@ -440,33 +440,33 @@ theorem zpow_toFun {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℤ} :
   ext t
   simp [zpow_eq_pow]
 
-theorem npow_Sorted {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℕ}
+theorem npow_sorted {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℕ}
     (h_sorted : ms.Sorted) : (ms.npow a).Sorted := by
   rw [npow_eq_pow]
-  apply pow_Sorted h_sorted
+  apply pow_sorted h_sorted
 
-theorem zpow_Sorted {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℤ}
+theorem zpow_sorted {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℤ}
     (h_sorted : ms.Sorted) : (ms.zpow a).Sorted := by
   rw [zpow_eq_pow]
-  apply pow_Sorted h_sorted
+  apply pow_sorted h_sorted
 
-theorem zpow_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℤ}
+theorem zpow_approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℤ}
     (h_basis : WellFormedBasis basis) (h_sorted : ms.Sorted)
     (h_approx : ms.Approximates) (h_trimmed : ms.Trimmed) :
     (ms.zpow a).Approximates := by
   rw [zpow_eq_pow]
   rcases lt_trichotomy 0 ms.realCoef with (h_leading | h_leading | h_leading)
-  · apply pow_Approximates <;> assumption
+  · apply pow_approximates <;> assumption
   · have : IsZero ms := by apply IsZero_of_leadingMonomial_zero_coef h_trimmed h_leading.symm
     cases basis with
     | nil => simp
     | cons basis_hd basis_tl =>
-      have h_fun := IsZero_Approximates_zero this h_approx
+      have h_fun := IsZero_approximates_zero this h_approx
       simp only [IsZero_iff_seq_nil] at this
       simp only [pow, this, Multiseries.pow, Multiseries.destruct_nil, Int.cast_eq_zero]
       split_ifs with ha
       · subst ha
-        convert one_Approximates h_basis
+        convert one_approximates h_basis
         simp
       · apply Approximates.nil
         replace ha : a ≠ 0 := by simpa
@@ -475,21 +475,21 @@ theorem zpow_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a :
         ext t
         simp [zero_zpow a ha]
   · have h_neg_approx : (ms.neg.pow a).Approximates := by
-      apply pow_Approximates h_basis (neg_Sorted h_sorted) (neg_Approximates h_approx)
-      · exact neg_Trimmed h_trimmed
+      apply pow_approximates h_basis (neg_sorted h_sorted) (neg_approximates h_approx)
+      · exact neg_trimmed h_trimmed
       · simpa [neg_leadingMonomial]
     rw [neg_zpow] at h_neg_approx
     have h_eq : ms.pow a = ((ms.pow a).mulConst ((-1)^a)).mulConst ((-1)^a) := by
       simp [← mul_zpow]
     rw [h_eq]
-    apply mulConst_Approximates h_neg_approx
+    apply mulConst_approximates h_neg_approx
 
-theorem npow_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℕ}
+theorem npow_approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℕ}
     (h_basis : WellFormedBasis basis) (h_sorted : ms.Sorted)
     (h_approx : ms.Approximates) (h_trimmed : ms.Trimmed) :
     (ms.npow a).Approximates := by
   rw [npow_eq_pow, show (a : ℝ) = (a : ℤ) by simp, ← zpow_eq_pow]
-  apply zpow_Approximates h_basis h_sorted h_approx h_trimmed
+  apply zpow_approximates h_basis h_sorted h_approx h_trimmed
 
 
 theorem sqrt_of_pow_toFun {basis : Basis} {ms : MultiseriesExpansion basis} {f : ℝ → ℝ}

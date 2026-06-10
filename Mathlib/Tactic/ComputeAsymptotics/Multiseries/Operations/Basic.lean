@@ -156,7 +156,7 @@ end
 
 mutual
 
-theorem Multiseries.mulConst_Sorted {basis_hd basis_tl} {ms : Multiseries basis_hd basis_tl} {c : ℝ}
+theorem Multiseries.mulConst_sorted {basis_hd basis_tl} {ms : Multiseries basis_hd basis_tl} {c : ℝ}
     (h_sorted : ms.Sorted) : (ms.mulConst c).Sorted := by
   let motive (ms : Multiseries basis_hd basis_tl) : Prop :=
     ∃ (X : Multiseries basis_hd basis_tl), ms = X.mulConst c ∧ X.Sorted
@@ -173,7 +173,7 @@ theorem Multiseries.mulConst_Sorted {basis_hd basis_tl} {ms : Multiseries basis_
       simp at h_ms_eq
       constructor
       · simp only [h_ms_eq]
-        exact mulConst_Sorted hX_coef_sorted
+        exact mulConst_sorted hX_coef_sorted
       constructor
       · simpa [h_ms_eq]
       simp only [motive]
@@ -181,19 +181,19 @@ theorem Multiseries.mulConst_Sorted {basis_hd basis_tl} {ms : Multiseries basis_
       simpa [h_ms_eq]
 
 /-- Multiplication by constant preserves well-orderedness. -/
-theorem mulConst_Sorted {basis : Basis} {ms : MultiseriesExpansion basis} {c : ℝ}
+theorem mulConst_sorted {basis : Basis} {ms : MultiseriesExpansion basis} {c : ℝ}
     (h_sorted : ms.Sorted) : (ms.mulConst c).Sorted := by
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
     simp only [sorted_iff_seq_sorted, mulConst_seq]
-    apply Multiseries.mulConst_Sorted
+    apply Multiseries.mulConst_sorted
     simpa using h_sorted
 
 end
 
 /-- If `ms` approximates `f`, then `ms.mulConst c` approximates `f * c`. -/
-theorem mulConst_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} {c : ℝ}
+theorem mulConst_approximates {basis : Basis} {ms : MultiseriesExpansion basis} {c : ℝ}
     (h_approx : ms.Approximates) :
     (ms.mulConst c).Approximates:= by
   cases basis with
@@ -217,7 +217,7 @@ theorem mulConst_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} 
       obtain ⟨hX_coef, hX_maj, hX_tl⟩ := hX_approx.elim_cons
       right
       simp only [mulConst_seq, mk_seq, Multiseries.mulConst_cons, Multiseries.cons_eq_cons,
-        mulConst_toFun, mk_toFun, ↓existsAndEq, and_true, mulConst_Approximates hX_coef,
+        mulConst_toFun, mk_toFun, ↓existsAndEq, and_true, mulConst_approximates hX_coef,
         Algebra.mul_smul_comm, true_and, exists_eq_left', hX_maj.smul]
       refine ⟨_, ?_, hX_tl⟩
       simp only [mk_eq_mk_iff_iff, mulConst_seq, mk_seq, mulConst_toFun, mk_toFun, true_and]
@@ -237,7 +237,7 @@ theorem mulConst_not_zero {basis : Basis} {ms : MultiseriesExpansion basis} {c :
     · simp
     · simp at h_ne_zero
 
-theorem mulConst_Trimmed {basis : Basis} {ms : MultiseriesExpansion basis} {c : ℝ}
+theorem mulConst_trimmed {basis : Basis} {ms : MultiseriesExpansion basis} {c : ℝ}
     (h_trimmed : ms.Trimmed) (hc : c ≠ 0) :
     (ms.mulConst c).Trimmed := by
   cases basis with
@@ -246,11 +246,11 @@ theorem mulConst_Trimmed {basis : Basis} {ms : MultiseriesExpansion basis} {c : 
     cases ms with
     | nil => constructor
     | cons exp coef tl =>
-    simp only [Trimmed_iff_seq_Trimmed, mk_seq, mulConst_seq, Multiseries.mulConst_cons]
+    simp only [Trimmed_iff_seq_trimmed, mk_seq, mulConst_seq, Multiseries.mulConst_cons]
       at h_trimmed ⊢
     apply Multiseries.Trimmed_cons at h_trimmed
     apply Multiseries.Trimmed.cons
-    · exact mulConst_Trimmed h_trimmed.left hc
+    · exact mulConst_trimmed h_trimmed.left hc
     · exact mulConst_not_zero h_trimmed.right hc
 
 theorem mulConst_realCoef {basis : Basis} {ms : MultiseriesExpansion basis} {c : ℝ} :
@@ -333,21 +333,21 @@ theorem Multiseries.neg_neg {basis_hd basis_tl} {ms : Multiseries basis_hd basis
 theorem neg_neg {basis : Basis} {ms : MultiseriesExpansion basis} : ms.neg.neg = ms := by
   cases basis <;> simp [neg]
 
-theorem Multiseries.neg_Sorted {basis_hd basis_tl} {ms : Multiseries basis_hd basis_tl}
+theorem Multiseries.neg_sorted {basis_hd basis_tl} {ms : Multiseries basis_hd basis_tl}
     (h_sorted : ms.Sorted) : ms.neg.Sorted :=
-  Multiseries.mulConst_Sorted h_sorted
+  Multiseries.mulConst_sorted h_sorted
 
-theorem neg_Sorted {basis : Basis} {ms : MultiseriesExpansion basis}
+theorem neg_sorted {basis : Basis} {ms : MultiseriesExpansion basis}
     (h_sorted : ms.Sorted) : ms.neg.Sorted :=
-  mulConst_Sorted h_sorted
+  mulConst_sorted h_sorted
 
-theorem neg_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
+theorem neg_approximates {basis : Basis} {ms : MultiseriesExpansion basis}
     (h_approx : ms.Approximates) : ms.neg.Approximates :=
-  mulConst_Approximates h_approx
+  mulConst_approximates h_approx
 
-theorem neg_Trimmed {basis : Basis} {ms : MultiseriesExpansion basis} (h_trimmed : ms.Trimmed) :
+theorem neg_trimmed {basis : Basis} {ms : MultiseriesExpansion basis} (h_trimmed : ms.Trimmed) :
     ms.neg.Trimmed :=
-  mulConst_Trimmed h_trimmed (by simp)
+  mulConst_trimmed h_trimmed (by simp)
 
 theorem neg_leadingMonomial {basis : Basis} {ms : MultiseriesExpansion basis} :
     ms.neg.leadingMonomial = ⟨-ms.leadingMonomial.coef, ms.leadingMonomial.unit⟩ := by

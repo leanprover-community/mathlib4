@@ -441,7 +441,7 @@ theorem Multiseries.add_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
 mutual
 
-theorem Multiseries.add_Sorted {basis_hd basis_tl} {X Y : Multiseries basis_hd basis_tl}
+theorem Multiseries.add_sorted {basis_hd basis_tl} {X Y : Multiseries basis_hd basis_tl}
     (hX_sorted : X.Sorted) (hY_sorted : Y.Sorted) : (X + Y).Sorted := by
   let motive : (Multiseries basis_hd basis_tl) → Prop := fun ms =>
     ∃ (X Y : Multiseries basis_hd basis_tl),
@@ -480,23 +480,23 @@ theorem Multiseries.add_Sorted {basis_hd basis_tl} {X Y : Multiseries basis_hd b
         simp only [h_eq, Multiseries.add_leadingExp, sup_lt_iff, hX_comp, hY_comp,
           and_self, true_and, motive]
         constructor
-        · apply add_Sorted <;> assumption
+        · apply add_sorted <;> assumption
         · use ?_, ?_
 
 /-- `X + Y` is well-ordered when `X` and `Y` are well-ordered. -/
-theorem add_Sorted {basis : Basis} {X Y : MultiseriesExpansion basis}
+theorem add_sorted {basis : Basis} {X Y : MultiseriesExpansion basis}
     (hX_sorted : X.Sorted) (hY_sorted : Y.Sorted) : (X + Y).Sorted := by
   cases basis with
   | nil =>
     constructor
   | cons basis_hd basis_tl =>
     simp only [sorted_iff_seq_sorted, add_seq] at hX_sorted hY_sorted ⊢
-    apply Multiseries.add_Sorted hX_sorted hY_sorted
+    apply Multiseries.add_sorted hX_sorted hY_sorted
 
 end
 
 /-- If `X` approximates `fX` and `Y` approximates `fY`, then `X + Y` approximates `fX + fY`. -/
-theorem add_Approximates {basis : Basis} {X Y : MultiseriesExpansion basis}
+theorem add_approximates {basis : Basis} {X Y : MultiseriesExpansion basis}
     (hX_approx : X.Approximates) (hY_approx : Y.Approximates) :
     (X + Y).Approximates := by
   cases basis with
@@ -579,7 +579,7 @@ theorem add_Approximates {basis : Basis} {X Y : MultiseriesExpansion basis}
         subst this
         simp only [Multiseries.cons_eq_cons, ↓existsAndEq, and_true, add_toFun, exists_eq_left']
         constructorm* _ ∧ _
-        · apply add_Approximates hX_coef hY_coef
+        · apply add_approximates hX_coef hY_coef
         · apply hX_maj.add hY_maj (by linarith) (by linarith)
         refine ⟨_, _, ?_, hX_tl, hY_tl⟩
         simp only [mk_eq_mk_iff_iff, add_seq, mk_seq, add_toFun, mk_toFun, true_and]
@@ -595,17 +595,17 @@ theorem sub_toFun {basis : Basis} {X Y : MultiseriesExpansion basis} :
   ring_nf
 
 /-- `X - Y` is well-ordered when `X` and `Y` are well-ordered. -/
-theorem sub_Sorted {basis : Basis} {X Y : MultiseriesExpansion basis}
+theorem sub_sorted {basis : Basis} {X Y : MultiseriesExpansion basis}
     (hX_sorted : X.Sorted) (hY_sorted : Y.Sorted) : (X.sub Y).Sorted := by
-  apply add_Sorted hX_sorted
-  apply neg_Sorted hY_sorted
+  apply add_sorted hX_sorted
+  apply neg_sorted hY_sorted
 
 /-- If `X` approximates `fX` and `Y` approximates `fY`, then `X - Y` approximates `fX - fY`. -/
-theorem sub_Approximates {basis : Basis} {X Y : MultiseriesExpansion basis}
+theorem sub_approximates {basis : Basis} {X Y : MultiseriesExpansion basis}
     (hX_approx : X.Approximates) (hY_approx : Y.Approximates) :
     (X.sub Y).Approximates := by
-  apply add_Approximates hX_approx
-  apply neg_Approximates hY_approx
+  apply add_approximates hX_approx
+  apply neg_approximates hY_approx
 
 instance {basis_hd basis_tl} :
     Multiseries.FriendlyOperationClass
@@ -717,7 +717,7 @@ theorem Multiseries.Sorted.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         ∃ A B, tl = A + B ∧ A.Sorted ∧ motive B) :
     ms.Sorted :=
   Multiseries.Sorted.coind_friend' Multiseries.add motive Multiseries.Sorted
-    (by apply Multiseries.add_Sorted) h_base h_step
+    (by apply Multiseries.add_sorted) h_base h_step
 
 theorem Multiseries.Sorted.add_coind' {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : Multiseries basis_hd basis_tl}
@@ -823,7 +823,7 @@ theorem Approximates.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       use (mk (.cons A_exp A_coef A_tl) fA) + X,
         mk Y (B.toFun - basis_hd ^ B_exp * B_coef.toFun - X.toFun)
       simp only [h_tl, add_seq, mk_seq, add_assoc, hB_coef, add_toFun, mk_toFun, add_sub_cancel,
-        add_Approximates hA hX, hY, and_self, and_true, true_and]
+        add_approximates hA hX, hY, and_self, and_true, true_and]
       constructor
       · apply Majorized.of_eventuallyEq hf_eq
         apply hA_maj.add hB_maj (by linarith) (by rfl)
@@ -840,7 +840,7 @@ theorem Approximates.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       simp only [h_tl, add_seq, mk_seq, add_assoc, add_toFun, mk_toFun, add_sub_cancel, hY,
         and_true, true_and]
       constructorm* _ ∧ _
-      · apply add_Approximates hA_coef hB_coef
+      · apply add_approximates hA_coef hB_coef
       · apply Majorized.of_eventuallyEq hf_eq
         apply hA_maj.add hB_maj (by rfl) (by rfl)
       · grw [hf_eq]
@@ -848,7 +848,7 @@ theorem Approximates.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         ext t
         simp
         ring
-      · apply add_Approximates hA_tl hX
+      · apply add_approximates hA_tl hX
 
 end MultiseriesExpansion
 

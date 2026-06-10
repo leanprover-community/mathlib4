@@ -79,7 +79,7 @@ def proveNeZero (ms : MS) : MetaM Q(¬ MultiseriesExpansion.IsZero $ms.val) := d
   let ~q($basis_hd :: $basis_tl) := ms.basis | panic! "proveNeZero: unexpected basis"
   let ~q(MultiseriesExpansion.mk (.cons $exp $coef $tl) $f) := ms.val
     | panic! "proveNeZero: unexpected val"
-  return q(MultiseriesExpansion.cons_not_IsZero)
+  return q(MultiseriesExpansion.cons_not_isZero)
 
 /-- Compare two trimmed multiseries. It assumes that `x.basis = ... ++ y.basis` and that `x` and
 `y` both are not `nil`s. -/
@@ -193,7 +193,7 @@ lemma WellFormedBasis.insert_neg_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
     (h_right : (Real.log ∘ right_hd) =o[atTop] ms.toFun) :
     WellFormedBasis (left ++ (Real.exp ∘ (-f')) :: right_hd :: right_tl) := by
   apply WellFormedBasis.insert_pos_exp _ _ _ (ms := ms.neg)
-    (neg_Sorted h_sorted) (neg_Approximates h_approx) (neg_Trimmed h_trimmed)
+    (neg_sorted h_sorted) (neg_approximates h_approx) (neg_trimmed h_trimmed)
   · simpa [neg_leadingMonomial]
   · simpa [neg_leadingMonomial]
   · exact h_basis

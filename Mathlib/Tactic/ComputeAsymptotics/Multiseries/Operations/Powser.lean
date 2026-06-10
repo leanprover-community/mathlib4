@@ -322,7 +322,7 @@ theorem Multiseries.powser_leadingExp_le_zero {s : LazySeries} {basis_hd : ℝ �
     (Multiseries.powser s ms).leadingExp ≤ 0 := by
   cases s <;> simp
 
-theorem Multiseries.powser_Sorted {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem Multiseries.powser_sorted {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : Multiseries basis_hd basis_tl}
     (h_sorted : ms.Sorted) (h_neg : ms.leadingExp < 0) :
     (Multiseries.powser s ms).Sorted := by
@@ -335,7 +335,7 @@ theorem Multiseries.powser_Sorted {s : LazySeries} {basis_hd : ℝ → ℝ} {bas
   | nil => simp at h_eq
   | cons s_hd s_tl =>
   simp only [powser_cons, Multiseries.cons_eq_cons] at h_eq
-  simp only [h_eq, MultiseriesExpansion.const_Sorted, Multiseries.mul_leadingExp,
+  simp only [h_eq, MultiseriesExpansion.const_sorted, Multiseries.mul_leadingExp,
     WithBot.coe_zero, true_and]
   constructor
   · generalize ms.leadingExp = x at *
@@ -344,14 +344,14 @@ theorem Multiseries.powser_Sorted {s : LazySeries} {basis_hd : ℝ → ℝ} {bas
     cases x <;> cases y <;> simp; norm_cast at this h_neg ⊢; linarith
   exact ⟨_, _, rfl, h_sorted, s_tl, rfl⟩
 
-theorem powser_Sorted {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem powser_sorted {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : MultiseriesExpansion (basis_hd :: basis_tl)} (h_sorted : ms.Sorted)
     (h_neg : ms.leadingExp < 0) :
     (powser s ms).Sorted := by
   simp only [sorted_iff_seq_sorted, leadingExp_def, powser_seq] at *
-  exact Multiseries.powser_Sorted h_sorted h_neg
+  exact Multiseries.powser_sorted h_sorted h_neg
 
-theorem powser_Approximates {s : LazySeries} (h_convergent : s.Convergent) {basis_hd : ℝ → ℝ}
+theorem powser_approximates {s : LazySeries} (h_convergent : s.Convergent) {basis_hd : ℝ → ℝ}
     {basis_tl : Basis} {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
     (h_basis : WellFormedBasis (basis_hd :: basis_tl))
     (h_neg : ms.leadingExp < 0) (h_sorted : ms.Sorted)
@@ -360,7 +360,7 @@ theorem powser_Approximates {s : LazySeries} (h_convergent : s.Convergent) {basi
     apply neg_leadingExp_tendsto_zero h_neg h_approx
   let motive (X : MultiseriesExpansion (basis_hd :: basis_tl)) : Prop :=
     ∃ (s : LazySeries), s.Convergent ∧ X ≈ powser s ms
-  apply Approximates.mul_coind h_basis motive (powser_Sorted h_sorted h_neg)
+  apply Approximates.mul_coind h_basis motive (powser_sorted h_sorted h_neg)
   · use s
   rintro X ⟨s, h_convergent, h_seq_eq, hf_eq⟩
   cases s with
@@ -378,8 +378,8 @@ theorem powser_Approximates {s : LazySeries} (h_convergent : s.Convergent) {basi
     apply Filter.EventuallyEq.comp_tendsto _ hf_tendsto_zero
     exact LazySeries.toFun_cons_eventually_eq h_convergent
   use ms, powser s_tl ms
-  simp only [powser_seq, const_Approximates h_basis.tail, powser_toFun, h_approx,
-    Multiseries.powser_Sorted (by simpa using h_sorted) h_neg, true_and]
+  simp only [powser_seq, const_approximates h_basis.tail, powser_toFun, h_approx,
+    Multiseries.powser_sorted (by simpa using h_sorted) h_neg, true_and]
   constructorm* _ ∧ _
   · apply Majorized.of_eventuallyEq hf_eq
     apply LazySeries.toFun_Majorized_zero h_convergent hf_tendsto_zero
@@ -439,12 +439,12 @@ theorem zeros_convergent : Convergent zeros := by
     simp
 
 -- I am almost sure we don't really need `h_sorted` and `h_approx`
-theorem zeros_powser_Approximates {basis_hd} {basis_tl}
+theorem zeros_powser_approximates {basis_hd} {basis_tl}
     {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
     (h_basis : WellFormedBasis (basis_hd :: basis_tl)) (h_sorted : ms.Sorted)
     (h_approx : ms.Approximates) (h_neg : ms.leadingExp < 0) :
     (ms.powser zeros).Approximates :=
-  powser_Approximates zeros_convergent h_basis h_neg h_sorted h_approx
+  powser_approximates zeros_convergent h_basis h_neg h_sorted h_approx
 
 end Zeros
 

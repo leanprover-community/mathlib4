@@ -105,17 +105,17 @@ theorem exp_toFun {basis : Basis} {ms : MultiseriesExpansion basis} :
 
 mutual
 
-theorem Multiseries.exp_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem Multiseries.exp_sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : Multiseries basis_hd basis_tl}
     (h : ms.Sorted)
     (h_nonpos : ¬ ms.exps.FirstNonzeroIsPos) :
     ms.exp.Sorted := by
   cases ms with
-  | nil => simpa [Multiseries.exp] using Multiseries.one_Sorted
+  | nil => simpa [Multiseries.exp] using Multiseries.one_sorted
   | cons exp coef tl =>
   simp only [Multiseries.exp, Multiseries.destruct_cons]
   split_ifs with h_if
-  · apply Multiseries.powser_Sorted h
+  · apply Multiseries.powser_sorted h
     simpa
   have h_exp : exp = 0 := by
     contrapose! h_nonpos
@@ -125,14 +125,14 @@ theorem Multiseries.exp_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   subst h_exp
   clear h_if
   obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := h.elim_cons
-  apply Multiseries.mulMonomial_Sorted
-  · exact Multiseries.powser_Sorted h_tl_sorted h_comp
-  · apply exp_Sorted h_coef_sorted
+  apply Multiseries.mulMonomial_sorted
+  · exact Multiseries.powser_sorted h_tl_sorted h_comp
+  · apply exp_sorted h_coef_sorted
     contrapose! h_nonpos
     simp only [Multiseries.cons_exps]
     exact UnitMonomial.FirstNonzeroIsPos.of_tail rfl h_nonpos
 
-theorem exp_Sorted {basis : Basis} {ms : MultiseriesExpansion basis}
+theorem exp_sorted {basis : Basis} {ms : MultiseriesExpansion basis}
     (h : ms.Sorted)
     (h_nonpos : ¬ ms.exps.FirstNonzeroIsPos) :
     ms.exp.Sorted := by
@@ -140,11 +140,11 @@ theorem exp_Sorted {basis : Basis} {ms : MultiseriesExpansion basis}
   | nil => apply Sorted.const
   | cons basis_hd basis_tl =>
     simp only [sorted_iff_seq_sorted, exps_eq_Seq_exps, exp_seq] at *
-    apply Multiseries.exp_Sorted h h_nonpos
+    apply Multiseries.exp_sorted h h_nonpos
 
 end
 
-theorem exp_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
+theorem exp_approximates {basis : Basis} {ms : MultiseriesExpansion basis}
     (h_basis : WellFormedBasis basis)
     (h_sorted : ms.Sorted)
     (h_approx : ms.Approximates)
@@ -156,7 +156,7 @@ theorem exp_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
   | nil f =>
     simp only [exp, mk_seq, Multiseries.exp, Multiseries.destruct_nil, mk_toFun]
     apply Approximates.elim_nil at h_approx
-    convert (one_Approximates h_basis).replaceFun _
+    convert (one_approximates h_basis).replaceFun _
     · ext g
       simp [ext_iff]
     · apply h_approx.mono
@@ -165,7 +165,7 @@ theorem exp_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
   simp only [MultiseriesExpansion.exp, mk_seq, Multiseries.exp, Multiseries.destruct_cons, mk_toFun]
   split_ifs with h_if
   · rw [← expSeries_toFun]
-    exact powser_Approximates expSeries_convergent h_basis (by simpa) h_sorted h_approx
+    exact powser_approximates expSeries_convergent h_basis (by simpa) h_sorted h_approx
   have h_exp : exp = 0 := by
     contrapose! h_nonpos
     simp
@@ -178,11 +178,11 @@ theorem exp_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
   let ms := ((mk tl (f - basis_hd ^ 0 * coef.toFun)).powser expSeries).mulMonomial coef.exp 0
   have h : ms.Approximates := by
     simp only [pow_zero, one_mul, ms]
-    apply mulMonomial_Approximates h_basis
-    · apply powser_Approximates expSeries_convergent h_basis (by simpa) (by simpa)
+    apply mulMonomial_approximates h_basis
+    · apply powser_approximates expSeries_convergent h_basis (by simpa) (by simpa)
       convert h_tl
       simp
-    · apply exp_Approximates h_basis.tail h_coef_sorted h_coef
+    · apply exp_approximates h_basis.tail h_coef_sorted h_coef
       contrapose! h_nonpos
       simp only [exps_eq_Seq_exps, mk_seq, Multiseries.cons_exps]
       exact UnitMonomial.FirstNonzeroIsPos.of_tail rfl h_nonpos

@@ -583,20 +583,20 @@ theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis b
       MultiseriesExpansion
         (basis_hd :: basis_tl ++ [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) :=
     ms.extendBasisEnd (Real.log ∘ (basis_hd :: basis_tl).getLast (by simp))
-  have h_sorted' : ms'.Sorted := MultiseriesExpansion.extendBasisEnd_Sorted h_sorted
+  have h_sorted' : ms'.Sorted := MultiseriesExpansion.extendBasisEnd_sorted h_sorted
   have h_approx' : ms'.Approximates :=
-    MultiseriesExpansion.extendBasisEnd_Approximates h_basis' h_approx
-  have h_trimmed' : ms'.Trimmed := extendBasisEnd_Trimmed h_trimmed
+    MultiseriesExpansion.extendBasisEnd_approximates h_basis' h_approx
+  have h_trimmed' : ms'.Trimmed := extendBasisEnd_trimmed h_trimmed
   have h_toFun : ms'.toFun = ms.toFun := by
     simp [ms']
   let ms_log :
       MultiseriesExpansion
         (basis_hd :: basis_tl ++ [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) :=
     MultiseriesExpansion.monomial _ (basis_tl.length + 1)
-  have h_log_sorted : ms_log.Sorted := monomial_Sorted
+  have h_log_sorted : ms_log.Sorted := monomial_sorted
   have h_log_approx : ms_log.Approximates :=
-    monomial_Approximates (n := ⟨basis_tl.length + 1, by simp⟩) h_basis'
-  have h_log_trimmed : ms_log.Trimmed := monomial_Trimmed (by simp)
+    monomial_approximates (n := ⟨basis_tl.length + 1, by simp⟩) h_basis'
+  have h_log_trimmed : ms_log.Trimmed := monomial_trimmed (by simp)
   have h_log_toFun : ms_log.toFun = (Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)) := by
     simp [ms_log]
   rw [← h_log_toFun, ← h_toFun]

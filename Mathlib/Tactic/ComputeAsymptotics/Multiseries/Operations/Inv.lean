@@ -163,7 +163,7 @@ end
 
 mutual
 
-theorem Multiseries.inv_Sorted {basis_hd basis_tl} {ms : Multiseries basis_hd basis_tl}
+theorem Multiseries.inv_sorted {basis_hd basis_tl} {ms : Multiseries basis_hd basis_tl}
     (h_sorted : ms.Sorted) : ms.inv.Sorted := by
   cases ms with
   | nil =>
@@ -172,27 +172,27 @@ theorem Multiseries.inv_Sorted {basis_hd basis_tl} {ms : Multiseries basis_hd ba
   | cons exp coef tl =>
     obtain ⟨h_coef, h_comp, h_tl⟩ := h_sorted.elim_cons
     simp only [Multiseries.inv, Multiseries.destruct_cons]
-    apply Multiseries.mulMonomial_Sorted
-    · apply Multiseries.powser_Sorted
-      · apply Multiseries.mulMonomial_Sorted
+    apply Multiseries.mulMonomial_sorted
+    · apply Multiseries.powser_sorted
+      · apply Multiseries.mulMonomial_sorted
         · apply h_tl
-        · apply inv_Sorted
+        · apply inv_sorted
           exact h_coef
       · simp only [Multiseries.mulMonomial_leadingExp]
         generalize tl.leadingExp = w at *
         cases w with
         | bot => simp [Ne.bot_lt']
         | coe => simpa [← WithBot.coe_add] using h_comp
-    · apply inv_Sorted
+    · apply inv_sorted
       exact h_coef
 
-theorem inv_Sorted {basis : Basis} {ms : MultiseriesExpansion basis}
+theorem inv_sorted {basis : Basis} {ms : MultiseriesExpansion basis}
     (h_sorted : ms.Sorted) : ms.inv.Sorted := by
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
     simp only [sorted_iff_seq_sorted, inv_seq] at *
-    exact Multiseries.inv_Sorted h_sorted
+    exact Multiseries.inv_sorted h_sorted
 
 end
 
@@ -223,7 +223,7 @@ theorem tl_mulMonomial_coef_inv_neg_exp_toFun_tendsto_zero
   simp
 
 -- TODO: do we need `ms.Sorted`?
-theorem inv_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
+theorem inv_approximates {basis : Basis} {ms : MultiseriesExpansion basis}
     (h_basis : WellFormedBasis basis) (h_sorted : ms.Sorted) (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed) : ms.inv.Approximates := by
   cases basis with
@@ -253,19 +253,19 @@ theorem inv_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
           coef.inv (-exp)).powser invSeries).mulMonomial coef.inv (-exp)
       have h : ms.Approximates := by
         simp only [ms]
-        apply mulMonomial_Approximates h_basis
+        apply mulMonomial_approximates h_basis
         swap
-        · apply inv_Approximates h_basis.tail h_coef_sorted h_coef h_coef_trimmed
-        apply powser_Approximates invSeries_convergent h_basis
+        · apply inv_approximates h_basis.tail h_coef_sorted h_coef h_coef_trimmed
+        apply powser_approximates invSeries_convergent h_basis
         · simp only [leadingExp_def, mulMonomial_seq, mk_seq, Multiseries.mulMonomial_leadingExp]
           generalize tl.leadingExp = w at h_comp
           cases w with
           | bot => simp [Ne.bot_lt']
           | coe => simpa [← WithBot.coe_add] using h_comp
         · simp only [sorted_iff_seq_sorted, mulMonomial_seq, mk_seq]
-          apply Multiseries.mulMonomial_Sorted h_tl_sorted (inv_Sorted h_coef_sorted)
-        apply mulMonomial_Approximates h_basis h_tl
-        apply inv_Approximates (h_basis.tail) h_coef_sorted h_coef h_coef_trimmed
+          apply Multiseries.mulMonomial_sorted h_tl_sorted (inv_sorted h_coef_sorted)
+        apply mulMonomial_approximates h_basis h_tl
+        apply inv_approximates (h_basis.tail) h_coef_sorted h_coef h_coef_trimmed
       convert! h.replaceFun _
       have h_tendsto_zero : Tendsto ((f - basis_hd ^ exp * coef.toFun) * basis_hd ^ (-exp) *
           coef.toFun⁻¹) atTop (𝓝 0) := by
@@ -283,19 +283,19 @@ theorem inv_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
       congr
       ring
 
-theorem div_Sorted {basis : Basis} {X Y : MultiseriesExpansion basis}
+theorem div_sorted {basis : Basis} {X Y : MultiseriesExpansion basis}
     (hX_sorted : X.Sorted) (hY_sorted : Y.Sorted) : (X.div Y).Sorted := by
-  apply mul_Sorted hX_sorted
-  exact inv_Sorted hY_sorted
+  apply mul_sorted hX_sorted
+  exact inv_sorted hY_sorted
 
-theorem div_Approximates {basis : Basis} {X Y : MultiseriesExpansion basis}
+theorem div_approximates {basis : Basis} {X Y : MultiseriesExpansion basis}
     (h_basis : WellFormedBasis basis)
     (hY_sorted : Y.Sorted)
     (hY_trimmed : Y.Trimmed)
     (hX_approx : X.Approximates) (hY_approx : Y.Approximates) :
     (X.div Y).Approximates := by
-  apply mul_Approximates h_basis hX_approx
-  exact inv_Approximates h_basis hY_sorted hY_approx hY_trimmed
+  apply mul_approximates h_basis hX_approx
+  exact inv_approximates h_basis hY_sorted hY_approx hY_trimmed
 
 end MultiseriesExpansion
 end Mathlib.Tactic.ComputeAsymptotics
