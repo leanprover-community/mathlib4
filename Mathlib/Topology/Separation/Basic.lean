@@ -267,9 +267,12 @@ class R0Space (X : Type u) [TopologicalSpace X] : Prop where
   /-- In an R₀ space, the `Specializes` relation is symmetric. -/
   specializes_symm : Std.Symm (Specializes : X → X → Prop)
 
-@[deprecated (since := "2026-04-15")] alias specializes_symmetric := R0Space.specializes_symm
-
 export R0Space (specializes_symm)
+
+@[deprecated (since := "2026-06-10")]
+alias R0Space.specializes_symmetric := R0Space.specializes_symm
+
+export R0Space (specializes_symmetric)
 
 section R0Space
 
