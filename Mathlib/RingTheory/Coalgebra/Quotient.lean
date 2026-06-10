@@ -8,6 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.RingTheory.Coalgebra.CoassocSimps
+public import Mathlib.RingTheory.Coalgebra.Hom
 
 /-!
 # Coalgebra structure on the quotient by a coideal
@@ -15,6 +16,7 @@ public import Mathlib.RingTheory.Coalgebra.CoassocSimps
 ## Main definitions
 
 * `Submodule.IsCoideal I` : the submodule `I : Submodule R C` is a coideal.
+* `Coalgebra.Quotient.mkQCoalgHom` : `Submodule.mkQ` as a coalgebra homomorphism.
 
 ## Main results
 
@@ -70,6 +72,12 @@ lemma counit_mk (x : C) : counit (R := R) (Submodule.Quotient.mk (p := I) x) = c
 @[simp]
 lemma comul_mk (x : C) :
     comul (R := R) (Submodule.Quotient.mk (p := I) x) = map I.mkQ I.mkQ (comul x) := rfl
+
+/-- `Submodule.mkQ` as a coalgebra homomorphism. -/
+@[expose] def mkQCoalgHom : C →ₗc[R] C ⧸ I := ⟨I.mkQ, rfl, rfl⟩
+
+@[simp] lemma mkQCoalgHom_apply (x : C) :
+    mkQCoalgHom (R := R) I x = Submodule.Quotient.mk x := rfl
 
 end CoalgebraStruct
 
