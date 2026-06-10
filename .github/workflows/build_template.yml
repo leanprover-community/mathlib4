@@ -614,7 +614,11 @@ jobs:
     # Pins the OIDC `sub` claim to `...:environment:<cache_environment>`, which the Azure cache
     # app's federated credential is scoped to. A token minted by any job without this environment
     # (e.g. the untrusted build/post_steps/style_lint jobs) cannot satisfy that trust.
-    environment: ${{ inputs.cache_environment }}
+    environment:
+      name: ${{ inputs.cache_environment }}
+      # Skip creating a GitHub deployment record/UI; we use the environment only to
+      # pin the OIDC `sub` claim and gate access to its federated credential.
+      deployment: false
     permissions:
       contents: read
       id-token: write

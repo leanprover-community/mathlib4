@@ -543,7 +543,7 @@ theorem wellFoundedOn_insert : WellFoundedOn (insert a s) r ↔ WellFoundedOn s 
 
 @[simp]
 theorem wellFoundedOn_sdiff_singleton : WellFoundedOn (s \ {a}) r ↔ WellFoundedOn s r := by
-  simp only [← wellFoundedOn_insert (a := a), insert_diff_singleton, mem_insert_iff, true_or,
+  simp only [← wellFoundedOn_insert (a := a), insert_sdiff_singleton, mem_insert_iff, true_or,
     insert_eq_of_mem]
 
 protected theorem WellFoundedOn.insert (h : WellFoundedOn s r) (a : α) :
