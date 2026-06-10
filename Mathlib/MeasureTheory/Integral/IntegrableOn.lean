@@ -541,7 +541,6 @@ lemma integrableAtFilter_congr (h : f =ᵐ[μ] g) :
 
 lemma IntegrableAtFilter.congr'_enorm
     (hf : IntegrableAtFilter f l μ) (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ a ∂μ, ‖f a‖ₑ = ‖g a‖ₑ) :
-    (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ a ∂μ, ‖f a‖ₑ = ‖g a‖ₑ) :
     IntegrableAtFilter g l μ :=
   let ⟨s, hs, hf⟩ := hf; ⟨s, hs, hf.congr'_enorm hg.restrict (ae_restrict_le h)⟩
 
