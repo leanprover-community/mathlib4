@@ -485,3 +485,19 @@ lemma Monotone.final_functor_iff {J₁ J₂ : Type*} [Preorder J₁] [Preorder J
       exact ⟨j₁, ⟨homOfLE h₁⟩⟩
     · intro _ c _ _
       exact ⟨c, 𝟙 _, rfl⟩
+
+lemma Monotone.initial_functor_iff {J₁ J₂ : Type*} [Preorder J₁] [Preorder J₂]
+  [IsCodirectedOrder J₁] {f : J₁ → J₂} (hf : Monotone f) :
+  hf.functor.Initial ↔ ( ∀ j₁,∃ j₂, f j₂ ≤ j₁) := by
+  rw [Functor.initial_iff_of_isCofiltered]
+  constructor
+  · rintro ⟨h, _⟩ j₂
+    obtain ⟨j₁, ⟨φ⟩⟩ := h j₂
+    exact ⟨j₁,leOfHom φ⟩
+  · intro h
+    constructor
+    · intro j₂
+      obtain ⟨j₁, h₁⟩ := h j₂
+      exact ⟨j₁, ⟨homOfLE h₁⟩⟩
+    · intro _ c _ _
+      exact ⟨ c, 𝟙 _, rfl⟩
