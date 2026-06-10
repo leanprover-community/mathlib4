@@ -571,7 +571,7 @@ most commonly occurring `algebraMap`s (those out of `ℕ`, `ℤ` and `ℚ`) into
 (`ℕ`, `ℤ` and `ℚ` casts) and then try to disperse the casts using the various `push_cast` lemmas. -/
 def postprocess (mvarId : MVarId) : MetaM MVarId := do
   -- collect the available `push_cast` lemmas
-  let mut thms : SimpTheorems := ← NormCast.pushCastExt.getTheorems
+  let mut thms : SimpTheorems ← NormCast.pushCastExt.getTheorems
   -- augment this list with the `algebraMapThms` lemmas, which handle `algebraMap` operations
   for thm in algebraMapThms do
     let ⟨levelParams, _, proof⟩ ← abstractMVars (mkConst thm)
