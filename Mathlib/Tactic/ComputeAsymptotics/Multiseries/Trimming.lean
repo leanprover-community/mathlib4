@@ -47,11 +47,9 @@ theorem const_iff {c : MultiseriesExpansion []} : IsZero c ↔ c.toReal = 0 := b
   constructor <;> grind [IsZero]
 
 @[simp]
-theorem iff_seq_nil {basis_hd basis_tl} {ms : MultiseriesExpansion (basis_hd :: basis_tl)} :
+theorem iff_seq_eq_nil {basis_hd basis_tl} {ms : MultiseriesExpansion (basis_hd :: basis_tl)} :
     IsZero ms ↔ ms.seq = .nil where
-  mp h := by
-    cases h
-    rfl
+  mp h := by cases h; rw [mk_seq]
   mpr h := by
     convert IsZero.nil ms.toFun
     simp [h]
@@ -60,11 +58,8 @@ theorem approximates_zero {basis : Basis} {ms : MultiseriesExpansion basis}
     (h_zero : IsZero ms) (h_approx : ms.Approximates) :
     ms.toFun =ᶠ[atTop] 0 := by
   cases h_zero with
-  | const hc =>
-    simp [hc]
-    rfl
-  | nil =>
-    simpa using h_approx
+  | const hc => simp [hc, Pi.zero_def]
+  | nil => simpa using h_approx
 
 theorem not_cons {basis_hd} {basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
     {tl : Multiseries basis_hd basis_tl} {f : ℝ → ℝ} :
@@ -101,10 +96,9 @@ theorem trimmed_iff_seq_trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     | nil =>
       convert Trimmed.nil (f := ms.toFun)
       simp [hs]
-    | cons h_trimmed h_ne_zero =>
-      convert Trimmed.cons h_trimmed h_ne_zero (f := ms.toFun)
-      · simp only [ms_eq_mk_iff, hs, Multiseries.cons_eq_cons, true_and, and_true]
-        exact ⟨rfl, rfl⟩
+    | @cons _ _ exp coef tl _ h_trimmed h_ne_zero =>
+      convert Trimmed.cons h_trimmed h_ne_zero (exp := exp) (tl := tl) (f := ms.toFun)
+      simp only [ms_eq_mk_iff, hs, and_true]
 
 namespace Multiseries.Trimmed
 
@@ -116,10 +110,8 @@ theorem nil {basis_hd} {basis_tl} :
 theorem cons {basis_hd} {basis_tl} {exp : ℝ}
     {coef : MultiseriesExpansion basis_tl} {tl : Multiseries basis_hd basis_tl}
     (h_coef : coef.Trimmed) (h_ne_zero : ¬ IsZero coef) :
-    Multiseries.Trimmed (cons exp coef tl) := by
-  constructor
-  · exact h_coef
-  · exact h_ne_zero
+    Multiseries.Trimmed (cons exp coef tl) :=
+  MultiseriesExpansion.Trimmed.cons h_coef h_ne_zero
 
 /-- If `cons (exp, coef) tl` is trimmed, then `coef` is trimmed and is not zero. -/
 theorem elim_cons {basis_hd} {basis_tl} {exp : ℝ}
