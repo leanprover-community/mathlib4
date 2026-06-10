@@ -91,7 +91,7 @@ protected class Functor.IsIso (F : C ⥤ D) : Prop where
   /-- A functor which is an isomorphism of categories is bijective on objects. -/
   bijectiveOnObjects : F.obj.Bijective := by infer_instance
 
-variable {C} {D} (F : C ⥤ D) [h : F.IsIsomorphism]
+variable {C} {D} (F : C ⥤ D) [h : F.IsIso]
 
 instance : F.Full := h.full
 instance : F.Faithful := h.faithful
@@ -101,6 +101,7 @@ noncomputable def Functor.objEquiv : C ≃ D := .ofBijective _ h.bijectiveOnObje
 
 /-- The strict inverse of a functor that is an isomorphism of categories, defined using
 `Functor.objEquiv` on objects and `Functor.preimage` on morphisms. -/
+@[no_expose]
 noncomputable def Functor.strictInv : D ⥤ C where
   obj := F.objEquiv.invFun
   map {X Y} f :=
@@ -137,6 +138,11 @@ def IsoCat.toEquivalence (e : IsoCat C D) : C ≌ D where
   counitIso := eqToIso e.counit_eq
   functor_unitIso_comp X := by simp [eqToHom_map]
 
+instance (F : C ⥤ D) [h : F.IsIso] : F.IsEquivalence := by
+  have := Equivalence.isEquivalence_functor F.asIsomorphism.toEquivalence
+  dsimp [asIsomorphism, IsoCat.toEquivalence] at this
+  infer_instance
+
 /-- Promotes an equivalence of categories `e : C ≌ D` whose unit and counit isomorphisms are
 given by equalities of objects into an `IsoCat C D`. -/
 @[simps]
@@ -150,7 +156,7 @@ def Equivalence.toIsoCat (e : C ≌ D)
   unit_eq := Functor.ext_of_iso e.unitIso (by simp [h])
   counit_eq := Functor.ext_of_iso e.counitIso (by simp [h'])
 
-instance IsoCat.isIsomorphismFunctor (e : IsoCat C D) : e.functor.IsIsomorphism where
+instance IsoCat.isIsomorphismFunctor (e : IsoCat C D) : e.functor.IsIso where
   faithful := e.toEquivalence.faithful_functor
   full := e.toEquivalence.full_functor
   bijectiveOnObjects := Function.bijective_iff_has_inverse.mpr
