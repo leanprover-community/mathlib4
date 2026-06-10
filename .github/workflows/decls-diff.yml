@@ -178,6 +178,9 @@ jobs:
           PR_NUMBER:      ${{ steps.pr.outputs.pr-number }}
           MODE:           warning
           DEFAULT_BRANCH: master
+          # If a real diff is already shown, keep it (relabelled) rather than
+          # blanking it to "unavailable"; the heading surfaces the cache miss.
+          NEW_HEADING:    '#### Declarations diff (Lean -- cache miss, showing previous diff)'
         run: |
           # Record the cache miss in the step summary first, so a later patcher
           # error (e.g. a transient GitHub failure) still leaves this run-local

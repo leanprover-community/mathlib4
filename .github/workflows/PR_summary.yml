@@ -217,12 +217,23 @@ jobs:
         else
           declDiff="$(printf '#### Declarations diff (regex)\n\n%s\n' "${declDiff}")"
         fi
-        # Append a placeholder for the post-build, Lean-aware diff. The
-        # `decls-diff.yml` workflow replaces the region between the markers (see
-        # mathlib-ci's `updateDeclsDiffSection.py`); the regex block above is left
-        # as-is. The markers are HTML comments (invisible when rendered), and the
-        # heading carries the status (`pending` → `(Lean)` / `(Lean -- unavailable)`).
-        declDiff="$(printf '%s\n\n<!-- DECLS_DIFF_LEAN_BEGIN -->\n#### Declarations diff (Lean -- pending)\n\n_Computed after the build finishes._\n<!-- DECLS_DIFF_LEAN_END -->\n' "${declDiff}")"
+        # Append the post-build, Lean-aware diff region. The `decls-diff.yml`
+        # workflow later replaces the content between the markers (see mathlib-ci's
+        # `updateDeclsDiffSection.py`); the regex block above is left as-is. The
+        # markers are HTML comments (invisible when rendered), and the heading
+        # carries the status (`pending` → `(Lean)` / `(Lean -- unavailable)`).
+        #
+        # Because this pre-build step rewrites the whole comment, it would otherwise
+        # blank a previously-shown diff back to `pending` on every push. Instead we
+        # ask `updateDeclsDiffSection.py` (MODE=emit) to carry the existing real diff
+        # forward — relabelled stale — so it stays visible until the new build lands;
+        # on the first run (or with no prior diff) it prints the pending placeholder.
+        leanRegion="$(MODE=emit \
+          NEW_HEADING='#### Declarations diff (Lean -- stale, waiting for the new build)' \
+          REPO="${{ github.repository }}" PR_NUMBER="${PR}" PR_HEAD_SHA="${currentHash}" \
+          python3 "${CI_SCRIPTS_DIR}/pr_summary/updateDeclsDiffSection.py" \
+          || printf '#### Declarations diff (Lean -- pending)\n\n_Computed after the build finishes._')"
+        declDiff="$(printf '%s\n\n<!-- DECLS_DIFF_LEAN_BEGIN -->\n%s\n<!-- DECLS_DIFF_LEAN_END -->\n' "${declDiff}" "${leanRegion}")"
         git checkout "${currentHash}" --
         hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${currentHash}"
         printf 'hashURL: %s' "${hashURL}"
