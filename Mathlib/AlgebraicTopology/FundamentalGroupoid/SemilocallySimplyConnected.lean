@@ -295,8 +295,7 @@ This means:
 public structure PathInTube {X : Type*} [TopologicalSpace X] {x y : X} {n : ℕ}
     (γ : Path x y) (part : IntervalPartition n) (T : TubeData X x y n) : Prop where
   /-- γ stays in the segment neighborhoods U[i] on each interval [t[i], t[i+1]] -/
-  stays_in_U : ∀ i (s : unitInterval),
-    (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → γ s ∈ T.U i
+  stays_in_U : ∀ i : Fin n, MapsTo γ (Icc (part.t i.castSucc) (part.t i.succ)) (T.U i)
   /-- γ passes through the point neighborhoods V[j] at ALL partition points -/
   passes_through_V : ∀ j, γ (part.t j) ∈ T.V j
 
@@ -310,8 +309,7 @@ public lemma PathInTube.subpath_range_subset {X : Type*} [TopologicalSpace X] {x
   have h_mono : (part.t i.castSucc : ℝ) ≤ part.t i.succ :=
     part.mono i.castSucc_lt_succ.le
   simpa [Path.subpath_apply] using
-    hγ.stays_in_U i (Set.Icc.convexComb (part.t i.castSucc) (part.t i.succ) t)
-      ⟨Set.Icc.le_convexComb h_mono t, Set.Icc.convexComb_le h_mono t⟩
+    hγ.stays_in_U i ⟨Set.Icc.le_convexComb h_mono t, Set.Icc.convexComb_le h_mono t⟩
 
 /-- Convert TubeData with partition to the set of paths in the tube -/
 @[expose] public def TubeData.toSet {X : Type*} [TopologicalSpace X] {x y : X} {n : ℕ}
@@ -324,8 +322,7 @@ private theorem Path.exists_vertexNeighborhood_family [LocPathConnectedSpace X]
     {x y : X} {γ : Path x y} {n : ℕ}
     {t : Fin (n + 1) → unitInterval} {U : Fin n → Set X}
     (h_mono : Monotone t) (hU_open : ∀ i, IsOpen (U i))
-    (hU_contains : ∀ i : Fin n, ∀ s : unitInterval,
-      (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ s ∈ U i) :
+    (hU_contains : ∀ i : Fin n, MapsTo γ (Icc (t i.castSucc) (t i.succ)) (U i)) :
     ∃ V : Fin (n + 1) → Set X,
       (∀ j, IsOpen (V j)) ∧
       (∀ j, IsPathConnected (V j)) ∧
@@ -341,7 +338,7 @@ private theorem Path.exists_vertexNeighborhood_family [LocPathConnectedSpace X]
     have hγ_in_inter : γ (t j) ∈ U_inter := by
       simp only [U_inter, Set.mem_iInter]
       intro i hi
-      exact hU_contains i (t j) <| by
+      exact hU_contains i <| by
         cases hi with
         | inl h =>
             constructor <;> apply h_mono <;> simp [h, Fin.le_def]
@@ -407,69 +404,35 @@ public theorem Path.exists_partition_in_slsc_neighborhoods [SemilocallySimplyCon
   refine ⟨n, part, T, ?_⟩
   exact { stays_in_U := hU_contains, passes_through_V := hγ_in_V }
 
-/-- Given a partition and tube data, the set of paths in the tube is open in the path space.
-This follows from the compact-open topology: it's a finite intersection of:
-1. Sets {γ' | γ' maps [t i, t i+1] into U i} (open by compact-open topology)
-2. Sets {γ' | γ'(t j) ∈ V[j]} (open by continuity of evaluation) -/
+/-- The "tube" of continuous maps determined by finitely many compact-into-open constraints
+together with finitely many open vertex constraints is open in the compact-open topology. -/
+public theorem ContinuousMap.isOpen_setOf_mapsTo_forall_mem
+    {α : Type*} [TopologicalSpace α] {n m : ℕ}
+    {K : Fin n → Set α} (hK : ∀ i, IsCompact (K i)) {U : Fin n → Set X} (hU : ∀ i, IsOpen (U i))
+    (p : Fin m → α) {V : Fin m → Set X} (hV : ∀ j, IsOpen (V j)) :
+    IsOpen {f : C(α, X) | (∀ i, MapsTo f (K i) (U i)) ∧ ∀ j, f (p j) ∈ V j} := by
+  have h₁ : IsOpen {f : C(α, X) | ∀ i, MapsTo f (K i) (U i)} := by
+    rw [setOf_forall]
+    exact isOpen_iInter_of_finite fun i ↦ ContinuousMap.isOpen_setOf_mapsTo (hK i) (hU i)
+  have h₂ : IsOpen {f : C(α, X) | ∀ j, f (p j) ∈ V j} := by
+    rw [setOf_forall]
+    exact isOpen_iInter_of_finite fun j ↦ (hV j).preimage (continuous_eval_const (p j))
+  exact h₁.inter h₂
+
+/-- Given a partition and tube data, the set of paths in the tube is open in the path space:
+it is the pullback, along the inclusion `Path x y → C(I, X)`, of a tube of continuous maps. -/
 public theorem TubeData.isOpen {x y : X} {n : ℕ}
     (part : IntervalPartition n) (T : TubeData X x y n) :
     IsOpen (T.toSet part) := by
-  -- The tube is the intersection of two conditions
-  have : T.toSet part =
-    {γ' : Path x y | ∀ i (s : unitInterval),
-      (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → γ' s ∈ T.U i} ∩
-    {γ' : Path x y | ∀ j, γ' (part.t j) ∈ T.V j} := by
-    ext γ'
-    simp only [TubeData.toSet, Set.mem_setOf_eq, Set.mem_inter_iff]
-    constructor
-    · intro h
-      exact ⟨h.stays_in_U, h.passes_through_V⟩
-    · intro ⟨h1, h2⟩
-      exact ⟨h1, h2⟩
-  rw [this]
-  apply IsOpen.inter
-  -- First part: paths staying in U[i] on each segment
-  · -- This is a finite intersection of open sets in the compact-open topology
-    have : {γ' : Path x y | ∀ i (s : unitInterval),
-        (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → γ' s ∈ T.U i} =
-      ⋂ i : Fin n, {γ' : Path x y | ∀ s : unitInterval,
-        (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → γ' s ∈ T.U i} := by
-      ext γ'
-      simp only [Set.mem_setOf_eq, Set.mem_iInter]
-    rw [this]
-    apply isOpen_iInter_of_finite
-    intro i
-    -- Each segment condition defines an open set
-    let K_i : Set unitInterval := Set.Icc (part.t i.castSucc) (part.t i.succ)
-    have h_compact_K : IsCompact K_i := isCompact_Icc
-    have h_eq : {γ' : Path x y | ∀ s : unitInterval,
-        (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → γ' s ∈ T.U i} =
-      {γ' : Path x y | Set.MapsTo γ' K_i (T.U i)} := by
-      ext γ'
-      simp only [Set.mem_setOf_eq, Set.MapsTo, K_i, Set.mem_Icc]
-      refine forall_congr' fun s ↦ ?_
-      constructor
-      · intro h hs; exact h hs
-      · intro h hs; exact h hs
-    rw [h_eq]
-    have : {γ' : Path x y | Set.MapsTo γ' K_i (T.U i)} =
-        (↑) ⁻¹' {f : C(unitInterval, X) | Set.MapsTo f K_i (T.U i)} := by
-      rfl
-    rw [this]
-    exact (ContinuousMap.isOpen_setOf_mapsTo h_compact_K (T.U_open i)).preimage
-      continuous_induced_dom
-  -- Second part: paths passing through V[j] at all points
-  · -- This is a finite intersection of open sets (by continuity of evaluation)
-    have : {γ' : Path x y | ∀ j, γ' (part.t j) ∈ T.V j} =
-        ⋂ j : Fin (n + 1), {γ' : Path x y | γ' (part.t j) ∈ T.V j} := by
-      ext γ'
-      simp only [Set.mem_setOf_eq, Set.mem_iInter]
-    rw [this]
-    apply isOpen_iInter_of_finite
-    intro j
-    -- `{γ' | γ'(part.t j) ∈ V[j]}` is the preimage of `V[j]` under evaluation, hence open.
-    exact (T.V_open j).preimage <|
-      (continuous_eval_const (part.t j)).comp continuous_induced_dom
+  have h : T.toSet part = (fun γ : Path x y ↦ γ.toContinuousMap) ⁻¹'
+      {f : C(unitInterval, X) |
+        (∀ i, MapsTo f (Icc (part.t i.castSucc) (part.t i.succ)) (T.U i)) ∧
+        ∀ j, f (part.t j) ∈ T.V j} :=
+    Set.ext fun γ' ↦
+      ⟨fun hγ ↦ ⟨hγ.stays_in_U, hγ.passes_through_V⟩, fun ⟨h1, h2⟩ ↦ ⟨h1, h2⟩⟩
+  rw [h]
+  exact (ContinuousMap.isOpen_setOf_mapsTo_forall_mem (fun _ ↦ isCompact_Icc) T.U_open
+    _ T.V_open).preimage continuous_induced_dom
 
 /-! ### Proof strategy for discrete topology on `Path.Homotopic.Quotient`
 

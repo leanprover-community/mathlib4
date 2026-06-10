@@ -554,39 +554,10 @@ theorem isOpen_refined_tubeNeighborhood
     {U : Fin (n' + 1) → Set X} {V : Fin (n' + 2) → Set X}
     (hU_open : ∀ i, IsOpen (U i)) (hV_open : ∀ j, IsOpen (V j)) :
     IsOpen {β : BasedPath x₀ |
-      (∀ (i : Fin (n' + 1)) (s : I),
-          (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ U i) ∧
-      (∀ j, β.1 (part.t j) ∈ V j)} := by
-  have h_split : {β : BasedPath x₀ |
-        (∀ (i : Fin (n' + 1)) (s : I),
-            (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ U i) ∧
-        (∀ j, β.1 (part.t j) ∈ V j)} =
-      {β : BasedPath x₀ | ∀ (i : Fin (n' + 1)) (s : I),
-          (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ U i} ∩
-      {β : BasedPath x₀ | ∀ j, β.1 (part.t j) ∈ V j} := by ext β; simp
-  rw [h_split]
-  refine IsOpen.inter ?_ ?_
-  · have h_U_iInter : {β : BasedPath x₀ | ∀ (i : Fin (n' + 1)) (s : I),
-          (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ U i} =
-        ⋂ i : Fin (n' + 1), {β : BasedPath x₀ | ∀ s : I,
-            (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ U i} := by
-      ext β; simp
-    rw [h_U_iInter]
-    refine isOpen_iInter_of_finite fun i ↦ ?_
-    have h_U_preimage : {β : BasedPath x₀ | ∀ s : I,
-          (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ U i} =
-        (fun β : BasedPath x₀ ↦ (β.1 : C(I, X))) ⁻¹'
-          {f : C(I, X) | Set.MapsTo f
-            (Set.Icc (part.t i.castSucc) (part.t i.succ) : Set I) (U i)} := by
-      ext β; simp [Set.MapsTo, Set.mem_Icc]
-    rw [h_U_preimage]
-    exact (ContinuousMap.isOpen_setOf_mapsTo isCompact_Icc (hU_open i)).preimage
-      continuous_subtype_val
-  · have h_V_iInter : {β : BasedPath x₀ | ∀ j, β.1 (part.t j) ∈ V j} =
-        ⋂ j : Fin (n' + 2), {β : BasedPath x₀ | β.1 (part.t j) ∈ V j} := by ext β; simp
-    rw [h_V_iInter]
-    exact isOpen_iInter_of_finite fun j ↦
-      (hV_open j).preimage ((continuous_eval_const (part.t j)).comp continuous_subtype_val)
+      (∀ i, Set.MapsTo β (Set.Icc (part.t i.castSucc) (part.t i.succ)) (U i)) ∧
+      ∀ j, β (part.t j) ∈ V j} :=
+  (ContinuousMap.isOpen_setOf_mapsTo_forall_mem (fun _ ↦ isCompact_Icc) hU_open
+    part.t hV_open).preimage continuous_subtype_val
 
 /-- Variable-endpoint tube/component theorem.
 
@@ -640,16 +611,15 @@ public theorem exists_open_nhds_pathComponent_preimage
     | cast k => rw [hV'_castSucc_eq]; exact hα_tube.passes_through_V _
   -- The neighborhood `N` of `α`: based paths satisfying the refined tube conditions.
   set N : Set (BasedPath x₀) := {β : BasedPath x₀ |
-      (∀ (i : Fin (n' + 1)) (s : I),
-          (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ T.U i) ∧
-      (∀ j, β.1 (part.t j) ∈ V' j)} with hN_def
+      (∀ i, Set.MapsTo β (Set.Icc (part.t i.castSucc) (part.t i.succ)) (T.U i)) ∧
+      ∀ j, β (part.t j) ∈ V' j} with hN_def
   refine ⟨N, ?_, ?_, ?_, ?_⟩
   · simpa [hN_def] using isOpen_refined_tubeNeighborhood part T.U_open hV'_open_all
   · -- `α ∈ N`.
     exact ⟨hα_tube.stays_in_U, hα_passes_V'⟩
   · -- `N ⊆ endpoint ⁻¹' U`.
     intro β hβ
-    have h1 : β.1 (part.t (Fin.last (n' + 1))) ∈ V' (Fin.last (n' + 1)) := hβ.2 _
+    have h1 : β (part.t (Fin.last (n' + 1))) ∈ V' (Fin.last (n' + 1)) := hβ.2 _
     rw [hV'_last_eq] at h1
     exact hV'_sub_U (by simpa [part.t_last] using! h1)
   · -- Every `β ∈ N` is `JoinedIn (endpoint ⁻¹' U)` to `α`.
@@ -657,7 +627,7 @@ public theorem exists_open_nhds_pathComponent_preimage
     obtain ⟨hβ_stays, hβ_passes⟩ := hβ
     -- Endpoint of `β` lies in `U`.
     have hβ_end_U : endpoint β ∈ U := by
-      have h1 : β.1 (part.t (Fin.last (n' + 1))) ∈ V' (Fin.last (n' + 1)) := hβ_passes _
+      have h1 : β (part.t (Fin.last (n' + 1))) ∈ V' (Fin.last (n' + 1)) := hβ_passes _
       rw [hV'_last_eq] at h1
       exact hV'_sub_U (by simpa [part.t_last] using! h1)
     -- Rung paths in `V' j`.
@@ -679,7 +649,7 @@ public theorem exists_open_nhds_pathComponent_preimage
           Set.range (β.toPath.subpath (part.t i.castSucc) (part.t i.succ)) ⊆ T.U i := by
         rintro _ ⟨t, rfl⟩
         simp only [Path.subpath_apply]
-        exact hβ_stays i _ ⟨Set.Icc.le_convexComb hab t, Set.Icc.convexComb_le hab t⟩
+        exact hβ_stays i ⟨Set.Icc.le_convexComb hab t, Set.Icc.convexComb_le hab t⟩
       have hρ_cast : Set.range (ρ i.castSucc) ⊆ T.U i := by
         refine (hρ_range _).trans ?_
         rw [hV'_castSucc_eq]; exact T.V_left_subset i

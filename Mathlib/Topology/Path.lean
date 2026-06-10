@@ -686,8 +686,7 @@ theorem exists_partition_in_cover
     {x y : X} (γ : Path x y) (hU_cover : ∀ s : unitInterval, ∃ i, γ s ∈ U i) :
     ∃ (n : ℕ) (t : Fin (n + 1) → unitInterval),
       Monotone t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
-      (∀ i : Fin n, ∃ j : ι,
-        ∀ s : unitInterval, (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ s ∈ U j) := by
+      (∀ i : Fin n, ∃ j : ι, MapsTo γ (Icc (t i.castSucc) (t i.succ)) (U j)) := by
   -- Pull back the cover along `γ`; the result is an open cover of `unitInterval`.
   obtain ⟨n, t, ht_mono, ht0, htn, ht_cover⟩ :=
     exists_monotone_partition_unitInterval
@@ -697,7 +696,7 @@ theorem exists_partition_in_cover
         exact Set.mem_iUnion.2 ⟨i, hi⟩)
   refine ⟨n, t, ht_mono, ht0, htn, fun i ↦ ?_⟩
   obtain ⟨j, hj⟩ := ht_cover i
-  exact ⟨j, fun s hs ↦ hj ⟨hs.1, hs.2⟩⟩
+  exact ⟨j, fun s hs ↦ hj hs⟩
 
 /-- Generic Lebesgue partition lemma for paths, neighborhood version: If every point on a path
 has a neighborhood with property P, then there exists a partition such that each segment lies
@@ -707,7 +706,7 @@ theorem exists_partition_with_property {x y : X} (γ : Path x y) (P : Set X → 
     ∃ (n : ℕ) (t : Fin (n + 1) → unitInterval),
       Monotone t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
       (∀ i : Fin n, ∃ U : Set X, IsOpen U ∧ P U ∧
-        ∀ s : unitInterval, (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ s ∈ U) := by
+        MapsTo γ (Icc (t i.castSucc) (t i.succ)) U) := by
   choose U hU_open hU_mem hU_P using h
   obtain ⟨n, t, h_mono, h_start, h_end, h_segments⟩ :=
     exists_partition_in_cover (fun z : Set.range γ ↦ U z.val z.property)
