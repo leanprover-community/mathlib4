@@ -159,7 +159,7 @@ theorem fderivWithin_fderivWithin {g : F → G} {f : E → F} {x : E} {y : F} {s
     (hxs : UniqueDiffWithinAt 𝕜 s x) (hy : f x = y) (v : E) :
     fderivWithin 𝕜 g t y (fderivWithin 𝕜 f s x v) = fderivWithin 𝕜 (g ∘ f) s x v := by
   subst y
-  rw [fderivWithin_comp x hg hf h hxs, coe_comp', Function.comp_apply]
+  rw [fderivWithin_comp x hg hf h hxs, comp_apply]
 
 /-- Ternary version of `fderivWithin_comp`, with equality assumptions of basepoints added, in
   order to apply more easily as a rewrite from right-to-left. -/

@@ -90,7 +90,7 @@ theorem concat_eq_append {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
 /-- The concatenation of the reverse of the first walk with the second walk. -/
 protected def reverseAux {u v w : V} : G.Walk u v → G.Walk u w → G.Walk v w
   | nil, q => q
-  | cons h p, q => Walk.reverseAux p (cons (G.symm h) q)
+  | cons h p, q => p.reverseAux <| cons h.symm q
 
 /-- The walk in reverse. -/
 @[symm]
@@ -155,7 +155,7 @@ theorem exists_concat_eq_cons {u v w : V} :
 @[simp]
 theorem reverse_nil {u : V} : (nil : G.Walk u u).reverse = nil := rfl
 
-theorem reverse_singleton {u v : V} (h : G.Adj u v) : (cons h nil).reverse = cons (G.symm h) nil :=
+theorem reverse_singleton {u v : V} (h : G.Adj u v) : (cons h nil).reverse = cons h.symm nil :=
   rfl
 
 @[simp]
@@ -163,7 +163,7 @@ theorem reverse_toWalk {u v : V} (h : G.Adj u v) : h.toWalk.reverse = h.symm.toW
 
 @[simp]
 theorem cons_reverseAux {u v w x : V} (p : G.Walk u v) (q : G.Walk w x) (h : G.Adj w u) :
-    (cons h p).reverseAux q = p.reverseAux (cons (G.symm h) q) := rfl
+    (cons h p).reverseAux q = p.reverseAux (cons h.symm q) := rfl
 
 @[simp]
 protected theorem append_reverseAux {u v w x : V}
@@ -171,7 +171,7 @@ protected theorem append_reverseAux {u v w x : V}
     (p.append q).reverseAux r = q.reverseAux (p.reverseAux r) := by
   induction p with
   | nil => rfl
-  | cons h _ ih => exact ih q (cons (G.symm h) r)
+  | cons h _ ih => exact ih q (cons h.symm r)
 
 @[simp]
 protected theorem reverseAux_append {u v w x : V}
@@ -179,14 +179,14 @@ protected theorem reverseAux_append {u v w x : V}
     (p.reverseAux q).append r = p.reverseAux (q.append r) := by
   induction p with
   | nil => rfl
-  | cons h _ ih => simp [ih (cons (G.symm h) q)]
+  | cons h _ ih => simp [ih (cons h.symm q)]
 
 protected theorem reverseAux_eq_reverse_append {u v w : V} (p : G.Walk u v) (q : G.Walk u w) :
     p.reverseAux q = p.reverse.append q := by simp [reverse]
 
 @[simp]
 theorem reverse_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
-    (cons h p).reverse = p.reverse.append (cons (G.symm h) nil) := by simp [reverse]
+    (cons h p).reverse = p.reverse.append (cons h.symm nil) := by simp [reverse]
 
 @[simp]
 theorem reverse_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
@@ -200,7 +200,7 @@ theorem reverse_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
 
 @[simp]
 theorem reverse_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
-    (p.concat h).reverse = cons (G.symm h) p.reverse := by simp [concat_eq_append]
+    (p.concat h).reverse = cons h.symm p.reverse := by simp [concat_eq_append]
 
 @[simp]
 theorem reverse_reverse {u v : V} (p : G.Walk u v) : p.reverse.reverse = p := by
