@@ -516,7 +516,8 @@ section NonDefaultScope
 non-default-scope security warning. It warns when any of three inputs takes the
 reader off the repo's default trust boundary:
 
-1. a scope is set (`--scope=` or `MATHLIB_CACHE_REPO_SCOPE`);
+1. a scope is set (`--scope=` or `MATHLIB_CACHE_REPO_SCOPE`) and differs from
+   the checked-out HEAD;
 2. `--cache-from=LIST` differs from the repo's default chain (passing the
    default explicitly is not widening);
 3. `--repo=` is given and differs from the detected git remote.
@@ -539,6 +540,15 @@ def test_shouldWarnNonDefaultScope : IO Unit := do
     assert "a set scope warns"
       (← withSuppressedOutput (shouldWarnNonDefaultScope none none none MATHLIBREPO))
     scopeOverride.set none
+
+    -- A scope equal to HEAD is trust-equivalent to no scope (CI's normal mode).
+    -- Skipped when HEAD can't be resolved (not in a git checkout).
+    let head? ← try some <$> withSuppressedOutput getGitCommitHash catch _ => pure none
+    if let some head := head? then
+      scopeOverride.set (some head)
+      assert "a scope equal to HEAD does not warn"
+        (!(← withSuppressedOutput (shouldWarnNonDefaultScope none none none MATHLIBREPO)))
+      scopeOverride.set none
 
     -- --cache-from equal to the repo's default chain is not widening.
     let mathlibDefault := defaultContainersForRepo MATHLIBREPO
@@ -603,6 +613,17 @@ def test_getNonDefaultScopeReason : IO Unit := do
     assert "scope is reported ahead of cache-from"
       (reason == "--scope=abc123 (explicit per-commit scope)")
     scopeOverride.set none
+
+    -- A HEAD scope is exempt from condition 1, so a simultaneous cache-from
+    -- trigger is reported instead of the scope.
+    let head? ← try some <$> withSuppressedOutput getGitCommitHash catch _ => pure none
+    if let some head := head? then
+      scopeOverride.set (some head)
+      let reason ←
+        withSuppressedOutput (getNonDefaultScopeReason none none (some [.forks, .legacy]) MATHLIBREPO)
+      assert "a HEAD scope yields the cache-from reason"
+        (reason == "--cache-from=forks, legacy (explicit container override)")
+      scopeOverride.set none
 
     let reason ←
       withSuppressedOutput (getNonDefaultScopeReason none none (some [.forks, .legacy]) MATHLIBREPO)

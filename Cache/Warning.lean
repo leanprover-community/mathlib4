@@ -21,12 +21,29 @@ Two stderr-only notices `cache get` prints before reading:
 namespace Cache.Requests
 
 /--
+`true` iff the resolved scope (see `getRepoScope`) equals the checked-out HEAD.
+
+A HEAD scope only serves artifacts built from the commit already checked out,
+so trust-wise it is the same as not passing a scope — which we don't warn
+about. It is not behaviorally the same: fork artifacts live only under the
+SHA-scoped namespace, so CI must set `MATHLIB_CACHE_REPO_SCOPE` to the build
+SHA on every fork build to read back its own uploads.
+
+`false` when no scope is set or HEAD cannot be determined.
+-/
+def scopeIsHead : IO Bool := do
+  let some scope ← getRepoScope | return false
+  let head ← try getGitCommitHash catch _ => return false
+  return head == scope
+
+/--
 Condition to determine if a non-default scope warning should be printed.
 
 Returns `true` if any of these hold:
 0. `--unsafe` was passed (`unsafeWindow?` is `some _`): the read walks several
    fork commits and trusts whoever built each of them
 1. `MATHLIB_CACHE_REPO_SCOPE` is set in the environment (any non-empty value)
+   and differs from the checked-out HEAD (see `scopeIsHead`)
 2. `--cache-from` was passed and widens the lookup chain beyond `defaultContainersForRepo` for the resolved repo
 3. `--repo` was passed and does not match the git remote (`detectedRepo?`)
 
@@ -42,8 +59,10 @@ def shouldWarnNonDefaultScope (repoExplicit? detectedRepo? : Option String)
   -- Condition 0: `--unsafe` (with its SHA window) — the most permissive read.
   if unsafeWindow?.isSome then return true
 
-  -- Condition 1: `--scope=` flag or `MATHLIB_CACHE_REPO_SCOPE` env var supplied
-  if (← getRepoScope).isSome then return true
+  -- Condition 1: `--scope=` flag or `MATHLIB_CACHE_REPO_SCOPE` env var supplied.
+  -- A HEAD scope is exempt: trust-equivalent to no scope (see `scopeIsHead`).
+  if (← getRepoScope).isSome then
+    unless (← scopeIsHead) do return true
 
   -- Condition 2: --cache-from CLI override widens the lookup chain
   match cliCacheFromOverride? with
@@ -106,14 +125,16 @@ def getNonDefaultScopeReason (repoExplicit? detectedRepo? : Option String)
       trusting whoever built them)"
 
   -- Condition 1: `--scope=` flag (preferred form) or `MATHLIB_CACHE_REPO_SCOPE`
-  -- env var (CI form). Reported with the source that set it.
-  if let some s ← scopeOverride.get then
-    return s!"--scope={s} (explicit per-commit scope)"
-  let scope? ← IO.getEnv "MATHLIB_CACHE_REPO_SCOPE"
-  if let some scope := scope? then
-    let trimmed := scope.trimAscii
-    if !trimmed.isEmpty then
-      return s!"MATHLIB_CACHE_REPO_SCOPE={trimmed} (explicit per-commit scope)"
+  -- env var (CI form). Reported with the source that set it. A HEAD scope is
+  -- exempt, mirroring `shouldWarnNonDefaultScope`.
+  unless (← scopeIsHead) do
+    if let some s ← scopeOverride.get then
+      return s!"--scope={s} (explicit per-commit scope)"
+    let scope? ← IO.getEnv "MATHLIB_CACHE_REPO_SCOPE"
+    if let some scope := scope? then
+      let trimmed := scope.trimAscii
+      if !trimmed.isEmpty then
+        return s!"MATHLIB_CACHE_REPO_SCOPE={trimmed} (explicit per-commit scope)"
 
   -- Condition 2: --cache-from override
   if let some cliOverride := cliCacheFromOverride? then
