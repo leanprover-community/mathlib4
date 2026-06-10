@@ -873,6 +873,19 @@ theorem _root_.ContinuousLinearMap.intervalIntegral_comp_comm [CompleteSpace E] 
 
 end ContinuousLinearMap
 
+section LinearIsometry
+
+variable {a b : ℝ} {μ : Measure ℝ} {f : ℝ → E} [RCLike 𝕜]
+variable [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
+
+variable [NormedSpace ℝ F] [CompleteSpace E] [CompleteSpace F]
+
+theorem _root_.LinearIsometry.intervalIntegral_comp_comm (L : E →ₗᵢ[𝕜] F) (f : ℝ → E) :
+    ∫ x in a..b, L (f x) ∂μ = L (∫ x in a..b, f x ∂μ) := by
+  simp_rw [intervalIntegral, L.integral_comp_comm, L.map_sub]
+
+end LinearIsometry
+
 section RCLike
 
 variable {𝕜 : Type*} [RCLike 𝕜] {f : ℝ → 𝕜} {a b : ℝ} {μ : Measure ℝ}
