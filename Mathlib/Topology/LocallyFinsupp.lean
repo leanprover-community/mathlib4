@@ -80,7 +80,7 @@ theorem supportDiscreteWithin_iff_locallyFiniteWithin [T1Space X] [Zero Y] {f : 
     f =ᶠ[codiscreteWithin U] 0 ↔ ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support) := by
   have : f.support = (U \ {x | f x = (0 : X → Y) x}) := by
     ext x
-    simp only [mem_support, ne_eq, Pi.zero_apply, mem_diff, mem_setOf_eq, iff_and_self]
+    simp only [mem_support, ne_eq, Pi.zero_apply, Set.mem_sdiff, mem_setOf_eq, iff_and_self]
     exact (h ·)
   rw [EventuallyEq, Filter.Eventually, codiscreteWithin_iff_locallyFiniteComplementWithin, this]
 
@@ -207,7 +207,7 @@ theorem eq_zero_codiscreteWithin [Zero Y] [T1Space X] (D : locallyFinsuppWithin 
   apply codiscreteWithin_iff_locallyFiniteComplementWithin.2
   have : D.support = (U \ {x | D x = (0 : X → Y) x}) := by
     ext x
-    simp only [mem_support, ne_eq, Pi.zero_apply, Set.mem_diff, Set.mem_setOf_eq, iff_and_self]
+    simp only [mem_support, ne_eq, Pi.zero_apply, Set.mem_sdiff, Set.mem_setOf_eq, iff_and_self]
     exact (support_subset_iff.1 D.supportWithinDomain) x
   rw [← this]
   exact D.supportLocallyFiniteWithinDomain
