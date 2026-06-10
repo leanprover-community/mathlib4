@@ -229,33 +229,12 @@ theorem balancedHull_convexHull_subset_absConvexHull {s : Set E} :
 @[deprecated balancedHull_convexHull_subset_absConvexHull (since := "2026-05-23")]
 alias balancedHull_convexHull_subseteq_absConvexHull := balancedHull_convexHull_subset_absConvexHull
 
-variable [TopologicalSpace E] [ContinuousConstSMul 𝕜 E]
-
-omit [PartialOrder 𝕜] in
-protected theorem IsOpen.balancedHull {s : Set E} (hs : IsOpen s) (hzero : 0 ∈ s) :
-    IsOpen (balancedHull 𝕜 s) := by
-  have : (⋃ r : 𝕜, ⋃ (_ : ‖r‖ ≤ 1), r • s) = (⋃ r : 𝕜, ⋃ (_ : ‖r‖ ≤ 1 ∧ r ≠ 0), r • s) := by
-    refine subset_antisymm (Set.iUnion₂_mono' fun r hr ↦ ?_) (Set.iUnion₂_mono' (by grind))
-    obtain rfl | hr_ne := eq_or_ne r 0
-    · exact ⟨1, by simp, by simpa [Set.zero_smul_set ⟨0, hzero⟩]⟩
-    · use r
-  rw [balancedHull, this]
-  exact isOpen_biUnion (fun r hr ↦ hs.smul₀ hr.2)
-
-variable [ZeroLEOneClass 𝕜] [IsTopologicalAddGroup E]
-
-lemma convexHull_interior_subset (s : Set E) :
-    convexHull 𝕜 (interior s) ⊆ interior (convexHull 𝕜 s) :=
-  convexHull_min (interior_mono <| subset_convexHull 𝕜 s) (convex_convexHull 𝕜 s).interior
-
-protected theorem IsOpen.convexHull {s : Set E} (hs : IsOpen s) :
-    IsOpen (convexHull 𝕜 s) := by
-  simpa [← subset_interior_iff_isOpen, hs.interior_eq] using convexHull_interior_subset 𝕜 s
+variable [ZeroLEOneClass 𝕜] [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] [IsTopologicalAddGroup E]
 
 theorem IsOpen.absConvexHull {s : Set E} (hs : IsOpen s) (hzero : 0 ∈ s) :
     IsOpen (absConvexHull 𝕜 s) := by
   rw [absConvexHull_eq_convexHull_balancedHull]
-  exact hs.balancedHull 𝕜 hzero |>.convexHull 𝕜
+  exact hs.balancedHull hzero |>.convexHull
 
 end
 
