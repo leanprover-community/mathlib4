@@ -9,6 +9,8 @@ public import Mathlib.Analysis.Convex.Between
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Normed.Module.Convex
 
+import Mathlib.LinearAlgebra.AffineSpace.Ordered
+
 /-!
 # Sides of affine subspaces
 
@@ -729,6 +731,147 @@ theorem sOppSide_pointReflection {s : AffineSubspace R P} {x y : P} (hx : x ∈ 
     s.SOppSide y (pointReflection R x y) := by
   refine (sbtw_pointReflection_of_ne R fun h => hy ?_).sOppSide_of_notMem_of_mem hy hx
   rwa [← h]
+
+theorem wSameSide_iff_wOppSide_pointReflection
+    {S : AffineSubspace R P} {x : P}
+    (hx : x ∈ S) (p q : P) :
+    S.WSameSide p q ↔ S.WOppSide ((AffineEquiv.pointReflection R x) p) q := by
+  constructor
+  · intro h
+    by_cases hp : p ∈ S
+    · exact AffineSubspace.wOppSide_of_left_mem q (by
+        rw [AffineEquiv.pointReflection_apply]
+        simpa using S.smul_vsub_vadd_mem (1 : R) hx hp hx)
+    · exact (AffineSubspace.sOppSide_pointReflection hx hp).symm.trans_wSameSide h
+  · intro h
+    by_cases hp : p ∈ S
+    · exact AffineSubspace.wSameSide_of_left_mem q hp
+    · exact (AffineSubspace.sOppSide_pointReflection hx hp).trans_wOppSide h
+
+theorem sSameSide_iff_sOppSide_pointReflection
+    {S : AffineSubspace R P} {x : P}
+    (hx : x ∈ S) (p q : P) :
+    S.SSameSide p q ↔ S.SOppSide ((AffineEquiv.pointReflection R x) p) q := by
+  constructor
+  · intro h
+    exact (AffineSubspace.sOppSide_pointReflection hx h.left_notMem).symm.trans_sSameSide h
+  · intro h
+    have hp : p ∉ S := by
+      intro hp
+      exact h.left_notMem (by
+        rw [AffineEquiv.pointReflection_apply]
+        simpa using S.smul_vsub_vadd_mem (1 : R) hx hp hx)
+    exact (AffineSubspace.sOppSide_pointReflection hx hp).trans h
+
+theorem wSameSide_pointReflection_iff_wOppSide
+    {S : AffineSubspace R P} {x : P}
+    (hx : x ∈ S) (p q : P) :
+    S.WSameSide ((AffineEquiv.pointReflection R x) p) q ↔ S.WOppSide p q := by
+  simpa [Equiv.pointReflection_involutive x p] using
+    wSameSide_iff_wOppSide_pointReflection hx ((AffineEquiv.pointReflection R x) p) q
+
+theorem sSameSide_pointReflection_iff_sOppSide
+    {S : AffineSubspace R P} {x : P}
+    (hx : x ∈ S) (p q : P) :
+    S.SSameSide ((AffineEquiv.pointReflection R x) p) q ↔ S.SOppSide p q := by
+  simpa [Equiv.pointReflection_involutive x p] using
+    sSameSide_iff_sOppSide_pointReflection hx ((AffineEquiv.pointReflection R x) p) q
+
+/- {x | S.SSameSide p x} is closed under Wbtw. Implies that
+open half spaces are convex -/
+theorem _root_.Wbtw.sSameSide_of_sSameSide_of_sSameSide
+    {S : AffineSubspace R P} {p : P} {x y z : P}
+    (hx_side : S.SSameSide p x) (hy_side : S.SSameSide p y)
+    (hz_btw : Wbtw R x z y) :
+    S.SSameSide p z := by
+  obtain ⟨q, hq⟩ := AffineSubspace.SSameSide.nonempty hx_side
+  simp only [Wbtw, affineSegment, Set.mem_image, Set.mem_Icc] at hz_btw
+  obtain ⟨t, ht, hz_eq⟩ := hz_btw
+  have hp : p ∉ S := AffineSubspace.SSameSide.left_notMem hx_side
+  /-
+  given p ∉ S, q ∈ S, image2 tells us
+  1) x and y are both of the form t(p-q) + q' for 0 < t, q' ∈ S
+  2) expressing z in this form is sufficient for goal
+
+  we can do that by linearly interpolating the t and q',
+  so we need to show:
+  1) z = ((lineMap tx ty) t) * (p-q) + ((lineMap qx qy) t)
+  2) the scalar is > 0 and the basepoint is in S
+  -/
+  have image2 := AffineSubspace.setOf_sSameSide_eq_image2 hp hq
+  simp only [Set.ext_iff, Set.mem_setOf_eq, Set.mem_image2, Set.mem_Ioi,
+    SetLike.mem_coe] at image2
+  obtain ⟨tx, htx, qx, hqx, hx_eq⟩ := (image2 x).mp hx_side
+  obtain ⟨ty, hty, qy, hqy, hy_eq⟩ := (image2 y).mp hy_side
+  set tz := (AffineMap.lineMap tx ty) t with htz
+  set qz := (AffineMap.lineMap qx qy) t with hqz
+  apply (image2 z).mpr
+  use (AffineMap.lineMap tx ty) t
+  constructor
+  · /- WTS (lineMap tx ty) t > 0 -/
+    simpa using
+      (lineMap_strict_mono_endpoints
+        (a := (0 : R)) (a' := tx) (b := (0 : R)) (b' := ty)
+        htx hty ht.1 ht.2)
+  use (AffineMap.lineMap qx qy) t
+  constructor
+  · /- WTS (lineMap qx qy) t ∈ S -/
+    exact AffineMap.lineMap_mem t hqx hqy
+  · /- WTS z = ((lineMap tx ty) t) * (p-q) + ((lineMap qx qy) t) -/
+    rw [← hz_eq, ← hx_eq, ← hy_eq]
+    rw [← AffineMap.lineMap_vadd_lineMap]
+    simp [AffineMap.lineMap_apply_module, smul_eq_mul, vadd_right_cancel_iff]
+    module
+
+/- {x | S.WSameSide p x} is closed under Wbtw. Implies that
+closed half spaces are convex. -/
+theorem _root_.Wbtw.wSameSide_of_wSameSide_of_wSameSide
+    {S : AffineSubspace R P} {p : P} {x y z : P}
+    (hx_side : S.WSameSide p x) (hy_side : S.WSameSide p y)
+    (hz_btw : Wbtw R x z y) :
+    S.WSameSide p z := by
+    /- if none are in S we can reduce to strong case, and rest
+    follow from known lemmas -/
+  by_cases hp : p ∈ S
+  · exact AffineSubspace.wSameSide_of_left_mem z hp
+  · by_cases hx : x ∈ S <;> by_cases hy : y ∈ S
+    · have hz := AffineSubspace.mem_of_wbtw hz_btw hx hy
+      exact AffineSubspace.wSameSide_of_right_mem p hz
+    · refine AffineSubspace.WSameSide.trans hy_side ?_ hy
+      exact Wbtw.wSameSide₃₂ hz_btw hx
+    · refine AffineSubspace.WSameSide.trans hx_side ?_ hx
+      exact Wbtw.wSameSide₁₂ hz_btw hy
+    · suffices hstrong : S.SSameSide p z by
+        exact AffineSubspace.SSameSide.wSameSide hstrong
+      refine Wbtw.sSameSide_of_sSameSide_of_sSameSide ?_ ?_ hz_btw
+      · exact ⟨hx_side, hp, hx⟩
+      · exact ⟨hy_side, hp, hy⟩
+
+theorem _root_.Wbtw.wOppSide_of_wOppSide_of_wOppSide
+    {S : AffineSubspace R P} {p : P} {x y z : P}
+    (hx_side : S.WOppSide p x) (hy_side : S.WOppSide p y)
+    (hz_btw : Wbtw R x z y) :
+    S.WOppSide p z := by
+  /- reduce by reflection to SameSide case -/
+  obtain ⟨r, hr⟩ := AffineSubspace.WOppSide.nonempty hx_side
+  apply (wSameSide_pointReflection_iff_wOppSide hr p z).mp
+  set p' := (AffineEquiv.pointReflection R r) p with hp'
+  refine Wbtw.wSameSide_of_wSameSide_of_wSameSide ?_ ?_ hz_btw
+  · exact (wSameSide_pointReflection_iff_wOppSide hr p x).mpr hx_side
+  · exact (wSameSide_pointReflection_iff_wOppSide hr p y).mpr hy_side
+
+theorem _root_.Wbtw.sOppSide_of_sOppSide_of_sOppSide
+    {S : AffineSubspace R P} {p : P} {x y z : P}
+    (hx_side : S.SOppSide p x) (hy_side : S.SOppSide p y)
+    (hz_btw : Wbtw R x z y) :
+    S.SOppSide p z := by
+  /- reduce by reflection to SameSide case -/
+  obtain ⟨r, hr⟩ := AffineSubspace.SOppSide.nonempty hx_side
+  apply (sSameSide_pointReflection_iff_sOppSide hr p z).mp
+  set p' := (AffineEquiv.pointReflection R r) p with hp'
+  refine Wbtw.sSameSide_of_sSameSide_of_sSameSide ?_ ?_ hz_btw
+  · exact (sSameSide_pointReflection_iff_sOppSide hr p x).mpr hx_side
+  · exact (sSameSide_pointReflection_iff_sOppSide hr p y).mpr hy_side
 
 end LinearOrderedField
 
