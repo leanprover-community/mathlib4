@@ -115,13 +115,13 @@ the first homology of the naive cotangent complex of `S` over `P.Ring` and
 the cotangent space of `P`. -/
 noncomputable
 def h1CotangentEquivCotangent {R : Type u} {S : Type v} [CommRing R] [CommRing S]
-    [Algebra R S] (P : Extension R S) :
+    [Algebra R S] (P : Extension.{w} R S) :
     H1Cotangent P.Ring S ≃ₗ[S] P.Cotangent :=
   P.h1CotangentExtendScalarsEquiv.symm ≪≫ₗ
     P.extendScalars.h1CotangentEquivOfSurjective Function.surjective_id ≪≫ₗ
     P.cotangentExtendScalarsEquiv
 
-theorem cotangentComplex_comp_coe_h1CotangentEquivCotangent (P : Extension R S) :
+theorem cotangentComplex_comp_coe_h1CotangentEquivCotangent (P : Extension.{w} R S) :
     P.cotangentComplex.comp P.h1CotangentEquivCotangent.toLinearMap =
       H1Cotangent.δ R P.Ring S := by
   rw [h1CotangentEquivCotangent, LinearEquiv.coe_trans, LinearEquiv.coe_trans,
@@ -139,7 +139,7 @@ theorem cotangentComplex_comp_coe_h1CotangentEquivCotangent (P : Extension R S) 
   rw [← Generators.H1Cotangent.δ_C _ _ u.prop hu]
   congr
 
-theorem coe_h1CotangentEquivCotangent_comp_map (P : Extension R S) :
+theorem coe_h1CotangentEquivCotangent_comp_map (P : Extension.{w} R S) :
     P.h1CotangentEquivCotangent.toLinearMap.comp (Algebra.H1Cotangent.map R P.Ring S S) =
       h1Cotangentι.comp (H1Cotangent.map P.defaultHom) := by
   rw [h1CotangentEquivCotangent, LinearEquiv.coe_trans, LinearEquiv.coe_trans,
@@ -151,7 +151,7 @@ theorem coe_h1CotangentEquivCotangent_comp_map (P : Extension R S) :
     LinearMap.comp_assoc, ← (H1Cotangent.map P.toExtendScalars).restrictScalars_self,
     ← H1Cotangent.map_comp, H1Cotangent.map_eq]
 
-theorem H1Cotangent.map_defaultHom_surjective (P : Extension R S) :
+theorem H1Cotangent.map_defaultHom_surjective (P : Extension.{w} R S) :
     Function.Surjective (H1Cotangent.map P.defaultHom) := by
   rw [← LinearMap.range_eq_top,
     ← (Submodule.map_injective_of_injective h1Cotangentι_injective).eq_iff,
