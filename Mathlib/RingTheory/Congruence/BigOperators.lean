@@ -53,6 +53,11 @@ protected lemma finsetSum {ι S : Type*} [AddCommMonoid S] [Mul S] (t : RingCon 
     t (s.sum f) (s.sum g) :=
   t.toAddCon.finsetSum s h
 
+protected lemma coe_finsetSum {ι S : Type*} [NonAssocSemiring S] (t : RingCon S) (s : Finset ι)
+    {f : ι → S} :
+    (↑(s.sum f) : t.Quotient) = ∑ i ∈ s, (f i : t.Quotient) :=
+  map_sum (mk' t) f s
+
 protected lemma finsuppProd {ι : Type*} {β : Type*} {M : Type*}
     [Add M] [CommMonoid M] [Zero β]
     (c : RingCon M) (h : ι → β → M) (h' : ι → β → M)

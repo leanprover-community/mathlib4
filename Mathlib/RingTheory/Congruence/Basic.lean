@@ -26,7 +26,6 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 
 ## TODO
 
-* Use this for `RingQuot` too.
 * Copy across more API from `Con` and `AddCon` in `Mathlib/GroupTheory/Congruence/`.
 -/
 
@@ -319,6 +318,14 @@ protected def gi : @GaloisInsertion (R → R → Prop) (RingCon R) _ _ ringConGe
       ringConGen_of_ringCon c ▸ ringConGen_mono H⟩
   le_l_u x := (ringConGen_of_ringCon x).symm ▸ le_refl x
   choice_eq _ _ := rfl
+
+variable {R}
+
+theorem le_comap_ringConGen {R' F} [Add R'] [Mul R'] [FunLike F R' R]
+    [MulHomClass F R' R] [AddHomClass F R' R] (r : R → R → Prop) (f : F) :
+    ringConGen (r.onFun f) ≤ (ringConGen r).comap f  := by
+  apply ringConGen_le fun x y h => ?_
+  exact RingConGen.Rel.of _ _ h
 
 end Lattice
 
