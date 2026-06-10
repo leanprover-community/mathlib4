@@ -45,38 +45,26 @@ complete block `0 ≤ i < n` of consecutive shifts equals `m`, where `/` is Eucl
 (`Int.ediv`) division. -/
 theorem sum_range_add_ediv (m : ℤ) {n : ℕ} (hn : 0 < n) :
     ∑ i ∈ Finset.range n, (m + i) / n = m := by
-  -- key step: replacing `m` by `m + 1` increases the sum by exactly one.
-  have key : ∀ k : ℤ,
-      ∑ i ∈ Finset.range n, (k + 1 + i) / n = (∑ i ∈ Finset.range n, (k + i) / n) + 1 := by
-    intro k
-    -- View the summands as `f` evaluated at `i` and at `i + 1`.
-    set f : ℕ → ℤ := fun i ↦ (k + i) / n with hf
-    have hshift : ∑ i ∈ Finset.range n, (k + 1 + i) / n = ∑ i ∈ Finset.range n, f (i + 1) := by
-      simp [hf, add_comm, add_left_comm]
-    rw [hshift]
-    have hfn : f n = f 0 + 1 := by
-      simp only [hf, Nat.cast_zero, add_zero]
-      rw [show k + n = k + 1 * n by ring, Int.add_mul_ediv_right _ _ (by exact_mod_cast hn.ne')]
-    have hsum : (∑ i ∈ Finset.range n, f (i + 1)) + f 0 = (∑ i ∈ Finset.range n, f i) + f n := by
-      rw [← Finset.sum_range_succ', ← Finset.sum_range_succ]
-    rw [hfn] at hsum
-    linarith [hsum]
-  -- Induct on `m`, using `key` in both directions.
-  induction m using Int.induction_on with
-  | zero =>
-    refine Finset.sum_eq_zero fun i hi ↦ ?_
-    rw [zero_add]
-    exact Int.ediv_eq_zero_of_lt (by positivity) (by exact_mod_cast Finset.mem_range.mp hi)
-  | succ k ih => exact (key k).trans (congrArg (· + 1) ih)
-  | pred k ih => grind [key (-k - 1)]
+  rw [← Int.natCast_pos] at hn
+  lift m % n to ℕ using Int.emod_nonneg m (by grind) with t ht
+  calc
+    _ = ∑ i ∈ Finset.range n, (m / n + if n - t ≤ i then 1 else 0) := 
+      Finset.sum_congr rfl fun i hi ↦ by
+        rw [Int.add_ediv_of_pos hn]
+        grind [Nat.div_eq_zero_iff, Nat.mod_eq_of_lt]
+    _ = n * (m / n) + (Finset.Ico (n - t) n).card := by
+      simp [Finset.sum_add_distrib, -tsub_le_iff_right, -Nat.sub_le_iff_le_add, 
+        ← Nat.Ico_zero_eq_range]
+    _ = m := by 
+      have : m % n < n := Int.emod_lt_of_pos _ hn
+      grind [Int.mul_ediv_add_emod, Nat.card_Ico]
 
 /-- Reduction of a real floor to an integer (Euclidean) division:
 `⌊x + i / n⌋ = (⌊n * x⌋ + i) / n`. -/
 theorem floor_add_natCast_div (x : α) {n : ℕ} (hn : 0 < n) (i : ℕ) :
-    ⌊x + (i : α) / n⌋ = (⌊(n : α) * x⌋ + i) / n := by
-  have hn0 : (n : α) ≠ 0 := by exact_mod_cast hn.ne'
-  rw [show x + (i : α) / n = ((n : α) * x + i) / n by field_simp,
-    Int.floor_div_natCast, Int.floor_add_natCast]
+    ⌊x + i / n⌋ = (⌊n * x⌋ + i) / n := by
+  rw [← Int.floor_add_natCast, ← Int.floor_div_natCast]
+  field_simp
 
 /-- **Hermite's identity** for the floor function: for every `x` in a linearly ordered
 floor field and every `n : ℕ`, `∑ i ∈ Finset.range n, ⌊x + i / n⌋ = ⌊n * x⌋`. -/
