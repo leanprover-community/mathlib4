@@ -43,7 +43,7 @@ name_poly_vars s, t, u over R
 /-- The polynomial map on coordinate vectors giving
 `(x(P) * x(Q) : x(P) + x(Q) : 1) ↦ (x(P+Q) * x(P-Q) : x(P+Q) + x(P-Q) : 1)`
 for points `P`, `Q` on the elliptic curve `W`. -/
-noncomputable def addSubMap : Fin 3 → MvPolynomial (Fin 3) R :=
+@[expose] noncomputable def addSubMap : Fin 3 → MvPolynomial (Fin 3) R :=
   ![s ^ 2 - C W.b₄ * s * u - C W.b₆ * t * u - C W.b₈ * u ^ 2,
     C 2 * t * s + C W.b₂ * s * u + C W.b₄ * t * u + C W.b₆ * u ^ 2,
     t ^ 2 - C 4 * s * u]
