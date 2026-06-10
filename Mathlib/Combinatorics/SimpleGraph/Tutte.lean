@@ -90,7 +90,7 @@ private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
   have exists_complMatch (K : G.deleteUniversalVerts.coe.ConnectedComponent) :
       ∃ M : Subgraph G, M.verts = Subtype.val '' K.supp \ M1.verts ∧ M.IsMatching := by
     have : G.IsClique (Subtype.val '' K.supp \ M1.verts) :=
-      ((h' K).of_induce).subset Set.diff_subset
+      ((h' K).of_induce).subset Set.sdiff_subset
     rw [← this.even_iff_exists_isMatching (Set.toFinite _), hM1.1]
     exact even_ncard_image_val_supp_sdiff_image_val_rep_union _ ht hrep
   choose complMatch hcomplMatch_compl hcomplMatch_match using exists_complMatch
@@ -99,7 +99,7 @@ private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
     refine .iSup hcomplMatch_match fun i j hij ↦ (?_ : Disjoint _ _)
     rw [(hcomplMatch_match i).support_eq_verts, hcomplMatch_compl i,
         (hcomplMatch_match j).support_eq_verts, hcomplMatch_compl j]
-    exact Set.disjoint_of_subset Set.diff_subset Set.diff_subset <|
+    exact Set.disjoint_of_subset Set.sdiff_subset Set.sdiff_subset <|
       Set.disjoint_image_of_injective Subtype.val_injective <|
         SimpleGraph.pairwise_disjoint_supp_connectedComponent _ hij
   have disjointM12 : Disjoint M1.support M2.support := by
@@ -108,7 +108,7 @@ private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
     exact fun K ↦ hcomplMatch_compl K ▸ Set.disjoint_sdiff_right
   -- The only vertices left are indeed contained in universalVerts
   have : (M1.verts ∪ M2.verts)ᶜ ⊆ G.universalVerts := by
-    rw [Set.compl_subset_comm, Set.compl_eq_univ_diff]
+    rw [Set.compl_subset_comm, Set.compl_eq_univ_sdiff]
     intro v hv
     by_cases h : v ∈ M1.verts
     · exact M1.verts.mem_union_left _ h

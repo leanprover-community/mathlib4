@@ -295,7 +295,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat.{u}} (c : BinaryCofan X Y) :
             have : ∀ a, a ∉ Set.range c.inl → a ∈ Set.range c.inr := by
               rintro a (h : a ∈ (Set.range c.inl)ᶜ)
               rwa [eq_compl_iff_isCompl.mpr h₃.symm]
-            convert_to Continuous
+            convert_to! Continuous
                 (g ∘ h₂.isEmbedding.toHomeomorph.symm ∘ Subtype.map _ this)
             · ext ⟨x, hx⟩
               exact dif_neg hx
