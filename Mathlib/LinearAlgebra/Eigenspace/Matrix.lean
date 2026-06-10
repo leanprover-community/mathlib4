@@ -5,7 +5,6 @@ Authors: Jon Bannon, Jireh Loreaux
 -/
 module
 
-public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-!
@@ -136,14 +135,6 @@ theorem spectrum_toLin (A : Matrix n n R) (b : Basis n R M) :
 @[simp]
 theorem spectrum_toLin' (A : Matrix n n R) : spectrum R A.toLin' = spectrum R A :=
   AlgEquiv.spectrum_eq Matrix.toLinAlgEquiv' A
-
-@[simp]
-lemma hasEigenvalue_toLin'_transpose_iff [IsDomain R] {A : Matrix n n R} {μ : R} :
-    HasEigenvalue Aᵀ.toLin' μ ↔ HasEigenvalue A.toLin' μ := by
-  have aux : toLin' Aᵀ - μ • 1 = toLin' (A - μ • 1)ᵀ := by ext; simp
-  have aux' : toLin' A - μ • 1 = toLin' (A - μ • 1) := by ext; simp
-  simp only [hasEigenvalue_iff, eigenspace_def, aux, aux', ← LinearMap.det_eq_zero_iff_ker_ne_bot,
-    LinearMap.det_toLin', Matrix.det_transpose]
 
 end Matrix
 
