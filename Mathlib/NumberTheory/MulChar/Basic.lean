@@ -462,8 +462,7 @@ theorem zpow_apply_coe {R : Type*} [CommGroupWithZero R] {R' : Type*} [CommRing 
     (χ : MulChar R R') (n : ℤ) (a : Rˣ) : (χ ^ n) a = χ (a ^ n : Rˣ) := by
   obtain ⟨m, rfl | rfl⟩ := Int.eq_nat_or_neg n
   · simp [pow_apply_coe]
-  · rw [zpow_neg, zpow_natCast, inv_apply', ← Units.val_inv_eq_inv_val, pow_apply_coe,
-      ← inv_zpow', zpow_natCast, Units.val_pow_eq_pow_val, map_pow]
+  · simp [pow_apply_coe, inv_apply', ← inv_pow]
 
 lemma injective_ringHomComp {f : R' →+* R''} (hf : Function.Injective f) :
     Function.Injective (ringHomComp (R := R) · f) := by
