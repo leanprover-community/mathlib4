@@ -81,6 +81,8 @@ end IntervalPartition
 /-- Data for a tubular neighborhood in path space.
 This is completely abstract: just neighborhoods and their properties.
 The connection to paths and intervals is made via the partition parameter in `PathInTube`.
+The endpoints `x y` are phantom parameters: no field mentions them, but they pin down the
+type `Path x y` of the paths the tube is for (see `TubeData.toSet`).
 
 Consists of:
 - Segment neighborhoods U[i] (for n segments)
@@ -300,7 +302,7 @@ private theorem Path.exists_rung_paths {x y : X} {n : ℕ} (γ γ' : Path x y)
 
 /-- For a single segment i, the path γ_i · α_{i+1} (along γ then down the next rung) is
 homotopic to α_i · γ'_i (down the current rung then along γ'). Both paths lie entirely in
-the SLSC neighborhood U_i, and since they share endpoints, the SLSC property implies they
+the path-homotopy-trivial set U_i, and since they share endpoints, triviality implies they
 are homotopic. This is the crucial "rectangle" homotopy for each segment. -/
 public theorem Path.segment_rung_homotopy {a b c d : X} (U : Set X)
     (hU : IsPathHomotopyTrivial U)
@@ -440,7 +442,7 @@ public theorem IsPathHomotopyTrivial.nullhomotopic_of_range_subset {U : Set X}
 /-- One-sided specialization of `paste_segment_homotopies` that kills the source loop.
 
 Given the same rectangle homotopies, plus:
-- U₀ is an SLSC neighborhood containing the range of α 0
+- U₀ is a path-homotopy-trivial set containing the range of α 0
 
 Then `γ'` is homotopic to `γ` followed by the final rung. -/
 public theorem Path.paste_segment_homotopies_trivial_source {x y y' : X} {n : ℕ}
@@ -467,7 +469,7 @@ public theorem Path.paste_segment_homotopies_trivial_source {x y y' : X} {n : �
   exact h_paste.trans <| Path.Homotopic.trans_left_of_nullhomotopic h_α₀_null
 
 /-- Two-sided specialization of `paste_segment_homotopies`: if the source and target rungs live in
-SLSC neighborhoods, then both endpoint loops are null-homotopic and we get γ ≃ γ' directly. -/
+path-homotopy-trivial sets, then both endpoint loops are null-homotopic and we get γ ≃ γ' directly. -/
 public theorem Path.paste_segment_homotopies_trivial {x y : X} {n : ℕ} (γ γ' : Path x y)
     (part : IntervalPartition n)
     (α : (i : Fin (n + 1)) → Path (γ (part.t i)) (γ' (part.t i)))
@@ -501,12 +503,7 @@ public theorem Path.tube_subset_homotopy_class {x y : X} {n : ℕ}
     (hγ : PathInTube γ part T)
     (γ' : Path x y) (hγ' : PathInTube γ' part T) :
     Path.Homotopic γ' γ := by
-  -- Step 1: Construct rungs connecting partition points
   obtain ⟨α, hα_ranges⟩ := Path.exists_rung_paths γ γ' part T hγ hγ'
-  -- Step 2: For each segment i, prove the rectangle homotopy using segment_rung_homotopy
-  -- The subpaths γ|[t_i, t_{i+1}] and γ'|[t_i, t_{i+1}] both lie in U_i
-  -- The rungs α_i and α_{i+1} also lie in U_i
-  -- By SLSC property of U_i, we get: γ_i · α_{i+1} ≃ α_i · γ'_i
   have h_rectangles : ∀ (i : Fin n),
       Path.Homotopic
         ((γ.subpath (part.t i.castSucc) (part.t i.succ)).trans (α i.succ))
@@ -521,7 +518,6 @@ public theorem Path.tube_subset_homotopy_class {x y : X} {n : ℕ}
       exact (hα_ranges i).1
     · -- α i.succ has range in U_i
       exact (hα_ranges i).2
-  -- Step 3: Apply the stronger pasting lemma to kill the endpoint loops.
   cases n with
   | zero => exact isEmptyElim part
   | succ n' =>
