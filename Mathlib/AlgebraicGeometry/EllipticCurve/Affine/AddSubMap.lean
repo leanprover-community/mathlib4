@@ -99,7 +99,8 @@ lemma isHomogeneous_addSubMap (i : Fin 3) : (addSubMap W i).IsHomogeneous 2 := b
   · exact .add (.add (.add CXY CXY) CXY) CXX
   · exact .sub (isHomogeneous_X_pow ..) CXY
 
-lemma isHomogenous_addSubMapCoeff (ij : Fin 3 × Fin 3) : (addSubMapCoeff W ij).IsHomogeneous 2 := by
+lemma isHomogeneous_addSubMapCoeff (ij : Fin 3 × Fin 3) :
+    (addSubMapCoeff W ij).IsHomogeneous 2 := by
   simp only [addSubMapCoeff]
   fin_cases ij <;>
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Function.uncurry_apply_pair,
