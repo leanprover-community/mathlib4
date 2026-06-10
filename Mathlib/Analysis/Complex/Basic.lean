@@ -45,9 +45,13 @@ We also register the fact that `ℂ` is an `RCLike` field.
 
 assert_not_exists Absorbs
 
+namespace Complex
+
 /-- A shortcut instance to ensure computability; otherwise we get the noncomputable instance
 `Complex.instNormedField.toNormedModule.toModule`. -/
-instance Complex.instModuleSelf : Module ℂ ℂ := delta% inferInstance
+instance instModuleSelf : Module ℂ ℂ := delta% inferInstance
+
+end Complex
 
 noncomputable section
 
@@ -92,7 +96,7 @@ theorem continuous_normSq : Continuous normSq := by
   simpa [← Complex.normSq_eq_norm_sq] using continuous_norm (E := ℂ).pow 2
 
 theorem nnnorm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖₊ = 1 :=
-  (pow_left_inj₀ zero_le' zero_le' hn).1 <| by rw [← nnnorm_pow, h, nnnorm_one, one_pow]
+  (pow_left_inj₀ zero_le zero_le hn).1 <| by rw [← nnnorm_pow, h, nnnorm_one, one_pow]
 
 theorem norm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖ = 1 :=
   congr_arg Subtype.val (nnnorm_eq_one_of_pow_eq_one h hn)
@@ -108,11 +112,11 @@ theorem equivRealProd_apply_le' (z : ℂ) : ‖equivRealProd z‖ ≤ 1 * ‖z�
   simpa using equivRealProd_apply_le z
 
 theorem lipschitz_equivRealProd : LipschitzWith 1 equivRealProd := by
-  simpa using AddMonoidHomClass.lipschitz_of_bound equivRealProdLm 1 equivRealProd_apply_le'
+  simpa using! AddMonoidHomClass.lipschitz_of_bound equivRealProdLm 1 equivRealProd_apply_le'
 
 theorem antilipschitz_equivRealProd : AntilipschitzWith (NNReal.sqrt 2) equivRealProd :=
   AddMonoidHomClass.antilipschitz_of_bound equivRealProdLm fun z ↦ by
-    simpa only [Real.coe_sqrt, NNReal.coe_ofNat] using norm_le_sqrt_two_mul_max z
+    simpa only [Real.coe_sqrt, NNReal.coe_ofNat] using! norm_le_sqrt_two_mul_max z
 
 theorem isUniformEmbedding_equivRealProd : IsUniformEmbedding equivRealProd :=
   antilipschitz_equivRealProd.isUniformEmbedding lipschitz_equivRealProd.uniformContinuous
@@ -243,7 +247,7 @@ theorem continuous_conj : Continuous (conj : ℂ → ℂ) :=
 conjugation. -/
 theorem ringHom_eq_id_or_conj_of_continuous {f : ℂ →+* ℂ} (hf : Continuous f) :
     f = RingHom.id ℂ ∨ f = conj := by
-  simpa only [DFunLike.ext_iff] using real_algHom_eq_id_or_conj (AlgHom.mk' f (map_real_smul f hf))
+  simpa only [DFunLike.ext_iff] using! real_algHom_eq_id_or_conj (AlgHom.mk' f (map_real_smul f hf))
 
 /-- The complex-conjugation function from `ℂ` to itself is a continuous `ℝ`-algebra isomorphism. -/
 def conjCAE : ℂ ≃A[ℝ] ℂ := { conjAe, conjLIE.toContinuousLinearEquiv with }
@@ -262,9 +266,8 @@ theorem conjCAE_toAlgEquiv : conjCAE.toAlgEquiv = conjAe :=
 @[simp] theorem conjCLE_toLinearEquiv : conjCLE.toLinearEquiv = conjAe.toLinearEquiv :=
   rfl
 
-@[simp] lemma conjCLE_coe_toLinearMap :
-    (conjCLE : ℂ →ₗ[ℝ] ℂ) = conjAe.toLinearMap :=
-  rfl
+@[deprecated "Now provable by simp" (since := "2026-04-13")]
+lemma conjCLE_coe_toLinearMap : (conjCLE : ℂ →ₗ[ℝ] ℂ) = conjAe.toLinearMap := by simp
 
 @[simp]
 theorem conjCAE_apply (z : ℂ) : conjCAE z = conj z :=
@@ -312,8 +315,9 @@ lemma _root_.Filter.Tendsto.ofReal {α : Type*} {l : Filter α} {f : α → ℝ}
 
 /-- The only continuous ring homomorphism from `ℝ` to `ℂ` is the identity. -/
 theorem ringHom_eq_ofReal_of_continuous {f : ℝ →+* ℂ} (h : Continuous f) : f = ofRealHom := by
-  convert congr_arg AlgHom.toRingHom <| Subsingleton.elim (AlgHom.mk' f <| map_real_smul f h)
-    (Algebra.ofId ℝ ℂ)
+  convert!
+    congr_arg AlgHom.toRingHom <|
+      Subsingleton.elim (AlgHom.mk' f <| map_real_smul f h) (Algebra.ofId ℝ ℂ)
 
 /-- Continuous linear map version of the canonical embedding of `ℝ` in `ℂ`. -/
 def ofRealCLM : ℝ →L[ℝ] ℂ :=
