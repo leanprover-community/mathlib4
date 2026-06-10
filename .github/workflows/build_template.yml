@@ -935,10 +935,10 @@ jobs:
           echo "Found label actor: $USERNAME ($ACTOR_TYPE)"
 
       # bot usernames will cause this step to error with "Could not resolve to a User...",
-      # so we skip it for all bot actors; allowed bots are validated in the next step
+      # so we skip it for all non-user actors; allowed bots are validated in the next step
       - if: >-
           contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI') &&
-          steps.get-label-actor.outputs.actor_type != 'Bot'
+          steps.get-label-actor.outputs.actor_type == 'User'
         name: check team membership
         uses: tspascoal/get-user-teams-membership@b2546c5affc730fd8e3d8483ae9ad3621938c2f9 # v4.0.2
         id: actorTeams
