@@ -790,8 +790,7 @@ instance : IsZeroApply (M →ₛₗ[σ₁₂] M₂) M M₂ where
 
 @[deprecated (since := "2026-05-20")] protected alias zero_apply := _root_.zero_apply
 
-@[simp] lemma coe_zero_iff (f : M →ₛₗ[σ₁₂] M₂) : ⇑f = 0 ↔ f = 0 := by
-  aesop
+@[deprecated (since := "2026-06-10")] alias coe_zero_iff := FunLike.coe_zero_iff
 
 @[simp]
 theorem comp_zero (g : M₂ →ₛₗ[σ₂₃] M₃) : (g.comp (0 : M →ₛₗ[σ₁₂] M₂) : M →ₛₗ[σ₁₃] M₃) = 0 :=
@@ -831,7 +830,7 @@ instance : Add (M →ₛₗ[σ₁₂] M₂) :=
       map_add' := by simp [add_comm, add_left_comm]
       map_smul' := by simp [smul_add] }⟩
 
-instance instIsAddApply : IsAddApply (M →ₛₗ[σ₁₂] M₂) M M₂ where
+instance : IsAddApply (M →ₛₗ[σ₁₂] M₂) M M₂ where
   add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-05-20")] protected alias add_apply := _root_.add_apply
