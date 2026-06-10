@@ -131,7 +131,6 @@ be used once that is defined. -/
 @[deprecated "Please use `orthogonalProjectionOnto` or `starProjection`." (since := "2026-06-10")]
 abbrev orthogonalProjectionFn (x : E) : E := K.starProjection x
 
-set_option linter.deprecated false in
 @[deprecated "Please use `orthogonalProjectionOnto` or `starProjection`." (since := "2026-06-10")]
 theorem orthogonalProjectionFn_eq (v : E) :
     K.orthogonalProjectionFn v = (K.orthogonalProjectionOnto v : E) := rfl
