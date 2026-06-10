@@ -118,7 +118,7 @@ theorem frequently_measure_inter_ne_zero (hf : Conservative f μ) (hs : NullMeas
   -- Then all `t n`, `n > N`, are null sets, hence `T = t N \ ⋃ n > N, t n` has positive measure.
   set T := t N \ ⋃ n > N, t n with hT
   have hμT : μ T ≠ 0 := by
-    rwa [hT, measure_diff_null]
+    rwa [hT, measure_sdiff_null]
     exact (measure_biUnion_null_iff {n | N < n}.to_countable).2 hmax
   have hTm : NullMeasurableSet T μ := htm.diff <| .biUnion {n | N < n}.to_countable fun _ _ ↦ htm
   -- Take `x ∈ T` and `m ≠ 0` such that `f^[m] x ∈ T`.

@@ -106,7 +106,7 @@ class CuspFormClass (F : Type*) (Γ : outParam <| Subgroup (GL (Fin 2) ℝ)) (k 
 instance (priority := 100) ModularForm.funLike :
     FunLike (ModularForm Γ k) ℍ ℂ where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.ext' h
+  coe_injective f g h := by cases f; cases g; congr; exact DFunLike.ext' h
 
 instance (priority := 100) ModularForm.instModularFormClass :
     ModularFormClass (ModularForm Γ k) Γ k where
@@ -122,7 +122,7 @@ lemma ModularFormClass.continuous {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)}
 
 instance (priority := 100) CuspForm.funLike : FunLike (CuspForm Γ k) ℍ ℂ where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.ext' h
+  coe_injective f g h := by cases f; cases g; congr; exact DFunLike.ext' h
 
 instance (priority := 100) CuspFormClass.cuspForm : CuspFormClass (CuspForm Γ k) Γ k where
   slash_action_eq f := f.slash_action_eq'

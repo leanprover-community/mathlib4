@@ -157,8 +157,10 @@ variable [CommMonoid α] {x y z : α}
 @[to_additive (attr := symm)]
 theorem IsRelPrime.symm (H : IsRelPrime x y) : IsRelPrime y x := fun _ hx hy ↦ H hy hx
 
-@[to_additive]
-theorem symmetric_isRelPrime : Symmetric (IsRelPrime : α → α → Prop) := fun _ _ ↦ .symm
+@[to_additive] instance symm_isRelPrime : Std.Symm (IsRelPrime : α → α → Prop) where
+  symm _ _ := .symm
+
+@[deprecated (since := "2026-06-10")] alias symmetric_isRelPrime := symm_isRelPrime
 
 @[to_additive] theorem isRelPrime_comm : IsRelPrime x y ↔ IsRelPrime y x :=
   ⟨IsRelPrime.symm, IsRelPrime.symm⟩
