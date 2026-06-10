@@ -214,6 +214,7 @@ variable {R : Type*} [NonAssocRing R]
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The ring norm underlying a multiplicative ring norm. -/
 def toRingNorm (f : MulRingNorm R) : RingNorm R where
+  toFun := f
   __ := f
   mul_le' x y := le_of_eq (f.map_mul' x y)
 
