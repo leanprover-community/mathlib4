@@ -330,6 +330,8 @@ instance instAddCommMonoid : AddCommMonoid (VectorMeasure α M) := FunLike.addCo
 
 @[deprecated (since := "2026-06-10")] alias coeFnAddMonoidHom := FunLike.coeAddMonoidHom
 
+@[deprecated (since := "2026-06-10")] alias coeFnAddMonoidHom_apply := FunLike.coeAddMonoidHom_apply
+
 @[deprecated (since := "2026-06-10")] alias coe_finsetSum := FunLike.coe_sum
 
 end AddCommMonoid
@@ -448,6 +450,10 @@ def toSignedMeasure (μ : Measure α) [hμ : IsFiniteMeasure μ] : SignedMeasure
     rw [ENNReal.tsum_toReal_eq]
     exacts [(summable_measure_toReal hf₁ hf₂).hasSum, fun _ ↦ measure_ne_top _ _]
 
+open Classical in
+theorem toSignedMeasure_apply (μ : Measure α) [hμ : IsFiniteMeasure μ] (i : Set α) :
+    μ.toSignedMeasure i = if MeasurableSet i then μ.real i else 0 := rfl
+
 @[simp]
 theorem toSignedMeasure_apply_measurable {μ : Measure α} [IsFiniteMeasure μ] {i : Set α}
     (hi : MeasurableSet i) : μ.toSignedMeasure i = μ.real i :=
@@ -499,6 +505,10 @@ def toENNRealVectorMeasure (μ : Measure α) : VectorMeasure α ℝ≥0∞ where
     rw [Summable.hasSum_iff ENNReal.summable, if_pos (MeasurableSet.iUnion hf₁),
       MeasureTheory.measure_iUnion hf₂ hf₁]
     exact tsum_congr fun n => if_pos (hf₁ n)
+
+open Classical in
+theorem toENNRealVectorMeasure_apply (μ : Measure α) (i : Set α) :
+    μ.toENNRealVectorMeasure i = if MeasurableSet i then μ i else 0 := rfl
 
 @[simp]
 theorem toENNRealVectorMeasure_apply_measurable {μ : Measure α} {i : Set α} (hi : MeasurableSet i) :
