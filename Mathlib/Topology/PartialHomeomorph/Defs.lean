@@ -17,7 +17,7 @@ This file defines homeomorphisms between subsets of topological spaces. An eleme
 Additionally, we require that the functions are continuous on them. Equivalently, they are
 homeomorphisms there.
 
-As in equivs, we register a coercion to functions, and we use `e x` and `e.symm x` throughout
+As for `Equiv`s, we register a coercion to functions, and we use `e x` and `e.symm x` throughout
 instead of `e.toFun x` and `e.invFun x`.
 
 ## Main definitions
@@ -86,11 +86,9 @@ def Simps.symm_apply (e : PartialHomeomorph X Y) : Y → X := e.symm
 
 initialize_simps_projections PartialHomeomorph (toFun → apply, invFun → symm_apply)
 
-@[fun_prop]
 protected theorem continuousOn : ContinuousOn e e.source :=
   e.continuousOn_toFun
 
-@[fun_prop]
 theorem continuousOn_symm : ContinuousOn e.symm e.target :=
   e.continuousOn_invFun
 
@@ -175,7 +173,7 @@ protected theorem surjOn : SurjOn e e.source e.target :=
 
 end Basic
 
-/-- Interpret a `Homeomorph` as an `PartialHomeomorph` by restricting it
+/-- Interpret a `Homeomorph` as a `PartialHomeomorph` by restricting it
 to a set `s` in the domain and to `t` in the codomain. -/
 @[simps! -fullyApplied apply symm_apply toPartialEquiv,
   simps! -isSimp source target]
@@ -191,14 +189,14 @@ def _root_.Homeomorph.toPartialHomeomorph (e : X ≃ₜ Y) : PartialHomeomorph X
   e.toPartialHomeomorphOfImageEq univ univ <| by rw [image_univ, e.surjective.range_eq]
 
 /-- Replace `toPartialEquiv` field to provide better definitional equalities. -/
-def replaceEquiv (e : PartialHomeomorph X Y) (e' : PartialEquiv X Y)
+def replacePartialEquiv (e : PartialHomeomorph X Y) (e' : PartialEquiv X Y)
     (h : e.toPartialEquiv = e') : PartialHomeomorph X Y where
   toPartialEquiv := e'
   continuousOn_toFun := h ▸ e.continuousOn_toFun
   continuousOn_invFun := h ▸ e.continuousOn_invFun
 
-theorem replaceEquiv_eq_self (e' : PartialEquiv X Y)
-    (h : e.toPartialEquiv = e') : e.replaceEquiv e' h = e := by
+theorem replacePartialEquiv_eq_self (e' : PartialEquiv X Y)
+    (h : e.toPartialEquiv = e') : e.replacePartialEquiv e' h = e := by
   cases e
   subst e'
   rfl

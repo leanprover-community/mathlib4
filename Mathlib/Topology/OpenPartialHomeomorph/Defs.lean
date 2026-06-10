@@ -16,7 +16,7 @@ This file defines homeomorphisms between open subsets of topological spaces. An 
 Additionally, we require that these sets are open, and that the functions are continuous on them.
 Equivalently, they are homeomorphisms there.
 
-As in equivs, we register a coercion to functions, and we use `e x` and `e.symm x` throughout
+As for `Equiv`s, we register a coercion to functions, and we use `e x` and `e.symm x` throughout
 instead of `e.toFun x` and `e.invFun x`.
 
 ## Main definitions
@@ -86,11 +86,9 @@ def Simps.symm_apply (e : OpenPartialHomeomorph X Y) : Y → X := e.symm
 
 initialize_simps_projections OpenPartialHomeomorph (toFun → apply, invFun → symm_apply)
 
-@[fun_prop]
 protected theorem continuousOn : ContinuousOn e e.source :=
   e.continuousOn_toFun
 
-@[fun_prop]
 theorem continuousOn_symm : ContinuousOn e.symm e.target :=
   e.continuousOn_invFun
 
@@ -105,6 +103,9 @@ theorem coe_mk (e : PartialEquiv X Y) (h₁ h₂ h₃ h₄) :
 theorem coe_mk_symm (e : PartialEquiv X Y) (h₁ h₂ h₃ h₄) :
     ((OpenPartialHomeomorph.mk (.mk e h₁ h₂) h₃ h₄).symm : Y → X) = e.symm :=
   rfl
+
+@[deprecated (since := "2026-05-20")] alias mk_coe_symm := coe_mk_symm
+
 theorem toPartialHomeomorph_injective :
     Injective (toPartialHomeomorph : OpenPartialHomeomorph X Y → PartialHomeomorph X Y)
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
@@ -213,11 +214,9 @@ def _root_.Homeomorph.toOpenPartialHomeomorph (e : X ≃ₜ Y) : OpenPartialHome
 /-- Replace `toPartialEquiv` field to provide better definitional equalities. -/
 def replacePartialEquiv (e : OpenPartialHomeomorph X Y) (e' : PartialEquiv X Y)
     (h : e.toPartialEquiv = e') : OpenPartialHomeomorph X Y where
-  toPartialEquiv := e'
+  toPartialHomeomorph := e.toPartialHomeomorph.replacePartialEquiv e' h
   open_source := h ▸ e.open_source
   open_target := h ▸ e.open_target
-  continuousOn_toFun := h ▸ e.continuousOn_toFun
-  continuousOn_invFun := h ▸ e.continuousOn_invFun
 
 @[deprecated (since := "2026-05-19")] alias replaceEquiv := replacePartialEquiv
 
