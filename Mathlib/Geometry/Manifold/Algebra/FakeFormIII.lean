@@ -399,7 +399,7 @@ noncomputable def fundamentalVectorFieldLinearMap (p : P) :
     simp only [fundamentalVectorField_eq_mfderiv_action, map_smul, RingHom.id_apply]
     exact rfl
 
-omit [IsManifold IB ∞ B] in
+omit [IsManifold (IB.prod IG) ∞ P] in
 lemma isMIntegralCurve_action_expLie (p : P) (A : GroupLieAlgebra IG G) :
     IsMIntegralCurve (I := IB.prod IG) (fun t ↦ p <• expLie (IG := IG) (t • A))
       (fun q : P ↦ fundamentalVectorField (IB := IB) (IG := IG) A q) := by

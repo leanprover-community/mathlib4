@@ -6,6 +6,7 @@ Authors: Dominic Steinitz
 
 import Mathlib
 import Mathlib.Geometry.Manifold.Algebra.FakeFormIII
+import Mathlib.Geometry.Manifold.Algebra.UnitsMFDeriv
 
 /-!
 # The Frame Bundle
@@ -201,8 +202,8 @@ def FrameBundle (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M]
               exact (Trivialization.continuousLinearEquivAt 𝕜
                 (trivializationAt E (TangentSpace I) p.proj) q.proj hb_tan).symm_apply_apply x⟩,
           rfl⟩
-      haveI : NormedAddCommGroup (TangentSpace I q.proj) := by
-        change NormedAddCommGroup E; infer_instance
+      letI : NormedAddCommGroup (TangentSpace I q.proj) := inferInstanceAs (NormedAddCommGroup E)
+      letI : NormedSpace 𝕜 (TangentSpace I q.proj) := inferInstanceAs (NormedSpace 𝕜 E)
       exact (isUnit_comp_iff_of_isUnit htan_unit q.2).mp hq.2
     · simp only [Set.mem_preimage, Set.mem_prod, Set.mem_setOf_eq]
       have hb := e.mem_source.mp hpe
@@ -244,8 +245,8 @@ def FrameBundle (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M]
               exact (Trivialization.continuousLinearEquivAt 𝕜
                 (trivializationAt E (TangentSpace I) p.proj) p.proj hb_tan).symm_apply_apply x⟩,
           rfl⟩
-      haveI : NormedAddCommGroup (TangentSpace I p.proj) := by
-        change NormedAddCommGroup E; infer_instance
+      letI : NormedAddCommGroup (TangentSpace I p.proj) := inferInstanceAs (NormedAddCommGroup E)
+      letI : NormedSpace 𝕜 (TangentSpace I p.proj) := inferInstanceAs (NormedSpace 𝕜 E)
       exact (isUnit_comp_iff_of_isUnit htan_unit p.2).mpr hp
 
 instance [IsManifold I ∞ M] [CompleteSpace E] :
@@ -631,17 +632,53 @@ noncomputable instance FrameBundle.isPrincipalBundle [IsManifold I ∞ M] :
 
 end FrameBundleRL
 
-lemma maurerCartan_units_eq
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
-    (g : Units (E →L[ℝ] E)) (v : E →L[ℝ] E) :
-    maurerCartan (IG := modelWithCornersSelf ℝ (E →L[ℝ] E)) g v =
-      (g⁻¹ : Units (E →L[ℝ] E)).val ∘L v := by
-  simp only [maurerCartan]
-  apply?
+section FrameBundleYangMills
 
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+
+/-- `maurerCartan` for `(E →L[ℝ] E)ˣ` is left-multiplication by `g⁻¹`. -/
+lemma maurerCartan_units_eq
+    (g : (E →L[ℝ] E)ˣ) (v : E →L[ℝ] E) :
+    maurerCartan (IG := modelWithCornersSelf ℝ (E →L[ℝ] E)) g v =
+      (g⁻¹ : (E →L[ℝ] E)ˣ).val ∘L v := by
+  simp only [maurerCartan]
+  exact mfderiv_units_mulLeft g⁻¹ g v
+
+/-- `Ad_{g⁻¹}` for `(E →L[ℝ] E)ˣ` is conjugation. -/
 lemma Ad_units_eq
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
-    (g : Units (E →L[ℝ] E)) (A : E →L[ℝ] E) :
+    (g : (E →L[ℝ] E)ˣ) (A : E →L[ℝ] E) :
     Ad (IG := modelWithCornersSelf ℝ (E →L[ℝ] E)) g⁻¹ A =
-      (g⁻¹ : Units (E →L[ℝ] E)).val ∘L A ∘L g.val := by
-  sorry
+      (g⁻¹ : (E →L[ℝ] E)ˣ).val ∘L A ∘L g.val := by
+  simp only [Ad]
+  refine (mfderiv_units_mul_mul g⁻¹ g⁻¹⁻¹ A).trans ?_
+  simp only [inv_inv]
+  rw [mul_assoc]
+  rfl
+
+variable {H : Type*} [TopologicalSpace H]
+  {I : ModelWithCorners ℝ E H}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I ∞ M]
+
+/-- The Yang-Mills connection transformation law for the frame bundle, in coordinates.
+This is the coordinate form of the abstract `yangMills_transformation`: for the frame bundle
+the group is `(E →L[ℝ] E)ˣ`, the adjoint action `Ad_{g⁻¹}` is conjugation and the Maurer-Cartan
+form `maurerCartan g` is left multiplication by `g⁻¹`. -/
+theorem frameBundleYangMills_transformation
+    [SmoothRightGAction ∞ (modelWithCornersSelf ℝ (E →L[ℝ] E))
+      (I.prod (modelWithCornersSelf ℝ (E →L[ℝ] E))) (E →L[ℝ] E)ˣ ↑(FrameBundle I M)]
+    (τ : ConnectionForm (G := (E →L[ℝ] E)ˣ) (IG := modelWithCornersSelf ℝ (E →L[ℝ] E))
+      (IB := I) (P := ↑(FrameBundle I M)))
+    (σ₁ σ₂ : M → ↑(FrameBundle I M)) (U₁ U₂ : Set M)
+    (hσ₁ : IsLocalSection (IB := I) (IG := modelWithCornersSelf ℝ (E →L[ℝ] E))
+      (proj := frameBundleProj) σ₁ U₁)
+    (hσ₂ : IsLocalSection (IB := I) (IG := modelWithCornersSelf ℝ (E →L[ℝ] E))
+      (proj := frameBundleProj) σ₂ U₂)
+    (Ω : M → (E →L[ℝ] E)ˣ) (hΩ : ∀ m ∈ U₁ ∩ U₂, σ₁ m <• Ω m = σ₂ m)
+    (m : M) (hm : m ∈ U₁ ∩ U₂) (v : TangentSpace I m) :
+    yangMillsField τ σ₂ m v =
+      (Ω m)⁻¹.val ∘L (yangMillsField τ σ₁ m v) ∘L (Ω m).val +
+      (Ω m)⁻¹.val ∘L (mfderiv I (modelWithCornersSelf ℝ (E →L[ℝ] E)) Ω m v) := by
+  rw [yangMills_transformation τ σ₁ σ₂ U₁ U₂ hσ₁ hσ₂ Ω hΩ m hm v, Ad_units_eq,
+      maurerCartan_units_eq]
+  exact rfl
+end FrameBundleYangMills
