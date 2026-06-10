@@ -316,7 +316,6 @@ dihedral group whose center is trivial. -/
 theorem center_eq_closure_of_even_ne_two (heven : Even n) (hn2 : n ≠ 2) :
     Subgroup.center (DihedralGroup n) = Subgroup.closure {r ((n / 2 : ℕ) : ZMod n)} := by
   obtain ⟨m, hm⟩ := heven
-  have hn : n = 2 * m := by lia
   have hdiv : n / 2 = m := by lia
   have hmm : (m : ZMod n) + m = 0 := by rw [← Nat.cast_add, ← hm, ZMod.natCast_self]
   -- `2 ≠ 0` in `ZMod n`, since `n` is even with `n ≠ 2`, and so `n ∤ 2`.
