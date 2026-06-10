@@ -364,19 +364,14 @@ lemma card_product_filter_lt [LinearOrder α] :
     #{x ∈ s ×ˢ s | x.1 < x.2} = (#s).choose 2 := by
   set u : Finset (α × α) := {x ∈ s ×ˢ s | x.1 < x.2}
   set v : Finset (α × α) := {x ∈ s ×ˢ s | x.2 < x.1}
-  have disj : Disjoint u v := by
-    simp +contextual [disjoint_left, u, v, lt_asymm]
-  have union : u.disjUnion v disj = s.offDiag := by
-    ext x
-    rcases lt_trichotomy x.1 x.2 with h | h | h <;>
-      simp [u, v, h, lt_asymm, ne_of_lt, ne_of_gt]
+  have disj : Disjoint u v := by grind [disjoint_left]
+  have union : u.disjUnion v disj = s.offDiag := by grind
   have swap : #u = #v := by
     convert Finset.card_map (Equiv.prodComm α α).toEmbedding
-    ext; simp [u, v, and_comm]
+    grind [mem_map_equiv]
   rw [Nat.choose_two_right]
   apply Nat.eq_div_of_mul_eq_left two_ne_zero
-  rw [Nat.mul_two, Nat.mul_sub_one, ← offDiag_card, ← union,
-    Finset.card_disjUnion, swap]
+  grind [Nat.mul_sub_one, ← offDiag_card, Finset.card_disjUnion]
 
 
 end Diag
