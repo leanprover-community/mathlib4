@@ -112,7 +112,7 @@ instance : CoeFun (α ->> β) (fun _ => α → β) where
 
 instance : FunLike (α -o β) α β where
   coe f := f.toFun
-  coe_injective' := silentSorry
+  coe_injective := silentSorry
 
 #eval Lean.Elab.Command.liftTermElabM do
   Lean.Meta.registerCoercion ``ConHom.toFun
@@ -708,7 +708,7 @@ structure FooHom (α : Type*) where
 
 instance : FunLike (FooHom α) α (α → α) where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[fun_prop]
 theorem con_foohom' {β : Type*} {f : β → FooHom α} (hf : Con f) {g₁ : β → α} (hg₁ : Con g₁)
