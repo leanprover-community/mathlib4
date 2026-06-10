@@ -67,11 +67,11 @@ lemma continuousAt_iff {α : Type*} [TopologicalSpace α] {f : α → E →WOT[�
 
 lemma continuousOn_iff {α : Type*} [TopologicalSpace α] {f : α → E →WOT[𝕜] F} {s : Set α} :
     ContinuousOn f s ↔ ∀ x y, ContinuousOn (⟪y, f · x⟫_𝕜) s := by
-  simp_rw [ContinuousOn, forall_comm (α := E) , forall_comm (α := F), continuousWithinAt_iff]
+  simp_rw [ContinuousOn, forall_comm (α := E), forall_comm (α := F), continuousWithinAt_iff]
 
 lemma continuous_iff {α : Type*} [TopologicalSpace α] {f : α → E →WOT[𝕜] F} :
     Continuous f ↔ ∀ x y, Continuous (⟪y, f · x⟫_𝕜) := by
-  simp_rw [continuous_iff_continuousAt, forall_comm (α := E) , forall_comm (α := F),
+  simp_rw [continuous_iff_continuousAt, forall_comm (α := E), forall_comm (α := F),
     continuousAt_iff]
 
 @[fun_prop] alias ⟨continuousWithinAt_inner_apply, continuousWithinAt⟩ := continuousWithinAt_iff
