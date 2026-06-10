@@ -662,6 +662,9 @@ theorem top_prod (s : Subsemiring S) : (⊤ : Subsemiring R).prod s = s.comap (R
 theorem top_prod_top : (⊤ : Subsemiring R).prod (⊤ : Subsemiring S) = ⊤ :=
   (top_prod _).trans <| comap_top _
 
+protected theorem center_prod : center (R × S) = prod (center R) (center S) :=
+  SetLike.coe_injective Set.center_prod
+
 /-- Product of subsemirings is isomorphic to their product as monoids. -/
 def prodEquiv (s : Subsemiring R) (t : Subsemiring S) : s.prod t ≃+* s × t :=
   { Equiv.Set.prod (s : Set R) (t : Set S) with
@@ -695,7 +698,7 @@ theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι]
     {S : ι → Subsemiring R} [hS : ∀ i, IsMulCommutative (S i)]
     (dir : Directed (· ≤ ·) S) : IsMulCommutative (⨆ i, S i : Subsemiring R) := by
   simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_directed dir,
-    Subsemigroup.coe_iSup_of_directed dir] using Subsemigroup.isMulCommutative_iSup dir
+    Subsemigroup.coe_iSup_of_directed dir] using! Subsemigroup.isMulCommutative_iSup dir
 
 instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
     {S : ι →o Subsemiring R} [hS : ∀ i, IsMulCommutative (S i)] :

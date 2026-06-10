@@ -64,7 +64,7 @@ lemma toFun_injective : Function.Injective fun f : IntertwiningMap ρ σ ↦ f.t
 
 instance : FunLike (IntertwiningMap ρ σ) V W where
   coe f := f.toFun
-  coe_injective' := toFun_injective ρ σ
+  coe_injective := toFun_injective ρ σ
 
 instance : LinearMapClass (IntertwiningMap ρ σ) A V W where
   map_add f := f.map_add
@@ -423,7 +423,7 @@ def equivLinearMapAsModule :
   invFun f :=
     { toLinearMap := { f with
         map_smul' a v := by simp }
-      isIntertwining' g := by ext v; simpa using f.map_smul' (MonoidAlgebra.single g 1) v }
+      isIntertwining' g := by ext v; simpa using! f.map_smul' (MonoidAlgebra.single g 1) v }
   map_add' g₁ g₂ := by ext; simp
   map_smul' t g := by ext; simp
   left_inv f := rfl

@@ -69,7 +69,7 @@ lemma HasSmallInductiveDimensionLT_one_iff :
     refine hs.of_isOpen_of_subset (fun _ hU ↦ hU.isOpen) (fun U hU ↦ ⟨?_, hs.isOpen hU⟩)
     rw [← closure_subset_iff_isClosed]
     cases h U hU
-    rwa [isEmpty_coe_sort, (hs.isOpen hU).frontier_eq, diff_eq_empty] at ‹_›
+    rwa [isEmpty_coe_sort, (hs.isOpen hU).frontier_eq, sdiff_eq_empty] at ‹_›
   · exact fun h ↦ .succ 0 _ h fun _ hU ↦ hU.frontier_eq ▸ .zero
 
 end
