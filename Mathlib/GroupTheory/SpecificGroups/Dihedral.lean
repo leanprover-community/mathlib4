@@ -348,6 +348,6 @@ theorem center_eq_closure_of_even_ne_two (heven : Even n) (hn2 : n ≠ 2) :
 
 theorem center_eq_bot_of_zero : Subgroup.center (DihedralGroup 0) = ⊥ := by
   rw [center_eq_closure_of_even_ne_two (by decide) (by decide)]
-  simp only [Nat.zero_div, CharP.cast_eq_zero, r_zero, Subgroup.closure_eq_bot_iff, subset_refl]
+  simp only [Nat.zero_div, CharP.cast_eq_zero, r_zero, Subgroup.zpowers_one_eq_bot]
 
 end DihedralGroup
