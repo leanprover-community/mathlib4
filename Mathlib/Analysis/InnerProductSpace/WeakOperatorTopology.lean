@@ -16,6 +16,14 @@ public import Mathlib.Analysis.LocallyConvex.WeakOperatorTopology
 This file gives a few properties of the weak operator topology that are specific to operators on
 Hilbert spaces. This mostly involves using the Fréchet-Riesz representation to convert between
 applications of elements of the dual and inner products with vectors in the space.
+
+## Main results
+
++ `ContinuousLinearMapWOT.tendsto_iff_forall_inner_apply_tendsto`: a function `f : α → E →WOT[𝕜] F`
+  tends to `𝓝 A` if and only if `fun a ↦ ⟪y, (f a) x⟫_𝕜` tends to `𝓝 ⟪y, A x⟫_𝕜` for all
+  `x : E`, `y : F`. Also included are the corresponding characterizations of continuity.
++ The adjoint operation is continuous in the weak operator topology, declared as an instance of
+  `ContinuousStar (F →WOT[𝕜] F)`.
 -/
 
 public section
