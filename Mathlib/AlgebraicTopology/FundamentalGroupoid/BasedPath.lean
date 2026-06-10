@@ -58,8 +58,23 @@ variable {x₀ : X}
 public instance : TopologicalSpace (BasedPath x₀) :=
   inferInstanceAs (TopologicalSpace { γ : C(I, X) // γ 0 = x₀ })
 
+public instance : FunLike (BasedPath x₀) I X where
+  coe γ := γ.1
+  coe_injective' _ _ h := Subtype.ext (DFunLike.coe_injective h)
+
+public instance : ContinuousMapClass (BasedPath x₀) I X where
+  map_continuous γ := γ.1.continuous
+
+@[simp] public theorem mk_apply (γ : C(I, X)) (h : γ 0 = x₀) (t : I) :
+    (show BasedPath x₀ from ⟨γ, h⟩) t = γ t := rfl
+
+/-- Applying the underlying `C(I, X)` bundle agrees with applying the based path itself. -/
+@[simp] public theorem val_apply (γ : BasedPath x₀) (t : I) : γ.1 t = γ t := rfl
+
+@[simp] public theorem source (γ : BasedPath x₀) : γ 0 = x₀ := γ.2
+
 /-- The endpoint of a based path. -/
-@[expose] public def endpoint (γ : BasedPath x₀) : X := γ.1 1
+@[expose] public def endpoint (γ : BasedPath x₀) : X := γ 1
 
 /-- View a based path as a path to its endpoint. -/
 @[expose] public def toPath (γ : BasedPath x₀) : Path x₀ (endpoint γ) where
@@ -70,23 +85,14 @@ public instance : TopologicalSpace (BasedPath x₀) :=
 /-- Definitional unfolding of `endpoint`. Not a global simp lemma: it overlaps with
 `endpoint_refl` (and other `endpoint_…` lemmas) on the simp normal form, so we instead include it
 explicitly in `simp [endpoint_def, …]` at each site that wants to bridge between the named
-`endpoint γ = u` API and the underlying `γ.1 1` evaluation. -/
-public theorem endpoint_def (γ : BasedPath x₀) : endpoint γ = γ.1 1 := rfl
-@[simp] public theorem toPath_apply (γ : BasedPath x₀) (t : I) : toPath γ t = γ.1 t := rfl
+`endpoint γ = u` API and the underlying `γ 1` evaluation. -/
+public theorem endpoint_def (γ : BasedPath x₀) : endpoint γ = γ 1 := rfl
+@[simp] public theorem toPath_apply (γ : BasedPath x₀) (t : I) : toPath γ t = γ t := rfl
 public theorem toPath_source (γ : BasedPath x₀) : toPath γ 0 = x₀ := γ.2
 public theorem toPath_target (γ : BasedPath x₀) : toPath γ 1 = endpoint γ := rfl
 
-@[ext] public theorem ext {γ γ' : BasedPath x₀} (h : ∀ t, γ.1 t = γ'.1 t) : γ = γ' := by
-  cases γ with
-  | mk γ hγ =>
-    cases γ' with
-    | mk γ' hγ' =>
-      simp only at h
-      have hfun : γ = γ' := by
-        ext t
-        exact h t
-      subst hfun
-      simp
+@[ext] public theorem ext {γ γ' : BasedPath x₀} (h : ∀ t, γ t = γ' t) : γ = γ' :=
+  DFunLike.ext γ γ' h
 
 /-- The canonical inclusion `Path x₀ y → BasedPath x₀`: package an ordinary path out of `x₀` as a
 based path, forgetting `y` at the type level. The endpoint is recovered as
@@ -178,20 +184,20 @@ original path and then a new endpoint path. -/
 public theorem deformTerminal_apply_of_le {u v : X} (γ : BasedPath x₀) (hu : endpoint γ = u)
     (δ : Path u v) {a b : ℝ} (ha : 0 ≤ a) (hab : a < b) (hb : b < 1)
     (t : I) (ht : (t : ℝ) ≤ a) :
-    (deformTerminal γ hu δ ha hab hb).1 t = γ.toPath.extend t := by
+    (deformTerminal γ hu δ ha hab hb) t = γ.toPath.extend t := by
   simp [deformTerminal, endpoint_def, ht]
 
 public theorem deformTerminal_apply_of_lt_of_le {u v : X} (γ : BasedPath x₀)
     (hu : endpoint γ = u) (δ : Path u v) {a b : ℝ} (ha : 0 ≤ a) (hab : a < b) (hb : b < 1)
     (t : I) (hta : a < (t : ℝ)) (htb : (t : ℝ) ≤ b) :
-    (deformTerminal γ hu δ ha hab hb).1 t =
+    (deformTerminal γ hu δ ha hab hb) t =
       (terminalTail γ hu a (by linarith)).extend (((t : ℝ) - a) / (b - a)) := by
   simp [deformTerminal, endpoint_def, not_le_of_gt hta, htb]
 
 public theorem deformTerminal_apply_of_lt {u v : X} (γ : BasedPath x₀) (hu : endpoint γ = u)
     (δ : Path u v) {a b : ℝ} (ha : 0 ≤ a) (hab : a < b) (hb : b < 1)
     (t : I) (ht : b < (t : ℝ)) :
-    (deformTerminal γ hu δ ha hab hb).1 t = δ.extend (((t : ℝ) - b) / (1 - b)) := by
+    (deformTerminal γ hu δ ha hab hb) t = δ.extend (((t : ℝ) - b) / (1 - b)) := by
   simp [deformTerminal, endpoint_def, not_le_of_gt (lt_trans hab ht), not_le_of_gt ht]
 
 /-- The endpoint of `deformTerminal γ hu δ ha hab hb` is the endpoint of `δ`. -/
@@ -364,7 +370,7 @@ theorem exists_deformTerminal_mem_basicNeighborhood
   by_cases h1K : (1 : I) ∈ K
   · have hKUgood : (K, U) ∈ Tgood := (hTgood_iff (K, U)).2 ⟨hKUT, h1K⟩
     by_cases hta : (t : ℝ) ≤ a
-    · rw [BasedPath.deformTerminal_apply_of_le γ rfl δ ha0 hab hb1 t hta,
+    · rw [val_apply, BasedPath.deformTerminal_apply_of_le γ rfl δ ha0 hab hb1 t hta,
           Path.extend_apply _ t.2]
       exact (hSdata K U hKU).2.2 ht
     · have hat : a < (t : ℝ) := lt_of_not_ge hta
@@ -390,7 +396,7 @@ theorem exists_deformTerminal_mem_basicNeighborhood
             (terminalTail γ rfl a (by linarith)).extend (((t : ℝ) - a) / (b - a)) ∈ W := by
           rw [Path.extend_apply _ hparam]
           exact hrange ⟨⟨((t : ℝ) - a) / (b - a), hparam⟩, rfl⟩
-        rw [BasedPath.deformTerminal_apply_of_lt_of_le γ rfl δ ha0 hab hb1 t hat htb]
+        rw [val_apply, BasedPath.deformTerminal_apply_of_lt_of_le γ rfl δ ha0 hab hb1 t hat htb]
         exact hW_good (K, U) hKUgood htailW
       · have hbt : b < (t : ℝ) := lt_of_not_ge htb
         have hparam : (((t : ℝ) - b) / (1 - b)) ∈ (Set.Icc 0 1 : Set ℝ) := by
@@ -400,7 +406,7 @@ theorem exists_deformTerminal_mem_basicNeighborhood
         have hδt : δ.extend (((t : ℝ) - b) / (1 - b)) ∈ W := by
           rw [Path.extend_apply _ hparam]
           exact hδW ⟨⟨((t : ℝ) - b) / (1 - b), hparam⟩, rfl⟩
-        rw [BasedPath.deformTerminal_apply_of_lt γ rfl δ ha0 hab hb1 t hbt]
+        rw [val_apply, BasedPath.deformTerminal_apply_of_lt γ rfl δ ha0 hab hb1 t hbt]
         exact hW_good (K, U) hKUgood hδt
   · have hKUbad : (K, U) ∈ Tbad := (hTbad_iff (K, U)).2 ⟨hKUT, h1K⟩
     have ht_not_Ioc : t ∉ Set.Ioc a₀ 1 := fun htIoc ↦ by
@@ -412,7 +418,7 @@ theorem exists_deformTerminal_mem_basicNeighborhood
       have hat : a < (t : ℝ) := lt_of_not_ge hgt
       have hat₀ : ((a₀ : I) : ℝ) < t := lt_trans ha₀_lt_a hat
       exact ht_not_Ioc ⟨hat₀, t.2.2⟩
-    rw [BasedPath.deformTerminal_apply_of_le γ rfl δ ha0 hab hb1 t htle,
+    rw [val_apply, BasedPath.deformTerminal_apply_of_le γ rfl δ ha0 hab hb1 t htle,
         Path.extend_apply _ t.2]
     exact (hSdata K U hKU).2.2 ht
 
