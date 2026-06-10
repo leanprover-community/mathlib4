@@ -19,7 +19,7 @@ We set up the endomorphism of `ℙ²` that on affine points with affine sum is e
 ```
 see `WeierstrassCurve.addSubMap` (this is on coordinate vectors).
 
-TODO: We show that the map really does what it is claimed to do.
+TODO: Show that the map really does what it is claimed to do.
 
 This will be used to eventually show the approximate parallelogram law:
 `∃ C, ∀ P Q : E(K), |h(P+Q) + h(P-Q) - 2*h(P) - 2*h(Q)| ≤ C`,
