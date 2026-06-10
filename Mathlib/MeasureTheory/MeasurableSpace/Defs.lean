@@ -468,9 +468,9 @@ theorem measurableSet_sSup {ms : Set (MeasurableSpace α)} {s : Set α} :
   change GenerateMeasurable (⋃₀ _) _ ↔ _
   simp [← setOf_exists]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem measurableSet_iSup {ι} {m : ι → MeasurableSpace α} {s : Set α} :
     MeasurableSet[iSup m] s ↔ GenerateMeasurable { s : Set α | ∃ i, MeasurableSet[m i] s } s := by
+  unfold iSup
   simp only [measurableSet_sSup, exists_range_iff]
 
 theorem measurableSpace_iSup_eq (m : ι → MeasurableSpace α) :
