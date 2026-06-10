@@ -265,9 +265,9 @@ end ENNReal
 
 section NormedAddCommGroup
 
-variable (μ)
 variable {f g : α → E}
 
+variable (μ) in
 /-- Average value of a function `f` w.r.t. a measure `μ`, denoted `⨍ x, f x ∂μ`.
 
 It is equal to `(μ.real univ)⁻¹ • ∫ x, f x ∂μ`, so it takes value zero if `f` is not integrable or
@@ -315,6 +315,7 @@ or if `s` has infinite measure. If `s` has measure `1`, then the average of any 
 its integral. -/
 notation3 "⨍ " (...) " in " s ", " r:60:(scoped f => average (Measure.restrict volume s) f) => r
 
+variable (μ) in
 @[simp]
 theorem average_zero : ⨍ _, (0 : E) ∂μ = 0 := by rw [average, integral_zero]
 
@@ -322,39 +323,80 @@ theorem average_zero : ⨍ _, (0 : E) ∂μ = 0 := by rw [average, integral_zero
 theorem average_zero_measure (f : α → E) : ⨍ x, f x ∂(0 : Measure α) = 0 := by
   rw [average, smul_zero, integral_zero_measure]
 
-@[simp]
-theorem average_neg (f : α → E) : ⨍ x, -f x ∂μ = -⨍ x, f x ∂μ :=
-  integral_neg f
+@[to_fun average_fun_add]
+lemma average_add (hf : Integrable f μ) (hg : Integrable g μ) :
+    ⨍ a, (f + g) a ∂μ = ⨍ a, f a ∂μ + ⨍ a, g a ∂μ := by
+  obtain rfl | hμ := eq_or_ne μ 0
+  · simp
+  · exact integral_add (hf.smul_measure <| by simpa) (hg.smul_measure <| by simpa)
 
-theorem average_eq' (f : α → E) : ⨍ x, f x ∂μ = ∫ x, f x ∂(μ univ)⁻¹ • μ :=
-  rfl
+@[to_fun setAverage_fun_add]
+lemma setAverage_add (hf : IntegrableOn f s μ) (hg : IntegrableOn g s μ) :
+    ⨍ a in s, (f + g) a ∂μ = ⨍ a in s, f a ∂μ + ⨍ a in s, g a ∂μ := average_add hf hg
 
-theorem average_eq (f : α → E) : ⨍ x, f x ∂μ = (μ.real univ)⁻¹ • ∫ x, f x ∂μ := by
+@[to_fun average_fun_finsetSum]
+lemma average_finsetSum {ι : Type*} {s : Finset ι} {f : ι → α → E}
+    (hf : ∀ i ∈ s, Integrable (f i) μ) : ⨍ a, (∑ i ∈ s, f i) a ∂μ = ∑ i ∈ s, ⨍ a, f i a ∂μ := by
+  obtain rfl | hμ := eq_or_ne μ 0
+  · simp
+  · simp only [Finset.sum_apply]
+    exact integral_finsetSum _ fun i hi ↦ (hf _ hi).smul_measure <| by simpa
+
+@[to_fun setAverage_fun_finsetSum]
+lemma setAverage_finsetSum {ι : Type*} {t : Finset ι} {f : ι → α → E}
+    (hf : ∀ i ∈ t, IntegrableOn (f i) s μ) :
+    ⨍ a in s, (∑ i ∈ t, f i) a ∂μ = ∑ i ∈ t, ⨍ a in s, f i a ∂μ := average_finsetSum hf
+
+variable (μ f) in
+@[to_fun (attr := simp) average_fun_neg]
+lemma average_neg : ⨍ x, (-f) x ∂μ = -⨍ x, f x ∂μ := integral_neg f
+
+@[to_fun average_fun_sub]
+lemma average_sub (hf : Integrable f μ) (hg : Integrable g μ) :
+    ⨍ a, (f - g) a ∂μ = ⨍ a, f a ∂μ - ⨍ a, g a ∂μ := by
+  rw [sub_eq_add_neg, sub_eq_add_neg, average_add hf hg.neg, average_neg]
+
+@[to_fun setAverage_fun_sub]
+lemma setAverage_sub (hf : IntegrableOn f s μ) (hg : IntegrableOn g s μ) :
+    ⨍ a in s, (f - g) a ∂μ = ⨍ a in s, f a ∂μ - ⨍ a in s, g a ∂μ := average_sub hf hg
+
+variable (μ) in
+lemma average_const_mul {L : Type*} [RCLike L] (r : L) (f : α → L) :
+    ⨍ a, r * f a ∂μ = r * ⨍ a, f a ∂μ := integral_const_mul ..
+
+variable (μ) in
+lemma average_mul_const {L : Type*} [RCLike L] (r : L) (f : α → L) :
+    ⨍ a, f a * r ∂μ = (⨍ a, f a ∂μ) * r := integral_mul_const ..
+
+variable (μ f) in
+theorem average_eq' : ⨍ x, f x ∂μ = ∫ x, f x ∂(μ univ)⁻¹ • μ := rfl
+
+variable (μ f) in
+theorem average_eq : ⨍ x, f x ∂μ = (μ.real univ)⁻¹ • ∫ x, f x ∂μ := by
   rw [average_eq', integral_smul_measure, ENNReal.toReal_inv, measureReal_def]
 
-theorem average_eq_integral [IsProbabilityMeasure μ] (f : α → E) : ⨍ x, f x ∂μ = ∫ x, f x ∂μ := by
+variable (μ f) in
+theorem average_eq_integral [IsProbabilityMeasure μ] : ⨍ x, f x ∂μ = ∫ x, f x ∂μ := by
   rw [average, measure_univ, inv_one, one_smul]
 
+variable (μ f) in
 @[simp]
-theorem measure_smul_average [IsFiniteMeasure μ] (f : α → E) :
-    μ.real univ • ⨍ x, f x ∂μ = ∫ x, f x ∂μ := by
+theorem measure_smul_average [IsFiniteMeasure μ] : μ.real univ • ⨍ x, f x ∂μ = ∫ x, f x ∂μ := by
   rcases eq_or_ne μ 0 with hμ | hμ
   · rw [hμ, integral_zero_measure, average_zero_measure, smul_zero]
   · rw [average_eq, smul_inv_smul₀]
     refine (ENNReal.toReal_pos ?_ <| measure_ne_top _ _).ne'
     rwa [Ne, measure_univ_eq_zero]
 
-theorem setAverage_eq (f : α → E) (s : Set α) :
-    ⨍ x in s, f x ∂μ = (μ.real s)⁻¹ • ∫ x in s, f x ∂μ := by
+variable (μ f) in
+theorem setAverage_eq (s : Set α) : ⨍ x in s, f x ∂μ = (μ.real s)⁻¹ • ∫ x in s, f x ∂μ := by
   rw [average_eq, measureReal_restrict_apply_univ]
 
-theorem setAverage_eq' (f : α → E) (s : Set α) :
-    ⨍ x in s, f x ∂μ = ∫ x, f x ∂(μ s)⁻¹ • μ.restrict s := by
+variable (μ f) in
+theorem setAverage_eq' (s : Set α) : ⨍ x in s, f x ∂μ = ∫ x, f x ∂(μ s)⁻¹ • μ.restrict s := by
   simp only [average_eq', restrict_apply_univ]
 
-variable {μ}
-
-theorem average_congr {f g : α → E} (h : f =ᵐ[μ] g) : ⨍ x, f x ∂μ = ⨍ x, g x ∂μ := by
+theorem average_congr (h : f =ᵐ[μ] g) : ⨍ x, f x ∂μ = ⨍ x, g x ∂μ := by
   simp only [average_eq, integral_congr_ae h]
 
 theorem setAverage_congr (h : s =ᵐ[μ] t) : ⨍ x in s, f x ∂μ = ⨍ x in t, f x ∂μ := by
@@ -422,20 +464,6 @@ theorem average_mem_openSegment_compl_self [IsFiniteMeasure μ] {f : α → E} {
   simpa only [union_compl_self, restrict_univ] using
     average_union_mem_openSegment aedisjoint_compl_right hs.compl hs₀ hsc₀ (measure_ne_top _ _)
       (measure_ne_top _ _) hfi.integrableOn hfi.integrableOn
-
-@[to_fun average_fun_add]
-lemma average_add (hf : Integrable f μ) (hg : Integrable g μ) :
-    ⨍ a, (f + g) a ∂μ = ⨍ a, f a ∂μ + ⨍ a, g a ∂μ := by
-  obtain rfl | hμ := eq_or_ne μ 0
-  · simp
-  · exact integral_add (hf.smul_measure <| by simpa) (hg.smul_measure <| by simpa)
-
-@[to_fun setAverage_fun_add]
-lemma setAverage_add (hf : IntegrableOn f s μ) (hg : IntegrableOn g s μ) :
-    ⨍ a in s, (f + g) a ∂μ = ⨍ a in s, f a ∂μ + ⨍ a in s, g a ∂μ := average_add hf hg
-
-lemma average_const_mul {L : Type*} [RCLike L] (r : L) (f : α → L) :
-    ⨍ a, r * f a ∂μ = r * ⨍ a, f a ∂μ := integral_const_mul ..
 
 @[simp] lemma average_count [Module ℚ≥0 E] [CompleteSpace E] [MeasurableSingletonClass α]
     [Fintype α] (f : α → E) : ⨍ a, f a ∂.count = 𝔼 a, f a := by
