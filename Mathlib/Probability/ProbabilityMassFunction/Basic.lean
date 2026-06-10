@@ -50,7 +50,7 @@ namespace PMF
 
 instance instFunLike : FunLike (PMF α) α ℝ≥0∞ where
   coe p a := p.1 a
-  coe_injective' _ _ h := Subtype.ext h
+  coe_injective _ _ h := Subtype.ext h
 
 @[ext]
 protected theorem ext {p q : PMF α} (h : ∀ x, p x = q x) : p = q :=

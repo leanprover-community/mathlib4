@@ -551,7 +551,7 @@ theorem supp_inj {C D : G.ConnectedComponent} : C.supp = D.supp ↔ C = D :=
 
 instance : SetLike G.ConnectedComponent V where
   coe := ConnectedComponent.supp
-  coe_injective' := ConnectedComponent.supp_injective
+  coe_injective := ConnectedComponent.supp_injective
 
 @[simp]
 theorem mem_supp_iff (C : G.ConnectedComponent) (v : V) :

@@ -88,7 +88,7 @@ attribute [nolint docBlame] toZeroHom
 
 instance funLike : FunLike (α →*₀ β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
+  coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
 
 instance monoidWithZeroHomClass : MonoidWithZeroHomClass (α →*₀ β) α β where
   map_mul := MonoidWithZeroHom.map_mul'
