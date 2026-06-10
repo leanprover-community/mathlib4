@@ -499,28 +499,26 @@ protected theorem Homeomorph.isHomeomorph (h : X ≃ₜ Y) : IsHomeomorph h :=
 
 namespace IsHomeomorph
 
+@[simps! toEquiv apply symm_apply]
+noncomputable def homeomorph (f : X → Y) (hf : IsHomeomorph f) : X ≃ₜ Y where
+  continuous_toFun := hf.1
+  continuous_invFun :=
+    Equiv.ofBijective f hf.bijective |>.continuous_symm_iff.2 hf.isOpenMap
+  toEquiv := Equiv.ofBijective f hf.bijective
+
 protected lemma injective (hf : IsHomeomorph f) : Function.Injective f := hf.bijective.injective
 protected lemma surjective (hf : IsHomeomorph f) : Function.Surjective f := hf.bijective.surjective
 
 protected lemma id : IsHomeomorph (@id X) := ⟨continuous_id, .id, Function.bijective_id⟩
 
 theorem image_interior (hf : IsHomeomorph f) (s : Set X) :
-    f '' interior s = interior (f '' s) := by
-  have h := hf.isOpenMap.preimage_interior_eq_interior_preimage hf.1 (f '' s)
-  rw [Set.preimage_image_eq _ hf.injective] at h
-  rw [← h, Set.image_preimage_eq _ hf.surjective]
+  f '' interior s = interior (f '' s) := hf.homeomorph.image_interior s
 
 theorem image_closure (hf : IsHomeomorph f) (s : Set X) :
-    f '' closure s = closure (f '' s) := by
-  have h := hf.isOpenMap.preimage_closure_eq_closure_preimage hf.continuous (f '' s)
-  rw [Set.preimage_image_eq _ hf.injective] at h
-  rw [← h, Set.image_preimage_eq _ hf.surjective]
+  f '' closure s = closure (f '' s) := hf.homeomorph.image_closure s
 
 theorem image_frontier (hf : IsHomeomorph f) (s : Set X) :
-    f '' frontier s = frontier (f '' s) := by
-  have h := hf.isOpenMap.preimage_frontier_eq_frontier_preimage hf.continuous (f '' s)
-  rw [Set.preimage_image_eq _ hf.injective] at h
-  rw [← h, Set.image_preimage_eq _ hf.surjective]
+  f '' frontier s = frontier (f '' s) := hf.homeomorph.image_frontier s
 
 lemma comp {g : Y → Z} (hg : IsHomeomorph g) (hf : IsHomeomorph f) : IsHomeomorph (g ∘ f) :=
   ⟨hg.1.comp hf.1, hg.2.comp hf.2, hg.3.comp hf.3⟩
