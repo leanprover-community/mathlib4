@@ -462,7 +462,7 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
       · exact (disjoint_disjointed K).set_pairwise _
       · exact MeasurableSet.disjointed (fun i ↦ (hK i).measurableSet)
     rw [this, restrict_mass]
-    exact le_trans (apply_mono _ (diff_subset_compl (K m) (K n))) (hμ.2 n)
+    exact le_trans (apply_mono _ (sdiff_subset_compl (K m) (K n))) (hμ.2 n)
 
 /-- **Prokhorov theorem**: Given a sequence of compact sets `Kₙ` and a sequence `uₙ` tending to
 zero, the finite measures of mass `C` giving mass at most `uₙ` to the complement of `Kₙ` form a
