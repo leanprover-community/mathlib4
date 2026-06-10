@@ -306,8 +306,7 @@ end IsLocalStructomorph
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
   {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
-  {n : ℕ∞ω}
-  [IsManifold J n N] {f : M → N} {s : Set M}
+  {n : ℕ∞ω} {f : M → N} {s : Set M}
   {φ : OpenPartialHomeomorph M H} {ψ : OpenPartialHomeomorph N G}
 
 /-- This is a smooth analogue of `OpenPartialHomeomorph.continuousWithinAt_writtenInExtend_iff`. -/
