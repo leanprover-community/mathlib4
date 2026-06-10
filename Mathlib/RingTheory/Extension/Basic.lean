@@ -119,11 +119,6 @@ def self : Extension R S where
 /-- The kernel of an extension. -/
 abbrev ker : Ideal P.Ring := RingHom.ker (algebraMap P.Ring S)
 
-@[simp]
-lemma comap_ker_eq (Q : Extension P.Ring S) :
-    Q.ker.comap (algebraMap P.Ring Q.Ring) = P.ker := by
-  rw [Extension.ker, RingHom.comap_ker, ← IsScalarTower.algebraMap_eq]
-
 section Localization
 
 variable (M : Submonoid S) {S' : Type*} [CommRing S'] [Algebra S S'] [IsLocalization M S']
