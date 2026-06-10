@@ -120,6 +120,10 @@ theorem eqvGen_rel_eq (r : R → R → Prop) : Relation.EqvGen (Rel r) = RingCon
     | add => exact (RingQuot.ringCon r).add ‹_› ‹_›
     | mul => exact (RingQuot.ringCon r).mul ‹_› ‹_›
 
+theorem ringCon_eq (r : R → R → Prop) : RingQuot.ringCon r = ringConGen r := by
+  ext
+  exact congr($(eqvGen_rel_eq r) _ _)
+
 end RingQuot
 
 /-- The quotient of a ring by an arbitrary relation. -/
@@ -358,26 +362,24 @@ theorem ringQuot_ext [NonAssocSemiring T] {r : R → R → Prop} (f g : RingQuot
 
 variable [Semiring T]
 
+-- theorem ringCon_le_of_le {c : RingCon R} (h : r ≤ c) : ringCon r ≤ c := fun _ _ hx => by
+--   induction hx with
+--   | rel _ _ r =>
+--     induction r with
+--     | of r => exact h _ _ r
+--     | add_left _ r' => exact c.add r' (c.refl _)
+--     | mul_left _ r' => exact c.mul r' (c.refl _)
+--     | mul_right _ r' => exact c.mul (c.refl _) r'
+--   | refl _ => exact c.refl _
+--   | symm _ => exact c.symm ‹_›
+--   | trans _ => exact c.trans ‹_› ‹_›
+
 irreducible_def preLift {r : R → R → Prop} {f : R →+* T} (h : ∀ ⦃x y⦄, r x y → f x = f y) :
     RingQuot r →+* T :=
-  .comp (RingCon.lift) (ringEquivQuotient r).toRingHom
-  -- { toFun := fun x ↦ Quot.lift f
-  --       (by
-  --         rintro _ _ r
-  --         induction r with
-  --         | of r => exact h r
-  --         | add_left _ r' => rw [map_add, map_add, r']
-  --         | mul_left _ r' => rw [map_mul, map_mul, r']
-  --         | mul_right _ r' => rw [map_mul, map_mul, r'])
-  --       x.toQuot
-  --   map_zero' := by simp only [← zero_quot, f.map_zero]
-  --   map_add' := by
-  --     rintro ⟨⟨x⟩⟩ ⟨⟨y⟩⟩
-  --     simp only [add_quot, f.map_add x y]
-  --   map_one' := by simp only [← one_quot, f.map_one]
-  --   map_mul' := by
-  --     rintro ⟨⟨x⟩⟩ ⟨⟨y⟩⟩
-  --     simp only [mul_quot, f.map_mul x y] }
+  .comp
+    (RingCon.lift _ f (ringCon_eq r ▸ RingCon.ringConGen_le h))
+    (ringEquivQuotient r).toRingHom
+
 
 /-- Any ring homomorphism `f : R →+* T` which respects a relation `r : R → R → Prop`
 factors uniquely through a morphism `RingQuot r →+* T`.
@@ -388,13 +390,10 @@ irreducible_def lift {r : R → R → Prop} :
     invFun := fun F ↦ ⟨F.comp (mkRingHom r), fun _ _ h ↦ congr_arg F (mkRingHom_rel h)⟩
     left_inv := fun f ↦ by
       ext
-      simp only [preLift_def, mkRingHom_def, RingHom.coe_comp, RingHom.coe_mk, MonoidHom.coe_mk,
-                 OneHom.coe_mk, Function.comp_apply]
+      simp [preLift_def, mkRingHom_def]
     right_inv := fun F ↦ by
-      simp only [preLift_def]
       ext
-      simp only [mkRingHom_def, RingHom.coe_comp, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-        Function.comp_apply] }
+      simp [preLift_def, mkRingHom_def] }
 
 @[simp]
 theorem lift_mkRingHom_apply (f : R →+* T) {r : R → R → Prop} (w : ∀ ⦃x y⦄, r x y → f x = f y) (x) :
@@ -488,10 +487,11 @@ theorem mkAlgHom_rel {s : A → A → Prop} {x y : A} (w : s x y) :
   simp [mkAlgHom_def, mkRingHom_def, Quot.sound (Rel.of w)]
 
 theorem mkAlgHom_surjective (s : A → A → Prop) : Function.Surjective (mkAlgHom S s) := by
-  suffices Function.Surjective fun x ↦ (⟨.mk (Rel s) x⟩ : RingQuot s) by
-    simpa [mkAlgHom_def, mkRingHom_def]
-  rintro ⟨⟨a⟩⟩
-  use a
+  -- suffices Function.Surjective fun x ↦ (⟨.mk (Rel s) x⟩ : RingQuot s) by
+  --   simpa [mkAlgHom_def, mkRingHom_def]
+  -- rintro ⟨⟨a⟩⟩
+  -- use a
+  sorry
 
 variable {B : Type u₄} [Semiring B] [Algebra S B]
 
@@ -504,26 +504,11 @@ theorem ringQuot_ext' {s : A → A → Prop} (f g : RingQuot s →ₐ[S] B)
 
 irreducible_def preLiftAlgHom {s : A → A → Prop} {f : A →ₐ[S] B}
   (h : ∀ ⦃x y⦄, s x y → f x = f y) : RingQuot s →ₐ[S] B :=
-{ toFun := fun x ↦ Quot.lift f
-            (by
-              rintro _ _ r
-              induction r with
-              | of r => exact h r
-              | add_left _ r' => simp only [map_add, r']
-              | mul_left _ r' => simp only [map_mul, r']
-              | mul_right _ r' => simp only [map_mul, r'])
-            x.toQuot
-  map_zero' := by simp only [← zero_quot, map_zero]
-  map_add' := by
-    rintro ⟨⟨x⟩⟩ ⟨⟨y⟩⟩
-    simp only [add_quot, map_add _ x y]
-  map_one' := by simp only [← one_quot, map_one]
-  map_mul' := by
-    rintro ⟨⟨x⟩⟩ ⟨⟨y⟩⟩
-    simp only [mul_quot, map_mul _ x y]
+{ __ := preLift (f := f.toRingHom) h
   commutes' := by
     rintro x
-    simp [← one_quot, smul_quot, Algebra.algebraMap_eq_smul_one] }
+    simp [preLift_def, ← mk_one, smul_mk, Algebra.algebraMap_eq_smul_one]
+    sorry }
 
 /-- Any `S`-algebra homomorphism `f : A →ₐ[S] B` which respects a relation `s : A → A → Prop`
 factors uniquely through a morphism `RingQuot s →ₐ[S] B`.
@@ -534,19 +519,15 @@ irreducible_def liftAlgHom {s : A → A → Prop} :
     invFun := fun F ↦ ⟨F.comp (mkAlgHom S s), fun _ _ h ↦ congr_arg F (mkAlgHom_rel S h)⟩
     left_inv := fun f ↦ by
       ext
-      simp only [preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def,
-        AlgHom.coe_comp, AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-        Function.comp_apply]
+      simp [preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def, preLift_def]
     right_inv := fun F ↦ by
       ext
-      simp only [preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def,
-                 AlgHom.coe_comp, AlgHom.coe_mk, RingHom.coe_mk,
-                 MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply] }
+      simp [preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def, preLift_def] }
 
 @[simp]
 theorem liftAlgHom_mkAlgHom_apply (f : A →ₐ[S] B) {s : A → A → Prop}
     (w : ∀ ⦃x y⦄, s x y → f x = f y) (x) : (liftAlgHom S ⟨f, w⟩) ((mkAlgHom S s) x) = f x := by
-  simp_rw [liftAlgHom_def, preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def]
+  simp_rw [liftAlgHom_def, preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def, preLift_def]
   rfl
 
 -- note this is essentially `(liftAlgHom S).symm_apply_eq.mp h`
