@@ -898,6 +898,10 @@ theorem intervalIntegral_im (hf : IntervalIntegrable f μ a b) :
     ∫ x in a..b, RCLike.im (f x) ∂μ = RCLike.im (∫ x in a..b, f x ∂μ) :=
   RCLike.imCLM.intervalIntegral_comp_comm hf
 
+open scoped ComplexConjugate in
+theorem intervalIntegral_conj : ∫ x in a..b, conj (f x) ∂μ = conj (∫ x in a..b, f x ∂μ) :=
+  RCLike.conjLIE.toLinearIsometry.intervalIntegral_comp_comm f
+
 end RCLike
 
 /-!
