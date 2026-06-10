@@ -97,7 +97,7 @@ noncomputable instance : MulAction Gal(L/K) (primesOver p B) where
   one_smul Q := by
     apply Subtype.val_inj.mp
     change map _ Q.1 = Q.1
-    simpa only [map_one] using map_id Q.1
+    simpa only [map_one] using! map_id Q.1
   mul_smul σ τ Q := by
     apply Subtype.val_inj.mp
     change map _ Q.1 = map _ (map _ Q.1)
@@ -129,17 +129,11 @@ theorem exists_smul_eq_of_isGaloisGroup : ∃ σ : G, σ • P = Q := by
     (over_def P p).symm.trans (over_def Q p) with ⟨σ, hs⟩
   exact ⟨σ, hs.symm⟩
 
-@[deprecated (since := "2025-10-26")]
-alias exists_map_eq_of_isGalois := exists_smul_eq_of_isGaloisGroup
-
 instance isPretransitive_of_isGaloisGroup : MulAction.IsPretransitive G (primesOver p B) where
   exists_smul_eq := by
     intro ⟨P, _, _⟩ ⟨Q, _, _⟩
     rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, hs⟩
     exact ⟨σ, Subtype.val_inj.mp hs⟩
-
-@[deprecated (since := "2025-10-26")]
-alias isPretransitive_of_isGalois := isPretransitive_of_isGaloisGroup
 
 include G in
 /-- All the `Ideal.ramificationIdx` over a fixed maximal ideal are the same. -/
@@ -148,18 +142,12 @@ theorem ramificationIdx_eq_of_isGaloisGroup :
   rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, rfl⟩
   exact (ramificationIdx_map_eq p P (MulSemiringAction.toAlgEquiv A B σ)).symm
 
-@[deprecated (since := "2025-10-26")]
-alias ramificationIdx_eq_of_isGalois := ramificationIdx_eq_of_isGaloisGroup
-
 include G in
 /-- All the `Ideal.inertiaDeg` over a fixed maximal ideal are the same. -/
 theorem inertiaDeg_eq_of_isGaloisGroup :
     inertiaDeg p P = inertiaDeg p Q := by
   rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, rfl⟩
   exact (inertiaDeg_map_eq p P (MulSemiringAction.toAlgEquiv A B σ)).symm
-
-@[deprecated (since := "2025-10-26")]
-alias inertiaDeg_eq_of_isGalois := inertiaDeg_eq_of_isGaloisGroup
 
 include G in
 /-- The `ramificationIdxIn` is equal to any ramification index over the same ideal. -/
@@ -209,6 +197,8 @@ theorem inertiaDegIn_mul_inertiaDegIn [p.IsMaximal] [P.IsMaximal] :
   have : Q.LiesOver p := LiesOver.trans Q P p
   rw [inertiaDegIn_eq_inertiaDeg p P G, inertiaDegIn_eq_inertiaDeg p Q GAC,
     inertiaDegIn_eq_inertiaDeg P Q GBC, inertiaDeg_algebra_tower p P Q]
+
+set_option linter.overlappingInstances false
 
 variable {p} in
 include G GAC GBC in
@@ -317,7 +307,8 @@ theorem card_stabilizer_eq_card_inertia_mul_finrank (p : Ideal R) [p.IsMaximal]
     (Quotient.stabilizerQuotientInertiaEquiv G p P).toEquiv
   rw [← IsGalois.card_aut_eq_finrank, ← this,
     ← ((inertia G P).subgroupOf (MulAction.stabilizer G P)).card_mul_index,
-    Nat.card_congr (Subgroup.subgroupOfEquivOfLe (inertia_le_stabilizer (M := G) P)).toEquiv]
+    Nat.card_congr (Subgroup.subgroupOfEquivOfLe (inertia_le_stabilizer (M := G) P)).toEquiv,
+    AddSubgroup.subgroupOf_inertia]
 
 lemma ncard_primesOver_mul_card_inertia_mul_finrank (p : Ideal R) [p.IsMaximal]
     (P : Ideal S) [P.LiesOver p] [P.IsMaximal] [Algebra.IsSeparable (R ⧸ p) (S ⧸ P)] :

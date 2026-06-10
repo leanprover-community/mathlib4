@@ -146,7 +146,7 @@ variable {R}
 @[simp]
 theorem ι_comp_lift {A : Type*} [Semiring A] [Algebra R A] (f : M →ₗ[R] A) :
     (lift R f).toLinearMap.comp (ι R) = f := by
-  convert (lift R).symm_apply_apply f
+  convert! (lift R).symm_apply_apply f
 
 @[simp]
 theorem lift_ι_apply {A : Type*} [Semiring A] [Algebra R A] (f : M →ₗ[R] A) (x) :
