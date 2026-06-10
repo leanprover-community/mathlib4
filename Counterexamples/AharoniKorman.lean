@@ -67,7 +67,6 @@ aim of reaching a contradiction (as then, no such partition can exist). We may f
   we have a contradiction (`no_spinalMap`), and therefore show that no spinal map exists.
 -/
 
-attribute [aesop norm 10 tactic] Lean.Elab.Tactic.Omega.omegaDefault
 attribute [aesop 2 simp] Set.subset_def Finset.subset_iff
 
 /-- A type synonym on ℕ³ on which we will construct Hollom's partial order P_5. -/
@@ -261,11 +260,13 @@ lemma line_injOn {C : Set Hollom} (n : ℕ) (hC : IsChain (· ≤ ·) C) (hCn : 
   induction hCn hx using induction_on_level with | h a b =>
   induction hCn hy using induction_on_level with | h c d =>
   have := hC.total hx hy
-  aesop
+  simp at *
+  lia
 
 lemma add_lt_add_of_lt {a b c d n : ℕ} (h : h(a, b, n) < h(c, d, n)) : a + b < c + d := by
   change embed n (a, b) < embed n (c, d) at h
-  aesop
+  simp at *
+  lia
 
 lemma line_mapsTo {x y : Hollom} (hxy : (ofHollom x).2.2 = (ofHollom y).2.2) :
     Set.MapsTo line (Set.Icc x y) (Set.Icc (line x) (line y)) := by
@@ -366,7 +367,7 @@ theorem no_infinite_antichain {A : Set Hollom} (hC : IsAntichain (· ≤ ·) A) 
     exact hC hcd hab (by simp; lia) (HollomOrder.twice this)
 
 private lemma triangle_finite (n : ℕ) : {x : ℕ × ℕ | x.1 + x.2 ≤ n}.Finite :=
-  (Set.finite_Iic (n, n)).subset <| by aesop
+  (Set.finite_Iic (n, n)).subset <| by simp [Set.subset_def]; lia
 
 variable {C : Set Hollom}
 
@@ -408,13 +409,13 @@ theorem exists_finite_intersection (hC : IsChain (· ≤ ·) C) :
       simp +contextual [Set.subset_def, D, embed_apply]
     -- ...and `C ∩ level (n + 1)` is infinite (by assumption).
     specialize hC' (n + 1) (by lia)
-    rw [← (C ∩ level (n + 1)).inter_union_diff D, Set.infinite_union] at hC'
+    rw [← (C ∩ level (n + 1)).inter_union_sdiff D, Set.infinite_union] at hC'
     refine hC'.resolve_left ?_
     simpa using this
   -- In fact, we only need it to be nonempty, and find a point.
   obtain ⟨x, hxy⟩ := this.nonempty
   induction hxy.1.2 using induction_on_level with | h x y =>
-  simp only [Set.mem_diff, Set.mem_inter_iff, toHollom_mem_level_iff, and_true, Set.mem_setOf_eq,
+  simp only [Set.mem_sdiff, Set.mem_inter_iff, toHollom_mem_level_iff, and_true, Set.mem_setOf_eq,
     not_le, D] at hxy
   -- Take the point `(x, y, n + 1)` in `C` that avoids `D`. As `(u, v, n)` is also in the chain `C`,
   -- they must be comparable.
@@ -593,7 +594,8 @@ lemma card_chainBetween {a b c d : ℕ} (hac : a ≤ c) (hbd : b ≤ d) :
 lemma chainBetween_subset {a b c d : ℕ} :
     chainBetween a b c d ⊆ Finset.Icc (a, b) (c, d) := by
   rw [chainBetween]
-  aesop (add simp Finset.subset_iff)
+  split_ifs <;> simp [Finset.subset_iff]
+  lia
 
 end make_chains
 
@@ -839,7 +841,7 @@ lemma square_subset_above (h : (C ∩ level n).Finite) :
     Function.Embedding.coeFn_mk, Set.mem_inter_iff, and_imp, «forall», toHollom_mem_level_iff,
     Prod.forall, Set.subset_def, Set.mem_image, Set.mem_Ici, Prod.exists, Prod.mk_le_mk,
     Set.mem_setOf_eq, forall_exists_index, Prod.mk.injEq,
-    toHollom_le_toHollom_iff_fixed_right, Set.mem_diff, and_true, ← max_add_add_right,
+    toHollom_le_toHollom_iff_fixed_right, Set.mem_sdiff, and_true, ← max_add_add_right,
     Hollom.ext_iff]
   -- After simplifying, direct calculations show the subset relation as required.
   rintro k hak hbk _ _ _ f g hkf hkg rfl rfl rfl
@@ -857,7 +859,7 @@ lemma square_subset_R (h : (C ∩ level n).Finite) :
   rintro _ ⟨⟨x, y⟩, hxy, rfl⟩
   exact ⟨⟨by simp [embed], fun b hb ↦ .inr ((ha ⟨_, hxy, rfl⟩).1 _ hb)⟩, (ha ⟨_, hxy, rfl⟩).2⟩
 
-lemma R_diff_infinite (h : (C ∩ level n).Finite) : (R n C \ (C ∩ level n)).Infinite := by
+lemma R_sdiff_infinite (h : (C ∩ level n).Finite) : (R n C \ (C ∩ level n)).Infinite := by
   obtain ⟨a, ha⟩ := (square_subset_R h).exists
   refine ((Set.Ici_infinite _).image ?_).mono ha
   aesop (add safe unfold [Set.InjOn])
@@ -978,7 +980,8 @@ lemma square_subset_S_case_2 (h : (C ∩ level n).Finite) (h' : (C ∩ level (n 
   rw [S, if_neg h']
   filter_upwards [eventually_ge_atTop (x0 n C + 1), eventually_ge_atTop (y0 n C + 1),
     square_subset_R h] with a hax hay haR
-  aesop (add simp embed_apply)
+  simp [Set.subset_def, embed_apply] at *
+  grind
 
 theorem square_subset_S (h : (C ∩ level n).Finite) :
     ∀ᶠ a in atTop, embed n '' Set.Ici (a, a) ⊆ S n C \ (C ∩ level n) :=
