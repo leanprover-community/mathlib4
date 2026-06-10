@@ -487,8 +487,7 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞ω}
       congr with v
       simp only [fourierPowSMulRight_apply, mul_comm, pow_succ, neg_mul, Fin.prod_univ_succ,
         Fin.cons_zero, Fin.cons_succ, neg_smul, fourierSMulRight_apply,
-        ContinuousMultilinearMap.neg_apply, ContinuousMultilinearMap.smul_apply,
-        smul_comm (M := ℝ) (N := ℂ) (α := E), smul_smul]
+        neg_apply, smul_apply, smul_comm (M := ℝ) (N := ℂ) (α := E), smul_smul]
     exact E ▸ hasFDerivAt_fourierIntegral L I₁ I₂ w
   · intro n hn
     apply fourierIntegral_continuous Real.continuous_fourierChar (by apply L.continuous₂)
@@ -538,9 +537,9 @@ theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
   induction n with
   | zero =>
     ext w m
-    simp only [iteratedFDeriv_zero_apply, fourierPowSMulRight_apply, pow_zero,
-      Finset.univ_eq_empty, _root_.neg_apply, ContinuousLinearMap.flip_apply,
-      Finset.prod_empty, one_smul, fourierIntegral_continuousMultilinearMap_apply' ((h'f 0 bot_le))]
+    simp only [iteratedFDeriv_zero_apply, fourierPowSMulRight_apply, pow_zero, Finset.univ_eq_empty,
+      neg_apply, ContinuousLinearMap.flip_apply, Finset.prod_empty, one_smul,
+      fourierIntegral_continuousMultilinearMap_apply' ((h'f 0 bot_le))]
   | succ n ih =>
     ext w m
     have J : Integrable (fderiv ℝ (iteratedFDeriv ℝ n f)) μ := by
@@ -552,18 +551,17 @@ theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
           (m 0) (Fin.tail m) =
         (-(2 * π * I)) ^ (n + 1) • (∏ x : Fin (n + 1), -L (m x) w) • ∫ v, 𝐞 (-L v w) • f v ∂μ by
       rw [fourierIntegral_continuousMultilinearMap_apply' (h'f _ hn)]
-      simp only [iteratedFDeriv_succ_apply_left, fourierPowSMulRight_apply,
-        _root_.neg_apply, ContinuousLinearMap.flip_apply]
+      simp only [iteratedFDeriv_succ_apply_left, fourierPowSMulRight_apply, neg_apply,
+        ContinuousLinearMap.flip_apply]
       rw [← fourierIntegral_continuousMultilinearMap_apply' ((J.apply_continuousLinearMap _)),
           ← fourierIntegral_continuousLinearMap_apply' J]
       exact H
     have h'n : n < N := (Nat.cast_lt.mpr n.lt_succ_self).trans_le hn
     rw [fourierIntegral_fderiv _ (h'f n h'n.le)
       (hf.differentiable_iteratedFDeriv (mod_cast h'n)) J]
-    simp only [ih h'n.le, fourierSMulRight_apply, _root_.neg_apply,
-      ContinuousLinearMap.flip_apply, neg_smul, smul_neg, neg_neg,
-      ContinuousMultilinearMap.smul_apply, fourierPowSMulRight_apply,
-      ← coe_smul (E := E), smul_smul]
+    simp only [ih h'n.le, fourierSMulRight_apply, neg_apply, ContinuousLinearMap.flip_apply,
+      neg_smul, smul_neg, neg_neg, smul_apply, fourierPowSMulRight_apply, ← coe_smul (E := E),
+      smul_smul]
     congr 1
     simp only [ofReal_prod, ofReal_neg, pow_succ, mul_neg, Fin.prod_univ_succ, neg_mul,
       ofReal_mul, neg_neg, Fin.tail_def]
