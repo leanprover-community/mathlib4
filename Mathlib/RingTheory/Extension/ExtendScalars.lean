@@ -78,7 +78,7 @@ lemma cotangentExtendScalarsEquiv_symm_toLinearMap (P : Extension.{w} R S) :
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
-theorem H1Cotangent.map_toExtendScalar_injective (P : Extension.{w} R S) :
+theorem H1Cotangent.map_toExtendScalars_injective (P : Extension.{w} R S) :
     Function.Injective (H1Cotangent.map P.toExtendScalars) := by
   rw [← LinearMap.ker_eq_bot, H1Cotangent.map, LinearMap.ker_restrict,
     ← cotangentExtendScalarsEquiv_symm_toLinearMap, LinearEquiv.ker,
