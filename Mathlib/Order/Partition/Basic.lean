@@ -158,7 +158,7 @@ def partscopyEquiv (P : Partition s) (hst : s = t) : ↥(P.copy hst) ≃ ↥P :=
 @[simps]
 def removeBot (P : Set α) (indep : _root_.sSupIndep P) (sSup_eq : sSup P = s) : Partition s where
   parts := P \ {⊥}
-  sSupIndep' := indep.mono diff_subset
+  sSupIndep' := indep.mono sdiff_subset
   bot_notMem' := by simp
   sSup_eq' := by simp [← sSup_eq]
 
