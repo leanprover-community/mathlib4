@@ -196,7 +196,11 @@ theorem geom_mean_eq_arith_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ
   rw [geom_mean_weighted_of_constant, arith_mean_weighted_of_constant] <;> assumption
 
 /-- **AM-GM inequality - equality condition**: This theorem provides the equality condition for the
-*positive* weighted version of the AM-GM inequality for real-valued nonnegative functions. -/
+*positive* weighted version of the AM-GM inequality for real-valued nonnegative functions.
+
+The condition is that all elements of `z` are equal to their center of mass `∑ i ∈ s, w i * z i`;
+see `geom_mean_eq_arith_mean_weighted_iff_of_pos` for a version that compares the elements to each
+other instead. -/
 theorem geom_mean_eq_arith_mean_weighted_iff_of_pos' (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
     ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i ↔ ∀ j ∈ s, z j = ∑ i ∈ s, w i * z i := by
@@ -237,7 +241,11 @@ theorem geom_mean_eq_arith_mean_weighted_iff_of_pos' (w z : ι → ℝ) (hw : �
 alias geom_mean_eq_arith_mean_weighted_iff' := geom_mean_eq_arith_mean_weighted_iff_of_pos'
 
 /-- **AM-GM inequality - equality condition**: This theorem provides the equality condition for the
-weighted version of the AM-GM inequality for real-valued nonnegative functions. -/
+weighted version of the AM-GM inequality for real-valued nonnegative functions.
+
+The condition is that all elements of `z` with a nonzero weight are equal to their center of mass
+`∑ i ∈ s, w i * z i`; see `geom_mean_eq_arith_mean_weighted_iff_of_nonneg` for a version that
+compares the elements to each other instead. -/
 theorem geom_mean_eq_arith_mean_weighted_iff_of_nonneg' (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
     ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i ↔ ∀ j ∈ s, w j ≠ 0 → z j = ∑ i ∈ s, w i * z i := by
@@ -251,7 +259,10 @@ theorem geom_mean_eq_arith_mean_weighted_iff_of_nonneg' (w z : ι → ℝ) (hw :
 @[deprecated (since := "2026-06-07")]
 alias geom_mean_eq_arith_mean_weighted_iff := geom_mean_eq_arith_mean_weighted_iff_of_nonneg'
 
-/-- **AM-GM inequality - equality condition** -/
+/-- **AM-GM inequality - equality condition**.
+The condition is that all elements of `z` are equal to each other;
+see `geom_mean_eq_arith_mean_weighted_iff_of_pos'` for a version that compares the elements to their
+center of mass `∑ i ∈ s, w i * z i` instead. -/
 theorem geom_mean_eq_arith_mean_weighted_iff_of_pos (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
     ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i ↔ ∀ j ∈ s, ∀ k ∈ s, z j = z k := by
@@ -260,7 +271,10 @@ theorem geom_mean_eq_arith_mean_weighted_iff_of_pos (w z : ι → ℝ) (hw : ∀
   suffices ∏ i ∈ s, z k ^ w i = ∑ i ∈ s, w i * z k by convert this using 3 <;> grind
   rw [← rpow_sum_of_nonneg (hz k hk) (hw · · |>.le), ← sum_mul, hw', rpow_one, one_mul]
 
-/-- **AM-GM inequality - equality condition** -/
+/-- **AM-GM inequality - equality condition**.
+The condition is that all elements of `z` with a nonzero weight are equal to each other;
+see `geom_mean_eq_arith_mean_weighted_iff_of_nonneg'` for a version that compares the elements to
+their center of mass `∑ i ∈ s, w i * z i` instead. -/
 theorem geom_mean_eq_arith_mean_weighted_iff_of_nonneg (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
     ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i ↔ ∀ j ∈ s, w j ≠ 0 → ∀ k ∈ s, w k ≠ 0 → z j = z k := by
@@ -271,7 +285,10 @@ theorem geom_mean_eq_arith_mean_weighted_iff_of_nonneg (w z : ι → ℝ) (hw : 
       (sum_filter_ne_zero _ |>.trans hw') (hz _ <| mem_of_mem_filter · ·)
   grind [prod_filter_of_ne, sum_filter_of_ne, rpow_zero]
 
-/-- **AM-GM inequality - strict inequality condition** -/
+/-- **AM-GM inequality - strict inequality condition**.
+The condition is that not all elements of `z` are equal to their center of mass
+`∑ i ∈ s, w i * z i`; see `geom_mean_lt_arith_mean_weighted_iff_of_pos` for a version that compares
+the elements to each other instead. -/
 theorem geom_mean_lt_arith_mean_weighted_iff_of_pos' (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
     ∏ i ∈ s, z i ^ w i < ∑ i ∈ s, w i * z i ↔ ∃ j ∈ s, z j ≠ ∑ i ∈ s, w i * z i := by
@@ -279,7 +296,10 @@ theorem geom_mean_lt_arith_mean_weighted_iff_of_pos' (w z : ι → ℝ) (hw : �
   rw [← geom_mean_eq_arith_mean_weighted_iff_of_pos' s w z hw hw' hz]
   exact geom_mean_le_arith_mean_weighted s w z (hw · · |>.le) hw' hz |>.ge_iff_eq
 
-/-- **AM-GM inequality - strict inequality condition** -/
+/-- **AM-GM inequality - strict inequality condition**.
+The condition is that not all elements of `z` with a nonzero weight are equal to their center of
+mass `∑ i ∈ s, w i * z i`; see `geom_mean_lt_arith_mean_weighted_iff_of_nonneg` for a version that
+compares the elements to each other instead. -/
 theorem geom_mean_lt_arith_mean_weighted_iff_of_nonneg' (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
     ∏ i ∈ s, z i ^ w i < ∑ i ∈ s, w i * z i ↔ ∃ j ∈ s, w j ≠ 0 ∧ z j ≠ ∑ i ∈ s, w i * z i := by
@@ -292,7 +312,11 @@ theorem geom_mean_lt_arith_mean_weighted_iff_of_nonneg' (w z : ι → ℝ) (hw :
 
 /-- **AM-GM inequality - strict inequality condition**: This theorem provides the strict inequality
 condition for the *positive* weighted version of the AM-GM inequality for real-valued nonnegative
-functions. -/
+functions.
+
+The condition is that not all elements of `z` are equal to each other;
+see `geom_mean_lt_arith_mean_weighted_iff_of_pos'` for a version that compares the elements to their
+center of mass `∑ i ∈ s, w i * z i` instead. -/
 theorem geom_mean_lt_arith_mean_weighted_iff_of_pos (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
     ∏ i ∈ s, z i ^ w i < ∑ i ∈ s, w i * z i ↔ ∃ j ∈ s, ∃ k ∈ s, z j ≠ z k := by
@@ -311,7 +335,10 @@ theorem geom_mean_lt_arith_mean_weighted_iff_of_pos (w z : ι → ℝ) (hw : ∀
     apply (geom_mean_eq_arith_mean_weighted_iff_of_pos' s w z hw hw' hz).mp at h
     simp only [h j hjs, h k hks, ne_eq, not_true_eq_false] at hzjk
 
-/-- **AM-GM inequality - strict inequality condition** -/
+/-- **AM-GM inequality - strict inequality condition**.
+The condition is that not all elements of `z` with a nonzero weight are equal to each other;
+see `geom_mean_lt_arith_mean_weighted_iff_of_nonneg'` for a version that compares the elements to
+their center of mass `∑ i ∈ s, w i * z i` instead. -/
 theorem geom_mean_lt_arith_mean_weighted_iff_of_nonneg (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
     ∏ i ∈ s, z i ^ w i < ∑ i ∈ s, w i * z i ↔ ∃ j ∈ s, ∃ k ∈ s, w j ≠ 0 ∧ w k ≠ 0 ∧ z j ≠ z k := by
