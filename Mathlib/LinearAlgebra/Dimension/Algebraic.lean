@@ -34,14 +34,14 @@ open scoped nonZeroDivisors
 namespace Algebra.IsAlgebraic
 
 variable
-  (R : Type u) (S : Type v) [CommRing R] [CommRing S] [IsDomain R] [IsDomain S]
+  (R : Type u) (S : Type v) [CommRing R] [CommRing S] [NoZeroDivisors R] [NoZeroDivisors S]
   [Algebra R S] [FaithfulSMul R S] [Algebra.IsAlgebraic R S]
 
 section Tower
 
 variable (M : Type w) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
 
-/-- **Tower law over domains**: if `R` and `S` are integral domains, `S` is a faithful algebraic
+/-- **Tower law over domains**: if `R` and `S` have no zero divisors, `S` is a faithful algebraic
 `R`-algebra, and `M` is a `S`-module, then
 $\operatorname{rank}_R(S) * \operatorname{rank}_S(M) = \operatorname{rank}_R(M)$.
 
@@ -49,6 +49,9 @@ See `Algebra.IsAlgebraic.rank_mul_rank` for a non–universe polymorphic version
 `_root_.lift_rank_mul_lift_rank` for when all your modules are free. -/
 theorem lift_rank_mul_lift_rank :
     lift.{w} (rank R S) * lift.{v} (rank S M) = lift.{v} (rank R M) := by
+  nontriviality R using Module.subsingleton R S
+  nontriviality S using Module.subsingleton S M
+  have _ : IsDomain S := {}
   letI R' := FractionRing R
   letI S' := FractionRing S
   let M' := LocalizedModule S⁰ M
@@ -66,7 +69,7 @@ theorem lift_rank_mul_lift_rank :
     ← h₁.lift_rank_eq, ← lift_umax.{v, w}, lift_id'.{w, v}, lift_id'.{w, v},
      ← lift_id'.{v, w} (rank S' M'),← lift_id'.{v, w} (rank R' M'), _root_.lift_rank_mul_lift_rank]
 
-/-- **Tower law over domains**: if `R` and `S` are integral domains, `S` is a faithful algebraic
+/-- **Tower law over domains**: if `R` and `S` have no zero divisors, `S` is a faithful algebraic
 `R`-algebra, and `M` is a `S`-module, then
 $\operatorname{rank}_R(S) * \operatorname{rank}_S(M) = \operatorname{rank}_R(M)$.
 
@@ -77,7 +80,7 @@ theorem rank_mul_rank
     rank R S * rank S M = rank R M := by
   convert! lift_rank_mul_lift_rank R S M <;> rw [lift_id]
 
-/-- **Tower law over domains**: if `R` and `S` are integral domains, `S` is a faithful algebraic
+/-- **Tower law over domains**: if `R` and `S` have no zero divisors, `S` is a faithful algebraic
 `R`-algebra, and `M` is a `S`-module, then
 $\operatorname{rank}_R(S) * \operatorname{rank}_S(M) = \operatorname{rank}_R(M)$.
 
