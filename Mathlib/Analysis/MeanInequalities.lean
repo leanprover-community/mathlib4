@@ -499,7 +499,7 @@ namespace Real
 /-- **Young's inequality**, a version for nonnegative real numbers. -/
 theorem young_inequality_of_nonneg {a b p q : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b)
     (hpq : p.HolderConjugate q) : a * b ≤ a ^ p / p + b ^ q / q := by
-  simpa [← rpow_mul, ha, hb, hpq.ne_zero, hpq.symm.ne_zero, _root_.div_eq_inv_mul] using
+  simpa [← rpow_mul, ha, hb, hpq.ne_zero, hpq.symm.ne_zero, div_eq_inv_mul] using
     geom_mean_le_arith_mean2_weighted hpq.inv_nonneg hpq.symm.inv_nonneg
       (rpow_nonneg ha p) (rpow_nonneg hb q) hpq.inv_add_inv_eq_one
 
@@ -511,6 +511,13 @@ theorem young_inequality (a b : ℝ) {p q : ℝ} (hpq : p.HolderConjugate q) :
     _ = |a| * |b| := abs_mul a b
     _ ≤ |a| ^ p / p + |b| ^ q / q :=
       Real.young_inequality_of_nonneg (abs_nonneg a) (abs_nonneg b) hpq
+
+/-- **Young's inequality** equality condition for nonnegative real numbers. -/
+theorem young_inequality_eq_iff_of_nonneg {a b p q : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b)
+    (hpq : p.HolderConjugate q) : a * b = a ^ p / p + b ^ q / q ↔ a ^ p = b ^ q := by
+  simpa [← rpow_mul, ha, hb, hpq.ne_zero, hpq.symm.ne_zero, div_eq_inv_mul] using
+    geom_mean_eq_arith_mean2_weighted_iff_of_nonneg hpq.inv_nonneg hpq.symm.inv_nonneg
+      (rpow_nonneg ha p) (rpow_nonneg hb q) hpq.inv_add_inv_eq_one
 
 end Real
 
@@ -524,8 +531,18 @@ theorem young_inequality (a b : ℝ≥0) {p q : ℝ≥0} (hpq : p.HolderConjugat
 
 /-- **Young's inequality**, `ℝ≥0` version with real conjugate exponents. -/
 theorem young_inequality_real (a b : ℝ≥0) {p q : ℝ} (hpq : p.HolderConjugate q) :
-    a * b ≤ a ^ p / Real.toNNReal p + b ^ q / Real.toNNReal q := by
-  simpa [Real.coe_toNNReal, hpq.nonneg, hpq.symm.nonneg] using young_inequality a b hpq.toNNReal
+    a * b ≤ a ^ p / p.toNNReal + b ^ q / q.toNNReal := by
+  simpa [hpq.nonneg, hpq.symm.nonneg] using young_inequality a b hpq.toNNReal
+
+/-- **Young's inequality** equality condition, `ℝ≥0` version. -/
+theorem young_inequality_eq_iff (a b : ℝ≥0) {p q : ℝ≥0} (hpq : p.HolderConjugate q) :
+    a * b = a ^ (p : ℝ) / p + b ^ (q : ℝ) / q ↔ a ^ (p : ℝ) = b ^ (q : ℝ) :=
+  mod_cast Real.young_inequality_eq_iff_of_nonneg a.coe_nonneg b.coe_nonneg hpq.coe
+
+/-- **Young's inequality** equality condition, `ℝ≥0` version with real conjugate exponents. -/
+theorem young_inequality_real_eq_iff (a b : ℝ≥0) {p q : ℝ} (hpq : p.HolderConjugate q) :
+    a * b = a ^ p / p.toNNReal + b ^ q / q.toNNReal ↔ a ^ p = b ^ q := by
+  simpa [hpq.nonneg, hpq.symm.nonneg] using young_inequality_eq_iff a b hpq.toNNReal
 
 end NNReal
 
@@ -538,12 +555,25 @@ theorem young_inequality (a b : ℝ≥0∞) {p q : ℝ} (hpq : p.HolderConjugate
   · refine le_trans le_top (le_of_eq ?_)
     repeat rw [div_eq_mul_inv]
     rcases h with h | h <;> rw [h] <;> simp [hpq.pos, hpq.symm.pos]
-  -- if a ≠ ⊤ and b ≠ ⊤, use the nnreal version: nnreal.young_inequality_real
+  -- if `a ≠ ⊤` and `b ≠ ⊤`, use the `NNReal` version: `NNReal.young_inequality_real`
   rw [← coe_toNNReal h.left, ← coe_toNNReal h.right, ← coe_mul, ← coe_rpow_of_nonneg _ hpq.nonneg,
     ← coe_rpow_of_nonneg _ hpq.symm.nonneg, ENNReal.ofReal, ENNReal.ofReal, ←
     @coe_div (Real.toNNReal p) _ (by simp [hpq.pos]), ←
     @coe_div (Real.toNNReal q) _ (by simp [hpq.symm.pos]), ← coe_add, coe_le_coe]
   exact NNReal.young_inequality_real a.toNNReal b.toNNReal hpq
+
+/-- **Young's inequality** equality condition, `ℝ≥0∞` version with real conjugate exponents. -/
+theorem young_inequality_eq_iff (a b : ℝ≥0∞) {p q : ℝ} (hpq : p.HolderConjugate q) :
+    a * b = a ^ p / .ofReal p + b ^ q / .ofReal q ↔
+      (a = ⊤ ∧ b ≠ 0) ∨ (a ≠ 0 ∧ b = ⊤) ∨ a ^ p = b ^ q := by
+  by_cases! h0 : a = 0 ∨ b = 0
+  · rcases h0 with rfl | rfl <;> simp [hpq.pos, hpq.symm.pos, eq_comm]
+  by_cases! h : a = ⊤ ∨ b = ⊤
+  · rcases h with rfl | rfl <;> simp [hpq.pos, hpq.symm.pos, h0, div_eq_mul_inv]
+  rw [← coe_toNNReal h.left, ← coe_toNNReal h.right, ← coe_mul, ← coe_rpow_of_nonneg _ hpq.nonneg,
+    ← coe_rpow_of_nonneg _ hpq.symm.nonneg, ← ofNNReal_toNNReal, ← ofNNReal_toNNReal,
+    ← coe_div (by simp [hpq.pos]), ← coe_div (by simp [hpq.symm.pos]), ← coe_add, coe_inj, coe_inj]
+  simp [young_inequality_real_eq_iff a.toNNReal b.toNNReal hpq]
 
 end ENNReal
 
