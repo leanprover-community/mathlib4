@@ -437,7 +437,7 @@ theorem contMDiff_tangentBundleModelSpaceHomeomorph :
 
 set_option backward.isDefEq.respectTransparency false in
 theorem contMDiff_tangentBundleModelSpaceHomeomorph_symm :
-    ContMDiff (I.prod 𝓘(𝕜, E)) I.tangent n
+    ContMDiff I.tangent I.tangent n
     ((tangentBundleModelSpaceHomeomorph I).symm : ModelProd H E → TangentBundle I H) := by
   apply contMDiff_iff.2 ⟨Homeomorph.continuous _, fun x y ↦ ?_⟩
   apply contDiffOn_id.congr
@@ -451,8 +451,7 @@ variable (H I) in
 /-- In the tangent bundle to the model space, the second projection is `C^n`. -/
 lemma contMDiff_snd_tangentBundle_modelSpace :
     ContMDiff I.tangent 𝓘(𝕜, E) n (fun (p : TangentBundle I H) ↦ p.2) := by
-  change ContMDiff I.tangent 𝓘(𝕜, E) n
-    ((id Prod.snd : ModelProd H E → E) ∘ (tangentBundleModelSpaceHomeomorph I))
+  change CMDiff n ((id Prod.snd : ModelProd H E → E) ∘ (tangentBundleModelSpaceHomeomorph I))
   apply ContMDiff.comp (I' := I.prod 𝓘(𝕜, E))
   · convert! contMDiff_snd
     rw [chartedSpaceSelf_prod]
