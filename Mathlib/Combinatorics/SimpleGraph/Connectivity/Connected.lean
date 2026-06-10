@@ -754,6 +754,11 @@ theorem isBridge_iff {u v : V} :
 @[simp] lemma IsBridge.of_not_reachable (huv : ¬ G.Reachable u v) :
     G.IsBridge s(u, v) := fun h ↦ huv <| h.mono <| deleteEdges_le _
 
+theorem IsBridge.reachable_iff_adj (h : G.IsBridge s(u, v)) : G.Reachable u v ↔ G.Adj u v := by
+  refine ⟨fun hreach ↦ G.mem_edgeSet.mp ?_, Adj.reachable⟩
+  have : G.deleteEdges {s(u, v)} < G := deleteEdges_le _ |>.lt_of_ne <| by grind [isBridge_iff]
+  grind [edgeSet_strict_mono this, edgeSet_deleteEdges]
+
 lemma IsBridge.nontrivial {e : Sym2 V} (he : G.IsBridge e) : Nontrivial V := by
   cases e with | h u v; exact ⟨u, v, by rintro rfl; simp [IsBridge] at he⟩
 
