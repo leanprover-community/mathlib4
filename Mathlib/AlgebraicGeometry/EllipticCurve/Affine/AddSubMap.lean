@@ -84,10 +84,12 @@ noncomputable def bRelationCoeffs : Fin 3 → MvPolynomial (Fin 3) R :=
       C (-16 * W.b₈) * t ^ 2 * u ^ 2,
     C (-28) * s * u ^ 3 + C 4 * t ^ 2 * u ^ 2 + C (-W.b₂) * t * u ^ 3 +  C (-8 * W.b₄) * u ^ 4]
 
-private lemma CXX {i : Fin 3} {a : R} : (C a * X (R := R) i ^ 2).IsHomogeneous 2 :=
+variable {a} in
+private lemma CXX {i : Fin 3} : (C a * X (R := R) i ^ 2).IsHomogeneous 2 :=
     isHomogeneous_C_mul_X_pow ..
 
-private lemma CXY {i j : Fin 3} {a : R} : (C a * X (R := R) i * X j).IsHomogeneous 2 :=
+variable {a} in
+private lemma CXY {i j : Fin 3} : (C a * X (R := R) i * X j).IsHomogeneous 2 :=
     .mul (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
 
 lemma isHomogeneous_addSubMap (i : Fin 3) : (addSubMap W i).IsHomogeneous 2 := by
