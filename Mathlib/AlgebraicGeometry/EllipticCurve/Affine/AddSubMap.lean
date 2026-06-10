@@ -11,16 +11,19 @@ public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 public import Mathlib.Tactic.Ring.NamePolyVars
 
 /-!
-# The approximate parallelogram law on elliptic curves
+# The addition-and-subtraction map on x-coordinates
 
-If `K` is a field with `AdmissibleAbsoluteValues` and `E` is an elliptic curve over `K`,
-let `h : E(K) → ℝ` be the naïve height of the x-coordinate.
+We set up the endomorphism of `ℙ²` that on affine points with affine sum is equal to
+```
+(x(P) * x(Q) : x(P) + x(Q) : 1) ↦ (x(P+Q) * x(P-Q) : x(P+Q) + x(P-Q) : 1) ;
+```
+see `WeierstrassCurve.addSubMap` (this is on coordinate vectors).
 
-The goal of this file is to show the approximate parallelogram law:
+TODO: We show that the map really does what it is claimed to do.
+
+This will be used to eventually show the approximate parallelogram law:
 `∃ C, ∀ P Q : E(K), |h(P+Q) + h(P-Q) - 2*h(P) - 2*h(Q)| ≤ C`,
-where `h` denotes the (logarithmic) naïve height on `E(K)`,
-and to show that there are only finitely many points in `E(K)` of bounded height
-when `K` has the Northcott property.
+where `K` is a field with a height and `h` denotes the (logarithmic) naïve height on `E(K)`.
 -/
 
 public section
