@@ -76,10 +76,8 @@ theorem mk_inj {x : X} {q₁ q₂ : Path.Homotopic.Quotient x₀ x} :
 
 
 /-- The quotient map from based paths to endpoint/path-homotopy classes. -/
-def ofBasedPath (x₀ : X) : BasedPath x₀ → UniversalCover x₀
-  | ⟨γ, hγ⟩ =>
-      ⟨γ 1, Path.Homotopic.Quotient.mk
-        ({ toContinuousMap := γ, source' := hγ, target' := rfl } : Path x₀ (γ 1))⟩
+@[expose] def ofBasedPath (x₀ : X) (α : BasedPath x₀) : UniversalCover x₀ :=
+  mk (BasedPath.endpoint α) (Path.Homotopic.Quotient.mk α.toPath)
 
 /-- The topology on `UniversalCover x₀` as the quotient topology coinduced from the compact-open
 topology on `BasedPath x₀` via `ofBasedPath`. See the module-level `## Implementation note` for
@@ -90,17 +88,21 @@ instance instTopologicalSpaceUniversalCover (x₀ : X) : TopologicalSpace (Unive
 @[fun_prop] theorem continuous_ofBasedPath (x₀ : X) : Continuous (ofBasedPath x₀) :=
   continuous_coinduced_rng
 
+/-- `ofBasedPath` applied to the canonical based path from `p : Path x₀ y` gives the
+endpoint-and-homotopy-class pair. -/
+theorem ofBasedPath_ofPath {y : X} (p : Path x₀ y) :
+    ofBasedPath x₀ (BasedPath.ofPath p) = mk y (Path.Homotopic.Quotient.mk p) := by
+  refine UniversalCover.ext p.target ?_
+  apply Path.Homotopic.hpath_hext
+  intro t
+  rfl
+
 /-- Every point of `UniversalCover x₀` is represented by some based path. -/
 theorem surjective_ofBasedPath (x₀ : X) : Function.Surjective (ofBasedPath x₀) := by
   intro z
   rcases z with ⟨x, q⟩
   induction q using Quotient.inductionOn with
-  | h γ =>
-      refine ⟨⟨γ.toContinuousMap, γ.source⟩, ?_⟩
-      cases γ with
-      | mk f hs ht =>
-          subst x
-          rfl
+  | h γ => exact ⟨BasedPath.ofPath γ, ofBasedPath_ofPath γ⟩
 
 /-- `ofBasedPath` is a quotient map: `UniversalCover x₀` carries the quotient topology from
 `BasedPath x₀` under endpoint-preserving path homotopy. -/
@@ -118,18 +120,15 @@ theorem proj_ofBasedPath (x₀ : X) (γ : BasedPath x₀) :
     proj (ofBasedPath x₀ γ) = BasedPath.endpoint γ :=
   (rfl)
 
+/-- Equal images under `ofBasedPath` have equal endpoints. -/
+theorem endpoint_eq_of_ofBasedPath_eq {α β : BasedPath x₀}
+    (h : ofBasedPath x₀ α = ofBasedPath x₀ β) :
+    BasedPath.endpoint α = BasedPath.endpoint β := by
+  simpa using congrArg (proj (x₀ := x₀)) h
+
 /-- `ofBasedPath` unpacks to `mk (endpoint α) ⟦α.toPath⟧`. -/
 theorem ofBasedPath_eq (α : BasedPath x₀) :
-    ofBasedPath x₀ α = mk (BasedPath.endpoint α) (Path.Homotopic.Quotient.mk α.toPath) := by
-  cases α; rfl
-
-/-- `ofBasedPath` applied to the canonical based path from `p : Path x₀ y` gives the
-endpoint-and-homotopy-class pair. -/
-theorem ofBasedPath_ofPath {y : X} (p : Path x₀ y) :
-    ofBasedPath x₀ (BasedPath.ofPath p) = mk y (Path.Homotopic.Quotient.mk p) := by
-  refine UniversalCover.ext p.target ?_
-  apply Path.Homotopic.hpath_hext
-  intro t
+    ofBasedPath x₀ α = mk (BasedPath.endpoint α) (Path.Homotopic.Quotient.mk α.toPath) :=
   rfl
 
 /-- Equality in the universal cover induces an endpoint-preserving homotopy of representative
@@ -137,10 +136,7 @@ based paths. -/
 theorem toPath_homotopic_of_ofBasedPath_eq {α β : BasedPath x₀}
     (h : ofBasedPath x₀ α = ofBasedPath x₀ β) :
     Path.Homotopic
-      (α.toPath.cast rfl (by
-        have heq : BasedPath.endpoint α = BasedPath.endpoint β := by
-          simpa [proj_ofBasedPath] using congrArg (proj (x₀ := x₀)) h
-        exact heq.symm))
+      (α.toPath.cast rfl (endpoint_eq_of_ofBasedPath_eq h).symm)
       β.toPath := by
   rw [ofBasedPath_eq α, ofBasedPath_eq β] at h
   obtain ⟨hend, hq⟩ := UniversalCover.mk.injEq .. |>.mp h
@@ -164,7 +160,7 @@ theorem ofBasedPath_eq_of_homotopic_toPath {α β : BasedPath x₀}
 
 @[fun_prop] theorem continuous_proj (x₀ : X) : Continuous (proj (x₀ := x₀)) := by
   rw [(isQuotientMap_ofBasedPath x₀).continuous_iff]
-  exact (continuous_eval_const (1 : I)).comp continuous_subtype_val
+  exact BasedPath.continuous_endpoint
 
 /-- The endpoint projection `UniversalCover x₀ → X` is an open map when `X` is locally
 path-connected. -/
@@ -247,10 +243,8 @@ theorem pathComponent_preimage_eq_of_ofBasedPath_eq
     (hαβ : ofBasedPath x₀ α = ofBasedPath x₀ β) :
     pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α =
       pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) β := by
-  have hβ_end : BasedPath.endpoint β ∈ U := by
-    have heq : BasedPath.endpoint α = BasedPath.endpoint β := by
-      simpa [proj_ofBasedPath] using congrArg (proj (x₀ := x₀)) hαβ
-    exact heq ▸ hα_end
+  have hβ_end : BasedPath.endpoint β ∈ U :=
+    endpoint_eq_of_ofBasedPath_eq hαβ ▸ hα_end
   exact BasedPath.pathComponent_preimage_saturated (x₀ := x₀) hβ_end
     (toPath_homotopic_of_ofBasedPath_eq hαβ)
 
@@ -259,10 +253,8 @@ theorem mem_basedPathComponent_of_ofBasedPath_eq {U : Set X} {y : X} {p : Path x
     {α β : BasedPath x₀} (hβ : β ∈ basedPathComponent U p)
     (hαβ : ofBasedPath x₀ α = ofBasedPath x₀ β) :
     α ∈ basedPathComponent U p := by
-  have hα_end : BasedPath.endpoint α ∈ U := by
-    have heq : BasedPath.endpoint α = BasedPath.endpoint β := by
-      simpa [proj_ofBasedPath] using congrArg (proj (x₀ := x₀)) hαβ
-    exact heq ▸ hβ.target_mem
+  have hα_end : BasedPath.endpoint α ∈ U :=
+    (endpoint_eq_of_ofBasedPath_eq hαβ).symm ▸ hβ.target_mem
   unfold basedPathComponent
   have hself : α ∈ pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α :=
     mem_pathComponentIn_self hα_end

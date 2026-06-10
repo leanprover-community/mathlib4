@@ -30,6 +30,12 @@ The geometric concatenation `[γ] · [p] = [γ.trans p]` is therefore a *right* 
 With this convention, `(g * h) • p = g • (h • p)` follows from `(g * h)⁻¹ = h⁻¹ * g⁻¹`,
 `toPath_mul`, and `Path.Homotopic.Quotient.trans_assoc`.
 
+We prefer a left action with the inverse baked in (compare `arrowAction`) over a
+`MulOpposite` action: mathlib's orbit, subgroup, and `IsQuotientCoveringMap` machinery — and
+the Galois correspondence between covers and subgroups of `π₁` this is building toward —
+all consume left actions of the group itself. The inverse-free computation rule is available
+as `inv_smul_mk`.
+
 ## Main definitions and results
 
 * `instance : MulAction (FundamentalGroup X x₀) (UniversalCover x₀)` —
@@ -66,6 +72,10 @@ instance : SMul (FundamentalGroup X x₀) (UniversalCover x₀) where
 theorem smul_mk (g : FundamentalGroup X x₀) (x : X) (q : Path.Homotopic.Quotient x₀ x) :
     g • mk x q = mk x (g⁻¹.toPath.trans q) := rfl
 
+/-- Inverse-free form of `smul_mk`, convenient for explicit computations. -/
+theorem inv_smul_mk (g : FundamentalGroup X x₀) (x : X) (q : Path.Homotopic.Quotient x₀ x) :
+    g⁻¹ • mk x q = mk x (g.toPath.trans q) := by rw [smul_mk, inv_inv]
+
 @[simp]
 theorem proj_smul (g : FundamentalGroup X x₀) (p : UniversalCover x₀) :
     proj (g • p) = proj p := rfl
@@ -97,11 +107,9 @@ instance : ContinuousConstSMul (FundamentalGroup X x₀) (UniversalCover x₀) w
       intro β
       rw [ofBasedPath_ofPath, Function.comp_apply, ofBasedPath_eq, smul_mk,
         Path.Homotopic.Quotient.mk_trans, hγ']
-    refine (continuous_ofBasedPath x₀).comp ?_
-    refine Continuous.subtype_mk ?_ _
-    refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
-    have h_eval : Continuous fun p : BasedPath x₀ × I ↦ p.1.1 p.2 :=
-      continuous_eval.comp (continuous_subtype_val.prodMap continuous_id)
+    refine (continuous_ofBasedPath x₀).comp (BasedPath.continuous_iff.mpr ?_)
+    have h_eval : Continuous fun p : BasedPath x₀ × I ↦ p.1 p.2 :=
+      BasedPath.continuous_iff.mp continuous_id
     simpa using!
       Path.trans_continuous_family (a := fun _ : BasedPath x₀ ↦ x₀)
         (b := fun _ : BasedPath x₀ ↦ x₀)

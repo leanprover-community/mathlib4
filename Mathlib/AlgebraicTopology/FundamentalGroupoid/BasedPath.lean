@@ -62,14 +62,23 @@ public instance : FunLike (BasedPath x₀) I X where
   coe γ := γ.1
   coe_injective' _ _ h := Subtype.ext (DFunLike.coe_injective h)
 
-public instance : ContinuousMapClass (BasedPath x₀) I X where
-  map_continuous γ := γ.1.continuous
+/-- Evaluation `BasedPath x₀ × I → X` is jointly continuous (the compact-open topology on a
+subspace of `C(I, X)` with locally compact domain). This also provides the
+`ContinuousMapClass` and `ContinuousEvalConst` instances. -/
+public instance : ContinuousEval (BasedPath x₀) I X :=
+  .of_continuous_forget continuous_subtype_val
 
 @[simp] public theorem mk_apply (γ : C(I, X)) (h : γ 0 = x₀) (t : I) :
     (show BasedPath x₀ from ⟨γ, h⟩) t = γ t := rfl
 
 /-- Applying the underlying `C(I, X)` bundle agrees with applying the based path itself. -/
 @[simp] public theorem val_apply (γ : BasedPath x₀) (t : I) : γ.1 t = γ t := rfl
+
+/-- A map into the based-path space is continuous iff its uncurried evaluation is continuous. -/
+public theorem continuous_iff {Y : Type*} [TopologicalSpace Y] {f : Y → BasedPath x₀} :
+    Continuous f ↔ Continuous fun p : Y × I ↦ f p.1 p.2 :=
+  ⟨fun hf ↦ continuous_eval.comp ((continuous_subtype_val.comp hf).prodMap continuous_id),
+    fun h ↦ Continuous.subtype_mk (ContinuousMap.continuous_of_continuous_uncurry _ h) _⟩
 
 @[simp] public theorem source (γ : BasedPath x₀) : γ 0 = x₀ := γ.2
 
@@ -87,6 +96,10 @@ public instance : ContinuousMapClass (BasedPath x₀) I X where
 explicitly in `simp [endpoint_def, …]` at each site that wants to bridge between the named
 `endpoint γ = u` API and the underlying `γ 1` evaluation. -/
 public theorem endpoint_def (γ : BasedPath x₀) : endpoint γ = γ 1 := rfl
+
+@[fun_prop] public theorem continuous_endpoint : Continuous (endpoint (x₀ := x₀)) :=
+  continuous_eval_const 1
+
 @[simp] public theorem toPath_apply (γ : BasedPath x₀) (t : I) : toPath γ t = γ t := rfl
 public theorem toPath_source (γ : BasedPath x₀) : toPath γ 0 = x₀ := γ.2
 public theorem toPath_target (γ : BasedPath x₀) : toPath γ 1 = endpoint γ := rfl
@@ -158,28 +171,27 @@ a new endpoint path onto `γ` while preserving its image on `[0, a]`. -/
 original path and then a new endpoint path. -/
 @[expose] public noncomputable def deformTerminal {u v : X} (γ : BasedPath x₀)
     (hu : endpoint γ = u)
-    (δ : Path u v) {a b : ℝ} (ha : 0 ≤ a) (hab : a < b) (hb : b < 1) : BasedPath x₀ := by
+    (δ : Path u v) {a b : ℝ} (ha : 0 ≤ a) (hab : a < b) (hb : b < 1) : BasedPath x₀ :=
   let tail : Path (γ.toPath.extend a) u := terminalTail γ hu a (by linarith)
   let f : ℝ → X := fun t ↦
-    if hta : t ≤ a then γ.toPath.extend t else
-      if htb : t ≤ b then tail.extend ((t - a) / (b - a)) else δ.extend ((t - b) / (1 - b))
+    if t ≤ a then γ.toPath.extend t
+    else if t ≤ b then tail.extend ((t - a) / (b - a))
+    else δ.extend ((t - b) / (1 - b))
   have hf_cont : Continuous f := by
     refine Continuous.if_le γ.toPath.continuous_extend ?_ continuous_id continuous_const ?_
     · refine Continuous.if_le
         (tail.continuous_extend.comp (by fun_prop))
         (δ.continuous_extend.comp (by fun_prop))
         continuous_id continuous_const ?_
-      · intro t htb
-        have hba : b - a ≠ 0 := sub_ne_zero.mpr hab.ne.symm
-        subst t
-        simp [tail, hba]
+      intro t htb
+      have hba : b - a ≠ 0 := sub_ne_zero.mpr hab.ne.symm
+      subst t
+      simp [tail, hba]
     · intro t hta
       subst t
       simp [tail, hab.le]
-  refine ⟨ContinuousMap.mk
-    (fun t : I ↦ f t)
-    (hf_cont.comp continuous_subtype_val), ?_⟩
-  simpa [f, ha, endpoint_def] using! γ.toPath.source
+  ⟨⟨fun t : I ↦ f t, hf_cont.comp continuous_subtype_val⟩,
+    by simpa [f, ha, endpoint_def] using! γ.toPath.source⟩
 
 public theorem deformTerminal_apply_of_le {u v : X} (γ : BasedPath x₀) (hu : endpoint γ = u)
     (δ : Path u v) {a b : ℝ} (ha : 0 ≤ a) (hab : a < b) (hb : b < 1)
@@ -279,10 +291,8 @@ at `t = 1` it is `γ` itself. Joint continuity in `t` is `continuous_initialSegm
   rw [initialSegmentFamily, Path.initialSegmentFamily_one, ofPath_cast, ofPath_toPath_self]
 
 public theorem continuous_initialSegmentFamily {x₀ : X} (γ : BasedPath x₀) :
-    Continuous γ.initialSegmentFamily := by
-  refine Continuous.subtype_mk ?_ _
-  refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
-  simpa only using! γ.toPath.continuous_initialSegmentFamily_uncurry
+    Continuous γ.initialSegmentFamily :=
+  continuous_iff.mpr (by simpa only using! γ.toPath.continuous_initialSegmentFamily_uncurry)
 
 /-- Appending a fixed terminal path's initial-segment family to a fixed based path is jointly
 continuous in the family parameter. This packages the boilerplate for using
@@ -291,8 +301,7 @@ map `I → BasedPath x₀`. -/
 public theorem continuous_append_initialSegmentFamily {x₀ z : X}
     (γ : BasedPath x₀) (δ : Path (endpoint γ) z) :
     Continuous fun t : I ↦ γ.append (Path.initialSegmentFamily δ t) := by
-  apply Continuous.subtype_mk
-  refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
+  refine continuous_iff.mpr ?_
   simpa using!
     Path.trans_continuous_family (fun _ : I ↦ γ.toPath)
       (Path.continuous_uncurry_iff.mpr continuous_const) (Path.initialSegmentFamily δ)

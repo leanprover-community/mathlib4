@@ -157,7 +157,7 @@ public theorem simplyConnectedSpace [LocPathConnectedSpace X] [PathConnectedSpac
       Path.Homotopic.Quotient.mk (α.toPath.trans γ) = Path.Homotopic.Quotient.mk α.toPath := by
     have h_end' : ofBasedPath x₀ (BasedPath.ofPath (α.toPath.trans γ)) =
         ofBasedPath x₀ (BasedPath.ofPath α.toPath) := by
-      rw [show BasedPath.ofPath α.toPath = α from by cases α; rfl]
+      rw [BasedPath.ofPath_toPath_self]
       exact h_end
     rw [ofBasedPath_ofPath, ofBasedPath_ofPath] at h_end'
     simpa using h_end'

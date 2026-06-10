@@ -93,15 +93,12 @@ theorem map_fromPath (f : C(X, Y)) {x : X} (γ : Path x x) :
     map f x (fromPath ⟦γ⟧) = fromPath ⟦γ.map f.continuous⟧ :=
   rfl
 
-@[simp]
 theorem toPath_one {x : X} : (1 : FundamentalGroup X x).toPath = .refl x := rfl
 
 /-- Note that `End` multiplication reverses composition, so the order of `trans` is swapped. -/
-@[simp]
 theorem toPath_mul {x : X} (g h : FundamentalGroup X x) :
     (g * h).toPath = h.toPath.trans g.toPath := rfl
 
-@[simp]
 theorem toPath_inv {x : X} (g : FundamentalGroup X x) : g⁻¹.toPath = g.toPath.symm := rfl
 
 end FundamentalGroup

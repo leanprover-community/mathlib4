@@ -430,6 +430,11 @@ theorem extend_cast {x' y'} (γ : Path x y) (hx : x' = x) (hy : y' = y) :
 theorem cast_coe (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : (γ.cast hx hy : I → X) = γ :=
   rfl
 
+@[simp]
+theorem range_cast (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) :
+    range (γ.cast hx hy) = range γ :=
+  rfl
+
 lemma bijective_cast {x' y' : X} (hx : x' = x) (hy : y' = y) : Bijective (Path.cast · hx hy) := by
   subst_vars; exact bijective_id
 
