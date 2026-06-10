@@ -368,13 +368,13 @@ lemma OrderEmbedding.range_eq_iff
   let ef := (f.strictMono.strictMonoOn .univ).orderIso
   let eg := (g.strictMono.strictMonoOn .univ).orderIso
   let i : f '' .univ ≃o g '' .univ :=
-    { __ := Equiv.setCongr (by simpa using h)
+    { __ := Equiv.setCongr (by simpa using! h)
       map_rel_iff' := by rfl }
   have : (ef.trans i).trans eg.symm = .refl _ := by
     exact Subsingleton.elim _ _
   ext x
   simpa only [OrderIso.trans_apply, OrderIso.apply_symm_apply, OrderIso.refl_apply, Subtype.ext_iff]
-    using congr(eg ($this ⟨x, Set.mem_univ x⟩))
+    using! congr(eg ($this ⟨x, Set.mem_univ x⟩))
 
 lemma OrderHom.range_eq_iff {α β : Type*} [LinearOrder α] [PartialOrder β]
     [Finite α] {f g : α →o β}

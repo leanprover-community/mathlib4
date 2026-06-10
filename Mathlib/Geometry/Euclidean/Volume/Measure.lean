@@ -202,7 +202,7 @@ theorem InnerProductSpace.euclideanHausdorffMeasure_eq_volume :
 /-!
 ### `μHE[d]` on an affine space matches the volume measure on the associated inner product space.
 -/
-/- We may want to endow an affine space with a `MeasureSpace` that transfers `volume` from its
+/-- We may want to endow an affine space with a `MeasureSpace` that transfers `volume` from its
 associated inner product space. If it is implemented, we can unify this lemma with the previous one.
 -/
 theorem EuclideanGeometry.euclideanHausdorffMeasure_eq (p : P) :
@@ -266,7 +266,7 @@ noncomputable def Submodule.measurableEquivProd (s : Submodule ℝ V) (p : P) : 
 @[simp]
 theorem Submodule.measurableEquivProd_apply (s : Submodule ℝ V) (p q : P) :
     s.measurableEquivProd p q =
-    (s.orthogonalProjection (q -ᵥ p), sᗮ.orthogonalProjection (q -ᵥ p)) := by
+    (s.orthogonalProjectionOnto (q -ᵥ p), sᗮ.orthogonalProjectionOnto (q -ᵥ p)) := by
   simp [measurableEquivProd]
 
 @[simp]

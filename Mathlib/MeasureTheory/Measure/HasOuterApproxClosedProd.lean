@@ -165,7 +165,7 @@ lemma ext_of_integral_prod_mul_prod_boundedContinuousFunction
     μ = ν := by
   refine ext_of_lintegral_prod_mul_prod_boundedContinuousFunction fun f g ↦ ?_
   rw [← toReal_eq_toReal_iff']
-  · simp only [coe_finsetProd]
+  · simp only [ofNNReal_finsetProd]
     have {μ : Measure ((Π i, X i) × Π j, Y j)} :
         (∫⁻ p, (∏ i, (f i (p.1 i) : ℝ≥0∞)) * ∏ j, (g j (p.2 j) : ℝ≥0∞) ∂μ).toReal =
           ∫ p, (∏ i, (f i (p.1 i)).toReal) * ∏ j, (g j (p.2 j)).toReal ∂μ := by
@@ -237,7 +237,7 @@ lemma ext_of_integral_mul_prod_boundedContinuousFunction {μ ν : Measure (Z × 
   rw [← e.map_measurableEquiv_injective.eq_iff]
   refine ext_of_integral_prod_mul_boundedContinuousFunction fun f g ↦ ?_
   rw [integral_map_equiv, integral_map_equiv]
-  simpa [e, mul_comm] using h g f
+  simpa [e, mul_comm] using! h g f
 
 lemma eq_prod_of_integral_mul_prod_boundedContinuousFunction {μ : Measure Z}
     {ν : Measure (Π j, Y j)} {ξ : Measure (Z × (Π j, Y j))}
@@ -259,7 +259,7 @@ lemma ext_of_integral_mul_boundedContinuousFunction {μ ν : Measure (Z × T)}
   rw [← e.map_measurableEquiv_injective.eq_iff]
   refine ext_of_integral_prod_mul_prod_boundedContinuousFunction fun f g ↦ ?_
   rw [integral_map_equiv, integral_map_equiv]
-  simpa [e] using h (f ()) (g ())
+  simpa [e] using! h (f ()) (g ())
 
 /-- The product of two finite measures `μ` and `ν` is the only finite measure `ξ` such that
 for all real bounded continuous functions `f` and `g` we have

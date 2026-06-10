@@ -73,9 +73,10 @@ namespace OuterMeasure
 
 instance : FunLike (OuterMeasure α) (Set α) ℝ≥0∞ where
   coe m := m.measureOf
-  coe_injective' | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
+  coe_injective | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
 
 @[simp] theorem measureOf_eq_coe (m : OuterMeasure α) : m.measureOf = m := rfl
+@[simp] theorem coe_mk (m : Set α → ℝ≥0∞) (h₁ h₂ h₃) : OuterMeasure.mk m h₁ h₂ h₃ = m := rfl
 
 instance : OuterMeasureClass (OuterMeasure α) α where
   measure_empty f := f.empty
