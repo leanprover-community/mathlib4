@@ -37,11 +37,8 @@ section ofSurjective
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
   [HopfAlgebra R A] [HopfAlgebraStruct R B]
 
-/-- Transfer the Hopf algebra axioms along a surjective bialgebra homomorphism `f`
-intertwining the antipodes: in convolution-algebra terms, `S_B ⋆ id` and `id ⋆ S_B` pull back
-along the coalgebra morphism `f` to the pushforwards of `S_A ⋆ id` and `id ⋆ S_A` along the
-algebra morphism `f`, hence to the convolution unit; precomposition by a surjection is
-injective. -/
+/-- Transfer the Hopf algebra axioms along a surjective bialgebra homomorphism intertwining
+the antipodes. -/
 noncomputable abbrev ofSurjective (f : A →ₐc[R] B) (hf : Function.Surjective f)
     (hS : antipode R ∘ₗ f.toLinearMap = f.toLinearMap ∘ₗ antipode R) : HopfAlgebra R B := by
   have h1 : (AlgHomClass.toAlgHom f).toLinearMap ∘ₗ (1 : WithConv (A →ₗ[R] A)).ofConv =
