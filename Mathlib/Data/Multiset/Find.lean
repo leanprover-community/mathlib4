@@ -14,7 +14,7 @@ public import Mathlib.Data.Set.Subsingleton
 This module provides `Multiset.find? s p ⋯`, which lifts `List.find?` to multisets.
 -/
 
-@[expose] public section
+public section
 
 namespace List
 
@@ -41,7 +41,7 @@ variable {α : Type*} (p : α → Prop) [DecidablePred p]
 
 This is the multiset version of `List.find?`,
 and is like `Multiset.choose`, but `Option`-valued. -/
-def find? (s : Multiset α) : {x ∈ s | p x}.Subsingleton → Option α :=
+@[expose] def find? (s : Multiset α) : {x ∈ s | p x}.Subsingleton → Option α :=
   Quotient.recOn s (fun l _ => l.find? p) fun l₁ l₂ h => by
     unfold Eq.ndrec
     rw [eqRec_eq_cast, cast_eq_iff_heq]
