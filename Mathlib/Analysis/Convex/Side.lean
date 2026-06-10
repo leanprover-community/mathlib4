@@ -777,7 +777,7 @@ theorem sSameSide_pointReflection_iff_sOppSide
   simpa [Equiv.pointReflection_involutive x p] using
     sSameSide_iff_sOppSide_pointReflection hx ((AffineEquiv.pointReflection R x) p) q
 
-/- {x | S.SSameSide p x} is closed under Wbtw. Implies that
+/-- {x | S.SSameSide p x} is closed under Wbtw. Implies that
 open half spaces are convex -/
 theorem _root_.Wbtw.sSameSide_of_sSameSide_of_sSameSide
     {S : AffineSubspace R P} {p : P} {x y z : P}
@@ -823,7 +823,7 @@ theorem _root_.Wbtw.sSameSide_of_sSameSide_of_sSameSide
     simp [AffineMap.lineMap_apply_module, smul_eq_mul, vadd_right_cancel_iff]
     module
 
-/- {x | S.WSameSide p x} is closed under Wbtw. Implies that
+/-- {x | S.WSameSide p x} is closed under Wbtw. Implies that
 closed half spaces are convex. -/
 theorem _root_.Wbtw.wSameSide_of_wSameSide_of_wSameSide
     {S : AffineSubspace R P} {p : P} {x y z : P}
