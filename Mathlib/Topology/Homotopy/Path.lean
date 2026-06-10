@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Homotopy.Basic
 public import Mathlib.Topology.Connected.PathConnected
+public import Mathlib.Topology.Constructions
 public import Mathlib.Analysis.Convex.Basic
 
 /-!
@@ -311,6 +312,17 @@ theorem mk_surjective : Function.Surjective (@mk X _ x₀ x₁) :=
 /-- `Path.Homotopic.Quotient.mk` is the simp normal form. -/
 @[simp] theorem mk'_eq_mk (p : Path x₀ x₁) : Quotient.mk' p = mk p := rfl
 @[simp] theorem mk''_eq_mk (p : Path x₀ x₁) : Quotient.mk'' p = mk p := rfl
+
+/-- The quotient topology on `Path.Homotopic.Quotient x₀ x₁` induced from the compact-open
+topology on `Path x₀ x₁` (itself induced from `C(I, X)`). -/
+instance instTopologicalSpace (x₀ x₁ : X) :
+    TopologicalSpace (Path.Homotopic.Quotient x₀ x₁) :=
+  inferInstanceAs (TopologicalSpace (Quotient _))
+
+/-- `Path.Homotopic.Quotient.mk` is a quotient map for the quotient topology. -/
+theorem isQuotientMap_mk (x₀ x₁ : X) :
+    Topology.IsQuotientMap (mk : Path x₀ x₁ → Path.Homotopic.Quotient x₀ x₁) :=
+  isQuotientMap_quotient_mk'
 
 theorem exact {p q : Path x₀ x₁} (h : Quotient.mk p = Quotient.mk q) :
     Homotopic p q := by

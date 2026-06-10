@@ -822,17 +822,6 @@ public theorem Path.isOpen_setOf_homotopic [SemilocallySimplyConnectedSpace X]
   rw [mem_nhds_iff]
   refine ⟨T, fun p' hp' ↦ (hT_subset hp').trans hq, hT_open, hqT⟩
 
-/-- The quotient topology on `Path.Homotopic.Quotient x₀ x` induced from `Path x₀ x`
-(which itself inherits the compact-open topology via `C(I, X)`). -/
-public instance Path.Homotopic.Quotient.instTopologicalSpace (x₀ x : X) :
-    TopologicalSpace (Path.Homotopic.Quotient x₀ x) :=
-  inferInstanceAs (TopologicalSpace (Quotient _))
-
-/-- `Path.Homotopic.Quotient.mk` is a quotient map for the quotient topology. -/
-public theorem Path.Homotopic.Quotient.isQuotientMap_mk (x y : X) :
-    IsQuotientMap (Path.Homotopic.Quotient.mk : Path x y → Path.Homotopic.Quotient x y) :=
-  isQuotientMap_quotient_mk'
-
 /-- In a semilocally simply connected, locally path-connected space, the quotient of paths by
 homotopy has the discrete topology. -/
 public instance Path.Homotopic.Quotient.discreteTopology
