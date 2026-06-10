@@ -407,7 +407,11 @@ theorem CanonicalDecomp.divisor_eq_divisor {x : ℂ} (D : CanonicalDecomp f g R)
           (canonicalFactor_ne_zero ha (by aesop) (by aesop))
       · have := D.eventuallyEq
         have := D.ne_zero
-        simp_all only [mem_ball, dist_zero_right, ne_eq, zpow_neg, not_lt,
+      refine analyticAt_finprod fun a ↦ ?_
+      by_cases ha : a ∈ ball 0 R
+      · exact (analyticOnNhd_canonicalFactor _ _ _ (by aesop)).zpow 
+          (canonicalFactor_ne_zero ha (by aesop) (by aesop))
+      · simp_all only [mem_ball, dist_zero_right, not_lt,
           locallyFinsuppWithin.apply_eq_zero_of_notMem, neg_zero, zpow_zero]
         exact analyticAt_const
     have η₀ : f =ᶠ[𝓝[≠] x] (∏ᶠ u, canonicalFactor R u ^ (-(divisor f (ball 0 R)) u)) • g := by
@@ -418,8 +422,7 @@ theorem CanonicalDecomp.divisor_eq_divisor {x : ℂ} (D : CanonicalDecomp f g R)
       rw [← closure_ball 0 hR.ne']
       exact isOpen_ball.perfect_closure.2
     have : meromorphicOrderAt (∏ᶠ u, canonicalFactor R u ^ (-(divisor f (ball 0 R)) u)) x = 0 := by
-      apply η₁.meromorphicNFAt.meromorphicOrderAt_eq_zero_iff.2 (finprod_apply_ne_zero _)
-      intro a
+      refine η₁.meromorphicNFAt.meromorphicOrderAt_eq_zero_iff.2 (finprod_apply_ne_zero fun a ↦ ?_)
       by_cases ha : a ∈ ball 0 R
       · exact zpow_ne_zero _ (canonicalFactor_ne_zero ha (by aesop) (by aesop))
       · simp_all
@@ -449,13 +452,10 @@ information relevant in the extended canonical decomposition.
 structure ECanonicalDecomp (f h : ℂ → E) (R : ℝ) where
   /-- A proof that `f` is meromorphic on `closedBall 0 R`. -/
   meromorphicOn : MeromorphicOn f (closedBall 0 R)
-
   /-- A proof that `g` is analytin in a neighborhood of `closedBall 0 R`. -/
   analyticOnNhd : AnalyticOnNhd ℂ h (closedBall 0 R)
-
   /-- A proof that `g` does not vanish on the closed ball. -/
   ne_zero : ∀ u ∈ (closedBall 0 R), h u ≠ 0
-
   /--
   A proof that `f` is equal, up to modification over a discrete set, to a product of `g`, canonical
   factors prescribed by the divisor of `f`, and a factorized rational function with poles and zeros
@@ -463,7 +463,7 @@ structure ECanonicalDecomp (f h : ℂ → E) (R : ℝ) where
   -/
   eventuallyEq : f =ᶠ[codiscreteWithin (closedBall 0 R)]
     ((∏ᶠ u, (canonicalFactor R u) ^ (-divisor f (ball 0 R) u))
-    * (∏ᶠ u, (· - u) ^ (divisor f (sphere 0 R)) u)) • h
+    * (∏ᶠ v, (· - v) ^ (divisor f (sphere 0 R)) v)) • h
 
 /--
 **Extended canonical decomposition:** A meromorphic function on a closed disk is equal, up to
