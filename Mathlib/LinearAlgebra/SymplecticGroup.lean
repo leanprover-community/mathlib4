@@ -139,8 +139,7 @@ theorem symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A := by
 theorem map_mem {S : Type*} [CommRing S]
     (f : R →+* S) (hA : A ∈ symplecticGroup l R) :
     f.mapMatrix A ∈ symplecticGroup l S := by
-  rw [mem_iff] at hA ⊢
-  rw [RingHom.mapMatrix_apply, ← J_map _ _ f, ← transpose_map,
+  rw [mem_iff, RingHom.mapMatrix_apply, ← J_map _ _ f, ← transpose_map,
     ← Matrix.map_mul, ← Matrix.map_mul, hA]
 
 theorem transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGroup l R := by
