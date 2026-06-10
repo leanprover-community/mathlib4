@@ -48,15 +48,12 @@ def comulAlgHom : (A ⧸ I) →ₐ[R] (A ⧸ I) ⊗[R] (A ⧸ I) :=
       (Bialgebra.comulAlgHom R A))
     (Submodule.IsCoideal.map_mkQ_comul_eq_zero (I := I.restrictScalars R))
 
-lemma counit_comp_mkₐ : (counitAlgHom I).toLinearMap.comp (Ideal.Quotient.mkₐ R I).toLinearMap =
-    (counit : A →ₗ[R] R) :=
-  rfl
+lemma counit_comp_mkₐ :
+    (counitAlgHom I).toLinearMap ∘ₗ (Ideal.Quotient.mkₐ R I).toLinearMap = counit := rfl
 
 lemma comul_comp_mkₐ :
-    (comulAlgHom (R := R) I).toLinearMap.comp (Ideal.Quotient.mkₐ R I).toLinearMap =
-      (map (Ideal.Quotient.mkₐ R I).toLinearMap (Ideal.Quotient.mkₐ R I).toLinearMap).comp
-        comul :=
-  rfl
+    (comulAlgHom (R := R) I).toLinearMap ∘ₗ (Ideal.Quotient.mkₐ R I).toLinearMap =
+      map (Ideal.Quotient.mkₐ R I).toLinearMap (Ideal.Quotient.mkₐ R I).toLinearMap ∘ₗ comul := rfl
 
 /-- The bialgebra structure on `A ⧸ I` when `I` is a biideal. -/
 instance : Bialgebra R (A ⧸ I) := by
@@ -69,8 +66,7 @@ instance : Bialgebra R (A ⧸ I) := by
   · rw [CoassocSimps.map_counit_comp_comul_right]; rfl
 
 @[simp] lemma counit_mk (a : A) :
-    counit (R := R) (Ideal.Quotient.mk I a) = counit a :=
-  rfl
+    counit (R := R) (Ideal.Quotient.mk I a) = counit a := rfl
 
 @[simp] lemma comul_mk (a : A) :
     comul (R := R) (Ideal.Quotient.mk I a) =
@@ -78,9 +74,7 @@ instance : Bialgebra R (A ⧸ I) := by
   rfl
 
 /-- `Ideal.Quotient.mkₐ` as a bialgebra homomorphism. -/
-def mkBialgHom : A →ₐc[R] A ⧸ I :=
-  { (⟨(Ideal.Quotient.mkₐ R I).toLinearMap, counit_comp_mkₐ I, (comul_comp_mkₐ I).symm⟩ :
-      A →ₗc[R] A ⧸ I), Ideal.Quotient.mkₐ R I with }
+def mkBialgHom : A →ₐc[R] A ⧸ I := .ofAlgHom (Ideal.Quotient.mkₐ R I) rfl rfl
 
 @[simp] lemma mkBialgHom_apply (a : A) :
     mkBialgHom (R := R) I a = Ideal.Quotient.mk I a := rfl
