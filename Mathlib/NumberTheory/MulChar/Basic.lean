@@ -209,6 +209,14 @@ theorem equivToUnitHom_symm_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : equivToUnitHom.s
 lemma coe_toMonoidHom (χ : MulChar R R')
     (x : R) : χ.toMonoidHom x = χ x := rfl
 
+theorem apply_ne_zero_iff [Nontrivial R'] {χ : MulChar R R'} {a : R} :
+    χ a ≠ 0 ↔ IsUnit a :=
+  ⟨by simpa using (map_nonunit χ).mt, fun h ↦ (h.map χ).ne_zero⟩
+
+theorem apply_eq_zero_iff [Nontrivial R'] {χ : MulChar R R'} {a : R} :
+    χ a = 0 ↔ ¬ IsUnit a := by
+  simpa using χ.apply_ne_zero_iff.not
+
 /-!
 ### Commutative group structure on multiplicative characters
 
