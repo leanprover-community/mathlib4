@@ -381,6 +381,9 @@ def getRepoScope : IO (Option String) := do
     pure (if trimmed.isEmpty then none else some trimmed)
   | none => pure none
 
+def getGitCommitHash : IO String :=
+  return (← IO.runCmd "git" #["rev-parse", "HEAD"]).trimAsciiEnd.copy
+
 section Get
 
 /-- Formats the config file for `curl`, containing the list of files to be downloaded
@@ -650,7 +653,12 @@ run, each carrying the SHA scope to read at. A round is
 `(container?, url, scope?)`.
 
 Without `--unsafe` (`unsafeScopes` empty) every round uses the single resolved
-`scope?`: one round per container, all at the same scope.
+`scope?`: one round per container, all at the same scope. When no explicit
+scope is given, `headScope?` (the checked-out HEAD, resolved by the caller)
+applies to the `forks` round only: fork uploads live under the per-commit
+namespace, so this is what lets a plain `cache get` retrieve what CI built for
+exactly the commit the reader has checked out. The other containers' layouts
+are not SHA-scoped, so `headScope?` must not leak into their rounds.
 
 With `--unsafe` (`unsafeScopes` non-empty) the `forks` container — the only
 SHA-scoped container, whose markers the walk probed — is expanded into one round
@@ -658,10 +666,13 @@ per discovered SHA, most recent first. Every other container reads unscoped
 (`master` is flat and serves the bulk of files by hash; `legacy` has no walked
 markers), so the base `scope?` is intentionally dropped here. -/
 def expandDownloadRounds (containerURLs : List (Option Container × String))
-    (scope? : Option String) (unsafeScopes : List String) :
+    (scope? : Option String) (unsafeScopes : List String)
+    (headScope? : Option String := none) :
     List (Option Container × String × Option String) :=
   if unsafeScopes.isEmpty then
-    containerURLs.map fun (c, url) => (c, url, scope?)
+    containerURLs.map fun (c, url) =>
+      if c == some Container.forks then (c, url, scope? <|> headScope?)
+      else (c, url, scope?)
   else
     containerURLs.flatMap fun (c, url) =>
       if c == some Container.forks then
@@ -707,7 +718,14 @@ def downloadFiles
   -- succeeded so the next round only retries genuine misses. With `--unsafe`
   -- the `forks` container is expanded into one round per discovered SHA scope.
   let scope? ← getRepoScope
-  let rounds := expandDownloadRounds containerURLs scope? unsafeScopes
+  -- With no explicit scope, the forks round defaults to HEAD: `cache get` on a
+  -- checked-out commit retrieves what CI built for exactly that commit, fork
+  -- included. This adds no trust over an unscoped forks read — the namespace
+  -- can only hold artifacts built from the commit the reader already has.
+  let headScope? ← if scope?.isNone && unsafeScopes.isEmpty then
+      try pure (some (← getGitCommitHash)) catch _ => pure none
+    else pure none
+  let rounds := expandDownloadRounds containerURLs scope? unsafeScopes headScope?
   let unsafeMode := !unsafeScopes.isEmpty
   let mut remaining := hashMap
   let mut finalState : TransferState := ⟨0, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
@@ -1071,9 +1089,6 @@ section Commit
 
 def isGitStatusClean : IO Bool :=
   return (← IO.runCmd "git" #["status", "--porcelain"]).isEmpty
-
-def getGitCommitHash : IO String :=
-  return (← IO.runCmd "git" #["rev-parse", "HEAD"]).trimAsciiEnd.copy
 
 /--
 Sends a commit file to the server, containing the hashes of the respective committed files.

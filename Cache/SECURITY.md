@@ -110,14 +110,18 @@ the same fork cannot read them. Uploads to the other containers are not
 commit-scoped — each receives uploads from a single trust level, so the
 container boundary alone isolates them.
 
-A reader opts into a particular commit's namespace with `cache get --scope=SHA`,
-or lets `cache get --unsafe` discover the most recent cached fork commit
-automatically (`--unsafe-window=N` reads the `N` most recent instead, default
-`1`). Either way the reader is choosing to trust whoever produced those fork
-artifacts — the per-commit namespace bounds *replay*, not the trust decision
-itself — so both forms print the non-default-scope security notice before
-reading. They never run in CI; CI routing (above) is loaded from the trusted
-branch.
+By default a `cache get` reads the fork namespace at the checked-out HEAD: it
+can only serve artifacts built from the commit the reader already has, so it
+adds no trust over the fork container itself and prints no notice. (CI pins
+the same namespace explicitly via `MATHLIB_CACHE_REPO_SCOPE`, set to the build
+SHA.) A reader opts into a *different* commit's namespace with
+`cache get --scope=SHA`, or lets `cache get --unsafe` discover the most recent
+cached fork commits automatically (`--unsafe-window=N` reads the `N` most
+recent, default `1`). Either way the reader is choosing to trust whoever
+produced those fork artifacts — the per-commit namespace bounds *replay*, not
+the trust decision itself — so both forms print the non-default-scope security
+notice before reading. Neither runs in CI; CI routing (above) is loaded from
+the trusted branch.
 
 ## Explicitly out of scope
 

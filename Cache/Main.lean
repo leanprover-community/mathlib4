@@ -49,12 +49,14 @@ Options:
                      (e.g. `--cache-from=master,forks`). Overrides the per-repo default.
                      Known containers: master, forks, nightly-testing,
                      pr-toolchain-tests, legacy.
-  --scope=REF        Read from the SHA-scoped namespace for the given commit ref
-                     (any git ref `git rev-parse` accepts: HEAD, branch, tag, SHA).
-                     Use the SHA reported by `cache query`. Wins over the
-                     MATHLIB_CACHE_REPO_SCOPE env var. Reading at a non-default
+  --scope=REF        Read the fork SHA-scoped namespace at the given commit ref
+                     (any git ref `git rev-parse` accepts: HEAD, branch, tag, SHA)
+                     instead of the default, the checked-out HEAD. Use the SHA
+                     reported by `cache query`. Wins over the
+                     MATHLIB_CACHE_REPO_SCOPE env var. Reading another commit's
                      scope means trusting the artifacts produced at that commit;
-                     `cache get` prints a security notice when this is set.
+                     `cache get` prints a security notice when the scope differs
+                     from HEAD.
   --unsafe           (get only) Instead of pinning one --scope, automatically walk
                      this branch's history and try the most recent cached fork
                      commits as scopes, in order, until the cache is satisfied.

@@ -899,9 +899,12 @@ section UnsafeRounds
 concrete download rounds to run, each tagged with the SHA scope to read at.
 
 Without `--unsafe` (empty `unsafeScopes`) every round carries the single resolved
-base scope. With `--unsafe` the `forks` container — the only SHA-scoped container
-— fans out into one round per discovered SHA (most recent first), while every
-other container reads unscoped and the base scope is dropped. -/
+base scope; with no base scope, `headScope?` applies to the `forks` round only,
+so a plain `cache get` reads the fork namespace of the checked-out commit while
+the other containers' non-SHA-scoped layouts stay untouched. With `--unsafe` the
+`forks` container — the only SHA-scoped container — fans out into one round per
+discovered SHA (most recent first), while every other container reads unscoped
+and the base scope is dropped. -/
 def test_expandDownloadRounds : IO Unit := do
   IO.println "expandDownloadRounds:"
   let chain : List (Option Container × String) :=
@@ -915,6 +918,21 @@ def test_expandDownloadRounds : IO Unit := do
     (expandDownloadRounds chain (some "S") [] ==
       [(some .master, "U_m", some "S"), (some .forks, "U_f", some "S"),
        (some .legacy, "U_l", some "S")])
+
+  -- With no base scope the forks round defaults to the HEAD scope; the other
+  -- containers' layouts are not SHA-scoped, so it must not leak into them.
+  assert "no base scope, head scope → forks at head, others unscoped"
+    (expandDownloadRounds chain none [] (some "H") ==
+      [(some .master, "U_m", none), (some .forks, "U_f", some "H"),
+       (some .legacy, "U_l", none)])
+  assert "explicit base scope wins over head scope"
+    (expandDownloadRounds chain (some "S") [] (some "H") ==
+      [(some .master, "U_m", some "S"), (some .forks, "U_f", some "S"),
+       (some .legacy, "U_l", some "S")])
+  assert "unsafe mode ignores head scope"
+    (expandDownloadRounds chain none ["a"] (some "H") ==
+      [(some .master, "U_m", none), (some .forks, "U_f", some "a"),
+       (some .legacy, "U_l", none)])
 
   -- Unsafe scopes: only forks fans out, in order; others unscoped, base dropped.
   assert "unsafe scopes fan out forks (in order), others unscoped"

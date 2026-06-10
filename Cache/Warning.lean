@@ -24,10 +24,10 @@ namespace Cache.Requests
 `true` iff the resolved scope (see `getRepoScope`) equals the checked-out HEAD.
 
 A HEAD scope only serves artifacts built from the commit already checked out,
-so trust-wise it is the same as not passing a scope — which we don't warn
-about. It is not behaviorally the same: fork artifacts live only under the
-SHA-scoped namespace, so CI must set `MATHLIB_CACHE_REPO_SCOPE` to the build
-SHA on every fork build to read back its own uploads.
+and it is what an unscoped `cache get` reads anyway — the forks round defaults
+to the HEAD namespace (see `expandDownloadRounds`). So an explicit HEAD scope
+(e.g. CI's `MATHLIB_CACHE_REPO_SCOPE`, set to the build SHA on every fork
+build) just pins the default behavior and warrants no warning.
 
 `false` when no scope is set or HEAD cannot be determined.
 -/
