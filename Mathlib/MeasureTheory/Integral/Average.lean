@@ -348,8 +348,10 @@ lemma setAverage_finsetSum {ι : Type*} {t : Finset ι} {f : ι → α → E}
     ⨍ a in s, (∑ i ∈ t, f i) a ∂μ = ∑ i ∈ t, ⨍ a in s, f i a ∂μ := average_finsetSum hf
 
 variable (μ f) in
-@[to_fun (attr := simp) average_fun_neg]
+@[to_fun average_fun_neg]
 lemma average_neg : ⨍ x, (-f) x ∂μ = -⨍ x, f x ∂μ := integral_neg f
+
+attribute [simp] average_fun_neg
 
 @[to_fun average_fun_sub]
 lemma average_sub (hf : Integrable f μ) (hg : Integrable g μ) :
