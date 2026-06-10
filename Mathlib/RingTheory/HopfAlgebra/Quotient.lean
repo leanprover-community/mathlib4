@@ -6,7 +6,7 @@ Authors: Robert Hawkins
 module
 
 public import Mathlib.RingTheory.Bialgebra.Quotient
-public import Mathlib.RingTheory.HopfAlgebra.Basic
+public import Mathlib.RingTheory.HopfAlgebra.Convolution
 
 /-!
 # Hopf algebra structure on quotients by Hopf ideals
@@ -27,7 +27,8 @@ by a Hopf ideal inherits a Hopf algebra structure.
 
 public section
 
-open Bialgebra Coalgebra HopfAlgebra LinearMap TensorProduct WithConv
+open Bialgebra Bialgebra.Quotient Coalgebra HopfAlgebra Ideal.Quotient LinearMap
+  TensorProduct WithConv
 
 namespace HopfAlgebra
 
@@ -41,48 +42,33 @@ intertwining the antipodes: in convolution-algebra terms, `S_B ⋆ id` and `id �
 along the coalgebra morphism `f` to the pushforwards of `S_A ⋆ id` and `id ⋆ S_A` along the
 algebra morphism `f`, hence to the convolution unit; precomposition by a surjection is
 injective. -/
-abbrev ofSurjective (f : A →ₐc[R] B) (hf : Function.Surjective f)
-    (hS : antipode R ∘ₗ f.toLinearMap = f.toLinearMap ∘ₗ antipode R) : HopfAlgebra R B where
-  mul_antipode_rTensor_comul := by
-    have hf' : Function.Surjective f.toLinearMap := hf
-    rw [← LinearMap.cancel_right hf']
-    calc (mul' R B ∘ₗ (antipode R).rTensor B ∘ₗ comul) ∘ₗ f.toLinearMap
-        = (toConv (antipode R) * toConv .id : WithConv (B →ₗ[R] B)).ofConv ∘ₗ
-            f.toCoalgHom.toLinearMap := rfl
-      _ = (toConv (antipode R ∘ₗ f.toLinearMap) * toConv f.toLinearMap).ofConv := by
-          rw [convMul_comp_coalgHom_distrib]; rfl
-      _ = (toConv (f.toLinearMap ∘ₗ antipode R) * toConv f.toLinearMap).ofConv := by
-          rw [hS]
+noncomputable abbrev ofSurjective (f : A →ₐc[R] B) (hf : Function.Surjective f)
+    (hS : antipode R ∘ₗ f.toLinearMap = f.toLinearMap ∘ₗ antipode R) : HopfAlgebra R B := by
+  have h1 : (AlgHomClass.toAlgHom f).toLinearMap ∘ₗ (1 : WithConv (A →ₗ[R] A)).ofConv =
+      (1 : WithConv (B →ₗ[R] B)).ofConv ∘ₗ f.toLinearMap := by
+    ext a
+    simp only [comp_apply, convOne_apply, ← LinearMap.congr_fun f.counit_comp a]
+    exact AlgHomClass.commutes f _
+  refine .ofConvInverse (antipode R) (ofConv_injective ?_) (ofConv_injective ?_) <;>
+    rw [← LinearMap.cancel_right (show Function.Surjective f.toLinearMap from hf)]
+  · calc (toConv (antipode R) * toConv .id : WithConv (B →ₗ[R] B)).ofConv ∘ₗ
+          f.toCoalgHom.toLinearMap
+        = (toConv (f.toLinearMap ∘ₗ antipode R) * toConv f.toLinearMap).ofConv := by
+          rw [convMul_comp_coalgHom_distrib, hS]; rfl
       _ = (AlgHomClass.toAlgHom f).toLinearMap ∘ₗ
             (toConv (antipode R) * toConv .id : WithConv (A →ₗ[R] A)).ofConv := by
           rw [algHom_comp_convMul_distrib]; rfl
-      _ = f.toLinearMap ∘ₗ (mul' R A ∘ₗ (antipode R).rTensor A ∘ₗ comul) := rfl
-      _ = f.toLinearMap ∘ₗ (Algebra.linearMap R A ∘ₗ counit) := by
-          rw [mul_antipode_rTensor_comul]
-      _ = (Algebra.linearMap R B ∘ₗ counit) ∘ₗ f.toLinearMap := by
-          ext a
-          simp only [comp_apply, ← LinearMap.congr_fun f.counit_comp a]
-          exact AlgHomClass.commutes f _
-  mul_antipode_lTensor_comul := by
-    have hf' : Function.Surjective f.toLinearMap := hf
-    rw [← LinearMap.cancel_right hf']
-    calc (mul' R B ∘ₗ (antipode R).lTensor B ∘ₗ comul) ∘ₗ f.toLinearMap
-        = (toConv .id * toConv (antipode R) : WithConv (B →ₗ[R] B)).ofConv ∘ₗ
-            f.toCoalgHom.toLinearMap := rfl
-      _ = (toConv f.toLinearMap * toConv (antipode R ∘ₗ f.toLinearMap)).ofConv := by
-          rw [convMul_comp_coalgHom_distrib]; rfl
-      _ = (toConv f.toLinearMap * toConv (f.toLinearMap ∘ₗ antipode R)).ofConv := by
-          rw [hS]
+      _ = (1 : WithConv (B →ₗ[R] B)).ofConv ∘ₗ f.toLinearMap := by
+          rw [antipode_mul_id, h1]
+  · calc (toConv .id * toConv (antipode R) : WithConv (B →ₗ[R] B)).ofConv ∘ₗ
+          f.toCoalgHom.toLinearMap
+        = (toConv f.toLinearMap * toConv (f.toLinearMap ∘ₗ antipode R)).ofConv := by
+          rw [convMul_comp_coalgHom_distrib, hS]; rfl
       _ = (AlgHomClass.toAlgHom f).toLinearMap ∘ₗ
             (toConv .id * toConv (antipode R) : WithConv (A →ₗ[R] A)).ofConv := by
           rw [algHom_comp_convMul_distrib]; rfl
-      _ = f.toLinearMap ∘ₗ (mul' R A ∘ₗ (antipode R).lTensor A ∘ₗ comul) := rfl
-      _ = f.toLinearMap ∘ₗ (Algebra.linearMap R A ∘ₗ counit) := by
-          rw [mul_antipode_lTensor_comul]
-      _ = (Algebra.linearMap R B ∘ₗ counit) ∘ₗ f.toLinearMap := by
-          ext a
-          simp only [comp_apply, ← LinearMap.congr_fun f.counit_comp a]
-          exact AlgHomClass.commutes f _
+      _ = (1 : WithConv (B →ₗ[R] B)).ofConv ∘ₗ f.toLinearMap := by
+          rw [id_mul_antipode, h1]
 
 end ofSurjective
 
@@ -125,8 +111,7 @@ end HopfAlgebraStruct
 
 variable [HopfAlgebra R A] (I : Ideal A) [I.IsTwoSided] [I.IsHopfIdeal R]
 
-instance : HopfAlgebra R (A ⧸ I) :=
-  .ofSurjective (Bialgebra.Quotient.mkBialgHom I) Ideal.Quotient.mk_surjective
-    (antipode_comp_mkₐ I)
+noncomputable instance : HopfAlgebra R (A ⧸ I) :=
+  .ofSurjective (mkBialgHom I) mk_surjective (antipode_comp_mkₐ I)
 
 end HopfAlgebra.Quotient
