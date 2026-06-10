@@ -317,6 +317,21 @@ lemma essInf_eq_iInf (hμ : ∀ a, μ {a} ≠ 0) (f : α → β) : essInf f μ =
 
 end CompleteLattice
 
+section CompleteLinearOrder
+
+variable [CompleteLinearOrder β]
+
+lemma iSup_le_essSup {f : α → β} (h : ∀ ⦃x⦄, ∀ ⦃a⦄, a < f x → μ {y | a < f y} ≠ 0) :
+    ⨆ x, f x ≤ essSup f μ := by
+  apply iSup_le
+  intro i
+  rw [essSup_eq_sInf]
+  apply le_sInf
+  intro b hb
+  exact not_lt.mp fun a ↦ h a hb
+
+end CompleteLinearOrder
+
 namespace ENNReal
 
 variable {f : α → ℝ≥0∞}
