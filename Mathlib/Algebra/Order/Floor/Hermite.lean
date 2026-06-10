@@ -48,14 +48,14 @@ theorem sum_range_add_ediv (m : ℤ) {n : ℕ} (hn : 0 < n) :
   rw [← Int.natCast_pos] at hn
   lift m % n to ℕ using Int.emod_nonneg m (by grind) with t ht
   calc
-    _ = ∑ i ∈ Finset.range n, (m / n + if n - t ≤ i then 1 else 0) := 
+    _ = ∑ i ∈ Finset.range n, (m / n + if n - t ≤ i then 1 else 0) :=
       Finset.sum_congr rfl fun i hi ↦ by
         rw [Int.add_ediv_of_pos hn]
         grind [Nat.div_eq_zero_iff, Nat.mod_eq_of_lt]
     _ = n * (m / n) + (Finset.Ico (n - t) n).card := by
-      simp [Finset.sum_add_distrib, -tsub_le_iff_right, -Nat.sub_le_iff_le_add, 
+      simp [Finset.sum_add_distrib, -tsub_le_iff_right, -Nat.sub_le_iff_le_add,
         ← Nat.Ico_zero_eq_range]
-    _ = m := by 
+    _ = m := by
       have : m % n < n := Int.emod_lt_of_pos _ hn
       grind [Int.mul_ediv_add_emod, Nat.card_Ico]
 
