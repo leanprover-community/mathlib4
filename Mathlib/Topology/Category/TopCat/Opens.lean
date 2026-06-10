@@ -49,7 +49,7 @@ the morphisms `U ⟶ V` are not just proofs `U ≤ V`, but rather
 
 instance opensHom.instFunLike : FunLike (U ⟶ V) U V where
   coe f := Set.inclusion f.le
-  coe_injective' := by rintro ⟨⟨_⟩⟩ _ _; congr!
+  coe_injective := by rintro ⟨⟨_⟩⟩ _ _; congr!
 
 lemma apply_def (f : U ⟶ V) (x : U) : f x = ⟨x, f.le x.2⟩ := rfl
 
@@ -456,6 +456,7 @@ theorem map_functor_eq {X : TopCat.{u}} {U : Opens X} (V : Opens U) :
     ((Opens.map U.inclusion').obj <| U.isOpenEmbedding.functor.obj V) = V :=
   TopologicalSpace.Opens.map_functor_eq' _ U.isOpenEmbedding V
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem adjunction_counit_map_functor {X : TopCat.{u}} {U : Opens X} (V : Opens U) :
     U.isOpenEmbedding.isOpenMap.adjunction.counit.app (U.isOpenEmbedding.functor.obj V) =
