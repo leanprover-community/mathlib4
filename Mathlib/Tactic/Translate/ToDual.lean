@@ -19,6 +19,12 @@ Known limitations:
   `le_mul`, `le_add` and `add_le`, and in particular should realize that `le_add` and `add_le`
   are dual to each other. Currently, this requires writing
   `attribute [to_dual existing le_add] add_le`.
+- It is currently not possible for a constant to have multiple possible duals.
+  This would be useful for constants that have orders on different types, such as `Monotone f`.
+  If the domain and codomain of `f` are both dualized, then `Monotone f` is simply dual to itself.
+  But there are also cases where only the domain or only the codomain should be dualized.
+  Then, `Monotone f` would be dual to `Antitone f`.
+  We may also want this feature for dualizing results about bicategories.
 -/
 
 public meta section
@@ -181,8 +187,6 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("iic", ["Ici"]),
   ("ioc", ["Ico"]),
   ("ico", ["Ioc"]),
-  ("u", ["L"]),
-  ("l", ["U"]),
   ("next", ["Prev"]),
   ("prev", ["Next"]),
   ("heyting", ["Coheyting"]),
@@ -256,6 +260,11 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("decidableSucc", "DecidablePred"),
 ]
 
+@[inherit_doc GuessName.GuessNameExt]
+initialize guessNameExt : GuessName.GuessNameExt ←
+  GuessName.registerGuessNameExt { nameDict, abbreviationDict }
+
+
 /-- The bundle of environment extensions for `to_dual` -/
 def data : TranslateData where
   ignoreArgsAttr; doTranslateAttr; translations
@@ -263,7 +272,7 @@ def data : TranslateData where
   attrName := `to_dual
   changeNumeral := false
   isDual := true
-  guessNameData := { nameDict, abbreviationDict }
+  guessNameExt
 
 /-- The `to_dual_insert_cast` attribute is used to tag declarations `foo` that should not be
 unfolded in a proof that is translated. Instead, a rewrite with an equality theorem is inserted.
@@ -285,5 +294,11 @@ initialize registerBuiltinAttribute {
         addTranslationAttr data src (← elabTranslationAttr src stx) kind
     applicationTime := .afterCompilation
   }
+
+/-- `to_dual_name_hint src tgt` lets `to_dual` translate between the name segments `src` and `tgt`
+for the rest of the file current. `src` and `tgt` should both be capitalized. -/
+elab "to_dual_name_hint" src:ident tgt:ident : command => do
+  guessNameExt.addTranslation src tgt
+  guessNameExt.addTranslation tgt src
 
 end Mathlib.Tactic.ToDual
