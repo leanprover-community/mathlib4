@@ -9,7 +9,7 @@ public import Mathlib.NumberTheory.LSeries.RiemannZeta
 public import Mathlib.NumberTheory.Harmonic.GammaDeriv
 
 /-!
-# Asymptotics of `ζ s` as `s → 1`
+# Asymptotics of `ζ s` as `s → 1` and `deriv ζ s` as `s → 0`
 
 The goal of this file is to evaluate the limit of `ζ s - 1 / (s - 1)` as `s → 1`.
 
@@ -17,9 +17,9 @@ The goal of this file is to evaluate the limit of `ζ s - 1 / (s - 1)` as `s →
 
 * `tendsto_riemannZeta_sub_one_div`: the limit of `ζ s - 1 / (s - 1)`, at the filter of punctured
   neighbourhoods of 1 in `ℂ`, exists and is equal to the Euler-Mascheroni constant `γ`.
+* `deriv_riemannZeta_zero`: `ζ'(0) = -log(2π) / 2`, which derives from the above.
 * `riemannZeta_one_ne_zero`: with our definition of `ζ 1` (which is characterised as the limit of
   `ζ s - 1 / (s - 1) / Gammaℝ s` as `s → 1`), we have `ζ 1 ≠ 0`.
-* `deriv_riemannZeta_zero`: `ζ'(0) = -log(2π) / 2`, which derives from the above.
 
 ### Outline of arguments
 
@@ -466,12 +466,10 @@ theorem deriv_riemannZeta_zero :
       norm_cast
       simp
     · exact ((hasDerivAt_id 0).div_const 2).add (hasDerivAt_const 0 1)
-  have h₄ := h₁.mul ((h₂.mul h₃).inv (by simp))
-  simp only [one_mul, id_eq, zero_mul, add_zero, sub_zero, Pi.sub_apply, mul_one,
-    neg_zero, one_pow, Pi.inv_apply, Pi.mul_apply, zero_div, cpow_zero, mul_zero,
-    Function.comp_apply, zero_add, Pi.one_apply, Gamma_one, Pi.div_apply, div_one] at h₄
-  convert! h₄ using 1
-  rw [completedRiemannZeta₀_zero, hasDerivAt_Gamma_one.deriv, show 4 * (π : ℂ) = 2 * 2 * π by ring]
+  suffices h : -(log (2 * π) * 2) = γ - log (2 * 2 * π) + (-log π + -γ) by
+    norm_num only at h
+    convert! h₁.mul ((h₂.mul h₃).inv (by simp)) using 1
+    simpa [completedRiemannZeta₀_zero, hasDerivAt_Gamma_one.deriv, field]
   open ComplexOrder in
   repeat rw [log_mul (by positivity) (by positivity) (by simp [arg, LT.lt.le, Real.pi_pos])]
   ring
