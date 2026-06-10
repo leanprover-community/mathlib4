@@ -179,7 +179,6 @@ theorem Multiseries.one_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
 theorem one_Sorted {basis : Basis} : one.Sorted (basis := basis) :=
   const_Sorted
 
--- TODO : move it
 /-- The constant multiseries approximates the constant function. -/
 theorem const_Approximates {c : ℝ} {basis : Basis} (h_basis : WellFormedBasis basis) :
     (const basis c).Approximates := by
@@ -190,7 +189,6 @@ theorem const_Approximates {c : ℝ} {basis : Basis} (h_basis : WellFormedBasis 
     apply (const_Approximates h_basis.tail).cons _ (by simp)
     exact Majorized.const <| h_basis.tendsto_atTop (by simp)
 
--- TODO : move it
 /-- `zero` approximates the zero function. -/
 theorem zero_Approximates {basis : Basis} :
     (@zero basis).Approximates := by
@@ -261,7 +259,7 @@ theorem monomial_toFun {basis : Basis} {n : ℕ} (h : n < basis.length) :
     (monomial basis n).toFun = basis[n] := by
   let n' : Fin basis.length := ⟨n, h⟩
   conv_lhs => rw [show n = n'.val by simp [n']]
-  convert monomialRpow_toFun
+  convert! monomialRpow_toFun
   simp
   grind
 
