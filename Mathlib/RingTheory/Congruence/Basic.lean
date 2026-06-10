@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Hom
 public import Mathlib.Algebra.Ring.Action.Basic
 public import Mathlib.GroupTheory.Congruence.Basic
 public import Mathlib.RingTheory.Congruence.Defs
@@ -95,6 +96,30 @@ instance [Monoid α] [Semiring R] [MulSemiringAction α R] [IsScalarTower α R R
   smul_one := fun _ => congr_arg toQuotient <| smul_one _
   smul_mul := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <|
     MulSemiringAction.smul_mul _ _ _
+
+section
+variable [CommSemiring α] [Semiring R] [Algebra α R]
+
+instance (c : RingCon R) : Algebra α c.Quotient where
+  algebraMap := c.mk'.comp (algebraMap α R)
+  commutes' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.commutes _ _
+  smul_def' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.smul_def _ _
+
+@[simp, norm_cast]
+theorem coe_algebraMap (c : RingCon R) (s : α) :
+    (algebraMap α R s : c.Quotient) = algebraMap α c.Quotient s :=
+  rfl
+
+variable (α) in
+/-- The algebra morphism from `R` to the quotient by a ring congruence. -/
+@[simps!] def mkₐ (c : RingCon R) : R →ₐ[α] c.Quotient :=
+  { mk' c with commutes' _ := rfl }
+
+theorem mkₐ_surjective (c : RingCon R) :
+    Function.Surjective (c.mkₐ (α := α)) :=
+  mk'_surjective c
+
+end
 
 end Algebraic
 

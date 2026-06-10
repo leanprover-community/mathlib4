@@ -42,7 +42,7 @@ set_option linter.unusedVariables false
 @[fun_prop] theorem Con_apply (x : α) : Con (fun f : α → β => f x) := silentSorry
 @[fun_prop] theorem Con_applyDep (x : α) : Con (fun f : (x' : α) → E x' => f x) := silentSorry
 @[fun_prop] theorem Con_comp (f : β → γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x => f (g x)) := silentSorry
--- @[fun_prop] theorem Con_let (f : α → β → γ) (g : α → β) (hf : Con (fun (x,y) => f x y)) (hg : Con g) : Con (fun x => let y:= g x; f x y) := silentSorry
+-- @[fun_prop] theorem Con_let (f : α → β → γ) (g : α → β) (hf : Con (fun (x,y) => f x y)) (hg : Con g) : Con (fun x => let y := g x; f x y) := silentSorry
 @[fun_prop] theorem Con_pi (f : β → (i : α) → (E i)) (hf : ∀ i, Con (fun x => f x i)) : Con (fun x i => f x i) := silentSorry
 
 -- Lin is missing `const` theorem
@@ -112,7 +112,7 @@ instance : CoeFun (α ->> β) (fun _ => α → β) where
 
 instance : FunLike (α -o β) α β where
   coe f := f.toFun
-  coe_injective' := silentSorry
+  coe_injective := silentSorry
 
 #eval Lean.Elab.Command.liftTermElabM do
   Lean.Meta.registerCoercion ``ConHom.toFun
@@ -481,12 +481,12 @@ theorem Dif_Con [Add 𝕜] (f : α → β) (hf : Dif 𝕜 f) : Con f := silentSo
 
 def f4 (a : α) := a
 
-example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch:=aesop)
+example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch := aesop)
 
 @[fun_prop]
 theorem f4_dif : Dif Nat (f4 : α → α) := silentSorry
 
-example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch:=aesop)
+example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch := aesop)
 
 
 -- Test abbrev transparency
@@ -708,7 +708,7 @@ structure FooHom (α : Type*) where
 
 instance : FunLike (FooHom α) α (α → α) where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[fun_prop]
 theorem con_foohom' {β : Type*} {f : β → FooHom α} (hf : Con f) {g₁ : β → α} (hg₁ : Con g₁)
@@ -740,3 +740,114 @@ example {β} [Zero β] (f : β → γ) (hf : Lin f) :
 
 example {β} [Zero β] [Add β] :
   Lin (fun x : α => 0 + 0) := by fun_prop
+
+/-! Test imitating the discharging of `ModelWithCorners` metavariables -/
+section MDifferentiableMock
+
+variable {α β γ δ ι : Type*} {E : ι → Type*}
+
+class Dummy (A : Type*)
+instance : Dummy A := ⟨⟩
+
+/-- Mock model-with-corners data.
+The `Dummy` parameters are necessary (only) to match the arity of the real `ModelWithCorners` -/
+structure ModelWithCorners (M : Type*) [Dummy M] [Dummy M] [Dummy M] [Dummy M] [Dummy M] [Dummy M] where
+  data : Nat := 0
+
+def ModelWithCorners.prod (I : ModelWithCorners α) (J : ModelWithCorners β) :
+  ModelWithCorners (α × β) := { data := I.data + J.data + 1 }
+
+/-- Mock manifold differentiability.  The source and target model data are explicit arguments,
+as for real `MDifferentiable I I' f`. -/
+@[fun_prop]
+opaque MDifferentiable {M M' : Type*} (I : ModelWithCorners M) (I' : ModelWithCorners M') (f : M → M') : Prop
+
+namespace MDifferentiable
+
+variable {I : ModelWithCorners α} {I' : ModelWithCorners β} {I'' : ModelWithCorners γ} {I''' : ModelWithCorners δ}
+
+@[fun_prop]
+theorem id (I : ModelWithCorners α) : MDifferentiable I I (id : α → α) := silentSorry
+
+@[fun_prop]
+theorem const (I : ModelWithCorners α) (I' : ModelWithCorners β) (y : β) :
+    MDifferentiable I I' (fun _ : α ↦ y) := silentSorry
+
+@[fun_prop]
+theorem comp (g : β → γ) (f : α → β)
+    (hg : MDifferentiable I' I'' g) (hf : MDifferentiable I I' f) :
+    MDifferentiable I I'' (fun x ↦ g (f x)) := silentSorry
+
+@[fun_prop]
+theorem apply (i : ι) (I : ModelWithCorners ((x : ι) → E x)) (I' : ModelWithCorners (E i)) :
+    MDifferentiable I I' (fun f : (x : ι) → E x ↦ f i) := silentSorry
+
+@[fun_prop]
+theorem pi (f : α → (i : ι) → E i)
+    (Iα : ModelWithCorners α) (IE : (i : ι) → ModelWithCorners (E i))
+    (IPi : ModelWithCorners ((i : ι) → E i))
+    (hf : ∀ i, MDifferentiable Iα (IE i) (fun x ↦ f x i)) :
+    MDifferentiable Iα IPi (fun x i ↦ f x i) := silentSorry
+
+@[fun_prop]
+theorem prod_mk (f : α → β) (g : α → γ)
+    (Iβγ : ModelWithCorners (β × γ))
+    (hf : MDifferentiable I I' f) (hg : MDifferentiable I I'' g) :
+    MDifferentiable I Iβγ (fun x ↦ (f x, g x)) := silentSorry
+
+@[fun_prop]
+theorem fst (Iαβ : ModelWithCorners (α × β)) :
+    MDifferentiable Iαβ I (fun x : α × β ↦ x.1) := silentSorry
+
+@[fun_prop]
+theorem snd (Iαβ : ModelWithCorners (α × β)) :
+    MDifferentiable Iαβ I' (fun x : α × β ↦ x.2) := silentSorry
+
+@[fun_prop]
+theorem prodMap {f g : α → β} {Iα : ModelWithCorners α} {Iβ : ModelWithCorners β} :
+    MDifferentiable (Iα.prod Iα) (Iβ.prod Iβ) (Prod.map f g) := silentSorry
+
+end MDifferentiable
+
+variable {Iα : ModelWithCorners α}
+
+@[fun_prop]
+theorem mdiff_add [Add α] : MDifferentiable (Iα.prod Iα) Iα (fun x ↦ x.1 + x.2) := silentSorry
+@[fun_prop]
+theorem mdiff_mul [Mul α] : MDifferentiable (Iα.prod Iα) Iα (fun x ↦ x.1 * x.2) := silentSorry
+
+example [Add α] [Mul α] : MDifferentiable Iα Iα (fun x ↦ let y := x * x; y + x) := by
+  fail_if_success fun_prop
+  fun_prop (disch := apply_rules [ModelWithCorners.prod])
+
+example [Add α] [Mul α] {f g : α → α} {a : α} :
+    MDifferentiable Iα (Iα.prod Iα) (fun x ↦ Prod.map f g (x,a)) := by
+  -- fail_if_success fun_prop
+  fun_prop (disch := apply_rules [ModelWithCorners.prod])
+
+opaque Space : Type
+def Space.mwc : ModelWithCorners Space := { data := 42 }
+instance : Add Space := ⟨fun x y ↦ x⟩
+
+example : MDifferentiable Space.mwc Space.mwc (fun x : Space ↦ x + x + x) := by
+  fail_if_success fun_prop
+  fun_prop (disch := apply_rules [Space.mwc])
+
+end MDifferentiableMock
+
+section DependentCompositionalForm
+
+-- These examples involving dependent types used to be incorrectly detected as uncurried forms
+
+@[fun_prop]
+theorem Con_subtype_mk {p : β → Prop} {f : α → β} (h : Con f) (hp : ∀ x, p (f x)) :
+  Con fun x => (⟨f x, hp x⟩ : Subtype p) := silentSorry
+
+example : Con fun x => (⟨x, trivial⟩ : {x : α // True}) := by fun_prop
+
+@[fun_prop]
+theorem Con_imp {p q : α → Prop} : Con (fun x => p x → q x) := silentSorry
+
+example {p : α → Prop} : Con (fun x => True → p x) := by fun_prop
+
+end DependentCompositionalForm
