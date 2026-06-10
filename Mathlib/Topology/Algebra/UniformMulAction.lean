@@ -83,7 +83,7 @@ section SMul
 variable [SMul M X]
 
 @[to_additive]
-instance (priority := 100) UniformContinuousConstSMul.to_continuousConstSMul
+instance (priority := 100) UniformContinuousConstSMul.continuousConstSMul
     [UniformContinuousConstSMul M X] : ContinuousConstSMul M X :=
   ⟨fun c => (uniformContinuous_const_smul c).continuous⟩
 
@@ -119,7 +119,7 @@ instance MulOpposite.uniformContinuousConstSMul [UniformContinuousConstSMul M X]
 end SMul
 
 @[to_additive]
-instance IsUniformGroup.to_uniformContinuousConstSMul {G : Type u} [Group G] [UniformSpace G]
+instance IsUniformGroup.uniformContinuousConstSMul {G : Type u} [Group G] [UniformSpace G]
     [IsUniformGroup G] : UniformContinuousConstSMul G G :=
   ⟨fun _ => uniformContinuous_const.mul uniformContinuous_id⟩
 
