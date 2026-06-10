@@ -975,9 +975,8 @@ theorem OrthonormalBasis.det_to_matrix_orthonormalBasis : ‖a.toBasis.det b‖ 
 
 theorem LinearIsometryEquiv.toMatrix_mem_unitaryGroup {G : Type*} [NormedAddCommGroup G]
     [InnerProductSpace 𝕜 G] (f : E ≃ₗᵢ[𝕜] G) (b : OrthonormalBasis ι 𝕜 E)
-    (b' : OrthonormalBasis ι 𝕜 G) : f.toMatrix b.toBasis b'.toBasis ∈ Matrix.unitaryGroup ι 𝕜 := by
-  convert b'.toMatrix_orthonormalBasis_mem_unitary (b.map f)
-  simp [LinearMap.toMatrix_eq_basisToMatrix, OrthonormalBasis.coe_map]
+    (b' : OrthonormalBasis ι 𝕜 G) : f.toMatrix b.toBasis b'.toBasis ∈ Matrix.unitaryGroup ι 𝕜 :=
+  f.toMatrix_eq_basisToMatrix b.toBasis _ ▸ b'.toMatrix_orthonormalBasis_mem_unitary (b.map f)
 
 end
 
