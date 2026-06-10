@@ -377,16 +377,19 @@ noncomputable def monodromy {x y : X} (γ : Path.Homotopic.Quotient x y) :
       congr($(cov.liftPath_lifts ..) 1).trans γ.target⟩)
     fun _ _ h ↦ Subtype.ext (cov.liftPath_apply_one_eq_of_homotopicRel h ..)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Lift a homotopy class of paths to a covering space. -/
 noncomputable def liftPathQuotient {x y : X} (γ : Path.Homotopic.Quotient x y) (e : p ⁻¹' {x}) :
     Path.Homotopic.Quotient e.1 (cov.monodromy γ e) :=
-  γ.hrecOn (fun γ : Path x y ↦ .mk ⟨cov.liftPath γ e.1 (γ.source.trans e.2.symm),
-      cov.liftPath_zero .., rfl⟩) fun γ γ' h ↦ by
+  have he (γ : Path x y) : γ 0 = p (e : E) := by aesop
+  let g (γ : Path x y) : Path.Homotopic.Quotient (e : E) (cov.liftPath γ (e : E) (he γ) 1) :=
+    .mk ⟨cov.liftPath γ (e : E) (he γ), cov.liftPath_zero .., rfl⟩
+  let _i : Setoid (Path x y) := Path.Homotopic.setoid x y
+  have hg (γ γ' : Path x y) (hγ : γ ≈ γ') : g γ ≍ g γ' := by
     refine .trans (heq_of_eq ?_) (Path.Homotopic.Quotient.cast_heq rfl
-      (cov.liftPath_apply_one_eq_of_homotopicRel h _ (γ.source.trans e.2.symm) _))
+      (cov.liftPath_apply_one_eq_of_homotopicRel hγ _ (he γ) _))
     rw [← Path.Homotopic.Quotient.mk_cast, Path.Homotopic.Quotient.eq]
-    exact cov.homotopicRel_liftPath h _ (γ.source.trans e.2.symm) (γ'.source.trans e.2.symm)
+    exact cov.homotopicRel_liftPath hγ _ (by aesop) (by aesop)
+  γ.hrecOn g hg
 
 theorem map_liftPathQuotient {x y : X} (γ : Path.Homotopic.Quotient x y) (e : p ⁻¹' {x}) :
     (cov.liftPathQuotient γ e).map ⟨p, cov.continuous⟩ = γ.cast e.2 (cov.monodromy γ e).2 := by
