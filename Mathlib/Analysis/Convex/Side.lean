@@ -847,19 +847,6 @@ theorem _root_.Wbtw.wSameSide_of_wSameSide_of_wSameSide
       · exact ⟨hx_side, hp, hx⟩
       · exact ⟨hy_side, hp, hy⟩
 
-theorem _root_.Wbtw.wOppSide_of_wOppSide_of_wOppSide
-    {S : AffineSubspace R P} {p : P} {x y z : P}
-    (hx_side : S.WOppSide p x) (hy_side : S.WOppSide p y)
-    (hz_btw : Wbtw R x z y) :
-    S.WOppSide p z := by
-  /- reduce by reflection to SameSide case -/
-  obtain ⟨r, hr⟩ := AffineSubspace.WOppSide.nonempty hx_side
-  apply (wSameSide_pointReflection_iff_wOppSide hr p z).mp
-  set p' := (AffineEquiv.pointReflection R r) p with hp'
-  refine Wbtw.wSameSide_of_wSameSide_of_wSameSide ?_ ?_ hz_btw
-  · exact (wSameSide_pointReflection_iff_wOppSide hr p x).mpr hx_side
-  · exact (wSameSide_pointReflection_iff_wOppSide hr p y).mpr hy_side
-
 theorem _root_.Wbtw.sOppSide_of_sOppSide_of_sOppSide
     {S : AffineSubspace R P} {p : P} {x y z : P}
     (hx_side : S.SOppSide p x) (hy_side : S.SOppSide p y)
@@ -872,6 +859,19 @@ theorem _root_.Wbtw.sOppSide_of_sOppSide_of_sOppSide
   refine Wbtw.sSameSide_of_sSameSide_of_sSameSide ?_ ?_ hz_btw
   · exact (sSameSide_pointReflection_iff_sOppSide hr p x).mpr hx_side
   · exact (sSameSide_pointReflection_iff_sOppSide hr p y).mpr hy_side
+
+theorem _root_.Wbtw.wOppSide_of_wOppSide_of_wOppSide
+    {S : AffineSubspace R P} {p : P} {x y z : P}
+    (hx_side : S.WOppSide p x) (hy_side : S.WOppSide p y)
+    (hz_btw : Wbtw R x z y) :
+    S.WOppSide p z := by
+  /- reduce by reflection to SameSide case -/
+  obtain ⟨r, hr⟩ := AffineSubspace.WOppSide.nonempty hx_side
+  apply (wSameSide_pointReflection_iff_wOppSide hr p z).mp
+  set p' := (AffineEquiv.pointReflection R r) p with hp'
+  refine Wbtw.wSameSide_of_wSameSide_of_wSameSide ?_ ?_ hz_btw
+  · exact (wSameSide_pointReflection_iff_wOppSide hr p x).mpr hx_side
+  · exact (wSameSide_pointReflection_iff_wOppSide hr p y).mpr hy_side
 
 end LinearOrderedField
 
