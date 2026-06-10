@@ -170,7 +170,7 @@ theorem IsHadamard.kronecker [Fintype m] [DecidableEq m] [Fintype n]
         simp only [← mul_apply, mul_smul_comm, hB.conjTranspose_mul]
         simp [one_apply, ← Nat.cast_mul, ← ite_and]
 
-/-- A Hadamard matrix of order greater than two has order divisible by four.
+/-- A integer Hadamard matrix of order greater than two has order divisible by four.
 
 This is the standard divisibility obstruction in [Section 2.3][deLauneyFlannery2011]. -/
 theorem IsHadamard.four_dvd_card [Fintype n] [DecidableEq n] {A : Matrix n n ℤ}
