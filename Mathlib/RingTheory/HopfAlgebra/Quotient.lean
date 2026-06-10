@@ -37,15 +37,22 @@ section ofSurjective
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
   [HopfAlgebra R A] [HopfAlgebraStruct R B]
 
+/-- Post-composition by an algebra homomorphism sends the convolution unit to the
+convolution unit. -/
+lemma _root_.LinearMap.algHom_comp_convOne (g : A →ₐ[R] B) :
+    g.toLinearMap ∘ₗ (1 : WithConv (A →ₗ[R] A)).ofConv = (1 : WithConv (A →ₗ[R] B)).ofConv := by
+  ext a; simp
+
+/-- Pre-composition by a coalgebra homomorphism sends the convolution unit to the
+convolution unit. -/
+lemma _root_.LinearMap.convOne_comp_coalgHom (g : A →ₗc[R] B) :
+    (1 : WithConv (B →ₗ[R] B)).ofConv ∘ₗ g.toLinearMap = (1 : WithConv (A →ₗ[R] B)).ofConv := by
+  ext a; simp
+
 /-- Transfer the Hopf algebra axioms along a surjective bialgebra homomorphism intertwining
 the antipodes. -/
 noncomputable abbrev ofSurjective (f : A →ₐc[R] B) (hf : Function.Surjective f)
     (hS : antipode R ∘ₗ f.toLinearMap = f.toLinearMap ∘ₗ antipode R) : HopfAlgebra R B := by
-  have h1 : (AlgHomClass.toAlgHom f).toLinearMap ∘ₗ (1 : WithConv (A →ₗ[R] A)).ofConv =
-      (1 : WithConv (B →ₗ[R] B)).ofConv ∘ₗ f.toLinearMap := by
-    ext a
-    simp only [comp_apply, convOne_apply, ← LinearMap.congr_fun f.counit_comp a]
-    exact AlgHomClass.commutes f _
   refine .ofConvInverse (antipode R) (ofConv_injective ?_) (ofConv_injective ?_) <;>
     rw [← LinearMap.cancel_right (show Function.Surjective f.toLinearMap from hf)]
   · calc (toConv (antipode R) * toConv .id : WithConv (B →ₗ[R] B)).ofConv ∘ₗ
@@ -56,7 +63,7 @@ noncomputable abbrev ofSurjective (f : A →ₐc[R] B) (hf : Function.Surjective
             (toConv (antipode R) * toConv .id : WithConv (A →ₗ[R] A)).ofConv := by
           rw [algHom_comp_convMul_distrib]; rfl
       _ = (1 : WithConv (B →ₗ[R] B)).ofConv ∘ₗ f.toLinearMap := by
-          rw [antipode_mul_id, h1]
+          rw [antipode_mul_id, algHom_comp_convOne, ← convOne_comp_coalgHom f.toCoalgHom]
   · calc (toConv .id * toConv (antipode R) : WithConv (B →ₗ[R] B)).ofConv ∘ₗ
           f.toCoalgHom.toLinearMap
         = (toConv f.toLinearMap * toConv (f.toLinearMap ∘ₗ antipode R)).ofConv := by
@@ -65,7 +72,7 @@ noncomputable abbrev ofSurjective (f : A →ₐc[R] B) (hf : Function.Surjective
             (toConv .id * toConv (antipode R) : WithConv (A →ₗ[R] A)).ofConv := by
           rw [algHom_comp_convMul_distrib]; rfl
       _ = (1 : WithConv (B →ₗ[R] B)).ofConv ∘ₗ f.toLinearMap := by
-          rw [id_mul_antipode, h1]
+          rw [id_mul_antipode, algHom_comp_convOne, ← convOne_comp_coalgHom f.toCoalgHom]
 
 end ofSurjective
 
