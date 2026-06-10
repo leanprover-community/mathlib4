@@ -15,7 +15,7 @@ public import Mathlib.Tactic.Ring.NamePolyVars
 
 We set up the endomorphism of `ℙ²` that on affine points with affine sum is equal to
 ```
-(x(P) * x(Q) : x(P) + x(Q) : 1) ↦ (x(P+Q) * x(P-Q) : x(P+Q) + x(P-Q) : 1) ;
+(x(P) * x(Q) : x(P) + x(Q) : 1) ↦ (x(P+Q) * x(P-Q) : x(P+Q) + x(P-Q) : 1);
 ```
 see `WeierstrassCurve.addSubMap` (this is on coordinate vectors).
 
