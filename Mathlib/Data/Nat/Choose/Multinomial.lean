@@ -451,7 +451,7 @@ end List
 
 namespace Multiset
 
-/-- The `multinomial` coefficients on `Multiset ℕ`. -/
+/-- The `multinomial` coefficients on `m : Multiset ℕ` defined by `(m.sum) ! / ∏ i ∈ m, m i !` -/
 def multinomial (m : Multiset ℕ) : ℕ := Quot.liftOn m List.multinomial <| fun l l' h ↦ by
   induction h with
   | nil => simp
@@ -500,5 +500,29 @@ theorem multinomial_nsmul (k : ℕ) (m : Multiset ℕ) :
 theorem multinomial_nsmul_singleton (k n : ℕ) :
     (k • {n} : Multiset ℕ).multinomial = Nat.multinomial (Finset.range k) (fun _ ↦ n) := by
   simp [multinomial_nsmul]
+
+theorem multinomial_pos (m : Multiset ℕ) : 0 < m.multinomial := by
+  induction m using Multiset.induction_on with
+  | empty => simp
+  | cons x m h =>
+    simp only [multinomial_cons, h, mul_pos_iff_of_pos_right]
+    exact Nat.choose_pos (Nat.le_add_right x m.sum)
+
+public meta section PositivityExtension
+
+open Lean Meta Mathlib Meta Positivity Qq
+
+/--
+Positivity extension for `Multiset.multinomial`.
+-/
+@[positivity multinomial (_ : Multiset ℕ)]
+meta def evalMultinomial : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(multinomial $a) =>
+    assertInstancesCommute
+    return .positive q(multinomial_pos $a)
+  | _, _, _ => throwError "not multinomial"
+
+end PositivityExtension
 
 end Multiset
