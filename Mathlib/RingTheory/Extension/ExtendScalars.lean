@@ -133,7 +133,7 @@ theorem cotangentComplex_comp_coe_h1CotangentEquivCotangent (P : Extension.{w} R
   trans 1 ⊗ₜ[P.Ring] D R P.Ring x; · exact cotangentComplex_mk P ⟨x, x_in⟩
   let u : (Generators.self P.Ring S).toExtension.ker :=
     ⟨algebraMap P.Ring (Generators.self P.Ring S).toExtension.Ring x, by
-      rwa [← Ideal.mem_comap, comap_ker_eq]⟩
+      rwa [← Ideal.mem_comap, RingHom.comap_ker, ← IsScalarTower.algebraMap_eq]⟩
   have hu : Cotangent.mk u ∈
     (Generators.self P.Ring S).toExtension.cotangentComplex.ker := by simp [u]
   rw [← Generators.H1Cotangent.δ_C _ _ u.prop hu]
