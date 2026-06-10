@@ -68,11 +68,6 @@ instance : IsNoetherianRing R := by
   · rw [Submodule.ker_mkQ, inf_eq_right.mpr ((Ideal.span_singleton_le_iff_mem I).mpr hx₁)]
     exact Submodule.fg_span_singleton x
 
--- PRed
-instance (R : Type*) [CommRing R] (I : Ideal R) [I.IsPrime] [Finite (R ⧸ I)] :
-    Finite I.ResidueField :=
-  IsLocalization.finite (R ⧸ I) (nonZeroDivisors (R ⧸ I))
-
 instance [IsDomain R] [PerfectField (FractionRing R)] (P : Ideal R) [P.IsPrime] :
     PerfectField P.ResidueField := by
   rcases eq_or_ne P ⊥ with rfl | hP
