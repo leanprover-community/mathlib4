@@ -102,6 +102,34 @@ jobs:
           echo "::notice::Using legacy workflow-data artifact fallback from maintainer_merge.yml"
           echo "Using legacy workflow-data artifact fallback from maintainer_merge.yml" >> "$GITHUB_STEP_SUMMARY"
 
+      - if: ${{ ! steps.inputs.outputs.mOrD == '' }}
+        name: Resolve splice-bot attribution
+        id: attribution
+        env:
+          AUTHOR: ${{ steps.inputs.outputs.author }}
+          COMMENT: ${{ steps.inputs.outputs.comment }}
+        run: |
+          # When mathlib-splicebot[bot] relays a 'maintainer merge/delegate' command
+          # from a review comment on the original PR, its comment ends with an
+          # attribution line of the form (see the SPLICEBOT_LABEL_COMMANDS repo variable)
+          #   Requested by @reviewer via splice-bot from #12345.
+          # so the Zulip report and PR comment credit the requesting reviewer instead
+          # of the bot. The requester's free text is rendered by SpliceBot as a
+          # markdown blockquote, so this line-anchored match cannot be forged; we
+          # additionally only trust the attribution line when the comment author is
+          # the bot itself.
+          display_author="${AUTHOR}"
+          if [ "${AUTHOR}" = "mathlib-splicebot[bot]" ]
+          then
+            attributed="$(printf '%s' "${COMMENT}" | tr -d '\r' |
+              sed -n 's=^Requested by @\([A-Za-z0-9-][A-Za-z0-9-]*\) via splice-bot from #\([0-9][0-9]*\)\.$=\1 (via splice-bot from #\2)=p' | tail -1)"
+            if [ -n "${attributed}" ]
+            then
+              display_author="${attributed}"
+            fi
+          fi
+          echo "display_author=${display_author}" | tee -a "$GITHUB_OUTPUT"
+
       # bot usernames would cause this step to error with "Could not resolve to a User...",
       # so we skip it for all bot accounts; allowed bots are validated in the next step
       - if: ${{ ! steps.inputs.outputs.mOrD == '' && ! endsWith(steps.inputs.outputs.author, '[bot]') }}
@@ -174,7 +202,7 @@ jobs:
           # message="${message}"$'\n\n---\n'"${metadata}"
           printf 'title<<EOF\n%s\nEOF' "${message}" | tee "$GITHUB_OUTPUT"
         env:
-          AUTHOR: ${{ steps.inputs.outputs.author }}
+          AUTHOR: ${{ steps.attribution.outputs.display_author }}
           EVENT_NAME: ${{ steps.inputs.outputs.event_name }}
           PR_NUMBER: ${{ steps.inputs.outputs.pr_number }}
           PR_URL: ${{ steps.inputs.outputs.pr_url }}
@@ -198,8 +226,10 @@ jobs:
       - name: Compose PR comment body
         if: ${{ steps.authorized.outputs.authorized == 'true' }}
         id: pr_comment
+        env:
+          DISPLAY_AUTHOR: ${{ steps.attribution.outputs.display_author }}
         run: |
-          body="🚀 Pull request has been placed on the maintainer queue by ${{ steps.inputs.outputs.author }}."
+          body="🚀 Pull request has been placed on the maintainer queue by ${DISPLAY_AUTHOR}."
           trigger_name="${{ steps.inputs.outputs.event_name }}"
           trigger_run_url="${{ github.event.workflow_run.html_url }}"
           wf_run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
