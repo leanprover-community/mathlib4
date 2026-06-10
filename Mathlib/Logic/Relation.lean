@@ -93,17 +93,17 @@ alias irreflexive_iff_subrelation_ne := irrefl_iff_subrelation_ne
 protected theorem Std.Symm.iff [Std.Symm r] (x y : α) : r x y ↔ r y x :=
   ⟨symm_of r, symm_of r⟩
 
-@[deprecated (since := "2026-04-15")] protected alias Symmetric.iff := Std.Symm.iff
+@[deprecated (since := "2026-06-10")] protected alias Symmetric.iff := Std.Symm.iff
 
 theorem Std.Symm.flip_eq [Std.Symm r] : flip r = r :=
   funext₂ fun _ _ ↦ propext <| Std.Symm.iff (r := r) ..
 
-@[deprecated (since := "2026-04-15")] alias Symmetric.flip_eq := Std.Symm.flip_eq
+@[deprecated (since := "2026-06-10")] alias Symmetric.flip_eq := Std.Symm.flip_eq
 
 theorem Std.Symm.swap_eq [Std.Symm r] : swap r = r :=
   Std.Symm.flip_eq
 
-@[deprecated (since := "2026-04-15")] alias Symmetric.swap_eq := Std.Symm.swap_eq
+@[deprecated (since := "2026-06-10")] alias Symmetric.swap_eq := Std.Symm.swap_eq
 
 theorem flip_eq_iff : flip r = r ↔ Std.Symm r :=
   ⟨fun h ↦ ⟨fun _ _ ↦ congr_fun₂ h .. |>.mp⟩, fun _ ↦ Std.Symm.flip_eq⟩
@@ -125,7 +125,7 @@ instance Std.Refl.comap [Std.Refl r] (f : α → β) : Std.Refl (r on f) where
 instance Std.Symm.comap [Std.Symm r] (f : α → β) : Std.Symm (r on f) where
   symm _ _ hab := symm_of r hab
 
-@[deprecated (since := "2026-04-15")] alias Symmetric.comap := Std.Symm.comap
+@[deprecated (since := "2026-06-10")] alias Symmetric.comap := Std.Symm.comap
 
 instance IsTrans.comap [IsTrans β r] (f : α → β) : IsTrans α (r on f) where
   trans _ _ _ := trans_of r
@@ -263,7 +263,7 @@ instance _root_.Std.Symm.map {r : α → α → Prop} [Std.Symm r] (f : α → �
     rintro ⟨x, y, hxy, rfl, rfl⟩
     exact ⟨y, x, symm hxy, rfl, rfl⟩
 
-@[deprecated (since := "2026-04-15")] alias map_symmetric := Std.Symm.map
+@[deprecated (since := "2026-06-10")] alias map_symmetric := Std.Symm.map
 
 lemma _root_.IsTrans.map {r : α → α → Prop} [IsTrans α r] {f : α → β}
     (hf : ∀ x y, f x = f y → r x y) : IsTrans β (Relation.Map r f f) := by
@@ -373,7 +373,7 @@ instance stdSymm [Std.Symm r] : Std.Symm (ReflGen r) where
     | refl => refl
     | single h => single <| symm h
 
-@[deprecated (since := "2026-04-23")] alias symmetric := stdSymm
+@[deprecated (since := "2026-06-10")] alias symmetric := stdSymm
 
 instance [IsTrans α r] : IsTrans α (ReflGen r) where
   trans a b c h₁ h₂ := by
@@ -447,7 +447,7 @@ instance stdSymm [Std.Symm r] : Std.Symm (ReflTransGen r) where
     | refl => rfl
     | tail _ b c => apply c.head <| symm b
 
-@[deprecated (since := "2026-04-15")] alias symmetric := stdSymm
+@[deprecated (since := "2026-06-10")] alias symmetric := stdSymm
 
 theorem cases_tail : ReflTransGen r a b → b = a ∨ ∃ c, ReflTransGen r a c ∧ r c b :=
   (cases_tail_iff r a b).1
@@ -569,7 +569,7 @@ instance stdSymm [Std.Symm r] : Std.Symm (TransGen r) where
     | single i => exact .single <| symm i
     | tail _ h₁ h₂ => exact .head (symm h₁) h₂
 
-@[deprecated (since := "2026-04-15")] alias symmetric := stdSymm
+@[deprecated (since := "2026-06-10")] alias symmetric := stdSymm
 
 instance [Std.Refl r] : Std.Refl (TransGen r) where
   refl x := .single (refl x)
@@ -847,12 +847,12 @@ theorem join_of_single [Std.Refl r] (hab : r a b) : Join r a b :=
 protected instance Join.symm : Std.Symm (Join r) where
   symm _ _ := fun ⟨c, hac, hcb⟩ ↦ ⟨c, hcb, hac⟩
 
-@[deprecated (since := "2026-04-15")] alias symmetric_join := Join.symm
+@[deprecated (since := "2026-06-10")] alias symmetric_join := Join.symm
 
 protected instance Join.refl [Std.Refl r] : Std.Refl (Join r) where
   refl a := ⟨a, _root_.refl a, _root_.refl a⟩
 
-@[deprecated (since := "2026-04-15")] alias reflexive_join := Join.refl
+@[deprecated (since := "2026-06-10")] alias reflexive_join := Join.refl
 
 theorem isTrans_join [IsTrans α r] (h : ∀ a b c, r a b → r a c → Join r b c) :
     IsTrans α (Join r) :=

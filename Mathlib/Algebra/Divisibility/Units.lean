@@ -156,7 +156,7 @@ variable [CommMonoid α] {x y z : α}
 instance symm_isRelPrime : Std.Symm (IsRelPrime : α → α → Prop) where
   symm _ _ := .symm
 
-@[deprecated (since := "2026-04-15")] alias symmetric_isRelPrime := symm_isRelPrime
+@[deprecated (since := "2026-06-10")] alias symmetric_isRelPrime := symm_isRelPrime
 
 theorem isRelPrime_comm : IsRelPrime x y ↔ IsRelPrime y x :=
   ⟨IsRelPrime.symm, IsRelPrime.symm⟩

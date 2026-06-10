@@ -64,8 +64,8 @@ theorem Disjoint.symm ⦃a b : α⦄ : Disjoint a b → Disjoint b a :=
 instance symm_disjoint : Std.Symm (Disjoint : α → α → Prop) where
   symm := Disjoint.symm
 
-@[deprecated (since := "2026-04-15")] alias symmetric_codisjoint := symm_codisjoint
-@[to_dual existing, deprecated (since := "2026-04-15")] alias symmetric_disjoint := symm_disjoint
+@[deprecated (since := "2026-06-10")] alias symmetric_codisjoint := symm_codisjoint
+@[to_dual existing, deprecated (since := "2026-06-10")] alias symmetric_disjoint := symm_disjoint
 
 @[to_dual (attr := simp, grind ←)]
 theorem disjoint_bot_left : Disjoint ⊥ a := fun _ hbot _ ↦ hbot

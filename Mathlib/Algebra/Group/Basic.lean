@@ -1026,9 +1026,9 @@ lemma multiplicative_of_symm_of_total [Std.Symm p]
   · exact hmul' rbc pab pbc pac
   · rw [hmul' rcb pac (symm pbc) pab, mul_assoc, hf_swap (symm pbc), mul_one]
 
-@[deprecated (since := "2026-04-15")]
+@[deprecated (since := "2026-06-10")]
 alias additive_of_symmetric_of_total := additive_of_symm_of_total
-@[to_additive existing additive_of_symmetric_of_total, deprecated (since := "2026-04-15")]
+@[to_additive existing additive_of_symmetric_of_total, deprecated (since := "2026-06-10")]
 alias multiplicative_of_symmetric_of_total := multiplicative_of_symm_of_total
 
 @[deprecated (since := "2026-01-09")]

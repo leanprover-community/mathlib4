@@ -54,7 +54,7 @@ theorem Disjoint.symm : Disjoint f g → Disjoint g f := by simp only [Disjoint,
 instance Disjoint.stdSymm : Std.Symm (α := Perm α) Disjoint where
   symm _ _ := Disjoint.symm
 
-@[deprecated (since := "2026-04-15")] alias Disjoint.symmetric := Disjoint.stdSymm
+@[deprecated (since := "2026-06-10")] alias Disjoint.symmetric := Disjoint.stdSymm
 
 theorem disjoint_comm : Disjoint f g ↔ Disjoint g f :=
   ⟨Disjoint.symm, Disjoint.symm⟩

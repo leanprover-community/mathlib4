@@ -96,7 +96,7 @@ theorem Coprime.lcm_eq_mul {m n : ℕ} (h : Coprime m n) : lcm m n = m * n := by
 instance Coprime.stdSymm : Std.Symm Coprime where
   symm _ _ := Coprime.symm
 
-@[deprecated (since := "2026-04-15")] alias Coprime.symmetric := Coprime.stdSymm
+@[deprecated (since := "2026-06-10")] alias Coprime.symmetric := Coprime.stdSymm
 
 theorem Coprime.dvd_mul_right {m n k : ℕ} (H : Coprime k n) : k ∣ m * n ↔ k ∣ m :=
   ⟨H.dvd_of_dvd_mul_right, fun h => dvd_mul_of_dvd_left h n⟩

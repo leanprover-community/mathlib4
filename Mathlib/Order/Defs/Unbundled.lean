@@ -219,7 +219,7 @@ section
 def Reflexive := ∀ x, x ≺ x
 
 /-- `Std.Symm` as a definition, suitable for use in proofs. -/
-@[deprecated Std.Symm (since := "2026-04-15")]
+@[deprecated Std.Symm (since := "2026-06-10")]
 def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
 
 /-- `IsTrans` as a definition, suitable for use in proofs. -/
@@ -246,7 +246,7 @@ theorem Equivalence.stdRefl (h : Equivalence r) : Std.Refl r where
 theorem Equivalence.stdSymm (h : Equivalence r) : Std.Symm r where
   symm _ _ := h.symm
 
-@[deprecated (since := "2026-04-15")] alias Equivalence.symmetric := Equivalence.stdSymm
+@[deprecated (since := "2026-06-10")] alias Equivalence.symmetric := Equivalence.stdSymm
 
 theorem Equivalence.isTrans (h : Equivalence r) : IsTrans α r :=
   ⟨fun _ _ _ ↦ h.trans⟩

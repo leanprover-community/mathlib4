@@ -684,7 +684,7 @@ theorem toRel_prop (s : Set (Sym2 α)) (x y : α) : ToRel s x y ↔ s(x, y) ∈ 
 instance toRel_symm (s : Set (Sym2 α)) : Std.Symm (ToRel s) where
   symm x y := by simp [eq_swap]
 
-@[deprecated (since := "2026-04-15")] alias toRel_symmetric := toRel_symm
+@[deprecated (since := "2026-06-10")] alias toRel_symmetric := toRel_symm
 
 theorem toRel_fromRel (sym : Std.Symm r) : ToRel (fromRel sym) = r :=
   rfl

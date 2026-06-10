@@ -1052,7 +1052,7 @@ lemma not_bijective : Bijective Not := not_involutive.bijective
 lemma symm_apply_eq_iff {α : Sort*} {f : α → α} : Std.Symm (f · = ·) ↔ Involutive f := by
   simp [symm_def, Involutive]
 
-@[deprecated (since := "2026-04-15")] alias symmetric_apply_eq_iff := symm_apply_eq_iff
+@[deprecated (since := "2026-06-10")] alias symmetric_apply_eq_iff := symm_apply_eq_iff
 
 /-- The property of a binary function `f : α → β → γ` being injective.
 Mathematically this should be thought of as the corresponding function `α × β → γ` being injective.
@@ -1141,7 +1141,7 @@ protected lemma Std.Symm.forall_existsUnique_iff' {r : α → α → Prop} [Std.
   rcases forall_existsUnique_iff'.1 h with ⟨f, rfl : r = _⟩
   exact ⟨f, symm_apply_eq_iff.1 ‹_›, rfl⟩
 
-@[deprecated (since := "2026-04-15")]
+@[deprecated (since := "2026-06-10")]
 protected alias Symmetric.forall_existsUnique_iff' := Std.Symm.forall_existsUnique_iff'
 
 /-- A symmetric relation `r : α → α → Prop` is "function-like"
@@ -1151,7 +1151,7 @@ protected lemma Std.Symm.forall_existsUnique_iff {r : α → α → Prop} [Std.S
     (∀ a, ∃! b, r a b) ↔ ∃ f : α → α, Involutive f ∧ ∀ {a b}, r a b ↔ f a = b := by
   simp [Std.Symm.forall_existsUnique_iff', funext_iff]
 
-@[deprecated (since := "2026-04-15")]
+@[deprecated (since := "2026-06-10")]
 protected alias Symmetric.forall_existsUnique_iff := Std.Symm.forall_existsUnique_iff
 
 /-- `s.piecewise f g` is the function equal to `f` on the set `s`, and to `g` on its complement. -/

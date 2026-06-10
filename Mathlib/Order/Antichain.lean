@@ -36,7 +36,7 @@ variable {α β : Type*} {r r₁ r₂ : α → α → Prop} {r' : β → β → 
 protected instance Std.Symm.compl [Std.Symm r] : Std.Symm rᶜ where
   symm a b hr hr' := hr <| symm b a hr'
 
-@[deprecated (since := "2026-04-15")] alias Symmetric.compl := Std.Symm.compl
+@[deprecated (since := "2026-06-10")] alias Symmetric.compl := Std.Symm.compl
 
 /-- An antichain is a set such that no two distinct elements are related. -/
 def IsAntichain (r : α → α → Prop) (s : Set α) : Prop :=
@@ -107,14 +107,14 @@ theorem _root_.isAntichain_insert_of_symm [Std.Symm r] :
     IsAntichain r (insert a s) ↔ IsAntichain r s ∧ ∀ ⦃b⦄, b ∈ s → a ≠ b → ¬r a b :=
   pairwise_insert_of_symm
 
-@[deprecated (since := "2026-04-15")]
+@[deprecated (since := "2026-06-10")]
 alias _root_.isAntichain_insert_of_symmetric := _root_.isAntichain_insert_of_symm
 
 theorem insert_of_symm (hs : IsAntichain r s) [Std.Symm r] (h : ∀ ⦃b⦄, b ∈ s → a ≠ b → ¬r a b) :
     IsAntichain r (insert a s) :=
   isAntichain_insert_of_symm.mpr ⟨hs, h⟩
 
-@[deprecated (since := "2026-04-15")] alias insert_of_symmetric := insert_of_symm
+@[deprecated (since := "2026-06-10")] alias insert_of_symmetric := insert_of_symm
 
 theorem image_relEmbedding (hs : IsAntichain r s) (φ : r ↪r r') : IsAntichain r' (φ '' s) := by
   intro b hb b' hb' h₁ h₂

@@ -220,7 +220,7 @@ relation. -/
 lemma symm_of_symmetricRelation (e : SymmetricRelation p₁ p₂) : Std.Symm (Rel.ofPair p₁ p₂) where
   symm x₁ x₂ := fun ⟨r, hr₁, hr₂⟩ ↦ ⟨e.s r, by simpa, by simpa⟩
 
-@[deprecated (since := "2026-06-06")]
+@[deprecated (since := "2026-06-10")]
 alias symmetric_of_symmetricRelation := symm_of_symmetricRelation
 
 /-- An internal transitive relation in the category of types gives rise to a standard transitive

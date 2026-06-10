@@ -52,7 +52,7 @@ theorem Std.Symm.pairwise_on [LinearOrder ι] [Std.Symm r] (f : ι → α) :
   mp h _m _n hmn := h hmn.ne
   mpr h _m _n hmn := hmn.lt_or_gt.elim (@h _ _) fun h' ↦ symm_of r <| h h'
 
-@[deprecated (since := "2026-04-15")] alias Symmetric.pairwise_on := Std.Symm.pairwise_on
+@[deprecated (since := "2026-06-10")] alias Symmetric.pairwise_on := Std.Symm.pairwise_on
 
 theorem pairwise_disjoint_on [PartialOrder α] [OrderBot α] [LinearOrder ι] (f : ι → α) :
     Pairwise (Disjoint on f) ↔ ∀ ⦃m n⦄, m < n → Disjoint (f m) (f n) :=
@@ -147,7 +147,7 @@ theorem pairwise_union_of_symm [Std.Symm r] :
     (s ∪ t).Pairwise r ↔ s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b :=
   pairwise_union.trans <| by simp only [Std.Symm.iff, and_self_iff]
 
-@[deprecated (since := "2026-04-15")] alias pairwise_union_of_symmetric := pairwise_union_of_symm
+@[deprecated (since := "2026-06-10")] alias pairwise_union_of_symmetric := pairwise_union_of_symm
 
 theorem pairwise_insert :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, a ≠ b → r a b ∧ r b a := by
@@ -170,27 +170,27 @@ theorem pairwise_insert_of_symm [Std.Symm r] :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, a ≠ b → r a b := by
   simp only [pairwise_insert, Std.Symm.iff a, and_self_iff]
 
-@[deprecated (since := "2026-04-15")] alias pairwise_insert_of_symmetric := pairwise_insert_of_symm
+@[deprecated (since := "2026-06-10")] alias pairwise_insert_of_symmetric := pairwise_insert_of_symm
 
 theorem pairwise_insert_of_symm_of_notMem [Std.Symm r] (ha : a ∉ s) :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, r a b := by
   simp only [pairwise_insert_of_notMem ha, Std.Symm.iff a, and_self_iff]
 
-@[deprecated (since := "2026-04-15")]
+@[deprecated (since := "2026-06-10")]
 alias pairwise_insert_of_symmetric_of_notMem := pairwise_insert_of_symm_of_notMem
 
 theorem Pairwise.insert_of_symm [Std.Symm r] (hs : s.Pairwise r)
     (h : ∀ b ∈ s, a ≠ b → r a b) : (insert a s).Pairwise r :=
   pairwise_insert_of_symm.mpr ⟨hs, h⟩
 
-@[deprecated (since := "2026-04-15")] alias Pairwise.insert_of_symmetric := Pairwise.insert_of_symm
+@[deprecated (since := "2026-06-10")] alias Pairwise.insert_of_symmetric := Pairwise.insert_of_symm
 
 theorem pairwise_pair : Set.Pairwise {a, b} r ↔ a ≠ b → r a b ∧ r b a := by simp [pairwise_insert]
 
 theorem pairwise_pair_of_symm [Std.Symm r] : Set.Pairwise {a, b} r ↔ a ≠ b → r a b := by
   simp [pairwise_insert_of_symm]
 
-@[deprecated (since := "2026-04-15")] alias pairwise_pair_of_symmetric := pairwise_pair_of_symm
+@[deprecated (since := "2026-06-10")] alias pairwise_pair_of_symmetric := pairwise_pair_of_symm
 
 theorem pairwise_univ : (univ : Set α).Pairwise r ↔ Pairwise r := by
   simp only [Set.Pairwise, Pairwise, mem_univ, forall_const]

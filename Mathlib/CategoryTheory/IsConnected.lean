@@ -300,7 +300,7 @@ def Zag (j₁ j₂ : J) : Prop :=
 instance zag_symm : Std.Symm (@Zag J _) where
   symm _ _ h := h.symm
 
-@[deprecated (since := "2026-04-15")] alias zag_symmetric := zag_symm
+@[deprecated (since := "2026-06-10")] alias zag_symmetric := zag_symm
 
 @[symm] theorem Zag.symm {j₁ j₂ : J} (h : Zag j₁ j₂) : Zag j₂ j₁ := symm_of _ h
 
@@ -317,7 +317,7 @@ def Zigzag : J → J → Prop :=
 instance zigzag_symm : Std.Symm (@Zigzag J _) :=
   inferInstanceAs <| Std.Symm <| Relation.ReflTransGen Zag
 
-@[deprecated (since := "2026-04-15")] alias zigzag_symmetric := zigzag_symm
+@[deprecated (since := "2026-06-10")] alias zigzag_symmetric := zigzag_symm
 
 theorem zigzag_equivalence : _root_.Equivalence (@Zigzag J _) where
   refl := refl_of <| Relation.ReflTransGen _
