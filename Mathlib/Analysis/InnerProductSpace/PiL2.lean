@@ -594,6 +594,9 @@ protected theorem toBasis_map {G : Type*} [NormedAddCommGroup G] [InnerProductSp
     (b.map L).toBasis = b.toBasis.map L.toLinearEquiv :=
   rfl
 
+lemma coe_map {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+    (b : OrthonormalBasis ι 𝕜 E) (f : E ≃ₗᵢ[𝕜] G) : ⇑(b.map f) = f ∘ b := rfl
+
 /-- A basis that is orthonormal is an orthonormal basis. -/
 def _root_.Module.Basis.toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
     OrthonormalBasis ι 𝕜 E :=
@@ -969,6 +972,12 @@ theorem OrthonormalBasis.det_to_matrix_orthonormalBasis : ‖a.toBasis.det b‖ 
   rw [star_def, RCLike.mul_conj] at this
   norm_cast at this
   rwa [pow_eq_one_iff_of_nonneg (norm_nonneg _) two_ne_zero] at this
+
+theorem LinearIsometryEquiv.toMatrix_mem_unitaryGroup {G : Type*} [NormedAddCommGroup G]
+    [InnerProductSpace 𝕜 G] (f : E ≃ₗᵢ[𝕜] G) (b : OrthonormalBasis ι 𝕜 E)
+    (b' : OrthonormalBasis ι 𝕜 G) : f.toMatrix b.toBasis b'.toBasis ∈ Matrix.unitaryGroup ι 𝕜 := by
+  convert b'.toMatrix_orthonormalBasis_mem_unitary (b.map f)
+  simp [LinearMap.toMatrix_eq_basisToMatrix, OrthonormalBasis.coe_map]
 
 end
 
