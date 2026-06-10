@@ -116,7 +116,7 @@ theorem reachable_fromEdgeSet_eq_reflTransGen_toRel {s : Set (Sym2 V)} :
   ext
   simpa [Relation.reflGen_iff] using by tauto
 
-theorem reachable_fromEdgeSet_fromRel_eq_reflTransGen {r : V → V → Prop} (sym : Symmetric r) :
+theorem reachable_fromEdgeSet_fromRel_eq_reflTransGen {r : V → V → Prop} (sym : Std.Symm r) :
     (fromEdgeSet <| Sym2.fromRel sym).Reachable = Relation.ReflTransGen r :=
   reachable_fromEdgeSet_eq_reflTransGen_toRel
 
@@ -551,7 +551,7 @@ theorem supp_inj {C D : G.ConnectedComponent} : C.supp = D.supp ↔ C = D :=
 
 instance : SetLike G.ConnectedComponent V where
   coe := ConnectedComponent.supp
-  coe_injective' := ConnectedComponent.supp_injective
+  coe_injective := ConnectedComponent.supp_injective
 
 @[simp]
 theorem mem_supp_iff (C : G.ConnectedComponent) (v : V) :
