@@ -203,20 +203,6 @@ theorem perm_option_toList {o₁ o₂ : Option α} : o₁.toList ~ o₂.toList �
   · cases p.length_eq
   · exact Option.mem_toList.1 (p.symm.subset <| by simp)
 
-/-- The pair `[a, b]` is a permutation of a list if and only if that list is equal to `[a, b]` or
-to `[b, a]`. -/
-theorem pair_perm {a b : α} : [a, b] ~ l ↔ l = [a, b] ∨ l = [b, a] := by
-  generalize hl' : [a, b] = l'
-  constructor
-  · intro h
-    induction h generalizing a b <;> grind [singleton_perm]
-  · rintro (rfl | rfl) <;> grind [Perm]
-
-/-- A list is a permutation of the pair `[a, b]` if and only if it is equal to `[a, b]` or to
-`[b, a]`. -/
-theorem perm_pair {a b : α} : l ~ [a, b] ↔ l = [a, b] ∨ l = [b, a] :=
-  perm_comm.trans pair_perm
-
 theorem perm_replicate_append_replicate
     [DecidableEq α] {l : List α} {a b : α} {m n : ℕ} (h : a ≠ b) :
     l ~ replicate m a ++ replicate n b ↔ count a l = m ∧ count b l = n ∧ l ⊆ [a, b] := by
