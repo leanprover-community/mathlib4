@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Order.Module.Defs
 # Further lemmas about monotonicity of scalar multiplication
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 R M : Type*}
 

@@ -48,7 +48,7 @@ separate variables constrained by certain relations.
 * <https://ysharifi.wordpress.com/2011/09/30/the-jacobson-noether-theorem/>
 -/
 
-@[expose] public section
+public section
 
 namespace JacobsonNoether
 
@@ -82,6 +82,8 @@ lemma exists_pow_mem_center_of_inseparable' (p : ℕ) [ExpChar D p] {a : D}
     rw [pow_zero, pow_one] at hn
     exact ha hn
   exact ⟨n, ⟨Nat.one_le_iff_ne_zero.mpr nzero, hn⟩⟩
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- If `D` is a purely inseparable extension of `k` of characteristic `p`,
   then for every element `a` of `D \ k`, there exists a natural number `m`
@@ -122,15 +124,15 @@ theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
     change a * ha.choose - ha.choose * a ≠ 0
     simpa only [ne_eq, sub_eq_zero] using Ne.symm ha.choose_spec
   -- We find a maximum natural number `n` such that `(a * x - x * a) ^ n b ≠ 0`.
-  obtain ⟨n, hn, hb⟩ : ∃ n, 0 < n ∧ (ad k D a)^[n] b ≠ 0 ∧ (ad k D a)^[n+1] b = 0 := by
+  obtain ⟨n, hn, hb⟩ : ∃ n, 0 < n ∧ (ad k D a)^[n] b ≠ 0 ∧ (ad k D a)^[n + 1] b = 0 := by
     obtain ⟨m, -, hm2⟩ := exist_pow_eq_zero_of_le p ha insep
-    have h_exist : ∃ n, 0 < n ∧ (ad k D a)^[n+1] b = 0 := ⟨p ^ m,
+    have h_exist : ∃ n, 0 < n ∧ (ad k D a)^[n + 1] b = 0 := ⟨p ^ m,
       ⟨expChar_pow_pos D p m, by rw [hm2 (p ^ m + 1) (Nat.le_add_right _ _), Pi.zero_apply]⟩⟩
     classical
     refine ⟨Nat.find h_exist, ⟨(Nat.find_spec h_exist).1, ?_, (Nat.find_spec h_exist).2⟩⟩
     set t := (Nat.find h_exist - 1 : ℕ) with ht
     by_cases! h_pos : 0 < t
-    · convert (ne_eq _ _) ▸ not_and.mp (Nat.find_min h_exist (m := t) (by lia)) h_pos
+    · convert! (ne_eq _ _) ▸ not_and.mp (Nat.find_min h_exist (m := t) (by lia)) h_pos
       lia
     · suffices h_find : Nat.find h_exist = 1 by
         rwa [h_find]

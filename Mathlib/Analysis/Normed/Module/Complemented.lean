@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Topology.Algebra.Module.Complement
 
 /-!
 # Complemented subspaces of normed vector spaces
@@ -34,43 +35,30 @@ open LinearMap (ker range)
 
 namespace ContinuousLinearMap
 
-section
-
-variable [CompleteSpace 𝕜]
-
-theorem ker_closedComplemented_of_finiteDimensional_range (f : E →L[𝕜] F)
-    [FiniteDimensional 𝕜 (range f)] : (ker f).ClosedComplemented := by
-  set f' : E →L[𝕜] range f := f.codRestrict _ (LinearMap.mem_range_self (f : E →ₗ[𝕜] F))
-  rcases f'.exists_right_inverse_of_surjective (f : E →ₗ[𝕜] F).range_rangeRestrict with ⟨g, hg⟩
-  simpa only [f', ker_codRestrict]
-    using f'.closedComplemented_ker_of_rightInverse g (ContinuousLinearMap.ext_iff.1 hg)
-
-end
-
 variable [CompleteSpace E] [CompleteSpace (F × G)]
 
 /-- If `f : E →L[R] F` and `g : E →L[R] G` are two surjective linear maps and
 their kernels are complement of each other, then `x ↦ (f x, g x)` defines
 a linear equivalence `E ≃L[R] F × G`. -/
-nonrec def equivProdOfSurjectiveOfIsCompl (f : E →L[𝕜] F) (g : E →L[𝕜] G) (hf : range f = ⊤)
-    (hg : range g = ⊤) (hfg : IsCompl (ker f) (ker g)) : E ≃L[𝕜] F × G :=
+nonrec def equivProdOfSurjectiveOfIsCompl (f : E →L[𝕜] F) (g : E →L[𝕜] G) (hf : f.range = ⊤)
+    (hg : g.range = ⊤) (hfg : IsCompl f.ker g.ker) : E ≃L[𝕜] F × G :=
   (f.equivProdOfSurjectiveOfIsCompl (g : E →ₗ[𝕜] G) hf hg hfg).toContinuousLinearEquivOfContinuous
     (f.continuous.prodMk g.continuous)
 
 @[simp]
-theorem coe_equivProdOfSurjectiveOfIsCompl {f : E →L[𝕜] F} {g : E →L[𝕜] G} (hf : range f = ⊤)
-    (hg : range g = ⊤) (hfg : IsCompl (ker f) (ker g)) :
+theorem coe_equivProdOfSurjectiveOfIsCompl {f : E →L[𝕜] F} {g : E →L[𝕜] G} (hf : f.range = ⊤)
+    (hg : g.range = ⊤) (hfg : IsCompl f.ker g.ker) :
     (equivProdOfSurjectiveOfIsCompl f g hf hg hfg : E →ₗ[𝕜] F × G) = f.prod g := rfl
 
 @[simp]
 theorem equivProdOfSurjectiveOfIsCompl_toLinearEquiv {f : E →L[𝕜] F} {g : E →L[𝕜] G}
-    (hf : range f = ⊤) (hg : range g = ⊤) (hfg : IsCompl (ker f) (ker g)) :
+    (hf : f.range = ⊤) (hg : g.range = ⊤) (hfg : IsCompl f.ker g.ker) :
     (equivProdOfSurjectiveOfIsCompl f g hf hg hfg).toLinearEquiv =
       LinearMap.equivProdOfSurjectiveOfIsCompl f g hf hg hfg := rfl
 
 @[simp]
-theorem equivProdOfSurjectiveOfIsCompl_apply {f : E →L[𝕜] F} {g : E →L[𝕜] G} (hf : range f = ⊤)
-    (hg : range g = ⊤) (hfg : IsCompl (ker f) (ker g)) (x : E) :
+theorem equivProdOfSurjectiveOfIsCompl_apply {f : E →L[𝕜] F} {g : E →L[𝕜] G} (hf : f.range = ⊤)
+    (hg : g.range = ⊤) (hfg : IsCompl f.ker g.ker) (x : E) :
     equivProdOfSurjectiveOfIsCompl f g hf hg hfg x = (f x, g x) := rfl
 
 end ContinuousLinearMap
@@ -107,16 +95,16 @@ theorem coe_prodEquivOfClosedCompl_symm (h : IsCompl p q) (hp : IsClosed (p : Se
 @[simp]
 theorem coe_continuous_linearProjOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
-    (p.linearProjOfClosedCompl q h hp hq : E →ₗ[𝕜] p) = p.linearProjOfIsCompl q h := rfl
+    (p.linearProjOfClosedCompl q h hp hq : E →ₗ[𝕜] p) = p.projectionOnto q h := rfl
 
 @[simp]
 theorem coe_continuous_linearProjOfClosedCompl' (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
-    ⇑(p.linearProjOfClosedCompl q h hp hq) = p.linearProjOfIsCompl q h := rfl
+    ⇑(p.linearProjOfClosedCompl q h hp hq) = p.projectionOnto q h := rfl
 
 theorem ClosedComplemented.of_isCompl_isClosed (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) : p.ClosedComplemented :=
-  ⟨p.linearProjOfClosedCompl q h hp hq, Submodule.linearProjOfIsCompl_apply_left h⟩
+  ⟨p.linearProjOfClosedCompl q h hp hq, Submodule.projectionOnto_apply_left h⟩
 
 alias IsCompl.closedComplemented_of_isClosed := ClosedComplemented.of_isCompl_isClosed
 
@@ -125,11 +113,5 @@ theorem closedComplemented_iff_isClosed_exists_isClosed_isCompl :
       IsClosed (p : Set E) ∧ ∃ q : Submodule 𝕜 E, IsClosed (q : Set E) ∧ IsCompl p q :=
   ⟨fun h => ⟨h.isClosed, h.exists_isClosed_isCompl⟩,
     fun ⟨hp, ⟨_, hq, hpq⟩⟩ => .of_isCompl_isClosed hpq hp hq⟩
-
-theorem ClosedComplemented.of_quotient_finiteDimensional [CompleteSpace 𝕜]
-    [FiniteDimensional 𝕜 (E ⧸ p)] (hp : IsClosed (p : Set E)) : p.ClosedComplemented := by
-  obtain ⟨q, hq⟩ : ∃ q, IsCompl p q := p.exists_isCompl
-  haveI : FiniteDimensional 𝕜 q := (p.quotientEquivOfIsCompl q hq).finiteDimensional
-  exact .of_isCompl_isClosed hq hp q.closed_of_finiteDimensional
 
 end Submodule

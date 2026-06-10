@@ -54,7 +54,7 @@ variable [Semiring R] [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid M₃] 
 /-- `pi` construction for linear functions. From a family of linear functions it produces a linear
 function into a family of modules. -/
 def pi (f : (i : ι) → M₂ →ₗ[R] φ i) : M₂ →ₗ[R] (i : ι) → φ i :=
-  { Pi.addHom fun i => (f i).toAddHom with
+  { AddHom.pi fun i => (f i).toAddHom with
     toFun := fun c i => f i c
     map_smul' := fun _ _ => funext fun i => (f i).map_smul _ _ }
 
@@ -123,6 +123,21 @@ instance CompatibleSMul.pi (R S M N ι : Type*) [Semiring S]
     [AddCommMonoid M] [AddCommMonoid N] [SMul R M] [SMul R N] [Module S M] [Module S N]
     [LinearMap.CompatibleSMul M N R S] : LinearMap.CompatibleSMul M (ι → N) R S where
   map_smul f r m := by ext i; apply ((LinearMap.proj i).comp f).map_smul_of_tower
+
+/-- Construct a linear map between two (dependent) function spaces
+by applying index-dependent linear maps to the coordinates.
+A bundled version of `Pi.map`.
+
+If the index type is finite, then this map can be seen as a “block diagonal” map
+between indexed products of modules. -/
+def piMap {ψ : ι → Type*} [∀ i, AddCommMonoid (ψ i)] [∀ i, Module R (ψ i)]
+    (f : ∀ i, φ i →ₗ[R] ψ i) : (∀ i, φ i) →ₗ[R] (∀ i, ψ i) :=
+  .pi fun i ↦ f i ∘ₗ proj i
+
+@[simp]
+theorem coe_piMap {ψ : ι → Type*} [∀ i, AddCommMonoid (ψ i)] [∀ i, Module R (ψ i)]
+    (f : ∀ i, φ i →ₗ[R] ψ i) : ⇑(piMap f) = Pi.map fun i ↦ f i :=
+  rfl
 
 /-- Linear map between the function spaces `I → M₂` and `I → M₃`, induced by a linear map `f`
 between `M₂` and `M₃`. -/
@@ -201,7 +216,7 @@ theorem iSup_range_single_eq_iInf_ker_proj {I J : Set ι} (hd : Disjoint I J)
 
 theorem iSup_range_single [Finite ι] : ⨆ i, range (single R φ i) = ⊤ := by
   cases nonempty_fintype ι
-  convert top_unique (iInf_emptyset.ge.trans <| iInf_ker_proj_le_iSup_range_single R φ _)
+  convert! top_unique (iInf_emptyset.ge.trans <| iInf_ker_proj_le_iSup_range_single R φ _)
   · rename_i i
     exact ((@iSup_pos _ _ _ fun _ => range <| single R φ i) <| Finset.mem_univ i).symm
   · rw [Finset.coe_univ, Set.union_empty]
@@ -271,7 +286,7 @@ note [partially-applied ext lemmas]. -/
 @[ext]
 theorem pi_ext' (h : ∀ i, f.comp (single R φ i) = g.comp (single R φ i)) : f = g := by
   refine pi_ext fun i x => ?_
-  convert LinearMap.congr_fun (h i) x
+  convert! LinearMap.congr_fun (h i) x
 
 end Ext
 
@@ -326,7 +341,7 @@ variable (R φ)
 
 theorem single_eq_pi_diag (i : ι) : single R φ i = pi (diag i) := by
   ext x j
-  convert (update_apply 0 x i j _).symm
+  convert! (update_apply 0 x i j _).symm
   rfl
 
 theorem ker_single (i : ι) : ker (single R φ i) = ⊥ :=
@@ -354,8 +369,8 @@ variable [Semiring R] {φ : ι → Type*} [(i : ι) → AddCommMonoid (φ i)] [(
 open LinearMap
 
 /-- A version of `Set.pi` for submodules. Given an index set `I` and a family of submodules
-`p : (i : ι) → Submodule R (φ i)`, `pi I s` is the submodule of dependent functions
-`f : (i : ι) → φ i` such that `f i` belongs to `p a` whenever `i ∈ I`. -/
+`p : (i : ι) → Submodule R (φ i)`, `pi I p` is the submodule of dependent functions
+`f : (i : ι) → φ i` such that `f i` belongs to `p i` whenever `i ∈ I`. -/
 @[simps]
 def pi (I : Set ι) (p : (i : ι) → Submodule R (φ i)) : Submodule R ((i : ι) → φ i) where
   carrier := Set.pi I fun i => p i
@@ -578,10 +593,9 @@ theorem sumArrowLequivProdArrow_symm_apply_inr {α β} (f : α → M) (g : β �
 /-- If `ι` has a unique element, then `ι → M` is linearly equivalent to `M`. -/
 @[simps +simpRhs -fullyApplied symm_apply]
 def funUnique (ι R M : Type*) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M] :
-    (ι → M) ≃ₗ[R] M :=
-  { Equiv.funUnique ι M with
-    map_add' := fun _ _ => rfl
-    map_smul' := fun _ _ => rfl }
+    (ι → M) ≃ₗ[R] M where
+  toAddEquiv := .funUnique ι M
+  map_smul' _ _ := rfl
 
 @[simp]
 theorem funUnique_apply (ι R M : Type*) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M] :
@@ -629,7 +643,7 @@ lemma Pi.mem_span_range_single_inl_iff
 
 section Extend
 
-variable (R) {η : Type x} [Semiring R] (s : ι → η)
+variable (R) {η : Type*} [Semiring R] (s : ι → η)
 
 /-- `Function.extend s f 0` as a bundled linear map. -/
 @[simps]

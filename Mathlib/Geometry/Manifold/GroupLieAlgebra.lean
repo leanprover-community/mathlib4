@@ -60,14 +60,16 @@ is given by the image of `v` under left-multiplication by `g`. -/
 @[to_additive /-- The invariant vector field associated to a vector `v` in the Lie algebra. At a
 point `g`, it is given by the image of `v` under left-addition by `g`. -/]
 noncomputable def mulInvariantVectorField (v : GroupLieAlgebra I G) (g : G) : TangentSpace I g :=
-  mfderiv I I (g * ·) (1 : G) v
+  mfderiv% (g * ·) (1 : G) v
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma mulInvariantVectorField_add (v w : GroupLieAlgebra I G) :
     mulInvariantVectorField (v + w) = mulInvariantVectorField v + mulInvariantVectorField w := by
   ext g
   simp [mulInvariantVectorField]
 
+set_option backward.isDefEq.respectTransparency false in
 /- `to_additive` fails on the next lemma, as it tries to additivize `smul` while it shouldn't.
 Therefore, we state and prove by hand the additive version. -/
 lemma addInvariantVectorField_smul {G : Type*} [TopologicalSpace G] [ChartedSpace H G] [AddGroup G]
@@ -76,6 +78,7 @@ lemma addInvariantVectorField_smul {G : Type*} [TopologicalSpace G] [ChartedSpac
   ext g
   simp [addInvariantVectorField]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mulInvariantVectorField_smul (c : 𝕜) (v : GroupLieAlgebra I G) :
     mulInvariantVectorField (c • v) = c • mulInvariantVectorField v := by
   ext g
@@ -98,15 +101,15 @@ variable [LieGroup I (minSmoothness 𝕜 3) G]
 
 @[to_additive (attr := simp)]
 lemma inverse_mfderiv_mul_left {g h : G} :
-    (mfderiv I I (fun b ↦ g * b) h).inverse = mfderiv I I (fun b ↦ g⁻¹ * b) (g * h) := by
-  have M : 1 ≤ minSmoothness 𝕜 3 := le_trans (by simp) le_minSmoothness
-  have A : mfderiv I I ((fun x ↦ g⁻¹ * x) ∘ (fun x ↦ g * x)) h =
+    (mfderiv% (fun b ↦ g * b) h).inverse = mfderiv% (fun b ↦ g⁻¹ * b) (g * h) := by
+  have M : minSmoothness 𝕜 3 ≠ 0 := lt_of_lt_of_le (by simp) le_minSmoothness |>.ne'
+  have A : mfderiv% ((fun x ↦ g⁻¹ * x) ∘ (fun x ↦ g * x)) h =
       ContinuousLinearMap.id _ _ := by
     have : (fun x ↦ g⁻¹ * x) ∘ (fun x ↦ g * x) = id := by ext x; simp
     rw [this, id_eq, mfderiv_id]
   rw [mfderiv_comp (I' := I) _ (contMDiff_mul_left.contMDiffAt.mdifferentiableAt M)
     (contMDiff_mul_left.contMDiffAt.mdifferentiableAt M)] at A
-  have A' : mfderiv I I ((fun x ↦ g * x) ∘ (fun x ↦ g⁻¹ * x)) (g * h) =
+  have A' : mfderiv% ((fun x ↦ g * x) ∘ (fun x ↦ g⁻¹ * x)) (g * h) =
       ContinuousLinearMap.id _ _ := by
     have : (fun x ↦ g * x) ∘ (fun x ↦ g⁻¹ * x) = id := by ext x; simp
     rw [this, id_eq, mfderiv_id]
@@ -118,7 +121,7 @@ lemma inverse_mfderiv_mul_left {g h : G} :
 @[to_additive /-- Invariant vector fields are invariant under pullbacks. -/]
 lemma mpullback_mulInvariantVectorField (g : G) (v : GroupLieAlgebra I G) :
     mpullback I I (g * ·) (mulInvariantVectorField v) = mulInvariantVectorField v := by
-  have M : 1 ≤ minSmoothness 𝕜 3 := le_trans (by simp) le_minSmoothness
+  have M : minSmoothness 𝕜 3 ≠ 0 := lt_of_lt_of_le (by simp) le_minSmoothness |>.ne'
   ext h
   simp only [mpullback, inverse_mfderiv_mul_left, mulInvariantVectorField]
   have D : (fun x ↦ h * x) = (fun b ↦ g⁻¹ * b) ∘ (fun x ↦ g * h * x) := by
@@ -129,6 +132,7 @@ lemma mpullback_mulInvariantVectorField (g : G) (v : GroupLieAlgebra I G) :
   · exact contMDiff_mul_left.contMDiffAt.mdifferentiableAt M
   · exact contMDiff_mul_left.contMDiffAt.mdifferentiableAt M
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma mulInvariantVectorField_eq_mpullback (g : G) (V : Π (g : G), TangentSpace I g) :
     mulInvariantVectorField (V 1) g = mpullback I I (g⁻¹ * ·) V g := by
@@ -137,9 +141,10 @@ lemma mulInvariantVectorField_eq_mpullback (g : G) (V : Π (g : G), TangentSpace
   congr
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_additive]
 theorem contMDiff_mulInvariantVectorField (v : GroupLieAlgebra I G) :
-    ContMDiff I I.tangent (minSmoothness 𝕜 2)
+    CMDiff (minSmoothness 𝕜 2)
       (fun (g : G) ↦ (mulInvariantVectorField v g : TangentBundle I G)) := by
   /- We will write the desired map as a composition of obviously smooth maps.
   The derivative of the product `P : (g, h) ↦ g * h` is given by
@@ -152,52 +157,49 @@ theorem contMDiff_mulInvariantVectorField (v : GroupLieAlgebra I G) :
   There is a small abuse of notation in the above argument, where we have identified `T (M × M)`
   and `TM × TM`. In the formal proof, we need to introduce this identification, called `F₂` below,
   which is also already known to be smooth. -/
-  have M : 1 ≤ minSmoothness 𝕜 3 := le_trans (by simp) le_minSmoothness
+  have M : minSmoothness 𝕜 3 ≠ 0 := lt_of_lt_of_le (by simp) le_minSmoothness |>.ne'
   have A : minSmoothness 𝕜 2 + 1 = minSmoothness 𝕜 3 := by
     rw [← minSmoothness_add]
     norm_num
   let fg : G → TangentBundle I G := fun g ↦ TotalSpace.mk' E g 0
-  have sfg : ContMDiff I I.tangent (minSmoothness 𝕜 2) fg := contMDiff_zeroSection _ _
+  have sfg : CMDiff (minSmoothness 𝕜 2) fg := contMDiff_zeroSection _ _
   let fv : G → TangentBundle I G := fun _ ↦ TotalSpace.mk' E 1 v
-  have sfv : ContMDiff I I.tangent (minSmoothness 𝕜 2) fv := contMDiff_const
+  have sfv : CMDiff (minSmoothness 𝕜 2) fv := contMDiff_const
   let F₁ : G → (TangentBundle I G × TangentBundle I G) := fun g ↦ (fg g, fv g)
-  have S₁ : ContMDiff I (I.tangent.prod I.tangent) (minSmoothness 𝕜 2) F₁ :=
-    ContMDiff.prodMk sfg sfv
+  have S₁ : CMDiff (minSmoothness 𝕜 2) F₁ := sfg.prodMk sfv
   let F₂ : (TangentBundle I G × TangentBundle I G) → TangentBundle (I.prod I) (G × G) :=
     (equivTangentBundleProd I G I G).symm
-  have S₂ : ContMDiff (I.tangent.prod I.tangent) (I.prod I).tangent (minSmoothness 𝕜 2) F₂ :=
-    contMDiff_equivTangentBundleProd_symm
+  have S₂ : CMDiff (minSmoothness 𝕜 2) F₂ := contMDiff_equivTangentBundleProd_symm
   let F₃ : TangentBundle (I.prod I) (G × G) → TangentBundle I G :=
     tangentMap (I.prod I) I (fun (p : G × G) ↦ p.1 * p.2)
-  have S₃ : ContMDiff (I.prod I).tangent I.tangent (minSmoothness 𝕜 2) F₃ := by
+  have S₃ : CMDiff (minSmoothness 𝕜 2) F₃ := by
     apply ContMDiff.contMDiff_tangentMap _ (m := minSmoothness 𝕜 2) le_rfl
     rw [A]
     exact contMDiff_mul I (minSmoothness 𝕜 3)
   let S := (S₃.comp S₂).comp S₁
-  convert S with g
+  convert! S with g
   · simp [F₁, F₂, F₃, fg, fv]
   · simp only [comp_apply, tangentMap, F₃, F₂, F₁, fg, fv]
     rw [mfderiv_prod_eq_add_apply ((contMDiff_mul I (minSmoothness 𝕜 3)).mdifferentiableAt M)]
-    simp [mulInvariantVectorField]
+    simp +instances [mulInvariantVectorField]
 
 @[to_additive]
 theorem contMDiffAt_mulInvariantVectorField (v : GroupLieAlgebra I G) {g : G} :
-    ContMDiffAt I I.tangent (minSmoothness 𝕜 2)
+    CMDiffAt (minSmoothness 𝕜 2)
       (fun (g : G) ↦ (mulInvariantVectorField v g : TangentBundle I G)) g :=
   (contMDiff_mulInvariantVectorField v).contMDiffAt
 
 @[to_additive]
 theorem mdifferentiable_mulInvariantVectorField (v : GroupLieAlgebra I G) :
-    MDifferentiable I I.tangent
-      (fun (g : G) ↦ (mulInvariantVectorField v g : TangentBundle I G)) :=
-  (contMDiff_mulInvariantVectorField v).mdifferentiable (le_trans (by simp) le_minSmoothness)
+    MDiff (fun (g : G) ↦ (mulInvariantVectorField v g : TangentBundle I G)) :=
+  (contMDiff_mulInvariantVectorField v).mdifferentiable
+    (lt_of_lt_of_le (by simp) le_minSmoothness).ne'
 
 @[to_additive]
 theorem mdifferentiableAt_mulInvariantVectorField (v : GroupLieAlgebra I G) {g : G} :
-    MDifferentiableAt I I.tangent
-      (fun (g : G) ↦ (mulInvariantVectorField v g : TangentBundle I G)) g :=
+    MDiffAt (fun (g : G) ↦ (mulInvariantVectorField v g : TangentBundle I G)) g :=
   (contMDiffAt_mulInvariantVectorField v).mdifferentiableAt
-    (le_trans (by simp) le_minSmoothness)
+    (lt_of_lt_of_le (by simp) le_minSmoothness).ne'
 
 open VectorField
 

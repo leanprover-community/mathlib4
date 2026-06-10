@@ -18,7 +18,7 @@ parallel morphisms out of `X` factor through the parallel pair `f`, `g`
 (`h₂ : ∀ ⦃Z : C⦄ (i j : X ⟶ Z), ∃ (a : Y ⟶ Z), i = f ≫ a ∧ j = g ≫ a`).
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Limits
 

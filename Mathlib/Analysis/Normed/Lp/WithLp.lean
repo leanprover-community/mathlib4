@@ -177,76 +177,13 @@ end AddCommGroup
 
 @[to_additive]
 instance instIsScalarTower [SMul K K'] [SMul K V] [SMul K' V] [IsScalarTower K K' V] :
-    IsScalarTower K K' (WithLp p V) where
-  smul_assoc x y z := by
-    change toLp p ((x • y) • (ofLp z)) = toLp p (x • y • ofLp z)
-    simp
+    IsScalarTower K K' (WithLp p V) :=
+  (WithLp.equiv p V).isScalarTower K K'
 
 @[to_additive]
 instance instSMulCommClass [SMul K V] [SMul K' V] [SMulCommClass K K' V] :
-    SMulCommClass K K' (WithLp p V) where
-  smul_comm x y z := by
-    change toLp p (x • y • ofLp z) = toLp p (y • x • ofLp z)
-    rw [smul_comm]
-
-section equiv
-
-@[deprecated ofLp_zero (since := "2025-06-08")]
-theorem equiv_zero [AddCommGroup V] : WithLp.equiv p V 0 = 0 :=
-  rfl
-
-@[deprecated toLp_zero (since := "2025-06-08")]
-theorem equiv_symm_zero [AddCommGroup V] : (WithLp.equiv p V).symm 0 = 0 :=
-  rfl
-
-@[deprecated toLp_eq_zero (since := "2025-06-08")]
-theorem equiv_symm_eq_zero_iff [AddCommGroup V] {x : V} :
-    (WithLp.equiv p V).symm x = 0 ↔ x = 0 := toLp_eq_zero p
-
-@[deprecated ofLp_eq_zero (since := "2025-06-08")]
-theorem equiv_eq_zero_iff [AddCommGroup V] {x : WithLp p V} :
-    WithLp.equiv p V x = 0 ↔ x = 0 := ofLp_eq_zero p
-
-@[deprecated ofLp_add (since := "2025-06-08")]
-theorem equiv_add [AddCommGroup V] (x y : WithLp p V) :
-    WithLp.equiv p V (x + y) = WithLp.equiv p V x + WithLp.equiv p V y :=
-  rfl
-
-@[deprecated toLp_add (since := "2025-06-08")]
-theorem equiv_symm_add [AddCommGroup V] (x' y' : V) :
-    (WithLp.equiv p V).symm (x' + y') = (WithLp.equiv p V).symm x' + (WithLp.equiv p V).symm y' :=
-  rfl
-
-@[deprecated ofLp_sub (since := "2025-06-08")]
-theorem equiv_sub [AddCommGroup V] (x y : WithLp p V) :
-    WithLp.equiv p V (x - y) = WithLp.equiv p V x - WithLp.equiv p V y :=
-  rfl
-
-@[deprecated toLp_sub (since := "2025-06-08")]
-theorem equiv_symm_sub [AddCommGroup V] (x' y' : V) :
-    (WithLp.equiv p V).symm (x' - y') = (WithLp.equiv p V).symm x' - (WithLp.equiv p V).symm y' :=
-  rfl
-
-@[deprecated ofLp_neg (since := "2025-06-08")]
-theorem equiv_neg [AddCommGroup V] (x : WithLp p V) : WithLp.equiv p V (-x) = -WithLp.equiv p V x :=
-  rfl
-
-@[deprecated toLp_neg (since := "2025-06-08")]
-theorem equiv_symm_neg [AddCommGroup V] (x' : V) :
-    (WithLp.equiv p V).symm (-x') = -(WithLp.equiv p V).symm x' :=
-  rfl
-
-@[deprecated ofLp_smul (since := "2025-06-08")]
-theorem equiv_smul [SMul K V] (c : K) (x : WithLp p V) :
-    WithLp.equiv p V (c • x) = c • WithLp.equiv p V x :=
-  rfl
-
-@[deprecated toLp_smul (since := "2025-06-08")]
-theorem equiv_symm_smul [SMul K V] (c : K) (x' : V) :
-    (WithLp.equiv p V).symm (c • x') = c • (WithLp.equiv p V).symm x' :=
-  rfl
-
-end equiv
+    SMulCommClass K K' (WithLp p V) :=
+  (WithLp.equiv p V).smulCommClass K K'
 
 variable (K V)
 

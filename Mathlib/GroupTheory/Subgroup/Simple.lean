@@ -23,7 +23,7 @@ subgroup, subgroups
 
 -/
 
-@[expose] public section
+public section
 
 
 variable {G : Type*} [Group G]
@@ -34,7 +34,7 @@ section
 variable (G) (A)
 
 /-- A `Group` is simple when it has exactly two normal `Subgroup`s. -/
-@[mk_iff]
+@[mk_iff, wikidata Q571124]
 class IsSimpleGroup : Prop extends Nontrivial G where
   /-- Any normal subgroup is either `⊥` or `⊤` -/
   eq_bot_or_eq_top_of_normal : ∀ H : Subgroup G, H.Normal → H = ⊥ ∨ H = ⊤
@@ -64,7 +64,7 @@ namespace IsSimpleGroup
 
 @[to_additive]
 instance {C : Type*} [CommGroup C] [IsSimpleGroup C] : IsSimpleOrder (Subgroup C) :=
-  ⟨fun H => H.normal_of_comm.eq_bot_or_eq_top⟩
+  ⟨fun H => H.normal_of_isMulCommutative.eq_bot_or_eq_top⟩
 
 open Subgroup
 

@@ -73,7 +73,7 @@ theorem range_toContinuousMultilinearMap :
 
 instance funLike : FunLike (M [⋀^ι]→L[R] N) (ι → M) N where
   coe f := f.toFun
-  coe_injective' _ _ h := toContinuousMultilinearMap_injective <| DFunLike.ext' h
+  coe_injective _ _ h := toContinuousMultilinearMap_injective <| DFunLike.ext' h
 
 instance continuousMapClass : ContinuousMapClass (M [⋀^ι]→L[R] N) (ι → M) N where
   map_continuous f := f.cont
@@ -101,7 +101,7 @@ theorem ext {f g : M [⋀^ι]→L[R] N} (H : ∀ x, f x = g x) : f = g :=
 
 theorem toAlternatingMap_injective :
     Injective (toAlternatingMap : (M [⋀^ι]→L[R] N) → (M [⋀^ι]→ₗ[R] N)) := fun f g h =>
-  DFunLike.ext' <| by convert DFunLike.ext'_iff.1 h
+  DFunLike.ext' <| by convert! DFunLike.ext'_iff.1 h
 
 @[simp]
 theorem range_toAlternatingMap :
@@ -465,6 +465,12 @@ variable {R M N ι : Type*} [Ring R] [AddCommGroup M] [Module R M] [TopologicalS
 theorem map_update_sub [DecidableEq ι] (m : ι → M) (i : ι) (x y : M) :
     f (update m i (x - y)) = f (update m i x) - f (update m i y) :=
   f.toMultilinearMap.map_update_sub _ _ _ _
+
+@[simp]
+theorem map_vecCons_sub {n} (f : M [⋀^Fin (n + 1)]→L[R] N) (x y : M) (v : Fin n → M) :
+    f (Matrix.vecCons (x - y) v) = f (Matrix.vecCons x v) - f (Matrix.vecCons y v) := by
+  rw [vecCons, ← Fin.update_cons_zero 0, map_update_sub]
+  simp [vecCons]
 
 section IsTopologicalAddGroup
 

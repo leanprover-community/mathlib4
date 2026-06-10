@@ -17,7 +17,7 @@ We prove basic properties of the maximal ideal of a local ring.
 
 -/
 
-@[expose] public section
+public section
 
 namespace IsLocalRing
 
@@ -82,8 +82,6 @@ iff it is a unit.
 -/
 theorem notMem_maximalIdeal {x : R} : x ∉ maximalIdeal R ↔ IsUnit x := by
   simp only [mem_maximalIdeal, mem_nonunits_iff, not_not]
-
-@[deprecated (since := "2025-05-23")] alias not_mem_maximalIdeal := notMem_maximalIdeal
 
 theorem isField_iff_maximalIdeal_eq : IsField R ↔ maximalIdeal R = ⊥ :=
   not_iff_not.mp

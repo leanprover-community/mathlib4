@@ -21,7 +21,7 @@ We do not make `IsFiniteLength` a class, instead we use `[IsNoetherian R M] [IsA
 Finite length, Composition series
 -/
 
-@[expose] public section
+public section
 
 variable (R : Type*) [Ring R]
 
@@ -120,7 +120,7 @@ lemma IsFiniteLength.of_surjective (H : IsFiniteLength R M) (hf : Function.Surje
     IsFiniteLength R N := by
   rw [isFiniteLength_iff_isNoetherian_isArtinian] at H ⊢
   cases H
-  exact ⟨isNoetherian_of_surjective _ f (LinearMap.range_eq_top.mpr hf),
+  exact ⟨isNoetherian_of_surjective f (LinearMap.range_eq_top.mpr hf),
     isArtinian_of_surjective _ f hf⟩
 
 /- The following instances are now automatic:

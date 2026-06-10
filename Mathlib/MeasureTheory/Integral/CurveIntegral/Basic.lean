@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Order.Field.Pointwise
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.Deriv
 public import Mathlib.Analysis.Calculus.Deriv.AffineMap
 public import Mathlib.Analysis.Calculus.Deriv.Shift
 public import Mathlib.Analysis.Normed.Module.Convex
@@ -40,7 +40,7 @@ allows us to avoid inserting `ContinuousLinearMap.restrictScalars` here and ther
 
 ## Main results
 
-We prove that `curveIntegral` well behaves with respect to
+We prove that `curveIntegral` behaves well with respect to
 
 - operations on `Path`s, see `curveIntegral_refl`, `curveIntegral_symm`, `curveIntegral_trans` etc;
 - algebraic operations on 1-forms, see `curveIntegral_add` etc.
@@ -62,7 +62,7 @@ We use the name “curve integral” instead of other names for the following re
 - for many people whose mother tongue is not English,
   “line integral” sounds like an integral along a straight line;
 
-- we reserve the name "path integral" for Feynmann-style integrals over the space of paths.
+- we reserve the name "path integral" for Feynman-style integrals over the space of paths.
 
 ### Usage of `ContinuousLinearMap`s for 1-forms
 
@@ -136,11 +136,11 @@ theorem curveIntegral_of_not_completeSpace (h : ¬CompleteSpace F) (ω : E → E
 
 theorem curveIntegralFun_def [NormedSpace ℝ E] (ω : E → E →L[𝕜] F) (γ : Path a b) (t : ℝ) :
     curveIntegralFun ω γ t = ω (γ.extend t) (derivWithin γ.extend I t) := by
-  simp only [curveIntegralFun, NormedSpace.restrictScalars_eq]
+  simp +instances only [curveIntegralFun, NormedSpace.restrictScalars_eq]
 
 theorem curveIntegral_def [NormedSpace ℝ F] (ω : E → E →L[𝕜] F) (γ : Path a b) :
     curveIntegral ω γ = ∫ t in 0..1, curveIntegralFun ω γ t := by
-  simp only [curveIntegral, NormedSpace.restrictScalars_eq]
+  simp +instances only [curveIntegral, NormedSpace.restrictScalars_eq]
 
 theorem curveIntegral_eq_intervalIntegral_deriv [NormedSpace ℝ E] [NormedSpace ℝ F]
     (ω : E → E →L[𝕜] F) (γ : Path a b) :
@@ -204,7 +204,7 @@ theorem curveIntegralFun_symm (ω : E → E →L[𝕜] F) (γ : Path a b) :
   funext <| curveIntegralFun_symm_apply ω γ
 
 protected theorem CurveIntegrable.symm (h : CurveIntegrable ω γ) : CurveIntegrable ω γ.symm := by
-  simpa [CurveIntegrable] using (h.comp_sub_left 1).neg.symm
+  simpa [CurveIntegrable] using! (h.comp_sub_left 1).neg.symm
 
 @[simp]
 theorem curveIntegrable_symm : CurveIntegrable ω γ.symm ↔ CurveIntegrable ω γ :=
@@ -258,13 +258,13 @@ theorem CurveIntegrable.intervalIntegrable_curveIntegralFun_trans_left
     (h : CurveIntegrable ω γab) (γbc : Path b c) :
     IntervalIntegrable (curveIntegralFun ω (γab.trans γbc)) volume 0 (1 / 2) := by
   refine .congr_ae ?_ (curveIntegralFun_trans_aeeq_left _ _ _).symm
-  simpa [ofNat_smul_eq_nsmul] using h.comp_mul_left.smul (2 : 𝕜)
+  simpa [ofNat_smul_eq_nsmul] using! h.comp_mul_left.smul (2 : 𝕜)
 
 theorem CurveIntegrable.intervalIntegrable_curveIntegralFun_trans_right
     (γab : Path a b) (h : CurveIntegrable ω γbc) :
     IntervalIntegrable (curveIntegralFun ω (γab.trans γbc)) volume (1 / 2) 1 := by
   refine .congr_ae ?_ (curveIntegralFun_trans_aeeq_right _ _ _).symm
-  simpa [ofNat_smul_eq_nsmul] using h.comp_sub_right 1 |>.comp_mul_left (c := 2) |>.smul (2 : 𝕜)
+  simpa [ofNat_smul_eq_nsmul] using! h.comp_sub_right 1 |>.comp_mul_left (c := 2) |>.smul (2 : 𝕜)
 
 protected theorem CurveIntegrable.trans (h₁ : CurveIntegrable ω γab) (h₂ : CurveIntegrable ω γbc) :
     CurveIntegrable ω (γab.trans γbc) :=
@@ -356,8 +356,9 @@ theorem curveIntegralFun_add :
 
 protected theorem CurveIntegrable.add (h₁ : CurveIntegrable ω₁ γ) (h₂ : CurveIntegrable ω₂ γ) :
     CurveIntegrable (ω₁ + ω₂) γ := by
-  simpa [CurveIntegrable] using IntervalIntegrable.add h₁ h₂
+  simpa [CurveIntegrable] using! IntervalIntegrable.add h₁ h₂
 
+-- TODO: `to_fun` generates wrong lemma name
 theorem curveIntegral_add (h₁ : CurveIntegrable ω₁ γ) (h₂ : CurveIntegrable ω₂ γ) :
     curveIntegral (ω₁ + ω₂) γ = ∫ᶜ x in γ, ω₁ x + ∫ᶜ x in γ, ω₂ x := by
   letI : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
@@ -376,10 +377,9 @@ theorem curveIntegralFun_zero : curveIntegralFun (0 : E → E →L[𝕜] F) γ =
 theorem curveIntegralFun_fun_zero : curveIntegralFun (fun _ ↦ 0 : E → E →L[𝕜] F) γ = 0 :=
   curveIntegralFun_zero
 
+@[to_fun]
 theorem CurveIntegrable.zero : CurveIntegrable (0 : E → E →L[𝕜] F) γ := by
   simp [CurveIntegrable, IntervalIntegrable.zero]
-
-theorem CurveIntegrable.fun_zero : CurveIntegrable (fun _ ↦ 0 : E → E →L[𝕜] F) γ := .zero
 
 @[simp]
 theorem curveIntegral_zero : curveIntegral (0 : E → E →L[𝕜] F) γ = 0 := by simp [curveIntegral]
@@ -391,11 +391,9 @@ theorem curveIntegral_fun_zero : ∫ᶜ _ in γ, (0 : E →L[𝕜] F) = 0 := cur
 theorem curveIntegralFun_neg : curveIntegralFun (-ω) γ = -curveIntegralFun ω γ := by
   ext; simp [curveIntegralFun]
 
+@[to_fun]
 theorem CurveIntegrable.neg (h : CurveIntegrable ω γ) : CurveIntegrable (-ω) γ := by
   simpa [CurveIntegrable] using IntervalIntegrable.neg h
-
-theorem CurveIntegrable.fun_neg (h : CurveIntegrable ω γ) : CurveIntegrable (-ω ·) γ :=
-  h.neg
 
 @[simp]
 theorem curveIntegrable_neg_iff : CurveIntegrable (-ω) γ ↔ CurveIntegrable ω γ :=
@@ -517,8 +515,8 @@ theorem HasFDerivWithinAt.curveIntegral_segment_source' (hs : Convex ℝ s)
     ≤ ∫ x in 0..1, ‖ω x - ω a‖ * ‖b - a‖
     ≤ ε * ‖b - a‖`
   -/
-  simp only [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO, Path.segment_same,
-    curveIntegral_refl, sub_zero, Asymptotics.isLittleO_iff]
+  simp only [hasFDerivWithinAt_iff_isLittleO, Path.segment_same, curveIntegral_refl, sub_zero,
+    Asymptotics.isLittleO_iff]
   intro ε hε
   obtain ⟨δ, hδ₀, hδ⟩ : ∃ δ > 0,
       ball a δ ∩ s ⊆ {z | ContinuousWithinAt ω s z ∧ dist (ω z) (ω a) ≤ ε} := by
@@ -529,11 +527,12 @@ theorem HasFDerivWithinAt.curveIntegral_segment_source' (hs : Convex ℝ s)
   have hsub : [a -[ℝ] b] ⊆ ball a δ ∩ s :=
     ((convex_ball _ _).inter hs).segment_subset (by simp [*]) (by simp [*])
   rw [← curveIntegral_segment_const, ← curveIntegral_fun_sub]
-  · refine norm_curveIntegral_segment_le fun z hz ↦ (hδ (hsub hz)).2
+  · refine norm_curveIntegral_segment_le fun z hz ↦ ?_
+    simpa [dist_eq_norm] using (hδ (hsub hz)).2
   · rw [curveIntegrable_segment]
     refine ContinuousOn.intervalIntegrable_of_Icc zero_le_one fun t ht ↦ ?_
     refine ((hδ ?_).1.eval_const _).comp AffineMap.lineMap_continuous.continuousWithinAt ?_
-    · refine hsub <| segment_eq_image_lineMap ℝ a b ▸ mem_image_of_mem _ ht
+    · exact hsub <| lineMap_mem_segment ℝ a b ht
     · rw [mapsTo_iff_image_subset, ← segment_eq_image_lineMap]
       exact hs.segment_subset ha hbs
   · rw [curveIntegrable_segment]

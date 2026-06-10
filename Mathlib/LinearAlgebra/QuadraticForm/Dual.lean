@@ -25,7 +25,6 @@ public import Mathlib.LinearAlgebra.QuadraticForm.Prod
 
 @[expose] public section
 
-
 variable (R M N : Type*)
 
 namespace LinearMap
@@ -75,10 +74,9 @@ end Ring
 
 end LinearMap
 
-namespace QuadraticForm
-
 open QuadraticMap
 
+namespace QuadraticForm
 section Semiring
 
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
@@ -126,6 +124,7 @@ section Ring
 variable [CommRing R] [AddCommGroup M] [Module R M]
 variable {R M}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The isometry sending `(Q.prod <| -Q)` to `(QuadraticForm.dualProd R M)`.
 
 This is `σ` from Proposition 4.8, page 84 of
@@ -138,11 +137,12 @@ def toDualProd (Q : QuadraticForm R M) [Invertible (2 : R)] :
     (Q.associated.comp (LinearMap.fst _ _ _) + Q.associated.comp (LinearMap.snd _ _ _))
     (LinearMap.fst _ _ _ - LinearMap.snd _ _ _)
   map_app' x := by
-    dsimp only [associated, associatedHom]
+    dsimp only [QuadraticMap.associated, QuadraticMap.associatedHom]
     dsimp only [LinearMap.smul_apply, LinearMap.coe_mk, AddHom.coe_mk, AddHom.toFun_eq_coe,
-      LinearMap.coe_toAddHom, LinearMap.prod_apply, Pi.prod, LinearMap.add_apply,
+      LinearMap.coe_toAddHom, LinearMap.prod_apply, Function.prod_apply, LinearMap.add_apply,
       LinearMap.coe_comp, Function.comp_apply, LinearMap.fst_apply, LinearMap.snd_apply,
-      LinearMap.sub_apply, dualProd_apply, polarBilin_apply_apply, prod_apply, neg_apply]
+      LinearMap.sub_apply, dualProd_apply, polarBilin_apply_apply, QuadraticMap.prod_apply,
+      QuadraticMap.neg_apply]
     simp only [polar_sub_right, polar_self, nsmul_eq_mul, Nat.cast_ofNat, polar_comm _ x.1 x.2,
       smul_sub, Module.End.smul_def, sub_add_sub_cancel, ← sub_eq_add_neg (Q x.1) (Q x.2)]
     rw [← map_sub (⅟2 : Module.End R R), ← mul_sub, ← Module.End.smul_def]
@@ -169,41 +169,27 @@ lemma LinearMap.BilinForm.linearIndependent_of_pairwise_le_zero {ι R M : Type*}
     (hn : Pairwise fun i j ↦ B (v i) (v j) ≤ 0) :
     LinearIndependent R v := by
   refine linearIndependent_iff'.mpr fun s c hc ↦ ?_
-  set x := ∑ i ∈ s with 0 ≤ c i, c i • v i with hx
-  set y := ∑ i ∈ s with c i < 0, (-c i) • v i with hy
+  set x := ∑ i ∈ s with 0 < c i, c i • v i with hx
+  set y := ∑ i ∈ s with 0 < -c i, (-c i) • v i with hy
   replace hc : x = y := by
-    simp_rw [hx, hy, neg_smul, Finset.sum_neg_distrib, ← add_eq_zero_iff_eq_neg, ← hc]
-    simp [← s.sum_filter_add_sum_filter_not (p := fun i ↦ 0 ≤ c i) (f := fun i ↦ c i • v i)]
+    classical
+    simp_rw [hx, hy, neg_smul, Finset.sum_neg_distrib, ← add_eq_zero_iff_eq_neg]
+    rw [← hc, ← Finset.sum_union, Finset.sum_subset]
+    · grind only [= Finset.subset_iff, = Finset.mem_union, = Finset.mem_filter]
+    · simp +contextual [eq_comm (a := (0 : R))]
+    · grind only [Finset.disjoint_filter]
   have hx₀ : x = 0 := by
     suffices B x y ≤ 0 by simpa [hc, ← hB.le_zero_iff, B.toQuadraticMap_apply]
-    suffices 0 ≤ ∑ x ∈ s with c x < 0, ∑ i ∈ s with 0 ≤ c i, c x * (c i * (B (v i)) (v x)) by
+    suffices 0 ≤ ∑ x ∈ s with c x < 0, ∑ i ∈ s with 0 < c i, c x * (c i * (B (v i)) (v x)) by
       simpa [hx, hy, map_neg, Finset.mul_sum]
     refine Finset.sum_nonneg fun i hi ↦ Finset.sum_nonneg fun j hj ↦ ?_
-    rcases eq_or_ne i j with rfl | hij
-    · rw [← mul_assoc]
-      exact mul_nonneg (mul_self_nonneg _) (hB.nonneg _)
-    · specialize hn hij.symm
-      grind [mul_nonneg_iff, mul_nonpos_iff]
-  replace hx : ∑ i ∈ s with 0 ≤ c i, c i * f (v i) = 0 := by
-    rw [hx₀] at hx
-    simpa using (congr(f $hx)).symm
-  replace hx (i : ι) (hi : i ∈ s) : c i ≤ 0 := by
-    have aux (j : ι) (hj : j ∈ {i ∈ s | 0 ≤ c i}) : 0 ≤ c j * f (v j) := by
-      obtain ⟨hjs : j ∈ s, hj₀ : 0 ≤ c j⟩ := by simpa using hj
-      nlinarith [hp j]
-    rw [Finset.sum_eq_zero_iff_of_nonneg aux] at hx
+    grind [Pairwise, mul_nonneg_iff, mul_nonpos_iff]
+  have H (c : ι → R) (h : ∑ i ∈ s with 0 < c i, c i • v i = 0) (i : ι) (hi : i ∈ s) : c i ≤ 0 := by
+    have : ∑ i ∈ s with 0 < c i, c i * f (v i) = 0 := by simpa using (congr(f $h))
+    rw [Finset.sum_eq_zero_iff_of_nonneg (by grind [mul_nonneg])] at this
     by_contra! hi'
     have : 0 < c i * f (v i) := mul_pos hi' (hp i)
     grind
-  replace hy : ∑ i ∈ s with c i < 0, c i * f (v i) = 0 := by
-    rw [← hc, hx₀] at hy
-    simpa using (congr(f $hy)).symm
-  replace hy (i : ι) (hi : i ∈ s) : 0 ≤ c i := by
-    have aux (j : ι) (hj : j ∈ {i ∈ s | c i < 0}) : c j * f (v j) ≤ 0 := by
-      obtain ⟨hjs : j ∈ s, hj₀ : c j < 0⟩ := by simpa using hj
-      nlinarith [hp j]
-    rw [Finset.sum_eq_zero_iff_of_nonpos aux] at hy
-    by_contra! hi'
-    have : c i * f (v i) < 0 := mul_neg_of_neg_of_pos hi' (hp i)
-    grind
-  exact fun i hi ↦ le_antisymm (hx i hi) (hy i hi)
+  replace hx (i : ι) (hi : i ∈ s) : c i ≤ 0 := H _ (by grind) i hi
+  replace hy (i : ι) (hi : i ∈ s) : -c i ≤ 0 := H (-c ·) (by grind) i hi
+  grind

@@ -16,7 +16,7 @@ nontrivial, then `S` is also simple.
 If `R` is a simple (non-unital non-assoc) ring then any ring isomorphic to `R` is also simple.
 -/
 
-@[expose] public section
+public section
 
 namespace IsSimpleRing
 

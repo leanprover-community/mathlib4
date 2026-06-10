@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Basic
 
-/-! The cohomology of a sheaf of groups in degree 1
+/-! # The cohomology of a sheaf of groups in degree 1
 
 In this file, we shall define the cohomology in degree 1 of a sheaf
 of groups (TODO).
@@ -105,7 +105,7 @@ lemma mul_ev (γ₁ γ₂ : OneCochain G U) (i j : I) {T : C} (a : T ⟶ U i) (b
     (γ₁ * γ₂).ev i j a b = γ₁.ev i j a b * γ₂.ev i j a b := rfl
 
 instance : Inv (OneCochain G U) where
-  inv γ := { ev := fun i j _ a b ↦ (γ.ev i j a b) ⁻¹}
+  inv γ := { ev := fun i j _ a b ↦ (γ.ev i j a b)⁻¹ }
 
 @[simp]
 lemma inv_ev (γ : OneCochain G U) (i j : I) {T : C} (a : T ⟶ U i) (b : T ⟶ U j) :

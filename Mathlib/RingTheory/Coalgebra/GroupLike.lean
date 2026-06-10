@@ -22,7 +22,7 @@ This file defines group-like elements in a coalgebra, i.e. elements `a` such tha
 
 @[expose] public section
 
-open Coalgebra Function TensorProduct
+open Coalgebra Function Module TensorProduct
 
 variable {F R A B : Type*}
 
@@ -70,6 +70,8 @@ structure GroupLike where
 
 namespace GroupLike
 
+initialize_simps_projections GroupLike (as_prefix val)
+
 attribute [simp] isGroupLikeElem_val
 
 attribute [coe] val
@@ -82,6 +84,7 @@ lemma val_injective : Injective (val : GroupLike R A → A) := by rintro ⟨a, h
   val_injective.eq_iff
 
 /-- Identity equivalence between `GroupLike R A` and `{a : A // IsGroupLikeElem R a}`. -/
+@[simps]
 def valEquiv : GroupLike R A ≃ Subtype (IsGroupLikeElem R : A → Prop) where
   toFun a := ⟨a.1, a.2⟩
   invFun a := ⟨a.1, a.2⟩
@@ -93,7 +96,7 @@ end CommSemiring
 
 section CommRing
 variable [CommRing R] [IsDomain R] [AddCommGroup A] [Module R A] [Coalgebra R A]
-  [NoZeroSMulDivisors R A]
+  [IsTorsionFree R A]
 
 open Submodule in
 /-- Group-like elements over a domain are linearly independent. -/
@@ -152,6 +155,6 @@ lemma linearIndepOn_isGroupLikeElem : LinearIndepOn R id {a : A | IsGroupLikeEle
 
 /-- Group-like elements over a domain are linearly independent. -/
 lemma linearIndep_groupLikeVal : LinearIndependent R (GroupLike.val (R := R) (A := A)) := by
-  simpa using (linearIndependent_equiv GroupLike.valEquiv).2 linearIndepOn_isGroupLikeElem
+  simpa using! (linearIndependent_equiv GroupLike.valEquiv).2 linearIndepOn_isGroupLikeElem
 
 end CommRing

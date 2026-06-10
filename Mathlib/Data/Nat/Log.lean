@@ -159,15 +159,6 @@ theorem le_log_iff_pow_le {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) :
     x ≤ log b y ↔ b ^ x ≤ y :=
   le_iff_le_iff_lt_iff_lt.mpr <| log_lt_iff_lt_pow hb hy
 
-@[deprecated le_log_iff_pow_le (since := "2025-10-05")]
-theorem pow_le_iff_le_log {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) :
-    b ^ x ≤ y ↔ x ≤ log b y :=
-  (le_log_iff_pow_le hb hy).symm
-
-@[deprecated log_lt_iff_lt_pow (since := "2025-10-05")]
-theorem lt_pow_iff_log_lt {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) : y < b ^ x ↔ log b y < x :=
-  (log_lt_iff_lt_pow hb hy).symm
-
 theorem pow_le_of_le_log {b x y : ℕ} (hy : y ≠ 0) (h : x ≤ log b y) : b ^ x ≤ y := by
   refine (le_or_gt b 1).elim (fun hb => ?_) fun hb => (le_log_iff_pow_le hb hy).1 h
   rw [log_of_left_le_one hb, Nat.le_zero] at h
@@ -213,11 +204,8 @@ theorem log_eq_iff {b m n : ℕ} (h : m ≠ 0 ∨ 1 < b ∧ n ≠ 0) :
   have hm : m ≠ 0 := h.resolve_right hbn
   rw [not_and_or, not_lt, Ne, not_not] at hbn
   rcases hbn with (hb | rfl)
-  · obtain rfl | rfl := le_one_iff_eq_zero_or_eq_one.1 hb
-    any_goals
-      simp only [ne_eq, lt_self_iff_false, not_lt_zero, false_and, or_false]
-        at h
-      simp [h, eq_comm (a := 0), Nat.zero_pow (Nat.pos_iff_ne_zero.2 _)] <;> lia
+  · obtain rfl | rfl := le_one_iff_eq_zero_or_eq_one.1 hb <;>
+      simp only [log_zero_left, log_one_left] <;> lia
   · simp [@eq_comm _ 0, hm]
 
 theorem log_eq_of_pow_le_of_lt_pow {b m n : ℕ} (h₁ : b ^ m ≤ n) (h₂ : n < b ^ (m + 1)) :
@@ -435,16 +423,8 @@ theorem clog_le_of_le_pow {b x y : ℕ} (h : x ≤ b ^ y) : clog b x ≤ y := by
   · rwa [clog_le_iff_le_pow hb]
   · grind [clog_of_left_le_one]
 
-@[deprecated clog_le_iff_le_pow (since := "2025-10-05")]
-theorem le_pow_iff_clog_le {b : ℕ} (hb : 1 < b) {x y : ℕ} : x ≤ b ^ y ↔ clog b x ≤ y :=
-  (clog_le_iff_le_pow hb).symm
-
 theorem lt_clog_iff_pow_lt {b : ℕ} (hb : 1 < b) {x y : ℕ} : y < clog b x ↔ b ^ y < x :=
   lt_iff_lt_of_le_iff_le (clog_le_iff_le_pow hb)
-
-@[deprecated lt_clog_iff_pow_lt (since := "2025-10-05")]
-theorem pow_lt_iff_lt_clog {b : ℕ} (hb : 1 < b) {x y : ℕ} : b ^ y < x ↔ y < clog b x :=
-  (lt_clog_iff_pow_lt hb).symm
 
 theorem pow_lt_of_lt_clog {b x y : ℕ} (h : y < clog b x) : b ^ y < x :=
   lt_imp_lt_of_le_imp_le clog_le_of_le_pow h
@@ -513,7 +493,7 @@ theorem clog_eq_clog_succ_iff {b n : ℕ} (hb : 1 < b) :
   simp only [le_antisymm_iff, and_iff_right_iff_imp]
   exact fun _ ↦ clog_monotone b (le_add_right n 1)
 
-/-- This lemma says that `⌈log (b ^ k) n⌉ = ⌈(⌈log b n⌉ / k)⌉, using operations on natural numbers
+/-- This lemma says that `⌈log (b ^ k) n⌉ = ⌈(⌈log b n⌉ / k)⌉`, using operations on natural numbers
 to express this equality.
 
 Since Lean has no dedicated function for the ceiling division,

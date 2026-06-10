@@ -134,6 +134,128 @@ instance [MeasurableSpace α] [CountablyGenerated α] [MeasurableSpace β] [Coun
     CountablyGenerated (α × β) :=
   .sup (.comap Prod.fst) (.comap Prod.snd)
 
+section CountablyGeneratedAtom
+
+variable {mα : MeasurableSpace α} [CountablyGenerated α]
+
+open Classical in
+/-- The atoms in a countably generated measurable space.
+
+Some of those sets may be empty, but the nonempty ones are the atoms of the measurable space.
+See `measurableAtom_eq_countablyGeneratedAtom_natGeneratingSequence`. -/
+def countablyGeneratedAtom (α : Type*) [MeasurableSpace α] [CountablyGenerated α] :
+    (ℕ → Prop) → Set α :=
+  fun p ↦ ⋂ n, if p n then natGeneratingSequence α n else (natGeneratingSequence α n)ᶜ
+
+lemma measurableSet_countablyGeneratedAtom (p : ℕ → Prop) :
+    MeasurableSet (countablyGeneratedAtom α p) := by
+  refine MeasurableSet.iInter fun n ↦ ?_
+  exact MeasurableSet.ite' (fun _ ↦ measurableSet_natGeneratingSequence n)
+    (fun _ ↦ (measurableSet_natGeneratingSequence n).compl)
+
+lemma disjoint_countablyGeneratedAtom :
+    Pairwise (Function.onFun Disjoint (countablyGeneratedAtom α)) := by
+  intro p q hpq s hsp hsq
+  simp only [le_eq_subset, bot_eq_empty, subset_empty_iff] at hsp hsq ⊢
+  ext x
+  simp only [mem_empty_iff_false, iff_false]
+  intro hxs
+  obtain ⟨n, hn⟩ : ∃ n, p n ≠ q n := by grind
+  specialize hsp hxs
+  specialize hsq hxs
+  simp only [countablyGeneratedAtom, mem_iInter] at hsp hsq
+  grind
+
+lemma iUnion_countablyGeneratedAtom : ⋃ p, countablyGeneratedAtom α p = univ := by
+  ext x
+  simp only [countablyGeneratedAtom, mem_iUnion, mem_iInter, mem_univ, iff_true]
+  exact ⟨fun n ↦ x ∈ natGeneratingSequence α n, by grind⟩
+
+lemma mem_countablyGeneratedAtom_natGeneratingSequence (x : α) :
+    x ∈ countablyGeneratedAtom α (x ∈ natGeneratingSequence α ·) := by
+  simp [countablyGeneratedAtom]; grind
+
+open Classical in
+/-- Any measurable set in a countably generated measurable space can be expressed as a union of
+atoms. -/
+lemma exists_eq_iUnion_countablyGeneratedAtom {s : Set α} (hs : MeasurableSet s) :
+    ∃ (q : (ℕ → Prop) → Prop), s = ⋃ p, if q p then countablyGeneratedAtom α p else ∅ := by
+  rw [← generateFrom_natGeneratingSequence α] at hs
+  refine generateFrom_induction (range (natGeneratingSequence α)) _ ?_ ?_ ?_ ?_ s hs
+  · simp only [mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+    refine fun n _ ↦ ⟨fun p ↦ p n, ?_⟩
+    ext x
+    simp only [mem_iUnion, mem_ite_empty_right]
+    refine ⟨fun hx ↦ ?_, ?_⟩
+    · exact ⟨(x ∈ natGeneratingSequence α ·), by simp [countablyGeneratedAtom]; grind⟩
+    · rintro ⟨p, hpn, hpx⟩
+      simp only [countablyGeneratedAtom, mem_iInter] at hpx
+      specialize hpx n
+      simpa [hpn] using hpx
+  · exact ⟨fun _ ↦ False, by simp⟩
+  · simp only [forall_exists_index]
+    intro t ht q htq
+    refine ⟨fun p ↦ ¬ q p, ?_⟩
+    ext x
+    simp only [htq, compl_iUnion, mem_iInter, mem_compl_iff, mem_ite_empty_right, not_and,
+      mem_iUnion]
+    refine ⟨fun h ↦ ?_, ?_⟩
+    · refine ⟨fun n ↦ x ∈ natGeneratingSequence α n, ?_,
+        mem_countablyGeneratedAtom_natGeneratingSequence x⟩
+      contrapose! h
+      refine ⟨fun n ↦ x ∈ natGeneratingSequence α n, h,
+        mem_countablyGeneratedAtom_natGeneratingSequence x⟩
+    · rintro ⟨p, hpq, hpx⟩ p' hqp' hx_mem
+      have hpp' : p ≠ p' := by grind
+      have h_disj : Disjoint (countablyGeneratedAtom α p) (countablyGeneratedAtom α p') :=
+        disjoint_countablyGeneratedAtom hpp'
+      grind
+  · intro t ht h
+    choose q hq using h
+    refine ⟨fun p ↦ ⨆ n, q n p, ?_⟩
+    ext
+    simp [hq]
+    grind
+
+/-- The measurable atom of a point in a countably generated measurable space is given by
+a `countablyGeneratedAtom`. -/
+lemma measurableAtom_eq_countablyGeneratedAtom_natGeneratingSequence (x : α) :
+    measurableAtom x = countablyGeneratedAtom α (x ∈ natGeneratingSequence α ·) := by
+  let A := natGeneratingSequence α
+  have hA : ∀ n, MeasurableSet (A n) := measurableSet_natGeneratingSequence
+  have hA_gen : generateFrom (range A) = mα := generateFrom_natGeneratingSequence α
+  change measurableAtom x = countablyGeneratedAtom α (x ∈ A ·)
+  refine subset_antisymm (measurableAtom_subset ?_ ?_) ?_
+  · exact measurableSet_countablyGeneratedAtom _
+  · exact mem_countablyGeneratedAtom_natGeneratingSequence x
+  classical
+  unfold measurableAtom
+  simp only [subset_iInter_iff]
+  intro s hxs hs
+  obtain ⟨q, hq⟩ : ∃ (q : (ℕ → Prop) → Prop), s =
+      ⋃ p, if q p then countablyGeneratedAtom α p else ∅ :=
+    exists_eq_iUnion_countablyGeneratedAtom hs
+  suffices q (x ∈ A ·) by
+    rw [hq]
+    refine subset_trans (le_of_eq ?_) (subset_iUnion _ (x ∈ A ·))
+    simp [this]
+  simp only [hq, mem_iUnion, mem_ite_empty_right] at hxs
+  obtain ⟨p, hpq, hpx⟩ := hxs
+  suffices p = (x ∈ A ·) by rwa [← this]
+  by_contra! hp
+  have h_disj : Disjoint (countablyGeneratedAtom α p) (countablyGeneratedAtom α (x ∈ A ·)) :=
+    disjoint_countablyGeneratedAtom hp
+  have hx_mem : x ∈ countablyGeneratedAtom α (x ∈ A ·) :=
+    mem_countablyGeneratedAtom_natGeneratingSequence x
+  grind
+
+/-- In a countably generated measurable space, the atoms are measurable. -/
+lemma measurableSet_measurableAtom (x : α) : MeasurableSet (measurableAtom x) := by
+  rw [measurableAtom_eq_countablyGeneratedAtom_natGeneratingSequence]
+  exact measurableSet_countablyGeneratedAtom _
+
+end CountablyGeneratedAtom
+
 section SeparatesPoints
 
 /-- We say that a measurable space separates points if for any two distinct points,
@@ -168,6 +290,21 @@ theorem separating_of_generateFrom (S : Set (Set α))
 theorem SeparatesPoints.mono {m m' : MeasurableSpace α} [hsep : @SeparatesPoints _ m] (h : m ≤ m') :
     @SeparatesPoints _ m' := @SeparatesPoints.mk _ m' fun _ _ hxy ↦
     @SeparatesPoints.separates _ m hsep _ _ fun _ hs ↦ hxy _ (h _ hs)
+
+theorem _root_.eq_const_of_measurable_bot [MeasurableSpace β] [Nonempty β]
+    [SeparatesPoints β] {f : α → β} (hf : Measurable[⊥] f) :
+    ∃ c, f = fun _ ↦ c := by
+  have h (a₁ : α) (a₂ : α) : f a₁ = f a₂ := by
+    by_contra! h
+    obtain ⟨s, hs, hx, hy⟩ := exists_measurableSet_of_ne h
+    obtain h' | h' := MeasurableSpace.measurableSet_bot_iff.mp (hf hs)
+    · absurd hx
+      simp [← mem_preimage, h']
+    · absurd hy
+      simp [← mem_preimage, h']
+  obtain h' | h' := isEmpty_or_nonempty α
+  · use (Classical.ofNonempty : β), funext (by simp)
+  · use f (Classical.ofNonempty : α), funext (fun x ↦ h _ _)
 
 /-- We say that a measurable space is countably separated if there is a
 countable sequence of measurable sets separating points. -/
@@ -216,7 +353,7 @@ instance (priority := 50) MeasurableSingletonClass.of_separatesPoints [Measurabl
     [Countable α] [SeparatesPoints α] : MeasurableSingletonClass α where
   measurableSet_singleton x := by
     choose s hsm hxs hys using fun y (h : x ≠ y) ↦ exists_measurableSet_of_ne h
-    convert MeasurableSet.iInter fun y ↦ .iInter fun h ↦ hsm y h
+    convert! MeasurableSet.iInter fun y ↦ .iInter fun h ↦ hsm y h
     ext y
     rcases eq_or_ne x y with rfl | h
     · simpa
@@ -236,7 +373,7 @@ instance countablySeparated_of_separatesPoints [MeasurableSpace α]
   rcases h with ⟨b, hbc, hb⟩
   refine ⟨⟨b, hbc, fun t ht ↦ hb.symm ▸ .basic t ht, ?_⟩⟩
   rw [hb] at ‹SeparatesPoints _›
-  convert separating_of_generateFrom b
+  convert! separating_of_generateFrom b
   simp
 
 variable (α)
@@ -288,7 +425,7 @@ theorem measurableEquiv_nat_bool_of_countablyGenerated [MeasurableSpace α]
   use range (mapNatBool α), Equiv.ofInjective _ <|
     injective_mapNatBool _,
     Measurable.subtype_mk <| measurable_mapNatBool _
-  simp_rw [← generateFrom_natGeneratingSequence α]
+  simp_rw +instances [← generateFrom_natGeneratingSequence α]
   apply measurable_generateFrom
   rintro _ ⟨n, rfl⟩
   rw [← Equiv.image_eq_preimage_symm _ _]
@@ -323,7 +460,7 @@ section MeasurableMemPartition
 lemma measurableSet_succ_memPartition (t : ℕ → Set α) (n : ℕ) {s : Set α}
     (hs : s ∈ memPartition t n) :
     MeasurableSet[generateFrom (memPartition t (n + 1))] s := by
-  rw [← diff_union_inter s (t n)]
+  rw [← sdiff_union_inter s (t n)]
   refine MeasurableSet.union ?_ ?_ <;>
     · refine measurableSet_generateFrom ?_
       rw [memPartition_succ]
@@ -345,16 +482,16 @@ lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ)
       classical
       refine ⟨(memPartition t n).toFinset \ S, ?_, ?_⟩
       · simp only [Finset.coe_sdiff, coe_toFinset]
-        exact diff_subset
+        exact sdiff_subset
       · simp only [Finset.coe_sdiff, coe_toFinset]
         refine (IsCompl.eq_compl ⟨?_, ?_⟩).symm
         · refine Set.disjoint_sUnion_right.mpr fun u huS => ?_
           refine Set.disjoint_sUnion_left.mpr fun v huV => ?_
-          refine disjoint_memPartition t n (mem_of_mem_diff huV) (hS_subset huS) ?_
-          exact ne_of_mem_of_not_mem huS (notMem_of_mem_diff huV) |>.symm
+          refine disjoint_memPartition t n (mem_of_mem_sdiff huV) (hS_subset huS) ?_
+          exact ne_of_mem_of_not_mem huS (notMem_of_mem_sdiff huV) |>.symm
         · rw [codisjoint_iff]
           simp only [sup_eq_union, top_eq_univ]
-          rw [← sUnion_memPartition t n, union_comm, ← sUnion_union, union_diff_cancel hS_subset]
+          rw [← sUnion_memPartition t n, union_comm, ← sUnion_union, union_sdiff_cancel hS_subset]
     | iUnion f _ h =>
       choose S hS_subset hS_eq using h
       have : Fintype (⋃ n, (S n : Set (Set α))) := by

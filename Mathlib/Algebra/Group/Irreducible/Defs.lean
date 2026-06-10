@@ -19,7 +19,7 @@ In decomposition monoids (e.g., `ℕ`, `ℤ`), this predicate is equivalent to `
 (see `irreducible_iff_prime`), however this is not true in general.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero IsOrderedMonoid Multiset
 
@@ -40,16 +40,12 @@ variable [Monoid M] {p q a b : M}
 
 We explicitly avoid stating that `p` is non-zero, this would require a semiring. Assuming only a
 monoid allows us to reuse irreducible for associated elements. -/
-@[to_additive]
+@[to_additive (attr := wikidata Q2989575)]
 structure Irreducible (p : M) : Prop where
   /-- An irreducible element is not a unit. -/
   not_isUnit : ¬IsUnit p
   /-- If an irreducible element factors, then one factor is a unit. -/
   isUnit_or_isUnit ⦃a b : M⦄ : p = a * b → IsUnit a ∨ IsUnit b
-
-namespace Irreducible
-
-end Irreducible
 
 @[to_additive] lemma irreducible_iff :
     Irreducible p ↔ ¬IsUnit p ∧ ∀ ⦃a b⦄, p = a * b → IsUnit a ∨ IsUnit b where

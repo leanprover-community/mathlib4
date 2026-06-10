@@ -17,7 +17,7 @@ a subfield `𝕜 ⊆ 𝕜'`. The results are analogous to those found in
 `Mathlib.Analysis.Calculus.FDeriv.RestrictScalars`.
 -/
 
-@[expose] public section
+public section
 
 variable
   {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
@@ -80,7 +80,7 @@ to `𝕜'`.
 theorem ContDiffAt.restrictScalars_iteratedFDeriv_eventuallyEq (h : ContDiffAt 𝕜' n f x) :
     (restrictScalars 𝕜) ∘ (iteratedFDeriv 𝕜' n f) =ᶠ[𝓝 x] iteratedFDeriv 𝕜 n f := by
   have h' : ContDiffWithinAt 𝕜' n f Set.univ x := h
-  convert (h'.restrictScalars_iteratedFDerivWithin_eventuallyEq _ trivial)
+  convert! (h'.restrictScalars_iteratedFDerivWithin_eventuallyEq _ trivial)
   <;> simp [iteratedFDerivWithin_univ.symm, uniqueDiffOn_univ]
 
 /--

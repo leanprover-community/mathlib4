@@ -14,7 +14,7 @@ public import Mathlib.Topology.EMetricSpace.BoundedVariation
 # Almost everywhere differentiability of functions with locally bounded variation
 
 In this file we show that a bounded variation function is differentiable almost everywhere.
-This implies that Lipschitz functions from the real line into finite-dimensional vector space
+This implies that Lipschitz functions from the real line into finite-dimensional vector spaces
 are also differentiable almost everywhere.
 
 ## Main definitions and results
@@ -31,7 +31,7 @@ We also give several variations around these results.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped NNReal Topology
 open Set MeasureTheory Filter
@@ -68,10 +68,7 @@ theorem ae_differentiableWithinAt_of_mem {f : ℝ → V} {s : Set ℝ}
   let A := (Module.Basis.ofVectorSpace ℝ V).equivFun.toContinuousLinearEquiv
   suffices H : ∀ᵐ x, x ∈ s → DifferentiableWithinAt ℝ (A ∘ f) s x by
     filter_upwards [H] with x hx xs
-    have : f = (A.symm ∘ A) ∘ f := by
-      simp only [ContinuousLinearEquiv.symm_comp_self, Function.id_comp]
-    rw [this]
-    exact A.symm.differentiableAt.comp_differentiableWithinAt x (hx xs)
+    exact (ContinuousLinearEquiv.comp_differentiableWithinAt_iff _).mp (hx xs)
   apply ae_differentiableWithinAt_of_mem_pi
   exact A.lipschitz.comp_locallyBoundedVariationOn h
 

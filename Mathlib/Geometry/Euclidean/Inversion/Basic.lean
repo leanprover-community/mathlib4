@@ -14,9 +14,9 @@ public import Mathlib.Tactic.AdaptationNote
 
 In this file we define inversion in a sphere in an affine space. This map sends each point `x` to
 the point `y` such that `y -ᵥ c = (R / dist x c) ^ 2 • (x -ᵥ c)`, where `c` and `R` are the center
-and the radius the sphere.
+and the radius of the sphere.
 
-In many applications, it is convenient to assume that the inversions swaps the center and the point
+In many applications, it is convenient to assume that the inversion swaps the center and the point
 at infinity. In order to stay in the original affine space, we define the map so that it sends
 center to itself.
 
@@ -192,7 +192,7 @@ theorem mul_dist_le_mul_dist_add_mul_dist (a b c d : P) :
     dist_inversion_inversion hc hd, one_pow] at H
   rw [← dist_pos] at hb hc hd
   rw [← div_le_div_iff_of_pos_right (mul_pos hb (mul_pos hc hd))]
-  convert H using 1 <;> simp [field, dist_comm a]; ring
+  convert! H using 1 <;> simp [field, dist_comm a]; ring
 
 end EuclideanGeometry
 

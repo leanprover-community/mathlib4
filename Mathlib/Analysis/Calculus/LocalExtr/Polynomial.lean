@@ -16,7 +16,7 @@ In this file we use Rolle's Theorem
 to relate the number of real roots of a real polynomial and its derivative.
 Namely, we prove the following facts.
 
-* `Polynomial.card_roots_toFinset_le_card_roots_derivative_diff_roots_succ`:
+* `Polynomial.card_roots_toFinset_le_card_roots_derivative_sdiff_roots_succ`:
   the number of roots of a real polynomial `p` is at most the number of roots of its derivative
   that are not roots of `p` plus one.
 * `Polynomial.card_roots_toFinset_le_derivative`, `Polynomial.card_rootSet_le_derivative`:
@@ -29,29 +29,33 @@ Namely, we prove the following facts.
 polynomial, Rolle's Theorem, root
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial
 
 /-- The number of roots of a real polynomial `p` is at most the number of roots of its derivative
 that are not roots of `p` plus one. -/
-theorem card_roots_toFinset_le_card_roots_derivative_diff_roots_succ (p : ℝ[X]) :
+theorem card_roots_toFinset_le_card_roots_derivative_sdiff_roots_succ (p : ℝ[X]) :
     p.roots.toFinset.card ≤ (p.derivative.roots.toFinset \ p.roots.toFinset).card + 1 := by
   rcases eq_or_ne (derivative p) 0 with hp' | hp'
-  · rw [eq_C_of_derivative_eq_zero hp', roots_C, Multiset.toFinset_zero, Finset.card_empty]
-    exact zero_le _
+  · rw [eq_C_of_derivative_eq_zero hp']
+    simp
   have hp : p ≠ 0 := ne_of_apply_ne derivative (by rwa [derivative_zero])
-  refine Finset.card_le_diff_of_interleaved fun x hx y hy hxy hxy' => ?_
+  refine Finset.card_le_sdiff_of_interleaved fun x hx y hy hxy hxy' => ?_
   rw [Multiset.mem_toFinset, mem_roots hp] at hx hy
   obtain ⟨z, hz1, hz2⟩ := exists_deriv_eq_zero hxy p.continuousOn (hx.trans hy.symm)
   refine ⟨z, ?_, hz1⟩
   rwa [Multiset.mem_toFinset, mem_roots hp', IsRoot, ← p.deriv]
 
+@[deprecated (since := "2026-06-03")]
+alias card_roots_toFinset_le_card_roots_derivative_diff_roots_succ :=
+  card_roots_toFinset_le_card_roots_derivative_sdiff_roots_succ
+
 /-- The number of roots of a real polynomial is at most the number of roots of its derivative plus
 one. -/
 theorem card_roots_toFinset_le_derivative (p : ℝ[X]) :
     p.roots.toFinset.card ≤ p.derivative.roots.toFinset.card + 1 :=
-  p.card_roots_toFinset_le_card_roots_derivative_diff_roots_succ.trans <| by
+  p.card_roots_toFinset_le_card_roots_derivative_sdiff_roots_succ.trans <| by
     grw [Finset.sdiff_subset]
 
 /-- The number of roots of a real polynomial (counted with multiplicities) is at most the number of
@@ -70,7 +74,7 @@ theorem card_roots_le_derivative (p : ℝ[X]) :
           ((p.derivative.roots.toFinset \ p.roots.toFinset).card + 1) :=
       (add_le_add
         (Finset.sum_le_sum fun _ _ => rootMultiplicity_sub_one_le_derivative_rootMultiplicity _ _)
-        p.card_roots_toFinset_le_card_roots_derivative_diff_roots_succ)
+        p.card_roots_toFinset_le_card_roots_derivative_sdiff_roots_succ)
     _ ≤ (∑ x ∈ p.roots.toFinset, p.derivative.roots.count x) +
           ((∑ x ∈ p.derivative.roots.toFinset \ p.roots.toFinset,
             p.derivative.roots.count x) + 1) := by

@@ -15,7 +15,7 @@ public import Mathlib.Data.Nat.Cast.Basic
 This file exists in order to avoid adding extra imports to other files in this subdirectory.
 -/
 
-@[expose] public section
+public section
 
 theorem CharZero.of_addMonoidHom {M N : Type*} [AddCommMonoidWithOne M] [AddCommMonoidWithOne N]
     [CharZero M] (e : M →+ N) (he : e 1 = 1) (he' : Function.Injective e) : CharZero N where

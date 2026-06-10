@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Data.Nat.Cast.Field
+import Mathlib.Analysis.Asymptotics.Theta
 
 /-!
 # Binomial coefficients and factorial variants
@@ -21,14 +22,14 @@ This file proves asymptotic theorems for binomial coefficients and factorial var
 * `isTheta_choose` is the proof that `n.choose k = Θ(n^k)` as `n → ∞`.
 -/
 
-@[expose] public section
+public section
 
 
 open Asymptotics Filter Nat Topology
 
 /-- `n.descFactorial k` is asymptotically equivalent to `n^k`. -/
 lemma isEquivalent_descFactorial (k : ℕ) :
-    (fun (n : ℕ) ↦ (n.descFactorial k : ℝ)) ~[atTop] (fun (n : ℕ) ↦ (n^k : ℝ)) := by
+    (fun (n : ℕ) ↦ (n.descFactorial k : ℝ)) ~[atTop] (fun (n : ℕ) ↦ (n ^ k : ℝ)) := by
   induction k with
   | zero => simpa using IsEquivalent.refl
   | succ k h =>
@@ -41,7 +42,7 @@ lemma isEquivalent_descFactorial (k : ℕ) :
 
 /-- `n.choose k` is asymptotically equivalent to `n^k / k!`. -/
 theorem isEquivalent_choose (k : ℕ) :
-    (fun (n : ℕ) ↦ (n.choose k : ℝ)) ~[atTop] (fun (n : ℕ) ↦ (n^k / k.factorial : ℝ)) := by
+    (fun (n : ℕ) ↦ (n.choose k : ℝ)) ~[atTop] (fun (n : ℕ) ↦ (n ^ k / k.factorial : ℝ)) := by
   conv_lhs =>
     intro n
     rw [choose_eq_descFactorial_div_factorial,
@@ -50,7 +51,7 @@ theorem isEquivalent_choose (k : ℕ) :
 
 /-- `n.choose k` is big-theta `n^k`. -/
 theorem isTheta_choose (k : ℕ) :
-    (fun (n : ℕ) ↦ (n.choose k : ℝ)) =Θ[atTop] (fun (n : ℕ) ↦ (n^k : ℝ)) := by
+    (fun (n : ℕ) ↦ (n.choose k : ℝ)) =Θ[atTop] (fun (n : ℕ) ↦ (n ^ k : ℝ)) := by
   apply (isEquivalent_choose k).trans_isTheta
   simp_rw [div_eq_mul_inv, mul_comm _ (_⁻¹)]
   exact isTheta_rfl.const_mul_left <| inv_ne_zero (mod_cast k.factorial_ne_zero)

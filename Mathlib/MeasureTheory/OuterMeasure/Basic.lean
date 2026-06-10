@@ -9,7 +9,7 @@ public import Mathlib.Data.Countable.Basic
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Order.Disjointed
 public import Mathlib.MeasureTheory.OuterMeasure.Defs
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 /-!
 # Outer Measures
@@ -32,7 +32,7 @@ Note that we do not need `α` to be measurable to define an outer measure.
 outer measure
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -94,14 +94,18 @@ theorem measure_union_le (s t : Set α) : μ (s ∪ t) ≤ μ s + μ t := by
 lemma measure_univ_le_add_compl (s : Set α) : μ univ ≤ μ s + μ sᶜ :=
   s.union_compl_self ▸ measure_union_le s sᶜ
 
-theorem measure_le_inter_add_diff (μ : F) (s t : Set α) : μ s ≤ μ (s ∩ t) + μ (s \ t) := by
+theorem measure_le_inter_add_sdiff (μ : F) (s t : Set α) : μ s ≤ μ (s ∩ t) + μ (s \ t) := by
   simpa using measure_union_le (s ∩ t) (s \ t)
 
-theorem measure_diff_null (ht : μ t = 0) : μ (s \ t) = μ s :=
-  (measure_mono diff_subset).antisymm <| calc
-    μ s ≤ μ (s ∩ t) + μ (s \ t) := measure_le_inter_add_diff _ _ _
+@[deprecated (since := "2026-06-03")] alias measure_le_inter_add_diff := measure_le_inter_add_sdiff
+
+theorem measure_sdiff_null (ht : μ t = 0) : μ (s \ t) = μ s :=
+  (measure_mono sdiff_subset).antisymm <| calc
+    μ s ≤ μ (s ∩ t) + μ (s \ t) := measure_le_inter_add_sdiff _ _ _
     _ ≤ μ t + μ (s \ t) := by gcongr; apply inter_subset_right
     _ = μ (s \ t) := by simp [ht]
+
+@[deprecated (since := "2026-06-03")] alias measure_diff_null := measure_sdiff_null
 
 theorem measure_biUnion_null_iff {I : Set ι} (hI : I.Countable) {s : ι → Set α} :
     μ (⋃ i ∈ I, s i) = 0 ↔ ∀ i ∈ I, μ (s i) = 0 := by
@@ -138,7 +142,7 @@ theorem measure_iUnion_of_tendsto_zero {ι} (μ : F) {s : ι → Set α} (l : Fi
   set S := ⋃ n, s n
   set M := ⨆ n, μ (s n)
   have A : ∀ k, μ S ≤ M + μ (S \ s k) := fun k ↦ calc
-    μ S ≤ μ (S ∩ s k) + μ (S \ s k) := measure_le_inter_add_diff _ _ _
+    μ S ≤ μ (S ∩ s k) + μ (S \ s k) := measure_le_inter_add_sdiff _ _ _
     _ ≤ μ (s k) + μ (S \ s k) := by gcongr; apply inter_subset_right
     _ ≤ M + μ (S \ s k) := by gcongr; exact le_iSup (μ ∘ s) k
   have B : Tendsto (fun k ↦ M + μ (S \ s k)) l (𝓝 M) := by simpa using tendsto_const_nhds.add h0
@@ -185,7 +189,7 @@ theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ →
   refine (m.mono ?_).trans (measure_iUnion_le _)
   -- Current goal: `(⋃ k, s k) \ s n ⊆ ⋃ k, s (k + n + 1) \ s (k + n)`
   have h' : Monotone s := @monotone_nat_of_le_succ (Set α) _ _ h_mono
-  simp only [diff_subset_iff, iUnion_subset_iff]
+  simp only [sdiff_subset_iff, iUnion_subset_iff]
   intro i x hx
   have : ∃ i, x ∈ s i := by exists i
   rcases Nat.findX this with ⟨j, hj, hlt⟩

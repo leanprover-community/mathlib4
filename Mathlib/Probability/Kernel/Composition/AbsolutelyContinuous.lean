@@ -27,7 +27,7 @@ or mutually singular.
 
 -/
 
-@[expose] public section
+public section
 
 open ProbabilityTheory Filter
 

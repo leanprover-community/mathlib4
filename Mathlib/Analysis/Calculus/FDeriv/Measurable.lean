@@ -319,7 +319,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
       lia
     set m := k - 1
     have m_ge : n e ≤ m := Nat.le_sub_one_of_lt k_gt
-    have km : k = m + 1 := (Nat.succ_pred_eq_of_pos (lt_of_le_of_lt (zero_le _) k_gt)).symm
+    have km : k = m + 1 := (Nat.succ_pred_eq_of_pos k_gt.pos).symm
     rw [km] at hk h'k
     -- `f` is well approximated by `L e (n e) k` at the relevant scale
     -- (in fact, we use `m = k - 1` instead of `k` because of the precise definition of `A`).
@@ -373,7 +373,7 @@ variable [CompleteSpace F]
 Borel-measurable. -/
 theorem measurableSet_of_differentiableAt : MeasurableSet { x | DifferentiableAt 𝕜 f x } := by
   have : IsComplete (univ : Set (E →L[𝕜] F)) := complete_univ
-  convert measurableSet_of_differentiableAt_of_isComplete 𝕜 f this
+  convert! measurableSet_of_differentiableAt_of_isComplete 𝕜 f this
   simp
 
 @[fun_prop]
@@ -399,12 +399,12 @@ variable {𝕜}
 @[fun_prop]
 theorem measurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜] [MeasurableSpace F]
     [BorelSpace F] (f : 𝕜 → F) : Measurable (deriv f) := by
-  simpa only [fderiv_deriv] using measurable_fderiv_apply_const 𝕜 f 1
+  simpa only [fderiv_apply_one_eq_deriv] using measurable_fderiv_apply_const 𝕜 f 1
 
 theorem stronglyMeasurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜]
     [h : SecondCountableTopologyEither 𝕜 F] (f : 𝕜 → F) : StronglyMeasurable (deriv f) := by
   borelize F
-  rcases h.out with h𝕜|hF
+  rcases h.out with h𝕜 | hF
   · exact stronglyMeasurable_iff_measurable_separable.2
       ⟨measurable_deriv f, isSeparable_range_deriv _⟩
   · exact (measurable_deriv f).stronglyMeasurable
@@ -646,7 +646,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
       lia
     set m := k - 1
     have m_ge : n e ≤ m := Nat.le_sub_one_of_lt k_gt
-    have km : k = m + 1 := (Nat.succ_pred_eq_of_pos (lt_of_le_of_lt (zero_le _) k_gt)).symm
+    have km : k = m + 1 := (Nat.succ_pred_eq_of_pos k_gt.pos).symm
     rw [km] at hk h'k
     -- `f` is well approximated by `L e (n e) k` at the relevant scale
     -- (in fact, we use `m = k - 1` instead of `k` because of the precise definition of `A`).
@@ -657,7 +657,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
           · simp only [one_div, inv_pow, left_mem_Icc, le_add_iff_nonneg_right]
             positivity
           · simp only [pow_add, tsub_le_iff_left] at h'k
-            simpa only [hy.1, mem_Icc, true_and, one_div, pow_one] using h'k
+            simpa only [hy.1, mem_Icc, true_and, one_div, pow_one] using! h'k
         _ = 4 * (1 / 2) ^ e * (1 / 2) ^ (m + 2) := by ring
         _ ≤ 4 * (1 / 2) ^ e * (y - x) := by gcongr
         _ = 4 * (1 / 2) ^ e * ‖y - x‖ := by rw [Real.norm_of_nonneg yzero.le]
@@ -671,7 +671,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
       _ ≤ 16 * ‖y - x‖ * (ε / 16) := by gcongr
       _ = ε * ‖y - x‖ := by ring
   -- Conclusion of the proof
-  rw [← this.derivWithin (uniqueDiffOn_Ici x x Set.left_mem_Ici)] at f'K
+  rw [← this.derivWithin (uniqueDiffOn_Ici x x Set.self_mem_Ici)] at f'K
   exact ⟨this.differentiableWithinAt, f'K⟩
 
 theorem differentiable_set_eq_D (hK : IsComplete K) :
@@ -701,7 +701,7 @@ Borel-measurable. -/
 theorem measurableSet_of_differentiableWithinAt_Ici :
     MeasurableSet { x | DifferentiableWithinAt ℝ f (Ici x) x } := by
   have : IsComplete (univ : Set F) := complete_univ
-  convert measurableSet_of_differentiableWithinAt_Ici_of_isComplete f this
+  convert! measurableSet_of_differentiableWithinAt_Ici_of_isComplete f this
   simp
 
 @[fun_prop]
@@ -859,7 +859,7 @@ lemma isOpen_B_with_param {r s t : ℝ} (hf : Continuous f.uncurry) (K : Set (E 
     IsOpen {p : α × E | p.2 ∈ B (f p.1) K r s t} := by
   suffices H : IsOpen (⋃ L ∈ K,
       {p : α × E | p.2 ∈ A (f p.1) L r t ∧ p.2 ∈ A (f p.1) L s t}) by
-    convert H; ext p; simp [B]
+    convert! H; ext p; simp [B]
   refine isOpen_biUnion (fun L _ ↦ ?_)
   exact (isOpen_A_with_param hf L).inter (isOpen_A_with_param hf L)
 
@@ -894,7 +894,7 @@ values in a complete space is Borel-measurable. -/
 theorem measurableSet_of_differentiableAt_with_param (hf : Continuous f.uncurry) :
     MeasurableSet {p : α × E | DifferentiableAt 𝕜 (f p.1) p.2} := by
   have : IsComplete (univ : Set (E →L[𝕜] F)) := complete_univ
-  convert measurableSet_of_differentiableAt_of_isComplete_with_param hf this
+  convert! measurableSet_of_differentiableAt_of_isComplete_with_param hf this
   simp
 
 theorem measurable_fderiv_with_param (hf : Continuous f.uncurry) :
@@ -921,14 +921,14 @@ theorem measurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpace 
     [OpensMeasurableSpace 𝕜] [MeasurableSpace F]
     [BorelSpace F] {f : α → 𝕜 → F} (hf : Continuous f.uncurry) :
     Measurable (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2) := by
-  simpa only [fderiv_deriv] using measurable_fderiv_apply_const_with_param 𝕜 hf 1
+  simpa only [fderiv_apply_one_eq_deriv] using measurable_fderiv_apply_const_with_param 𝕜 hf 1
 
 theorem stronglyMeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpace 𝕜]
     [OpensMeasurableSpace 𝕜] [h : SecondCountableTopologyEither α F]
     {f : α → 𝕜 → F} (hf : Continuous f.uncurry) :
     StronglyMeasurable (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2) := by
   borelize F
-  rcases h.out with hα|hF
+  rcases h.out with hα | hF
   · have : ProperSpace 𝕜 := .of_locallyCompactSpace 𝕜
     apply stronglyMeasurable_iff_measurable_separable.2 ⟨measurable_deriv_with_param hf, ?_⟩
     have : range (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2)

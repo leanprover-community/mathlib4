@@ -51,7 +51,7 @@ theorem exists_between_finsets [DenselyOrdered α] [NoMinOrder α]
         (exists_between (lo_lt_hi _ (Finset.max'_mem _ nlo) _ (Finset.min'_mem _ nhi))) fun m hm ↦
         ⟨m, fun x hx ↦ lt_of_le_of_lt (Finset.le_max' lo x hx) hm.1, fun y hy ↦
           lt_of_lt_of_le hm.2 (Finset.min'_le hi y hy)⟩
-    else-- upper set is empty, use `NoMaxOrder`
+    else -- upper set is empty, use `NoMaxOrder`
         Exists.elim
         (exists_gt (Finset.max' lo nlo)) fun m hm ↦
         ⟨m, fun x hx ↦ lt_of_le_of_lt (Finset.le_max' lo x hx) hm, fun y hy ↦ (nhi ⟨y, hy⟩).elim⟩
@@ -107,12 +107,11 @@ def PartialIso : Type _ :=
   { f : Finset (α × β) //
     ∀ p ∈ f, ∀ q ∈ f,
       cmp (Prod.fst p) (Prod.fst q) = cmp (Prod.snd p) (Prod.snd q) }
+deriving Preorder
 
 namespace PartialIso
 
 instance : Inhabited (PartialIso α β) := ⟨⟨∅, fun _p h _q ↦ (Finset.notMem_empty _ h).elim⟩⟩
-
-instance : Preorder (PartialIso α β) := Subtype.preorder _
 
 variable {α β}
 

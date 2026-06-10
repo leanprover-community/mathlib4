@@ -40,15 +40,14 @@ variable {α : Type*} (m : MeasurableSpace α) {s t : Set α}
 
 /-- The `MeasurableSpace` of sets which are measurable with respect to a given σ-algebra `m`
 on `α`, modulo a given σ-filter `l` on `α`. -/
+@[implicit_reducible]
 def eventuallyMeasurableSpace (l : Filter α) [CountableInterFilter l] : MeasurableSpace α where
   MeasurableSet' s := ∃ t, MeasurableSet t ∧ s =ᶠ[l] t
   measurableSet_empty := ⟨∅, MeasurableSet.empty, EventuallyEq.refl _ _ ⟩
   measurableSet_compl := fun _ ⟨t, ht, hts⟩ => ⟨tᶜ, ht.compl, hts.compl⟩
   measurableSet_iUnion s hs := by
     choose t ht hts using hs
-    exact ⟨⋃ i, t i, MeasurableSet.iUnion ht, EventuallyEq.countable_iUnion hts⟩
-
-@[deprecated (since := "2025-06-21")] alias EventuallyMeasurableSpace := eventuallyMeasurableSpace
+    exact ⟨⋃ i, t i, MeasurableSet.iUnion ht, .countable_iUnion hts⟩
 
 /-- We say a set `s` is an `EventuallyMeasurableSet` with respect to a given
 σ-algebra `m` and σ-filter `l` if it differs from a set in `m` by a set in
@@ -66,9 +65,6 @@ theorem MeasurableSet.eventuallyMeasurableSet (hs : MeasurableSet s) :
 theorem le_eventuallyMeasurableSpace : m ≤ eventuallyMeasurableSpace m l :=
   fun _ hs => hs.eventuallyMeasurableSet
 
-@[deprecated (since := "2025-06-21")] alias EventuallyMeasurableSpace.measurable_le :=
-  le_eventuallyMeasurableSpace
-
 theorem eventuallyMeasurableSet_of_mem_filter (hs : s ∈ l) : EventuallyMeasurableSet m l s :=
   ⟨univ, MeasurableSet.univ, eventuallyEq_univ.mpr hs⟩
 
@@ -84,9 +80,6 @@ section instances
 instance eventuallyMeasurableSingleton [MeasurableSingletonClass α] :
     @MeasurableSingletonClass α (eventuallyMeasurableSpace m l) :=
   @MeasurableSingletonClass.mk _ (_) <| fun x => (MeasurableSet.singleton x).eventuallyMeasurableSet
-
-@[deprecated (since := "2025-06-21")] alias EventuallyMeasurableSpace.measurableSingleton :=
-  eventuallyMeasurableSingleton
 
 end instances
 

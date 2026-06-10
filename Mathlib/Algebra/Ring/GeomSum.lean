@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Algebra.Ring.GrindInstances
 
 /-!
 # Partial sums of geometric series in a ring
@@ -20,7 +21,7 @@ which `x` and `y` commute. Even versions not using division or subtraction, vali
 are recorded.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field IsOrderedRing
 
@@ -74,7 +75,7 @@ lemma geom_sum₂_with_one (x : R) (n : ℕ) :
 /-- $x^n-y^n = (x-y) \sum x^ky^{n-1-k}$ reformulated without `-` signs. -/
 protected lemma Commute.geom_sum₂_mul_add {x y : R} (h : Commute x y) (n : ℕ) :
     (∑ i ∈ range n, (x + y) ^ i * y ^ (n - 1 - i)) * x + y ^ n = (x + y) ^ n := by
-  let f :  ℕ → ℕ → R := fun m i : ℕ => (x + y) ^ i * y ^ (m - 1 - i)
+  let f : ℕ → ℕ → R := fun m i : ℕ => (x + y) ^ i * y ^ (m - 1 - i)
   change (∑ i ∈ range n, (f n) i) * x + y ^ n = (x + y) ^ n
   induction n with
   | zero => rw [range_zero, sum_empty, zero_mul, zero_add, pow_zero, pow_zero]
@@ -116,7 +117,7 @@ protected lemma Commute.geom_sum₂_comm (n : ℕ) (h : Commute x y) :
   simp only [Nat.add_sub_cancel]
   rw [← Finset.sum_flip]
   refine Finset.sum_congr rfl fun i hi => ?_
-  simpa [Nat.sub_sub_self (Nat.succ_le_succ_iff.mp (Finset.mem_range.mp hi))] using h.pow_pow _ _
+  simpa [Nat.sub_sub_self (Nat.succ_le_succ_iff.mp (Finset.mem_range.mp hi))] using! h.pow_pow _ _
 
 -- TODO: for consistency, the next two lemmas should be moved to the root namespace
 lemma RingHom.map_geom_sum (x : R) (n : ℕ) (f : R →+* S) :
@@ -151,7 +152,7 @@ lemma geom_sum₂_mul_of_ge (hxy : y ≤ x) (n : ℕ) :
 lemma geom_sum₂_mul_of_le (hxy : x ≤ y) (n : ℕ) :
     (∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) * (y - x) = y ^ n - x ^ n := by
   rw [← Finset.sum_range_reflect]
-  convert geom_sum₂_mul_of_ge hxy n using 3
+  convert! geom_sum₂_mul_of_ge hxy n using 3
   simp_all only [Finset.mem_range]
   rw [mul_comm]
   congr
@@ -225,7 +226,7 @@ theorem dvd_pow_pow_sub_self_of_dvd {r : R} {p a b : ℕ} (h : a ∣ b) :
   rw [← Nat.sub_add_cancel (hp a), ← Nat.sub_add_cancel (hp b), pow_succ', pow_succ',
     ← mul_sub_one, ← mul_sub_one]
   refine mul_dvd_mul_left _ <| dvd_pow_sub_one_of_dvd <| Int.natCast_dvd_natCast.mp ?_
-  rw [Nat.cast_sub (hp a), Nat.cast_sub (hp b), Nat.cast_pow, Nat.cast_pow]
+  push_cast [hp a, hp b]
   exact dvd_pow_sub_one_of_dvd h
 
 lemma geom_sum_mul (x : R) (n : ℕ) : (∑ i ∈ range n, x ^ i) * (x - 1) = x ^ n - 1 := by
@@ -283,7 +284,7 @@ protected lemma Commute.geom_sum₂_Ico_mul (h : Commute x y) {m n : ℕ}
     have hp := Commute.pow_pow (Commute.op h.symm) (n - 1 - k) k
     simpa [Commute, SemiconjBy] using hp
   simp only [this]
-  convert (Commute.op h).mul_geom_sum₂_Ico hmn
+  convert! (Commute.op h).mul_geom_sum₂_Ico hmn
 
 lemma geom_sum_Ico_mul (x : R) {m n : ℕ} (hmn : m ≤ n) :
     (∑ i ∈ Finset.Ico m n, x ^ i) * (x - 1) = x ^ n - x ^ m := by
@@ -301,10 +302,6 @@ variable [CommRing R]
 theorem pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum {x : R} {m n : ℕ} :
     (x ^ m - 1) * ∑ k ∈ range n, x ^ k = (x ^ n - 1) * ∑ k ∈ range m, x ^ k := by
   grind [geom_sum_mul]
-
-@[deprecated (since := "2025-10-31")]
-protected alias IsPrimitiveRoot.pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum :=
-  pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum
 
 lemma geom_sum₂_mul (x y : R) (n : ℕ) :
     (∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) * (x - y) = x ^ n - y ^ n :=
@@ -338,13 +335,8 @@ protected lemma sub_dvd_pow_sub_pow : x - y ∣ x ^ n - y ^ n := by
   · have : x ^ n ≤ y ^ n := Nat.pow_le_pow_left h.le _
     exact (Nat.sub_eq_zero_of_le this).symm ▸ dvd_zero (x - y)
 
-@[deprecated (since := "2025-08-23")] alias nat_sub_dvd_pow_sub_pow := Nat.sub_dvd_pow_sub_pow
-
 lemma sub_one_dvd_pow_sub_one : x - 1 ∣ x ^ n - 1 := by
   simpa using x.sub_dvd_pow_sub_pow 1 n
-
-@[deprecated (since := "2025-08-23")]
-alias nat_pow_one_sub_dvd_pow_mul_sub_one := Nat.sub_one_dvd_pow_sub_one
 
 lemma pow_sub_pow_dvd_pow_sub_pow (hmk : m ∣ k) : x ^ m - y ^ m ∣ x ^ k - y ^ k := by
   obtain ⟨n, rfl⟩ := hmk; simpa [pow_mul] using (x ^ m).sub_dvd_pow_sub_pow (y ^ m) n

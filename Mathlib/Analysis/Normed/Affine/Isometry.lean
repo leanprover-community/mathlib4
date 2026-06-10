@@ -38,8 +38,7 @@ algebra-homomorphisms.)
 
 @[expose] public section
 
-
-open Function Set
+open Function Set Metric
 
 variable (𝕜 : Type*) {V V₁ V₁' V₂ V₃ V₄ : Type*} {P₁ P₁' : Type*} (P P₂ : Type*) {P₃ P₄ : Type*}
   [NormedField 𝕜]
@@ -76,7 +75,7 @@ theorem linear_eq_linearIsometry : f.linear = f.linearIsometry.toLinearMap := by
 
 instance : FunLike (P →ᵃⁱ[𝕜] P₂) P P₂ where
   coe f := f.toFun
-  coe_injective' f g := by cases f; cases g; simp
+  coe_injective f g := by cases f; cases g; simp
 
 @[simp]
 theorem coe_toAffineMap : ⇑f.toAffineMap = f := by
@@ -164,10 +163,10 @@ protected theorem antilipschitz : AntilipschitzWith 1 f :=
 protected theorem continuous : Continuous f :=
   f.isometry.continuous
 
-theorem ediam_image (s : Set P) : EMetric.diam (f '' s) = EMetric.diam s :=
+theorem ediam_image (s : Set P) : ediam (f '' s) = ediam s :=
   f.isometry.ediam_image s
 
-theorem ediam_range : EMetric.diam (range f) = EMetric.diam (univ : Set P) :=
+theorem ediam_range : ediam (range f) = ediam (univ : Set P) :=
   f.isometry.ediam_range
 
 theorem diam_image (s : Set P) : Metric.diam (f '' s) = Metric.diam s :=
@@ -634,7 +633,7 @@ protected theorem antilipschitz : AntilipschitzWith 1 e :=
   e.isometry.antilipschitz
 
 @[simp]
-theorem ediam_image (s : Set P) : EMetric.diam (e '' s) = EMetric.diam s :=
+theorem ediam_image (s : Set P) : ediam (e '' s) = ediam s :=
   e.isometry.ediam_image s
 
 @[simp]
@@ -746,7 +745,7 @@ include 𝕜 in
 is an isometry if `f` is one. -/
 theorem vadd_vsub {f : P → P₂} (hf : Isometry f) {p : P} {g : V → V₂}
     (hg : ∀ v, g v = f (v +ᵥ p) -ᵥ f p) : Isometry g := by
-  convert (vaddConst 𝕜 (f p)).symm.isometry.comp (hf.comp (vaddConst 𝕜 p).isometry)
+  convert! (vaddConst 𝕜 (f p)).symm.isometry.comp (hf.comp (vaddConst 𝕜 p).isometry)
   exact funext hg
 
 variable (𝕜) in

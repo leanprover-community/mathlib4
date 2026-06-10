@@ -9,7 +9,8 @@ public import Mathlib.Algebra.Order.Kleene
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Data.Set.Lattice
 public import Mathlib.Tactic.DeriveFintype
-import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Languages
@@ -63,14 +64,13 @@ variable {α β γ : Type*}
 /-- A language is a set of strings over an alphabet. -/
 def Language (α) :=
   Set (List α)
+deriving CompleteAtomicBooleanAlgebra
 
 namespace Language
 
 instance : Membership (List α) (Language α) := ⟨Set.Mem⟩
 instance : Singleton (List α) (Language α) := ⟨Set.singleton⟩
 instance : Insert (List α) (Language α) := ⟨Set.insert⟩
-instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Language α) :=
-  Set.instCompleteAtomicBooleanAlgebra
 
 variable {l m : Language α} {a b x : List α}
 
@@ -126,8 +126,6 @@ theorem ext {l m : Language α} (h : ∀ (x : List α), x ∈ l ↔ x ∈ m) : l
 @[simp]
 theorem notMem_zero (x : List α) : x ∉ (0 : Language α) :=
   id
-
-@[deprecated (since := "2025-05-23")] alias not_mem_zero := notMem_zero
 
 @[simp]
 theorem mem_one (x : List α) : x ∈ (1 : Language α) ↔ x = [] := by rfl
@@ -219,10 +217,6 @@ instance : MulLeftMono (Language α) where
 instance : MulRightMono (Language α) where
   elim _ _ _ := image2_subset_right
 
-@[deprecated mul_le_mul' (since := "2025-10-26")]
-theorem le_mul_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ * l₂ ≤ m₁ * m₂ :=
-  mul_le_mul'
-
 theorem mem_iSup {ι : Sort v} {l : ι → Language α} {x : List α} : (x ∈ ⨆ i, l i) ↔ ∃ i, x ∈ l i :=
   mem_iUnion
 
@@ -244,11 +238,11 @@ theorem add_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Langu
 
 theorem iSup_sub {ι : Sort v} (l : ι → Language α) (m : Language α) :
     (⨆ i, l i) - m = ⨆ i, l i - m :=
-  iUnion_diff _ _
+  iUnion_sdiff _ _
 
 theorem sub_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Language α) :
     (m - ⨆ i, l i) = ⨅ i, m - l i :=
-  diff_iUnion _ _
+  sdiff_iUnion _ _
 
 theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     x ∈ l ^ n ↔ ∃ S : List (List α), x = S.flatten ∧ S.length = n ∧ ∀ y ∈ S, y ∈ l := by
@@ -302,11 +296,7 @@ instance : KleeneAlgebra (Language α) where
     refine iSup_le fun n ↦ ?_
     induction n with
     | zero => simp
-    | succ n ih => grw [pow_succ, ← mul_assoc m (l^n) l, ih, h]
-
-@[deprecated add_le_add (since := "2025-10-26")]
-theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ + l₂ ≤ m₁ + m₂ :=
-  add_le_add
+    | succ n ih => grw [pow_succ, ← mul_assoc m (l ^ n) l, ih, h]
 
 /-- **Arden's lemma** -/
 theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + n ↔ l = m∗ * n where
@@ -410,8 +400,8 @@ lemma reverse_kstar (l : Language α) : l∗.reverse = l.reverse∗ := by
 lemma mem_inf {x : List α} {l m : Language α} : x ∈ l ⊓ m ↔ x ∈ l ∧ x ∈ m := by
   apply Set.mem_inter_iff
 
-lemma compl_compl (l : Language α) : lᶜᶜ = l := by
-  simp [compl]
+lemma compl_compl (l : Language α) : lᶜᶜ = l :=
+  _root_.compl_compl l
 
 end Language
 

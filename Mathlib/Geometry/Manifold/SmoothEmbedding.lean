@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.Immersion
 public import Mathlib.Geometry.Manifold.ContMDiff.Defs
-public import Mathlib.Geometry.Manifold.Diffeomorph
+public import Mathlib.Geometry.Manifold.Diffeomorph  -- shake: keep (used in `proof_wanted` only)
 
 /-! # Smooth embeddings
 
@@ -44,7 +44,7 @@ This will be useful to define embedded submanifolds.
 open scoped ContDiff
 open Topology
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -61,7 +61,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {M M' N N' : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [TopologicalSpace M'] [ChartedSpace H' M']
   [TopologicalSpace N] [ChartedSpace G N] [TopologicalSpace N'] [ChartedSpace G' N']
-  {n : WithTop ℕ∞}
+  {n : ℕ∞ω}
 
 variable (I J n) in
 /-- A `C^k` map `f : M → M'` is a smooth `C^k` embedding if it is a topological embedding

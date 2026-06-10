@@ -72,8 +72,8 @@ variable {ι ι' G H : Type*} [Group G] [Group H]
 the generators. -/
 instance instFunLike : FunLike (FreeGroupBasis ι G) ι G where
   coe b := fun i ↦ b.repr.symm (FreeGroup.of i)
-  coe_injective' := by
-    rintro ⟨b⟩  ⟨b'⟩ hbb'
+  coe_injective := by
+    rintro ⟨b⟩ ⟨b'⟩ hbb'
     have H : (b.symm : FreeGroup ι →* G) = (b'.symm : FreeGroup ι →* G) := by
       ext i; exact congr_fun hbb' i
     have : b.symm = b'.symm := by ext x; exact DFunLike.congr_fun H x
@@ -145,8 +145,8 @@ def ofLift {G : Type u} [Group G] (X : Type u) (of : X → G)
         simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.id_apply,
           FreeGroup.lift_apply_of, lift_of])
       (by
-        let lift_symm_of : ∀ {H : Type u} [Group H], ∀ (f : G →* H) (a), lift.symm f a = f (of a) :=
-          by intro H _ f a; simp [← lift_of (lift.symm f)]
+        let lift_symm_of : ∀ {H : Type u} [Group H], ∀ (f : G →* H) (a),
+          lift.symm f a = f (of a) := by intro H _ f a; simp [← lift_of (lift.symm f)]
         apply lift.symm.injective; ext x
         simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.id_apply,
           FreeGroup.lift_apply_of, lift_of, lift_symm_of])
@@ -218,7 +218,7 @@ group extends in a unique way to a homomorphism from `G`.
 Note that since `IsFreeGroup.lift` is expressed as a bijection, it already
 expresses the universal property. -/
 theorem unique_lift (f : Generators G → H) : ∃! F : G →* H, ∀ a, F (of a) = f a := by
-  simpa only [funext_iff] using lift.symm.bijective.existsUnique f
+  simpa only [funext_iff] using! lift.symm.bijective.existsUnique f
 
 /-- If a group satisfies the universal property of a free group with respect to a given type, then
 it is free. Here, the universal property is expressed as in `IsFreeGroup.lift` and its

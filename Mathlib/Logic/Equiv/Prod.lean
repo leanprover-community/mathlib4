@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.Contrapose
-public import Mathlib.Data.Prod.PProd
 
 /-!
 # Equivalence between product types

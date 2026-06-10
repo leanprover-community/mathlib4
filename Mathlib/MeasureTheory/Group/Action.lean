@@ -22,7 +22,7 @@ typeclass for measures invariant under action of an (additive or multiplicative)
 some basic properties of such measures.
 -/
 
-@[expose] public section
+public section
 
 
 open scoped ENNReal NNReal Pointwise Topology symmDiff
@@ -171,9 +171,9 @@ theorem smul_set_ae_eq (c : G) {s t : Set α} : c • s =ᵐ[μ] c • t ↔ s =
 
 end AE
 
-section MeasurableSMul
+section MeasurableConstSMul
 
-variable {m : MeasurableSpace α} [MeasurableSpace M] [SMul M α] [MeasurableSMul M α] (c : M)
+variable {m : MeasurableSpace α} [SMul M α] [MeasurableConstSMul M α] (c : M)
   (μ : Measure α) [SMulInvariantMeasure M α μ]
 
 @[to_additive (attr := simp)]
@@ -188,7 +188,7 @@ theorem measurePreserving_smul : MeasurePreserving (c • ·) μ μ :=
 protected theorem map_smul : map (c • ·) μ = μ :=
   (measurePreserving_smul c μ).map_eq
 
-end MeasurableSMul
+end MeasurableConstSMul
 
 @[to_additive]
 theorem MeasurePreserving.smulInvariantMeasure_iterateMulAct
@@ -209,26 +209,26 @@ section SMulHomClass
 
 universe uM uN uα uβ
 variable {M : Type uM} {N : Type uN} {α : Type uα} {β : Type uβ}
-  [MeasurableSpace M] [MeasurableSpace N] [MeasurableSpace α] [MeasurableSpace β]
+  [MeasurableSpace α] [MeasurableSpace β]
 
 @[to_additive]
 theorem smulInvariantMeasure_map [SMul M α] [SMul M β]
-    [MeasurableSMul M β]
+    [MeasurableConstSMul M β]
     (μ : Measure α) [SMulInvariantMeasure M α μ] (f : α → β)
     (hsmul : ∀ (m : M) a, f (m • a) = m • f a) (hf : Measurable f) :
     SMulInvariantMeasure M β (map f μ) where
   measure_preimage_smul m S hS := calc
     map f μ ((m • ·) ⁻¹' S)
-    _ = μ (f ⁻¹' ((m • ·) ⁻¹' S)) := map_apply hf <| hS.preimage (measurable_const_smul _)
+    _ = μ (f ⁻¹' (m • ·) ⁻¹' S) := map_apply hf <| hS.preimage (measurable_const_smul _)
     _ = μ ((m • f ·) ⁻¹' S) := by rw [preimage_preimage]
     _ = μ ((f <| m • ·) ⁻¹' S) := by simp_rw [hsmul]
-    _ = μ ((m • ·) ⁻¹' (f ⁻¹' S)) := by rw [← preimage_preimage]
+    _ = μ ((m • ·) ⁻¹' f ⁻¹' S) := by rw [← preimage_preimage]
     _ = μ (f ⁻¹' S) := by rw [SMulInvariantMeasure.measure_preimage_smul m (hS.preimage hf)]
     _ = map f μ S := (map_apply hf hS).symm
 
 @[to_additive]
 instance smulInvariantMeasure_map_smul [SMul M α] [SMul N α] [SMulCommClass N M α]
-    [MeasurableSMul M α] [MeasurableSMul N α]
+    [MeasurableConstSMul M α] [MeasurableConstSMul N α]
     (μ : Measure α) [SMulInvariantMeasure M α μ] (n : N) :
     SMulInvariantMeasure M α (map (n • ·) μ) :=
   smulInvariantMeasure_map μ _ (smul_comm n) <| measurable_const_smul _
@@ -237,22 +237,23 @@ end SMulHomClass
 
 variable (G) {m : MeasurableSpace α} [Group G] [MulAction G α] (μ : Measure α)
 
-variable [MeasurableSpace G] [MeasurableSMul G α] in
+variable [MeasurableConstSMul G α] in
 /-- Equivalent definitions of a measure invariant under a multiplicative action of a group.
 
-- 0: `SMulInvariantMeasure G α μ`;
+0. `SMulInvariantMeasure G α μ`;
 
-- 1: for every `c : G` and a measurable set `s`, the measure of the preimage of `s` under scalar
-     multiplication by `c` is equal to the measure of `s`;
+1. for every `c : G` and a measurable set `s`, the measure of the preimage of `s` under scalar
+  multiplication by `c` is equal to the measure of `s`;
 
-- 2: for every `c : G` and a measurable set `s`, the measure of the image `c • s` of `s` under
-     scalar multiplication by `c` is equal to the measure of `s`;
+2. for every `c : G` and a measurable set `s`, the measure of the image `c • s` of `s` under
+  scalar multiplication by `c` is equal to the measure of `s`;
 
-- 3, 4: properties 2, 3 for any set, including non-measurable ones;
+3. property 1 for any set, including non-measurable ones;
+4. property 2 for any set, including non-measurable ones;
 
-- 5: for any `c : G`, scalar multiplication by `c` maps `μ` to `μ`;
+5. for any `c : G`, scalar multiplication by `c` maps `μ` to `μ`;
 
-- 6: for any `c : G`, scalar multiplication by `c` is a measure-preserving map. -/
+6. for any `c : G`, scalar multiplication by `c` is a measure-preserving map. -/
 @[to_additive]
 theorem smulInvariantMeasure_tfae :
     List.TFAE
@@ -299,7 +300,7 @@ variable {G}
 variable [SMulInvariantMeasure G α μ]
 
 variable {μ}
-variable [MeasurableSpace G] [MeasurableSMul G α] in
+variable [MeasurableConstSMul G α] in
 @[to_additive]
 theorem NullMeasurableSet.smul {s} (hs : NullMeasurableSet s μ) (c : G) :
     NullMeasurableSet (c • s) μ := by

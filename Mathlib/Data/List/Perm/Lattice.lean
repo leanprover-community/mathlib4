@@ -16,7 +16,7 @@ public import Mathlib.Data.List.Nodup
 This file develops theory about the `List.Perm` relation and the lattice structure on lists.
 -/
 
-@[expose] public section
+public section
 
 -- Make sure we don't import algebra
 assert_not_exists Monoid
@@ -45,6 +45,9 @@ theorem Perm.bagInter {l₁ l₂ t₁ t₂ : List α} (hl : l₁ ~ l₂) (ht : t
     l₁.bagInter t₁ ~ l₂.bagInter t₂ :=
   ht.bagInter_left l₂ ▸ hl.bagInter_right _
 
+theorem Perm.bagInter_symm (l₁ l₂ : List α) : (l₁.bagInter l₂).Perm (l₂.bagInter l₁) :=
+  perm_iff_count.mpr fun _ ↦ (by simp [List.count_bagInter, Nat.min_comm])
+
 theorem Perm.inter_append {l t₁ t₂ : List α} (h : Disjoint t₁ t₂) :
     l ∩ (t₁ ++ t₂) ~ l ∩ t₁ ++ l ∩ t₂ := by
   induction l with
@@ -56,10 +59,7 @@ theorem Perm.inter_append {l t₁ t₂ : List α} (h : Disjoint t₁ t₂) :
     by_cases h₂ : x ∈ t₂
     · simp only [*, inter_cons_of_notMem, false_or, mem_append, inter_cons_of_mem,
         not_false_iff]
-      refine Perm.trans (Perm.cons _ l_ih) ?_
-      change [x] ++ xs ∩ t₁ ++ xs ∩ t₂ ~ xs ∩ t₁ ++ ([x] ++ xs ∩ t₂)
-      rw [← List.append_assoc]
-      solve_by_elim [Perm.append_right, perm_append_comm]
+      exact perm_cons_append_cons _ l_ih
     · simp [*]
 
 theorem Perm.take_inter {xs ys : List α} (n : ℕ) (h : xs ~ ys)

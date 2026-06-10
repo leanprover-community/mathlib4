@@ -27,7 +27,7 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 ## TODO
 
 * Use this for `RingQuot` too.
-* Copy across more API from `Con` and `AddCon` in `GroupTheory/Congruence.lean`.
+* Copy across more API from `Con` and `AddCon` in `Mathlib/GroupTheory/Congruence/`.
 -/
 
 @[expose] public section
@@ -79,7 +79,7 @@ lemma toCon_injective : Injective fun c : RingCon R ↦ c.toCon := fun c d ↦ b
 /-- A coercion from a congruence relation to its underlying binary relation. -/
 instance : FunLike (RingCon R) R (R → Prop) where
   coe c := c.r
-  coe_injective' := DFunLike.coe_injective.comp toCon_injective
+  coe_injective := DFunLike.coe_injective.comp toCon_injective
 
 variable (c)
 
@@ -121,7 +121,7 @@ protected theorem zsmul {S : Type*} [AddGroup S] [Mul S] (t : RingCon S)
     (z : ℤ) {x y : S} (hx : t x y) : t (z • x) (z • y) := t.toAddCon.zsmul z hx
 
 instance : Inhabited (RingCon R) :=
-  ⟨ringConGen EmptyRelation⟩
+  ⟨ringConGen emptyRelation⟩
 
 @[simp]
 theorem rel_mk {s : Con R} {h a b} : RingCon.mk s h a b ↔ s a b :=
