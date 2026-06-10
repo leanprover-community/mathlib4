@@ -519,8 +519,8 @@ theorem toENNRealVectorMeasure_apply_measurable {μ : Measure α} {i : Set α} (
 
 @[simp]
 theorem toENNRealVectorMeasure_zero : (0 : Measure α).toENNRealVectorMeasure = 0 := by
-  ext i hi
-  simp [hi]
+  ext i
+  simp
 
 @[simp]
 theorem toENNRealVectorMeasure_add (μ ν : Measure α) :
