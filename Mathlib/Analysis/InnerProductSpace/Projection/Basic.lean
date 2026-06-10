@@ -652,7 +652,7 @@ lemma re_inner_starProjection_eq_normSq [K.HasOrthogonalProjection] (v : E) :
     ← mul_sub_one, show (2 : ℝ) - 1 = 1 by norm_num, mul_one, sub_eq_iff_eq_add', norm_sub_rev]
   simpa [sq, add_comm] using K.norm_sq_eq_add_norm_sq_starProjection v
 
-@[deprecated "Use `re_inner_starProjection_eq_normSq`" (since := "2026-06-10")]
+@[deprecated norm_sq_eq_add_norm_sq_starProjection (since := "2026-06-10")]
 theorem orthogonalProjectionFn_norm_sq [K.HasOrthogonalProjection] (v : E) :
     ‖v‖ * ‖v‖ = ‖v - K.orthogonalProjectionFn v‖ * ‖v - K.orthogonalProjectionFn v‖ +
       ‖K.orthogonalProjectionFn v‖ * ‖K.orthogonalProjectionFn v‖ := by
