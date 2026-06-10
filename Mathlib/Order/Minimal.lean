@@ -32,7 +32,7 @@ but it may be worth re-examining this to make it easier in the future; see the T
 * In the linearly ordered case, versions of lemmas like `minimal_mem_image` will hold with
   `MonotoneOn`/`AntitoneOn` assumptions rather than the stronger `x ≤ y ↔ f x ≤ f y` assumptions.
 
-* `Set.maximal_iff_forall_insert` and `Set.minimal_iff_forall_diff_singleton` will generalize to
+* `Set.maximal_iff_forall_insert` and `Set.minimal_iff_forall_sdiff_singleton` will generalize to
   lemmas about covering in the case of an `IsStronglyAtomic`/`IsStronglyCoatomic` order.
 
 * `Finset` versions of the lemmas about sets.
@@ -218,7 +218,8 @@ variable [WellFoundedLT α]
 @[to_dual]
 lemma exists_minimalFor_of_wellFoundedLT (P : ι → Prop) (f : ι → α) (hP : ∃ i, P i) :
     ∃ i, MinimalFor P f i := by
-  simpa [not_lt_iff_le_imp_ge, InvImage] using (instIsWellFoundedInvImage (· < ·) f).wf.has_min _ hP
+  simpa [not_lt_iff_le_imp_ge, InvImage]
+    using! (instIsWellFoundedInvImage (· < ·) f).wf.has_min _ hP
 
 @[to_dual]
 lemma exists_minimal_of_wellFoundedLT (P : α → Prop) (hP : ∃ a, P a) : ∃ a, Minimal P a :=
@@ -337,18 +338,27 @@ theorem Minimal.not_ssubset (h : Minimal P s) (ht : P t) : ¬ t ⊂ s :=
 theorem Maximal.mem_of_prop_insert (h : Maximal P s) (hx : P (insert x s)) : x ∈ s :=
   h.eq_of_subset hx (subset_insert _ _) ▸ mem_insert ..
 
-theorem Minimal.notMem_of_prop_diff_singleton (h : Minimal P s) (hx : P (s \ {x})) : x ∉ s :=
-  fun hxs ↦ ((h.eq_of_superset hx diff_subset).subset hxs).2 rfl
+theorem Minimal.notMem_of_prop_sdiff_singleton (h : Minimal P s) (hx : P (s \ {x})) : x ∉ s :=
+  fun hxs ↦ ((h.eq_of_superset hx sdiff_subset).subset hxs).2 rfl
 
-theorem Set.minimal_iff_forall_diff_singleton (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) :
+@[deprecated (since := "2026-06-03")]
+alias Minimal.notMem_of_prop_diff_singleton := Minimal.notMem_of_prop_sdiff_singleton
+
+theorem Set.minimal_iff_forall_sdiff_singleton (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) :
     Minimal P s ↔ P s ∧ ∀ x ∈ s, ¬ P (s \ {x}) :=
-  ⟨fun h ↦ ⟨h.1, fun _ hx hP ↦ h.notMem_of_prop_diff_singleton hP hx⟩,
+  ⟨fun h ↦ ⟨h.1, fun _ hx hP ↦ h.notMem_of_prop_sdiff_singleton hP hx⟩,
     fun h ↦ ⟨h.1, fun _ ht hts x hxs ↦ by_contra fun hxt ↦
-      h.2 x hxs (hP ht <| subset_diff_singleton hts hxt)⟩⟩
+      h.2 x hxs (hP ht <| subset_sdiff_singleton hts hxt)⟩⟩
 
-theorem Set.exists_diff_singleton_of_not_minimal (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) (hs : P s)
+@[deprecated (since := "2026-06-03")]
+alias Set.minimal_iff_forall_diff_singleton := Set.minimal_iff_forall_sdiff_singleton
+
+theorem Set.exists_sdiff_singleton_of_not_minimal (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) (hs : P s)
     (h : ¬ Minimal P s) : ∃ x ∈ s, P (s \ {x}) := by
-  simpa [Set.minimal_iff_forall_diff_singleton hP, hs] using h
+  simpa [Set.minimal_iff_forall_sdiff_singleton hP, hs] using h
+
+@[deprecated (since := "2026-06-03")]
+alias Set.exists_diff_singleton_of_not_minimal := Set.exists_sdiff_singleton_of_not_minimal
 
 theorem Set.maximal_iff_forall_ssuperset : Maximal P s ↔ P s ∧ ∀ ⦃t⦄, s ⊂ t → ¬ P t :=
   maximal_iff_forall_gt
@@ -369,7 +379,7 @@ theorem Set.exists_insert_of_not_maximal (hP : ∀ ⦃s t⦄, P t → s ⊆ t �
     (h : ¬ Maximal P s) : ∃ x ∉ s, P (insert x s) := by
   simpa [Set.maximal_iff_forall_insert hP, hs] using h
 
-/- TODO : generalize `minimal_iff_forall_diff_singleton` and `maximal_iff_forall_insert`
+/- TODO : generalize `minimal_iff_forall_sdiff_singleton` and `maximal_iff_forall_insert`
 to `IsStronglyCoatomic`/`IsStronglyAtomic` orders. -/
 
 end Subset
@@ -521,7 +531,7 @@ theorem image_setOf_minimal (f : α ≃o β) (P : α → Prop) :
 theorem map_minimal_mem (f : s ≃o t) (hx : Minimal (· ∈ s) x) :
     Minimal (· ∈ t) (f ⟨x, hx.prop⟩) := by
   simpa only [show t = range (Subtype.val ∘ f) by simp, mem_univ, minimal_true_subtype, hx,
-    true_imp_iff, image_univ] using OrderEmbedding.minimal_mem_image
+    true_imp_iff, image_univ] using! OrderEmbedding.minimal_mem_image
     (f.toOrderEmbedding.trans (OrderEmbedding.subtype (· ∈ t))) (s := univ) (x := ⟨x, hx.prop⟩)
 
 /-- If two sets are order isomorphic, their minimals are also order isomorphic. -/

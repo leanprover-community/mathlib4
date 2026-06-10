@@ -68,6 +68,7 @@ variable (R M)
 variable (x y : L)
 
 open LieModule LinearMap
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 local notation "φ" => LieModule.toEnd R L M
 
@@ -223,7 +224,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
         simp only [hz₀, map_zero, LinearMap.zero_apply]
     -- If `z ≠ 0`, then `⁅α • u + x, z⁆` vanishes per axiom of Lie algebras
     refine ⟨⟨z, hUle z.2⟩, ?_, ?_⟩
-    · simpa only [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero, Subtype.ext_iff] using hz₀
+    · simpa only [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero, Subtype.ext_iff] using! hz₀
     · change ⁅z, _⁆ = (0 : E)
       ext
       exact lie_self z.1
@@ -309,7 +310,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     replace this : engel K x ≤ engel K (v : L) := (hmin ⟨_, v, v.2, rfl⟩ this).ge
     intro z
     -- And so we are done, by the definition of Engel subalgebra.
-    simpa only [mem_engel_iff, Subtype.ext_iff, coe_toEnd_pow _ _ _ E] using this z.2
+    simpa only [mem_engel_iff, Subtype.ext_iff, coe_toEnd_pow _ _ _ E] using! this z.2
   -- Now we are in good shape.
   -- Fix an element `z` in the Engel subalgebra of `y`.
   intro z hz

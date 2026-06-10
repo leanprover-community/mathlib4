@@ -392,16 +392,22 @@ theorem _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t
   rw [disjoint_iff_inter_eq_empty] at h ⊢
   rw [← hf.image_inter hs ht, h, image_empty]
 
-lemma InjOn.image_diff {t : Set α} (h : s.InjOn f) : f '' (s \ t) = f '' s \ f '' (s ∩ t) := by
-  refine subset_antisymm (subset_diff.2 ⟨image_mono diff_subset, ?_⟩)
-    (diff_subset_iff.2 (by rw [← image_union, inter_union_diff]))
-  exact Disjoint.image disjoint_sdiff_inter h diff_subset inter_subset_left
+lemma InjOn.image_sdiff {t : Set α} (h : s.InjOn f) : f '' (s \ t) = f '' s \ f '' (s ∩ t) := by
+  refine subset_antisymm (subset_sdiff.2 ⟨image_mono sdiff_subset, ?_⟩)
+    (sdiff_subset_iff.2 (by rw [← image_union, inter_union_sdiff]))
+  exact Disjoint.image disjoint_sdiff_inter h sdiff_subset inter_subset_left
 
-lemma InjOn.image_diff_subset {f : α → β} {t : Set α} (h : InjOn f s) (hst : t ⊆ s) :
+@[deprecated (since := "2026-06-03")] alias InjOn.image_diff := InjOn.image_sdiff
+
+lemma InjOn.image_sdiff_subset {f : α → β} {t : Set α} (h : InjOn f s) (hst : t ⊆ s) :
     f '' (s \ t) = f '' s \ f '' t := by
-  rw [h.image_diff, inter_eq_self_of_subset_right hst]
+  rw [h.image_sdiff, inter_eq_self_of_subset_right hst]
 
-alias image_diff_of_injOn := InjOn.image_diff_subset
+@[deprecated (since := "2026-06-03")] alias InjOn.image_diff_subset := InjOn.image_sdiff_subset
+
+alias image_sdiff_of_injOn := InjOn.image_sdiff_subset
+
+@[deprecated (since := "2026-06-03")] alias image_diff_of_injOn := image_sdiff_of_injOn
 
 theorem InjOn.imageFactorization_injective (h : InjOn f s) :
     Injective (s.imageFactorization f) :=
@@ -755,8 +761,8 @@ theorem BijOn.insert_iff (ha : a ∉ s) (hfa : f a ∉ t) :
     BijOn f (insert a s) (insert (f a) t) ↔ BijOn f s t where
   mp h := by
     have := congrArg (· \ {f a}) (image_insert_eq ▸ h.image_eq)
-    simp only [mem_singleton_iff, insert_diff_of_mem] at this
-    rw [diff_singleton_eq_self hfa, diff_singleton_eq_self] at this
+    simp only [mem_singleton_iff, insert_sdiff_of_mem] at this
+    rw [sdiff_singleton_eq_self hfa, sdiff_singleton_eq_self] at this
     · exact ⟨by simp [← this, mapsTo_iff_image_subset], h.injOn.mono (subset_insert ..),
         by simp [← this, surjOn_image]⟩
     simp only [mem_image, not_exists, not_and]
@@ -776,8 +782,8 @@ theorem BijOn.insert (h₁ : BijOn f s t) (h₂ : f a ∉ t) :
 
 theorem BijOn.sdiff_singleton (h₁ : BijOn f s t) (h₂ : a ∈ s) :
     BijOn f (s \ {a}) (t \ {f a}) := by
-  convert! h₁.subset_left diff_subset
-  simp [h₁.injOn.image_diff, h₁.image_eq, h₂, inter_eq_self_of_subset_right]
+  convert! h₁.subset_left sdiff_subset
+  simp [h₁.injOn.image_sdiff, h₁.image_eq, h₂, inter_eq_self_of_subset_right]
 
 end bijOn
 
@@ -1069,17 +1075,17 @@ then `s₁` has a subset containing `s` that `f` maps bijectively to `t'`. -/
 theorem BijOn.exists_extend_of_subset {t' : Set β} (h : BijOn f s t) (hss₁ : s ⊆ s₁) (htt' : t ⊆ t')
     (ht' : SurjOn f s₁ t') : ∃ s', s ⊆ s' ∧ s' ⊆ s₁ ∧ Set.BijOn f s' t' := by
   obtain ⟨r, hrss, hbij⟩ := exists_subset_bijOn ((s₁ ∩ f ⁻¹' t') \ f ⁻¹' t) f
-  rw [image_diff_preimage, image_inter_preimage] at hbij
+  rw [image_sdiff_preimage, image_inter_preimage] at hbij
   refine ⟨s ∪ r, subset_union_left, ?_, ?_, ?_, fun y hyt' ↦ ?_⟩
-  · exact union_subset hss₁ <| hrss.trans <| diff_subset.trans inter_subset_left
+  · exact union_subset hss₁ <| hrss.trans <| sdiff_subset.trans inter_subset_left
   · rw [mapsTo_iff_image_subset, image_union, hbij.image_eq, h.image_eq, union_subset_iff]
-    exact ⟨htt', diff_subset.trans inter_subset_right⟩
+    exact ⟨htt', sdiff_subset.trans inter_subset_right⟩
   · rw [injOn_union, and_iff_right h.injOn, and_iff_right hbij.injOn]
     · refine fun x hxs y hyr hxy ↦ (hrss hyr).2 ?_
       rw [← h.image_eq]
       exact ⟨x, hxs, hxy⟩
-    exact (subset_diff.1 hrss).2.symm.mono_left h.mapsTo
-  rw [image_union, h.image_eq, hbij.image_eq, union_diff_self]
+    exact (subset_sdiff.1 hrss).2.symm.mono_left h.mapsTo
+  rw [image_union, h.image_eq, hbij.image_eq, union_sdiff_self]
   exact .inr ⟨ht' hyt', hyt'⟩
 
 /-- If `f` maps `s` bijectively to `t`, and `t'` is a superset of `t` contained in the range of `f`,
