@@ -208,6 +208,11 @@ lemma monomial_eq_monomial_iff {m n : ℕ} {a b : R} :
   simp only [← ofFinsupp_single, SkewMonoidAlgebra.ofFinsupp_inj, Finsupp.single_eq_single_iff,
     EmbeddingLike.apply_eq_iff_eq]
 
+lemma induction {motive : SkewPolynomial R → Prop} (p : SkewPolynomial R) (h0 : motive 0)
+  (ha : ∀ (n : ℕ) (r : R) (q : SkewPolynomial R), n ∉ q.support → r ≠ 0 → motive q →
+    motive (SkewPolynomial.monomial n r + q)) : motive p := by
+  apply SkewMonoidAlgebra.induction <;> aesop
+
 end Monomial
 section phi
 
@@ -554,9 +559,13 @@ lemma sum_add_index (p q : SkewPolynomial R) (f : ℕ → R → S) (hf : ∀ i, 
   simp only [sum_def']
   exact SkewMonoidAlgebra.sum_add_index (fun n _ ↦ hf (toAdd n)) (fun n _ ↦ h_add (toAdd n))
 
+/-- See also `SkewPolynomial.sum_add`. -/
+@[simp]
 lemma sum_add' (p : SkewPolynomial R) (f g : ℕ → R → S) : p.sum (f + g) = p.sum f + p.sum g := by
   simp [sum_def, Finset.sum_add_distrib]
 
+/-- See also `SkewPolynomial.sum_add'`. -/
+@[simp]
 lemma sum_add (p : SkewPolynomial R) (f g : ℕ → R → S) :
     (p.sum fun n x ↦ f n x + g n x) = p.sum f + p.sum g :=
   sum_add' _ _ _
@@ -576,11 +585,6 @@ protected lemma smul_sum {T : Type*} [DistribSMul T S] (p : SkewPolynomial R) (b
   Finsupp.smul_sum
 
 end Sum
-
-lemma induction {motive : SkewPolynomial R → Prop} (p : SkewPolynomial R) (h0 : motive 0)
-  (ha : ∀ (n : ℕ) (r : R) (q : SkewPolynomial R), n ∉ q.support → r ≠ 0 → motive q →
-    motive (SkewPolynomial.monomial n r + q)) : motive p := by
-  apply SkewMonoidAlgebra.induction <;> aesop
 
 @[simp]
 lemma coeff_add (p q : SkewPolynomial R) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q n :=

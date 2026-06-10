@@ -894,14 +894,18 @@ theorem sum_add_index {S : Type*} [AddCommMonoid S] (p q : R[X]) (f : ℕ → R 
   rw [show p + q = ⟨p.toFinsupp + q.toFinsupp⟩ from rfl]
   exact Finsupp.sum_add_index (fun i _ ↦ hf i) (fun a _ b₁ b₂ ↦ h_add a b₁ b₂)
 
+/-- See also `Polynomial.sum_add`. -/
+@[simp]
 theorem sum_add' {S : Type*} [AddCommMonoid S] (p : R[X]) (f g : ℕ → R → S) :
     p.sum (f + g) = p.sum f + p.sum g := by simp [sum_def, Finset.sum_add_distrib]
 
+/-- See also `Polynomial.sum_add'`. -/
+@[simp]
 theorem sum_add {S : Type*} [AddCommMonoid S] (p : R[X]) (f g : ℕ → R → S) :
     (p.sum fun n x ↦ f n x + g n x) = p.sum f + p.sum g :=
   sum_add' _ _ _
 
-/-- See also `SkewPolynomial.sum_smul_index'` for a version using `smul` on the RHS. -/
+/-- See also `Polynomial.sum_smul_index'` for a version using `smul` on the RHS. -/
 theorem sum_smul_index {S : Type*} [AddCommMonoid S] (p : R[X]) (b : R) (f : ℕ → R → S)
     (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a ↦ f n (b * a) :=
   Finsupp.sum_smul_index hf
