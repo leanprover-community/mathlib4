@@ -43,7 +43,7 @@ in the basis `[b₂, ..., bₙ]` (`basis_tl`).
 
 namespace Tactic.ComputeAsymptotics
 
-open Filter Asymptotics Topology Stream'
+open Filter Stream'
 
 /-- List of functions used to construct monomials in multiseries. -/
 abbrev Basis := List (ℝ → ℝ)
@@ -869,7 +869,7 @@ theorem elim_cons {exp : ℝ}
   cases h <;> simp at h_ms; grind
 
 /-- One can replace `f` in `Approximates` with the funcion that eventually equals `f`. -/
-theorem replaceFun_Approximates {ms : MultiseriesExpansion (basis_hd :: basis_tl)} {f : ℝ → ℝ}
+theorem replaceFun {ms : MultiseriesExpansion (basis_hd :: basis_tl)} {f : ℝ → ℝ}
     (h_equiv : ms.toFun =ᶠ[atTop] f) (h_approx : ms.Approximates) :
     (ms.replaceFun f).Approximates := by
   let motive (ms : MultiseriesExpansion (basis_hd :: basis_tl)) : Prop :=
