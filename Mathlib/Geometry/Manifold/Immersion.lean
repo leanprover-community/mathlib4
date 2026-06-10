@@ -74,6 +74,10 @@ This shortens the overall argument, as the definition of submersions has the sam
   `IsImmersion(At)OfComplement.small` and `IsImmersion(At)OfComplement.smallEquiv`.
 
 ## TODO
+* Remove the `IsManifold I n M` and `IsManifold J n N` hypotheses from `IsImmersionAt.contMDiffAt`
+  and all its variants; these are superfluous. By hypothesis, `h.domChart` and `h.codChart` are in
+  the maximal atlas for `M` resp. `N`; this implies that smoothness of `f` can be tested w.r.t.
+  these charts (without any `IsManifold` hypotheses).
 * The converse to `IsImmersionAtOfComplement.congr_F` also holds: any two complements are
   isomorphic, as they are isomorphic to the cokernel of the differential `mfderiv I J f x`.
 * If `f` is an immersion at `x`, its differential splits, hence is injective.
@@ -404,10 +408,6 @@ theorem continuousOn (h : IsImmersionAtOfComplement F I J n f x) :
 theorem continuousAt (h : IsImmersionAtOfComplement F I J n f x) : ContinuousAt f x :=
   h.continuousOn.continuousAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
 
--- TODO: prove the next two lemmas without these hypotheses
--- By hypothesis, `h.domChart` and `h.codChart` are in the maximal atlas for `M` resp. `N`;
--- this implies that smoothness of `f` can be tested w.r.t. these charts
--- (without any `IsManifold` hypotheses)
 variable [IsManifold I n M] [IsManifold J n N]
 
 /-- Prefer using `IsImmersionAtOfComplement.contMDiffAt` instead -/
@@ -601,8 +601,6 @@ theorem continuousOn (h : IsImmersionAt I J n f x) : ContinuousOn f h.domChart.s
 theorem continuousAt (h : IsImmersionAt I J n f x) : ContinuousAt f x :=
   h.isImmersionAtOfComplement_complement.continuousAt
 
--- TODO: prove the next two lemmas without these hypotheses
--- This will follow easily from `IsImmersionAtOfComplement.contMDiff{On,At}`
 variable [IsManifold I n M] [IsManifold J n N]
 
 /-- Prefer using `IsImmersionAt.contMDiffAt` instead -/
@@ -708,8 +706,6 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
 
 @[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
 
--- TODO: prove this lemma without the `IsManifold` hypotheses
--- This will follow easily from `IsImmersionAtOfComplement.contMDiffAt`
 /-- A `C^n` immersion is `C^n`. -/
 theorem contMDiff [IsManifold I n M] [IsManifold J n N]
     (h : IsImmersionOfComplement F I J n f) : CMDiff n f :=
@@ -777,8 +773,6 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
 
 @[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
 
--- TODO: prove this lemma without the `IsManifold` hypotheses
--- This will follow easily from `IsImmersionAt.contMDiffAt`
 /-- A `C^n` immersion is `C^n`. -/
 theorem contMDiff [IsManifold I n M] [IsManifold J n N]
     (h : IsImmersion I J n f) : CMDiff n f :=
