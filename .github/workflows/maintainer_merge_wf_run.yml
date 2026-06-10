@@ -102,7 +102,9 @@ jobs:
           echo "::notice::Using legacy workflow-data artifact fallback from maintainer_merge.yml"
           echo "Using legacy workflow-data artifact fallback from maintainer_merge.yml" >> "$GITHUB_STEP_SUMMARY"
 
-      - if: ${{ ! steps.inputs.outputs.mOrD == '' }}
+      # bot usernames would cause this step to error with "Could not resolve to a User...",
+      # so we skip it for all bot accounts; allowed bots are validated in the next step
+      - if: ${{ ! steps.inputs.outputs.mOrD == '' && ! endsWith(steps.inputs.outputs.author, '[bot]') }}
         name: Check whether user is part of mathlib-reviewers team
         uses: tspascoal/get-user-teams-membership@b2546c5affc730fd8e3d8483ae9ad3621938c2f9 # v4.0.2
         id: actorTeams
@@ -113,8 +115,26 @@ jobs:
           username: ${{ steps.inputs.outputs.author }}
           GITHUB_TOKEN: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }} # (Requires scope: `read:org`)
 
+      - if: ${{ ! steps.inputs.outputs.mOrD == '' }}
+        name: Determine whether the author may use the maintainer merge command
+        id: authorized
+        env:
+          AUTHOR: ${{ steps.inputs.outputs.author }}
+          IS_TEAM_MEMBER: ${{ steps.actorTeams.outputs.isTeamMember }}
+        run: |
+          # mathlib-splicebot[bot] posts 'maintainer merge' comments on split PRs
+          # on behalf of reviewers; SpliceBot's command-level authorization
+          # (see SPLICEBOT_LABEL_COMMANDS) has already checked that the
+          # requester is a reviewer or maintainer.
+          if [ "${IS_TEAM_MEMBER}" = "true" ] || [ "${AUTHOR}" = "mathlib-splicebot[bot]" ]
+          then
+            echo "authorized=true" | tee -a "$GITHUB_OUTPUT"
+          else
+            echo "authorized=false" | tee -a "$GITHUB_OUTPUT"
+          fi
+
       - name: Checkout local actions
-        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        if: ${{ steps.authorized.outputs.authorized == 'true' }}
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ github.workflow_sha }}
@@ -122,11 +142,11 @@ jobs:
           sparse-checkout: .github/actions
           path: workflow-actions
       - name: Get mathlib-ci
-        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        if: ${{ steps.authorized.outputs.authorized == 'true' }}
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
       - name: Determine Zulip topic
-        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        if: ${{ steps.authorized.outputs.authorized == 'true' }}
         id: determine_topic
         run: |
           "${CI_SCRIPTS_DIR}/maintainer/get_tlabel.sh" "/repos/leanprover-community/mathlib4/issues/${PR_NUMBER}" >> "$GITHUB_OUTPUT"
@@ -135,7 +155,7 @@ jobs:
           PR_NUMBER: ${{ steps.inputs.outputs.pr_number }}
 
       - name: Form the message
-        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        if: ${{ steps.authorized.outputs.authorized == 'true' }}
         id: form_the_message
         run: |
           message="$(
@@ -163,7 +183,7 @@ jobs:
           PR_AUTHOR: ${{ steps.inputs.outputs.pr_author }}
 
       - name: Send message on Zulip
-        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        if: ${{ steps.authorized.outputs.authorized == 'true' }}
         continue-on-error: true
         uses: zulip/github-actions-zulip/send-message@bd8ec52de371d139ae8313661b7d8318c19266aa # v2.0.1
         with:
@@ -176,7 +196,7 @@ jobs:
           content: ${{ steps.form_the_message.outputs.title }}
 
       - name: Compose PR comment body
-        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        if: ${{ steps.authorized.outputs.authorized == 'true' }}
         id: pr_comment
         run: |
           body="🚀 Pull request has been placed on the maintainer queue by ${{ steps.inputs.outputs.author }}."
@@ -194,7 +214,7 @@ jobs:
           printf 'body<<EOF\n%s\nEOF\n' "${body}" | tee -a "$GITHUB_OUTPUT"
 
       - name: Add comment to PR
-        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        if: ${{ steps.authorized.outputs.authorized == 'true' }}
         continue-on-error: true
         uses: GrantBirki/comment@3439715f0cf3b8fc29bf47be0e3226679c06c41a # v3.0.0
         with:
@@ -203,7 +223,7 @@ jobs:
           issue-number: ${{ steps.inputs.outputs.pr_number }}
           body: ${{ steps.pr_comment.outputs.body }}
 
-      - if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+      - if: ${{ steps.authorized.outputs.authorized == 'true' }}
         name: Generate app token
         id: app-token
         uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
@@ -215,7 +235,7 @@ jobs:
           azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
 
       - name: Add label to PR
-        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        if: ${{ steps.authorized.outputs.authorized == 'true' }}
         continue-on-error: true
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
