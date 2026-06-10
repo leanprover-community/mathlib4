@@ -327,9 +327,8 @@ theorem center_eq_closure_of_even_ne_two (heven : Even n) (hn2 : n ≠ 2) :
   simp only [Subgroup.mem_center_iff, Subgroup.mem_closure_singleton, hdiv]
   rcases x with i | i
   · -- `r i` is central iff `i = -i`, i.e. iff `i ∈ {0, m}`.
-    constructor
-    · intro hx
-      have hi : -i = i := by simpa using (sr.inj (hx (sr 0))).symm
+    refine ⟨fun hx ↦ ?_, fun ⟨k, hk⟩ g ↦ ?_⟩
+    · have hi : -i = i := by simpa using (sr.inj (hx (sr 0))).symm
       -- `i = -i` forces `2 * i.val = n = 2 * m`, hence `i = m` (or `i = 0` when `n = 0`).
       have hii : i = 0 ∨ i = (m : ZMod n) := by
         have := (ZMod.neg_eq_self_iff i).mp hi
@@ -340,7 +339,6 @@ theorem center_eq_closure_of_even_ne_two (heven : Even n) (hn2 : n ≠ 2) :
       obtain rfl | rfl := hii
       exacts [⟨0, by simp⟩, ⟨1, by simp⟩]
     · -- `r (m * k)` commutes with everything since `(m + m) * k = 0`.
-      rintro ⟨k, hk⟩ g
       rw [← hk, r_zpow]
       rcases g with j | j <;> simp only [r_mul_r, sr_mul_r, r_mul_sr, sr.injEq, r.injEq] <;> grind
   · -- `sr i` is never central: it fails to commute with `r 1`, as `2 ≠ 0`.
