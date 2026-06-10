@@ -84,7 +84,7 @@ end ConstructorsEtc
 
 section ScientificNotation
 
-variable [DivisionRing α] [CharZero α]
+variable [DivisionSemiring α] [CharZero α]
 
 example : (0.1 : ℚ) = 1/10 := by norm_num1
 example : (3.14 : ℚ) = 157/50 := by norm_num1
