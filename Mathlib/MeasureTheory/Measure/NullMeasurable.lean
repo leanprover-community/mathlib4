@@ -93,9 +93,13 @@ def NullMeasurableSet [MeasurableSpace α] (s : Set α)
     (μ : Measure α := by volume_tac) : Prop :=
   @MeasurableSet (NullMeasurableSpace α μ) _ s
 
+theorem nullMeasurableSet_iff_eventuallyMeasurableSet (s : Set α) :
+  NullMeasurableSet s μ ↔ EventuallyMeasurableSet inferInstance (ae μ) s := by rfl
+
 @[simp, aesop unsafe (rule_sets := [Measurable])]
-theorem _root_.MeasurableSet.nullMeasurableSet (h : MeasurableSet s) : NullMeasurableSet s μ :=
-  h.eventuallyMeasurableSet
+theorem _root_.MeasurableSet.nullMeasurableSet (h : MeasurableSet s) : NullMeasurableSet s μ := by
+  rw [nullMeasurableSet_iff_eventuallyMeasurableSet]
+  exact h.eventuallyMeasurableSet
 
 theorem nullMeasurableSet_empty : NullMeasurableSet ∅ μ :=
   MeasurableSet.empty
@@ -122,9 +126,9 @@ theorem compl_iff : NullMeasurableSet sᶜ μ ↔ NullMeasurableSet s μ :=
 theorem of_subsingleton [Subsingleton α] : NullMeasurableSet s μ :=
   Subsingleton.measurableSet
 
-set_option backward.isDefEq.respectTransparency false in
-protected theorem congr (hs : NullMeasurableSet s μ) (h : s =ᵐ[μ] t) : NullMeasurableSet t μ :=
-  EventuallyMeasurableSet.congr hs h.symm
+protected theorem congr (hs : NullMeasurableSet s μ) (h : s =ᵐ[μ] t) : NullMeasurableSet t μ := by
+  rw [nullMeasurableSet_iff_eventuallyMeasurableSet] at hs ⊢
+  exact EventuallyMeasurableSet.congr hs h.symm
 
 @[measurability]
 protected theorem iUnion {ι : Sort*} [Countable ι] {s : ι → Set α}
@@ -396,15 +400,15 @@ protected theorem NullMeasurable.measurable' (h : NullMeasurable f μ) :
     @Measurable (NullMeasurableSpace α μ) β _ _ f :=
   h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Measurable.comp_nullMeasurable {g : β → γ} (hg : Measurable g) (hf : NullMeasurable f μ) :
-    NullMeasurable (g ∘ f) μ :=
-  hg.comp_eventuallyMeasurable hf
+    NullMeasurable (g ∘ f) μ := by
+  intro _ h
+  rw [preimage_comp]
+  exact hf <| h.preimage hg
 
-set_option backward.isDefEq.respectTransparency false in
 theorem NullMeasurable.congr {g : α → β} (hf : NullMeasurable f μ) (hg : f =ᵐ[μ] g) :
     NullMeasurable g μ :=
-  EventuallyMeasurable.congr hf hg.symm
+  fun s hs ↦ NullMeasurableSet.congr (hf hs) <| hg.preimage s
 
 end NullMeasurable
 
