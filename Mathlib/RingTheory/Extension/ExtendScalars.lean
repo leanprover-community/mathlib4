@@ -11,16 +11,25 @@ public import Mathlib.RingTheory.Kaehler.JacobiZariski
 # Extension of Scalars for Algebra Extensions
 
 This file provides APIs for extending the base ring of an algebra extension `P : Extension R S`
-to its own presentation ring `P.Ring`. We show the diagram in
+to its own extension ring `P.Ring`. We show the diagram in
 https://github.com/leanprover-community/mathlib4/pull/39520 is commutative.
 
 ## Main definitions and results
 
-- `Algebra.Extension.extendScalars`: Views an extension `P` over `R` as an extension over `P.Ring`.
-- `Algebra.Extension.defaulHom`: The canonical extension homomorphism from
-  the universal extension to `P`.
-- `Algebra.Extension.cotangentComplex_comp_coe_h1CotangentEquivCotangent`,
-  `Algebra.Extension.coe_h1CotangentEquivCotangent_comp_map`: commutativity results
+- `extendScalars`: Views `P : Extension R S` as `Extension P.Ring S`.
+- `toExtendScalars`: The canonical homomorphism from `P` to `P.extendScalars` induced by
+  the identity map on the underlying extension rings.
+- `cotangentExtendScalarsEquiv` : The linear equivalence between the cotangent spaces of
+  `P.extensScalars` and `P` induced by the identity map.
+- `h1CotangentExtendScalarsEquiv`: `P.extensScalars` can be used to compute the first homology of
+  the naive cotangent complex of `S` over `P.Ring`.
+- `h1CotangentEquivOfSurjective`: If `R → P.Ring` is surjective, this is the linear isomorphism
+  induced by `P.h1Cotangentι`.
+- `h1CotangentEquivCotangent`: This is the linear equivalence between `H1Cotangent P.Ring S` and
+  `P.Cotangent` defined by the composition of `h1CotangentExtendScalarsEquiv.symm`,
+  `h1CotangentEquivOfSurjective` and `cotangentExtendScalarsEquiv`.
+- `cotangentComplex_comp_coe_h1CotangentEquivCotangent`,
+  `coe_h1CotangentEquivCotangent_comp_map`: commutativity results.
 
 -/
 
@@ -43,15 +52,16 @@ def extendScalars {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R
   σ := P.σ
   algebraMap_σ := P.algebraMap_σ
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical homomorphism from `P` to `P.extendScalars` induced by the identity map
-on the underlying presentation rings. -/
+on the underlying extension rings. -/
 @[simps!]
 noncomputable
 def toExtendScalars {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S]
     (P : Extension.{w} R S) : P.Hom P.extendScalars :=
-  .ofAlgHom (IsScalarTower.toAlgHom R P.Ring P.extendScalars.Ring) (by
-    change (IsScalarTower.toAlgHom R P.Ring S).comp (IsScalarTower.toAlgHom R P.Ring P.Ring) = _
-    ext; simp)
+  .ofAlgHom (IsScalarTower.toAlgHom R P.Ring P.extendScalars.Ring)
+    (by dsimp; ext; simp)
 
 /-- `Extension.extendScalars` does not change the cotangent space of an extension. -/
 noncomputable
@@ -73,18 +83,6 @@ theorem H1Cotangent.map_toExtendScalar_injective (P : Extension.{w} R S) :
   rw [← LinearMap.ker_eq_bot, H1Cotangent.map, LinearMap.ker_restrict,
     ← cotangentExtendScalarsEquiv_symm_toLinearMap, LinearEquiv.ker,
     Submodule.comap_bot, Submodule.ker_subtype]
-
-/-- The canonical homomorphism of extensions from the universal presentation `R[S] → S`
-(given by `Generators.self R S`) to the extension `P`. It maps the generator corresponding
-to `s : S` to `P.σ s`. -/
-@[simps!]
-noncomputable
-def defaultHom (P : Extension.{w} R S) : (Generators.self R S).toExtension.Hom P :=
-  letI : Algebra (MvPolynomial S R) S := (Generators.self R S).algebra
-  .ofAlgHom (MvPolynomial.aeval P.σ) (by
-    change (IsScalarTower.toAlgHom R P.Ring S).comp (MvPolynomial.aeval P.σ) =
-      (IsScalarTower.toAlgHom R S S).comp (IsScalarTower.toAlgHom R (MvPolynomial S R) S)
-    ext; simp)
 
 /-- The first homology of the naive cotangent complex of `P.extendScalars` is
 linearly equivalent to that of `S` over `P.Ring`. -/
@@ -123,10 +121,6 @@ def h1CotangentEquivCotangent {R : Type u} {S : Type v} [CommRing R] [CommRing S
     P.extendScalars.h1CotangentEquivOfSurjective Function.surjective_id ≪≫ₗ
     P.cotangentExtendScalarsEquiv
 
-lemma comap_ker_eq (P : Extension R S) (Q : Extension P.Ring S) :
-    Q.ker.comap (algebraMap P.Ring Q.Ring) = P.ker := by
-  simp_rw [Extension.ker, RingHom.ker, Ideal.comap_comap, ← IsScalarTower.algebraMap_eq]
-
 theorem cotangentComplex_comp_coe_h1CotangentEquivCotangent (P : Extension R S) :
     P.cotangentComplex.comp P.h1CotangentEquivCotangent.toLinearMap =
       H1Cotangent.δ R P.Ring S := by
@@ -140,9 +134,9 @@ theorem cotangentComplex_comp_coe_h1CotangentEquivCotangent (P : Extension R S) 
   let u : (Generators.self P.Ring S).toExtension.ker :=
     ⟨algebraMap P.Ring (Generators.self P.Ring S).toExtension.Ring x, by
       rwa [← Ideal.mem_comap, comap_ker_eq]⟩
-  have hu : u.1 = MvPolynomial.C x := rfl
-  rw [← Generators.H1Cotangent.δAux_C (Generators.self P.Ring S), ← hu,
-    ← Generators.H1Cotangent.δ_eq_δAux _ (Generators.self R P.Ring) u (by simp [u])]
+  have hu : Cotangent.mk u ∈
+    (Generators.self P.Ring S).toExtension.cotangentComplex.ker := by simp [u]
+  rw [← Generators.H1Cotangent.δ_C _ _ u.prop hu]
   congr
 
 theorem coe_h1CotangentEquivCotangent_comp_map (P : Extension R S) :
