@@ -372,8 +372,7 @@ end Sub
 
 section AddCommGroup
 
-instance instAddCommGroup : AddCommGroup 𝓢(E, F) :=
-  FunLike.addCommGroup
+instance instAddCommGroup : AddCommGroup 𝓢(E, F) := fast_instance% FunLike.addCommGroup
 
 @[deprecated (since := "2026-06-10")] protected alias sum_apply := sum_apply
 
@@ -393,7 +392,7 @@ section Module
 
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
-instance instModule : Module 𝕜 𝓢(E, F) := FunLike.module
+instance instModule : Module 𝕜 𝓢(E, F) := fast_instance% FunLike.module
 
 end Module
 
