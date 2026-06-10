@@ -361,12 +361,20 @@ lemma setAverage_sub (hf : IntegrableOn f s μ) (hg : IntegrableOn g s μ) :
     ⨍ a in s, (f - g) a ∂μ = ⨍ a in s, f a ∂μ - ⨍ a in s, g a ∂μ := average_sub hf hg
 
 variable (μ) in
-lemma average_const_mul {L : Type*} [RCLike L] (r : L) (f : α → L) :
+lemma average_const_mul {𝕜 : Type*} [RCLike 𝕜] (r : 𝕜) (f : α → 𝕜) :
     ⨍ a, r * f a ∂μ = r * ⨍ a, f a ∂μ := integral_const_mul ..
 
 variable (μ) in
-lemma average_mul_const {L : Type*} [RCLike L] (r : L) (f : α → L) :
+lemma average_mul_const {𝕜 : Type*} [RCLike 𝕜] (f : α → 𝕜) (r : 𝕜) :
     ⨍ a, f a * r ∂μ = (⨍ a, f a ∂μ) * r := integral_mul_const ..
+
+variable (μ) in
+lemma average_const_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] (r : 𝕜) (f : α → E) :
+    ⨍ a, r • f a ∂μ = r • ⨍ a, f a ∂μ := integral_smul ..
+
+variable (μ) in
+lemma average_smul_const {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [CompleteSpace E]
+    (f : α → 𝕜) (c : E) : ⨍ a, f a • c ∂μ = (⨍ a, f a ∂μ) • c := integral_smul_const ..
 
 variable (μ f) in
 theorem average_eq' : ⨍ x, f x ∂μ = ∫ x, f x ∂(μ univ)⁻¹ • μ := rfl
