@@ -51,7 +51,7 @@ jobs:
           push_to_fork: leanprover-community/mathlib4_copy
           # Title the split PR so it passes check_pr_titles.yaml: scope without
           # the Mathlib/ prefix or the .lean extension.
-          pr_title: 'chore({file_scope}): automated extraction'
+          pr_title: 'chore({file_scope}): automated extraction from #{pr_number}'
           scope_strip_prefix: 'Mathlib/'
           min_repo_permission: 'disabled'
           allow_pr_author: 'true'
