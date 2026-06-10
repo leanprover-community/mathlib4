@@ -756,7 +756,7 @@ def findAutomaticProjections (str : Name) (projs : Array ParsedProjectionData) :
   MetaM.run' <| TermElabM.run' (s := {levelNames := strDecl.levelParams}) <|
   forallTelescope strDecl.type fun args _ ↦ do
   let projs ← projs.mapM fun proj => do
-    if let some (projExpr, projName) := ← findAutomaticProjectionsAux str proj args then
+    if let some (projExpr, projName) ← findAutomaticProjectionsAux str proj args then
       unless ← isDefEq projExpr proj.expr?.get! do
         throwError "The projection {proj.newName} is not definitionally equal to an application \
           of {projName}:{indentExpr proj.expr?.get!}\nvs{indentExpr projExpr}"
