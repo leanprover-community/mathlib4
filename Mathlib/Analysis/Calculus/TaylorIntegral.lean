@@ -16,6 +16,9 @@ public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 In this file we prove Taylor's formula with the remainder term in integral form.
 
 * `map_add_eq_sum_add_integral_iteratedFDeriv`: version for higher dimensions with `iteratedFDeriv`
+
+TODO: add a version that assumes `ContDiffOn f (closedBall x (‖y‖))`
+
 -/
 
 @[expose] public section
