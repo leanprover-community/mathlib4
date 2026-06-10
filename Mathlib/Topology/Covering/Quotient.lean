@@ -83,13 +83,35 @@ noncomputable def fiberEquivGroup {x : X} (e : f ⁻¹' {x}) : f ⁻¹' {x} ≃ 
 @[simp] theorem fiberEquivGroup_self {x : X} (e : f ⁻¹' {x}) : hf.fiberEquivGroup e e = 1 :=
   (Equiv.apply_eq_iff_eq_symm_apply _).mpr <| Subtype.ext (one_smul ..).symm
 
-theorem fiberEquivGroup_smul_self {x : X} (e : f ⁻¹' {x}) {e' : f ⁻¹' {x}} :
-    hf.fiberEquivGroup e e' • e = e'.1 :=
+@[simp] theorem fiberEquivGroup_eq_iff {x : X} (e e' : f ⁻¹' {x}) (g : G) :
+    hf.fiberEquivGroup e e' = g ↔ e' = g • (e : E) := by
+  rw [fiberEquivGroup, Equiv.symm_apply_eq, Equiv.ofBijective_apply, Subtype.mk.injEq]
+
+@[simp] theorem fiberEquivGroup_smul_self {x : X} (e : f ⁻¹' {x}) {e' : f ⁻¹' {x}} :
+    hf.fiberEquivGroup e e' • (e : E) = (e' : E) :=
   congr($((hf.fiberEquivGroup e).symm_apply_apply e'))
+
+/-- The action of `G` restricted to the fiber. -/
+@[implicit_reducible] def mulActionFiber (x : X) : MulAction G (f ⁻¹' {x}) :=
+  SubMulAction.mulAction ⟨f ⁻¹' {x}, fun g _ h ↦ (hf.map_smul g).trans h⟩
+
+@[simp] lemma coe_mulActionFiber_smul (x : X) (g : G) (e : f ⁻¹' {x}) :
+    letI := hf.mulActionFiber x
+    (↑(g • e) : E) = g • (e : E) :=
+  rfl
+
+lemma mulActionFiber_isPretransitive (x : X) :
+    letI := hf.mulActionFiber x
+    MulAction.IsPretransitive G (f ⁻¹' {x}) := by
+  letI := hf.mulActionFiber x
+  constructor
+  intro e e'
+  obtain ⟨g, hg⟩ := hf.apply_eq_iff_mem_orbit.mp (e'.2.trans e.2.symm)
+  exact ⟨g, Subtype.ext hg⟩
 
 /-- A quotient covering map `f` induces a permutation action on each fiber. -/
 @[simps!] def toPermFiber (x : X) : G →* Equiv.Perm (f ⁻¹' {x}) :=
-  SubMulAction.mulAction ⟨f ⁻¹' {x}, fun g _ h ↦ (hf.map_smul g).trans h⟩ |>.toPermHom
+  (hf.mulActionFiber x).toPermHom
 
 theorem toPermFiber_ext (x : X) (e : f ⁻¹' {x}) {g g' : G}
     (eq : hf.toPermFiber x g e = hf.toPermFiber x g' e) : g = g' :=
@@ -100,9 +122,13 @@ theorem toPermFiber_injective (x : X) : Function.Injective (hf.toPermFiber x) :=
   have ⟨e, he⟩ := hf.surjective x
   fun _ _ eq ↦ hf.toPermFiber_ext x ⟨e, he⟩ congr($eq _)
 
-theorem toPermFiber_transitive {x : X} (e e' : f ⁻¹' {x}) : ∃ g : G, hf.toPermFiber x g e = e' :=
-  have ⟨g, eq⟩ := hf.apply_eq_iff_mem_orbit.mp (e'.2.trans e.2.symm)
-  ⟨g, Subtype.ext eq⟩
+theorem exists_toPermFiber_eq {x : X} (e e' : f ⁻¹' {x}) : ∃ g, hf.toPermFiber x g e = e' := by
+  letI := hf.mulActionFiber x
+  have := hf.mulActionFiber_isPretransitive x
+  obtain ⟨g, rfl⟩ := MulAction.IsPretransitive.exists_smul_eq e e' (M := G)
+  use g
+  ext
+  simp
 
 end IsQuotientCoveringMap
 

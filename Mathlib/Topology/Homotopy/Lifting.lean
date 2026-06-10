@@ -562,7 +562,7 @@ theorem monodromy_ext_iff {x y : X} {γ γ' : Path.Homotopic.Quotient x y} (e) :
     hp.isCoveringMap.monodromy γ = hp.isCoveringMap.monodromy γ' where
   mp eq := by
     ext e'
-    obtain ⟨g, rfl⟩ := hp.toPermFiber_transitive e e'
+    obtain ⟨g, rfl⟩ := hp.exists_toPermFiber_eq e e'
     simp_rw [monodromy_toPermFiber, eq]
   mpr := (congr_fun · _)
 
