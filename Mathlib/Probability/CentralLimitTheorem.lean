@@ -147,10 +147,10 @@ theorem tendstoInDistribution_inv_sqrt_mul_sum_sub
   convert!
     (tendstoInDistribution_inv_sqrt_mul_var_mul_sum_sub this h hindep hident).continuous_comp (g :=
       (√Var[X 0; P] * ·)) (by fun_prop)
-  · simp [field] -- simp [field, hX] triggers the unused simp arguments linter
+  · simp [field]
     field_simp [h]
   · ext
-    simp [field] -- simp [field, hX] triggers the unused simp arguments linter
+    simp [field]
     field_simp [h]
 
 end ProbabilityTheory
@@ -406,31 +406,13 @@ theorem tendstoInDistribution_inv_sqrt_smul_sum
   forall_aemeasurable n :=
     .const_smul (Finset.aemeasurable_fun_sum _ fun _ _ ↦ (hident _).aemeasurable_fst) ((√n)⁻¹)
   tendsto := by
-    have hclt :
-        Tendsto
-          (fun n : ℕ =>
-            ProbabilityMeasure.map
-              (⟨P, inferInstance⟩ : ProbabilityMeasure Ω)
-              ((Finset.aemeasurable_fun_sum (Finset.range n)
-              (fun k _ ↦ (hident k).aemeasurable_fst)).const_smul ((√n)⁻¹)))
-          atTop
-          (𝓝
-            ((⟨stdGaussian (EuclideanSpace ℝ (Fin d)),
-                inferInstance⟩ :
-              ProbabilityMeasure (EuclideanSpace ℝ (Fin d))))) :=
-      tendsto_map_inv_sqrt_smul_sum (P := P) (d := d) (X := X) h0 h1 hindep hident
+    have hclt := tendsto_map_inv_sqrt_smul_sum (P := P) (d := d) (X := X) h0 h1 hindep hident
     have hmapY_eq : Measure.map Y P' = stdGaussian (EuclideanSpace ℝ (Fin d)) := hY.map_eq
-    have hmapY_prob : IsProbabilityMeasure (Measure.map Y P') := by
-      rw [hmapY_eq]
-      exact inferInstance
-    have hY' :
-        (⟨Measure.map Y P', hmapY_prob⟩ :
-          ProbabilityMeasure (EuclideanSpace ℝ (Fin d))) =
-        (⟨stdGaussian (EuclideanSpace ℝ (Fin d)),
-          inferInstance⟩ :
-          ProbabilityMeasure (EuclideanSpace ℝ (Fin d))) := by
-      apply Subtype.ext
-      exact hmapY_eq
     convert hclt
+    · apply Subtype.ext
+      rfl
+    · apply Subtype.ext
+      exact hmapY_eq
+
 
 end Multivariate
