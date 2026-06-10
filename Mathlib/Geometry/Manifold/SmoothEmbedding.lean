@@ -22,6 +22,8 @@ This will be useful to define embedded submanifolds.
 * `IsSmoothEmbedding.id`: the identity map is a smooth embedding
 * `IsSmoothEmbedding.of_opens`: the inclusion of an open subset `s → M` of a smooth manifold
   is a smooth embedding
+* `IsSmoothEmbedding.contMDiff`: if `f` is a `C^n` embedding, it is automatically `C^n`
+  in the sense of `ContMDiff`.
 
 ## Implementation notes
 
@@ -33,7 +35,6 @@ This will be useful to define embedded submanifolds.
   https://math.stackexchange.com/a/3769328 for counterexamples.
 
 ## TODO
-* `IsSmoothEmbedding.contMDiff`: if `f` is a smooth embedding, it is `C^n`.
 * `IsSmoothEmbedding.comp`: the composition of smooth embeddings (between Banach manifolds)
   is a smooth embedding
 * `IsLocalDiffeomorph.isSmoothEmbedding`, `Diffeomorph.isSmoothEmbedding`:
@@ -64,8 +65,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {n : ℕ∞ω}
 
 variable (I J n) in
-/-- A `C^k` map `f : M → M'` is a smooth `C^k` embedding if it is a topological embedding
-and a `C^k` immersion. -/
+/-- A `C^n` map `f : M → M'` is a smooth `C^n` embedding if it is a topological embedding
+and a `C^n` immersion. -/
 @[mk_iff]
 structure IsSmoothEmbedding (f : M → N) where
   isImmersion : IsImmersion I J n f
@@ -74,9 +75,6 @@ structure IsSmoothEmbedding (f : M → N) where
 namespace IsSmoothEmbedding
 
 variable {f g : M → N}
-
--- combine isImmersion with `hf.isImmersion.contMDiff` (once proven)
-proof_wanted contMDiff (hf : IsSmoothEmbedding I J n f) : CMDiff n f
 
 protected lemma id [IsManifold I n M] : IsSmoothEmbedding I I n (@id M) := ⟨.id, .id⟩
 
@@ -93,6 +91,11 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsSmoothEmbedding I I n (Subtype.val : s → M) := by
   rw [isSmoothEmbedding_iff]
   exact ⟨IsImmersion.of_opens s, IsEmbedding.subtypeVal⟩
+
+/-- A smooth embedding is automatically smooth. -/
+lemma contMDiff [IsManifold I n M] [IsManifold J n N] (hf : IsSmoothEmbedding I J n f) :
+    ContMDiff I J n f :=
+  hf.isImmersion.contMDiff
 
 -- use IsImmersion.comp and IsEmbedding.comp
 /-- The composition of two smooth embeddings between Banach manifolds is a smooth embedding. -/
