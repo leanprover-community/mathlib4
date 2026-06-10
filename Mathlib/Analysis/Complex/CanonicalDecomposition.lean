@@ -230,13 +230,10 @@ is formulated by saying that `g` is meromorphic in normal form and `g ≠ 0`.
 structure CanonicalDecomp (f g : ℂ → E) (R : ℝ) : Prop where
   /-- A proof that `f` is meromorphic on `closedBall 0 R`. -/
   meromorphicOn : MeromorphicOn f (closedBall 0 R)
-
   /-- A proof that `g` is meromorphic in normal form on `closedBall 0 R`. -/
   meromorphicNFOn : MeromorphicNFOn g (closedBall 0 R)
-
   /-- A proof that `g` does not vanish in the interior of the ball. -/
   ne_zero : ∀ u ∈ (ball 0 R), g u ≠ 0
-
   /--
   A proof that `f` is equal, up to modification over a discrete set, to a product of `g` and
   canonical factors prescribed by the divisor of `f`.
@@ -394,12 +391,17 @@ sphere.
 theorem CanonicalDecomp.divisor_eq_divisor {x : ℂ} (D : CanonicalDecomp f g R) (hR : 0 < R) :
     divisor g (closedBall (0 : ℂ) R) x = divisor f (sphere 0 R) x := by
   rcases lt_trichotomy ‖x‖ R with h|h|h
-  · have : x ∉ sphere (0 : ℂ) R := by aesop
+  · -- The case where `x` is contained in `ball 0 R`. There, the divisor of `g` vanishes because `g`
+    -- does not have zeros or poles. The divisor of `f` vanishes because `x` is not contained in the
+    -- sphere.
+    have : x ∉ sphere (0 : ℂ) R := by aesop
     have := (D.meromorphicNFOn (mem_closedBall_zero_iff.mpr h.le)).meromorphicOrderAt_eq_zero_iff.2
       (D.ne_zero x (by aesop))
     rw [divisor_apply D.meromorphicNFOn.meromorphicOn (mem_closedBall_zero_iff.mpr h.le)]
     simp_all
-  · have η₁ : AnalyticAt ℂ (∏ᶠ u, canonicalFactor R u ^ (-(divisor f (ball 0 R)) u)) x := by
+  · -- The case where `x` is contained in `sphere 0 R`. There, the orders of `f` and `g` agree
+    -- because the canonical factors are analytic and do not vanish.
+    have η₁ : AnalyticAt ℂ (∏ᶠ u, canonicalFactor R u ^ (-(divisor f (ball 0 R)) u)) x := by
       refine analyticAt_finprod fun a ↦ ?_
       by_cases ha : a ∈ ball 0 R
       · exact (analyticOnNhd_canonicalFactor _ _ _ (by aesop)).zpow
@@ -423,7 +425,8 @@ theorem CanonicalDecomp.divisor_eq_divisor {x : ℂ} (D : CanonicalDecomp f g R)
       divisor_apply D.meromorphicNFOn.meromorphicOn (by aesop), meromorphicOrderAt_congr η₀,
       meromorphicOrderAt_smul η₁.meromorphicAt (D.meromorphicNFOn (by aesop)).meromorphicAt]
     simp_all
-  · have : x ∉ sphere (0 : ℂ) R := by aesop
+  · -- Trivial case: `x` is outside `closedBall 0 R`, so both divisors evaluate to zero.
+    have : x ∉ sphere (0 : ℂ) R := by aesop
     simp_all
 
 /-!
