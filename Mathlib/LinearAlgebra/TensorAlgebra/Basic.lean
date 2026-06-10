@@ -57,7 +57,7 @@ inductive Rel : FreeAlgebra R M → FreeAlgebra R M → Prop
     Rel (FreeAlgebra.ι R (r • a)) (algebraMap R (FreeAlgebra R M) r * FreeAlgebra.ι R a)
 
 /-- `Rel` as a ring congruence, used to build the quotient. -/
-def ringCon : RingCon (FreeAlgebra R M) := ringConGen (Rel R M)
+@[no_expose] def ringCon : RingCon (FreeAlgebra R M) := ringConGen (Rel R M)
 
 end TensorAlgebra
 
