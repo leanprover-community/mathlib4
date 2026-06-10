@@ -161,8 +161,11 @@ as a quotient of `PowerAlgebra R A` -/
 noncomputable def asPowersEquiv : asPowers R A ≃ₐ[R] FreeProduct R A :=
   RingQuot.algEquivQuotAlgEquiv
     (powerAlgebraEquivFreeTensorAlgebra R A |>.symm) _ _ (by
-
-      sorry)
+      rw [ringCon', ringCon, rel']
+      erw [RingCon.comap_ringConGen_equiv]
+      congr
+      ext i x
+      simp [Function.onFun])
   |>.symm
 
 open RingQuot Function

@@ -158,6 +158,20 @@ def comap (J : RingCon R') (f : F) :
 theorem comap_rel {J : RingCon R'} {f : F} {x y : R} :
     J.comap f x y ↔ J (f x) (f y) := Iff.rfl
 
+@[simp]
+theorem comap_ringHomComp {R R' R''}
+    [NonAssocSemiring R] [NonAssocSemiring R']
+    [NonAssocSemiring R''] (J : RingCon R) (g : R' →+* R) (f : R'' →+* R') :
+    J.comap (g.comp f) = (J.comap g).comap f := by
+  ext
+  simp
+
+@[simp]
+theorem comap_ringHomId {R} [NonAssocSemiring R] (J : RingCon R) :
+    J.comap (RingHom.id _) = J := by
+  ext
+  simp
+
 end Basic
 
 section Quotient

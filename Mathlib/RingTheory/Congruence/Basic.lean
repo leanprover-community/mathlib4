@@ -141,6 +141,7 @@ instance : LE (RingCon R) where
 /-- Definition of `≤` for congruence relations. -/
 theorem le_def : c ≤ d ↔ ∀ {x y}, c x y → d x y := .rfl
 
+@[gcongr]
 theorem comap_mono {R' : Type*} [Add R'] [Mul R']
     {F : Type*} [FunLike F R R'] [AddHomClass F R R'] [MulHomClass F R R']
     {J J' : RingCon R'} {f : F} (h : J ≤ J') :
@@ -265,6 +266,7 @@ theorem ringConGen_le {r : R → R → Prop} {c : RingCon R}
 
 /-- Given binary relations `r, s` with `r` contained in `s`, the smallest congruence relation
 containing `s` contains the smallest congruence relation containing `r`. -/
+@[gcongr]
 theorem ringConGen_mono {r s : R → R → Prop} (h : ∀ x y, r x y → s x y) :
     ringConGen r ≤ ringConGen s :=
   ringConGen_le fun x y hr => RingConGen.Rel.of _ _ <| h x y hr
@@ -326,6 +328,18 @@ theorem le_comap_ringConGen {R' F} [Add R'] [Mul R'] [FunLike F R' R]
     ringConGen (r.onFun f) ≤ (ringConGen r).comap f  := by
   apply ringConGen_le fun x y h => ?_
   exact RingConGen.Rel.of _ _ h
+
+theorem comap_ringConGen_equiv {R S} [NonAssocSemiring R] [NonAssocSemiring S] (r : R → R → Prop)
+    (f : S ≃+* R) :
+    (ringConGen r).comap f = ringConGen (r.onFun f) := by
+  refine le_antisymm ?_ (le_comap_ringConGen _ _)
+  trans ((ringConGen (Function.onFun r ⇑f)).comap f.symm.toRingHom).comap f.toRingHom
+  · apply comap_mono
+    grw [← le_comap_ringConGen]
+    gcongr
+    simp [Function.onFun]
+  · rw [← comap_ringHomComp]
+    simp
 
 end Lattice
 
