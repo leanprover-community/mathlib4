@@ -100,7 +100,7 @@ namespace Copy
 
 instance : FunLike (Copy A B) α β where
   coe f := DFunLike.coe f.toHom
-  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; congr!
+  coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; congr!
 
 lemma injective (f : Copy A B) : Injective f.toHom := f.injective'
 
@@ -635,7 +635,7 @@ lemma free_killCopies (hH : H ≠ ⊥) : H.Free (G.killCopies H) := by
   have he' : e' ∈ G'.coe.edgeSet := (Iso.map_mem_edgeSet_iff _).2 he₀
   rw [Subgraph.edgeSet_coe] at he'
   have := Subgraph.edgeSet_subset _ he'
-  simp only [edgeSet_sdiff, edgeSet_fromEdgeSet, edgeSet_sdiff_sdiff_isDiag, Set.mem_diff,
+  simp only [edgeSet_sdiff, edgeSet_fromEdgeSet, edgeSet_sdiff_sdiff_isDiag, Set.mem_sdiff,
     Set.mem_iUnion, not_exists] at this
   refine this.2 (G'.map <| .ofLE sdiff_le) ⟨((Copy.ofLE _ _ _).isoSubgraphMap _).comp hHG'.some⟩ ?_
   rw [Sym2.map_map, Set.mem_singleton_iff, ← he₁]
