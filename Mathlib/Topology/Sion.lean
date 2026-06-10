@@ -21,7 +21,7 @@ and let `f : X × Y → β` be a function such that
 - for all `y ∈ Y`, `f(⬝, y)` is lower semicontinuous and quasiconvex
 Then:
 
-* `Sion.minimax' : If `β` is complete, then `⊓ x, ⊔ y, f (x, y) = ⊔ y, ⊓ x f (x, y)`.
+* `Sion.minimax'` : If `β` is complete, then `⊓ x, ⊔ y, f (x, y) = ⊔ y, ⊓ x f (x, y)`.
 
 * `Sion.minimax` : A variant using `IsLUB` and `IsGLB` that does not assume a complete order.
 
