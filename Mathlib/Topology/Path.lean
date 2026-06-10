@@ -634,6 +634,50 @@ theorem truncate_zero_one {a b : X} (γ : Path a b) :
   have : ↑x ∈ (Icc 0 1 : Set ℝ) := x.2
   rw [truncate, coe_mk_mk, max_eq_left this.1, min_eq_left this.2, extend_extends']
 
+/-! #### Initial segments of a path -/
+
+theorem truncateOfLE_range_subset_preimage {a b : X} (γ : Path a b) {t₀ t₁ : ℝ}
+    (h : t₀ ≤ t₁) {U : Set X} (hU : Set.Icc t₀ t₁ ⊆ γ.extend ⁻¹' U) :
+    Set.range (γ.truncateOfLE h) ⊆ U := by
+  rintro _ ⟨s, rfl⟩
+  dsimp [truncateOfLE, truncate]
+  apply hU
+  constructor
+  · exact le_min (le_max_right _ _) h
+  · exact min_le_right _ _
+
+/-- The family of initial segments of `γ : Path a b`: at parameter `t : I`, the path
+`s ↦ γ.extend (min s t)` from `a` to `γ t` (`initialSegmentFamily_apply`). At `t = 0` this is
+the constant path at `a` (`initialSegmentFamily_zero`); at `t = 1` it is `γ` itself, up to a
+trivial right-endpoint cast (`initialSegmentFamily_one`). The property consumers actually need
+is joint continuity in `(t, s)`, recorded as `continuous_initialSegmentFamily_uncurry` and used
+to build the rung homotopy in `joinedIn_preimage_of_append`. -/
+noncomputable def initialSegmentFamily {a b : X} (γ : Path a b) (t : I) :
+    Path a (γ t) :=
+  (γ.truncate 0 t).cast (by rw [min_eq_left t.2.1, γ.extend_zero]) (γ.extend_apply t.2).symm
+
+theorem continuous_initialSegmentFamily_uncurry {a b : X} (γ : Path a b) :
+    Continuous ↿(initialSegmentFamily γ) := by
+  have htrunc : Continuous (fun ts : I × I ↦ γ.truncate 0 ts.1 ts.2 : I × I → X) := by
+    let key : I × I → ℝ × ℝ × I := fun ts ↦ (0, ts.1, ts.2)
+    have hkey : Continuous key := by fun_prop
+    simpa [key] using! γ.truncate_continuous_family.comp hkey
+  simpa [initialSegmentFamily] using! htrunc
+
+@[simp] theorem initialSegmentFamily_apply {a b : X} (γ : Path a b) (t s : I) :
+    initialSegmentFamily γ t s = γ.extend (min (s : ℝ) t) := by
+  simp [initialSegmentFamily, Path.truncate, max_eq_left s.2.1]
+
+theorem initialSegmentFamily_zero {a b : X} (γ : Path a b) :
+    initialSegmentFamily γ 0 = (Path.refl a).cast rfl (by simp) := by
+  ext s
+  simp [initialSegmentFamily_apply, γ.extend_zero, Path.refl, min_eq_right s.2.1]
+
+theorem initialSegmentFamily_one {a b : X} (γ : Path a b) :
+    initialSegmentFamily γ 1 = γ.cast rfl (by simp) := by
+  ext s
+  simp [initialSegmentFamily_apply, min_eq_left s.2.2, γ.extend_apply s.2]
+
 /-! #### Reparametrising a path -/
 
 

@@ -25,7 +25,8 @@ of the compact-open topology on `C(I, X)`. It then develops the path-component m
   basic API for operating on based paths.
 * `BasedPath.deformTerminal`: a reparametrization that traverses a compressed tail of the
   original path and then a new path from its endpoint.
-* `Path.initialSegmentFamily`: the family `t ↦ γ|_[0, t]` of initial segments of a path.
+* `BasedPath.initialSegmentFamily`: the family `t ↦ γ|_[0, t]` of initial segments of a
+  based path.
 
 ## Main results
 
@@ -227,51 +228,6 @@ public theorem endpoint_deformTerminal {u v : X} (γ : BasedPath x₀) (hu : end
 
 end BasedPath
 
-namespace Path
-
-public theorem truncateOfLE_range_subset_preimage {a b : X} (γ : Path a b) {t₀ t₁ : ℝ}
-    (h : t₀ ≤ t₁) {U : Set X} (hU : Set.Icc t₀ t₁ ⊆ γ.extend ⁻¹' U) :
-    Set.range (γ.truncateOfLE h) ⊆ U := by
-  rintro _ ⟨s, rfl⟩
-  dsimp [truncateOfLE, truncate]
-  apply hU
-  constructor
-  · exact le_min (le_max_right _ _) h
-  · exact min_le_right _ _
-
-/-- The family of initial segments of `γ : Path a b`: at parameter `t : I`, the path
-`s ↦ γ.extend (min s t)` from `a` to `γ t` (`initialSegmentFamily_apply`). At `t = 0` this is
-the constant path at `a` (`initialSegmentFamily_zero`); at `t = 1` it is `γ` itself, up to a
-trivial right-endpoint cast (`initialSegmentFamily_one`). The property consumers actually need
-is joint continuity in `(t, s)`, recorded as `continuous_initialSegmentFamily_uncurry` and used
-to build the rung homotopy in `joinedIn_preimage_of_append`. -/
-@[expose] public noncomputable def initialSegmentFamily {a b : X} (γ : Path a b) (t : I) :
-    Path a (γ t) :=
-  (γ.truncate 0 t).cast (by rw [min_eq_left t.2.1, γ.extend_zero]) (γ.extend_apply t.2).symm
-
-public theorem continuous_initialSegmentFamily_uncurry {a b : X} (γ : Path a b) :
-    Continuous ↿(initialSegmentFamily γ) := by
-  have htrunc : Continuous (fun ts : I × I ↦ γ.truncate 0 ts.1 ts.2 : I × I → X) := by
-    let key : I × I → ℝ × ℝ × I := fun ts ↦ (0, ts.1, ts.2)
-    have hkey : Continuous key := by fun_prop
-    simpa [key] using! γ.truncate_continuous_family.comp hkey
-  simpa [initialSegmentFamily] using! htrunc
-
-@[simp] public theorem initialSegmentFamily_apply {a b : X} (γ : Path a b) (t s : I) :
-    initialSegmentFamily γ t s = γ.extend (min (s : ℝ) t) := by
-  simp [initialSegmentFamily, Path.truncate, max_eq_left s.2.1]
-
-public theorem initialSegmentFamily_zero {a b : X} (γ : Path a b) :
-    initialSegmentFamily γ 0 = (Path.refl a).cast rfl (by simp) := by
-  ext s
-  simp [initialSegmentFamily_apply, γ.extend_zero, Path.refl, min_eq_right s.2.1]
-
-public theorem initialSegmentFamily_one {a b : X} (γ : Path a b) :
-    initialSegmentFamily γ 1 = γ.cast rfl (by simp) := by
-  ext s
-  simp [initialSegmentFamily_apply, min_eq_left s.2.2, γ.extend_apply s.2]
-
-end Path
 
 namespace BasedPath
 
@@ -655,12 +611,12 @@ public theorem exists_open_nhds_pathComponent_preimage
         rw [hV'_castSucc_eq]; exact T.V_left_subset i
       have hρ_succ : Set.range (ρ i.succ) ⊆ T.U i :=
         (hρ_range _).trans ((hV'_sub_TV _).trans (T.V_right_subset i))
-      exact Path.segment_rung_homotopy (T.U i) (T.U_slsc i)
+      exact Path.segment_rung_homotopy (T.U i) (T.U_trivial i)
         _ _ _ _ hα_sub hβ_sub hρ_cast hρ_succ
     -- Paste the segment homotopies; use `T.U 0` as the enclosing SLSC neighborhood.
     have h_paste :=
-      Path.paste_segment_homotopies_slsc_source α.toPath β.toPath part ρ h_rectangles
-        (T.U ⟨0, Nat.succ_pos n'⟩) (T.U_slsc ⟨0, Nat.succ_pos n'⟩)
+      Path.paste_segment_homotopies_trivial_source α.toPath β.toPath part ρ h_rectangles
+        (T.U ⟨0, Nat.succ_pos n'⟩) (T.U_trivial ⟨0, Nat.succ_pos n'⟩)
         ((hρ_range 0).trans (by
           have h_zero : (0 : Fin (n' + 2)) =
               (⟨0, Nat.succ_pos n'⟩ : Fin (n' + 1)).castSucc := rfl

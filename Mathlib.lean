@@ -7820,6 +7820,7 @@ public import Mathlib.Topology.Homotopy.TopCat.Basic
 public import Mathlib.Topology.Homotopy.TopCat.Path
 public import Mathlib.Topology.Homotopy.TopCat.ToSSet
 public import Mathlib.Topology.Homotopy.TopCat.ZerothHomotopy
+public import Mathlib.Topology.Homotopy.TubeNeighborhood
 public import Mathlib.Topology.IndicatorConstPointwise
 public import Mathlib.Topology.Inseparable
 public import Mathlib.Topology.Instances.AddCircle.Defs
