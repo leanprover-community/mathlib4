@@ -9,8 +9,10 @@ public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Order.Floor.Ring
 public import Mathlib.Algebra.Order.Ring.Star
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Data.Int.ConditionallyCompleteOrder
 public import Mathlib.Data.Int.Star
+public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Tactic.Ring.RingNF
 
 /-!
@@ -61,7 +63,7 @@ theorem sum_range_add_ediv (m : ℤ) {n : ℕ} (hn : 0 < n) :
 
 /-- Reduction of a real floor to an integer (Euclidean) division:
 `⌊x + i / n⌋ = (⌊n * x⌋ + i) / n`. -/
-theorem floor_add_natCast_div (x : α) {n : ℕ} (hn : 0 < n) (i : ℕ) :
+private theorem floor_add_natCast_div (x : α) {n : ℕ} (hn : 0 < n) (i : ℕ) :
     ⌊x + i / n⌋ = (⌊n * x⌋ + i) / n := by
   rw [← Int.floor_add_natCast, ← Int.floor_div_natCast]
   field_simp
