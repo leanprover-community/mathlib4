@@ -40,7 +40,7 @@ variable (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Category.{v₂} D]
 
 /-- An isomorphism of categories: a pair of functors whose composites are equal to the
 identity functors. -/
-structure IsoCat where mk' ::
+structure IsoCat where
   /-- The forward functor of an isomorphism of categories. -/
   functor : C ⥤ D
   /-- The inverse functor of an isomorphism of categories. -/
@@ -51,17 +51,16 @@ structure IsoCat where mk' ::
   counit_eq : inverse ⋙ functor = 𝟭 D
 
 /-- The identity isomorphism of categories. -/
-@[refl]
-def IsoCat.refl {C : Type u₁} [Category.{v₁} C] : IsoCat C C where
+@[simps, refl]
+def IsoCat.refl : IsoCat C C where
   functor := 𝟭 C
   inverse := 𝟭 C
   unit_eq := (Functor.comp_id _).symm
   counit_eq := Functor.comp_id _
 
 /-- The inverse isomorphism of categories, obtained by swapping `functor` and `inverse`. -/
-@[symm]
-def IsoCat.symm {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
-    (e : IsoCat C D) : IsoCat D C where
+@[simps, symm]
+def IsoCat.symm (e : IsoCat C D) : IsoCat D C where
   functor := e.inverse
   inverse := e.functor
   unit_eq := e.counit_eq.symm
@@ -69,8 +68,7 @@ def IsoCat.symm {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v
 
 /-- Composition of isomorphisms of categories. -/
 @[trans]
-def IsoCat.trans {C : Type u₁} {D : Type u₂} {E : Type u₃}
-    [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E]
+def IsoCat.trans {E : Type u₃} [Category.{v₃} E]
     (e : IsoCat C D) (f : IsoCat D E) : IsoCat C E where
   functor := e.functor ⋙ f.functor
   inverse := f.inverse ⋙ e.inverse
@@ -85,7 +83,7 @@ variable {C} {D} in
 /-- A functor `F : C ⥤ D` is an isomorphism of categories if it is full, faithful and
 bijective on objects. Such a functor has a strict inverse `Functor.strictInv` and assembles
 into an `IsoCat` via `Functor.asIsomorphism`. -/
-class Functor.IsIsomorphism (F : C ⥤ D) : Prop where
+protected class Functor.IsIso (F : C ⥤ D) : Prop where
   /-- A functor which is an isomorphism of categories is faithful. -/
   faithful : F.Faithful := by infer_instance
   /-- A functor which is an isomorphism of categories is full. -/
