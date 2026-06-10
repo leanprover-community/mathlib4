@@ -24,8 +24,8 @@ variable {α : Type u} {β : Type v} [LinearOrder α] [PartialOrder β]
 
 open Cardinal Filter Order Set
 
-theorem eventuallyConst_of_rangeSplitting [Nonempty α] {f : α → β} (hf : Monotone f)
-    (hf' : ¬ IsCofinal (range (rangeSplitting f))) : atTop.EventuallyConst f := by
+theorem Filter.EventuallyConst.of_not_isCofinal_rangeSplitting [Nonempty α] {f : α → β}
+    (hf : Monotone f) (hf' : ¬ IsCofinal (range (rangeSplitting f))) : atTop.EventuallyConst f := by
   rw [eventuallyConst_atTop]
   obtain ⟨i, hi⟩ := not_isCofinal_iff.1 hf'
   refine ⟨i, fun j hij ↦ (hf hij).antisymm' <| (hf (hi _ ⟨⟨f j, j, rfl⟩, rfl⟩).le).trans' ?_⟩
@@ -34,7 +34,7 @@ theorem eventuallyConst_of_rangeSplitting [Nonempty α] {f : α → β} (hf : Mo
 theorem Monotone.eventuallyConst_of_lt_cof {f : α → β} (hf : Monotone f)
     (hα : lift.{u} #β < lift.{v} (cof α)) : atTop.EventuallyConst f := by
   have : Nonempty α := by by_contra!; simp at hα
-  apply eventuallyConst_of_rangeSplitting hf
+  refine .of_not_isCofinal_rangeSplitting hf ?_
   contrapose! hα
   classical let := hf.linearOrderRange
   rw [← lift_cof_congr_of_strictMono (rangeSplitting_strictMono hf) hα, lift_le]
