@@ -596,16 +596,11 @@ lemma isSubmersionOfComplement_complement (h : IsSubmersion I J n f) :
     IsSubmersionOfComplement h.complement I J n f :=
   Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec h
 
-/-- If `f` is a submersion, it is a submersion at each point.
--/
+/-- If `f` is a submersion, it is a submersion at each point. -/
 lemma isSubmersionAt (h : IsSubmersion I J n f) (x : M) : IsSubmersionAt I J n f x := by
   rw [IsSubmersionAt]
   use h.complement, by infer_instance, by infer_instance
   exact h.isSubmersionOfComplement_complement x
-
-/-- If `f = g` and `f` is a submersion, so is `g`. -/
-theorem congr (h : IsSubmersion I J n f) (heq : f = g) : IsSubmersion I J n g :=
-  heq ▸ h
 
 /-- If `f: M → N` and `g: M' × N'` are submersions at `x` and `x'`, respectively,
 then `f × g: M × N → M' × N'` is a submersion at `(x, x')`. -/
