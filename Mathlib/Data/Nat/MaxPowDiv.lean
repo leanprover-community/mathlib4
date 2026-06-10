@@ -145,7 +145,7 @@ theorem padicValNat_lt_self {p n : ℕ} (hn : n ≠ 0) : padicValNat p n < n := 
     exact le_of_dvd (Nat.pos_of_ne_zero hn) pow_padicValNat_dvd
 
 theorem padicValNat_le_self {p : ℕ} (n : ℕ) : padicValNat p n ≤ n := by
-  rcases eq_or_ne n 0 with (rfl | hn)
+  rcases eq_or_ne n 0 with rfl | hn
   · simp
   · exact Nat.le_of_lt <| padicValNat_lt_self hn
 
