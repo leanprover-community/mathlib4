@@ -481,7 +481,7 @@ theorem toQuadraticForm' {R : Type*} [CommRing R] [PartialOrder R] [StarRing R] 
   simpa [Matrix.toQuadraticForm', toLinearMap₂'_apply'] using hM.dotProduct_mulVec_pos hx
 
 /-- See also `LinearMap.isPosSemidef_iff_posSemidef_toMatrix` for the semi-definite case. -/
-theorem _root_.LinearMap.BilinForm.toQuadraticMap_posDef_iff_matrix
+theorem _root_.LinearMap.BilinForm.posDef_toQuadraticMap_iff_matrix
     {R M : Type*} [CommRing R] [PartialOrder R] [StarRing R] [TrivialStar R]
     [AddCommGroup M] [Module R M] [DecidableEq n]
     (b : Module.Basis n R M) (B : LinearMap.BilinForm R M) (hB_symm : B.IsSymm) :

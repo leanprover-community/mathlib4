@@ -198,7 +198,7 @@ lemma exists_cartanMatrix_mul_diagaonal_posDef [DecidableEq ι] [P.IsRootSystem]
     refine Matrix.PosDef.smul ?_ two_pos
     have aux : (P.posRootForm ℤ).posForm.IsSymm := by
       simpa only [posRootForm_eq, LinearMap.BilinForm.isSymm_iff] using P.rootFormIn_isSymm ℤ
-    rw [← LinearMap.BilinForm.toQuadraticMap_posDef_iff_matrix _ _ aux]
+    rw [← LinearMap.BilinForm.posDef_toQuadraticMap_iff_matrix _ _ aux]
     simpa using P.posRootForm_rootFormIn_posDef ℤ
 
 lemma exists_cartanMatrix_diagaonal_mul_posDef [DecidableEq ι] [P.IsRootSystem] :
