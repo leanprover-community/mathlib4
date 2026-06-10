@@ -54,7 +54,7 @@ structure GroupCone (G : Type*) [CommGroup G] extends Submonoid G where
 @[to_additive]
 instance GroupCone.instSetLike (G : Type*) [CommGroup G] : SetLike (GroupCone G) G where
   coe C := C.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+  coe_injective p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
 @[to_additive]
 instance (G : Type*) [CommGroup G] : PartialOrder (GroupCone G) := .ofSetLike (GroupCone G) G
