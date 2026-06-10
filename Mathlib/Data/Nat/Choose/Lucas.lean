@@ -140,18 +140,13 @@ theorem eq_pow_multiplicity_of_choose_modEq_zero (hn : 0 < n)
   rename_i hp
   by_contra! hn₀
   obtain ⟨m, hm⟩ := pow_multiplicity_dvd p n
-  specialize h _ (mem_Icc.mpr ⟨NeZero.one_le, le_sub_one_of_lt <| lt_of_le_of_ne (le_of_dvd hn
-    (pow_multiplicity_dvd p n)) hn₀.symm⟩)
+  specialize h (p ^ multiplicity p n) (by grind [le_of_dvd hn (pow_multiplicity_dvd p n)])
   nth_grw 1 [← mul_one (p ^ _), hm, choose_pow_mul_pow_mul_modEq_choose, choose_one_right] at h
-  have : ¬ p ∣ m := by
-    by_contra! hc
-    have : p ^ (multiplicity p n + 1) ∣ n := by
-      nth_rw 2 [hm]
-      simpa using Nat.mul_dvd_mul_left _ hc
-    nlinarith [(FiniteMultiplicity.pow_dvd_iff_le_multiplicity (finiteMultiplicity_iff.mpr
-      ⟨hp.out.ne_one, hn⟩)).mp this]
-  norm_cast at h
-  exact absurd (dvd_iff_mod_eq_zero.mpr h) this
+  suffices multiplicity p n + 1 ≤ multiplicity p n by lia
+  rw [← FiniteMultiplicity.pow_dvd_iff_le_multiplicity]
+  · nth_rw 2 [hm]
+    simpa [pow_add] using Nat.mul_dvd_mul_left _ (dvd_iff_mod_eq_zero.mpr (by exact_mod_cast h))
+  · exact finiteMultiplicity_iff.mpr ⟨hp.out.ne_one, hn⟩
 
 /-- For primes `p` and positive integer `n`, assume that for all `i ∈ Icc 1 (n - 1)`,
 `choose n i` congruent to `0` module `p`, then `n = p ^ multiplicity p n`.
