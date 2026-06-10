@@ -366,13 +366,8 @@ lemma card_product_filter_lt [LinearOrder α] :
   set v : Finset (α × α) := {x ∈ s ×ˢ s | x.2 < x.1}
   have disj : Disjoint u v := by grind [disjoint_left]
   have union : u.disjUnion v disj = s.offDiag := by grind
-  have swap : #u = #v := by
-    convert Finset.card_map (Equiv.prodComm α α).toEmbedding
-    grind [mem_map_equiv]
-  rw [Nat.choose_two_right]
-  apply Nat.eq_div_of_mul_eq_left two_ne_zero
-  grind [Nat.mul_sub_one, ← offDiag_card, Finset.card_disjUnion]
-
+  have swap : #u = #v := Finset.card_equiv (Equiv.prodComm α α) (by grind)
+  grind [Nat.mul_sub_one, offDiag_card, Nat.choose_two_right]
 
 end Diag
 
