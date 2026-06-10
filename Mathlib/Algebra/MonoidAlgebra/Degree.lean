@@ -395,7 +395,7 @@ lemma supDegree_add_eq_left (h : q.supDegree D < p.supDegree D) :
   obtain ⟨a, ha, he⟩ := exists_supDegree_mem_support D (ne_zero_of_not_supDegree_le h.not_ge)
   rw [he] at h ⊢
   apply Finset.le_sup
-  rw [mem_support_iff, add_apply, apply_eq_zero_of_not_le_supDegree h.not_ge, add_zero]
+  rw [mem_support_iff, Finsupp.add_apply, apply_eq_zero_of_not_le_supDegree h.not_ge, add_zero]
   exact mem_support_iff.mp ha
 
 lemma supDegree_add_eq_right (h : p.supDegree D < q.supDegree D) :
