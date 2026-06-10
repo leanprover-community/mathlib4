@@ -180,7 +180,7 @@ variable {G : Type*} [Groupoid G] (r : HomRel G)
 /-- Inverse of a map in the quotient category of a groupoid. -/
 protected def inv {X Y : Quotient r} (f : X ⟶ Y) : Y ⟶ X :=
   Quot.liftOn f (fun f' => Quot.mk _ (Groupoid.inv f')) (fun _ _ con => by
-    obtain ⟨_, _, a, f, g, b, hfg⟩ := con
+    have ⟨_, _, a, f, g, b, hfg⟩ := con
     simpa using! (Quot.sound (HomRel.CompClosure.intro _ _
       (inv b ≫ inv g) _ _ (inv f ≫ inv a) hfg)).symm)
 

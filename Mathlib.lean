@@ -7396,6 +7396,7 @@ public import Mathlib.Tactic.ProxyType
 public import Mathlib.Tactic.Push
 public import Mathlib.Tactic.Push.Attr
 public import Mathlib.Tactic.Qify
+public import Mathlib.Tactic.RCases
 public import Mathlib.Tactic.RSuffices
 public import Mathlib.Tactic.Recall
 public import Mathlib.Tactic.Recover

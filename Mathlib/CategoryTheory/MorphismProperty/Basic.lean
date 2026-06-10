@@ -577,7 +577,7 @@ lemma map_eq_isoClosure (W : MorphismProperty C) (F : C ⥤ D) :
     W.map F = (W.strictMap F).isoClosure := by
   ext
   refine ⟨fun ⟨_, _, f, hf, hf'⟩ ↦ ⟨_, _, _, ⟨hf⟩, hf'⟩, fun ⟨_, _, f, hf, hf'⟩ ↦ ?_⟩
-  obtain ⟨hf⟩ := hf
+  have ⟨hf⟩ := hf
   exact ⟨_, _, _, hf, hf'⟩
 
 instance map_respectsIso (P : MorphismProperty C) (F : C ⥤ D) :
