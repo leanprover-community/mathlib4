@@ -67,6 +67,12 @@ public theorem isCoveringMap [LocPathConnectedSpace X] [PathConnectedSpace X]
   rw [IsOpen.trivializationDiscrete_baseSet]
   exact hxU
 
+/-- Fibers of the universal cover are discrete. -/
+public instance discreteTopology_fiber [LocPathConnectedSpace X] [PathConnectedSpace X]
+    [SemilocallySimplyConnectedSpace X] (x₀ x : X) :
+    DiscreteTopology (proj (x₀ := x₀) ⁻¹' {x}) :=
+  (isCoveringMap x₀ x).discreteTopology_fiber
+
 /-- Helper: every point of `UniversalCover x₀` is joined to the basepoint. The connecting
 path is the family of initial segments `t ↦ α |_[0, t]`, lifted through `ofBasedPath`. -/
 theorem joined_basepoint_of_ofBasedPath (α : BasedPath x₀) :
@@ -179,7 +185,7 @@ public theorem simplyConnectedSpace [LocPathConnectedSpace X] [PathConnectedSpac
   apply (isCoveringMap x₀).injective_path_homotopic_map
     (ofBasedPath x₀ α) (ofBasedPath x₀ α)
   -- Cast `hγ_null` from `Quotient α.endpoint α.endpoint` to `Quotient (proj e) (proj e)`;
-  -- `refl_cast` and `← mk_map` then align it with the goal.
+  -- `cast_refl` and `← mk_map` then align it with the goal.
   have hcast :=
     congrArg (Path.Homotopic.Quotient.cast · (proj_ofBasedPath x₀ α) (proj_ofBasedPath x₀ α))
       hγ_null

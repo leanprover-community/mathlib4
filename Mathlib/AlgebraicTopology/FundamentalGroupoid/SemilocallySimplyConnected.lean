@@ -37,7 +37,7 @@ relevant for covering space theory.
 ## Main theorems
 
 * `semilocallySimplyConnectedAt_iff` - Characterization in terms of loops being nullhomotopic.
-* `semilocallySimplyConnectedAt_iff_paths` - Characterization: there exists a neighbourhood `U`
+* `semilocallySimplyConnectedAt_iff_paths` - Characterization: there exists a neighborhood `U`
   such that any two paths in `U` between the same endpoints are homotopic.
 * `SemilocallySimplyConnectedAt.of_simplyConnected` - Simply connected spaces are semilocally
   simply connected at every point.
@@ -119,24 +119,8 @@ public theorem semilocallySimplyConnectedAt_iff_paths {x : X} :
       ∀ {u u' : X} (γ γ' : Path u u'),
         range γ ⊆ U → range γ' ⊆ U → γ.Homotopic γ' := by
   rw [semilocallySimplyConnectedAt_iff]
-  constructor
-  · intro ⟨U, hU_open, hx_in_U, hU_loops⟩
-    refine ⟨U, hU_open, hx_in_U, ?_⟩
-    intro u u' γ γ' hγ hγ'
-    -- γ.trans γ'.symm is a loop in U, hence nullhomotopic
-    have hloop : range (γ.trans γ'.symm) ⊆ U := by
-      intro y hy
-      simp only [Path.trans_range, Path.symm_range] at hy
-      exact hy.elim (fun h ↦ hγ h) (fun h ↦ hγ' h)
-    have hnull := hU_loops (γ.trans γ'.symm) hloop
-    exact Path.Homotopic.of_trans_symm hnull
-  · intro ⟨U, hU_open, hx_in_U, hU_paths⟩
-    refine ⟨U, hU_open, hx_in_U, ?_⟩
-    intro u γ hγ
-    have hrefl : range (Path.refl u) ⊆ U := by
-      simp only [Path.refl_range, singleton_subset_iff]
-      exact hγ ⟨0, γ.source⟩
-    exact hU_paths γ (Path.refl u) hγ hrefl
+  exact exists_congr fun U ↦ and_congr_right fun _ ↦ and_congr_right fun _ ↦
+    (Path.Homotopic.paths_homotopic_iff_loops_nullhomotopic U).symm
 
 /-! ### SemilocallySimplyConnectedOn -/
 
@@ -486,100 +470,20 @@ public theorem TubeData.isOpen {x y : X} {n : ℕ}
     exact (T.V_open j).preimage <|
       (continuous_eval_const (part.t j)).comp continuous_induced_dom
 
-/-! ### Proof strategy for discrete topology on Path.Homotopic.Quotient
+/-! ### Proof strategy for discrete topology on `Path.Homotopic.Quotient`
 
-The main theorem `Path.Homotopic.Quotient.discreteTopology` states that in a semilocally
-simply connected space, the quotient `Path.Homotopic.Quotient x y` carries the discrete topology.
-This is proved by showing that every homotopy class (singleton in the quotient) is open.
-
-**Overall proof strategy:**
-
-Given a path `p : Path x y`, we show that its homotopy class `{p' | Path.Homotopic p' p}` is open.
-
-1. **Partition construction** (`exists_partition_in_slsc_neighborhoods`):
-   Use compactness of `p`'s image and the Lebesgue number lemma to find a finite partition
-   `0 = t₀ < t₁ < ... < tₙ = 1` such that each segment `p([tᵢ, tᵢ₊₁])` lies in an open,
-   path-connected neighborhood `Uᵢ` where all paths with the same endpoints are homotopic.
-
-   **Crucially**, we also obtain **overlap neighborhoods** `Vⱼ` at each interior partition
-   point `tⱼ`:
-   - Each `Vⱼ` is open and path-connected
-   - `p(tⱼ) ∈ Vⱼ ⊆ Uⱼ₋₁ ∩ Uⱼ`
-   - These overlaps are obtained using **local path-connectedness**: at each `tⱼ`, the
-     intersection `Uⱼ₋₁ ∩ Uⱼ` is an open neighborhood of `p(tⱼ)`, so it contains a
-     path-connected neighborhood `Vⱼ`.
-
-   This ensures rungs can be constructed at interior points (where we need paths in the
-   intersection).
-
-2. **The tube is open** (`tube_isOpen`):
-   The set of paths `p'` such that `p'([tᵢ, tᵢ₊₁]) ⊆ Uᵢ` for all `i` is open in the
-   compact-open topology on `Path x y`. This follows because each segment `[tᵢ, tᵢ₊₁]` is
-   compact and each `Uᵢ` is open, so the tube is a finite intersection of sets of the form
-   `{f | MapsTo f K U}` which are open by definition of the compact-open topology.
-
-3. **Ladder homotopy construction** (`tube_subset_homotopy_class`):
-   Any path `p'` in the tube is homotopic to `p` via a "ladder homotopy":
-
-   - **Rungs** (`exists_rung_paths`): For each partition point `tᵢ`, construct a path `αᵢ`
-     from `p(tᵢ)` to `p'(tᵢ)`:
-     * At interior points: use path-connectedness of the overlap neighborhood `Vⱼ` to connect
-       `p(tⱼ)` to `p'(tⱼ)`. Since `Vⱼ ⊆ Uⱼ₋₁ ∩ Uⱼ`, the rung lies in both adjacent segments'
-       neighborhoods as required.
-     * At endpoints: use constant paths since `p` and `p'` share endpoints.
-
-   - **Rectangle homotopies** (`segment_rung_homotopy`): For each segment `i`, we have
-     a rectangle with:
-     * Bottom edge: segment `pᵢ` of `p` from `p(tᵢ)` to `p(tᵢ₊₁)`
-     * Top edge: segment `p'ᵢ` of `p'` from `p'(tᵢ)` to `p'(tᵢ₊₁)`
-     * Left edge: rung `αᵢ` from `p(tᵢ)` to `p'(tᵢ)`
-     * Right edge: rung `αᵢ₊₁` from `p(tᵢ₊₁)` to `p'(tᵢ₊₁)`
-
-     Both `pᵢ` and `p'ᵢ` lie in the SLSC neighborhood `Uᵢ`, as do the rungs (by construction).
-     By the SLSC property, `pᵢ · αᵢ₊₁ ≃ αᵢ · p'ᵢ` (both are paths from `p(tᵢ)` to `p'(tᵢ₊₁)`
-     with ranges in `Uᵢ`).
-
-   - **Pasting via telescoping** (`paste_segment_homotopies`): Compose the segment homotopies:
-     ```
-     p = p₀ · p₁ · ... · pₙ₋₁
-       ≃ (α₀ · p'₀ · α₁⁻¹) · (α₁ · p'₁ · α₂⁻¹) · ... · (αₙ₋₁ · p'ₙ₋₁ · αₙ⁻¹)
-       ≃ α₀ · (p'₀ · p'₁ · ... · p'ₙ₋₁) · αₙ⁻¹  (telescoping cancellation)
-       ≃ α₀ · p' · αₙ⁻¹
-     ```
-
-     The theorem `paste_segment_homotopies` keeps the final rung `αₙ`, so it applies equally
-     well when the endpoint is allowed to move. The fixed-endpoint theorem is then recovered in
-     two steps:
-     * `paste_segment_homotopies_slsc_source` kills the initial loop `α₀`
-     * `paste_segment_homotopies_slsc` also kills the final loop `αₙ`
-
-4. **Tubular neighborhoods** (`exists_open_tubular_neighborhood_in_homotopy_class`):
-   Combining steps 1-3, we have shown that for any path `p`:
-   - Step 1 gives a partition `tᵢ` and SLSC neighborhoods `Uᵢ` for `p`
-   - Step 2 shows the tube `T = {p' | ∀i, p'([tᵢ, tᵢ₊₁]) ⊆ Uᵢ}` is open
-   - Step 3 shows `T ⊆ {p' | Homotopic p' p}` (the tube is contained in `p`'s homotopy class)
-
-   **Therefore: Every path `p` has an open neighborhood contained in its homotopy class.**
-   This is the key fact that bridges the local SLSC property to the global topological result.
-
-5. **Homotopy classes are open** (`isOpen_setOf_homotopic`):
-   Let `H(p) = {p' | Homotopic p' p}` be the homotopy class of `p`. To show `H(p)` is open:
-   - Take any `q ∈ H(p)` (so `q` is homotopic to `p`)
-   - By step 4, `q` has an open neighborhood `T_q` with `T_q ⊆ H(q)`
-   - Since homotopy is an equivalence relation, `H(q) = H(p)`
-   - Therefore `q ∈ T_q ⊆ H(p)`, so `q` has an open neighborhood in `H(p)`
-
-   Since every point in `H(p)` has an open neighborhood contained in `H(p)`, the set `H(p)`
-   is open.
-
-6. **Discrete topology** (`discreteTopology`):
-   In the quotient `Path.Homotopic.Quotient x y`, singletons `{⟦p⟧}` correspond to homotopy
-   classes `H(p)` under the quotient map. By step 5, `H(p)` is open, so its image `{⟦p⟧}` is
-   open in the quotient topology. Since every singleton is open, the quotient has discrete
-   topology.
-
-This proof strategy shows that SLSC spaces have "locally unique" path homotopy classes,
-which is the key to constructing universal covers.
+To prove `Path.Homotopic.Quotient.discreteTopology` we show every homotopy class of paths is
+open in the compact-open topology. Given `p : Path x y`, compactness and the Lebesgue number
+lemma yield a partition `0 = t₀ < ⋯ < tₙ = 1` with each segment `p [tᵢ, tᵢ₊₁]` inside an open
+path-homotopy-trivial `Uᵢ`, together with path-connected overlap neighborhoods
+`p tⱼ ∈ Vⱼ ⊆ Uⱼ₋₁ ∩ Uⱼ` (`Path.exists_partition_in_slsc_neighborhoods`). The tube
+`{p' | ∀ i, p' [tᵢ, tᵢ₊₁] ⊆ Uᵢ ∧ ∀ j, p' tⱼ ∈ Vⱼ}` is open (`TubeData.isOpen`) and contained
+in the homotopy class of `p`: connect `p tⱼ` to `p' tⱼ` by rungs `αⱼ` inside `Vⱼ`
+(`Path.exists_rung_paths`), homotope each segment across its rectangle of rungs
+(`Path.segment_rung_homotopy`), and paste by telescoping cancellation
+(`Path.paste_segment_homotopies`, then `_slsc_source`/`_slsc` to kill the boundary rungs);
+this is `Path.tube_subset_homotopy_class`. Openness of homotopy classes
+(`Path.isOpen_setOf_homotopic`) follows, and singletons in the quotient are open.
 -/
 
 /-! ### Construction of "rung" paths for the ladder homotopy -/
@@ -924,24 +828,22 @@ public instance Path.Homotopic.Quotient.instTopologicalSpace (x₀ x : X) :
     TopologicalSpace (Path.Homotopic.Quotient x₀ x) :=
   inferInstanceAs (TopologicalSpace (Quotient _))
 
-/--
-In a semilocally simply connected, locally path-connected space, the quotient of paths by
-homotopy has discrete topology.
--/
-public instance Path.Homotopic.Quotient.instDiscreteTopology
+/-- `Path.Homotopic.Quotient.mk` is a quotient map for the quotient topology. -/
+public theorem Path.Homotopic.Quotient.isQuotientMap_mk (x y : X) :
+    IsQuotientMap (Path.Homotopic.Quotient.mk : Path x y → Path.Homotopic.Quotient x y) :=
+  isQuotientMap_quotient_mk'
+
+/-- In a semilocally simply connected, locally path-connected space, the quotient of paths by
+homotopy has the discrete topology. -/
+public instance Path.Homotopic.Quotient.discreteTopology
     [SemilocallySimplyConnectedSpace X] [LocPathConnectedSpace X] {x y : X} :
     DiscreteTopology (Path.Homotopic.Quotient x y) := by
   rw [discreteTopology_iff_isOpen_singleton]
   intro a
   induction a using Quotient.inductionOn with
   | h p =>
-    change IsOpen ((Path.Homotopic.Quotient.mk : Path x y → Path.Homotopic.Quotient x y) ⁻¹'
-      ({⟦p⟧} : Set (Path.Homotopic.Quotient x y)))
-    have heq :
-        (Path.Homotopic.Quotient.mk : Path x y → Path.Homotopic.Quotient x y) ⁻¹' {⟦p⟧} =
-          {p' : Path x y | Path.Homotopic p' p} :=
-      Set.ext fun _ ↦ Path.Homotopic.Quotient.eq
-    rw [heq]
-    exact isOpen_setOf_homotopic p
+    apply (Path.Homotopic.Quotient.isQuotientMap_mk x y).isOpen_preimage.mp
+    convert isOpen_setOf_homotopic p using 1
+    exact Set.ext fun _ ↦ Path.Homotopic.Quotient.eq
 
 end

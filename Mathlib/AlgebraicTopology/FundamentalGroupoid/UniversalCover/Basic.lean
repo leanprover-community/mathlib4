@@ -21,10 +21,8 @@ the quotient topology coming from the compact-open based-path space.
 
 * `UniversalCover x₀`: a `structure` with fields `proj : X` (the endpoint) and
   `path : Path.Homotopic.Quotient x₀ proj` (the homotopy class of paths from `x₀`),
-  topologised as the quotient of `BasedPath x₀` under endpoint-preserving homotopy.
+  topologized as the quotient of `BasedPath x₀` under endpoint-preserving homotopy.
 * `UniversalCover.proj : UniversalCover x₀ → X`: the endpoint projection (auto-generated).
-* `UniversalCover.Fiber x₀ x`, `UniversalCover.fiberEquiv`: the fiber over `x` and its
-  identification with the homotopy class of paths.
 * `UniversalCover.sheet`: the sheet indexed by `q : Path.Homotopic.Quotient x₀ x` over a good
   neighborhood `U`, viewed as a subset of `UniversalCover x₀`.
 
@@ -40,8 +38,8 @@ the quotient topology coming from the compact-open based-path space.
 
 ## Implementation note
 
-Hatcher (and many textbook treatments) topologise the universal cover directly, declaring
-a basic open set for each pair `(q, U)` of a homotopy class `q` and a good neighbourhood `U`.
+Hatcher (and many textbook treatments) topologize the universal cover directly, declaring
+a basic open set for each pair `(q, U)` of a homotopy class `q` and a good neighborhood `U`.
 
 Here we take a different route: the based-path space `BasedPath x₀` already naturally has the
 compact-open topology, and we put the quotient topology on the endpoint/homotopy-class model via the
@@ -187,28 +185,6 @@ theorem isOpenMap_proj [LocPathConnectedSpace X] (x₀ : X) :
   rw [himage]
   exact BasedPath.isOpenMap_endpoint x₀ _ hs_pre
 
-/-- The fibre of the universal cover over `x`, as a subtype of `UniversalCover x₀` picking out
-points whose projection is `x`. Having a named type for the fibre lets us transport
-covering-map lemmas (such as `IsCoveringMap.discreteTopology_fiber`) onto the universal cover
-without inline subtype spellings. -/
-abbrev Fiber (x₀ x : X) :=
-  {p : UniversalCover x₀ // proj p = x}
-
-/-- The fibre over `x` is equivalent to the quotient of paths from `x₀` to `x`. This provides
-the standard identification of the fibre with `π₁(X, x₀)`-like data: once we also know that the
-fibre is discrete (see `Covering.lean`), any continuous section of the universal cover amounts
-to a choice of homotopy class. -/
-noncomputable def fiberEquiv (x₀ x : X) :
-    Fiber x₀ x ≃ Path.Homotopic.Quotient x₀ x where
-  toFun p := p.1.path.cast rfl p.2.symm
-  invFun q := ⟨mk x q, rfl⟩
-  left_inv p := by
-    rcases p with ⟨⟨y, q⟩, hp⟩
-    dsimp at hp ⊢
-    subst hp
-    simp
-  right_inv q := by simp
-
 /-! ### Sheet construction over a good neighborhood
 
 Below we construct, for each point `x` and a good neighborhood `U` of `x`, the sheets indexed by
@@ -315,23 +291,6 @@ theorem ofBasedPath_mem_sheet_iff {U : Set X} {hxU : x ∈ U}
     {q : Path.Homotopic.Quotient x₀ x} {α : BasedPath x₀} :
     ofBasedPath x₀ α ∈ sheet U hxU q ↔ α ∈ basedPathSheet U hxU q := by
   rw [← ofBasedPath_preimage_sheet U hxU q]; rfl
-
-/-- The sheet over `U` is the `ofBasedPath` image of the corresponding `basedPathSheet`. -/
-theorem sheet_eq_image (U : Set X) (hxU : x ∈ U) (q : Path.Homotopic.Quotient x₀ x) :
-    sheet U hxU q = ofBasedPath x₀ '' basedPathSheet U hxU q := by
-  ext e
-  refine ⟨?_, ?_⟩
-  · intro he
-    obtain ⟨α, rfl⟩ := surjective_ofBasedPath x₀ e
-    exact ⟨α, ofBasedPath_mem_sheet_iff.mp he, rfl⟩
-  · rintro ⟨α, hα, rfl⟩
-    exact ofBasedPath_mem_sheet_iff.mpr hα
-
-/-- Sheet decomposition in terms of `basedPathComponent`: the sheet over `U` indexed by the
-class of `p` is the `ofBasedPath` image of the path component of `ofPath p`. -/
-theorem sheet_eq_image_of_basedPathComponent (U : Set X) (hxU : x ∈ U) (p : Path x₀ x) :
-    sheet U hxU (Path.Homotopic.Quotient.mk p) = ofBasedPath x₀ '' basedPathComponent U p := by
-  rw [sheet_eq_image, basedPathSheet_mk]
 
 theorem isOpen_sheet [LocPathConnectedSpace X] [SemilocallySimplyConnectedSpace X]
     (U : Set X) (hU_open : IsOpen U) (hxU : x ∈ U)

@@ -14,7 +14,7 @@ public import Mathlib.Topology.Order.Basic
 # Based paths
 
 For a topological space `X` and basepoint `x₀ : X`, this file introduces the space
-`BasedPath x₀` of continuous maps `γ : C(I, X)` with `γ 0 = x₀`, topologised as a subspace
+`BasedPath x₀` of continuous maps `γ : C(I, X)` with `γ 0 = x₀`, topologized as a subspace
 of the compact-open topology on `C(I, X)`. It then develops the path-component machinery of
 `endpoint ⁻¹' U` that feeds the universal-cover construction.
 
@@ -23,7 +23,7 @@ of the compact-open topology on `C(I, X)`. It then develops the path-component m
 * `BasedPath x₀`: the compact-open space of based paths out of `x₀`.
 * `BasedPath.endpoint`, `BasedPath.toPath`, `BasedPath.ofPath`, `BasedPath.append`:
   basic API for operating on based paths.
-* `BasedPath.deformTerminal`: a reparameterisation that traverses a compressed tail of the
+* `BasedPath.deformTerminal`: a reparametrization that traverses a compressed tail of the
   original path and then a new path from its endpoint.
 * `Path.initialSegmentFamily`: the family `t ↦ γ|_[0, t]` of initial segments of a path.
 
@@ -33,11 +33,11 @@ of the compact-open topology on `C(I, X)`. It then develops the path-component m
   locally path-connected.
 * `BasedPath.joinedIn_preimage_of_append`: appending a path inside `U` moves a based path
   within the same path component of `endpoint ⁻¹' U`.
-* `BasedPath.exists_open_nhd_pathComponent_preimage`: for a good neighbourhood `U` of `y`,
-  every based path landing in `U` has an open neighbourhood of based paths that are all joined
-  to it inside `endpoint ⁻¹' U`.
+* `BasedPath.exists_open_nhds_pathComponent_preimage`: in a semilocally simply connected,
+  locally path-connected space, every based path landing in an open set `U` has an open
+  neighborhood of based paths that are all joined to it inside `endpoint ⁻¹' U`.
 * `BasedPath.isOpen_pathComponent_preimage`: in a semilocally simply connected, locally
-  path-connected space, path components of `endpoint ⁻¹' U` (for good `U`) are open.
+  path-connected space, path components of `endpoint ⁻¹' U` (for open `U`) are open.
 * `BasedPath.pathComponent_preimage_saturated`: path components of `endpoint ⁻¹' U` are
   invariant under endpoint-preserving homotopy.
 -/
@@ -326,11 +326,11 @@ theorem exists_endpointNeighborhood_of_basicNeighborhood [LocPathConnectedSpace 
   let b : ℝ := (a + 1) / 2
   have ha₀_nonneg : 0 ≤ ((a₀ : I) : ℝ) := a₀.2.1
   have ha₀_lt_one : ((a₀ : I) : ℝ) < 1 := ha₀.2
-  have ha₀_lt_a : ((a₀ : I) : ℝ) < a := by dsimp [a]; nlinarith
-  have ha0 : 0 ≤ a := by dsimp [a]; nlinarith
-  have ha1 : a ≤ 1 := by dsimp [a]; nlinarith
-  have hab : a < b := by dsimp [a, b]; nlinarith
-  have hb1 : b < 1 := by dsimp [a, b]; nlinarith
+  have ha₀_lt_a : ((a₀ : I) : ℝ) < a := by dsimp [a]; linarith
+  have ha0 : 0 ≤ a := by dsimp [a]; linarith
+  have ha1 : a ≤ 1 := by dsimp [a]; linarith
+  have hab : a < b := by dsimp [a, b]; linarith
+  have hb1 : b < 1 := by dsimp [a, b]; linarith
   refine ⟨W, a₀, a, b, hWopen, huW, hWpath, ?_, hIoc, ha₀_lt_a, ha0, ha1, hab, hb1⟩
   intro KU hKU z hz
   have hz' : ∀ KU ∈ Tgood, z ∈ KU.2 := by simpa [O] using hWO hz
@@ -459,7 +459,7 @@ public theorem isOpenMap_endpoint [LocPathConnectedSpace X] (x₀ : X) :
 
 variable {x₀ : X}
 
-public theorem joinedIn_preimage_singleton_of_homotopic (x₀ : X) {y : X} {U : Set X}
+public theorem joinedIn_preimage_of_homotopic (x₀ : X) {y : X} {U : Set X}
     (hy : y ∈ U) {p q : Path x₀ y} (h : Path.Homotopic p q) :
     JoinedIn (endpoint (x₀ := x₀) ⁻¹' U) (ofPath p) (ofPath q) := by
   rcases h with ⟨H⟩
@@ -491,7 +491,7 @@ public theorem joinedIn_preimage_of_append {U : Set X} {z : X} (γ : BasedPath x
   have h_start :
       JoinedIn (endpoint (x₀ := x₀) ⁻¹' U) γ (append γ γrefl) := by
     simpa [γrefl] using!
-      (joinedIn_preimage_singleton_of_homotopic (x₀ := x₀) (U := U) hγU
+      (joinedIn_preimage_of_homotopic (x₀ := x₀) (U := U) hγU
         (p := γ.toPath.trans (Path.refl (endpoint γ))) (q := γ.toPath)
         (Path.Homotopic.trans_refl γ.toPath)).symm
   have h_move :
@@ -575,11 +575,11 @@ theorem isOpen_refined_tubeNeighborhood
 
 /-- Variable-endpoint tube/component theorem.
 
-If `α : BasedPath x₀` has endpoint in a neighborhood `U` satisfying the path-uniqueness
-(`SLSC`) condition, then `α` has an open neighborhood `N` in `BasedPath x₀` such that every
-element of `N` has endpoint in `U` and lies in the same path component of `endpoint ⁻¹' U` as
-`α`. -/
-public theorem exists_open_nhd_pathComponent_preimage
+In a semilocally simply connected, locally path-connected space, if `α : BasedPath x₀` has
+endpoint in an open set `U`, then `α` has an open neighborhood `N` in `BasedPath x₀` such that
+every element of `N` has endpoint in `U` and lies in the same path component of
+`endpoint ⁻¹' U` as `α`. -/
+public theorem exists_open_nhds_pathComponent_preimage
     [SemilocallySimplyConnectedSpace X] [LocPathConnectedSpace X]
     {U : Set X} (hU_open : IsOpen U)
     (α : BasedPath x₀) (hα : endpoint α ∈ U) :
@@ -691,7 +691,7 @@ public theorem exists_open_nhd_pathComponent_preimage
     -- Join `α` to `append α ρ_final`, then deform `append α ρ_final` to `β` via `h_paste`.
     refine (joinedIn_preimage_of_append α hα ρ_final hρ_final_range).trans ?_
     obtain ⟨γ, hγ⟩ :=
-      (joinedIn_preimage_singleton_of_homotopic (x₀ := x₀) (U := ({endpoint β} : Set X))
+      (joinedIn_preimage_of_homotopic (x₀ := x₀) (U := ({endpoint β} : Set X))
         (show endpoint β ∈ ({endpoint β} : Set X) from rfl)
         (show Path.Homotopic (α.toPath.trans ρ_final) β.toPath from h_paste)).mono
         (Set.preimage_mono (Set.singleton_subset_iff.mpr hβ_end_U))
@@ -706,14 +706,14 @@ public theorem isOpen_pathComponent_preimage
   intro β hβ
   have hβ_end_U : endpoint β ∈ U := hβ.target_mem
   obtain ⟨N, hN_open, hβ_N, _, hN_joined⟩ :=
-    exists_open_nhd_pathComponent_preimage hU_open β hβ_end_U
+    exists_open_nhds_pathComponent_preimage hU_open β hβ_end_U
   refine mem_nhds_iff.mpr ⟨N, ?_, hN_open, hβ_N⟩
   intro γ hγ_N
   exact hβ.trans (hN_joined γ hγ_N)
 
 section joinedInSLSC
 
-/-! Reparametrisation helpers for `toPath_homotopic_of_joinedIn_slsc` (private to this section). -/
+/-! Reparametrization helpers for `toPath_homotopic_of_joinedIn_slsc` (private to this section). -/
 
 private def joinedInSLSC_uReal (ts : ℝ × ℝ) : ℝ :=
   ts.1 + max 0 (2 * ts.2 - 1) * (1 - ts.1)
@@ -750,7 +750,7 @@ private theorem joinedInSLSC_uFn_one_left (s : I) : joinedInSLSC_uFn (1, s) = 1 
   Subtype.ext (by simp [joinedInSLSC_uFn, joinedInSLSC_uReal])
 
 private theorem joinedInSLSC_uFn_one_right (t : I) : joinedInSLSC_uFn (t, 1) = 1 :=
-  Subtype.ext (by simp [joinedInSLSC_uFn, joinedInSLSC_uReal]; ring)
+  Subtype.ext (by norm_num [joinedInSLSC_uFn, joinedInSLSC_uReal])
 
 private theorem joinedInSLSC_vFn_left (t s : I) :
     (joinedInSLSC_vFn (t, s) : ℝ) = min (2 * (s : ℝ)) 1 := by
@@ -806,7 +806,7 @@ the SLSC hypothesis.
 2. Since `U` has the SLSC uniqueness property, the loop `L` is null-homotopic in `U` via
    some `L ≃ refl v`.
 3. Combine `F'` with this null-homotopy to build a rel-endpoints homotopy between
-   `α.toPath` (with target cast to `v`) and `β.toPath`. The reparametrisation is
+   `α.toPath` (with target cast to `v`) and `β.toPath`. The reparametrization is
    carried by the pair of coordinate helpers `joinedInSLSC_uFn` / `joinedInSLSC_vFn`
    above, which rescale `(t, s) ∈ I × I` so that the bottom edge (`s = 0`) evaluates
    to the free-homotopy `F'` and the top edge (`s = 1`) picks up the null-homotopy of
@@ -909,6 +909,6 @@ public theorem pathComponent_preimage_saturated
     {p q : Path x₀ y} (h : Path.Homotopic p q) :
     pathComponentIn (endpoint (x₀ := x₀) ⁻¹' U) (ofPath p) =
       pathComponentIn (endpoint (x₀ := x₀) ⁻¹' U) (ofPath q) :=
-  pathComponentIn_congr (joinedIn_preimage_singleton_of_homotopic x₀ hy h).symm
+  pathComponentIn_congr (joinedIn_preimage_of_homotopic x₀ hy h).symm
 
 end BasedPath

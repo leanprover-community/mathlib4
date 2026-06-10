@@ -27,7 +27,7 @@ In this file, we define a `Homotopy` between two `Path`s. In addition, we define
   a `Path.Homotopy (p₀.trans p₁) (q₀.trans q₁)`
 * `Path.Homotopic p₀ p₁` is the relation saying that there is a homotopy between `p₀` and `p₁`
 * `Path.Homotopic.setoid x₀ x₁` is the setoid on `Path`s from `Path.Homotopic`
-* `Path.Homotopic.Quotient x₀ x₁` is the quotient type from `Path x₀ x₀` by `Path.Homotopic.setoid`
+* `Path.Homotopic.Quotient x₀ x₁` is the quotient type from `Path x₀ x₁` by `Path.Homotopic.setoid`
 
 -/
 
@@ -373,7 +373,7 @@ theorem cast_rfl_rfl {x y : X} (γ : Homotopic.Quotient x y) : γ.cast rfl rfl =
   rfl
 
 @[simp, grind =]
-theorem refl_cast {x y : X} (h : y = x) : (refl x).cast h h = refl y := by
+theorem cast_refl {x y : X} (h : y = x) : (refl x).cast h h = refl y := by
   cases h; rfl
 
 @[simp, grind =]
@@ -459,7 +459,7 @@ open Set.Icc
 
 variable {X : Type*} [TopologicalSpace X] {x y : X}
 
-/-- Extract a subpath from `γ` on the interval `[a, b]`. This is `γ` reparametrised via
+/-- Extract a subpath from `γ` on the interval `[a, b]`. This is `γ` reparametrized via
 `Set.Icc.convexComb a b`, i.e. `t ↦ a + t (b - a)`. -/
 def subpathOn (γ : Path x y) (a b : unitInterval) : Path (γ a) (γ b) where
   toFun t := γ (convexComb a b t)
