@@ -105,10 +105,6 @@ theorem contMDiffAt_extChartAt : ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) 
   filter_upwards [extChartAt_target_mem_nhdsWithin x] with y hy
   exact PartialEquiv.right_inv (extChartAt I x) hy
 
-theorem contMDiffOn_extend (he : e ∈ maximalAtlas I n M) :
-    ContMDiffOn I 𝓘(𝕜, E) n (e.extend I) e.source :=
-  fun _x' hx' ↦ (contMDiffAt_extend he hx').contMDiffWithinAt
-
 theorem contMDiffOn_extChartAt : ContMDiffOn I 𝓘(𝕜, E) n (extChartAt I x) (chartAt H x).source :=
   contMDiffOn_extend (chart_mem_maximalAtlas x)
 
