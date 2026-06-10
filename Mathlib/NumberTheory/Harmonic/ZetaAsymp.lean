@@ -9,7 +9,7 @@ public import Mathlib.NumberTheory.LSeries.RiemannZeta
 public import Mathlib.NumberTheory.Harmonic.GammaDeriv
 
 /-!
-# Asymptotics of `ζ s` as `s → 1` and `deriv ζ s` as `s → 0`
+# Asymptotics of `ζ s` as `s → 1` or `s → 0`
 
 The goal of this file is to evaluate the limit of `ζ s - 1 / (s - 1)` as `s → 1`.
 
