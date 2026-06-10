@@ -326,7 +326,8 @@ instance : IsAddApply (VectorMeasure α M) (Set α) M where
 
 @[deprecated (since := "2026-06-10")] protected alias add_apply := add_apply
 
-instance instAddCommMonoid : AddCommMonoid (VectorMeasure α M) := FunLike.addCommMonoid
+instance instAddCommMonoid : AddCommMonoid (VectorMeasure α M) :=
+  fast_instance% FunLike.addCommMonoid
 
 @[deprecated (since := "2026-06-10")] alias coeFnAddMonoidHom := FunLike.coeAddMonoidHom
 
@@ -374,7 +375,7 @@ instance : IsSubApply (VectorMeasure α M) (Set α) M where
 
 @[deprecated (since := "2026-06-10")] protected alias sub_apply := sub_apply
 
-instance instAddCommGroup : AddCommGroup (VectorMeasure α M) := FunLike.addCommGroup
+instance instAddCommGroup : AddCommGroup (VectorMeasure α M) := fast_instance% FunLike.addCommGroup
 
 end AddCommGroup
 
@@ -384,7 +385,7 @@ variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
 variable {R : Type*} [Semiring R] [DistribMulAction R M] [ContinuousConstSMul R M]
 
 instance instDistribMulAction [ContinuousAdd M] : DistribMulAction R (VectorMeasure α M) :=
-  FunLike.distribMulAction
+  fast_instance% FunLike.distribMulAction
 
 end DistribMulAction
 
@@ -393,7 +394,8 @@ section Module
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
 variable {R : Type*} [Semiring R] [Module R M] [ContinuousConstSMul R M]
 
-instance instModule [ContinuousAdd M] : Module R (VectorMeasure α M) := FunLike.module
+instance instModule [ContinuousAdd M] : Module R (VectorMeasure α M) :=
+  fast_instance% FunLike.module
 
 end Module
 
@@ -442,7 +444,7 @@ namespace Measure
 open Classical in
 /-- A finite measure coerced into a real function is a signed measure. -/
 def toSignedMeasure (μ : Measure α) [hμ : IsFiniteMeasure μ] : SignedMeasure α where
-  measureOf' := fun s : Set α => if MeasurableSet s then μ.real s else 0
+  measureOf' s := if MeasurableSet s then μ.real s else 0
   empty' := by simp
   not_measurable' _ hi := if_neg hi
   m_iUnion' f hf₁ hf₂ := by
@@ -451,10 +453,10 @@ def toSignedMeasure (μ : Measure α) [hμ : IsFiniteMeasure μ] : SignedMeasure
     exacts [(summable_measure_toReal hf₁ hf₂).hasSum, fun _ ↦ measure_ne_top _ _]
 
 open Classical in
+@[simp]
 theorem toSignedMeasure_apply (μ : Measure α) [hμ : IsFiniteMeasure μ] (i : Set α) :
     μ.toSignedMeasure i = if MeasurableSet i then μ.real i else 0 := rfl
 
-@[simp]
 theorem toSignedMeasure_apply_measurable {μ : Measure α} [IsFiniteMeasure μ] {i : Set α}
     (hi : MeasurableSet i) : μ.toSignedMeasure i = μ.real i :=
   if_pos hi
@@ -498,7 +500,7 @@ theorem toSignedMeasure_smul (μ : Measure α) [IsFiniteMeasure μ] (r : ℝ≥0
 open Classical in
 /-- A measure is a vector measure over `ℝ≥0∞`. -/
 def toENNRealVectorMeasure (μ : Measure α) : VectorMeasure α ℝ≥0∞ where
-  measureOf' := fun i : Set α => if MeasurableSet i then μ i else 0
+  measureOf' i := if MeasurableSet i then μ i else 0
   empty' := by simp
   not_measurable' _ hi := if_neg hi
   m_iUnion' _ hf₁ hf₂ := by
@@ -507,10 +509,10 @@ def toENNRealVectorMeasure (μ : Measure α) : VectorMeasure α ℝ≥0∞ where
     exact tsum_congr fun n => if_pos (hf₁ n)
 
 open Classical in
+@[simp]
 theorem toENNRealVectorMeasure_apply (μ : Measure α) (i : Set α) :
     μ.toENNRealVectorMeasure i = if MeasurableSet i then μ i else 0 := rfl
 
-@[simp]
 theorem toENNRealVectorMeasure_apply_measurable {μ : Measure α} {i : Set α} (hi : MeasurableSet i) :
     μ.toENNRealVectorMeasure i = μ i :=
   if_pos hi
