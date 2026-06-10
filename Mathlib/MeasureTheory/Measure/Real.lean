@@ -78,9 +78,14 @@ theorem nonempty_of_measureReal_ne_zero (h : μ.real s ≠ 0) : s.Nonempty :=
     (c • μ).real s = c * μ.real s := by
   simp [measureReal_def]
 
+theorem map_measureReal_apply_of_aemeasurable [MeasurableSpace β] {f : α → β}
+    (hf : AEMeasurable f μ) {s : Set β} (hs : MeasurableSet s) :
+    (μ.map f).real s = μ.real (f ⁻¹' s) := by
+  simp_rw [measureReal_def, map_apply_of_aemeasurable hf hs]
+
 theorem map_measureReal_apply [MeasurableSpace β] {f : α → β} (hf : Measurable f)
-    {s : Set β} (hs : MeasurableSet s) : (μ.map f).real s = μ.real (f ⁻¹' s) := by
-  simp_rw [measureReal_def, map_apply hf hs]
+    {s : Set β} (hs : MeasurableSet s) : (μ.map f).real s = μ.real (f ⁻¹' s) :=
+  map_measureReal_apply_of_aemeasurable hf.aemeasurable hs
 
 @[gcongr] theorem measureReal_mono (h : s₁ ⊆ s₂) (h₂ : μ s₂ ≠ ∞ := by finiteness) :
     μ.real s₁ ≤ μ.real s₂ :=
@@ -152,7 +157,7 @@ theorem measureReal_biUnion_finset_le (s : Finset β) (f : β → Set α) :
 
 theorem measureReal_iUnion_fintype_le [Fintype β] (f : β → Set α) :
     μ.real (⋃ b, f b) ≤ ∑ p, μ.real (f p) := by
-  convert measureReal_biUnion_finset_le Finset.univ f
+  convert! measureReal_biUnion_finset_le Finset.univ f
   simp
 
 theorem measureReal_iUnion_fintype [Fintype β] {f : β → Set α} (hn : Pairwise (Disjoint on f))
@@ -177,21 +182,24 @@ theorem measureReal_union_null_iff
 theorem measureReal_congr (H : s =ᵐ[μ] t) : μ.real s = μ.real t := by
   simp [Measure.real, measure_congr H]
 
-theorem measureReal_inter_add_diff₀ (ht : NullMeasurableSet t μ)
+theorem measureReal_inter_add_sdiff₀ (ht : NullMeasurableSet t μ)
     (h : μ s ≠ ∞ := by finiteness) :
     μ.real (s ∩ t) + μ.real (s \ t) = μ.real s := by
   simp only [measureReal_def]
-  rw [← ENNReal.toReal_add, measure_inter_add_diff₀ s ht]
+  rw [← ENNReal.toReal_add, measure_inter_add_sdiff₀ s ht]
   · exact measure_ne_top_of_subset inter_subset_left h
-  · exact measure_ne_top_of_subset diff_subset h
+  · exact measure_ne_top_of_subset sdiff_subset h
+
+@[deprecated (since := "2026-06-03")]
+alias measureReal_inter_add_diff₀ := measureReal_inter_add_sdiff₀
 
 theorem measureReal_union_add_inter₀ (ht : NullMeasurableSet t μ)
     (h₁ : μ s ≠ ∞ := by finiteness) (h₂ : μ t ≠ ∞ := by finiteness) :
     μ.real (s ∪ t) + μ.real (s ∩ t) = μ.real s + μ.real t := by
   have : μ (s ∪ t) ≠ ∞ :=
     ((measure_union_le _ _).trans_lt (ENNReal.add_lt_top.2 ⟨h₁.lt_top, h₂.lt_top⟩ )).ne
-  rw [← measureReal_inter_add_diff₀ ht this, Set.union_inter_cancel_right, union_diff_right,
-    ← measureReal_inter_add_diff₀ ht h₁]
+  rw [← measureReal_inter_add_sdiff₀ ht this, Set.union_inter_cancel_right, union_sdiff_right,
+    ← measureReal_inter_add_sdiff₀ ht h₁]
   ac_rfl
 
 theorem measureReal_union_add_inter₀' (hs : NullMeasurableSet s μ)
@@ -228,18 +236,24 @@ theorem measureReal_union' (hd : Disjoint s₁ s₂) (h : MeasurableSet s₁)
     μ.real (s₁ ∪ s₂) = μ.real s₁ + μ.real s₂ :=
   measureReal_union₀' h.nullMeasurableSet hd.aedisjoint h₁ h₂
 
-theorem measureReal_inter_add_diff (ht : MeasurableSet t)
+theorem measureReal_inter_add_sdiff (ht : MeasurableSet t)
     (h : μ s ≠ ∞ := by finiteness) :
     μ.real (s ∩ t) + μ.real (s \ t) = μ.real s := by
   simp only [Measure.real]
-  rw [← ENNReal.toReal_add, measure_inter_add_diff _ ht]
+  rw [← ENNReal.toReal_add, measure_inter_add_sdiff _ ht]
   · exact measure_ne_top_of_subset inter_subset_left h
-  · exact measure_ne_top_of_subset diff_subset h
+  · exact measure_ne_top_of_subset sdiff_subset h
 
-theorem measureReal_diff_add_inter (ht : MeasurableSet t)
+@[deprecated (since := "2026-06-03")]
+alias measureReal_inter_add_diff := measureReal_inter_add_sdiff
+
+theorem measureReal_sdiff_add_inter (ht : MeasurableSet t)
     (h : μ s ≠ ∞ := by finiteness) :
     μ.real (s \ t) + μ.real (s ∩ t) = μ.real s :=
-  (add_comm _ _).trans (measureReal_inter_add_diff ht h)
+  (add_comm _ _).trans (measureReal_inter_add_sdiff ht h)
+
+@[deprecated (since := "2026-06-03")]
+alias measureReal_diff_add_inter := measureReal_sdiff_add_inter
 
 theorem measureReal_union_add_inter (ht : MeasurableSet t)
     (h₁ : μ s ≠ ∞ := by finiteness) (h₂ : μ t ≠ ∞ := by finiteness) :
@@ -256,8 +270,8 @@ lemma measureReal_symmDiff_eq (hs : MeasurableSet s) (ht : MeasurableSet t)
     μ.real (s ∆ t) = μ.real (s \ t) + μ.real (t \ s) := by
   simp only [Measure.real]
   rw [← ENNReal.toReal_add, measure_symmDiff_eq hs.nullMeasurableSet ht.nullMeasurableSet]
-  · exact measure_ne_top_of_subset diff_subset h₁
-  · exact measure_ne_top_of_subset diff_subset h₂
+  · exact measure_ne_top_of_subset sdiff_subset h₁
+  · exact measure_ne_top_of_subset sdiff_subset h₂
 
 lemma measureReal_symmDiff_le (u : Set α)
     (h₁ : μ s ≠ ∞ := by finiteness) (h₂ : μ t ≠ ∞ := by finiteness) :
@@ -294,81 +308,110 @@ real measure of the set. -/
     (∑ b ∈ s, μ.real {b}) = μ.real s := by
   simp [measureReal_def, ← ENNReal.toReal_sum (fun _ _ ↦ ne_of_lt measure_singleton_lt_top)]
 
-theorem measureReal_diff_null' (h : μ.real (s₁ ∩ s₂) = 0) (h' : μ s₁ ≠ ∞ := by finiteness) :
+theorem measureReal_sdiff_null' (h : μ.real (s₁ ∩ s₂) = 0) (h' : μ s₁ ≠ ∞ := by finiteness) :
     μ.real (s₁ \ s₂) = μ.real s₁ := by
   simp only [measureReal_def]
-  rw [measure_diff_null']
+  rw [measure_sdiff_null']
   exact (measureReal_eq_zero_iff (measure_ne_top_of_subset inter_subset_left h')).1 h
 
-theorem measureReal_diff_null (h : μ.real s₂ = 0) (h' : μ s₂ ≠ ∞ := by finiteness) :
+@[deprecated (since := "2026-06-03")] alias measureReal_diff_null' := measureReal_sdiff_null'
+
+theorem measureReal_sdiff_null (h : μ.real s₂ = 0) (h' : μ s₂ ≠ ∞ := by finiteness) :
     μ.real (s₁ \ s₂) = μ.real s₁ := by
   rcases eq_top_or_lt_top (μ s₁) with H | H
-  · simp [measureReal_def, H, measure_diff_eq_top H h']
-  · exact measureReal_diff_null' (measureReal_mono_null inter_subset_right h h') H.ne
+  · simp [measureReal_def, H, measure_sdiff_eq_top H h']
+  · exact measureReal_sdiff_null' (measureReal_mono_null inter_subset_right h h') H.ne
 
-theorem measureReal_add_diff (hs : MeasurableSet s)
+@[deprecated (since := "2026-06-03")] alias measureReal_diff_null := measureReal_sdiff_null
+
+theorem measureReal_add_sdiff (hs : MeasurableSet s)
     (h₁ : μ s ≠ ∞ := by finiteness) (h₂ : μ t ≠ ∞ := by finiteness) :
     μ.real s + μ.real (t \ s) = μ.real (s ∪ t) := by
   rw [← measureReal_union' (@disjoint_sdiff_right _ s t) hs h₁
-    (measure_ne_top_of_subset diff_subset h₂), union_diff_self]
+    (measure_ne_top_of_subset sdiff_subset h₂), union_sdiff_self]
 
-theorem measureReal_diff' (hm : MeasurableSet t)
+@[deprecated (since := "2026-06-03")] alias measureReal_add_diff := measureReal_add_sdiff
+
+theorem measureReal_sdiff' (hm : MeasurableSet t)
     (h₁ : μ s ≠ ∞ := by finiteness) (h₂ : μ t ≠ ∞ := by finiteness) :
     μ.real (s \ t) = μ.real (s ∪ t) - μ.real t := by
-  rw [union_comm, ← measureReal_add_diff hm h₂ h₁]
+  rw [union_comm, ← measureReal_add_sdiff hm h₂ h₁]
   ring
 
-theorem measureReal_diff (h : s₂ ⊆ s₁) (h₂ : MeasurableSet s₂) (h₁ : μ s₁ ≠ ∞ := by finiteness) :
-    μ.real (s₁ \ s₂) = μ.real s₁ - μ.real s₂ := by
-  rw [measureReal_diff' h₂ h₁ (measure_ne_top_of_subset h h₁), union_eq_self_of_subset_right h]
+@[deprecated (since := "2026-06-03")] alias measureReal_diff' := measureReal_sdiff'
 
-theorem le_measureReal_diff (h : μ s₂ ≠ ∞ := by finiteness) :
+theorem measureReal_sdiff (h : s₂ ⊆ s₁) (h₂ : MeasurableSet s₂) (h₁ : μ s₁ ≠ ∞ := by finiteness) :
+    μ.real (s₁ \ s₂) = μ.real s₁ - μ.real s₂ := by
+  rw [measureReal_sdiff' h₂ h₁ (measure_ne_top_of_subset h h₁), union_eq_self_of_subset_right h]
+
+@[deprecated (since := "2026-06-03")] alias measureReal_diff := measureReal_sdiff
+
+theorem le_measureReal_sdiff (h : μ s₂ ≠ ∞ := by finiteness) :
     μ.real s₁ - μ.real s₂ ≤ μ.real (s₁ \ s₂) := by
   simp only [tsub_le_iff_left]
   calc
     μ.real s₁ ≤ μ.real (s₂ ∪ s₁) := measureReal_le_measureReal_union_right h
-    _ = μ.real (s₂ ∪ s₁ \ s₂) := congr_arg μ.real union_diff_self.symm
+    _ = μ.real (s₂ ∪ s₁ \ s₂) := congr_arg μ.real union_sdiff_self.symm
     _ ≤ μ.real s₂ + μ.real (s₁ \ s₂) := measureReal_union_le _ _
 
-theorem measureReal_diff_lt_of_lt_add (hs : MeasurableSet s) (hst : s ⊆ t) (ε : ℝ)
+@[deprecated (since := "2026-06-03")] alias le_measureReal_diff := le_measureReal_sdiff
+
+theorem measureReal_sdiff_lt_of_lt_add (hs : MeasurableSet s) (hst : s ⊆ t) (ε : ℝ)
     (h : μ.real t < μ.real s + ε) (ht' : μ t ≠ ∞ := by finiteness) :
     μ.real (t \ s) < ε := by
-  rw [measureReal_diff hst hs ht']; linarith
+  rw [measureReal_sdiff hst hs ht']; linarith
 
-theorem measureReal_diff_le_iff_le_add (hs : MeasurableSet s) (hst : s ⊆ t) (ε : ℝ)
+@[deprecated (since := "2026-06-03")]
+alias measureReal_diff_lt_of_lt_add := measureReal_sdiff_lt_of_lt_add
+
+theorem measureReal_sdiff_le_iff_le_add (hs : MeasurableSet s) (hst : s ⊆ t) (ε : ℝ)
     (ht' : μ t ≠ ∞ := by finiteness) :
     μ.real (t \ s) ≤ ε ↔ μ.real t ≤ μ.real s + ε := by
-  rw [measureReal_diff hst hs ht', tsub_le_iff_left]
+  rw [measureReal_sdiff hst hs ht', tsub_le_iff_left]
 
-theorem measureReal_eq_measureReal_of_null_diff (hst : s ⊆ t)
+@[deprecated (since := "2026-06-03")]
+alias measureReal_diff_le_iff_le_add := measureReal_sdiff_le_iff_le_add
+
+theorem measureReal_eq_measureReal_of_null_sdiff (hst : s ⊆ t)
     (h_nulldiff : μ.real (t \ s) = 0) (h : μ (t \ s) ≠ ∞ := by finiteness) :
     μ.real s = μ.real t := by
   rw [measureReal_eq_zero_iff h] at h_nulldiff
-  simp [measureReal_def, measure_eq_measure_of_null_diff hst h_nulldiff]
+  simp [measureReal_def, measure_eq_measure_of_null_sdiff hst h_nulldiff]
 
-theorem measureReal_eq_measureReal_of_between_null_diff
+@[deprecated (since := "2026-06-03")]
+alias measureReal_eq_measureReal_of_null_diff := measureReal_eq_measureReal_of_null_sdiff
+
+theorem measureReal_eq_measureReal_of_between_null_sdiff
     (h12 : s₁ ⊆ s₂) (h23 : s₂ ⊆ s₃) (h_nulldiff : μ.real (s₃ \ s₁) = 0)
     (h' : μ (s₃ \ s₁) ≠ ∞ := by finiteness) :
     μ.real s₁ = μ.real s₂ ∧ μ.real s₂ = μ.real s₃ := by
   have A : μ s₁ = μ s₂ ∧ μ s₂ = μ s₃ :=
-    measure_eq_measure_of_between_null_diff h12 h23 ((measureReal_eq_zero_iff h').1 h_nulldiff)
+    measure_eq_measure_of_between_null_sdiff h12 h23 ((measureReal_eq_zero_iff h').1 h_nulldiff)
   simp [measureReal_def, A.1, A.2]
 
-theorem measureReal_eq_measureReal_smaller_of_between_null_diff (h12 : s₁ ⊆ s₂)
+theorem measureReal_eq_measureReal_smaller_of_between_null_sdiff (h12 : s₁ ⊆ s₂)
     (h23 : s₂ ⊆ s₃) (h_nulldiff : μ.real (s₃ \ s₁) = 0)
     (h' : μ (s₃ \ s₁) ≠ ∞ := by finiteness) :
     μ.real s₁ = μ.real s₂ :=
-  (measureReal_eq_measureReal_of_between_null_diff h12 h23 h_nulldiff h').1
+  (measureReal_eq_measureReal_of_between_null_sdiff h12 h23 h_nulldiff h').1
 
-theorem measureReal_eq_measureReal_larger_of_between_null_diff (h12 : s₁ ⊆ s₂)
+@[deprecated (since := "2026-06-03")]
+alias measureReal_eq_measureReal_smaller_of_between_null_diff :=
+  measureReal_eq_measureReal_smaller_of_between_null_sdiff
+
+theorem measureReal_eq_measureReal_larger_of_between_null_sdiff (h12 : s₁ ⊆ s₂)
     (h23 : s₂ ⊆ s₃) (h_nulldiff : μ.real (s₃ \ s₁) = 0) (h' : μ (s₃ \ s₁) ≠ ∞ := by finiteness) :
     μ.real s₂ = μ.real s₃ :=
-  (measureReal_eq_measureReal_of_between_null_diff h12 h23 h_nulldiff h').2
+  (measureReal_eq_measureReal_of_between_null_sdiff h12 h23 h_nulldiff h').2
+
+@[deprecated (since := "2026-06-03")]
+alias measureReal_eq_measureReal_larger_of_between_null_diff :=
+  measureReal_eq_measureReal_larger_of_between_null_sdiff
 
 theorem measureReal_compl [IsFiniteMeasure μ] (h₁ : MeasurableSet s) :
     μ.real sᶜ = μ.real univ - μ.real s := by
-  rw [compl_eq_univ_diff]
-  exact measureReal_diff (subset_univ s) h₁
+  rw [compl_eq_univ_sdiff]
+  exact measureReal_sdiff (subset_univ s) h₁
 
 theorem measureReal_compl₀ [IsFiniteMeasure μ] (h₁ : NullMeasurableSet s μ) :
     μ.real sᶜ = μ.real univ - μ.real s := by
@@ -406,7 +449,7 @@ theorem exists_nonempty_inter_of_measureReal_univ_lt_sum_measureReal [IsFiniteMe
     (fun i mi ↦ (h i mi).nullMeasurableSet)
   simp only [Measure.real] at H
   apply (ENNReal.toReal_lt_toReal (by finiteness) _).1
-  · convert H
+  · convert! H
     rw [ENNReal.toReal_sum (by finiteness)]
   · exact (ENNReal.sum_lt_top.mpr (fun i hi ↦ measure_lt_top ..)).ne
 

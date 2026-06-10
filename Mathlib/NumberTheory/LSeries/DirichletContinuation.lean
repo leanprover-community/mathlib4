@@ -136,7 +136,7 @@ private lemma LFunction_changeLevel_aux {M N : ℕ} [NeZero M] [NeZero N] (hMN :
     exact (differentiableAt_LFunction _ _ (.inl hs)).differentiableWithinAt
   · refine DifferentiableOn.analyticOnNhd (fun s hs ↦ ?_) isOpen_compl_singleton
     refine ((differentiableAt_LFunction _ _ (.inl hs)).mul ?_).differentiableWithinAt
-    refine .fun_finset_prod fun i h ↦ ?_
+    refine .fun_finsetProd fun i h ↦ ?_
     have : NeZero i := ⟨(Nat.pos_of_mem_primeFactors h).ne'⟩
     fun_prop
   · refine eventually_of_mem ?_ (fun t (ht : 1 < t.re) ↦ ?_)
@@ -154,7 +154,7 @@ lemma LFunction_changeLevel {M N : ℕ} [NeZero M] [NeZero N] (hMN : M ∣ N)
   rcases h with h | h
   · have hχ : changeLevel hMN χ ≠ 1 := h ∘ (changeLevel_eq_one_iff hMN).mp
     have h' : Continuous fun s ↦ LFunction χ s * ∏ p ∈ N.primeFactors, (1 - χ p * ↑p ^ (-s)) :=
-      (differentiable_LFunction h).continuous.mul <| continuous_finset_prod _ fun p hp ↦ by
+      (differentiable_LFunction h).continuous.mul <| continuous_finsetProd _ fun p hp ↦ by
         have : NeZero p := ⟨(Nat.prime_of_mem_primeFactors hp).ne_zero⟩
         fun_prop
     exact congrFun ((differentiable_LFunction hχ).continuous.ext_on
@@ -174,7 +174,7 @@ zeta function by multiplying with `∏ p ∈ N.primeFactors, (1 - (p : ℂ) ^ (-
 lemma LFunctionTrivChar_eq_mul_riemannZeta {s : ℂ} (hs : s ≠ 1) :
     LFunctionTrivChar N s = (∏ p ∈ N.primeFactors, (1 - (p : ℂ) ^ (-s))) * riemannZeta s := by
   rw [← LFunction_modOne_eq (χ := 1), LFunctionTrivChar, ← changeLevel_one N.one_dvd, mul_comm]
-  convert LFunction_changeLevel N.one_dvd 1 (.inr hs) using 4 with p
+  convert! LFunction_changeLevel N.one_dvd 1 (.inr hs) using 4 with p
   rw [MulChar.one_apply <| isUnit_of_subsingleton _, one_mul]
 
 /-- The L function of the trivial Dirichlet character mod `N` has a simple pole with
@@ -190,7 +190,7 @@ lemma LFunctionTrivChar_residue_one :
   conv => enter [3, 1]; rw [← mul_one <| Finset.prod ..]; enter [1, 2, p]; rw [← cpow_neg_one]
   refine .mul (f := fun s ↦ ∏ p ∈ N.primeFactors, _) ?_ riemannZeta_residue_one
   refine tendsto_nhdsWithin_of_tendsto_nhds <| Continuous.tendsto ?_ 1
-  exact continuous_finset_prod _ fun p hp ↦ by
+  exact continuous_finsetProd _ fun p hp ↦ by
     have : NeZero p := ⟨(Nat.prime_of_mem_primeFactors hp).ne_zero⟩
     fun_prop
 
@@ -350,7 +350,7 @@ lemma differentiable_LFunctionTrivChar₁ : Differentiable ℂ (LFunctionTrivCha
     ← differentiableOn_compl_singleton_and_continuousAt_iff (c := 1) Filter.univ_mem]
   refine ⟨DifferentiableOn.congr (f := fun s ↦ (s - 1) * LFunctionTrivChar n s)
     (fun _ hs ↦ DifferentiableAt.differentiableWithinAt <| by fun_prop (disch := simp_all))
-    fun _ hs ↦ Function.update_of_ne (Set.mem_diff_singleton.mp hs).2 ..,
+    fun _ hs ↦ Function.update_of_ne (Set.mem_sdiff_singleton.mp hs).2 ..,
     continuousWithinAt_compl_self.mp ?_⟩
   simpa using LFunctionTrivChar_residue_one
 
@@ -389,7 +389,7 @@ is continuous away from the zeros of the L-function. -/
 lemma continuousOn_neg_logDeriv_LFunction_of_nontriv (hχ : χ ≠ 1) :
     ContinuousOn (fun s ↦ -deriv (LFunction χ) s / LFunction χ s) {s | LFunction χ s ≠ 0} := by
   have h := differentiable_LFunction hχ
-  simpa [neg_div] using ((h.contDiff.continuous_deriv le_rfl).continuousOn.div
+  simpa [neg_div] using! ((h.contDiff.continuous_deriv le_rfl).continuousOn.div
     h.continuous.continuousOn fun _ hw ↦ hw).neg
 
 end nontrivial

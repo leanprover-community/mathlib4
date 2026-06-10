@@ -127,11 +127,13 @@ theorem Finset.card_compl_lt_iff_nonempty [Fintype α] [DecidableEq α] (s : Fin
     #sᶜ < Fintype.card α ↔ s.Nonempty :=
   sᶜ.card_lt_iff_ne_univ.trans s.compl_ne_univ_iff_nonempty
 
-theorem Finset.card_univ_diff [DecidableEq α] [Fintype α] (s : Finset α) :
+theorem Finset.card_univ_sdiff [DecidableEq α] [Fintype α] (s : Finset α) :
     #(univ \ s) = Fintype.card α - #s := by grind
 
+@[deprecated (since := "2026-06-03")] alias Finset.card_univ_diff := Finset.card_univ_sdiff
+
 theorem Finset.card_compl [DecidableEq α] [Fintype α] (s : Finset α) : #sᶜ = Fintype.card α - #s :=
-  Finset.card_univ_diff s
+  Finset.card_univ_sdiff s
 
 @[simp]
 theorem Finset.card_add_card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
@@ -198,7 +200,6 @@ theorem Fintype.card_lex (α : Type*) [Fintype α] : Fintype.card (Lex α) = Fin
 
 -- Note: The extra hypothesis `h` is there so that the rewrite lemma applies,
 -- no matter what instance of `Fintype (Set.univ : Set α)` is used.
-@[simp]
 theorem Fintype.card_setUniv [Fintype α] {h : Fintype (Set.univ : Set α)} :
     Fintype.card (Set.univ : Set α) = Fintype.card α := by
   apply Fintype.card_of_finset'

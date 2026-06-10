@@ -24,7 +24,7 @@ In this file we define simple and semisimple Lie algebras, together with related
 lie algebra, radical, simple, semisimple
 -/
 
-@[expose] public section
+public section
 
 variable (R L M : Type*)
 variable [CommRing R] [LieRing L] [AddCommGroup M] [Module R M] [LieRingModule L M]

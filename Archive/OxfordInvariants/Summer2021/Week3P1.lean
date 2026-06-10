@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Data.Nat.Cast.Order.Field
+import Mathlib.Tactic.Positivity
 
 /-!
 # The Oxford Invariants Puzzle Challenges - Summer 2021, Week 3, Problem 1
@@ -114,7 +115,8 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
       mul_div_mul_right _ _ (a_pos _ <| Nat.le_succ _).ne']
     suffices h : ∀ i, i ∈ Finset.range (n + 1) → 0 ≤ (a 0 : α) * a (n + 1) / (a i * a (i + 1)) from
       Finset.single_le_sum h (Finset.self_mem_range_succ n)
-    refine fun i _ ↦ div_nonneg ?_ ?_ <;> refine mul_nonneg ?_ ?_ <;> exact Nat.cast_nonneg _
+    intro i hi
+    positivity
   -- Claim that the sum equals `(aₙ + aₙ₊₂)/aₙ₊₁ * b - (aₙ * b - a₀)/aₙ₊₁`
   refine ⟨(a n + a (n + 2)) / a (n + 1) * b - (a n * b - a 0) / a (n + 1), ?_, ?_⟩
   -- Check that this indeed equals the sum

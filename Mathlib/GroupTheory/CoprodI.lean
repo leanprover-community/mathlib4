@@ -458,6 +458,7 @@ theorem mem_of_mem_equivPair_tail {i j : ι} {w : Word M} (m : M i) :
   · exact List.mem_of_mem_tail h
   · revert h; cases w.toList <;> simp +contextual
 
+set_option backward.defeqAttrib.useBackward true in
 theorem equivPair_head {i : ι} {w : Word M} :
     (equivPair i w).head =
       if h : ∃ (h : w.toList ≠ []), (w.toList.head h).1 = i
@@ -791,11 +792,9 @@ end NeWord
 
 section PingPongLemma
 
-open Pointwise
-
 open Cardinal
-
 open scoped Function -- required for scoped `on` notation
+open scoped Pointwise
 
 variable {G : Type*} [Group G]
 variable {H : ι → Type*} [∀ i, Group (H i)]
@@ -942,9 +941,9 @@ def _root_.freeGroupEquivCoprodI {ι : Type u_1} :
 
 section PingPongLemma
 
-open Pointwise Cardinal
-
+open Cardinal
 open scoped Function -- required for scoped `on` notation
+open scoped Pointwise
 
 variable [Nontrivial ι]
 variable {G : Type u_1} [Group G] (a : ι → G)
@@ -1019,7 +1018,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
           smul_set_mono ((hXYdisj j i).union_left <| hYdisj hij.symm).subset_compl_right
         _ ⊆ X i := by
           clear hnne0 hlt
-          induction n, h1n using Int.le_induction with
+          induction n, h1n using Int.leInduction with
           | base => rw [zpow_one]; exact hX i
           | succ n _hle hi =>
             calc
@@ -1037,7 +1036,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
           smul_set_mono ((hXdisj hij.symm).union_left (hXYdisj i j).symm).subset_compl_right
         _ ⊆ Y i := by
           clear hnne0 hgt
-          induction n, h1n using Int.le_induction_down with
+          induction n, h1n using Int.leInductionDown with
           | base => rw [zpow_neg, zpow_one]; exact hY i
           | pred n hle hi =>
             calc

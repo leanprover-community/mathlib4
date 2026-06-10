@@ -228,7 +228,7 @@ theorem cond_inter_self (hms : MeasurableSet s) (t : Set Ω) (μ : Measure Ω) :
 theorem inter_pos_of_cond_ne_zero (hms : MeasurableSet s) (hcst : μ[t | s] ≠ 0) :
     0 < μ (s ∩ t) := by
   refine pos_iff_ne_zero.mpr (right_ne_zero_of_mul (a := (μ s)⁻¹) ?_)
-  convert hcst
+  convert! hcst
   simp [hms, Set.inter_comm, cond]
 
 lemma cond_pos_of_inter_ne_zero [IsFiniteMeasure μ] (hms : MeasurableSet s) (hci : μ (s ∩ t) ≠ 0) :
@@ -267,7 +267,7 @@ theorem cond_add_cond_compl_eq (hms : MeasurableSet s) (μ : Measure Ω) [IsFini
     μ[t | s] * μ s + μ[t | sᶜ] * μ sᶜ = μ t := by
   rw [cond_mul_eq_inter hms, cond_mul_eq_inter hms.compl, Set.inter_comm _ t,
     Set.inter_comm _ t]
-  exact measure_inter_add_diff t hms
+  exact measure_inter_add_sdiff t hms
 
 /-- **Bayes' Theorem** -/
 theorem cond_eq_inv_mul_cond_mul (hms : MeasurableSet s) (hmt : MeasurableSet t) (μ : Measure Ω)
@@ -301,7 +301,7 @@ lemma sum_meas_smul_cond_fiber {X : Ω → α} (hX : Measurable X) (μ : Measure
   ext E hE
   calc
     _ = ∑ x, μ (X ⁻¹' {x} ∩ E) := by
-      simp only [Measure.coe_finset_sum, Measure.coe_smul, Finset.sum_apply,
+      simp only [Measure.coe_finsetSum, Measure.coe_smul, Finset.sum_apply,
         Pi.smul_apply, smul_eq_mul]
       simp_rw [mul_comm (μ _), cond_mul_eq_inter (hX (.singleton _))]
     _ = _ := by

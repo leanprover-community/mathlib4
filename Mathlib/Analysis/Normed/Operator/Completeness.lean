@@ -107,9 +107,9 @@ theorem isCompact_image_coe_of_bounded_of_closed_image [ProperSpace F] {s : Set 
     IsCompact (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s) :=
   hc.closure_eq ▸ isCompact_closure_image_coe_of_bounded hb
 
-/-- If a set `s` of semilinear functions is bounded and is closed in the weak-* topology, then its
+/-- If a set `s` of semilinear functions is bounded and is closed in the weak-\* topology, then its
 image under coercion to functions `E → F` is a closed set. We don't have a name for `E →SL[σ] F`
-with weak-* topology in `mathlib`, so we use an equivalent condition (see `isClosed_induced_iff'`).
+with weak-\* topology in `mathlib`, so we use an equivalent condition (see `isClosed_induced_iff'`).
 
 TODO: reformulate this in terms of a type synonym with the right topology. -/
 theorem isClosed_image_coe_of_bounded_of_weak_closed {s : Set (E' →SL[σ₁₂] F)} (hb : IsBounded s)
@@ -119,9 +119,9 @@ theorem isClosed_image_coe_of_bounded_of_weak_closed {s : Set (E' →SL[σ₁₂
   isClosed_of_closure_subset fun f hf =>
     ⟨ofMemClosureImageCoeBounded f hb hf, hc (ofMemClosureImageCoeBounded f hb hf) hf, rfl⟩
 
-/-- If a set `s` of semilinear functions is bounded and is closed in the weak-* topology, then its
+/-- If a set `s` of semilinear functions is bounded and is closed in the weak-\* topology, then its
 image under coercion to functions `E → F` is a compact set. We don't have a name for `E →SL[σ] F`
-with weak-* topology in `mathlib`, so we use an equivalent condition (see `isClosed_induced_iff'`).
+with weak-\* topology in `mathlib`, so we use an equivalent condition (see `isClosed_induced_iff'`).
 -/
 theorem isCompact_image_coe_of_bounded_of_weak_closed [ProperSpace F] {s : Set (E' →SL[σ₁₂] F)}
     (hb : IsBounded s) (hc : ∀ f : E' →SL[σ₁₂] F,
@@ -130,8 +130,8 @@ theorem isCompact_image_coe_of_bounded_of_weak_closed [ProperSpace F] {s : Set (
   isCompact_image_coe_of_bounded_of_closed_image hb <|
     isClosed_image_coe_of_bounded_of_weak_closed hb hc
 
-/-- A closed ball is closed in the weak-* topology. We don't have a name for `E →SL[σ] F` with
-weak-* topology in `mathlib`, so we use an equivalent condition (see `isClosed_induced_iff'`). -/
+/-- A closed ball is closed in the weak-\* topology. We don't have a name for `E →SL[σ] F` with
+weak-\* topology in `mathlib`, so we use an equivalent condition (see `isClosed_induced_iff'`). -/
 theorem is_weak_closed_closedBall (f₀ : E' →SL[σ₁₂] F) (r : ℝ) ⦃f : E' →SL[σ₁₂] F⦄
     (hf : ⇑f ∈ closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' closedBall f₀ r)) :
     f ∈ closedBall f₀ r := by
