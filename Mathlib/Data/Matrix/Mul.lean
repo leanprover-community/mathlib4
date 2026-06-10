@@ -741,6 +741,9 @@ theorem mulVec_diagonal [Fintype m] [DecidableEq m] (v w : m → α) (x : m) :
     (diagonal v *ᵥ w) x = v x * w x :=
   diagonal_dotProduct v w x
 
+lemma mulVec_apply [Fintype n] {M : Matrix m n α} {x : n → α} {i : m} :
+    (M *ᵥ x) i = ∑ j : n, M i j * x j := rfl
+
 theorem vecMul_diagonal [Fintype m] [DecidableEq m] (v w : m → α) (x : m) :
     (v ᵥ* diagonal w) x = v x * w x :=
   dotProduct_diagonal' v w x

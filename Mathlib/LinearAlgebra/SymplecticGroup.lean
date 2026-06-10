@@ -40,6 +40,13 @@ def J : Matrix (l ⊕ l) (l ⊕ l) R :=
   Matrix.fromBlocks 0 (-1) 1 0
 
 @[simp]
+theorem J_map {S : Type*} [CommRing S] (f : R →+* S) : (J l R).map f = J l S := by
+  unfold J
+  rw [fromBlocks_map, Matrix.map_zero f f.map_zero,
+    Matrix.map_one f f.map_zero f.map_one, Matrix.map_neg f f.map_neg,
+    Matrix.map_one f f.map_zero f.map_one]
+
+@[simp]
 theorem J_transpose : (J l R)ᵀ = -J l R := by
   rw [J, fromBlocks_transpose, ← neg_one_smul R (fromBlocks _ _ _ _ : Matrix (l ⊕ l) (l ⊕ l) R),
     fromBlocks_smul, Matrix.transpose_zero, Matrix.transpose_one, transpose_neg]
@@ -128,6 +135,13 @@ theorem symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A := by
   simp only [det_mul, det_transpose] at hA
   rw [mul_comm A.det, mul_assoc] at hA
   exact hA
+
+theorem map_mem {S : Type*} [CommRing S]
+    (f : R →+* S) (hA : A ∈ symplecticGroup l R) :
+    f.mapMatrix A ∈ symplecticGroup l S := by
+  rw [mem_iff] at hA ⊢
+  rw [RingHom.mapMatrix_apply, ← J_map _ _ f, ← transpose_map,
+    ← Matrix.map_mul, ← Matrix.map_mul, hA]
 
 theorem transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGroup l R := by
   rw [mem_iff] at hA ⊢
