@@ -400,24 +400,17 @@ theorem CanonicalDecomp.divisor_eq_divisor {x : ℂ} (D : CanonicalDecomp f g R)
     rw [divisor_apply D.meromorphicNFOn.meromorphicOn (mem_closedBall_zero_iff.mpr h.le)]
     simp_all
   · have η₁ : AnalyticAt ℂ (∏ᶠ u, canonicalFactor R u ^ (-(divisor f (ball 0 R)) u)) x := by
-      apply analyticAt_finprod
-      intro a
-      by_cases ha : a ∈ ball 0 R
-      · exact AnalyticAt.zpow (analyticOnNhd_canonicalFactor _ _ _ (by aesop))
-          (canonicalFactor_ne_zero ha (by aesop) (by aesop))
-      · have := D.eventuallyEq
-        have := D.ne_zero
       refine analyticAt_finprod fun a ↦ ?_
       by_cases ha : a ∈ ball 0 R
-      · exact (analyticOnNhd_canonicalFactor _ _ _ (by aesop)).zpow 
+      · exact AnalyticAt.zpow (analyticOnNhd_canonicalFactor _ _ _ (by aesop))
           (canonicalFactor_ne_zero ha (by aesop) (by aesop))
       · simp_all only [mem_ball, dist_zero_right, not_lt,
           locallyFinsuppWithin.apply_eq_zero_of_notMem, neg_zero, zpow_zero]
         exact analyticAt_const
     have η₀ : f =ᶠ[𝓝[≠] x] (∏ᶠ u, canonicalFactor R u ^ (-(divisor f (ball 0 R)) u)) • g := by
-      apply MeromorphicAt.eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin_preperfect
+      refine MeromorphicAt.eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin_preperfect
         (U := closedBall 0 R) (D.meromorphicOn x (by aesop))
-        (η₁.meromorphicAt.smul (D.meromorphicNFOn.meromorphicOn x (by aesop))) (by aesop) _
+        (η₁.meromorphicAt.smul (D.meromorphicNFOn.meromorphicOn x (by aesop))) (by aesop) ?_
         D.eventuallyEq
       rw [← closure_ball 0 hR.ne']
       exact isOpen_ball.perfect_closure.2
@@ -495,7 +488,7 @@ theorem _root_.MeromorphicOn.exists_ecanonicalDecomp (h₁f : MeromorphicOn f (c
         <;> simp_all
       eventuallyEq := by
         simp only [hR.symm, closedBall_zero]
-        apply mem_codiscreteWithin_subsingleton subsingleton_singleton
+        apply mem_codiscreteWithin_of_subsingleton subsingleton_singleton
     }
   obtain ⟨g, D⟩ := h₁f.exists_canonicalDecomp h₂f
   have h₄g : ∀ (u : closedBall (0 : ℂ) R), meromorphicOrderAt g u ≠ ⊤ := by
