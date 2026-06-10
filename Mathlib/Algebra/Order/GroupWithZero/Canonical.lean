@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Order.AddGroupWithTop
 public import Mathlib.Algebra.Order.Group.Defs
 public import Mathlib.Algebra.Order.Group.Int
 public import Mathlib.Algebra.Order.Group.Units
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Order.Monoid.OrderDual
 public import Mathlib.Algebra.Order.Monoid.TypeTags
 public import Mathlib.Data.Int.Basic
@@ -191,7 +191,7 @@ instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
   isBot_zero _ := (le_top : _ ≤ ⊤)
   mul_lt_mul_of_pos_left := by
     simpa [← ofAdd_add, ← toDual_add]
-      using fun a ha b c hbc ↦ add_right_strictMono_of_ne_top (by simpa using ha.ne') hbc
+      using! fun a ha b c hbc ↦ add_right_strictMono_of_ne_top (by simpa using! ha.ne') hbc
 
 @[deprecated "Use simp" (since := "2025-11-17")]
 theorem ofAdd_toDual_eq_zero_iff [LinearOrderedAddCommMonoidWithTop α]
@@ -562,12 +562,12 @@ lemma lt_log_of_exp_lt (hax : exp a < x) : a < log x :=
   (lt_log_iff_exp_lt (exp_pos.trans hax).ne').2 hax
 
 /-- The exponential map as an order isomorphism between `G` and `Gᵐ⁰ˣ`. -/
-@[simps!] def expOrderIso : G ≃o Gᵐ⁰ˣ where
+@[simps! -isSimp] def expOrderIso : G ≃o Gᵐ⁰ˣ where
   __ := expEquiv
   map_rel_iff' := by simp [← Units.val_le_val]
 
 /-- The logarithm as an order isomorphism between `Gᵐ⁰ˣ` and `G`. -/
-@[simps!] def logOrderIso : Gᵐ⁰ˣ ≃o G where
+@[simps! -isSimp] def logOrderIso : Gᵐ⁰ˣ ≃o G where
   __ := logEquiv
   map_rel_iff' := by simp
 

@@ -484,7 +484,7 @@ theorem haarContent_self {K₀ : PositiveCompacts G} : haarContent K₀ K₀.toC
 @[to_additive /-- The variant of `is_left_invariant_addCHaar` for `addHaarContent` -/]
 theorem is_left_invariant_haarContent {K₀ : PositiveCompacts G} (g : G) (K : Compacts G) :
     haarContent K₀ (K.map _ <| continuous_const_mul g) = haarContent K₀ K := by
-  simpa only [ENNReal.coe_inj, ← NNReal.coe_inj, haarContent_apply] using
+  simpa only [ENNReal.coe_inj, ← NNReal.coe_inj, haarContent_apply] using!
     is_left_invariant_chaar g K
 
 @[to_additive]
@@ -602,7 +602,8 @@ private lemma steinhaus_mul_aux (μ : Measure G) [IsHaarMeasure μ] [μ.InnerReg
     obtain ⟨K, hKE, hK_comp, hK_meas⟩ := hEapprox
     exact ⟨closure K, hK_comp.closure_subset_measurableSet hE hKE, hK_comp.closure,
       isClosed_closure, by rwa [hK_comp.measure_closure]⟩
-  filter_upwards [eventually_nhds_one_measure_smul_diff_lt hK K_closed hKpos.ne' (μ := μ)] with g hg
+  filter_upwards [eventually_nhds_one_measure_smul_sdiff_lt hK K_closed hKpos.ne' (μ := μ)]
+    with g hg
   obtain ⟨_, ⟨x, hxK, rfl⟩, hgxK⟩ : ∃ x ∈ g • K, x ∈ K :=
      not_disjoint_iff.1 fun hd ↦ by simp [hd.symm.sdiff_eq_right, measure_smul] at hg
   simpa using div_mem_div (hKE hgxK) (hKE hxK)

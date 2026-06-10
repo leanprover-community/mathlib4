@@ -103,7 +103,7 @@ variable {f₀ f₁ : C(X, Y)}
 
 instance instFunLike : FunLike (Homotopy f₀ f₁) (I × X) Y where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
@@ -393,7 +393,7 @@ variable {f₀ f₁ : C(X, Y)} {P : C(X, Y) → Prop}
 
 instance instFunLike : FunLike (HomotopyWith f₀ f₁ P) (I × X) Y where
   coe F := ⇑F.toHomotopy
-  coe_injective'
+  coe_injective
   | ⟨⟨⟨_, _⟩, _, _⟩, _⟩, ⟨⟨⟨_, _⟩, _, _⟩, _⟩, rfl => rfl
 
 instance : HomotopyLike (HomotopyWith f₀ f₁ P) f₀ f₁ where
@@ -402,7 +402,7 @@ instance : HomotopyLike (HomotopyWith f₀ f₁ P) f₀ f₁ where
   map_one_left F := F.map_one_left
 
 theorem coeFn_injective : @Function.Injective (HomotopyWith f₀ f₁ P) (I × X → Y) (⇑) :=
-  DFunLike.coe_injective'
+  DFunLike.coe_injective
 
 @[ext]
 theorem ext {F G : HomotopyWith f₀ f₁ P} (h : ∀ x, F x = G x) : F = G := DFunLike.ext F G h
@@ -610,7 +610,7 @@ theorem symm_trans (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel f₁ f₂ S) :
 def cast {f₀ f₁ g₀ g₁ : C(X, Y)} (F : HomotopyRel f₀ f₁ S) (h₀ : f₀ = g₀) (h₁ : f₁ = g₁) :
     HomotopyRel g₀ g₁ S where
   toHomotopy := Homotopy.cast F.toHomotopy h₀ h₁
-  prop' t x hx := by simpa only [← h₀, ← h₁] using F.prop t x hx
+  prop' t x hx := by simpa only [← h₀, ← h₁] using! F.prop t x hx
 
 /-- Post-compose a homotopy relative to a set by a continuous function. -/
 @[simps!] def compContinuousMap {f₀ f₁ : C(X, Y)} (F : f₀.HomotopyRel f₁ S) (g : C(Y, Z)) :
