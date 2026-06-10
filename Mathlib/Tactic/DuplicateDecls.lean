@@ -180,8 +180,10 @@ def sortedDuplicateDeclarations (cfg : Target) :
 
 /-- The duplicate declarations linter. It tells you which duplicate declarations there are
 in the current environment. -/
-public def lintDuplicateDeclarations (cfg : Target) : CoreM MessageData := do
-  let dups ← sortedDuplicateDeclarations cfg
+public def lintDuplicateDeclarations (tgt : Target) : CoreM MessageData := do
+  if (← getEnv).header.isModule then
+    throwError "In order to detect aliases, this function should be run in a non-module"
+  let dups ← sortedDuplicateDeclarations tgt
   let mut msg := m!"Number of duplicates: {dups.foldl (init := 0) (· + ·.2.size)}"
   for (module, dups) in dups do
     msg := msg ++ s!"\n\n-- {module}"
