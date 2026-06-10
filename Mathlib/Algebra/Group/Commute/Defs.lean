@@ -199,10 +199,15 @@ end Group
 
 end Commute
 
-@[to_additive] protected lemma IsLeftRegular.mul_eq_of_comm [Semigroup M] {a b c : M}
-    (reg : IsLeftRegular a) (eq : a * b = c) (hc : Commute c a) : b * a = c :=
-  reg <| show a * (b * a) = a * c by rw [← mul_assoc, eq, hc.eq]
+@[to_additive] protected lemma IsLeftRegular.commute_mul_left_iff [Semigroup M] {a b : M}
+    (reg : IsLeftRegular a) : Commute (a * b) a ↔ Commute a b := by
+  simp only [commute_iff_eq]
+  refine ⟨fun h ↦ reg ?_, fun h ↦ ?_⟩
+  · simp only [← h, mul_assoc]
+  · simp [h, ← mul_assoc]
 
-@[to_additive] protected lemma IsRightRegular.mul_eq_of_comm [Semigroup M] {a b c : M}
-    (reg : IsRightRegular a) (eq : b * a = c) (hc : Commute a c) : a * b = c :=
-  reg <| show a * b * a = c * a by rw [mul_assoc, eq, hc.eq]
+@[to_additive] protected lemma IsRightRegular.commute_mul_right_iff [Semigroup M] {a b : M}
+    (reg : IsRightRegular a) : Commute a (b * a) ↔ Commute a b := by
+  simp only [commute_iff_eq]
+  refine ⟨fun h ↦ reg <| show a * b * a = b * a * a by rw [mul_assoc]; exact h, fun h ↦ ?_⟩
+  rw [← mul_assoc, h]
