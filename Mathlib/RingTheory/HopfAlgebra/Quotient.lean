@@ -37,14 +37,12 @@ section ofSurjective
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
   [HopfAlgebra R A] [HopfAlgebraStruct R B]
 
-/-- Post-composition by an algebra homomorphism sends the convolution unit to the
-convolution unit. -/
+/-- Post-composition by an algebra homomorphism preserves the convolution unit. -/
 lemma _root_.LinearMap.algHom_comp_convOne (g : A →ₐ[R] B) :
     g.toLinearMap ∘ₗ (1 : WithConv (A →ₗ[R] A)).ofConv = (1 : WithConv (A →ₗ[R] B)).ofConv := by
   ext a; simp
 
-/-- Pre-composition by a coalgebra homomorphism sends the convolution unit to the
-convolution unit. -/
+/-- Pre-composition by a coalgebra homomorphism preserves the convolution unit. -/
 lemma _root_.LinearMap.convOne_comp_coalgHom (g : A →ₗc[R] B) :
     (1 : WithConv (B →ₗ[R] B)).ofConv ∘ₗ g.toLinearMap = (1 : WithConv (A →ₗ[R] B)).ofConv := by
   ext a; simp
