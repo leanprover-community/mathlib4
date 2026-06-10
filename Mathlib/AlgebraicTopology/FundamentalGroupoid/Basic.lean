@@ -237,6 +237,21 @@ theorem paths_homotopic_iff_loops_nullhomotopic (U : Set X) :
       exact ⟨hγ, hγ'⟩
     exact of_trans_symm (hloops (γ.trans γ'.symm) hloop)
 
+/-- Based variant of `paths_homotopic_iff_loops_nullhomotopic`: all pairs of paths from `x`
+with ranges in `U` are homotopic iff all loops at `x` with range in `U` are nullhomotopic. -/
+theorem paths_from_homotopic_iff_loops_nullhomotopic (U : Set X) (x : X) :
+    (∀ {u : X} (γ γ' : Path x u), Set.range γ ⊆ U → Set.range γ' ⊆ U → γ.Homotopic γ') ↔
+    (∀ γ : Path x x, Set.range γ ⊆ U → γ.Homotopic (Path.refl x)) := by
+  refine ⟨fun hpaths γ hγ ↦ ?_, fun hloops u γ γ' hγ hγ' ↦ ?_⟩
+  · have hrefl : Set.range (Path.refl x) ⊆ U := by
+      simp only [Path.refl_range, Set.singleton_subset_iff]
+      exact hγ ⟨0, γ.source⟩
+    exact hpaths γ (Path.refl x) hγ hrefl
+  · have hloop : Set.range (γ.trans γ'.symm) ⊆ U := by
+      simp only [Path.trans_range, Path.symm_range, Set.union_subset_iff]
+      exact ⟨hγ, hγ'⟩
+    exact of_trans_symm (hloops (γ.trans γ'.symm) hloop)
+
 namespace Quotient
 
 @[simp, grind =]
@@ -299,7 +314,31 @@ theorem of_trans_symm {γ γ' : Homotopic.Quotient x₀ x₁}
   simp only [← mk_trans, ← mk_symm, ← mk_refl] at h
   exact Quotient.sound (Homotopic.of_trans_symm (Quotient.exact h))
 
+/-- A loop whose conjugate by a path is trivial is itself trivial:
+if `(α.trans δ).trans α.symm = refl`, then `δ = refl`.
+This is the quotient analogue of `a * b * a⁻¹ = 1 → b = 1`. -/
+theorem of_conj_eq_refl {x₀ x₁ : X} {α : Homotopic.Quotient x₀ x₁}
+    {δ : Homotopic.Quotient x₁ x₁}
+    (h : (α.trans δ).trans α.symm = refl x₀) : δ = refl x₁ := by
+  have h₁ := congrArg (fun q ↦ q.trans α) h
+  simp only [trans_assoc, symm_trans, trans_refl, refl_trans] at h₁
+  have h₂ := congrArg (fun q ↦ α.symm.trans q) h₁
+  rw [← trans_assoc] at h₂
+  simpa only [symm_trans, refl_trans] using h₂
+
 end Quotient
+
+/-- A loop whose conjugate by a path is null-homotopic is itself null-homotopic. -/
+theorem of_conj_nullhomotopic {x₀ x₁ : X} {α : Path x₀ x₁} {δ : Path x₁ x₁}
+    (h : ((α.trans δ).trans α.symm).Homotopic (Path.refl x₀)) :
+    δ.Homotopic (Path.refl x₁) := by
+  have h' : ((Quotient.mk α).trans (Quotient.mk δ)).trans (Quotient.mk α).symm =
+      Quotient.refl x₀ := by
+    simp only [← Quotient.mk_trans, ← Quotient.mk_symm, ← Quotient.mk_refl]
+    exact Quotient.eq.mpr h
+  have h₂ := Quotient.of_conj_eq_refl h'
+  rw [← Quotient.mk_refl] at h₂
+  exact Quotient.eq.mp h₂
 
 end Homotopic
 
