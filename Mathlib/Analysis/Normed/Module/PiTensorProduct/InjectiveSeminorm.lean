@@ -213,10 +213,10 @@ theorem injectiveSeminorm_tprod_le (m : Π (i : ι), E i) :
   le_trans (injectiveSeminorm_le_projectiveSeminorm _) (projectiveSeminorm_tprod_le m)
 
 -- Use `projectiveSeminorm` to turn the `PiTensorProduct` into a seminormed space.
--- The definition `injectiveSeminorm` is subject to deprecication in a follow-up PR. See:
+-- The definition `injectiveSeminorm` is subject to deprecation in a follow-up PR. See:
 -- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/injectiveSeminorm/with/568798633
 noncomputable instance : SeminormedAddCommGroup (⨂[𝕜] i, E i) :=
-  AddGroupSeminorm.toSeminormedAddCommGroup projectiveSeminorm.toAddGroupSeminorm
+  fast_instance% AddGroupSeminorm.toSeminormedAddCommGroup projectiveSeminorm.toAddGroupSeminorm
 
 noncomputable instance : NormedSpace 𝕜 (⨂[𝕜] i, E i) := ⟨projectiveSeminorm_smul_le⟩
 
