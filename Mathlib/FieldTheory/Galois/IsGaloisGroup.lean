@@ -529,6 +529,14 @@ theorem fixingSubgroup_range_algebraMap_isFractionRing (A B : Type*) [CommRing A
     use algebraMap A K x
     rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
 
+/-- If `H` is a Galois group on `L/E`, then `H` is also a Galois group on
+`L/(IsScalarTower.toAlgHom K E L).fieldRange`. -/
+theorem of_toAlgHom_fieldRange (E : Type*) [Field E] [Algebra K E] [Algebra E L]
+    [IsScalarTower K E L] [IsGaloisGroup H E L] :
+    IsGaloisGroup H (IsScalarTower.toAlgHom K E L).fieldRange L :=
+  IsGaloisGroup.of_ringEquiv H E ((IsScalarTower.toAlgHom K E L).fieldRange) L
+    (IsScalarTower.toAlgHom K E L).equivFieldRange.toRingEquiv fun _ ↦ by simp
+
 section IsGaloisGroup
 
 variable [hGKL : IsGaloisGroup G K L]
@@ -633,24 +641,30 @@ theorem fixingSubgroup_range_algebraMap [Finite G] (A B C : Type*) (H : Subgroup
     rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
 
 attribute [local instance] FractionRing.liftAlgebra in
-/-- If `G` acts on a domain `C` with `IsGaloisGroup G A C` and `B` is an integrally closed
-intermediate domain, then `IsGaloisGroup` holds for the fixing subgroup of `algebraMap B C`. -/
+/-- If `G` acts on a domain `C` with `IsGaloisGroup G A C` and `B` is an intermediate domain,
+then the fixing subgroup of `algebraMap B C` is a Galois group on
+`FractionRing C / FractionRing B`. -/
 theorem isGaloisGroup_fixingSubgroup_range_algebraMap [Finite G] (A B C : Type*) [CommRing A]
-    [CommRing B] [CommRing C] [IsIntegrallyClosed B] [IsDomain C] [Algebra A B] [Algebra A C]
-    [Algebra B C] [FaithfulSMul B C] [FaithfulSMul A C] [Algebra.IsIntegral B C]
-    [IsScalarTower A B C] [MulSemiringAction G C] [IsGaloisGroup G A C] :
-    IsGaloisGroup (fixingSubgroup G (Set.range (algebraMap B C))) B C := by
+    [CommRing B] [CommRing C] [IsDomain C] [Algebra A B] [Algebra A C]
+    [Algebra B C] [FaithfulSMul B C] [FaithfulSMul A C] [IsScalarTower A B C]
+    [MulSemiringAction G C] [IsGaloisGroup G A C] :
+    letI : IsDomain B := (FaithfulSMul.algebraMap_injective B C).isDomain
+    letI : IsDomain A := (FaithfulSMul.algebraMap_injective A C).isDomain
+    letI : MulSemiringAction G (FractionRing C) :=
+      IsFractionRing.mulSemiringAction G A C (FractionRing A) (FractionRing C)
+    IsGaloisGroup (fixingSubgroup G (Set.range (algebraMap B C)))
+      (FractionRing B) (FractionRing C) := by
+  letI : IsDomain B := (FaithfulSMul.algebraMap_injective B C).isDomain
+  letI : IsDomain A := (FaithfulSMul.algebraMap_injective A C).isDomain
+  letI : MulSemiringAction G (FractionRing C) :=
+    IsFractionRing.mulSemiringAction G A C (FractionRing A) (FractionRing C)
   have : FaithfulSMul A B := FaithfulSMul.tower_bot A B C
-  have : IsDomain B := (FaithfulSMul.algebraMap_injective B C).isDomain
-  have : IsDomain A := (FaithfulSMul.algebraMap_injective A C).isDomain
   let K := FractionRing A
   let L := FractionRing C
   let F := FractionRing B
-  let : MulSemiringAction G L := IsFractionRing.mulSemiringAction G A C K L
   have : IsGaloisGroup G K L := IsGaloisGroup.toFractionRing G A C
-  have := of_isScalarTower G K L F
   rw [fixingSubgroup_range_algebraMap_isFractionRing G F L]
-  exact IsGaloisGroup.of_isFractionRing _ _ _ F L
+  exact of_isScalarTower G K L F
 
 open Pointwise in
 /-- If `G` is a finite Galois group for `L/K`, `H` is a Galois group for `L/F`, and `F/K` is
@@ -666,9 +680,9 @@ attribute [local instance] FractionRing.liftAlgebra in
 /-- In a tower of rings `A ≤ B ≤ C`, if `G` is a Galois group on `C/A`, `G'` is a Galois group
 on `B/A`, and `H ≤ G` is a Galois group on `C/B`, then `H` is a normal subgroup of `G`. -/
 theorem normal_of_isGaloisGroup [Finite G] [Finite G'] (A B C : Type*) [CommRing A]
-    [CommRing B] [CommRing C] [IsIntegrallyClosed B] [IsDomain C] [Algebra A B] [Algebra A C]
-    [Algebra B C] [FaithfulSMul B C] [FaithfulSMul A C] [Algebra.IsIntegral B C]
-    [IsScalarTower A B C] [MulSemiringAction G C] [IsGaloisGroup G A C]
+    [CommRing B] [CommRing C] [IsDomain C] [Algebra A B] [Algebra A C]
+    [Algebra B C] [FaithfulSMul B C] [FaithfulSMul A C] [IsScalarTower A B C]
+    [MulSemiringAction G C] [IsGaloisGroup G A C]
     [MulSemiringAction G' B] [IsGaloisGroup G' A B] [IsGaloisGroup H B C] :
     H.Normal := by
   have : FaithfulSMul A B := FaithfulSMul.tower_bot A B C
@@ -685,9 +699,8 @@ theorem normal_of_isGaloisGroup [Finite G] [Finite G'] (A B C : Type*) [CommRing
   have : IsGaloisGroup H F' L := IsGaloisGroup.toFractionRing H B C
   have := of_isScalarTower G K L F
   have := isGalois G' K F'
-  have := IsGalois.of_algEquiv (IsScalarTower.toAlgHom K F' L).equivFieldRange
-  have := IsGaloisGroup.of_ringEquiv H F' F L
-    (IsScalarTower.toAlgHom K F' L).equivFieldRange.toRingEquiv fun _ ↦ by simp
+  have : IsGalois K F := IsGalois.of_algEquiv (IsScalarTower.toAlgHom K F' L).equivFieldRange
+  have : IsGaloisGroup H F L := of_toAlgHom_fieldRange G K L H F'
   exact normal_of_isGalois G K L H F
 
 end IsGaloisGroup
@@ -759,7 +772,7 @@ theorem mulSemiringActionQuotient_smul_def [MulSemiringAction G B] [SMulDistribC
   refine (Quotient.liftOn'_mk'' (· • b) _ g).trans (FaithfulSMul.algebraMap_injective B C ?_)
   rw [algebraMap.smul', algebraMap.smul']
 
-theorem isScalarTower_mulSemiringActionQuotient [MulSemiringAction G B] [SMulDistribClass G B C]
+instance isScalarTower_mulSemiringActionQuotient [MulSemiringAction G B] [SMulDistribClass G B C]
     [IsGaloisGroup N B C] [N.Normal] :
     letI := mulSemiringActionQuotient G B C N
     IsScalarTower G (G ⧸ N) B :=
@@ -816,11 +829,8 @@ noncomputable def quotientMulEquiv [Finite G] [Finite G'] (N : Subgroup G) [N.No
     G ⧸ N ≃* G' :=
   haveI : IsDomain B := (FaithfulSMul.algebraMap_injective B C).isDomain
   haveI := FaithfulSMul.tower_bot A B C
-  letI := smulOfNormal G B C N
-  haveI := smulDistribClass_smulOfNormal G B C N
   letI := mulSemiringActionOfNormal G B C N
   letI := mulSemiringActionQuotient G B C N
-  haveI := isScalarTower_mulSemiringActionQuotient G B C N
   haveI := smulCommClassQuotient G A B C N
   haveI := quotient G A B C N
   mulEquivCongr (G ⧸ N) G' A B
@@ -832,25 +842,30 @@ theorem algebraMap_quotientMulEquiv_smul [Finite G] [Finite G'] (N : Subgroup G)
     algebraMap B C (quotientMulEquiv G G' A B C N g • x) = g • algebraMap B C x := by
   haveI : IsDomain B := (FaithfulSMul.algebraMap_injective B C).isDomain
   haveI := FaithfulSMul.tower_bot A B C
-  letI := smulOfNormal G B C N
-  haveI := smulDistribClass_smulOfNormal G B C N
   letI := mulSemiringActionOfNormal G B C N
   letI := mulSemiringActionQuotient G B C N
-  haveI := isScalarTower_mulSemiringActionQuotient G B C N
   haveI := smulCommClassQuotient G A B C N
   haveI := quotient G A B C N
   rw [show quotientMulEquiv G G' A B C N ↑g • x = ↑g • x from mulEquivCongr_apply_smul ..]
   exact algebraMap_smulOfNormal G B C N g x
 
+attribute [local instance] FractionRing.liftAlgebra in
 /-- The restriction homomorphism from the Galois group of `C/A` to the Galois group of `B/A` where
 `C/B/A` is a tower of domains with `C/A` and `B/A` Galois. -/
 noncomputable def restrictHom [Finite G] [Finite G'] [MulSemiringAction G C] [IsGaloisGroup G A C]
     [MulSemiringAction G' B] [IsGaloisGroup G' A B] [IsIntegrallyClosed B] :
     G →* G' :=
+  letI N := fixingSubgroup G (Set.range (algebraMap B C))
+  haveI : IsDomain B := (FaithfulSMul.algebraMap_injective B C).isDomain
+  haveI : IsDomain A := (FaithfulSMul.algebraMap_injective A C).isDomain
+  letI : MulSemiringAction G (FractionRing C) :=
+    IsFractionRing.mulSemiringAction G A C (FractionRing A) (FractionRing C)
+  haveI : IsGaloisGroup N (FractionRing B) (FractionRing C) :=
+    isGaloisGroup_fixingSubgroup_range_algebraMap G A B C
   haveI : Algebra.IsIntegral A C := Algebra.IsInvariant.isIntegral A C G
   haveI : Algebra.IsIntegral B C := Algebra.IsIntegral.tower_top A
-  letI N := fixingSubgroup G (Set.range (algebraMap B C))
-  haveI : IsGaloisGroup N B C := isGaloisGroup_fixingSubgroup_range_algebraMap G A B C
+  haveI : IsGaloisGroup N B C :=
+    IsGaloisGroup.of_isFractionRing N B C (FractionRing B) (FractionRing C)
   haveI : N.Normal := normal_of_isGaloisGroup G G' N A B C
   (quotientMulEquiv G G' A B C N).toMonoidHom.comp (QuotientGroup.mk' N)
 
