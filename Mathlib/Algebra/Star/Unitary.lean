@@ -434,10 +434,9 @@ end Unitary
 
 /-- In a ring without zero divisors and with trivial star, the unitary elements are exactly `1`
 and `-1`. -/
-theorem coe_unitary_eq_one_neg_one (R : Type*) [Ring R] [StarRing R] [TrivialStar R]
-    [NoZeroDivisors R] : (unitary R : Set R) = {1, -1} := by
-  ext a
-  simp [Unitary.mem_iff_eq_one_or_eq_neg_one]
+theorem coe_unitary_eq_neg_one_one (R : Type*) [Ring R] [StarRing R] [TrivialStar R]
+    [NoZeroDivisors R] : (unitary R : Set R) = {-1, 1} := by
+  simp [Set.ext_iff, Unitary.mem_iff_eq_one_or_eq_neg_one, or_comm]
 
 theorem IsStarProjection.two_mul_sub_one_mem_unitary {R : Type*} [Ring R] [StarRing R] {p : R}
     (hp : IsStarProjection p) : 2 * p - 1 ∈ unitary R := by
