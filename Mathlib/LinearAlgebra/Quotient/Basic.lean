@@ -80,16 +80,7 @@ variable {p}
 
 instance [Subsingleton M] : Subsingleton (M ⧸ p) := by simpa using Subsingleton.elim ..
 
-@[deprecated Quotient.nontrivial_iff (since := "2025-11-02")]
-theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := Quotient.nontrivial_iff.mpr h.ne
-
-@[deprecated Quotient.nontrivial_iff (since := "2025-11-02")]
-theorem nontrivial_of_ne_top (h : p ≠ ⊤) : Nontrivial (M ⧸ p) := Quotient.nontrivial_iff.mpr h
-
 end Quotient
-
-@[deprecated (since := "2025-11-02")]
-alias subsingleton_quotient_iff_eq_top := Quotient.subsingleton_iff
 
 instance QuotientBot.infinite [Infinite M] : Infinite (M ⧸ (⊥ : Submodule R M)) :=
   Infinite.of_injective Submodule.Quotient.mk fun _x _y h =>
@@ -159,7 +150,6 @@ theorem liftQSpanSingleton_apply (x : M) (f : M →ₛₗ[τ₁₂] M₂) (h : f
 theorem range_mkQ : range p.mkQ = ⊤ :=
   eq_top_iff'.2 <| by rintro ⟨x⟩; exact ⟨x, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ker_mkQ : ker p.mkQ = p := by ext; simp
 
@@ -192,7 +182,6 @@ theorem mapQ_apply (f : M →ₛₗ[τ₁₂] M₂) {h} (x : M) :
 theorem mapQ_mkQ (f : M →ₛₗ[τ₁₂] M₂) {h} : (mapQ p q f h).comp p.mkQ = q.mkQ.comp f := by
   ext x; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapQ_zero (h : p ≤ q.comap (0 : M →ₛₗ[τ₁₂] M₂) := (by simp)) :
     p.mapQ q (0 : M →ₛₗ[τ₁₂] M₂) h = 0 := by
@@ -238,8 +227,11 @@ theorem map_liftQ [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) 
 theorem ker_liftQ (f : M →ₛₗ[τ₁₂] M₂) (h) : ker (p.liftQ f h) = (ker f).map (mkQ p) :=
   comap_liftQ _ _ _ _
 
+lemma ker_mapQ (f : M →ₛₗ[τ₁₂] M₂) (h) : ker (p.mapQ q f h) = (comap f q).map p.mkQ := by
+  simp [Submodule.mapQ, Submodule.ker_liftQ, LinearMap.ker_comp]
+
 theorem range_liftQ [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (h) :
-    range (p.liftQ f h) = range f := by simpa only [range_eq_map] using map_liftQ _ _ _ _
+    range (p.liftQ f h) = range f := by simpa only [range_eq_map] using! map_liftQ _ _ _ _
 
 theorem ker_liftQ_eq_bot (f : M →ₛₗ[τ₁₂] M₂) (h) (h' : ker f ≤ p) : ker (p.liftQ f h) = ⊥ := by
   rw [ker_liftQ, le_antisymm h h', mkQ_map_self]
@@ -247,6 +239,10 @@ theorem ker_liftQ_eq_bot (f : M →ₛₗ[τ₁₂] M₂) (h) (h' : ker f ≤ p)
 theorem ker_liftQ_eq_bot' (f : M →ₛₗ[τ₁₂] M₂) (h : p = ker f) :
     ker (p.liftQ f (le_of_eq h)) = ⊥ :=
   ker_liftQ_eq_bot p f h.le h.ge
+
+theorem range_mapQ [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (h : p ≤ comap f q) :
+    (p.mapQ q f h).range = f.range.map q.mkQ := by
+  rw [mapQ, range_liftQ, range_comp]
 
 section
 
@@ -325,7 +321,7 @@ theorem span_preimage_eq [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂]
 
 /-- If `P` is a submodule of `M` and `Q` a submodule of `N`,
 and `f : M ≃ₗ N` maps `P` to `Q`, then `M ⧸ P` is equivalent to `N ⧸ Q`. -/
-@[simps]
+@[simps apply]
 def Quotient.equiv {N : Type*} [AddCommGroup N] [Module R N] (P : Submodule R M)
     (Q : Submodule R N) (f : M ≃ₗ[R] N) (hf : P.map (f : M →ₗ[R] N) = Q) : (M ⧸ P) ≃ₗ[R] N ⧸ Q :=
   { P.mapQ Q (f : M →ₗ[R] N) fun _ hx => hf ▸ Submodule.mem_map_of_mem hx with
@@ -374,7 +370,6 @@ variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
 variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃] [RingHomSurjective τ₁₂]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem range_mkQ_comp (f : M →ₛₗ[τ₁₂] M₂) : (range f).mkQ.comp f = 0 :=
   LinearMap.ext fun x => by simp
 

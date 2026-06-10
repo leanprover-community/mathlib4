@@ -32,7 +32,7 @@ also in the subset.
 @[expose] public section
 
 
-variable (K V : Type*) [Field K] [AddCommGroup V] [Module K V]
+variable (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V]
 
 namespace Projectivization
 
@@ -55,7 +55,7 @@ variable {K V}
 
 instance : SetLike (Subspace K V) (ℙ K V) where
   coe := carrier
-  coe_injective' A B := by
+  coe_injective A B := by
     cases A
     cases B
     simp
@@ -132,12 +132,10 @@ instance : CompleteLattice (Subspace K V) :=
 
 instance subspaceInhabited : Inhabited (Subspace K V) where default := ⊤
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The span of the empty set is the bottom of the lattice of subspaces. -/
 @[simp]
 theorem span_empty : span (∅ : Set (ℙ K V)) = ⊥ := gi.gc.l_bot
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The span of the entire projective space is the top of the lattice of subspaces. -/
 @[simp]
 theorem span_univ : span (Set.univ : Set (ℙ K V)) = ⊤ := by
@@ -152,7 +150,7 @@ theorem span_le_subspace_iff {S : Set (ℙ K V)} {W : Subspace K V} : span S ≤
 
 /-- If a set of points is a subset of another set of points, then its span will be contained in the
 span of that set. -/
-@[mono]
+@[gcongr, mono]
 theorem monotone_span : Monotone (span : Set (ℙ K V) → Subspace K V) :=
   gi.gc.monotone_l
 
@@ -224,7 +222,7 @@ def submodule : Projectivization.Subspace K V ≃o Submodule K V where
       exact s.mem_add _ _ hx₂ hy₂ hxy (hx₁ hx₂) (hy₁ hy₂)
     zero_mem' h := h.irrefl.elim
     smul_mem' c x h₁ h₂ := by
-      convert h₁ (right_ne_zero_of_smul h₂) using 1
+      convert! h₁ (right_ne_zero_of_smul h₂) using 1
       rw [Projectivization.mk_eq_mk_iff']
       exact ⟨c, rfl⟩ }
   invFun s :=
@@ -248,6 +246,13 @@ def submodule : Projectivization.Subspace K V ≃o Submodule K V where
 theorem mem_submodule_iff (s : Projectivization.Subspace K V) {v : V} (hv : v ≠ 0) :
     v ∈ submodule s ↔ Projectivization.mk K v hv ∈ s :=
   ⟨fun h => h hv, fun h _ => h⟩
+
+@[simp]
+lemma bot_coe : ((⊥ : Subspace K V) : Set (Projectivization K V)) = ∅ := by
+  ext x
+  simp only [SetLike.mem_coe, Set.mem_empty_iff_false, iff_false]
+  induction x using ind with | h v hv =>
+  rwa [← Subspace.mem_submodule_iff _ hv, Subspace.submodule.map_bot, Submodule.mem_bot]
 
 end Subspace
 

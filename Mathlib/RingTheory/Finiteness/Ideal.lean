@@ -17,9 +17,6 @@ Lemmas about finiteness of ideal operations.
 
 public section
 
-open Function (Surjective)
-open Finsupp
-
 namespace Ideal
 
 variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
@@ -47,15 +44,26 @@ theorem fg_ker_comp {R S A : Type*} [CommRing R] [CommRing S] [CommRing A] (f : 
   exact Submodule.fg_ker_comp f₁ g₁ hf
     (Submodule.FG.restrictScalars_of_surjective hg hsur) hsur
 
+/-- Let `f : R →+* S` be a surjective ring homomorphism, and let `I` be an ideal of `R`. If `f(I)`
+and `I ∩ ker(f)` are finitely generated ideals, then `I` is also finitely generated. -/
+theorem fg_of_fg_map_of_fg_inf_ker_of_surjective {R S : Type*} [CommRing R] [CommRing S]
+    {f : R →+* S} {I : Ideal R} (hmap : (I.map f).FG) (hk : (I ⊓ (RingHom.ker f)).FG)
+    (hf : Function.Surjective f) : I.FG := by
+  algebraize [f]
+  refine Submodule.fg_of_fg_map_of_fg_inf_ker (Module.compHom.toLinearMap f) ?_ hk
+  have : RingHomSurjective f := ⟨hf⟩
+  simpa [Ideal.map_eq_submodule_map] using! Submodule.FG.restrictScalars_of_surjective hmap hf
+
 theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (h : I.radical.FG) :
     ∃ n : ℕ, I.radical ^ n ≤ I := by
-  have := le_refl I.radical
-  revert this
-  refine Submodule.fg_induction _ _ (fun J => J ≤ I.radical → ∃ n : ℕ, J ^ n ≤ I) ?_ ?_ _ h
-  · intro x hx
-    obtain ⟨n, hn⟩ := hx (subset_span (Set.mem_singleton x))
+  suffices hJ : ∀ J : Ideal R, J.FG → J ≤ I.radical → ∃ n : ℕ, J ^ n ≤ I by
+    simpa using hJ I.radical h
+  intro J hJ hJK
+  induction J, hJ using Submodule.fg_induction with
+  | singleton x =>
+    obtain ⟨n, hn⟩ := hJK (subset_span (Set.mem_singleton x))
     exact ⟨n, by rwa [← span, span_singleton_pow, span_le, Set.singleton_subset_iff]⟩
-  · intro J K hJ hK hJK
+  | sup J K _ _ hJ hK =>
     obtain ⟨n, hn⟩ := hJ fun x hx => hJK <| mem_sup_left hx
     obtain ⟨m, hm⟩ := hK fun x hx => hJK <| mem_sup_right hx
     use n + m
@@ -63,7 +71,7 @@ theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (
     refine fun i _ => mul_le_right.trans ?_
     obtain h | h := le_or_gt n i
     · exact mul_le_right.trans ((pow_le_pow_right h).trans hn)
-    · exact mul_le_left.trans ((pow_le_pow_right (by omega)).trans hm)
+    · exact mul_le_left.trans ((pow_le_pow_right (by lia)).trans hm)
 
 theorem exists_pow_le_of_le_radical_of_fg_radical {R : Type*} [CommSemiring R] {I J : Ideal R}
     (hIJ : I ≤ J.radical) (hJ : J.radical.FG) :
@@ -74,15 +82,14 @@ theorem exists_pow_le_of_le_radical_of_fg_radical {R : Type*} [CommSemiring R] {
 lemma exists_pow_le_of_le_radical_of_fg {R : Type*} [CommSemiring R] {I J : Ideal R}
     (h' : I ≤ J.radical) (h : I.FG) :
     ∃ n : ℕ, I ^ n ≤ J := by
-  revert h'
-  apply Submodule.fg_induction _ _ _ _ _ I h
-  · intro x hJ
-    simp only [submodule_span_eq, span_le, Set.singleton_subset_iff, SetLike.mem_coe] at hJ
-    obtain ⟨n, hn⟩ := hJ
+  induction I, h using Submodule.fg_induction with
+  | singleton x =>
+    simp only [submodule_span_eq, span_le, Set.singleton_subset_iff, SetLike.mem_coe] at h'
+    obtain ⟨n, hn⟩ := h'
     refine ⟨n, by simpa [span_singleton_pow, span_le]⟩
-  · intro I₁ I₂ h₁ h₂ hJ
-    obtain ⟨n₁, hn₁⟩ := h₁ (le_sup_left.trans hJ)
-    obtain ⟨n₂, hn₂⟩ := h₂ (le_sup_right.trans hJ)
+  | sup I₁ I₂ _ _ h₁ h₂ =>
+    obtain ⟨n₁, hn₁⟩ := h₁ (le_sup_left.trans h')
+    obtain ⟨n₂, hn₂⟩ := h₂ (le_sup_right.trans h')
     use n₁ + n₂
     exact sup_pow_add_le_pow_sup_pow.trans (sup_le hn₁ hn₂)
 

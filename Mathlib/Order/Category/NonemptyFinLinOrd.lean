@@ -42,13 +42,13 @@ instance : CoeSort NonemptyFinLinOrd (Type _) where
   coe X := X.carrier
 
 instance : LargeCategory NonemptyFinLinOrd :=
-  inferInstanceAs (Category (InducedCategory _ NonemptyFinLinOrd.toLinOrd))
+  inferInstanceAs <| Category (InducedCategory _ toLinOrd)
 
 instance : ConcreteCategory NonemptyFinLinOrd (· →o ·) :=
-  InducedCategory.concreteCategory NonemptyFinLinOrd.toLinOrd
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toLinOrd) _
 
 instance (X : NonemptyFinLinOrd) : BoundedOrder X :=
-    Fintype.toBoundedOrder X
+  Fintype.toBoundedOrder X
 
 /-- Construct a bundled `NonemptyFinLinOrd` from the underlying type and typeclass. -/
 abbrev of (α : Type*) [Nonempty α] [Fintype α] [LinearOrder α] : NonemptyFinLinOrd where
@@ -101,7 +101,7 @@ instance : Inhabited NonemptyFinLinOrd :=
   ⟨of PUnit⟩
 
 instance hasForgetToLinOrd : HasForget₂ NonemptyFinLinOrd LinOrd :=
-  InducedCategory.hasForget₂ _
+  inferInstanceAs <| HasForget₂ (InducedCategory _ toLinOrd) _
 
 instance hasForgetToFinPartOrd : HasForget₂ NonemptyFinLinOrd FinPartOrd where
   forget₂.obj X := .of X
@@ -205,7 +205,6 @@ instance : SplitEpiCategory NonemptyFinLinOrd.{u} :=
       have H : f (φ b) ≤ f (φ a) := f.hom.hom.monotone (le_of_lt h)
       simpa only [hφ] using H⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance : HasStrongEpiMonoFactorisations NonemptyFinLinOrd.{u} :=
   ⟨fun {X Y} f => by
     let I := of (Set.image f ⊤)

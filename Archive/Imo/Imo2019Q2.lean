@@ -58,9 +58,7 @@ rather than more literally with `affineSegment`.
 
 
 open Affine Affine.Simplex EuclideanGeometry Module
-
-open scoped Affine EuclideanGeometry Real
-
+open scoped Real
 
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
@@ -96,6 +94,7 @@ structure Imo2019q2Cfg where
   C_ne_Q₁ : C ≠ Q₁
 
 /-- A default choice of orientation, for lemmas that need to pick one. -/
+@[implicit_reducible]
 def someOrientation [hd2 : Fact (finrank ℝ V = 2)] : Module.Oriented ℝ V (Fin 2) :=
   ⟨Basis.orientation (finBasisOfFinrankEq _ _ hd2.out)⟩
 
@@ -310,7 +309,7 @@ theorem sbtw_A_B₁_C : Sbtw ℝ cfg.A cfg.B₁ cfg.C :=
 
 theorem sbtw_A_A₁_A₂ : Sbtw ℝ cfg.A cfg.A₁ cfg.A₂ := by
   refine Sphere.sbtw_secondInter cfg.A_mem_circumsphere ?_
-  convert cfg.sbtw_B_A₁_C.dist_lt_max_dist _
+  convert! cfg.sbtw_B_A₁_C.dist_lt_max_dist _
   change _ = max (dist (cfg.triangleABC.points 1) _) (dist (cfg.triangleABC.points 2) _)
   simp_rw [circumsphere_center, circumsphere_radius, dist_circumcenter_eq_circumradius, max_self]
 
@@ -376,7 +375,7 @@ variable [Module.Oriented ℝ V (Fin 2)]
 theorem two_zsmul_oangle_QPA₂_eq_two_zsmul_oangle_BAA₂ :
     (2 : ℤ) • ∡ cfg.Q cfg.P cfg.A₂ = (2 : ℤ) • ∡ cfg.B cfg.A cfg.A₂ := by
   refine two_zsmul_oangle_of_parallel cfg.QP_parallel_BA ?_
-  convert AffineSubspace.Parallel.refl (k := ℝ) (P := Pt) _ using 1
+  convert! AffineSubspace.Parallel.refl (k := ℝ) (P := Pt) _ using 1
   rw [cfg.collinear_PAA₁A₂.affineSpan_eq_of_ne (Set.mem_insert_of_mem _
     (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_singleton _))))
     (Set.mem_insert_of_mem _ (Set.mem_insert _ _)) cfg.A₂_ne_A,

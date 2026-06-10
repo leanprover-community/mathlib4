@@ -45,6 +45,12 @@ Let `E` be a real, finite-dimensional, inner product space and `s` be a subset o
 -/
 def HarmonicOnNhd := ∀ x ∈ s, HarmonicAt f x
 
+/--
+Harmonic functions are two times continuously differentiable.
+-/
+lemma HarmonicOnNhd.contDiffOn (hf : HarmonicOnNhd f s) : ContDiffOn ℝ 2 f s :=
+  fun x hx ↦ (hf x hx).1.contDiffWithinAt
+
 /-!
 ## Elementary Properties
 -/
@@ -140,7 +146,7 @@ The negative of a harmonic function is harmonic.
 theorem HarmonicAt.neg (h : HarmonicAt f x) :
     HarmonicAt (-f) x := by
   constructor
-  · simpa using h.1.neg
+  · simpa using! h.1.neg
   · filter_upwards [h.2] with x hx
     simp_all [laplacian_neg]
 

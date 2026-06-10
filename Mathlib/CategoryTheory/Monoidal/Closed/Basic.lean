@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Adjunction.Mates
 public import Mathlib.CategoryTheory.Adjunction.Parametrized
+public import Mathlib.Tactic.BDSimp
 
 /-!
 # Closed monoidal categories
@@ -53,6 +54,7 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
 This isn't an instance because it's not usually how we want to construct internal homs,
 we'll usually prove all objects are closed uniformly.
 -/
+@[implicit_reducible]
 def tensorClosed {X Y : C} (hX : Closed X) (hY : Closed Y) : Closed (X ⊗ Y) where
   rightAdj := Closed.rightAdj X ⋙ Closed.rightAdj Y
   adj := (hY.adj.comp hX.adj).ofNatIsoLeft (MonoidalCategory.tensorLeftTensor X Y).symm
@@ -61,6 +63,7 @@ def tensorClosed {X Y : C} (hX : Closed X) (hY : Closed Y) : Closed (X ⊗ Y) wh
 This isn't an instance because most of the time we'll prove closedness for all objects at once,
 rather than just for this one.
 -/
+@[implicit_reducible]
 def unitClosed : Closed (𝟙_ C) where
   rightAdj := 𝟭 C
   adj := Adjunction.id.ofNatIsoLeft (MonoidalCategory.leftUnitorNatIso C).symm
@@ -81,6 +84,9 @@ def adjunction : tensorLeft A ⊣ ihom A :=
 
 instance : (tensorLeft A).IsLeftAdjoint :=
   (ihom.adjunction A).isLeftAdjoint
+
+instance : (ihom A).IsRightAdjoint :=
+  (ihom.adjunction A).isRightAdjoint
 
 /-- The evaluation natural transformation. -/
 def ev : ihom A ⋙ tensorLeft A ⟶ 𝟭 C :=
@@ -204,6 +210,7 @@ theorem curry_id_eq_coev : curry (𝟙 _) = (ihom.coev A).app X := by
   rw [curry_eq, (ihom A).map_id (A ⊗ _)]
   apply comp_id
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma whiskerLeft_curry_ihom_ev_app (g : A ⊗ Y ⟶ X) :
@@ -285,6 +292,11 @@ def internalHom [MonoidalClosed C] : Cᵒᵖ ⥤ C ⥤ C where
   obj X := ihom X.unop
   map f := pre f.unop
 
+instance [MonoidalClosed C] (X : Cᵒᵖ) : (internalHom.obj X).IsRightAdjoint := by
+  bdsimp
+  infer_instance
+
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The parametrized adjunction between `curriedTensor C : C ⥤ C ⥤ C`
 and `internalHom : Cᵒᵖ ⥤ C ⥤ C` -/
@@ -301,6 +313,7 @@ variable (F : C ⥤ D) {G : D ⥤ C} (adj : F ⊣ G)
   [F.Monoidal] [F.IsEquivalence] [MonoidalClosed D]
 
 /-- Transport the property of being monoidal closed across a monoidal equivalence of categories -/
+@[implicit_reducible]
 noncomputable def ofEquiv : MonoidalClosed C where
   closed X :=
     { rightAdj := F ⋙ ihom (F.obj X) ⋙ G
@@ -308,6 +321,7 @@ noncomputable def ofEquiv : MonoidalClosed C where
           adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft
             (Iso.compInverseIso (H := adj.toEquivalence) (Functor.Monoidal.commTensorLeft F X)) }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Suppose we have a monoidal equivalence `F : C ≌ D`, with `D` monoidal closed. We can pull the
 monoidal closed instance back along the equivalence. For `X, Y, Z : C`, this lemma describes the
 resulting currying map `Hom(X ⊗ Y, Z) → Hom(Y, (X ⟶[C] Z))`. (`X ⟶[C] Z` is defined to be
@@ -323,12 +337,12 @@ theorem ofEquiv_curry_def {X Y Z : C} (f : X ⊗ Y ⟶ Z) :
   -- This whole proof used to be `rfl` before https://github.com/leanprover-community/mathlib4/pull/16317.
   change ((adj.comp ((ihom.adjunction (F.obj X)).comp
       adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft _).homEquiv _ _ _ = _
-  dsimp only [Adjunction.ofNatIsoLeft]
-  rw [Adjunction.mkOfHomEquiv_homEquiv]
+  rw [Adjunction.homEquiv_ofNatIsoLeft_apply]
   dsimp
   rw [Adjunction.comp_homEquiv, Adjunction.comp_homEquiv]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Suppose we have a monoidal equivalence `F : C ≌ D`, with `D` monoidal closed. We can pull the
 monoidal closed instance back along the equivalence. For `X, Y, Z : C`, this lemma describes the
 resulting uncurrying map `Hom(Y, (X ⟶[C] Z)) → Hom(X ⊗ Y ⟶ Z)`. (`X ⟶[C] Z` is
@@ -345,8 +359,7 @@ theorem ofEquiv_uncurry_def {X Y Z : C} :
   -- This whole proof used to be `rfl` before https://github.com/leanprover-community/mathlib4/pull/16317.
   change (((adj.comp ((ihom.adjunction (F.obj X)).comp
       adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft _).homEquiv _ _).symm _ = _
-  dsimp only [Adjunction.ofNatIsoLeft]
-  rw [Adjunction.mkOfHomEquiv_homEquiv]
+  rw [Adjunction.homEquiv_ofNatIsoLeft_symm_apply]
   dsimp
   rw [Adjunction.comp_homEquiv, Adjunction.comp_homEquiv]
   rfl
@@ -394,8 +407,8 @@ lemma comp_eq (x y z : C) [Closed x] [Closed y] : comp x y z = curry (compTransp
 
 /-!
 The proofs of associativity and unitality use the following outline:
-  1. Take adjoint transpose on each side of the equality (uncurry_injective)
-  2. Do whatever rewrites/simps are necessary to apply uncurry_curry
+  1. Take adjoint transpose on each side of the equality (`uncurry_injective`)
+  2. Do whatever rewrites/simps are necessary to apply `uncurry_curry`
   3. Conclude with simp
 -/
 

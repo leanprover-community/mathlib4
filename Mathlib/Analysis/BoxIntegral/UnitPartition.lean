@@ -70,7 +70,6 @@ open Bornology
 def BoxIntegral.hasIntegralVertices (B : Box ι) : Prop :=
   ∃ l u : ι → ℤ, (∀ i, B.lower i = l i) ∧ (∀ i, B.upper i = u i)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any bounded set is contained in a `BoxIntegral.Box` with integral vertices. -/
 theorem BoxIntegral.le_hasIntegralVertices_of_isBounded [Finite ι] {s : Set (ι → ℝ)}
     (h : IsBounded s) :
@@ -165,7 +164,6 @@ theorem mem_box_iff_index {x : ι → ℝ} {ν : ι → ℤ} :
 theorem index_tag (ν : ι → ℤ) :
     index n (tag n ν) = ν := mem_box_iff_index.mp (tag_mem n ν)
 
-set_option backward.isDefEq.respectTransparency false in
 variable {n} in
 theorem disjoint {ν ν' : ι → ℤ} :
     ν ≠ ν' ↔ Disjoint (box n ν).toSet (box n ν').toSet := by
@@ -460,7 +458,7 @@ theorem _root_.tendsto_card_div_pow_atTop_volume (hs₁ : IsBounded s)
     (hs₂ : MeasurableSet s) (hs₃ : volume (frontier s) = 0) :
     Tendsto (fun n : ℕ ↦ (Nat.card ↑(s ∩ (n : ℝ)⁻¹ • L) : ℝ) / n ^ card ι)
       atTop (𝓝 (volume.real s)) := by
-  convert tendsto_tsum_div_pow_atTop_integral s (fun _ ↦ 1) continuous_const hs₁ hs₂ hs₃
+  convert! tendsto_tsum_div_pow_atTop_integral s (fun _ ↦ 1) continuous_const hs₁ hs₂ hs₃
   · rw [tsum_const, nsmul_eq_mul, mul_one, Nat.cast_inj]
   · rw [setIntegral_const, smul_eq_mul, mul_one]
 

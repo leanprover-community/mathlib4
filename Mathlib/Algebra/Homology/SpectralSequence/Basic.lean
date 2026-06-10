@@ -68,7 +68,7 @@ attribute [reassoc (attr := simp)] Hom.comm
 @[simps! id_hom comp_hom]
 instance : Category (SpectralSequence C c r₀) where
   Hom := Hom
-  id _ := { hom _ _ := 𝟙 _}
+  id _ := { hom _ _ := 𝟙 _ }
   comp f g :=
     { hom r hr := f.hom r ≫ g.hom r
       comm r r' hrr' pq hr := by
@@ -93,6 +93,7 @@ def pageFunctor (r : ℤ) (hr : r₀ ≤ r := by lia) :
   obj E := E.page r
   map f := f.hom r
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism between the homology of a spectral sequence on the
 object `pq : κ` of the `r`th page and the corresponding object on the next page. -/
 @[simps!]

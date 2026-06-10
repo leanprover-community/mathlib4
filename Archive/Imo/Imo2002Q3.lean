@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
 import Mathlib.Analysis.Polynomial.Basic
-import Mathlib.RingTheory.Polynomial.UniqueFactorization
+import Mathlib.RingTheory.Polynomial.Content
 
 /-!
 # IMO 2002 Q3
@@ -12,12 +12,12 @@ import Mathlib.RingTheory.Polynomial.UniqueFactorization
 Find all pairs of positive integers $m,n ≥ 3$ for which there exist infinitely many
 positive integers $a$ such that $(a^m+a-1) / (a^n+a^2-1)$ is itself an integer.
 
-# Solution
+## Solution
 
 It suffices to find $(m,n)$ pairs for which $a^n+a^2-1 ∣ a^m+a-1$, where both sides are viewed as
-polynomials in $a$. This automatically gives $m ≤ n$, so we have
+polynomials in $a$. This automatically gives $n ≤ m$, so we have
 $$a^n+a^2-1 ∣ (a^m+a-1)(a+1) - (a^n+a^2-1) = a^m(a+1) - a^n.$$
-Since $a^n$ is coprime to $a^n+a^2-1$ we have $a^n+a^2-1 ∣ a^{m-n}(a+1)-1$, so $m-n+1 ≥ n$.
+Since $a^n$ is coprime to $a^n+a^2-1$ we have $a^n+a^2-1 ∣ a^{m-n}(a+1)-1$, so $n ≤ m-n+1$.
 
 Because $n ≥ 3$, there exists a real root $0 < r < 1$ of $a^n+a^2-1$,
 whence $r^{m-n+1}+r^{m-n}-1 = 0$. But we must also have $m-n ≤ 2$, for otherwise
@@ -113,6 +113,6 @@ theorem result : {a : ℤ | 0 < a ∧ a ^ n + a ^ 2 - 1 ∣ a ^ m + a - 1}.Infin
   conv =>
     enter [1, 1, a]
     rw [show a ^ 5 + a - 1 = (a ^ 2 - a + 1) * (a ^ 3 + a ^ 2 - 1) by ring]
-  simpa using Set.Ioi_infinite 0
+  simpa using! Set.Ioi_infinite 0
 
 end Imo2002Q3

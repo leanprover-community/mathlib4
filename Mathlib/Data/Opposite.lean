@@ -55,7 +55,7 @@ variable {α}
 
 theorem op_injective : Function.Injective (op : α → αᵒᵖ) := fun _ _ => congr_arg Opposite.unop
 
-theorem unop_injective : Function.Injective (unop : αᵒᵖ → α) := fun ⟨_⟩⟨_⟩ => by simp
+theorem unop_injective : Function.Injective (unop : αᵒᵖ → α) := fun _ _ h => congrArg op h
 
 @[simp]
 theorem op_unop (x : αᵒᵖ) : op (unop x) = x :=

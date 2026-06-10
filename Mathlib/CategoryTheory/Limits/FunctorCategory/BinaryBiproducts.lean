@@ -37,17 +37,18 @@ def pointwiseBinaryBicone : BinaryBicone F G where
   inl := { app X := biprod.inl }
   inr := { app X := biprod.inr }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The bicone associated with `F` and `G` is a bilimit bicone. -/
 @[simps]
 def pointwiseBinaryBicone.isBilimit : (pointwiseBinaryBicone F G).IsBilimit where
   isLimit := evaluationJointlyReflectsLimits _ fun d => by
     refine IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_ (BinaryBiproduct.isLimit (F.obj d) (G.obj d))
     · exact (pairComp F G ((evaluation D C).obj d)).symm
-    · exact Cones.ext (Iso.refl _) <| by rintro (_ | _ | _)<;> cat_disch
+    · exact Cone.ext (Iso.refl _) <| by rintro (_ | _ | _) <;> cat_disch
   isColimit := evaluationJointlyReflectsColimits _ fun d => by
     refine IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_ (BinaryBiproduct.isColimit (F.obj d) (G.obj d))
     · exact (pairComp F G ((evaluation D C).obj d)).symm
-    · exact Cocones.ext (Iso.refl _) <| by rintro (_ | _ | _)<;> cat_disch
+    · exact Cocone.ext (Iso.refl _) <| by rintro (_ | _ | _) <;> cat_disch
 
 /-- Construction of the binary biproduct data for functors `F` and `G` -/
 @[simps]

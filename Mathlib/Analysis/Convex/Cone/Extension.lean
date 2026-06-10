@@ -5,7 +5,7 @@ Authors: Yury Kudryashov, Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Data.Real.Archimedean
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Geometry.Convex.Cone.Basic
 public import Mathlib.LinearAlgebra.LinearPMap
 
@@ -58,7 +58,6 @@ open Submodule
 
 variable (s : ConvexCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Induction step in M. Riesz extension theorem. Given a convex cone `s` in a vector space `E`,
 a partially defined linear map `f : f.domain → ℝ`, assume that `f` is nonnegative on `f.domain ∩ p`
 and `p + s = E`. If `f` is not defined on the whole `E`, then we can extend it to a larger
@@ -73,7 +72,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     set Sp := f '' { x : f.domain | (x : E) + y ∈ s }
     set Sn := f '' { x : f.domain | -(x : E) - y ∈ s }
     suffices (upperBounds Sn ∩ lowerBounds Sp).Nonempty by
-      simpa only [Sp, Sn, Set.Nonempty, upperBounds, lowerBounds, forall_mem_image] using this
+      simpa only [Sp, Sn, Set.Nonempty, upperBounds, lowerBounds, forall_mem_image] using! this
     refine exists_between_of_forall_le (Nonempty.image f ?_) (Nonempty.image f (dense y)) ?_
     · rcases dense (-y) with ⟨x, hx⟩
       rw [← neg_neg x, NegMemClass.coe_neg, ← sub_eq_add_neg] at hx
@@ -102,6 +101,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
         smul_eq_mul, ← mul_assoc, mul_inv_cancel₀ hr.ne, one_mul] at this
     · subst r
       simp only [zero_smul, add_zero] at hzs ⊢
+      rw [RingHom.id_apply, zero_smul]
       apply nonneg
       exact hzs
     · have : r⁻¹ • x + y ∈ s := by
@@ -125,7 +125,7 @@ theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : 
       directedOn_image.2 (hcd.mono LinearPMap.domain_mono.monotone)
     rcases (mem_sSup_of_directed (cne.image _) hdir).1 hx with ⟨_, ⟨f, hfc, rfl⟩, hfx⟩
     have : f ≤ LinearPMap.sSup c hcd := LinearPMap.le_sSup _ hfc
-    convert ← hcs hfc ⟨x, hfx⟩ hxs using 1
+    convert! ← hcs hfc ⟨x, hfx⟩ hxs using 1
     exact this.2 rfl
   obtain ⟨q, hpq, hqs, hq⟩ := zorn_le_nonempty₀ S hSc p hp_nonneg
   refine ⟨q, hpq, ?_, hqs⟩
@@ -165,7 +165,7 @@ theorem exists_extension_of_le_sublinear (f : E →ₗ.[ℝ] ℝ) (N : E → ℝ
       smul_mem' := fun c hc p hp =>
         calc
           N (c • p.1) = c * N p.1 := N_hom c hc p.1
-          _ ≤ c * p.2 := mul_le_mul_of_nonneg_left hp hc.le
+          _ ≤ c * p.2 := by gcongr; exact hp
       add_mem' := fun x hx y hy => (N_add _ _).trans (add_le_add hx hy) }
   set f' := (-f).coprod (LinearMap.id.toPMap ⊤)
   have hf'_nonneg : ∀ x : f'.domain, x.1 ∈ s → 0 ≤ f' x := fun x (hx : N x.1.1 ≤ x.1.2) ↦ by

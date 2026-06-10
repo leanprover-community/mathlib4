@@ -101,12 +101,12 @@ theorem cycleOf_apply_apply_zpow_self (f : Perm α) [DecidableRel f.SameCycle] (
 @[simp]
 theorem cycleOf_apply_apply_pow_self (f : Perm α) [DecidableRel f.SameCycle] (x : α) (k : ℕ) :
     cycleOf f x ((f ^ k) x) = (f ^ (k + 1) : Perm α) x := by
-  convert cycleOf_apply_apply_zpow_self f x k using 1
+  convert! cycleOf_apply_apply_zpow_self f x k using 1
 
 @[simp]
 theorem cycleOf_apply_apply_self (f : Perm α) [DecidableRel f.SameCycle] (x : α) :
     cycleOf f x (f x) = f (f x) := by
-  convert cycleOf_apply_apply_pow_self f x 1 using 1
+  convert! cycleOf_apply_apply_pow_self f x 1 using 1
 
 @[simp]
 theorem cycleOf_apply_self (f : Perm α) [DecidableRel f.SameCycle] (x : α) : cycleOf f x x = f x :=
@@ -177,7 +177,7 @@ theorem cycleOf_mul_of_apply_right_eq_self [DecidableRel f.SameCycle]
     rw [cycleOf_apply_apply_zpow_self]
     simp [h.mul_zpow, zpow_apply_eq_self_of_apply_eq_self hx]
   · rw [cycleOf_apply_of_not_sameCycle hxy, cycleOf_apply_of_not_sameCycle]
-    contrapose! hxy
+    contrapose hxy
     obtain ⟨z, rfl⟩ := hxy
     refine ⟨z, ?_⟩
     simp [h.mul_zpow, zpow_apply_eq_self_of_apply_eq_self hx]
@@ -295,7 +295,6 @@ theorem SameCycle.exists_pow_eq_of_mem_support {f} [DecidableEq α] [Fintype α]
     (hx : x ∈ f.support) : ∃ i < #(f.cycleOf x).support, (f ^ i) x = y :=
   h.exists_pow_eq_of_mem_support_aux hx
 
-set_option backward.isDefEq.respectTransparency false in
 theorem support_cycleOf_le [DecidableEq α] [Fintype α] (f : Perm α) (x : α) :
     support (f.cycleOf x) ≤ support f := by
   intro y hy
@@ -439,7 +438,7 @@ theorem mem_list_cycles_iff {α : Type*} [Finite α] {l : List (Perm α)}
       have key : ∀ x ∈ σ.support ∩ τ.support, σ x = τ x := by
         intro x hx
         rw [h x (mem_support.mp (mem_of_mem_inter_left hx)), hτl x (mem_of_mem_inter_right hx)]
-      convert hτ
+      convert! hτ
       refine h3.eq_on_support_inter_nonempty_congr (h1 _ hτ) key ?_ ha
       exact key a (mem_inter_of_mem ha hτa)
 
@@ -499,11 +498,9 @@ theorem cycleFactorsFinset_eq_list_toFinset {σ : Perm α} {l : List (Perm α)} 
     have hperm : l ~ l' := List.perm_of_nodup_nodup_toFinset_eq hn hn' h.symm
     refine ⟨?_, ?_, ?_⟩
     · exact fun _ h => hc' _ (hperm.subset h)
-    · have := List.Perm.pairwise_iff (@Disjoint.symmetric _) hperm
-      rwa [this]
+    · rwa [hperm.pairwise_iff symm]
     · rw [← hp', hperm.symm.prod_eq']
-      refine hd'.imp ?_
-      exact Disjoint.commute
+      exact hd'.imp Disjoint.commute
   · rintro ⟨hc, hd, hp⟩
     refine List.toFinset_eq_of_perm _ _ ?_
     refine list_cycles_perm_list_cycles ?_ hc' hc hd' hd
@@ -553,7 +550,7 @@ theorem cycleOf_mem_cycleFactorsFinset_iff {f : Perm α} {x : α} :
   rw [mem_cycleFactorsFinset_iff]
   constructor
   · rintro ⟨hc, _⟩
-    contrapose! hc
+    contrapose hc
     rw [notMem_support, ← cycleOf_eq_one_iff] at hc
     simp [hc]
   · intro hx
@@ -570,7 +567,6 @@ lemma cycleOf_ne_one_iff_mem_cycleFactorsFinset {g : Equiv.Perm α} {x : α} :
     g.cycleOf x ≠ 1 ↔ g.cycleOf x ∈ g.cycleFactorsFinset := by
   rw [cycleOf_mem_cycleFactorsFinset_iff, mem_support, ne_eq, cycleOf_eq_one_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_cycleFactorsFinset_support_le {p f : Perm α} (h : p ∈ cycleFactorsFinset f) :
     p.support ≤ f.support := by
   rw [mem_cycleFactorsFinset_iff] at h
@@ -671,8 +667,8 @@ theorem Disjoint.cycleFactorsFinset_mul_eq_union {f g : Perm α} (h : Disjoint f
     cycleFactorsFinset (f * g) = cycleFactorsFinset f ∪ cycleFactorsFinset g := by
   rw [cycleFactorsFinset_eq_finset]
   refine ⟨?_, ?_, ?_⟩
-  · simp [or_imp, mem_cycleFactorsFinset_iff, forall_swap]
-  · rw [coe_union, Set.pairwise_union_of_symmetric Disjoint.symmetric]
+  · simp [or_imp, mem_cycleFactorsFinset_iff, forall_comm]
+  · rw [coe_union, Set.pairwise_union_of_symm]
     exact
       ⟨cycleFactorsFinset_pairwise_disjoint _, cycleFactorsFinset_pairwise_disjoint _,
         fun x hx y hy _ =>
@@ -872,7 +868,6 @@ theorem subtypePerm_on_cycleFactorsFinset [DecidableEq α] [Fintype α]
   simp only [subtypePerm_apply, Subtype.coe_mk, subtypePermOfSupport]
   exact ((mem_cycleFactorsFinset_iff.mp hc).2 x hx).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem commute_iff_of_mem_cycleFactorsFinset [DecidableEq α] [Fintype α] {g k c : Equiv.Perm α}
     (hc : c ∈ g.cycleFactorsFinset) :
     Commute k c ↔

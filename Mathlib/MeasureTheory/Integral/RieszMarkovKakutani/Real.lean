@@ -102,7 +102,6 @@ lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : S
   apply NNReal.eq
   rw [toNNRealLinear_apply, show f.nnrealPart.toReal = f by ext z; simp [hf z], hp]
 
-set_option backward.isDefEq.respectTransparency false in
 omit [T2Space X] [LocallyCompactSpace X] in
 /-- Given `f : C_c(X, ℝ)` such that `range f ⊆ [a, b]` we obtain a partition of the support of `f`
 determined by partitioning `[a, b]` into `N` pieces. -/
@@ -482,7 +481,7 @@ lemma _root_.MeasureTheory.Measure.exists_innerRegular_eq_of_isCompact
     by infer_instance, ?_, fun g ↦ ?_⟩
   · rw [Measure.map_apply (by fun_prop) hK.measurableSet.compl]
     simp
-  convert hν' (g.compContinuous ⟨Subtype.val, by fun_prop⟩)
+  convert! hν' (g.compContinuous ⟨Subtype.val, by fun_prop⟩)
   · simp only [BoundedContinuousFunction.compContinuous_apply, ContinuousMap.coe_mk]
     rw [← integral_map (φ := Subtype.val) (by fun_prop) (by fun_prop)]
     simp only [map_comap_subtype_coe hK.measurableSet, μ', Measure.restrict_eq_self_of_ae_mem h]

@@ -130,7 +130,6 @@ theorem UniformContinuous.inv₀ {X : Type*} [UniformSpace X] {f : X → α}
   simp only [← uniformContinuousOn_univ, ← Set.image_univ] at *
   exact hf.inv₀ hf₀
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_fun]
 theorem TendstoLocallyUniformlyOn.inv₀_of_disjoint {X ι : Type*} [TopologicalSpace X]
     {s : Set X} {F : ι → X → α} {f : X → α} {l : Filter ι}
@@ -181,9 +180,6 @@ instance (priority := 100) NormedDivisionRing.to_continuousInv₀ : ContinuousIn
       simpa
     · apply Metric.closedBall_mem_nhds
       simpa
-
-@[deprecated (since := "2025-09-01")] alias NormedDivisionRing.to_hasContinuousInv₀ :=
-  NormedDivisionRing.to_continuousInv₀
 
 @[to_fun]
 theorem TendstoLocallyUniformlyOn.div₀ {X ι : Type*} [TopologicalSpace X]

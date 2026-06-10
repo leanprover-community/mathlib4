@@ -24,7 +24,7 @@ As in other polynomial files, we typically use the notation:
 + `R : Type*` `[CommRing R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
-This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
+  This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`.
 
 + `a : R`
 
@@ -39,7 +39,7 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 
 noncomputable section
 
-open Set Function Finsupp AddMonoidAlgebra
+open Set Function Finsupp
 
 universe u v
 
@@ -53,9 +53,6 @@ section CommRing
 
 variable [CommRing R]
 variable {p q : MvPolynomial σ R}
-
-instance instCommRingMvPolynomial : CommRing (MvPolynomial σ R) :=
-  AddMonoidAlgebra.commRing
 
 variable (σ a a')
 
@@ -93,7 +90,7 @@ theorem degrees_neg (p : MvPolynomial σ R) : (-p).degrees = p.degrees := by
 
 theorem degrees_sub_le [DecidableEq σ] {p q : MvPolynomial σ R} :
     (p - q).degrees ≤ p.degrees ∪ q.degrees := by
-  simpa [degrees_def] using AddMonoidAlgebra.supDegree_sub_le
+  simpa [degrees_def] using! AddMonoidAlgebra.supDegree_sub_le
 
 end Degrees
 
@@ -115,13 +112,13 @@ section Vars
 theorem vars_neg : (-p).vars = p.vars := by simp [vars, degrees_neg]
 
 theorem vars_sub_subset [DecidableEq σ] : (p - q).vars ⊆ p.vars ∪ q.vars := by
-  convert vars_add_subset p (-q) using 2 <;> simp [sub_eq_add_neg]
+  convert! vars_add_subset p (-q) using 2 <;> simp [sub_eq_add_neg]
 
 @[simp]
 theorem vars_sub_of_disjoint [DecidableEq σ] (hpq : Disjoint p.vars q.vars) :
     (p - q).vars = p.vars ∪ q.vars := by
   rw [← vars_neg q] at hpq
-  convert vars_add_of_disjoint hpq using 2 <;> simp [sub_eq_add_neg]
+  convert! vars_add_of_disjoint hpq using 2 <;> simp [sub_eq_add_neg]
 
 end Vars
 

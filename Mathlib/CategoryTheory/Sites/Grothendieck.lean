@@ -72,7 +72,7 @@ three axioms:
 A sieve `S` on `X` is referred to as `J`-covering, (or just covering), if `S ∈ J X`.
 
 See also [nlab] or [MM92] Chapter III, Section 2, Definition 1. -/
-@[stacks 00Z4]
+@[stacks 00Z4, wikidata Q1062242]
 structure GrothendieckTopology where
   /-- A Grothendieck topology on `C` consists of a set of sieves for each object `X`,
   which satisfy some axioms. -/
@@ -91,7 +91,7 @@ namespace GrothendieckTopology
 
 instance : DFunLike (GrothendieckTopology C) C (fun X ↦ Set (Sieve X)) where
   coe J X := sieves J X
-  coe_injective' J₁ J₂ h := by cases J₁; cases J₂; congr
+  coe_injective J₁ J₂ h := by cases J₁; cases J₂; congr
 
 variable {C}
 variable {X Y : C} {S R : Sieve X}
@@ -124,7 +124,7 @@ variable {J} in
 lemma pullback_mem_iff_of_isIso {i : X ⟶ Y} [IsIso i] {S : Sieve Y} :
     S.pullback i ∈ J _ ↔ S ∈ J _ := by
   refine ⟨fun H ↦ ?_, J.pullback_stable i⟩
-  convert J.pullback_stable (inv i) H
+  convert! J.pullback_stable (inv i) H
   rw [← Sieve.pullback_comp, IsIso.inv_hom_id, Sieve.pullback_id]
 
 @[grind .]
@@ -306,7 +306,7 @@ theorem isGLB_sInf (s : Set (GrothendieckTopology C)) : IsGLB s (sInf s) := by
 definitionally equal to the bottom and top respectively.
 -/
 instance : CompleteLattice (GrothendieckTopology C) :=
-  CompleteLattice.copy (completeLatticeOfInf _ isGLB_sInf) _ rfl (discrete C)
+  fast_instance% CompleteLattice.copy (completeLatticeOfInf _ isGLB_sInf) _ rfl (discrete C)
     (by
       apply le_antisymm
       · exact (completeLatticeOfInf _ isGLB_sInf).le_top (discrete C)
@@ -347,12 +347,34 @@ theorem bot_covers (S : Sieve X) (f : Y ⟶ X) : (⊥ : GrothendieckTopology C).
 theorem top_covers (S : Sieve X) (f : Y ⟶ X) : (⊤ : GrothendieckTopology C).Covers S f := by
   simp [covers_iff]
 
+lemma eq_top_iff (J : GrothendieckTopology C) : J = ⊤ ↔ ∀ X, ⊥ ∈ J X := by
+  refine ⟨fun h ↦ h ▸ by simp, fun h ↦ ?_⟩
+  rw [_root_.eq_top_iff]
+  intro X S _
+  exact J.superset_covering bot_le (h X)
+
+lemma eq_top_of_isEmpty [IsEmpty C] (J : GrothendieckTopology C) : J = ⊤ := by
+  rw [eq_top_iff]
+  intro X
+  exact IsEmpty.elim ‹IsEmpty C› X
+
+@[simp]
+lemma bot_eq_top_iff_isEmpty : (⊥ : GrothendieckTopology C) = ⊤ ↔ IsEmpty C := by
+  refine ⟨fun h ↦ ⟨fun X ↦ ?_⟩, fun h ↦ eq_top_of_isEmpty _⟩
+  apply bot_ne_top (α := Sieve X)
+  simp only [← GrothendieckTopology.bot_covering, h, top_covering]
+
+@[simp]
+lemma bot_lt_top_iff_nonempty : (⊥ : GrothendieckTopology C) < ⊤ ↔ Nonempty C := by
+  contrapose!
+  simp
+
 /-- The dense Grothendieck topology.
 
 See https://ncatlab.org/nlab/show/dense+topology, or [MM92] Chapter III, Section 2, example (e).
 -/
 def dense : GrothendieckTopology C where
-  sieves X S := ∀ {Y : C} (f : Y ⟶ X), ∃ (Z : _) (g : Z ⟶ Y), S (g ≫ f)
+  sieves X := {S | ∀ {Y : C} (f : Y ⟶ X), ∃ (Z : _) (g : Z ⟶ Y), S (g ≫ f)}
   top_mem' _ Y _ := ⟨Y, 𝟙 Y, ⟨⟩⟩
   pullback_stable' := by
     intro X Y S h H Z f
@@ -384,7 +406,7 @@ For the pullback stability condition, we need the right Ore condition to hold.
 See https://ncatlab.org/nlab/show/atomic+site, or [MM92] Chapter III, Section 2, example (f).
 -/
 def atomic (hro : RightOreCondition C) : GrothendieckTopology C where
-  sieves X S := ∃ (Y : _) (f : Y ⟶ X), S f
+  sieves X := {S | ∃ (Y : _) (f : Y ⟶ X), S f}
   top_mem' _ := ⟨_, 𝟙 _, ⟨⟩⟩
   pullback_stable' := by
     rintro X Y S h ⟨Z, f, hf⟩
@@ -493,6 +515,7 @@ def pullback (S : J.Cover X) (f : Y ⟶ X) : J.Cover Y :=
 def Arrow.base {f : Y ⟶ X} {S : J.Cover X} (I : (S.pullback f).Arrow) : S.Arrow :=
   ⟨I.Y, I.f ≫ f, I.hf⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A relation of `S.pullback f` gives rise to a relation of `S`. -/
 def Arrow.Relation.base
     {f : Y ⟶ X} {S : J.Cover X} {I₁ I₂ : (S.pullback f).Arrow}
@@ -607,6 +630,7 @@ def index {D : Type u₁} [Category.{v₁} D] (S : J.Cover X) (P : Cᵒᵖ ⥤ D
   fst I := P.map I.r.g₁.op
   snd I := P.map I.r.g₂.op
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural multifork associated to `S : J.Cover X` for a presheaf `P`.
 Saying that this multifork is a limit is essentially equivalent to the sheaf condition at the
 given object for the given covering sieve. See `Sheaf.lean` for an equivalent sheaf condition

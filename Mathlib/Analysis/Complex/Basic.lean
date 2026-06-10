@@ -9,7 +9,9 @@ public import Mathlib.Analysis.Complex.Order
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Data.Complex.BigOperators
 public import Mathlib.LinearAlgebra.Complex.Module
+public import Mathlib.Topology.Algebra.Algebra.Equiv
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalars
 public import Mathlib.Topology.Instances.RealVectorSpace
 
 /-!
@@ -43,9 +45,13 @@ We also register the fact that `ℂ` is an `RCLike` field.
 
 assert_not_exists Absorbs
 
+namespace Complex
+
 /-- A shortcut instance to ensure computability; otherwise we get the noncomputable instance
 `Complex.instNormedField.toNormedModule.toModule`. -/
-instance Complex.instModuleSelf : Module ℂ ℂ := delta% inferInstance
+instance instModuleSelf : Module ℂ ℂ := delta% inferInstance
+
+end Complex
 
 noncomputable section
 
@@ -63,7 +69,6 @@ instance : DenselyNormedField ℂ where
     let ⟨x, h⟩ := exists_between hr
     ⟨x, by rwa [norm_real, Real.norm_of_nonneg (h₀.trans_lt h.1).le]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance {R : Type*} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ where
   norm_smul_le r x := by
     rw [← algebraMap_smul ℝ r x, real_smul, norm_mul, norm_real, norm_algebraMap']
@@ -91,7 +96,7 @@ theorem continuous_normSq : Continuous normSq := by
   simpa [← Complex.normSq_eq_norm_sq] using continuous_norm (E := ℂ).pow 2
 
 theorem nnnorm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖₊ = 1 :=
-  (pow_left_inj₀ zero_le' zero_le' hn).1 <| by rw [← nnnorm_pow, h, nnnorm_one, one_pow]
+  (pow_left_inj₀ zero_le zero_le hn).1 <| by rw [← nnnorm_pow, h, nnnorm_one, one_pow]
 
 theorem norm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖ = 1 :=
   congr_arg Subtype.val (nnnorm_eq_one_of_pow_eq_one h hn)
@@ -107,11 +112,11 @@ theorem equivRealProd_apply_le' (z : ℂ) : ‖equivRealProd z‖ ≤ 1 * ‖z�
   simpa using equivRealProd_apply_le z
 
 theorem lipschitz_equivRealProd : LipschitzWith 1 equivRealProd := by
-  simpa using AddMonoidHomClass.lipschitz_of_bound equivRealProdLm 1 equivRealProd_apply_le'
+  simpa using! AddMonoidHomClass.lipschitz_of_bound equivRealProdLm 1 equivRealProd_apply_le'
 
 theorem antilipschitz_equivRealProd : AntilipschitzWith (NNReal.sqrt 2) equivRealProd :=
   AddMonoidHomClass.antilipschitz_of_bound equivRealProdLm fun z ↦ by
-    simpa only [Real.coe_sqrt, NNReal.coe_ofNat] using norm_le_sqrt_two_mul_max z
+    simpa only [Real.coe_sqrt, NNReal.coe_ofNat] using! norm_le_sqrt_two_mul_max z
 
 theorem isUniformEmbedding_equivRealProd : IsUniformEmbedding equivRealProd :=
   antilipschitz_equivRealProd.isUniformEmbedding lipschitz_equivRealProd.uniformContinuous
@@ -184,7 +189,6 @@ theorem imCLM_coe : (imCLM : ℂ →ₗ[ℝ] ℝ) = imLm :=
 theorem imCLM_apply (z : ℂ) : (imCLM : ℂ → ℝ) z = z.im :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem restrictScalars_toSpanSingleton' (x : E) :
     ContinuousLinearMap.restrictScalars ℝ (toSpanSingleton ℂ x : ℂ →L[ℂ] E) =
       reCLM.smulRight x + I • imCLM.smulRight x := by
@@ -243,19 +247,37 @@ theorem continuous_conj : Continuous (conj : ℂ → ℂ) :=
 conjugation. -/
 theorem ringHom_eq_id_or_conj_of_continuous {f : ℂ →+* ℂ} (hf : Continuous f) :
     f = RingHom.id ℂ ∨ f = conj := by
-  simpa only [DFunLike.ext_iff] using real_algHom_eq_id_or_conj (AlgHom.mk' f (map_real_smul f hf))
+  simpa only [DFunLike.ext_iff] using! real_algHom_eq_id_or_conj (AlgHom.mk' f (map_real_smul f hf))
 
-/-- Continuous linear equiv version of the conj function, from `ℂ` to `ℂ`. -/
-def conjCLE : ℂ ≃L[ℝ] ℂ :=
-  conjLIE
+/-- The complex-conjugation function from `ℂ` to itself is a continuous `ℝ`-algebra isomorphism. -/
+def conjCAE : ℂ ≃A[ℝ] ℂ := { conjAe, conjLIE.toContinuousLinearEquiv with }
+
+/-- Continuous linear equiv version of the conj function, from `ℂ` to `ℂ`.
+
+This is an abbreviation for `conjCAE` coerced to a continuous linear map. -/
+abbrev conjCLE : ℂ ≃L[ℝ] ℂ := conjCAE.toContinuousLinearEquiv
+
+@[simp] lemma conjLIE_toCLE : conjLIE.toContinuousLinearEquiv = conjCLE := rfl
 
 @[simp]
-theorem conjCLE_coe : conjCLE.toLinearEquiv = conjAe.toLinearEquiv :=
+theorem conjCAE_toAlgEquiv : conjCAE.toAlgEquiv = conjAe :=
   rfl
 
+@[simp] theorem conjCLE_toLinearEquiv : conjCLE.toLinearEquiv = conjAe.toLinearEquiv :=
+  rfl
+
+@[deprecated "Now provable by simp" (since := "2026-04-13")]
+lemma conjCLE_coe_toLinearMap : (conjCLE : ℂ →ₗ[ℝ] ℂ) = conjAe.toLinearMap := by simp
+
 @[simp]
+theorem conjCAE_apply (z : ℂ) : conjCAE z = conj z :=
+  rfl
+
+-- simp tag not needed because conjCLE is `abbrev`
 theorem conjCLE_apply (z : ℂ) : conjCLE z = conj z :=
   rfl
+
+@[simp] lemma conjCAE_toLinearMap : conjCAE.toLinearMap = conjAe.toLinearMap := rfl
 
 /-- Linear isometry version of the canonical embedding of `ℝ` in `ℂ`. -/
 def ofRealLI : ℝ →ₗᵢ[ℝ] ℂ :=
@@ -293,8 +315,9 @@ lemma _root_.Filter.Tendsto.ofReal {α : Type*} {l : Filter α} {f : α → ℝ}
 
 /-- The only continuous ring homomorphism from `ℝ` to `ℂ` is the identity. -/
 theorem ringHom_eq_ofReal_of_continuous {f : ℝ →+* ℂ} (h : Continuous f) : f = ofRealHom := by
-  convert congr_arg AlgHom.toRingHom <| Subsingleton.elim (AlgHom.mk' f <| map_real_smul f h)
-    (Algebra.ofId ℝ ℂ)
+  convert!
+    congr_arg AlgHom.toRingHom <|
+      Subsingleton.elim (AlgHom.mk' f <| map_real_smul f h) (Algebra.ofId ℝ ℂ)
 
 /-- Continuous linear map version of the canonical embedding of `ℝ` in `ℂ`. -/
 def ofRealCLM : ℝ →L[ℝ] ℂ :=
@@ -386,9 +409,8 @@ theorem _root_.RCLike.map_nonneg_iff {𝕜 𝕜' : Type*} [RCLike 𝕜] [RCLike 
 
 open scoped ComplexOrder in
 @[simp] theorem _root_.RCLike.to_complex_nonneg_iff {𝕜 : Type*} [RCLike 𝕜] {a : 𝕜} :
-    0 ≤ RCLike.re a + RCLike.im a * Complex.I ↔ 0 ≤ a := RCLike.map_nonneg_iff rfl
+    0 ≤ RCLike.re a + RCLike.im a * Complex.I ↔ 0 ≤ a := RCLike.map_nonneg_iff I_im
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural `ℝ`-linear isometry equivalence between `𝕜` satisfying `RCLike 𝕜` and `ℂ` when
 `RCLike.im RCLike.I = 1`. -/
 @[simps]
@@ -416,11 +438,13 @@ theorem isometry_intCast : Isometry ((↑) : ℤ → ℂ) :=
   Isometry.of_dist_eq <| by simp_rw [← Complex.ofReal_intCast,
     Complex.isometry_ofReal.dist_eq, Int.dist_cast_real, implies_true]
 
-theorem closedEmbedding_intCast : IsClosedEmbedding ((↑) : ℤ → ℂ) :=
+theorem isClosedEmbedding_intCast : IsClosedEmbedding ((↑) : ℤ → ℂ) :=
   isometry_intCast.isClosedEmbedding
 
+@[deprecated (since := "2026-04-15")] alias closedEmbedding_intCast := isClosedEmbedding_intCast
+
 lemma isClosed_range_intCast : IsClosed (Set.range ((↑) : ℤ → ℂ)) :=
-  Complex.closedEmbedding_intCast.isClosed_range
+  Complex.isClosedEmbedding_intCast.isClosed_range
 
 lemma isOpen_compl_range_intCast : IsOpen (Set.range ((↑) : ℤ → ℂ))ᶜ :=
   Complex.isClosed_range_intCast.isOpen_compl
@@ -435,10 +459,7 @@ theorem eq_coe_norm_of_nonneg {z : ℂ} (hz : 0 ≤ z) : z = ↑‖z‖ := by
 
 /-- We show that the partial order and the topology on `ℂ` are compatible.
 We turn this into an instance scoped to `ComplexOrder`. -/
-lemma orderClosedTopology : OrderClosedTopology ℂ where
-  isClosed_le' := by
-    simp_rw [le_def, Set.setOf_and]
-    refine IsClosed.inter (isClosed_le ?_ ?_) (isClosed_eq ?_ ?_) <;> continuity
+lemma orderClosedTopology : OrderClosedTopology ℂ := RCLike.instOrderClosedTopology
 
 scoped[ComplexOrder] attribute [instance] Complex.orderClosedTopology
 
@@ -614,13 +635,12 @@ def slitPlane : Set ℂ := {z | 0 < z.re ∨ z.im ≠ 0}
 
 lemma mem_slitPlane_iff {z : ℂ} : z ∈ slitPlane ↔ 0 < z.re ∨ z.im ≠ 0 := Set.mem_setOf
 
-set_option backward.isDefEq.respectTransparency false in
 /- If `z` is non-zero, then either `z` or `-z` is in `slitPlane`. -/
 lemma mem_slitPlane_or_neg_mem_slitPlane {z : ℂ} (hz : z ≠ 0) :
     z ∈ slitPlane ∨ -z ∈ slitPlane := by
   rw [mem_slitPlane_iff, mem_slitPlane_iff]
   rw [ne_eq, Complex.ext_iff] at hz
-  push_neg at hz
+  push Not at hz
   simp_all only [ne_eq, zero_re, zero_im, neg_re, Left.neg_pos_iff, neg_im, neg_eq_zero]
   by_contra! contra
   exact hz (le_antisymm contra.1.1 contra.2.1) contra.1.2
@@ -633,7 +653,6 @@ lemma isOpen_slitPlane : IsOpen slitPlane :=
 @[simp]
 lemma ofReal_mem_slitPlane {x : ℝ} : ↑x ∈ slitPlane ↔ 0 < x := by simp [mem_slitPlane_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma neg_ofReal_mem_slitPlane {x : ℝ} : -↑x ∈ slitPlane ↔ x < 0 := by
   simpa using ofReal_mem_slitPlane (x := -x)
@@ -664,8 +683,7 @@ lemma slitPlane_ne_zero {z : ℂ} (hz : z ∈ slitPlane) : z ≠ 0 :=
 lemma ball_one_subset_slitPlane : Metric.ball 1 1 ⊆ slitPlane := by
   intro z hz
   apply Or.inl
-  have : -1 < z.re - 1 := neg_lt_of_abs_lt <| (abs_re_le_norm _).trans_lt (mem_ball_iff_norm.1 hz)
-  linarith
+  simpa using (re_le_norm _).trans_lt (mem_ball_iff_norm'.1 hz)
 
 /-- The slit plane includes the open unit ball of radius `1` around `1`. -/
 lemma mem_slitPlane_of_norm_lt_one {z : ℂ} (hz : ‖z‖ < 1) : 1 + z ∈ slitPlane :=

@@ -50,7 +50,7 @@ section Mul
 variable [Mul S]
 
 /-- Equality behind `Commute a b`; useful for rewriting. -/
-@[to_additive /-- Equality behind `AddCommute a b`; useful for rewriting. -/]
+@[to_additive (attr := grind →) /-- Equality behind `AddCommute a b`; useful for rewriting. -/]
 protected theorem eq {a b : S} (h : Commute a b) : a * b = b * a :=
   h
 
@@ -68,7 +68,7 @@ protected theorem symm {a b : S} (h : Commute a b) : Commute b a :=
 protected theorem semiconjBy {a b : S} (h : Commute a b) : SemiconjBy a b b :=
   h
 
-@[to_additive]
+@[to_additive (attr := grind =)]
 protected theorem symm_iff {a b : S} : Commute a b ↔ Commute b a :=
   ⟨Commute.symm, Commute.symm⟩
 

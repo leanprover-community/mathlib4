@@ -20,7 +20,7 @@ equipped with all the usual instances of the continuous functional calculus.
 
 -/
 
-@[expose] public section
+public section
 
 namespace ContinuousLinearMap
 
@@ -30,7 +30,6 @@ open scoped NNReal
 variable {𝕜 H : Type*} [RCLike 𝕜] [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] [CompleteSpace H]
 variable [Algebra ℝ (H →L[𝕜] H)] [IsScalarTower ℝ 𝕜 (H →L[𝕜] H)]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped InnerProductSpace in
 lemma IsPositive.spectrumRestricts {f : H →L[𝕜] H} (hf : f.IsPositive) :
     SpectrumRestricts f ContinuousMap.realToNNReal := by
@@ -42,9 +41,9 @@ lemma IsPositive.spectrumRestricts {f : H →L[𝕜] H} (hf : f.IsPositive) :
   set c := -c
   exact isUnit_of_forall_le_norm_inner_map _ (c := ⟨c, hc.le⟩) hc fun x ↦ calc
     ‖x‖ ^ 2 * c = re ⟪algebraMap ℝ (H →L[𝕜] H) c x, x⟫_𝕜 := by
-      rw [Algebra.algebraMap_eq_smul_one, ← algebraMap_smul 𝕜 c (1 : (H →L[𝕜] H)), coe_smul',
-        Pi.smul_apply, one_apply, inner_smul_left, RCLike.algebraMap_eq_ofReal, conj_ofReal,
-        re_ofReal_mul, inner_self_eq_norm_sq, mul_comm]
+      rw [Algebra.algebraMap_eq_smul_one, ← algebraMap_smul 𝕜 c (1 : (H →L[𝕜] H)), smul_apply,
+        one_apply_eq_self, inner_smul_left, RCLike.algebraMap_eq_ofReal, conj_ofReal, re_ofReal_mul,
+        inner_self_eq_norm_sq, mul_comm]
     _ ≤ re ⟪(f + (algebraMap ℝ (H →L[𝕜] H)) c) x, x⟫_𝕜 := by
       simpa only [add_apply, inner_add_left, map_add, le_add_iff_nonneg_left]
         using hf.re_inner_nonneg_left x
@@ -72,11 +71,10 @@ lemma instStarOrderedRingRCLike
       induction hp using AddSubmonoid.closure_induction with
       | mem _ hf =>
         obtain ⟨f, rfl⟩ := hf
-        simpa using ContinuousLinearMap.IsPositive.adjoint_conj isPositive_one f
+        simpa using! ContinuousLinearMap.IsPositive.adjoint_conj isPositive_one f
       | zero => exact isPositive_zero
       | add f g _ _ hf hg => exact hf.add hg
 
-set_option backward.isDefEq.respectTransparency false in
 instance instStarOrderedRing {H : Type*} [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H] : StarOrderedRing (H →L[ℂ] H) :=
   instStarOrderedRingRCLike

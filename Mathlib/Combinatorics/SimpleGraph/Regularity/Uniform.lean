@@ -61,26 +61,29 @@ random-like. -/
 def IsUniform (s t : Finset α) : Prop :=
   ∀ ⦃s'⦄, s' ⊆ s → ∀ ⦃t'⦄, t' ⊆ t → (#s : 𝕜) * ε ≤ #s' →
     (#t : 𝕜) * ε ≤ #t' → |(G.edgeDensity s' t' : 𝕜) - (G.edgeDensity s t : 𝕜)| < ε
+deriving Decidable
 
 variable {G ε}
-
-instance IsUniform.instDecidableRel : DecidableRel (G.IsUniform ε) := by
-  unfold IsUniform; infer_instance
 
 theorem IsUniform.mono {ε' : 𝕜} (h : ε ≤ ε') (hε : IsUniform G ε s t) : IsUniform G ε' s t :=
   fun s' hs' t' ht' hs ht => by
   refine (hε hs' ht' (le_trans ?_ hs) (le_trans ?_ ht)).trans_le h <;> gcongr
 
 omit [IsStrictOrderedRing 𝕜] in
-theorem IsUniform.symm : Symmetric (IsUniform G ε) := fun s t h t' ht' s' hs' ht hs => by
-  rw [edgeDensity_comm _ t', edgeDensity_comm _ t]
-  exact h hs' ht' hs ht
+instance : Std.Symm (IsUniform G ε) where
+  symm s t h t' ht' s' hs' ht hs := by
+    rw [edgeDensity_comm _ t', edgeDensity_comm _ t]
+    exact h hs' ht' hs ht
+
+omit [IsStrictOrderedRing 𝕜] in
+theorem IsUniform.symm : IsUniform G ε s t → IsUniform G ε t s :=
+  symm_of _
 
 variable (G)
 
 omit [IsStrictOrderedRing 𝕜] in
 theorem isUniform_comm : IsUniform G ε s t ↔ IsUniform G ε t s :=
-  ⟨fun h => h.symm, fun h => h.symm⟩
+  ⟨symm_of _, symm_of _⟩
 
 lemma isUniform_one : G.IsUniform (1 : 𝕜) s t := by
   intro s' hs' t' ht' hs ht
@@ -237,7 +240,7 @@ def IsUniform (ε : 𝕜) : Prop :=
 lemma bot_isUniform (hε : 0 < ε) : (⊥ : Finpartition A).IsUniform G ε := by
   rw [Finpartition.IsUniform, Finpartition.card_bot, nonUniforms_bot _ hε, Finset.card_empty,
     Nat.cast_zero]
-  exact mul_nonneg (Nat.cast_nonneg _) hε.le
+  positivity
 
 lemma isUniform_one : P.IsUniform G (1 : 𝕜) := by
   rw [IsUniform, mul_one, Nat.cast_le]
@@ -285,8 +288,7 @@ lemma IsEquipartition.card_interedges_sparsePairs_le' (hP : P.IsEquipartition)
     _ ≤ ∑ UV ∈ P.parts.offDiag, ε * (#UV.1 * #UV.2) := by gcongr; apply filter_subset
     _ = ε * ∑ UV ∈ P.parts.offDiag, (#UV.1 * #UV.2 : 𝕜) := (mul_sum _ _ _).symm
     _ ≤ _ := ?_
-  · gcongr with UV hUV
-    obtain ⟨U, V⟩ := UV
+  · gcongr with ⟨U, V⟩ hUV
     simp only [mk_mem_sparsePairs, ne_eq, ← card_interedges_div_card, Rat.cast_div,
       Rat.cast_natCast, Rat.cast_mul] at hUV
     refine ((div_lt_iff₀ ?_).1 hUV.2.2.2).le
@@ -350,8 +352,8 @@ lemma IsEquipartition.card_biUnion_offDiag_le (hε : 0 < ε) (hP : P.IsEquiparti
   refine (mul_le_mul_of_nonneg_left this <| by positivity).trans ?_
   suffices 1 ≤ ε / 4 * #P.parts by
     rw [mul_left_comm, ← sq]
-    convert mul_le_mul_of_nonneg_left this (mul_nonneg zero_le_two <| sq_nonneg (#A : 𝕜))
-      using 1 <;> ring
+    convert! mul_le_mul_of_nonneg_left this (mul_nonneg zero_le_two <| sq_nonneg (#A : 𝕜)) using 1
+      <;> ring
   rwa [← div_le_iff₀', one_div_div]
   positivity
 
@@ -370,7 +372,7 @@ lemma IsEquipartition.sum_nonUniforms_lt' (hA : A.Nonempty) (hε : 0 < ε) (hP :
     exact Nat.mul_le_mul (hP.card_part_le_average_add_one hU)
       (hP.card_part_le_average_add_one hV)
   · rw [mul_right_comm _ ε, mul_comm ε]
-    apply mul_lt_mul_of_pos_right _ hε
+    gcongr
     norm_cast
     exact aux (P.parts_nonempty hA.ne_empty).card_pos
 
@@ -395,14 +397,13 @@ that have edge density at least `δ`. -/
 @[simps] def regularityReduced (ε δ : 𝕜) : SimpleGraph α where
   Adj a b := G.Adj a b ∧
     ∃ U ∈ P.parts, ∃ V ∈ P.parts, a ∈ U ∧ b ∈ V ∧ U ≠ V ∧ G.IsUniform ε U V ∧ δ ≤ G.edgeDensity U V
-  symm a b := by
+  symm.symm a b := by
     rintro ⟨ab, U, UP, V, VP, xU, yV, UV, GUV, εUV⟩
-    refine ⟨G.symm ab, V, VP, U, UP, yV, xU, UV.symm, GUV.symm, ?_⟩
+    refine ⟨ab.symm, V, VP, U, UP, yV, xU, UV.symm, GUV.symm, ?_⟩
     rwa [edgeDensity_comm]
-  loopless := ⟨fun a h ↦ G.loopless.irrefl a h.1⟩
 
-instance regularityReduced.instDecidableRel_adj : DecidableRel (G.regularityReduced P ε δ).Adj := by
-  unfold regularityReduced; infer_instance
+instance regularityReduced.instDecidableRel_adj : DecidableRel (G.regularityReduced P ε δ).Adj :=
+  inferInstanceAs <| DecidableRel (mk _ _).Adj
 
 variable {G P}
 

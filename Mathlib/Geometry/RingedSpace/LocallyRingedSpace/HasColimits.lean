@@ -82,6 +82,7 @@ noncomputable def coproductCofan : Cocone F where
     { app j := LocallyRingedSpace.homMk (colimit.ι (F ⋙ forgetToSheafedSpace) j)
       naturality := fun ⟨j⟩ ⟨j'⟩ ⟨⟨(f : j = j')⟩⟩ => by subst f; simp }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The explicit coproduct cofan constructed in `coproductCofan` is indeed a colimit. -/
 noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
@@ -116,7 +117,7 @@ noncomputable instance : PreservesColimitsOfShape (Discrete.{v} ι) forgetToShea
   ⟨fun {G} =>
     preservesColimit_of_preserves_colimit_cocone (coproductCofanIsColimit G)
       ((colimit.isColimit (C := SheafedSpace.{u+1, u, u} CommRingCat.{u}) _).ofIsoColimit
-        (Cocones.ext (Iso.refl _) fun _ => Category.comp_id _))⟩
+        (Cocone.ext (Iso.refl _) fun _ => Category.comp_id _))⟩
 
 end HasCoproducts
 
@@ -126,6 +127,7 @@ variable {X Y : LocallyRingedSpace.{v}} (f g : X ⟶ Y)
 
 namespace HasCoequalizer
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[instance]
 theorem coequalizer_π_app_isLocalHom
@@ -159,7 +161,7 @@ restriction of `s` onto `U'` is invertible. This `U'` is given by `π '' V`, whe
 basic open set of `π⋆x`.
 
 Since `f ⁻¹' V = Y.basic_open (f ≫ π)꙳ x = Y.basic_open (g ≫ π)꙳ x = g ⁻¹' V`, we have
-`π ⁻¹' (π '' V) = V` (as the underlying set map is merely the set-theoretic coequalizer).
+`π ⁻¹' π '' V = V` (as the underlying set map is merely the set-theoretic coequalizer).
 This shows that `π '' V` is indeed open, and `s` is invertible on `π '' V` as the components of `π꙳`
 are local ring homs.
 -/
@@ -174,16 +176,17 @@ noncomputable def imageBasicOpen : Opens Y :=
     (show Y.presheaf.obj (op (unop _)) from
       ((coequalizer.π f.toShHom g.toShHom).hom.c.app (op U)) s)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem imageBasicOpen_image_preimage :
     (coequalizer.π f.toShHom g.toShHom).hom.base ⁻¹'
       ((coequalizer.π f.toShHom g.toShHom).hom.base ''
         (imageBasicOpen f g U s).1) = (imageBasicOpen f g U s).1 := by
-  fapply Types.coequalizer_preimage_image_eq_of_preimage_eq f.base
-    -- Porting note: Type of `g.base` needs to be explicit
-    (g.base : X.carrier.1 ⟶ Y.carrier.1)
+  fapply Types.coequalizer_preimage_image_eq_of_preimage_eq (↾f.base)
+    (↾g.base) (↾(coequalizer.π f.toShHom g.toShHom).hom.base)
   · ext
-    simp_rw [types_comp_apply, ← TopCat.comp_app, ← PresheafedSpace.comp_base]
+    simp only [TypeCat.Fun.toFun_apply, comp_apply, ConcreteCategory.hom_ofHom,
+      TypeCat.Fun.coe_mk, ← TopCat.comp_app, ← PresheafedSpace.comp_base]
     congr 3
     exact SheafedSpace.forgetToPresheafedSpace.congr_map
       (coequalizer.condition f.toShHom g.toShHom)
@@ -223,7 +226,7 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
     IsLocalHom ((coequalizer.π f.toShHom g.toShHom :).hom.stalkMap x).hom := by
   constructor
   rintro a ha
-  rcases TopCat.Presheaf.germ_exist _ _ a with ⟨U, hU, s, rfl⟩
+  rcases TopCat.Presheaf.exists_germ_eq _ a with ⟨U, hU, s, rfl⟩
   rw [PresheafedSpace.stalkMap_germ_apply (coequalizer.π f.toShHom g.toShHom).hom U _ hU] at ha
   let V := imageBasicOpen f g U s
   have hV : (coequalizer.π f.toShHom g.toShHom).hom.base ⁻¹'
@@ -245,7 +248,8 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
     ← isUnit_map_iff (Y.presheaf.map (eqToHom hV').op).hom]
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw`
   erw [← CommRingCat.comp_apply, ← CommRingCat.comp_apply, ← Y.presheaf.map_comp]
-  convert @RingedSpace.isUnit_res_basicOpen Y.toRingedSpace (unop _)
+  convert!
+    @RingedSpace.isUnit_res_basicOpen Y.toRingedSpace (unop _)
       (((coequalizer.π f.toShHom g.toShHom).hom.c.app (op U)) s)
 
 end HasCoequalizer

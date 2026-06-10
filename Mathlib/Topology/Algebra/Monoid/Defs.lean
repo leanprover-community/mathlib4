@@ -28,7 +28,7 @@ instead of extending typeclasses with these fields.
 We also provide convenience dot notation lemmas like `Filter.Tendsto.mul` and `ContinuousAt.add`.
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology
 
@@ -131,7 +131,7 @@ theorem continuous_mul_const (m : M) : Continuous (· * m) :=
 @[to_additive]
 theorem Filter.Tendsto.const_mul {α : Type*} {f : α → M} {x : Filter α} {a : M}
     (b : M) (hf : Tendsto f x (𝓝 a)) : Tendsto (b * f ·) x (𝓝 (b * a)) :=
-  continuous_const_mul  b |>.tendsto _ |>.comp hf
+  continuous_const_mul b |>.tendsto _ |>.comp hf
 
 @[to_additive]
 theorem Filter.Tendsto.mul_const {α : Type*} {f : α → M} {x : Filter α} {a : M}

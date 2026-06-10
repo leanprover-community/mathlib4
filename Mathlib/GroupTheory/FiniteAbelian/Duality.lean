@@ -54,7 +54,7 @@ lemma exists_apply_ne_one_aux
     exact (MulEquiv.map_eq_one_iff e).mp <| funext ha
   obtain ⟨φi, hφi⟩ := H (n i) (dvd_exponent e i) ((e a i).toAdd) hi
   use (φi.comp (Pi.evalMonoidHom (fun (i : ι) ↦ Multiplicative (ZMod (n i))) i)).comp e
-  simpa only [coe_comp, coe_coe, Function.comp_apply, Pi.evalMonoidHom_apply, ne_eq] using hφi
+  simpa only [coe_comp, coe_coe, Function.comp_apply, Pi.evalMonoidHom_apply, ne_eq] using! hφi
 
 variable [hM : HasEnoughRootsOfUnity M (Monoid.exponent G)]
 
@@ -128,6 +128,13 @@ theorem forall_monoidHom_apply_eq_one_iff (H : Subgroup G) (x : G) :
   simp only [← QuotientGroup.eq_one_iff, ← forall_apply_eq_apply_iff _ (M := M), map_one] at h ⊢
   exact fun φ ↦ h (φ.comp (QuotientGroup.mk' H)) fun y hy ↦ hy φ
 
+theorem card_restrictHom_ker (H : Subgroup G) :
+    Nat.card (restrictHom H Mˣ).ker = Nat.card (G ⧸ H) := by
+  have : HasEnoughRootsOfUnity M (Monoid.exponent (G ⧸ H)) :=
+    hM.of_dvd M <| Group.exponent_quotient_dvd H
+  rw [Nat.card_congr (MonoidHom.restrictHomKerEquiv Mˣ H).toEquiv,
+    card_monoidHom_of_hasEnoughRootsOfUnity]
+
 variable (G) in
 /--
 The `MulEquiv` between the double dual `(G →* Mˣ) →* Mˣ` of a finite commutative group `G`
@@ -155,6 +162,7 @@ theorem apply_monoidHomMonoidHomEquiv (φ : G →* Mˣ) (η : (G →* Mˣ) →* 
   rw [← monoidHomMonoidHomEquiv_symm_apply_apply G M (monoidHomMonoidHomEquiv G M η) φ,
     MulEquiv.symm_apply_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (G) in
 /--
 The order reversing bijection that sends a subgroup of `G` to its dual subgroup in `G →* Mˣ`
@@ -184,6 +192,7 @@ theorem mem_subgroupOrderIsoSubgroupMonoidHom_iff (H : Subgroup G) (φ : G →* 
     φ ∈ (subgroupOrderIsoSubgroupMonoidHom G M H).ofDual ↔ ∀ g ∈ H, φ g = 1 := by
   simp [subgroupOrderIsoSubgroupMonoidHom]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mem_subgroupOrderIsoSubgroupMonoidHom_symm_iff (Φ : Subgroup (G →* Mˣ)) (g : G) :
     g ∈ (subgroupOrderIsoSubgroupMonoidHom G M).symm (OrderDual.toDual Φ) ↔ ∀ φ ∈ Φ, φ g = 1 := by
@@ -191,5 +200,11 @@ theorem mem_subgroupOrderIsoSubgroupMonoidHom_symm_iff (Φ : Subgroup (G →* M�
     Equiv.coe_fn_symm_mk, OrderDual.ofDual_toDual, MulEquiv.coe_mapSubgroup,
     Subgroup.mem_map_equiv, mem_ker, restrictHom_apply, restrict_eq_one_iff,
     monoidHomMonoidHomEquiv_symm_apply_apply]
+
+/-- The cardinality of the dual subgroup of `G →* Mˣ` associated to a subgroup `H` of `G`
+equals the index of `H` in `G`. -/
+theorem card_subgroupOrderIsoSubgroupMonoidHom (H : Subgroup G) :
+    Nat.card (subgroupOrderIsoSubgroupMonoidHom G M H).ofDual = Nat.card (G ⧸ H) :=
+  card_restrictHom_ker _ _
 
 end CommGroup
