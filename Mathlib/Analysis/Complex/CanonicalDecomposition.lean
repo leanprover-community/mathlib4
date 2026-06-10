@@ -409,7 +409,7 @@ theorem CanonicalDecomp.divisor_eq_divisor {x : ℂ} (D : CanonicalDecomp f g R)
         have := D.ne_zero
       refine analyticAt_finprod fun a ↦ ?_
       by_cases ha : a ∈ ball 0 R
-      · exact (analyticOnNhd_canonicalFactor _ _ _ (by aesop)).zpow 
+      · exact (analyticOnNhd_canonicalFactor _ _ _ (by aesop)).zpow
           (canonicalFactor_ne_zero ha (by aesop) (by aesop))
       · simp_all only [mem_ball, dist_zero_right, not_lt,
           locallyFinsuppWithin.apply_eq_zero_of_notMem, neg_zero, zpow_zero]
