@@ -662,9 +662,12 @@ lemma fundamentalGroupToMulOpposite_injective [SimplyConnectedSpace E] :
   rw [← MonoidHom.ker_eq_bot_iff, ker_fundamentalGroupToMulOpposite, MonoidHom.ker_eq_bot_iff]
   exact hp.monodromyPerm_injective
 
-noncomputable abbrev fundamentalGroupEquiv [SimplyConnectedSpace E] :
-    FundamentalGroup X x ≃* Gᵐᵒᵖ :=
-  MulEquiv.ofBijective (hp.fundamentalGroupToMulOpposite e)
-    ⟨hp.fundamentalGroupToMulOpposite_injective e, hp.fundamentalGroupToMulOpposite_surjective e⟩
+/-- The fundamental group of the base of simply-connected covering map is equivalent to the
+group of the covering map. -/
+noncomputable def fundamentalGroupEquiv [SimplyConnectedSpace E] :
+    FundamentalGroup X x ≃* G :=
+  (MulEquiv.ofBijective (hp.fundamentalGroupToMulOpposite e)
+    ⟨hp.fundamentalGroupToMulOpposite_injective e,
+     hp.fundamentalGroupToMulOpposite_surjective e⟩).trans <| (MulEquiv.inv' G).symm
 
 end IsQuotientCoveringMap
