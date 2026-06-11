@@ -55,7 +55,7 @@ class AlgHomClass (F : Type*) (R : outParam Type*) [CommSemiring R] (A B : outPa
 instance {R : Type uR} [CommSemiring R] (A : Type uA) (B : Type uB) [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] : FunLike (A →ₐ[R] B) A B where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     rcases f with ⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩
     rcases g
     congr
