@@ -315,7 +315,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
           simp only [hg, ← e, PFun.mk_apply, Part.bind_some, List.tail_cons, pure]
           rfl
         | succ b' IH =>
-          refine PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, IH (a + 1) (by omega)⟩)
+          refine PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, IH (a + 1) (by lia)⟩)
           simp only [hg, PFun.mk_apply, Part.bind_some, List.tail_cons, pure]
           exact Part.mem_some_iff.2 rfl
   | comp g _ _ IHf IHg => exact exists_code.comp IHf IHg
@@ -375,6 +375,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
           (PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, this⟩))
         simp only [hf, hm n.lt_succ_self, PFun.mk_apply, Part.bind_some, List.headI, if_false,
           Part.mem_some_iff, List.tail_cons]
+
 end Code
 
 /-!

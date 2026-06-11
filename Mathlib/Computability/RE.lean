@@ -50,7 +50,7 @@ theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
   obtain ⟨x, k, e⟩ | ⟨x, k, e⟩ := h
   · exact ⟨k, x, by simp [e]⟩
   · refine ⟨k, ?_⟩
-    rcases cf.evaln k n with _ | y
+    rcases cf.evaln k n with - | y
     · exact ⟨x, by simp [e]⟩
     · exact ⟨y, by simp⟩
 
@@ -220,6 +220,7 @@ theorem to_re {p : α → Prop} (hp : ComputablePred p) : REPred p := by
   refine
     (Partrec.cond hf (Decidable.Partrec.const' (Part.some ())) Partrec.none).of_eq fun n =>
       Part.ext fun a => by cases h : f n <;> simp [h]
+
 -- Post's theorem on the equivalence of r.e., co-r.e. sets and
 -- computable sets. The assumption that p is decidable is required
 -- unless we assume Markov's principle or LEM.
@@ -229,8 +230,7 @@ theorem computable_iff_re_compl_re {p : α → Prop} [DecidablePred p] :
   ⟨fun h => ⟨h.to_re, h.not.to_re⟩, fun ⟨h₁, h₂⟩ =>
     ⟨‹_›, by
       obtain ⟨k, pk, hk⟩ :=
-        Partrec.merge (h₁.map (Computable.const true).to₂)
-          (h₂.map (Computable.const false).to₂)
+        Partrec.merge (h₁.map (Computable.const true).to₂) (h₂.map (Computable.const false).to₂)
         (by
           intro a x hx y hy
           simp only [PFun.mk_apply, Part.mem_map_iff, Part.mem_assert_iff,

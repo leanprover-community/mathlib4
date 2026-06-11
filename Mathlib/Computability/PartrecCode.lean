@@ -52,8 +52,8 @@ theorem rfind' {f : ℕ →. ℕ} (hf : Nat.Partrec f) :
     Nat.Partrec
       (PFun.mk <| Nat.unpaired fun a m =>
         (Nat.rfind (PFun.mk fun n =>
-          (fun x => decide (x = 0)) <$> f (Nat.pair a (n + m)))).map (· + m)) := by
-  exact (@Partrec₂.unpaired' fun a => PFun.mk fun m =>
+          (fun x => decide (x = 0)) <$> f (Nat.pair a (n + m)))).map (· + m)) :=
+  (@Partrec₂.unpaired' fun a => PFun.mk fun m =>
     (Nat.rfind (PFun.mk fun n =>
       (fun x => decide (x = 0)) <$> f (Nat.pair a (n + m)))).map (· + m)).mpr <| by
     let G : ℕ → ℕ →. ℕ := fun x => PFun.mk fun y =>

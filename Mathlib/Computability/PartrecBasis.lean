@@ -146,7 +146,7 @@ theorem of_part : ∀ {n f}, Partrec f → @Partrec' n f :=
 theorem part_iff {n f} : @Partrec' n f ↔ Partrec f :=
   ⟨to_part, of_part⟩
 
-theorem part_iff₁ {f : ℕ →. ℕ} : (@Partrec' 1 (PFun.mk fun v => f v.head)) ↔ Partrec f :=
+theorem part_iff₁ {f : ℕ →. ℕ} : @Partrec' 1 (PFun.mk fun v => f v.head) ↔ Partrec f :=
   part_iff.trans
     ⟨fun h =>
       (h.comp <| (Primrec.vector_ofFn fun _ => _root_.Primrec.id).to_comp).of_eq
@@ -154,7 +154,7 @@ theorem part_iff₁ {f : ℕ →. ℕ} : (@Partrec' 1 (PFun.mk fun v => f v.head
       fun h => h.comp vector_head⟩
 
 theorem part_iff₂ {f : ℕ → ℕ →. ℕ} :
-    (@Partrec' 2 (PFun.mk fun v => f v.head v.tail.head)) ↔ Partrec₂ f :=
+    @Partrec' 2 (PFun.mk fun v => f v.head v.tail.head) ↔ Partrec₂ f :=
   part_iff.trans
     ⟨fun h =>
       (h.comp <| vector_cons.comp fst <| vector_cons.comp snd (const nil)).of_eq fun v => by simp,
