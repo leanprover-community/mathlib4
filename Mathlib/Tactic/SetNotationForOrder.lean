@@ -8,6 +8,8 @@ module
 public meta import Batteries.Lean.NameMapAttribute
 public meta import Lean.Elab.App
 public meta import Mathlib.Lean.PrettyPrinter.Delaborator
+public import Mathlib.Tactic.Translate.GuessName
+public import Mathlib.Util.AddRelatedDecl
 
 /-!
 # Set notation for order operations
@@ -35,7 +37,7 @@ meta section
 
 namespace Mathlib.Meta.SetNotationForOrder
 
-open Lean Meta Elab Term PrettyPrinter.Delaborator SubExpr
+open Mathlib.Tactic Lean Meta Elab Term PrettyPrinter.Delaborator SubExpr
 
 /-- Add an instance of `UsesSetNotationForOrder` for `declName`. -/
 def mkUsesSetNotationForOrderInstance (declName : Name) (kind : AttributeKind) : CoreM Unit :=
@@ -222,7 +224,7 @@ binder_predicate (priority := high) x " ⊇ " y:term => `($x ⊇ $y)
 `∃ x, x ⊃ y ∧ ...` -/
 binder_predicate (priority := high) x " ⊃ " y:term => `($x ⊃ $y)
 
-/-! Dot-notation namespace linter -/
+/-! ## Dot-notation namespace linter -/
 
 /-- A temporary linter to help adapt to `@[set_notation_for_order]`.
 It gives a warning when a lemma is in the wrong namespace for dot-notation. -/
@@ -246,5 +248,56 @@ public def subsetDotNotationLinter : Batteries.Tactic.Lint.Linter where
         if c == otherStart then
           return some m!"`{n}` should be named `{otherStart ++ rest}` in order to use dot-notation."
     return none
+
+/-! ## Lemma translation -/
+
+@[inherit_doc GuessName.GuessNameData.nameDict]
+def nameDict : Std.HashMap String (List String) := .ofList [
+  ("le", ["Subset"]),
+  ("ge", ["Superset"]),
+  ("lt", ["SSubset"]),
+  ("gt", ["SSuperset"]),
+  ("inf", ["Inter"]),
+  ("sup", ["Union"]),
+  ("sInf", ["SInter"]),
+  ("sSup", ["SUnion"]),
+  ("iSup", ["IUnion"]),
+  ("iSup", ["IUnion"]),
+]
+
+/-- Generate a variant of a theorem by restricting the order on the specified types to those
+that are tagged `@[use_set_notation_for_order]`.
+
+Explicitly, `to_set_notation` inserts a `[UsesSetNotationForOrder α]` type class
+assumption for each type `α`.
+TODO: it would be nice to be able to restrict which types get the assumption.
+
+This is used to automatically generate theorems like `subset_trans` from `le_trans`.
+The theorem name is automatically translated.
+-/
+initialize
+  registerBuiltinAttribute {
+    name := `to_set_notation
+    descr := "generate the set notation version of an order theoretic lemma."
+    add src stx kind := do
+      unless kind == .global do
+        throwAttrMustBeGlobal `to_set_notation kind
+      let .str srcRoot srcStr := src | throwError "invalid name `{src}`"
+      let tgt := srcRoot.str <| GuessName.guessName { nameDict, abbreviationDict := {} } srcStr
+      MetaM.run' <| addRelatedDecl src tgt stx ⟨mkNullNode⟩
+        (docstringPrefix? := s!"Set notation form of `{src}`") (hoverInfo := true)
+        fun value levels => do
+        forallTelescope (← inferType value) fun xs _ ↦ do
+          let mut value := mkAppN value xs
+          for x in xs.reverse do
+            if let .sort (.succ u) ← inferType x then
+              -- If `x` is a type,
+              -- create a constant lambda expression for the proof that now assumes `cls`.
+              let cls := .app (.const ``UsesSetNotationForOrder [u]) x
+              let ident ← withFreshMacroScope <| MonadQuotation.addMacroScope `inst
+              value := .lam ident cls value .instImplicit
+            value ← mkLambdaFVars #[x] value
+          return (value, levels)
+  }
 
 end Mathlib.Meta.SetNotationForOrder
