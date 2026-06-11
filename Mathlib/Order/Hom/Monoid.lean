@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Order.Hom.Basic
 public import Mathlib.Data.FunLike.IsApply
 
+/-! # Monoid structure on order homomorphisms -/
+
 @[expose] public section
 
 variable {α : Type*} [Preorder α]
