@@ -991,6 +991,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   srcType ← reorderForall reorder srcType
   if let some b := unfoldBoundaries? then
     srcType ← b.unfoldInsertions srcType
+  -- We rely on unification to determine how the universe parameters need to be reordered.
   let levels ← mkFreshLevelMVars srcDecl.numLevelParams
   srcType := srcType.instantiateLevelParams srcDecl.levelParams levels
   let tgtType := tgtDecl.type
