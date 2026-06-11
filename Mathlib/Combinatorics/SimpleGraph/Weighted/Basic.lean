@@ -175,8 +175,10 @@ lemma standardWeightEdgeSet_notin (h : StandardWeights G) :
     s(x, y) ∉ G.edgeSet ↔ G.edgeWeight x y = 0 := by
   grind [h.edgeWeight_NotAdj_iff, G.mem_edgeSet]
 
+-- CI simpNF is fine up to here
+
 variable [Fintype X]
-/-
+
 /--
 The degree of a vertex x of a WeightedGraphWithKillingTerm is non-negative and defined as
 ∑ y, (G.edgeWeight x y) + (G.killingTerm x).
@@ -200,7 +202,7 @@ lemma degreeWithStandardWeights (h : StandardWeights G) (x : X) :
   congr! with y hy
   · grind [standardWeights_edgeWeight_neq_zero_iff_eq_one]
   exact h.edgeWeight_Adj_iff.mp ((G.toSimpleGraph.mem_neighborFinset x y).mp hy)
-
+/-
 lemma degreeWithStandardWeightsCard (h : StandardWeights G) (x : X) :
     G.degree x = (G.neighborFinset x).card := by
   rw [degreeWithStandardWeights G h x]
