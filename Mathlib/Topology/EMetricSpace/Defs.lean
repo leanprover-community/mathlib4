@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 module
 
 public import Mathlib.Data.ENNReal.Inv
+public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.UniformSpace.Basic
 public import Mathlib.Topology.UniformSpace.OfFun
 
@@ -132,7 +133,11 @@ protected theorem PseudoEMetricSpace.ext {α : Type*} {m m' : PseudoEMetricSpace
   congr 1
   exact UniformSpace.ext (((show ed = ed' from h) ▸ hU).trans hU'.symm)
 
-variable [PseudoEMetricSpace α] {x : α} {s t : Set α}
+variable {x : α} {s t : Set α}
+
+section
+
+variable [PseudoEMetricSpace α]
 
 /-- Reformulation of the uniform structure in terms of the extended distance -/
 theorem uniformity_pseudoedist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | edist p.1 p.2 < ε } :=
@@ -171,6 +176,8 @@ theorem Metric.mem_nhdsWithin_iff : s ∈ 𝓝[t] x ↔ ∃ ε > 0, eball x ε �
 
 theorem Metric.isOpen_iff : IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, eball x ε ⊆ s := by
   simp [isOpen_iff_nhds, mem_nhds_iff]
+
+end
 
 /-- A `WeakPseudoEMetricSpace` is a topological space endowed with a `ℝ≥0∞`-value distance `edist`
 which is *almost* an extended pseudometric space: the `edist` is reflexive, commutative and
@@ -228,9 +235,13 @@ instance PseudoEMetricSpace.toWeakPseudoEMetricSpace (α : Type u) [inst : Pseud
         exact le_top
       _ = r := tsub_add_cancel_of_le hy.le
 
-export PseudoEMetricSpace (edist_self edist_comm edist_triangle)
+export WeakPseudoEMetricSpace (edist_self edist_comm edist_triangle)
 
 attribute [simp] edist_self
+
+section
+
+variable [TopologicalSpace α] [WeakPseudoEMetricSpace α]
 
 /-- Triangle inequality for the extended distance -/
 theorem edist_triangle_left (x y z : α) : edist x y ≤ edist z x + edist z y := by
@@ -278,13 +289,19 @@ theorem EMetric.toUniformSpace_ofEDist {α : Type u} [EDist α] (edist_self : �
     (PseudoEMetricSpace.ofEDist edist edist_self edist_comm edist_triangle).toUniformSpace =
       (uniformSpaceOfEDist edist edist_self edist_comm edist_triangle) := by rfl
 
+end
+
+section
+
+variable [PseudoEMetricSpace α]
+
 /-- Given `f : β → ℝ≥0∞`, if `f` sends `{i | p i}` to a set of positive numbers
 accumulating to zero, then `f i`-neighborhoods of the diagonal form a basis of `𝓤 α`.
 
 For specific bases see `uniformity_basis_edist`, `uniformity_basis_edist'`,
 `uniformity_basis_edist_nnreal`, and `uniformity_basis_edist_inv_nat`. -/
-protected theorem EMetric.mk_uniformity_basis {β : Type*} {p : β → Prop} {f : β → ℝ≥0∞}
-    (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
+protected theorem EMetric.mk_uniformity_basis {β : Type*} {p : β → Prop}
+    {f : β → ℝ≥0∞} (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
     (𝓤 α).HasBasis p fun x => { p : α × α | edist p.1 p.2 < f x } := by
   refine ⟨fun s => uniformity_basis_edist.mem_iff.trans ?_⟩
   constructor
@@ -371,6 +388,8 @@ theorem uniformContinuous_iff [PseudoEMetricSpace β] {f : α → β} :
 
 end EMetric
 
+end
+
 open EMetric
 
 /-- Auxiliary function to replace the uniformity on a pseudoemetric space with
@@ -400,9 +419,44 @@ abbrev PseudoEMetricSpace.induced {α β} (f : α → β) (m : PseudoEMetricSpac
   toUniformSpace := UniformSpace.comap f m.toUniformSpace
   uniformity_edist := (uniformity_basis_edist.comap (Prod.map f f)).eq_biInf
 
+/-- `WeakPseudoEMetricSpace` can be induced backwards. -/
+abbrev WeakPseudoEMetricSpace.IsInducing {α β : Type*} [e : TopologicalSpace α]
+  [n : TopologicalSpace β] {f : α → β} (hf : IsInducing f) (m : WeakPseudoEMetricSpace β) :
+    WeakPseudoEMetricSpace α where
+  edist := fun x y ↦ edist (f x) (f y)
+  edist_self x := edist_self (f x)
+  edist_comm x y := edist_comm (f x) (f y)
+  edist_triangle x y z := edist_triangle (f x) (f y) (f z)
+  topology_le := by
+    let hα := PseudoEMetricSpace.ofEDist (fun x y ↦ edist (f x) (f y))
+      (fun x ↦ edist_self (f x)) (fun x y ↦ edist_comm (f x) (f y))
+      (fun x y z ↦ edist_triangle (f x) (f y) (f z))
+    let hβ := PseudoEMetricSpace.ofEDist m.edist edist_self edist_comm edist_triangle
+    rw [(isInducing_iff f).mp hf]
+    refine (continuous_le_rng m.topology_le ?_).le_induced
+    refine @Continuous.mk α β hα.toUniformSpace.toTopologicalSpace
+      hβ.toUniformSpace.toTopologicalSpace f fun s hs ↦ ?_
+    rw [Metric.isOpen_iff] at hs ⊢
+    intro x (hx : f x ∈ s)
+    obtain ⟨ε, hε, hεs⟩ := hs (f x) hx
+    exact ⟨ε, hε, fun y hy ↦ hεs hy⟩
+  topology_eq_on_restrict x r := by
+    obtain ⟨u, hu, uy⟩ := m.topology_eq_on_restrict (f x) r
+    rw [(isInducing_iff f).mp hf]
+    exact ⟨f ⁻¹' u, isOpen_induced hu, by aesop (add simp [Set.ext_iff])⟩
+
+/-- Weak pseudo-emetric space instance on subsets of weak pseudo-emetric spaces -/
+instance {α : Type*} {p : α → Prop} [TopologicalSpace α] [WeakPseudoEMetricSpace α] :
+    WeakPseudoEMetricSpace (Subtype p) :=
+  WeakPseudoEMetricSpace.IsInducing IsInducing.subtypeVal ‹_›
+
 /-- Pseudoemetric space instance on subsets of pseudoemetric spaces -/
 instance {α : Type*} {p : α → Prop} [PseudoEMetricSpace α] : PseudoEMetricSpace (Subtype p) :=
   PseudoEMetricSpace.induced Subtype.val ‹_›
+
+section
+
+variable [TopologicalSpace α] [WeakPseudoEMetricSpace α]
 
 /-- The extended pseudodistance on a subset of a pseudoemetric space is the restriction of
 the original pseudodistance, by definition. -/
@@ -433,7 +487,18 @@ distance, with a topology defeq to the initial one. -/
 @[deprecated (since := "2026-01-08")]
 alias PseudoEmetricSpace.ofEdistOfTopology := PseudoEMetricSpace.ofEDistOfTopology
 
+end
 namespace MulOpposite
+
+variable {α : Type*} [TopologicalSpace α] [WeakPseudoEMetricSpace α]
+
+/-- weak pseudoemetric space instance on the multiplicative opposite of a
+weak pseudoemetric space. -/
+@[to_additive
+/-- Weak pseudoemetric space instance on the additive opposite of a weak pseudoemetric space. -/]
+instance {α : Type*} [n : TopologicalSpace α] [WeakPseudoEMetricSpace α] :
+    WeakPseudoEMetricSpace αᵐᵒᵖ :=
+  WeakPseudoEMetricSpace.IsInducing MulOpposite.opHomeomorph.symm.isInducing ‹_›
 
 /-- Pseudoemetric space instance on the multiplicative opposite of a pseudoemetric space. -/
 @[to_additive
@@ -449,9 +514,12 @@ theorem edist_op (x y : α) : edist (op x) (op y) = edist x y := rfl
 
 end MulOpposite
 
+variable {α β : Type*} [PseudoEMetricSpace α]
+
 section ULift
 
-instance : PseudoEMetricSpace (ULift α) := PseudoEMetricSpace.induced ULift.down ‹_›
+instance : PseudoEMetricSpace (ULift α) :=
+  PseudoEMetricSpace.induced ULift.down ‹_›
 
 theorem ULift.edist_eq (x y : ULift α) : edist x y = edist x.down y.down := rfl
 
@@ -463,7 +531,7 @@ end ULift
 /-- The product of two pseudoemetric spaces, with the max distance, is an extended
 pseudometric spaces. We make sure that the uniform structure thus constructed is the one
 corresponding to the product of uniform spaces, to avoid diamond problems. -/
-instance Prod.pseudoEMetricSpaceMax [PseudoEMetricSpace β] :
+instance Prod.pseudoEMetricSpaceMax {α : Type*} [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     PseudoEMetricSpace (α × β) where
   edist x y := edist x.1 y.1 ⊔ edist x.2 y.2
   edist_self x := by simp
@@ -950,37 +1018,6 @@ theorem edist_ofDual (a b : Xᵒᵈ) : edist (ofDual a) (ofDual b) = edist a b :
 end
 
 section
-
-/-- `WeakPseudoEMetricSpace` can be induced backwards. -/
-abbrev WeakPseudoEMetricSpace.IsInducing {α β : Type*} [e : TopologicalSpace α]
-  [n : TopologicalSpace β] {f : α → β} (hf : IsInducing f) (m : WeakPseudoEMetricSpace β) :
-    WeakPseudoEMetricSpace α where
-  edist := fun x y ↦ edist (f x) (f y)
-  edist_self x := edist_self (f x)
-  edist_comm x y := edist_comm (f x) (f y)
-  edist_triangle x y z := edist_triangle (f x) (f y) (f z)
-  topology_le := by
-    let hα := PseudoEMetricSpace.ofEDist (fun x y ↦ edist (f x) (f y))
-      (fun x ↦ edist_self (f x)) (fun x y ↦ edist_comm (f x) (f y))
-      (fun x y z ↦ edist_triangle (f x) (f y) (f z))
-    let hβ := PseudoEMetricSpace.ofEDist m.edist edist_self edist_comm edist_triangle
-    rw [(isInducing_iff f).mp hf]
-    refine (continuous_le_rng m.topology_le ?_).le_induced
-    refine @Continuous.mk α β hα.toUniformSpace.toTopologicalSpace
-      hβ.toUniformSpace.toTopologicalSpace f fun s hs ↦ ?_
-    rw [Metric.isOpen_iff] at hs ⊢
-    intro x (hx : f x ∈ s)
-    obtain ⟨ε, hε, hεs⟩ := hs (f x) hx
-    exact ⟨ε, hε, fun y hy ↦ hεs hy⟩
-  topology_eq_on_restrict x r := by
-    obtain ⟨u, hu, uy⟩ := m.topology_eq_on_restrict (f x) r
-    rw [(isInducing_iff f).mp hf]
-    exact ⟨f ⁻¹' u, isOpen_induced hu, by aesop (add simp [Set.ext_iff])⟩
-
-/-- Weak pseudo-emetric space instance on subsets of weak pseudo-emetric spaces -/
-instance {α : Type*} {p : α → Prop} [TopologicalSpace α] [WeakPseudoEMetricSpace α] :
-    WeakPseudoEMetricSpace (Subtype p) :=
-  WeakPseudoEMetricSpace.IsInducing IsInducing.subtypeVal ‹_›
 
 /-- A weak extended metric space extends a `WeakPseudoEMetricSpace` with the condition
 `edist x y = 0 ↔ x = y`. -/
