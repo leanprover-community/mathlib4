@@ -272,7 +272,7 @@ instance : DecidableEq X := by exact Classical.typeDecidableEq X
 /-- We define the indicator functions to be our standard basis functions for X → ℝ -/
 noncomputable
 abbrev basisFun (y : X) : X → ℝ := Pi.single y 1
-
+/-
 /-- We use the notation 𝟙_ to write this basis/indicator function more concisely. -/
 scoped notation "𝟙_" y:max => basisFun y
 
@@ -314,7 +314,7 @@ lemma associatedForm_of_basis_eq_degree :
   rw [← Finset.sum_const_zero]
   congr! with z h'
   grind
-/-
+
 lemma neq_basis_vecs_imp_sum_weighted_killingTerm_neq_basisFun_eq_zero (x y : X) (h : x ≠ y) :
     ∑ z, G.killingTerm z * (𝟙_x) z * (𝟙_y) z = 0 := by
   have : (𝟙_y) x = 0 := by grind
