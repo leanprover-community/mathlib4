@@ -642,7 +642,6 @@ def equivOfNatIsoOfIso {F G : J ⥤ C} (α : F ≅ G) (c : Cocone F) (d : Cocone
     (w : (Cocone.precompose α.inv).obj c ≅ d) : IsColimit c ≃ IsColimit d :=
   (precomposeInvEquiv α _).symm.trans (equivIsoColimit w)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The cocone points of two colimit cocones for naturally isomorphic functors
 are themselves isomorphic.
