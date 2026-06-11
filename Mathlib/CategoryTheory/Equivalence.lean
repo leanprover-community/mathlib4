@@ -142,22 +142,22 @@ abbrev unit (e : C ≌ D) : 𝟭 C ⟶ e.functor ⋙ e.inverse :=
 abbrev counit (e : C ≌ D) : e.inverse ⋙ e.functor ⟶ 𝟭 D :=
   e.counitIso.hom
 
-@[reassoc +to_dual (attr := simp)]
+@[reassoc +to_dual]
 lemma unitIso_hom_inv_id_app (e : C ≌ D) (X : C) :
     dsimp% e.unit.app X ≫ e.unitInv.app X = 𝟙 X :=
   e.unitIso.hom_inv_id_app X
 
-@[reassoc +to_dual (attr := simp)]
+@[reassoc +to_dual]
 lemma unitIso_inv_hom_id_app (e : C ≌ D) (X : C) :
     dsimp% e.unitInv.app X ≫ e.unit.app X = 𝟙 _ :=
   e.unitIso.inv_hom_id_app X
 
-@[reassoc +to_dual (attr := simp)]
+@[reassoc +to_dual]
 lemma counitIso_hom_inv_id_app (e : C ≌ D) (Y : D) :
     dsimp% e.counit.app Y ≫ e.counitInv.app Y = 𝟙 _ :=
   e.counitIso.hom_inv_id_app Y
 
-@[reassoc +to_dual (attr := simp)]
+@[reassoc +to_dual]
 lemma counitIso_inv_hom_id_app (e : C ≌ D) (Y : D) :
     dsimp% e.counitInv.app Y ≫ e.counit.app Y = 𝟙 Y :=
   e.counitIso.inv_hom_id_app Y
@@ -459,7 +459,7 @@ variable (e : C ≌ D)
 those lemmas in this setting without providing `e.unitIso` (or similar) as an explicit argument.
 We also provide the lemmas for length four compositions, since they're occasionally useful.
 (e.g. in proving that equivalences take monos to monos) -/
-@[to_dual (attr := simp) cancel_unitInv_left]
+@[to_dual cancel_unitInv_left, simp]
 theorem cancel_unit_right {X Y : C} (f f' : X ⟶ Y) :
     f ≫ e.unit.app Y = f' ≫ e.unit.app Y ↔ f = f' := by simp only [cancel_mono]
 
@@ -471,7 +471,7 @@ theorem cancel_unitInv_right {X Y : C} (f f' : X ⟶ e.inverse.obj (e.functor.ob
 theorem cancel_counit_right {X Y : D} (f f' : X ⟶ e.functor.obj (e.inverse.obj Y)) :
     f ≫ e.counit.app Y = f' ≫ e.counit.app Y ↔ f = f' := by simp only [cancel_mono]
 
-@[to_dual (attr := simp) cancel_counit_left]
+@[to_dual cancel_counit_left, simp]
 theorem cancel_counitInv_right {X Y : D} (f f' : X ⟶ Y) :
     f ≫ e.counitInv.app Y = f' ≫ e.counitInv.app Y ↔ f = f' := by simp only [cancel_mono]
 
