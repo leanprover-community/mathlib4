@@ -214,6 +214,9 @@ instance PseudoEMetricSpace.toWeakPseudoEMetricSpace (α : Type u) [inst : Pseud
   edist_triangle := edist_triangle
   topology_le := by rw [uniformSpace_edist]
   topology_eq_on_restrict x r := by
+    -- This is an easy consequence of later lemmas for `PseudoEMetricSpace`
+    -- However we don't use them here, since they can be generalised to `WeakPseudoEMetricSpace`,
+    -- which however first requires this instance.
     suffices IsOpen (Metric.eball x r) from this.preimage_val
     rw [EMetric.isOpen_iff]
     intro y hy
