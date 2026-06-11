@@ -468,8 +468,10 @@ public theorem Path.paste_segment_homotopies_trivial_source {x y y' : X} {n : �
       (α₀.source ▸ h_α₀_in_U₀ ⟨0, rfl⟩) (by simpa [α₀] using h_α₀_in_U₀)
   exact h_paste.trans <| Path.Homotopic.trans_left_of_nullhomotopic h_α₀_null
 
-/-- Two-sided specialization of `paste_segment_homotopies`: if the source and target rungs live in
-path-homotopy-trivial sets, then both endpoint loops are null-homotopic and we get γ ≃ γ' directly. -/
+/--
+Two-sided specialization of `paste_segment_homotopies`: if the source and target rungs live in
+path-homotopy-trivial sets, then both endpoint loops are null-homotopic and we get γ ≃ γ' directly.
+-/
 public theorem Path.paste_segment_homotopies_trivial {x y : X} {n : ℕ} (γ γ' : Path x y)
     (part : IntervalPartition n)
     (α : (i : Fin (n + 1)) → Path (γ (part.t i)) (γ' (part.t i)))
