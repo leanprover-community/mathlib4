@@ -115,8 +115,7 @@ instance [hg : IsFinitelyPresented G] [hh : IsFinitelyPresented H] :
     <| equiv (PresentedGroup.coprodPresentations setg seth) ?_
   use ng + nh
   let s := (FreeGroup.map Sum.inl '' setg ∪ FreeGroup.map Sum.inr '' seth)
-  suffices
-  ∃ ψ : FreeGroup (Fin ng ⊕ Fin nh) →* PresentedGroup s,
+  suffices ∃ ψ : FreeGroup (Fin ng ⊕ Fin nh) →* PresentedGroup s,
     Function.Surjective ψ ∧ ψ.ker.IsNormalClosureFG
   by
     rcases this with ⟨ψ, hsurj, hfg⟩
@@ -126,6 +125,6 @@ instance [hg : IsFinitelyPresented G] [hh : IsFinitelyPresented H] :
     simp only [MonoidHom.ker_comp_mulEquiv]
     exact Subgroup.IsNormalClosureFG.map (hfg) (toDisjoint.symm.surjective)
   exact ⟨PresentedGroup.mk s, PresentedGroup.mk_surjective s, s,
-  (hsetgfin.image (FreeGroup.map Sum.inl)).union (hsethfin.image (FreeGroup.map Sum.inr)),
-  (QuotientGroup.ker_mk' (Subgroup.normalClosure s)).symm⟩
+    (hsetgfin.image (FreeGroup.map Sum.inl)).union (hsethfin.image (FreeGroup.map Sum.inr)),
+    (QuotientGroup.ker_mk' (Subgroup.normalClosure s)).symm⟩
 end Group.IsFinitelyPresented
