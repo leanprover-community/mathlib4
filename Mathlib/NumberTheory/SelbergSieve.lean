@@ -37,18 +37,18 @@ minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(
 
 noncomputable section
 
-open scoped ArithmeticFunction
+open scoped ArithmeticFunction.Moebius
 
 open Finset Real Nat ArithmeticFunction
 
 /-- We set up a sieve problem as follows. Take a finite set of natural numbers `A`, whose elements
 are weighted by a sequence `a n`. Also take a finite set of primes `P`, represented by a squarefree
 natural number. These are the primes that we will sift from our set `A`. Suppose we can approximate
-`∑ n ∈ {k ∈ A | d ∣ k}, a n = ν d * X + R d`, where `X` is an approximation to the total size of `A`
+`∑ n ∈ A with d ∣ n, a n = ν d * X + R d`, where `X` is an approximation to the total size of `A`
 and `ν` is a multiplicative arithmetic function such that `0 < ν p < 1` for all primes `p ∣ P`.
 
 Then a sieve-type theorem will give us an upper (or lower) bound on the size of the sifted sum
-`∑ n ∈ {k ∈ support | k.Coprime P}, a n`, obtained by removing any elements of `A` that are a
+`∑ n ∈ support with n.Coprime P, a n`, obtained by removing any elements of `A` that are a
 multiple of a prime in `P`. -/
 structure BoundingSieve where
   /-- The set of natural numbers that is to be sifted. The fundamental lemma yields an upper bound
@@ -252,12 +252,12 @@ theorem upperMoebius_lambdaSquared (weights : ℕ → ℝ) (hw : weights 1 = 1) 
   intro n
   split_ifs
   · simp_all
-  convert sq_nonneg (∑ d ∈ n.divisors, weights d)
+  grw [sq_nonneg (∑ d ∈ n.divisors, weights d), sum_divisors_lambda_sq_larger_sum _ n, sum_comm]
+  apply le_of_eq
   simp_rw [sq, mul_sum, sum_mul]
-  rw [sum_divisors_lambda_sq_larger_sum _ n, sum_comm]
-  refine sum_congr rfl fun d1 hd1 ↦ ?_
+  congr! 1 with d1 hd1
   rw [sum_comm]
-  refine sum_congr rfl fun d2 hd2 ↦ ?_
+  congr! 1 with d2 hd2
   rw [sum_ite_eq_of_mem', mul_comm]
   -- Deal with the side goal from `sum_ite_eq_of_mem'`
   rw [mem_divisors, Nat.lcm_dvd_iff]
@@ -302,7 +302,7 @@ theorem inv_selbergTerms_eq_sum_divisors_moebius_nu {l : ℕ} (hl : Squarefree l
   simp only [selbergTerms_apply, mul_inv, inv_inv,
     Finset.prod_inv_distrib, s.nu_mult.prodPrimeFactors_one_sub_of_squarefree _ hl, mul_sum]
   rw [← Nat.sum_divisorsAntidiagonal fun i _ : ℕ ↦ (s.nu l)⁻¹ * (↑(μ i) * s.nu i)]
-  refine sum_congr rfl fun ⟨d, e⟩ hd ↦ ?_
+  congr! 1 with ⟨d, e⟩ hd
   obtain ⟨rfl, -⟩ : d * e = l ∧ _ := by simpa using hd
   obtain ⟨hde, -⟩ : d.Coprime e ∧ _ := by simpa only [squarefree_mul_iff] using hl
   obtain ⟨hd0, he0⟩ : ¬s.nu d = 0 ∧ ¬s.nu e = 0 :=
@@ -331,7 +331,7 @@ theorem sum_divisors_selbergTerms_eq_selbergTerms_mul_nu_inv {d : ℕ} (hd : d �
     _ = s.selbergTerms d *
           ∑ l ∈ divisors s.prodPrimes, if l ∣ d then (s.selbergTerms l)⁻¹ else 0 := by
       simp_rw [← sum_filter, mul_sum]
-      refine sum_congr rfl fun l hl ↦ ?_
+      congr! 1 with l hl
       simp only [mem_filter, mem_divisors, ne_eq] at hl
       rw [selbergTerms_isMultiplicative.map_div_of_coprime hl.2]
       · ring
@@ -388,7 +388,7 @@ theorem mainSum_lambdaSquared_eq_sum_mul_sum_sq (w : ℕ → ℝ) :
         := ?caseC
   case caseA =>
     rw [mainSum_lambdaSquared_eq_sum_sum_mul w]
-    refine sum_congr rfl fun d1 hd1 ↦ sum_congr rfl fun d2 _ ↦ ?_
+    congr! 2 with d1 hd1 d2 hd2
     have hgcd_dvd : d1.gcd d2 ∣ s.prodPrimes :=
       (Nat.gcd_dvd_left d1 d2).trans (dvd_of_mem_divisors hd1)
     simp_rw [nu_inv_eq_sum_divisors_inv_selbergTerms hgcd_dvd, ← sum_filter, mul_sum]
