@@ -49,7 +49,7 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
     refine Module.Dual.exists_continuous_extension_of_le_seminorm  p f
       (show Continuous (‖f‖₊ • (normSeminorm 𝕜 E)) from ?_) fun x => f.le_opNorm x
     exact continuous_norm.const_smul ‖f‖₊
-  refine ⟨g, hg, le_antisymm (g.mkContinuous_norm_le (norm_nonneg f) hl) ?_⟩
+  refine ⟨g, hg, le_antisymm (g.opNorm_le_bound (norm_nonneg f) hl) ?_⟩
   exact f.opNorm_le_bound (norm_nonneg _) fun x => by simpa [hg x] using g.le_opNorm x
 
 end RCLike
