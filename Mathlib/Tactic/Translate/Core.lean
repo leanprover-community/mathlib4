@@ -1285,6 +1285,7 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
   Term.addTermInfo' cfg.ref (← mkConstWithLevelParams tgt) (isBinder := !alreadyExists)
     |>.run' |>.run'
   return nestedNames.push tgt
+
 end
-#check Batteries.Tactic.Alias.aliasExt
+
 end Mathlib.Tactic.Translate
