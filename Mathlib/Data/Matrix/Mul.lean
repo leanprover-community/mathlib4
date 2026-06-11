@@ -77,6 +77,8 @@ so that `r₁ • a ⬝ᵥ r₂ • b` is parsed as `(r₁ • a) ⬝ᵥ (r₂ �
 @[inherit_doc]
 infixl:72 " ⬝ᵥ " => dotProduct
 
+lemma dotProduct_eq_sum [Mul α] [AddCommMonoid α] (v w : m → α) : v ⬝ᵥ w = ∑ i, v i * w i := rfl
+
 theorem dotProduct_assoc [NonUnitalSemiring α] (u : m → α) (w : n → α) (v : Matrix m n α) :
     (fun j => u ⬝ᵥ fun i => v i j) ⬝ᵥ w = u ⬝ᵥ fun i => v i ⬝ᵥ w := by
   simpa [dotProduct, Finset.mul_sum, Finset.sum_mul, mul_assoc] using Finset.sum_comm
@@ -702,6 +704,9 @@ def mulVec [Fintype n] (M : Matrix m n α) (v : n → α) : m → α
 scoped infixr:73 " *ᵥ " => Matrix.mulVec
 
 lemma mulVec_apply [Fintype n] (M : Matrix m n α) (v : n → α) (i : m) :
+    (M *ᵥ v) i = (M i ·) ⬝ᵥ v := rfl
+
+lemma mulVec_apply_eq_sum [Fintype n] (M : Matrix m n α) (v : n → α) (i : m) :
     (M *ᵥ v) i = ∑ j : n, M i j * v j := rfl
 
 /--
@@ -718,6 +723,9 @@ def vecMul [Fintype m] (v : m → α) (M : Matrix m n α) : n → α
 scoped infixl:73 " ᵥ* " => Matrix.vecMul
 
 lemma vecMul_apply [Fintype m] (v : m → α) (M : Matrix m n α) (i : n) :
+    (v ᵥ* M) i = v ⬝ᵥ (M · i) := rfl
+
+lemma vecMul_apply_eq_sum [Fintype m] (v : m → α) (M : Matrix m n α) (i : n) :
     (v ᵥ* M) i = ∑ j : m, v j * M j i := rfl
 
 /-- Left multiplication by a matrix, as an `AddMonoidHom` from vectors to vectors. -/
