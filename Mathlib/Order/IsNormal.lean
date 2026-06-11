@@ -5,6 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Dynamics.FixedPoints.Defs
 public import Mathlib.Order.DirSupClosed
 public import Mathlib.Order.SuccPred.CompleteLinearOrder
 public import Mathlib.Order.SuccPred.InitialSeg
@@ -113,7 +114,7 @@ theorem to_Iio (hf : IsNormal f) (a : α) :
     IsNormal (β := Iio (f a)) fun x : Iio a ↦ ⟨f x.1, hf.strictMono x.2⟩ := by
   rw [isNormal_iff]
   refine ⟨fun x y h ↦ hf.strictMono h, fun b hb c hc ↦ hf.2 (hb.subtypeVal (isLowerSet_Iio _)) ?_⟩
-  simpa [upperBounds] using fun d hd ↦ hc ⟨d, hd.trans b.2⟩ hd
+  simpa [upperBounds] using! fun d hd ↦ hc ⟨d, hd.trans b.2⟩ hd
 
 end LinearOrder
 
@@ -127,9 +128,20 @@ theorem map_sSup (hf : IsNormal f) {s : Set α} (hs : s.Nonempty) (hs' : BddAbov
 theorem map_iSup {ι} [Nonempty ι] {g : ι → α} (hf : IsNormal f) (hg : BddAbove (range g)) :
     f (⨆ i, g i) = ⨆ i, f (g i) := by
   unfold iSup
-  convert map_sSup hf (range_nonempty g) hg
+  convert! map_sSup hf (range_nonempty g) hg
   ext
   simp
+
+theorem iSup_iterate_mem_fixedPoints [WellFoundedLT α] {f : α → α} (a : α) (hf : IsNormal f)
+    (hf' : BddAbove (.range fun n ↦ f^[n] a)) : ⨆ n, f^[n] a ∈ f.fixedPoints := by
+  rw [f.mem_fixedPoints_iff, hf.map_iSup hf']
+  apply le_antisymm <;> refine ciSup_le fun n ↦ ?_
+  · rw [← f.iterate_succ_apply']
+    exact le_ciSup hf' _
+  · apply hf.strictMono.le_apply.trans
+    apply (le_ciSup (hf'.mono _) n)
+    simp_rw [← f.iterate_succ_apply']
+    grind
 
 theorem preimage_Iic (hf : IsNormal f) {x : β}
     (h₁ : (f ⁻¹' Iic x).Nonempty) (h₂ : BddAbove (f ⁻¹' Iic x)) :
@@ -162,7 +174,7 @@ variable [ConditionallyCompleteLinearOrderBot α] [ConditionallyCompleteLinearOr
 
 theorem apply_of_isSuccLimit (hf : IsNormal f) (ha : IsSuccLimit a) :
     f a = ⨆ b : Iio a, f b := by
-  convert map_iSup hf _
+  convert! map_iSup hf _
   · exact ha.iSup_Iio.symm
   · exact ⟨⊥, ha.bot_lt⟩
   · use a
@@ -202,7 +214,7 @@ theorem ext_iff [OrderBot α] {g : α → β} (hf : IsNormal f) (hg : IsNormal g
   | succ a ha IH => exact H₂ a IH
   | isSuccLimit a ha IH =>
     apply (hf.isLUB_image_Iio_of_isSuccLimit ha).unique
-    convert hg.isLUB_image_Iio_of_isSuccLimit ha using 1
+    convert! hg.isLUB_image_Iio_of_isSuccLimit ha using 1
     aesop
 
 @[deprecated (since := "2026-03-22")] protected alias ext := IsNormal.ext_iff
