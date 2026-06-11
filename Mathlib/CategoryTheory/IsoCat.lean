@@ -34,6 +34,7 @@ namespace CategoryTheory
 open Functor NatIso Category
 
 variable {C : Type*} {D : Type*} {E : Type*} [Category* C] [Category* D] [Category* E]
+variable (F : C ⥤ D) (G : D ⥤ E)
 
 variable (C) (D) in
 /-- An isomorphism of categories: a pair of functors whose composites are equal to the
@@ -77,34 +78,38 @@ def IsoCat.trans (e : IsoCat C D) (f : IsoCat D E) : IsoCat C E where
     rw [Functor.assoc, ← Functor.assoc e.inverse, e.counit_eq, Functor.id_comp]
     exact f.counit_eq
 
+namespace Functor
+
 /-- A functor `F : C ⥤ D` is an isomorphism of categories if it is full, faithful and
 bijective on objects. Such a functor has a strict inverse `Functor.strictInv` and assembles
 into an `IsoCat` via `Functor.asIsomorphism`. -/
-protected class Functor.IsIso (F : C ⥤ D) : Prop where
+protected class IsIso (F : C ⥤ D) : Prop where
   /-- A functor which is an isomorphism of categories is faithful. -/
   faithful : F.Faithful := by infer_instance
   /-- A functor which is an isomorphism of categories is full. -/
   full : F.Full := by infer_instance
   /-- A functor which is an isomorphism of categories is bijective on objects. -/
-  bijectiveOnObjects (F) : F.obj.Bijective
+  bijective_obj (F) : F.obj.Bijective
+
+export Functor.IsIso (bijective_obj)
 
 attribute [instance] Functor.IsIso.faithful Functor.IsIso.full
 
 instance : (𝟭 C).IsIso where
-  bijectiveOnObjects := Function.bijective_id
+  bijective_obj := Function.bijective_id
 
-variable (F : C ⥤ D) [F.IsIso] (G : D ⥤ E) [G.IsIso]
+variable [F.IsIso] [G.IsIso]
 
 /-- The bijection on objects induced by a functor that is an isomorphism of categories. -/
-noncomputable def Functor.objEquiv : C ≃ D := .ofBijective _ h.bijectiveOnObjects
+noncomputable def objEquiv : C ≃ D := .ofBijective _ (F.bijective_obj)
 
 @[simp]
-lemma Functor.objEquiv_symm_apply_apply (X : C) :
+lemma objEquiv_symm_apply_apply (X : C) :
     F.objEquiv.symm (F.obj X) = X :=
   F.objEquiv.symm_apply_apply X
 
 @[simp]
-lemma Functor.objEquiv_apply_symm_apply (Y : D) :
+lemma objEquiv_apply_symm_apply (Y : D) :
     F.obj (F.objEquiv.symm Y) = Y :=
   F.objEquiv.apply_symm_apply Y
 
@@ -114,23 +119,25 @@ instance : F.IsEquivalence where
 /-- The strict inverse of a functor that is an isomorphism of categories, defined using
 `Functor.objEquiv` on objects and `Functor.preimage` on morphisms. -/
 @[no_expose]
-noncomputable def Functor.strictInv : D ⥤ C where
+noncomputable def strictInv : D ⥤ C where
   obj := F.objEquiv.symm
   map f := F.preimage (eqToHom (by simp) ≫ f ≫ eqToHom (by simp))
-  map_comp _ _ := by simp [← Functor.preimage_comp]
+  map_comp _ _ := by simp [← preimage_comp]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- A functor that is an isomorphism of categories assembles into an `IsoCat`,
 with `Functor.strictInv` as its inverse. -/
-noncomputable def Functor.asIsomorphism : IsoCat C D where
+noncomputable def asIsomorphism : IsoCat C D where
   functor := F
   inverse := F.strictInv
   unit_eq :=
-    Functor.ext (fun x ↦ by simp [strictInv])
+    ext (fun x ↦ by simp [strictInv])
       (fun _ _ _ ↦ F.map_injective (by simp [eqToHom_map, strictInv]))
   counit_eq :=
-    Functor.ext (fun x ↦ by simp [strictInv])
+    ext (fun x ↦ by simp [strictInv])
       (fun _ _ _ ↦ by simp [strictInv])
+
+end Functor
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence of categories underlying an `IsoCat`, with the unit and counit
@@ -158,17 +165,17 @@ def Equivalence.toIsoCat (e : C ≌ D)
 instance IsoCat.isIsomorphismFunctor (e : IsoCat C D) : e.functor.IsIso where
   faithful := e.toEquivalence.faithful_functor
   full := e.toEquivalence.full_functor
-  bijectiveOnObjects := Function.bijective_iff_has_inverse.mpr
+  bijective_obj := Function.bijective_iff_has_inverse.mpr
     ⟨e.inverse.obj, fun X => (Functor.congr_obj e.unit_eq X).symm,
       Functor.congr_obj e.counit_eq⟩
 
 instance (e : IsoCat C D) : e.inverse.IsIso :=
   IsoCat.isIsomorphismFunctor e.symm
 
-instance : F.strictInv.IsIso :=
+instance [F.IsIso] : F.strictInv.IsIso :=
   IsoCat.isIsomorphismFunctor F.asIsomorphism.symm
 
-instance : (F ⋙ G).IsIso :=
+instance [F.IsIso] [G.IsIso] : (F ⋙ G).IsIso :=
   IsoCat.isIsomorphismFunctor (F.asIsomorphism.trans G.asIsomorphism)
 
 end CategoryTheory
