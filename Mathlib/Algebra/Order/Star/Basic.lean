@@ -204,7 +204,7 @@ protected theorem IsSelfAdjoint.mul_self_nonneg {a : R} (ha : IsSelfAdjoint a) :
   simpa [ha.star_eq] using star_mul_self_nonneg a
 
 /-- A star projection is non-negative in a star-ordered ring. -/
-@[grind →, aesop safe apply (rule_sets := [CStarAlgebra])]
+@[grind →, aesop safe forward (rule_sets := [CStarAlgebra])]
 theorem IsStarProjection.nonneg {p : R} (hp : IsStarProjection p) : 0 ≤ p :=
   hp.isIdempotentElem ▸ hp.isSelfAdjoint.mul_self_nonneg
 
@@ -468,7 +468,7 @@ variable [NonUnitalRing R] [PartialOrder R] [StarRing R] [StarOrderedRing R] {p 
 lemma IsSelfAdjoint.iff_of_le {a b : R} (hab : a ≤ b) :
     IsSelfAdjoint a ↔ IsSelfAdjoint b := by
   replace hab := (sub_nonneg.mpr hab).isSelfAdjoint
-  exact ⟨fun ha ↦ by simpa using hab.add ha, fun hb ↦ by simpa using (hab.sub hb).neg⟩
+  aesop (add simp IsSelfAdjoint)
 
 alias ⟨IsSelfAdjoint.of_ge, IsSelfAdjoint.of_le⟩ := IsSelfAdjoint.iff_of_le
 
