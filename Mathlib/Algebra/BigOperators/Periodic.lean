@@ -15,9 +15,9 @@ This file collects lemmas about `Finset` sums of `Function.Antiperiodic` functio
 
 ## Main results
 
-* `Function.Antiperiodic.sum_map_add_right`: For an antiperiodic function `f` with antiperiod
-  `c`, summing `f` over a Finset shifted by `c` (via `addRightEmbedding c`) negates the sum
-  over the original Finset.
+* `Function.Antiperiodic.sum_map_addRightEmbedding`: For an antiperiodic function `f` with
+  antiperiod `c`, summing `f` over a Finset shifted by `c` (via `addRightEmbedding c`) negates
+  the sum over the original Finset.
 * `Function.Antiperiodic.sum_Ico_shift`: The specialization to a half-open interval `[a, b)`
   shifted by `c`.
 * `Function.Antiperiodic.sum_Ico_mul_add_sum_Ico_mul_shift_eq_zero`: A bilinear cancellation
@@ -35,7 +35,7 @@ variable {α R : Type*}
 
 /-- For an antiperiodic function `f` with antiperiod `c`, summing `f` over a Finset shifted by
 `c` (via `addRightEmbedding c`) negates the sum over the original Finset. -/
-theorem sum_map_add_right [Add α] [IsRightCancelAdd α] [SubtractionCommMonoid R]
+theorem sum_map_addRightEmbedding [Add α] [IsRightCancelAdd α] [SubtractionCommMonoid R]
     {f : α → R} {c : α} (hf : Antiperiodic f c) (s : Finset α) :
     ∑ k ∈ s.map (addRightEmbedding c), f k = -∑ k ∈ s, f k := by
   simp [hf _]
@@ -48,7 +48,7 @@ sum. -/
 theorem sum_Ico_shift [SubtractionCommMonoid R] {f : α → R} {c : α} (hf : Antiperiodic f c)
     (a b : α) :
     ∑ k ∈ Ico (a + c) (b + c), f k = -∑ k ∈ Ico a b, f k := by
-  rw [← Finset.map_add_right_Ico, hf.sum_map_add_right]
+  rw [← Finset.map_add_right_Ico, hf.sum_map_addRightEmbedding]
 
 /-- For `w` antiperiodic with antiperiod `c`, the weighted sum `w k * f k` over `[a + c, b + c)`
 and the shifted-argument weighted sum `w k * f (k + c)` over `[a, b)` add to zero. -/
