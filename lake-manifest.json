@@ -35,7 +35,7 @@
    "type": "git",
    "subDir": null,
    "scope": "leanprover-community",
-   "rev": "1537e3fc7e680d64e06fe5fb95c4c9edee7941c2",
+   "rev": "b2da7698bdf22804095ea5b5007f23c09398f687",
    "name": "proofwidgets",
    "manifestFile": "lake-manifest.json",
    "inputRev": "main",
