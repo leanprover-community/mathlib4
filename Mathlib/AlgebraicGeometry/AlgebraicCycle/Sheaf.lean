@@ -825,84 +825,62 @@ lemma range_linearMap_eq_range_mulLeft_stalkToFunctionFieldLinearMap [IsRegularI
       LinearMap.range ((LinearMap.mulLeft (X.presheaf.stalk x)
       ((algebraMap (X.presheaf.stalk x) X.functionField ϖ)^(D x))) ∘ₗ
       D.stalkToFunctionFieldLinearMap x) := by
-  rw [LinearMap.range_comp]
-
-  suffices (LinearMap.range (Algebra.linearMap (X.presheaf.stalk x) X.functionField) : Set X.functionField) =
-    (LinearMap.mulLeft (↑(X.presheaf.stalk x)) ((algebraMap ↑(X.presheaf.stalk x) ↑X.functionField) ϖ ^ D x)) ''
-    Set.range (D.stalkToFunctionFieldLinearMap x) by exact SetLike.coe_injective this
-
+  haveI : IsDiscreteValuationRing (X.presheaf.stalk x) :=
+    IsRegularInCodimensionOne.stalk_dvr x hx
+  set ϖK := algebraMap (X.presheaf.stalk x) X.functionField ϖ with hϖK_def
+  have hϖK : ϖK ≠ 0 := by
+    rw [hϖK_def, ne_eq, map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective _ _)]
+    exact hϖ.ne_zero
+  -- Integer powers of the uniformizer have the expected order of vanishing.
+  have hord_zpow : ∀ n : ℤ, X.ord (ϖK ^ n) x = n := fun n => by
+    have h1 : ordHom x hx ϖK = WithZero.exp 1 := Ring.ordFrac_irreducible hϖ
+    rw [ord_eq_iff hx (zpow_ne_zero n hϖK), map_zpow₀, h1, ← WithZero.exp_zsmul, smul_eq_mul,
+      mul_one, WithZero.exp_eq_coe_ofAdd]
+  -- The range of the algebra map is exactly the rational functions of nonnegative order at `x`.
+  have hmem : ∀ z : X.functionField,
+      (∃ a, algebraMap (X.presheaf.stalk x) X.functionField a = z) ↔
+        (z ≠ 0 → 0 ≤ X.ord z x) := by
+    intro z
+    constructor
+    · rintro ⟨a, rfl⟩ hz
+      have ha : a ≠ 0 := fun h => hz (by simp [h])
+      rw [le_ord_iff hx hz, ofAdd_zero, WithZero.coe_one]
+      exact Ring.ordFrac_ge_one_of_ne_zero ha
+    · intro h
+      rcases eq_or_ne z 0 with rfl | hz
+      · exact ⟨0, map_zero _⟩
+      refine IsDiscreteValuationRing.exists_lift_of_le_one ?_
+      have h1 : (1 : WithZero (Multiplicative ℤ)) ≤ Ring.ordFrac (X.presheaf.stalk x) z := by
+        have h0 := (le_ord_iff hx hz (n := 0)).mp (h hz)
+        rwa [ofAdd_zero, WithZero.coe_one] at h0
+      rw [Ring.ordFrac_eq_valuation_inv] at h1
+      exact (one_le_inv₀ (WithZero.pos_iff_ne_zero.mpr
+        ((Valuation.ne_zero_iff _).mpr hz))).mp h1
+  -- Reduce the equality of submodules to an equality of sets.
+  apply SetLike.coe_injective
+  simp only [LinearMap.range_comp, Submodule.map_coe, LinearMap.coe_range]
   have range_eq : Set.range (D.stalkToFunctionFieldLinearMap x) =
       {f : X.functionField | f ≠ 0 → - D x ≤ X.ord f x} := by
     simp only [stalkToFunctionFieldLinearMap]
     erw [range_stalkToFunctionField D hD x hx]
   rw [range_eq]
-  have : IsDiscreteValuationRing (X.presheaf.stalk x) := by
-    exact IsRegularInCodimensionOne.stalk_dvr x hx
-  have := IsDiscreteValuationRing.map_algebraMap_eq_valuationSubring (A := X.presheaf.stalk x) (K := X.functionField)
-  have : (Subring.map (algebraMap ↑(X.presheaf.stalk x) ↑X.functionField) ⊤).carrier =
-  (IsDedekindDomain.HeightOneSpectrum.valuation (↑X.functionField)
-        (IsDiscreteValuationRing.maximalIdeal ↑(X.presheaf.stalk x))).integer := by
-    rw [this]
-    exact Set.Subset.antisymm (fun ⦃a⦄ a_1 ↦ a_1) fun ⦃a⦄ a_1 ↦ a_1
-  simp only [Subsemiring.coe_carrier_toSubmonoid, Subring.coe_toSubsemiring, Subring.coe_map,
-    Subring.coe_top, Set.image_univ] at this
-  rw [LinearMap.coe_range]
-  suffices (IsDedekindDomain.HeightOneSpectrum.valuation (↑X.functionField)
-        (IsDiscreteValuationRing.maximalIdeal ↑(X.presheaf.stalk x))).integer =
-         ⇑(LinearMap.mulLeft (↑(X.presheaf.stalk x)) ((algebraMap ↑(X.presheaf.stalk x) ↑X.functionField) ϖ ^ D x)) ''
-    {f | f ≠ 0 → -D x ≤ ord f x} by
-    rw [← this]
-    refine Eq.symm ((Filter.principal_eq_iff_eq.mp) (congrArg Filter.principal ?_))
-    (expose_names;
-      exact Filter.principal_eq_iff_eq.mp (congrArg Filter.principal (id (Eq.symm this_3))))
   ext z
-  erw [Valuation.mem_integer_iff ((IsDedekindDomain.HeightOneSpectrum.valuation (↑X.functionField) (IsDiscreteValuationRing.maximalIdeal ↑(X.presheaf.stalk x)))) z]
-  simp
-
+  simp only [Set.mem_range, Algebra.linearMap_apply, Set.mem_image, Set.mem_setOf_eq,
+    LinearMap.mulLeft_apply]
+  rw [hmem z]
   constructor
-  · intro k
-    use (algebraMap ↑(X.presheaf.stalk x) ↑X.functionField) ϖ ^ (- D x) * z
-    constructor
-    · intro h
-      rw [X.ord_mul hx (left_ne_zero_of_mul h) (right_ne_zero_of_mul h)]
-      have : Scheme.ord z x ≥ 0 := by
-        obtain ⟨a, rfl⟩ := IsDiscreteValuationRing.exists_lift_of_le_one k
-        by_cases o : a = 0
-        · simp [o]
-        have o' : (algebraMap ↑(X.presheaf.stalk x) ↑X.functionField) a ≠ 0 := by
-          exact right_ne_zero_of_mul h
-        simp
-        rw [le_ord_iff hx o' (n := 0)]
-        erw [ordFrac_eq_intValuation o]
-        simp
-        suffices ((IsDiscreteValuationRing.maximalIdeal ↑(X.presheaf.stalk x)).intValuation a) ≤ 1 by
-          sorry
-        exact
-          IsDedekindDomain.HeightOneSpectrum.intValuation_le_one
-            (IsDiscreteValuationRing.maximalIdeal ↑(X.presheaf.stalk x)) a
-
-      have : Scheme.ord ((algebraMap ↑(X.presheaf.stalk x) ↑X.functionField) ϖ ^ (-D x)) x = -D x := by
-
-        sorry
-      omega
-    · field_simp
-      have : (algebraMap ↑(X.presheaf.stalk x) ↑X.functionField) ϖ ≠ 0 := by
-        have : ϖ ≠ 0 := by
-          exact Irreducible.ne_zero hϖ
-        simp [this]
-      rw [← zpow_add₀ this]
-      simp
-  · rintro ⟨r, hr, rfl⟩
-    /-
-    NOTE: this probably should not be done by constructor.
-    We should probably have a better way of converting ord into ordHom, and then into
-    ordFrac
-    -/
-
-    --exact?
-
-
-    sorry
+  -- A function of nonnegative order is `ϖ ^ D x` times a function of order at least `- D x`.
+  · intro hz
+    refine ⟨ϖK ^ (- D x) * z, fun hf => ?_, ?_⟩
+    · have hz' : z ≠ 0 := right_ne_zero_of_mul hf
+      rw [X.ord_mul hx (zpow_ne_zero _ hϖK) hz', hord_zpow]
+      linarith [hz hz']
+    · rw [← mul_assoc, ← zpow_add₀ hϖK, add_neg_cancel, zpow_zero, one_mul]
+  -- Conversely, `ϖ ^ D x` times a function of order at least `- D x` has nonnegative order.
+  · rintro ⟨r, hr, rfl⟩ hne
+    have hr' : r ≠ 0 := right_ne_zero_of_mul hne
+    rw [X.ord_mul hx (zpow_ne_zero _ hϖK) hr', hord_zpow]
+    linarith [hr hr']
 
 noncomputable def stalkMap
     [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (hD : D.support ⊆ {x | coheight x = 1})
@@ -927,7 +905,24 @@ lemma stalkMap_Bijective [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ
     (hD : D.support ⊆ {x | coheight x = 1})
     (x : X) (hx : coheight x = 1)
     (ϖ : X.presheaf.stalk x) (hϖ : Irreducible ϖ) :
-    Function.Bijective <| stalkMap D hD x hx ϖ hϖ := sorry
+    Function.Bijective <| stalkMap D hD x hx ϖ hϖ := by
+  -- `stalkMap` is two linear equivalences composed with `f.rangeRestrict`, so it suffices to
+  -- show that `f` is injective.
+  have hϖK : (algebraMap (X.presheaf.stalk x) X.functionField ϖ) ^ (D x) ≠ 0 := by
+    refine zpow_ne_zero _ ?_
+    rw [ne_eq, map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective _ _)]
+    exact hϖ.ne_zero
+  have hf : Function.Injective ⇑((LinearMap.mulLeft (X.presheaf.stalk x)
+      ((algebraMap (X.presheaf.stalk x) X.functionField ϖ)^(D x))) ∘ₗ
+      D.stalkToFunctionFieldLinearMap x) := by
+    rw [LinearMap.coe_comp]
+    refine Function.Injective.comp (fun a b hab => mul_left_cancel₀ hϖK hab)
+      (fun a b hab => ?_)
+    exact stalkToFunctionField_injective D x hab
+  unfold stalkMap
+  simp only [LinearMap.coe_comp, LinearEquiv.coe_coe]
+  exact (LinearEquiv.bijective _).comp <| (LinearEquiv.bijective _).comp
+    ⟨(LinearMap.injective_rangeRestrict_iff _).mpr hf, LinearMap.surjective_rangeRestrict _⟩
 
 noncomputable
 def stalkEquiv [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ)

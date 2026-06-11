@@ -172,16 +172,15 @@ of 𝒪ₓ(P)
 
 ker (f3 ∘ f2 ∘ f1) = Submodule.comap (f3 ∘ f2) (ker f1)
 -/
+open Classical in
 lemma toSkyscraperFun_ker {U : X.Opens} (hD : support D ⊆ {x | coheight x = 1})
     (ϖ : X.presheaf.stalk p) (hϖ : Irreducible ϖ) (hp : coheight p = 1) (hp' : p ∈ U) :
     letI : Module ↑Γ(X, U) ↑(X.residueField p) := (X.evaluation U p hp').hom.toModule
-  (toSkyscraperFun p D hD ϖ hϖ hp hp').ker.carrier = {f : Γ(D.sheaf, U) | X.ord f.1 p ≥ 1 - D p} := by
+  (toSkyscraperFun p D hD ϖ hϖ hp hp').ker.carrier = {f : Γ(D.sheaf, U) | f.1 ∈ carrier (D - single p 1) U} := by
   simp [toSkyscraperFun, LinearMap.ker_comp, Set.preimage_comp, Scheme.residue]
   have := IsLocalRing.ker_residue (R := X.presheaf.stalk p)
   suffices ⇑(germModuleHom D.sheaf U p hp') ⁻¹'
     ⇑(D.stalkEquiv hD p hp ϖ hϖ) ⁻¹' IsLocalRing.maximalIdeal ↑(X.presheaf.stalk p) by sorry
-
-  --[IsLocalRing.ker_residue]
   #check IsLocalRing.residue_eq_zero_iff
   #check IsLocalRing.ker_residue
 
@@ -194,12 +193,6 @@ a section of Oₓ(D).
 
 
 -/
-
-
-
-
-
-
 
 
 
