@@ -67,7 +67,7 @@ instance (n : SimplexCategory) (m : SimplexCategoryᵒᵖ) :
 /-- If `x : Δ[n] _⦋d⦌` and `i : Fin (d + 1)`, we may evaluate `x i : Fin (n + 1)`. -/
 instance (n i : ℕ) : FunLike (Δ[n] _⦋i⦌) (Fin (i + 1)) (Fin (n + 1)) where
   coe x j := (objEquiv x).toOrderHom j
-  coe_injective' _ _ h := objEquiv.injective (by ext : 3; apply congr_fun h)
+  coe_injective _ _ h := objEquiv.injective (by ext : 3; apply congr_fun h)
 
 lemma monotone_apply {n i : ℕ} (x : Δ[n] _⦋i⦌) :
     Monotone (fun (j : Fin (i + 1)) ↦ x j) :=
@@ -196,6 +196,12 @@ lemma yonedaEquiv_symm_app_objEquiv_symm {X : SSet.{u}} {n : SimplexCategory}
   rfl
 
 namespace stdSimplex
+
+lemma δ_apply {n d : ℕ} (x : (Δ[n] _⦋d + 1⦌ : Type u)) (i : Fin (d + 2)) (j : Fin (d + 1)) :
+    Δ[n].δ i x j = x (i.succAbove j) := rfl
+
+lemma σ_apply {n d : ℕ} (x : (Δ[n] _⦋d⦌ : Type u)) (i : Fin (d + 1)) (j : Fin (d + 2)) :
+    Δ[n].σ i x j = x (i.predAbove j) := rfl
 
 @[simp]
 lemma objEquiv_yonedaEquiv_id (n : ℕ) :

@@ -5,10 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Data.Finite.Card
 public import Mathlib.Analysis.Analytic.Within
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
+public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
 # Faa di Bruno formula
@@ -159,7 +159,7 @@ lemma injective_embSigma (n : ℕ) : Injective (embSigma n) := by
   ext i
   exact mk.inj_iff.mp (congr_fun hpq.1 i)
 
-/- The best proof would probably to establish the bijection with Finpartitions, but we opt
+/-- The best proof would probably to establish the bijection with Finpartitions, but we opt
 for a direct argument, embedding `OrderedPartition n` in a type which is obviously finite. -/
 noncomputable instance : Fintype (OrderedFinpartition n) :=
   Fintype.ofInjective _ (injective_embSigma n)
@@ -1011,7 +1011,7 @@ private lemma faaDiBruno_aux1 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
   simp only [Nat.succ_eq_add_one, OrderedFinpartition.extend, extendLeft,
     ContinuousMultilinearMap.curryLeft_apply,
     FormalMultilinearSeries.compAlongOrderedFinpartition_apply, applyOrderedFinpartition_apply,
-    ContinuousLinearMap.coe_comp', comp_apply, continuousMultilinearCurryFin1_apply,
+    ContinuousLinearMap.comp_apply, continuousMultilinearCurryFin1_apply,
     Matrix.zero_empty, ContinuousLinearMap.flipMultilinear_apply_apply,
     compAlongOrderedFinpartitionL_apply, compAlongOrderFinpartition_apply]
   congr
@@ -1032,7 +1032,7 @@ private lemma faaDiBruno_aux2 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
   simp? [OrderedFinpartition.extend, extendMiddle, applyOrderedFinpartition_apply] says
     simp only [OrderedFinpartition.extend, extendMiddle, ContinuousMultilinearMap.curryLeft_apply,
       Nat.succ_eq_add_one, FormalMultilinearSeries.compAlongOrderedFinpartition_apply,
-      applyOrderedFinpartition_apply, ContinuousLinearMap.coe_comp', comp_apply,
+      applyOrderedFinpartition_apply, ContinuousLinearMap.comp_apply,
       ContinuousMultilinearMap.toContinuousLinearMap_apply, compAlongOrderedFinpartitionL_apply,
       compAlongOrderFinpartition_apply]
   congr
@@ -1101,8 +1101,7 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
       ext v
       simp only [Nat.succ_eq_add_one, Fintype.sum_option, ContinuousMultilinearMap.curryLeft_apply,
         ContinuousMultilinearMap.sum_apply, ContinuousMultilinearMap.add_apply,
-        FormalMultilinearSeries.compAlongOrderedFinpartition_apply, ContinuousLinearMap.coe_sum',
-        Finset.sum_apply, ContinuousLinearMap.add_apply]
+        FormalMultilinearSeries.compAlongOrderedFinpartition_apply, sum_apply, add_apply]
     rw [Finset.sum_sigma']
     exact Fintype.sum_equiv (OrderedFinpartition.extendEquiv m) _ _ (fun p ↦ rfl)
   · intro m hm
