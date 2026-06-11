@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Tactic.ClickSuggestions.SectionState
 public import Mathlib.Order.Antisymmetrization
-public import Lean.Meta.ExprLens
+public meta import Lean.Meta.ExprLens
 
 /-!
 # Support for `grw` suggestions in `#click_suggestions`
