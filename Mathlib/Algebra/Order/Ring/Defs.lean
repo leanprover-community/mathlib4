@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 public import Mathlib.Algebra.CharZero.Defs
 public import Mathlib.Algebra.Order.Group.Defs
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Order.Monoid.NatCast
 public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 public import Mathlib.Algebra.Ring.Defs
