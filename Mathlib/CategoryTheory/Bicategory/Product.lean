@@ -33,8 +33,7 @@ variable (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂) [Bicategory
 
 /-- The cartesian product of two bicategories. -/
 @[simps! (notRecursive := [])] -- notRecursive to generate simp lemmas like _fst and _snd
-instance prod :
-    Bicategory (B × C) where
+instance prod : Bicategory (B × C) where
   homCategory X Y := CategoryTheory.prod' (X.1 ⟶ Y.1) (X.2 ⟶ Y.2)
   whiskerLeft f g h θ := f.1 ◁ θ.1 ×ₘ f.2 ◁ θ.2
   whiskerRight θ g := θ.1 ▷ g.1 ×ₘ θ.2 ▷ g.2
@@ -43,20 +42,11 @@ instance prod :
   rightUnitor f := Iso.prod (ρ_ f.1) (ρ_ f.2)
   whisker_exchange η θ := Prod.ext (whisker_exchange η.1 θ.1) (whisker_exchange η.2 θ.2)
 
+open Strict
+
+attribute [local simp] leftUnitor_eqToIso rightUnitor_eqToIso associator_eqToIso in
 /-- The cartesian product of two strict bicategories is strict. -/
 instance [Strict B] [Strict C] : Strict (B × C) where
-  leftUnitor_eqToIso f := by
-    refine Iso.ext (hom_ext ?_ ?_)
-    · simpa using congr($(Strict.leftUnitor_eqToIso f.1).hom)
-    · simpa using congr($(Strict.leftUnitor_eqToIso f.2).hom)
-  rightUnitor_eqToIso f := by
-    refine Iso.ext (hom_ext ?_ ?_)
-    · simpa using congr($(Strict.rightUnitor_eqToIso f.1).hom)
-    · simpa using congr($(Strict.rightUnitor_eqToIso f.2).hom)
-  associator_eqToIso f g h := by
-    refine Iso.ext (hom_ext ?_ ?_)
-    · simpa using congr($(Strict.associator_eqToIso f.1 g.1 h.1).hom)
-    · simpa using congr($(Strict.associator_eqToIso f.2 g.2 h.2).hom)
 
 namespace Prod
 
