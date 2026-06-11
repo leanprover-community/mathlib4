@@ -72,6 +72,15 @@ attribute [fun_prop] continuousOn_rpow_const
 lemma monotone_nnrpow_const (y : ℝ≥0) : Monotone (nnrpow · y) :=
   monotone_rpow_of_nonneg zero_le_coe
 
+@[fun_prop]
+lemma continuousAt_nnrpow {x y : ℝ≥0} (h : x ≠ 0 ∨ 0 < y) :
+    ContinuousAt (fun (p : ℝ≥0 × ℝ≥0) => p.1.nnrpow p.2) (x, y) := by
+  let f := (fun x : ℝ≥0 × ℝ => x.1 ^ x.2) ∘ (Prod.map id NNReal.toReal)
+  change ContinuousAt f (x, y)
+  refine ContinuousAt.comp ?_ (by fun_prop)
+  simp only [Prod.map_apply, id_eq]
+  exact NNReal.continuousAt_rpow (by grind [NNReal.coe_pos])
+
 end NNReal
 
 namespace CFC

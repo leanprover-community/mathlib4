@@ -25,7 +25,7 @@ continuous functional calculus, rpow, sqrt
 
 public section
 
-open scoped NNReal
+open scoped NNReal UniformConvergence
 
 namespace CFC
 
@@ -59,6 +59,74 @@ lemma continuousOn_nnrpow (r : ℝ≥0) : ContinuousOn (· ^ r) {a : A | 0 ≤ a
   obtain (rfl | hr) := eq_zero_or_pos r
   · simpa using continuousOn_const
   · exact continuousOn_id.cfcₙ_nnreal_of_mem_nhdsSet _ Filter.univ_mem
+
+open UniformOnFun Set in
+lemma continuousOn_setProd' {X : Type*} [TopologicalSpace X] {f : X → ℝ → ℝ}
+    {s : Set X} {t : Set ℝ} {tA : Set A} (hf : ContinuousOn f.uncurry (s ×ˢ t))
+    (ht : ∀ a ∈ tA, quasispectrum ℝ a ⊆ t) :
+    ContinuousOn (fun x : X × A => cfcₙ (f x.1) x.2) (s ×ˢ tA) := by
+  sorry
+
+open UniformOnFun Set in
+lemma continuousOn_nnrpow_setProd :
+    ContinuousOn (fun x : A × ℝ≥0 => x.1 ^ x.2) (Ici 0 ×ˢ Ioi 0) := by
+  intro (a, p) hap
+  have ha : 0 ≤ a := Set.mem_prod.mp hap |>.1
+  have hp : 0 < p := Set.mem_prod.mp hap |>.2
+  obtain ⟨K, hK₁, hK₂⟩ := (quasispectrum.isCompact_nnreal a).nhdsSet_basis_isCompact.ex_mem
+  let s : Set ℝ≥0 := K ∩ Ici 0
+  have hs_compact : IsCompact s := hK₂.inter_right (ClosedIciTopology.isClosed_Ici 0)
+  let s' := {f : ℝ≥0 →ᵤ[{s}] ℝ≥0 | ContinuousOn (toFun {s} f) s ∧ f 0 = 0}
+                ×ˢ {a : A | 0 ≤ a ∧ quasispectrum ℝ≥0 a ⊆ s}
+  let ssw := {b : A | 0 ≤ b ∧ quasispectrum ℝ≥0 b ⊆ s} ×ˢ Ioi (0 : ℝ≥0)
+  let ssws := Ioi (0 : ℝ≥0) ×ˢ {b : A | 0 ≤ b ∧ quasispectrum ℝ≥0 b ⊆ s}
+  refine ContinuousWithinAt.mono_of_mem_nhdsWithin (t := ssw) ?_ <| by
+    rw [nhdsWithin_prod_eq, Filter.mem_prod_iff]
+    refine ⟨{b : A | 0 ≤ b ∧ quasispectrum ℝ≥0 b ⊆ s}, ?_, Ioi 0, self_mem_nhdsWithin, ?_⟩
+    · rw [nhdsWithin]
+      apply Filter.mem_inf_of_inter (s := {x | (fun x ↦ quasispectrum ℝ≥0 x ⊆ K) x}) (t := Ici 0)
+      · exact (upperHemicontinuous_quasispectrum_nnreal A |>.upperHemicontinuousAt a K hK₁ |>.mono
+            fun b hb => subset_of_mem_nhdsSet hb)
+      · exact Filter.mem_principal_self _
+      · exact fun b ⟨hbK, hb_nonneg⟩ => ⟨hb_nonneg, subset_inter hbK (fun x _ => zero_le x)⟩
+    · exact prod_subset_prod_iff.mpr (Or.inl ⟨Subset.rfl, Subset.rfl⟩)
+  let f₁ : ℝ≥0 → ℝ≥0 →ᵤ[{s}] ℝ≥0 := fun q : ℝ≥0 => ofFun {s} (fun x : ℝ≥0 => x.nnrpow q)
+  let f₂ : (ℝ≥0 →ᵤ[{s}] ℝ≥0) × A → A := fun x => cfcₙ (toFun {s} x.1) x.2
+  have h₁ : ContinuousWithinAt f₁ (Ioi 0) p := by
+    have : CompactSpace s := isCompact_iff_compactSpace.mp hs_compact
+    refine ContinuousOn.continuousOn_uniformOnFun_of_uncurry ?_ _ hp
+    intro x hx
+    apply ContinuousAt.continuousWithinAt
+    change ContinuousAt ((fun a => a.1 ^ a.2) ∘ (Prod.map id NNReal.toReal) ∘ Prod.swap) x
+    refine ContinuousAt.comp ?_ (by fun_prop)
+    apply NNReal.continuousAt_rpow
+    simp only [id_eq, ne_eq, NNReal.coe_pos]
+    grind only [= mem_prod, = mem_Ioi]
+  have h₁' : ∀ q ∈ Ioi 0, f₁ q 0 = 0 := by
+    intro q hq
+    simp only [ofFun, NNReal.nnrpow_def, Equiv.coe_fn_mk, NNReal.rpow_eq_left_iff, zero_ne_one,
+      NNReal.coe_eq_one, ne_eq, NNReal.coe_eq_zero, true_and, false_or, f₁]
+    grind only [= mem_Ioi]
+  have hcomp : (fun x : A × ℝ≥0 => x.1 ^ x.2) = f₂ ∘ (Prod.map f₁ id) ∘ Prod.swap := by
+    ext
+    simp [Prod.map, Prod.swap, f₁, f₂, ofFun, nnrpow_def, toFun]
+  rw [hcomp]
+  refine ContinuousWithinAt.comp (t := s') ?_ ?_ ?_
+  · apply continuousOn_cfcₙ_nnreal_setProd hs_compact
+    simp only [Function.comp_apply, Prod.swap_prod_mk, Prod.map_apply, id_eq, mem_prod,
+      mem_setOf_eq]
+    refine ⟨⟨?_, h₁' _ hp⟩, ha, Set.subset_inter (subset_of_mem_nhdsSet hK₁) (by grind [zero_le])⟩
+    simp only [toFun, NNReal.nnrpow_def, Equiv.symm_apply_apply, f₁]
+    fun_prop
+  · refine ContinuousWithinAt.comp (t := ssws) ?_ (by fun_prop) (by grind [MapsTo])
+    simp only [Prod.swap_prod_mk]
+    exact ContinuousWithinAt.prodMap h₁ continuousWithinAt_id
+  · intro x hx
+    simp only [Function.comp_apply, mem_prod, Prod.map_fst, Prod.fst_swap, mem_setOf_eq,
+      Prod.map_snd, Prod.snd_swap, id_eq, s']
+    refine ⟨⟨?_, by grind⟩, by grind, by grind⟩
+    simp only [toFun, NNReal.nnrpow_def, Equiv.symm_apply_apply, f₁]
+    fun_prop
 
 end nonunital
 
