@@ -520,7 +520,7 @@ instance : Neg (QuadraticMap R M N) :=
       toFun_smul := fun a x => by simp only [Pi.neg_apply, Q.map_smul, smul_neg]
       exists_companion' :=
         let ⟨B, h⟩ := Q.exists_companion
-        ⟨-B, fun x y => by simp_rw [Pi.neg_apply, h, LinearMap.neg_apply, neg_add]⟩ }⟩
+        ⟨-B, fun x y => by simp_rw [Pi.neg_apply, h, neg_apply, neg_add]⟩ }⟩
 
 @[simp, norm_cast]
 theorem coeFn_neg (Q : QuadraticMap R M N) : ⇑(-Q) = -Q :=
@@ -799,7 +799,7 @@ theorem toQuadraticMap_sub (B₁ B₂ : BilinMap R M N) :
   rfl
 
 theorem polar_toQuadraticMap (x y : M) : polar (toQuadraticMap B) x y = B x y + B y x := by
-  simp only [polar, toQuadraticMap_apply, map_add, add_apply, add_assoc, add_comm (B y x) _,
+  simp only [polar, toQuadraticMap_apply, map_add, _root_.add_apply, add_assoc, add_comm (B y x) _,
     add_sub_cancel_left, sub_eq_add_neg _ (B y y), add_neg_cancel_left]
 
 theorem polarBilin_toQuadraticMap : polarBilin (toQuadraticMap B) = B + flip B :=
@@ -862,12 +862,14 @@ instance [Invertible (2 : R)] : Invertible (2 : Module.End R M) where
     (1 : Module.End R M)
   invOf_mul_self := by
     ext m
-    dsimp [Submonoid.smul_def]
+    simp only [smul_one_mul, _root_.smul_apply, Module.End.ofNat_apply, Submonoid.smul_def,
+      Module.End.one_apply]
     rw [← ofNat_smul_eq_nsmul R, invOf_smul_smul (2 : R) m]
   mul_invOf_self := by
     ext m
-    dsimp [Submonoid.smul_def]
-    rw [← ofNat_smul_eq_nsmul R, smul_invOf_smul (2 : R) m]
+    simp only [mul_smul_one, _root_.smul_apply, Module.End.ofNat_apply, Submonoid.smul_def,
+      Module.End.one_apply]
+    rw [← ofNat_smul_eq_nsmul R, invOf_smul_smul (2 : R) m]
 
 /-- If `2` is invertible in `R`, then applying the inverse of `2` in `End R M` to an element
 of `M` is the same as multiplying by the inverse of `2` in `R`. -/
@@ -910,9 +912,8 @@ set_option backward.defeqAttrib.useBackward true in
 /-- Twice the associated bilinear map of `Q` is the same as the polar of `Q`. -/
 @[simp] theorem two_nsmul_associated : 2 • associatedHom S Q = Q.polarBilin := by
   ext
-  dsimp
-  rw [← _root_.smul_apply, nsmul_eq_mul, Nat.cast_ofNat, mul_invOf_self', Module.End.one_apply,
-    polar]
+  simp only [_root_.smul_apply, associated_apply, polarBilin_apply_apply, ← smul_assoc]
+  rw [nsmul_eq_mul, Nat.cast_ofNat, mul_invOf_self', polar, one_smul]
 
 theorem associated_isSymm (Q : QuadraticMap R M N) (x y : M) :
     associatedHom S Q x y = associatedHom S Q y x := by

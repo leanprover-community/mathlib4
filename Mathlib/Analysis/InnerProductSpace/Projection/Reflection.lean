@@ -52,7 +52,7 @@ def reflection : E ≃ₗᵢ[𝕜] E :=
       let v := x - w
       have : ⟪v, w⟫ = 0 := starProjection_inner_eq_zero x w w.2
       convert! norm_sub_eq_norm_add this using 2
-      · dsimp [reflectionLinearEquiv, v, w]
+      · simp [reflectionLinearEquiv, v, w]
         abel
       · simp only [v, add_sub_cancel] }
 

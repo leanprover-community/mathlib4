@@ -117,7 +117,7 @@ def equivariantProjection : W →ₗ[k[G]] V :=
 
 theorem equivariantProjection_apply (v : W) :
     π.equivariantProjection G v = (Nat.card G : k)⁻¹ʳ • ∑ g : G, π.conjugate g v := by
-  simp only [equivariantProjection, smul_apply, sumOfConjugatesEquivariant_apply,
+  simp only [equivariantProjection, _root_.smul_apply, sumOfConjugatesEquivariant_apply,
     Fintype.card_eq_nat_card]
 
 theorem equivariantProjection_condition (hcard : IsUnit (Nat.card G : k))
