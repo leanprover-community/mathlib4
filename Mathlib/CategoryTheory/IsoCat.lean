@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.EqToHom
 An `IsoCat C D` is an isomorphism of categories: a pair of functors `C ⥤ D` and `D ⥤ C`
 whose composites are *equal* (not merely naturally isomorphic) to the identity functors.
 This is a strict notion, stronger than an equivalence of categories `C ≌ D`.
-We also define `IsIsomorphism` as a property saying that a functor is fully faithful and
+We also define `Functor.IsIso` as a property saying that a functor is fully faithful and
 bijective on objects. We develop basic api for these two concepts.
 
 Unless the application explicitely demands an isomorphism, the equivalence of categories is
@@ -64,7 +64,7 @@ def IsoCat.symm (e : IsoCat C D) : IsoCat D C where
   counit_eq := e.unit_eq.symm
 
 /-- Composition of isomorphisms of categories. -/
-@[trans]
+@[simps, trans]
 def IsoCat.trans {E : Type*} [Category* E]
     (e : IsoCat C D) (f : IsoCat D E) : IsoCat C E where
   functor := e.functor ⋙ f.functor
@@ -86,7 +86,7 @@ protected class Functor.IsIso (F : C ⥤ D) : Prop where
   /-- A functor which is an isomorphism of categories is full. -/
   full : F.Full := by infer_instance
   /-- A functor which is an isomorphism of categories is bijective on objects. -/
-  bijectiveOnObjects : F.obj.Bijective := by infer_instance
+  bijectiveOnObjects : F.obj.Bijective
 
 variable {C} {D} (F : C ⥤ D) [h : F.IsIso]
 
@@ -100,12 +100,9 @@ noncomputable def Functor.objEquiv : C ≃ D := .ofBijective _ h.bijectiveOnObje
 `Functor.objEquiv` on objects and `Functor.preimage` on morphisms. -/
 @[no_expose]
 noncomputable def Functor.strictInv : D ⥤ C where
-  obj := F.objEquiv.invFun
-  map {X Y} f :=
-    F.preimage (eqToHom (F.objEquiv.apply_symm_apply X) ≫ f ≫
-      eqToHom (F.objEquiv.apply_symm_apply Y).symm)
-  map_id X := by simp
-  map_comp {X Y Z} f g := by simp [← Functor.preimage_comp]
+  obj := F.objEquiv.symm
+  map f := F.preimage (eqToHom (by simp) ≫ f ≫ eqToHom (by simp))
+  map_comp _ _ := by simp [← Functor.preimage_comp]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- A functor that is an isomorphism of categories assembles into an `IsoCat`,
@@ -113,17 +110,12 @@ with `Functor.strictInv` as its inverse. -/
 noncomputable def Functor.asIsomorphism : IsoCat C D where
   functor := F
   inverse := F.strictInv
-  unit_eq := by
-    refine Functor.ext
-      (fun X => ((Equiv.ofBijective _ h.bijectiveOnObjects).symm_apply_apply X).symm) ?_
-    intro X Y f
-    apply F.map_injective
-    simp [Functor.strictInv, eqToHom_map]
-  counit_eq := by
-    refine Functor.ext
-      (fun X => (Equiv.ofBijective _ h.bijectiveOnObjects).apply_symm_apply X) ?_
-    intro X Y f
-    simp [Functor.strictInv]
+  unit_eq :=
+    Functor.ext (fun x ↦ by simp [strictInv])
+      (fun _ _ _ ↦ F.map_injective (by simp [eqToHom_map, strictInv]))
+  counit_eq :=
+    Functor.ext (fun x ↦ by simp [strictInv])
+      (fun _ _ _ ↦ by simp [strictInv])
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence of categories underlying an `IsoCat`, with the unit and counit
