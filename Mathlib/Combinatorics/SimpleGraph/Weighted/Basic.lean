@@ -265,7 +265,7 @@ def associatedForm := G.associatedFormBilinearMap.toLinearMap
 lemma associatedForm_apply {f g} : G.associatedForm f g =
   (1/2) * ∑ x, ∑ y, (G.edgeWeight x y) * (f x - f y) * (g x - g y) +
     ∑ x, (G.killingTerm x) * f x * g x := by rfl
-/-
+
 noncomputable
 instance : DecidableEq X := by exact Classical.typeDecidableEq X
 
@@ -314,7 +314,7 @@ lemma associatedForm_of_basis_eq_degree :
   rw [← Finset.sum_const_zero]
   congr! with z h'
   grind
-
+/-
 lemma neq_basis_vecs_imp_sum_weighted_killingTerm_neq_basisFun_eq_zero (x y : X) (h : x ≠ y) :
     ∑ z, G.killingTerm z * (𝟙_x) z * (𝟙_y) z = 0 := by
   have : (𝟙_y) x = 0 := by grind
