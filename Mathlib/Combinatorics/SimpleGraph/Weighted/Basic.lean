@@ -388,6 +388,5 @@ lemma associatedForm_isSymm : G.associatedForm.IsSymm := by
   simp only [LinearMap.isSymm_def, associatedForm_apply, one_div, Real.ringHom_apply]
   intro f g
   congr 1 <;> grind
-
-end WeightedGraphWithKillingTerm
 -/
+end WeightedGraphWithKillingTerm
