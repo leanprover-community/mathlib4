@@ -114,7 +114,7 @@ public def generateSuggestions (loc : SubExpr.GoalsLocation) (parentDecl? : Opti
 public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
   RequestM.asTask do
   let some loc := props.selectedLocations.back? |
-    return .text "Please shift-click an expression in the tactic state to get suggestions."
+    return .text "Shift-click an expression in the tactic state to get suggestions."
   let doc ← RequestM.readDoc
   if loc.loc matches .hypValue .. then
     return .text "#click_suggestions cannot suggest anything about the value of a let variable."
