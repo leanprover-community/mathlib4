@@ -634,7 +634,7 @@ See note [reducible non-instances]. -/
 @[deprecated isMulCommutative_topologicalClosure (since := "2026-03-12")]
 abbrev Subalgebra.commSemiringTopologicalClosure [T2Space A] (s : Subalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : CommSemiring s.topologicalClosure :=
-  have : IsMulCommutative s := ⟨⟨hs⟩⟩
+  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
   inferInstance
 
 /-- This is really a statement about topological algebra isomorphisms,
