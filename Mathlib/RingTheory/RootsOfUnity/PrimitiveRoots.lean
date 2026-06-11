@@ -170,19 +170,21 @@ lemma isUnit_unit {ζ : M} {n} (hn) (hζ : IsPrimitiveRoot ζ n) :
 lemma isUnit_unit' {ζ : G} {n} (hn) (hζ : IsPrimitiveRoot ζ n) :
     IsPrimitiveRoot (hζ.isUnit hn).unit' n := coe_units_iff.mp hζ
 
+theorem pow_div_gcd (h : IsPrimitiveRoot ζ k) (j : ℕ) (h0 : k.gcd j ≠ 0) :
+    IsPrimitiveRoot (ζ ^ j) (k / k.gcd j) where
+  pow_eq_one := by
+    rw [← pow_mul, ← Nat.mul_div_assoc j (k.gcd_dvd_left j), mul_comm,
+      Nat.mul_div_assoc k (k.gcd_dvd_right j), pow_mul, h.pow_eq_one, one_pow]
+  dvd_of_pow_eq_one l hl := by
+    rw [Nat.div_dvd_iff_dvd_mul (k.gcd_dvd_left j) h0.pos]
+    grw [← k.gcd_dvd_right l, ← Nat.gcd_mul_right_dvd_mul_gcd]
+    apply h.dvd_of_pow_eq_one
+    rw [pow_gcd_eq_one]
+    exact ⟨h.pow_eq_one, by rwa [pow_mul]⟩
+
 theorem pow_of_coprime (h : IsPrimitiveRoot ζ k) (i : ℕ) (hi : i.Coprime k) :
     IsPrimitiveRoot (ζ ^ i) k := by
-  by_cases h0 : k = 0
-  · subst k; simp_all only [pow_one, Nat.coprime_zero_right]
-  rcases h.isUnit h0 with ⟨ζ, rfl⟩
-  rw [← Units.val_pow_eq_pow_val]
-  rw [coe_units_iff] at h ⊢
-  refine
-    { pow_eq_one := by rw [← pow_mul', pow_mul, h.pow_eq_one, one_pow]
-      dvd_of_pow_eq_one := fun l hl ↦ h.dvd_of_pow_eq_one l ?_ }
-  rw [← pow_one ζ, ← zpow_natCast ζ, ← hi.gcd_eq_one, Nat.gcd_eq_gcd_ab, zpow_add, mul_pow,
-    ← zpow_natCast, ← zpow_mul, mul_right_comm]
-  simp only [zpow_mul, hl, h.pow_eq_one, one_zpow, one_pow, one_mul, zpow_natCast]
+  grind [pow_div_gcd h i (by grind)]
 
 theorem pow_of_prime (h : IsPrimitiveRoot ζ k) {p : ℕ} (hprime : Nat.Prime p) (hdiv : ¬p ∣ k) :
     IsPrimitiveRoot (ζ ^ p) k :=
@@ -252,18 +254,6 @@ theorem pow {n : ℕ} {a b : ℕ} (hn : 0 < n) (h : IsPrimitiveRoot ζ n) (hprod
   simp only [iff_def, ← pow_mul, h.pow_eq_one, true_and]
   intro l hl
   exact Nat.dvd_of_mul_dvd_mul_left (Nat.pos_of_mul_pos_right hn) <| h.dvd_of_pow_eq_one _ hl
-
-theorem pow_div_gcd_of_primitive (h : IsPrimitiveRoot ζ k) (j : ℕ) (h0 : k.gcd j ≠ 0) :
-    IsPrimitiveRoot (ζ ^ j) (k / k.gcd j) where
-  pow_eq_one := by
-    rw [← pow_mul, ← Nat.mul_div_assoc j (k.gcd_dvd_left j), mul_comm,
-      Nat.mul_div_assoc k (k.gcd_dvd_right j), pow_mul, h.pow_eq_one, one_pow]
-  dvd_of_pow_eq_one l hl := by
-    rw [Nat.div_dvd_iff_dvd_mul (k.gcd_dvd_left j) h0.pos]
-    grw [← k.gcd_dvd_right l, ← Nat.gcd_mul_right_dvd_mul_gcd]
-    apply h.dvd_of_pow_eq_one
-    rw [pow_gcd_eq_one]
-    exact ⟨h.pow_eq_one, by rwa [pow_mul]⟩
 
 lemma injOn_pow {n : ℕ} {ζ : M} (hζ : IsPrimitiveRoot ζ n) :
     Set.InjOn (ζ ^ ·) (Finset.range n) := by
