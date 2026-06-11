@@ -512,26 +512,20 @@ section SubsetSSubset
 attribute [to_set_notation] lt_iff_le_not_ge le_of_lt
   not_le_of_gt not_lt_of_ge lt_of_le_not_ge
   LT.lt.le LT.lt.not_ge LE.le.not_gt LE.le.lt_of_not_ge
-  lt_of_le_of_lt lt_of_lt_of_le lt_of_le_of_ne eq_or_lt_of_le lt_or_eq_of_le
+  lt_of_le_of_lt lt_of_lt_of_le lt_of_le_of_ne lt_of_ne_of_le eq_or_lt_of_le lt_or_eq_of_le
   eq_of_le_of_not_lt eq_of_le_of_not_lt'
   LE.le.trans_lt LT.lt.trans_le LE.le.lt_of_ne Ne.lt_of_le
   LE.le.eq_or_lt LE.le.lt_or_eq
   LE.le.eq_of_not_lt LE.le.eq_of_not_lt'
   lt_iff_le_and_ne le_iff_lt_or_eq
 
-@[deprecated (since := "2026-06-11")]
+-- TODO: deprecate these aliases
 alias ssubset_iff_subset_not_subset := ssubset_iff_subset_not_superset
-
-@[deprecated (since := "2026-06-11")] alias not_subset_of_ssubset := not_subset_of_ssuperset
-@[deprecated (since := "2026-06-11")] alias not_ssubset_of_subset := not_ssubset_of_superset
-
-@[deprecated (since := "2026-06-11")]
+alias not_subset_of_ssubset := not_subset_of_ssuperset
+alias not_ssubset_of_subset := not_ssubset_of_superset
 alias ssubset_of_subset_not_subset := ssubset_of_subset_not_superset
-
-@[deprecated (since := "2026-06-11")] alias LT.lt.not_subset := LT.lt.not_superset
-@[deprecated (since := "2026-06-11")] alias LE.le.not_ssubset := LE.le.not_ssuperset
-
-@[deprecated (since := "2026-06-11")]
+alias LT.lt.not_subset := LT.lt.not_superset
+alias LE.le.not_ssubset := LE.le.not_ssuperset
 alias LE.le.ssubset_of_not_subset := LE.le.ssubset_of_not_superset
 
 @[deprecated (since := "2026-05-24")] alias HasSSubset.SSubset.subset := LT.lt.subset
@@ -539,8 +533,6 @@ alias LE.le.ssubset_of_not_subset := LE.le.ssubset_of_not_superset
 @[deprecated (since := "2026-05-24")] alias HasSubset.Subset.not_ssubset := LE.le.not_ssuperset
 @[deprecated (since := "2026-05-24")]
 alias HasSubset.Subset.ssubset_of_not_subset := LE.le.ssubset_of_not_superset
-
-@[deprecated (since := "2026-06-11")] alias ssubset_of_ne_of_subset := ssubset_of_subset_of_ne
 
 alias eq_of_superset_of_not_ssuperset := eq_of_subset_of_not_ssubset'
 alias LE.le.eq_of_not_ssuperset := LE.le.eq_of_not_ssubset'
@@ -560,7 +552,8 @@ alias HasSubset.Subset.eq_of_not_ssubset := LE.le.eq_of_not_ssubset
 @[deprecated (since := "2026-05-24")]
 alias HasSubset.Subset.eq_of_not_ssuperset := LE.le.eq_of_not_ssuperset
 
-@[deprecated (since := "2026-06-11")] alias ssubset_iff_subset_ne := ssubset_iff_subset_and_ne
+-- TODO: deprecate
+alias ssubset_iff_subset_ne := ssubset_iff_subset_and_ne
 
 end SubsetSSubset
 
