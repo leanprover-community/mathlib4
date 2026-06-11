@@ -41,8 +41,13 @@ namespace Introspective
 
 variable {r : ℕ}
 
+@[simp]
+protected theorem zero {n : ℕ} {f : K[X]} : Introspective f n 0 := by
+  simp [Introspective]
+
+@[simp]
 protected theorem one {f : K[X]} : Introspective f 1 r := by
-  grind [Introspective]
+  simp [Introspective]
 
 protected theorem X_sub_C {p a : ℕ} [ExpChar K p] : Introspective (X - C (a : K)) p r := by
   intro μ hμ
