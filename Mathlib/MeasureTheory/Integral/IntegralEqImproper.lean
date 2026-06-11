@@ -1333,7 +1333,7 @@ theorem integral_Ioi_deriv_mul_eq_sub
     (huv : IntegrableOn (u' * v + u * v') (Ioi a))
     (h_zero : Tendsto (u * v) (𝓝[>] a) (𝓝 a')) (h_infty : Tendsto (u * v) atTop (𝓝 b')) :
     ∫ (x : ℝ) in Ioi a, u' x * v x + u x * v' x = b' - a' := by
-  rw [← Ici_diff_left] at h_zero
+  rw [← Ici_sdiff_left] at h_zero
   let f := Function.update (u * v) a a'
   have hderiv : ∀ x ∈ Ioi a, HasDerivAt f (u' x * v x + u x * v' x) x := by
     intro x (hx : a < x)
@@ -1364,7 +1364,7 @@ theorem integral_Iic_deriv_mul_eq_sub
     (huv : IntegrableOn (u' * v + u * v') (Iic a))
     (h_zero : Tendsto (u * v) (𝓝[<] a) (𝓝 a')) (h_infty : Tendsto (u * v) atBot (𝓝 b')) :
     ∫ (x : ℝ) in Iic a, u' x * v x + u x * v' x = a' - b' := by
-  rw [← Iic_diff_right] at h_zero
+  rw [← Iic_sdiff_right] at h_zero
   let f := Function.update (u * v) a a'
   have hderiv : ∀ x ∈ Iio a, HasDerivAt f (u' x * v x + u x * v' x) x := by
     intro x hx

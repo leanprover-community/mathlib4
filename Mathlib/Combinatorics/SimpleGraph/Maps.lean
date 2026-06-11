@@ -56,9 +56,7 @@ the adjacency relation.
 This is injective when the function is (see `SimpleGraph.map_injective`). -/
 protected def map (f : V → W) (G : SimpleGraph V) : SimpleGraph W where
   Adj := Ne ⊓ Relation.Map G.Adj f f
-  symm a b := by
-    rintro ⟨v, w, h, _⟩
-    aesop (add norm unfold Relation.Map) (add forward safe Adj.symm)
+  symm.symm a b := by aesop (add norm unfold Relation.Map) (add forward safe Adj.symm)
 
 instance instDecidableMapAdj [DecidableEq W] {f : V → W} {a b}
     [Decidable (Relation.Map G.Adj f f a b)] : Decidable ((G.map f).Adj a b) :=
@@ -128,7 +126,7 @@ This is one of the ways of creating induced graphs. See `SimpleGraph.induce` for
 This is surjective when `f` is injective (see `SimpleGraph.comap_surjective`). -/
 protected def comap (f : V → W) (G : SimpleGraph W) : SimpleGraph V where
   Adj u v := G.Adj (f u) (f v)
-  symm _ _ h := h.symm
+  symm.symm _ _ h := h.symm
 
 @[simp] lemma comap_adj {G : SimpleGraph W} {f : V → W} :
     (G.comap f).Adj u v ↔ G.Adj (f u) (f v) := Iff.rfl
