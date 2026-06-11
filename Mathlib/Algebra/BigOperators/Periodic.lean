@@ -38,7 +38,7 @@ variable {α R : Type*}
 theorem sum_map_add_right [Add α] [IsRightCancelAdd α] [SubtractionCommMonoid R]
     {f : α → R} {c : α} (hf : Antiperiodic f c) (s : Finset α) :
     ∑ k ∈ s.map (addRightEmbedding c), f k = -∑ k ∈ s, f k := by
-  simp only [Finset.sum_map, addRightEmbedding_apply, hf _, Finset.sum_neg_distrib]
+  simp [hf _]
 
 variable [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
   [ExistsAddOfLE α] [LocallyFiniteOrder α]
