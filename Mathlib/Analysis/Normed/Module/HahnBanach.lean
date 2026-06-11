@@ -9,15 +9,15 @@ public import Mathlib.Analysis.LocallyConvex.HahnBanach
 public import Mathlib.Analysis.Normed.Module.Span
 
 /-!
-# Extension Hahn-Banach theorem
+# Hahn-Banach extension theorem
 
-In this file we prove the analytic Hahn-Banach theorem for normed vector spaces. For any continuous
-linear function on a subspace, we can extend it to a function on the entire space without changing
+In this file, we prove the analytic Hahn-Banach theorem for normed vector spaces. For any continuous
+linear functional on a subspace, we can extend it to the entire space without changing
 its norm. For Hahn-Banach theorems for locally convex spaces, see
 `Mathlib.Analysis.LocallyConvex.HahnBanach`.
 
 We prove
-* `exists_extension_norm_eq`: Hahn-Banach theorem for continuous linear functions on normed spaces
+* `exists_extension_norm_eq`: Hahn-Banach theorem for continuous linear functionals on normed spaces
   over `ℝ` or `ℂ`.
 
 In order to state and prove the corollaries uniformly, we prove the statements for a field `𝕜`

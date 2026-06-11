@@ -1033,8 +1033,8 @@ theorem Seminorm.bound_comp_of_isInducing {p : Seminorm 𝕜 E} (hp : Continuous
 theorem Seminorm.exists_le_comp_of_isInducing {p : Seminorm 𝕜 E} (hp : Continuous p)
     [PolynormableSpace 𝕜₂ F] {f : E →ₛₗ[σ₁₂] F} (hf : IsInducing f) :
     ∃ p₂ : Seminorm 𝕜₂ F, Continuous p₂ ∧ p ≤ p₂.comp f := by
-  obtain ⟨s, C, -, hqC⟩ := hf.exists_continuous_seminorm_le hp
-    (PolynormableSpace.withSeminorms 𝕜₂ F)
+  obtain ⟨s, C, -, hqC⟩ := Seminorm.bound_comp_of_isInducing hp
+    (PolynormableSpace.withSeminorms 𝕜₂ F) hf
   have := (PolynormableSpace.withSeminorms 𝕜₂ F).topologicalAddGroup
   exact ⟨_, Continuous.const_smul (continuous_finsetSup fun i _ => i.2) C, hqC⟩
 
