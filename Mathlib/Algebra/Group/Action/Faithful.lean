@@ -76,18 +76,16 @@ instance (R : Type*) [Mul R] [IsLeftCancelMul R] : FaithfulSMul Rᵐᵒᵖ R whe
   eq_of_smul_eq_smul {r₁ r₂} h := by simpa using h r₁.unop
 
 /-- `Monoid.toMulAction` is faithful on cancellative monoids. -/
-@[to_additive (attr :=
-  deprecated "subsumed by `instFaithfulSMul` or `instFaithfulSMulOfIsRightCancelMul`"
-  (since := "2026-02-03"))
+@[deprecated "subsumed by `instFaithfulSMul` or `instFaithfulSMulOfIsRightCancelMul`"
+  (since := "2026-02-03"), to_additive
   /-- `AddMonoid.toAddAction` is faithful on additive cancellative monoids. -/]
 lemma RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α α :=
   inferInstance
 
 /-- `Monoid.toOppositeMulAction` is faithful on cancellative monoids. -/
-@[to_additive (attr :=
-    deprecated "subsumed by `instFaithfulSMulMulOpposite` or \
+@[deprecated "subsumed by `instFaithfulSMulMulOpposite` or \
     `instFaithfulSMulMulOppositeOfIsLeftCancelMul`"
-    (since := "2026-02-03"))
+    (since := "2026-02-03"), to_additive
   /-- `AddMonoid.toOppositeAddAction` is faithful on additive cancellative monoids. -/]
 lemma LeftCancelMonoid.to_faithfulSMul_mulOpposite [LeftCancelMonoid α] : FaithfulSMul αᵐᵒᵖ α :=
   inferInstance
