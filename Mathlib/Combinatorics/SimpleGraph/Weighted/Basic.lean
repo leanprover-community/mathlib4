@@ -126,7 +126,6 @@ variable (x y : X)
 If a graph has standard weights, then an edge weight is non-0 if and only if the vertices are
 adjacent.
 -/
-@[simp]
 lemma standardWeights_edgeWeight_neq_zero_iff_eq_one (h : StandardWeights G) :
     G.edgeWeight x y ≠ 0 ↔ G.Adj x y := by
   contrapose
@@ -136,7 +135,6 @@ lemma standardWeights_edgeWeight_neq_zero_iff_eq_one (h : StandardWeights G) :
 If a graph has standard weights, then an edge weight is not equal to 1 if and only if the vertices
 are not adjacent.
 -/
-@[simp]
 lemma standardWeights_edgeWeight_neq_one_iff_eq_zero (h : StandardWeights G) :
     G.edgeWeight x y ≠ 1 ↔ ¬ G.Adj x y := by
   contrapose
@@ -275,7 +273,6 @@ abbrev basisFun (y : X) : X → ℝ := Pi.single y 1
 /-- We use the notation 𝟙_ to write this basis/indicator function more concisely. -/
 scoped notation "𝟙_" y:max => basisFun y
 
-@[simp]
 lemma sum_killingTerm_weight_mul_basisFun_sq_eq_killingTerm_mul_basisFun_sq :
     ∑ i, G.killingTerm i * (𝟙_x) i ^ 2 = G.killingTerm x := by
   simp [(Fintype.sum_subset (f := fun (y : X) ↦ G.killingTerm y * (𝟙_x) y ^ 2)
@@ -285,7 +282,6 @@ lemma sum_killingTerm_weight_mul_basisFun_sq_eq_killingTerm_mul_basisFun_sq :
 The form associated to a `WeightedGraphWithKillingTerm` is equal to the degree of a vertex `x`, when
 passed the standard basis function with support at `x`.
 -/
-@[simp]
 lemma associatedForm_of_basis_eq_degree :
     G.associatedForm (𝟙_x) (𝟙_x) = G.degree x := by
   simp only [associatedForm_apply, degree, one_div, NNReal.coe_add, NNReal.coe_sum]
@@ -316,7 +312,6 @@ lemma associatedForm_of_basis_eq_degree :
   congr! with z h'
   grind
 
-@[simp]
 lemma neq_basis_vecs_imp_sum_weighted_killingTerm_neq_basisFun_eq_zero (x y : X) (h : x ≠ y) :
     ∑ z, G.killingTerm z * (𝟙_x) z * (𝟙_y) z = 0 := by
   have : (𝟙_y) x = 0 := by grind
@@ -329,7 +324,6 @@ lemma neq_basis_vecs_imp_sum_weighted_killingTerm_neq_basisFun_eq_zero (x y : X)
 The form associated to a `WeightedGraphWithKillingTerm` is equal to negative the edge weight, when
 passed the standard basis functions with support at each vertex of the edge.
 -/
-@[simp]
 lemma associatedForm_neq_basisFuns_eq_neq_edgeWeight (x y : X) (h : x ≠ y) :
     G.associatedForm (𝟙_x) (𝟙_y) = - G.edgeWeight x y := by
   simp only [associatedForm_apply, one_div]
