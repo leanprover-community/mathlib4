@@ -95,7 +95,6 @@ variable (R E₁) in
   __ := LinearMap.id
   __ := OrderHom.id
 
-@[simp] lemma toLinearMap_id : (PositiveLinearMap.id R E₁).toLinearMap = .id := rfl
 @[simp] lemma toOrderHom_id : (PositiveLinearMap.id R E₁).toOrderHom = .id := rfl
 
 /-- The composition of positive linear maps is again a positive linear map. -/
@@ -181,28 +180,6 @@ lemma nsmul_apply (f : E₁ →ₚ[R] E₂) (n : ℕ) (x : E₁) :
 instance : AddCommMonoid (E₁ →ₚ[R] E₂) :=
   toLinearMap_injective.addCommMonoid _ toLinearMap_zero toLinearMap_add
     toLinearMap_nsmul
-
-section MulOpposite
--- this section is probably unnecessary
-open MulOpposite
-
-variable {R E : Type*} [Semiring R] [AddCommMonoid E] [PartialOrder E] [Module R E]
-
-/-- `MulOpposite.op` as a positive linear map -/
-@[simps!]
-protected def op : E →ₚ[R] Eᵐᵒᵖ where
-  toLinearMap := (opLinearEquiv R).toLinearMap
-  monotone' _ _ h := h
-
-/-- `MulOpposite.unop` as a positive linear map -/
-protected def unop : Eᵐᵒᵖ →ₚ[R] E where
-  toLinearMap := (opLinearEquiv R).symm.toLinearMap
-  monotone' _ _ h := h
-
-@[simp]
-lemma unop_apply (x : Eᵐᵒᵖ) : PositiveLinearMap.unop (R := R) x = unop x := rfl
-
-end MulOpposite
 
 end general
 
