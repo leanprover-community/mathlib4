@@ -279,7 +279,7 @@ lemma countingFunction_finsum_eq_finsum_add {c : ℂ} {R : ℝ} {D : ℂ → ℤ
   · have {g : ℂ → ℝ} : (fun u ↦ D u * g u).support ⊆ hD.toFinset :=
       fun x ↦ by simp +contextual
     simp only [finsum_eq_sum_of_support_subset _ this,
-      Finset.sum_eq_sum_diff_singleton_add ((Set.Finite.mem_toFinset hD).mpr h), sub_self,
+      Finset.sum_eq_sum_sdiff_singleton_add ((Set.Finite.mem_toFinset hD).mpr h), sub_self,
       norm_zero, log_zero, sub_zero, inv_zero, mul_zero, add_zero, add_left_inj]
     refine Finset.sum_congr rfl fun x hx ↦ ?_
     simp only [Finset.mem_sdiff, Finset.notMem_singleton] at hx

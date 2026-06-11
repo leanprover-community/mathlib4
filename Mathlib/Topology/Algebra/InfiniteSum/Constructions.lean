@@ -194,7 +194,7 @@ theorem HasProd.of_sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g :
     HasProd f a := by
   classical
   apply le_nhds_of_cauchy_adhp h
-  simp only [← mapClusterPt_def, mapClusterPt_iff_frequently, frequently_atTop, ge_iff_le,
+  simp only [← mapClusterPt_def, mapClusterPt_iff_frequently, frequently_atTop,
     le_eq_subset]
   intro u hu s
   rcases mem_nhds_iff.1 hu with ⟨v, vu, v_open, hv⟩
