@@ -345,7 +345,7 @@ instance : Coe (L₁ →ₗ⁅R⁆ L₂) (L₁ →ₗ[R] L₂) :=
 
 instance : FunLike (L₁ →ₗ⁅R⁆ L₂) L₁ L₂ where
   coe f := f.toFun
-  coe_injective' x y h := by
+  coe_injective x y h := by
     cases x; cases y; simp at h; simp [h]
 
 initialize_simps_projections LieHom (toFun → apply)
@@ -686,7 +686,7 @@ instance : CoeOut (M →ₗ⁅R,L⁆ N) (M →ₗ[R] N) :=
 
 instance : FunLike (M →ₗ⁅R,L⁆ N) M N where
   coe f := f.toFun
-  coe_injective' x y h := by cases x; cases y; simp at h; simp [h]
+  coe_injective x y h := by cases x; cases y; simp at h; simp [h]
 
 initialize_simps_projections LieModuleHom (toFun → apply)
 
