@@ -223,9 +223,9 @@ theorem mdifferentiableWithinAt_iff_target :
         ContinuousWithinAt f s x :=
       and_iff_left_of_imp <| (continuousAt_extChartAt _).comp_continuousWithinAt
   simp_rw [cont, DifferentiableWithinAtProp, extChartAt, OpenPartialHomeomorph.extend,
-    PartialEquiv.coe_trans,
-    ModelWithCorners.toPartialEquiv_coe, OpenPartialHomeomorph.coe_coe, modelWithCornersSelf_coe,
-    chartAt_self_eq, OpenPartialHomeomorph.refl_apply]
+    PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
+    OpenPartialHomeomorph.coe_toPartialEquiv, modelWithCornersSelf_coe, chartAt_self_eq,
+    OpenPartialHomeomorph.refl_apply]
   rfl
 
 theorem mdifferentiableAt_iff_target {x : M} :
@@ -514,6 +514,7 @@ theorem writtenInExtChartAt_comp (h : ContinuousWithinAt f s x) :
 variable {f' f₀' f₁' : TangentSpace I x →L[𝕜] TangentSpace I' (f x)}
   {g' : TangentSpace I' (f x) →L[𝕜] TangentSpace I'' (g (f x))}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `UniqueMDiffWithinAt` achieves its goal: it implies the uniqueness of the derivative. -/
 protected nonrec theorem UniqueMDiffWithinAt.eq (U : UniqueMDiffWithinAt I s x)
     (h : HasMFDerivWithinAt I I' f s x f') (h₁ : HasMFDerivWithinAt I I' f s x f₁') : f' = f₁' := by
@@ -717,6 +718,7 @@ lemma mfderivWithin_of_isOpen (hs : IsOpen s) (hx : x ∈ s) :
     mfderivWithin I I' f s x = mfderiv I I' f x :=
   mfderivWithin_of_mem_nhds (hs.mem_nhds hx)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasMFDerivWithinAt_insert {y : M} :
     HasMFDerivWithinAt I I' f (insert y s) x f' ↔ HasMFDerivWithinAt I I' f s x f' := by
   have : T1Space M := I.t1Space M
@@ -745,9 +747,12 @@ protected theorem HasMFDerivWithinAt.insert (h : HasMFDerivWithinAt I I' f s x f
     HasMFDerivWithinAt I I' f (insert x s) x f' :=
   h.insert'
 
-theorem hasMFDerivWithinAt_diff_singleton (y : M) :
+theorem hasMFDerivWithinAt_sdiff_singleton (y : M) :
     HasMFDerivWithinAt I I' f (s \ {y}) x f' ↔ HasMFDerivWithinAt I I' f s x f' := by
-  rw [← hasMFDerivWithinAt_insert, insert_diff_singleton, hasMFDerivWithinAt_insert]
+  rw [← hasMFDerivWithinAt_insert, insert_sdiff_singleton, hasMFDerivWithinAt_insert]
+
+@[deprecated (since := "2026-06-03")]
+alias hasMFDerivWithinAt_diff_singleton := hasMFDerivWithinAt_sdiff_singleton
 
 theorem mfderivWithin_eq_mfderiv (hs : UniqueMDiffWithinAt I s x) (h : MDifferentiableAt I I' f x) :
     mfderivWithin I I' f s x = mfderiv I I' f x := by
@@ -1115,6 +1120,7 @@ theorem mfderiv_congr {f' : M → M'} (h : f = f') :
 
 variable (x)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem HasMFDerivWithinAt.comp (hg : HasMFDerivWithinAt I' I'' g u (f x) g')
     (hf : HasMFDerivWithinAt I I' f s x f') (hst : s ⊆ f ⁻¹' u) :
     HasMFDerivWithinAt I I'' (g ∘ f) s x (g'.comp f') := by
