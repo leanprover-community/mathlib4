@@ -90,19 +90,25 @@ theorem irrefl_iff_subrelation_ne : Std.Irrefl r ↔ Subrelation r Ne := by
 @[deprecated (since := "2026-02-12")]
 alias irreflexive_iff_subrelation_ne := irrefl_iff_subrelation_ne
 
-protected theorem Symmetric.iff (H : Symmetric r) (x y : α) : r x y ↔ r y x :=
-  ⟨fun h ↦ H h, fun h ↦ H h⟩
+protected theorem Std.Symm.iff [Std.Symm r] (x y : α) : r x y ↔ r y x :=
+  ⟨symm_of r, symm_of r⟩
 
-theorem Symmetric.flip_eq (h : Symmetric r) : flip r = r :=
-  funext₂ fun _ _ ↦ propext <| h.iff _ _
+@[deprecated (since := "2026-06-10")] protected alias Symmetric.iff := Std.Symm.iff
 
-theorem Symmetric.swap_eq : Symmetric r → swap r = r :=
-  Symmetric.flip_eq
+theorem Std.Symm.flip_eq [Std.Symm r] : flip r = r :=
+  funext₂ fun _ _ ↦ propext <| Std.Symm.iff (r := r) ..
 
-theorem flip_eq_iff : flip r = r ↔ Symmetric r :=
-  ⟨fun h _ _ ↦ (congr_fun₂ h _ _).mp, Symmetric.flip_eq⟩
+@[deprecated (since := "2026-06-10")] alias Symmetric.flip_eq := Std.Symm.flip_eq
 
-theorem swap_eq_iff : swap r = r ↔ Symmetric r :=
+theorem Std.Symm.swap_eq [Std.Symm r] : swap r = r :=
+  Std.Symm.flip_eq
+
+@[deprecated (since := "2026-06-10")] alias Symmetric.swap_eq := Std.Symm.swap_eq
+
+theorem flip_eq_iff : flip r = r ↔ Std.Symm r :=
+  ⟨fun h ↦ ⟨fun _ _ ↦ congr_fun₂ h .. |>.mp⟩, fun _ ↦ Std.Symm.flip_eq⟩
+
+theorem swap_eq_iff : swap r = r ↔ Std.Symm r :=
   flip_eq_iff
 
 end NeImp
@@ -116,12 +122,17 @@ instance Std.Refl.comap [Std.Refl r] (f : α → β) : Std.Refl (r on f) where
 
 @[deprecated (since := "2026-03-27")] alias Reflexive.comap := Std.Refl.comap
 
-theorem Symmetric.comap (h : Symmetric r) (f : α → β) : Symmetric (r on f) := fun _ _ hab ↦ h hab
+instance Std.Symm.comap [Std.Symm r] (f : α → β) : Std.Symm (r on f) where
+  symm _ _ hab := symm_of r hab
+
+@[deprecated (since := "2026-06-10")] alias Symmetric.comap := Std.Symm.comap
 
 instance IsTrans.comap [IsTrans β r] (f : α → β) : IsTrans α (r on f) where
   trans _ _ _ := trans_of r
 
 @[deprecated (since := "2026-02-21")] alias Transitive.comap := IsTrans.comap
+
+instance IsEquiv.comap [IsEquiv β r] (f : α → β) : IsEquiv α (r on f) where
 
 theorem Equivalence.comap (h : Equivalence r) (f : α → β) : Equivalence (r on f) :=
   ⟨fun a ↦ h.refl (f a), h.symm, h.trans⟩
@@ -246,9 +257,13 @@ lemma _root_.Std.Refl.map {r : α → α → Prop} [Std.Refl r] {f : α → β} 
 
 @[deprecated (since := "2026-03-27")] alias map_reflexive := Std.Refl.map
 
-lemma map_symmetric {r : α → α → Prop} (hr : Symmetric r) (f : α → β) :
-    Symmetric (Relation.Map r f f) := by
-  rintro _ _ ⟨x, y, hxy, rfl, rfl⟩; exact ⟨_, _, hr hxy, rfl, rfl⟩
+instance _root_.Std.Symm.map {r : α → α → Prop} [Std.Symm r] (f : α → β) :
+    Std.Symm (Relation.Map r f f) where
+  symm _ _ := by
+    rintro ⟨x, y, hxy, rfl, rfl⟩
+    exact ⟨y, x, symm hxy, rfl, rfl⟩
+
+@[deprecated (since := "2026-06-10")] alias map_symmetric := Std.Symm.map
 
 lemma _root_.IsTrans.map {r : α → α → Prop} [IsTrans α r] {f : α → β}
     (hf : ∀ x y, f x = f y → r x y) : IsTrans β (Relation.Map r f f) := by
@@ -259,11 +274,10 @@ lemma _root_.IsTrans.map {r : α → α → Prop} [IsTrans α r] {f : α → β}
 
 @[deprecated (since := "2026-02-21")] alias map_transitive := isTrans_map
 
-lemma map_equivalence {r : α → α → Prop} (hr : Equivalence r) (f : α → β)
-    (hf : f.Surjective) (hf_ker : ∀ x y, f x = f y → r x y) :
-    Equivalence (Relation.Map r f f) where
+lemma map_equivalence {r : α → α → Prop} (hr : Equivalence r) (f : α → β) (hf : f.Surjective)
+    (hf_ker : ∀ x y, f x = f y → r x y) : Equivalence (Relation.Map r f f) where
   refl := hr.stdRefl.map hf |>.refl
-  symm := @(map_symmetric hr.symmetric _)
+  symm := @(hr.stdSymm.map f |>.symm)
   trans := @(hr.isTrans.map hf_ker |>.trans)
 
 -- TODO: state this using `≤`, after adjusting imports.
@@ -321,6 +335,9 @@ inductive ReflGen (r : α → α → Prop) (a : α) : α → Prop
   | refl : ReflGen r a a
   | single {b : α} : r a b → ReflGen r a b
 
+attribute [refl] ReflGen.refl
+attribute [grind =] reflGen_iff
+
 /-- `SymmGen r`: symmetric closure of `r`. This is also the comparability relation, such
   that `SymmGen r a b` means that either `r a b` or `r b a` (see `Mathlib.Order.Comparable`). -/
 def SymmGen (r : α → α → Prop) (a b : α) : Prop :=
@@ -337,8 +354,6 @@ inductive EqvGen : α → α → Prop
 
 attribute [mk_iff] TransGen
 attribute [grind] TransGen
-attribute [refl] ReflGen.refl
-attribute [grind =] reflGen_iff
 
 namespace ReflGen
 
@@ -352,6 +367,21 @@ theorem mono {p : α → α → Prop} (hp : ∀ a b, r a b → p a b) : ∀ {a b
 
 instance : Std.Refl (ReflGen r) :=
   ⟨@refl α r⟩
+
+instance stdSymm [Std.Symm r] : Std.Symm (ReflGen r) where
+  symm _ _
+    | refl => refl
+    | single h => single <| symm h
+
+@[deprecated (since := "2026-06-10")] alias symmetric := stdSymm
+
+instance [IsTrans α r] : IsTrans α (ReflGen r) where
+  trans a b c h₁ h₂ := by
+    obtain (rfl | h₂) := h₂
+    · exact h₁
+    obtain (rfl | h₁) := h₁
+    · exact single h₂
+    exact single (trans_of r h₁ h₂)
 
 end ReflGen
 
@@ -411,11 +441,13 @@ theorem head (hab : r a b) (hbc : ReflTransGen r b c) : ReflTransGen r a c := by
   | refl => exact refl.tail hab
   | tail _ hcd hac => exact hac.tail hcd
 
-theorem symmetric (h : Symmetric r) : Symmetric (ReflTransGen r) := by
-  intro x y h
-  induction h with
-  | refl => rfl
-  | tail _ b c => apply Relation.ReflTransGen.head (h b) c
+instance stdSymm [Std.Symm r] : Std.Symm (ReflTransGen r) where
+  symm x y h := by
+    induction h with
+    | refl => rfl
+    | tail _ b c => apply c.head <| symm b
+
+@[deprecated (since := "2026-06-10")] alias symmetric := stdSymm
 
 theorem cases_tail : ReflTransGen r a b → b = a ∨ ∃ c, ReflTransGen r a c ∧ r c b :=
   (cases_tail_iff r a b).1
@@ -531,14 +563,18 @@ theorem head'_iff : TransGen r a c ↔ ∃ b, r a b ∧ ReflTransGen r b c := by
   rcases IH with ⟨d, had, hdb⟩
   exact ⟨_, had, hdb.tail hbc⟩
 
-theorem symmetric (hr : Symmetric r) : Symmetric (TransGen r) := by
-  intro x y h
-  induction h with
-  | single i => exact .single (hr i)
-  | tail _ h₁ h₂ => exact .head (hr h₁) h₂
+instance stdSymm [Std.Symm r] : Std.Symm (TransGen r) where
+  symm x y h := by
+    induction h with
+    | single i => exact .single <| symm i
+    | tail _ h₁ h₂ => exact .head (symm h₁) h₂
+
+@[deprecated (since := "2026-06-10")] alias symmetric := stdSymm
+
+instance [Std.Refl r] : Std.Refl (TransGen r) where
+  refl x := .single (refl x)
 
 end TransGen
-
 
 section reflGen
 
@@ -808,10 +844,15 @@ theorem church_rosser (h : ∀ a b c, r a b → r a c → ∃ d, ReflGen r b d �
 theorem join_of_single [Std.Refl r] (hab : r a b) : Join r a b :=
   ⟨b, hab, refl b⟩
 
-theorem symmetric_join : Symmetric (Join r) := fun _ _ ⟨c, hac, hcb⟩ ↦ ⟨c, hcb, hac⟩
+protected instance Join.symm : Std.Symm (Join r) where
+  symm _ _ := fun ⟨c, hac, hcb⟩ ↦ ⟨c, hcb, hac⟩
 
-instance reflexive_join [Std.Refl r] : Std.Refl (Join r) where
-  refl a := ⟨a, refl a, refl a⟩
+@[deprecated (since := "2026-06-10")] alias symmetric_join := Join.symm
+
+protected instance Join.refl [Std.Refl r] : Std.Refl (Join r) where
+  refl a := ⟨a, _root_.refl a, _root_.refl a⟩
+
+@[deprecated (since := "2026-06-10")] alias reflexive_join := Join.refl
 
 theorem isTrans_join [IsTrans α r] (h : ∀ a b c, r a b → r a c → Join r b c) :
     IsTrans α (Join r) :=
@@ -823,7 +864,7 @@ theorem isTrans_join [IsTrans α r] (h : ∀ a b c, r a b → r a c → Join r b
 
 theorem equivalence_join [Std.Refl r] [IsTrans α r] (h : ∀ a b c, r a b → r a c → Join r b c) :
     Equivalence (Join r) :=
-  ⟨reflexive_join.refl, @symmetric_join α r, isTrans_join h |>.trans _ _ _⟩
+  ⟨Join.refl.refl, Join.symm.symm _ _, isTrans_join h |>.trans _ _ _⟩
 
 theorem equivalence_join_reflTransGen
     (h : ∀ a b c, r a b → r a c → ∃ d, ReflGen r b d ∧ ReflTransGen r c d) :

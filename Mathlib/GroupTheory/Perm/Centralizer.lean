@@ -212,7 +212,7 @@ structure Basis (g : Equiv.Perm α) where
 
 instance (g : Perm α) : FunLike (Basis g) g.cycleFactorsFinset α where
   coe a := a.toFun
-  coe_injective' a a' _ := by cases a; cases a'; congr
+  coe_injective a a' _ := by cases a; cases a'; congr
 
 namespace Basis
 
@@ -434,7 +434,7 @@ end Basis
 
 namespace OnCycleFactors
 
-open Basis BigOperators Nat Equiv.Perm
+open Basis Nat
 
 theorem mem_range_toPermHom_iff {τ} : τ ∈ (toPermHom g).range ↔
     ∀ c, #(τ c).val.support = #c.val.support := by
@@ -646,7 +646,7 @@ theorem card_isConj_mul_eq :
   classical
   rw [Nat.card_eq_fintype_card, ← nat_card_centralizer g]
   rw [Subgroup.nat_card_centralizer_nat_card_stabilizer, Nat.card_eq_fintype_card]
-  convert MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct (Perm α)) g
+  convert! MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct (Perm α)) g
   · ext h
     simp only [Set.mem_setOf_eq, ConjAct.mem_orbit_conjAct, isConj_comm]
   · rw [ConjAct.card, Fintype.card_perm]
@@ -681,7 +681,7 @@ theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
   · -- nonempty case
     classical
     obtain ⟨g, rfl⟩ := (exists_with_cycleType_iff α).mpr hm
-    convert card_isConj_mul_eq g
+    convert! card_isConj_mul_eq g
     simp_rw [Set.coe_setOf, Nat.card_eq_fintype_card, ← Fintype.card_coe, Finset.mem_filter,
       Finset.mem_univ, true_and, ← isConj_iff_cycleType_eq, isConj_comm (g := g)]
   · -- empty case

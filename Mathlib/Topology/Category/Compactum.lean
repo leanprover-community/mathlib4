@@ -111,7 +111,7 @@ instance : CoeSort Compactum Type* :=
 
 instance {X Y : Compactum} : FunLike (X ⟶ Y) X Y where
   coe f := f.f
-  coe_injective' _ _ h := (Monad.forget_faithful β).map_injective (by aesop)
+  coe_injective _ _ h := (Monad.forget_faithful β).map_injective (by aesop)
 
 -- Basic instances
 instance : ConcreteCategory Compactum (· ⟶ ·) where
@@ -378,7 +378,7 @@ theorem continuous_of_hom {X Y : Compactum} (f : X ⟶ Y) : Continuous f := by
 noncomputable def ofTopologicalSpace (X : Type*) [TopologicalSpace X] [CompactSpace X]
     [T2Space X] : Compactum where
   A := X
-  a := TypeCat.ofHom Ultrafilter.lim
+  a := ↾Ultrafilter.lim
   unit := by
     ext x
     exact lim_eq (pure_le_nhds _)
@@ -406,12 +406,12 @@ noncomputable def ofTopologicalSpace (X : Type*) [TopologicalSpace X] [CompactSp
 
 /-- Any continuous map between Compacta is a morphism of compacta. -/
 def homOfContinuous {X Y : Compactum} (f : X → Y) (cont : Continuous f) : X ⟶ Y :=
-  { f := TypeCat.ofHom f
+  { f := ↾f
     h := by
       rw [continuous_iff_ultrafilter] at cont
       ext (F : Ultrafilter X)
       specialize cont (X.str F) F (le_nhds_of_str_eq F (X.str F) rfl)
-      simpa using str_eq_of_le_nhds (Ultrafilter.map f F) _ cont }
+      simpa using! str_eq_of_le_nhds (Ultrafilter.map f F) _ cont }
 
 end Compactum
 
@@ -436,7 +436,7 @@ instance faithful : compactumToCompHaus.Faithful where
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` gets confused by coercion using forget.
     apply Monad.Algebra.Hom.ext
     ext
-    simpa using ConcreteCategory.congr_hom h _
+    simpa using! ConcreteCategory.congr_hom h _
 
 /-- This definition is used to prove essential surjectivity of `compactumToCompHaus`. -/
 noncomputable def isoOfTopologicalSpace {D : CompHaus} :

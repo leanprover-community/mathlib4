@@ -74,7 +74,7 @@ variable [TopologicalSpace β] [Zero β]
 
 instance : FunLike C_c(α, β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
@@ -125,9 +125,6 @@ def continuousMapEquiv [CompactSpace α] : C(α, β) ≃ C_c(α, β) where
     { toFun := f
       hasCompactSupport' := HasCompactSupport.of_compactSpace f }
   invFun f := f
-
-@[deprecated (since := "2025-10-21")] alias ContinuousMap.liftCompactlySupported :=
-    continuousMapEquiv
 
 variable {γ : Type*} [TopologicalSpace γ] [Zero γ]
 
@@ -354,7 +351,6 @@ instance [NonUnitalCommRing β] [IsTopologicalRing β] :
   DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => rfl) fun _ _ => rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
     [IsTopologicalSemiring β] [Module R β] [ContinuousConstSMul R β] [IsScalarTower R β β] :
     IsScalarTower R C_c(α, β) C_c(α, β) where
@@ -363,7 +359,6 @@ instance {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
     simp only [smul_eq_mul, coe_mul, coe_smul, Pi.mul_apply, Pi.smul_apply]
     rw [← smul_eq_mul, ← smul_eq_mul, smul_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 instance {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
     [IsTopologicalSemiring β] [Module R β] [ContinuousConstSMul R β] [SMulCommClass R β β] :
     SMulCommClass R C_c(α, β) C_c(α, β) where
@@ -472,7 +467,7 @@ instance semilatticeSup : SemilatticeSup C_c(α, β) := fast_instance%
 
 lemma finsetSup'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) (a : α) :
     s.sup' H f a = s.sup' H fun i ↦ f i a :=
-  Finset.comp_sup'_eq_sup'_comp H (fun g : C_c(α, β) ↦ g a) fun _ _ ↦ rfl
+  Finset.apply_sup'_eq_sup'_comp H (fun g : C_c(α, β) ↦ g a) fun _ _ ↦ rfl
 
 @[simp, norm_cast]
 lemma coe_finsetSup' {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) :
@@ -498,7 +493,7 @@ instance semilatticeInf : SemilatticeInf C_c(α, β) := fast_instance%
 
 lemma finsetInf'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) (a : α) :
     s.inf' H f a = s.inf' H fun i ↦ f i a :=
-  Finset.comp_inf'_eq_inf'_comp H (fun g : C_c(α, β) ↦ g a) fun _ _ ↦ rfl
+  Finset.apply_inf'_eq_inf'_comp H (fun g : C_c(α, β) ↦ g a) fun _ _ ↦ rfl
 
 @[simp, norm_cast]
 lemma coe_finsetInf' {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) :

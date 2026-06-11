@@ -76,7 +76,7 @@ lemma starAlgHom_id {a : A} {φ : C(spectrum S a, S) →⋆ₐ[S] A} {f : C(S, R
     (h : SpectrumRestricts a f) (h_id : φ (.restrict (spectrum S a) <| .id S) = a) :
     h.starAlgHom φ (.restrict (spectrum R a) <| .id R) = a := by
   simp only [SpectrumRestricts.starAlgHom_apply]
-  convert h_id
+  convert! h_id
   ext x
   exact h.rightInvOn x.2
 
@@ -239,7 +239,7 @@ lemma nonUnitalStarAlgHom_id {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A}
     (h : QuasispectrumRestricts a f) (h_id : φ (.id _) = a) :
     h.nonUnitalStarAlgHom φ (.id _) = a := by
   simp only [QuasispectrumRestricts.nonUnitalStarAlgHom_apply]
-  convert h_id
+  convert! h_id
   ext x
   exact h.rightInvOn x.2
 
@@ -265,7 +265,6 @@ lemma continuous_nonUnitalStarAlgHom {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙ�
     Continuous (h.nonUnitalStarAlgHom φ) :=
   hφ.comp <| (continuous_postcomp _).comp (continuous_precomp _)
 
-set_option backward.isDefEq.respectTransparency false in
 variable [CompleteSpace R] in
 lemma isClosedEmbedding_nonUnitalStarAlgHom {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A}
     (hφ : IsClosedEmbedding φ) {f : C(S, R)} (h : QuasispectrumRestricts a f)

@@ -17,19 +17,19 @@ the set of all values of `v (coeff t f) * ∏ i : t.support, c i` for all `t : �
 
 ## Main definitions and results
 
-* `MvPowerSeries.gaussNormC` is the supremum of the set of all values of
+* `MvPowerSeries.gaussNorm` is the supremum of the set of all values of
   `v (coeff t f) * ∏ i : t.support, c i` for all `t : σ →₀ ℕ`, where `f` is a multivariate power
   series, `v : R → ℝ` is a function and `c` is a tuple of real numbers.
 
-* `MvPowerSeries.gaussNormC_nonneg`: if `v` is a non-negative function, then the Gauss norm is
+* `MvPowerSeries.gaussNorm_nonneg`: if `v` is a non-negative function, then the Gauss norm is
   non-negative.
 
-* `MvPowerSeries.gaussNormC_eq_zero_iff`: if `v` is a non-negative function and `v x = 0 ↔ x = 0`
+* `MvPowerSeries.gaussNorm_eq_zero_iff`: if `v` is a non-negative function and `v x = 0 ↔ x = 0`
   for all `x : R` and `c` is positive, then the Gauss norm is zero if and only if the power series
   is zero.
 
 * `MvPowerSeries.gaussNorm_add_le_max`: if `v` is a non-negative non-archimedean function and the
-  set of values `v (coeff t f) * ∏ i : t.support, c i` is bounded above (similarily for `g`), then
+  set of values `v (coeff t f) * ∏ i : t.support, c i` is bounded above (similarly for `g`), then
   the Gauss norm has the non-archimedean property.
 -/
 
@@ -46,7 +46,7 @@ noncomputable def gaussNorm : ℝ :=
    ⨆ t : σ →₀ ℕ, v (coeff t f) * t.prod (c · ^ ·)
 
 /-- We say `f` HasGaussNorm if the values `v (coeff t f) * ∏ i : t.support, c i` is bounded above,
-  that is `gaussNormC f` is finite. -/
+  that is `gaussNorm f` is finite. -/
 abbrev HasGaussNorm := BddAbove (Set.range (fun (t : σ →₀ ℕ) ↦ (v (coeff t f) * t.prod (c · ^ ·))))
 
 @[simp]
@@ -61,7 +61,7 @@ lemma gaussNorm_nonneg (vNonneg : ∀ a, v a ≥ 0) : 0 ≤ gaussNorm v c f := b
   by_cases h : HasGaussNorm v c f
   · trans v (constantCoeff f)
     · simp [vNonneg]
-    · convert (le_gaussNorm v c f h 0)
+    · convert! (le_gaussNorm v c f h 0)
       simp
   · simp [h]
 
@@ -113,9 +113,9 @@ lemma gaussNorm_add_le_max (f g : MvPowerSeries σ R) (hc : 0 ≤ c)
       rcases max_choice (v ((coeff t) f) * ∏ i ∈ t.support, c i ^ t i)
         (v ((coeff t) g) * ∏ i ∈ t.support, c i ^ t i) with h | h
       · left
-        simpa [h] using le_gaussNorm v c f hbfd t
+        simpa [h] using! le_gaussNorm v c f hbfd t
       · right
-        simpa [h] using le_gaussNorm v c g hbgd t
+        simpa [h] using! le_gaussNorm v c g hbgd t
   · simp only [le_sup_iff]
     left
     exact gaussNorm_nonneg v c f vNonneg

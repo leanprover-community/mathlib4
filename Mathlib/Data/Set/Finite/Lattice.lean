@@ -9,6 +9,8 @@ public import Mathlib.Data.Set.Finite.Powerset
 public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Data.Set.Lattice.Image
 
+import Mathlib.Data.Fintype.Option
+
 /-!
 # Finiteness of unions and intersections
 
@@ -368,6 +370,45 @@ theorem iUnion_univ_pi_of_monotone {ι ι' : Type*} [LinearOrder ι'] [Nonempty 
     ⋃ j : ι', pi univ (fun i => s i j) = pi univ fun i => ⋃ j, s i j :=
   iUnion_pi_of_monotone finite_univ fun i _ => hs i
 
+theorem _root_.iInf_iSup_eq_of_finite {ι : Sort v} {κ : ι → Sort w} [Order.Frame α] [Finite ι]
+    {f : Π a, κ a → α} : ⨅ a, ⨆ b, f a b = ⨆ g : (Π a, κ a), ⨅ a, f a (g a) := by
+  suffices ∀ {ι : Type v} {κ : ι → Type w} [Finite ι] (f : Π a, κ a → α),
+      ⨅ a, ⨆ b, f a b = ⨆ g : (Π a, κ a), ⨅ a, f a (g a) by
+    simpa [← Equiv.plift.symm.iInf_comp, ← Equiv.plift.symm.iSup_comp,
+        ← (Equiv.plift.piCongr fun a => @Equiv.plift (κ a.down)).symm.iSup_comp] using!
+      this (κ := fun a => PLift (κ a.down)) fun (a : PLift ι) b => f a.down b.down
+  intro ι κ _ f
+  induction ι using Finite.induction_empty_option with
+  | of_equiv e h => simp [← e.iInf_comp, ← e.piCongrLeft κ |>.iSup_comp, h]
+  | h_empty => simp [iInf_of_empty, iSup_const]
+  | h_option h =>
+    simp only [iInf_option, h, ← (Equiv.piOptionEquivProd (β := κ)).symm.iSup_comp,
+      Equiv.piOptionEquivProd_symm_apply, iSup_prod, ← inf_iSup_eq, ← iSup_inf_eq]
+
+theorem _root_.iSup_iInf_eq_of_finite {ι : Sort v} {κ : ι → Sort w} [Order.Coframe α] [Finite ι]
+    {f : ∀ a, κ a → α} : ⨆ a, ⨅ b, f a b = ⨅ g : ∀ a, κ a, ⨆ a, f a (g a) :=
+  iInf_iSup_eq_of_finite (α := αᵒᵈ)
+
+theorem Finite.biInf_iSup_eq {ι : Type v} {κ : ι → Sort w} [Nonempty (Π a, κ a)] [Order.Frame α]
+    {s : Set ι} (hs : s.Finite) {f : Π a, κ a → α} :
+    ⨅ a ∈ s, ⨆ b, f a b = ⨆ g : (Π a, κ a), ⨅ a ∈ s, f a (g a) := by
+  classical
+  suffices h : ∀ {κ : ι → Type w} [Nonempty (Π a, κ a)] (f : Π a, κ a → α),
+      ⨅ a ∈ s, ⨆ b, f a b = ⨆ g : (Π a, κ a), ⨅ a ∈ s, f a (g a) by
+    haveI : Nonempty (Π a, PLift (κ a)) := (Equiv.piCongrRight fun _ => Equiv.plift).nonempty
+    simpa [← Equiv.plift.symm.iSup_comp, ← (Equiv.piCongrRight fun _ => Equiv.plift).symm.iSup_comp]
+      using h (κ := fun a => PLift (κ a)) fun a b => f a b.down
+  intro κ _ f
+  haveI := hs.to_subtype
+  haveI : Nonempty (Π a : { a // a ∉ s }, κ ↑a) := ‹Nonempty (Π a, κ a)›.map fun f a ↦ f a
+  simp [← iInf_subtype'', iInf_iSup_eq_of_finite (ι := s),
+    ← Equiv.piEquivPiSubtypeProd (· ∈ s) _ |>.symm.iSup_comp, iSup_prod, iSup_const]
+
+theorem Finite.biSup_iInf_eq {ι : Type v} {κ : ι → Sort w} [Nonempty (∀ a, κ a)] [Order.Coframe α]
+    {s : Set ι} (hs : s.Finite) {f : ∀ a, κ a → α} :
+    ⨆ a ∈ s, ⨅ b, f a b = ⨅ g : ∀ a, κ a, ⨆ a ∈ s, f a (g a) :=
+  hs.biInf_iSup_eq (α := αᵒᵈ)
+
 section
 
 variable [Preorder α] [IsDirectedOrder α] [Nonempty α] {s : Set α}
@@ -402,12 +443,18 @@ protected theorem Finset.bddAbove [SemilatticeSup α] [Nonempty α] (s : Finset 
 section LinearOrder
 variable [LinearOrder α] {s : Set α}
 
-lemma Set.finite_diff_iUnion_Ioo (s : Set α) : (s \ ⋃ (x ∈ s) (y ∈ s), Ioo x y).Finite :=
+lemma Set.finite_sdiff_iUnion_Ioo (s : Set α) : (s \ ⋃ (x ∈ s) (y ∈ s), Ioo x y).Finite :=
   Set.finite_of_forall_not_lt_lt fun _x hx _y hy _z hz hxy hyz => hy.2 <| mem_iUnion₂_of_mem hx.1 <|
     mem_iUnion₂_of_mem hz.1 ⟨hxy, hyz⟩
 
-lemma Set.finite_diff_iUnion_Ioo' (s : Set α) : (s \ ⋃ x : s × s, Ioo x.1 x.2).Finite := by
-  simpa only [iUnion, iSup_prod, iSup_subtype] using s.finite_diff_iUnion_Ioo
+@[deprecated (since := "2026-06-03")]
+alias Set.finite_diff_iUnion_Ioo := Set.finite_sdiff_iUnion_Ioo
+
+lemma Set.finite_sdiff_iUnion_Ioo' (s : Set α) : (s \ ⋃ x : s × s, Ioo x.1 x.2).Finite := by
+  simpa only [iUnion, iSup_prod, iSup_subtype] using s.finite_sdiff_iUnion_Ioo
+
+@[deprecated (since := "2026-06-03")]
+alias Set.finite_diff_iUnion_Ioo' := Set.finite_sdiff_iUnion_Ioo'
 
 lemma Directed.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} [Nonempty ι]
     {f : ι → Set α} (h : Directed (· ⊆ ·) f) {s : Finset α} (hs : (s : Set α) ⊆ ⋃ i, f i) :

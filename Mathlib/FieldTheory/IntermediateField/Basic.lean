@@ -327,11 +327,11 @@ instance toField : Field S :=
 
 @[norm_cast]
 theorem coe_sum {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∑ i, f i) : L) = ∑ i, (f i : L) :=
-  AddSubmonoidClass.coe_finset_sum f Finset.univ
+  AddSubmonoidClass.coe_finsetSum f Finset.univ
 
 @[norm_cast]
 theorem coe_prod {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∏ i, f i) : L) = ∏ i, (f i : L) :=
-  SubmonoidClass.coe_finset_prod f Finset.univ
+  SubmonoidClass.coe_finsetProd f Finset.univ
 
 /-!
 `IntermediateField`s inherit structure from their `Subfield` coercions.
@@ -545,6 +545,16 @@ variable {f}
 @[simp]
 theorem mem_fieldRange {y : L'} : y ∈ f.fieldRange ↔ ∃ x, f x = y :=
   Iff.rfl
+
+/-- An algebra homomorphism between fields restricts to an algebra equivalence onto its range. -/
+noncomputable def equivFieldRange : L ≃ₐ[K] f.fieldRange :=
+  AlgEquiv.ofBijective
+    (f.codRestrict f.range fun x ↦ mem_fieldRange.mpr ⟨x, rfl⟩)
+    ⟨fun _ _ h ↦ f.injective (congr_arg Subtype.val h),
+     fun ⟨_, hy⟩ ↦ (mem_fieldRange.mp hy).imp fun _ hx => Subtype.ext hx⟩
+
+@[simp]
+theorem equivFieldRange_apply (x : L) : f.equivFieldRange x = f x := rfl
 
 end AlgHom
 
