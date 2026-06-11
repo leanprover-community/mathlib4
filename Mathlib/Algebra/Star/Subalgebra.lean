@@ -121,7 +121,6 @@ lemma toNonUnitalStarSubalgebra_injective : Function.Injective
     (toNonUnitalStarSubalgebra : StarSubalgebra R A → NonUnitalStarSubalgebra R A) :=
   fun _ _ ↦ by simp [SetLike.ext_iff]
 
-@[simp]
 lemma toNonUnitalStarSubalgebra_inj {S U : StarSubalgebra R A} :
     S.toNonUnitalStarSubalgebra = U.toNonUnitalStarSubalgebra ↔ S = U :=
   toNonUnitalStarSubalgebra_injective.eq_iff

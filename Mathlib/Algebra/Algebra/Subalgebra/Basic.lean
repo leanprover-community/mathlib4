@@ -209,7 +209,6 @@ lemma toNonUnitalSubalgebra_injective : Function.Injective
     (toNonUnitalSubalgebra : Subalgebra R A → NonUnitalSubalgebra R A) :=
   fun _ _ ↦ by simp [SetLike.ext_iff]
 
-@[simp]
 lemma toNonUnitalSubalgebra_inj {S U : Subalgebra R A} :
     S.toNonUnitalSubalgebra = U.toNonUnitalSubalgebra ↔ S = U :=
   toNonUnitalSubalgebra_injective.eq_iff
