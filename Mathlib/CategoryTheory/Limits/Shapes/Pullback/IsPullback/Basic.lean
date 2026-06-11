@@ -35,6 +35,7 @@ namespace IsPullback
 
 variable {P X Y Z : C} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `c` is a limiting binary product cone, and we have a terminal object,
 then we have `IsPullback c.fst c.snd 0 0`
 (where each `0` is the unique morphism to the terminal object). -/
@@ -324,6 +325,7 @@ Z --id--> Z
 lemma id_horiz (f : X ⟶ Z) : IsPullback (𝟙 X) f f (𝟙 Z) :=
   of_horiz_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 In a category, given a morphism `f : A ⟶ B` and an object `X`,
@@ -356,15 +358,8 @@ lemma of_isLimit_binaryFan_of_isTerminal
     {T : C} (hT : IsTerminal T) :
     IsPullback c.fst c.snd (hT.from _) (hT.from _) where
   isLimit' := ⟨PullbackCone.IsLimit.mk _
-    (fun s ↦ hc.lift (BinaryFan.mk s.fst s.snd))
-    (fun s ↦ hc.fac (BinaryFan.mk s.fst s.snd) ⟨.left⟩)
-    (fun s ↦ hc.fac (BinaryFan.mk s.fst s.snd) ⟨.right⟩)
-    (fun s m h₁ h₂ ↦ by
-      apply BinaryFan.IsLimit.hom_ext hc
-      · rw [h₁, hc.fac (BinaryFan.mk s.fst s.snd) ⟨.left⟩]
-        rfl
-      · rw [h₂, hc.fac (BinaryFan.mk s.fst s.snd) ⟨.right⟩]
-        rfl)⟩
+    (fun s ↦ BinaryFan.IsLimit.lift hc s.fst s.snd) (by simp) (by simp)
+    (fun s m h₁ h₂ ↦ by apply BinaryFan.IsLimit.hom_ext hc <;> cat_disch)⟩
 end
 
 lemma mk' {P X Y Z : C} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z}
@@ -434,6 +429,7 @@ namespace IsPushout
 
 variable {Z X Y P : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y ⟶ P}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `c` is a colimiting binary coproduct cocone, and we have an initial object,
 then we have `IsPushout 0 0 c.inl c.inr`
 (where each `0` is the unique morphism from the initial object). -/
@@ -710,6 +706,7 @@ Z --id--> Z
 lemma id_horiz (f : X ⟶ Z) : IsPushout (𝟙 X) f f (𝟙 Z) :=
   of_horiz_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 In a category, given a morphism `f : A ⟶ B` and an object `X`,
@@ -744,15 +741,8 @@ lemma of_isColimit_binaryCofan_of_isInitial
     IsPushout (hI.to _) (hI.to _) c.inr c.inl where
   w := hI.hom_ext _ _
   isColimit' := ⟨PushoutCocone.IsColimit.mk _
-    (fun s ↦ hc.desc (BinaryCofan.mk s.inr s.inl))
-    (fun s ↦ hc.fac (BinaryCofan.mk s.inr s.inl) ⟨.right⟩)
-    (fun s ↦ hc.fac (BinaryCofan.mk s.inr s.inl) ⟨.left⟩)
-    (fun s m h₁ h₂ ↦ by
-      apply BinaryCofan.IsColimit.hom_ext hc
-      · rw [h₂, hc.fac (BinaryCofan.mk s.inr s.inl) ⟨.left⟩]
-        rfl
-      · rw [h₁, hc.fac (BinaryCofan.mk s.inr s.inl) ⟨.right⟩]
-        rfl)⟩
+    (fun s ↦ BinaryCofan.IsColimit.desc hc s.inr s.inl) (by simp) (by simp)
+    (fun s m h₁ h₂ ↦ by apply BinaryCofan.IsColimit.hom_ext hc <;> cat_disch)⟩
 
 lemma mk' {Z X Y P : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y ⟶ P}
     (w : f ≫ inl = g ≫ inr)
@@ -817,6 +807,7 @@ theorem Functor.map_isPullback [PreservesLimit (cospan h i) F] (s : IsPullback f
   · simp
   · simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem Functor.map_isPushout [PreservesColimit (span f g) F] (s : IsPushout f g h i) :
     IsPushout (F.map f) (F.map g) (F.map h) (F.map i) := by
@@ -960,6 +951,7 @@ variable {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullbacksAlong g]
 
 namespace IsPullback
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An `IsPullback` square yields an isomorphism `Over.mk fst ≅ Over.mk (pullback.fst f g)`
 in `Over X`. -/
 noncomputable def isoOverPullback {P : C} {fst : P ⟶ X} {snd : P ⟶ Y}
@@ -967,12 +959,14 @@ noncomputable def isoOverPullback {P : C} {fst : P ⟶ X} {snd : P ⟶ Y}
     Over.mk fst ≅ Over.mk (pullback.fst f g) :=
   Over.isoMk (h.isoIsPullback _ _ (IsPullback.of_hasPullback f g)) (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma isoOverPullback_hom_left_comp_snd {P : C} {fst : P ⟶ X} {snd : P ⟶ Y}
     (h : IsPullback fst snd f g) :
     dsimp% h.isoOverPullback.hom.left ≫ pullback.snd f g = snd :=
   h.isoIsPullback_hom_snd _ _ (IsPullback.of_hasPullback f g)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An isomorphism `Over.mk p ≅ Over.mk (pullback.fst f g)` in `Over X` yields
 an `IsPullback` square. -/
 lemma of_over_iso {P : C} {p : P ⟶ X}
@@ -982,6 +976,7 @@ lemma of_over_iso {P : C} {p : P ⟶ X}
     ((Over.forget X).mapIso e) (Iso.refl _) (Iso.refl _) (Iso.refl _)
     (by simpa using Over.w e.hom) (by simp) (by simp) (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An `IsPullback` square over a cospan `(f, g)` is equivalent to an isomorphism
 `Over.mk fst ≅ Over.mk (pullback.fst f g)` in `Over X`, together with the
 second projection being determined by the isomorphism. -/

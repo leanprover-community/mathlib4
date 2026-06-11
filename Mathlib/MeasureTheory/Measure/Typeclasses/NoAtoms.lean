@@ -61,7 +61,7 @@ theorem _root_.Set.Countable.measure_zero (h : s.Countable) (μ : Measure α) [N
 
 theorem _root_.Set.Countable.ae_notMem (h : s.Countable) (μ : Measure α) [NoAtoms μ] :
     ∀ᵐ x ∂μ, x ∉ s := by
-  simpa only [ae_iff, Classical.not_not] using h.measure_zero μ
+  simpa only [ae_iff, Classical.not_not] using! h.measure_zero μ
 
 lemma Measure.ae_ne (μ : Measure α) [NoAtoms μ] (a : α) : ∀ᵐ x ∂μ, x ≠ a :=
   (countable_singleton a).ae_notMem μ
@@ -81,7 +81,7 @@ theorem _root_.Finset.measure_zero (s : Finset α) (μ : Measure α) [NoAtoms μ
   s.finite_toSet.measure_zero μ
 
 theorem insert_ae_eq_self (a : α) (s : Set α) : (insert a s : Set α) =ᵐ[μ] s :=
-  union_ae_eq_right.2 <| measure_mono_null diff_subset (measure_singleton _)
+  union_ae_eq_right.2 <| measure_mono_null sdiff_subset (measure_singleton _)
 
 /-
 If a set has positive measure under an atomless measure, then it has an accumulation point.

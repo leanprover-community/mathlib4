@@ -126,7 +126,7 @@ lemma range_sigmoid : range Real.sigmoid = Ioo 0 1 := by
 open Topology Filter
 
 lemma tendsto_sigmoid_atTop : Tendsto sigmoid atTop (𝓝 1) := by
-  simpa using Real.tendsto_exp_comp_nhds_zero.mpr tendsto_neg_atTop_atBot |>.const_add 1 |>.inv₀ <|
+  simpa using! Real.tendsto_exp_comp_nhds_zero.mpr tendsto_neg_atTop_atBot |>.const_add 1 |>.inv₀ <|
     by norm_num
 
 lemma tendsto_sigmoid_atBot : Tendsto sigmoid atBot (𝓝 0) :=
@@ -135,7 +135,7 @@ lemma tendsto_sigmoid_atBot : Tendsto sigmoid atBot (𝓝 0) :=
 
 lemma hasDerivAt_sigmoid (x : ℝ) :
     HasDerivAt sigmoid (sigmoid x * (1 - sigmoid x)) x := by
-  convert (hasDerivAt_neg' x |>.exp.const_add 1 |>.inv <| by positivity) using 1
+  convert! (hasDerivAt_neg' x |>.exp.const_add 1 |>.inv <| by positivity) using 1
   rw [← sigmoid_neg, ← sigmoid_mul_rexp_neg x, sigmoid_def]
   field [sq]
 
