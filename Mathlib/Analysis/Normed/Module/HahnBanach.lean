@@ -46,7 +46,7 @@ satisfying `IsRCLikeNormedField 𝕜`. -/
 theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
     ∃ g : StrongDual 𝕜 E, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
   obtain ⟨g, hg, hl⟩ := by
-    refine Module.Dual.exists_continuous_extension_of_le_seminorm  p f
+    refine Module.Dual.exists_continuous_extension_of_le_seminorm p f
       (show Continuous (‖f‖₊ • (normSeminorm 𝕜 E)) from ?_) fun x => f.le_opNorm x
     exact continuous_norm.const_smul ‖f‖₊
   refine ⟨g, hg, le_antisymm (g.opNorm_le_bound (norm_nonneg f) hl) ?_⟩
