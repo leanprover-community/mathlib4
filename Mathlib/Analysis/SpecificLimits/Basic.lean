@@ -294,7 +294,7 @@ protected theorem ENNReal.tendsto_pow_atTop_nhds_top_iff {r : ℝ≥0∞} :
   · contrapose!
     intro r_le_one h_tends
     specialize h_tends (Ioi_mem_nhds one_lt_top)
-    simp only [Filter.mem_map, mem_atTop_sets, ge_iff_le, Set.mem_preimage, Set.mem_Ioi] at h_tends
+    simp only [Filter.mem_map, mem_atTop_sets, Set.mem_preimage, Set.mem_Ioi] at h_tends
     obtain ⟨n, hn⟩ := h_tends
     exact lt_irrefl _ <| lt_of_lt_of_le (hn n le_rfl) <| pow_le_one₀ zero_le r_le_one
   · intro r_gt_one
@@ -362,8 +362,8 @@ theorem tsum_geometric_inv_two_ge (n : ℕ) :
   have B : ((Finset.range n).sum fun i : ℕ ↦ ite (n ≤ i) ((2⁻¹ : ℝ) ^ i) 0) = 0 :=
     Finset.sum_eq_zero fun i hi ↦
       ite_eq_right_iff.2 fun h ↦ (lt_irrefl _ ((Finset.mem_range.1 hi).trans_le h)).elim
-  simp only [← Summable.sum_add_tsum_nat_add n A, B, if_true, zero_add, zero_le',
-    le_add_iff_nonneg_left, pow_add, _root_.tsum_mul_right, tsum_geometric_inv_two]
+  simp [-inv_pow, ← Summable.sum_add_tsum_nat_add n A, B, pow_add, _root_.tsum_mul_right,
+    tsum_geometric_inv_two]
 
 theorem hasSum_geometric_two' (a : ℝ) : HasSum (fun n : ℕ ↦ a / 2 / 2 ^ n) a := by
   convert!

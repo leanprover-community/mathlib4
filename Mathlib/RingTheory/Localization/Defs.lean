@@ -151,7 +151,7 @@ abbrev toLocalizationMap : M.LocalizationMap S where
 
 @[simp]
 lemma toLocalizationMap_toMonoidHom :
-    (toLocalizationMap M S).toMonoidHom = (algebraMap R S : R →*₀ S) := rfl
+    (toLocalizationMap M S).toMonoidHom = (.ofClass (algebraMap R S) : R →*₀ S) := rfl
 
 @[simp] lemma coe_toLocalizationMap : ⇑(toLocalizationMap M S) = algebraMap R S := rfl
 

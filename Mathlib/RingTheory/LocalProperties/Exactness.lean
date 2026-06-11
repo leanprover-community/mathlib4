@@ -5,7 +5,7 @@ Authors: Sihan Su, Yongle Hu, Yi Song
 -/
 module
 
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.RingTheory.LocalProperties.Submodule
 public import Mathlib.RingTheory.Localization.Algebra
 public import Mathlib.RingTheory.Localization.Away.Basic

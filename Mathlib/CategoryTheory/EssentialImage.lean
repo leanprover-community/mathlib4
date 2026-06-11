@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.NatIso
 public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+public import Mathlib.Data.Set.Operations
 
 /-!
 # Essential image of a functor
@@ -47,6 +48,10 @@ def essImage (F : C ⥤ D) : ObjectProperty D := fun Y => ∃ X : C, Nonempty (F
 /-- Get the witnessing object that `Y` is in the subcategory given by `F`. -/
 def essImage.witness {Y : D} (h : F.essImage Y) : C :=
   h.choose
+
+lemma isoClosure_eq_essImage : ObjectProperty.isoClosure (· ∈ Set.range F.obj) = F.essImage := by
+  ext
+  exact ⟨fun ⟨_, ⟨Z, rfl⟩, ⟨e⟩⟩ ↦ ⟨Z, ⟨e.symm⟩⟩, fun ⟨Z, ⟨e⟩⟩ ↦ ⟨F.obj Z, ⟨Z, rfl⟩, ⟨e.symm⟩⟩⟩
 
 /-- Extract the isomorphism between `F.obj h.witness` and `Y` itself. -/
 def essImage.getIso {Y : D} (h : F.essImage Y) : F.obj h.witness ≅ Y :=

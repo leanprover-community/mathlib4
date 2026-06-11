@@ -88,7 +88,6 @@ def leftAdjointsCoyonedaEquiv {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (a
     NatIso.ofComponents fun Y =>
       ((adj1.homEquiv X.unop Y).trans (adj2.homEquiv X.unop Y).symm).toIso
 
-set_option linter.deprecated false in
 /-- Deprecated: prefer `(Adjunction.conjugateIsoEquiv adj1 adj2).symm`. -/
 @[deprecated "Use `(Adjunction.conjugateIsoEquiv adj1 adj2).symm` \
   (requires `import Mathlib.CategoryTheory.Adjunction.Mates`)." (since := "2026-01-31")]
@@ -97,7 +96,6 @@ def natIsoOfRightAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
   NatIso.removeOp ((Coyoneda.fullyFaithful.whiskeringRight _).isoEquiv.symm
     (leftAdjointsCoyonedaEquiv adj2 (adj1.ofNatIsoRight r)))
 
-set_option linter.deprecated false in
 /-- Deprecated: prefer `Adjunction.conjugateIsoEquiv adj1 adj2`. -/
 @[deprecated "Use `Adjunction.conjugateIsoEquiv adj1 adj2` \
   (requires `import Mathlib.CategoryTheory.Adjunction.Mates`)." (since := "2026-01-31")]

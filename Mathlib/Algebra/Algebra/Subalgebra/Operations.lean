@@ -91,14 +91,23 @@ def FixedPoints.subsemiring : Subsemiring B' where
   __ := FixedPoints.addSubmonoid G B'
   __ := FixedPoints.submonoid G B'
 
+instance : SMulCommClass G (FixedPoints.subsemiring B' G) B' :=
+  inferInstanceAs (SMulCommClass G (FixedPoints.submonoid G B') B')
+
 /-- The set of fixed points under a group action, as a subring. -/
 def FixedPoints.subring : Subring B where
   __ := FixedPoints.addSubgroup G B
   __ := FixedPoints.submonoid G B
 
+instance : SMulCommClass G (FixedPoints.subring B G) B :=
+  inferInstanceAs (SMulCommClass G (FixedPoints.subsemiring B G) B)
+
 /-- The set of fixed points under a group action, as a subalgebra. -/
 def FixedPoints.subalgebra : Subalgebra A B' where
   __ := FixedPoints.subsemiring B' G
   algebraMap_mem' r g := smul_algebraMap g r
+
+instance : SMulCommClass G (FixedPoints.subalgebra A B' G) B' :=
+  inferInstanceAs (SMulCommClass G (FixedPoints.subsemiring B' G) B')
 
 end MulSemiringAction

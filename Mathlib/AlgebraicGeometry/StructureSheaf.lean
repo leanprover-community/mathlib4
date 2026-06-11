@@ -227,7 +227,6 @@ def structurePresheafInCommRingCat : Presheaf CommRingCat (PrimeSpectrum.Top R) 
       map_one' := rfl
       map_zero' := rfl }
 
-set_option backward.isDefEq.respectTransparency false in
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     Module ((structureSheafInType R R).obj.obj U) ((structureSheafInType R M).obj.obj U) :=
   inferInstanceAs (Module (sectionsSubalgebra R _) (sectionsSubalgebraSubmodule M _))
@@ -343,7 +342,7 @@ theorem const_ext {f₁ f₂ : M} {g₁ g₂ : R} {U hu₁ hu₂} (h : g₂ • 
   Subtype.ext <| funext fun x ↦ LocalizedModule.mk_eq.mpr (by simp [h, Submonoid.smul_def])
 
 theorem const_congr {f₁ f₂ : M} {g₁ g₂ : R} {U hu} (hf : f₁ = f₂) (hg : g₁ = g₂) :
-    const f₁ g₁ U hu = const f₂ g₂ U (hg ▸ hu) := by substs hf hg; rfl
+    const f₁ g₁ U hu = const f₂ g₂ U (hg ▸ hu) := by subst hf hg; rfl
 
 theorem const_mul_rev (f g : R) (U hu₁ hu₂) : const f g U hu₁ * const g f U hu₂ = 1 := by
   rw [const_mul, const_congr rfl (mul_comm g f), const_self]
@@ -1079,7 +1078,7 @@ theorem comapₗ_eq_localRingHom (f : R →+* S) (U : Opens (PrimeSpectrum.Top R
   induction m using LocalizedModule.induction_on with | h m s =>
   trans LocalizedModule.mk (f m) ⟨f ↑s, s.2⟩
   · simp
-  convert_to Localization.mk _ _ = Localization.localRingHom _ _ _ _ (Localization.mk _ _)
+  convert_to! Localization.mk _ _ = Localization.localRingHom _ _ _ _ (Localization.mk _ _)
   simp [Localization.mk_eq_mk']
 
 /-- For a ring homomorphism `f : R →+* S` and open sets `U` and `V` of the prime spectra of `R` and
@@ -1124,7 +1123,7 @@ theorem comap_const (f : R →+* S) (U : Opens (PrimeSpectrum.Top R))
       const (f a) (f b) V fun p hpV => hb (PrimeSpectrum.comap f p) (hUV hpV) :=
   Subtype.ext <| funext fun p => by
     rw [comap_apply, const_apply, const_apply]
-    convert_to Localization.localRingHom _ _ _ _ (Localization.mk _ _) = Localization.mk _ _
+    convert_to! Localization.localRingHom _ _ _ _ (Localization.mk _ _) = Localization.mk _ _
     simp [Localization.mk_eq_mk']
 
 /-- For an inclusion `i : V ⟶ U` between open sets of the prime spectrum of `R`, the comap of the

@@ -233,6 +233,12 @@ theorem IsIntegral.isMaximal_of_isMaximal_comap (I : Ideal A) [I.IsPrime]
 @[deprecated (since := "2026-05-08")] alias IsIntegralClosure.isMaximal_of_isMaximal_comap :=
   IsIntegral.isMaximal_of_isMaximal_comap
 
+theorem IsIntegral.mem_minimalPrimes_map_under (I : Ideal A) [I.IsPrime] :
+    I ∈ ((I.under R).map (algebraMap R A)).minimalPrimes := by
+  refine ⟨⟨inferInstance, map_comap_le⟩, fun r ⟨hr, hpr⟩ hrq ↦ ?_⟩
+  contrapose! hpr
+  exact mt map_le_iff_le_comap.mp (not_le_of_gt (IsIntegral.comap_lt_comap (hrq.lt_of_not_ge hpr)))
+
 variable [IsDomain A]
 
 variable (R) in

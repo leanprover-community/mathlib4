@@ -117,7 +117,7 @@ namespace TestFunction
 
 instance toTestFunctionClass : TestFunctionClass 𝓓^{n}(Ω, F) Ω F n where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
   map_contDiff f := f.contDiff'
   map_hasCompactSupport f := f.hasCompactSupport'
   tsupport_map_subset f := f.tsupport_subset'

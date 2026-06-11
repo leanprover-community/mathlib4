@@ -673,6 +673,13 @@ theorem fg_iSup {ι : Sort*} [Finite ι] {S : ι → IntermediateField F E} (h :
   simp_rw [← hs, ← adjoin_iUnion]
   exact fg_adjoin_of_finite (Set.finite_iUnion fun _ ↦ Finset.finite_toSet _)
 
+/-- A field is finitely generated if and only if it is finitely generated over its prime
+subfield. -/
+theorem _root_.Field.fg_iff_fg_top_bot :
+    Field.FG F ↔ (⊤ : IntermediateField (⊥ : Subfield F) F).FG := by
+  simp [Field.fg_iff, fg_def, Set.exists_finite_iff_finset,
+    ← toSubfield_inj, Subfield.algebraMap_ofSubfield, Subfield.closure_union]
+
 theorem induction_on_adjoin_finset (S : Finset E) (P : IntermediateField F E → Prop) (base : P ⊥)
     (ih : ∀ (K : IntermediateField F E), ∀ x ∈ S, P K → P (K⟮x⟯.restrictScalars F)) :
     P (adjoin F S) := by

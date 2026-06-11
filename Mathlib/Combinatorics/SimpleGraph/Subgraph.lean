@@ -1311,7 +1311,7 @@ theorem deleteVerts_le : G'.deleteVerts s ≤ G' := by
 @[gcongr, mono]
 theorem deleteVerts_mono {G' G'' : G.Subgraph} (h : G' ≤ G'') :
     G'.deleteVerts s ≤ G''.deleteVerts s :=
-  induce_mono h (Set.diff_subset_diff_left h.1)
+  induce_mono h (Set.sdiff_subset_sdiff_left h.1)
 
 @[mono]
 lemma deleteVerts_mono' {G' : SimpleGraph V} (u : Set V) (h : G ≤ G') :
@@ -1321,7 +1321,7 @@ lemma deleteVerts_mono' {G' : SimpleGraph V} (u : Set V) (h : G ≤ G') :
 
 @[gcongr, mono]
 theorem deleteVerts_anti {s s' : Set V} (h : s ⊆ s') : G'.deleteVerts s' ≤ G'.deleteVerts s :=
-  induce_mono (le_refl _) (Set.diff_subset_diff_right h)
+  induce_mono (le_refl _) (Set.sdiff_subset_sdiff_right h)
 
 @[simp]
 theorem deleteVerts_inter_verts_left_eq : G'.deleteVerts (G'.verts ∩ s) = G'.deleteVerts s := by

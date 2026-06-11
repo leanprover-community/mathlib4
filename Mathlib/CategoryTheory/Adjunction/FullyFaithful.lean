@@ -166,15 +166,16 @@ noncomputable def fullyFaithfulROfIsIsoCounit [IsIso h.counit] : R.FullyFaithful
 
 instance whiskerLeft_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
     IsIso (whiskerLeft L h.counit) := by
-  have := h.left_triangle
-  rw [← IsIso.eq_inv_comp] at this
+  have := ((Functor.associator ..).inv ≫ whiskerRight (inv h.unit) L) ≫= h.left_triangle
+  simp only [assoc, ← whiskerRight_comp_assoc, IsIso.inv_hom_id, whiskerRight_id', id_comp,
+    Iso.inv_hom_id_assoc] at this
   rw [this]
   infer_instance
 
 instance whiskerRight_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
     IsIso (whiskerRight h.counit R) := by
   have := h.right_triangle
-  rw [← IsIso.eq_inv_comp] at this
+  rw [← IsIso.eq_inv_comp, Iso.inv_comp_eq] at this
   rw [this]
   infer_instance
 

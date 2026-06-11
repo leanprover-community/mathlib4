@@ -48,9 +48,9 @@ variable (A : ValuationSubring K)
 
 instance : SetLike (ValuationSubring K) K where
   coe A := A.toSubring
-  coe_injective' := by
+  coe_injective := by
     intro ⟨_, _⟩ ⟨_, _⟩ h
-    replace h := SetLike.coe_injective' h
+    replace h := SetLike.coe_injective h
     congr
 
 instance : PartialOrder (ValuationSubring K) := .ofSetLike (ValuationSubring K) K
@@ -554,7 +554,7 @@ section nonunits
 def nonunits : NonUnitalSubring K where
   carrier := {x | A.valuation x < 1}
   mul_mem' ha hb := (mul_lt_mul'' (Set.mem_setOf.mp ha) (Set.mem_setOf.mp hb)
-    zero_le' zero_le').trans_eq <| mul_one _
+    zero_le zero_le).trans_eq <| mul_one _
   add_mem' ha hb := (A.valuation.map_add ..).trans_lt (max_lt ha hb)
   zero_mem' := by simp
   neg_mem' h := (A.valuation.map_neg _).trans_lt h
@@ -689,7 +689,8 @@ theorem coe_mem_principalUnitGroup_iff {x : A.unitGroup} :
     (x : Kˣ) ∈ A.principalUnitGroup ↔
       A.unitGroupMulEquiv x ∈ (Units.map (IsLocalRing.residue A).toMonoidHom).ker := by
   rw [MonoidHom.mem_ker, Units.ext_iff]
-  let π := Ideal.Quotient.mk (IsLocalRing.maximalIdeal A); convert_to _ ↔ π _ = 1
+  let π := Ideal.Quotient.mk (IsLocalRing.maximalIdeal A)
+  convert_to! _ ↔ π _ = 1
   rw [← π.map_one, ← sub_eq_zero, ← π.map_sub, Ideal.Quotient.eq_zero_iff_mem, valuation_lt_one_iff]
   simp [mem_principalUnitGroup_iff]
 

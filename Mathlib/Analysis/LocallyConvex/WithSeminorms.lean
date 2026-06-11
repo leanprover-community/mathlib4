@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.LocallyConvex.Bounded
 public import Mathlib.Analysis.Seminorm
-public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Topology.Algebra.Equicontinuity
 public import Mathlib.Topology.MetricSpace.Equicontinuity
 public import Mathlib.Topology.Algebra.FilterBasis

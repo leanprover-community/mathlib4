@@ -616,7 +616,14 @@ def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Analysis.Convex.SimplicialComplex.Basic, `Mathlib.AlgebraicTopology),
   (`Mathlib.Analysis.Convex.SimplicialComplex.AffineIndependentUnion, `Mathlib.AlgebraicTopology),
   (`Mathlib.Probability.Kernel.Category, `Mathlib.CategoryTheory), -- For the category of s-finite/Markov kernels
-  (`Mathlib.RepresentationTheory.Continuous, `Mathlib.Topology) -- For continuous representations
+  (`Mathlib.RepresentationTheory.Continuous, `Mathlib.Topology), -- For continuous representations
+  -- TODO: think about the role of Analysis and Algebra, and perhaps further separation
+  (`Mathlib.Algebra.Order.Archimedean.Real, `Mathlib.Analysis),
+  (`Mathlib.Algebra.Star.CHSH, `Mathlib.Analysis),
+  (`Mathlib.Algebra.Order.Star.Real, `Mathlib.Analysis),
+  (`Mathlib.Topology.ContinuousMap.ContinuousSqrt, `Mathlib.Algebra.Order),
+  (`Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus, `Mathlib.Algebra.Order),
+  (`Mathlib.Algebra.Order.Ring.StandardPart, `Mathlib.Analysis),
 ]
 
 end DirectoryDependency

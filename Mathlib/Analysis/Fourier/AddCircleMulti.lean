@@ -37,9 +37,6 @@ local instance : Measure.IsAddHaarMeasure (volume : Measure UnitAddCircle) :=
 local instance : IsProbabilityMeasure (volume : Measure UnitAddCircle) :=
   inferInstanceAs (IsProbabilityMeasure AddCircle.haarAddCircle)
 
-/-- The product of finitely many copies of the unit circle, indexed by `d`. -/
-abbrev UnitAddTorus (d : Type*) := d → UnitAddCircle
-
 namespace UnitAddTorus
 
 variable {d : Type*} [Fintype d]

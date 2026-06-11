@@ -54,7 +54,7 @@ theorem mdifferentiableWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M
     ((FiberBundle.continuous_proj F E).continuousWithinAt.comp hf (mapsTo_image f s))
       ((Trivialization.open_baseSet _).mem_nhds (mem_baseSet_trivializationAt F E _))
   refine EventuallyEq.mdifferentiableWithinAt_iff (eventually_of_mem h1 fun x hx => ?_) ?_
-  · simp_rw [Function.comp, OpenPartialHomeomorph.coe_coe, Trivialization.coe_coe]
+  · simp_rw [Function.comp, OpenPartialHomeomorph.coe_toPartialEquiv, Trivialization.coe_coe]
     rw [Trivialization.coe_fst']
     exact hx
   · simp only [mfld_simps]

@@ -701,7 +701,7 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
       intro ej m <;> simp at ej <;> have := congr_arg Seq.destruct ej <;>
       simp at this; cases this
     case cons.intro b' s =>
-      substs b' ss
+      subst b' ss
       simp? at m ⊢ says simp only [cons_append, mem_cons_iff] at m ⊢
       rcases o with e | IH
       · simp [e]

@@ -98,9 +98,11 @@ theorem sSup_le_sSup_of_subset_insert_bot (h : s ⊆ insert ⊥ t) : sSup s ≤ 
   (sSup_le_sSup h).trans_eq (sSup_insert.trans (bot_sup_eq _))
 
 @[to_dual (attr := simp)]
-theorem sSup_diff_singleton_bot (s : Set α) : sSup (s \ {⊥}) = sSup s :=
-  (sSup_le_sSup diff_subset).antisymm <|
-    sSup_le_sSup_of_subset_insert_bot <| subset_insert_diff_singleton _ _
+theorem sSup_sdiff_singleton_bot (s : Set α) : sSup (s \ {⊥}) = sSup s :=
+  (sSup_le_sSup sdiff_subset).antisymm <|
+    sSup_le_sSup_of_subset_insert_bot <| subset_insert_sdiff_singleton _ _
+
+@[deprecated (since := "2026-06-03")] alias sSup_diff_singleton_bot := sSup_sdiff_singleton_bot
 
 @[to_dual]
 theorem sSup_pair {a b : α} : sSup {a, b} = a ⊔ b :=
@@ -437,20 +439,9 @@ theorem iSup₂_comm {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι
     ⨆ (i₁) (j₁) (i₂) (j₂), f i₁ j₁ i₂ j₂ = ⨆ (i₂) (j₂) (i₁) (j₁), f i₁ j₁ i₂ j₂ := by
   simp only [@iSup_comm _ (κ₁ _), @iSup_comm _ ι₁]
 
-/- TODO: this is strange. In the proof below, we get exactly the desired among the equalities,
-but close does not get it.
-begin
-  apply @le_antisymm,
-    simp, intros,
-    begin [smt]
-      ematch, ematch, ematch, trace_state, have := le_refl (f i_1 i),
-      trace_state, close
-    end
-end
--/
 @[to_dual (attr := simp)]
 theorem iSup_iSup_eq_left {b : β} {f : ∀ x : β, x = b → α} : ⨆ x, ⨆ h : x = b, f x h = f b rfl :=
-  (@le_iSup₂ _ _ _ _ f b rfl).antisymm'
+  (le_iSup₂ (f := f) b rfl).antisymm'
     (iSup_le fun c =>
       iSup_le <| by
         rintro rfl
@@ -500,13 +491,6 @@ lemma biInf_le_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty) {f : ι → α}
     ⨅ i ∈ s, f i ≤ ⨆ i ∈ s, f i :=
   (biInf_le _ hs.choose_spec).trans <| le_biSup _ hs.choose_spec
 
-/- TODO: here is another example where more flexible pattern matching might help.
-
-begin
-  apply @le_antisymm,
-  safe, pose h := f a ⊓ g a, begin [smt] ematch, ematch end
-end
--/
 @[to_dual]
 theorem iSup_sup [Nonempty ι] {f : ι → α} {a : α} : (⨆ x, f x) ⊔ a = ⨆ x, f x ⊔ a := by
   rw [iSup_sup_eq, iSup_const]

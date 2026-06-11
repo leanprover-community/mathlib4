@@ -159,7 +159,7 @@ lemma subsingleton_of_disjoint_isOpen_iUnion_eq_univ
     (h_open : ∀ i, IsOpen (s i)) (h_Union : ⋃ i, s i = univ) :
     Subsingleton ι := by
   refine subsingleton_of_disjoint_isClopen h_nonempty h_disj (fun i ↦ ⟨?_, h_open i⟩)
-  rw [← isOpen_compl_iff, compl_eq_univ_diff, ← h_Union, iUnion_diff]
+  rw [← isOpen_compl_iff, compl_eq_univ_sdiff, ← h_Union, iUnion_sdiff]
   refine isOpen_iUnion (fun j ↦ ?_)
   rcases eq_or_ne i j with rfl | h_ne
   · simp
@@ -171,7 +171,7 @@ lemma subsingleton_of_disjoint_isClosed_iUnion_eq_univ [Finite ι]
     (h_closed : ∀ i, IsClosed (s i)) (h_Union : ⋃ i, s i = univ) :
     Subsingleton ι := by
   refine subsingleton_of_disjoint_isClopen h_nonempty h_disj (fun i ↦ ⟨h_closed i, ?_⟩)
-  rw [← isClosed_compl_iff, compl_eq_univ_diff, ← h_Union, iUnion_diff]
+  rw [← isClosed_compl_iff, compl_eq_univ_sdiff, ← h_Union, iUnion_sdiff]
   refine isClosed_iUnion_of_finite (fun j ↦ ?_)
   rcases eq_or_ne i j with rfl | h_ne
   · simp

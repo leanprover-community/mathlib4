@@ -314,7 +314,7 @@ theorem edist_lt_top {α : Type*} [PseudoMetricSpace α] (x y : α) : edist x y 
   (edist_dist x y).symm ▸ ENNReal.ofReal_lt_top
 
 /-- In a pseudometric space, the extended distance is always finite -/
-@[aesop (rule_sets := [finiteness]) safe apply]
+@[aesop (rule_sets := [finiteness]) safe apply, simp]
 theorem edist_ne_top (x y : α) : edist x y ≠ ⊤ :=
   (edist_lt_top x y).ne
 
@@ -422,6 +422,9 @@ def closedBall (x : α) (ε : ℝ) :=
 
 theorem mem_closedBall' : y ∈ closedBall x ε ↔ dist x y ≤ ε := by rw [dist_comm, mem_closedBall]
 
+theorem nonneg_of_mem_closedBall (hy : y ∈ closedBall x ε) : 0 ≤ ε :=
+  dist_nonneg.trans hy
+
 /-- `sphere x ε` is the set of all points `y` with `dist y x = ε` -/
 def sphere (x : α) (ε : ℝ) := { y | dist y x = ε }
 
@@ -506,12 +509,16 @@ theorem sphere_union_ball : sphere x ε ∪ ball x ε = closedBall x ε := by
   rw [union_comm, ball_union_sphere]
 
 @[simp]
-theorem closedBall_diff_sphere : closedBall x ε \ sphere x ε = ball x ε := by
-  rw [← ball_union_sphere, Set.union_diff_cancel_right sphere_disjoint_ball.symm.le_bot]
+theorem closedBall_sdiff_sphere : closedBall x ε \ sphere x ε = ball x ε := by
+  rw [← ball_union_sphere, Set.union_sdiff_cancel_right sphere_disjoint_ball.symm.le_bot]
+
+@[deprecated (since := "2026-06-03")] alias closedBall_diff_sphere := closedBall_sdiff_sphere
 
 @[simp]
-theorem closedBall_diff_ball : closedBall x ε \ ball x ε = sphere x ε := by
-  rw [← ball_union_sphere, Set.union_diff_cancel_left sphere_disjoint_ball.symm.le_bot]
+theorem closedBall_sdiff_ball : closedBall x ε \ ball x ε = sphere x ε := by
+  rw [← ball_union_sphere, Set.union_sdiff_cancel_left sphere_disjoint_ball.symm.le_bot]
+
+@[deprecated (since := "2026-06-03")] alias closedBall_diff_ball := closedBall_sdiff_ball
 
 theorem mem_ball_comm : x ∈ ball y ε ↔ y ∈ ball x ε := by rw [mem_ball', mem_ball]
 
@@ -941,7 +948,7 @@ lemma DiscreteTopology.of_forall_le_dist {α} [PseudoMetricSpace α] {r : ℝ} (
     (hr : Pairwise (r ≤ dist · · : α → α → Prop)) : DiscreteTopology α :=
   ⟨by rw [Metric.uniformSpace_eq_bot.2 ⟨r, hpos, hr⟩, UniformSpace.toTopologicalSpace_bot]⟩
 
-/- Instantiate a pseudometric space as a pseudoemetric space. Before we can state the instance,
+/-! Instantiate a pseudometric space as a pseudoemetric space. Before we can state the instance,
 we need to show that the uniform structure coming from the edistance and the
 distance coincide. -/
 

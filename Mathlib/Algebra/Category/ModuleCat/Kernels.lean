@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!

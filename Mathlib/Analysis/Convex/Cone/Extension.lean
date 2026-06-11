@@ -5,7 +5,7 @@ Authors: Yury Kudryashov, Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Data.Real.Archimedean
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Geometry.Convex.Cone.Basic
 public import Mathlib.LinearAlgebra.LinearPMap
 
