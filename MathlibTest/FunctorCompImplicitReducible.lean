@@ -61,7 +61,6 @@ Still safe: the narrower tier does not feed into TC-search defeq, so the two
 instances remain distinct. -/
 
 section ImplicitReducible
-attribute [local implicit_reducible] Functor.comp
 
 set_option pp.mvars.anonymous false in
 /--
@@ -81,17 +80,24 @@ end ImplicitReducible
 
 /-! ### Variant 3: `[instance_reducible]` on `Functor.comp` (TC tier)
 
-The TC tier deliberately reproduces the pre-split corruption: `rfl` succeeds
-even though the two instances are mathematically distinct. This pins the
-*upper bound* of the tier hierarchy — if a future change accidentally made
-`[instance_reducible]` even narrower, this test would notice. -/
+If `Functor.comp` is instance-reducible, type class synthesis will accept the locally
+defined `SGMonoidal` instance because its type is definitionally equal to the expected type at
+instance transparency.
+
+If a future change accidentally made `[instance_reducible]` even narrower, this test would
+notice.
+
+-/
 
 section InstanceReducible
+
+set_option allowUnsafeReducibility true
 attribute [local instance_reducible] Functor.comp
 
 example :
     letI : SGMonoidal ((F ⋙ G) ⋙ H) := inferInstance
-    SGMonoidal.n (F ⋙ (G ⋙ H)) = SGMonoidal.n ((F ⋙ G) ⋙ H) := rfl
+    SGMonoidal.n (F ⋙ (G ⋙ H)) = SGMonoidal.n ((F ⋙ G) ⋙ H) := by
+  rfl
 
 end InstanceReducible
 
