@@ -276,7 +276,7 @@ theorem _root_.ContinuousLinearMap.normDet_sq [CompleteSpace V] (f : U →L[𝕜
     rw [ContinuousLinearMap.adjoint_comp, ← ContinuousLinearMap.comp_assoc,
       ContinuousLinearMap.comp_assoc (ContinuousLinearMap.adjoint _),
       f.range.subtypeₗᵢ.adjoint_comp_self, ContinuousLinearMap.one_def, ContinuousLinearMap.comp_id,
-      ContinuousLinearMap.det, ContinuousLinearMap.coe_comp, ← det_toMatrix bu.toBasis,
+      ContinuousLinearMap.det, ContinuousLinearMap.toLinearMap_comp, ← det_toMatrix bu.toBasis,
       toMatrix_comp bu.toBasis b.toBasis bu.toBasis, ← ContinuousLinearMap.adjoint_toLinearMap,
       toMatrix_adjoint, f.toLinearMap.normDet_eq_norm_det_toMatrix_rangeRestrict bu b]
     simp [RCLike.conj_mul]
@@ -352,7 +352,7 @@ theorem normDet_comp_of_finrank_eq [FiniteDimensional 𝕜 V] (f : U →ₗ[𝕜
     congrm ?_ * _
     suffices (g.domRestrict f.range).normDet * (id : V →ₗ[𝕜] V).normDet = g.normDet by simpa
     have : f.range = id.range := by simp [htop]
-    convert (normDet_comp LinearMap.id g).symm
+    convert! (normDet_comp LinearMap.id g).symm
   · have hker : f.ker ≠ ⊥ := by
       simpa [ker_eq_bot_iff_range_eq_top_of_finrank_eq_finrank h] using htop
     have hker' : (g ∘ₗ f).ker ≠ ⊥ := by
