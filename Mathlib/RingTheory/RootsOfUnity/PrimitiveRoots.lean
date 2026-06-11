@@ -253,6 +253,18 @@ theorem pow {n : ℕ} {a b : ℕ} (hn : 0 < n) (h : IsPrimitiveRoot ζ n) (hprod
   intro l hl
   exact Nat.dvd_of_mul_dvd_mul_left (Nat.pos_of_mul_pos_right hn) <| h.dvd_of_pow_eq_one _ hl
 
+theorem pow_div_gcd_of_primitive (h : IsPrimitiveRoot ζ k) (j : ℕ) (h0 : k.gcd j ≠ 0) :
+    IsPrimitiveRoot (ζ ^ j) (k / k.gcd j) where
+  pow_eq_one := by
+    rw [← pow_mul, ← Nat.mul_div_assoc j (k.gcd_dvd_left j), mul_comm,
+      Nat.mul_div_assoc k (k.gcd_dvd_right j), pow_mul, h.pow_eq_one, one_pow]
+  dvd_of_pow_eq_one l hl := by
+    rw [Nat.div_dvd_iff_dvd_mul (k.gcd_dvd_left j) h0.pos]
+    grw [← k.gcd_dvd_right l, ← Nat.gcd_mul_right_dvd_mul_gcd]
+    apply h.dvd_of_pow_eq_one
+    rw [pow_gcd_eq_one]
+    exact ⟨h.pow_eq_one, by rwa [pow_mul]⟩
+
 lemma injOn_pow {n : ℕ} {ζ : M} (hζ : IsPrimitiveRoot ζ n) :
     Set.InjOn (ζ ^ ·) (Finset.range n) := by
   intro i hi j hj e
