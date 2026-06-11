@@ -159,8 +159,8 @@ instance compactSpace_constructibleTopology [CompactSpace X]
     · apply isCompact_sInter_of_subset_constructibleTopologySubbasis _ (hA₁'.sdiff.union hA₂'.sdiff)
       grind [hB.prop, Set.union_subset_iff]
     · rw [← Set.sInter_union]
-      refine hB.prop.2.1 (_ ∪ F) ?_ <| (hA₁'.diff.union hA₂'.diff).union hF
-      grind [Set.diff_singleton_subset_iff, Set.union_subset_iff]
+      refine hB.prop.2.1 (_ ∪ F) ?_ <| (hA₁'.sdiff.union hA₂'.sdiff).union hF
+      grind [Set.sdiff_singleton_subset_iff, Set.union_subset_iff]
 
 /-- If `X` is quasi-separated, quasi-sober, prespectral and quasi-compact, then `X` is still
 quasi-compact in the constructible topology. This holds in particular for spectral spaces. -/
