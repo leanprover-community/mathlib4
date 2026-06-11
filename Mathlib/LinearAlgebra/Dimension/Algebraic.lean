@@ -34,7 +34,7 @@ open scoped nonZeroDivisors
 namespace Algebra.IsAlgebraic
 
 variable
-  (R : Type u) (S : Type v) [CommRing R] [CommRing S] [NoZeroDivisors R] [NoZeroDivisors S]
+  (R : Type u) (S : Type v) [CommRing R] [CommRing S] [NoZeroDivisors S]
   [Algebra R S] [FaithfulSMul R S] [Algebra.IsAlgebraic R S]
 
 section Tower
@@ -50,7 +50,8 @@ See `Algebra.IsAlgebraic.rank_mul_rank` for a non–universe polymorphic version
 theorem lift_rank_mul_lift_rank :
     lift.{w} (rank R S) * lift.{v} (rank S M) = lift.{v} (rank R M) := by
   nontriviality R using Module.subsingleton R S
-  nontriviality S using Module.subsingleton S M
+  have _ : NoZeroDivisors R := .of_faithfulSMul R S
+  have _ : Nontrivial S := FaithfulSMul.algebraMap_injective R S |>.nontrivial
   have _ : IsDomain S := {}
   letI R' := FractionRing R
   letI S' := FractionRing S
