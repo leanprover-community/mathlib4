@@ -38,6 +38,9 @@ lemma Lattice.mem_ideal_sup_principal [Lattice α] (a b : α) (J : Ideal α) :
   ⟨fun ⟨j, ⟨jJ, _, ha', bja'⟩⟩ => ⟨j, jJ, le_trans bja' (sup_le_sup_left ha' j)⟩,
     fun ⟨j, hj, hbja⟩ => ⟨j, hj, a, le_refl a, hbja⟩⟩
 
+@[deprecated (since := "2026-06-11")] alias DistribLattice.mem_ideal_sup_principal :=
+  Lattice.mem_ideal_sup_principal
+
 theorem DistribLattice.prime_ideal_of_disjoint_filter_ideal [DistribLattice α]
     {F : PFilter α} {I : Ideal α} (hFI : Disjoint (F : Set α) (I : Set α)) :
     ∃ J : Ideal α, (IsPrime J) ∧ I ≤ J ∧ Disjoint (F : Set α) J := by
