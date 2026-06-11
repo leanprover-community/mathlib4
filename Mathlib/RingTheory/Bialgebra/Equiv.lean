@@ -124,7 +124,7 @@ instance : EquivLike (A ≃ₐc[R] B) A B where
 
 instance : FunLike (A ≃ₐc[R] B) A B where
   coe := DFunLike.coe
-  coe_injective' := DFunLike.coe_injective
+  coe_injective := DFunLike.coe_injective
 
 instance : BialgEquivClass (A ≃ₐc[R] B) R A B where
   map_add := (·.map_add')

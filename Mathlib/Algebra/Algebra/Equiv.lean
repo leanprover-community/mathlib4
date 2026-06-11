@@ -134,7 +134,7 @@ instance : EquivLike (A ≃ₛₐ[φ] B) A B where
 /-- Helper instance since the coercion is not always found. -/
 instance : FunLike (A ≃ₛₐ[φ] B) A B where
   coe := DFunLike.coe
-  coe_injective' := DFunLike.coe_injective'
+  coe_injective := DFunLike.coe_injective
 
 instance : SemialgEquivClass (A ≃ₛₐ[φ] B) φ A B where
   map_add f := f.map_add'
@@ -383,6 +383,9 @@ theorem leftInverse_symm (e : A ≃ₛₐ[φ] B) : Function.LeftInverse e.symm e
 
 theorem rightInverse_symm (e : A ≃ₛₐ[φ] B) : Function.RightInverse e.symm e :=
   e.right_inv
+
+lemma image_symm_eq_preimage (e : A₁ ≃ₐ[R] A₂) (s : Set A₂) : e.symm '' s = e ⁻¹' s :=
+  e.toLinearEquiv.image_symm_eq_preimage _
 
 end symm
 
