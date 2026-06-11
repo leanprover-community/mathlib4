@@ -25,7 +25,6 @@ public import Mathlib.LinearAlgebra.QuadraticForm.Prod
 
 @[expose] public section
 
-
 variable (R M N : Type*)
 
 namespace LinearMap
@@ -75,10 +74,9 @@ end Ring
 
 end LinearMap
 
-namespace QuadraticForm
-
 open QuadraticMap
 
+namespace QuadraticForm
 section Semiring
 
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
@@ -126,6 +124,7 @@ section Ring
 variable [CommRing R] [AddCommGroup M] [Module R M]
 variable {R M}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The isometry sending `(Q.prod <| -Q)` to `(QuadraticForm.dualProd R M)`.
 
 This is `σ` from Proposition 4.8, page 84 of
@@ -138,11 +137,12 @@ def toDualProd (Q : QuadraticForm R M) [Invertible (2 : R)] :
     (Q.associated.comp (LinearMap.fst _ _ _) + Q.associated.comp (LinearMap.snd _ _ _))
     (LinearMap.fst _ _ _ - LinearMap.snd _ _ _)
   map_app' x := by
-    dsimp only [associated, associatedHom]
+    dsimp only [QuadraticMap.associated, QuadraticMap.associatedHom]
     dsimp only [LinearMap.smul_apply, LinearMap.coe_mk, AddHom.coe_mk, AddHom.toFun_eq_coe,
       LinearMap.coe_toAddHom, LinearMap.prod_apply, Function.prod_apply, LinearMap.add_apply,
       LinearMap.coe_comp, Function.comp_apply, LinearMap.fst_apply, LinearMap.snd_apply,
-      LinearMap.sub_apply, dualProd_apply, polarBilin_apply_apply, prod_apply, neg_apply]
+      LinearMap.sub_apply, dualProd_apply, polarBilin_apply_apply, QuadraticMap.prod_apply,
+      QuadraticMap.neg_apply]
     simp only [polar_sub_right, polar_self, nsmul_eq_mul, Nat.cast_ofNat, polar_comm _ x.1 x.2,
       smul_sub, Module.End.smul_def, sub_add_sub_cancel, ← sub_eq_add_neg (Q x.1) (Q x.2)]
     rw [← map_sub (⅟2 : Module.End R R), ← mul_sub, ← Module.End.smul_def]

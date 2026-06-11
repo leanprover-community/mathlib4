@@ -93,15 +93,10 @@ namespace Mathlib.Tactic.GCongr
 variable {α : Type*} {a b : α} {r : α → α → Prop}
 
 lemma AntisymmRel.left (h : AntisymmRel r a b) : r a b := h.1
-lemma AntisymmRel.right (h : AntisymmRel r a b) : r b a := h.2
 
 /-- See if the term is `AntisymmRel r a b` and the goal is `r a b`. -/
 @[gcongr_forward] meta def exactAntisymmRelLeft : ForwardExt where
   eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``AntisymmRel.left #[h])
-
-/-- See if the term is `AntisymmRel r a b` and the goal is `r b a`. -/
-@[gcongr_forward] meta def exactAntisymmRelRight : ForwardExt where
-  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``AntisymmRel.right #[h])
 
 end Mathlib.Tactic.GCongr
 
@@ -294,7 +289,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem wellFoundedGT_antisymmetrization_iff :
     WellFoundedGT (Antisymmetrization α (· ≤ ·)) ↔ WellFoundedGT α := by
   simp_rw [isWellFounded_iff]
-  convert wellFounded_liftOn₂'_iff with ⟨_⟩ ⟨_⟩
+  convert! wellFounded_liftOn₂'_iff with ⟨_⟩ ⟨_⟩
   exact fun _ _ _ _ h₁ h₂ ↦ propext
     ⟨fun h ↦ (h₂.2.trans_lt h).trans_le h₁.1, fun h ↦ (h₂.1.trans_lt h).trans_le h₁.2⟩
 
