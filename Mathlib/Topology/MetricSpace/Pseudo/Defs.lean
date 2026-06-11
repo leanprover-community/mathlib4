@@ -1073,7 +1073,9 @@ abbrev PseudoEMetricSpace.toPseudoMetricSpaceOfDist {X : Type*} [e : PseudoEMetr
     (dist : X → X → ℝ) (dist_nonneg : ∀ x y, 0 ≤ dist x y)
     (h : ∀ x y, edist x y = .ofReal (dist x y)) : PseudoMetricSpace X where
   dist := dist
-  dist_self x := by simpa [h, (dist_nonneg _ _).ge_iff_eq', -edist_self] using edist_self x
+  dist_self x := by
+    refine le_antisymm ?_ (dist_nonneg x x)
+    rw [← ENNReal.zero_eq_ofReal, ← h x x, edist_self]
   dist_comm x y := by simpa [h, dist_nonneg] using edist_comm x y
   dist_triangle x y z := by
     simpa [h, dist_nonneg, add_nonneg, ← ENNReal.ofReal_add] using edist_triangle x y z

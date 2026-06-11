@@ -6,7 +6,6 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 module
 
 public import Mathlib.Data.ENNReal.Inv
-public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.UniformSpace.Basic
 public import Mathlib.Topology.UniformSpace.OfFun
 
@@ -31,7 +30,7 @@ to `EMetricSpace` at the end.
 @[expose] public section
 
 
-assert_not_exists IsUniformEmbedding.prod TendstoUniformlyOnFilter --Nat.instLocallyFiniteOrder
+assert_not_exists Nat.instLocallyFiniteOrder IsUniformEmbedding.prod TendstoUniformlyOnFilter
 
 open Filter Set Topology Set.Notation
 
@@ -490,31 +489,6 @@ distance, with a topology defeq to the initial one. -/
 alias PseudoEmetricSpace.ofEdistOfTopology := PseudoEMetricSpace.ofEDistOfTopology
 
 end
-namespace MulOpposite
-
-variable {α : Type*} [TopologicalSpace α] [WeakPseudoEMetricSpace α]
-
-/-- weak pseudoemetric space instance on the multiplicative opposite of a
-weak pseudoemetric space. -/
-@[to_additive
-/-- Weak pseudoemetric space instance on the additive opposite of a weak pseudoemetric space. -/]
-instance {α : Type*} [n : TopologicalSpace α] [WeakPseudoEMetricSpace α] :
-    WeakPseudoEMetricSpace αᵐᵒᵖ :=
-  WeakPseudoEMetricSpace.IsInducing MulOpposite.opHomeomorph.symm.isInducing ‹_›
-
-/-- Pseudoemetric space instance on the multiplicative opposite of a pseudoemetric space. -/
-@[to_additive
-/-- Pseudoemetric space instance on the additive opposite of a pseudoemetric space. -/]
-instance {α : Type*} [PseudoEMetricSpace α] : PseudoEMetricSpace αᵐᵒᵖ :=
-  PseudoEMetricSpace.induced unop ‹_›
-
-@[to_additive]
-theorem edist_unop (x y : αᵐᵒᵖ) : edist (unop x) (unop y) = edist x y := rfl
-
-@[to_additive]
-theorem edist_op (x y : α) : edist (op x) (op y) = edist x y := rfl
-
-end MulOpposite
 
 variable {α β : Type*} [PseudoEMetricSpace α]
 
