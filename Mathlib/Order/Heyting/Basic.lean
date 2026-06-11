@@ -844,7 +844,8 @@ protected abbrev Function.Injective.generalizedCoheytingAlgebra [Max α] [Min α
 
 -- See note [reducible non-instances]
 /-- Pullback a `HeytingAlgebra` along an injection. -/
-@[to_dual (reorder := le (x y), lt (x y), map_sup map_inf, map_top map_bot, map_himp (a b))]
+@[to_dual (reorder := le (x y), lt (x y), map_sup map_inf, map_top map_bot, map_himp (a b))
+/-- Pullback a `CoheytingAlgebra` along an injection. -/]
 protected abbrev Function.Injective.heytingAlgebra [Max α] [Min α] [LE α] [LT α] [Top α] [Bot α]
     [Compl α] [HImp α] [HeytingAlgebra β] (f : α → β) (hf : Injective f)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
