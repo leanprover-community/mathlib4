@@ -705,6 +705,14 @@ instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsD
     IsMulCommutative (⨆ i, S i : Subsemiring R) :=
   isMulCommutative_iSup S.monotone.directed_le
 
+section rangeS
+
+theorem rangeS_prodMap (f : R →+* S) (g : S →+* T) :
+    (f.prodMap g).rangeS = Subsemiring.prod f.rangeS g.rangeS :=
+  SetLike.coe_injective Set.range_prodMap
+
+end rangeS
+
 end Subsemiring
 
 namespace RingHom
