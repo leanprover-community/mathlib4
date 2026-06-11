@@ -7,100 +7,190 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Finite
-public import Mathlib.Data.Real.Hom
+public import Mathlib.Algebra.Order.Archimedean.Real.Hom
 
 /-!
 # Weighted Graphs with and without Killing Term
 
-In this file we introduce `foo` and `bar`,
-two main concepts in the theory of xyzzyology.
+In this file we introduce `WeightedGraph` and `WeightedGraphWithKillingTerm`. Weighted graphs
+have general use in graph theory, and weighted graphs with a killing term are used in the study of
+Dirichlet forms on discrete spaces.
 
 ## Main results
 
-- `exists_foo`: the main existence theorem of `foo`s.
-- `bar_of_foo_of_baz`: a construction of a `bar`, given a `foo` and a `baz`.
-  If this doc-string is longer than one line, subsequent lines should be indented by two spaces
-  (as required by markdown syntax).
-- `bar_eq`    : the main classification theorem of `bar`s.
+- `WeightedGraph`: defines a weighted graphs as a `SimpleGraph` with a non-negative real-valued
+  symmetric `edgeWeight` function.
+- `WeightedGraphWithKillingTerm`: extends `WeightedGraph` by adding a non-negative real-valued
+  function defined on the vertices of the graph.
+- `StandardWeights`: a proposition that the killing term is 0 and the edgeWeight function is induced
+  by the underlying adjaceny relations such that an edge has weight 1 if it exists and 0 otherwise.
+
+- `degree`: defines the degree of a vertex of a `WeightedGraphWithKillingTerm`.
+- `degreeWithStandardWeights`: If a graph has standard weights then the degree in the sense of
+  `WeightedGraphWithKillingTerm.degree` coincides with the `SimpleGraph.degree`.
+
+- `associatedForm`: the bilinear form associated to a `WeightedGraphWithKillingTerm`
+- `associatedForm_of_basis_eq_degree`: The form associated to a `WeightedGraphWithKillingTerm` is
+  equal to the degree of a vertex `x`, when passed the standard basis function with support at `x`.
+- `associatedForm_neq_basisFuns_eq_neq_edgeWeight`: The form associated to a
+  `WeightedGraphWithKillingTerm` is equal to negative the edge weight, when passed the standard
+  basis functions with support at each vertex of the edge.
+- `associatedForm_at_basisVec_eq_killingTerm`: The form associated to a
+  `WeightedGraphWithKillingTerm` is equal to the killing term of a vertex `x` when passed the
+  standard basis function with support at `x` and the constant 1 function.
 
 ## Notation
 
- - `|_|` : The barrification operator, see `bar_of_foo`.
+ - `𝟙_x` : The indicator function with support at x, see `basisFun`.
 
 ## References
 
-See -- include link to Graphs and Discrete Dirichlet Spaces
+* [M. Keller, D. Lenz, R. K. Wojciechowski, *Graphs and Discrete Dirichlet Spaces*][keller2021]
+
+## To-Do
+- Define Dirichlet forms and graph Laplacians and prove their basic properties.
+
 -/
 @[expose] public section
+
 open NNReal
 
+/--
+A WeightedGraph is a simple graph with a non-negative real-valued symmetric edge weight function
+that is 0 if and only if two vertices are not adjacent.
+-/
 @[ext]
 structure WeightedGraph (X : Type*) extends SimpleGraph X where
   edgeWeight : X → X → ℝ≥0
   edgeWeight_symm : IsSymmOp edgeWeight
-  edgeDef (u v : X) : Adj u v ↔ 0 < edgeWeight u v -- make a lemma for the contrapositive of this
+  edgeDef (u v : X) : Adj u v ↔ 0 < edgeWeight u v
 
 variable {X : Type*}
 
+/--
+Two vertices are not adjacent if and only if the weight of the edge connecting them is 0 (i.e. no
+such edge exists).
+-/
+lemma WeightedGraph.Not_Adj_iff_edgeWeight_eq_zero {x y : X} (G : WeightedGraph X) :
+    ¬ G.Adj x y ↔ G.edgeWeight x y = 0 := by
+  contrapose
+  rw [G.edgeDef]
+  constructor
+  · grind
+  intro h
+  exact (lt_of_le_of_ne (G.edgeWeight x y).coe_nonneg (coe_ne_zero.mpr h).symm :
+    (0 : ℝ) < G.edgeWeight x y)
+
+/--
+No vertex is adjacent to itself, so the edge weight of loop (edge that connects a vertex to itself)
+is 0.
+-/
 @[simp]
 lemma WeightedGraph.no_loop {x : X} (G : WeightedGraph X) : G.edgeWeight x x = 0 :=
   (le_of_not_gt (not_imp_not.mpr (G.edgeDef x x).mpr (G.irrefl (v := x)))).ge_iff_eq.mp
   (G.edgeWeight x x).coe_nonneg
 
+/--
+The edge weight function is symmetric, so the order of its inputs can be switched.
+-/
 lemma WeightedGraph.edgeWeight_symm_apply (G : WeightedGraph X) (y z : X) :
     G.edgeWeight y z = G.edgeWeight z y := G.edgeWeight_symm.symm_op y z
 
+/--
+A WeightedGraphWithKillingTerm is a weighted graph with an additional non-negative real-valued
+ function defined on its vertices.
+-/
 @[ext]
 structure WeightedGraphWithKillingTerm (X : Type*) extends WeightedGraph X where
   killingTerm : X → ℝ≥0
 
--- Define predicates to recover simple graphs and produce them
--- Do everything for WeightedGraph, then include special cases
-
 variable (G : WeightedGraphWithKillingTerm X)
 
--- Maybe let this be a special corollary that uniquely includes decidability hypotheses
--- #check fun x y ↦ if G.Adj x y then 1 else 0
+/-! ### Declarations about Graphs with Standard Weights -/
 
---instance {x y : X} : Decidable (G.Adj x y) := by infer_instance
-
-structure StandardWeights : Prop where
+/--
+A WeightedGraphWithKillingTerm has standard weights if all edges have weight 1 (and the edgeWeight
+is 0, whenever two vertices are not connected by an edge), and the killing term is 0.
+-/
+structure StandardWeights (G : WeightedGraphWithKillingTerm X) : Prop where
   edgeWeight_Adj_iff {x y : X} : G.Adj x y ↔ G.edgeWeight x y = 1
   edgeWeight_NotAdj_iff  {x y : X} : ¬ G.Adj x y ↔ G.edgeWeight x y = 0
   killingTerm_zero : G.killingTerm = 0
 
 variable (x y : X)
 
+/--
+If a graph has standard weights, then an edge weight is non-0 if and only if the vertices are
+adjacent.
+-/
 @[simp]
 lemma standardWeights_edgeWeight_neq_zero_iff_eq_one (h : StandardWeights G) :
     G.edgeWeight x y ≠ 0 ↔ G.Adj x y := by
   contrapose
   exact h.edgeWeight_NotAdj_iff.symm
 
+/--
+If a graph has standard weights, then an edge weight is not equal to 1 if and only if the vertices
+are not adjacent.
+-/
 @[simp]
 lemma standardWeights_edgeWeight_neq_one_iff_eq_zero (h : StandardWeights G) :
     G.edgeWeight x y ≠ 1 ↔ ¬ G.Adj x y := by
   contrapose
   exact h.edgeWeight_Adj_iff.symm
 
--- include way to produce graph with standardweights from simpleGraph
+noncomputable
+instance : DecidableRel (G.Adj) := by exact Classical.decRel G.Adj
 
--- Example 0.2 (Graphs with standard weights)
+/--
+If a graph has standard weights, then the edgeWeight function can be defined piecewise as 1 if
+the input vertices are adjacent and 0 otherwise.
+-/
+lemma standardWeights_edgeWeight_fun (h : StandardWeights G) :
+    G.edgeWeight = fun x y ↦ if G.Adj x y then 1 else 0 := by
+  ext x y
+  by_cases hyp : G.Adj x y <;> simp [hyp, h.edgeWeight_NotAdj_iff.mp, h.edgeWeight_Adj_iff.mp]
+
+/--
+If a graph has standard weights, then the edgeWeight function can be defined piecewise as 0 if
+the input vertices are not adjacent and 1 otherwise.
+-/
+lemma standardWeights_edgeWeight_fun' (h : StandardWeights G) :
+    G.edgeWeight = fun x y ↦ if ¬ G.Adj x y then 0 else 1 := by
+  ext x y
+  by_cases hyp : G.Adj x y <;> simp [hyp, h.edgeWeight_NotAdj_iff.mp, h.edgeWeight_Adj_iff.mp]
+
+/--
+If a graph has standard weights, then an edge is in the edgeSet if and only if the associated
+edge weight is 1.
+-/
 lemma standardWeightEdgeSet_in (h : StandardWeights G) :
     s(x, y) ∈ G.edgeSet ↔ G.edgeWeight x y = 1 := (G.mem_edgeSet).trans h.edgeWeight_Adj_iff
 
+/--
+If a graph has standard weights, then an edge is not in the edgeSet if and only if the associated
+edge weight is 0.
+-/
 lemma standardWeightEdgeSet_notin (h : StandardWeights G) :
     s(x, y) ∉ G.edgeSet ↔ G.edgeWeight x y = 0 := by
   grind [h.edgeWeight_NotAdj_iff, G.mem_edgeSet]
 
 variable [Fintype X]
 
+/--
+The degree of a vertex x of a WeightedGraphWithKillingTerm is non-negative and defined as
+∑ y, (G.edgeWeight x y) + (G.killingTerm x).
+-/
 def WeightedGraphWithKillingTerm.degree (x : X) : ℝ≥0 :=
   ∑ y, (G.edgeWeight x y) + (G.killingTerm x)
 
 noncomputable
 instance : Fintype ↑(G.neighborSet x) := Fintype.ofFinite (G.neighborSet x)
 
+/--
+If a WeightedGraphWithKillingTerm has standard weights, then its notion of degree coincides with
+the notion of degree on the underlying simple graph.
+-/
 lemma degreeWithStandardWeights (h : StandardWeights G) (x : X) :
     G.degree x = G.toSimpleGraph.degree x := by
   simp only [WeightedGraphWithKillingTerm.degree, h.killingTerm_zero, Pi.zero_apply, add_zero,
@@ -118,7 +208,11 @@ lemma degreeWithStandardWeightsCard (h : StandardWeights G) (x : X) :
 
 namespace WeightedGraphWithKillingTerm
 
--- Definiton 0.5
+/-! ### Declarations about the Form Associated to Weighted Graphs with Killing Term -/
+
+/--
+The definition of the form associated to a `WeightedGraphWithKillingTerm`.
+-/
 @[simp]
 noncomputable
 def associatedFormFun (f g : X → ℝ) :=
@@ -159,6 +253,9 @@ def associatedFormBilinearMap :
     apply sub_eq_zero.mp
     ring_nf
 
+/--
+The associated form as a bilinear map.
+-/
 noncomputable
 def associatedForm := G.associatedFormBilinearMap.toLinearMap
 
@@ -180,6 +277,10 @@ lemma sum_killingTerm_weight_mul_basisFun_sq_eq_killingTerm_mul_basisFun_sq :
   simp [(Fintype.sum_subset (f := fun (y : X) ↦ G.killingTerm y * (𝟙_x) y ^ 2)
       (s := {x}) (by grind)).symm]
 
+/--
+The form associated to a `WeightedGraphWithKillingTerm` is equal to the degree of a vertex `x`, when
+passed the standard basis function with support at `x`.
+-/
 @[simp]
 lemma associatedForm_of_basis_eq_degree :
     G.associatedForm (𝟙_x) (𝟙_x) = G.degree x := by
@@ -221,6 +322,10 @@ lemma neq_basis_vecs_imp_sum_weighted_killingTerm_neq_basisFun_eq_zero (x y : X)
   congr! with y h
   grind
 
+/--
+The form associated to a `WeightedGraphWithKillingTerm` is equal to negative the edge weight, when
+passed the standard basis functions with support at each vertex of the edge.
+-/
 @[simp]
 lemma associatedForm_neq_basisFuns_eq_neq_edgeWeight (x y : X) (h : x ≠ y) :
     G.associatedForm (𝟙_x) (𝟙_y) = - G.edgeWeight x y := by
@@ -269,6 +374,10 @@ lemma associatedForm_neq_basisFuns_eq_neq_edgeWeight (x y : X) (h : x ≠ y) :
   rw [this, G.edgeWeight_symm_apply]
   ring
 
+/--
+The form associated to a `WeightedGraphWithKillingTerm` is equal to the killing term of a vertex `x`
+when passed the standard basis function with support at x and the constant 1 function.
+-/
 lemma associatedForm_at_basisVec_eq_killingTerm : G.associatedForm (𝟙_x) 1 = G.killingTerm x := by
   have : ∑ x_1 ∈ univ \ {x}, ↑(G.killingTerm x_1) * (𝟙_x) x_1 = 0 := by
     rw [← Finset.sum_const_zero]; congr! with z h2; grind
