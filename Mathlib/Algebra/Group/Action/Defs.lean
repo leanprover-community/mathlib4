@@ -353,14 +353,6 @@ lemma mul_smul_comm [Mul β] [SMul α β] [SMulCommClass α β β] (s : α) (x y
 lemma smul_mul_assoc [Mul β] [SMul α β] [IsScalarTower α β β] (r : α) (x y : β) :
     r • x * y = r • (x * y) := smul_assoc r x y
 
-/-- Scalar variant of `mul_eq_one_symm`. -/
-@[to_additive]
-theorem mul_eq_smul_one_symm [Monoid β] [SMul α β] [IsScalarTower α β β]
-    [SMulCommClass α β β] {a b : β} {c : α} (ha : IsLeftRegular a)
-    (h : a * b = c • 1) : b * a = c • 1 :=
-  ha.mul_eq_of_comm h <| show (c • 1) * a = a * (c • 1) by
-    rw [smul_mul_assoc, one_mul, mul_smul_comm, mul_one]
-
 /-- Note that the `IsScalarTower α β β` typeclass argument is usually satisfied by `Algebra α β`. -/
 @[to_additive]
 lemma smul_div_assoc [DivInvMonoid β] [SMul α β] [IsScalarTower α β β] (r : α) (x y : β) :
@@ -410,6 +402,19 @@ lemma Commute.smul_right [Mul α] [SMulCommClass M α α] [IsScalarTower M α α
 lemma Commute.smul_left [Mul α] [SMulCommClass M α α] [IsScalarTower M α α] {a b : α}
     (h : Commute a b) (r : M) : Commute (r • a) b :=
   SemiconjBy.smul_left h r
+
+@[to_additive]
+theorem IsLeftRegular.commute_of_commute_of_mul_eq_smul [Semigroup α] [IsScalarTower M α α]
+    [SMulCommClass M α α] {a : M} {x y z : α} (hx : IsLeftRegular x) (hz : Commute x z)
+    (h : x * y = a • z) : Commute x y := by
+  rw [← hx.commute_mul_left_iff, commute_iff_eq, h, smul_mul_assoc, mul_smul_comm, hz.eq]
+
+@[to_additive]
+theorem IsRightRegular.commute_of_commute_of_mul_eq_smul [Semigroup α] [IsScalarTower M α α]
+    [SMulCommClass M α α] {a : M} {x y z : α} (hy : IsRightRegular y) (hz : Commute y z)
+    (h : x * y = a • z) : Commute x y := by
+  rw [Commute.symm_iff, ← hy.commute_mul_right_iff, commute_iff_eq, h, smul_mul_assoc,
+    mul_smul_comm, hz.eq]
 
 end
 

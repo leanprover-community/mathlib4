@@ -106,8 +106,9 @@ theorem IsHadamard.of_mul_conjTranspose [Fintype n] [DecidableEq n] [CommRing R]
     pow_ne_zero _ hcard <| by
       simpa [det_mul, det_conjTranspose, det_smul, det_one, h, star_zero] using
         (congr_arg det hmul).symm
-  exact mul_eq_smul_one_symm
-    (isRegular_of_isLeftRegular_det (IsRegular.of_ne_zero hdet).left).left hmul
+  have hreg : IsLeftRegular A :=
+    (isRegular_of_isLeftRegular_det (IsRegular.of_ne_zero hdet).left).left
+  rw [← (hreg.commute_of_commute_of_mul_eq_smul (Commute.one_right A) hmul).eq, hmul]
 
 theorem isHadamard_iff_mul_conjTranspose [Fintype n] [DecidableEq n] [CommRing R] [StarRing R]
     [NoZeroDivisors R] {A : Matrix n n R} (hcard : (Fintype.card n : R) ≠ 0) :
