@@ -202,7 +202,9 @@ lemma degreeWithStandardWeights (h : StandardWeights G) (x : X) :
   congr! with y hy
   · grind [standardWeights_edgeWeight_neq_zero_iff_eq_one]
   exact h.edgeWeight_Adj_iff.mp ((G.toSimpleGraph.mem_neighborFinset x y).mp hy)
-/-
+
+-- CI ok up to here
+
 lemma degreeWithStandardWeightsCard (h : StandardWeights G) (x : X) :
     G.degree x = (G.neighborFinset x).card := by
   rw [degreeWithStandardWeights G h x]
@@ -263,7 +265,7 @@ def associatedForm := G.associatedFormBilinearMap.toLinearMap
 lemma associatedForm_apply {f g} : G.associatedForm f g =
   (1/2) * ∑ x, ∑ y, (G.edgeWeight x y) * (f x - f y) * (g x - g y) +
     ∑ x, (G.killingTerm x) * f x * g x := by rfl
-
+/-
 noncomputable
 instance : DecidableEq X := by exact Classical.typeDecidableEq X
 
