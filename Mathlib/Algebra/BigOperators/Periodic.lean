@@ -15,11 +15,8 @@ This file collects lemmas about `Finset` sums of `Function.Antiperiodic` functio
 
 ## Main results
 
-* `Function.Antiperiodic.sum_map_addRightEmbedding`: For an antiperiodic function `f` with
-  antiperiod `c`, summing `f` over a Finset shifted by `c` (via `addRightEmbedding c`) negates
-  the sum over the original Finset.
-* `Function.Antiperiodic.sum_Ico_shift`: The specialization to a half-open interval `[a, b)`
-  shifted by `c`.
+* `Function.Antiperiodic.sum_Ico_shift`: Shifting a sum over a half-open interval `[a, b)` by
+  the antiperiod `c` negates the sum.
 * `Function.Antiperiodic.sum_Ico_mul_add_sum_Ico_mul_shift_eq_zero`: A bilinear cancellation
   variant: if `w` is antiperiodic with antiperiod `c`, then summing `w k * f k` over
   `[a + c, b + c)` cancels with summing `w k * f (k + c)` over `[a, b)`.
@@ -31,16 +28,7 @@ open Finset
 
 namespace Function.Antiperiodic
 
-variable {α R : Type*}
-
-/-- For an antiperiodic function `f` with antiperiod `c`, summing `f` over a Finset shifted by
-`c` (via `addRightEmbedding c`) negates the sum over the original Finset. -/
-theorem sum_map_addRightEmbedding [Add α] [IsRightCancelAdd α] [SubtractionCommMonoid R]
-    {f : α → R} {c : α} (hf : Antiperiodic f c) (s : Finset α) :
-    ∑ k ∈ s.map (addRightEmbedding c), f k = -∑ k ∈ s, f k := by
-  simp [hf _]
-
-variable [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
+variable {α R : Type*} [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
   [ExistsAddOfLE α] [LocallyFiniteOrder α]
 
 /-- Shifting the index of summation of an antiperiodic function by its antiperiod negates the
