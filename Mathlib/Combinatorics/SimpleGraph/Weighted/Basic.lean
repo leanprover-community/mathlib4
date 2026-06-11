@@ -83,7 +83,7 @@ lemma WeightedGraph.Not_Adj_iff_edgeWeight_eq_zero {x y : X} (G : WeightedGraph 
   intro h
   exact (lt_of_le_of_ne (G.edgeWeight x y).coe_nonneg (coe_ne_zero.mpr h).symm :
     (0 : ℝ) < G.edgeWeight x y)
-/-
+
 /--
 No vertex is adjacent to itself, so the edge weight of loop (edge that connects a vertex to itself)
 is 0.
@@ -176,7 +176,7 @@ lemma standardWeightEdgeSet_notin (h : StandardWeights G) :
   grind [h.edgeWeight_NotAdj_iff, G.mem_edgeSet]
 
 variable [Fintype X]
-
+/-
 /--
 The degree of a vertex x of a WeightedGraphWithKillingTerm is non-negative and defined as
 ∑ y, (G.edgeWeight x y) + (G.killingTerm x).
