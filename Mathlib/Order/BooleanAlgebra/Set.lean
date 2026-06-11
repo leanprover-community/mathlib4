@@ -501,11 +501,11 @@ lemma _root_.LE.le.sdiff_ssubset_of_nonempty (hst : s ⊆ t) (hs : s.Nonempty) :
   simpa [inter_eq_self_of_subset_right hst]
 
 @[deprecated (since := "2026-06-05")]
-alias _root_.HasSubset.Subset.diff_ssubset_of_nonempty := LE.le.diff_ssubset_of_nonempty
+alias _root_.HasSubset.Subset.sdiff_ssubset_of_nonempty := LE.le.sdiff_ssubset_of_nonempty
 
 @[deprecated (since := "2026-06-03")]
 alias _root_.HasSubset.Subset.diff_ssubset_of_nonempty :=
-  _root_.HasSubset.Subset.sdiff_ssubset_of_nonempty
+  _root_.LE.le.sdiff_ssubset_of_nonempty
 
 lemma ssubset_iff_sdiff_singleton : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t \ {a} := by
   grind
