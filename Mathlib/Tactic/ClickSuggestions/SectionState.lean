@@ -93,8 +93,7 @@ inductive SectionKind where
 
 -- TODO?: add a `⏳️` with hover info that shows which lemmas are still being computed?
 /-- Create the HTML corresponding to `s`. -/
-def renderSection {α} (tactic : String) (kind : SectionKind) (s : SectionState α) : Html :=
-  Id.run do
+def renderSection (tactic : String) (kind : SectionKind) (s : SectionState α) : Html := Id.run do
   let { results, errors } := s
   if results.isEmpty && errors.isEmpty then
     return .text ""

@@ -9,7 +9,7 @@ public import Mathlib.Tactic.ClickSuggestions.TryPremises
 public import Mathlib.Tactic.ClickSuggestions.Unfold
 public import Mathlib.Tactic.Widget.Conv
 public meta import Mathlib.Lean.Meta.KAbstractPositions
-public import Lean.Server.FileWorker.RequestHandling
+public meta import Lean.Server.FileWorker.RequestHandling
 
 /-!
 # Point & click suggestions
@@ -91,8 +91,6 @@ public def generateSuggestions (loc : SubExpr.GoalsLocation) (parentDecl? : Opti
   let rootExpr ← match fvarId? with
     | some fvarId => fvarId.getType
     | none => loc.mvarId.getType
-  -- TODO: instead of computing the occurrences a single time (i.e. the `n` in `nth_rw n`),
-  -- compute the occurrence for each suggestion separately, to avoid inaccuracies.
   viewKAbstractSubExpr' rootExpr pos fun subExpr rwKind ↦ do
   let mut htmls : Array Html := #[]
 
@@ -115,21 +113,22 @@ public def generateSuggestions (loc : SubExpr.GoalsLocation) (parentDecl? : Opti
 @[server_rpc_method]
 public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
   RequestM.asTask do
-  let some loc := props.selectedLocations.back? | return .text ""
+  let some loc := props.selectedLocations.back? |
+    return .text "Please shift-click an expression in the tactic state to get suggestions."
   let doc ← RequestM.readDoc
   if loc.loc matches .hypValue .. then
-    return .text "click_suggestions cannot suggest anything about the value of a let variable."
+    return .text "#click_suggestions cannot suggest anything about the value of a let variable."
   let some onGoal := props.goals.findFinIdx? (·.mvarId == loc.mvarId) |
-    return .text "click_suggestions: please reload the tactic state"
+    return .text "#click_suggestions: please reload the tactic state"
   let goal := props.goals[onGoal]
   let onGoal := if onGoal.val != 0 then some onGoal.val else none
   let some goalsAt := (FileWorker.findGoalsAt? doc (doc.meta.text.lspPosToUtf8Pos props.pos)).get |
-    return .text "Internal click_suggestions error: could not find any goal at the cursor position"
+    return .text "Internal #click_suggestions error: could not find any goal at the cursor position"
   let some { ctxInfo := { parentDecl?, .. }, useAfter, tacticInfo := { stx, .. }, .. } :=
     goalsAt.find? fun { useAfter, tacticInfo, .. } ↦
       let goals := if useAfter then tacticInfo.goalsAfter else tacticInfo.goalsBefore
       goals.contains loc.mvarId
-    | return .text "click_suggestions: Please reload the tactic state"
+    | return .text "#click_suggestions: Please reload the tactic state"
   goal.ctx.val.runMetaM {} do loc.mvarId.withContext do
     let (statusHtml, statusToken) ← mkRefreshComponent
     let (solvedHtml, solvedToken) ← mkRefreshComponent
@@ -139,7 +138,7 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
       else
         Meta.viewSubexpr (fun _ e ↦ exprToHtml e) loc.pos (← loc.rootExpr)
     let html ← mkRefreshComponentM
-      (.text "click_suggestions has started searching.") fun masterToken ↦ do
+      (.text "#click_suggestions has started searching.") fun masterToken ↦ do
       (generateSuggestions loc parentDecl? masterToken).run {
         onGoal, masterToken, statusToken, solvedToken
         stx := if useAfter then some ⟨stx⟩ else none
@@ -151,7 +150,7 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
       } |>.run (← IO.mkRef {})
     return <details «open»={true}>
       <summary className="mv2 pointer">
-        suggestions for {targetHtml}: {statusHtml}
+        Suggestions for {targetHtml}: {statusHtml}
       </summary>
       {solvedHtml}
       {html}
