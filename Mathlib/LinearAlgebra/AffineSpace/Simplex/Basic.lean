@@ -711,6 +711,9 @@ theorem closedInterior_sdiff_interior [Nontrivial k] [IsOrderedAddMonoid k] [Zer
   simpa [closedInterior_eq_interior_union] using
     fun i ↦ (s.disjoint_interior_closedInterior_faceOpposite i).symm
 
+@[deprecated (since := "2026-06-03")]
+alias closedInterior_diff_interior := closedInterior_sdiff_interior
+
 end LinearOrder
 
 end Simplex
