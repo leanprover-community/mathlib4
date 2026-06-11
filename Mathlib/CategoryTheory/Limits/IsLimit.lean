@@ -76,6 +76,8 @@ structure IsColimit (t : Cocone F) where
 
 attribute [reassoc (attr := simp)] IsLimit.fac IsColimit.fac
 
+to_dual_name_hint Lift Desc
+
 namespace IsLimit
 
 @[to_dual]
@@ -90,18 +92,19 @@ of a colimit cocone over `F` to the cocone point of any cocone over `G`. -/]
 def map {F G : J ⥤ C} (s : Cone F) {t : Cone G} (P : IsLimit t) (α : F ⟶ G) : s.pt ⟶ t.pt :=
   P.lift ((Cone.postcompose α).obj s)
 
+set_option backward.isDefEq.respectTransparency false in -- needed to make reassoc work
 @[to_dual (attr := reassoc (attr := simp)) (reorder := c hd d) ι_map]
 theorem map_π {F G : J ⥤ C} (c : Cone F) {d : Cone G} (hd : IsLimit d) (α : F ⟶ G) (j : J) :
     hd.map c α ≫ d.π.app j = c.π.app j ≫ α.app j :=
   fac _ _ _
 
-@[to_dual (attr := simp) desc_self]
+@[to_dual (attr := simp)]
 theorem lift_self {c : Cone F} (t : IsLimit c) : t.lift c = 𝟙 c.pt :=
   (t.uniq _ _ fun _ => id_comp _).symm
 
 -- Repackaging the definition in terms of cone morphisms.
 /-- The universal morphism from any other cone to a limit cone. -/
-@[to_dual (attr := simps) descCoconeMorphism
+@[to_dual (attr := simps)
 /-- The universal morphism from a colimit cocone to any other cocone. -/]
 def liftConeMorphism {t : Cone F} (h : IsLimit t) (s : Cone F) : s ⟶ t where hom := h.lift s
 
@@ -225,7 +228,7 @@ def ofPointIso {r t : Cone F} (P : IsLimit r) [i : IsIso (P.lift t)] : IsLimit t
 variable {t : Cone F}
 
 set_option backward.defeqAttrib.useBackward true in
-@[to_dual hom_desc]
+@[to_dual]
 theorem hom_lift (h : IsLimit t) {W : C} (m : W ⟶ t.pt) :
     m = h.lift { pt := W, π := { app := fun b => m ≫ t.π.app b } } :=
   h.uniq { pt := W, π := { app := fun b => m ≫ t.π.app b } } m fun _ => rfl
@@ -239,7 +242,7 @@ theorem hom_ext (h : IsLimit t) {W : C} {f f' : W ⟶ t.pt}
     f = f' := by
   rw [h.hom_lift f, h.hom_lift f']; congr; exact funext w
 
-@[to_dual nonempty_isColimit_iff_isIso_desc]
+@[to_dual]
 lemma nonempty_isLimit_iff_isIso_lift {s t : Cone F} (hs : IsLimit s) :
     Nonempty (IsLimit t) ↔ IsIso (hs.lift t) :=
   ⟨fun ⟨ht⟩ ↦ ⟨ht.lift s, ht.hom_ext (by simp), hs.hom_ext (by simp)⟩, fun h ↦ ⟨hs.ofPointIso⟩⟩
@@ -264,6 +267,7 @@ def ofConeEquiv {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} (h : Cone G �
   left_inv := by cat_disch
   right_inv := by cat_disch
 
+-- TODO: this and the following have the wrong name
 @[simp]
 theorem ofConeEquiv_apply_desc {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} (h : Cone G ≌ Cone F)
     {c : Cone G} (P : IsLimit (h.functor.obj c)) (s) :
