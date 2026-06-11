@@ -33,10 +33,7 @@ namespace CategoryTheory
 
 open Functor NatIso Category
 
--- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
-universe v₁ v₂ v₃ u₁ u₂ u₃
-
-variable (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Category.{v₂} D]
+variable (C : Type*) (D : Type*) [Category* C] [Category* D]
 
 /-- An isomorphism of categories: a pair of functors whose composites are equal to the
 identity functors. -/
@@ -68,7 +65,7 @@ def IsoCat.symm (e : IsoCat C D) : IsoCat D C where
 
 /-- Composition of isomorphisms of categories. -/
 @[trans]
-def IsoCat.trans {E : Type u₃} [Category.{v₃} E]
+def IsoCat.trans {E : Type*} [Category* E]
     (e : IsoCat C D) (f : IsoCat D E) : IsoCat C E where
   functor := e.functor ⋙ f.functor
   inverse := f.inverse ⋙ e.inverse
