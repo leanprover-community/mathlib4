@@ -23,8 +23,8 @@ metric `g` if and only if the differentiated metric tensor `∇ g` (defined by
   `(X, σ, τ) ↦ 𝓛_X g(σ, τ) - g(∇_X σ, τ) - g(σ, ∇_X τ)` defining when a connection `∇` on a
   Riemannian vector bundle `(V, g)` is compatible with the metric `g`.
 * `CovariantDerivative.metricCompatibilityTensor_apply` and
-  `CovariantDerivative.metricCompatibilityTensor_apply` give formulas for applying the compatibility
-  tensor at `x` to vector fields and sections which are differentiable at `x`,
+  `CovariantDerivative.metricCompatibilityTensor_apply_eq_extend` give formulas for applying
+  the compatibility tensor at `x` to vector fields and sections which are differentiable at `x`,
   resp. to extensions of tangent vectors and sections at `x` to differentiable vector fields and
   sections near `x`.
 * `CovariantDerivative.IsMetric`: predicate for a connection to be metric, namely that
@@ -36,8 +36,8 @@ metric `g` if and only if the differentiated metric tensor `∇ g` (defined by
  `CovariantDerivative.IsMetric` with the characterisation that parallel transport be an
   isometry.
 
-* Given connections on bundles `V` and `W`, there is an induced connnection on the bundle `Hom(V, W)`.
-  When this induced connection has been defined in Mathlib, rephrase the definition of
+* Given connections on bundles `V` and `W`, there is an induced connnection on the bundle
+  `Hom(V, W)`. When this induced connection has been defined in Mathlib, rephrase the definition of
   `CovariantDerivative.metricCompatibilityTensor`, to be simply the covariant derivative of the
   metric tensor (considered as a section of `Hom(V, Hom(V, ℝ))`).
 
@@ -46,17 +46,14 @@ open Bundle NormedSpace
 open scoped Manifold ContDiff
 
 variable
-  -- Let `M` be a `C^k` real manifold modeled on `(E, H)`
+  -- Let `M` be a real manifold modeled on `(E, H)`
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  -- Let `V` be a bundle over `M` with standard fiber `F`, endowed with a Riemannian metric.
+  -- Let `V` be a bundle over `M` with standard fiber `F`.
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
-  [∀ x, AddCommGroup (V x)] [∀ x, Module ℝ (V x)]
-  [∀ x : M, TopologicalSpace (V x)]
-  [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul ℝ (V x)]
-  [FiberBundle F V] [RiemannianBundle V]
+  [∀ x, NormedAddCommGroup (V x)] [∀ x, InnerProductSpace ℝ (V x)] [FiberBundle F V]
 
 /-! # Compatible connections
 
@@ -96,6 +93,7 @@ lemma metricCompatibilityTensorAux_apply (σ τ : Π x : M, V x) {x : M} (X₀ :
   rw [real_inner_comm]
   rfl
 
+-- From now on, assume `V` is a vector bundle endowed with a `C¹` Riemannian metric.
 variable [VectorBundle ℝ F V] [IsContMDiffRiemannianBundle I 1 F V] {x : M}
 
 theorem metricCompatibilityTensorAux_tensorial₁ (τ : Π x, V x) (hτ : MDiffAt (T% τ) x) :
