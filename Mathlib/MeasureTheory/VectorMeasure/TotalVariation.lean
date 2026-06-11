@@ -62,9 +62,11 @@ lemma eTVDist_triangle (μ ν ξ : VectorMeasure 𝓧 M) :
   _ = ((μ - ν) + (ν - ξ)).variation Set.univ := by simp [eTVDist]
   _ ≤ eTVDist μ ν + eTVDist ν ξ := VectorMeasure.variation_add_le _
 
+@[simp]
 lemma eTVDist_zero_right (μ : VectorMeasure 𝓧 M) : eTVDist μ 0 = μ.variation Set.univ := by
   simp only [eTVDist, sub_zero]
 
+@[simp]
 lemma eTVDist_zero_left (ν : VectorMeasure 𝓧 M) : eTVDist 0 ν = ν.variation Set.univ := by
   rw [eTVDist_comm, eTVDist_zero_right]
 
