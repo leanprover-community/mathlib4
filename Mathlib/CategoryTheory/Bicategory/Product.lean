@@ -42,8 +42,7 @@ instance prod : Bicategory (B × C) where
   rightUnitor f := Iso.prod (ρ_ f.1) (ρ_ f.2)
   whisker_exchange η θ := Prod.ext (whisker_exchange η.1 θ.1) (whisker_exchange η.2 θ.2)
 
-open Strict
-
+open Strict in
 attribute [local simp] leftUnitor_eqToIso rightUnitor_eqToIso associator_eqToIso in
 /-- The cartesian product of two strict bicategories is strict. -/
 instance [Strict B] [Strict C] : Strict (B × C) where
