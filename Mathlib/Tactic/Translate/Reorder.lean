@@ -246,34 +246,15 @@ private def decomposePerm {n} (map : Vector (Option (Fin n)) n) : Permutation :=
     perm := cycle :: perm
   return perm
 
-/-- Determine the universe level reorder for `decl`, given the argument reorder.
-For each reordering in `reorder`, we find any corresponding universe reorderings,
-which are then combined to get the result. -/
-def guessUnivReorder (reorder : ArgReorder) (decl : ConstantInfo) : Permutation := Id.run do
-  let mut map := .replicate decl.levelParams.length none
-  for ⟨cycle, _⟩ in reorder.perm do
-    for i in cycle, i' in cycle.tail ++ [cycle.head (by grind)] do
-      for (u, u') in matchingUnivs (getNthHyp i decl.type) (getNthHyp i' decl.type) do
-        let some p := getParam? u | pure ()
-        let some p' := getParam? u' | pure ()
-        if p != p' then
-          let some n := decl.levelParams.finIdxOf? p | pure ()
-          let some n' := decl.levelParams.finIdxOf? p' | pure ()
-          map := map.set n n'
-  return decomposePerm map
-where
-  getNthHyp : Nat → Expr → Expr
-    | 0, e => e.bindingDomain!
-    | n + 1, e => getNthHyp n e.bindingBody!
-  matchingUnivs (e e' : Expr) : List (Level × Level) :=
-    match e.getAppFn, e'.getAppFn with
-    | .const n us, .const n' us' => if n == n' then us.zip us' else []
-    | .sort u, .sort u' => [(u, u')]
-    | _, _ => []
-  getParam? : Level → Option Name
-    | .param p => some p
-    | .succ u => getParam? u
-    | _ => none
+/-- Return the permutation that sends `src` to `tgt`, if it exists. -/
+def getPermutation {α : Type*} [BEq α] (src : Array α) (tgt : Array α) : Option Permutation := do
+  let n := src.size
+  if h : n = tgt.size then
+    have src : Vector α n := src.toVector
+    have tgt : Vector α n := h ▸ tgt.toVector
+    return decomposePerm (← src.mapM (some <$> tgt.finIdxOf? ·))
+  else
+    none
 
 /-- Determine how many forall binders should be introduced to get a non-dependent conclusion. -/
 private def depForallDepth : Expr → Nat

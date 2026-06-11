@@ -388,30 +388,19 @@ info: eq_of_max_of_min {α : Type} [PartialOrder α] (a b : α) (hmin : ∀ (x :
 theorem le_of_lt_and_le_of_lt {β} [Preorder β] (a b : α) (c d : β) : (a < b → a ≤ b) ∧ (c < d → c ≤ d) :=
   ⟨le_of_lt, (fun γ [Preorder γ] (c d : γ) ↦ @le_of_lt γ _ c d) β c d⟩
 
--- Test the reordering of universes
-@[to_dual (reorder := α β γ) universeTest1']
-def universeTest1.{u,v,w} (α : Type u) (β : Type v) (γ : Type w) := α × β × γ
+/-! Test the reordering of universes -/
 
-/-- info: universeTest1'.{w, u, v} (γ : Type w) (α : Type u) (β : Type v) : Type (max u w v) -/
-#guard_msgs in
-#check universeTest1'
+def universeTest1.{u,v,w} (α : Type u) (β : Type v) (γ : Type w) := α × β × γ
+@[to_dual existing (reorder := α β γ) universeTest1]
+def universeTest1'.{v,w,u} (α : Type u) (β : Type v) (γ : Type w) := α × β × γ
+@[to_dual none] alias universeTest1'' := universeTest1
 
 @[to_dual (reorder := u₁ u₂) universeTest2']
 def universeTest2.{u,v} (u₁ : PUnit.{u}) (u₂ : PUnit.{v}) := PProd.mk u₁ u₂
 
-/-- info: universeTest2'.{v, u} (u₂ : PUnit) (u₁ : PUnit) : PUnit ×' PUnit -/
+/-- info: universeTest2'.{u, v} (u₂ : PUnit) (u₁ : PUnit) : PUnit ×' PUnit -/
 #guard_msgs in
 #check universeTest2'
-
-@[to_dual (reorder := u₁ u₂) universeTest3']
-def universeTest3.{u,u',v,v'} (u₁ : PProd PUnit.{u} PUnit.{u'}) (u₂ : PProd PUnit.{v} PUnit.{v'}) :=
-  PProd.mk u₁ u₂
-
-/--
-info: universeTest3'.{v, v', u, u'} (u₂ : PUnit ×' PUnit) (u₁ : PUnit ×' PUnit) : (PUnit ×' PUnit) ×' PUnit ×' PUnit
--/
-#guard_msgs in
-#check universeTest3'
 
 class Category.{v,u} (c : Type u) where
   bla : Type v
