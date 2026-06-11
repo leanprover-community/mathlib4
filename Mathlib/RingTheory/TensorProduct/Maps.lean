@@ -280,6 +280,10 @@ lemma linearMap_comp_rid : (Algebra.linearMap S (S ⊗[R] B)).restrictScalars R 
     (TensorProduct.rid R R S).toLinearMap = (Algebra.linearMap R B).lTensor S := by
   ext; simp
 
+@[simp] lemma rid_comp_includeLeftRingHom :
+    (Algebra.TensorProduct.rid R S A : A ⊗[R] R →+* A).comp includeLeftRingHom = .id A := by
+  ext; simp
+
 section
 
 variable (R A B C : Type*) [CommSemiring R] [CommSemiring A] [Algebra R A] [Semiring B]
@@ -549,6 +553,10 @@ lemma map_comp_id
 theorem map_comp_includeLeft (f : A →ₐ[S] C) (g : B →ₐ[R] D) :
     (map f g).comp includeLeft = includeLeft.comp f :=
   AlgHom.ext <| by simp
+
+@[simp] lemma map_comp_includeLeftRingHom (f : A →ₐ[S] C) (g : B →ₐ[R] D) :
+    (map f g : A ⊗[R] B →+* C ⊗[R] D).comp includeLeftRingHom =
+      includeLeftRingHom.comp (f : A →+* C) := by ext; simp
 
 @[simp]
 theorem map_restrictScalars_comp_includeRight (f : A →ₐ[S] C) (g : B →ₐ[R] D) :

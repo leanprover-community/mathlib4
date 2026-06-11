@@ -429,8 +429,8 @@ instance [Bialgebra R T] :
     ext
     · have : includeLeftRingHom = algebraMap S (S ⊗[R] T) := rfl
       simp [Scheme.monObjAsOverPullback_mul, pullbackSpecIso', specOverSpec_over, ← Spec.map_comp,
-        ← CommRingCat.ofHom_comp, OverClass.asOver, AlgebraicGeometry.Scheme.mul_left,
-        this, Hom.asOver, OverClass.asOverHom, pullback.condition]
+        ← CommRingCat.ofHom_comp, OverClass.asOver, Scheme.mul_left, this, Hom.asOver,
+        OverClass.asOverHom, pullback.condition]
       rfl
     · convert! congr($(μ_pullback_left_fst R S T) ≫ (pullbackSpecIso R T T).hom ≫
         Spec.map (CommRingCat.ofHom (Bialgebra.comulAlgHom R T).toRingHom)) using 1
