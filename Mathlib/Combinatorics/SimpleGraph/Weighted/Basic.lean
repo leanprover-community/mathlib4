@@ -19,7 +19,7 @@ Dirichlet forms on discrete spaces.
 ## Main results
 
 - `WeightedGraph`: defines a weighted graphs as a `SimpleGraph` with a non-negative real-valued
-  symmetric `edgeWeight` function.
+  symmetric `WeightedGraph.edgeWeight` function.
 - `WeightedGraphWithKillingTerm`: extends `WeightedGraph` by adding a non-negative real-valued
   function defined on the vertices of the graph.
 - `StandardWeights`: a proposition that the killing term is 0 and the edgeWeight function is induced
@@ -61,8 +61,11 @@ that is 0 if and only if two vertices are not adjacent.
 -/
 @[ext]
 structure WeightedGraph (X : Type*) extends SimpleGraph X where
+  /-- The function that takes the endpoints of an edge and returns the edge's weight -/
   edgeWeight : X → X → ℝ≥0
+  /-- The edge weight function is symmetric. -/
   edgeWeight_symm : IsSymmOp edgeWeight
+  /-- An edge weight is greater than 0 if and only if the corresponding vertices are adjacent. -/
   edgeDef (u v : X) : Adj u v ↔ 0 < edgeWeight u v
 
 variable {X : Type*}
@@ -102,6 +105,7 @@ A WeightedGraphWithKillingTerm is a weighted graph with an additional non-negati
 -/
 @[ext]
 structure WeightedGraphWithKillingTerm (X : Type*) extends WeightedGraph X where
+  /-- The killing term is a non-negative real-valued function on the vertices of the graph. -/
   killingTerm : X → ℝ≥0
 
 variable (G : WeightedGraphWithKillingTerm X)
@@ -125,7 +129,7 @@ adjacent.
 -/
 @[simp]
 lemma standardWeights_edgeWeight_neq_zero_iff_eq_one (h : StandardWeights G) :
-    G.edgeWeight x y ≠ 0 ↔ G.Adj x y := by
+    ¬ G.edgeWeight x y = 0 ↔ G.Adj x y := by
   contrapose
   exact h.edgeWeight_NotAdj_iff.symm
 
@@ -135,7 +139,7 @@ are not adjacent.
 -/
 @[simp]
 lemma standardWeights_edgeWeight_neq_one_iff_eq_zero (h : StandardWeights G) :
-    G.edgeWeight x y ≠ 1 ↔ ¬ G.Adj x y := by
+    ¬ G.edgeWeight x y = 1 ↔ ¬ G.Adj x y := by
   contrapose
   exact h.edgeWeight_Adj_iff.symm
 
@@ -213,7 +217,6 @@ namespace WeightedGraphWithKillingTerm
 /--
 The definition of the form associated to a `WeightedGraphWithKillingTerm`.
 -/
-@[simp]
 noncomputable
 def associatedFormFun (f g : X → ℝ) :=
   (1/2) * ∑ x, ∑ y, (G.edgeWeight x y) * (f x - f y) * (g x - g y) +
@@ -221,11 +224,11 @@ def associatedFormFun (f g : X → ℝ) :=
 
 open Finset
 
-def associatedFormBilinearMap :
+lemma associatedFormBilinearMap :
     IsBilinearMap (R := ℝ) G.associatedFormFun where
   add_left f g h := by
     apply sub_eq_zero.mp
-    simp [sub_add_eq_sub_sub]
+    simp [associatedFormFun, sub_add_eq_sub_sub]
     ring_nf
     simp [sum_add_distrib]
     ring
@@ -239,7 +242,7 @@ def associatedFormBilinearMap :
     ring_nf
   add_right f g h := by
     apply sub_eq_zero.mp
-    simp [sub_add_eq_sub_sub]
+    simp [associatedFormFun, sub_add_eq_sub_sub]
     ring_nf
     simp [sum_add_distrib]
     ring
@@ -266,14 +269,16 @@ lemma associatedForm_apply {f g} : G.associatedForm f g =
 noncomputable
 instance : DecidableEq X := by exact Classical.typeDecidableEq X
 
+/-- We define the indicator functions to be our standard basis functions for X → ℝ -/
 noncomputable
 abbrev basisFun (y : X) : X → ℝ := Pi.single y 1
 
+/-- We use the notation 𝟙_ to write this basis/indicator function more concisely. -/
 scoped notation "𝟙_" y:max => basisFun y
 
 @[simp]
 lemma sum_killingTerm_weight_mul_basisFun_sq_eq_killingTerm_mul_basisFun_sq :
-    ∑ i, ↑(G.killingTerm i) * (𝟙_x) i ^ 2 = ↑(G.killingTerm x) * (𝟙_x) x ^ 2 := by
+    ∑ i, G.killingTerm i * (𝟙_x) i ^ 2 = G.killingTerm x * (𝟙_x) x ^ 2 := by
   simp [(Fintype.sum_subset (f := fun (y : X) ↦ G.killingTerm y * (𝟙_x) y ^ 2)
       (s := {x}) (by grind)).symm]
 
@@ -315,7 +320,7 @@ lemma associatedForm_of_basis_eq_degree :
 
 @[simp]
 lemma neq_basis_vecs_imp_sum_weighted_killingTerm_neq_basisFun_eq_zero (x y : X) (h : x ≠ y) :
-    ∑ z, ↑(G.killingTerm z) * (𝟙_x) z * (𝟙_y) z = 0 := by
+    ∑ z, G.killingTerm z * (𝟙_x) z * (𝟙_y) z = 0 := by
   have : (𝟙_y) x = 0 := by grind
   rw [Finset.sum_eq_sum_sdiff_singleton_add (i := x) (by simp), this, mul_zero, add_zero,
     ← Finset.sum_const_zero (s := (_ : Finset X))]
