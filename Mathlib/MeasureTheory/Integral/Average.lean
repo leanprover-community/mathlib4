@@ -237,12 +237,12 @@ theorem setLIntegral_setLAverage (μ : Measure α) [IsFiniteMeasure μ] (f : α 
   lintegral_laverage _ _
 
 @[gcongr]
-theorem laverage_mono_ae (h : ∀ᵐ a ∂μ, f a ≤ g a) :
+theorem laverage_mono_ae (h : f ≤ᶠ[ae μ] g) :
     ⨍⁻ a, f a ∂μ ≤ ⨍⁻ a, g a ∂μ :=
   lintegral_mono_ae <| h.filter_mono <| Measure.ae_mono' Measure.smul_absolutelyContinuous
 
 @[gcongr]
-theorem setLAverage_mono_ae (s : Set α) (h : ∀ᵐ a ∂μ, f a ≤ g a) :
+theorem setLAverage_mono_ae (s : Set α) (h : f ≤ᶠ[ae μ] g) :
     ⨍⁻ a in s, f a ∂μ ≤ ⨍⁻ a in s, g a ∂μ :=
   laverage_mono_ae <| h.filter_mono <| ae_mono Measure.restrict_le_self
 
@@ -507,7 +507,8 @@ theorem measure_le_setAverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞) (hf
     simp only [Pi.zero_apply, sub_nonneg, mem_compl_iff, mem_setOf_eq, not_le] at hx
     exact hx.le
   · exact hf.sub (integrableOn_const hμ₁)
-  · rwa [pos_iff_ne_zero, inter_comm, ← diff_compl, ← diff_inter_self_eq_diff, measure_diff_null]
+  · rwa [pos_iff_ne_zero, inter_comm, ← sdiff_compl, ← sdiff_inter_self_eq_sdiff,
+      measure_sdiff_null]
     refine measure_mono_null ?_ (measure_inter_eq_zero_of_restrict H)
     exact inter_subset_inter_left _ fun a ha => (sub_eq_zero.1 <| of_not_not ha).le
 
@@ -562,7 +563,7 @@ avoiding a null set. -/
 theorem exists_notMem_null_le_average (hμ : μ ≠ 0) (hf : Integrable f μ) (hN : μ N = 0) :
     ∃ x, x ∉ N ∧ f x ≤ ⨍ a, f a ∂μ := by
   have := measure_le_average_pos hμ hf
-  rw [← measure_diff_null hN] at this
+  rw [← measure_sdiff_null hN] at this
   obtain ⟨x, hx, hxN⟩ := nonempty_of_measure_ne_zero this.ne'
   exact ⟨x, hxN, hx⟩
 
@@ -629,7 +630,7 @@ theorem measure_le_setLAverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞)
     (hf.aestronglyMeasurable.nullMeasurableSet_le aestronglyMeasurable_const)]
   rw [← setOf_inter_eq_sep, ← Measure.restrict_apply₀
     (hf.ennreal_toReal.aestronglyMeasurable.nullMeasurableSet_le aestronglyMeasurable_const),
-    ← measure_diff_null (measure_eq_top_of_lintegral_ne_top hf h)] at this
+    ← measure_sdiff_null (measure_eq_top_of_lintegral_ne_top hf h)] at this
   refine this.trans_le (measure_mono ?_)
   rintro x ⟨hfx, hx⟩
   dsimp at hfx
@@ -650,7 +651,7 @@ theorem measure_setLAverage_le_pos (hμ : μ s ≠ 0) (hs : NullMeasurableSet s 
     measure_setAverage_le_pos hμ hμ₁ (integrable_toReal_of_lintegral_ne_top hg.aemeasurable hint)
   simp_rw [← setOf_inter_eq_sep, ← Measure.restrict_apply₀' hs, hfg']
   rw [← setOf_inter_eq_sep, ← Measure.restrict_apply₀' hs, ←
-    measure_diff_null (measure_eq_top_of_lintegral_ne_top hg.aemeasurable hint)] at this
+    measure_sdiff_null (measure_eq_top_of_lintegral_ne_top hg.aemeasurable hint)] at this
   refine this.trans_le (measure_mono ?_)
   rintro x ⟨hfx, hx⟩
   dsimp at hfx
@@ -688,7 +689,7 @@ avoiding a null set. -/
 theorem exists_notMem_null_laverage_le (hμ : μ ≠ 0) (hint : ∫⁻ a : α, f a ∂μ ≠ ∞) (hN : μ N = 0) :
     ∃ x, x ∉ N ∧ ⨍⁻ a, f a ∂μ ≤ f x := by
   have := measure_laverage_le_pos hμ hint
-  rw [← measure_diff_null hN] at this
+  rw [← measure_sdiff_null hN] at this
   obtain ⟨x, hx, hxN⟩ := nonempty_of_measure_ne_zero this.ne'
   exact ⟨x, hxN, hx⟩
 
@@ -712,7 +713,7 @@ avoiding a null set. -/
 theorem exists_notMem_null_le_laverage (hμ : μ ≠ 0) (hf : AEMeasurable f μ) (hN : μ N = 0) :
     ∃ x, x ∉ N ∧ f x ≤ ⨍⁻ a, f a ∂μ := by
   have := measure_le_laverage_pos hμ hf
-  rw [← measure_diff_null hN] at this
+  rw [← measure_sdiff_null hN] at this
   obtain ⟨x, hx, hxN⟩ := nonempty_of_measure_ne_zero this.ne'
   exact ⟨x, hxN, hx⟩
 
