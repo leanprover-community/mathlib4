@@ -957,8 +957,7 @@ axiom MulAxiom {α} : Mul α
 
 /-! Docstring on `alias` -/
 
-@[to_additive]
-alias HMulAlias := HMul
+@[to_additive] alias HMulAlias := HMul
 
 /--
 info: **Alias** of `HAdd`.
@@ -973,3 +972,38 @@ run_cmd
   let some doc ← findDocString? (← getEnv) ``HAddAlias
     | throwError "no `docComment` docstring found"
   logInfo doc
+
+@[to_additive /-- Overriding docstring -/] alias HMulAlias' := HMul
+
+/-- info: Overriding docstring -/
+#guard_msgs in
+run_cmd
+  let some doc ← findDocString? (← getEnv) ``HAddAlias'
+    | throwError "no `docComment` docstring found"
+  logInfo doc
+
+/-! Deprecated attribute -/
+
+@[deprecated mul_comm (since := "today"), to_additive]
+def old_mul_comm {α} [CommMagma α] (a b : α) : a * b = b * a := mul_comm a b
+
+/--
+warning: `old_add_comm` has been deprecated: Use `add_comm` instead
+---
+info: @old_add_comm : ∀ {α : Type u_1} [inst : AddCommMagma α] (a b : α), a + b = b + a
+-/
+#guard_msgs in
+#check @old_add_comm
+
+/--
+warning: Instead of `@[to_additive (attr := deprecated ...)]`, the deprecation should be added separately, before the `to_additive` attribute:
+
+`@[deprecated ..., to_additive]`.
+
+Then `to_additive` will automatically deprecate the newly generated declaration.
+
+Note: This linter can be disabled with `set_option linter.translateDeprecated false`
+-/
+#guard_msgs in
+@[to_additive (attr := deprecated mul_comm (since := "today"))]
+def old_mul_comm' {α} [CommMagma α] (a b : α) : a * b = b * a := mul_comm a b

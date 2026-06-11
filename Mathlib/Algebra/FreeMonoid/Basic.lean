@@ -114,13 +114,13 @@ theorem toList_one : toList (1 : FreeMonoid α) = [] := rfl
 @[to_additive (attr := simp)]
 theorem ofList_nil : ofList ([] : List α) = 1 := rfl
 
-@[to_additive (attr := deprecated toList_one (since := "2026-03-26"))]
+@[deprecated toList_one (since := "2026-03-26"), to_additive]
 theorem toList_nil : toList ([] : FreeMonoid α) = [] := rfl
 
 @[to_additive (attr := simp)]
 theorem toList_mul (xs ys : FreeMonoid α) : toList (xs * ys) = toList xs ++ toList ys := rfl
 
-@[to_additive (attr := deprecated toList_mul (since := "2026-03-26"))]
+@[deprecated toList_mul (since := "2026-03-26"), to_additive]
 theorem toList_cons (x : α) (xs : FreeMonoid α) : toList (x :: xs) = x :: toList xs := rfl
 
 @[to_additive (attr := simp)]

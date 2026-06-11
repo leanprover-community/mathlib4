@@ -104,7 +104,7 @@ theorem isMulCommutative_closure {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s, 
 
 open scoped IsMulCommutative
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative monoid. -/
-@[to_additive (attr := deprecated isMulCommutative_closure (since := "2026-03-09"))
+@[deprecated isMulCommutative_closure (since := "2026-03-09"), to_additive
 /-- If all the elements of a set `s` commute, then `closure s` forms an additive
 commutative monoid. -/]
 abbrev closureCommMonoidOfComm {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :

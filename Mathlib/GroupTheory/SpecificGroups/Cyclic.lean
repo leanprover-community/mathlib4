@@ -202,8 +202,8 @@ theorem commutative_of_addCyclic_center_quotient {G G' : Type*} [AddGroup G] [Ad
     [IsAddCyclic G'] (f : G →+ G') (hf : f.ker ≤ .center G) (a b : G) : a + b = b + a :=
   f.isAddCommutative_of_isAddCyclic_of_ker_le_center hf |>.is_comm.comm a b
 
-@[to_additive existing (attr := deprecated MonoidHom.isMulCommutative_of_isCyclic_of_ker_le_center
-  (since := "2026-05-26"))]
+@[deprecated MonoidHom.isMulCommutative_of_isCyclic_of_ker_le_center (since := "2026-05-26"),
+to_additive]
 theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G)
     (a b : G) : a * b = b * a :=
   f.isMulCommutative_of_isCyclic_of_ker_le_center hf |>.is_comm.comm a b

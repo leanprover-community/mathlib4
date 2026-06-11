@@ -649,15 +649,15 @@ theorem lowerCentralSeries_mono (n : ℕ) :
   | zero => intro S T h; simpa
   | succ d hd => intro S T h; simp only [lowerCentralSeries_succ]; exact commutator_mono (hd h) h
 
-@[to_additive (attr := deprecated "Use `top_subtype_lowerCentralSeries` and \
-  `lowerCentralSeries_mono` instead." (since := "2026-05-27"))]
+@[deprecated "Use `top_subtype_lowerCentralSeries` and \
+  `lowerCentralSeries_mono` instead." (since := "2026-05-27"), to_additive]
 theorem lowerCentralSeries_map_subtype_le (H : Subgroup G) (n : ℕ) :
     ((⊤ : Subgroup H).lowerCentralSeries n).map H.subtype ≤ lowerCentralSeries ⊤ n := by
   rw [top_subtype_lowerCentralSeries]
   exact lowerCentralSeries_mono n le_top
 
-@[to_additive (attr := deprecated "Use `map_lowerCentralSeries` and \
-  `lowerCentralSeries_mono` instead." (since := "2026-05-28"))]
+@[deprecated "Use `map_lowerCentralSeries` and \
+  `lowerCentralSeries_mono` instead." (since := "2026-05-28"), to_additive]
 theorem lowerCentralSeries.map {K : Type*} [Group K] (f : G →* K) (n : ℕ) :
     ((⊤ : Subgroup G).lowerCentralSeries n).map f ≤ (⊤ : Subgroup K).lowerCentralSeries n := by
   rw [map_lowerCentralSeries]

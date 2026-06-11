@@ -333,7 +333,7 @@ theorem length_le (h : Red L₁ L₂) : L₂.length ≤ L₁.length :=
   h.sublist.length_le
 
 set_option linter.auxLemma false in
-@[to_additive (attr := deprecated "Should not be needed." (since := "2026-04-10"))]
+@[deprecated "Should not be needed." (since := "2026-04-10"), to_additive]
 theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
     Step L₁ L₂ → sizeOf L₂ < sizeOf L₁
   | _, _, @Step.not _ L1 L2 x b => by
@@ -912,10 +912,9 @@ theorem sum.map_inv : sum x⁻¹ = -sum x :=
 end Sum
 
 /-- The bijection between the free group on the empty type, and a type with one element. -/
-@[to_additive
-  (attr := deprecated "Use `Equiv.ofUnique (FreeGroup Empty) Unit` instead,
+@[deprecated "Use `Equiv.ofUnique (FreeGroup Empty) Unit` instead,
 or `MulEquiv.ofUnique (FreeGroup Empty) Unit` for the multiplicative version instead."
-(since := "2026-02-11"))
+(since := "2026-02-11"), to_additive
   /-- The bijection between the additive free group on the empty type,
   and a type with one element. -/]
 abbrev freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit :=

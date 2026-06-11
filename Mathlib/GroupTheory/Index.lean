@@ -525,7 +525,7 @@ lemma _root_.AddSubgroup.inf_eq_bot_of_coprime {G : Type*} [AddGroup G] {H K : A
     (h : Nat.Coprime (Nat.card H) (Nat.card K)) : H ⊓ K = ⊥ :=
   disjoint_iff.mp <| AddSubgroup.disjoint_of_coprime_natCard h
 
-@[to_additive existing (attr := deprecated disjoint_of_coprime_natCard (since := "2026-05-28"))]
+@[deprecated disjoint_of_coprime_natCard (since := "2026-05-28"), to_additive]
 lemma inf_eq_bot_of_coprime (h : Nat.Coprime (Nat.card H) (Nat.card K)) : H ⊓ K = ⊥ :=
   disjoint_iff.mp <| disjoint_of_coprime_natCard h
 
