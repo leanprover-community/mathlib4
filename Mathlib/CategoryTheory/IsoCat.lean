@@ -33,8 +33,9 @@ namespace CategoryTheory
 
 open Functor NatIso Category
 
-variable (C : Type*) (D : Type*) [Category* C] [Category* D]
+variable {C : Type*} {D : Type*} {E : Type*} [Category* C] [Category* D] [Category* E]
 
+variable (C) (D) in
 /-- An isomorphism of categories: a pair of functors whose composites are equal to the
 identity functors. -/
 structure IsoCat where
@@ -47,6 +48,7 @@ structure IsoCat where
   /-- The composition `inverse ⋙ functor` is equal to the identity. -/
   counit_eq : inverse ⋙ functor = 𝟭 D
 
+variable (C) in
 /-- The identity isomorphism of categories. -/
 @[simps, refl]
 def IsoCat.refl : IsoCat C C where
@@ -65,8 +67,7 @@ def IsoCat.symm (e : IsoCat C D) : IsoCat D C where
 
 /-- Composition of isomorphisms of categories. -/
 @[simps, trans]
-def IsoCat.trans {E : Type*} [Category* E]
-    (e : IsoCat C D) (f : IsoCat D E) : IsoCat C E where
+def IsoCat.trans (e : IsoCat C D) (f : IsoCat D E) : IsoCat C E where
   functor := e.functor ⋙ f.functor
   inverse := f.inverse ⋙ e.inverse
   unit_eq := by
@@ -76,7 +77,6 @@ def IsoCat.trans {E : Type*} [Category* E]
     rw [Functor.assoc, ← Functor.assoc e.inverse, e.counit_eq, Functor.id_comp]
     exact f.counit_eq
 
-variable {C} {D} in
 /-- A functor `F : C ⥤ D` is an isomorphism of categories if it is full, faithful and
 bijective on objects. Such a functor has a strict inverse `Functor.strictInv` and assembles
 into an `IsoCat` via `Functor.asIsomorphism`. -/
@@ -88,13 +88,28 @@ protected class Functor.IsIso (F : C ⥤ D) : Prop where
   /-- A functor which is an isomorphism of categories is bijective on objects. -/
   bijectiveOnObjects : F.obj.Bijective
 
-variable {C} {D} (F : C ⥤ D) [h : F.IsIso]
+attribute [instance] Functor.IsIso.faithful Functor.IsIso.full
 
-instance : F.Full := h.full
-instance : F.Faithful := h.faithful
+instance : (𝟭 C).IsIso where
+  bijectiveOnObjects := Function.bijective_id
+
+variable (F : C ⥤ D) [h : F.IsIso] (G : D ⥤ E) [h' : G.IsIso]
 
 /-- The bijection on objects induced by a functor that is an isomorphism of categories. -/
 noncomputable def Functor.objEquiv : C ≃ D := .ofBijective _ h.bijectiveOnObjects
+
+@[simp]
+lemma Functor.objEquiv_symm_apply_apply (X : C) :
+    F.objEquiv.symm (F.obj X) = X :=
+  F.objEquiv.symm_apply_apply X
+
+@[simp]
+lemma Functor.objEquiv_apply_symm_apply (Y : D) :
+    F.obj (F.objEquiv.symm Y) = Y :=
+  F.objEquiv.apply_symm_apply Y
+
+instance : F.IsEquivalence where
+  essSurj := ⟨fun Y ↦ ⟨F.objEquiv.symm Y, ⟨eqToIso (by simp)⟩⟩⟩
 
 /-- The strict inverse of a functor that is an isomorphism of categories, defined using
 `Functor.objEquiv` on objects and `Functor.preimage` on morphisms. -/
@@ -127,11 +142,6 @@ def IsoCat.toEquivalence (e : IsoCat C D) : C ≌ D where
   counitIso := eqToIso e.counit_eq
   functor_unitIso_comp X := by simp [eqToHom_map]
 
-instance (F : C ⥤ D) [h : F.IsIso] : F.IsEquivalence := by
-  have := Equivalence.isEquivalence_functor F.asIsomorphism.toEquivalence
-  dsimp [asIsomorphism, IsoCat.toEquivalence] at this
-  infer_instance
-
 /-- Promotes an equivalence of categories `e : C ≌ D` whose unit and counit isomorphisms are
 given by equalities of objects into an `IsoCat C D`. -/
 @[simps]
@@ -151,5 +161,14 @@ instance IsoCat.isIsomorphismFunctor (e : IsoCat C D) : e.functor.IsIso where
   bijectiveOnObjects := Function.bijective_iff_has_inverse.mpr
     ⟨e.inverse.obj, fun X => (Functor.congr_obj e.unit_eq X).symm,
       Functor.congr_obj e.counit_eq⟩
+
+instance (e : IsoCat C D) : e.inverse.IsIso :=
+  IsoCat.isIsomorphismFunctor e.symm
+
+instance : F.strictInv.IsIso :=
+  IsoCat.isIsomorphismFunctor F.asIsomorphism.symm
+
+instance : (F ⋙ G).IsIso :=
+  IsoCat.isIsomorphismFunctor (F.asIsomorphism.trans G.asIsomorphism)
 
 end CategoryTheory
