@@ -54,6 +54,8 @@ This shortens the overall argument, as the definition of submersions has the sam
 * `IsImmersion.id`: the identity map is an immersion
 * `IsImmersion.of_opens`: the inclusion of an open subset `s → M` of a smooth manifold
   is a smooth immersion
+* `IsImmersion.sumInl` and `IsImmersion.sumInr`: given `C^n` manifolds `M` and `N`,
+  `Sum.inl : M → M ⊕ N` and `Sum.inr : N → M ⊕ N` are `C^n` immersions
 * `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
 * `IsImmersion.contMDiff`: if f is a `C^n` immersion, it is automatically `C^n`
   in the sense of `ContMDiff`.
@@ -615,6 +617,7 @@ In other words, `f` is an immersion at each `x ∈ M`.
 This definition has a fixed parameter `F`, which is a choice of complement of `E` in `E'`:
 being an immersion at `x` includes a choice of linear isomorphism between `E × F` and `E'`.
 -/
+@[expose]
 def IsImmersionOfComplement (f : M → N) : Prop := ∀ x, IsImmersionAtOfComplement F I J n f x
 
 variable (I J n) in
@@ -696,6 +699,32 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsImmersionOfComplement PUnit I I n (Subtype.val : s → M) :=
   fun y ↦ IsImmersionAtOfComplement.of_opens s y
 
+/-- Given `C^n` manifolds `M` and `N` over the same model `I`,
+`Sum.inl : M → M ⊕ N` is a `C^n` immersion with complement `Unit` -/
+lemma sumInl {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] [IsManifold I n M]
+    [IsManifold I n M'] : IsImmersionOfComplement Unit I I n (@Sum.inl M M') := by
+  intro x
+  apply IsImmersionAtOfComplement.mk_of_continuousAt (equiv := (.prodUnique 𝕜 E _))
+    (by fun_prop) _ _ (mem_chart_source H x) (mem_chart_source H (Sum.inl x))
+    (IsManifold.chart_mem_maximalAtlas x) (IsManifold.chart_mem_maximalAtlas (Sum.inl x))
+  intro y hy
+  have : I ((chartAt H x) ((chartAt H x).symm (I.symm y))) = y := by
+    rw [(chartAt H x).right_inv (by simp_all), I.right_inv (by simp_all)]
+  simpa
+
+/-- Given `C^n` manifolds `M` and `N` over the same model `I`,
+`Sum.inr : N → M ⊕ N` is a `C^n` immersion with complement `Unit` -/
+lemma sumInr {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] [IsManifold I n M]
+    [IsManifold I n M'] : IsImmersionOfComplement Unit I I n (@Sum.inr M M') := by
+  intro x
+  apply IsImmersionAtOfComplement.mk_of_continuousAt (equiv := (.prodUnique 𝕜 E _))
+    (by fun_prop) _ _ (mem_chart_source H x) (mem_chart_source H (Sum.inr x))
+    (IsManifold.chart_mem_maximalAtlas x) (IsManifold.chart_mem_maximalAtlas (Sum.inr x))
+  intro y hy
+  have : I ((chartAt H x) ((chartAt H x).symm (I.symm y))) = y := by
+    rw [(chartAt H x).right_inv (by simp_all), I.right_inv (by simp_all)]
+  simpa
+
 @[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
 
 /-- A `C^n` immersion is `C^n`. -/
@@ -762,6 +791,18 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsImmersion I I n (Subtype.val : s → M) := by
   use PUnit, by infer_instance, by infer_instance
   exact IsImmersionOfComplement.of_opens s
+
+/-- Given `C^n` manifolds `M` and `N` over the same model `I`,
+`Sum.inl : M → M ⊕ N` is a `C^n` immersion -/
+lemma sumInl {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
+    [IsManifold I n M] [IsManifold I n M'] : IsImmersion I I n (@Sum.inl M M') :=
+  IsImmersionOfComplement.sumInl.isImmersion
+
+/-- Given `C^n` manifolds `M` and `N` over the same model `I`,
+`Sum.inr : N → M ⊕ N` is a `C^n` immersion -/
+lemma sumInr {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
+    [IsManifold I n M] [IsManifold I n M'] : IsImmersion I I n (@Sum.inr M M') :=
+  IsImmersionOfComplement.sumInr.isImmersion
 
 @[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
 
