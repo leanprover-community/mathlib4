@@ -181,17 +181,6 @@ instance isMulCommutative [T2Space A] (x : A) [IsStarNormal x] :
     IsMulCommutative (elemental R x) :=
   isMulCommutative_topologicalClosure _
 
-open scoped IsMulCommutative in
-@[deprecated isMulCommutative (since := "2026-03-12")]
-instance [T2Space A] {x : A} [IsStarNormal x] : NonUnitalCommSemiring (elemental R x) :=
-  fast_instance% inferInstance
-
-instance {R A : Type*} [CommRing R] [StarRing R] [NonUnitalRing A] [StarRing A]
-    [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]
-    [TopologicalSpace A] [IsSemitopologicalRing A] [ContinuousConstSMul R A] [ContinuousStar A]
-    [T2Space A] {x : A} [IsStarNormal x] : NonUnitalCommRing (elemental R x) where
-  mul_comm := mul_comm
-
 instance {A : Type*} [UniformSpace A] [CompleteSpace A] [NonUnitalSemiring A] [StarRing A]
     [IsSemitopologicalSemiring A] [ContinuousStar A] [Module R A] [IsScalarTower R A A]
     [SMulCommClass R A A] [StarModule R A] [ContinuousConstSMul R A] (x : A) :

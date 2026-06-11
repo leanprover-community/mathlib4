@@ -682,11 +682,6 @@ instance isClosed (x : A) : IsClosed (elemental R x : Set A) :=
 instance isMulCommutative [T2Space A] (x : A) : IsMulCommutative (elemental R x) := by
   unfold elemental; infer_instance
 
-open scoped IsMulCommutative in
-@[deprecated isMulCommutative (since := "2026-03-12")]
-instance [T2Space A] {x : A} : CommSemiring (elemental R x) :=
-  fast_instance% commSemiringTopologicalClosure _ mul_comm
-
 instance {A : Type*} [UniformSpace A] [CompleteSpace A] [Semiring A]
     [IsSemitopologicalSemiring A] [Algebra R A] (x : A) :
     CompleteSpace (elemental R x) :=
@@ -722,8 +717,5 @@ abbrev Subalgebra.commRingTopologicalClosure [T2Space A] (s : Subalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : CommRing s.topologicalClosure :=
   have : IsMulCommutative s := ⟨⟨hs⟩⟩
   inferInstance
-
-instance [T2Space A] {x : A} : CommRing (elemental R x) where
-  mul_comm := mul_comm
 
 end Ring

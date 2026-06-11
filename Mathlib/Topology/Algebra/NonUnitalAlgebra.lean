@@ -169,16 +169,6 @@ instance isClosed (x : A) : IsClosed (elemental R x : Set A) :=
 instance [T2Space A] {x : A} : IsMulCommutative (elemental R x) :=
   isMulCommutative_topologicalClosure _
 
-open scoped IsMulCommutative in
-instance [T2Space A] {x : A} : NonUnitalCommSemiring (elemental R x) :=
-  fast_instance% inferInstance
-
-instance {R A : Type*} [CommRing R] [NonUnitalRing A]
-    [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
-    [TopologicalSpace A] [IsSemitopologicalRing A] [ContinuousConstSMul R A]
-    [T2Space A] {x : A} : NonUnitalCommRing (elemental R x) where
-  mul_comm := mul_comm
-
 instance {A : Type*} [UniformSpace A] [CompleteSpace A] [NonUnitalSemiring A]
     [IsSemitopologicalSemiring A] [Module R A] [IsScalarTower R A A]
     [SMulCommClass R A A] [ContinuousConstSMul R A] (x : A) :
