@@ -189,22 +189,22 @@ lemma associatedForm_of_basis_eq_degree :
     Pi.single_eq_same, one_pow, mul_one]
   rw [mul_add]
   congr
-  rw [Finset.sum_eq_sum_diff_singleton_add (i := x) (by simp)]
+  rw [Finset.sum_eq_sum_sdiff_singleton_add (i := x) (by simp)]
   have : ∑ x_1, ↑((G.edgeWeight x x_1) : ℝ) * (1 - (𝟙_x) x_1) ^ 2
       = ∑ x_1, ↑(G.edgeWeight x x_1 : ℝ) := by
-    rw [Finset.sum_eq_sum_diff_singleton_add (i := x) (by simp)]
-    nth_rw 2 [Finset.sum_eq_sum_diff_singleton_add (i := x) (by simp)]
+    rw [Finset.sum_eq_sum_sdiff_singleton_add (i := x) (by simp)]
+    nth_rw 2 [Finset.sum_eq_sum_sdiff_singleton_add (i := x) (by simp)]
     congr
     · ext y
       by_cases h : y = x <;> simp_all
     simp_all
   simp only [Pi.single_eq_same, this, two_mul]
   congr 1
-  nth_rw 2 [Finset.sum_eq_sum_diff_singleton_add (i := x) (by simp)]
+  nth_rw 2 [Finset.sum_eq_sum_sdiff_singleton_add (i := x) (by simp)]
   simp only [G.no_loop, coe_zero, add_zero]
   congr! with y h
   have : y ≠ x := by grind
-  rw [Finset.sum_eq_sum_diff_singleton_add (i := x) (by simp)]
+  rw [Finset.sum_eq_sum_sdiff_singleton_add (i := x) (by simp)]
   simp only [ne_eq, this, not_false_eq_true, Pi.single_eq_of_ne, zero_sub, even_two, Even.neg_pow,
     Pi.single_eq_same, one_pow, mul_one, G.edgeWeight_symm_apply]
   apply add_eq_right.mpr
@@ -216,7 +216,7 @@ lemma associatedForm_of_basis_eq_degree :
 lemma neq_basis_vecs_imp_sum_weighted_killingTerm_neq_basisFun_eq_zero (x y : X) (h : x ≠ y) :
     ∑ z, ↑(G.killingTerm z) * (𝟙_x) z * (𝟙_y) z = 0 := by
   have : (𝟙_y) x = 0 := by grind
-  rw [Finset.sum_eq_sum_diff_singleton_add (i := x) (by simp), this, mul_zero, add_zero,
+  rw [Finset.sum_eq_sum_sdiff_singleton_add (i := x) (by simp), this, mul_zero, add_zero,
     ← Finset.sum_const_zero (s := (_ : Finset X))]
   congr! with y h
   grind
@@ -227,8 +227,8 @@ lemma associatedForm_neq_basisFuns_eq_neq_edgeWeight (x y : X) (h : x ≠ y) :
   simp only [associatedForm_apply, one_div]
   field_simp
   rw [neq_basis_vecs_imp_sum_weighted_killingTerm_neq_basisFun_eq_zero (h := h), mul_zero, add_zero,
-    Finset.sum_eq_sum_diff_singleton_add (i := x) (by simp)]
-  nth_rw 2 [Finset.sum_eq_sum_diff_singleton_add (i := y) (by simp)]
+    Finset.sum_eq_sum_sdiff_singleton_add (i := x) (by simp)]
+  nth_rw 2 [Finset.sum_eq_sum_sdiff_singleton_add (i := y) (by simp)]
   have one_y_eq_0 : (𝟙_y) x = 0 := by grind
   conv => lhs; congr; rfl; arg 2; simp [h]
   have : ∑ x_1 ∈ univ \ {y}, ↑(G.edgeWeight x x_1)
@@ -254,7 +254,7 @@ lemma associatedForm_neq_basisFuns_eq_neq_edgeWeight (x y : X) (h : x ≠ y) :
       exact this
     congr! with z h2
     grind
-  rw [this, zero_add, Finset.sum_eq_sum_diff_singleton_add (i := y) (by grind)]
+  rw [this, zero_add, Finset.sum_eq_sum_sdiff_singleton_add (i := y) (by grind)]
   have : ↑(G.edgeWeight y x) * ((𝟙_x) y - (𝟙_x) x) * ((𝟙_y) y - (𝟙_y) x)
     = - ↑(G.edgeWeight y x) := by grind
   rw [this]
@@ -273,7 +273,7 @@ lemma associatedForm_at_basisVec_eq_killingTerm : G.associatedForm (𝟙_x) 1 = 
   have : ∑ x_1 ∈ univ \ {x}, ↑(G.killingTerm x_1) * (𝟙_x) x_1 = 0 := by
     rw [← Finset.sum_const_zero]; congr! with z h2; grind
   simp [associatedForm_apply]
-  grind [Finset.sum_eq_sum_diff_singleton_add]
+  grind [Finset.sum_eq_sum_sdiff_singleton_add]
 
 lemma associatedForm_isSymm : G.associatedForm.IsSymm := by
   simp only [LinearMap.isSymm_def, associatedForm_apply, one_div, Real.ringHom_apply]
