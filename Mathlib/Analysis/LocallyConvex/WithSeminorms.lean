@@ -1023,14 +1023,14 @@ section NontriviallyNormedField
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [Module 𝕜 E] [TopologicalSpace E]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
-theorem Topology.IsInducing.exists_continuous_seminorm_le {p : Seminorm 𝕜 E} (hp : Continuous p)
+theorem Seminorm.bound_comp_of_isInducing {p : Seminorm 𝕜 E} (hp : Continuous p)
     {q : SeminormFamily 𝕜₂ F ι} (hq : WithSeminorms q) {f : E →ₛₗ[σ₁₂] F} (hf : IsInducing f) :
     ∃ (s : Finset ι) (C : ℝ≥0), C ≠ 0 ∧ p ≤ (C • s.sup q).comp f := by
   obtain ⟨s, C, hC, hqC⟩ := Seminorm.bound_of_continuous (hf.withSeminorms hq) p hp
   rw [← SeminormFamily.finset_sup_comp, ← Seminorm.smul_comp] at hqC
   exact ⟨s, C, hC, hqC⟩
 
-theorem PolynormableSpace.exists_continuous_seminorm_le {p : Seminorm 𝕜 E} (hp : Continuous p)
+theorem Seminorm.exists_le_comp_of_isInducing {p : Seminorm 𝕜 E} (hp : Continuous p)
     [PolynormableSpace 𝕜₂ F] {f : E →ₛₗ[σ₁₂] F} (hf : IsInducing f) :
     ∃ p₂ : Seminorm 𝕜₂ F, Continuous p₂ ∧ p ≤ p₂.comp f := by
   obtain ⟨s, C, -, hqC⟩ := hf.exists_continuous_seminorm_le hp
