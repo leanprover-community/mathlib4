@@ -354,9 +354,9 @@ end CommSemiring
 section Semifield
 variable [Semifield K] [CharZero K]
 
-@[simp]
-lemma expect_indicator_one [Fintype ι] (s : Finset ι) : 𝔼 i : ι, (Set.indicator s 1 i : K) = s.dens := by
-  classical simp [expect, sum_indicator_eq_sum_inter, dens, div_eq_inv_mul]
+@[simp] lemma expect_indicator_one [Fintype ι] (s : Finset ι) :
+    𝔼 i : ι, (Set.indicator s 1 i : K) = s.dens := by
+  classical simp [expect, sum_indicator_eq_sum_inter, dens, div_eq_inv_mul, NNRat.smul_def]
 
 lemma expect_boole_mul [Fintype ι] [Nonempty ι] [DecidableEq ι] (f : ι → K) (i : ι) :
     𝔼 j, ite (i = j) (Fintype.card ι : K) 0 * f j = f i := by
