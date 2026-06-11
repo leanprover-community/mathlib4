@@ -110,6 +110,17 @@ lemma ord_le_ord_iff {x y : X} (hx : coheight x = 1) (hy : coheight y = 1) {f g 
   erw [Multiplicative.toAdd_le]
   simp
 
+/--
+TODO: Make this proof less awful
+-/
+lemma le_ord_iff {x : X} (hx : coheight x = 1) {f : X.functionField}
+    (hf : f ≠ 0) {n : ℤ} :
+    n ≤ ord f x ↔ ↑(Multiplicative.ofAdd n) ≤ ordHom x hx f := by
+  rw [ord_eq_unzero_ordHom hx hf]
+  erw [Multiplicative.toAdd_le]
+  rw [le_unzero_iff]
+  rfl
+
 lemma ord_add {x : X} (hx : coheight x = 1) [IsDiscreteValuationRing (X.presheaf.stalk x)]
     {f g : X.functionField} (hfg : f + g ≠ 0) :
     min (ord f x) (ord g x) ≤ ord (f + g) x := by
