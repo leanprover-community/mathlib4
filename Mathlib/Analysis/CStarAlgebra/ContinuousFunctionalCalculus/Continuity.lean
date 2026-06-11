@@ -258,15 +258,6 @@ theorem continuousOn_cfc_setProd {s : Set 𝕜} (hs : IsCompact s) :
     (fun a ⟨_, ha'⟩ ↦ lipschitzOnWith_cfc_fun_of_subset a ha')
 
 open UniformOnFun in
-private lemma uniformContinuous_ofFun_toFun_compact {𝕜 : Type*} [UniformSpace 𝕜] {s k : Set 𝕜}
-    (hk : IsCompact k) (hks : k ⊆ s) :
-    Continuous (fun f : 𝕜 →ᵤ[{t | IsCompact t ∧ t ⊆ s}] 𝕜 ↦
-      ofFun {k} (toFun {t | IsCompact t ∧ t ⊆ s} f)) := by
-  apply UniformContinuous.continuous
-  refine uniformContinuous_ofFun_toFun 𝕜 _ _ fun _ _ ↦ ?_
-  exact ⟨{k}, by simp_all⟩
-
-open UniformOnFun in
 theorem continuousOn_cfc_setProd_nhdsSet [CompleteSpace A] {s : Set 𝕜} :
     ContinuousOn (fun fa : (𝕜 →ᵤ[{t | IsCompact t ∧ t ⊆ s}] 𝕜) × A ↦ cfc (toFun {s} fa.1) fa.2)
       ({f | ContinuousOn (toFun {t | IsCompact t ∧ t ⊆ s} f) s} ×ˢ
@@ -278,7 +269,8 @@ theorem continuousOn_cfc_setProd_nhdsSet [CompleteSpace A] {s : Set 𝕜} :
   refine ⟨Set.univ ×ˢ {x | k ∈ 𝓝ˢ (spectrum 𝕜 x)}, isOpen_univ.prod this, by simpa, ?_⟩
   conv in cfc _ => equals cfc (toFun {k} (ofFun {k} (toFun {t | IsCompact t ∧ t ⊆ s} fa.1))) => rfl
   refine continuousOn_cfc_setProd hk |>.comp'
-    (uniformContinuous_ofFun_toFun_compact hk hks |>.prodMap continuous_id).continuousOn ?_
+    (uniformContinuous_ofFun_toFun_of_mem 𝕜 {t | IsCompact t ∧ t ⊆ s} _ ⟨hk, hks⟩ |>.prodMap
+      uniformContinuous_id).continuous.continuousOn ?_
   intro (f, a) ⟨⟨hf, ha⟩, ⟨_, ha'⟩⟩
   exact ⟨hf.mono hks, ha.1, subset_of_mem_nhdsSet ha'⟩
 
@@ -461,7 +453,8 @@ theorem continuousOn_cfc_nnreal_setProd_nhdsSet [CompleteSpace A] {s : Set ℝ�
   refine ⟨Set.univ ×ˢ {x | k ∈ 𝓝ˢ (spectrum ℝ≥0 x)}, isOpen_univ.prod this, by simpa, ?_⟩
   conv in cfc _ => equals cfc (toFun {k} (ofFun {k} (toFun {t | IsCompact t ∧ t ⊆ s} fa.1))) => rfl
   refine continuousOn_cfc_nnreal_setProd hk |>.comp'
-    (uniformContinuous_ofFun_toFun_compact hk hks |>.prodMap continuous_id).continuousOn ?_
+    (uniformContinuous_ofFun_toFun_of_mem _ {t | IsCompact t ∧ t ⊆ s} _ ⟨hk, hks⟩ |>.prodMap
+      uniformContinuous_id).continuous.continuousOn ?_
   intro (f, a) ⟨⟨hf, ha⟩, ⟨_, ha'⟩⟩
   exact ⟨hf.mono hks, ha.1, subset_of_mem_nhdsSet ha'⟩
 
@@ -816,7 +809,8 @@ theorem continuousOn_cfcₙ_setProd_nhdsSet [CompleteSpace A] {s : Set 𝕜} :
   conv in cfcₙ _ =>
     equals cfcₙ (toFun {k} (ofFun {k} (toFun {t | IsCompact t ∧ t ⊆ s} fa.1))) => rfl
   refine continuousOn_cfcₙ_setProd hk |>.comp'
-    (uniformContinuous_ofFun_toFun_compact hk hks |>.prodMap continuous_id).continuousOn ?_
+    (uniformContinuous_ofFun_toFun_of_mem _ {t | IsCompact t ∧ t ⊆ s} _ ⟨hk, hks⟩ |>.prodMap
+      uniformContinuous_id).continuous.continuousOn ?_
   intro (f, a) ⟨⟨hf, ha⟩, ⟨_, ha'⟩⟩
   exact ⟨⟨hf.1.mono hks, hf.2⟩, ha.1, subset_of_mem_nhdsSet ha'⟩
 
@@ -1010,7 +1004,8 @@ theorem continuousOn_cfcₙ_nnreal_setProd_nhdsSet [CompleteSpace A] {s : Set �
   conv in cfcₙ _ =>
     equals cfcₙ (toFun {k} (ofFun {k} (toFun {t | IsCompact t ∧ t ⊆ s} fa.1))) => rfl
   refine continuousOn_cfcₙ_nnreal_setProd hk |>.comp'
-    (uniformContinuous_ofFun_toFun_compact hk hks |>.prodMap continuous_id).continuousOn ?_
+    (uniformContinuous_ofFun_toFun_of_mem _ {t | IsCompact t ∧ t ⊆ s} _ ⟨hk, hks⟩ |>.prodMap
+      uniformContinuous_id).continuous.continuousOn ?_
   intro (f, a) ⟨⟨hf, ha⟩, ⟨_, ha'⟩⟩
   exact ⟨⟨hf.1.mono hks, hf.2⟩, ha.1, subset_of_mem_nhdsSet ha'⟩
 
