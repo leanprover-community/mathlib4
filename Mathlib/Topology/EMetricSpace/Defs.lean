@@ -137,6 +137,8 @@ variable {x : α} {s t : Set α}
 
 section
 
+open Metric
+
 variable [PseudoEMetricSpace α]
 
 /-- Reformulation of the uniform structure in terms of the extended distance -/
@@ -161,20 +163,20 @@ theorem mem_uniformity_edist {s : Set (α × α)} :
     s ∈ 𝓤 α ↔ ∃ ε > 0, ∀ {a b : α}, edist a b < ε → (a, b) ∈ s :=
   uniformity_basis_edist.mem_uniformity_iff
 
-theorem Metric.nhds_eq : 𝓝 x = ⨅ ε > 0, 𝓟 (Metric.eball x ε) :=
+theorem EMetric.nhds_eq : 𝓝 x = ⨅ ε > 0, 𝓟 (Metric.eball x ε) :=
   nhds_basis_eball.eq_biInf
 
-theorem Metric.mem_nhds_iff : s ∈ 𝓝 x ↔ ∃ ε > 0, eball x ε ⊆ s :=
+theorem EMetric.mem_nhds_iff : s ∈ 𝓝 x ↔ ∃ ε > 0, eball x ε ⊆ s :=
   nhds_basis_eball.mem_iff
 
 theorem Metric.nhdsWithin_basis_eball :
     (𝓝[s] x).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) fun ε => eball x ε ∩ s :=
   nhdsWithin_hasBasis nhds_basis_eball s
 
-theorem Metric.mem_nhdsWithin_iff : s ∈ 𝓝[t] x ↔ ∃ ε > 0, eball x ε ∩ t ⊆ s :=
-  Metric.nhdsWithin_basis_eball.mem_iff
+theorem EMetric.mem_nhdsWithin_iff : s ∈ 𝓝[t] x ↔ ∃ ε > 0, eball x ε ∩ t ⊆ s :=
+  nhdsWithin_basis_eball.mem_iff
 
-theorem Metric.isOpen_iff : IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, eball x ε ⊆ s := by
+theorem EMetric.isOpen_iff : IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, eball x ε ⊆ s := by
   simp [isOpen_iff_nhds, mem_nhds_iff]
 
 end
@@ -214,7 +216,7 @@ instance PseudoEMetricSpace.toWeakPseudoEMetricSpace (α : Type u) [inst : Pseud
   topology_le := by rw [uniformSpace_edist]
   topology_eq_on_restrict x r := by
     suffices IsOpen (Metric.eball x r) from this.preimage_val
-    rw [Metric.isOpen_iff]
+    rw [EMetric.isOpen_iff]
     intro y hy
     refine ⟨r - edist x y, by simp_all [edist_comm], ?_⟩
     unfold Metric.eball at hy ⊢
@@ -436,7 +438,7 @@ abbrev WeakPseudoEMetricSpace.IsInducing {α β : Type*} [e : TopologicalSpace �
     refine (continuous_le_rng m.topology_le ?_).le_induced
     refine @Continuous.mk α β hα.toUniformSpace.toTopologicalSpace
       hβ.toUniformSpace.toTopologicalSpace f fun s hs ↦ ?_
-    rw [Metric.isOpen_iff] at hs ⊢
+    rw [EMetric.isOpen_iff] at hs ⊢
     intro x (hx : f x ∈ s)
     obtain ⟨ε, hε, hεs⟩ := hs (f x) hx
     exact ⟨ε, hε, fun y hy ↦ hεs hy⟩
@@ -734,10 +736,10 @@ namespace Metric
 variable {x : α} {ε : ℝ≥0∞} {s t : Set α}
 
 @[simp] theorem isOpen_eball : IsOpen (eball x ε) :=
-  Metric.isOpen_iff.2 fun _ => exists_eball_subset_eball
+  EMetric.isOpen_iff.2 fun _ => exists_eball_subset_eball
 
 theorem isClosed_eball_top : IsClosed (eball x ⊤) :=
-  isOpen_compl_iff.1 <| Metric.isOpen_iff.2 fun _y hy =>
+  isOpen_compl_iff.1 <| EMetric.isOpen_iff.2 fun _y hy =>
     ⟨⊤, ENNReal.coe_lt_top, fun _z hzy hzx =>
       hy (edistLtTopSetoid.trans (edistLtTopSetoid.symm hzy) hzx)⟩
 
