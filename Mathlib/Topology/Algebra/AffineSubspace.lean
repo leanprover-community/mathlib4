@@ -68,21 +68,12 @@ This is the continuous affine version of `AffineEquiv.affineSubspaceMap`. -/
 noncomputable def affineSubspaceMap (e : P ≃ᴬ[R] Q) (s : AffineSubspace R P) [Nonempty s] :
     s ≃ᴬ[R] s.map e.toAffineMap :=
   { e.toAffineEquiv.affineSubspaceMap s with
-    continuous_toFun := by
-      have h_eq : Subtype.val ∘ (e.toAffineEquiv.affineSubspaceMap s).toFun = e ∘ Subtype.val := by
-        ext x; simp
-      rw [Topology.IsEmbedding.subtypeVal.continuous_iff, h_eq]
-      exact e.continuous.comp continuous_subtype_val
-    continuous_invFun := by
-      have h_eq : Subtype.val ∘ (e.toAffineEquiv.affineSubspaceMap s).invFun =
-        e.symm ∘ Subtype.val := by
-        ext x; apply e.injective
-        calc
-          _ = (e.toAffineEquiv : P → Q) ((e.toAffineEquiv.affineSubspaceMap s).invFun x : P) := rfl
-          _ = (x : Q) := AffineEquiv.affineSubspaceMap_apply_symm_apply e.toAffineEquiv s x
-          _ = e (e.symm (x : Q)) := by simp
-      rw [Topology.IsEmbedding.subtypeVal.continuous_iff, h_eq]
-      exact e.continuous_invFun.comp continuous_subtype_val }
+    continuous_toFun := by simpa [Topology.IsEmbedding.subtypeVal.continuous_iff] using!
+      (e.continuous.comp continuous_subtype_val).congr fun _ => rfl
+    continuous_invFun := by simpa [Topology.IsEmbedding.subtypeVal.continuous_iff] using!
+      (e.continuous_invFun.comp continuous_subtype_val).congr fun x ↦
+        (e.apply_eq_iff_eq_symm_apply.mp
+          (AffineEquiv.affineSubspaceMap_apply_symm_apply e.toAffineEquiv s x)).symm }
 
 @[simp]
 theorem affineSubspaceMap_apply (e : P ≃ᴬ[R] Q) (s : AffineSubspace R P) [Nonempty s]
