@@ -408,6 +408,12 @@ class Category.{v,u} (c : Type u) where
 @[to_dual self (reorder := A B, 2 4)]
 structure Comma {A : Type u} [Category.{v} A] {B : Type u'} [Category.{v'} B] where
 
+@[to_dual self (reorder := α β, 3 4)]
+axiom HLE {α β : Type*} : α → β → Prop
+
+@[to_dual self (reorder := α γ, a c, 7 8)]
+axiom hle_trans {α β γ : Type*} (a : α) (b : β) (c : γ) : HLE a b → HLE b c → HLE a c
+
 open Mathlib.Tactic Translate ToDual
 
 /-- info: "leftMono" -/
