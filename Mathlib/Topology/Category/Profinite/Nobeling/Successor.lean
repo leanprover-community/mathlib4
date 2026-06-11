@@ -194,8 +194,9 @@ set_option backward.defeqAttrib.useBackward true in
 theorem CC_comp_zero : ∀ y, (Linear_CC' C hsC ho) ((πs C o) y) = 0 := by
   intro y
   ext x
-  dsimp [Linear_CC', Linear_CC'₀, Linear_CC'₁, LocallyConstant.sub_apply]
-  simp only [sub_eq_zero]
+  simp only [Linear_CC', Linear_CC'₁, Linear_CC'₀, sub_apply, LocallyConstant.sub_apply,
+    LocallyConstant.comapₗ_apply_apply, ContinuousMap.coe_mk, πs_apply_apply,
+    LocallyConstant.coe_zero, Pi.zero_apply, sub_eq_zero]
   congr 1
   ext i
   dsimp [CC'₀, CC'₁, ProjRestrict, Proj]
@@ -237,8 +238,8 @@ include hC in
 open scoped Classical in
 theorem CC_exact {f : LocallyConstant C ℤ} (hf : Linear_CC' C hsC ho f = 0) :
     ∃ y, πs C o y = f := by
-  dsimp [Linear_CC', Linear_CC'₀, Linear_CC'₁] at hf
-  simp only [sub_eq_zero, ← LocallyConstant.coe_inj] at hf
+  simp only [Linear_CC', Linear_CC'₁, Linear_CC'₀, sub_apply,
+    sub_eq_zero, ← LocallyConstant.coe_inj] at hf
   let C₀C : C0 C ho → C := fun x ↦ ⟨x.val, x.prop.1⟩
   have h₀ : Continuous C₀C := Continuous.subtype_mk continuous_induced_dom _
   let C₁C : π (C1 C ho) (ord I · < o) → C :=

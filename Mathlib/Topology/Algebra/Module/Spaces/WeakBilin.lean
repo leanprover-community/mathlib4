@@ -162,7 +162,7 @@ instance instIsTopologicalAddGroup [ContinuousAdd 𝕜] : IsTopologicalAddGroup 
     refine continuous_induced_rng.2 (continuous_pi_iff.mpr fun y => ?_)
     refine cast (congr_arg _ ?_) (eval_continuous B (-y))
     ext x
-    simp only [map_neg, Function.comp_apply, LinearMap.neg_apply]
+    simp only [map_neg, Function.comp_apply, neg_apply]
 
 end Ring
 

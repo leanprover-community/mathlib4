@@ -274,7 +274,7 @@ def _root_.LinearMap.compDer : Derivation R A M →ₗ[A] Derivation R A N where
         simp only [coeFn_coe, LinearMap.comp_apply, map_add, leibniz,
           LinearMap.coe_restrictScalars, LinearMap.map_smul] }
   map_add' D₁ D₂ := by ext; exact LinearMap.map_add _ _ _
-  map_smul' r D := by ext; dsimp; simp only [_root_.map_smul]
+  map_smul' r D := by ext; simp
 
 @[simp]
 theorem coe_to_linearMap_comp : (f.compDer D : A →ₗ[R] N) = (f : M →ₗ[R] N).comp (D : A →ₗ[R] M) :=
@@ -513,7 +513,7 @@ end Field
 instance : Neg (Derivation R A M) :=
   ⟨fun D =>
     mk' (-D) fun a b => by
-      simp only [LinearMap.neg_apply, smul_neg, neg_add_rev, leibniz, coeFn_coe, add_comm]⟩
+      simp only [neg_apply, smul_neg, neg_add_rev, leibniz, coeFn_coe, add_comm]⟩
 
 @[simp]
 theorem coe_neg (D : Derivation R A M) : ⇑(-D) = -D :=
