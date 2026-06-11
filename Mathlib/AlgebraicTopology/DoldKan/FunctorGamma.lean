@@ -234,6 +234,9 @@ def splitting (K : ChainComplex C ℕ) : SimplicialObject.Splitting (Γ₀.obj K
       rw [id_comp]
       rfl))
 
+@[simp]
+lemma coe_splitting (K : ChainComplex C ℕ) (n : ℕ) : (Γ₀.splitting K).N n = K.X n := rfl
+
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
