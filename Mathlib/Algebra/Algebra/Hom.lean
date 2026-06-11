@@ -84,7 +84,7 @@ instance {R : Type uR} {S : Type uS} [CommSemiring R] [CommSemiring S] (φ : R �
     (A : Type uA) (B : Type uB) [Semiring A] [Semiring B] [Algebra R A] [Algebra S B] :
     FunLike (A →ₛₐ[φ] B) A B where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     rcases f with ⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩
     rcases g
     congr
