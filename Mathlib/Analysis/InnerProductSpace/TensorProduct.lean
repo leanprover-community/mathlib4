@@ -56,17 +56,12 @@ open scoped TensorProduct
 
 namespace TensorProduct
 
-set_option backward.privateInPublic true in
-/-- Bilinear map for the inner product on tensor products.
-On pure tensors: `inner_ (a ⊗ₜ b) (c ⊗ₜ d) = ⟪a, c⟫ * ⟪b, d⟫`. -/
-private abbrev inner_ : E ⊗[𝕜] F →ₗ⋆[𝕜] E ⊗[𝕜] F →ₗ[𝕜] 𝕜 :=
-  (lift <| mapBilinear (.id 𝕜) E F 𝕜 𝕜).compr₂ (LinearMap.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜)
+instance instInner : Inner 𝕜 (E ⊗[𝕜] F) where inner x y :=
+  ((lift <| mapBilinear (.id 𝕜) E F 𝕜 𝕜).compr₂ (.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜)) x y
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance instInner : Inner 𝕜 (E ⊗[𝕜] F) := ⟨fun x y => inner_ x y⟩
-
-private lemma inner_def (x y : E ⊗[𝕜] F) : inner 𝕜 x y = inner_ x y := rfl
+lemma inner_def (x y : E ⊗[𝕜] F) :
+    inner 𝕜 x y = ((lift <| mapBilinear (.id 𝕜) E F 𝕜 𝕜).compr₂
+      (.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜)) x y := rfl
 
 variable (𝕜) in
 @[simp] theorem inner_tmul (x x' : E) (y y' : F) :
@@ -84,7 +79,7 @@ lemma inner_mapIncl_mapIncl (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) (x y
 open scoped ComplexOrder
 open Module
 
-/- This holds in any inner product space, but we need this to set up the instance.
+/-- This holds in any inner product space, but we need this to set up the instance.
 This is a helper lemma for showing that this inner product is positive definite. -/
 private theorem inner_self {ι ι' : Type*} [Fintype ι] [Fintype ι'] (x : E ⊗[𝕜] F)
     (e : OrthonormalBasis ι 𝕜 E) (f : OrthonormalBasis ι' 𝕜 F) :

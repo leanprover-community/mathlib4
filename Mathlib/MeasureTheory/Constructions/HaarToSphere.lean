@@ -87,7 +87,7 @@ variable [FiniteDimensional ℝ E] [μ.IsAddHaarMeasure]
 @[simp]
 theorem toSphere_apply_univ : μ.toSphere univ = dim E * μ (ball 0 1) := by
   nontriviality E
-  rw [toSphere_apply_univ', measure_diff_null (measure_singleton _)]
+  rw [toSphere_apply_univ', measure_sdiff_null (measure_singleton _)]
 
 @[simp]
 theorem toSphere_real_apply_univ : μ.toSphere.real univ = dim E * μ.real (ball 0 1) := by
@@ -108,7 +108,7 @@ instance : IsFiniteMeasure μ.toSphere where
   measure_univ_lt_top := by
     rw [toSphere_apply_univ']
     exact ENNReal.mul_lt_top (ENNReal.natCast_lt_top _) <|
-      measure_ball_lt_top.trans_le' <| measure_mono diff_subset
+      measure_ball_lt_top.trans_le' <| measure_mono sdiff_subset
 
 /-- The measure on `(0, +∞)` that has density `(· ^ n)` with respect to the Lebesgue measure. -/
 def volumeIoiPow (n : ℕ) : Measure (Ioi (0 : ℝ)) :=
@@ -203,7 +203,6 @@ divided by the measure of the ball. -/
 noncomputable def toSphereBallBound (n : ℕ) (ε : ℝ) : ℝ≥0 :=
   if n ≠ 0 ∧ 0 < ε then n * ((min (Real.toNNReal ε) 2) / 4) ^ n else 1
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toSphereBallBound_pos (n : ℕ) (ε : ℝ) : 0 < toSphereBallBound n ε := by
   unfold toSphereBallBound
   split_ifs with h
