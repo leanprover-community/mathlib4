@@ -77,7 +77,7 @@ so that `r₁ • a ⬝ᵥ r₂ • b` is parsed as `(r₁ • a) ⬝ᵥ (r₂ �
 @[inherit_doc]
 infixl:72 " ⬝ᵥ " => dotProduct
 
-lemma dotProduct_eq_sum [Mul α] [AddCommMonoid α] (v w : m → α) : v ⬝ᵥ w = ∑ i, v i * w i := rfl
+lemma dotProduct_apply [Mul α] [AddCommMonoid α] (v w : m → α) : v ⬝ᵥ w = ∑ i, v i * w i := rfl
 
 theorem dotProduct_assoc [NonUnitalSemiring α] (u : m → α) (w : n → α) (v : Matrix m n α) :
     (fun j => u ⬝ᵥ fun i => v i j) ⬝ᵥ w = u ⬝ᵥ fun i => v i ⬝ᵥ w := by
