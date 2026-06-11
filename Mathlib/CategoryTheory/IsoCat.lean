@@ -23,7 +23,7 @@ to be preferred.
 ## Main definitions
 
 * `CategoryTheory.IsoCat`: the type of isomorphisms between categories `C` and `D`.
-* `CategoryTheory.Functor.IsIsomorphism`: a typeclass expressing that a functor is full,
+* `CategoryTheory.Functor.IsIso`: a typeclass expressing that a functor is full,
   faithful and bijective on objects, hence underlies an isomorphism of categories.
 -/
 
@@ -86,14 +86,14 @@ protected class Functor.IsIso (F : C ⥤ D) : Prop where
   /-- A functor which is an isomorphism of categories is full. -/
   full : F.Full := by infer_instance
   /-- A functor which is an isomorphism of categories is bijective on objects. -/
-  bijectiveOnObjects : F.obj.Bijective
+  bijectiveOnObjects (F) : F.obj.Bijective
 
 attribute [instance] Functor.IsIso.faithful Functor.IsIso.full
 
 instance : (𝟭 C).IsIso where
   bijectiveOnObjects := Function.bijective_id
 
-variable (F : C ⥤ D) [h : F.IsIso] (G : D ⥤ E) [h' : G.IsIso]
+variable (F : C ⥤ D) [F.IsIso] (G : D ⥤ E) [G.IsIso]
 
 /-- The bijection on objects induced by a functor that is an isomorphism of categories. -/
 noncomputable def Functor.objEquiv : C ≃ D := .ofBijective _ h.bijectiveOnObjects
