@@ -70,13 +70,10 @@ def extend (D D' : AlgebraicCycle X ℤ) (h : D' ≥ 0) :
       apply ModuleCat.hom_ext
       ext ⟨v, hv⟩
       apply Subtype.ext
-
-      -- Both paths: extend then restrict, or restrict then extend
-      -- Both preserve the underlying value v
-
-      simp [Sheaf.map, mapFun, presheaf, sheaf]
-      sorry
-      --split_ifs <;> rfl
+      -- Both paths (extend then restrict, and restrict then extend) preserve the
+      -- underlying function field element.
+      simp only [Sheaf.map, mapFun, presheaf, sheaf]
+      split_ifs <;> rfl
   }
 
 open CategoryTheory
@@ -93,22 +90,9 @@ lemma extend_mono (D D' : AlgebraicCycle X ℤ) (h : D' ≥ 0) :
     exact
       Sheaf.mono_of_injective
         ((SheafOfModules.toSheaf X.ringCatSheaf).map (extend D D' h)) this
-  intro U
-  simp [extend]
-  intro ⟨x, hx⟩ ⟨y, hy⟩ h
-  change (AddHom.toFun _) (⟨x, hx⟩ : ↑((D.sheaf).val.obj U)) =
-         (AddHom.toFun _) (⟨y, hy⟩ : ↑((D.sheaf).val.obj U)) at h
-  --change (ModuleCat.ofHom _) _ = (ModuleCat.ofHom _) _ at h
-  simp at h
-
-  --simp [-AddHom.toFun_eq_coe, -LinearMap.toFun_eq_coe] at h
-  --change (fun (x : ↑(carrier D (unop U))) ↦ ⟨↑x, extend._proof_1 D D' U ↑x⟩) ⟨x, hx⟩ = (fun x ↦ ⟨↑x, _⟩) ⟨y, hy⟩ at h
-  -- Modified by Claude Opus 4.6: replaced broken grind
-  have hxy : x = y := by
-    have := congr_arg Subtype.val h
-    sorry
-    --simpa using this
-  exact Subtype.ext hxy
+  intro U a b hab
+  -- The component of `extend` is `f ↦ ⟨f.1, _⟩`, so equal images have equal values.
+  exact Subtype.ext (congrArg Subtype.val hab)
 
 open Function.locallyFinsuppWithin
 omit [IsRegularInCodimensionOne X] in
