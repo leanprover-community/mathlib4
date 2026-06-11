@@ -88,7 +88,6 @@ lemma WeightedGraph.Not_Adj_iff_edgeWeight_eq_zero {x y : X} (G : WeightedGraph 
 No vertex is adjacent to itself, so the edge weight of loop (edge that connects a vertex to itself)
 is 0.
 -/
-@[simp]
 lemma WeightedGraph.no_loop {x : X} (G : WeightedGraph X) : G.edgeWeight x x = 0 :=
   (le_of_not_gt (not_imp_not.mpr (G.edgeDef x x).mpr (G.irrefl (v := x)))).ge_iff_eq.mp
   (G.edgeWeight x x).coe_nonneg
@@ -296,12 +295,12 @@ lemma associatedForm_of_basis_eq_degree :
     nth_rw 2 [Finset.sum_eq_sum_sdiff_singleton_add (i := x) (by simp)]
     congr
     · ext y
-      by_cases h : y = x <;> simp_all
-    simp_all
+      by_cases h : y = x <;> simp_all [G.no_loop]
+    simp_all [G.no_loop]
   simp only [Pi.single_eq_same, this, two_mul]
   congr 1
   nth_rw 2 [Finset.sum_eq_sum_sdiff_singleton_add (i := x) (by simp)]
-  simp only [G.no_loop, coe_zero, add_zero]
+  simp only [G.no_loop, NNReal.coe_zero, add_zero]
   congr! with y h
   have : y ≠ x := by grind
   rw [Finset.sum_eq_sum_sdiff_singleton_add (i := x) (by simp)]
