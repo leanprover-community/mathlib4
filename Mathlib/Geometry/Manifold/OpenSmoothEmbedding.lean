@@ -31,6 +31,53 @@ variable (I J n) in
 def IsOpenSmoothEmbedding (f : M → N) : Prop :=
   ∃ U : Opens N, ∃ φ : Diffeomorph I J M U n, (Subtype.val ∘ φ) = f
 
+set_option linter.flexible false in -- TODO fix!
+open IsManifold in
+lemma foo [IsManifold I n M]
+    (φ : OpenPartialHomeomorph M H) (hφ : φ ∈ maximalAtlas I n M) (Φ : Diffeomorph I I M M n) :
+    Φ.toHomeomorph.toOpenPartialHomeomorph.symm.trans φ ∈ maximalAtlas I n M := by
+  rw [IsManifold.mem_maximalAtlas_iff, _root_.mem_maximalAtlas_iff]
+  intro e he
+  constructor
+  · rw [OpenPartialHomeomorph.trans_symm_eq_symm_trans_symm, OpenPartialHomeomorph.symm_symm]
+    rw [IsManifold.mem_maximalAtlas_iff, _root_.mem_maximalAtlas_iff] at hφ
+    have aux := (hφ e he).1
+    -- dubious now...
+    rw [contDiffGroupoid, mem_groupoid_of_pregroupoid]
+    constructor
+    · simp
+      rw [contDiffPregroupoid]
+      dsimp
+      sorry
+    · sorry -- analogous to upstairs
+  · rw [IsManifold.mem_maximalAtlas_iff, _root_.mem_maximalAtlas_iff] at hφ
+    have aux := (hφ e he).2
+
+
+    sorry -- analogous to upstairs, I guess
+
+-- TODO: once we have a better characterisatio of local diffeomorphisms, replace this proof by
+-- "mfderiv% Φ is invertible, hence has a left inverse, thus Φ is an immersion"
+lemma Diffeomorph.isImmersionOfComplement [IsManifold I n M] (Φ : Diffeomorph I I M M n) :
+    IsImmersionOfComplement Unit I I n Φ := by
+  intro x
+  let b : OpenPartialHomeomorph M H :=
+    Φ.toHomeomorph.toOpenPartialHomeomorph.symm.trans (chartAt H x)
+  apply IsImmersionAtOfComplement.mk_of_continuousAt (codChart := b) (equiv := (.prodUnique 𝕜 E _))
+    _ _ (mem_chart_source H x) ?_ (IsManifold.chart_mem_maximalAtlas x)
+  · simp [b]
+    sorry -- missing lemma: post-composing with a maximal atlas
+  · intro y hy
+    have : I ((chartAt H x) ((chartAt H x).symm (I.symm y))) = y := by
+      rw [(chartAt H x).right_inv (by simp_all), I.right_inv (by simp_all)]
+    simpa [b]
+  · exact Φ.contMDiff_toFun.continuous.continuousAt
+  · simp [b]
+
+lemma Diffeomorph.isSmoothEmbedding [IsManifold I n M] (Φ : Diffeomorph I I M M n) :
+    IsSmoothEmbedding I I n Φ :=
+  ⟨Φ.isImmersionOfComplement.isImmersion, Φ.toHomeomorph.isEmbedding⟩
+
 namespace IsOpenSmoothEmbedding
 
 variable {f : M → N}
@@ -38,7 +85,7 @@ variable {f : M → N}
 lemma isImmersion (hf : IsOpenSmoothEmbedding I J n f) : IsImmersion I J n f := by
   obtain ⟨U, φ, rfl⟩ := hf
   -- apply post-composition lemma (PRed in #28865); Subtype.val is an immersion,
-  -- and φ is an immersion since it's a diffeo (using the inverse function theorem)
+  -- and φ is an immersion/smooth embedding as above
   sorry
 
 lemma isSmoothEmbedding (hf : IsOpenSmoothEmbedding I J n f) : IsSmoothEmbedding I J n f := by
