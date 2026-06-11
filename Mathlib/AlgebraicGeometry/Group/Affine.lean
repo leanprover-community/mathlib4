@@ -87,7 +87,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance preservesColimitsOfSize_algΓ : PreservesColimitsOfSize.{w, v} (algΓ R) := by
   unfold algΓ; infer_instance
 
-noncomputable instance braided_algSpec : (algSpec R).Braided := .ofChosenFiniteProducts _
+noncomputable instance braidedAlgSpec : (algSpec R).Braided := .ofChosenFiniteProducts _
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
