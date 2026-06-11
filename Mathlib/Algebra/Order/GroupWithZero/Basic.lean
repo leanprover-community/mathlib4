@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Algebra.Notation.Pi.Defs
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
+public import Mathlib.Algebra.Order.GroupWithZero.Defs
 public import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Tactic.Monotonicity.Attr
@@ -200,6 +200,17 @@ theorem mul_eq_mul_iff_eq_and_eq_of_pos' [PosMulStrictMono α] [MulPosStrictMono
   refine ⟨fun hab ↦ h.not_lt ?_, fun hcd ↦ h.not_lt ?_⟩
   · exact (mul_lt_mul_of_pos_right hab c0).trans_le (mul_le_mul_of_nonneg_left hcd b0.le)
   · exact (mul_le_mul_of_nonneg_right hab c0.le).trans_lt (mul_lt_mul_of_pos_left hcd b0)
+
+theorem eq_and_eq_of_pos_of_le_of_mul_le_mul [PosMulReflectLE α] [MulPosReflectLE α]
+    [PosMulMono α] [MulPosMono α] (ha : 0 < a) (hc : 0 < c) (hab : a ≤ b) (hcd : c ≤ d)
+    (h : b * d ≤ a * c) : a = b ∧ c = d := by
+  refine ⟨le_antisymm hab ?_, le_antisymm hcd ?_⟩
+  · grw [hcd] at h
+    · exact le_of_mul_le_mul_of_pos_right h <| hc.trans_le hcd
+    · exact ha.le
+  · grw [hab] at h
+    · exact le_of_mul_le_mul_of_pos_left h <| ha.trans_le hab
+    · exact hc.le
 
 end PartialOrder
 

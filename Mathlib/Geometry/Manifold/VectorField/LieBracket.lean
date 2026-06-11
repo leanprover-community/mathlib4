@@ -27,7 +27,7 @@ The main results are the following:
 
 -/
 
-@[expose] public section
+public section
 
 open Set Function Filter NormedSpace
 open scoped Topology Manifold ContDiff
@@ -83,14 +83,14 @@ lemma mlieBracketWithin_def :
     (lieBracketWithin 𝕜
       (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm V (range I))
       (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm W (range I))
-      ((extChartAt I x₀).symm ⁻¹' s ∩ range I)) x₀ := rfl
+      ((extChartAt I x₀).symm ⁻¹' s ∩ range I)) x₀ := (rfl)
 
 lemma mlieBracketWithin_apply :
     mlieBracketWithin I V W s x₀ = (mfderiv% (extChartAt I x₀) x₀).inverse
     ((lieBracketWithin 𝕜
       (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm V (range I))
       (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm W (range I))
-      ((extChartAt I x₀).symm ⁻¹' s ∩ range I)) ((extChartAt I x₀ x₀))) := rfl
+      ((extChartAt I x₀).symm ⁻¹' s ∩ range I)) ((extChartAt I x₀ x₀))) := (rfl)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma mlieBracketWithin_eq_lieBracketWithin {V W : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {s : Set E} :
@@ -101,7 +101,7 @@ lemma mlieBracketWithin_eq_lieBracketWithin {V W : Π (x : E), TangentSpace 𝓘
 /- Copy of the `lieBracket` API to manifolds -/
 
 @[simp] lemma mlieBracketWithin_univ :
-    mlieBracketWithin I V W univ = mlieBracket I V W := rfl
+    mlieBracketWithin I V W univ = mlieBracket I V W := (rfl)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma mlieBracketWithin_eq_zero_of_eq_zero (hV : V x = 0) (hW : W x = 0) :
@@ -661,7 +661,7 @@ lemma mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt
   have A : (extChartAt I x₀).symm (extChartAt I x₀ x₀) = x₀ := by simp
   by_cases hfi : (mfderiv[s] f x₀).IsInvertible; swap
   · simp only [mlieBracketWithin_apply, mpullbackWithin_apply,
-      ContinuousLinearMap.inverse_of_not_isInvertible hfi, ContinuousLinearMap.zero_apply]
+      ContinuousLinearMap.inverse_of_not_isInvertible hfi, zero_apply]
     rw [lieBracketWithin_eq_zero_of_eq_zero]
     · simp [-extChartAt]
     · simp only [mpullbackWithin_apply]
