@@ -221,6 +221,7 @@ namespace Splitting
 variable {X Y : SimplicialObject C} (s : Splitting X)
 
 /-- The cofan for `summand s.N Δ` induced by a splitting of a simplicial object. -/
+@[simps!]
 def cofan (Δ : SimplexCategoryᵒᵖ) : Cofan (summand s.N Δ) :=
   Cofan.mk (X.obj Δ) (fun A => s.ι A.1.unop.len ≫ X.map A.e.op)
 
