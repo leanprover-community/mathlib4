@@ -1,0 +1,103 @@
+name: Export cross-reference data
+
+# Generates a JSON dictionary of every declaration tagged with `@[wikidata]`,
+# `@[stacks]`, or `@[kerodon]` (name, file, line, and the referenced ids) and
+# pushes it to a versioned repository (`CROSSREFS_REPO`), where it is publicly
+# available at `https://raw.githubusercontent.com/<CROSSREFS_REPO>/master/crossrefs.json`.
+#
+# The data is read from the fully-imported `Mathlib` environment by
+# `scripts/export_crossrefs.lean`, like the `#stacks_tags` command.
+
+on:
+  workflow_run:
+    workflows: ["continuous integration"]
+    branches: [master]
+    types: [completed]
+  workflow_dispatch:
+
+concurrency:
+  group: export-crossrefs
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  # TODO: move to `leanprover-community/mathlib4-crossrefs` for the production deployment.
+  CROSSREFS_REPO: jcommelin/crossref-exports
+
+jobs:
+  export:
+    name: Export cross-reference JSON
+    runs-on: ubuntu-latest
+    # Automatic runs are restricted to the canonical repository; manual dispatch
+    # is also allowed elsewhere (e.g. a fork) for pre-deployment verification.
+    if: >-
+      github.event_name == 'workflow_dispatch'
+      || (github.repository == 'leanprover-community/mathlib4'
+          && github.event.workflow_run.conclusion == 'success')
+    steps:
+      - name: Checkout the built commit
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          # The exact commit CI validated; for manual runs, the dispatched ref.
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
+
+      - name: Record commit SHA
+        id: sha
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Configure Lean and fetch the Mathlib cache
+        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
+        with:
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: true
+          reinstall-transient-toolchain: true
+
+      - name: Generate crossrefs.json
+        env:
+          CROSSREFS_OUT: crossrefs.json
+          CROSSREFS_COMMIT: ${{ steps.sha.outputs.sha }}
+        run: lake env lean scripts/export_crossrefs.lean
+
+      - name: Sanity-check the output
+        run: |
+          jq -e '.entries | length > 0' crossrefs.json > /dev/null
+          echo "Exported $(jq '.entries | length' crossrefs.json) entries."
+
+      - name: Push to the crossrefs repository
+        env:
+          CROSSREFS_PUSH_TOKEN: ${{ secrets.CROSSREFS_PUSH_TOKEN }}
+        run: |
+          git clone --depth 1 \
+            "https://x-access-token:${CROSSREFS_PUSH_TOKEN}@github.com/${CROSSREFS_REPO}.git" \
+            crossrefs-repo
+          cd crossrefs-repo
+          # Commit only when the entries themselves change. The `generated`
+          # timestamp and source `commit` change on every run, so comparing the
+          # whole file would produce a commit even when nothing of substance did.
+          if [ -f crossrefs.json ] && \
+             diff -q <(jq -S '.entries' crossrefs.json) <(jq -S '.entries' ../crossrefs.json) > /dev/null; then
+            echo "No change in entries; nothing to commit."
+          else
+            cp ../crossrefs.json crossrefs.json
+            git config user.name  "leanprover-community-bot"
+            git config user.email "leanprover-community-bot@users.noreply.github.com"
+            git add crossrefs.json
+            git commit -m "Update crossrefs (mathlib4@${{ steps.sha.outputs.sha }})"
+            git push
+          fi
+
+      - name: Post failure message on Zulip
+        if: failure()
+        uses: zulip/github-actions-zulip/send-message@bd8ec52de371d139ae8313661b7d8318c19266aa # v2.0.1
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'mathlib4'
+          type: 'stream'
+          topic: 'crossrefs export failure'
+          content: |
+            ❌ Cross-reference export [failed](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ steps.sha.outputs.sha }}

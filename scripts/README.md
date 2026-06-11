@@ -236,6 +236,17 @@ to module `Foo.Bar` (no `srcDir` indirection).
   normalize the BibTeX file `docs/references.bib` using `bibtool`.
 - `yaml_check.py`, `check-yaml.lean`
   Sanity checks for `undergrad.yaml`, `overview.yaml`, `100.yaml` and `1000.yaml`.
+- `export_crossrefs.lean`
+  Exports a JSON dictionary of every declaration tagged with `@[wikidata]`, `@[stacks]`, or
+  `@[kerodon]` (declaration name, source file, line number, and the cross-reference ids).
+  It runs as a Lean command over the fully-imported `Mathlib` environment (like `#stacks_tags`),
+  so it is invoked with `lake env lean scripts/export_crossrefs.lean` rather than `lake exe`.
+  The output path defaults to `crossrefs.json` (override with `CROSSREFS_OUT`); the embedded
+  mathlib commit SHA is read from `CROSSREFS_COMMIT`. The
+  [`export_crossrefs.yml`](../.github/workflows/export_crossrefs.yml) workflow runs this after every
+  successful master build and publishes the result to the
+  [`mathlib4-crossrefs`](https://github.com/leanprover-community/mathlib4-crossrefs) repository
+  (committing only when the entries actually change).
 - `autolabel.lean` is the Lean script in charge of automatically adding a `t-`label on eligible PRs.
   Autolabelling is inferred by which directories the current PR modifies.
 - `auto_commit.sh` runs a command and creates a commit with the result. The commit message format
