@@ -53,23 +53,23 @@ theorem rfind' {f : ℕ →. ℕ} (hf : Nat.Partrec f) :
       (PFun.mk <| Nat.unpaired fun a m =>
         (Nat.rfind (PFun.mk fun n =>
           (fun x => decide (x = 0)) <$> f (Nat.pair a (n + m)))).map (· + m)) :=
-  (@Partrec₂.unpaired' fun a => PFun.mk fun m =>
-    (Nat.rfind (PFun.mk fun n =>
-      (fun x => decide (x = 0)) <$> f (Nat.pair a (n + m)))).map (· + m)).mpr <| by
-    let G : ℕ → ℕ →. ℕ := fun x => PFun.mk fun y =>
+  Partrec₂.unpaired'.mpr <| by
+    let G : ℕ → ℕ → Part ℕ := fun x y =>
       f (Nat.pair (Nat.unpair x).1 (y + (Nat.unpair x).2))
     have h1 :
         Partrec₂ (fun a => PFun.mk fun b =>
           Nat.rfind (PFun.mk fun n =>
             (fun x => decide (x = 0)) <$> f (Nat.pair a (n + b)))) :=
+      have hpair : Computable (fun p : ℕ × ℕ =>
+          Nat.pair (Nat.unpair p.1).1 (p.2 + (Nat.unpair p.1).2)) :=
+        (Primrec₂.pair.comp
+          (_root_.Primrec.fst.comp <| _root_.Primrec.unpair.comp _root_.Primrec.fst)
+          (Primrec.nat_add.comp _root_.Primrec.snd <|
+            _root_.Primrec.snd.comp <| _root_.Primrec.unpair.comp _root_.Primrec.fst)).to_comp
+      have hG_unpaired : Nat.Partrec (PFun.mk (Nat.unpaired G)) :=
+        Partrec₂.unpaired'.mpr (((Partrec.nat_iff.mpr hf).comp hpair).to₂)
       Partrec₂.unpaired'.mp <|
-        (Nat.Partrec.rfind <| (@Partrec₂.unpaired' G).mpr <|
-          (Partrec.nat_iff.mpr hf).comp <|
-            (Primrec₂.pair.comp
-              (_root_.Primrec.fst.comp <| _root_.Primrec.unpair.comp _root_.Primrec.fst)
-              (Primrec.nat_add.comp _root_.Primrec.snd <|
-                _root_.Primrec.snd.comp <| _root_.Primrec.unpair.comp _root_.Primrec.fst)).to_comp
-          ).of_eq fun p => by simp [G, Nat.unpaired]
+        (Nat.Partrec.rfind hG_unpaired).of_eq fun p => by simp [G, Nat.unpaired]
     exact Partrec.map h1
       (Primrec.nat_add.comp _root_.Primrec.snd <|
         _root_.Primrec.snd.comp _root_.Primrec.fst).to_comp.to₂

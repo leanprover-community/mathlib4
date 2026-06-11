@@ -441,14 +441,14 @@ namespace Partrec₂
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
-theorem unpaired {f : ℕ → ℕ →. α} :
-    Partrec (PFun.mk (Nat.unpaired fun x y => f x y)) ↔ Partrec₂ f :=
+theorem unpaired {f : ℕ → ℕ → Part α} :
+    Partrec (PFun.mk (Nat.unpaired f)) ↔ Partrec₂ fun x => PFun.mk (f x) :=
   ⟨fun h => (h.comp (@Computable.encode (ℕ × ℕ) _)).of_eq fun ⟨_, _⟩ => by
       simp [Nat.unpaired],
    fun h => (h.comp Computable.unpair).of_eq fun _ => rfl⟩
 
-theorem unpaired' {f : ℕ → ℕ →. ℕ} :
-    Nat.Partrec (PFun.mk (Nat.unpaired fun x y => f x y)) ↔ Partrec₂ f :=
+theorem unpaired' {f : ℕ → ℕ → Part ℕ} :
+    Nat.Partrec (PFun.mk (Nat.unpaired f)) ↔ Partrec₂ fun x => PFun.mk (f x) :=
   Partrec.nat_iff.symm.trans unpaired
 
 nonrec theorem comp {f : β → γ →. σ} {g : α → β} {h : α → γ} (hf : Partrec₂ f)
