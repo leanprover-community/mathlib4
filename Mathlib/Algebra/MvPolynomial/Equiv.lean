@@ -522,7 +522,8 @@ lemma support_optionEquivLeft (p : MvPolynomial (Option σ) R) :
     simpa using! hm
   · rintro ⟨m, h, rfl⟩
     refine ⟨some m, ?_⟩
-    rwa [← coeff, zero_apply, ← mem_support_iff, mem_support_coeff_optionEquivLeft, optionElim_some]
+    rwa [← coeff, Finsupp.zero_apply, ← mem_support_iff, mem_support_coeff_optionEquivLeft,
+      optionElim_some]
 
 theorem nonempty_support_optionEquivLeft {f : MvPolynomial (Option σ) R} (h : f ≠ 0) :
     (optionEquivLeft R σ f).support.Nonempty := by
@@ -736,7 +737,7 @@ theorem support_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
     simpa using! hm
   · rintro ⟨m, h, rfl⟩
     refine ⟨tail m, ?_⟩
-    rwa [← coeff, zero_apply, ← mem_support_iff, mem_support_coeff_finSuccEquiv, cons_tail]
+    rwa [← coeff, Finsupp.zero_apply, ← mem_support_iff, mem_support_coeff_finSuccEquiv, cons_tail]
 
 theorem mem_support_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {x} :
     x ∈ (finSuccEquiv R n f).support ↔ x ∈ (fun m : Fin (n + 1) →₀ _ ↦ m 0) '' f.support := by

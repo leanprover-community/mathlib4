@@ -383,7 +383,7 @@ theorem dotProduct_toMatrix₂_mulVec (B : M₁ →ₛₗ[σ₁] M₂ →ₛₗ[
       B (b₁.equivFun.symm x) (b₂.equivFun.symm y) := by
   simp only [dotProduct, Function.comp_apply, Function.comp_def, mulVec_eq_sum, op_smul_eq_smul,
     Finset.sum_apply, Pi.smul_apply, transpose_apply, toMatrix₂_apply, smul_eq_mul, mul_sum,
-    Basis.equivFun_symm_apply, map_sum, map_smulₛₗ, coe_sum, _root_.smul_apply]
+    Basis.equivFun_symm_apply, map_sum, map_smulₛₗ, FunLike.coe_sum, _root_.smul_apply]
   rw [Finset.sum_comm]
   refine Finset.sum_congr rfl (fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ ?_)
   ring
@@ -393,7 +393,8 @@ lemma apply_eq_dotProduct_toMatrix₂_mulVec (B : M₁ →ₛₗ[σ₁] M₂ →
   nth_rw 1 [← b₁.sum_repr x, ← b₂.sum_repr y]
   suffices ∑ j, ∑ i, σ₂ (b₂.repr y j) * σ₁ (b₁.repr x i) * B (b₁ i) (b₂ j) =
            ∑ i, ∑ j, σ₁ (b₁.repr x i) * σ₂ (b₂.repr y j) * B (b₁ i) (b₂ j) by
-    simpa [dotProduct, Matrix.mulVec_eq_sum, Finset.mul_sum, -Basis.sum_repr, ← mul_assoc]
+    simp [dotProduct, Matrix.mulVec_eq_sum, Finset.mul_sum, -Basis.sum_repr, ← mul_assoc, ← this,
+      mul_comm]
   simp_rw [mul_comm (σ₂ _)]
   exact Finset.sum_comm
 

@@ -98,8 +98,8 @@ private theorem bracket_leibniz_lie (x y : A ⊗[R] L) (z : A ⊗[R] M) :
       · intro a₃ l₃; simp only [bracket'_tmul]
         rw [mul_left_comm a₂ a₁ a₃, mul_assoc, leibniz_lie, TensorProduct.tmul_add]
       · grind
-    · grind [_root_.add_apply]
-  · grind [_root_.add_apply]
+    · grind
+  · grind
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in

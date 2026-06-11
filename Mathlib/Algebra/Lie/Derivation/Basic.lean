@@ -193,7 +193,7 @@ protected theorem map_sub : D (a - b) = D a - D b :=
 instance instNeg : Neg (LieDerivation R L M) :=
   ⟨fun D =>
     mk (-D) fun a b => by
-      simp only [LinearMap.neg_apply, coeFn_coe, apply_lie_eq_sub,
+      simp only [neg_apply, coeFn_coe, apply_lie_eq_sub,
         neg_sub, lie_neg, sub_neg_eq_add, add_comm, ← sub_eq_add_neg] ⟩
 
 @[simp]

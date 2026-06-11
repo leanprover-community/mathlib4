@@ -72,8 +72,8 @@ open Classical in
 theorem dualDistribInvOfBasis_apply [Fintype ι] [∀ i, Fintype (κ i)] (b : Π i, Basis (κ i) R (M i))
     (f : Dual R (⨂[R] i, M i)) : dualDistribInvOfBasis b f =
     ∑ p : (Π i, κ i), f (⨂ₜ[R] i, b i (p i)) • (⨂ₜ[R] i, (b i).dualBasis (p i)) := by
-  simp only [dualDistribInvOfBasis, Basis.coe_dualBasis, ringLmapEquivSelf_symm_apply, coe_sum,
-    coe_comp, coe_smulRight, End.one_apply, Finset.sum_apply, Function.comp_apply,
+  simp only [dualDistribInvOfBasis, Basis.coe_dualBasis, ringLmapEquivSelf_symm_apply,
+    coe_comp, coe_smulRight, End.one_apply, sum_apply, Function.comp_apply,
     applyₗ_apply_apply]
   convert! rfl
 

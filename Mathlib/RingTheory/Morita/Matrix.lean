@@ -155,7 +155,7 @@ def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) (j : ι
       AddSubmonoidClass.coe_finsetSum, SetLike.val_smul, ← smul_assoc, ← Finset.sum_smul]
     congr
     ext i1 j1
-    simp only [mul_apply, smul_single, smul_eq_mul, mul_one, sum_apply]
+    simp only [mul_apply, smul_single, smul_eq_mul, mul_one, Matrix.sum_apply]
     rw [Finset.sum_eq_single_of_mem (a := i) (by simp) (fun b _ hb ↦ by simp [single, Ne.symm hb])]
     simp only [single_apply, and_true, ite_mul, one_mul, zero_mul]
     split_ifs with h <;> simp [h]
@@ -208,7 +208,7 @@ def moritaEquivalenceMatrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] (i :
   linear.map_smul {X Y} f r := by
     ext (v : ι → X)
     simp only [ModuleCat.matrixEquivalence_functor, ModuleCat.toMatrixModCat_obj_carrier,
-      ModuleCat.toMatrixModCat_map, ModuleCat.hom_smul, ModuleCat.hom_ofHom, _root_.smul_apply]
+      ModuleCat.toMatrixModCat_map, ModuleCat.hom_smul, ModuleCat.hom_ofHom]
     ext i
     simp only [LinearMap.mapMatrixModule_apply, LinearMap.compLeft_apply, Function.comp_apply,
       _root_.smul_apply]
