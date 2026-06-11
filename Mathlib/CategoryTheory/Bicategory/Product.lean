@@ -44,9 +44,7 @@ instance prod :
   whisker_exchange η θ := Prod.ext (whisker_exchange η.1 θ.1) (whisker_exchange η.2 θ.2)
 
 /-- The cartesian product of two strict bicategories is strict. -/
-instance (B : Type u₁) [Bicategory.{w₁, v₁} B] [Strict B]
-    (C : Type u₂) [Bicategory.{w₂, v₂} C] [Strict C] :
-    Strict (B × C) where
+instance [Strict B] [Strict C] : Strict (B × C) where
   leftUnitor_eqToIso f := by
     refine Iso.ext (hom_ext ?_ ?_)
     · simpa using congr($(Strict.leftUnitor_eqToIso f.1).hom)
