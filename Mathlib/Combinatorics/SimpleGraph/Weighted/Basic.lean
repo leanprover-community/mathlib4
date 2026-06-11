@@ -268,11 +268,11 @@ lemma associatedForm_apply {f g} : G.associatedForm f g =
 
 noncomputable
 instance : DecidableEq X := by exact Classical.typeDecidableEq X
-
+/-
 /-- We define the indicator functions to be our standard basis functions for X → ℝ -/
 noncomputable
 abbrev basisFun (y : X) : X → ℝ := Pi.single y 1
-/-
+
 /-- We use the notation 𝟙_ to write this basis/indicator function more concisely. -/
 scoped notation "𝟙_" y:max => basisFun y
 
