@@ -129,7 +129,7 @@ adjacent.
 -/
 @[simp]
 lemma standardWeights_edgeWeight_neq_zero_iff_eq_one (h : StandardWeights G) :
-    ¬ G.edgeWeight x y = 0 ↔ G.Adj x y := by
+    G.edgeWeight x y ≠ 0 ↔ G.Adj x y := by
   contrapose
   exact h.edgeWeight_NotAdj_iff.symm
 
@@ -139,7 +139,7 @@ are not adjacent.
 -/
 @[simp]
 lemma standardWeights_edgeWeight_neq_one_iff_eq_zero (h : StandardWeights G) :
-    ¬ G.edgeWeight x y = 1 ↔ ¬ G.Adj x y := by
+    G.edgeWeight x y ≠ 1 ↔ ¬ G.Adj x y := by
   contrapose
   exact h.edgeWeight_Adj_iff.symm
 
