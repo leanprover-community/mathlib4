@@ -47,12 +47,13 @@ an additive congruence relation. -/]
 def mkMulHom (c : Con M) : MulHom M c.Quotient where
   toFun := (↑)
   map_mul' _ _ := rfl
+
 /-- The kernel of a multiplicative homomorphism as a congruence relation. -/
 @[to_additive /-- The kernel of an additive homomorphism as an additive congruence relation. -/]
 def ker (f : F) : Con M where
   toSetoid := Setoid.ker f
   mul' h1 h2 := by
-    dsimp [Setoid.ker, onFun] at *
+    dsimp +instances [Setoid.ker, onFun] at *
     rw [map_mul, h1, h2, map_mul]
 
 @[to_additive (attr := norm_cast)]
@@ -119,10 +120,10 @@ def correspondence {c : Con M} : { d // c ≤ d } ≃o Con c.Quotient where
           d.1.trans (d.1.symm <| d.2 <| c.eq.1 hx) <| d.1.trans H <| d.2 <| c.eq.1 hy,
           fun h => ⟨_, _, h, rfl, rfl⟩⟩
   right_inv d :=
-    ext fun x y =>
-      ⟨fun ⟨_, _, H, hx, hy⟩ =>
-        hx ▸ hy ▸ H,
-        Con.induction_on₂ x y fun w z h => ⟨w, z, h, rfl, rfl⟩⟩
+    Con.ext fun x y ↦ by
+      refine ⟨?_, Con.induction_on₂ x y fun w z h => ⟨w, z, h, rfl, rfl⟩⟩
+      rintro ⟨a, b, H, rfl, rfl⟩
+      exact H
   map_rel_iff' {s t} := by
     constructor
     · intro h x y hs

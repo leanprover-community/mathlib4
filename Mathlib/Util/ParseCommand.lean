@@ -6,7 +6,9 @@ Authors: Matthew Robert Ballard, Damiano Testa
 module
 
 public meta import Lean.Elab.Command
-public import Mathlib.Init
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+public meta import Mathlib.Tactic.Linter.Header  --shake: keep
 
 /-!
 # `#parse` -- a command to parse text and log outputs
@@ -29,6 +31,21 @@ def captureException (env : Environment) (s : ParserFn) (input : String) : Excep
     .error (s.toErrorMsg ictx)
   else if ictx.atEnd s.pos then
     .ok s.stxStack.back
+  else
+    .error ((s.mkError "end of input").toErrorMsg ictx)
+
+/-- Parse a string as a tactic sequence.
+
+This is a slight modification of `Parser.runParserCategory`. -/
+def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>") :
+    Except String (TSyntax ``Lean.Parser.Tactic.tacticSeq) :=
+  let p := andthenFn whitespace Tactic.tacticSeq.fn
+  let ictx := mkInputContext input fileName
+  let s := p.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
+  if s.hasError then
+    .error (s.toErrorMsg ictx)
+  else if s.pos.atEnd input then
+    .ok ⟨s.stxStack.back⟩
   else
     .error ((s.mkError "end of input").toErrorMsg ictx)
 

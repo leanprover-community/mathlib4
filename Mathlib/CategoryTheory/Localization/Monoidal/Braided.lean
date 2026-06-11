@@ -28,7 +28,7 @@ open CategoryTheory Category MonoidalCategory BraidedCategory Functor
 
 namespace CategoryTheory.Localization.Monoidal
 
-variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProperty C)
+variable {C D : Type*} [Category* C] [Category* D] (L : C ⥤ D) (W : MorphismProperty C)
   [MonoidalCategory C] [W.IsMonoidal] [L.IsLocalization W]
   {unit : D} (ε : L.obj (𝟙_ C) ≅ unit)
 
@@ -43,7 +43,7 @@ variable [BraidedCategory C]
 noncomputable instance : Lifting₂ L' L' W W ((curriedTensor C).flip ⋙ (whiskeringRight C C
     (LocalizedMonoidal L W ε)).obj L') (tensorBifunctor L W ε).flip :=
   inferInstanceAs (Lifting₂ L' L' W W (((curriedTensor C) ⋙ (whiskeringRight C C
-    (LocalizedMonoidal L W ε)).obj L')).flip (tensorBifunctor L W ε).flip )
+    (LocalizedMonoidal L W ε)).obj L')).flip (tensorBifunctor L W ε).flip)
 
 /-- The braiding on the localized category as a natural isomorphism of bifunctors. -/
 noncomputable def braidingNatIso : tensorBifunctor L W ε ≅ (tensorBifunctor L W ε).flip :=
@@ -52,7 +52,7 @@ noncomputable def braidingNatIso : tensorBifunctor L W ε ≅ (tensorBifunctor L
       (LocalizedMonoidal L W ε)).obj L')
     (((curriedTensor C).flip ⋙ (whiskeringRight C C
       (LocalizedMonoidal L W ε)).obj L'))
-    _ _  (isoWhiskerRight (curriedBraidingNatIso C) _)
+    _ _ (isoWhiskerRight (curriedBraidingNatIso C) _)
 
 lemma braidingNatIso_hom_app (X Y : C) :
     ((braidingNatIso L W ε).hom.app ((L').obj X)).app ((L').obj Y) =
@@ -79,6 +79,7 @@ lemma braidingNatIso_hom_app_naturality_μ_right (X Y Z : C) :
   (NatTrans.congr_app ((braidingNatIso L W ε).hom.naturality
     ((Functor.LaxMonoidal.μ (L') X Y))) ((L').obj Z)).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_hexagon_forward (X Y Z : C) :
     (α_ ((L').obj X) ((L').obj Y) ((L').obj Z)).hom ≫
@@ -96,6 +97,7 @@ lemma map_hexagon_forward (X Y Z : C) :
     rw [braidingNatIso_hom_app_naturality_μ_left, braidingNatIso_hom_app]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_hexagon_reverse (X Y Z : C) :
     (α_ ((L').obj X) ((L').obj Y) ((L').obj Z)).inv ≫
@@ -116,9 +118,9 @@ lemma map_hexagon_reverse (X Y Z : C) :
 noncomputable instance : BraidedCategory (LocalizedMonoidal L W ε) := by
   refine .ofBifunctor (braidingNatIso L W ε) ?_ ?_
   · apply natTrans₃_ext (L') (L') (L') W W W
-    simpa using map_hexagon_forward _ _ _
+    simpa using! map_hexagon_forward _ _ _
   · apply natTrans₃_ext (L') (L') (L') W W W
-    simpa using map_hexagon_reverse _ _ _
+    simpa using! map_hexagon_reverse _ _ _
 
 lemma β_hom_app (X Y : C) :
     (β_ ((L').obj X) ((L').obj Y)).hom =
@@ -136,6 +138,7 @@ section Symmetric
 
 variable [SymmetricCategory C]
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable instance : SymmetricCategory (LocalizedMonoidal L W ε) := by
   refine .ofCurried (natTrans₂_ext (L') (L') W W fun X Y ↦ ?_)
   simp [-Functor.map_braiding, β_hom_app, ← Functor.map_comp_assoc]

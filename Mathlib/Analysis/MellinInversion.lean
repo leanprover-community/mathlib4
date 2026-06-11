@@ -17,7 +17,7 @@ We derive the Mellin inversion formula as a consequence of the Fourier inversion
 - `mellin_inversion`: The inverse Mellin transform of the Mellin transform applied to `x > 0` is x.
 -/
 
-@[expose] public section
+public section
 
 open Real Complex Set MeasureTheory
 

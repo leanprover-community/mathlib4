@@ -16,10 +16,10 @@ that `mapId` and `mapComp` are given by `eqToIso _`.
 To a strict pseudofunctor between strict bicategories we can associate a functor between the
 underlying categories, see `StrictPseudofunctor.toFunctor`.
 
-# TODO
+## TODO
 
-Once the deprecated `Functor/Strict.lean` is removed we should rename this file to
-`Functor/Strict.lean`.
+Once the deprecated `Mathlib/CategoryTheory/Bicategory/Functor/Strict.lean` is removed we should
+rename this file to `Mathlib/CategoryTheory/Bicategory/Functor/Strict.lean`.
 
 -/
 
@@ -50,7 +50,7 @@ structure StrictPseudofunctor extends StrictlyUnitaryPseudofunctor B C where
 construct a `StrictPseudofunctor`.
 
 `StrictPseudofunctorPreCore` does not construct a Pseudofunctor in general,
-since it does not include the compatibility conditoins on the associator
+since it does not include the compatibility conditions on the associator
 and unitors. However, when the underlying bicategories are strict, a
 `StrictPseudofunctorPreCore` does induce a `StrictPseudofunctor`. -/
 structure StrictPseudofunctorPreCore extends PrelaxFunctor B C where
@@ -92,8 +92,8 @@ namespace StrictPseudofunctor
 
 variable {B C}
 
-/-- An alternate constructor for strictly unitary lax functors that does not
-require the `mapId` or `mapComp` fields, and that adapts the compatability conditions
+/-- An alternate constructor for strict pseudofunctors that does not
+require the `mapId` or `mapComp` fields, and that adapts the compatibility conditions
 to the fact that the pseudofunctor is strict -/
 @[simps]
 def mk' (S : StrictPseudofunctorCore B C) : StrictPseudofunctor B C where
@@ -128,6 +128,7 @@ variable (B) in
 def id : StrictPseudofunctor B B where
   __ := StrictlyUnitaryPseudofunctor.id B
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composition of `StrictPseudofunctor`. -/
 @[simps!]
 def comp (F : StrictPseudofunctor B C)

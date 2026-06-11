@@ -11,7 +11,7 @@ public import Mathlib.GroupTheory.Coset.Basic
 
 /-! Results about the cardinality of a quotient module. -/
 
-@[expose] public section
+public section
 
 namespace Submodule
 

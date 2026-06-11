@@ -23,7 +23,7 @@ public import Mathlib.CategoryTheory.Abelian.Opposite
 
 -/
 
-@[expose] public section
+public section
 
 
 open CategoryTheory CategoryTheory.Limits Opposite

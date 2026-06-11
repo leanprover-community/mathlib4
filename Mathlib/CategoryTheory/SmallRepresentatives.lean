@@ -121,6 +121,7 @@ the obvious functor `h.smallCategoryOfSet.obj ⥤ C` is an equivalence. -/
 noncomputable def equivalence : h.smallCategoryOfSet.obj ≌ C :=
   h.functor.asEquivalence
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given `h : CoreSmallCategoryOfSet Ω C`, the equivalence of categories
 `h.smallCategoryOfSet.obj ≌ C` is actually an isomorphism: it induces
 a bijection on the type of arrows. -/
@@ -128,9 +129,9 @@ noncomputable def arrowEquiv : Arrow h.smallCategoryOfSet.obj ≃ Arrow C :=
   Equiv.ofBijective h.functor.mapArrow.obj (by
     constructor
     · rintro ⟨x, y, f⟩ ⟨x', y', g⟩ hfg
-      obtain rfl : x = x' := by simpa using congr_arg Arrow.leftFunc.obj hfg
-      obtain rfl : y = y' := by simpa using congr_arg Arrow.rightFunc.obj hfg
-      obtain rfl : f = g := by simpa [Arrow.mk_eq_mk_iff] using hfg
+      obtain rfl : x = x' := by simpa using! congr_arg Arrow.leftFunc.obj hfg
+      obtain rfl : y = y' := by simpa using! congr_arg Arrow.rightFunc.obj hfg
+      obtain rfl : f = g := by simpa [Arrow.mk_eq_mk_iff] using! hfg
       rfl
     · rintro ⟨X, Y, f⟩
       obtain ⟨x, rfl⟩ := h.objEquiv.surjective X
@@ -162,7 +163,7 @@ end SmallCategoryOfSet
 /-- Index set of a representative set of all categories `C` which satisfy
 `HasCardinalLT C κ`, see `SmallCategoryCardinalLT.categoryFamily`. -/
 def SmallCategoryCardinalLT (κ : Cardinal.{w}) : Type w :=
-  { S : SmallCategoryOfSet κ.ord.toType // HasCardinalLT (Arrow S.obj) κ}
+  { S : SmallCategoryOfSet κ.ord.ToType // HasCardinalLT (Arrow S.obj) κ}
 
 namespace SmallCategoryCardinalLT
 
@@ -178,7 +179,7 @@ lemma hasCardinalLT (S : SmallCategoryCardinalLT κ) :
 lemma exists_equivalence (C : Type u) [Category.{v} C] (hC : HasCardinalLT (Arrow C) κ) :
     ∃ (S : SmallCategoryCardinalLT κ),
       Nonempty (categoryFamily κ S ≌ C) := by
-  let Ω := κ.ord.toType
+  let Ω := κ.ord.ToType
   have ι : Arrow C ↪ Ω := Nonempty.some (by
     rw [← Cardinal.lift_mk_le']
     simpa [Ω] using hC.le)

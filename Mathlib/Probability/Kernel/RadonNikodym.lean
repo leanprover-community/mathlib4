@@ -11,7 +11,7 @@ public import Mathlib.Probability.Kernel.WithDensity
 /-!
 # Radon-Nikodym derivative and Lebesgue decomposition for kernels
 
-Let `α` and `γ` be two measurable space, where either `α` is countable or `γ` is
+Let `α` and `γ` be two measurable spaces, where either `α` is countable or `γ` is
 countably generated. Let `κ, η : Kernel α γ` be finite kernels.
 Then there exists a function `Kernel.rnDeriv κ η : α → γ → ℝ≥0∞` jointly measurable on `α × γ`
 and a kernel `Kernel.singularPart κ η : Kernel α γ` such that
@@ -199,9 +199,6 @@ lemma notMem_mutuallySingularSetSlice (κ η : Kernel α γ) (a : α) (x : γ) :
     x ∉ mutuallySingularSetSlice κ η a ↔ rnDerivAux κ (κ + η) a x < 1 := by
   simp [mutuallySingularSetSlice]
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_mutuallySingularSetSlice := notMem_mutuallySingularSetSlice
-
 lemma measurableSet_mutuallySingularSet (κ η : Kernel α γ) :
     MeasurableSet (mutuallySingularSet κ η) :=
   measurable_rnDerivAux κ (κ + η) measurableSet_Ici
@@ -383,16 +380,16 @@ lemma mutuallySingular_singularPart (κ η : Kernel α γ) [IsFiniteKernel κ] [
 lemma rnDeriv_add_singularPart (κ η : Kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel η] :
     withDensity η (rnDeriv κ η) + singularPart κ η = κ := by
   ext a s hs
-  rw [← inter_union_diff s (mutuallySingularSetSlice κ η a)]
+  rw [← inter_union_sdiff s (mutuallySingularSetSlice κ η a)]
   simp only [coe_add, Pi.add_apply, Measure.coe_add]
   have hm := measurableSet_mutuallySingularSetSlice κ η a
   simp only [measure_union (Disjoint.mono inter_subset_right le_rfl disjoint_sdiff_right)
     (hs.diff hm)]
   rw [singularPart_of_subset_mutuallySingularSetSlice (hs.inter hm) inter_subset_right,
-    singularPart_of_subset_compl_mutuallySingularSetSlice (diff_subset_iff.mpr (by simp)),
+    singularPart_of_subset_compl_mutuallySingularSetSlice (sdiff_subset_iff.mpr (by simp)),
     add_zero, withDensity_rnDeriv_of_subset_mutuallySingularSetSlice inter_subset_right,
     zero_add, withDensity_rnDeriv_of_subset_compl_mutuallySingularSetSlice (hs.diff hm)
-      (diff_subset_iff.mpr (by simp)), add_comm]
+      (sdiff_subset_iff.mpr (by simp)), add_comm]
 
 section EqZeroIff
 

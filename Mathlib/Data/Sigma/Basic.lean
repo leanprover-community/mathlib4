@@ -51,8 +51,10 @@ instance instDecidableEqSigma [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq
     | _, b₁, _, b₂, isTrue (Eq.refl _) =>
       match b₁, b₂, h₂ _ b₁ b₂ with
       | _, _, isTrue (Eq.refl _) => isTrue rfl
-      | _, _, isFalse n => isFalse fun h ↦ Sigma.noConfusion h fun _ e₂ ↦ n <| eq_of_heq e₂
-    | _, _, _, _, isFalse n => isFalse fun h ↦ Sigma.noConfusion h fun e₁ _ ↦ n e₁
+      | _, _, isFalse n => isFalse fun h ↦
+        Sigma.noConfusion rfl .rfl (heq_of_eq h) fun _ e₂ ↦ n (eq_of_heq e₂)
+    | _, _, _, _, isFalse n => isFalse fun h ↦
+      Sigma.noConfusion rfl .rfl (heq_of_eq h) fun e₁ _ ↦ n (eq_of_heq e₁)
 
 theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
     Sigma.mk a₁ b₁ = ⟨a₂, b₂⟩ ↔ a₁ = a₂ ∧ b₁ ≍ b₂ := by simp
@@ -167,12 +169,8 @@ theorem Sigma.curry_update {γ : ∀ a, β a → Type*} [DecidableEq α] [∀ a,
   ext ja jb
   unfold Sigma.curry
   obtain rfl | ha := eq_or_ne ia ja
-  · obtain rfl | hb := eq_or_ne ib jb
-    · simp
-    · simp only [update_self]
-      rw [Function.update_of_ne (mt _ hb.symm), Function.update_of_ne hb.symm]
-      rintro h
-      injection h
+  · simp
+    grind
   · rw [Function.update_of_ne (ne_of_apply_ne Sigma.fst _), Function.update_of_ne]
     · exact ha.symm
     · exact ha.symm
@@ -228,8 +226,10 @@ instance decidableEq [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq (β a)] 
     | _, b₁, _, b₂, isTrue (Eq.refl _) =>
       match b₁, b₂, h₂ _ b₁ b₂ with
       | _, _, isTrue (Eq.refl _) => isTrue rfl
-      | _, _, isFalse n => isFalse fun h ↦ PSigma.noConfusion h fun _ e₂ ↦ n <| eq_of_heq e₂
-    | _, _, _, _, isFalse n => isFalse fun h ↦ PSigma.noConfusion h fun e₁ _ ↦ n e₁
+      | _, _, isFalse n => isFalse fun h ↦
+        PSigma.noConfusion rfl .rfl (heq_of_eq h) fun _ e₂ ↦ n (eq_of_heq e₂)
+    | _, _, _, _, isFalse n => isFalse fun h ↦
+      PSigma.noConfusion rfl .rfl (heq_of_eq h) fun e₁ _ ↦ n (eq_of_heq e₁)
 
 theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
     @PSigma.mk α β a₁ b₁ = @PSigma.mk α β a₂ b₂ ↔ a₁ = a₂ ∧ b₁ ≍ b₂ :=

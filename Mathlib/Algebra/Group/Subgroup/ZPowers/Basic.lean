@@ -113,19 +113,14 @@ variable {s : Set G} {g : G}
 
 @[to_additive]
 instance zpowers_isMulCommutative (g : G) : IsMulCommutative (zpowers g) :=
-  ⟨⟨fun ⟨_, _, h₁⟩ ⟨_, _, h₂⟩ => by
-      rw [Subtype.ext_iff, coe_mul, coe_mul, Subtype.coe_mk, Subtype.coe_mk, ← h₁, ← h₂,
-        zpow_mul_comm]⟩⟩
+  ⟨⟨fun ⟨_, _, h₁⟩ ⟨_, _, h₂⟩ ↦ by simp [← h₁, ← h₂, zpow_mul_comm]⟩⟩
 
 @[to_additive (attr := simp)]
 theorem zpowers_le {g : G} {H : Subgroup G} : zpowers g ≤ H ↔ g ∈ H := by
   rw [zpowers_eq_closure, closure_le, Set.singleton_subset_iff, SetLike.mem_coe]
 
+@[to_additive]
 alias ⟨_, zpowers_le_of_mem⟩ := zpowers_le
-
-alias ⟨_, _root_.AddSubgroup.zmultiples_le_of_mem⟩ := AddSubgroup.zmultiples_le
-
-attribute [to_additive existing] zpowers_le_of_mem
 
 @[to_additive (attr := simp)]
 theorem zpowers_eq_bot {g : G} : zpowers g = ⊥ ↔ g = 1 := by rw [eq_bot_iff, zpowers_le, mem_bot]
@@ -151,9 +146,3 @@ theorem Int.zmultiples_natAbs (a : ℤ) :
 @[simp] lemma Int.addSubgroupClosure_one : AddSubgroup.closure ({1} : Set ℤ) = ⊤ := by
   ext
   simp [AddSubgroup.mem_closure_singleton]
-
-@[deprecated (since := "2025-08-12")]
-alias AddSubgroup.closure_singleton_int_one_eq_top := Int.addSubgroupClosure_one
-
-@[deprecated (since := "2025-08-12")]
-alias AddSubgroup.zmultiples_one_eq_top := Int.zmultiples_one

@@ -22,7 +22,7 @@ This file contains some results on cardinality of Ore localizations.
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
@@ -38,8 +38,8 @@ theorem oreDiv_one_surjective_of_finite_left [Finite S] :
     Surjective (fun x ↦ x /ₒ (1 : ↥S) : X → OreLocalization S X) := by
   refine OreLocalization.ind fun x s ↦ ?_
   obtain ⟨i, j, hne, heq⟩ := Finite.exists_ne_map_eq_of_infinite (α := ℕ) (s ^ ·)
-  wlog hlt : j < i generalizing i j
-  · exact this j i hne.symm heq.symm (hne.lt_of_le (not_lt.1 hlt))
+  wlog! hlt : j < i generalizing i j
+  · exact this j i hne.symm heq.symm (hne.lt_of_le hlt)
   use s ^ (i - (j + 1)) • x
   rw [oreDiv_eq_iff]
   refine ⟨s ^ j, (s ^ (j + 1)).1, ?_, ?_⟩
@@ -52,8 +52,8 @@ theorem oreDiv_one_surjective_of_finite_right [Finite X] :
     Surjective (fun x ↦ x /ₒ (1 : ↥S) : X → OreLocalization S X) := by
   refine OreLocalization.ind fun x s ↦ ?_
   obtain ⟨i, j, hne, heq⟩ := Finite.exists_ne_map_eq_of_infinite (α := ℕ) (s ^ · • x)
-  wlog hlt : j < i generalizing i j
-  · exact this j i hne.symm heq.symm (hne.lt_of_le (not_lt.1 hlt))
+  wlog! hlt : j < i generalizing i j
+  · exact this j i hne.symm heq.symm (hne.lt_of_le hlt)
   use s ^ (i - (j + 1)) • x
   rw [oreDiv_eq_iff]
   refine ⟨s ^ j, (s ^ (j + 1)).1, ?_, ?_⟩
@@ -75,14 +75,14 @@ theorem cardinalMk_le_max : #(OreLocalization S X) ≤ max (lift.{v} #S) (lift.{
   · have := lift_mk_le_lift_mk_of_surjective (oreDiv_one_surjective_of_finite_left S X)
     rw [lift_umax.{v, u}, lift_id'] at this
     exact le_max_of_le_right this
-  convert ← mk_le_of_surjective (show Surjective fun x : X × S ↦ x.1 /ₒ x.2 from
-    Quotient.mk''_surjective)
+  convert! ←
+    mk_le_of_surjective (show Surjective fun x : X × S ↦ x.1 /ₒ x.2 from Quotient.mk''_surjective)
   rw [mk_prod, mul_comm]
   refine mul_eq_max ?_ ?_ <;> simp
 
 @[to_additive]
 theorem cardinalMk_le : #(OreLocalization S R) ≤ #R := by
-  convert ← cardinalMk_le_max S R
+  convert! ← cardinalMk_le_max S R
   simp_rw [lift_id, max_eq_right_iff, mk_subtype_le]
 
 -- TODO: remove the `Commute` assumption

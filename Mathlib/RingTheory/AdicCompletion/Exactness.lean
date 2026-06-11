@@ -5,7 +5,7 @@ Authors: Judith Ludwig, Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.RingTheory.AdicCompletion.Functoriality
 public import Mathlib.RingTheory.Filtration
 
@@ -28,7 +28,7 @@ All results are proven directly without using Mittag-Leffler systems.
 
 -/
 
-@[expose] public section
+public section
 
 universe u v w t
 
@@ -45,7 +45,7 @@ variable {N : Type w} [AddCommGroup N] [Module R N]
 
 variable {f : M →ₗ[R] N}
 
-/- In each step, a preimage is constructed from the preimage of the previous step by
+/-- In each step, a preimage is constructed from the preimage of the previous step by
 subtracting this delta. -/
 private noncomputable def mapPreimageDelta (hf : Function.Surjective f) (x : AdicCauchySequence I N)
     {n : ℕ} {y yₙ : M} (hy : f y = x (n + 1)) (hyₙ : f yₙ = x n) :
@@ -56,7 +56,7 @@ private noncomputable def mapPreimageDelta (hf : Function.Surjective f) (x : Adi
     exact AdicCauchySequence.mk_eq_mk (Nat.le_succ n) x
   ⟨⟨h.choose, h.choose_spec.1⟩, h.choose_spec.2⟩
 
-/- Inductively construct preimage of Cauchy sequence. -/
+/-- Inductively construct preimage of Cauchy sequence. -/
 private noncomputable def mapPreimage (hf : Function.Surjective f) (x : AdicCauchySequence I N) :
     (n : ℕ) → f ⁻¹' {x n}
   | .zero => ⟨(hf (x 0)).choose, (hf (x 0)).choose_spec⟩
@@ -96,12 +96,12 @@ theorem map_injective {f : M →ₗ[R] N} (hf : Function.Injective f) :
   intro x
   apply AdicCompletion.induction_on I M x (fun a ↦ ?_)
   intro hx
-  refine AdicCompletion.mk_zero_of _ _ _ ⟨42, fun n _ ↦ ⟨n + k, by cutsat, n, by cutsat, ?_⟩⟩
+  refine AdicCompletion.mk_zero_of _ _ _ ⟨42, fun n _ ↦ ⟨n + k, by lia, n, by lia, ?_⟩⟩
   rw [← Submodule.comap_map_eq_of_injective hf (I ^ n • ⊤ : Submodule R M),
     Submodule.map_smul'', Submodule.map_top]
   apply (smul_mono_right _ inf_le_right : I ^ n • (I ^ k • ⊤ ⊓ (range f)) ≤ _)
-  nth_rw 1 [show n = n + k - k by cutsat]
-  rw [← hk (n + k) (show n + k ≥ k by cutsat)]
+  nth_rw 1 [show n = n + k - k by lia]
+  rw [← hk (n + k) (show n + k ≥ k by lia)]
   exact ⟨by simpa using congrArg (fun x ↦ x.val (n + k)) hx, ⟨a (n + k), rfl⟩⟩
 
 end Injectivity
@@ -119,7 +119,7 @@ variable {k : ℕ}
   (hkn : ∀ n ≥ k, I ^ n • ⊤ ⊓ LinearMap.range f = I ^ (n - k) • (I ^ k • ⊤ ⊓ LinearMap.range f))
   (x : AdicCauchySequence I N) (hker : ∀ (n : ℕ), g (x n) ∈ (I ^ n • ⊤ : Submodule R P))
 
-/- In each step, a preimage is constructed from the preimage of the previous step by
+/-- In each step, a preimage is constructed from the preimage of the previous step by
 adding this delta. -/
 private noncomputable def mapExactAuxDelta {n : ℕ} {d : N}
     (hdmem : d ∈ (I ^ (k + n + 1) • ⊤ : Submodule R N)) {y yₙ : M}
@@ -132,8 +132,8 @@ private noncomputable def mapExactAuxDelta {n : ℕ} {d : N}
     · abel
     · refine Submodule.sub_mem _ (Submodule.sub_mem _ ?_ ?_) hyₙ
       · rw [← Submodule.Quotient.eq]
-        exact AdicCauchySequence.mk_eq_mk (by cutsat) _
-      · exact (Submodule.smul_mono_left (Ideal.pow_le_pow_right (by cutsat))) hdmem
+        exact AdicCauchySequence.mk_eq_mk (by lia) _
+      · exact (Submodule.smul_mono_left (Ideal.pow_le_pow_right (by lia))) hdmem
   have hincl : I ^ (k + n - k) • (I ^ k • ⊤ ⊓ range f) ≤ I ^ (k + n - k) • (range f) :=
     smul_mono_right _ inf_le_right
   have hyyₙ : y - yₙ ∈ (I ^ n • ⊤ : Submodule R M) := by
@@ -142,7 +142,7 @@ private noncomputable def mapExactAuxDelta {n : ℕ} {d : N}
     · rw [← Submodule.comap_map_eq_of_injective hf (I ^ (k + n - k) • ⊤ : Submodule R M),
         Submodule.map_smul'', Submodule.map_top]
       apply hincl
-      rw [← hkn (k + n) (by cutsat)]
+      rw [← hkn (k + n) (by lia)]
       exact ⟨h, ⟨y - yₙ, rfl⟩⟩
   ⟨⟨y - yₙ, hyyₙ⟩, by simpa [hd, Nat.succ_eq_add_one, Nat.add_assoc]⟩
 
@@ -196,10 +196,10 @@ theorem map_exact : Function.Exact (map I f) (map I g) := by
     · ext n
       suffices h : Submodule.Quotient.mk (p := (I ^ n • ⊤ : Submodule R N)) (f (a n)) =
             Submodule.Quotient.mk (p := (I ^ n • ⊤ : Submodule R N)) (b (k + n)) by
-        simp [h, AdicCauchySequence.mk_eq_mk (show n ≤ k + n by cutsat)]
+        simp [h, AdicCauchySequence.mk_eq_mk (show n ≤ k + n by lia)]
       rw [Submodule.Quotient.eq]
       have hle : (I ^ (k + n) • ⊤ : Submodule R N) ≤ (I ^ n • ⊤ : Submodule R N) :=
-        Submodule.smul_mono_left (Ideal.pow_le_pow_right (by cutsat))
+        Submodule.smul_mono_left (Ideal.pow_le_pow_right (by lia))
       exact hle (a n).property
 
 end

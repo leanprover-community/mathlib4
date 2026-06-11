@@ -38,8 +38,8 @@ ring homomorphism `i : K →+* L`, as well as its basic properties.
   then any ring homomorphism `K →+* M` can be lifted to `L →+* M`.
   This is similar to `IsAlgClosed.lift` and `IsSepClosed.lift`.
 
-- `PerfectRing.liftEquiv`: `K →+* M` is one-to-one correspondence to `L →+* M`,
-  given by `PerfectRing.lift`. This is a generalization to `PerfectClosure.lift`.
+- `PerfectRing.liftEquiv`: `K →+* M` is in one-to-one correspondence with `L →+* M`,
+  given by `PerfectRing.lift`. This generalizes `PerfectClosure.lift`.
 
 - `IsPerfectClosure.equiv`: perfect closures of a ring are isomorphic.
 
@@ -167,7 +167,7 @@ theorem IsPRadical.comap_pNilradical [IsPRadical i p] :
 variable (K) in
 instance IsPRadical.of_id : IsPRadical (RingHom.id K) p where
   pow_mem' x := ⟨0, x, by simp⟩
-  ker_le' x h := by convert Ideal.zero_mem _
+  ker_le' x h := by convert! Ideal.zero_mem _
 
 /-- Composition of `p`-radical ring homomorphisms is also `p`-radical. -/
 theorem IsPRadical.trans [IsPRadical i p] [IsPRadical f p] :
@@ -254,19 +254,19 @@ variable [CommRing K] [CommRing L] [CommRing M] [CommRing N]
 
 namespace IsPRadical
 
-/-- If `i : K →+* L` is `p`-radical, then for any ring `M` of exponential charactistic `p` whose
+/-- If `i : K →+* L` is `p`-radical, then for any ring `M` of exponential characteristic `p` whose
 `p`-nilradical is zero, the map `(L →+* M) → (K →+* M)` induced by `i` is injective. -/
 theorem injective_comp_of_pNilradical_eq_bot [IsPRadical i p] (h : pNilradical M p = ⊥) :
     Function.Injective fun f : L →+* M ↦ f.comp i := fun f g heq ↦ by
   ext x
   obtain ⟨n, y, hx⟩ := IsPRadical.pow_mem i p x
   apply_fun _ using pow_expChar_pow_inj_of_pNilradical_eq_bot M p h n
-  simpa only [← map_pow, ← hx] using congr($(heq) y)
+  simpa only [← map_pow, ← hx] using! congr($(heq) y)
 
 variable (M)
 
-/-- If `i : K →+* L` is `p`-radical, then for any reduced ring `M` of exponential charactistic `p`,
-the map `(L →+* M) → (K →+* M)` induced by `i` is injective.
+/-- If `i : K →+* L` is `p`-radical, then for any reduced ring `M` of exponential characteristic
+`p`, the map `(L →+* M) → (K →+* M)` induced by `i` is injective.
 A special case of `IsPRadical.injective_comp_of_pNilradical_eq_bot`
 and a generalization of `IsPurelyInseparable.injective_comp_algebraMap`. -/
 theorem injective_comp [IsPRadical i p] [IsReduced M] :
@@ -274,8 +274,8 @@ theorem injective_comp [IsPRadical i p] [IsReduced M] :
   injective_comp_of_pNilradical_eq_bot i p <| bot_unique <|
     pNilradical_le_nilradical.trans (nilradical_eq_zero M).le
 
-/-- If `i : K →+* L` is `p`-radical, then for any perfect ring `M` of exponential charactistic `p`,
-the map `(L →+* M) → (K →+* M)` induced by `i` is injective.
+/-- If `i : K →+* L` is `p`-radical, then for any perfect ring `M` of exponential characteristic
+`p`, the map `(L →+* M) → (K →+* M)` induced by `i` is injective.
 A special case of `IsPRadical.injective_comp_of_pNilradical_eq_bot`. -/
 theorem injective_comp_of_perfect [IsPRadical i p] [PerfectRing M p] :
     Function.Injective fun f : L →+* M ↦ f.comp i :=
@@ -367,10 +367,10 @@ theorem comp_lift : lift i (f.comp i) p = f :=
 theorem comp_lift_apply (x : L) : lift i (f.comp i) p x = f x := congr($(comp_lift i f p) x)
 
 variable (M) in
-/-- If `i : K →+* L` is a homomorphisms of characteristic `p` rings, such that
+/-- If `i : K →+* L` is a homomorphism of characteristic `p` rings, such that
 `i` is `p`-radical, and `M` is a perfect ring of characteristic `p`,
-then `K →+* M` is one-to-one correspondence to
-`L →+* M`, given by `PerfectRing.lift`. This is a generalization to `PerfectClosure.lift`. -/
+then `K →+* M` is in one-to-one correspondence with
+`L →+* M`, given by `PerfectRing.lift`. This generalizes `PerfectClosure.lift`. -/
 def liftEquiv : (K →+* M) ≃ (L →+* M) where
   toFun j := lift i j p
   invFun f := f.comp i

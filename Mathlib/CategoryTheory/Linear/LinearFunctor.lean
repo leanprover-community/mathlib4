@@ -28,7 +28,7 @@ for every two objects `X` and `Y`, the map
 
 namespace CategoryTheory
 
-variable (R : Type*) [Semiring R] {C D : Type*} [Category C] [Category D]
+variable (R : Type*) [Semiring R] {C D : Type*} [Category* C] [Category* D]
   [Preadditive C] [Preadditive D] [CategoryTheory.Linear R C] [CategoryTheory.Linear R D]
   (F : C ⥤ D)
 
@@ -64,8 +64,30 @@ theorem map_units_smul {X Y : C} (r : Rˣ) (f : X ⟶ Y) : F.map (r • f) = r �
 
 instance : Linear R (𝟭 C) where
 
-instance {E : Type*} [Category E] [Preadditive E] [CategoryTheory.Linear R E] (G : D ⥤ E)
-    [Linear R G] : Linear R (F ⋙ G) where
+section
+
+variable {E : Type*} [Category* E] [Preadditive E] [CategoryTheory.Linear R E] (G : D ⥤ E)
+
+instance [Linear R G] : Linear R (F ⋙ G) where
+
+set_option backward.isDefEq.respectTransparency false in
+lemma linear_of_full_essSurj_comp [F.Full] [F.EssSurj] [Functor.Linear R (F ⋙ G)] :
+    Functor.Linear R G := by
+  refine ⟨fun {X Y} f r ↦ ?_⟩
+  obtain ⟨X', Y', eX, eY, f', rfl⟩ :
+      ∃ (X' Y' : C) (eX : F.obj X' ≅ X) (eY : F.obj Y' ≅ Y)
+        (f' : X' ⟶ Y'), f = eX.inv ≫ F.map f' ≫ eY.hom := by
+    obtain ⟨f', hf'⟩ :=
+      F.map_surjective ((F.objObjPreimageIso X).hom ≫ f ≫ (F.objObjPreimageIso Y).inv)
+    exact ⟨_, _, F.objObjPreimageIso X, F.objObjPreimageIso Y, f', by cat_disch⟩
+  simpa only [comp_map, map_smul, Linear.smul_comp, Linear.comp_smul, ← G.map_comp]
+    using G.map eX.inv ≫= ((F ⋙ G).map_smul r f') =≫ G.map eY.hom
+
+lemma linear_comp_iff_of_full_of_essSurj [F.Full] [F.EssSurj] :
+    Functor.Linear R (F ⋙ G) ↔ Functor.Linear R G :=
+  ⟨fun _ ↦ linear_of_full_essSurj_comp F G, fun _ ↦ inferInstance⟩
+
+end
 
 variable (R) [F.Additive]
 
@@ -91,7 +113,7 @@ instance inducedFunctorLinear (F : C → D) : Functor.Linear R (inducedFunctor F
 
 end InducedCategory
 
-instance fullSubcategoryInclusionLinear {C : Type*} [Category C] [Preadditive C]
+instance fullSubcategoryInclusionLinear {C : Type*} [Category* C] [Preadditive C]
     [CategoryTheory.Linear R C] (Z : ObjectProperty C) : Z.ι.Linear R where
 
 section
@@ -99,10 +121,10 @@ section
 variable {R} [Additive F]
 
 instance natLinear : F.Linear ℕ where
-  map_smul := F.mapAddHom.map_nsmul
+  map_smul f r := F.mapAddHom.map_nsmul r f
 
 instance intLinear : F.Linear ℤ where
-  map_smul f r := F.mapAddHom.map_zsmul f r
+  map_smul f r := F.mapAddHom.map_zsmul r f
 
 variable [CategoryTheory.Linear ℚ C] [CategoryTheory.Linear ℚ D]
 
@@ -115,6 +137,7 @@ end Functor
 
 namespace Equivalence
 
+set_option backward.defeqAttrib.useBackward true in
 instance inverseLinear (e : C ≌ D) [e.functor.Linear R] : e.inverse.Linear R where
   map_smul r f := by
     apply e.functor.map_injective

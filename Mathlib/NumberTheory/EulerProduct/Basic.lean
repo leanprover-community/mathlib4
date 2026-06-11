@@ -44,7 +44,7 @@ for `s : Finset ℕ`.
 Euler product, multiplicative function
 -/
 
-@[expose] public section
+public section
 
 /-- If `f` is multiplicative and summable, then its values at natural numbers `> 1`
 have norm strictly less than `1`. -/
@@ -132,7 +132,7 @@ lemma norm_tsum_factoredNumbers_sub_tsum_lt (hsum : Summable f) (hf₀ : f 0 = 0
   refine ⟨N, fun s hs ↦ ?_⟩
   have := hN _ <| factoredNumbers_compl hs
   rwa [← hsum.tsum_subtype_add_tsum_subtype_compl (factoredNumbers s),
-    add_sub_cancel_left, tsum_eq_tsum_diff_singleton (factoredNumbers s)ᶜ hf₀]
+    add_sub_cancel_left, tsum_eq_tsum_sdiff_singleton (factoredNumbers s)ᶜ hf₀]
 
 -- Versions of the three lemmas above for `smoothNumbers N`
 
@@ -189,7 +189,7 @@ theorem eulerProduct_hasProd (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
 include hf₁ hmul in
 /-- The *Euler Product* for multiplicative (on coprime arguments) functions.
 
-If `f : ℕ → R`, where `R` is a complete normed commutative ring, `f 0 = 0`, `f 1 = 1`, `f` i
+If `f : ℕ → R`, where `R` is a complete normed commutative ring, `f 0 = 0`, `f 1 = 1`, `f` is
 multiplicative on coprime arguments, and `‖f ·‖` is summable, then
 `∏' p : ℕ, if p.Prime then ∑' e, f (p ^ e) else 1 = ∑' n, f n`.
 This version is stated using `HasProd` and `Set.mulIndicator`. -/

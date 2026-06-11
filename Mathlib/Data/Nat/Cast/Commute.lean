@@ -13,13 +13,31 @@ public import Mathlib.Algebra.Ring.Commute
 
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 
 namespace Nat
 
-section Commute
+section AddCommute
+
+variable [AddMonoidWithOne α]
+
+theorem addCommute_cast (m n : ℕ) : AddCommute (m : α) (n : α) := by
+  rw [addCommute_iff_eq, ← Nat.cast_add, ← Nat.cast_add, m.add_comm]
+
+theorem addCommute_cast_one (n : ℕ) : AddCommute (n : α) 1 :=
+  mod_cast addCommute_cast n 1
+
+theorem cast_add_comm (m n : ℕ) : (m : α) + n = n + m :=
+  addCommute_cast m n
+
+theorem cast_add_one_comm (n : ℕ) : (n : α) + 1 = 1 + n :=
+  addCommute_cast_one n
+
+end AddCommute
+
+section NonAssocSemiring
 
 variable [NonAssocSemiring α]
 
@@ -40,7 +58,7 @@ theorem commute_cast (x : α) (n : ℕ) : Commute x n :=
 theorem _root_.Commute.ofNat_right (x : α) (n : ℕ) [n.AtLeastTwo] : Commute x (OfNat.ofNat n) :=
   n.commute_cast x
 
-end Commute
+end NonAssocSemiring
 end Nat
 
 namespace SemiconjBy

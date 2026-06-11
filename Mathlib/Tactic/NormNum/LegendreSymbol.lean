@@ -6,6 +6,7 @@ Authors: Michael Stoll
 module
 
 public meta import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
+public import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
 
 /-!
 # A `norm_num` extension for Jacobi and Legendre symbols

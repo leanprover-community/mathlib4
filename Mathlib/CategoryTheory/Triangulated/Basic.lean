@@ -153,20 +153,17 @@ lemma Triangle.hom_ext {A B : Triangle C} (f g : A ⟶ B)
     (h₁ : f.hom₁ = g.hom₁) (h₂ : f.hom₂ = g.hom₂) (h₃ : f.hom₃ = g.hom₃) : f = g :=
   TriangleMorphism.ext h₁ h₂ h₃
 
-@[simp]
 lemma id_hom₁ (A : Triangle C) : TriangleMorphism.hom₁ (𝟙 A) = 𝟙 _ := rfl
-@[simp]
 lemma id_hom₂ (A : Triangle C) : TriangleMorphism.hom₂ (𝟙 A) = 𝟙 _ := rfl
-@[simp]
 lemma id_hom₃ (A : Triangle C) : TriangleMorphism.hom₃ (𝟙 A) = 𝟙 _ := rfl
 
-@[simp, reassoc]
+@[reassoc]
 lemma comp_hom₁ {X Y Z : Triangle C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom₁ = f.hom₁ ≫ g.hom₁ := rfl
-@[simp, reassoc]
+@[reassoc]
 lemma comp_hom₂ {X Y Z : Triangle C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom₂ = f.hom₂ ≫ g.hom₂ := rfl
-@[simp, reassoc]
+@[reassoc]
 lemma comp_hom₃ {X Y Z : Triangle C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom₃ = f.hom₃ ≫ g.hom₃ := rfl
 
@@ -337,6 +334,8 @@ def binaryProductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryProduct
     Triangle C :=
   Triangle.mk ((Limits.prod.lift (𝟙 X₁) 0)) (Limits.prod.snd : X₁ ⨯ X₂ ⟶ _) 0
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism of triangles
 `binaryProductTriangle X₁ X₂ ≅ binaryBiproductTriangle X₁ X₂`. -/
 @[simps!]
@@ -359,6 +358,7 @@ def productTriangle : Triangle C :=
     (Limits.Pi.map (fun j => (T j).mor₂))
     (Limits.Pi.map (fun j => (T j).mor₃) ≫ inv (piComparison _ _))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A projection from the product of a family of triangles. -/
 @[simps]
 def productTriangle.π (j : J) :
@@ -366,15 +366,13 @@ def productTriangle.π (j : J) :
   hom₁ := Pi.π _ j
   hom₂ := Pi.π _ j
   hom₃ := Pi.π _ j
-  comm₃ := by
-    dsimp
-    rw [← piComparison_comp_π, assoc, IsIso.inv_hom_id_assoc]
-    simp only [limMap_π, Discrete.natTrans_app]
 
 /-- The fan given by `productTriangle T`. -/
 @[simp]
 def productTriangle.fan : Fan T := Fan.mk (productTriangle T) (productTriangle.π T)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- A family of morphisms `T' ⟶ T j` lifts to a morphism `T' ⟶ productTriangle T`. -/
 @[simps]
 def productTriangle.lift {T' : Triangle C} (φ : ∀ j, T' ⟶ T j) :
@@ -387,15 +385,18 @@ def productTriangle.lift {T' : Triangle C} (φ : ∀ j, T' ⟶ T j) :
     rw [← cancel_mono (piComparison _ _), assoc, assoc, assoc, IsIso.inv_hom_id, comp_id]
     cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The triangle `productTriangle T` satisfies the universal property of the categorical
 product of the triangles `T`. -/
 def productTriangle.isLimitFan : IsLimit (productTriangle.fan T) :=
-  mkFanLimit _ (fun s => productTriangle.lift T s.proj) (fun s j => by cat_disch) (by
+  Fan.IsLimit.mk _ (fun s => productTriangle.lift T s.proj) (fun s j => by cat_disch) (by
     intro s m hm
     ext1
     all_goals
       exact Pi.hom_ext _ _ (fun j => (by simp [← hm])))
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma productTriangle.zero₃₁ [HasZeroMorphisms C]
     (h : ∀ j, (T j).mor₃ ≫ (T j).mor₁⟦(1 : ℤ)⟧' = 0) :
     (productTriangle T).mor₃ ≫ (productTriangle T).mor₁⟦1⟧' = 0 := by
@@ -406,12 +407,11 @@ lemma productTriangle.zero₃₁ [HasZeroMorphisms C]
   change _ ≫ (Pi.lift (fun j => Pi.π _ j ≫ (T j).mor₁))⟦(1 : ℤ)⟧' = 0
   rw [assoc, ← cancel_mono (piComparison _ _), zero_comp, assoc, assoc]
   ext j
-  simp only [map_lift_piComparison, assoc, limit.lift_π, Fan.mk_π_app, zero_comp,
-    Functor.map_comp, ← piComparison_comp_π_assoc, IsIso.inv_hom_id_assoc,
-    limMap_π_assoc, Discrete.natTrans_app, h j, comp_zero]
+  simp [h j]
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The functor `C ⥤ Triangle C` which sends `X` to `contractibleTriangle X`. -/
 @[simps]
@@ -442,16 +442,19 @@ def π₃ : Triangle C ⥤ C where
   obj T := T.obj₃
   map f := f.hom₃
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The first morphism of a triangle, as a natural transformation `π₁ ⟶ π₂`. -/
 @[simps]
 def π₁Toπ₂ : (π₁ : Triangle C ⥤ C) ⟶ Triangle.π₂ where
   app T := T.mor₁
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The second morphism of a triangle, as a natural transformation `π₂ ⟶ π₃`. -/
 @[simps]
 def π₂Toπ₃ : (π₂ : Triangle C ⥤ C) ⟶ Triangle.π₃ where
   app T := T.mor₂
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The third morphism of a triangle, as a natural
 transformation `π₃ ⟶ π₁ ⋙ shiftFunctor _ (1 : ℤ)`. -/
 @[simps]
@@ -470,8 +473,11 @@ end
 
 section
 
-variable {J : Type*} [Category J]
+open Functor
 
+variable {J : Type*} [Category* J]
+
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for functors to the category of triangles. -/
 @[simps]
 def functorMk {obj₁ obj₂ obj₃ : J ⥤ C}
@@ -482,6 +488,81 @@ def functorMk {obj₁ obj₂ obj₃ : J ⥤ C}
     { hom₁ := obj₁.map φ
       hom₂ := obj₂.map φ
       hom₃ := obj₃.map φ }
+
+/-- Constructor for natural transformations between functors to the
+category of triangles. -/
+@[simps]
+def functorHomMk (A B : J ⥤ Triangle C) (hom₁ : A ⋙ π₁ ⟶ B ⋙ π₁)
+    (hom₂ : A ⋙ π₂ ⟶ B ⋙ π₂) (hom₃ : A ⋙ π₃ ⟶ B ⋙ π₃)
+    (comm₁ : whiskerLeft A π₁Toπ₂ ≫ hom₂ = hom₁ ≫ whiskerLeft B π₁Toπ₂ := by cat_disch)
+    (comm₂ : whiskerLeft A π₂Toπ₃ ≫ hom₃ = hom₂ ≫ whiskerLeft B π₂Toπ₃ := by cat_disch)
+    (comm₃ : whiskerLeft A π₃Toπ₁ ≫ whiskerRight hom₁ (shiftFunctor C (1 : ℤ)) =
+      hom₃ ≫ whiskerLeft B π₃Toπ₁ := by cat_disch) : A ⟶ B where
+  app j :=
+    { hom₁ := hom₁.app j
+      hom₂ := hom₂.app j
+      hom₃ := hom₃.app j
+      comm₁ := NatTrans.congr_app comm₁ j
+      comm₂ := NatTrans.congr_app comm₂ j
+      comm₃ := NatTrans.congr_app comm₃ j }
+  naturality _ _ φ := by
+    ext
+    · exact hom₁.naturality φ
+    · exact hom₂.naturality φ
+    · exact hom₃.naturality φ
+
+/-- Constructor for natural transformations between functors constructed
+with `functorMk`. -/
+@[simps!]
+def functorHomMk'
+    {obj₁ obj₂ obj₃ : J ⥤ C}
+    {mor₁ : obj₁ ⟶ obj₂} {mor₂ : obj₂ ⟶ obj₃} {mor₃ : obj₃ ⟶ obj₁ ⋙ shiftFunctor C (1 : ℤ)}
+    {obj₁' obj₂' obj₃' : J ⥤ C}
+    {mor₁' : obj₁' ⟶ obj₂'} {mor₂' : obj₂' ⟶ obj₃'}
+    {mor₃' : obj₃' ⟶ obj₁' ⋙ shiftFunctor C (1 : ℤ)}
+    (hom₁ : obj₁ ⟶ obj₁') (hom₂ : obj₂ ⟶ obj₂') (hom₃ : obj₃ ⟶ obj₃')
+    (comm₁ : mor₁ ≫ hom₂ = hom₁ ≫ mor₁')
+    (comm₂ : mor₂ ≫ hom₃ = hom₂ ≫ mor₂')
+    (comm₃ : mor₃ ≫ whiskerRight hom₁ (shiftFunctor C (1 : ℤ)) = hom₃ ≫ mor₃') :
+    functorMk mor₁ mor₂ mor₃ ⟶ functorMk mor₁' mor₂' mor₃' :=
+  functorHomMk _ _ hom₁ hom₂ hom₃ comm₁ comm₂ comm₃
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Constructor for natural isomorphisms between functors to the
+category of triangles. -/
+@[simps]
+def functorIsoMk (A B : J ⥤ Triangle C) (iso₁ : A ⋙ π₁ ≅ B ⋙ π₁)
+    (iso₂ : A ⋙ π₂ ≅ B ⋙ π₂) (iso₃ : A ⋙ π₃ ≅ B ⋙ π₃)
+    (comm₁ : whiskerLeft A π₁Toπ₂ ≫ iso₂.hom = iso₁.hom ≫ whiskerLeft B π₁Toπ₂)
+    (comm₂ : whiskerLeft A π₂Toπ₃ ≫ iso₃.hom = iso₂.hom ≫ whiskerLeft B π₂Toπ₃)
+    (comm₃ : whiskerLeft A π₃Toπ₁ ≫ whiskerRight iso₁.hom (shiftFunctor C (1 : ℤ)) =
+      iso₃.hom ≫ whiskerLeft B π₃Toπ₁) : A ≅ B where
+  hom := functorHomMk _ _ iso₁.hom iso₂.hom iso₃.hom comm₁ comm₂ comm₃
+  inv := functorHomMk _ _ iso₁.inv iso₂.inv iso₃.inv
+    (by simp only [← cancel_epi iso₁.hom, ← reassoc_of% comm₁,
+          Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc])
+    (by simp only [← cancel_epi iso₂.hom, ← reassoc_of% comm₂,
+          Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc])
+    (by
+      simp only [← cancel_epi iso₃.hom, ← reassoc_of% comm₃, Iso.hom_inv_id_assoc,
+        ← whiskerRight_comp, Iso.hom_inv_id, whiskerRight_id']
+      apply comp_id)
+
+/-- Constructor for natural isomorphisms between functors constructed
+with `functorMk`. -/
+@[simps!]
+def functorIsoMk'
+    {obj₁ obj₂ obj₃ : J ⥤ C}
+    {mor₁ : obj₁ ⟶ obj₂} {mor₂ : obj₂ ⟶ obj₃} {mor₃ : obj₃ ⟶ obj₁ ⋙ shiftFunctor C (1 : ℤ)}
+    {obj₁' obj₂' obj₃' : J ⥤ C}
+    {mor₁' : obj₁' ⟶ obj₂'} {mor₂' : obj₂' ⟶ obj₃'}
+    {mor₃' : obj₃' ⟶ obj₁' ⋙ shiftFunctor C (1 : ℤ)}
+    (iso₁ : obj₁ ≅ obj₁') (iso₂ : obj₂ ≅ obj₂') (iso₃ : obj₃ ≅ obj₃')
+    (comm₁ : mor₁ ≫ iso₂.hom = iso₁.hom ≫ mor₁')
+    (comm₂ : mor₂ ≫ iso₃.hom = iso₂.hom ≫ mor₂')
+    (comm₃ : mor₃ ≫ whiskerRight iso₁.hom (shiftFunctor C (1 : ℤ)) = iso₃.hom ≫ mor₃') :
+    functorMk mor₁ mor₂ mor₃ ≅ functorMk mor₁' mor₂' mor₃' :=
+  functorIsoMk _ _ iso₁ iso₂ iso₃ comm₁ comm₂ comm₃
 
 end
 

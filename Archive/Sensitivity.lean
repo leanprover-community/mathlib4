@@ -6,7 +6,7 @@ Authors: Reid Barton, Johan Commelin, Jesse Michael Han, Chris Hughes, Robert Y.
   Patrick Massot
 -/
 import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Data.Real.Sqrt
+import Mathlib.Analysis.Real.Sqrt
 import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.Tactic.ApplyFun
@@ -54,12 +54,8 @@ Notations:
 
 
 /-- The hypercube in dimension `n`. -/
-def Q (n : ℕ) :=
+abbrev Q (n : ℕ) :=
   Fin n → Bool
-
-instance (n) : Inhabited (Q n) := inferInstanceAs (Inhabited (Fin n → Bool))
-
-instance (n) : Fintype (Q n) := inferInstanceAs (Fintype (Fin n → Bool))
 
 /-- The projection from `Q n.succ` to `Q n` forgetting the first value
 (i.e. the image of zero). -/
@@ -79,7 +75,7 @@ instance : Unique (Q 0) :=
   ⟨⟨fun _ => true⟩, by intro; ext x; fin_cases x⟩
 
 /-- `Q n` has 2^n elements. -/
-theorem card : card (Q n) = 2 ^ n := by simp [Q]
+theorem card : card (Q n) = 2 ^ n := by simp
 
 /-! Until the end of this namespace, `n` will be an implicit argument (still
 a natural number). -/
@@ -94,7 +90,7 @@ theorem succ_n_eq (p q : Q n.succ) : p = q ↔ p 0 = q 0 ∧ π p = π q := by
     by_cases hx : x = 0
     · rwa [hx]
     · rw [← Fin.succ_pred x hx]
-      convert congr_fun h (Fin.pred x hx)
+      convert! congr_fun h (Fin.pred x hx)
 
 /-- The adjacency relation defining the graph structure on `Q n`:
 `p.adjacent q` if there is an edge from `p` to `q` in `Q n`. -/
@@ -135,7 +131,7 @@ theorem adj_iff_proj_adj {p q : Q n.succ} (h₀ : p 0 = q 0) :
     rw [← Fin.pred_inj (ha := (?ha : y ≠ 0)) (hb := (?hb : i.succ ≠ 0)),
       Fin.pred_succ]
     case ha =>
-      contrapose! hy
+      contrapose hy
       rw [hy, h₀]
     case hb =>
       apply Fin.succ_ne_zero
@@ -176,6 +172,7 @@ instance : DecidableEq (V n) := by induction n <;> · dsimp only [V]; infer_inst
 
 instance : AddCommGroup (V n) := by induction n <;> · dsimp only [V]; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Module ℝ (V n) := by induction n <;> · dsimp only [V]; infer_instance
 
 end V
@@ -197,6 +194,7 @@ noncomputable def ε : ∀ {n : ℕ}, Q n → V n →ₗ[ℝ] ℝ
 
 variable {n : ℕ}
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
   induction n with
@@ -207,7 +205,7 @@ theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
     all_goals
       simp only [Bool.cond_true, Bool.cond_false, LinearMap.fst_apply, LinearMap.snd_apply,
         LinearMap.comp_apply, IH]
-      congr 1; rw [Q.succ_n_eq]; simp [hp, hq]
+      congr 1; simp [Q.succ_n_eq, hp, hq]
 
 /-- Any vector in `V n` annihilated by all `ε p`'s is zero. -/
 theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
@@ -284,15 +282,17 @@ is necessary since otherwise `n • v` refers to the multiplication defined
 using only the addition of `V`. -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 theorem f_squared (v : V n) : (f n) (f n v) = (n : ℝ) • v := by
   induction n with
-  | zero =>  simp only [Nat.cast_zero, zero_smul, f_zero, zero_apply]
+  | zero => simp only [Nat.cast_zero, zero_smul, f_zero, LinearMap.zero_apply]
   | succ n IH =>
     cases v; rw [f_succ_apply, f_succ_apply]; simp [IH, add_smul (n : ℝ) 1, add_assoc]; abel
 
 /-! We now compute the matrix of `f` in the `e` basis (`p` is the line index,
 `q` the column index). -/
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 theorem f_matrix (p q : Q n) : |ε q (f n (e p))| = if p ∈ q.adjacent then 1 else 0 := by
   induction n with
@@ -311,7 +311,7 @@ theorem f_matrix (p q : Q n) : |ε q (f n (e p))| = if p ∈ q.adjacent then 1 e
 
 /-- The linear operator $g_m$ corresponding to Knuth's matrix $B_m$. -/
 noncomputable def g (m : ℕ) : V m →ₗ[ℝ] V m.succ :=
-  LinearMap.prod (f m + √ (m + 1) • LinearMap.id) LinearMap.id
+  LinearMap.prod (f m + √(m + 1) • LinearMap.id) LinearMap.id
 
 /-! In the following lemmas, `m` will denote a natural number. -/
 
@@ -321,18 +321,21 @@ variable {m : ℕ}
 /-! Again we unpack what are the values of `g`. -/
 
 
-theorem g_apply : ∀ v, g m v = (f m v + √ (m + 1) • v, v) := by
+set_option backward.isDefEq.respectTransparency false in
+theorem g_apply : ∀ v, g m v = (f m v + √(m + 1) • v, v) := by
   delta g; intro v; simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem g_injective : Injective (g m) := by
   rw [g]
   intro x₁ x₂ h
-  simp only [V, LinearMap.prod_apply, LinearMap.id_apply, Prod.mk_inj, Pi.prod] at h
+  simp only [V, LinearMap.prod_apply, LinearMap.id_apply, Prod.mk_inj, Function.prod_apply] at h
   exact h.right
 
-theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √ (m + 1) • w := by
+set_option backward.isDefEq.respectTransparency false in
+theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √(m + 1) • w := by
   rcases hv with ⟨v, rfl⟩
-  have : √ (m + 1) * √ (m + 1) = m + 1 := Real.mul_self_sqrt (mod_cast zero_le _)
+  have : √(m + 1) * √(m + 1) = m + 1 := Real.mul_self_sqrt (mod_cast zero_le)
   rw [f_succ_apply, g_apply]
   simp [this, f_squared, smul_add, add_smul, smul_smul]
   abel
@@ -380,21 +383,21 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
   suffices 0 < dim (W ⊓ img) by
     exact mod_cast exists_mem_ne_zero_of_rank_pos this
   have dim_le : dim (W ⊔ img) ≤ 2 ^ (m + 1 : Cardinal) := by
-    convert ← Submodule.rank_le (W ⊔ img)
+    convert! ← Submodule.rank_le (W ⊔ img)
     rw [← Nat.cast_succ]
     apply dim_V
   have dim_add : dim (W ⊔ img) + dim (W ⊓ img) = dim W + 2 ^ m := by
-    convert ← Submodule.rank_sup_add_rank_inf_eq W img
+    convert! ← Submodule.rank_sup_add_rank_inf_eq W img
     rw [rank_range_of_injective (g m) g_injective]
     apply dim_V
   have dimW : dim W = card H := by
     have li : LinearIndependent ℝ (H.restrict e) := by
-      convert (dualBases_e_ε m.succ).basis.linearIndependent.comp _ Subtype.val_injective
+      convert! (dualBases_e_ε m.succ).basis.linearIndependent.comp _ Subtype.val_injective
       rw [(dualBases_e_ε _).coe_basis]
       rfl
     have hdW := rank_span li
     rw [Set.range_restrict] at hdW
-    convert hdW
+    convert! hdW
     rw [← (dualBases_e_ε _).coe_basis, Cardinal.mk_image_eq (dualBases_e_ε _).basis.injective,
       Cardinal.mk_fintype]
   rw [← finrank_eq_rank ℝ] at dim_le dim_add dimW ⊢
@@ -407,7 +410,7 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
 open Classical in
 /-- **Huang sensitivity theorem** also known as the **Huang degree theorem** -/
 theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
-    ∃ q, q ∈ H ∧ √ (m + 1) ≤ Card H ∩ q.adjacent := by
+    ∃ q, q ∈ H ∧ √(m + 1) ≤ Card H ∩ q.adjacent := by
   rcases exists_eigenvalue H hH with ⟨y, ⟨⟨y_mem_H, y_mem_g⟩, y_ne⟩⟩
   have coeffs_support : ((dualBases_e_ε m.succ).coeffs y).support ⊆ H.toFinset := by
     intro p p_in
@@ -420,13 +423,13 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     contrapose! y_ne
     exact epsilon_total fun p => abs_nonpos_iff.mp (le_trans (H_max p) y_ne)
   refine ⟨q, (dualBases_e_ε _).mem_of_mem_span y_mem_H q (abs_pos.mp H_q_pos), ?_⟩
-  let s := √ (m + 1)
+  let s := √(m + 1)
   suffices s * |ε q y| ≤ _ * |ε q y| from (mul_le_mul_iff_left₀ H_q_pos).mp ‹_›
   let coeffs := (dualBases_e_ε m.succ).coeffs
   calc
     s * |ε q y| = |ε q (s • y)| := by
       rw [map_smul, smul_eq_mul, abs_mul, abs_of_nonneg (Real.sqrt_nonneg _)]
-    _ = |ε q (f m.succ y)| := by rw [← f_image_g y (by simpa using y_mem_g)]
+    _ = |ε q (f m.succ y)| := by rw [← f_image_g y (by simpa using! y_mem_g)]
     _ = |ε q (f m.succ (lc _ (coeffs y)))| := by rw [(dualBases_e_ε _).lc_coeffs y]
     _ =
         |(coeffs y).sum fun (i : Q m.succ) (a : ℝ) =>
@@ -449,7 +452,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
       norm_cast
       apply card_le_card
       rw [Set.toFinset_inter]
-      convert inter_subset_inter_right coeffs_support
+      convert! inter_subset_inter_right coeffs_support
 
 end
 

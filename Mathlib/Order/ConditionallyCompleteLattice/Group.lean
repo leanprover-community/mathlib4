@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 
 -/
 
-@[expose] public section
+public section
 
 open Set
 

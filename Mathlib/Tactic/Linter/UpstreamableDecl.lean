@@ -5,8 +5,8 @@ Authors: Damiano Testa, Anne Baanen
 -/
 module
 
-public meta import ImportGraph.Meta
 public import Mathlib.Init
+public import ImportGraph.Tools.FindHome
 
 /-! # The `upstreamableDecl` linter
 
@@ -14,12 +14,13 @@ The `upstreamableDecl` linter detects declarations that could be moved to a file
 import hierarchy. This is intended to assist with splitting files.
 -/
 
-public meta section
+meta section
 
 open Lean Elab Command Linter
 
+-- TODO: move this to the `Lean` directory
 /-- Does this declaration come from the current file? -/
-def Lean.Name.isLocal (env : Environment) (decl : Name) : Bool :=
+public def Lean.Name.isLocal (env : Environment) (decl : Name) : Bool :=
   (env.getModuleIdxFor? decl).isNone
 
 open Mathlib.Command.MinImports
@@ -61,7 +62,7 @@ see options `linter.upstreamableDecl.defs` and `linter.upstreamableDecl.private`
 
 This is intended to assist with splitting files.
 -/
-register_option linter.upstreamableDecl : Bool := {
+public register_option linter.upstreamableDecl : Bool := {
   defValue := false
   descr := "enable the upstreamableDecl linter"
 }
@@ -73,7 +74,7 @@ The linter does not place a warning on any declaration depending on a definition
 (while it does place a warning on the definition itself), since we often create a new file for a
 definition on purpose.
 -/
-register_option linter.upstreamableDecl.defs : Bool := {
+public register_option linter.upstreamableDecl.defs : Bool := {
   defValue := false
   descr := "upstreamableDecl warns on definitions"
 }
@@ -81,7 +82,7 @@ register_option linter.upstreamableDecl.defs : Bool := {
 /--
 If set to `true`, the `upstreamableDecl` linter will add warnings on private declarations.
 -/
-register_option linter.upstreamableDecl.private : Bool := {
+public register_option linter.upstreamableDecl.private : Bool := {
   defValue := false
   descr := "upstreamableDecl warns on private declarations"
 }

@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 public import Mathlib.Algebra.Polynomial.Eval.Algebra
-public import Mathlib.Tactic.Abel
 
 /-!
 # The Pochhammer polynomials
@@ -427,7 +426,7 @@ theorem ascPochhammer_eval_neg_coe_nat_of_lt {n k : ℕ} (h : k < n) :
     rcases lt_trichotomy k n with hkn | rfl | hkn
     · simp [ih hkn]
     · simp
-    · cutsat
+    · lia
 
 /-- Over an integral domain, the Pochhammer polynomial of degree `n` has roots *only* at
 `0`, `-1`, ..., `-(n - 1)`. -/
@@ -442,11 +441,11 @@ theorem ascPochhammer_eval_eq_zero_iff [IsDomain R]
       cases zero' with
       | inl h =>
         obtain ⟨rn, hrn, rrn⟩ := ih h
-        exact ⟨rn, by cutsat, rrn⟩
+        exact ⟨rn, by lia, rrn⟩
       | inr h =>
         exact ⟨n, lt_add_one n, eq_neg_of_add_eq_zero_right h⟩
   · obtain ⟨rn, hrn, rnn⟩ := hrn
-    convert ascPochhammer_eval_neg_coe_nat_of_lt hrn
+    convert! ascPochhammer_eval_neg_coe_nat_of_lt hrn
     simp [rnn]
 
 /-- `descPochhammer R n` is `0` for `0, 1, …, n-1`. -/

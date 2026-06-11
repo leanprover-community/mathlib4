@@ -53,7 +53,7 @@ theorem support_smul [SMulZeroClass S R] (r : S) (p : R[X]) :
     support (r • p) ⊆ support p := by
   intro i hi
   rw [mem_support_iff] at hi ⊢
-  contrapose! hi
+  contrapose hi
   simp [hi]
 
 open scoped Pointwise in
@@ -86,9 +86,11 @@ theorem lcoeff_apply (n : ℕ) (f : R[X]) : lcoeff R n f = coeff f n :=
   rfl
 
 @[simp]
-theorem finset_sum_coeff {ι : Type*} (s : Finset ι) (f : ι → R[X]) (n : ℕ) :
+theorem finsetSum_coeff {ι : Type*} (s : Finset ι) (f : ι → R[X]) (n : ℕ) :
     coeff (∑ b ∈ s, f b) n = ∑ b ∈ s, coeff (f b) n :=
   map_sum (lcoeff R n) _ _
+
+@[deprecated (since := "2026-04-08")] alias finset_sum_coeff := finsetSum_coeff
 
 lemma coeff_list_sum (l : List R[X]) (n : ℕ) :
     l.sum.coeff n = (l.map (lcoeff R n)).sum :=
@@ -225,7 +227,10 @@ end Fewnomials
 theorem coeff_mul_X_pow (p : R[X]) (n d : ℕ) :
     coeff (p * Polynomial.X ^ n) (d + n) = coeff p d := by
   rw [coeff_mul, Finset.sum_eq_single (d, n), coeff_X_pow, if_pos rfl, mul_one]
-  all_goals grind [mem_antidiagonal, mul_zero]
+  · rintro ⟨i, j⟩ h1 h2
+    rw [coeff_X_pow, if_neg, mul_zero]
+    grind [mem_antidiagonal]
+  · grind [mem_antidiagonal]
 
 @[simp]
 theorem coeff_X_pow_mul (p : R[X]) (n d : ℕ) :
@@ -274,9 +279,9 @@ theorem mul_X_pow_eq_zero {p : R[X]} {n : ℕ} (H : p * X ^ n = 0) : p = 0 :=
   ext fun k => (coeff_mul_X_pow p n k).symm.trans <| ext_iff.1 H (k + n)
 
 theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := by
-  suffices IsLeftRegular (X^n : R[X]) from
+  suffices IsLeftRegular (X ^ n : R[X]) from
     ⟨this, this.right_of_commute (fun p => commute_X_pow p n)⟩
-  intro P Q (hPQ : X^n * P = X^n * Q)
+  intro P Q (hPQ : X ^ n * P = X ^ n * Q)
   ext i
   rw [← coeff_X_pow_mul P n i, hPQ, coeff_X_pow_mul Q n i]
 
@@ -299,6 +304,12 @@ theorem coeff_X_add_one_pow (R : Type*) [Semiring R] (n k : ℕ) :
 theorem coeff_one_add_X_pow (R : Type*) [Semiring R] (n k : ℕ) :
     ((1 + X) ^ n).coeff k = (n.choose k : R) := by rw [add_comm _ X, coeff_X_add_one_pow]
 
+theorem one_add_X_pow_sub_X_pow {S : Type*} [CommRing S] (d : ℕ) :
+    (1 + X : S[X]) ^ d - X ^ d = ∑ i ∈ range d, d.choose i • X ^ i := by
+  ext i
+  simp [Polynomial.coeff_one_add_X_pow]
+  split_ifs <;> simp_all [Nat.choose_eq_zero_of_lt, lt_iff_le_and_ne]
+
 theorem C_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : C r ∣ φ ↔ ∀ i, r ∣ φ.coeff i := by
   constructor
   · rintro ⟨φ, rfl⟩ c
@@ -311,7 +322,7 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : C r ∣ φ ↔ ∀ i, r ∣ φ
       let ψ : R[X] := ∑ i ∈ φ.support, monomial i (c' i)
       use ψ
       ext i
-      simp only [c', ψ, coeff_C_mul, mem_support_iff, coeff_monomial, finset_sum_coeff,
+      simp only [c', ψ, coeff_C_mul, mem_support_iff, coeff_monomial, finsetSum_coeff,
         Finset.sum_ite_eq']
       split_ifs with hi
       · rw [hc]

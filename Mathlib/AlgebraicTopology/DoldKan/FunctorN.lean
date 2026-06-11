@@ -43,8 +43,9 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)` which maps
 `X` to the formal direct factor of `K[X]` defined by `PInfty`. -/
 @[simps]

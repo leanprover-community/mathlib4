@@ -25,7 +25,7 @@ It also includes a bit of more general topological theory of the reals,
 needed to define the structures and prove continuity.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists StarRing UniformContinuousConstSMul UniformOnFun
 
@@ -52,7 +52,7 @@ instance : IsUniformAddGroup ℝ :=
   IsUniformAddGroup.mk' Real.uniformContinuous_add Real.uniformContinuous_neg
 
 theorem Real.uniformContinuous_const_mul {x : ℝ} : UniformContinuous (x * ·) :=
-  uniformContinuous_of_continuousAt_zero (DistribMulAction.toAddMonoidHom ℝ x)
+  uniformContinuous_of_continuousAt_zero (DistribSMul.toAddMonoidHom ℝ x)
     (continuous_const_smul x).continuousAt
 
 -- short-circuit type class inference

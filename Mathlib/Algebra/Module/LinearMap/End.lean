@@ -6,8 +6,9 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 -/
 module
 
+public import Mathlib.Algebra.Group.Center
 public import Mathlib.Algebra.Module.Equiv.Opposite
-public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+public import Mathlib.Algebra.Module.Torsion.Free
 
 /-!
 # Endomorphisms of a module
@@ -120,15 +121,9 @@ theorem isUnit_apply_inv_apply_of_isUnit {f : End R M} (h : IsUnit f) (x : M) :
     f (h.unit.inv x) = x :=
   show (f * h.unit.inv) x = x by simp
 
-@[deprecated (since := "2025-04-28")]
-alias _root_.Module.End_isUnit_apply_inv_apply_of_isUnit := isUnit_apply_inv_apply_of_isUnit
-
 theorem isUnit_inv_apply_apply_of_isUnit {f : End R M} (h : IsUnit f) (x : M) :
     h.unit.inv (f x) = x :=
   (by simp : (h.unit.inv * f) x = x)
-
-@[deprecated (since := "2025-04-28")]
-alias _root_.Module.End_isUnit_inv_apply_apply_of_isUnit := isUnit_inv_apply_apply_of_isUnit
 
 theorem coe_pow (f : End R M) (n : ℕ) : ⇑(f ^ n) = f^[n] := hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 
@@ -154,6 +149,7 @@ theorem id_pow (n : ℕ) : (id : End R M) ^ n = .id :=
 variable {f' : End R M}
 
 theorem iterate_succ (n : ℕ) : f' ^ (n + 1) = .comp (f' ^ n) f' := by rw [pow_succ, mul_eq_comp]
+theorem iterate_succ' (n : ℕ) : f' ^ (n + 1) = .comp f' (f' ^ n) := by rw [pow_succ', mul_eq_comp]
 
 theorem iterate_surjective (h : Surjective f') : ∀ n : ℕ, Surjective (f' ^ n)
   | 0 => surjective_id
@@ -175,13 +171,22 @@ theorem iterate_bijective (h : Bijective f') : ∀ n : ℕ, Bijective (f' ^ n)
 
 theorem injective_of_iterate_injective {n : ℕ} (hn : n ≠ 0) (h : Injective (f' ^ n)) :
     Injective f' := by
-  rw [← Nat.succ_pred_eq_of_pos (show 0 < n by cutsat), iterate_succ, coe_comp] at h
+  rw [← Nat.succ_pred_eq_of_pos (show 0 < n by lia), iterate_succ, coe_comp] at h
   exact h.of_comp
 
 theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjective (f' ^ n)) :
     Surjective f' := by
   rw [← Nat.succ_pred_eq_of_pos (Nat.pos_iff_ne_zero.mpr hn), pow_succ', coe_mul] at h
   exact Surjective.of_comp h
+
+/-- Scalar multiplication on the left, as a linear map. -/
+@[simps] def smulLeft (α : R) (hα : α ∈ Set.center R) : End R M where
+  toFun x := α • x
+  map_add' := smul_add _
+  map_smul' β _ := by simp [smul_smul, ((Set.mem_center_iff.mp hα).comm β).eq]
+
+@[simp] lemma smulLeft_eq {R : Type*} [CommSemiring R] [Module R M] (α : R)
+    (hα : α ∈ Set.center R := by simp) : smulLeft α hα = α • .id (M := M) := rfl
 
 end
 
@@ -222,19 +227,18 @@ instance apply_isScalarTower [Monoid S] [DistribMulAction S M] [SMulCommClass R 
 
 end Module.End
 
+section
+
 /-! ## Actions as module endomorphisms -/
 
-
-namespace DistribMulAction
-
 variable (R M) [Semiring R] [AddCommMonoid M] [Module R M]
-variable [Monoid S] [DistribMulAction S M] [SMulCommClass S R M]
+variable [Monoid S]
 
 /-- Each element of the monoid defines a linear map.
 
-This is a stronger version of `DistribMulAction.toAddMonoidHom`. -/
+This is a stronger version of `DistribSMul.toAddMonoidHom`. -/
 @[simps]
-def toLinearMap (s : S) : M →ₗ[R] M where
+def DistribSMul.toLinearMap [DistribSMul S M] [SMulCommClass S R M] (s : S) : M →ₗ[R] M where
   toFun := HSMul.hSMul s
   map_add' := smul_add s
   map_smul' _ _ := smul_comm _ _ _
@@ -243,12 +247,15 @@ def toLinearMap (s : S) : M →ₗ[R] M where
 
 This is a stronger version of `DistribMulAction.toAddMonoidEnd`. -/
 @[simps]
-def toModuleEnd : S →* Module.End R M where
-  toFun := toLinearMap R M
+def DistribMulAction.toModuleEnd [DistribMulAction S M] [SMulCommClass S R M] :
+    S →* Module.End R M where
+  toFun := DistribSMul.toLinearMap R M
   map_one' := LinearMap.ext <| one_smul _
   map_mul' _ _ := LinearMap.ext <| mul_smul _ _
 
-end DistribMulAction
+@[deprecated (since := "2026-01-07")] alias DistribMulAction.toLinearMap := DistribSMul.toLinearMap
+
+end
 
 section Module
 
@@ -261,7 +268,7 @@ This is a stronger version of `DistribMulAction.toModuleEnd`. -/
 @[simps]
 def Module.toModuleEnd : S →+* Module.End R M :=
   { DistribMulAction.toModuleEnd R M with
-    toFun := DistribMulAction.toLinearMap R M
+    toFun := DistribSMul.toLinearMap R M
     map_zero' := LinearMap.ext <| zero_smul S
     map_add' := fun _ _ ↦ LinearMap.ext <| add_smul _ _ }
 
@@ -270,7 +277,7 @@ multiplication. -/
 @[simps]
 def RingEquiv.moduleEndSelf : Rᵐᵒᵖ ≃+* Module.End R R :=
   { Module.toModuleEnd R R with
-    toFun := DistribMulAction.toLinearMap R R
+    toFun := DistribSMul.toLinearMap R R
     invFun := fun f ↦ MulOpposite.op (f 1)
     left_inv := mul_one
     right_inv := fun _ ↦ LinearMap.ext_ring <| one_mul _ }
@@ -280,7 +287,7 @@ multiplication. -/
 @[simps]
 def RingEquiv.moduleEndSelfOp : R ≃+* Module.End Rᵐᵒᵖ R :=
   { Module.toModuleEnd _ _ with
-    toFun := DistribMulAction.toLinearMap _ _
+    toFun := DistribSMul.toLinearMap _ _
     invFun := fun f ↦ f 1
     left_inv := mul_one
     right_inv := fun _ ↦ LinearMap.ext_ring_op <| mul_one _ }
@@ -325,15 +332,8 @@ lemma smulRight_zero (f : M₁ →ₗ[R] S) : f.smulRight (0 : M) = 0 := by ext;
 lemma zero_smulRight (x : M) : (0 : M₁ →ₗ[R] S).smulRight x = 0 := by ext; simp
 
 @[simp]
-lemma smulRight_apply_eq_zero_iff {f : M₁ →ₗ[R] S} {x : M} [NoZeroSMulDivisors S M] :
-    f.smulRight x = 0 ↔ f = 0 ∨ x = 0 := by
-  rcases eq_or_ne x 0 with rfl | hx
-  · simp
-  refine ⟨fun h ↦ Or.inl ?_, fun h ↦ by simp [h.resolve_right hx]⟩
-  ext v
-  replace h : f v • x = 0 := by simpa only [LinearMap.zero_apply] using LinearMap.congr_fun h v
-  rw [smul_eq_zero] at h
-  tauto
+lemma smulRight_apply_eq_zero_iff [IsDomain S] {f : M₁ →ₗ[R] S} {x : M} [Module.IsTorsionFree S M] :
+    f.smulRight x = 0 ↔ f = 0 ∨ x = 0 := by simp [DFunLike.ext_iff, forall_or_right]
 
 end SMulRight
 
@@ -391,7 +391,10 @@ def applyₗ : M →ₗ[R] (M →ₗ[R] M₂) →ₗ[R] M₂ :=
 
 /--
 The family of linear maps `M₂ → M` parameterised by `f ∈ M₂ → R`, `x ∈ M`, is linear in `f`, `x`.
--/
+
+This is also known as a rank-one operator.
+See `ContinuousLinearMap.smulRightL` for the continuous version of this, and see
+`InnerProductSpace.rankOne` for the rank-one operator on Hilbert spaces. -/
 def smulRightₗ : (M₂ →ₗ[R] R) →ₗ[R] M →ₗ[R] M₂ →ₗ[R] M where
   toFun f :=
     { toFun := LinearMap.smulRight f
@@ -409,9 +412,12 @@ def smulRightₗ : (M₂ →ₗ[R] R) →ₗ[R] M →ₗ[R] M₂ →ₗ[R] M whe
     apply mul_smul
 
 @[simp]
-theorem smulRightₗ_apply (f : M₂ →ₗ[R] R) (x : M) (c : M₂) :
-    (smulRightₗ : (M₂ →ₗ[R] R) →ₗ[R] M →ₗ[R] M₂ →ₗ[R] M) f x c = f c • x :=
+theorem smulRightₗ_apply (f : M₂ →ₗ[R] R) (x : M) :
+    (smulRightₗ : (M₂ →ₗ[R] R) →ₗ[R] M →ₗ[R] M₂ →ₗ[R] M) f x = smulRight f x :=
   rfl
+
+theorem smulRightₗ_apply_apply (f : M₂ →ₗ[R] R) (x : M) (y : M₂) :
+    smulRightₗ f x y = f y • x := rfl
 
 end CommSemiring
 

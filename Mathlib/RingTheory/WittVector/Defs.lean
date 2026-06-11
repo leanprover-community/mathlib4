@@ -80,13 +80,17 @@ theorem ext {x y : 𝕎 R} (h : ∀ n, x.coeff n = y.coeff n) : x = y := by
   simp only at h
   simp [funext_iff, h]
 
+theorem coeff_surjective (n : ℕ) :
+    Function.Surjective (fun (x : 𝕎 R) ↦ x.coeff n) :=
+  fun x ↦ ⟨(mk p fun _ ↦ x), rfl⟩
+
 variable (p)
 
 @[simp]
 theorem coeff_mk (x : ℕ → R) : (mk p x).coeff = x :=
   rfl
 
-/- These instances are not needed for the rest of the development,
+/-- These instances are not needed for the rest of the development,
 but it is interesting to establish early on that `WittVector p` is a lawful functor. -/
 instance : Functor (WittVector p) where
   map f v := mk p (f ∘ v.coeff)
@@ -224,7 +228,7 @@ theorem wittOne_pos_eq_zero (n : ℕ) (hn : 0 < n) : wittOne p n = 0 := by
     bind₁_C_right]
   rw [sub_mul, one_mul]
   rw [Finset.sum_eq_single 0]
-  · simp only [invOf_eq_inv, one_mul, tsub_zero, pow_zero]
+  · simp only [one_mul, pow_zero]
     simp only [one_pow, one_mul, xInTermsOfW_zero, sub_self, bind₁_X_right]
   · intro i hin hi0
     rw [Finset.mem_range] at hin

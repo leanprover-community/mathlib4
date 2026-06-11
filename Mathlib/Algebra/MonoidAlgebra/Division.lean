@@ -142,6 +142,7 @@ theorem modOf_apply_add_self (x : k[G]) (g : G) (d : G) : (x %ᵒᶠ g) (d + g) 
 theorem modOf_apply_self_add (x : k[G]) (g : G) (d : G) : (x %ᵒᶠ g) (g + d) = 0 :=
   modOf_apply_of_exists_add _ _ _ ⟨_, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of'_mul_modOf (g : G) (x : k[G]) : of' k G g * x %ᵒᶠ g = 0 := by
   ext g'
   rw [Finsupp.zero_apply]
@@ -149,6 +150,7 @@ theorem of'_mul_modOf (g : G) (x : k[G]) : of' k G g * x %ᵒᶠ g = 0 := by
   · rw [modOf_apply_self_add]
   · rw [modOf_apply_of_not_exists_add _ _ _ h, of'_apply, single_mul_apply_of_not_exists_add _ _ h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_of'_modOf (x : k[G]) (g : G) : x * of' k G g %ᵒᶠ g = 0 := by
   ext g'
   rw [Finsupp.zero_apply]
@@ -160,6 +162,7 @@ theorem mul_of'_modOf (x : k[G]) (g : G) : x * of' k G g %ᵒᶠ g = 0 := by
 theorem of'_modOf (g : G) : of' k G g %ᵒᶠ g = 0 := by
   simpa only [one_mul] using mul_of'_modOf (1 : k[G]) g
 
+set_option backward.isDefEq.respectTransparency false in
 theorem divOf_add_modOf [IsCancelAdd G] (x : k[G]) (g : G) :
     of' k G g * (x /ᵒᶠ g) + x %ᵒᶠ g = x := by
   ext g'

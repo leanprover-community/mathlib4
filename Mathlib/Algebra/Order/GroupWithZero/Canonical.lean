@@ -5,18 +5,19 @@ Authors: Kenny Lau, Johan Commelin, Patrick Massot
 -/
 module
 
+public import Mathlib.Algebra.Group.WithOne.Map
 public import Mathlib.Algebra.GroupWithZero.InjSurj
+public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.GroupWithZero.WithZero
 public import Mathlib.Algebra.Order.AddGroupWithTop
 public import Mathlib.Algebra.Order.Group.Defs
 public import Mathlib.Algebra.Order.Group.Int
 public import Mathlib.Algebra.Order.Group.Units
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
-public import Mathlib.Algebra.Order.Monoid.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Order.Monoid.OrderDual
 public import Mathlib.Algebra.Order.Monoid.TypeTags
-public import Mathlib.Algebra.Group.WithOne.Map
-public import Mathlib.Tactic.Tauto
+public import Mathlib.Data.Int.Basic
+public import Mathlib.Data.Set.Function
 
 /-!
 # Linearly ordered commutative groups and monoids with a zero element adjoined
@@ -25,7 +26,7 @@ This file sets up a special class of linearly ordered commutative monoids
 that show up as the target of so-called “valuations” in algebraic number theory.
 
 Usually, in the informal literature, these objects are constructed
-by taking a linearly ordered commutative group Γ and formally adjoining a zero element: Γ ∪ {0}.
+by taking a linearly ordered commutative group Γ and formally adjoining a zero element: `Γ ∪ {0}`.
 
 The disadvantage is that a type such as `NNReal` is not of that form,
 whereas it is a very common target for valuations.
@@ -38,28 +39,38 @@ variable {α β : Type*}
 
 /-- A linearly ordered commutative monoid with a zero element. -/
 class LinearOrderedCommMonoidWithZero (α : Type*) extends CommMonoidWithZero α, LinearOrder α,
-    IsOrderedMonoid α, OrderBot α where
-  /-- `0 ≤ 1` in any linearly ordered commutative monoid. -/
-  zero_le_one : (0 : α) ≤ 1
+    PosMulStrictMono α, OrderBot α, IsBotZeroClass α where
 
 /-- A linearly ordered commutative group with a zero element. -/
 class LinearOrderedCommGroupWithZero (α : Type*) extends LinearOrderedCommMonoidWithZero α,
   CommGroupWithZero α
 
-instance (priority := 100) LinearOrderedCommMonoidWithZero.toZeroLeOneClass
-    [LinearOrderedCommMonoidWithZero α] : ZeroLEOneClass α :=
-  { ‹LinearOrderedCommMonoidWithZero α› with }
-
-instance (priority := 100) CanonicallyOrderedAdd.toZeroLeOneClass
-    [AddZeroClass α] [LE α] [CanonicallyOrderedAdd α] [One α] : ZeroLEOneClass α :=
-  ⟨zero_le 1⟩
-
 section LinearOrderedCommMonoidWithZero
 variable [LinearOrderedCommMonoidWithZero α] {a b : α} {n : ℕ}
 
-/-
+/-!
 The following facts are true more generally in a (linearly) ordered commutative monoid.
 -/
+
+-- See note [lower instance priority]
+instance (priority := 100) LinearOrderedCommMonoidWithZero.toMulPosStrictMono :
+    MulPosStrictMono α := posMulStrictMono_iff_mulPosStrictMono.1 inferInstance
+
+-- See note [lower instance priority]
+instance (priority := 100) LinearOrderedCommMonoidWithZero.toIsOrderedMonoid :
+   IsOrderedMonoid α where
+  mul_le_mul_left a b hab c := by
+    obtain rfl | hc := eq_or_ne c 0
+    · simp
+    obtain rfl | hab := hab.eq_or_lt
+    · simp
+    · exact (mul_lt_mul_of_pos_right hab hc.pos).le
+
+-- See note [lower instance priority]
+instance (priority := 100) : IsCancelMulZero α where
+  mul_left_cancel_of_ne_zero ha := (strictMono_mul_left_of_pos ha.pos).injective
+  mul_right_cancel_of_ne_zero ha := (strictMono_mul_right_of_pos ha.pos).injective
+
 /-- Pullback a `LinearOrderedCommMonoidWithZero` under an injective map.
 See note [reducible non-instances]. -/
 abbrev Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β] [Bot β] [One β]
@@ -74,79 +85,41 @@ abbrev Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β]
     LinearOrderedCommMonoidWithZero β where
   __ := hf.linearOrder f le lt hinf hsup compare
   __ := hf.commMonoidWithZero f zero one mul npow
-  __ := Function.Injective.isOrderedMonoid f mul le
-  zero_le_one := le.1 <| by simp only [zero, one, LinearOrderedCommMonoidWithZero.zero_le_one]
-  bot_le a := le.1 <| bot ▸ bot_le
+  __ := Function.Injective.posMulStrictMono f zero mul lt
+  isBot_zero _ := le.1 <| zero ▸ zero_le
+  bot_le _ := le.1 <| bot ▸ bot_le
 
-@[simp] lemma zero_le' : 0 ≤ a := by
-  simpa only [mul_zero, mul_one] using mul_le_mul_right (zero_le_one' α) a
-
-@[simp]
-theorem not_lt_zero' : ¬a < 0 :=
-  not_lt_of_ge zero_le'
-
-@[simp]
-theorem le_zero_iff : a ≤ 0 ↔ a = 0 :=
-  ⟨fun h ↦ le_antisymm h zero_le', fun h ↦ h ▸ le_rfl⟩
-
-theorem zero_lt_iff : 0 < a ↔ a ≠ 0 :=
-  ⟨ne_of_gt, fun h ↦ lt_of_le_of_ne zero_le' h.symm⟩
-
-theorem ne_zero_of_lt (h : b < a) : a ≠ 0 := fun h1 ↦ not_lt_zero' <| show b < 0 from h1 ▸ h
-
-/-- See also `bot_eq_zero` and `bot_eq_zero'` for canonically ordered monoids. -/
-lemma bot_eq_zero'' : (⊥ : α) = 0 := eq_of_forall_ge_iff fun _ ↦ by simp
+instance (priority := 100) LinearOrderedCommMonoidWithZero.toIsMulTorsionFree :
+    IsMulTorsionFree α where
+  pow_left_injective n hn := by simpa using (pow_left_strictMonoOn₀ (M₀ := α) hn).injOn
 
 instance instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual :
     LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) where
-  top := .ofMul <| .toDual 0
-  top_add' a := zero_mul a.toMul.ofDual
-  le_top _ := zero_le'
+  top_add' a := by ext; simp [bot_eq_zero]
+  isAddLeftRegular_of_ne_top := by simp +contextual [IsRegular.of_ne_zero, bot_eq_zero]
 
 instance instLinearOrderedAddCommMonoidWithTopOrderDualAdditive :
     LinearOrderedAddCommMonoidWithTop (Additive α)ᵒᵈ where
-  top := .toDual <| .ofMul _
-  top_add' := fun a ↦ zero_mul (Additive.toMul (OrderDual.ofDual a))
-  le_top := fun a ↦ @zero_le' _ _ (Additive.toMul (OrderDual.ofDual a))
+  top_add' a := by ext; simp; simp [bot_eq_zero (α := α)]
+  isAddLeftRegular_of_ne_top := by simp; simp +contextual [bot_eq_zero, IsRegular.of_ne_zero]
 
 variable [NoZeroDivisors α]
 
-lemma pow_pos_iff (hn : n ≠ 0) : 0 < a ^ n ↔ 0 < a := by simp_rw [zero_lt_iff, pow_ne_zero_iff hn]
+lemma pow_pos_iff (hn : n ≠ 0) : 0 < a ^ n ↔ 0 < a := by
+  simp_rw [pos_iff_ne_zero, pow_ne_zero_iff hn]
 
 end LinearOrderedCommMonoidWithZero
 
 section LinearOrderedCommGroupWithZero
 variable [LinearOrderedCommGroupWithZero α] {a b c d : α} {m n : ℕ}
 
--- See note [lower instance priority]
-instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulReflectLE :
-    PosMulReflectLE α where
-  elim a b c hbc := by simpa [a.2.ne'] using mul_le_mul_right hbc a⁻¹
-
--- See note [lower instance priority]
-instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosReflectLE :
-    MulPosReflectLE α where
-  elim a b c hbc := by simpa [a.2.ne'] using mul_le_mul_left hbc a⁻¹
-
--- See note [lower instance priority]
-instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulReflectLT :
-    PosMulReflectLT α where elim _a _b _c := lt_of_mul_lt_mul_left'
-
--- See note [lower instance priority]
-instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulStrictMono :
-    PosMulStrictMono α := PosMulReflectLE.toPosMulStrictMono
-
--- See note [lower instance priority]
-instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosStrictMono :
-    MulPosStrictMono α := MulPosReflectLE.toMulPosStrictMono
-
 @[simp]
 theorem Units.zero_lt (u : αˣ) : (0 : α) < u :=
-  zero_lt_iff.2 u.ne_zero
+  u.ne_zero.pos
 
 theorem mul_inv_lt_of_lt_mul₀ (h : a < b * c) : a * c⁻¹ < b := by
   contrapose! h
-  simpa only [inv_inv] using mul_inv_le_of_le_mul₀ zero_le' zero_le' h
+  simpa only [inv_inv] using mul_inv_le_of_le_mul₀ zero_le zero_le h
 
 theorem inv_mul_lt_of_lt_mul₀ (h : a < b * c) : b⁻¹ * a < c := by
   rw [mul_comm] at *
@@ -154,17 +127,24 @@ theorem inv_mul_lt_of_lt_mul₀ (h : a < b * c) : b⁻¹ * a < c := by
 
 theorem lt_of_mul_lt_mul_of_le₀ (h : a * b < c * d) (hc : 0 < c) (hh : c ≤ a) : b < d := by
   have ha : a ≠ 0 := ne_of_gt (lt_of_lt_of_le hc hh)
-  rw [← inv_le_inv₀ (zero_lt_iff.2 ha) hc] at hh
+  rw [← inv_le_inv₀ ha.pos hc] at hh
   simpa [inv_mul_cancel_left₀ ha, inv_mul_cancel_left₀ hc.ne']
-    using mul_lt_mul_of_le_of_lt_of_nonneg_of_pos hh h zero_le' (inv_pos.2 hc)
+    using mul_lt_mul_of_le_of_lt_of_nonneg_of_pos hh h zero_le (inv_pos.2 hc)
 
 instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) where
-  neg_top := inv_zero (G₀ := α)
-  add_neg_cancel := fun a ha ↦ mul_inv_cancel₀ (G₀ := α) (id ha : a.toMul ≠ 0)
+  top_add' := by simp
+  neg_top := by ext; simp [bot_eq_zero]
+  add_neg_cancel_of_ne_top := by
+    simp +contextual [bot_eq_zero, Additive.ext_iff, OrderDual.ext_iff, -Additive.toMul_eq_top,
+      -ofDual_eq_zero]
 
 instance : LinearOrderedAddCommGroupWithTop (Additive α)ᵒᵈ where
-  neg_top := inv_zero (G₀ := α)
-  add_neg_cancel := fun a ha ↦ mul_inv_cancel₀ (G₀ := α) (id ha : a.toMul ≠ 0)
+  top_add' := by simp
+  neg_top := by ext; simp; simp [bot_eq_zero]
+  add_neg_cancel_of_ne_top := by
+    simp
+    simp +contextual [bot_eq_zero, Additive.ext_iff, OrderDual.ext_iff, -Additive.toMul_eq_top,
+      -ofDual_eq_zero]
 
 -- Counterexample with monoid for the backward direction:
 -- Take `Mᵐ⁰` where `M := ℚ ×ₗ ℕ`.
@@ -178,7 +158,7 @@ lemma denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units :
     refine ⟨Units.mk0 z (ne_zero_of_lt hz.1), by simp [← Units.val_lt_val, hz]⟩
   · refine ⟨fun x y h ↦ ?_⟩
     lift y to αˣ using (ne_zero_of_lt h).isUnit
-    obtain rfl | hx := (zero_le' (a := x)).eq_or_lt
+    obtain rfl | hx := eq_zero_or_pos x
     · obtain ⟨z, hz⟩ := exists_one_lt' (α := αˣ)
       exact ⟨(y * z⁻¹ : αˣ), by simp, Units.val_lt_val.mpr <| by simp [hz]⟩
     · lift x to αˣ using hx.ne'.isUnit
@@ -186,29 +166,32 @@ lemma denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units :
       exact ⟨z, by simp [hz, hz']⟩
 
 -- Counterexample with monoid: `{ x : ℝ | 0 ≤ x ≤ 1 }`
-instance [DenselyOrdered α] : Nontrivial αˣ :=
+instance [DenselyOrdered α] : Nontrivial αˣ := by
   have := denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units (α := α)
-  by tauto
+  tauto
 
 -- Counterexample with monoid:
 -- `{ x : ℝ | x = 0 ∨ ∃ (a : ℤ) (b c : ℕ), x = Real.exp (a + b * √2 - c * √3) }`
-instance [DenselyOrdered α] : DenselyOrdered αˣ :=
+instance [DenselyOrdered α] : DenselyOrdered αˣ := by
   have := denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units (α := α)
-  by tauto
+  tauto
 
-lemma denselyOrdered_units_iff [Nontrivial αˣ] : DenselyOrdered αˣ ↔ DenselyOrdered α :=
+lemma denselyOrdered_units_iff [Nontrivial αˣ] : DenselyOrdered αˣ ↔ DenselyOrdered α := by
   have := denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units (α := α)
-  by tauto
+  tauto
 
 end LinearOrderedCommGroupWithZero
 
 instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
     [LinearOrderedAddCommMonoidWithTop α] :
     LinearOrderedCommMonoidWithZero (Multiplicative αᵒᵈ) where
-  zero := Multiplicative.ofAdd (OrderDual.toDual ⊤)
+  zero := .ofAdd <| .toDual ⊤
   zero_mul := @top_add _ (_)
   mul_zero := @add_top _ (_)
-  zero_le_one := (le_top : (0 : α) ≤ ⊤)
+  isBot_zero _ := (le_top : _ ≤ ⊤)
+  mul_lt_mul_of_pos_left := by
+    simpa [← ofAdd_add, ← toDual_add]
+      using! fun a ha b c hbc ↦ add_right_strictMono_of_ne_top (by simpa using! ha.ne') hbc
 
 @[deprecated "Use simp" (since := "2025-11-17")]
 theorem ofAdd_toDual_eq_zero_iff [LinearOrderedAddCommMonoidWithTop α]
@@ -218,7 +201,7 @@ theorem ofAdd_toDual_eq_zero_iff [LinearOrderedAddCommMonoidWithTop α]
 theorem ofDual_toAdd_eq_top_iff [LinearOrderedAddCommMonoidWithTop α]
     (x : Multiplicative αᵒᵈ) : OrderDual.ofDual x.toAdd = ⊤ ↔ x = 0 := Iff.rfl
 
-@[deprecated bot_eq_zero'' (since := "2025-11-17")]
+@[deprecated bot_eq_zero (since := "2025-11-17")]
 theorem ofAdd_bot [LinearOrderedAddCommMonoidWithTop α] :
     Multiplicative.ofAdd ⊥ = (0 : Multiplicative αᵒᵈ) := rfl
 
@@ -227,11 +210,9 @@ theorem ofDual_toAdd_zero [LinearOrderedAddCommMonoidWithTop α] :
     OrderDual.ofDual (0 : Multiplicative αᵒᵈ).toAdd = ⊤ := rfl
 
 instance [LinearOrderedAddCommGroupWithTop α] :
-    LinearOrderedCommGroupWithZero (Multiplicative αᵒᵈ) :=
-  { Multiplicative.divInvMonoid, instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual,
-    Multiplicative.instNontrivial with
-    inv_zero := @LinearOrderedAddCommGroupWithTop.neg_top _ (_)
-    mul_inv_cancel := @LinearOrderedAddCommGroupWithTop.add_neg_cancel _ (_) }
+    LinearOrderedCommGroupWithZero (Multiplicative αᵒᵈ) where
+  inv_zero := LinearOrderedAddCommGroupWithTop.neg_top (α := α)
+  mul_inv_cancel := LinearOrderedAddCommGroupWithTop.add_neg_cancel_of_ne_top (α := α)
 
 namespace WithZero
 
@@ -248,7 +229,7 @@ end Bot
 section LE
 variable [LE α] {x y : WithZero α} {a b : α}
 
-instance (priority := 10) le : LE (WithZero α) := WithBot.instLE
+instance (priority := 10) le : LE (WithZero α) := inferInstanceAs <| LE (WithBot α)
 
 lemma le_def : x ≤ y ↔ ∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b := WithBot.le_iff_forall
 
@@ -256,11 +237,16 @@ lemma le_def : x ≤ y ↔ ∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a �
 
 lemma not_coe_le_zero (a : α) : ¬(a : WithZero α) ≤ 0 := WithBot.not_coe_le_bot _
 
-instance instOrderBot : OrderBot (WithZero α) := WithBot.instOrderBot
+instance instOrderBot : OrderBot (WithZero α) := inferInstanceAs <| OrderBot (WithBot α)
 
-instance instBoundedOrder [OrderTop α] : BoundedOrder (WithBot α) := WithBot.instBoundedOrder
+instance instBoundedOrder [OrderTop α] : BoundedOrder (WithZero α) :=
+  inferInstanceAs <| BoundedOrder (WithBot α)
 
-@[simp] lemma zero_le (a : WithZero α) : 0 ≤ a := bot_le (a := a)
+instance : IsBotZeroClass (WithZero α) where
+  isBot_zero _ := bot_le
+
+@[deprecated _root_.zero_le (since := "2026-05-06")]
+protected lemma zero_le (a : WithZero α) : 0 ≤ a := by simp
 
 /-- There is a general version `le_zero_iff`, but this lemma does not require a `PartialOrder`. -/
 @[simp]
@@ -278,7 +264,7 @@ lemma unbot_le_iff (hx : x ≠ 0) : unzero hx ≤ b ↔ x ≤ b := WithBot.unbot
 @[simp, norm_cast] lemma coe_le_one [One α] : (a : WithZero α) ≤ 1 ↔ a ≤ 1 := coe_le_coe
 
 @[simp] lemma unzero_le_unzero (hx : x ≠ 0) (hy : y ≠ 0) : unzero hx ≤ unzero hy ↔ x ≤ y :=
-  WithBot.unbot_le_unbot ..
+  WithBot.unbot_le_unbot_iff ..
 
 end LE
 
@@ -287,7 +273,7 @@ section LT
 variable [LT α] {x y : WithZero α} {a b : α}
 
 /-- The order on `WithZero α`, defined by `⊥ < ↑a` and `a < b → ↑a < ↑b`. -/
-instance (priority := 10) instLT : LT (WithZero α) := WithBot.instLT
+instance (priority := 10) instLT : LT (WithZero α) := inferInstanceAs <| LT (WithBot α)
 
 lemma lt_def : x < y ↔ x = 0 ∧ (∃ b : α, y = b) ∨ ∃ a b : α, a < b ∧ x = ↑a ∧ y = ↑b :=
   WithBot.lt_def
@@ -318,13 +304,13 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {x y : WithZero α} {a b : α}
 
-instance instPreorder : Preorder (WithZero α) := WithBot.instPreorder
+instance instPreorder : Preorder (WithZero α) := inferInstanceAs <| Preorder (WithBot α)
 
 instance instMulLeftMono [Mul α] [MulLeftMono α] :
     MulLeftMono (WithZero α) := by
   refine ⟨fun a b c hbc => ?_⟩
-  induction a; · exact zero_le _
-  induction b; · exact zero_le _
+  induction a; · exact zero_le
+  induction b; · exact zero_le
   rcases WithZero.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
   rw [← coe_mul _ c, ← coe_mul, coe_le_coe]
   exact mul_le_mul_right hbc' _
@@ -407,12 +393,13 @@ end Preorder
 section PartialOrder
 variable [PartialOrder α]
 
-instance instPartialOrder : PartialOrder (WithZero α) := WithBot.instPartialOrder
+instance instPartialOrder : PartialOrder (WithZero α) :=
+  inferInstanceAs <| PartialOrder (WithBot α)
 
 instance instMulLeftReflectLT [Mul α] [MulLeftReflectLT α] :
     MulLeftReflectLT (WithZero α) := by
   refine ⟨fun a b c h => ?_⟩
-  have := ((zero_le _).trans_lt h).ne'
+  have := h.ne_zero
   induction a
   · simp at this
   induction c
@@ -448,8 +435,7 @@ instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithZero α) where
 theorem coe_inf [SemilatticeInf α] (a b : α) : ((a ⊓ b : α) : WithZero α) = (a : WithZero α) ⊓ b :=
   rfl
 
-instance instLattice [Lattice α] : Lattice (WithZero α) :=
-  { WithZero.semilatticeSup, WithZero.semilatticeInf with }
+instance instLattice [Lattice α] : Lattice (WithZero α) where
 
 end Lattice
 
@@ -466,8 +452,8 @@ instance decidableLT [Preorder α] [DecidableLT α] : DecidableLT (WithZero α)
   | 0, (a : α) => isTrue <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe
 
-instance isTotal_le [Preorder α] [IsTotal α (· ≤ ·)] : IsTotal (WithZero α) (· ≤ ·) where
-  total x y := by cases x <;> cases y <;> simp; simpa using IsTotal.total ..
+instance total_le [Preorder α] [@Std.Total α (· ≤ ·)] : @Std.Total (WithZero α) (· ≤ ·) where
+  total x y := by cases x <;> cases y <;> simp; simpa using Std.Total.total ..
 
 section LinearOrder
 variable [LinearOrder α] {a b c : α} {x y : WithZero α}
@@ -493,7 +479,7 @@ theorem exists_ne_zero_and_lt_and_lt [NoMinOrder α] (hx : x ≠ 0) (hy : y ≠ 
 
 end LinearOrder
 
-instance isOrderedMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+instance isOrderedMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     IsOrderedMonoid (WithZero α) where
   mul_le_mul_left _ _ := mul_le_mul_left
 
@@ -524,9 +510,12 @@ instance instCanonicallyOrderedAdd [AddZeroClass α] [Preorder α] [CanonicallyO
   | (a : α), 0 => le_rfl
   | (a : α), (b : α) => WithZero.coe_le_coe.2 le_self_add
 
-instance instLinearOrderedCommMonoidWithZero [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α] :
-    LinearOrderedCommMonoidWithZero (WithZero α) where
-  zero_le_one := WithZero.zero_le _
+instance instLinearOrderedCommMonoidWithZero [CommMonoid α] [LinearOrder α]
+    [IsOrderedCancelMonoid α] : LinearOrderedCommMonoidWithZero (WithZero α) where
+  isBot_zero _ := zero_le
+  mul_lt_mul_of_pos_left
+  | (a : α), _, 0, (c : α), _ => by simp [← WithZero.coe_mul]
+  | (a : α), _, (b : α), (c : α), hbc => by norm_cast at *; exact mul_lt_mul_right hbc _
 
 instance instLinearOrderedCommGroupWithZero [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] :
     LinearOrderedCommGroupWithZero (WithZero α) where
@@ -573,12 +562,12 @@ lemma lt_log_of_exp_lt (hax : exp a < x) : a < log x :=
   (lt_log_iff_exp_lt (exp_pos.trans hax).ne').2 hax
 
 /-- The exponential map as an order isomorphism between `G` and `Gᵐ⁰ˣ`. -/
-@[simps!] def expOrderIso : G ≃o Gᵐ⁰ˣ where
+@[simps! -isSimp] def expOrderIso : G ≃o Gᵐ⁰ˣ where
   __ := expEquiv
   map_rel_iff' := by simp [← Units.val_le_val]
 
 /-- The logarithm as an order isomorphism between `Gᵐ⁰ˣ` and `G`. -/
-@[simps!] def logOrderIso : Gᵐ⁰ˣ ≃o G where
+@[simps! -isSimp] def logOrderIso : Gᵐ⁰ˣ ≃o G where
   __ := logEquiv
   map_rel_iff' := by simp
 
@@ -588,6 +577,20 @@ lemma lt_mul_exp_iff_le {x y : ℤᵐ⁰} (hy : y ≠ 0) : x < y * exp 1 ↔ x �
   · simp
   lift x to Multiplicative ℤ using hx
   rw [← log_le_log, ← log_lt_log] <;> simp [log_mul, Int.lt_add_one_iff]
+
+lemma exists_exp_neg_natCast_lt {x : ℤᵐ⁰} (hx : x ≠ 0) :
+    ∃ (k : ℕ), exp (-(k : ℤ)) < x := by
+  obtain ⟨y, hnz, hyx⟩ := WithZero.exists_ne_zero_and_lt hx
+  use (-y.log).toNat
+  apply lt_of_le_of_lt _ hyx
+  rw [← WithZero.le_log_iff_exp_le hnz, Int.neg_le_iff]
+  exact Int.self_le_toNat _
+
+lemma exists_exp_neg_natCast_lt_and_lt {x y : ℤᵐ⁰} (hx : x ≠ 0) (hy : y ≠ 0) :
+    ∃ (k : ℕ), exp (-(k : ℤ)) < x ∧ exp (-(k : ℤ)) < y  := by
+  obtain ⟨z, hz, hzx, hzy⟩ := WithZero.exists_ne_zero_and_le_and_le hx hy
+  obtain ⟨k, hk⟩ := exists_exp_neg_natCast_lt hz
+  grind
 
 lemma le_exp_log {x : Gᵐ⁰} :
     x ≤ exp (log x) := by

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Measure.GiryMonad
 public import Mathlib.MeasureTheory.Measure.OpenPos
+public import Mathlib.MeasureTheory.Measure.Doubling
 
 /-!
 # The product measure
@@ -84,7 +85,7 @@ theorem measurable_measure_prodMk_left_finite [IsFiniteMeasure ν] {s : Set (α 
     have (a : α) : ν (Prod.mk a ⁻¹' ⋃ i, f i) = ∑' i, ν (Prod.mk a ⁻¹' f i) := by
       rw [preimage_iUnion, measure_iUnion]
       exacts [hfd.mono fun _ _ ↦ .preimage _, fun i ↦ measurable_prodMk_left (hfm i)]
-    simpa only [this] using Measurable.ennreal_tsum ihf
+    simpa only [this] using Measurable.tsum ihf
 
 /-- If `ν` is an s-finite measure, and `s ⊆ α × β` is measurable, then `x ↦ ν { y | (x, y) ∈ s }`
 is a measurable function.
@@ -97,7 +98,7 @@ theorem measurable_measure_prodMk_left [SFinite ν] {s : Set (α × β)} (hs : M
     Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
   rw [← sum_sfiniteSeq ν]
   simp_rw [Measure.sum_apply_of_countable]
-  exact Measurable.ennreal_tsum (fun i ↦ measurable_measure_prodMk_left_finite hs)
+  exact Measurable.tsum (fun i ↦ measurable_measure_prodMk_left_finite hs)
 
 /-- If `μ` is an s-finite measure, and `s ⊆ α × β` is measurable, then `y ↦ μ { x | (x, y) ∈ s }` is
   a measurable function. -/
@@ -119,7 +120,6 @@ theorem Measurable.map_prodMk_right {μ : Measure α} [SFinite μ] :
 
 /-- The Lebesgue integral is measurable. This shows that the integrand of (the right-hand-side of)
   Tonelli's theorem is measurable. -/
-@[fun_prop, measurability]
 theorem Measurable.lintegral_prod_right' [SFinite ν] :
     ∀ {f : α × β → ℝ≥0∞}, Measurable f → Measurable fun x => ∫⁻ y, f (x, y) ∂ν := by
   have m := @measurable_prodMk_left
@@ -141,14 +141,13 @@ theorem Measurable.lintegral_prod_right' [SFinite ν] :
 /-- The Lebesgue integral is measurable. This shows that the integrand of (the right-hand-side of)
   Tonelli's theorem is measurable.
   This version has the argument `f` in curried form. -/
-@[fun_prop, measurability]
+@[fun_prop]
 theorem Measurable.lintegral_prod_right [SFinite ν] {f : α → β → ℝ≥0∞}
     (hf : Measurable (uncurry f)) : Measurable fun x => ∫⁻ y, f x y ∂ν :=
   hf.lintegral_prod_right'
 
 /-- The Lebesgue integral is measurable. This shows that the integrand of (the right-hand-side of)
   the symmetric version of Tonelli's theorem is measurable. -/
-@[fun_prop, measurability]
 theorem Measurable.lintegral_prod_left' [SFinite μ] {f : α × β → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun y => ∫⁻ x, f (x, y) ∂μ :=
   (measurable_swap_iff.mpr hf).lintegral_prod_right'
@@ -156,7 +155,6 @@ theorem Measurable.lintegral_prod_left' [SFinite μ] {f : α × β → ℝ≥0�
 /-- The Lebesgue integral is measurable. This shows that the integrand of (the right-hand-side of)
   the symmetric version of Tonelli's theorem is measurable.
   This version has the argument `f` in curried form. -/
-@[fun_prop, measurability]
 theorem Measurable.lintegral_prod_left [SFinite μ] {f : α → β → ℝ≥0∞}
     (hf : Measurable (uncurry f)) : Measurable fun y => ∫⁻ x, f x y ∂μ :=
   hf.lintegral_prod_left'
@@ -287,6 +285,29 @@ instance {X Y : Type*}
     [SFinite (volume : Measure Y)] : IsOpenPosMeasure (volume : Measure (X × Y)) :=
   prod.instIsOpenPosMeasure
 
+protected theorem FiniteAtFilter.prod {X Y : Type*} {m : MeasurableSpace X} {μ : Measure X}
+    {m' : MeasurableSpace Y} {ν : Measure Y} {l : Filter X} {l' : Filter Y}
+    (hμ : μ.FiniteAtFilter l) (hν : ν.FiniteAtFilter l') :
+    (μ.prod ν).FiniteAtFilter (l ×ˢ l') := by
+  rcases hμ with ⟨s, hs, hμs⟩
+  rcases hν with ⟨t, ht, hνt⟩
+  use s ×ˢ t, Filter.prod_mem_prod hs ht
+  grw [prod_prod_le]
+  exact ENNReal.mul_lt_top hμs hνt
+
+instance prod.instIsLocallyFiniteMeasure {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    {m : MeasurableSpace X} {μ : Measure X} [IsLocallyFiniteMeasure μ] {m' : MeasurableSpace Y}
+    {ν : Measure Y} [IsLocallyFiniteMeasure ν] : IsLocallyFiniteMeasure (μ.prod ν) where
+  finiteAtNhds x := by
+    rw [nhds_prod_eq]
+    exact μ.finiteAt_nhds _ |>.prod <| ν.finiteAt_nhds _
+
+instance {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    {m : MeasureSpace X} [IsLocallyFiniteMeasure (volume : Measure X)]
+    {m' : MeasureSpace Y} [IsLocallyFiniteMeasure (volume : Measure Y)] :
+    IsLocallyFiniteMeasure (volume : Measure (X × Y)) :=
+  prod.instIsLocallyFiniteMeasure
+
 instance prod.instIsFiniteMeasure {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
     (μ : Measure α) (ν : Measure β) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     IsFiniteMeasure (μ.prod ν) := by
@@ -323,6 +344,31 @@ instance {X Y : Type*}
     [TopologicalSpace Y] [MeasureSpace Y] [IsFiniteMeasureOnCompacts (volume : Measure Y)] :
     IsFiniteMeasureOnCompacts (volume : Measure (X × Y)) :=
   prod.instIsFiniteMeasureOnCompacts _ _
+
+
+open IsUnifLocDoublingMeasure in
+/--
+The product of two uniformly locally doubling measures is a uniformly locally doubling measure,
+assuming the second one is s-finite.
+-/
+instance _root_.IsUnifLocDoublingMeasure.prod {X Y : Type*}
+    [PseudoMetricSpace X] [MeasurableSpace X] [PseudoMetricSpace Y] [MeasurableSpace Y]
+    (μ : Measure X) (ν : Measure Y) [SFinite ν]
+    [IsUnifLocDoublingMeasure μ] [IsUnifLocDoublingMeasure ν] :
+    IsUnifLocDoublingMeasure (μ.prod ν) := by
+  constructor
+  use doublingConstant μ * doublingConstant ν
+  filter_upwards [eventually_measure_le_doublingConstant_mul μ,
+    eventually_measure_le_doublingConstant_mul ν] with r hμr hνr x
+  rw [← closedBall_prod_same, prod_prod, ← closedBall_prod_same, prod_prod]
+  grw [hμr, hνr, ENNReal.coe_mul, mul_mul_mul_comm]
+
+instance IsUnifLocDoublingMeasure.volume_prod {X Y : Type*} [PseudoMetricSpace X] [MeasureSpace X]
+    [PseudoMetricSpace Y] [MeasureSpace Y] [SFinite (volume : Measure Y)]
+    [IsUnifLocDoublingMeasure (volume : Measure X)]
+    [IsUnifLocDoublingMeasure (volume : Measure Y)] :
+    IsUnifLocDoublingMeasure (volume : Measure (X × Y)) :=
+  .prod _ _
 
 theorem ae_measure_lt_top {s : Set (α × β)} (hs : MeasurableSet s) (h2s : (μ.prod ν) s ≠ ∞) :
     ∀ᵐ x ∂μ, ν (Prod.mk x ⁻¹' s) < ∞ := by
@@ -362,9 +408,8 @@ theorem measure_ae_null_of_prod_null {s : Set (α × β)} (h : μ.prod ν s = 0)
   rw [measure_prod_null mt] at ht
   rw [eventuallyLE_antisymm_iff]
   exact
-    ⟨EventuallyLE.trans_eq (Eventually.of_forall fun x => measure_mono (preimage_mono hst))
-        ht,
-      Eventually.of_forall fun x => zero_le _⟩
+    ⟨EventuallyLE.trans_eq (Eventually.of_forall fun x => measure_mono (preimage_mono hst)) ht,
+      Eventually.of_forall fun x => zero_le⟩
 
 omit [SFinite ν] in
 theorem AbsolutelyContinuous.prod [SFinite ν'] (h1 : μ ≪ μ') (h2 : ν ≪ ν') :
@@ -751,7 +796,7 @@ theorem dirac_prod (x : α) : (dirac x).prod ν = map (Prod.mk x) ν := by
     dirac_apply' _ hs, ← indicator_mul_left _ _ fun _ => sfiniteSeq ν i t, Pi.one_apply, one_mul]
 
 theorem dirac_prod_dirac {x : α} {y : β} : (dirac x).prod (dirac y) = dirac (x, y) := by
-  rw [prod_dirac, map_dirac measurable_prodMk_right]
+  rw [prod_dirac, map_dirac' measurable_prodMk_right]
 
 theorem prod_add (ν' : Measure β) [SFinite ν'] : μ.prod (ν + ν') = μ.prod ν + μ.prod ν' := by
   simp_rw [← sum_sfiniteSeq ν, ← sum_sfiniteSeq ν', sum_add_sum, ← sum_sfiniteSeq μ, prod_sum,
@@ -792,7 +837,7 @@ theorem map_prod_map {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ} (
 -- hence it is placed in the `WithDensity` file, where the instance is defined.
 lemma prod_smul_left {μ : Measure α} (c : ℝ≥0∞) : (c • μ).prod ν = c • (μ.prod ν) := by
   ext s hs
-  rw [Measure.prod_apply hs, Measure.smul_apply, Measure.prod_apply hs]
+  rw [prod_apply hs, Measure.smul_apply, prod_apply hs]
   simp
 
 end Measure
@@ -828,7 +873,7 @@ theorem skew_product [SFinite μa] [SFinite μc] {f : α → β} (hf : MeasurePr
     infer_instance
   -- Thus we can use the integral formula for the product measure, and compute things explicitly
   ext s hs
-  rw [map_apply this hs, prod_apply (this hs), prod_apply hs,
+  rw [map_apply this hs, Measure.prod_apply (this hs), Measure.prod_apply hs,
     ← hf.lintegral_comp (measurable_measure_prodMk_left hs)]
   apply lintegral_congr_ae
   filter_upwards [hg] with a ha
@@ -853,7 +898,7 @@ theorem prod_of_right {f : α × β → γ} {μ : Measure α} {ν : Measure β} 
     QuasiMeasurePreserving f (μ.prod ν) τ := by
   refine ⟨hf, ?_⟩
   refine AbsolutelyContinuous.mk fun s hs h2s => ?_
-  rw [map_apply hf hs, prod_apply (hf hs)]; simp_rw [preimage_preimage]
+  rw [map_apply hf hs, Measure.prod_apply (hf hs)]; simp_rw [preimage_preimage]
   rw [lintegral_congr_ae (h2f.mono fun x hx => hx.preimage_null h2s), lintegral_zero]
 
 theorem prod_of_left {α β γ} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
@@ -862,7 +907,8 @@ theorem prod_of_left {α β γ} [MeasurableSpace α] [MeasurableSpace β] [Measu
     (h2f : ∀ᵐ y ∂ν, QuasiMeasurePreserving (fun x => f (x, y)) μ τ) :
     QuasiMeasurePreserving f (μ.prod ν) τ := by
   rw [← prod_swap]
-  convert (QuasiMeasurePreserving.prod_of_right (hf.comp measurable_swap) h2f).comp
+  convert!
+    (QuasiMeasurePreserving.prod_of_right (hf.comp measurable_swap) h2f).comp
       ((measurable_swap.measurePreserving (ν.prod μ)).symm
           MeasurableEquiv.prodComm).quasiMeasurePreserving
 
@@ -914,24 +960,22 @@ theorem AEMeasurable.comp_snd {f : β → γ} (hf : AEMeasurable f ν) :
     AEMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
 
-@[fun_prop, measurability]
 theorem AEMeasurable.lintegral_prod_right' [SFinite ν] {f : α × β → ℝ≥0∞}
     (hf : AEMeasurable f (μ.prod ν)) : AEMeasurable (fun x ↦ ∫⁻ y, f (x, y) ∂ν) μ := by
   obtain ⟨g, hg, hfg⟩ := hf
   refine ⟨fun x ↦ ∫⁻ y, g (x, y) ∂ν, by fun_prop, ?_⟩
   exact (ae_ae_of_ae_prod hfg).mono fun x hfg' ↦ lintegral_congr_ae hfg'
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem AEMeasurable.lintegral_prod_right [SFinite ν] {f : α → β → ℝ≥0∞}
     (hf : AEMeasurable f.uncurry (μ.prod ν)) : AEMeasurable (fun x ↦ ∫⁻ y, f x y ∂ν) μ :=
   hf.lintegral_prod_right'
 
-@[fun_prop, measurability]
 theorem AEMeasurable.lintegral_prod_left' [SFinite ν] [SFinite μ] {f : α × β → ℝ≥0∞}
     (hf : AEMeasurable f (μ.prod ν)) : AEMeasurable (fun y ↦ ∫⁻ x, f (x, y) ∂μ) ν :=
   hf.prod_swap.lintegral_prod_right'
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem AEMeasurable.lintegral_prod_left [SFinite ν] [SFinite μ] {f : α → β → ℝ≥0∞}
     (hf : AEMeasurable f.uncurry (μ.prod ν)) : AEMeasurable (fun y ↦ ∫⁻ x, f x y ∂μ) ν :=
   hf.lintegral_prod_left'
@@ -995,7 +1039,7 @@ theorem setLIntegral_prod_symm [SFinite μ] {s : Set α} {t : Set β} (f : α ×
     setLIntegral_prod]
   · rfl
   · refine AEMeasurable.comp_measurable ?_ measurable_swap
-    convert hf
+    convert! hf
     rw [← Measure.prod_restrict, Measure.prod_swap, Measure.prod_restrict]
 
 /-- The reversed version of **Tonelli's Theorem**. In this version `f` is in curried form, which
@@ -1073,7 +1117,7 @@ theorem fst_map_prodMk₀ {X : α → β} {Y : α → γ} {μ : Measure α}
       Measure.map_apply_of_aemeasurable hX hs, ← prod_univ, mk_preimage_prod, preimage_univ,
       inter_univ]
   · have : ¬AEMeasurable (fun x ↦ (X x, Y x)) μ := by
-      contrapose! hX
+      contrapose hX
       exact measurable_fst.comp_aemeasurable hX
     simp [map_of_not_aemeasurable, hX, this]
 
@@ -1135,7 +1179,7 @@ theorem snd_map_prodMk₀ {X : α → β} {Y : α → γ} {μ : Measure α} (hX 
       Measure.map_apply_of_aemeasurable hY hs, ← univ_prod, mk_preimage_prod, preimage_univ,
       univ_inter]
   · have : ¬AEMeasurable (fun x ↦ (X x, Y x)) μ := by
-      contrapose! hY
+      contrapose hY
       exact measurable_snd.comp_aemeasurable hY
     simp [map_of_not_aemeasurable, hY, this]
 
@@ -1179,8 +1223,9 @@ theorem _root_.MeasureTheory.measurePreserving_prodAssoc (μa : Measure α) (μb
     have A (x : α) : MeasurableSet (Prod.mk x ⁻¹' s) := measurable_prodMk_left hs
     have B : MeasurableSet (MeasurableEquiv.prodAssoc ⁻¹' s) :=
       MeasurableEquiv.prodAssoc.measurable hs
-    simp_rw [map_apply MeasurableEquiv.prodAssoc.measurable hs, prod_apply hs, prod_apply (A _),
-      prod_apply B, lintegral_prod _ (measurable_measure_prodMk_left B).aemeasurable]
+    simp_rw [map_apply MeasurableEquiv.prodAssoc.measurable hs, Measure.prod_apply hs,
+    Measure.prod_apply (A _), Measure.prod_apply B,
+    lintegral_prod _ (measurable_measure_prodMk_left B).aemeasurable]
     rfl
 
 theorem _root_.MeasureTheory.volume_preserving_prodAssoc {α₁ β₁ γ₁ : Type*} [MeasureSpace α₁]

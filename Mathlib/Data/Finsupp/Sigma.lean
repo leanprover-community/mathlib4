@@ -51,7 +51,7 @@ theorem embSigma_apply [DecidableEq κ] {k : κ} (f : ι k →₀ M) (i : Σ k, 
   split_ifs with h
   · subst h
     simp only [embSigma, Embedding.sigmaMk]
-    apply embDomain_apply
+    apply embDomain_apply_self
   · simp only [embSigma, Embedding.sigmaMk]
     rw [embDomain_notin_range]
     simp_all
@@ -60,7 +60,7 @@ theorem embSigma_apply [DecidableEq κ] {k : κ} (f : ι k →₀ M) (i : Σ k, 
 theorem embSigma_apply_self {k : κ} (f : ι k →₀ M) (i : ι k) :
     embSigma f ⟨k, i⟩ = f i := by
   rw [embSigma]
-  exact embDomain_apply (Embedding.sigmaMk k) f i
+  exact embDomain_apply_self (Embedding.sigmaMk k) f i
 
 /-- Values of `embSigma f` at indices outside the `k`-th summand are zero. -/
 theorem embSigma_apply_of_ne {k k' : κ} (f : ι k →₀ M) (hk : k' ≠ k) (i : ι k') :

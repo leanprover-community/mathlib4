@@ -107,9 +107,7 @@ variable (s t)
 variable {s t}
 
 @[to_additive (attr := simp)] lemma mulEnergy_pos_iff : 0 < Eₘ[s, t] ↔ s.Nonempty ∧ t.Nonempty where
-  mp h := of_not_not fun H => by
-    simp_rw [not_and_or, not_nonempty_iff_eq_empty] at H
-    obtain rfl | rfl := H <;> simp at h
+  mp h := by by_contra! +distrib rfl | rfl <;> simp at h
   mpr h := mulEnergy_pos h.1 h.2
 
 @[to_additive (attr := simp)] lemma mulEnergy_eq_zero_iff : Eₘ[s, t] = 0 ↔ s = ∅ ∨ t = ∅ := by
@@ -159,8 +157,6 @@ lemma card_sq_le_card_mul_mulEnergy (s t u : Finset α) :
       rw [filter_eq_self.2, card_product, mul_pow]; aesop (add unsafe mul_mem_mul)
     _ ≤ #(s * t) * Eₘ[s, t] := card_sq_le_card_mul_mulEnergy _ _ _
 
-@[deprecated (since := "2025-07-07")] alias le_card_add_mul_mulEnergy := le_card_mul_mul_mulEnergy
-
 end Mul
 
 open scoped Combinatorics.Additive
@@ -171,7 +167,7 @@ variable [CommMonoid α]
 
 @[to_additive] lemma mulEnergy_comm (s t : Finset α) : Eₘ[s, t] = Eₘ[t, s] := by
   rw [mulEnergy, ← Finset.card_map (Equiv.prodComm _ _).toEmbedding, map_filter]
-  simp [-Finset.card_map, mulEnergy, mul_comm, map_eq_image, Function.comp_def]
+  simp [mulEnergy, mul_comm, map_eq_image]
 
 end CommMonoid
 

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Util.Notation3
 public meta import Mathlib.Lean.Expr.ExtraRecognizers
+public import Mathlib.Data.Set.Operations
 
 /-!
 # Set Notation
@@ -45,7 +46,7 @@ If the `Set.Notation` namespace is open, sets of a subtype coerced to the ambien
 represented with `↑`.
 -/
 @[scoped delab app.Set.image]
-meta def delab_set_image_subtype : Delab := whenPPOption getPPCoercions do
+meta def delabSetImageSubtype : Delab := whenPPOption getPPCoercions do
   let #[α, _, f, _] := (← getExpr).getAppArgs | failure
   guard <| f.isAppOfArity ``Subtype.val 2
   let some _ := α.coeTypeSet? | failure

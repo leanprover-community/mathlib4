@@ -37,7 +37,7 @@ differentiability, norm
 
 -/
 
-@[expose] public section
+public section
 
 open ContinuousLinearMap Filter NNReal Real Set
 
@@ -62,7 +62,7 @@ theorem ContDiffAt.contDiffAt_norm_smul (ht : t ≠ 0) (h : ContDiffAt ℝ n (�
   have h1 : ContDiffAt ℝ n (fun y ↦ t⁻¹ • y) (t • x) := (contDiff_const_smul t⁻¹).contDiffAt
   have h2 : ContDiffAt ℝ n (fun y ↦ |t| * ‖y‖) x := h.const_smul |t|
   conv at h2 => enter [4]; rw [← one_smul ℝ x, ← inv_mul_cancel₀ ht, mul_smul]
-  convert h2.comp (t • x) h1 using 1
+  convert! h2.comp (t • x) h1 using 1
   ext y
   simp only [Function.comp_apply]
   rw [norm_smul, ← mul_assoc, norm_eq_abs, ← abs_mul, mul_inv_cancel₀ ht, abs_one, one_mul]
@@ -71,22 +71,21 @@ theorem contDiffAt_norm_smul_iff (ht : t ≠ 0) :
     ContDiffAt ℝ n (‖·‖) x ↔ ContDiffAt ℝ n (‖·‖) (t • x) where
   mp h := h.contDiffAt_norm_smul ht
   mpr hd := by
-    convert hd.contDiffAt_norm_smul (inv_ne_zero ht)
+    convert! hd.contDiffAt_norm_smul (inv_ne_zero ht)
     rw [smul_smul, inv_mul_cancel₀ ht, one_smul]
 
 theorem ContDiffAt.contDiffAt_norm_of_smul (h : ContDiffAt ℝ n (‖·‖) (t • x)) :
     ContDiffAt ℝ n (‖·‖) x := by
-  rcases eq_bot_or_bot_lt n with rfl | hn
+  rcases eq_or_ne n 0 with rfl | hn
   · apply contDiffAt_zero.2
     exact ⟨univ, univ_mem, continuous_norm.continuousOn⟩
-  replace hn : 1 ≤ n := ENat.add_one_natCast_le_withTop_of_lt hn
   obtain rfl | ht := eq_or_ne t 0
-  · by_cases! hE : Nontrivial E
-    · rw [zero_smul] at h
-      exact (mt (ContDiffAt.differentiableAt · (mod_cast hn)))
-        (not_differentiableAt_norm_zero E) h |>.elim
-    · rw [eq_const_of_subsingleton (‖·‖) 0]
+  · suffices Subsingleton E by
+      rw [eq_const_of_subsingleton (‖·‖) 0]
       exact contDiffAt_const
+    rw [zero_smul] at h
+    by_contra!
+    exact not_differentiableAt_norm_zero E <| h.differentiableAt hn
   · exact contDiffAt_norm_smul_iff ht |>.2 h
 
 theorem HasStrictFDerivAt.hasStrictFDerivAt_norm_smul
@@ -96,11 +95,10 @@ theorem HasStrictFDerivAt.hasStrictFDerivAt_norm_smul
     hasStrictFDerivAt_id (t • x) |>.const_smul t⁻¹
   have h2 : HasStrictFDerivAt (fun y ↦ |t| * ‖y‖) (|t| • f) x := h.const_smul |t|
   conv at h2 => enter [3]; rw [← one_smul ℝ x, ← inv_mul_cancel₀ ht, mul_smul]
-  convert h2.comp (t • x) h1 with y
+  convert! h2.comp (t • x) h1 with y
   · rw [norm_smul, ← mul_assoc, norm_eq_abs, ← abs_mul, mul_inv_cancel₀ ht, abs_one, one_mul]
   ext y
-  simp only [coe_smul', Pi.smul_apply, smul_eq_mul, comp_smulₛₗ, map_inv₀, RingHom.id_apply,
-    comp_id]
+  simp only [smul_apply, smul_eq_mul, comp_smulₛₗ, map_inv₀, RingHom.id_apply, comp_id]
   rw [eq_inv_mul_iff_mul_eq₀ ht, ← mul_assoc, self_mul_sign]
 
 theorem HasStrictFDerivAt.hasStrictDerivAt_norm_smul_neg
@@ -120,12 +118,11 @@ theorem HasFDerivAt.hasFDerivAt_norm_smul
     hasFDerivAt_id (t • x) |>.const_smul t⁻¹
   have h2 : HasFDerivAt (fun y ↦ |t| * ‖y‖) (|t| • f) x := h.const_smul |t|
   conv at h2 => enter [3]; rw [← one_smul ℝ x, ← inv_mul_cancel₀ ht, mul_smul]
-  convert h2.comp (t • x) h1 using 2 with y
+  convert! h2.comp (t • x) h1 using 2 with y
   · simp only [Function.comp_apply]
     rw [norm_smul, ← mul_assoc, norm_eq_abs, ← abs_mul, mul_inv_cancel₀ ht, abs_one, one_mul]
   · ext y
-    simp only [coe_smul', Pi.smul_apply, smul_eq_mul, comp_smulₛₗ, map_inv₀, RingHom.id_apply,
-      comp_id]
+    simp only [smul_apply, smul_eq_mul, comp_smulₛₗ, map_inv₀, RingHom.id_apply, comp_id]
     rw [eq_inv_mul_iff_mul_eq₀ ht, ← mul_assoc, self_mul_sign]
 
 theorem HasFDerivAt.hasFDerivAt_norm_smul_neg
@@ -142,16 +139,16 @@ theorem differentiableAt_norm_smul (ht : t ≠ 0) :
     DifferentiableAt ℝ (‖·‖) x ↔ DifferentiableAt ℝ (‖·‖) (t • x) where
   mp hd := (hd.hasFDerivAt.hasFDerivAt_norm_smul ht).differentiableAt
   mpr hd := by
-    convert (hd.hasFDerivAt.hasFDerivAt_norm_smul (inv_ne_zero ht)).differentiableAt
+    convert! (hd.hasFDerivAt.hasFDerivAt_norm_smul (inv_ne_zero ht)).differentiableAt
     rw [smul_smul, inv_mul_cancel₀ ht, one_smul]
 
 theorem DifferentiableAt.differentiableAt_norm_of_smul (h : DifferentiableAt ℝ (‖·‖) (t • x)) :
     DifferentiableAt ℝ (‖·‖) x := by
   obtain rfl | ht := eq_or_ne t 0
-  · by_cases! hE : Nontrivial E
-    · rw [zero_smul] at h
-      exact not_differentiableAt_norm_zero E h |>.elim
-    · exact (hasFDerivAt_of_subsingleton _ _).differentiableAt
+  · suffices Subsingleton E from (hasFDerivAt_of_subsingleton _ _).differentiableAt
+    rw [zero_smul] at h
+    by_contra!
+    exact not_differentiableAt_norm_zero E h
   · exact differentiableAt_norm_smul ht |>.2 h
 
 theorem DifferentiableAt.fderiv_norm_self {x : E} (h : DifferentiableAt ℝ (‖·‖) x) :
@@ -162,7 +159,7 @@ theorem DifferentiableAt.fderiv_norm_self {x : E} (h : DifferentiableAt ℝ (‖
   simp_rw [this]
   rw [deriv_mul_const]
   · conv_lhs => enter [1, 1]; change _root_.abs ∘ (fun t ↦ 1 + t)
-    rw [deriv_comp, deriv_abs, deriv_const_add]
+    rw [deriv_comp, deriv_abs, deriv_const_add_id]
     · simp
     · exact differentiableAt_abs (by simp)
     · exact differentiableAt_id.const_add _

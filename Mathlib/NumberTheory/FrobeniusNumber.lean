@@ -61,7 +61,7 @@ theorem frobeniusNumber_pair (cop : Coprime m n) (hm : 1 < m) (hn : 1 < n) :
   simp_rw [FrobeniusNumber, AddSubmonoid.mem_closure_pair]
   have hmn : m + n ≤ m * n := add_le_mul hm hn
   constructor
-  · push_neg
+  · push Not
     intro a b h
     apply cop.mul_add_mul_ne_mul (add_one_ne_zero a) (add_one_ne_zero b)
     simp only [Nat.sub_sub, smul_eq_mul] at h
@@ -72,18 +72,9 @@ theorem frobeniusNumber_pair (cop : Coprime m n) (hm : 1 < m) (hn : 1 < n) :
   · intro k hk
     dsimp at hk
     contrapose! hk
-    let x := chineseRemainder cop 0 k
-    have hx : x.val < m * n := chineseRemainder_lt_mul cop 0 k (ne_bot_of_gt hm) (ne_bot_of_gt hn)
-    suffices key : x.1 ≤ k by
-      obtain ⟨a, ha⟩ := modEq_zero_iff_dvd.mp x.2.1
-      obtain ⟨b, hb⟩ := (modEq_iff_dvd' key).mp x.2.2
-      exact ⟨a, b, by rw [mul_comm, ← ha, mul_comm, ← hb, Nat.add_sub_of_le key]⟩
-    refine x.2.2.le_of_lt_add (lt_of_le_of_lt ?_ (add_lt_add_left hk n))
-    rw [Nat.sub_add_cancel (le_tsub_of_add_le_left hmn)]
-    exact
-      ModEq.le_of_lt_add
-        (x.2.1.trans (modEq_zero_iff_dvd.mpr (Nat.dvd_sub (dvd_mul_right m n) dvd_rfl)).symm)
-        (lt_of_lt_of_le hx le_tsub_add)
+    obtain ⟨a, b, h⟩ := exists_add_mul_eq_of_gcd_dvd_of_mul_pred_le m n k
+      (by simp [cop.gcd_eq_one]) (by grind [pred_mul, mul_pred, pred_eq_sub_one])
+    exact ⟨a, b, succ_inj.mp (congrArg succ h)⟩
 
 namespace Nat
 
@@ -161,17 +152,18 @@ theorem exists_mem_span_nat_finset_of_ge :
   obtain ⟨rx, hrx⟩ : setGcd s ∣ r := (dvd_mod_iff (setGcd_dvd_of_mem hxs)).mpr <|
     (Nat.dvd_add_right <| dvd_mul_of_dvd_right (Finset.dvd_sum fun i _ ↦
       dvd_mul_of_dvd_right (setGcd_dvd_of_mem (hts i.2)) _) _).mp dvd
-  convert (sum_mem fun i _ ↦ mul_mem_left _ _ (subset_span i.2) :
-    -- an explicit ℕ-linear combination of elements of `t` that is equal to `r + n`
-    ∑ i : t, (if 0 ≤ a i then rx else x / setGcd s - rx) * (a i).natAbs * i ∈ span t)
+  convert!
+    (sum_mem fun i _ ↦ mul_mem_left _ _ (subset_span i.2) :
+      -- an explicit ℕ-linear combination of elements of `t` that is equal to `r + n`
+       ∑ i : t, (if 0 ≤ a i then rx else x / setGcd s - rx) * (a i).natAbs * i ∈ span t)
   simp_rw [← Int.natCast_inj, hrx, n, Finset.mul_sum, mul_comm _ rx, cast_add, cast_sum, cast_mul,
     ← eq, Finset.mul_sum, smul_eq_mul, ← mul_assoc, ← Finset.sum_add_distrib, ← add_mul]
   congr! 2 with i
   split_ifs with hai
-  · rw [Int.toNat_eq_zero.mpr (by cutsat), cast_zero, mul_zero, add_zero,
+  · rw [Int.toNat_eq_zero.mpr (by lia), cast_zero, mul_zero, add_zero,
       Int.natCast_natAbs, abs_eq_self.mpr hai]
-  · rw [cast_sub, Int.natCast_natAbs, abs_eq_neg_self.mpr (by cutsat), sub_mul,
-      ← Int.eq_natCast_toNat.mpr (by cutsat), mul_neg (rx : ℤ), sub_neg_eq_add, add_comm]
+  · rw [cast_sub, Int.natCast_natAbs, abs_eq_neg_self.mpr (by lia), sub_mul,
+      ← Int.eq_natCast_toNat.mpr (by lia), mul_neg (rx : ℤ), sub_neg_eq_add, add_comm]
     rw [← Nat.mul_le_mul_left_iff (pos_of_ne_zero h0), ← hrx,
       Nat.mul_div_cancel' (setGcd_dvd_of_mem hxs)]
     exact (c.mod_lt (pos_of_ne_zero hx)).le
@@ -215,7 +207,7 @@ theorem exists_frobeniusNumber_iff {s : Set ℕ} :
   mp := fun ⟨n, hn⟩ ↦ by
     rw [frobeniusNumber_iff] at hn
     exact ⟨dvd_one.mp <| Nat.dvd_add_iff_right (setGcd_dvd_of_mem_closure (hn.2 (n + 1)
-      (by omega))) (n := 1) |>.mpr (setGcd_dvd_of_mem_closure (hn.2 (n + 2) (by omega))),
+      (by lia))) (n := 1) |>.mpr (setGcd_dvd_of_mem_closure (hn.2 (n + 2) (by lia))),
       fun h ↦ hn.1 <| AddSubmonoid.closure_mono (Set.singleton_subset_iff.mpr h)
         (addSubmonoidClosure_one.ge ⟨⟩)⟩
   mpr h := by

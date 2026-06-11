@@ -22,13 +22,13 @@ that are sent to a zero object by `G`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
 open Localization Limits MorphismProperty
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
   [Abelian C] [Abelian D] (G : D ⥤ C)
   [PreservesFiniteLimits G] [PreservesFiniteColimits G]
 

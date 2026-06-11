@@ -58,6 +58,8 @@ lemma prop_isoClosure {X Y : C} (h : P X) (e : X ⟶ Y) [IsIso e] : isoClosure P
 lemma le_isoClosure : P ≤ isoClosure P :=
   fun X hX => ⟨X, hX, ⟨Iso.refl X⟩⟩
 
+instance [P.Nonempty] : P.isoClosure.Nonempty := .mono P.le_isoClosure
+
 variable {P Q} in
 lemma monotone_isoClosure (h : P ≤ Q) : isoClosure P ≤ isoClosure Q := by
   rintro X ⟨X', hX', ⟨e⟩⟩
@@ -90,6 +92,22 @@ instance (F : C ⥤ D) : IsClosedUnderIsomorphisms (P.map F) where
 instance (F : D ⥤ C) [P.IsClosedUnderIsomorphisms] :
     IsClosedUnderIsomorphisms (P.inverseImage F) where
   of_iso e hX := P.prop_of_iso (F.mapIso e) hX
+
+@[simp]
+lemma isoClosure_strictMap (F : C ⥤ D) :
+    (P.strictMap F).isoClosure = P.map F := by
+  refine le_antisymm ?_ ?_
+  · rw [isoClosure_le_iff]
+    exact P.strictMap_le_map F
+  · rintro X ⟨Y, hY, ⟨e⟩⟩
+    exact ⟨F.obj Y, ⟨Y, hY⟩, ⟨e.symm⟩⟩
+
+@[simp]
+lemma map_isoClosure (F : C ⥤ D) :
+    P.isoClosure.map F = P.map F := by
+  refine le_antisymm ?_ (map_monotone P.le_isoClosure F)
+  rintro X ⟨Y, ⟨Z, hZ, ⟨e⟩⟩, ⟨e'⟩⟩
+  exact ⟨Z, hZ, ⟨F.mapIso e.symm ≪≫ e'⟩⟩
 
 end ObjectProperty
 

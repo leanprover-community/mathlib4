@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Finset.Defs
 public import Mathlib.Data.Multiset.ZeroCons
+public import Aesop
 
 /-!
 # Empty and nonempty finite sets
@@ -103,8 +104,6 @@ theorem empty_val : (∅ : Finset α).1 = 0 :=
 theorem notMem_empty (a : α) : a ∉ (∅ : Finset α) := by
   simp only [mem_def, empty_val, notMem_zero, not_false_iff]
 
-@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
-
 @[simp]
 theorem not_nonempty_empty : ¬(∅ : Finset α).Nonempty := fun ⟨x, hx⟩ => notMem_empty x hx
 
@@ -125,12 +124,7 @@ theorem empty_subset (s : Finset α) : ∅ ⊆ s :=
 theorem eq_empty_of_forall_notMem {s : Finset α} (H : ∀ x, x ∉ s) : s = ∅ :=
   eq_of_veq (eq_zero_of_forall_notMem H)
 
-@[deprecated (since := "2025-05-23")] alias eq_empty_of_forall_not_mem := eq_empty_of_forall_notMem
-
 theorem eq_empty_iff_forall_notMem {s : Finset α} : s = ∅ ↔ ∀ x, x ∉ s := by grind
-
-@[deprecated (since := "2025-05-23")]
-alias eq_empty_iff_forall_not_mem := eq_empty_iff_forall_notMem
 
 @[simp]
 theorem val_eq_zero {s : Finset α} : s.1 = 0 ↔ s = ∅ :=
@@ -144,10 +138,11 @@ theorem not_ssubset_empty (s : Finset α) : ¬s ⊂ ∅ := by grind
 theorem nonempty_of_ne_empty {s : Finset α} (h : s ≠ ∅) : s.Nonempty :=
   exists_mem_of_ne_zero (mt val_eq_zero.1 h)
 
+@[push ←]
 theorem nonempty_iff_ne_empty {s : Finset α} : s.Nonempty ↔ s ≠ ∅ :=
   ⟨Nonempty.ne_empty, nonempty_of_ne_empty⟩
 
-@[simp]
+@[simp, push]
 theorem not_nonempty_iff_eq_empty {s : Finset α} : ¬s.Nonempty ↔ s = ∅ :=
   nonempty_iff_ne_empty.not.trans not_not
 

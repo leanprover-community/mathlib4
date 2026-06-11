@@ -34,7 +34,7 @@ open CategoryTheory Category Functor
 
 namespace CategoryTheory
 
-variable {C D A : Type*} [Category C] [Category D] [Category A]
+variable {C D A : Type*} [Category* C] [Category* D] [Category* A]
   {L : C ⥤ D} {F : D ⥤ A} {G : C ⥤ A} (e : L ⋙ F ≅ G) (M : Type*)
   [AddMonoid M] [HasShift C M]
   [G.ShiftSequence M] (F' : M → D ⥤ A) (e' : ∀ m, L ⋙ F' m ≅ G.shift m)
@@ -66,6 +66,7 @@ noncomputable def shiftIso (n a a' : M) (ha' : n + a = a') :
     Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (e' a) ≪≫
     G.shiftIso n a a' ha' ≪≫ (e' a').symm)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma shiftIso_hom_app_obj (n a a' : M) (ha' : n + a = a') (X : C) :
     (shiftIso L G M F' e' n a a' ha').hom.app (L.obj X) =
       (F' a).map ((L.commShiftIso n).inv.app X) ≫
@@ -78,11 +79,14 @@ end induced
 
 variable [HasShift D M] [L.CommShift M]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an isomorphism of functors `e : L ⋙ F ≅ G` relating functors `L : C ⥤ D`,
 `F : D ⥤ A` and `G : C ⥤ A`, an additive monoid `M`, a family of functors `F' : M → D ⥤ A`
 equipped with isomorphisms `e' : ∀ m, L ⋙ F' m ≅ G.shift m`, this is the shift sequence
 induced on `F` induced by a shift sequence for the functor `G`, provided that
 the functor `(whiskeringLeft C D A).obj L` of precomposition by `L` is fully faithful. -/
+@[implicit_reducible]
 noncomputable def induced : F.ShiftSequence M where
   sequence := F'
   isoZero := induced.isoZero e M F' e'
@@ -126,6 +130,8 @@ lemma induced_shiftIso_hom_app_obj (n a a' : M) (ha' : n + a = a') (X : C) :
         (G.shiftIso n a a' ha').hom.app X ≫ (e' a').inv.app X := by
   apply induced.shiftIso_hom_app_obj
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma induced_shiftMap {n : M} {X Y : C} (f : X ⟶ Y⟦n⟧) (a a' : M) (h : n + a = a') :
     letI := induced e M F' e'

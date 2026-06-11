@@ -6,9 +6,8 @@ Junyan Xu
 -/
 import Mathlib.Algebra.MvPolynomial.Funext
 import Mathlib.Analysis.Analytic.Polynomial
-import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
-import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.RingTheory.Algebraic.Integral
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Topology.Algebra.MvPolynomial
 
@@ -50,7 +49,7 @@ variable {n : ℕ∞} {s : Set E}
 
 instance : FunLike (ContDiffSupportedOn 𝕜 E F n s) E F where
   coe := Subtype.val
-  coe_injective' := Subtype.coe_injective
+  coe_injective := Subtype.coe_injective
 
 @[simp]
 lemma coe_mk (f : E → F) (h) : (⟨f, h⟩ : ContDiffSupportedOn 𝕜 E F n s) = f := rfl

@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Localization.NumDen
 # Ring-theoretic fractions in `ℚ`
 -/
 
-@[expose] public section
+public section
 
 namespace Rat
 

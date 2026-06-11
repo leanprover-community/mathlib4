@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.Finiteness.Ideal
 public import Mathlib.RingTheory.Ideal.Cotangent
+public import Mathlib.RingTheory.KrullDimension.Zero
 
 /-!
 
@@ -27,7 +28,7 @@ Noetherian local domain that is not a field `(R, m, k)`:
 Also see `tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain` for a version without `¬ IsField R`.
 -/
 
-@[expose] public section
+public section
 
 
 variable (R : Type*) [CommRing R]
@@ -91,8 +92,8 @@ theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [IsLocalRin
   · rw [hx, Ideal.span_singleton_pow, Ideal.span_le, Set.singleton_subset_iff]
     exact Nat.find_spec this
 
-theorem maximalIdeal_isPrincipal_of_isDedekindDomain [IsLocalRing R] [IsDomain R]
-    [IsDedekindDomain R] : (maximalIdeal R).IsPrincipal := by
+theorem maximalIdeal_isPrincipal_of_isDedekindDomain [IsLocalRing R] [IsDedekindDomain R] :
+    (maximalIdeal R).IsPrincipal := by
   classical
   by_cases ne_bot : maximalIdeal R = ⊥
   · rw [ne_bot]; infer_instance
@@ -133,7 +134,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [IsLocalRing R] [IsDomain R
       exact (IsFractionRing.to_map_eq_zero_iff (K := K)).not.mpr ha₂
     · apply Submodule.FG.map; exact IsNoetherian.noetherian _
   · have :
-        (M.map (DistribMulAction.toLinearMap R K x)).comap (Algebra.linearMap R K) = ⊤ := by
+        (M.map (DistribSMul.toLinearMap R K x)).comap (Algebra.linearMap R K) = ⊤ := by
       contrapose! hx with h
       rintro m' ⟨m, hm, rfl : algebraMap R K m = m'⟩
       obtain ⟨k, hk⟩ := hb₃ m hm
@@ -218,7 +219,7 @@ theorem IsDiscreteValuationRing.TFAE [IsNoetherianRing R] [IsLocalRing R] [IsDom
     simp [Nat.le_one_iff_eq_zero_or_eq_one, finrank_cotangentSpace_eq_zero_iff, h]
   rw [this]
   have : maximalIdeal R ≠ ⊥ := isField_iff_maximalIdeal_eq.not.mp h
-  convert tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain R
+  convert! tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain R
   · exact ⟨fun _ ↦ inferInstance, fun h ↦ { h with not_a_field' := this }⟩
   · exact ⟨fun h P h₁ h₂ ↦ h.unique ⟨h₁, h₂⟩ ⟨this, inferInstance⟩,
       fun H ↦ ⟨_, ⟨this, inferInstance⟩, fun P hP ↦ H P hP.1 hP.2⟩⟩
@@ -238,6 +239,23 @@ variable (R)
 lemma IsLocalRing.finrank_CotangentSpace_eq_one [IsDomain R] [IsDiscreteValuationRing R] :
     finrank (ResidueField R) (CotangentSpace R) = 1 :=
   finrank_CotangentSpace_eq_one_iff.mpr ‹_›
+
+open Ring in
+lemma IsDiscreteValuationRing.ringKrullDim_eq_one [IsDomain R] [IsDiscreteValuationRing R] :
+    ringKrullDim R = 1 := by
+  refine eq_of_le_of_not_lt (krullDimLE_iff (n := 1).mp ?_) fun h ↦ ?_
+  · exact krullDimLE_one_iff_of_isPrime_bot.mpr fun I hI hI' ↦ hI'.isMaximal hI
+  · have : KrullDimLE 0 R := krullDimLE_iff.mpr (ENat.WithBot.lt_add_one_iff.mp h)
+    exact IsDiscreteValuationRing.not_isField R KrullDimLE.isField_of_isDomain
+
+open Ring in
+lemma IsDiscreteValuationRing.not_krullDimLE_zero [IsDomain R] [IsDiscreteValuationRing R] :
+      ¬ KrullDimLE 0 R := by
+  simp [krullDimLE_iff, ringKrullDim_eq_one R]
+
+open Ring in
+instance [IsDomain R] [IsDiscreteValuationRing R] : KrullDimLE 1 R :=
+    krullDimLE_iff.mpr (IsDiscreteValuationRing.ringKrullDim_eq_one R).le
 
 instance (priority := 100) IsDedekindDomain.isPrincipalIdealRing
     [IsLocalRing R] [IsDedekindDomain R] : IsPrincipalIdealRing R :=

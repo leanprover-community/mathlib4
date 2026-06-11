@@ -113,6 +113,7 @@ private theorem one_smul' [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodu
   rw [smulAddMonoidHom_apply_of_of]
   exact DirectSum.of_eq_of_gradedMonoid_eq (one_smul (GradedMonoid A) <| GradedMonoid.mk i xi)
 
+set_option backward.defeqAttrib.useBackward true in
 -- Almost identical to the proof of `direct_sum.mul_assoc`
 private theorem mul_smul' [DecidableEq ιA] [DecidableEq ιB] [GSemiring A] [Gmodule A M]
     (a b : ⨁ i, A i)
@@ -124,7 +125,7 @@ private theorem mul_smul' [DecidableEq ιA] [DecidableEq ιB] [GSemiring A] [Gmo
         (DirectSum.mulHom A) =
       (AddMonoidHom.compHom AddMonoidHom.flipHom <|
           (smulAddMonoidHom A M).flip.compHom.comp <| smulAddMonoidHom A M).flip
-    from-- `fun a b c ↦ a • (b • c)` as a bundled hom
+    from -- `fun a b c ↦ a • (b • c)` as a bundled hom
       DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this a) b) c
   ext ai ax bi bx ci cx : 6
   dsimp only [coe_comp, Function.comp_apply, compHom_apply_apply, flip_apply, flipHom_apply]
@@ -137,8 +138,8 @@ private theorem mul_smul' [DecidableEq ιA] [DecidableEq ιB] [GSemiring A] [Gmo
 /-- The `Module` derived from `gmodule A M`. -/
 instance module [DecidableEq ιA] [DecidableEq ιB] [GSemiring A] [Gmodule A M] :
     Module (⨁ i, A i) (⨁ i, M i) where
-  one_smul := one_smul' _ _
-  mul_smul := mul_smul' _ _
+  one_smul := by exact one_smul' _ _
+  mul_smul := by exact mul_smul' _ _
   smul_add r := (smulAddMonoidHom A M r).map_add
   smul_zero r := (smulAddMonoidHom A M r).map_zero
   add_smul r s x := by simp only [smul_def, map_add, AddMonoidHom.add_apply]
@@ -191,19 +192,21 @@ end SetLike
 namespace GradedModule
 
 variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A]
-  [AddSubmonoidClass σ M] [SetLike.GradedMonoid 𝓐] [SetLike.GradedSMul 𝓐 𝓜]
+  [AddSubmonoidClass σ M] [SetLike.GradedSMul 𝓐 𝓜]
+  [DecidableEq ιA] [DecidableEq ιM] [GradedRing 𝓐]
 
 /-- The smul multiplication of `A` on `⨁ i, 𝓜 i` from `(⨁ i, 𝓐 i) →+ (⨁ i, 𝓜 i) →+ ⨁ i, 𝓜 i`
 turns `⨁ i, 𝓜 i` into an `A`-module
 -/
-def isModule [DecidableEq ιA] [DecidableEq ιM] [GradedRing 𝓐] : Module A (⨁ i, 𝓜 i) :=
+@[implicit_reducible]
+def isModule : Module A (⨁ i, 𝓜 i) :=
   { Module.compHom _ (DirectSum.decomposeRingEquiv 𝓐 : A ≃+* ⨁ i, 𝓐 i).toRingHom with
     smul := fun a b => DirectSum.decompose 𝓐 a • b }
 
 /-- `⨁ i, 𝓜 i` and `M` are isomorphic as `A`-modules.
 "The internal version" and "the external version" are isomorphism as `A`-modules.
 -/
-def linearEquiv [DecidableEq ιA] [DecidableEq ιM] [GradedRing 𝓐] [DirectSum.Decomposition 𝓜] :
+def linearEquiv [DirectSum.Decomposition 𝓜] :
     @LinearEquiv A A _ _ (RingHom.id A) (RingHom.id A) _ _ M (⨁ i, 𝓜 i) _
     _ _ (by letI := isModule 𝓐 𝓜; infer_instance) := by
   letI h := isModule 𝓐 𝓜
@@ -222,7 +225,7 @@ def linearEquiv [DecidableEq ιA] [DecidableEq ιM] [GradedRing 𝓐] [DirectSum
     DirectSum.Gmodule.smulAddMonoidHom _ _ (decompose 𝓐 ↑(decompose 𝓐 x i))
     (decomposeAddEquiv 𝓜 ↑(decompose 𝓜 y j)) from DirectSum.Gmodule.smul_def _ _ _ _]
   simp only [decomposeAddEquiv_apply, decompose_coe, Gmodule.smulAddMonoidHom_apply_of_of]
-  convert DirectSum.decompose_coe 𝓜 _
+  convert! DirectSum.decompose_coe 𝓜 _
   rfl
 
 end GradedModule
