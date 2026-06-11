@@ -804,8 +804,8 @@ theorem closedInterior_eq_interior_union_surface [IsOrderedAddMonoid k] [ZeroLEO
 alias closedInterior_eq_interior_union := closedInterior_eq_interior_union_surface
 
 /-- The closed interior with the open interior removed gives the surface. -/
-theorem closedInterior_diff_interior_eq_surface [Nontrivial k] [IsOrderedAddMonoid k] [ZeroLEOneClass k]
-    {n : ℕ} [NeZero n] (s : Simplex k P n) :
+theorem closedInterior_diff_interior_eq_surface [Nontrivial k] [IsOrderedAddMonoid k]
+    [ZeroLEOneClass k] {n : ℕ} [NeZero n] (s : Simplex k P n) :
     s.closedInterior \ s.interior = s.surface := by
   simpa [s.surface_eq_iUnion_closedInterior_faceOpposite,
     closedInterior_eq_interior_union_surface] using
