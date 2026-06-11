@@ -1,3 +1,4 @@
+import Mathlib.Algebra.Category.Grp.Zero
 import Mathlib.Topology.Sheaves.Skyscraper
 import Mathlib.AlgebraicGeometry.ResidueField
 import Mathlib.AlgebraicGeometry.Modules.Presheaf
@@ -264,5 +265,117 @@ def skyscraper2 : PresheafOfModules X.ringCatSheaf.obj where
       simp only [eqToHom_map, eqToHom_trans_assoc, eqToHom_refl, Category.id_comp]
     · exact ((ModuleCat.restrictScalars _).map_isZero (skyObj_isZero_of_neg p h)).eq_of_tgt _ _
 
+section PresheafIsoSkyscraper
+
+open Limits
+
+/-- Applying `eqToHom` commutes with application in `ModuleCat` (stated heterogeneously). -/
+private lemma heq_eqToHom_apply_moduleCat {R : Type*} [Ring R] {M N : ModuleCat R}
+    (e : M = N) (x : M) : HEq ((eqToHom e) x) x := by
+  subst e
+  rfl
+
+/-- Applying `eqToHom` commutes with application in `Ab` (stated heterogeneously). -/
+private lemma heq_eqToHom_apply_ab {M N : Ab} (e : M = N) (x : M) :
+    HEq ((eqToHom e) x) x := by
+  subst e
+  rfl
+
+lemma skyscraper2_presheaf_obj_pos {U : (TopologicalSpace.Opens X)ᵒᵖ} (h : p ∈ unop U) :
+    (skyscraper2 p).presheaf.obj U = AddCommGrpCat.of (X.residueField p) := by
+  change (forget₂ (ModuleCat _) Ab).obj (skyObj p U) = _
+  rw [skyObj_pos p h]
+  rfl
+
+lemma skyscraperAb_presheaf_obj_pos {U : (TopologicalSpace.Opens X)ᵒᵖ} (h : p ∈ unop U) :
+    (skyscraperAb p).presheaf.obj U = AddCommGrpCat.of (X.residueField p) := if_pos h
+
+lemma skyscraper2_presheaf_obj_isZero {U : (TopologicalSpace.Opens X)ᵒᵖ} (h : p ∉ unop U) :
+    IsZero ((skyscraper2 p).presheaf.obj U) :=
+  (forget₂ (ModuleCat _) Ab).map_isZero (skyObj_isZero_of_neg p h)
+
+lemma skyscraperAb_presheaf_obj_isZero {U : (TopologicalSpace.Opens X)ᵒᵖ} (h : p ∉ unop U) :
+    IsZero ((skyscraperAb p).presheaf.obj U) := by
+  have : (skyscraperAb p).presheaf.obj U = ⊤_ Ab := if_neg h
+  rw [this]
+  exact AddCommGrpCat.isZero_of_subsingleton _
+
+/--
+When `p ∈ V`, the restriction map of the underlying `Ab`-presheaf of `skyscraper2` is the
+identity of the residue field, i.e. an `eqToHom`.
+-/
+lemma skyscraper2_presheaf_map_pos {U V : (TopologicalSpace.Opens X)ᵒᵖ} (i : U ⟶ V)
+    (h : p ∈ unop V) :
+    (skyscraper2 p).presheaf.map i =
+      eqToHom ((skyscraper2_presheaf_obj_pos p (i.unop.le h)).trans
+        (skyscraper2_presheaf_obj_pos p h).symm) := by
+  ext x
+  change (skyMap p i) x = (eqToHom ((skyscraper2_presheaf_obj_pos p (i.unop.le h)).trans
+    (skyscraper2_presheaf_obj_pos p h).symm)) x
+  rw [skyMap_pos p i h]
+  exact eq_of_heq (((heq_eqToHom_apply_moduleCat (skyObj_pos p h).symm _).trans
+    (heq_eqToHom_apply_moduleCat (skyObj_pos p (i.unop.le h)) x)).trans
+    (heq_eqToHom_apply_ab _ x).symm)
+
+open Classical in
+/--
+When `p ∈ V`, the restriction map of the skyscraper presheaf is an `eqToHom`.
+-/
+lemma skyscraperAb_presheaf_map_pos {U V : (TopologicalSpace.Opens X)ᵒᵖ} (i : U ⟶ V)
+    (h : p ∈ unop V) :
+    (skyscraperAb p).presheaf.map i =
+      eqToHom ((skyscraperAb_presheaf_obj_pos p (i.unop.le h)).trans
+        (skyscraperAb_presheaf_obj_pos p h).symm) := by
+  change (skyscraperPresheaf p (AddCommGrpCat.of (X.residueField p))).map i = _
+  rw [skyscraperPresheaf_map, dif_pos h]
+  rfl
+
+open Classical in
+/--
+The component at `U` of the isomorphism between the underlying `Ab`-presheaf of `skyscraper2`
+and the skyscraper presheaf: when `p ∈ U` both objects are equal to (the `Ab`-bundling of) the
+residue field at `p`; otherwise both objects are zero objects.
+-/
+noncomputable
+def skyscraper2PresheafIsoSkyscraperApp (U : (TopologicalSpace.Opens X)ᵒᵖ) :
+    (skyscraper2 p).presheaf.obj U ≅ (skyscraperAb p).presheaf.obj U :=
+  if h : p ∈ unop U then
+    eqToIso ((skyscraper2_presheaf_obj_pos p h).trans (skyscraperAb_presheaf_obj_pos p h).symm)
+  else
+    (skyscraper2_presheaf_obj_isZero p h).iso (skyscraperAb_presheaf_obj_isZero p h)
+
+lemma skyscraper2PresheafIsoSkyscraperApp_pos {U : (TopologicalSpace.Opens X)ᵒᵖ}
+    (h : p ∈ unop U) :
+    skyscraper2PresheafIsoSkyscraperApp p U =
+      eqToIso ((skyscraper2_presheaf_obj_pos p h).trans
+        (skyscraperAb_presheaf_obj_pos p h).symm) :=
+  dif_pos h
+
+/--
+The underlying `Ab`-presheaf of `skyscraper2` is isomorphic to the skyscraper presheaf valued in
+the residue field at `p`.
+-/
+noncomputable
 def skyscraper2PresheafIsoSkyscraper :
-    (skyscraper2 p).presheaf ≅ (skyscraperAb p).presheaf := sorry
+    (skyscraper2 p).presheaf ≅ (skyscraperAb p).presheaf :=
+  NatIso.ofComponents (skyscraper2PresheafIsoSkyscraperApp p) (by
+    intro U V i
+    by_cases h : p ∈ unop V
+    · rw [skyscraper2PresheafIsoSkyscraperApp_pos p (i.unop.le h),
+        skyscraper2PresheafIsoSkyscraperApp_pos p h,
+        skyscraper2_presheaf_map_pos p i h, skyscraperAb_presheaf_map_pos p i h]
+      simp
+    · exact (skyscraperAb_presheaf_obj_isZero p h).eq_of_tgt _ _)
+
+end PresheafIsoSkyscraper
+
+/--
+The skyscraper sheaf of modules at `p` valued in the residue field at `p`: the underlying
+presheaf of modules is `skyscraper2`, and the sheaf condition is transported along
+`skyscraper2PresheafIsoSkyscraper` from the sheaf condition for the skyscraper sheaf.
+-/
+noncomputable
+def skyscraper2SheafOfModules : SheafOfModules X.ringCatSheaf where
+  val := skyscraper2 p
+  isSheaf := TopCat.Presheaf.isSheaf_of_iso (skyscraper2PresheafIsoSkyscraper p).symm
+    (skyscraperAb p).2

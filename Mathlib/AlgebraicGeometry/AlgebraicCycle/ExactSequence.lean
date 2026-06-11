@@ -157,11 +157,45 @@ def toSkyscraperFun {U : X.Opens} (hD : support D ⊆ {x | coheight x = 1})
   let _ : Module ↑Γ(X, U) ↑(X.presheaf.stalk p) := (X.presheaf.germ U p hp').hom.toModule
   let _ : Module ↑(X.presheaf.stalk p) ↑(X.residueField p) := (X.residue p).hom.toModule
   letI : Module ↑Γ(X, U) ↑(X.residueField p) := (X.evaluation U p hp').hom.toModule
-  have : IsScalarTower Γ(X, U) ↑(X.presheaf.stalk p) ↑(X.residueField p) := sorry
+  have : IsScalarTower Γ(X, U) ↑(X.presheaf.stalk p) ↑(X.residueField p) := by
+    constructor
+    intro r s t
+    change (X.residue p).hom ((X.presheaf.germ U p hp').hom r * s) * t =
+      (X.evaluation U p hp').hom r * ((X.residue p).hom s * t)
+    rw [map_mul, mul_assoc]
+    rfl
   let : Module ↑Γ(X, U) ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf p) := l (D.sheaf) U p hp'
-  have : IsScalarTower ↑Γ(X, U) ↑(X.presheaf.stalk p) ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf p) := sorry
-  have : LinearMap.CompatibleSMul ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf p) ↑(X.presheaf.stalk p) ↑Γ(X, U)
-    ↑(X.presheaf.stalk p) := sorry
+  -- The action of `Γ(X, U)` on the stalk of `𝒪ₓ(D)` (given by `l`, via the `RingCat`-valued
+  -- germ) agrees with acting by the germ in `X.presheaf.stalk p`.
+  have key : ∀ (r : ↑Γ(X, U)) (m : ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf p)),
+      r • m = (X.presheaf.germ U p hp' r : ↑(X.presheaf.stalk p)) • m := by
+    intro r m
+    obtain ⟨W, hpW, m', rfl⟩ := TopCat.Presheaf.exists_germ_eq D.sheaf.val.presheaf m
+    have hpΩ : p ∈ U ⊓ W := ⟨hp', hpW⟩
+    change TopCat.Presheaf.germ X.ringCatSheaf.presheaf U p hp' r •
+      TopCat.Presheaf.germ D.sheaf.val.presheaf W p hpW m' = _
+    rw [← TopCat.Presheaf.germ_res_apply D.sheaf.val.presheaf
+        (homOfLE (inf_le_right : U ⊓ W ≤ W)) p hpΩ m',
+      ← TopCat.Presheaf.germ_res_apply X.ringCatSheaf.presheaf
+        (homOfLE (inf_le_left : U ⊓ W ≤ U)) p hpΩ r,
+      ← TopCat.Presheaf.germ_res_apply X.presheaf
+        (homOfLE (inf_le_left : U ⊓ W ≤ U)) p hpΩ r,
+      ← PresheafOfModules.germ_ringCat_smul (M := D.sheaf.val) p (U ⊓ W) hpΩ]
+    exact PresheafOfModules.germ_smul (R := X.presheaf) (M := D.sheaf.val) p (U ⊓ W) hpΩ _ _
+  have : IsScalarTower ↑Γ(X, U) ↑(X.presheaf.stalk p)
+    ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf p) := by
+    constructor
+    intro r s m
+    rw [key r (s • m)]
+    change ((X.presheaf.germ U p hp' r : ↑(X.presheaf.stalk p)) * s) • m = _
+    rw [mul_smul]
+  have : LinearMap.CompatibleSMul ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf p)
+    ↑(X.presheaf.stalk p) ↑Γ(X, U)
+    ↑(X.presheaf.stalk p) := by
+    constructor
+    intro f r m
+    rw [key r m, map_smul]
+    rfl
   let f2 := (stalkEquiv D hD p hp ϖ hϖ).restrictScalars Γ(X, U)
   let f3 := (Module.compHom.toLinearMap (X.residue p).hom).restrictScalars Γ(X, U)
   f3 ∘ₗ f2 ∘ₗ f1
@@ -176,7 +210,8 @@ open Classical in
 lemma toSkyscraperFun_ker {U : X.Opens} (hD : support D ⊆ {x | coheight x = 1})
     (ϖ : X.presheaf.stalk p) (hϖ : Irreducible ϖ) (hp : coheight p = 1) (hp' : p ∈ U) :
     letI : Module ↑Γ(X, U) ↑(X.residueField p) := (X.evaluation U p hp').hom.toModule
-  (toSkyscraperFun p D hD ϖ hϖ hp hp').ker.carrier = {f : Γ(D.sheaf, U) | f.1 ∈ carrier (D - single p 1) U} := by
+    (toSkyscraperFun p D hD ϖ hϖ hp hp').ker.carrier =
+    {f : Γ(D.sheaf, U) | f.1 ∈ carrier (D - single p 1) U} := by
   simp [toSkyscraperFun, LinearMap.ker_comp, Set.preimage_comp, Scheme.residue]
   have := IsLocalRing.ker_residue (R := X.presheaf.stalk p)
   suffices ⇑(germModuleHom D.sheaf U p hp') ⁻¹'
@@ -185,6 +220,13 @@ lemma toSkyscraperFun_ker {U : X.Opens} (hD : support D ⊆ {x | coheight x = 1}
   #check IsLocalRing.ker_residue
 
   sorry
+
+lemma toSkyscraperFun_isLocallySurjective (hD : support D ⊆ {x | coheight x = 1})
+    (ϖ : X.presheaf.stalk p) (hϖ : Irreducible ϖ) (hp : coheight p = 1) :
+    ∀ (y : X.residueField p) (x : X), ∃ (V : X.Opens) (hpV : p ∈ V) (hxV : x ∈ V),
+    ∃ s : Γ(D.sheaf, V), toSkyscraperFun p D hD ϖ hϖ hp hpV s = y
+    := sorry
+
 #check TopCat.Presheaf.isLocallySurjective_iff
 /-
 For this local surjectivity proof, we want to say that given a section s of k(X) over U, for any
@@ -226,8 +268,9 @@ and just show all of the exactness and such there
 noncomputable
 def toSkyscraper {U : X.Opens} (hD : support D ⊆ {x | coheight x = 1})
     (ϖ : X.presheaf.stalk p) (hϖ : Irreducible ϖ) (hp : coheight p = 1) :
-    (D.sheaf).val.obj (op U) ⟶ (skyscraperSheafOfModules p).val.obj (op U) := by
-  by_cases o : p ∈ U
+    (D.sheaf).val.obj (op U) ⟶ (skyscraper2SheafOfModules p).val.obj (op U) := by
+  sorry
+  /-by_cases o : p ∈ U
   · classical
     refine ModuleCat.ofHom (X := D.sheaf.val.obj (op U))
         (Y := (skyscraperSheafOfModules p).val.obj (op U)) ?_
@@ -256,7 +299,7 @@ def toSkyscraper {U : X.Opens} (hD : support D ⊆ {x | coheight x = 1})
     TODO: Write some API for skyscraperSheafOfModules that makes this easy
     -/
     sorry
-  exact 0
+  exact 0-/
 
 instance (ϖ : X.presheaf.stalk p) (hϖ : Irreducible ϖ) (hp : coheight p = 1)
     (hD : ∀ z : X, coheight z ≠ 1 → D z ≥ 0)
