@@ -79,9 +79,9 @@ theorem to_Module_monoidAlgebra_map_aux {k G : Type*} [CommRing k] [Monoid G] (V
   · intro g
     simp only [one_smul, MonoidAlgebra.lift_single, MonoidAlgebra.of_apply]
     exact LinearMap.congr_fun (w g) x
-  · intro g h gw hw; simp only [map_add, LinearMap.add_apply, hw, gw]
+  · intro g h gw hw; simp only [map_add, _root_.add_apply, hw, gw]
   · intro r g w
-    simp only [map_smul, w, LinearMap.smul_apply]
+    simp only [map_smul, w, _root_.smul_apply]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `toModuleMonoidAlgebra`. -/

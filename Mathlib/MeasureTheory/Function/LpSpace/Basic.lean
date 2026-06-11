@@ -839,7 +839,7 @@ variable (μ p) in
     ext f
     filter_upwards [(B (g + h)).coeFn_compLp f, (B g).coeFn_compLp f, (B h).coeFn_compLp f,
       Lp.coeFn_add ((B g).compLp f) ((B h).compLp f)] with x hx hg hh hadd
-    simp only [compLpₗ_apply, LinearMap.add_apply, hx, hadd]
+    simp only [compLpₗ_apply, _root_.add_apply, hx, hadd]
     simp only [map_add, add_apply, Pi.add_apply, hg, hh]
   map_smul' c g := by
     ext f

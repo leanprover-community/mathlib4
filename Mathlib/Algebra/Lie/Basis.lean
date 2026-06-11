@@ -267,7 +267,7 @@ def baseSupp (i : ι) : Dual R b.cartan :=
 @[simp] lemma baseSupp_apply_h' (i j : ι) :
     b.baseSupp i (b.h' j) = b.A i j := by
   classical
-  simp only [baseSupp, LinearMap.coe_sum, Finset.sum_apply]
+  simp only [baseSupp, _root_.sum_apply]
   let e := LinearEquiv.ofEq _ _ b.coe_cartan_eq_span
   let f (k : ι) : R := b.A i k • (Basis.span b.linInd).repr (e <| b.h' j) k
   change ∑ k, f k = _
@@ -402,10 +402,10 @@ lemma iSupIndep_rootSpace :
   have hs0' : rootSpace b.cartan 0 = ⨆ i ∈ s0, LieModule.genWeightSpace L i := by simp [hs0]
   have hsU' : U = ⨆ i ∈ sU, LieModule.genWeightSpace L i := by
     simp only [hU, hsU, mem_setOf_eq, iSup_exists, iSup_and, iSup_comm (ι := b.cartan → R),
-      iSup_iSup_eq_left, LinearMap.coe_sum, LinearMap.coe_smul]
+      iSup_iSup_eq_left, FunLike.coe_sum, FunLike.coe_smul]
   have hsV' : V = ⨆ i ∈ sV, LieModule.genWeightSpace L i := by
     simp only [hV, hsV, mem_setOf_eq, iSup_exists, iSup_and, iSup_comm (ι := b.cartan → R),
-      iSup_iSup_eq_left, LinearMap.coe_sum, LinearMap.coe_smul]
+      iSup_iSup_eq_left, FunLike.coe_sum, FunLike.coe_smul]
   have hU0 : Disjoint s0 sU := by
     suffices ∀ g ∈ sU, g ≠ 0 by
       refine Set.disjoint_iff_forall_ne.mpr fun f hf g hg ↦ ?_

@@ -114,7 +114,7 @@ theorem fourierIntegral_comp_add_right [MeasurableAdd V] (e : AddChar 𝕜 𝕊)
   rw [integral_add_right_eq_self fun v : V ↦ (e (-L (v - v₀) w) : ℂ) • f v, ← integral_smul]
   congr 1 with v
   rw [← smul_assoc, smul_eq_mul, ← Circle.coe_mul, ← e.map_add_eq_mul, ← LinearMap.neg_apply,
-    ← sub_eq_add_neg, ← LinearMap.sub_apply, map_sub, neg_sub]
+    ← sub_eq_add_neg, ← _root_.sub_apply, map_sub, neg_sub]
 
 end Defs
 

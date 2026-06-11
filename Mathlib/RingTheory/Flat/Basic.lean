@@ -362,7 +362,7 @@ theorem iff_lTensor_exact' [Small.{v'} R] : Flat R M ↔
     fun N' N'' _ _ _ _ L hL ↦ LinearMap.ker_eq_bot |>.mp <| eq_bot_iff |>.mpr
       fun x (hx : _ = 0) ↦ ?_⟩
   simpa [Eq.comm] using @H PUnit N' N'' _ _ _ _ _ _ 0 L (fun x ↦ by
-    simp_rw [Set.mem_range, LinearMap.zero_apply, exists_const]
+    simp_rw [Set.mem_range, _root_.zero_apply, exists_const]
     exact (L.map_eq_zero_iff hL).trans eq_comm) x |>.mp hx
 
 /-- `M` is flat if and only if `M ⊗ -` is an exact functor.
@@ -384,7 +384,7 @@ theorem iff_rTensor_exact' [Small.{v'} R] : Flat R M ↔
     fun N' N'' _ _ _ _ f hf ↦ LinearMap.ker_eq_bot |>.mp <| eq_bot_iff |>.mpr
       fun x (hx : _ = 0) ↦ ?_⟩
   simpa [Eq.comm] using @H PUnit N' N'' _ _ _ _ _ _ 0 f (fun x ↦ by
-    simp_rw [Set.mem_range, LinearMap.zero_apply, exists_const]
+    simp_rw [Set.mem_range, _root_.zero_apply, exists_const]
     exact (f.map_eq_zero_iff hf).trans eq_comm) x |>.mp hx
 
 /-- `M` is flat if and only if `- ⊗ M` is an exact functor.

@@ -185,9 +185,9 @@ private theorem fFold_fFold (m : M) (x : A × S f) : fFold f m (fFold f m x) = Q
       rw [← smul_mul_assoc, ← mul_assoc, f.contract_mid]
     · simp
     · rintro x y _hx _hy ihx ihy
-      rw [LinearMap.add_apply, LinearMap.add_apply, mul_add, smul_add, ihx, ihy]
+      rw [_root_.add_apply, _root_.add_apply, mul_add, smul_add, ihx, ihy]
     · rintro x hx _c ihx
-      rw [LinearMap.smul_apply, LinearMap.smul_apply, mul_smul_comm, ihx, smul_comm]
+      rw [_root_.smul_apply, _root_.smul_apply, mul_smul_comm, ihx, smul_comm]
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in

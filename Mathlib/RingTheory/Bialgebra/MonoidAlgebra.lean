@@ -49,7 +49,7 @@ instance instBialgebra : Bialgebra R A[M] where
       LinearMap.mul_apply', single_mul_single, comul_single, Bialgebra.comul_mul,
       ← (Coalgebra.Repr.arbitrary R b).eq, ← (Coalgebra.Repr.arbitrary R d).eq, Finset.sum_mul_sum,
       Algebra.TensorProduct.tmul_mul_tmul, map_sum, TensorProduct.map_tmul, lsingle_apply,
-      LinearMap.compl₁₂_apply, LinearMap.coe_sum, Finset.sum_apply,
+      LinearMap.compl₁₂_apply, FunLike.coe_sum, Finset.sum_apply,
       Finset.sum_comm (s := (Coalgebra.Repr.arbitrary R b).index)]
 
 -- TODO: Generalise to `A[M] →ₐc[R] A[N]` under `Bialgebra R A`

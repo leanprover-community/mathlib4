@@ -93,7 +93,7 @@ def sumOfConjugates : W →ₗ[k] V :=
   ∑ g : G, π.conjugate g
 
 lemma sumOfConjugates_apply (v : W) : π.sumOfConjugates G v = ∑ g : G, π.conjugate g v :=
-  LinearMap.sum_apply _ _ _
+  _root_.sum_apply _ _ _
 
 /-- In fact, the sum over `g : G` of the conjugate of `π` by `g` is a `k[G]`-linear map.
 -/

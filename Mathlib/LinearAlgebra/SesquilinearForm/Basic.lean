@@ -296,7 +296,7 @@ theorem IsAlt.self_eq_zero (x : M₁) : B x x = 0 :=
 theorem IsAlt.eq_of_add_add_eq_zero [IsCancelAdd M] {a b c : M₁} (hAdd : a + b + c = 0) :
     B a b = B b c := by
   have : B a a + B a b + B a c = B a c + B b c + B c c := by
-    simp_rw [← map_add, ← map_add₂, hAdd, map_zero, LinearMap.zero_apply]
+    simp_rw [← map_add, ← map_add₂, hAdd, map_zero, _root_.zero_apply]
   rw [H, H, zero_add, add_zero, add_comm] at this
   exact add_left_cancel this
 
@@ -546,7 +546,7 @@ lemma isOrthogonal_of_forall_apply_same {F : Type*} [FunLike F M M] [LinearMapCl
   intro x y
   suffices 2 * B (f x) (f y) = 2 * B x y from h this
   have := hf (x + y)
-  simp only [map_add, LinearMap.add_apply, hf x, hf y, show B y x = B x y from hB.eq y x] at this
+  simp only [map_add, _root_.add_apply, hf x, hf y, show B y x = B x y from hB.eq y x] at this
   rw [show B (f y) (f x) = B (f x) (f y) from hB.eq (f y) (f x)] at this
   simp only [add_assoc, add_right_inj] at this
   simp only [← add_assoc, add_left_inj] at this

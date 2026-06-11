@@ -121,8 +121,8 @@ lemma genEigenspace_one {f : End R M} {μ : R} :
 @[simp]
 lemma mem_genEigenspace_one {f : End R M} {μ : R} {x : M} :
     x ∈ f.genEigenspace μ 1 ↔ f x = μ • x := by
-  rw [genEigenspace_one, LinearMap.mem_ker, LinearMap.sub_apply,
-    sub_eq_zero, LinearMap.smul_apply, Module.End.one_apply]
+  rw [genEigenspace_one, LinearMap.mem_ker, _root_.sub_apply,
+    sub_eq_zero, _root_.smul_apply, Module.End.one_apply]
 
 -- `simp` can prove this using `genEigenspace_zero`
 lemma mem_genEigenspace_zero {f : End R M} {μ : R} {x : M} :
@@ -381,7 +381,7 @@ lemma isNilpotent_restrict_genEigenspace_nat (f : End R M) (μ : R) (k : ℕ)
   use k
   ext ⟨x, hx⟩
   rw [mem_genEigenspace_nat] at hx
-  rw [LinearMap.zero_apply, ZeroMemClass.coe_zero, ZeroMemClass.coe_eq_zero,
+  rw [_root_.zero_apply, ZeroMemClass.coe_zero, ZeroMemClass.coe_eq_zero,
     Module.End.pow_restrict, LinearMap.restrict_apply]
   ext
   simpa
@@ -832,7 +832,7 @@ lemma genEigenspace_le_smul (f : Module.End R M) (μ t : R) (k : ℕ∞) :
   intro m hm
   simp_rw [mem_genEigenspace, ← exists_prop, LinearMap.mem_ker] at hm ⊢
   peel hm with l hlk hl
-  rw [mul_smul, ← smul_sub, smul_pow, LinearMap.smul_apply, hl, smul_zero]
+  rw [mul_smul, ← smul_sub, smul_pow, _root_.smul_apply, hl, smul_zero]
 
 lemma genEigenspace_inf_le_add
     (f₁ f₂ : End R M) (μ₁ μ₂ : R) (k₁ k₂ : ℕ∞) (h : Commute f₁ f₂) :
@@ -847,12 +847,12 @@ lemma genEigenspace_inf_le_add
   replace h : Commute (f₁ - μ₁ • 1) (f₂ - μ₂ • 1) :=
     (h.sub_right <| Algebra.commute_algebraMap_right μ₂ f₁).sub_left
       (Algebra.commute_algebraMap_left μ₁ _)
-  rw [this, h.add_pow', LinearMap.coe_sum, Finset.sum_apply]
+  rw [this, h.add_pow', FunLike.coe_sum, Finset.sum_apply]
   constructor
   · simpa only [Nat.cast_add] using add_le_add hlk₁ hlk₂
   refine Finset.sum_eq_zero fun ⟨i, j⟩ hij ↦ ?_
   suffices (((f₁ - μ₁ • 1) ^ i) * ((f₂ - μ₂ • 1) ^ j)) m = 0 by
-    rw [LinearMap.smul_apply, this, smul_zero]
+    rw [_root_.smul_apply, this, smul_zero]
   rw [Finset.mem_antidiagonal] at hij
   obtain hi | hj : l₁ ≤ i ∨ l₂ ≤ j := by lia
   · rw [(h.pow_pow i j).eq, Module.End.mul_apply, Module.End.pow_map_zero_of_le hi hl₁, map_zero]

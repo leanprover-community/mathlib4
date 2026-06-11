@@ -201,7 +201,7 @@ lemma Algebra.FormallySmooth.of_surjective_of_ker_eq_map_of_flat [Module.Flat R 
   have rΔle : Δ.range ≤ (Submodule.comap J.subtype (IP * J)).map J.toCotangent := by
     rintro x ⟨y, hy⟩
     simp only [← cotker, ← hy, LinearMap.mem_ker, Δ]
-    rw [LinearMap.sub_apply, map_sub, LinearMap.id_apply, ← LinearMap.comp_apply, σ'_spec, sub_self]
+    rw [_root_.sub_apply, map_sub, LinearMap.id_apply, ← LinearMap.comp_apply, σ'_spec, sub_self]
   have leΔk := mul_le_ker_of_range_le_mul_of_sq_zero (by simp [IP, ← Ideal.map_pow, I, sq0]) Δ rΔle
   let δ := (Submodule.liftQ _ Δ (le_of_eq_of_le cotker leΔk)).comp
     (mapcot.quotKerEquivOfSurjective cotsurj).symm.toLinearMap

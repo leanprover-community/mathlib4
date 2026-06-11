@@ -98,13 +98,13 @@ lemma traceForm_lieInvariant : (traceForm R L M).lieInvariant L := by
 /-- This lemma justifies the terminology "invariant" for trace forms. -/
 @[simp] lemma lie_traceForm_eq_zero (x : L) : ⁅x, traceForm R L M⁆ = 0 := by
   ext y z
-  rw [LieHom.lie_apply, LinearMap.sub_apply, Module.Dual.lie_apply, LinearMap.zero_apply,
-    LinearMap.zero_apply, traceForm_apply_lie_apply', sub_self]
+  rw [LieHom.lie_apply, _root_.sub_apply, Module.Dual.lie_apply, _root_.zero_apply,
+    _root_.zero_apply, traceForm_apply_lie_apply', sub_self]
 
 @[simp] lemma traceForm_eq_zero_of_isNilpotent [IsReduced R] [IsNilpotent L M] :
     traceForm R L M = 0 := by
   ext x y
-  simp only [traceForm_apply_apply, LinearMap.zero_apply, ← isNilpotent_iff_eq_zero]
+  simp only [traceForm_apply_apply, _root_.zero_apply, ← isNilpotent_iff_eq_zero]
   apply LinearMap.isNilpotent_trace_of_isNilpotent
   exact isNilpotent_toEnd_of_isNilpotent₂ R L M x y
 
@@ -131,7 +131,7 @@ lemma trace_toEnd_mul_eq_zero_of_traceForm_eq_zero (h : traceForm R L M = 0)
     rw [LieHom.map_lie, LinearMap.trace_lie_mul_eq, Ring.lie_def,
       ← LieRing.of_associative_ring_bracket, /-← Module.End.instLieRingModule_eq, -/ hbc, mul_neg,
       map_neg, neg_eq_zero, Module.End.mul_eq_comp, ← traceForm_apply_apply, h,
-      LinearMap.zero_apply, LinearMap.zero_apply]
+      _root_.zero_apply, _root_.zero_apply]
   | zero => simp
   | add u v _ _ hu hv => simp [add_mul, hu, hv]
   | smul t u _ hu => simp [hu]
@@ -147,7 +147,7 @@ lemma traceForm_genWeightSpace_eq [Module.Free R M]
     simpa [nsmul_eq_mul, smul_eq_mul] using mul_left_comm (χ x) d (χ y)
   have := traceForm_eq_zero_of_isNilpotent R L (shiftedGenWeightSpace R L M χ)
   replace this := LinearMap.congr_fun (LinearMap.congr_fun this x) y
-  rwa [LinearMap.zero_apply, LinearMap.zero_apply, traceForm_apply_apply,
+  rwa [_root_.zero_apply, _root_.zero_apply, traceForm_apply_apply,
     shiftedGenWeightSpace.toEnd_eq, shiftedGenWeightSpace.toEnd_eq,
     ← LinearEquiv.conj_comp, LinearMap.trace_conj', LinearMap.comp_sub, LinearMap.sub_comp,
     LinearMap.sub_comp, map_sub, map_sub, map_sub, LinearMap.comp_smul, LinearMap.smul_comp,
@@ -264,7 +264,7 @@ lemma traceForm_eq_sum_genWeightSpaceOf [IsPrincipalIdealRing R]
   have h := LieSubmodule.iSupIndep_toSubmodule.mpr <| iSupIndep_genWeightSpaceOf R L M z
   have hds := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top h <| by
     simp [← LieSubmodule.iSup_toSubmodule]
-  simp only [LinearMap.coe_sum, Finset.sum_apply, traceForm_apply_apply,
+  simp only [FunLike.coe_sum, Finset.sum_apply, traceForm_apply_apply,
     LinearMap.trace_eq_sum_trace_restrict' hds hfin hxy]
   exact Finset.sum_congr (by simp) (fun χ _ ↦ rfl)
 
@@ -294,7 +294,7 @@ lemma lowerCentralSeries_one_inf_center_le_ker_traceForm [Module.Free R M] [Modu
   to `AlgebraicClosure (FractionRing R)` and argue using the action of `A ⊗ L` on `A ⊗ M`. -/
   rintro z ⟨hz : z ∈ lowerCentralSeries R L L 1, hzc : z ∈ LieAlgebra.center R L⟩
   ext x
-  rw [traceForm_apply_apply, LinearMap.zero_apply]
+  rw [traceForm_apply_apply, _root_.zero_apply]
   let A := AlgebraicClosure (FractionRing R)
   suffices algebraMap R A (trace R _ ((φ z).comp (φ x))) = 0 by
     have that : Module.IsTorsionFree R A := .trans_faithfulSMul R (FractionRing R) A
@@ -456,7 +456,7 @@ lemma traceForm_eq_sum_finrank_nsmul :
       (χ : L →ₗ[K] K).smulRight (χ : L →ₗ[K] K) := by
   ext
   rw [traceForm_eq_sum_finrank_nsmul_mul, ← Finset.sum_attach]
-  simp [-LinearMap.coe_smul]
+  simp [-FunLike.coe_smul]
 
 /-- A variant of `LieModule.traceForm_eq_sum_finrank_nsmul` in which the sum is taken only over the
 non-zero weights. -/
@@ -477,9 +477,9 @@ lemma traceForm_eq_sum_finrank_nsmul' :
 lemma range_traceForm_le_span_weight :
     LinearMap.range (traceForm K L M) ≤ span K (range (Weight.toLinear K L M)) := by
   rintro - ⟨x, rfl⟩
-  rw [LieModule.traceForm_eq_sum_finrank_nsmul, LinearMap.coe_sum, Finset.sum_apply]
+  rw [LieModule.traceForm_eq_sum_finrank_nsmul, FunLike.coe_sum, Finset.sum_apply]
   refine Submodule.sum_mem _ fun χ _ ↦ ?_
-  simp_rw [LinearMap.smul_apply, LinearMap.coe_smulRight, Weight.toLinear_apply,
+  simp_rw [_root_.smul_apply, LinearMap.coe_smulRight, Weight.toLinear_apply,
     ← Nat.cast_smul_eq_nsmul K]
   exact Submodule.smul_mem _ _ <| Submodule.smul_mem _ _ <| subset_span <| mem_range_self χ
 

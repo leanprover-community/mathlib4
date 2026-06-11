@@ -207,14 +207,14 @@ lemma pairing_same : P.pairing i i = 2 := P.root_coroot_two i
 variable {P} in
 lemma pairing_eq_add_of_root_eq_add {i j k l : ι} (h : P.root k = P.root i + P.root j) :
     P.pairing k l = P.pairing i l + P.pairing j l := by
-  simp only [← root_coroot_eq_pairing, h, map_add, LinearMap.add_apply]
+  simp only [← root_coroot_eq_pairing, h, map_add, _root_.add_apply]
 
 variable {P} in
 lemma pairing_eq_add_of_root_eq_smul_add_smul
     {i j k l : ι} {x y : R} (h : P.root k = x • P.root i + y • P.root l) :
     P.pairing k j = x • P.pairing i j + y • P.pairing l j := by
-  simp only [← root_coroot_eq_pairing, h, map_add, map_smul, LinearMap.add_apply,
-    LinearMap.smul_apply, smul_eq_mul]
+  simp only [← root_coroot_eq_pairing, h, map_add, map_smul, _root_.add_apply,
+    _root_.smul_apply, smul_eq_mul]
 
 lemma coroot_root_two :
     P.toLinearMap.flip (P.coroot i) (P.root i) = 2 := by

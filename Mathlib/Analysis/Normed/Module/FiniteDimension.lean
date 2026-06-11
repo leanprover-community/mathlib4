@@ -299,7 +299,7 @@ protected theorem LinearIndependent.eventually {ι} [Finite ι] {f : ι → E}
     exact hg
   rw [LinearMap.ker_eq_bot]
   refine (hK.add_sub_lipschitzWith (LipschitzWith.of_dist_le_mul fun v u => ?_) hg).injective
-  simp only [dist_eq_norm, LinearMap.lsum_apply, Pi.sub_apply, LinearMap.sum_apply,
+  simp only [dist_eq_norm, LinearMap.lsum_apply, Pi.sub_apply, _root_.sum_apply,
     LinearMap.comp_apply, LinearMap.proj_apply, LinearMap.smulRight_apply, LinearMap.id_apply, ←
     Finset.sum_sub_distrib, ← smul_sub, ← sub_smul, NNReal.coe_sum, coe_nnnorm, Finset.sum_mul]
   refine norm_sum_le_of_le _ fun i _ => ?_

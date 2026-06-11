@@ -65,7 +65,7 @@ def weightedVSubOfPoint (p : ι → P) (b : P) : (ι → k) →ₗ[k] V :=
 @[simp]
 theorem weightedVSubOfPoint_apply (w : ι → k) (p : ι → P) (b : P) :
     s.weightedVSubOfPoint p b w = ∑ i ∈ s, w i • (p i -ᵥ b) := by
-  simp [weightedVSubOfPoint, LinearMap.sum_apply]
+  simp [weightedVSubOfPoint, _root_.sum_apply]
 
 /-- The value of `weightedVSubOfPoint`, where the given points are equal. -/
 @[simp (high)]
@@ -980,7 +980,7 @@ def weightedVSubOfPoint (w : ι → k) : (ι → P) × P →ᵃ[k] V where
   linear := ∑ i ∈ s, w i • ((LinearMap.proj i).comp (LinearMap.fst _ _ _) - LinearMap.snd _ _ _)
   map_vadd' := by
     rintro ⟨p, b⟩ ⟨v, b'⟩
-    simp [LinearMap.sum_apply, Finset.weightedVSubOfPoint, vsub_vadd_eq_vsub_sub,
+    simp [_root_.sum_apply, Finset.weightedVSubOfPoint, vsub_vadd_eq_vsub_sub,
      vadd_vsub_assoc, ← sub_add_eq_add_sub, smul_add, Finset.sum_add_distrib]
 
 end AffineMap

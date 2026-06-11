@@ -153,7 +153,7 @@ theorem fwdDiff_iter_eq_sum_shift (f : M → G) (n : ℕ) (y : M) :
   have : Commute (shiftₗ M G h) (-1) := (Commute.one_right _).neg_right
   convert! congr_fun (LinearMap.congr_fun (this.add_pow n) f) y using 3
   · simp only [sub_eq_add_neg]
-  · rw [LinearMap.sum_apply, sum_apply]
+  · rw [_root_.sum_apply, sum_apply]
     congr 1 with k
     have : ((-1) ^ (n - k) * n.choose k : Module.End ℤ (M → G))
               = ↑((-1) ^ (n - k) * n.choose k : ℤ) := by norm_cast
