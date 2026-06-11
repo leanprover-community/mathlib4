@@ -54,7 +54,7 @@ variable {R S : Type*} [Semiring R] [Semiring S] [PartialOrder S] (abv : Absolut
 
 instance funLike : FunLike (AbsoluteValue R S) R S where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
+  coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
 
 instance zeroHomClass : ZeroHomClass (AbsoluteValue R S) R S where
   map_zero f := (f.eq_zero' _).2 rfl
@@ -163,7 +163,7 @@ instance monoidWithZeroHomClass : MonoidWithZeroHomClass (AbsoluteValue R S) R S
 
 /-- Absolute values from a nontrivial `R` to a linear ordered ring preserve `*`, `0` and `1`. -/
 def toMonoidWithZeroHom : R →*₀ S :=
-  abv
+  .ofClass abv
 
 @[simp]
 theorem coe_toMonoidWithZeroHom : ⇑abv.toMonoidWithZeroHom = abv :=

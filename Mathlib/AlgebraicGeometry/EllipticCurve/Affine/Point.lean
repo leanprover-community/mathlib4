@@ -7,7 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
 public import Mathlib.LinearAlgebra.FreeModule.Norm
-public import Mathlib.RingTheory.ClassGroup
+public import Mathlib.RingTheory.ClassGroup.Basic
 public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
@@ -127,11 +127,11 @@ lemma basis_apply (n : Fin 2) :
 
 @[simp]
 lemma basis_zero : CoordinateRing.basis W' 0 = 1 := by
-  simpa only [basis_apply] using pow_zero _
+  simpa only [basis_apply] using! pow_zero _
 
 @[simp]
 lemma basis_one : CoordinateRing.basis W' 1 = mk W' Y := by
-  simpa only [basis_apply] using pow_one _
+  simpa only [basis_apply] using! pow_one _
 
 lemma coe_basis : (CoordinateRing.basis W' : Fin 2 → W'.CoordinateRing) = ![1, mk W' Y] := by
   ext n
@@ -301,10 +301,10 @@ lemma XYIdeal_neg_mul {x y : F} (h : W.Nonsingular x y) :
   simp_rw [XYIdeal, XClass, YClass, span_pair_mul_span_pair, mul_comm, ← map_mul,
     AdjoinRoot.mk_eq_mk.mpr ⟨1, Y_rw⟩, map_mul, span_insert, ← span_singleton_mul_span_singleton,
     ← Ideal.mul_sup, ← span_insert]
-  convert mul_top (_ : Ideal W.CoordinateRing) using 2
+  convert! mul_top (_ : Ideal W.CoordinateRing) using 2
   on_goal 2 => infer_instance
   simp_rw [← Set.image_singleton (f := mk W), ← Set.image_insert_eq, ← map_span]
-  convert map_top (R := F[X][Y]) (mk W) using 1
+  convert! map_top (R := F[X][Y]) (mk W) using 1
   apply congr_arg
   simp_rw [eq_top_iff_one, mem_span_insert', mem_span_singleton']
   rcases ((nonsingular_iff' ..).mp h).right with hx | hy
@@ -341,7 +341,7 @@ lemma XYIdeal_mul_XYIdeal [DecidableEq F] {x₁ x₂ y₁ y₂ : F}
     ← sub_eq_add_neg, ← sub_mul, ← map_sub <| mk W, sub_sub_sub_cancel_right, span_insert,
     ← span_singleton_mul_span_singleton, ← sup_rw, ← Ideal.sup_mul, ← Ideal.sup_mul]
   apply congr_arg (_ ∘ _)
-  convert top_mul (_ : Ideal W.CoordinateRing)
+  convert! top_mul (_ : Ideal W.CoordinateRing)
   simp_rw [XClass, ← Set.image_singleton (f := mk W), ← map_span, ← Ideal.map_sup, eq_top_iff_one,
     mem_map_iff_of_surjective _ AdjoinRoot.mk_surjective, ← span_insert, mem_span_insert',
     mem_span_singleton']
@@ -378,15 +378,17 @@ lemma XYIdeal'_eq {x y : F} (h : W.Nonsingular x y) :
   rfl
 
 lemma mk_XYIdeal'_neg_mul {x y : F} (h : W.Nonsingular x y) :
-    ClassGroup.mk (XYIdeal' <| (nonsingular_neg ..).mpr h) * ClassGroup.mk (XYIdeal' h) = 1 := by
+    ClassGroup.mk W.FunctionField (XYIdeal'  <| (nonsingular_neg ..).mpr h) *
+      ClassGroup.mk W.FunctionField (XYIdeal' h) = 1 := by
   rw [← map_mul]
   exact (ClassGroup.mk_eq_one_of_coe_ideal <| (coeIdeal_mul ..).symm.trans <|
     FractionalIdeal.coeIdeal_inj.mpr <| XYIdeal_neg_mul h).mpr ⟨_, XClass_ne_zero x, rfl⟩
 
 lemma mk_XYIdeal'_mul_mk_XYIdeal' [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁)
     (h₂ : W.Nonsingular x₂ y₂) (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
-    ClassGroup.mk (XYIdeal' h₁) * ClassGroup.mk (XYIdeal' h₂) =
-      ClassGroup.mk (XYIdeal' <| nonsingular_add h₁ h₂ hxy) := by
+    ClassGroup.mk W.FunctionField (XYIdeal' h₁) *
+        ClassGroup.mk W.FunctionField (XYIdeal' h₂) =
+      ClassGroup.mk W.FunctionField (XYIdeal' <| nonsingular_add h₁ h₂ hxy) := by
   rw [← map_mul]
   exact (ClassGroup.mk_eq_mk_of_coe_ideal (coeIdeal_mul ..).symm <| XYIdeal'_eq _).mpr
     ⟨_, _, XClass_ne_zero _, YClass_ne_zero _, XYIdeal_mul_XYIdeal h₁.left h₂.left hxy⟩
@@ -430,14 +432,18 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
         · exact (hq hq').elim -- `hq'` should be `rfl`
         · rw [hq'] at hdpq hdq -- line should be redundant
           rcases le_or_gt dp (dq + 1) with hpq | hpq
-          · convert (degree_sub_eq_right_of_degree_lt <| (degree_sub_le _ _).trans_lt <|
-                      max_lt_iff.mpr ⟨hdp.trans_lt _, hdpq.trans_lt _⟩).trans
+          · convert!
+            (degree_sub_eq_right_of_degree_lt <|
+                  (degree_sub_le _ _).trans_lt <|
+                    max_lt_iff.mpr ⟨hdp.trans_lt _, hdpq.trans_lt _⟩).trans
               (max_eq_right_of_lt _).symm <;> rw [hdq] <;>
                 exact WithBot.coe_lt_coe.mpr <| by dsimp; linarith only [hpq]
           · rw [sub_sub]
-            convert (degree_sub_eq_left_of_degree_lt <| (degree_add_le _ _).trans_lt <|
+            convert!
+              (degree_sub_eq_left_of_degree_lt <|
+                    (degree_add_le _ _).trans_lt <|
                       max_lt_iff.mpr ⟨hdpq.trans_lt _, hdq.trans_lt _⟩).trans
-              (max_eq_left_of_lt _).symm <;> rw [hdp] <;>
+                (max_eq_left_of_lt _).symm <;> rw [hdp] <;>
                 exact WithBot.coe_lt_coe.mpr <| by dsimp; linarith only [hpq]
 
 lemma degree_norm_ne_one [IsDomain R] (x : W'.CoordinateRing) :
@@ -709,7 +715,7 @@ the class of the non-zero fractional ideal `⟨X - x, Y - y⟩` in the ideal cla
 noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) where
   toFun P := match P with
     | 0 => 0
-    | some _ _ h => ClassGroup.mk <| CoordinateRing.XYIdeal' h
+    | some _ _ h => ClassGroup.mk W.FunctionField <| CoordinateRing.XYIdeal' h
   map_zero' := rfl
   map_add' := by
     rintro (_ | ⟨x₁, y₁, h₁⟩) (_ | ⟨x₂, y₂, h₂⟩)
@@ -723,8 +729,10 @@ noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) 
 lemma toClass_zero : toClass (0 : W.Point) = 0 :=
   rfl
 
+-- note: giving `W` to `XYIdeal'` explicitly hugely speeds up elaboration for some reason.
+-- see https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Field.20.28FunctionField.20.3Fm.2E19.29/near/594011283
 lemma toClass_some {x y : F} (h : W.Nonsingular x y) :
-    toClass (some _ _ h) = ClassGroup.mk (CoordinateRing.XYIdeal' h) :=
+    toClass (some _ _ h) = ClassGroup.mk W.FunctionField (CoordinateRing.XYIdeal' (W := W) h) :=
   rfl
 
 private lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
@@ -787,7 +795,7 @@ noncomputable def map : (W'⁄F).Point →+ (W'⁄K).Point where
     by_cases hxy : x₁ = x₂ ∧ y₁ = (W'⁄F).negY x₂ y₂
     · rw [add_of_Y_eq hxy.left hxy.right,
         add_of_Y_eq (congr_arg _ hxy.left) <| by rw [hxy.right, baseChange_negY]]
-    · simpa only [add_some hxy, ← baseChange_addX, ← baseChange_addY, ← baseChange_slope] using
+    · simpa only [add_some hxy, ← baseChange_addX, ← baseChange_addY, ← baseChange_slope] using!
         (add_some fun h ↦ hxy ⟨f.injective h.1, f.injective (W'.baseChange_negY f .. ▸ h).2⟩).symm
 
 lemma map_zero : map f (0 : (W'⁄F).Point) = 0 :=
@@ -819,7 +827,7 @@ noncomputable abbrev baseChange [Algebra F K] [IsScalarTower R F K] :
 lemma map_baseChange [Algebra F K] [IsScalarTower R F K] [Algebra F L] [IsScalarTower R F L]
     (f : K →ₐ[F] L) (P : (W'⁄F).Point) : map f (baseChange F K P) = baseChange F L P := by
   have : Subsingleton (F →ₐ[F] L) := inferInstance
-  convert map_map (Algebra.ofId F K) f P
+  convert! map_map (Algebra.ofId F K) f P
 
 end Point
 
