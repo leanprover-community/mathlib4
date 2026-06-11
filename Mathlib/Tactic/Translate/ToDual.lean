@@ -195,11 +195,6 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("coframe", ["Frame"]),
   ("epigraph", ["Hypograph"]),
   ("hypograph", ["Epigraph"]),
-  ("sdiff", ["HImp"]),
-  ("himp", ["SDiff"]),
-  /- `compl` should often not be translated by `to_dual`, so we leave this entry out. -/
-  -- ("compl", ["HNot"]),
-  ("hnot", ["Compl"]),
 
   ("epi", ["Mono"]),
   /- `mono` can also refer to monotone, so we don't translate it. -/

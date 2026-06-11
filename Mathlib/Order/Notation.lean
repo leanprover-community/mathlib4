@@ -144,12 +144,12 @@ meta def delabInf : Delab :=
 end Mathlib.Meta
 
 /-- Syntax typeclass for Heyting implication `⇨`. -/
-@[notation_class, to_dual]
+@[notation_class, to_dual SDiff]
 class HImp (α : Type*) where
   /-- Heyting implication `⇨` -/
   himp : α → α → α
 
-attribute [to_dual existing (reorder := 3 4)] HImp.himp
+attribute [to_dual existing (reorder := 3 4) sdiff] HImp.himp
 attribute [to_dual existing (reorder := himp (1 2))] HImp.mk
 
 /-- Syntax typeclass for Heyting negation `￢`.
@@ -159,7 +159,7 @@ while the latter belongs to co-Heyting algebras. They are both pseudo-complement
 underestimates while `HNot` overestimates. In Boolean algebras, they are equal.
 See `hnot_eq_compl`.
 -/
-@[notation_class, to_dual]
+@[notation_class, to_dual Compl]
 class HNot (α : Type*) where
   /-- Heyting negation `￢` -/
   hnot : α → α

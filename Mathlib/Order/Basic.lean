@@ -654,13 +654,9 @@ theorem lt_update_self_iff : x < update x i a ↔ x i < a := by simp [lt_iff_le_
 
 end Function
 
--- `to_dual` cannot yet reorder arguments of arguments
+@[to_dual instHImp]
 instance Pi.instSDiff [∀ i, SDiff (π i)] : SDiff (∀ i, π i) :=
   ⟨fun x y i ↦ x i \ y i⟩
-
-@[to_dual existing]
-instance Pi.instHImp [∀ i, HImp (π i)] : HImp (∀ i, π i) :=
-  ⟨fun x y i ↦ x i ⇨ y i⟩
 
 @[to_dual (attr := push ←) himp_def]
 theorem Pi.sdiff_def [∀ i, SDiff (π i)] (x y : ∀ i, π i) :

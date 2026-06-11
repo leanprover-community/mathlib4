@@ -50,6 +50,7 @@ assert_not_exists RelIso
 open Function OrderDual
 
 to_dual_name_hint Compl HNot
+to_dual_name_hint SDiff HImp
 
 universe u
 
