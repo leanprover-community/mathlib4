@@ -126,6 +126,7 @@ def opInverse : HomologicalComplex Vᵒᵖ c.symm ⥤ (HomologicalComplex V c)�
     { f := fun i => (f.f i).unop
       comm' := fun i j _ => by simp only [unopSymm_d, ← unop_comp, f.comm] }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `opEquivalence`. -/
 def opUnitIso : 𝟭 (HomologicalComplex V c)ᵒᵖ ≅ opFunctor V c ⋙ opInverse V c :=
@@ -141,6 +142,7 @@ def opUnitIso : 𝟭 (HomologicalComplex V c)ᵒᵖ ≅ opFunctor V c ⋙ opInve
       ext x
       simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `opEquivalence`. -/
 def opCounitIso : opInverse V c ⋙ opFunctor V c ≅ 𝟭 (HomologicalComplex Vᵒᵖ c.symm) :=
   NatIso.ofComponents
@@ -181,6 +183,7 @@ def unopInverse : HomologicalComplex V c.symm ⥤ (HomologicalComplex Vᵒᵖ c)
     { f := fun i => (f.f i).op
       comm' := fun i j _ => by simp only [opSymm_d, ← op_comp, f.comm] }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `unopEquivalence`. -/
 def unopUnitIso : 𝟭 (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≅ unopFunctor V c ⋙ unopInverse V c :=
@@ -196,6 +199,7 @@ def unopUnitIso : 𝟭 (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≅ unopFunctor V c 
       ext x
       simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `unopEquivalence`. -/
 def unopCounitIso : unopInverse V c ⋙ unopFunctor V c ≅ 𝟭 (HomologicalComplex V c.symm) :=
   NatIso.ofComponents
@@ -225,11 +229,13 @@ instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
     K.unop.HasHomology i :=
   inferInstanceAs <| (K.sc i).unop.HasHomology
 
+set_option backward.defeqAttrib.useBackward true in
 instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
     ((opFunctor _ _).obj (op K)).HasHomology i := by
   dsimp
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
     ((unopFunctor _ _).obj (op K)).HasHomology i := by
   dsimp
@@ -448,6 +454,7 @@ open HomologicalComplex
 
 variable {V : Type*} [Category* V] {ι : Type*} {c : ComplexShape ι} [Preadditive V]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The opposite of a homotopy between morphisms of homological complexes. -/
 @[simps]
 def op {F G : HomologicalComplex V c} {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :
@@ -460,6 +467,7 @@ def op {F G : HomologicalComplex V c} {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ�
     nth_rw 2 [add_comm]
     rfl)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The homotopy between morphisms of homological complexes that is deduced
 from a homotopy in the opposite category. -/
 @[simps]

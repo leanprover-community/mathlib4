@@ -290,9 +290,9 @@ def adaptationNoteLinter : TextbasedLinter := fun opts lines ↦ Id.run do
     -- (e.g. "-- Adaptation note:" or "-- adaptation note:"), but not lines that
     -- merely reference the concept (e.g. "-- see adaptation note") or that
     -- use the correct #adaptation_note command.
-    if line.containsSubstr "daptation note" &&
-        !line.containsSubstr "#adaptation_note" &&
-        !line.containsSubstr "see adaptation note" then
+    if line.contains "daptation note" &&
+        !line.contains "#adaptation_note" &&
+        !line.contains "see adaptation note" then
       errors := errors.push (StyleError.adaptationNote, idx + 1)
   return (errors, none)
 
@@ -361,11 +361,13 @@ def findBadUnicodeAux (s : String) (pos : s.Pos) (c : Char)
       if ! isAllowedCharacter c then
         -- bad: character not allowed.
         findBadUnicodeAux s posₙ cₙ (err.push (.unwantedUnicode c))
-      else if cₙ == UnicodeVariant.emoji && !(emojis.contains c) then
+      else if cₙ == UnicodeVariant.emoji && !(emojis.contains c) && !(unrestricted.contains c) then
         -- bad: unwanted emoji variant selector.
         let errₙ := err.push (.unicodeVariant (String.ofList [c, cₙ]) none)
         findBadUnicodeAux s posₙ cₙ errₙ
-      else if cₙ == UnicodeVariant.text && !(nonEmojis.contains c) then
+      else if
+        cₙ == UnicodeVariant.text && !(nonEmojis.contains c) && !(unrestricted.contains c)
+      then
         -- bad: unwanted text variant selector.
         let errₙ := err.push (.unicodeVariant (String.ofList [c, cₙ]) none)
         findBadUnicodeAux s posₙ cₙ errₙ
@@ -568,6 +570,7 @@ def modulesNotUpperCamelCase (opts : LinterOptions) (modules : Array Lean.Name) 
   let exceptions := [
     `Mathlib.Analysis.CStarAlgebra.lpSpace,
     `Mathlib.Analysis.InnerProductSpace.l2Space,
+    `Mathlib.Analysis.Normed.Lp.lpHolder,
     `Mathlib.Analysis.Normed.Lp.lpSpace
   ]
   -- We allow only names in UpperCamelCase, possibly with a trailing underscore.
