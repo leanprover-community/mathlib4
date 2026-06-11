@@ -609,9 +609,7 @@ instance instRing [MulSemiringAction (Multiplicative ℕ) R] : Ring (SkewPolynom
 
 @[simp]
 lemma coeff_neg (p : SkewPolynomial R) (n : ℕ) : coeff (-p) n = -coeff p n := by
-  simp only [coeff, ← add_eq_zero_iff_eq_neg, ← SkewMonoidAlgebra.coeff_add]
-  convert coeff_zero (ofAdd n)
-  exact neg_add_cancel p
+  simp [← add_eq_zero_iff_eq_neg, ← coeff_add, neg_add_cancel p]
 
 @[simp]
 lemma coeff_sub (p q : SkewPolynomial R) (n : ℕ) : coeff (p - q) n = coeff p n - coeff q n := by
