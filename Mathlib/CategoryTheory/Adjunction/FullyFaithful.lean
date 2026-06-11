@@ -168,7 +168,6 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable def fullyFaithfulROfIsIsoCounit [IsIso h.counit] : R.FullyFaithful where
   preimage {X Y} f := inv (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f
 
-set_option backward.isDefEq.respectTransparency false in
 instance whiskerLeft_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
     IsIso (whiskerLeft L h.counit) := by
   have := ((Functor.associator ..).inv ≫ whiskerRight (inv h.unit) L) ≫= h.left_triangle
@@ -177,7 +176,6 @@ instance whiskerLeft_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
   rw [this]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance whiskerRight_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
     IsIso (whiskerRight h.counit R) := by
   have := h.right_triangle

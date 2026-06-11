@@ -101,7 +101,7 @@ variable [NonUnitalNonAssocSemiring D] [DistribMulAction R D] [Star D]
 
 instance : FunLike (A →⋆ₙₐ[R] B) A B where
   coe f := f.toFun
-  coe_injective' := by rintro ⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩ h; congr
+  coe_injective := by rintro ⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩ h; congr
 
 instance : NonUnitalAlgHomClass (A →⋆ₙₐ[R] B) R A B where
   map_smulₛₗ f := f.map_smul'
@@ -323,7 +323,7 @@ variable {F R A B C D : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Star
 
 instance : FunLike (A →⋆ₐ[R] B) A B where
   coe f := f.toFun
-  coe_injective' := by rintro ⟨⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩, _⟩ h; congr
+  coe_injective := by rintro ⟨⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩, _⟩ h; congr
 
 instance : AlgHomClass (A →⋆ₐ[R] B) R A B where
   map_mul f := f.map_mul'
@@ -711,7 +711,7 @@ instance : StarRingEquivClass (A ≃⋆ₐ[R] B) A B where
 /-- Helper instance for cases where the inference via `EquivLike` is too hard. -/
 instance : FunLike (A ≃⋆ₐ[R] B) A B where
   coe f := f.toFun
-  coe_injective' := DFunLike.coe_injective
+  coe_injective := DFunLike.coe_injective
 
 @[simp]
 theorem toStarRingEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toStarRingEquiv = e := rfl
