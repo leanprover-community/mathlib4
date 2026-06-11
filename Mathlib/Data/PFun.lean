@@ -75,7 +75,7 @@ instance inhabited : Inhabited (α →. β) :=
 
 instance : FunLike (α →. β) α (Part β) where
   coe := PFun.toFun
-  coe_injective' := fun ⟨_⟩ ⟨_⟩ h => congrArg PFun.mk h
+  coe_injective' _ _ := congrArg PFun.mk
 
 initialize_simps_projections PFun (toFun → apply)
 
@@ -85,7 +85,7 @@ initialize_simps_projections PFun (toFun → apply)
 
 @[simp] theorem mk_apply (f : α → Part β) (x : α) : PFun.mk f x = f x := rfl
 
-@[simp] theorem mk_coe (f : α →. β) : PFun.mk ⇑f = f := by cases f; rfl
+@[simp] theorem mk_coe (f : α →. β) : PFun.mk ⇑f = f := rfl
 
 /-- The domain of a partial function -/
 def Dom (f : α →. β) : Set α :=
@@ -96,7 +96,7 @@ theorem mem_dom (f : α →. β) (x : α) : x ∈ Dom f ↔ ∃ y, y ∈ f x := 
 
 @[simp]
 theorem dom_mk (p : α → Prop) (f : ∀ a, p a → β) :
-    (PFun.Dom (PFun.mk fun x => ⟨p x, f x⟩)) = { x | p x } :=
+    PFun.Dom (PFun.mk fun x => ⟨p x, f x⟩) = { x | p x } :=
   rfl
 
 theorem dom_eq (f : α →. β) : Dom f = { x | ∃ y, y ∈ f x } :=
@@ -190,8 +190,8 @@ def res (f : α → β) (s : Set α) : α →. β :=
 theorem mem_res (f : α → β) (s : Set α) (a : α) (b : β) : b ∈ res f s a ↔ a ∈ s ∧ f a = b := by
   simp [res, @eq_comm _ b]
 
-theorem res_univ (f : α → β) : PFun.res f Set.univ = f := by
-  ext; rfl
+theorem res_univ (f : α → β) : PFun.res f Set.univ = f :=
+  rfl
 
 theorem dom_iff_graph (f : α →. β) (x : α) : x ∈ f.Dom ↔ ∃ y, (x, y) ∈ f.graph :=
   Part.dom_iff_mem

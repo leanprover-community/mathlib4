@@ -85,15 +85,14 @@ This is the computable part of the equivalence `PartialFunEquivPointed`. -/
 @[simps obj map]
 def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
   obj X := PartialFun.of { x : X // x ≠ X.point }
-  map f := PFun.mk (PFun.toSubtype _ f.toFun ∘ Subtype.val)
+  map {X Y} f := PFun.mk (PFun.toSubtype (· ≠ Y.point) f.toFun ∘ Subtype.val)
   map_id _ :=
     PFun.ext fun _ b =>
       PFun.mem_toSubtype_iff (b := b).trans (Subtype.coe_inj.trans Part.mem_some_iff.symm)
-  map_comp {X} {Y} {Z} f g := PFun.ext fun ⟨a, _⟩ ⟨c, hc⟩ => by
-    change ⟨c, hc⟩ ∈ PFun.toSubtype (fun x => x ≠ Z.point) (g.toFun ∘ f.toFun) a ↔
-      ⟨c, hc⟩ ∈ (PFun.toSubtype (fun x => x ≠ Y.point) f.toFun a).bind
-        (fun b : {y : Y // y ≠ Y.point} =>
-          PFun.toSubtype (fun x => x ≠ Z.point) g.toFun b)
+  map_comp {X Y Z} f g := PFun.ext fun ⟨a, _⟩ ⟨c, hc⟩ => by
+    change ⟨c, hc⟩ ∈ PFun.toSubtype (· ≠ Z.point) (g.toFun ∘ f.toFun) a ↔
+      ⟨c, hc⟩ ∈ (PFun.toSubtype (· ≠ Y.point) f.toFun a).bind
+        fun b : {y // y ≠ Y.point} => PFun.toSubtype (· ≠ Z.point) g.toFun b
     simp only [Function.comp_apply, Part.mem_bind_iff, PFun.mem_toSubtype_iff]
     refine ⟨fun h => ⟨⟨f.toFun a, fun heq => hc ((heq ▸ h).trans g.map_point)⟩, rfl, h⟩,
       fun ⟨_, hb, h⟩ => hb ▸ h⟩
@@ -104,7 +103,7 @@ pointed types. This is the noncomputable part of the equivalence `PartialFunEqui
 be computable because `= Option.none` is decidable while the domain of a general `Part` isn't. -/
 @[simps obj map]
 noncomputable def partialFunToPointed : PartialFun ⥤ Pointed where
-  obj X := ⟨Option X, (none : Option X)⟩
+  obj X := ⟨Option X, none⟩
   map f :=
     { toFun := Option.elim' none fun a => (f.toFun a).toOption
       map_point := rfl }
@@ -123,18 +122,15 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
       { toFun := fun a => ⟨some a, some_ne_none a⟩
         invFun := fun a => Option.get _ (Option.ne_none_iff_isSome.1 a.2)
         left_inv := fun _ => Option.get_some _ _
-        right_inv := fun ⟨a, ha⟩ => Subtype.ext (Option.some_get _) })
+        right_inv := fun _ => Subtype.ext (Option.some_get _) })
       fun {X Y} f => PFun.ext fun a b => by
         classical
         dsimp [PartialFun.Iso.mk, CategoryStruct.comp, pointedToPartialFun,
           partialFunToPointed, PFun.lift, PartialFun.of, PFun.comp]
         simp only [Part.bind_some]
         change b ∈ ((f.toFun a).bind fun c =>
-            Part.some (⟨some c, Option.some_ne_none c⟩ : {x : Option Y // x ≠ none})) ↔
-          b ∈ PFun.toSubtype (fun x : Option Y => x ≠ none)
-            (fun o : Option X => Option.elim' (none : Option Y)
-              (fun y : X => (f.toFun y).toOption) o)
-            (some a)
+            Part.some (⟨some c, some_ne_none c⟩ : {x : Option Y // x ≠ none})) ↔
+          b ∈ PFun.toSubtype (· ≠ none) (Option.elim' none fun y => (f.toFun y).toOption) (some a)
         refine (Part.mem_bind_iff.trans ?_).trans PFun.mem_toSubtype_iff.symm
         obtain ⟨b | b, hb⟩ := b
         · exact (hb rfl).elim
@@ -149,19 +145,16 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
         classical
         obtain _ | ⟨a, ha⟩ := a
         · exact f.map_point.symm
-        change Equiv.optionSubtypeNe Y.point
-          ((PFun.toSubtype (fun x => x ≠ Y.point) f.toFun a).toOption) = f.toFun a
+        change Equiv.optionSubtypeNe Y.point ((PFun.toSubtype _ f.toFun a).toOption) = f.toFun a
         dsimp only [PFun.toSubtype, Part.toOption]
         split_ifs with h <;> simp_all
   functor_unitIso_comp X := by
     ext (_ | x)
     · rfl
     · classical
-      change (Equiv.optionSubtypeNe (none : Option X))
-          ((PFun.lift
-            (fun a : X => (⟨some a, Option.some_ne_none a⟩ : {x : Option X // x ≠ none}))
-              x).toOption) = some x
+      change Equiv.optionSubtypeNe (none : Option X) ((PFun.lift _ x).toOption) = some x
       simp
+      rfl
 
 /-- Forgetting that maps are total and making them total again by adding a point is the same as just
 adding a point. -/
