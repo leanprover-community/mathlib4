@@ -387,7 +387,7 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
       k ≤ r →
         (((listTransvecCol M).drop k).prod * M) (inl i) (inr unit) =
           if k ≤ i then 0 else M (inl i) (inr unit) by
-    simpa [List.drop] using H 0 zero_le
+    simpa [List.drop] using H 0
   intro k hk
   induction hk using Nat.decreasingInduction with
   | of_succ n hn IH =>
