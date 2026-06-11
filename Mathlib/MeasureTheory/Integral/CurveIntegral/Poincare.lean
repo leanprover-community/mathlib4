@@ -13,6 +13,8 @@ public import Mathlib.MeasureTheory.Integral.CurveIntegral.Basic
 public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 public import Mathlib.Topology.Homotopy.Affine
 
+import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
+
 /-!
 # Poincaré lemma for 1-forms
 
@@ -330,10 +332,7 @@ theorem curveIntegral_segment_add_eq_of_hasFDerivWithinAt_symmetric (hs : Convex
       lift x to I using hx
       lift y to I using hy
       simp [φ]
-    refine .congr ?_ this
-    -- TODO: add `ContDiff.lineMap` etc
-    simp only [AffineMap.lineMap_apply_module]
-    fun_prop
+    exact .congr (by fun_prop) this
 
 variable [CompleteSpace F]
 

@@ -632,7 +632,7 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
   have : ∀ p ∈ s, J * ∏ q ∈ s, q.asIdeal < J * ∏ q ∈ s \ {p}, q.asIdeal := by
     intro p hps
     conv_rhs => rw [← mul_one (J * _)]
-    rw [Finset.prod_eq_mul_prod_diff_singleton_of_mem hps, ← mul_assoc,
+    rw [Finset.prod_eq_mul_prod_sdiff_singleton_of_mem hps, ← mul_assoc,
       mul_right_comm _ p.asIdeal]
     refine mul_lt_mul_of_pos_left ?_ ?_
     · rw [Ideal.one_eq_top, lt_top_iff_ne_top]
@@ -666,7 +666,7 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
   by_cases hqp : q = p'
   · subst hqp
     convert! sub_mem H₁ H₂
-    rw [Finset.sum_eq_add_sum_diff_singleton_of_mem hp's, add_sub_cancel_right]
+    rw [Finset.sum_eq_add_sum_sdiff_singleton_of_mem hp's, add_sub_cancel_right]
   · refine Ideal.mul_mono_right ?_ (ha p' hp's)
     exact Ideal.prod_le_inf.trans (Finset.inf_le (b := q) (by simpa [hq] using hqp))
 
@@ -742,8 +742,6 @@ lemma divMod_zero_of_not_le {a b c : FractionalIdeal R⁰ K} (hac : ¬ a ≤ c) 
     c.divMod b a = 0 := by
   simp [divMod, hac]
 
-set_option maxHeartbeats 212000 in
--- changed for new compiler
 /-- Let `I J I' J'` be nonzero fractional ideals in a Dedekind domain with `J ≤ I` and `J' ≤ I'`.
 If `I/J = I'/J'` in the group of fractional ideals (i.e. `I * J' = I' * J`),
 then `I/J ≃ I'/J'` as quotient `R`-modules. -/
