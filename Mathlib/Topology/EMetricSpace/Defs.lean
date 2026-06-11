@@ -31,7 +31,7 @@ to `EMetricSpace` at the end.
 @[expose] public section
 
 
-assert_not_exists Nat.instLocallyFiniteOrder IsUniformEmbedding.prod TendstoUniformlyOnFilter
+assert_not_exists IsUniformEmbedding.prod TendstoUniformlyOnFilter --Nat.instLocallyFiniteOrder
 
 open Filter Set Topology Set.Notation
 
@@ -549,26 +549,29 @@ theorem Prod.edist_eq [PseudoEMetricSpace β] (x y : α × β) :
 
 namespace Metric
 
-variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} {s t : Set α}
+variable {α : Type*} [TopologicalSpace α] [WeakPseudoEMetricSpace α] {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞}
+  {s t : Set α}
 
 theorem mem_eball' : y ∈ eball x ε ↔ edist x y < ε := by rw [edist_comm, mem_eball]
 
 /-- `Metric.closedEBall x ε` is the set of all points `y` with `edist y x ≤ ε` -/
-def closedEBall (x : α) (ε : ℝ≥0∞) :=
+def closedEBall {α : Type*} [h : EDist α] (x : α) (ε : ℝ≥0∞) :=
   { y | edist y x ≤ ε }
 
-@[simp] theorem mem_closedEBall : y ∈ closedEBall x ε ↔ edist y x ≤ ε := Iff.rfl
+@[simp] theorem mem_closedEBall {α : Type*} [EDist α] {x y : α} :
+  y ∈ closedEBall x ε ↔ edist y x ≤ ε := Iff.rfl
 
 theorem mem_closedEBall' : y ∈ closedEBall x ε ↔ edist x y ≤ ε := by
   rw [edist_comm, mem_closedEBall]
 
 @[simp]
-theorem closedEBall_top (x : α) : closedEBall x ∞ = univ :=
+theorem closedEBall_top {α : Type*} [EDist α] (x : α) : closedEBall x ∞ = univ :=
   eq_univ_of_forall fun _ => mem_setOf.2 le_top
 
-theorem eball_subset_closedEBall : eball x ε ⊆ closedEBall x ε := fun _ h => le_of_lt h.out
+theorem eball_subset_closedEBall {α : Type*} [EDist α] {x : α} :
+    eball x ε ⊆ closedEBall x ε := fun _ h => le_of_lt h.out
 
-theorem pos_of_mem_eball (hy : y ∈ eball x ε) : 0 < ε :=
+theorem pos_of_mem_eball {α : Type*} [EDist α] {x y : α} (hy : y ∈ eball x ε) : 0 < ε :=
   hy.pos
 
 theorem mem_eball_self (h : 0 < ε) : x ∈ eball x ε := by
@@ -583,7 +586,8 @@ theorem mem_closedEBall_comm : x ∈ closedEBall y ε ↔ y ∈ closedEBall x ε
   rw [mem_closedEBall', mem_closedEBall]
 
 @[gcongr]
-theorem closedEBall_subset_closedEBall (h : ε₁ ≤ ε₂) : closedEBall x ε₁ ⊆ closedEBall x ε₂ :=
+theorem closedEBall_subset_closedEBall {α : Type*} [EDist α] {x : α} (h : ε₁ ≤ ε₂) :
+    closedEBall x ε₁ ⊆ closedEBall x ε₂ :=
   fun _y (yx : _ ≤ ε₁) => le_trans yx h
 
 theorem eball_disjoint (h : ε₁ + ε₂ ≤ edist x y) : Disjoint (eball x ε₁) (eball y ε₂) :=
@@ -625,12 +629,15 @@ def edistLtTopSetoid : Setoid α where
       trans hxy hyz := lt_of_le_of_lt (edist_triangle _ _ _) (ENNReal.add_lt_top.2 ⟨hxy, hyz⟩) }
 
 @[simp]
-theorem eball_zero : eball x 0 = ∅ := by rw [eball_eq_empty_iff]
+theorem eball_zero {α : Type*} [EDist α] {x : α} : eball x 0 = ∅ := by
+  ext
+  simp
 
-theorem nhds_basis_closedEBall : (𝓝 x).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) (closedEBall x) :=
+theorem nhds_basis_closedEBall {α : Type*} [PseudoEMetricSpace α] {x : α} :
+    (𝓝 x).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) (closedEBall x) :=
   nhds_basis_uniformity uniformity_basis_edist_le
 
-theorem nhdsWithin_basis_closedEBall :
+theorem nhdsWithin_basis_closedEBall {α : Type*} [PseudoEMetricSpace α] {s : Set α} {x : α} :
     (𝓝[s] x).HasBasis (fun ε : ℝ≥0∞ => 0 < ε) fun ε => closedEBall x ε ∩ s :=
   nhdsWithin_hasBasis nhds_basis_closedEBall s
 
@@ -806,10 +813,14 @@ end EMetric
 
 namespace Subtype
 
+instance {α : Type*} [EDist α] {p : α → Prop} :
+    EDist (Subtype p) where
+  edist x y := edist x.val y.val
+
 open Metric
 
 @[simp]
-theorem preimage_eball {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
+theorem preimage_eball {α : Type*} [EDist α] {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
     Subtype.val ⁻¹' (eball a.1 r) = eball a r :=
   rfl
 
@@ -817,7 +828,7 @@ theorem preimage_eball {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
 alias preimage_emetricBall := preimage_eball
 
 @[simp]
-theorem preimage_closedEBall {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
+theorem preimage_closedEBall {α : Type*} [EDist α] {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
     Subtype.val ⁻¹' (closedEBall a.1 r) = closedEBall a r :=
   rfl
 
@@ -825,7 +836,7 @@ theorem preimage_closedEBall {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞)
 alias preimage_emetricClosedBall := preimage_closedEBall
 
 @[simp]
-theorem image_eball {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
+theorem image_eball {α : Type*} [EDist α] {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
     Subtype.val '' (eball a r) = eball a.1 r ∩ {a | p a} := by
   rw [← preimage_eball, image_preimage_eq_inter_range, range_val_subtype]
 
@@ -833,7 +844,7 @@ theorem image_eball {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
 alias image_emetricBall := image_eball
 
 @[simp]
-theorem image_closedEBall {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
+theorem image_closedEBall {α : Type*} [EDist α] {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
     Subtype.val '' (closedEBall a r) = closedEBall a.1 r ∩ {a | p a} := by
   rw [← preimage_closedEBall, image_preimage_eq_inter_range, range_val_subtype]
 
@@ -869,9 +880,31 @@ protected theorem EMetricSpace.ext
   ext1
   assumption
 
-variable {γ : Type w} [EMetricSpace γ]
 
-export EMetricSpace (eq_of_edist_eq_zero)
+/-- A weak extended metric space extends a `WeakPseudoEMetricSpace` with the condition
+`edist x y = 0 ↔ x = y`. -/
+class WeakEMetricSpace
+    (α : Type u) [TopologicalSpace α] : Type u extends WeakPseudoEMetricSpace α where
+  eq_of_edist_eq_zero : ∀ {x y : α}, edist x y = 0 → x = y
+
+@[ext]
+protected theorem WeakEMetricSpace.ext {α : Type*} [TopologicalSpace α] {m m' : WeakEMetricSpace α}
+    (h : m.toEDist = m'.toEDist) : m = m' := by
+  cases m
+  cases m'
+  congr
+  ext1
+  assumption
+
+/--
+Every `EMetricSpace` has a `WeakEMetricSpace` structure by using the topology induced by edist. -/
+instance EMetricSpace.toWeakEMetricSpace (α : Type u) [EMetricSpace α] :
+    WeakEMetricSpace α where
+  eq_of_edist_eq_zero := eq_of_edist_eq_zero
+
+variable {γ : Type w} [TopologicalSpace γ] [WeakEMetricSpace γ]
+
+export WeakEMetricSpace (eq_of_edist_eq_zero)
 
 /-- Characterize the equality of points by the vanishing of their extended distance -/
 @[simp]
@@ -906,10 +939,10 @@ See note [reducible non-instances].
 abbrev EMetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : EMetricSpace γ)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : EMetricSpace γ where
   edist := @edist _ m.toEDist
-  edist_self := edist_self
+  edist_self := edist_self (τ := m.toUniformSpace.toTopologicalSpace)
   eq_of_edist_eq_zero := @eq_of_edist_eq_zero _ _
-  edist_comm := edist_comm
-  edist_triangle := edist_triangle
+  edist_comm := edist_comm (τ := m.toUniformSpace.toTopologicalSpace)
+  edist_triangle := edist_triangle (τ := m.toUniformSpace.toTopologicalSpace)
   toUniformSpace := U
   uniformity_edist := H.trans (@PseudoEMetricSpace.uniformity_edist γ _)
 
@@ -923,10 +956,10 @@ See note [reducible non-instances].
 abbrev EMetricSpace.replaceTopology {γ} [T : TopologicalSpace γ] (m : EMetricSpace γ)
     (H : T = m.toUniformSpace.toTopologicalSpace) : EMetricSpace γ where
   edist := @edist _ m.toEDist
-  edist_self := edist_self
+  edist_self := edist_self (τ := m.toUniformSpace.toTopologicalSpace)
   eq_of_edist_eq_zero := @eq_of_edist_eq_zero _ _
-  edist_comm := edist_comm
-  edist_triangle := edist_triangle
+  edist_comm := edist_comm (τ := m.toUniformSpace.toTopologicalSpace)
+  edist_triangle := edist_triangle (τ := m.toUniformSpace.toTopologicalSpace)
   toUniformSpace := m.toUniformSpace.replaceTopology H
   uniformity_edist := PseudoEMetricSpace.uniformity_edist
 
@@ -950,7 +983,8 @@ instance {α : Type*} [EMetricSpace α] : EMetricSpace (ULift α) :=
   EMetricSpace.induced ULift.down ULift.down_injective ‹_›
 
 /-- Reformulation of the uniform structure in terms of the extended distance -/
-theorem uniformity_edist : 𝓤 γ = ⨅ ε > 0, 𝓟 { p : γ × γ | edist p.1 p.2 < ε } :=
+theorem uniformity_edist {γ} [EMetricSpace γ] :
+    𝓤 γ = ⨅ ε > 0, 𝓟 { p : γ × γ | edist p.1 p.2 < ε } :=
   PseudoEMetricSpace.uniformity_edist
 
 /-!
@@ -1018,27 +1052,6 @@ theorem edist_ofDual (a b : Xᵒᵈ) : edist (ofDual a) (ofDual b) = edist a b :
 end
 
 section
-
-/-- A weak extended metric space extends a `WeakPseudoEMetricSpace` with the condition
-`edist x y = 0 ↔ x = y`. -/
-class WeakEMetricSpace
-    (α : Type u) [TopologicalSpace α] : Type u extends WeakPseudoEMetricSpace α where
-  eq_of_edist_eq_zero : ∀ {x y : α}, edist x y = 0 → x = y
-
-@[ext]
-protected theorem WeakEMetricSpace.ext {α : Type*} [TopologicalSpace α] {m m' : WeakEMetricSpace α}
-    (h : m.toEDist = m'.toEDist) : m = m' := by
-  cases m
-  cases m'
-  congr
-  ext1
-  assumption
-
-/--
-Every `EMetricSpace` has a `WeakEMetricSpace` structure by using the topology induced by edist. -/
-instance EMetricSpace.toWeakEMetricSpace (α : Type u) [EMetricSpace α] :
-    WeakEMetricSpace α where
-  eq_of_edist_eq_zero := eq_of_edist_eq_zero
 
 /-- The `WeakEMetric` space induced by pulling back a topology along an injective function. -/
 abbrev WeakEMetricSpace.induced
