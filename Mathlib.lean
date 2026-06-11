@@ -110,6 +110,7 @@ public import Mathlib.Algebra.Category.CommAlgCat.Basic
 public import Mathlib.Algebra.Category.CommAlgCat.FiniteType
 public import Mathlib.Algebra.Category.CommAlgCat.Monoidal
 public import Mathlib.Algebra.Category.CommBialgCat
+public import Mathlib.Algebra.Category.CommHopfAlgCat
 public import Mathlib.Algebra.Category.ContinuousCohomology.Basic
 public import Mathlib.Algebra.Category.FGModuleCat.Abelian
 public import Mathlib.Algebra.Category.FGModuleCat.Basic
@@ -153,6 +154,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Algebra
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Biproducts
 public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
+public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRingsExact
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Descent
 public import Mathlib.Algebra.Category.ModuleCat.Differentials.Basic
@@ -2072,6 +2074,7 @@ public import Mathlib.Analysis.LocallyConvex.Barrelled
 public import Mathlib.Analysis.LocallyConvex.Basic
 public import Mathlib.Analysis.LocallyConvex.Bounded
 public import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
+public import Mathlib.Analysis.LocallyConvex.HahnBanach
 public import Mathlib.Analysis.LocallyConvex.Montel
 public import Mathlib.Analysis.LocallyConvex.PointwiseConvergence
 public import Mathlib.Analysis.LocallyConvex.Polar
@@ -4224,7 +4227,6 @@ public import Mathlib.Data.Nat.GCD.BigOperators
 public import Mathlib.Data.Nat.GCD.Prime
 public import Mathlib.Data.Nat.Hyperoperation
 public import Mathlib.Data.Nat.Init
-public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.Nat.Log
 public import Mathlib.Data.Nat.MaxPowDiv
 public import Mathlib.Data.Nat.ModEq
@@ -4683,6 +4685,7 @@ public import Mathlib.Geometry.Manifold.Sheaf.Smooth
 public import Mathlib.Geometry.Manifold.SmoothApprox
 public import Mathlib.Geometry.Manifold.SmoothEmbedding
 public import Mathlib.Geometry.Manifold.StructureGroupoid
+public import Mathlib.Geometry.Manifold.Submersion
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
@@ -6127,6 +6130,7 @@ public import Mathlib.Order.KonigLemma
 public import Mathlib.Order.KrullDimension
 public import Mathlib.Order.Lattice
 public import Mathlib.Order.Lattice.Congruence
+public import Mathlib.Order.Lattice.Nat
 public import Mathlib.Order.LatticeIntervals
 public import Mathlib.Order.Lex
 public import Mathlib.Order.LiminfLimsup
@@ -6362,6 +6366,7 @@ public import Mathlib.RepresentationTheory.Character
 public import Mathlib.RepresentationTheory.Coinduced
 public import Mathlib.RepresentationTheory.Coinvariants
 public import Mathlib.RepresentationTheory.Continuous.Basic
+public import Mathlib.RepresentationTheory.Continuous.TopRep
 public import Mathlib.RepresentationTheory.Equiv
 public import Mathlib.RepresentationTheory.FDRep
 public import Mathlib.RepresentationTheory.FinGroupCharZero
@@ -6381,6 +6386,7 @@ public import Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSe
 public import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
 public import Mathlib.RepresentationTheory.Homological.GroupHomology.Shapiro
 public import Mathlib.RepresentationTheory.Homological.Resolution
+public import Mathlib.RepresentationTheory.Homological.TateCohomology.Basic
 public import Mathlib.RepresentationTheory.Induced
 public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RepresentationTheory.Invariants
@@ -6930,6 +6936,7 @@ public import Mathlib.RingTheory.RingHom.Integral
 public import Mathlib.RingTheory.RingHom.Locally
 public import Mathlib.RingTheory.RingHom.LocallyStandardSmooth
 public import Mathlib.RingTheory.RingHom.OpenImmersion
+public import Mathlib.RingTheory.RingHom.PurelyInseparable
 public import Mathlib.RingTheory.RingHom.QuasiFinite
 public import Mathlib.RingTheory.RingHom.Smooth
 public import Mathlib.RingTheory.RingHom.StandardSmooth

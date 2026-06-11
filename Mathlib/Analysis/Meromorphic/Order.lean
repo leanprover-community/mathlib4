@@ -705,10 +705,10 @@ theorem isClopen_setOf_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
     · rw [h₁w]
       tauto
     -- Nontrivial case: w ≠ z
-    use t' \ {z.1}, fun y h₁y _ ↦ h₁t' y (mem_of_mem_diff h₁y) (mem_of_mem_inter_right h₁y)
+    use t' \ {z.1}, fun y h₁y _ ↦ h₁t' y (mem_of_mem_sdiff h₁y) (mem_of_mem_inter_right h₁y)
     constructor
     · exact h₂t'.sdiff isClosed_singleton
-    · apply (mem_diff w).1
+    · apply (mem_sdiff w).1
       exact ⟨hw, mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
 
 /--
@@ -804,10 +804,10 @@ theorem codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top (hf : MeromorphicOn f
     rw [eventually_nhdsWithin_iff, eventually_nhds_iff] at h₁a ⊢
     obtain ⟨t, h₁t, h₂t, h₃t⟩ := h₁a
     use t \ {x}, fun y h₁y _ ↦ h₁t y h₁y.1 h₁y.2
-    exact ⟨h₂t.sdiff isClosed_singleton, Set.mem_diff_of_mem h₃t hax⟩
+    exact ⟨h₂t.sdiff isClosed_singleton, Set.mem_sdiff_of_mem h₃t hax⟩
   · filter_upwards [hf.eventually_analyticAt_or_mem_compl hx, h₁f] with a h₁a h'₁a
-    simp only [mem_compl_iff, mem_diff, mem_image, mem_setOf_eq, Subtype.exists, exists_and_right,
-      exists_eq_right, not_exists, not_or, not_and, not_forall, Decidable.not_not]
+    simp only [mem_compl_iff, Set.mem_sdiff, mem_image, mem_setOf_eq, Subtype.exists,
+      exists_and_right, exists_eq_right, not_exists, not_or, not_and, not_forall, Decidable.not_not]
     rcases h₁a with h' | h'
     · simp +contextual [h'.meromorphicOrderAt_eq, h'.analyticOrderAt_eq_zero.2, h'₁a]
     · exact fun ha ↦ (h' ha).elim

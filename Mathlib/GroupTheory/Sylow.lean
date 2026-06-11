@@ -737,6 +737,19 @@ theorem card_eq_multiplicity [Finite G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow
   rw [heq, ← hp.out.pow_dvd_iff_dvd_ordProj (show Nat.card G ≠ 0 from Nat.card_pos.ne'), ← heq]
   exact P.1.card_subgroup_dvd_card
 
+variable (G) in
+theorem _root_.Group.card_dvd_prod_orderOf [Fintype G] : Nat.card G ∣ ∏ g : G, orderOf g := by
+  classical
+  refine Nat.dvd_iff_prime_pow_dvd_dvd .. |>.mpr fun p k hp h ↦ ?_
+  have := Fact.mk hp
+  have ⟨H, hH⟩ := exists_subgroup_card_pow_prime p h
+  have (g : G) (hg : g ∈ (H \ {1} : Set G).toFinset) : p ∣ orderOf g := by
+    have ⟨hg, hg1⟩ : g ∈ H ∧ g ≠ 1 := by simpa using hg
+    simpa using IsPGroup.of_card hH |>.dvd_orderOf (g := ⟨g, hg⟩) <| by simpa
+  grw [← prod_dvd_prod_of_subset _ _ _ (H \ {1} : Set G).toFinset.subset_univ,
+    ← prod_dvd_prod_of_dvd _ _ this, prod_const, k.le_sub_one_of_lt <| k.lt_pow_self hp.one_lt]
+  simp [Finset.card_sdiff, ← Nat.card_eq_fintype_card, hH]
+
 /-- If `G` has a normal Sylow `p`-subgroup, then it is the only Sylow `p`-subgroup. -/
 @[implicit_reducible]
 noncomputable def unique_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
