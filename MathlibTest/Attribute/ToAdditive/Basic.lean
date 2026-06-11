@@ -685,7 +685,7 @@ theorem mulTrivial : True := trivial
 /-- info: (via `docComment` syntax) I am an additive docstring! -/
 #guard_msgs in
 run_cmd
-  let some doc  ← findDocString? (← getEnv) ``addTrivial
+  let some doc ← findDocString? (← getEnv) ``addTrivial
     | throwError "no `docComment` docstring found"
   logInfo doc
 
@@ -954,3 +954,22 @@ attribute [to_additive existing] MulClass MulClass.mk.congr_simp
 #guard_msgs in
 @[to_additive]
 axiom MulAxiom {α} : Mul α
+
+/-! Docstring on `alias` -/
+
+@[to_additive]
+alias HMulAlias := HMul
+
+/--
+info: **Alias** of `HAdd`.
+
+---
+
+The notation typeclass for heterogeneous addition.
+This enables the notation `a + b : γ` where `a : α`, `b : β`.
+-/
+#guard_msgs in
+run_cmd
+  let some doc ← findDocString? (← getEnv) ``HAddAlias
+    | throwError "no `docComment` docstring found"
+  logInfo doc

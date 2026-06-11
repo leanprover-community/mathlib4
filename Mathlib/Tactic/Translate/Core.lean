@@ -14,6 +14,7 @@ public meta import Lean.Meta.Tactic.Symm
 public meta import Lean.Meta.CoeAttr
 public meta import Mathlib.Lean.Meta.Simp
 public import Batteries.Lean.NameMapAttribute
+public import Batteries.Tactic.Alias
 public import Batteries.Tactic.Trans
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.Translate.Attributes
@@ -867,6 +868,18 @@ def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
     trace[translate_detail] "Making {tgt} an instance with priority {prio}."
     addInstance tgt attr_kind prio |>.run'
 
+open Batteries.Tactic.Alias in
+def copyAliasAttribute (t : TranslateData) (src tgt : Name) : CoreM Unit := do
+  if let some srcInfo ← getAliasInfo? src then
+    let env ← getEnv
+    let tgtInfo? := match srcInfo with
+      | .plain n => .plain <$> findTranslationName? env t n
+      | .forward n => .forward <$> findTranslationName? env t n
+      | .reverse n => .reverse <$> findTranslationName? env t n
+    if let some tgtInfo := tgtInfo? then
+      setAliasInfo tgtInfo tgt
+      addAliasDocstring tgt tgtInfo
+
 /-- Warn the user when the declaration has an attribute. -/
 def warnAttrCore (stx : Syntax) (f : Environment → Name → Bool)
     (thisAttr attrName src tgt : Name) : CoreM Unit := do
@@ -1147,8 +1160,10 @@ mutual
 /-- Apply attributes to the original and translated declarations. -/
 partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) (reorder : Reorder)
     (relevantArg : RelevantArg) : TermElabM (Array Name) := do
-  -- we only copy the `instance` attribute, since it is nice to directly tag `instance` declarations
+  -- we copy the `instance` attribute, since it is nice to directly tag `instance` declarations
   copyInstanceAttribute src tgt
+  -- We copy the `alias` attribute, and add the appropriate `alias` docstring
+  copyAliasAttribute t src tgt
   -- Warn users if the original declaration has an attributee
   if !cfg.self && !cfg.none && linter.existingAttributeWarning.get (← getOptions) then
     let appliedAttrs ← getAllSimpAttrs src
@@ -1245,15 +1260,14 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     let reorder := cfg.reorder?.getD {}
     -- tgt doesn't exist, so let's make it
     transformDeclRec t cfg src tgt src reorder cfg.rename
+  if let some doc := cfg.doc then
+    addDocStringCore tgt doc
   let nestedNames ← copyMetaData t cfg src
   -- add pop-up information when mousing over the given translated name
   -- (the information will be over the attribute if no translated name is given)
   Term.addTermInfo' cfg.ref (← mkConstWithLevelParams tgt) (isBinder := !alreadyExists)
     |>.run' |>.run'
-  if let some doc := cfg.doc then
-    addDocStringCore tgt doc
   return nestedNames.push tgt
-
 end
-
+#check Batteries.Tactic.Alias.aliasExt
 end Mathlib.Tactic.Translate
