@@ -54,7 +54,7 @@ Dirichlet forms on discrete spaces.
 @[expose] public section
 
 open NNReal
-/-
+
 /--
 A WeightedGraph is a simple graph with a non-negative real-valued symmetric edge weight function
 that is 0 if and only if two vertices are not adjacent.
@@ -67,7 +67,7 @@ structure WeightedGraph (X : Type*) extends SimpleGraph X where
   edgeWeight_symm : IsSymmOp edgeWeight
   /-- An edge weight is greater than 0 if and only if the corresponding vertices are adjacent. -/
   edgeDef (u v : X) : Adj u v ↔ 0 < edgeWeight u v
-
+/-
 variable {X : Type*}
 
 /--
