@@ -36,7 +36,7 @@ variable [LE α]
 @[to_dual]
 instance : SetLike (UpperSet α) α where
   coe := UpperSet.carrier
-  coe_injective' s t h := by cases s; cases t; congr
+  coe_injective s t h := by cases s; cases t; congr
 
 /-- See Note [custom simps projection]. -/
 @[to_dual /-- See Note [custom simps projection]. -/]

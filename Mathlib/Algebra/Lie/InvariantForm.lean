@@ -198,7 +198,7 @@ theorem isSemisimple_of_nondegenerate : IsSemisimple K L := by
   intro I hI
   apply (orthogonal_disjoint Φ hΦ_nondeg hΦ_inv hL I hI).mono_right
   apply sSup_le
-  simp only [Set.mem_diff, Set.mem_setOf_eq, Set.mem_singleton_iff, and_imp]
+  simp only [Set.mem_sdiff, Set.mem_setOf_eq, Set.mem_singleton_iff, and_imp]
   intro J hJ hJI
   rw [← lie_eq_self_of_isAtom_of_nonabelian J hJ (hL J hJ), lieIdeal_oper_eq_span, lieSpan_le]
   rintro _ ⟨x, y, rfl⟩
