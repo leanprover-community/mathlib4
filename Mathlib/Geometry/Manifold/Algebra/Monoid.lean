@@ -294,7 +294,7 @@ instance : Inhabited (ContMDiffMonoidMorphism I I' n G G') :=
 @[to_additive]
 instance : FunLike (ContMDiffMonoidMorphism I I' n G G') G G' where
   coe a := a.toFun
-  coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.ext' h
+  coe_injective f g h := by cases f; cases g; congr; exact DFunLike.ext' h
 
 @[to_additive]
 instance : MonoidHomClass (ContMDiffMonoidMorphism I I' n G G') G G' where
