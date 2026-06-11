@@ -5,6 +5,7 @@ Authors: Moritz Doll
 -/
 module
 
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.Normed.Lp.ProdLp
 
@@ -46,6 +47,37 @@ noncomputable instance instProdInnerProductSpace :
 @[simp]
 theorem prod_inner_apply (x y : WithLp 2 (E × F)) :
     ⟪x, y⟫_𝕜 = ⟪(ofLp x).fst, (ofLp y).fst⟫_𝕜 + ⟪(ofLp x).snd, (ofLp y).snd⟫_𝕜 := rfl
+
+section Adjoint
+
+variable (𝕜 E F)
+variable [CompleteSpace E] [CompleteSpace F]
+
+/-- The adjoint of the inclusion of the first factor into `WithLp 2 (E × F)` is the projection
+onto the first factor. -/
+theorem adjoint_inlL : ContinuousLinearMap.adjoint (inlL 2 𝕜 E F) = fstL 2 𝕜 E F := by
+  rw [eq_comm, ContinuousLinearMap.eq_adjoint_iff]
+  intro x y
+  simp
+
+/-- The adjoint of the inclusion of the second factor into `WithLp 2 (E × F)` is the projection
+onto the second factor. -/
+theorem adjoint_inrL : ContinuousLinearMap.adjoint (inrL 2 𝕜 E F) = sndL 2 𝕜 E F := by
+  rw [eq_comm, ContinuousLinearMap.eq_adjoint_iff]
+  intro x y
+  simp
+
+/-- The adjoint of the projection onto the first factor of `WithLp 2 (E × F)` is the inclusion
+of the first factor. -/
+theorem adjoint_fstL : ContinuousLinearMap.adjoint (fstL 2 𝕜 E F) = inlL 2 𝕜 E F := by
+  rw [← adjoint_inlL, ContinuousLinearMap.adjoint_adjoint]
+
+/-- The adjoint of the projection onto the second factor of `WithLp 2 (E × F)` is the inclusion
+of the second factor. -/
+theorem adjoint_sndL : ContinuousLinearMap.adjoint (sndL 2 𝕜 E F) = inrL 2 𝕜 E F := by
+  rw [← adjoint_inrL, ContinuousLinearMap.adjoint_adjoint]
+
+end Adjoint
 
 end WithLp
 

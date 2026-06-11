@@ -130,6 +130,20 @@ def sndₗ : WithLp p (α × β) →ₗ[𝕜] β where
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
+/-- The inclusion of the first factor into `WithLp p (α × β)`, as a linear map. -/
+def inlₗ : α →ₗ[𝕜] WithLp p (α × β) :=
+  (WithLp.linearEquiv p 𝕜 (α × β)).symm.toLinearMap ∘ₗ LinearMap.inl 𝕜 α β
+
+/-- The inclusion of the second factor into `WithLp p (α × β)`, as a linear map. -/
+def inrₗ : β →ₗ[𝕜] WithLp p (α × β) :=
+  (WithLp.linearEquiv p 𝕜 (α × β)).symm.toLinearMap ∘ₗ LinearMap.inr 𝕜 α β
+
+@[simp]
+theorem inlₗ_apply (x : α) : inlₗ p 𝕜 α β x = toLp p (x, 0) := rfl
+
+@[simp]
+theorem inrₗ_apply (y : β) : inrₗ p 𝕜 α β y = toLp p (0, y) := rfl
+
 end algebra
 
 /-! Note that the unapplied versions of these lemmas are deliberately omitted, as they break
@@ -570,6 +584,22 @@ def fstL : WithLp p (α × β) →L[𝕜] α where
 @[simps! coe apply]
 def sndL : WithLp p (α × β) →L[𝕜] β where
   __ := sndₗ ..
+
+/-- The inclusion of the first factor into `WithLp p (α × β)`, as a continuous linear map. -/
+def inlL : α →L[𝕜] WithLp p (α × β) where
+  __ := inlₗ p 𝕜 α β
+  cont := (prod_continuous_toLp p α β).comp (continuous_id.prodMk continuous_const)
+
+/-- The inclusion of the second factor into `WithLp p (α × β)`, as a continuous linear map. -/
+def inrL : β →L[𝕜] WithLp p (α × β) where
+  __ := inrₗ p 𝕜 α β
+  cont := (prod_continuous_toLp p α β).comp (continuous_const.prodMk continuous_id)
+
+@[simp]
+theorem inlL_apply (x : α) : inlL p 𝕜 α β x = toLp p (x, 0) := rfl
+
+@[simp]
+theorem inrL_apply (y : β) : inrL p 𝕜 α β y = toLp p (0, y) := rfl
 
 end ContinuousLinearEquiv
 
