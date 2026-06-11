@@ -5,10 +5,6 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Init.Data.ULift
-public import Init.Data.Fin.Fold
-public import Init.Data.List.Nat.Pairwise
-public import Init.Data.List.Nat.Range
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.Localization.NormTrace
 
