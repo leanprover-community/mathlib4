@@ -282,9 +282,9 @@ instance full_map [F.Faithful] [F₁.Full] [F₂.Full] [IsIso α] [IsIso β] : (
       right := F₂.preimage φ.right
       w := F.map_injective (by
         rw [← cancel_mono (β.app _), ← cancel_epi (α.app _), F.map_comp, F.map_comp, assoc, assoc,
-          ← Functor.comp_map, ← Functor.comp_map, ← α.naturality_assoc, β.naturality]
-        simp only [Functor.comp_map, F₁.map_preimage, F₂.map_preimage, ← map_obj_hom α β Y, φ.w,
-          map_obj_hom α β X, assoc]) },
+          ← Functor.comp_map, ← Functor.comp_map, ← α.naturality_assoc, β.naturality,
+          Functor.comp_map, Functor.comp_map, F₁.map_preimage, F₂.map_preimage, ← map_obj_hom α β Y,
+          φ.w, map_obj_hom α β X, assoc, assoc]) },
       by cat_disch⟩
 
 set_option backward.defeqAttrib.useBackward true in
