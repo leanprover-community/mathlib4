@@ -96,7 +96,7 @@ lemma smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : M
   module
 
 @[to_fun (attr := fun_prop)]
-lemma const_smul {x : 𝕜} {f : 𝕜 → E} (hf : MeromorphicAt f x) {c : R} :
+lemma const_smul {x : 𝕜} {f : 𝕜 → E} (hf : MeromorphicAt f x) (c : R) :
     MeromorphicAt (c • f) x := by
   rcases hf with ⟨m, hf⟩
   exact ⟨m, by simpa [smul_comm _ c _] using hf.fun_const_smul⟩
@@ -558,7 +558,7 @@ include hf in
   fun x hx ↦ (hs x hx).smul (hf x hx)
 
 include hf in
-@[to_fun] lemma const_smul {c : R} : MeromorphicOn (c • f) U := fun x hx ↦ (hf x hx).const_smul
+@[to_fun] lemma const_smul (c : R) : MeromorphicOn (c • f) U := fun x hx ↦ (hf x hx).const_smul c
 
 include hs ht in
 @[to_fun] lemma mul : MeromorphicOn (s * t) U := fun x hx ↦ (hs x hx).mul (ht x hx)
@@ -706,8 +706,8 @@ lemma smul {f : 𝕜 → 𝕜} (hf : Meromorphic f) (hg : Meromorphic g) :
     Meromorphic (f • g) := fun x ↦ (hf x).smul (hg x)
 
 @[to_fun (attr := fun_prop)]
-lemma const_smul (hf : Meromorphic f) {c : R} :
-    Meromorphic (c • f) := fun x ↦ (hf x).const_smul
+lemma const_smul (hf : Meromorphic f) (c : R) :
+    Meromorphic (c • f) := fun x ↦ (hf x).const_smul c
 
 @[to_fun (attr := fun_prop)]
 lemma mul {f g : 𝕜 → 𝕜'} (hf : Meromorphic f) (hg : Meromorphic g) :
