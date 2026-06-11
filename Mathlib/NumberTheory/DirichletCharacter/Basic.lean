@@ -477,13 +477,9 @@ theorem mem_annihilator_iff_mem_closure {H : Set (ZMod n)ˣ} {χ : DirichletChar
 theorem mem_annihilator_iff {H : Set (ZMod n)ˣ} {χ : DirichletCharacter R n} :
     χ ∈ annihilator R H ↔ ∀ a ∈ H, χ a = 1 := by
   rw [mem_annihilator_iff_mem_closure]
-  constructor
-  · intro h a ha; exact h a (Submonoid.subset_closure ha)
-  · intro h x hx
-    refine Submonoid.closure_induction ?_ ?_ ?_ hx
-    · exact h
-    · simp
-    · intro a b _ _ ha hb; simp [map_mul, ha, hb]
+  refine ⟨fun h a ha ↦ h a (Submonoid.subset_closure ha), fun h x hx ↦ ?_⟩
+  refine Submonoid.closure_induction h (by simp) (fun a b _ _ ha hb ↦ ?_) hx
+  simp [map_mul, ha, hb]
 
 variable (R n) in
 /-- The subgroup of Dirichlet characters of level `n` whose primitive character sends the prime `p`
