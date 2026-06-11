@@ -842,13 +842,10 @@ theorem domRestrict_comp_rangeRestrict (g : S →+* T) (f : R →+* S) :
     (g.domRestrict f.range).comp (f.rangeRestrict) = g.comp f :=
   rfl
 
-section Range
-
+@[simp]
 theorem range_prodMap {R' S' : Type*} [Ring R'] [Ring S'] (f : R →+* S) (g : R' →+* S') :
     (f.prodMap g).range = f.range.prod g.range :=
   SetLike.coe_injective Set.range_prodMap
-
-end Range
 
 section eqLocus
 

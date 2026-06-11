@@ -62,7 +62,9 @@ theorem prod_inf_prod {S T : Subalgebra R A} {S₁ T₁ : Subalgebra R B} :
 protected theorem center_prod : center R (A × B) = prod (center R A) (center R B) :=
   SetLike.coe_injective Set.center_prod
 
-theorem range_prodMap (f : A →ₐ[R] B) (g : C →ₐ[R] D) :(f.prodMap g).range = f.range.prod g.range :=
+@[simp]
+theorem range_prodMap (f : A →ₐ[R] B) (g : C →ₐ[R] D) :
+    (f.prodMap g).range = f.range.prod g.range :=
   SetLike.coe_injective Set.range_prodMap
 
 end Subalgebra
