@@ -27,13 +27,11 @@ We prove properties of the total variation distance, in particular alternative f
 
 -/
 
-@[expose] public section
-
-open MeasureTheory
+public section
 
 open scoped ENNReal
 
-namespace InformationTheory
+namespace MeasureTheory
 
 variable {𝓧 : Type*} {m𝓧 : MeasurableSpace 𝓧}
   {μ ν : Measure 𝓧} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
@@ -122,4 +120,4 @@ theorem tvDist_eq_integral_abs_rnDeriv_add_singularPart :
     (withDensity_absolutelyContinuous ν (μ.rnDeriv ν)) (μ.mutuallySingular_singularPart ν),
     tvDist_withDensity_self_eq_integral (by fun_prop) (μ.rnDeriv_ne_top ν)]
 
-end InformationTheory
+end MeasureTheory
