@@ -812,7 +812,7 @@ theorem closedInterior_diff_interior_eq_surface [Nontrivial k] [IsOrderedAddMono
       fun i ↦ (s.disjoint_interior_closedInterior_faceOpposite i).symm
 
 @[deprecated "use `closedInterior_sdiff_interior_eq_surface` instead" (since := "2026-06-03")]
-alias closedInterior_diff_interior := closedInterior_sdiff_interior_eq_surface
+alias closedInterior_diff_interior := closedInterior_diff_interior_eq_surface
 
 end LinearOrder
 
