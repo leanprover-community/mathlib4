@@ -124,7 +124,7 @@ lemma integrable_integral_norm_cartanKernel (h : Meromorphic f) :
 If `f : ℂ → ℂ` is meromorphic, then the Cartan kernel of integration is integrable as a function in
 the two variables `α` and `β`.
 -/
-theorem integrable_cartanKernel (h : Meromorphic f) :
+theorem integrableOn_cartanKernel (h : Meromorphic f) :
     IntegrableOn (fun p ↦ cartanKernel f R p.1 p.2) (uIoc 0 (2 * π) ×ˢ uIoc 0 (2 * π)) := by
   rw [IntegrableOn, Measure.volume_eq_prod, ← Measure.prod_restrict]
   have := h.measurable
@@ -145,17 +145,8 @@ theorem proximity_top_eq_circleAverage_circleAverage (h : Meromorphic f) :
     _ = (2 * π)⁻¹ * (2 * π)⁻¹ * ∫ α in 0..2 * π, ∫ β in 0..2 * π, F α β := by
       simp [circleAverage, F, Cartan.cartanKernel, mul_assoc]
     _ = (2 * π)⁻¹ * (2 * π)⁻¹ * ∫ β in 0..2 * π, ∫ α in 0..2 * π, F α β := by
-      congr 1
-      set μ := volume.restrict (Ioc 0 (2 * π))
-      calc ∫ x in 0..2 * π, ∫ y in 0..2 * π, F x y
-        _ = ∫ x, ∫ y, F x y ∂μ ∂μ := by
-          simp [μ, intervalIntegral.integral_of_le two_pi_pos.le]
-        _ = ∫ y, ∫ x, F x y ∂μ ∂μ := by
-          apply MeasureTheory.integral_integral_swap
-          simp only [← uIoc_of_le two_pi_pos.le, μ, Measure.prod_restrict, ← Measure.volume_eq_prod]
-          exact Cartan.integrable_cartanKernel h
-        _ = ∫ y in 0..2 * π, ∫ x in 0..2 * π, F x y := by
-          simp [μ, intervalIntegral.integral_of_le two_pi_pos.le]
+      rw [MeasureTheory.intervalIntegral_intervalIntegral_swap]
+      exact Cartan.integrableOn_cartanKernel h
     _ = (2 * π)⁻¹ * ∫ β in 0..2 * π, ((2 * π)⁻¹ * ∫ α in 0..2 * π, F α β) := by
       simp [mul_comm, mul_left_comm, mul_assoc]
     _ = (2 * π)⁻¹ * ∫ β in 0..2 * π, log⁺ ‖f (circleMap 0 R β)‖ := by
@@ -181,7 +172,7 @@ theorem circleIntegrable_circleAverage_log_norm_sub (h : Meromorphic f) :
   have integrable_intervalIntegral_cartanKernel_left :
       Integrable (∫ β in 0..2 * π, Cartan.cartanKernel f R · β)
         (volume.restrict (Ioc 0 (2 * π))) := by
-    have h_int := Cartan.integrable_cartanKernel (R := R) h
+    have h_int := Cartan.integrableOn_cartanKernel (R := R) h
     rw [uIoc_of_le two_pi_pos.le, IntegrableOn, Measure.volume_eq_prod, ← Measure.prod_restrict]
       at h_int
     simpa [intervalIntegral.integral_of_le two_pi_pos.le, Cartan.cartanKernel]

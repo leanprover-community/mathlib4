@@ -544,6 +544,15 @@ lemma intervalIntegral_integral_swap {a b : ℝ} {f : ℝ → α → E}
     simp only [hab, Set.uIoc_of_ge] at h_int
     rw [integral_integral_swap h_int, integral_neg]
 
+/-- Change the order of integration for interval integrals. -/
+lemma intervalIntegral_intervalIntegral_swap {F : ℝ → ℝ → E} {a b c d : ℝ}
+    (h : IntegrableOn F.uncurry (uIoc a b ×ˢ uIoc c d)) :
+    ∫ x in a..b, ∫ y in c..d, F x y = ∫ y in c..d, ∫ x in a..b, F x y := by
+  rw [intervalIntegral.intervalIntegral_eq_integral_uIoc, ← intervalIntegral_integral_swap,
+    ← intervalIntegral.integral_smul]
+  · simp_rw [intervalIntegral.intervalIntegral_eq_integral_uIoc]
+  · rwa [← integrable_swap_iff, Measure.prod_restrict, ← Measure.volume_eq_prod, ← IntegrableOn]
+
 /-- **Fubini's Theorem** for set integrals. -/
 theorem setIntegral_prod (f : α × β → E) {s : Set α} {t : Set β}
     (hf : IntegrableOn f (s ×ˢ t) (μ.prod ν)) :
