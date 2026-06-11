@@ -107,7 +107,7 @@ theorem contMDiffAt_extChartAt : ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) 
 
 theorem contMDiffOn_extChartAt [IsManifold I n M] :
     ContMDiffOn I 𝓘(𝕜, E) n (extChartAt I x) (chartAt H x).source :=
-  fun _x' hx' => (contMDiffAt_extChartAt' hx').contMDiffWithinAt
+  contMDiffOn_extend (chart_mem_maximalAtlas x)
 
 theorem contMDiffOn_extend_symm (he : e ∈ maximalAtlas I n M) :
     ContMDiffOn 𝓘(𝕜, E) I n (e.extend I).symm (I '' e.target) := by
