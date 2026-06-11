@@ -67,7 +67,7 @@ structure WeightedGraph (X : Type*) extends SimpleGraph X where
   edgeWeight_symm : IsSymmOp edgeWeight
   /-- An edge weight is greater than 0 if and only if the corresponding vertices are adjacent. -/
   edgeDef (u v : X) : Adj u v ↔ 0 < edgeWeight u v
-/-
+
 variable {X : Type*}
 
 /--
@@ -83,7 +83,7 @@ lemma WeightedGraph.Not_Adj_iff_edgeWeight_eq_zero {x y : X} (G : WeightedGraph 
   intro h
   exact (lt_of_le_of_ne (G.edgeWeight x y).coe_nonneg (coe_ne_zero.mpr h).symm :
     (0 : ℝ) < G.edgeWeight x y)
-
+/-
 /--
 No vertex is adjacent to itself, so the edge weight of loop (edge that connects a vertex to itself)
 is 0.
