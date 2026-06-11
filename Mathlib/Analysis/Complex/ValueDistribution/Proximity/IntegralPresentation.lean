@@ -50,7 +50,7 @@ noncomputable def cartanKernel (f : ℂ → ℂ) (R : ℝ) (α β : ℝ) : ℝ :
 For every function `f : ℂ → ℂ`, the Cartan kernel of integration `cartanKernel f R α β` is
 integrable as a function in `α`.
 -/
-lemma integrable_cartanKernel_left (f : ℂ → ℂ) (R : ℝ) (β : ℝ) :
+lemma integrableOn_cartanKernel_left (f : ℂ → ℂ) (R : ℝ) (β : ℝ) :
     IntegrableOn (cartanKernel f R · β) (Ioc 0 (2 * π)) := by
   apply (intervalIntegrable_iff_integrableOn_Ioc_of_le two_pi_pos.le).1
   simpa [cartanKernel, norm_sub_rev, CircleIntegrable] using circleIntegrable_log_norm_sub_const 1
@@ -72,7 +72,7 @@ private lemma integral_norm_cartanKernel_eq (f : ℂ → ℂ) (R β : ℝ) :
   let μ : Measure ℝ := volume.restrict (Ioc 0 (2 * π))
   calc ∫ α, ‖cartanKernel f R α β‖ ∂μ
     _ = 2 * (∫ α, (cartanKernel f R α β)⁺ ∂μ) - ∫ α, cartanKernel f R α β ∂μ :=
-      integral_abs_eq_two_mul_integral_posPart_sub_integral (integrable_cartanKernel_left f R β)
+      integral_abs_eq_two_mul_integral_posPart_sub_integral (integrableOn_cartanKernel_left f R β)
     _ = 2 * (∫ α, (cartanKernel f R α β)⁺ ∂μ) - 2 * π * log⁺ ‖f (circleMap 0 R β)‖ := by
       congr
       set z := f (circleMap 0 R β)
@@ -129,8 +129,32 @@ theorem integrableOn_cartanKernel (h : Meromorphic f) :
   rw [IntegrableOn, Measure.volume_eq_prod, ← Measure.prod_restrict]
   have := h.measurable
   simpa [uIoc_of_le two_pi_pos.le] using (integrable_prod_iff' (by fun_prop)).2
-    ⟨Eventually.of_forall (integrable_cartanKernel_left f R),
+    ⟨Eventually.of_forall (integrableOn_cartanKernel_left f R),
       integrable_integral_norm_cartanKernel h⟩
+
+/--
+Corollary of `integrableOn_cartanKernel`: If `f : ℂ → ℂ` is meromorphic, then the function
+`β ↦ ∫ α in 0..2 * π, Cartan.cartanKernel f R α β` is integrable.
+-/
+lemma integrableOn_intervalIntegral_cartanKernel_left (h : Meromorphic f) :
+    IntegrableOn (∫ α in 0..2 * π, Cartan.cartanKernel f R α ·) (Ioc 0 (2 * π)) := by
+  have h_int := Cartan.integrableOn_cartanKernel (R := R) h
+  rw [uIoc_of_le two_pi_pos.le, IntegrableOn, Measure.volume_eq_prod, ← Measure.prod_restrict]
+    at h_int
+  simpa [IntegrableOn, intervalIntegral.integral_of_le two_pi_pos.le, Cartan.cartanKernel]
+    using h_int.integral_prod_right
+
+/--
+Corollary of `integrableOn_cartanKernel`: If `f : ℂ → ℂ` is meromorphic, then the function
+`α ↦ ∫ β in 0..2 * π, Cartan.cartanKernel f R α β` is integrable.
+-/
+lemma integrableOn_intervalIntegral_cartanKernel_right (h : Meromorphic f) :
+    IntegrableOn (∫ β in 0..2 * π, Cartan.cartanKernel f R · β) (Ioc 0 (2 * π)) := by
+  have h_int := Cartan.integrableOn_cartanKernel (R := R) h
+  rw [uIoc_of_le two_pi_pos.le, IntegrableOn, Measure.volume_eq_prod, ← Measure.prod_restrict]
+    at h_int
+  simpa [IntegrableOn, intervalIntegral.integral_of_le two_pi_pos.le, Cartan.cartanKernel]
+    using h_int.integral_prod_left
 
 end Cartan
 
@@ -169,18 +193,9 @@ theorem circleIntegrable_circleAverage_log_norm_sub (h : Meromorphic f) :
     CircleIntegrable (fun a ↦ circleAverage (log ‖f · - a‖) 0 R) 0 1 := by
   by_cases hR : R = 0
   · simp [hR, circleAverage_zero, norm_sub_rev, circleIntegrable_log_norm_sub_const]
-  have integrable_intervalIntegral_cartanKernel_left :
-      Integrable (∫ β in 0..2 * π, Cartan.cartanKernel f R · β)
-        (volume.restrict (Ioc 0 (2 * π))) := by
-    have h_int := Cartan.integrableOn_cartanKernel (R := R) h
-    rw [uIoc_of_le two_pi_pos.le, IntegrableOn, Measure.volume_eq_prod, ← Measure.prod_restrict]
-      at h_int
-    simpa [intervalIntegral.integral_of_le two_pi_pos.le, Cartan.cartanKernel]
-      using h_int.integral_prod_left
-  unfold CircleIntegrable
-  rw [intervalIntegrable_iff_integrableOn_Ioc_of_le two_pi_pos.le]
+  rw [CircleIntegrable, intervalIntegrable_iff_integrableOn_Ioc_of_le two_pi_pos.le]
   apply IntegrableOn.congr_fun
-    (integrable_intervalIntegral_cartanKernel_left.const_mul (2 * π)⁻¹)
+    ((Cartan.integrableOn_intervalIntegral_cartanKernel_right (R := R) h).const_mul (2 * π)⁻¹)
     (fun _ _ ↦ by simp [circleAverage, Cartan.cartanKernel]) measurableSet_Ioc
 
 end ValueDistribution
