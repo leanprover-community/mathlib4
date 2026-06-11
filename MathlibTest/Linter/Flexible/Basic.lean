@@ -71,7 +71,7 @@ example {a b : Nat} (h : a ≤ b) : a + 0 ≤ b + 1 := by
   exact Nat.le_succ_of_le h
 
 /--
-warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
+warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal with a wildcard `*`. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
@@ -79,9 +79,9 @@ info: Try this:
   [apply] simp only [Nat.add_zero] at *
 ---
 info: `exact Nat.le_succ_of_le h`
-uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal, was used on line 96.
+uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line 96.
 ---
-warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
+warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal with a wildcard `*`. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
@@ -89,7 +89,7 @@ info: Try this:
   [apply] simp only [Nat.add_zero] at *
 ---
 info: `exact Nat.le_succ_of_le h`
-uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal, was used on line
+uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line
 -/
 #guard_msgs (substring := true) in
 example {a b : Nat} (h : a ≤ b) : a + 0 ≤ b + 1 := by
@@ -97,19 +97,19 @@ example {a b : Nat} (h : a ≤ b) : a + 0 ≤ b + 1 := by
   exact Nat.le_succ_of_le h
 
 /--
-warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
+warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal with a wildcard `*`. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: `exact h2`
-uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal, was used on line 116.
+uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line 116.
 ---
-warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
+warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal with a wildcard `*`. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: `exact h2`
-uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal, was used on line
+uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line
 -/
 #guard_msgs (substring := true) in
 example {a b : Nat} (h1 : 0 + 0 = 0) (h2 : a ≤ b) : a ≤ b := by
@@ -117,19 +117,19 @@ example {a b : Nat} (h1 : 0 + 0 = 0) (h2 : a ≤ b) : a ≤ b := by
   exact h2
 
 /--
-warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
+warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal with a wildcard `*`. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: `exact h2`
-uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal, was used on line 136.
+uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line 136.
 ---
-warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
+warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal with a wildcard `*`. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: `exact h2`
-uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal, was used on line
+uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line
 -/
 #guard_msgs (substring := true) in
 example {a b : Nat} (h1 : 0 + 0 = 0) (h2 : a ≤ b) : a ≤ b := by
@@ -137,7 +137,7 @@ example {a b : Nat} (h1 : 0 + 0 = 0) (h2 : a ≤ b) : a ≤ b := by
   exact h2
 
 /--
-warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
+warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal with a wildcard `*`. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
@@ -145,9 +145,9 @@ info: Try this:
   [apply] simp only [Nat.add_zero] at *
 ---
 info: `exact h`
-uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal, was used on line 162.
+uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line 162.
 ---
-warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
+warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the current goal with a wildcard `*`. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
@@ -155,7 +155,7 @@ info: Try this:
   [apply] simp only [Nat.add_zero] at *
 ---
 info: `exact h`
-uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal, was used on line
+uses a rigid tactic. Previously, the flexible tactic `simp`, which potentially modified all hypotheses and the goal with a wildcard `*`, was used on line
 -/
 #guard_msgs (substring := true) in
 example {a b : Nat} (h : a = b) : a + 0 = b := by
