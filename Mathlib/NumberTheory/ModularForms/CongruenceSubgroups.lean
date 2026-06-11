@@ -78,13 +78,11 @@ modulo `N`. -/
 def Gamma0 : Subgroup SL(2, ℤ) where
   carrier := { g | (g 1 0 : ZMod N) = 0 }
   one_mem' := by simp
-  mul_mem' := by
-    intro a b ha hb
+  mul_mem' {a} {b} ha hb := by
     have h := (Matrix.two_mul_expl a.1 b.1).2.2.1
     simp only [coe_mul, Set.mem_setOf_eq] at *
     simp [h, ha, hb]
-  inv_mem' := by
-    intro a ha
+  inv_mem' {a} ha := by
     simpa [SL2_inv_expl a] using ha
 
 @[simp]
