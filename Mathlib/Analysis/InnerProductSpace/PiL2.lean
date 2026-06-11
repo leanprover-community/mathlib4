@@ -588,14 +588,14 @@ protected theorem map_apply {G : Type*} [NormedAddCommGroup G] [InnerProductSpac
     (b : OrthonormalBasis ι 𝕜 E) (L : E ≃ₗᵢ[𝕜] G) (i : ι) : b.map L i = L (b i) :=
   rfl
 
+lemma coe_map {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+    (b : OrthonormalBasis ι 𝕜 E) (L : E ≃ₗᵢ[𝕜] G) : ⇑(b.map L) = L ∘ b := rfl
+
 @[simp]
 protected theorem toBasis_map {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
     (b : OrthonormalBasis ι 𝕜 E) (L : E ≃ₗᵢ[𝕜] G) :
     (b.map L).toBasis = b.toBasis.map L.toLinearEquiv :=
   rfl
-
-lemma coe_map {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
-    (b : OrthonormalBasis ι 𝕜 E) (f : E ≃ₗᵢ[𝕜] G) : ⇑(b.map f) = f ∘ b := rfl
 
 /-- A basis that is orthonormal is an orthonormal basis. -/
 def _root_.Module.Basis.toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
