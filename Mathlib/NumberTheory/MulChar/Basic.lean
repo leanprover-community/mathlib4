@@ -454,6 +454,24 @@ lemma ringHomComp_pow (χ : MulChar R R') (f : R' →+* R'') (n : ℕ) :
   | zero => simp only [pow_zero, ringHomComp_one]
   | succ n ih => simp only [pow_succ, ih, ringHomComp_mul]
 
+/-- Bundled version of `MulChar.ringHomComp` as a `MonoidHom`. -/
+@[simps]
+def ringHomCompHom (f : R' →+* R'') : MulChar R R' →* MulChar R R'' where
+  toFun χ := χ.ringHomComp f
+  map_one' := ringHomComp_one f
+  map_mul' _ _ := ringHomComp_mul _ _ f
+
+lemma ringHomComp_zpow (χ : MulChar R R') (f : R' →+* R'') (n : ℤ) :
+    χ.ringHomComp f ^ n = (χ ^ n).ringHomComp f :=
+  ((ringHomCompHom f).map_zpow χ n).symm
+
+/-- If `a` is a unit and `n : ℤ`, then `(χ ^ n) a = χ (a ^ n)`. -/
+theorem zpow_apply_coe {R : Type*} [CommGroupWithZero R] {R' : Type*} [CommRing R']
+    (χ : MulChar R R') (n : ℤ) (a : Rˣ) : (χ ^ n) a = χ (a ^ n : Rˣ) := by
+  obtain ⟨m, rfl | rfl⟩ := Int.eq_nat_or_neg n
+  · simp [pow_apply_coe]
+  · simp [pow_apply_coe, inv_apply', ← inv_pow]
+
 lemma injective_ringHomComp {f : R' →+* R''} (hf : Function.Injective f) :
     Function.Injective (ringHomComp (R := R) · f) := by
   simpa

@@ -919,13 +919,12 @@ noncomputable def integralAgainstBilinLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F�
     if IntegrableOn φ K μ then ∫ x, B (f x) (φ x) ∂μ else 0
   map_add' f g := by
     split_ifs with hφ
-    · simp_rw [coe_add, Pi.add_apply, map_add, ContinuousLinearMap.add_apply,
+    · simp_rw [coe_add, Pi.add_apply, map_add, add_apply,
         integral_add (f.integrable_bilin B hφ) (g.integrable_bilin B hφ)]
     · simp
   map_smul' c f := by
     split_ifs with hφ
-    · simp_rw [coe_smul, Pi.smul_apply, map_smul, ContinuousLinearMap.smul_apply,
-        integral_smul c, RingHom.id_apply]
+    · simp_rw [coe_smul, Pi.smul_apply, map_smul, smul_apply, integral_smul c, RingHom.id_apply]
     · simp
 
 @[simp]
@@ -945,7 +944,7 @@ lemma integralAgainstBilinLM_eq_setIntegral {B : F₁ →L[𝕜] F₂ →L[𝕜]
     integralAgainstBilinLM B μ φ f = ∫ x in K, B (f x) (φ x) ∂μ := by
   rw [integralAgainstBilinLM_eq_integral hφ, setIntegral_eq_integral_of_forall_compl_eq_zero]
   intro x hx
-  rw [f.zero_on_compl hx, Pi.zero_apply, map_zero, ContinuousLinearMap.zero_apply]
+  rw [f.zero_on_compl hx, Pi.zero_apply, map_zero, zero_apply]
 
 lemma norm_integralAgainstBilinLM_le {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
     {f : 𝓓^{n}_{K}(E, F₁)} :
