@@ -6,6 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.Basis
+public import Mathlib.Algebra.Lie.CartanCriterion
 public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Semisimple
 public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Relations
 
@@ -36,6 +37,8 @@ variable {ι K M N : Type*} [Fintype ι] [DecidableEq ι] [Field K] [CharZero K]
   [AddCommGroup M] [Module K M] [AddCommGroup N] [Module K N]
   {P : RootPairing ι K M N} [P.IsReduced] [P.IsCrystallographic] [P.IsIrreducible] [P.IsRootSystem]
   (b : P.Base)
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- The Geck construction yields a basis of the Lie algebra it constructs. -/
 def basis :
@@ -88,10 +91,8 @@ def basis :
 instance : (cartanSubalgebra' b).IsCartanSubalgebra :=
   inferInstanceAs (basis b).cartan.IsCartanSubalgebra
 
--- Thanks to `RootPairing.GeckConstruction.instHasTrivialRadical`, we can drop this after:
--- https://github.com/leanprover-community/mathlib4/issues/28713
--- https://github.com/leanprover-community/mathlib4/issues/10068
-variable [LieAlgebra.IsKilling K (lieAlgebra b)]
+-- TODO drop this after: https://github.com/leanprover-community/mathlib4/issues/28713
+variable [Fact ((4 - b.cartanMatrix).det ≠ 0)]
 
 open LieAlgebra.IsKilling in
 /-- Up to equivalence, `LieAlgebra.IsKilling.rootSystem` is left inverse to

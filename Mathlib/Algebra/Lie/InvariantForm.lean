@@ -198,11 +198,11 @@ theorem isSemisimple_of_nondegenerate : IsSemisimple K L := by
   intro I hI
   apply (orthogonal_disjoint Φ hΦ_nondeg hΦ_inv hL I hI).mono_right
   apply sSup_le
-  simp only [Set.mem_diff, Set.mem_setOf_eq, Set.mem_singleton_iff, and_imp]
+  simp only [Set.mem_sdiff, Set.mem_setOf_eq, Set.mem_singleton_iff, and_imp]
   intro J hJ hJI
   rw [← lie_eq_self_of_isAtom_of_nonabelian J hJ (hL J hJ), lieIdeal_oper_eq_span, lieSpan_le]
   rintro _ ⟨x, y, rfl⟩
-  simp only [orthogonal_carrier, Φ.isOrtho_def, Set.mem_setOf_eq]
+  simp only [orthogonal_carrier, LinearMap.IsOrtho, Set.mem_setOf_eq]
   intro z hz
   rw [← neg_eq_zero, ← hΦ_inv]
   suffices ⁅(x : L), z⁆ = 0 by simp only [this, map_zero, LinearMap.zero_apply]
