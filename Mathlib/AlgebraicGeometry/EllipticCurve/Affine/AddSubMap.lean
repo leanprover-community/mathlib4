@@ -21,7 +21,8 @@ see `WeierstrassCurve.addSubMap` (this is on coordinate vectors).
 
 TODO: Show that the map really does what it is claimed to do.
 
-This will be used to eventually show the approximate parallelogram law:
+This will be used to eventually show the approximate parallelogram law for `K`-points
+on an elliptic curve `E`:
 `∃ C, ∀ P Q : E(K), |h(P+Q) + h(P-Q) - 2*h(P) - 2*h(Q)| ≤ C`,
 where `K` is a field with a height and `h` denotes the (logarithmic) naïve height on `E(K)`.
 -/
@@ -42,7 +43,7 @@ name_poly_vars s, t, u over R
 
 /-- The polynomial map on coordinate vectors giving
 `(x(P) * x(Q) : x(P) + x(Q) : 1) ↦ (x(P+Q) * x(P-Q) : x(P+Q) + x(P-Q) : 1)`
-for points `P`, `Q` on the elliptic curve `W`. -/
+for points `P`, `Q` on the Weierstrass curve `W`. -/
 @[expose] noncomputable def addSubMap : Fin 3 → MvPolynomial (Fin 3) R :=
   ![s ^ 2 - C W.b₄ * s * u - C W.b₆ * t * u - C W.b₈ * u ^ 2,
     C 2 * t * s + C W.b₂ * s * u + C W.b₄ * t * u + C W.b₆ * u ^ 2,
@@ -76,17 +77,6 @@ noncomputable def addSubMapCoeff : Fin 3 × Fin 3 → MvPolynomial (Fin 3) R :=
       C 6 * s * t + C (-W.b₂) * s * u + C (-5 * W.b₄) * t * u + C (W.b₂ * W.b₄ - 27 * W.b₆) * u ^ 2,
       C (-8 * W.b₄) * s * u + C (-12 * W.b₆) * t * u + C (W.b₄ ^ 2 - 28 * W.b₈) * u ^ 2]].uncurry
 
-/-- The multiples of the relation `W.b_relation`, which is equivalent to
-`4*W.b₈ - W.b₂*W.b₆ + W.b₄^2 = 0`, that we have to add to show the equality in
-`addSubMapCoeff_condition` below. -/
-noncomputable def bRelationCoeffs : Fin 3 → MvPolynomial (Fin 3) R :=
-  ![C (-8 * W.b₄ ^ 2) * s ^ 3 * u + C (5 * W.b₈) * s ^ 2 * t ^ 2 +
-      C (3 * W.b₂ * W.b₈ - 11 * W.b₄ * W.b₆) * s ^ 2 * t * u +
-      C (-8 * W.b₄ * W.b₈) * s ^ 2 * u ^ 2 + C (3 * W.b₄ * W.b₈ - 3 * W.b₆ ^ 2) * s * t ^ 2 * u,
-    C (-32 * W.b₄) * s * t ^ 2 * u + C (16 * W.b₆) * s * t * u ^ 2 + C (-16 * W.b₆) * t ^ 3 * u +
-      C (-16 * W.b₈) * t ^ 2 * u ^ 2,
-    C (-28) * s * u ^ 3 + C 4 * t ^ 2 * u ^ 2 + C (-W.b₂) * t * u ^ 3 + C (-8 * W.b₄) * u ^ 4]
-
 private lemma CXX {i : Fin 3} {a : R} : (C a * X (R := R) i ^ 2).IsHomogeneous 2 :=
     isHomogeneous_C_mul_X_pow ..
 
@@ -109,7 +99,7 @@ lemma isHomogeneous_addSubMapCoeff (ij : Fin 3 × Fin 3) :
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Function.uncurry_apply_pair,
       Matrix.cons_val', Matrix.cons_val_zero, Matrix.cons_val_fin_one, neg_mul, Fin.mk_one,
       Matrix.cons_val_one, Fin.reduceFinMk, Matrix.cons_val, Fin.zero_eta]
-    -- The following works, but is slow (44883 vs. 11592 heartbeats):
+    -- The following works, but is slow (44889 vs. 11590 heartbeats):
     -- <;> repeat first | refine .add ?_ CXY | refine .add ?_ CXX | exact CXX | exact CXY
   · exact .add (.add (.add (.add CXX CXY) CXY) CXX) CXY
   · exact .add (.add (.add (.add CXX CXY) CXY) CXX) CXY
@@ -125,17 +115,11 @@ variable [W.IsElliptic]
 
 lemma addSubMapCoeff_condition (x : Fin 3 → R) (i : Fin 3) :
     ∑ j : Fin 3, (C (↑W.Δ'⁻¹ : R) * addSubMapCoeff W (i, j)).eval x *
-      (addSubMap W j).eval x = x i ^ (2 + 2) := by
-  have hr : 4 * W.b₈ - W.b₂ * W.b₆ + W.b₄ ^ 2 = 0 := by linear_combination W.b_relation
+      (addSubMap W j).eval x = x i ^ 4 := by
   simp only [eval_mul, eval_C, mul_assoc]
   rw [← Finset.mul_sum, Units.inv_mul_eq_iff_eq_mul, Fin.sum_univ_three]
-  simp only [addSubMap, addSubMapCoeff, Function.uncurry_apply_pair]
-  have : -(bRelationCoeffs W i).eval x * (4 * W.b₈ - W.b₂ * W.b₆ + W.b₄ ^ 2) = 0 := by simp [hr]
-  fin_cases i <;>
-    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, neg_mul, Fin.zero_eta,
-      Matrix.cons_val_zero, Matrix.cons_val_one, map_sub, map_add, map_mul, eval_C, map_pow,
-      eval_X, map_neg, Fin.reduceFinMk, Matrix.cons_val, Fin.mk_one, coe_Δ', Δ] <;>
-    rw [← sub_eq_zero, ← this] <;> simp [bRelationCoeffs] <;> ring
+  simp only [addSubMap, addSubMapCoeff, Function.uncurry_apply_pair, coe_Δ', Δ]
+  fin_cases i <;> simp <;> grind only [b_relation]
 
 lemma addSubMap_ne_zero [IsDomain R] {x : Fin 3 → R} (hx : x ≠ 0) :
     (fun i ↦ (addSubMap W i).eval x) ≠ 0 := by
