@@ -6,16 +6,18 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Even
-public import Mathlib.Order.Lattice
+public import Mathlib.Order.Defs.LinearOrder
 
 /-!
 # Parity in ordered monoids
+
+This file proves results about square and even elements in ordered monoids.
 -/
 
 public section
 
 section
-variable {M : Type*} [LinearOrder M] [Monoid M] {a b : M}
+variable {M : Type*} [LinearOrder M] [Mul M] {a b : M}
 
 @[to_additive]
 protected lemma IsSquare.max (ha : IsSquare a) (hb : IsSquare b) : IsSquare (max a b) := by grind
