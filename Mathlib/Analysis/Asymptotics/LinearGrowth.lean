@@ -18,7 +18,7 @@ versions, using a `liminf` and a `limsup` respectively. Most properties are deve
 
 - `linearGrowthInf`, `linearGrowthSup`: respectively, `liminf` and `limsup` of `(u n) / n`.
 - `linearGrowthInfTopHom`, `linearGrowthSupBotHom`: the functions `linearGrowthInf`,
-`linearGrowthSup` as homomorphisms preserving finitary `Inf`/`Sup` respectively.
+  `linearGrowthSup` as homomorphisms preserving finitary `Inf`/`Sup` respectively.
 
 ## TODO
 
@@ -339,12 +339,7 @@ lemma Real.eventually_atTop_exists_int_between {a b : ℝ} (h : a < b) :
     ∀ᶠ x : ℝ in atTop, ∃ n : ℤ, a * x ≤ n ∧ n ≤ b * x := by
   refine (eventually_ge_atTop (b - a)⁻¹).mono fun x ab_x ↦ ?_
   rw [inv_le_iff_one_le_mul₀ (sub_pos_of_lt h), mul_comm, sub_mul, le_sub_iff_add_le'] at ab_x
-  obtain ⟨n, n_bx, hn⟩ := (b * x).exists_floor
-  refine ⟨n, ?_, n_bx⟩
-  specialize hn (n + 1)
-  simp only [Int.cast_add, Int.cast_one, add_le_iff_nonpos_right, Int.reduceLE, imp_false,
-    not_le] at hn
-  exact le_of_add_le_add_right (ab_x.trans hn.le)
+  exact ⟨_, le_of_add_le_add_right (ab_x.trans (Int.lt_floor_add_one _).le), Int.floor_le _⟩
 
 lemma Real.eventually_atTop_exists_nat_between {a b : ℝ} (h : a < b) (hb : 0 ≤ b) :
     ∀ᶠ x : ℝ in atTop, ∃ n : ℕ, a * x ≤ n ∧ n ≤ b * x := by
@@ -352,8 +347,7 @@ lemma Real.eventually_atTop_exists_nat_between {a b : ℝ} (h : a < b) (hb : 0 �
     with x x_0 ⟨m, m_a, m_b⟩
   refine ⟨m.toNat, m_a.trans (Int.cast_le.2 m.self_le_toNat), ?_⟩
   apply le_of_eq_of_le _ (max_le m_b (mul_nonneg hb x_0))
-  norm_cast
-  exact Int.toNat_eq_max m
+  exact_mod_cast Int.toNat_eq_max m
 
 lemma EReal.eventually_atTop_exists_nat_between {a b : EReal} (h : a < b) (hb : 0 ≤ b) :
     ∀ᶠ n : ℕ in atTop, ∃ m : ℕ, a * n ≤ m ∧ m ≤ b * n :=
@@ -363,7 +357,7 @@ lemma EReal.eventually_atTop_exists_nat_between {a b : EReal} (h : a < b) (hb : 
     refine Eventually.of_forall fun n ↦ ⟨0, ?_, ?_⟩ <;> rw [Nat.cast_zero]
     · apply mul_nonpos_iff.2 -- Split apply and exact for a 0.5s. gain
       exact .inr ⟨bot_le, n.cast_nonneg'⟩
-    · exact mul_nonneg hb n.cast_nonneg'
+    · positivity
   | (a : ℝ) =>
     match b with
     | ⊤ => by
@@ -383,9 +377,7 @@ lemma tendsto_atTop_of_linearGrowthInf_natCast_pos (h : (linearGrowthInf fun n �
     Tendsto v atTop atTop := by
   refine tendsto_atTop.2 fun M ↦ ?_
   have := tendsto_atTop_of_linearGrowthInf_pos (h.lt_of_le' (linearGrowthInf_natCast_nonneg v))
-  refine (tendsto_nhds_top_iff_real.1 this M).mono fun n ↦ ?_
-  rw [coe_coe_eq_natCast, Nat.cast_lt]
-  exact le_of_lt
+  exact (tendsto_nhds_top_iff_real.1 this M).mono fun n ↦ by exact_mod_cast le_of_lt
 
 lemma le_linearGrowthInf_comp (hu : 0 ≤ᶠ[atTop] u) (hv : Tendsto v atTop atTop) :
     (linearGrowthInf fun n ↦ v n : EReal) * linearGrowthInf u ≤ linearGrowthInf (u ∘ v) := by
@@ -440,9 +432,8 @@ lemma linearGrowthInf_comp_nonneg (h : Monotone u) (h' : u ≠ ⊥) (hv : Tendst
     0 ≤ linearGrowthInf (u ∘ v) := by
   simp only [ne_eq, funext_iff, not_forall] at h'
   obtain ⟨m, hum⟩ := h'
-  have um_uvn : ∀ᶠ n in atTop, u m ≤ (u ∘ v) n := by
-    apply (eventually_map (P := fun n : ℕ ↦ u m ≤ u n)).2
-    exact (eventually_atTop.2 ⟨m, fun n m_n ↦ h m_n⟩).filter_mono hv
+  have um_uvn : ∀ᶠ n in atTop, u m ≤ (u ∘ v) n :=
+    (eventually_atTop.2 ⟨m, fun n m_n ↦ h m_n⟩).filter_mono hv
   apply (linearGrowthInf_eventually_monotone um_uvn).trans'
   rcases eq_or_ne (u m) ⊤ with hum' | hum'
   · rw [hum', ← Pi.top_def, linearGrowthInf_top]; exact le_top

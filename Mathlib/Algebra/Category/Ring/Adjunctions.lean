@@ -27,9 +27,7 @@ noncomputable section
 
 universe v u
 
-open MvPolynomial Opposite
-
-open CategoryTheory
+open MvPolynomial Opposite CategoryTheory
 
 namespace CommRingCat
 
@@ -45,17 +43,18 @@ theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = MvPolynomial α �
   rfl
 
 -- This is not a `@[simp]` lemma as the left-hand side simplifies via `dsimp`.
-theorem free_map_coe {α β : Type u} {f : α → β} : ⇑(free.map f) = ⇑(rename f) :=
+theorem free_map_coe {α β : Type u} {f : α ⟶ β} : ⇑(free.map f) = ⇑(rename f) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The free-forgetful adjunction for commutative rings. -/
 def adj : free ⊣ forget CommRingCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ ↦
-        { toFun := fun f ↦ homEquiv f.hom
+        { toFun := fun f ↦ ↾(homEquiv f.hom)
           invFun := fun f ↦ ofHom <| homEquiv.symm f
           left_inv := fun f ↦ congrArg ofHom (homEquiv.left_inv f.hom)
-          right_inv := fun f ↦ homEquiv.right_inv f }
+          right_inv := by cat_disch }
       homEquiv_naturality_left_symm := fun {_ _ Y} f g =>
         hom_ext <| RingHom.ext fun x ↦ eval₂_cast_comp f (Int.castRingHom Y) g x }
 
@@ -66,24 +65,27 @@ instance : (forget CommRingCat.{u}).IsRightAdjoint :=
 @[simps]
 def coyoneda : Type vᵒᵖ ⥤ CommRingCat.{u} ⥤ CommRingCat.{max u v} where
   obj n :=
-  { obj R := CommRingCat.of ((unop n) → R)
-    map {R S} φ := CommRingCat.ofHom (Pi.ringHom (φ.hom.comp <| Pi.evalRingHom _ ·)) }
+  { obj R := CommRingCat.of (unop n → R)
+    map {R S} φ := CommRingCat.ofHom (RingHom.pi (φ.hom.comp <| Pi.evalRingHom _ ·)) }
   map {m n} f :=
-  { app R := CommRingCat.ofHom (Pi.ringHom (Pi.evalRingHom _ <| f.unop ·)) }
+  { app R := CommRingCat.ofHom (RingHom.pi (Pi.evalRingHom _ <| f.unop ·)) }
 
 /-- The adjunction `Hom_{CRing}(Fun(n, R), S) ≃ Fun(n, Hom_{CRing}(R, S))`. -/
 def coyonedaAdj (R : CommRingCat.{u}) :
     (coyoneda.flip.obj R).rightOp ⊣ yoneda.obj R where
-  unit := { app n i := CommRingCat.ofHom (Pi.evalRingHom _ i) }
-  counit := { app S := (CommRingCat.ofHom (Pi.ringHom fun f ↦ f.hom)).op }
+  unit := { app n := ↾fun i ↦ CommRingCat.ofHom (Pi.evalRingHom _ i) }
+  counit := { app S := (CommRingCat.ofHom (RingHom.pi fun f ↦ f.hom)).op }
 
 instance (R : CommRingCat.{u}) : (yoneda.obj R).IsRightAdjoint := ⟨_, ⟨coyonedaAdj R⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- If `n` is a singleton, `Hom(n, -)` is the identity in `CommRingCat`. -/
 @[simps!]
 def coyonedaUnique {n : Type v} [Unique n] : coyoneda.obj (op n) ≅ 𝟭 CommRingCat.{max u v} :=
   NatIso.ofComponents (fun X ↦ (RingEquiv.piUnique _).toCommRingCatIso) (fun f ↦ by ext; simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The monoid algebra functor `CommGrpCat ⥤ R-Alg` given by `G ↦ R[G]`. -/
 @[simps]
 def monoidAlgebra (R : CommRingCat.{max u v}) : CommMonCat.{v} ⥤ Under R where
@@ -91,6 +93,8 @@ def monoidAlgebra (R : CommRingCat.{max u v}) : CommMonCat.{v} ⥤ Under R where
   map f := Under.homMk (CommRingCat.ofHom <| MonoidAlgebra.mapDomainRingHom R f.hom)
   map_comp f g := by ext : 2; apply MonoidAlgebra.ringHom_ext <;> intro <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction `G ↦ R[G]` and `S ↦ Sˣ` between `CommGrpCat` and `R-Alg`. -/
 def monoidAlgebraAdj (R : CommRingCat.{u}) :
     monoidAlgebra R ⊣ Under.forget R ⋙ forget₂ _ _ where
@@ -101,7 +105,7 @@ def monoidAlgebraAdj (R : CommRingCat.{u}) :
     naturality S T f := by
       ext : 2
       apply MonoidAlgebra.ringHom_ext <;>
-        intro <;> simp [MonoidAlgebra.liftNCRingHom, ← Under.w f, - Under.w] }
+        intro <;> simp [MonoidAlgebra.liftNCRingHom, ← Under.w f, -Under.w] }
   left_triangle_components G := by
     ext : 2
     apply MonoidAlgebra.ringHom_ext <;> intro <;> simp [MonoidAlgebra.liftNCRingHom]

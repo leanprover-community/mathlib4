@@ -79,7 +79,7 @@ lemma LinearEquiv.charpoly_conj (e : M₁ ≃ₗ[R] M₂) (φ : Module.End R M�
   rw [← LinearMap.charpoly_toMatrix φ b, ← LinearMap.charpoly_toMatrix (e.conj φ) (b.map e)]
   congr 1
   ext i j : 1
-  simp [LinearMap.toMatrix, LinearEquiv.conj_apply]
+  simp [LinearMap.toMatrix]
 
 namespace Matrix
 

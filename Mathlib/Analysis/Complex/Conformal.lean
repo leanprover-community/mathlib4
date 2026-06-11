@@ -71,7 +71,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace ℂ
 theorem isConformalMap_complex_linear {map : ℂ →L[ℂ] E} (nonzero : map ≠ 0) :
     IsConformalMap (map.restrictScalars ℝ) := by
   have minor₁ : ‖map 1‖ ≠ 0 := by
-    simpa only [ContinuousLinearMap.ext_ring_iff, Ne, norm_eq_zero] using nonzero
+    simpa only [ContinuousLinearMap.ext_ring_iff, Ne, norm_eq_zero] using! nonzero
   refine ⟨‖map 1‖, minor₁, ⟨‖map 1‖⁻¹ • ((map : ℂ →ₗ[ℂ] E) : ℂ →ₗ[ℝ] E), ?_⟩, ?_⟩
   · intro x
     simp only [LinearMap.smul_apply]
@@ -121,15 +121,15 @@ theorem isConformalMap_iff_is_complex_or_conj_linear :
   · exact fun h => ⟨h.is_complex_or_conj_linear, h.ne_zero⟩
   · rintro ⟨⟨map, rfl⟩ | ⟨map, hmap⟩, h₂⟩
     · refine isConformalMap_complex_linear ?_
-      contrapose! h₂ with w
+      contrapose h₂ with w
       simp only [w, restrictScalars_zero]
     · have minor₁ : g = map.restrictScalars ℝ ∘L ↑conjCLE := by
         ext1
-        simp only [hmap, coe_comp', ContinuousLinearEquiv.coe_coe, Function.comp_apply,
-          conjCLE_apply, starRingEnd_self_apply]
+        simp only [hmap, ContinuousLinearEquiv.coe_coe, comp_apply, conjCLE_apply,
+          starRingEnd_self_apply]
       rw [minor₁] at h₂ ⊢
       refine isConformalMap_complex_linear_conj ?_
-      contrapose! h₂ with w
+      contrapose h₂ with w
       simp only [w, restrictScalars_zero, zero_comp]
 
 end ConformalIntoComplexPlane

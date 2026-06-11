@@ -32,6 +32,8 @@ are obtained as `leftKanExtension L F` and `rightKanExtension L F`.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory
@@ -333,10 +335,12 @@ def RightExtension.postcomp₁ (f : L ⋙ G ⟶ L') (F : C ⥤ H) :
 
 variable [IsEquivalence G]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (f : L' ⟶ L ⋙ G) [IsIso f] (F : C ⥤ H) :
     IsEquivalence (LeftExtension.postcomp₁ G f F) := by
   apply StructuredArrow.isEquivalenceMap₂
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (f : L ⋙ G ⟶ L') [IsIso f] (F : C ⥤ H) :
     IsEquivalence (RightExtension.postcomp₁ G f F) := by
   apply CostructuredArrow.isEquivalenceMap₂
@@ -367,6 +371,7 @@ noncomputable def RightExtension.isUniversalPostcomp₁Equiv (ex : RightExtensio
 
 variable {F F'}
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isLeftKanExtension_iff_postcomp₁ (α : F ⟶ L' ⋙ F') :
     F'.IsLeftKanExtension α ↔ (G ⋙ F').IsLeftKanExtension
       (α ≫ whiskerRight e.inv _ ≫ (associator _ _ _).hom) := by
@@ -379,6 +384,7 @@ lemma isLeftKanExtension_iff_postcomp₁ (α : F ⟶ L' ⋙ F') :
   · exact fun _ => ⟨⟨eq (isUniversalOfIsLeftKanExtension _ _)⟩⟩
   · exact fun _ => ⟨⟨eq.symm (isUniversalOfIsLeftKanExtension _ _)⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isRightKanExtension_iff_postcomp₁ (α : L' ⋙ F' ⟶ F) :
     F'.IsRightKanExtension α ↔ (G ⋙ F').IsRightKanExtension
       ((associator _ _ _).inv ≫ whiskerRight e.hom F' ≫ α) := by
@@ -397,6 +403,7 @@ section
 
 variable (L : C ⥤ D) (F : C ⥤ H) (G : H ⥤ D')
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a left extension `E` of `F : C ⥤ H` along `L : C ⥤ D` and a functor `G : H ⥤ D'`,
 `E.postcompose₂ G` is the extension of `F ⋙ G` along `L` obtained by whiskering by `G`
 on the right. -/
@@ -405,8 +412,9 @@ def LeftExtension.postcompose₂ : LeftExtension L F ⥤ LeftExtension L (F ⋙ 
   StructuredArrow.map₂
     (F := (whiskeringRight _ _ _).obj G)
     (G := (whiskeringRight _ _ _).obj G)
-    (𝟙 _) ({app _ := (associator _ _ _).hom})
+    (𝟙 _) ({ app _ := (associator _ _ _).hom })
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a right extension `E` of `F : C ⥤ H` along `L : C ⥤ D` and a functor `G : H ⥤ D'`,
 `E.postcompose₂ G` is the extension of `F ⋙ G` along `L` obtained by whiskering by `G`
 on the right. -/
@@ -415,7 +423,7 @@ def RightExtension.postcompose₂ : RightExtension L F ⥤ RightExtension L (F �
   CostructuredArrow.map₂
     (F := (whiskeringRight _ _ _).obj G)
     (G := (whiskeringRight _ _ _).obj G)
-    ({app _ := associator _ _ _ |>.inv}) (𝟙 _)
+    ({ app _ := associator _ _ _ |>.inv }) (𝟙 _)
 
 variable {L F} {F' : D ⥤ H}
 /-- An isomorphism to describe the action of `LeftExtension.postcompose₂` on terms of the form
@@ -426,6 +434,7 @@ def LeftExtension.postcompose₂ObjMkIso (α : F ⟶ L ⋙ F') :
     .mk (F' ⋙ G) <| whiskerRight α G ≫ (associator _ _ _).hom :=
   StructuredArrow.isoMk (.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An isomorphism to describe the action of `RightExtension.postcompose₂` on terms of the form
 `RightExtension.mk _ α`. -/
 @[simps!]
@@ -454,9 +463,11 @@ def RightExtension.precomp : RightExtension L F ⥤ RightExtension (G ⋙ L) (G 
 
 variable [IsEquivalence G]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : IsEquivalence (LeftExtension.precomp L F G) := by
   apply StructuredArrow.isEquivalenceMap₂
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : IsEquivalence (RightExtension.precomp L F G) := by
   apply CostructuredArrow.isEquivalenceMap₂
 
@@ -474,6 +485,7 @@ noncomputable def RightExtension.isUniversalPrecompEquiv (e : RightExtension L F
 
 variable {F L}
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isLeftKanExtension_iff_precomp (α : F ⟶ L ⋙ F') :
     F'.IsLeftKanExtension α ↔ F'.IsLeftKanExtension
       (whiskerLeft G α ≫ (associator _ _ _).inv) := by
@@ -485,6 +497,7 @@ lemma isLeftKanExtension_iff_precomp (α : F ⟶ L ⋙ F') :
   · exact fun _ => ⟨⟨eq (isUniversalOfIsLeftKanExtension _ _)⟩⟩
   · exact fun _ => ⟨⟨eq.symm (isUniversalOfIsLeftKanExtension _ _)⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isRightKanExtension_iff_precomp (α : L ⋙ F' ⟶ F) :
     F'.IsRightKanExtension α ↔
       F'.IsRightKanExtension ((associator _ _ _).hom ≫ whiskerLeft G α) := by
@@ -551,6 +564,7 @@ section
 
 variable {L : C ⥤ D} {F₁ F₂ : C ⥤ H}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When two left extensions `α₁ : LeftExtension L F₁` and `α₂ : LeftExtension L F₂`
 are essentially the same via an isomorphism of functors `F₁ ≅ F₂`,
 then `α₁` is universal iff `α₂` is. -/
@@ -605,11 +619,17 @@ def LeftExtension.precomp₂
     L'.LeftExtension F₁ ⥤ (L ⋙ L').LeftExtension F₀ :=
   LeftExtension.precomp L' F₁ L ⋙ StructuredArrow.map α
 
+#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
+Assistance investigating this would be appreciated. -/
+attribute [nolint simpNF] _root_.CategoryTheory.Functor.LeftExtension.precomp₂_map_left
+
 variable
     {L : C ⥤ D} {L' : D ⥤ D'}
     {F₀ : C ⥤ H} {F₁ : D ⥤ H} {F₂ : D' ⥤ H}
     (α : F₀ ⟶ L ⋙ F₁)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- If the right extension defined by `α : F₀ ⟶ L ⋙ F₁` is universal,
 then for every `L' : D ⥤ D'`, `F₁ : D ⥤ H`, if an extension
 `b : L'.LeftExtension F₁` is universal, so is the "pasted" extension
@@ -646,8 +666,7 @@ def LeftExtension.isUniversalPrecomp₂
         (hα.fac <| LeftExtension.mk _ <|
           y.hom ≫ (L.associator L' y.right).hom) t
     dsimp at hb_fac_app hα_fac_app
-    simp only [precomp₂_obj_left, const_obj_obj, whiskeringLeft_obj_obj,
-      comp_obj, StructuredArrow.left_eq_id, const_obj_map, id_comp,
+    simp only [whiskeringLeft_obj_obj, comp_obj,
       precomp₂_obj_right, whiskeringLeft_obj_map, NatTrans.comp_app,
       precomp₂_obj_hom_app, whiskerLeft_app, assoc] at a_w_t
     simp [← a_w_t, hb_fac_app, u, hα_fac_app]
@@ -666,31 +685,21 @@ def LeftExtension.isUniversalOfPrecomp₂
   letI (y : L'.LeftExtension F₁) : Unique (b ⟶ y) := by
     let u : (LeftExtension.precomp₂ L' α).obj b ⟶
       (LeftExtension.precomp₂ L' α).obj y := hb.to _
-    haveI := u.w
-    simp only [precomp₂_obj_left, const_obj_obj, precomp₂_obj_right,
-      whiskeringLeft_obj_obj, StructuredArrow.left_eq_id, const_obj_map, id_comp,
-      whiskeringLeft_obj_map] at this
     refine
       ⟨⟨StructuredArrow.homMk u.right <| by
           apply hα.hom_ext
           ext t
           have := congr_app u.w t
-          simp only [precomp₂_obj_left, const_obj_obj, precomp₂_obj_right,
-            whiskeringLeft_obj_obj, comp_obj, StructuredArrow.left_eq_id,
-            const_obj_map, id_comp, precomp₂_obj_hom_app, whiskeringLeft_obj_map,
-            NatTrans.comp_app, whiskerLeft_app, assoc] at this
+          dsimp at this
+          simp only [precomp₂_obj_hom_app, assoc] at this
           simp [this]⟩, fun a => ?_⟩
-    dsimp
     ext1
     apply hb.hom_ext
     ext t
     have := congr_app u.w t
-    have a_w := a.w
-    simp only [precomp₂_obj_left, const_obj_obj, precomp₂_obj_right,
-      whiskeringLeft_obj_obj, comp_obj, StructuredArrow.left_eq_id,
-      const_obj_map, id_comp, precomp₂_obj_hom_app, whiskeringLeft_obj_map,
-      NatTrans.comp_app, whiskerLeft_app, assoc] at this a_w
-    simp [← this, a_w]
+    dsimp at this
+    simp only [precomp₂_obj_hom_app, assoc] at this
+    simp [this, ← a.w]
   apply IsInitial.ofUnique
 
 /-- If the left extension defined by `α : F₀ ⟶ L ⋙ F₁` is universal,
@@ -707,6 +716,7 @@ def LeftExtension.isUniversalPrecomp₂Equiv
   right_inv x := by subsingleton
 
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isLeftKanExtension_iff_postcompose [F₁.IsLeftKanExtension α]
     {F₂ : D' ⥤ H} (L'' : C ⥤ D') (e : L ⋙ L' ≅ L'') (β : F₁ ⟶ L' ⋙ F₂)
     (γ : F₀ ⟶ L'' ⋙ F₂)
@@ -749,6 +759,7 @@ noncomputable def coconeOfIsLeftKanExtension (c : Cocone F) : Cocone F' where
   pt := c.pt
   ι := F'.descOfIsLeftKanExtension α _ c.ι
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `c` is a colimit cocone for a functor `F : C ⥤ H` and `α : F ⟶ L ⋙ F'` is the unit of any
 left Kan extension `F' : D ⥤ H` of `F` along `L : C ⥤ D`, then `coconeOfIsLeftKanExtension α c` is
 a colimit cocone, too. -/
@@ -775,6 +786,7 @@ noncomputable def colimitIsoOfIsLeftKanExtension : colimit F' ≅ colimit F :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit F')
     (F'.isColimitCoconeOfIsLeftKanExtension α (colimit.isColimit F))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_colimitIsoOfIsLeftKanExtension_hom (i : C) :
     α.app i ≫ colimit.ι F' (L.obj i) ≫ (F'.colimitIsoOfIsLeftKanExtension α).hom =
@@ -800,6 +812,7 @@ noncomputable def coneOfIsRightKanExtension (c : Cone F) : Cone F' where
   pt := c.pt
   π := F'.liftOfIsRightKanExtension α _ c.π
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `c` is a limit cone for a functor `F : C ⥤ H` and `α : L ⋙ F' ⟶ F` is the counit of any
 right Kan extension `F' : D ⥤ H` of `F` along `L : C ⥤ D`, then `coneOfIsRightKanExtension α c` is
 a limit cone, too. -/
@@ -826,6 +839,7 @@ noncomputable def limitIsoOfIsRightKanExtension : limit F' ≅ limit F :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit F')
     (F'.isLimitConeOfIsRightKanExtension α (limit.isLimit F))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma limitIsoOfIsRightKanExtension_inv_π (i : C) :
     (F'.limitIsoOfIsRightKanExtension α).inv ≫ limit.π F' (L.obj i) ≫ α.app i = limit.π F i := by
@@ -850,6 +864,7 @@ variable (F₀) in
 instance isRightKanExtensionId : F₀.IsRightKanExtension F₀.leftUnitor.hom where
   nonempty_isUniversal := ⟨CostructuredArrow.mkIdTerminal⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance isLeftKanExtensionAlongEquivalence (α : F₀ ≅ L.functor ⋙ F₁) :
     F₁.IsLeftKanExtension α.hom := by
   refine ⟨⟨?_⟩⟩
@@ -859,14 +874,16 @@ instance isLeftKanExtensionAlongEquivalence (α : F₀ ≅ L.functor ⋙ F₁) :
     (fun y ↦ StructuredArrow.homMk <| α.inv ≫ y.hom ≫ y.right.leftUnitor.hom) ?_
   intro y m
   ext x
-  simpa using α.inv.app x ≫= congr_app m.w.symm x
+  simpa using α.inv.app x ≫= congr_app m.w x
 
+set_option backward.isDefEq.respectTransparency false in
 instance isLeftKanExtensionAlongEquivalence' (L : C ⥤ D) (α : F₀ ⟶ L ⋙ F₁)
     [IsEquivalence L] [IsIso α] :
     F₁.IsLeftKanExtension α :=
   inferInstanceAs <|
     F₁.IsLeftKanExtension (asIso α : F₀ ≅ (asEquivalence L).functor ⋙ F₁).hom
 
+set_option backward.isDefEq.respectTransparency false in
 instance isRightKanExtensionAlongEquivalence (α : L.functor ⋙ F₁ ≅ F₀) :
     F₁.IsRightKanExtension α.hom := by
   refine ⟨⟨?_⟩⟩
@@ -878,6 +895,7 @@ instance isRightKanExtensionAlongEquivalence (α : L.functor ⋙ F₁ ≅ F₀) 
   ext x
   simpa using congr_app m.w x =≫ α.inv.app x
 
+set_option backward.isDefEq.respectTransparency false in
 instance isRightKanExtensionAlongEquivalence' (L : C ⥤ D) (α : L ⋙ F₁ ⟶ F₀)
     [IsEquivalence L] [IsIso α] :
     F₁.IsRightKanExtension α :=

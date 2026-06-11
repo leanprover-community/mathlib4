@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Init
 public import Lean.Elab.Tactic.Simp
+public import Lean.Meta.DiscrTree
 
 /-!
 # Helper functions for using the simplifier.
@@ -155,9 +156,35 @@ def getAllSimpDecls (simpAttr : Name) : CoreM (List Name) := do
 /-- Gets all simp-attributes given to declaration `decl`. -/
 def getAllSimpAttrs (decl : Name) : CoreM (Array Name) := do
   let mut simpAttrs := #[]
-  for (simpAttr, simpDecl) in (← simpExtensionMapRef.get).toList do
+  for (simpAttr, simpDecl) in ← simpExtensionMapRef.get do
     if (← simpDecl.getTheorems).contains decl then
       simpAttrs := simpAttrs.push simpAttr
   return simpAttrs
+
+/-- Run `e` while the entries in `declNames` are erased from the `simp` set, while preserving the
+rest of the `simp` configuration.
+
+Performance note: the code in `e` will be run with a new cache (which is discarded at the end of the
+function). The original cache is restored when this function returns.
+-/
+meta def Simp.withoutTheorems {α} (declNames : Array Name) (e : SimpM α) : SimpM α := do
+  let mut theorems ← getSimpTheorems
+  let mut procs ← getSimprocs
+  for name in declNames do
+    -- Erase all variants of the theorem, not just the forward post-proc.
+    theorems := theorems
+      |>.eraseTheorem (.decl name)
+      |>.eraseTheorem (.decl name (inv := true))
+      |>.eraseTheorem (.decl name (post := false))
+      |>.eraseTheorem (.decl name (inv := true) (post := false))
+    procs := procs.erase name
+  let oldMethods ← getMethods
+  let methods := mkMethods #[procs] oldMethods.discharge? oldMethods.wellBehavedDischarge
+  -- Preserve the cache, otherwise a deleted theorem might continue firing,
+  -- or conversely a failure inside `e` could be propagated outside.
+  withPreservedCache <| withSimpTheorems theorems do
+    let (x, s) ← e.run (← getContext) (← get) methods
+    set s
+    return x
 
 end Lean.Meta

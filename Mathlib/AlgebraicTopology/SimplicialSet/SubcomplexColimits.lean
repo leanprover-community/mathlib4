@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 public import Mathlib.CategoryTheory.Limits.Types.Multicoequalizer
 
 /-!
@@ -61,6 +60,7 @@ noncomputable def isColimit :
     exact (Multicofork.isColimitMapEquiv _ _).2
       (Types.isColimitOfMulticoequalizerDiagram h'))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A colimit multicofork attached to a `MulticoequalizerDiagram`
 structure in the complete lattice of subcomplexes of a simplicial set.
 In this variant, we assume that the index type `ι` has a linear order. This allows

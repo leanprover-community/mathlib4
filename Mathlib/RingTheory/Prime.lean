@@ -21,7 +21,7 @@ public section
 
 section CancelCommMonoidWithZero
 
-variable {R : Type*} [CancelCommMonoidWithZero R]
+variable {R : Type*} [CommMonoidWithZero R] [IsCancelMulZero R]
 
 open Finset
 

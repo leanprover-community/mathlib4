@@ -189,14 +189,6 @@ variable (F) in
   ext v w
   exact real_inner_comm _ _
 
-@[deprecated (since := "2025-11-15")] alias innerₛₗ_apply_coe := coe_innerₛₗ_apply
-@[deprecated (since := "2025-11-15")] alias innerₛₗ_apply := innerₛₗ_apply_apply
-@[deprecated (since := "2025-11-15")] alias innerₗ_apply := innerₗ_apply_apply
-@[deprecated (since := "2025-11-15")] alias innerSL_apply_coe := coe_innerSL_apply
-@[deprecated (since := "2025-11-15")] alias innerSL_apply := innerSL_apply_apply
-@[deprecated (since := "2025-11-15")] alias innerSLFlip_apply := innerSLFlip_apply_apply
-@[deprecated (since := "2025-11-15")] alias innerSL_real_flip := flip_innerSL_real
-
 variable {𝕜}
 
 namespace ContinuousLinearMap
@@ -220,7 +212,7 @@ theorem toSesqForm_apply_norm_le {f : E →L[𝕜] E'} {v : E'} : ‖toSesqForm 
   have h₂ := @norm_inner_le_norm 𝕜 E' _ _ _ v (f x)
   calc
     ‖⟪v, f x⟫‖ ≤ ‖v‖ * ‖f x‖ := h₂
-    _ ≤ ‖v‖ * (‖f‖ * ‖x‖) := mul_le_mul_of_nonneg_left h₁ (norm_nonneg v)
+    _ ≤ ‖v‖ * (‖f‖ * ‖x‖) := by gcongr
     _ = ‖f‖ * ‖v‖ * ‖x‖ := by ring
 
 end ContinuousLinearMap
@@ -342,7 +334,8 @@ theorem isIdempotentElem_rankOne_self {x : F} (hx : ‖x‖ = 1) :
 @[simp] theorem rankOne_one_left_eq_innerSL (x : F) : rankOne 𝕜 1 x = innerSL 𝕜 x := by ext; simp
 
 lemma rankOne_comp_rankOne (x : E) (y z : F) (w : G) :
-    rankOne 𝕜 x y ∘L rankOne 𝕜 z w = inner 𝕜 y z • rankOne 𝕜 x w := by simp [comp_rankOne]
+    rankOne 𝕜 x y ∘L rankOne 𝕜 z w = inner 𝕜 y z • rankOne 𝕜 x w := by
+  simp [comp_rankOne]
 
 lemma inner_left_rankOne_apply (x : F) (y z : G) (w : F) :
     inner 𝕜 (rankOne 𝕜 x y z) w = inner 𝕜 z y * inner 𝕜 x w := by
@@ -353,7 +346,8 @@ lemma inner_right_rankOne_apply (x y : F) (z w : G) :
   simp [inner_smul_right, mul_comm]
 
 section Normed
-variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+variable {F H : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+  [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
 
 @[simp] theorem rankOne_eq_zero {x : E} {y : F} : rankOne 𝕜 x y = 0 ↔ x = 0 ∨ y = 0 := by
   simp [ContinuousLinearMap.ext_iff, rankOne_apply, forall_or_right, or_comm,
@@ -366,13 +360,59 @@ theorem isIdempotentElem_rankOne_self_iff {x : F} (hx : x ≠ 0) :
     IsIdempotentElem (rankOne 𝕜 x x) ↔ ‖x‖ = 1 := by
   refine ⟨?_, isIdempotentElem_rankOne_self⟩
   simp only [IsIdempotentElem, mul_def, comp_rankOne, rankOne_apply, inner_self_eq_norm_sq_to_K,
-    map_smul, coe_smul', Pi.smul_apply]
+    map_smul, _root_.smul_apply]
   nth_rw 2 [← one_smul 𝕜 (rankOne 𝕜 x x)]
   rw [← sub_eq_zero, ← sub_smul]
   simp only [smul_eq_zero, rankOne_eq_zero, hx, or_self, or_false, sub_eq_zero, sq_eq_one_iff,
     FaithfulSMul.algebraMap_eq_one_iff, ← show ((-(1 : ℝ) : ℝ) : 𝕜) = -1 by grind, ofReal_inj]
   grind [norm_nonneg]
 
+theorem rankOne_eq_rankOne_iff_comm {a c : F} {b d : H} :
+    rankOne 𝕜 a b = rankOne 𝕜 c d ↔ rankOne 𝕜 b a = rankOne 𝕜 d c := by
+  simp_rw [ContinuousLinearMap.ext_iff, ext_iff_inner_left 𝕜 (E := F),
+    ext_iff_inner_right 𝕜 (E := H)]
+  rw [forall_comm]
+  simp [inner_smul_left, inner_smul_right, mul_comm]
+
+open ComplexOrder in
+theorem exists_of_rankOne_eq_rankOne {a c : F} {b d : H}
+    (ha : a ≠ 0) (hb : b ≠ 0) (h : rankOne 𝕜 a b = rankOne 𝕜 c d) :
+    ∃ (α β : 𝕜) (_ : α ≠ 0) (_ : 0 < β), a = α • c ∧ b = (α * β) • d := by
+  have h₂ := rankOne_eq_rankOne_iff_comm.mp h
+  simp only [ContinuousLinearMap.ext_iff, rankOne_apply] at h h₂
+  have h₃ := calc
+    a = (⟪b, b⟫_𝕜 / ⟪b, b⟫_𝕜) • a := by simp_all
+    _ = (1 / ⟪b, b⟫_𝕜) • (⟪b, b⟫_𝕜 • a) := by simp only [smul_smul]; ring_nf
+    _ = (⟪d, b⟫_𝕜 / ⟪b, b⟫_𝕜) • c := by simp only [h, smul_smul]; ring_nf
+  have h₄ := calc
+    b = (⟪a, a⟫_𝕜 / ⟪a, a⟫_𝕜) • b := by simp_all
+    _ = (1 / ⟪a, a⟫_𝕜) • (⟪a, a⟫_𝕜 • b) := by simp only [smul_smul]; ring_nf
+    _ = ((⟪d, b⟫_𝕜 / ⟪b, b⟫_𝕜) * (⟪c, c⟫_𝕜 / ⟪a, a⟫_𝕜)) • d := by
+      simp_rw [h₂, h₃, inner_smul_right, smul_smul]; ring_nf
+  have h₅ : ⟪d, b⟫_𝕜 ≠ 0 := fun h ↦ by simp [h, hb] at h₄
+  have h₆ : c ≠ 0 := fun h ↦ by simp [h, ha] at h₃
+  refine ⟨_, ‖c‖ ^ 2 / ‖a‖ ^ 2, div_ne_zero h₅ <| by simpa, ?_, h₃, by simpa using h₄⟩
+  simp_rw [← ofReal_pow, ← ofReal_div, pos_iff (K := 𝕜), ofReal_re, ofReal_im, and_true]
+  exact div_pos (by simpa [sq_pos_iff]) (by simpa [sq_pos_iff])
+
 end Normed
 
 end InnerProductSpace
+
+namespace ContinuousLinearMap
+
+open InnerProductSpace
+
+variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+    [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+
+theorem opNorm_le_of_re_inner_le {T : E →L[𝕜] F} {C : ℝ} (hC : 0 ≤ C)
+    (h : ∀ x y, ‖x‖ = 1 → ‖y‖ = 1 → re ⟪T x, y⟫_𝕜 ≤ C) : ‖T‖ ≤ C := by
+  refine opNorm_le_of_unit_norm hC fun x hx ↦ ?_
+  by_cases hTx : ‖T x‖ = 0
+  · rwa [hTx]
+  · specialize h x (((‖T x‖⁻¹ : ℝ) : 𝕜) • T x) hx (by simp [norm_smul, hTx])
+    rwa [inner_smul_right, re_ofReal_mul, ← norm_sq_eq_re_inner,
+      inv_mul_eq_div, sq, mul_self_div_self] at h
+
+end ContinuousLinearMap

@@ -49,14 +49,14 @@ theorem iIndepFun.indep_comap_natural_of_lt (hf : ∀ i, StronglyMeasurable (f i
 
 theorem iIndepFun.condExp_natural_ae_eq_of_lt [SecondCountableTopology β] [CompleteSpace β]
     [NormedSpace ℝ β] (hf : ∀ i, StronglyMeasurable (f i)) (hfi : iIndepFun f μ)
-    (hij : i < j) : μ[f j|Filtration.natural f hf i] =ᵐ[μ] fun _ => μ[f j] := by
+    (hij : i < j) : μ[f j | Filtration.natural f hf i] =ᵐ[μ] fun _ => μ[f j] := by
   have : IsProbabilityMeasure μ := hfi.isProbabilityMeasure
   exact condExp_indep_eq (hf j).measurable.comap_le (Filtration.le _ _)
     (comap_measurable <| f j).stronglyMeasurable (hfi.indep_comap_natural_of_lt hf hij)
 
 theorem iIndepSet.condExp_indicator_filtrationOfSet_ae_eq (hsm : ∀ n, MeasurableSet (s n))
     (hs : iIndepSet s μ) (hij : i < j) :
-    μ[(s j).indicator (fun _ => 1 : Ω → ℝ)|filtrationOfSet hsm i] =ᵐ[μ]
+    μ[(s j).indicator (fun _ => 1 : Ω → ℝ) | filtrationOfSet hsm i] =ᵐ[μ]
     fun _ => μ.real (s j) := by
   rw [Filtration.filtrationOfSet_eq_natural (β := fun _ ↦ ℝ) hsm]
   refine (iIndepFun.condExp_natural_ae_eq_of_lt _ hs.iIndepFun_indicator hij).trans ?_
@@ -76,7 +76,7 @@ theorem measure_limsup_eq_one {s : ℕ → Set Ω} (hsm : ∀ n, MeasurableSet (
   suffices {ω | Tendsto (fun n => ∑ k ∈ Finset.range n,
       (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|filtrationOfSet hsm k]) ω) atTop atTop} =ᵐ[μ] Set.univ by
     rw [measure_congr this, measure_univ]
-  have : ∀ᵐ ω ∂μ, ∀ n, (μ[(s (n + 1)).indicator (1 : Ω → ℝ)|filtrationOfSet hsm n]) ω = _ :=
+  have : ∀ᵐ ω ∂μ, ∀ n, (μ[(s (n + 1)).indicator (1 : Ω → ℝ) | filtrationOfSet hsm n]) ω = _ :=
     ae_all_iff.2 fun n => hs.condExp_indicator_filtrationOfSet_ae_eq hsm n.lt_succ_self
   filter_upwards [this] with ω hω
   refine eq_true (?_ : Tendsto _ _ _)

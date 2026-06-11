@@ -27,7 +27,7 @@ to develop relative versions `ContinuousOn` and `ContinuousWithinAt` of `Continu
 
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Function Topology
 
@@ -93,14 +93,18 @@ theorem mem_nhdsWithin_iff_exists_mem_nhds_inter {t : Set α} {a : α} {s : Set 
     t ∈ 𝓝[s] a ↔ ∃ u ∈ 𝓝 a, u ∩ s ⊆ t :=
   (nhdsWithin_hasBasis (𝓝 a).basis_sets s).mem_iff
 
-theorem diff_mem_nhdsWithin_compl {x : α} {s : Set α} (hs : s ∈ 𝓝 x) (t : Set α) :
+theorem sdiff_mem_nhdsWithin_compl {x : α} {s : Set α} (hs : s ∈ 𝓝 x) (t : Set α) :
     s \ t ∈ 𝓝[tᶜ] x :=
-  diff_mem_inf_principal_compl hs t
+  sdiff_mem_inf_principal_compl hs t
 
-theorem diff_mem_nhdsWithin_diff {x : α} {s t : Set α} (hs : s ∈ 𝓝[t] x) (t' : Set α) :
+@[deprecated (since := "2026-06-03")] alias diff_mem_nhdsWithin_compl := sdiff_mem_nhdsWithin_compl
+
+theorem sdiff_mem_nhdsWithin_sdiff {x : α} {s t : Set α} (hs : s ∈ 𝓝[t] x) (t' : Set α) :
     s \ t' ∈ 𝓝[t \ t'] x := by
-  rw [nhdsWithin, diff_eq, diff_eq, ← inf_principal, ← inf_assoc]
+  rw [nhdsWithin, sdiff_eq, sdiff_eq, ← inf_principal, ← inf_assoc]
   exact inter_mem_inf hs (mem_principal_self _)
+
+@[deprecated (since := "2026-06-03")] alias diff_mem_nhdsWithin_diff := sdiff_mem_nhdsWithin_sdiff
 
 theorem nhds_of_nhdsWithin_of_nhds {s t : Set α} {a : α} (h1 : s ∈ 𝓝 a) (h2 : t ∈ 𝓝[s] a) :
     t ∈ 𝓝 a := by
@@ -210,6 +214,10 @@ theorem nhdsWithin_union (a : α) (s t : Set α) : 𝓝[s ∪ t] a = 𝓝[s] a �
 theorem nhds_eq_nhdsWithin_sup_nhdsWithin (b : α) {I₁ I₂ : Set α} (hI : Set.univ = I₁ ∪ I₂) :
     nhds b = nhdsWithin b I₁ ⊔ nhdsWithin b I₂ := by
   rw [← nhdsWithin_univ b, hI, nhdsWithin_union]
+
+lemma inter_mem_nhdsWithin_inter {a b c d : Set α} {x : α} (h : a ∈ 𝓝[b] x) (h' : c ∈ 𝓝[d] x) :
+    a ∩ c ∈ 𝓝[b ∩ d] x :=
+  inter_mem (nhdsWithin_mono _ inter_subset_left h) (nhdsWithin_mono _ inter_subset_right h')
 
 /-- If `L` and `R` are neighborhoods of `b` within sets whose union is `Set.univ`, then
 `L ∪ R` is a neighborhood of `b`. -/
@@ -508,6 +516,18 @@ theorem frequently_nhds_subtype_iff (s : Set α) (a : s) (P : α → Prop) :
 theorem tendsto_nhdsWithin_iff_subtype {s : Set α} {a : α} (h : a ∈ s) (f : α → β) (l : Filter β) :
     Tendsto f (𝓝[s] a) l ↔ Tendsto (s.restrict f) (𝓝 ⟨a, h⟩) l := by
   rw [nhdsWithin_eq_map_subtype_coe h, tendsto_map'_iff]; rfl
+
+theorem clusterPt_principal_subtype_iff_frequently {s t : Set α} (hst : s ⊆ t) {J : Set s} {a : s} :
+    ClusterPt a (Filter.principal J) ↔ ∃ᶠ x in nhdsWithin a t, ∃ h : x ∈ s, (⟨x, h⟩ : s) ∈ J := by
+  rw [nhdsWithin_eq_map_subtype_coe (hst a.prop), Filter.frequently_map,
+    clusterPt_principal_iff_frequently,
+    Topology.IsInducing.subtypeVal.nhds_eq_comap, Filter.frequently_comap,
+    Topology.IsInducing.subtypeVal.nhds_eq_comap, Filter.frequently_comap, Subtype.coe_mk]
+  apply frequently_congr
+  apply Eventually.of_forall
+  intro x
+  simp only [SetCoe.exists, exists_and_left, exists_eq_left]
+  exact ⟨fun ⟨h, hx⟩ => ⟨hst h, h, hx⟩, fun ⟨_, hx⟩ => hx⟩
 
 /-!
 ## The `nhdsSetWithin`-filter

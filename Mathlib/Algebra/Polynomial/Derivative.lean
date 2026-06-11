@@ -40,7 +40,7 @@ section Derivative
 
 section Semiring
 
-variable [Semiring R]
+variable [Semiring R] {p : R[X]}
 
 /-- `derivative p` is the formal derivative of the polynomial `p` -/
 def derivative : R[X] →ₗ[R] R[X] where
@@ -97,7 +97,7 @@ theorem derivative_C_mul_X_sq (a : R) : derivative (C a * X ^ 2) = C (a * 2) * X
   rw [derivative_C_mul_X_pow, Nat.cast_two, pow_one]
 
 theorem derivative_X_pow (n : ℕ) : derivative (X ^ n : R[X]) = C (n : R) * X ^ (n - 1) := by
-  convert derivative_C_mul_X_pow (1 : R) n <;> simp
+  convert! derivative_C_mul_X_pow (1 : R) n <;> simp
 
 @[simp]
 theorem derivative_X_pow_succ (n : ℕ) :
@@ -223,26 +223,6 @@ theorem iterate_derivative_one {k} (h : 0 < k) : derivative^[k] (1 : R[X]) = 0 :
 theorem iterate_derivative_X {k} (h : 1 < k) : derivative^[k] (X : R[X]) = 0 :=
   iterate_derivative_eq_zero <| natDegree_X_le.trans_lt h
 
-theorem natDegree_eq_zero_of_derivative_eq_zero [IsAddTorsionFree R] {f : R[X]}
-    (h : derivative f = 0) : f.natDegree = 0 := by
-  rcases eq_or_ne f 0 with (rfl | hf)
-  · exact natDegree_zero
-  rw [natDegree_eq_zero_iff_degree_le_zero]
-  by_contra! f_nat_degree_pos
-  rw [← natDegree_pos_iff_degree_pos] at f_nat_degree_pos
-  let m := f.natDegree - 1
-  have hm : m + 1 = f.natDegree := tsub_add_cancel_of_le f_nat_degree_pos
-  have h2 := coeff_derivative f m
-  rw [Polynomial.ext_iff] at h
-  rw [h m, coeff_zero, ← Nat.cast_add_one, ← nsmul_eq_mul', eq_comm, smul_eq_zero] at h2
-  replace h2 := h2.resolve_left m.succ_ne_zero
-  rw [hm, ← leadingCoeff, leadingCoeff_eq_zero] at h2
-  exact hf h2
-
-theorem eq_C_of_derivative_eq_zero [IsAddTorsionFree R] {f : R[X]} (h : derivative f = 0) :
-    f = C (f.coeff 0) :=
-  eq_C_of_natDegree_eq_zero <| natDegree_eq_zero_of_derivative_eq_zero h
-
 @[simp]
 theorem derivative_mul {f g : R[X]} : derivative (f * g) = derivative f * g + f * derivative g := by
   induction f using Polynomial.induction_on' with
@@ -291,30 +271,6 @@ theorem derivative_natCast_mul {n : ℕ} {f : R[X]} :
 theorem iterate_derivative_natCast_mul {n k : ℕ} {f : R[X]} :
     derivative^[k] ((n : R[X]) * f) = n * derivative^[k] f := by
   induction k generalizing f <;> simp [*]
-
-theorem mem_support_derivative [IsAddTorsionFree R] (p : R[X]) (n : ℕ) :
-    n ∈ (derivative p).support ↔ n + 1 ∈ p.support := by
-  suffices ¬p.coeff (n + 1) * (n + 1 : ℕ) = 0 ↔ coeff p (n + 1) ≠ 0 by
-    simpa only [mem_support_iff, coeff_derivative, Ne, Nat.cast_succ]
-  rw [← nsmul_eq_mul', smul_eq_zero]
-  simp only [Nat.succ_ne_zero, false_or]
-
-@[simp]
-theorem degree_derivative_eq [IsAddTorsionFree R] (p : R[X]) (hp : 0 < natDegree p) :
-    degree (derivative p) = (natDegree p - 1 : ℕ) := by
-  apply le_antisymm
-  · rw [derivative_apply]
-    apply le_trans (degree_sum_le _ _) (Finset.sup_le _)
-    intro n hn
-    apply le_trans (degree_C_mul_X_pow_le _ _) (WithBot.coe_le_coe.2 (tsub_le_tsub_right _ _))
-    apply le_natDegree_of_mem_supp _ hn
-  · refine le_sup ?_
-    rw [mem_support_derivative, tsub_add_cancel_of_le, mem_support_iff]
-    · rw [coeff_natDegree, Ne, leadingCoeff_eq_zero]
-      intro h
-      rw [h, natDegree_zero] at hp
-      exact hp.false
-    exact hp
 
 theorem coeff_iterate_derivative {k} (p : R[X]) (m : ℕ) :
     (derivative^[k] p).coeff m = (m + k).descFactorial k • p.coeff (m + k) := by
@@ -401,6 +357,9 @@ noncomputable def derivativeFinsupp : R[X] →ₗ[R] ℕ →₀ R[X] where
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
+@[deprecated (since := "2025-12-15")]
+alias derivativeFinsupp_apply_toFun := derivativeFinsupp_apply_apply
+
 @[simp]
 theorem support_derivativeFinsupp_subset_range {p : R[X]} {n : ℕ} (h : p.natDegree < n) :
     (derivativeFinsupp p).support ⊆ range n := by
@@ -437,6 +396,74 @@ theorem derivativeFinsupp_derivative (p : R[X]) :
   ext i : 1
   simp
 
+section IsAddTorsionFree
+variable [IsAddTorsionFree R]
+
+lemma mem_support_derivative : n ∈ (derivative p).support ↔ n + 1 ∈ p.support := by
+  suffices ¬p.coeff (n + 1) * (n + 1 : ℕ) = 0 ↔ coeff p (n + 1) ≠ 0 by
+    simpa only [mem_support_iff, coeff_derivative, Ne, Nat.cast_succ]
+  rw [← nsmul_eq_mul', smul_eq_zero]
+  simp only [Nat.succ_ne_zero, false_or]
+
+@[simp]
+lemma degree_derivative (hp : p.natDegree ≠ 0) : degree (derivative p) = ↑(natDegree p - 1) := by
+  apply le_antisymm
+  · rw [derivative_apply]
+    apply le_trans (degree_sum_le _ _) (Finset.sup_le _)
+    intro n hn
+    apply le_trans (degree_C_mul_X_pow_le _ _) (WithBot.coe_le_coe.2 (tsub_le_tsub_right _ _))
+    apply le_natDegree_of_mem_supp _ hn
+  · refine le_sup ?_
+    rw [mem_support_derivative, tsub_add_cancel_of_le (by lia), mem_support_iff,
+      coeff_natDegree, leadingCoeff_ne_zero]
+    rintro rfl
+    simp at hp
+
+@[simp]
+lemma natDegree_derivative (p : R[X]) : p.derivative.natDegree = p.natDegree - 1 := by
+  by_cases hp : p.natDegree = 0
+  · grind [natDegree_derivative_le]
+  · simp [natDegree, degree_derivative hp]
+
+@[simp] lemma derivative_eq_zero : p.derivative = 0 ↔ p.natDegree = 0 where
+  mp hp := by
+    obtain rfl | hp' := eq_or_ne p 0
+    · exact natDegree_zero
+    rw [natDegree_eq_zero_iff_degree_le_zero]
+    by_contra! f_nat_degree_pos
+    rw [← natDegree_pos_iff_degree_pos] at f_nat_degree_pos
+    let m := p.natDegree - 1
+    have hm : m + 1 = p.natDegree := tsub_add_cancel_of_le (by lia)
+    have h2 := coeff_derivative p m
+    rw [Polynomial.ext_iff] at hp
+    rw [hp m, coeff_zero, ← Nat.cast_add_one, ← nsmul_eq_mul', eq_comm, smul_eq_zero] at h2
+    replace h2 := h2.resolve_left m.succ_ne_zero
+    rw [hm, ← leadingCoeff, leadingCoeff_eq_zero] at h2
+    exact hp' h2
+  mpr hp := by rw [eq_C_of_natDegree_eq_zero hp, derivative_C]
+
+lemma derivative_ne_zero : p.derivative ≠ 0 ↔ p.natDegree ≠ 0 := derivative_eq_zero.ne
+
+@[simp] lemma leadingCoeff_derivative (p : R[X]) :
+    leadingCoeff (derivative p) = leadingCoeff p * p.natDegree := by
+  by_cases hp : p.natDegree = 0
+  · simp [hp]
+  rw [leadingCoeff, leadingCoeff, coeff_derivative, natDegree_derivative]
+  norm_cast
+  congr <;> lia
+
+@[deprecated (since := "2026-06-03")]
+alias ⟨natDegree_eq_zero_of_derivative_eq_zero, _⟩ := derivative_eq_zero
+
+lemma eq_C_of_derivative_eq_zero (h : derivative p = 0) : p = C (p.coeff 0) :=
+  eq_C_of_natDegree_eq_zero <| derivative_eq_zero.1 h
+
+@[deprecated degree_derivative (since := "2026-06-03")]
+lemma degree_derivative_eq (p : R[X]) (hp : 0 < natDegree p) :
+    degree (derivative p) = (natDegree p - 1 : ℕ) :=
+  degree_derivative (by lia)
+
+end IsAddTorsionFree
 end Semiring
 
 section CommSemiring
@@ -451,7 +478,7 @@ theorem derivative_pow_succ (p : R[X]) (n : ℕ) :
 
 theorem derivative_pow (p : R[X]) (n : ℕ) :
     derivative (p ^ n) = C (n : R) * p ^ (n - 1) * derivative p :=
-  Nat.casesOn n (by rw [pow_zero, derivative_one, Nat.cast_zero, C_0, zero_mul, zero_mul]) fun n =>
+  Nat.casesOn n (by simp) fun n ↦
     by rw [p.derivative_pow_succ n, Nat.add_one_sub_one, n.cast_succ]
 
 theorem derivative_sq (p : R[X]) : derivative (p ^ 2) = C 2 * p * derivative p := by
@@ -528,7 +555,7 @@ theorem iterate_derivative_mul_X_pow (n m : ℕ) (p : R[X]) :
     norm_cast
     ring
   rw [hsum]
-  refine sum_congr_of_eq_on_inter (fun k hk hk' ↦ ?_) (by aesop) (by simp)
+  refine sum_congr_of_eq_on_inter (fun k hk hk' ↦ ?_) (by simp_all) (by simp)
   rcases le_or_gt k m with hkm | hkm
   · replace hk' : n < k := by simpa [hkm] using hk'
     simp [Nat.choose_eq_zero_of_lt hk']
@@ -536,19 +563,19 @@ theorem iterate_derivative_mul_X_pow (n m : ℕ) (p : R[X]) :
 
 theorem iterate_derivative_mul_X {n : ℕ} (p : R[X]) :
     derivative^[n] (p * X) = (derivative^[n] p) * X + n • derivative^[n - 1] p := by
-  convert p.iterate_derivative_mul_X_pow n 1; · simp
+  convert! p.iterate_derivative_mul_X_pow n 1; · simp
   rcases n with rfl | n <;> simp [sum_range_succ]
 
 theorem iterate_derivative_derivative_mul_X {n : ℕ} (p : R[X]) :
     derivative^[n] (derivative p * X) = (derivative^[n + 1] p) * X + n • derivative^[n] p := by
-  convert (derivative p).iterate_derivative_mul_X_pow n 1; · simp
+  convert! (derivative p).iterate_derivative_mul_X_pow n 1; · simp
   rcases n with rfl | n <;> simp [sum_range_succ]
 
 theorem iterate_derivative_derivative_mul_X_sq {n : ℕ} (p : R[X]) :
     derivative^[n] (derivative^[2] p * X ^ 2) =
       (derivative^[n + 2] p) * X ^ 2 + (2 * n) • (derivative^[n + 1] p) * X +
         (n * (n - 1)) • derivative^[n] p := by
-  convert (derivative^[2] p).iterate_derivative_mul_X_pow n 2
+  convert! (derivative^[2] p).iterate_derivative_mul_X_pow n 2
   rcases n with rfl | n; · simp
   rcases n with rfl | n; · simp [sum_range_succ, ← mul_assoc]
   suffices ((n + 1 + 1) * (n + 1) / 2) * 2 = (n + 1 + 1) * (n + 1) by
@@ -594,7 +621,7 @@ theorem derivative_prod [DecidableEq ι] {s : Multiset ι} {f : ι → R[X]} :
 theorem derivative_prod_finset [DecidableEq ι] {s : Finset ι} {f : ι → R[X]} :
     derivative (∏ b ∈ s, f b) =
       ∑ a ∈ s, (∏ b ∈ s.erase a, f b) * derivative (f a) := by
-  simpa using derivative_prod
+  simpa using! derivative_prod
 
 end CommSemiring
 
@@ -686,7 +713,7 @@ theorem iterate_derivative_eq_zero_of_degree_lt {k : ℕ} {P : R[X]} (h : P.degr
       case pos hP' => simp [hP']
       case neg hP' =>
         have hP'' : P.natDegree ≠ 0 := by
-          contrapose! hP'
+          contrapose hP'
           exact derivative_of_natDegree_zero hP'
         refine ind <| (natDegree_lt_iff_degree_lt hP').mp ?_
         linarith [(natDegree_lt_iff_degree_lt hP).mpr h, natDegree_derivative_lt hP'']

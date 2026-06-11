@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplex
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 /-!
 # A binary product of finite simplicial sets is finite
@@ -18,7 +17,7 @@ We also show that if `X₁` and `X₂` are finite, then `X₁ ⊗ X₂` is also 
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

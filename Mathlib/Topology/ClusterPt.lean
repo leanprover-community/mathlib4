@@ -27,6 +27,9 @@ universe u v w
 variable {X : Type u} [TopologicalSpace X] {Y : Type v} {ι : Sort w} {α β : Type*}
   {x : X} {s s₁ s₂ t : Set X}
 
+@[simp]
+protected lemma ClusterPt.top : ClusterPt x ⊤ := by simp [ClusterPt]
+
 theorem clusterPt_sup {F G : Filter X} : ClusterPt x (F ⊔ G) ↔ ClusterPt x F ∨ ClusterPt x G := by
   simp only [ClusterPt, inf_sup_left, sup_neBot]
 
@@ -171,6 +174,17 @@ theorem MapClusterPt.of_comp {φ : β → α} {p : Filter β} (h : Tendsto φ p 
     (H : MapClusterPt x p (u ∘ φ)) : MapClusterPt x F u :=
   H.clusterPt.mono <| map_mono h
 
+theorem IsClosed.mem_of_mapClusterPt {l : X} {s : Set X} {f : α → X} {b : Filter α}
+    (hs : IsClosed s) (hf : MapClusterPt l b f) (h : ∀ᶠ (x : α) in b, f x ∈ s) : l ∈ s :=
+  (hf.frequently' h).mem_of_closed hs
+
+/-- A point `a` is a cluster point of the sequence `x` if and only if `a` belongs to the closure
+of every tail `x '' {n | i ≤ n}`. -/
+theorem mapClusterPt_atTop_iff_forall_mem_closure {ι : Type*} [Preorder ι] [IsDirectedOrder ι]
+    [Nonempty ι] {x : ι → X} {a : X} :
+    MapClusterPt a atTop x ↔ ∀ i, a ∈ closure (x '' Ici i) := by
+  simp [MapClusterPt, (atTop_basis.map x).clusterPt_iff_forall_mem_closure]
+
 end MapClusterPt
 
 theorem accPt_sup {x : X} {F G : Filter X} :
@@ -183,7 +197,7 @@ theorem accPt_iff_clusterPt {x : X} {F : Filter X} : AccPt x F ↔ ClusterPt x (
 /-- `x` is an accumulation point of a set `C` iff it is a cluster point of `C ∖ {x}`. -/
 theorem accPt_principal_iff_clusterPt {x : X} {C : Set X} :
     AccPt x (𝓟 C) ↔ ClusterPt x (𝓟 (C \ { x })) := by
-  rw [accPt_iff_clusterPt, inf_principal, inter_comm, diff_eq]
+  rw [accPt_iff_clusterPt, inf_principal, inter_comm, sdiff_eq]
 
 /-- `x` is an accumulation point of a set `C` iff every neighborhood
 of `x` contains a point of `C` other than `x`. -/
@@ -225,7 +239,7 @@ theorem clusterPt_principal {x : X} {C : Set X} :
   · intro h
     by_contra! hc
     rw [accPt_principal_iff_clusterPt] at hc
-    simp_all only [not_false_eq_true, diff_singleton_eq_self, not_true_eq_false, hc.1]
+    simp_all only [not_false_eq_true, sdiff_singleton_eq_self, not_true_eq_false, hc.1]
   · rintro (h | h)
     · exact clusterPt_principal_iff.mpr fun _ mem ↦ ⟨x, ⟨mem_of_mem_nhds mem, h⟩⟩
     · exact h.clusterPt
@@ -323,6 +337,9 @@ theorem isClosed_iff_clusterPt : IsClosed s ↔ ∀ a, ClusterPt a (𝓟 s) → 
   calc
     IsClosed s ↔ closure s ⊆ s := closure_subset_iff_isClosed.symm
     _ ↔ ∀ a, ClusterPt a (𝓟 s) → a ∈ s := by simp only [subset_def, mem_closure_iff_clusterPt]
+
+theorem isClosed_iff_accPt : IsClosed s ↔ ∀ a, AccPt a (𝓟 s) → a ∈ s := by
+  simp [isClosed_iff_clusterPt, clusterPt_principal, or_imp]
 
 theorem isClosed_iff_nhds :
     IsClosed s ↔ ∀ x, (∀ U ∈ 𝓝 x, (U ∩ s).Nonempty) → x ∈ s := by

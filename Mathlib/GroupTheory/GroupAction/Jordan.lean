@@ -158,7 +158,7 @@ theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
       exact ⟨ha, hga⟩
     have hmn : t.ncard - 1 < n := by
       rw [Nat.lt_iff_add_one_le, ← htm, Nat.le_iff_lt_add_one, ← hsn]
-      apply Set.ncard_lt_ncard _ s.toFinite
+      apply Set.ncard_lt_ncard _
       exact ⟨Set.inter_subset_left, fun h ↦ hgb (Set.inter_subset_right (h hb))⟩
     have htm' : t.ncard - 1 + 2 < Nat.card α := lt_trans (Nat.add_lt_add_right hmn 2) hsn'
     suffices IsPretransitive ↥(fixingSubgroup G s) ↥(ofFixingSubgroup G s) →
@@ -200,7 +200,7 @@ theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
       · exact fun h ↦ ha (by rw [h]; trivial)
     have hmn : t.ncard - 1 < n := by
       rw [Nat.lt_iff_add_one_le, ← htm, Nat.le_iff_lt_add_one, ← hsn]
-      apply Set.ncard_lt_ncard _ (Set.toFinite s)
+      apply Set.ncard_lt_ncard _
       refine ⟨Set.inter_subset_left, fun h ↦ hb ?_⟩
       suffices s = g • s by
         rw [this]
@@ -373,11 +373,12 @@ theorem isPretransitive_of_isCycle_mem {g : Perm α}
   have hg' : (⟨g, hg⟩ : ↥G) ∈ fixingSubgroup G ((↑g.support : Set α)ᶜ) := by
     simp_rw [mem_fixingSubgroup_iff G]
     intro y hy
-    simpa only [Set.mem_compl_iff, Finset.mem_coe, notMem_support] using hy
+    simpa only [Set.mem_compl_iff, Finset.mem_coe, notMem_support] using! hy
   let g' : fixingSubgroup (↥G) ((↑g.support : Set α)ᶜ) := ⟨(⟨g, hg⟩ : ↥G), hg'⟩
   obtain ⟨i, hi⟩ := hgc ((hs x).mpr hx)
   exact ⟨g' ^ i, hi.symm⟩
 
+set_option backward.isDefEq.respectTransparency false in
 omit [Fintype α] in variable [Finite α] in
 /-- A primitive subgroup of `Equiv.Perm α` that contains a swap
 is the full permutation group (Jordan). -/
@@ -413,12 +414,9 @@ theorem subgroup_eq_top_of_isPreprimitive_of_isSwap_mem
   · rw [hn]; apply Nat.lt_add_one
   have := isPretransitive_of_isCycle_mem h2g.isCycle hg
   apply IsPreprimitive.of_prime_card
-  convert Nat.prime_two
+  convert! Nat.prime_two
   rw [Nat.card_eq_fintype_card, Fintype.card_subtype, ← card_support_eq_two.mpr h2g]
   simp [SubMulAction.mem_ofFixingSubgroup_iff, support]
-
-@[deprecated (since := "2025-11-04")]
-alias eq_top_of_isPreprimitive_of_isSwap_mem := subgroup_eq_top_of_isPreprimitive_of_isSwap_mem
 
 /-- A primitive subgroup of `Equiv.Perm α` that contains a 3-cycle
 contains the alternating group (Jordan). -/
@@ -453,7 +451,7 @@ theorem alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem
   · grind
   have := isPretransitive_of_isCycle_mem h3g.isCycle hg
   apply IsPreprimitive.of_prime_card
-  convert Nat.prime_three
+  convert! Nat.prime_three
   rw [Nat.card_eq_fintype_card, Fintype.card_subtype, ← h3g.card_support]
   apply congr_arg
   ext x

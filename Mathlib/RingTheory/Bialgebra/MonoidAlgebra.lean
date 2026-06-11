@@ -36,7 +36,7 @@ namespace MonoidAlgebra
 variable [CommSemiring R] [Semiring A] [Bialgebra R A] [Monoid M] [Monoid N] [Monoid O]
 
 variable (R A M) in
-@[to_additive (dont_translate := R A) (relevant_arg := M)]
+@[to_additive (dont_translate := R A)]
 instance instBialgebra : Bialgebra R A[M] where
   counit_one := by simp only [one_def, counit_single, Bialgebra.counit_one]
   mul_compr₂_counit := by ext; simp

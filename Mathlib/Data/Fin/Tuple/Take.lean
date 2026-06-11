@@ -117,6 +117,7 @@ theorem take_append_left {n' : ℕ} {α : Sort*} (m : ℕ) (h : m ≤ n) (u : (i
     (v : (i : Fin n') → α) : take m (Nat.le_add_right_of_le h) (append u v) = take m h u :=
   take_addCases_left m h _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Taking the first `n + m` elements of an `addCases u v`, where `v` is a `n'`-tuple and `m ≤ n'`,
 is the same as appending `u` with the first `m` elements of `v`. -/
 theorem take_addCases_right {n' : ℕ} {motive : Fin (n + n') → Sort*} (m : ℕ) (h : m ≤ n')

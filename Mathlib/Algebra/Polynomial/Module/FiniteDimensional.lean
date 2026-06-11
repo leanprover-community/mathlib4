@@ -5,9 +5,10 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.FieldTheory.Minpoly.Field
-public import Mathlib.Algebra.Polynomial.Module.AEval
 public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.Algebra.Polynomial.Module.AEval
+public import Mathlib.FieldTheory.Minpoly.Field
+
 /-!
 # Polynomial modules in finite dimensions
 

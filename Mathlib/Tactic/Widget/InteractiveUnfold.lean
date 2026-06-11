@@ -11,7 +11,6 @@ public meta import Mathlib.Lean.Meta.KAbstractPositions
 public import Lean.Server.Rpc.RequestHandling
 public import Mathlib.Tactic.NthRewrite
 public import Mathlib.Tactic.Widget.SelectPanelUtils
-public import ProofWidgets.Cancellable
 public import ProofWidgets.Component.Basic
 public import ProofWidgets.Component.OfRpcMethod
 
@@ -33,6 +32,7 @@ For example, if the goal contains `1+1`, then it will suggest rewriting this int
 Clicking on a suggestion pastes a rewrite into the editor, which will be of the form
 - `rw [show 1+1 = Nat.add 1 1 from rfl]`
 - `rw [show 1+1 = 2 from rfl]`
+
 It also takes into account the position of the selected expression if it appears in multiple places,
 and whether the rewrite is in the goal or a local hypothesis.
 The rewrite string is created using `mkRewrite`.
@@ -184,8 +184,9 @@ def renderUnfolds (e : Expr) (occ : Option Nat) (loc : Option Name) (range : Lsp
   </details>
 
 
-@[server_rpc_method_cancellable]
-private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
+/-- The rpc method of the `unfold?` widget. -/
+@[server_rpc_method]
+def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
   RequestM.asTask do
   let doc ← RequestM.readDoc
   let some loc := props.selectedLocations.back? |
