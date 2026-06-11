@@ -577,7 +577,7 @@ lemma _root_.AlgHom.liftOfSurjective_comp (f : A →ₐ[R] B) (hf : Function.Sur
 lemma _root_.AlgHom.liftOfSurjective_surjective (f : A →ₐ[R] B) (hf : Function.Surjective f)
     (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom)
     (hg : Function.Surjective g) : Function.Surjective (AlgHom.liftOfSurjective f hf g H) :=
-  .of_comp (g := f) (by convert hg; ext; simp)
+  .of_comp (g := f) (by convert! hg; ext; simp)
 
 end liftOfSurjective
 

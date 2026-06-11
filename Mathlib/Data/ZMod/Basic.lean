@@ -666,8 +666,8 @@ theorem val_add_of_le {n : ℕ} [NeZero n] {a b : ZMod n} (h : n ≤ a.val + b.v
 
 theorem val_add_le {n : ℕ} (a b : ZMod n) : (a + b).val ≤ a.val + b.val := by
   cases n
-  · simpa [ZMod.val] using Int.natAbs_add_le _ _
-  · simpa [ZMod.val_add] using Nat.mod_le _ _
+  · simpa [ZMod.val] using! Int.natAbs_add_le _ _
+  · simpa [ZMod.val_add] using! Nat.mod_le _ _
 
 theorem val_mul {n : ℕ} (a b : ZMod n) : (a * b).val = a.val * b.val % n := by
   cases n
@@ -824,6 +824,18 @@ lemma isUnit_prime_iff_not_dvd {n p : ℕ} (hp : p.Prime) : IsUnit (p : ZMod n) 
 
 lemma isUnit_prime_of_not_dvd {n p : ℕ} (hp : p.Prime) (h : ¬ p ∣ n) : IsUnit (p : ZMod n) :=
   (isUnit_prime_iff_not_dvd hp).mpr h
+
+/-- In `ZMod (p ^ d)` with `0 < d`, a natural number is a unit iff `p` does not divide it. -/
+theorem isUnit_natCast_iff_not_dvd_pow {p d a : ℕ} (hp : p.Prime) (hd : 0 < d) :
+    IsUnit (a : ZMod (p ^ d)) ↔ ¬ p ∣ a := by
+  rw [isUnit_iff_coprime, Nat.coprime_pow_right_iff hd, Nat.coprime_comm,
+    hp.coprime_iff_not_dvd]
+
+/-- In `ZMod (p ^ d)` with `0 < d`, the prime `p` is not a unit. -/
+theorem prime_natCast_not_isUnit_pow {p d : ℕ} (hp : p.Prime) (hd : 0 < d) :
+    ¬ IsUnit ((p : ℕ) : ZMod (p ^ d)) := by
+  simp [isUnit_prime_iff_not_dvd hp]
+  lia
 
 @[simp]
 theorem inv_coe_unit {n : ℕ} (u : (ZMod n)ˣ) : (u : ZMod n)⁻¹ = (u⁻¹ : (ZMod n)ˣ) := by
@@ -1226,7 +1238,7 @@ lemma ZModModule.two_le_char [NeZero n] [Nontrivial G] : 2 ≤ n := by
 
 lemma ZModModule.periodicPts_add_left [NeZero n] (x : G) : periodicPts (x + ·) = .univ :=
   Set.eq_univ_of_forall fun y ↦ ⟨n, NeZero.pos n, by
-    simpa [char_nsmul_eq_zero, IsPeriodicPt] using isFixedPt_id _⟩
+    simpa [char_nsmul_eq_zero, IsPeriodicPt] using! isFixedPt_id _⟩
 
 end general
 

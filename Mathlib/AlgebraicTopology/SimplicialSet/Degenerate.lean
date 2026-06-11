@@ -301,7 +301,7 @@ lemma le_iff_contains_nonDegenerate (B : X.Subcomplex) :
 
 lemma eq_top_iff_contains_nonDegenerate :
     A = ⊤ ↔ ∀ (n : ℕ), X.nonDegenerate n ⊆ A.obj _ := by
-  simpa using le_iff_contains_nonDegenerate ⊤ A
+  simpa using! le_iff_contains_nonDegenerate ⊤ A
 
 set_option backward.isDefEq.respectTransparency false in
 lemma degenerate_eq_top_iff (n : ℕ) :

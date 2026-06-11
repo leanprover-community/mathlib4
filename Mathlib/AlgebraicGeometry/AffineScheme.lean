@@ -264,7 +264,7 @@ theorem isAffineOpen_opensRange {X Y : Scheme} [IsAffine X] (f : X ⟶ Y)
   exact Subtype.range_val.symm
 
 theorem isAffineOpen_top (X : Scheme) [IsAffine X] : IsAffineOpen (⊤ : X.Opens) := by
-  convert isAffineOpen_opensRange (𝟙 X)
+  convert! isAffineOpen_opensRange (𝟙 X)
   ext1
   exact Set.range_id.symm
 
@@ -322,8 +322,9 @@ theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine
 
 theorem isBasis_basicOpen (X : Scheme) [IsAffine X] :
     Opens.IsBasis (Set.range (X.basicOpen : Γ(X, ⊤) → X.Opens)) := by
-  convert PrimeSpectrum.isBasis_basic_opens.of_isInducing
-    (TopCat.homeoOfIso (Scheme.forgetToTop.mapIso X.isoSpec)).isInducing using 1
+  convert!
+    PrimeSpectrum.isBasis_basic_opens.of_isInducing
+      (TopCat.homeoOfIso (Scheme.forgetToTop.mapIso X.isoSpec)).isInducing using 1
   ext V
   simp only [Set.mem_range, exists_exists_eq_and, Set.mem_setOf,
     ← Opens.coe_inj (V := V), ← Scheme.toSpecΓ_preimage_basicOpen]
@@ -499,9 +500,8 @@ lemma fromSpec_app_of_le (V : X.Opens) (h : U ≤ V) :
 include hU in
 protected theorem isCompact :
     IsCompact (U : Set X) := by
-  convert @IsCompact.image _ _ _ _ Set.univ hU.fromSpec PrimeSpectrum.compactSpace.1
-    (by fun_prop)
-  convert hU.range_fromSpec.symm
+  convert! @IsCompact.image _ _ _ _ Set.univ hU.fromSpec PrimeSpectrum.compactSpace.1 (by fun_prop)
+  convert! hU.range_fromSpec.symm
   exact Set.image_univ
 
 theorem _root_.AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
@@ -597,8 +597,9 @@ include hU in
 theorem basicOpen :
     IsAffineOpen (X.basicOpen f) := by
   rw [← hU.fromSpec_image_basicOpen, Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion]
-  convert isAffineOpen_opensRange
-    (Spec.map (CommRingCat.ofHom <| algebraMap Γ(X, U) (Localization.Away f)))
+  convert!
+    isAffineOpen_opensRange
+      (Spec.map (CommRingCat.ofHom <| algebraMap Γ(X, U) (Localization.Away f)))
   exact Opens.ext (PrimeSpectrum.localization_away_comap_range (Localization.Away f) f).symm
 
 lemma Spec_basicOpen {R : CommRingCat} (f : R) :
@@ -623,9 +624,9 @@ theorem exists_basicOpen_le {V : X.Opens} (x : V) (h : ↑x ∈ U) :
   have : IsAffine _ := hU
   obtain ⟨_, ⟨_, ⟨r, rfl⟩, rfl⟩, h₁, h₂ : _ ≤ U.ι ⁻¹ᵁ V⟩ :=
     (isBasis_basicOpen U).exists_subset_of_mem_open (x.2 : (⟨x, h⟩ : U) ∈ _) (U.ι ⁻¹ᵁ V).isOpen
-  replace h₁ : x.1 ∈ X.basicOpen r := by simpa [U.mem_basicOpen_toScheme] using h₁
+  replace h₁ : x.1 ∈ X.basicOpen r := by simpa [U.mem_basicOpen_toScheme] using! h₁
   replace h₂ : X.basicOpen r ≤ V := by
-    simpa [Scheme.image_basicOpen] using (U.ι.image_mono h₂).trans (U.ι.image_preimage_le _)
+    simpa [Scheme.image_basicOpen] using! (U.ι.image_mono h₂).trans (U.ι.image_preimage_le _)
   exact ⟨U.topIso.hom.hom r, by simp [Scheme.Opens.toScheme_presheaf_obj, h₁, h₂]⟩
 
 noncomputable
@@ -660,7 +661,7 @@ theorem isLocalization_basicOpen :
   apply
     (IsLocalization.isLocalization_iff_of_ringEquiv (Submonoid.powers f)
       (asIso <| basicOpenSectionsToAffine hU f).commRingCatIsoToRingEquiv).mpr
-  convert StructureSheaf.IsLocalization.to_basicOpen _ f using 1
+  convert! StructureSheaf.IsLocalization.to_basicOpen _ f using 1
   apply Algebra.algebra_ext
   intro _
   congr 1
@@ -806,7 +807,7 @@ theorem isLocalization_stalk' (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec y �
       (S := X.presheaf.stalk (hU.fromSpec y)) _ y.asIdeal.primeCompl _
       (TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨hU.fromSpec y, hy⟩) _ _
       (asIso <| hU.fromSpec.stalkMap y).commRingCatIsoToRingEquiv).mpr
-  convert StructureSheaf.IsLocalization.to_stalk Γ(X, U) y using 1
+  convert! StructureSheaf.IsLocalization.to_stalk Γ(X, U) y using 1
   delta IsLocalization.AtPrime StructureSheaf.stalkAlgebra
   congr!
   simp [RingHom.algebraMap_toAlgebra, ← CommRingCat.hom_comp, IsAffineOpen.fromSpec_app_self]
@@ -1038,7 +1039,7 @@ theorem of_affine_open_cover {X : Scheme} {P : X.affineOpens → Prop}
     obtain ⟨i, hi⟩ := Opens.mem_iSup.mp (iSup_U.ge (Set.mem_univ x))
     obtain ⟨f, g, e, hf⟩ := exists_basicOpen_le_affine_inter V.prop (U i).prop x ⟨x.prop, hi⟩
     refine ⟨f, hf, ?_⟩
-    convert basicOpen _ g (hU i) using 1
+    convert! basicOpen _ g (hU i) using 1
     ext1
     exact e
   choose f hf₁ hf₂ using this
@@ -1146,7 +1147,7 @@ lemma IsAffineOpen.fromSpec_preimage_zeroLocus {X : Scheme.{u}} {U : X.Opens}
     hU.fromSpec ⁻¹' X.zeroLocus s = PrimeSpectrum.zeroLocus s := by
   ext x
   suffices (∀ f ∈ s, ¬f ∉ x.asIdeal) ↔ s ⊆ x.asIdeal by
-    simpa [← hU.fromSpec_image_basicOpen, -not_not] using this
+    simpa [← hU.fromSpec_image_basicOpen, -not_not] using! this
   simp_rw [not_not]
   rfl
 

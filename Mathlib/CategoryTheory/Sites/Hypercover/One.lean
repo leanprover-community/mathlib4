@@ -71,6 +71,13 @@ def sieve₁ {i₁ i₂ : E.I₀} {W : C} (p₁ : W ⟶ E.X i₁) (p₂ : W ⟶ 
     rintro Z Z' g ⟨j, h, fac₁, fac₂⟩ φ
     exact ⟨j, φ ≫ h, by simpa using φ ≫= fac₁, by simpa using φ ≫= fac₂⟩
 
+lemma pullback_sieve₁ {i₁ i₂ : E.I₀} {W : C} (p₁ : W ⟶ E.X i₁) (p₂ : W ⟶ E.X i₂)
+    {T : C} (f : T ⟶ W) :
+    Sieve.pullback f (E.sieve₁ p₁ p₂) = E.sieve₁ (f ≫ p₁) (f ≫ p₂) := by
+  refine le_antisymm ?_ ?_ <;>
+  · intro Z g ⟨k, u, hu₁, hu₂⟩
+    cat_disch
+
 section
 
 variable {i₁ i₂ : E.I₀} [HasPullback (E.f i₁) (E.f i₂)]
@@ -78,6 +85,14 @@ variable {i₁ i₂ : E.I₀} [HasPullback (E.f i₁) (E.f i₂)]
 /-- The obvious morphism `E.Y j ⟶ pullback (E.f i₁) (E.f i₂)` given by `E : PreOneHypercover S`. -/
 noncomputable abbrev toPullback (j : E.I₁ i₁ i₂) : E.Y j ⟶ pullback (E.f i₁) (E.f i₂) :=
   pullback.lift (E.p₁ j) (E.p₂ j) (E.w j)
+
+@[reassoc (attr := simp)]
+lemma toPullback_fst (k : E.I₁ i₁ i₂) : E.toPullback k ≫ pullback.fst _ _ = E.p₁ k := by
+  rw [pullback.lift_fst]
+
+@[reassoc (attr := simp)]
+lemma toPullback_snd (k : E.I₁ i₁ i₂) : E.toPullback k ≫ pullback.snd _ _ = E.p₂ k := by
+  rw [pullback.lift_snd]
 
 variable (i₁ i₂) in
 /-- The sieve of `pullback (E.f i₁) (E.f i₂)` given by `E : PreOneHypercover S`. -/
@@ -694,13 +709,13 @@ lemma inv_hom_s₀_apply (i : F.I₀) : e.hom.s₀ (e.inv.s₀ i) = i :=
 lemma hom_inv_s₁_apply {i j : E.I₀} (k : E.I₁ i j) :
     e.inv.s₁ (e.hom.s₁ k) = E.congrIndexOneOfEq (by simp) (by simp) k := by
   obtain ⟨hs₀, hh₀, hs₁, hh₁⟩ := PreOneHypercover.Hom.ext'_iff.mp e.hom_inv_id
-  simpa using hs₁ i j k
+  simpa using! hs₁ i j k
 
 @[simp]
 lemma inv_hom_s₁_apply {i j : F.I₀} (k : F.I₁ i j) :
     e.hom.s₁ (e.inv.s₁ k) = F.congrIndexOneOfEq (by simp) (by simp) k := by
   obtain ⟨hs₀, hh₀, hs₁, hh₁⟩ := PreOneHypercover.Hom.ext'_iff.mp e.inv_hom_id
-  simpa using hs₁ i j k
+  simpa using! hs₁ i j k
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
@@ -923,7 +938,7 @@ noncomputable def multiforkLift : c.pt ⟶ F.obj.obj (Opposite.op S) :=
     dsimp
     simp only [assoc, ← Functor.map_comp, ← op_comp, fac₁, fac₂]
     simp only [op_comp, Functor.map_comp]
-    simpa using c.condition ⟨⟨i₁, i₂⟩, j⟩ =≫ F.obj.map h.op)
+    simpa using! c.condition ⟨⟨i₁, i₂⟩, j⟩ =≫ F.obj.map h.op)
 
 @[reassoc]
 lemma multiforkLift_map (i₀ : E.I₀) : multiforkLift c ≫ F.obj.map (E.f i₀).op = c.ι i₀ := by
@@ -939,7 +954,6 @@ noncomputable def isLimitMultifork : IsLimit (E.multifork F.1) :=
     intro c m hm
     apply F.property.hom_ext_ofArrows _ E.mem₀
     intro i₀
-    dsimp only
     rw [multiforkLift_map]
     exact hm i₀)
 
@@ -982,7 +996,7 @@ def inter [HasPullbacks C] (E F : J.OneHypercover S)
   mem₀ := (E.toZeroHypercover.inter F.toZeroHypercover).mem₀
   mem₁ i₁ i₂ W p₁ p₂ h := by
     rw [PreOneHypercover.sieve₁_inter h]
-    refine J.bind_covering (E.mem₁ _ _ _ _ (by simpa using h)) fun _ _ _ ↦ ?_
+    refine J.bind_covering (E.mem₁ _ _ _ _ (by simpa using! h)) fun _ _ _ ↦ ?_
     exact J.pullback_stable _
       (F.mem₁ _ _ _ _ (by simpa [Category.assoc, ← pullback.condition]))
 

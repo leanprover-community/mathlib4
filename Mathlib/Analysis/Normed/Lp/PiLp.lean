@@ -785,7 +785,7 @@ theorem nnnorm_eq_of_L2 (x : PiLp 2 β) :
 theorem norm_sq_eq_of_L2 (β : ι → Type*) [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp 2 β) :
     ‖x‖ ^ 2 = ∑ i : ι, ‖x i‖ ^ 2 := by
   suffices ‖x‖₊ ^ 2 = ∑ i : ι, ‖x i‖₊ ^ 2 by
-    simpa only [NNReal.coe_sum] using congr_arg ((↑) : ℝ≥0 → ℝ) this
+    simpa only [NNReal.coe_sum] using! congr_arg ((↑) : ℝ≥0 → ℝ) this
   rw [nnnorm_eq_of_L2, NNReal.sq_sqrt]
 
 theorem dist_eq_of_L2 (x y : PiLp 2 β) :
@@ -1137,12 +1137,11 @@ section
 
 variable [Semiring 𝕜] [∀ i, SeminormedAddCommGroup (β i)] [∀ i, Module 𝕜 (β i)]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `WithLp.linearEquiv` as a continuous linear equivalence. -/
 @[simps! apply symm_apply]
 def continuousLinearEquiv : PiLp p β ≃L[𝕜] ∀ i, β i where
   toLinearEquiv := WithLp.linearEquiv _ _ _
-  continuous_toFun := continuous_ofLp _ _
-  continuous_invFun := continuous_toLp p _
 
 lemma coe_continuousLinearEquiv :
     ⇑(PiLp.continuousLinearEquiv p 𝕜 β) = ofLp := rfl
@@ -1150,12 +1149,12 @@ lemma coe_continuousLinearEquiv :
 lemma coe_symm_continuousLinearEquiv :
     ⇑(PiLp.continuousLinearEquiv p 𝕜 β).symm = toLp p := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 variable {𝕜} in
 /-- The projection on the `i`-th coordinate of `PiLp p β`, as a continuous linear map. -/
 @[simps!]
 def proj (i : ι) : PiLp p β →L[𝕜] β i where
   __ := projₗ p β i
-  cont := PiLp.continuous_apply ..
 
 end
 

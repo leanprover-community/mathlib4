@@ -84,7 +84,7 @@ lemma geometricMeasure_real_singleton_pos (h1 : p ≠ 0) (h2 : p ≠ 1) n :
 
 lemma hasSum_one_geometricMeasure (hp : p ≠ 0) :
     HasSum (fun n ↦ (1 - p : ℝ) ^ n * p) 1 := by
-  convert (hasSum_geometric_of_lt_one (r := 1 - p) (by grind) (by grind)).mul_right (p : ℝ)
+  convert! (hasSum_geometric_of_lt_one (r := 1 - p) (by grind) (by grind)).mul_right (p : ℝ)
   grind
 
 instance isProbabilityMeasure_geometricMeasure :
@@ -115,7 +115,7 @@ lemma hasSum_integral_geometricMeasure [CompleteSpace E]
     ext n; rw [ENNReal.toReal_ofReal (geometricMeasure_nonneg p n)]
   rw [this, geometricMeasure_eq hp]
   apply hasSum_integral_sum_dirac (by simp)
-  convert (integrable_geometricMeasure_iff hp).1 hf with n
+  convert! (integrable_geometricMeasure_iff hp).1 hf with n
   rw [ENNReal.toReal_ofReal (geometricMeasure_nonneg p n)]
 
 /-- If a function is integrable with respect to `geometricMeasure p`, then its integral

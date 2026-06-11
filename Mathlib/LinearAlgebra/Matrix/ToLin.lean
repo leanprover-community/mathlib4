@@ -882,7 +882,7 @@ theorem LinearMap.toMatrixAlgEquiv_mul (f g : M₁ →ₗ[R] M₁) :
 theorem Matrix.toLinAlgEquiv_mul (A B : Matrix n n R) :
     Matrix.toLinAlgEquiv v₁ (A * B) =
       (Matrix.toLinAlgEquiv v₁ A).comp (Matrix.toLinAlgEquiv v₁ B) := by
-  convert Matrix.toLin_mul v₁ v₁ v₁ A B
+  convert! Matrix.toLin_mul v₁ v₁ v₁ A B
 
 @[simp]
 theorem LinearMap.isUnit_toMatrix_iff {f : M₁ →ₗ[R] M₁} : IsUnit (f.toMatrix v₁ v₁) ↔ IsUnit f :=

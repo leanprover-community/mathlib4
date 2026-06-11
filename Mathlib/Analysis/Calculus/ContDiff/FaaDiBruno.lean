@@ -268,7 +268,7 @@ lemma one_lt_partSize_index_zero (c : OrderedFinpartition (n + 1)) (hc : range (
         c.emb (c.index 0) ⟨c.partSize (c.index 0) - 1, Nat.sub_one_lt_of_lt (c.partSize_pos _)⟩}
           ⊆ range (c.emb (c.index 0)) := by simp [insert_subset]
     simp only [emb_zero] at this
-    convert Nat.card_mono Subtype.finite this
+    convert! Nat.card_mono Subtype.finite this
     simp only [Nat.card_eq_fintype_card, Fintype.card_ofFinset, toFinset_singleton]
     apply (Finset.card_pair ?_).symm
     exact ((Fin.zero_le _).trans_lt (c.parts_strictMono ((pos_iff_ne_zero' (c.index 0)).mpr h))).ne
@@ -384,7 +384,7 @@ def extendMiddle (c : OrderedFinpartition n) (k : Fin c.length) : OrderedFinpart
     · simp only [hm, ↓reduceDIte]
       exact strictMono_succ.comp ((c.emb_strictMono m).comp (by exact fun ⦃a b⦄ h ↦ h))
   parts_strictMono := by
-    convert strictMono_succ.comp c.parts_strictMono with m
+    convert! strictMono_succ.comp c.parts_strictMono with m
     rcases eq_or_ne m k with rfl | hm
     · simp only [↓reduceDIte, update_self, add_tsub_cancel_right, comp_apply, cast_mk]
       let a : Fin (c.partSize m + 1) := ⟨c.partSize m, lt_add_one (c.partSize m)⟩
@@ -550,7 +550,7 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
   parts_strictMono i j hij := by
     simp only [Fin.lt_def]
     rw [← Nat.add_lt_add_iff_right (k := 1)]
-    convert Fin.lt_def.1 (c.parts_strictMono hij)
+    convert! Fin.lt_def.1 (c.parts_strictMono hij)
     · rcases eq_or_ne i (c.index 0) with rfl | hi
       -- We do not yet replace `omega` with `lia` here, as it is measurably slower.
       · simp only [↓reduceDIte, update_self, succ_mk, cast_mk, val_pred]
@@ -943,7 +943,7 @@ theorem taylorComp_sub_taylorComp_isBigO
       hqf _ <| c.partSize_le _
     rw [← Asymptotics.isBigO_pi] at H₂ H₃ H₄
     have H₅ := ((H₂.prod_left H₃).norm_left.pow (c.length - 1)).mul H₄.norm_norm
-    simpa [mul_assoc] using H₁.norm_left.mul <| H₅.const_mul_left c.length
+    simpa [mul_assoc] using! H₁.norm_left.mul <| H₅.const_mul_left c.length
   · have H₁ : (fun a ↦ p₁ a c.length - p₂ a c.length) =O[l] f := hpf _ c.length_le
     have H₂ : ∀ i, (q₂ · (c.partSize i)) =O[l] (1 : α → ℝ) := fun i ↦
       (hq₂_bdd _ <| c.partSize_le i).isBigO_one ℝ
@@ -1086,7 +1086,7 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
         t (f x) := hg.fderivWithin c.length (cm.trans_lt hm) (f x) (h hx)
       have K : HasFDerivWithinAt f ((continuousMultilinearCurryFin1 𝕜 E F) (p x 1)) s x :=
         hf.hasFDerivWithinAt hm.ne_bot hx
-      convert HasFDerivWithinAt.linear_multilinear_comp (J.comp x K h) I B
+      convert! HasFDerivWithinAt.linear_multilinear_comp (J.comp x K h) I B
       simp only [B, Nat.succ_eq_add_one, Fintype.sum_option, comp_apply, faaDiBruno_aux1,
         faaDiBruno_aux2]
     have B : HasFDerivWithinAt (fun x ↦ (q (f x)).taylorComp (p x) m)
@@ -1097,7 +1097,7 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
           ((q (f x)).compAlongOrderedFinpartition (p x) (c.extend i)) =
         (q (f x)).taylorComp (p x) (m + 1) by
       rw [← this]
-      convert B
+      convert! B
       ext v
       simp only [Nat.succ_eq_add_one, Fintype.sum_option, ContinuousMultilinearMap.curryLeft_apply,
         ContinuousMultilinearMap.sum_apply, ContinuousMultilinearMap.add_apply,

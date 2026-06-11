@@ -169,7 +169,7 @@ def toPreimages : J ⥤ Type v where
     rw [mem_iInter] at h ⊢
     intro f
     rw [← mem_preimage, preimage_preimage, mem_preimage]
-    convert h (g ≫ f); rw [F.map_comp]; rfl)
+    convert! h (g ≫ f); rw [F.map_comp]; rfl)
 
 instance toPreimages_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite ((F.toPreimages s).obj j) :=
   fun _ => Subtype.finite
@@ -313,7 +313,7 @@ theorem eval_section_surjective_of_surjective (i : J) :
   let s : Set (F.obj i) := {x}
   haveI := F.toPreimages_nonempty_of_surjective s Fsur (singleton_nonempty x)
   obtain ⟨sec, h⟩ := nonempty_sections_of_finite_cofiltered_system (F.toPreimages s)
-  refine ⟨⟨fun j => (sec j).val, fun jk => by simpa [Subtype.ext_iff] using h jk⟩, ?_⟩
+  refine ⟨⟨fun j => (sec j).val, fun jk => by simpa [Subtype.ext_iff] using! h jk⟩, ?_⟩
   · have := (sec i).prop
     simp only [mem_iInter, mem_preimage] at this
     have := this (𝟙 i)

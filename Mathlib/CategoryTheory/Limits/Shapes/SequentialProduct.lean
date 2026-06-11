@@ -91,6 +91,7 @@ lemma functorMap_commSq_aux {n m k : ℕ} (h : n ≤ m) (hh : ¬(k < m)) :
     · omega
     simp [dif_neg (by lia : ¬(k < m)), dif_neg hh]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma functorMap_commSq {n m : ℕ} (h : ¬(m < n)) :
     (Functor.ofOpSequence (functorMap f)).map (homOfLE (by lia : n ≤ m + 1)).op ≫ Pi.π _ m ≫
       eqToHom (functorObj_eq_neg (by lia : ¬(m < n))) =

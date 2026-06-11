@@ -234,9 +234,9 @@ attribute [local instance] FintypeCat.fintype in
 @[simp]
 theorem incl_mk_nat_card (n : ℕ) :
     Fintype.card (incl.obj (mk n)) = n := by
-  convert Finset.card_fin n
+  convert! Finset.card_fin n
   dsimp [incl, mk, len]
-  convert (Fintype.ofEquiv_card Equiv.ulift).symm
+  convert! (Fintype.ofEquiv_card Equiv.ulift).symm
 
 end Skeleton
 

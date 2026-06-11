@@ -229,7 +229,7 @@ lemma isLocallyConstant_rankAtStalk [Module.FinitePresentation R M] [Module.Flat
     IsLocallyConstant (rankAtStalk (R := R) M) := by
   let e : freeLocus R M ≃ₜ PrimeSpectrum R :=
     (Homeomorph.setCongr freeLocus_eq_univ).trans (Homeomorph.Set.univ (PrimeSpectrum R))
-  convert isLocallyConstant_rankAtStalk_freeLocus.comp_continuous e.symm.continuous
+  convert! isLocallyConstant_rankAtStalk_freeLocus.comp_continuous e.symm.continuous
 
 @[simp]
 lemma rankAtStalk_eq_zero_of_subsingleton [Subsingleton M] :

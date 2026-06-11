@@ -109,6 +109,7 @@ lemma coeffs_h_subset (i) : ↑(D.h i).coeffs ⊆ Set.range ⇑(algebraMap (D.su
   rw [Subalgebra.setRange_algebraMap]
   grind [subalgebra, Algebra.subset_adjoin]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coeffs_p_subset (i) :
     ↑(D.p i).coeffs ⊆
       Set.range (MvPolynomial.map (σ := D.vars) (algebraMap (D.subalgebra R) A)) := by
@@ -211,7 +212,7 @@ public theorem exists_subalgebra_fg [Smooth A B] :
     algHom_ext (by simp [hh])
   have (j : _) : Ideal.Quotient.mk (RingHom.ker f ^ 2) (aeval h (P.relation j)) = 0 := by
     suffices ho : σ (aeval P.val (P.relation j)) = 0 by
-      convert ho
+      convert! ho
       exact congr($hdiag _)
     simp
   simp_rw [Ideal.Quotient.eq_zero_iff_mem, hkerf,

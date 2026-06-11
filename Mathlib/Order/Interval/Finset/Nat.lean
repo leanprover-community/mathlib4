@@ -197,7 +197,7 @@ open Multiset
 
 theorem multiset_Ico_map_mod (n a : ℕ) :
     (Multiset.Ico n (n + a)).map (· % a) = Multiset.range a := by
-  convert congr_arg Finset.val (image_Ico_mod n a)
+  convert! congr_arg Finset.val (image_Ico_mod n a)
   refine ((nodup_map_iff_inj_on (Finset.Ico _ _).nodup).2 <| ?_).dedup.symm
   exact mod_injOn_Ico _ _
 
@@ -232,7 +232,7 @@ theorem range_image_pred_top_sub (n : ℕ) :
 
 theorem range_add_eq_union : range (a + b) = range a ∪ (range b).map (addLeftEmbedding a) := by
   simp_rw [Finset.range_eq_Ico, map_eq_image]
-  convert (Ico_union_Ico_eq_Ico a.zero_le (a.le_add_right b)).symm
+  convert! (Ico_union_Ico_eq_Ico a.zero_le (a.le_add_right b)).symm
   ext x
   simp only [Ico_zero_eq_range, mem_image, mem_range, addLeftEmbedding_apply, mem_Ico]
   constructor
@@ -284,7 +284,7 @@ theorem Nat.cauchy_induction_mul (h : ∀ (n : ℕ), P (n + 1) → P n) (k seed 
     (hs : P seed.succ) (hm : ∀ x, seed < x → P x → P (k * x)) (n : ℕ) : P n := by
   apply Nat.cauchy_induction h _ hs (k * ·) fun x hl hP => ⟨_, hm x hl hP⟩
   intro _ hl _
-  convert (Nat.mul_lt_mul_right <| seed.succ_pos.trans_le hl).2 hk
+  convert! (Nat.mul_lt_mul_right <| seed.succ_pos.trans_le hl).2 hk
   rw [one_mul]
 
 theorem Nat.cauchy_induction_two_mul (h : ∀ n, P (n + 1) → P n) (seed : ℕ) (hs : P seed.succ)

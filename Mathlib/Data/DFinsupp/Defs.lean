@@ -1123,21 +1123,6 @@ def equivCongrLeft [∀ i, Zero (β i)] (h : ι ≃ κ) : (Π₀ i, β i) ≃ Π
     rw [comapDomain'_apply, mapRange_apply, comapDomain'_apply, Equiv.cast_eq_iff_heq,
       h.apply_symm_apply]
 
-section SigmaCurry
-
-variable {α : ι → Type*} {δ : ∀ i, α i → Type v}
-
-instance hasAdd₂ [∀ i j, AddZeroClass (δ i j)] : Add (Π₀ (i : ι) (j : α i), δ i j) :=
-  inferInstance
-
-instance addZeroClass₂ [∀ i j, AddZeroClass (δ i j)] : AddZeroClass (Π₀ (i : ι) (j : α i), δ i j) :=
-  inferInstance
-
-instance addMonoid₂ [∀ i j, AddMonoid (δ i j)] : AddMonoid (Π₀ (i : ι) (j : α i), δ i j) :=
-  inferInstance
-
-end SigmaCurry
-
 variable {α : Option ι → Type v}
 
 /-- Adds a term to a dfinsupp, making a dfinsupp indexed by an `Option`.

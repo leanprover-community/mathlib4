@@ -64,8 +64,14 @@ and the actual set-theoretic fiber of `PrimeSpectrum S → PrimeSpectrum R` at `
 abbrev Ideal.Fiber (p : Ideal R) [p.IsPrime] (S : Type*) [AddCommGroup S] [Module R S] : Type _ :=
   p.ResidueField ⊗[R] S
 
-instance (p : Ideal R) [p.IsPrime] (q : Ideal (p.Fiber S)) [q.IsPrime] : q.LiesOver p :=
+instance (q : Ideal (p.Fiber S)) [q.IsPrime] : q.LiesOver p :=
   .trans _ (⊥ : Ideal p.ResidueField) _
+
+/-- If `q` is a prime ideal of `p.Fiber S`,  then the localization `(p.Fiber S)_q` is an algebra
+over the localization `R_p` since `p.Fiber S` is already an `R_p`-algebra. This `R_p`-algebra
+structure on `(p.Fiber S)_q` agrees with the one coming from the fact that `q` lies over `p`. -/
+instance (q : Ideal (p.Fiber S)) [q.IsPrime] : Localization.AtPrime.IsLiesOverAlgebra p q where
+  algebraMap_eq := (Localization.localRingHom_unique p q _ (Ideal.over_def q p) fun _ ↦ rfl).symm
 
 lemma Ideal.Fiber.exists_smul_eq_one_tmul (x : p.Fiber S) : ∃ r ∉ p, ∃ s, r • x = 1 ⊗ₜ[R] s := by
   obtain ⟨r, hr, s, e⟩ := Ideal.ResidueField.exists_smul_eq_tmul_one _
@@ -111,7 +117,7 @@ noncomputable def PrimeSpectrum.preimageEquivFiber (p : PrimeSpectrum R) :
       ← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ r), ← Algebra.smul_def, e]
     · simp
     · rw [← Ideal.mem_comap, ← PrimeSpectrum.comap_asIdeal]
-      convert hr
+      convert! hr
       exact (residueField_comap _).le ⟨q.comap (algebraMap _ _), rfl⟩
     · simpa [-Algebra.algebraMap_self, -AlgHom.commutes, -AlgHom.map_algebraMap,
         -Ideal.ResidueField.map_algebraMap]
@@ -127,12 +133,12 @@ noncomputable def PrimeSpectrum.preimageOrderIsoFiber (p : PrimeSpectrum R) :
     constructor
     · obtain ⟨q₁, rfl⟩ := (preimageEquivFiber R S p).symm.surjective q₁
       obtain ⟨q₂, rfl⟩ := (preimageEquivFiber R S p).symm.surjective q₂
-      simpa using Ideal.comap_mono
+      simpa using! Ideal.comap_mono
     · intro H x hx
       obtain ⟨r, hr, s, e⟩ := Ideal.Fiber.exists_smul_eq_one_tmul _ x
       rw [← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ r), ← Algebra.smul_def, e] at hx ⊢
-      · replace hx : s ∈ q₁.1.asIdeal := by simpa using hx
-        simpa using H hx
+      · replace hx : s ∈ q₁.1.asIdeal := by simpa using! hx
+        simpa using! H hx
       · rw [← q₂.2] at hr; simpa [IsScalarTower.algebraMap_apply R S q₂.1.asIdeal.ResidueField]
       · rw [← q₁.2] at hr; simpa [IsScalarTower.algebraMap_apply R S q₁.1.asIdeal.ResidueField]
 
@@ -165,8 +171,8 @@ noncomputable def PrimeSpectrum.preimageHomeomorphFiber (R S : Type*) [CommRing 
   exact
   { __ := preimageOrderIsoFiber R S p
     continuous_toFun := by
-      convert (H.toHomeomorphOfSurjective
-        (preimageOrderIsoFiber R S p).symm.surjective).symm.continuous
+      convert!
+        (H.toHomeomorphOfSurjective (preimageOrderIsoFiber R S p).symm.surjective).symm.continuous
       ext1 x
       obtain ⟨x, rfl⟩ := (H.toHomeomorphOfSurjective
         (preimageOrderIsoFiber R S p).symm.surjective).surjective x

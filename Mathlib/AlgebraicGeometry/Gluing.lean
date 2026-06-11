@@ -352,7 +352,7 @@ def fromGlued : 𝒰.gluedCover.glued ⟶ X := by
   · exact fun x => 𝒰.f x
   rintro ⟨x, y⟩
   change pullback.fst _ _ ≫ _ = ((pullbackSymmetry _ _).hom ≫ pullback.fst _ _) ≫ _
-  simpa using pullback.condition
+  simpa using! pullback.condition
 
 @[simp, reassoc]
 theorem ι_fromGlued (x : 𝒰.I₀) : 𝒰.gluedCover.ι x ≫ 𝒰.fromGlued = 𝒰.f x :=
@@ -398,7 +398,7 @@ theorem isOpenMap_fromGlued : IsOpenMap 𝒰.fromGlued := by
   constructor
   · rw [← Set.image_preimage_eq_inter_range]
     apply (𝒰.f (𝒰.idx x)).isOpenEmbedding.isOpenMap
-    convert hU (𝒰.idx x) using 1
+    convert! hU (𝒰.idx x) using 1
     simp only [← ι_fromGlued, gluedCover_U, Hom.comp_base, TopCat.hom_comp, ContinuousMap.coe_comp,
       Set.preimage_comp]
     congr! 1
@@ -711,7 +711,7 @@ lemma glueDataι_naturality {i j : Shrink.{u} J} (f : ↓i ⟶ ↓j) :
   rw [← cancel_epi (V F ↓i ↓j).ι, ← this, ← Category.assoc,
     ← (Iso.eq_inv_comp _).mp (homOfLE_tAux F ↓i ↓j (𝟙 _) f),
     ← Category.assoc, ← Category.assoc, Category.assoc]
-  convert Category.id_comp _
+  convert! Category.id_comp _
   simp [← cancel_mono (Opens.ι _), V]
 
 set_option backward.defeqAttrib.useBackward true in

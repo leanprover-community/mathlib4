@@ -286,7 +286,7 @@ lemma LinearOrderedAddCommGroup.isAddCyclic_iff_nonempty_equiv_int {A : Type*}
     obtain ⟨m, rfl⟩ := hs a
     aesop
   wlog hg' : 0 < g
-  · exact this (g := -g) (by simpa using neg_surjective.comp hs) (by grind) (by grind)
+  · exact this (g := -g) (by simpa using! neg_surjective.comp hs) (by grind) (by grind)
   have hi : (fun n : ℤ ↦ n • g).Injective := injective_zsmul_iff_not_isOfFinAddOrder.mpr
       <| not_isOfFinAddOrder_of_isAddTorsionFree h_ne
   exact ⟨.symm { Equiv.ofBijective _ ⟨hi, hs⟩ with
@@ -573,7 +573,8 @@ variable (G) in
 noncomputable def IsCyclic.mulAutMulEquiv [Group G] [h : IsCyclic G] :
     MulAut G ≃* (ZMod (Nat.card G))ˣ :=
   ((MulAut.congr (zmodCyclicMulEquiv h)).symm.trans
-    (MulAutMultiplicative (ZMod (Nat.card G)))).trans (ZMod.AddAutEquivUnits (Nat.card G))
+    (MulAutMultiplicative (ZMod (Nat.card G)))).trans
+      (ZMod.AddAutEquivUnits (Nat.card G)).toMultiplicative
 
 variable (G) in
 theorem IsCyclic.card_mulAut [Group G] [Finite G] [h : IsCyclic G] :

@@ -102,7 +102,7 @@ lemma normalCore_isClosed (H : Subgroup G) (h : IsClosed (H : Set G)) :
   push_cast
   apply isClosed_iInter
   intro g
-  convert IsClosed.preimage (IsTopologicalGroup.continuous_conj (ConjAct.ofConjAct g⁻¹)) h using 1
+  convert! IsClosed.preimage (IsTopologicalGroup.continuous_conj (ConjAct.ofConjAct g⁻¹)) h using 1
   exact Set.ext (fun t ↦ Set.mem_smul_set_iff_inv_smul_mem)
 
 @[to_additive]

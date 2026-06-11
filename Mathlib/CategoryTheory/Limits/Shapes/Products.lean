@@ -6,7 +6,6 @@ Authors: Kim Morrison, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Limits.HasLimits
-public import Mathlib.CategoryTheory.Discrete.Basic
 
 /-!
 # Categorical (co)products
@@ -110,12 +109,15 @@ lemma hasProduct_of_equiv_of_iso (f : α → C) (g : β → C)
 /-- Make a fan `f` into a limit fan by providing `lift`, `fac`, and `uniq` --
   just a convenience lemma to avoid having to go through `Discrete` -/
 @[simps]
-def mkFanLimit {f : β → C} (t : Fan f) (lift : ∀ s : Fan f, s.pt ⟶ t.pt)
+def Fan.IsLimit.mk {f : β → C} (t : Fan f) (lift : ∀ s : Fan f, s.pt ⟶ t.pt)
     (fac : ∀ (s : Fan f) (j : β), lift s ≫ t.proj j = s.proj j := by cat_disch)
     (uniq : ∀ (s : Fan f) (m : s.pt ⟶ t.pt) (_ : ∀ j : β, m ≫ t.proj j = s.proj j),
       m = lift s := by cat_disch) :
     IsLimit t :=
   { lift }
+
+@[deprecated (since := "2026-05-19")]
+alias mkFanLimit := Fan.IsLimit.mk
 
 /-- Constructor for morphisms to the point of a limit fan. -/
 def Fan.IsLimit.lift {F : β → C} {c : Fan F} (hc : IsLimit c) {A : C}
@@ -142,12 +144,15 @@ lemma Fan.IsLimit.hom_ext {I : Type*} {F : I → C} {c : Fan F} (hc : IsLimit c)
 /-- Make a cofan `f` into a colimit cofan by providing `desc`, `fac`, and `uniq` --
   just a convenience lemma to avoid having to go through `Discrete` -/
 @[simps]
-def mkCofanColimit {f : β → C} (s : Cofan f) (desc : ∀ t : Cofan f, s.pt ⟶ t.pt)
+def Cofan.IsColimit.mk {f : β → C} (s : Cofan f) (desc : ∀ t : Cofan f, s.pt ⟶ t.pt)
     (fac : ∀ (t : Cofan f) (j : β), s.inj j ≫ desc t = t.inj j := by cat_disch)
     (uniq : ∀ (t : Cofan f) (m : s.pt ⟶ t.pt) (_ : ∀ j : β, s.inj j ≫ m = t.inj j),
       m = desc t := by cat_disch) :
     IsColimit s :=
   { desc }
+
+@[deprecated (since := "2026-05-19")]
+alias mkCofanColimit := Cofan.IsColimit.mk
 
 /-- Constructor for morphisms from the point of a colimit cofan. -/
 def Cofan.IsColimit.desc {F : β → C} {c : Cofan F} (hc : IsColimit c) {A : C}
@@ -284,7 +289,7 @@ theorem Sigma.ι_desc {β : Type w} {f : β → C} [HasCoproduct f] {P : C} (p :
 
 set_option backward.isDefEq.respectTransparency false in
 instance {f : β → C} [HasCoproduct f] : IsIso (Sigma.desc (fun a ↦ Sigma.ι f a)) := by
-  convert IsIso.id _
+  convert! IsIso.id _
   ext
   simp
 
@@ -314,7 +319,7 @@ def Cofan.isColimitTrans {X : α → C} (c : Cofan X) (hc : IsColimit c)
       (hs : ∀ a, IsColimit (Cofan.mk (X a) (π a))) :
         IsColimit (Cofan.mk (f := fun ⟨a,b⟩ => Y a b) c.pt
           (fun (⟨a, b⟩ : Σ a, _) ↦ π a b ≫ c.inj a)) := by
-  refine mkCofanColimit _ ?_ ?_ ?_
+  refine Cofan.IsColimit.mk _ ?_ ?_ ?_
   · exact fun t ↦ hc.desc (Cofan.mk _ fun a ↦ (hs a).desc (Cofan.mk t.pt (fun b ↦ t.inj ⟨a, b⟩)))
   · intro t ⟨a, b⟩
     simp only [mk_pt, cofan_mk_inj, Category.assoc]
@@ -323,7 +328,7 @@ def Cofan.isColimitTrans {X : α → C} (c : Cofan X) (hc : IsColimit c)
   · intro t m h
     refine hc.hom_ext fun ⟨a⟩ ↦ (hs a).hom_ext fun ⟨b⟩ ↦ ?_
     erw [hc.fac, (hs a).fac]
-    simpa using h ⟨a, b⟩
+    simpa using! h ⟨a, b⟩
 
 /-- Construct a morphism between categorical products (indexed by the same type)
 from a family of morphisms between the factors.
@@ -618,7 +623,7 @@ instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     HasProduct fun p : Σ i, f i => g p.1 p.2 where
   exists_limit := Nonempty.intro
     { cone := Fan.mk (∏ᶜ fun i => ∏ᶜ g i) (fun X => Pi.π (fun i => ∏ᶜ g i) X.1 ≫ Pi.π (g X.1) X.2)
-      isLimit := mkFanLimit _ (fun s => Pi.lift fun b => Pi.lift fun c => s.proj ⟨b, c⟩)
+      isLimit := Fan.IsLimit.mk _ (fun s => Pi.lift fun b => Pi.lift fun c => s.proj ⟨b, c⟩)
         (by simp)
         (by intro s (m : _ ⟶ (∏ᶜ fun i ↦ ∏ᶜ g i)) w; aesop (add norm simp Sigma.forall)) }
 
@@ -639,7 +644,7 @@ instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
   exists_colimit := Nonempty.intro
     { cocone := Cofan.mk (∐ fun i => ∐ g i)
         (fun X => Sigma.ι (g X.1) X.2 ≫ Sigma.ι (fun i => ∐ g i) X.1)
-      isColimit := mkCofanColimit _
+      isColimit := Cofan.IsColimit.mk _
         (fun s => Sigma.desc fun b => Sigma.desc fun c => s.inj ⟨b, c⟩)
         (by simp)
         (by intro s (m : (∐ fun i ↦ ∐ g i) ⟶ _) w; aesop_cat (add norm simp Sigma.forall)) }
@@ -829,7 +834,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- Any isomorphism is the projection from a single object product. -/
 def Fan.isLimitMkOfUnique {X Y : C} (e : X ≅ Y) (J : Type*) [Unique J] :
     IsLimit (Fan.mk X fun _ : J ↦ e.hom) := by
-  refine mkFanLimit _ (fun s ↦ s.proj default ≫ e.inv) (fun s j ↦ ?_) fun s m hm ↦ ?_
+  refine Fan.IsLimit.mk _ (fun s ↦ s.proj default ≫ e.inv) (fun s j ↦ ?_) fun s m hm ↦ ?_
   · obtain rfl : j = default := Subsingleton.elim _ _
     simp
   · simpa [← cancel_mono e.hom] using hm default
@@ -866,7 +871,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- Any isomorphism is the projection from a single object product. -/
 def Cofan.isColimitMkOfUnique {X Y : C} (e : X ≅ Y) (J : Type*) [Unique J] :
     IsColimit (Cofan.mk Y fun _ : J ↦ e.hom) := by
-  refine mkCofanColimit _ (fun s ↦ e.inv ≫ s.inj default) (fun s j ↦ ?_) fun s m hm ↦ ?_
+  refine Cofan.IsColimit.mk _ (fun s ↦ e.inv ≫ s.inj default) (fun s j ↦ ?_) fun s m hm ↦ ?_
   · obtain rfl : j = default := Subsingleton.elim _ _
     simp
   · simpa [← cancel_epi e.hom] using hm default
@@ -921,7 +926,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem Sigma.ι_reindex_hom (b : β) :
     Sigma.ι (f ∘ ε) b ≫ (Sigma.reindex ε f).hom = Sigma.ι f (ε b) := by
   dsimp [Sigma.reindex]
-  simp only [HasColimit.isoOfEquivalence_hom_π, Functor.id_obj, Discrete.functor_obj,
+  simp only [HasColimit.ι_isoOfEquivalence_hom, Functor.id_obj, Discrete.functor_obj,
     Function.comp_apply, Discrete.equivalence_functor, Discrete.equivalence_inverse,
     Functor.comp_obj, Discrete.natIso_inv_app, Iso.refl_inv, Category.id_comp]
   have h := colimit.w (Discrete.functor f) (Discrete.eqToHom' (ε.apply_symm_apply (ε b)))
@@ -971,7 +976,7 @@ set_option backward.defeqAttrib.useBackward true in
 def Fan.IsLimit.prod (c : ∀ i : ι, Fan (fun j : ι' ↦ X i j)) (hc : ∀ i : ι, IsLimit (c i))
     (c' : Fan (fun i : ι ↦ (c i).pt)) (hc' : IsLimit c') :
     (IsLimit <| Fan.mk c'.pt fun p : ι × ι' ↦ c'.proj _ ≫ (c p.1).proj p.2) := by
-  refine mkFanLimit _ (fun t ↦ ?_) ?_ fun t m hm ↦ ?_
+  refine Fan.IsLimit.mk _ (fun t ↦ ?_) ?_ fun t m hm ↦ ?_
   · exact Fan.IsLimit.lift hc' fun i ↦ Fan.IsLimit.lift (hc i) fun j ↦ t.proj (i, j)
   · simp
   · refine Fan.IsLimit.hom_ext hc' _ _ fun i ↦ ?_
@@ -982,7 +987,7 @@ set_option backward.defeqAttrib.useBackward true in
 def Cofan.IsColimit.prod (c : ∀ i : ι, Cofan (fun j : ι' ↦ X i j)) (hc : ∀ i : ι, IsColimit (c i))
     (c' : Cofan (fun i : ι ↦ (c i).pt)) (hc' : IsColimit c') :
     (IsColimit <| Cofan.mk c'.pt fun p : ι × ι' ↦ (c p.1).inj p.2 ≫ c'.inj _) := by
-  refine mkCofanColimit _ (fun t ↦ ?_) ?_ fun t m hm ↦ ?_
+  refine Cofan.IsColimit.mk _ (fun t ↦ ?_) ?_ fun t m hm ↦ ?_
   · exact Cofan.IsColimit.desc hc' fun i ↦ Cofan.IsColimit.desc (hc i) fun j ↦ t.inj (i, j)
   · simp
   · refine Cofan.IsColimit.hom_ext hc' _ _ fun i ↦ ?_

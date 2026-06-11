@@ -31,7 +31,7 @@ public section
 
 open Set Filter Topology
 
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : Filter X}
+variable {α X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : Filter X}
   {s t s₁ s₂ t₁ t₂ : Set X} {x : X}
 
 theorem nhdsSet_diagonal (X) [TopologicalSpace (X × X)] :
@@ -146,6 +146,11 @@ theorem monotone_nhdsSet : Monotone (𝓝ˢ : Set X → Filter X) := fun _ _ => 
 
 theorem nhds_le_nhdsSet (h : x ∈ s) : 𝓝 x ≤ 𝓝ˢ s :=
   le_sSup <| mem_image_of_mem _ h
+
+theorem tendsto_nhdsSet_of_tendsto_nhds {f : α → X} {l : Filter α} {x : X} (hx : x ∈ s)
+    (hf : Tendsto f l (𝓝 x)) :
+    Tendsto f l (𝓝ˢ s) :=
+  hf.trans (nhds_le_nhdsSet hx)
 
 @[simp]
 theorem nhdsSet_union (s t : Set X) : 𝓝ˢ (s ∪ t) = 𝓝ˢ s ⊔ 𝓝ˢ t := by

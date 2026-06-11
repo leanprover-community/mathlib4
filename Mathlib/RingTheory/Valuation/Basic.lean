@@ -889,7 +889,7 @@ theorem orderMonoidIso_spec (h : v.IsEquiv w) (a : R) :
   · rw [← restrict₀_eq_zero_iff] at ha
     rwa [restrict_def, ha, map_zero, Eq.comm, ← h_res.eq_zero]
   · rw [(v.restrict_eq_mk ha)]
-    convert valueGroup₀Fun_spec (h := h) (hs := ha) (r := 1) (by simp)
+    convert! valueGroup₀Fun_spec (h := h) (hs := ha) (r := 1) (by simp)
     exact w.restrict_eq_mk ((eq_zero h.symm).ne.mpr ha)
 
 theorem orderMonoidIso_symm (h : v.IsEquiv w) (h' : w.IsEquiv v) :

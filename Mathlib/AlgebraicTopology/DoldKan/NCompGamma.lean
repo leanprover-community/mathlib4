@@ -51,7 +51,7 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
     rw [Isδ₀.iff] at h₂
     have h₃ : 1 ≤ (j : ℕ) := by
       by_contra h
-      exact h₂ (by simpa only [Fin.ext_iff, not_le, Nat.lt_one_iff] using h)
+      exact h₂ (by simpa only [Fin.ext_iff, not_le, Nat.lt_one_iff] using! h)
     exact (HigherFacesVanish.of_P (m + 1) m).comp_δ_eq_zero j h₂ (by lia)
   · simp only [← add_assoc] at hk
     clear h₂ hi

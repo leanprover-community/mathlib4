@@ -128,7 +128,7 @@ theorem integral_biUnion_finset {ι : Type*} (t : Finset ι) {s : ι → Set X}
 theorem integral_iUnion_fintype {ι : Type*} [Fintype ι] {s : ι → Set X}
     (hs : ∀ i, MeasurableSet (s i)) (h's : Pairwise (Disjoint on s))
     (hf : ∀ i, IntegrableOn f (s i) μ) : ∫ x in ⋃ i, s i, f x ∂μ = ∑ i, ∫ x in s i, f x ∂μ := by
-  convert integral_biUnion_finset Finset.univ (fun i _ => hs i) _ fun i _ => hf i
+  convert! integral_biUnion_finset Finset.univ (fun i _ => hs i) _ fun i _ => hf i
   · simp
   · simp [pairwise_univ, h's]
 
@@ -214,7 +214,7 @@ theorem integral_biUnion_eq_sum_powerset {ι : Type*} {t : Finset ι} {s : ι �
     rcases hu.2 with ⟨i, hi⟩
     exact (hf i (hu.1 hi)).mono (biInter_subset_of_mem hi) le_rfl
   congr with x
-  convert Finset.indicator_biUnion_eq_sum_powerset t s f x with u hu
+  convert! Finset.indicator_biUnion_eq_sum_powerset t s f x with u hu
   rw [indicator_smul_apply]
   norm_cast
 
@@ -298,7 +298,7 @@ theorem tendsto_setIntegral_of_antitone
   rcases hfi with ⟨i₀, hi₀⟩
   suffices Tendsto (∫ x in s i₀, f x ∂μ - ∫ x in s i₀ \ s ·, f x ∂μ) atTop
       (𝓝 (∫ x in s i₀, f x ∂μ - ∫ x in ⋃ i, s i₀ \ s i, f x ∂μ)) by
-    convert this.congr' <| (eventually_ge_atTop i₀).mono fun i hi ↦ ?_
+    convert! this.congr' <| (eventually_ge_atTop i₀).mono fun i hi ↦ ?_
     · rw [← diff_iInter, setIntegral_diff _ hi₀ (iInter_subset _ _), sub_sub_cancel]
       exact .iInter_of_antitone h_anti hsm
     · rw [setIntegral_diff (hsm i) hi₀ (h_anti hi), sub_sub_cancel]
@@ -380,7 +380,7 @@ theorem integral_union_eq_left_of_ae (ht_eq : ∀ᵐ x ∂μ.restrict t, f x = 0
     ∫ x in s ∪ t, f x ∂μ = ∫ x in s, f x ∂μ := by
   have ht : IntegrableOn f t μ := by apply integrableOn_zero.congr_fun_ae; symm; exact ht_eq
   by_cases H : IntegrableOn f (s ∪ t) μ; swap
-  · rw [integral_undef H, integral_undef]; simpa [integrableOn_union, ht] using H
+  · rw [integral_undef H, integral_undef]; simpa [integrableOn_union, ht] using! H
   let f' := H.1.mk f
   calc
     ∫ x : X in s ∪ t, f x ∂μ = ∫ x : X in s ∪ t, f' x ∂μ := integral_congr_ae H.1.ae_eq_mk
@@ -883,7 +883,7 @@ theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : ι → 
     rw [← NNReal.summable_coe]; exact h
   have S'' := ENNReal.tsum_coe_eq S'.hasSum
   simp_rw [ENNReal.coe_nnreal_eq, NNReal.coe_mk, coe_nnnorm] at S''
-  convert ENNReal.ofReal_lt_top
+  convert! ENNReal.ofReal_lt_top
 
 variable [TopologicalSpace X] [BorelSpace X] [T2Space X] [IsLocallyFiniteMeasure μ]
 
@@ -1036,7 +1036,7 @@ set_option backward.defeqAttrib.useBackward true in
 theorem measure_le_lintegral_thickenedIndicator (μ : Measure X) {E : Set X}
     (E_mble : MeasurableSet E) {δ : ℝ} (δ_pos : 0 < δ) :
     μ E ≤ ∫⁻ x, (thickenedIndicator δ_pos E x : ℝ≥0∞) ∂μ := by
-  convert measure_le_lintegral_thickenedIndicatorAux μ E_mble δ
+  convert! measure_le_lintegral_thickenedIndicatorAux μ E_mble δ
   dsimp
   simp only [thickenedIndicatorAux_lt_top.ne, ENNReal.coe_toNNReal, Ne, not_false_iff]
 

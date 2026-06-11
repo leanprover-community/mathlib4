@@ -82,15 +82,15 @@ private lemma recursion' (n : ℕ) :
   have hu₁_eval_neg_one : u₁ (-1) = 0 := by simp only [u₁, f]; simp
   have t : u₂ 1 * v₂ 1 - u₂ (-1) * v₂ (-1) = 2 * (0 ^ n * cos θ) := by simp [u₂, v₂, f, ← two_mul]
   have hf (x) : HasDerivAt f (- 2 * x) x := by
-    convert (hasDerivAt_pow 2 x).const_sub 1 using 1
+    convert! (hasDerivAt_pow 2 x).const_sub 1 using 1
     simp
   have hu₁ (x) : HasDerivAt u₁ (u₁' x) x := by
-    convert (hf x).pow _ using 1
+    convert! (hf x).pow _ using 1
     simp only [Nat.add_succ_sub_one, u₁', Nat.cast_add_one]
     ring
   have hv₁ (x) : HasDerivAt v₁ (v₁' x) x := (hasDerivAt_mul_const θ).sin
   have hu₂ (x) : HasDerivAt u₂ (u₂' x) x := by
-    convert (hasDerivAt_id' x).fun_mul ((hf x).fun_pow _) using 1
+    convert! (hasDerivAt_id' x).fun_mul ((hf x).fun_pow _) using 1
     simp only [u₂']
     ring
   have hv₂ (x) : HasDerivAt v₂ (v₂' x) x := (hasDerivAt_mul_const θ).cos

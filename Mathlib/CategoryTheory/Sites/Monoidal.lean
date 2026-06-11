@@ -72,7 +72,7 @@ noncomputable def functorEnrichedHomCoyonedaObjEquiv (M : A) (F G : Cᵒᵖ ⥤ 
       congr 1
       let α : Over.mk j'.hom.unop ⟶ Over.mk j.hom.unop := Over.homMk φ.right.unop
         (Quiver.Hom.op_inj (by simp))
-      simpa using (g.naturality α.op).symm)
+      simpa using! (g.naturality α.op).symm)
   left_inv f := by
     dsimp
     ext j
@@ -138,7 +138,7 @@ lemma whiskerLeft {G₁ G₂ : Cᵒᵖ ⥤ A} {g : G₁ ⟶ G₂} (hg : J.W g) (
     ((ihom.adjunction _).homEquiv _ _).bijective]
   rw [← Function.Bijective.of_comp_iff (g := MonoidalClosed.curry) _
     ((ihom.adjunction _).homEquiv _ _).bijective] at this
-  convert this using 1
+  convert! this using 1
   ext α : 1
   dsimp
   rw [curry_natural_left]

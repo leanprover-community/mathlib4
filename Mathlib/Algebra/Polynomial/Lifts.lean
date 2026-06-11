@@ -85,6 +85,9 @@ theorem lifts_iff_coeffs_subset_range (p : S[X]) :
     · exact ⟨0, by simp [hn]⟩
     · exact h <| coeff_mem_coeffs hn
 
+theorem mem_lifts_of_surjective (hf : Function.Surjective f) (p : S[X]) : p ∈ lifts f :=
+  (lifts_iff_coeff_lifts p).mpr fun n ↦ hf (p.coeff n)
+
 /-- If `(r : R)`, then `C (f r)` lifts. -/
 theorem C_mem_lifts (f : R →+* S) (r : R) : C (f r) ∈ lifts f :=
   ⟨C r, by

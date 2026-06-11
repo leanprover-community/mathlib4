@@ -5,9 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.CategoryTheory.Monoidal.Functor
-public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 /-!
 # Monoidal natural transformations

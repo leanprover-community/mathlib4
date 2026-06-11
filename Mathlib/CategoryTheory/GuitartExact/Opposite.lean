@@ -44,7 +44,7 @@ def functor :
       w.CostructuredArrowDownwards g.unop where
   obj f := CostructuredArrowDownwards.mk _ _ f.unop.right.left.unop
       f.unop.right.hom.unop f.unop.hom.left.unop
-      (Quiver.Hom.op_inj (by simpa using CostructuredArrow.w f.unop.hom))
+      (Quiver.Hom.op_inj (by simpa using! CostructuredArrow.w f.unop.hom))
   map {f f'} φ :=
     CostructuredArrow.homMk
       (StructuredArrow.homMk (φ.unop.right.left.unop)
@@ -110,6 +110,11 @@ instance guitartExact_id' (F : C₁ ⥤ C₂) :
     GuitartExact (TwoSquare.mk F (𝟭 C₁) (𝟭 C₂) F (𝟙 F)) := by
   rw [← guitartExact_op_iff]
   apply guitartExact_id
+
+instance guitartExact_of_isEquivalence_of_isIso'
+    [T.IsEquivalence] [B.IsEquivalence] [IsIso w.natTrans] : GuitartExact w := by
+  rw [← guitartExact_op_iff]
+  infer_instance
 
 end TwoSquare
 

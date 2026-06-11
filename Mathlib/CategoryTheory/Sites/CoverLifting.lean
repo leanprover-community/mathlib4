@@ -81,7 +81,7 @@ lemma Functor.cover_lift [G.IsCocontinuous J K] {U : C} {S : Sieve (G.obj U)}
 
 /-- The identity functor on a site is cocontinuous. -/
 instance isCocontinuous_id : Functor.IsCocontinuous (𝟭 C) J J :=
-  ⟨fun h => by simpa using h⟩
+  ⟨fun h => by simpa using! h⟩
 
 /-- The composition of two cocontinuous functors is cocontinuous. -/
 theorem isCocontinuous_comp [G.IsCocontinuous J K] [G'.IsCocontinuous K L] :

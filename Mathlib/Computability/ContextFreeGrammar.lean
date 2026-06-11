@@ -319,7 +319,7 @@ protected lemma Derives.reverse (hg : g.Derives u v) : g.reverse.Derives u.rever
 
 set_option backward.defeqAttrib.useBackward true in
 lemma derives_reverse : g.reverse.Derives u.reverse v.reverse ↔ g.Derives u v :=
-  ⟨fun h ↦ by convert h.reverse <;> simp, .reverse⟩
+  ⟨fun h ↦ by convert! h.reverse <;> simp, .reverse⟩
 
 @[simp] lemma derives_reverse_comm : g.reverse.Derives u v ↔ g.Derives u.reverse v.reverse := by
   rw [iff_comm, ← derives_reverse, List.reverse_reverse, List.reverse_reverse]

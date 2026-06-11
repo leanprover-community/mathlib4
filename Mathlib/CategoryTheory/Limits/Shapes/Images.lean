@@ -420,7 +420,7 @@ theorem image.lift_mk_comp {C : Type u} [Category.{v} C] {X Y Z : C}
 -- (uniqueness of the lift comes for free).
 instance image.lift_mono (F' : MonoFactorisation f) : Mono (image.lift F') := by
   refine @mono_of_mono _ _ _ _ _ _ F'.m ?_
-  simpa using MonoFactorisation.m_mono _
+  simpa using! MonoFactorisation.m_mono _
 
 theorem HasImage.uniq (F' : MonoFactorisation f) (l : image f ⟶ F'.I) (w : l ≫ F'.m = image.ι f) :
     l = image.lift F' :=
@@ -489,7 +489,7 @@ theorem image.ext [HasImage f] {W : C} {g h : image f ⟶ W} [HasLimit (parallel
   have t : v ≫ q = 𝟙 (image f) :=
     (cancel_mono_id (image.ι f)).1
       (by
-        convert t₀ using 1
+        convert! t₀ using 1
         rw [Category.assoc])
   -- The proof from wikipedia next proves `q ≫ v = 𝟙 _`,
   -- and concludes that `equalizer g h ≅ image f`,

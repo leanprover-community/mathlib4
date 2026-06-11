@@ -118,9 +118,9 @@ lemma map_hexagon_reverse (X Y Z : C) :
 noncomputable instance : BraidedCategory (LocalizedMonoidal L W ε) := by
   refine .ofBifunctor (braidingNatIso L W ε) ?_ ?_
   · apply natTrans₃_ext (L') (L') (L') W W W
-    simpa using map_hexagon_forward _ _ _
+    simpa using! map_hexagon_forward _ _ _
   · apply natTrans₃_ext (L') (L') (L') W W W
-    simpa using map_hexagon_reverse _ _ _
+    simpa using! map_hexagon_reverse _ _ _
 
 lemma β_hom_app (X Y : C) :
     (β_ ((L').obj X) ((L').obj Y)).hom =

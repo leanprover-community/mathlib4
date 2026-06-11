@@ -63,7 +63,7 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
       ∃ (ι : Type u), Nonempty ι ∧ ∃ f : ι → Ordinal, (∀ i, f i ∈ s) ∧ ⨆ i, f i = a] := by
   tfae_have 1 → 2 := by
     simpa only [mem_closure_iff_nhdsWithin_neBot, inter_comm s, nhdsWithin_inter',
-      SuccOrder.nhdsLE_eq_nhds] using id
+      SuccOrder.nhdsLE_eq_nhds] using! id
   tfae_have 2 → 3
   | h => by
     rcases (s ∩ Iic a).eq_empty_or_nonempty with he | hne

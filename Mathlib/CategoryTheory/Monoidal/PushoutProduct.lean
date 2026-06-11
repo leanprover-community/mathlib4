@@ -103,6 +103,7 @@ section Monoidal
 
 variable [MonoidalCategory C] (X₁ X₂ X₃ : Arrow C) {W : C}
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Left-whiskering the pushout-product of `X₁` and `X₂` with `W : C` is isomorphic to the
   pushout-product of `W ◁ X₁` and `X₂`. -/

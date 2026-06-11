@@ -584,18 +584,16 @@ theorem preVal_add (x y : ModP O p) :
   rw [preVal_mk hv hx0, preVal_mk hv hy0, preVal_mk hv hxy0, map_add]; exact v.map_add _ _
 
 theorem v_p_lt_preVal {x : ModP O p} : v p < preVal K v O p x ↔ x ≠ 0 := by
-  refine ⟨fun h hx => by rw [hx, preVal_zero] at h; exact not_lt_zero' h,
-    fun h => lt_of_not_ge fun hp => h ?_⟩
+  refine ⟨by aesop, fun h => lt_of_not_ge fun hp => h ?_⟩
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
   rw [preVal_mk hv h, ← map_natCast (algebraMap O K) p, hv.le_iff_dvd] at hp
   · rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton]; exact hp
 
-theorem preVal_eq_zero {x : ModP O p} : preVal K v O p x = 0 ↔ x = 0 :=
-  ⟨fun hvx =>
-    by_contradiction fun hx0 : x ≠ 0 => by
-      rw [← v_p_lt_preVal (hv := hv), hvx] at hx0
-      exact not_lt_zero' hx0,
-    fun hx => hx.symm ▸ preVal_zero⟩
+theorem preVal_eq_zero {x : ModP O p} : preVal K v O p x = 0 ↔ x = 0 where
+  mp h := by
+    contrapose! h
+    exact ((v_p_lt_preVal hv).2 h).ne_zero
+  mpr hx := by simp [hx]
 
 theorem v_p_lt_val {x : O} :
     v p < v (algebraMap O K x) ↔ (Ideal.Quotient.mk _ x : ModP O p) ≠ 0 := by
@@ -830,11 +828,11 @@ def Tilt [Fact p.Prime] [hvp : Fact (v p ≠ 1)] :=
 namespace Tilt
 
 noncomputable instance [Fact p.Prime] [hvp : Fact (v p ≠ 1)] : Field (Tilt K v O hv p) :=
-  haveI := Fact.mk <| mt hv.one_of_isUnit <| (map_natCast (algebraMap O K) p).symm ▸ hvp.1
+  #adaptation_note /-- This type ascription was not needed prior to nightly-2026-05-17. -/
+  haveI : Fact ¬IsUnit (p : O) :=
+    Fact.mk <| mt hv.one_of_isUnit <| (map_natCast (algebraMap O K) p).symm ▸ hvp.1
   haveI := PreTilt.isDomain K v O hv p
-  #adaptation_note /-- This `letI` was not needed prior to nightly-2026-04-15. -/
-  letI : CommRing (PreTilt O p) := inferInstance
-  inferInstanceAs <| Field (FractionRing _)
+  inferInstanceAs <| Field (FractionRing (PreTilt O p))
 
 end Tilt
 

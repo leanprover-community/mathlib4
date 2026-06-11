@@ -262,6 +262,7 @@ theorem limitObjIsoLimitCompEvaluation_inv_limit_map [HasLimitsOfShape J C] {i j
   rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv,
     limit_map_limitObjIsoLimitCompEvaluation_hom]
 
+set_option backward.isDefEq.respectTransparency false in
 @[ext]
 theorem limit_obj_ext {H : J ⥤ K ⥤ C} [HasLimitsOfShape J C] {k : K} {W : C}
     {f g : W ⟶ (limit H).obj k}
@@ -358,6 +359,7 @@ theorem colimit_map_colimitObjIsoColimitCompEvaluation_hom [HasColimitsOfShape J
   rw [← Iso.inv_comp_eq, ← Category.assoc, ← Iso.eq_comp_inv,
     colimitObjIsoColimitCompEvaluation_inv_colimit_map]
 
+set_option backward.isDefEq.respectTransparency false in
 @[ext]
 theorem colimit_obj_ext {H : J ⥤ K ⥤ C} [HasColimitsOfShape J C] {k : K} {W : C}
     {f g : (colimit H).obj k ⟶ W} (w : ∀ j, (colimit.ι H j).app k ≫ f = (colimit.ι H j).app k ≫ g) :

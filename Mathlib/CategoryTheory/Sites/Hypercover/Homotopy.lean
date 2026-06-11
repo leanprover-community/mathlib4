@@ -188,9 +188,10 @@ lemma sieve₁'_cylinder (i j : Σ (i : E.I₀), F.I₁ (f.s₀ i) (g.s₀ i)) :
     simp_rw [← pullbackSymmetry_inv_comp_fst]
     apply (((cylinder f g).sieve₁' i j)).downward_closed
     rw [sieve₁']
-    convert Sieve.ofArrows_mk _ _ (ULift.up k)
+    convert! Sieve.ofArrows_mk _ _ (ULift.up k)
     simp [toPullback_cylinder f g ⟨k⟩]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation): The refinement morphism `cylinder f g ⟶ E`. -/
 @[simps]
 noncomputable def cylinderHom : (cylinder f g).Hom E where

@@ -44,6 +44,7 @@ The examples of filters appearing in the description of the two motivating ideas
 The predicate "happening eventually" is `Filter.Eventually`, and "happening often" is
 `Filter.Frequently`, whose definitions are immediate after `Filter` is defined (but they come
 rather late in this file in order to immediately relate them to the lattice structure).
+
 ## Notation
 
 * `∀ᶠ x in f, p x` : `f.Eventually p`;

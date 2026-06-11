@@ -333,7 +333,7 @@ lemma PreservesLocalization.colimitDesc_preimage (F : X.AffineZariskiSiteᵒᵖ 
     (α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F)
     (H : α.Coequifibered) (U : X.AffineZariskiSite) :
     (relativeGluingData H).toBase ⁻¹ᵁ U.1 = ((relativeGluingData H).cover.f U).opensRange := by
-  simpa using (relativeGluingData H).toBase_preimage_eq_opensRange_ι U
+  simpa using! (relativeGluingData H).toBase_preimage_eq_opensRange_ι U
 
 @[deprecated (since := "2026-02-01")]
 alias _root_.AlgebraicGeometry.Scheme.preservesLocalization_toOpensFunctor :=
@@ -357,12 +357,12 @@ noncomputable def isColimitCocone : IsColimit (cocone X) :=
       (U.2.isoSpec.hom ≫ colimit.ι F U) <| by
       rw [Pullback.range_fst, Opens.range_ι, ← Hom.coe_opensRange, Hom.opensRange_comp_of_isIso,
         ← Scheme.Hom.coe_preimage]
-      convert congr($(D.toBase_preimage_eq_opensRange_ι U).1)
+      convert! congr($(D.toBase_preimage_eq_opensRange_ι U).1)
       · delta cocone
         congr with U
         simp [D, relativeGluingData, restrictIsoSpec]
       · simp
-    convert (inferInstance : IsIso e.hom)
+    convert! (inferInstance : IsIso e.hom)
     rw [← cancel_mono U.1.ι, ← Iso.inv_comp_eq]
     simp [e, ← pullback.condition, IsAffineOpen.isoSpec_hom]
   .ofPointIso (colimit.isColimit F)

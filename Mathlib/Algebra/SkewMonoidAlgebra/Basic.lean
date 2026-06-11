@@ -329,7 +329,7 @@ theorem coeff_one_one : coeff (1 : SkewMonoidAlgebra k G) 1 = 1 := by
 theorem coeff_one {a : G} [Decidable (a = 1)] :
     (1 : SkewMonoidAlgebra k G).coeff a = if a = 1 then 1 else 0 := by
   classical
-  simpa [eq_comm (a := a)] using coeff_single_apply
+  simpa [eq_comm (a := a)] using! coeff_single_apply
 
 theorem natCast_def (n : ℕ) : (n : SkewMonoidAlgebra k G) = single (1 : G) (n : k) := by
   induction n <;> simp_all
@@ -1078,7 +1078,7 @@ theorem mapDomain_mul [MulSemiringAction α β] [MulSemiringAction α₂ β]
     ext a b c
     rw [sum_mapDomain_index (by simp) (by simp [smul_add, mul_add, single_add])]
     simp_rw [hf]
-  convert this using 4
+  convert! this using 4
   rw [map_sum]
 
 /-- If f : G → H is a multiplicative homomorphism between two monoids and

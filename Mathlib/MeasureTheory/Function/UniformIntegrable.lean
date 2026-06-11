@@ -220,7 +220,7 @@ theorem MemLp.integral_indicator_norm_ge_le (hf : MemLp f 1 μ) (hmeas : Strongl
   obtain ⟨M, hM⟩ := this (ENNReal.ofReal ε) (ENNReal.ofReal_pos.2 hε)
   simp only [sub_zero] at hM
   refine ⟨M, ?_⟩
-  convert hM M le_rfl
+  convert! hM M le_rfl
   simp only [coe_nnnorm, ENNReal.ofReal_eq_coe_nnreal (norm_nonneg _)]
   rfl
 
@@ -286,7 +286,7 @@ theorem MemLp.eLpNorm_indicator_norm_ge_le (hf : MemLp f p μ) (hmeas : Strongly
   rw [ENNReal.rpow_mul]
   gcongr
   rw [ENNReal.ofReal_rpow_of_pos hε]
-  convert hM using 3 with x
+  convert! hM using 3 with x
   rw [enorm_indicator_eq_indicator_enorm, enorm_indicator_eq_indicator_enorm]
   have hiff : M ^ (1 / p.toReal) ≤ ‖f x‖₊ ↔ M ≤ ‖‖f x‖ ^ p.toReal‖₊ := by
     rw [coe_nnnorm, coe_nnnorm, Real.norm_rpow_of_nonneg (norm_nonneg _), norm_norm,
@@ -397,7 +397,7 @@ theorem MemLp.eLpNorm_indicator_le (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf :
   obtain ⟨⟨f', hf', heq⟩, _⟩ := hf
   obtain ⟨δ, hδpos, hδ⟩ := (hℒp.ae_eq heq).eLpNorm_indicator_le_of_meas hp_one hp_top hf' hε
   refine ⟨δ, hδpos, fun s hs hμs => ?_⟩
-  convert hδ s hs hμs using 1
+  convert! hδ s hs hμs using 1
   rw [eLpNorm_indicator_eq_eLpNorm_restrict hs, eLpNorm_indicator_eq_eLpNorm_restrict hs]
   exact eLpNorm_congr_ae heq.restrict
 
@@ -416,7 +416,7 @@ theorem unifIntegrable_subsingleton [Subsingleton ι] (hp_one : 1 ≤ p) (hp_top
   · obtain ⟨i⟩ := hι
     obtain ⟨δ, hδpos, hδ⟩ := (hf i).eLpNorm_indicator_le hp_one hp_top hε
     refine ⟨δ, hδpos, fun j s hs hμs => ?_⟩
-    convert hδ s hs hμs
+    convert! hδ s hs hμs
   · exact ⟨1, zero_lt_one, fun i => False.elim <| hι <| Nonempty.intro i⟩
 
 /-- This lemma is less general than `MeasureTheory.unifIntegrable_finite` which applies to
@@ -530,7 +530,7 @@ theorem tendsto_Lp_finite_of_tendsto_ae [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp'
     exact fun n => (hf n).ae_eq_mk
   filter_upwards [hfg, h_ae_forall_eq, hg.1.ae_eq_mk] with x hx_tendsto hxf_eq hxg_eq
   rw [← hxg_eq]
-  convert hx_tendsto using 1
+  convert! hx_tendsto using 1
   ext1 n
   exact (hxf_eq n).symm
 
@@ -917,7 +917,7 @@ theorem uniformIntegrable_average
 /-- The averaging of a uniformly integrable real-valued sequence is also uniformly integrable. -/
 theorem uniformIntegrable_average_real (hp : 1 ≤ p) {f : ℕ → α → ℝ} (hf : UniformIntegrable f p μ) :
     UniformIntegrable (fun n => (∑ i ∈ Finset.range n, f i) / (n : α → ℝ)) p μ := by
-  convert uniformIntegrable_average hp hf using 2 with n
+  convert! uniformIntegrable_average hp hf using 2 with n
   ext x
   simp [div_eq_inv_mul]
 

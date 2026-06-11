@@ -86,7 +86,7 @@ theorem image_right_subset_upperBounds {f : α → β} (hf : Monotone f)
 though it is injective only on partial orders. -/
 def principal (a : α) : DedekindCut α :=
   (Concept.ofObject _ a).copy (Iic a) (Ici a)
-    (by ext; simpa [mem_lowerPolar_iff] using forall_ge_iff_le.symm)
+    (by ext; simpa [mem_lowerPolar_iff] using! forall_ge_iff_le.symm)
     (by ext; simp)
 
 @[simp] theorem left_principal (a : α) : (principal a).left = Iic a := rfl

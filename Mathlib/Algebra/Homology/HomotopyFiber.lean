@@ -42,7 +42,7 @@ class HasHomotopyFiber (φ : F ⟶ G) : Prop where
 instance [HasBinaryBiproducts C] : HasHomotopyFiber φ where
   hasBinaryBiproduct _ _ _ := inferInstance
 
-variable [HasHomotopyFiber φ] [DecidableRel c.Rel]
+variable [HasHomotopyFiber φ]
 
 set_option backward.defeqAttrib.useBackward true in
 instance : HasHomotopyCofiber ((opFunctor C c).map φ.op) where

@@ -861,7 +861,6 @@ noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData 
     (fun x hx => h.liftK (x ≫ inv φ.τ₂) (by rw [assoc, ← cancel_mono φ.τ₃, assoc,
       assoc, ← φ.comm₂₃, IsIso.inv_hom_id_assoc, hx, zero_comp]))
     (fun x hx => by simp [i]) (fun x hx b hb => by
-      dsimp
       rw [← cancel_mono h.i, ← cancel_mono φ.τ₂, assoc, assoc, liftK_i_assoc,
         assoc, IsIso.inv_hom_id, comp_id, hb])
   let f' := hi.lift (KernelFork.ofι S₂.f S₂.zero)

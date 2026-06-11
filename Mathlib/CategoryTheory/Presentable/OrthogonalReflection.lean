@@ -242,7 +242,7 @@ noncomputable def D₂.multispanIndex : MultispanIndex (multispanShape W Z) C wh
 variable [HasMulticoequalizer (D₂.multispanIndex W Z)]
 
 /-- The object `succ W Z` is the multicoequalizer of all pairs of morphisms
- `g₁ g₂ : Y ⟶ step W Z` with a `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
+`g₁ g₂ : Y ⟶ step W Z` with a `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
 noncomputable abbrev succ := multicoequalizer (D₂.multispanIndex W Z)
 
 /-- The projection from `Z` to the multicoequalizer of all morphisms `g₁ g₂ : Y ⟶ step W Z` with
@@ -452,7 +452,7 @@ lemma isRightAdjoint_ι :
     W.isLocal.ι.IsRightAdjoint := by
   rw [Functor.isRightAdjoint_iff_leftAdjointObjIsDefined_eq_top]
   ext Z
-  simpa using (corepresentableBy Z hW).isCorepresentable
+  simpa using! (corepresentableBy Z hW).isCorepresentable
 
 end OrthogonalReflection
 

@@ -243,7 +243,7 @@ instance isCardinalFiltered_pi {ι : Type u'} (J : ι → Type u) [∀ i, Catego
         ι.app X i := (c i).ι.app X
         ι.naturality {X Y} f := by
           ext i
-          simpa using (c i).ι.naturality f }⟩
+          simpa using! (c i).ι.naturality f }⟩
 
 section
 
@@ -279,8 +279,8 @@ lemma isCardinalFiltered_iff_aux₂ {ι : Type w} {j : ι → J} {k : J}
 set_option backward.defeqAttrib.useBackward true in
 variable (J κ) in
 /-- A category is `κ`-filtered iff
-1) any family of objects of cardinality `< κ` admits a map towards a common object, and
-2) any family of morphisms `j ⟶ k` of cardinality `< κ` (between *fixed* objects
+1. any family of objects of cardinality `< κ` admits a map towards a common object, and
+2. any family of morphisms `j ⟶ k` of cardinality `< κ` (between *fixed* objects
    `j` and `k`) can be coequalized by a suitable morphism `k ⟶ l`.
 -/
 lemma isCardinalFiltered_iff :

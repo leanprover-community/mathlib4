@@ -663,7 +663,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         simp_rw [Fin.val_zero, Fintype.prod_empty, Nat.div_one, mul_one, Fin.cons_zero,
           Fin.prod_univ_succ, Fin.castLE_zero, Fin.cons_zero, ← Nat.div_div_eq_div_mul,
           mul_left_comm (_ % _ : ℕ), ← mul_sum]
-        convert Nat.mod_add_div _ _
+        convert! Nat.mod_add_div _ _
         exact ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq (Fin.prod_univ_succ _)))
 
 theorem finPiFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (f : ∀ i : Fin m, Fin (n i)) :
@@ -702,7 +702,7 @@ theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) ×
   by_cases him : iv < m
   · conv in Sigma.mk _ _ =>
       equals ⟨Sum.inl ⟨iv, him⟩, j⟩ => simp [Fin.addCases, him]
-    simpa using ih _
+    simpa using! ih _
   · replace him := Nat.eq_of_lt_succ_of_not_lt hi him
     subst him
     conv in Sigma.mk _ _ =>

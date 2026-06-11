@@ -606,7 +606,7 @@ lemma ι_D₁ :
         rfl
     · rw [mapBifunctor.d₁_eq_zero' _ _ _ _ h₁ _ _ h₂, comp_zero,
         ιOrZero_eq_zero _ _ _ _ _ _ _ _ _ _ _ _
-          (by simpa only [← ComplexShape.assoc c₁ c₂ c₃ c₁₂ c₂₃ c₄] using h₂),
+          (by simpa only [← ComplexShape.assoc c₁ c₂ c₃ c₁₂ c₂₃ c₄] using! h₂),
         comp_zero, smul_zero]
   · rw [mapBifunctor.d₁_eq_zero _ _ _ _ _ _ _ h₁,
       d₁_eq_zero _ _ _ _ _ _ _ _ _ _ _ _ h₁, comp_zero]

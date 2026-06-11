@@ -64,7 +64,7 @@ protected theorem map {x : α} (hx : IsFixedPt fa x) {g : α → β} (h : Semico
     fb (g x) = g (fa x) := (h.eq x).symm
     _ = g x := congr_arg g hx
 
-protected theorem apply {x : α} (hx : IsFixedPt f x) : IsFixedPt f (f x) := by convert hx
+protected theorem apply {x : α} (hx : IsFixedPt f x) : IsFixedPt f (f x) := by convert! hx
 
 theorem preimage_iterate {s : Set α} (h : IsFixedPt (Set.preimage f) s) (n : ℕ) :
     IsFixedPt (Set.preimage f^[n]) s := by

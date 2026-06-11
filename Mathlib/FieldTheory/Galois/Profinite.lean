@@ -169,7 +169,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma algEquivToLimit_continuous : Continuous (algEquivToLimit k K) := by
   rw [continuous_induced_rng]
   refine continuous_pi (fun L ↦ ?_)
-  convert restrictNormalHom_continuous L.unop.1
+  convert! restrictNormalHom_continuous L.unop.1
   exact (DiscreteTopology.eq_bot (α := L.unop ≃ₐ[k] L.unop)).symm
 
 /-- The projection map from `lim Gal(L/k)` to a specific `Gal(L/k)`. -/
@@ -303,7 +303,7 @@ lemma isOpen_mulEquivToLimit_image_fixingSubgroup [IsGalois k K]
     exact (isOpen_induced <| (continuous_apply (op L)).isOpen_preimage {1} trivial)
   ext x
   obtain ⟨σ, rfl⟩ := (mulEquivToLimit k K).surjective x
-  simpa using FiniteGaloisIntermediateField.mem_fixingSubgroup_iff σ L
+  simpa using! FiniteGaloisIntermediateField.mem_fixingSubgroup_iff σ L
 
 lemma mulEquivToLimit_symm_continuous [IsGalois k K] : Continuous (mulEquivToLimit k K).symm := by
   apply continuous_of_continuousAt_one _ (continuousAt_def.mpr _)

@@ -104,10 +104,10 @@ theorem EqualizerCondition.bijective_mapToEqualizer_pullback' {P : Cᵒᵖ ⥤ T
   obtain ⟨a, ha₁, ha₂⟩ := hP b hb
   refine ⟨a, ?_, ?_⟩
   · ext
-    simpa [mapToEqualizer] using ha₁
+    simpa [mapToEqualizer] using! ha₁
   · intro y h
     apply ha₂ y
-    simpa [mapToEqualizer, Subtype.ext_iff] using h
+    simpa [mapToEqualizer, Subtype.ext_iff] using! h
 
 theorem EqualizerCondition.bijective_mapToEqualizer_pullback {P : Cᵒᵖ ⥤ Type*}
     (hP : EqualizerCondition P) {X B : C} (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π] :
@@ -126,10 +126,10 @@ theorem EqualizerCondition.mk' (P : Cᵒᵖ ⥤ Type*)
   intro b hb
   obtain ⟨a, ha₁, ha₂⟩ := hP ⟨b, hb⟩
   refine ⟨a, ?_, ?_⟩
-  · simpa [Subtype.ext_iff, mapToEqualizer] using ha₁
+  · simpa [Subtype.ext_iff, mapToEqualizer] using! ha₁
   · intro y h
     apply ha₂ y
-    simpa [mapToEqualizer, Subtype.ext_iff] using h
+    simpa [mapToEqualizer, Subtype.ext_iff] using! h
 
 set_option backward.isDefEq.respectTransparency false in
 theorem EqualizerCondition.mk (P : Cᵒᵖ ⥤ Type*)
@@ -290,8 +290,9 @@ lemma isSheaf_yoneda_obj [Preregular C] (W : C) :
   obtain ⟨t, t_amalg, t_uniq⟩ :=
     (Sieve.forallYonedaIsSheaf_iff_colimit S).mpr ⟨h_colim⟩ W x_ext hx_ext
   refine ⟨t, ?_, ?_⟩
-  · convert Presieve.isAmalgamation_restrict (Sieve.le_generate
-      (Presieve.ofArrows (fun () ↦ Y) (fun () ↦ f))) _ _ t_amalg
+  · convert!
+    Presieve.isAmalgamation_restrict
+      (Sieve.le_generate (Presieve.ofArrows (fun () ↦ Y) (fun () ↦ f))) _ _ t_amalg
     exact (Presieve.restrict_extend hx).symm
   · exact fun y hy ↦ t_uniq y <| Presieve.isAmalgamation_sieveExtend x y hy
 

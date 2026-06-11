@@ -272,7 +272,7 @@ def ContinuousMulEquiv.toProfiniteGrpIso {X Y : ProfiniteGrp} (e : X ≃ₜ* Y) 
 instance : HasForget₂ ProfiniteGrp Profinite where
   forget₂ := {
     obj G := G.toProfinite
-    map f := CompHausLike.ofHom _ ⟨f, by continuity⟩}
+    map f := CompHausLike.ofHom _ ⟨f, by fun_prop⟩}
 
 @[to_additive]
 instance : (forget₂ ProfiniteGrp Profinite).Faithful := {
@@ -359,7 +359,7 @@ def limitConeIsLimit : Limits.IsLimit (limitCone F) where
       map_mul' := fun _ _ ↦ Subtype.ext (funext fun j ↦ map_mul (cone.π.app j).hom _ _) }
   uniq cone m h := by
     apply (forget₂ ProfiniteGrp Profinite).map_injective
-    simpa using (Profinite.limitConeIsLimit (F ⋙ (forget₂ ProfiniteGrp Profinite))).uniq
+    simpa using! (Profinite.limitConeIsLimit (F ⋙ (forget₂ ProfiniteGrp Profinite))).uniq
       ((forget₂ ProfiniteGrp Profinite).mapCone cone) ((forget₂ ProfiniteGrp Profinite).map m)
       (fun j ↦ congrArg (forget₂ ProfiniteGrp Profinite).map (h j))
 

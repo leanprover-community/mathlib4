@@ -101,7 +101,7 @@ def limitCone : Cone F where
     { app := fun j ↦ ofHom <| limitπAlgHom F j
       naturality := fun _ _ f => by
         ext
-        simpa using (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ }
+        simpa using! (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Witness that the limit cone in `AlgCat R` is a limit cone.

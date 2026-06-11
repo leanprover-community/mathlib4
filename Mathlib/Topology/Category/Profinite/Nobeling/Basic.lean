@@ -392,7 +392,7 @@ theorem eval_eq (l : Products I) (x : C) :
     exact if_pos (h i hi)
   · simp only [List.map_map, List.prod_eq_zero_iff, List.mem_map, Function.comp_apply]
     push Not at h
-    convert h with i
+    convert! h with i
     dsimp [LocallyConstant.evalMonoidHom, e]
     simp only [ite_eq_right_iff, one_ne_zero]
 
@@ -596,7 +596,7 @@ theorem lt_ord_of_lt {l m : Products I} {o : Ordinal} (h₁ : m < l)
 
 theorem eval_πs {l : Products I} {o : Ordinal} (hlt : ∀ i ∈ l.val, ord I i < o) :
     πs C o (l.eval (π C (ord I · < o))) = l.eval C := by
-  simpa only [← LocallyConstant.coe_inj] using evalFacProp C (ord I · < o) hlt
+  simpa only [← LocallyConstant.coe_inj] using! evalFacProp C (ord I · < o) hlt
 
 theorem eval_πs' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     (hlt : ∀ i ∈ l.val, ord I i < o₁) :

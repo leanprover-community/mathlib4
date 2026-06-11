@@ -182,7 +182,7 @@ This is `Finsupp.domCongr` as a `LinearEquiv`.
 See also `LinearMap.funCongrLeft` for the case of arbitrary functions. -/
 protected def domLCongr {α₁ α₂ : Type*} (e : α₁ ≃ α₂) : (α₁ →₀ M) ≃ₗ[R] α₂ →₀ M :=
   (Finsupp.domCongr e : (α₁ →₀ M) ≃+ (α₂ →₀ M)).toLinearEquiv <| by
-    simpa only [equivMapDomain_eq_mapDomain, domCongr_apply] using (lmapDomain M R e).map_smul
+    simpa only [equivMapDomain_eq_mapDomain, domCongr_apply] using! (lmapDomain M R e).map_smul
 
 @[simp]
 theorem domLCongr_apply {α₁ : Type*} {α₂ : Type*} (e : α₁ ≃ α₂) (v : α₁ →₀ M) :

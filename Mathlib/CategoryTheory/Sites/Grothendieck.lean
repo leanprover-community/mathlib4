@@ -124,7 +124,7 @@ variable {J} in
 lemma pullback_mem_iff_of_isIso {i : X ⟶ Y} [IsIso i] {S : Sieve Y} :
     S.pullback i ∈ J _ ↔ S ∈ J _ := by
   refine ⟨fun H ↦ ?_, J.pullback_stable i⟩
-  convert J.pullback_stable (inv i) H
+  convert! J.pullback_stable (inv i) H
   rw [← Sieve.pullback_comp, IsIso.inv_hom_id, Sieve.pullback_id]
 
 @[grind .]

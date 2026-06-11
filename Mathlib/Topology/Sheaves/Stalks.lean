@@ -27,7 +27,7 @@ Some lemmas about stalks and germs only hold for certain classes of concrete cat
 property of forgetful functors of categories of algebraic structures (like `MonCat`,
 `CommRingCat`,...) is that they preserve filtered colimits. Since stalks are filtered colimits,
 this ensures that the stalks of presheaves valued in these categories behave exactly as for
-`Type`-valued presheaves. For example, in `germ_exist` we prove that in such a category, every
+`Type`-valued presheaves. For example, in `exists_germ_eq` we prove that in such a category, every
 element of the stalk is the germ of a section.
 
 Furthermore, if we require the forgetful functor to reflect isomorphisms and preserve limits (as
@@ -219,7 +219,8 @@ theorem comp (ℱ : X.Presheaf C) (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
 theorem stalkPushforward_iso_of_isInducing {f : X ⟶ Y} (hf : IsInducing f)
     (F : X.Presheaf C) (x : X) : IsIso (F.stalkPushforward _ f x) := by
   haveI := Functor.initial_of_adjunction (hf.adjunctionNhds x)
-  convert (Functor.Final.colimitIso (OpenNhds.map f x).op ((OpenNhds.inclusion x).op ⋙ F)).isIso_hom
+  convert!
+    (Functor.Final.colimitIso (OpenNhds.map f x).op ((OpenNhds.inclusion x).op ⋙ F)).isIso_hom
   refine stalk_hom_ext _ fun U hU ↦ (stalkPushforward_germ _ f F _ x hU).trans ?_
   symm
   exact colimit.ι_pre ((OpenNhds.inclusion x).op ⋙ F) (OpenNhds.map f x).op _
@@ -267,7 +268,7 @@ lemma pullback_obj_obj_ext {Z : C} {f : X ⟶ Y} {F : Y.Presheaf C} (U : (Opens 
   apply ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit F _).hom_ext
   rintro ⟨⟨V⟩, ⟨⟩, ⟨b⟩⟩
   simpa [pullbackPushforwardAdjunction, Functor.lanAdjunction_unit]
-    using h V (leOfHom b)
+    using! h V (leOfHom b)
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
@@ -277,7 +278,7 @@ lemma pullbackPushforwardAdjunction_unit_pullback_map_germToPullbackStalk
     ((pullbackPushforwardAdjunction C f).unit.app F).app (op V) ≫
       ((pullback C f).obj F).map (homOfLE hV).op ≫ germToPullbackStalk C f F U x hx =
         F.germ _ (f x) (hV hx) := by
-  simpa [pullbackPushforwardAdjunction] using
+  simpa [pullbackPushforwardAdjunction] using!
     ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit F (op U)).fac _
       (CostructuredArrow.mk (homOfLE hV).op)
 
@@ -422,7 +423,7 @@ variable [PreservesFilteredColimits (forget C)]
 For presheaves valued in a concrete category whose forgetful functor preserves filtered colimits,
 every element of the stalk is the germ of a section.
 -/
-theorem germ_exist (F : X.Presheaf C) (x : X) (t : ToType (stalk.{v, u} F x)) :
+theorem exists_germ_eq (F : X.Presheaf C) {x : X} (t : ToType (stalk.{v, u} F x)) :
     ∃ (U : Opens X) (m : x ∈ U) (s : ToType (F.obj (op U))), F.germ _ x m s = t := by
   obtain ⟨U, s, e⟩ :=
     Types.jointly_surjective.{v, v} _ (isColimitOfPreserves (forget C) (colimit.isColimit _)) t
@@ -432,6 +433,19 @@ theorem germ_exist (F : X.Presheaf C) (x : X) (t : ToType (stalk.{v, u} F x)) :
   intro s e
   exact ⟨V, m, s, e⟩
 
+@[deprecated (since := "2026-05-16")] alias germ_exist := exists_germ_eq
+
+/-- A version of `exists_germ_eq` that provides a section
+over a subset of a given open neighborhood. -/
+theorem exists_le_germ_eq (F : X.Presheaf C) {x : X} (t : ToType (stalk.{v, u} F x))
+    {V : Opens X} (hV : x ∈ V) :
+    ∃ U ≤ V, ∃ (m : x ∈ U) (s : ToType (F.obj (op U))), F.germ _ x m s = t := by
+  rcases F.exists_germ_eq t with ⟨U, hxU, s, rfl⟩
+  refine ⟨U ⊓ V, inf_le_right, by simp [*], F.map (homOfLE inf_le_left).op s, ?_⟩
+  exact germ_res_apply ..
+
+/-- If two sections have the same germ at `x`,
+then their restrictions to some open neighborhood `W` of `x` are equal. -/
 theorem germ_eq (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ U) (mV : x ∈ V)
     (s : ToType (F.obj (op U))) (t : ToType (F.obj (op V)))
     (h : F.germ U x mU s = F.germ V x mV t) :
@@ -442,14 +456,14 @@ theorem germ_eq (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ U) (mV : 
 theorem stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} {f : F ⟶ G}
     (h : ∀ U : Opens X, Function.Injective (f.app (op U))) (x : X) :
     Function.Injective ((stalkFunctor C x).map f) := fun s t hst => by
-  rcases germ_exist F x s with ⟨U₁, hxU₁, s, rfl⟩
-  rcases germ_exist F x t with ⟨U₂, hxU₂, t, rfl⟩
+  rcases exists_germ_eq F s with ⟨U₁, hxU₁, s, rfl⟩
+  rcases exists_germ_eq F t with ⟨U₂, hxU₂, t, rfl⟩
   rw [stalkFunctor_map_germ_apply, stalkFunctor_map_germ_apply] at hst
   obtain ⟨W, hxW, iWU₁, iWU₂, heq⟩ := G.germ_eq x hxU₁ hxU₂ _ _ hst
   rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply, ← f.naturality, ← f.naturality,
     ConcreteCategory.comp_apply, ConcreteCategory.comp_apply] at heq
   replace heq := h W heq
-  convert congr_arg (F.germ _ x hxW) heq using 1
+  convert! congr_arg (F.germ _ x hxW) heq using 1
   exacts [(F.germ_res_apply iWU₁ x hxW s).symm, (F.germ_res_apply iWU₂ x hxW t).symm]
 
 section IsBasis
@@ -458,9 +472,9 @@ variable {B : Set (Opens X)} (hB : Opens.IsBasis B)
 
 include hB
 
-lemma germ_exist_of_isBasis (F : X.Presheaf C) (x : X) (t : ToType (F.stalk x)) :
+lemma exists_mem_germ_eq_of_isBasis (F : X.Presheaf C) (x : X) (t : ToType (F.stalk x)) :
     ∃ (U : Opens X) (m : x ∈ U) (_ : U ∈ B) (s : ToType (F.obj (op U))), F.germ _ x m s = t := by
-  obtain ⟨U, hxU, s, rfl⟩ := F.germ_exist x t
+  obtain ⟨U, hxU, s, rfl⟩ := F.exists_germ_eq t
   obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := hB.exists_subset_of_mem_open hxU U.2
   exact ⟨V, hxV, hV, F.map (homOfLE hVU).op s, by rw [← ConcreteCategory.comp_apply, F.germ_res']⟩
 
@@ -472,15 +486,15 @@ lemma germ_eq_of_isBasis (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ 
   obtain ⟨W, hxW, hWU, hWV, e⟩ := F.germ_eq x mU mV _ _ h
   obtain ⟨_, ⟨W', hW', rfl⟩, hxW', hW'W⟩ := hB.exists_subset_of_mem_open hxW W.2
   refine ⟨W', hxW', hW', hW'W.trans hWU.le, hW'W.trans hWV.le, ?_⟩
-  simpa only [← ConcreteCategory.comp_apply, ← F.map_comp] using
+  simpa only [← ConcreteCategory.comp_apply, ← F.map_comp] using!
     DFunLike.congr_arg (ConcreteCategory.hom (F.map (homOfLE hW'W).op)) e
 
 lemma stalkFunctor_map_injective_of_isBasis
     {F G : X.Presheaf C} {α : F ⟶ G} (hα : ∀ U ∈ B, Function.Injective (α.app (op U))) (x : X) :
     Function.Injective ((stalkFunctor _ x).map α) := by
   intro s t hst
-  obtain ⟨U₁, hxU₁, hU₁, s, rfl⟩ := germ_exist_of_isBasis hB _ x s
-  obtain ⟨U₂, hxU₂, hU₂, t, rfl⟩ := germ_exist_of_isBasis hB _ x t
+  obtain ⟨U₁, hxU₁, hU₁, s, rfl⟩ := exists_mem_germ_eq_of_isBasis hB _ x s
+  obtain ⟨U₂, hxU₂, hU₂, t, rfl⟩ := exists_mem_germ_eq_of_isBasis hB _ x t
   rw [stalkFunctor_map_germ_apply, stalkFunctor_map_germ_apply] at hst
   obtain ⟨W, hxW, hW, iWU₁, iWU₂, heq⟩ := germ_eq_of_isBasis hB _ _ hxU₁ hxU₂ hst
   simp only [← α.naturality_apply, (hα W hW).eq_iff] at heq
@@ -606,7 +620,7 @@ theorem app_surjective_of_stalkFunctor_map_bijective {F G : Sheaf C X} (f : F �
   -- Since `f` is surjective on stalks, we can find a preimage `s₀` of the germ of `t` at `x`
   obtain ⟨s₀, hs₀⟩ := (h x hx).2 (G.presheaf.germ U x hx t)
   -- ... and this preimage must come from some section `s₁` defined on some open neighborhood `V₁`
-  obtain ⟨V₁, hxV₁, s₁, rfl⟩ := F.presheaf.germ_exist x s₀
+  obtain ⟨V₁, hxV₁, s₁, rfl⟩ := F.presheaf.exists_germ_eq s₀
   rename' hs₀ => hs₁
   rw [stalkFunctor_map_germ_apply V₁ x hxV₁ f.1 s₁] at hs₁
   -- Now, the germ of `f.app (op V₁) s₁` equals the germ of `t`, hence they must coincide on

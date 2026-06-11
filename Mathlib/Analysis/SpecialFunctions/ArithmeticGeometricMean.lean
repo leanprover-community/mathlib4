@@ -243,7 +243,7 @@ lemma agm_eq_agm_agmSequences_fst_agmSequences_snd (n : ℕ) :
   refine tendsto_nhds_unique ?_ tendsto_agmSequences_snd_agm
   have key := @tendsto_agmSequences_snd_agm x y
   rw [← tendsto_add_atTop_iff_nat (n + 1)] at key
-  convert key using 2 with m
+  convert! key using 2 with m
   simp_rw [agmSequences, Prod.mk.eta, ← iterate_add_apply, add_right_comm]
 
 lemma agm_eq_agm_gm_am : agm x y = agm (sqrt (x * y)) ((x + y) / 2) := by

@@ -123,7 +123,7 @@ set_option backward.defeqAttrib.useBackward true in
 noncomputable instance : (Fiber.inducedFunctor (comp_const F S)).EssSurj := by
   apply essSurj_of_surj
   intro Y
-  have hYS : (fiberInclusion.obj Y).base = S := by simpa using Y.2
+  have hYS : (fiberInclusion.obj Y).base = S := by simpa using! Y.2
   use hYS ▸ (fiberInclusion.obj Y).fiber
   apply fiberInclusion_obj_inj
   ext <;> simp [hYS]

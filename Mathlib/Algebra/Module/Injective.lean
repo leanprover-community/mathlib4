@@ -292,7 +292,7 @@ theorem ExtensionOfMaxAdjoin.extendIdealTo_wd (h : Module.Baer R Q) {y : N} (r r
     (eq1 : r • y = r' • y) : ExtensionOfMaxAdjoin.extendIdealTo i f h y r =
     ExtensionOfMaxAdjoin.extendIdealTo i f h y r' := by
   rw [← sub_eq_zero, ← map_sub]
-  convert ExtensionOfMaxAdjoin.extendIdealTo_wd' i f h (r - r') _
+  convert! ExtensionOfMaxAdjoin.extendIdealTo_wd' i f h (r - r') _
   rw [sub_smul, sub_eq_zero, eq1]
 
 theorem ExtensionOfMaxAdjoin.extendIdealTo_eq (h : Module.Baer R Q) {y : N} (r : R)

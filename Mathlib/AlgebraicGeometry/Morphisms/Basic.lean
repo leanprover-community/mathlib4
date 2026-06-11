@@ -208,11 +208,11 @@ lemma coprodMap {X Y X' Y' : Scheme.{u}} (f : X ⟶ X') (g : Y ⟶ Y') (hf : P f
   rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩)
   · rw [← MorphismProperty.cancel_left_of_respectsIso P
       (isPullback_inl_inl_coprodMap f g).flip.isoPullback.hom]
-    convert hf
+    convert! hf
     simp [Scheme.Cover.pullbackHom, coprodOpenCover]
   · rw [← MorphismProperty.cancel_left_of_respectsIso P
       (isPullback_inr_inr_coprodMap f g).flip.isoPullback.hom]
-    convert hg
+    convert! hg
     simp [Scheme.Cover.pullbackHom, coprodOpenCover]
 
 end IsZariskiLocalAtTarget
@@ -634,7 +634,7 @@ theorem isStableUnderBaseChange (hP' : Q.IsStableUnderBaseChange) :
           (pullbackRightPullbackFstIso (S.affineCover.f i) g
             (pullback.snd f (S.affineCover.f i))).symm
         exact asIso
-          (pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simpa using pullback.condition) (by simp))
+          (pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simpa using! pullback.condition) (by simp))
       have : e.hom ≫ pullback.fst _ _ =
           pullback.snd (pullback.fst f g) ((S.affineCover.pullback₁ f).f i) := by
         simp [e]

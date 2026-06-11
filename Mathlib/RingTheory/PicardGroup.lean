@@ -140,7 +140,7 @@ theorem bijective_curry : Function.Bijective (curry e.toLinearMap) := by
       rTensorHom N ∘ₗ (ringLmapEquivSelf R R M).symm.toLinearMap := by
     rw [← LinearEquiv.toLinearMap_symm_comp_eq]; ext
     simp [LinearEquiv.congrLeft, LinearEquiv.congrRight, LinearEquiv.arrowCongrAddEquiv]
-  simpa [this] using (rTensorEquiv R M <| TensorProduct.comm R N M ≪≫ₗ e).bijective
+  simpa [this] using! (rTensorEquiv R M <| TensorProduct.comm R N M ≪≫ₗ e).bijective
 
 /-- Given `M ⊗[R] N ≃ₗ[R] R`, this is the induced isomorphism `M ≃ₗ[R] Nᵛ`. -/
 noncomputable def linearEquivDual : M ≃ₗ[R] Dual R N := .ofBijective _ (bijective_curry e)
@@ -244,7 +244,7 @@ theorem free_iff_linearEquiv : Free R M ↔ Nonempty (M ≃ₗ[R] R) := by
       e.symm ≪≫ₗ linearEquiv R M ≪≫ₗ (.symm <| .funUnique Unit R R)
   have : Unique (Free.ChooseBasisIndex R M) :=
     (Fintype.card_eq_one_iff_nonempty_unique.mp (by simpa using this)).some
-  exact ⟨e ≪≫ₗ LinearEquiv.finsuppUnique R R _⟩
+  exact ⟨e ≪≫ₗ uniqueLinearEquiv R R default⟩
 
 /- TODO: The ≤ direction holds for arbitrary invertible modules over any commutative **ring** by
 considering the localization at a prime (which is free of rank 1) using the strong rank condition.
@@ -684,8 +684,9 @@ set_option backward.privateInPublic.warn false in
 `I ⊗[R] J` to `I * J` induced by multiplication is an isomorphism. -/
 noncomputable def tensorEquivMul : I ⊗[R] J ≃ₗ[R] I * J := by
   refine .ofBijective _ ⟨.of_comp (f := Submodule.subtype _) ?_, mulMap'_surjective _ _⟩
-  convert (projective_units_and_mul'_comp_lTensor_bijective J).2.1.comp
-    (Flat.rTensor_preserves_injective_linearMap _ I.1.subtype_injective)
+  convert!
+    (projective_units_and_mul'_comp_lTensor_bijective J).2.1.comp
+      (Flat.rTensor_preserves_injective_linearMap _ I.1.subtype_injective)
   simp_rw [← LinearMap.coe_comp]
   congr 1; ext; rfl
 
@@ -776,18 +777,19 @@ set_option backward.defeqAttrib.useBackward true in
 the multiplication map induces an isomorphism `A ⊗[R] M ≃ₗ[A] A`. -/
 noncomputable def tensorSubmoduleAlgebraEquiv : A ⊗[R] submoduleAlgebra e ≃ₗ[A] A :=
   .ofBijective (.mul'' R A ∘ₗ AlgebraTensorModule.lTensor A A (Submodule.subtype _)) <| by
-    convert (AlgebraTensorModule.congr (.refl ..) (submoduleAlgebraEquiv e) ≪≫ₗ e).bijective
+    convert! (AlgebraTensorModule.congr (.refl ..) (submoduleAlgebraEquiv e) ≪≫ₗ e).bijective
     ext x
     refine x.induction_on (by simp) ?_ (by simp +contextual)
     intro a x
     obtain ⟨m, rfl⟩ := (submoduleAlgebraEquiv e).symm.surjective x
-    suffices a * toAlgebra e m = e (a ⊗ₜ[R] m) by simpa using this
+    suffices a * toAlgebra e m = e (a ⊗ₜ[R] m) by simpa using! this
     dsimp [toAlgebra]
     rw [map_one, ← smul_eq_mul, ← map_smul, smul_tmul', smul_eq_mul, mul_one]
 
 theorem top_mul_submoduleAlgebra : ⊤ * submoduleAlgebra e = ⊤ := by
   rw [← Submodule.mulMap_range]
-  convert (Submodule.topEquiv.rTensor _ ≪≫ₗ (tensorSubmoduleAlgebraEquiv e).restrictScalars R).range
+  convert!
+    (Submodule.topEquiv.rTensor _ ≪≫ₗ (tensorSubmoduleAlgebraEquiv e).restrictScalars R).range
   ext; rfl
 
 /-- When a flat `R`-module `M` is embedded as a submodule of a faithful `R`-algebra `A`,
@@ -795,8 +797,9 @@ we have `I ⊗[R] M ≃ₗ[R] I * M` for any `R`-submodule `I` of `A`. -/
 noncomputable def tensorSubmoduleAlgebraEquivMul (I : Submodule R A) :
     I ⊗[R] submoduleAlgebra e ≃ₗ[R] I * submoduleAlgebra e := by
   refine .ofBijective _ ⟨.of_comp (f := Submodule.subtype _) ?_, Submodule.mulMap'_surjective _ _⟩
-  convert ((tensorSubmoduleAlgebraEquiv e).restrictScalars R).injective.comp
-    (Flat.rTensor_preserves_injective_linearMap _ I.subtype_injective)
+  convert!
+    ((tensorSubmoduleAlgebraEquiv e).restrictScalars R).injective.comp
+      (Flat.rTensor_preserves_injective_linearMap _ I.subtype_injective)
   simp_rw [← LinearEquiv.coe_toLinearMap, ← LinearMap.coe_comp]
   congr 1; ext; rfl
 
@@ -902,7 +905,7 @@ theorem Ideal.eq_top_of_mk_tensor_eq_one [IsFractionRing R R] (I J : Ideal R)
   have : IsUnit (e 1 : R) := IsFractionRing.self_iff_nonZeroDivisors_le_isUnit.mp ‹_› <|
       IsRegular.mem_nonZeroDivisors <| isRightRegular_iff_isRegular.mp <| by
     rw [IsRightRegular]
-    convert Subtype.val_injective.comp e.injective using 2
+    convert! Subtype.val_injective.comp e.injective using 2
     rw [← smul_eq_mul, ← Submodule.coe_smul, ← map_smul, smul_eq_mul, mul_one, Function.comp_apply]
   constructor <;> refine eq_top_of_isUnit_mem _ ?_ this
   exacts [mul_le_right (e 1).2, mul_le_left (e 1).2]

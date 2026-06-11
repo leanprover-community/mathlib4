@@ -111,7 +111,7 @@ theorem rootMultiplicity_eq_rootMultiplicity {p : R[X]} {t : R} :
   simp_rw [rootMultiplicity_eq_multiplicity, comp_X_add_C_eq_zero_iff]
   congr 1
   rw [C_0, sub_zero]
-  convert (multiplicity_map_eq <| algEquivAevalXAddC t).symm using 2
+  convert! (multiplicity_map_eq <| algEquivAevalXAddC t).symm using 2
   simp [C_eq_algebraMap]
 
 /-- See `Polynomial.rootMultiplicity_eq_natTrailingDegree'` for the special case of `t = 0`. -/
@@ -205,7 +205,7 @@ theorem prime_X_sub_C (r : R) : Prime (X - C r) :=
     exact id⟩
 
 theorem prime_X : Prime (X : R[X]) := by
-  convert prime_X_sub_C (0 : R)
+  convert! prime_X_sub_C (0 : R)
   simp
 
 theorem Monic.prime_of_degree_eq_one (hp1 : degree p = 1) (hm : Monic p) : Prime p :=
