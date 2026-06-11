@@ -247,8 +247,6 @@ lemma exists_nat_ne_zero_exists_integer_mul_eq_and_absNorm_span_eq_pow (x : K) :
   have hx : IsAlgebraic ℤ x := IsFractionRing.isAlgebraic_iff ℤ _ _ |>.mpr (.of_finite ℚ x)
   obtain ⟨m, r, hm, hmr⟩ := hx.exists_nsmul_eq (𝓞 K)
   rw [← RingOfIntegers.coe_eq_algebraMap r] at hmr
-  have hI : (span {(m : 𝓞 K)}).toAddSubgroup ≤ (span {(m : 𝓞 K), r}).toAddSubgroup :=
-    Submodule.toAddSubgroup_mono <| span_mono <| by grind
   set n := (span {(m : 𝓞 K)}).toAddSubgroup.relIndex (span {(m : 𝓞 K), r}).toAddSubgroup with hndef
   have hn : n ≠ 0 := isFiniteRelIndex (by simp [hm]) _ |>.relIndex_ne_zero
   obtain ⟨a, ha'⟩ : ∃ a, m * a = n * r := by
@@ -332,29 +330,28 @@ end withFinset
 lemma finite_setOf_prod_infinitePlace_iSup_le {n : ℕ} (hn : n ≠ 0) (B : ℝ) :
     {x : 𝓞 K | ∏ v : InfinitePlace K, (⨆ i, v (![(x : K), n] i)) ^ v.mult ≤ B}.Finite := by
   set B' := B / n ^ (totalWeight K - 1)
-  have H' : Set.BijOn ((↑) : 𝓞 K → K) {x | ∀ (v : InfinitePlace K), v x ≤ B'}
-      {x | IsIntegral ℤ x ∧ ∀ (φ : K →+* ℂ), ‖φ x‖ ≤ B'} := by
-    refine .mk (fun x hx ↦ ?_) (fun _ _ _ _ ↦ RingOfIntegers.ext) fun a ha ↦ ?_ <;>
-      simp only [Set.mem_image, Set.mem_setOf_eq] at *
-    · exact ⟨x.isIntegral_coe, fun φ ↦ hx <| .mk φ⟩
-    · rw [← mem_integralClosure_iff ℤ K] at ha
-      exact ⟨⟨a, ha.1⟩, fun v ↦ v.norm_embedding_eq a ▸ ha.2 v.embedding, rfl⟩
-  exact H'.finite_iff_finite.mpr (Embeddings.finite_of_norm_le K ℂ B') |>.subset
-    fun _ _ ↦ by grind [infinitePlace_apply_le_of_prod_le hn B]
+  suffices Set.BijOn ((↑) : 𝓞 K → K) {x | ∀ (v : InfinitePlace K), v x ≤ B'}
+      {x | IsIntegral ℤ x ∧ ∀ (φ : K →+* ℂ), ‖φ x‖ ≤ B'} from
+    this.finite_iff_finite.mpr (Embeddings.finite_of_norm_le K ℂ B') |>.subset
+      fun _ _ ↦ by grind [infinitePlace_apply_le_of_prod_le hn B]
+  refine .mk (fun x hx ↦ ?_) (fun _ _ _ _ ↦ RingOfIntegers.ext) fun a ha ↦ ?_ <;>
+    simp only [Set.mem_image, Set.mem_setOf_eq] at *
+  · exact ⟨x.isIntegral_coe, fun φ ↦ hx <| .mk φ⟩
+  · rw [← mem_integralClosure_iff ℤ K] at ha
+    exact ⟨⟨a, ha.1⟩, fun v ↦ v.norm_embedding_eq a ▸ ha.2 v.embedding, rfl⟩
 
 /-- The set of `a : 𝓞 K` such that `mulHeight₁ (a / n) = mulHeight ![a, n]` is bounded
 (for some given nonzero `n : ℕ`) is finite. -/
 lemma finite_setOf_mulHeight_nat_le {n : ℕ} (hn : n ≠ 0) (B : ℝ) :
     {a : 𝓞 K | mulHeight ![(a : K), n] ≤ B}.Finite := by
-  have H : {a : 𝓞 K | mulHeight ![(a : K), n] ≤ B} ⊆
-      {a | ∏ v : InfinitePlace K, (⨆ i, v (![(a : K), n] i)) ^ v.mult ≤
-        n ^ totalWeight K * B} := by
-    refine Set.setOf_subset_setOf_of_imp fun a ha ↦ ?_
-    rw [mulHeight_eq <| by simp [hn], mul_comm] at ha
-    grw [← ha, ← mul_assoc, ← one_le_pow_totalWeight_mul_finprod hn, one_mul]
-    -- nonnegativity side goal
-    exact Finset.prod_nonneg fun _ _ ↦ pow_nonneg (Real.iSup_nonneg_of_nonnegHomClass ..) _
-  exact (finite_setOf_prod_infinitePlace_iSup_le hn _).subset H
+  suffices {a : 𝓞 K | mulHeight ![(a : K), n] ≤ B} ⊆
+      {a | ∏ v : InfinitePlace K, (⨆ i, v (![(a : K), n] i)) ^ v.mult ≤ n ^ totalWeight K * B} from
+    (finite_setOf_prod_infinitePlace_iSup_le hn _).subset this
+  refine Set.setOf_subset_setOf_of_imp fun a ha ↦ ?_
+  rw [mulHeight_eq <| by simp [hn], mul_comm] at ha
+  grw [← ha, ← mul_assoc, ← one_le_pow_totalWeight_mul_finprod hn, one_mul]
+  -- nonnegativity side goal
+  exact Finset.prod_nonneg fun _ _ ↦ pow_nonneg (Real.iSup_nonneg_of_nonnegHomClass ..) _
 
 variable (K) in
 /- The set of `x : K` such that `mulHeight₁ x` is bounded and `n * x` is integral
@@ -363,25 +360,23 @@ This is a stepping stone for the proof of the next result, which is strictly str
 private lemma finite_setOf_isIntegral_nat_mul_and_mulHeight₁_le {n : ℕ} (hn : n ≠ 0) (B : ℝ) :
     {x : K | IsIntegral ℤ (n * x) ∧ mulHeight₁ x ≤ B}.Finite := by
   have hn' : (n : K) ≠ 0 := mod_cast hn
-  have H : Set.BijOn (fun a : 𝓞 K ↦ (a / n : K)) {a | mulHeight ![(a : K), n] ≤ B}
-      {x | IsIntegral ℤ (n * x) ∧ mulHeight₁ x ≤ B} := by
-    refine .mk (fun a ha ↦ ?_) (fun a _ b _ h ↦ ?_) fun x ⟨hx₁, hx₂⟩ ↦ ?_
-    · simp only [Set.mem_setOf_eq] at ha ⊢
-      rw [mul_div_cancel₀ (a : K) hn', mulHeight₁_div_eq_mulHeight]
-      exact ⟨a.isIntegral_coe, ha⟩
-    · rwa [div_left_inj' hn', RingOfIntegers.eq_iff] at h
-    · simp only [Set.mem_setOf_eq, Set.mem_image]
-      obtain ⟨a, ha⟩ : ∃ a : 𝓞 K, n * x = a := ⟨⟨_, hx₁⟩, rfl⟩
-      refine ⟨a, ?_, (EuclideanDomain.eq_div_of_mul_eq_right hn' ha).symm⟩
-      rwa [← ha, ← mulHeight₁_div_eq_mulHeight, mul_div_cancel_left₀ x hn']
-  exact H.finite_iff_finite.mp <| finite_setOf_mulHeight_nat_le hn B
+  suffices Set.BijOn (fun a : 𝓞 K ↦ (a / n : K)) {a | mulHeight ![(a : K), n] ≤ B}
+      {x | IsIntegral ℤ (n * x) ∧ mulHeight₁ x ≤ B} from
+    this.finite_iff_finite.mp <| finite_setOf_mulHeight_nat_le hn B
+  refine .mk (fun a ha ↦ ?_) (fun a _ b _ h ↦ ?_) fun x ⟨hx₁, hx₂⟩ ↦ ?_
+  · simp only [Set.mem_setOf_eq] at ha ⊢
+    rw [mul_div_cancel₀ (a : K) hn', mulHeight₁_div_eq_mulHeight]
+    exact ⟨a.isIntegral_coe, ha⟩
+  · rwa [div_left_inj' hn', RingOfIntegers.eq_iff] at h
+  · simp only [Set.mem_setOf_eq, Set.mem_image]
+    obtain ⟨a, ha⟩ : ∃ a : 𝓞 K, n * x = a := ⟨⟨_, hx₁⟩, rfl⟩
+    refine ⟨a, ?_, (EuclideanDomain.eq_div_of_mul_eq_right hn' ha).symm⟩
+    rwa [← ha, ← mulHeight₁_div_eq_mulHeight, mul_div_cancel_left₀ x hn']
 
 variable (K) in
 /-- A number field `K` satisfies the **Northcott property**:
 The set of elements of bounded multiplicative height is finite. -/
 theorem finite_setOf_mulHeight₁_le (B : ℝ) : {x : K | mulHeight₁ x ≤ B}.Finite := by
-  rcases lt_or_ge B 0 with hB | hB
-  · grind [mulHeight₁_pos]
   have H : {x : K | mulHeight₁ x ≤ B} =
       ⋃ n : Fin ⌊B⌋₊, {x : K | IsIntegral ℤ ((n + 1) * x) ∧ mulHeight₁ x ≤ B} := by
     ext x : 1
