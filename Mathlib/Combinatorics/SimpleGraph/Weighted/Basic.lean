@@ -122,7 +122,6 @@ structure StandardWeights (G : WeightedGraphWithKillingTerm X) : Prop where
   killingTerm_zero : G.killingTerm = 0
 
 variable (x y : X)
-
 /--
 If a graph has standard weights, then an edge weight is non-0 if and only if the vertices are
 adjacent.
@@ -278,7 +277,7 @@ scoped notation "𝟙_" y:max => basisFun y
 
 @[simp]
 lemma sum_killingTerm_weight_mul_basisFun_sq_eq_killingTerm_mul_basisFun_sq :
-    ∑ i, G.killingTerm i * (𝟙_x) i ^ 2 = G.killingTerm x * (𝟙_x) x ^ 2 := by
+    ∑ i, G.killingTerm i * (𝟙_x) i ^ 2 = G.killingTerm x := by
   simp [(Fintype.sum_subset (f := fun (y : X) ↦ G.killingTerm y * (𝟙_x) y ^ 2)
       (s := {x}) (by grind)).symm]
 
@@ -291,8 +290,7 @@ lemma associatedForm_of_basis_eq_degree :
     G.associatedForm (𝟙_x) (𝟙_x) = G.degree x := by
   simp only [associatedForm_apply, degree, one_div, NNReal.coe_add, NNReal.coe_sum]
   field_simp
-  simp only [sum_killingTerm_weight_mul_basisFun_sq_eq_killingTerm_mul_basisFun_sq,
-    Pi.single_eq_same, one_pow, mul_one]
+  simp only [sum_killingTerm_weight_mul_basisFun_sq_eq_killingTerm_mul_basisFun_sq]
   rw [mul_add]
   congr
   rw [Finset.sum_eq_sum_sdiff_singleton_add (i := x) (by simp)]
