@@ -163,7 +163,7 @@ instance [FormallyUnramified f] [LocallyOfFiniteType f] (x : X) :
   suffices h : Algebra.IsSeparable
       (IsLocalRing.ResidueField <| Y.presheaf.stalk (f x))
       (IsLocalRing.ResidueField <| X.presheaf.stalk x) by
-    convert h
+    convert! h
     refine Algebra.algebra_ext _ _ fun x ↦ ?_
     obtain ⟨x, rfl⟩ := IsLocalRing.residue_surjective x
     rfl

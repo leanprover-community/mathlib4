@@ -101,7 +101,7 @@ agree, except perhaps at radius 0.
 lemma proximity_congr_codiscrete {f g : ℂ → E} {a : WithTop E} {r : ℝ}
     (hfg : f =ᶠ[codiscrete ℂ] g) (hr : r ≠ 0) :
     proximity f a r = proximity g a r :=
-  proximity_congr_codiscreteWithin (hfg.filter_mono (codiscreteWithin.mono (by tauto))) hr
+  proximity_congr_codiscreteWithin (hfg.filter_mono (codiscreteWithin_mono (by tauto))) hr
 
 /--
 For finite values `a₀`, the proximity function `proximity f a₀` equals the proximity function for
@@ -151,6 +151,14 @@ theorem proximity_nonneg {a : WithTop E} :
 @[simp] lemma proximity_const {c : E} {r : ℝ} :
     proximity (fun _ ↦ c) ⊤ r = log⁺ ‖c‖ := by
   simp [proximity, circleAverage_const]
+
+/--
+If `f` is continuous, then so is its proximitiy function at `⊤`.
+-/
+@[fun_prop] theorem continuous_proximity_top (hf : Continuous f) :
+    Continuous (proximity f ⊤) := by
+  simp only [proximity, reduceDIte]
+  fun_prop
 
 /-!
 ## Behaviour under Arithmetic Operations
