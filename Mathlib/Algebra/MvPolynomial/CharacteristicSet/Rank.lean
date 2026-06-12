@@ -19,18 +19,9 @@ which are essential for the Characteristic Set Method (Wu's Method).
   ordered lexicographically. This defines a well-ordering on polynomials when the variable type
   is well-founded.
 
-* `TriangularSet.rank`: The rank of a triangular set is a lexicographic sequence
-  of ranks of its polynomials. For two triangular sets `S` and `T`, `S < T` if either:
-  1. There exists `k < S.length` such that `S₀ ≈ T₀`, `S₁ ≈ T₁`, ..., `Sₖ₋₁ ≈ Tₖ₋₁` and `Sₖ < Tₖ`;
-  2. `S.length > T.length` and `∀ i < T.length, Sᵢ ≈ Tᵢ`.
-
-## Main results
-
-* `MvPolynomial.instWellFoundedLT`: When `σ` is well-founded, polynomials are well-founded
-  under the rank ordering.
-
-* `TriangularSet.instWellFoundedLT`: When `σ` is finite, triangular sets are well-founded
-  under the rank ordering. This guarantees termination of characteristic set algorithms.
+## References
+* [Wen-Tsun Wu, *Basic principles of mechanical theorem proving in elementary geometries*]
+  [wen1986basic]
 
 -/
 
