@@ -545,12 +545,12 @@ instance [PreconnectedSpace X] [NoncompactSpace X] : ConnectedSpace (OnePoint X)
   toNonempty := inferInstance
 
 /-- If `X` is an infinite type with discrete topology (e.g., `ℕ`), then the identity map from
-`CofiniteTopology (OnePoint X)` to `OnePoint X` is not continuous. -/
-theorem not_continuous_cofiniteTopology_of_symm [Infinite X] [DiscreteTopology X] :
-    ¬Continuous (@CofiniteTopology.of (OnePoint X)).symm := by
+`WithCofiniteTopology (OnePoint X)` to `OnePoint X` is not continuous. -/
+theorem not_continuous_withCofiniteTopology_of_symm [Infinite X] [DiscreteTopology X] :
+    ¬Continuous (@WithCofiniteTopology.of (OnePoint X)).symm := by
   inhabit X
   simp only [continuous_iff_continuousAt, ContinuousAt, not_forall]
-  use CofiniteTopology.of ↑(default : X)
+  use WithCofiniteTopology.of ↑(default : X)
   simpa [nhds_coe_eq, nhds_discrete, CofiniteTopology.nhds_eq, Equiv.symm_apply_eq,
     Set.compl_def, Set.mem_singleton_iff] using (finite_singleton _).infinite_compl
 
@@ -645,6 +645,6 @@ Let `α = OnePoint ℕ` be the one-point compactification of `ℕ`, and let `β`
 theorem Continuous.homeoOfEquivCompactToT2.t1_counterexample :
     ∃ (α β : Type) (_ : TopologicalSpace α) (_ : TopologicalSpace β),
       CompactSpace α ∧ T1Space β ∧ ∃ f : α ≃ β, Continuous f ∧ ¬Continuous f.symm :=
-  ⟨OnePoint ℕ, CofiniteTopology (OnePoint ℕ), inferInstance, inferInstance, inferInstance,
-    inferInstance, CofiniteTopology.of, CofiniteTopology.continuous_of,
-    OnePoint.not_continuous_cofiniteTopology_of_symm⟩
+  ⟨OnePoint ℕ, WithCofiniteTopology (OnePoint ℕ), inferInstance, inferInstance, inferInstance,
+    inferInstance, WithCofiniteTopology.of, WithCofiniteTopology.continuous_of,
+    OnePoint.not_continuous_withCofiniteTopology_of_symm⟩

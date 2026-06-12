@@ -263,7 +263,8 @@ instance (priority := 100) [IndiscreteTopology X] : PreirreducibleSpace X where
     rintro ⟨h | h⟩ <;> simp_all
 
 /-- An infinite type with cofinite topology is an irreducible topological space. -/
-instance (priority := 100) {X} [Infinite X] : IrreducibleSpace (CofiniteTopology X) where
+instance (priority := 100) {X} [TopologicalSpace X] [Infinite X] [CofiniteTopology X] :
+    IrreducibleSpace X where
   isPreirreducible_univ u v := by
     simp only [CofiniteTopology.isOpen_iff, univ_inter]
     intro hu hv hu' hv'
