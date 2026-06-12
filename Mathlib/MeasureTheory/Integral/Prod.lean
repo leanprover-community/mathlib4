@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Integral.SetToL1Prod
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.MeasureTheory.Measure.Prod
 
@@ -60,12 +61,6 @@ functions. We show that if `f` is a binary measurable function, then the functio
 along one of the variables (using either the Lebesgue or Bochner integral) is measurable.
 -/
 
-
-theorem measurableSet_integrable [SFinite ν] ⦃f : α → β → E⦄
-    (hf : StronglyMeasurable (uncurry f)) : MeasurableSet {x | Integrable (f x) ν} := by
-  simp_rw [Integrable, hf.of_uncurry_left.aestronglyMeasurable, true_and]
-  exact measurableSet_lt (Measurable.lintegral_prod_right hf.enorm) measurable_const
-
 section
 
 variable [NormedSpace ℝ E]
@@ -75,6 +70,12 @@ variable [NormedSpace ℝ E]
   This version has `f` in curried form. -/
 theorem MeasureTheory.StronglyMeasurable.integral_prod_right [SFinite ν] ⦃f : α → β → E⦄
     (hf : StronglyMeasurable (uncurry f)) : StronglyMeasurable fun x => ∫ y, f x y ∂ν := by
+  simp only [integral_eq_setToFun]
+  apply MeasureTheory.StronglyMeasurable.setToFun_prod_right
+
+
+#exit
+
   classical
   by_cases hE : CompleteSpace E; swap; · simp [integral, hE, stronglyMeasurable_const]
   borelize E

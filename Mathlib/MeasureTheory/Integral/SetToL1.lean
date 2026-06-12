@@ -844,6 +844,12 @@ theorem setToFun_simpleFunc [CompleteSpace F] (hT : DominatedFinMeasAdditive μ 
   apply (SimpleFunc.setToSimpleFunc_congr T (fun s ↦ hT.eq_zero_of_measure_zero) hT.1 hf _).symm
   grw [A, Lp.simpleFunc.toSimpleFunc_eq_toFun]
 
+theorem setToFun_simpleFunc_eq_setToSimpleFunc [CompleteSpace F]
+    (hT : DominatedFinMeasAdditive μ T C) (f : SimpleFunc α E) (hf : Integrable f μ) :
+    setToFun μ T hT f = f.setToSimpleFunc T := by
+  rw [setToFun_simpleFunc hT f hf]
+  rfl
+
 section Order
 
 variable {G' G'' : Type*}

@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.MeasureTheory.Integral.Prod
 public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Semivariation
 
@@ -17,10 +18,12 @@ public section
 open Filter Function MeasureTheory RCLike Set TopologicalSpace Topology
 open scoped ENNReal NNReal Finset
 
-variable {ι X Y E F G : Type*} {mX : MeasurableSpace X} {mY : MeasurableSpace Y}
+variable {ι X Y E F G H I : Type*} {mX : MeasurableSpace X} {mY : MeasurableSpace Y}
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
+  [NormedAddCommGroup H] [NormedSpace ℝ H]
+  [NormedAddCommGroup I] [NormedSpace ℝ I]
   {μ : VectorMeasure X E} {ν : VectorMeasure Y F}
   {B : E →L[ℝ] F →L[ℝ] G} {f g : X → E} {s t : Set X}
 
@@ -77,8 +80,7 @@ theorem stronglyMeasurable_vectorMeasure_prodMk_left {s : Set (X × Y)}
   | basic s hs =>
     obtain ⟨s, hs, t, -, rfl⟩ := hs
     classical
-    simpa [mk_preimage_prod_right_eq_if, of_if] using
-      stronglyMeasurable_const.indicator hs
+    simpa [mk_preimage_prod_right_eq_if, of_if] using stronglyMeasurable_const.indicator hs
   | compl s hs ihs =>
     simp_rw [preimage_compl, VectorMeasure.of_compl (measurable_prodMk_left hs)]
     exact stronglyMeasurable_const.sub ihs
@@ -87,7 +89,7 @@ theorem stronglyMeasurable_vectorMeasure_prodMk_left {s : Set (X × Y)}
       rw [preimage_iUnion]
       apply hasSum_of_disjoint_iUnion
       exacts [fun i ↦ measurable_prodMk_left (hfm i), hfd.mono fun _ _ ↦ .preimage _]
-    apply StronglyMeasurable.hasSum ihf this
+    exact StronglyMeasurable.hasSum ihf this
 
 open scoped Classical in
 /-- The product of two vector measures when the first one has finite variation, obtained by
@@ -139,5 +141,117 @@ instance [CompleteSpace G] [IsFiniteMeasure (μ.transpose B.flip).variation] : H
 instance [CompleteSpace G] [h : IsFiniteMeasure (ν.transpose B).variation] : HasProd μ ν B := by
   rw [← B.flip_flip] at h ⊢
   apply HasProd.flip
+
+#where
+
+
+/-- The Bochner integral is measurable. This shows that the integrand of (the right-hand-side of)
+  Fubini's theorem is measurable.
+  This version has `f` in curried form. -/
+theorem MeasureTheory.StronglyMeasurable.integral_prod_right [SFinite (ν.transpose B).variation]
+    (B : G →L[ℝ] F →L[ℝ] H)  ⦃f : X → Y → G⦄
+    (hf : StronglyMeasurable (uncurry f)) : StronglyMeasurable fun x => ∫ᵛ y, f x y ∂[B; ν] := by
+  classical
+  by_cases hH : CompleteSpace H; swap;
+  · simp_rw [integral_of_not_completeSpace hH, stronglyMeasurable_const]
+  borelize H
+  borelize G
+  haveI : SeparableSpace (range (uncurry f) ∪ {0} : Set G) :=
+    hf.separableSpace_range_union_singleton
+  let s : ℕ → SimpleFunc (X × Y) G :=
+    SimpleFunc.approxOn _ hf.measurable (range (uncurry f) ∪ {0}) 0 (by simp)
+  let s' : ℕ → X → SimpleFunc Y G := fun n x => (s n).comp (Prod.mk x) measurable_prodMk_left
+  let f' : ℕ → X → G := fun n => {x | ν.Integrable (f x) B}.indicator fun x => (s' n x).integral ν
+  have hf' n : StronglyMeasurable (f' n) := by
+    apply StronglyMeasurable.indicator --?_ (measurableSet_integrable hf)
+    have : ∀ x, ((s' n x).range.filter fun x => x ≠ 0) ⊆ (s n).range := by
+      intro x; refine Finset.Subset.trans (Finset.filter_subset _ _) ?_; intro y
+      simp_rw [SimpleFunc.mem_range]; rintro ⟨z, rfl⟩; exact ⟨(x, z), rfl⟩
+    simp only [SimpleFunc.integral_eq_sum_of_subset (this _)]
+    refine Finset.stronglyMeasurable_fun_sum _ fun x _ => ?_
+    refine (Measurable.ennreal_toReal ?_).stronglyMeasurable.smul_const _
+    simp only [s', SimpleFunc.coe_comp, preimage_comp]
+    apply measurable_measure_prodMk_left
+    exact (s n).measurableSet_fiber x
+  have h2f' : Tendsto f' atTop (𝓝 fun x : α => ∫ y : β, f x y ∂ν) := by
+    rw [tendsto_pi_nhds]; intro x
+    by_cases hfx : Integrable (f x) ν
+    · have (n : _) : Integrable (s' n x) ν := by
+        apply (hfx.norm.add hfx.norm).mono' (s' n x).aestronglyMeasurable
+        filter_upwards with y
+        simp_rw [s', SimpleFunc.coe_comp]; exact SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
+      simp only [f', hfx, SimpleFunc.integral_eq_integral _ (this _), indicator_of_mem,
+        mem_setOf_eq]
+      refine
+        tendsto_integral_of_dominated_convergence (fun y => ‖f x y‖ + ‖f x y‖)
+          (fun n => (s' n x).aestronglyMeasurable) (hfx.norm.add hfx.norm) ?_ ?_
+      · refine fun n => Eventually.of_forall fun y =>
+          SimpleFunc.norm_approxOn_zero_le ?_ ?_ (x, y) n
+        · exact hf.measurable
+        · simp
+      · refine Eventually.of_forall fun y => SimpleFunc.tendsto_approxOn ?_ ?_ ?_
+        · exact hf.measurable.of_uncurry_left
+        · simp
+        apply subset_closure
+        simp [-uncurry_apply_pair]
+    · simp [f', hfx, integral_undef]
+  exact stronglyMeasurable_of_tendsto _ hf' h2f'
+
+/-- The Bochner integral is measurable. This shows that the integrand of (the right-hand-side of)
+  Fubini's theorem is measurable. -/
+theorem MeasureTheory.StronglyMeasurable.integral_prod_right' [SFinite ν] ⦃f : α × β → E⦄
+    (hf : StronglyMeasurable f) : StronglyMeasurable fun x => ∫ y, f (x, y) ∂ν := by
+  rw [← uncurry_curry f] at hf; exact hf.integral_prod_right
+
+/-- The Bochner integral is measurable. This shows that the integrand of (the right-hand-side of)
+  the symmetric version of Fubini's theorem is measurable.
+  This version has `f` in curried form. -/
+theorem MeasureTheory.StronglyMeasurable.integral_prod_left [SFinite μ] ⦃f : α → β → E⦄
+    (hf : StronglyMeasurable (uncurry f)) : StronglyMeasurable fun y => ∫ x, f x y ∂μ :=
+  (hf.comp_measurable measurable_swap).integral_prod_right'
+
+/-- The Bochner integral is measurable. This shows that the integrand of (the right-hand-side of)
+  the symmetric version of Fubini's theorem is measurable. -/
+theorem MeasureTheory.StronglyMeasurable.integral_prod_left' [SFinite μ] ⦃f : α × β → E⦄
+    (hf : StronglyMeasurable f) : StronglyMeasurable fun y => ∫ x, f (x, y) ∂μ :=
+  (hf.comp_measurable measurable_swap).integral_prod_right'
+
+
+theorem Integrable.integral_prod_left (B : G →L[ℝ] F →L[ℝ] H)
+    [IsFiniteMeasure (ν.transpose B).variation]
+    {μ : Measure X} ⦃f : X × Y → G⦄ (hf : Integrable f (μ.prod (ν.transpose B).variation)) :
+    Integrable (fun x => ∫ᵛ y, f (x, y) ∂[B; ν]) μ := by
+  apply Integrable.mono hf.integral_norm_prod_left
+
+
+#exit
+
+  Integrable.mono hf.integral_norm_prod_left hf.aestronglyMeasurable.integral_prod_right' <|
+    Eventually.of_forall fun x =>
+      (norm_integral_le_integral_norm _).trans_eq <|
+        (norm_of_nonneg <|
+            integral_nonneg_of_ae <|
+              Eventually.of_forall fun y => (norm_nonneg (f (x, y)) :)).symm
+
+
+/-- The map that sends an L¹-function `f : α × β → E` to `∫∫f` is continuous. -/
+theorem continuous_integral_integral (B : G →L[ℝ] F →L[ℝ] H) (C : H →L[ℝ] E →L[ℝ] I) :
+    Continuous fun f : X × Y →₁[μ.variation.prod ν.variation] G =>
+      ∫ᵛ x, (∫ᵛ y, f (x, y) ∂[B; ν]) ∂[C; μ] := by
+  rw [continuous_iff_continuousAt]; intro g
+  apply tendsto_integral_of_L1
+  refine
+    tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_prod_left.aestronglyMeasurable
+      (Eventually.of_forall fun h => (L1.integrable_coeFn h).integral_prod_left) ?_
+  simp_rw [← lintegral_fn_integral_sub _ (L1.integrable_coeFn _) (L1.integrable_coeFn g)]
+  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le) _
+  · exact fun i => ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖ₑ ∂ν ∂μ
+  swap; · exact fun i => lintegral_mono fun x => enorm_integral_le_lintegral_enorm _
+  have this (i : α × β →₁[μ.prod ν] E) : Measurable fun z => ‖i z - g z‖ₑ :=
+    ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).enorm
+  simp_rw [← lintegral_prod _ (this _).aemeasurable, ← L1.ofReal_norm_sub_eq_lintegral,
+    ← ofReal_zero]
+  refine (continuous_ofReal.tendsto 0).comp ?_
+  rw [← tendsto_iff_norm_sub_tendsto_zero]; exact tendsto_id
 
 end MeasureTheory.VectorMeasure
