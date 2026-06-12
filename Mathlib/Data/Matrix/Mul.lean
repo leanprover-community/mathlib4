@@ -751,12 +751,11 @@ theorem dotProduct_mulVec [Fintype n] [Fintype m] [NonUnitalSemiring R] (v : m �
   simp only [dotProduct, vecMul, mulVec, Finset.mul_sum, Finset.sum_mul, mul_assoc]
   exact Finset.sum_comm
 
-lemma dot_mulVec_eq_sum_sum [Fintype n] [NonUnitalSemiring R]
-    (A : Matrix n n R) (x : n → R) :
-    x ⬝ᵥ (A *ᵥ x) = ∑ i, ∑ j, x i * A i j * x j := by
-  simp_rw [Matrix.dotProduct_mulVec, dotProduct, vecMul_eq_sum, Finset.sum_apply,
-    Pi.smul_apply, smul_eq_mul, Finset.sum_mul]
-  rw [Finset.sum_comm]
+lemma dot_mulVec_eq_sum_sum [Fintype n] [Fintype m] [NonUnitalSemiring R]
+    (v : m → R) (A : Matrix m n R) (w : n → R) :
+    v ⬝ᵥ (A *ᵥ w) = ∑ j, ∑ i, v i * A i j * w j := by
+  simp_rw [dotProduct_mulVec, dotProduct, vecMul_eq_sum, Finset.sum_apply, Pi.smul_apply,
+    smul_eq_mul, Finset.sum_mul]
 
 @[simp]
 theorem mulVec_zero [Fintype n] (A : Matrix m n α) : A *ᵥ 0 = 0 := by

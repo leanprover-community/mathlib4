@@ -87,7 +87,7 @@ namespace Content
 
 instance : FunLike (Content G) (Compacts G) ℝ≥0∞ where
   coe μ s := μ.toFun s
-  coe_injective' := by
+  coe_injective := by
     rintro ⟨μ, _, _⟩ ⟨v, _, _⟩ h; congr!; ext s : 1; exact ENNReal.coe_injective <| congr_fun h s
 
 variable (μ : Content G)
@@ -331,7 +331,7 @@ theorem borel_le_caratheodory : S ≤ μ.outerMeasure.caratheodory := by
   simp only [subset_inter_iff] at hL
   have hL'U : (L' : Set G) ⊆ U := IsCompact.closure_subset_of_isOpen L.2 hU hL.2
   have hL'U' : (L' : Set G) ⊆ (U' : Set G) := IsCompact.closure_subset_of_isOpen L.2 U'.2 hL.1
-  have : ↑U' \ U ⊆ U' \ L' := diff_subset_diff_right hL'U
+  have : ↑U' \ U ⊆ U' \ L' := sdiff_subset_sdiff_right hL'U
   grw [this]
   rw [μ.outerMeasure_of_isOpen (↑U' \ L') (IsOpen.sdiff U'.2 isClosed_closure)]
   simp only [innerContent, iSup_subtype']
@@ -347,10 +347,10 @@ theorem borel_le_caratheodory : S ≤ μ.outerMeasure.caratheodory := by
     IsCompact.closure_subset_of_isOpen M.2 (IsOpen.sdiff U'.2 isClosed_closure) hM
   have : (↑(L' ⊔ M') : Set G) ⊆ U' := by
     simp only [Compacts.coe_sup, union_subset_iff, hL'U', true_and]
-    exact hM'.trans diff_subset
+    exact hM'.trans sdiff_subset
   rw [μ.outerMeasure_of_isOpen (↑U') U'.2]
   refine le_trans (ge_of_eq ?_) (μ.le_innerContent _ _ this)
-  exact μ.sup_disjoint L' M' (subset_diff.1 hM').2.symm isClosed_closure isClosed_closure
+  exact μ.sup_disjoint L' M' (subset_sdiff.1 hM').2.symm isClosed_closure isClosed_closure
 
 /-- The measure induced by the outer measure coming from a content, on the Borel sigma-algebra. -/
 protected def measure : Measure G :=

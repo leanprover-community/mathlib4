@@ -104,11 +104,11 @@ variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β]
 
 instance : FunLike (α →ₙ+* β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
-    apply DFunLike.coe_injective'
+    apply DFunLike.coe_injective
     exact h
 
 instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
@@ -360,11 +360,11 @@ variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β}
 
 instance instFunLike : FunLike (α →+* β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
-    apply DFunLike.coe_injective'
+    apply DFunLike.coe_injective
     exact h
 
 instance instRingHomClass : RingHomClass (α →+* β) α β where
