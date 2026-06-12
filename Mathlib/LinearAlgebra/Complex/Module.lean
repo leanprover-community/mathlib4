@@ -630,7 +630,6 @@ instance {F E A : Type*} [AddCommGroup E] [PartialOrder E]
     [FunLike F E A] [OrderHomClass F E A] [LinearMapClass F ℂ E A] :
     StarHomClass F E A where
   map_star φ x := by
-    have : AddMonoidHomClass F E A := inferInstance
     rw [← realPart_add_I_smul_imaginaryPart x]
     simp [(ℜ x).2.map' φ, IsSelfAdjoint.star_eq, (ℑ x).2.map' φ]
 
