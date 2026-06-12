@@ -254,57 +254,6 @@ open TypeCat Limits Types Functor
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] Types.chosenCoend_def chosenCoend.map_apply in
-lemma associatorComponents_aux₁ {X : C} {Y : Fᵒᵖ} {e e' : E} {d d' : D}
-    {p : (P.obj X).obj (Opposite.op d)} {q : (Q.obj d).obj (Opposite.op e)}
-    {p' : (P.obj X).obj (Opposite.op d')} {q' : (Q.obj d').obj (Opposite.op e')}
-    {f : e ⟶ e'} {r : (R.obj e).obj Y}
-    (h : Relation.EqvGen (coendRel (P.compDiagram Q X e))
-      ⟨d', p', (Q.obj d').map f.op q'⟩ ⟨d, p, q⟩) :
-    Relation.EqvGen (coendRel (P.compDiagram (Q.comp R) X (unop Y)))
-      ⟨d', p', Quot.mk _ ⟨e', (q', (R.map f).app Y r)⟩⟩
-      ⟨d, p, Quot.mk _ ⟨e, (q, r)⟩⟩ := by
-  replace h := Relation.EqvGen.map (fun ⟨d, p, q⟩ ↦ ⟨d, (p, Quot.mk _ ⟨e, q, r⟩)⟩)
-      (Relation.EqvGen (coendRel (P.compDiagram (Q.comp R) X (unop Y)))) _ _ (h.mono <| by
-    intro ⟨d, p, q⟩ ⟨d', p', q'⟩ h
-    apply Relation.EqvGen.rel
-    rw [coendRel_iff] at h ⊢
-    obtain ⟨f, x, h₁, h₂⟩ := h
-    use f
-    simp_all [Prod.ext_iff])
-  simp only [Relation.EqvGen.idempotent] at h
-  refine Relation.EqvGen.trans _ _ _ ?_ h
-  apply Relation.EqvGen.rel
-  rw [coendRel_iff]
-  exact ⟨𝟙 _, by simp; exact (Quot.sound <| coendRel.mk (F := Q.compDiagram R _ _) f (_, _)).symm⟩
-
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-attribute [local simp] Types.chosenCoend_def chosenCoend.map_apply in
-lemma associatorComponents_aux₂ {X : C} {Y : Fᵒᵖ} {d d' : D} {e e' : E}
-  {q : (Q.obj d).obj (Opposite.op e)} {r : (R.obj e).obj Y}
-  {q' : (Q.obj d').obj (Opposite.op e')}
-  {r' : (R.obj e').obj Y} {f : d ⟶ d'} {p : (P.obj X).obj (Opposite.op d')}
-  (h : Relation.EqvGen (coendRel (Q.compDiagram R d' (unop Y)))
-    ⟨e, ((ConcreteCategory.hom ((Q.map f).app (Opposite.op e))) q, r)⟩ ⟨e', (q', r')⟩) :
-  Relation.EqvGen (coendRel ((P.comp Q).compDiagram R X (unop Y)))
-    ⟨e, (Quot.mk (coendRel (P.compDiagram Q X e)) ⟨d, (P.obj X).map f.op p, q⟩, r)⟩
-    ⟨e', (Quot.mk (coendRel (P.compDiagram Q X e')) ⟨d', (p, q')⟩, r')⟩ := by
-  replace h := Relation.EqvGen.map (fun ⟨e, q, r⟩ ↦ ⟨e, Quot.mk _ ⟨d', p, q⟩, r⟩)
-      (Relation.EqvGen (coendRel ((P.comp Q).compDiagram R X (unop Y)))) _ _ (h.mono <| by
-    intro ⟨d, p, q⟩ ⟨d', p', q'⟩ h
-    apply Relation.EqvGen.rel
-    rw [coendRel_iff] at h ⊢
-    obtain ⟨f, x, h₁, h₂⟩ := h
-    exact ⟨f, by simp_all [Prod.ext_iff]⟩)
-  simp only [Relation.EqvGen.idempotent] at h
-  refine (Relation.EqvGen.trans _ _ _ ?_ h)
-  apply Relation.EqvGen.rel
-  rw [coendRel_iff]
-  exact ⟨𝟙 _, by simp; exact Quot.sound <| coendRel.mk (F := P.compDiagram Q _ _) f (_, _)⟩
-
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-attribute [local simp] Types.chosenCoend_def chosenCoend.map_apply in
 /-- The objectwise components of the associator isomorphism
 `(P.comp Q).comp R ≅ P.comp (Q.comp R)`. -/
 @[simps hom inv]
@@ -316,19 +265,16 @@ def associatorComponents (X : C) (Y : Fᵒᵖ) :
     · rintro ⟨d, p, q⟩ ⟨d', p', q'⟩ ⟨f, x⟩
       rw [coendRel_iff]
       exact ⟨f, by simp⟩
-    · rintro ⟨e, ⟨d, p, q⟩, r⟩ ⟨e', ⟨d', p', q'⟩, r'⟩ h
-      dsimp
-      rw [coendRel_iff] at h
-      obtain ⟨f, ⟨x, r''⟩, h₁, h₂⟩ := h
-      dsimp at h₁ h₂
-      simp only [map_id, NatTrans.id_app, Prod.mk.injEq] at h₁
-      obtain ⟨rfl, rfl⟩ := h₂
-      obtain ⟨h₁, rfl⟩ := h₁
-      dsimp at h₁
-      symm
+    · rintro ⟨e, _, _⟩ ⟨e', _, _⟩ ⟨f, ⟨x, r⟩⟩
+      refine Quot.inductionOn x ?_
+      rintro ⟨d, p, q⟩
       dsimp [Quot.map]
-      rw [Quot.eq] at h₁ ⊢
-      exact associatorComponents_aux₁ _ _ _ h₁
+      simp only [map_id, NatTrans.id_app, types_id_apply]
+      -- First use the inner coend condition, then apply the outer quotient constructor.
+      let outer (x : ((Q.comp R).obj d).obj Y) :=
+        chosenCoend.ι (P.compDiagram (Q.comp R) X (unop Y)) d (p, x)
+      exact congrArg outer
+        (types_congr_hom (chosenCoend.condition (F := Q.compDiagram R d (unop Y)) f) (q, r))
   inv := by
     refine ↾Quot.lift (fun ⟨d, p, x⟩ ↦
         Quot.map (fun ⟨e, q, r⟩ ↦ ⟨e, Quot.mk _ ⟨d, p, q⟩, r⟩) ?_ x) ?_
@@ -336,18 +282,16 @@ def associatorComponents (X : C) (Y : Fᵒᵖ) :
       rw [coendRel_iff]
       use f
       simp
-    · rintro ⟨d, p, e, q, r⟩ ⟨d', p', e', q', r'⟩ h
-      dsimp
-      rw [coendRel_iff] at h
-      obtain ⟨f, ⟨p, x⟩, h₁, h₂⟩ := h
-      dsimp at h₁ h₂
-      simp only [map_id, Prod.mk.injEq] at h₂
-      obtain ⟨rfl, rfl⟩ := h₁
-      obtain ⟨rfl, h₂⟩ := h₂
-      dsimp at h₂
+    · rintro ⟨d, _, _⟩ ⟨d', _, _⟩ ⟨f, ⟨p, x⟩⟩
+      refine Quot.inductionOn x ?_
+      rintro ⟨e, q, r⟩
       dsimp [Quot.map]
-      rw [Quot.eq] at h₂ ⊢
-      exact associatorComponents_aux₂ _ _ _ h₂
+      simp only [map_id, types_id_apply]
+      -- First use the inner coend condition, then apply the outer quotient constructor.
+      let outer (x : ((P.comp Q).obj X).obj (op e)) :=
+        chosenCoend.ι ((P.comp Q).compDiagram R X (unop Y)) e (x, r)
+      exact congrArg outer
+        (types_congr_hom (chosenCoend.condition (F := P.compDiagram Q X e) f) (p, q))
   hom_inv_id := by
     ext ⟨_, ⟨_, _, _⟩, _⟩
     dsimp [Quot.map]
