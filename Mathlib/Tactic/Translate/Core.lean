@@ -127,7 +127,8 @@ register_option linter.existingAttributeWarning : Bool := {
     doesn't have certain attributes" }
 
 /-- Linter used by translate attributes that checks if the given declaration name is
-    equal to the automatically generated name -/
+equal to the automatically generated name -/
+@[deprecated linter.generateName (since := "2026-06-12")]
 register_option linter.translateGenerateName : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that checks if the given declaration name is \
