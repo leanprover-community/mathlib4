@@ -125,7 +125,6 @@ private theorem exists_embedding_of_agree_qf
     (hQF : ∀ ψ : L.Formula α, ψ.IsQF → (ψ.Realize v ↔ ψ.Realize w)) :
     ∃ g : (Substructure.closure L (Set.range v) : L.Substructure M) ↪[L] N,
       ∀ i, g ⟨v i, Substructure.subset_closure ⟨i, rfl⟩⟩ = w i := by
-  classical
   -- For each element of `range v`, choose an index `idx x` with `v (idx x) = x`.
   choose idx hidx using fun x : Set.range v => x.2
   -- The agreement hypothesis specializes to atomic equalities and relations, hence to variables.
@@ -212,7 +211,6 @@ private theorem exists_model_not_realize_with_qf_consequences
     {T : L.Theory} {α : Type u'} {φ : L.Formula α} (hqe : ¬ T.IsQFEquivalent φ) :
     ∃ (M1 : Theory.ModelType.{u, v, max u v u'} T) (v0 : α → M1), ¬ φ.Realize v0 ∧
       ∀ q : {ψ : L.Formula α // ψ.IsQF ∧ φ ⟹[T] ψ}, q.1.Realize v0 := by
-  classical
   -- Work in `L[[α]]` with a constant for each variable. The target theory is `T`, the sentence
   -- `¬φ`, and every quantifier-free consequence `ψ` of `φ`; a model of it provides `v0`.
   let Q1 : Type _ := {ψ : L.Formula α // ψ.IsQF ∧ φ ⟹[T] ψ}
@@ -287,7 +285,6 @@ private theorem exists_model_realize_with_qf_realized_at
     (hqfConseq : ∀ q : {ψ : L.Formula α // ψ.IsQF ∧ φ ⟹[T] ψ}, q.1.Realize v0) :
     ∃ (N1 : Theory.ModelType.{u, v, max u v u'} T) (w : α → N1),
       φ.Realize w ∧ ∀ ψ : L.Formula α, ψ.IsQF → (ψ.Realize v0 ↔ ψ.Realize w) := by
-  classical
   -- Work in `L[[α]]`. The target theory is `T`, the sentence `φ`, and every quantifier-free formula
   -- `ψ` realized at `v0`; a model of it provides `w` realizing `φ` and agreeing with `v0`.
   let P : Type _ := {ψ : L.Formula α // ψ.IsQF ∧ ψ.Realize v0}
