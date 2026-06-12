@@ -283,7 +283,6 @@ lemma not_isTrivial_completeOn (f : Set α) : ¬ (completeOn f).IsTrivial :=
   (IsComplete.completeOn f).not_isTrivial
 
 /-- A hypergraph is linear if any two distinct edges share at most one vertex. -/
-@[expose]
 def IsLinear (H : Hypergraph α) : Prop :=
   H.edgeSet.Pairwise fun e e' ↦ (e ∩ e').Subsingleton
 
