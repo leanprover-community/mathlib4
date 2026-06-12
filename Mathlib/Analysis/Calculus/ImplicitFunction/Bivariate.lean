@@ -74,7 +74,7 @@ theorem eventually_apply_eq_iff_implicitFunctionOfBivariate :
 
 theorem hasStrictFDerivAt_implicitFunctionOfBivariate :
     HasStrictFDerivAt (implicitFunctionOfBivariate df₁ df₂ cf₁ cf₂ if₂u)
-      (-(f₂ u.1 u.2).inverse ∘L f₁ u.1 u.2) u.1 := by
+      (-(f₂ u.1 u.2).inverse ∘ᶠ f₁ u.1 u.2) u.1 := by
   simpa using! HasStrictFDerivAt.hasStrictFDerivAt_implicitFunctionOfProdDomain
     (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) (by simpa using! if₂u)
 

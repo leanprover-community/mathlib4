@@ -112,8 +112,8 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
     intro a ha
     exact (hcontdiff a ha).isSymmSndFDerivWithinAt (by simp) hunique
       (by simp [hinterior, hclosure, ha]) ha
-  -- Consider `η a = ω (ψ a) ∘L dψ a`.
-  set η : ℝ × ℝ → ℝ × ℝ →L[ℝ] F := fun a ↦ ω (ψ a) ∘L dψ a
+  -- Consider `η a = ω (ψ a) ∘ᶠ dψ a`.
+  set η : ℝ × ℝ → ℝ × ℝ →L[ℝ] F := fun a ↦ ω (ψ a) ∘ᶠ dψ a
   -- Put `f a = η a (0, 1)`, `g a = -η a (1, 0)`.
   set f : ℝ × ℝ → F := fun a ↦ η a (0, 1)
   have hf : ∀ a ∈ Icc 0 1, f a = ω (ψ a) (derivWithin (ψ ∘ (a.1, ·)) I a.2) := by
@@ -165,7 +165,7 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
     linear_combination (norm := {dsimp; abel}) -this
   -- Write a formula for the derivative of `η`.
   set dη : ℝ × ℝ → ℝ × ℝ →L[ℝ] ℝ × ℝ →L[ℝ] F := fun a ↦
-    .compL ℝ (ℝ × ℝ) E F (ω (ψ a)) ∘L d2ψ a + (dω (ψ a)).bilinearComp (dψ a) (dψ a)
+    .compL ℝ (ℝ × ℝ) E F (ω (ψ a)) ∘ᶠ d2ψ a + (dω (ψ a)).bilinearComp (dψ a) (dψ a)
   have hdη : ∀ a ∈ U \ s', HasFDerivAt η (dη a) a := by
     rintro a ⟨haU, has⟩
     refine HasFDerivWithinAt.comp_hasFDerivAt (t := t) a ?_ ?_ ?_ |>.clm_comp (hd2ψ a haU)
@@ -190,11 +190,11 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
     have := hdω_symm a hU.1 b hU.2 (by simpa [hmem_s'] using hs') _ (hdψ_mem u) _ (hdψ_mem v)
     simp [dη, hψφ, this, hd2ψ_symm _ (hU_subset hU)]
   -- It gives formulas for the derivatives of `f` and `g`
-  set f' : ℝ × ℝ → ℝ × ℝ →L[ℝ] F := fun a ↦ ContinuousLinearMap.apply ℝ F (0, 1) ∘L dη a
+  set f' : ℝ × ℝ → ℝ × ℝ →L[ℝ] F := fun a ↦ ContinuousLinearMap.apply ℝ F (0, 1) ∘ᶠ dη a
   have hf' : ∀ a ∈ U \ s', HasFDerivAt f (f' a) a := by
     intro a ha
     exact (ContinuousLinearMap.apply ℝ F (0, 1)).hasFDerivAt.comp a (hdη a ha)
-  set g' : ℝ × ℝ → ℝ × ℝ →L[ℝ] F := fun a ↦ -(ContinuousLinearMap.apply ℝ F (1, 0) ∘L dη a)
+  set g' : ℝ × ℝ → ℝ × ℝ →L[ℝ] F := fun a ↦ -(ContinuousLinearMap.apply ℝ F (1, 0) ∘ᶠ dη a)
   have hg' : ∀ a ∈ U \ s', HasFDerivAt g (g' a) a := by
     intro a ha
     exact (ContinuousLinearMap.apply ℝ F (1, 0)).hasFDerivAt.comp a (hdη a ha) |>.neg
@@ -246,7 +246,7 @@ theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_countable
   simp only [← curveIntegral_restrictScalars (𝕜 := 𝕜) (𝕝 := ℝ)]
   set e := ContinuousLinearMap.restrictScalarsL 𝕜 E F ℝ ℝ
   exact φ.curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_countable_real hs hφt
-    (dω := fun x ↦ e ∘L dω x)
+    (dω := fun x ↦ e ∘ᶠ dω x)
     (fun a ha b hb hs ↦ e.hasFDerivAt.comp_hasFDerivWithinAt _ (hω a ha b hb hs))
     (e.continuous.comp_continuousOn hωc) hdω_symm hcontdiff
 

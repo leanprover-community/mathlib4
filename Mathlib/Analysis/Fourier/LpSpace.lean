@@ -128,8 +128,8 @@ theorem fourier_toTemperedDistribution_eq (f : Lp (α := E) F 2) :
   apply DenseRange.induction_on (p := p)
     (SchwartzMap.denseRange_toLpCLM (p := 2) ENNReal.ofNat_ne_top) f
   · apply isClosed_eq
-    · exact (fourierCLM ℂ 𝓢'(E, F) ∘L toTemperedDistributionCLM F volume 2).continuous
-    · exact (toTemperedDistributionCLM F volume 2 ∘L fourierCLM ℂ (Lp (α := E) F 2)).continuous
+    · exact (fourierCLM ℂ 𝓢'(E, F) ∘ᶠ toTemperedDistributionCLM F volume 2).continuous
+    · exact (toTemperedDistributionCLM F volume 2 ∘ᶠ fourierCLM ℂ (Lp (α := E) F 2)).continuous
   intro f
   simp [p, TemperedDistribution.fourier_toTemperedDistributionCLM_eq]
 

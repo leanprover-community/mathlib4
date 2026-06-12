@@ -199,7 +199,7 @@ variable {E' : Type*} [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 /-- Given `f : E →L[𝕜] E'`, construct the continuous sesquilinear form `fun x y ↦ ⟪x, A y⟫`, given
 as a continuous linear map. -/
 noncomputable def toSesqForm : (E →L[𝕜] E') →L[𝕜] E' →L⋆[𝕜] E →L[𝕜] 𝕜 :=
-  (ContinuousLinearMap.flipₗᵢ' E E' 𝕜 (starRingEnd 𝕜) (RingHom.id 𝕜)).toContinuousLinearEquiv ∘L
+  (ContinuousLinearMap.flipₗᵢ' E E' 𝕜 (starRingEnd 𝕜) (RingHom.id 𝕜)).toContinuousLinearEquiv ∘ᶠ
     ContinuousLinearMap.compSL E E' (E' →L⋆[𝕜] 𝕜) (RingHom.id 𝕜) (RingHom.id 𝕜) (innerSLFlip 𝕜)
 
 @[simp]
@@ -305,7 +305,7 @@ noncomputable def rankOne : E →L[𝕜] F →L⋆[𝕜] F →L[𝕜] E :=
 
 lemma rankOne_def (x : E) (y : F) : rankOne 𝕜 x y = (innerSL 𝕜 y).smulRight x := rfl
 
-lemma rankOne_def' (x : E) (y : F) : rankOne 𝕜 x y = .toSpanSingleton 𝕜 x ∘L innerSL 𝕜 y := rfl
+lemma rankOne_def' (x : E) (y : F) : rankOne 𝕜 x y = .toSpanSingleton 𝕜 x ∘ᶠ innerSL 𝕜 y := rfl
 
 lemma toLinearMap_rankOne (x : E) (y : F) :
     (rankOne 𝕜 x y).toLinearMap = (innerₛₗ 𝕜 y).smulRight x := rfl
@@ -322,7 +322,7 @@ lemma toLinearMap_rankOne (x : E) (y : F) :
 @[simp] lemma rankOne_apply (x : E) (y z : F) : rankOne 𝕜 x y z = inner 𝕜 y z • x := rfl
 
 lemma comp_rankOne {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
-    (x : E) (y : F) (f : E →L[𝕜] G) : f ∘L rankOne 𝕜 x y = rankOne 𝕜 (f x) y := by
+    (x : E) (y : F) (f : E →L[𝕜] G) : f ∘ᶠ rankOne 𝕜 x y = rankOne 𝕜 (f x) y := by
   simp_rw [rankOne_def', ← comp_assoc, comp_toSpanSingleton]
 
 theorem isIdempotentElem_rankOne_self {x : F} (hx : ‖x‖ = 1) :
@@ -334,7 +334,7 @@ theorem isIdempotentElem_rankOne_self {x : F} (hx : ‖x‖ = 1) :
 @[simp] theorem rankOne_one_left_eq_innerSL (x : F) : rankOne 𝕜 1 x = innerSL 𝕜 x := by ext; simp
 
 lemma rankOne_comp_rankOne (x : E) (y z : F) (w : G) :
-    rankOne 𝕜 x y ∘L rankOne 𝕜 z w = inner 𝕜 y z • rankOne 𝕜 x w := by
+    rankOne 𝕜 x y ∘ᶠ rankOne 𝕜 z w = inner 𝕜 y z • rankOne 𝕜 x w := by
   simp [comp_rankOne]
 
 lemma inner_left_rankOne_apply (x : F) (y z : G) (w : F) :

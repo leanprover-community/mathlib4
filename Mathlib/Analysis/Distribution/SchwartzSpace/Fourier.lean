@@ -103,14 +103,14 @@ theorem fourierTransformCLM_apply (f : 𝓢(V, E)) :
 
 instance instFourierTransformInv : FourierTransformInv 𝓢(V, E) 𝓢(V, E) where
   fourierInv := (compCLMOfContinuousLinearEquiv ℂ (LinearIsometryEquiv.neg ℝ (E := V)))
-      ∘L (fourierTransformCLM ℂ)
+      ∘ᶠ (fourierTransformCLM ℂ)
 
 instance instFourierInvAdd : FourierInvAdd 𝓢(V, E) 𝓢(V, E) where
   fourierInv_add := ContinuousLinearMap.map_add _
 
 instance instFourierInvSMul : FourierInvSMul 𝕜 𝓢(V, E) 𝓢(V, E) where
   fourierInv_smul := ((compCLMOfContinuousLinearEquiv 𝕜 (D := V) (E := V) (F := E)
-    (LinearIsometryEquiv.neg ℝ (E := V))) ∘L (fourierTransformCLM 𝕜)).map_smul
+    (LinearIsometryEquiv.neg ℝ (E := V))) ∘ᶠ (fourierTransformCLM 𝕜)).map_smul
 
 instance instContinuousFourierInv : ContinuousFourierInv 𝓢(V, E) 𝓢(V, E) where
   continuous_fourierInv := ContinuousLinearMap.continuous _

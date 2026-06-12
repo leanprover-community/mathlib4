@@ -341,7 +341,7 @@ theorem integral_divergence_of_hasFDerivAt_off_countable_of_equiv {F : Type*}
               f i (eL.symm <| i.insertNth (eL a i) x)) := by
       refine integral_divergence_of_hasFDerivAt_off_countable' (eL a) (eL b)
         ((he_ord _ _).2 hle) (fun i x => f i (eL.symm x))
-        (fun i x => f' i (eL.symm x) ∘L (eL.symm : ℝⁿ⁺¹ →L[ℝ] F)) (eL.symm ⁻¹' s)
+        (fun i x => f' i (eL.symm x) ∘ᶠ (eL.symm : ℝⁿ⁺¹ →L[ℝ] F)) (eL.symm ⁻¹' s)
         (hs.preimage eL.symm.injective) ?_ ?_ ?_
       · exact fun i => (Hc i).comp eL.symm.continuousOn hIcc'.subset
       · refine fun x hx i => (Hd (eL.symm x) ⟨?_, hx.2⟩ i).comp x eL.symm.hasFDerivAt

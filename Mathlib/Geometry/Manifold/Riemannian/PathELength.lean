@@ -147,7 +147,7 @@ lemma pathELength_comp_of_monotoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : Monot
   rw [lintegral_image_eq_lintegral_deriv_mul_of_monotoneOn measurableSet_Icc B hf]
   apply setLIntegral_congr_fun measurableSet_Icc (fun t ht ↦ ?_)
   have : (mfderiv[Icc a b] (γ ∘ f) t) =
-      (mfderiv[Icc (f a) (f b)] γ (f t)) ∘L mfderiv[Icc a b] f t := by
+      (mfderiv[Icc (f a) (f b)] γ (f t)) ∘ᶠ mfderiv[Icc a b] f t := by
     rw [← f_im] at hγ ⊢
     apply mfderivWithin_comp
     · apply hγ _ (mem_image_of_mem _ ht)
@@ -179,7 +179,7 @@ lemma pathELength_comp_of_antitoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : Antit
   rw [lintegral_image_eq_lintegral_deriv_mul_of_antitoneOn measurableSet_Icc B hf]
   apply setLIntegral_congr_fun measurableSet_Icc (fun t ht ↦ ?_)
   have : (mfderiv[Icc a b] (γ ∘ f) t)
-      = (mfderiv[Icc (f b) (f a)] γ (f t)) ∘L mfderiv[Icc a b] f t := by
+      = (mfderiv[Icc (f b) (f a)] γ (f t)) ∘ᶠ mfderiv[Icc a b] f t := by
     rw [← f_im] at hγ ⊢
     apply mfderivWithin_comp
     · apply hγ _ (mem_image_of_mem _ ht)

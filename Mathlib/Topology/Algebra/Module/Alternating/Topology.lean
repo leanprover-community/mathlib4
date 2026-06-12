@@ -324,7 +324,7 @@ def compContinuousAlternatingMapCLM :
       ContinuousAlternatingMap.isEmbedding_toContinuousMultilinearMap |>.continuous_iff]
     exact map_continuous <|
       (precomp (ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) G)
-        ((ContinuousAlternatingMap.toContinuousMultilinearMapCLM 𝕜 : (E [⋀^ι]→L[𝕜] F) →L[𝕜] _))) ∘L
+        ((ContinuousAlternatingMap.toContinuousMultilinearMapCLM 𝕜 : (E [⋀^ι]→L[𝕜] F) →L[𝕜] _))) ∘ᶠ
         (compContinuousMultilinearMapL 𝕜 (fun _ : ι ↦ E) F G)
 
 end ContinuousLinearMap
@@ -386,7 +386,7 @@ def continuousAlternatingMapCongr (e : E ≃L[𝕜] E') (e' : F ≃L[𝕜] G) :
 
 lemma coe_continuousAlternatingMapCongr (e : E ≃L[𝕜] E') (e' : F ≃L[𝕜] G) :
     (e.continuousAlternatingMapCongr e' (ι := ι) : (E [⋀^ι]→L[𝕜] F) →L[𝕜] (E' [⋀^ι]→L[𝕜] G)) =
-      ContinuousLinearMap.compContinuousAlternatingMapCLM 𝕜 E' F G ι (e' : F →L[𝕜] G) ∘L
+      ContinuousLinearMap.compContinuousAlternatingMapCLM 𝕜 E' F G ι (e' : F →L[𝕜] G) ∘ᶠ
         ContinuousAlternatingMap.compContinuousLinearMapCLM e.symm :=
   rfl
 

@@ -77,9 +77,9 @@ lemma iIndepFun_of_covariance_strongDual [NormedSpace ℝ E]
         map_add' x y := by ext; simp
         map_smul' c x := by ext; simp }
     exact (hX.hasGaussianLaw _).map L
-  have h1 : L₁ ∘ (fun ω k ↦ X i k ω) = ∑ k : J i, (L₁ ∘L .single ℝ _ k) ∘ X i k := by
+  have h1 : L₁ ∘ (fun ω k ↦ X i k ω) = ∑ k : J i, (L₁ ∘ᶠ .single ℝ _ k) ∘ X i k := by
     ext; simp [-ContinuousLinearMap.comp_apply, ← L₁.sum_comp_single]
-  have h2 : L₂ ∘ (fun ω k ↦ X j k ω) = ∑ k : J j, (L₂ ∘L .single ℝ _ k) ∘ X j k := by
+  have h2 : L₂ ∘ (fun ω k ↦ X j k ω) = ∑ k : J j, (L₂ ∘ᶠ .single ℝ _ k) ∘ X j k := by
     ext; simp [-ContinuousLinearMap.comp_apply, ← L₂.sum_comp_single]
   rw [h1, h2, covariance_sum_sum]
   · exact sum_eq_zero fun _ _ ↦ sum_eq_zero fun _ _ ↦ h i j (by simpa) ..
@@ -132,9 +132,9 @@ lemma indepFun_of_covariance_strongDual [NormedSpace ℝ E]
         map_smul' c x := by ext <;> simp }
     exact (hXY.hasGaussianLaw _).map L
   classical
-  have h1 : L₁ ∘ (fun ω i ↦ X i ω) = ∑ i : I, (L₁ ∘L .single ℝ _ i) ∘ X i := by
+  have h1 : L₁ ∘ (fun ω i ↦ X i ω) = ∑ i : I, (L₁ ∘ᶠ .single ℝ _ i) ∘ X i := by
     ext; simp [-ContinuousLinearMap.comp_apply, ← L₁.sum_comp_single]
-  have h2 : L₂ ∘ (fun ω j ↦ Y j ω) = ∑ j : J, (L₂ ∘L .single ℝ _ j) ∘ Y j := by
+  have h2 : L₂ ∘ (fun ω j ↦ Y j ω) = ∑ j : J, (L₂ ∘ᶠ .single ℝ _ j) ∘ Y j := by
     ext; simp [-ContinuousLinearMap.comp_apply, ← L₂.sum_comp_single]
   rw [h1, h2, covariance_sum_sum]
   · exact sum_eq_zero fun i _ ↦ sum_eq_zero fun j _ ↦ h ..

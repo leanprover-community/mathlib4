@@ -455,7 +455,7 @@ variable [Module S F] [SMulCommClass 𝕜 S F] [ContinuousConstSMul S F]
 def prodL : ((E →L[𝕜] F) × (E →L[𝕜] G)) ≃L[S] (E →L[𝕜] F × G) where
   __ := prodₗ S
   continuous_toFun := by
-    change Continuous fun x => .id 𝕜 _ ∘L prodₗ S x
+    change Continuous fun x => .id 𝕜 _ ∘ᶠ prodₗ S x
     simp_rw [← coprod_inl_inr]
     exact (((inl 𝕜 F G).postcomp E).coprod ((inr 𝕜 F G).postcomp E)).continuous
   continuous_invFun :=
@@ -547,7 +547,7 @@ theorem symm_conjContinuousAlgEquiv_apply_apply (e : G ≃L[𝕜] H) (f : H →L
     e.conjContinuousAlgEquiv.symm f x = e.symm (f (e x)) := rfl
 
 theorem conjContinuousAlgEquiv_apply (e : G ≃L[𝕜] H) (f : G →L[𝕜] G) :
-    e.conjContinuousAlgEquiv f = e ∘L f ∘L e.symm := rfl
+    e.conjContinuousAlgEquiv f = e ∘ᶠ f ∘ᶠ e.symm := rfl
 
 @[simp] theorem symm_conjContinuousAlgEquiv (e : G ≃L[𝕜] H) :
     e.conjContinuousAlgEquiv.symm = e.symm.conjContinuousAlgEquiv := rfl

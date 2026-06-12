@@ -765,7 +765,7 @@ theorem smulLeftCLM_smulLeftCLM_apply {g₁ g₂ : E → 𝕜} (hg₁ : g₁.Has
 
 theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
     (hg₂ : g₂.HasTemperateGrowth) :
-    smulLeftCLM F g₁ ∘L smulLeftCLM F g₂ = smulLeftCLM F (g₁ * g₂) := by
+    smulLeftCLM F g₁ ∘ᶠ smulLeftCLM F g₂ = smulLeftCLM F (g₁ * g₂) := by
   ext1 f
   exact smulLeftCLM_smulLeftCLM_apply hg₁ hg₂ f
 
@@ -1055,7 +1055,7 @@ theorem postcompCLM_apply (L : F →L[𝕜] G) (f : 𝓢(E, F)) (x : E) : f.post
 
 @[simp]
 theorem postcompCLM_postcompCLM (L₁ : F →L[𝕜] G) (L₂ : G →L[𝕜] H) (f : 𝓢(E, F)) :
-  (f.postcompCLM L₁).postcompCLM L₂ = f.postcompCLM (L₂ ∘L L₁) := rfl
+  (f.postcompCLM L₁).postcompCLM L₂ = f.postcompCLM (L₂ ∘ᶠ L₁) := rfl
 
 end Postcomp
 

@@ -26,7 +26,7 @@ of requiring self adjointness in the definition.
 ## Main statements
 
 * `ContinuousLinearMap.IsPositive.conj_adjoint` : if `T : E →L[𝕜] E` is positive,
-  then for any `S : E →L[𝕜] F`, `S ∘L T ∘L S†` is also positive.
+  then for any `S : E →L[𝕜] F`, `S ∘ᶠ T ∘ᶠ S†` is also positive.
 * `ContinuousLinearMap.isPositive_iff_complex` : in a ***complex*** Hilbert space,
   checking that `⟪T x, x⟫` is a nonnegative real number for all `x` suffices to prove that
   `T` is positive.
@@ -353,23 +353,23 @@ theorem IsPositive.smul_of_nonneg {T : E →L[𝕜] E} (hT : T.IsPositive) {c : 
 
 @[aesop safe apply]
 theorem IsPositive.conj_adjoint [CompleteSpace E] [CompleteSpace F] {T : E →L[𝕜] E}
-    (hT : T.IsPositive) (S : E →L[𝕜] F) : (S ∘L T ∘L S†).IsPositive := by
+    (hT : T.IsPositive) (S : E →L[𝕜] F) : (S ∘ᶠ T ∘ᶠ S†).IsPositive := by
   refine isPositive_def'.mpr ⟨hT.isSelfAdjoint.conj_adjoint S, fun x => ?_⟩
   rw [reApplyInnerSelf, comp_apply, ← adjoint_inner_right]
   exact hT.re_inner_nonneg_left _
 
 theorem isPositive_self_comp_adjoint [CompleteSpace E] [CompleteSpace F] (S : E →L[𝕜] F) :
-    (S ∘L S†).IsPositive := by
+    (S ∘ᶠ S†).IsPositive := by
   simpa using! isPositive_one.conj_adjoint S
 
 @[aesop safe apply]
 theorem IsPositive.adjoint_conj [CompleteSpace E] [CompleteSpace F] {T : E →L[𝕜] E}
-    (hT : T.IsPositive) (S : F →L[𝕜] E) : (S† ∘L T ∘L S).IsPositive := by
+    (hT : T.IsPositive) (S : F →L[𝕜] E) : (S† ∘ᶠ T ∘ᶠ S).IsPositive := by
   convert! hT.conj_adjoint (S†)
   rw [adjoint_adjoint]
 
 theorem isPositive_adjoint_comp_self [CompleteSpace E] [CompleteSpace F] (S : E →L[𝕜] F) :
-    (S† ∘L S).IsPositive := by
+    (S† ∘ᶠ S).IsPositive := by
   simpa using! isPositive_one.adjoint_conj S
 
 section LinearMap
@@ -401,7 +401,7 @@ end LinearMap
 
 theorem IsPositive.conj_starProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] E} (hT : T.IsPositive)
     [U.HasOrthogonalProjection] :
-    (U.starProjection ∘L T ∘L U.starProjection).IsPositive := by
+    (U.starProjection ∘ᶠ T ∘ᶠ U.starProjection).IsPositive := by
   simp only [isPositive_iff, IsSymmetric, toLinearMap_comp, LinearMap.coe_comp, coe_coe,
     Function.comp_apply, comp_apply]
   simp_rw [← coe_coe, U.starProjection_isSymmetric _, hT.isSymmetric _,
@@ -410,7 +410,7 @@ theorem IsPositive.conj_starProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] 
 
 theorem IsPositive.orthogonalProjectionOnto_comp {T : E →L[𝕜] E} (hT : T.IsPositive)
     (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
-    (U.orthogonalProjectionOnto ∘L T ∘L U.subtypeL).IsPositive := by
+    (U.orthogonalProjectionOnto ∘ᶠ T ∘ᶠ U.subtypeL).IsPositive := by
   simp only [isPositive_iff, IsSymmetric, toLinearMap_comp, LinearMap.coe_comp, coe_coe,
     Function.comp_apply, comp_apply]
   simp_rw [U.inner_orthogonalProjectionOnto_eq_of_mem_right, Submodule.subtypeL_apply,

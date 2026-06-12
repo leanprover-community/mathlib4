@@ -99,7 +99,7 @@ theorem hasFDerivAt (f : 𝓢(E, F)) (x : E) : HasFDerivAt f (fderiv ℝ f x) x 
 /-- The partial derivative (or directional derivative) in the direction `m : E` as a
 continuous linear map on Schwartz space. -/
 instance : LineDeriv E 𝓢(E, F) 𝓢(E, F) where
-  lineDerivOp m f := (SchwartzMap.evalCLM ℝ E F m ∘L fderivCLM ℝ E F) f
+  lineDerivOp m f := (SchwartzMap.evalCLM ℝ E F m ∘ᶠ fderivCLM ℝ E F) f
 
 theorem lineDerivOp_apply_eq_fderiv (m : E) (f : 𝓢(E, F)) (x : E) :
     ∂_{m} f x = fderiv ℝ f x m := rfl
@@ -111,7 +111,7 @@ instance : LineDerivAdd E 𝓢(E, F) 𝓢(E, F) where
     simp [lineDerivOp_apply_eq_fderiv]
 
 instance : LineDerivSMul 𝕜 E 𝓢(E, F) 𝓢(E, F) where
-  lineDerivOp_smul m := (SchwartzMap.evalCLM 𝕜 E F m ∘L fderivCLM 𝕜 E F).map_smul
+  lineDerivOp_smul m := (SchwartzMap.evalCLM 𝕜 E F m ∘ᶠ fderivCLM 𝕜 E F).map_smul
 
 instance : LineDerivLeftSMul ℝ E 𝓢(E, F) 𝓢(E, F) where
   lineDerivOp_left_smul r y f := by
@@ -119,12 +119,12 @@ instance : LineDerivLeftSMul ℝ E 𝓢(E, F) 𝓢(E, F) where
     simp [lineDerivOp_apply_eq_fderiv]
 
 instance : ContinuousLineDeriv E 𝓢(E, F) 𝓢(E, F) where
-  continuous_lineDerivOp m := (SchwartzMap.evalCLM ℝ E F m ∘L fderivCLM ℝ E F).continuous
+  continuous_lineDerivOp m := (SchwartzMap.evalCLM ℝ E F m ∘ᶠ fderivCLM ℝ E F).continuous
 
 open LineDeriv
 
 theorem lineDerivOpCLM_eq (m : E) :
-    lineDerivOpCLM 𝕜 𝓢(E, F) m = SchwartzMap.evalCLM 𝕜 E F m ∘L fderivCLM 𝕜 E F := rfl
+    lineDerivOpCLM 𝕜 𝓢(E, F) m = SchwartzMap.evalCLM 𝕜 E F m ∘ᶠ fderivCLM 𝕜 E F := rfl
 
 @[deprecated (since := "2025-11-25")]
 alias pderivCLM := lineDerivOpCLM

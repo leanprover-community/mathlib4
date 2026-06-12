@@ -353,7 +353,7 @@ lemma eventually_riemannianEDist_le_edist_extChartAt (x : M) :
     ← lintegral_const_mul' _ _ ENNReal.coe_ne_top]
   apply setLIntegral_mono' measurableSet_Icc (fun t ht ↦ ?_)
   have : mfderiv[Icc 0 1] γ t =
-      (mfderiv[range I] (extChartAt I x).symm (η t)) ∘L (mfderiv[Icc 0 1] η t) := by
+      (mfderiv[range I] (extChartAt I x).symm (η t)) ∘ᶠ (mfderiv[Icc 0 1] η t) := by
     apply mfderivWithin_comp
     · exact mdifferentiableWithinAt_extChartAt_symm (hη.1 ht)
     · exact η_smooth.mdifferentiableOn one_ne_zero t ht
@@ -463,7 +463,7 @@ lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
     _ ≤ ∫⁻ t' in Icc 0 t₁, C * ‖mfderiv[Icc 0 t₁] γ t' 1‖ₑ := by
       apply setLIntegral_mono' measurableSet_Icc (fun t' ht' ↦ ?_)
       have : mfderiv[Icc 0 t₁] γ' t' =
-          (mfderiv% (extChartAt I x) (γ t')) ∘L (mfderiv[Icc 0 t₁] γ t') := by
+          (mfderiv% (extChartAt I x) (γ t')) ∘ᶠ (mfderiv[Icc 0 t₁] γ t') := by
         apply mfderiv_comp_mfderivWithin
         · refine mdifferentiableAt_extChartAt (uc' ?_)
           apply t₁_mem ht'

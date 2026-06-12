@@ -97,7 +97,7 @@ variable {g : ℂ →L[ℝ] ℂ}
 
 theorem IsConformalMap.is_complex_or_conj_linear (h : IsConformalMap g) :
     (∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g) ∨
-      ∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g ∘L ↑conjCLE := by
+      ∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g ∘ᶠ ↑conjCLE := by
   rcases h with ⟨c, -, li, rfl⟩
   obtain ⟨li, rfl⟩ : ∃ li' : ℂ ≃ₗᵢ[ℝ] ℂ, li'.toLinearIsometry = li :=
     ⟨li.toLinearIsometryEquiv rfl, by ext1; rfl⟩
@@ -115,7 +115,7 @@ conjugate is complex linear, and the map is nonvanishing. -/
 theorem isConformalMap_iff_is_complex_or_conj_linear :
     IsConformalMap g ↔
       ((∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g) ∨
-          ∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g ∘L ↑conjCLE) ∧
+          ∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g ∘ᶠ ↑conjCLE) ∧
         g ≠ 0 := by
   constructor
   · exact fun h => ⟨h.is_complex_or_conj_linear, h.ne_zero⟩
@@ -123,7 +123,7 @@ theorem isConformalMap_iff_is_complex_or_conj_linear :
     · refine isConformalMap_complex_linear ?_
       contrapose h₂ with w
       simp only [w, restrictScalars_zero]
-    · have minor₁ : g = map.restrictScalars ℝ ∘L ↑conjCLE := by
+    · have minor₁ : g = map.restrictScalars ℝ ∘ᶠ ↑conjCLE := by
         ext1
         simp only [hmap, ContinuousLinearEquiv.coe_coe, comp_apply, conjCLE_apply,
           starRingEnd_self_apply]

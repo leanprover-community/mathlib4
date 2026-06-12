@@ -64,12 +64,12 @@ instance intrinsicStarAddMonoid [ContinuousAdd F] : StarAddMonoid (WithConv (E �
 theorem intrinsicStar_comp {G : Type*} [AddCommMonoid G] [Module R G] [StarAddMonoid G]
     [StarModule R G] [TopologicalSpace G] [ContinuousStar G] (f : WithConv (E →L[R] F))
     (g : WithConv (G →L[R] E)) :
-    star (toConv (f.ofConv ∘L g.ofConv)) = toConv ((star f).ofConv ∘L (star g).ofConv) := by
+    star (toConv (f.ofConv ∘ᶠ g.ofConv)) = toConv ((star f).ofConv ∘ᶠ (star g).ofConv) := by
   ext; simp
 
 theorem intrinsicStar_comp' {G : Type*} [AddCommMonoid G] [Module R G] [StarAddMonoid G]
     [StarModule R G] [TopologicalSpace G] [ContinuousStar G] (f : E →L[R] F) (g : G →L[R] E) :
-    star (toConv (f ∘L g)) = toConv ((star (toConv f)).ofConv ∘L (star (toConv g)).ofConv) := by
+    star (toConv (f ∘ᶠ g)) = toConv ((star (toConv f)).ofConv ∘ᶠ (star (toConv g)).ofConv) := by
   ext; simp
 
 @[simp] theorem intrinsicStar_id :

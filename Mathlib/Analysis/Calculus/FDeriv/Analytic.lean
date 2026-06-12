@@ -324,7 +324,7 @@ theorem HasFPowerSeriesWithinOnBall.hasSum_derivSeries_of_hasFDerivWithinAt
   have : HasFPowerSeriesWithinOnBall (a ∘ f) (a.compFormalMultilinearSeries p) s x r :=
     a.comp_hasFPowerSeriesWithinOnBall h
   have Z := (this.fderivWithin hu).hasSum h'y (by simpa [edist_zero_right] using! hy)
-  have : fderivWithin 𝕜 (a ∘ f) (insert x s) (x + y) = a ∘L f' := by
+  have : fderivWithin 𝕜 (a ∘ f) (insert x s) (x + y) = a ∘ᶠ f' := by
     apply HasFDerivWithinAt.fderivWithin _ (hu _ h'y)
     exact a.hasFDerivAt.comp_hasFDerivWithinAt (x + y) hf'
   rw [this] at Z
@@ -625,7 +625,7 @@ protected theorem hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x)
 protected theorem hasStrictFDerivAt_uncurry [DecidableEq ι]
     (fa : ContinuousMultilinearMap 𝕜 E F × ∀ i, E i) :
     HasStrictFDerivAt (fun fx : ContinuousMultilinearMap 𝕜 E F × ∀ i, E i ↦ fx.1 fx.2)
-      (apply 𝕜 E F fa.2 ∘L .fst _ _ _ + fa.1.linearDeriv fa.2 ∘L .snd _ _ _) fa := by
+      (apply 𝕜 E F fa.2 ∘ᶠ .fst _ _ _ + fa.1.linearDeriv fa.2 ∘ᶠ .snd _ _ _) fa := by
   let f := ContinuousLinearMap.id 𝕜 (ContinuousMultilinearMap 𝕜 E F)
     |>.continuousMultilinearMapOption
   have Hf := (f.hasStrictFDerivAt (fun _ ↦ fa)).comp (f := fun fx _ ↦ fx) fa
@@ -651,8 +651,8 @@ theorem _root_.HasStrictFDerivAt.continuousMultilinearMap_apply {G : Type*}
     {f' : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F} {g' : ∀ i, G →L[𝕜] E i}
     (hf : HasStrictFDerivAt f f' x) (hg : ∀ i, HasStrictFDerivAt (g i) (g' i) x) :
     HasStrictFDerivAt (fun x ↦ f x (g · x))
-      (ContinuousMultilinearMap.apply 𝕜 E F (g · x) ∘L f' +
-        ∑ i, (f x).toContinuousLinearMap (g · x) i ∘L g' i) x := by
+      (ContinuousMultilinearMap.apply 𝕜 E F (g · x) ∘ᶠ f' +
+        ∑ i, (f x).toContinuousLinearMap (g · x) i ∘ᶠ g' i) x := by
   convert!
     ContinuousMultilinearMap.hasStrictFDerivAt_uncurry (f x, (g · x)) |>.comp x
       (hf.prodMk (hasStrictFDerivAt_pi.2 hg))
@@ -665,8 +665,8 @@ theorem _root_.HasFDerivWithinAt.continuousMultilinearMap_apply {G : Type*}
     {f' : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F} {g' : ∀ i, G →L[𝕜] E i}
     (hf : HasFDerivWithinAt f f' s x) (hg : ∀ i, HasFDerivWithinAt (g i) (g' i) s x) :
     HasFDerivWithinAt (fun x ↦ f x (g · x))
-      (ContinuousMultilinearMap.apply 𝕜 E F (g · x) ∘L f' +
-        ∑ i, (f x).toContinuousLinearMap (g · x) i ∘L g' i) s x := by
+      (ContinuousMultilinearMap.apply 𝕜 E F (g · x) ∘ᶠ f' +
+        ∑ i, (f x).toContinuousLinearMap (g · x) i ∘ᶠ g' i) s x := by
   convert!
     ContinuousMultilinearMap.hasStrictFDerivAt_uncurry
         (f x, (g · x)) |>.hasFDerivAt.comp_hasFDerivWithinAt
@@ -680,8 +680,8 @@ theorem _root_.HasFDerivAt.continuousMultilinearMap_apply {G : Type*}
     {f' : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F} {g' : ∀ i, G →L[𝕜] E i}
     (hf : HasFDerivAt f f' x) (hg : ∀ i, HasFDerivAt (g i) (g' i) x) :
     HasFDerivAt (fun x ↦ f x (g · x))
-      (ContinuousMultilinearMap.apply 𝕜 E F (g · x) ∘L f' +
-        ∑ i, (f x).toContinuousLinearMap (g · x) i ∘L g' i) x := by
+      (ContinuousMultilinearMap.apply 𝕜 E F (g · x) ∘ᶠ f' +
+        ∑ i, (f x).toContinuousLinearMap (g · x) i ∘ᶠ g' i) x := by
   simp only [← hasFDerivWithinAt_univ] at *
   exact hf.continuousMultilinearMap_apply hg
 
@@ -692,7 +692,7 @@ theorem _root_.HasFDerivWithinAt.multilinear_comp
     {g : ∀ i, G → E i} {g' : ∀ i, G →L[𝕜] E i} {s : Set G} {x : G}
     (hg : ∀ i, HasFDerivWithinAt (g i) (g' i) s x) :
     HasFDerivWithinAt (fun x ↦ f (fun i ↦ g i x))
-      ((∑ i : ι, (f.toContinuousLinearMap (fun j ↦ g j x) i) ∘L (g' i))) s x := by
+      ((∑ i : ι, (f.toContinuousLinearMap (fun j ↦ g j x) i) ∘ᶠ (g' i))) s x := by
   simpa using (hasFDerivWithinAt_const f x s).continuousMultilinearMap_apply hg
 
 /-- Given `f` a multilinear map, then the derivative of `x ↦ f (g₁ x, ..., gₙ x)` at `x` applied
@@ -702,7 +702,7 @@ theorem _root_.HasFDerivAt.multilinear_comp
     {g : ∀ i, G → E i} {g' : ∀ i, G →L[𝕜] E i} {x : G}
     (hg : ∀ i, HasFDerivAt (g i) (g' i) x) :
     HasFDerivAt (fun x ↦ f (fun i ↦ g i x))
-      ((∑ i : ι, (f.toContinuousLinearMap (fun j ↦ g j x) i) ∘L (g' i))) x := by
+      ((∑ i : ι, (f.toContinuousLinearMap (fun j ↦ g j x) i) ∘ᶠ (g' i))) x := by
   simpa using (hasFDerivAt_const f x).continuousMultilinearMap_apply hg
 
 /-- Technical lemma used in the proof of `hasFTaylorSeriesUpTo_iteratedFDeriv`, to compare sums
@@ -731,10 +731,10 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
   · rintro n - x
     suffices H : curryLeft (f.iteratedFDeriv (Nat.succ n) x) = (∑ e : Fin n ↪ ι,
           ((iteratedFDerivComponent f e.toEquivRange).linearDeriv
-            (Pi.compRightL 𝕜 _ Subtype.val x)) ∘L (Pi.compRightL 𝕜 _ Subtype.val)) by
+            (Pi.compRightL 𝕜 _ Subtype.val x)) ∘ᶠ (Pi.compRightL 𝕜 _ Subtype.val)) by
       have A : HasFDerivAt (f.iteratedFDeriv n) (∑ e : Fin n ↪ ι,
           ((iteratedFDerivComponent f e.toEquivRange).linearDeriv (Pi.compRightL 𝕜 _ Subtype.val x))
-            ∘L (Pi.compRightL 𝕜 _ Subtype.val)) x := by
+            ∘ᶠ (Pi.compRightL 𝕜 _ Subtype.val)) x := by
         apply HasFDerivAt.fun_sum (fun s _hs ↦ ?_)
         exact (ContinuousMultilinearMap.hasFDerivAt _ _).comp x (ContinuousLinearMap.hasFDerivAt _)
       rwa [← H] at A
@@ -869,9 +869,9 @@ variable {ι : Type*} {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ 
 theorem hasFDerivAt_uncurry_of_multilinear [DecidableEq ι]
     (f : E →L[𝕜] ContinuousMultilinearMap 𝕜 G F) (v : E × Π i, G i) :
     HasFDerivAt (fun (p : E × Π i, G i) ↦ f p.1 p.2)
-      ((f.flipMultilinear v.2) ∘L (.fst _ _ _) +
-        ∑ i : ι, ((f v.1).toContinuousLinearMap v.2 i) ∘L (.proj _) ∘L (.snd _ _ _)) v :=
-  (f ∘L .fst 𝕜 E (∀ i, G i)).hasFDerivAt.continuousMultilinearMap_apply
+      ((f.flipMultilinear v.2) ∘ᶠ (.fst _ _ _) +
+        ∑ i : ι, ((f v.1).toContinuousLinearMap v.2 i) ∘ᶠ (.proj _) ∘ᶠ (.snd _ _ _)) v :=
+  (f ∘ᶠ .fst 𝕜 E (∀ i, G i)).hasFDerivAt.continuousMultilinearMap_apply
     (hasFDerivAt_pi'.mp (hasFDerivAt_snd (E := E) (F := ∀ i, G i)))
 
 /-- Given `f` a linear map into multilinear maps, then the derivative
@@ -883,8 +883,8 @@ theorem _root_.HasFDerivWithinAt.linear_multilinear_comp
     (ha : HasFDerivWithinAt a a' s x) (hb : ∀ i, HasFDerivWithinAt (b i) (b' i) s x)
     (f : E →L[𝕜] ContinuousMultilinearMap 𝕜 G F) :
     HasFDerivWithinAt (fun y ↦ f (a y) (fun i ↦ b i y))
-      ((f.flipMultilinear (fun i ↦ b i x)) ∘L a' +
-        ∑ i, ((f (a x)).toContinuousLinearMap (fun j ↦ b j x) i) ∘L (b' i)) s x :=
+      ((f.flipMultilinear (fun i ↦ b i x)) ∘ᶠ a' +
+        ∑ i, ((f (a x)).toContinuousLinearMap (fun j ↦ b j x) i) ∘ᶠ (b' i)) s x :=
   (f.hasFDerivAt.comp_hasFDerivWithinAt x ha).continuousMultilinearMap_apply hb
 
 /-- Given `f` a linear map into multilinear maps, then the derivative
@@ -895,8 +895,8 @@ theorem _root_.HasFDerivAt.linear_multilinear_comp [DecidableEq ι] {a : H → E
     (ha : HasFDerivAt a a' x) (hb : ∀ i, HasFDerivAt (b i) (b' i) x)
     (f : E →L[𝕜] ContinuousMultilinearMap 𝕜 G F) :
     HasFDerivAt (fun y ↦ f (a y) (fun i ↦ b i y))
-      ((f.flipMultilinear (fun i ↦ b i x)) ∘L a' +
-        ∑ i, ((f (a x)).toContinuousLinearMap (fun j ↦ b j x) i) ∘L (b' i)) x :=
+      ((f.flipMultilinear (fun i ↦ b i x)) ∘ᶠ a' +
+        ∑ i, ((f (a x)).toContinuousLinearMap (fun j ↦ b j x) i) ∘ᶠ (b' i)) x :=
   (f.hasFDerivAt.comp x ha).continuousMultilinearMap_apply hb
 
 end ContinuousLinearMap

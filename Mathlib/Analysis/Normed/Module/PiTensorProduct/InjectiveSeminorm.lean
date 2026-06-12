@@ -307,12 +307,12 @@ This is the continuous version of `PiTensorProduct.mapIncl`. -/
 noncomputable def mapLIncl (p : Π i, Submodule 𝕜 (E i)) : (⨂[𝕜] i, p i) →L[𝕜] ⨂[𝕜] i, E i :=
   mapL fun (i : ι) ↦ (p i).subtypeL
 
-theorem mapL_comp : mapL (fun (i : ι) ↦ g i ∘L f i) = mapL g ∘L mapL f := by
+theorem mapL_comp : mapL (fun (i : ι) ↦ g i ∘ᶠ f i) = mapL g ∘ᶠ mapL f := by
   apply ContinuousLinearMap.coe_injective
   ext; simp
 
 theorem liftIsometry_comp_mapL (h : ContinuousMultilinearMap 𝕜 E' F) :
-    liftIsometry 𝕜 E' F h ∘L mapL f = liftIsometry 𝕜 E F (h.compContinuousLinearMap f) := by
+    liftIsometry 𝕜 E' F h ∘ᶠ mapL f = liftIsometry 𝕜 E F (h.compContinuousLinearMap f) := by
   apply ContinuousLinearMap.coe_injective
   ext; simp
 

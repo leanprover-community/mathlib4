@@ -65,7 +65,7 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
       ContinuousLinearMap.ext_iff, not_forall, smulRight_apply, zero_apply,
       smul_eq_zero_iff_left hu]
     exact ⟨u, huv⟩
-  set T := apply' _ (.id 𝕜) z ∘L f.toContinuousAlgHom.toContinuousLinearMap ∘L smulRightL 𝕜 _ _ v
+  set T := apply' _ (.id 𝕜) z ∘ᶠ f.toContinuousAlgHom.toContinuousLinearMap ∘ᶠ smulRightL 𝕜 _ _ v
   have hT x : T x = f (smulRight v x) z := rfl
   have this A x : T (A x) = f A (T x) := by
     simp only [hT, ← mul_apply_eq_comp, ← map_mul]
@@ -79,7 +79,7 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
       simp [← this, hxy]
     simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
   set Tₗ : V ≃ₗ[𝕜] W := .ofBijective T.toLinearMap ⟨inj, surj⟩
-  set T' := apply' _ (.id 𝕜) u ∘L f.symm.toContinuousAlgHom.toContinuousLinearMap ∘L
+  set T' := apply' _ (.id 𝕜) u ∘ᶠ f.symm.toContinuousAlgHom.toContinuousLinearMap ∘ᶠ
     smulRightL 𝕜 _ _ d
   set TL : V ≃L[𝕜] W := { Tₗ with
     continuous_toFun := T.continuous
@@ -102,8 +102,8 @@ variable {𝕜 V W : Type*} [RCLike 𝕜] [NormedAddCommGroup V] [InnerProductSp
 section auxiliaryDefs
 
 variable (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0)
-  (hα2 : α' * α' = α⁻¹) (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
-  (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W)
+  (hα2 : α' * α' = α⁻¹) (he : e.toContinuousLinearMap.adjoint ∘ᶠ e = α • .id 𝕜 V)
+  (he' : e ∘ᶠ e.toContinuousLinearMap.adjoint = α • .id 𝕜 W)
 include hα hα2 he he'
 
 /-- Scalar multiple of a continuous linear equivalence (given certain properties are satisfied). -/
@@ -177,18 +177,18 @@ public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
   rw [ContinuousAlgEquiv.ext_iff] at hy
   simp_rw [← StarAlgEquiv.coe_toAlgEquiv, ContinuousAlgEquiv.coe_mk f.toAlgEquiv hf _ ▸ hy,
     conjContinuousAlgEquiv_apply,  adjoint_comp] at this
-  replace this (x : V →L[𝕜] V) : adjoint y.toContinuousLinearMap ∘L y ∘L adjoint x ∘L y.symm =
-      adjoint x ∘L adjoint y.toContinuousLinearMap := by
+  replace this (x : V →L[𝕜] V) : adjoint y.toContinuousLinearMap ∘ᶠ y ∘ᶠ adjoint x ∘ᶠ y.symm =
+      adjoint x ∘ᶠ adjoint y.toContinuousLinearMap := by
     simp_rw [← this x, ← comp_assoc, ← adjoint_comp]
     simp
-  replace this (x : V →L[𝕜] V) : Commute x (adjoint y.toContinuousLinearMap ∘L y) := by
+  replace this (x : V →L[𝕜] V) : Commute x (adjoint y.toContinuousLinearMap ∘ᶠ y) := by
     simp_rw [commute_iff_eq, mul_def, ← comp_assoc, ← (adjoint_adjoint x ▸ this _), comp_assoc]
     simp
   -- Let `α : 𝕜` be that scalar, i.e., `adjoint y ∘ y = α • id`. This scalar is clearly real.
   obtain ⟨α, hα⟩ := by simpa using (Subalgebra.mem_center_iff (R := 𝕜)).mpr fun _ ↦ this _
   simp only [AlgHom.toRingHom_eq_coe, Algebra.toRingHom_ofId, Algebra.algebraMap_eq_smul_one] at hα
-  have : IsUnit (adjoint y.toContinuousLinearMap ∘L y) :=
-    isUnit_iff_exists.mpr ⟨y.symm ∘L adjoint y.symm.toContinuousLinearMap, by
+  have : IsUnit (adjoint y.toContinuousLinearMap ∘ᶠ y) :=
+    isUnit_iff_exists.mpr ⟨y.symm ∘ᶠ adjoint y.symm.toContinuousLinearMap, by
       simp [mul_def, ← comp_assoc, comp_assoc _ _ (adjoint y.toContinuousLinearMap),
         ← adjoint_comp, one_def, comp_assoc _ y.toContinuousLinearMap]⟩
   have hα_re : α = RCLike.re α := by
@@ -206,10 +206,10 @@ public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
     exact (nonneg_iff_isPositive _).mp this
   have hα_pos := RCLike.ofReal_pos.mp <| hα_re ▸ (lt_of_le_of_ne' hα_nonneg hα_ne_zero)
   -- We also get `y ∘ adjoint y = α • id`.
-  have h_comp_adjoint : y.toContinuousLinearMap ∘L adjoint y.toContinuousLinearMap =
+  have h_comp_adjoint : y.toContinuousLinearMap ∘ᶠ adjoint y.toContinuousLinearMap =
       α • ContinuousLinearMap.id 𝕜 _ := by
     ext x
-    simpa using congr(y (($hα ∘L y.symm.toContinuousLinearMap) x)).symm
+    simpa using congr(y (($hα ∘ᶠ y.symm.toContinuousLinearMap) x)).symm
   -- Finally, we construct our isometry `1/√(re α) • y`.
   set β := (((RCLike.re α : ℝ) ^ (-(1 / 2 : ℝ)) : ℝ) : 𝕜)
   have hβ : β * β = α⁻¹ := by

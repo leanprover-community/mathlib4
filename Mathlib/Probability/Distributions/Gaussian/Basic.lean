@@ -98,7 +98,7 @@ lemma isGaussian_map_of_measurable {E F : Type*} [TopologicalSpace E] [AddCommMo
     [Module ℝ E] {mE : MeasurableSpace E} [TopologicalSpace F] [AddCommMonoid F]
     [Module ℝ F] {mF : MeasurableSpace F} [OpensMeasurableSpace F] {μ : Measure E}
     {L : E →L[ℝ] F} [IsGaussian μ] (hL : Measurable L) : IsGaussian (μ.map L) := by
-  refine isGaussian_of_map_eq_gaussianReal fun L' ↦ ⟨μ[L' ∘L L], Var[L' ∘L L; μ].toNNReal, ?_⟩
+  refine isGaussian_of_map_eq_gaussianReal fun L' ↦ ⟨μ[L' ∘ᶠ L], Var[L' ∘ᶠ L; μ].toNNReal, ?_⟩
   rw [Measure.map_map (by fun_prop) hL, ← ContinuousLinearMap.coe_comp,
     IsGaussian.map_eq_gaussianReal]
 

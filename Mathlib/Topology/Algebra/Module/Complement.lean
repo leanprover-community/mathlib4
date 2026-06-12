@@ -139,7 +139,7 @@ open LinearMap in
 theorem _root_.ContinuousLinearMap.isTopCompl_range_ker_of_leftInverse
     (f₁ : M →L[R] N) (f₂ : N →L[R] M) (h : Function.LeftInverse f₂ f₁) :
     f₁.range.IsTopCompl f₂.ker :=
-  let p := f₁ ∘L f₂
+  let p := f₁ ∘ᶠ f₂
   have p_idem : IsIdempotentElem p := by ext x; simp [p, h (f₂ x)]
   have range_p : p.range = f₁.range := range_comp_of_range_eq_top _ <|
     range_eq_top_of_surjective _ h.surjective
@@ -213,7 +213,7 @@ variable (p q) in
 See also `Submodule.IsTopCompl.projectionOnto` for the same projection as an element of
 `M →L[R] p`. -/
 noncomputable def projectionL (h : IsTopCompl p q) : M →L[R] M :=
-  p.subtypeL ∘L p.projectionOntoL q h
+  p.subtypeL ∘ᶠ p.projectionOntoL q h
 
 @[simp]
 theorem coe_projectionL (h : IsTopCompl p q) :
@@ -480,7 +480,7 @@ theorem toLinearEquiv_quotientEquivOfIsTopCompl (h : IsTopCompl p q) :
   rfl
 
 theorem quotientEquivOfIsTopCompl_comp_mkQL (h : IsTopCompl p q) :
-    (quotientEquivOfIsTopCompl p q h) ∘L p.mkQL = q.projectionOntoL p h.symm :=
+    (quotientEquivOfIsTopCompl p q h) ∘ᶠ p.mkQL = q.projectionOntoL p h.symm :=
   rfl
 
 @[simp]
@@ -514,10 +514,10 @@ submodules `p` and `q` of `E`, `ContinuousLinearMap.ofIsCompl` is the induced co
 
 This is the continuous version of `LinearMap.ofIsCompl`. -/
 noncomputable def ofIsTopCompl (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) : E →L[R] F :=
-  φ.coprod ψ ∘L ↑(prodEquivOfIsTopCompl p q h).symm
+  φ.coprod ψ ∘ᶠ ↑(prodEquivOfIsTopCompl p q h).symm
 
 theorem ofIsTopCompl_eq_add (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) :
-    ofIsTopCompl h φ ψ = φ ∘L p.projectionOntoL q h + ψ ∘L q.projectionOntoL p h.symm := by
+    ofIsTopCompl h φ ψ = φ ∘ᶠ p.projectionOntoL q h + ψ ∘ᶠ q.projectionOntoL p h.symm := by
   ext; simp [ofIsTopCompl]
 
 @[simp]

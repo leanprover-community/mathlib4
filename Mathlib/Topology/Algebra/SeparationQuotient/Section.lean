@@ -33,7 +33,7 @@ such that `mk (outCLM x) = x` for all `x`.
 Note that continuity of this map comes for free, because `mk` is a topology inducing map.
 -/
 theorem exists_out_continuousLinearMap :
-    ∃ f : SeparationQuotient E →L[K] E, mkCLM K E ∘L f = .id K (SeparationQuotient E) := by
+    ∃ f : SeparationQuotient E →L[K] E, mkCLM K E ∘ᶠ f = .id K (SeparationQuotient E) := by
   rcases (mkCLM K E).toLinearMap.exists_rightInverse_of_surjective
     (LinearMap.range_eq_top.mpr surjective_mk) with ⟨f, hf⟩
   replace hf : mk ∘ f = id := congr_arg DFunLike.coe hf
@@ -45,7 +45,7 @@ noncomputable def outCLM : SeparationQuotient E →L[K] E :=
   (exists_out_continuousLinearMap K E).choose
 
 @[simp]
-theorem mkCLM_comp_outCLM : mkCLM K E ∘L outCLM K E = .id K (SeparationQuotient E) :=
+theorem mkCLM_comp_outCLM : mkCLM K E ∘ᶠ outCLM K E = .id K (SeparationQuotient E) :=
   (exists_out_continuousLinearMap K E).choose_spec
 
 variable {E} in

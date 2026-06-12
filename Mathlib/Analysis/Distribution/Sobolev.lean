@@ -92,7 +92,7 @@ theorem besselPotential_besselPotential_apply (s s' : ℝ) (f : 𝓢'(E, F)) :
     _ = _ := by congr; ring
 
 theorem besselPotential_compL_besselPotential (s s' : ℝ) :
-    besselPotential E F s' ∘L besselPotential E F s = besselPotential E F (s + s') := by
+    besselPotential E F s' ∘ᶠ besselPotential E F s = besselPotential E F (s + s') := by
   ext f : 1
   exact besselPotential_besselPotential_apply s s' f
 

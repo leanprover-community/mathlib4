@@ -926,7 +926,7 @@ abbrev _root_.ContinuousLinearMap.finCons
     [AddCommMonoid N] [Module R N] [TopologicalSpace N]
     (f : N →L[R] M 0) (fs : N →L[R] Π i, M (Fin.succ i)) :
     N →L[R] Π i, M i :=
-  Fin.consEquivL R M ∘L f.prod fs
+  Fin.consEquivL R M ∘ᶠ f.prod fs
 
 end
 
@@ -1097,18 +1097,18 @@ theorem isInvertible_zero_iff :
   · exact inverse_of_not_isInvertible h
 
 lemma IsInvertible.comp {g : M₂ →L[R] M₃} {f : M →L[R] M₂}
-    (hg : g.IsInvertible) (hf : f.IsInvertible) : (g ∘L f).IsInvertible := by
+    (hg : g.IsInvertible) (hf : f.IsInvertible) : (g ∘ᶠ f).IsInvertible := by
   rcases hg with ⟨N, rfl⟩
   rcases hf with ⟨M, rfl⟩
   exact ⟨M.trans N, rfl⟩
 
 lemma IsInvertible.of_inverse {f : M →L[R] M₂} {g : M₂ →L[R] M}
-    (hf : f ∘L g = .id R M₂) (hg : g ∘L f = .id R M) :
+    (hf : f ∘ᶠ g = .id R M₂) (hg : g ∘ᶠ f = .id R M) :
     f.IsInvertible :=
   ⟨ContinuousLinearEquiv.equivOfInverse' _ _ hf hg, rfl⟩
 
 lemma inverse_eq {f : M →L[R] M₂} {g : M₂ →L[R] M}
-    (hf : f ∘L g = .id R M₂) (hg : g ∘L f = .id R M) :
+    (hf : f ∘ᶠ g = .id R M₂) (hg : g ∘ᶠ f = .id R M) :
     f.inverse = g := by
   have : f = ContinuousLinearEquiv.equivOfInverse' f g hf hg := rfl
   rw [this, inverse_equiv]
@@ -1121,27 +1121,27 @@ lemma IsInvertible.inverse_apply_eq {f : M →L[R] M₂} {x : M} {y : M₂} (hf 
   exact ContinuousLinearEquiv.symm_apply_eq M
 
 @[simp] lemma isInvertible_equiv_comp {e : M₂ ≃L[R] M₃} {f : M →L[R] M₂} :
-    ((e : M₂ →L[R] M₃) ∘L f).IsInvertible ↔ f.IsInvertible := by
+    ((e : M₂ →L[R] M₃) ∘ᶠ f).IsInvertible ↔ f.IsInvertible := by
   constructor
   · rintro ⟨A, hA⟩
-    have : f = e.symm ∘L ((e : M₂ →L[R] M₃) ∘L f) := by ext; simp
+    have : f = e.symm ∘ᶠ ((e : M₂ →L[R] M₃) ∘ᶠ f) := by ext; simp
     rw [this, ← hA]
     simp
   · rintro ⟨M, rfl⟩
     simp
 
 @[simp] lemma isInvertible_comp_equiv {e : M₃ ≃L[R] M} {f : M →L[R] M₂} :
-    (f ∘L (e : M₃ →L[R] M)).IsInvertible ↔ f.IsInvertible := by
+    (f ∘ᶠ (e : M₃ →L[R] M)).IsInvertible ↔ f.IsInvertible := by
   constructor
   · rintro ⟨A, hA⟩
-    have : f = (f ∘L (e : M₃ →L[R] M)) ∘L e.symm := by ext; simp
+    have : f = (f ∘ᶠ (e : M₃ →L[R] M)) ∘ᶠ e.symm := by ext; simp
     rw [this, ← hA]
     simp
   · rintro ⟨M, rfl⟩
     simp
 
 @[simp] lemma inverse_equiv_comp {e : M₂ ≃L[R] M₃} {f : M →L[R] M₂} :
-    (e ∘L f).inverse = f.inverse ∘L (e.symm : M₃ →L[R] M₂) := by
+    (e ∘ᶠ f).inverse = f.inverse ∘ᶠ (e.symm : M₃ →L[R] M₂) := by
   by_cases hf : f.IsInvertible
   · rcases hf with ⟨A, rfl⟩
     simp only [ContinuousLinearEquiv.comp_coe, inverse_equiv, ContinuousLinearEquiv.coe_inj]
@@ -1149,7 +1149,7 @@ lemma IsInvertible.inverse_apply_eq {f : M →L[R] M₂} {x : M} {y : M₂} (hf 
   · rw [inverse_of_not_isInvertible (by simp [hf]), inverse_of_not_isInvertible hf, zero_comp]
 
 @[simp] lemma inverse_comp_equiv {e : M₃ ≃L[R] M} {f : M →L[R] M₂} :
-    (f ∘L e).inverse = (e.symm : M →L[R] M₃) ∘L f.inverse := by
+    (f ∘ᶠ e).inverse = (e.symm : M →L[R] M₃) ∘ᶠ f.inverse := by
   by_cases hf : f.IsInvertible
   · rcases hf with ⟨A, rfl⟩
     simp only [ContinuousLinearEquiv.comp_coe, inverse_equiv, ContinuousLinearEquiv.coe_inj]
@@ -1157,21 +1157,21 @@ lemma IsInvertible.inverse_apply_eq {f : M →L[R] M₂} {x : M} {y : M₂} (hf 
   · rw [inverse_of_not_isInvertible (by simp [hf]), inverse_of_not_isInvertible hf, comp_zero]
 
 lemma IsInvertible.inverse_comp_of_left {g : M₂ →L[R] M₃} {f : M →L[R] M₂}
-    (hg : g.IsInvertible) : (g ∘L f).inverse = f.inverse ∘L g.inverse := by
+    (hg : g.IsInvertible) : (g ∘ᶠ f).inverse = f.inverse ∘ᶠ g.inverse := by
   rcases hg with ⟨N, rfl⟩
   simp
 
 lemma IsInvertible.inverse_comp_apply_of_left {g : M₂ →L[R] M₃} {f : M →L[R] M₂} {v : M₃}
-    (hg : g.IsInvertible) : (g ∘L f).inverse v = f.inverse (g.inverse v) := by
+    (hg : g.IsInvertible) : (g ∘ᶠ f).inverse v = f.inverse (g.inverse v) := by
   simp only [hg.inverse_comp_of_left, comp_apply]
 
 lemma IsInvertible.inverse_comp_of_right {g : M₂ →L[R] M₃} {f : M →L[R] M₂}
-    (hf : f.IsInvertible) : (g ∘L f).inverse = f.inverse ∘L g.inverse := by
+    (hf : f.IsInvertible) : (g ∘ᶠ f).inverse = f.inverse ∘ᶠ g.inverse := by
   rcases hf with ⟨M, rfl⟩
   simp
 
 lemma IsInvertible.inverse_comp_apply_of_right {g : M₂ →L[R] M₃} {f : M →L[R] M₂} {v : M₃}
-    (hf : f.IsInvertible) : (g ∘L f).inverse v = f.inverse (g.inverse v) := by
+    (hf : f.IsInvertible) : (g ∘ᶠ f).inverse v = f.inverse (g.inverse v) := by
   simp only [hf.inverse_comp_of_right, comp_apply]
 
 @[simp]
@@ -1184,11 +1184,11 @@ theorem ringInverse_equiv (e : M ≃L[R] M) : (↑e)⁻¹ʳ = inverse (e : M →
 /-- The function `ContinuousLinearEquiv.inverse` can be written in terms of `Ring.inverse` for the
 ring of self-maps of the domain. -/
 theorem inverse_eq_ringInverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
-    inverse f = ((e.symm : M₂ →L[R] M).comp f)⁻¹ʳ ∘L e.symm := by
+    inverse f = ((e.symm : M₂ →L[R] M).comp f)⁻¹ʳ ∘ᶠ e.symm := by
   by_cases h₁ : f.IsInvertible
   · obtain ⟨e', he'⟩ := h₁
     rw [← he']
-    change _ = (e'.trans e.symm : M →L[R] M)⁻¹ʳ ∘L (e.symm : M₂ →L[R] M)
+    change _ = (e'.trans e.symm : M →L[R] M)⁻¹ʳ ∘ᶠ (e.symm : M₂ →L[R] M)
     ext
     simp
   · suffices ¬IsUnit ((e.symm : M₂ →L[R] M).comp f) by simp [this, h₁]
@@ -1213,7 +1213,7 @@ namespace IsInvertible
 variable {f : M →L[R] M₂}
 
 @[simp]
-theorem self_comp_inverse (hf : f.IsInvertible) : f ∘L f.inverse = .id _ _ := by
+theorem self_comp_inverse (hf : f.IsInvertible) : f ∘ᶠ f.inverse = .id _ _ := by
   rcases hf with ⟨e, rfl⟩
   simp
 
@@ -1223,7 +1223,7 @@ theorem self_apply_inverse (hf : f.IsInvertible) (y : M₂) : f (f.inverse y) = 
   simp
 
 @[simp]
-theorem inverse_comp_self (hf : f.IsInvertible) : f.inverse ∘L f = .id _ _ := by
+theorem inverse_comp_self (hf : f.IsInvertible) : f.inverse ∘ᶠ f = .id _ _ := by
   rcases hf with ⟨e, rfl⟩
   simp
 
@@ -1265,7 +1265,7 @@ end IsInvertible
 
 /-- Composition of a map on a product with the exchange of the product factors -/
 theorem coprod_comp_prodComm [ContinuousAdd M] (f : M₂ →L[R] M) (g : M₃ →L[R] M) :
-    f.coprod g ∘L ContinuousLinearEquiv.prodComm R M₃ M₂ = g.coprod f := by
+    f.coprod g ∘ᶠ ContinuousLinearEquiv.prodComm R M₃ M₂ = g.coprod f := by
   ext <;> simp
 
 end ContinuousLinearMap

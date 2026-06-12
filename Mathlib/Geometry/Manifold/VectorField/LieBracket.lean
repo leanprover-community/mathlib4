@@ -603,7 +603,7 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
       (PartialEquiv.left_inv (extChartAt I' (f x₀)) h'y).symm
     congr 2
     have : (mfderiv[range I'] ((extChartAt I' (f x₀)).symm)
-        (extChartAt I' (f x₀) (f ((extChartAt I x₀).symm y)))) ∘L
+        (extChartAt I' (f x₀) (f ((extChartAt I x₀).symm y)))) ∘ᶠ
         (mfderiv% (extChartAt I' (f x₀)) (f ((extChartAt I x₀).symm y))) =
         ContinuousLinearMap.id _ _ := by
       convert!

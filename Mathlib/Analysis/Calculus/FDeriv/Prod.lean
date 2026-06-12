@@ -508,8 +508,8 @@ variable {φ : E → F' 0} {φs : E → ∀ i, F' (Fin.succ i)}
 theorem hasFDerivAtFilter_finCons
     {φ' : E →L[𝕜] Π i, F' i} {l : Filter (E × E)} :
     HasFDerivAtFilter (fun x => Fin.cons (φ x) (φs x)) φ' l ↔
-      HasFDerivAtFilter φ (.proj 0 ∘L φ') l ∧
-      HasFDerivAtFilter φs (Pi.compRightL 𝕜 F' Fin.succ ∘L φ') l := by
+      HasFDerivAtFilter φ (.proj 0 ∘ᶠ φ') l ∧
+      HasFDerivAtFilter φs (Pi.compRightL 𝕜 F' Fin.succ ∘ᶠ φ') l := by
   rw [hasFDerivAtFilter_pi', Fin.forall_fin_succ, hasFDerivAtFilter_pi']
   dsimp [ContinuousLinearMap.comp, LinearMap.comp, Function.comp_def]
   simp only [Fin.cons_zero, Fin.cons_succ]
@@ -530,8 +530,8 @@ theorem HasFDerivAtFilter.finCons
 
 theorem hasStrictFDerivAt_finCons {φ' : E →L[𝕜] Π i, F' i} :
     HasStrictFDerivAt (fun x => Fin.cons (φ x) (φs x)) φ' x ↔
-      HasStrictFDerivAt φ (.proj 0 ∘L φ') x ∧
-      HasStrictFDerivAt φs (Pi.compRightL 𝕜 F' Fin.succ ∘L φ') x :=
+      HasStrictFDerivAt φ (.proj 0 ∘ᶠ φ') x ∧
+      HasStrictFDerivAt φs (Pi.compRightL 𝕜 F' Fin.succ ∘ᶠ φ') x :=
   hasFDerivAtFilter_finCons
 
 /-- A variant of `hasStrictFDerivAt_finCons` where the derivative variables are free on the RHS
@@ -552,7 +552,7 @@ theorem HasStrictFDerivAt.finCons
 theorem hasFDerivAt_finCons
     {φ' : E →L[𝕜] Π i, F' i} :
     HasFDerivAt (fun x => Fin.cons (φ x) (φs x)) φ' x ↔
-      HasFDerivAt φ (.proj 0 ∘L φ') x ∧ HasFDerivAt φs (Pi.compRightL 𝕜 F' Fin.succ ∘L φ') x :=
+      HasFDerivAt φ (.proj 0 ∘ᶠ φ') x ∧ HasFDerivAt φs (Pi.compRightL 𝕜 F' Fin.succ ∘ᶠ φ') x :=
   hasFDerivAtFilter_finCons
 
 /-- A variant of `hasFDerivAt_finCons` where the derivative variables are free on the RHS
@@ -573,8 +573,8 @@ theorem HasFDerivAt.finCons
 theorem hasFDerivWithinAt_finCons
     {φ' : E →L[𝕜] Π i, F' i} :
     HasFDerivWithinAt (fun x => Fin.cons (φ x) (φs x)) φ' s x ↔
-      HasFDerivWithinAt φ (.proj 0 ∘L φ') s x ∧
-      HasFDerivWithinAt φs (Pi.compRightL 𝕜 F' Fin.succ ∘L φ') s x :=
+      HasFDerivWithinAt φ (.proj 0 ∘ᶠ φ') s x ∧
+      HasFDerivWithinAt φs (Pi.compRightL 𝕜 F' Fin.succ ∘ᶠ φ') s x :=
   hasFDerivAtFilter_finCons
 
 /-- A variant of `hasFDerivWithinAt_finCons` where the derivative variables are free on the RHS

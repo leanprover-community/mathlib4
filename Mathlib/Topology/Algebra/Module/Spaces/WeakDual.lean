@@ -210,7 +210,7 @@ their weak topologies. -/
 def map (f : E →L[𝕜] F) : WeakSpace 𝕜 E →L[𝕜] WeakSpace 𝕜 F :=
   { f with
     cont :=
-      WeakBilin.continuous_of_continuous_eval _ fun l => WeakBilin.eval_continuous _ (l ∘L f) }
+      WeakBilin.continuous_of_continuous_eval _ fun l => WeakBilin.eval_continuous _ (l ∘ᶠ f) }
 
 theorem map_apply (f : E →L[𝕜] F) (x : E) : WeakSpace.map f x = f x :=
   rfl

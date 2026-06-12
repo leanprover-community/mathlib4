@@ -257,11 +257,11 @@ def contMDiffFiberwiseLinear (n : ℕ∞ω) : StructureGroupoid (B × F) where
       Setoid.trans (OpenPartialHomeomorph.EqOnSource.trans' heφ heφ') ⟨?_, ?_⟩⟩
     · change
         ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n
-          (fun x : B => (φ' x).toContinuousLinearMap ∘L (φ x).toContinuousLinearMap) (U ∩ U')
+          (fun x : B => (φ' x).toContinuousLinearMap ∘ᶠ (φ x).toContinuousLinearMap) (U ∩ U')
       exact (hφ'.mono inter_subset_right).clm_comp (hφ.mono inter_subset_left)
     · change
         ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n
-          (fun x : B => (φ x).symm.toContinuousLinearMap ∘L (φ' x).symm.toContinuousLinearMap)
+          (fun x : B => (φ x).symm.toContinuousLinearMap ∘ᶠ (φ' x).symm.toContinuousLinearMap)
           (U ∩ U')
       exact (h2φ.mono inter_subset_left).clm_comp (h2φ'.mono inter_subset_right)
     · apply FiberwiseLinear.source_trans_openPartialHomeomorph

@@ -305,7 +305,7 @@ variable (Eₗ) {𝕜 E Fₗ Gₗ}
 /-- Apply `L(x,-)` pointwise to bilinear maps, as a continuous bilinear map -/
 @[simps! apply]
 def precompR (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : E →L[𝕜] (Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ :=
-  compL 𝕜 Eₗ Fₗ Gₗ ∘L L
+  compL 𝕜 Eₗ Fₗ Gₗ ∘ᶠ L
 
 /-- Apply `L(-,y)` pointwise to bilinear maps, as a continuous bilinear map -/
 def precompL (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : (Eₗ →L[𝕜] E) →L[𝕜] Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ :=

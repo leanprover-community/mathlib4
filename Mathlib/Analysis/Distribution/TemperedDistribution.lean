@@ -96,7 +96,7 @@ set_option backward.privateInPublic true in
 /-- A function of temperate growth `f` defines a tempered distribution via integration, namely
 `g ↦ ∫ (x : E), g x • f x ∂μ`. -/
 def toTemperedDistribution {f : E → F} (hf : f.HasTemperateGrowth) : 𝓢'(E, F) :=
-  toPointwiseConvergenceCLM _ _ _ _ ((integralCLM ℂ μ) ∘L (bilinLeftCLM (lsmul ℂ ℂ) hf))
+  toPointwiseConvergenceCLM _ _ _ _ ((integralCLM ℂ μ) ∘ᶠ (bilinLeftCLM (lsmul ℂ ℂ) hf))
 
 set_option backward.privateInPublic true in
 @[simp]
@@ -116,7 +116,7 @@ variable (E F) in
 /-- The canonical embedding of `𝓢(E, F)` into `𝓢'(E, F)` as a continuous linear map. -/
 def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
     𝓢(E, F) →L[ℂ] 𝓢'(E, F) where
-  toFun f := toPointwiseConvergenceCLM _ _ _ _ <| integralCLM ℂ μ ∘L pairing (lsmul ℂ ℂ).flip f
+  toFun f := toPointwiseConvergenceCLM _ _ _ _ <| integralCLM ℂ μ ∘ᶠ pairing (lsmul ℂ ℂ).flip f
   map_add' _ _ := by simp
   map_smul' _ _ := by simp
   cont := PointwiseConvergenceCLM.continuous_of_continuous_eval
@@ -162,7 +162,7 @@ def toTemperedDistribution {p : ℝ≥0∞}
   haveI := ENNReal.HolderConjugate.inv_one_sub_inv' hp.out
   haveI : Fact (1 ≤ (1 - p⁻¹)⁻¹) := by simp [fact_iff]
   toPointwiseConvergenceCLM _ _ _ _ <|
-    (lsmul ℂ ℂ).flip.lpPairing μ p (1 - p⁻¹)⁻¹ f ∘L toLpCLM ℂ ℂ (1 - p⁻¹)⁻¹ μ
+    (lsmul ℂ ℂ).flip.lpPairing μ p (1 - p⁻¹)⁻¹ f ∘ᶠ toLpCLM ℂ ℂ (1 - p⁻¹)⁻¹ μ
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -264,7 +264,7 @@ theorem smulLeftCLM_smulLeftCLM_apply {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasT
 
 theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasTemperateGrowth)
     (hg₂ : g₂.HasTemperateGrowth) :
-    smulLeftCLM F g₂ ∘L smulLeftCLM F g₁ = smulLeftCLM F (g₁ * g₂) := by
+    smulLeftCLM F g₂ ∘ᶠ smulLeftCLM F g₁ = smulLeftCLM F (g₁ * g₂) := by
   ext1 f
   simp [hg₁, hg₂]
 

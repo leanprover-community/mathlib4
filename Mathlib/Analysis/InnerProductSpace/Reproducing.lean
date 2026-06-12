@@ -96,16 +96,16 @@ variable (H) [CompleteSpace H] [CompleteSpace V]
 
 /-- The kernel functions of a reproducing kernel Hilbert space are the adjoint of
 the point evaluation. -/
-def kerFun (x : X) : V →L[𝕜] H := (.proj x ∘L coeCLM 𝕜).adjoint
+def kerFun (x : X) : V →L[𝕜] H := (.proj x ∘ᶠ coeCLM 𝕜).adjoint
 
 /-- The kernel of a reproducing kernel Hilbert space is a matrix of entries given by the
 kernel functions. -/
-def kernel : Matrix X X (V →L[𝕜] V) := .of fun x y ↦ (kerFun H x).adjoint ∘L kerFun H y
+def kernel : Matrix X X (V →L[𝕜] V) := .of fun x y ↦ (kerFun H x).adjoint ∘ᶠ kerFun H y
 
 lemma kerFun_apply (y : X) (v : V) (x : X) : kerFun H y v x = kernel H x y v := by
   simp [kernel, kerFun]
 
-lemma kernel_apply (x y : X) : kernel H x y = (kerFun H x).adjoint ∘L kerFun H y := by
+lemma kernel_apply (x y : X) : kernel H x y = (kerFun H x).adjoint ∘ᶠ kerFun H y := by
   simp [kerFun, kernel]
 
 variable {H} in

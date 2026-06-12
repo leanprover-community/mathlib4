@@ -108,7 +108,7 @@ lemma IsMIntegralCurveOn.comp_mul (hγ : IsMIntegralCurveOn γ v s) (a : ℝ) :
     IsMIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
   intro t ht
   have : (1 : ℝ →L[ℝ] ℝ).smulRight (a • v (γ (t * a))) =
-      (1 : ℝ →L[ℝ] ℝ).smulRight (v (γ (t * a))) ∘SL (1 : ℝ →L[ℝ] ℝ).smulRight a := by
+      (1 : ℝ →L[ℝ] ℝ).smulRight (v (γ (t * a))) ∘ᶠ (1 : ℝ →L[ℝ] ℝ).smulRight a := by
     simp [ContinuousLinearMap.smulRight_comp_smulRight]
   rw [comp_apply, Pi.smul_apply, this]
   refine HasMFDerivWithinAt.comp t (hγ (t * a) ht)

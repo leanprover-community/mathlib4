@@ -432,7 +432,7 @@ noncomputable def postcompCLM (T : F →L[𝕜] F') :
       f.hasCompactSupport.comp_left (map_zero _),
       (tsupport_comp_subset (map_zero _) f).trans f.tsupport_subset⟩
   TestFunction.limitCLM 𝕜 Φ
-    (fun K K_sub_Ω ↦ ofSupportedInCLM 𝕜 K_sub_Ω ∘L ContDiffMapSupportedIn.postcompCLM T)
+    (fun K K_sub_Ω ↦ ofSupportedInCLM 𝕜 K_sub_Ω ∘ᶠ ContDiffMapSupportedIn.postcompCLM T)
     (fun _ _ _ ↦ by ext; simp [Φ])
 
 @[simp]
@@ -465,7 +465,7 @@ noncomputable def monoCLM :
     else 0
   TestFunction.limitCLM 𝕜 Φ
     (fun K K_sub_Ω₁ ↦ if h : n₂ ≤ n₁ ∧ Ω₁ ≤ Ω₂
-      then ofSupportedInCLM 𝕜 (K_sub_Ω₁.trans h.2) ∘L ContDiffMapSupportedIn.monoCLM 𝕜
+      then ofSupportedInCLM 𝕜 (K_sub_Ω₁.trans h.2) ∘ᶠ ContDiffMapSupportedIn.monoCLM 𝕜
       else 0)
     (fun _ _ _ ↦ by ext; dsimp [Φ]; split_ifs with h <;> simp [h])
 
@@ -503,7 +503,7 @@ noncomputable def fderivCLM :
         f.hasCompactSupport.fderiv ℝ, tsupport_fderiv_subset ℝ |>.trans f.tsupport_subset⟩
     else 0
   TestFunction.limitCLM 𝕜 Φ
-    (fun K K_sub_Ω ↦ ofSupportedInCLM 𝕜 K_sub_Ω ∘L ContDiffMapSupportedIn.fderivCLM 𝕜 n k)
+    (fun K K_sub_Ω ↦ ofSupportedInCLM 𝕜 K_sub_Ω ∘ᶠ ContDiffMapSupportedIn.fderivCLM 𝕜 n k)
     (fun _ _ _ ↦ by ext; dsimp [Φ]; split_ifs with h <;> simp [h])
 
 @[simp]
@@ -556,7 +556,7 @@ noncomputable def lineDerivCLM (v : E) :
   { toFun f := f v
     map_add' _ _ := rfl
     map_smul' _ _ := rfl }
-  postcompCLM ev_v ∘L fderivCLM 𝕜 n k
+  postcompCLM ev_v ∘ᶠ fderivCLM 𝕜 n k
 
 lemma lineDerivCLM_eq_fderivCLM {f : 𝓓^{n}(Ω, F)} {v : E} {x : E} :
     (lineDerivCLM 𝕜 v f : 𝓓^{k}(Ω, F)) x = fderivCLM 𝕜 n k f x v :=

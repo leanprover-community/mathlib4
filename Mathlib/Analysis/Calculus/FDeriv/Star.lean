@@ -39,22 +39,22 @@ section TrivialStar
 variable [TrivialStar 𝕜]
 
 protected theorem HasFDerivAtFilter.star (h : HasFDerivAtFilter f f' L) :
-    HasFDerivAtFilter (fun x => star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L f') L :=
+    HasFDerivAtFilter (fun x => star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘ᶠ f') L :=
   (starL' 𝕜 : F ≃L[𝕜] F).toContinuousLinearMap.hasFDerivAtFilter.comp h Filter.tendsto_map
 
 @[fun_prop]
 protected theorem HasStrictFDerivAt.star (h : HasStrictFDerivAt f f' x) :
-    HasStrictFDerivAt (fun x => star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L f') x :=
+    HasStrictFDerivAt (fun x => star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘ᶠ f') x :=
   HasFDerivAtFilter.star h
 
 @[fun_prop]
 protected theorem HasFDerivWithinAt.star (h : HasFDerivWithinAt f f' s x) :
-    HasFDerivWithinAt (fun x => star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L f') s x :=
+    HasFDerivWithinAt (fun x => star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘ᶠ f') s x :=
   HasFDerivAtFilter.star h
 
 @[fun_prop]
 protected theorem HasFDerivAt.star (h : HasFDerivAt f f' x) :
-    HasFDerivAt (fun x => star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L f') x :=
+    HasFDerivAt (fun x => star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘ᶠ f') x :=
   HasFDerivAtFilter.star h
 
 @[fun_prop]
@@ -97,12 +97,12 @@ theorem differentiable_star_iff : (Differentiable 𝕜 fun y => star (f y)) ↔ 
 
 theorem fderivWithin_star (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun y => star (f y)) s x =
-      ((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L fderivWithin 𝕜 f s x :=
+      ((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘ᶠ fderivWithin 𝕜 f s x :=
   (starL' 𝕜 : F ≃L[𝕜] F).comp_fderivWithin hxs
 
 @[simp]
 theorem fderiv_star :
-    fderiv 𝕜 (fun y => star (f y)) x = ((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L fderiv 𝕜 f x :=
+    fderiv 𝕜 (fun y => star (f y)) x = ((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘ᶠ fderiv 𝕜 f x :=
   (starL' 𝕜 : F ≃L[𝕜] F).comp_fderiv
 
 end TrivialStar

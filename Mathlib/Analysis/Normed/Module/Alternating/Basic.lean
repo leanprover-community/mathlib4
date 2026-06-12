@@ -465,7 +465,7 @@ see `fderivCompContinuousLinearMap_apply` below.
 -/
 def fderivCompContinuousLinearMap (f : F [⋀^ι]→L[𝕜] G) (g : E →L[𝕜] F) :
     (E →L[𝕜] F) →L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
-  liftCLM (f.1.fderivCompContinuousLinearMap (fun _ : ι ↦ g) ∘L .pi fun _ ↦ .id _ _) <| by
+  liftCLM (f.1.fderivCompContinuousLinearMap (fun _ : ι ↦ g) ∘ᶠ .pi fun _ ↦ .id _ _) <| by
     intro dg v a b heq hne
     trans ∑ i, f fun j ↦ Function.update (fun _ ↦ g) i dg j (v j)
     · simp
@@ -484,8 +484,8 @@ def fderivCompContinuousLinearMap (f : F [⋀^ι]→L[𝕜] G) (g : E →L[𝕜]
 @[simp]
 lemma toContinuousMultilinearMapCLM_comp_fderivCompContinuousLinearMap
     (f : F [⋀^ι]→L[𝕜] G) (g : E →L[𝕜] F) :
-    toContinuousMultilinearMapCLM 𝕜 ∘L f.fderivCompContinuousLinearMap g =
-      f.1.fderivCompContinuousLinearMap (fun _ : ι ↦ g) ∘L .pi fun _ ↦ .id _ _ :=
+    toContinuousMultilinearMapCLM 𝕜 ∘ᶠ f.fderivCompContinuousLinearMap g =
+      f.1.fderivCompContinuousLinearMap (fun _ : ι ↦ g) ∘ᶠ .pi fun _ ↦ .id _ _ :=
   rfl
 
 @[simp]

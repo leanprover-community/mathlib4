@@ -207,11 +207,11 @@ section Real
 /-- `ℝ`-linear map from `ℂ` to itself, which we shall show is the real derivative of the
 `GL(2, ℝ)`-action on `ℍ`. -/
 noncomputable def smulFDeriv (g : GL (Fin 2) ℝ) (z : ℂ) : ℂ →L[ℝ] ℂ :=
-  (σ g) ∘L (ContinuousLinearMap.toSpanSingleton ℂ (g.det.val / denom g z ^ 2)).restrictScalars ℝ
+  (σ g) ∘ᶠ (ContinuousLinearMap.toSpanSingleton ℂ (g.det.val / denom g z ^ 2)).restrictScalars ℝ
 
 @[simp]
 theorem smulFDeriv_J_mul (g : GL (Fin 2) ℝ) (z : ℂ) :
-    smulFDeriv (J * g) z = -Complex.conjCLE ∘L smulFDeriv g z := by
+    smulFDeriv (J * g) z = -Complex.conjCLE ∘ᶠ smulFDeriv g z := by
   ext
   by_cases hg : 0 < g.val.det
   · simp [smulFDeriv, σ, hg, hg.not_gt, neg_div]

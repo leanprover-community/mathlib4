@@ -73,7 +73,7 @@ set_option backward.privateInPublic.warn false in
 instance : Category (TopModuleCat R) where
   Hom := Hom
   id M := ⟨ContinuousLinearMap.id R M⟩
-  comp φ ψ := ⟨ψ.hom' ∘L φ.hom'⟩
+  comp φ ψ := ⟨ψ.hom' ∘ᶠ φ.hom'⟩
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 set_option backward.privateInPublic true in

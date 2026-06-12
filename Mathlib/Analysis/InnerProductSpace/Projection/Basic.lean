@@ -122,7 +122,7 @@ variable {K}
 as opposed to `Submodule.orthogonalProjectionOnto`, which maps into the subtype. This
 version is important as it satisfies `IsStarProjection`. -/
 def starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
-    E →L[𝕜] E := U.subtypeL ∘L U.orthogonalProjectionOnto
+    E →L[𝕜] E := U.subtypeL ∘ᶠ U.orthogonalProjectionOnto
 
 /-- The orthogonal projection onto a complete subspace, as an
 unbundled function. This definition is only intended for use in
@@ -439,7 +439,7 @@ theorem orthogonalProjectionOnto_apply_of_mem_orthogonal
 
 /-- The projection into `U` from an orthogonal submodule `V` is the zero map. -/
 theorem IsOrtho.orthogonalProjectionOnto_comp_subtypeL {U V : Submodule 𝕜 E}
-    [U.HasOrthogonalProjection] (h : U ⟂ V) : U.orthogonalProjectionOnto ∘L V.subtypeL = 0 := by
+    [U.HasOrthogonalProjection] (h : U ⟂ V) : U.orthogonalProjectionOnto ∘ᶠ V.subtypeL = 0 := by
   ext v; simp [orthogonalProjectionOnto_apply_of_mem_orthogonal <| h.symm v.prop]
 
 @[deprecated (since := "2026-05-05")]
@@ -447,14 +447,14 @@ alias IsOrtho.orthogonalProjection_comp_subtypeL := IsOrtho.orthogonalProjection
 
 theorem IsOrtho.starProjection_comp_starProjection {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] (h : U ⟂ V) :
-    U.starProjection ∘L V.starProjection = 0 := calc
-  _ = U.subtypeL ∘L (U.orthogonalProjectionOnto ∘L V.subtypeL) ∘L V.orthogonalProjectionOnto := by
+    U.starProjection ∘ᶠ V.starProjection = 0 := calc
+  _ = U.subtypeL ∘ᶠ (U.orthogonalProjectionOnto ∘ᶠ V.subtypeL) ∘ᶠ V.orthogonalProjectionOnto := by
       simp only [starProjection, ContinuousLinearMap.comp_assoc]
     _ = 0 := by simp [h.orthogonalProjectionOnto_comp_subtypeL]
 
 /-- The projection into `U` from `V` is the zero map if and only if `U` and `V` are orthogonal. -/
 theorem orthogonalProjectionOnto_comp_subtypeL_eq_zero_iff {U V : Submodule 𝕜 E}
-    [U.HasOrthogonalProjection] : U.orthogonalProjectionOnto ∘L V.subtypeL = 0 ↔ U ⟂ V := by
+    [U.HasOrthogonalProjection] : U.orthogonalProjectionOnto ∘ᶠ V.subtypeL = 0 ↔ U ⟂ V := by
   refine ⟨fun h u hu v hv ↦ ?_, Submodule.IsOrtho.orthogonalProjectionOnto_comp_subtypeL⟩
   convert! starProjection_inner_eq_zero v u hu using 2
   have : U.orthogonalProjectionOnto v = 0 := DFunLike.congr_fun h (⟨_, hv⟩ : V)
@@ -467,7 +467,7 @@ alias orthogonalProjection_comp_subtypeL_eq_zero_iff :=
 /-- `U.starProjection ∘ V.starProjection = 0` iff `U` and `V` are pairwise orthogonal. -/
 theorem starProjection_comp_starProjection_eq_zero_iff {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
-    U.starProjection ∘L V.starProjection = 0 ↔ U ⟂ V := by
+    U.starProjection ∘ᶠ V.starProjection = 0 ↔ U ⟂ V := by
   refine ⟨fun h => ?_, fun h => h.starProjection_comp_starProjection⟩
   rw [← orthogonalProjectionOnto_comp_subtypeL_eq_zero_iff]
   simp only [ContinuousLinearMap.ext_iff, ContinuousLinearMap.comp_apply, subtypeL_apply,
@@ -503,7 +503,7 @@ alias orthogonalProjection_starProjection_of_le := orthogonalProjectionOnto_star
 
 theorem starProjection_comp_starProjection_of_le {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] (h : U ≤ V) :
-    U.starProjection ∘L V.starProjection = U.starProjection := ContinuousLinearMap.ext fun _ => by
+    U.starProjection ∘ᶠ V.starProjection = U.starProjection := ContinuousLinearMap.ext fun _ => by
   nth_rw 1 [starProjection]
   simp [orthogonalProjectionOnto_starProjection_of_le h]
 

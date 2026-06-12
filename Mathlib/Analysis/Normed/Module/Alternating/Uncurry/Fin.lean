@@ -164,7 +164,7 @@ theorem alternatizeUncurryFin_smul {S : Type*} [Monoid S] [DistribMulAction S F]
   simp [alternatizeUncurryFin_apply, smul_comm _ c, Finset.smul_sum]
 
 theorem alternatizeUncurryFin_constOfIsEmptyLIE_comp (f : E →L[𝕜] F) :
-    alternatizeUncurryFin (constOfIsEmptyLIE 𝕜 E F (Fin 0) ∘L f) =
+    alternatizeUncurryFin (constOfIsEmptyLIE 𝕜 E F (Fin 0) ∘ᶠ f) =
       ofSubsingleton _ _ _ (0 : Fin 1) f := by
   ext
   simp [alternatizeUncurryFin_apply]
@@ -191,7 +191,7 @@ see `alternatizeUncurryFin_alternatizeUncurryFinCLM_comp_of_symmetric` below.
 -/
 theorem alternatizeUncurryFin_alternatizeUncurryFinCLM_comp_apply
     (f : E →L[𝕜] E →L[𝕜] E [⋀^Fin n]→L[𝕜] F) (v : Fin (n + 2) → E) :
-    alternatizeUncurryFin (alternatizeUncurryFinCLM 𝕜 E F ∘L f) v =
+    alternatizeUncurryFin (alternatizeUncurryFinCLM 𝕜 E F ∘ᶠ f) v =
       ∑ (i : Fin (n + 1)), ∑ j ≥ i,
         (-1 : ℤ) ^ (i + j : ℕ) •
           (f (v i.castSucc) (v j.succ) (j.removeNth <| i.castSucc.removeNth v) -
@@ -207,7 +207,7 @@ then the twice uncurried `f` is zero. -/
 theorem alternatizeUncurryFin_alternatizeUncurryFinCLM_comp_of_symmetric
     {f : E →L[𝕜] E →L[𝕜] E [⋀^Fin n]→L[𝕜] F}
     (hf : ∀ x y, f x y = f y x) :
-    alternatizeUncurryFin (alternatizeUncurryFinCLM 𝕜 E F ∘L f) = 0 := by
+    alternatizeUncurryFin (alternatizeUncurryFinCLM 𝕜 E F ∘ᶠ f) = 0 := by
   ext v
   simp [alternatizeUncurryFin_alternatizeUncurryFinCLM_comp_apply, hf]
 
@@ -215,8 +215,8 @@ theorem alternatizeUncurryFin_alternatizeUncurryFinCLM_comp_of_symmetric
 in terms of `alternatizeUncurryFinCLM`. -/
 theorem fderivCompContinuousLinearMap_eq_alternatizeUncurryFin (f : F [⋀^Fin (n + 1)]→L[𝕜] G)
     (g : E →L[𝕜] F) :
-    f.fderivCompContinuousLinearMap g = alternatizeUncurryFinCLM 𝕜 E G ∘L
-      ((compContinuousLinearMapCLM g ∘L f.curryLeft).postcomp E) := by
+    f.fderivCompContinuousLinearMap g = alternatizeUncurryFinCLM 𝕜 E G ∘ᶠ
+      ((compContinuousLinearMapCLM g ∘ᶠ f.curryLeft).postcomp E) := by
   ext dg v
   have (i j : Fin (n + 1)) :
       i.insertNth (α := fun _ ↦ E →L[𝕜] F) dg (fun _ ↦ g) j (v j) =
@@ -229,7 +229,7 @@ theorem fderivCompContinuousLinearMap_eq_alternatizeUncurryFin (f : F [⋀^Fin (
 composed with a symmetric bilinear map is zero. -/
 theorem alternatizeUncurryFin_fderivCompContinuousLinearMap_eq_zero (f : F [⋀^Fin n]→L[𝕜] G)
     (g : E →L[𝕜] F) {h : E →L[𝕜] E →L[𝕜] F} (hsymm : ∀ x y, h x y = h y x) :
-    alternatizeUncurryFin (f.fderivCompContinuousLinearMap g ∘L h) = 0 := by
+    alternatizeUncurryFin (f.fderivCompContinuousLinearMap g ∘ᶠ h) = 0 := by
   cases n with
   | zero =>
     simp [fderivCompContinuousLinearMap_of_isEmpty, ← alternatizeUncurryFinCLM_apply]

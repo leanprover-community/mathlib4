@@ -50,14 +50,14 @@ theorem differentiable_piLp : Differentiable 𝕜 f ↔ ∀ i, Differentiable �
 
 theorem hasStrictFDerivAt_piLp :
     HasStrictFDerivAt f f' y ↔
-      ∀ i, HasStrictFDerivAt (fun x => f x i) (PiLp.proj _ _ i ∘L f') y := by
+      ∀ i, HasStrictFDerivAt (fun x => f x i) (PiLp.proj _ _ i ∘ᶠ f') y := by
   have := Fintype.ofFinite ι
   rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_hasStrictFDerivAt_iff, hasStrictFDerivAt_pi']
   rfl
 
 theorem hasFDerivWithinAt_piLp :
     HasFDerivWithinAt f f' t y ↔
-      ∀ i, HasFDerivWithinAt (fun x => f x i) (PiLp.proj _ _ i ∘L f') t y := by
+      ∀ i, HasFDerivWithinAt (fun x => f x i) (PiLp.proj _ _ i ∘ᶠ f') t y := by
   have := Fintype.ofFinite ι
   rw [← (PiLp.continuousLinearEquiv p 𝕜 E).comp_hasFDerivWithinAt_iff, hasFDerivWithinAt_pi']
   rfl

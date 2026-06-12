@@ -207,7 +207,7 @@ theorem extDerivWithin_extDerivWithin_apply (hω : ContDiffWithinAt 𝕜 r ω s 
   extDerivWithin (extDerivWithin ω s) s x
     = alternatizeUncurryFin (fderivWithin 𝕜 (fun y ↦
         alternatizeUncurryFin (fderivWithin 𝕜 ω s y)) s x) := rfl
-  _ = alternatizeUncurryFin (alternatizeUncurryFinCLM _ _ _ ∘L
+  _ = alternatizeUncurryFin (alternatizeUncurryFinCLM _ _ _ ∘ᶠ
         fderivWithin 𝕜 (fderivWithin 𝕜 ω s) s x) := by
     congr 1
     have : DifferentiableWithinAt 𝕜 (fderivWithin 𝕜 ω s) s x := by

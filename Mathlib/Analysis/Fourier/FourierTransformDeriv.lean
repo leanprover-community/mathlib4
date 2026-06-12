@@ -114,7 +114,7 @@ variable {V W : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
 
 lemma hasFDerivAt_fourierChar_neg_bilinear_right (v : V) (w : W) :
     HasFDerivAt (fun w ↦ (𝐞 (-L v w) : ℂ))
-      ((-2 * π * I * 𝐞 (-L v w)) • (ofRealCLM ∘L (L v))) w := by
+      ((-2 * π * I * 𝐞 (-L v w)) • (ofRealCLM ∘ᶠ (L v))) w := by
   have ha : HasFDerivAt (fun w' : W ↦ L v w') (L v) w := ContinuousLinearMap.hasFDerivAt (L v)
   convert! (hasDerivAt_fourierChar (-L v w)).hasFDerivAt.comp w ha.neg using 1
   ext y
@@ -135,7 +135,7 @@ lemma differentiable_fourierChar_neg_bilinear_right (v : V) :
 
 lemma hasFDerivAt_fourierChar_neg_bilinear_left (v : V) (w : W) :
     HasFDerivAt (fun v ↦ (𝐞 (-L v w) : ℂ))
-      ((-2 * π * I * 𝐞 (-L v w)) • (ofRealCLM ∘L (L.flip w))) v :=
+      ((-2 * π * I * 𝐞 (-L v w)) • (ofRealCLM ∘ᶠ (L.flip w))) v :=
   hasFDerivAt_fourierChar_neg_bilinear_right L.flip w v
 
 lemma fderiv_fourierChar_neg_bilinear_left_apply (v y : V) (w : W) :

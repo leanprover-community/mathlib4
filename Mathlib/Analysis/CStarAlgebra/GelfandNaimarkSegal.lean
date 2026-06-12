@@ -126,7 +126,7 @@ noncomputable def leftMulMapPreGNS (a : A) : f.PreGNS →L[ℂ] f.PreGNS :=
 
 @[simp]
 lemma leftMulMapPreGNS_mul_eq_comp (a b : A) :
-    f.leftMulMapPreGNS (a * b) = f.leftMulMapPreGNS a ∘L f.leftMulMapPreGNS b := by
+    f.leftMulMapPreGNS (a * b) = f.leftMulMapPreGNS a ∘ᶠ f.leftMulMapPreGNS b := by
   ext c; simp [mul_assoc]
 
 /--

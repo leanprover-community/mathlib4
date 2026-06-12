@@ -47,10 +47,10 @@ variable (x)
 theorem HasFDerivAtFilter.comp {g : F → G} {g' : F →L[𝕜] G} {L' : Filter (F × F)}
     (hg : HasFDerivAtFilter g g' L') (hf : HasFDerivAtFilter f f' L)
     (hL : Tendsto (Prod.map f f) L L') :
-    HasFDerivAtFilter (g ∘ f) (g' ∘L f') L := by
+    HasFDerivAtFilter (g ∘ f) (g' ∘ᶠ f') L := by
   -- This proof can be golfed a lot. However, it should be left this way for readability.
   refine .of_isLittleOTVS <| calc
-    (fun p ↦ (g ∘ f) p.1 - (g ∘ f) p.2 - (g' ∘L f') (p.1 - p.2))
+    (fun p ↦ (g ∘ f) p.1 - (g ∘ f) p.2 - (g' ∘ᶠ f') (p.1 - p.2))
       = fun p ↦ (g (f p.1) - g (f p.2) - g' (f p.1 - f p.2)) +
           g' (f p.1 - f p.2 - f' (p.1 - p.2)) := by
       ext; simp
@@ -91,13 +91,13 @@ theorem HasFDerivWithinAt.comp_of_tendsto {g : F → G} {g' : F →L[𝕜] G} {t
 
 theorem HasFDerivWithinAt.comp_hasFDerivAt {g : F → G} {g' : F →L[𝕜] G} {t : Set F}
     (hg : HasFDerivWithinAt g g' t (f x)) (hf : HasFDerivAt f f' x)
-    (ht : ∀ᶠ x' in 𝓝 x, f x' ∈ t) : HasFDerivAt (g ∘ f) (g' ∘L f') x :=
+    (ht : ∀ᶠ x' in 𝓝 x, f x' ∈ t) : HasFDerivAt (g ∘ f) (g' ∘ᶠ f') x :=
   HasFDerivAtFilter.comp hg hf <| .prodMap (tendsto_nhdsWithin_iff.mpr ⟨hf.continuousAt, ht⟩) <|
     tendsto_pure_pure ..
 
 theorem HasFDerivWithinAt.comp_hasFDerivAt_of_eq {g : F → G} {g' : F →L[𝕜] G} {t : Set F} {y : F}
     (hg : HasFDerivWithinAt g g' t y) (hf : HasFDerivAt f f' x)
-    (ht : ∀ᶠ x' in 𝓝 x, f x' ∈ t) (hy : y = f x) : HasFDerivAt (g ∘ f) (g' ∘L f') x := by
+    (ht : ∀ᶠ x' in 𝓝 x, f x' ∈ t) (hy : y = f x) : HasFDerivAt (g ∘ f) (g' ∘ᶠ f') x := by
   subst y; exact hg.comp_hasFDerivAt x hf ht
 
 /-- The chain rule. -/

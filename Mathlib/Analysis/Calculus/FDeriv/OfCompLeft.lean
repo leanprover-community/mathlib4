@@ -74,7 +74,7 @@ theorem HasFDerivAtFilter.of_comp_of_leftInverse
     (hg : Tendsto (Prod.map g g) lE lF) (hf : HasFDerivAtFilter f f' lF)
     (hh : HasFDerivAtFilter h h' lE) (hcomp : (Prod.map (f ∘ g) (f ∘ g)) =ᶠ[lE] Prod.map h h)
     (hf'symm : Function.LeftInverse f'symm f') :
-    HasFDerivAtFilter g (f'symm ∘L h') lE := by
+    HasFDerivAtFilter g (f'symm ∘ᶠ h') lE := by
   apply of_comp_aux (f := f) (f' := f') <;> try assumption
   · exact Topology.IsEmbedding.of_leftInverse hf'symm (map_continuous _) (map_continuous _)
   · refine f'symm.isBigOTVS_comp.congr_left ?_
@@ -84,7 +84,7 @@ theorem HasFDerivWithinAt.of_comp_of_leftInverse
     (hst : Tendsto g (𝓝[s] a) (𝓝[t] (g a))) (hf : HasFDerivWithinAt f f' t (g a))
     (hh : HasFDerivWithinAt h h' s a) (hcomp : f ∘ g =ᶠ[𝓝[s] a] h)
     (hf'symm : Function.LeftInverse f'symm f') (ha : a ∈ s) :
-    HasFDerivWithinAt g (f'symm ∘L h') s a := by
+    HasFDerivWithinAt g (f'symm ∘ᶠ h') s a := by
   refine HasFDerivAtFilter.of_comp_of_leftInverse ?_ hf hh ?_ hf'symm
   · exact hst.prodMap (by simp)
   · exact hcomp.prodMap (hcomp.self_of_nhdsWithin ha)
@@ -93,7 +93,7 @@ theorem HasFDerivAt.of_comp_of_leftInverse
     (hgc : ContinuousAt g a) (hf : HasFDerivAt f f' (g a))
     (hh : HasFDerivAt h h' a) (hcomp : f ∘ g =ᶠ[𝓝 a] h)
     (hf'symm : Function.LeftInverse f'symm f') :
-    HasFDerivAt g (f'symm ∘L h') a := by
+    HasFDerivAt g (f'symm ∘ᶠ h') a := by
   refine HasFDerivAtFilter.of_comp_of_leftInverse ?_ hf hh ?_ hf'symm
   · exact hgc.tendsto.prodMap (by simp)
   · exact hcomp.prodMap hcomp.self_of_nhds
@@ -102,7 +102,7 @@ theorem HasStrictFDerivAt.of_comp_of_leftInverse
     (hgc : ContinuousAt g a) (hf : HasStrictFDerivAt f f' (g a))
     (hh : HasStrictFDerivAt h h' a) (hcomp : f ∘ g =ᶠ[𝓝 a] h)
     (hf'symm : Function.LeftInverse f'symm f') :
-    HasStrictFDerivAt g (f'symm ∘L h') a :=
+    HasStrictFDerivAt g (f'symm ∘ᶠ h') a :=
   HasFDerivAtFilter.of_comp_of_leftInverse (hgc.prodMap_nhds hgc) hf hh
     (hcomp.prodMap_nhds hcomp) hf'symm
 
@@ -116,7 +116,7 @@ provided that `h = f ∘ g` has derivative `f' ∘ g'`, where `f'` is a topologi
 
 theorem HasFDerivAtFilter.of_comp_of_isEmbedding
     (hg : Tendsto (Prod.map g g) lE lF) (hf : HasFDerivAtFilter f f' lF)
-    (hf' : Topology.IsEmbedding f') (hh : HasFDerivAtFilter h (f' ∘L g') lE)
+    (hf' : Topology.IsEmbedding f') (hh : HasFDerivAtFilter h (f' ∘ᶠ g') lE)
     (hcomp : (Prod.map (f ∘ g) (f ∘ g)) =ᶠ[lE] Prod.map h h) :
     HasFDerivAtFilter g g' lE := by
   apply of_comp_aux (f := f) (f' := f') <;> try assumption
@@ -125,7 +125,7 @@ theorem HasFDerivAtFilter.of_comp_of_isEmbedding
 
 theorem HasFDerivWithinAt.of_comp_of_isEmbedding
     (hg : Tendsto g (𝓝[s] a) (𝓝[t] (g a))) (hf : HasFDerivWithinAt f f' t (g a))
-    (hf' : Topology.IsEmbedding f') (hh : HasFDerivWithinAt h (f' ∘L g') s a)
+    (hf' : Topology.IsEmbedding f') (hh : HasFDerivWithinAt h (f' ∘ᶠ g') s a)
     (hcomp : (f ∘ g) =ᶠ[𝓝[s] a] h) (ha : a ∈ s) :
     HasFDerivWithinAt g g' s a := by
   refine HasFDerivAtFilter.of_comp_of_isEmbedding ?_ hf hf' hh ?_
@@ -134,7 +134,7 @@ theorem HasFDerivWithinAt.of_comp_of_isEmbedding
 
 theorem HasFDerivAt.of_comp_of_isEmbedding
     (hg : ContinuousAt g a) (hf : HasFDerivAt f f' (g a))
-    (hf' : Topology.IsEmbedding f') (hh : HasFDerivAt h (f' ∘L g') a)
+    (hf' : Topology.IsEmbedding f') (hh : HasFDerivAt h (f' ∘ᶠ g') a)
     (hcomp : (f ∘ g) =ᶠ[𝓝 a] h) :
     HasFDerivAt g g' a := by
   refine HasFDerivAtFilter.of_comp_of_isEmbedding ?_ hf hf' hh ?_
@@ -143,7 +143,7 @@ theorem HasFDerivAt.of_comp_of_isEmbedding
 
 theorem HasStrictFDerivAt.of_comp_of_isEmbedding
     (hg : ContinuousAt g a) (hf : HasStrictFDerivAt f f' (g a))
-    (hf' : Topology.IsEmbedding f') (hh : HasStrictFDerivAt h (f' ∘L g') a)
+    (hf' : Topology.IsEmbedding f') (hh : HasStrictFDerivAt h (f' ∘ᶠ g') a)
     (hcomp : (f ∘ g) =ᶠ[𝓝 a] h) :
     HasStrictFDerivAt g g' a :=
   HasFDerivAtFilter.of_comp_of_isEmbedding (hg.prodMap hg) hf hf' hh (hcomp.prodMap_nhds hcomp)

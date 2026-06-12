@@ -48,7 +48,7 @@ open FourierTransform
 variable (F) in
 /-- Fourier multiplier on Schwartz functions. -/
 def fourierMultiplierCLM (g : E → 𝕜) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
-  fourierInvCLM 𝕜 𝓢(E, F) ∘L (smulLeftCLM F g) ∘L fourierCLM 𝕜 𝓢(E, F)
+  fourierInvCLM 𝕜 𝓢(E, F) ∘ᶠ (smulLeftCLM F g) ∘ᶠ fourierCLM 𝕜 𝓢(E, F)
 
 theorem fourierMultiplierCLM_apply (g : E → 𝕜) (f : 𝓢(E, F)) :
     fourierMultiplierCLM F g f = 𝓕⁻ (smulLeftCLM F g (𝓕 f)) := by
@@ -90,7 +90,7 @@ theorem fourierMultiplierCLM_fourierMultiplierCLM_apply {g₁ g₂ : E → 𝕜}
 
 theorem fourierMultiplierCLM_compL_fourierMultiplierCLM {g₁ g₂ : E → 𝕜}
     (hg₁ : g₁.HasTemperateGrowth) (hg₂ : g₂.HasTemperateGrowth) :
-    fourierMultiplierCLM F g₁ ∘L fourierMultiplierCLM F g₂ =
+    fourierMultiplierCLM F g₁ ∘ᶠ fourierMultiplierCLM F g₂ =
     fourierMultiplierCLM F (g₁ * g₂) := by
   ext1 f
   simp [fourierMultiplierCLM_fourierMultiplierCLM_apply hg₁ hg₂]
@@ -141,7 +141,7 @@ open FourierTransform
 variable (F) in
 /-- Fourier multiplier on tempered distributions. -/
 def fourierMultiplierCLM (g : E → ℂ) : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
-  fourierInvCLM ℂ 𝓢'(E, F) ∘L (smulLeftCLM F g) ∘L fourierCLM ℂ 𝓢'(E, F)
+  fourierInvCLM ℂ 𝓢'(E, F) ∘ᶠ (smulLeftCLM F g) ∘ᶠ fourierCLM ℂ 𝓢'(E, F)
 
 theorem fourierMultiplierCLM_apply (g : E → ℂ) (f : 𝓢'(E, F)) :
     fourierMultiplierCLM F g f = 𝓕⁻ (smulLeftCLM F g (𝓕 f)) := by
@@ -166,7 +166,7 @@ theorem fourierMultiplierCLM_fourierMultiplierCLM_apply {g₁ g₂ : E → ℂ}
 
 theorem fourierMultiplierCLM_compL_fourierMultiplierCLM {g₁ g₂ : E → ℂ}
     (hg₁ : g₁.HasTemperateGrowth) (hg₂ : g₂.HasTemperateGrowth) :
-    fourierMultiplierCLM F g₂ ∘L fourierMultiplierCLM F g₁ =
+    fourierMultiplierCLM F g₂ ∘ᶠ fourierMultiplierCLM F g₁ =
     fourierMultiplierCLM F (g₁ * g₂) := by
   ext1 f
   simp [fourierMultiplierCLM_fourierMultiplierCLM_apply hg₁ hg₂]

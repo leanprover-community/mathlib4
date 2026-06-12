@@ -77,7 +77,7 @@ lemma inTangentCoordinates_eq_mfderiv_comp
     {ϕ : Π x : N, TangentSpace I (f x) →L[𝕜] TangentSpace I' (g x)} {x₀ : N} {x : N}
     (hx : f x ∈ (chartAt H (f x₀)).source) (hy : g x ∈ (chartAt H' (g x₀)).source) :
     inTangentCoordinates I I' f g ϕ x₀ x =
-    (mfderiv% (extChartAt I' (g x₀)) (g x)) ∘L (ϕ x) ∘L
+    (mfderiv% (extChartAt I' (g x₀)) (g x)) ∘ᶠ (ϕ x) ∘ᶠ
       (mfderiv[range I] (extChartAt I (f x₀)).symm (extChartAt I (f x₀) (f x))) := by
   rw [inTangentCoordinates_eq _ _ _ hx hy, tangentBundleCore_coordChange]
   congr

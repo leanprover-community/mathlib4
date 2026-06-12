@@ -176,10 +176,10 @@ theorem snd_comp_prod (f : M₁ →L[R] M₂) (g : M₁ →L[R] M₃) :
     (snd R M₂ M₃).comp (f.prod g) = g :=
   ext fun _x => rfl
 
-@[simp] theorem fst_comp_inl : fst R M₁ M₂ ∘L inl R M₁ M₂ = .id R M₁ := rfl
-@[simp] theorem fst_comp_inr : fst R M₁ M₂ ∘L inr R M₁ M₂ = 0 := rfl
-@[simp] theorem snd_comp_inl : snd R M₁ M₂ ∘L inl R M₁ M₂ = 0 := rfl
-@[simp] theorem snd_comp_inr : snd R M₁ M₂ ∘L inr R M₁ M₂ = .id R M₂ := rfl
+@[simp] theorem fst_comp_inl : fst R M₁ M₂ ∘ᶠ inl R M₁ M₂ = .id R M₁ := rfl
+@[simp] theorem fst_comp_inr : fst R M₁ M₂ ∘ᶠ inr R M₁ M₂ = 0 := rfl
+@[simp] theorem snd_comp_inl : snd R M₁ M₂ ∘ᶠ inl R M₁ M₂ = 0 := rfl
+@[simp] theorem snd_comp_inr : snd R M₁ M₂ ∘ᶠ inr R M₁ M₂ = .id R M₂ := rfl
 
 /-- `Prod.map` of two continuous linear maps. -/
 def prodMap (f₁ : M₁ →L[R] M₂) (f₂ : M₃ →L[R] M₄) :
@@ -250,7 +250,7 @@ theorem coe_proj (i : ι) : (proj i).toLinearMap = (LinearMap.proj i : ((i : ι)
 theorem pi_proj : pi proj = .id R (∀ i, φ i) := rfl
 
 @[simp]
-theorem pi_proj_comp (f : M₂ →L[R] ∀ i, φ i) : pi (proj · ∘L f) = f := rfl
+theorem pi_proj_comp (f : M₂ →L[R] ∀ i, φ i) : pi (proj · ∘ᶠ f) = f := rfl
 
 theorem iInf_ker_proj :
     (⨅ i, ker (proj i : (∀ i, φ i) →L[R] φ i).toLinearMap : Submodule R (∀ i, φ i)) = ⊥ :=
@@ -267,7 +267,7 @@ A bundled version of `Pi.map`.
 If the index type is finite, then this map can be seen as a “block diagonal” map
 between indexed products of modules. -/
 def piMap (f : ∀ i, φ i →L[R] ψ i) : (∀ i, φ i) →L[R] (∀ i, ψ i) :=
-  .pi fun i ↦ f i ∘L .proj i
+  .pi fun i ↦ f i ∘ᶠ .proj i
 
 @[simp]
 theorem coe_piMap (f : ∀ i, φ i →L[R] ψ i) :
@@ -399,7 +399,7 @@ lemma coprod_inl_inr : ContinuousLinearMap.coprod (.inl R M N) (.inr R M N) = .i
 
 @[simp]
 lemma coprod_comp_inl_inr [ContinuousAdd M₁] [ContinuousAdd M₂] (f : M × M₁ →L[R] M₂) :
-    (f ∘L .inl R M M₁).coprod (f ∘L .inr R M M₁) = f := by
+    (f ∘ᶠ .inl R M M₁).coprod (f ∘ᶠ .inr R M M₁) = f := by
   rw [← ContinuousLinearMap.comp_coprod, coprod_inl_inr, comp_id]
 
 /-- Taking the product of two maps with the same codomain is equivalent to taking the product of

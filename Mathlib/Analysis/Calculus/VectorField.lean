@@ -538,7 +538,7 @@ lemma _root_.exists_continuousLinearEquiv_fderivWithin_symm_eq
     ∧ ContDiffWithinAt 𝕜 1 (fun y ↦ ((N y).symm : F →L[𝕜] E)) s x
     ∧ (∀ᶠ y in 𝓝[s] x, N y = fderivWithin 𝕜 f s y)
     ∧ ∀ v, fderivWithin 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) s x v
-      = - (N x).symm ∘L ((fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x v)) ∘L (N x).symm := by
+      = - (N x).symm ∘ᶠ ((fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x v)) ∘ᶠ (N x).symm := by
   classical
   rcases hf with ⟨M, hM⟩
   let U := {y | ∃ (N : E ≃L[𝕜] F), N = fderivWithin 𝕜 f s y}
@@ -569,12 +569,12 @@ lemma _root_.exists_continuousLinearEquiv_fderivWithin_symm_eq
   have : fderivWithin 𝕜 (fun y ↦ ContinuousLinearMap.compL 𝕜 F E F (N y : E →L[𝕜] F)
       ((N y).symm : F →L[𝕜] E)) s x v = 0 := by
     simp [A', fderivWithin_const_apply]
-  have I : (N x : E →L[𝕜] F) ∘L (fderivWithin 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) s x v) =
-      - (fderivWithin 𝕜 (fun y ↦ (N y : E →L[𝕜] F)) s x v) ∘L ((N x).symm : F →L[𝕜] E) := by
+  have I : (N x : E →L[𝕜] F) ∘ᶠ (fderivWithin 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) s x v) =
+      - (fderivWithin 𝕜 (fun y ↦ (N y : E →L[𝕜] F)) s x v) ∘ᶠ ((N x).symm : F →L[𝕜] E) := by
     rw [ContinuousLinearMap.fderivWithin_of_bilinear _ (hN.differentiableWithinAt one_ne_zero)
       (hN'.differentiableWithinAt one_ne_zero) (hs x hx)] at this
     simpa [eq_neg_iff_add_eq_zero] using this
-  have B (M : F →L[𝕜] E) : M = ((N x).symm : F →L[𝕜] E) ∘L ((N x) ∘L M) := by
+  have B (M : F →L[𝕜] E) : M = ((N x).symm : F →L[𝕜] E) ∘ᶠ ((N x) ∘ᶠ M) := by
     ext; simp
   rw [B (fderivWithin 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) s x v), I]
   simp only [ContinuousLinearMap.comp_neg, eN.fderivWithin_eq e'N]
@@ -605,7 +605,7 @@ lemma _root_.exists_continuousLinearEquiv_fderiv_symm_eq
     ∧ ContDiffAt 𝕜 1 (fun y ↦ ((N y).symm : F →L[𝕜] E)) x
     ∧ (∀ᶠ y in 𝓝 x, N y = fderiv 𝕜 f y)
     ∧ ∀ v, fderiv 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) x v
-      = - (N x).symm ∘L ((fderiv 𝕜 (fderiv 𝕜 f) x v)) ∘L (N x).symm := by
+      = - (N x).symm ∘ᶠ ((fderiv 𝕜 (fderiv 𝕜 f) x v)) ∘ᶠ (N x).symm := by
   simp only [← fderivWithin_univ, ← contDiffWithinAt_univ, ← nhdsWithin_univ] at hf h'f ⊢
   exact exists_continuousLinearEquiv_fderivWithin_symm_eq h'f hf uniqueDiffOn_univ (mem_univ _)
 

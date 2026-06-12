@@ -310,12 +310,12 @@ theorem differentiable_euclidean : Differentiable 𝕜 f ↔ ∀ i, Differentiab
 
 theorem hasStrictFDerivAt_euclidean :
     HasStrictFDerivAt f f' y ↔
-      ∀ i, HasStrictFDerivAt (fun x => f x i) (PiLp.proj _ _ i ∘L f') y :=
+      ∀ i, HasStrictFDerivAt (fun x => f x i) (PiLp.proj _ _ i ∘ᶠ f') y :=
   hasStrictFDerivAt_piLp _
 
 theorem hasFDerivWithinAt_euclidean :
     HasFDerivWithinAt f f' t y ↔
-      ∀ i, HasFDerivWithinAt (fun x => f x i) (PiLp.proj _ _ i ∘L f') t y :=
+      ∀ i, HasFDerivWithinAt (fun x => f x i) (PiLp.proj _ _ i ∘ᶠ f') t y :=
   hasFDerivWithinAt_piLp _
 
 end finite

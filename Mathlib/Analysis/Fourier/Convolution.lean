@@ -170,7 +170,7 @@ open FourierTransform Convolution
 The continuity in the left argument is provided in `SchwartzMap.convolution_continuous_left`. -/
 noncomputable
 def convolution (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) : 𝓢(E, F₁) →ₗ[𝕜] 𝓢(E, F₂) →L[𝕜] 𝓢(E, F₃) where
-  toFun f := fourierInvCLM 𝕜 𝓢(E, F₃) ∘L pairing B (𝓕 f) ∘L fourierCLM 𝕜 𝓢(E, F₂)
+  toFun f := fourierInvCLM 𝕜 𝓢(E, F₃) ∘ᶠ pairing B (𝓕 f) ∘ᶠ fourierCLM 𝕜 𝓢(E, F₂)
   map_add' := by simp [FourierTransform.fourier_add]
   map_smul' := by simp [FourierTransform.fourier_smul]
 

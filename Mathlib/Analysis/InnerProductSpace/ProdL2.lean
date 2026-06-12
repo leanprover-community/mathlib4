@@ -114,13 +114,13 @@ theorem toLinearEquiv_orthogonalDecomposition_symm :
 
 theorem coe_orthogonalDecomposition :
     (K.orthogonalDecomposition : E →L[𝕜] WithLp 2 (K × Kᗮ)) =
-      (WithLp.prodContinuousLinearEquiv 2 𝕜 K Kᗮ).symm ∘L
+      (WithLp.prodContinuousLinearEquiv 2 𝕜 K Kᗮ).symm ∘ᶠ
         K.orthogonalProjectionOnto.prod Kᗮ.orthogonalProjectionOnto := by
   ext; simp
 
 theorem coe_orthogonalDecomposition_symm :
     (K.orthogonalDecomposition.symm : WithLp 2 (K × Kᗮ) →L[𝕜] E) =
-      K.subtypeL.coprod Kᗮ.subtypeL ∘L WithLp.prodContinuousLinearEquiv 2 𝕜 K Kᗮ :=
+      K.subtypeL.coprod Kᗮ.subtypeL ∘ᶠ WithLp.prodContinuousLinearEquiv 2 𝕜 K Kᗮ :=
   rfl
 
 theorem fst_orthogonalDecomposition_apply :
@@ -132,11 +132,11 @@ theorem snd_orthogonalDecomposition_apply :
   simp
 
 theorem fstL_comp_coe_orthogonalDecomposition :
-    WithLp.fstL 2 𝕜 K Kᗮ ∘L K.orthogonalDecomposition = K.orthogonalProjectionOnto := by
+    WithLp.fstL 2 𝕜 K Kᗮ ∘ᶠ K.orthogonalDecomposition = K.orthogonalProjectionOnto := by
   ext; simp
 
 theorem sndL_comp_coe_orthogonalDecomposition :
-    WithLp.sndL 2 𝕜 K Kᗮ ∘L K.orthogonalDecomposition = Kᗮ.orthogonalProjectionOnto := by
+    WithLp.sndL 2 𝕜 K Kᗮ ∘ᶠ K.orthogonalDecomposition = Kᗮ.orthogonalProjectionOnto := by
   ext; simp
 
 /-- If a subspace `K` of an inner product space `E` admits an orthogonal projection, then the

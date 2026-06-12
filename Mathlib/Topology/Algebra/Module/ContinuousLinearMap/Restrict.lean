@@ -85,7 +85,7 @@ variable {R₁ R₂ R₃ : Type*} [Semiring R₁] [Semiring R₂] [Semiring R₃
 `p → M₂`. -/
 @[simps!]
 def domRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₁ M₁) : p →SL[σ₁₂] M₂ :=
-  f ∘SL p.subtypeL
+  f ∘ᶠ p.subtypeL
 
 @[simp]
 theorem toLinearMap_domRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₁ M₁) :
@@ -123,7 +123,7 @@ theorem ker_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂
 @[simp]
 theorem domRestrict_comp_codRestrict (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂)
     (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
-    g.domRestrict p ∘SL f.codRestrict p h = g ∘SL f :=
+    g.domRestrict p ∘ᶠ f.codRestrict p h = g ∘ᶠ f :=
   rfl
 
 /-- Restrict the codomain of a continuous linear map `f` to `f.range`. -/
@@ -160,12 +160,12 @@ theorem restrict_apply {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁}
 open Set in
 lemma restrict_comp {p : Submodule R₁ M₁} {p₂ : Submodule R₂ M₂} {p₃ : Submodule R₃ M₃}
     {f : M₁ →SL[σ₁₂] M₂} {g : M₂ →SL[σ₂₃] M₃}
-    (hf : MapsTo f p p₂) (hg : MapsTo g p₂ p₃) (hfg : MapsTo (g ∘SL f) p p₃ := hg.comp hf) :
-    (g ∘SL f).restrict hfg = (g.restrict hg) ∘SL (f.restrict hf) :=
+    (hf : MapsTo f p p₂) (hg : MapsTo g p₂ p₃) (hfg : MapsTo (g ∘ᶠ f) p p₃ := hg.comp hf) :
+    (g ∘ᶠ f).restrict hfg = (g.restrict hg) ∘ᶠ (f.restrict hf) :=
   rfl
 
 theorem subtypeL_comp_restrict {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
-    (hf : ∀ x ∈ p, f x ∈ q) : q.subtypeL ∘SL (f.restrict hf) = f.domRestrict p :=
+    (hf : ∀ x ∈ p, f x ∈ q) : q.subtypeL ∘ᶠ (f.restrict hf) = f.domRestrict p :=
   rfl
 
 theorem restrict_eq_codRestrict_domRestrict {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁}
@@ -193,7 +193,7 @@ variable {R₁ R₂ R₃ : Type*} [Ring R₁] [Ring R₂]
 `LinearMap.range f₂`. -/
 def projKerOfRightInverse [IsTopologicalAddGroup M₁] (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁)
     (h : Function.RightInverse f₂ f₁) : M₁ →L[R₁] LinearMap.ker (f₁ : M₁ →ₛₗ[σ₁₂] M₂) :=
-  (.id R₁ M₁ - f₂ ∘SL f₁).codRestrict (LinearMap.ker f₁.toLinearMap) fun x => by simp [h (f₁ x)]
+  (.id R₁ M₁ - f₂ ∘ᶠ f₁).codRestrict (LinearMap.ker f₁.toLinearMap) fun x => by simp [h (f₁ x)]
 
 @[simp]
 theorem coe_projKerOfRightInverse_apply [IsTopologicalAddGroup M₁] (f₁ : M₁ →SL[σ₁₂] M₂)

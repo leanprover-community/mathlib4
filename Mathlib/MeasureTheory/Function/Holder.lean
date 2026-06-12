@@ -140,7 +140,7 @@ In the special case when `B := (NormedSpace.inclusionInDoubleDual 𝕜 E).flip`,
 definitionally the same as `B := ContinuousLinearMap.id 𝕜 (E →L[𝕜] 𝕜)`, this is the
 natural map `Lp (StrongDual 𝕜 E) p μ →L[𝕜] StrongDual 𝕜 (Lp E q μ)`. -/
 def lpPairing (B : E →L[𝕜] F →L[𝕜] G) : Lp E p μ →L[𝕜] Lp F q μ →L[𝕜] G :=
-  (L1.integralCLM' 𝕜 |>.postcomp <| Lp F q μ) ∘L (B.holderL μ p q 1)
+  (L1.integralCLM' 𝕜 |>.postcomp <| Lp F q μ) ∘ᶠ (B.holderL μ p q 1)
 
 lemma lpPairing_eq_integral (f : Lp E p μ) (g : Lp F q μ) :
     B.lpPairing μ p q f g = ∫ x, B (f x) (g x) ∂μ := by

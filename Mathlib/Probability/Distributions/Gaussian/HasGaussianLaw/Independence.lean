@@ -64,7 +64,7 @@ noncomputable
 def diagonalStrongDualPi (L : (i : ι) → StrongDual ℝ (E i) →L[ℝ] StrongDual ℝ (E i) →L[ℝ] ℝ) :
     StrongDual ℝ (Π i, E i) →L[ℝ] StrongDual ℝ (Π i, E i) →L[ℝ] ℝ :=
   letI g : LinearMap.BilinForm ℝ (StrongDual ℝ (Π i, E i)) := LinearMap.mk₂ ℝ
-    (fun x y ↦ ∑ i, L i (x ∘L (single ℝ E i)) (y ∘L (single ℝ E i)))
+    (fun x y ↦ ∑ i, L i (x ∘ᶠ (single ℝ E i)) (y ∘ᶠ (single ℝ E i)))
     (fun x y z ↦ by simp [sum_add_distrib])
     (fun c m n ↦ by simp [mul_sum])
     (fun x y z ↦ by simp [sum_add_distrib])
@@ -78,11 +78,11 @@ def diagonalStrongDualPi (L : (i : ι) → StrongDual ℝ (E i) →L[ℝ] Strong
     gcongr <;> grw [opNorm_comp_le, norm_single_le_one, mul_one]
 
 lemma diagonalStrongDualPi_apply (x y : StrongDual ℝ (Π i, E i)) :
-    diagonalStrongDualPi L x y = ∑ i, L i (x ∘L (.single ℝ E i)) (y ∘L (.single ℝ E i)) := rfl
+    diagonalStrongDualPi L x y = ∑ i, L i (x ∘ᶠ (.single ℝ E i)) (y ∘ᶠ (.single ℝ E i)) := rfl
 
 lemma toBilinForm_diagonalStrongDualPi_apply (x y : StrongDual ℝ (Π i, E i)) :
     (diagonalStrongDualPi L).toBilinForm x y =
-    ∑ i, (L i).toBilinForm (x ∘L (.single ℝ E i)) (y ∘L (.single ℝ E i)) := rfl
+    ∑ i, (L i).toBilinForm (x ∘ᶠ (.single ℝ E i)) (y ∘ᶠ (.single ℝ E i)) := rfl
 
 lemma isPosSemidef_diagonalStrongDualPi (hL : ∀ i, (L i).toBilinForm.IsPosSemidef) :
     (diagonalStrongDualPi L).toBilinForm.IsPosSemidef where
@@ -113,7 +113,7 @@ def diagonalStrongDualProd
     (L₂ : StrongDual ℝ F →L[ℝ] StrongDual ℝ F →L[ℝ] ℝ) :
     StrongDual ℝ (E × F) →L[ℝ] StrongDual ℝ (E × F) →L[ℝ] ℝ :=
   letI g : LinearMap.BilinForm ℝ (StrongDual ℝ (E × F)) := LinearMap.mk₂ ℝ
-    (fun x y ↦ L₁ (x ∘L (inl ℝ E F)) (y ∘L (inl ℝ E F)) + L₂ (x ∘L (inr ℝ E F)) (y ∘L (inr ℝ E F)))
+    (fun x y ↦ L₁ (x ∘ᶠ (inl ℝ E F)) (y ∘ᶠ (inl ℝ E F)) + L₂ (x ∘ᶠ (inr ℝ E F)) (y ∘ᶠ (inr ℝ E F)))
     (fun x y z ↦ by simp [add_add_add_comm])
     (fun c m n ↦ by simp [mul_add])
     (fun x y z ↦ by simp [add_add_add_comm])
@@ -130,12 +130,12 @@ def diagonalStrongDualProd
 
 lemma diagonalStrongDualProd_apply (x y : StrongDual ℝ (E × F)) :
     diagonalStrongDualProd L₁ L₂ x y =
-    L₁ (x ∘L (inl ℝ E F)) (y ∘L (inl ℝ E F)) + L₂ (x ∘L (inr ℝ E F)) (y ∘L (inr ℝ E F)) := rfl
+    L₁ (x ∘ᶠ (inl ℝ E F)) (y ∘ᶠ (inl ℝ E F)) + L₂ (x ∘ᶠ (inr ℝ E F)) (y ∘ᶠ (inr ℝ E F)) := rfl
 
 lemma toBilinForm_diagonalStrongDualProd_apply (x y : StrongDual ℝ (E × F)) :
     (diagonalStrongDualProd L₁ L₂).toBilinForm x y =
-    L₁.toBilinForm (x ∘L (inl ℝ E F)) (y ∘L (inl ℝ E F)) +
-    L₂.toBilinForm (x ∘L (inr ℝ E F)) (y ∘L (inr ℝ E F)) := rfl
+    L₁.toBilinForm (x ∘ᶠ (inl ℝ E F)) (y ∘ᶠ (inl ℝ E F)) +
+    L₂.toBilinForm (x ∘ᶠ (inr ℝ E F)) (y ∘ᶠ (inr ℝ E F)) := rfl
 
 lemma isPosSemidef_diagonalStrongDualProd
     (h₁ : L₁.toBilinForm.IsPosSemidef) (h₂ : L₂.toBilinForm.IsPosSemidef) :
@@ -199,7 +199,7 @@ lemma HasGaussianLaw.iIndepFun_of_covariance_strongDual (hX : HasGaussianLaw (fu
   let := Fintype.ofFinite ι
   rw [iIndepFun_iff_charFunDual_pi fun i ↦ hX.aemeasurable.eval i]
   intro L
-  have this ω : L (X · ω) = ∑ i, (L ∘L (single ℝ E i)) (X i ω) := by
+  have this ω : L (X · ω) = ∑ i, (L ∘ᶠ (single ℝ E i)) (X i ω) := by
     simp [← map_sum, LinearMap.sum_single_apply]
   simp_rw [hX.charFunDual_map_eq_fun, fun i ↦ (hX.eval i).charFunDual_map_eq_fun, ← Complex.exp_sum,
     sum_sub_distrib, ← sum_mul, this]
@@ -315,7 +315,7 @@ lemma HasGaussianLaw.indepFun_of_covariance_strongDual [NormedSpace ℝ E] [Norm
   have := hXY.isProbabilityMeasure
   rw [indepFun_iff_charFunDual_prod hXY.fst.aemeasurable hXY.snd.aemeasurable]
   intro L
-  have : L ∘ (fun ω ↦ (X ω, Y ω)) = (L ∘L (.inl ℝ E F)) ∘ X + (L ∘L (.inr ℝ E F)) ∘ Y := by
+  have : L ∘ (fun ω ↦ (X ω, Y ω)) = (L ∘ᶠ (.inl ℝ E F)) ∘ X + (L ∘ᶠ (.inr ℝ E F)) ∘ Y := by
     ext; simp [-comp_apply, ← comp_inl_add_comp_inr]
   rw [hXY.charFunDual_map_eq, hXY.fst.charFunDual_map_eq, hXY.snd.charFunDual_map_eq, ← exp_add,
     sub_add_sub_comm, ← add_mul, ← ofReal_add, ← integral_add, ← add_div, ← ofReal_add, this,

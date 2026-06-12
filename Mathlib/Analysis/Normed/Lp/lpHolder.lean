@@ -262,7 +262,7 @@ definitionally the same as `B := ContinuousLinearMap.id 𝕜 (E →L[𝕜] 𝕜)
 noncomputable def dualPairing [Fact (1 ≤ p)] [Fact (1 ≤ q)] [p.HolderConjugate q]
     (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] H) {K : ℝ≥0} (hBK : ∀ i, ‖B i‖ ≤ K) :
     lp E p →L[𝕜] lp F q →L[𝕜] H :=
-  (tsumCLM 𝕜 ι H |>.postcomp <| lp F q) ∘L (holderL 1 B hBK)
+  (tsumCLM 𝕜 ι H |>.postcomp <| lp F q) ∘ᶠ (holderL 1 B hBK)
 
 lemma dualPairing_apply [Fact (1 ≤ p)] [Fact (1 ≤ q)] [p.HolderConjugate q]
     (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] H) {K : ℝ≥0} (hBK : ∀ i, ‖B i‖ ≤ K)

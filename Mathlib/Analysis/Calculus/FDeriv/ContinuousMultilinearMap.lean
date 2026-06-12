@@ -61,8 +61,8 @@ theorem ContinuousMultilinearMap.hasStrictFDerivAt_compContinuousLinearMap
     HasStrictFDerivAt
       (fun fg : ContinuousMultilinearMap 𝕜 G H × ∀ i, F i →L[𝕜] G i ↦
         fg.1.compContinuousLinearMap fg.2)
-      (compContinuousLinearMapL fg.2 ∘L .fst _ _ _ +
-        fg.1.fderivCompContinuousLinearMap fg.2 ∘L .snd _ _ _)
+      (compContinuousLinearMapL fg.2 ∘ᶠ .fst _ _ _ +
+        fg.1.fderivCompContinuousLinearMap fg.2 ∘ᶠ .snd _ _ _)
       fg := by
   have := (compContinuousLinearMapContinuousMultilinear 𝕜 F G H).hasStrictFDerivAt fg.2
   convert! this.comp fg hasStrictFDerivAt_snd |>.clm_apply hasStrictFDerivAt_fst
@@ -71,16 +71,16 @@ theorem ContinuousMultilinearMap.hasStrictFDerivAt_compContinuousLinearMap
 theorem HasStrictFDerivAt.continuousMultilinearMapCompContinuousLinearMap
     (hf : HasStrictFDerivAt f f' x) (hg : ∀ i, HasStrictFDerivAt (g i) (g' i) x) :
     HasStrictFDerivAt (fun x ↦ (f x).compContinuousLinearMap (g · x))
-      (compContinuousLinearMapL (g · x) ∘L f' +
-        (f x).fderivCompContinuousLinearMap (g · x) ∘L .pi g') x :=
+      (compContinuousLinearMapL (g · x) ∘ᶠ f' +
+        (f x).fderivCompContinuousLinearMap (g · x) ∘ᶠ .pi g') x :=
   hasStrictFDerivAt_compContinuousLinearMap (f x, (g · x))
     |>.comp x (hf.prodMk (hasStrictFDerivAt_pi.2 hg))
 
 theorem HasFDerivAt.continuousMultilinearMapCompContinuousLinearMap
     (hf : HasFDerivAt f f' x) (hg : ∀ i, HasFDerivAt (g i) (g' i) x) :
     HasFDerivAt (fun x ↦ (f x).compContinuousLinearMap (g · x))
-      (compContinuousLinearMapL (g · x) ∘L f' +
-        (f x).fderivCompContinuousLinearMap (g · x) ∘L .pi g') x := by
+      (compContinuousLinearMapL (g · x) ∘ᶠ f' +
+        (f x).fderivCompContinuousLinearMap (g · x) ∘ᶠ .pi g') x := by
   convert!
     hasStrictFDerivAt_compContinuousLinearMap (f x, (g · x)) |>.hasFDerivAt |>.comp x
       (hf.prodMk (hasFDerivAt_pi.2 hg))
@@ -88,8 +88,8 @@ theorem HasFDerivAt.continuousMultilinearMapCompContinuousLinearMap
 theorem HasFDerivWithinAt.continuousMultilinearMapCompContinuousLinearMap
     (hf : HasFDerivWithinAt f f' s x) (hg : ∀ i, HasFDerivWithinAt (g i) (g' i) s x) :
     HasFDerivWithinAt (fun x ↦ (f x).compContinuousLinearMap (g · x))
-      (compContinuousLinearMapL (g · x) ∘L f' +
-        (f x).fderivCompContinuousLinearMap (g · x) ∘L .pi g') s x := by
+      (compContinuousLinearMapL (g · x) ∘ᶠ f' +
+        (f x).fderivCompContinuousLinearMap (g · x) ∘ᶠ .pi g') s x := by
   convert!
     hasStrictFDerivAt_compContinuousLinearMap
           (f x, (g · x)) |>.hasFDerivAt |>.comp_hasFDerivWithinAt
@@ -99,16 +99,16 @@ theorem fderivWithin_continuousMultilinearMapCompContinuousLinearMap
     (hf : DifferentiableWithinAt 𝕜 f s x) (hg : ∀ i, DifferentiableWithinAt 𝕜 (g i) s x)
     (hs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun x ↦ (f x).compContinuousLinearMap (g · x)) s x =
-      compContinuousLinearMapL (g · x) ∘L fderivWithin 𝕜 f s x +
-        (f x).fderivCompContinuousLinearMap (g · x) ∘L .pi fun i ↦ fderivWithin 𝕜 (g i) s x :=
+      compContinuousLinearMapL (g · x) ∘ᶠ fderivWithin 𝕜 f s x +
+        (f x).fderivCompContinuousLinearMap (g · x) ∘ᶠ .pi fun i ↦ fderivWithin 𝕜 (g i) s x :=
   hf.hasFDerivWithinAt.continuousMultilinearMapCompContinuousLinearMap
     (fun i ↦ (hg i).hasFDerivWithinAt) |>.fderivWithin hs
 
 theorem fderiv_continuousMultilinearMapCompContinuousLinearMap
     (hf : DifferentiableAt 𝕜 f x) (hg : ∀ i, DifferentiableAt 𝕜 (g i) x) :
     fderiv 𝕜 (fun x ↦ (f x).compContinuousLinearMap (g · x)) x =
-      compContinuousLinearMapL (g · x) ∘L fderiv 𝕜 f x +
-        (f x).fderivCompContinuousLinearMap (g · x) ∘L .pi fun i ↦ fderiv 𝕜 (g i) x :=
+      compContinuousLinearMapL (g · x) ∘ᶠ fderiv 𝕜 f x +
+        (f x).fderivCompContinuousLinearMap (g · x) ∘ᶠ .pi fun i ↦ fderiv 𝕜 (g i) x :=
   hf.hasFDerivAt.continuousMultilinearMapCompContinuousLinearMap
     (fun i ↦ (hg i).hasFDerivAt) |>.fderiv
 

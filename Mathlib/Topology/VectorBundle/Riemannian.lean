@@ -139,7 +139,7 @@ variable (F E)
 a point distort the norm by a factor arbitrarily close to 1. -/
 lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr : 1 < r) :
     ∀ᶠ y in 𝓝 x, ‖((trivializationAt F E x).symmL ℝ x)
-      ∘L ((trivializationAt F E x).continuousLinearMapAt ℝ y)‖ < r := by
+      ∘ᶠ ((trivializationAt F E x).continuousLinearMapAt ℝ y)‖ < r := by
   /- We will expand the definition of continuity of the inner product structure, in the chart.
   Denote `g' x` the metric in the fiber of `x`, read in the chart. For `y` close to `x`, then
   `g' y` and `g' x` are close. The inequality we have to prove reduces to comparing
@@ -224,7 +224,7 @@ lemma eventually_norm_trivializationAt_lt (x : B) :
     ∃ C > 0, ∀ᶠ y in 𝓝 x, ‖(trivializationAt F E x).continuousLinearMapAt ℝ y‖ < C := by
   refine ⟨(1 + ‖(trivializationAt F E x).continuousLinearMapAt ℝ  x‖) * 2, by positivity, ?_⟩
   filter_upwards [eventually_norm_symmL_trivializationAt_self_comp_lt F E x one_lt_two] with y hy
-  have A : ((trivializationAt F E x).continuousLinearMapAt ℝ x) ∘L
+  have A : ((trivializationAt F E x).continuousLinearMapAt ℝ x) ∘ᶠ
       ((trivializationAt F E x).symmL ℝ x) = ContinuousLinearMap.id _ _ := by
     ext v
     have h'x : x ∈ (trivializationAt F E x).baseSet := FiberBundle.mem_baseSet_trivializationAt' x
@@ -233,7 +233,7 @@ lemma eventually_norm_trivializationAt_lt (x : B) :
     convert! ((trivializationAt F E x).continuousLinearEquivAt ℝ _ h'x).apply_symm_apply v
     simp [Trivialization.coe_continuousLinearEquivAt_eq _ h'x]
   have : (trivializationAt F E x).continuousLinearMapAt ℝ y =
-    (ContinuousLinearMap.id _ _) ∘L ((trivializationAt F E x).continuousLinearMapAt ℝ y) := by simp
+    (ContinuousLinearMap.id _ _) ∘ᶠ ((trivializationAt F E x).continuousLinearMapAt ℝ y) := by simp
   grw [this, ← A, comp_assoc, opNorm_comp_le]
   gcongr
   linarith
@@ -242,7 +242,7 @@ lemma eventually_norm_trivializationAt_lt (x : B) :
 a point distort the norm by a factor arbitrarily close to 1. -/
 lemma eventually_norm_symmL_trivializationAt_comp_self_lt (x : B) {r : ℝ} (hr : 1 < r) :
     ∀ᶠ y in 𝓝 x, ‖((trivializationAt F E x).symmL ℝ y)
-      ∘L ((trivializationAt F E x).continuousLinearMapAt ℝ x)‖ < r := by
+      ∘ᶠ ((trivializationAt F E x).continuousLinearMapAt ℝ x)‖ < r := by
   /- We will expand the definition of continuity of the inner product structure, in the chart.
   Denote `g' x` the metric in the fiber of `x`, read in the chart. For `y` close to `x`, then
   `g' y` and `g' x` are close. The inequality we have to prove reduces to comparing
@@ -329,7 +329,7 @@ lemma eventually_norm_symmL_trivializationAt_lt (x : B) :
     ∃ C > 0, ∀ᶠ y in 𝓝 x, ‖(trivializationAt F E x).symmL ℝ y‖ < C := by
   refine ⟨2 * (1 + ‖(trivializationAt F E x).symmL ℝ x‖), by positivity, ?_⟩
   filter_upwards [eventually_norm_symmL_trivializationAt_comp_self_lt F E x one_lt_two] with y hy
-  have A : ((trivializationAt F E x).continuousLinearMapAt ℝ x) ∘L
+  have A : ((trivializationAt F E x).continuousLinearMapAt ℝ x) ∘ᶠ
       ((trivializationAt F E x).symmL ℝ x) = ContinuousLinearMap.id _ _ := by
     ext v
     have h'x : x ∈ (trivializationAt F E x).baseSet := FiberBundle.mem_baseSet_trivializationAt' x
@@ -338,7 +338,7 @@ lemma eventually_norm_symmL_trivializationAt_lt (x : B) :
     convert! ((trivializationAt F E x).continuousLinearEquivAt ℝ _ h'x).apply_symm_apply v
     simp [Trivialization.coe_continuousLinearEquivAt_eq _ h'x]
   have : (trivializationAt F E x).symmL ℝ y =
-     ((trivializationAt F E x).symmL ℝ y) ∘L (ContinuousLinearMap.id _ _) := by simp
+     ((trivializationAt F E x).symmL ℝ y) ∘ᶠ (ContinuousLinearMap.id _ _) := by simp
   grw [this, ← A, ← comp_assoc, opNorm_comp_le]
   gcongr
   linarith

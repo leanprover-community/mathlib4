@@ -715,7 +715,7 @@ theorem Submodule.IsCompl.isTopCompl_of_finiteDimensional_quotient {p q : Submod
     (h : IsCompl p q) (hp : IsClosed (p : Set E)) [FiniteDimensional 𝕜 (E ⧸ p)] :
     IsTopCompl p q := by
   let φ : E ⧸ p →L[𝕜] q := (p.quotientEquivOfIsCompl q h).toLinearMap.toContinuousLinearMap
-  have := (φ ∘L p.mkQL).isTopCompl_of_proj fun x ↦ by simp [φ]
+  have := (φ ∘ᶠ p.mkQL).isTopCompl_of_proj fun x ↦ by simp [φ]
   simpa [φ] using this.symm
 
 /-- Assume that `p q : Submodule 𝕜 E` are algebraic complements. If `p` is closed and `q`
@@ -744,7 +744,7 @@ lemma Submodule.ClosedComplemented.of_finiteDimensional_of_le
     (hB : B ≤ A) : B.ClosedComplemented := by
   obtain ⟨p, hp⟩ := hA
   obtain ⟨C, hBC⟩ := B.exists_isCompl
-  refine ⟨((projectionOnto B C hBC).domRestrict A).toContinuousLinearMap ∘SL p, fun x ↦ ?_⟩
+  refine ⟨((projectionOnto B C hBC).domRestrict A).toContinuousLinearMap ∘ᶠ p, fun x ↦ ?_⟩
   simp [hp ⟨x, hB x.2⟩]
 
 omit [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] in

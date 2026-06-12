@@ -266,7 +266,7 @@ variable {f : M → 𝕜} {g : M → V}
 /-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, if
 at some point `x`, `f` has differential `f' : TangentSpace I x →L[𝕜] 𝕜` and `g` has differential
 `g' : TangentSpace I x →L[𝕜] V` (both phrased using the predicate `HasMFDerivAt`), it follows that
-their scalar multiplication `f • g` has differential `f x • g' + toSpanSingleton 𝕜 (g x) ∘L f'`.
+their scalar multiplication `f • g` has differential `f x • g' + toSpanSingleton 𝕜 (g x) ∘ᶠ f'`.
 
 In fact, the statement above is not literally true, because, for example, the differential of `g`
 really takes values in the tangent space to `V` at `g x`, rather than in `V` itself. Of course, this
@@ -277,17 +277,17 @@ canonical identification. (It would also be possible to phrase the formula witho
 instead using casting and definitional abuse.) -/
 private lemma HasMFDerivAt.smul
     {f' : TangentSpace I x →L[𝕜] 𝕜}
-    (hs : HasMFDerivAt% f x ((fromTangentSpace (f x)).symm.toContinuousLinearMap ∘L f'))
+    (hs : HasMFDerivAt% f x ((fromTangentSpace (f x)).symm.toContinuousLinearMap ∘ᶠ f'))
     {g' : TangentSpace I x →L[𝕜] V}
-    (hg : HasMFDerivAt% g x ((fromTangentSpace (g x)).symm.toContinuousLinearMap ∘L g')) :
+    (hg : HasMFDerivAt% g x ((fromTangentSpace (g x)).symm.toContinuousLinearMap ∘ᶠ g')) :
     -- canonically identify `g'` with a linear map into the tangent space at `(f • g) x`
     letI g'_ : TangentSpace I x →L[𝕜] TangentSpace 𝓘(𝕜, V) ((f • g) x) :=
-      (fromTangentSpace _).symm.toContinuousLinearMap ∘L g'
+      (fromTangentSpace _).symm.toContinuousLinearMap ∘ᶠ g'
     -- canonically identify `g x` with a linear map into a tangent space at `(f • g) x`
     letI gx : 𝕜 →L[𝕜] TangentSpace 𝓘(𝕜, V) ((f • g) x) :=
       toSpanSingleton 𝕜 ((fromTangentSpace _).symm (g x))
     -- now the main statement typechecks
-    HasMFDerivAt% (f • g) x (f x • g'_ + gx ∘L f') := by
+    HasMFDerivAt% (f • g) x (f x • g'_ + gx ∘ᶠ f') := by
   constructor
   · exact hs.1.smul hg.1
   · simpa using! hs.2.smul hg.2
@@ -314,7 +314,7 @@ theorem MDifferentiable.smul (hf : MDiff f) (hg : MDiff g) : MDiff fun p ↦ f p
 formula for the `mfderiv` (differential) of their scalar multiplication `f • g`.
 
 Mathematically speaking the formula is `d(f • g) = f • dg + df ⊗ g`, i.e.
-`mfderiv% (f • g) x = f x • mfderiv% g x + toSpanSingleton 𝕜 (g x) ∘L mfderiv% f x`,
+`mfderiv% (f • g) x = f x • mfderiv% g x + toSpanSingleton 𝕜 (g x) ∘ᶠ mfderiv% f x`,
 but this doesn't typecheck because `mfderiv% (f • g) x` and `mfderiv% g x` take values in different
 tangent spaces -- respectively the tangent spaces to `V` at `(f • g) x` and `g x`. Of course, both
 these tangent spaces can be canonically identified with `V`.
@@ -325,14 +325,14 @@ instead using casting and definitional abuse.)
 
 It is good practice to use the equiv `NormedSpace.fromTangentSpace` throughout a computation. If
 this is done, typically `mfderiv% (f • g) x` will only turn up paired with this equiv (i.e., in an
-expression `(fromTangentSpace _) ∘L mfderiv% (f • g) x`), and the more convenient lemma
+expression `(fromTangentSpace _) ∘ᶠ mfderiv% (f • g) x`), and the more convenient lemma
 `fromTangentSpace_mfderiv_smul` (see below) can be used instead. -/
 private lemma mfderiv_smul (hf : MDiffAt f x) (hg : MDiffAt g x) :
     mfderiv% (f • g) x
-    = f x • (fromTangentSpace _).symm.toContinuousLinearMap ∘L
-      ((fromTangentSpace (g x)).toContinuousLinearMap ∘L mfderiv% g x)
-    + toSpanSingleton 𝕜 ((fromTangentSpace _).symm (g x)) ∘L
-      ((fromTangentSpace (f x)).toContinuousLinearMap ∘L mfderiv% f x) :=
+    = f x • (fromTangentSpace _).symm.toContinuousLinearMap ∘ᶠ
+      ((fromTangentSpace (g x)).toContinuousLinearMap ∘ᶠ mfderiv% g x)
+    + toSpanSingleton 𝕜 ((fromTangentSpace _).symm (g x)) ∘ᶠ
+      ((fromTangentSpace (f x)).toContinuousLinearMap ∘ᶠ mfderiv% f x) :=
   (hf.hasMFDerivAt.smul hg.hasMFDerivAt).mfderiv
 
 -- TODO: investigate inlining the proof: this lemma statement abuses defeq
@@ -340,7 +340,7 @@ private lemma mfderiv_smul (hf : MDiffAt f x) (hg : MDiffAt g x) :
 formula for the `mfderiv` (differential) of their scalar multiplication `f • g`.
 
 Mathematically speaking the formula is `d(f • g) = f • dg + df ⊗ g`, i.e.
-`mfderiv% (f • g) x = f x • mfderiv% g x + toSpanSingleton 𝕜 (g x) ∘L mfderiv% f x`,
+`mfderiv% (f • g) x = f x • mfderiv% g x + toSpanSingleton 𝕜 (g x) ∘ᶠ mfderiv% f x`,
 but this doesn't typecheck because `mfderiv% (f • g) x` and `mfderiv% g x` take values in different
 tangent spaces -- respectively the tangent spaces to `V` at `(f • g) x` and `g x`. Of course, both
 these tangent spaces can be canonically identified with `V`.
@@ -349,9 +349,9 @@ This lemma phrases the formula using the equiv `NormedSpace.fromTangentSpace`, w
 canonical identification. (It would also be possible to phrase the formula without this equiv,
 instead using casting and definitional abuse.) -/
 private lemma fromTangentSpace_mfderiv_smul (hf : MDiffAt f x) (hg : MDiffAt g x) :
-    (fromTangentSpace ((f • g) x)).toContinuousLinearMap ∘L mfderiv% (f • g) x
-    = f x • (fromTangentSpace _).toContinuousLinearMap ∘L mfderiv% g x
-    + toSpanSingleton 𝕜 (g x) ∘L (fromTangentSpace _).toContinuousLinearMap ∘L mfderiv% f x := by
+    (fromTangentSpace ((f • g) x)).toContinuousLinearMap ∘ᶠ mfderiv% (f • g) x
+    = f x • (fromTangentSpace _).toContinuousLinearMap ∘ᶠ mfderiv% g x
+    + toSpanSingleton 𝕜 (g x) ∘ᶠ (fromTangentSpace _).toContinuousLinearMap ∘ᶠ mfderiv% f x := by
   rw [mfderiv_smul hf hg]
   rfl
 
@@ -367,9 +367,9 @@ different tangent spaces (at `(f • g) x` and `g x`) appear in the equation.
 This is a defeq variant of the main lemma `fromTangentSpace_mfderiv_smul`, in which we work in the
 tangent space at `f x • g x` (the simp-normal form) rather than at `(f • g) x`. -/
 private lemma fromTangentSpace_mfderiv_smul' (hf : MDiffAt f x) (hg : MDiffAt g x) :
-    (fromTangentSpace (f x • g x)).toContinuousLinearMap ∘L mfderiv% (f • g) x
-    = f x • (fromTangentSpace _).toContinuousLinearMap ∘L mfderiv% g x
-    + toSpanSingleton 𝕜 (g x) ∘L (fromTangentSpace _).toContinuousLinearMap ∘L mfderiv% f x :=
+    (fromTangentSpace (f x • g x)).toContinuousLinearMap ∘ᶠ mfderiv% (f • g) x
+    = f x • (fromTangentSpace _).toContinuousLinearMap ∘ᶠ mfderiv% g x
+    + toSpanSingleton 𝕜 (g x) ∘ᶠ (fromTangentSpace _).toContinuousLinearMap ∘ᶠ mfderiv% f x :=
   fromTangentSpace_mfderiv_smul hf hg
 
 -- TODO: investigate inlining the proof: this lemma statement abuses defeq
@@ -418,7 +418,7 @@ Future: this could be generalised to functions into additive torsors over abelia
 @[expose]
 noncomputable def mvfderivWithin (g : M → F) (s : Set M) :
     Π x : M, TangentSpace I x →L[𝕜] F :=
-  fun x ↦ (NormedSpace.fromTangentSpace <| g x).toContinuousLinearMap ∘L (mfderiv[s] g x)
+  fun x ↦ (NormedSpace.fromTangentSpace <| g x).toContinuousLinearMap ∘ᶠ (mfderiv[s] g x)
 
 variable (I) in
 /-- The exterior derivative of a vector-valued function on `M`,
@@ -429,7 +429,7 @@ Future: this could be generalised to functions into additive torsors over abelia
 @[expose]
 noncomputable def mvfderiv (g : M → F) :
     Π x : M, TangentSpace I x →L[𝕜] F :=
-  fun x ↦ (NormedSpace.fromTangentSpace <| g x).toContinuousLinearMap ∘L (mfderiv% g x)
+  fun x ↦ (NormedSpace.fromTangentSpace <| g x).toContinuousLinearMap ∘ᶠ (mfderiv% g x)
 @[deprecated (since := "2026-05-17")] alias extDerivFun := mvfderiv
 
 namespace Manifold

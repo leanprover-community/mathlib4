@@ -55,22 +55,22 @@ lemma ext_iff {p q : M →L[R] M}
 
 alias ⟨_, ext⟩ := IsIdempotentElem.ext_iff
 
-/-- `range f` is invariant under `T` if and only if `f ∘L T ∘L f = T ∘L f`,
+/-- `range f` is invariant under `T` if and only if `f ∘ᶠ T ∘ᶠ f = T ∘ᶠ f`,
 for idempotent `f`. -/
 lemma range_mem_invtSubmodule_iff {f T : M →L[R] M}
     (hf : IsIdempotentElem f) :
-    f.range ∈ Module.End.invtSubmodule T ↔ f ∘L T ∘L f = T ∘L f := by
+    f.range ∈ Module.End.invtSubmodule T ↔ f ∘ᶠ T ∘ᶠ f = T ∘ᶠ f := by
   simpa [← toLinearMap_comp] using
     LinearMap.IsIdempotentElem.range_mem_invtSubmodule_iff (T := T) hf.toLinearMap
 
 alias ⟨conj_eq_of_range_mem_invtSubmodule,
   range_mem_invtSubmodule⟩ := IsIdempotentElem.range_mem_invtSubmodule_iff
 
-/-- `ker f` is invariant under `T` if and only if `f ∘L T ∘L f = f ∘L T`,
+/-- `ker f` is invariant under `T` if and only if `f ∘ᶠ T ∘ᶠ f = f ∘ᶠ T`,
 for idempotent `f`. -/
 lemma ker_mem_invtSubmodule_iff {f T : M →L[R] M}
     (hf : IsIdempotentElem f) :
-    f.ker ∈ Module.End.invtSubmodule T ↔ f ∘L T ∘L f = f ∘L T := by
+    f.ker ∈ Module.End.invtSubmodule T ↔ f ∘ᶠ T ∘ᶠ f = f ∘ᶠ T := by
   simpa [← toLinearMap_comp] using
     LinearMap.IsIdempotentElem.ker_mem_invtSubmodule_iff (T := T) hf.toLinearMap
 

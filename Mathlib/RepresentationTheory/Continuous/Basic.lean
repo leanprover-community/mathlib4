@@ -55,7 +55,7 @@ variable {R G V W U}
   which is also continuous. -/
 structure ContIntertwiningMap (π₁ : ContRepresentation R G V) (π₂ : ContRepresentation R G W)
     extends V →L[R] W where
-  isIntertwining' (g : G) : toContinuousLinearMap ∘L π₁ g = π₂ g ∘L toContinuousLinearMap
+  isIntertwining' (g : G) : toContinuousLinearMap ∘ᶠ π₁ g = π₂ g ∘ᶠ toContinuousLinearMap
 
 /-- notation for continuous intertwining maps -/
 scoped[ContRepresentation] notation:30 π₁ " →ⁱL " π₂ =>
@@ -136,25 +136,25 @@ variable {ρ : ContRepresentation R G V} {σ : ContRepresentation R G W}
   {τ : ContRepresentation R G U} (φ : Equiv ρ σ)
 
 lemma isIntertwining (g : G) :
-    φ.toContinuousLinearEquiv.toContinuousLinearMap ∘L (ρ g) =
-      (σ g) ∘L φ.toContinuousLinearEquiv.toContinuousLinearMap :=
+    φ.toContinuousLinearEquiv.toContinuousLinearMap ∘ᶠ (ρ g) =
+      (σ g) ∘ᶠ φ.toContinuousLinearEquiv.toContinuousLinearMap :=
   φ.isIntertwining' g
 
 /-- An `Equiv` between representations could be built from a `LinearEquiv` and an assumption
   proving the `G`-equivariance. -/
-def mk (e : V ≃L[R] W) (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) : ρ.Equiv σ where
+def mk (e : V ≃L[R] W) (he : ∀ g, e ∘ᶠ (ρ g) = (σ g) ∘ᶠ e) : ρ.Equiv σ where
   __ := e
   cont := e.continuous
   isIntertwining' := he
 
-lemma toContinuousLinearEquiv_mk' {e : V ≃L[R] W} (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) :
+lemma toContinuousLinearEquiv_mk' {e : V ≃L[R] W} (he : ∀ g, e ∘ᶠ (ρ g) = (σ g) ∘ᶠ e) :
     (mk e he).toContinuousLinearEquiv = e := rfl
 
-lemma toContIntertwiningMap_mk' (e : V ≃L[R] W) (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) :
+lemma toContIntertwiningMap_mk' (e : V ≃L[R] W) (he : ∀ g, e ∘ᶠ (ρ g) = (σ g) ∘ᶠ e) :
     (mk e he).toContIntertwiningMap = ⟨e.toContinuousLinearMap, he⟩ := rfl
 
 @[simp]
-lemma toContinuousLinearMap_mk' (e : V ≃L[R] W) (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) :
+lemma toContinuousLinearMap_mk' (e : V ≃L[R] W) (he : ∀ g, e ∘ᶠ (ρ g) = (σ g) ∘ᶠ e) :
     (mk e he).toContinuousLinearMap = e.toContinuousLinearMap := rfl
 
 lemma toContinuousLinearEquiv_injective :
@@ -179,7 +179,7 @@ instance : ContinuousLinearEquivClass (σ.Equiv ρ) R W V where
   inv_continuous f := f.continuous_invFun
 
 @[simp]
-lemma mk_apply {e : V ≃L[R] W} (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) (v : V) :
+lemma mk_apply {e : V ≃L[R] W} (he : ∀ g, e ∘ᶠ (ρ g) = (σ g) ∘ᶠ e) (v : V) :
     (mk e he) v = e v := rfl
 
 @[ext]
@@ -222,12 +222,12 @@ def symm : Equiv σ ρ := mk φ.toContinuousLinearEquiv.symm <| fun g ↦ by
 open ContinuousLinearMap
 
 lemma _root_.ContinuousLinearEquiv.isIntertwining_symm_isIntertwining {e : V ≃L[R] W}
-    (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) (g : G) :
-    e.symm ∘L (σ g) = (ρ g) ∘L e.symm :=
+    (he : ∀ g, e ∘ᶠ (ρ g) = (σ g) ∘ᶠ e) (g : G) :
+    e.symm ∘ᶠ (σ g) = (ρ g) ∘ᶠ e.symm :=
   (mk e he).symm.isIntertwining g
 
 @[simp]
-lemma mk_symm {e : V ≃L[R] W} (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) :
+lemma mk_symm {e : V ≃L[R] W} (he : ∀ g, e ∘ᶠ (ρ g) = (σ g) ∘ᶠ e) :
     (mk e he).symm = mk e.symm (e.isIntertwining_symm_isIntertwining he) := rfl
 
 lemma toLinearMap_symm (φ : Equiv ρ σ) : (symm φ).toLinearMap = φ.toLinearEquiv.symm := rfl

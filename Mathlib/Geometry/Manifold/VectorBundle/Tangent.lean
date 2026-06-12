@@ -530,8 +530,8 @@ see `inTangentCoordinates_eq_mfderiv_comp`. -/
 theorem inTangentCoordinates_eq (f : N → M) (g : N → M') (ϕ : N → E →L[𝕜] E') {x₀ x : N}
     (hx : f x ∈ (chartAt H (f x₀)).source) (hy : g x ∈ (chartAt H' (g x₀)).source) :
     inTangentCoordinates I I' f g ϕ x₀ x =
-      (tangentBundleCore I' M').coordChange (achart H' (g x)) (achart H' (g x₀)) (g x) ∘L
-        ϕ x ∘L (tangentBundleCore I M).coordChange (achart H (f x₀)) (achart H (f x)) (f x) :=
+      (tangentBundleCore I' M').coordChange (achart H' (g x)) (achart H' (g x₀)) (g x) ∘ᶠ
+        ϕ x ∘ᶠ (tangentBundleCore I M).coordChange (achart H (f x₀)) (achart H (f x)) (f x) :=
   (tangentBundleCore I M).inCoordinates_eq (tangentBundleCore I' M') (ϕ x) hx hy
 
 end inTangentCoordinates

@@ -595,9 +595,9 @@ theorem mfderiv_prod_eq_add {f : M × M' → M''} {p : M × M'}
   `TangentSpace`. Version in terms of the one-variable derivatives. -/
 theorem mfderiv_prod_eq_add_comp {f : M × M' → M''} {p : M × M'} (hf : MDiffAt f p) :
     mfderiv% f p =
-        (mfderiv% (fun z : M ↦ f (z, p.2)) p.1) ∘L (id (ContinuousLinearMap.fst 𝕜 E E') :
+        (mfderiv% (fun z : M ↦ f (z, p.2)) p.1) ∘ᶠ (id (ContinuousLinearMap.fst 𝕜 E E') :
           (TangentSpace (I.prod I') p) →L[𝕜] (TangentSpace I p.1)) +
-        (mfderiv% (fun z : M' ↦ f (p.1, z)) p.2) ∘L (id (ContinuousLinearMap.snd 𝕜 E E') :
+        (mfderiv% (fun z : M' ↦ f (p.1, z)) p.2) ∘ᶠ (id (ContinuousLinearMap.snd 𝕜 E E') :
           (TangentSpace (I.prod I') p) →L[𝕜] (TangentSpace I' p.2)) := by
   rw [mfderiv_prod_eq_add hf]
   congr

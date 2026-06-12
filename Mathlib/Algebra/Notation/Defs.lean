@@ -83,7 +83,7 @@ class FComp (α : Type u) (β : Type v) (γ : outParam (Type w)) where
   /-- `a ∘ᶠ b` is the composition of `a` and `b`. The meaning of this notation is type-dependent. -/
   protected comp : α → β → γ
 
-@[inherit_doc] infixr:65 " ∘ᶠ " => FComp.comp
+@[inherit_doc] infixr:80 " ∘ᶠ " => FComp.comp
 
 end Comp
 

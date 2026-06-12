@@ -140,19 +140,19 @@ theorem comp_fderiv {f : G → E} {x : G} :
 lemma _root_.fderivWithin_continuousLinearEquiv_comp (L : G ≃L[𝕜] G') (f : E → (F →L[𝕜] G))
     (hs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun x ↦ (L : G →L[𝕜] G').comp (f x)) s x =
-      (((ContinuousLinearEquiv.refl 𝕜 F).arrowCongr L)) ∘L (fderivWithin 𝕜 f s x) := by
+      (((ContinuousLinearEquiv.refl 𝕜 F).arrowCongr L)) ∘ᶠ (fderivWithin 𝕜 f s x) := by
   change fderivWithin 𝕜 (((ContinuousLinearEquiv.refl 𝕜 F).arrowCongr L) ∘ f) s x = _
   rw [ContinuousLinearEquiv.comp_fderivWithin _ hs]
 
 lemma _root_.fderiv_continuousLinearEquiv_comp (L : G ≃L[𝕜] G') (f : E → (F →L[𝕜] G)) (x : E) :
     fderiv 𝕜 (fun x ↦ (L : G →L[𝕜] G').comp (f x)) x =
-      (((ContinuousLinearEquiv.refl 𝕜 F).arrowCongr L)) ∘L (fderiv 𝕜 f x) := by
+      (((ContinuousLinearEquiv.refl 𝕜 F).arrowCongr L)) ∘ᶠ (fderiv 𝕜 f x) := by
   change fderiv 𝕜 (((ContinuousLinearEquiv.refl 𝕜 F).arrowCongr L) ∘ f) x = _
   rw [ContinuousLinearEquiv.comp_fderiv]
 
 lemma _root_.fderiv_continuousLinearEquiv_comp' (L : G ≃L[𝕜] G') (f : E → (F →L[𝕜] G)) :
     fderiv 𝕜 (fun x ↦ (L : G →L[𝕜] G').comp (f x)) =
-      fun x ↦ (((ContinuousLinearEquiv.refl 𝕜 F).arrowCongr L)) ∘L (fderiv 𝕜 f x) := by
+      fun x ↦ (((ContinuousLinearEquiv.refl 𝕜 F).arrowCongr L)) ∘ᶠ (fderiv 𝕜 f x) := by
   ext x : 1
   exact fderiv_continuousLinearEquiv_comp L f x
 

@@ -346,7 +346,7 @@ variable [CommRing R]
 variable (R E V₁) in
 /-- The Laplacian defined by iterated `lineDerivOp` as a continuous linear map. -/
 def laplacianCLM : V₁ →L[R] V₃ :=
-  ∑ i, lineDerivOpCLM R V₂ (stdOrthonormalBasis ℝ E i) ∘L
+  ∑ i, lineDerivOpCLM R V₂ (stdOrthonormalBasis ℝ E i) ∘ᶠ
     lineDerivOpCLM R V₁ (stdOrthonormalBasis ℝ E i)
 
 end definition

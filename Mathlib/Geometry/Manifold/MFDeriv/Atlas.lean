@@ -267,7 +267,7 @@ theorem mdifferentiableOn_extChartAt_symm :
 Version where the basepoint belongs to `(extChartAt I x).target`. -/
 lemma mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm {x : M}
     {y : E} (hy : y ∈ (extChartAt I x).target) :
-    (mfderiv% (extChartAt I x) ((extChartAt I x).symm y)) ∘L
+    (mfderiv% (extChartAt I x) ((extChartAt I x).symm y)) ∘ᶠ
       (mfderiv[range I] (extChartAt I x).symm y) = ContinuousLinearMap.id _ _ := by
   have U : UniqueMDiffWithinAt 𝓘(𝕜, E) (range ↑I) y := by
     apply I.uniqueMDiffOn
@@ -290,7 +290,7 @@ lemma mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm {x : M}
 Version where the basepoint belongs to `(extChartAt I x).source`. -/
 lemma mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm' {x : M}
     {y : M} (hy : y ∈ (extChartAt I x).source) :
-    (mfderiv% (extChartAt I x) y) ∘L (mfderiv[range I] (extChartAt I x).symm (extChartAt I x y))
+    (mfderiv% (extChartAt I x) y) ∘ᶠ (mfderiv[range I] (extChartAt I x).symm (extChartAt I x y))
     = ContinuousLinearMap.id _ _ := by
   have : y = (extChartAt I x).symm (extChartAt I x y) := ((extChartAt I x).left_inv hy).symm
   convert! mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm ((extChartAt I x).map_source hy)
@@ -300,7 +300,7 @@ lemma mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm' {x : M}
 Version where the basepoint belongs to `(extChartAt I x).target`. -/
 lemma mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt
     {y : E} (hy : y ∈ (extChartAt I x).target) :
-    (mfderiv[range I] (extChartAt I x).symm y) ∘L
+    (mfderiv[range I] (extChartAt I x).symm y) ∘ᶠ
       (mfderiv% (extChartAt I x) ((extChartAt I x).symm y))
       = ContinuousLinearMap.id _ _ := by
   have h'y : (extChartAt I x).symm y ∈ (extChartAt I x).source := (extChartAt I x).map_target hy
@@ -332,7 +332,7 @@ set_option backward.isDefEq.respectTransparency false in
 Version where the basepoint belongs to `(extChartAt I x).source`. -/
 lemma mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt'
     {y : M} (hy : y ∈ (extChartAt I x).source) :
-    (mfderiv[range I] (extChartAt I x).symm (extChartAt I x y)) ∘L (mfderiv% (extChartAt I x) y)
+    (mfderiv[range I] (extChartAt I x).symm (extChartAt I x y)) ∘ᶠ (mfderiv% (extChartAt I x) y)
       = ContinuousLinearMap.id _ _ := by
   have : y = (extChartAt I x).symm (extChartAt I x y) := ((extChartAt I x).left_inv hy).symm
   convert! mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt ((extChartAt I x).map_source hy)
