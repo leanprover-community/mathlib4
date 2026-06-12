@@ -33,10 +33,9 @@ namespace Matrix
 
 open scoped Kronecker
 
-variable [Fintype n] [DecidableEq n]
+variable [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
 
 section Semiring
-
 variable [Semiring R] [StarRing R]
 
 /-- A square matrix over a `*`-semiring whose entries are unitary and whose rows and columns are
@@ -82,7 +81,7 @@ theorem isHadamard_conjTranspose_iff : Aᴴ.IsHadamard ↔ A.IsHadamard :=
   ⟨fun hA => by simpa using hA.conjTranspose, (·.conjTranspose)⟩
 
 /-- The Kronecker product of two Hadamard matrices is Hadamard. -/
-theorem IsHadamard.kronecker [Fintype m] [DecidableEq m] {A : Matrix m m R} {B : Matrix n n R}
+theorem IsHadamard.kronecker {A : Matrix m m R} {B : Matrix n n R}
     (hA : A.IsHadamard) (hB : B.IsHadamard) : (A ⊗ₖ B).IsHadamard := by
   refine ⟨fun _ _ ↦ mul_mem (hA.apply _ _) (hB.apply _ _), ?_, ?_⟩ <;> ext ⟨i, i'⟩ ⟨j, j'⟩
   · calc
@@ -108,7 +107,6 @@ theorem IsHadamard.kronecker [Fintype m] [DecidableEq m] {A : Matrix m m R} {B :
 end Semiring
 
 section Ring
-
 variable [Ring R] [StarRing R] {A : Matrix n n R}
 
 /-- Negating a Hadamard matrix gives a Hadamard matrix. -/
@@ -123,7 +121,6 @@ theorem IsHadamard.neg_iff : (-A).IsHadamard ↔ A.IsHadamard :=
 end Ring
 
 section CommSemiring
-
 variable [CommSemiring R] [StarRing R] [TrivialStar R] [IsCancelMulZero R] {A : Matrix n n R}
 
 /-- A Hadamard matrix with constant row sum `s` has order `s ^ 2`, provided the order is
@@ -145,7 +142,6 @@ theorem IsHadamard.card_eq_sq_of_const_row_sum {s : R}
 end CommSemiring
 
 section CommRing
-
 variable [CommRing R] [StarRing R] {A : Matrix n n R}
 
 /-- The Hadamard determinant identity: `det A * star (det A) = (card n)^(card n)`. -/
@@ -164,7 +160,7 @@ theorem IsHadamard.det_ne_zero [IsReduced R] (hA : A.IsHadamard)
 nonzero in a commutative ring with no zero divisors.
 
 This is the matrix form of [Theorem 2.3.6][deLauneyFlannery2011]. -/
-theorem IsHadamard.of_mul_conjTranspose [NoZeroDivisors R]
+theorem IsHadamard.of_mul_conjTranspose [IsCancelMulZero R]
     (hentry : ∀ i j, A i j ∈ unitary R)
     (hmul : A * Aᴴ = (Fintype.card n : R) • (1 : Matrix n n R))
     (hcard : (Fintype.card n : R) ≠ 0) : A.IsHadamard := by
@@ -178,7 +174,7 @@ theorem IsHadamard.of_mul_conjTranspose [NoZeroDivisors R]
   exact hreg <| show A * (Aᴴ * A) = A * ((Fintype.card n : R) • 1) by
     rw [← mul_assoc, hmul, smul_mul_assoc, one_mul, mul_smul_comm, mul_one]
 
-theorem isHadamard_iff_mul_conjTranspose [NoZeroDivisors R]
+theorem isHadamard_iff_mul_conjTranspose [IsCancelMulZero R]
     (hcard : (Fintype.card n : R) ≠ 0) :
     A.IsHadamard ↔
       (∀ i j, A i j ∈ unitary R) ∧
