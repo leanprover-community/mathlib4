@@ -253,20 +253,22 @@ jobs:
       # `pr_branch_ref` already checked out, so this is a local `git diff` against
       # a shallow `master` fetch — no API call. If so, the prebuilt `master`
       # artifact would mask the change, so we must build the tool from this branch.
-      # Fork PRs are skipped: they run master's `build_template` via
+      #
+      # Skipped for fork PRs: they run master's `build_template` via
       # `pull_request_target` (never this one), their untrusted tool must not be
       # built/run with cache credentials, and bors exercises tool changes in-repo.
+      # A skipped step leaves `tool_changed` empty, which keeps the prebuilt-
+      # artifact fast path enabled below.
       - name: detect cache-tool changes
         id: tool_changes
+        if: ${{ github.event.pull_request.head.repo.fork != true }}
         shell: bash # plain bash: reads the PR tree + a shallow master fetch; runs no PR code
         run: |
           tool_changed=false
-          if [ "${{ github.event.pull_request.head.repo.fork }}" != "true" ]; then
-            git -C pr-branch fetch --no-tags --depth=1 https://github.com/leanprover-community/mathlib4.git master || true
-            # Fail safe toward building: a failed fetch/diff leaves $? non-zero.
-            if ! git -C pr-branch diff --quiet FETCH_HEAD -- Cache scripts/lake-build-with-retry.sh scripts/lake-build-wrapper.py; then
-              tool_changed=true
-            fi
+          git -C pr-branch fetch --no-tags --depth=1 https://github.com/leanprover-community/mathlib4.git master || true
+          # Fail safe toward building: a failed fetch/diff leaves $? non-zero.
+          if ! git -C pr-branch diff --quiet FETCH_HEAD -- Cache scripts/lake-build-with-retry.sh scripts/lake-build-wrapper.py; then
+            tool_changed=true
           fi
           echo "tool_changed=${tool_changed}"
           echo "tool_changed=${tool_changed}" >> "$GITHUB_OUTPUT"
