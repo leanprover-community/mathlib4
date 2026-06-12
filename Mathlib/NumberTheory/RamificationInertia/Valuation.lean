@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Order.Hom.Units
 public import Mathlib.NumberTheory.RamificationInertia.Ramification
 public import Mathlib.RingTheory.Valuation.Discrete.RankOne
 public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 
 
 /-!
@@ -61,8 +62,6 @@ theorem valuation_liesOver (x : K) :
 
 variable (K)
 
--- TODO: Can remove the `attribute [-instance] ValuativeRel.isUniformAddGroup` after #36769
-attribute [-instance] ValuativeRel.isUniformAddGroup in
 theorem uniformContinuous_algebraMap_liesOver :
     UniformContinuous (algebraMap (WithVal (v.valuation K)) (WithVal (w.valuation L))) := by
   refine uniformContinuous_of_continuousAt_zero _ ?_

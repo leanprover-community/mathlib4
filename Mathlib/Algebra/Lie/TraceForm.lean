@@ -47,6 +47,8 @@ open Set Module
 
 namespace LieModule
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-- A finite, free representation of a Lie algebra `L` induces a bilinear form on `L` called
 the trace form. See also `killingForm`. -/
 noncomputable def traceForm : LinearMap.BilinForm R L :=
@@ -125,9 +127,9 @@ lemma trace_toEnd_mul_eq_zero_of_traceForm_eq_zero (h : traceForm R L M = 0)
     obtain ⟨c : L, hbc : φ c = ⁅y, φ b⁆⟩ := hy (φ b) (LieHom.mem_range_self φ b)
     replace hbc : ⁅φ b, y⁆ = -φ c := by rw [hbc, Module.End.instLieRingModule_eq, lie_skew]
     rw [LieHom.map_lie, LinearMap.trace_lie_mul_eq, Ring.lie_def,
-      ← LieRing.of_associative_ring_bracket, ← Module.End.instLieRingModule_eq, hbc, mul_neg,
-      map_neg, neg_eq_zero, Module.End.mul_eq_comp, ← traceForm_apply_apply, h,
-      LinearMap.zero_apply, LinearMap.zero_apply]
+      ← LieRing.of_associative_ring_bracket, hbc, mul_neg, map_neg, neg_eq_zero,
+      Module.End.mul_eq_comp, ← traceForm_apply_apply, h, LinearMap.zero_apply,
+      LinearMap.zero_apply]
   | zero => simp
   | add u v _ _ hu hv => simp [add_mul, hu, hv]
   | smul t u _ hu => simp [hu]
@@ -318,7 +320,7 @@ lemma isLieAbelian_of_ker_traceForm_eq_bot [Module.Free R M] [Module.Finite R M]
     (h : LinearMap.ker (traceForm R L M) = ⊥) : IsLieAbelian L := by
   simpa only [← disjoint_lowerCentralSeries_maxTrivSubmodule_iff R L L, disjoint_iff_inf_le,
     LieIdeal.toLieSubalgebra_toSubmodule, LieSubmodule.toSubmodule_eq_bot, h]
-    using lowerCentralSeries_one_inf_center_le_ker_traceForm R L M
+    using! lowerCentralSeries_one_inf_center_le_ker_traceForm R L M
 
 end LieModule
 

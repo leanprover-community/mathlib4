@@ -164,6 +164,7 @@ theorem iff_of_openCover (𝒰 : Y.OpenCover) :
     P f ↔ ∀ i, P (𝒰.pullbackHom f i) :=
   ⟨fun H _ ↦ of_isPullback (.of_hasPullback _ _) H, of_openCover _⟩
 
+set_option backward.defeqAttrib.useBackward true in
 lemma of_range_subset_iSup [P.RespectsRight @IsOpenImmersion] {ι : Type*} (U : ι → Y.Opens)
     (H : Set.range f ⊆ (⨆ i, U i : Y.Opens)) (hf : ∀ i, P (f ∣_ U i)) : P f := by
   let g : X ⟶ (⨆ i, U i : Y.Opens) := IsOpenImmersion.lift (Scheme.Opens.ι _) f (by simpa using H)
@@ -223,6 +224,7 @@ abbrev IsZariskiLocalAtSource (P : MorphismProperty Scheme.{u}) :=
 
 namespace IsZariskiLocalAtSource
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 `P` is local at the source if
 1. `P` respects isomorphisms.
@@ -633,7 +635,7 @@ theorem isStableUnderBaseChange (hP' : Q.IsStableUnderBaseChange) :
           (pullbackRightPullbackFstIso (S.affineCover.f i) g
             (pullback.snd f (S.affineCover.f i))).symm
         exact asIso
-          (pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simpa using pullback.condition) (by simp))
+          (pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simpa using! pullback.condition) (by simp))
       have : e.hom ≫ pullback.fst _ _ =
           pullback.snd (pullback.fst f g) ((S.affineCover.pullback₁ f).f i) := by
         simp [e]
@@ -646,10 +648,8 @@ theorem isStableUnderBaseChange (hP' : Q.IsStableUnderBaseChange) :
 lemma isZariskiLocalAtSource
     (H : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffine Y] (𝒰 : Scheme.OpenCover.{u} X),
         Q f ↔ ∀ i, Q (𝒰.f i ≫ f)) : IsZariskiLocalAtSource P := by
-  refine .mk_of_small ?_ ?_
-  all_goals
-    intro X Y f 𝒰 hf
-    simp_rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top _ (iSup_affineOpens_eq_top Y),
+  refine .mk_of_small (fun {X Y f} 𝒰 hf ↦ ?_) (fun {X Y f} 𝒰 hf ↦ ?_) <;>
+  simp_rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top _ (iSup_affineOpens_eq_top Y),
       HasAffineProperty.iff_of_isAffine, morphismRestrict_comp] at hf ⊢
   · intro i U
     let 𝒰' : X.OpenCover := (Scheme.Cover.ulift 𝒰).add (𝒰.f i)

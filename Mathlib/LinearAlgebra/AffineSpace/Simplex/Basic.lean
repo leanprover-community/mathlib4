@@ -443,7 +443,7 @@ lemma setInterior_restrict (I : Set k) {n : ℕ} (s : Simplex k P n) {S : Affine
     (s.restrict S hS).setInterior I = S.subtype ⁻¹' (s.setInterior I) := by
   letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   rw [← S.subtype_injective.image_injective.eq_iff,
-    Set.image_preimage_eq_of_subset (s.setInterior_subset_affineSpan.trans (by simpa using hS)),
+    Set.image_preimage_eq_of_subset (s.setInterior_subset_affineSpan.trans (by simpa using! hS)),
     ← (s.restrict S hS).setInterior_map I S.subtype_injective]
   rfl
 
@@ -705,11 +705,14 @@ theorem closedInterior_eq_interior_union [IsOrderedAddMonoid k] [ZeroLEOneClass 
   · refine Set.union_subset s.interior_subset_closedInterior (Set.iUnion_subset fun i ↦ ?_)
     exact s.closedInterior_faceOpposite_subset_closedInterior i
 
-theorem closedInterior_diff_interior [Nontrivial k] [IsOrderedAddMonoid k] [ZeroLEOneClass k]
+theorem closedInterior_sdiff_interior [Nontrivial k] [IsOrderedAddMonoid k] [ZeroLEOneClass k]
     {n : ℕ} [NeZero n] (s : Simplex k P n) :
     s.closedInterior \ s.interior = ⋃ i : Fin (n + 1), (s.faceOpposite i).closedInterior := by
   simpa [closedInterior_eq_interior_union] using
     fun i ↦ (s.disjoint_interior_closedInterior_faceOpposite i).symm
+
+@[deprecated (since := "2026-06-03")]
+alias closedInterior_diff_interior := closedInterior_sdiff_interior
 
 end LinearOrder
 
