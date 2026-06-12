@@ -171,7 +171,7 @@ lemma isUnit_jacobian_of_linearIndependent_of_span_eq_top
   classical
   rw [isUnit_jacobian_iff_aevalDifferential_bijective]
   exact LinearMap.bijective_of_linearIndependent_of_span_eq_top (Pi.basisFun _ _).span_eq
-    (by convert hli; simp) (by convert hsp; simp)
+    (by convert! hli; simp) (by convert! hsp; simp)
 
 end
 
@@ -192,7 +192,6 @@ lemma jacobiMatrix_ofAlgEquiv (P : PreSubmersivePresentation R S ι σ) {T : Typ
     (P.ofAlgEquiv e).jacobiMatrix = P.jacobiMatrix :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma jacobian_ofAlgEquiv (P : PreSubmersivePresentation R S ι σ) {T : Type*} [CommRing T]
     [Algebra R T] (e : S ≃ₐ[R] T) [Finite σ] :
@@ -380,8 +379,9 @@ lemma comp_jacobian_eq_jacobian_smul_jacobian [Finite σ] [Finite σ'] :
     (aeval (Q.comp P).val) (Q.comp P).jacobiMatrix.toBlocks₂₂.det = P.jacobian • Q.jacobian
   · simp only [Generators.algebraMap_apply, ← map_mul]
     congr
-    convert Matrix.det_fromBlocks_zero₁₂ (Q.comp P).jacobiMatrix.toBlocks₁₁
-      (Q.comp P).jacobiMatrix.toBlocks₂₁ (Q.comp P).jacobiMatrix.toBlocks₂₂
+    convert!
+      Matrix.det_fromBlocks_zero₁₂ (Q.comp P).jacobiMatrix.toBlocks₁₁
+        (Q.comp P).jacobiMatrix.toBlocks₂₁ (Q.comp P).jacobiMatrix.toBlocks₂₂
   · rw [jacobiMatrix_comp_₁₁_det, jacobiMatrix_comp_₂₂_det, mul_comm, Algebra.smul_def]
 
 end Composition
@@ -440,7 +440,6 @@ lemma jacobiMatrix_reindex {ι' σ' : Type*} (e : ι' ≃ ι) (f : σ' ≃ σ)
   simp [jacobiMatrix_apply,
     MvPolynomial.pderiv_rename e.symm.injective, reindex, Presentation.reindex]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma jacobian_reindex (P : PreSubmersivePresentation R S ι σ)
     {ι' σ' : Type*} (e : ι' ≃ ι) (f : σ' ≃ σ) [Finite σ] [Finite σ'] :
@@ -607,7 +606,7 @@ noncomputable def aevalDifferentialEquiv (P : SubmersivePresentation R S ι σ) 
   haveI : Fintype σ := Fintype.ofFinite σ
   have :
       IsUnit (LinearMap.toMatrix (Pi.basisFun S σ) (Pi.basisFun S σ) P.aevalDifferential).det := by
-    convert P.jacobian_isUnit
+    convert! P.jacobian_isUnit
     rw [LinearMap.toMatrix_eq_toMatrix', jacobian_eq_jacobiMatrix_det,
       aevalDifferential_toMatrix'_eq_mapMatrix_jacobiMatrix, P.algebraMap_eq]
     simp [RingHom.map_det]

@@ -106,14 +106,14 @@ namespace GenLoop
 
 instance instFunLike : FunLike (Ω^ N X x) (I^N) X where
   coe f := f.1
-  coe_injective' := fun ⟨⟨f, _⟩, _⟩ ⟨⟨g, _⟩, _⟩ _ ↦ by congr
+  coe_injective := fun ⟨⟨f, _⟩, _⟩ ⟨⟨g, _⟩, _⟩ _ ↦ by congr
 
 @[simp]
 theorem coe_coe (f : Ω^ N X x) : ⇑(f : C(I^N, X)) = f := rfl
 
 @[ext]
 theorem ext (f g : Ω^ N X x) (H : ∀ y, f y = g y) : f = g :=
-  DFunLike.coe_injective' (funext H)
+  DFunLike.coe_injective (funext H)
 
 @[simp]
 theorem mk_apply (f : C(I^N, X)) (H y) : (⟨f, H⟩ : Ω^ N X x) y = f y :=
@@ -127,7 +127,7 @@ instance instContinuousEvalConst : ContinuousEvalConst (Ω^ N X x) (I^N) X := in
 /-- Copy of a `GenLoop` with a new map from the unit cube equal to the old one.
   Useful to fix definitional equalities. -/
 def copy (f : Ω^ N X x) (g : (I^N) → X) (h : g = f) : Ω^ N X x :=
-  ⟨⟨g, h.symm ▸ f.1.2⟩, by convert f.2⟩
+  ⟨⟨g, h.symm ▸ f.1.2⟩, by convert! f.2⟩
 
 theorem coe_copy (f : Ω^ N X x) {g : (I^N) → X} (h : g = f) : ⇑(copy f g h) = g :=
   rfl
@@ -393,6 +393,7 @@ theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
     | apply congr_arg q
     apply (Cube.splitAt i).left_inv
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Concatenation of two `GenLoop`s along the `i`th coordinate. -/
 def transAt (i : N) (f g : Ω^ N X x) : Ω^ N X x :=
   copy (fromLoop i <| (toLoop i f).trans <| toLoop i g)

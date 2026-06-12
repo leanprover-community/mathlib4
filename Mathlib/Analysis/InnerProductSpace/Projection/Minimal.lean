@@ -51,7 +51,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
   have norm_tendsto : Tendsto (fun n => ‖u - w n‖) atTop (𝓝 δ) := by
     have h : Tendsto (fun _ : ℕ => δ) atTop (𝓝 δ) := tendsto_const_nhds
     have h' : Tendsto (fun n : ℕ => δ + 1 / (n + 1)) atTop (𝓝 δ) := by
-      convert h.add tendsto_one_div_add_atTop_nhds_zero_nat
+      convert! h.add tendsto_one_div_add_atTop_nhds_zero_nat
       simp only [add_zero]
     exact tendsto_of_tendsto_of_tendsto_of_le_of_le h h' (fun x => δ_le _) fun x => le_of_lt (hw _)
   -- Step 2: Prove that the sequence `w : ℕ → K` is a Cauchy sequence
@@ -130,7 +130,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
   use v, hv
   have h_cont : Continuous fun v => ‖u - v‖ := by fun_prop
   have : Tendsto (fun n => ‖u - w n‖) atTop (𝓝 ‖u - v‖) := by
-    convert Tendsto.comp h_cont.continuousAt w_tendsto
+    convert! Tendsto.comp h_cont.continuousAt w_tendsto
   exact tendsto_nhds_unique this norm_tendsto
 
 /-- Characterization of minimizers for the projection on a convex set in a real inner product
