@@ -31,7 +31,17 @@ variable (I J n) in
 def IsOpenSmoothEmbedding (f : M → N) : Prop :=
   ∃ U : Opens N, ∃ φ : Diffeomorph I J M U n, (Subtype.val ∘ φ) = f
 
-set_option linter.flexible false in -- TODO fix!
+open IsManifold in
+lemma bar (φ : OpenPartialHomeomorph H H) (hφ : CMDiff[φ.source] n φ) :
+    φ ∈ contDiffGroupoid n I := by
+  rw [contDiffGroupoid, mem_groupoid_of_pregroupoid]
+  constructor
+  · rw [contDiffPregroupoid]
+    dsimp
+    rw [← contMDiffOn_iff_contDiffOn]
+    sorry -- is this kind of obvious, as I is smooth??
+  sorry
+
 open IsManifold in
 lemma foo [IsManifold I n M]
     (φ : OpenPartialHomeomorph M H) (hφ : φ ∈ maximalAtlas I n M) (Φ : Diffeomorph I I M M n) :
@@ -39,7 +49,12 @@ lemma foo [IsManifold I n M]
   rw [IsManifold.mem_maximalAtlas_iff, _root_.mem_maximalAtlas_iff]
   intro e he
   constructor
-  · rw [OpenPartialHomeomorph.trans_symm_eq_symm_trans_symm, OpenPartialHomeomorph.symm_symm]
+  · apply bar
+    simp
+    -- φ and e are smooth... hopefully!
+    -- then, composition of smooth functions!
+    sorry
+    /- rw [OpenPartialHomeomorph.trans_symm_eq_symm_trans_symm, OpenPartialHomeomorph.symm_symm]
     rw [IsManifold.mem_maximalAtlas_iff, _root_.mem_maximalAtlas_iff] at hφ
     have aux := (hφ e he).1
     -- dubious now...
@@ -49,12 +64,9 @@ lemma foo [IsManifold I n M]
       rw [contDiffPregroupoid]
       dsimp
       sorry
-    · sorry -- analogous to upstairs
-  · rw [IsManifold.mem_maximalAtlas_iff, _root_.mem_maximalAtlas_iff] at hφ
-    have aux := (hφ e he).2
-
-
-    sorry -- analogous to upstairs, I guess
+    · sorry -- analogous to upstairs -/
+  · apply bar
+    sorry
 
 -- TODO: once we have a better characterisatio of local diffeomorphisms, replace this proof by
 -- "mfderiv% Φ is invertible, hence has a left inverse, thus Φ is an immersion"
