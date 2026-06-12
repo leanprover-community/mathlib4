@@ -63,7 +63,7 @@ def DischargeM.disch {u : Level} (i : ℕ) (kind : ProofKind) (type : Q(Sort u))
     DischargeM Q($type) := do
   let ⟨discharger⟩ ← read
   let context ← CacheAtomM.getContext Cache
-  logInfo m!"Discharging {type} in local context {context}"
+  trace[Tactic.field_simp] m!"Discharging {type} in local context {context}"
   let ⟨c, l⟩ ← CacheAtomM.get (σ := Cache)
   match c.get? ⟨i, kind, context⟩  with
   | none =>
@@ -751,9 +751,10 @@ further progress.
 elab (name := fieldSimp) "field_simp" tk:"!"?  d:(discharger)? args:(simpArgs)? loc:(location)? :
     tactic => withMainContext do
   let disch ← parseDischarger d args
+  let baseDepth := (← getMCtx).depth
   let disch {u : Level} (type : Q(Sort u)) : MetaM Q($type) := do
-    logInfo m!"Running discharger on {type}"
-    if tk.isSome then
+    trace[Tactic.field_simp] m!"Running discharger on {type}"
+    if tk.isSome ∧ baseDepth = (← getMCtx).depth then
       try disch type
       catch | _ => return ← mkFreshExprMVarQ type
     else disch type
@@ -769,7 +770,7 @@ elab (name := fieldSimp) "field_simp" tk:"!"?  d:(discharger)? args:(simpArgs)? 
     let mut sideGoals ← (← cs.get).2.getMVars
     for g in sideGoals do g.withContext do
       -- let lctx := (← g.getDecl).lctx
-      logInfo m!"{g}"
+      trace[Tactic.field_simp] m!"{g}"
     let currGoals ← getGoals
     if currGoals.length < numGoals then
       setGoals (sideGoals ++ currGoals)
