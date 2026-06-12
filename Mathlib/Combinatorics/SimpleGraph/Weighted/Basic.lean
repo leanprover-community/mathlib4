@@ -266,8 +266,8 @@ lemma associatedForm_apply {f g} : G.associatedForm f g =
   (1/2) * ∑ x, ∑ y, (G.edgeWeight x y) * (f x - f y) * (g x - g y) +
     ∑ x, (G.killingTerm x) * f x * g x := by rfl
 
-noncomputable
-instance : DecidableEq X := by exact Classical.typeDecidableEq X
+--noncomputable
+--instance : DecidableEq X := by exact Classical.typeDecidableEq X
 /-
 /-- We define the indicator functions to be our standard basis functions for X → ℝ -/
 noncomputable
