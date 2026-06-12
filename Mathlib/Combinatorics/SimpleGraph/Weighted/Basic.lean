@@ -78,11 +78,8 @@ lemma WeightedGraph.Not_Adj_iff_edgeWeight_eq_zero {x y : X} (G : WeightedGraph 
     ¬ G.Adj x y ↔ G.edgeWeight x y = 0 := by
   contrapose
   rw [G.edgeDef]
-  constructor
-  · grind
-  intro h
-  exact (lt_of_le_of_ne (G.edgeWeight x y).coe_nonneg (coe_ne_zero.mpr h).symm :
-    (0 : ℝ) < G.edgeWeight x y)
+  exact ⟨by grind, fun h ↦ (lt_of_le_of_ne (G.edgeWeight x y).coe_nonneg (coe_ne_zero.mpr h).symm :
+    (0 : ℝ) < G.edgeWeight x y)⟩
 
 /--
 No vertex is adjacent to itself, so the edge weight of loop (edge that connects a vertex to itself)
@@ -201,8 +198,7 @@ lemma degreeWithStandardWeights (h : StandardWeights G) (x : X) :
 open scoped Classical in
 lemma degreeWithStandardWeightsCard (h : StandardWeights G) (x : X) :
     G.degree x = (G.neighborFinset x).card := by
-  rw [degreeWithStandardWeights G h x]
-  simp
+  simp [degreeWithStandardWeights G h x]
 
 namespace WeightedGraphWithKillingTerm
 
@@ -308,7 +304,6 @@ lemma associatedForm_of_basis_eq_degree :
   rw [← sum_const_zero]
   congr! with z h'
   grind
-
 
 lemma neq_basis_vecs_imp_sum_weighted_killingTerm_neq_basisFun_eq_zero (x y : X) (h : x ≠ y) :
     ∑ z, G.killingTerm z * (𝟙_x) z * (𝟙_y) z = 0 := by
