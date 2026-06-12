@@ -33,20 +33,29 @@ variable {A₁ A₂ B₁ B₂ : Type*}
 
 section CFC
 
-variable [NonUnitalRing A₁] [Module ℂ A₁] [SMulCommClass ℝ A₁ A₁] [IsScalarTower ℝ A₁ A₁]
-  [StarRing A₁] [TopologicalSpace A₁] [NonUnitalContinuousFunctionalCalculus ℝ A₁ IsSelfAdjoint]
-  [PartialOrder A₁] [StarOrderedRing A₁]
-
-variable [NonUnitalRing A₂] [Module ℂ A₂] [StarRing A₂] [PartialOrder A₂] [StarOrderedRing A₂]
+variable {R E₁ E₂ : Type*} [Semiring R] [AddCommGroup E₁] [PartialOrder E₁]
+    [Star E₁] [Module R E₁] [SelfAdjointDecompose E₁]
+    [NonUnitalRing E₂] [PartialOrder E₂] [StarRing E₂] [StarOrderedRing E₂] [Module R E₂]
 
 @[aesop safe apply (rule_sets := [CStarAlgebra])]
-lemma map_isSelfAdjoint (f : A₁ →ₚ[ℂ] A₂) (a : A₁) (ha : IsSelfAdjoint a) :
+lemma map_isSelfAdjoint (f : E₁ →ₚ[R] E₂) {a : E₁} (ha : IsSelfAdjoint a) :
     IsSelfAdjoint (f a) := by
-  rw [← CFC.posPart_sub_negPart a ha]
+  obtain ⟨b, c, hb, hc, rfl⟩ := ha.exists_nonneg_sub_nonpos
   cfc_tac
 
 end CFC
 
+-- should generalize this to morphism classes, and also need to add the
+-- `SelfAdjointDecompose` instance for types with a CFC.
+open ComplexStarModule in
+instance [AddCommGroup A₁] [Module ℂ A₁] [PartialOrder A₁] [StarAddMonoid A₁]
+    [SelfAdjointDecompose A₁] [StarModule ℂ A₁] [NonUnitalRing A₂] [Module ℂ A₂] [StarRing A₂]
+    [PartialOrder A₂] [StarOrderedRing A₂] [StarModule ℂ A₂] :
+    StarHomClass (A₁ →ₚ[ℂ] A₂) A₁ A₂ where
+  map_star φ x := by
+    rw [← realPart_add_I_smul_imaginaryPart x]
+    simp [φ.map_isSelfAdjoint (ℜ x).2, IsSelfAdjoint.star_eq,
+      φ.map_isSelfAdjoint (ℑ x).2]
 
 section CStarAlgebra
 
