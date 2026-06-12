@@ -157,7 +157,7 @@ elab (name := ring1NF) "ring1_nf" tk:"!"? cfg:optConfig : tactic => do
   let mut cfg ← elabConfig cfg
   if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let s ← IO.mkRef {}
-  liftMetaMAtMain fun g ↦ AtomM.RecurseT.run s cfg.toConfig
+  liftMetaMAtMain fun g ↦ AtomM.RecurseM.run s cfg.toConfig
     (wellBehavedDischarge := true) evalExpr (cleanup cfg) <| proveEq g
 
 @[tactic_alt ring1]

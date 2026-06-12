@@ -768,7 +768,7 @@ elab (name := fieldSimp) "field_simp" tk:"!"?  d:(discharger)? args:(simpArgs)? 
   let cs ← IO.mkRef (0, {})
   let s ← IO.mkRef {}
   let cleanup r := do r.mkEqTrans (← simpOnlyNames [] r.expr) -- convert e.g. `x = x` to `True`
-  let m := CacheAtomM.recurse (wellBehavedDischarge := false) cs s {}
+  let m := CacheAtomM.recurse (wellBehavedDischarge := false) cs s {contextual := true}
     ((fun e ↦ (reduceProp e <|> reduceExpr e) ⟨disch⟩)) cleanup
   let numGoals := (← getGoals).length
   let loc := (loc.map expandLocation).getD (.targets #[] true)
@@ -785,6 +785,9 @@ elab (name := fieldSimp) "field_simp" tk:"!"?  d:(discharger)? args:(simpArgs)? 
       let g :: l := currGoals | unreachable!
       setGoals (g :: sideGoals ++ l)
 
+@[inherit_doc fieldSimp] macro "field_simp!" d:(discharger)? args:(simpArgs)? loc:(location)? :
+    tactic =>
+  `(tactic| field_simp ! $[$d:discharger]? $[$args:simpArgs]? $[$loc:location]?)
 
 /--
 `field_simp` normalizes an expression in a (semi-)field by rewriting it to a common denominator,

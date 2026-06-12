@@ -1075,3 +1075,24 @@ example (x : ℚ) : (x = 0 → x / x = 1) := by
   field_simp
   guard_target = (x = 0 → x / x = 1)
   exact test_sorry
+
+
+variable {K : Type*} [Field K] {a b c : K}
+
+example (h : b - a * c ≠ 0) : 1 / (b - a * c) = 0 := by
+  field_simp
+  guard_target = 1 = (b - a * c) * 0
+  exact test_sorry
+
+example (h : b - a * c ≠ 0) : c / (b - a * c) = 0 := by
+  field_simp!
+  · guard_target = c = (b - c * a) * 0
+    exact test_sorry
+  · guard_target = b - c * a ≠ 0
+    ring_nf at h ⊢
+    exact h
+
+example (h : b - c * a ≠ 0) : c / (b - c * a) = 0 := by
+  field_simp -- c = (b - c * a) * 0
+  guard_target = c = (b - c * a) * 0
+  exact test_sorry

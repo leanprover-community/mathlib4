@@ -188,7 +188,8 @@ partial def RecurseT.runCached
     (wellBehavedDischarge : Bool) (eval : Expr → CacheAtomM σ Simp.Result)
     (simp : Simp.Result → MetaM Simp.Result) (x : RecurseT (CacheAtomM σ) α) :
     MetaM α := do
-  let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta, singlePass := true }
+  let ctx ← Simp.mkContext
+    { zetaDelta := cfg.zetaDelta, singlePass := true, contextual := cfg.contextual }
     (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
     (congrTheorems := ← getSimpCongrTheorems)
   let nctx := { ctx, simp }
