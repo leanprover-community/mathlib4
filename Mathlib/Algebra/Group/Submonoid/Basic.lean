@@ -361,6 +361,14 @@ theorem IsUnit.mem_submonoid_iff {M : Type*} [Monoid M] (a : M) :
 
 end IsUnit
 
+section Commute
+
+@[simp] lemma Submonoid.commute_coe_coe {S M : Type*} [Mul M] [SetLike S M]
+    [MulMemClass S M] {s : S} {x y : s} : Commute (x : M) (y : M) ↔ Commute x y := by
+  simp [commute_iff_eq, Subtype.ext_iff]
+
+end Commute
+
 namespace MonoidHom
 
 open Submonoid

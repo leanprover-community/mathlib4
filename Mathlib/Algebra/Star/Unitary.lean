@@ -147,18 +147,17 @@ theorem isUnit_coe {U : unitary R} : IsUnit (U : R) := (Unitary.toUnits _).isUni
 lemma commute_self_star (u : unitary R) : Commute u (star u) := by simp [commute_iff_eq]
 lemma commute_star_self (u : unitary R) : Commute (star u) u := by simp [commute_iff_eq]
 
-lemma _root_.commute_unitary_self_star {u : R} (hu : u ∈ unitary R) : Commute u (star u) := by
-  simpa only [commute_iff_eq, Subtype.ext_iff, Submonoid.coe_mul, Unitary.coe_star] using
-    Unitary.commute_self_star ⟨u, hu⟩
+lemma _root_.commute_unitary_self_star {u : R} (hu : u ∈ unitary R) : Commute u (star u) :=
+  Submonoid.commute_coe_coe.mpr <| commute_self_star ⟨u, hu⟩
 
 lemma _root_.commute_unitary_star_self {u : R} (hu : u ∈ unitary R) : Commute (star u) u :=
   commute_unitary_self_star hu |>.symm
 
-lemma _root_.commute_unitary_iff_star_mul_mul {x u : R} {hu : u ∈ unitary R} :
+lemma _root_.commute_unitary_iff_star_left_conjugate {x u : R} (hu : u ∈ unitary R) :
     Commute u x ↔ star u * x * u = x := by
   simpa using! (Unitary.toUnits ⟨u, hu⟩).commute_iff_inv_mul_cancel
 
-lemma _root_.commute_unitary_iff_mul_mul_star {x u : R} {hu : u ∈ unitary R} :
+lemma _root_.commute_unitary_iff_star_right_conjugate {x u : R} (hu : u ∈ unitary R) :
     Commute u x ↔ u * x * star u = x := by
   simpa using! (Unitary.toUnits ⟨u, hu⟩).commute_iff_mul_inv_cancel
 
