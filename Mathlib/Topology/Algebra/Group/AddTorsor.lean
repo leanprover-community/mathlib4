@@ -119,8 +119,8 @@ variable
   [CommGroup W] [TopologicalSpace W]
   [Torsor W Q] [TopologicalSpace Q] [IsTopologicalTorsor Q]
 
-@[to_additive]
-instance : IsTopologicalTorsor (P × Q) where
+@[to_additive instIsTopologicalAddTorsorProd]
+instance instIsTopologicalTorsorProd : IsTopologicalTorsor (P × Q) where
   continuous_smul := Continuous.prodMk (by fun_prop) (by fun_prop)
   continuous_sdiv := Continuous.prodMk (by fun_prop) (by fun_prop)
 
