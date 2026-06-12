@@ -134,4 +134,16 @@ lemma ntRootsFinset_pairwise_associated_sub_one_sub_of_prime (hζ : IsPrimitiveR
   simp only [hij, add_tsub_cancel_of_le] at h
   rw [← h, associated_mul_unit_right_iff]
 
+/-- Given an `n`-th primitive root of unity `ζ`, where `1 < n`, we have that `ζ - 1` divides `n`.
+  In particular, if `ζ` is a `p`-th primitive root of unity with `p` prime, then `ζ - 1` divides
+  `p`. -/
+theorem sub_one_dvd_natCast (hζ : IsPrimitiveRoot ζ n) (hn : 1 < n) : ζ - 1 ∣ (n : A) := by
+  have key : (n : A) = ∑ i ∈ range n, (1 - ζ ^ i) := by
+    rw [Finset.sum_sub_distrib, hζ.geom_sum_eq_zero hn, sub_zero, Finset.sum_const, card_range,
+      nsmul_eq_mul, mul_one]
+  rw [key]
+  refine Finset.dvd_sum fun i _ ↦ ?_
+  have h : ζ - 1 ∣ ζ ^ i - 1 := by simpa using sub_dvd_pow_sub_pow ζ 1 i
+  rwa [← dvd_neg, neg_sub] at h
+
 end IsPrimitiveRoot
