@@ -1,15 +1,17 @@
 /-
-Copyright (c) 2021 Rémy Degenne. All rights reserved.
+Copyright (c) 2026 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
+Authors: Sébastien Gouëzel
 -/
 module
 
 public import Mathlib.MeasureTheory.Integral.SetToL1
 
 /-!
-#SetTo1 and products
+# SetToL1 and products
 -/
+
+public section
 
 open Function TopologicalSpace Set Filter
 open scoped Topology

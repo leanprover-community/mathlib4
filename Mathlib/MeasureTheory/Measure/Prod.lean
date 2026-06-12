@@ -419,6 +419,14 @@ theorem AbsolutelyContinuous.prod [SFinite ν'] (h1 : μ ≪ μ') (h2 : ν ≪ �
   rw [measure_prod_null hs] at h2s
   exact (h2s.filter_mono h1.ae_le).mono fun _ h => h2 h
 
+omit [SFinite ν] in
+@[gcongr] theorem prod_mono [SFinite ν'] (h1 : μ ≤ μ') (h2 : ν ≤ ν') : μ.prod ν ≤ μ'.prod ν' := by
+  apply Measure.le_iff.2 (fun s hs ↦ ?_)
+  calc μ.prod ν s
+  _ ≤ ∫⁻ x, ν (Prod.mk x ⁻¹' s) ∂μ := prod_apply_le hs
+  _ ≤ ∫⁻ x, ν' (Prod.mk x ⁻¹' s) ∂μ' := by gcongr
+  _ = (μ'.prod ν') s := (prod_apply hs).symm
+
 /-- Note: the converse is not true. For a counterexample, see
   Walter Rudin *Real and Complex Analysis*, example (c) in section 8.9. It is true if the set is
   measurable, see `ae_prod_mem_iff_ae_ae_mem`. -/
@@ -835,7 +843,8 @@ theorem map_prod_map {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ} (
 
 -- `prod_smul_right` needs an instance to get `SFinite (c • ν)` from `SFinite ν`,
 -- hence it is placed in the `WithDensity` file, where the instance is defined.
-lemma prod_smul_left {μ : Measure α} (c : ℝ≥0∞) : (c • μ).prod ν = c • (μ.prod ν) := by
+lemma prod_smul_left {μ : Measure α} {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (c : R) : (c • μ).prod ν = c • (μ.prod ν) := by
   ext s hs
   rw [prod_apply hs, Measure.smul_apply, prod_apply hs]
   simp

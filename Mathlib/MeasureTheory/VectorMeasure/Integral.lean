@@ -614,6 +614,19 @@ theorem norm_integral_le_lintegral_norm :
     ‖∫ᵛ a, f a ∂[B; μ]‖ ≤ ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂(μ.transpose B).variation) :=
   (norm_setToFun_le_toReal _ (by simp)).trans (by simp)
 
+theorem norm_integral_le_integral_norm :
+    ‖∫ᵛ a, f a ∂[B; μ]‖ ≤ ∫ a, ‖f a‖ ∂(μ.transpose B).variation := by
+  have le_ae : ∀ᵐ a ∂(μ.transpose B).variation, 0 ≤ ‖f a‖ :=
+    Eventually.of_forall fun a => norm_nonneg _
+  by_cases h : AEStronglyMeasurable f (μ.transpose B).variation
+  · calc ‖∫ᵛ a, f a ∂[B; μ]‖
+    _ ≤ ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂(μ.transpose B).variation) :=
+      norm_integral_le_lintegral_norm
+    _ = ∫ a, ‖f a‖ ∂(μ.transpose B).variation :=
+      (integral_eq_lintegral_of_nonneg_ae le_ae <| h.norm).symm
+  · rw [integral_non_aestronglyMeasurable h, norm_zero]
+    exact integral_nonneg_of_ae le_ae
+
 theorem enorm_integral_le_lintegral_enorm :
     ‖∫ᵛ a, f a ∂[B; μ]‖ₑ ≤ ∫⁻ a, ‖f a‖ₑ ∂(μ.transpose B).variation :=
   (enorm_setToFun_le _ (by simp)).trans (by simp)
