@@ -711,8 +711,8 @@ theorem Commute.span_left {s : Set A} {x : A} (h : ∀ y ∈ s, Commute y x) :
   | add _ _ _ _ h₁ h₂ => exact h₁.add_left h₂
   | smul _ _ _ h => exact h.smul_left _
 
-/-- In a non-unital algebra, If every element of a set `s` commutes with `x`, then every element of
-`Submodule.span R s` commutes with `x`. -/
+/-- In a non-unital algebra, if `x` commutes with every element of a set `s`, then `x` commutes
+with every element of `Submodule.span R s`. -/
 theorem Commute.span_right {s : Set A} {x : A} (h : ∀ y ∈ s, Commute x y) :
     ∀ y ∈ span R s, Commute x y := by
   simp only [Commute.symm_iff (a := x)] at *
