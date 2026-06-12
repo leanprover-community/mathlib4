@@ -117,7 +117,7 @@ theorem contMDiffOn_extend_symm (he : e ∈ maximalAtlas I n M) :
 
 theorem contMDiffOn_extChartAt_symm (x : M) :
     ContMDiffOn 𝓘(𝕜, E) I n (extChartAt I x).symm (extChartAt I x).target := by
-  convert contMDiffOn_extend_symm (chart_mem_maximalAtlas (I := I) x)
+  convert! contMDiffOn_extend_symm (chart_mem_maximalAtlas (I := I) x)
   · rw [extChartAt_target, I.image_eq]
   · infer_instance
   · infer_instance
@@ -143,7 +143,7 @@ theorem contMDiffWithinAt_extChartAt_symm_target_self (x : M) :
     apply ContinuousAt.comp _ I.continuousAt_symm
     exact (chartAt H x).symm.continuousAt (by simp)
   · apply contMDiffWithinAt_id.congr_of_mem (fun y hy ↦ ?_) (by simp)
-    convert PartialEquiv.right_inv (extChartAt I x) hy
+    convert! PartialEquiv.right_inv (extChartAt I x) hy
     simp
 
 omit [IsManifold I n M] in
@@ -282,7 +282,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : OpenPartialHomeomorph M 
       have hy'' : f ((extChartAt I x).symm y) ∈ c'.source := by
         simp only [c, hy, mfld_simps]
       rw [contMDiffWithinAt_iff_of_mem_source hy' hy''] at H
-      convert H.2.mono _
+      convert! H.2.mono _
       · simp only [c, hy, mfld_simps]
       · dsimp [c, c']; mfld_set_tac
     · -- regularity of the candidate local structomorphism in the reverse direction
@@ -297,7 +297,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : OpenPartialHomeomorph M 
       have hy'' : f.symm ((extChartAt I (f x)).symm y) ∈ c.source := by
         simp only [c', hy, mfld_simps]
       rw [contMDiffWithinAt_iff_of_mem_source hy' hy''] at H
-      convert H.2.mono _
+      convert! H.2.mono _
       · simp only [c', hy, mfld_simps]
       · dsimp [c, c']; mfld_set_tac
     -- now check the candidate local structomorphism agrees with `f` where it is supposed to

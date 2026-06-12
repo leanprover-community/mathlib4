@@ -11,9 +11,21 @@ public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
 /-! # Bicategories of spans in a category
 
 In this file, given a category `C` and two morphism properties
-Wₗ Wᵣ in C satisfying suitable assumptions regarding identities and base changes,
+Wₗ and Wᵣ in C that are stable under compositions, contain identities and
+such that for any morphism `b : x₃ ⟶ x₄` in Wₗ and any morphism `r : x₂ → x₃` in Wᵣ,
+there exists a pullback square
+```
+     t
+  x₁ --> x₂
+  |      |
+l |      | r
+  v      v
+  x₃ --> x₄
+     b
+```
+in `C` such that `t` satisfies `Wₗ` and `l` satisfies `Wᵣ`,
 we construct the bicategory of spans in C with left morphism in Wₗ and right morphism
-in Wᵣ.
+in Wᵣ (TODO @robin-carlier).
 
 -/
 
@@ -42,7 +54,7 @@ namespace Span
 
 variable {Wₗ Wᵣ} {c c' : C}
 
-/-- A morphism of span is a morphism between the apices compatible
+/-- A morphism of spans is a morphism between the apices compatible
 with the projections. -/
 structure Hom (S₁ S₂ : Span Wₗ Wᵣ c c') : Type _ where
   /-- the map between the apices -/
@@ -64,12 +76,13 @@ attribute [grind =] id_hom comp_hom
 @[ext, grind ext]
 lemma hom_ext {S S' : Span Wₗ Wᵣ c c'} {f g : S ⟶ S'} (h : f.hom = g.hom) :
     f = g := by
-  cases f; cases g
+  cases f
+  cases g
   grind
 
 set_option mathlib.tactic.category.grind true in
 /-- Construct an isomorphism of spans from an isomorphism between the
-apices that is compatible with the projections -/
+apices that is compatible with the projections. -/
 @[simps (attr := grind =)]
 def mkIso {S S' : Span Wₗ Wᵣ c c'} (e : S.apex ≅ S'.apex)
     (hₗ : e.hom ≫ S'.l = S.l := by cat_disch)
@@ -82,12 +95,10 @@ variable [Wₗ.ContainsIdentities] [Wᵣ.ContainsIdentities] [Wₗ.HasPullbacksA
     [Wₗ.IsStableUnderBaseChangeAgainst Wᵣ] [Wᵣ.IsStableUnderBaseChangeAgainst Wₗ]
     [Wₗ.IsStableUnderComposition] [Wᵣ.IsStableUnderComposition]
 
-instance {c c' c'' : C}
-    (S₁ : Span Wₗ Wᵣ c c') (S₂ : Span Wₗ Wᵣ c' c'') :
-    Limits.HasPullback S₁.r S₂.l :=
-  letI : Limits.HasPullback S₂.l S₁.r :=
-    Limits.hasPullback_ofHasPullbacksAgainst S₂.wl S₁.wr
-  Limits.hasPullback_symmetry _ _
+open Limits in
+instance {c c' c'' : C} (S₁ : Span Wₗ Wᵣ c c') (S₂ : Span Wₗ Wᵣ c' c'') : HasPullback S₁.r S₂.l :=
+  letI : HasPullback S₂.l S₁.r := hasPullback_ofHasPullbacksAgainst S₂.wl S₁.wr
+  hasPullback_symmetry _ _
 
 instance (S₁ : Span Wₗ Wᵣ c c') : Wₗ.IsStableUnderBaseChangeAlong S₁.r :=
   MorphismProperty.IsStableUnderBaseChangeAgainst.isStableUnderBaseChangeAlong _ S₁.wr
@@ -113,11 +124,11 @@ total span
      P
     /  \
    /    \
-  Ŝ₁     Ŝ₂
+  X₁     X₂
  /  \   /  \
 c     c'    c''
 ```
-where the top diamond is a pullbacks square
+where the top diamond is a pullback square
 -/
 @[simps (attr := grind =)]
 noncomputable def comp {c c' c'' : C}
@@ -134,8 +145,6 @@ noncomputable def comp {c c' c'' : C}
     IsStableUnderComposition.comp_mem
     _ _ (IsStableUnderBaseChangeAlong.of_isPullback
       (.of_hasPullback S₁.r S₂.l) S₁.wr) S₂.wr
-
-end Span
 
 variable (C) in
 /-- The bicategory of spans of `C` with left/right legs satisfying a given
@@ -512,6 +521,6 @@ instance (S : X ⟶ Y) : IsIso (πₗ S (𝟙 _)) :=
 
 end
 
-end Spans
+end Span
 
 end CategoryTheory

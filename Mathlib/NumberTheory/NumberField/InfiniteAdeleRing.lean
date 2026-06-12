@@ -128,7 +128,7 @@ theorem norm_eq_zero_of_not_isUnit [NumberField K] {x : InfiniteAdeleRing K} (hx
 `NumberField.InfinitePlace.prod_eq_abs_norm`. -/
 theorem coe_norm_eq_abs_norm [NumberField K] (x : K) :
     ‖algebraMap K (InfiniteAdeleRing K) x‖ = |Algebra.norm ℚ x| := by
-  simpa [-Rat.cast_abs, norm_def] using InfinitePlace.prod_eq_abs_norm x
+  simpa [-Rat.cast_abs, norm_def] using! InfinitePlace.prod_eq_abs_norm x
 
 end InfiniteAdeleRing
 
