@@ -76,6 +76,17 @@ recommended_spelling "vsub" for "-ᵥ" in [VSub.vsub, «term_-ᵥ_»]
 
 variable {G : Type*}
 
+section Comp
+
+/-- Type class for the `∘ᶠ` notation. -/
+class Comp (α : Type u) (β : Type v) (γ : outParam (Type w)) where
+  /-- `a ∘ᶠ b` is the composition of `a` and `b`. The meaning of this notation is type-dependent. -/
+  comp : α → β → γ
+
+@[inherit_doc] infixr:65 " ∘ᶠ " => Comp.comp
+
+end Comp
+
 section Star
 
 /-- Notation typeclass (with no default notation!) for an algebraic structure with a star operation.
