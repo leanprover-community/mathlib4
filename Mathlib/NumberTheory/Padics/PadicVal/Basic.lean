@@ -237,18 +237,27 @@ protected theorem mul {q r : ℚ} (hq : q ≠ 0) (hr : r ≠ 0) :
   · simp [finite_int_prime_iff]
   · simp [finite_int_prime_iff, hq, hr]
 
-/-- A rewrite lemma for `padicValRat p (q^k)` with condition `q ≠ 0`. -/
-protected theorem pow {q : ℚ} (hq : q ≠ 0) {k : ℕ} :
+/-- A rewrite lemma for `padicValRat p (q^k)`. -/
+@[simp]
+protected theorem pow (q : ℚ) {k : ℕ} :
     padicValRat p (q ^ k) = k * padicValRat p q := by
+  obtain rfl | hq := eq_or_ne q 0
+  · cases k <;> simp
   induction k <;>
     simp [*, padicValRat.mul hq (pow_ne_zero _ hq), _root_.pow_succ', add_mul, add_comm]
 
-/-- A rewrite lemma for `padicValRat p (q⁻¹)` with condition `q ≠ 0`. -/
+/-- A rewrite lemma for `padicValRat p (q⁻¹)`. -/
+@[simp]
 protected theorem inv (q : ℚ) : padicValRat p q⁻¹ = -padicValRat p q := by
   by_cases hq : q = 0
   · simp [hq]
   · rw [eq_neg_iff_add_eq_zero, ← padicValRat.mul (inv_ne_zero hq) hq, inv_mul_cancel₀ hq,
       padicValRat.one]
+
+@[simp]
+protected theorem zpow (q : ℚ) {k : ℤ} :
+    padicValRat p (q ^ k) = k * padicValRat p q := by
+  induction k using Int.negInduction <;> simp
 
 /-- A rewrite lemma for `padicValRat p (q / r)` with conditions `q ≠ 0`, `r ≠ 0`. -/
 protected theorem div {q r : ℚ} (hq : q ≠ 0) (hr : r ≠ 0) :
@@ -331,8 +340,7 @@ lemma lt_add_of_lt {q r₁ r₂ : ℚ} (hqr : r₁ + r₂ ≠ 0)
 
 @[simp]
 lemma self_pow_inv (r : ℕ) : padicValRat p ((p : ℚ) ^ r)⁻¹ = -r := by
-  rw [padicValRat.inv, neg_inj, padicValRat.pow (Nat.cast_ne_zero.mpr hp.elim.ne_zero),
-      padicValRat.self hp.elim.one_lt, mul_one]
+  rw [padicValRat.inv, neg_inj, padicValRat.pow p, padicValRat.self hp.elim.one_lt, mul_one]
 
 /-- A finite sum of rationals with positive `p`-adic valuation has positive `p`-adic valuation
 (if the sum is non-zero). -/
@@ -388,12 +396,13 @@ protected theorem div (dvd : p ∣ b) : padicValNat p (b / p) = padicValNat p b 
   rw [padicValNat.div_of_dvd dvd, padicValNat_self]
 
 /-- A version of `padicValRat.pow` for `padicValNat`. -/
-protected theorem pow (n : ℕ) (ha : a ≠ 0) : padicValNat p (a ^ n) = n * padicValNat p a := by
-  simpa only [← @Nat.cast_inj ℤ, push_cast] using padicValRat.pow (Nat.cast_ne_zero.mpr ha)
+@[simp]
+protected theorem pow (a n : ℕ) : padicValNat p (a ^ n) = n * padicValNat p a := by
+  simpa only [← @Nat.cast_inj ℤ, push_cast] using padicValRat.pow a
 
 @[simp]
 protected theorem prime_pow (n : ℕ) : padicValNat p (p ^ n) = n := by
-  rw [padicValNat.pow _ (@Fact.out p.Prime).ne_zero, padicValNat_self, mul_one]
+  rw [padicValNat.pow p, padicValNat_self, mul_one]
 
 protected theorem div_pow (dvd : p ^ a ∣ b) : padicValNat p (b / p ^ a) = padicValNat p b - a := by
   rw [padicValNat.div_of_dvd dvd, padicValNat.prime_pow]
@@ -444,7 +453,7 @@ theorem padicValNat_primes {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime] (ne
 
 theorem padicValNat_prime_prime_pow {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
     (n : ℕ) (ne : p ≠ q) : padicValNat p (q ^ n) = 0 := by
-  rw [padicValNat.pow _ <| Nat.Prime.ne_zero hq.elim, padicValNat_primes ne, mul_zero]
+  rw [padicValNat.pow _, padicValNat_primes ne, mul_zero]
 
 theorem padicValNat_mul_pow_left {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
     (n m : ℕ) (ne : p ≠ q) : padicValNat p (p ^ n * q ^ m) = n := by
