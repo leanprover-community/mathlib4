@@ -39,20 +39,19 @@ namespace SheafOfModules
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {J : GrothendieckTopology C} {K : GrothendieckTopology D} {F : C ⥤ D}
   {S : Sheaf J RingCat.{u}} {R : Sheaf K RingCat.{u}}
-  [Functor.IsContinuous.{u} F J K]
+  [Functor.IsContinuous F J K]
   (φ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R)
 
 /-- The canonical map from the (global) sections of a sheaf of modules
 to the (global) sections of its pushforward. -/
 @[simps]
-def pushforwardSections [Functor.IsContinuous.{v} F J K]
-    {M : SheafOfModules.{v} R} (s : M.sections) :
+def pushforwardSections {M : SheafOfModules.{v} R} (s : M.sections) :
     ((pushforward φ).obj M).sections where
   val _ := s.val _
   property _ := s.property _
 
 variable (M) in
-lemma bijective_pushforwardSections [Functor.IsContinuous.{v} F J K] [F.Final] :
+lemma bijective_pushforwardSections [F.Final] :
     Function.Bijective (pushforwardSections φ (M := M)) :=
   Functor.bijective_sectionsPrecomp _ _
 
@@ -62,17 +61,16 @@ variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 /-- The canonical morphism `unit S ⟶ (pushforward.{u} φ).obj (unit R)`
 of sheaves of modules corresponding to a continuous map between ringed sites. -/
 noncomputable def unitToPushforwardObjUnit : unit S ⟶ (pushforward.{u} φ).obj (unit R) where
-  val.app X := ModuleCat.homMk ((forget₂ RingCat AddCommGrpCat).map (φ.val.app X)) (fun r ↦ by
+  val.app X := ModuleCat.homMk ((forget₂ RingCat AddCommGrpCat).map (φ.hom.app X)) (fun r ↦ by
     ext m
-    exact ((φ.val.app X).hom.map_mul _ _).symm)
+    exact ((φ.hom.app X).hom.map_mul _ _).symm)
   val.naturality f := by
     ext
-    exact ConcreteCategory.congr_hom (φ.val.naturality f) _
+    exact ConcreteCategory.congr_hom (φ.hom.naturality f) _
 
-lemma unitToPushforwardObjUnit_val_app_apply {X : Cᵒᵖ} (a : S.val.obj X) :
-    (unitToPushforwardObjUnit φ).val.app X a = φ.val.app X a := rfl
+lemma unitToPushforwardObjUnit_val_app_apply {X : Cᵒᵖ} (a : S.obj.obj X) :
+    (unitToPushforwardObjUnit φ).val.app X a = φ.hom.app X a := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pushforwardSections_unitHomEquiv
     {M : SheafOfModules.{u} R} (f : unit R ⟶ M) :
     pushforwardSections φ (M.unitHomEquiv f) =
@@ -108,7 +106,7 @@ instance [F.Final] : IsIso (pullbackObjUnitToUnit φ) := by
   intro M
   rw [← ((pullbackPushforwardAdjunction.{u} φ).homEquiv _ _).bijective.of_comp_iff',
     ← (unitHomEquiv _).bijective.of_comp_iff']
-  convert (bijective_pushforwardSections φ M).comp (unitHomEquiv _).bijective
+  convert! (bijective_pushforwardSections φ M).comp (unitHomEquiv _).bijective
   ext f : 1
   dsimp
   rw [pushforwardSections_unitHomEquiv, EmbeddingLike.apply_eq_iff_eq,
@@ -132,6 +130,7 @@ lemma pullback_map_ιFree_comp_pullbackObjFreeIso_hom {I : Type u} (i : I) :
       pullbackObjUnitToUnit φ ≫ ιFree i := by
   simp [pullbackObjFreeIso, ιFree]
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma pullbackObjFreeIso_hom_naturality {I J : Type u} (f : I → J) :
     (pullback φ).map (freeMap f) ≫ (pullbackObjFreeIso φ J).hom =
@@ -139,10 +138,11 @@ lemma pullbackObjFreeIso_hom_naturality {I J : Type u} (f : I → J) :
   Cofan.IsColimit.hom_ext (isColimitCofanMkObjOfIsColimit (pullback φ) _ _
     (isColimitFreeCofan (R := S) I)) _ _ (fun i ↦ by simp [← Functor.map_comp_assoc])
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism `freeFunctor ⋙ pullback φ ≅ freeFunctor` for a
 continuous map between ringed sites, when the underlying functor between the sites
 is final. -/
 noncomputable def freeFunctorCompPullbackIso : freeFunctor ⋙ pullback φ ≅ freeFunctor :=
-  NatIso.ofComponents (pullbackObjFreeIso φ)
+  NatIso.ofComponents (fun X ↦ pullbackObjFreeIso φ X)
 
 end SheafOfModules

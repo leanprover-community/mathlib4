@@ -21,10 +21,10 @@ satisfies the descending chain condition. The corresponding property of
 objects `isArtinianObject : ObjectProperty C` is always
 closed under subobjects.
 
-## Future works
+## Future work
 
 * when `C` is an abelian category, relate `IsArtinianObject` in `C`
-with `IsNoetherianObject` in `Cᵒᵖ`.
+  with `IsNoetherianObject` in `Cᵒᵖ`.
 
 -/
 
@@ -86,6 +86,7 @@ lemma not_strictAnti_of_isArtinianObject
     ¬ StrictAnti f :=
   (isArtinianObject_iff_not_strictAnti X).1 inferInstance f
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isArtinianObject_iff_isEventuallyConstant :
     IsArtinianObject X ↔ ∀ (F : ℕ ⥤ (MonoOver X)ᵒᵖ),
       IsFiltered.IsEventuallyConstant F := by

@@ -327,7 +327,7 @@ theorem aestronglyMeasurable_exp_mul_sum {X : ι → Ω → ℝ} {s : Finset ι}
   classical
   induction s using Finset.induction_on with
   | empty =>
-    simp only [sum_apply, sum_empty, mul_zero, exp_zero]
+    simp only [Finset.sum_apply, sum_empty, mul_zero, exp_zero]
     exact aestronglyMeasurable_const
   | insert i s hi_notin_s h_rec =>
     have : ∀ i : ι, i ∈ s → AEStronglyMeasurable (fun ω : Ω => exp (t * X i ω)) μ := fun i hi =>
@@ -350,7 +350,7 @@ theorem iIndepFun.integrable_exp_mul_sum [IsFiniteMeasure μ] {X : ι → Ω →
   classical
   induction s using Finset.induction_on with
   | empty =>
-    simp only [sum_apply, sum_empty, mul_zero, exp_zero]
+    simp only [Finset.sum_apply, sum_empty, mul_zero, exp_zero]
     exact integrable_const _
   | insert i s hi_notin_s h_rec =>
     have : ∀ i : ι, i ∈ s → Integrable (fun ω : Ω => exp (t * X i ω)) μ := fun i hi =>
@@ -358,7 +358,7 @@ theorem iIndepFun.integrable_exp_mul_sum [IsFiniteMeasure μ] {X : ι → Ω →
     specialize h_rec this
     rw [sum_insert hi_notin_s]
     refine IndepFun.integrable_exp_mul_add ?_ (h_int i (mem_insert_self _ _)) h_rec
-    exact (h_indep.indepFun_finset_sum_of_notMem h_meas hi_notin_s).symm
+    exact (h_indep.indepFun_finsetSum_of_notMem h_meas hi_notin_s).symm
 
 theorem iIndepFun.mgf_sum₀ {X : ι → Ω → ℝ}
     (h_indep : iIndepFun X μ) (h_meas : ∀ i, AEMeasurable (X i) μ)
@@ -371,7 +371,7 @@ theorem iIndepFun.mgf_sum₀ {X : ι → Ω → ℝ}
     have h_int' : ∀ i : ι, AEStronglyMeasurable (fun ω : Ω => exp (t * X i ω)) μ := fun i =>
       ((h_meas i).const_mul t).exp.aestronglyMeasurable
     rw [sum_insert hi_notin_s,
-      IndepFun.mgf_add (h_indep.indepFun_finset_sum_of_notMem₀ h_meas hi_notin_s).symm (h_int' i)
+      IndepFun.mgf_add (h_indep.indepFun_finsetSum_of_notMem₀ h_meas hi_notin_s).symm (h_int' i)
         (aestronglyMeasurable_exp_mul_sum fun i _ => h_int' i),
       h_rec, prod_insert hi_notin_s]
 
@@ -425,7 +425,6 @@ theorem mgf_sum_of_identDistrib
 
 section Chernoff
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Chernoff bound** on the upper tail of a real random variable. -/
 theorem measure_ge_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
     (h_int : Integrable (fun ω => exp (t * X ω)) μ) :
@@ -534,3 +533,28 @@ lemma integral_id_map (h : Integrable id μ) (L : E →L[𝕜] F) :
   simp [L.integral_comp_id_comm h]
 
 end ContinuousLinearMap
+
+namespace ContinuousLinearEquiv
+
+variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup F]
+    [NormedSpace 𝕜 E] [NormedSpace ℝ E] [NormedSpace 𝕜 F] [NormedSpace ℝ F] [CompleteSpace E]
+    [CompleteSpace F] [MeasurableSpace E] {μ : Measure E}
+
+lemma integral_comp_id_comm' (L : E ≃L[𝕜] F) :
+    μ[L] = L μ[id] := by
+  by_cases h : Integrable (fun x ↦ x) μ
+  · exact ContinuousLinearMap.integral_comp_id_comm' h L.toContinuousLinearMap
+  have : ¬ Integrable L μ := mt L.integrable_comp_iff.1 h
+  simp_all [integral_undef]
+
+lemma integral_comp_id_comm (L : E ≃L[𝕜] F) :
+    μ[L] = L (∫ x, x ∂μ) := L.integral_comp_id_comm'
+
+variable [BorelSpace E] [MeasurableSpace F] [BorelSpace F]
+
+lemma integral_id_map (L : E ≃L[𝕜] F) :
+    ∫ x, x ∂(μ.map L) = L (∫ x, x ∂μ) := by
+  rw [show ⇑L = ⇑L.toHomeomorph.toMeasurableEquiv from rfl, integral_map_equiv]
+  simp [L.integral_comp_id_comm]
+
+end ContinuousLinearEquiv

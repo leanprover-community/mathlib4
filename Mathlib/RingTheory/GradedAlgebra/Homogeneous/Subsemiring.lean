@@ -48,7 +48,7 @@ theorem toSubsemiring_injective :
 
 instance setLike : SetLike (HomogeneousSubsemiring 𝒜) A where
   coe x := x.carrier
-  coe_injective' _ _ h := toSubsemiring_injective <| SetLike.coe_injective h
+  coe_injective _ _ h := toSubsemiring_injective <| SetLike.coe_injective h
 
 instance : PartialOrder (HomogeneousSubsemiring 𝒜) := .ofSetLike (HomogeneousSubsemiring 𝒜) A
 
@@ -91,9 +91,9 @@ theorem IsHomogeneous.subsemiringClosure {s : Set A}
   | mul x y _ _ h₁ h₂ =>
     classical
     rw [decompose_mul, DirectSum.mul_eq_dfinsuppSum]
-    rw [DFinsupp.sum_apply, DFinsupp.sum, AddSubmonoidClass.coe_finset_sum]
+    rw [DFinsupp.sum_apply, DFinsupp.sum, AddSubmonoidClass.coe_finsetSum]
     refine sum_mem fun j _ ↦ ?_
-    rw [DFinsupp.sum_apply, DFinsupp.sum, AddSubmonoidClass.coe_finset_sum]
+    rw [DFinsupp.sum_apply, DFinsupp.sum, AddSubmonoidClass.coe_finsetSum]
     refine sum_mem fun k _ ↦ ?_
     obtain rfl | h := eq_or_ne i (j + k) <;> simp [of_eq_of_ne, mul_mem, *]
 

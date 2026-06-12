@@ -273,7 +273,6 @@ lemma measurable_singularPart_fun_right (κ η : Kernel α γ) (a : α) :
     - ENNReal.ofReal (1 - rnDerivAux κ (κ + η) a b) * rnDeriv κ η a b) ∘ (fun b ↦ (a, b)))
   exact (measurable_singularPart_fun κ η).comp measurable_prodMk_left
 
-set_option backward.isDefEq.respectTransparency false in
 lemma singularPart_compl_mutuallySingularSetSlice (κ η : Kernel α γ) [IsSFiniteKernel κ]
     [IsSFiniteKernel η] (a : α) :
     singularPart κ η a (mutuallySingularSetSlice κ η a)ᶜ = 0 := by
@@ -334,7 +333,6 @@ lemma withDensity_rnDeriv_of_subset_mutuallySingularSetSlice [IsFiniteKernel κ]
     withDensity η (rnDeriv κ η) a s = 0 :=
   measure_mono_null hs (withDensity_rnDeriv_mutuallySingularSetSlice κ η a)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma withDensity_rnDeriv_of_subset_compl_mutuallySingularSetSlice
     [IsFiniteKernel κ] [IsFiniteKernel η] {a : α} {s : Set γ} (hsm : MeasurableSet s)
     (hs : s ⊆ (mutuallySingularSetSlice κ η a)ᶜ) :
@@ -382,16 +380,16 @@ lemma mutuallySingular_singularPart (κ η : Kernel α γ) [IsFiniteKernel κ] [
 lemma rnDeriv_add_singularPart (κ η : Kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel η] :
     withDensity η (rnDeriv κ η) + singularPart κ η = κ := by
   ext a s hs
-  rw [← inter_union_diff s (mutuallySingularSetSlice κ η a)]
+  rw [← inter_union_sdiff s (mutuallySingularSetSlice κ η a)]
   simp only [coe_add, Pi.add_apply, Measure.coe_add]
   have hm := measurableSet_mutuallySingularSetSlice κ η a
   simp only [measure_union (Disjoint.mono inter_subset_right le_rfl disjoint_sdiff_right)
     (hs.diff hm)]
   rw [singularPart_of_subset_mutuallySingularSetSlice (hs.inter hm) inter_subset_right,
-    singularPart_of_subset_compl_mutuallySingularSetSlice (diff_subset_iff.mpr (by simp)),
+    singularPart_of_subset_compl_mutuallySingularSetSlice (sdiff_subset_iff.mpr (by simp)),
     add_zero, withDensity_rnDeriv_of_subset_mutuallySingularSetSlice inter_subset_right,
     zero_add, withDensity_rnDeriv_of_subset_compl_mutuallySingularSetSlice (hs.diff hm)
-      (diff_subset_iff.mpr (by simp)), add_comm]
+      (sdiff_subset_iff.mpr (by simp)), add_comm]
 
 section EqZeroIff
 

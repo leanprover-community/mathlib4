@@ -79,7 +79,6 @@ end Equiv.Perm
 
 namespace alternatingGroup
 
-set_option backward.isDefEq.respectTransparency false in
 theorem stabilizer.surjective_toPerm {s : Set α} (hs : sᶜ.Nontrivial) :
     Function.Surjective (toPerm : stabilizer (alternatingGroup α) s → Perm s) := by
   classical
@@ -93,17 +92,17 @@ theorem stabilizer.surjective_toPerm {s : Set α} (hs : sᶜ.Nontrivial) :
     intro _
     simp only [mem_smul_set]
     rintro ⟨x, hx, rfl⟩
-    convert hx
+    convert! hx
     rw [Perm.smul_def, ← Perm.notMem_support]
     exact (Set.disjoint_left.mp hk_support) hx
   intro g
   rcases Int.units_eq_one_or (sign g) with hsg | hsg
-  · use! ofSubtype g
+  · use! Equiv.Perm.ofSubtype g
     · simp [mem_alternatingGroup, hsg]
     · rw [mem_stabilizer_iff, Submonoid.mk_smul]
       exact ofSubtype_mem_stabilizer g
     · aesop
-  · use! ofSubtype g * k
+  · use! Equiv.Perm.ofSubtype g * k
     · simp [mem_alternatingGroup, hk_swap.sign_eq, hsg]
     · rw [mem_stabilizer_iff, Submonoid.mk_smul, mul_smul, hks, ofSubtype_mem_stabilizer]
     · ext x
@@ -143,7 +142,7 @@ theorem stabilizer_ne_top {s : Set α} (hs : s.Nonempty) (hsc : sᶜ.Nontrivial)
   simp_rw [mem_stabilizer_set, Subgroup.mk_smul, mul_smul, Perm.smul_def]
   grind
 
-/- Here, we need that `Nat.card α` has at least `4` elements,
+/-- Here, we need that `Nat.card α` has at least `4` elements,
 so that  either `t` has at least 3 elements, or `tᶜ` has at least 2.
 The condition is necessary, because the result is wrong when
 `α = {1, 2, 3}` and either `t = {1, 2}` or `t = {1}`. -/
@@ -155,7 +154,7 @@ theorem exists_mem_stabilizer_smul_eq (hα : 4 ≤ Nat.card α) {t : Set α} :
     simpa
   by_cases ht : 2 < t.ncard
   · rw [← Set.ncard_pair hab] at ht
-    replace ht := Set.diff_nonempty_of_ncard_lt_ncard ht
+    replace ht := Set.sdiff_nonempty_of_ncard_lt_ncard ht
     obtain ⟨c, hct, hc⟩ := ht
     simp only [mem_insert_iff, not_or] at hc
     refine ⟨⟨swap c a * swap a b, by simp [hab, hc.1]⟩, ?_, ?_⟩
@@ -171,7 +170,6 @@ theorem exists_mem_stabilizer_smul_eq (hα : 4 ≤ Nat.card α) {t : Set α} :
     · simp only [Subgroup.smul_def, Perm.smul_def, Perm.coe_mul]
       grind
 
-set_option backward.isDefEq.respectTransparency false in
 theorem subgroup_eq_top_of_isPreprimitive (h4 : 4 < Nat.card α)
     (G : Subgroup (alternatingGroup α)) [hG' : IsPreprimitive G α] {s : Set α}
     (hG : stabilizer (alternatingGroup α) s ≤ G) :
@@ -211,8 +209,7 @@ end MulAction.IsBlock
 
 namespace alternatingGroup
 
-set_option backward.isDefEq.respectTransparency false in
-/- Note : The proof of this statement is close to that
+/-- Note : The proof of this statement is close to that
 of `Equiv.Perm.isCoatom_stabilizer_of_ncard_lt_ncard_compl`,
 and while it would not be absolutely impossible to abstract both proofs,
 the result would be slightly awkward because the
@@ -277,7 +274,6 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl {s : Set α}
   apply isMultiplyPretransitive_of_le (n := Nat.card α - 2) _ (Nat.sub_le _ _)
   grind
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isCoatom_stabilizer_singleton (h3 : 3 ≤ Nat.card α)
     {s : Set α} (h : s.Nonempty) (h1 : s.Subsingleton) :
     IsCoatom (stabilizer (alternatingGroup α) s) := by
@@ -290,7 +286,6 @@ theorem isCoatom_stabilizer_singleton (h3 : 3 ≤ Nat.card α)
     alternatingGroup.isPreprimitive_of_three_le_card α h3
   apply IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `MulAction.stabilizer (alternatingGroup α) s` is a maximal subgroup of `alternatingGroup α`,
 provided `s ≠ ∅`, `sᶜ ≠ ∅` and `Nat.card α ≠ 2 * s.ncard`.
 

@@ -29,7 +29,6 @@ open Topology Metric Filter Set ENNReal NNReal BoundedContinuousFunction
 
 open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
-set_option backward.isDefEq.respectTransparency false in
 lemma CompletelyRegularSpace.exists_BCNN {X : Type*} [TopologicalSpace X] [CompletelyRegularSpace X]
     {K : Set X} (K_closed : IsClosed K) {x : X} (x_notin_K : x ∉ K) :
     ∃ (f : X →ᵇ ℝ≥0), f x = 1 ∧ (∀ y ∈ K, f y = 0) := by
@@ -151,7 +150,7 @@ lemma tendsto_diracProbaEquivSymm_iff_tendsto [T0Space X] [CompletelyRegularSpac
   rw [← (diracProbaEquiv (X := X)).symm_comp_self, ← tendsto_map'_iff] at key
   simp only [tendsto_map'_iff, map_map, Equiv.self_comp_symm, map_id] at key
   simp only [← key, diracProba_comp_diracProbaEquiv_symm_eq_val]
-  convert tendsto_subtype_rng.symm
+  convert! tendsto_subtype_rng.symm
   exact apply_rangeSplitting (fun x ↦ diracProba x) μ
 
 /-- In a T0 topological space, `diracProbaEquiv` is continuous. -/

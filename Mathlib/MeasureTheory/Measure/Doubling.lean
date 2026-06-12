@@ -114,7 +114,6 @@ theorem eventually_measure_mul_le_scalingConstantOf_mul (K : ℝ) :
     gcongr
     apply le_max_left
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eventually_measure_le_scaling_constant_mul (K : ℝ) :
     ∀ᶠ r in 𝓝[>] 0, ∀ x, μ (closedBall x (K * r)) ≤ scalingConstantOf μ K * μ (closedBall x r) := by
   filter_upwards [Classical.choose_spec
@@ -124,7 +123,7 @@ theorem eventually_measure_le_scaling_constant_mul (K : ℝ) :
 theorem eventually_measure_le_scaling_constant_mul' (K : ℝ) (hK : 0 < K) :
     ∀ᶠ r in 𝓝[>] 0, ∀ x,
       μ (closedBall x r) ≤ scalingConstantOf μ K⁻¹ * μ (closedBall x (K * r)) := by
-  convert eventually_nhdsGT_zero_mul_left hK (eventually_measure_le_scaling_constant_mul μ K⁻¹)
+  convert! eventually_nhdsGT_zero_mul_left hK (eventually_measure_le_scaling_constant_mul μ K⁻¹)
   simp [inv_mul_cancel_left₀ hK.ne']
 
 /-- A scale below which the doubling measure `μ` satisfies good rescaling properties when one

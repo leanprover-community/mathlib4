@@ -16,6 +16,7 @@ Given `0 < a, b`, it computes the unique `(w, x, y, z, d)` such that the followi
 * `a = (w + x) d`
 * `b = (y + z) d`
 * `w * z = x * y + 1`
+
 `d` is then the gcd of `a` and `b`, and `a' := a / d = w + x` and `b' := b / d = y + z` are coprime.
 
 This story is closely related to the structure of SL₂(ℕ) (as a free monoid on two generators) and
@@ -42,8 +43,8 @@ namespace PNat
 
 /-- A term of `XgcdType` is a system of six naturals.  They should
 be thought of as representing the matrix
-[[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]
-together with the vector [a, b] = [ap + 1, bp + 1].
+`[[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]`
+together with the vector `[a, b] = [ap + 1, bp + 1]`.
 -/
 structure XgcdType where
   /-- `wp` is a variable which changes through the algorithm. -/
@@ -108,9 +109,9 @@ def qp : ℕ :=
   u.q - 1
 
 /-- The map `v` gives the product of the matrix
-[[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]
-and the vector [a, b] = [ap + 1, bp + 1].  The map
-`vp` gives [sp, tp] such that v = [sp + 1, tp + 1].
+`[[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]`
+and the vector `[a, b] = [ap + 1, bp + 1]`.  The map
+`vp` gives `[sp, tp]` such that `v = [sp + 1, tp + 1]`.
 -/
 def vp : ℕ × ℕ :=
   ⟨u.wp + u.x + u.ap + u.wp * u.ap + u.x * u.bp, u.y + u.zp + u.bp + u.y * u.ap + u.zp * u.bp⟩
@@ -233,7 +234,9 @@ theorem start_v (a b : ℕ+) : (start a b).v = ⟨a, b⟩ := by
   dsimp [start, v, XgcdType.a, XgcdType.b, w, z]
   have := a.pos
   have := b.pos
-  lia
+  #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
+  we need to re-enable model-based theory combination in `lia` for this to go through. -/
+  lia +mbtc
 
 /-- `finish` happens when the reducing process ends. -/
 def finish : XgcdType :=

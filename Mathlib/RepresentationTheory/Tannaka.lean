@@ -39,8 +39,8 @@ variable {k G : Type u} [CommRing k] [Group G]
 
 section definitions
 
-instance : (forget₂ (FDRep k G) (FGModuleCat k)).Monoidal := by
-  change (Action.forget _ _).Monoidal; infer_instance
+instance : (forget₂ (FDRep k G) (FGModuleCat k)).Monoidal :=
+  inferInstanceAs <| (Action.forget _ _).Monoidal
 
 variable (k G) in
 /-- The monoidal forgetful functor from `FDRep k G` to `FGModuleCat k`. -/
@@ -50,7 +50,6 @@ def forget := LaxMonoidalFunctor.of (forget₂ (FDRep k G) (FGModuleCat k))
 
 @[simp] lemma forget_map (X Y : FDRep k G) (f : X ⟶ Y) : (forget k G).map f = f.hom := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Definition of `equivHom g : Aut (forget k G)` by its components. -/
 @[simps]
 def equivApp (g : G) (X : FDRep k G) : X.V ≅ X.V where
@@ -119,7 +118,6 @@ lemma equivHom_injective [Nontrivial k] : Function.Injective (equivHom k G) := b
   apply_fun (fun x ↦ (x.hom.hom.app rightFDRep).hom (single t 1) 1) at h
   simp_all [single_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `FDRep k G` morphism induced by multiplication on `G → k`. -/
 def mulRepHom : rightFDRep (k := k) (G := G) ⊗ rightFDRep ⟶ rightFDRep where
   hom := InducedCategory.homMk (ofHom (LinearMap.mul' k (G → k)))
@@ -176,7 +174,7 @@ def ofRightFDRep [Fintype G] (X : FDRep k G) (v : X) : rightFDRep ⟶ X where
     ext f
     let φ_term (X : FDRep k G) (f : G → k) v s := (f s) • (X.ρ s⁻¹ v)
     have := sum_map univ (mulRightEmbedding t⁻¹) (φ_term X (rightRegular t f) v)
-    simpa [φ_term] using this
+    simpa [φ_term] using! this
 
 set_option backward.isDefEq.respectTransparency false in
 lemma toRightFDRepComp_injective {η₁ η₂ : Aut (forget k G)}
@@ -213,7 +211,7 @@ lemma toRightFDRepComp_in_rightRegular [IsDomain k] (η : Aut (forget k G)) :
       congrFun congr(($nat.symm).hom (single u 1)) 1
     _ = evalAlgHom _ _ s (leftRegular t⁻¹ (single u 1)) :=
       congr($hs (leftRegular t⁻¹ (single u 1)))
-    _ = _ := by by_cases u = t * s <;> simp_all [single_apply]
+    _ = _ := by by_cases u = t * s <;> simp_all
 
 lemma equivHom_surjective [IsDomain k] : Function.Surjective (equivHom k G) := by
   intro η

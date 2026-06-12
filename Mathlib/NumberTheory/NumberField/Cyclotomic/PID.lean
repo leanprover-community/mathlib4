@@ -29,7 +29,6 @@ open NumberField Polynomial InfinitePlace Nat Real cyclotomic
 
 variable (K : Type u) [Field K] [NumberField K]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `IsCyclotomicExtension {3} ℚ K` then `𝓞 K` is a principal ideal domain. -/
 theorem three_pid [IsCyclotomicExtension {3} ℚ K] : IsPrincipalIdealRing (𝓞 K) := by
   apply RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
@@ -44,7 +43,6 @@ theorem three_pid [IsCyclotomicExtension {3} ℚ K] : IsPrincipalIdealRing (𝓞
   gcongr
   exact pi_gt_three
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `IsCyclotomicExtension {5} ℚ K` then `𝓞 K` is a principal ideal domain. -/
 theorem five_pid [IsCyclotomicExtension {5} ℚ K] : IsPrincipalIdealRing (𝓞 K) := by
   have : Fact (Nat.Prime 5) := ⟨Nat.prime_five⟩

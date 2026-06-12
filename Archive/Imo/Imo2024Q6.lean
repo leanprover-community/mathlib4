@@ -55,10 +55,9 @@ lemma Aquaesulian.injective : Function.Injective f := by
   · exact (h.eq_of_apply_eq_inl he.symm hc).symm
   · exact h.eq_of_apply_eq_inl he hc
 
-@[simp]
 lemma Aquaesulian.apply_zero : f 0 = 0 := by
   refine h.injective ?_
-  convert h.apply_apply_add 0 using 1 <;> simp
+  convert! h.apply_apply_add 0 using 1 <;> simp
 
 @[simp]
 lemma Aquaesulian.apply_neg_apply_add (x : G) : f (-(f x)) + x = 0 := by
@@ -68,13 +67,12 @@ lemma Aquaesulian.apply_neg_apply_add (x : G) : f (-(f x)) + x = 0 := by
   · rw [add_neg_cancel, h.apply_zero] at hc
     exact hc.symm
 
-@[simp]
 lemma Aquaesulian.apply_neg_apply (x : G) : f (-(f x)) = -x := by
   rw [← add_eq_zero_iff_eq_neg]
   exact h.apply_neg_apply_add x
 
 lemma Aquaesulian.apply_neg_apply_neg (x : G) : f (-(f (-x))) = x := by
-  simp [h]
+  simp [h.apply_neg_apply]
 
 lemma Aquaesulian.apply_neg_of_apply_eq {x₁ x₂ : G} (hx : f x₁ = x₂) : f (-x₂) = -x₁ := by
   rw [← hx]
@@ -82,7 +80,7 @@ lemma Aquaesulian.apply_neg_of_apply_eq {x₁ x₂ : G} (hx : f x₁ = x₂) : f
 
 lemma Aquaesulian.apply_neg_eq_neg_iff {x₁ x₂ : G} : f (-x₂) = -x₁ ↔ f x₁ = x₂ := by
   refine ⟨fun hn ↦ ?_, h.apply_neg_of_apply_eq⟩
-  convert h.apply_neg_of_apply_eq hn <;> rw [neg_neg]
+  convert! h.apply_neg_of_apply_eq hn <;> rw [neg_neg]
 
 lemma Aquaesulian.pair_lemma {x u v : G} (huv : u ≠ v) (hx : f x = u ∨ f u = x)
     (hy : f x = v ∨ f v = x) : f x = v ∨ f x = u := by
@@ -97,14 +95,14 @@ lemma Aquaesulian.g_two {x y u v : G} (huv : u ≠ v) (hx : f x + f (-x) = u)
     f (x + y) = -(f (-x)) + -(f (-y)) + v ∨ f (x + y) = -(f (-x)) + -(f (-y)) + u := by
   refine h.pair_lemma ?_ ?_ ?_
   · simp [huv]
-  · convert h x (-(f (-y))) using 2
+  · convert! h x (-(f (-y))) using 2
     · rw [h.apply_neg_apply_neg, add_comm]
     · rw [← hx]
       abel
     · rw [← hx]
       abel_nf
     · rw [h.apply_neg_apply_neg, add_comm]
-  · convert h y (-(f (-x))) using 2
+  · convert! h y (-(f (-x))) using 2
     · rw [h.apply_neg_apply_neg]
     · rw [← hy]
       abel
@@ -207,14 +205,12 @@ lemma aquaesulian_fExample : Aquaesulian fExample := by
     exact .inr (apply_fExample_add_apply_of_fract_le h.le)
   · exact .inl (apply_fExample_add_apply_of_fract_le h)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma fract_fExample (x : ℚ) :
     Int.fract (fExample x) = if Int.fract x = 0 then 0 else 1 - Int.fract x := by
   by_cases h : Int.fract x = 0
   · simp [fExample, h]
   · simp [fExample, h, sub_eq_add_neg, Int.fract_neg]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma floor_fExample (x : ℚ) :
     ⌊fExample x⌋ = if Int.fract x = 0 then x else ⌊x⌋ - 1 := by
   by_cases h : Int.fract x = 0
@@ -227,7 +223,6 @@ lemma floor_fExample (x : ℚ) :
     rw [Int.floor_eq_iff]
     simp [(Int.fract_nonneg x).lt_of_ne' h, (Int.fract_lt_one x).le]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma card_range_fExample : #(Set.range (fun x ↦ fExample x + fExample (-x))) = 2 := by
   have h : Set.range (fun x ↦ fExample x + fExample (-x)) = {0, -2} := by
     ext x

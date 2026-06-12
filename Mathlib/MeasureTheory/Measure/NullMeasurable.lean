@@ -85,7 +85,7 @@ instance NullMeasurableSpace.instSubsingleton [h : Subsingleton α] :
   h
 
 instance NullMeasurableSpace.instMeasurableSpace : MeasurableSpace (NullMeasurableSpace α μ) :=
-  @eventuallyMeasurableSpace α inferInstance (ae μ) _
+  fast_instance% @eventuallyMeasurableSpace α inferInstance (ae μ) _
 
 /-- A set is called `NullMeasurableSet` if it can be approximated by a measurable set up to
 a set of null measure. -/
@@ -197,7 +197,7 @@ theorem exists_measurable_superset_ae_eq (h : NullMeasurableSet s μ) :
     ∃ t ⊇ s, MeasurableSet t ∧ t =ᵐ[μ] s := by
   rcases h with ⟨t, htm, hst⟩
   refine ⟨t ∪ toMeasurable μ (s \ t), ?_, htm.union (measurableSet_toMeasurable _ _), ?_⟩
-  · exact diff_subset_iff.1 (subset_toMeasurable _ _)
+  · exact sdiff_subset_iff.1 (subset_toMeasurable _ _)
   · have : toMeasurable μ (s \ t) =ᵐ[μ] (∅ : Set α) := by simp [ae_le_set.1 hst.le]
     simpa only [union_empty] using hst.symm.union this
 
@@ -228,12 +228,12 @@ theorem exists_subordinate_pairwise_disjoint [Countable ι] {s : ι → Set α}
       (∀ i, t i ⊆ s i) ∧
         (∀ i, s i =ᵐ[μ] t i) ∧ (∀ i, MeasurableSet (t i)) ∧ Pairwise (Disjoint on t) := by
   choose t ht_sub htm ht_eq using fun i => exists_measurable_subset_ae_eq (h i)
-  rcases exists_null_pairwise_disjoint_diff hd with ⟨u, hum, hu₀, hud⟩
+  rcases exists_null_pairwise_disjoint_sdiff hd with ⟨u, hum, hu₀, hud⟩
   exact
-    ⟨fun i => t i \ u i, fun i => diff_subset.trans (ht_sub _), fun i =>
-      (ht_eq _).symm.trans (diff_null_ae_eq_self (hu₀ i)).symm, fun i => (htm i).diff (hum i),
+    ⟨fun i => t i \ u i, fun i => sdiff_subset.trans (ht_sub _), fun i =>
+      (ht_eq _).symm.trans (sdiff_null_ae_eq_self (hu₀ i)).symm, fun i => (htm i).diff (hum i),
       hud.mono fun i j h =>
-        h.mono (diff_subset_diff_left (ht_sub i)) (diff_subset_diff_left (ht_sub j))⟩
+        h.mono (sdiff_subset_sdiff_left (ht_sub i)) (sdiff_subset_sdiff_left (ht_sub j))⟩
 
 theorem measure_iUnion {m0 : MeasurableSpace α} {μ : Measure α} [Countable ι] {f : ι → Set α}
     (hn : Pairwise (Disjoint on f)) (h : ∀ i, MeasurableSet (f i)) :
@@ -248,20 +248,20 @@ theorem measure_iUnion₀ [Countable ι] {f : ι → Set α} (hd : Pairwise (AED
     (h : ∀ i, NullMeasurableSet (f i) μ) : μ (⋃ i, f i) = ∑' i, μ (f i) := by
   rcases exists_subordinate_pairwise_disjoint h hd with ⟨t, _ht_sub, ht_eq, htm, htd⟩
   calc
-    μ (⋃ i, f i) = μ (⋃ i, t i) := measure_congr (EventuallyEq.countable_iUnion ht_eq)
+    μ (⋃ i, f i) = μ (⋃ i, t i) := measure_congr (.countable_iUnion ht_eq)
     _ = ∑' i, μ (t i) := measure_iUnion htd htm
     _ = ∑' i, μ (f i) := tsum_congr fun i => measure_congr (ht_eq _).symm
 
 theorem measure_union₀_aux (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
     (hd : AEDisjoint μ s t) : μ (s ∪ t) = μ s + μ t := by
   rw [union_eq_iUnion, measure_iUnion₀, tsum_fintype, Fintype.sum_bool, cond, cond]
-  exacts [(pairwise_on_bool AEDisjoint.symmetric).2 hd, fun b => Bool.casesOn b ht hs]
+  exacts [pairwise_on_bool.mpr hd, fun b ↦ Bool.casesOn b ht hs]
 
 /-- A null measurable set `t` is Carathéodory measurable: for any `s`, we have
 `μ (s ∩ t) + μ (s \ t) = μ s`. -/
-theorem measure_inter_add_diff₀ (s : Set α) (ht : NullMeasurableSet t μ) :
+theorem measure_inter_add_sdiff₀ (s : Set α) (ht : NullMeasurableSet t μ) :
     μ (s ∩ t) + μ (s \ t) = μ s := by
-  refine le_antisymm ?_ (measure_le_inter_add_diff _ _ _)
+  refine le_antisymm ?_ (measure_le_inter_add_sdiff _ _ _)
   rcases exists_measurable_superset μ s with ⟨s', hsub, hs'm, hs'⟩
   replace hs'm : NullMeasurableSet s' μ := hs'm.nullMeasurableSet
   calc
@@ -269,21 +269,25 @@ theorem measure_inter_add_diff₀ (s : Set α) (ht : NullMeasurableSet t μ) :
     _ = μ (s' ∩ t ∪ s' \ t) :=
       (measure_union₀_aux (hs'm.inter ht) (hs'm.diff ht) <|
           (@disjoint_inf_sdiff _ s' t _).aedisjoint).symm
-    _ = μ s' := congr_arg μ (inter_union_diff _ _)
+    _ = μ s' := congr_arg μ (inter_union_sdiff _ _)
     _ = μ s := hs'
+
+@[deprecated (since := "2026-06-03")] alias measure_inter_add_diff₀ := measure_inter_add_sdiff₀
 
 /-- If `s` and `t` are null measurable sets of equal measure
 and their intersection has finite measure,
 then `s \ t` and `t \ s` have equal measures too. -/
-theorem measure_diff_symm (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
+theorem measure_sdiff_symm (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
     (h : μ s = μ t) (hfin : μ (s ∩ t) ≠ ∞) : μ (s \ t) = μ (t \ s) := by
-  rw [← ENNReal.add_right_inj hfin, measure_inter_add_diff₀ _ ht, inter_comm,
-    measure_inter_add_diff₀ _ hs, h]
+  rw [← ENNReal.add_right_inj hfin, measure_inter_add_sdiff₀ _ ht, inter_comm,
+    measure_inter_add_sdiff₀ _ hs, h]
+
+@[deprecated (since := "2026-06-03")] alias measure_diff_symm := measure_sdiff_symm
 
 theorem measure_union_add_inter₀ (s : Set α) (ht : NullMeasurableSet t μ) :
     μ (s ∪ t) + μ (s ∩ t) = μ s + μ t := by
-  rw [← measure_inter_add_diff₀ (s ∪ t) ht, union_inter_cancel_right, union_diff_right, ←
-    measure_inter_add_diff₀ s ht, add_comm, ← add_assoc, add_right_comm]
+  rw [← measure_inter_add_sdiff₀ (s ∪ t) ht, union_inter_cancel_right, union_sdiff_right, ←
+    measure_inter_add_sdiff₀ s ht, add_comm, ← add_assoc, add_right_comm]
 
 theorem measure_union_add_inter₀' (hs : NullMeasurableSet s μ) (t : Set α) :
     μ (s ∪ t) + μ (s ∩ t) = μ s + μ t := by
@@ -353,13 +357,11 @@ theorem nullMeasurableSet_toMeasurable : NullMeasurableSet (toMeasurable μ s) �
 
 variable [MeasurableSingletonClass α] {mβ : MeasurableSpace β} [MeasurableSingletonClass β]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma measure_preimage_fst_singleton_eq_tsum [Countable β] (μ : Measure (α × β)) (x : α) :
     μ (Prod.fst ⁻¹' {x}) = ∑' y, μ {(x, y)} := by
   rw [← measure_iUnion (by simp [Pairwise]) fun _ ↦ .singleton _, iUnion_singleton_eq_range,
     preimage_fst_singleton_eq_range]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma measure_preimage_snd_singleton_eq_tsum [Countable α] (μ : Measure (α × β)) (y : β) :
     μ (Prod.snd ⁻¹' {y}) = ∑' x, μ {(x, y)} := by
   have : Prod.snd ⁻¹' {y} = ⋃ x : α, {(x, y)} := by ext y; simp [Prod.ext_iff, eq_comm]
@@ -428,7 +430,7 @@ theorem measurableSet_of_null [μ.IsComplete] (hs : μ s = 0) : MeasurableSet s 
 
 theorem NullMeasurableSet.measurable_of_complete (hs : NullMeasurableSet s μ) [μ.IsComplete] :
     MeasurableSet s :=
-  diff_diff_cancel_left (subset_toMeasurable μ s) ▸
+  sdiff_sdiff_cancel_left (subset_toMeasurable μ s) ▸
     (measurableSet_toMeasurable _ _).diff
       (measurableSet_of_null (ae_le_set.1 <|
         EventuallyEq.le (NullMeasurableSet.toMeasurable_ae_eq hs)))

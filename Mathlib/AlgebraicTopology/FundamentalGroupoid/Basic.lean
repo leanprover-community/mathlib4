@@ -23,6 +23,8 @@ group of `x`.
 
 open CategoryTheory
 
+universe u
+
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 variable {x₀ x₁ : X}
 
@@ -55,7 +57,6 @@ theorem reflTransSymmAux_mem_I (x : I × I) : reflTransSymmAux x ∈ I := by
     · apply mul_nonneg <;> grind
     · apply mul_le_one₀ <;> grind
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₀` to
   `p.trans p.symm`. -/
 def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.symm) where
@@ -92,11 +93,9 @@ theorem transReflReparamAux_mem_I (t : I) : transReflReparamAux t ∈ I := by
   unfold transReflReparamAux
   split_ifs <;> constructor <;> linarith [unitInterval.le_one t, unitInterval.nonneg t]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem transReflReparamAux_zero : transReflReparamAux 0 = 0 := by
   norm_num [transReflReparamAux]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem transReflReparamAux_one : transReflReparamAux 1 = 1 := by
   norm_num [transReflReparamAux]
 
@@ -138,11 +137,9 @@ theorem transAssocReparamAux_mem_I (t : I) : transAssocReparamAux t ∈ I := by
   unfold transAssocReparamAux
   split_ifs <;> constructor <;> linarith [unitInterval.le_one t, unitInterval.nonneg t]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem transAssocReparamAux_zero : transAssocReparamAux 0 = 0 := by
   norm_num [transAssocReparamAux]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem transAssocReparamAux_one : transAssocReparamAux 1 = 1 := by
   norm_num [transAssocReparamAux]
 
@@ -332,20 +329,20 @@ scoped notation "πₓ" => FundamentalGroupoid.fundamentalGroupoidFunctor.obj
 /-- The functor between fundamental groupoids induced by a continuous map. -/
 scoped notation "πₘ" => FundamentalGroupoid.fundamentalGroupoidFunctor.map
 
-theorem map_eq {X Y : TopCat} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.Quotient x₀ x₁) :
+theorem map_eq {X Y : TopCat.{u}} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.Quotient x₀ x₁) :
     (πₘ (TopCat.ofHom f)).map p = p.map f := rfl
 
 /-- Help the typechecker by converting a point in a groupoid back to a point in
 the underlying topological space. -/
-abbrev toTop {X : TopCat} (x : πₓ X) : X := x.as
+abbrev toTop {X : TopCat.{u}} (x : πₓ X) : X := x.as
 
 /-- Help the typechecker by converting a point in a topological space to a
 point in the fundamental groupoid of that space. -/
-abbrev fromTop {X : TopCat} (x : X) : πₓ X := ⟨x⟩
+abbrev fromTop {X : TopCat.{u}} (x : X) : πₓ X := ⟨x⟩
 
 /-- Help the typechecker by converting an arrow in the fundamental groupoid of
 a topological space back to a path in that space (i.e., `Path.Homotopic.Quotient`). -/
-abbrev toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) :
+abbrev toPath {X : TopCat.{u}} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) :
     Path.Homotopic.Quotient x₀.as x₁.as :=
   p
 
@@ -361,11 +358,11 @@ theorem fromPath_eq_iff_homotopic {x₀ x₁ : X} (f : Path x₀ x₁) (g : Path
   ⟨fun ih ↦ Quotient.exact ih, fun h ↦ Quotient.sound h⟩
 
 lemma eqToHom_eq {x₀ x₁ : X} (h : x₀ = x₁) :
-    eqToHom (congr_arg mk h) = ⟦(Path.refl x₁).cast h rfl⟧ := by subst h; rfl
+    eqToHom congr(mk $h) = (Path.Homotopic.Quotient.refl x₁).cast h rfl := by subst h; rfl
 
 @[reassoc]
-lemma conj_eqToHom {x y x' y' : X} {p : Path x y} (hx : x' = x) (hy : y' = y) :
-    eqToHom (congr_arg mk hx) ≫ .mk p ≫ eqToHom (congr_arg mk hy.symm) = .mk (p.cast hx hy) := by
+lemma conj_eqToHom {x y x' y' : X} {p : Path.Homotopic.Quotient x y} (hx : x' = x) (hy : y' = y) :
+    eqToHom congr(mk $hx) ≫ p ≫ eqToHom congr(mk $hy.symm) = p.cast hx hy := by
   subst hx hy; simp
 
 end FundamentalGroupoid

@@ -72,8 +72,7 @@ instance : Inhabited (SheafedSpace (Discrete Unit)) :=
   ⟨unit (TopCat.of PEmpty)⟩
 
 instance : Category (SheafedSpace C) :=
-  show Category (InducedCategory (PresheafedSpace C) SheafedSpace.toPresheafedSpace) by
-    infer_instance
+  inferInstanceAs <| Category (InducedCategory (PresheafedSpace C) SheafedSpace.toPresheafedSpace)
 
 @[ext (iff := false)]
 theorem ext {X Y : SheafedSpace C} (α β : X ⟶ Y) (w : α.hom.base = β.hom.base)
@@ -275,7 +274,6 @@ lemma mono_of_base_injective_of_stalk_epi {X Y : SheafedSpace C} (f : X ⟶ Y)
   replace e := congr_arg InducedCategory.Hom.hom e
   congr 1
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local ext] DFunLike.ext in
 include instCC in
 lemma epi_of_base_surjective_of_stalk_mono {X Y : SheafedSpace C} (f : X ⟶ Y)
@@ -283,7 +281,7 @@ lemma epi_of_base_surjective_of_stalk_mono {X Y : SheafedSpace C} (f : X ⟶ Y)
     (h₂ : ∀ x, Mono (f.hom.stalkMap x)) : Epi f := by
   constructor
   intro Z ⟨g, gc⟩ ⟨h, hc⟩ e
-  rw [InducedCategory.hom_ext_iff] at e
+  apply_fun InducedCategory.Hom.hom at e
   obtain rfl : g = h := ConcreteCategory.hom_ext _ _ fun y ↦ by
     rw [← (h₁ y).choose_spec]
     simpa using congr(($e).base.hom (h₁ y).choose)

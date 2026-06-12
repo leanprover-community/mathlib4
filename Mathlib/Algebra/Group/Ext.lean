@@ -98,6 +98,14 @@ theorem CancelMonoid.ext {M : Type*} ⦃m₁ m₂ : CancelMonoid M⦄
   CancelMonoid.toLeftCancelMonoid_injective <| LeftCancelMonoid.ext h_mul
 
 @[to_additive]
+theorem CancelMonoid.toRightCancelMonoid_injective {M : Type u} :
+    Function.Injective (@CancelMonoid.toRightCancelMonoid M) := by
+  intro m₁ m₂ h
+  apply CancelMonoid.ext
+  exact congrArg (fun m : Monoid M => (letI := m; HMul.hMul : M → M → M)) <|
+    congrArg (@RightCancelMonoid.toMonoid M) h
+
+@[to_additive]
 theorem CancelCommMonoid.toCommMonoid_injective {M : Type u} :
     Function.Injective (@CancelCommMonoid.toCommMonoid M) := by
   rintro @⟨@⟨@⟨⟩⟩⟩ @⟨@⟨@⟨⟩⟩⟩ h
@@ -123,8 +131,9 @@ theorem DivInvMonoid.ext {M : Type*} ⦃m₁ m₂ : DivInvMonoid M⦄
     exact @MonoidHom.map_zpow' M M m₁ m₂ f (congr_fun h_inv) x m
   have : m₁.div = m₂.div := by
     ext a b
-    exact @map_div' _ _
-      (F := @MonoidHom _ _ (_) _) _ (id _) _ inferInstance f (congr_fun h_inv) a b
+    exact (@div_eq_mul_inv _ m₁ a b).trans
+      (((congr_fun (congr_fun h_mul a) _).trans
+        (congr_arg _ (congr_fun h_inv b))).trans (@div_eq_mul_inv _ m₂ a b).symm)
   rcases m₁ with @⟨_, ⟨_⟩, ⟨_⟩⟩
   congr
 

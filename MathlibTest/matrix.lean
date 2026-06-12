@@ -144,7 +144,7 @@ example {α : Type _} [CommRing α] {a b c d : α} :
       pow_zero, one_mul, Fin.zero_succAbove, Finset.univ_unique, Fin.val_succ, Fin.val_eq_zero,
       zero_add, pow_one, cons_val_succ, neg_mul, ne_eq, Fin.succ_ne_zero, not_false_eq_true,
       Fin.succAbove_ne_zero_zero, Finset.sum_neg_distrib, Finset.sum_const, Finset.card_singleton,
-      nsmul_eq_mul, Nat.cast_one]
+      one_smul]
   ring
 
 example {α : Type _} [CommRing α] {a b c d e f g h i : α} :
@@ -159,7 +159,7 @@ example {α : Type _} [CommRing α] {a b c d e f g h i : α} :
       zero_add, pow_one, neg_mul, ne_eq, Fin.succ_ne_zero, not_false_eq_true,
       Fin.succAbove_ne_zero_zero, Finset.sum_neg_distrib, Finset.sum_singleton, cons_val_succ,
       Fin.succ_succAbove_one, even_two, Even.neg_pow, one_pow, Finset.sum_const,
-      Finset.card_singleton, nsmul_eq_mul, Nat.cast_one]
+      Finset.card_singleton, one_smul]
   ring
 
 example {R : Type*} [Semiring R] {a b c d : R} :

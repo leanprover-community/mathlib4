@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Heather Macbeth
+Authors: Heather Macbeth, Michał Świętek
 -/
 module
 
@@ -11,25 +11,16 @@ public import Mathlib.Analysis.Normed.Module.RCLike.Basic
 public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.Analysis.LocallyConvex.AbsConvex
 public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.Analysis.RCLike.Lemmas
+public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 
 /-!
-# The strong dual of a normed space
+# Polar sets in the strong dual of a normed space
 
-In this file we consider the strong dual `StrongDual` of a normed space, and the continuous linear
-map `NormedSpace.inclusionInDoubleDual` from a normed space into its double StrongDual.
-
-For base field `𝕜 = ℝ` or `𝕜 = ℂ`, this map is actually an isometric embedding; we provide a
-version `NormedSpace.inclusionInDoubleDualLi` of the map which is of type a bundled linear
-isometric embedding, `E →ₗᵢ[𝕜] (StrongDual 𝕜 (StrongDual 𝕜 E))`.
-
-Since a lot of elementary properties don't require `eq_of_dist_eq_zero` we start setting up the
-theory for `SeminormedAddCommGroup` and we specialize to `NormedAddCommGroup` when needed.
+In this file we study polar sets in the strong dual `StrongDual` of a normed space.
 
 ## Main definitions
 
-* `inclusionInDoubleDual` and `inclusionInDoubleDualLi` are the inclusion of a normed space
-  in its double `StrongDual`, considered as a bounded linear map and as a linear isometry,
-  respectively.
 * `polar 𝕜 s` is the subset of `StrongDual 𝕜 E` consisting of those functionals `x'` for which
   `‖x' z‖ ≤ 1` for every `z ∈ s`.
 
@@ -42,84 +33,13 @@ theory for `SeminormedAddCommGroup` and we specialize to `NormedAddCommGroup` wh
 strong dual, polar
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
 open Topology Bornology
 
-universe u v
-
 namespace NormedSpace
-
-section General
-
-variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-variable (E : Type*) [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
-/-- The inclusion of a normed space in its double (topological) strong dual, considered
-as a bounded linear map. -/
-def inclusionInDoubleDual : E →L[𝕜] StrongDual 𝕜 (StrongDual 𝕜 E) :=
-  ContinuousLinearMap.apply 𝕜 𝕜
-
-@[simp]
-theorem dual_def (x : E) (f : StrongDual 𝕜 E) : inclusionInDoubleDual 𝕜 E x f = f x :=
-  rfl
-
-theorem inclusionInDoubleDual_norm_eq :
-    ‖inclusionInDoubleDual 𝕜 E‖ = ‖ContinuousLinearMap.id 𝕜 (StrongDual 𝕜 E)‖ :=
-  ContinuousLinearMap.opNorm_flip _
-
-theorem inclusionInDoubleDual_norm_le : ‖inclusionInDoubleDual 𝕜 E‖ ≤ 1 := by
-  rw [inclusionInDoubleDual_norm_eq]
-  exact ContinuousLinearMap.norm_id_le
-
-theorem double_dual_bound (x : E) : ‖(inclusionInDoubleDual 𝕜 E) x‖ ≤ ‖x‖ := by
-  simpa using ContinuousLinearMap.le_of_opNorm_le _ (inclusionInDoubleDual_norm_le 𝕜 E) x
-
-end General
-
-section BidualIsometry
-
-variable (𝕜 : Type v) [RCLike 𝕜] {E : Type u}
-
-section Seminormed
-
-variable [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-
-/-- The inclusion of a normed space in its double strong dual is an isometry onto its image. -/
-def inclusionInDoubleDualLi : E →ₗᵢ[𝕜] StrongDual 𝕜 (StrongDual 𝕜 E) :=
-  { inclusionInDoubleDual 𝕜 E with
-    norm_map' x := by
-      apply le_antisymm (double_dual_bound 𝕜 E x)
-      obtain ⟨g, hg⟩ := exists_dual_vector'' 𝕜 x
-      grw [← (inclusionInDoubleDual 𝕜 E x).unit_le_opNorm g hg.left]
-      simp [hg.right] }
-
-/-- If one controls the norm of every `f x`, then one controls the norm of `x`.
-Compare `ContinuousLinearMap.opNorm_le_bound`. -/
-theorem norm_le_dual_bound (x : E) {M : ℝ} (hMp : 0 ≤ M)
-    (hM : ∀ f : StrongDual 𝕜 E, ‖f x‖ ≤ M * ‖f‖) : ‖x‖ ≤ M := by
-  rw [← (inclusionInDoubleDualLi (E := E) 𝕜).norm_map x]
-  exact ContinuousLinearMap.opNorm_le_bound _ hMp hM
-
-end Seminormed
-
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
-theorem eq_zero_of_forall_dual_eq_zero {x : E} (h : ∀ f : StrongDual 𝕜 E, f x = (0 : 𝕜)) : x = 0 :=
-  norm_le_zero_iff.mp (norm_le_dual_bound 𝕜 x le_rfl fun f => by simp [h f])
-
-theorem eq_zero_iff_forall_dual_eq_zero (x : E) : x = 0 ↔ ∀ g : StrongDual 𝕜 E, g x = 0 :=
-  ⟨fun hx => by simp [hx], fun h => eq_zero_of_forall_dual_eq_zero 𝕜 h⟩
-
-/-- See also `geometric_hahn_banach_point_point`. -/
-theorem eq_iff_forall_dual_eq {x y : E} : x = y ↔ ∀ g : StrongDual 𝕜 E, g x = g y := by
-  rw [← sub_eq_zero, eq_zero_iff_forall_dual_eq_zero 𝕜 (x - y)]
-  simp [sub_eq_zero]
-
-end BidualIsometry
 
 section PolarSets
 
@@ -139,8 +59,8 @@ theorem polar_closure (s : Set E) : StrongDual.polar 𝕜 (closure s) = StrongDu
   ((topDualPairing 𝕜 E).flip.polar_antitone subset_closure).antisymm <|
     (topDualPairing 𝕜 E).flip.polar_gc.l_le <|
       closure_minimal ((topDualPairing 𝕜 E).flip.polar_gc.le_u_l s) <| by
-        simpa [LinearMap.flip_flip] using
-          (isClosed_polar _ _).preimage (inclusionInDoubleDual 𝕜 E).continuous
+        simpa [LinearMap.flip_flip] using!
+          (isClosed_polar _ _).preimage (ContinuousLinearMap.apply 𝕜 𝕜 (E := E)).continuous
 
 variable {𝕜}
 
@@ -160,7 +80,6 @@ theorem smul_mem_polar {s : Set E} {x' : StrongDual 𝕜 E} {c : 𝕜} (hc : ∀
     simp only [c_zero, norm_eq_zero, Ne, not_false_iff, inv_mul_cancel₀, norm_inv]
   rwa [cancel] at le
 
-set_option backward.isDefEq.respectTransparency false in
 theorem polar_ball_subset_closedBall_div {c : 𝕜} (hc : 1 < ‖c‖) {r : ℝ} (hr : 0 < r) :
     StrongDual.polar 𝕜 (ball (0 : E) r) ⊆ closedBall (0 : StrongDual 𝕜 E) (‖c‖ / r) := by
   intro x' hx'
@@ -185,7 +104,6 @@ theorem closedBall_inv_subset_polar_closedBall {r : ℝ} :
     _ = r / r := inv_mul_eq_div _ _
     _ ≤ 1 := div_self_le_one r
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `polar` of closed ball in a normed space `E` is the closed ball of the dual with inverse
 radius. -/
 theorem polar_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
@@ -195,25 +113,12 @@ theorem polar_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [
   intro x' h
   simp only [mem_closedBall_zero_iff]
   refine ContinuousLinearMap.opNorm_le_of_ball hr (inv_nonneg.mpr hr.le) fun z _ => ?_
-  simpa only [one_div] using LinearMap.bound_of_ball_bound' hr 1 x'.toLinearMap h z
+  simpa only [one_div] using! LinearMap.bound_of_ball_bound' hr 1 x'.toLinearMap h z
 
-set_option backward.isDefEq.respectTransparency false in
 theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
     (hr : 0 < r) : StrongDual.polar 𝕜 (ball (0 : E) r) = closedBall (0 : StrongDual 𝕜 E) r⁻¹ := by
-  apply le_antisymm
-  · intro x hx
-    rw [mem_closedBall_zero_iff]
-    apply le_of_forall_gt_imp_ge_of_dense
-    intro a ha
-    rw [← mem_closedBall_zero_iff, ← (mul_div_cancel_left₀ a (Ne.symm (ne_of_lt hr)))]
-    rw [← RCLike.norm_of_nonneg (K := 𝕜) (le_trans zero_le_one
-      (le_of_lt ((inv_lt_iff_one_lt_mul₀' hr).mp ha)))]
-    apply polar_ball_subset_closedBall_div _ hr hx
-    rw [RCLike.norm_of_nonneg (K := 𝕜) (le_trans zero_le_one
-      (le_of_lt ((inv_lt_iff_one_lt_mul₀' hr).mp ha)))]
-    exact (inv_lt_iff_one_lt_mul₀' hr).mp ha
-  · rw [← polar_closedBall hr]
-    exact LinearMap.polar_antitone _ ball_subset_closedBall
+  letI : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
+  rw [← polar_closedBall hr, ← closure_ball _ hr.ne', polar_closure]
 
 /-- Given a neighborhood `s` of the origin in a normed space `E`, the dual norms of all elements of
 the polar `polar 𝕜 s` are bounded by a constant. -/
@@ -256,3 +161,24 @@ theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
 end NormedField
 
 end LinearMap
+
+section Deprecated
+
+variable (𝕜 : Type*) [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+
+@[deprecated SeparatingDual.eq_zero_of_forall_dual_eq_zero (since := "2026-03-18")]
+theorem NormedSpace.eq_zero_of_forall_dual_eq_zero {x : E}
+    (h : ∀ f : StrongDual 𝕜 E, f x = 0) : x = 0 :=
+  SeparatingDual.eq_zero_of_forall_dual_eq_zero h
+
+@[deprecated SeparatingDual.eq_zero_iff_forall_dual_eq_zero (since := "2026-03-18")]
+theorem NormedSpace.eq_zero_iff_forall_dual_eq_zero (x : E) :
+    x = 0 ↔ ∀ g : StrongDual 𝕜 E, g x = 0 :=
+  SeparatingDual.eq_zero_iff_forall_dual_eq_zero x
+
+@[deprecated SeparatingDual.eq_iff_forall_dual_eq (since := "2026-03-18")]
+theorem NormedSpace.eq_iff_forall_dual_eq {x y : E} :
+    x = y ↔ ∀ g : StrongDual 𝕜 E, g x = g y :=
+  SeparatingDual.eq_iff_forall_dual_eq
+
+end Deprecated

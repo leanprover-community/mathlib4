@@ -40,7 +40,7 @@ In this file, we prove results about ideals in cyclotomic extensions of `ℚ`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace IsCyclotomicExtension.Rat
 
@@ -72,13 +72,12 @@ theorem associated_norm_zeta_sub_one : Associated (Algebra.norm ℤ (hζ.toInteg
       rw [hζ.norm_toInteger_sub_one_of_eq_two_pow, h, Int.ofNat_two]
   · rw [hζ.norm_toInteger_sub_one_of_prime_ne_two h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem absNorm_span_zeta_sub_one : absNorm (span {hζ.toInteger - 1}) = p := by
   simpa using congr_arg absNorm <|
     span_singleton_eq_span_singleton.mpr <| associated_norm_zeta_sub_one p k hζ
 
 theorem p_mem_span_zeta_sub_one : (p : 𝓞 K) ∈ span {hζ.toInteger - 1} := by
-  convert Ideal.absNorm_mem _
+  convert! Ideal.absNorm_mem _
   exact (absNorm_span_zeta_sub_one ..).symm
 
 theorem span_zeta_sub_one_ne_bot : span {hζ.toInteger - 1} ≠ ⊥ :=
@@ -95,7 +94,6 @@ theorem inertiaDeg_span_zeta_sub_one : inertiaDeg 𝒑 (span {hζ.toInteger - 1}
   rw [← Nat.pow_right_inj hp.out.one_lt, pow_one, ← absNorm_eq_pow_inertiaDeg' _ hp.out,
     absNorm_span_zeta_sub_one]
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] FractionRing.liftAlgebra in
 theorem map_eq_span_zeta_sub_one_pow :
     (map (algebraMap ℤ (𝓞 K)) 𝒑) = span {hζ.toInteger - 1} ^ Module.finrank ℚ K := by
@@ -116,7 +114,7 @@ theorem map_eq_span_zeta_sub_one_pow :
     ← Nat.card_eq_fintype_card, IsGalois.card_aut_eq_finrank]
 
 theorem ramificationIdx_span_zeta_sub_one :
-    ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 (span {hζ.toInteger - 1}) = p ^ k * (p - 1) := by
+    ramificationIdx 𝒑 (span {hζ.toInteger - 1}) = p ^ k * (p - 1) := by
   have h := isPrime_span_zeta_sub_one p k hζ
   rw [← Nat.totient_prime_pow_succ hp.out, ← finrank _ K,
     IsDedekindDomain.ramificationIdx_eq_multiplicity _ h, map_eq_span_zeta_sub_one_pow p k hζ,
@@ -125,7 +123,6 @@ theorem ramificationIdx_span_zeta_sub_one :
 
 variable (K)
 
-set_option backward.isDefEq.respectTransparency false in
 include hK in
 theorem ncard_primesOver_of_prime_pow :
     (primesOver 𝒑 (𝓞 K)).ncard = 1 := by
@@ -156,7 +153,7 @@ theorem inertiaDeg_eq_of_prime_pow (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP�
 
 include hK in
 theorem ramificationIdx_eq_of_prime_pow (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver 𝒑] :
-    ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = p ^ k * (p - 1) := by
+    ramificationIdx 𝒑 P = p ^ k * (p - 1) := by
   rw [eq_span_zeta_sub_one_of_liesOver p k K hK.zeta_spec P, ramificationIdx_span_zeta_sub_one]
 
 include hK in
@@ -188,7 +185,7 @@ theorem inertiaDeg_span_zeta_sub_one' : inertiaDeg 𝒑 (span {hζ.toInteger - 1
   exact inertiaDeg_span_zeta_sub_one p 0 hζ
 
 theorem ramificationIdx_span_zeta_sub_one' :
-    ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 (span {hζ.toInteger - 1}) = p - 1 := by
+    ramificationIdx 𝒑 (span {hζ.toInteger - 1}) = p - 1 := by
   rw [← pow_one p] at hK hζ
   rw [ramificationIdx_span_zeta_sub_one p 0 hζ, pow_zero, one_mul]
 
@@ -212,7 +209,7 @@ theorem inertiaDeg_eq_of_prime (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ :
 
 include hK in
 theorem ramificationIdx_eq_of_prime (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver 𝒑] :
-    ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = p - 1 := by
+    ramificationIdx 𝒑 P = p - 1 := by
   rw [eq_span_zeta_sub_one_of_liesOver' p K hK.zeta_spec P, ramificationIdx_span_zeta_sub_one']
 
 include hK in
@@ -238,7 +235,6 @@ open NumberField.Ideal Polynomial
 
 variable {m} [NeZero m] [hK : IsCyclotomicExtension {m} ℚ K]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
     inertiaDeg 𝒑 P = orderOf (p : ZMod m) := by
   replace hm : p.Coprime m := hp.out.coprime_iff_not_dvd.mpr hm
@@ -261,9 +257,8 @@ theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
 @[deprecated (since := "2025-12-10")]
 alias inertiaDeg_of_not_dvd := inertiaDeg_eq_of_not_dvd
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
-    ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = 1 := by
+    ramificationIdx 𝒑 P = 1 := by
   let ζ := (zeta_spec m ℚ K).toInteger
   have h₁ : ¬ p ∣ exponent ζ := by
     rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top (zeta_spec m ℚ K)]
@@ -333,15 +328,12 @@ private theorem inertiaDegIn_ramificationIdxIn_aux (hn : n = p ^ (k + 1) * m) (h
     (isCyclotomicExtension_singleton_iff_eq_adjoin _ _ _ _ hζₚ).mpr rfl
   -- A prime ideal of `Fₚ` above `𝒑`
   obtain ⟨Pₚ, hP₁, _⟩ := exists_maximal_ideal_liesOver_of_isIntegral 𝒑 (S := 𝓞 Fₚ)
-  have hPp : Ideal.map (algebraMap (𝓞 Fₚ) (𝓞 K)) Pₚ ≠ ⊥ :=
-    map_ne_bot_of_ne_bot <| Ring.ne_bot_of_isMaximal_of_not_isField hP₁ <| not_isField Fₚ
   suffices Pₚ.ramificationIdxIn (𝓞 K) *
       Pₘ.inertiaDegIn (𝓞 K) * (Pₘ.primesOver (𝓞 K)).ncard = 1 by
     replace this := Nat.eq_one_of_mul_eq_one_right this
     rw [← inertiaDegIn_mul_inertiaDegIn 𝒑 Pₘ Gal(Fₘ/ℚ) _ Gal(K/ℚ) Gal(K/Fₘ),
-      ← ramificationIdxIn_mul_ramificationIdxIn Pₚ Gal(Fₚ/ℚ) _ Gal(K/ℚ) Gal(K/Fₚ)
-      (map_ne_bot_of_ne_bot hp') hPp, Nat.eq_one_of_mul_eq_one_left this,
-      Nat.eq_one_of_mul_eq_one_right this, mul_one, mul_one,
+      ← ramificationIdxIn_mul_ramificationIdxIn' Pₚ Gal(Fₚ/ℚ) _ Gal(K/ℚ) Gal(K/Fₚ),
+      Nat.eq_one_of_mul_eq_one_left this, Nat.eq_one_of_mul_eq_one_right this, mul_one, mul_one,
       inertiaDegIn_eq_of_not_dvd p _ hm, ramificationIdxIn_eq_of_prime_pow p k Fₚ]
     exact ⟨rfl, rfl⟩
   have h_main : Module.finrank ℚ Fₘ * Module.finrank ℚ Fₚ = Module.finrank ℚ K := by
@@ -355,12 +347,13 @@ private theorem inertiaDegIn_ramificationIdxIn_aux (hn : n = p ^ (k + 1) * m) (h
     ← ncard_primesOver_mul_ncard_primesOver Pₘ Gal(Fₘ/ℚ) (𝓞 K) Gal(K/ℚ) Gal(K/Fₘ) hp',
     ramificationIdxIn_eq_of_not_dvd p Fₘ hm, inertiaDegIn_eq_of_prime_pow p k Fₚ,
     ncard_primesOver_of_prime_pow p k Fₚ, one_mul, one_mul, mul_one, mul_assoc, mul_assoc,
-    mul_right_inj' (primesOver_ncard_ne_zero 𝒑 _), ← mul_assoc, ← mul_rotate (𝒑.inertiaDegIn (𝓞 K)),
+    mul_right_inj' (IsDedekindDomain.primesOver_ncard_ne_zero 𝒑 _), ← mul_assoc,
+    ← mul_rotate (𝒑.inertiaDegIn (𝓞 K)),
     ← inertiaDegIn_mul_inertiaDegIn 𝒑 Pₘ Gal(Fₘ/ℚ) (𝓞 K) Gal(K/ℚ) Gal(K/Fₘ), mul_assoc, mul_assoc,
     mul_right_inj' (inertiaDegIn_ne_zero Gal(Fₘ/ℚ)), ← mul_rotate',
-    ← ramificationIdxIn_mul_ramificationIdxIn (p := 𝒑) Pₚ Gal(Fₚ/ℚ) (𝓞 K) Gal(K/ℚ) Gal(K/Fₚ)
-    (map_ne_bot_of_ne_bot hp') hPp, eq_comm, mul_assoc,
-    mul_eq_left₀ (ramificationIdxIn_ne_zero Gal(Fₚ/ℚ) hp'), ← mul_assoc] at h_main
+    ← ramificationIdxIn_mul_ramificationIdxIn' (p := 𝒑) Pₚ Gal(Fₚ/ℚ) (𝓞 K) Gal(K/ℚ) Gal(K/Fₚ),
+    eq_comm, mul_assoc, mul_eq_left₀ (ramificationIdxIn_ne_zero Gal(Fₚ/ℚ) hp'), ← mul_assoc]
+    at h_main
 
 /--
 Write `n = p ^ (k + 1) * m` where the prime `p` does not divide `m`, then the inertia degree of
@@ -384,7 +377,7 @@ theorem inertiaDeg_eq (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
   rw [← inertiaDegIn_eq_inertiaDeg 𝒑 P Gal(K/ℚ), inertiaDegIn_eq n K hn hm]
 
 theorem ramificationIdx_eq (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
-    ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = p ^ k * (p - 1) := by
+    ramificationIdx 𝒑 P = p ^ k * (p - 1) := by
   have : IsGalois ℚ K := isGalois {n} ℚ K
   rw [← ramificationIdxIn_eq_ramificationIdx 𝒑 P Gal(K/ℚ), ramificationIdxIn_eq n K hn hm]
 

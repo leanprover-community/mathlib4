@@ -22,7 +22,7 @@ notation is desirable but this notation is defined in core for `Prod` so replaci
 `x × y` seems difficult.
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 

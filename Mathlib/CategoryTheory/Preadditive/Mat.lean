@@ -180,14 +180,14 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
               refine if h : x.1 = j then ?_ else 0
               refine if h' : @Eq.ndrec (Fin n) x.1 (fun j => (f j).ι) x.2 _ h = y then ?_ else 0
               apply eqToHom
-              substs h h'
+              subst h h'
               rfl
             -- Notice we were careful not to use `subst` until we had a goal in `Prop`.
             ι := fun j x y => by
               refine if h : y.1 = j then ?_ else 0
               refine if h' : @Eq.ndrec _ y.1 (fun j => (f j).ι) y.2 _ h = x then ?_ else 0
               apply eqToHom
-              substs h h'
+              subst h h'
               rfl
             ι_π := fun j j' => by
               ext x y
@@ -195,12 +195,12 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
               simp_rw [dite_comp, comp_dite]
               simp only [ite_self, dite_eq_ite, Limits.comp_zero, Limits.zero_comp,
                 eqToHom_trans]
-              erw [Finset.sum_sigma]
+              rw [← Finset.univ_sigma_univ, Finset.sum_sigma]
               dsimp +instances
               simp only [if_true, Finset.sum_dite_irrel, Finset.mem_univ,
                 Finset.sum_const_zero, Finset.sum_dite_eq']
               split_ifs with h h'
-              · substs h h'
+              · subst h h'
                 simp only [CategoryTheory.eqToHom_refl, CategoryTheory.Mat_.id_apply_self]
               · subst h
                 rw [eqToHom_refl, id_apply_of_ne _ _ _ h']
@@ -280,7 +280,6 @@ end Functor
 
 namespace Mat_
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The embedding of `C` into `Mat_ C` as one-by-one matrices.
 (We index the summands by `PUnit`.) -/
 @[simps]
@@ -308,6 +307,7 @@ open CategoryTheory.Limits
 
 variable {C}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Every object in `Mat_ C` is isomorphic to the biproduct of its summands.
@@ -355,6 +355,7 @@ def additiveObjIsoBiproduct (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C)
     F.obj M ≅ ⨁ fun i => F.obj ((embedding C).obj (M.X i)) :=
   F.mapIso (isoBiproductEmbedding M) ≪≫ F.mapBiproduct _
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma additiveObjIsoBiproduct_hom_π (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) (i : M.ι) :
     (additiveObjIsoBiproduct F M).hom ≫ biproduct.π _ i =
@@ -364,6 +365,7 @@ lemma additiveObjIsoBiproduct_hom_π (F : Mat_ C ⥤ D) [Functor.Additive F] (M 
   erw [biproduct.lift_π, ← F.map_comp]
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_additiveObjIsoBiproduct_inv (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) (i : M.ι) :
@@ -384,7 +386,7 @@ theorem additiveObjIsoBiproduct_naturality (F : Mat_ C ⥤ D) [Functor.Additive 
   classical
   ext i : 1
   simp only [Category.assoc, additiveObjIsoBiproduct_hom_π, isoBiproductEmbedding_hom,
-    embedding_obj_ι, embedding_obj_X, biproduct.lift_π, biproduct.matrix_π,
+    biproduct.lift_π, biproduct.matrix_π,
     ← cancel_epi (additiveObjIsoBiproduct F M).inv, Iso.inv_hom_id_assoc]
   ext j : 1
   simp only [ι_additiveObjIsoBiproduct_inv_assoc, isoBiproductEmbedding_inv,
@@ -415,10 +417,11 @@ def lift (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ D where
     · subst h; simp
     · simp [h]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance lift_additive (F : C ⥤ D) [Functor.Additive F] : Functor.Additive (lift F) where
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- An additive functor `C ⥤ D` factors through its lift to `Mat_ C ⥤ D`. -/
 @[simps!]
 def embeddingLiftIso (F : C ⥤ D) [Functor.Additive F] : embedding C ⋙ lift F ≅ F :=
@@ -427,6 +430,7 @@ def embeddingLiftIso (F : C ⥤ D) [Functor.Additive F] : embedding C ⋙ lift F
       { hom := biproduct.desc fun _ => 𝟙 (F.obj X)
         inv := biproduct.lift fun _ => 𝟙 (F.obj X) })
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `Mat_.lift F` is the unique additive functor `L : Mat_ C ⥤ D` such that `F ≅ embedding C ⋙ L`.
 -/
@@ -501,16 +505,14 @@ where the morphisms are matrices with components in `R`. -/
 @[nolint unusedArguments]
 def Mat (_ : Type u) :=
   FintypeCat.{u}
-
-instance (R : Type u) : Inhabited (Mat R) := by
-  dsimp [Mat]
-  infer_instance
+deriving Inhabited
 
 instance (R : Type u) : CoeSort (Mat R) (Type u) :=
   FintypeCat.instCoeSort
 
 open Matrix
 
+attribute [local instance] FintypeCat.fintype in
 open scoped Classical in
 instance (R : Type u) [Semiring R] : Category (Mat R) where
   Hom X Y := Matrix X Y R
@@ -545,10 +547,12 @@ theorem id_apply_self (M : Mat R) (i : M) : (𝟙 M : Matrix M M R) i i = 1 := b
 theorem id_apply_of_ne (M : Mat R) (i j : M) (h : i ≠ j) : (𝟙 M : Matrix M M R) i j = 0 := by
   simp [id_apply, h]
 
+attribute [local instance] FintypeCat.fintype in
 theorem comp_def {M N K : Mat R} (f : M ⟶ N) (g : N ⟶ K) :
     f ≫ g = fun i k => ∑ j : N, f i j * g j k :=
   rfl
 
+attribute [local instance] FintypeCat.fintype in
 @[simp]
 theorem comp_apply {M N K : Mat R} (f : M ⟶ N) (g : N ⟶ K) (i k) :
     (f ≫ g) i k = ∑ j : N, f i j * g j k :=
@@ -576,7 +580,7 @@ def equivalenceSingleObjInverse : Mat_ (SingleObj Rᵐᵒᵖ) ⥤ Mat R where
     -- Porting note: this proof was automatic in mathlib3
     ext
     simp only [Mat_.comp_apply, comp_apply]
-    apply Finset.unop_sum
+    convert! Finset.unop_sum _ _
 
 instance : (equivalenceSingleObjInverse R).Faithful where
   map_injective w := by
@@ -587,6 +591,7 @@ instance : (equivalenceSingleObjInverse R).Faithful where
 instance : (equivalenceSingleObjInverse R).Full where
   map_surjective f := ⟨fun i j => MulOpposite.op (f i j), rfl⟩
 
+attribute [local instance] FintypeCat.fintype in
 instance : (equivalenceSingleObjInverse R).EssSurj where
   mem_essImage X :=
     ⟨{  ι := X
@@ -599,9 +604,8 @@ and the category of matrices over that ring considered as a single-object catego
 def equivalenceSingleObj : Mat R ≌ Mat_ (SingleObj Rᵐᵒᵖ) :=
   (equivalenceSingleObjInverse R).asEquivalence.symm
 
-instance (X Y : Mat R) : AddCommGroup (X ⟶ Y) := by
-  change AddCommGroup (Matrix X Y R)
-  infer_instance
+instance (X Y : Mat R) : AddCommGroup (X ⟶ Y) :=
+  inferInstanceAs <| AddCommGroup (Matrix X Y R)
 
 variable {R}
 

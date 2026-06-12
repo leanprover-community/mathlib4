@@ -93,7 +93,7 @@ theorem coeff_invOfUnit [DecidableEq σ] (n : σ →₀ ℕ) (φ : MvPowerSeries
         -↑u⁻¹ *
           ∑ x ∈ antidiagonal n,
             if x.2 < n then coeff x.1 φ * coeff x.2 (invOfUnit φ u) else 0 := by
-  convert coeff_inv_aux n (↑u⁻¹) φ
+  convert! coeff_inv_aux n (↑u⁻¹) φ
 
 @[simp]
 theorem constantCoeff_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) :
@@ -266,8 +266,8 @@ protected theorem mul_inv_rev (φ ψ : MvPowerSeries σ k) :
       MvPowerSeries.inv_mul_cancel _ h.right]
 
 instance : InvOneClass (MvPowerSeries σ k) :=
-  { inferInstanceAs (One (MvPowerSeries σ k)),
-    inferInstanceAs (Inv (MvPowerSeries σ k)) with
+  { (inferInstance : One (MvPowerSeries σ k)),
+    (inferInstance : Inv (MvPowerSeries σ k)) with
     inv_one := by
       rw [MvPowerSeries.inv_eq_iff_mul_eq_one, mul_one]
       simp }

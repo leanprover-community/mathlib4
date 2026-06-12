@@ -88,7 +88,6 @@ theorem ack_two (n : ℕ) : ack 2 n = 2 * n + 3 := by
   | zero => simp
   | succ n IH => simpa [mul_succ]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
   induction n with
@@ -370,7 +369,7 @@ lemma eval_pappAck_step_succ (c : Code) (n) :
 
 lemma primrec_pappAck : Primrec pappAck := by
   suffices Primrec (Nat.rec Code.succ (fun _ c => pappAck.step c)) by
-    convert this using 2 with n; induction n <;> simp [pappAck, *]
+    convert! this using 2 with n; induction n <;> simp [pappAck, *]
   apply_rules [Primrec.nat_rec₁, primrec_pappAck_step.comp, Primrec.snd]
 
 @[simp]

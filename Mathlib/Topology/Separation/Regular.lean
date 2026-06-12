@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.StacksAttribute
 public import Mathlib.Topology.Compactness.Lindelof
 public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Topology.Connected.Clopen
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Regular, normal, T₃, T₄ and T₅ spaces
@@ -60,7 +60,7 @@ If the space is also Lindelöf:
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists UniformSpace
 
@@ -89,7 +89,7 @@ theorem regularSpace_TFAE (X : Type u) [TopologicalSpace X] :
       ∀ x : X, (𝓝 x).lift' closure ≤ 𝓝 x,
       ∀ x : X, (𝓝 x).lift' closure = 𝓝 x] := by
   tfae_have 1 ↔ 5 := by
-    rw [regularSpace_iff, (@compl_surjective (Set X) _).forall, forall_swap]
+    rw [regularSpace_iff, (@compl_surjective (Set X) _).forall, forall_comm]
     simp only [isClosed_compl_iff, mem_compl_iff, Classical.not_not, @and_comm (_ ∈ _),
       (nhds_basis_opens _).lift'_closure.le_basis_iff (nhds_basis_opens _), and_imp,
       (nhds_basis_opens _).disjoint_iff_right, ← subset_interior_iff_mem_nhdsSet,
@@ -191,7 +191,7 @@ theorem IsCompact.exists_isOpen_closure_subset {K U : Set X} (hK : IsCompact K) 
     ∃ V, IsOpen V ∧ K ⊆ V ∧ closure V ⊆ U := by
   have hd : Disjoint (𝓝ˢ K) (𝓝ˢ Uᶜ) := by
     simpa [hK.disjoint_nhdsSet_left, disjoint_nhds_nhdsSet,
-      ← subset_interior_iff_mem_nhdsSet] using hU
+      ← subset_interior_iff_mem_nhdsSet] using! hU
   rcases ((hasBasis_nhdsSet _).disjoint_iff (hasBasis_nhdsSet _)).1 hd
     with ⟨V, ⟨hVo, hKV⟩, W, ⟨hW, hUW⟩, hVW⟩
   refine ⟨V, hVo, hKV, Subset.trans ?_ (compl_subset_comm.1 hUW)⟩
@@ -254,7 +254,6 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
     RegularSpace (∀ i, X i) :=
   regularSpace_iInf fun _ => regularSpace_induced _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a regular space, if a compact set and a closed set are disjoint, then they have disjoint
 neighborhoods. -/
 lemma SeparatedNhds.of_isCompact_isClosed {s t : Set X}
@@ -484,6 +483,30 @@ theorem normal_exists_closure_subset [NormalSpace X] {s t : Set X} (hs : IsClose
     (compl_subset_comm.1 htt')⟩
   exact fun x hxs hxt => hs't'.le_bot ⟨hxs, hxt⟩
 
+theorem exists_mem_nhdsSet_isClosed_subset [NormalSpace X] {u s : Set X} (h : s ∈ 𝓝ˢ u)
+    (hu : IsClosed u) : ∃ t ∈ 𝓝ˢ u, IsClosed t ∧ t ⊆ s := by
+  obtain ⟨o, ho_open, huo, hos⟩ := mem_nhdsSet_iff_exists.mp h
+  obtain ⟨v, hv_open, huv, hcvo⟩ := normal_exists_closure_subset hu ho_open huo
+  refine ⟨closure v, ?_, isClosed_closure, hcvo.trans hos⟩
+  exact mem_of_superset (mem_nhdsSet_iff_exists.mpr ⟨v, hv_open, huv, subset_rfl⟩) subset_closure
+
+theorem closed_nhdsSet_basis [NormalSpace X] (u : Set X) (hu : IsClosed u) : (𝓝ˢ u).HasBasis
+    (fun s : Set X ↦ s ∈ 𝓝ˢ u ∧ IsClosed s) id := by
+  refine hasBasis_self.2 fun _ ht ↦ exists_mem_nhdsSet_isClosed_subset ht hu
+
+theorem lift'_nhdsSet_closure [NormalSpace X] (u : Set X) (hu : IsClosed u) :
+    (𝓝ˢ u).lift' closure = 𝓝ˢ u :=
+  (closed_nhdsSet_basis u hu).lift'_closure_eq_self fun _ ↦ And.right
+
+theorem Filter.HasBasis.nhdsSet_closure [NormalSpace X] {ι : Sort*} {u : Set X} {p : ι → Prop}
+    {s : ι → Set X} (hu : IsClosed u) (h : (𝓝ˢ u).HasBasis p s) :
+    (𝓝ˢ u).HasBasis p fun i ↦ closure (s i) :=
+  lift'_nhdsSet_closure u hu ▸ h.lift'_closure
+
+theorem hasBasis_nhdsSet_closure [NormalSpace X] (u : Set X) (hu : IsClosed u) :
+    (𝓝ˢ u).HasBasis (fun s => s ∈ 𝓝ˢ u) closure :=
+  (𝓝ˢ u).basis_sets.nhdsSet_closure hu
+
 /-- If the codomain of a closed embedding is a normal space, then so is the domain. -/
 protected theorem Topology.IsClosedEmbedding.normalSpace [TopologicalSpace Y] [NormalSpace Y]
     {f : X → Y} (hf : IsClosedEmbedding f) : NormalSpace X where
@@ -572,10 +595,10 @@ instance (priority := 100) CompletelyNormalSpace.toNormalSpace
   normal s t hs ht hd := separatedNhds_iff_disjoint.2 <|
     completely_normal (by rwa [hs.closure_eq]) (by rwa [ht.closure_eq])
 
-theorem Topology.IsEmbedding.completelyNormalSpace [TopologicalSpace Y] [CompletelyNormalSpace Y]
-    {e : X → Y} (he : IsEmbedding e) : CompletelyNormalSpace X := by
+theorem Topology.IsInducing.completelyNormalSpace [TopologicalSpace Y] [CompletelyNormalSpace Y]
+    {e : X → Y} (he : IsInducing e) : CompletelyNormalSpace X := by
   refine ⟨fun s t hd₁ hd₂ => ?_⟩
-  simp only [he.isInducing.nhdsSet_eq_comap]
+  simp only [he.nhdsSet_eq_comap]
   refine disjoint_comap (completely_normal ?_ ?_)
   · rwa [← subset_compl_iff_disjoint_left, image_subset_iff, preimage_compl,
       ← he.closure_eq_preimage_closure_image, subset_compl_iff_disjoint_left]
@@ -590,7 +613,6 @@ instance ULift.instCompletelyNormalSpace [CompletelyNormalSpace X] :
     CompletelyNormalSpace (ULift X) :=
   IsEmbedding.uliftDown.completelyNormalSpace
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 A space is completely normal iff all open subspaces are normal.
 -/
@@ -643,10 +665,8 @@ class T5Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, Comple
 
 theorem Topology.IsEmbedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X → Y}
     (he : IsEmbedding e) : T5Space X where
-  __ := he.t1Space
-  completely_normal := by
-    have := he.completelyNormalSpace
-    exact completely_normal
+  toCompletelyNormalSpace := he.completelyNormalSpace
+  toT1Space := he.t1Space
 
 protected theorem Homeomorph.t5Space [TopologicalSpace Y] [T5Space X] (h : X ≃ₜ Y) : T5Space Y :=
   h.symm.isClosedEmbedding.t5Space
@@ -700,7 +720,6 @@ instance [CompletelyNormalSpace X] [R0Space X] : T5Space (SeparationQuotient X) 
 
 end CompletelyNormal
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a compact T₂ space, the connected component of a point equals the intersection of all
 its clopen neighbourhoods. -/
 theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : X) :
@@ -756,7 +775,6 @@ theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : 
         exact iInter_subset (fun s : { s : Set X // IsClopen s ∧ x ∈ s } => s.1)
           ⟨s ∩ v, H2, mem_inter H.2.1 h1⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `ConnectedComponents X` is Hausdorff when `X` is Hausdorff and compact -/
 @[stacks 0900 "The Stacks entry proves profiniteness."]
 instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (ConnectedComponents X) := by

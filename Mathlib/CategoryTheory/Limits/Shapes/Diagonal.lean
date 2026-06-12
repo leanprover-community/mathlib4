@@ -75,6 +75,8 @@ end Diagonal
 
 end pullback
 
+section Diagonal
+
 variable [HasPullbacks C]
 
 open pullback
@@ -131,9 +133,9 @@ abbrev pullbackDiagonalMapIso.inv : pullback i₁ i₂ ⟶
         (Category.id_comp _).symm) (by
         ext
         · simp only [Category.assoc, diagonal_fst, Category.comp_id, limit.lift_π,
-            PullbackCone.mk_pt, PullbackCone.mk_π_app, limit.lift_π_assoc, cospan_left]
+          PullbackCone.mk_π_app, limit.lift_π_assoc, cospan_left]
         · simp only [condition_assoc, Category.assoc, diagonal_snd, Category.comp_id, limit.lift_π,
-            PullbackCone.mk_pt, PullbackCone.mk_π_app, limit.lift_π_assoc, cospan_right])
+          PullbackCone.mk_π_app, limit.lift_π_assoc, cospan_right])
 
 set_option backward.isDefEq.respectTransparency false in
 /-- This iso witnesses the fact that
@@ -165,7 +167,7 @@ theorem pullbackDiagonalMapIso.hom_fst :
     (pullbackDiagonalMapIso f i i₁ i₂).hom ≫ pullback.fst _ _ =
       pullback.snd _ _ ≫ pullback.fst _ _ := by
   delta pullbackDiagonalMapIso
-  simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
+  simp only [limit.lift_π, PullbackCone.mk_π_app]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
@@ -173,7 +175,7 @@ theorem pullbackDiagonalMapIso.hom_snd :
     (pullbackDiagonalMapIso f i i₁ i₂).hom ≫ pullback.snd _ _ =
       pullback.snd _ _ ≫ pullback.snd _ _ := by
   delta pullbackDiagonalMapIso
-  simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
+  simp only [limit.lift_π, PullbackCone.mk_π_app]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
@@ -181,7 +183,7 @@ theorem pullbackDiagonalMapIso.inv_fst :
     (pullbackDiagonalMapIso f i i₁ i₂).inv ≫ pullback.fst _ _ =
       pullback.fst _ _ ≫ i₁ ≫ pullback.fst _ _ := by
   delta pullbackDiagonalMapIso
-  simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
+  simp only [limit.lift_π, PullbackCone.mk_π_app]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
@@ -388,6 +390,7 @@ theorem diagonal_pullback_fst {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
           (diagonalObjPullbackFstIso f g).inv := by
   ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Informally, this is a special case of `pullback_map_diagonal_isPullback` for `T = X`. -/
 lemma pullback_lift_diagonal_isPullback (g : Y ⟶ X) (f : X ⟶ S) :
@@ -506,5 +509,82 @@ lemma isPullback_map_snd_snd {X Y Z S : C} (f : X ⟶ S) (g : Y ⟶ S) (h : Z �
   · intro c m hfst hsnd
     refine pullback.hom_ext (by simpa) ?_
     apply pullback.hom_ext <;> simp [← hsnd, pullback.condition, ← hfst]
+
+end Diagonal
+
+section Codiagonal
+
+namespace pushout
+
+variable {X Y : C} (f : X ⟶ Y) [HasPushout f f]
+
+/-- The codiagonal object of a morphism `f : X ⟶ Y` is `pushout f f`. -/
+noncomputable abbrev codiagonalObj (f : X ⟶ Y) [HasPushout f f] : C :=
+  pushout f f
+
+/-- The codiagonal morphism `pushout f f ⟶ Y` for a morphism `f : X ⟶ Y`. -/
+noncomputable def codiagonal (f : X ⟶ Y) [HasPushout f f] : codiagonalObj f ⟶ Y :=
+  pushout.desc (𝟙 Y) (𝟙 Y) rfl
+
+@[reassoc (attr := simp)]
+theorem inl_codiagonal : pushout.inl _ _ ≫ codiagonal f = 𝟙 _ :=
+  pushout.inl_desc _ _ _
+
+@[reassoc (attr := simp)]
+theorem inr_codiagonal : pushout.inr _ _ ≫ codiagonal f = 𝟙 _ :=
+  pushout.inr_desc _ _ _
+
+set_option backward.isDefEq.respectTransparency false in
+lemma op_codiagonal :
+    (pushout.codiagonal f).op = pullback.diagonal f.op ≫ (pullbackIsoOpPushout _ _).hom := by
+  rw [← Iso.comp_inv_eq]
+  ext <;> simp [← op_comp]
+
+instance : IsSplitEpi (codiagonal f) :=
+  ⟨⟨⟨pushout.inl _ _, inl_codiagonal f⟩⟩⟩
+
+instance : IsSplitMono (pushout.inl f f) :=
+  ⟨⟨⟨codiagonal f, inl_codiagonal f⟩⟩⟩
+
+instance : IsSplitMono (pushout.inr f f) :=
+  ⟨⟨⟨codiagonal f, inr_codiagonal f⟩⟩⟩
+
+instance [Epi f] : IsIso (codiagonal f) := by
+  rw [(IsIso.inv_eq_of_hom_inv_id (inl_codiagonal f)).symm]
+  infer_instance
+
+lemma isIso_codiagonal_iff : IsIso (codiagonal f) ↔ Epi f :=
+  ⟨fun H ↦ ⟨fun _ _ e ↦ by rw [← inl_desc _ _ e, (cancel_mono (g := inl f f) (h := inr f f)
+    (codiagonal f)).mp (by simp), inr_desc]⟩, fun _ ↦ inferInstance⟩
+
+end pushout
+
+variable [HasPushouts C]
+
+set_option backward.isDefEq.respectTransparency false in
+/--
+Given `f : T ⟶ X`, `g : T ⟶ Y`, and `i : S ⟶ T`, the diagram
+```
+X ⨿ₛ Y ⟶ X ⨿ₜ Y
+  ↑        ↑
+  |        |
+  |        |
+T ⨿ₛ T  ⟶  T
+```
+is a pushout square.
+-/
+theorem isPushout_map_codiagonal {S T : C} (f : T ⟶ X) (g : T ⟶ Y) (i : S ⟶ T) :
+    IsPushout
+      (pushout.map i i (i ≫ f) (i ≫ g) f g (𝟙 _) (by simp) (by simp))
+      (pushout.codiagonal i)
+      (pushout.map (i ≫ f) (i ≫ g) f g (𝟙 _) (𝟙 _) i (by simp) (by simp))
+      (f ≫ pushout.inl _ _) := by
+  rw [← IsPullback.op_iff]
+  simp only [op_pushoutMap, Quiver.Hom.unop_op, op_comp, unop_comp, op_id, pushout.op_codiagonal]
+  exact .of_iso (pullback_map_diagonal_isPullback f.op g.op i.op)
+    (pullbackIsoOpPushout _ _) (.refl _) (pullbackIsoOpPushout _ _) (pullbackIsoOpPushout _ _)
+    (by simp [← Iso.inv_comp_eq]) (by simp) (by simp) (by simp)
+
+end Codiagonal
 
 end CategoryTheory.Limits

@@ -25,7 +25,7 @@ yields a not-necessarily-unital, not-necessarily-associative algebra.
 
 ## Main Definitions
 - `SkewMonoidAlgebra k G`: the skew monoid algebra of `G` over `k` is the type of finite formal
-`k`-linear combinations of terms of `G`, endowed with a skewed convolution product.
+  `k`-linear combinations of terms of `G`, endowed with a skewed convolution product.
 
 -/
 
@@ -283,7 +283,7 @@ theorem _root_.IsSMulRegular.skewMonoidAlgebra_iff {S : Type*} [Monoid S] [Distr
   inhabit G
   refine ⟨IsSMulRegular.skewMonoidAlgebra, fun ha b₁ b₂ inj ↦ ?_⟩
   rw [← (single_injective _).eq_iff, ← smul_single, ← smul_single] at inj
-  exact single_injective (default) (ha inj)
+  exact single_injective default (ha inj)
 
 end Single
 
@@ -329,7 +329,7 @@ theorem coeff_one_one : coeff (1 : SkewMonoidAlgebra k G) 1 = 1 := by
 theorem coeff_one {a : G} [Decidable (a = 1)] :
     (1 : SkewMonoidAlgebra k G).coeff a = if a = 1 then 1 else 0 := by
   classical
-  simpa [eq_comm (a := a)] using coeff_single_apply
+  simpa [eq_comm (a := a)] using! coeff_single_apply
 
 theorem natCast_def (n : ℕ) : (n : SkewMonoidAlgebra k G) = single (1 : G) (n : k) := by
   induction n <;> simp_all
@@ -606,13 +606,13 @@ end AddGroupWithOne
 
 section Mul
 
-/- Interaction of `sum` and `•` assuming some multiplication structure. -/
+/-- Interaction of `sum` and `•` assuming some multiplication structure. -/
 theorem sum_smul_index {N : Type*} [AddCommMonoid N] [NonUnitalNonAssocSemiring k]
     {g : SkewMonoidAlgebra k G} {b : k} {h : G → k → N} (h0 : ∀ i, h i 0 = 0) :
     (b • g).sum h = g.sum (h · <| b * ·) := by
   simp [sum_def, Finsupp.sum_smul_index' h0]
 
-/- Variant of the interaction of `sum` and `•` assuming some scalar multiplication structure. -/
+/-- Variant of the interaction of `sum` and `•` assuming some scalar multiplication structure. -/
 theorem sum_smul_index' {N R : Type*} [AddCommMonoid k]
     [DistribSMul R k] [AddCommMonoid N]
     {g : SkewMonoidAlgebra k G} {b : R} {h : G → k → N} (h0 : ∀ i, h i 0 = 0) :
@@ -835,6 +835,7 @@ def comapMulAction : MulAction G (SkewMonoidAlgebra M α) where
 attribute [local instance] comapMulAction
 /-- This is not an instance as it conflicts with `SkewMonoidAlgebra.distribMulAction`
   when `G = kˣ`. -/
+@[implicit_reducible]
 def comapDistribMulActionSelf [AddCommMonoid k] :
     DistribMulAction G (SkewMonoidAlgebra k G) where
   smul_zero g := by
@@ -850,9 +851,9 @@ section coeff_mul
 
 variable [Semiring k]
 
-section Monoid
+section Mul
 
-variable [Monoid G] [MulSemiringAction G k]
+variable [Mul G] [SMulZeroClass G k]
 
 theorem coeff_mul [DecidableEq G] (f g : SkewMonoidAlgebra k G)
     (x : G) : (f * g).coeff x = f.sum fun a₁ b₁ ↦ g.sum fun a₂ b₂ ↦
@@ -880,7 +881,6 @@ theorem coeff_mul_antidiagonal_of_finset (f g : SkewMonoidAlgebra k G) (x : G)
         simp only [Finset.mem_filter, mem_support_iff, not_and, Classical.not_not] at hp ⊢
         by_cases h1 : f.coeff p.1 = 0 <;> simp_all
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_mul_antidiagonal_finsum (f g : SkewMonoidAlgebra k G) (x : G) :
     (f * g).coeff x = ∑ᶠ p ∈ {p : G × G | p.1 * p.2 = x}, f.coeff p.1 * p.1 • g.coeff p.2 := by
   have : ({p : G × G | p.1 * p.2 = x}
@@ -919,10 +919,6 @@ theorem coeff_mul_single_aux (f : SkewMonoidAlgebra k G) {r : k} {x y z : G}
     _ = f.coeff y * y • r := by
       split_ifs with h <;> simp [support] at h <;> simp [h]
 
-theorem coeff_mul_single_one (f : SkewMonoidAlgebra k G) (r : k) (x : G) :
-    (f * single 1 r).coeff x = f.coeff x * x • r :=
-  f.coeff_mul_single_aux fun a ↦ by rw [mul_one]
-
 theorem coeff_mul_single_of_not_exists_mul (r : k) {g g' : G} (x : SkewMonoidAlgebra k G)
     (h : ∀ x, ¬g' = x * g) : (x * single g r).coeff g' = 0 := by
   classical
@@ -944,10 +940,6 @@ theorem coeff_single_mul_aux (f : SkewMonoidAlgebra k G) {r : k} {x y z : G}
     _ = if z ∈ f.support then r * x • f.coeff z else 0 := (f.support.sum_ite_eq' _ _)
     _ = _ := by split_ifs with h <;> simp [support] at h <;> simp [h]
 
-theorem coeff_single_one_mul (f : SkewMonoidAlgebra k G) (r : k) (x : G) :
-    (single (1 : G) r * f).coeff x = r * f.coeff x := by
-  simp [coeff_single_mul_aux, one_smul]
-
 theorem coeff_single_mul_of_not_exists_mul (r : k) {g g' : G} (x : SkewMonoidAlgebra k G)
     (h : ¬∃ d, g' = g * d) : (single g r * x).coeff g' = 0 := by
   classical
@@ -957,6 +949,20 @@ theorem coeff_single_mul_of_not_exists_mul (r : k) {g g' : G} (x : SkewMonoidAlg
     rintro g'' _hg'' rfl
     exact absurd ⟨_, rfl⟩ h
   · simp
+
+end Mul
+
+section Monoid
+
+variable [Monoid G] [MulSemiringAction G k]
+
+theorem coeff_mul_single_one (f : SkewMonoidAlgebra k G) (r : k) (x : G) :
+    (f * single 1 r).coeff x = f.coeff x * x • r :=
+  f.coeff_mul_single_aux fun a ↦ by rw [mul_one]
+
+theorem coeff_single_one_mul (f : SkewMonoidAlgebra k G) (r : k) (x : G) :
+    (single (1 : G) r * f).coeff x = r * f.coeff x := by
+  simp [coeff_single_mul_aux, one_smul]
 
 end Monoid
 
@@ -1056,7 +1062,7 @@ theorem mapDomain_one [MonoidHomClass F α α₂] (f : F) :
       (1 : SkewMonoidAlgebra β α₂) := by
   simp_rw [one_def, mapDomain_single, map_one]
 
-/- Like `mapDomain_add`, but for the skewed convolutive multiplication we define in this
+/-- Like `mapDomain_add`, but for the skewed convolutive multiplication we define in this
   file. This theorem holds assuming that `(hf : ∀ (a : α) (x : β), a • x = (f a) • x)`. -/
 theorem mapDomain_mul [MulSemiringAction α β] [MulSemiringAction α₂ β]
     [MulHomClass F α α₂] {f : F} (x y : SkewMonoidAlgebra β α)
@@ -1072,7 +1078,7 @@ theorem mapDomain_mul [MulSemiringAction α β] [MulSemiringAction α₂ β]
     ext a b c
     rw [sum_mapDomain_index (by simp) (by simp [smul_add, mul_add, single_add])]
     simp_rw [hf]
-  convert this using 4
+  convert! this using 4
   rw [map_sum]
 
 /-- If f : G → H is a multiplicative homomorphism between two monoids and
@@ -1179,10 +1185,14 @@ theorem distribMulActionHom_ext' [DistribMulAction R M] [DistribMulAction R N] {
     f = g :=
   distribMulActionHom_ext fun a ↦ DistribMulActionHom.congr_fun (h a)
 
+variable (R) in
 /-- Interpret `single a` as a linear map. -/
 def lsingle {α : Type*} (a : α) [Module R M] : M →ₗ[R] (SkewMonoidAlgebra M α) where
   __ := singleAddHom a
   map_smul' _ _ := (smul_single _ _ _).symm
+
+lemma lsingle_apply {α : Type*} (a : α) [Module R M] (m : M) :
+  lsingle R a m = single a m := rfl
 
 /-- Two `R`-linear maps from `SkewMonoidAlgebra M α` which agree on each `single x y`
   agree everywhere. -/
@@ -1192,7 +1202,7 @@ theorem lhom_ext {α : Type*} [Module R M] [Module R N] ⦃φ ψ : SkewMonoidAlg
 
 @[ext high]
 theorem lhom_ext' {α : Type*} [Module R M] [Module R N] ⦃φ ψ : SkewMonoidAlgebra M α →ₗ[R] N⦄
-    (h : ∀ a, φ.comp (lsingle a) = ψ.comp (lsingle a)) : φ = ψ :=
+    (h : ∀ a, φ.comp (lsingle R a) = ψ.comp (lsingle R a)) : φ = ψ :=
   lhom_ext fun a ↦ LinearMap.congr_fun (h a)
 
 variable {A : Type*} [NonUnitalNonAssocSemiring A] [Monoid G] [Semiring k] [MulSemiringAction G k]

@@ -42,7 +42,6 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace
 
 section Rotation
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Characteristic function of a centered Gaussian measure.
 For a Gaussian measure, the hypothesis `∀ L : StrongDual ℝ E, μ[L] = 0` is equivalent to the simpler
 `μ[id] = 0`, but at this point we don't know yet that `μ` has a first moment so we can't use it.
@@ -70,21 +69,21 @@ lemma map_rotation_eq_self_of_forall_strongDual_eq_zero
   have h1 : (L.comp (.rotation θ)).comp (.inl ℝ E E)
       = Real.cos θ • L.comp (.inl ℝ E E) - Real.sin θ • L.comp (.inr ℝ E E) := by
     ext x
-    simp only [ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.inl_apply,
+    simp only [ContinuousLinearMap.comp_apply, ContinuousLinearMap.inl_apply,
       ContinuousLinearMap.rotation_apply, smul_zero, add_zero]
     rw [← L.comp_inl_add_comp_inr]
     simp [-neg_smul, sub_eq_add_neg]
   have h2 : (L.comp (.rotation θ)).comp (.inr ℝ E E)
       = Real.sin θ • L.comp (.inl ℝ E E) + Real.cos θ • L.comp (.inr ℝ E E) := by
     ext x
-    simp only [ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.inr_apply,
-      ContinuousLinearMap.rotation_apply, smul_zero, zero_add, ContinuousLinearMap.add_apply,
-      ContinuousLinearMap.coe_smul', Pi.smul_apply, ContinuousLinearMap.inl_apply, smul_eq_mul]
+    simp only [ContinuousLinearMap.comp_apply, ContinuousLinearMap.inr_apply,
+      ContinuousLinearMap.rotation_apply, smul_zero, zero_add, add_apply, smul_apply,
+      ContinuousLinearMap.inl_apply, smul_eq_mul]
     rw [← L.comp_inl_add_comp_inr]
     simp
   rw [h1, h2]
-  simp only [ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_smul',
-    ContinuousLinearMap.coe_add']
+  simp only [FunLike.coe_sub, FunLike.coe_smul,
+    FunLike.coe_add]
   rw [variance_sub, variance_smul, variance_add, variance_smul, variance_smul, covariance_smul_left,
     covariance_smul_right, variance_smul, covariance_smul_left, covariance_smul_right]
   · have h := Real.cos_sq_add_sin_sq θ
@@ -128,7 +127,7 @@ lemma integrable_exp_sq_of_conv_neg (μ : Measure E) [IsGaussian μ] {C C' : ℝ
     simp only [ContinuousLinearEquiv.coe_neg] at hC
     filter_upwards [hC] with y hy
     rw [integrable_map_measure (by fun_prop) (by fun_prop)] at hy
-    convert hy with x
+    convert! hy with x
     simp only [Function.comp_apply, Pi.neg_apply, id_eq, Real.exp_eq_exp, mul_eq_mul_left_iff,
       norm_nonneg, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_left_inj₀]
     left
@@ -159,7 +158,6 @@ lemma integrable_exp_sq_of_conv_neg (μ : Measure E) [IsGaussian μ] {C C' : ℝ
   _ ≤ C' * ((1 + ε) * ‖x - y‖ ^ 2 + (1 + 1 / ε) * ‖y‖ ^ 2) := by gcongr
   _ = C / ε * ‖y‖ ^ 2 + C * ‖x - y‖ ^ 2 := by grind
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Fernique's theorem**: for a Gaussian measure, there exists `C > 0` such that the function
 `x ↦ exp (C * ‖x‖ ^ 2)` is integrable. -/
 theorem exists_integrable_exp_sq [CompleteSpace E] (μ : Measure E) [IsGaussian μ] :
@@ -190,7 +188,7 @@ lemma memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp : p ≠ ∞
     rw [← memLp_norm_rpow_iff (q := 2) (by fun_prop) (by simp) (by simp)]
     simpa using this
   lift p to ℝ≥0 using hp
-  convert memLp_of_mem_interior_integrableExpSet ?_ (p / 2)
+  convert! memLp_of_mem_interior_integrableExpSet ?_ (p / 2)
   · simp
   obtain ⟨C, hC_pos, hC⟩ := exists_integrable_exp_sq μ
   have hC_neg : Integrable (fun x ↦ rexp (-C * ‖x‖ ^ 2)) μ := by -- `-C` could be any negative
@@ -204,19 +202,16 @@ lemma memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp : p ≠ ∞
     exact fun x hx ↦ integrable_exp_mul_of_le_of_le hC_neg hC hx.1.le hx.2.le
   exact h_subset ⟨by simp [hC_pos], hC_pos⟩
 
+@[to_fun integrable_fun_id]
 lemma integrable_id : Integrable id μ :=
   memLp_one_iff_integrable.1 <| memLp_id μ 1 (by norm_num)
 
-lemma integrable_fun_id : Integrable (fun x ↦ x) μ := integrable_id
-
+@[to_fun memLp_two_fun_id]
 lemma memLp_two_id : MemLp id 2 μ := memLp_id μ 2 (by norm_num)
-
-lemma memLp_two_fun_id : MemLp (fun x ↦ x) 2 μ := memLp_two_id
 
 lemma integral_dual (L : StrongDual ℝ E) : μ[L] = L (∫ x, x ∂μ) :=
   L.integral_comp_comm ((memLp_id μ 1 (by simp)).integrable le_rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A Gaussian measure with variance zero is a Dirac. -/
 lemma eq_dirac_of_variance_eq_zero (h : ∀ L : StrongDual ℝ E, Var[L; μ] = 0) :
     μ = Measure.dirac (∫ x, x ∂μ) := by

@@ -64,12 +64,14 @@ theorem exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
       EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a))) ↔
     (S ∈ F.inducedTopology (coherentTopology _) X) := by
   refine ⟨fun ⟨α, _, Y, π, ⟨H₁, H₂⟩⟩ ↦ ?_, fun hS ↦ ?_⟩
-  · apply (mem_sieves_iff_hasEffectiveEpiFamily (Sieve.functorPushforward _ S)).mpr
+  · rw [mem_inducedTopology_iff_of_isCoverDense]
+    apply (mem_sieves_iff_hasEffectiveEpiFamily (Sieve.functorPushforward _ S)).mpr
     refine ⟨α, inferInstance, fun i => F.obj (Y i),
       fun i => F.map (π i), ⟨?_,
       fun a => Sieve.image_mem_functorPushforward F S (H₂ a)⟩⟩
     exact F.map_finite_effectiveEpiFamily _ _
-  · obtain ⟨α, _, Y, π, ⟨H₁, H₂⟩⟩ := (mem_sieves_iff_hasEffectiveEpiFamily _).mp hS
+  · rw [mem_inducedTopology_iff_of_isCoverDense] at hS
+    obtain ⟨α, _, Y, π, ⟨H₁, H₂⟩⟩ := (mem_sieves_iff_hasEffectiveEpiFamily _).mp hS
     refine ⟨α, inferInstance, ?_⟩
     let Z : α → C := fun a ↦ (Functor.EffectivelyEnough.presentation (F := F) (Y a)).some.p
     let g₀ : (a : α) → F.obj (Z a) ⟶ Y a := fun a ↦ F.effectiveEpiOver (Y a)
@@ -79,7 +81,7 @@ theorem exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
       simpa using this
     · obtain ⟨W, g₁, g₂, h₁, h₂⟩ := H₂ a
       rw [h₂]
-      convert S.downward_closed h₁ (F.preimage (g₀ a ≫ g₂))
+      convert! S.downward_closed h₁ (F.preimage (g₀ a ≫ g₂))
       exact F.map_injective (by simp)
 
 lemma eq_induced : haveI := F.reflects_precoherent
@@ -92,9 +94,7 @@ lemma eq_induced : haveI := F.reflects_precoherent
 
 instance : haveI := F.reflects_precoherent;
     F.IsDenseSubsite (coherentTopology C) (coherentTopology D) where
-  functorPushforward_mem_iff := by
-    rw [eq_induced F]
-    rfl
+  functorPushforward_mem_iff := by simp [eq_induced F]
 
 lemma coverPreserving : haveI := F.reflects_precoherent
     CoverPreserving (coherentTopology _) (coherentTopology _) F :=
@@ -117,7 +117,7 @@ noncomputable
 def equivalence (A : Type u₃) [Category.{v₃} A] [∀ X, HasLimitsOfShape (StructuredArrow X F.op) A] :
     haveI := F.reflects_precoherent
     Sheaf (coherentTopology C) A ≌ Sheaf (coherentTopology D) A :=
-  Functor.IsDenseSubsite.sheafEquiv F _ _ _
+  Functor.IsDenseSubsite.sheafEquiv _ _ F _
 
 end SheafEquiv
 
@@ -141,7 +141,7 @@ def equivalence' (A : Type u₃) [Category.{v₃} A]
     [∀ X, HasLimitsOfShape (StructuredArrow X F.op) A] :
     haveI := F.reflects_precoherent
     Sheaf (coherentTopology C) A ≌ Sheaf (coherentTopology D) A :=
-  Functor.IsDenseSubsite.sheafEquiv F _ _ _
+  Functor.IsDenseSubsite.sheafEquiv _ _ F _
 
 end RegularExtensive
 
@@ -168,10 +168,12 @@ theorem exists_effectiveEpi_iff_mem_induced (X : C) (S : Sieve X) :
       EffectiveEpi π ∧ S.arrows π) ↔
     (S ∈ F.inducedTopology (regularTopology _) X) := by
   refine ⟨fun ⟨Y, π, ⟨H₁, H₂⟩⟩ ↦ ?_, fun hS ↦ ?_⟩
-  · apply (mem_sieves_iff_hasEffectiveEpi (Sieve.functorPushforward _ S)).mpr
+  · rw [mem_inducedTopology_iff_of_isCoverDense]
+    apply (mem_sieves_iff_hasEffectiveEpi (Sieve.functorPushforward _ S)).mpr
     refine ⟨F.obj Y, F.map π, ⟨?_, Sieve.image_mem_functorPushforward F S H₂⟩⟩
     exact F.map_effectiveEpi _
-  · obtain ⟨Y, π, ⟨H₁, H₂⟩⟩ := (mem_sieves_iff_hasEffectiveEpi _).mp hS
+  · rw [mem_inducedTopology_iff_of_isCoverDense] at hS
+    obtain ⟨Y, π, ⟨H₁, H₂⟩⟩ := (mem_sieves_iff_hasEffectiveEpi _).mp hS
     let g₀ := F.effectiveEpiOver Y
     refine ⟨_, F.preimage (g₀ ≫ π), ?_, (?_ : S.arrows (F.preimage _))⟩
     · refine F.effectiveEpi_of_map _ ?_
@@ -179,7 +181,7 @@ theorem exists_effectiveEpi_iff_mem_induced (X : C) (S : Sieve X) :
       infer_instance
     · obtain ⟨W, g₁, g₂, h₁, h₂⟩ := H₂
       rw [h₂]
-      convert S.downward_closed h₁ (F.preimage (g₀ ≫ g₂))
+      convert! S.downward_closed h₁ (F.preimage (g₀ ≫ g₂))
       exact F.map_injective (by simp)
 
 lemma eq_induced : haveI := F.reflects_preregular
@@ -192,9 +194,7 @@ lemma eq_induced : haveI := F.reflects_preregular
 
 instance : haveI := F.reflects_preregular;
     F.IsDenseSubsite (regularTopology C) (regularTopology D) where
-  functorPushforward_mem_iff := by
-    rw [eq_induced F]
-    rfl
+  functorPushforward_mem_iff := by simp [eq_induced F]
 
 lemma coverPreserving : haveI := F.reflects_preregular
     CoverPreserving (regularTopology _) (regularTopology _) F :=
@@ -217,7 +217,7 @@ noncomputable
 def equivalence (A : Type u₃) [Category.{v₃} A] [∀ X, HasLimitsOfShape (StructuredArrow X F.op) A] :
     haveI := F.reflects_preregular
     Sheaf (regularTopology C) A ≌ Sheaf (regularTopology D) A :=
-  Functor.IsDenseSubsite.sheafEquiv F _ _ _
+  Functor.IsDenseSubsite.sheafEquiv _ _ F _
 
 end SheafEquiv
 
@@ -243,9 +243,9 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
     (@equalizerCondition_iff_isSheaf _ _ _ _ F _ h).symm
 
 noncomputable instance [Preregular C] [FinitaryExtensive C]
-    (F : Sheaf (coherentTopology C) A) : PreservesFiniteProducts F.val :=
-  (Presheaf.isSheaf_iff_preservesFiniteProducts F.val).1
-    ((Presheaf.isSheaf_coherent_iff_regular_and_extensive F.val).mp F.cond).1
+    (F : Sheaf (coherentTopology C) A) : PreservesFiniteProducts F.obj :=
+  (Presheaf.isSheaf_iff_preservesFiniteProducts F.obj).1
+    ((Presheaf.isSheaf_coherent_iff_regular_and_extensive F.obj).mp F.property).1
 
 theorem isSheaf_iff_preservesFiniteProducts_of_projective [Preregular C] [FinitaryExtensive C]
     [∀ (X : C), Projective X] :
@@ -258,19 +258,20 @@ theorem isSheaf_iff_extensiveSheaf_of_projective [Preregular C] [FinitaryExtensi
     IsSheaf (coherentTopology C) F ↔ IsSheaf (extensiveTopology C) F := by
   rw [isSheaf_iff_preservesFiniteProducts_of_projective, isSheaf_iff_preservesFiniteProducts]
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 The categories of coherent sheaves and extensive sheaves on `C` are equivalent if `C` is
 preregular, finitary extensive, and every object is projective.
 -/
-@[simps]
+@[simps!]
 def coherentExtensiveEquivalence [Preregular C] [FinitaryExtensive C] [∀ (X : C), Projective X] :
     Sheaf (coherentTopology C) A ≌ Sheaf (extensiveTopology C) A where
-  functor := {
-    obj := fun F ↦ ⟨F.val, (isSheaf_iff_extensiveSheaf_of_projective F.val).mp F.cond⟩
-    map := fun f ↦ ⟨f.val⟩ }
-  inverse := {
-    obj := fun F ↦ ⟨F.val, (isSheaf_iff_extensiveSheaf_of_projective F.val).mpr F.cond⟩
-    map := fun f ↦ ⟨f.val⟩ }
+  functor :=
+    ObjectProperty.lift _ (sheafToPresheaf _ _) (fun F ↦
+      (isSheaf_iff_extensiveSheaf_of_projective F.obj).mp F.property)
+  inverse :=
+    ObjectProperty.lift _ (sheafToPresheaf _ _) (fun F ↦
+      (isSheaf_iff_extensiveSheaf_of_projective F.obj).mpr F.property)
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 

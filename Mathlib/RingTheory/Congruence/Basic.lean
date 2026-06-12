@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Hom
 public import Mathlib.Algebra.Ring.Action.Basic
 public import Mathlib.GroupTheory.Congruence.Basic
 public import Mathlib.RingTheory.Congruence.Defs
@@ -81,17 +82,44 @@ instance smulCommClass' [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R 
   haveI := SMulCommClass.symm R α R
   SMulCommClass.symm _ _ _
 
+instance [Monoid α] [NonAssocSemiring R] [MulAction α R] [IsScalarTower α R R]
+    (c : RingCon R) : MulAction α c.Quotient :=
+  inferInstanceAs <| MulAction α c.toCon.Quotient
+
 instance [Monoid α] [NonAssocSemiring R] [DistribMulAction α R] [IsScalarTower α R R]
-    (c : RingCon R) : DistribMulAction α c.Quotient :=
-  { c.toCon.mulAction with
-    smul_zero := fun _ => congr_arg toQuotient <| smul_zero _
-    smul_add := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <| smul_add _ _ _ }
+    (c : RingCon R) : DistribMulAction α c.Quotient where
+  smul_zero := fun _ => congr_arg toQuotient <| smul_zero _
+  smul_add := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <| smul_add _ _ _
 
 instance [Monoid α] [Semiring R] [MulSemiringAction α R] [IsScalarTower α R R] (c : RingCon R) :
-    MulSemiringAction α c.Quotient :=
-  { smul_one := fun _ => congr_arg toQuotient <| smul_one _
-    smul_mul := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <|
-      MulSemiringAction.smul_mul _ _ _ }
+    MulSemiringAction α c.Quotient where
+  smul_one := fun _ => congr_arg toQuotient <| smul_one _
+  smul_mul := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <|
+    MulSemiringAction.smul_mul _ _ _
+
+section
+variable [CommSemiring α] [Semiring R] [Algebra α R]
+
+instance (c : RingCon R) : Algebra α c.Quotient where
+  algebraMap := c.mk'.comp (algebraMap α R)
+  commutes' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.commutes _ _
+  smul_def' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.smul_def _ _
+
+@[simp, norm_cast]
+theorem coe_algebraMap (c : RingCon R) (s : α) :
+    (algebraMap α R s : c.Quotient) = algebraMap α c.Quotient s :=
+  rfl
+
+variable (α) in
+/-- The algebra morphism from `R` to the quotient by a ring congruence. -/
+@[simps!] def mkₐ (c : RingCon R) : R →ₐ[α] c.Quotient :=
+  { mk' c with commutes' _ := rfl }
+
+theorem mkₐ_surjective (c : RingCon R) :
+    Function.Surjective (c.mkₐ (α := α)) :=
+  mk'_surjective c
+
+end
 
 end Algebraic
 

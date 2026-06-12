@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Order.Group.Synonym
 Transfer algebraic instances from `α` to `αᵒᵈ` and `Lex α`.
 -/
 
-@[expose] public section
+public section
 
 
 open Function
@@ -25,47 +25,65 @@ variable {α : Type*}
 /-! ### Order dual -/
 
 
-open OrderDual
+namespace OrderDual
 
-instance [h : MulZeroClass α] : MulZeroClass αᵒᵈ := h
+instance [MulZeroClass α] : MulZeroClass αᵒᵈ := inferInstanceAs <| MulZeroClass α
 
-instance [h : MulZeroOneClass α] : MulZeroOneClass αᵒᵈ := h
+instance [MulZeroOneClass α] : MulZeroOneClass αᵒᵈ := inferInstanceAs <| MulZeroOneClass α
 
-instance [Mul α] [Zero α] [h : NoZeroDivisors α] : NoZeroDivisors αᵒᵈ := h
+instance [Mul α] [Zero α] [NoZeroDivisors α] : NoZeroDivisors αᵒᵈ :=
+  inferInstanceAs <| NoZeroDivisors α
 
-instance [h : SemigroupWithZero α] : SemigroupWithZero αᵒᵈ := h
+instance [SemigroupWithZero α] : SemigroupWithZero αᵒᵈ := inferInstanceAs <| SemigroupWithZero α
 
-instance [h : MonoidWithZero α] : MonoidWithZero αᵒᵈ := h
+instance [MonoidWithZero α] : MonoidWithZero αᵒᵈ := inferInstanceAs <| MonoidWithZero α
 
-instance [Mul α] [Zero α] [h : IsLeftCancelMulZero α] : IsLeftCancelMulZero αᵒᵈ := h
-instance [Mul α] [Zero α] [h : IsRightCancelMulZero α] : IsRightCancelMulZero αᵒᵈ := h
-instance [Mul α] [Zero α] [h : IsCancelMulZero α] : IsCancelMulZero αᵒᵈ := h
+instance [Mul α] [Zero α] [IsLeftCancelMulZero α] : IsLeftCancelMulZero αᵒᵈ :=
+  inferInstanceAs <| IsLeftCancelMulZero α
 
-instance [h : CommMonoidWithZero α] : CommMonoidWithZero αᵒᵈ := h
+instance [Mul α] [Zero α] [IsRightCancelMulZero α] : IsRightCancelMulZero αᵒᵈ :=
+  inferInstanceAs <| IsRightCancelMulZero α
 
-instance [h : GroupWithZero α] : GroupWithZero αᵒᵈ := h
+instance [Mul α] [Zero α] [IsCancelMulZero α] : IsCancelMulZero αᵒᵈ where
 
-instance [h : CommGroupWithZero α] : CommGroupWithZero αᵒᵈ := h
+instance [CommMonoidWithZero α] : CommMonoidWithZero αᵒᵈ := inferInstanceAs <| CommMonoidWithZero α
+
+instance [GroupWithZero α] : GroupWithZero αᵒᵈ := inferInstanceAs <| GroupWithZero α
+
+instance [CommGroupWithZero α] : CommGroupWithZero αᵒᵈ := inferInstanceAs <| CommGroupWithZero α
+
+end OrderDual
 
 /-! ### Lexicographic order -/
 
 
-instance [h : MulZeroClass α] : MulZeroClass (Lex α) := h
+namespace Lex
 
-instance [h : MulZeroOneClass α] : MulZeroOneClass (Lex α) := h
+instance [MulZeroClass α] : MulZeroClass (Lex α) := inferInstanceAs <| MulZeroClass α
 
-instance [Mul α] [Zero α] [h : NoZeroDivisors α] : NoZeroDivisors (Lex α) := h
+instance [MulZeroOneClass α] : MulZeroOneClass (Lex α) := inferInstanceAs <| MulZeroOneClass α
 
-instance [h : SemigroupWithZero α] : SemigroupWithZero (Lex α) := h
+instance [Mul α] [Zero α] [NoZeroDivisors α] : NoZeroDivisors (Lex α) :=
+  inferInstanceAs <| NoZeroDivisors α
 
-instance [h : MonoidWithZero α] : MonoidWithZero (Lex α) := h
+instance [SemigroupWithZero α] : SemigroupWithZero (Lex α) := inferInstanceAs <| SemigroupWithZero α
 
-instance [Mul α] [Zero α] [h : IsLeftCancelMulZero α] : IsLeftCancelMulZero (Lex α) := h
-instance [Mul α] [Zero α] [h : IsRightCancelMulZero α] : IsRightCancelMulZero (Lex α) := h
-instance [Mul α] [Zero α] [h : IsCancelMulZero α] : IsCancelMulZero (Lex α) := h
+instance [MonoidWithZero α] : MonoidWithZero (Lex α) := inferInstanceAs <| MonoidWithZero α
 
-instance [h : CommMonoidWithZero α] : CommMonoidWithZero (Lex α) := h
+instance [Mul α] [Zero α] [IsLeftCancelMulZero α] : IsLeftCancelMulZero (Lex α) :=
+  inferInstanceAs <| IsLeftCancelMulZero α
 
-instance [h : GroupWithZero α] : GroupWithZero (Lex α) := h
+instance [Mul α] [Zero α] [IsRightCancelMulZero α] : IsRightCancelMulZero (Lex α) :=
+  inferInstanceAs <| IsRightCancelMulZero α
 
-instance [h : CommGroupWithZero α] : CommGroupWithZero (Lex α) := h
+instance [Mul α] [Zero α] [IsCancelMulZero α] : IsCancelMulZero (Lex α) :=
+  inferInstanceAs <| IsCancelMulZero α
+
+instance [CommMonoidWithZero α] : CommMonoidWithZero (Lex α) :=
+  inferInstanceAs <| CommMonoidWithZero α
+
+instance [GroupWithZero α] : GroupWithZero (Lex α) := inferInstanceAs <| GroupWithZero α
+
+instance [CommGroupWithZero α] : CommGroupWithZero (Lex α) := inferInstanceAs <| CommGroupWithZero α
+
+end Lex

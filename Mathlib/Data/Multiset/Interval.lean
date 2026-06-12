@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.DFinsupp.Interval
 public import Mathlib.Data.DFinsupp.Multiset
 public import Mathlib.Order.Interval.Finset.Nat
-public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Order.Lattice.Nat
 public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
@@ -26,12 +26,12 @@ multisets are typically used computationally.
 
 -/
 
-@[expose] public section
+public section
 
 
 open Finset DFinsupp Function
 
-open Pointwise
+open scoped Pointwise
 
 variable {α : Type*}
 
@@ -78,6 +78,6 @@ theorem card_uIcc :
     toDFinsupp_support]
 
 theorem card_Iic : (Finset.Iic s).card = ∏ i ∈ s.toFinset, (s.count i + 1) := by
-  simp_rw [Iic_eq_Icc, card_Icc, bot_eq_zero, toFinset_zero, empty_union, count_zero]
+  simp_rw [Iic_eq_Icc, card_Icc, bot_eq_zero, toFinset_zero, empty_union, count_zero, tsub_zero]
 
 end Multiset

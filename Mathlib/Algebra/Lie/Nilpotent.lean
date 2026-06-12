@@ -475,6 +475,7 @@ theorem lowerCentralSeriesLast_le_of_not_isTrivial [IsNilpotent L M] (h : ¬ IsT
   · exact antitone_lowerCentralSeries _ _ _ (Nat.le_of_lt_succ h)
 
 variable [LieModule R L M]
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- For a nilpotent Lie module `M` of a Lie algebra `L`, the first term in the lower central series
 of `M` contains a non-zero element on which `L` acts trivially unless the entire action is trivial.
@@ -573,7 +574,7 @@ theorem lcs_add_le_iff (l k : ℕ) : N₁.lcs (l + k) ≤ N₂ ↔ N₁.lcs l �
     rw [(by abel : l + (k + 1) = l + 1 + k), ih, ucs_succ, lcs_succ, top_lie_le_iff_le_normalizer]
 
 theorem lcs_le_iff (k : ℕ) : N₁.lcs k ≤ N₂ ↔ N₁ ≤ N₂.ucs k := by
-  convert lcs_add_le_iff (R := R) (L := L) (M := M) 0 k
+  convert! lcs_add_le_iff (R := R) (L := L) (M := M) 0 k
   rw [zero_add]
 
 theorem gc_lcs_ucs (k : ℕ) :
@@ -788,7 +789,6 @@ theorem coe_lowerCentralSeries_ideal_quot_eq {I : LieIdeal R L} (k : ℕ) :
       rw [← LieSubmodule.mem_toSubmodule, ← ih, LieSubmodule.mem_toSubmodule] at hz
       exact ⟨⟨y, LieSubmodule.mem_top _⟩, ⟨z, hz⟩, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Note that the below inequality can be strict. For example the ideal of strictly-upper-triangular
 2x2 matrices inside the Lie algebra of upper-triangular 2x2 matrices with `k = 1`. -/
 -- Porting note: added `LieSubmodule.toSubmodule` in the statement
@@ -855,6 +855,8 @@ theorem LieEquiv.nilpotent_iff_equiv_nilpotent (e : L ≃ₗ⁅R⁆ L') :
 theorem LieHom.isNilpotent_range [IsNilpotent L] (f : L →ₗ⁅R⁆ L') : IsNilpotent f.range :=
   f.surjective_rangeRestrict.lieAlgebra_isNilpotent
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-- Note that this result is not quite a special case of
 `LieModule.isNilpotent_range_toEnd_iff` which concerns nilpotency of the
 `(ad R L).range`-module `L`, whereas this result concerns nilpotency of the `(ad R L).range`-module
@@ -914,7 +916,6 @@ theorem coe_lcs_eq [LieModule R L M] :
       true_and, (I : LieSubalgebra R L).coe_bracket_of_module]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsNilpotent L I] : LieRing.IsNilpotent I := by
   let f : I →ₗ⁅R⁆ L := I.incl
   let g : I →ₗ⁅R⁆ I := LieHom.id
@@ -922,33 +923,6 @@ instance [IsNilpotent L I] : LieRing.IsNilpotent I := by
   exact Function.injective_id.lieModuleIsNilpotent hfg
 
 end LieIdeal
-
-section OfAssociative
-
-variable (R : Type u) {A : Type v} [CommRing R] [Ring A] [Algebra R A]
-
-theorem _root_.LieAlgebra.ad_nilpotent_of_nilpotent {a : A} (h : IsNilpotent a) :
-    IsNilpotent (LieAlgebra.ad R A a) := by
-  rw [LieAlgebra.ad_eq_lmul_left_sub_lmul_right]
-  have hl : IsNilpotent (LinearMap.mulLeft R a) := by rwa [LinearMap.isNilpotent_mulLeft_iff]
-  have hr : IsNilpotent (LinearMap.mulRight R a) := by rwa [LinearMap.isNilpotent_mulRight_iff]
-  have := @LinearMap.commute_mulLeft_right R A _ _ _ _ _ a a
-  exact this.isNilpotent_sub hl hr
-
-variable {R}
-
-theorem _root_.LieSubalgebra.isNilpotent_ad_of_isNilpotent_ad {L : Type v} [LieRing L]
-    [LieAlgebra R L] (K : LieSubalgebra R L) {x : K} (h : IsNilpotent (LieAlgebra.ad R L ↑x)) :
-    IsNilpotent (LieAlgebra.ad R K x) := by
-  obtain ⟨n, hn⟩ := h
-  use n
-  exact Module.End.submodule_pow_eq_zero_of_pow_eq_zero (K.ad_comp_incl_eq x) hn
-
-theorem _root_.LieAlgebra.isNilpotent_ad_of_isNilpotent {L : LieSubalgebra R A} {x : L}
-    (h : IsNilpotent (x : A)) : IsNilpotent (LieAlgebra.ad R L x) :=
-  L.isNilpotent_ad_of_isNilpotent_ad <| LieAlgebra.ad_nilpotent_of_nilpotent R h
-
-end OfAssociative
 
 section ExtendScalars
 
@@ -985,21 +959,17 @@ variable [CommRing R] [LieRing L] [LieAlgebra R L]
 `L` under the adjoint action. -/
 def maxNilpotentIdeal := maxNilpotentSubmodule R L L
 
-set_option backward.isDefEq.respectTransparency false in
 instance maxNilpotentIdealIsNilpotent [IsNoetherian R L] :
     IsNilpotent L (maxNilpotentIdeal R L) :=
   instMaxNilpotentSubmoduleIsNilpotent R L L
 
-set_option backward.isDefEq.respectTransparency false in
 theorem LieIdeal.isNilpotent_iff_le_maxNilpotentIdeal [IsNoetherian R L] (I : LieIdeal R L) :
     IsNilpotent L I ↔ I ≤ maxNilpotentIdeal R L :=
   isNilpotent_iff_le_maxNilpotentSubmodule R L L I
 
-set_option backward.isDefEq.respectTransparency false in
 theorem center_le_maxNilpotentIdeal : center R L ≤ maxNilpotentIdeal R L :=
   le_sSup (trivialIsNilpotent L (center R L))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem maxNilpotentIdeal_le_radical : maxNilpotentIdeal R L ≤ radical R L :=
   sSup_le_sSup fun I (_ : IsNilpotent L I) ↦ isSolvable_of_isNilpotent I
 

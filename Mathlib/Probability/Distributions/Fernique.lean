@@ -105,7 +105,6 @@ def _root_.ContinuousLinearMap.rotation (θ : ℝ) : E × E →L[ℝ] E × E whe
     simp only [Prod.fst_add, smul_add, Prod.snd_add, neg_smul, Prod.mk_add_mk]
     abel_nf
   map_smul' c x := by simp [smul_comm c]
-  cont := by fun_prop
 
 lemma _root_.ContinuousLinearMap.rotation_apply (θ : ℝ) (x : E × E) :
     ContinuousLinearMap.rotation θ x
@@ -181,7 +180,7 @@ lemma measure_le_mul_measure_gt_normThreshold_le_of_map_rotation_eq_self [SFinit
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ) (a : ℝ) (n : ℕ) :
     μ {x | ‖x‖ ≤ a} * μ {x | normThreshold a (n + 1) < ‖x‖}
       ≤ μ {x | normThreshold a n < ‖x‖} ^ 2 := by
-  convert measure_le_mul_measure_gt_le_of_map_rotation_eq_self h_rot _ _
+  convert! measure_le_mul_measure_gt_le_of_map_rotation_eq_self h_rot _ _
   simp [normThreshold_add_one]
 
 lemma lt_normThreshold_zero (ha_pos : 0 < a) : a / (1 - √2) < normThreshold a 0 := by
@@ -200,7 +199,6 @@ lemma normThreshold_eq (n : ℕ) : normThreshold a n = a * (1 + √2) * (√2 ^ 
   rw [normThreshold, arithGeom_same_eq_mul_div (by simp), div_eq_mul_inv, Real.inv_sqrt_two_sub_one]
   ring
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sq_normThreshold_add_one_le (n : ℕ) :
     normThreshold a (n + 1) ^ 2 ≤ a ^ 2 * (1 + √2) ^ 2 * 2 ^ (n + 2) := by
   simp_rw [normThreshold_eq, mul_pow, mul_assoc]
@@ -243,7 +241,6 @@ lemma measure_gt_normThreshold_le_rpow [IsProbabilityMeasure μ]
       rw [mul_pow, ← pow_mul, ← mul_assoc, pow_two, ← mul_assoc,
         ENNReal.inv_mul_cancel hc_pos.ne' hc_lt_top.ne, one_mul, pow_add, pow_one]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma measure_gt_normThreshold_le_exp [IsProbabilityMeasure μ]
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
     (ha_gt : 2⁻¹ < μ {x | ‖x‖ ≤ a}) (ha_lt : μ {x | ‖x‖ ≤ a} < 1) (n : ℕ) :
@@ -271,7 +268,6 @@ lemma measure_gt_normThreshold_le_exp [IsProbabilityMeasure μ]
 noncomputable def logRatio (c : ℝ≥0∞) : ℝ :=
   Real.log (c.toReal / (1 - c).toReal) / (8 * (1 + √2) ^ 2)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma logRatio_pos {c : ℝ≥0∞} (hc_gt : (2 : ℝ≥0∞)⁻¹ < c) (hc_lt : c < 1) : 0 < logRatio c := by
   refine div_pos (Real.log_pos ?_) (by positivity)
   rw [one_lt_div_iff]
@@ -304,7 +300,6 @@ lemma logRatio_mono {c d : ℝ≥0∞} (hc : (2 : ℝ≥0∞)⁻¹ < c) (hd : d 
   · finiteness
   · finiteness
 
-set_option backward.isDefEq.respectTransparency false in
 lemma logRatio_mul_normThreshold_add_one_le {c : ℝ≥0∞}
     (hc_gt : (2 : ℝ≥0∞)⁻¹ < c) (hc_lt : c < 1) (n : ℕ) :
     logRatio c * normThreshold a (n + 1) ^ 2 * a⁻¹ ^ 2
@@ -334,7 +329,7 @@ open Metric in
 /-- Auxiliary lemma for `lintegral_exp_mul_sq_norm_le_mul`, in which we find an upper bound on an
 integral by dealing separately with the contribution of each set in a sequence of annuli.
 This is the bound of the integral over one of those annuli. -/
-lemma lintegral_closedBall_diff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ]
+lemma lintegral_closedBall_sdiff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ]
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
     (ha_gt : 2⁻¹ < μ {x | ‖x‖ ≤ a}) (ha_lt : μ {x | ‖x‖ ≤ a} < 1) (n : ℕ) :
     ∫⁻ x in (closedBall 0 (normThreshold a (n + 1)) \ closedBall 0 (normThreshold a n)),
@@ -351,7 +346,7 @@ lemma lintegral_closedBall_diff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ]
     refine setLIntegral_mono (by fun_prop) fun x hx ↦ ?_
     gcongr
     · exact mul_nonneg (logRatio_pos ha_gt ha_lt).le (by positivity)
-    · simp only [Set.mem_diff, mem_closedBall, dist_zero_right, not_le] at hx
+    · simp only [Set.mem_sdiff, mem_closedBall, dist_zero_right, not_le] at hx
       exact hx.1
   -- The integral of a constant is the constant times the measure of the set
   _ = .ofReal (rexp (C * t (n + 1) ^ 2)) * μ (closedBall 0 (t (n + 1)) \ closedBall 0 (t n)) := by
@@ -369,7 +364,7 @@ lemma lintegral_closedBall_diff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ]
   _ ≤ .ofReal (rexp (2⁻¹ * Real.log (c.toReal / (1 - c).toReal) * 2 ^ n))
       * c * .ofReal (rexp (-Real.log (c / (1 - c)).toReal * 2 ^ n)) := by
     gcongr ENNReal.ofReal (rexp ?_) * _ * _
-    convert logRatio_mul_normThreshold_add_one_le ha_gt ha_lt n (a := a) using 1
+    convert! logRatio_mul_normThreshold_add_one_le ha_gt ha_lt n (a := a) using 1
     ring
   _ = c * .ofReal (rexp (-2⁻¹ * Real.log (c / (1 - c)).toReal * 2 ^ n)) := by
     rw [mul_comm _ c, mul_assoc, ← ENNReal.ofReal_mul (by positivity), ← Real.exp_add]
@@ -377,6 +372,10 @@ lemma lintegral_closedBall_diff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ]
     norm_cast
     simp only [Nat.cast_pow, Nat.cast_ofNat, ENNReal.toReal_div]
     ring
+
+@[deprecated (since := "2026-06-03")]
+alias lintegral_closedBall_diff_exp_logRatio_mul_sq_le :=
+  lintegral_closedBall_sdiff_exp_logRatio_mul_sq_le
 
 open Metric in
 lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
@@ -425,9 +424,7 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
       change μ {x | ¬ x ∈ closedBall 0 a} = 0
       rw [← ae_iff]
       filter_upwards [ha] with x hx using by simp [hx]
-    · refine measurable_to_prop ?_
-      rw [show (fun x : E ↦ ‖x‖ ≤ a) ⁻¹' {True} = {x : E | ‖x‖ ≤ a} by ext; simp]
-      exact measurableSet_le (by fun_prop) (by fun_prop)
+    · fun_prop
   -- So we can assume `μ {x | ‖x‖ ≤ a} < 1`, which implies `c' < 1`
   have ha_lt : μ {x | ‖x‖ ≤ a} < 1 := lt_of_le_of_ne prob_le_one ha
   have hc'_lt : c' < 1 := lt_of_le_of_lt hc' ha_lt
@@ -436,7 +433,7 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
       = closedBall 0 a ∪ ⋃ n, closedBall 0 (t (n + 1)) \ closedBall 0 (t n) := by
     ext x
     simp only [Set.mem_univ, Set.mem_union, Metric.mem_closedBall, dist_zero_right, Set.mem_iUnion,
-      Set.mem_diff, not_le, true_iff]
+      Set.mem_sdiff, not_le, true_iff]
     simp_rw [and_comm (b := t _ < ‖x‖)]
     rcases le_or_gt (‖x‖) a with ha' | ha'
     · exact Or.inl ha'
@@ -461,7 +458,7 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
   rw [← ENNReal.tsum_mul_left]
   gcongr with n
   -- Now we prove the bound for each annulus, by calling a previous lemma
-  refine (le_trans ?_ (lintegral_closedBall_diff_exp_logRatio_mul_sq_le h_rot
+  refine (le_trans ?_ (lintegral_closedBall_sdiff_exp_logRatio_mul_sq_le h_rot
     (hc'_gt.trans_le hc') ha_lt n)).trans ?_
   · gcongr
     simp only [inv_pow, C]
@@ -517,7 +514,6 @@ theorem lintegral_exp_mul_sq_norm_le_of_map_rotation_eq_self [IsProbabilityMeasu
   gcongr
   exact prob_le_one
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary lemma for `exists_integrable_exp_sq_of_map_rotation_eq_self`.
 The assumptions on `a` and `μ {x | ‖x‖ ≤ a}` are not needed and will be removed in that more
 general theorem. -/
@@ -535,7 +531,7 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self' [IsProbabilityMeasure μ
     rwa [inv_eq_one_div, ENNReal.div_lt_iff (by simp) (by simp), mul_comm] at ha_gt
   have h_pos : 0 < logRatio c * a⁻¹ ^ 2 := mul_pos (logRatio_pos ha_gt hc_lt) (by positivity)
   refine ⟨logRatio c * a⁻¹ ^ 2, h_pos, ⟨by fun_prop, ?_⟩⟩
-  simp only [HasFiniteIntegral, ← ofReal_norm_eq_enorm, Real.norm_eq_abs, Real.abs_exp]
+  simp only [HasFiniteIntegral, ← ofReal_norm, Real.norm_eq_abs, Real.abs_exp]
   -- `⊢ ∫⁻ x, ENNReal.ofReal (rexp (logRatio c * a⁻¹ ^ 2 * ‖x‖ ^ 2)) ∂μ < ∞`
   refine (lintegral_exp_mul_sq_norm_le_of_map_rotation_eq_self h_rot le_rfl ha_gt).trans_lt ?_
   refine ENNReal.add_lt_top.mpr ⟨ENNReal.ofReal_lt_top, ?_⟩
@@ -562,7 +558,7 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self_of_isProbabilityMeasure
   -- Otherwise, we can find `b > 0` such that the ball of radius `b` has full measure
   obtain ⟨b, hb⟩ : ∃ b, μ {x | ‖x‖ ≤ b} = 1 := by
     by_contra h_ne
-    push_neg at h_meas_Ioo h_ne
+    push Not at h_meas_Ioo h_ne
     suffices μ .univ ≤ 2⁻¹ by simp at this
     have h_le a : μ {x | ‖x‖ ≤ a} ≤ 2⁻¹ := by
       have h_of_pos a' (ha : 0 < a') : μ {x | ‖x‖ ≤ a'} ≤ 2⁻¹ := by

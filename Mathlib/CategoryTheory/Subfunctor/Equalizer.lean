@@ -37,8 +37,8 @@ protected def equalizer : Subfunctor F₁ where
   map φ x := by
     rintro ⟨hx, h⟩
     exact ⟨A.map _ hx,
-      (FunctorToTypes.naturality _ _ f φ ⟨x, hx⟩).trans (Eq.trans (by rw [h])
-        (FunctorToTypes.naturality _ _ g φ ⟨x, hx⟩).symm)⟩
+      (NatTrans.naturality_apply f φ ⟨x, hx⟩).trans (Eq.trans (by rw [h])
+        (NatTrans.naturality_apply g φ ⟨x, hx⟩).symm)⟩
 
 attribute [local simp] equalizer_obj
 
@@ -52,11 +52,10 @@ lemma mem_equalizer_iff {i : C} (x : A.toFunctor.obj i) :
     x.1 ∈ (Subfunctor.equalizer f g).obj i ↔ f.app i x = g.app i x := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma range_le_equalizer_iff {G : C ⥤ Type w} (φ : G ⟶ A.toFunctor) :
     range (φ ≫ A.ι) ≤ Subfunctor.equalizer f g ↔ φ ≫ f = φ ≫ g := by
   rw [NatTrans.ext_iff]
-  simp [le_def, Set.subset_def, funext_iff, CategoryTheory.types_ext_iff]
+  simp [le_def, Set.subset_def, ConcreteCategory.hom_ext_iff, funext_iff]
 
 lemma equalizer_eq_iff :
     Subfunctor.equalizer f g = A ↔ f = g := by
@@ -117,6 +116,7 @@ def equalizer.fork : Limits.Fork f g :=
 lemma equalizer.fork_ι :
     (equalizer.fork f g).ι = equalizer.ι f g := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `(Subfunctor.equalizer f g).toFunctor` is the equalizer of `f` and `g`. -/
 def equalizer.forkIsLimit : Limits.IsLimit (equalizer.fork f g) :=
   Limits.Fork.IsLimit.mk _

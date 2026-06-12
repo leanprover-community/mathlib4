@@ -55,7 +55,6 @@ namespace IsGood
 variable {f : ℕ+ → ℕ} (hf : IsGood f)
 include hf
 
-set_option backward.isDefEq.respectTransparency false in
 lemma f₁ : f 1 = 0 := by
   have h : f 2 = 2 * f 1 ∨ f 2 = 2 * f 1 + 1 := by rw [two_mul]; exact hf.rel 1 1
   obtain h₁ | h₂ := hf.f₂ ▸ h
