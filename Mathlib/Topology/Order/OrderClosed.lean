@@ -514,12 +514,102 @@ theorem IsClosed.epigraph [TopologicalSpace β] {f : β → α} {s : Set β} (hs
     (hf : ContinuousOn f s) : IsClosed { p : β × α | p.1 ∈ s ∧ f p.1 ≤ p.2 } :=
   (hs.preimage continuous_fst).isClosed_le (hf.comp continuousOn_fst Subset.rfl) continuousOn_snd
 
+/-- The limit of a collection of functions that is frequently monotone on a set is monotone on
+that set. -/
+lemma monotoneOn_of_frequently_monotoneOn_of_tendsto {ι α β : Type*} [Preorder α]
+    [TopologicalSpace β] [Preorder β] [OrderClosedTopology β] {l : Filter ι}
+    {F : ι → α → β} {f : α → β} {s : Set α} (hF : ∃ᶠ i in l, MonotoneOn (F i) s)
+    (hlim : ∀ x ∈ s, Tendsto (fun i ↦ F i x) l (𝓝 (f x))) : MonotoneOn f s :=
+  fun a ha b hb hab ↦ le_of_tendsto_of_tendsto_of_frequently (hlim a ha) (hlim b hb) <|
+    hF.mono fun _ hi ↦ hi ha hb hab
+
+/-- The limit of a collection of functions that is frequently monotone is monotone. -/
+lemma monotone_of_frequently_monotone_of_tendsto {ι α β : Type*} [Preorder α] [TopologicalSpace β]
+    [Preorder β] [OrderClosedTopology β] {l : Filter ι} {F : ι → α → β} {f : α → β}
+    (hF : ∃ᶠ i in l, Monotone (F i)) (hlim : ∀ x, Tendsto (fun i ↦ F i x) l (𝓝 (f x))) :
+    Monotone f :=
+  monotoneOn_univ.1 <| monotoneOn_of_frequently_monotoneOn_of_tendsto
+    (hF.mono fun _ hi ↦ hi.monotoneOn _) fun x _ ↦ hlim x
+
+/-- The limit of a collection of functions that is frequently antitone on a set is antitone on
+that set. -/
+lemma antitoneOn_of_frequently_antitoneOn_of_tendsto {ι α β : Type*} [Preorder α]
+    [TopologicalSpace β] [Preorder β] [OrderClosedTopology β] {l : Filter ι}
+    {F : ι → α → β} {f : α → β} {s : Set α} (hF : ∃ᶠ i in l, AntitoneOn (F i) s)
+    (hlim : ∀ x ∈ s, Tendsto (fun i ↦ F i x) l (𝓝 (f x))) : AntitoneOn f s :=
+  monotoneOn_of_frequently_monotoneOn_of_tendsto (β := βᵒᵈ) hF hlim
+
+/-- The limit of a collection of functions that is frequently antitone is antitone. -/
+lemma antitone_of_frequently_antitone_of_tendsto {ι α β : Type*} [Preorder α] [TopologicalSpace β]
+    [Preorder β] [OrderClosedTopology β] {l : Filter ι} {F : ι → α → β} {f : α → β}
+    (hF : ∃ᶠ i in l, Antitone (F i)) (hlim : ∀ x, Tendsto (fun i ↦ F i x) l (𝓝 (f x))) :
+    Antitone f :=
+  monotone_of_frequently_monotone_of_tendsto (β := βᵒᵈ) hF hlim
+
+/-- The limit of a collection of functions that is eventually monotone on a set is monotone on
+that set. -/
+lemma monotoneOn_of_eventually_monotoneOn_of_tendsto {ι α β : Type*} [Preorder α]
+    [TopologicalSpace β] [Preorder β] [OrderClosedTopology β] {l : Filter ι} [l.NeBot]
+    {F : ι → α → β} {f : α → β} {s : Set α} (hF : ∀ᶠ i in l, MonotoneOn (F i) s)
+    (hlim : ∀ x ∈ s, Tendsto (fun i ↦ F i x) l (𝓝 (f x))) : MonotoneOn f s :=
+  monotoneOn_of_frequently_monotoneOn_of_tendsto hF.frequently hlim
+
+/-- The limit of a collection of functions that is eventually monotone is monotone. -/
+lemma monotone_of_eventually_monotone_of_tendsto {ι α β : Type*} [Preorder α] [TopologicalSpace β]
+    [Preorder β] [OrderClosedTopology β] {l : Filter ι} [l.NeBot] {F : ι → α → β} {f : α → β}
+    (hF : ∀ᶠ i in l, Monotone (F i)) (hlim : ∀ x, Tendsto (fun i ↦ F i x) l (𝓝 (f x))) :
+    Monotone f :=
+  monotone_of_frequently_monotone_of_tendsto hF.frequently hlim
+
+/-- The limit of a collection of functions that is eventually antitone on a set is antitone on
+that set. -/
+lemma antitoneOn_of_eventually_antitoneOn_of_tendsto {ι α β : Type*} [Preorder α]
+    [TopologicalSpace β] [Preorder β] [OrderClosedTopology β] {l : Filter ι} [l.NeBot]
+    {F : ι → α → β} {f : α → β} {s : Set α} (hF : ∀ᶠ i in l, AntitoneOn (F i) s)
+    (hlim : ∀ x ∈ s, Tendsto (fun i ↦ F i x) l (𝓝 (f x))) : AntitoneOn f s :=
+  monotoneOn_of_eventually_monotoneOn_of_tendsto (β := βᵒᵈ) hF hlim
+
+/-- The limit of a collection of functions that is eventually antitone is antitone. -/
+lemma antitone_of_eventually_antitone_of_tendsto {ι α β : Type*} [Preorder α] [TopologicalSpace β]
+    [Preorder β] [OrderClosedTopology β] {l : Filter ι} [l.NeBot] {F : ι → α → β} {f : α → β}
+    (hF : ∀ᶠ i in l, Antitone (F i)) (hlim : ∀ x, Tendsto (fun i ↦ F i x) l (𝓝 (f x))) :
+    Antitone f :=
+  monotone_of_eventually_monotone_of_tendsto (β := βᵒᵈ) hF hlim
+
+/-- The limit of a collection of functions that is monotone on a set is monotone on that set. -/
+lemma monotoneOn_of_monotoneOn_of_tendsto {ι α β : Type*} [Preorder α] [TopologicalSpace β]
+    [Preorder β] [OrderClosedTopology β] {l : Filter ι} [l.NeBot] {F : ι → α → β}
+    {f : α → β} {s : Set α} (hF : ∀ i, MonotoneOn (F i) s)
+    (hlim : ∀ x ∈ s, Tendsto (fun i ↦ F i x) l (𝓝 (f x))) : MonotoneOn f s :=
+  monotoneOn_of_eventually_monotoneOn_of_tendsto (.of_forall hF) hlim
+
+/-- The limit of a collection of monotone functions is monotone. -/
+lemma monotone_of_monotone_of_tendsto {ι α β : Type*} [Preorder α] [TopologicalSpace β]
+    [Preorder β] [OrderClosedTopology β] {l : Filter ι} [l.NeBot] {F : ι → α → β} {f : α → β}
+    (hF : ∀ i, Monotone (F i)) (hlim : ∀ x, Tendsto (fun i ↦ F i x) l (𝓝 (f x))) :
+    Monotone f :=
+  monotone_of_eventually_monotone_of_tendsto (.of_forall hF) hlim
+
+/-- The limit of a collection of functions that is antitone on a set is antitone on that set. -/
+lemma antitoneOn_of_antitoneOn_of_tendsto {ι α β : Type*} [Preorder α] [TopologicalSpace β]
+    [Preorder β] [OrderClosedTopology β] {l : Filter ι} [l.NeBot] {F : ι → α → β}
+    {f : α → β} {s : Set α} (hF : ∀ i, AntitoneOn (F i) s)
+    (hlim : ∀ x ∈ s, Tendsto (fun i ↦ F i x) l (𝓝 (f x))) : AntitoneOn f s :=
+  monotoneOn_of_monotoneOn_of_tendsto (β := βᵒᵈ) hF hlim
+
+/-- The limit of a collection of antitone functions is antitone. -/
+lemma antitone_of_antitone_of_tendsto {ι α β : Type*} [Preorder α] [TopologicalSpace β]
+    [Preorder β] [OrderClosedTopology β] {l : Filter ι} [l.NeBot] {F : ι → α → β} {f : α → β}
+    (hF : ∀ i, Antitone (F i)) (hlim : ∀ x, Tendsto (fun i ↦ F i x) l (𝓝 (f x))) :
+    Antitone f :=
+  monotone_of_monotone_of_tendsto (β := βᵒᵈ) hF hlim
+
 /-- The set of monotone functions on a set is closed. -/
 theorem isClosed_monotoneOn [Preorder β] {s : Set β} : IsClosed {f : β → α | MonotoneOn f s} := by
   simp only [isClosed_iff_clusterPt, clusterPt_principal_iff_frequently]
-  intro g hg a ha b hb hab
-  have hmain (x) : Tendsto (fun f' ↦ f' x) (𝓝 g) (𝓝 (g x)) := continuousAt_apply x _
-  exact le_of_tendsto_of_tendsto_of_frequently (hmain a) (hmain b) (hg.mono fun g h ↦ h ha hb hab)
+  intro g hg
+  simpa using monotoneOn_of_frequently_monotoneOn_of_tendsto (l := 𝓝 g) hg
+    fun x _ ↦ continuousAt_apply x g
 
 /-- The set of monotone functions is closed. -/
 theorem isClosed_monotone [Preorder β] : IsClosed {f : β → α | Monotone f} := by
