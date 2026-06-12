@@ -64,14 +64,14 @@ open Manifold Set TopologicalSpace
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
-  {H : Type*} [TopologicalSpace H]
-  {G : Type*} [TopologicalSpace G]
-  {W : Type*} [TopologicalSpace W]
-  (I : ModelWithCorners 𝕜 E H) (J : ModelWithCorners 𝕜 F G) (K : ModelWithCorners 𝕜 V W)
-  (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-  (N : Type*) [TopologicalSpace N] [ChartedSpace G N]
-  (P : Type*) [TopologicalSpace P] [ChartedSpace W P] (n : WithTop ℕ∞)
+  {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  {H₁ : Type*} [TopologicalSpace H₁]
+  {H₂ : Type*} [TopologicalSpace H₂]
+  {H₃ : Type*} [TopologicalSpace H₃]
+  (I : ModelWithCorners 𝕜 E H₁) (J : ModelWithCorners 𝕜 F H₂) (K : ModelWithCorners 𝕜 F' H₃)
+  (M : Type*) [TopologicalSpace M] [ChartedSpace H₁ M]
+  (N : Type*) [TopologicalSpace N] [ChartedSpace H₂ N]
+  (P : Type*) [TopologicalSpace P] [ChartedSpace H₃ P] (n : WithTop ℕ∞)
 
 section PartialDiffeomorph
 /-- A partial diffeomorphism on `s` is a function `f : M → N` such that `f` restricts to a
