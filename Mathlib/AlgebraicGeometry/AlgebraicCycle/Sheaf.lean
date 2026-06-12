@@ -896,9 +896,9 @@ noncomputable def stalkMap
   have range_eq : f.range = g.range :=
     (range_linearMap_eq_range_mulLeft_stalkToFunctionFieldLinearMap D hD x hx ϖ hϖ).symm
   let equiv := (Submodule.comap_equiv_self_of_inj_of_le (p := f.range) this range_eq.le).symm
-  let equiv2 : (Submodule.comap g f.range) ≃ₗ[X.presheaf.stalk x] X.presheaf.stalk x := by
-    rw [range_eq, ← Submodule.map_top, Submodule.comap_map_eq_of_injective this]
-    exact Submodule.topEquiv
+  let equiv2 : (Submodule.comap g f.range) ≃ₗ[X.presheaf.stalk x] X.presheaf.stalk x :=
+    (LinearEquiv.ofEq _ ⊤ (by rw [range_eq, ← Submodule.map_top,
+      Submodule.comap_map_eq_of_injective this])).trans Submodule.topEquiv
   exact equiv2 ∘ₗ equiv.toLinearMap ∘ₗ f.rangeRestrict
 
 lemma stalkMap_Bijective [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ)
@@ -930,5 +930,91 @@ def stalkEquiv [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ)
     (x : X) (hx : coheight x = 1)
     (ϖ : X.presheaf.stalk x) (hϖ : Irreducible ϖ) :=
     LinearEquiv.ofBijective (stalkMap D hD x hx ϖ hϖ) (stalkMap_Bijective D hD x hx ϖ hϖ)
+
+/--
+The defining property of `stalkEquiv`: its value on a stalk element `m` is the unique element
+of the structure sheaf stalk whose image in the function field is `ϖ ^ D x` times the
+function-field realization of `m`.
+-/
+lemma algebraMap_stalkEquiv_apply [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ)
+    (hD : D.support ⊆ {x | coheight x = 1})
+    (x : X) (hx : coheight x = 1)
+    (ϖ : X.presheaf.stalk x) (hϖ : Irreducible ϖ)
+    (m : ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf x)) :
+    algebraMap (X.presheaf.stalk x) X.functionField (stalkEquiv D hD x hx ϖ hϖ m) =
+      (algebraMap (X.presheaf.stalk x) X.functionField ϖ) ^ (D x) *
+        D.stalkToFunctionFieldLinearMap x m := by
+  set f := (LinearMap.mulLeft (X.presheaf.stalk x)
+      ((algebraMap (X.presheaf.stalk x) X.functionField ϖ)^(D x))) ∘ₗ
+      D.stalkToFunctionFieldLinearMap x with hf_def
+  set g := Algebra.linearMap (X.presheaf.stalk x) X.functionField with hg_def
+  have hginj : Function.Injective g := FaithfulSMul.algebraMap_injective _ _
+  have range_eq : LinearMap.range f = LinearMap.range g :=
+    (range_linearMap_eq_range_mulLeft_stalkToFunctionFieldLinearMap D hD x hx ϖ hϖ).symm
+  set e := Submodule.comap_equiv_self_of_inj_of_le (p := LinearMap.range f) hginj range_eq.le
+    with he_def
+  -- By construction, `stalkEquiv m` is the value of `e.symm` at the range restriction of `f`.
+  have h1 : stalkEquiv D hD x hx ϖ hϖ m = ((e.symm (f.rangeRestrict m)) :
+      ↑(X.presheaf.stalk x)) := by
+    unfold stalkEquiv stalkMap
+    rfl
+  -- Applying `e` and then taking values gives back `g`.
+  have h2 : g ((e.symm (f.rangeRestrict m)) : ↑(X.presheaf.stalk x)) =
+      ((f.rangeRestrict m) : X.functionField) := by
+    have h3 := congrArg Subtype.val (e.apply_symm_apply (f.rangeRestrict m))
+    rwa [he_def, Submodule.comap_equiv_self_of_inj_of_le_apply] at h3
+  rw [h1]
+  exact h2
+
+/--
+The order of vanishing of an integer power of a uniformizer at `x` is the exponent.
+-/
+lemma ord_zpow_algebraMap_irreducible [IsRegularInCodimensionOne X]
+    {x : X} (hx : coheight x = 1) {ϖ : X.presheaf.stalk x} (hϖ : Irreducible ϖ) (n : ℤ) :
+    X.ord ((algebraMap (X.presheaf.stalk x) X.functionField ϖ) ^ n) x = n := by
+  haveI : IsDiscreteValuationRing (X.presheaf.stalk x) :=
+    IsRegularInCodimensionOne.stalk_dvr x hx
+  have hϖK : algebraMap (X.presheaf.stalk x) X.functionField ϖ ≠ 0 := by
+    rw [ne_eq, map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective _ _)]
+    exact hϖ.ne_zero
+  have h1 : ordHom x hx (algebraMap (X.presheaf.stalk x) X.functionField ϖ) = WithZero.exp 1 :=
+    Ring.ordFrac_irreducible hϖ
+  rw [ord_eq_iff hx (zpow_ne_zero n hϖK), map_zpow₀, h1, ← WithZero.exp_zsmul, smul_eq_mul,
+    mul_one, WithZero.exp_eq_coe_ofAdd]
+
+/--
+Rational functions coming from the local ring at `x` have nonnegative order of vanishing.
+-/
+lemma ord_algebraMap_nonneg [IsRegularInCodimensionOne X] {x : X} (hx : coheight x = 1)
+    {a : ↑(X.presheaf.stalk x)} (ha : a ≠ 0) :
+    0 ≤ X.ord (algebraMap (X.presheaf.stalk x) X.functionField a) x := by
+  haveI : IsDiscreteValuationRing (X.presheaf.stalk x) :=
+    IsRegularInCodimensionOne.stalk_dvr x hx
+  have hKa : algebraMap (X.presheaf.stalk x) X.functionField a ≠ 0 := by
+    rw [ne_eq, map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective _ _)]
+    exact ha
+  rw [le_ord_iff hx hKa, ofAdd_zero, WithZero.coe_one]
+  exact Ring.ordFrac_ge_one_of_ne_zero ha
+
+/--
+A nonzero element of the local ring at a codimension one point `x` lies in the maximal ideal
+iff the corresponding rational function vanishes at `x` to order at least one.
+-/
+lemma mem_maximalIdeal_iff_one_le_ord [IsRegularInCodimensionOne X] {x : X}
+    (hx : coheight x = 1) {a : ↑(X.presheaf.stalk x)} (ha : a ≠ 0) :
+    a ∈ IsLocalRing.maximalIdeal (X.presheaf.stalk x) ↔
+      1 ≤ X.ord (algebraMap (X.presheaf.stalk x) X.functionField a) x := by
+  haveI : IsDiscreteValuationRing (X.presheaf.stalk x) :=
+    IsRegularInCodimensionOne.stalk_dvr x hx
+  have hKa : algebraMap (X.presheaf.stalk x) X.functionField a ≠ 0 := by
+    rw [ne_eq, map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective _ _)]
+    exact ha
+  have hnn := ord_algebraMap_nonneg hx ha
+  have hiff : IsUnit a ↔
+      X.ord (algebraMap (X.presheaf.stalk x) X.functionField a) x = 0 := by
+    rw [ord_eq_iff hx hKa, ofAdd_zero, WithZero.coe_one]
+    exact Ring.isUnit_iff_ordFrac_one_of_isDiscreteValuationRing (K := X.functionField)
+  rw [IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, hiff]
+  omega
 
 end AlgebraicCycle
