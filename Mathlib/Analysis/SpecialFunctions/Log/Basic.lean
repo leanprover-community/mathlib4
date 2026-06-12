@@ -305,7 +305,7 @@ theorem log_sqrt {x : ℝ} (hx : 0 ≤ x) : log (√x) = log x / 2 := by
 
 theorem log_le_sub_one_of_pos {x : ℝ} (hx : 0 < x) : log x ≤ x - 1 := by
   rw [le_sub_iff_add_le]
-  convert add_one_le_exp (log x)
+  convert! add_one_le_exp (log x)
   rw [exp_log hx]
 
 lemma one_sub_inv_le_log_of_pos (hx : 0 < x) : 1 - x⁻¹ ≤ log x := by
@@ -338,10 +338,10 @@ theorem abs_log_mul_self_lt (x : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) : |log x * x| 
 
 /-- The real logarithm function tends to `+∞` at `+∞`. -/
 theorem tendsto_log_atTop : Tendsto log atTop atTop :=
-  tendsto_comp_exp_atTop.1 <| by simpa only [log_exp] using tendsto_id
+  tendsto_comp_exp_atTop.1 <| by simpa only [log_exp] using! tendsto_id
 
 lemma tendsto_log_nhdsGT_zero : Tendsto log (𝓝[>] 0) atBot := by
-  simpa [← tendsto_comp_exp_atBot] using tendsto_id
+  simpa [← tendsto_comp_exp_atBot] using! tendsto_id
 
 theorem tendsto_log_nhdsNE_zero : Tendsto log (𝓝[≠] 0) atBot := by
   simpa [comp_def] using tendsto_log_nhdsGT_zero.comp tendsto_abs_nhdsNE_zero

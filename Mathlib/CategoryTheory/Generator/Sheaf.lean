@@ -63,7 +63,7 @@ variable (A) in
 instance hasSeparator [HasSeparator A] [Preadditive A] [HasCoproducts.{u} A] :
     HasSeparator (Sheaf J A) where
   hasSeparator := ⟨_, isSeparator J (S := fun (_ : Unit) ↦ separator A)
-      (by simpa using isSeparator_separator A)⟩
+      (by simpa using! isSeparator_separator A)⟩
 
 end Sheaf
 
