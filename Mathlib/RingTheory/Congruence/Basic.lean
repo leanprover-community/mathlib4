@@ -324,12 +324,10 @@ theorem sSup_eq_ringConGen (S : Set (RingCon R)) :
   congr! with x y
   simp
 
-variable {R}
-
 theorem le_comap_ringConGen {R' F} [Add R'] [Mul R'] [FunLike F R' R]
     [MulHomClass F R' R] [AddHomClass F R' R] (r : R → R → Prop) (f : F) :
     ringConGen (r.onFun f) ≤ (ringConGen r).comap f  := by
-  apply ringConGen_le fun x y h => ?_
+  apply ringConGen_le.2 fun x y h => ?_
   exact RingConGen.Rel.of _ _ h
 
 theorem comap_ringConGen_equiv {R S} [NonAssocSemiring R] [NonAssocSemiring S] (r : R → R → Prop)

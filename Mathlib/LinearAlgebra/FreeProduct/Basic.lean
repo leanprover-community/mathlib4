@@ -191,7 +191,7 @@ def ι' : (⨁ i, A i) →ₗ[R] FreeProduct R A :=
 /-- The injection into the free product of any `1 : A i` is the 1 of the free product. -/
 theorem identify_one (i : I) : ι' R A (DirectSum.lof R I A i 1) = 1 := by
   suffices ι' R A (DirectSum.lof R I A i 1) = mkAlgHom R A 1 by simpa [← ι_apply]
-  exact Quotient.sound <| RingCon.le_ringConGen _ _ _ <| rel_id R A (i := i)
+  exact Quotient.sound <| RingCon.le_ringConGen _ _ <| rel_id R A (i := i)
 
 /-- Multiplication in the free product of the injections of any two `aᵢ aᵢ': A i` for
 the same `i` is just the injection of multiplication `aᵢ * aᵢ'` in `A i`. -/
@@ -199,7 +199,7 @@ theorem mul_injections (a₁ a₂ : A i) :
     ι' R A (DirectSum.lof R I A i a₁) * ι' R A (DirectSum.lof R I A i a₂)
       = ι' R A (DirectSum.lof R I A i (a₁ * a₂)) := by
   rw [← ι_apply, ← ι_apply, ← RingCon.coe_mul]
-  refine Quotient.sound <| RingCon.le_ringConGen _ _ _ <| ?_
+  refine Quotient.sound <| RingCon.le_ringConGen _ _ <| ?_
   convert! rel.prod
   simp
 
@@ -227,7 +227,7 @@ to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.
   toFun maps :=
     RingCon.liftₐ _
       (TensorAlgebra.lift R <| DirectSum.toModule R I B <| (@maps · |>.toLinearMap))
-        <| RingCon.ringConGen_le fun x y r ↦ by
+        <| RingCon.ringConGen_le.2 fun x y r ↦ by
           cases r with
           | id => simp
           | prod => simp

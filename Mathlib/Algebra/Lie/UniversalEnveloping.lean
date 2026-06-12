@@ -83,7 +83,7 @@ def ι : L →ₗ⁅R⁆ UniversalEnvelopingAlgebra R L :=
     map_lie' := fun {x y} => by
       suffices mkAlgHom R L (ιₜ ⁅x, y⁆ + ιₜ y * ιₜ x) = mkAlgHom R L (ιₜ x * ιₜ y) by
         rw [map_mul] at this; simp [LieRing.of_associative_ring_bracket, ← this]
-      exact Quotient.sound <| RingCon.le_ringConGen _ _ _ (Rel.lie_compat x y) }
+      exact Quotient.sound <| RingCon.le_ringConGen _ _ (Rel.lie_compat x y) }
 
 variable {A : Type u₃} [Ring A] [Algebra R A] (f : L →ₗ⁅R⁆ A)
 

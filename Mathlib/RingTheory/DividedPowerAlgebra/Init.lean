@@ -145,11 +145,11 @@ protected theorem induction_on {P : DividedPowerAlgebra R M → Prop} (f : Divid
 
 theorem dp_zero {m : M} : dp R 0 m = 1 := by
   rw [dp_def, ← RingCon.coe_one]
-  exact Quotient.sound <| RingCon.le_ringConGen _ _ _ Rel.zero
+  exact Quotient.sound <| RingCon.le_ringConGen _ _ Rel.zero
 
 theorem dp_smul {r : R} {n : ℕ} {m : M} : dp R n (r • m) = r ^ n • dp R n m := by
   rw [dp_def, dp_def, ← RingCon.coe_smul]
-  exact Quotient.sound <| RingCon.le_ringConGen _ _ _ Rel.smul
+  exact Quotient.sound <| RingCon.le_ringConGen _ _ Rel.smul
 
 theorem dp_null {n : ℕ} : dp R n (0 : M) = if n = 0 then 1 else 0 := by
   cases Nat.eq_zero_or_pos n with
@@ -165,12 +165,12 @@ theorem dp_null_of_ne_zero {n : ℕ} (hn : n ≠ 0) : dp R n (0 : M) = 0 := by
 theorem dp_mul {n p : ℕ} {m : M} :
     dp R n m * dp R p m = (n + p).choose n • dp R (n + p) m := by
   simp only [dp_def, ← RingCon.coe_mul, ← RingCon.coe_nsmul]
-  exact Quotient.sound <| RingCon.le_ringConGen _ _ _ Rel.mul
+  exact Quotient.sound <| RingCon.le_ringConGen _ _ Rel.mul
 
 theorem dp_add {n : ℕ} {x y : M} :
     dp R n (x + y) = (antidiagonal n).sum fun k ↦ dp R k.1 x * dp R k.2 y := by
   simp_rw [dp_def, ← RingCon.coe_mul, ← RingCon.coe_finsetSum]
-  exact Quotient.sound <| RingCon.le_ringConGen _ _ _ Rel.add
+  exact Quotient.sound <| RingCon.le_ringConGen _ _ Rel.add
 
 theorem dp_sum {ι : Type*} [DecidableEq ι] (s : Finset ι) (q : ℕ) (x : ι → M) :
     dp R q (s.sum x) =

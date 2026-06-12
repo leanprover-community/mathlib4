@@ -108,7 +108,7 @@ private theorem ι_apply (m : M) :
 /-- As well as being linear, `ι Q` squares to the quadratic form -/
 @[simp]
 theorem ι_sq_scalar (m : M) : ι Q m * ι Q m = algebraMap R _ (Q m) :=
-  Quotient.sound <| RingCon.le_ringConGen _ _ _ (Rel.of m)
+  Quotient.sound <| RingCon.le_ringConGen _ _ (Rel.of m)
 
 variable {Q} {A : Type*} [Semiring A] [Algebra R A]
 
@@ -129,7 +129,7 @@ def lift :
     RingCon.liftₐ (CliffordAlgebra.ringCon Q)
       (TensorAlgebra.lift R (f : M →ₗ[R] A))
       (by
-        exact RingCon.ringConGen_le fun x y (h : Rel Q x y) => by
+        exact RingCon.ringConGen_le.2 fun x y (h : Rel Q x y) => by
           induction h
           simp [f.prop])
   invFun F :=

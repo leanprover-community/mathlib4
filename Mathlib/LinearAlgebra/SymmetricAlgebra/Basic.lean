@@ -81,7 +81,7 @@ instance : CommSemiring (SymmetricAlgebra R M) where
     | ι x => induction a using SymmetricAlgebra.induction with
       | algebraMap r => exact Algebra.commute_algebraMap_left _ _
       | ι y =>
-        have := RingCon.le_ringConGen (SymRel R M) _ _ <| SymRel.mul_comm y x
+        have := RingCon.le_ringConGen (r := SymRel R M) _ _ <| SymRel.mul_comm y x
         simpa [commute_iff_eq, ι, ← RingCon.coe_mul]
       | mul a b ha hb => exact ha.mul_left hb
       | add a b ha hb => exact ha.add_left hb
@@ -102,7 +102,7 @@ def lift : (M →ₗ[R] A) ≃ (SymmetricAlgebra R M →ₐ[R] A) :=
       (Equiv.subtypeUnivEquiv fun h _ _ h' ↦ ?_).symm
   (TensorAlgebra.lift R).trans <| equiv.trans <| RingCon.liftₐEquiv (symRingCon R M)
 where finally
-  refine RingCon.ringConGen_le (fun x y h' => ?_) h'
+  refine RingCon.ringConGen_le.2 (fun x y h' => ?_) h'
   induction h' with | mul_comm x y
   rw [RingCon.ker_apply, map_mul, map_mul, mul_comm]
 
