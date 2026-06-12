@@ -15,6 +15,8 @@ public import Mathlib.Order.RelIso.Basic
 
 @[expose] public section
 
+assert_not_exists MonoidWithZero
+
 namespace RelHom
 variable {α : Type*} {r : α → α → Prop}
 
