@@ -11,8 +11,12 @@ public import Mathlib.RingTheory.Kaehler.JacobiZariski
 # Extension of Scalars for Algebra Extensions
 
 This file provides APIs for extending the base ring of an algebra extension `P : Extension R S`
-to its own extension ring `P.Ring`. We show the diagram in
-https://github.com/leanprover-community/mathlib4/pull/39520 is commutative.
+to its own extension ring `P.Ring`. We introduce canonical maps and isomorphisms between
+the cotangent spaces and the first homology of naive cotangent complex associated with
+`P.extendScalars` and `P`. We provide commutativity results of these maps and ismorphisms
+(See https://github.com/leanprover-community/mathlib4/pull/39520 for an image of the full diagram).
+In particular, we show the boundary map of the Jacobi-Zariski sequence of `R → P.Ring → S`
+coincides with `P.cotangentComplex` via a canonical isomorphism `P.h1CotangentEquivCotangent`.
 
 ## Main definitions and results
 
@@ -28,8 +32,8 @@ https://github.com/leanprover-community/mathlib4/pull/39520 is commutative.
 - `h1CotangentEquivCotangent`: This is the linear equivalence between `H1Cotangent P.Ring S` and
   `P.Cotangent` defined by the composition of `h1CotangentExtendScalarsEquiv.symm`,
   `h1CotangentEquivOfSurjective` and `cotangentExtendScalarsEquiv`.
-- `cotangentComplex_comp_coe_h1CotangentEquivCotangent`,
-  `coe_h1CotangentEquivCotangent_comp_map`: commutativity results.
+- `cotangentComplex_comp_h1CotangentEquivCotangent`,
+  `h1CotangentEquivCotangent_comp_map`: commutativity results.
 
 -/
 
@@ -78,7 +82,7 @@ lemma cotangentExtendScalarsEquiv_symm_toLinearMap (P : Extension.{w} R S) :
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
-theorem H1Cotangent.map_toExtendScalar_injective (P : Extension.{w} R S) :
+theorem H1Cotangent.map_toExtendScalars_injective (P : Extension.{w} R S) :
     Function.Injective (H1Cotangent.map P.toExtendScalars) := by
   rw [← LinearMap.ker_eq_bot, H1Cotangent.map, LinearMap.ker_restrict,
     ← cotangentExtendScalarsEquiv_symm_toLinearMap, LinearEquiv.ker,
@@ -121,7 +125,7 @@ def h1CotangentEquivCotangent {R : Type u} {S : Type v} [CommRing R] [CommRing S
     P.extendScalars.h1CotangentEquivOfSurjective Function.surjective_id ≪≫ₗ
     P.cotangentExtendScalarsEquiv
 
-theorem cotangentComplex_comp_coe_h1CotangentEquivCotangent (P : Extension.{w} R S) :
+theorem cotangentComplex_comp_h1CotangentEquivCotangent (P : Extension.{w} R S) :
     P.cotangentComplex.comp P.h1CotangentEquivCotangent.toLinearMap =
       H1Cotangent.δ R P.Ring S := by
   rw [h1CotangentEquivCotangent, LinearEquiv.coe_trans, LinearEquiv.coe_trans,
@@ -133,13 +137,11 @@ theorem cotangentComplex_comp_coe_h1CotangentEquivCotangent (P : Extension.{w} R
   trans 1 ⊗ₜ[P.Ring] D R P.Ring x; · exact cotangentComplex_mk P ⟨x, x_in⟩
   let u : (Generators.self P.Ring S).toExtension.ker :=
     ⟨algebraMap P.Ring (Generators.self P.Ring S).toExtension.Ring x, by
-      rwa [← Ideal.mem_comap, comap_ker_eq]⟩
-  have hu : Cotangent.mk u ∈
-    (Generators.self P.Ring S).toExtension.cotangentComplex.ker := by simp [u]
-  rw [← Generators.H1Cotangent.δ_C _ _ u.prop hu]
+      rwa [← Ideal.mem_comap, RingHom.comap_ker, ← IsScalarTower.algebraMap_eq]⟩
+  rw [← Generators.H1Cotangent.δ_C _ _ u.prop]
   congr
 
-theorem coe_h1CotangentEquivCotangent_comp_map (P : Extension.{w} R S) :
+theorem h1CotangentEquivCotangent_comp_map (P : Extension.{w} R S) :
     P.h1CotangentEquivCotangent.toLinearMap.comp (Algebra.H1Cotangent.map R P.Ring S S) =
       h1Cotangentι.comp (H1Cotangent.map P.defaultHom) := by
   rw [h1CotangentEquivCotangent, LinearEquiv.coe_trans, LinearEquiv.coe_trans,
@@ -155,11 +157,11 @@ theorem H1Cotangent.map_defaultHom_surjective (P : Extension.{w} R S) :
     Function.Surjective (H1Cotangent.map P.defaultHom) := by
   rw [← LinearMap.range_eq_top,
     ← (Submodule.map_injective_of_injective h1Cotangentι_injective).eq_iff,
-    ← LinearMap.range_comp, ← P.coe_h1CotangentEquivCotangent_comp_map, LinearMap.range_comp,
+    ← LinearMap.range_comp, ← P.h1CotangentEquivCotangent_comp_map, LinearMap.range_comp,
     ← (Algebra.H1Cotangent.exact_map_δ R P.Ring S).linearMap_ker_eq, Submodule.map_top,
     ← exact_hCotangentι_cotangentComplex.linearMap_ker_eq, Submodule.map_equiv_eq_comap_symm,
     LinearMap.ker, LinearMap.ker, ← Submodule.comap_comp]
   congr
-  rw [LinearEquiv.comp_toLinearMap_symm_eq, P.cotangentComplex_comp_coe_h1CotangentEquivCotangent]
+  rw [LinearEquiv.comp_toLinearMap_symm_eq, P.cotangentComplex_comp_h1CotangentEquivCotangent]
 
 end Algebra.Extension

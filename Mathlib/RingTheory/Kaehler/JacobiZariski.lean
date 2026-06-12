@@ -401,8 +401,9 @@ lemma δ_eq_δAux (x : Q.ker) (hx) :
       ((Q.comp P).toExtension.cotangentComplex y)
     rw [CotangentSpace.fst_compEquiv, Extension.CotangentSpace.map_cotangentComplex, hy, hx]
 
-lemma δ_C {r : S} (hr : MvPolynomial.C r ∈ Q.ker) (h) :
-    δ Q P ⟨Extension.Cotangent.mk ⟨MvPolynomial.C r, hr⟩, h⟩ = 1 ⊗ₜ[S] D R S r := by
+lemma δ_C {r : S} (hr : C r ∈ Q.ker) :
+    δ Q P ⟨Extension.Cotangent.mk ⟨C r, hr⟩, Extension.Cotangent.mk_C_mem_ker_cotangentComplex ..⟩
+      = 1 ⊗ₜ[S] D R S r := by
   rw [δ_eq_δAux, δAux_C]
 
 lemma δ_eq_δ : δ Q P = δ Q P' := by
