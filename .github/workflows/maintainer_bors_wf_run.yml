@@ -40,7 +40,7 @@ jobs:
       - name: Download legacy artifact (fallback)
         id: download-legacy-artifact
         if: ${{ steps.bridge.outputs.pr_number == '' }}
-        uses: dawidd6/action-download-artifact@8a338493df3d275e4a7a63bcff3b8fe97e51a927 # v19
+        uses: dawidd6/action-download-artifact@b6e2e70617bc3265edd6dab6c906732b2f1ae151 # v21
         with:
           workflow: maintainer_bors.yml
           name: workflow-data
@@ -157,7 +157,7 @@ jobs:
         if: ${{ ! steps.inputs.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.inputs.outputs.bot == 'true' ) }}
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1

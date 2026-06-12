@@ -195,7 +195,7 @@ theorem coverEntropy_image_le_of_uniformContinuous [UniformSpace X] [UniformSpac
     {T : Y → Y} {φ : X → Y} (h : Semiconj φ S T) (h' : UniformContinuous φ) (F : Set X) :
     coverEntropy T (φ '' F) ≤ coverEntropy S F := by
   rw [coverEntropy_image_of_comap _ h F]
-  exact coverEntropy_antitone S F (uniformContinuous_iff.1 h')
+  exact coverEntropy_antitone S F (uniformContinuous_iff_le_comap.1 h')
 
 /-- The entropy of `φ '' F` is at most the entropy of `F` if `φ` is uniformly continuous. This
   version uses a `liminf`. -/
@@ -203,7 +203,7 @@ theorem coverEntropyInf_image_le_of_uniformContinuous [UniformSpace X] [UniformS
     {T : Y → Y} {φ : X → Y} (h : Semiconj φ S T) (h' : UniformContinuous φ) (F : Set X) :
     coverEntropyInf T (φ '' F) ≤ coverEntropyInf S F := by
   rw [coverEntropyInf_image_of_comap _ h F]
-  exact coverEntropyInf_antitone S F (uniformContinuous_iff.1 h')
+  exact coverEntropyInf_antitone S F (uniformContinuous_iff_le_comap.1 h')
 
 lemma coverEntropy_image_le_of_uniformContinuousOn_invariant [UniformSpace X] [UniformSpace Y]
     {S : X → X} {T : Y → Y} {φ : X → Y} (h : Semiconj φ S T) {F G : Set X}

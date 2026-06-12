@@ -290,6 +290,10 @@ theorem monomial_sum_index {α : Type*} (s : Finset α) (f : α → σ →₀ �
     monomial (∑ i ∈ s, f i) a = C a * ∏ i ∈ s, monomial (f i) 1 := by
   rw [← monomial_sum_one, C_mul', ← (monomial _).map_smul, smul_eq_mul, mul_one]
 
+theorem monomial_sum_prod {α : Type*} (s : Finset α) (f : α → σ →₀ ℕ) (g : α → R) :
+    monomial (∑ i ∈ s, f i) (∏ i ∈ s, g i) = ∏ i ∈ s, monomial (f i) (g i) := by
+  simp_rw [monomial_sum_index, map_prod, ← Finset.prod_mul_distrib, C_mul_monomial, mul_one]
+
 theorem monomial_finsupp_sum_index {α β : Type*} [Zero β] (f : α →₀ β) (g : α → β → σ →₀ ℕ)
     (a : R) : monomial (f.sum g) a = C a * f.prod fun a b => monomial (g a b) 1 :=
   monomial_sum_index _ _ _
@@ -612,13 +616,17 @@ theorem coeff_X_pow [DecidableEq σ] (i : σ) (m) (k : ℕ) :
     at this
   exact pow_zero _
 
-theorem coeff_X' [DecidableEq σ] (i : σ) (m) :
+theorem coeff_X [DecidableEq σ] (i : σ) (m) :
     coeff m (X i : MvPolynomial σ R) = if Finsupp.single i 1 = m then 1 else 0 := by
   rw [← coeff_X_pow, pow_one]
 
+@[deprecated (since := "2026-05-25")]
+alias coeff_X' := coeff_X
+
 @[simp]
-theorem coeff_X (i : σ) : coeff (Finsupp.single i 1) (X i : MvPolynomial σ R) = 1 := by
-  classical rw [coeff_X', if_pos rfl]
+theorem coeff_X_same (i : σ) :
+    coeff (Finsupp.single i 1) (X i : MvPolynomial σ R) = 1 := by
+  classical rw [coeff_X, if_pos rfl]
 
 @[simp]
 theorem coeff_C_mul (m) (a : R) (p : MvPolynomial σ R) : coeff m (C a * p) = a * coeff m p := by
@@ -742,7 +750,7 @@ theorem X_ne_zero [Nontrivial R] (s : σ) :
     X (R := R) s ≠ 0 := by
   rw [ne_zero_iff]
   use Finsupp.single s 1
-  simp only [coeff_X, ne_eq, one_ne_zero, not_false_eq_true]
+  simp only [coeff_X_same, ne_eq, one_ne_zero, not_false_eq_true]
 
 @[simp]
 theorem support_eq_empty {p : MvPolynomial σ R} : p.support = ∅ ↔ p = 0 :=
@@ -999,7 +1007,7 @@ lemma monomial_mul_mem_coeffsIn : monomial i 1 * p ∈ coeffsIn σ M ↔ p ∈ c
 
 @[simp]
 lemma mul_X_mem_coeffsIn : p * X s ∈ coeffsIn σ M ↔ p ∈ coeffsIn σ M := by
-  simpa [-mul_monomial_mem_coeffsIn] using mul_monomial_mem_coeffsIn (i := .single s 1)
+  simpa [-mul_monomial_mem_coeffsIn] using! mul_monomial_mem_coeffsIn (i := .single s 1)
 
 @[simp]
 lemma X_mul_mem_coeffsIn : X s * p ∈ coeffsIn σ M ↔ p ∈ coeffsIn σ M := by simp [mul_comm]
@@ -1025,7 +1033,7 @@ lemma mem_coeffsIn_iff_coeffs_subset : p ∈ coeffsIn σ M ↔ (p.coeffs : Set S
   refine ⟨fun h x _ ↦ h x, fun h i ↦ ?_⟩
   by_cases hp : i ∈ p.support
   · exact h hp
-  · convert M.zero_mem
+  · convert! M.zero_mem
     simpa using hp
 
 end Module
