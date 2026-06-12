@@ -183,8 +183,10 @@ theorem map_lt_map {f : α → β} {s t : Multiset α} (h : s < t) : s.map f < t
   rw [← s.card_map f, ← t.card_map f]
   exact card_le_card H
 
+@[gcongr]
 theorem map_mono (f : α → β) : Monotone (map f) := fun _ _ => map_le_map
 
+@[gcongr]
 theorem map_strictMono (f : α → β) : StrictMono (map f) := fun _ _ => map_lt_map
 
 @[simp, gcongr]

@@ -110,14 +110,17 @@ theorem gc_comap_map (f : α → β) :
     GaloisConnection (MeasurableSpace.comap f) (MeasurableSpace.map f) := fun _ _ =>
   comap_le_iff_le_map
 
+@[gcongr]
 theorem map_mono (h : m₁ ≤ m₂) : m₁.map f ≤ m₂.map f :=
   (gc_comap_map f).monotone_u h
 
+@[gcongr]
 theorem monotone_map : Monotone (MeasurableSpace.map f) := fun _ _ => map_mono
 
 theorem comap_mono (h : m₁ ≤ m₂) : m₁.comap g ≤ m₂.comap g :=
   (gc_comap_map g).monotone_l h
 
+@[gcongr]
 theorem monotone_comap : Monotone (MeasurableSpace.comap g) := fun _ _ h => comap_mono h
 
 @[simp]
