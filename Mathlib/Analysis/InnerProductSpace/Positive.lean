@@ -402,8 +402,8 @@ end LinearMap
 theorem IsPositive.conj_starProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] E} (hT : T.IsPositive)
     [U.HasOrthogonalProjection] :
     (U.starProjection ∘L T ∘L U.starProjection).IsPositive := by
-  simp only [isPositive_iff, IsSymmetric, coe_comp, LinearMap.coe_comp, coe_coe,
-    Function.comp_apply, coe_comp']
+  simp only [isPositive_iff, IsSymmetric, toLinearMap_comp, LinearMap.coe_comp, coe_coe,
+    Function.comp_apply, comp_apply]
   simp_rw [← coe_coe, U.starProjection_isSymmetric _, hT.isSymmetric _,
     U.starProjection_isSymmetric _, ← U.starProjection_isSymmetric _, coe_coe,
     hT.inner_nonneg_right, implies_true, and_self]
@@ -411,8 +411,8 @@ theorem IsPositive.conj_starProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] 
 theorem IsPositive.orthogonalProjectionOnto_comp {T : E →L[𝕜] E} (hT : T.IsPositive)
     (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     (U.orthogonalProjectionOnto ∘L T ∘L U.subtypeL).IsPositive := by
-  simp only [isPositive_iff, IsSymmetric, coe_comp, LinearMap.coe_comp, coe_coe,
-    Function.comp_apply, coe_comp']
+  simp only [isPositive_iff, IsSymmetric, toLinearMap_comp, LinearMap.coe_comp, coe_coe,
+    Function.comp_apply, comp_apply]
   simp_rw [U.inner_orthogonalProjectionOnto_eq_of_mem_right, Submodule.subtypeL_apply,
     U.inner_orthogonalProjectionOnto_eq_of_mem_left, ← coe_coe, hT.isSymmetric _, coe_coe,
     hT.inner_nonneg_right, implies_true, and_self]
@@ -547,7 +547,7 @@ theorem ContinuousLinearMap.isPositive_iff_eq_sum_rankOne [FiniteDimensional �
   let a (i : Fin (Module.finrank 𝕜 E)) : E :=
     ((hT.isSymmetric.eigenvalues rfl i).sqrt : 𝕜) • hT.isSymmetric.eigenvectorBasis rfl i
   refine ⟨Module.finrank 𝕜 E, a, ext fun _ ↦ ?_⟩
-  simp_rw [sum_apply, rankOne_apply, a, inner_smul_left, smul_smul, mul_assoc, conj_ofReal,
+  simp_rw [_root_.sum_apply, rankOne_apply, a, inner_smul_left, smul_smul, mul_assoc, conj_ofReal,
     mul_comm (⟪_, _⟫_𝕜), ← mul_assoc, ← ofReal_mul,
     ← Real.sqrt_mul (hT.toLinearMap.nonneg_eigenvalues rfl _),
     Real.sqrt_mul_self (hT.toLinearMap.nonneg_eigenvalues rfl _), mul_comm _ (⟪_, _⟫_𝕜),
@@ -561,6 +561,6 @@ theorem Matrix.posSemidef_iff_eq_sum_vecMulVec {n : Type*} [Finite n] {M : Matri
   rw [← isPositive_toEuclideanLin_iff, ← isPositive_toContinuousLinearMap_iff,
     isPositive_iff_eq_sum_rankOne]
   simp_rw [eq_comm, ← LinearEquiv.symm_apply_eq, coe_toContinuousLinearMap_symm,
-    ContinuousLinearMap.coe_sum, map_sum, symm_toEuclideanLin_rankOne, eq_comm]
+    ContinuousLinearMap.toLinearMap_sum, map_sum, symm_toEuclideanLin_rankOne, eq_comm]
   exact ⟨fun ⟨m, u, hu⟩ ↦ ⟨m, fun i ↦ (u i).ofLp, hu⟩,
     fun ⟨m, u, hu⟩ ↦ ⟨m, fun i ↦ WithLp.toLp 2 (u i), hu⟩⟩

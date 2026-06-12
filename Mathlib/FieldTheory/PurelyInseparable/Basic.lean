@@ -441,6 +441,14 @@ theorem isPurelyInseparable_iff_finSepDegree_eq_one :
   ⟨fun _ ↦ IsPurelyInseparable.finSepDegree_eq_one F E,
     fun h ↦ isPurelyInseparable_of_finSepDegree_eq_one h⟩
 
+/-- An extension `E / F` is purely inseparable if and only there is at most one
+  embedding `E →ₐ[F] AlgebraicClosure E` -/
+theorem isPurelyInseparable_iff_subsingleton_emb :
+    IsPurelyInseparable F E ↔ Subsingleton (Field.Emb F E) := by
+  rw [isPurelyInseparable_iff_finSepDegree_eq_one, Field.finSepDegree, Nat.card_eq_one_iff_unique,
+    and_iff_left_iff_imp]
+  infer_instance
+
 lemma isSeparable_iff_finInsepDegree_eq_one :
     Algebra.IsSeparable F K ↔ finInsepDegree F K = 1 := by
   rw [← separableClosure.eq_top_iff, ← IntermediateField.finrank_eq_one_iff_eq_top, finInsepDegree]

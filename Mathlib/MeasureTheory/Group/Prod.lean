@@ -331,7 +331,7 @@ theorem measure_mul_measure_eq (s t : Set G) (h2s : ν' s ≠ 0) (h3s : ν' s �
 theorem measure_eq_div_smul (h2s : ν' s ≠ 0) (h3s : ν' s ≠ ∞) :
     μ' = (μ' s / ν' s) • ν' := by
   ext1 t -
-  rw [smul_apply, smul_eq_mul, mul_comm, ← mul_div_assoc, mul_comm,
+  rw [Measure.smul_apply, smul_eq_mul, mul_comm, ← mul_div_assoc, mul_comm,
     measure_mul_measure_eq μ' ν' s t h2s h3s, mul_div_assoc, ENNReal.mul_div_cancel h2s h3s]
 
 end SigmaFinite
