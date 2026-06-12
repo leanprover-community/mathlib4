@@ -5,7 +5,7 @@ Authors: Yuxuan Xiao
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.PseudoDivision
+public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.Rank
 
 /-!
 # Ascending sets and basic sets
@@ -21,6 +21,11 @@ A basic set is the "smallest" ascending set contained in a given set of polynomi
 * `AscendingSetTheory`: A typeclass abstracting the definition of an ascending set
   (e.g., strong vs. weak reduction) and the algorithm to compute a basic set.
   from a list of polynomials.
+
+## References
+* [Wen-Tsun Wu, *Basic principles of mechanical theorem proving in elementary geometries*]
+  [wen1986basic]
+* [Wen-Tsun Wu, *Mathematics Mechanization*][wen2000mathematics]
 
 -/
 
