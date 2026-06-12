@@ -87,7 +87,7 @@ set_option backward.isDefEq.respectTransparency false in
 include hc in
 lemma isCofiltered_costructuredArrow (i' : I') :
     IsCofiltered (CostructuredArrow (left c) ((right c' f).obj i')) := by
-  refine isCofiltered_costructuredArrow_of_isCofiltered_of_exists' _ _ ?_ ?_
+  refine isCofiltered_costructuredArrow_of_isCofiltered_of_exists _ _ ?_ ?_
   · obtain ⟨j, p, hp⟩ := exists_hom_of_preservesColimit_yoneda hc (f ≫ c'.π.app i')
     exact ⟨j, ⟨Under.homMk p hp⟩⟩
   · intro a s s'
@@ -176,7 +176,7 @@ set_option backward.isDefEq.respectTransparency false in
 include hc' in
 lemma isFiltered_structuredArrow (i : I) :
     IsFiltered (StructuredArrow ((left c f).obj i) (right c')) := by
-  refine isFiltered_structuredArrow_of_isFiltered_of_exists' _ _ ?_ ?_
+  refine isFiltered_structuredArrow_of_isFiltered_of_exists _ _ ?_ ?_
   · obtain ⟨j, p, hp⟩ := exists_hom_of_preservesColimit_coyoneda hc' (c.ι.app i ≫ f)
     exact ⟨j, ⟨Over.homMk p hp⟩⟩
   · intro a s s'
