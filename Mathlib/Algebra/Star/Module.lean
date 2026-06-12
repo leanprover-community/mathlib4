@@ -223,7 +223,8 @@ def StarModule.decomposeProdAdjoint : A ≃ₗ[R] selfAdjoint A × skewAdjoint A
   refine LinearEquiv.ofLinear ((selfAdjointPart R).prod (skewAdjointPart R))
     (LinearMap.coprod ((selfAdjoint.submodule R A).subtype) (skewAdjoint.submodule R A).subtype)
     ?_ (LinearMap.ext <| StarModule.selfAdjointPart_add_skewAdjointPart R)
-  ext x <;> dsimp only [Submodule.subtype, selfAdjoint.submodule, skewAdjoint.submodule] <;> simp
+  dsimp [Submodule.subtype, selfAdjoint.submodule, skewAdjoint.submodule]
+  ext x <;> simp
 
 end SelfSkewAdjoint
 
