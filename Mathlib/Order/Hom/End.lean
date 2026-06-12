@@ -25,10 +25,8 @@ variable [Preorder α]
 
 instance : Mul (α →o α) where mul f g := f.comp g
 instance : One (α →o α) where one := .id
-instance : IsMulApplyEqComp (α →o α) α where
-  mul_apply_eq_comp _ _ _ := rfl
-instance : IsOneApplyEqSelf (α →o α) α where
-  one_apply_eq_self _ := rfl
+instance : IsMulApplyEqComp (α →o α) α where mul_apply_eq_comp _ _ _ := rfl
+instance : IsOneApplyEqSelf (α →o α) α where one_apply_eq_self _ := rfl
 
 lemma mul_eq_comp (f g : α →o α) : (f * g : α →o α) = f.comp g := rfl
 lemma one_eq_id : (1 : α →o α) = .id := rfl
