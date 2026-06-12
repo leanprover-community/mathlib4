@@ -50,15 +50,13 @@ costructured arrow category on `L` over `R.obj b`. It is left adjoint to
 def costructuredArrowSndProj (b : B) :
     CostructuredArrow (snd L R) b ⥤ CostructuredArrow L (R.obj b) where
   obj X := CostructuredArrow.mk (X.left.hom ≫ R.map X.hom)
-  map f := CostructuredArrow.homMk f.left.left (by
-    have h := CostructuredArrow.w f
-    dsimp at h ⊢
-    rw [reassoc_of% f.left.w, ← R.map_comp, h])
+  map f := CostructuredArrow.homMk f.left.left <| by
+    dsimp
+    rw [reassoc_of% f.left.w, ← R.map_comp, dsimp% CostructuredArrow.w f]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor from the costructured arrow category on `L` over `R.obj b` to the costructured
-arrow category on `snd L R` over `b : B`, exhibiting the former as a reflective subcategory of
-the latter, see `costructuredArrowSndAdjunction`. -/
+arrow category on `snd L R` over `b : B`. -/
 @[simps]
 def costructuredArrowSndInclusion (b : B) :
     CostructuredArrow L (R.obj b) ⥤ CostructuredArrow (snd L R) b where
@@ -66,16 +64,14 @@ def costructuredArrowSndInclusion (b : B) :
   map f := CostructuredArrow.homMk ⟨f.left, 𝟙 b, by simp⟩ (by simp)
 
 set_option backward.defeqAttrib.useBackward true in
-/-- The functor `costructuredArrowSndProj` is left adjoint to
-`costructuredArrowSndInclusion`. -/
+/-- The functor `costructuredArrowSndProj` is left adjoint to `costructuredArrowSndInclusion`. -/
 @[simps]
 def costructuredArrowSndAdjunction (b : B) :
     costructuredArrowSndProj L R b ⊣ costructuredArrowSndInclusion L R b where
   unit.app X := CostructuredArrow.homMk ⟨𝟙 X.left.left, X.hom, by simp⟩ (by simp)
   unit.naturality _ _ f := by
-    ext
-    · simp
-    · simpa using CostructuredArrow.w f
+    have := CostructuredArrow.w f
+    cat_disch
   counit.app X := CostructuredArrow.homMk (𝟙 X.left) (by simp)
 
 section Relative
@@ -88,7 +84,6 @@ lemma exists_eq_of_isCofiltered_costructuredArrow {b : B}
     (CostructuredArrow.mk s₁) (CostructuredArrow.mk s₂)
   exact ⟨W.left, p₁.left, p₂.left, (CostructuredArrow.w p₁).trans (CostructuredArrow.w p₂).symm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isCofiltered_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofiltered B]
     [∀ b, IsCofiltered (CostructuredArrow L (R.obj b))] : IsCofiltered (Comma L R) := by
   have : Nonempty (Comma L R) := by
@@ -104,25 +99,17 @@ lemma isCofiltered_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofilte
       obtain ⟨ib, vb₁, vb₂, heqb⟩ := exists_eq_of_isCofiltered_costructuredArrow L R
         (Q.hom ≫ R.map (IsCofiltered.minToRight j₁.right j₂.right)) j₂.hom
       obtain ⟨i₀, il₀, ir₀, heq⟩ := IsCofiltered.cospan va₁ vb₁
-      refine ⟨⟨i₀, IsCofiltered.min j₁.right j₂.right, L.map (il₀ ≫ va₁) ≫ Q.hom⟩,
-        ⟨il₀ ≫ va₂, IsCofiltered.minToLeft _ _, ?_⟩,
-        ⟨ir₀ ≫ vb₂, IsCofiltered.minToRight _ _, ?_⟩, trivial⟩
-      · simp [← heqa]
-      · simp only [Functor.map_comp, Category.assoc, ← heqb]
-        simp only [← Functor.map_comp_assoc, ← heq]
+      exact ⟨⟨i₀, IsCofiltered.min j₁.right j₂.right, L.map (il₀ ≫ va₁) ≫ Q.hom⟩,
+        ⟨il₀ ≫ va₂, IsCofiltered.minToLeft _ _, by simp [← heqa]⟩,
+        ⟨ir₀ ≫ vb₂, IsCofiltered.minToRight _ _, by cat_disch⟩, trivial⟩
     · obtain ⟨Q⟩ : Nonempty (CostructuredArrow L (R.obj (IsCofiltered.eq u.right v.right))) :=
         IsCofiltered.nonempty
       obtain ⟨ia, va₁, va₂, heqa⟩ := exists_eq_of_isCofiltered_costructuredArrow L R
         (Q.hom ≫ R.map (IsCofiltered.eqHom u.right v.right)) j₁.hom
       obtain ⟨i₀, α, β, hα, hβ⟩ := IsCofiltered.bowtie u.left (va₂ ≫ v.left) (𝟙 _) va₂
-      refine ⟨⟨i₀, IsCofiltered.eq u.right v.right, L.map (β ≫ va₁) ≫ Q.hom⟩,
-        ⟨β ≫ va₂, IsCofiltered.eqHom u.right v.right, ?_⟩, ?_⟩
-      · simp [← heqa]
-      · ext
-        · simp only [Category.comp_id] at hβ
-          subst hβ
-          simpa using hα
-        · simp [← IsCofiltered.eq_condition]
+      have := IsCofiltered.eq_condition u.right v.right
+      exact ⟨⟨i₀, IsCofiltered.eq u.right v.right, L.map (β ≫ va₁) ≫ Q.hom⟩,
+        ⟨β ≫ va₂, IsCofiltered.eqHom u.right v.right, by cat_disch⟩, by cat_disch⟩
   constructor
 
 set_option backward.isDefEq.respectTransparency false in
