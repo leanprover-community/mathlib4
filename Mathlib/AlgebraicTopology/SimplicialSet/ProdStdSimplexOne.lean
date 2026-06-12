@@ -29,6 +29,7 @@ namespace prodStdSimplex
 
 variable {p : ℕ}
 
+set_option backward.defeqAttrib.useBackward true in
 open stdSimplex in
 /-- This is an enumeration of the `p + 1` nondegenerate dimension-`(p + 1)`
 simplices of `Δ[p] ⊗ Δ[1]`. It sends `i : Fin (p + 1)` to the nondegenerate
@@ -59,9 +60,9 @@ noncomputable def nonDegenerateEquiv₁ :
       obtain ⟨i, rfl⟩ := Fin.eq_succ_of_ne_zero (i := i) (by
         rintro rfl
         have := DFunLike.congr_fun hs 0
-        simp only [orderHomOfSimplex_coe, OrderHom.id_coe, id_eq, Fin.ext_iff,
+        simp only [orderHomOfSimplex_coe,
           stdSimplex.objMk₁_of_le_castSucc (0 : Fin (p + 3)) 0 (by simp)] at this
-        lia)
+        simp at this)
       obtain ⟨i, rfl⟩ | rfl := i.eq_castSucc_or_eq_last
       · exact ⟨i, nonDegenerate_ext₂ rfl rfl⟩
       · have := DFunLike.congr_fun hs (Fin.last _)

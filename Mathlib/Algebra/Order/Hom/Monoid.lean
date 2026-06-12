@@ -175,6 +175,30 @@ instance [EquivLike F α β] [OrderIsoClass F α β] [MulEquivClass F α β] : C
 
 end Monoid
 
+section MonoidHomClass
+
+variable [Group α] [Monoid β]
+variable {F : Type*} [FunLike F α β] [MonoidHomClass F α β]
+
+@[to_additive]
+theorem map_inv_le_map_inv_iff_map_le_map [LE β] [MulRightMono β] [MulLeftMono β]
+    {f g : F} {x : α} : f x⁻¹ ≤ g x⁻¹ ↔ g x ≤ f x := by
+  suffices h : ∀ (f g : F) (x), f x⁻¹ ≤ g x⁻¹ → g x ≤ f x from
+    ⟨h f g x, by simpa using h g f x⁻¹⟩
+  exact fun f g x hfg ↦ calc
+    _ = f x * (f x⁻¹ * g x) := by simp [← mul_assoc, ← map_mul]
+    _ ≤ f x * (g x⁻¹ * g x) := by gcongr
+    _ = f x                 := by simp [← map_mul]
+
+@[to_additive]
+theorem MonoidHomClass.ext_iff_le [PartialOrder β] [MulRightMono β] [MulLeftMono β] {f g : F} :
+    f = g ↔ ∀ x, f x ≤ g x where
+  mp := by simp +contextual
+  mpr h := DFunLike.ext f g
+    fun x ↦ le_antisymm (h x) (map_inv_le_map_inv_iff_map_le_map.mp <| h x⁻¹)
+
+end MonoidHomClass
+
 section OrderedZero
 
 variable [FunLike F α β]
@@ -246,7 +270,7 @@ variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [MulOneClass α
 @[to_additive]
 instance : FunLike (α →*o β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := g
     congr
@@ -296,11 +320,11 @@ theorem coe_orderHom (f : α →*o β) : ((f : α →o β) : α → β) = f :=
 
 @[to_additive]
 theorem toMonoidHom_injective : Injective (toMonoidHom : _ → α →* β) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h using 0
+  ext <| by convert! DFunLike.ext_iff.1 h using 0
 
 @[to_additive]
 theorem toOrderHom_injective : Injective (toOrderHom : _ → α →o β) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h using 0
+  ext <| by convert! DFunLike.ext_iff.1 h using 0
 
 /-- Copy of an `OrderMonoidHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
@@ -524,11 +548,11 @@ theorem coe_orderIso (f : α ≃*o β) : ((f : α →o β) : α → β) = f :=
 
 @[to_additive]
 theorem toMulEquiv_injective : Injective (toMulEquiv : _ → α ≃* β) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h using 0
+  ext <| by convert! DFunLike.ext_iff.1 h using 0
 
 @[to_additive]
 theorem toOrderIso_injective : Injective (toOrderIso : _ → α ≃o β) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h using 0
+  ext <| by convert! DFunLike.ext_iff.1 h using 0
 
 variable (α)
 
@@ -712,7 +736,7 @@ protected lemma strictMono : StrictMono f :=
 protected lemma strictMono_symm : StrictMono f.symm :=
   strictMono_of_le_iff_le <| fun a b ↦ by
     rw [← map_le_map_iff f]
-    convert Iff.rfl <;>
+    convert! Iff.rfl <;>
     exact f.toEquiv.apply_symm_apply _
 
 end Preorder

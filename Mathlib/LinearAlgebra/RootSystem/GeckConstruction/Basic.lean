@@ -165,6 +165,8 @@ def ω :
   letI := P.indexNeg
   .fromBlocks 1 0 0 <| .of fun i j ↦ if i = -j then 1 else 0
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-- Geck's construction of the Lie algebra associated to a root system with distinguished base.
 
 Note that it is convenient to include `range h` in the Lie span, to make it elementary that it
@@ -328,13 +330,13 @@ instance : IsLieAbelian (cartanSubalgebra' b) := by
   refine ⟨fun ⟨⟨x, hx⟩, hx'⟩ ⟨⟨y, hy⟩, hy'⟩ ↦ ?_⟩
   let x' : cartanSubalgebra b := ⟨x, hx'⟩
   let y' : cartanSubalgebra b := ⟨y, hy'⟩
-  suffices ⁅x', y'⁆ = 0 by simpa [x', y', Subtype.ext_iff, -trivial_lie_zero] using this
-  simp
+  suffices ⁅x', y'⁆ = 0 by simpa [x', y', Subtype.ext_iff] using this
+  simp [trivial_lie_zero]
 
 instance : LieModule.IsTriangularizable R (cartanSubalgebra' b) (b.support ⊕ ι → R) := by
   refine ⟨fun ⟨⟨x, hx'⟩, hx⟩ ↦ ?_⟩
   obtain ⟨d, rfl⟩ : ∃ d : b.support ⊕ ι → R, Matrix.diagonal d = x :=
-    span_range_h_le_range_diagonal <| by simpa using hx
+    span_range_h_le_range_diagonal <| by simpa using! hx
   simp
 
 lemma cartanSubalgebra_le_lieAlgebra :
@@ -391,7 +393,6 @@ variable (b) in
     simp only [← mul_assoc, ω_mul_ω, one_mul]
     simp [mul_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ωConj_mem_of_mem
     {x : Matrix (b.support ⊕ ι) (b.support ⊕ ι) R} (hx : x ∈ lieAlgebra b) :
     ωConj b x ∈ lieAlgebra b := by
