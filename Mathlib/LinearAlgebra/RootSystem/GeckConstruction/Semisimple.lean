@@ -368,7 +368,7 @@ instance instIsIrreducible [Nonempty ι] :
     (mem_span_range_iff_exists_fun K).mp <| hU hx
   suffices c = 0 by simp [this, ← hc]
   have hCM : (4 - b.cartanMatrix).det ≠ 0 :=
-    RootPairing.Base.cartanMatrix_det_four_sub_ne_zero b
+    RootPairing.Base.det_four_sub_cartanMatrix_ne_zero b
   contrapose! hCM
   suffices ((Int.castRingHom K).mapMatrix (4 - b.cartanMatrix)).det = 0 by
     simpa only [← RingHom.map_det, eq_intCast, Int.cast_eq_zero] using this
