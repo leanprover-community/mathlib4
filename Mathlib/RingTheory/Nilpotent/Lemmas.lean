@@ -3,16 +3,20 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Nilpotent.Defs
+module
+
+public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # Nilpotent elements
 
 This file contains results about nilpotent elements that involve ring theory.
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 
@@ -31,7 +35,7 @@ theorem RingHom.ker_isRadical_iff_reduced_of_surjective {S F} [CommSemiring R] [
 theorem isRadical_iff_span_singleton [CommSemiring R] :
     IsRadical y ↔ (Ideal.span ({y} : Set R)).IsRadical := by
   simp_rw [IsRadical, ← Ideal.mem_span_singleton]
-  exact forall_swap.trans (forall_congr' fun r => exists_imp.symm)
+  exact forall_comm.trans (forall_congr' fun r => exists_imp.symm)
 
 theorem isNilpotent_iff_zero_mem_powers [Monoid R] [Zero R] {x : R} :
     IsNilpotent x ↔ 0 ∈ Submonoid.powers x := Iff.rfl

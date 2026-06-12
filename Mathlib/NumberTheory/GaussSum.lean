@@ -3,9 +3,13 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
-import Mathlib.NumberTheory.LegendreSymbol.ZModChar
-import Mathlib.Algebra.CharP.CharAndCard
+module
+
+public import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
+public import Mathlib.NumberTheory.LegendreSymbol.ZModChar
+public import Mathlib.Algebra.CharP.CharAndCard
+
+import Mathlib.NumberTheory.MulChar.Lemmas
 
 /-!
 # Gauss sums
@@ -45,6 +49,8 @@ Quadratic Reciprocity.
 additive character, multiplicative character, Gauss sum
 -/
 
+@[expose] public section
+
 
 universe u v
 
@@ -72,6 +78,20 @@ theorem gaussSum_mulShift (χ : MulChar R R') (ψ : AddChar R R') (a : Rˣ) :
   simp only [gaussSum, mulShift_apply, Finset.mul_sum]
   simp_rw [← mul_assoc, ← map_mul]
   exact Fintype.sum_bijective _ a.mulLeft_bijective _ _ fun x ↦ rfl
+
+/-- Replacing `ψ` by `mulShift ψ a` multiplies the Gauss sum by `χ⁻¹ a`. -/
+theorem gaussSum_mulShift_eq (χ : MulChar R R') (ψ : AddChar R R') (a : Rˣ) :
+    gaussSum χ (ψ.mulShift a) = χ⁻¹ a * gaussSum χ ψ := by
+  rw [← gaussSum_mulShift χ ψ a, inv_apply_eq_inv,
+    Ring.inverse_mul_cancel_left _ _ (a.isUnit.map χ)]
+
+/-- Taking complex conjugates of a Gauss sum inverts both characters. -/
+lemma star_gaussSum_eq (χ : MulChar R ℂ) (ψ : AddChar R ℂ) :
+    star (gaussSum χ ψ) = gaussSum χ⁻¹ ψ⁻¹ :=
+  calc
+    _ = ∑ x, star (ψ x) * χ⁻¹ x := by simp [gaussSum, star_mul, MulChar.star_apply']
+    _ = ∑ x, ψ⁻¹ x * χ⁻¹ x := by simp [← starRingEnd_apply, map_neg_eq_conj]
+    _ = _ := by simp [mul_comm, gaussSum]
 
 end GaussSumDef
 
@@ -186,7 +206,7 @@ theorem gaussSum_frob (χ : MulChar R R') (ψ : AddChar R R') :
   rfl
 
 /-- For a quadratic character `χ` and when the characteristic `p` of the target ring
-is a unit in the source ring, the `p`th power of the Gauss sum of`χ` and `ψ` is
+is a unit in the source ring, the `p`th power of the Gauss sum of `χ` and `ψ` is
 `χ p` times the original Gauss sum. -/
 theorem MulChar.IsQuadratic.gaussSum_frob (hp : IsUnit (p : R)) {χ : MulChar R R'}
     (hχ : IsQuadratic χ) (ψ : AddChar R R') :
@@ -197,7 +217,7 @@ theorem MulChar.IsQuadratic.gaussSum_frob (hp : IsUnit (p : R)) {χ : MulChar R 
 
 /-- For a quadratic character `χ` and when the characteristic `p` of the target ring
 is a unit in the source ring and `n` is a natural number, the `p^n`th power of the Gauss
-sum of`χ` and `ψ` is `χ (p^n)` times the original Gauss sum. -/
+sum of `χ` and `ψ` is `χ (p^n)` times the original Gauss sum. -/
 theorem MulChar.IsQuadratic.gaussSum_frob_iter (n : ℕ) (hp : IsUnit (p : R)) {χ : MulChar R R'}
     (hχ : IsQuadratic χ) (ψ : AddChar R R') :
     gaussSum χ ψ ^ p ^ n = χ ((p : R) ^ n) * gaussSum χ ψ := by
@@ -274,6 +294,7 @@ in this way, the result is reduced to `card_pow_char_pow`.
 
 open ZMod
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For every finite field `F` of odd characteristic, we have `2^(#F/2) = χ₈ #F` in `F`. -/
 theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringChar F ≠ 2) :
     (2 : F) ^ (Fintype.card F / 2) = χ₈ (Fintype.card F) := by
@@ -292,7 +313,7 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
     exact mt FFp.dvd_of_dvd_pow hFF
   -- there is a primitive additive character `ℤ/8ℤ → FF`, sending `a + 8ℤ ↦ τ^a`
   -- with a primitive eighth root of unity `τ`
-  let ψ₈ := primitiveZModChar 8 F (by convert hp2 3 using 1; norm_cast)
+  let ψ₈ := primitiveZModChar 8 F (by convert! hp2 3 using 1; norm_cast)
   -- We cast from `AddChar (ZMod (8 : ℕ+)) FF` to `AddChar (ZMod 8) FF`
   -- This is needed to make `simp_rw [← h₁]` below work.
   let ψ₈char : AddChar (ZMod 8) FF := ψ₈.char
@@ -334,6 +355,6 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
   · rw [(by norm_num : (8 : F) = 2 ^ 2 * 2), mul_pow,
       (FiniteField.isSquare_iff hF <| hp2 2).mp ⟨2, pow_two 2⟩, one_mul]
   apply (algebraMap F FF).injective
-  simpa only [map_pow, map_ofNat, map_intCast, Nat.cast_ofNat] using h
+  simpa only [map_pow, map_ofNat, map_intCast, Nat.cast_ofNat] using! h
 
 end GaussSumTwo

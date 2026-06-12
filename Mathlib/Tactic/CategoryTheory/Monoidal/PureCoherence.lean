@@ -3,8 +3,11 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
-import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
+module
+
+public meta import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
+public import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
 
 /-!
 # Coherence tactic for monoidal categories
@@ -15,6 +18,8 @@ in a monoidal category which are built out of associators and unitors
 are equal.
 
 -/
+
+public meta section
 
 open Lean Meta Elab Qq
 open CategoryTheory Mathlib.Tactic.BicategoryLike MonoidalCategory
@@ -262,7 +267,7 @@ open Elab.Tactic
 /-- Close the goal of the form `η = θ`, where `η` and `θ` are 2-isomorphisms made up only of
 associators, unitors, and identities.
 ```lean
-example {C : Type} [Category C] [MonoidalCategory C] :
+example {C : Type} [Category* C] [MonoidalCategory C] :
   (λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom := by
   monoidal_coherence
 ```

@@ -3,10 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Sites.Grothendieck
-import Mathlib.CategoryTheory.Sites.Pretopology
-import Mathlib.CategoryTheory.Limits.Lattice
-import Mathlib.Topology.Sets.Opens
+module
+
+public import Mathlib.CategoryTheory.Sites.Grothendieck
+public import Mathlib.CategoryTheory.Sites.Pretopology
+public import Mathlib.CategoryTheory.Limits.Lattice
+public import Mathlib.Topology.Sets.Opens
 
 /-!
 # Grothendieck topology on a topological space
@@ -31,6 +33,8 @@ We define the two separately, rather than defining the Grothendieck topology as 
 by the pretopology for the purpose of having nice definitional properties for the sieves.
 -/
 
+@[expose] public section
+
 
 universe u
 
@@ -42,7 +46,7 @@ open CategoryTheory TopologicalSpace CategoryTheory.Limits
 
 /-- The Grothendieck topology associated to a topological space. -/
 def grothendieckTopology : GrothendieckTopology (Opens T) where
-  sieves X S := ∀ x ∈ X, ∃ (U : _) (f : U ⟶ X), S f ∧ x ∈ U
+  sieves X := {S | ∀ x ∈ X, ∃ (U : Opens T) (f : U ⟶ X), S f ∧ x ∈ U}
   top_mem' _ _ hx := ⟨_, 𝟙 _, trivial, hx⟩
   pullback_stable' X Y S f hf y hy := by
     rcases hf y (f.le hy) with ⟨U, g, hg, hU⟩
@@ -55,7 +59,7 @@ def grothendieckTopology : GrothendieckTopology (Opens T) where
 
 /-- The Grothendieck pretopology associated to a topological space. -/
 def pretopology : Pretopology (Opens T) where
-  coverings X R := ∀ x ∈ X, ∃ (U : _) (f : U ⟶ X), R f ∧ x ∈ U
+  coverings X := {R | ∀ x ∈ X, ∃ (U : _) (f : U ⟶ X), R f ∧ x ∈ U}
   has_isos _ _ f _ _ hx := ⟨_, _, Presieve.singleton_self _, (inv f).le hx⟩
   pullbacks X Y f S hS x hx := by
     rcases hS _ (f.le hx) with ⟨U, g, hg, hU⟩
@@ -79,10 +83,7 @@ theorem toPretopology_grothendieckTopology :
     exact ⟨V, g₂, hg₂, g₁.le hU⟩
   · intro X R hR x hx
     rcases hR x hx with ⟨U, f, hf, hU⟩
-    exact ⟨U, f, Sieve.le_generate R U hf, hU⟩
-
-@[deprecated (since := "2025-09-19")]
-alias pretopology_ofGrothendieck := toPretopology_grothendieckTopology
+    exact ⟨U, f, Sieve.le_generate R U _ hf, hU⟩
 
 /-- The pretopology associated to a space induces the Grothendieck topology associated to the space.
 -/

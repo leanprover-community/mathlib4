@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Order.Fin.Basic
-import Mathlib.Order.SuccPred.Basic
+module
+
+public import Mathlib.Order.Fin.Basic
+public import Mathlib.Order.SuccPred.Basic
 
 /-!
 # `SuccOrder` and `PredOrder` of `Fin n`
@@ -15,6 +17,8 @@ to a specific `Fin` instance.
 
 -/
 
+public section
+
 
 namespace Fin
 
@@ -23,10 +27,10 @@ instance : ∀ {n : ℕ}, SuccOrder (Fin n)
   | n + 1 =>
     SuccOrder.ofCore (Fin.lastCases (Fin.last n) Fin.succ)
       (fun {i} hi j ↦ by
-        obtain ⟨i, rfl⟩ := Fin.eq_castSucc_of_ne_last (by simpa using hi)
+        obtain ⟨i, rfl⟩ := Fin.eq_castSucc_of_ne_last (by simpa using! hi)
         simp [castSucc_lt_iff_succ_le])
       (fun i hi ↦ by
-        obtain rfl : i = Fin.last n := by simpa using hi
+        obtain rfl : i = Fin.last n := by simpa using! hi
         simp)
 
 lemma orderSucc_eq {n : ℕ} :
@@ -51,14 +55,14 @@ instance : ∀ {n : ℕ}, PredOrder (Fin n)
     PredOrder.ofCore
       (Fin.cases 0 Fin.castSucc)
       (fun {i} hi j ↦ by
-        obtain ⟨i, rfl⟩ := Fin.eq_succ_of_ne_zero (by simpa using hi)
+        obtain ⟨i, rfl⟩ := Fin.eq_succ_of_ne_zero (by simpa using! hi)
         simp [le_castSucc_iff])
       (fun i hi ↦ by
-        obtain rfl : i = 0 := by simpa using hi
+        obtain rfl : i = 0 := by simpa using! hi
         rfl)
 
 lemma orderPred_eq {n : ℕ} :
-    Order.succ = Fin.lastCases (Fin.last n) Fin.succ := rfl
+    Order.pred = Fin.cases 0 Fin.castSucc (n := n) := rfl
 
 lemma orderPred_apply {n : ℕ} (i : Fin (n + 1)) :
     Order.pred i = Fin.cases 0 Fin.castSucc i := rfl

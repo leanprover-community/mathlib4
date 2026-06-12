@@ -3,10 +3,12 @@ Copyright (c) 2025 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
-import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
-import Mathlib.CategoryTheory.Bicategory.End
-import Mathlib.CategoryTheory.Monoidal.Comon_
+module
+
+public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
+public import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
+public import Mathlib.CategoryTheory.Bicategory.End
+public import Mathlib.CategoryTheory.Monoidal.Comon_
 
 /-!
 # Comonads in a bicategory
@@ -21,6 +23,8 @@ We can also define monads in a bicategory. This is not yet done as we don't have
 structure on the set of lax functors at this point, which is needed to show that monads form a
 bicategory.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -41,9 +45,9 @@ abbrev Comonad.counit {a : B} {t : a ⟶ a} [Comonad t] : t ⟶ 𝟙 a := ComonO
 abbrev Comonad.comul {a : B} {t : a ⟶ a} [Comonad t] : t ⟶ t ≫ t := ComonObj.comul
 
 @[inherit_doc] scoped notation "ε" => Comonad.counit
-@[inherit_doc] scoped notation "ε["x"]" => Comonad.counit (t := x)
+@[inherit_doc] scoped notation "ε[" x "]" => Comonad.counit (t := x)
 @[inherit_doc] scoped notation "Δ" => Comonad.comul
-@[inherit_doc] scoped notation "Δ["x"]" => Comonad.comul (t := x)
+@[inherit_doc] scoped notation "Δ[" x "]" => Comonad.comul (t := x)
 
 namespace Comonad
 
@@ -73,6 +77,7 @@ instance {a : B} : Comonad (𝟙 a) :=
   ComonObj.instTensorUnit (a ⟶ a)
 
 /-- An oplax functor from the trivial bicategory to `B` defines a comonad in `B`. -/
+@[implicit_reducible]
 def ofOplaxFromUnit (F : LocallyDiscrete (Discrete Unit) ⥤ᵒᵖᴸ B) :
     Comonad (F.map (𝟙 ⟨⟨Unit.unit⟩⟩)) where
   comul := F.map₂ (ρ_ _).inv ≫ F.mapComp _ _
@@ -129,7 +134,7 @@ def obj (m : ComonadBicat B) :=
   m.toOplax.obj ⟨⟨PUnit.unit⟩⟩
 
 /-- The morphism in `B` associated with the comonad. -/
-def hom (m : ComonadBicat B) : m.obj  ⟶ m.obj :=
+def hom (m : ComonadBicat B) : m.obj ⟶ m.obj :=
   m.toOplax.map (𝟙 (⟨⟨PUnit.unit⟩⟩ : LocallyDiscrete (Discrete PUnit)))
 
 instance (m : ComonadBicat B) : Comonad m.hom :=

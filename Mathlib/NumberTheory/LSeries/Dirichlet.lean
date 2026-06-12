@@ -3,12 +3,15 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.DirichletCharacter.Bounds
-import Mathlib.NumberTheory.LSeries.Convolution
-import Mathlib.NumberTheory.LSeries.Deriv
-import Mathlib.NumberTheory.LSeries.RiemannZeta
-import Mathlib.NumberTheory.SumPrimeReciprocals
-import Mathlib.NumberTheory.VonMangoldt
+module
+
+public import Mathlib.NumberTheory.DirichletCharacter.Bounds
+public import Mathlib.NumberTheory.LSeries.Convolution
+public import Mathlib.NumberTheory.LSeries.Deriv
+public import Mathlib.NumberTheory.LSeries.Positivity
+public import Mathlib.NumberTheory.LSeries.RiemannZeta
+public import Mathlib.NumberTheory.SumPrimeReciprocals
+public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
 
 /-!
 # L-series of Dirichlet characters and arithmetic functions
@@ -20,7 +23,7 @@ on `re s > 1`; see `LSeries_vonMangoldt_eq_deriv_riemannZeta_div`.
 
 We also prove some general results on L-series associated to Dirichlet characters
 (i.e., Dirichlet L-series). For example, we show that the abscissa of absolute convergence
-equals `1` (see `DirichletCharacter.absicssaOfAbsConv`) and that the L-series does not
+equals `1` (see `DirichletCharacter.absicssaOfAbsConv_eq_one`) and that the L-series does not
 vanish on the open half-plane `re s > 1` (see `DirichletCharacter.LSeries_ne_zero_of_one_lt_re`).
 
 We deduce results on the Riemann zeta function (which is `L 1` or `L ↗ζ` on `re s > 1`)
@@ -30,6 +33,8 @@ as special cases.
 
 Dirichlet L-series, Möbius function, von Mangoldt function, Riemann zeta function
 -/
+
+public section
 
 open scoped LSeries.notation
 
@@ -320,6 +325,29 @@ lemma LSeries_one_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : L 1 s ≠ 0 :
 /-- The Riemann Zeta Function does not vanish on the half-plane `re s > 1`. -/
 lemma riemannZeta_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : riemannZeta s ≠ 0 :=
   LSeries_one_eq_riemannZeta hs ▸ LSeries_one_ne_zero_of_one_lt_re hs
+
+section ComplexOrderLemmas
+
+open scoped ComplexOrder
+
+/-- The Riemann zeta function is positive in `ComplexOrder` for real arguments greater than 1.
+This means it is a positive real number:
+both `(riemannZeta x).re > 0` and `(riemannZeta x).im = 0`. -/
+lemma riemannZeta_pos_of_one_lt {x : ℝ} (hx : 1 < x) : 0 < riemannZeta x := by
+  have hx' : 1 < (x : ℂ).re := by simpa using hx
+  rw [← LSeries_one_eq_riemannZeta hx']
+  refine LSeries.positive (fun _ ↦ by simp) (by simp) ?_
+  simpa [LSeries.abscissaOfAbsConv_one] using (by exact_mod_cast hx : (1 : EReal) < x)
+
+/-- The real part of the Riemann zeta function is positive for real arguments greater than 1. -/
+lemma riemannZeta_re_pos_of_one_lt {x : ℝ} (hx : 1 < x) : 0 < (riemannZeta x).re :=
+  (Complex.pos_iff.mp (riemannZeta_pos_of_one_lt hx)).1
+
+/-- The Riemann zeta function is real-valued for real arguments greater than 1. -/
+lemma riemannZeta_im_eq_zero_of_one_lt {x : ℝ} (hx : 1 < x) : (riemannZeta x).im = 0 :=
+  (Complex.pos_iff.mp (riemannZeta_pos_of_one_lt hx)).2.symm
+
+end ComplexOrderLemmas
 
 end zeta
 

@@ -3,9 +3,11 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Floris van Doorn
 -/
-import Mathlib.Algebra.Notation.Indicator
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Order.Filter.Subsingleton
+module
+
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Order.Filter.Subsingleton
 /-!
 # Functions that are eventually constant along a filter
 
@@ -20,6 +22,8 @@ However, this proposition is false for empty `α`, `β`.
 Instead, we say that `Filter.map f l` is supported on a subsingleton.
 This allows us to drop `[Nonempty _]` assumptions here and there.
 -/
+
+@[expose] public section
 
 open Set
 
@@ -134,7 +138,7 @@ variable [One β] {s : Set α} {c : β}
 @[to_additive]
 lemma of_mulIndicator_const (h : EventuallyConst (s.mulIndicator fun _ ↦ c) l) (hc : c ≠ 1) :
     EventuallyConst s l := by
-  simpa [Function.comp_def, hc, imp_false] using h.comp (· = c)
+  simpa [Function.comp_def, hc, imp_false] using! h.comp (· = c)
 
 @[to_additive]
 theorem mulIndicator_const (h : EventuallyConst s l) (c : β) :
@@ -155,7 +159,7 @@ end EventuallyConst
 
 lemma eventuallyConst_atTop [SemilatticeSup α] [Nonempty α] :
     EventuallyConst f atTop ↔ (∃ i, ∀ j, i ≤ j → f j = f i) :=
-  (atTop_basis.eventuallyConst_iff' fun _ _ ↦ left_mem_Ici).trans <| by
+  (atTop_basis.eventuallyConst_iff' fun _ _ ↦ self_mem_Ici).trans <| by
     simp only [true_and, mem_Ici]
 
 lemma eventuallyConst_atTop_nat {f : ℕ → α} :

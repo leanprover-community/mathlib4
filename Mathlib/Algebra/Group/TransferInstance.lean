@@ -3,9 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Data.Fintype.Basic
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Data.Fintype.Basic
 
 /-!
 # Transfer algebraic structures across `Equiv`s
@@ -18,6 +20,8 @@ then `α` has a group structure, and similarly for monoids, semigroups and so on
 When adding new definitions that transfer type-classes across an equivalence, please use
 `abbrev`. See note [reducible non-instances].
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero MulAction
 
@@ -64,21 +68,12 @@ lemma inv_def [Inv β] (x : α) :
     x⁻¹ = e.symm (e x)⁻¹ := rfl
 
 variable (M) in
-/-- Transfer `SMul` across an `Equiv` -/
-@[to_additive /-- Transfer `VAdd` across an `Equiv` -/]
-protected abbrev smul [SMul M β] : SMul M α where smul r x := e.symm (r • e x)
-
-@[to_additive]
-lemma smul_def [SMul M β] (r : M) (x : α) :
-    letI := e.smul M
-    r • x = e.symm (r • e x) := rfl
-
-variable (M) in
 /-- Transfer `Pow` across an `Equiv` -/
-@[to_additive existing smul]
+@[to_additive (attr := to_additive /-- Transfer `VAdd` across an `Equiv` -/) smul
+/-- Transfer `SMul` across an `Equiv` -/]
 protected abbrev pow [Pow β M] : Pow α M where pow x n := e.symm (e x ^ n)
 
-@[to_additive existing smul_def]
+@[to_additive (attr := to_additive) smul_def]
 lemma pow_def [Pow β M] (n : M) (x : α) :
     letI := e.pow M
     x ^ n = e.symm (e x ^ n) := rfl
@@ -101,7 +96,7 @@ def mulEquiv (e : α ≃ β) [Mul β] :
 @[to_additive (attr := simp)]
 lemma mulEquiv_apply (e : α ≃ β) [Mul β] (a : α) : (mulEquiv e) a = e a := rfl
 
-@[to_additive]
+@[to_additive (attr := simp)]
 lemma mulEquiv_symm_apply (e : α ≃ β) [Mul β] (b : β) :
     letI := Equiv.mul e
     (mulEquiv e).symm b = e.symm b := rfl

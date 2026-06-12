@@ -3,9 +3,12 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.Algebra.Polynomial.Module.AEval
-import Mathlib.Algebra.Module.Torsion.Basic
+module
+
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.Algebra.Polynomial.Module.AEval
+public import Mathlib.FieldTheory.Minpoly.Field
+
 /-!
 # Polynomial modules in finite dimensions
 
@@ -18,6 +21,8 @@ by an `R`-linear endomorphism, which require the concept of finite-dimensionalit
   over `K`, then the induced `K[X]`-module structure on `M` is pure torsion.
 
 -/
+
+public section
 
 open Polynomial
 

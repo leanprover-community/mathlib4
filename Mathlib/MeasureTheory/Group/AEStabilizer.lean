@@ -3,8 +3,10 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Group.Action
-import Mathlib.Order.Filter.EventuallyConst
+module
+
+public import Mathlib.MeasureTheory.Group.Action
+public import Mathlib.Order.Filter.EventuallyConst
 
 /-!
 # A.e. stabilizer of a set
@@ -27,6 +29,8 @@ Also, many lemmas in this file are true for a *quasi-measure-preserving* action,
 but we don't have the corresponding typeclass.
 -/
 
+@[expose] public section
+
 open Filter Set MeasureTheory
 open scoped Pointwise
 
@@ -41,8 +45,8 @@ def aestabilizer (s : Set α) : Subgroup G where
   carrier := {g | g • s =ᵐ[μ] s}
   one_mem' := by simp
   -- TODO: `calc` would be more readable but fails because of defeq abuse
-  mul_mem' {g₁ g₂} h₁ h₂ := by simpa only [smul_smul] using ((smul_set_ae_eq g₁).2 h₂).trans h₁
-  inv_mem' {g} h := by simpa using (smul_set_ae_eq g⁻¹).2 h.out.symm
+  mul_mem' {g₁ g₂} h₁ h₂ := by simpa only [smul_smul] using! ((smul_set_ae_eq g₁).2 h₂).trans h₁
+  inv_mem' {g} h := by simpa using! (smul_set_ae_eq g⁻¹).2 h.out.symm
 
 variable {G μ}
 variable {g : G} {s t : Set α}

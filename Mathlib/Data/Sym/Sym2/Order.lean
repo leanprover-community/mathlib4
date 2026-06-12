@@ -3,8 +3,10 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Sym.Sym2
-import Mathlib.Order.Lattice
+module
+
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Order.Lattice
 
 /-!
 # Sorting the elements of `Sym2`
@@ -12,6 +14,8 @@ import Mathlib.Order.Lattice
 This file provides `Sym2.sortEquiv`, the forward direction of which is somewhat analogous to
 `Multiset.sort`.
 -/
+
+@[expose] public section
 
 namespace Sym2
 
@@ -34,8 +38,8 @@ protected theorem inf_le_sup [Lattice α] (s : Sym2 α) : s.inf ≤ s.sup := by
 @[simps!]
 def sortEquiv [LinearOrder α] : Sym2 α ≃ { p : α × α // p.1 ≤ p.2 } where
   toFun s := ⟨(s.inf, s.sup), Sym2.inf_le_sup _⟩
-  invFun p := Sym2.mk p
-  left_inv := Sym2.ind fun a b => mk_eq_mk_iff.mpr <| by
+  invFun p := s(p.1.1, p.1.2)
+  left_inv := Sym2.ind fun a b => eq_iff.mpr <| by
     cases le_total a b with
     | inl h => simp [h]
     | inr h => simp [h]

@@ -3,8 +3,10 @@ Copyright (c) 2021 Yourong Zang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang
 -/
-import Mathlib.Analysis.Calculus.Conformal.NormedSpace
-import Mathlib.Geometry.Manifold.ChartedSpace
+module
+
+public import Mathlib.Analysis.Calculus.Conformal.NormedSpace
+public import Mathlib.Geometry.Manifold.StructureGroupoid
 
 /-!
 # Conformal Groupoid
@@ -19,6 +21,8 @@ In this file we define the groupoid of conformal maps on normed spaces.
 
 conformal, groupoid
 -/
+
+@[expose] public section
 
 
 variable {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]

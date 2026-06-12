@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Analysis.InnerProductSpace.Convex
-import Mathlib.Analysis.SpecialFunctions.Complex.Arg
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Convex
+public import Mathlib.Analysis.SpecialFunctions.Complex.Arg
 
 /-!
 # Rays in the complex numbers
@@ -21,6 +23,8 @@ the usual way this is considered.
 
 -/
 
+public section
+
 
 variable {x y : ℂ}
 
@@ -34,8 +38,7 @@ theorem sameRay_iff : SameRay ℝ x y ↔ x = 0 ∨ y = 0 ∨ x.arg = y.arg := b
   rcases eq_or_ne y 0 with (rfl | hy)
   · simp
   simp only [hx, hy, sameRay_iff_norm_smul_eq, arg_eq_arg_iff hx hy]
-  simp [field, hx]
-  rw [mul_comm, eq_comm]
+  simp [field, hx, mul_comm, eq_comm]
 
 theorem sameRay_iff_arg_div_eq_zero : SameRay ℝ x y ↔ arg (x / y) = 0 := by
   rw [← Real.Angle.toReal_zero, ← arg_coe_angle_eq_iff_eq_toReal, sameRay_iff]

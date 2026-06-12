@@ -3,11 +3,13 @@ Copyright (c) 2023 Parth Shastri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parth Shastri, Gabriel Ebner, Mario Carneiro
 -/
-import Mathlib.Init
-import Lean.Elab.Command
-import Lean.Compiler.CSimpAttr
-import Lean.Util.FoldConsts
-import Lean.Data.AssocList
+module  -- shake: keep-downstream (`[csimp]` is not currently tracked)
+
+public import Mathlib.Init
+public meta import Lean.Elab.Command
+public meta import Lean.Compiler.CSimpAttr
+public meta import Lean.Util.FoldConsts
+public meta import Lean.Data.AssocList
 
 /-!
 # Define the `compile_inductive%` command.
@@ -23,9 +25,13 @@ Similarly, `compile_def% Foo.foo` adds compiled code for definitions when missin
 This can be the case for type class projections, or definitions like `List._sizeOf_1`.
 -/
 
+public section
+
 namespace Mathlib.Util
 
 open Lean Meta
+
+meta section
 
 private def replaceConst (repl : AssocList Name Name) (e : Expr) : Expr :=
   e.replace fun | .const n us => repl.find? n |>.map (.const · us) | _ => none
@@ -230,6 +236,8 @@ elab tk:"compile_inductive% " i:ident : command => Command.liftTermElabM do
   let iv ← withRef i <| getConstInfoInduct n
   withRef tk <| compileInductive iv
 
+end
+
 end Mathlib.Util
 
 -- `Nat.rec` already has a `@[csimp]` lemma in Lean.
@@ -243,11 +251,15 @@ compile_inductive% PEmpty
 compile_inductive% Sum
 compile_inductive% PSum
 compile_inductive% And
-compile_inductive% False
-compile_inductive% Empty
 compile_inductive% Bool
 compile_inductive% Sigma
 compile_inductive% Option
+-- False.rec and Empty.rec already have special compiler support
+compile_def% False.recOn
+compile_def% Empty.recOn
+
+set_option backward.privateInPublic true
+set_option backward.privateInPublic.warn false
 
 -- In addition to the manual implementation below, we also have to override the `Float.val` and
 -- `Float.mk` functions because these also have no implementation in core lean.
@@ -276,5 +288,6 @@ run_cmd Command.liftTermElabM do
 -- were manually implemented as `noncomputable`
 compile_inductive% String
 compile_inductive% Lean.Name
+compile_def% Lean.Name.sizeOf._f
 compile_def% Lean.Name.sizeOf
 compile_def% Lean.instSizeOfName

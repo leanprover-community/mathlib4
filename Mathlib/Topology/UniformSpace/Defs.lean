@@ -3,11 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Rel
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Tactic.Monotonicity.Basic
-import Mathlib.Topology.Order
+module
+
+public import Mathlib.Data.Rel.Cover
+public import Mathlib.Topology.Order
 
 /-!
 # Uniform spaces
@@ -107,6 +106,8 @@ The formalization uses the books:
 But it makes a more systematic use of the filter library.
 -/
 
+@[expose] public section
+
 open Set Filter Topology
 
 universe u v ua ub uc ud
@@ -117,191 +118,11 @@ universe u v ua ub uc ud
 
 variable {α : Type ua} {β : Type ub} {γ : Type uc} {δ : Type ud} {ι : Sort*}
 
-/-- The identity relation, or the graph of the identity function -/
-@[deprecated SetRel.id (since := "2025-10-17")]
-def idRel {α : Type*} :=
-  { p : α × α | p.1 = p.2 }
-
-set_option linter.deprecated false in
-@[deprecated SetRel.mem_id (since := "2025-10-17")]
-theorem mem_idRel {a b : α} : (a, b) ∈ @idRel α ↔ a = b :=
-  Iff.rfl
-
-set_option linter.deprecated false in
-@[deprecated SetRel.id_subset_iff (since := "2025-10-17")]
-theorem idRel_subset {s : SetRel α α} : idRel ⊆ s ↔ ∀ a, (a, a) ∈ s := by
-  simp [subset_def, mem_idRel]
-
-set_option linter.deprecated false in
-@[deprecated SetRel.exists_eq_singleton_of_prod_subset_id (since := "2025-10-17")]
-theorem eq_singleton_left_of_prod_subset_idRel {X : Type*} {S T : Set X} (hS : S.Nonempty)
-    (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ SetRel.id) : ∃ x, S = {x} := by
-  obtain ⟨x, hx, -⟩ := SetRel.exists_eq_singleton_of_prod_subset_id hS hT h_diag; exact ⟨x, hx⟩
-
-set_option linter.deprecated false in
-@[deprecated SetRel.exists_eq_singleton_of_prod_subset_id (since := "2025-10-17")]
-theorem eq_singleton_right_prod_subset_idRel {X : Type*} {S T : Set X} (hS : S.Nonempty)
-    (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ SetRel.id) : ∃ x, T = {x} := by
-  obtain ⟨x, -, hx⟩ := SetRel.exists_eq_singleton_of_prod_subset_id hS hT h_diag; exact ⟨x, hx⟩
-
-@[deprecated (since := "2025-10-17")]
-alias eq_singleton_prod_subset_idRel := SetRel.exists_eq_singleton_of_prod_subset_id
-
-set_option linter.deprecated false in
-/-- The composition of relations -/
-@[deprecated SetRel.comp (since := "2025-10-17")]
-def compRel (r₁ r₂ : SetRel α α) :=
-  { p : α × α | ∃ z : α, (p.1, z) ∈ r₁ ∧ (z, p.2) ∈ r₂ }
-
 open scoped SetRel
-
-set_option linter.deprecated false in
-@[deprecated SetRel.mem_comp (since := "2025-10-17")]
-theorem mem_compRel {α : Type u} {r₁ r₂ : SetRel α α} {x y : α} :
-    (x, y) ∈ r₁ ○ r₂ ↔ ∃ z, (x, z) ∈ r₁ ∧ (z, y) ∈ r₂ :=
-  Iff.rfl
-
-set_option linter.deprecated false in
-@[deprecated SetRel.inv_id (since := "2025-10-17")]
-theorem swap_idRel : Prod.swap '' idRel = @idRel α :=
-  Set.ext fun ⟨a, b⟩ => by simpa [image_swap_eq_preimage_swap] using eq_comm
-
-set_option linter.deprecated false in
-@[deprecated Monotone.relComp (since := "2025-10-17")]
-theorem Monotone.compRel [Preorder β] {f g : β → SetRel α α} (hf : Monotone f) (hg : Monotone g) :
-    Monotone fun x => f x ○ g x := fun _ _ h _ ⟨z, h₁, h₂⟩ => ⟨z, hf h h₁, hg h h₂⟩
-
-@[deprecated (since := "2025-10-17")] alias compRel_mono := SetRel.comp_subset_comp
-@[deprecated (since := "2025-10-17")] alias compRel_left_mono := SetRel.comp_subset_comp_left
-@[deprecated (since := "2025-10-17")] alias compRel_right_mono := SetRel.comp_subset_comp_right
-@[deprecated (since := "2025-10-17")] alias prodMk_mem_compRel := SetRel.prodMk_mem_comp
-@[deprecated (since := "2025-03-10")] alias prod_mk_mem_compRel := SetRel.prodMk_mem_comp
-
-set_option linter.deprecated false in
-@[deprecated SetRel.id_comp (since := "2025-10-17")]
-theorem id_compRel {r : SetRel α α} : idRel ○ r = r :=
-  SetRel.id_comp _
-
-@[deprecated SetRel.comp_assoc (since := "2025-10-17")]
-theorem compRel_assoc {r s t : SetRel α α} : r ○ s ○ t = r ○ (s ○ t) := by
-  apply SetRel.comp_assoc
-
-set_option linter.deprecated false in
-@[deprecated SetRel.left_subset_comp (since := "2025-10-17")]
-theorem left_subset_compRel {s t : SetRel α α} (h : idRel ⊆ t) : s ⊆ s ○ t := fun ⟨_x, y⟩ xy_in =>
-  ⟨y, xy_in, h <| rfl⟩
-
-set_option linter.deprecated false in
-@[deprecated SetRel.right_subset_comp (since := "2025-10-17")]
-theorem right_subset_compRel {s t : SetRel α α} (h : idRel ⊆ s) : t ⊆ s ○ t := fun ⟨x, _y⟩ xy_in =>
-  ⟨x, h <| rfl, xy_in⟩
-
-set_option linter.deprecated false in
-@[deprecated SetRel.left_subset_comp (since := "2025-10-17")]
-theorem subset_comp_self {s : SetRel α α} (h : idRel ⊆ s) : s ⊆ s ○ s :=
-  left_subset_compRel h
-
-set_option linter.deprecated false in
-@[deprecated SetRel.subset_iterate_comp (since := "2025-10-17")]
-theorem subset_iterate_compRel {s t : SetRel α α} (h : idRel ⊆ s) (n : ℕ) :
-    t ⊆ (s ○ ·)^[n] t := by
-  induction n generalizing t with
-  | zero => exact Subset.rfl
-  | succ n ihn => exact (right_subset_compRel h).trans ihn
-
-/-- The relation is invariant under swapping factors. -/
-@[deprecated SetRel.IsSymm (since := "2025-10-17")]
-def IsSymmetricRel (V : SetRel α α) : Prop :=
-  Prod.swap ⁻¹' V = V
-
-/-- The maximal symmetric relation contained in a given relation. -/
-@[deprecated SetRel.symmetrize (since := "2025-10-17")]
-def symmetrizeRel (V : SetRel α α) : SetRel α α :=
-  V ∩ Prod.swap ⁻¹' V
-
-set_option linter.deprecated false in
-@[deprecated SetRel.isSymm_symmetrize (since := "2025-10-17")]
-theorem symmetric_symmetrizeRel (V : SetRel α α) : IsSymmetricRel (symmetrizeRel V) := by
-  simp [IsSymmetricRel, symmetrizeRel, preimage_inter, inter_comm, ← preimage_comp]
-
-set_option linter.deprecated false in
-@[deprecated SetRel.symmetrize_subset_self (since := "2025-10-17")]
-theorem symmetrizeRel_subset_self (V : SetRel α α) : symmetrizeRel V ⊆ V :=
-  sep_subset _ _
-
-set_option linter.deprecated false in
-@[deprecated SetRel.symmetrize_mono (since := "2025-10-17")]
-theorem symmetrize_mono {V W : SetRel α α} (h : V ⊆ W) : symmetrizeRel V ⊆ symmetrizeRel W :=
-  inter_subset_inter h <| preimage_mono h
-
-set_option linter.deprecated false in
-@[deprecated SetRel.comm (since := "2025-10-17")]
-theorem IsSymmetricRel.mk_mem_comm {V : SetRel α α} (hV : IsSymmetricRel V) {x y : α} :
-    (x, y) ∈ V ↔ (y, x) ∈ V :=
-  Set.ext_iff.1 hV (y, x)
-
-set_option linter.deprecated false in
-@[deprecated SetRel.inv_eq_self (since := "2025-10-17")]
-theorem IsSymmetricRel.eq {U : SetRel α α} (hU : IsSymmetricRel U) : Prod.swap ⁻¹' U = U :=
-  hU
-
-set_option linter.deprecated false in
-@[deprecated SetRel.isSymm_inter (since := "2025-10-17")]
-theorem IsSymmetricRel.inter {U V : SetRel α α} (hU : IsSymmetricRel U) (hV : IsSymmetricRel V) :
-    IsSymmetricRel (U ∩ V) := by rw [IsSymmetricRel, preimage_inter, hU.eq, hV.eq]
-
-set_option linter.deprecated false in
-@[deprecated SetRel.isSymm_iInter (since := "2025-10-17")]
-theorem IsSymmetricRel.iInter {U : (i : ι) → SetRel α α} (hU : ∀ i, IsSymmetricRel (U i)) :
-    IsSymmetricRel (⋂ i, U i) := by
-  simp_rw [IsSymmetricRel, preimage_iInter, (hU _).eq]
-
-set_option linter.deprecated false in
-@[deprecated SetRel.IsSymm.sInter (since := "2025-10-17")]
-lemma IsSymmetricRel.sInter {s : Set (SetRel α α)} (h : ∀ i ∈ s, IsSymmetricRel i) :
-    IsSymmetricRel (⋂₀ s) := by
-  rw [sInter_eq_iInter]
-  exact IsSymmetricRel.iInter (by simpa)
-
-set_option linter.deprecated false in
-@[deprecated SetRel.isSymm_id (since := "2025-10-17")]
-lemma isSymmetricRel_idRel : IsSymmetricRel (idRel : Set (α × α)) := by
-  simp [IsSymmetricRel, idRel, eq_comm]
-
-set_option linter.deprecated false in
-@[deprecated SetRel.isSymm_univ (since := "2025-10-17")]
-lemma isSymmetricRel_univ : IsSymmetricRel (Set.univ : Set (α × α)) := by
-  simp [IsSymmetricRel]
-
-set_option linter.deprecated false in
-@[deprecated SetRel.isSymm_preimage (since := "2025-10-17")]
-lemma IsSymmetricRel.preimage_prodMap {U : Set (β × β)} (ht : IsSymmetricRel U) (f : α → β) :
-    IsSymmetricRel (Prod.map f f ⁻¹' U) :=
-  Set.ext fun _ ↦ ht.mk_mem_comm
-
-set_option linter.deprecated false in
-@[deprecated SetRel.isSymm_image (since := "2025-10-17")]
-lemma IsSymmetricRel.image_prodMap {U : Set (α × α)} (ht : IsSymmetricRel U) (f : α → β) :
-    IsSymmetricRel (Prod.map f f '' U) := by
-  rw [IsSymmetricRel, ← image_swap_eq_preimage_swap, ← image_comp, ← Prod.map_comp_swap, image_comp,
-      image_swap_eq_preimage_swap, ht]
-
-set_option linter.deprecated false in
-@[deprecated SetRel.prod_subset_comm (since := "2025-10-17")]
-lemma IsSymmetricRel.prod_subset_comm {s : Set (α × α)} {t u : Set α} (hs : IsSymmetricRel s) :
-    t ×ˢ u ⊆ s ↔ u ×ˢ t ⊆ s := by
-  rw [← hs.eq, ← image_subset_iff, image_swap_prod, hs.eq]
 
 lemma SetRel.mem_filter_prod_comm (R : SetRel α α) {f g : Filter α} [R.IsSymm] :
     R ∈ f ×ˢ g ↔ R ∈ g ×ˢ f := by
   rw [← R.inv_eq_self, SetRel.inv, ← mem_map, ← prod_comm, ← SetRel.inv, R.inv_eq_self]
-
-set_option linter.deprecated false in
-@[deprecated SetRel.mem_filter_prod_comm (since := "2025-10-17")]
-lemma IsSymmetricRel.mem_filter_prod_comm {s : Set (α × α)} {f g : Filter α}
-    (hs : IsSymmetricRel s) :
-    s ∈ f ×ˢ g ↔ s ∈ g ×ˢ f := by
-  rw [← hs.eq, ← mem_map, ← prod_comm, hs.eq]
 
 /-- This core description of a uniform space is outside of the type class hierarchy. It is useful
   for constructions of uniform spaces, when the topology is derived from the uniform space. -/
@@ -340,6 +161,7 @@ def UniformSpace.Core.mkOfBasis {α : Type u} (B : FilterBasis (α × α))
   comp := ((B.hasBasis.lift' (monotone_id.relComp monotone_id)).le_basis_iff B.hasBasis).2 comp
 
 /-- A uniform space generates a topological space -/
+@[implicit_reducible]
 def UniformSpace.Core.toTopologicalSpace {α : Type u} (u : UniformSpace.Core α) :
     TopologicalSpace α :=
   .mkOfNhds fun x ↦ .comap (Prod.mk x) u.uniformity
@@ -411,7 +233,7 @@ abbrev UniformSpace.toCore (u : UniformSpace α) : UniformSpace.Core α where
     have : Prod.mk x ⁻¹' U ∈ 𝓝 x := by
       rw [UniformSpace.nhds_eq_comap_uniformity]
       exact preimage_mem_comap hU
-    convert mem_of_mem_nhds this
+    convert! mem_of_mem_nhds this
 
 theorem UniformSpace.toCore_toTopologicalSpace (u : UniformSpace α) :
     u.toCore.toTopologicalSpace = u.toTopologicalSpace :=
@@ -469,6 +291,9 @@ instance uniformity.neBot [Nonempty α] : NeBot (𝓤 α) :=
 theorem refl_mem_uniformity {x : α} {s : SetRel α α} (h : s ∈ 𝓤 α) : (x, x) ∈ s :=
   refl_le_uniformity h rfl
 
+theorem isRefl_of_mem_uniformity {s : SetRel α α} (h : s ∈ 𝓤 α) : s.IsRefl :=
+  ⟨fun _ => refl_mem_uniformity h⟩
+
 theorem mem_uniformity_of_eq {x y : α} {s : SetRel α α} (h : s ∈ 𝓤 α) (hx : x = y) : (x, y) ∈ s :=
   refl_le_uniformity h hx
 
@@ -479,8 +304,8 @@ theorem comp_le_uniformity : ((𝓤 α).lift' fun s : SetRel α α => s ○ s) �
   UniformSpace.comp
 
 theorem lift'_comp_uniformity : ((𝓤 α).lift' fun s : SetRel α α => s ○ s) = 𝓤 α :=
-  comp_le_uniformity.antisymm <| le_lift'.2 fun s hs ↦ mem_of_superset hs <|
-    have : SetRel.IsRefl s := ⟨fun _ ↦ refl_mem_uniformity hs⟩; SetRel.left_subset_comp
+  comp_le_uniformity.antisymm <| le_lift'.2 fun _s hs ↦ mem_of_superset hs <|
+    have := isRefl_of_mem_uniformity hs; SetRel.left_subset_comp
 
 theorem tendsto_swap_uniformity : Tendsto (@Prod.swap α α) (𝓤 α) (𝓤 α) :=
   symm_le_uniformity
@@ -509,15 +334,15 @@ theorem tendsto_const_uniformity {a : α} {f : Filter β} : Tendsto (fun _ => (a
   tendsto_diag_uniformity (fun _ => a) f
 
 theorem symm_of_uniformity {s : SetRel α α} (hs : s ∈ 𝓤 α) :
-    ∃ t ∈ 𝓤 α, (∀ a b, (a, b) ∈ t → (b, a) ∈ t) ∧ t ⊆ s :=
+    ∃ t ∈ 𝓤 α, SetRel.IsSymm t ∧ t ⊆ s :=
   have : preimage Prod.swap s ∈ 𝓤 α := symm_le_uniformity hs
-  ⟨s ∩ preimage Prod.swap s, inter_mem hs this, fun _ _ ⟨h₁, h₂⟩ => ⟨h₂, h₁⟩, inter_subset_left⟩
+  ⟨s ∩ preimage Prod.swap s, inter_mem hs this, ⟨fun _ _ ⟨h₁, h₂⟩ => ⟨h₂, h₁⟩⟩, inter_subset_left⟩
 
 theorem comp_symm_of_uniformity {s : SetRel α α} (hs : s ∈ 𝓤 α) :
     ∃ t ∈ 𝓤 α, (∀ {a b}, (a, b) ∈ t → (b, a) ∈ t) ∧ t ○ t ⊆ s :=
   let ⟨_t, ht₁, ht₂⟩ := comp_mem_uniformity_sets hs
-  let ⟨t', ht', ht'₁, ht'₂⟩ := symm_of_uniformity ht₁
-  ⟨t', ht', ht'₁ _ _, Subset.trans (monotone_id.relComp monotone_id ht'₂) ht₂⟩
+  let ⟨t', ht', _, ht'₂⟩ := symm_of_uniformity ht₁
+  ⟨t', ht', SetRel.symm _, Subset.trans (monotone_id.relComp monotone_id ht'₂) ht₂⟩
 
 theorem uniformity_le_symm : 𝓤 α ≤ map Prod.swap (𝓤 α) := by
   rw [map_swap_eq_comap_swap]; exact tendsto_swap_uniformity.le_comap
@@ -560,7 +385,7 @@ theorem uniformity_lift_le_comp {f : SetRel α α → Filter β} (h : Monotone f
 theorem comp3_mem_uniformity {s : SetRel α α} (hs : s ∈ 𝓤 α) : ∃ t ∈ 𝓤 α, t ○ (t ○ t) ⊆ s :=
   let ⟨_t', ht', ht's⟩ := comp_mem_uniformity_sets hs
   let ⟨t, ht, htt'⟩ := comp_mem_uniformity_sets ht'
-  have : SetRel.IsRefl t := SetRel.id_subset_iff.1 <| refl_le_uniformity ht
+  have := isRefl_of_mem_uniformity ht
   ⟨t, ht, (SetRel.comp_subset_comp (SetRel.left_subset_comp.trans htt') htt').trans ht's⟩
 
 /-- See also `comp3_mem_uniformity`. -/
@@ -579,7 +404,7 @@ theorem comp_symm_mem_uniformity_sets {s : SetRel α α} (hs : s ∈ 𝓤 α) :
     _ ⊆ s := w_sub
 
 theorem subset_comp_self_of_mem_uniformity {s : SetRel α α} (h : s ∈ 𝓤 α) : s ⊆ s ○ s :=
-  have : SetRel.IsRefl s := SetRel.id_subset_iff.1 <| refl_le_uniformity h; SetRel.left_subset_comp
+  have := isRefl_of_mem_uniformity h; SetRel.left_subset_comp
 
 theorem comp_comp_symm_mem_uniformity_sets {s : SetRel α α} (hs : s ∈ 𝓤 α) :
     ∃ t ∈ 𝓤 α, SetRel.IsSymm t ∧ t ○ t ○ t ⊆ s := by
@@ -651,6 +476,13 @@ theorem mem_comp_comp {V W M : SetRel β β} [W.IsSymm] {p : β × β} :
   · rintro ⟨⟨w, z⟩, ⟨w_in, z_in⟩, hwz⟩
     rw [mem_ball_symmetry] at z_in
     exact ⟨z, ⟨w, w_in, hwz⟩, z_in⟩
+
+lemma isCover_iff_subset_iUnion_ball {U : SetRel β β} [U.IsSymm] {s N : Set β} :
+    U.IsCover s N ↔ s ⊆ ⋃ y ∈ N, ball y U := by
+  simp [SetRel.IsCover, subset_def, ball, U.comm]
+
+alias ⟨_root_.SetRel.IsCover.subset_iUnion_ball, _root_.SetRel.IsCover.of_subset_iUnion_ball⟩ :=
+  isCover_iff_subset_iUnion_ball
 
 end UniformSpace
 
@@ -732,6 +564,16 @@ theorem UniformSpace.mem_closure_iff_ball {s : Set α} {x} :
     x ∈ closure s ↔ ∀ {V}, V ∈ 𝓤 α → (ball x V ∩ s).Nonempty := by
   simp [mem_closure_iff_nhds_basis' (nhds_basis_uniformity' (𝓤 α).basis_sets)]
 
+theorem UniformSpace.closure_subset_preimage
+    {U : SetRel α α} (hU : U ∈ 𝓤 α) (s : Set α) : closure s ⊆ U.preimage s := by
+  intro x hx
+  obtain ⟨y, hxy, hy⟩ := mem_closure_iff_ball.mp hx hU
+  exact ⟨y, hy, hxy⟩
+
+theorem UniformSpace.closure_subset_image
+    {U : SetRel α α} (hU : U ∈ 𝓤 α) (s : Set α) : closure s ⊆ U.image s :=
+  closure_subset_preimage (symm_le_uniformity hU) s
+
 theorem nhds_eq_uniformity {x : α} : 𝓝 x = (𝓤 α).lift' (ball x) :=
   (nhds_basis_uniformity' (𝓤 α).basis_sets).eq_biInf
 
@@ -779,11 +621,12 @@ theorem Filter.HasBasis.biInter_biUnion_ball {p : ι → Prop} {U : ι → SetRe
 
 /-! ### Uniform continuity -/
 
+variable [UniformSpace β]
 
 /-- A function `f : α → β` is *uniformly continuous* if `(f x, f y)` tends to the diagonal
 as `(x, y)` tends to the diagonal. In other words, if `x` is sufficiently close to `y`, then
 `f x` is close to `f y` no matter where `x` and `y` are located in `α`. -/
-def UniformContinuous [UniformSpace β] (f : α → β) :=
+def UniformContinuous (f : α → β) :=
   Tendsto (fun x : α × α => (f x.1, f x.2)) (𝓤 α) (𝓤 β)
 
 /-- Notation for uniform continuity with respect to non-standard `UniformSpace` instances. -/
@@ -793,22 +636,22 @@ scoped[Uniformity] notation "UniformContinuous[" u₁ ", " u₂ "]" => @UniformC
 the diagonal as `(x, y)` tends to the diagonal while remaining in `s ×ˢ s`.
 In other words, if `x` is sufficiently close to `y`, then `f x` is close to
 `f y` no matter where `x` and `y` are located in `s`. -/
-def UniformContinuousOn [UniformSpace β] (f : α → β) (s : Set α) : Prop :=
+def UniformContinuousOn (f : α → β) (s : Set α) : Prop :=
   Tendsto (fun x : α × α => (f x.1, f x.2)) (𝓤 α ⊓ 𝓟 (s ×ˢ s)) (𝓤 β)
 
-theorem uniformContinuous_def [UniformSpace β] {f : α → β} :
+theorem uniformContinuous_def {f : α → β} :
     UniformContinuous f ↔ ∀ r ∈ 𝓤 β, { x : α × α | (f x.1, f x.2) ∈ r } ∈ 𝓤 α :=
   Iff.rfl
 
-theorem uniformContinuous_iff_eventually [UniformSpace β] {f : α → β} :
+theorem uniformContinuous_iff_eventually {f : α → β} :
     UniformContinuous f ↔ ∀ r ∈ 𝓤 β, ∀ᶠ x : α × α in 𝓤 α, (f x.1, f x.2) ∈ r :=
   Iff.rfl
 
-theorem uniformContinuousOn_univ [UniformSpace β] {f : α → β} :
+theorem uniformContinuousOn_univ {f : α → β} :
     UniformContinuousOn f univ ↔ UniformContinuous f := by
   rw [UniformContinuousOn, UniformContinuous, univ_prod_univ, principal_univ, inf_top_eq]
 
-theorem uniformContinuous_of_const [UniformSpace β] {c : α → β} (h : ∀ a b, c a = c b) :
+theorem uniformContinuous_of_const {c : α → β} (h : ∀ a b, c a = c b) :
     UniformContinuous c :=
   have : (fun x : α × α => (c x.fst, c x.snd)) ⁻¹' SetRel.id = univ :=
     eq_univ_iff_forall.2 fun ⟨a, b⟩ => h a b
@@ -816,33 +659,53 @@ theorem uniformContinuous_of_const [UniformSpace β] {c : α → β} (h : ∀ a 
 
 theorem uniformContinuous_id : UniformContinuous (@id α) := tendsto_id
 
-theorem uniformContinuous_const [UniformSpace β] {b : β} : UniformContinuous fun _ : α => b :=
+theorem uniformContinuous_const {b : β} : UniformContinuous fun _ : α => b :=
   uniformContinuous_of_const fun _ _ => rfl
 
-nonrec theorem UniformContinuous.comp [UniformSpace β] [UniformSpace γ] {g : β → γ} {f : α → β}
+nonrec theorem UniformContinuous.comp [UniformSpace γ] {g : β → γ} {f : α → β}
     (hg : UniformContinuous g) (hf : UniformContinuous f) : UniformContinuous (g ∘ f) :=
   hg.comp hf
 
 /-- If a function `T` is uniformly continuous in a uniform space `β`,
 then its `n`-th iterate `T^[n]` is also uniformly continuous. -/
-theorem UniformContinuous.iterate [UniformSpace β] (T : β → β) (n : ℕ) (h : UniformContinuous T) :
+theorem UniformContinuous.iterate (T : β → β) (n : ℕ) (h : UniformContinuous T) :
     UniformContinuous T^[n] := by
   induction n with
   | zero => exact uniformContinuous_id
   | succ n hn => exact Function.iterate_succ _ _ ▸ UniformContinuous.comp hn h
 
-theorem Filter.HasBasis.uniformContinuous_iff {ι'} [UniformSpace β] {p : ι → Prop}
+theorem Filter.HasBasis.uniformContinuous_iff {ι'} {p : ι → Prop}
     {s : ι → SetRel α α} (ha : (𝓤 α).HasBasis p s) {q : ι' → Prop} {t : ι' → Set (β × β)}
     (hb : (𝓤 β).HasBasis q t) {f : α → β} :
     UniformContinuous f ↔ ∀ i, q i → ∃ j, p j ∧ ∀ x y, (x, y) ∈ s j → (f x, f y) ∈ t i :=
   (ha.tendsto_iff hb).trans <| by simp only [Prod.forall]
 
-theorem Filter.HasBasis.uniformContinuousOn_iff {ι'} [UniformSpace β] {p : ι → Prop}
+theorem Filter.HasBasis.uniformContinuousOn_iff {ι'} {p : ι → Prop}
     {s : ι → SetRel α α} (ha : (𝓤 α).HasBasis p s) {q : ι' → Prop} {t : ι' → Set (β × β)}
     (hb : (𝓤 β).HasBasis q t) {f : α → β} {S : Set α} :
     UniformContinuousOn f S ↔
       ∀ i, q i → ∃ j, p j ∧ ∀ x, x ∈ S → ∀ y, y ∈ S → (x, y) ∈ s j → (f x, f y) ∈ t i :=
   ((ha.inf_principal (S ×ˢ S)).tendsto_iff hb).trans <| by
     simp_rw [Prod.forall, Set.inter_comm (s _), forall_mem_comm, mem_inter_iff, mem_prod, and_imp]
+
+/-- A map `f : α → β` between uniform spaces is called *uniform inducing* if the uniformity filter
+on `α` is the pullback of the uniformity filter on `β` under `Prod.map f f`. If `α` is a separated
+space, then this implies that `f` is injective, hence it is a `IsUniformEmbedding`. -/
+@[mk_iff]
+structure IsUniformInducing (f : α → β) : Prop where
+  /-- The uniformity filter on the domain is the pullback of the uniformity filter on the codomain
+  under `Prod.map f f`. -/
+  comap_uniformity : comap (fun x : α × α ↦ (f x.1, f x.2)) (𝓤 β) = 𝓤 α
+
+/-- A map `f : α → β` between uniform spaces is a *uniform embedding* if it is uniform inducing and
+injective. If `α` is a separated space, then the latter assumption follows from the former. -/
+@[mk_iff]
+structure IsUniformEmbedding (f : α → β) : Prop extends IsUniformInducing f where
+  /-- A uniform embedding is injective. -/
+  injective : Function.Injective f
+
+lemma IsUniformEmbedding.isUniformInducing {f : α → β} (hf : IsUniformEmbedding f) :
+    IsUniformInducing f :=
+  hf.toIsUniformInducing
 
 end UniformSpace

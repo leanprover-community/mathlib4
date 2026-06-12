@@ -3,8 +3,10 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.Classes
-import Mathlib.Analysis.Normed.Algebra.Unitization
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Analysis.Normed.Algebra.Unitization
 /-! # The minimal unitization of a C⋆-algebra
 
 This file shows that when `E` is a C⋆-algebra (over a densely normed field `𝕜`), that the minimal
@@ -15,6 +17,8 @@ In addition, we show that in a `RegularNormedAlgebra` which is a `StarRing` for 
 involution is isometric, that multiplication on the right is also an isometry (i.e.,
 `Isometry (ContinuousLinearMap.mul 𝕜 E).flip`).
 -/
+
+public section
 
 open ContinuousLinearMap
 
@@ -29,14 +33,14 @@ variable [NormedSpace 𝕜 E] [IsScalarTower 𝕜 E E] [SMulCommClass 𝕜 E E] 
 
 lemma opNorm_mul_flip_apply (a : E) : ‖(mul 𝕜 E).flip a‖ = ‖a‖ := by
   refine le_antisymm
-    (opNorm_le_bound _ (norm_nonneg _) fun b => by simpa only [mul_comm] using norm_mul_le b a) ?_
+    (opNorm_le_bound _ (norm_nonneg _) fun b => by simpa only [mul_comm] using! norm_mul_le b a) ?_
   suffices ‖mul 𝕜 E (star a)‖ ≤ ‖(mul 𝕜 E).flip a‖ by
-    simpa only [ge_iff_le, opNorm_mul_apply, norm_star] using this
+    simpa only [ge_iff_le, opNorm_mul_apply, norm_star] using! this
   refine opNorm_le_bound _ (norm_nonneg _) fun b => ?_
   calc ‖mul 𝕜 E (star a) b‖ = ‖(mul 𝕜 E).flip a (star b)‖ := by
-        simpa only [mul_apply', flip_apply, star_mul, star_star] using norm_star (star b * a)
+        simpa only [mul_apply', flip_apply, star_mul, star_star] using! norm_star (star b * a)
     _ ≤ ‖(mul 𝕜 E).flip a‖ * ‖b‖ := by
-        simpa only [flip_apply, mul_apply', norm_star] using le_opNorm ((mul 𝕜 E).flip a) (star b)
+        simpa only [flip_apply, mul_apply', norm_star] using! le_opNorm ((mul 𝕜 E).flip a) (star b)
 
 lemma opNNNorm_mul_flip_apply (a : E) : ‖(mul 𝕜 E).flip a‖₊ = ‖a‖₊ :=
   Subtype.ext (opNorm_mul_flip_apply 𝕜 a)
@@ -63,12 +67,12 @@ instance CStarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
       exact
         ((mul 𝕜 E a).unit_le_opNorm x <| mem_closedBall_zero_iff.mp hx).trans
           (opNorm_mul_apply_le 𝕜 E a)
-    · have ha : 0 < ‖a‖₊ := zero_le'.trans_lt hr
+    · have ha : 0 < ‖a‖₊ := hr.pos
       rw [← inv_inv ‖a‖₊, NNReal.lt_inv_iff_mul_lt (inv_ne_zero ha.ne')] at hr
       obtain ⟨k, hk₁, hk₂⟩ :=
         NormedField.exists_lt_nnnorm_lt 𝕜 (mul_lt_mul_of_pos_right hr <| inv_pos.2 ha)
       refine ⟨_, ⟨k • star a, ?_, rfl⟩, ?_⟩
-      · simpa only [mem_closedBall_zero_iff, norm_smul, one_mul, norm_star] using
+      · simpa only [mem_closedBall_zero_iff, norm_smul, one_mul, norm_star] using!
           (NNReal.le_inv_iff_mul_le ha.ne').1 (one_mul ‖a‖₊⁻¹ ▸ hk₂.le : ‖k‖₊ ≤ ‖a‖₊⁻¹)
       · simp only [map_smul, nnnorm_smul, mul_apply', CStarRing.nnnorm_self_mul_star]
         rwa [← div_lt_iff₀ (mul_pos ha ha), div_eq_mul_inv, mul_inv, ← mul_assoc]
@@ -94,9 +98,9 @@ theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
   simp only
   -- rewrite to a more convenient form; this is where we use the C⋆-property
   rw [← Real.sqrt_sq (norm_nonneg _), Real.sqrt_le_sqrt_iff (norm_nonneg _), sq,
-    ← CStarRing.norm_star_mul_self, ContinuousLinearMap.add_apply, star_add, mul_apply',
-    Algebra.algebraMap_eq_smul_one, ContinuousLinearMap.smul_apply,
-    ContinuousLinearMap.one_apply, star_mul, star_smul, add_mul, smul_mul_assoc, ← mul_smul_comm,
+    ← CStarRing.norm_star_mul_self, add_apply, star_add, mul_apply',
+    Algebra.algebraMap_eq_smul_one, smul_apply,
+    one_apply_eq_self, star_mul, star_smul, add_mul, smul_mul_assoc, ← mul_smul_comm,
     mul_assoc, ← mul_add, ← sSup_unitClosedBall_eq_norm]
   refine (norm_mul_le _ _).trans ?_
   calc
@@ -112,12 +116,12 @@ theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
     gcongr
     · rw [Algebra.algebraMap_eq_smul_one]
       refine (norm_smul _ _).trans_le ?_
-      simpa only [mul_one] using
+      simpa only [mul_one] using!
         mul_le_mul_of_nonneg_left (mem_closedBall_zero_iff.1 hy) (norm_nonneg (star x * x).fst)
     · exact (unit_le_opNorm _ y <| mem_closedBall_zero_iff.1 hy).trans (opNorm_mul_apply_le _ _ _)
-  · simp only [ContinuousLinearMap.add_apply, mul_apply', Unitization.snd_star, Unitization.snd_mul,
+  · simp only [add_apply, mul_apply', Unitization.snd_star, Unitization.snd_mul,
       Unitization.fst_mul, Unitization.fst_star, Algebra.algebraMap_eq_smul_one, smul_apply,
-      one_apply, smul_add, mul_add, add_mul]
+      one_apply_eq_self, smul_add, mul_add, add_mul]
     simp only [smul_smul, smul_mul_assoc, ← add_assoc, ← mul_assoc, mul_smul_comm]
 
 variable {𝕜}

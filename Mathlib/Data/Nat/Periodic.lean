@@ -3,8 +3,10 @@ Copyright (c) 2021 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey
 -/
-import Mathlib.Algebra.Ring.Periodic
-import Mathlib.Data.Nat.Count
+module
+
+public import Mathlib.Algebra.Ring.Periodic
+public import Mathlib.Data.Nat.Count
 
 /-!
 # Periodic Functions on ℕ
@@ -12,6 +14,8 @@ import Mathlib.Data.Nat.Count
 This file identifies a few functions on `ℕ` which are periodic, and also proves a lemma about
 periodic predicates which helps determine their cardinality when filtering intervals over them.
 -/
+
+public section
 
 assert_not_exists TwoSidedIdeal
 

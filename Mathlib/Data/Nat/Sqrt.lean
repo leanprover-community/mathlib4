@@ -3,12 +3,16 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Basic
-import Batteries.Data.Nat.Basic
+module
+
+public import Mathlib.Data.Nat.Basic
+public import Batteries.Data.Nat.Basic
 
 /-!
 # Properties of the natural number square root function.
 -/
+
+public section
 
 namespace Nat
 
@@ -69,7 +73,7 @@ lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n < (guess + 1) * (guess + 1)) 
     refine Nat.mul_self_lt_mul_self (?_ : _ < _ * ((_ / 2) + 1))
     rw [← add_div_right _ (by decide), Nat.mul_comm 2, Nat.mul_assoc,
       show guess + n / guess + 2 = (guess + n / guess + 1) + 1 from rfl]
-    have aux_lemma {a : ℕ} : a ≤ 2 * ((a + 1) / 2) := by omega
+    have aux_lemma {a : ℕ} : a ≤ 2 * ((a + 1) / 2) := by lia
     refine lt_of_lt_of_le ?_ (Nat.mul_le_mul_left _ aux_lemma)
     rw [Nat.add_assoc, Nat.mul_add]
     exact Nat.add_lt_add_left (lt_mul_div_succ _ (lt_of_le_of_lt (Nat.zero_le m) h)) _
@@ -102,7 +106,6 @@ private lemma sqrt_isSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
     simp only [shiftLeft_eq, Nat.one_mul]
     refine Nat.le_of_lt (Nat.le_trans lt_log2_self (le_add_right_of_le ?_))
     rw [← Nat.pow_add]
-    apply Nat.pow_le_pow_right (by decide)
     grind
 
 lemma sqrt_le (n : ℕ) : sqrt n * sqrt n ≤ n := (sqrt_isSqrt n).left
@@ -173,7 +176,7 @@ lemma sqrt_succ_le_succ_sqrt (n : ℕ) : sqrt n.succ ≤ n.sqrt.succ :=
   le_of_lt_succ <| sqrt_lt.2 <| (have := sqrt_le_add n; by grind)
 
 @[simp]
-lemma log2_two : (2 : ℕ).log2 = 1 := rfl
+lemma log2_two : (2 : ℕ).log2 = 1 := by simp [log2_def]
 
 @[simp]
 lemma sqrt_two : sqrt 2 = 1 := by simp [sqrt, sqrt.iter]

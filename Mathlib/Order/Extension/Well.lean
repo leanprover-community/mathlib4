@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies, Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Junyan Xu
 -/
-import Mathlib.Data.Prod.Lex
-import Mathlib.SetTheory.Ordinal.Rank
+module
+
+public import Mathlib.Data.Prod.Lex
+public import Mathlib.SetTheory.Ordinal.Rank
 
 /-!
 # Extend a well-founded order to a well-order
@@ -33,6 +35,8 @@ to the `mathlib` 3 version but avoids non-standard instances.
 well-founded relation, well order, extension
 -/
 
+@[expose] public section
+
 
 universe u
 
@@ -52,6 +56,7 @@ By taking the lexicographic product of the two, we get both properties, so we ca
 get a well-order that extend our original order `r`. Another way to view this is that we choose an
 arbitrary well-order to serve as a tiebreak between two elements of same rank.
 -/
+@[implicit_reducible]
 noncomputable def wellOrderExtension : LinearOrder α :=
   @LinearOrder.lift' α (Ordinal ×ₗ Cardinal) _ (fun a : α => (rank r a, embeddingToCardinal a))
     fun _ _ h => embeddingToCardinal.injective <| congr_arg Prod.snd h
@@ -78,7 +83,7 @@ def toWellOrderExtension : α ≃ WellOrderExtension α :=
   Equiv.refl _
 
 noncomputable instance [LT α] [h : WellFoundedLT α] : LinearOrder (WellOrderExtension α) :=
-  h.wellOrderExtension
+  fast_instance% h.wellOrderExtension
 
 instance WellOrderExtension.wellFoundedLT [LT α] [WellFoundedLT α] :
     WellFoundedLT (WellOrderExtension α) :=

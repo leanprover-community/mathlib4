@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 -- Some proofs and docs came from mathlib3 `src/algebra/commute.lean` (c) Neil Strickland
+module
 
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Order.Defs.Unbundled
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Order.Defs.Unbundled
 
 /-!
 # Semiconjugate elements of a semigroup
@@ -26,6 +27,8 @@ Lean does not immediately recognise these terms as equations, so for rewriting w
 This file provides only basic operations (`mul_left`, `mul_right`, `inv_right` etc). Other
 operations (`pow_right`, field inverse etc) are in the files that define corresponding notions.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
@@ -69,8 +72,13 @@ theorem mul_left (ha : SemiconjBy a y z) (hb : SemiconjBy b x y) : SemiconjBy (a
 is transitive. -/
 @[to_additive /-- The relation “there exists an element that semiconjugates `a` to `b`” on an
 additive semigroup is transitive. -/]
-protected theorem transitive : Transitive fun a b : S ↦ ∃ c, SemiconjBy c a b
-  | _, _, _, ⟨x, hx⟩, ⟨y, hy⟩ => ⟨y * x, hy.mul_left hx⟩
+protected theorem isTrans : IsTrans S fun a b ↦ ∃ c, SemiconjBy c a b :=
+  ⟨fun _ _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨y * x, hy.mul_left hx⟩⟩
+
+@[deprecated (since := "2026-02-20")]
+protected alias _root_.AddSemiconjBy.transitive := AddSemiconjBy.isTrans
+@[to_additive existing, deprecated (since := "2026-02-20")]
+protected alias transitive := SemiconjBy.isTrans
 
 end Semigroup
 
@@ -91,8 +99,10 @@ theorem one_left (x : M) : SemiconjBy 1 x x :=
 generally, on `MulOneClass` type) is reflexive. -/
 @[to_additive /-- The relation “there exists an element that semiconjugates `a` to `b`” on an
 additive monoid (or, more generally, on an `AddZeroClass` type) is reflexive. -/]
-protected theorem reflexive : Reflexive fun a b : M ↦ ∃ c, SemiconjBy c a b
-  | a => ⟨1, one_left a⟩
+protected theorem refl : Std.Refl fun a b : M ↦ ∃ c, SemiconjBy c a b where
+  refl a := ⟨1, one_left a⟩
+
+@[deprecated (since := "2026-03-27")] protected alias reflexive := SemiconjBy.refl
 
 end MulOneClass
 

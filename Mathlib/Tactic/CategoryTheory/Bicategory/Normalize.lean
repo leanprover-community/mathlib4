@@ -3,8 +3,11 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
-import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
+module
+
+public meta import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
+public import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
+public import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 
 /-!
 # Normalization of 2-morphisms in bicategories
@@ -13,6 +16,8 @@ This file provides the implementation of the normalization given in
 `Mathlib/Tactic/CategoryTheory/Coherence/Normalize.lean`. See this file for more details.
 
 -/
+
+public meta section
 
 open Lean Meta Elab Qq
 open CategoryTheory Mathlib.Tactic.BicategoryLike Bicategory

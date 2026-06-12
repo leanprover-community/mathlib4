@@ -3,8 +3,10 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Ring.Defs
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Ring.Defs
 
 /-!
 # Equitable functions
@@ -19,6 +21,8 @@ useful when the codomain of `f` is `ℕ` or `ℤ` (or more generally a successor
 `ℕ` can be replaced by any `SuccOrder` + `ConditionallyCompleteMonoid`, but we don't have the
 latter yet.
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*}
@@ -48,7 +52,7 @@ theorem equitableOn_iff_exists_le_le_add_one {s : Set α} {f : α → ℕ} :
 
 theorem equitableOn_iff_exists_image_subset_icc {s : Set α} {f : α → ℕ} :
     s.EquitableOn f ↔ ∃ b, f '' s ⊆ Icc b (b + 1) := by
-  simpa only [image_subset_iff] using equitableOn_iff_exists_le_le_add_one
+  simpa only [image_subset_iff] using! equitableOn_iff_exists_le_le_add_one
 
 theorem equitableOn_iff_exists_eq_eq_add_one {s : Set α} {f : α → ℕ} :
     s.EquitableOn f ↔ ∃ b, ∀ a ∈ s, f a = b ∨ f a = b + 1 := by

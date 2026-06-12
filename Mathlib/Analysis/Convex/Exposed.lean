@@ -3,10 +3,12 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Analysis.Convex.Extreme
-import Mathlib.Analysis.Convex.Function
-import Mathlib.Topology.Algebra.Module.LinearMap
-import Mathlib.Topology.Order.OrderClosed
+module
+
+public import Mathlib.Analysis.Convex.Extreme
+public import Mathlib.Analysis.Convex.Function
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
+public import Mathlib.Topology.Order.OrderClosed
 
 /-!
 # Exposed sets
@@ -38,6 +40,8 @@ See chapter 8 of [Barry Simon, *Convexity*][simon2011]
 
 Prove lemmas relating exposed sets and points to the intrinsic frontier.
 -/
+
+@[expose] public section
 
 open Affine Set
 
@@ -113,7 +117,7 @@ theorem eq_inter_halfSpace [IsOrderedRing 𝕜] [Nontrivial 𝕜] {A B : Set E} 
   · refine ⟨0, 1, ?_⟩
     rw [eq_comm, eq_empty_iff_forall_notMem]
     rintro x ⟨-, h⟩
-    rw [ContinuousLinearMap.zero_apply] at h
+    rw [zero_apply] at h
     have : ¬(1 : 𝕜) ≤ 0 := not_le_of_gt zero_lt_one
     contradiction
   exact hAB.eq_inter_halfSpace' hB

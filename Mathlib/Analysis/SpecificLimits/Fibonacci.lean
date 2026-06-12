@@ -3,14 +3,18 @@ Copyright (c) 2025 Snir Broshi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Snir Broshi
 -/
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.NumberTheory.Real.GoldenRatio
+module
+
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.NumberTheory.Real.GoldenRatio
 
 /-!
 # The ratio of consecutive Fibonacci numbers
 
 We prove that the ratio of consecutive Fibonacci numbers tends to the golden ratio.
 -/
+
+public section
 
 open Nat Real Filter Tendsto
 open scoped Topology goldenRatio
@@ -31,6 +35,6 @@ theorem tendsto_fib_succ_div_fib_atTop :
 /-- The limit of `fib n / fib (n + 1)` as `n → ∞` is the negative conjugate of the golden ratio. -/
 theorem tendsto_fib_div_fib_succ_atTop :
     Tendsto (fun n ↦ (fib n / fib (n + 1) : ℝ)) atTop (𝓝 (-ψ)) := by
-  convert tendsto_fib_succ_div_fib_atTop.inv₀ (by positivity) using 2
+  convert! tendsto_fib_succ_div_fib_atTop.inv₀ (by positivity) using 2
   · rw [inv_div]
   · rw [inv_goldenRatio]

@@ -3,9 +3,10 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
+module
 
-import Mathlib.Topology.Order.LowerUpperTopology
-import Mathlib.Topology.Order.ScottTopology
+public import Mathlib.Topology.Order.LowerUpperTopology
+public import Mathlib.Topology.Order.ScottTopology
 
 /-!
 # Lawson topology
@@ -47,6 +48,8 @@ It is shown that `Topology.WithLawson α` is an instance of `Topology.IsLawson`.
 Lawson topology, preorder
 -/
 
+@[expose] public section
+
 open Set TopologicalSpace
 
 variable {α : Type*}
@@ -61,6 +64,7 @@ section Preorder
 /--
 The Lawson topology is defined as the meet of `Topology.lower` and the `Topology.scott`.
 -/
+@[implicit_reducible]
 def lawson (α : Type*) [Preorder α] : TopologicalSpace α := lower α ⊓ scott α univ
 
 variable (α) [Preorder α] [TopologicalSpace α]
@@ -88,12 +92,12 @@ protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (laws
       (image2 (fun x x_1 ↦ ⇑WithLower.toLower ⁻¹' x ∩ ⇑WithScott.toScott ⁻¹' x_1)
         (IsLower.lowerBasis (WithLower α)) {U | IsOpen[scott α univ] U}) := by
     rw [lawsonBasis, image2, IsLower.lowerBasis]
-    simp_rw [diff_eq_compl_inter]
+    simp_rw [sdiff_eq_compl_inter]
     aesop
   rw [lawsonBasis_image2]
-  convert IsTopologicalBasis.inf_induced IsLower.isTopologicalBasis
-    (isTopologicalBasis_opens (α := WithScott α))
-    WithLower.toLower WithScott.toScott
+  convert!
+    IsTopologicalBasis.inf_induced IsLower.isTopologicalBasis
+      (isTopologicalBasis_opens (α := WithScott α)) WithLower.toLower WithScott.toScott
   rw [@topology_eq_lawson α _ _ _, lawson]
   apply (congrArg₂ min _) _
   · letI _ := lower α
@@ -137,7 +141,12 @@ instance [Inhabited α] : Inhabited (WithLawson α) := ‹Inhabited α›
 variable [Preorder α]
 
 instance instPreorder : Preorder (WithLawson α) := ‹Preorder α›
-instance instTopologicalSpace : TopologicalSpace (WithLawson α) := lawson α
+
+instance instTopologicalSpace : TopologicalSpace (WithLawson α) :=
+  -- fast_instance% lawson α fails
+  letI : TopologicalSpace α := lawson α
+  inferInstanceAs <| TopologicalSpace α
+
 instance instIsLawson : IsLawson (WithLawson α) := ⟨rfl⟩
 
 /-- If `α` is equipped with the Lawson topology, then it is homeomorphic to `WithLawson α`.
@@ -215,19 +224,18 @@ end Preorder
 namespace IsLawson
 variable [PartialOrder α] [TopologicalSpace α] [IsLawson α]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Lawson topology on a partial order is T₁. -/
 -- see Note [lower instance priority]
 instance (priority := 90) toT1Space : T1Space α where
   t1 a := by
-    simp only [IsLawson.topology_eq_lawson]
+    simp +instances only [IsLawson.topology_eq_lawson]
     rw [← (Set.OrdConnected.upperClosure_inter_lowerClosure ordConnected_singleton),
       ← WithLawson.isClosed_preimage_ofLawson]
     apply IsClosed.inter
       (lawsonClosed_of_lowerClosed _ (IsLower.isClosed_upperClosure (finite_singleton a)))
     rw [lowerClosure_singleton, LowerSet.coe_Iic, ← WithLawson.isClosed_preimage_ofLawson]
     exact lawsonClosed_of_scottClosed _ isClosed_Iic
-
-@[deprecated (since := "2025-07-02")] protected alias singleton_isClosed := isClosed_singleton
 
 end IsLawson
 

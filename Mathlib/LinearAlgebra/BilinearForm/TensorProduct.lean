@@ -3,10 +3,12 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.BilinearForm.Hom
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.TensorProduct.Finite
+module
+
+public import Mathlib.LinearAlgebra.BilinearForm.Hom
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # The bilinear form on a tensor product
@@ -19,6 +21,8 @@ import Mathlib.RingTheory.TensorProduct.Finite
   free modules.
 
 -/
+
+@[expose] public section
 
 universe u v w uR uA uM₁ uM₂ uN₁ uN₂
 
@@ -137,6 +141,14 @@ theorem baseChange_tmul (B₂ : BilinForm R M₂) (a : A) (m₂ : M₂)
     (a' : A) (m₂' : M₂) :
     B₂.baseChange A (a ⊗ₜ m₂) (a' ⊗ₜ m₂') = (B₂ m₂ m₂') • (a * a') :=
   rfl
+
+@[simp] lemma baseChange_zero : (0 : BilinForm R M₂).baseChange A = 0 := by ext; simp
+
+@[simp] lemma baseChange_eq_zero_iff [FaithfulSMul R A]
+    (B : BilinForm R M₂) : B.baseChange A = 0 ↔ B = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+  ext m m'
+  simpa [← Algebra.algebraMap_eq_smul_one] using LinearMap.congr_fun₂ h (1 ⊗ₜ[R] m) (1 ⊗ₜ[R] m')
 
 variable (A) in
 /-- The base change of a symmetric bilinear form is symmetric. -/

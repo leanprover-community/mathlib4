@@ -3,8 +3,9 @@ Copyright (c) 2025 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Mathlib.Init -- `import Lean.Elab.Command` is enough
+public import Mathlib.Init -- `import Lean.Elab.Command` is enough
 
 /-!
 # The "commandRanges" linter
@@ -18,6 +19,8 @@ of each declaration that should be removed.
 This linter is strictly tied to the `#clear_deprecations` command in
 `Mathlib/Tactic/Linter/FindDeprecations.lean`.
 -/
+
+meta section
 
 open Lean Elab Linter
 
@@ -35,7 +38,7 @@ Thus, assuming that there has been no tampering with positions/synthetic syntax,
 if the current command is followed by another command, then `trailing` for the previous command
 coincides with `start` of the following.
 -/
-register_option linter.commandRanges : Bool := {
+public register_option linter.commandRanges : Bool := {
   defValue := false
   descr := "enable the commandRanges linter"
 }

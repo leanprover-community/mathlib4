@@ -3,12 +3,10 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Init.Data.ULift
-import Init.Data.Fin.Fold
-import Init.Data.List.Nat.Pairwise
-import Init.Data.List.Nat.Range
-import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.RingTheory.Localization.NormTrace
+module
+
+public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.RingTheory.Localization.NormTrace
 
 /-!
 # Number field discriminant
@@ -21,6 +19,8 @@ This file defines the discriminant of a number field.
 ## Tags
 number field, discriminant
 -/
+
+public section
 
 open Module
 
@@ -75,7 +75,7 @@ theorem numberField_discr : discr ℚ = 1 := by
   let b : Basis (Fin 1) ℤ (𝓞 ℚ) :=
     Basis.map (Basis.singleton (Fin 1) ℤ) ringOfIntegersEquiv.toAddEquiv.toIntLinearEquiv.symm
   calc NumberField.discr ℚ
-    _ = Algebra.discr ℤ b := by convert (discr_eq_discr ℚ b).symm
+    _ = Algebra.discr ℤ b := by convert! (discr_eq_discr ℚ b).symm
     _ = Algebra.trace ℤ (𝓞 ℚ) (b default * b default) := by
       rw [Algebra.discr_def, Matrix.det_unique, Algebra.traceMatrix_apply, Algebra.traceForm_apply]
     _ = Algebra.trace ℤ (𝓞 ℚ) 1 := by
@@ -99,7 +99,7 @@ theorem Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K]
     (h' : ∀ i j, IsIntegral ℤ (b'.toMatrix b i j)) : discr ℚ b = discr ℚ b' := by
   replace h' : ∀ i j, IsIntegral ℤ (b'.toMatrix (b.reindex (b.indexEquiv b')) i j) := by
     intro i j
-    convert h' i ((b.indexEquiv b').symm j)
+    convert! h' i ((b.indexEquiv b').symm j)
     simp [Basis.toMatrix_apply]
   classical
   rw [← (b.reindex (b.indexEquiv b')).toMatrix_map_vecMul b', discr_of_matrix_vecMul,
@@ -114,11 +114,10 @@ theorem Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K]
     obtain ⟨r', hr'⟩ := IsIntegrallyClosed.isIntegral_iff.1 this
     refine isUnit_iff_exists_inv.2 ⟨r', ?_⟩
     suffices algebraMap ℤ ℚ (r * r') = 1 by
-      rw [← RingHom.map_one (algebraMap ℤ ℚ)] at this
+      rw [← map_one (algebraMap ℤ ℚ)] at this
       exact (IsFractionRing.injective ℤ ℚ) this
-    rw [RingHom.map_mul, hr, hr', ← Matrix.det_mul,
-      Basis.toMatrix_mul_toMatrix_flip, Matrix.det_one]
-  rw [← RingHom.map_one (algebraMap ℤ ℚ), ← hr]
+    rw [map_mul, hr, hr', ← Matrix.det_mul, Basis.toMatrix_mul_toMatrix_flip, Matrix.det_one]
+  rw [← map_one (algebraMap ℤ ℚ), ← hr]
   rcases Int.isUnit_iff.1 hunit with hp | hm
   · simp [hp]
   · simp [hm]

@@ -3,8 +3,10 @@ Copyright (c) 2023 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
-import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
+public import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
 
 /-!
 # Results about indicator functions, their integrals, and measures
@@ -25,6 +27,8 @@ the present file would then become unnecessary: lemmas such as
 moved out of `Mathlib/MeasureTheory/Integral/Lebesgue/Basic.lean`, and the lemmas in this file could
 be moved to, e.g., `Mathlib/MeasureTheory/Constructions/BorelSpace/Metrizable.lean`.
 -/
+
+public section
 
 namespace MeasureTheory
 
@@ -49,7 +53,7 @@ lemma tendsto_measure_of_ae_tendsto_indicator {μ : Measure α} (A_mble : Measur
           (Eventually.of_forall ?_) ?_ ?_ ?_
   · exact fun i ↦ Measurable.indicator measurable_const (As_mble i)
   · filter_upwards [As_le_B] with i hi
-    exact Eventually.of_forall (fun x ↦ indicator_le_indicator_of_subset hi (by simp) x)
+    exact Eventually.of_forall fun x ↦ by grw [hi]
   · rwa [← lintegral_indicator_one B_mble] at B_finmeas
   · simpa only [Pi.one_def, tendsto_indicator_const_apply_iff_eventually] using h_lim
 

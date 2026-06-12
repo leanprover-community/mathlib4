@@ -3,8 +3,10 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Data.NNRat.Defs
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Data.NNRat.Defs
 
 /-!
 # The rational numbers form a field
@@ -18,6 +20,8 @@ See note [foundational algebra order theory].
 rat, rationals, field, ℚ, numerator, denominator, num, denom
 -/
 
+@[expose] public section
+
 namespace Rat
 
 instance instField : Field ℚ where
@@ -28,7 +32,7 @@ instance instField : Field ℚ where
   qsmul := _
   qsmul_def := fun _ _ => rfl
   nnratCast_def q := by
-    rw [← NNRat.den_coe, ← Int.cast_natCast q.num, ← NNRat.num_coe]; exact(num_div_den _).symm
+    rw [← NNRat.den_coe, ← Int.cast_natCast q.num, ← NNRat.num_coe]; exact (num_div_den _).symm
   ratCast_def _ := (num_div_den _).symm
 
 /-!
@@ -67,6 +71,10 @@ lemma inv_def (q : ℚ≥0) : q⁻¹ = divNat q.den q.num := by ext; simp [Rat.i
 lemma div_def (p q : ℚ≥0) : p / q = divNat (p.num * q.den) (p.den * q.num) := by
   ext; simp [Rat.div_def', num_coe, den_coe]
 
+theorem divNat_eq_div (a b : ℕ) : divNat a b = a / b := by
+  ext
+  simp [Rat.mkRat_eq_div]
+
 lemma num_inv_of_ne_zero {q : ℚ≥0} (hq : q ≠ 0) : q⁻¹.num = q.den := by
   rw [inv_def, divNat, num, coe_mk, Rat.divInt_ofNat, ← Rat.mk_eq_mkRat _ _ (num_ne_zero.mpr hq),
     Int.natAbs_natCast]
@@ -94,3 +102,15 @@ instance instSemifield : Semifield ℚ≥0 where
   zpow_neg' n a := by ext; apply Field.zpow_neg'
 
 end NNRat
+
+theorem NNRatCast.ofScientific_eq_ite {K} [NNRatCast K] (m : ℕ) (b : Bool) (d : ℕ) :
+    (OfScientific.ofScientific m b d : K) =
+      if b = true then NNRat.divNat m (10 ^ d) else ↑(m * 10 ^ d) := by
+  rw [NNRatCast.toOfScientific_def]
+  split_ifs
+  · congr 2
+    rw [← Rat.ofScientific_eq_ofScientific, Rat.ofScientific_def, if_pos ‹_›]
+    congr
+  · congr 2
+    rw [← Rat.ofScientific_eq_ofScientific, Rat.ofScientific_def, if_neg ‹_›]
+    congr

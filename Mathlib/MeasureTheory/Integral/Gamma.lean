@@ -3,8 +3,10 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Analysis.SpecialFunctions.PolarCoord
-import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.PolarCoord
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 
 /-!
 # Integrals involving the Gamma function
@@ -13,6 +15,8 @@ In this file, we collect several integrals over `ℝ` or `ℂ` that evaluate in 
 `Real.Gamma` function.
 
 -/
+
+public section
 
 open Real Set MeasureTheory MeasureTheory.Measure
 
@@ -58,13 +62,13 @@ theorem integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 0 < p) (hq : -1 <
 
 theorem integral_exp_neg_rpow {p : ℝ} (hp : 0 < p) :
     ∫ x in Ioi (0 : ℝ), exp (-x ^ p) = Gamma (1 / p + 1) := by
-  convert (integral_rpow_mul_exp_neg_rpow hp neg_one_lt_zero) using 1
+  convert! (integral_rpow_mul_exp_neg_rpow hp neg_one_lt_zero) using 1
   · simp_rw [rpow_zero, one_mul]
   · rw [zero_add, Gamma_add_one (one_div_ne_zero (ne_of_gt hp))]
 
 theorem integral_exp_neg_mul_rpow {p b : ℝ} (hp : 0 < p) (hb : 0 < b) :
     ∫ x in Ioi (0 : ℝ), exp (-b * x ^ p) = b ^ (-1 / p) * Gamma (1 / p + 1) := by
-  convert (integral_rpow_mul_exp_neg_mul_rpow hp neg_one_lt_zero hb) using 1
+  convert! (integral_rpow_mul_exp_neg_mul_rpow hp neg_one_lt_zero hb) using 1
   · simp_rw [rpow_zero, one_mul]
   · rw [zero_add, Gamma_add_one (one_div_ne_zero (ne_of_gt hp)), mul_assoc]
 
@@ -126,14 +130,14 @@ theorem Complex.integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 1 ≤ p) 
 
 theorem Complex.integral_exp_neg_rpow {p : ℝ} (hp : 1 ≤ p) :
     ∫ x : ℂ, rexp (-‖x‖ ^ p) = π * Real.Gamma (2 / p + 1) := by
-  convert (integral_rpow_mul_exp_neg_rpow hp (by linarith : (-2 : ℝ) < 0)) using 1
+  convert! (integral_rpow_mul_exp_neg_rpow hp (by linarith : (-2 : ℝ) < 0)) using 1
   · simp_rw [rpow_zero, one_mul]
   · rw [zero_add, Real.Gamma_add_one (div_ne_zero two_ne_zero (by linarith))]
     ring
 
 theorem Complex.integral_exp_neg_mul_rpow {p b : ℝ} (hp : 1 ≤ p) (hb : 0 < b) :
     ∫ x : ℂ, rexp (-b * ‖x‖ ^ p) = π * b ^ (-2 / p) * Real.Gamma (2 / p + 1) := by
-  convert (integral_rpow_mul_exp_neg_mul_rpow hp (by linarith : (-2 : ℝ) < 0)) hb using 1
+  convert! (integral_rpow_mul_exp_neg_mul_rpow hp (by linarith : (-2 : ℝ) < 0)) hb using 1
   · simp_rw [rpow_zero, one_mul]
   · rw [zero_add, Real.Gamma_add_one (div_ne_zero two_ne_zero (by linarith))]
     ring

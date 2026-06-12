@@ -3,10 +3,12 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Eric Rodriguez
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Data.Nat.Choose.Basic
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Data.Nat.Cast.Order.Basic
+public import Mathlib.Data.Nat.Choose.Basic
 
 /-!
 # Inequalities for binomial coefficients
@@ -19,6 +21,8 @@ bounds `n^r/r^r ≤ n.choose r ≤ e^r n^r/r^r` in the future.
 * `Nat.choose_le_pow_div`: `n.choose r ≤ n^r / r!`
 * `Nat.pow_le_choose`: `(n + 1 - r)^r / r! ≤ n.choose r`. Beware of the fishy ℕ-subtraction.
 -/
+
+public section
 
 
 open Nat
@@ -52,6 +56,17 @@ lemma choose_le_pow (n k : ℕ) : n.choose k ≤ n ^ k :=
 
 lemma choose_lt_pow (hn : n ≠ 0) (hk : 2 ≤ k) : n.choose k < n ^ k :=
   (choose_le_descFactorial n k).trans_lt (descFactorial_lt_pow hn hk)
+
+theorem choose_add_le_add_one_pow (n k : ℕ) : (n + k).choose k ≤ (n + 1) ^ k := by
+  rw [choose_eq_asc_factorial_div_factorial]
+  exact Nat.div_le_of_le_mul (ascFactorial_le_factorial_mul_pow _ _)
+
+theorem choose_le_sub_pow (n k : ℕ) : n.choose k ≤ (n + 1 - k) ^ k := by
+  rcases le_or_gt k n with h | h
+  · obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_le h
+    rw [Nat.add_comm k m, Nat.add_right_comm, Nat.add_sub_cancel]
+    exact choose_add_le_add_one_pow m k
+  · simp [choose_eq_zero_of_lt h]
 
 -- horrific casting is due to ℕ-subtraction
 theorem pow_le_choose (r n : ℕ) : ((n + 1 - r : ℕ) ^ r : α) / r ! ≤ n.choose r := by

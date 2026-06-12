@@ -3,11 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Alistair Tucker, Wen Yang
 -/
-import Mathlib.Order.Interval.Set.Image
-import Mathlib.Order.CompleteLatticeIntervals
-import Mathlib.Topology.Order.DenselyOrdered
-import Mathlib.Topology.Order.Monotone
-import Mathlib.Topology.Connected.TotallyDisconnected
+module
+
+public import Mathlib.Order.Interval.Set.Image
+public import Mathlib.Order.CompleteLatticeIntervals
+public import Mathlib.Topology.Order.DenselyOrdered
+public import Mathlib.Topology.Order.Monotone
+public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 # Intermediate Value Theorem
@@ -30,7 +32,7 @@ on intervals.
 
 * `IsClosed.Icc_subset_of_forall_mem_nhdsWithin` : “Continuous induction” principle;
   if `s ∩ [a, b]` is closed, `a ∈ s`, and for each `x ∈ [a, b) ∩ s` some of its right neighborhoods
-  is included `s`, then `[a, b] ⊆ s`.
+  is included in `s`, then `[a, b] ⊆ s`.
 * `IsClosed.Icc_subset_of_forall_exists_gt`, `IsClosed.mem_of_ge_of_forall_exists_gt` : two
   other versions of the “continuous induction” principle.
 * `ContinuousOn.StrictMonoOn_of_InjOn_Ioo` :
@@ -41,6 +43,8 @@ on intervals.
 
 intermediate value theorem, connected space, connected set
 -/
+
+public section
 
 
 open Filter OrderDual TopologicalSpace Function Set
@@ -185,7 +189,7 @@ In this section we prove the following results:
   i.e. `a ∈ s` and `b ∈ s` imply `Icc a b ⊆ s`;
 
 * `IsPreconnected.mem_intervals`: any preconnected set `s` in a conditionally complete linear order
-  is one of the intervals `Set.Icc`, `set.`Ico`, `set.Ioc`, `set.Ioo`, ``Set.Ici`, `Set.Iic`,
+  is one of the intervals `Set.Icc`, `Set.Ico`, `Set.Ioc`, `Set.Ioo`, `Set.Ici`, `Set.Iic`,
   `Set.Ioi`, `Set.Iio`; note that this is false for non-complete orders: e.g., in `ℝ \ {0}`, the set
   of positive numbers cannot be represented as `Set.Ioi _`.
 
@@ -195,7 +199,7 @@ In this section we prove the following results:
 /-- If a preconnected set contains endpoints of an interval, then it includes the whole interval. -/
 theorem IsPreconnected.Icc_subset {s : Set α} (hs : IsPreconnected s) {a b : α} (ha : a ∈ s)
     (hb : b ∈ s) : Icc a b ⊆ s := by
-  simpa only [image_id] using hs.intermediate_value ha hb continuousOn_id
+  simpa only [image_id] using! hs.intermediate_value ha hb continuousOn_id
 
 theorem IsPreconnected.ordConnected {s : Set α} (h : IsPreconnected s) : OrdConnected s :=
   ⟨fun _ hx _ hy => h.Icc_subset hx hy⟩
@@ -205,7 +209,7 @@ theorem IsConnected.Icc_subset {s : Set α} (hs : IsConnected s) {a b : α} (ha 
     (hb : b ∈ s) : Icc a b ⊆ s :=
   hs.2.Icc_subset ha hb
 
-/-- If preconnected set in a linear order space is unbounded below and above, then it is the whole
+/-- If a preconnected set in a linear order space is unbounded below and above, then it is the whole
 space. -/
 theorem IsPreconnected.eq_univ_of_unbounded {s : Set α} (hs : IsPreconnected s) (hb : ¬BddBelow s)
     (ha : ¬BddAbove s) : s = univ := by
@@ -216,7 +220,16 @@ theorem IsPreconnected.eq_univ_of_unbounded {s : Set α} (hs : IsPreconnected s)
 
 end
 
-variable {α : Type u} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
+variable {α : Type u} [TopologicalSpace α]
+
+theorem denselyOrdered_of_preconnectedSpace [LinearOrder α] [OrderTopology α]
+    [PreconnectedSpace α] : DenselyOrdered α where
+  dense x y hxy := by
+    suffices (Iio y ∩ Ioi x).Nonempty by grind [Set.inter_nonempty_iff_exists_left]
+    exact nonempty_inter (isOpen_Iio' y) (isOpen_Ioi' x) (Set.Iio_union_Ioi_of_lt hxy)
+      ⟨x, Set.mem_Iio.mpr hxy⟩ ⟨y, Set.mem_Ioi.mpr hxy⟩
+
+variable [ConditionallyCompleteLinearOrder α] [OrderTopology α]
 
 /-- A bounded connected subset of a conditionally complete linear order includes the open interval
 `(Inf s, Sup s)`. -/
@@ -329,7 +342,7 @@ theorem IsClosed.mem_of_ge_of_forall_exists_lt {a b : α} {s : Set α} (hs : IsC
   suffices OrderDual.toDual a ∈ ofDual ⁻¹' s by aesop
   have : IsClosed (OrderDual.ofDual ⁻¹' (s ∩ Icc a b)) := hs
   rw [preimage_inter, ← Icc_toDual] at this
-  apply this.mem_of_ge_of_forall_exists_gt (by aesop) (by aesop) (fun x hx ↦ ?_)
+  apply this.mem_of_ge_of_forall_exists_gt (by simp_all) (by simp_all) (fun x hx ↦ ?_)
   rw [Ico_toDual, ← preimage_inter, ← Equiv.image_symm_eq_preimage, mem_image] at hx
   aesop
 
@@ -449,8 +462,14 @@ theorem isPreconnected_Ioi : IsPreconnected (Ioi a) :=
 theorem isPreconnected_Ioo : IsPreconnected (Ioo a b) :=
   ordConnected_Ioo.isPreconnected
 
+theorem isPreconnected_uIoo : IsPreconnected (uIoo a b) :=
+  isPreconnected_Ioo
+
 theorem isPreconnected_Ioc : IsPreconnected (Ioc a b) :=
   ordConnected_Ioc.isPreconnected
+
+theorem isPreconnected_uIoc : IsPreconnected (uIoc a b) :=
+  isPreconnected_Ioc
 
 theorem isPreconnected_Ico : IsPreconnected (Ico a b) :=
   ordConnected_Ico.isPreconnected
@@ -473,8 +492,14 @@ theorem isConnected_Icc (h : a ≤ b) : IsConnected (Icc a b) :=
 theorem isConnected_Ioo (h : a < b) : IsConnected (Ioo a b) :=
   ⟨nonempty_Ioo.2 h, isPreconnected_Ioo⟩
 
+theorem isConnected_uIoo (h : a ≠ b) : IsConnected (uIoo a b) :=
+  ⟨nonempty_uIoo.2 h, isPreconnected_uIoo⟩
+
 theorem isConnected_Ioc (h : a < b) : IsConnected (Ioc a b) :=
   ⟨nonempty_Ioc.2 h, isPreconnected_Ioc⟩
+
+theorem isConnected_uIoc (h : a ≠ b) : IsConnected (uIoc a b) :=
+  ⟨nonempty_uIoc.2 h, isPreconnected_uIoc⟩
 
 theorem isConnected_Ico (h : a < b) : IsConnected (Ico a b) :=
   ⟨nonempty_Ico.2 h, isPreconnected_Ico⟩
@@ -499,7 +524,7 @@ theorem setOf_isPreconnected_eq_of_ordered :
     isPreconnected_Ioi, isPreconnected_Iio, isPreconnected_Ici, isPreconnected_Iic,
     isPreconnected_univ, isPreconnected_empty]
 
-/-- This lemmas characterizes when a subset `s` of a densely ordered conditionally complete linear
+/-- This lemma characterizes when a subset `s` of a densely ordered conditionally complete linear
 order is totally disconnected with respect to the order topology: between any two distinct points
 of `s` must lie a point not in `s`. -/
 lemma isTotallyDisconnected_iff_lt {s : Set α} :
@@ -524,6 +549,7 @@ variable {δ : Type*} [LinearOrder δ] [TopologicalSpace δ] [OrderClosedTopolog
 
 /-- **Intermediate Value Theorem** for continuous functions on closed intervals, case
 `f a ≤ t ≤ f b`. -/
+@[wikidata Q245098]
 theorem intermediate_value_Icc {a b : α} (hab : a ≤ b) {f : α → δ} (hf : ContinuousOn f (Icc a b)) :
     Icc (f a) (f b) ⊆ f '' Icc a b :=
   isPreconnected_Icc.intermediate_value (left_mem_Icc.2 hab) (right_mem_Icc.2 hab) hf
@@ -608,35 +634,35 @@ theorem intermediate_value_Ioo' {a b : α} (hab : a ≤ b) {f : α → δ}
       ((hf.continuousWithinAt ⟨refl a, hab⟩).mono Ioo_subset_Icc_self)
 
 /-- **Intermediate value theorem**: if `f` is continuous on an order-connected set `s` and `a`,
-`b` are two points of this set, then `f` sends `s` to a superset of `Icc (f x) (f y)`. -/
+`b` are two points of this set, then `f` sends `s` to a superset of `Icc (f a) (f b)`. -/
 theorem ContinuousOn.surjOn_Icc {s : Set α} [hs : OrdConnected s] {f : α → δ}
     (hf : ContinuousOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) : SurjOn f s (Icc (f a) (f b)) :=
   hs.isPreconnected.intermediate_value ha hb hf
 
 /-- **Intermediate value theorem**: if `f` is continuous on an order-connected set `s` and `a`,
-`b` are two points of this set, then `f` sends `s` to a superset of `[f x, f y]`. -/
+`b` are two points of this set, then `f` sends `s` to a superset of `[f a, f b]`. -/
 theorem ContinuousOn.surjOn_uIcc {s : Set α} [hs : OrdConnected s] {f : α → δ}
     (hf : ContinuousOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
     SurjOn f s (uIcc (f a) (f b)) := by
   rcases le_total (f a) (f b) with hab | hab <;> simp [hf.surjOn_Icc, *]
 
-/-- A continuous function which tendsto `Filter.atTop` along `Filter.atTop` and to `atBot` along
-`at_bot` is surjective. -/
+/-- A continuous function which tends to `Filter.atTop` along `Filter.atTop` and to `Filter.atBot`
+along `Filter.atBot` is surjective. -/
 theorem Continuous.surjective {f : α → δ} (hf : Continuous f) (h_top : Tendsto f atTop atTop)
     (h_bot : Tendsto f atBot atBot) : Function.Surjective f := fun p =>
   mem_range_of_exists_le_of_exists_ge hf (h_bot.eventually (eventually_le_atBot p)).exists
     (h_top.eventually (eventually_ge_atTop p)).exists
 
-/-- A continuous function which tendsto `Filter.atBot` along `Filter.atTop` and to `Filter.atTop`
-along `atBot` is surjective. -/
+/-- A continuous function which tends to `Filter.atBot` along `Filter.atTop` and to `Filter.atTop`
+along `Filter.atBot` is surjective. -/
 theorem Continuous.surjective' {f : α → δ} (hf : Continuous f) (h_top : Tendsto f atBot atTop)
     (h_bot : Tendsto f atTop atBot) : Function.Surjective f :=
   Continuous.surjective (α := αᵒᵈ) hf h_top h_bot
 
 /-- If a function `f : α → β` is continuous on a nonempty interval `s`, its restriction to `s`
-tends to `at_bot : Filter β` along `at_bot : Filter ↥s` and tends to `Filter.atTop : Filter β` along
-`Filter.atTop : Filter ↥s`, then the restriction of `f` to `s` is surjective. We formulate the
-conclusion as `Function.surjOn f s Set.univ`. -/
+tends to `Filter.atBot : Filter β` along `Filter.atBot : Filter ↥s` and tends to
+`Filter.atTop : Filter β` along `Filter.atTop : Filter ↥s`, then the restriction of `f` to `s` is
+surjective. We formulate the conclusion as `Function.surjOn f s Set.univ`. -/
 theorem ContinuousOn.surjOn_of_tendsto {f : α → δ} {s : Set α} [OrdConnected s] (hs : s.Nonempty)
     (hf : ContinuousOn f s) (hbot : Tendsto (fun x : s => f x) atBot atBot)
     (htop : Tendsto (fun x : s => f x) atTop atTop) : SurjOn f s univ :=

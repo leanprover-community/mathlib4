@@ -3,10 +3,12 @@ Copyright (c) 2023 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Order.BigOperators.Group.Multiset
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.LinearAlgebra.Matrix.Notation
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Order.BigOperators.Group.Multiset
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!
 
@@ -32,6 +34,8 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
   *An Algebraic Theory of Complexity for Discrete Optimisation*][cohen2012]
 
 -/
+
+@[expose] public section
 
 /-- A template for a valued CSP problem over a domain `D` with costs in `C`.
 Regarding `C` we want to support `Bool`, `Nat`, `ENat`, `Int`, `Rat`, `NNRat`,
@@ -143,7 +147,7 @@ lemma Function.HasMaxCutPropertyAt.rows_lt_aux {C : Type*} [PartialOrder C]
   apply asymm
   obtain ⟨o, in_omega, rfl⟩ := rin
   change o (fun j => ![![a, b], ![b, a]] j 0) = o (fun j => ![![a, b], ![b, a]] j 1)
-  convert symmega ![a, b] ![b, a] (by simp [List.Perm.swap]) o in_omega using 2 <;>
+  convert! symmega ![a, b] ![b, a] (by simp [List.Perm.swap]) o in_omega using 2 <;>
     simp [Matrix.const_fin1_eq]
 
 variable {C : Type*} [AddCommMonoid C] [PartialOrder C] [IsOrderedCancelAddMonoid C]
@@ -173,7 +177,7 @@ lemma Function.HasMaxCutProperty.forbids_commutativeFractionalPolymorphism
     rw [two_nsmul, two_nsmul]
     exact add_lt_add half_sharp half_sharp
   have impos : 2 • (ω.map (fun _ => f ![a, b])).sum < ω.size • 2 • f ![a, b] := by
-    convert lt_of_lt_of_le sharp contr
+    convert! lt_of_lt_of_le sharp contr
     simp [FractionalOperation.tt, Multiset.map_map]
   have rhs_swap : ω.size • 2 • f ![a, b] = 2 • ω.size • f ![a, b] := nsmul_left_comm ..
   have distrib : (ω.map (fun _ => f ![a, b])).sum = ω.size • f ![a, b] := by simp

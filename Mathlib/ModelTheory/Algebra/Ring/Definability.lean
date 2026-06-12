@@ -3,11 +3,12 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.ModelTheory.Definability
-import Mathlib.RingTheory.MvPolynomial.FreeCommRing
-import Mathlib.RingTheory.Nullstellensatz
-import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
+public import Mathlib.ModelTheory.Definability
+public import Mathlib.RingTheory.MvPolynomial.FreeCommRing
+public import Mathlib.RingTheory.Nullstellensatz
+public import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 
 /-!
 
@@ -16,6 +17,8 @@ import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 This file proves that the set of zeros of a multivariable polynomial is a definable subset.
 
 -/
+
+public section
 
 namespace FirstOrder
 

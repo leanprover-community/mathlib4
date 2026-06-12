@@ -3,7 +3,9 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Joël Riou
 -/
-import Mathlib.RingTheory.RingHom.Flat
+module
+
+public import Mathlib.RingTheory.RingHom.Flat
 
 /-!
 # Faithfully flat ring maps
@@ -11,6 +13,8 @@ import Mathlib.RingTheory.RingHom.Flat
 A ring map `f : R →+* S` is faithfully flat if `S` is faithfully flat as an `R`-algebra. This is
 the same as being flat and a surjection on prime spectra.
 -/
+
+@[expose] public section
 
 namespace RingHom
 
@@ -35,14 +39,14 @@ lemma flat (hf : f.FaithfullyFlat) : f.Flat := by
   exact inferInstanceAs <| Module.Flat R S
 
 lemma iff_flat_and_comap_surjective :
-    f.FaithfullyFlat ↔ f.Flat ∧ Function.Surjective f.specComap := by
+    f.FaithfullyFlat ↔ f.Flat ∧ Function.Surjective (PrimeSpectrum.comap f) := by
   algebraize [f]
   rw [← algebraMap_toAlgebra f, faithfullyFlat_algebraMap_iff, flat_algebraMap_iff]
-  exact ⟨fun h ↦ ⟨inferInstance, PrimeSpectrum.specComap_surjective_of_faithfullyFlat⟩,
-    fun ⟨h, hf⟩ ↦ .of_specComap_surjective hf⟩
+  exact ⟨fun h ↦ ⟨inferInstance, PrimeSpectrum.comap_surjective_of_faithfullyFlat⟩,
+    fun ⟨h, hf⟩ ↦ .of_comap_surjective hf⟩
 
 lemma eq_and : FaithfullyFlat =
-      fun (f : R →+* S) ↦ f.Flat ∧ Function.Surjective f.specComap := by
+      fun (f : R →+* S) ↦ f.Flat ∧ Function.Surjective (PrimeSpectrum.comap f) := by
   ext
   rw [iff_flat_and_comap_surjective]
 
@@ -55,11 +59,11 @@ lemma stableUnderComposition : StableUnderComposition FaithfullyFlat := by
 lemma of_bijective (hf : Function.Bijective f) : f.FaithfullyFlat := by
   rw [iff_flat_and_comap_surjective]
   refine ⟨.of_bijective hf, fun p ↦ ?_⟩
-  use ((RingEquiv.ofBijective f hf).symm : _ →+* _).specComap p
+  use p.comap ((RingEquiv.ofBijective f hf).symm : _ →+* _)
   have : ((RingEquiv.ofBijective f hf).symm : _ →+* _).comp f = id R := by
     ext
     exact (RingEquiv.ofBijective f hf).injective (by simp)
-  rw [← PrimeSpectrum.specComap_comp_apply, this, PrimeSpectrum.specComap_id]
+  rw [← PrimeSpectrum.comap_comp_apply, this, PrimeSpectrum.comap_id]
 
 lemma injective (hf : f.FaithfullyFlat) : Function.Injective ⇑f := by
   algebraize [f]

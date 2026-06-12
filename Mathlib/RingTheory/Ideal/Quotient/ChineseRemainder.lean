@@ -3,12 +3,16 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Pi
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.RingTheory.Ideal.Quotient.Operations
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Pi
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-! # Module version of Chinese remainder theorem
 -/
+
+public section
 
 open Function
 
@@ -46,13 +50,13 @@ theorem ker_tensorProductMk_quotient :
       (⨅ i, I i) • (⊤ : Submodule R M) := by
   have := rTensor_exact M (exact_subtype_ker_map _) (pi_mkQ_surjective hI)
   rw [← (TensorProduct.lid R M).conj_exact_iff_exact, exact_iff] at this
-  convert this
+  convert! this
   · classical simp [pi_mkQ_rTensor, LinearMap.comp_assoc]
   refine le_antisymm (Submodule.smul_le.mpr fun r hr m _ ↦ ⟨⟨r, ?_⟩ ⊗ₜ m, rfl⟩) ?_
   · simpa only [ker_pi, Submodule.ker_mkQ]
   rintro _ ⟨x, rfl⟩
   refine x.induction_on (by simp) (fun r m ↦ Submodule.smul_mem_smul ?_ ⟨⟩) fun _ _ ↦ ?_
-  · simpa only [← (I _).ker_mkQ, ← ker_pi] using Subtype.mem _
-  · simpa using add_mem
+  · simpa only [← (I _).ker_mkQ, ← ker_pi] using! Subtype.mem _
+  · simpa using! add_mem
 
 end Ideal

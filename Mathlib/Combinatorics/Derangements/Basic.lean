@@ -3,11 +3,13 @@ Copyright (c) 2021 Henry Swanson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henry Swanson
 -/
-import Mathlib.Dynamics.FixedPoints.Basic
-import Mathlib.GroupTheory.Perm.Option
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Logic.Equiv.Option
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Dynamics.FixedPoints.Basic
+public import Mathlib.GroupTheory.Perm.Option
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Logic.Equiv.Option
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Derangements on types
@@ -16,7 +18,7 @@ In this file we define `derangements α`, the set of derangements on a type `α`
 
 We also define some equivalences involving various subtypes of `Perm α` and `derangements α`:
 * `derangementsOptionEquivSigmaAtMostOneFixedPoint`: An equivalence between
-  `derangements (Option α)` and the sigma-type `Σ a : α, {f : Perm α // fixed_points f ⊆ a}`.
+  `derangements (Option α)` and the sigma-type `Σ a : α, {f : Perm α // fixedPoints f ⊆ a}`.
 * `derangementsRecursionEquiv`: An equivalence between `derangements (Option α)` and the
   sigma-type `Σ a : α, (derangements (({a}ᶜ : Set α) : Type*) ⊕ derangements α)` which is later
   used to inductively count the number of derangements.
@@ -24,6 +26,8 @@ We also define some equivalences involving various subtypes of `Perm α` and `de
 In order to prove the above, we also prove some results about the effect of `Equiv.removeNone`
 on derangements: `RemoveNone.fiber_none` and `RemoveNone.fiber_some`.
 -/
+
+@[expose] public section
 
 
 open Equiv Function

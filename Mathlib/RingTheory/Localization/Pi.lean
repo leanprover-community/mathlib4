@@ -3,14 +3,16 @@ Copyright (c) 2024 Madison Crim. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Madison Crim
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Divisibility.Prod
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.RingTheory.Localization.Basic
-import Mathlib.Algebra.Group.Pi.Units
-import Mathlib.RingTheory.KrullDimension.Zero
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.Divisibility.Prod
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.RingTheory.Localization.Basic
+public import Mathlib.Algebra.Group.Pi.Units
+public import Mathlib.RingTheory.KrullDimension.Zero
 
 /-!
 # Localizing a product of commutative rings
@@ -18,7 +20,7 @@ import Mathlib.RingTheory.KrullDimension.Zero
 ## Main Result
 
 * `bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom`: the canonical map from a
-    localization of a finite product of rings `R i `at a monoid `M` to the direct product of
+    localization of a finite product of rings `R i` at a monoid `M` to the direct product of
     localizations `R i` at the projection of `M` onto each corresponding factor is bijective.
 
 ## Implementation notes
@@ -28,6 +30,8 @@ See `Mathlib/RingTheory/Localization/Defs.lean` for a design overview.
 ## Tags
 localization, commutative ring
 -/
+
+public section
 
 namespace IsLocalization
 
@@ -64,7 +68,7 @@ the projection of `M` onto each corresponding factor. Given a ring homomorphism 
 product `Π i, R i` to the product of the localizations of each `R i` at `M' i`, every `y : M`
 maps to a unit under this homomorphism. -/
 lemma isUnit_piRingHom_algebraMap_comp_piEvalRingHom (y : M) :
-    IsUnit ((Pi.ringHom fun i ↦ (algebraMap (R i) (S i)).comp (Pi.evalRingHom R i)) y) :=
+    IsUnit ((RingHom.pi fun i ↦ (algebraMap (R i) (S i)).comp (Pi.evalRingHom R i)) y) :=
   Pi.isUnit_iff.mpr fun i ↦ map_units _ (⟨y.1 i, y, y.2, rfl⟩ : M.map (Pi.evalRingHom R i))
 
 /-- Let `M` be a submonoid of a direct product of commutative rings `R i`, and let `M' i` denote
@@ -83,7 +87,7 @@ include M in
 variable {R} in
 lemma surjective_piRingHom_algebraMap_comp_piEvalRingHom
     [∀ i, Ring.KrullDimLE 0 (R i)] [∀ i, IsLocalRing (R i)] :
-    Surjective (Pi.ringHom (fun i ↦ (algebraMap (R i) (S i)).comp (Pi.evalRingHom R i))) := by
+    Surjective (RingHom.pi (fun i ↦ (algebraMap (R i) (S i)).comp (Pi.evalRingHom R i))) := by
   apply Surjective.piMap (fun i ↦ ?_)
   by_cases h₀ : (0 : R i) ∈ (M.map (Pi.evalRingHom R i))
   · have := uniqueOfZeroMem h₀ (S := (S i))

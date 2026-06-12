@@ -3,11 +3,13 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.ConstantSheaf
-import Mathlib.CategoryTheory.Sites.Equivalence
-import Mathlib.Condensed.Basic
-import Mathlib.Condensed.Light.Basic
-import Mathlib.Condensed.Light.Instances
+module
+
+public import Mathlib.CategoryTheory.Sites.ConstantSheaf
+public import Mathlib.CategoryTheory.Sites.Equivalence
+public import Mathlib.Condensed.Basic
+public import Mathlib.Condensed.Light.Basic
+public import Mathlib.Condensed.Light.Instances
 /-!
 
 # Discrete-underlying adjunction
@@ -25,6 +27,8 @@ The file `Mathlib/Condensed/Discrete/Characterization.lean` defines a predicate 
 condensed and light condensed objects, and provides several conditions on a (light) condensed
 set or module that characterize it as discrete.
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -86,12 +90,11 @@ noncomputable def discreteUnderlyingAdj : discrete C ⊣ underlying C :=
 end LightCondensed
 
 /-- A version of `LightCondensed.discrete` in the `LightCondSet` namespace -/
-noncomputable abbrev LightCondSet.discrete := LightCondensed.discrete (Type u)
+noncomputable abbrev LightCondSet.discrete := LightCondensed.discrete <| Type u
 
 /-- A version of `LightCondensed.underlying` in the `LightCondSet` namespace -/
-noncomputable abbrev LightCondSet.underlying := LightCondensed.underlying (Type u)
+noncomputable abbrev LightCondSet.underlying := LightCondensed.underlying <| Type u
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- A version of `LightCondensed.discrete_underlying_adj` in the `LightCondSet` namespace -/
 noncomputable abbrev LightCondSet.discreteUnderlyingAdj : discrete ⊣ underlying :=
   LightCondensed.discreteUnderlyingAdj _

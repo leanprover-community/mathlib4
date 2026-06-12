@@ -3,10 +3,12 @@ Copyright (c) 2022 Cuma Kökmen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Cuma Kökmen, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Integral.CircleIntegral
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.Order.Fin.Tuple
-import Mathlib.Util.Superscript
+module
+
+public import Mathlib.MeasureTheory.Integral.CircleIntegral
+public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.Order.Fin.Tuple
+public import Mathlib.Util.Superscript
 
 /-!
 # Integral over a torus in `ℂⁿ`
@@ -54,6 +56,8 @@ We also define a predicate saying that `f ∘ torusMap c R` is integrable on the
 
 integral, torus
 -/
+
+@[expose] public section
 
 
 variable {n : ℕ}
@@ -157,7 +161,7 @@ theorem torusIntegral_add (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c
 
 theorem torusIntegral_sub (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c R) :
     (∯ x in T(c, R), f x - g x) = (∯ x in T(c, R), f x) - ∯ x in T(c, R), g x := by
-  simpa only [sub_eq_add_neg, ← torusIntegral_neg] using torusIntegral_add hf hg.neg
+  simpa only [sub_eq_add_neg, ← torusIntegral_neg] using! torusIntegral_add hf hg.neg
 
 theorem torusIntegral_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [SMulCommClass 𝕜 ℂ E] (a : 𝕜)
     (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) : (∯ x in T(c, R), a • f x) = a • ∯ x in T(c, R), f x := by
@@ -190,6 +194,7 @@ theorem torusIntegral_dim0 [CompleteSpace E]
     integral_dirac, Measure.pi_of_empty (fun _ : Fin 0 ↦ volume) 0,
     Measure.dirac_apply_of_mem (mem_singleton _), Subsingleton.elim (torusMap c R 0) c]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In dimension one, `torusIntegral` is the same as `circleIntegral`
 (up to the natural equivalence between `ℂ` and `Fin 1 → ℂ`). -/
 theorem torusIntegral_dim1 (f : ℂ¹ → E) (c : ℂ¹) (R : ℝ¹) :

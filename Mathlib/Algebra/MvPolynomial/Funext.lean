@@ -3,11 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.RingDivision
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Algebra.MvPolynomial.Polynomial
-import Mathlib.Algebra.MvPolynomial.Rename
+module
+
+public import Mathlib.Algebra.Polynomial.RingDivision
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.MvPolynomial.Polynomial
+public import Mathlib.Algebra.MvPolynomial.Rename
 
 /-!
 ## Function extensionality for multivariate polynomials
@@ -22,6 +24,8 @@ if they are equal upon evaluating them on an arbitrary assignment of the variabl
 
 -/
 
+public section
+
 namespace MvPolynomial
 
 variable {R : Type*} [CommRing R] [IsDomain R]
@@ -32,8 +36,8 @@ private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
   induction n with
   | zero =>
     apply (MvPolynomial.isEmptyRingEquiv R (Fin 0)).injective
-    rw [RingEquiv.map_zero]
-    convert h _ finZeroElim
+    rw [map_zero]
+    convert! h _ finZeroElim
   | succ n ih =>
     apply (finSuccEquiv R n).injective
     rw [map_zero]
@@ -62,7 +66,7 @@ theorem funext_set (h : ∀ x ∈ Set.pi .univ s, eval x p = eval x q) :
   suffices p = 0 by rw [this, map_zero]
   refine funext_fin (s ∘ f) (fun _ ↦ hs _) fun x hx ↦ ?_
   choose g hg using fun i ↦ (hs i).nonempty
-  convert h (Function.extend f x g) fun i _ ↦ ?_
+  convert! h (Function.extend f x g) fun i _ ↦ ?_
   · simp only [eval, eval₂Hom_rename, Function.extend_comp hf]
   obtain ⟨i, rfl⟩ | nex := em (∃ x, f x = i)
   · rw [hf.extend_apply]; exact hx _ ⟨⟩

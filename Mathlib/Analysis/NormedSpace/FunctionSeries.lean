@@ -1,3 +1,5 @@
-import Mathlib.Analysis.Normed.Group.FunctionSeries
+module
 
-deprecated_module (since := "2025-09-02")
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
+
+deprecated_module (since := "2026-03-23")

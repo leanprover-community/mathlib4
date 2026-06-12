@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.Basic
-import Mathlib.Algebra.Homology.Additive
+module
+
+public import Mathlib.Algebra.Homology.Embedding.Basic
+public import Mathlib.Algebra.Homology.Additive
 
 /-!
 # The restriction functor of an embedding of complex shapes
@@ -15,13 +17,15 @@ Given `c` and `c'` complex shapes on two types, and `e : c.Embedding c'`
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Category Limits ZeroObject
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
 
 namespace HomologicalComplex
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   (K L M : HomologicalComplex C c') (φ : K ⟶ L) (φ' : L ⟶ M)
   (e : c.Embedding c') [e.IsRelIff]
 
@@ -38,6 +42,7 @@ def restrictionXIso {i : ι} {i' : ι'} (h : e.f i = i') :
     (K.restriction e).X i ≅ K.X i' :=
   eqToIso (h ▸ rfl)
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma restriction_d_eq {i j : ι} {i' j' : ι'} (hi : e.f i = i') (hj : e.f j = j') :
     (K.restriction e).d i j = (K.restrictionXIso e hi).hom ≫ K.d i' j' ≫
@@ -47,11 +52,13 @@ lemma restriction_d_eq {i j : ι} {i' j' : ι'} (hi : e.f i = i') (hj : e.f j = 
 
 variable {K L}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `K.restriction e ⟶ L.restriction e` induced by a morphism `φ : K ⟶ L`. -/
 @[simps]
 def restrictionMap : K.restriction e ⟶ L.restriction e where
   f i := φ.f (e.f i)
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma restrictionMap_f' {i : ι} {i' : ι'} (hi : e.f i = i') :
     (restrictionMap φ e).f i = (K.restrictionXIso e hi).hom ≫
@@ -72,7 +79,7 @@ end HomologicalComplex
 
 namespace ComplexShape.Embedding
 
-variable (e : Embedding c c') (C : Type*) [Category C] [HasZeroObject C] [e.IsRelIff]
+variable (e : Embedding c c') (C : Type*) [Category* C] [HasZeroObject C] [e.IsRelIff]
 
 /-- Given `e : ComplexShape.Embedding c c'`, this is the restriction
 functor `HomologicalComplex C c' ⥤ HomologicalComplex C c`. -/

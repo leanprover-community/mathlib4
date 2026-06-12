@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.Combinatorics.Pigeonhole
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
+public import Mathlib.Combinatorics.Pigeonhole
 
 /-!
 # Conservative systems
@@ -34,6 +36,8 @@ infinitely many times.
 
 conservative dynamical system, Poincare recurrence theorem
 -/
+
+public section
 
 
 noncomputable section
@@ -65,7 +69,7 @@ namespace Conservative
 protected theorem id (μ : Measure α) : Conservative id μ :=
   { toQuasiMeasurePreserving := QuasiMeasurePreserving.id μ
     exists_mem_iterate_mem' := fun _ _ h0 => by
-      simpa [exists_ne] using nonempty_of_measure_ne_zero h0 }
+      simpa [exists_ne] using! nonempty_of_measure_ne_zero h0 }
 
 theorem of_absolutelyContinuous {ν : Measure α} (h : Conservative f μ) (hν : ν ≪ μ)
     (h' : QuasiMeasurePreserving f ν ν) : Conservative f ν :=
@@ -107,14 +111,14 @@ theorem frequently_measure_inter_ne_zero (hf : Conservative f μ) (hs : NullMeas
   -- Let `N` be the maximal `n` such that `μ (t n) ≠ 0`.
   obtain ⟨N, hN, hmax⟩ : ∃ N, μ (t N) ≠ 0 ∧ ∀ n > N, μ (t n) = 0 := by
     rw [Nat.frequently_atTop_iff_infinite, not_infinite] at H
-    convert exists_max_image _ (·) H ⟨0, by simpa⟩ using 4
+    convert! exists_max_image _ (·) H ⟨0, by simpa⟩ using 4
     rw [gt_iff_lt, ← not_le, not_imp_comm, mem_setOf]
   have htm {n : ℕ} : NullMeasurableSet (t n) μ :=
     hs.inter <| hs.preimage <| hf.toQuasiMeasurePreserving.iterate n
   -- Then all `t n`, `n > N`, are null sets, hence `T = t N \ ⋃ n > N, t n` has positive measure.
   set T := t N \ ⋃ n > N, t n with hT
   have hμT : μ T ≠ 0 := by
-    rwa [hT, measure_diff_null]
+    rwa [hT, measure_sdiff_null]
     exact (measure_biUnion_null_iff {n | N < n}.to_countable).2 hmax
   have hTm : NullMeasurableSet T μ := htm.diff <| .biUnion {n | N < n}.to_countable fun _ _ ↦ htm
   -- Take `x ∈ T` and `m ≠ 0` such that `f^[m] x ∈ T`.
@@ -123,7 +127,7 @@ theorem frequently_measure_inter_ne_zero (hf : Conservative f μ) (hs : NullMeas
   -- This contradicts `x ∈ T ⊆ (⋃ n > N, t n)ᶜ`.
   refine hxt.2 <| mem_iUnion₂.2 ⟨N + m, ?_, hxt.1.1, ?_⟩
   · simpa [pos_iff_ne_zero]
-  · simpa only [iterate_add] using hmt.1.2
+  · simpa only [iterate_add] using! hmt.1.2
 
 /-- If `f` is a conservative map and `s` is a measurable set of nonzero measure, then
 for an arbitrarily large `m` a positive measure of points `x ∈ s` returns back to `s`
@@ -148,17 +152,14 @@ theorem measure_mem_forall_ge_image_notMem_eq_zero (hf : Conservative f μ)
   rcases nonempty_of_measure_ne_zero hm with ⟨x, ⟨_, hxn⟩, hxm, -⟩
   exact hxn m hmn.lt.le hxm
 
-@[deprecated (since := "2025-05-23")]
-alias measure_mem_forall_ge_image_not_mem_eq_zero := measure_mem_forall_ge_image_notMem_eq_zero
-
 /-- Poincaré recurrence theorem: given a conservative map `f` and a measurable set `s`,
 almost every point `x ∈ s` returns back to `s` infinitely many times. -/
 theorem ae_mem_imp_frequently_image_mem (hf : Conservative f μ) (hs : NullMeasurableSet s μ) :
     ∀ᵐ x ∂μ, x ∈ s → ∃ᶠ n in atTop, f^[n] x ∈ s := by
-  simp only [frequently_atTop, @forall_swap (_ ∈ s), ae_all_iff]
+  simp only [frequently_atTop, @forall_comm (_ ∈ s), ae_all_iff]
   intro n
-  filter_upwards [
-    measure_eq_zero_iff_ae_notMem.1 (hf.measure_mem_forall_ge_image_notMem_eq_zero hs n)]
+  filter_upwards
+    [measure_eq_zero_iff_ae_notMem.1 (hf.measure_mem_forall_ge_image_notMem_eq_zero hs n)]
   simp
 
 theorem inter_frequently_image_mem_ae_eq (hf : Conservative f μ) (hs : NullMeasurableSet s μ) :

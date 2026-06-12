@@ -3,8 +3,10 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Fin.Basic
-import Mathlib.Order.Interval.Set.UnorderedInterval
+module
+
+public import Mathlib.Order.Fin.Basic
+public import Mathlib.Order.Interval.Set.UnorderedInterval
 
 /-!
 # (Pre)images of set intervals under `Fin` operations
@@ -22,6 +24,8 @@ under the following operations:
 - `Fin.succ`,
 - `Fin.rev`.
 -/
+
+public section
 
 open Function Set
 
@@ -467,7 +471,7 @@ theorem range_natAdd (m n : ℕ) : range (natAdd m : Fin n → Fin (m + n)) = {i
   constructor
   · rintro ⟨i, rfl⟩
     apply le_coe_natAdd
-  · refine fun (hi : m ≤ i) ↦ ⟨⟨i - m, by cutsat⟩, ?_⟩
+  · refine fun (hi : m ≤ i) ↦ ⟨⟨i - m, by lia⟩, ?_⟩
     ext
     simp [hi]
 
@@ -641,8 +645,8 @@ theorem image_addNat_Ici (m) (i : Fin n) : (addNat · m) '' Ici i = Ici (i.addNa
   rw [← preimage_addNat_Ici_addNat, image_preimage_eq_of_subset]
   intro j hj
   have : (i : ℕ) + m ≤ j := hj
-  refine ⟨⟨j - m, by cutsat⟩, ?_⟩
-  simp (disch := omega)
+  refine ⟨⟨j - m, by lia⟩, ?_⟩
+  simp (disch := lia)
 
 @[simp]
 theorem image_addNat_Ioi (m) (i : Fin n) : (addNat · m) '' Ioi i = Ioi (i.addNat m) := by

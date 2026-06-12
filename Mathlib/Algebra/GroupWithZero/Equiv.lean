@@ -3,10 +3,14 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.GroupWithZero.Hom
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.GroupWithZero.Hom
 
 /-! # Isomorphisms of monoids with zero -/
+
+@[expose] public section
 
 assert_not_exists Ring
 
@@ -35,7 +39,7 @@ variable {G H : Type*} [MulZeroOneClass G] [MulZeroOneClass H]
 
 /-- An isomorphism of monoids with zero can be treated as a homomorphism preserving zero.
 This is a helper projection that utilizes the `MonoidWithZeroHomClass` instance. -/
-def toMonoidWithZeroHom (f : G ≃* H) : G →*₀ H := f
+def toMonoidWithZeroHom (f : G ≃* H) : G →*₀ H := .ofClass f
 
 @[simp] lemma toMonoidWithZeroHom_apply (f : G ≃* H) (x : G) : f.toMonoidWithZeroHom x = f x := rfl
 

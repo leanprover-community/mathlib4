@@ -3,9 +3,11 @@ Copyright (c) 2024 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
-import Mathlib.Topology.LocallyClosed
-import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+module
+
+public import Mathlib.Topology.LocallyClosed
+public import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Baire category and Baire measurable sets
@@ -25,12 +27,15 @@ A set `s` in a topological space `α` is called a `BaireMeasurableSet` or said t
 
 -/
 
+@[expose] public section
+
 variable (α : Type*) {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 open Topology
 
 /-- Notation for `=ᶠ[residual _]`. That is, eventual equality with respect to
-the filter of residual sets. -/
+the filter of residual sets.
+In lemma names, this is called `residualEq`. -/
 scoped[Topology] notation:50 f " =ᵇ " g:50 => Filter.EventuallyEq (residual _) f g
 
 /-- Notation to say that a property of points in a topological space holds
@@ -136,7 +141,7 @@ theorem MeasurableSet.residualEq_isOpen [MeasurableSpace α] [BorelSpace α] (h 
     exact .compl <| hsU.trans <| .symm <| closure_residualEq Uo.isLocallyClosed
   | iUnion f _ _ ihf =>
     choose u uo su using ihf
-    exact ⟨⋃ i, u i, isOpen_iUnion uo, EventuallyEq.countable_iUnion su⟩
+    exact ⟨⋃ i, u i, isOpen_iUnion uo, .countable_iUnion su⟩
 
 /-- Any `BaireMeasurableSet` differs from some open set by a meager set. -/
 theorem BaireMeasurableSet.residualEq_isOpen (h : BaireMeasurableSet s) :

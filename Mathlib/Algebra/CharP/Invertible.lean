@@ -3,13 +3,15 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Ring.Parity
-import Mathlib.Algebra.GroupWithZero.Invertible
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Data.Int.GCD
-import Mathlib.Data.Nat.Cast.Commute
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Algebra.GroupWithZero.Invertible
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.Int.GCD
+public import Mathlib.Data.Nat.Cast.Commute
 
 /-!
 # Invertibility of elements given a characteristic
@@ -19,6 +21,8 @@ characteristic zero. Some more cases are given as a `def`, to be included only
 when needed. To construct instances for concrete numbers,
 `invertibleOfNonzero` is a useful definition.
 -/
+
+@[expose] public section
 
 
 variable {R K : Type*}
@@ -52,6 +56,7 @@ theorem CharP.natCast_gcdA_mul_intCast_eq_gcd (n : ℕ) :
 
 /-- In a ring of characteristic `p`, `(n : R)` is invertible when `n` is coprime with `p`, with
 inverse `n.gcdA p`. -/
+@[implicit_reducible]
 def invertibleOfCoprime {n : ℕ} (h : n.Coprime p) :
     Invertible (n : R) where
   invOf := n.gcdA p
@@ -61,7 +66,7 @@ def invertibleOfCoprime {n : ℕ} (h : n.Coprime p) :
 theorem invOf_eq_of_coprime {n : ℕ} [Invertible (n : R)] (h : n.Coprime p) :
     ⅟(n : R) = n.gcdA p := by
   letI : Invertible (n : R) := invertibleOfCoprime h
-  convert (rfl : ⅟(n : R) = _)
+  convert! (rfl : ⅟(n : R) = _)
 
 theorem CharP.isUnit_natCast_iff {n : ℕ} (hp : p.Prime) : IsUnit (n : R) ↔ ¬p ∣ n where
   mp h := by
@@ -88,11 +93,13 @@ variable [Semifield K]
 
 /-- A natural number `t` is invertible in a semifield `K` if the characteristic of `K` does not
 divide `t`. -/
+@[implicit_reducible]
 def invertibleOfRingCharNotDvd {t : ℕ} (not_dvd : ¬ringChar K ∣ t) : Invertible (t : K) :=
   invertibleOfNonzero fun h => not_dvd ((ringChar.spec K t).mp h)
 
 /-- A natural number `t` is invertible in a semifield `K` of characteristic `p` if `p` does not
 divide `t`. -/
+@[implicit_reducible]
 def invertibleOfCharPNotDvd {p : ℕ} [CharP K p] {t : ℕ} (not_dvd : ¬p ∣ t) : Invertible (t : K) :=
   invertibleOfNonzero fun h => not_dvd ((CharP.cast_eq_zero_iff K p t).mp h)
 

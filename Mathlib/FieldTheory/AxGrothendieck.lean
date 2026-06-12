@@ -3,12 +3,13 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.RingTheory.Algebraic.Basic
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
-import Mathlib.ModelTheory.Algebra.Ring.Definability
-import Mathlib.RingTheory.Polynomial.Basic
+public import Mathlib.RingTheory.Algebraic.Basic
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
+public import Mathlib.ModelTheory.Algebra.Ring.Definability
+public import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Ax-Grothendieck
@@ -36,6 +37,8 @@ the Ax-Grothendieck Theorem were first formalized in Lean 3 by Joseph Hua
 [here](https://github.com/Jlh18/ModelTheory8Report)
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -183,7 +186,7 @@ theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime_or_zero
   rcases hp with hp | rfl
   · exact ACF_models_genericPolyMapSurjOnOfInjOn_of_prime hp φ mons
   · rw [ACF_zero_realize_iff_infinite_ACF_prime_realize]
-    convert Set.infinite_univ (α := Nat.Primes)
+    convert! Set.infinite_univ (α := Nat.Primes)
     rw [Set.eq_univ_iff_forall]
     intro ⟨p, hp⟩
     exact ACF_models_genericPolyMapSurjOnOfInjOn_of_prime hp φ mons

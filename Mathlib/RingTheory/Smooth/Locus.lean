@@ -3,9 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Etale.Kaehler
-import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
-import Mathlib.RingTheory.Support
+module
+
+public import Mathlib.RingTheory.Etale.Kaehler
+public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
+public import Mathlib.RingTheory.Support
 
 /-!
 # Smooth locus of an algebra
@@ -21,6 +23,8 @@ Some of them are true for arbitrary algebras but the proof is substantially hard
   The smooth locus is the whole spectrum if and only if `A` is smooth over `R`.
 - `Algebra.isOpen_smoothLocus` : The smooth locus is open.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -100,6 +104,10 @@ lemma smoothLocus_eq_univ_iff [FinitePresentation R A] :
     ← basicOpen_subset_smoothLocus_iff]
   simp
 
+lemma smoothLocus_eq_univ [Smooth R A] : smoothLocus R A = Set.univ := by
+  rw [smoothLocus_eq_univ_iff]
+  infer_instance
+
 lemma smoothLocus_comap_of_isLocalization {Af : Type*} [CommRing Af] [Algebra A Af] [Algebra R Af]
     [IsScalarTower R A Af] (f : A) [IsLocalization.Away f Af] :
     PrimeSpectrum.comap (algebraMap A Af) ⁻¹' smoothLocus R A = smoothLocus R Af := by
@@ -136,5 +144,15 @@ lemma isOpen_smoothLocus [FinitePresentation R A] : IsOpen (smoothLocus R A) := 
   replace this := (PrimeSpectrum.localization_away_isOpenEmbedding Af f).isOpenMap _ this
   rw [Set.image_preimage_eq_inter_range, localization_away_comap_range Af f] at this
   exact ⟨_, Set.inter_subset_left, this, hx, hxf⟩
+
+variable (R) in
+open PrimeSpectrum in
+lemma IsSmoothAt.exists_notMem_smooth [FinitePresentation R A] (p : Ideal A) [p.IsPrime]
+    [IsSmoothAt R p] :
+    ∃ f ∉ p, Smooth R (Localization.Away f) := by
+  obtain ⟨_, ⟨_, ⟨f, rfl⟩, rfl⟩, hxf, hf⟩ :=
+    isBasis_basic_opens.exists_subset_of_mem_open ‹⟨p, ‹_›⟩ ∈ smoothLocus R A› isOpen_smoothLocus
+  refine ⟨f, by simpa using hxf, ⟨?_, inferInstance⟩⟩
+  rwa [basicOpen_subset_smoothLocus_iff] at hf
 
 end Algebra

@@ -23,14 +23,14 @@ terms of a quantity that is a root of a particular cubic equation.
 ## Main statements
 
 - `cubic_eq_zero_iff`: gives the roots of the cubic equation
-where the discriminant `p = 3 * a * c - b^2` is nonzero.
+  where the discriminant `p = 3 * a * c - b^2` is nonzero.
 - `cubic_eq_zero_iff_of_p_eq_zero`: gives the roots of the cubic equation
-where the discriminant equals zero.
+  where the discriminant equals zero.
 - `quartic_eq_zero_iff`: gives the roots of the quartic equation
-where the quantity `b^3 - 4 * a * b * c + 8 * a^2 * d` is nonzero, in terms of a root `u`
-to a cubic resolvent.
+  where the quantity `b^3 - 4 * a * b * c + 8 * a^2 * d` is nonzero, in terms of a root `u`
+  to a cubic resolvent.
 - `quartic_eq_zero_iff_of_q_eq_zero`: gives the roots of the quartic equation
-where the quantity `b^3 - 4 * a * b * c + 8 * a^2 * d` equals zero.
+  where the quantity `b^3 - 4 * a * b * c + 8 * a^2 * d` equals zero.
 
 ## Proof outline
 
@@ -91,7 +91,7 @@ theorem cubic_depressed_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp_nonzero : p
   rw [h₁]
   apply Eq.congr_left
   have hs_nonzero : s ≠ 0 := by
-    contrapose! hp_nonzero with hs_nonzero
+    contrapose hp_nonzero with hs_nonzero
     linear_combination -1 * ht + t * hs_nonzero
   rw [← mul_left_inj' (pow_ne_zero 3 hs_nonzero)]
   have H := cube_root_of_unity_sum hω
@@ -172,7 +172,7 @@ theorem quartic_depressed_eq_zero_iff
   have hi2 : (2 : K) ≠ 0 := Invertible.ne_zero _
   have h4 : (4 : K) = 2 ^ 2 := by norm_num
   have hs_nonzero : s ≠ 0 := by
-    contrapose! hq_nonzero with hs0
+    contrapose hq_nonzero with hs0
     linear_combination (exp := 2) -hu + (4 * r - u ^ 2) * hs + (u ^ 2 * s - 4 * r * s) * hs0
   calc
     _ ↔ 4 * (x ^ 4 + p * x ^ 2 + q * x + r) = 0 := by simp [h4, hi2]

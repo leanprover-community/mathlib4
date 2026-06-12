@@ -3,8 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Empty
-import Mathlib.Data.Multiset.Filter
+module
+
+public import Mathlib.Data.Finset.Empty
+public import Mathlib.Data.Multiset.Filter
 
 /-!
 # Filtering a finite set
@@ -19,6 +21,8 @@ import Mathlib.Data.Multiset.Filter
 finite sets, finset
 
 -/
+
+@[expose] public section
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
@@ -55,7 +59,7 @@ open Lean Elab Term Meta Batteries.ExtendedBinder
 
 /-- Return `true` if `expectedType?` is `some (Finset ?α)`, throws `throwUnsupportedSyntax` if it is
 `some (Set ?α)`, and returns `false` otherwise. -/
-def knownToBeFinsetNotSet (expectedType? : Option Expr) : TermElabM Bool :=
+meta def knownToBeFinsetNotSet (expectedType? : Option Expr) : TermElabM Bool :=
   -- As we want to reason about the expected type, we would like to wait for it to be available.
   -- However this means that if we fall back on `elabSetBuilder` we will have postponed.
   -- This is undesirable as we want set builder notation to quickly elaborate to a `Set` when no
@@ -88,7 +92,7 @@ See also
 TODO: Write a delaborator
 -/
 @[term_elab setBuilder]
-def elabFinsetBuilderSep : TermElab
+meta def elabFinsetBuilderSep : TermElab
   | `({ $x:ident ∈ $s:term | $p }), expectedType? => do
     -- If the expected type is known to be `Set ?α`, give up. If it is not known to be `Set ?α` or
     -- `Finset ?α`, check the expected type of `s`.
@@ -143,12 +147,8 @@ theorem filter_congr_decidable (s : Finset α) (p : α → Prop) (h : DecidableP
 @[simp]
 theorem filter_true {h} (s : Finset α) : @filter _ (fun _ => True) h s = s := by ext; simp
 
-@[deprecated (since := "2025-08-24")] alias filter_True := filter_true
-
 @[simp]
 theorem filter_false {h} (s : Finset α) : @filter _ (fun _ => False) h s = ∅ := by ext; simp
-
-@[deprecated (since := "2025-08-24")] alias filter_False := filter_false
 
 variable {p q}
 
@@ -172,6 +172,7 @@ theorem filter_false_of_mem (h : ∀ x ∈ s, ¬p x) : s.filter p = ∅ := filte
 theorem filter_const (p : Prop) [Decidable p] (s : Finset α) :
     (s.filter fun _a => p) = if p then s else ∅ := by split_ifs <;> simp [*]
 
+@[congr]
 theorem filter_congr {s : Finset α} (H : ∀ x ∈ s, p x ↔ q x) : filter p s = filter q s :=
   eq_of_veq <| Multiset.filter_congr H
 
@@ -213,8 +214,8 @@ lemma _root_.Set.pairwiseDisjoint_filter [DecidableEq β] (f : α → β) (s : S
 theorem disjoint_filter_and_not_filter :
     Disjoint (s.filter (fun x ↦ p x ∧ ¬q x)) (s.filter (fun x ↦ q x ∧ ¬p x)) := by
   intro _ htp htq
-  simp only [bot_eq_empty, le_eq_subset, subset_empty, ← not_nonempty_iff_eq_empty]
-  rintro ⟨_, hx⟩
+  simp only [bot_eq_empty, le_eq_subset, subset_empty]
+  by_contra! ⟨_, hx⟩
   exact (mem_filter.mp (htq hx)).2.2 (mem_filter.mp (htp hx)).2.1
 
 variable {p q}
@@ -224,6 +225,11 @@ lemma filter_inj : s.filter p = t.filter p ↔ ∀ ⦃a⦄, p a → (a ∈ s ↔
 
 lemma filter_inj' : s.filter p = s.filter q ↔ ∀ ⦃a⦄, a ∈ s → (p a ↔ q a) := by
   simp [Finset.ext_iff]
+
+@[simp]
+lemma filter_mem_eq_of_subset [DecidablePred (· ∈ s)] (hst : s ⊆ t) :
+    t.filter (· ∈ s) = s := by
+  grind
 
 end Filter
 

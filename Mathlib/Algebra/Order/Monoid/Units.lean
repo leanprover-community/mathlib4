@@ -3,12 +3,16 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Order.Hom.Basic
-import Mathlib.Algebra.Group.Units.Defs
+module
+
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Algebra.Group.Units.Defs
 
 /-!
 # Units in ordered monoids
 -/
+
+@[expose] public section
 
 namespace Units
 

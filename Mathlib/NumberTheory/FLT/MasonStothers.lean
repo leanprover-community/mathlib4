@@ -3,7 +3,9 @@ Copyright (c) 2024 Jineon Baek and Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
-import Mathlib.RingTheory.Polynomial.Radical
+module
+
+public import Mathlib.RingTheory.Polynomial.Radical
 
 /-!
 # Mason-Stothers theorem
@@ -17,6 +19,8 @@ which is essentially based on Noah Snyder's paper "An Alternative Proof of Mason
 but slightly different.
 
 -/
+
+public section
 
 open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain EuclideanDomain
 
@@ -59,13 +63,13 @@ protected theorem Polynomial.abc
   have hbc : IsCoprime b c := by
     rw [add_eq_zero_iff_neg_eq] at hsum
     rw [← hsum, IsCoprime.neg_right_iff]
-    convert IsCoprime.add_mul_left_right hab.symm 1
+    convert! IsCoprime.add_mul_left_right hab.symm 1
     rw [mul_one]
   have hsum' : b + c + a = 0 := by rwa [add_rotate] at hsum
   have hca : IsCoprime c a := by
     rw [add_eq_zero_iff_neg_eq] at hsum'
     rw [← hsum', IsCoprime.neg_right_iff]
-    convert IsCoprime.add_mul_left_right hbc.symm 1
+    convert! IsCoprime.add_mul_left_right hbc.symm 1
     rw [mul_one]
   have wbc : w = wronskian b c := wronskian_eq_of_sum_zero hsum
   have wca : w = wronskian c a := by

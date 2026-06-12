@@ -3,11 +3,13 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Combinatorics.SetFamily.Compression.Down
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Order.UpperLower.Basic
+module
+
+public import Mathlib.Algebra.Order.Ring.Canonical
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Combinatorics.SetFamily.Compression.Down
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Harris-Kleitman inequality
@@ -25,6 +27,8 @@ correlate in the uniform measure.
 
 * [D. J. Kleitman, *Families of non-disjoint subsets*][kleitman1966]
 -/
+
+public section
 
 
 open Finset
@@ -57,7 +61,7 @@ theorem IsLowerSet.le_card_inter_finset' (h𝒜 : IsLowerSet (𝒜 : Set (Finset
     obtain rfl | rfl := h𝒜s
     · simp only [card_empty, zero_mul, empty_inter, mul_zero, le_refl]
     obtain rfl | rfl := hℬs
-    · simp only [card_empty, inter_empty, mul_zero, le_refl]
+    · simp
     · simp only [card_empty, pow_zero, inter_singleton_of_mem, mem_singleton, card_singleton,
         le_refl]
   | insert a s hs ih =>

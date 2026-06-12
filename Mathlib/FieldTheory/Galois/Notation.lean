@@ -3,8 +3,10 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Algebra.Equiv
-import Lean.PrettyPrinter.Delaborator.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
+public import Lean.PrettyPrinter.Delaborator.Basic
 
 /-!
 # Notation for Galois group
@@ -15,6 +17,8 @@ We provide such a notation in this file.
 Although this notation works for all automorphism groups of algebras, we should only use this
 notation when `L/K` is an extension of fields.
 -/
+
+public section
 
 section Notation
 
@@ -33,7 +37,7 @@ macro "Gal(" L:term:100 "/" K:term ")" : term => `($L ≃ₐ[$K] $L)
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Pretty printer for the `Gal(L/K)` notation. -/
 @[app_delab AlgEquiv]
-partial def delabGal : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
+meta def delabGal : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
   -- After Lean 4.19 the pretty printer clears local instances, so we re-add them here.
   -- TODO: remove this once the behavior changes.
   -- See [Zulip](https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Bug.3F.20Local.20instances.20not.20populated.20during.20delaboration/with/544850819).

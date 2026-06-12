@@ -3,8 +3,10 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Sites.Precoverage
-import Mathlib.CategoryTheory.Limits.Types.Pullbacks
+module
+
+public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
+public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
 /-!
 # The jointly surjective precoverage
@@ -17,6 +19,8 @@ families as coverings. We show that this precoverage is stable under the standar
 See `Mathlib/CategoryTheory/Sites/Types.lean` for the Grothendieck topology of jointly surjective
 covers.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -44,8 +48,8 @@ lemma singleton_mem_jointlySurjectivePrecoverage_iff {X Y : Type u} {f : X ⟶ Y
   exact hx
 
 @[simp]
-lemma ofArrows_mem_jointlySurjectivePrecoverage_iff {X : Type u} {ι : Type*} {Y : ι → Type u}
-    {f : ∀ i, Y i ⟶ X} :
+lemma ofArrows_mem_jointlySurjectivePrecoverage_iff {X : Type u} {ι : Type*}
+    {Y : ι → Type u} {f : ∀ i, Y i ⟶ X} :
     Presieve.ofArrows Y f ∈ jointlySurjectivePrecoverage X ↔
       ∀ x, ∃ (i : ι), x ∈ Set.range (f i) := by
   refine ⟨fun h x ↦ ?_, fun h x ↦ ?_⟩
@@ -73,9 +77,17 @@ instance : jointlySurjectivePrecoverage.IsStableUnderSup where
     obtain ⟨Y, f, hf, hx⟩ := hR x
     use Y, f, .inl hf
 
+instance : Precoverage.Small.{u} jointlySurjectivePrecoverage.{u} where
+  zeroHypercoverSmall {X} E := by
+    choose i y hy using ofArrows_mem_jointlySurjectivePrecoverage_iff.mp E.mem₀
+    refine ⟨X, i, ?_⟩
+    rw [ofArrows_mem_jointlySurjectivePrecoverage_iff]
+    intro x
+    use x, y x, hy x
+
 end Types
 
-variable {C : Type*} [Category C] (F : C ⥤ Type u)
+variable {C : Type*} [Category* C] (F : C ⥤ Type u)
 
 lemma Presieve.mem_comap_jointlySurjectivePrecoverage_iff {X : C} {R : Presieve X} :
     R ∈ Types.jointlySurjectivePrecoverage.comap F X ↔

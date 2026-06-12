@@ -3,10 +3,12 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
-import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
-import Mathlib.RepresentationTheory.Coinduced
-import Mathlib.RepresentationTheory.Induced
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
+public import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
+public import Mathlib.RepresentationTheory.Coinduced
+public import Mathlib.RepresentationTheory.Induced
 
 /-!
 # Shapiro's lemma for group homology
@@ -20,7 +22,7 @@ Since `Res(S)` is also exact,
 given a projective resolution `P` of `k` as a trivial `k`-linear `G`-representation,
 `Res(S)(P)` is a projective resolution of `k` as a trivial `k`-linear `S`-representation.
 
-In `Mathlib/RepresentationTheory/Homological/GroupHomology/Induced.lean`,
+In `Mathlib/RepresentationTheory/Induced.lean`,
 given a `G`-representation `X`,
 we define a natural isomorphism between the functors `Rep k S ⥤ ModuleCat k` sending `A` to
 `(Ind_S^G A ⊗ X)_G` and to `(A ⊗ Res(S)(X))_S`. Hence a projective resolution `P` of `k` as a
@@ -35,6 +37,8 @@ group homology, we conclude Shapiro's lemma: `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A)
 
 -/
 
+@[expose] public section
+
 universe u
 
 namespace groupHomology
@@ -48,16 +52,23 @@ variable {k G : Type u} [CommRing k] [Group G] (S : Subgroup G) (A : Rep k S)
 `(A ⊗ Res(S)(P))_S ≅ (Ind_S^G(A) ⊗ P)_G`. -/
 noncomputable abbrev coinvariantsTensorResProjectiveResolutionIso
     (P : ProjectiveResolution (Rep.trivial k G k)) :
-    ((Action.res _ S.subtype).mapProjectiveResolution P).complex.coinvariantsTensorObj A ≅
+    ((resFunctor S.subtype).mapProjectiveResolution P).complex.coinvariantsTensorObj A ≅
       P.complex.coinvariantsTensorObj (ind S.subtype A) :=
   (NatIso.mapHomologicalComplex (coinvariantsTensorIndNatIso S.subtype A).symm _).app _
 
+-- The smiley face in this proof can be avoided if you replace `ind` with `ind.{_, _, _, u}`.
+-- The proof still compiles without this, but it takes much longer because of universe
+-- unification issues.
+-- Similarly, replacing `resFunctor.{u}` with `resFunctor` works but makes the proof
+-- three times as slow.
 /-- Shapiro's lemma: given a subgroup `S ≤ G` and an `S`-representation `A`, we have
 `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A).` -/
-noncomputable def indIso [DecidableEq G] (A : Rep k S) (n : ℕ) :
+noncomputable def indIso [DecidableEq G] (A : Rep.{u} k S) (n : ℕ) :
     groupHomology (ind S.subtype A) n ≅ groupHomology A n :=
-  (HomologicalComplex.homologyFunctor _ _ _).mapIso (inhomogeneousChainsIso (ind S.subtype A) ≪≫
+  (HomologicalComplex.homologyFunctor (ModuleCat k) (ComplexShape.down ℕ) n).mapIso
+  (inhomogeneousChainsIso (ind S.subtype A :) ≪≫
     (coinvariantsTensorResProjectiveResolutionIso S A (barResolution k G)).symm) ≪≫
-  (groupHomologyIso A n ((Action.res _ _).mapProjectiveResolution <| barResolution k G)).symm
+  (groupHomologyIso A n ((resFunctor.{u} S.subtype).mapProjectiveResolution <|
+    barResolution k G)).symm
 
 end groupHomology

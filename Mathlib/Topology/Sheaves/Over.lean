@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Topology.Sets.Opens
-import Mathlib.CategoryTheory.Comma.Over.Basic
+module
+
+public import Mathlib.Topology.Sets.Opens
+public import Mathlib.CategoryTheory.Comma.Over.Basic
 
 /-!
 # Opens and Over categories
@@ -16,10 +18,12 @@ to the category `Opens U`.
 
 ## TODO
 * show that both functors of the equivalence `overEquivalence U` are continuous and
-induce an equivalence between `Sheaf ((Opens.grothendieckTopology X).over U) A`
-and `Sheaf (Opens.grothendieckTopology U) A` for any category `A`.
+  induce an equivalence between `Sheaf ((Opens.grothendieckTopology X).over U) A`
+  and `Sheaf (Opens.grothendieckTopology U) A` for any category `A`.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -31,6 +35,7 @@ variable {X : Type u} [TopologicalSpace X] (U : Opens X)
 
 namespace Opens
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `X` is a topological space and `U : Opens X`,
 then the category `Over U` is equivalent to `Opens ↥U`. -/
 @[simps!]

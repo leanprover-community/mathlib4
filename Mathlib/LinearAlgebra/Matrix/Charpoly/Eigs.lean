@@ -3,9 +3,11 @@ Copyright (c) 2023 Mohanad Ahmed. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mohanad Ahmed
 -/
-import Mathlib.Algebra.Algebra.Spectrum.Basic
-import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.FieldTheory.IsAlgClosed.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Spectrum.Basic
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
 # Eigenvalues are characteristic polynomial roots.
@@ -48,6 +50,8 @@ dependencies are not general enough to unify them. We should refactor
 arbitrary map.
 -/
 
+public section
+
 
 variable {n : Type*} [Fintype n] [DecidableEq n]
 variable {R K : Type*} [CommRing R] [Field K]
@@ -59,34 +63,35 @@ open scoped Matrix
 
 namespace Matrix
 
-/-- The roots of the characteristic polynomial are in the spectrum of the matrix. -/
-theorem mem_spectrum_of_isRoot_charpoly [Nontrivial R]
-    {r : R} (hr : IsRoot B.charpoly r) : r ∈ spectrum R B := by
-  simp_all [eval_charpoly, spectrum.mem_iff, isUnit_iff_isUnit_det, algebraMap_eq_diagonal,
+theorem mem_spectrum_iff_not_isUnit_eval_charpoly {r : R} :
+    r ∈ spectrum R B ↔ ¬IsUnit (B.charpoly.eval r) := by
+  simp [eval_charpoly, spectrum.mem_iff, isUnit_iff_isUnit_det, algebraMap_eq_diagonal,
     Pi.algebraMap_def]
+
+/-- The roots of the characteristic polynomial are in the spectrum of the matrix. -/
+theorem mem_spectrum_of_isRoot_charpoly [Nontrivial R] {r : R} (hr : IsRoot B.charpoly r) :
+    r ∈ spectrum R B := by
+  simp [mem_spectrum_iff_not_isUnit_eval_charpoly, hr.eq_zero]
 
 /--
 In fields, the roots of the characteristic polynomial are exactly the spectrum of the matrix.
 The weaker direction is true in nontrivial rings (see `Matrix.mem_spectrum_of_isRoot_charpoly`).
 -/
 theorem mem_spectrum_iff_isRoot_charpoly {r : K} : r ∈ spectrum K A ↔ IsRoot A.charpoly r := by
-  simp [eval_charpoly, spectrum.mem_iff, isUnit_iff_isUnit_det, algebraMap_eq_diagonal,
-    Pi.algebraMap_def]
+  simp [mem_spectrum_iff_not_isUnit_eval_charpoly]
 
-theorem det_eq_prod_roots_charpoly_of_splits (hAps : A.charpoly.Splits (RingHom.id K)) :
-    A.det = (Matrix.charpoly A).roots.prod := by
-  rw [det_eq_sign_charpoly_coeff, ← charpoly_natDegree_eq_dim A,
-    Polynomial.coeff_zero_eq_prod_roots_of_monic_of_splits A.charpoly_monic hAps, ← mul_assoc,
+theorem det_eq_prod_roots_charpoly_of_splits [IsDomain R] (hAps : B.charpoly.Splits) :
+    B.det = (Matrix.charpoly B).roots.prod := by
+  rw [det_eq_sign_charpoly_coeff, ← charpoly_natDegree_eq_dim B,
+    hAps.coeff_zero_eq_prod_roots_of_monic B.charpoly_monic, ← mul_assoc,
     ← pow_two, pow_right_comm, neg_one_sq, one_pow, one_mul]
 
-theorem trace_eq_sum_roots_charpoly_of_splits (hAps : A.charpoly.Splits (RingHom.id K)) :
-    A.trace = (Matrix.charpoly A).roots.sum := by
+theorem trace_eq_sum_roots_charpoly_of_splits [IsDomain R] (hAps : B.charpoly.Splits) :
+    B.trace = (Matrix.charpoly B).roots.sum := by
   rcases isEmpty_or_nonempty n with h | _
-  · rw [Matrix.trace, Fintype.sum_empty, Matrix.charpoly,
-      det_eq_one_of_card_eq_zero (Fintype.card_eq_zero_iff.2 h), Polynomial.roots_one,
-      Multiset.empty_eq_zero, Multiset.sum_zero]
+  · simp
   · rw [trace_eq_neg_charpoly_nextCoeff, neg_eq_iff_eq_neg,
-      ← Polynomial.nextCoeff_eq_neg_sum_roots_of_monic_of_splits A.charpoly_monic hAps]
+      ← hAps.nextCoeff_eq_neg_sum_roots_of_monic B.charpoly_monic]
 
 variable (A)
 

@@ -1,3 +1,7 @@
-import Mathlib.Tactic.Ring.Basic
-import Mathlib.Tactic.Ring.RingNF
-import Mathlib.Tactic.Ring.PNat
+module
+
+public import Mathlib.Tactic.Ring.Basic
+public import Mathlib.Tactic.Ring.PNat
+public import Mathlib.Tactic.Ring.RingNF
+
+set_option linter.style.header false

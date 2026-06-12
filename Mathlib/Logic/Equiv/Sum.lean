@@ -3,10 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.Option.Defs
-import Mathlib.Data.Sigma.Basic
-import Mathlib.Logic.Equiv.Prod
-import Mathlib.Tactic.Coe
+module
+
+public import Mathlib.Data.Option.Defs
+public import Mathlib.Data.Sigma.Basic
+public import Mathlib.Logic.Equiv.Prod
+public import Mathlib.Tactic.Coe
 
 /-!
 # Equivalence between sum types
@@ -22,13 +24,16 @@ In this file we continue the work on equivalences begun in `Mathlib/Logic/Equiv/
     satisfy the distributive law up to a canonical equivalence;
 
 More definitions of this kind can be found in other files.
-E.g., `Mathlib/Algebra/Equiv/TransferInstance.lean` does it for many algebraic type classes like
-`Group`, `Module`, etc.
+E.g., `Mathlib/Algebra/Group/TransferInstance.lean` does it for `Group`,
+`Mathlib/Algebra/Module/TransferInstance.lean` does it for `Module`, and similar files exist for
+other algebraic type classes.
 
 ## Tags
 
 equivalence, congruence, bijective map
 -/
+
+@[expose] public section
 
 universe u v w z
 
@@ -284,11 +289,6 @@ theorem sumCompl_symm_apply_of_pos {α} {p : α → Prop} [DecidablePred p] {a :
 theorem sumCompl_symm_apply_of_neg {α} {p : α → Prop} [DecidablePred p] {a : α} (h : ¬p a) :
     (sumCompl p).symm a = Sum.inr ⟨a, h⟩ :=
   dif_neg h
-
-@[deprecated (since := "2025-10-28")]
-alias sumCompl_apply_symm_of_pos := sumCompl_symm_apply_of_pos
-@[deprecated (since := "2025-10-28")]
-alias sumCompl_apply_symm_of_neg := sumCompl_symm_apply_of_neg
 
 @[simp]
 theorem sumCompl_symm_apply_pos {α} {p : α → Prop} [DecidablePred p] (x : {x // p x}) :

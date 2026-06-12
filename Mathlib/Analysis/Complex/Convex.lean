@@ -3,9 +3,11 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Analysis.Complex.ReImTopology
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.Analysis.Convex.PathConnected
+module
+
+public import Mathlib.Analysis.Complex.ReImTopology
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Analysis.Convex.PathConnected
 
 /-!
 # Theorems about convexity on the complex plane
@@ -14,6 +16,8 @@ We show that the open and closed half-spaces in ℂ given by an inequality on ei
 imaginary part are all convex over ℝ. We also prove some results on star-convexity for the
 slit plane.
 -/
+
+public section
 
 open Set
 open scoped ComplexOrder
@@ -26,7 +30,7 @@ lemma convexHull_reProdIm (s t : Set ℝ) :
   calc
     convexHull ℝ (equivRealProdLm ⁻¹' (s ×ˢ t)) = equivRealProdLm ⁻¹' convexHull ℝ (s ×ˢ t) := by
       simpa only [← LinearEquiv.image_symm_eq_preimage]
-        using ((equivRealProdLm.symm.toLinearMap).image_convexHull (s ×ˢ t)).symm
+        using! ((equivRealProdLm.symm.toLinearMap).image_convexHull (s ×ˢ t)).symm
     _ = convexHull ℝ s ×ℂ convexHull ℝ t := by rw [convexHull_prod]; rfl
 
 /-- The slit plane is star-convex at a positive number. -/
@@ -94,11 +98,12 @@ lemma Convex.rectangle_subset {U : Set ℂ} (U_convex : Convex ℝ U) {z w : ℂ
 instance : PathConnectedSpace ℂˣ :=
   have : PathConnectedSpace { z : ℂ // z ≠ 0 } :=
     (isPathConnected_iff_pathConnectedSpace (F := {0}ᶜ)).mp (by
-      convert (((convex_halfSpace_im_gt 0).isPathConnected ⟨.I, by simp⟩).union
-        ((convex_halfSpace_re_gt 0).isPathConnected ⟨1, by simp⟩) ⟨1 + .I, by simp⟩).union
-        (((convex_halfSpace_im_lt 0).isPathConnected ⟨-.I, by simp⟩).union
-        ((convex_halfSpace_re_lt 0).isPathConnected ⟨-1, by simp⟩) ⟨-1 - .I, by simp⟩)
-        ⟨1 - .I, by simp⟩ using 1
+      convert!
+        (((convex_halfSpace_im_gt 0).isPathConnected ⟨.I, by simp⟩).union
+              ((convex_halfSpace_re_gt 0).isPathConnected ⟨1, by simp⟩) ⟨1 + .I, by simp⟩).union
+          (((convex_halfSpace_im_lt 0).isPathConnected ⟨-.I, by simp⟩).union
+            ((convex_halfSpace_re_lt 0).isPathConnected ⟨-1, by simp⟩) ⟨-1 - .I, by simp⟩)
+          ⟨1 - .I, by simp⟩ using 1
       ext x
       refine ⟨?_, by aesop⟩
       simp +contextual [Complex.ext_iff, -not_and, not_and_or, or_imp, ← ne_eq, ← lt_or_lt_iff_ne])

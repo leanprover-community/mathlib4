@@ -3,9 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Matrix.Kronecker
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.TensorProduct.Basis
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Kronecker
+public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.LinearAlgebra.TensorProduct.Basis
 
 /-!
 # Connections between `TensorProduct` and `Matrix`
@@ -16,6 +18,8 @@ where the correspondence is induced by `Basis.tensorProduct`
 Notably, `TensorProduct.toMatrix_map` shows that taking the tensor product of linear maps is
 equivalent to taking the Kronecker product of their matrix representations.
 -/
+
+public section
 
 open Matrix Module LinearMap
 open scoped Kronecker

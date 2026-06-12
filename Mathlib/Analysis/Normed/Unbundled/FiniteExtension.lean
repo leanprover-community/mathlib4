@@ -3,11 +3,13 @@ Copyright (c) 2025 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
-import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
-import Mathlib.Analysis.Normed.Unbundled.SmoothingSeminorm
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+module
+
+public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
+public import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
+public import Mathlib.Analysis.Normed.Unbundled.SmoothingSeminorm
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 
 
 /-!
@@ -37,6 +39,8 @@ at least one power-multiplicative `K`-algebra norm on `L` extending the norm on 
 
 Basis.norm, nonarchimedean
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -87,7 +91,7 @@ theorem norm_isNonarchimedean (hna : IsNonarchimedean (Norm.norm : K → ℝ)) :
     IsNonarchimedean B.norm := fun x y ↦ by
   obtain ⟨ixy, _, hixy⟩ := exists_mem_eq_sup' univ_nonempty (fun i ↦ ‖(B.repr (x + y)) i‖)
   have hxy : ‖B.repr (x + y) ixy‖ ≤ max ‖B.repr x ixy‖ ‖B.repr y ixy‖ := by
-    rw [LinearEquiv.map_add, Finsupp.coe_add, Pi.add_apply]; exact hna _ _
+    rw [map_add, Finsupp.coe_add, Pi.add_apply]; exact hna _ _
   rw [Basis.norm, hixy]
   rcases le_max_iff.mp hxy with (hx | hy)
   · exact le_max_of_le_left (le_trans hx (norm_repr_le_norm B ixy))
@@ -108,11 +112,10 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
     obtain ⟨ixy, _, hixy_def⟩ := exists_mem_eq_sup' univ_nonempty (fun i ↦ ‖(B.repr (x * y)) i‖)
     -- We rewrite the LHS using `ixy`.
     conv_lhs => simp only [Basis.norm]; rw [hixy_def, ← Basis.sum_repr B x, ← Basis.sum_repr B y]
-    rw [sum_mul, map_finset_sum]
-    simp_rw [smul_mul_assoc, LinearEquiv.map_smul, mul_sum, map_finset_sum,
-      mul_smul_comm, LinearEquiv.map_smul]
+    rw [sum_mul, map_finsetSum]
+    simp_rw [smul_mul_assoc, map_smul, mul_sum, map_finsetSum, mul_smul_comm, map_smul]
     have hna' : IsNonarchimedean (NormedField.toMulRingNorm K) := hna
-    /- Since the norm is nonarchimidean, the norm of a finite sum is bounded by the maximum of the
+    /- Since the norm is nonarchimedean, the norm of a finite sum is bounded by the maximum of the
           norms of the summands. -/
     obtain ⟨k, -, (hk : ‖∑ i : ι, (B.repr x i • ∑ i_1 : ι,
       B.repr y i_1 • B.repr (B i * B i_1)) ixy‖ ≤
@@ -120,8 +123,8 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
       IsNonarchimedean.finset_image_add hna'
         (fun i ↦ (B.repr x i • ∑ i_1 : ι, B.repr y i_1 • B.repr (B i * B i_1)) ixy)
         (univ : Finset ι)
-    simp only [Finsupp.coe_smul, Finsupp.coe_finset_sum, Pi.smul_apply, sum_apply, smul_eq_mul,
-      norm_mul] at hk ⊢
+    simp only [Finsupp.coe_smul, Finsupp.coe_finsetSum, Pi.smul_apply, Finset.sum_apply,
+      smul_eq_mul, norm_mul] at hk ⊢
     apply le_trans hk
     -- We use the above property again.
     obtain ⟨k', hk'⟩ : ∃ (k' : ι),

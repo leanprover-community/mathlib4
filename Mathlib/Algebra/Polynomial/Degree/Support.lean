@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.MonoidAlgebra.Support
-import Mathlib.Algebra.Polynomial.Degree.Operations
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.Support
+public import Mathlib.Algebra.Polynomial.Degree.Operations
 
 /-!
 # Degree and support of univariate polynomials
@@ -14,6 +16,8 @@ import Mathlib.Algebra.Polynomial.Degree.Operations
 * `Polynomial.as_sum_range`: write `p : R[X]` as a sum over `{0, ..., natDegree p}`
 * `Polynomial.natDegree_mem_support_of_nonzero`: `natDegree p ∈ support p` if `p ≠ 0`
 -/
+
+public section
 
 noncomputable section
 
@@ -95,11 +99,11 @@ theorem as_sum_range_C_mul_X_pow (p : R[X]) :
   p.as_sum_range_C_mul_X_pow' (lt_add_one _)
 
 theorem mem_support_C_mul_X_pow {n a : ℕ} {c : R} (h : a ∈ support (C c * X ^ n)) : a = n :=
-  mem_singleton.1 <| support_C_mul_X_pow' n c h
+  mem_singleton.1 <| support_C_mul_X_pow_subset n c h
 
 theorem card_support_C_mul_X_pow_le_one {c : R} {n : ℕ} : #(support (C c * X ^ n)) ≤ 1 := by
   rw [← card_singleton n]
-  apply card_le_card (support_C_mul_X_pow' n c)
+  apply card_le_card (support_C_mul_X_pow_subset n c)
 
 theorem card_supp_le_succ_natDegree (p : R[X]) : #p.support ≤ p.natDegree + 1 := by
   rw [← Finset.card_range (p.natDegree + 1)]

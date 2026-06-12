@@ -3,12 +3,16 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+module
+
+public import Mathlib.Algebra.Order.Sub.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 
 /-!
 # Lemmas about subtraction in an unbundled canonically ordered monoids
 -/
+
+public section
 
 -- These are about *unbundled* canonically ordered monoids
 assert_not_exists IsOrderedMonoid
@@ -52,7 +56,7 @@ theorem lt_of_tsub_lt_tsub_right_of_le (h : c ≤ b) (h2 : a - c < b - c) : a < 
   exact h2.false
 
 theorem tsub_add_tsub_cancel (hab : b ≤ a) (hcb : c ≤ b) : a - b + (b - c) = a - c := by
-  convert tsub_add_cancel_of_le (tsub_le_tsub_right hab c) using 2
+  convert! tsub_add_cancel_of_le (tsub_le_tsub_right hab c) using 2
   rw [tsub_tsub, add_tsub_cancel_of_le hcb]
 
 theorem tsub_tsub_tsub_cancel_right (h : c ≤ b) : a - c - (b - c) = a - b := by

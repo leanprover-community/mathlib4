@@ -3,9 +3,10 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
-import Mathlib.Probability.Notation
-import Mathlib.Probability.CDF
-import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+module
+
+public import Mathlib.Probability.CDF
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 
 /-! # Gamma distributions over ℝ
 
@@ -20,6 +21,8 @@ Define the gamma measure over the reals.
 * `gammaMeasure`: a gamma measure on `ℝ`, parametrized by its shape `a` and rate `r`.
 
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal
 
@@ -69,13 +72,13 @@ lemma lintegral_gammaPDF_of_nonpos {x a r : ℝ} (hx : x ≤ 0) :
     rw [if_neg (by linarith)]
 
 /-- The gamma pdf is measurable. -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_gammaPDFReal (a r : ℝ) : Measurable (gammaPDFReal a r) :=
   Measurable.ite measurableSet_Ici (((measurable_id'.pow_const _).const_mul _).mul
     (measurable_id'.const_mul _).neg.exp) measurable_const
 
 /-- The gamma pdf is strongly measurable -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma stronglyMeasurable_gammaPDFReal (a r : ℝ) :
     StronglyMeasurable (gammaPDFReal a r) :=
   (measurable_gammaPDFReal a r).stronglyMeasurable
@@ -129,16 +132,7 @@ lemma isProbabilityMeasure_gammaMeasure {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
     IsProbabilityMeasure (gammaMeasure a r) where
   measure_univ := by simp [gammaMeasure, lintegral_gammaPDF_eq_one ha hr]
 
-@[deprecated (since := "2025-08-28")] alias isProbabilityMeasureGamma :=
-  isProbabilityMeasure_gammaMeasure
-
 section GammaCDF
-
-/-- CDF of the gamma distribution -/
-@[deprecated "Use `cdf (gammaMeasure a r)` instead." (since := "2025-08-28")]
-noncomputable
-def gammaCDFReal (a r : ℝ) : StieltjesFunction :=
-  cdf (gammaMeasure a r)
 
 lemma cdf_gammaMeasure_eq_integral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
     cdf (gammaMeasure a r) x = ∫ x in Iic x, gammaPDFReal a r x := by
@@ -148,17 +142,11 @@ lemma cdf_gammaMeasure_eq_integral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : �
   · exact ae_of_all _ fun b ↦ by simp [gammaPDFReal_nonneg ha hr]
   · fun_prop
 
-@[deprecated (since := "2025-08-28")] alias gammaCDFReal_eq_integral :=
-  cdf_gammaMeasure_eq_integral
-
 lemma cdf_gammaMeasure_eq_lintegral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
     cdf (gammaMeasure a r) x = ENNReal.toReal (∫⁻ x in Iic x, gammaPDF a r x) := by
   have : IsProbabilityMeasure (gammaMeasure a r) := isProbabilityMeasure_gammaMeasure ha hr
   simp only [gammaPDF, cdf_eq_real]
   simp [gammaMeasure, gammaPDF, measureReal_def]
-
-@[deprecated (since := "2025-08-28")] alias gammaCDFReal_eq_lintegral :=
-  cdf_gammaMeasure_eq_lintegral
 
 end GammaCDF
 

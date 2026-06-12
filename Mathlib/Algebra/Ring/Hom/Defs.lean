@@ -3,9 +3,11 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Jireh Loreaux
 -/
-import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Ring.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Hom
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Ring.Basic
 
 /-!
 # Homomorphisms of semirings and rings
@@ -40,6 +42,8 @@ groups, we use the same structure `RingHom a β`, a.k.a. `α →+* β`, for both
 
 `RingHom`, `SemiringHom`
 -/
+
+@[expose] public section
 
 assert_not_exists Function.Injective.mulZeroClass semigroupDvd Units.map
 
@@ -100,11 +104,11 @@ variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β]
 
 instance : FunLike (α →ₙ+* β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
-    apply DFunLike.coe_injective'
+    apply DFunLike.coe_injective
     exact h
 
 instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
@@ -167,8 +171,9 @@ end
 variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β]
 
 /-- The identity non-unital ring homomorphism from a non-unital semiring to itself. -/
+@[implicit_reducible]
 protected def id (α : Type*) [NonUnitalNonAssocSemiring α] : α →ₙ+* α where
-  toFun := id
+  toFun x := x
   map_mul' _ _ := rfl
   map_zero' := rfl
   map_add' _ _ := rfl
@@ -203,6 +208,7 @@ theorem coe_mulHom_id : (NonUnitalRingHom.id α : α →ₙ* α) = MulHom.id α 
 variable [NonUnitalNonAssocSemiring γ]
 
 /-- Composition of non-unital ring homomorphisms is a non-unital ring homomorphism. -/
+@[implicit_reducible]
 def comp (g : β →ₙ+* γ) (f : α →ₙ+* β) : α →ₙ+* γ :=
   { g.toMulHom.comp f.toMulHom, g.toAddMonoidHom.comp f.toAddMonoidHom with }
 
@@ -286,6 +292,7 @@ end NonUnitalRingHom
 
 This extends from both `MonoidHom` and `MonoidWithZeroHom` in order to put the fields in a
 sensible order, even though `MonoidWithZeroHom` already extends `MonoidHom`. -/
+@[wikidata Q1194212]
 structure RingHom (α : Type*) (β : Type*) [NonAssocSemiring α] [NonAssocSemiring β] extends
   α →* β, α →+ β, α →ₙ+* β, α →*₀ β
 
@@ -353,11 +360,11 @@ variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β}
 
 instance instFunLike : FunLike (α →+* β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
-    apply DFunLike.coe_injective'
+    apply DFunLike.coe_injective
     exact h
 
 instance instRingHomClass : RingHomClass (α →+* β) α β where
@@ -502,8 +509,9 @@ def mk' [NonAssocSemiring α] [NonAssocRing β] (f : α →* β)
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β}
 
 /-- The identity ring homomorphism from a semiring to itself. -/
+@[implicit_reducible]
 def id (α : Type*) [NonAssocSemiring α] : α →+* α where
-  toFun := _root_.id
+  toFun x := x
   map_zero' := rfl
   map_one' := rfl
   map_add' _ _ := rfl
@@ -530,8 +538,9 @@ theorem coe_monoidHom_id : (id α : α →* α) = MonoidHom.id α :=
 variable {_ : NonAssocSemiring γ}
 
 /-- Composition of ring homomorphisms is a ring homomorphism. -/
+@[implicit_reducible]
 def comp (g : β →+* γ) (f : α →+* β) : α →+* γ :=
-  { g.toNonUnitalRingHom.comp f.toNonUnitalRingHom with toFun := g ∘ f, map_one' := by simp }
+  { g.toNonUnitalRingHom.comp f.toNonUnitalRingHom with toFun x := g (f x), map_one' := by simp }
 
 /-- Composition of semiring homomorphisms is associative. -/
 theorem comp_assoc {δ} {_ : NonAssocSemiring δ} (f : α →+* β) (g : β →+* γ) (h : γ →+* δ) :

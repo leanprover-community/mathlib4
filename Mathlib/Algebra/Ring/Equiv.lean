@@ -3,12 +3,17 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Equiv.Opposite
-import Mathlib.Algebra.GroupWithZero.Equiv
-import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Logic.Equiv.Set
-import Mathlib.Algebra.Notation.Prod
+module
+
+public import Mathlib.Algebra.Group.Equiv.Opposite
+public import Mathlib.Algebra.GroupWithZero.Equiv
+public import Mathlib.Algebra.GroupWithZero.InjSurj
+public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Util.Delaborators
+
+import Mathlib.Tactic.DSimpPercent
 
 /-!
 # (Semi)ring equivs
@@ -36,6 +41,8 @@ multiplication in `Equiv.Perm`, and multiplication in `CategoryTheory.End`, not 
 
 Equiv, MulEquiv, AddEquiv, RingEquiv, MulAut, AddAut, RingAut
 -/
+
+@[expose] public section
 
 -- guard against import creep
 assert_not_exists Field Fintype
@@ -111,12 +118,6 @@ def toRingEquiv [Mul α] [Add α] [Mul β] [Add β] [EquivLike F α β] [RingEqu
   { (f : α ≃* β), (f : α ≃+ β) with }
 
 end RingEquivClass
-
-/-- Any type satisfying `RingEquivClass` can be cast into `RingEquiv` via
-`RingEquivClass.toRingEquiv`. -/
-instance [Mul α] [Add α] [Mul β] [Add β] [EquivLike F α β] [RingEquivClass F α β] :
-    CoeTC F (α ≃+* β) :=
-  ⟨RingEquivClass.toRingEquiv⟩
 
 namespace RingEquiv
 
@@ -265,15 +266,11 @@ theorem mk_coe' (e : R ≃+* S) (f h₁ h₂ h₃ h₄) :
     (⟨⟨f, ⇑e, h₁, h₂⟩, h₃, h₄⟩ : S ≃+* R) = e.symm :=
   symm_bijective.injective <| ext fun _ => rfl
 
-/-- Auxiliary definition to avoid looping in `dsimp` with `RingEquiv.symm_mk`. -/
-protected def symm_mk.aux (f : R → S) (g h₁ h₂ h₃ h₄) := (mk ⟨f, g, h₁, h₂⟩ h₃ h₄).symm
-
 @[simp]
-theorem symm_mk (f : R → S) (g h₁ h₂ h₃ h₄) :
-    (mk ⟨f, g, h₁, h₂⟩ h₃ h₄).symm =
-      { symm_mk.aux f g h₁ h₂ h₃ h₄ with
-        toFun := g
-        invFun := f } :=
+theorem symm_mk (e : R ≃ S) (h₁ h₂) : dsimp%
+    (mk e h₁ h₂).symm =
+      { (mk e h₁ h₂).symm with
+        toEquiv := e.symm } :=
   rfl
 
 @[simp]
@@ -306,7 +303,14 @@ lemma image_symm_eq_preimage (e : R ≃+* S) (s : Set S) : e.symm '' s = e ⁻¹
 lemma image_eq_preimage_symm (e : R ≃+* S) (s : Set R) : e '' s = e.symm ⁻¹' s :=
   e.toEquiv.image_eq_preimage_symm _
 
-@[deprecated (since := "2025-11-05")] alias image_eq_preimage := image_eq_preimage_symm
+@[simp]
+lemma coe_coe_toEquiv_symm (e : R ≃+* S) : ⇑(e : R ≃ S).symm = ⇑e.symm := rfl
+
+@[simp]
+lemma coe_coe_toMulEquiv_symm (e : R ≃+* S) : ⇑(e : R ≃* S).symm = ⇑e.symm := rfl
+
+@[simp]
+lemma coe_coe_toAddEquiv_symm (e : R ≃+* S) : ⇑(e : R ≃+ S).symm = ⇑e.symm := rfl
 
 theorem symm_apply_eq (e : R ≃+* S) {x : S} {y : R} :
     e.symm x = y ↔ x = e y := Equiv.symm_apply_eq _
@@ -818,39 +822,6 @@ theorem symm_toRingHom_comp_toRingHom (e : R ≃+* S) :
     e.symm.toRingHom.comp e.toRingHom = RingHom.id _ := by
   simp
 
-/-- Construct an equivalence of rings from homomorphisms in both directions, which are inverses.
--/
-@[simps]
-def ofHomInv' {R S F G : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
-    [FunLike F R S] [FunLike G S R]
-    [NonUnitalRingHomClass F R S] [NonUnitalRingHomClass G S R] (hom : F) (inv : G)
-    (hom_inv_id : (inv : S →ₙ+* R).comp (hom : R →ₙ+* S) = NonUnitalRingHom.id R)
-    (inv_hom_id : (hom : R →ₙ+* S).comp (inv : S →ₙ+* R) = NonUnitalRingHom.id S) :
-    R ≃+* S where
-  toFun := hom
-  invFun := inv
-  left_inv := DFunLike.congr_fun hom_inv_id
-  right_inv := DFunLike.congr_fun inv_hom_id
-  map_mul' := map_mul hom
-  map_add' := map_add hom
-
-/--
-Construct an equivalence of rings from unital homomorphisms in both directions, which are inverses.
--/
-@[simps]
-def ofHomInv {R S F G : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
-    [FunLike F R S] [FunLike G S R] [RingHomClass F R S]
-    [RingHomClass G S R] (hom : F) (inv : G)
-    (hom_inv_id : (inv : S →+* R).comp (hom : R →+* S) = RingHom.id R)
-    (inv_hom_id : (hom : R →+* S).comp (inv : S →+* R) = RingHom.id S) :
-    R ≃+* S where
-  toFun := hom
-  invFun := inv
-  left_inv := DFunLike.congr_fun hom_inv_id
-  right_inv := DFunLike.congr_fun inv_hom_id
-  map_mul' := map_mul hom
-  map_add' := map_add hom
-
 end SemiringHom
 
 variable [Semiring R] [Semiring S]
@@ -900,10 +871,41 @@ end RingEquiv
 
 namespace RingEquiv
 
+section NonUnital
+
+variable [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
+
+/-- If a non-unital ring homomorphism has an inverse, it is a ring isomorphism. -/
+@[simps -isSimp]
+def ofNonUnitalRingHom (hom : R →ₙ+* S) (inv : S →ₙ+* R)
+    (hom_inv_id : inv.comp hom = .id R) (inv_hom_id : hom.comp inv = .id S) :
+    R ≃+* S where
+  toFun := hom
+  invFun := inv
+  left_inv := DFunLike.congr_fun hom_inv_id
+  right_inv := DFunLike.congr_fun inv_hom_id
+  map_mul' := map_mul hom
+  map_add' := map_add hom
+
+attribute [simp] ofNonUnitalRingHom_apply
+
+@[deprecated (since := "2025-12-04")] alias ofHomInv' := ofNonUnitalRingHom
+@[deprecated (since := "2025-12-04")] alias ofHomInv'_apply := ofNonUnitalRingHom_apply
+@[deprecated (since := "2025-12-04")] alias ofHomInv'_symm_apply := ofNonUnitalRingHom_symm_apply
+
+@[simp]
+theorem symm_ofNonUnitalRingHom (f : R →ₙ+* S) (g : S →ₙ+* R) (h₁ h₂) :
+    (ofNonUnitalRingHom f g h₁ h₂).symm = ofNonUnitalRingHom g f h₂ h₁ :=
+  rfl
+
+end NonUnital
+
+section Unital
+
 variable [NonAssocSemiring R] [NonAssocSemiring S]
 
 /-- If a ring homomorphism has an inverse, it is a ring isomorphism. -/
-@[simps]
+@[simps -isSimp]
 def ofRingHom (f : R →+* S) (g : S →+* R) (h₁ : f.comp g = RingHom.id S)
     (h₂ : g.comp f = RingHom.id R) : R ≃+* S :=
   { f with
@@ -912,6 +914,12 @@ def ofRingHom (f : R →+* S) (g : S →+* R) (h₁ : f.comp g = RingHom.id S)
     left_inv := RingHom.ext_iff.1 h₂
     right_inv := RingHom.ext_iff.1 h₁ }
 
+attribute [simp] ofRingHom_apply
+
+@[deprecated (since := "2025-12-04")] alias ofHomInv := ofRingHom
+@[deprecated (since := "2025-12-04")] alias ofHomInv_apply := ofRingHom_apply
+@[deprecated (since := "2025-12-04")] alias ofHomInv_symm_apply := ofRingHom_symm_apply
+
 theorem coe_ringHom_ofRingHom (f : R →+* S) (g : S →+* R) (h₁ h₂) : ofRingHom f g h₁ h₂ = f :=
   rfl
 
@@ -919,6 +927,7 @@ theorem coe_ringHom_ofRingHom (f : R →+* S) (g : S →+* R) (h₁ h₂) : ofRi
 theorem ofRingHom_coe_ringHom (f : R ≃+* S) (g : S →+* R) (h₁ h₂) : ofRingHom (↑f) g h₁ h₂ = f :=
   ext fun _ ↦ rfl
 
+@[simp]
 theorem ofRingHom_symm (f : R →+* S) (g : S →+* R) (h₁ h₂) :
     (ofRingHom f g h₁ h₂).symm = ofRingHom g f h₂ h₁ :=
   rfl
@@ -939,6 +948,8 @@ lemma sumArrowEquivProdArrow_apply (x) :
 @[simp low]
 lemma sumArrowEquivProdArrow_symm_apply (x : (α → R) × (β → R)) :
     (sumArrowEquivProdArrow α β R).symm x = (Equiv.sumArrowEquivProdArrow α β R).symm x := rfl
+
+end Unital
 
 end RingEquiv
 

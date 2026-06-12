@@ -3,8 +3,9 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.FiberedCategory.HomLift
+public import Mathlib.CategoryTheory.FiberedCategory.HomLift
 
 /-!
 # Co-Cartesian morphisms
@@ -33,6 +34,8 @@ difference between the two is that the latter is more flexible with respect to n
 equalities.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -174,8 +177,7 @@ lemma universal_property {S' : 𝒮} {b' : 𝒳} (g : S ⟶ S') (f' : R ⟶ S') 
   have : p.IsHomLift (f ≫ g) φ' := (hf' ▸ inferInstance)
   apply IsStronglyCocartesian.universal_property' f
 
-instance isCocartesian_of_isStronglyCocartesian [p.IsStronglyCocartesian f φ] :
-    p.IsCocartesian f φ where
+instance isCocartesian_of_isStronglyCocartesian : p.IsCocartesian f φ where
   universal_property := fun φ' => universal_property p f φ (𝟙 S) f (comp_id f).symm φ'
 
 section

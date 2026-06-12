@@ -3,8 +3,10 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
-import Mathlib.LinearAlgebra.Orientation
+module
+
+public import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
+public import Mathlib.LinearAlgebra.Orientation
 
 /-!
 # Orientations of real inner product spaces.
@@ -32,6 +34,8 @@ This file provides definitions and proves lemmas about orientations of real inne
   space, is equal up to sign to the product of the lengths of the vectors.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -124,7 +128,7 @@ theorem adjustToOrientation_apply_eq_or_eq_neg (i : ι) :
 theorem det_adjustToOrientation :
     (e.adjustToOrientation x).toBasis.det = e.toBasis.det ∨
       (e.adjustToOrientation x).toBasis.det = -e.toBasis.det := by
-  simpa using e.toBasis.det_adjustToOrientation x
+  simpa using! e.toBasis.det_adjustToOrientation x
 
 theorem abs_det_adjustToOrientation (v : ι → E) :
     |(e.adjustToOrientation x).toBasis.det v| = |e.toBasis.det v| := by
@@ -211,7 +215,7 @@ theorem volumeForm_robust_neg (b : OrthonormalBasis (Fin n) ℝ E) (hb : b.toBas
   let e : OrthonormalBasis (Fin n.succ) ℝ E := o.finOrthonormalBasis n.succ_pos Fact.out
   simp_rw [volumeForm]
   apply e.det_eq_neg_det_of_opposite_orientation b
-  convert hb.symm
+  convert! hb.symm
   exact o.finOrthonormalBasis_orientation _ _
 
 @[simp]
@@ -249,7 +253,7 @@ theorem abs_volumeForm_apply_le (v : Fin n → E) : |o.volumeForm v| ≤ ∏ i :
   · intro i _
     positivity
   intro i _
-  convert abs_real_inner_le_norm (b i) (v i)
+  convert! abs_real_inner_le_norm (b i) (v i)
   simp [b.orthonormal.1 i]
 
 theorem volumeForm_apply_le (v : Fin n → E) : o.volumeForm v ≤ ∏ i : Fin n, ‖v i‖ :=
@@ -307,7 +311,7 @@ theorem volumeForm_comp_linearIsometryEquiv (φ : E ≃ₗᵢ[ℝ] E)
   rcases n with - | n
   · refine o.eq_or_eq_neg_of_isEmpty.elim ?_ ?_ <;> rintro rfl <;> simp
   have : FiniteDimensional ℝ E := .of_fact_finrank_eq_succ n
-  convert o.volumeForm_map φ (φ ∘ x)
+  convert! o.volumeForm_map φ (φ ∘ x)
   · symm
     rwa [← o.map_eq_iff_det_pos φ.toLinearEquiv] at hφ
     rw [_i.out, Fintype.card_fin]

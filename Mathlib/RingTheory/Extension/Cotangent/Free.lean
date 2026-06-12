@@ -3,9 +3,11 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.LinearAlgebra.Basis.Exact
-import Mathlib.RingTheory.Extension.Cotangent.Basic
-import Mathlib.RingTheory.Extension.Presentation.Submersive
+module
+
+public import Mathlib.LinearAlgebra.Basis.Exact
+public import Mathlib.RingTheory.Extension.Cotangent.Basic
+public import Mathlib.RingTheory.Extension.Presentation.Submersive
 
 /-!
 # Computation of Jacobian of presentations from basis of Cotangent
@@ -23,6 +25,8 @@ smooth algebras (TODO @chrisflav).
   If the `fᵢ` form a basis of `I/I²` and the restricted cotangent complex
   `I/I² → S ⊗[R] (Ω[R[Xᵢ]⁄R]) = ⊕ᵢ S → ⊕ⱼ S` is bijective, `P` is submersive.
 -/
+
+public section
 
 universe t₂ t₁ u v
 
@@ -87,6 +91,17 @@ lemma disjoint_ker_toKaehler_of_linearIndependent
   obtain rfl := (linearIndependent_iff.mp h) c hx
   simp
 
+lemma cotangentRestrict_bijective_of_basis_kaehlerDifferential
+    (huv : IsCompl (Set.range v) (Set.range u)) (b : Module.Basis κ S (Ω[S⁄R]))
+    (hb : ∀ k, b k = (D R S) (P.val (v k))) [Subsingleton (H1Cotangent R S)] :
+    Function.Bijective (cotangentRestrict P hu) := by
+  refine P.cotangentRestrict_bijective_of_isCompl _ huv ?_ ?_
+  · simp_rw [← hb]
+    exact b.span_eq
+  · apply disjoint_ker_toKaehler_of_linearIndependent
+    simp_rw [← hb]
+    exact b.linearIndependent
+
 end Generators
 
 namespace PreSubmersivePresentation
@@ -111,9 +126,9 @@ lemma isUnit_jacobian_of_cotangentRestrict_bijective
   · rw [heq]
     exact (b.linearIndependent.map' _ (LinearMap.ker_eq_bot_of_injective h.injective)).map' _
       (Finsupp.linearEquivFunOnFinite S S σ).ker
-  · rw [heq, Set.range_comp, Set.range_comp, ← Submodule.map_span, ← Submodule.map_span,
+  · rw [heq, Set.range_comp, Set.range_comp, Submodule.span_image_linearEquiv, ← Submodule.map_span,
       b.span_eq, Submodule.map_top, LinearMap.range_eq_top_of_surjective _ h.surjective,
-      Submodule.map_top, LinearEquivClass.range]
+      Submodule.map_top, LinearEquiv.range]
 
 end PreSubmersivePresentation
 

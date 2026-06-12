@@ -3,9 +3,11 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.NumberTheory.DirichletCharacter.Basic
-import Mathlib.NumberTheory.MulChar.Duality
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.NumberTheory.DirichletCharacter.Basic
+public import Mathlib.NumberTheory.MulChar.Duality
 
 /-!
 # Orthogonality relations for Dirichlet characters
@@ -16,6 +18,8 @@ and `b : ZMod n`, then the sum `∑ χ : DirichletCharacter R n, χ a⁻¹ * χ 
 when `a ≠ b` and has the value `n.totient` otherwise. This requires `R` to have
 enough roots of unity (e.g., `R` could be an algebraically closed field of characteristic zero).
 -/
+
+public section
 
 namespace DirichletCharacter
 

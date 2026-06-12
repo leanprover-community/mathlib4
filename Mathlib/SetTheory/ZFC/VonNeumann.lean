@@ -3,9 +3,10 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.ZFC.Class
-import Mathlib.SetTheory.ZFC.Ordinal
-import Mathlib.SetTheory.ZFC.Rank
+module
+
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.SetTheory.ZFC.Class
 
 /-!
 # Von Neumann hierarchy
@@ -19,6 +20,8 @@ that `⋃ o, V_ o = univ`.
 - `V_ o` is notation for `vonNeumann o`. It is scoped in the `ZFSet` namespace.
 -/
 
+@[expose] public section
+
 universe u
 
 open Order
@@ -29,7 +32,7 @@ namespace ZFSet
 `V_ a` for `a < o`. It satisfies the following properties:
 
 - `vonNeumann_zero`: `V_ 0 = ∅`
-- `vonNeumann_succ`: `V_ (succ a) = powerset (V_ a)`
+- `vonNeumann_add_one`: `V_ (a + 1) = powerset (V_ a)`
 - `vonNeumann_of_isSuccPrelimit`: `IsSuccPrelimit a → V_ a = ⋃ b < a, V_ b`
 -/
 noncomputable def vonNeumann (o : Ordinal.{u}) : ZFSet.{u} :=
@@ -109,16 +112,17 @@ theorem vonNeumann_injective : Function.Injective vonNeumann :=
 theorem vonNeumann_inj : V_ a = V_ b ↔ a = b :=
   vonNeumann_injective.eq_iff
 
-@[gcongr]
-alias ⟨_, _root_.GCongr.ZFSet.vonNeumann_inj⟩ := vonNeumann_inj
-
 @[simp]
 theorem vonNeumann_zero : V_ 0 = ∅ :=
   (eq_empty _).2 (by simp [mem_vonNeumann])
 
 @[simp]
+theorem vonNeumann_add_one (o : Ordinal) : V_ (o + 1) = powerset (V_ o) :=
+  ext fun z ↦ by rw [mem_vonNeumann, mem_powerset, subset_vonNeumann, lt_add_one_iff]
+
+@[deprecated vonNeumann_add_one (since := "2026-05-25")]
 theorem vonNeumann_succ (o : Ordinal) : V_ (succ o) = powerset (V_ o) :=
-  ext fun z ↦ by rw [mem_vonNeumann, mem_powerset, subset_vonNeumann, lt_succ_iff]
+  vonNeumann_add_one o
 
 theorem vonNeumann_of_isSuccPrelimit (h : IsSuccPrelimit o) :
     V_ o = ⋃ a : Set.Iio o, vonNeumann a :=
@@ -126,5 +130,33 @@ theorem vonNeumann_of_isSuccPrelimit (h : IsSuccPrelimit o) :
 
 theorem iUnion_vonNeumann : ⋃ o, (V_ o : Class) = Class.univ :=
   Class.eq_univ_of_forall fun x ↦ Set.mem_iUnion.2 <| exists_mem_vonNeumann x
+
+theorem _root_.Ordinal.toZFSet_subset_vonNeumann (o : Ordinal) : o.toZFSet ⊆ V_ o := by
+  simp [subset_vonNeumann]
+
+lemma _root_.Ordinal.card_le_card_vonNeumann (o : Ordinal) : o.card ≤ card (V_ o) := by
+  simpa using card_mono o.toZFSet_subset_vonNeumann
+
+open Cardinal in
+theorem card_vonNeumann (o : Ordinal.{u}) : card (V_ o) = preBeth o := by
+  induction o using Ordinal.limitRecOn with
+  | zero => simp
+  | add_one o ih => simp [ih]
+  | limit o ho ih =>
+    simp_rw [preBeth_limit ho.isSuccPrelimit, ← fun i : Set.Iio o => ih i i.2,
+      vonNeumann_of_isSuccPrelimit ho.isSuccPrelimit]
+    apply iSup_card_le_card_iUnion.antisymm'
+    rw [← lift_le.{u + 1}]
+    apply lift_card_iUnion_le_sum_card.trans
+    refine (sum_eq_lift_iSup_of_lift_mk_le_lift_iSup ?_ ?_).le
+    · rw [mk_Iio_ordinal, ← lift_aleph0.{u + 1, u}, lift_le, Ordinal.aleph0_le_card]
+      exact Ordinal.omega0_le_of_isSuccLimit ho
+    · rw [mk_Iio_ordinal, lift_lift, lift_le]
+      by_contra! h
+      refine (⨆ i : Set.Iio o, (V_ ↑i).card).card_ord.not_lt <|
+        (Ordinal.card_le_card_vonNeumann _).trans_lt <| (cantor _).trans_le ?_
+      rw [← card_powerset, ← vonNeumann_add_one]
+      refine le_ciSup bddAbove_of_small (⟨_, ho.succ_lt ?_⟩ : Set.Iio o)
+      exact (ord_card_le _).trans_lt' (ord_strictMono h)
 
 end ZFSet

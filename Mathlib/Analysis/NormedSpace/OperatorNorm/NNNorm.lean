@@ -1,3 +1,5 @@
-import Mathlib.Analysis.Normed.Operator.NNNorm
+module
 
-deprecated_module (since := "2025-09-03")
+public import Mathlib.Analysis.Normed.Operator.NNNorm
+
+deprecated_module (since := "2026-03-23")

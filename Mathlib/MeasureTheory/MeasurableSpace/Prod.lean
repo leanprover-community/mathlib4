@@ -3,14 +3,18 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Embedding
-import Mathlib.MeasureTheory.PiSystem
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
+public import Mathlib.MeasureTheory.PiSystem
 
 /-!
 # The product sigma algebra
 
 This file talks about the measurability of operations on binary functions.
 -/
+
+public section
 
 assert_not_exists MeasureTheory.Measure
 
@@ -106,7 +110,7 @@ lemma MeasurableEmbedding.prodMk_left {β γ : Type*} [MeasurableSingletonClass 
   measurable := Measurable.prodMk measurable_const hf.measurable
   measurableSet_image' := by
     intro s hs
-    convert (MeasurableSet.singleton x).prod (hf.measurableSet_image.mpr hs)
+    convert! (MeasurableSet.singleton x).prod (hf.measurableSet_image.mpr hs)
     ext x
     simp [Prod.ext_iff, eq_comm, ← exists_and_left, and_left_comm]
 

@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Countable.Basic
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Logic.Equiv.List
-import Mathlib.Order.Preorder.Finite
+module
+
+public import Mathlib.Data.Countable.Basic
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Logic.Equiv.List
+public import Mathlib.Order.Preorder.Finite
 
 /-!
 # Countable sets
@@ -22,6 +24,8 @@ For a noncomputable conversion to `Encodable s`, use `Set.Countable.nonempty_enc
 
 sets, countable set
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid Multiset.sort
 
@@ -68,6 +72,7 @@ theorem countable_iff_nonempty_encodable {s : Set α} : s.Countable ↔ Nonempty
 alias ⟨Countable.nonempty_encodable, _⟩ := countable_iff_nonempty_encodable
 
 /-- Convert `Set.Countable s` to `Encodable s` (noncomputable). -/
+@[implicit_reducible]
 protected def Countable.toEncodable {s : Set α} (hs : s.Countable) : Encodable s :=
   Classical.choice hs.nonempty_encodable
 
@@ -102,7 +107,7 @@ lemma range_enumerateCountable_of_mem {s : Set α} (h : s.Countable) {default : 
 lemma enumerateCountable_mem {s : Set α} (h : s.Countable) {default : α} (h_mem : default ∈ s)
     (n : ℕ) :
     enumerateCountable h default n ∈ s := by
-  convert mem_range_self n
+  convert! mem_range_self n
   exact (range_enumerateCountable_of_mem h h_mem).symm
 
 end Enumerate
@@ -157,6 +162,14 @@ theorem Countable.image {s : Set α} (hs : s.Countable) (f : α → β) : (f '' 
   rw [image_eq_range]
   have := hs.to_subtype
   apply countable_range
+
+theorem Infinite.exists_subset_countable_infinite {α : Type u} {s : Set α} (hs : s.Infinite) :
+    ∃ t ⊆ s, t.Countable ∧ t.Infinite := by
+  obtain ⟨f, hf⟩ := Infinite.natEmbedding s hs
+  refine ⟨range (Subtype.val ∘ f), ?_, ?_, ?_⟩
+  · exact fun _ ⟨y, hy⟩ ↦ hy ▸ Subtype.coe_prop (f y)
+  · exact countable_range (Subtype.val ∘ f)
+  · exact infinite_range_of_injective <| Injective.comp Subtype.val_injective hf
 
 theorem MapsTo.countable_of_injOn {s : Set α} {t : Set β} {f : α → β} (hf : MapsTo f s t)
     (hf' : InjOn f s) (ht : t.Countable) : s.Countable :=
@@ -228,8 +241,10 @@ theorem countable_union {s t : Set α} : (s ∪ t).Countable ↔ s.Countable ∧
 theorem Countable.union {s t : Set α} (hs : s.Countable) (ht : t.Countable) : (s ∪ t).Countable :=
   countable_union.2 ⟨hs, ht⟩
 
-theorem Countable.of_diff {s t : Set α} (h : (s \ t).Countable) (ht : t.Countable) : s.Countable :=
-  (h.union ht).mono (subset_diff_union _ _)
+theorem Countable.of_sdiff {s t : Set α} (h : (s \ t).Countable) (ht : t.Countable) : s.Countable :=
+  (h.union ht).mono (subset_sdiff_union _ _)
+
+@[deprecated (since := "2026-06-03")] alias Countable.of_diff := Countable.of_sdiff
 
 @[simp]
 theorem countable_insert {s : Set α} {a : α} : (insert a s).Countable ↔ s.Countable := by
@@ -268,13 +283,20 @@ theorem countable_setOf_finite_subset {s : Set α} (hs : s.Countable) :
 theorem Countable.setOf_finite [Countable α] : {s : Set α | s.Finite}.Countable := by
   simpa using countable_setOf_finite_subset countable_univ
 
+/-- If the codomain of a map is countable and the fibres are countable, the domain
+is countable. -/
+theorem Countable.of_preimage_singleton {f : α → β} [Countable β]
+    (h : ∀ (b : β), (f ⁻¹' {b}).Countable) : Countable α := by
+  simp_rw [← Set.countable_univ_iff, ← Set.preimage_univ (f := f), ← Set.iUnion_of_singleton,
+    Set.preimage_iUnion, Set.countable_iUnion h]
+
 theorem countable_univ_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)}
     (hs : ∀ a, (s a).Countable) : (pi univ s).Countable :=
   have := fun a ↦ (hs a).to_subtype; .of_equiv _ (Equiv.Set.univPi s).symm
 
 theorem countable_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)} (hs : ∀ a, (s a).Countable) :
     { f : ∀ a, π a | ∀ a, f a ∈ s a }.Countable := by
-  simpa only [← mem_univ_pi] using countable_univ_pi hs
+  simpa only [← mem_univ_pi] using! countable_univ_pi hs
 
 protected theorem Countable.prod {s : Set α} {t : Set β} (hs : s.Countable) (ht : t.Countable) :
     Set.Countable (s ×ˢ t) :=

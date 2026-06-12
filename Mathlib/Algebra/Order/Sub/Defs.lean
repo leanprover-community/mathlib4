@@ -3,9 +3,11 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Order.Lattice
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+public import Mathlib.Order.Lattice
 
 /-!
 # Ordered Subtraction
@@ -39,6 +41,8 @@ lemmas about subtraction/division in `Ordered[Add]CommGroup` with these.
 TODO: generalize `Nat.le_of_le_of_sub_le_sub_right`, `Nat.sub_le_sub_right_iff`,
   `Nat.mul_self_sub_mul_self_eq`
 -/
+
+public section
 
 
 variable {α : Type*}
@@ -83,7 +87,8 @@ variable [Preorder α]
 section AddCommSemigroup
 
 variable [AddCommSemigroup α] [Sub α] [OrderedSub α] {a b c d : α}
-/- TODO: Most results can be generalized to [Add α] [@Std.Commutative α (· + ·)] -/
+
+-- TODO: Most results can be generalized to `[Add α] [IsAddCommutative α]`
 
 theorem tsub_le_iff_left : a - b ≤ c ↔ a ≤ b + c := by rw [tsub_le_iff_right, add_comm]
 
@@ -107,8 +112,8 @@ section Cov
 
 variable [AddLeftMono α]
 
-theorem tsub_le_tsub_left (h : a ≤ b) (c : α) : c - b ≤ c - a :=
-  tsub_le_iff_left.mpr <| le_add_tsub.trans <| by gcongr
+theorem tsub_le_tsub_left (h : a ≤ b) (c : α) : c - b ≤ c - a := by
+  grw [tsub_le_iff_left, ← h, ← le_add_tsub]
 
 @[gcongr] theorem tsub_le_tsub (hab : a ≤ b) (hcd : c ≤ d) : a - d ≤ b - c :=
   (tsub_le_tsub_right hab _).trans <| tsub_le_tsub_left hcd _

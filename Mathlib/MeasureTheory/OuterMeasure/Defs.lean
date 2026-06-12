@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.InfiniteSum.Defs
-import Mathlib.Topology.Order.Real
+module
+
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
+public import Mathlib.Topology.Order.Real
 
 /-!
 # Definitions of an outer measure and the corresponding `FunLike` class
@@ -33,6 +35,8 @@ We also define a typeclass `MeasureTheory.OuterMeasureClass`.
 outer measure
 -/
 
+public section
+
 assert_not_exists Module.Basis IsTopologicalRing UniformSpace
 
 open scoped ENNReal
@@ -52,6 +56,8 @@ structure OuterMeasure (α : Type*) where
   protected iUnion_nat : ∀ s : ℕ → Set α, Pairwise (Disjoint on s) →
     measureOf (⋃ i, s i) ≤ ∑' i, measureOf (s i)
 
+attribute [gcongr] OuterMeasure.mono
+
 /-- A mixin class saying that elements `μ : F` are outer measures on `α`.
 
 This typeclass is used to unify some API for outer measures and measures. -/
@@ -61,13 +67,16 @@ class OuterMeasureClass (F : Type*) (α : outParam Type*) [FunLike F (Set α) �
   protected measure_iUnion_nat_le (f : F) (s : ℕ → Set α) : Pairwise (Disjoint on s) →
     f (⋃ i, s i) ≤ ∑' i, f (s i)
 
+attribute [gcongr] OuterMeasureClass.measure_mono
+
 namespace OuterMeasure
 
 instance : FunLike (OuterMeasure α) (Set α) ℝ≥0∞ where
   coe m := m.measureOf
-  coe_injective' | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
+  coe_injective | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
 
 @[simp] theorem measureOf_eq_coe (m : OuterMeasure α) : m.measureOf = m := rfl
+@[simp] theorem coe_mk (m : Set α → ℝ≥0∞) (h₁ h₂ h₃) : OuterMeasure.mk m h₁ h₂ h₃ = m := rfl
 
 instance : OuterMeasureClass (OuterMeasure α) α where
   measure_empty f := f.empty

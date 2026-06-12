@@ -3,13 +3,15 @@ Copyright (c) 2021 Vladimir Goryachev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Kim Morrison, Eric Rodriguez
 -/
-import Mathlib.Data.List.GetD
-import Mathlib.Data.Nat.Count
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.Interval.Set.Monotone
-import Mathlib.Order.OrderIsoNat
-import Mathlib.Order.WellFounded
-import Mathlib.Data.Finset.Sort
+module
+
+public import Mathlib.Data.List.GetD
+public import Mathlib.Data.Nat.Count
+public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Order.Interval.Set.Monotone
+public import Mathlib.Order.OrderIsoNat
+public import Mathlib.Order.WellFounded
+public import Mathlib.Data.Finset.Sort
 
 /-!
 # The `n`th Number Satisfying a Predicate
@@ -42,6 +44,8 @@ There has been some discussion on the subject of whether both of `nth` and
 Future work should address how lemmas that use these should be written.
 
 -/
+
+@[expose] public section
 
 
 open Finset
@@ -103,7 +107,7 @@ theorem nth_injOn (hf : (setOf p).Finite) : (Set.Iio #hf.toFinset).InjOn (nth p)
 
 theorem range_nth_of_finite (hf : (setOf p).Finite) : Set.range (nth p) = insert 0 (setOf p) := by
   simpa only [← List.getD_eq_getElem?_getD, ← nth_eq_getD_sort hf, mem_sort,
-    Set.Finite.mem_toFinset] using Set.range_list_getD (hf.toFinset.sort (· ≤ ·)) 0
+    Set.Finite.mem_toFinset] using! Set.range_list_getD (hf.toFinset.sort (· ≤ ·)) 0
 
 @[simp]
 theorem image_nth_Iio_card (hf : (setOf p).Finite) : nth p '' Set.Iio #hf.toFinset = setOf p :=
@@ -232,7 +236,7 @@ theorem nth_zero : nth p 0 = sInf (setOf p) := by rw [nth_eq_sInf]; simp
 theorem nth_zero_of_zero (h : p 0) : nth p 0 = 0 := by simp [nth_zero, h]
 
 theorem nth_zero_of_exists [DecidablePred p] (h : ∃ n, p n) : nth p 0 = Nat.find h := by
-  rw [nth_zero]; convert Nat.sInf_def h
+  rw [nth_zero]; convert! Nat.sInf_def h
 
 theorem nth_eq_zero {n} :
     nth p n = 0 ↔ p 0 ∧ n = 0 ∨ ∃ hf : (setOf p).Finite, #hf.toFinset ≤ n := by
@@ -285,14 +289,13 @@ lemma nth_le_of_strictMonoOn_of_mapsTo {p : ℕ → Prop} (f : ℕ → ℕ)
     (hmaps : Set.MapsTo f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } (setOf p))
     (hmono : StrictMonoOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card }) {n : ℕ} :
     nth p n ≤ f n := by
-  by_cases hn : (∀ hf : Set.Finite (setOf p), n < hf.toFinset.card)
+  by_cases! hn : (∀ hf : Set.Finite (setOf p), n < hf.toFinset.card)
   · induction n using Nat.strong_induction_on with | _ n ih =>
     rw [nth_eq_sInf]
     refine csInf_le (by simp) ⟨hmaps hn, fun k hk => ?_⟩
     have : f k < f n := by apply hmono <;> grind
     grind
-  · push_neg at hn
-    rcases hn with ⟨hf, hn⟩
+  · rcases hn with ⟨hf, hn⟩
     rw [nth, dif_pos hf, List.getD_eq_default _ _ (by simp [hn])]
     exact Nat.zero_le _
 
@@ -315,7 +318,7 @@ lemma le_nth_of_monotoneOn_of_surjOn {p : ℕ → Prop} (f : ℕ → ℕ)
     rintro b ⟨hb, h⟩
     rcases hsurj hb with ⟨m, hm, rfl⟩
     apply hmono hn hm
-    rw [Nat.succ_le]
+    rw [Nat.succ_le_iff]
     apply hmono.reflect_lt <;> grind
 
 /-- `Nat.nth p` is the unique strictly monotone function whose image is `setOf p`. -/
@@ -348,9 +351,9 @@ lemma nth_comp_of_strictMono {n : ℕ} {f : ℕ → ℕ} (hf : StrictMono f)
     repeat nth_rw 1 [nth_eq_sInf]
     have h0' : ∀ k', (p k' ∧ ∀ k < n + 1, nth p k < k') → k' ∈ Set.range f := fun _ h ↦ h0 _ h.1
     rw [← hs h0', ← hf.monotone.map_csInf]
-    · convert rfl using 8 with k m' hm
+    · convert! rfl using 8 with k m' hm
       nth_rw 2 [← hf.lt_iff_lt]
-      convert Iff.rfl using 2
+      convert! Iff.rfl using 2
       exact ih m' (Nat.lt_add_one_iff.mp hm) fun hfi ↦ hm.trans (h hfi)
     · rcases h0 _ (nth_mem _ h) with ⟨t, ht⟩
       exact ⟨t, ht ▸ (nth_mem _ h), fun _ hk ↦ ht ▸ nth_lt_nth' hk h⟩

@@ -3,13 +3,16 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.FunLike.Equiv
-import Mathlib.Data.Quot
-import Mathlib.Data.Subtype
-import Mathlib.Logic.Unique
-import Mathlib.Tactic.Conv
-import Mathlib.Tactic.Simps.Basic
-import Mathlib.Tactic.Substs
+module
+
+public import Mathlib.Data.FunLike.Equiv
+public import Mathlib.Data.Quot
+public import Mathlib.Data.Subtype
+public import Mathlib.Logic.Unique
+public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Substs
+
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # Equivalence between types
@@ -20,7 +23,7 @@ In this file we define two types:
   not equality!) to express that various `Type`s or `Sort`s are equivalent.
 
 * `Equiv.Perm α`: the group of permutations `α ≃ α`. More lemmas about `Equiv.Perm` can be found in
-  `Mathlib/GroupTheory/Perm.lean`.
+  `Mathlib/GroupTheory/Perm/`.
 
 Then we define
 
@@ -43,8 +46,9 @@ Then we define
   - `Equiv.decidableEq` takes `e : α ≃ β` and `[DecidableEq β]` and returns `DecidableEq α`.
 
   More definitions of this kind can be found in other files.
-  E.g., `Mathlib/Algebra/Equiv/TransferInstance.lean` does it for many algebraic type classes like
-  `Group`, `Module`, etc.
+  E.g., `Mathlib/Algebra/Group/TransferInstance.lean` does it for `Group`,
+  `Mathlib/Algebra/Module/TransferInstance.lean` does it for `Module`, and similar files exist for
+  other algebraic type classes.
 
 Many more such isomorphisms and operations are defined in `Mathlib/Logic/Equiv/Basic.lean`.
 
@@ -52,6 +56,8 @@ Many more such isomorphisms and operations are defined in `Mathlib/Logic/Equiv/B
 
 equivalence, congruence, bijective map
 -/
+
+@[expose] public section
 
 open Function
 
@@ -101,13 +107,6 @@ instance : EquivLike (α ≃ β) α β where
   right_inv := Equiv.right_inv
   coe_injective' e₁ e₂ h₁ h₂ := by cases e₁; cases e₂; congr
 
-/-- Deprecated helper instance for when inference gets stuck on following the normal chain
-`EquivLike → FunLike`. -/
-@[deprecated EquivLike.toFunLike (since := "2025-06-20")]
-def instFunLike : FunLike (α ≃ β) α β where
-  coe := Equiv.toFun
-  coe_injective' := DFunLike.coe_injective
-
 @[simp, norm_cast]
 lemma _root_.EquivLike.coe_coe {F} [EquivLike F α β] (e : F) :
     ((e : α ≃ β) : α → β) = e := rfl
@@ -117,7 +116,7 @@ lemma _root_.EquivLike.coe_coe {F} [EquivLike F α β] (e : F) :
 
 /-- The map `(r ≃ s) → (r → s)` is injective. -/
 theorem coe_fn_injective : @Function.Injective (α ≃ β) (α → β) (fun e => e) :=
-  DFunLike.coe_injective'
+  DFunLike.coe_injective
 
 protected theorem coe_inj {e₁ e₂ : α ≃ β} : (e₁ : α → β) = e₂ ↔ e₁ = e₂ :=
   @DFunLike.coe_fn_eq _ _ _ _ e₁ e₂
@@ -156,6 +155,8 @@ initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)
 theorem left_inv' (e : α ≃ β) : Function.LeftInverse e.symm e := e.left_inv
 /-- Restatement of `Equiv.right_inv` in terms of `Function.RightInverse`. -/
 theorem right_inv' (e : α ≃ β) : Function.RightInverse e.symm e := e.right_inv
+
+@[simp] lemma symm_mk (f : α → β) (g hl hr) : (mk f g hl hr).symm = mk g f hr hl := rfl
 
 /-- Composition of equivalences `e₁ : α ≃ β` and `e₂ : β ≃ γ`. -/
 @[trans]
@@ -270,8 +271,11 @@ theorem Perm.coe_subsingleton {α : Type*} [Subsingleton α] (e : Perm α) : (e 
     e ∘ (e : α ≃ β).symm = id :=
   (e : α ≃ β).self_comp_symm
 
-@[simp, grind =] theorem symm_trans_apply (f : α ≃ β) (g : β ≃ γ) (a : γ) :
+theorem symm_trans_apply (f : α ≃ β) (g : β ≃ γ) (a : γ) :
     (f.trans g).symm a = f.symm (g.symm a) := rfl
+
+@[simp, grind =]
+theorem symm_trans (f : α ≃ β) (g : β ≃ γ) : (f.trans g).symm = g.symm.trans f.symm := rfl
 
 theorem symm_symm_apply (f : α ≃ β) (b : α) : f.symm.symm b = f b := rfl
 
@@ -281,13 +285,13 @@ theorem apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : α ≃ β) : f x = y �
 
 @[simp] theorem cast_apply {α β} (h : α = β) (x : α) : Equiv.cast h x = cast h x := rfl
 
-@[simp] theorem cast_symm {α β} (h : α = β) : (Equiv.cast h).symm = Equiv.cast h.symm := rfl
+theorem cast_symm {α β} (h : α = β) : Equiv.cast h.symm = (Equiv.cast h).symm := rfl
 
 @[simp] theorem cast_refl {α} (h : α = α := rfl) : Equiv.cast h = Equiv.refl α := rfl
 
-@[simp] theorem cast_trans {α β γ} (h : α = β) (h2 : β = γ) :
-    (Equiv.cast h).trans (Equiv.cast h2) = Equiv.cast (h.trans h2) :=
-  ext fun x => by substs h h2; rfl
+theorem cast_trans {α β γ} (h : α = β) (h2 : β = γ) :
+    Equiv.cast (h.trans h2) = (Equiv.cast h).trans (Equiv.cast h2) :=
+  ext fun x => by subst h h2; rfl
 
 theorem cast_eq_iff_heq {α β} (h : α = β) {a : α} {b : β} : Equiv.cast h a = b ↔ a ≍ b := by
   subst h; simp
@@ -819,6 +823,11 @@ noncomputable def ofBijective (f : α → β) (hf : Bijective f) : α ≃ β whe
   left_inv := leftInverse_surjInv hf
   right_inv := rightInverse_surjInv _
 
+@[simp] lemma coe_ofBijective (f : α → β) (hf : Bijective f) : ⇑(ofBijective f hf) = f := rfl
+
+@[simp] lemma ofBijective_coe {f : α ≃ β} :
+    Equiv.ofBijective f f.bijective = f := Equiv.ext (congrFun rfl)
+
 lemma ofBijective_apply_symm_apply (f : α → β) (hf : Bijective f) (x : β) :
     f ((ofBijective f hf).symm x) = x :=
   (ofBijective f hf).apply_symm_apply x
@@ -827,6 +836,14 @@ lemma ofBijective_apply_symm_apply (f : α → β) (hf : Bijective f) (x : β) :
 lemma ofBijective_symm_apply_apply (f : α → β) (hf : Bijective f) (x : α) :
     (ofBijective f hf).symm (f x) = x :=
   (ofBijective f hf).symm_apply_apply x
+
+/-- Bijective functions are equivalent to equivalences. -/
+@[simps]
+noncomputable def bijectiveEquiv : { f : α → β // Bijective f } ≃ (α ≃ β) where
+  toFun f := .ofBijective f f.prop
+  invFun f := ⟨f, f.bijective⟩
+  left_inv _ := rfl
+  right_inv _ := by ext; rfl
 
 end Equiv
 
@@ -897,6 +914,7 @@ def finTwoEquiv : Fin 2 ≃ Bool where
   right_inv b := by grind
 
 namespace Equiv
+
 variable {α β : Type*}
 
 /-- The left summand of `α ⊕ β` is equivalent to `α`. -/
@@ -912,5 +930,47 @@ def sumIsRight : {x : α ⊕ β // x.isRight} ≃ β where
   toFun x := x.1.getRight x.2
   invFun b := ⟨.inr b, Sum.isRight_inr⟩
   left_inv | ⟨.inr _b, _⟩ => rfl
+
+variable (e : α ≃ β)
+
+/-- Transfer `LE` across an `Equiv`. -/
+protected abbrev le [LE β] : LE α where
+  le a b := e a ≤ e b
+
+lemma le_def [LE β] (a b : α) :
+    letI := e.le
+    e a ≤ e b ↔ a ≤ b := Iff.rfl
+
+/-- Transfer `LT` across an `Equiv`. -/
+protected abbrev lt [LT β] : LT α where
+  lt a b := e a < e b
+
+lemma lt_def [LT β] (a b : α) :
+    letI := e.lt
+    e a < e b ↔ a < b := Iff.rfl
+
+/-- Transfer `Max` across an `Equiv`. -/
+protected abbrev max [Max β] : Max α where
+  max a b := e.symm (max (e a) (e b))
+
+lemma max_def [Max β] (a b : α) :
+    letI := e.max
+    max a b = e.symm (max (e a) (e b)) := rfl
+
+/-- Transfer `Min` across an `Equiv`. -/
+protected abbrev min [Min β] : Min α where
+  min a b := e.symm (min (e a) (e b))
+
+lemma min_def [Min β] (a b : α) :
+    letI := e.min
+    min a b = e.symm (min (e a) (e b)) := rfl
+
+/-- Transfer `Ord` across an `Equiv`. -/
+protected abbrev ord [Ord β] : Ord α where
+  compare a b := compare (e a) (e b)
+
+lemma ord_def [Ord β] (a b : α) :
+    letI := e.ord
+    compare a b = compare (e a) (e b) := rfl
 
 end Equiv

@@ -3,9 +3,11 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.RingHom.FaithfullyFlat
-import Mathlib.RingTheory.RingHom.Injective
-import Mathlib.RingTheory.RingHom.Surjective
+module
+
+public import Mathlib.RingTheory.RingHom.FaithfullyFlat
+public import Mathlib.RingTheory.RingHom.Injective
+public import Mathlib.RingTheory.RingHom.Surjective
 
 /-!
 # Properties satisfying faithfully flat descent for rings
@@ -16,6 +18,8 @@ We show the following properties of ring homomorphisms descend under faithfully 
 - surjective
 - bijective
 -/
+
+public section
 
 open TensorProduct
 
@@ -31,7 +35,7 @@ lemma Module.FaithfullyFlat.injective_of_tensorProduct [Module.FaithfullyFlat R 
       Algebra.linearMap S (S ⊗[R] T) ∘ₗ (AlgebraTensorModule.rid R S S).toLinearMap := by
     ext; simp
   apply (Module.FaithfullyFlat.lTensor_injective_iff_injective R S (Algebra.linearMap R T)).mp
-  simpa [this] using H
+  simpa [this] using! H
 
 lemma Module.FaithfullyFlat.surjective_of_tensorProduct [Module.FaithfullyFlat R S]
     (H : Function.Surjective (algebraMap S (S ⊗[R] T))) :
@@ -40,7 +44,7 @@ lemma Module.FaithfullyFlat.surjective_of_tensorProduct [Module.FaithfullyFlat R
       Algebra.linearMap S (S ⊗[R] T) ∘ₗ (AlgebraTensorModule.rid R S S).toLinearMap := by
     ext; simp
   apply (Module.FaithfullyFlat.lTensor_surjective_iff_surjective R S (Algebra.linearMap R T)).mp
-  simpa [this] using H
+  simpa [this] using! H
 
 lemma Module.FaithfullyFlat.bijective_of_tensorProduct [Module.FaithfullyFlat R S]
     (H : Function.Bijective (algebraMap S (S ⊗[R] T))) :

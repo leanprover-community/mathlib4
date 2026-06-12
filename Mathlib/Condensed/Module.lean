@@ -3,14 +3,16 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Algebra.Category.ModuleCat.Abelian
-import Mathlib.Algebra.Category.ModuleCat.Colimits
-import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
-import Mathlib.Algebra.Category.ModuleCat.Adjunctions
-import Mathlib.CategoryTheory.Sites.Abelian
-import Mathlib.CategoryTheory.Sites.Adjunction
-import Mathlib.CategoryTheory.Sites.LeftExact
-import Mathlib.Condensed.Basic
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Abelian
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
+public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
+public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
+public import Mathlib.CategoryTheory.Sites.Abelian
+public import Mathlib.CategoryTheory.Sites.Adjunction
+public import Mathlib.CategoryTheory.Sites.LeftExact
+public import Mathlib.Condensed.Basic
 /-!
 
 # Condensed `R`-modules
@@ -24,6 +26,8 @@ This file defines condensed modules over a ring `R`.
 * The forgetful functor from condensed `R`-modules to condensed sets has a left adjoint, sending a
   condensed set to the corresponding *free* condensed `R`-module.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -72,7 +76,7 @@ noncomputable abbrev Condensed.setAbAdjunction : freeAb ⊣ abForget := freeForg
 namespace CondensedMod
 
 lemma hom_naturality_apply {X Y : CondensedMod.{u} R} (f : X ⟶ Y) {S T : CompHausᵒᵖ} (g : S ⟶ T)
-    (x : X.val.obj S) : f.val.app T (X.val.map g x) = Y.val.map g (f.val.app S x) :=
-  NatTrans.naturality_apply f.val g x
+    (x : X.obj.obj S) : f.hom.app T (X.obj.map g x) = Y.obj.map g (f.hom.app S x) :=
+  NatTrans.naturality_apply f.hom g x
 
 end CondensedMod

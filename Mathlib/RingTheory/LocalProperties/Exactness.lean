@@ -3,12 +3,13 @@ Copyright (c) 2024 Sihan Su. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sihan Su, Yongle Hu, Yi Song
 -/
-import Mathlib.Algebra.Exact
-import Mathlib.RingTheory.LocalProperties.Submodule
-import Mathlib.RingTheory.Localization.Algebra
-import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.Algebra.Module.LocalizedModule.AtPrime
-import Mathlib.Algebra.Module.LocalizedModule.Away
+module
+
+public import Mathlib.Algebra.Exact.Basic
+public import Mathlib.RingTheory.LocalProperties.Submodule
+public import Mathlib.RingTheory.Localization.Algebra
+public import Mathlib.RingTheory.Localization.Away.Basic
+public import Mathlib.Algebra.Module.LocalizedModule.AtPrime
 
 /-!
 # Local properties about linear maps
@@ -17,6 +18,8 @@ In this file, we show that
 injectivity, surjectivity, bijectivity and exactness of linear maps are local properties.
 More precisely, we show that these can be checked at maximal ideals and on standard covers.
 -/
+
+public section
 
 open Submodule LocalizedModule Ideal LinearMap
 
@@ -304,7 +307,7 @@ lemma injective_of_isLocalization_of_span_eq_top
     .of_algebraMap_eq <| by simp [RingHom.algebraMap_toAlgebra]
   apply injective_of_isLocalized_span s hs Rᵣ (fun r : s ↦ Algebra.linearMap _ _) _
     (fun r : s ↦ ((IsScalarTower.toAlgHom R S (Sᵣ r)).toLinearMap)) (Algebra.linearMap R S)
-  simpa [IsLocalization.map_linearMap_eq_toLinearMap_mapₐ] using h
+  simpa [IsLocalization.map_linearMap_eq_toLinearMap_mapₐ] using! h
 
 lemma surjective_of_isLocalization_of_span_eq_top
     (h : ∀ r : s, Function.Surjective (IsLocalization.Away.map (Rᵣ r) (Sᵣ r) f r.1)) :
@@ -318,7 +321,7 @@ lemma surjective_of_isLocalization_of_span_eq_top
     .of_algebraMap_eq <| by simp [RingHom.algebraMap_toAlgebra]
   apply surjective_of_isLocalized_span s hs Rᵣ (fun r : s ↦ Algebra.linearMap _ _) _
     (fun r : s ↦ ((IsScalarTower.toAlgHom R S (Sᵣ r)).toLinearMap)) (Algebra.linearMap R S)
-  simpa [IsLocalization.map_linearMap_eq_toLinearMap_mapₐ] using h
+  simpa [IsLocalization.map_linearMap_eq_toLinearMap_mapₐ] using! h
 
 lemma bijective_of_isLocalization_of_span_eq_top
     (h : ∀ r : s, Function.Bijective (IsLocalization.Away.map (Rᵣ r) (Sᵣ r) f r.1)) :

@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.RingTheory.LocalRing.Basic
+module
+
+public import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 
@@ -17,6 +19,8 @@ We define the maximal ideal of a local ring as the ideal of all nonunits.
   set of nonunits.
 
 -/
+
+@[expose] public section
 
 namespace IsLocalRing
 

@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Categories with classes of fibrations, cofibrations, weak equivalences
@@ -13,6 +15,8 @@ We introduce typeclasses `CategoryWithFibrations`, `CategoryWithCofibrations` an
 classes of morphisms named "fibrations", "cofibrations" or "weak equivalences".
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -247,5 +251,37 @@ lemma trivialCofibrations_op : trivialCofibrations Cᵒᵖ = (trivialFibrations 
 lemma trivialFibrations_eq_unop : trivialFibrations C = (trivialCofibrations Cᵒᵖ).unop := rfl
 
 end
+
+section ObjectProperty
+
+variable [CategoryWithWeakEquivalences C] {P : ObjectProperty C}
+
+instance : CategoryWithWeakEquivalences P.FullSubcategory where
+  weakEquivalences := (weakEquivalences C).inverseImage P.ι
+
+instance [(weakEquivalences C).HasTwoOutOfThreeProperty] :
+    (weakEquivalences P.FullSubcategory).HasTwoOutOfThreeProperty :=
+  inferInstanceAs ((weakEquivalences C).inverseImage P.ι).HasTwoOutOfThreeProperty
+
+instance [(weakEquivalences C).IsMultiplicative] :
+    (weakEquivalences P.FullSubcategory).IsMultiplicative :=
+  inferInstanceAs ((weakEquivalences C).inverseImage P.ι).IsMultiplicative
+
+lemma weakEquivalence_iff_of_objectProperty
+    {X Y : P.FullSubcategory} (f : X ⟶ Y) :
+    WeakEquivalence f ↔ WeakEquivalence f.hom := by
+  simp only [weakEquivalence_iff]
+  rfl
+
+instance {X Y : P.FullSubcategory} (f : X ⟶ Y) [WeakEquivalence f] :
+    WeakEquivalence f.hom := by
+  rwa [← weakEquivalence_iff_of_objectProperty]
+
+instance {X Y : P.FullSubcategory} (f : X ⟶ Y) [WeakEquivalence f] :
+    WeakEquivalence (P.ι.map f) := by
+  dsimp
+  infer_instance
+
+end ObjectProperty
 
 end HomotopicalAlgebra

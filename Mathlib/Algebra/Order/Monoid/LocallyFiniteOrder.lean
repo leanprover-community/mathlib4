@@ -3,15 +3,17 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.Algebra.Order.Group.Units
-import Mathlib.Algebra.Order.Hom.MonoidWithZero
-import Mathlib.Algebra.Order.Hom.TypeTags
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Data.Nat.Cast.Order.Ring
-import Mathlib.Tactic.Abel
-import Mathlib.Algebra.Group.Embedding
-import Mathlib.Order.Interval.Finset.Basic
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.Algebra.Order.Group.Units
+public import Mathlib.Algebra.Order.Hom.MonoidWithZero
+public import Mathlib.Algebra.Order.Hom.TypeTags
+public import Mathlib.Algebra.Order.Ring.Int
+public import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.Tactic.Abel
+public import Mathlib.Algebra.Group.Embedding
+public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 
@@ -29,6 +31,8 @@ import Mathlib.Order.Interval.Finset.Basic
   is isomorphic to `ℤᵐ⁰`.
 
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -74,7 +78,7 @@ def LocallyFiniteOrder.addMonoidHom :
   map_zero' := by simp
   map_add' a b := by
     wlog hab : a ≤ b generalizing a b
-    · convert this b a (le_of_not_ge hab) using 1 <;> simp only [add_comm]
+    · convert! this b a (le_of_not_ge hab) using 1 <;> simp only [add_comm]
     obtain ha | ha := le_total 0 a <;> obtain hb | hb := le_total 0 b
     · have : -b ≤ a := by trans 0 <;> simp [ha, hb]
       simp [ha, hb, card_Ico_zero_add, this]
@@ -126,8 +130,8 @@ lemma LocallyFiniteOrder.orderAddMonoidHom_bijective [Nontrivial G] :
     obtain ⟨x, hx⟩ := this
     exact fun a ↦ ⟨a • x, by simp_all⟩
   have ⟨a, ha⟩ := exists_zero_lt (α := G)
-  obtain ⟨b, hb⟩ := exists_covBy_of_wellFoundedLT (α := Icc 0 a) (a := ⟨0, by simpa using ha.le⟩)
-    (fun H ↦ ha.not_ge (@H ⟨a, by simpa using ha.le⟩ ha.le))
+  obtain ⟨b, hb⟩ := exists_covBy_of_wellFoundedLT (α := Icc 0 a) (a := ⟨0, by simpa using! ha.le⟩)
+    (fun H ↦ ha.not_ge (@H ⟨a, by simpa using! ha.le⟩ ha.le))
   use b.1
   have : 0 ≤ b.1 := hb.1.le
   suffices Ico 0 b.1 = {0} by simpa [orderAddMonoidHom, addMonoidHom, this]
@@ -138,10 +142,10 @@ lemma LocallyFiniteOrder.orderAddMonoidHom_bijective [Nontrivial G] :
     by_contra hx'
     have := b.2
     simp only [Finset.mem_Icc] at this
-    exact hb.2 (c := ⟨x, by simpa [h₁] using h₂.le.trans this.2⟩)
-      (lt_of_le_of_ne h₁ (by simpa using Ne.symm hx')) h₂
+    exact hb.2 (c := ⟨x, by simpa [h₁] using! h₂.le.trans this.2⟩)
+      (lt_of_le_of_ne h₁ (by simpa using! Ne.symm hx')) h₂
   · rintro rfl
-    simpa using hb.1
+    simpa using! hb.1
 
 variable (G) in
 /-- Any nontrivial linearly ordered abelian group that is locally finite is isomorphic to `ℤ`. -/

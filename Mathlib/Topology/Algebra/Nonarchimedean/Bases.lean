@@ -3,10 +3,11 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.Module.Submodule.Pointwise
-import Mathlib.Topology.Algebra.FilterBasis
-import Mathlib.Topology.Algebra.Nonarchimedean.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Basic
+public import Mathlib.Topology.Algebra.FilterBasis
+public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 
 /-!
 # Neighborhood bases for non-archimedean rings and modules
@@ -25,6 +26,8 @@ A special case of this construction is given by `SubmodulesBasis` where the subg
 sub-modules in a commutative algebra. This important example gives rise to the adic topology
 (studied in its own file).
 -/
+
+@[expose] public section
 
 open Set Filter Function Lattice
 
@@ -60,6 +63,7 @@ theorem of_comm {A ι : Type*} [CommRing A] (B : ι → AddSubgroup A)
     rightMul := fun x i ↦ (leftMul x i).imp fun j hj ↦ by simpa only [mul_comm] using hj }
 
 /-- Every subgroups basis on a ring leads to a ring filter basis. -/
+@[implicit_reducible]
 def toRingFilterBasis [Nonempty ι] {B : ι → AddSubgroup A} (hB : RingSubgroupsBasis B) :
     RingFilterBasis A where
   sets := { U | ∃ i, U = B i }
@@ -129,6 +133,7 @@ theorem mem_addGroupFilterBasis (i) : (B i : Set A) ∈ hB.toRingFilterBasis.toA
 
 /-- The topology defined from a subgroups basis, admitting the given subgroups as a basis
 of neighborhoods of zero. -/
+@[implicit_reducible]
 def topology : TopologicalSpace A :=
   hB.toRingFilterBasis.toAddGroupFilterBasis.topology
 
@@ -218,6 +223,7 @@ theorem toRing_subgroups_basis (hB : SubmodulesRingBasis B) :
   exact hj ⟨b, b_in, rfl⟩
 
 /-- The topology associated to a basis of submodules in an algebra. -/
+@[implicit_reducible]
 def topology [Nonempty ι] (hB : SubmodulesRingBasis B) : TopologicalSpace A :=
   hB.toRing_subgroups_basis.topology
 
@@ -297,6 +303,7 @@ def toModuleFilterBasis : ModuleFilterBasis R M where
     exact hB.smul m₀ i
 
 /-- The topology associated to a basis of submodules in a module. -/
+@[implicit_reducible]
 def topology : TopologicalSpace M :=
   hB.toModuleFilterBasis.toAddGroupFilterBasis.topology
 
@@ -325,7 +332,7 @@ theorem nonarchimedean (hB : SubmodulesBasis B) : @NonarchimedeanAddGroup M _ hB
     hB.toModuleFilterBasis.toAddGroupFilterBasis.nhds_zero_hasBasis.mem_iff.mp hU
   exact ⟨hB.openAddSubgroup i, hi⟩
 
-library_note2 «non-Archimedean non-instances» /--
+library_note «non-Archimedean non-instances» /--
 The non-Archimedean subgroup basis lemmas cannot be instances because some instances
 (such as `MeasureTheory.AEEqFun.instAddMonoid` or `IsTopologicalAddGroup.toContinuousAdd`)
 cause the search for `@IsTopologicalAddGroup β ?m1 ?m2`, i.e. a search for a topological group where

@@ -3,8 +3,10 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Calculus.FDeriv.CompCLM
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 
 /-!
 # Derivatives of operations on continuous multilinear maps
@@ -36,6 +38,8 @@ All statements in the first section are claiming this, for various notions of di
 The second section deduces the corresponding differentiability results when `ι` is finite.
 -/
 
+public section
+
 variable {𝕜 ι E : Type*} {F G : ι → Type*} {H : Type*}
   [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -61,7 +65,7 @@ theorem ContinuousMultilinearMap.hasStrictFDerivAt_compContinuousLinearMap
         fg.1.fderivCompContinuousLinearMap fg.2 ∘L .snd _ _ _)
       fg := by
   have := (compContinuousLinearMapContinuousMultilinear 𝕜 F G H).hasStrictFDerivAt fg.2
-  convert this.comp fg hasStrictFDerivAt_snd |>.clm_apply hasStrictFDerivAt_fst
+  convert! this.comp fg hasStrictFDerivAt_snd |>.clm_apply hasStrictFDerivAt_fst
   ext <;> simp [fderivCompContinuousLinearMap]
 
 theorem HasStrictFDerivAt.continuousMultilinearMapCompContinuousLinearMap
@@ -77,16 +81,19 @@ theorem HasFDerivAt.continuousMultilinearMapCompContinuousLinearMap
     HasFDerivAt (fun x ↦ (f x).compContinuousLinearMap (g · x))
       (compContinuousLinearMapL (g · x) ∘L f' +
         (f x).fderivCompContinuousLinearMap (g · x) ∘L .pi g') x := by
-  convert hasStrictFDerivAt_compContinuousLinearMap (f x, (g · x)) |>.hasFDerivAt
-    |>.comp x (hf.prodMk (hasFDerivAt_pi.2 hg))
+  convert!
+    hasStrictFDerivAt_compContinuousLinearMap (f x, (g · x)) |>.hasFDerivAt |>.comp x
+      (hf.prodMk (hasFDerivAt_pi.2 hg))
 
 theorem HasFDerivWithinAt.continuousMultilinearMapCompContinuousLinearMap
     (hf : HasFDerivWithinAt f f' s x) (hg : ∀ i, HasFDerivWithinAt (g i) (g' i) s x) :
     HasFDerivWithinAt (fun x ↦ (f x).compContinuousLinearMap (g · x))
       (compContinuousLinearMapL (g · x) ∘L f' +
         (f x).fderivCompContinuousLinearMap (g · x) ∘L .pi g') s x := by
-  convert hasStrictFDerivAt_compContinuousLinearMap (f x, (g · x)) |>.hasFDerivAt
-    |>.comp_hasFDerivWithinAt x (hf.prodMk (hasFDerivWithinAt_pi.2 hg))
+  convert!
+    hasStrictFDerivAt_compContinuousLinearMap
+          (f x, (g · x)) |>.hasFDerivAt |>.comp_hasFDerivWithinAt
+      x (hf.prodMk (hasFDerivWithinAt_pi.2 hg))
 
 theorem fderivWithin_continuousMultilinearMapCompContinuousLinearMap
     (hf : DifferentiableWithinAt 𝕜 f s x) (hg : ∀ i, DifferentiableWithinAt 𝕜 (g i) s x)

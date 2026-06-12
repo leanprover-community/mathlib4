@@ -3,15 +3,17 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.VectorMeasure.Basic
-import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+module
+
+public import Mathlib.MeasureTheory.VectorMeasure.Basic
+public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 
 /-!
 
 # Vector measure defined by an integral
 
 Given a measure `μ` and an integrable function `f : α → E`, we can define a vector measure `v` such
-that for all measurable set `s`, `v i = ∫ x in s, f x ∂μ`. This definition is useful for
+that for all measurable sets `s`, `v s = ∫ x in s, f x ∂μ`. This definition is useful for
 the Radon-Nikodym theorem for signed measures.
 
 ## Main definitions
@@ -20,6 +22,8 @@ the Radon-Nikodym theorem for signed measures.
   with respect to a measure `μ` on some set if `f` is integrable, and `0` otherwise.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -44,7 +48,7 @@ def Measure.withDensityᵥ {m : MeasurableSpace α} (μ : Measure α) (f : α �
       empty' := by simp
       not_measurable' := fun _ hs => if_neg hs
       m_iUnion' := fun s hs₁ hs₂ => by
-        convert hasSum_integral_iUnion hs₁ hs₂ hf.integrableOn with n
+        convert! hasSum_integral_iUnion hs₁ hs₂ hf.integrableOn with n
         · rw [if_pos (hs₁ n)]
         · rw [if_pos (MeasurableSet.iUnion hs₁)] }
   else 0
@@ -59,7 +63,7 @@ theorem withDensityᵥ_apply (hf : Integrable f μ) {s : Set α} (hs : Measurabl
 @[simp]
 theorem withDensityᵥ_zero : μ.withDensityᵥ (0 : α → E) = 0 := by
   ext1 s hs
-  rw [Pi.zero_def, withDensityᵥ_apply (integrable_zero α E μ) hs]
+  rw [withDensityᵥ_apply (integrable_zero α E μ) hs]
   simp
 
 @[simp]

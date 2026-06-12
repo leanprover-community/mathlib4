@@ -3,11 +3,15 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Function
+module
+
+public import Mathlib.Data.Set.Function
 
 /-!
 # Monotone functions over sets
 -/
+
+public section
 
 variable {α β γ : Type*}
 
@@ -90,14 +94,10 @@ lemma monotoneOn_insert_iff {a : α} :
       (∀ b ∈ s, b ≤ a → f b ≤ f a) ∧ (∀ b ∈ s, a ≤ b → f a ≤ f b) ∧ MonotoneOn f s := by
   simp [MonotoneOn, forall_and]
 
-@[deprecated (since := "2025-06-14")] alias MonotoneOn_insert_iff := monotoneOn_insert_iff
-
 lemma antitoneOn_insert_iff {a : α} :
     AntitoneOn f (insert a s) ↔
       (∀ b ∈ s, b ≤ a → f a ≤ f b) ∧ (∀ b ∈ s, a ≤ b → f b ≤ f a) ∧ AntitoneOn f s :=
   @monotoneOn_insert_iff α βᵒᵈ _ _ _ _ _
-
-@[deprecated (since := "2025-06-14")] alias AntitoneOn_insert_iff := antitoneOn_insert_iff
 
 end Mono
 

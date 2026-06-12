@@ -3,9 +3,11 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.Separation.Regular
-import Mathlib.Topology.UniformSpace.Defs
-import Mathlib.Tactic.TautoSet
+module
+
+public import Mathlib.Topology.Separation.Regular
+public import Mathlib.Topology.UniformSpace.Defs
+public import Mathlib.Tactic.TautoSet
 
 /-!
 # Compact separated uniform spaces
@@ -25,6 +27,8 @@ loop.
 uniform space, uniform continuity, compact space
 -/
 
+@[expose] public section
+
 open Topology Filter UniformSpace Set
 open scoped SetRel
 
@@ -36,6 +40,7 @@ variable {γ : Type*}
 
 
 /-- The unique uniform structure inducing a given compact topological structure. -/
+@[implicit_reducible]
 def uniformSpaceOfCompactR1 [TopologicalSpace γ] [CompactSpace γ] [R1Space γ] : UniformSpace γ where
   uniformity := 𝓝ˢ (diagonal γ)
   symm := continuous_swap.tendsto_nhdsSet fun _ => Eq.symm
