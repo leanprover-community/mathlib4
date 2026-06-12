@@ -338,7 +338,6 @@ lemma lt_add_of_lt {q r₁ r₂ : ℚ} (hqr : r₁ + r₂ ≠ 0)
     padicValRat p q < padicValRat p (r₁ + r₂) :=
   lt_of_lt_of_le (lt_min hval₁ hval₂) (padicValRat.min_le_padicValRat_add hqr)
 
-@[simp]
 lemma self_pow_inv (r : ℕ) : padicValRat p ((p : ℚ) ^ r)⁻¹ = -r := by
   rw [padicValRat.inv, neg_inj, padicValRat.pow p, padicValRat.self hp.elim.one_lt, mul_one]
 
@@ -400,7 +399,6 @@ protected theorem div (dvd : p ∣ b) : padicValNat p (b / p) = padicValNat p b 
 protected theorem pow (a n : ℕ) : padicValNat p (a ^ n) = n * padicValNat p a := by
   simpa only [← @Nat.cast_inj ℤ, push_cast] using padicValRat.pow a
 
-@[simp]
 protected theorem prime_pow (n : ℕ) : padicValNat p (p ^ n) = n := by
   rw [padicValNat.pow p, padicValNat_self, mul_one]
 
