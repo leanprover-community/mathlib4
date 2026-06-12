@@ -27,6 +27,10 @@ such that their main (max) variables are strictly increasing:
 * `TriangularSet.takeConcat_lt_of_reducedToSet`: Appending a reduced element
   strictly decreases the order, used to prove termination of basic set algorithms.
 
+## References
+* [Wen-Tsun Wu, *Basic principles of mechanical theorem proving in elementary geometries*]
+  [wen1986basic]
+
 -/
 
 @[expose] public section

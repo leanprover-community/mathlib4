@@ -39,6 +39,11 @@ This file implements the core algorithms of Wu's Method for solving systems of a
   The variety of the input system is exactly the union of the "quasi-varieties"
   defined by the computed triangular sets.
 
+## References
+* [Wen-Tsun Wu, *Basic principles of mechanical theorem proving in elementary geometries*]
+  [wen1986basic]
+* [Wen-Tsun Wu, *Mathematics Mechanization*][wen2000mathematics]
+
 -/
 
 @[expose] public section
