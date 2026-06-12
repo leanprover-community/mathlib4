@@ -42,9 +42,10 @@ variable [Semiring R] [StarRing R]
 orthogonal with respect to the conjugate transpose:
 `A * Aᴴ = n • 1` and `Aᴴ * A = n • 1`.
 
-Over a ring with trivial star (e.g. `ℝ`, `ℤ`), the one-sided condition from
+Over a commutative ring in which the order is regular, the one-sided condition from
 [Definition 2.3.1][deLauneyFlannery2011] implies this predicate by
-`IsHadamard.of_mul_conjTranspose`. Over `ℂ`, the entry condition becomes `‖A i j‖ = 1`,
+`IsHadamard.of_mul_conjTranspose`; over a ring with trivial star (e.g. `ℝ`, `ℤ`), the entry
+condition becomes `A i j = 1 ∨ A i j = -1`. Over `ℂ`, the entry condition becomes `‖A i j‖ = 1`,
 generalizing the fourth-root complex Hadamard matrices of
 [Definition 2.7.1][deLauneyFlannery2011]. -/
 def IsHadamard (A : Matrix n n R) : Prop :=
@@ -162,26 +163,36 @@ theorem IsHadamard.det_ne_zero [IsReduced R] (hA : A.IsHadamard)
     (hcard : (Fintype.card n : R) ≠ 0) : A.det ≠ 0 := fun h =>
   pow_ne_zero _ hcard <| by rw [← hA.det_mul_star_det, h, star_zero, zero_mul]
 
+/-- The determinant of a Hadamard matrix is regular, provided the order is regular in `R`. -/
+theorem IsHadamard.isRegular_det (hA : A.IsHadamard)
+    (hcard : IsRegular (Fintype.card n : R)) : IsRegular A.det := by
+  have : IsRegular (A.det * star A.det) := by
+    rw [hA.det_mul_star_det]
+    exact hcard.pow _
+  rw [isRegular_mul_iff] at this
+  exact this.1
+
 /-- Build a Hadamard matrix from the one-sided row-orthogonality condition, provided the order is
-nonzero in a commutative ring with no zero divisors.
+regular in `R`.
 
 This is the matrix form of [Theorem 2.3.6][deLauneyFlannery2011]. -/
-theorem IsHadamard.of_mul_conjTranspose [IsCancelMulZero R]
+theorem IsHadamard.of_mul_conjTranspose
     (hentry : ∀ i j, A i j ∈ unitary R)
     (hmul : A * Aᴴ = (Fintype.card n : R) • (1 : Matrix n n R))
-    (hcard : (Fintype.card n : R) ≠ 0) : A.IsHadamard := by
+    (hcard : IsRegular (Fintype.card n : R)) : A.IsHadamard := by
   refine ⟨hentry, hmul, ?_⟩
-  have hdet : A.det ≠ 0 := fun h =>
-    pow_ne_zero _ hcard <| by
-      simpa [det_mul, det_conjTranspose, det_smul, det_one, h, star_zero] using
-        (congr_arg det hmul).symm
-  have hreg : IsLeftRegular A :=
-    (isRegular_of_isLeftRegular_det (IsRegular.of_ne_zero hdet).left).left
+  have hdet : IsRegular (A.det * star A.det) := by
+    have := congr_arg det hmul
+    rw [det_mul, det_conjTranspose, det_smul, det_one, mul_one] at this
+    rw [this]
+    exact hcard.pow _
+  rw [isRegular_mul_iff] at hdet
+  have hreg : IsLeftRegular A := (isRegular_of_isLeftRegular_det hdet.1.left).left
   exact hreg <| show A * (Aᴴ * A) = A * ((Fintype.card n : R) • 1) by
     rw [← mul_assoc, hmul, smul_mul_assoc, one_mul, mul_smul_comm, mul_one]
 
-theorem isHadamard_iff_mul_conjTranspose [IsCancelMulZero R]
-    (hcard : (Fintype.card n : R) ≠ 0) :
+theorem isHadamard_iff_mul_conjTranspose
+    (hcard : IsRegular (Fintype.card n : R)) :
     A.IsHadamard ↔
       (∀ i j, A i j ∈ unitary R) ∧
         A * Aᴴ = (Fintype.card n : R) • (1 : Matrix n n R) :=
