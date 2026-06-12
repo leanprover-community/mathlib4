@@ -67,12 +67,16 @@ public def toSetoid (s : Set α) : Setoid α := Setoid.fromSets {s}
 variable {β : Type*}
 
 /-- A function is constant on a subset if any two inputs give the same result. -/
-@[simp] public def IsConstOn (f : α → β) (s : Set α) : Prop :=
+public def IsConstOn (f : α → β) (s : Set α) : Prop :=
   ∀ᵉ (a ∈ s) (b ∈ s), f a = f b
+
+@[simp] public lemma isConstOn_iff {f : α → β} {s : Set α} :
+    s.IsConstOn f ↔ ∀ᵉ (a ∈ s) (b ∈ s), f a = f b :=
+  Iff.rfl
 
 namespace IsConstOn
 
-@[simp] public protected lemma empty {f : α → β} : IsConstOn f ∅ := by simp
+public protected lemma empty {f : α → β} : IsConstOn f ∅ := by simp
 
 /-- Functions which are constant on a subset are the same as functions from the quotient in which
 the set is collapsed to a point. -/
