@@ -93,34 +93,6 @@ jobs:
       - name: 'Setup jq'
         uses: dcarbone/install-jq-action@b7ef57d46ece78760b4019dbc4080a1ba2a40b45 # v3.2.0
 
-      # Checkout the trusted source to build the cache tooling from.
-      #
-      # The cache tool is infrastructure (source-hashing + .ltar pack/upload +
-      # container routing), not Lean-version-specific: its hash is toolchain-
-      # stable and it packs oleans as opaque bytes, so it neither needs nor
-      # benefits from being built against the nightly toolchain. We therefore
-      # build it from a single canonical source — `leanprover-community/mathlib4`
-      # at `master` — on BOTH this repo and `mathlib4-nightly-testing`, instead
-      # of from `nightly-testing-green` on the latter. This keeps the cache
-      # backend logic uniform across master and nightly (no skew between the tool
-      # that writes a container and the tool that reads it) and lands future
-      # cache-tool changes everywhere at once. master is itself a stable source,
-      # so the original reason for the green pin — a broken `nightly-testing`
-      # must not break the tooling — still holds.
-      #
-      # Trade-off: when the cache tool changes on master ahead of a nightly
-      # branch, that branch's LOCAL tool lags until it merges master, so a
-      # nightly contributor may see (self-healing) cache misses in that window.
-      # The master-built binary is self-contained and runs under the newer
-      # nightly toolchain. (`tools_branch_ref`, when set, still wins and stays
-      # in-repo.)
-      - name: Checkout tools branch
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-        with:
-          repository: ${{ inputs.tools_branch_ref == '' && github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'leanprover-community/mathlib4' || github.repository }}
-          ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || 'master' }}
-          path: tools-branch
-
       - name: Checkout local actions
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
@@ -277,14 +249,45 @@ jobs:
           # Set it as an environment variable for subsequent steps
           echo "LEAN_SRC_PATH=$LEAN_SRC_PATH" >> "$GITHUB_ENV"
 
-      - name: build tools-branch tools
-        shell: bash # We're only building a trusted branch with the tools, so no need to run inside landrun.
+      # Does this branch change the cache tool itself? `pr-branch` is
+      # `pr_branch_ref` already checked out, so this is a local `git diff` against
+      # a shallow `master` fetch — no API call. If so, the prebuilt `master`
+      # artifact would mask the change, so we must build the tool from this branch.
+      # Fork PRs are skipped: they run master's `build_template` via
+      # `pull_request_target` (never this one), their untrusted tool must not be
+      # built/run with cache credentials, and bors exercises tool changes in-repo.
+      - name: detect cache-tool changes
+        id: tool_changes
+        shell: bash # plain bash: reads the PR tree + a shallow master fetch; runs no PR code
         run: |
-          cd tools-branch
-          lake build cache check-yaml graph
-          ls .lake/build/bin/cache
-          ls .lake/build/bin/check-yaml
-          ls .lake/packages/importGraph/.lake/build/bin/graph
+          tool_changed=false
+          if [ "${{ github.event.pull_request.head.repo.fork }}" != "true" ]; then
+            git -C pr-branch fetch --no-tags --depth=1 https://github.com/leanprover-community/mathlib4.git master || true
+            # Fail safe toward building: a failed fetch/diff leaves $? non-zero.
+            if ! git -C pr-branch diff --quiet FETCH_HEAD -- Cache scripts/lake-build-with-retry.sh scripts/lake-build-wrapper.py; then
+              tool_changed=true
+            fi
+          fi
+          echo "tool_changed=${tool_changed}"
+          echo "tool_changed=${tool_changed}" >> "$GITHUB_OUTPUT"
+
+      # Populate `tools-branch/` with the trusted CI tooling (the `cache` binary and
+      # the `lake-build-*` helper scripts invoked by path below).
+      #
+      #   - Fast path: download the prebuilt `tools-bin` artifact published from
+      #     `master` by `publish_tools.yml` — only on canonical mathlib4, and only
+      #     when this branch doesn't change the cache tool (see the detection above).
+      #   - Source build: from `tools_source_ref`, pointed at the branch *under
+      #     test* (`pr_branch_ref`) — bors `staging`/`trying`, in-repo dev branches,
+      #     and the nightly-testing repo (which has no `master` branch) — so the
+      #     built tool matches the tree. Fork PRs keep `master`, so an untrusted
+      #     tool is never built/run.
+      - name: Get CI tools
+        uses: ./workflow-actions/.github/actions/get-tools
+        with:
+          use_artifact: ${{ inputs.tools_branch_ref == '' && github.repository == 'leanprover-community/mathlib4' && steps.tool_changes.outputs.tool_changed != 'true' }}
+          tools_source_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.event.pull_request.head.repo.fork && 'master' || inputs.pr_branch_ref) }}
+          github_token: ${{ github.token }}
 
       - name: download dependencies
         # We need network access to download dependencies
@@ -686,7 +689,11 @@ jobs:
     # Pins the OIDC `sub` claim to `...:environment:<cache_environment>`, which the Azure cache
     # app's federated credential is scoped to. A token minted by any job without this environment
     # (e.g. the untrusted build/post_steps/style_lint jobs) cannot satisfy that trust.
-    environment: ${{ inputs.cache_environment }}
+    environment:
+      name: ${{ inputs.cache_environment }}
+      # Skip creating a GitHub deployment record/UI; we use the environment only to
+      # pin the OIDC `sub` claim and gate access to its federated credential.
+      deployment: false
     permissions:
       contents: read
       id-token: write
@@ -695,22 +702,22 @@ jobs:
     # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Some.20files.20not.20found.20in.20the.20cache/near/407183836
     if: ${{ always() && needs.build.outputs.cache-staging-has-files == 'true' }}
     steps:
-      # As in the `build` job (see the rationale there), build the cache tooling
-      # — and load the trust-dispatch action below — from canonical master, not
-      # `nightly-testing-green`, so the write side and read side share one
-      # backend. The nightly repo has no fork PRs, so sourcing the dispatch from
-      # canonical master is at least as trusted as green.
+      # Build the write-side cache tool (and load the trust-dispatch action below)
+      # from the branch under test, so a PR's `--container`-aware tool is what
+      # writes the cache. This job only runs in trusted in-repo contexts (bors,
+      # dev branches, the nightly-testing repo) — fork PRs run master's
+      # `build_template` via `pull_request_target`, never this one — so
+      # `pr_branch_ref` is always a trusted ref here. Fork PRs keep `master`.
       - name: Checkout tools branch
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
-          repository: ${{ inputs.tools_branch_ref == '' && github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'leanprover-community/mathlib4' || github.repository }}
-          ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || 'master' }}
+          ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.event.pull_request.head.repo.fork && 'master' || inputs.pr_branch_ref) }}
           fetch-depth: 1
 
-      # Same trust dispatch as in the `build` and `post_steps` jobs. Loaded
-      # from the tools-branch checkout above (canonical master), which is what
-      # the OIDC token's container scoping is keyed to — so a fork PR cannot
-      # influence which container this job is authorized to write.
+      # Same trust dispatch as in the `build` and `post_steps` jobs. Loaded from
+      # the tools-branch checkout above (the branch under test, a trusted in-repo
+      # ref in the contexts where this job runs), which is what the OIDC token's
+      # container scoping is keyed to.
       - name: Compute cache trust dispatch
         uses: ./.github/actions/cache-trust-dispatch
         with:
@@ -868,6 +875,21 @@ jobs:
         run: |
           lake env lean --run "${CI_SCRIPTS_DIR}/pr_summary/dumpReasonableDecls.lean" \
             --out decls.txt --imports-out imports.json Mathlib
+          ## Record the PR number so the post-build `decls-diff` workflow can find
+          ## the comment to patch without the (laggy) commit-SHA search API. Empty
+          ## for non-PR builds (push to master / bors); the consumer then falls
+          ## back to the commit's associated PRs.
+          printf '%s' "${{ github.event.pull_request.number }}" > pr_number.txt
+
+      - name: ensure dump outputs are regular files
+        run: |
+          for f in decls.txt imports.json import_graph.dot pr_number.txt; do
+            if [ -L "$f" ] || [ ! -f "$f" ]; then
+              echo "Refusing to upload: $f is not a regular file." >&2
+              ls -la -- "$f" >&2 || true
+              exit 1
+            fi
+          done
 
       - name: upload the import graph
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -877,12 +899,13 @@ jobs:
             import_graph.dot
             decls.txt
             imports.json
+            pr_number.txt
           ## Master pushes: 90 days, so later PRs forked from these commits
           ## can consume the dumps from the artifact. Other branches: 7 days.
           retention-days: ${{ github.ref == 'refs/heads/master' && '90' || '7' }}
 
       - name: clean up the import graph file
-        run: rm -f import_graph.dot decls.txt imports.json
+        run: rm -f import_graph.dot decls.txt imports.json pr_number.txt
 
       - name: check all scripts build successfully
         run: |
@@ -972,7 +995,7 @@ jobs:
                     nodes {
                       ... on LabeledEvent {
                         createdAt
-                        actor { login }
+                        actor { login __typename }
                         label { name }
                       }
                     }
@@ -992,16 +1015,20 @@ jobs:
         run: |
           # Parse the GraphQL response and filter for the specific label
           echo '${{ steps.get-timeline.outputs.data }}'
-          USERNAME=$(echo '${{ steps.get-timeline.outputs.data }}' | jq -r '
+          ACTOR=$(echo '${{ steps.get-timeline.outputs.data }}' | jq -c '
             .repository.pullRequest.timelineItems.nodes
             | map(select(.label.name == "auto-merge-after-CI"))
             | sort_by(.createdAt)
             | last
-            | .actor.login // empty
+            | .actor // empty
           ')
+          USERNAME=$(echo "$ACTOR" | jq -r '.login // empty')
+          # 'Bot' for GitHub App actors (whose GraphQL logins lack the '[bot]' suffix),
+          # 'User' for regular accounts
+          ACTOR_TYPE=$(echo "$ACTOR" | jq -r '.__typename // empty')
 
           # Validate username format (GitHub usernames are alphanumeric + hyphens, max 39 chars)
-          printf 'USERNAME: %s\n' "$USERNAME"
+          printf 'USERNAME: %s\nACTOR_TYPE: %s\n' "$USERNAME" "$ACTOR_TYPE"
           if [[ -z "$USERNAME" ]]; then
             echo "Error: No actor found for the specified label"
             exit 1
@@ -1011,13 +1038,14 @@ jobs:
           fi
 
           echo "username=$USERNAME" >> "$GITHUB_OUTPUT"
-          echo "Found label actor: $USERNAME"
+          echo "actor_type=$ACTOR_TYPE" >> "$GITHUB_OUTPUT"
+          echo "Found label actor: $USERNAME ($ACTOR_TYPE)"
 
-      - if: >- # bot usernames will cause this step to error with "Could not resolve to a User..."
+      # bot usernames will cause this step to error with "Could not resolve to a User...",
+      # so we skip it for all non-user actors; allowed bots are validated in the next step
+      - if: >-
           contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI') &&
-          steps.get-label-actor.outputs.username != 'mathlib-nolints' &&
-          steps.get-label-actor.outputs.username != 'mathlib-update-dependencies' &&
-          steps.get-label-actor.outputs.username != 'mathlib-splicebot'
+          steps.get-label-actor.outputs.actor_type == 'User'
         name: check team membership
         uses: tspascoal/get-user-teams-membership@b2546c5affc730fd8e3d8483ae9ad3621938c2f9 # v4.0.2
         id: actorTeams
@@ -1030,9 +1058,14 @@ jobs:
       - if: >-
           contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI') &&
           (
-            steps.get-label-actor.outputs.username == 'mathlib-nolints' ||
-            steps.get-label-actor.outputs.username == 'mathlib-update-dependencies' ||
-            steps.get-label-actor.outputs.username == 'mathlib-splicebot' ||
+            (
+              steps.get-label-actor.outputs.actor_type == 'Bot' &&
+              (
+                steps.get-label-actor.outputs.username == 'mathlib-nolints' ||
+                steps.get-label-actor.outputs.username == 'mathlib-update-dependencies' ||
+                steps.get-label-actor.outputs.username == 'mathlib-splicebot'
+              )
+            ) ||
             contains(steps.actorTeams.outputs.teams, 'mathlib-maintainers') ||
             contains(steps.actorTeams.outputs.teams, 'lean-release-managers') ||
             contains(steps.actorTeams.outputs.teams, 'bot-users')
