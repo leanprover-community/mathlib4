@@ -140,9 +140,7 @@ lemma standardWeights_edgeWeight_neq_one_iff_eq_zero (h : StandardWeights G) :
   contrapose
   exact h.edgeWeight_Adj_iff.symm
 
-noncomputable
-instance : DecidableRel (G.Adj) := by exact Classical.decRel G.Adj
-
+open scoped Classical in
 /--
 If a graph has standard weights, then the edgeWeight function can be defined piecewise as 1 if
 the input vertices are adjacent and 0 otherwise.
@@ -152,14 +150,14 @@ lemma standardWeights_edgeWeight_fun (h : StandardWeights G) :
   ext x y
   by_cases hyp : G.Adj x y <;> simp [hyp, h.edgeWeight_NotAdj_iff.mp, h.edgeWeight_Adj_iff.mp]
 
+open scoped Classical in
 /--
 If a graph has standard weights, then the edgeWeight function can be defined piecewise as 0 if
 the input vertices are not adjacent and 1 otherwise.
 -/
 lemma standardWeights_edgeWeight_fun' (h : StandardWeights G) :
     G.edgeWeight = fun x y ↦ if ¬ G.Adj x y then 0 else 1 := by
-  ext x y
-  by_cases hyp : G.Adj x y <;> simp [hyp, h.edgeWeight_NotAdj_iff.mp, h.edgeWeight_Adj_iff.mp]
+  grind [standardWeights_edgeWeight_fun]
 
 /--
 If a graph has standard weights, then an edge is in the edgeSet if and only if the associated
@@ -185,9 +183,7 @@ The degree of a vertex x of a WeightedGraphWithKillingTerm is non-negative and d
 def WeightedGraphWithKillingTerm.degree (x : X) : ℝ≥0 :=
   ∑ y, (G.edgeWeight x y) + (G.killingTerm x)
 
-noncomputable
-instance : Fintype ↑(G.neighborSet x) := Fintype.ofFinite (G.neighborSet x)
-
+open scoped Classical in
 /--
 If a WeightedGraphWithKillingTerm has standard weights, then its notion of degree coincides with
 the notion of degree on the underlying simple graph.
@@ -202,6 +198,7 @@ lemma degreeWithStandardWeights (h : StandardWeights G) (x : X) :
   · grind [standardWeights_edgeWeight_neq_zero_iff_eq_one]
   exact h.edgeWeight_Adj_iff.mp ((G.toSimpleGraph.mem_neighborFinset x y).mp hy)
 
+open scoped Classical in
 lemma degreeWithStandardWeightsCard (h : StandardWeights G) (x : X) :
     G.degree x = (G.neighborFinset x).card := by
   rw [degreeWithStandardWeights G h x]
