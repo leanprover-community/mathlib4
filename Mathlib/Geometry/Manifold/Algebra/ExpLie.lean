@@ -235,18 +235,23 @@ This is a consequence of Lee, *Introduction to Smooth Manifolds*, Theorem 9.12
 smooth vector field. Here we assume only the smooth dependence of integral curves
 on initial conditions.
 
-Note: This statement does not assume that `Φ` satisfies the usual flow identities
-(e.g. `Φ 0 x = x` or `Φ (t + s) x = Φ t (Φ s x)`), only that it parametrises
-integral curves of `X`.
+The hypothesis `hΦ₀ : ∀ x, Φ 0 x = x` pins the initial conditions; together with
+uniqueness of integral curves (which requires `T2Space M` and boundarylessness) it
+identifies `Φ` with the maximal flow of `X`, whose smoothness is Lee's theorem.
+Without `hΦ₀` the statement is false: for `X = 0` every constant curve is an
+integral curve, so `Φ t x = f x` would satisfy the hypotheses for an arbitrary
+(e.g. discontinuous) `f`.
 
 TODO: Replace this axiom with a proper development of flows (Lee Theorem 9.12)
 once available in Mathlib. It would be nice to make this a proof_wanted but then
 we end up with sorries. -/
 axiom contMDiff_flow_like
     {M : Type*} [TopologicalSpace M] [ChartedSpace HG M] [IsManifold IG (minSmoothness ℝ 3) M]
+    [T2Space M] [BoundarylessManifold IG M]
     (X : ∀ x : M, TangentSpace IG x)
     (hX : ContMDiff IG IG.tangent (minSmoothness ℝ 2) (fun x => (⟨x, X x⟩ : TangentBundle IG M)))
     (Φ : ℝ → M → M)
+    (hΦ₀ : ∀ x, Φ 0 x = x)
     (hΦ : ∀ x, IsMIntegralCurve (fun t => Φ t x) (fun x => X x)) :
     ContMDiff (𝓘(ℝ, ℝ).prod IG) IG (minSmoothness ℝ 2) (fun p : ℝ × M => Φ p.1 p.2)
 
@@ -379,6 +384,24 @@ lemma isMIntegralCurve_prod_mk
   intro t;
   convert HasMFDerivAt.prodMk ( h₁ t ) ( h₂ t ) using 1
 
+public lemma expLie_zero
+    [T2Space G]
+    [BoundarylessManifold IG G] [CompleteSpace EG] :
+    expLie (0 : GroupLieAlgebra IG G) = 1 := by
+  have hconst : IsMIntegralCurve (fun _ ↦ (1 : G))
+               (mulInvariantVectorField (0 : GroupLieAlgebra IG G)) := by
+    unfold mulInvariantVectorField
+    apply isMIntegralCurve_const
+    simp only [map_zero]
+    exact rfl
+  have hγ := (IsMIntegralCurve.exists_global (0 : GroupLieAlgebra IG G)).choose_spec
+  have heq : (fun _ : ℝ ↦ (1 : G)) =
+             (IsMIntegralCurve.exists_global (0 : GroupLieAlgebra IG G)).choose :=
+    IsMIntegralCurve.unique_global 0 _ _ hconst hγ.2 rfl hγ.1
+  have := congr_fun heq 1
+  simp only [expLie] at this ⊢
+  exact this.symm
+
 public theorem contMDiff_expLie [T2Space G] [CompleteSpace EG] [BoundarylessManifold IG G] :
     ContMDiff 𝓘(ℝ, EG) IG (minSmoothness ℝ 2) (fun v : EG => expLie (G := G) (IG := IG) v) := by
   have hXi : ContMDiff (IG.prod 𝓘(ℝ, EG)) (IG.prod 𝓘(ℝ, EG)).tangent (minSmoothness ℝ 2)
@@ -388,27 +411,27 @@ public theorem contMDiff_expLie [T2Space G] [CompleteSpace EG] [BoundarylessMani
   have hflow := contMDiff_flow_like
     (fun p : G × EG => (mfderiv IG IG (p.1 * ·) 1 p.2, (0:EG)))
     hXi
-    (fun t p => (expLie (t • p.2), p.2))
+    (fun t p => (p.1 * expLie (t • p.2), p.2))
+    (fun p => by
+      have h0 : expLie (G := G) (IG := IG) ((0:ℝ) • p.2) = 1 := by
+        rw [zero_smul]; exact expLie_zero
+      simp only [h0, mul_one])
     (fun p : G × EG => isMIntegralCurve_prod_mk
-      (γ₁ := fun t => expLie (t • p.2)) (γ₂ := fun _ => p.2)
+      (γ₁ := fun t => p.1 * expLie (t • p.2)) (γ₂ := fun _ => p.2)
       (X₁ := fun x => mfderiv IG IG (x * ·) 1 p.2) (X₂ := fun _ => (0 : EG))
-      (isMIntegralCurve_expLie_smul p.2)
+      (IsMIntegralCurve.left_translate (fun t => expLie (t • p.2)) p.2
+        (isMIntegralCurve_expLie_smul p.2) p.1)
       (isMIntegralCurve_const (by rfl)))
-  have hexp : (fun v : EG => expLie (G := G) (IG := IG) v) =
-    fun v => expLie (G := G) (IG := IG) ((1 : ℝ) • v) := by
-    funext v
-    simp
-  rw [hexp]
   have hkey : ContMDiff 𝓘(ℝ, EG) (𝓘(ℝ, ℝ).prod (IG.prod 𝓘(ℝ, EG))) (minSmoothness ℝ 2)
       (fun v : EG => ((1:ℝ), ((1:G), v))) :=
     contMDiff_const.prodMk (contMDiff_const.prodMk contMDiff_id)
-  have hcomp := hflow.comp hkey
-  have hcomp2 : ContMDiff 𝓘(ℝ, EG) IG (minSmoothness ℝ 2)
-      (fun v : EG => expLie (G := G) (IG := IG) v) := by
-    have := contMDiff_fst (I := IG) (J := 𝓘(ℝ, EG)).comp hcomp
-    convert this using 1
-  simp only [one_smul]
-  exact hcomp2
+  have hfst := (contMDiff_fst (I := IG) (J := 𝓘(ℝ, EG))).comp (hflow.comp hkey)
+  have hfun : (fun v : EG => expLie (G := G) (IG := IG) v) =
+      (fun v : EG => (1 : G) * expLie (G := G) (IG := IG) ((1:ℝ) • v)) := by
+    funext v
+    rw [one_smul, one_mul]
+  rw [hfun]
+  exact hfst
 
 lemma IsMIntegralCurve.time_shift
     (γ : ℝ → G) (v : (x : G) → TangentSpace IG x)
@@ -442,24 +465,6 @@ lemma IsMIntegralCurve.mul
       ((contMDiff_mulInvariantVectorField v).of_le (le_trans (by norm_num) le_minSmoothness))
       hshift htranslate h0
   exact congr_fun heq t
-
-public lemma expLie_zero
-    [T2Space G]
-    [BoundarylessManifold IG G] [CompleteSpace EG] :
-    expLie (0 : GroupLieAlgebra IG G) = 1 := by
-  have hconst : IsMIntegralCurve (fun _ ↦ (1 : G))
-               (mulInvariantVectorField (0 : GroupLieAlgebra IG G)) := by
-    unfold mulInvariantVectorField
-    apply isMIntegralCurve_const
-    simp only [map_zero]
-    exact rfl
-  have hγ := (IsMIntegralCurve.exists_global (0 : GroupLieAlgebra IG G)).choose_spec
-  have heq : (fun _ : ℝ ↦ (1 : G)) =
-             (IsMIntegralCurve.exists_global (0 : GroupLieAlgebra IG G)).choose :=
-    IsMIntegralCurve.unique_global 0 _ _ hconst hγ.2 rfl hγ.1
-  have := congr_fun heq 1
-  simp only [expLie] at this ⊢
-  exact this.symm
 
 public lemma expLie_add (A : GroupLieAlgebra IG G) (s t : ℝ)
     [T2Space G] [CompleteSpace EG] [BoundarylessManifold IG G] :
