@@ -111,7 +111,7 @@ def algHomEquivPrimeSpectrum [IsFiniteSplit k R] : (R →ₐ[k] k) ≃ PrimeSpec
     have : (RingHom.ker f).IsPrime := RingHom.ker_isPrime f
     apply (AlgEquiv.ofBijective (ofId k (R ⧸ RingHom.ker f))
       (bijective_algebraMap_quotient _ _)).injective
-    rw [AlgEquiv.apply_symm_apply, AlgEquiv.coe_ofBijective, ofId_apply,
+    rw [AlgEquiv.apply_symm_apply, AlgEquiv.ofBijective_apply, ofId_apply,
       IsScalarTower.algebraMap_apply k R]
     simp [-Ideal.Quotient.mk_algebraMap, Ideal.Quotient.mk_eq_mk_iff_sub_mem]
   right_inv p := by
