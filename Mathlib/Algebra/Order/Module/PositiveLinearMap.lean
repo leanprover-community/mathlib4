@@ -83,7 +83,7 @@ instance : FunLike (E₁ →ₚ[R] E₂) E₁ E₂ where
     apply DFunLike.coe_injective'
     exact h
 
-initialize_simps_projections PositiveLinearMap (toFun → apply)
+initialize_simps_projections PositiveLinearMap (toFun → apply, as_prefix toLinearMap)
 
 @[ext]
 lemma ext {f g : E₁ →ₚ[R] E₂} (h : ∀ x, f x = g x) : f = g :=
