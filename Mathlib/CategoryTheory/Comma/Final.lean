@@ -68,12 +68,12 @@ private lemma final_fst_small [R.Final] : (fst L R).Final := by
 
 end Small
 
-section NonSmall
-
 variable {A : Type u₁} [Category.{v₁} A]
 variable {B : Type u₂} [Category.{v₂} B]
 variable {T : Type u₃} [Category.{v₃} T]
 variable (L : A ⥤ T) (R : B ⥤ T)
+
+section NonSmall
 
 instance final_fst [R.Final] : (fst L R).Final := by
   let sA : A ≌ AsSmall.{max u₁ u₂ u₃ v₁ v₂ v₃} A := AsSmall.equiv
@@ -146,11 +146,6 @@ lemma map_final {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v
   infer_instance⟩
 
 section Relative
-
-variable {A : Type u₁} [Category.{v₁} A]
-variable {B : Type u₂} [Category.{v₂} B]
-variable {T : Type u₃} [Category.{v₃} T]
-variable (L : A ⥤ T) (R : B ⥤ T)
 
 lemma exists_eq_of_isCofiltered_costructuredArrow {b : B}
     [IsCofiltered (CostructuredArrow L (R.obj b))] {a₁ a₂ : A}
@@ -226,11 +221,6 @@ lemma initial_snd_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofilter
       ⟨vb₂, IsCofiltered.eqHom s s', by simp [heqb]⟩, ?_⟩
     simpa using IsCofiltered.eq_condition s s'
 
-variable {A : Type u₄} [Category.{v₄} A]
-variable {B : Type u₅} [Category.{v₅} B]
-variable {T : Type u₆} [Category.{v₆} T]
-variable (L : A ⥤ T) (R : B ⥤ T)
-
 lemma isFiltered_of_isFiltered_structuredArrow [IsFiltered A] [IsFiltered B]
     [∀ a, IsFiltered (StructuredArrow (L.obj a) R)] : IsFiltered (Comma L R) := by
   have (a : Aᵒᵖ) : IsCofiltered (CostructuredArrow R.op (L.op.obj a)) :=
@@ -261,11 +251,6 @@ lemma final_snd_of_isFiltered_structuredArrow [IsFiltered A] [IsFiltered B]
 end Relative
 
 section Filtered
-
-variable {A : Type u₁} [Category.{v₁} A]
-variable {B : Type u₂} [Category.{v₂} B]
-variable {T : Type u₃} [Category.{v₃} T]
-variable (L : A ⥤ T) (R : B ⥤ T)
 
 /-- Let `A` and `B` be filtered categories, `R : B ⥤ T` be final and `L : A ⥤ T`. Then, the
 comma category `Comma L R` is filtered. -/
