@@ -90,7 +90,7 @@ with the intrinsic star operation.
 This type class can be used to guarantee `PositiveLinearMap` is a `StarHomClass`. -/
 class SelfAdjointDecompose (R : Type*) [AddGroup R] [Star R]
     [PartialOrder R] where
-  /-- Every selfadjoint element is the difference of nonnegatives elements. -/
+  /-- Every self-adjoint element is the difference of nonnegatives elements. -/
   exists_nonneg_sub_nonnpos {a : R} (ha : IsSelfAdjoint a) :
     ∃ (b c : R), 0 ≤ b ∧ 0 ≤ c ∧ a = b - c
 
