@@ -21,10 +21,13 @@ corresponding operations in multiplicative torsors.
 
 ## Implementation notes
 
-Affine spaces are the motivating example of torsors of additive group actions. Multiplicative
-torsors are not used much yet, but will play a central role in e.g. the development of the theory
-of principal bundles. Most API is written multiplicatively and then also provided in additive form
-via `to_additive`.
+Affine spaces are a motivating example of additive torsors. Additional simply transitive
+actions which give rise to torsors include the action of the Weyl group on Weyl chambers, the
+action of non-zero scalars on the non-vanishing elements of the top exterior power of a
+finite-dimensional vector space, the action of the general linear group of a vector space on the
+bases of that space, and the monodromy action of the fundamental group of a space on a fibre of its
+universal cover. Both the additive and multiplicative notation will be useful to formalise
+such examples.
 
 ## Notation
 
@@ -79,12 +82,12 @@ attribute [instance 100] Torsor.nonempty
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12096): linter not ported yet
 --@[nolint instance_priority]
 @[to_additive /-- An `AddGroup G` is a torsor for itself.-/]
-instance Group.toTorsor (G : Type*) [Group G] : Torsor G G where
+instance Group.instTorsor (G : Type*) [Group G] : Torsor G G where
   sdiv := Div.div
   sdiv_smul' := div_mul_cancel
   smul_sdiv' := mul_div_cancel_right
 
-@[deprecated (since := "2026-05-04")] alias addGroupIsAddTorsor := AddGroup.toAddTorsor
+@[deprecated (since := "2026-05-04")] alias addGroupIsAddTorsor := AddGroup.instAddTorsor
 
 /-- Simplify division for a torsor for a `Group G` over itself. -/
 @[to_additive (attr := simp) /-- Simplify subtraction for a torsor for an `AddGroup G` over
