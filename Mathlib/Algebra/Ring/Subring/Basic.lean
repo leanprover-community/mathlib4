@@ -81,10 +81,6 @@ theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : Subring R → Sub
 theorem toSubsemiring_mono : Monotone (toSubsemiring : Subring R → Subsemiring R) :=
   toSubsemiring_strictMono.monotone
 
-instance isMulCommutative_toSubsemiring (s : Subring R) [IsMulCommutative s] :
-    IsMulCommutative s.toSubsemiring :=
-  ‹IsMulCommutative s›
-
 @[gcongr, mono]
 theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → AddSubgroup R) :=
   fun _ _ => id

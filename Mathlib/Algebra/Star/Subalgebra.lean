@@ -958,16 +958,4 @@ instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsD
 
 end directed
 
-section IsMulCommutative
-
-instance isMulCommutative_toSubalgebra (S : StarSubalgebra R A) [IsMulCommutative S] :
-    IsMulCommutative S.toSubalgebra :=
-  ‹IsMulCommutative S›
-
-instance isMulCommutative_toNonUnitalStarSubalgebra (S : StarSubalgebra R A) [IsMulCommutative S] :
-    IsMulCommutative S.toNonUnitalStarSubalgebra :=
-  ‹IsMulCommutative S›
-
-end IsMulCommutative
-
 end StarSubalgebra
