@@ -98,8 +98,10 @@ lemma isCofiltered_costructuredArrow (i' : I') :
 
 include hc in
 lemma initial_snd : (Comma.snd (left c) (right c' f)).Initial := by
-  have := isCofiltered_costructuredArrow hc f
-  exact Comma.initial_snd_of_isCofiltered_costructuredArrow _ _
+  have (i' : I') : IsConnected (CostructuredArrow (left c) ((right c' f).obj i')) :=
+    have := isCofiltered_costructuredArrow hc f i'
+    IsCofiltered.isConnected _
+  exact Comma.initial_snd_of_isConnected_costructuredArrow _ _
 
 variable [IsCofiltered I']
 
@@ -187,8 +189,10 @@ lemma isFiltered_structuredArrow (i : I) :
 
 include hc' in
 lemma final_fst : (Comma.fst (left c f) (right c')).Final := by
-  have := isFiltered_structuredArrow hc' f
-  exact Comma.final_fst_of_isFiltered_structuredArrow _ _
+  have (i : I) : IsConnected (StructuredArrow ((left c f).obj i) (right c')) :=
+    have := isFiltered_structuredArrow hc' f i
+    IsFiltered.isConnected _
+  exact Comma.final_fst_of_isConnected_structuredArrow _ _
 
 variable [IsFiltered I]
 

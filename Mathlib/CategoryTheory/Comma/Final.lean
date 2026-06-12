@@ -5,11 +5,8 @@ Authors: Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 public import Mathlib.CategoryTheory.Limits.IsConnected
-public import Mathlib.CategoryTheory.Limits.Sifted
 public import Mathlib.CategoryTheory.Filtered.Final
-public import Mathlib.CategoryTheory.Grothendieck
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.CommaMap
 
 /-!
@@ -40,120 +37,10 @@ namespace Comma
 
 open Limits Functor CostructuredArrow
 
-section Small
-
-variable {A : Type v₁} [Category.{v₁} A]
-variable {B : Type v₁} [Category.{v₁} B]
-variable {T : Type v₁} [Category.{v₁} T]
-variable (L : A ⥤ T) (R : B ⥤ T)
-
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-private lemma final_fst_small [R.Final] : (fst L R).Final := by
-  rw [Functor.final_iff_isIso_colimit_pre]
-  intro G
-  let i : colimit G ≅ colimit (fst L R ⋙ G) :=
-    colimitIsoColimitGrothendieck L G ≪≫
-    (Final.colimitIso (Grothendieck.pre (functor L) R) (grothendieckProj L ⋙ G)).symm ≪≫
-    HasColimit.isoOfNatIso (Iso.refl _) ≪≫
-    Final.colimitIso (grothendieckPrecompFunctorEquivalence L R).functor (fst L R ⋙ G)
-  convert! i.isIso_inv
-  apply colimit.hom_ext
-  intro ⟨a, b, f⟩
-  simp only [colimit.ι_pre, comp_obj, fst_obj, grothendieckPrecompFunctorEquivalence_functor,
-    Iso.trans_inv, Iso.symm_inv, Category.assoc, i]
-  change _ = colimit.ι (fst L R ⋙ G)
-    ((grothendieckPrecompFunctorToComma L R).obj ⟨b, CostructuredArrow.mk f⟩) ≫ _
-  simp
-
-end Small
-
 variable {A : Type u₁} [Category.{v₁} A]
 variable {B : Type u₂} [Category.{v₂} B]
 variable {T : Type u₃} [Category.{v₃} T]
 variable (L : A ⥤ T) (R : B ⥤ T)
-
-section NonSmall
-
-instance final_fst [R.Final] : (fst L R).Final := by
-  let sA : A ≌ AsSmall.{max u₁ u₂ u₃ v₁ v₂ v₃} A := AsSmall.equiv
-  let sB : B ≌ AsSmall.{max u₁ u₂ u₃ v₁ v₂ v₃} B := AsSmall.equiv
-  let sT : T ≌ AsSmall.{max u₁ u₂ u₃ v₁ v₂ v₃} T := AsSmall.equiv
-  let L' := sA.inverse ⋙ L ⋙ sT.functor
-  let R' := sB.inverse ⋙ R ⋙ sT.functor
-  let fC : Comma L R ⥤ Comma L' R' :=
-    map (F₁ := sA.functor) (F := sT.functor) (F₂ := sB.functor)
-      (isoWhiskerRight sA.unitIso (L ⋙ sT.functor)).hom
-      (isoWhiskerRight sB.unitIso (R ⋙ sT.functor)).hom
-  have : Final (fst L' R') := final_fst_small _ _
-  apply final_of_natIso (F := (fC ⋙ fst L' R' ⋙ sA.inverse))
-  exact (Functor.associator _ _ _).symm.trans (Iso.compInverseIso (mapFst _ _))
-
-instance initial_snd [L.Initial] : (snd L R).Initial := by
-  have : ((opFunctor L R).leftOp ⋙ fst R.op L.op).Final :=
-    final_equivalence_comp (opEquiv L R).functor.leftOp (fst R.op L.op)
-  have : (snd L R).op.Final := final_of_natIso (opFunctorCompFst _ _)
-  apply initial_of_final_op
-
-/-- `Comma L R` with `L : A ⥤ T` and `R : B ⥤ T` is connected if `R` is final and `A` is
-connected. -/
-instance isConnected_comma_of_final [IsConnected A] [R.Final] : IsConnected (Comma L R) := by
-  rwa [isConnected_iff_of_final (fst L R)]
-
-/-- `Comma L R` with `L : A ⥤ T` and `R : B ⥤ T` is connected if `L` is initial and `B` is
-connected. -/
-instance isConnected_comma_of_initial [IsConnected B] [L.Initial] : IsConnected (Comma L R) := by
-  rwa [isConnected_iff_of_initial (snd L R)]
-
-end NonSmall
-
-set_option backward.defeqAttrib.useBackward true in
-/-- Let the following diagram commute up to isomorphism:
-
-```
-      L       R
-  A  ---→ T  ←--- B
-  |       |       |
-  | F     | H     | G
-  ↓       ↓       ↓
-  A' ---→ T' ←--- B'
-      L'      R'
-```
-
-Let `F`, `G`, `R` and `R'` be final and `B` be filtered. Then, the induced functor between the comma
-categories of the first and second row of the diagram is final. -/
-lemma map_final {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B] {T : Type u₃}
-    [Category.{v₃} T] {L : A ⥤ T} {R : B ⥤ T} {A' : Type u₄} [Category.{v₄} A'] {B' : Type u₅}
-    [Category.{v₅} B'] {T' : Type u₆} [Category.{v₆} T'] {L' : A' ⥤ T'} {R' : B' ⥤ T'} {F : A ⥤ A'}
-    {G : B ⥤ B'} {H : T ⥤ T'} (iL : F ⋙ L' ≅ L ⋙ H) (iR : G ⋙ R' ≅ R ⋙ H) [IsFiltered B]
-    [R.Final] [R'.Final] [F.Final] [G.Final] :
-    (Comma.map iL.hom iR.inv).Final := ⟨fun ⟨i₂, j₂, u₂⟩ => by
-  haveI := final_of_natIso iR
-  rw [isConnected_iff_of_equivalence (StructuredArrow.commaMapEquivalence iL.hom iR.inv _)]
-  have : StructuredArrow.map₂ u₂ iR.hom ≅ StructuredArrow.post j₂ G R' ⋙
-      StructuredArrow.map₂ (G := 𝟭 _) (F := 𝟭 _) (R' := R ⋙ H) u₂ iR.hom ⋙
-      StructuredArrow.pre _ R H :=
-    eqToIso (by
-      congr
-      · simp
-      · ext; simp) ≪≫
-    (StructuredArrow.map₂CompMap₂Iso _ _ _ _).symm ≪≫
-    isoWhiskerLeft _ ((StructuredArrow.map₂CompMap₂Iso _ _ _ _).symm ≪≫
-      isoWhiskerLeft _ (StructuredArrow.preIsoMap₂ _ _ _).symm) ≪≫
-    isoWhiskerRight (StructuredArrow.postIsoMap₂ j₂ G R').symm _
-  haveI := final_of_natIso this.symm
-  rw [IsIso.Iso.inv_inv]
-  infer_instance⟩
-
-section Relative
-
-lemma exists_eq_of_isCofiltered_costructuredArrow {b : B}
-    [IsCofiltered (CostructuredArrow L (R.obj b))] {a₁ a₂ : A}
-    (s₁ : L.obj a₁ ⟶ R.obj b) (s₂ : L.obj a₂ ⟶ R.obj b) :
-    ∃ (a : A) (t₁ : a ⟶ a₁) (t₂ : a ⟶ a₂), L.map t₁ ≫ s₁ = L.map t₂ ≫ s₂ := by
-  obtain ⟨W, p₁, p₂, -⟩ := IsCofilteredOrEmpty.cone_objs
-    (CostructuredArrow.mk s₁) (CostructuredArrow.mk s₂)
-  exact ⟨W.left, p₁.left, p₂.left, (CostructuredArrow.w p₁).trans (CostructuredArrow.w p₂).symm⟩
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor from the costructured arrow category on `snd L R` over `b : B` to the
@@ -193,6 +80,16 @@ def costructuredArrowSndAdjunction (b : B) :
   counit := { app X := CostructuredArrow.homMk (𝟙 X.left) (by simp) }
   left_triangle_components X := by ext; simp
   right_triangle_components Y := by ext <;> simp
+
+section Relative
+
+lemma exists_eq_of_isCofiltered_costructuredArrow {b : B}
+    [IsCofiltered (CostructuredArrow L (R.obj b))] {a₁ a₂ : A}
+    (s₁ : L.obj a₁ ⟶ R.obj b) (s₂ : L.obj a₂ ⟶ R.obj b) :
+    ∃ (a : A) (t₁ : a ⟶ a₁) (t₂ : a ⟶ a₂), L.map t₁ ≫ s₁ = L.map t₂ ≫ s₂ := by
+  obtain ⟨W, p₁, p₂, -⟩ := IsCofilteredOrEmpty.cone_objs
+    (CostructuredArrow.mk s₁) (CostructuredArrow.mk s₂)
+  exact ⟨W.left, p₁.left, p₂.left, (CostructuredArrow.w p₁).trans (CostructuredArrow.w p₂).symm⟩
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isCofiltered_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofiltered B]
@@ -244,12 +141,12 @@ lemma initial_fst_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofilter
   · exact ⟨⟨_, A'.right, L.map (IsCofiltered.eqHom s s') ≫ A'.hom⟩,
       ⟨IsCofiltered.eqHom s s', 𝟙 A'.right, by simp⟩, IsCofiltered.eq_condition s s'⟩
 
-lemma initial_snd_of_isCofiltered_costructuredArrow
-    [∀ b, IsCofiltered (CostructuredArrow L (R.obj b))] : (snd L R).Initial where
+lemma initial_snd_of_isConnected_costructuredArrow
+    [∀ b, IsConnected (CostructuredArrow L (R.obj b))] : (snd L R).Initial where
   out b := by
     have := final_of_adjunction (costructuredArrowSndAdjunction L R b)
     rw [← isConnected_iff_of_final (costructuredArrowSndInclusion L R b)]
-    exact IsCofiltered.isConnected _
+    infer_instance
 
 lemma isFiltered_of_isFiltered_structuredArrow [IsFiltered A] [IsFiltered B]
     [∀ a, IsFiltered (StructuredArrow (L.obj a) R)] : IsFiltered (Comma L R) := by
@@ -258,11 +155,12 @@ lemma isFiltered_of_isFiltered_structuredArrow [IsFiltered A] [IsFiltered B]
   have : IsCofiltered (Comma R.op L.op) := isCofiltered_of_isCofiltered_costructuredArrow _ _
   exact IsFiltered.of_equivalence (opEquiv L R).symm
 
-lemma final_fst_of_isFiltered_structuredArrow
-    [∀ a, IsFiltered (StructuredArrow (L.obj a) R)] : (fst L R).Final := by
-  have (a : Aᵒᵖ) : IsCofiltered (CostructuredArrow R.op (L.op.obj a)) :=
-    IsCofiltered.of_equivalence (structuredArrowOpEquivalence R (L.obj a.unop))
-  have : (snd R.op L.op).Initial := initial_snd_of_isCofiltered_costructuredArrow _ _
+lemma final_fst_of_isConnected_structuredArrow
+    [∀ a, IsConnected (StructuredArrow (L.obj a) R)] : (fst L R).Final := by
+  have (a : Aᵒᵖ) : IsConnected (CostructuredArrow R.op (L.op.obj a)) :=
+    (isConnected_iff_of_equivalence (structuredArrowOpEquivalence R (L.obj a.unop))).mp
+      inferInstance
+  have : (snd R.op L.op).Initial := initial_snd_of_isConnected_costructuredArrow _ _
   have : ((opFunctor L R).leftOp ⋙ snd R.op L.op).Initial :=
     initial_equivalence_comp (opEquiv L R).functor.leftOp _
   have : (fst L R).op.Initial := initial_of_natIso <| opFunctorCompSnd _ _
@@ -279,6 +177,64 @@ lemma final_snd_of_isFiltered_structuredArrow [IsFiltered A] [IsFiltered B]
   apply final_of_initial_op
 
 end Relative
+
+section NonSmall
+
+instance initial_snd [L.Initial] : (snd L R).Initial :=
+  initial_snd_of_isConnected_costructuredArrow L R
+
+instance final_fst [R.Final] : (fst L R).Final :=
+  final_fst_of_isConnected_structuredArrow L R
+
+/-- `Comma L R` with `L : A ⥤ T` and `R : B ⥤ T` is connected if `R` is final and `A` is
+connected. -/
+instance isConnected_comma_of_final [IsConnected A] [R.Final] : IsConnected (Comma L R) := by
+  rwa [isConnected_iff_of_final (fst L R)]
+
+/-- `Comma L R` with `L : A ⥤ T` and `R : B ⥤ T` is connected if `L` is initial and `B` is
+connected. -/
+instance isConnected_comma_of_initial [IsConnected B] [L.Initial] : IsConnected (Comma L R) := by
+  rwa [isConnected_iff_of_initial (snd L R)]
+
+end NonSmall
+
+set_option backward.defeqAttrib.useBackward true in
+/-- Let the following diagram commute up to isomorphism:
+
+```
+      L       R
+  A  ---→ T  ←--- B
+  |       |       |
+  | F     | H     | G
+  ↓       ↓       ↓
+  A' ---→ T' ←--- B'
+      L'      R'
+```
+
+Let `F`, `G`, `R` and `R'` be final and `B` be filtered. Then, the induced functor between the comma
+categories of the first and second row of the diagram is final. -/
+lemma map_final {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B] {T : Type u₃}
+    [Category.{v₃} T] {L : A ⥤ T} {R : B ⥤ T} {A' : Type u₄} [Category.{v₄} A'] {B' : Type u₅}
+    [Category.{v₅} B'] {T' : Type u₆} [Category.{v₆} T'] {L' : A' ⥤ T'} {R' : B' ⥤ T'} {F : A ⥤ A'}
+    {G : B ⥤ B'} {H : T ⥤ T'} (iL : F ⋙ L' ≅ L ⋙ H) (iR : G ⋙ R' ≅ R ⋙ H) [IsFiltered B]
+    [R.Final] [R'.Final] [F.Final] [G.Final] :
+    (Comma.map iL.hom iR.inv).Final := ⟨fun ⟨i₂, j₂, u₂⟩ => by
+  haveI := final_of_natIso iR
+  rw [isConnected_iff_of_equivalence (StructuredArrow.commaMapEquivalence iL.hom iR.inv _)]
+  have : StructuredArrow.map₂ u₂ iR.hom ≅ StructuredArrow.post j₂ G R' ⋙
+      StructuredArrow.map₂ (G := 𝟭 _) (F := 𝟭 _) (R' := R ⋙ H) u₂ iR.hom ⋙
+      StructuredArrow.pre _ R H :=
+    eqToIso (by
+      congr
+      · simp
+      · ext; simp) ≪≫
+    (StructuredArrow.map₂CompMap₂Iso _ _ _ _).symm ≪≫
+    isoWhiskerLeft _ ((StructuredArrow.map₂CompMap₂Iso _ _ _ _).symm ≪≫
+      isoWhiskerLeft _ (StructuredArrow.preIsoMap₂ _ _ _).symm) ≪≫
+    isoWhiskerRight (StructuredArrow.postIsoMap₂ j₂ G R').symm _
+  haveI := final_of_natIso this.symm
+  rw [IsIso.Iso.inv_inv]
+  infer_instance⟩
 
 section Filtered
 
