@@ -873,6 +873,35 @@ lemma meromorphicOrderAt_comp_of_deriv_ne_zero (hg : AnalyticAt 𝕜 g x) (hg' :
   · rw [meromorphicOrderAt_of_not_meromorphicAt hf, meromorphicOrderAt_of_not_meromorphicAt]
     rwa [meromorphicAt_comp_iff_of_deriv_ne_zero hg hg']
 
+/-- `meromorphicOrderAt` is invariant under translation. -/
+@[simp] theorem meromorphicOrderAt_comp_add_const_eq_meromorphicOrderAt {c : 𝕜} {f : 𝕜 → E} :
+    meromorphicOrderAt (f ∘ (· + c)) (x - c) = meromorphicOrderAt f x := by
+  classical
+  by_cases h : ¬ MeromorphicAt f x
+  · simp_all
+  rw [MeromorphicAt.meromorphicOrderAt_comp (by simp_all) (by fun_prop)]
+  · have {a b c : 𝕜} : a + b - c = a - (c - b) := by ring
+    simp [this]
+  · have {a b c : 𝕜} : a + b - (c - b + b) = a - (c - b) := by ring
+    simp_rw [eventuallyConst_iff_analyticOrderAt_sub_eq_top, this]
+    simp
+
+/-- `meromorphicOrderAt` is invariant under translation. -/
+@[simp] theorem meromorphicOrderAt_fun_comp_add_const_eq_meromorphicOrderAt {c : 𝕜} {f : 𝕜 → E} :
+    meromorphicOrderAt (fun z ↦ f (z + c)) (x - c) = meromorphicOrderAt f x :=
+  meromorphicOrderAt_comp_add_const_eq_meromorphicOrderAt
+
+/-- `meromorphicOrderAt` is invariant under translation. -/
+@[simp] theorem meromorphicOrderAt_comp_sub_const_eq_meromorphicOrderAt {c : 𝕜} {f : 𝕜 → E} :
+    meromorphicOrderAt (f ∘ (· - c)) (x + c) = meromorphicOrderAt f x := by
+  simp [← meromorphicOrderAt_comp_add_const_eq_meromorphicOrderAt (f := f) (c := -c),
+    ← sub_eq_add_neg]
+
+/-- `meromorphicOrderAt` is invariant under translation. -/
+@[simp] theorem meromorphicOrderAt_fun_comp_sub_const_eq_meromorphicOrderAt {c : 𝕜} {f : 𝕜 → E} :
+    meromorphicOrderAt (fun z ↦ f (z - c)) (x + c) = meromorphicOrderAt f x :=
+  meromorphicOrderAt_comp_sub_const_eq_meromorphicOrderAt
+
 end comp
 
 section smul

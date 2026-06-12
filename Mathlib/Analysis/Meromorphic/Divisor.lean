@@ -23,7 +23,7 @@ of divisors and of meromorphic functions to subsets of their domain of definitio
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {U : Set 𝕜} {z : 𝕜}
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-open Filter Topology
+open Filter Metric Topology
 
 namespace MeromorphicOn
 
@@ -68,6 +68,12 @@ Simplifier lemma: on `U`, the divisor of a function `f` that is meromorphic on `
 lemma divisor_apply {f : 𝕜 → E} (hf : MeromorphicOn f U) (hz : z ∈ U) :
     divisor f U z = (meromorphicOrderAt f z).untop₀ := by simp_all [MeromorphicOn.divisor_def]
 
+/-- The divisor of a function `f` evaluates to zero if `f` is not meromorphic. -/
+@[simp] theorem divisor_eq_zero_of_not_meromorphicOn {f : 𝕜 → E} (hf : ¬ MeromorphicOn f U) :
+    divisor f U z = 0 := by
+  unfold divisor
+  aesop
+
 lemma AnalyticOnNhd.divisor_apply {f : 𝕜 → E} (hf : AnalyticOnNhd 𝕜 f U) (hz : z ∈ U) :
     divisor f U z = ((analyticOrderAt f z).map (↑)).untop₀ := by
   rw [hf.meromorphicOn.divisor_apply hz, (hf z hz).meromorphicOrderAt_eq]
@@ -81,8 +87,8 @@ Special case of `Function.locallyFinsuppWithin.finiteSupport` that frequently sh
 analysis: Divisors on spheres have finite support.
 -/
 lemma _root_.divisor_sphere_support_finite [ProperSpace 𝕜] {f : 𝕜 → E} {R : ℝ} {c : 𝕜} :
-    (divisor f (Metric.sphere c R)).support.Finite :=
-    (divisor f (Metric.sphere c R)).finiteSupport (isCompact_sphere c R)
+    (divisor f (sphere c R)).support.Finite :=
+    (divisor f (sphere c R)).finiteSupport (isCompact_sphere c R)
 
 /--
 If `f` is meromorphic on a compact set `U` and `V ⊆ U`, then the divisor of `f` on `V` has finite
@@ -102,9 +108,9 @@ Special case of `MeromorphicOn.divisor_subset_finiteSupport` that frequently sho
 analysis, where  `U` is a closed ball and `V` is its interior.
 -/
 lemma divisor_ball_support_finite [ProperSpace 𝕜] {f : 𝕜 → E} {R : ℝ} {c : 𝕜}
-    (hf : MeromorphicOn f (Metric.closedBall c R)) :
-    (divisor f (Metric.ball c R)).support.Finite :=
-  hf.divisor_support_finite_of_subset (isCompact_closedBall c R) Metric.ball_subset_closedBall
+    (hf : MeromorphicOn f (closedBall c R)) :
+    (divisor f (ball c R)).support.Finite :=
+  hf.divisor_support_finite_of_subset (isCompact_closedBall c R) ball_subset_closedBall
 
 /-!
 ## Congruence Lemmas
@@ -464,5 +470,73 @@ lemma divisor_sub_const_self {z₀ : 𝕜} {U : Set 𝕜} (h : z₀ ∈ U) : div
   rw [divisor_apply (show MeromorphicOn (· - z₀) U from fun_sub id <| const z₀) h, ← untop₀_coe 1]
   congr
   exact (meromorphicOrderAt_eq_int_iff (by fun_prop)).mpr ⟨fun _ ↦ 1, analyticAt_const, by simp⟩
+
+/-- Divisors are invariant under translation. -/
+@[simp] theorem divisor_comp_add_const_eq_divisor {c x : 𝕜} {f : 𝕜 → E} :
+    divisor (f ∘ (· + c)) {x | x + c ∈ U} (x - c) = divisor f U x := by
+  by_cases h : ¬ MeromorphicOn f U
+  · have := (meromorphicOn_comp_add_const_iff_meromorphicOn (c := c) (U := U) (f := f)).not.2 h
+    simp_all
+  rw [not_not] at h
+  have := (meromorphicOn_comp_add_const_iff_meromorphicOn (c := c) (U := U) (f := f)).2 h
+  by_cases h₁ : ¬ x ∈ U
+  · rw [Function.locallyFinsuppWithin.apply_eq_zero_of_notMem,
+      Function.locallyFinsuppWithin.apply_eq_zero_of_notMem]
+    <;> aesop
+  rw [divisor_apply, divisor_apply]
+  <;> aesop
+
+/-- Divisors are invariant under translation. -/
+@[simp] theorem divisor_fun_comp_add_const_eq_divisor {c x : 𝕜} {f : 𝕜 → E} :
+    divisor (fun z ↦ f (z + c)) {x | x + c ∈ U} (x - c) = divisor f U x :=
+  divisor_comp_add_const_eq_divisor
+
+/-- Divisors are invariant under translation. -/
+@[simp] theorem divisor_comp_sub_const_eq_divisor {c : 𝕜} {f : 𝕜 → E} :
+    divisor (f ∘ (· - c)) {x | x - c ∈ U} (z + c) = divisor f U z := by
+  nth_rw 2 [← divisor_comp_add_const_eq_divisor (c := -c)]
+  congr 2
+  <;> simp [sub_eq_add_neg]
+
+/-- Divisors are invariant under translation, special case where the set is a ball.. -/
+@[simp] theorem divisor_ball_comp_add_const_eq_divisor_ball {c : 𝕜} {R : ℝ} {f : 𝕜 → E} :
+    divisor (f ∘ (· - c)) (ball c R) (z + c) = divisor f (ball 0 R) z := by
+  nth_rw 2 [← divisor_comp_sub_const_eq_divisor (c := c)]
+  congr
+  all_goals
+    rw [ball_eq_setOf_sub_mem_ball]
+
+/-- Divisors are invariant under translation, special case where the set is a ball. -/
+@[simp] theorem divisor_ball_fun_comp_add_const_eq_divisor_ball {c : 𝕜} {R : ℝ} {f : 𝕜 → E} :
+    divisor (fun z ↦ f (z - c)) (ball c R) (z + c) = divisor f (ball 0 R) z :=
+  divisor_ball_comp_add_const_eq_divisor_ball
+
+/-- Divisors are invariant under translation, special case where the set is a closed ball. -/
+@[simp] theorem divisor_closedBall_comp_add_const_eq_divisor_closedBall {c : 𝕜} {R : ℝ}
+    {f : 𝕜 → E} :
+    divisor (f ∘ (· - c)) (closedBall c R) (z + c) = divisor f (closedBall 0 R) z := by
+  nth_rw 2 [← divisor_comp_sub_const_eq_divisor (c := c)]
+  congr
+  all_goals
+    rw [closedBall_eq_setOf_sub_mem_closedBall]
+
+/-- Divisors are invariant under translation, special case where the set is a closed ball. -/
+@[simp] theorem divisor_closedBall_fun_comp_add_const_eq_divisor_closedBall {c : 𝕜} {R : ℝ}
+    {f : 𝕜 → E} :
+    divisor (fun z ↦ f (z - c)) (closedBall c R) (z + c) = divisor f (closedBall 0 R) z :=
+  divisor_closedBall_comp_add_const_eq_divisor_closedBall
+
+/-- Divisors are invariant under translation, special case where the set is a sphere. -/
+@[simp] theorem divisor_sphere_comp_add_const_eq_divisor_sphere {c : 𝕜} {R : ℝ} {f : 𝕜 → E} :
+    divisor (f ∘ (· - c)) (sphere c R) (z + c) = divisor f (sphere 0 R) z := by
+  nth_rw 2 [← divisor_comp_sub_const_eq_divisor (c := c)]
+  congr
+  all_goals
+    rw [sphere_eq_setOf_sub_mem_sphere]
+
+/-- Divisors are invariant under translation, special case where the set is a sphere. -/
+@[simp] theorem divisor_sphere_fun_comp_add_const_eq_divisor_sphere {c : 𝕜} {R : ℝ} {f : 𝕜 → E} :
+    divisor (fun z ↦ f (z - c)) (sphere c R) (z + c) = divisor f (sphere 0 R) z :=
+  divisor_sphere_comp_add_const_eq_divisor_sphere
 
 end MeromorphicOn

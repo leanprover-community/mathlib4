@@ -873,6 +873,14 @@ theorem mem_ball_iff_norm'' : b ∈ ball a r ↔ ‖b / a‖ < r := by
 theorem mem_ball_iff_norm''' : b ∈ ball a r ↔ ‖a / b‖ < r := by
   rw [mem_ball', dist_eq_norm_div]
 
+/-- A translated ball is a ball. -/
+@[to_additive ball_eq_setOf_sub_mem_ball]
+theorem ball_eq_setOf_div_mem_ball'' :
+    {x | x / a ∈ ball 1 r} = Metric.ball a r := by
+  ext x
+  rw [mem_ball_iff_norm'']
+  simp
+
 @[to_additive mem_closedBall_iff_norm]
 theorem mem_closedBall_iff_norm'' : b ∈ closedBall a r ↔ ‖b / a‖ ≤ r := by
   rw [mem_closedBall, dist_eq_norm_div]
@@ -881,9 +889,25 @@ theorem mem_closedBall_iff_norm'' : b ∈ closedBall a r ↔ ‖b / a‖ ≤ r :
 theorem mem_closedBall_iff_norm''' : b ∈ closedBall a r ↔ ‖a / b‖ ≤ r := by
   rw [mem_closedBall', dist_eq_norm_div]
 
+/-- A translated closed ball is a closed ball. -/
+@[to_additive closedBall_eq_setOf_sub_mem_closedBall]
+theorem closedBall_eq_setOf_div_mem_closedBall'' :
+    {x | x / a ∈ closedBall 1 r} = Metric.closedBall a r := by
+  ext x
+  rw [mem_closedBall_iff_norm'']
+  simp
+
 -- Higher priority to fire before `mem_sphere`.
 @[to_additive (attr := simp high) mem_sphere_iff_norm]
 theorem mem_sphere_iff_norm' : b ∈ sphere a r ↔ ‖b / a‖ = r := by simp [dist_eq_norm_div]
+
+/-- A translated sphere is a sphere. -/
+@[to_additive sphere_eq_setOf_sub_mem_sphere]
+theorem sphere_eq_setOf_div_mem_sphere'' :
+    {x | x / a ∈ sphere 1 r} = Metric.sphere a r := by
+  ext x
+  rw [mem_sphere_iff_norm']
+  simp
 
 @[to_additive]
 theorem mul_mem_ball_iff_norm : a * b ∈ ball a r ↔ ‖b‖ < r := by

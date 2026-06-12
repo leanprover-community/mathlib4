@@ -484,6 +484,16 @@ lemma analyticOrderAt_centeredMonomial {z₀ : 𝕜} {n : ℕ} :
   rw [AnalyticAt.analyticOrderAt_eq_natCast (by fun_prop)]
   exact ⟨1, by simp [Pi.one_def, analyticAt_const]⟩
 
+/-- The analytic order of the function `(· - c)` at `x` is one if `x = c` and zero otherwise. -/
+@[simp] theorem analyticOrderAt_id_sub_const [DecidableEq 𝕜] {c x : 𝕜} :
+    analyticOrderAt (· - c) x = if x = c then 1 else 0 := by
+  by_cases h : x = c
+  · have := analyticOrderAt_centeredMonomial (n := 1) (z₀ := x)
+    simp_all [pow_one]
+  · simp only [h, reduceIte]
+    apply analyticOrderAt_eq_zero.2
+    grind
+
 section NontriviallyNormedField
 variable {f g : 𝕜 → 𝕜} {z₀ : 𝕜}
 
