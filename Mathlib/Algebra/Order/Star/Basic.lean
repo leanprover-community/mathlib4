@@ -476,8 +476,8 @@ instance {R : Type*} [NonUnitalRing R] [LinearOrder R] [StarRing R] [StarOrdered
     TrivialStar R where
   star_trivial r := by
     obtain (hr | hr) : 0 ≤ r ∨ 0 ≤ -r := by grind
-    · exact LE.le.star_eq hr
-    · simpa using LE.le.star_eq hr
+    · exact hr.star_eq
+    · simpa using hr.star_eq
 
 end NonUnitalRing
 
