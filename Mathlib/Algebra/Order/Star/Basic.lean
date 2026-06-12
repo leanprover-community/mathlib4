@@ -91,13 +91,13 @@ This type class can be used to guarantee `PositiveLinearMap` is a `StarHomClass`
 class SelfAdjointDecompose (R : Type*) [AddGroup R] [Star R]
     [PartialOrder R] where
   /-- Every self-adjoint element is the difference of nonnegatives elements. -/
-  exists_nonneg_sub_nonnpos {a : R} (ha : IsSelfAdjoint a) :
+  exists_nonneg_sub_nonneg {a : R} (ha : IsSelfAdjoint a) :
     ∃ (b c : R), 0 ≤ b ∧ 0 ≤ c ∧ a = b - c
 
 lemma IsSelfAdjoint.exists_nonneg_sub_nonneg {R : Type*} [AddGroup R] [Star R]
     [PartialOrder R] [SelfAdjointDecompose R] {a : R} (ha : IsSelfAdjoint a) :
     ∃ (b c : R), 0 ≤ b ∧ 0 ≤ c ∧ a = b - c :=
-  SelfAdjointDecompose.exists_nonneg_sub_nonnpos ha
+  SelfAdjointDecompose.exists_nonneg_sub_nonneg ha
 
 namespace StarOrderedRing
 section NonUnitalSemiring

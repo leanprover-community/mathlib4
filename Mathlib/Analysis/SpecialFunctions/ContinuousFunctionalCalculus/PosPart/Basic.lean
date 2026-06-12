@@ -149,7 +149,7 @@ lemma negPart_nonneg (a : A) :
   cfcₙ_nonneg (fun x _ ↦ by positivity)
 
 instance : SelfAdjointDecompose A where
-  exists_nonneg_sub_nonnpos {a} ha := ⟨a⁺, a⁻, by cfc_tac, by cfc_tac, (posPart_sub_negPart a).symm⟩
+  exists_nonneg_sub_nonneg {a} ha := ⟨a⁺, a⁻, by cfc_tac, by cfc_tac, (posPart_sub_negPart a).symm⟩
 
 lemma posPart_eq_of_eq_sub_negPart {a b : A} (hab : a = b - a⁻) (hb : 0 ≤ b := by cfc_tac) :
     a⁺ = b := by
