@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.Hom.Basic
 public import Mathlib.Data.FunLike.IsApply
-public import Mathlib.Algebra.Group.Action.Defs
 
 /-! # Monoid structure on order homomorphisms -/
 
