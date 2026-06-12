@@ -17,6 +17,10 @@ so that in particular any compact subset of `ℂ` contains only finitely many ze
 
 * `riemannZetaZeros`: The zeros of Riemann zeta function.
 
+* `riemannZetaTrivialZeros`: The trivial zeros `{-2, -4, -6, …}`.
+
+* `riemannZetaNontrivialZeros`: The zeros that are neither trivial zeros nor the point `s = 1`.
+
 ## Main results
 
 * `isClosed_riemannZetaZeros`: `riemannZetaZeros` is closed.
@@ -25,6 +29,9 @@ so that in particular any compact subset of `ℂ` contains only finitely many ze
 
 * `IsCompact.inter_riemannZetaZeros_finite`: for any compact set `S : Set ℂ`, the intersection
   `S ∩ riemannZetaZeros` is finite.
+
+* `riemannHypothesis_iff_nontrivialZeros`: the Riemann hypothesis is equivalent to the statement
+  that every nontrivial zero has real part `1 / 2`.
 -/
 
 @[expose] public section
@@ -70,5 +77,49 @@ open Filter in
 lemma tendsto_riemannZeta_cofinite_cocompact :
     Tendsto ((↑) : riemannZetaZeros → ℂ) cofinite (cocompact ℂ) :=
   isClosed_riemannZetaZeros.tendsto_coe_cofinite_of_isDiscrete isDiscrete_riemannZetaZeros
+
+/-! ### Trivial and nontrivial zeros -/
+
+/-- The trivial zeros of the Riemann zeta function: `{-2(n+1) | n : ℕ} = {-2, -4, -6, …}`.
+These are indeed zeros by `riemannZeta_neg_two_mul_nat_add_one`. -/
+def riemannZetaTrivialZeros : Set ℂ :=
+  {s | ∃ n : ℕ, s = -2 * ((n : ℂ) + 1)}
+
+lemma mem_riemannZetaTrivialZeros {s : ℂ} :
+    s ∈ riemannZetaTrivialZeros ↔ ∃ n : ℕ, s = -2 * ((n : ℂ) + 1) := .rfl
+
+/-- The nontrivial zeros of the Riemann zeta function: zeros that are neither trivial zeros
+nor the point `s = 1` (where `riemannZeta` has its pole removed by a junk value). -/
+def riemannZetaNontrivialZeros : Set ℂ :=
+  riemannZetaZeros \ (riemannZetaTrivialZeros ∪ {1})
+
+lemma mem_riemannZetaNontrivialZeros {s : ℂ} :
+    s ∈ riemannZetaNontrivialZeros ↔
+      riemannZeta s = 0 ∧ s ∉ riemannZetaTrivialZeros ∧ s ≠ 1 := by
+  simp only [riemannZetaNontrivialZeros, Set.mem_sdiff, Set.mem_union, Set.mem_singleton_iff,
+    mem_riemannZetaZeros, not_or]
+
+/-- Trivial zeros are indeed zeros of `ζ`. -/
+lemma riemannZetaTrivialZeros_subset_zeros :
+    riemannZetaTrivialZeros ⊆ riemannZetaZeros := by
+  intro s ⟨n, hs⟩
+  rw [mem_riemannZetaZeros, hs]
+  exact riemannZeta_neg_two_mul_nat_add_one n
+
+lemma riemannZetaNontrivialZeros_subset_zeros :
+    riemannZetaNontrivialZeros ⊆ riemannZetaZeros :=
+  Set.sdiff_subset
+
+/-- The Riemann hypothesis is equivalent to the statement that every nontrivial zero of the
+Riemann zeta function has real part `1 / 2`. -/
+theorem riemannHypothesis_iff_nontrivialZeros :
+    RiemannHypothesis ↔ ∀ s ∈ riemannZetaNontrivialZeros, s.re = 1 / 2 := by
+  constructor
+  · intro hRH s hs
+    rw [mem_riemannZetaNontrivialZeros] at hs
+    obtain ⟨hzero, hnottriv, hne1⟩ := hs
+    exact hRH s hzero (fun ⟨n, hn⟩ => hnottriv ⟨n, hn⟩) hne1
+  · intro h s hzero hnottriv hne1
+    refine h s (mem_riemannZetaNontrivialZeros.mpr ⟨hzero, fun ⟨n, hn⟩ => hnottriv ⟨n, hn⟩, hne1⟩)
 
 end
