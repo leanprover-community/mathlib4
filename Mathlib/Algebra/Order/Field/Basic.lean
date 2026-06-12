@@ -795,7 +795,7 @@ meta def evalInv : PositivityExt where eval {u α} zα pα? e := do
 @[positivity _ ^ (0 : ℤ), Pow.pow _ (0 : ℤ)]
 meta def evalPowZeroInt : PositivityExt where eval {u α} _zα pα? e := do
   let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
-  let some _ := pα? | throwError "no PartialOrder instance"
+  let some _ := pα? | pure .none
   let _a ← synthInstanceQ q(Semifield $α)
   let _a ← synthInstanceQ q(LinearOrder $α)
   let _a ← synthInstanceQ q(IsStrictOrderedRing $α)

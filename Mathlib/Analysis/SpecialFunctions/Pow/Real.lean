@@ -376,7 +376,7 @@ open Lean Meta Qq
 when the exponent is zero. The other cases are done in `evalRpow`. -/
 @[positivity (_ : ℝ) ^ (0 : ℝ)]
 meta def evalRpowZero : PositivityExt where eval {u α} _ pα? e := do
-  let some _ := pα? | throwError "no PartialOrder instance"
+  let some _ := pα? | pure .none
   match u, α, e with
   | 0, ~q(ℝ), ~q($a ^ (0 : ℝ)) =>
     assertInstancesCommute
@@ -387,7 +387,7 @@ meta def evalRpowZero : PositivityExt where eval {u α} _ pα? e := do
 the base is nonnegative and positive when the base is positive. -/
 @[positivity (_ : ℝ) ^ (_ : ℝ)]
 meta def evalRpow : PositivityExt where eval {u α} _zα pα? e := do
-  let some _ := pα? | throwError "no PartialOrder instance"
+  let some _ := pα? | pure .none
   match u, α, e with
   | 0, ~q(ℝ), ~q($a ^ ($b : ℝ)) =>
     assertInstancesCommute

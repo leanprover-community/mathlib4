@@ -421,7 +421,7 @@ meta def evalRealArctan : PositivityExt where eval {u α} z p e := do
 meta def evalRealCosArctan : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.cos (Real.arctan $a)) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     assumeInstancesCommute
     return .positive q(Real.cos_arctan_pos _)
   | _ => throwError "not Real.cos (Real.arctan _)"

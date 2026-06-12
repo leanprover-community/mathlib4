@@ -475,7 +475,7 @@ open Lean.Meta Qq Mathlib.Meta.Positivity in
 meta def _root_.Mathlib.Meta.Positivity.evalGamma : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Gamma $a) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     match ← core q(inferInstance) (some q(inferInstance)) a with
     | .positive pa =>
       assertInstancesCommute

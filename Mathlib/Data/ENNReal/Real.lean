@@ -393,7 +393,7 @@ open Lean Meta Qq
 /-- Extension for the `positivity` tactic: `ENNReal.ofReal`. -/
 @[positivity ENNReal.ofReal _]
 meta def evalENNRealOfReal : PositivityExt where eval {u α} _zα pα? e := do
-  let some _ := pα? | throwError "no PartialOrder instance"
+  let some _ := pα? | pure .none
   match u, α, e with
   | 0, ~q(ℝ≥0∞), ~q(ENNReal.ofReal $a) =>
     assertInstancesCommute

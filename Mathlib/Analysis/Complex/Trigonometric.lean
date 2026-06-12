@@ -943,7 +943,7 @@ open Lean.Meta Qq
 meta def evalCosh : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.cosh $a) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     assertInstancesCommute
     return .positive q(Real.cosh_pos $a)
   | _, _, _ => throwError "not Real.cosh"

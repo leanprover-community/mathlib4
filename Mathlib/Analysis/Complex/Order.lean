@@ -145,7 +145,7 @@ input is. -/
 meta def evalComplexOfReal : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℂ), ~q(Complex.ofReal $a) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     assumeInstancesCommute
     match ← core q(inferInstance) (some q(inferInstance)) a with
     | .positive pa => return .positive q(ofReal_pos $pa)

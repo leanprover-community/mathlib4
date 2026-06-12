@@ -30,7 +30,7 @@ It calls `Mathlib.Meta.proveFinsetNonempty` to attempt proving that the finset i
 meta def evalFinsetCard : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Finset.card $s) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     let some ps ← proveFinsetNonempty s | return .none
     assertInstancesCommute
     return .positive q(Finset.Nonempty.card_pos $ps)
@@ -41,7 +41,7 @@ meta def evalFinsetCard : PositivityExt where eval {u α} _ pα? e := do
 meta def evalFintypeCard : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(@Fintype.card $β $instβ) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     let instβno ← synthInstanceQ q(Nonempty $β)
     assumeInstancesCommute
     return .positive q(@Fintype.card_pos $β $instβ $instβno)
@@ -54,7 +54,7 @@ It calls `Mathlib.Meta.proveFinsetNonempty` to attempt proving that the finset i
 meta def evalFinsetDens : PositivityExt where eval {u 𝕜} _ pα? e := do
   match u, 𝕜, e with
   | 0, ~q(ℚ≥0), ~q(@Finset.dens $α $instα $s) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     let some ps ← proveFinsetNonempty s | return .none
     assumeInstancesCommute
     return .positive q(@Nonempty.dens_pos $α $instα $s $ps)

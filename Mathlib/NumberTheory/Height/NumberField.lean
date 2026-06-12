@@ -197,7 +197,7 @@ open Lean.Meta Qq
 meta def evalHeightTotalWeight : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(@Height.totalWeight $K $KF $KA) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     -- Check whether there is a `NumberField` instance for `$K` around.
     match ← trySynthInstanceQ q(NumberField $K) with
     | .some _inst =>

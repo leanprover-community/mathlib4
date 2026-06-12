@@ -53,7 +53,7 @@ theorem int_floor_nonneg_of_pos [Ring α] [LinearOrder α] [FloorRing α] {a : �
 meta def evalIntFloor : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℤ), ~q(@Int.floor $α' $ir $io $j $a) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     match ← core q(inferInstance) (some q(inferInstance)) a with
     | .positive pa =>
         assertInstancesCommute
@@ -73,7 +73,7 @@ theorem nat_ceil_pos [Semiring α] [LinearOrder α] [FloorSemiring α] {a : α} 
 meta def evalNatCeil : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(@Nat.ceil $α' $ir $io $j $a) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     let _i ← synthInstanceQ q(LinearOrder $α')
     let _i ← synthInstanceQ q(IsStrictOrderedRing $α')
     assertInstancesCommute
@@ -92,7 +92,7 @@ theorem int_ceil_pos [Ring α] [LinearOrder α] [FloorRing α] {a : α} : 0 < a 
 meta def evalIntCeil : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℤ), ~q(@Int.ceil $α' $ir $io $j $a) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     match ← core q(inferInstance) (some q(inferInstance)) a with
     | .positive pa =>
         assertInstancesCommute

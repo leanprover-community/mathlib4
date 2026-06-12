@@ -799,7 +799,7 @@ alias ⟨_, sinh_ne_zero_of_ne_zero⟩ := Real.sinh_ne_zero
 is. -/
 @[positivity Real.sinh _]
 meta def evalSinh : PositivityExt where eval {u α} _ pα? e := do
-  let some _ := pα? | throwError "no PartialOrder instance"
+  let some _ := pα? | pure .none
   let zα : Q(Zero ℝ) := q(inferInstance)
   let pα : Q(PartialOrder ℝ) := q(inferInstance)
   match u, α, e with

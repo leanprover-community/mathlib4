@@ -263,7 +263,7 @@ open Qq Mathlib.Meta.Positivity in
 meta def evalHeight : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@height $V $P $i1 $i2 $i3 $i4 $n $hn $s $i) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     assertInstancesCommute
     return .positive q(height_pos $s $i)
   | _, _, _ => throwError "not Simplex.height"

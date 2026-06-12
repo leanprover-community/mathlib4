@@ -92,7 +92,7 @@ open Lean Meta Qq
 meta def evalBoundingSieveWeights : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@BoundingSieve.weights $s $n) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.nonnegative q(BoundingSieve.weights_nonneg $s $n))
   | _, _, _ => throwError "not BoundingSieve.weights"

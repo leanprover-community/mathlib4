@@ -670,7 +670,7 @@ open Lean.Meta Qq
 meta def evalExp : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.exp $a) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.positive q(Real.exp_pos $a))
   | _, _, _ => throwError "not Real.exp"

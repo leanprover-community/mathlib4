@@ -663,7 +663,7 @@ meta def evalNonemptyIntervalLength : PositivityExt where
   eval {u α} _ pα? e := do
     let ~q(@NonemptyInterval.length _ $ig $ipo $a) := e |
       throwError "not NonemptyInterval.length"
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     let _i ← synthInstanceQ q(IsOrderedAddMonoid $α)
     assertInstancesCommute
     return .nonnegative q(NonemptyInterval.length_nonneg $a)
@@ -673,7 +673,7 @@ meta def evalNonemptyIntervalLength : PositivityExt where
 meta def evalIntervalLength : PositivityExt where
   eval {u α} _ pα? e := do
     let ~q(@Interval.length _ $ig $ipo $a) := e | throwError "not Interval.length"
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     let _i ← synthInstanceQ q(IsOrderedAddMonoid $α)
     assumeInstancesCommute
     return .nonnegative q(Interval.length_nonneg $a)

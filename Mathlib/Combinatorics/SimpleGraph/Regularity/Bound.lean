@@ -242,7 +242,7 @@ open Lean.Meta Qq
 meta def evalInitialBound : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(SzemerediRegularity.initialBound $ε $l) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.positive q(SzemerediRegularity.initialBound_pos $ε $l))
   | _, _, _ => throwError "not initialBound"
@@ -255,7 +255,7 @@ example (ε : ℝ) (l : ℕ) : 0 < SzemerediRegularity.initialBound ε l := by p
 meta def evalBound : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(SzemerediRegularity.bound $ε $l) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.positive q(SzemerediRegularity.bound_pos $ε $l))
   | _, _, _ => throwError "not bound"

@@ -589,7 +589,7 @@ lemma log_nz_of_isRat_neg {n : ℤ} : (NormNum.IsRat e n d) → (decide (n / d <
 meta def evalLogNatCast : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.log (Nat.cast $a)) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.nonnegative q(Real.log_natCast_nonneg $a))
   | _, _, _ => throwError "not Real.log"
@@ -599,7 +599,7 @@ meta def evalLogNatCast : PositivityExt where eval {u α} _zα pα? e := do
 meta def evalLogIntCast : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.log (Int.cast $a)) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.nonnegative q(Real.log_intCast_nonneg $a))
   | _, _, _ => throwError "not Real.log"
@@ -609,7 +609,7 @@ meta def evalLogIntCast : PositivityExt where eval {u α} _zα pα? e := do
 meta def evalLogNatLit : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.log $a) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     match ← NormNum.derive a with
     | .isNat (_ : Q(AddMonoidWithOne ℝ)) lit p =>
       assumeInstancesCommute

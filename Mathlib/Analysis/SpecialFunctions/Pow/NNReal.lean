@@ -1126,7 +1126,7 @@ the base is nonnegative and positive when the base is positive.
 This is the `NNReal` analogue of `evalRpow` for `Real`. -/
 @[positivity (_ : ℝ≥0) ^ (_ : ℝ)]
 meta def evalNNRealRpow : PositivityExt where eval {u α} _ pα? e := do
-  let some _ := pα? | throwError "no PartialOrder instance"
+  let some _ := pα? | pure .none
   match u, α, e with
   | 0, ~q(ℝ≥0), ~q($a ^ (0 : ℝ)) =>
     assertInstancesCommute
@@ -1156,7 +1156,7 @@ the base is nonnegative and positive when the base is positive.
 This is the `ENNReal` analogue of `evalRpow` for `Real`. -/
 @[positivity (_ : ℝ≥0∞) ^ (_ : ℝ)]
 meta def evalENNRealRpow : PositivityExt where eval {u α} _ pα? e := do
-  let some _ := pα? | throwError "no PartialOrder instance"
+  let some _ := pα? | pure .none
   match u, α, e with
   | 0, ~q(ℝ≥0∞), ~q($a ^ (0 : ℝ)) =>
     assertInstancesCommute

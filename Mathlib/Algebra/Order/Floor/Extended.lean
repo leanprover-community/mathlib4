@@ -259,7 +259,7 @@ alias ⟨_, natCeil_pos⟩ := ENat.ceil_pos
 meta def evalENatCeil : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℕ∞), ~q(ENat.ceil $r) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     match ← core q(inferInstance) (some q(inferInstance)) r with
     | .positive pr =>
       assertInstancesCommute

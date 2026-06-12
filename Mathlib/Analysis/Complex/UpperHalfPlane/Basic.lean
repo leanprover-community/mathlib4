@@ -151,7 +151,7 @@ open Lean Meta Qq
 meta def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(UpperHalfPlane.im $a) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.positive q(@UpperHalfPlane.im_pos $a))
   | _, _, _ => throwError "not UpperHalfPlane.im"
@@ -161,7 +161,7 @@ meta def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα pα? e := d
 meta def evalUpperHalfPlaneCoe : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℂ), ~q(UpperHalfPlane.coe $a) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.nonzero q(@UpperHalfPlane.ne_zero $a))
   | _, _, _ => throwError "not UpperHalfPlane.coe"

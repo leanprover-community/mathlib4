@@ -79,7 +79,7 @@ alias ⟨_, mersenne_pos_of_pos⟩ := mersenne_pos
 /-- Extension for the `positivity` tactic: `mersenne`. -/
 @[positivity mersenne _]
 meta def evalMersenne : PositivityExt where eval {u α} _zα pα? e := do
-  let some _ := pα? | throwError "no PartialOrder instance"
+  let some _ := pα? | pure .none
   match u, α, e with
   | 0, ~q(ℕ), ~q(mersenne $a) =>
     assertInstancesCommute

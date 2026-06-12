@@ -592,7 +592,7 @@ open Lean Meta Qq Function
 meta def evalDiam : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Metric.diam _ $inst $s) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.nonnegative q(Metric.diam_nonneg))
   | _, _, _ => throwError "not ‖ · ‖"

@@ -260,7 +260,7 @@ open Lean Meta Qq Function
 meta def evalDist : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Dist.dist $β $inst $a $b) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     let _inst ← synthInstanceQ q(PseudoMetricSpace $β)
     assertInstancesCommute
     pure (.nonnegative q(dist_nonneg))

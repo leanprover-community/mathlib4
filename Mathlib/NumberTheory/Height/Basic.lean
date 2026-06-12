@@ -192,7 +192,7 @@ open Lean.Meta Qq Height
 meta def evalMulHeight₁ : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@mulHeight₁ $K $KF $KA $a) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.positive q(mulHeight₁_pos $a))
   | _, _, _ => throwError "not Height.mulHeight₁"
@@ -202,7 +202,7 @@ meta def evalMulHeight₁ : PositivityExt where eval {u α} _ pα? e := do
 meta def evalLogHeight₁ : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@logHeight₁ $K $KF $KA $a) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.nonnegative q(zero_le_logHeight₁ $a))
   | _, _, _ => throwError "not Height.logHeight₁"
@@ -513,7 +513,7 @@ open Lean.Meta Qq Height
 meta def evalMulHeight : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@mulHeight $K $KF $KA $ι $a) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     -- Check whether there is a `Finite` instance for `$ι` around.
     match ← trySynthInstanceQ q(Finite $ι) with
     | .some _instFinite =>
@@ -527,7 +527,7 @@ meta def evalMulHeight : PositivityExt where eval {u α} _ pα? e := do
 meta def evalLogHeight : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@logHeight $K $KF $KA $ι $a) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    let some _ := pα? | pure .none
     -- Check whether there is a `Finite` instance for `$ι` around.
     match ← trySynthInstanceQ q(Finite $ι) with
     | .some _instFinite =>
