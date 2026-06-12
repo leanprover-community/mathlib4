@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.RestrictScalars
 public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.Data.Complex.Basic
 public import Mathlib.Data.Real.Star
@@ -621,5 +622,16 @@ lemma mem_unitary_iff_isStarNormal_and_realPart_sq_add_imaginaryPart_sq_eq_one [
   · have : IsStarNormal x := ⟨h.trans h'.symm⟩
     exact ⟨this, by simp [sq, ← star_mul_self_eq_realPart_sq_add_imaginaryPart_sq x, h]⟩
   · simp [← hx.star_comm_self.eq, star_mul_self_eq_realPart_sq_add_imaginaryPart_sq, ← sq, h]
+
+instance {F E A : Type*} [AddCommGroup E] [PartialOrder E]
+    [StarAddMonoid E] [SelfAdjointDecompose E] [Module ℂ E] [StarModule ℂ E]
+    [NonUnitalRing A] [PartialOrder A] [StarRing A]
+    [StarOrderedRing A] [Module ℂ A] [StarModule ℂ A]
+    [FunLike F E A] [OrderHomClass F E A] [LinearMapClass F ℂ E A] :
+    StarHomClass F E A where
+  map_star φ x := by
+    have : AddMonoidHomClass F E A := inferInstance
+    rw [← realPart_add_I_smul_imaginaryPart x]
+    simp [(ℜ x).2.map' φ, IsSelfAdjoint.star_eq, (ℑ x).2.map' φ]
 
 end RealImaginaryPart

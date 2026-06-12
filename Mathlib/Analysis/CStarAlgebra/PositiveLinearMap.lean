@@ -31,17 +31,6 @@ open scoped NNReal
 
 variable {A₁ A₂ B₁ B₂ : Type*}
 
-open scoped ComplexStarModule in
-instance {F E₁ E₂ : Type*} [AddCommGroup E₁] [PartialOrder E₁]
-    [StarAddMonoid E₁] [SelfAdjointDecompose E₁] [Module ℂ E₁] [StarModule ℂ E₁]
-    [NonUnitalRing E₂] [PartialOrder E₂] [StarRing E₂]
-    [StarOrderedRing E₂] [Module ℂ E₂] [StarModule ℂ E₂]
-    [FunLike F E₁ E₂] [OrderHomClass F E₁ E₂] [LinearMapClass F ℂ E₁ E₂] :
-    StarHomClass F E₁ E₂ where
-  map_star φ x := by
-    rw [← realPart_add_I_smul_imaginaryPart x]
-    simp [(ℜ x).2.map' φ , IsSelfAdjoint.star_eq, (ℑ x).2.map' φ]
-
 section CStarAlgebra
 
 namespace PositiveLinearMap

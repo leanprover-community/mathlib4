@@ -457,7 +457,7 @@ instance (priority := 100) StarRingEquivClass.instOrderIsoClass [EquivLike F R S
 
 @[aesop safe apply (rule_sets := [CStarAlgebra])]
 lemma IsSelfAdjoint.map' {F E R : Type*} [AddCommGroup E] [PartialOrder E] [StarAddMonoid E]
-    [Ring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
+    [NonUnitalRing R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
     [SelfAdjointDecompose E] [FunLike F E R] [OrderHomClass F E R] [AddMonoidHomClass F E R]
     (f : F) {a : E} (ha : IsSelfAdjoint a) :
     IsSelfAdjoint (f a) := by
