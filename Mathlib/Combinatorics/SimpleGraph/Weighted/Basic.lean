@@ -266,9 +266,8 @@ lemma associatedForm_apply {f g} : G.associatedForm f g =
   (1/2) * ∑ x, ∑ y, (G.edgeWeight x y) * (f x - f y) * (g x - g y) +
     ∑ x, (G.killingTerm x) * f x * g x := by rfl
 
---noncomputable
---instance : DecidableEq X := by exact Classical.typeDecidableEq X
-/-
+variable [DecidableEq X]
+
 /-- We define the indicator functions to be our standard basis functions for X → ℝ -/
 noncomputable
 abbrev basisFun (y : X) : X → ℝ := Pi.single y 1
@@ -388,5 +387,5 @@ lemma associatedForm_isSymm : G.associatedForm.IsSymm := by
   simp only [LinearMap.isSymm_def, associatedForm_apply, one_div, Real.ringHom_apply]
   intro f g
   congr 1 <;> grind
--/
+
 end WeightedGraphWithKillingTerm
