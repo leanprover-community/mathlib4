@@ -107,9 +107,8 @@ variable (X) in
 lemma constructibleTopology_eq_generateFrom_isConstructible
     [CompactSpace X] [QuasiSeparatedSpace X] :
     constructibleTopology X = generateFrom { s | IsConstructible s } := by
-  rw [constructibleTopology, ← generateFrom_latticeClosure (constructibleTopologySubbasis X)]
-  congr
-  exact latticeClosure_constructibleTopologySubbasis
+  rw [constructibleTopology, ← generateFrom_latticeClosure (constructibleTopologySubbasis X),
+    latticeClosure_constructibleTopologySubbasis]
 
 lemma isCompact_of_mem_constructibleTopologySubbasis [CompactSpace X] {s : Set X}
     (hs : s ∈ constructibleTopologySubbasis X) : IsCompact s := by
