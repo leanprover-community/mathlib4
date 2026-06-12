@@ -618,7 +618,7 @@ theorem hasQuantifierElimination_of_isElementaryExtensionPairCardinalLTGenerated
     {T : L.Theory} {κ : Cardinal} (hκ : Cardinal.aleph0 ≤ κ)
     (h : ∀ ⦃M N : Type (max u v)⦄ [L.Structure M] [L.Structure N]
       [T.Model M] [T.Model N] [Nonempty M] [Nonempty N],
-      T.IsElementaryExtensionPairCardinalLTGenerated κ M N) :
+      L.IsElementaryExtensionPairCardinalLTGenerated κ M N) :
     T.HasQuantifierElimination := by
   refine hasQuantifierElimination_of_exists_realize_of_embeddings (T := T) ?_
   intro α _ φ hφ M N A _ _ _ _ _ _ _ f g a hM
@@ -639,7 +639,7 @@ theorem hasQuantifierElimination_of_isElementaryExtensionPairFG
     {T : L.Theory}
     (h : ∀ ⦃M N : Type (max u v)⦄ [L.Structure M] [L.Structure N]
       [T.Model M] [T.Model N] [Nonempty M] [Nonempty N],
-      T.IsElementaryExtensionPairFG M N) :
+      L.IsElementaryExtensionPairFG M N) :
     T.HasQuantifierElimination :=
   hasQuantifierElimination_of_isElementaryExtensionPairCardinalLTGenerated le_rfl
     fun ⦃M N⦄ _ _ _ _ _ _ => (@h M N _ _ _ _ _ _).toCardinalLTGenerated_aleph0
@@ -653,7 +653,7 @@ theorem hasQuantifierElimination_of_isElementaryExtensionPair
     {T : L.Theory}
     (h : ∀ ⦃M N : Type (max u v)⦄ [L.Structure M] [L.Structure N]
       [T.Model M] [T.Model N] [Nonempty M] [Nonempty N],
-      T.IsElementaryExtensionPair M N) :
+      L.IsElementaryExtensionPair M N) :
     T.HasQuantifierElimination :=
   hasQuantifierElimination_of_isElementaryExtensionPairFG
     fun ⦃M N⦄ _ _ _ _ _ _ => (@h M N _ _ _ _ _ _).FG
