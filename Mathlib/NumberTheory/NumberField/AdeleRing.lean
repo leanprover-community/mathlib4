@@ -50,7 +50,7 @@ deriving CommRing, TopologicalSpace, IsTopologicalRing, Algebra K
 
 namespace AdeleRing
 
-/-- `𝔸ᶠ[K]` is notation for `NumberField.FiniteAdeleRing (𝓞 K) K`. -/
+/-- `𝔸ᶠ[K]` is notation for `IsDedekindDomain.FiniteAdeleRing (𝓞 K) K`. -/
 scoped notation:max "𝔸ᶠ[" K "]" => FiniteAdeleRing (𝓞 K) K
 /-- `𝔸[R, K]` is notation for `NumberField.AdeleRing R K`. -/
 scoped notation:max "𝔸[" R ", " K "]" => AdeleRing R K
