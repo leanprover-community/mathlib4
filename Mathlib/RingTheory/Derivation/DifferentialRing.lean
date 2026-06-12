@@ -93,7 +93,7 @@ lemma DifferentialAlgebra.equiv {A : Type*} [CommRing A] [Differential A]
   letI := Differential.equiv h.toRingEquiv
   ⟨fun a ↦ by
     change (LinearMap.comp ..) _ = _
-    simp only [AlgEquiv.toRingEquiv_eq_coe, RingHom.toAddMonoidHom_eq_coe,
+    simp only [RingHom.toAddMonoidHom_eq_coe,
       RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom, LinearMap.coe_comp,
       AddMonoidHom.coe_toIntLinearMap, AddMonoidHom.coe_coe, RingHom.coe_coe, Derivation.coeFn_coe,
       Function.comp_apply, AlgEquiv.commutes, deriv_algebraMap]

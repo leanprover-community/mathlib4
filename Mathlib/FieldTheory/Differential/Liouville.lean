@@ -30,7 +30,7 @@ literature, and we introduce it as part of the formalization of Liouville's theo
 
 -/
 
-@[expose] public section
+public section
 
 open Differential algebraMap IntermediateField Finset Polynomial
 
@@ -187,12 +187,11 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
       · rcongr e
         apply_fun e at h
         simp only [AlgEquiv.commutes, map_add, map_sum, map_mul] at h
-        convert h using 2
+        convert! h using 2
         · rcongr x
           simp [logDeriv, algEquiv_deriv']
         · rw [algEquiv_deriv']
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 We lift `isLiouville_of_finiteDimensional_galois` to non-Galois field extensions by using it for the
 normal closure then obtaining it for `F`.

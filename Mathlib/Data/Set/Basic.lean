@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.PropInstances
 public import Mathlib.Tactic.Lift
+public import Mathlib.Tactic.Attr.Register
 
 /-!
 # Basic properties of sets
@@ -370,11 +371,13 @@ theorem nonempty_of_not_subset (h : ¬s ⊆ t) : (s \ t).Nonempty :=
 theorem nonempty_of_ssubset (ht : s ⊂ t) : (t \ s).Nonempty :=
   nonempty_of_not_subset ht.2
 
-theorem Nonempty.of_diff (h : (s \ t).Nonempty) : s.Nonempty :=
+theorem Nonempty.of_sdiff (h : (s \ t).Nonempty) : s.Nonempty :=
   h.imp fun _ => And.left
 
+@[deprecated (since := "2026-06-03")] alias Nonempty.of_diff := Nonempty.of_sdiff
+
 theorem nonempty_of_ssubset' (ht : s ⊂ t) : t.Nonempty :=
-  (nonempty_of_ssubset ht).of_diff
+  (nonempty_of_ssubset ht).of_sdiff
 
 theorem Nonempty.inl (hs : s.Nonempty) : (s ∪ t).Nonempty :=
   hs.imp fun _ => Or.inl
@@ -465,7 +468,7 @@ theorem not_nonempty_iff_eq_empty : ¬s.Nonempty ↔ s = ∅ := by
 theorem nonempty_iff_ne_empty : s.Nonempty ↔ s ≠ ∅ :=
   not_nonempty_iff_eq_empty.not_right
 
-/-- Variant of `nonempty_iff_ne_empty` used by `push_neg`. -/
+/-- Variant of `nonempty_iff_ne_empty` used by `push Not`. -/
 @[push ←]
 theorem nonempty_iff_empty_ne : s.Nonempty ↔ ∅ ≠ s :=
   nonempty_iff_ne_empty.trans ne_comm
@@ -485,7 +488,7 @@ theorem not_nonempty_empty : ¬(∅ : Set α).Nonempty := fun ⟨_, hx⟩ => hx
 
 @[simp]
 theorem isEmpty_coe_sort {s : Set α} : IsEmpty (↥s) ↔ s = ∅ :=
-  not_iff_not.1 <| by simpa using nonempty_iff_ne_empty
+  not_iff_not.1 <| by simpa using! nonempty_iff_ne_empty
 
 lemma eq_empty_of_isEmpty (s : Set α) [IsEmpty s] : s = ∅ := by
   simpa using ‹IsEmpty s›

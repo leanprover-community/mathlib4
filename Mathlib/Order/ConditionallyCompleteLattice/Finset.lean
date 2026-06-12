@@ -211,6 +211,7 @@ variable [Fintype ι] [Nonempty ι]
 lemma sup'_univ_eq_ciSup (f : ι → α) : univ.sup' univ_nonempty f = ⨆ i, f i := by
   simp [sup'_eq_csSup_image, iSup]
 
+@[to_dual existing]
 lemma inf'_univ_eq_ciInf (f : ι → α) : univ.inf' univ_nonempty f = ⨅ i, f i := by
   simp [inf'_eq_csInf_image, iInf]
 
@@ -223,6 +224,14 @@ lemma sup_univ_eq_ciSup [Fintype ι] (f : ι → α) : univ.sup f = ⨆ i, f i :
   le_antisymm
     (Finset.sup_le fun _ _ => le_ciSup (finite_range _).bddAbove _)
     (ciSup_le' fun _ => Finset.le_sup (mem_univ _))
+
+theorem ciSup_union [DecidableEq ι] {f : ι → α} {s t : Finset ι} :
+    (⨆ x ∈ s ∪ t, f x) = (⨆ x ∈ s, f x) ⊔ (⨆ x ∈ t, f x) := by
+  suffices ∀ st : Finset ι, BddAbove <| .range fun x ↦ ⨆ (_ : x ∈ st), f x by
+    simp [ciSup_or', ciSup_sup_eq, this]
+  refine fun st ↦ ⟨st.sup f, fun a ⟨i, ha⟩ ↦ ha ▸ ?_⟩
+  by_cases h : i ∈ st <;>
+    simp [h, le_sup]
 
 end ConditionallyCompleteLinearOrderBot
 

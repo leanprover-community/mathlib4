@@ -119,7 +119,6 @@ lemma aeval_val_relationOfHasCoeffs (r : σ) :
     MvPolynomial.aeval P.val (P.relationOfHasCoeffs R₀ r) = 0 := by
   rw [← MvPolynomial.aeval_map_algebraMap R, map_relationOfHasCoeffs, aeval_val_relation]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma algebraTensorAlgEquiv_symm_relation (r : σ) :
     (MvPolynomial.algebraTensorAlgEquiv R₀ R).symm (P.relation r) =
@@ -151,7 +150,6 @@ lemma tensorModelOfHasCoeffsHom_tmul (x : R) (y : MvPolynomial ι R₀) :
     P.tensorModelOfHasCoeffsHom R₀ (x ⊗ₜ y) = algebraMap R S x * MvPolynomial.aeval P.val y :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (P) in
 /-- (Implementation detail): The inverse of `tensorModelOfHasCoeffsHom`. -/
 noncomputable def tensorModelOfHasCoeffsInv : S →ₐ[R] R ⊗[R₀] P.ModelOfHasCoeffs R₀ :=
@@ -161,13 +159,12 @@ noncomputable def tensorModelOfHasCoeffsInv : S →ₐ[R] R ⊗[R₀] P.ModelOfH
     simp_rw [← RingHom.mem_ker, ← SetLike.le_def]
     rw [← P.span_range_relation_eq_ker, Ideal.span_le]
     rintro a ⟨i, rfl⟩
-    simp only [AlgEquiv.toAlgHom_eq_coe, SetLike.mem_coe, RingHom.mem_ker, AlgHom.coe_comp,
-      AlgHom.coe_coe, Function.comp_apply, algebraTensorAlgEquiv_symm_relation]
+    simp only [SetLike.mem_coe, RingHom.mem_ker, AlgHom.coe_comp,
+      AlgEquiv.coe_algHom, Function.comp_apply, algebraTensorAlgEquiv_symm_relation]
     simp only [TensorProduct.map_tmul, AlgHom.coe_id, id_eq, Ideal.Quotient.mkₐ_eq_mk,
       Ideal.Quotient.mk_span_range, tmul_zero]).comp
     (P.quotientEquiv.restrictScalars R).symm.toAlgHom
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma tensorModelOfHasCoeffsInv_aeval_val (x : MvPolynomial ι R₀) :
     P.tensorModelOfHasCoeffsInv R₀ (MvPolynomial.aeval P.val x) =
@@ -175,33 +172,27 @@ lemma tensorModelOfHasCoeffsInv_aeval_val (x : MvPolynomial ι R₀) :
   rw [← MvPolynomial.aeval_map_algebraMap R, ← Generators.algebraMap_apply, ← quotientEquiv_mk]
   simp [tensorModelOfHasCoeffsInv, -quotientEquiv_symm, -quotientEquiv_mk]
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
-private lemma hom_comp_inv :
+lemma tensorModelOfHasCoeffsHom_comp :
     (P.tensorModelOfHasCoeffsHom R₀).comp (P.tensorModelOfHasCoeffsInv R₀) = AlgHom.id R S := by
   have h : Function.Surjective
       ((P.quotientEquiv.restrictScalars R).toAlgHom.comp (Ideal.Quotient.mkₐ _ _)) :=
     (P.quotientEquiv.restrictScalars R).surjective.comp Ideal.Quotient.mk_surjective
-  simp only [← AlgHom.cancel_right h, tensorModelOfHasCoeffsInv, AlgEquiv.toAlgHom_eq_coe,
-    AlgHom.id_comp]
+  simp only [← AlgHom.cancel_right h, tensorModelOfHasCoeffsInv, AlgHom.id_comp]
   rw [AlgHom.comp_assoc, AlgHom.comp_assoc, ← AlgHom.comp_assoc _ _ (Ideal.Quotient.mkₐ R P.ker),
     AlgEquiv.symm_comp, AlgHom.id_comp]
   ext x
   simp
 
-set_option backward.privateInPublic true in
-private lemma inv_comp_hom :
+lemma tensorModelOfHasCoeffsInv_comp :
     (P.tensorModelOfHasCoeffsInv R₀).comp (P.tensorModelOfHasCoeffsHom R₀) = AlgHom.id R _ := by
   ext x
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
   simp
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The natural isomorphism `R ⊗[R₀] S₀ ≃ₐ[R] S`. -/
 noncomputable def tensorModelOfHasCoeffsEquiv : R ⊗[R₀] P.ModelOfHasCoeffs R₀ ≃ₐ[R] S :=
   AlgEquiv.ofAlgHom (P.tensorModelOfHasCoeffsHom R₀) (P.tensorModelOfHasCoeffsInv R₀)
-    (P.hom_comp_inv R₀) (P.inv_comp_hom R₀)
+    (P.tensorModelOfHasCoeffsHom_comp R₀) (P.tensorModelOfHasCoeffsInv_comp R₀)
 
 @[simp]
 lemma tensorModelOfHasCoeffsEquiv_tmul (x : R) (y : MvPolynomial ι R₀) :
@@ -229,12 +220,18 @@ noncomputable def ofHasCoeffs :
   map := P.map
   map_inj := P.map_inj
 
+#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
+Assistance investigating this would be appreciated. -/
+attribute [nolint simpNF]
+  _root_.Algebra.PreSubmersivePresentation.ofHasCoeffs_algebra_algebraMap_apply
+
 end Algebra.PreSubmersivePresentation
 
 namespace Algebra.SubmersivePresentation
 
 variable [Finite σ] (P : Algebra.SubmersivePresentation R S ι σ)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma exists_sum_eq_σ_jacobian_mul_σ_jacobian_inv_sub_one
     [DecidableEq σ] [Fintype σ] :
@@ -255,7 +252,7 @@ lemma jacobianRelations_spec [DecidableEq σ] [Fintype σ] :
     ∑ i, P.jacobianRelations i * P.relation i =
       P.jacobiMatrix.det * P.σ ↑(P.jacobian_isUnit.unit⁻¹) - 1 := by
   delta jacobianRelations
-  convert P.exists_sum_eq_σ_jacobian_mul_σ_jacobian_inv_sub_one.choose_spec
+  convert! P.exists_sum_eq_σ_jacobian_mul_σ_jacobian_inv_sub_one.choose_spec
 
 /-- The set of coefficients that is enough to descend a submersive presentation `P`. -/
 def coeffs : Set R :=
@@ -361,7 +358,7 @@ def ofHasCoeffs [FaithfulSMul R₀ R] :
       $(P.sum_jacobianRelationsOfHasCoeffs_mul_relationOfHasCoeffs R₀))
     simp only [map_sum, map_mul, Ideal.Quotient.mk_span_range, mul_zero, Finset.sum_const_zero,
       map_sub, map_one, @eq_comm (P.ModelOfHasCoeffs R₀) 0, sub_eq_zero] at this
-    convert IsUnit.of_mul_eq_one _ this
+    convert! IsUnit.of_mul_eq_one _ this
     rw [PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det]
     simp [jacobianOfHasCoeffs]
 

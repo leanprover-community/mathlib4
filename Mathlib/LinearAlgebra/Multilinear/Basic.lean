@@ -107,7 +107,7 @@ variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, AddCommMonoid (M₁ i
 
 instance : FunLike (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; cases h; rfl
+  coe_injective f g h := by cases f; cases g; cases h; rfl
 
 initialize_simps_projections MultilinearMap (toFun → apply)
 
@@ -121,8 +121,8 @@ def mk' [DecidableEq ι] (f : (∀ i, M₁ i) → M₂)
       f (update m i (c • x)) = c • f (update m i x) := by aesop) :
     MultilinearMap R M₁ M₂ where
   toFun := f
-  map_update_add' m i x y := by convert h₁ m i x y
-  map_update_smul' m i c x := by convert h₂ m i c x
+  map_update_add' m i x y := by convert! h₁ m i x y
+  map_update_smul' m i c x := by convert! h₂ m i c x
 
 @[simp]
 theorem toFun_eq_coe : f.toFun = ⇑f :=
@@ -214,6 +214,10 @@ theorem coe_smul (c : S) (f : MultilinearMap R M₁ M₂) : ⇑(c • f) = c •
 
 end SMul
 
+-- The `AddMonoid` instance exists to help speedup unification
+instance : AddMonoid (MultilinearMap R M₁ M₂) := fast_instance%
+  coe_injective.addMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+
 instance addCommMonoid : AddCommMonoid (MultilinearMap R M₁ M₂) := fast_instance%
   coe_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
@@ -269,9 +273,9 @@ def ofSubsingleton [Subsingleton ι] (i : ι) :
   invFun f :=
     { toFun := fun x ↦ f fun _ ↦ x
       map_add' := fun x y ↦ by
-        simpa [update_eq_const_of_subsingleton] using f.map_update_add 0 i x y
+        simpa [update_eq_const_of_subsingleton] using! f.map_update_add 0 i x y
       map_smul' := fun c x ↦ by
-        simpa [update_eq_const_of_subsingleton] using f.map_update_smul 0 i c x }
+        simpa [update_eq_const_of_subsingleton] using! f.map_update_smul 0 i c x }
   right_inv f := by ext x; refine congr_arg f ?_; exact (eq_const_of_subsingleton _ _).symm
 
 variable (M₁) {M₂}
@@ -285,7 +289,6 @@ def constOfIsEmpty [IsEmpty ι] (m : M₂) : MultilinearMap R M₁ M₂ where
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a multilinear map `f` on `n` variables (parameterized by `Fin n`) and a subset `s` of `k`
 of these variables, one gets a new multilinear map on `Fin k` by varying these variables, and fixing
 the other ones equal to a given value `z`. It is denoted by `f.restr s hk z`, where `hk` is a
@@ -522,7 +525,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     intro i
     by_cases hi : i = i₀
     · rw [hi]
-      simp only [B, sdiff_subset, update_self]
+      simp only [B, Finset.sdiff_subset, update_self]
     · simp only [B, hi, update_of_ne, Ne, not_false_iff, Finset.Subset.refl]
   have C_subset_A : ∀ i, C i ⊆ A i := by
     intro i
@@ -547,7 +550,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
       have : j = j₂ := by
         simpa [C] using hj
       rw [this]
-      simp only [B, mem_sdiff, not_true, not_false_iff, Finset.mem_singleton,
+      simp only [B, Finset.mem_sdiff, not_true, not_false_iff, Finset.mem_singleton,
         update_self, and_false]
     · simp [hi]
   have Beq :
@@ -1105,7 +1108,7 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
     change (g fun j ↦ update f i (f₁ + f₂) j <| x j) =
         (g fun j ↦ update f i f₁ j <| x j) + g fun j ↦ update f i f₂ j (x j)
     let c : Π (i : ι), (M₁ i →ₗ[R] M₁' i) → M₁' i := fun i f ↦ f (x i)
-    convert g.map_update_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) with j j j
+    convert! g.map_update_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) with j j j
     · exact Function.apply_update c f i (f₁ + f₂) j
     · exact Function.apply_update c f i f₁ j
     · exact Function.apply_update c f i f₂ j
@@ -1114,7 +1117,7 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
     ext g x
     change (g fun j ↦ update f i (a • f₀) j <| x j) = a • g fun j ↦ update f i f₀ j (x j)
     let c : Π (i : ι), (M₁ i →ₗ[R] M₁' i) → M₁' i := fun i f ↦ f (x i)
-    convert g.map_update_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) with j j j
+    convert! g.map_update_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) with j j j
     · exact Function.apply_update c f i (a • f₀) j
     · exact Function.apply_update c f i f₀ j
 
@@ -1342,7 +1345,7 @@ lemma map_sub_map_piecewise [LinearOrder ι] (a b : (i : ι) → M₁ i) (s : Fi
       · exact fun h ↦ (h₁ <| .inl h).ne h
     · cases h₂
       rw [update_self, s.piecewise_eq_of_notMem _ _ (lt_irrefl _ <| hk k ·)]
-    · push_neg at h₁
+    · push Not at h₁
       rw [update_of_ne (Ne.symm h₂), s.piecewise_eq_of_mem _ _ (h₁.1.resolve_left <| Ne.symm h₂)]
   · apply sum_congr rfl
     grind

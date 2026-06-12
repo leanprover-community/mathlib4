@@ -157,6 +157,7 @@ theorem C_mul : (C (a * a') : MvPolynomial σ R) = C a * C a' :=
 theorem C_pow (a : R) (n : ℕ) : (C (a ^ n) : MvPolynomial σ R) = C a ^ n :=
   map_pow _ _ _
 
+@[grind inj]
 theorem C_injective (σ : Type*) (R : Type*) [CommSemiring R] :
     Function.Injective (C : R → MvPolynomial σ R) :=
   Finsupp.single_injective _
@@ -289,6 +290,10 @@ theorem monomial_sum_index {α : Type*} (s : Finset α) (f : α → σ →₀ �
     monomial (∑ i ∈ s, f i) a = C a * ∏ i ∈ s, monomial (f i) 1 := by
   rw [← monomial_sum_one, C_mul', ← (monomial _).map_smul, smul_eq_mul, mul_one]
 
+theorem monomial_sum_prod {α : Type*} (s : Finset α) (f : α → σ →₀ ℕ) (g : α → R) :
+    monomial (∑ i ∈ s, f i) (∏ i ∈ s, g i) = ∏ i ∈ s, monomial (f i) (g i) := by
+  simp_rw [monomial_sum_index, map_prod, ← Finset.prod_mul_distrib, C_mul_monomial, mul_one]
+
 theorem monomial_finsupp_sum_index {α β : Type*} [Zero β] (f : α →₀ β) (g : α → β → σ →₀ ℕ)
     (a : R) : monomial (f.sum g) a = C a * f.prod fun a b => monomial (g a b) 1 :=
   monomial_sum_index _ _ _
@@ -303,6 +308,14 @@ theorem monomial_eq : monomial s a = C a * (s.prod fun n e => X n ^ e : MvPolyno
 @[simp]
 lemma prod_X_pow_eq_monomial : ∏ x ∈ s.support, X x ^ s x = monomial s (1 : R) := by
   simp only [monomial_eq, map_one, one_mul, Finsupp.prod]
+
+theorem prod_X_pow (x : σ → ℕ) (t : Finset σ) :
+    ∏ y ∈ t, (X y : MvPolynomial σ R) ^ x y = monomial (indicator t (fun i _ ↦ x i)) (1 : R) := by
+  rw [monomial_eq, C_1, one_mul, Finsupp.prod, Finset.prod_subset (support_indicator_subset _ _)]
+  · exact Finset.prod_congr rfl (fun _ hi ↦ by simp [Finsupp.indicator, hi])
+  · intro i hi hi'
+    rw [Finsupp.mem_support_iff, ne_eq, not_not] at hi'
+    rw [hi', pow_zero]
 
 @[elab_as_elim]
 theorem induction_on_monomial {motive : MvPolynomial σ R → Prop}
@@ -491,7 +504,7 @@ theorem support_smul {S₁ : Type*} [SMulZeroClass S₁ R] {a : S₁} {f : MvPol
 
 theorem support_sum {α : Type*} [DecidableEq σ] {s : Finset α} {f : α → MvPolynomial σ R} :
     (∑ x ∈ s, f x).support ⊆ s.biUnion fun x => (f x).support :=
-  Finsupp.support_finset_sum
+  Finsupp.support_finsetSum
 
 end Support
 
@@ -541,9 +554,12 @@ theorem coeff_zero (m : σ →₀ ℕ) : coeff m (0 : MvPolynomial σ R) = 0 :=
 theorem coeff_zero_X (i : σ) : coeff 0 (X i : MvPolynomial σ R) = 0 :=
   single_eq_of_ne' fun h => by cases Finsupp.single_eq_zero.1 h
 
+-- TODO: Remove once its use in the Witt vector API has been removed.
 @[simp]
-theorem coeff_mapRange (g : S₁ → R) (hg : g 0 = 0) (φ : MvPolynomial σ S₁) (m) :
-    coeff m (mapRange g hg φ) = g (coeff m φ) := rfl
+lemma coeff_addMonoidAlgebraMap (g : S₁ →+ R) (φ : MvPolynomial σ S₁) (m) :
+    coeff m (φ.map g) = g (coeff m φ) := rfl
+
+@[deprecated (since := "2026-03-27")] alias coeff_mapRange := coeff_addMonoidAlgebraMap
 
 /-- `MvPolynomial.coeff m` but promoted to an `AddMonoidHom`. -/
 @[simps]
@@ -600,13 +616,17 @@ theorem coeff_X_pow [DecidableEq σ] (i : σ) (m) (k : ℕ) :
     at this
   exact pow_zero _
 
-theorem coeff_X' [DecidableEq σ] (i : σ) (m) :
+theorem coeff_X [DecidableEq σ] (i : σ) (m) :
     coeff m (X i : MvPolynomial σ R) = if Finsupp.single i 1 = m then 1 else 0 := by
   rw [← coeff_X_pow, pow_one]
 
+@[deprecated (since := "2026-05-25")]
+alias coeff_X' := coeff_X
+
 @[simp]
-theorem coeff_X (i : σ) : coeff (Finsupp.single i 1) (X i : MvPolynomial σ R) = 1 := by
-  classical rw [coeff_X', if_pos rfl]
+theorem coeff_X_same (i : σ) :
+    coeff (Finsupp.single i 1) (X i : MvPolynomial σ R) = 1 := by
+  classical rw [coeff_X, if_pos rfl]
 
 @[simp]
 theorem coeff_C_mul (m) (a : R) (p : MvPolynomial σ R) : coeff m (C a * p) = a * coeff m p := by
@@ -648,6 +668,11 @@ lemma coeff_single_X_pow [DecidableEq σ] (s s' : σ) (n n' : ℕ) :
 lemma coeff_single_X [DecidableEq σ] (s s' : σ) (n : ℕ) :
     (X s).coeff (R := R) (Finsupp.single s' n) = if n = 1 ∧ s = s' then 1 else 0 := by
   simpa [eq_comm, and_comm] using coeff_single_X_pow s s' 1 n
+
+theorem coeff_prod_X_pow [DecidableEq σ] (d : σ →₀ ℕ) (x : σ → ℕ) (s : Finset σ) :
+    coeff d (∏ y ∈ s, (X y : MvPolynomial σ R) ^ x y) =
+      if d = Finsupp.indicator s (fun i _ ↦ x i) then 1 else 0 := by
+  simp_rw [prod_X_pow x s, coeff_monomial, eq_comm]
 
 @[simp]
 theorem support_mul_X (s : σ) (p : MvPolynomial σ R) :
@@ -717,7 +742,7 @@ theorem eq_zero_iff {p : MvPolynomial σ R} : p = 0 ↔ ∀ d, coeff d p = 0 := 
 
 theorem ne_zero_iff {p : MvPolynomial σ R} : p ≠ 0 ↔ ∃ d, coeff d p ≠ 0 := by
   rw [Ne, eq_zero_iff]
-  push_neg
+  push Not
   rfl
 
 @[simp]
@@ -725,7 +750,7 @@ theorem X_ne_zero [Nontrivial R] (s : σ) :
     X (R := R) s ≠ 0 := by
   rw [ne_zero_iff]
   use Finsupp.single s 1
-  simp only [coeff_X, ne_eq, one_ne_zero, not_false_eq_true]
+  simp only [coeff_X_same, ne_eq, one_ne_zero, not_false_eq_true]
 
 @[simp]
 theorem support_eq_empty {p : MvPolynomial σ R} : p.support = ∅ ↔ p = 0 :=
@@ -982,7 +1007,7 @@ lemma monomial_mul_mem_coeffsIn : monomial i 1 * p ∈ coeffsIn σ M ↔ p ∈ c
 
 @[simp]
 lemma mul_X_mem_coeffsIn : p * X s ∈ coeffsIn σ M ↔ p ∈ coeffsIn σ M := by
-  simpa [-mul_monomial_mem_coeffsIn] using mul_monomial_mem_coeffsIn (i := .single s 1)
+  simpa [-mul_monomial_mem_coeffsIn] using! mul_monomial_mem_coeffsIn (i := .single s 1)
 
 @[simp]
 lemma X_mul_mem_coeffsIn : X s * p ∈ coeffsIn σ M ↔ p ∈ coeffsIn σ M := by simp [mul_comm]
@@ -1001,14 +1026,14 @@ lemma coeffsIn_eq_span_monomial : coeffsIn σ M = .span R {monomial i m | (m ∈
 lemma coeffsIn_le {N : Submodule R (MvPolynomial σ S)} :
     coeffsIn σ M ≤ N ↔ ∀ m ∈ M, ∀ i, monomial i m ∈ N := by
   simp [coeffsIn_eq_span_monomial, Submodule.span_le, Set.subset_def,
-    forall_swap (α := MvPolynomial σ S)]
+    forall_comm (α := MvPolynomial σ S)]
 
 lemma mem_coeffsIn_iff_coeffs_subset : p ∈ coeffsIn σ M ↔ (p.coeffs : Set S) ⊆ M := by
   simp only [mem_coeffsIn, coeffs, Finset.coe_image, image_subset_iff]
   refine ⟨fun h x _ ↦ h x, fun h i ↦ ?_⟩
   by_cases hp : i ∈ p.support
   · exact h hp
-  · convert M.zero_mem
+  · convert! M.zero_mem
     simpa using hp
 
 end Module
@@ -1031,12 +1056,10 @@ lemma coeffsIn_mul (M N : Submodule R S) : coeffsIn σ (M * N) = coeffsIn σ M *
     rw [MvPolynomial.coeff_mul]
     exact sum_mem fun c hc ↦ Submodule.mul_mem_mul (hx _) (hy _)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coeffsIn_pow : ∀ {n}, n ≠ 0 → ∀ M : Submodule R S, coeffsIn σ (M ^ n) = coeffsIn σ M ^ n
   | 1, _, M => by simp
   | n + 2, _, M => by rw [pow_succ, coeffsIn_mul, coeffsIn_pow, ← pow_succ]; exact n.succ_ne_zero
 
-set_option backward.isDefEq.respectTransparency false in
 lemma le_coeffsIn_pow : ∀ {n}, coeffsIn σ M ^ n ≤ coeffsIn σ (M ^ n)
   | 0 => by simpa using ⟨1, map_one _⟩
   | n + 1 => (coeffsIn_pow n.succ_ne_zero _).ge

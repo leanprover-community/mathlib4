@@ -6,6 +6,7 @@ Authors: Oliver Nash, Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Algebra.Star
@@ -36,7 +37,7 @@ This file is a place to collect topological results about matrices.
   * `Matrix.blockDiagonal'_tsum`: non-uniform block diagonal commutes with infinite sums
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Matrix.GeneralLinearGroup Matrix.SpecialLinearGroup -- guard against import creep
 
@@ -45,15 +46,15 @@ open Matrix
 variable {X α l m n p S R : Type*} {m' n' : l → Type*}
 
 instance [TopologicalSpace R] : TopologicalSpace (Matrix m n R) :=
-  Pi.topologicalSpace
+  inferInstanceAs <| TopologicalSpace (m → n → R)
 
 instance [TopologicalSpace R] [T2Space R] : T2Space (Matrix m n R) :=
-  Pi.t2Space
+  inferInstanceAs <| T2Space (m → n → R)
 
 /-- The topology on finite matrices over a discrete space is discrete. -/
 instance [TopologicalSpace R] [Finite m] [Finite n] [DiscreteTopology R] :
     DiscreteTopology (Matrix m n R) :=
-  Pi.discreteTopology
+  inferInstanceAs <| DiscreteTopology (m → n → R)
 
 section Set
 
@@ -102,6 +103,13 @@ theorem Continuous.matrix_elem {A : X → Matrix m n R} (hA : Continuous A) (i :
     Continuous fun x => A x i j :=
   (continuous_apply_apply i j).comp hA
 
+lemma continuous_matrixOf [TopologicalSpace α] {f : α → m → n → R} :
+    Continuous (fun x ↦ Matrix.of (f x)) ↔ Continuous f := by
+  rfl
+
+@[fun_prop]
+alias ⟨_, Continuous.matrixOf⟩ := continuous_matrixOf
+
 @[continuity, fun_prop]
 theorem Continuous.matrix_map [TopologicalSpace S] {A : X → Matrix m n S} {f : S → R}
     (hA : Continuous A) (hf : Continuous f) : Continuous fun x => (A x).map f :=
@@ -148,7 +156,7 @@ theorem Continuous.matrix_mul [Fintype n] [Mul R] [AddCommMonoid R] [ContinuousA
     [ContinuousMul R] {A : X → Matrix m n R} {B : X → Matrix n p R} (hA : Continuous A)
     (hB : Continuous B) : Continuous fun x => A x * B x :=
   continuous_matrix fun _ _ =>
-    continuous_finset_sum _ fun _ _ => (hA.matrix_elem _ _).mul (hB.matrix_elem _ _)
+    continuous_finsetSum _ fun _ _ => (hA.matrix_elem _ _).mul (hB.matrix_elem _ _)
 
 instance [Fintype n] [Mul R] [AddCommMonoid R] [ContinuousAdd R] [ContinuousMul R] :
     ContinuousMul (Matrix n n R) :=
@@ -199,14 +207,14 @@ theorem continuous_matrix_diag : Continuous (Matrix.diag : Matrix n n R → n �
 @[continuity, fun_prop]
 theorem Continuous.matrix_trace [Fintype n] [AddCommMonoid R] [ContinuousAdd R]
     {A : X → Matrix n n R} (hA : Continuous A) : Continuous fun x => trace (A x) :=
-  continuous_finset_sum _ fun _ _ => hA.matrix_elem _ _
+  continuous_finsetSum _ fun _ _ => hA.matrix_elem _ _
 
 @[continuity, fun_prop]
 theorem Continuous.matrix_det [Fintype n] [DecidableEq n] [CommRing R] [IsTopologicalRing R]
     {A : X → Matrix n n R} (hA : Continuous A) : Continuous fun x => (A x).det := by
   simp_rw [Matrix.det_apply]
-  refine continuous_finset_sum _ fun l _ => Continuous.const_smul ?_ _
-  exact continuous_finset_prod _ fun l _ => hA.matrix_elem _ _
+  refine continuous_finsetSum _ fun l _ => Continuous.const_smul ?_ _
+  exact continuous_finsetProd _ fun l _ => hA.matrix_elem _ _
 
 @[continuity, fun_prop]
 theorem Continuous.matrix_updateCol [DecidableEq n] (i : n) {A : X → Matrix m n R}
@@ -299,6 +307,12 @@ theorem Continuous.matrix_blockDiag'
     {A : X → Matrix (Σ i, m' i) (Σ i, n' i) R} (hA : Continuous A) :
     Continuous fun x => blockDiag' (A x) :=
   continuous_pi fun _i => continuous_matrix fun _j _k => hA.matrix_elem _ _
+
+theorem isClosed_setOf_blockTriangular {α : Type*} {b : m → α} [LinearOrder α] [Zero R]
+    [T2Space R] : IsClosed {M : Matrix m m R | M.BlockTriangular b} := by
+  simp only [BlockTriangular, Set.setOf_forall]
+  refine isClosed_iInter fun i => isClosed_iInter fun j => isClosed_iInter fun _ => ?_
+  exact isClosed_eq (continuous_id.matrix_elem i j) continuous_const
 
 end BlockMatrices
 

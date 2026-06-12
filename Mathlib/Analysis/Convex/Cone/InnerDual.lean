@@ -84,10 +84,10 @@ lemma innerDual_insert (x : E) (s : Set E) :
 
 lemma innerDual_iUnion {ι : Sort*} (f : ι → Set E) :
     innerDual (⋃ i, f i) = ⨅ i, innerDual (f i) := by
-  ext; simp [forall_swap (α := E)]
+  ext; simp [forall_comm (α := E)]
 
 lemma innerDual_sUnion (S : Set (Set E)) : innerDual (⋃₀ S) = sInf (innerDual '' S) := by
-  ext; simp [forall_swap (α := E)]
+  ext; simp [forall_comm (α := E)]
 
 /-! ### Farkas' lemma and double dual of a cone in a Hilbert space -/
 
@@ -106,7 +106,7 @@ theorem hyperplane_separation' (C : ProperCone ℝ E) (hx₀ : x₀ ∉ C) :
 /-- The inner dual of inner dual of a proper cone is itself. -/
 @[simp] theorem innerDual_innerDual (C : ProperCone ℝ E) :
     innerDual (innerDual (C : Set E)) = C := by
-  simpa using C.dual_flip_dual (innerₗ E)
+  simpa using! C.dual_flip_dual (innerₗ E)
 
 open scoped InnerProductSpace
 

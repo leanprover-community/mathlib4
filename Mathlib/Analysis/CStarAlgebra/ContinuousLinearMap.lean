@@ -14,7 +14,7 @@ We place this here because, for reasons related to the import hierarchy, it shou
 in earlier files.
 -/
 
-@[expose] public section
+public section
 
 noncomputable
 instance {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E] [CompleteSpace E] :

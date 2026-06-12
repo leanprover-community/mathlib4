@@ -24,7 +24,7 @@ This file lifts order structures on `α` to `ι →₀ α`.
   functions.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -44,7 +44,7 @@ variable [Zero α]
 section OrderedAddCommMonoid
 variable [AddCommMonoid β] [Preorder β] [IsOrderedAddMonoid β] {f : ι →₀ α} {h₁ h₂ : ι → α → β}
 
-@[gcongr]
+@[gcongr only]
 lemma sum_le_sum (h : ∀ i ∈ f.support, h₁ i (f i) ≤ h₂ i (f i)) : f.sum h₁ ≤ f.sum h₂ :=
   Finset.sum_le_sum h
 
@@ -88,7 +88,8 @@ lemma sum_le_sum_index [DecidableEq ι] {f₁ f₂ : ι →₀ α} {h : ι → �
   classical
   rw [sum_of_support_subset _ Finset.subset_union_left _ hh₀,
     sum_of_support_subset _ Finset.subset_union_right _ hh₀]
-  exact Finset.sum_le_sum fun i hi ↦ hh _ hi <| hf _
+  gcongr with i hi
+  exact hh _ hi <| hf _
 
 end Preorder
 
@@ -153,7 +154,7 @@ theorem single_le_sum {α M N : Type*} [Zero M] [AddCommMonoid N]
   rcases eq_or_ne (f a) 0 with H | H
   · rw [H, single_zero, sum_zero_index]
     exact sum_nonneg' (fun i ↦ h i (f i))
-  · rw [sum, support_single_ne_zero _ H, sum_singleton, single_eq_same]
+  · rw [sum, support_single _ H, sum_singleton, single_eq_same]
     apply Finset.single_le_sum (fun i hi ↦ h i (f i))
     simpa [mem_support_iff, ne_eq] using H
 
@@ -170,8 +171,8 @@ instance isOrderedCancelAddMonoid [AddCommMonoid α] [Preorder α] [IsOrderedCan
   { le_of_add_le_add_left := fun _f _g _i h s => le_of_add_le_add_left (h s) }
 
 instance addLeftReflectLE [AddCommMonoid α] [Preorder α] [AddLeftReflectLE α] :
-    AddLeftReflectLE (ι →₀ α) :=
-  ⟨fun _f _g _h H x => le_of_add_le_add_left <| H x⟩
+    AddLeftReflectLE (ι →₀ α) where
+  le_of_add_le_add_left H x := le_of_add_le_add_left <| H x
 
 section SMulZeroClass
 variable [Zero α] [Preorder α] [Zero β] [Preorder β] [SMulZeroClass α β]
@@ -208,23 +209,31 @@ end SMulWithZero
 
 section PartialOrder
 
-variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] {f g : ι →₀ α}
+variable [AddCommMonoid α] [PartialOrder α] {f g : ι →₀ α}
 
-instance orderBot : OrderBot (ι →₀ α) where
+instance orderBot [IsBotZeroClass α] : OrderBot (ι →₀ α) where
   bot := 0
-  bot_le := by simp only [le_def, coe_zero, Pi.zero_apply, imp_true_iff, zero_le]
+  bot_le := by simp [le_def]
 
-protected theorem bot_eq_zero : (⊥ : ι →₀ α) = 0 :=
+instance [IsBotZeroClass α] : IsBotZeroClass (ι →₀ α) where
+  isBot_zero := isBot_bot
+
+@[deprecated _root_.bot_eq_zero (since := "2026-05-07")]
+protected theorem bot_eq_zero [IsBotZeroClass α] : (⊥ : ι →₀ α) = 0 :=
   rfl
+
+variable [CanonicallyOrderedAdd α]
 
 @[simp]
 theorem add_eq_zero_iff (f g : ι →₀ α) : f + g = 0 ↔ f = 0 ∧ g = 0 := by
   simp [DFunLike.ext_iff, forall_and]
 
-theorem le_iff' (f g : ι →₀ α) {s : Finset ι} (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
-  ⟨fun h s _hs => h s, fun h s => by
-    classical exact
-        if H : s ∈ f.support then h s (hf H) else (notMem_support_iff.1 H).symm ▸ zero_le (g s)⟩
+theorem le_iff' (f g : ι →₀ α) {s : Finset ι} (hf : f.support ⊆ s) :
+    f ≤ g ↔ ∀ i ∈ s, f i ≤ g i := by
+  refine ⟨fun h s _ ↦ h s, fun h s ↦ ?_⟩
+  by_cases H : s ∈ f.support
+  · exact h s (hf H)
+  · exact notMem_support_iff.1 H ▸ zero_le
 
 theorem le_iff (f g : ι →₀ α) : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
   le_iff' f g <| Subset.refl _
@@ -291,35 +300,39 @@ lemma embDomain_tsub (f : ι ↪ κ) (f1 f2 : ι →₀ α) :
     (f1 - f2).embDomain f = f1.embDomain f - f2.embDomain f := by
   simp_rw [embDomain_eq_mapDomain, mapDomain_tsub f.injective]
 
+/-- The support of a sum is the union of the supports, when the coefficients satisfy
+`CanonicallyOrderedAdd`.
+
+In the case where the supports are disjoint, there is also `Finsupp.support_add_eq`,
+which holds in any `AddZeroClass`. -/
+lemma support_add_eq_union {f1 f2 : ι →₀ α} [DecidableEq ι] :
+    (f1 + f2).support = f1.support ∪ f2.support :=
+  le_antisymm support_add <| Finset.union_subset
+    (support_mono le_self_add) (support_mono le_add_self)
+
 end PartialOrder
 
 section LinearOrder
 
-variable [AddCommMonoid α] [LinearOrder α] [CanonicallyOrderedAdd α]
+variable [AddCommMonoid α] [LinearOrder α] [IsBotZeroClass α]
 
 @[simp]
 theorem support_inf [DecidableEq ι] (f g : ι →₀ α) : (f ⊓ g).support = f.support ∩ g.support := by
   ext
-  simp only [inf_apply, mem_support_iff, Ne,
-    Finset.mem_inter]
-  simp only [← nonpos_iff_eq_zero, min_le_iff, not_or]
+  simp
 
 @[simp]
 theorem support_sup [DecidableEq ι] (f g : ι →₀ α) : (f ⊔ g).support = f.support ∪ g.support := by
   ext
-  simp only [mem_support_iff, Ne, sup_apply, ← nonpos_iff_eq_zero, sup_le_iff, mem_union,
-    not_and_or]
+  simp [imp_iff_not_or]
 
 nonrec theorem disjoint_iff {f g : ι →₀ α} : Disjoint f g ↔ Disjoint f.support g.support := by
   classical
-    rw [disjoint_iff, disjoint_iff, Finsupp.bot_eq_zero, ← Finsupp.support_eq_empty,
-      Finsupp.support_inf]
-    rfl
+  simp [disjoint_iff, bot_eq_zero, ← Finsupp.support_eq_empty]
 
 end LinearOrder
 
 /-! ### Some lemmas about `ℕ` -/
-
 
 section Nat
 

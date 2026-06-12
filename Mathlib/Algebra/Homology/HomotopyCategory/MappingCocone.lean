@@ -55,6 +55,7 @@ noncomputable def inl : Cochain K (mappingCocone φ) 0 :=
 noncomputable def inr : Cocycle L (mappingCocone φ) 1 :=
   (Cocycle.ofHom (mappingCone.inr φ)).rightShift (-1) 1 (by lia)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inl_v_fst_f (p : ℤ) :
@@ -62,6 +63,7 @@ lemma inl_v_fst_f (p : ℤ) :
   simp [inl, fst, Cochain.rightShift_v (n := -1) _ _ _ _ p _ _ (p + -1) (by lia),
     Cochain.leftShift_v (n := 1) _ _ _ _ _ p _ (p + -1) (by lia)]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inl_v_snd_v (p q : ℤ) (hpq : p + -1 = q) :
@@ -107,6 +109,7 @@ variable {M : CochainComplex C ℤ} {n m : ℤ}
 noncomputable def descCochain : Cochain (mappingCocone φ) M m :=
   (-m + 1).negOnePow • (mappingCone.descCochain φ α β h).leftShift (-1) m (by lia)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inl_v_descCochain_v (p q : ℤ) (hpq : p + m = q) :
@@ -115,6 +118,7 @@ lemma inl_v_descCochain_v (p q : ℤ) (hpq : p + m = q) :
     Cochain.rightShift_v (n := -1) _ _ _ _ p _ _ (p + -1) (by lia), smul_smul,
     Cochain.leftShift_v (n := n) _ (-1) m (by lia) _ _ hpq (p + -1) (by lia)]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inr_v_descCochain_v (p q : ℤ) (hpq : p + 1 = q) (r : ℤ) (hr : q + m = r) :
@@ -135,6 +139,7 @@ lemma inr_comp_descCochain :
   ext p q hpq
   simp [Cochain.comp_v (n₂ := m) _ _ _ _ (p + 1) q rfl (by lia)]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma δ_descCochain (n' : ℤ) (hn' : n + 1 = n') :
     δ m n (descCochain φ α β h) =
@@ -153,7 +158,11 @@ lemma δ_descCochain (n' : ℤ) (hn' : n + 1 = n') :
     Cochain.comp_v (n₁ := 1) _ _ _ (p + -1) p _ (by lia) hpq,
     Cochain.comp_v (n₂ := m + 2) _ _ _ p (p + -1) q rfl (by lia),
     smul_smul, Int.negOnePow_add, Int.negOnePow_even 2 ⟨1, rfl⟩]
-  grind
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was: `grind` -/
+  abel
 
 end
 
@@ -201,6 +210,7 @@ variable {M : CochainComplex C ℤ} {n m : ℤ}
 noncomputable def liftCochain : Cochain M (mappingCocone φ) n :=
   (mappingCone.liftCochain φ α β h).rightShift (-1) n (by lia)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma liftCochain_v_fst_f (p₁ p₂ : ℤ) (h₁₂ : p₁ + n = p₂) :
@@ -209,6 +219,7 @@ lemma liftCochain_v_fst_f (p₁ p₂ : ℤ) (h₁₂ : p₁ + n = p₂) :
     Cochain.rightShift_v (n := m) _ _ _ _ p₁ _ _ (p₂ + -1) (by lia),
     Cochain.leftShift_v (n := 1) _ _ _ _ _ p₂ _ (p₂ + -1) (by lia)]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma liftCochain_v_snd_v (p₁ p₂ p₃ : ℤ) (h₁₂ : p₁ + n = p₂) (h₂₃ : p₂ + -1 = p₃) :
@@ -239,13 +250,17 @@ lemma δ_liftCochain (n' : ℤ) (hn' : n + 1 = n') :
   dsimp [liftCochain, inl, inr]
   ext p q hpq
   simp [mappingCone.δ_liftCochain _ _ _ _ n' hn',
-    Cochain.δ_rightShift _ (-1) _ n' _ n  (by lia),
+    Cochain.δ_rightShift _ (-1) _ n' _ n (by lia),
     Cochain.rightShift_v (n := n) _ _ _ _ p _ _ (q + -1) (by lia),
     Cochain.rightShift_v _ _ _ _ _ _ _ (q + -1) rfl,
     Cochain.rightShift_v _ _ _ _ _ _ _ _ (add_zero (q + -1)),
     Cochain.comp_v _ _ _ p q _ hpq rfl,
     Cochain.comp_v (n₁ := n) (n₂ := 1) _ _ _ p (q + -1) q (by lia) (by lia)]
-  grind
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was: `grind` -/
+  abel
 
 end
 
@@ -302,6 +317,7 @@ noncomputable def triangle : Triangle (CochainComplex C ℤ) :=
   Triangle.mk (fst φ) φ
     ((mappingCone.triangle φ).mor₂ ≫ (shiftFunctorCompIsoId _ (-1 : ℤ) 1 (by lia)).inv.app _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Rotating the triangle `mappingCocone.triangle φ` gives a triangle that is
 isomorphic to `mappingCone.triangle φ`. -/

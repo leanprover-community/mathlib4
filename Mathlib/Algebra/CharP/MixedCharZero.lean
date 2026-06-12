@@ -126,10 +126,10 @@ lemma reduce_to_maximal_ideal {p : ℕ} (hp : Nat.Prime p) :
     · exact hM_max
     · cases CharP.exists (R ⧸ M) with
       | intro r hr =>
-        convert hr
+        convert! hr
         have r_dvd_p : r ∣ p := by
           rw [← CharP.cast_eq_zero_iff (R ⧸ M) r p]
-          convert congr_arg (Ideal.Quotient.factor hM_ge) (CharP.cast_eq_zero (R ⧸ I) p)
+          convert! congr_arg (Ideal.Quotient.factor hM_ge) (CharP.cast_eq_zero (R ⧸ I) p)
         symm
         apply (Nat.Prime.eq_one_or_self_of_dvd hp r r_dvd_p).resolve_left
         exact CharP.char_ne_one (R ⧸ M) r
@@ -158,7 +158,6 @@ Note: Property `(2)` is denoted as `EqualCharZero` in the statement names below.
 
 namespace EqualCharZero
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `ℚ`-algebra implies equal characteristic. -/
 private lemma of_algebraRat [Algebra ℚ R] : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I) := by
   intro I hI
@@ -178,7 +177,6 @@ section ConstructionAlgebraRat
 
 variable {R}
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma PNat.isUnit_natCast [h : Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))]
     (n : ℕ+) : IsUnit (n : R) := by
   -- `n : R` is a unit iff `(n)` is not a proper ideal in `R`.

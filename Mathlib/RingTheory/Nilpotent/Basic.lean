@@ -11,7 +11,7 @@ public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Data.Nat.Choose.Sum
-public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Order.Lattice.Nat
 public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
@@ -31,7 +31,7 @@ For the definition of `nilradical`, see `Mathlib/RingTheory/Nilpotent/Lemmas.lea
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
@@ -111,7 +111,7 @@ theorem Prime.isRadical [CommMonoidWithZero R] {y : R} (hy : Prime y) : IsRadica
 
 theorem zero_isRadical_iff [MonoidWithZero R] : IsRadical (0 : R) ↔ IsReduced R := by
   simp_rw [isReduced_iff, IsNilpotent, exists_imp, ← zero_dvd_iff]
-  exact forall_swap
+  exact forall_comm
 
 theorem isReduced_iff_pow_one_lt [MonoidWithZero R] (k : ℕ) (hk : 1 < k) :
     IsReduced R ↔ ∀ x : R, x ^ k = 0 → x = 0 := by
@@ -223,9 +223,3 @@ theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
   Commute.isNilpotent_finsum hf fun _ _ ↦ Commute.all _ _
 
 end CommSemiring
-
-@[deprecated "The assumptions `NoZeroSMulDivisors R M` and `Nontrivial M` imply `NoZeroDivisors R`,
-and TC inference already knows that this implies `IsReduced R`." (since := "2025-10-20")]
-lemma NoZeroSMulDivisors.isReduced (R : Type*) [MonoidWithZero R] [NoZeroDivisors R] :
-    IsReduced R := by
-  infer_instance

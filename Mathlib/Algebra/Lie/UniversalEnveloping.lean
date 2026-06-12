@@ -59,7 +59,6 @@ inductive Rel : TensorAlgebra R L → TensorAlgebra R L → Prop
 
 end UniversalEnvelopingAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The universal enveloping algebra of a Lie algebra. -/
 def UniversalEnvelopingAlgebra :=
   RingQuot (UniversalEnvelopingAlgebra.Rel R L)
@@ -73,6 +72,7 @@ def mkAlgHom : TensorAlgebra R L →ₐ[R] UniversalEnvelopingAlgebra R L :=
   RingQuot.mkAlgHom R (Rel R L)
 
 variable {L}
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- The natural Lie algebra morphism from a Lie algebra to its universal enveloping algebra. -/
 @[simps!]

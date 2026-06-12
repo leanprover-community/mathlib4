@@ -94,7 +94,7 @@ noncomputable def onFinsupp {𝕜 ι : Type*} [DecidableEq ι]
       refine (Finsupp.linearIndependent_single_one 𝕜 ι).affineIndependent.range.mono fun x hx => ?_
       simp only [Set.mem_iUnion, Finset.mem_coe] at hx
       obtain ⟨_, ⟨_, _, rfl⟩, hx⟩ := hx
-      grind )
+      grind)
 
 /--
 The simplicial complex associated to a simple graph, where vertices of the graph

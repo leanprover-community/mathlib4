@@ -181,7 +181,8 @@ open OrderDual
 section Norm
 variable [Norm E]
 
-instance OrderDual.toNorm : Norm Eᵒᵈ := ‹Norm E›
+instance OrderDual.toNorm : Norm Eᵒᵈ where
+  norm x := ‖ofDual x‖
 
 @[simp] lemma norm_toDual (x : E) : ‖toDual x‖ = ‖x‖ := rfl
 
@@ -192,7 +193,8 @@ end Norm
 section NNNorm
 variable [NNNorm E]
 
-instance OrderDual.toNNNorm : NNNorm Eᵒᵈ := ‹NNNorm E›
+instance OrderDual.toNNNorm : NNNorm Eᵒᵈ where
+  nnnorm x := ‖ofDual x‖₊
 
 @[simp] lemma nnnorm_toDual (x : E) : ‖toDual x‖₊ = ‖x‖₊ := rfl
 
@@ -205,21 +207,22 @@ namespace OrderDual
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) seminormedGroup [SeminormedGroup E] : SeminormedGroup Eᵒᵈ :=
-  ‹SeminormedGroup E›
+  inferInstanceAs <| SeminormedGroup E
 
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) seminormedCommGroup [SeminormedCommGroup E] : SeminormedCommGroup Eᵒᵈ :=
-  ‹SeminormedCommGroup E›
+  inferInstanceAs <| SeminormedCommGroup E
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) normedGroup [NormedGroup E] : NormedGroup Eᵒᵈ := ‹NormedGroup E›
+instance (priority := 100) normedGroup [NormedGroup E] : NormedGroup Eᵒᵈ :=
+  inferInstanceAs <| NormedGroup E
 
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) normedCommGroup [NormedCommGroup E] : NormedCommGroup Eᵒᵈ :=
-  ‹NormedCommGroup E›
+  inferInstanceAs <| NormedCommGroup E
 
 end OrderDual
 end OrderDual
@@ -294,7 +297,6 @@ variable [Fintype ι]
 section SeminormedGroup
 variable [∀ i, SeminormedGroup (G i)] [SeminormedGroup E] (f : ∀ i, G i) {x : ∀ i, G i} {r : ℝ}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Finite product of seminormed groups, using the sup norm. -/
 @[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
 instance Pi.seminormedGroup : SeminormedGroup (∀ i, G i) where
@@ -358,7 +360,7 @@ lemma pi_nnnorm_const_le' (a : E) : ‖fun _ : ι => a‖₊ ≤ ‖a‖₊ :=
 
 @[to_additive (attr := simp) pi_norm_const]
 lemma pi_norm_const' [Nonempty ι] (a : E) : ‖fun _i : ι => a‖ = ‖a‖ := by
-  simpa only [← dist_one_right] using dist_pi_const a 1
+  simpa only [← dist_one_right] using! dist_pi_const a 1
 
 @[to_additive (attr := simp) pi_nnnorm_const]
 lemma pi_nnnorm_const' [Nonempty ι] (a : E) : ‖fun _i : ι => a‖₊ = ‖a‖₊ :=
@@ -397,7 +399,6 @@ instance Pi.normedCommGroup [∀ i, NormedCommGroup (G i)] : NormedCommGroup (�
     mul_comm := mul_comm
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Pi.nnnorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i : ι} (y : G i) :
     ‖Pi.single i y‖₊ = ‖y‖₊ := by
   have H : ∀ b, ‖single i y b‖₊ = single (M := fun _ ↦ ℝ≥0) i ‖y‖₊ b := by
