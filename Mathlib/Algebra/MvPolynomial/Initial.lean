@@ -34,6 +34,10 @@ of the highest power of `xᵢ` appearing in `p`.
 * `initial_reducedTo`: The initial is always reduced w.r.t. the original polynomial
 * `initialOf_mul`: `initᵢ(p * q) = initᵢ(p) * initᵢ(q)` (for integral domains)
 
+## References
+* [Wen-Tsun Wu, *Basic principles of mechanical theorem proving in elementary geometries*]
+  [wen1986basic]
+
 -/
 
 @[expose] public section
