@@ -340,7 +340,7 @@ lemma associatedForm_neq_basisFuns_eq_neq_edgeWeight (x y : X) (h : x ≠ y) :
       * ((𝟙_x) x - (𝟙_x) x_1) * ((𝟙_y) x - (𝟙_y) x_1) = 0 := by
     rw [← Finset.sum_const_zero]
     congr! with z h2
-    grind
+    simp_all [mem_singleton]
   rw [this, zero_add]
   have : ∑ x_1 ∈ univ \ {x}, ∑ x_2, ↑(G.edgeWeight x_1 x_2) * ((𝟙_x) x_1 - (𝟙_x) x_2) *
     ((𝟙_y) x_1 - (𝟙_y) x_2)
@@ -353,22 +353,14 @@ lemma associatedForm_neq_basisFuns_eq_neq_edgeWeight (x y : X) (h : x ≠ y) :
   have : ∑ x_1 ∈ univ \ {x}, ∑ x_2 ∈ univ \ {x}, ↑(G.edgeWeight x_1 x_2) * ((𝟙_x) x_1 -
     (𝟙_x) x_2) * ((𝟙_y) x_1 - (𝟙_y) x_2)
       = 0 := by
-    suffices ∑ x_1 ∈ univ \ {x}, ∑ x_2 ∈ univ \ {x}, ↑(G.edgeWeight x_1 x_2) * ((𝟙_x) x_1 -
-    (𝟙_x) x_2) * ((𝟙_y) x_1 - (𝟙_y) x_2) = ∑ x_1 ∈ univ \ {x}, ∑ x_2 ∈ univ \ {x}, 0 by
-      simp only [Finset.sum_const_zero] at this
-      exact this
+    rw [← Finset.sum_const_zero, ← Finset.sum_const_zero]
     congr! with z h2
     grind
   rw [this, zero_add, Finset.sum_eq_sum_sdiff_singleton_add (i := y) (by grind)]
-  have : ↑(G.edgeWeight y x) * ((𝟙_x) y - (𝟙_x) x) * ((𝟙_y) y - (𝟙_y) x)
-    = - ↑(G.edgeWeight y x) := by grind
-  rw [this]
+  conv => lhs; arg 1; arg 2; simp [h]
   have : ∑ x_1 ∈ (univ \ {x}) \ {y}, ↑(G.edgeWeight x_1 x) * ((𝟙_x) x_1 -
       (𝟙_x) x) * ((𝟙_y) x_1 - (𝟙_y) x) = 0 := by
-    suffices ∑ x_1 ∈ (univ \ {x}) \ {y}, ↑(G.edgeWeight x_1 x) * ((𝟙_x) x_1 -
-      (𝟙_x) x) * ((𝟙_y) x_1 - (𝟙_y) x) = ∑ x_1 ∈ (univ \ {x}) \ {y}, 0 by
-      simp only [Finset.sum_const_zero] at this
-      exact this
+    rw [← Finset.sum_const_zero]
     congr! with z h2
     grind
   rw [this, G.edgeWeight_symm_apply]
