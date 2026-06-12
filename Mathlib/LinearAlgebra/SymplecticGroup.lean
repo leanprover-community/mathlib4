@@ -5,10 +5,11 @@ Authors: Matej Penciak, Moritz Doll, Fabien Clery
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Transvection
+public import Mathlib.LinearAlgebra.Matrix.Action
 public import Mathlib.LinearAlgebra.Matrix.SchurComplement
-public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.LinearAlgebra.Matrix.Transvection
 public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
 # The Symplectic Group
@@ -41,12 +42,9 @@ section JMatrixLemmas
 def J : Matrix (l ⊕ l) (l ⊕ l) R :=
   Matrix.fromBlocks 0 (-1) 1 0
 
-@[simp]
-theorem J_map {S : Type*} [CommRing S] (f : R →+* S) : (J l R).map f = J l S := by
-  unfold J
-  rw [fromBlocks_map, Matrix.map_zero f f.map_zero,
-    Matrix.map_one f f.map_zero f.map_one, Matrix.map_neg f f.map_neg,
-    Matrix.map_one f f.map_zero f.map_one]
+variable {R} in
+@[simp] theorem map_J {S : Type*} [CommRing S] (f : R →+* S) : (J l R).map f = J l S := by
+  simp [J, fromBlocks_map, Matrix.map_neg]
 
 @[simp]
 theorem J_transpose : (J l R)ᵀ = -J l R := by
@@ -160,7 +158,7 @@ theorem map_mem {S : Type*} [CommRing S]
     (f : R →+* S) (hA : A ∈ symplecticGroup l R) :
     f.mapMatrix A ∈ symplecticGroup l S := by
   rw [mem_iff] at hA ⊢
-  rw [RingHom.mapMatrix_apply, ← J_map _ _ f, ← transpose_map,
+  rw [RingHom.mapMatrix_apply, ← map_J _ f, ← transpose_map,
     ← Matrix.map_mul, ← Matrix.map_mul, hA]
 
 @[simp]
@@ -202,30 +200,21 @@ instance : Group (symplecticGroup l R) :=
       simp only [Submonoid.coe_one, Submonoid.coe_mul, Matrix.neg_mul, coe_inv]
       exact inv_left_mul_aux A.2 }
 
-theorem fromBlocks_mem_iff {A B C D : Matrix l l R} :
-  fromBlocks A B C D ∈ symplecticGroup l R ↔
-    Aᵀ * C = Cᵀ * A ∧
-    Bᵀ * D = Dᵀ * B ∧
-    Aᵀ * D - Cᵀ * B = 1 := by
-  constructor <;> intro h
+theorem fromBlocks_mem_iff [Finite l] {A B C D : Matrix l l R} :
+    fromBlocks A B C D ∈ symplecticGroup l R ↔
+      Aᵀ * C = Cᵀ * A ∧
+      Bᵀ * D = Dᵀ * B ∧
+      Aᵀ * D - Cᵀ * B = 1 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ mem_iff'.2 ?_⟩
   · have h_final : fromBlocks (Cᵀ * A - Aᵀ * C) (Cᵀ * B - Aᵀ * D)
       (Dᵀ * A - Bᵀ * C) (Dᵀ * B - Bᵀ * D) = J l R:= by
-      convert_to (fromBlocks Aᵀ Cᵀ Bᵀ Dᵀ) * J l R * (fromBlocks A B C D) = _
-      · simp only [sub_eq_add_neg, fromBlocks_multiply, mul_zero, mul_one, zero_add, mul_neg,
-        add_zero, neg_mul, J]
-      · rw [← fromBlocks_transpose]
-        exact mem_iff.1 (transpose_mem h)
+      simpa [mem_iff, fromBlocks_transpose, J, fromBlocks_multiply,
+        sub_eq_add_neg] using transpose_mem h
     obtain ⟨h_eq1, h_eq2, _, h_eq3⟩ := fromBlocks_inj.1 h_final
-    refine ⟨(sub_eq_zero.1 h_eq1).symm, (sub_eq_zero.1 h_eq3).symm, ?_⟩
-    rw [sub_eq_iff_comm, sub_neg_eq_add] at h_eq2
-    rw [← h_eq2, sub_eq_iff_eq_add']
-  · refine mem_iff'.mpr ?_
-    simp only [fromBlocks_transpose, J, fromBlocks_multiply, mul_zero, mul_one,
-      zero_add, mul_neg, add_zero, neg_mul, ← sub_eq_add_neg, fromBlocks_inj, sub_eq_zero]
-    refine ⟨h.1.symm, ?_, ?_, h.2.1.symm⟩
-    · rw [← h.2.2, neg_sub]
-    · have := congrArg transpose h.2.2
-      rwa [transpose_sub, transpose_mul, transpose_mul, transpose_one] at this
+    exact ⟨(sub_eq_zero.1 h_eq1).symm, (sub_eq_zero.1 h_eq3).symm, by grind⟩
+  · simp only [fromBlocks_transpose, J, fromBlocks_multiply, mul_zero, mul_one, zero_add, mul_neg,
+      add_zero, neg_mul, ← sub_eq_add_neg, fromBlocks_inj, sub_eq_zero]
+    exact ⟨h.1.symm, by grind, by simpa using congr(transpose $(h.2.2)), h.2.1.symm⟩
 
 section Determinant
 
@@ -240,20 +229,15 @@ private lemma det_one_if_fromBlocks_invertible [Invertible A]
     mul_inv_of_invertible, mul_one, h_block.2.2, det_one]
 
 private lemma ker_inter_eq_bot_of_rank_normal_form
-  (hU : IsUnit U.det) (hV : IsUnit V.det)
-  (h_rank : ∀ (x : l → R), (A *ᵥ x = 0) → (C *ᵥ x = 0) → x = 0) :
-  ∀ (x : l → R), ((Vᵀ⁻¹ * A * U) *ᵥ x = 0) → ((V * C * U) *ᵥ x = 0) → x = 0 := by
-  intro x h1 h2
-  refine mulVec_injective_of_isUnit ((isUnit_iff_isUnit_det U).2 hU) ?_
-  rw [mulVec_zero]
-  refine h_rank (U *ᵥ x) ?_ ?_
-  · rw [mulVec_mulVec, ← one_mul (A * U), ← mul_nonsing_inv _ (isUnit_det_transpose _ hV),
-      mul_assoc, ← mul_assoc _ A, ← mulVec_mulVec, h1, mulVec_zero]
-  · rw [mulVec_mulVec, ← one_mul (C * U), ← nonsing_inv_mul _ hV,
-      mul_assoc, ← mul_assoc _ C, ← mulVec_mulVec, h2, mulVec_zero]
+    (hU : IsUnit U.det) (hV : IsUnit V.det)
+    (h_rank : ∀ (x : l → R), (A • x = 0) → (C • x = 0) → x = 0) (x : l → R)
+    (h1 : (Vᵀ⁻¹ * A * U) • x = 0) (h2 : (V * C * U) • x = 0) : x = 0 := by
+  refine (U.isUnit_iff_isUnit_det.2 hU).smul_left_cancel.1 ?_
+  rw [mul_assoc, mul_smul, IsUnit.smul_eq_zero, mul_smul] at h1 h2
+  all_goals simp_all [isUnit_iff_isUnit_det]
 
 private lemma symm_condition_of_rank_normal_form (hV : IsUnit V.det)
-  (h_symm : Aᵀ * C = Cᵀ * A) :
+    (h_symm : Aᵀ * C = Cᵀ * A) :
     (Vᵀ⁻¹ * A * U)ᵀ * (V * C * U) = (V * C * U)ᵀ * (Vᵀ⁻¹ * A * U) := by
   rw [transpose_mul, transpose_mul, transpose_mul, transpose_mul,
     transpose_nonsing_inv, transpose_transpose]
@@ -264,14 +248,12 @@ private lemma symm_condition_of_rank_normal_form (hV : IsUnit V.det)
       mul_one, mul_one, h_symm]
 
 private lemma eq_zero_and_symm_on_support_of_diagonal_symm {s : Finset l}
-  (hR1 : let E : Matrix l l R := diagonal (fun i : l ↦ if i ∈ s then 1 else 0)
-    Aᵀ * E = E * A) :
-  (∀ (i j : l), i ∈ s → j ∉ s → A i j = 0) ∧
-  (∀ (i j : l), i ∈ s → j ∈ s → A i j = A j i) := by
+    (hR1 : let E : Matrix l l R := diagonal (fun i : l ↦ if i ∈ s then 1 else 0)
+      Aᵀ * E = E * A) :
+    (∀ (i j : l), i ∈ s → j ∉ s → A i j = 0) ∧
+    (∀ (i j : l), i ∈ s → j ∈ s → A i j = A j i) := by
   have h_main1 (i j : l) : (if j ∈ s then A j i else 0) = (if i ∈ s then A i j else 0) := by
-    convert ext_iff.2 hR1 i j
-    · simp only [mul_diagonal, transpose_apply, mul_ite, mul_one, mul_zero]
-    · simp only [diagonal_mul, ite_mul, one_mul, zero_mul]
+    convert ext_iff.2 hR1 i j <;> simp
   constructor <;> intro i j hi hj
   · have := (h_main1 i j).symm
     rwa [if_pos hi, if_neg hj] at this
@@ -281,8 +263,8 @@ private lemma eq_zero_and_symm_on_support_of_diagonal_symm {s : Finset l}
 private lemma exists_symmetric_X_invertible_add_mul_diagonal {R : Type*} [Field R] {s : Finset l}
   {A : Matrix l l R} (h1 : ∀ (i j : l), i ∈ s → j ∉ s → A i j = 0)
   (h2 : ∀ (i j : l), i ∈ s → j ∈ s → A i j = A j i)
-  (h_rank1 : ∀ (x : l → R), (A *ᵥ x = 0) →
-    ((diagonal (fun i : l ↦ if i ∈ s then 1 else 0)) *ᵥ x = 0) → x = 0) :
+  (h_rank1 : ∀ (x : l → R), (A • x = 0) →
+    ((diagonal (fun i ↦ if i ∈ s then 1 else (0 : R))) • x = 0) → x = 0) :
   ∃ (X : Matrix l l R), Xᵀ = X ∧
     IsUnit (A + X * (diagonal (fun i : l ↦ if i ∈ s then 1 else 0))).det := by
   set D : Matrix l l R := diagonal (fun i : l ↦ if i ∈ s then 1 else 0) with D_def
@@ -290,38 +272,27 @@ private lemma exists_symmetric_X_invertible_add_mul_diagonal {R : Type*} [Field 
     if i ∈ s ∧ j ∈ s then (if i = j then 1 else 0) - A i j else 0 with X1_def
   have hX_symm : Xᵀ = X := by
     ext i j
-    simp only [X1_def, transpose_apply, and_comm, eq_comm]
-    split_ifs with hif1 hif2
-    · rw [hif2]
-    · rw [h2 i j hif1.1 hif1.2]
-    · rfl
-  have hM1 : ∀ (i : l), i ∈ s → ∀ (j : l), (A + X * D) i j = if i = j then 1 else 0 := by
-    intro i hi j
-    simp only [X1_def, D_def, add_apply, mul_apply, diagonal_apply, mul_ite, mul_one, mul_zero,
-      Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte]
-    split
-    · next hj => rw [if_pos ⟨hi, hj⟩, add_sub_cancel]
-    · next hj => rw [h1 i j hi hj, if_neg (ne_of_mem_of_not_mem hi hj), add_zero]
+    simp [X1_def]; grind
+  have hM1 (i : l) (hi : i ∈ s) (j : l) : (A + X * D) i j = if i = j then 1 else 0 := by
+    simp [X1_def, D_def]; grind
   set M := A + X * D with M_def
   refine ⟨X, hX_symm, M.isUnit_iff_isUnit_det.1 <|
     isUnit_toLin'_iff.1 <| M.toLin'.isUnit_iff_ker_eq_bot.2 <|
       ker_toLin'_eq_bot_iff.2 <| fun x hx ↦ ?_⟩
-  have hDx : D *ᵥ x = 0 := by
+  have hDx : D • x = 0 := by
     ext i
     convert_to (if i ∈ s then x i else 0) = _
-    · simp only [mulVec_apply, D_def, diagonal_apply, ite_mul, one_mul, zero_mul,
-        Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
+    · simp [D_def, Finset.sum_ite_eq, mulVec_apply, diagonal_apply]
     · refine ite_eq_right_iff.2 fun hi ↦ ?_
-      simpa only [hM1 i hi, ite_mul, one_mul, zero_mul, Finset.sum_ite_eq,
-        Finset.mem_univ, ↓reduceIte] using (show ∑ j : l, M i j * x j = 0 from congrFun hx i)
-  have hAx : A *ᵥ x = 0 := by
-    convert_to A *ᵥ x + (X * D) *ᵥ x = 0
-    · rw [left_eq_add, (mulVec_mulVec ..).symm, hDx, mulVec_zero]
-    · rw [← add_mulVec, hx]
+      simpa [hM1 i hi] using (show ∑ j : l, M i j * x j = 0 from congrFun hx i)
+  have hAx : A • x = 0 := by
+    convert_to A • x + (X * D) • x = 0
+    · rw [left_eq_add, mul_smul, hDx, smul_zero]
+    · rwa [← add_smul]
   exact h_rank1 x hAx hDx
 
 private lemma exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot {R : Type*} [Field R]
-  {A C : Matrix l l R} (h_rank : ∀ (x : l → R), (A *ᵥ x = 0) → (C *ᵥ x = 0) → x = 0)
+  {A C : Matrix l l R} (h_rank : ∀ (x : l → R), (A • x = 0) → (C • x = 0) → x = 0)
   (h_symm : Aᵀ * C = Cᵀ * A) :
     ∃ (X : Matrix l l R), Xᵀ = X ∧ IsUnit (A + X * C).det := by
   rcases exists_rank_normal_form C with ⟨V, U, s, hV, hU, hR1_eq⟩
@@ -331,8 +302,7 @@ private lemma exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot {R : Typ
   have h_main1 : (∀ (i j : l), i ∈ s → j ∉ s → A' i j = 0) ∧
       (∀ (i j : l), i ∈ s → j ∈ s → A' i j = A' j i) := by
     refine eq_zero_and_symm_on_support_of_diagonal_symm ?_
-    have h_symm1 : A'ᵀ * C' = C'ᵀ * A' :=
-      symm_condition_of_rank_normal_form hV h_symm
+    have h_symm1 : A'ᵀ * C' = C'ᵀ * A' := symm_condition_of_rank_normal_form hV h_symm
     rwa [hR1_eq, diagonal_transpose] at h_symm1
   obtain ⟨X, hX_symm, hM1⟩ := exists_symmetric_X_invertible_add_mul_diagonal
     h_main1.1 h_main1.2 <| fun x hP1x hDx ↦
@@ -399,14 +369,12 @@ private lemma det_eq_one_of_isLocalRing [IsLocalRing R] {M : Matrix (l ⊕ l) (l
   set Lx : Matrix (l ⊕ l) (l ⊕ l) R := fromBlocks 1 X 0 1 with Lx_def
   have Lx_mul : Lx * fromBlocks A B C D =
       fromBlocks (A + X * C) (B + X * D) C D := by
-    simp only [Lx_def, fromBlocks_multiply, one_mul, zero_mul, zero_add]
+    simp [Lx_def, fromBlocks_multiply]
   set M' : Matrix (l ⊕ l) (l ⊕ l) R := Lx * M with M'_def
   have h_fromBlocks2_in : fromBlocks (A + X * C) (B + X * D) C D ∈ symplecticGroup l R := by
     rw [← Lx_mul, ← hM_blocks, ← M'_def]
     refine (symplecticGroup l R).mul_mem ?_ hM
-    rw [SymplecticGroup.mem_iff, fromBlocks_transpose, hX_symm, Lx_def]
-    simp only [J, fromBlocks_multiply, mul_zero, mul_one, zero_add, mul_neg, add_zero, neg_zero,
-      transpose_one, transpose_zero, neg_mul, one_mul, add_neg_cancel, zero_mul]
+    simp [mem_iff, fromBlocks_transpose, hX_symm, Lx_def, J, fromBlocks_multiply]
   have _ : Invertible (A + X * C) := (A + X * C).invertibleOfIsUnitDet hA_isUnit
   have h_main : M'.det = 1 := by
     rw [M'_def, hM_blocks, Lx_mul, det_one_if_fromBlocks_invertible h_fromBlocks2_in]
