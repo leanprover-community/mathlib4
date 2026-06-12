@@ -150,6 +150,45 @@ jobs:
           # Don't leave the GITHUB_TOKEN in pr-branch/.git/config, where that code could read it.
           persist-credentials: false
 
+      # TEMPORARY (cache storage-layout migration, PR #40035): remove once
+      # active branches have merged the new cache tool.
+      # CI writes the new container layout via the master-built cache binary,
+      # but a PR branch that predates the migration ships the old cache tool locally,
+      # so `lake exe cache get` on the contributor's machine reads the old layout and misses
+      # its own branch's freshly-built artifacts.
+      # Hard-fail here (same style as the `lake lint` predates-config gate below in 'lint mathlib')
+      #  and tell the author to merge master, which swaps in the new binary.
+      # The marker is `Cache/Infra.lean`, a module that only exists post-migration (it replaced `Cache/Init.lean`).
+      #
+      # TODO: Remove this check eventually. Note that there is no 'correctness' issue if we don't check this:
+      #       it's just that locally, the user will not get the artifacts this run has produced (also meaning the upload is 'waste').
+      - name: check cache tool is post-migration
+        # Canonical repo only. This nudge targets human fork-PR / dev-branch
+        # contributors who run `lake exe cache get` locally. The nightly-testing
+        # repo's branches (nightly-testing, bump/*, lean-pr-testing-*) are
+        # machine-managed and don't merge master the same way, so "merge master
+        # and push" is the wrong remedy there; never fail their CI on it.
+        if: github.repository == 'leanprover-community/mathlib4'
+        shell: bash
+        run: |
+          if [ ! -f pr-branch/Cache/Infra.lean ]; then
+            echo "::error title=Outdated cache tool::Your branch predates the cache storage-layout migration; merge master so 'lake exe cache get' can read your branch's artifacts."
+            echo ""
+            echo "=============================================================================="
+            echo "ERROR: Your branch predates the cache storage-layout migration (PR #40035)."
+            echo "Its 'lake exe cache' tool uses outdated infrastructure, so it will miss the"
+            echo "artifacts CI builds for your branch and rebuild them locally instead."
+            echo "Please merge 'master' into your PR branch and push again."
+            echo ""
+            echo "You can do this with:"
+            echo "  git fetch upstream"
+            echo "  git merge upstream/master"
+            echo "  git push"
+            echo "=============================================================================="
+            echo ""
+            exit 1
+          fi
+
       - name: Prepare DownstreamTest directory
         shell: bash
         run: |
