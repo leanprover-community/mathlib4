@@ -12,6 +12,11 @@ public import Mathlib.Data.FunLike.IsApply
 
 /-!
 # Relation isomorphisms form a group
+
+## TODO
+
++ rename the `mul_def`/`one_def lemmas to `mul_eq_comp`/`one_eq_id`.
++ use the `IsMulApplyEqComp` and `IsOneApplyEqSelf` classes for `RelHom` and `RelIso`.
 -/
 
 @[expose] public section
