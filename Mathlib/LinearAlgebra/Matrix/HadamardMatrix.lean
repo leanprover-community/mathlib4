@@ -121,22 +121,23 @@ theorem IsHadamard.neg_iff : (-A).IsHadamard ↔ A.IsHadamard :=
 end Ring
 
 section CommSemiring
-variable [CommSemiring R] [StarRing R] [TrivialStar R] [IsCancelMulZero R] {A : Matrix n n R}
+variable [CommSemiring R] [StarRing R] [TrivialStar R] {A : Matrix n n R}
 
 /-- A Hadamard matrix with constant row sum `s` has order `s ^ 2`, provided the order is
-nonzero in `R` and the star is trivial.
+regular in `R` and the star is trivial.
 
 This is a slightly stronger form of [Theorem 2.3.7][deLauneyFlannery2011]:
 only a constant row-sum hypothesis is needed under the two-sided orthogonality condition. -/
 theorem IsHadamard.card_eq_sq_of_const_row_sum {s : R}
-    (hA : A.IsHadamard) (hcard : (Fintype.card n : R) ≠ 0)
+    (hA : A.IsHadamard) (hcard : IsRegular (Fintype.card n : R))
     (hrow : ∀ i, ∑ j, A i j = s) : (Fintype.card n : R) = s ^ 2 := by
   have hAtA : Aᵀ * A = (Fintype.card n : R) • (1 : Matrix n n R) := by
     simpa [conjTranspose_eq_transpose_of_trivial] using hA.2.2
   have hL : (A *ᵥ 1) ⬝ᵥ (A *ᵥ 1) = (Fintype.card n : R) ^ 2 := by
     rw [dotProduct_mulVec, vecMul_mulVec, hAtA, vecMul_smul]
     simp [dotProduct, pow_two]
-  exact mul_left_cancel₀ hcard <| by
+  exact hcard.left <| show (Fintype.card n : R) * (Fintype.card n : R) =
+      (Fintype.card n : R) * s ^ 2 by
     simpa [Matrix.mulVec, dotProduct, hrow, pow_two, mul_comm, mul_assoc] using hL.symm
 
 end CommSemiring
@@ -149,6 +150,11 @@ theorem IsHadamard.det_mul_star_det (hA : A.IsHadamard) :
     A.det * star A.det = (Fintype.card n : R) ^ Fintype.card n := by
   have := congr_arg det hA.mul_conjTranspose
   rwa [det_mul, det_conjTranspose, det_smul, det_one, mul_one] at this
+
+/-- The Hadamard determinant identity: `star (det A) * det A = (card n)^(card n)`. -/
+theorem IsHadamard.star_det_mul_det (hA : A.IsHadamard) :
+    star A.det * A.det = (Fintype.card n : R) ^ Fintype.card n := by
+  rw [mul_comm, hA.det_mul_star_det]
 
 /-- A Hadamard matrix over a reduced commutative ring has nonzero determinant, provided the order
 is nonzero in `R`. -/
