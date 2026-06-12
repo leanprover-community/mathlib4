@@ -407,7 +407,6 @@ set_option backward.isDefEq.respectTransparency false in
 open StrongDual in
 /-- The extension `StrongDual.extendRCLike` as a continuous linear equivalence between
 the weak duals. -/
-@[simps toLinearEquiv]
 noncomputable def extendRCLikeL : WeakDual ℝ F ≃L[ℝ] WeakDual 𝕜 F where
   toLinearEquiv := toStrongDual ≪≫ₗ extendRCLikeₗ ≪≫ₗ toWeakDual.restrictScalars ℝ
   continuous_toFun := WeakBilin.continuous_of_continuous_eval_re _ fun x ↦ by
@@ -415,12 +414,19 @@ noncomputable def extendRCLikeL : WeakDual ℝ F ≃L[ℝ] WeakDual 𝕜 F where
   continuous_invFun :=
     continuous_of_continuous_eval fun x ↦ RCLike.continuous_re.comp (eval_continuous x)
 
+set_option backward.isDefEq.respectTransparency false in
+open StrongDual in
+lemma toLinearEquiv_extendRCLikeL :
+    (extendRCLikeL (𝕜 := 𝕜) (F := F)).toLinearEquiv =
+      toStrongDual ≪≫ₗ extendRCLikeₗ ≪≫ₗ toWeakDual.restrictScalars ℝ := by
+  rfl
+
 lemma extendRCLikeL_apply_apply (f : WeakDual ℝ F) (x : F) :
     extendRCLikeL (𝕜 := 𝕜) f x = f x - (I : 𝕜) • f ((I : 𝕜) • x) :=
   (toStrongDual f).extendRCLike_apply x
 
 lemma extendRCLikeL_symm_apply_apply (f : WeakDual 𝕜 F) (x : F) :
-    extendRCLikeL.symm f x = re (f x) := by
+    extendRCLikeL.symm f x = re (f x) :=
   rfl
 
 @[simp high]

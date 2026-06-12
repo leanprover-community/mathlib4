@@ -23,7 +23,7 @@ namespace StrongDual
 
 /-- The extension `StrongDual.extendRCLike` as a continuous linear equivalence between
 the strong duals when scalar multiplication (by `𝕜`) is jointly continuous. -/
-@[expose, simps! -isSimp toLinearEquiv apply symm_apply]
+@[expose, simps! -isSimp apply symm_apply]
 noncomputable def extendRCLikeL {𝕜 F : Type*} [RCLike 𝕜] [TopologicalSpace F]
     [AddCommGroup F] [Module 𝕜 F] [ContinuousSMul 𝕜 F] [Module ℝ F] [IsScalarTower ℝ 𝕜 F] :
     StrongDual ℝ F ≃L[ℝ] StrongDual 𝕜 F where
@@ -37,7 +37,11 @@ noncomputable def extendRCLikeL {𝕜 F : Type*} [RCLike 𝕜] [TopologicalSpace
   continuous_invFun := reCLM.postcomp F |>.continuous.comp <|
     (ContinuousLinearMap.isEmbedding_restrictScalars ℝ).continuous
 
-attribute [simp] extendRCLikeL_toLinearEquiv
+@[simp]
+lemma toLinearEquiv_extendRCLikeL {𝕜 F : Type*} [RCLike 𝕜] [TopologicalSpace F]
+    [AddCommGroup F] [Module 𝕜 F] [ContinuousSMul 𝕜 F] [Module ℝ F] [IsScalarTower ℝ 𝕜 F] :
+    (extendRCLikeL (𝕜 := 𝕜) (F := F)).toLinearEquiv = extendRCLikeₗ :=
+  rfl
 
 variable {𝕜 F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable [NormedSpace ℝ F] [IsScalarTower ℝ 𝕜 F]
@@ -66,12 +70,15 @@ theorem norm_extendRCLike (fr : StrongDual ℝ F) : ‖(fr.extendRCLike : Strong
         _ ≤ ‖(fr.extendRCLike : StrongDual 𝕜 F)‖ * ‖x‖ := le_opNorm _ _
 
 /-- `StrongDual.extendRCLike` bundled into a linear isometry equivalence. -/
-@[expose, simps! -isSimp toLinearEquiv apply symm_apply]
+@[expose, simps! -isSimp apply symm_apply]
 noncomputable def extendRCLikeₗᵢ : StrongDual ℝ F ≃ₗᵢ[ℝ] StrongDual 𝕜 F where
   toLinearEquiv := StrongDual.extendRCLikeₗ
   norm_map' := norm_extendRCLike
 
-attribute [simp] extendRCLikeₗᵢ_toLinearEquiv
+@[simp]
+lemma toLinearEquiv_extendRCLikeₗᵢ :
+    (extendRCLikeₗᵢ (𝕜 := 𝕜) (F := F)).toLinearEquiv = extendRCLikeₗ :=
+  rfl
 
 @[simp]
 lemma toContinuousLinearEquiv_extendRCLikeₗᵢ :
