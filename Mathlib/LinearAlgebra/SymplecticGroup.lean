@@ -350,7 +350,8 @@ private lemma exists_symmetric_X_isUnit_det_add_mul_of_symplectic [IsLocalRing R
     exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot h_rank <| by
       change f.mapMatrix Aᵀ * f.mapMatrix C = f.mapMatrix Cᵀ * f.mapMatrix A
       rw [← map_mul, (fromBlocks_mem_iff.1 hA).1, map_mul]
-  obtain ⟨X, hX_symm, hX_lift⟩ := IsSymm.lift IsLocalRing.residue_surjective hXbar_symm
+  obtain ⟨X, hX_symm, hX_lift⟩ := IsSymm.exists_map_eq_of_surjective
+    IsLocalRing.residue_surjective hXbar_symm
   refine ⟨X, hX_symm, (IsLocalRing.residue_ne_zero_iff_isUnit _).1 ?_⟩
   rw [RingHom.map_det, map_add, map_mul, RingHom.mapMatrix_apply _ X, hX_lift]
   exact hXbar_det.ne_zero
