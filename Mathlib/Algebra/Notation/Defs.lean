@@ -79,11 +79,11 @@ variable {G : Type*}
 section Comp
 
 /-- Type class for the `∘ᶠ` notation. -/
-class Comp (α : Type u) (β : Type v) (γ : outParam (Type w)) where
+class FComp (α : Type u) (β : Type v) (γ : outParam (Type w)) where
   /-- `a ∘ᶠ b` is the composition of `a` and `b`. The meaning of this notation is type-dependent. -/
-  comp : α → β → γ
+  protected comp : α → β → γ
 
-@[inherit_doc] infixr:65 " ∘ᶠ " => Comp.comp
+@[inherit_doc] infixr:65 " ∘ᶠ " => FComp.comp
 
 end Comp
 
