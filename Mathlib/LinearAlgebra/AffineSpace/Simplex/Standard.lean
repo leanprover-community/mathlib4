@@ -8,6 +8,7 @@ module
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 public import Mathlib.LinearAlgebra.StdBasis
+public import Mathlib.Analysis.Convex.stdSimplex
 
 /-!
 # Standard simplices
@@ -125,7 +126,7 @@ open Affine Affine.Simplex
 /-- The simplex in `Fin n → k` whose vertices are `0` and the standard basis vectors. -/
 def stdSimplex : Simplex k (Fin n → k) n := mkOfBasis <| Pi.basisFun k (Fin n)
 
-namespace Simplex
+namespace stdSimplex
 
 /-- The points of `stdSimplex` at successor indices are the standard basis vectors. -/
 lemma points_succ (i : Fin n) :
@@ -150,7 +151,30 @@ lemma closedInterior_eq [PartialOrder k] [IsOrderedRing k] :
     fun i h => Finset.single_le_sum (fun j _ => h j) (Finset.mem_univ i)
   grind [Finset.sum_nonneg, sub_nonneg, sub_le_self]
 
-end Simplex
+/-- The vertices of the face of `Affine.stdSimplex` opposite the vertex `0` are the standard
+basis vectors. -/
+lemma range_faceOpposite_zero_points [NeZero n] : Set.range ((stdSimplex n ℝ).faceOpposite 0).points
+    = Set.range (fun i : Fin n => Pi.single i (1 : ℝ)) := by
+  rw [range_faceOpposite_points]
+  ext x
+  simp only [Set.mem_image, Set.mem_compl_iff, Set.mem_singleton_iff, Set.mem_range]
+  constructor
+  · rintro ⟨i, hi, rfl⟩
+    obtain ⟨j, rfl⟩ := Fin.exists_succ_eq.mpr hi
+    rw [points_succ]
+    exact ⟨j, rfl⟩
+  · rintro ⟨j, rfl⟩
+    refine ⟨j.succ, Fin.succ_ne_zero j, ?_⟩
+    rw [points_succ]
+
+/-- The closed interior of the face of `Affine.stdSimplex` opposite the vertex `0` is the
+standard simplex `stdSimplex ℝ (Fin n)`. -/
+lemma faceOpposite_zero_eq_stdSimplex [NeZero n] :
+    ((Affine.stdSimplex n ℝ).faceOpposite 0).closedInterior = _root_.stdSimplex ℝ (Fin n) := by
+  rw [← convexHull_eq_closedInterior, range_faceOpposite_zero_points]
+  exact convexHull_rangle_single_eq_stdSimplex ℝ (Fin n)
+
+end stdSimplex
 
 end Affine
 
