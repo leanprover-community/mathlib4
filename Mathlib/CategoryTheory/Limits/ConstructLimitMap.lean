@@ -96,6 +96,11 @@ lemma isCofiltered_costructuredArrow (i' : I') :
       ((Under.w s).trans (Under.w s').symm)
     exact ⟨j, t, by ext; simpa using ht⟩
 
+include hc in
+lemma initial_snd : (Comma.snd (left c) (right c' f)).Initial := by
+  have := isCofiltered_costructuredArrow hc f
+  exact Comma.initial_snd_of_isCofiltered_costructuredArrow _ _
+
 variable [IsCofiltered I']
 
 include hc in
@@ -107,11 +112,6 @@ include hc in
 lemma initial_fst : (Comma.fst (left c) (right c' f)).Initial := by
   have := isCofiltered_costructuredArrow hc f
   exact Comma.initial_fst_of_isCofiltered_costructuredArrow _ _
-
-include hc in
-lemma initial_snd : (Comma.snd (left c) (right c' f)).Initial := by
-  have := isCofiltered_costructuredArrow hc f
-  exact Comma.initial_snd_of_isCofiltered_costructuredArrow _ _
 
 end ConstructLimitMap
 
@@ -185,17 +185,17 @@ lemma isFiltered_structuredArrow (i : I) :
       ((Over.w s).trans (Over.w s').symm)
     exact ⟨j, t, by ext; simpa using ht⟩
 
+include hc' in
+lemma final_fst : (Comma.fst (left c f) (right c')).Final := by
+  have := isFiltered_structuredArrow hc' f
+  exact Comma.final_fst_of_isFiltered_structuredArrow _ _
+
 variable [IsFiltered I]
 
 include hc' in
 lemma isFiltered : IsFiltered (Comma (left c f) (right c')) := by
   have := isFiltered_structuredArrow hc' f
   exact Comma.isFiltered_of_isFiltered_structuredArrow _ _
-
-include hc' in
-lemma final_fst : (Comma.fst (left c f) (right c')).Final := by
-  have := isFiltered_structuredArrow hc' f
-  exact Comma.final_fst_of_isFiltered_structuredArrow _ _
 
 include hc' in
 lemma final_snd : (Comma.snd (left c f) (right c')).Final := by

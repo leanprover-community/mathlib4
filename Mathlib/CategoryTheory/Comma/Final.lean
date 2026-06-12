@@ -30,7 +30,7 @@ and `A` and `B` are filtered.
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Lemma 3.4.3 -- 3.4.5
 -/
 
-public section
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
@@ -155,6 +155,45 @@ lemma exists_eq_of_isCofiltered_costructuredArrow {b : B}
     (CostructuredArrow.mk s₁) (CostructuredArrow.mk s₂)
   exact ⟨W.left, p₁.left, p₂.left, (CostructuredArrow.w p₁).trans (CostructuredArrow.w p₂).symm⟩
 
+set_option backward.defeqAttrib.useBackward true in
+/-- The functor from the costructured arrow category on `snd L R` over `b : B` to the
+costructured arrow category on `L` over `R.obj b`. It is left adjoint to
+`costructuredArrowSndInclusion`, see `costructuredArrowSndAdjunction`. -/
+@[simps]
+def costructuredArrowSndProj (b : B) :
+    CostructuredArrow (snd L R) b ⥤ CostructuredArrow L (R.obj b) where
+  obj X := CostructuredArrow.mk (X.left.hom ≫ R.map X.hom)
+  map f := CostructuredArrow.homMk f.left.left (by
+    have h := CostructuredArrow.w f
+    dsimp at h ⊢
+    rw [reassoc_of% f.left.w, ← R.map_comp, h])
+
+set_option backward.defeqAttrib.useBackward true in
+/-- The functor from the costructured arrow category on `L` over `R.obj b` to the costructured
+arrow category on `snd L R` over `b : B`, exhibiting the former as a reflective subcategory of
+the latter, see `costructuredArrowSndAdjunction`. -/
+@[simps]
+def costructuredArrowSndInclusion (b : B) :
+    CostructuredArrow L (R.obj b) ⥤ CostructuredArrow (snd L R) b where
+  obj X := ⟨⟨X.left, b, X.hom⟩, ⟨⟨⟩⟩, 𝟙 b⟩
+  map f := CostructuredArrow.homMk ⟨f.left, 𝟙 b, by simp⟩ (by simp)
+
+set_option backward.defeqAttrib.useBackward true in
+/-- The functor `costructuredArrowSndProj` is left adjoint to
+`costructuredArrowSndInclusion`. -/
+@[simps]
+def costructuredArrowSndAdjunction (b : B) :
+    costructuredArrowSndProj L R b ⊣ costructuredArrowSndInclusion L R b where
+  unit :=
+    { app X := CostructuredArrow.homMk ⟨𝟙 X.left.left, X.hom, by simp⟩ (by simp)
+      naturality _ _ f := by
+        ext
+        · simp
+        · simpa using CostructuredArrow.w f }
+  counit := { app X := CostructuredArrow.homMk (𝟙 X.left) (by simp) }
+  left_triangle_components X := by ext; simp
+  right_triangle_components Y := by ext <;> simp
+
 set_option backward.isDefEq.respectTransparency false in
 lemma isCofiltered_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofiltered B]
     [∀ b, IsCofiltered (CostructuredArrow L (R.obj b))] : IsCofiltered (Comma L R) := by
@@ -205,21 +244,12 @@ lemma initial_fst_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofilter
   · exact ⟨⟨_, A'.right, L.map (IsCofiltered.eqHom s s') ≫ A'.hom⟩,
       ⟨IsCofiltered.eqHom s s', 𝟙 A'.right, by simp⟩, IsCofiltered.eq_condition s s'⟩
 
-set_option backward.isDefEq.respectTransparency false in
-lemma initial_snd_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofiltered B]
-    [∀ b, IsCofiltered (CostructuredArrow L (R.obj b))] : (snd L R).Initial := by
-  have := isCofiltered_of_isCofiltered_costructuredArrow L R
-  rw [Functor.initial_iff_of_isCofiltered]
-  refine ⟨fun b ↦ ?_, fun {b} A' s s' ↦ ?_⟩
-  · obtain ⟨X⟩ : Nonempty (CostructuredArrow L (R.obj b)) := IsCofiltered.nonempty
-    exact ⟨⟨X.left, b, X.hom⟩, ⟨𝟙 b⟩⟩
-  · obtain ⟨Q⟩ : Nonempty (CostructuredArrow L (R.obj (IsCofiltered.eq s s'))) :=
-      IsCofiltered.nonempty
-    obtain ⟨ib, vb₁, vb₂, heqb⟩ := exists_eq_of_isCofiltered_costructuredArrow L R
-      (Q.hom ≫ R.map (IsCofiltered.eqHom s s')) A'.hom
-    refine ⟨⟨ib, IsCofiltered.eq s s', L.map vb₁ ≫ Q.hom⟩,
-      ⟨vb₂, IsCofiltered.eqHom s s', by simp [heqb]⟩, ?_⟩
-    simpa using IsCofiltered.eq_condition s s'
+lemma initial_snd_of_isCofiltered_costructuredArrow
+    [∀ b, IsCofiltered (CostructuredArrow L (R.obj b))] : (snd L R).Initial where
+  out b := by
+    have := final_of_adjunction (costructuredArrowSndAdjunction L R b)
+    rw [← isConnected_iff_of_final (costructuredArrowSndInclusion L R b)]
+    exact IsCofiltered.isConnected _
 
 lemma isFiltered_of_isFiltered_structuredArrow [IsFiltered A] [IsFiltered B]
     [∀ a, IsFiltered (StructuredArrow (L.obj a) R)] : IsFiltered (Comma L R) := by
@@ -228,7 +258,7 @@ lemma isFiltered_of_isFiltered_structuredArrow [IsFiltered A] [IsFiltered B]
   have : IsCofiltered (Comma R.op L.op) := isCofiltered_of_isCofiltered_costructuredArrow _ _
   exact IsFiltered.of_equivalence (opEquiv L R).symm
 
-lemma final_fst_of_isFiltered_structuredArrow [IsFiltered A] [IsFiltered B]
+lemma final_fst_of_isFiltered_structuredArrow
     [∀ a, IsFiltered (StructuredArrow (L.obj a) R)] : (fst L R).Final := by
   have (a : Aᵒᵖ) : IsCofiltered (CostructuredArrow R.op (L.op.obj a)) :=
     IsCofiltered.of_equivalence (structuredArrowOpEquivalence R (L.obj a.unop))
