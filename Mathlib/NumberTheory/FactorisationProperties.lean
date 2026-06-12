@@ -77,6 +77,12 @@ deriving Decidable
 /-- `abundancyIndex n` is the sum of the divisors of `n` divided by `n`. -/
 def abundancyIndex (n : ℕ) : ℚ := (∑ i ∈ n.divisors, i) / (n : ℚ)
 
+lemma Abundant.pos (h : Abundant n) : 0 < n := by
+  grind [Abundant, Nat.properDivisors_zero]
+
+lemma Weird.pos (h : Weird n) : 0 < n :=
+  h.1.pos
+
 theorem not_pseudoperfect_iff_forall :
     ¬ Pseudoperfect n ↔ n = 0 ∨ ∀ s ⊆ properDivisors n, ∑ i ∈ s, i ≠ n := by
   grind [Pseudoperfect]
