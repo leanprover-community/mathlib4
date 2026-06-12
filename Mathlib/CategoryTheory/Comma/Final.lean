@@ -71,15 +71,12 @@ set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def costructuredArrowSndAdjunction (b : B) :
     costructuredArrowSndProj L R b ⊣ costructuredArrowSndInclusion L R b where
-  unit :=
-    { app X := CostructuredArrow.homMk ⟨𝟙 X.left.left, X.hom, by simp⟩ (by simp)
-      naturality _ _ f := by
-        ext
-        · simp
-        · simpa using CostructuredArrow.w f }
-  counit := { app X := CostructuredArrow.homMk (𝟙 X.left) (by simp) }
-  left_triangle_components X := by ext; simp
-  right_triangle_components Y := by ext <;> simp
+  unit.app X := CostructuredArrow.homMk ⟨𝟙 X.left.left, X.hom, by simp⟩ (by simp)
+  unit.naturality _ _ f := by
+    ext
+    · simp
+    · simpa using CostructuredArrow.w f
+  counit.app X := CostructuredArrow.homMk (𝟙 X.left) (by simp)
 
 section Relative
 
@@ -178,8 +175,6 @@ lemma final_snd_of_isFiltered_structuredArrow [IsFiltered A] [IsFiltered B]
 
 end Relative
 
-section NonSmall
-
 instance initial_snd [L.Initial] : (snd L R).Initial :=
   initial_snd_of_isConnected_costructuredArrow L R
 
@@ -195,8 +190,6 @@ instance isConnected_comma_of_final [IsConnected A] [R.Final] : IsConnected (Com
 connected. -/
 instance isConnected_comma_of_initial [IsConnected B] [L.Initial] : IsConnected (Comma L R) := by
   rwa [isConnected_iff_of_initial (snd L R)]
-
-end NonSmall
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Let the following diagram commute up to isomorphism:
