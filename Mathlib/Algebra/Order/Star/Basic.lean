@@ -480,6 +480,7 @@ theorem mem_Icc (hp : IsStarProjection p) : p ∈ Set.Icc (0 : R) 1 := by
 end Ring
 
 section NonUnitalRing
+variable {F E : Type*}
 variable [NonUnitalRing R] [PartialOrder R] [StarRing R] [StarOrderedRing R] {p q : R}
 
 /-- A star projection `p` is less than or equal to a star projection `q` when `p * q = p`. -/
@@ -489,6 +490,18 @@ theorem le_of_mul_eq_left (hp : IsStarProjection p) (hq : IsStarProjection q)
 /-- A star projection `p` is less than or equal to a star projection `q` when `q * p = p`. -/
 theorem le_of_mul_eq_right (hp : IsStarProjection p) (hq : IsStarProjection q)
     (hpq : q * p = p) : p ≤ q := sub_nonneg.mp (hp.sub_of_mul_eq_right hq hpq).nonneg
+
+@[aesop safe apply (rule_sets := [CStarAlgebra])]
+lemma IsSelfAdjoint.map' [AddCommGroup E] [PartialOrder E] [StarAddMonoid E]
+    [SelfAdjointDecompose E] [FunLike F E R] [OrderHomClass F E R] [AddMonoidHomClass F E R]
+    (f : F) {a : E} (ha : IsSelfAdjoint a) :
+    IsSelfAdjoint (f a) := by
+  obtain ⟨b, c, hb, hc, rfl⟩ := ha.exists_nonneg_sub_nonpos
+  have h₁ := OrderHomClass.mono f hb
+  have h₂ := OrderHomClass.mono f hc
+  cfc_tac
+
+@[deprecated (since := "2026-06-12")] alias map_isSelfAdjoint := IsSelfAdjoint.map'
 
 end NonUnitalRing
 

@@ -31,31 +31,16 @@ open scoped NNReal
 
 variable {A₁ A₂ B₁ B₂ : Type*}
 
-section CFC
-
-variable {R E₁ E₂ : Type*} [Semiring R] [AddCommGroup E₁] [PartialOrder E₁]
-    [Star E₁] [Module R E₁] [SelfAdjointDecompose E₁]
-    [NonUnitalRing E₂] [PartialOrder E₂] [StarRing E₂] [StarOrderedRing E₂] [Module R E₂]
-
-@[aesop safe apply (rule_sets := [CStarAlgebra])]
-lemma map_isSelfAdjoint (f : E₁ →ₚ[R] E₂) {a : E₁} (ha : IsSelfAdjoint a) :
-    IsSelfAdjoint (f a) := by
-  obtain ⟨b, c, hb, hc, rfl⟩ := ha.exists_nonneg_sub_nonpos
-  cfc_tac
-
-end CFC
-
--- should generalize this to morphism classes, and also need to add the
--- `SelfAdjointDecompose` instance for types with a CFC.
-open ComplexStarModule in
-instance [AddCommGroup A₁] [Module ℂ A₁] [PartialOrder A₁] [StarAddMonoid A₁]
-    [SelfAdjointDecompose A₁] [StarModule ℂ A₁] [NonUnitalRing A₂] [Module ℂ A₂] [StarRing A₂]
-    [PartialOrder A₂] [StarOrderedRing A₂] [StarModule ℂ A₂] :
-    StarHomClass (A₁ →ₚ[ℂ] A₂) A₁ A₂ where
+open scoped ComplexStarModule in
+instance {F E₁ E₂ : Type*} [AddCommGroup E₁] [PartialOrder E₁]
+    [StarAddMonoid E₁] [SelfAdjointDecompose E₁] [Module ℂ E₁] [StarModule ℂ E₁]
+    [NonUnitalRing E₂] [PartialOrder E₂] [StarRing E₂]
+    [StarOrderedRing E₂] [Module ℂ E₂] [StarModule ℂ E₂]
+    [FunLike F E₁ E₂] [OrderHomClass F E₁ E₂] [LinearMapClass F ℂ E₁ E₂] :
+    StarHomClass F E₁ E₂ where
   map_star φ x := by
     rw [← realPart_add_I_smul_imaginaryPart x]
-    simp [φ.map_isSelfAdjoint (ℜ x).2, IsSelfAdjoint.star_eq,
-      φ.map_isSelfAdjoint (ℑ x).2]
+    simp [(ℜ x).2.map' φ , IsSelfAdjoint.star_eq, (ℑ x).2.map' φ]
 
 section CStarAlgebra
 
@@ -142,16 +127,6 @@ instance {F : Type*} [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂] [Ord
       obtain ⟨C, h⟩ := exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂)
       exact ⟨C, h⟩
     exact (LinearMap.mkContinuousOfExistsBound (f : A₁ →ₗ[ℂ] A₂) hbound).continuous
-
-instance {F : Type*} [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂] [OrderHomClass F A₁ A₂] :
-    StarHomClass F A₁ A₂ where
-  map_star f a := by
-    obtain ⟨y, hy_nonneg, hy_norm, hy⟩ := CStarAlgebra.exists_sum_four_nonneg a
-    have hy' : ∀ x : Fin 4, star (y x) = y x := fun x => by
-      rw [IsSelfAdjoint.star_eq (hy_nonneg x).isSelfAdjoint]
-    have hy'' : ∀ x : Fin 4, star (f (y x)) = f (y x) := fun x => by
-      rw [IsSelfAdjoint.star_eq (map_nonneg f (hy_nonneg x)).isSelfAdjoint]
-    simp [hy, hy', hy'']
 
 end PositiveLinearMap
 
