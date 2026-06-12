@@ -380,17 +380,16 @@ lemma closure_bot_sup_induction {p : ∀ g ∈ closure s, Prop} (mem : ∀ x hx,
   closure_le (L := L).mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
 lemma closure_eq_latticeClosure (hs1 : ⊥ ∈ s) (hs2 : compl '' s = s) :
-    BooleanSubalgebra.closure s = latticeClosure s := by
-  refine subset_antisymm ?_ ?_
-  · intro t ht
-    induction ht using BooleanSubalgebra.closure_bot_sup_induction with
-    | mem _ hx => apply subset_latticeClosure hx
-    | bot => apply subset_latticeClosure hs1
-    | sup _ _ _ _ hx hy => apply isSublattice_latticeClosure.supClosed hx hy
-    | compl _ _ h =>
-      rw [← compl_image_latticeClosure_eq_of_compl_image_eq_self hs2]
-      exact mem_image_of_mem compl h
-  · exact BooleanSubalgebra.latticeClosure_subset_closure
+    closure s = latticeClosure s := by
+  refine subset_antisymm ?_ latticeClosure_subset_closure
+  intro t ht
+  induction ht using closure_bot_sup_induction with
+  | mem _ hx => apply subset_latticeClosure hx
+  | bot => apply subset_latticeClosure hs1
+  | sup _ _ _ _ hx hy => apply isSublattice_latticeClosure.supClosed hx hy
+  | compl _ _ h =>
+    rw [← compl_image_latticeClosure_eq_of_compl_image_eq_self hs2]
+    exact mem_image_of_mem compl h
 
 section sdiff_sup
 
