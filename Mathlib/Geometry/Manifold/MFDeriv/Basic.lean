@@ -290,8 +290,6 @@ theorem mdifferentiableAt_iff_target_of_mem_source
   rw [← mdifferentiableWithinAt_univ, mdifferentiableWithinAt_iff_target_of_mem_source hy,
     continuousWithinAt_univ, ← mdifferentiableWithinAt_univ]
 
-variable [IsManifold I 1 M] [IsManifold I' 1 M']
-
 theorem mdifferentiableWithinAt_iff_of_mem_maximalAtlas {x : M} (he : e ∈ maximalAtlas I 1 M)
     (he' : e' ∈ maximalAtlas I' 1 M') (hx : x ∈ e.source) (hy : f x ∈ e'.source) :
     MDifferentiableWithinAt I I' f s x ↔
@@ -315,8 +313,8 @@ theorem mdifferentiableWithinAt_iff_image {x : M} (he : e ∈ maximalAtlas I 1 M
 
 /-- One can reformulate smoothness within a set at a point as continuity within this set at this
 point, and smoothness in any chart containing that point. -/
-theorem mdifferentiableWithinAt_iff_of_mem_source {x' : M} {y : M'} (hx : x' ∈ (chartAt H x).source)
-    (hy : f x' ∈ (chartAt H' y).source) :
+theorem mdifferentiableWithinAt_iff_of_mem_source [IsManifold I 1 M] [IsManifold I' 1 M']
+    {x' : M} {y : M'} (hx : x' ∈ (chartAt H x).source) (hy : f x' ∈ (chartAt H' y).source) :
     MDifferentiableWithinAt I I' f s x' ↔
       ContinuousWithinAt f s x' ∧
         DifferentiableWithinAt 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
@@ -327,8 +325,8 @@ theorem mdifferentiableWithinAt_iff_of_mem_source {x' : M} {y : M'} (hx : x' ∈
 /-- One can reformulate smoothness within a set at a point as continuity within this set at this
 point, and smoothness in any chart containing that point. Version requiring differentiability
 in the target instead of `range I`. -/
-theorem mdifferentiableWithinAt_iff_of_mem_source' {x' : M} {y : M'}
-    (hx : x' ∈ (chartAt H x).source) (hy : f x' ∈ (chartAt H' y).source) :
+theorem mdifferentiableWithinAt_iff_of_mem_source' [IsManifold I 1 M] [IsManifold I' 1 M']
+    {x' : M} {y : M'} (hx : x' ∈ (chartAt H x).source) (hy : f x' ∈ (chartAt H' y).source) :
     MDifferentiableWithinAt I I' f s x' ↔
       ContinuousWithinAt f s x' ∧
         DifferentiableWithinAt 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
@@ -344,8 +342,8 @@ theorem mdifferentiableWithinAt_iff_of_mem_source' {x' : M} {y : M'}
     ← map_extChartAt_nhdsWithin' hx, inter_comm, nhdsWithin_inter_of_mem]
   exact hc (extChartAt_source_mem_nhds' hy)
 
-theorem mdifferentiableAt_iff_of_mem_source {x' : M} {y : M'} (hx : x' ∈ (chartAt H x).source)
-    (hy : f x' ∈ (chartAt H' y).source) :
+theorem mdifferentiableAt_iff_of_mem_source [IsManifold I 1 M] [IsManifold I' 1 M']
+    {x' : M} {y : M'} (hx : x' ∈ (chartAt H x).source) (hy : f x' ∈ (chartAt H' y).source) :
     MDifferentiableAt I I' f x' ↔
       ContinuousAt f x' ∧
         DifferentiableWithinAt 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm) (range I)
@@ -369,13 +367,15 @@ theorem mdifferentiableOn_iff_of_mem_maximalAtlas' (he : e ∈ maximalAtlas I 1 
   (mdifferentiableOn_iff_of_mem_maximalAtlas he he' hs h2s).trans <| and_iff_right_of_imp fun h ↦
     (e.continuousOn_writtenInExtend_iff hs h2s).1 h.continuousOn
 
+variable [IsManifold I 1 M] [IsManifold I' 1 M']
+
 /-- If the set where you want `f` to be smooth lies entirely in a single chart, and `f` maps it
 into a single chart, the smoothness of `f` on that set can be expressed by purely looking in
 these charts.
 Note: this lemma uses `extChartAt I x '' s` instead of `(extChartAt I x).symm ⁻¹' s` to ensure
 that this set lies in `(extChartAt I x).target`. -/
-theorem mdifferentiableOn_iff_of_subset_source {x : M} {y : M'} (hs : s ⊆ (chartAt H x).source)
-    (h2s : MapsTo f s (chartAt H' y).source) :
+theorem mdifferentiableOn_iff_of_subset_source
+    {x : M} {y : M'} (hs : s ⊆ (chartAt H x).source) (h2s : MapsTo f s (chartAt H' y).source) :
     MDifferentiableOn I I' f s ↔
       ContinuousOn f s ∧
         DifferentiableOn 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm) (extChartAt I x '' s) :=
@@ -387,7 +387,8 @@ into a single chart, the smoothness of `f` on that set can be expressed by purel
 these charts.
 Note: this lemma uses `extChartAt I x '' s` instead of `(extChartAt I x).symm ⁻¹' s` to ensure
 that this set lies in `(extChartAt I x).target`. -/
-theorem mdifferentiableOn_iff_of_subset_source' {x : M} {y : M'} (hs : s ⊆ (extChartAt I x).source)
+theorem mdifferentiableOn_iff_of_subset_source'
+    {x : M} {y : M'} (hs : s ⊆ (extChartAt I x).source)
     (h2s : MapsTo f s (extChartAt I' y).source) :
     MDifferentiableOn I I' f s ↔
         DifferentiableOn 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm) (extChartAt I x '' s) := by
