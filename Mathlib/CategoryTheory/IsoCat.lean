@@ -169,11 +169,9 @@ instance IsoCat.isIso_functor (e : IsoCat C D) : e.functor.IsIso where
     ⟨e.inverse.obj, fun X => (Functor.congr_obj e.unit_eq X).symm,
       Functor.congr_obj e.counit_eq⟩
 
-instance (e : IsoCat C D) : e.inverse.IsIso :=
-  IsoCat.isIsomorphismFunctor e.symm
+instance (e : IsoCat C D) : e.inverse.IsIso := e.symm.isIso_functor
 
-instance [F.IsIso] : F.strictInv.IsIso :=
-  IsoCat.isIsomorphismFunctor F.asIsomorphism.symm
+instance [F.IsIso] : F.strictInv.IsIso := F.asIsomorphism.symm.isIso_functor
 
 instance [F.IsIso] [G.IsIso] : (F ⋙ G).IsIso :=
   (F.asIsomorphism.trans G.asIsomorphism).isIso_functor
