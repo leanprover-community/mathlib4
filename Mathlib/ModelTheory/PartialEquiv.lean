@@ -575,6 +575,8 @@ theorem equiv_between_cg (M_cg : Structure.CG L M) (N_cg : Structure.CG L N)
   rw [toEquivOfEqTop_toEmbedding]
   apply Embedding.toPartialEquiv_toEmbedding
 
+@[deprecated (since := "2026-06-13")] alias equiv_from_cg := equiv_between_cg
+
 end FGEquiv
 
 end Language
