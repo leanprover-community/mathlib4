@@ -163,11 +163,6 @@ lemma closedBall_mem {l : Filter A} (hl : l.IsIncreasingApproximateUnit) :
     Metric.closedBall 0 1 ∈ l := by
   simpa [Metric.closedBall] using! hl.eventually_norm
 
-omit [StarOrderedRing A] in
-lemma setOf_nonneg_mem {l : Filter A} (hl : l.IsIncreasingApproximateUnit) :
-    {x | 0 ≤ x} ∈ l := by
-  simpa using! hl.eventually_nonneg
-
 lemma pure_one (A : Type*) [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A] :
     (pure 1 : Filter A).IsIncreasingApproximateUnit where
   toIsApproximateUnit := .pure_one A
