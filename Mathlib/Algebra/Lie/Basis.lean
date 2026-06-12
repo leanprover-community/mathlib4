@@ -324,7 +324,7 @@ lemma linearIndependent_baseSupp [IsDomain R] [CharZero R] :
 
 @[simp] lemma baseSupp_apply_smul_f (i : ι) (x : b.cartan) :
     b.baseSupp i x • b.f i = -⁅x, b.f i⁆ := by
-  rw [← neg_eq_iff_eq_neg, ← neg_smul, ← LinearMap.neg_apply]
+  rw [← neg_eq_iff_eq_neg, ← neg_smul, ← neg_apply]
   have := b.symm.baseSupp_apply_smul_e i x
   simp only [symm_baseSupp, Pi.neg_apply, symm_e] at this
   exact this
@@ -413,8 +413,8 @@ lemma iSupIndep_rootSpace :
       exact (this _ hg).symm
     intro g hg contra
     obtain ⟨n, hn, rfl⟩ : ∃ n : ι → ℕ, n ≠ 0 ∧ g = -∑ i, n i • b.baseSupp i := by
-      simpa [hsU] using hg
-    rw [neg_eq_zero, LinearMap.coe_zero_iff] at contra
+      simpa [hsU, FunLike.coe_neg] using hg
+    rw [neg_eq_zero, FunLike.coe_zero_iff] at contra
     have := Fintype.linearIndependent_iff.mp b.linearIndependent_baseSupp ((↑) ∘ n)
       (by simpa [Nat.cast_smul_eq_nsmul])
     exact hn <| funext fun i ↦ by simpa using this i
@@ -426,7 +426,7 @@ lemma iSupIndep_rootSpace :
     intro g hg contra
     obtain ⟨n, hn, rfl⟩ : ∃ n : ι → ℕ, n ≠ 0 ∧ g = ∑ i, n i • b.baseSupp i := by
       simpa [hsV] using hg
-    rw [LinearMap.coe_zero_iff] at contra
+    rw [FunLike.coe_zero_iff] at contra
     have := Fintype.linearIndependent_iff.mp b.linearIndependent_baseSupp ((↑) ∘ n)
       (by simpa [Nat.cast_smul_eq_nsmul])
     exact hn <| funext fun i ↦ by simpa using this i
@@ -434,13 +434,13 @@ lemma iSupIndep_rootSpace :
     refine Set.disjoint_iff_forall_ne.mpr fun f hf g hg ↦ ?_
     rintro rfl
     obtain ⟨n, hn, hn'⟩ : ∃ n : ι → ℕ, n ≠ 0 ∧ f = -∑ i, n i • b.baseSupp i := by
-      simpa [hsU] using hf
+      simpa [hsU, FunLike.coe_neg] using hf
     obtain ⟨m, hm, rfl⟩ : ∃ m : ι → ℕ, m ≠ 0 ∧ f = ∑ i, m i • b.baseSupp i := by
       simpa [hsV] using hg
     replace hn' : ∑ i, (((↑) : ℕ → R) ∘ (m + n)) i • b.baseSupp i = 0 := by
       rw [eq_neg_iff_add_eq_zero] at hn'
       change ⇑(∑ i, m i • b.baseSupp i + ∑ i, n i • b.baseSupp i) = 0 at hn'
-      simp_rw [LinearMap.coe_zero_iff, ← Finset.sum_add_distrib, ← add_smul, ← Pi.add_apply,
+      simp_rw [FunLike.coe_zero_iff, ← Finset.sum_add_distrib, ← add_smul, ← Pi.add_apply,
         ← Nat.cast_smul_eq_nsmul R] at hn'
       exact hn'
     have := Fintype.linearIndependent_iff.mp b.linearIndependent_baseSupp ((↑) ∘ (m + n)) hn'
@@ -519,7 +519,13 @@ lemma root_mem_or_mem_neg (χ : b.cartan.root) :
     have := b.iSup_cartan_borelLower_borelUpper_eq_top
     rw [borelLower_eq, borelUpper_eq, cartan_eq] at this
     rw [iSup_union, iSup_union]
-    simpa [iSup_and, iSup_comm (ι := b.cartan → K)] using this
+    push_cast
+    simp only [mem_singleton_iff, iSup_iSup_eq_left, rootSpace_zero_eq, ne_eq, nsmul_eq_mul,
+      mem_setOf_eq, iSup_exists, iSup_and, iSup_comm (ι := b.cartan → K)]
+    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, rootSpace_zero_eq, ne_eq, Pi.neg_apply,
+      FunLike.coe_neg, smul_neg, nsmul_eq_mul, Finset.sum_neg_distrib, iSup_fin_three, Fin.isValue,
+      cons_val_zero, cons_val_one, cons_val] at this
+    exact this
   obtain ⟨χ, hχ⟩ := χ
   change χ.toLinear ∈ _ ∨ -χ.toLinear ∈ _
   replace hs : ⇑χ ∈ s :=
@@ -529,7 +535,7 @@ lemma root_mem_or_mem_neg (χ : b.cartan.root) :
     have hχ' : ¬ χ.IsZero := by simpa using hχ
     simp only [hχ', s, singleton_union, mem_union, mem_insert_iff, Weight.coe_eq_zero_iff,
       mem_setOf_eq, false_or] at hs
-    simpa only [← LinearMap.coe_neg, ← Weight.coe_coe, LinearMap.coe_injective.eq_iff] using hs
+    simpa only [← FunLike.coe_neg, ← Weight.coe_coe, LinearMap.coe_injective.eq_iff] using hs
   refine hs.symm.imp (fun ⟨n, hn₀, hn⟩ ↦ ?_) (fun ⟨n, hn₀, hn⟩ ↦ ?_) <;> simpa [hn] using this n
 
 /-- The distinguished root system base associated to a basis. -/

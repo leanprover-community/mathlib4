@@ -101,7 +101,7 @@ lemma chainsMap_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
 
 @[simp]
 lemma chainsMap_zero : chainsMap f (0 : A ⟶ res f B) = 0 := by
-  ext; simp [chainsMap_f, _root_.zero_apply (M₂ := B)]
+  ext; simp [chainsMap_f]
 
 lemma chainsMap_f_map_mono (hf : Function.Injective f) [Mono φ] (i : ℕ) :
     Mono ((chainsMap f φ).f i) := by

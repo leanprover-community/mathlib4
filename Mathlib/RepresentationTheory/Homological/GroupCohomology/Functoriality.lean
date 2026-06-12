@@ -316,8 +316,10 @@ set_option backward.isDefEq.respectTransparency false in
 theorem mapCocycles₁_one (φ : res 1 A ⟶ B) :
     mapCocycles₁ 1 φ = 0 := by
   rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i, cyclesMap'_i]
-  refine ModuleCat.hom_ext (LinearMap.ext fun _ ↦ funext fun y => ?_)
-  simp [mapShortComplexH1, shortComplexH1, Pi.zero_apply y]
+  refine ModuleCat.hom_ext (LinearMap.ext fun x ↦ funext fun y => ?_)
+  simp [mapShortComplexH1, shortComplexH1]
+  rfl -- Todo: this should be proved by `_root_.zero_apply`
+
 
 @[deprecated (since := "2025-6-09")]
 alias H1Map_id := map_id
