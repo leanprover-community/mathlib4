@@ -158,7 +158,7 @@ instance compactSpace_withConstructibleTopology [CompactSpace X] [QuasiSober X]
     apply this
     rw [Set.inter_comm]
     refine IsCompact.nonempty_inter_sInter ?_ (fun _ hb ↦ hb.2) fun F hsub hF ↦ ?_
-    · apply isCompact_sInter_of_subset_constructibleTopologySubbasis _ (hA₁'.diff.union hA₂'.diff)
+    · apply isCompact_sInter_of_subset_constructibleTopologySubbasis _ (hA₁'.sdiff.union hA₂'.sdiff)
       grind [hB.prop, Set.union_subset_iff]
     · rw [← Set.sInter_union]
       refine hB.prop.2.1 (_ ∪ F) ?_ <| (hA₁'.diff.union hA₂'.diff).union hF
@@ -192,3 +192,5 @@ instance t2Space_withConstructibleTopology₁ [T0Space X]
     (constructibleTopology X) t2Space_constructibleTopology₁ WithTopology.ofTopology
     (WithTopology.ofTopology_injective (constructibleTopology X))
     (WithTopology.continuous_ofTopology (constructibleTopology X))
+      refine hB.prop.2.1 (_ ∪ F) ?_ <| (hA₁'.sdiff.union hA₂'.sdiff).union hF
+      grind [Set.sdiff_singleton_subset_iff, Set.union_subset_iff]
