@@ -54,7 +54,7 @@ def PositiveLinearMap.ofClass (f : F) : E₁ →ₚ[R] E₂ :=
 @[deprecated (since := "2026-06-10")]
 alias PositiveLinearMapClass.toPositiveLinearMap := PositiveLinearMap.ofClass
 
-/-- A a type of additive group homomorphisms that map nonnegative elements to nonnegative elements
+/-- A type of additive group homomorphisms that map nonnegative elements to nonnegative elements
 is also a type of order homomorphisms. -/
 lemma OrderHomClass.of_addMonoidHom {F' E₁' E₂' : Type*} [FunLike F' E₁' E₂'] [AddGroup E₁']
     [LE E₁'] [AddRightMono E₁'] [AddGroup E₂'] [LE E₂'] [AddRightMono E₂']
