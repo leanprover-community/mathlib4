@@ -20,10 +20,6 @@ coordinates with total sum `1`.
 When `f : X → Y` is a map between finite types, we define the map
 `stdSimplex.map f : stdSimplex 𝕜 X → stdSimplex 𝕜 Y`.
 
-We also relate `stdSimplex ℝ (Fin n)` to `Affine.stdSimplex`, the affine simplex in `Fin n → ℝ`
-whose vertices are `0` and the standard basis vectors: the closed interior of the face of
-`Affine.stdSimplex` opposite the vertex `0` is `stdSimplex ℝ (Fin n)`
-(`Affine.Simplex.faceOpposite_zero_eq_stdSimplex`).
 -/
 
 @[expose] public section
