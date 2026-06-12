@@ -996,21 +996,22 @@ end IsManifold
 namespace Homeomorph
 
 variable {N M 𝕜 E H : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [TopologicalSpace H]
-variable [TopologicalSpace N] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
-variable [TopologicalSpace M] [ChartedSpace H M] {n : ℕ∞ω} [IsManifold I n M]
+  [TopologicalSpace N] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} [TopologicalSpace M]
+  [ChartedSpace H M] {n : ℕ∞ω} [IsManifold I n M]
 
-open IsManifold in lemma chartedSpace_trans_mem_maximalAtlas (φ : M ≃ₜ N) :
-    letI := φ.chartedSpace H
-    ∀ e ∈ atlas H N, φ.toOpenPartialHomeomorph.trans e ∈ maximalAtlas I n M := fun e he ↦ by
-  simp only [atlas, ChartedSpace.atlas, mem_setOf_eq] at he
+open IsManifold OpenPartialHomeomorph in lemma chartedSpace_trans_mem_maximalAtlas (φ : M ≃ₜ N)
+    (e : OpenPartialHomeomorph N H) (he : letI := φ.chartedSpace H; e ∈ atlas H N) :
+    φ.transOpenPartialHomeomorph e ∈ maximalAtlas I n M := by
   rcases he with ⟨q, he⟩
-  rw [← he, ← OpenPartialHomeomorph.trans_assoc]
-  exact StructureGroupoid.mem_maximalAtlas_of_eqOnSource
-    (Setoid.trans (OpenPartialHomeomorph.EqOnSource.trans'
-      (φ.toOpenPartialHomeomorph_trans_localInverseAt _)
-      (OpenPartialHomeomorph.eqOnSource_refl _)) (by rw [OpenPartialHomeomorph.ofSet_trans]))
-    <| restr_mem_maximalAtlas _ (IsManifold.chart_mem_maximalAtlas _)
-      <| by simpa using OpenPartialHomeomorph.open_source _
+  rw [← he, transOpenPartialHomeomorph_eq_trans, ← OpenPartialHomeomorph.trans_assoc]
+  -- We use here that the composition of φ with its local inverse at a point is equal to the
+  -- identity (on some open set).
+  refine StructureGroupoid.mem_maximalAtlas_of_eqOnSource (Setoid.trans
+      ((φ.toOpenPartialHomeomorph_trans_localInverseAt _).trans'
+      (OpenPartialHomeomorph.eqOnSource_refl _)) (by rw [ofSet_trans])) ?_
+  -- The composition of a chart with the identity on some open set is equal of the restriction of
+  -- the chart of that set. This restriction of a chart is also a member of the maximal atlas.
+  exact restr_mem_maximalAtlas _ (chart_mem_maximalAtlas _) (by simpa using open_source _)
 
 end Homeomorph
 

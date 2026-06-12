@@ -679,7 +679,7 @@ is a manifold.
 -/
 @[implicit_reducible]
 def Homeomorph.isManifold [IsManifold I n M] (φ : M ≃ₜ N) :
-  letI := φ.chartedSpace H;
+  letI := φ.chartedSpace H
   IsManifold I n N  where
     __ := φ.chartedSpace H
     compatible {e e'} he he' := by

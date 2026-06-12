@@ -320,12 +320,18 @@ lemma injOn_localInverseAt_target : (hf.localInverseAt x).target.InjOn f := by
 end IsLocalHomeomorph
 
 namespace Homeomorph
+open OpenPartialHomeomorph
 
+/--
+This lemma proves that the composition of `φ : OpenPartialHomeomorph` with its
+chosen local inverse `φ.isLocalHomeomorph.localInverseAt` is the identity.
+We have to use `OpenPartialHomemorph.EqOnSource` here because `localInverseAt` uses choice, which
+means that we can't prove anything about its source.
+-/
 lemma toOpenPartialHomeomorph_trans_localInverseAt (φ : X ≃ₜ Y) (m : X) :
-    (φ.toOpenPartialHomeomorph.trans  (φ.isLocalHomeomorph.localInverseAt m)).EqOnSource
-      <| .ofSet (φ ⁻¹' (φ.isLocalHomeomorph.localInverseAt m).source)
-        <| by simpa using OpenPartialHomeomorph.open_source _ := by
-  simpa [OpenPartialHomeomorph.EqOnSource, Set.EqOn, OpenPartialHomeomorph.open_source]
+    (φ.toOpenPartialHomeomorph.trans (φ.isLocalHomeomorph.localInverseAt m)).EqOnSource
+      <| .ofSet (φ ⁻¹' (φ.isLocalHomeomorph.localInverseAt m).source) (by simp [open_source]) := by
+  simpa [EqOnSource, Set.EqOn, open_source]
     using fun _ hx ↦ φ.bijective.injective <| IsLocalHomeomorph.apply_localInverseAt_of_mem _ hx
 
 end Homeomorph
