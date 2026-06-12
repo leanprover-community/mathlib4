@@ -5,11 +5,9 @@ Authors: Michael Rothgang, Samantha Naranjo Guevara
 -/
 module
 
-public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
 public import Mathlib.Analysis.Normed.Module.Shrink
 public import Mathlib.Topology.Algebra.Module.TransferInstance
-public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 
@@ -49,6 +47,8 @@ if there exist charts near `x` and `f x` in which `f` looks like the standard pr
   the set of points where `IsSubmersionAt(OfComplement)` holds is open.
 * `IsSubmersionAt.prodMap` and `IsSubmersion.prodMap`: the product of two submersions (at a point)
   is a submersion (at the product point).
+* `IsSubmersionAt.contMDiffAt`: if f is a submersion at `x`, it is `C^n` at `x`.
+* `IsSubmersion.contMDiff`: if f is a submersion, it is `C^n`.
 
 ## Implementation notes
 
@@ -61,8 +61,6 @@ The implementation strategy is identical to the one for immersions. See the impl
 ## TODO
 * The converse to `IsSubmersionAtOfComplement.congr_F` also holds: any two complements are
   isomorphic, as they are isomorphic to the kernel of the differential `mfderiv I J f x`.
-* `IsSubmersionAt.contMDiffAt`: if f is a submersion at `x`, it is `C^n` at `x`.
-* `IsSubmersion.contMDiff`: if f is a submersion, it is `C^n`.
 * If `f` is a submersion at `x`, its differential `mfderiv I J f x` admits a continuous right
   inverse, in particular is surjective.
 * If `f : M → N` is a map between Banach manifolds, `mfderiv I J f x` having a continuous right
@@ -356,11 +354,8 @@ lemma isSubmersionAt (h : IsSubmersionAtOfComplement F I J n f x) :
   use h.smallComplement, by infer_instance, by infer_instance
   exact (IsSubmersionAtOfComplement.congr_F h.smallEquiv).mp h
 
-/-- A submersion is `C^n` on a neighborhood of the point where it is a submersion.
-
-This lemma is marked private since `h.domChart` is an arbitrary representative:
-`contMDiffAt` is part of the public API -/
-private theorem contMDiffOn (h : IsSubmersionAtOfComplement F I J n f x) :
+/-- Prefer using `IsSubmersionAtOfComplement.contMDiffAt` instead -/
+theorem contMDiffOn (h : IsSubmersionAtOfComplement F I J n f x) :
     ContMDiffOn I J n f h.domChart.source := by
   have mapsto : MapsTo f h.domChart.source h.codChart.source :=
     fun x hx ↦ h.source_subset_preimage_source hx
@@ -525,11 +520,8 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
   hf.isSubmersionAtOfComplement_complement.prodMap hg.isSubmersionAtOfComplement_complement
     |>.isSubmersionAt
 
-/-- A submersion is `C^n` on a neighborhood of the point where it is a submersion.
-
-This lemma is marked private since `h.domChart` is an arbitrary representative:
-`contMDiffAt` is part of the public API -/
-private theorem contMDiffOn (h : IsSubmersionAt I J n f x) :
+/-- Prefer using `IsSubmersionAt.contMDiffAt` instead -/
+theorem contMDiffOn (h : IsSubmersionAt I J n f x) :
     ContMDiffOn I J n f h.domChart.source :=
   h.isSubmersionAtOfComplement_complement.contMDiffOn
 
@@ -621,6 +613,11 @@ protected lemma id [IsManifold I n M] : IsSubmersionOfComplement PUnit I I n (@i
     rw [(chartAt H x).right_inv (by simp_all), I.right_inv (by simp_all)]
   simpa
 
+/-- A `C^k` submersion is `C^k` -/
+theorem contMDiff [IsManifold I n M] [IsManifold J n N]
+    (h : IsSubmersionOfComplement F I J n f) : ContMDiff I J n f :=
+  fun x ↦ (h x).contMDiffAt
+
 end IsSubmersionOfComplement
 
 namespace IsSubmersion
@@ -660,6 +657,11 @@ theorem prodMap {f : M → N} {g : M' → N'}
 protected lemma id [IsManifold I n M] : IsSubmersion I I n (@id M) := by
   use PUnit, by infer_instance, by infer_instance
   exact IsSubmersionOfComplement.id
+
+/-- A `C^k` submersion is `C^k` -/
+theorem contMDiff [IsManifold I n M] [IsManifold J n N]
+    (h : IsSubmersion I J n f) : ContMDiff I J n f :=
+  h.isSubmersionOfComplement_complement.contMDiff
 
 end IsSubmersion
 
