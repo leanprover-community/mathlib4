@@ -255,7 +255,7 @@ theorem Filter.disjoint_cobounded_iff [Bornology α] {l : Filter α} :
     Disjoint l (cobounded α) ↔ ∃ s ∈ l, Bornology.IsBounded s :=
   l.basis_sets.disjoint_cobounded_iff
 
-alias ⟨Bornology.exists_isBounded_of_disjoint, _⟩ := Filter.disjoint_cobounded_iff
+alias ⟨Disjoint.exists_isBounded, _⟩ := Filter.disjoint_cobounded_iff
 
 theorem Bornology.IsBounded.disjoint_cobounded [Bornology α]
     {l : Filter α} {s : Set α} (hs : IsBounded s) (hl : s ∈ l) :
