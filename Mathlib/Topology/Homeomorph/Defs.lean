@@ -41,13 +41,15 @@ variable {X Y W Z : Type*}
 
 universe u v w
 
-structure EquivClass (F : Type u → Type u → Type w) where
-  coe {X : Type u} {Y : Type u} : F X Y → X → Y
-  inv {X : Type u} {Y : Type u} : F X Y → Y → X
-  left_inv {X : Type u} {Y : Type u} : ∀ e : F X Y, Function.LeftInverse (inv e) (coe e)
-  right_inv {X : Type u} {Y : Type u} : ∀ e : F X Y, Function.RightInverse (inv e) (coe e)
-  coe_injective' {X : Type u} {Y : Type u} : ∀ e g : F X Y, coe e = coe g → inv e = inv g → e = g
-  symm {X : Type u} {Y : Type u}  : F X Y → F Y X
+#print EquivLike
+#check EquivLike.coe_symm_apply_apply
+
+structure EquivClass (F : Type u) (A B : outParam (Type w))
+  extends EquivLike F A B, EquivLike F B A where
+  -- fwd : EquivLike F A B
+  -- rwd : EquivLike F B A
+  one : fwd.coe = rwd.inv
+  two : fwd.inv = rwd.coe
 
 /-- Homeomorphism between `X` and `Y`, also called topological isomorphism -/
 structure Homeomorph (X : Type*) (Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
