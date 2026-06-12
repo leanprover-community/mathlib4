@@ -88,7 +88,6 @@ lemma WeightedGraph.Not_Adj_iff_edgeWeight_eq_zero {x y : X} (G : WeightedGraph 
 No vertex is adjacent to itself, so the edge weight of loop (edge that connects a vertex to itself)
 is 0.
 -/
-@[simp]
 lemma WeightedGraph.no_loop {x : X} (G : WeightedGraph X) : G.edgeWeight x x = 0 :=
   (le_of_not_gt (not_imp_not.mpr (G.edgeDef x x).mpr (G.irrefl (v := x)))).ge_iff_eq.mp
   (G.edgeWeight x x).coe_nonneg
@@ -122,11 +121,11 @@ structure StandardWeights (G : WeightedGraphWithKillingTerm X) : Prop where
   killingTerm_zero : G.killingTerm = 0
 
 variable (x y : X)
+
 /--
 If a graph has standard weights, then an edge weight is non-0 if and only if the vertices are
 adjacent.
 -/
-@[simp]
 lemma standardWeights_edgeWeight_neq_zero_iff_eq_one (h : StandardWeights G) :
     G.edgeWeight x y ≠ 0 ↔ G.Adj x y := by
   contrapose
@@ -136,7 +135,6 @@ lemma standardWeights_edgeWeight_neq_zero_iff_eq_one (h : StandardWeights G) :
 If a graph has standard weights, then an edge weight is not equal to 1 if and only if the vertices
 are not adjacent.
 -/
-@[simp]
 lemma standardWeights_edgeWeight_neq_one_iff_eq_zero (h : StandardWeights G) :
     G.edgeWeight x y ≠ 1 ↔ ¬ G.Adj x y := by
   contrapose
@@ -273,7 +271,7 @@ abbrev basisFun (y : X) : X → ℝ := Pi.single y 1
 /-- We use the notation 𝟙_ to write this basis/indicator function more concisely. -/
 scoped notation "𝟙_" y:max => basisFun y
 
-@[simp]
+
 lemma sum_killingTerm_weight_mul_basisFun_sq_eq_killingTerm_mul_basisFun_sq :
     ∑ i, G.killingTerm i * (𝟙_x) i ^ 2 = G.killingTerm x := by
   simp [(Fintype.sum_subset (f := fun (y : X) ↦ G.killingTerm y * (𝟙_x) y ^ 2)
@@ -283,7 +281,6 @@ lemma sum_killingTerm_weight_mul_basisFun_sq_eq_killingTerm_mul_basisFun_sq :
 The form associated to a `WeightedGraphWithKillingTerm` is equal to the degree of a vertex `x`, when
 passed the standard basis function with support at `x`.
 -/
-@[simp]
 lemma associatedForm_of_basis_eq_degree :
     G.associatedForm (𝟙_x) (𝟙_x) = G.degree x := by
   have : DecidableEq X := Classical.typeDecidableEq X
@@ -315,7 +312,7 @@ lemma associatedForm_of_basis_eq_degree :
   congr! with z h'
   grind
 
-@[simp]
+
 lemma neq_basis_vecs_imp_sum_weighted_killingTerm_neq_basisFun_eq_zero (x y : X) (h : x ≠ y) :
     ∑ z, G.killingTerm z * (𝟙_x) z * (𝟙_y) z = 0 := by
   have : DecidableEq X := Classical.typeDecidableEq X
@@ -329,7 +326,6 @@ lemma neq_basis_vecs_imp_sum_weighted_killingTerm_neq_basisFun_eq_zero (x y : X)
 The form associated to a `WeightedGraphWithKillingTerm` is equal to negative the edge weight, when
 passed the standard basis functions with support at each vertex of the edge.
 -/
-@[simp]
 lemma associatedForm_neq_basisFuns_eq_neq_edgeWeight (x y : X) (h : x ≠ y) :
     G.associatedForm (𝟙_x) (𝟙_y) = - G.edgeWeight x y := by
   have : DecidableEq X := Classical.typeDecidableEq X
@@ -382,7 +378,6 @@ lemma associatedForm_neq_basisFuns_eq_neq_edgeWeight (x y : X) (h : x ≠ y) :
 The form associated to a `WeightedGraphWithKillingTerm` is equal to the killing term of a vertex `x`
 when passed the standard basis function with support at x and the constant 1 function.
 -/
-@[simp]
 lemma associatedForm_at_basisVec_eq_killingTerm : G.associatedForm (𝟙_x) 1 = G.killingTerm x := by
   have : DecidableEq X := Classical.typeDecidableEq X
   have : ∑ x_1 ∈ univ \ {x}, ↑(G.killingTerm x_1) * (𝟙_x) x_1 = 0 := by
