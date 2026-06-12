@@ -93,15 +93,32 @@ jobs:
       - name: 'Setup jq'
         uses: dcarbone/install-jq-action@b7ef57d46ece78760b4019dbc4080a1ba2a40b45 # v3.2.0
 
-      # Checkout a trusted branch to build the tooling from
+      # Checkout the trusted source to build the cache tooling from.
+      #
+      # The cache tool is infrastructure (source-hashing + .ltar pack/upload +
+      # container routing), not Lean-version-specific: its hash is toolchain-
+      # stable and it packs oleans as opaque bytes, so it neither needs nor
+      # benefits from being built against the nightly toolchain. We therefore
+      # build it from a single canonical source — `leanprover-community/mathlib4`
+      # at `master` — on BOTH this repo and `mathlib4-nightly-testing`, instead
+      # of from `nightly-testing-green` on the latter. This keeps the cache
+      # backend logic uniform across master and nightly (no skew between the tool
+      # that writes a container and the tool that reads it) and lands future
+      # cache-tool changes everywhere at once. master is itself a stable source,
+      # so the original reason for the green pin — a broken `nightly-testing`
+      # must not break the tooling — still holds.
+      #
+      # Trade-off: when the cache tool changes on master ahead of a nightly
+      # branch, that branch's LOCAL tool lags until it merges master, so a
+      # nightly contributor may see (self-healing) cache misses in that window.
+      # The master-built binary is self-contained and runs under the newer
+      # nightly toolchain. (`tools_branch_ref`, when set, still wins and stays
+      # in-repo.)
       - name: Checkout tools branch
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
-          # Recall that on the `leanprover-community/mathlib4-nightly-testing` repository,
-          # we don't maintain a `master` branch at all.
-          # For PRs and pushes to this repository, we will use `nightly-testing-green` instead,
-          # so that even when `nightly-testing` is broken, we can still build tools from a known good state.
-          ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing-green' || 'master') }}
+          repository: ${{ inputs.tools_branch_ref == '' && github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'leanprover-community/mathlib4' || github.repository }}
+          ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || 'master' }}
           path: tools-branch
 
       - name: Checkout local actions
@@ -678,15 +695,21 @@ jobs:
     # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Some.20files.20not.20found.20in.20the.20cache/near/407183836
     if: ${{ always() && needs.build.outputs.cache-staging-has-files == 'true' }}
     steps:
+      # As in the `build` job (see the rationale there), build the cache tooling
+      # — and load the trust-dispatch action below — from canonical master, not
+      # `nightly-testing-green`, so the write side and read side share one
+      # backend. The nightly repo has no fork PRs, so sourcing the dispatch from
+      # canonical master is at least as trusted as green.
       - name: Checkout tools branch
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
-          ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing-green' || 'master') }}
+          repository: ${{ inputs.tools_branch_ref == '' && github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'leanprover-community/mathlib4' || github.repository }}
+          ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || 'master' }}
           fetch-depth: 1
 
       # Same trust dispatch as in the `build` and `post_steps` jobs. Loaded
-      # from the tools-branch checkout above (master), which is what the
-      # OIDC token's container scoping is keyed to — so a fork PR cannot
+      # from the tools-branch checkout above (canonical master), which is what
+      # the OIDC token's container scoping is keyed to — so a fork PR cannot
       # influence which container this job is authorized to write.
       - name: Compute cache trust dispatch
         uses: ./.github/actions/cache-trust-dispatch
