@@ -60,9 +60,6 @@ theorem Functor.initial_of_isCofiltered_costructuredArrow
     [∀ d, IsCofiltered (CostructuredArrow F d)] : Initial F where
   out _ := IsCofiltered.isConnected _
 
-/-- If `C` is filtered, then `StructuredArrow d F` is filtered, provided that there is a
-morphism `d ⟶ F.obj c` for some `c : C` and that any two parallel morphisms `d ⟶ F.obj c` can
-be equalized at a later stage. -/
 theorem isFiltered_structuredArrow_of_isFiltered_of_exists [IsFilteredOrEmpty C] (d : D)
     (h₁ : ∃ c, Nonempty (d ⟶ F.obj c)) (h₂ : ∀ {c : C} (s s' : d ⟶ F.obj c),
       ∃ (c' : C) (t : c ⟶ c'), s ≫ F.map t = s' ≫ F.map t) :
@@ -81,9 +78,6 @@ theorem isFiltered_structuredArrow_of_isFiltered_of_exists [IsFilteredOrEmpty C]
       StructuredArrow.homMk (IsFiltered.coeqHom η.right μ.right) (by simp), ?_⟩
     simpa using IsFiltered.coeq_condition _ _
 
-/-- If `C` is cofiltered, then `CostructuredArrow F d` is cofiltered, provided that there is a
-morphism `F.obj c ⟶ d` for some `c : C` and that any two parallel morphisms `F.obj c ⟶ d` can
-be equalized at an earlier stage. -/
 theorem isCofiltered_costructuredArrow_of_isCofiltered_of_exists [IsCofilteredOrEmpty C] (d : D)
     (h₁ : ∃ c, Nonempty (F.obj c ⟶ d)) (h₂ : ∀ {c : C} (s s' : F.obj c ⟶ d),
       ∃ (c' : C) (t : c' ⟶ c), F.map t ≫ s = F.map t ≫ s') :
