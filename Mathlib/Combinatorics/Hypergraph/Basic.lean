@@ -286,6 +286,9 @@ lemma not_isTrivial_completeOn (f : Set α) : ¬ (completeOn f).IsTrivial :=
 def IsLinear (H : Hypergraph α) : Prop :=
   H.edgeSet.Pairwise fun e e' ↦ (e ∩ e').Subsingleton
 
+lemma isLinear_def : H.IsLinear ↔ H.edgeSet.Pairwise fun e e' ↦ (e ∩ e').Subsingleton :=
+  .rfl
+
 lemma IsLinear.inter_subsingleton (h : H.IsLinear) {e e' : Set α} (he : e ∈ H.edgeSet)
     (he' : e' ∈ H.edgeSet) (hee' : e ≠ e') : (e ∩ e').Subsingleton :=
   h he he' hee'
