@@ -5,7 +5,6 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.FieldTheory.Normal.Basic
 public import Mathlib.FieldTheory.PrimitiveElement
 public import Mathlib.GroupTheory.CosetCover
 

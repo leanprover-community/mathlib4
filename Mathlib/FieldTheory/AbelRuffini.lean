@@ -7,8 +7,6 @@ module
 
 public import Mathlib.FieldTheory.AlgebraicClosure
 public import Mathlib.FieldTheory.PolynomialGaloisGroup
-public import Mathlib.GroupTheory.Solvable
-public import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
 # The Abel-Ruffini Theorem
