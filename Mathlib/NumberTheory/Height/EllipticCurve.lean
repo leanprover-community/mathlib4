@@ -33,11 +33,9 @@ public section
 
 namespace WeierstrassCurve
 
-open Height
+open Height MvPolynomial
 
 variable {K : Type*} [Field K] [AdmissibleAbsValues K] (W : WeierstrassCurve K) [W.IsElliptic]
-
-open MvPolynomial
 
 /-- If `W` is a Weierstrass curve over `K`, then the map `F : ℙ² → ℙ²` given by `addSubMap W`
 is a morphism.
@@ -48,8 +46,8 @@ theorem abs_logHeight_addSubMap_sub_two_mul_logHeight_le :
     ∃ C, ∀ x : Fin 3 → K,
       |logHeight (fun i ↦ (addSubMap W i).eval x) - 2 * logHeight x| ≤ C := by
   obtain ⟨C₁, hC₁⟩ := logHeight_eval_le' <| isHomogeneous_addSubMap W
-  obtain ⟨C₂, h⟩ := logHeight_eval_ge' (N := 2) <|
-    fun ij ↦ IsHomogeneous.C_mul (isHomogeneous_addSubMapCoeff W ij) (↑W.Δ'⁻¹ : K)
+  obtain ⟨C₂, h⟩ := logHeight_eval_ge' (N := 2)
+    fun ij ↦ (isHomogeneous_addSubMapCoeff W ij).C_mul ↑W.Δ'⁻¹
   have hC₂ := fun x ↦ h _ <| addSubMapCoeff_condition W x
   refine ⟨max C₁ (-C₂), fun x ↦ abs_sub_le_iff.mpr ⟨?_, ?_⟩⟩ <;> grind
 

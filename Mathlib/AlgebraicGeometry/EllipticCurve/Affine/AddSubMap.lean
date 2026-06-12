@@ -78,10 +78,10 @@ noncomputable def addSubMapCoeff : Fin 3 × Fin 3 → MvPolynomial (Fin 3) R :=
       C (-8 * W.b₄) * s * u + C (-12 * W.b₆) * t * u + C (W.b₄ ^ 2 - 28 * W.b₈) * u ^ 2]].uncurry
 
 private lemma CXX {i : Fin 3} {a : R} : (C a * X (R := R) i ^ 2).IsHomogeneous 2 :=
-    isHomogeneous_C_mul_X_pow ..
+  isHomogeneous_C_mul_X_pow ..
 
 private lemma CXY {i j : Fin 3} {a : R} : (C a * X (R := R) i * X j).IsHomogeneous 2 :=
-    .mul (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
+  .mul (isHomogeneous_C_mul_X ..) (isHomogeneous_X ..)
 
 lemma isHomogeneous_addSubMap (i : Fin 3) : (addSubMap W i).IsHomogeneous 2 := by
   simp only [addSubMap]
@@ -101,15 +101,15 @@ lemma isHomogeneous_addSubMapCoeff (ij : Fin 3 × Fin 3) :
       Matrix.cons_val_one, Fin.reduceFinMk, Matrix.cons_val, Fin.zero_eta]
     -- The following works, but is slow (44889 vs. 11590 heartbeats):
     -- <;> repeat first | refine .add ?_ CXY | refine .add ?_ CXX | exact CXX | exact CXY
-  · exact .add (.add (.add (.add CXX CXY) CXY) CXX) CXY
-  · exact .add (.add (.add (.add CXX CXY) CXY) CXX) CXY
-  · exact .add (.add CXX CXY) CXY
-  · exact .add (.add CXY CXX) CXY
-  · exact .add (.add (.add CXX CXY) CXX) CXY
-  · exact .add (.add (.add (.add CXX CXY) CXY) CXX) CXY
-  · exact .add (.add CXX CXY) CXX
-  · exact .add (.add (.add CXY CXY) CXY) CXX
-  · exact .add (.add CXY CXY) CXX
+  · exact (((CXX.add CXY).add CXY).add CXX).add CXY
+  · exact (((CXX.add CXY).add CXY).add CXX).add CXY
+  · exact (CXX.add CXY).add CXY
+  · exact (CXY.add CXX).add CXY
+  · exact ((CXX.add CXY).add CXX).add CXY
+  · exact (((CXX.add CXY).add CXY).add CXX).add CXY
+  · exact (CXX.add CXY).add CXX
+  · exact ((CXY.add CXY).add CXY).add CXX
+  · exact (CXY.add CXY).add CXX
 
 variable [W.IsElliptic]
 
@@ -117,18 +117,15 @@ lemma addSubMapCoeff_condition (x : Fin 3 → R) (i : Fin 3) :
     ∑ j : Fin 3, (C (↑W.Δ'⁻¹ : R) * addSubMapCoeff W (i, j)).eval x *
       (addSubMap W j).eval x = x i ^ 4 := by
   simp only [eval_mul, eval_C, mul_assoc]
-  rw [← Finset.mul_sum, Units.inv_mul_eq_iff_eq_mul, Fin.sum_univ_three]
-  simp only [addSubMap, addSubMapCoeff, Function.uncurry_apply_pair, coe_Δ', Δ]
+  rw [← Finset.mul_sum, Units.inv_mul_eq_iff_eq_mul, Fin.sum_univ_three, addSubMap, addSubMapCoeff,
+    Function.uncurry_apply_pair, coe_Δ', Δ]
   fin_cases i <;> simp <;> grind only [b_relation]
 
-lemma addSubMap_ne_zero [IsDomain R] {x : Fin 3 → R} (hx : x ≠ 0) :
+lemma addSubMap_ne_zero [IsReduced R] {x : Fin 3 → R} (hx : x ≠ 0) :
     (fun i ↦ (addSubMap W i).eval x) ≠ 0 := by
   contrapose! hx
-  ext i : 1
-  replace hx i : (addSubMap W i).eval x = 0 := by
-    rw [Pi.zero_def, funext_iff] at hx
-    exact hx i
-  simpa [hx] using (addSubMapCoeff_condition W x i).symm
+  ext i
+  simpa [congrFun hx] using (addSubMapCoeff_condition W x i).symm
 
 end WeierstrassCurve
 
