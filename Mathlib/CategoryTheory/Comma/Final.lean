@@ -23,9 +23,7 @@ We then use this in a proof that derives finality of `map` between two comma cat
 on a quasi-commutative diagram of functors, some of which need to be final.
 
 Finally we prove filteredness of a `Comma L R` and finality of `snd L R`, given that `R` is final
-and `A` and `B` are filtered. More generally, we show that `Comma L R` is filtered and both
-projections are final under the weaker, "relative" assumption that `StructuredArrow (L.obj a) R`
-is filtered for every `a : A`, together with the dual results for cofiltered categories.
+and `A` and `B` are filtered.
 
 ## References
 
@@ -154,9 +152,7 @@ variable {B : Type u₂} [Category.{v₂} B]
 variable {T : Type u₃} [Category.{v₃} T]
 variable (L : A ⥤ T) (R : B ⥤ T)
 
-/-- Any two morphisms into an object in the image of `R` can be equalized if the relevant
-costructured arrow category is cofiltered. -/
-private lemma exists_eq_of_isCofiltered_costructuredArrow {b : B}
+lemma exists_eq_of_isCofiltered_costructuredArrow {b : B}
     [IsCofiltered (CostructuredArrow L (R.obj b))] {a₁ a₂ : A}
     (s₁ : L.obj a₁ ⟶ R.obj b) (s₂ : L.obj a₂ ⟶ R.obj b) :
     ∃ (a : A) (t₁ : a ⟶ a₁) (t₂ : a ⟶ a₂), L.map t₁ ≫ s₁ = L.map t₂ ≫ s₂ := by
@@ -165,12 +161,6 @@ private lemma exists_eq_of_isCofiltered_costructuredArrow {b : B}
   exact ⟨W.left, p₁.left, p₂.left, (CostructuredArrow.w p₁).trans (CostructuredArrow.w p₂).symm⟩
 
 set_option backward.isDefEq.respectTransparency false in
-/-- For `Comma L R` to be cofiltered, it suffices that `A` and `B` are cofiltered and that the
-costructured arrow categories of `L` over objects in the image of `R` are cofiltered.
-
-This is a relative version of `isCofiltered_of_initial`: by
-`Functor.initial_iff_isCofiltered_costructuredArrow`, `L` is initial if and only if
-`CostructuredArrow L d` is cofiltered for *all* `d : T`. -/
 lemma isCofiltered_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofiltered B]
     [∀ b, IsCofiltered (CostructuredArrow L (R.obj b))] : IsCofiltered (Comma L R) := by
   have : Nonempty (Comma L R) := by
@@ -208,11 +198,6 @@ lemma isCofiltered_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofilte
   constructor
 
 set_option backward.isDefEq.respectTransparency false in
-/-- If `A` and `B` are cofiltered and the costructured arrow categories of `L` over objects in
-the image of `R` are cofiltered, then `fst L R` is initial.
-
-This is a relative version of `initial_fst`, cf.
-`Functor.initial_iff_isCofiltered_costructuredArrow`. -/
 lemma initial_fst_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofiltered B]
     [∀ b, IsCofiltered (CostructuredArrow L (R.obj b))] : (fst L R).Initial := by
   have := isCofiltered_of_isCofiltered_costructuredArrow L R
@@ -226,11 +211,6 @@ lemma initial_fst_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofilter
       ⟨IsCofiltered.eqHom s s', 𝟙 A'.right, by simp⟩, IsCofiltered.eq_condition s s'⟩
 
 set_option backward.isDefEq.respectTransparency false in
-/-- If `A` and `B` are cofiltered and the costructured arrow categories of `L` over objects in
-the image of `R` are cofiltered, then `snd L R` is initial.
-
-This is a relative version of `initial_snd`, cf.
-`Functor.initial_iff_isCofiltered_costructuredArrow`. -/
 lemma initial_snd_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofiltered B]
     [∀ b, IsCofiltered (CostructuredArrow L (R.obj b))] : (snd L R).Initial := by
   have := isCofiltered_of_isCofiltered_costructuredArrow L R
@@ -251,12 +231,6 @@ variable {B : Type u₅} [Category.{v₅} B]
 variable {T : Type u₆} [Category.{v₆} T]
 variable (L : A ⥤ T) (R : B ⥤ T)
 
-/-- For `Comma L R` to be filtered, it suffices that `A` and `B` are filtered and that the
-structured arrow categories of `R` under objects in the image of `L` are filtered.
-
-This is a relative version of `isFiltered_of_final`: by
-`Functor.final_iff_isFiltered_structuredArrow`, `R` is final if and only if
-`StructuredArrow d R` is filtered for *all* `d : T`. -/
 lemma isFiltered_of_isFiltered_structuredArrow [IsFiltered A] [IsFiltered B]
     [∀ a, IsFiltered (StructuredArrow (L.obj a) R)] : IsFiltered (Comma L R) := by
   have (a : Aᵒᵖ) : IsCofiltered (CostructuredArrow R.op (L.op.obj a)) :=
@@ -264,10 +238,6 @@ lemma isFiltered_of_isFiltered_structuredArrow [IsFiltered A] [IsFiltered B]
   have : IsCofiltered (Comma R.op L.op) := isCofiltered_of_isCofiltered_costructuredArrow _ _
   exact IsFiltered.of_equivalence (opEquiv L R).symm
 
-/-- If `A` and `B` are filtered and the structured arrow categories of `R` under objects in the
-image of `L` are filtered, then `fst L R` is final.
-
-This is a relative version of `final_fst`, cf. `Functor.final_iff_isFiltered_structuredArrow`. -/
 lemma final_fst_of_isFiltered_structuredArrow [IsFiltered A] [IsFiltered B]
     [∀ a, IsFiltered (StructuredArrow (L.obj a) R)] : (fst L R).Final := by
   have (a : Aᵒᵖ) : IsCofiltered (CostructuredArrow R.op (L.op.obj a)) :=
@@ -278,10 +248,6 @@ lemma final_fst_of_isFiltered_structuredArrow [IsFiltered A] [IsFiltered B]
   have : (fst L R).op.Initial := initial_of_natIso <| opFunctorCompSnd _ _
   apply final_of_initial_op
 
-/-- If `A` and `B` are filtered and the structured arrow categories of `R` under objects in the
-image of `L` are filtered, then `snd L R` is final.
-
-This is a relative version of `final_snd`, cf. `Functor.final_iff_isFiltered_structuredArrow`. -/
 lemma final_snd_of_isFiltered_structuredArrow [IsFiltered A] [IsFiltered B]
     [∀ a, IsFiltered (StructuredArrow (L.obj a) R)] : (snd L R).Final := by
   have (a : Aᵒᵖ) : IsCofiltered (CostructuredArrow R.op (L.op.obj a)) :=
