@@ -5,6 +5,8 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.SetTheory.Cardinal.Regular
+public import Mathlib.SetTheory.Cardinal.Ordinal
 public import Mathlib.SetTheory.Ordinal.FixedPoint
 
 /-!
@@ -30,7 +32,6 @@ The following notation is scoped to the `Ordinal` namespace.
 
 ## TODO
 
-- Prove that `ε₀` and `Γ₀` are countable.
 - Prove that the ordinals principal under `veblen` are the gamma ordinals (and 0).
 
 ## References
@@ -722,5 +723,91 @@ theorem invVeblen₁_eq_iff : invVeblen₁ o = o ↔ o = 0 ∨ o ∈ range Γ_ :
 
 theorem invVeblen₁_lt_iff : invVeblen₁ o < o ↔ o ≠ 0 ∧ o ∉ range Γ_ := by
   rw [(invVeblen₁_le o).lt_iff_ne, ne_eq, invVeblen₁_eq_iff, not_or]
+
+section Countable
+
+open Cardinal
+
+variable {ι : Type*} [Countable ι]
+
+theorem countable_Iio_of_lt_omega_one (h : o < ω₁) : Countable (Set.Iio o) := by
+  rw [← ord_aleph 1, lt_ord] at h
+  rw [← mk_le_aleph0_iff, Cardinal.mk_Iio_ordinal,
+    lift_le_aleph0, ← succ_aleph0, Order.lt_succ_iff] at *
+  exact h
+
+theorem countable_toType_of_lt_omega_one (h : o < ω₁) : Countable (ToType o) := by
+  rw [← Cardinal.mk_le_aleph0_iff, Cardinal.mk_toType,
+    ← Cardinal.lt_aleph_one_iff, ← Cardinal.lt_omega_iff_card_lt]
+  exact h
+
+instance [h : Fact <| o < ω₁] : Countable (Set.Iio o) := countable_Iio_of_lt_omega_one h.out
+
+instance [h : Fact <| o < ω₁] : Countable (ToType o) := countable_toType_of_lt_omega_one h.out
+
+theorem omega0_opow_lt_omega_one (h : o < ω₁) : ω ^ o < ω₁ :=
+  isPrincipal_opow_omega 1 omega0_lt_omega_one h
+
+theorem nfpFamily_lt_omega_one_of_forall_lt_omega_one
+    {f : ι → Ordinal → Ordinal} (hf : ∀ i, ∀ x < ω₁, f i x < ω₁) (ho : o < ω₁) :
+    nfpFamily f o < ω₁ := by
+  apply iSup_lt_omega_one fun i => ?_
+  induction i with
+  | nil => simpa using ho
+  | cons _ _ ih => exact hf _ _ ih
+
+theorem derivFamily_lt_omega_one_of_forall_lt_omega_one
+    {f : ι → Ordinal → Ordinal} (hf : ∀ i, ∀ x < ω₁, f i x < ω₁) (ho : o < ω₁) :
+    derivFamily f o < ω₁ := by
+  induction o using Ordinal.limitRecOn with
+  | zero =>
+    rw [derivFamily_zero]
+    exact nfpFamily_lt_omega_one_of_forall_lt_omega_one hf <| omega_pos 1
+  | add_one p ih =>
+    have hp : p < ω₁ := lt_of_le_of_lt (le_succ p) ho
+    rw [derivFamily_add_one]
+    exact nfpFamily_lt_omega_one_of_forall_lt_omega_one hf <| (isSuccLimit_omega 1).succ_lt <| ih hp
+  | limit o hlim ih =>
+    rw [derivFamily_limit f hlim]
+    haveI : Fact _ := ⟨ho⟩
+    refine iSup_lt_omega_one ?_
+    intro ⟨i, hi⟩
+    exact ih i hi (lt_trans hi ho)
+
+theorem isPrincipal_veblen_omega_one : IsPrincipal veblen ω₁ := by
+  intro α
+  induction α using WellFoundedLT.induction with
+  | _ α ih =>
+    intro β hα hβ
+    rcases eq_or_ne α 0 with rfl | hα'
+    · rw [veblen_zero_apply]
+      exact omega0_opow_lt_omega_one hβ
+    · rw [veblen_of_ne_zero hα']
+      haveI : Fact _ := ⟨hα⟩
+      refine derivFamily_lt_omega_one_of_forall_lt_omega_one ?_ hβ
+      rintro ⟨a, ha⟩ b hb
+      exact ih a ha (ha.trans hα) hb
+
+theorem epsilon_lt_omega_one_of_lt_omega_one (ho : o < ω₁) : ε_ o < ω₁ :=
+  isPrincipal_veblen_omega_one (one_lt_omega0.trans omega0_lt_omega_one) ho
+
+theorem epsilon_zero_lt_omega_one : ε₀ < ω₁ :=
+  epsilon_lt_omega_one_of_lt_omega_one <| omega_pos 1
+
+theorem contable_toType_epsilon_zero : Countable (ToType ε₀) :=
+  countable_toType_of_lt_omega_one epsilon_zero_lt_omega_one
+
+theorem gamma_lt_omega_one_of_lt_omega_one (ho : o < ω₁) : Γ_ o < ω₁ := by
+  apply derivFamily_lt_omega_one_of_forall_lt_omega_one ?_ ho
+  rintro - o ho
+  exact isPrincipal_veblen_omega_one ho (omega_pos 1)
+
+theorem gamma_zero_lt_omega_one : Γ₀ < ω₁ :=
+  gamma_lt_omega_one_of_lt_omega_one <| omega_pos 1
+
+theorem contable_toType_gamma_zero : Countable (ToType Γ₀) :=
+  countable_toType_of_lt_omega_one gamma_zero_lt_omega_one
+
+end Countable
 
 end Ordinal
