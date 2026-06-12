@@ -131,6 +131,9 @@ instance [IsDomain R] : IsFractionRing R (⊥ : Ideal R).ResidueField :=
   IsLocalization.of_ringEquiv_left (RingEquiv.quotientBot R).symm
     (MulEquivClass.map_nonZeroDivisors (RingEquiv.quotientBot R).symm) (by simp)
 
+instance [Finite (R ⧸ I)] : Finite I.ResidueField :=
+  IsLocalization.finite (R ⧸ I) (nonZeroDivisors (R ⧸ I))
+
 lemma Ideal.bijective_algebraMap_quotient_residueField (I : Ideal R) [I.IsMaximal] :
     Function.Bijective (algebraMap (R ⧸ I) I.ResidueField) :=
   ⟨I.injective_algebraMap_quotient_residueField, IsFractionRing.surjective_iff_isField.mpr

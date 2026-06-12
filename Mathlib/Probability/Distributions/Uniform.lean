@@ -73,7 +73,7 @@ theorem aemeasurable {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s �
   apply zero_ne_one' ℝ≥0∞
   calc
     0 = (0 : Measure E) Set.univ := rfl
-    _ = _ := by rw [hu, smul_apply, restrict_apply MeasurableSet.univ,
+    _ = _ := by rw [hu, Measure.smul_apply, restrict_apply MeasurableSet.univ,
       Set.univ_inter, smul_eq_mul, ENNReal.inv_mul_cancel hns hnt]
 
 theorem absolutelyContinuous {X : Ω → E} {s : Set E} (hu : IsUniform X s ℙ μ) : map X ℙ ≪ μ := by
