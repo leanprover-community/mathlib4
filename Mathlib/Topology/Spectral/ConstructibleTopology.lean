@@ -51,6 +51,7 @@ abbrev WithConstructibleTopology (X : Type*) [TopologicalSpace X] : Type _ :=
 open TopologicalSpace Topology
 
 variable (X) in
+@[simp]
 lemma empty_mem_constructibleTopologySubbasis : ∅ ∈ constructibleTopologySubbasis X :=
   Or.intro_left _ ⟨isOpen_empty, isCompact_empty⟩
 
