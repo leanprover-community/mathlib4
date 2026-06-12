@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 public import Mathlib.CategoryTheory.Limits.IsConnected
 public import Mathlib.CategoryTheory.Limits.Sifted
 public import Mathlib.CategoryTheory.Filtered.Final
-public import Mathlib.CategoryTheory.Filtered.Flat
 public import Mathlib.CategoryTheory.Grothendieck
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.CommaMap
 
@@ -147,59 +146,6 @@ lemma map_final {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v
   haveI := final_of_natIso this.symm
   rw [IsIso.Iso.inv_inv]
   infer_instance⟩
-
-section Filtered
-
-variable {A : Type u₁} [Category.{v₁} A]
-variable {B : Type u₂} [Category.{v₂} B]
-variable {T : Type u₃} [Category.{v₃} T]
-variable (L : A ⥤ T) (R : B ⥤ T)
-
-set_option backward.defeqAttrib.useBackward true in
-attribute [local instance] map_final in
-/-- Let `A` and `B` be filtered categories, `R : B ⥤ T` be final and `L : A ⥤ T`. Then, the
-comma category `Comma L R` is filtered. -/
-instance isFiltered_of_final [IsFiltered A] [IsFiltered B] [R.Final] : IsFiltered (Comma L R) := by
-  haveI (a : A) : IsFiltered (Comma (fromPUnit (L.obj a)) R) :=
-    R.final_iff_isFiltered_structuredArrow.mp inferInstance (L.obj a)
-  have (a : A) : (fromPUnit (Over.mk (𝟙 a))).Final := final_const_of_isTerminal Over.mkIdTerminal
-  let η (a : A) : fromPUnit (Over.mk (𝟙 a)) ⋙ Over.forget a ⋙ L ≅ fromPUnit (L.obj a) :=
-    NatIso.ofComponents (fun _ => Iso.refl _)
-  have (a : A) := IsFiltered.of_final (map (L := fromPUnit (L.obj a)) (F := 𝟭 T) (η a).hom
-    ((Iso.refl (𝟭 B ⋙ R)).inv))
-  have : RepresentablyCoflat (fst L R) :=
-    ⟨fun a => IsFiltered.of_equivalence (CostructuredArrow.ofCommaFstEquivalence L R a).symm⟩
-  apply isFiltered_of_representablyCoflat (fst L R)
-
-attribute [local instance] isFiltered_of_final in
-/-- Let `A` and `B` be cofiltered categories, `L : A ⥤ T` be initial and `R : B ⥤ T`. Then, the
-comma category `Comma L R` is cofiltered. -/
-lemma isCofiltered_of_initial [IsCofiltered A] [IsCofiltered B] [L.Initial] :
-    IsCofiltered (Comma L R) :=
-  IsCofiltered.of_equivalence (Comma.opEquiv _ _).symm
-
-set_option backward.defeqAttrib.useBackward true in
-attribute [local instance] final_of_isFiltered_of_pUnit in
-/-- Let `A` and `B` be filtered categories, `R : B ⥤ T` be final and `R : A ⥤ T`. Then, the
-projection `snd L R : Comma L R ⥤ B` is final. -/
-instance final_snd [IsFiltered A] [IsFiltered B] [R.Final] : (snd L R).Final := by
-  let iL : star.{1} A ⋙ 𝟭 _ ≅ L ⋙ star _ := Iso.refl _
-  let iR : 𝟭 B ⋙ star.{1} B ≅ R ⋙ star _ := Iso.refl _
-  have := map_final iL iR
-  let s := (equivProd (𝟭 _) (star B)).trans <| prod.leftUnitorEquivalence B
-  let iS : map iL.hom iR.inv ⋙ s.functor ≅ snd L R :=
-    NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp [iL, iR, s])
-  apply final_of_natIso iS
-
-/-- Let `A` and `B` be cofiltered categories, `L : A ⥤ T` be initial and `R : B ⥤ T`. Then, the
-projection `fst L R : Comma L R ⥤ A` is initial. -/
-instance initial_fst [IsCofiltered A] [IsCofiltered B] [L.Initial] : (fst L R).Initial := by
-  have : ((opFunctor L R).leftOp ⋙ snd R.op L.op).Final :=
-    final_equivalence_comp (opEquiv L R).functor.leftOp _
-  have : (fst L R).op.Final := final_of_natIso <| opFunctorCompSnd _ _
-  apply initial_of_final_op
-
-end Filtered
 
 section Relative
 
@@ -347,6 +293,40 @@ lemma final_snd_of_isFiltered_structuredArrow [IsFiltered A] [IsFiltered B]
   apply final_of_initial_op
 
 end Relative
+
+section Filtered
+
+variable {A : Type u₁} [Category.{v₁} A]
+variable {B : Type u₂} [Category.{v₂} B]
+variable {T : Type u₃} [Category.{v₃} T]
+variable (L : A ⥤ T) (R : B ⥤ T)
+
+/-- Let `A` and `B` be filtered categories, `R : B ⥤ T` be final and `L : A ⥤ T`. Then, the
+comma category `Comma L R` is filtered. -/
+instance isFiltered_of_final [IsFiltered A] [IsFiltered B] [R.Final] : IsFiltered (Comma L R) := by
+  have := R.final_iff_isFiltered_structuredArrow.mp inferInstance
+  exact isFiltered_of_isFiltered_structuredArrow L R
+
+/-- Let `A` and `B` be cofiltered categories, `L : A ⥤ T` be initial and `R : B ⥤ T`. Then, the
+comma category `Comma L R` is cofiltered. -/
+lemma isCofiltered_of_initial [IsCofiltered A] [IsCofiltered B] [L.Initial] :
+    IsCofiltered (Comma L R) := by
+  have := L.initial_iff_isCofiltered_costructuredArrow.mp inferInstance
+  exact isCofiltered_of_isCofiltered_costructuredArrow L R
+
+/-- Let `A` and `B` be filtered categories, `R : B ⥤ T` be final and `R : A ⥤ T`. Then, the
+projection `snd L R : Comma L R ⥤ B` is final. -/
+instance final_snd [IsFiltered A] [IsFiltered B] [R.Final] : (snd L R).Final := by
+  have := R.final_iff_isFiltered_structuredArrow.mp inferInstance
+  exact final_snd_of_isFiltered_structuredArrow L R
+
+/-- Let `A` and `B` be cofiltered categories, `L : A ⥤ T` be initial and `R : B ⥤ T`. Then, the
+projection `fst L R : Comma L R ⥤ A` is initial. -/
+instance initial_fst [IsCofiltered A] [IsCofiltered B] [L.Initial] : (fst L R).Initial := by
+  have := L.initial_iff_isCofiltered_costructuredArrow.mp inferInstance
+  exact initial_fst_of_isCofiltered_costructuredArrow L R
+
+end Filtered
 
 end Comma
 
