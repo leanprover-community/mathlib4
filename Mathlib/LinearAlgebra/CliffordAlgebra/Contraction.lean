@@ -91,7 +91,7 @@ def contractLeft : Module.Dual R M →ₗ[R] CliffordAlgebra Q →ₗ[R] Cliffor
       | add _ _ hx hy => rw [map_add, map_add, map_add, add_add_add_comm, hx, hy]
       | ι_mul _ _ hx =>
         rw [foldr'_ι_mul, foldr'_ι_mul, foldr'_ι_mul, hx]
-        dsimp only [contractLeftAux_apply_apply]
+        simp only [contractLeftAux_apply_apply]
         rw [sub_add_sub_comm, mul_add, _root_.add_apply, add_smul]
   map_smul' c d :=
     LinearMap.ext fun x => by
@@ -101,7 +101,7 @@ def contractLeft : Module.Dual R M →ₗ[R] CliffordAlgebra Q →ₗ[R] Cliffor
       | add _ _ hx hy => rw [map_add, map_add, smul_add, hx, hy]
       | ι_mul _ _ hx =>
         rw [foldr'_ι_mul, foldr'_ι_mul, hx]
-        dsimp only [contractLeftAux_apply_apply]
+        simp only [contractLeftAux_apply_apply]
         rw [_root_.smul_apply, smul_assoc, mul_smul_comm, smul_sub]
 
 /-- Contract an element of the Clifford algebra with an element `d : Module.Dual R M` from the

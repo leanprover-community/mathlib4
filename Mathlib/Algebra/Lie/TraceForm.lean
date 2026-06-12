@@ -88,12 +88,12 @@ w.r.t. the trace form. -/
 lemma traceForm_apply_lie_apply' (x y z : L) :
     traceForm R L M ⁅x, y⁆ z = - traceForm R L M y ⁅x, z⁆ :=
   calc traceForm R L M ⁅x, y⁆ z
-      = - traceForm R L M ⁅y, x⁆ z := by rw [← lie_skew x y, map_neg, LinearMap.neg_apply]
+      = - traceForm R L M ⁅y, x⁆ z := by rw [← lie_skew x y, map_neg, neg_apply]
     _ = - traceForm R L M y ⁅x, z⁆ := by rw [traceForm_apply_lie_apply]
 
 lemma traceForm_lieInvariant : (traceForm R L M).lieInvariant L := by
   intro x y z
-  rw [← lie_skew, map_neg, LinearMap.neg_apply, LieModule.traceForm_apply_lie_apply R L M]
+  rw [← lie_skew, map_neg, neg_apply, LieModule.traceForm_apply_lie_apply R L M]
 
 /-- This lemma justifies the terminology "invariant" for trace forms. -/
 @[simp] lemma lie_traceForm_eq_zero (x : L) : ⁅x, traceForm R L M⁆ = 0 := by
@@ -168,7 +168,7 @@ lemma traceForm_eq_zero_if_mem_lcs_of_mem_ucs {x y : L} (k : ℕ)
       LieSubmodule.lieIdeal_oper_eq_linear_span', LieSubmodule.mem_top, true_and] at hx
     refine Submodule.span_induction ?_ ?_ (fun z w _ _ hz hw ↦ ?_) (fun t z _ hz ↦ ?_) hx
     · rintro - ⟨z, w, hw, rfl⟩
-      rw [← lie_skew, map_neg, LinearMap.neg_apply, neg_eq_zero, traceForm_apply_lie_apply]
+      rw [← lie_skew, map_neg, neg_apply, neg_eq_zero, traceForm_apply_lie_apply]
       exact ih hw (hy _)
     · simp
     · simp [hz, hw]
@@ -453,7 +453,7 @@ lemma traceForm_eq_sum_finrank_nsmul :
       (χ : L →ₗ[K] K).smulRight (χ : L →ₗ[K] K) := by
   ext
   rw [traceForm_eq_sum_finrank_nsmul_mul, ← Finset.sum_attach]
-  simp [-FunLike.coe_smul]
+  simp
 
 /-- A variant of `LieModule.traceForm_eq_sum_finrank_nsmul` in which the sum is taken only over the
 non-zero weights. -/

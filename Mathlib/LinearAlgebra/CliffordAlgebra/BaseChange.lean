@@ -95,8 +95,7 @@ def toBaseChange (Q : QuadraticForm R V) :
       rw [CliffordAlgebra.forall_mul_self_eq_iff (isUnit_of_invertible _)]
       refine TensorProduct.AlgebraTensorModule.curry_injective ?_
       ext v w
-      dsimp
-      exact hpure_tensor v w
+      simpa using hpure_tensor v w
     intro v w
     rw [← TensorProduct.tmul_add, CliffordAlgebra.ι_mul_ι_add_swap,
       QuadraticForm.polarBilin_baseChange, LinearMap.BilinForm.baseChange_tmul, one_mul,
