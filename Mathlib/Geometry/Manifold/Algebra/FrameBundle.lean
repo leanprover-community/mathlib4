@@ -47,6 +47,27 @@ lemma isUnit_comp_iff_of_isUnit {D : E →L[𝕜] E} (hD : IsUnit D) (A : E →L
       (congrFun (congrArg ContinuousLinearMap.comp (id (Eq.symm hv))) A)
   · exact hD.mul h
 
+/-- In any monoid, composition with a unit on the left does not change invertibility.
+Stated for continuous linear endomorphisms with no normed structure, so that it can be
+instantiated at `TangentSpace I x` using only the canonical module instances — installing
+local normed instances on the tangent space trips kernel-level aux-definition abstraction. -/
+lemma isUnit_comp_iff_of_isUnit_weak {R M : Type*} [Semiring R]
+    [TopologicalSpace M] [AddCommMonoid M] [Module R M]
+    {D : M →L[R] M} (hD : IsUnit D) (A : M →L[R] M) :
+    IsUnit (D.comp A) ↔ IsUnit A := by
+  have h : D.comp A = (hD.unit : M →L[R] M) * A := by
+    rw [IsUnit.unit_spec, ContinuousLinearMap.mul_def]
+    -- if `mul_def` has drifted: `rfl` (mul on endomorphisms is defeq to comp)
+  rw [h]
+  constructor
+  · intro hUA
+    have hA : A = ((hD.unit⁻¹ : (M →L[R] M)ˣ) : M →L[R] M) *
+        ((hD.unit : M →L[R] M) * A) := by
+      rw [← mul_assoc, Units.inv_mul, one_mul]
+    rw [hA]
+    exact (hD.unit⁻¹).isUnit.mul hUA
+  · exact fun hA ↦ hD.unit.isUnit.mul hA
+
 open Bundle FiberBundle
 
 omit [CompleteSpace 𝕜] [CompleteSpace E] in
@@ -202,9 +223,7 @@ def FrameBundle (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M]
               exact (Trivialization.continuousLinearEquivAt 𝕜
                 (trivializationAt E (TangentSpace I) p.proj) q.proj hb_tan).symm_apply_apply x⟩,
           rfl⟩
-      letI : NormedAddCommGroup (TangentSpace I q.proj) := inferInstanceAs (NormedAddCommGroup E)
-      letI : NormedSpace 𝕜 (TangentSpace I q.proj) := inferInstanceAs (NormedSpace 𝕜 E)
-      exact (isUnit_comp_iff_of_isUnit htan_unit q.2).mp hq.2
+      exact (isUnit_comp_iff_of_isUnit_weak htan_unit q.2).mp hq.2
     · simp only [Set.mem_preimage, Set.mem_prod, Set.mem_setOf_eq]
       have hb := e.mem_source.mp hpe
       rw [hom_trivializationAt_apply (σ := RingHom.id 𝕜)]
@@ -245,9 +264,7 @@ def FrameBundle (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M]
               exact (Trivialization.continuousLinearEquivAt 𝕜
                 (trivializationAt E (TangentSpace I) p.proj) p.proj hb_tan).symm_apply_apply x⟩,
           rfl⟩
-      letI : NormedAddCommGroup (TangentSpace I p.proj) := inferInstanceAs (NormedAddCommGroup E)
-      letI : NormedSpace 𝕜 (TangentSpace I p.proj) := inferInstanceAs (NormedSpace 𝕜 E)
-      exact (isUnit_comp_iff_of_isUnit htan_unit p.2).mpr hp
+      exact (isUnit_comp_iff_of_isUnit_weak htan_unit p.2).mpr hp
 
 instance [IsManifold I ∞ M] [CompleteSpace E] :
     IsManifold (I.prod 𝓘(𝕜, E →L[𝕜] E)) ∞ ↥(FrameBundle I M) := inferInstance
@@ -521,6 +538,27 @@ lemma intertwining_reverse [IsManifold I ∞ M]
     all_goals simp_all +decide [trivializationAt]
     congr
 
+/-- Set-wise form of `intertwining_reverse`: on the chart source at `b`, transporting through
+`frameBundleEquiv` intertwines the core trivialization with the Hom-bundle trivialization. -/
+lemma intertwining_reverse_at [IsManifold I ∞ M] (b : M)
+    (q : ↥(FrameBundle I M)) (hq : q.1.proj ∈ (chartAt H b).source) :
+    Prod.map id Units.val
+      ((frameBundleFiberBundleCore (I := I) (M := M)).localTrivAt b
+        ⟨q.1.proj, q.2.unit⟩) =
+    trivializationAt (E →L[𝕜] E)
+      (fun x => Bundle.Trivial M E x →L[𝕜] TangentSpace I x) b q.1 := by
+  obtain ⟨a, ha⟩ := q
+  change (a.proj, ((frameBundleFiberBundleCore (I := I) (M := M)).coordChange
+      (achart H a.proj) (achart H b) a.proj ha.unit).val)
+    = (trivializationAt (E →L[𝕜] E)
+        (fun x => Bundle.Trivial M E x →L[𝕜] TangentSpace I x) b) a
+  rw [frameBundleFiberBundleCore_coordChange_val (achart H a.proj) (achart H b) a.proj
+      ⟨mem_chart_source H a.proj, hq⟩ ha.unit, IsUnit.unit_spec,
+    hom_trivializationAt_apply (σ := RingHom.id 𝕜)]
+  rw [inCoordinates_eq]
+  all_goals simp_all +decide [trivializationAt]
+  congr
+
 lemma continuousAt_of_prodMap_isEmbedding {α β γ δ : Type*}
     [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
     {f : α → β × γ} {g : γ → δ} {x : α}
@@ -578,6 +616,31 @@ end FrameBundlePrincipal
 -- Everything up through frameBundleCoreHomeomorph stays in the general 𝕜 variable block
 -- (frameBundleEquiv, the intertwining lemmas, frameBundleCoreHomeomorph, etc.)
 
+section UnitsTransfer
+
+variable {𝕜' : Type*} [NontriviallyNormedField 𝕜']
+  {R : Type*} [NormedRing R] [NormedAlgebra 𝕜' R] [CompleteSpace R]
+  {EN : Type*} [NormedAddCommGroup EN] [NormedSpace 𝕜' EN]
+  {HN : Type*} [TopologicalSpace HN]
+  {IN : ModelWithCorners 𝕜' EN HN}
+  {N : Type*} [TopologicalSpace N] [ChartedSpace HN N]
+
+/-- A map into the units of a complete normed algebra is `C^n` as soon as its composite
+with `Units.val` is: the single chart on `Rˣ` is `Units.val` itself. -/
+lemma ContMDiffAt.units_of_val {f : N → Rˣ} {x : N} {n : WithTop ℕ∞}
+    (h : ContMDiffAt IN 𝓘(𝕜', R) n (fun y ↦ (f y : R)) x) :
+    ContMDiffAt IN 𝓘(𝕜', R) n f x := by
+  rw [contMDiffAt_iff_target]
+  refine ⟨Units.isOpenEmbedding_val.isInducing.continuousAt_iff.mpr h.continuousAt, ?_⟩
+  -- the goal is `ContMDiffAt _ _ n (extChartAt 𝓘(𝕜', R) (f x) ∘ f) x`; the chart of the
+  -- singleton charted space on `Rˣ` is `Units.val` and the model is the identity, so the
+  -- composite is definitionally `fun y ↦ (f y : R)`.
+  -- If the `rfl` below fails, replace it with
+  --   `simp [extChartAt, OpenPartialHomeomorph.extend]` (or find the unfolding via `simp?`).
+  exact h.congr_of_eventuallyEq (Filter.Eventually.of_forall fun y ↦ rfl)
+
+end UnitsTransfer
+
 section FrameBundleRL  -- restricted to ℝ for IsPrincipalBundle
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
@@ -605,30 +668,67 @@ noncomputable instance FrameBundle.isPrincipalBundle [IsManifold I ∞ M] :
       frameBundleCoreHomeomorph.symm
   mem_baseSet_localTriv := fun p =>
     mem_baseSet_trivializationAt (E →L[ℝ] E)ˣ (FrameSpace I M) p.1.proj
-  equivariant_localTriv := fun p g => by
+  equivariant_localTriv := fun p q hq g => by
+    have hq' : q.1.proj ∈ (chartAt H p.1.proj).source :=
+      ((trivializationAt (E →L[ℝ] E)ˣ (FrameSpace I M) p.1.proj).compHomeomorph
+        frameBundleCoreHomeomorph.symm).mem_source.mp hq
     apply Prod.ext
     · simp only [frameBundleProj, HSMul.hSMul, SMul.smul]
       exact rfl
     · apply Units.ext
-      have key : ∀ (q : ↥(FrameBundle I M)),
+      have key : ∀ (r : ↥(FrameBundle I M)),
           ((trivializationAt (E →L[ℝ] E)ˣ (FrameSpace I M) p.1.proj).compHomeomorph
-            frameBundleCoreHomeomorph.symm q).2.val =
+            frameBundleCoreHomeomorph.symm r).2.val =
           ((frameBundleFiberBundleCore (I := I) (M := M)).coordChange
-            (achart H q.1.proj) (achart H p.1.proj) q.1.proj q.2.unit).val := by
-        intro q
+            (achart H r.1.proj) (achart H p.1.proj) r.1.proj r.2.unit).val := by
+        intro r
         simp only [Trivialization.compHomeomorph, frameBundleCoreHomeomorph, frameBundleEquiv]
         exact rfl
       change ((trivializationAt (E →L[ℝ] E)ˣ (FrameSpace I M) p.1.proj).compHomeomorph
-                frameBundleCoreHomeomorph.symm (p <• g)).2.val =
+                frameBundleCoreHomeomorph.symm (q <• g)).2.val =
              ((trivializationAt (E →L[ℝ] E)ˣ (FrameSpace I M) p.1.proj).compHomeomorph
-                frameBundleCoreHomeomorph.symm p).2.val * (g : E →L[ℝ] E)
-      rw [key (p <• g), key p]
+                frameBundleCoreHomeomorph.symm q).2.val * (g : E →L[ℝ] E)
+      rw [key (q <• g), key q]
       simp only [HSMul.hSMul, SMul.smul]
-      rw [frameBundleFiberBundleCore_coordChange_val _ _ p.1.proj
-            ⟨mem_chart_source H p.1.proj, mem_chart_source H p.1.proj⟩,
-          frameBundleFiberBundleCore_coordChange_val _ _ p.1.proj
-            ⟨mem_chart_source H p.1.proj, mem_chart_source H p.1.proj⟩]
+      rw [frameBundleFiberBundleCore_coordChange_val _ _ q.1.proj
+            ⟨mem_chart_source H q.1.proj, hq'⟩,
+          frameBundleFiberBundleCore_coordChange_val _ _ q.1.proj
+            ⟨mem_chart_source H q.1.proj, hq'⟩]
       exact rfl
+  smooth_localTriv := fun p => by
+    intro q hq
+    apply ContMDiffAt.contMDiffWithinAt
+    set φ := (trivializationAt (E →L[ℝ] E)ˣ (FrameSpace I M) p.1.proj).compHomeomorph
+      frameBundleCoreHomeomorph.symm with hφdef
+    set e' := trivializationAt (E →L[ℝ] E)
+      (fun x => Bundle.Trivial M E x →L[ℝ] TangentSpace I x) p.1.proj with he'def
+    have hq' : q.1.proj ∈ (chartAt H p.1.proj).source := φ.mem_source.mp hq
+    have hq₁ : q.1 ∈ e'.source := by
+      rw [e'.mem_source, hom_trivializationAt_baseSet (σ := RingHom.id ℝ)]
+      exact ⟨by simp, hq'⟩
+    -- the Hom-bundle trivialization is smooth (ContMDiffVectorBundle on the Hom bundle)
+    have he'_smooth : ContMDiffAt (I.prod 𝓘(ℝ, E →L[ℝ] E)) (I.prod 𝓘(ℝ, E →L[ℝ] E)) ∞
+        (⇑e') q.1 :=
+      e'.contMDiffOn.contMDiffAt (e'.open_source.mem_nhds hq₁)
+    have hval : ContMDiffAt (I.prod 𝓘(ℝ, E →L[ℝ] E)) 𝓘(ℝ, E →L[ℝ] E) ∞
+        (fun r : ↥(FrameBundle I M) ↦ (e' r.1).2) q :=
+      contMDiff_snd.contMDiffAt.comp q
+        (he'_smooth.comp q contMDiff_subtype_val.contMDiffAt)
+    -- on φ.source, the fibre part of φ agrees with e' after Units.val
+    have hcongr : ∀ r : ↥(FrameBundle I M), r ∈ φ.source →
+        ((φ r).2 : E →L[ℝ] E) = (e' r.1).2 := fun r hr ↦
+      congrArg Prod.snd (intertwining_reverse_at p.1.proj r (φ.mem_source.mp hr))
+    have hsnd : ContMDiffAt (I.prod 𝓘(ℝ, E →L[ℝ] E)) 𝓘(ℝ, E →L[ℝ] E) ∞
+        (fun r : ↥(FrameBundle I M) ↦ (φ r).2) q := by
+      apply ContMDiffAt.units_of_val
+      exact hval.congr_of_eventuallyEq
+        (Filter.eventually_of_mem (φ.open_source.mem_nhds hq) hcongr)
+    have hfst : ContMDiff (I.prod 𝓘(ℝ, E →L[ℝ] E)) I ∞
+        (fun r : ↥(FrameBundle I M) ↦ r.1.proj) := by
+      apply ContMDiff.comp (I' := I.prod (modelWithCornersSelf ℝ (E →L[ℝ] E)))
+      · exact contMDiff_proj (fun x : M => Bundle.Trivial M E x →L[ℝ] TangentSpace I x)
+      · exact contMDiff_subtype_val
+    exact hfst.contMDiffAt.prodMk hsnd
 
 end FrameBundleRL
 

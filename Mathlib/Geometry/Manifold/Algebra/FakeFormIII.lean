@@ -169,8 +169,14 @@ class IsPrincipalBundle
   smooth_proj : ContMDiff IP IB ∞ proj
   localTriv : P → Trivialization G proj
   mem_baseSet_localTriv : ∀ p, proj p ∈ (localTriv p).baseSet
-  equivariant_localTriv : ∀ (p : P) (g : G),
-    (localTriv p) (p <• g) = ⟨proj p, ((localTriv p) p).2 * g⟩
+  /-- Each local trivialization is `G`-equivariant on its whole source, intertwining the
+  torsor action on the fibres with right translation of `G` on itself. -/
+  equivariant_localTriv : ∀ (p q : P), q ∈ (localTriv p).source → ∀ (g : G),
+    (localTriv p) (q <• g) = ⟨proj q, ((localTriv p) q).2 * g⟩
+  /-- Each local trivialization is smooth on its source. Together with `smooth_proj` and
+  equivariance this makes `localTriv p` the smooth equivariant chart of Tu §27. -/
+  smooth_localTriv : ∀ p : P,
+    ContMDiffOn IP (IB.prod IG) ∞ (localTriv p) (localTriv p).source
 
 variable [hPB : IsPrincipalBundle IB G IG P (IB.prod IG) proj]
 
@@ -189,7 +195,7 @@ theorem IsPrincipalBundle.is_transitive
     exact hmem_p
   · rw [φ.mem_source]
     rw [hq]; rw [hp] at hmem_p; exact hmem_p
-  · have heq := hPB.equivariant_localTriv p g
+  · have heq := hPB.equivariant_localTriv p p (φ.mem_source.mpr hmem_p) g
     simp only [Trivialization.coe_coe] at heq ⊢
     rw [heq, show g = (φ p).2⁻¹ * (φ q).2 from rfl, mul_inv_cancel_left]
     have hq_src : q ∈ φ.source := by
@@ -715,8 +721,7 @@ lemma mfderiv_action_at_g (p : P) (g : G) (w : TangentSpace IG g) :
 
 end
 
-/-- The transition function between two local sections of a smooth principal bundle is smooth.
-    TODO: prove this properly once equivariant_triv is generalized to all atlas trivializations. -/
+/-- The transition function between two local sections of a smooth principal bundle is smooth. -/
 theorem contMDiffAt_gaugeMap
     {B : Type*} [TopologicalSpace B]
     {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
@@ -739,7 +744,7 @@ theorem contMDiffAt_gaugeMap
     [MulAction (MulOpposite G) P]
     [SmoothRightGAction ∞ IG (IB.prod IG) G P]
     {proj : P → B}
-    [IsPrincipalBundle IB G IG P (IB.prod IG) proj]
+    [hPB : IsPrincipalBundle IB G IG P (IB.prod IG) proj]
     (σ₁ σ₂ : B → P)
     (U₁ U₂ : Set B)
     (hσ₁ : IsLocalSection (IB := IB) (IG := IG) (proj := proj) σ₁ U₁)
@@ -748,7 +753,41 @@ theorem contMDiffAt_gaugeMap
     (hΩ : ∀ x ∈ U₁ ∩ U₂, σ₁ x <• Ω x = σ₂ x)
     (m : B) (hm : m ∈ U₁ ∩ U₂) :
     ContMDiffAt IB IG ∞ Ω m := by
-  sorry
+  set φ := hPB.localTriv (σ₁ m)
+  have hb : m ∈ φ.baseSet := by
+    have h := hPB.mem_baseSet_localTriv (σ₁ m)
+    rwa [hσ₁.2.2 m hm.1] at h
+  have hV : IsOpen (U₁ ∩ U₂ ∩ φ.baseSet) := (hσ₁.1.inter hσ₂.1).inter φ.open_baseSet
+  have hmV : m ∈ U₁ ∩ U₂ ∩ φ.baseSet := ⟨hm, hb⟩
+  have hsrc₁ : ∀ x ∈ U₁ ∩ U₂ ∩ φ.baseSet, σ₁ x ∈ φ.source := fun x hx ↦
+    φ.mem_source.mpr (by rw [hσ₁.2.2 x hx.1.1]; exact hx.2)
+  have hsrc₂ : ∀ x ∈ U₁ ∩ U₂ ∩ φ.baseSet, σ₂ x ∈ φ.source := fun x hx ↦
+    φ.mem_source.mpr (by rw [hσ₂.2.2 x hx.1.2]; exact hx.2)
+  -- the closed form for Ω on the common neighbourhood
+  have hkey : ∀ x ∈ U₁ ∩ U₂ ∩ φ.baseSet,
+      Ω x = ((φ (σ₁ x)).2)⁻¹ * (φ (σ₂ x)).2 := by
+    intro x hx
+    have h := hPB.equivariant_localTriv (σ₁ m) (σ₁ x) (hsrc₁ x hx) (Ω x)
+    rw [hΩ x hx.1] at h
+    have h2 : (φ (σ₂ x)).2 = (φ (σ₁ x)).2 * Ω x := by rw [h]
+    rw [h2, inv_mul_cancel_left]
+  -- smoothness of the right-hand side
+  have hσ₁m : ContMDiffAt IB (IB.prod IG) ∞ σ₁ m :=
+    hσ₁.2.1.contMDiffAt (hσ₁.1.mem_nhds hm.1)
+  have hσ₂m : ContMDiffAt IB (IB.prod IG) ∞ σ₂ m :=
+    hσ₂.2.1.contMDiffAt (hσ₂.1.mem_nhds hm.2)
+  have hφ₁ : ContMDiffAt IB (IB.prod IG) ∞ (fun x ↦ φ (σ₁ x)) m :=
+    ((hPB.smooth_localTriv (σ₁ m)).contMDiffAt
+      (φ.open_source.mem_nhds (hsrc₁ m hmV))).comp m hσ₁m
+  have hφ₂ : ContMDiffAt IB (IB.prod IG) ∞ (fun x ↦ φ (σ₂ x)) m :=
+    ((hPB.smooth_localTriv (σ₁ m)).contMDiffAt
+      (φ.open_source.mem_nhds (hsrc₂ m hmV))).comp m hσ₂m
+  have hg₁ : ContMDiffAt IB IG ∞ (fun x ↦ (φ (σ₁ x)).2) m :=
+    contMDiff_snd.contMDiffAt.comp m hφ₁
+  have hg₂ : ContMDiffAt IB IG ∞ (fun x ↦ (φ (σ₂ x)).2) m :=
+    contMDiff_snd.contMDiffAt.comp m hφ₂
+  exact (hg₁.inv.mul hg₂).congr_of_eventuallyEq
+    (Filter.eventually_of_mem (hV.mem_nhds hmV) hkey)
 
 section
 
