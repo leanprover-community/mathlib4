@@ -2811,6 +2811,7 @@ public import Mathlib.CategoryTheory.Limits.ConcreteCategory.WithAlgebraicStruct
 public import Mathlib.CategoryTheory.Limits.ConeCategory
 public import Mathlib.CategoryTheory.Limits.Cones
 public import Mathlib.CategoryTheory.Limits.Connected
+public import Mathlib.CategoryTheory.Limits.ConstructLimitMap
 public import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 public import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
@@ -2878,6 +2879,7 @@ public import Mathlib.CategoryTheory.Limits.Presentation
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Bifunctor
 public import Mathlib.CategoryTheory.Limits.Preserves.BifunctorCokernel
+public import Mathlib.CategoryTheory.Limits.Preserves.Coyoneda
 public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Finite
 public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Opposites
 public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Pullbacks

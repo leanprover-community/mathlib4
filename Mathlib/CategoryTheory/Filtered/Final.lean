@@ -60,12 +60,15 @@ theorem Functor.initial_of_isCofiltered_costructuredArrow
     [∀ d, IsCofiltered (CostructuredArrow F d)] : Initial F where
   out _ := IsCofiltered.isConnected _
 
-theorem isFiltered_structuredArrow_of_isFiltered_of_exists [IsFilteredOrEmpty C]
-    (h₁ : ∀ d, ∃ c, Nonempty (d ⟶ F.obj c)) (h₂ : ∀ {d : D} {c : C} (s s' : d ⟶ F.obj c),
-      ∃ (c' : C) (t : c ⟶ c'), s ≫ F.map t = s' ≫ F.map t) (d : D) :
+/-- A pointwise version of `isFiltered_structuredArrow_of_isFiltered_of_exists`: to show that
+`StructuredArrow d F` is filtered for a *fixed* `d : D`, the conditions are only needed for
+this `d`. -/
+theorem isFiltered_structuredArrow_of_isFiltered_of_exists' [IsFilteredOrEmpty C] (d : D)
+    (h₁ : ∃ c, Nonempty (d ⟶ F.obj c)) (h₂ : ∀ {c : C} (s s' : d ⟶ F.obj c),
+      ∃ (c' : C) (t : c ⟶ c'), s ≫ F.map t = s' ≫ F.map t) :
     IsFiltered (StructuredArrow d F) := by
   have : Nonempty (StructuredArrow d F) := by
-    obtain ⟨c, ⟨f⟩⟩ := h₁ d
+    obtain ⟨c, ⟨f⟩⟩ := h₁
     exact ⟨.mk f⟩
   suffices IsFilteredOrEmpty (StructuredArrow d F) from IsFiltered.mk
   refine ⟨fun f g => ?_, fun f g η μ => ?_⟩
@@ -78,20 +81,34 @@ theorem isFiltered_structuredArrow_of_isFiltered_of_exists [IsFilteredOrEmpty C]
       StructuredArrow.homMk (IsFiltered.coeqHom η.right μ.right) (by simp), ?_⟩
     simpa using IsFiltered.coeq_condition _ _
 
-theorem isCofiltered_costructuredArrow_of_isCofiltered_of_exists [IsCofilteredOrEmpty C]
-    (h₁ : ∀ d, ∃ c, Nonempty (F.obj c ⟶ d)) (h₂ : ∀ {d : D} {c : C} (s s' : F.obj c ⟶ d),
-      ∃ (c' : C) (t : c' ⟶ c), F.map t ≫ s = F.map t ≫ s') (d : D) :
+theorem isFiltered_structuredArrow_of_isFiltered_of_exists [IsFilteredOrEmpty C]
+    (h₁ : ∀ d, ∃ c, Nonempty (d ⟶ F.obj c)) (h₂ : ∀ {d : D} {c : C} (s s' : d ⟶ F.obj c),
+      ∃ (c' : C) (t : c ⟶ c'), s ≫ F.map t = s' ≫ F.map t) (d : D) :
+    IsFiltered (StructuredArrow d F) :=
+  isFiltered_structuredArrow_of_isFiltered_of_exists' F d (h₁ d) h₂
+
+/-- A pointwise version of `isCofiltered_costructuredArrow_of_isCofiltered_of_exists`: to show
+that `CostructuredArrow F d` is cofiltered for a *fixed* `d : D`, the conditions are only needed
+for this `d`. -/
+theorem isCofiltered_costructuredArrow_of_isCofiltered_of_exists' [IsCofilteredOrEmpty C] (d : D)
+    (h₁ : ∃ c, Nonempty (F.obj c ⟶ d)) (h₂ : ∀ {c : C} (s s' : F.obj c ⟶ d),
+      ∃ (c' : C) (t : c' ⟶ c), F.map t ≫ s = F.map t ≫ s') :
     IsCofiltered (CostructuredArrow F d) := by
   suffices IsFiltered (CostructuredArrow F d)ᵒᵖ from isCofiltered_of_isFiltered_op _
   suffices IsFiltered (StructuredArrow (op d) F.op) from
     IsFiltered.of_equivalence (costructuredArrowOpEquivalence _ _).symm
-  apply isFiltered_structuredArrow_of_isFiltered_of_exists
-  · intro d
-    obtain ⟨c, ⟨t⟩⟩ := h₁ d.unop
+  apply isFiltered_structuredArrow_of_isFiltered_of_exists'
+  · obtain ⟨c, ⟨t⟩⟩ := h₁
     exact ⟨op c, ⟨Quiver.Hom.op t⟩⟩
-  · intro d c s s'
+  · intro c s s'
     obtain ⟨c', t, ht⟩ := h₂ s.unop s'.unop
     exact ⟨op c', Quiver.Hom.op t, Quiver.Hom.unop_inj ht⟩
+
+theorem isCofiltered_costructuredArrow_of_isCofiltered_of_exists [IsCofilteredOrEmpty C]
+    (h₁ : ∀ d, ∃ c, Nonempty (F.obj c ⟶ d)) (h₂ : ∀ {d : D} {c : C} (s s' : F.obj c ⟶ d),
+      ∃ (c' : C) (t : c' ⟶ c), F.map t ≫ s = F.map t ≫ s') (d : D) :
+    IsCofiltered (CostructuredArrow F d) :=
+  isCofiltered_costructuredArrow_of_isCofiltered_of_exists' F d (h₁ d) h₂
 
 /-- If `C` is filtered, then we can give an explicit condition for a functor `F : C ⥤ D` to
 be final. The converse is also true, see `final_iff_of_isFiltered`. -/

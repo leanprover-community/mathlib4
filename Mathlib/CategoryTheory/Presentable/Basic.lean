@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+public import Mathlib.CategoryTheory.Limits.Preserves.Coyoneda
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
@@ -243,7 +244,7 @@ lemma IsCardinalPresentable.exists_hom_of_isColimit [IsCardinalPresentable X κ]
     {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) (f : X ⟶ c.pt) :
     ∃ (j : J) (f' : X ⟶ F.obj j), f' ≫ c.ι.app j = f := by
   have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
-  exact Types.jointly_surjective_of_isColimit (isColimitOfPreserves (coyoneda.obj (op X)) hc) f
+  exact exists_hom_of_preservesColimit_coyoneda hc f
 
 variable {X} in
 lemma IsCardinalPresentable.exists_eq_of_isColimit [IsCardinalPresentable X κ]
@@ -253,8 +254,7 @@ lemma IsCardinalPresentable.exists_eq_of_isColimit [IsCardinalPresentable X κ]
     ∃ (j : J) (u : i₁ ⟶ j) (v : i₂ ⟶ j), f₁ ≫ F.map u = f₂ ≫ F.map v := by
   have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
   have := isFiltered_of_isCardinalFiltered J κ
-  exact (Types.FilteredColimit.isColimit_eq_iff _
-    (isColimitOfPreserves (coyoneda.obj (op X)) hc)).1 hf
+  exact exists_eq_of_preservesColimit_coyoneda hc f₁ f₂ hf
 
 variable {X} in
 lemma IsCardinalPresentable.exists_eq_of_isColimit' [IsCardinalPresentable X κ]
@@ -264,8 +264,7 @@ lemma IsCardinalPresentable.exists_eq_of_isColimit' [IsCardinalPresentable X κ]
     ∃ (j : J) (u : i ⟶ j), f₁ ≫ F.map u = f₂ ≫ F.map u := by
   have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
   have := isFiltered_of_isCardinalFiltered J κ
-  exact (Types.FilteredColimit.isColimit_eq_iff'
-    (isColimitOfPreserves (coyoneda.obj (op X)) hc) f₁ f₂).1 hf
+  exact exists_eq_of_preservesColimit_coyoneda_self hc f₁ f₂ hf
 
 lemma isCardinalPresentable_iff_isCardinalAccessible_uliftCoyoneda_obj :
     IsCardinalPresentable X κ ↔ (uliftCoyoneda.{t}.obj (op X)).IsCardinalAccessible κ := by
