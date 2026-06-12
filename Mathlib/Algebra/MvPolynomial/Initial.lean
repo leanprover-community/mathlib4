@@ -34,6 +34,10 @@ of the highest power of `xᵢ` appearing in `p`.
 * `initial_reducedTo`: The initial is always reduced w.r.t. the original polynomial
 * `initialOf_mul`: `initᵢ(p * q) = initᵢ(p) * initᵢ(q)` (for integral domains)
 
+## References
+* [Wen-Tsun Wu, *Basic principles of mechanical theorem proving in elementary geometries*]
+  [wen1986basic]
+
 -/
 
 @[expose] public section
@@ -397,7 +401,8 @@ theorem initial_monomial {s : σ →₀ ℕ} (r : R) {c : σ} :
 @[simp] theorem initial_X (i : σ) : (X i : MvPolynomial σ R).initial = 1 := by
   rw [← pow_one (X i : MvPolynomial σ R), initial_X_pow i one_ne_zero]
 
-theorem max_vars_initial_lt (hp : p.vars.max ≠ ⊥) : (initial p).vars.max < p.vars.max := by
+theorem max_vars_initial_lt (hp : p.vars.max ≠ ⊥) :
+    (initial p).vars.max < p.vars.max := by
   by_contra con
   have ⟨c, hc⟩ := WithBot.ne_bot_iff_exists.mp hp
   absurd p.degreeOf_initialOf_self c
