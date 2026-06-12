@@ -138,6 +138,9 @@ lemma ite_mul_ite (a b c d : α) :
 
 end Mul
 
+lemma neg_ite {α : Type*} (P : Prop) [Decidable P] [Neg α] (b : α) (c : α) :
+    -(if P then b else c) = if P then -b else -c := by split <;> rfl
+
 section Div
 variable [Div α]
 
