@@ -329,34 +329,31 @@ passed the standard basis functions with support at each vertex of the edge.
 lemma associatedForm_neq_basisFuns_eq_neq_edgeWeight (x y : X) (h : x ≠ y) :
     G.associatedForm (𝟙_x) (𝟙_y) = - G.edgeWeight x y := by
   have : DecidableEq X := Classical.typeDecidableEq X
+  -- Some lemmas we will need
+  have h2 : ∑ x_1 ∈ univ \ {x}, ∑ x_2 ∈ univ \ {x}, ↑(G.edgeWeight x_1 x_2) * ((𝟙_x) x_1 -
+    (𝟙_x) x_2) * ((𝟙_y) x_1 - (𝟙_y) x_2)
+      = 0 := by
+    rw [← sum_const_zero, ← sum_const_zero]
+    congr! with z h2
+    grind
+  have h3 : ∑ x_1 ∈ (univ \ {x}) \ {y}, ↑(G.edgeWeight x_1 x) * ((𝟙_x) x_1 -
+      (𝟙_x) x) * ((𝟙_y) x_1 - (𝟙_y) x) = 0 := by
+    rw [← sum_const_zero]
+    congr! with z h2
+    grind
+  -- now begin the proof
   simp only [associatedForm_apply, one_div]
   field_simp
   rw [neq_basis_vecs_imp_sum_weighted_killingTerm_neq_basisFun_eq_zero (h := h), mul_zero, add_zero,
     sum_eq_sum_sdiff_singleton_add (i := x) (by simp)]
   nth_rw 2 [sum_eq_sum_sdiff_singleton_add (i := y) (by simp)]
   conv => lhs; congr; rfl; arg 2; simp [h]
-  have : ∑ x_1 ∈ univ \ {y}, ↑(G.edgeWeight x x_1)
-      * ((𝟙_x) x - (𝟙_x) x_1) * ((𝟙_y) x - (𝟙_y) x_1) = 0 := by
-    rw [← sum_const_zero]
-    congr! with z h2
-    simp_all [mem_singleton]
-  rw [this, zero_add]
+  rw [sum_congr (s₁ := univ \ {y}) (s₂ := univ \ {y}) (g := fun _ ↦ 0) (by simp) (by simp_all),
+    sum_const_zero, zero_add]
   conv => lhs; congr; congr; rfl; ext z; rw [sum_eq_sum_sdiff_singleton_add (i := x) (by simp)]
-  rw [sum_add_distrib]
-  have : ∑ x_1 ∈ univ \ {x}, ∑ x_2 ∈ univ \ {x}, ↑(G.edgeWeight x_1 x_2) * ((𝟙_x) x_1 -
-    (𝟙_x) x_2) * ((𝟙_y) x_1 - (𝟙_y) x_2)
-      = 0 := by
-    rw [← sum_const_zero, ← sum_const_zero]
-    congr! with z h2
-    grind
-  rw [this, zero_add, sum_eq_sum_sdiff_singleton_add (i := y) (by grind)]
+  rw [sum_add_distrib, h2, zero_add, sum_eq_sum_sdiff_singleton_add (i := y) (by grind)]
   conv => lhs; arg 1; arg 2; simp [h]
-  have : ∑ x_1 ∈ (univ \ {x}) \ {y}, ↑(G.edgeWeight x_1 x) * ((𝟙_x) x_1 -
-      (𝟙_x) x) * ((𝟙_y) x_1 - (𝟙_y) x) = 0 := by
-    rw [← sum_const_zero]
-    congr! with z h2
-    grind
-  rw [this, G.edgeWeight_symm_apply]
+  rw [h3, G.edgeWeight_symm_apply]
   ring
 
 /--
