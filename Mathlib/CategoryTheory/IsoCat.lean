@@ -162,7 +162,7 @@ def Equivalence.toIsoCat (e : C ≌ D)
   unit_eq := Functor.ext_of_iso e.unitIso (by simp [h])
   counit_eq := Functor.ext_of_iso e.counitIso (by simp [h'])
 
-instance IsoCat.isIsomorphismFunctor (e : IsoCat C D) : e.functor.IsIso where
+instance IsoCat.isIso_functor (e : IsoCat C D) : e.functor.IsIso where
   faithful := e.toEquivalence.faithful_functor
   full := e.toEquivalence.full_functor
   bijective_obj := Function.bijective_iff_has_inverse.mpr
@@ -176,6 +176,6 @@ instance [F.IsIso] : F.strictInv.IsIso :=
   IsoCat.isIsomorphismFunctor F.asIsomorphism.symm
 
 instance [F.IsIso] [G.IsIso] : (F ⋙ G).IsIso :=
-  IsoCat.isIsomorphismFunctor (F.asIsomorphism.trans G.asIsomorphism)
+  (F.asIsomorphism.trans G.asIsomorphism).isIso_functor
 
 end CategoryTheory
