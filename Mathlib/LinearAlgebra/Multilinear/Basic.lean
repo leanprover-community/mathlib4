@@ -232,7 +232,7 @@ instance addCommMonoid : AddCommMonoid (MultilinearMap R M₁ M₂) := fast_inst
 
 @[deprecated (since := "2026-06-10")] alias coe_sum := FunLike.coe_sum
 
-@[deprecated (since := "2026-06-10")] protected alias sum_apply := sum_apply
+@[deprecated (since := "2026-06-10")] protected alias sum_apply := _root_.sum_apply
 
 /-- If `f` is a multilinear map, then `f.toLinearMap m i` is the linear map obtained by fixing all
 coordinates but `i` equal to those of `m`, and varying the `i`-th coordinate. -/
