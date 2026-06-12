@@ -118,9 +118,7 @@ lemma pow_apply_eq_iterate {F α : Type*} [FunLike F α α] [Monoid F] [IsOneApp
     (f ^ n) x = f^[n] x := by
   induction n with
   | zero => simp
-  | succ n ih =>
-    simpa only [pow_succ', mul_apply_eq_comp, Function.iterate_succ', Function.comp_apply]
-      using congr_arg f ih
+  | succ n ih => simp [pow_succ', ih, ← Function.iterate_succ_apply']
 
 end Add
 
