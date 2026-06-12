@@ -266,8 +266,7 @@ lemma associatedForm_apply {f g} : G.associatedForm f g =
   (1/2) * ∑ x, ∑ y, (G.edgeWeight x y) * (f x - f y) * (g x - g y) +
     ∑ x, (G.killingTerm x) * f x * g x := by rfl
 
-variable [DecidableEq X]
-
+open scoped Classical in
 /-- We define the indicator functions to be our standard basis functions for X → ℝ -/
 noncomputable
 abbrev basisFun (y : X) : X → ℝ := Pi.single y 1
@@ -286,6 +285,7 @@ passed the standard basis function with support at `x`.
 -/
 lemma associatedForm_of_basis_eq_degree :
     G.associatedForm (𝟙_x) (𝟙_x) = G.degree x := by
+  have : DecidableEq X := Classical.typeDecidableEq X
   simp only [associatedForm_apply, degree, one_div, NNReal.coe_add, NNReal.coe_sum]
   field_simp
   simp only [sum_killingTerm_weight_mul_basisFun_sq_eq_killingTerm_mul_basisFun_sq]
@@ -316,6 +316,7 @@ lemma associatedForm_of_basis_eq_degree :
 
 lemma neq_basis_vecs_imp_sum_weighted_killingTerm_neq_basisFun_eq_zero (x y : X) (h : x ≠ y) :
     ∑ z, G.killingTerm z * (𝟙_x) z * (𝟙_y) z = 0 := by
+  have : DecidableEq X := Classical.typeDecidableEq X
   have : (𝟙_y) x = 0 := by grind
   rw [Finset.sum_eq_sum_sdiff_singleton_add (i := x) (by simp), this, mul_zero, add_zero,
     ← Finset.sum_const_zero (s := (_ : Finset X))]
@@ -328,6 +329,7 @@ passed the standard basis functions with support at each vertex of the edge.
 -/
 lemma associatedForm_neq_basisFuns_eq_neq_edgeWeight (x y : X) (h : x ≠ y) :
     G.associatedForm (𝟙_x) (𝟙_y) = - G.edgeWeight x y := by
+  have : DecidableEq X := Classical.typeDecidableEq X
   simp only [associatedForm_apply, one_div]
   field_simp
   rw [neq_basis_vecs_imp_sum_weighted_killingTerm_neq_basisFun_eq_zero (h := h), mul_zero, add_zero,
@@ -378,6 +380,7 @@ The form associated to a `WeightedGraphWithKillingTerm` is equal to the killing 
 when passed the standard basis function with support at x and the constant 1 function.
 -/
 lemma associatedForm_at_basisVec_eq_killingTerm : G.associatedForm (𝟙_x) 1 = G.killingTerm x := by
+  have : DecidableEq X := Classical.typeDecidableEq X
   have : ∑ x_1 ∈ univ \ {x}, ↑(G.killingTerm x_1) * (𝟙_x) x_1 = 0 := by
     rw [← Finset.sum_const_zero]; congr! with z h2; grind
   simp [associatedForm_apply]
