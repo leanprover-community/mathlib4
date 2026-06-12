@@ -97,8 +97,8 @@ lemma toMeasure_apply_tsum_subtype [MeasurableSpace α] [MeasurableSingletonClas
 @[simp]
 lemma toMeasure_apply_singleton [MeasurableSpace α] [MeasurableSingletonClass α]
     (μ : DiscreteMeasure α) (a : α) : μ.toMeasure {a} = μ a := by
-  simp only [μ.toMeasure_apply_eq_tsum_mul (measurableSet_singleton a), Set.indicator.mul_indicator_eq,
-    ←tsum_subtype, tsum_singleton]
+  simp only [μ.toMeasure_apply_eq_tsum_mul (measurableSet_singleton a),
+    Set.indicator.mul_indicator_eq, ←tsum_subtype, tsum_singleton]
 
 theorem toMeasure_apply_eq_zero_iff [MeasurableSpace α] [MeasurableSingletonClass α]
     {μ : DiscreteMeasure α} {s : Set α} (hs : MeasurableSet s) :
@@ -110,7 +110,8 @@ theorem toMeasure_apply_eq_zero_iff [MeasurableSpace α] [MeasurableSingletonCla
 theorem toMeasure_apply_inter_support [MeasurableSpace α] [MeasurableSingletonClass α]
     {μ : DiscreteMeasure α} {s u : Set α} (hs : MeasurableSet s) (hu : MeasurableSet u)
     (h : μ.weight.support ⊆ u) : μ.toMeasure (s ∩ u) = μ.toMeasure s := by
-  simp only [toMeasure_apply_eq_tsum_mul (hs := hs), toMeasure_apply_eq_tsum_mul (hs := MeasurableSet.inter hs hu)]
+  simp only [toMeasure_apply_eq_tsum_mul (hs := hs),
+    toMeasure_apply_eq_tsum_mul (hs := MeasurableSet.inter hs hu)]
   apply tsum_congr (fun a ↦ ?_)
   repeat rw [Set.indicator.mul_indicator_eq, Set.indicator]
   simp only [support_subset_iff, weight_eq, ne_eq] at h
