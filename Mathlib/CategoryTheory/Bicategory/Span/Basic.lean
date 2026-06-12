@@ -153,18 +153,12 @@ structure Spans (Wₗ Wᵣ : MorphismProperty C) : Type _ where
   /-- the underlying object of `C` of a term in `Spans C _ _` -/
   of : C
 
-variable [Wₗ.ContainsIdentities] [Wᵣ.ContainsIdentities] [Wₗ.HasPullbacksAgainst Wᵣ]
-    [Wₗ.IsStableUnderBaseChangeAgainst Wᵣ] [Wᵣ.IsStableUnderBaseChangeAgainst Wₗ]
-    [Wₗ.IsStableUnderComposition] [Wᵣ.IsStableUnderComposition]
-
 namespace Spans
 
 noncomputable instance : CategoryStruct (Spans C Wₗ Wᵣ) where
   Hom x y := Span Wₗ Wᵣ x.of y.of
   id x := Span.id x.of
   comp S₁ S₂ := Span.comp S₁ S₂
-
-variable {Wₗ Wᵣ}
 
 @[simp, grind =]
 lemma id_apex (X : Spans C Wₗ Wᵣ) : (𝟙 X : X ⟶ X).apex = X.of := rfl
@@ -520,6 +514,8 @@ instance (S : X ⟶ Y) : IsIso (πₗ S (𝟙 _)) :=
   exact this
 
 end
+
+end Spans
 
 end Span
 
