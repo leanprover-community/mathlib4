@@ -88,9 +88,9 @@ lemma isHomogeneous_addSubMap (i : Fin 3) : (addSubMap W i).IsHomogeneous 2 := b
   fin_cases i <;>
     simp only [Fin.isValue, Fin.mk_one, Fin.zero_eta, Fin.reduceFinMk, Matrix.cons_val,
       Matrix.cons_val_one, Matrix.cons_val_zero]
-  · exact .sub (.sub (.sub (isHomogeneous_X_pow ..) CXY) CXY) CXX
-  · exact .add (.add (.add CXY CXY) CXY) CXX
-  · exact .sub (isHomogeneous_X_pow ..) CXY
+  · exact isHomogeneous_X_pow .. |>.sub CXY |>.sub CXY |>.sub CXX
+  · exact CXY.add CXY |>.add CXY |>.add CXX
+  · exact isHomogeneous_X_pow .. |>.sub CXY
 
 lemma isHomogeneous_addSubMapCoeff (ij : Fin 3 × Fin 3) :
     (addSubMapCoeff W ij).IsHomogeneous 2 := by
@@ -99,17 +99,17 @@ lemma isHomogeneous_addSubMapCoeff (ij : Fin 3 × Fin 3) :
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Function.uncurry_apply_pair,
       Matrix.cons_val', Matrix.cons_val_zero, Matrix.cons_val_fin_one, neg_mul, Fin.mk_one,
       Matrix.cons_val_one, Fin.reduceFinMk, Matrix.cons_val, Fin.zero_eta]
-    -- The following works, but is slow (44889 vs. 11590 heartbeats):
+    -- The following works, but is slow (44894 vs. 11717 heartbeats):
     -- <;> repeat first | refine .add ?_ CXY | refine .add ?_ CXX | exact CXX | exact CXY
-  · exact (((CXX.add CXY).add CXY).add CXX).add CXY
-  · exact (((CXX.add CXY).add CXY).add CXX).add CXY
-  · exact (CXX.add CXY).add CXY
-  · exact (CXY.add CXX).add CXY
-  · exact ((CXX.add CXY).add CXX).add CXY
-  · exact (((CXX.add CXY).add CXY).add CXX).add CXY
-  · exact (CXX.add CXY).add CXX
-  · exact ((CXY.add CXY).add CXY).add CXX
-  · exact (CXY.add CXY).add CXX
+  · exact CXX.add CXY |>.add CXY |>.add CXX |>.add CXY
+  · exact CXX.add CXY |>.add CXY |>.add CXX |>.add CXY
+  · exact CXX.add CXY |>.add CXY
+  · exact CXY.add CXX |>.add CXY
+  · exact CXX.add CXY |>.add CXX |>.add CXY
+  · exact CXX.add CXY |>.add CXY |>.add CXX |>.add CXY
+  · exact CXX.add CXY |>.add CXX
+  · exact CXY.add CXY |>.add CXY |>.add CXX
+  · exact CXY.add CXY |>.add CXX
 
 variable [W.IsElliptic]
 
