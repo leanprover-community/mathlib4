@@ -28,8 +28,8 @@ https://github.com/leanprover-community/mathlib4/pull/39520 is commutative.
 - `h1CotangentEquivCotangent`: This is the linear equivalence between `H1Cotangent P.Ring S` and
   `P.Cotangent` defined by the composition of `h1CotangentExtendScalarsEquiv.symm`,
   `h1CotangentEquivOfSurjective` and `cotangentExtendScalarsEquiv`.
-- `cotangentComplex_comp_coe_h1CotangentEquivCotangent`,
-  `coe_h1CotangentEquivCotangent_comp_map`: commutativity results.
+- `cotangentComplex_comp_h1CotangentEquivCotangent`,
+  `h1CotangentEquivCotangent_comp_map`: commutativity results.
 
 -/
 
@@ -153,11 +153,11 @@ theorem H1Cotangent.map_defaultHom_surjective (P : Extension.{w} R S) :
     Function.Surjective (H1Cotangent.map P.defaultHom) := by
   rw [← LinearMap.range_eq_top,
     ← (Submodule.map_injective_of_injective h1Cotangentι_injective).eq_iff,
-    ← LinearMap.range_comp, ← P.coe_h1CotangentEquivCotangent_comp_map, LinearMap.range_comp,
+    ← LinearMap.range_comp, ← P.h1CotangentEquivCotangent_comp_map, LinearMap.range_comp,
     ← (Algebra.H1Cotangent.exact_map_δ R P.Ring S).linearMap_ker_eq, Submodule.map_top,
     ← exact_hCotangentι_cotangentComplex.linearMap_ker_eq, Submodule.map_equiv_eq_comap_symm,
     LinearMap.ker, LinearMap.ker, ← Submodule.comap_comp]
   congr
-  rw [LinearEquiv.comp_toLinearMap_symm_eq, P.cotangentComplex_comp_coe_h1CotangentEquivCotangent]
+  rw [LinearEquiv.comp_toLinearMap_symm_eq, P.cotangentComplex_comp_h1CotangentEquivCotangent]
 
 end Algebra.Extension
