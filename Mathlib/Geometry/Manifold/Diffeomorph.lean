@@ -673,6 +673,7 @@ end Constructions
 
 end Diffeomorph
 
+open OpenPartialHomeomorph in
 /--
 The push-forward of a `ChartedSpace` along a homeomorphism `f : M ≃ₜ N` is a manifold, if `M`
 is a manifold.
@@ -683,8 +684,11 @@ def Homeomorph.isManifold [IsManifold I n M] (φ : M ≃ₜ N) :
   IsManifold I n N  where
     __ := φ.chartedSpace H
     compatible {e e'} he he' := by
-      have : _ ∈ contDiffGroupoid n I := IsManifold.compatible_of_mem_maximalAtlas
+      have : e.symm ≫ₕ e' =
+          (φ.transOpenPartialHomeomorph e).symm ≫ₕ φ.transOpenPartialHomeomorph e' := by
+        simp [trans_symm_eq_symm_trans_symm, trans_assoc,
+          ← trans_assoc φ.toOpenPartialHomeomorph.symm,
+          Homeomorph.transOpenPartialHomeomorph_eq_trans]
+      rw [this]
+      exact IsManifold.compatible_of_mem_maximalAtlas
         (φ.chartedSpace_trans_mem_maximalAtlas e he) (φ.chartedSpace_trans_mem_maximalAtlas e' he')
-      convert this
-      simp [OpenPartialHomeomorph.trans_symm_eq_symm_trans_symm, OpenPartialHomeomorph.trans_assoc,
-        ← OpenPartialHomeomorph.trans_assoc φ.toOpenPartialHomeomorph.symm]
