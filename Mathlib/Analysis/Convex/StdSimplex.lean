@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Convex.PathConnected
+public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Standard
 public import Mathlib.Topology.Algebra.Monoid.FunOnFinite
 public import Mathlib.Topology.UnitInterval
 
@@ -20,6 +21,10 @@ coordinates with total sum `1`.
 When `f : X → Y` is a map between finite types, we define the map
 `stdSimplex.map f : stdSimplex 𝕜 X → stdSimplex 𝕜 Y`.
 
+We also relate `stdSimplex ℝ (Fin n)` to `Affine.stdSimplex`, the affine simplex in `Fin n → ℝ`
+whose vertices are `0` and the standard basis vectors: the closed interior of the face of
+`Affine.stdSimplex` opposite the vertex `0` is `stdSimplex ℝ (Fin n)`
+(`Affine.Simplex.faceOpposite_zero_eq_stdSimplex`).
 -/
 
 @[expose] public section
@@ -417,3 +422,38 @@ theorem barycenter_eq_centerMass [DecidableEq X] :
 end Barycenter
 
 end stdSimplex
+
+/-! ### Relationship with the standard affine simplex -/
+
+section AffineSimplex
+
+variable {n : ℕ} [NeZero n]
+
+namespace Affine.Simplex
+
+/-- The vertices of the face of `Affine.stdSimplex` opposite the vertex `0` are the standard
+basis vectors. -/
+lemma range_faceOpposite_zero_points : Set.range ((Affine.stdSimplex n ℝ).faceOpposite 0).points
+    = Set.range (fun i : Fin n => Pi.single i (1 : ℝ)) := by
+  rw [range_faceOpposite_points]
+  ext x
+  simp only [Set.mem_image, Set.mem_compl_iff, Set.mem_singleton_iff, Set.mem_range]
+  constructor
+  · rintro ⟨i, hi, rfl⟩
+    obtain ⟨j, rfl⟩ := Fin.exists_succ_eq.mpr hi
+    rw [points_succ]
+    exact ⟨j, rfl⟩
+  · rintro ⟨j, rfl⟩
+    refine ⟨j.succ, Fin.succ_ne_zero j, ?_⟩
+    rw [points_succ]
+
+/-- The closed interior of the face of `Affine.stdSimplex` opposite the vertex `0` is the
+standard simplex `stdSimplex ℝ (Fin n)`. -/
+lemma faceOpposite_zero_eq_stdSimplex :
+    ((Affine.stdSimplex n ℝ).faceOpposite 0).closedInterior = _root_.stdSimplex ℝ (Fin n) := by
+  rw [← convexHull_eq_closedInterior, range_faceOpposite_zero_points]
+  exact convexHull_rangle_single_eq_stdSimplex ℝ (Fin n)
+
+end Affine.Simplex
+
+end AffineSimplex
