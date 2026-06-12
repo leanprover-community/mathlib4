@@ -249,46 +249,29 @@ jobs:
           # Set it as an environment variable for subsequent steps
           echo "LEAN_SRC_PATH=$LEAN_SRC_PATH" >> "$GITHUB_ENV"
 
-      # Does this branch change the cache tool itself? `pr-branch` is
-      # `pr_branch_ref` already checked out, so this is a local `git diff` against
-      # a shallow `master` fetch — no API call. If so, the prebuilt `master`
-      # artifact would mask the change, so we must build the tool from this branch.
-      #
-      # Skipped for fork PRs: they run master's `build_template` via
-      # `pull_request_target` (never this one), their untrusted tool must not be
-      # built/run with cache credentials, and bors exercises tool changes in-repo.
-      # A skipped step leaves `tool_changed` empty, which keeps the prebuilt-
-      # artifact fast path enabled below.
-      - name: detect cache-tool changes
-        id: tool_changes
-        if: ${{ github.event.pull_request.head.repo.fork != true }}
-        shell: bash # plain bash: reads the PR tree + a shallow master fetch; runs no PR code
-        run: |
-          tool_changed=false
-          git -C pr-branch fetch --no-tags --depth=1 https://github.com/leanprover-community/mathlib4.git master || true
-          # Fail safe toward building: a failed fetch/diff leaves $? non-zero.
-          if ! git -C pr-branch diff --quiet FETCH_HEAD -- Cache scripts/lake-build-with-retry.sh scripts/lake-build-wrapper.py; then
-            tool_changed=true
-          fi
-          echo "tool_changed=${tool_changed}"
-          echo "tool_changed=${tool_changed}" >> "$GITHUB_OUTPUT"
-
       # Populate `tools-branch/` with the trusted CI tooling (the `cache` binary and
       # the `lake-build-*` helper scripts invoked by path below).
       #
       #   - Fast path: download the prebuilt `tools-bin` artifact published from
       #     `master` by `publish_tools.yml` — only on canonical mathlib4, and only
-      #     when this branch doesn't change the cache tool (see the detection above).
+      #     when the branch under test doesn't change the cache tool. `get-tools`
+      #     makes that comparison itself against `source_dir` (the already-checked-
+      #     out `pr-branch`), so the tool-source path list lives in the action, not
+      #     duplicated here.
       #   - Source build: from `tools_source_ref`, pointed at the branch *under
       #     test* (`pr_branch_ref`) — bors `staging`/`trying`, in-repo dev branches,
       #     and the nightly-testing repo (which has no `master` branch) — so the
-      #     built tool matches the tree. Fork PRs keep `master`, so an untrusted
-      #     tool is never built/run.
+      #     built tool matches the tree. Fork PRs keep `master` and skip the
+      #     comparison (empty `source_dir`): they run master's `build_template` via
+      #     `pull_request_target`, never this one, and their untrusted tool must
+      #     never be built/run with cache credentials (bors exercises tool changes
+      #     in-repo instead).
       - name: Get CI tools
         uses: ./workflow-actions/.github/actions/get-tools
         with:
-          use_artifact: ${{ inputs.tools_branch_ref == '' && github.repository == 'leanprover-community/mathlib4' && steps.tool_changes.outputs.tool_changed != 'true' }}
+          use_artifact: ${{ inputs.tools_branch_ref == '' && github.repository == 'leanprover-community/mathlib4' }}
           tools_source_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.event.pull_request.head.repo.fork && 'master' || inputs.pr_branch_ref) }}
+          source_dir: ${{ github.event.pull_request.head.repo.fork != true && 'pr-branch' || '' }}
           github_token: ${{ github.token }}
 
       - name: download dependencies
