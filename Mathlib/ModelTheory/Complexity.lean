@@ -71,12 +71,8 @@ theorem IsAtomic.castLE {h : l ≤ n} (hφ : IsAtomic φ) : (φ.castLE h).IsAtom
 theorem IsAtomic.toFormula {φ : L.BoundedFormula α n} (hφ : φ.IsAtomic) :
     φ.toFormula.IsAtomic := by
   cases hφ with
-  | equal t₁ t₂ =>
-      simpa [BoundedFormula.toFormula, Term.equal] using
-        IsAtomic.equal ((t₁).relabel Sum.inl) ((t₂).relabel Sum.inl)
-  | rel R ts =>
-      simpa [BoundedFormula.toFormula, Relations.formula] using
-        IsAtomic.rel R (fun i => (ts i).relabel Sum.inl)
+  | equal t₁ t₂ => exact .equal (t₁.relabel Sum.inl) (t₂.relabel Sum.inl)
+  | rel R ts => exact .rel R fun i => (ts i).relabel Sum.inl
 
 /-- A quantifier-free formula is a formula defined without quantifiers. These are all equivalent
 to Boolean combinations of atomic formulas. -/

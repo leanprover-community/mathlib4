@@ -560,7 +560,8 @@ theorem dlo_hasQuantifierElimination :
   intro M N _ iN _ _ _ _ f a
   obtain ⟨g, ha, hfg⟩ := Language.dlo_isExtensionPair M N f a
   refine ⟨N, iN, ElementaryEmbedding.refl Language.order N, g, ha, ?_⟩
-  simpa [PartialEquiv.ExtendsAlong, PartialEquiv.codMap] using hfg
+  -- Mapping the codomain along the identity embedding is definitionally trivial.
+  exact hfg.imp fun _ h => h
 
 end Theory
 

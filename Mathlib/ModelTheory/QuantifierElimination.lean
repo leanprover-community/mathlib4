@@ -179,10 +179,13 @@ private theorem exists_embedding_of_agree_qf
         rw [hrepr (Structure.funMap f x)]
         simp only [Term.realize, hrepr]
         rfl
-      simpa [Term.realize] using hterm_eq hfunc
+      simpa [Term.realize, Function.comp_def] using hterm_eq hfunc
     map_rel' := by
       intro n R x
-      simpa [hterm_realize, hrepr] using (hQFrel R fun i => (repr (x i)).relabel idx).symm
+      -- The substructure `RelMap` is definitionally the ambient one applied to coercions.
+      change _ ↔ RelMap R fun i => ((x i : M))
+      simpa [hterm_realize, hrepr, Function.comp_def] using
+        (hQFrel R fun i => (repr (x i)).relabel idx).symm
   }, ?_⟩
   -- The generator `v i` has the same realization as the variable `xi`, so the embedding sends it
   -- to `w i`.
@@ -191,6 +194,8 @@ private theorem exists_embedding_of_agree_qf
   have hxi : (repr ⟨v i, Substructure.subset_closure ⟨i, rfl⟩⟩).realize
       ((↑) : Set.range v → M) = (Term.var (L := L) xi).realize ((↑) : Set.range v → M) := by
     simp [xi, hrepr]
+  -- Unfold the application of the embedding literal definitionally.
+  change ((repr ⟨v i, Substructure.subset_closure ⟨i, rfl⟩⟩).relabel idx).realize w = w i
   simpa [xi] using (hterm_eq hxi).trans (hvar (hidx xi))
 
 /-- Existential form of `exists_embedding_of_agree_qf` bundling the substructure, the embedding,
@@ -224,7 +229,7 @@ private theorem exists_model_not_realize_with_qf_consequences
   have hsat1 : Theory.IsSatisfiable (⋃ i, U1 i) := by
     by_contra hsat1
     rw [Theory.isSatisfiable_iUnion_iff_isSatisfiable_iUnion_finset] at hsat1
-    push_neg at hsat1
+    push Not at hsat1
     rcases hsat1 with ⟨s, hs⟩
     let qfs : Finset Q1 :=
       s.filterMap id (by intro a a' b ha ha'; simpa using ha.trans ha'.symm)
@@ -251,7 +256,8 @@ private theorem exists_model_not_realize_with_qf_consequences
         · rw [Set.mem_singleton_iff] at hnot
           subst hnot
           refine (Formula.realize_equivSentence (M := M) φ.not).mpr ?_
-          simpa [Formula.realize_not, Formula.boundedFormula_realize_eq_realize] using hφ
+          exact Formula.realize_not.mpr fun h =>
+            hφ ((Formula.boundedFormula_realize_eq_realize φ v xs).mpr h)
       have hmodel : M ⊨ ⋃ i ∈ s, U1 i := by
         refine model_iUnion_option_of_base_of_extra U1 base1
           (fun q : Q1 => Formula.equivSentence q.1) s rfl (fun _ => rfl) hbase ?_
@@ -271,7 +277,7 @@ private theorem exists_model_not_realize_with_qf_consequences
   refine ⟨Theory.ModelType.of T M1, fun i => (L.con i : M1), ?_, ?_⟩
   · have := (Formula.realize_equivSentence (M := M1) φ.not).mp
       (M1.is_model.realize_of_mem _ (Set.mem_iUnion.mpr ⟨none, by simp [U1, base1]⟩))
-    simpa [Formula.realize_not] using this
+    exact Formula.realize_not.mp this
   · intro q
     exact (Formula.realize_equivSentence (M := M1) q.1).mp
       (M1.is_model.realize_of_mem _ (Set.mem_iUnion.mpr ⟨some q, by simp [U1, base1]⟩))
@@ -298,7 +304,7 @@ private theorem exists_model_realize_with_qf_realized_at
   have hsat2 : Theory.IsSatisfiable (⋃ i, U2 i) := by
     by_contra hsat2
     rw [Theory.isSatisfiable_iUnion_iff_isSatisfiable_iUnion_finset] at hsat2
-    push_neg at hsat2
+    push Not at hsat2
     rcases hsat2 with ⟨s, hs⟩
     let qfs : Finset P :=
       s.filterMap id (by intro a a' b ha ha'; simpa using ha.trans ha'.symm)
@@ -598,7 +604,8 @@ private theorem exists_realize_descent_through_elementary
     BoundedFormula.realize_ex.mpr
       ⟨b', (BoundedFormula.realize_relabel_id_snoc φ (e.toEmbedding ∘ ga) b').mpr htarget⟩
   have hθN : θ.ex.Realize ga default :=
-    (e.map_boundedFormula θ.ex ga default).mp (by simpa [Function.comp_def] using hθN')
+    (e.map_boundedFormula θ.ex ga default).mp
+      (by simpa [Function.comp_def, Unique.eq_default] using hθN')
   obtain ⟨c, hc⟩ := BoundedFormula.realize_ex.mp hθN
   exact ⟨c, (BoundedFormula.realize_relabel_id_snoc φ ga c).mp hc⟩
 
