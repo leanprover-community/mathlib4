@@ -27,7 +27,7 @@ and `A` and `B` are filtered.
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Lemma 3.4.3 -- 3.4.5
 -/
 
-@[expose] public section
+public section
 
 universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
@@ -42,47 +42,7 @@ variable {B : Type u₂} [Category.{v₂} B]
 variable {T : Type u₃} [Category.{v₃} T]
 variable (L : A ⥤ T) (R : B ⥤ T)
 
-set_option backward.defeqAttrib.useBackward true in
-/-- The functor from the costructured arrow category on `snd L R` over `b : B` to the
-costructured arrow category on `L` over `R.obj b`. It is left adjoint to
-`costructuredArrowSndInclusion`, see `costructuredArrowSndAdjunction`. -/
-@[simps]
-def costructuredArrowSndProj (b : B) :
-    CostructuredArrow (snd L R) b ⥤ CostructuredArrow L (R.obj b) where
-  obj X := CostructuredArrow.mk (X.left.hom ≫ R.map X.hom)
-  map f := CostructuredArrow.homMk f.left.left <| by
-    dsimp
-    rw [reassoc_of% f.left.w, ← R.map_comp, dsimp% CostructuredArrow.w f]
-
-set_option backward.defeqAttrib.useBackward true in
-/-- The functor from the costructured arrow category on `L` over `R.obj b` to the costructured
-arrow category on `snd L R` over `b : B`. -/
-@[simps]
-def costructuredArrowSndInclusion (b : B) :
-    CostructuredArrow L (R.obj b) ⥤ CostructuredArrow (snd L R) b where
-  obj X := ⟨⟨X.left, b, X.hom⟩, ⟨⟨⟩⟩, 𝟙 b⟩
-  map f := CostructuredArrow.homMk ⟨f.left, 𝟙 b, by simp⟩ (by simp)
-
-set_option backward.defeqAttrib.useBackward true in
-/-- The functor `costructuredArrowSndProj` is left adjoint to `costructuredArrowSndInclusion`. -/
-@[simps]
-def costructuredArrowSndAdjunction (b : B) :
-    costructuredArrowSndProj L R b ⊣ costructuredArrowSndInclusion L R b where
-  unit.app X := CostructuredArrow.homMk ⟨𝟙 X.left.left, X.hom, by simp⟩ (by simp)
-  unit.naturality _ _ f := by
-    have := CostructuredArrow.w f
-    cat_disch
-  counit.app X := CostructuredArrow.homMk (𝟙 X.left) (by simp)
-
 section Relative
-
-lemma exists_eq_of_isCofiltered_costructuredArrow {b : B}
-    [IsCofiltered (CostructuredArrow L (R.obj b))] {a₁ a₂ : A}
-    (s₁ : L.obj a₁ ⟶ R.obj b) (s₂ : L.obj a₂ ⟶ R.obj b) :
-    ∃ (a : A) (t₁ : a ⟶ a₁) (t₂ : a ⟶ a₂), L.map t₁ ≫ s₁ = L.map t₂ ≫ s₂ := by
-  obtain ⟨W, p₁, p₂, -⟩ := IsCofilteredOrEmpty.cone_objs
-    (CostructuredArrow.mk s₁) (CostructuredArrow.mk s₂)
-  exact ⟨W.left, p₁.left, p₂.left, (CostructuredArrow.w p₁).trans (CostructuredArrow.w p₂).symm⟩
 
 lemma isCofiltered_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofiltered B]
     [∀ b, IsCofiltered (CostructuredArrow L (R.obj b))] : IsCofiltered (Comma L R) := by
@@ -94,9 +54,9 @@ lemma isCofiltered_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofilte
     refine ⟨fun j₁ j₂ ↦ ?_, fun j₁ j₂ u v ↦ ?_⟩
     · obtain ⟨Q⟩ : Nonempty (CostructuredArrow L (R.obj (IsCofiltered.min j₁.right j₂.right))) :=
         IsCofiltered.nonempty
-      obtain ⟨ia, va₁, va₂, heqa⟩ := exists_eq_of_isCofiltered_costructuredArrow L R
+      obtain ⟨ia, va₁, va₂, heqa⟩ := exists_eq_of_isCofiltered_costructuredArrow L
         (Q.hom ≫ R.map (IsCofiltered.minToLeft j₁.right j₂.right)) j₁.hom
-      obtain ⟨ib, vb₁, vb₂, heqb⟩ := exists_eq_of_isCofiltered_costructuredArrow L R
+      obtain ⟨ib, vb₁, vb₂, heqb⟩ := exists_eq_of_isCofiltered_costructuredArrow L
         (Q.hom ≫ R.map (IsCofiltered.minToRight j₁.right j₂.right)) j₂.hom
       obtain ⟨i₀, il₀, ir₀, heq⟩ := IsCofiltered.cospan va₁ vb₁
       exact ⟨⟨i₀, IsCofiltered.min j₁.right j₂.right, L.map (il₀ ≫ va₁) ≫ Q.hom⟩,
@@ -104,7 +64,7 @@ lemma isCofiltered_of_isCofiltered_costructuredArrow [IsCofiltered A] [IsCofilte
         ⟨ir₀ ≫ vb₂, IsCofiltered.minToRight _ _, by cat_disch⟩, trivial⟩
     · obtain ⟨Q⟩ : Nonempty (CostructuredArrow L (R.obj (IsCofiltered.eq u.right v.right))) :=
         IsCofiltered.nonempty
-      obtain ⟨ia, va₁, va₂, heqa⟩ := exists_eq_of_isCofiltered_costructuredArrow L R
+      obtain ⟨ia, va₁, va₂, heqa⟩ := exists_eq_of_isCofiltered_costructuredArrow L
         (Q.hom ≫ R.map (IsCofiltered.eqHom u.right v.right)) j₁.hom
       obtain ⟨i₀, α, β, hα, hβ⟩ := IsCofiltered.bowtie u.left (va₂ ≫ v.left) (𝟙 _) va₂
       have := IsCofiltered.eq_condition u.right v.right
