@@ -42,8 +42,9 @@ section JMatrixLemmas
 def J : Matrix (l ⊕ l) (l ⊕ l) R :=
   Matrix.fromBlocks 0 (-1) 1 0
 
-variable {R} in
-@[simp] theorem map_J {S : Type*} [CommRing S] (f : R →+* S) : (J l R).map f = J l S := by
+@[simp]
+theorem map_J {R S : Type*} [CommRing S] [CommRing R] (f : R →+* S) :
+    (J l R).map f = J l S := by
   simp [J, fromBlocks_map, Matrix.map_neg]
 
 @[simp]
