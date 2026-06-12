@@ -258,10 +258,6 @@ theorem ringConGen_eq (r : R → R → Prop) :
         (fun _ _ h1 h2 c hc => c.mul (h1 c hc) <| h2 c hc))
     (sInf_le le_ringConGen)
 
-
-theorem le_ringConGen (r : R → R → Prop) : r ≤ ⇑(ringConGen r) :=
-  fun h => RingConGen.Rel.of h
-
 /-- The smallest congruence relation containing a binary relation `r` is contained in any
 congruence relation containing `r`. -/
 theorem ringConGen_le {r : R → R → Prop} {c : RingCon R} : ringConGen r ≤ c ↔ r ≤ ⇑c :=
