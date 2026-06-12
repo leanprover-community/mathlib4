@@ -367,7 +367,7 @@ theorem nonempty_of_eq_zero_or_eq_zero (h : r = 0 ∨ t = 0) :
 /-- The parts in a complete equipartite subgraph are pairwise disjoint. -/
 theorem disjoint : (K.parts : Set (Finset V)).Pairwise Disjoint :=
   fun _ h₁ _ h₂ hne ↦ Finset.disjoint_left.mpr fun _ h₁' h₂' ↦
-    (G.loopless.irrefl _) (K.isCompleteBetween h₁ h₂ hne h₁' h₂')
+    G.irrefl <| K.isCompleteBetween h₁ h₂ hne h₁' h₂'
 
 /-- The finset of vertices in a complete equipartite subgraph. -/
 def verts : Finset V := K.parts.disjiUnion id K.disjoint
@@ -480,19 +480,18 @@ theorem completeEquipartiteGraph_succ_isContained_iff :
       exact ⟨K, s, K'.card_mem_parts hs_mem,
         fun _ h ↦ K'.isCompleteBetween (hparts_sub h) hs_mem (ne_of_mem_of_not_mem h nhs_mem)⟩
     · refine ⟨K.parts.cons s ?_, ?_, ?_, ?_⟩
-      · by_contra! hs_mem
+      · intro hs_mem
         obtain ⟨v, hv⟩ : s.Nonempty := by
           rw [← Finset.card_pos, hs]
           exact Nat.pos_of_ne_zero ht
-        absurd hadj s hs_mem hv hv
-        exact G.loopless.irrefl v
+        exact G.irrefl <| hadj s hs_mem hv hv
       · rw [Finset.card_cons, K.card_parts.resolve_right ht]
         exact .inl rfl
       · simp_rw [mem_cons, forall_eq_or_imp]
         exact ⟨hs, fun p ↦ K.card_mem_parts⟩
       · rw [coe_cons]
-        refine K.isCompleteBetween.insert_of_symmetric ?_ (fun p hp _ ↦ (hadj p hp).symm)
-        simp_rw [Symmetric, isCompleteBetween_comm, imp_self, implies_true]
+        have : Std.Symm G.IsCompleteBetween := by simp [symm_def, isCompleteBetween_comm]
+        exact K.isCompleteBetween.insert_of_symm fun p hp _ ↦ hadj p hp |>.symm
 
 end CompleteEquipartiteSubgraph
 

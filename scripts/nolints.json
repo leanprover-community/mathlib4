@@ -374,6 +374,7 @@
   "Localization.AtPrime.algebra_localization_localization"],
  ["defsWithUnderscore", "LucasLehmer.norm_num_ext.evalLucasLehmerTest"],
  ["defsWithUnderscore", "LucasLehmer.norm_num_ext.sModNat"],
+ ["defsWithUnderscore", "LucasLehmer.norm_num_ext.sModNatAux"],
  ["defsWithUnderscore", "LucasLehmer.norm_num_ext.sModNatTR"],
  ["defsWithUnderscore", "LucasLehmer.norm_num_ext.sModNat_aux"],
  ["defsWithUnderscore", "Mathlib.Meta.eval_expr"],
