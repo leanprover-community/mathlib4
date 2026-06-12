@@ -16,8 +16,8 @@ public import Mathlib.Algebra.Star.Unitary
 This file defines `Matrix.IsHadamard`, a unified notion that specializes to the classical real
 Hadamard matrices over `ℝ`/`ℤ` (where `star` is trivial and entries are `±1`) and to the complex
 Hadamard matrices over `ℂ` (where entries have unit norm). Basic results: conjugate-transpose
-closure, square order from constant row sum, the Sylvester (Kronecker) construction, and the
-divisibility obstruction `4 ∣ n`.
+closure, the order identity `n = s * star s` from constant column sums, the Sylvester
+(Kronecker) construction, and the divisibility obstruction `4 ∣ n`.
 
 ## References
 
@@ -122,24 +122,33 @@ theorem IsHadamard.neg_iff : (-A).IsHadamard ↔ A.IsHadamard :=
 end Ring
 
 section CommSemiring
-variable [CommSemiring R] [StarRing R] [TrivialStar R] {A : Matrix n n R}
+variable [CommSemiring R] [StarRing R] {A : Matrix n n R}
 
-/-- A Hadamard matrix with constant row sum `s` has order `s ^ 2`, provided the order is
-regular in `R` and the star is trivial.
+/-- A Hadamard matrix with constant column sum `s` has order `s * star s`, provided the order
+is regular in `R`.
 
-This is a slightly stronger form of [Theorem 2.3.7][deLauneyFlannery2011]:
-only a constant row-sum hypothesis is needed under the two-sided orthogonality condition. -/
-theorem IsHadamard.card_eq_sq_of_const_row_sum {s : R}
+The row-sum form follows by applying this to `Aᴴ`; over a ring with trivial star the
+conclusion becomes `(Fintype.card n : R) = s ^ 2`, a slightly stronger form of
+[Theorem 2.3.7][deLauneyFlannery2011]: only a constant sum hypothesis on one side is needed
+under the two-sided orthogonality condition. -/
+theorem IsHadamard.card_eq_mul_star_of_const_col_sum {s : R}
     (hA : A.IsHadamard) (hcard : IsRegular (Fintype.card n : R))
-    (hrow : ∀ i, ∑ j, A i j = s) : (Fintype.card n : R) = s ^ 2 := by
-  have hAtA : Aᵀ * A = (Fintype.card n : R) • (1 : Matrix n n R) := by
-    simpa [conjTranspose_eq_transpose_of_trivial] using hA.2.2
-  have hL : (A *ᵥ 1) ⬝ᵥ (A *ᵥ 1) = (Fintype.card n : R) ^ 2 := by
-    rw [dotProduct_mulVec, vecMul_mulVec, hAtA, vecMul_smul]
+    (hcol : ∀ j, ∑ i, A i j = s) : (Fintype.card n : R) = s * star s := by
+  have hvcol : (1 : n → R) ᵥ* A = s • 1 := by
+    ext j
+    simpa [Matrix.vecMul, dotProduct] using hcol j
+  have hconjcol : Aᴴ *ᵥ (1 : n → R) = star s • 1 := by
+    ext i
+    simp [Matrix.mulVec, dotProduct, ← star_sum, hcol i]
+  have hleft : (1 : n → R) ᵥ* (A * Aᴴ) ⬝ᵥ 1 = (Fintype.card n : R) ^ 2 := by
+    rw [hA.mul_conjTranspose, vecMul_smul, smul_dotProduct]
     simp [dotProduct, pow_two]
+  have hright : (1 : n → R) ᵥ* (A * Aᴴ) ⬝ᵥ 1 = (Fintype.card n : R) * (s * star s) := by
+    rw [← vecMul_vecMul, ← dotProduct_mulVec, hvcol, hconjcol]
+    simp [dotProduct, mul_comm, mul_left_comm]
   exact hcard.left <| show (Fintype.card n : R) * (Fintype.card n : R) =
-      (Fintype.card n : R) * s ^ 2 by
-    simpa [Matrix.mulVec, dotProduct, hrow, pow_two, mul_comm, mul_assoc] using hL.symm
+      (Fintype.card n : R) * (s * star s) by
+    simpa [pow_two] using hleft.symm.trans hright
 
 end CommSemiring
 
@@ -169,8 +178,7 @@ theorem IsHadamard.isRegular_det (hA : A.IsHadamard)
   have : IsRegular (A.det * star A.det) := by
     rw [hA.det_mul_star_det]
     exact hcard.pow _
-  rw [isRegular_mul_iff] at this
-  exact this.1
+  exact (isRegular_mul_iff.mp this).1
 
 /-- Build a Hadamard matrix from the one-sided row-orthogonality condition, provided the order is
 regular in `R`.
@@ -186,8 +194,8 @@ theorem IsHadamard.of_mul_conjTranspose
     rw [det_mul, det_conjTranspose, det_smul, det_one, mul_one] at this
     rw [this]
     exact hcard.pow _
-  rw [isRegular_mul_iff] at hdet
-  have hreg : IsLeftRegular A := (isRegular_of_isLeftRegular_det hdet.1.left).left
+  have hreg : IsLeftRegular A :=
+    (isRegular_of_isLeftRegular_det (isRegular_mul_iff.mp hdet).1.left).left
   exact hreg <| show A * (Aᴴ * A) = A * ((Fintype.card n : R) • 1) by
     rw [← mul_assoc, hmul, smul_mul_assoc, one_mul, mul_smul_comm, mul_one]
 
@@ -210,13 +218,16 @@ theorem IsHadamard.four_dvd_card {A : Matrix n n ℤ}
   obtain ⟨r, s, t, hrs, hrt, hst⟩ := Fintype.two_lt_card_iff.mp hcard
   have horth ⦃i k : n⦄ (hik : i ≠ k) : ∑ j, A i j * A k j = 0 := by
     simpa [Matrix.mul_apply, hik] using congr_fun (congr_fun hA.2.1 i) k
-  have hsum : ∑ j, (1 + A s j * A r j) * (1 + A t j * A r j) = (Fintype.card n : ℤ) := by
-    simp_rw [show ∀ j, (1 + A s j * A r j) * (1 + A t j * A r j) =
-        1 + A s j * A r j + A t j * A r j + A s j * A t j from fun j => by
-      obtain hr | hr := hpm r j <;> simp [hr] <;> ring]
-    simp [Finset.sum_add_distrib, horth hrs.symm, horth hrt.symm, horth hst]
-  exact Int.ofNat_dvd.mp <| hsum ▸ Finset.dvd_sum fun j _ => by
+  have hexpand : ∀ j, (1 + A s j * A r j) * (1 + A t j * A r j) =
+      1 + A s j * A r j + A t j * A r j + A s j * A t j := fun j => by
+    obtain hr | hr := hpm r j <;> simp [hr] <;> ring
+  have hdvd : ∀ j, (4 : ℤ) ∣ (1 + A s j * A r j) * (1 + A t j * A r j) := fun j => by
     obtain hs | hs := hpm s j <;> obtain hr | hr := hpm r j <;>
       obtain ht | ht := hpm t j <;> simp [hs, hr, ht]
+  have hsum : ∑ j, (1 + A s j * A r j) * (1 + A t j * A r j) = (Fintype.card n : ℤ) := by
+    simp_rw [hexpand]
+    simp [Finset.sum_add_distrib, horth hrs.symm, horth hrt.symm, horth hst]
+  rw [← Int.ofNat_dvd, ← hsum]
+  exact Finset.dvd_sum fun j _ => hdvd j
 
 end Matrix
