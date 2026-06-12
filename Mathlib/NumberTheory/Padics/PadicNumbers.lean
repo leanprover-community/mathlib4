@@ -601,8 +601,8 @@ def padicNormE {p : ℕ} [hp : Fact p.Prime] : AbsoluteValue ℚ_[p] ℚ where
   map_mul' q r := Quotient.inductionOn₂ q r <| PadicSeq.norm_mul
   nonneg' q := Quotient.inductionOn q <| PadicSeq.norm_nonneg
   eq_zero' q := Quotient.inductionOn q fun r ↦ by
-    erw [Padic.zero_def, Quotient.eq]
-    exact PadicSeq.norm_zero_iff r
+    rw [Padic.zero_def, Quotient.lift_mk, PadicSeq.norm_zero_iff r]
+    exact Quotient.eq.symm
   add_le' q r := by
     trans
       max ((Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _) q)
@@ -688,7 +688,7 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
         change padicNorm p (q' _ - q' _) < ε
         rcases Decidable.em (stationaryPoint hne' ≤ N) with hle | hle
         · have := (stationaryPoint_spec hne' le_rfl hle).symm
-          simp only [const_apply, sub_apply, padicNorm.zero, sub_self] at this
+          simp only [const_apply, CauSeq.sub_apply, padicNorm.zero, sub_self] at this
           simpa only [this]
         · exact hN _ (lt_of_not_ge hle).le _ le_rfl⟩
 
