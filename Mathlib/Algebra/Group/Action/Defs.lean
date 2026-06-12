@@ -403,19 +403,6 @@ lemma Commute.smul_left [Mul α] [SMulCommClass M α α] [IsScalarTower M α α]
     (h : Commute a b) (r : M) : Commute (r • a) b :=
   SemiconjBy.smul_left h r
 
-@[to_additive]
-theorem IsLeftRegular.commute_of_commute_of_mul_eq_smul [Semigroup α] [IsScalarTower M α α]
-    [SMulCommClass M α α] {a : M} {x y z : α} (hx : IsLeftRegular x) (hz : Commute x z)
-    (h : x * y = a • z) : Commute x y := by
-  rw [← hx.commute_mul_left_iff, commute_iff_eq, h, smul_mul_assoc, mul_smul_comm, hz.eq]
-
-@[to_additive]
-theorem IsRightRegular.commute_of_commute_of_mul_eq_smul [Semigroup α] [IsScalarTower M α α]
-    [SMulCommClass M α α] {a : M} {x y z : α} (hy : IsRightRegular y) (hz : Commute y z)
-    (h : x * y = a • z) : Commute x y := by
-  rw [Commute.symm_iff, ← hy.commute_mul_right_iff, commute_iff_eq, h, smul_mul_assoc,
-    mul_smul_comm, hz.eq]
-
 end
 
 section
