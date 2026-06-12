@@ -50,7 +50,7 @@ protected lemma multisetProd {ι S : Type*} [Add S] [CommMonoid S] (t : RingCon 
   t.toCon.multiset_prod h
 
 @[simp, norm_cast]
-protected lemma coe_multisetProd {ι S : Type*} [CommSemiring S] (t : RingCon S)
+protected lemma coe_multisetProd {ι S : Type*} [Add S] [CommMonoid S] (t : RingCon S)
     (s : Multiset ι) (f : ι → S) :
     (↑(s.map f).prod : t.Quotient) = (s.map fun i => (f i : t.Quotient)).prod :=
   t.toCon.coe_multisetProd s f
@@ -62,7 +62,7 @@ protected lemma multisetSum {ι S : Type*} [AddCommMonoid S] [Mul S] (t : RingCo
   t.toAddCon.multiset_sum h
 
 @[simp, norm_cast]
-protected lemma coe_multisetSum {ι S : Type*} [NonUnitalNonAssocSemiring S] (t : RingCon S)
+protected lemma coe_multisetSum {ι S : Type*} [AddCommMonoid S] [Mul S] (t : RingCon S)
     (s : Multiset ι) (f : ι → S) :
     (↑(s.map f).sum : t.Quotient) = (s.map fun i => (f i : t.Quotient)).sum :=
   t.toAddCon.coe_multisetSum s f
@@ -74,8 +74,8 @@ protected lemma finsetProd {ι S : Type*} [Add S] [CommMonoid S] (t : RingCon S)
   t.toCon.finsetProd s h
 
 @[simp, norm_cast]
-protected lemma coe_finsetProd
-    {ι S : Type*} [CommSemiring S] (t : RingCon S) (s : Finset ι) (f : ι → S) :
+protected lemma coe_finsetProd {ι S : Type*} [Add S] [CommMonoid S] (t : RingCon S) (s : Finset ι)
+    (f : ι → S) :
     (↑(s.prod f) : t.Quotient) = s.prod fun i => (f i : t.Quotient) :=
   t.toCon.coe_finsetProd s f
 
@@ -86,7 +86,7 @@ protected lemma finsetSum {ι S : Type*} [AddCommMonoid S] [Mul S] (t : RingCon 
   t.toAddCon.finsetSum s h
 
 @[simp, norm_cast]
-protected lemma coe_finsetSum {ι S : Type*} [NonUnitalNonAssocSemiring S] (t : RingCon S) (s : Finset ι)
+protected lemma coe_finsetSum {ι S : Type*} [AddCommMonoid S] [Mul S] (t : RingCon S) (s : Finset ι)
     (f : ι → S) :
     (↑(s.sum f) : t.Quotient) = s.sum fun i => (f i : t.Quotient) :=
   t.toAddCon.coe_finsetSum s f
@@ -101,7 +101,7 @@ protected lemma finsuppProd {ι : Type*} {β : Type*} {M : Type*}
 
 @[simp, norm_cast]
 protected lemma coe_finsuppProd {ι : Type*} {β : Type*} {M : Type*}
-    [CommSemiring M] [Zero β] (c : RingCon M) (h : ι → β → M) (f : ι →₀ β) :
+    [Add M] [CommMonoid M] [Zero β] (c : RingCon M) (h : ι → β → M) (f : ι →₀ β) :
     (↑(f.prod h) : c.Quotient) = f.prod fun i b => (h i b : c.Quotient) :=
   c.toCon.coe_finsuppProd h f
 
@@ -115,7 +115,7 @@ protected lemma finsuppSum {ι : Type*} {β : Type*} {M : Type*}
 
 @[simp, norm_cast]
 protected lemma coe_finsuppSum {ι : Type*} {β : Type*} {M : Type*}
-    [NonUnitalNonAssocSemiring M] [Zero β] (c : RingCon M) (h : ι → β → M) (f : ι →₀ β) :
+    [AddCommMonoid M] [Mul M] [Zero β] (c : RingCon M) (h : ι → β → M) (f : ι →₀ β) :
     (↑(f.sum h) : c.Quotient) = f.sum fun i b => (h i b : c.Quotient) :=
   c.toAddCon.coe_finsuppSum h f
 
@@ -129,7 +129,7 @@ protected lemma dfinsuppProd {ι : Type*} {β : ι → Type*} {M : Type*}
 
 @[simp, norm_cast]
 protected lemma coe_dfinsuppProd {ι : Type*} {β : ι → Type*} {M : Type*}
-    [DecidableEq ι] [CommSemiring M] [∀ i, Zero (β i)] [∀ i (y : β i), Decidable (y ≠ 0)]
+    [DecidableEq ι] [Add M] [CommMonoid M] [∀ i, Zero (β i)] [∀ i (y : β i), Decidable (y ≠ 0)]
     (c : RingCon M) (h : (i : ι) → β i → M) (f : Π₀ i, β i) :
     (↑(f.prod h) : c.Quotient) = f.prod fun i b => (h i b : c.Quotient) :=
   c.toCon.coe_dfinsuppProd h f
@@ -144,13 +144,13 @@ protected lemma dfinsuppSum {ι : Type*} {β : ι → Type*} {M : Type*}
 
 @[simp, norm_cast]
 protected lemma coe_dfinsuppSum {ι : Type*} {β : ι → Type*} {M : Type*}
-    [DecidableEq ι] [NonUnitalNonAssocSemiring M] [∀ i, Zero (β i)] [∀ i (y : β i), Decidable (y ≠ 0)]
+    [DecidableEq ι] [AddCommMonoid M] [Mul M] [∀ i, Zero (β i)] [∀ i (y : β i), Decidable (y ≠ 0)]
     (c : RingCon M) (h : (i : ι) → β i → M) (f : Π₀ i, β i) :
     (↑(f.sum h) : c.Quotient) = f.sum fun i b => (h i b : c.Quotient) :=
   c.toAddCon.coe_dfinsuppSum h f
 
 protected lemma dfinsuppSumAddHom {ι : Type*} {β : ι → Type*} {M : Type*}
-    [DecidableEq ι] [NonUnitalNonAssocSemiring M] [∀ i, AddCommMonoid (β i)]
+    [DecidableEq ι] [AddCommMonoid M] [Mul M] [∀ i, AddCommMonoid (β i)]
     (c : RingCon M) (h : (i : ι) → β i →+ M) (h' : (i : ι) → β i →+ M) {f g : Π₀ i, β i}
     (H : ∀ i, c (h i (f i)) (h' i (g i))) :
     c (f.sumAddHom h) (g.sumAddHom h') :=
