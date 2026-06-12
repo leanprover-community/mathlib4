@@ -103,6 +103,10 @@ def comp (g : E₂ →ₚ[R] E₃) (f : E₁ →ₚ[R] E₂) : E₁ →ₚ[R] E�
   toLinearMap := g.toLinearMap.comp f.toLinearMap
   monotone' := g.monotone'.comp f.monotone'
 
+@[simp] lemma toOrderHom_comp (g : E₂ →ₚ[R] E₃) (f : E₁ →ₚ[R] E₂) :
+    (g.comp f).toOrderHom = g.toOrderHom.comp f.toOrderHom :=
+  rfl
+
 @[simp] lemma comp_id (f : E₁ →ₚ[R] E₂) : f.comp (.id R E₁) = f := rfl
 @[simp] lemma id_comp (f : E₁ →ₚ[R] E₂) : (PositiveLinearMap.id R E₂).comp f = f := rfl
 
