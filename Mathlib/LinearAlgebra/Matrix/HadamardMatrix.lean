@@ -105,25 +105,6 @@ theorem IsHadamard.kronecker {A : Matrix m m R} {B : Matrix n n R}
         simp only [← mul_apply, mul_smul_comm, hB.conjTranspose_mul]
         simp [one_apply, ← Nat.cast_mul, ← ite_and]
 
-end Semiring
-
-section Ring
-variable [Ring R] [StarRing R] {A : Matrix n n R}
-
-/-- Negating a Hadamard matrix gives a Hadamard matrix. -/
-theorem IsHadamard.neg (hA : A.IsHadamard) : (-A).IsHadamard := by
-  simpa [IsHadamard, Unitary.mem_iff] using hA
-
-/-- A matrix is Hadamard iff its negation is. -/
-@[simp]
-theorem IsHadamard.neg_iff : (-A).IsHadamard ↔ A.IsHadamard :=
-  ⟨fun hA => by simpa using hA.neg, (·.neg)⟩
-
-end Ring
-
-section CommSemiring
-variable [CommSemiring R] [StarRing R] {A : Matrix n n R}
-
 /-- A Hadamard matrix with constant column sum `s` has order `s * star s`, provided the order
 is regular in `R`.
 
@@ -141,16 +122,30 @@ theorem IsHadamard.card_eq_mul_star_of_const_col_sum {s : R}
     ext i
     simp [Matrix.mulVec, dotProduct, ← star_sum, hcol i]
   have hleft : (1 : n → R) ᵥ* (A * Aᴴ) ⬝ᵥ 1 = (Fintype.card n : R) ^ 2 := by
-    rw [hA.mul_conjTranspose, vecMul_smul, smul_dotProduct]
+    rw [hA.mul_conjTranspose, Nat.cast_smul_eq_nsmul, vecMul_smul, smul_dotProduct]
     simp [dotProduct, pow_two]
   have hright : (1 : n → R) ᵥ* (A * Aᴴ) ⬝ᵥ 1 = (Fintype.card n : R) * (s * star s) := by
     rw [← vecMul_vecMul, ← dotProduct_mulVec, hvcol, hconjcol]
-    simp [dotProduct, mul_comm, mul_left_comm]
+    simp [dotProduct]
   exact hcard.left <| show (Fintype.card n : R) * (Fintype.card n : R) =
       (Fintype.card n : R) * (s * star s) by
     simpa [pow_two] using hleft.symm.trans hright
 
-end CommSemiring
+end Semiring
+
+section Ring
+variable [Ring R] [StarRing R] {A : Matrix n n R}
+
+/-- Negating a Hadamard matrix gives a Hadamard matrix. -/
+theorem IsHadamard.neg (hA : A.IsHadamard) : (-A).IsHadamard := by
+  simpa [IsHadamard, Unitary.mem_iff] using hA
+
+/-- A matrix is Hadamard iff its negation is. -/
+@[simp]
+theorem IsHadamard.neg_iff : (-A).IsHadamard ↔ A.IsHadamard :=
+  ⟨fun hA => by simpa using hA.neg, (·.neg)⟩
+
+end Ring
 
 section CommRing
 variable [CommRing R] [StarRing R] {A : Matrix n n R}
