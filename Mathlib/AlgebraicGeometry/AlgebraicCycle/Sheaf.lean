@@ -27,6 +27,14 @@ Note that we can extend the construction here to schemes which are not necessari
 some extra bookkeeping. That said, in my opinion the most sensible way to do this goes via the
 construction on integral schemes, and in any case the construction for integral schemes comes up the
 most in applications, hence our decision to formalize the version for integral schemes  .
+
+Note: This is currently written in a somewhat suboptimal way, both in the sense that the code is
+messy and in the sense that the mathematical strategy uses a bit of a hack. Namely, later on in the
+file we show that the stalk of `𝒪ₓ(D)` at a regular point is isomorphic to the stalk of
+`𝒪ₓ` at that point. This codimension one assumption is a bit too strong - the principled thing to
+do is to only assume that the stalk at that point is a UFD, and the result still holds. I mainly
+did this because I wanted to make use of the valuation API as much as possible, but this should
+be refactored at some point.
 -/
 @[expose] public section
 
@@ -999,6 +1007,10 @@ lemma ord_algebraMap_nonneg [IsRegularInCodimensionOne X] {x : X} (hx : coheight
 /--
 A nonzero element of the local ring at a codimension one point `x` lies in the maximal ideal
 iff the corresponding rational function vanishes at `x` to order at least one.
+
+TODO: This proof should really be a one or two liner since this lemma already exists in the form of
+Ring.isUnit_iff_ordFrac_one_of_isDiscreteValuationRing. It's not too bad as is, but still I think
+it could be quite a bit shorter
 -/
 lemma mem_maximalIdeal_iff_one_le_ord [IsRegularInCodimensionOne X] {x : X}
     (hx : coheight x = 1) {a : ↑(X.presheaf.stalk x)} (ha : a ≠ 0) :

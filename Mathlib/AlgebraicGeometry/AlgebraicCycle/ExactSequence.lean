@@ -1,7 +1,11 @@
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.Sheaf
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.Skyscraper
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.Testing
+import Mathlib.Algebra.Category.Grp.Abelian
+import Mathlib.Algebra.Category.Grp.EpiMono
+import Mathlib.CategoryTheory.Sites.Abelian
 import Mathlib.Topology.Sheaves.LocallySurjective
+import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 --set_option backward.isDefEq.respectTransparency false
 
@@ -360,27 +364,69 @@ lemma toSkyscraperFun_isLocallySurjective (hD : support D ⊆ {x | coheight x = 
   rw [hstalk]
   exact ha
 
+open Classical in
+/--
+`toSkyscraperFun` is also semilinear for the module structure on the residue field through
+the `RingCat`-valued stalk: both scalar actions are multiplication by the evaluation at `p`,
+by `residueField_compHom_smul_eq`.
+-/
+lemma toSkyscraperFun_compHom_smul {U : X.Opens} (hD : support D ⊆ {x | coheight x = 1})
+    (ϖ : X.presheaf.stalk p) (hϖ : Irreducible ϖ) (hp : coheight p = 1) (hp' : p ∈ U)
+    (a : ↑Γ(X, U)) (t : ↑((D.sheaf).val.obj (op U))) :
+    letI : Module ↑Γ(X, U) ↑(X.residueField p) := (X.evaluation U p hp').hom.toModule
+    toSkyscraperFun p D hD ϖ hϖ hp hp' (a • t) =
+      (letI : Module ↑Γ(X, U) ↑(X.residueField p) :=
+        Module.compHom ↑(X.residueField p) (X.ringCatSheaf.presheaf.germ U p hp').hom
+       a • toSkyscraperFun p D hD ϖ hϖ hp hp' t) := by
+  rw [residueField_compHom_smul_eq p hp' a]
+  letI : Module ↑Γ(X, U) ↑(X.residueField p) := (X.evaluation U p hp').hom.toModule
+  exact (toSkyscraperFun p D hD ϖ hϖ hp hp').map_smul' a t
+
+open Classical in
+/--
+`toSkyscraperFun` as a linear map into the residue field equipped with its module structure
+through the `RingCat`-valued stalk (as used by the skyscraper presheaf of modules).
+-/
+noncomputable
+def toSkyscraperFun' {U : X.Opens} (hD : support D ⊆ {x | coheight x = 1})
+    (ϖ : X.presheaf.stalk p) (hϖ : Irreducible ϖ) (hp : coheight p = 1) (hp' : p ∈ U) :
+    letI : Module ↑Γ(X, U) ↑(X.residueField p) :=
+      Module.compHom ↑(X.residueField p) (X.ringCatSheaf.presheaf.germ U p hp').hom
+    (D.sheaf).val.obj (op U) →ₗ[Γ(X, U)] ↑(X.residueField p) :=
+  letI : Module ↑Γ(X, U) ↑(X.residueField p) :=
+    Module.compHom ↑(X.residueField p) (X.ringCatSheaf.presheaf.germ U p hp').hom
+  { toFun := toSkyscraperFun p D hD ϖ hϖ hp hp'
+    map_add' := fun a b => map_add _ a b
+    map_smul' := fun a t => toSkyscraperFun_compHom_smul p D hD ϖ hϖ hp hp' a t }
+
 /--
 Map from `𝒪ₓ(D)` to the skyscraper sheaf at a point `p` on an open set U.
 -/
 noncomputable
 def toSkyscraper {U : X.Opens} (hD : support D ⊆ {x | coheight x = 1})
     (ϖ : X.presheaf.stalk p) (hϖ : Irreducible ϖ) (hp : coheight p = 1) :
-    (D.sheaf).val.obj (op U) ⟶ (skyscraper2SheafOfModules p).val.obj (op U) :=
+    (D.sheaf).val.obj (op U) ⟶
+      (skyscraperSheafOfModules p X.ringCatSheaf ↑(X.residueField p)).val.obj (op U) :=
   open Classical in
   if hp' : p ∈ U then
-    letI : Module ↑Γ(X, U) ↑(X.residueField p) := (X.evaluation U p hp').hom.toModule
+    letI : Module ↑Γ(X, U) ↑(X.residueField p) :=
+      Module.compHom ↑(X.residueField p) (X.ringCatSheaf.presheaf.germ U p hp').hom
     ModuleCat.ofHom (X := ↑(D.sheaf.val.obj (op U))) (Y := ↑(X.residueField p))
-      (toSkyscraperFun p D hD ϖ hϖ hp hp') ≫ eqToHom (skyObj_pos p hp').symm
+      (toSkyscraperFun' p D hD ϖ hϖ hp hp') ≫
+      eqToHom (skyscraperPresheafOfModulesObj_pos p X.ringCatSheaf
+        ↑(X.residueField p) hp').symm
   else 0
 
 open Classical in
 lemma toSkyscraper_pos {U : X.Opens} (hD : support D ⊆ {x | coheight x = 1})
     (ϖ : X.presheaf.stalk p) (hϖ : Irreducible ϖ) (hp : coheight p = 1) (hp' : p ∈ U) :
     toSkyscraper p D (U := U) hD ϖ hϖ hp =
-      (letI : Module ↑Γ(X, U) ↑(X.residueField p) := (X.evaluation U p hp').hom.toModule;
+      (letI : Module ↑Γ(X, U) ↑(X.residueField p) :=
+        Module.compHom ↑(X.residueField p) (X.ringCatSheaf.presheaf.germ U p hp').hom;
         ModuleCat.ofHom (X := ↑(D.sheaf.val.obj (op U))) (Y := ↑(X.residueField p))
-          (toSkyscraperFun p D hD ϖ hϖ hp hp')) ≫ eqToHom (skyObj_pos p hp').symm :=
+          (toSkyscraperFun' p D hD ϖ hϖ hp hp')) ≫
+      eqToHom (skyscraperPresheafOfModulesObj_pos p X.ringCatSheaf
+        ↑(X.residueField p) hp').symm :=
   dif_pos hp'
 
 open Classical in
@@ -408,17 +454,21 @@ opens containing `p` by evaluating `ϖ ^ D p * f` at `p`.
 noncomputable
 def toSkyscraperHom (hD : support D ⊆ {x | coheight x = 1})
     (ϖ : X.presheaf.stalk p) (hϖ : Irreducible ϖ) (hp : coheight p = 1) :
-    D.sheaf ⟶ skyscraper2SheafOfModules p where
+    D.sheaf ⟶ skyscraperSheafOfModules p X.ringCatSheaf ↑(X.residueField p) where
   val := {
     app U := toSkyscraper p D (U := unop U) hD ϖ hϖ hp
     naturality {U V} f := by
-      rw [show (skyscraper2SheafOfModules p).val.map f = skyMap p f from rfl]
+      rw [show (skyscraperSheafOfModules p X.ringCatSheaf ↑(X.residueField p)).val.map f =
+        skyscraperPresheafOfModulesMap p X.ringCatSheaf ↑(X.residueField p) f from rfl]
+      have hobj := fun (W : (TopologicalSpace.Opens ↥X)ᵒᵖ) (hw : p ∈ unop W) =>
+        skyscraperPresheafOfModulesObj_pos p X.ringCatSheaf ↑(X.residueField p)
+          (U := W) hw
       by_cases h : p ∈ unop V
       · have hU : p ∈ unop U := f.unop.le h
-        rw [skyMap_pos p f h, toSkyscraper_pos p D hD ϖ hϖ hp h,
-          toSkyscraper_pos p D hD ϖ hϖ hp hU]
+        rw [skyscraperPresheafOfModulesMap_pos p X.ringCatSheaf ↑(X.residueField p) f h,
+          toSkyscraper_pos p D hD ϖ hϖ hp h, toSkyscraper_pos p D hD ϖ hϖ hp hU]
         -- Elementwise, both sides are casts of the same residue: the underlying maps agree by
-        -- `toSkyscraperFun_res`, and all the `eqToHom`s and `coreMap` are identities.
+        -- `toSkyscraperFun_res`, and all the `eqToHom`s and the restriction are identities.
         apply ModuleCat.hom_ext
         ext s
         apply eq_of_heq
@@ -426,14 +476,15 @@ def toSkyscraperHom (hD : support D ⊆ {x | coheight x = 1})
             toSkyscraperFun p D hD ϖ hϖ hp hU s :=
           toSkyscraperFun_res p D hD ϖ hϖ hp f.unop.le h s
         refine HEq.trans (b := toSkyscraperFun p D hD ϖ hϖ hp h (mapFun D f.unop.le s)) ?_ ?_
-        · exact heq_eqToHom_apply_moduleCat (skyObj_pos p h).symm _
+        · exact heq_eqToHom_apply_moduleCat (hobj V h).symm _
         · rw [h1]
-          exact ((heq_eqToHom_apply_moduleCat (skyObj_pos p h).symm _).trans
-            ((heq_eqToHom_apply_moduleCat (skyObj_pos p (f.unop.le h)) _).trans
-              (heq_eqToHom_apply_moduleCat (skyObj_pos p hU).symm _))).symm
+          exact ((heq_eqToHom_apply_moduleCat (hobj V h).symm _).trans
+            ((heq_eqToHom_apply_moduleCat (hobj U (f.unop.le h)) _).trans
+              (heq_eqToHom_apply_moduleCat (hobj U hU).symm _))).symm
       · rw [toSkyscraper_neg p D hD ϖ hϖ hp h]
         exact ((ModuleCat.restrictScalars _).map_isZero
-          (skyObj_isZero_of_neg p h)).eq_of_tgt _ _
+          (skyscraperPresheafOfModulesObj_isZero_of_neg p X.ringCatSheaf
+            ↑(X.residueField p) h)).eq_of_tgt _ _
   }
 
 open Classical in
@@ -444,42 +495,49 @@ lemma toSkyscraperHom_isLocallySurjective (hD : support D ⊆ {x | coheight x = 
     (SheafOfModules.toSheaf X.ringCatSheaf).map <| toSkyscraperHom p D hD ϖ hϖ hp := by
   refine (TopCat.Presheaf.isLocallySurjective_iff _).mpr ?_
   intro U t x hxU
+  have hobj := fun {W : X.Opens} (hw : p ∈ W) =>
+    skyscraperPresheafOfModulesObj_pos p X.ringCatSheaf ↑(X.residueField p)
+      (U := op W) hw
   by_cases hxp : x = p
   · -- At `p` itself, use `toSkyscraperFun_isLocallySurjective` for the value of `t`.
     have hpU : p ∈ U := hxp ▸ hxU
     obtain ⟨V₀, hpV₀, s₀, hs₀⟩ := toSkyscraperFun_isLocallySurjective p D hD ϖ hϖ hp
-      ((eqToHom (skyObj_pos p hpU)).hom t)
+      ((eqToHom (hobj hpU)).hom t)
     have hpV : p ∈ V₀ ⊓ U := ⟨hpV₀, hpU⟩
     letI : Module ↑Γ(X, V₀ ⊓ U) ↑(X.residueField p) :=
       (X.evaluation (V₀ ⊓ U) p hpV).hom.toModule
     refine ⟨V₀ ⊓ U, inf_le_right, ⟨mapFun D inf_le_left s₀, ?_⟩, by rw [hxp]; exact hpV⟩
     -- The value of the candidate section under `toSkyscraperFun`.
     have hL : toSkyscraperFun p D hD ϖ hϖ hp hpV (mapFun D inf_le_left s₀) =
-        (eqToHom (skyObj_pos p hpU)).hom t :=
+        (eqToHom (hobj hpU)).hom t :=
       (toSkyscraperFun_res p D hD ϖ hϖ hp inf_le_left hpV s₀).trans hs₀
     -- Reduce the left hand side through `toSkyscraper_pos`.
     have hT : (ConcreteCategory.hom
         (((SheafOfModules.toSheaf X.ringCatSheaf).map (toSkyscraperHom p D hD ϖ hϖ hp)).hom.app
           (op (V₀ ⊓ U)))) (mapFun D inf_le_left s₀) =
-        (eqToHom (skyObj_pos p hpV).symm).hom
+        (eqToHom (hobj hpV).symm).hom
           (toSkyscraperFun p D hD ϖ hϖ hp hpV (mapFun D inf_le_left s₀)) := by
       change ((toSkyscraper p D (U := V₀ ⊓ U) hD ϖ hϖ hp).hom (mapFun D inf_le_left s₀) : _) = _
       rw [toSkyscraper_pos p D hD ϖ hϖ hp hpV]
       rfl
-    -- Reduce the right hand side through `skyMap_pos`.
+    -- Reduce the right hand side through `skyscraperPresheafOfModulesMap_pos`.
     have hRest : TopCat.Presheaf.restrictOpen t (V₀ ⊓ U) inf_le_right =
-        (eqToHom (skyObj_pos p hpV).symm).hom ((coreMap p (homOfLE
-          (inf_le_right : V₀ ⊓ U ≤ U)).op hpV).hom ((eqToHom (skyObj_pos p hpU)).hom t)) := by
-      change (skyMap p (homOfLE (inf_le_right : V₀ ⊓ U ≤ U)).op).hom t = _
-      rw [skyMap_pos p (homOfLE (inf_le_right : V₀ ⊓ U ≤ U)).op hpV]
+        (eqToHom (hobj hpV).symm).hom
+          ((skyscraperPresheafOfModulesRestriction p X.ringCatSheaf ↑(X.residueField p)
+            (homOfLE (inf_le_right : V₀ ⊓ U ≤ U)).op hpV).hom
+          ((eqToHom (hobj hpU)).hom t)) := by
+      change (skyscraperPresheafOfModulesMap p X.ringCatSheaf ↑(X.residueField p)
+        (homOfLE (inf_le_right : V₀ ⊓ U ≤ U)).op).hom t = _
+      rw [skyscraperPresheafOfModulesMap_pos p X.ringCatSheaf ↑(X.residueField p)
+        (homOfLE (inf_le_right : V₀ ⊓ U ≤ U)).op hpV]
       rfl
     rw [hT, hRest, hL]
     -- Both sides are casts of the same element of the residue field.
     apply eq_of_heq
-    refine HEq.trans (heq_eqToHom_apply_moduleCat (skyObj_pos p hpV).symm _) ?_
-    exact (heq_eqToHom_apply_moduleCat (skyObj_pos p hpU) t).trans
-      ((heq_eqToHom_apply_moduleCat (skyObj_pos p hpV).symm _).trans
-        (heq_eqToHom_apply_moduleCat (skyObj_pos p hpU) t)).symm
+    refine HEq.trans (heq_eqToHom_apply_moduleCat (hobj hpV).symm _) ?_
+    exact (heq_eqToHom_apply_moduleCat (hobj hpU) t).trans
+      ((heq_eqToHom_apply_moduleCat (hobj hpV).symm _).trans
+        (heq_eqToHom_apply_moduleCat (hobj hpU) t)).symm
   · -- Away from `p`, shrink to a neighbourhood avoiding `p`, where the skyscraper is zero.
     have hxc : x ∉ closure ({p} : Set X) := fun hmem =>
       hxp (pClosed x (Scheme.le_iff_specializes.mpr (specializes_iff_mem_closure.mpr hmem)))
@@ -488,7 +546,9 @@ lemma toSkyscraperHom_isLocallySurjective (hD : support D ⊆ {x | coheight x = 
     have hpV : p ∉ (U ⊓ ⟨(closure ({p} : Set X))ᶜ, isClosed_closure.isOpen_compl⟩ : X.Opens) :=
       fun hpv => hpv.2 (subset_closure rfl)
     exact @Subsingleton.elim _
-      (AddCommGrpCat.subsingleton_of_isZero (skyscraper2_presheaf_obj_isZero p hpV)) _ _
+      (AddCommGrpCat.subsingleton_of_isZero
+        (skyscraperPresheafOfModules_presheaf_obj_isZero p X.ringCatSheaf
+          ↑(X.residueField p) hpV)) _ _
 
 omit [IsRegularInCodimensionOne X] in
 /--
@@ -537,7 +597,7 @@ def twistedClosedSubschemeComplex (hD : support D ⊆ {x | coheight x = 1}) (ϖ 
   ShortComplex X.Modules where
   X₁ := (D - single p 1).sheaf
   X₂ := D.sheaf
-  X₃ := skyscraper2SheafOfModules p
+  X₃ := skyscraperSheafOfModules p X.ringCatSheaf ↑(X.residueField p)
   f := extendLe (sub_le_self D (single_effective p 1 (by simp)))
   g := toSkyscraperHom p D hD ϖ hϖ hp
   zero := by
@@ -564,7 +624,8 @@ def twistedClosedSubschemeComplex (hD : support D ⊆ {x | coheight x = 1}) (ϖ 
         have hset := Set.ext_iff.mp (toSkyscraperFun_ker p D hD ϖ hϖ hp hp') t
         exact hset.mpr s.2
       have hzero := LinearMap.mem_ker.mp hmem
-      change (eqToHom (skyObj_pos p hp').symm).hom
+      change (eqToHom (skyscraperPresheafOfModulesObj_pos p X.ringCatSheaf
+        ↑(X.residueField p) hp').symm).hom
         (toSkyscraperFun p D hD ϖ hϖ hp hp' t) = 0
       rw [hzero]
       exact map_zero _
@@ -609,11 +670,13 @@ lemma mem_carrier_of_comp_toSkyscraperHom_eq_zero (hD : support D ⊆ {x | cohei
       (X.evaluation (unop U) p hp').hom.toModule
     -- Componentwise, `k` composed with `toSkyscraper` is zero.
     have h1 : k.val.app U ≫ toSkyscraper p D (U := unop U) hD ϖ hϖ hp = 0 :=
-      congrArg (fun (ψ : A ⟶ skyscraper2SheafOfModules p) => ψ.val.app U) hk
+      congrArg (fun (ψ : A ⟶ skyscraperSheafOfModules p X.ringCatSheaf
+        ↑(X.residueField p)) => ψ.val.app U) hk
     rw [toSkyscraper_pos p D hD ϖ hϖ hp hp'] at h1
     have h2' := ConcreteCategory.congr_hom h1 t
     -- Cancel the (injective) `eqToHom` to get the statement about `toSkyscraperFun`.
-    have hinj : Function.Injective (eqToHom (skyObj_pos p hp').symm).hom :=
+    have hinj : Function.Injective (eqToHom (skyscraperPresheafOfModulesObj_pos
+        p X.ringCatSheaf ↑(X.residueField p) hp').symm).hom :=
       (ModuleCat.mono_iff_injective _).mp inferInstance
     have h2 : toSkyscraperFun p D hD ϖ hϖ hp hp' ((k.val.app U) t) = 0 := by
       apply hinj
@@ -693,6 +756,23 @@ lemma twistedClosedSubschemeComplex_exact (hD : support D ⊆ {x | coheight x = 
       apply ModuleCat.hom_ext
       ext t
       rfl⟩)
+
+lemma twistedClosedSubschemeComplex_shortExact (hD : support D ⊆ {x | coheight x = 1})
+    (ϖ : X.presheaf.stalk p) (hϖ : Irreducible ϖ)
+    (hp : coheight p = 1)
+    (pClosed : ∀ x : X, x ≤ p → x = p) :
+    (twistedClosedSubschemeComplex p D hD ϖ hϖ hp).ShortExact where
+  exact := twistedClosedSubschemeComplex_exact p D hD ϖ hϖ hp
+  mono_f := extendLe_mono (sub_le_self D (single_effective p 1 (by simp)))
+  epi_g := by
+    -- The map to the skyscraper sheaf is locally surjective, hence an epimorphism of
+    -- sheaves of abelian groups, and `toSheaf` is faithful so it reflects epimorphisms.
+    have h : Epi ((SheafOfModules.toSheaf X.ringCatSheaf).map
+        (toSkyscraperHom p D hD ϖ hϖ hp)) :=
+      (Sheaf.isLocallySurjective_iff_epi' (φ := (SheafOfModules.toSheaf X.ringCatSheaf).map
+        (toSkyscraperHom p D hD ϖ hϖ hp))).mp
+        (toSkyscraperHom_isLocallySurjective p D hD ϖ hϖ hp pClosed)
+    exact (SheafOfModules.toSheaf X.ringCatSheaf).epi_of_epi_map h
 
 end Sheaf
 end AlgebraicCycle
