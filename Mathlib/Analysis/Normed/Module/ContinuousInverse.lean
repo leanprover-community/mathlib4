@@ -144,14 +144,14 @@ lemma comp {g : F →L[R] G} (hg : g.HasLeftInverse) (hf : f.HasLeftInverse) :
   obtain ⟨finv, hfinv⟩ := hf
   obtain ⟨ginv, hginv⟩ := hg
   refine ⟨finv.comp ginv, fun x ↦ ?_⟩
-  simp only [coe_comp', Function.comp_apply]
+  simp only [comp_apply]
   rw [hginv, hfinv]
 
 lemma of_comp {g : F →L[R] G} (hfg : (g.comp f).HasLeftInverse) :
     f.HasLeftInverse := by
   obtain ⟨fginv, hfginv⟩ := hfg
   refine ⟨fginv.comp g, fun y ↦ ?_⟩
-  simp only [coe_comp', Function.comp_apply]
+  simp only [comp_apply]
   exact hfginv y
 
 lemma comp_continuousLinearEquivalence {f₀ : F' ≃L[R] E} (hf : f.HasLeftInverse) :
@@ -212,7 +212,7 @@ lemma closedComplemented_range (hf : f.HasLeftInverse) : Submodule.ClosedComplem
   use (f.comp hf.leftInverse).codRestrict f.range (by intro y; simp)
   rintro ⟨y, x, rfl⟩
   ext
-  simp only [coe_coe, coe_codRestrict_apply, coe_comp', Function.comp_apply]
+  simp only [coe_coe, coe_codRestrict_apply, comp_apply]
   rw [hf.leftInverse_leftInverse]
 
 section
@@ -310,7 +310,7 @@ lemma comp {g : F →L[R] G} (hg : g.HasRightInverse) (hf : f.HasRightInverse) :
   obtain ⟨finv, hfinv⟩ := hf
   obtain ⟨ginv, hginv⟩ := hg
   refine ⟨finv.comp ginv, fun x ↦ ?_⟩
-  simp only [coe_comp', Function.comp_apply]
+  simp only [comp_apply]
   rw [hfinv, hginv]
 
 lemma of_comp {g : F →L[R] G} (hfg : (g.comp f).HasRightInverse) :
