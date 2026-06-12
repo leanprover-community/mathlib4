@@ -94,7 +94,7 @@ class SelfAdjointDecompose (R : Type*) [AddGroup R] [Star R]
   exists_nonneg_sub_nonnpos {a : R} (ha : IsSelfAdjoint a) :
     ∃ (b c : R), 0 ≤ b ∧ 0 ≤ c ∧ a = b - c
 
-lemma IsSelfAdjoint.exists_nonneg_sub_nonpos {R : Type*} [AddGroup R] [Star R]
+lemma IsSelfAdjoint.exists_nonneg_sub_nonneg {R : Type*} [AddGroup R] [Star R]
     [PartialOrder R] [SelfAdjointDecompose R] {a : R} (ha : IsSelfAdjoint a) :
     ∃ (b c : R), 0 ≤ b ∧ 0 ≤ c ∧ a = b - c :=
   SelfAdjointDecompose.exists_nonneg_sub_nonnpos ha
@@ -496,7 +496,7 @@ lemma IsSelfAdjoint.map' [AddCommGroup E] [PartialOrder E] [StarAddMonoid E]
     [SelfAdjointDecompose E] [FunLike F E R] [OrderHomClass F E R] [AddMonoidHomClass F E R]
     (f : F) {a : E} (ha : IsSelfAdjoint a) :
     IsSelfAdjoint (f a) := by
-  obtain ⟨b, c, hb, hc, rfl⟩ := ha.exists_nonneg_sub_nonpos
+  obtain ⟨b, c, hb, hc, rfl⟩ := ha.exists_nonneg_sub_nonneg
   have h₁ := OrderHomClass.mono f hb
   have h₂ := OrderHomClass.mono f hc
   cfc_tac
