@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Order.BooleanSubalgebra
+public import Mathlib.Order.SupClosed
 public import Mathlib.Topology.Continuous
 public import Mathlib.Topology.Defs.Induced
 
