@@ -730,9 +730,9 @@ open Cardinal
 
 variable {ι : Type*} [Countable ι]
 
-theorem countable_Iio_of_lt_omega_one (h : o < ω₁) : Countable (Set.Iio o) := by
+theorem countable_Iio_of_lt_omega_one (h : o < ω₁) : (Iio o).Countable := by
   rw [← ord_aleph 1, lt_ord] at h
-  rw [← mk_le_aleph0_iff, Cardinal.mk_Iio_ordinal,
+  rw [← countable_coe_iff, ← mk_le_aleph0_iff, Cardinal.mk_Iio_ordinal,
     lift_le_aleph0, ← succ_aleph0, Order.lt_succ_iff] at *
   exact h
 
@@ -741,7 +741,7 @@ theorem countable_toType_of_lt_omega_one (h : o < ω₁) : Countable (ToType o) 
     ← Cardinal.lt_aleph_one_iff, ← Cardinal.lt_omega_iff_card_lt]
   exact h
 
-instance [h : Fact <| o < ω₁] : Countable (Set.Iio o) := countable_Iio_of_lt_omega_one h.out
+instance [h : Fact <| o < ω₁] : Countable (Iio o) := countable_Iio_of_lt_omega_one h.out
 
 instance [h : Fact <| o < ω₁] : Countable (ToType o) := countable_toType_of_lt_omega_one h.out
 
@@ -769,7 +769,7 @@ theorem derivFamily_lt_omega_one_of_forall_lt_omega_one
     exact nfpFamily_lt_omega_one_of_forall_lt_omega_one hf <| (isSuccLimit_omega 1).succ_lt <| ih hp
   | limit o hlim ih =>
     rw [derivFamily_limit f hlim]
-    haveI : Fact _ := ⟨ho⟩
+    have : Fact _ := ⟨ho⟩
     refine iSup_lt_omega_one ?_
     intro ⟨i, hi⟩
     exact ih i hi (lt_trans hi ho)
@@ -783,7 +783,7 @@ theorem isPrincipal_veblen_omega_one : IsPrincipal veblen ω₁ := by
     · rw [veblen_zero_apply]
       exact omega0_opow_lt_omega_one hβ
     · rw [veblen_of_ne_zero hα']
-      haveI : Fact _ := ⟨hα⟩
+      have : Fact _ := ⟨hα⟩
       refine derivFamily_lt_omega_one_of_forall_lt_omega_one ?_ hβ
       rintro ⟨a, ha⟩ b hb
       exact ih a ha (ha.trans hα) hb
