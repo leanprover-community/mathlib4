@@ -1329,6 +1329,7 @@ public import Mathlib.Algebra.Star.TransferInstance
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.Algebra.Star.UnitaryStarAlgAut
 public import Mathlib.Algebra.Symmetrized
+public import Mathlib.Algebra.TrivSqZeroExt
 public import Mathlib.Algebra.TrivSqZeroExt.Basic
 public import Mathlib.Algebra.TrivSqZeroExt.Ideal
 public import Mathlib.Algebra.Tropical.Basic
@@ -2222,6 +2223,7 @@ public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
 public import Mathlib.Analysis.Normed.Operator.Basic
 public import Mathlib.Analysis.Normed.Operator.Bilinear
 public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+public import Mathlib.Analysis.Normed.Operator.Compact
 public import Mathlib.Analysis.Normed.Operator.Compact.Basic
 public import Mathlib.Analysis.Normed.Operator.Compact.FiniteDimension
 public import Mathlib.Analysis.Normed.Operator.Compact.FredholmAlternative
@@ -2231,6 +2233,7 @@ public import Mathlib.Analysis.Normed.Operator.Conformal
 public import Mathlib.Analysis.Normed.Operator.ContinuousAlgEquiv
 public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 public import Mathlib.Analysis.Normed.Operator.Extend
+public import Mathlib.Analysis.Normed.Operator.FredholmAlternative
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.Analysis.Normed.Operator.Mul
 public import Mathlib.Analysis.Normed.Operator.NNNorm
@@ -2266,6 +2269,7 @@ public import Mathlib.Analysis.NormedSpace.Alternating.Uncurry.Fin
 public import Mathlib.Analysis.NormedSpace.Connected
 public import Mathlib.Analysis.NormedSpace.ENormedSpace
 public import Mathlib.Analysis.NormedSpace.Extr
+public import Mathlib.Analysis.NormedSpace.FunctionSeries
 public import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 public import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 public import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
@@ -2274,8 +2278,13 @@ public import Mathlib.Analysis.NormedSpace.Multilinear.Basic
 public import Mathlib.Analysis.NormedSpace.Multilinear.Curry
 public import Mathlib.Analysis.NormedSpace.MultipliableUniformlyOn
 public import Mathlib.Analysis.NormedSpace.Normalize
+public import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
+public import Mathlib.Analysis.NormedSpace.OperatorNorm.NNNorm
+public import Mathlib.Analysis.NormedSpace.OperatorNorm.Prod
 public import Mathlib.Analysis.NormedSpace.PiTensorProduct.InjectiveSeminorm
 public import Mathlib.Analysis.NormedSpace.PiTensorProduct.ProjectiveSeminorm
+public import Mathlib.Analysis.NormedSpace.RCLike
+public import Mathlib.Analysis.NormedSpace.Real
 public import Mathlib.Analysis.NormedSpace.RieszLemma
 public import Mathlib.Analysis.ODE.Basic
 public import Mathlib.Analysis.ODE.DiscreteGronwall
@@ -3692,6 +3701,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Counting
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Removal
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
+public import Mathlib.Combinatorics.SimpleGraph.Turan
 public import Mathlib.Combinatorics.SimpleGraph.Tutte
 public import Mathlib.Combinatorics.SimpleGraph.UnitDistance.Basic
 public import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
@@ -4990,6 +5000,8 @@ public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.LinearAlgebra.Complex.Orientation
 public import Mathlib.LinearAlgebra.Contraction
+public import Mathlib.LinearAlgebra.ConvexSpace
+public import Mathlib.LinearAlgebra.ConvexSpace.AffineSpace
 public import Mathlib.LinearAlgebra.Countable
 public import Mathlib.LinearAlgebra.CrossProduct
 public import Mathlib.LinearAlgebra.DFinsupp
@@ -7100,6 +7112,7 @@ public import Mathlib.RingTheory.ZariskisMainTheorem
 public import Mathlib.SetTheory.Cardinal.Aleph
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.SetTheory.Cardinal.Cofinality
 public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
 public import Mathlib.SetTheory.Cardinal.Cofinality.Club
 public import Mathlib.SetTheory.Cardinal.Cofinality.Enum
@@ -7325,6 +7338,7 @@ public import Mathlib.Tactic.Linter
 public import Mathlib.Tactic.Linter.AuxLemma
 public import Mathlib.Tactic.Linter.CommandRanges
 public import Mathlib.Tactic.Linter.CommandStart
+public import Mathlib.Tactic.Linter.DeprecatedModule
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
 public import Mathlib.Tactic.Linter.DocPrime
@@ -7610,6 +7624,7 @@ public import Mathlib.Topology.Algebra.Module.StrongTopology
 public import Mathlib.Topology.Algebra.Module.TopDualPairing
 public import Mathlib.Topology.Algebra.Module.TransferInstance
 public import Mathlib.Topology.Algebra.Module.UniformConvergence
+public import Mathlib.Topology.Algebra.Module.WeakDual
 public import Mathlib.Topology.Algebra.Monoid
 public import Mathlib.Topology.Algebra.Monoid.AddChar
 public import Mathlib.Topology.Algebra.Monoid.Defs
