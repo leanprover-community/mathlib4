@@ -74,9 +74,6 @@ theorem coeMonoidHom_apply (f : F) : coeMonoidHom F α β f = f := rfl
 @[to_additive (attr := norm_cast)]
 theorem coe_coeMonoidHom : (coeMonoidHom F α β : F → α → β) = DFunLike.coe := rfl
 
-@[to_additive (attr := simp)]
-theorem coeMonoidHom_apply (f : F) : coeMonoidHom F α β f = f := rfl
-
 @[to_additive (attr := norm_cast)]
 theorem coe_coeMonoidHom' : (coeMonoidHom F α β : F →ₙ* α → β) = coeMulHom F α β := rfl
 
