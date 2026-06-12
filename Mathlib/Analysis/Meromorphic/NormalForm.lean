@@ -409,6 +409,34 @@ theorem meromorphicNFAt_comp_iff_of_deriv_ne_zero [CompleteSpace 𝕜] [CharZero
     meromorphicAt_comp_iff_of_deriv_ne_zero hg hg',
     meromorphicOrderAt_comp_of_deriv_ne_zero hg hg']
 
+/-- `MeromorphicNFAt` is invariant under translation. -/
+@[simp] theorem meromorphicNFAt_comp_add_const_iff_meromorphicNFAt {c : 𝕜} {f : 𝕜 → E} :
+    MeromorphicNFAt (f ∘ (· + c)) (x - c) ↔ MeromorphicNFAt f x := by
+  constructor
+  · intro h
+    convert h.comp_analyticAt (g := fun z ↦ z - c) (by fun_prop)
+    aesop
+  · intro h
+    rw [(by ring : x = (x - c) + c)] at h
+    exact h.comp_analyticAt (g := fun z ↦ z + c) (by fun_prop)
+
+/-- `MeromorphicNFAt` is invariant under translation. -/
+@[simp] theorem meromorphicNFAt_fun_comp_add_const_iff_meromorphicNFAt {c : 𝕜} {f : 𝕜 → E} :
+    MeromorphicNFAt (fun z ↦ f (z + c)) (x - c) ↔ MeromorphicNFAt f x :=
+  meromorphicNFAt_comp_add_const_iff_meromorphicNFAt
+
+/-- `MeromorphicNFAt` is invariant under translation. -/
+@[simp] theorem meromorphicNFAt_comp_sub_const_iff_meromorphicNFAt {c : 𝕜} {f : 𝕜 → E} :
+    MeromorphicNFAt (f ∘ (· - c)) (x + c) ↔ MeromorphicNFAt f x := by
+  simp [← meromorphicNFAt_fun_comp_add_const_iff_meromorphicNFAt (f := f) (c := -c),
+    ← sub_eq_add_neg]
+  rfl
+
+/-- `MeromorphicNFAt` is invariant under translation. -/
+@[simp] theorem meromorphicNFAt_fun_comp_sub_const_iff_meromorphicNFAt {c : 𝕜} {f : 𝕜 → E} :
+    MeromorphicNFAt (fun z ↦ f (z - c)) (x + c) ↔ MeromorphicNFAt f x :=
+  meromorphicNFAt_comp_sub_const_iff_meromorphicNFAt
+
 /-!
 ### Continuous extension and conversion to normal form
 -/
