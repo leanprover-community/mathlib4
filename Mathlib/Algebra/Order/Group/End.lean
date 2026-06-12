@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Group.Defs
-public import Mathlib.Algebra.Order.Hom.Basic
+public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.RelIso.Basic
 public import Mathlib.Data.FunLike.IsApply
 
@@ -21,7 +21,7 @@ public import Mathlib.Data.FunLike.IsApply
 
 @[expose] public section
 
-assert_not_exists MulAction
+assert_not_exists MulAction MonoidWithZero
 
 variable {α : Type*} {r : α → α → Prop}
 
