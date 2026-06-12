@@ -268,11 +268,20 @@ abbrev basisFun (y : X) : X → ℝ := Pi.single y 1
 /-- We use the notation 𝟙_ to write this basis/indicator function more concisely. -/
 scoped notation "𝟙_" y:max => basisFun y
 
-
 lemma sum_killingTerm_weight_mul_basisFun_sq_eq_killingTerm_mul_basisFun_sq :
     ∑ i, G.killingTerm i * (𝟙_x) i ^ 2 = G.killingTerm x := by
   simp [(Fintype.sum_subset (f := fun (y : X) ↦ G.killingTerm y * (𝟙_x) y ^ 2)
       (s := {x}) (by grind)).symm]
+
+lemma sum_edgeWeight_mul_basisFun_sq_eq_sum_edgeWeight :
+    ∑ y, ↑((G.edgeWeight x y) : ℝ) * (1 - (𝟙_x) y) ^ 2 = ∑ y, ↑(G.edgeWeight x y : ℝ) := by
+  have : DecidableEq X := Classical.typeDecidableEq X
+  rw [sum_eq_sum_sdiff_singleton_add (i := x) (by simp)]
+  nth_rw 2 [sum_eq_sum_sdiff_singleton_add (i := x) (by simp)]
+  congr
+  · ext y
+    by_cases h : y = x <;> simp_all [G.no_loop]
+  simp_all [G.no_loop]
 
 /--
 The form associated to a `WeightedGraphWithKillingTerm` is equal to the degree of a vertex `x`, when
@@ -283,19 +292,10 @@ lemma associatedForm_of_basis_eq_degree :
   have : DecidableEq X := Classical.typeDecidableEq X
   simp only [associatedForm_apply, degree, one_div, NNReal.coe_add, NNReal.coe_sum]
   field_simp
-  simp only [sum_killingTerm_weight_mul_basisFun_sq_eq_killingTerm_mul_basisFun_sq]
-  rw [mul_add]
+  rw [sum_killingTerm_weight_mul_basisFun_sq_eq_killingTerm_mul_basisFun_sq, mul_add,
+    sum_eq_sum_sdiff_singleton_add (i := x) (by simp)]
   congr
-  rw [sum_eq_sum_sdiff_singleton_add (i := x) (by simp)]
-  have : ∑ x_1, ↑((G.edgeWeight x x_1) : ℝ) * (1 - (𝟙_x) x_1) ^ 2
-      = ∑ x_1, ↑(G.edgeWeight x x_1 : ℝ) := by
-    rw [sum_eq_sum_sdiff_singleton_add (i := x) (by simp)]
-    nth_rw 2 [sum_eq_sum_sdiff_singleton_add (i := x) (by simp)]
-    congr
-    · ext y
-      by_cases h : y = x <;> simp_all [G.no_loop]
-    simp_all [G.no_loop]
-  simp only [Pi.single_eq_same, this, two_mul]
+  simp only [Pi.single_eq_same, sum_edgeWeight_mul_basisFun_sq_eq_sum_edgeWeight, two_mul]
   congr 1
   nth_rw 2 [sum_eq_sum_sdiff_singleton_add (i := x) (by simp)]
   simp only [G.no_loop, NNReal.coe_zero, add_zero]
