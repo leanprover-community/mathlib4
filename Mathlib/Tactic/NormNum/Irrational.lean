@@ -248,8 +248,8 @@ def findNotPowerCertificateCore (m n : ℕ) : Option ℕ := Id.run do
 
 /-- Finds `NotPowerCertificate` showing that `m` is not `n`-power. -/
 def findNotPowerCertificate (m n : Q(ℕ)) : MetaM (NotPowerCertificate m n) := do
-  let .isNat (_ : Q(AddMonoidWithOne ℕ)) m _ := ← derive m | failure
-  let .isNat (_ : Q(AddMonoidWithOne ℕ)) n _ := ← derive n | failure
+  let .isNat (_ : Q(AddMonoidWithOne ℕ)) m _ ← derive m | failure
+  let .isNat (_ : Q(AddMonoidWithOne ℕ)) n _ ← derive n | failure
   let mVal := m.natLit!
   let nVal := n.natLit!
   let some k := findNotPowerCertificateCore mVal nVal | failure

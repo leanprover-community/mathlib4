@@ -74,14 +74,14 @@ meta def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
     have body : Q($α) := .betaRev f #[i]
     let rbody ← core zα pα body
-    let p_pos : Option Q(0 < $e) := ← (do
+    let p_pos : Option Q(0 < $e) ← do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
       let some ps ← proveFinsetNonempty s | pure none
       let .some pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
       assertInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
-      return some q(@sum_pos $ι $α $instα (@PartialOrder.toPreorder _ $pα) $pα' $f $s _
-        (fun i _ ↦ $pr i) $ps))
+      pure <| some q(@sum_pos $ι $α $instα (@PartialOrder.toPreorder _ $pα) $pα' $f $s _
+        (fun i _ ↦ $pr i) $ps)
     -- Try to show that the sum is positive
     if let some p_pos := p_pos then
       return .positive p_pos
