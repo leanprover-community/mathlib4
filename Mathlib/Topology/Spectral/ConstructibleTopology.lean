@@ -101,8 +101,7 @@ lemma latticeClosure_constructibleTopologySubbasis [CompactSpace X] [QuasiSepara
 lemma constructibleTopologySubbasis_subset_isConstructible
     [CompactSpace X] [QuasiSeparatedSpace X] :
     constructibleTopologySubbasis X ⊆ { s | IsConstructible s } := by
-  rw [← latticeClosure_constructibleTopologySubbasis]
-  exact subset_latticeClosure
+  simp [← latticeClosure_constructibleTopologySubbasis]
 
 variable (X) in
 lemma constructibleTopology_eq_generateFrom_isConstructible
