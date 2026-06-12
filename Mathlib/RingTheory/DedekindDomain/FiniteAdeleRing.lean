@@ -105,13 +105,16 @@ instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion 
 
 namespace FiniteAdeleRing
 
+/-- `𝔸ᶠ[R, K]` is notation for `IsDedekindDomain.FiniteAdeleRing R K`. -/
+scoped notation:max "𝔸ᶠ[" R ", " K "]" => FiniteAdeleRing R K
+
 /--
 The canonical map from `K` to the finite adeles of `K`.
 
 The content of the existence of this map is the fact that an element `k` of `K` is integral at
 all but finitely many places, which is `IsDedekindDomain.HeightOneSpectrum.Support.finite R k`.
 -/
-protected def algebraMap : K →+* FiniteAdeleRing R K where
+protected def algebraMap : K →+* 𝔸ᶠ[R, K] where
   toFun k := ⟨fun i ↦ k, by
     simp only [Filter.eventually_cofinite, SetLike.mem_coe, mem_adicCompletionIntegers R K,
      adicCompletion, Valued.valuedCompletion_apply, not_le]
@@ -121,25 +124,25 @@ protected def algebraMap : K →+* FiniteAdeleRing R K where
   map_zero' := rfl
   map_add' x y := Subtype.ext <| funext fun _ ↦ UniformSpace.Completion.coe_add _ _
 
-instance : Algebra K (FiniteAdeleRing R K) := (FiniteAdeleRing.algebraMap R K).toAlgebra
+instance : Algebra K 𝔸ᶠ[R, K] := (FiniteAdeleRing.algebraMap R K).toAlgebra
 
 @[simp]
 theorem algebraMap_apply (k : K) (v : HeightOneSpectrum R) :
-    algebraMap K (FiniteAdeleRing R K) k v = k := rfl
+    algebraMap K 𝔸ᶠ[R, K] k v = k := rfl
 
-instance : Algebra R (FiniteAdeleRing R K) := Algebra.compHom _ (algebraMap R K)
+instance : Algebra R 𝔸ᶠ[R, K] := Algebra.compHom _ (algebraMap R K)
 
-instance : IsScalarTower R K (FiniteAdeleRing R K) :=
+instance : IsScalarTower R K 𝔸ᶠ[R, K] :=
   IsScalarTower.of_algebraMap_eq' rfl
 
 variable {R} in
 @[ext]
-lemma ext {a₁ a₂ : FiniteAdeleRing R K} (h : ∀ v, a₁ v = a₂ v) : a₁ = a₂ :=
+lemma ext {a₁ a₂ : 𝔸ᶠ[R, K]} (h : ∀ v, a₁ v = a₂ v) : a₁ = a₂ :=
   Subtype.ext <| funext h
 
 section Topology
 
-instance : IsTopologicalRing (FiniteAdeleRing R K) :=
+instance : IsTopologicalRing 𝔸ᶠ[R, K] :=
   haveI : Fact (∀ v : HeightOneSpectrum R,
       IsOpen (v.adicCompletionIntegers K : Set (v.adicCompletion K))) :=
     ⟨fun _ ↦ Valued.isOpen_valuationSubring _⟩
@@ -152,19 +155,19 @@ section Units
 variable {R K}
 
 set_option backward.isDefEq.respectTransparency false in
-theorem isUnit_iff {a : FiniteAdeleRing R K} :
+theorem isUnit_iff {a : 𝔸ᶠ[R, K]} :
     IsUnit a ↔ (∀ v, a v ≠ 0) ∧ ∀ᶠ v in Filter.cofinite, Valued.v (a v) = 1 := by
   rw [RestrictedProduct.isUnit_iff]
   simp only [isUnit_iff_ne_zero, adicCompletionIntegers.isUnit_iff_valued_eq_one, exists_prop,
     Filter.eventually_cofinite, not_and_or, Set.setOf_or]
   simpa using! fun _ _ ↦ a.2
 
-theorem unitsEquiv_finite_valued_eq_one (a : (FiniteAdeleRing R K)ˣ) :
+theorem unitsEquiv_finite_valued_eq_one (a : 𝔸ᶠ[R, K]ˣ) :
     ∀ᶠ v in Filter.cofinite, Valued.v (RestrictedProduct.unitsEquiv _ a v).1 = 1 := by
   filter_upwards [(RestrictedProduct.unitsEquiv _ a).2] using fun _ h ↦
     adicCompletionIntegers.mem_units_iff_valued_eq_one.1 h
 
-theorem infinite_valued_ne_one_of_not_isUnit {a : FiniteAdeleRing R K} (ha₀ : ∀ v, a v ≠ 0)
+theorem infinite_valued_ne_one_of_not_isUnit {a : 𝔸ᶠ[R, K]} (ha₀ : ∀ v, a v ≠ 0)
     (ha : ¬IsUnit a) : {v | Valued.v (a v) ≠ 1}.Infinite := by
   contrapose! ha
   rw [isUnit_iff]
@@ -174,11 +177,9 @@ variable (R)
 
 variable (K) in
 /-- The global embedding of the units of `K` into the units of `FiniteAdeleRing R K`. -/
-def unitEmbedding : Kˣ →* (FiniteAdeleRing R K)ˣ := Units.map (algebraMap K (FiniteAdeleRing R K))
+def unitEmbedding : Kˣ →* 𝔸ᶠ[R, K]ˣ := Units.map (algebraMap K 𝔸ᶠ[R, K])
 
-@[simp]
-theorem unitEmbedding_apply (k : Kˣ) :
-    unitEmbedding R K k = algebraMap K (FiniteAdeleRing R K) k := rfl
+@[simp] theorem unitEmbedding_apply (k : Kˣ) : unitEmbedding R K k = algebraMap K 𝔸ᶠ[R, K] k := rfl
 
 end Units
 

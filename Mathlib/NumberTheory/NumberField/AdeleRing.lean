@@ -50,24 +50,31 @@ deriving CommRing, TopologicalSpace, IsTopologicalRing, Algebra K
 
 namespace AdeleRing
 
+/-- `𝔸ᶠ[K]` is notation for `NumberField.FiniteAdeleRing (𝓞 K) K`. -/
+scoped notation:max "𝔸ᶠ[" K "]" => FiniteAdeleRing (𝓞 K) K
+/-- `𝔸[R, K]` is notation for `NumberField.AdeleRing R K`. -/
+scoped notation:max "𝔸[" R ", " K "]" => AdeleRing R K
+/-- `𝔸[K]` is notation for `NumberField.AdeleRing (𝓞 K) K`. -/
+scoped notation:max "𝔸[" K "]" => AdeleRing (𝓞 K) K
+
 variable (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K]
   [Algebra R K] [IsFractionRing R K]
 
-instance : Inhabited (AdeleRing R K) := ⟨0⟩
+instance : Inhabited 𝔸[R, K] := ⟨0⟩
 
 @[simp]
 theorem algebraMap_fst_apply (x : K) (v : InfinitePlace K) :
-    (algebraMap K (AdeleRing R K) x).1 v = x := rfl
+    (algebraMap K 𝔸[R, K] x).1 v = x := rfl
 
 @[simp]
 theorem algebraMap_snd_apply (x : K) (v : HeightOneSpectrum R) :
-    (algebraMap K (AdeleRing R K) x).2 v = x := rfl
+    (algebraMap K 𝔸[R, K] x).2 v = x := rfl
 
-theorem algebraMap_injective [NumberField K] : Function.Injective (algebraMap K (AdeleRing R K)) :=
-  fun _ _ hxy => (algebraMap K _).injective (Prod.ext_iff.1 hxy).1
+theorem algebraMap_injective [NumberField K] : Function.Injective (algebraMap K 𝔸[R, K]) :=
+  fun _ _ hxy => (algebraMap K K∞).injective (Prod.ext_iff.1 hxy).1
 
 /-- The subgroup of principal adeles `(x)ᵥ` where `x ∈ K`. -/
-abbrev principalSubgroup : AddSubgroup (AdeleRing R K) := (algebraMap K _).range.toAddSubgroup
+abbrev principalSubgroup : AddSubgroup 𝔸[R, K] := (algebraMap K 𝔸[R, K]).range.toAddSubgroup
 
 end AdeleRing
 
