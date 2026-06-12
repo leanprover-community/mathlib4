@@ -86,17 +86,17 @@ lemma latticeClosure_constructibleTopologySubbasis [CompactSpace X] [QuasiSepara
     latticeClosure (constructibleTopologySubbasis X) = { s | IsConstructible s } := by
   rw [← BooleanSubalgebra.closure_eq_latticeClosure (empty_mem_constructibleTopologySubbasis X)
       compl_image_constructibleTopologySubbasis]
-  refine Set.eq_of_subset_of_subset (fun s hs => ?_)
-    (BooleanSubalgebra.closure_mono fun s ⟨hs1, hs2⟩ => ?_)
-  · change IsConstructible s
-    refine BooleanSubalgebra.mem_closure.1 hs fun t ht =>
-      ht.elim (fun ⟨ht1, ht2⟩ => ?_) (fun ⟨ht1, ht2⟩ => ?_)
-    · exact BooleanSubalgebra.subset_closure ⟨ht1,
-        (QuasiSeparatedSpace.isRetrocompact_iff_isCompact ht1).2 ht2⟩
-    · exact compl_compl t ▸ BooleanSubalgebra.compl_mem <|
-        BooleanSubalgebra.subset_closure ⟨ht1.isOpen_compl,
-          (QuasiSeparatedSpace.isRetrocompact_iff_isCompact ht1.isOpen_compl).2 ht2⟩
-  · exact Or.intro_left _ ⟨hs1, (QuasiSeparatedSpace.isRetrocompact_iff_isCompact hs1).1 hs2⟩
+  dsimp only [IsConstructible, SetLike.setOf_mem_eq]
+  congr 1
+  refine le_antisymm ?_ (BooleanSubalgebra.closure_mono ?_)
+  · rw [BooleanSubalgebra.closure_le]
+    rintro s (⟨h₁, h₂⟩ | ⟨h₁, h₂⟩)
+    · apply BooleanSubalgebra.subset_closure
+      grind [QuasiSeparatedSpace.isRetrocompact_iff_isCompact]
+    · rw [← compl_compl s]
+      refine BooleanSubalgebra.compl_mem (BooleanSubalgebra.subset_closure ?_)
+      grind [QuasiSeparatedSpace.isRetrocompact_iff_isCompact, IsClosed.isOpen_compl]
+  · grind [QuasiSeparatedSpace.isRetrocompact_iff_isCompact, constructibleTopologySubbasis]
 
 lemma constructibleTopologySubbasis_subset_isConstructible
     [CompactSpace X] [QuasiSeparatedSpace X] :
