@@ -9,6 +9,9 @@ public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
 public import Mathlib.Analysis.Normed.Module.Shrink
 public import Mathlib.Topology.Algebra.Module.TransferInstance
+public import Mathlib.Geometry.Manifold.ContMDiff.Defs
+public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
+public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 
 /-! # Smooth submersions
 
@@ -88,7 +91,7 @@ This will be the topic of Samantha Naranjo's master's thesis, and it's nice to c
 public noncomputable section
 
 open scoped Topology ContDiff
-
+open OpenPartialHomeomorph
 open Function Set
 
 namespace Manifold
@@ -142,7 +145,7 @@ NB. We don't know the particular atlasses used for `M` and `N`, so asking for `�
 in the `atlas` would be too optimistic: lying in the `maximalAtlas` is sufficient.
 
 This definition has a fixed parameter `F`, which is a choice of complement of `E''` in `E`:
-being an immersion at `x` includes a choice of linear isomorphism between `E'' × F` and `E`.
+being an submersion at `x` includes a choice of linear isomorphism between `E'' × F` and `E`.
 While the particular choice of complement is often not important, choosing a complement is useful
 in some settings, such as proving that embedded submanifolds are locally given either by an
 immersion or a submersion.
@@ -353,6 +356,36 @@ lemma isSubmersionAt (h : IsSubmersionAtOfComplement F I J n f x) :
   use h.smallComplement, by infer_instance, by infer_instance
   exact (IsSubmersionAtOfComplement.congr_F h.smallEquiv).mp h
 
+/-- A submersion is `C^n` on a neighborhood of the point where it is a submersion.
+
+This lemma is marked private since `h.domChart` is an arbitrary representative:
+`contMDiffAt` is part of the public API -/
+private theorem contMDiffOn (h : IsSubmersionAtOfComplement F I J n f x) :
+    ContMDiffOn I J n f h.domChart.source := by
+  have mapsto : MapsTo f h.domChart.source h.codChart.source :=
+    fun x hx ↦ h.source_subset_preimage_source hx
+  -- Smoothness of f is equivalent to smoothnes of ψ ∘ f ∘ φ⁻¹:
+  rw [← contMDiffOn_writtenInExtend_iff h.domChart_mem_maximalAtlas
+    h.codChart_mem_maximalAtlas le_rfl mapsto,
+    ← h.domChart.extend_target_eq_image_source]
+  -- We prove that E → E'' is a C^n map.
+  have : ContMDiff 𝓘(𝕜, E) 𝓘(𝕜, E'') n (Prod.fst ∘ h.equiv) := by
+    -- We know that equiv : E → E'' × F is C^n:
+    have h₁ : ContMDiff (𝓘(𝕜, E)) 𝓘(𝕜, E'' × F) n h.equiv := by
+      rw [contMDiff_iff_contDiff]
+      exact h.equiv.contDiff
+    -- We know that Prod.fst : E'' × F → E'' is C^n:
+    have h₂: ContMDiff (𝓘(𝕜, E'' × F)) (𝓘(𝕜, E'')) n (Prod.fst : E'' × F → E'') := by
+    -- We had to specify the type; that is, Prod.fst : E'' × F → E''.
+      rw [contMDiff_iff_contDiff]
+      exact contDiff_fst
+    exact h₂.comp h₁
+  exact this.contMDiffOn.congr h.writtenInCharts
+
+/-- A `C^n` submersion at `x` is `C^n` at `x`. -/
+theorem contMDiffAt (h : IsSubmersionAtOfComplement F I J n f x) : ContMDiffAt I J n f x :=
+  h.contMDiffOn.contMDiffAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
+
 end IsSubmersionAtOfComplement
 
 namespace IsSubmersionAt
@@ -491,6 +524,18 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
     IsSubmersionAt (I.prod I') (J.prod J') n (Prod.map f g) (x, x') :=
   hf.isSubmersionAtOfComplement_complement.prodMap hg.isSubmersionAtOfComplement_complement
     |>.isSubmersionAt
+
+/-- A submersion is `C^n` on a neighborhood of the point where it is a submersion.
+
+This lemma is marked private since `h.domChart` is an arbitrary representative:
+`contMDiffAt` is part of the public API -/
+private theorem contMDiffOn (h : IsSubmersionAt I J n f x) :
+    ContMDiffOn I J n f h.domChart.source :=
+  h.isSubmersionAtOfComplement_complement.contMDiffOn
+
+/-- A `C^k` submersion at `x` is `C^k` at `x`. -/
+theorem contMDiffAt (h : IsSubmersionAt I J n f x) : ContMDiffAt I J n f x :=
+  h.isSubmersionAtOfComplement_complement.contMDiffAt
 
 end IsSubmersionAt
 
