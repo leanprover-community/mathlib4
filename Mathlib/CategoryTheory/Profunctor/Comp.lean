@@ -55,6 +55,7 @@ def compDiagram (P : Profunctor.{w} C D) (Q : Profunctor.{w'} D E) (X : C) (Y : 
     map f := TypeCat.ofHom (Prod.map id ((Q.map f).app _)) }
   map g := { app U := TypeCat.ofHom (Prod.map ((P.obj _).map g) id) }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The map on composition diagrams induced by morphisms in the outer variables. -/
 @[simps]
 def compDiagramMap (P : Profunctor.{w} C D) (Q : Profunctor.{w'} D E)
@@ -100,6 +101,7 @@ section Left
 
 variable (P : Profunctor.{max u w} C D) {Q R : Profunctor.{max u w} D E} (f : Q ⟶ R)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Left whiskering of a natural transformation of profunctors. -/
 @[simps app_app]
@@ -133,6 +135,7 @@ section Right
 
 variable {P Q : Profunctor.{max u w} C D} (R : Profunctor.{max u w} D E) (f : P ⟶ Q)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] chosenCoend_def chosenCoend.map_apply in
 /-- Right whiskering of a natural transformation of profunctors. -/
@@ -175,6 +178,7 @@ variable {C : Type u} [Category.{u} C] {D : Type u} [Category* D]
 
 open Limits TypeCat
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The left unitor isomorphism `Profunctor.id.comp P ≅ P` for composition of profunctors. -/
 @[simps! hom_app_app inv_app_app]
@@ -191,6 +195,7 @@ def leftUnitor (P : Profunctor.{u} C D) : Profunctor.id.comp P ≅ P :=
     (fun f ↦ by dsimp; ext; simp [compDiagram, chosenCoend.ι_apply _]))
     (fun f ↦ by ext _ ⟨_, _⟩; simp [Types.chosenCoend_def, chosenCoend.map_apply])
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] Types.chosenCoend_def in
 @[simp]
@@ -209,6 +214,7 @@ open Limits TypeCat
 
 variable {C : Type u} [Category* C] {D : Type u} [Category.{u} D]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The right unitor isomorphism `P.comp Profunctor.id ≅ P` for composition of profunctors. -/
 @[simps! hom_app_app inv_app_app]
@@ -224,6 +230,7 @@ def rightUnitor (P : Profunctor.{u} C D) : P.comp .id ≅ P :=
     (fun f ↦ by dsimp; ext; simp [compDiagram, chosenCoend.ι_apply _]))
     (fun f ↦ by ext _ ⟨_, _⟩; simp [Types.chosenCoend_def, chosenCoend.map_apply])
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] Types.chosenCoend_def in
 @[simp]
@@ -244,6 +251,58 @@ variable {C D E F : Type u} [Category* C] [Category* D] [Category* E] [Category*
 
 open TypeCat Limits Types Functor
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+attribute [local simp] Types.chosenCoend_def chosenCoend.map_apply in
+lemma associatorComponents_aux₁ {X : C} {Y : Fᵒᵖ} {e e' : E} {d d' : D}
+    {p : (P.obj X).obj (Opposite.op d)} {q : (Q.obj d).obj (Opposite.op e)}
+    {p' : (P.obj X).obj (Opposite.op d')} {q' : (Q.obj d').obj (Opposite.op e')}
+    {f : e ⟶ e'} {r : (R.obj e).obj Y}
+    (h : Relation.EqvGen (coendRel (P.compDiagram Q X e))
+      ⟨d', p', (Q.obj d').map f.op q'⟩ ⟨d, p, q⟩) :
+    Relation.EqvGen (coendRel (P.compDiagram (Q.comp R) X (unop Y)))
+      ⟨d', p', Quot.mk _ ⟨e', (q', (R.map f).app Y r)⟩⟩
+      ⟨d, p, Quot.mk _ ⟨e, (q, r)⟩⟩ := by
+  replace h := Relation.EqvGen.map (fun ⟨d, p, q⟩ ↦ ⟨d, (p, Quot.mk _ ⟨e, q, r⟩)⟩)
+      (Relation.EqvGen (coendRel (P.compDiagram (Q.comp R) X (unop Y)))) _ _ (h.mono <| by
+    intro ⟨d, p, q⟩ ⟨d', p', q'⟩ h
+    apply Relation.EqvGen.rel
+    rw [coendRel_iff] at h ⊢
+    obtain ⟨f, x, h₁, h₂⟩ := h
+    use f
+    simp_all [Prod.ext_iff])
+  simp only [Relation.EqvGen.idempotent] at h
+  refine Relation.EqvGen.trans _ _ _ ?_ h
+  apply Relation.EqvGen.rel
+  rw [coendRel_iff]
+  exact ⟨𝟙 _, by simp; exact (Quot.sound <| coendRel.mk (F := Q.compDiagram R _ _) f (_, _)).symm⟩
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+attribute [local simp] Types.chosenCoend_def chosenCoend.map_apply in
+lemma associatorComponents_aux₂ {X : C} {Y : Fᵒᵖ} {d d' : D} {e e' : E}
+  {q : (Q.obj d).obj (Opposite.op e)} {r : (R.obj e).obj Y}
+  {q' : (Q.obj d').obj (Opposite.op e')}
+  {r' : (R.obj e').obj Y} {f : d ⟶ d'} {p : (P.obj X).obj (Opposite.op d')}
+  (h : Relation.EqvGen (coendRel (Q.compDiagram R d' (unop Y)))
+    ⟨e, ((ConcreteCategory.hom ((Q.map f).app (Opposite.op e))) q, r)⟩ ⟨e', (q', r')⟩) :
+  Relation.EqvGen (coendRel ((P.comp Q).compDiagram R X (unop Y)))
+    ⟨e, (Quot.mk (coendRel (P.compDiagram Q X e)) ⟨d, (P.obj X).map f.op p, q⟩, r)⟩
+    ⟨e', (Quot.mk (coendRel (P.compDiagram Q X e')) ⟨d', (p, q')⟩, r')⟩ := by
+  replace h := Relation.EqvGen.map (fun ⟨e, q, r⟩ ↦ ⟨e, Quot.mk _ ⟨d', p, q⟩, r⟩)
+      (Relation.EqvGen (coendRel ((P.comp Q).compDiagram R X (unop Y)))) _ _ (h.mono <| by
+    intro ⟨d, p, q⟩ ⟨d', p', q'⟩ h
+    apply Relation.EqvGen.rel
+    rw [coendRel_iff] at h ⊢
+    obtain ⟨f, x, h₁, h₂⟩ := h
+    exact ⟨f, by simp_all [Prod.ext_iff]⟩)
+  simp only [Relation.EqvGen.idempotent] at h
+  refine (Relation.EqvGen.trans _ _ _ ?_ h)
+  apply Relation.EqvGen.rel
+  rw [coendRel_iff]
+  exact ⟨𝟙 _, by simp; exact Quot.sound <| coendRel.mk (F := P.compDiagram Q _ _) f (_, _)⟩
+
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] Types.chosenCoend_def chosenCoend.map_apply in
 /-- The objectwise components of the associator isomorphism
@@ -257,22 +316,19 @@ def associatorComponents (X : C) (Y : Fᵒᵖ) :
     · rintro ⟨d, p, q⟩ ⟨d', p', q'⟩ ⟨f, x⟩
       rw [coendRel_iff]
       exact ⟨f, by simp⟩
-    · rintro ⟨e, _, _⟩ ⟨e', _, _⟩ ⟨f, ⟨x, r⟩⟩
-      refine Quot.inductionOn x ?_
-      rintro ⟨d, p, q⟩
+    · rintro ⟨e, ⟨d, p, q⟩, r⟩ ⟨e', ⟨d', p', q'⟩, r'⟩ h
+      dsimp
+      rw [coendRel_iff] at h
+      obtain ⟨f, ⟨x, r''⟩, h₁, h₂⟩ := h
+      dsimp at h₁ h₂
+      simp only [map_id, NatTrans.id_app, Prod.mk.injEq] at h₁
+      obtain ⟨rfl, rfl⟩ := h₂
+      obtain ⟨h₁, rfl⟩ := h₁
+      dsimp at h₁
+      symm
       dsimp [Quot.map]
-      simp only [map_id, NatTrans.id_app, types_id_apply]
-      -- First use the inner coend condition, then apply the outer quotient constructor.
-      let outer (x : ((Q.comp R).obj d).obj Y) :=
-        chosenCoend.ι (P.compDiagram (Q.comp R) X (unop Y)) d (p, x)
-      have inner_relation :
-          chosenCoend.ι (Q.compDiagram R d (unop Y)) e (((Q.obj d).map f.op q), r) =
-            chosenCoend.ι (Q.compDiagram R d (unop Y)) e' (q, (R.map f).app Y r) := by
-        simpa [types_comp_apply, Prod.map] using
-          types_congr_hom
-            (chosenCoend.condition (F := Q.compDiagram R d (unop Y)) (i := e) (j := e') f)
-            (q, r)
-      exact congrArg outer inner_relation
+      rw [Quot.eq] at h₁ ⊢
+      exact associatorComponents_aux₁ _ _ _ h₁
   inv := by
     refine ↾Quot.lift (fun ⟨d, p, x⟩ ↦
         Quot.map (fun ⟨e, q, r⟩ ↦ ⟨e, Quot.mk _ ⟨d, p, q⟩, r⟩) ?_ x) ?_
@@ -280,22 +336,18 @@ def associatorComponents (X : C) (Y : Fᵒᵖ) :
       rw [coendRel_iff]
       use f
       simp
-    · rintro ⟨d, _, _⟩ ⟨d', _, _⟩ ⟨f, ⟨p, x⟩⟩
-      refine Quot.inductionOn x ?_
-      rintro ⟨e, q, r⟩
+    · rintro ⟨d, p, e, q, r⟩ ⟨d', p', e', q', r'⟩ h
+      dsimp
+      rw [coendRel_iff] at h
+      obtain ⟨f, ⟨p, x⟩, h₁, h₂⟩ := h
+      dsimp at h₁ h₂
+      simp only [map_id, Prod.mk.injEq] at h₂
+      obtain ⟨rfl, rfl⟩ := h₁
+      obtain ⟨rfl, h₂⟩ := h₂
+      dsimp at h₂
       dsimp [Quot.map]
-      simp only [map_id, types_id_apply]
-      -- First use the inner coend condition, then apply the outer quotient constructor.
-      let outer (x : ((P.comp Q).obj X).obj (op e)) :=
-        chosenCoend.ι ((P.comp Q).compDiagram R X (unop Y)) e (x, r)
-      have inner_relation :
-          chosenCoend.ι (P.compDiagram Q X e) d (((P.obj X).map f.op p), q) =
-            chosenCoend.ι (P.compDiagram Q X e) d' (p, (Q.map f).app _ q) := by
-        simpa [types_comp_apply, Prod.map] using
-          types_congr_hom
-            (chosenCoend.condition (F := P.compDiagram Q X e) (i := d) (j := d') f)
-            (p, q)
-      exact congrArg outer inner_relation
+      rw [Quot.eq] at h₂ ⊢
+      exact associatorComponents_aux₂ _ _ _ h₂
   hom_inv_id := by
     ext ⟨_, ⟨_, _, _⟩, _⟩
     dsimp [Quot.map]
@@ -303,6 +355,7 @@ def associatorComponents (X : C) (Y : Fᵒᵖ) :
     ext ⟨_, _, ⟨_, _, _⟩⟩
     dsimp [Quot.map]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The associator isomorphism `(P.comp Q).comp R ≅ P.comp (Q.comp R)` for composition of
 profunctors. -/
