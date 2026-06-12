@@ -16,7 +16,7 @@ public import Mathlib.Algebra.Star.Unitary
 This file defines `Matrix.IsHadamard`, a unified notion that specializes to the classical real
 Hadamard matrices over `ℝ`/`ℤ` (where `star` is trivial and entries are `±1`) and to the complex
 Hadamard matrices over `ℂ` (where entries have unit norm). Basic results: conjugate-transpose
-closure, the order identity `n = s * star s` from constant column sums, the Sylvester
+closure, the order identity `n = s * star s` from constant row or column sums, the Sylvester
 (Kronecker) construction, and the divisibility obstruction `4 ∣ n`.
 
 ## References
@@ -108,8 +108,8 @@ theorem IsHadamard.kronecker {A : Matrix m m R} {B : Matrix n n R}
 /-- A Hadamard matrix with constant column sum `s` has order `s * star s`, provided the order
 is regular in `R`.
 
-The row-sum form follows by applying this to `Aᴴ`; over a ring with trivial star the
-conclusion becomes `(Fintype.card n : R) = s ^ 2`, a slightly stronger form of
+The row-sum form is `IsHadamard.card_eq_star_mul_of_const_row_sum`; over a ring with trivial
+star the conclusion becomes `(Fintype.card n : R) = s ^ 2`, a slightly stronger form of
 [Theorem 2.3.7][deLauneyFlannery2011]: only a constant sum hypothesis on one side is needed
 under the two-sided orthogonality condition. -/
 theorem IsHadamard.card_eq_mul_star_of_const_col_sum {s : R}
@@ -131,7 +131,36 @@ theorem IsHadamard.card_eq_mul_star_of_const_col_sum {s : R}
       (Fintype.card n : R) * (s * star s) by
     simpa [pow_two] using hleft.symm.trans hright
 
+/-- A Hadamard matrix with constant row sum `s` has order `star s * s`, provided the order
+is regular in `R`. This generalizes [Theorem 2.3.7][deLauneyFlannery2011]. -/
+theorem IsHadamard.card_eq_star_mul_of_const_row_sum {s : R}
+    (hA : A.IsHadamard) (hcard : IsRegular (Fintype.card n : R))
+    (hrow : ∀ i, ∑ j, A i j = s) : (Fintype.card n : R) = star s * s := by
+  have hcol : ∀ j, ∑ i, Aᴴ i j = star s := fun j => by
+    simp [conjTranspose_apply, ← star_sum, hrow j]
+  simpa using hA.conjTranspose.card_eq_mul_star_of_const_col_sum hcard hcol
+
 end Semiring
+
+section CommSemiring
+variable [CommSemiring R] [StarRing R] {A : Matrix n n R}
+
+/-- The transpose of a Hadamard matrix is Hadamard.
+
+Unlike `IsHadamard.conjTranspose` this requires commutativity: over a noncommutative ring the
+transpose of a Hadamard matrix need not be Hadamard. -/
+theorem IsHadamard.transpose (hA : A.IsHadamard) : Aᵀ.IsHadamard := by
+  refine ⟨fun i j => hA.1 j i, ?_, ?_⟩
+  · rw [show Aᵀᴴ = Aᴴᵀ from rfl, ← transpose_mul, hA.conjTranspose_mul, transpose_smul,
+      transpose_one]
+  · rw [show Aᵀᴴ = Aᴴᵀ from rfl, ← transpose_mul, hA.mul_conjTranspose, transpose_smul,
+      transpose_one]
+
+@[simp]
+theorem isHadamard_transpose_iff : Aᵀ.IsHadamard ↔ A.IsHadamard :=
+  ⟨fun hA => by simpa using hA.transpose, (·.transpose)⟩
+
+end CommSemiring
 
 section Ring
 variable [Ring R] [StarRing R] {A : Matrix n n R}
