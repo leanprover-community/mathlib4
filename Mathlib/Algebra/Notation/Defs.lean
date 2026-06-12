@@ -20,7 +20,7 @@ We introduce the notation typeclass `Star` for algebraic structures with a star 
 accommodate diverse notational preferences, no default notation is provided for `Star.star`.
 
 `SMul` is typically, but not exclusively, used for scalar multiplication-like operators.
-See the module `Algebra.AddTorsor` for a motivating example for the name `VAdd` (vector addition).
+See the module `Algebra.Torsor.Defs` for a motivating example for the name `VAdd` (vector addition).
 
 Note `Zero` has already been defined in core Lean.
 
