@@ -105,7 +105,7 @@ theorem not_weird_zero : ¬ Weird 0 := by
 theorem weird_seventy : Weird 70 := by
   decide +kernel
 
-def Deficient.pos (h : Deficient n) : 0 < n := by
+lemma Deficient.pos (h : Deficient n) : 0 < n := by
   grind only [not_deficient_zero]
 
 lemma Abundant.pos (h : Abundant n) : 0 < n := by
