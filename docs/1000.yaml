@@ -1510,6 +1510,8 @@ Q1196538:
 
 Q1196729:
   title: Mertens's theorems
+  decl: Mertens.abs_primeLogSum_sub_log_lt_two
+  authors: Yi Yuan
 
 Q1202608:
   title: De Gua's theorem

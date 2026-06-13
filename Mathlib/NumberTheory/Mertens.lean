@@ -113,7 +113,7 @@ lemma summable_primeLogDivMulPred : Summable fun p : Nat.Primes ↦ log p / (p *
     _ = 4 * n ^ ((1 / 2 : ℝ) - 2) := by simp [rpow_sub hn0]
     _ = 4 * n ^ (-(3 / 2 : ℝ)) := by norm_num
 
-lemma summable_full : Summable fun n : ℕ ↦ oddLogDivMulPred (n : ℝ) := by
+lemma summable_oddLogDivMulPred_nat : Summable fun n : ℕ ↦ oddLogDivMulPred (n : ℝ) := by
   have hpow : Summable fun n : ℕ ↦ 2 * (n : ℝ) ^ (-(3 / 2 : ℝ)) :=
     (Real.summable_nat_rpow.mpr (by norm_num)).mul_left 2
   refine Summable.of_norm_bounded_eventually_nat hpow ?_
@@ -124,9 +124,9 @@ lemma summable_full : Summable fun n : ℕ ↦ oddLogDivMulPred (n : ℝ) := by
   exact oddLogDivMulPred_le (x := n) (by exact_mod_cast hn1)
 
 lemma summable_oddLogDivMulPred_nat_tail : Summable fun k : Set.Ici 2 ↦ oddLogDivMulPred k :=
-  summable_full.subtype (Set.Ici 2)
+  summable_oddLogDivMulPred_nat.subtype (Set.Ici 2)
 
-lemma integral_oddLogDivMulPred_converges : IntegrableOn oddLogDivMulPred (Set.Ioi 2) := by
+lemma integrableOn_oddLogDivMulPred_Ioi_two : IntegrableOn oddLogDivMulPred (Set.Ioi 2) := by
   have hmajor : IntegrableOn (fun x : ℝ ↦ 2 * x ^ (-(3 / 2 : ℝ))) (Set.Ioi 2) := by
     let F : ℝ → ℝ := fun x ↦ -4 * x ^ (-(1 / 2 : ℝ))
     have hderiv : ∀ x ∈ Set.Ici 2, HasDerivAt F (2 * x ^ (-(3 / 2 : ℝ))) x := by
@@ -280,8 +280,8 @@ lemma tsum_oddLogDivMulPred_nat_tail_lt_integral : ∑' n : ℕ, oddLogDivMulPre
             + ∫ x in Set.Ioi ((m + 3 : ℕ) : ℝ), oddLogDivMulPred x =
             ∫ x in Set.Ioi 3, oddLogDivMulPred x :=
           intervalIntegral.integral_interval_add_Ioi
-            (integral_oddLogDivMulPred_converges.mono_set (by grind))
-            (integral_oddLogDivMulPred_converges.mono_set (by grind))
+            (integrableOn_oddLogDivMulPred_Ioi_two.mono_set (by grind))
+            (integrableOn_oddLogDivMulPred_Ioi_two.mono_set (by grind))
         have : 0 ≤ ∫ x in Set.Ioi (((m + 3 : ℕ) : ℝ)), oddLogDivMulPred x :=
           setIntegral_nonneg measurableSet_Ioi fun x hx ↦ oddLogDivMulPred_nonneg (by grind)
         linarith
@@ -291,8 +291,8 @@ lemma tsum_oddLogDivMulPred_nat_tail_lt_integral : ∑' n : ℕ, oddLogDivMulPre
   _ < (∫ x in 2..3, oddLogDivMulPred x) + ∫ x in Set.Ioi 3, oddLogDivMulPred x :=
     add_lt_add_left oddLogDivMulPred_three_lt_integral_two_three _
   _ = _ :=
-    intervalIntegral.integral_interval_add_Ioi integral_oddLogDivMulPred_converges
-      (integral_oddLogDivMulPred_converges.mono_set (by grind))
+    intervalIntegral.integral_interval_add_Ioi integrableOn_oddLogDivMulPred_Ioi_two
+      (integrableOn_oddLogDivMulPred_Ioi_two.mono_set (by grind))
 
 lemma half_integral_log_div_mul_pred_le : 1 / 2 * ∫ u in Set.Ioi 5, log u / (u * (u - 1))
     ≤ 5 / 8 * ∫ u in Set.Ioi 5, log u / u ^ 2 := by
@@ -398,7 +398,7 @@ lemma factorial_prime_exponent_lower {n p : ℕ} (hp : p.Prime) (hpn : p ≤ n) 
     simpa [Nat.factorization_factorial hp <| Nat.lt_succ_of_le <| p.log_le_self n]
       using (single_le_sum (fun k _ ↦ Nat.zero_le (n / p ^ k)) hmem)
 
-lemma primeLogSum_sub_log_lt_theta_div {n : ℕ} (hn : 0 < n) :
+lemma primeLogSum_sub_log_le_theta_div {n : ℕ} (hn : 0 < n) :
     ∑ p ∈ Ioc 0 n with p.Prime, log p / p - log n ≤ Chebyshev.theta n / n := by
   have hnpos : (0 : ℝ) < n := by exact_mod_cast Nat.pos_of_ne_zero (by lia : n ≠ 0)
   have hlt : n * (∑ p ∈ Ioc 0 n with p.Prime, log p / p) - Chebyshev.theta n ≤ n * log n := by
@@ -464,7 +464,7 @@ lemma finite_primeLogDivMulPred_lt_one {n : ℕ} :
 
 /-- **Mertens' first theorem**: for every natural number `n`, the sum of `log p / p` over
 primes `p ≤ n` differs from `log n` by at most `2`. -/
-theorem mertens_first_theorem_nat {n : ℕ} :
+theorem abs_primeLogSum_sub_log_lt_two {n : ℕ} :
     |∑ p ∈ Ioc 0 n with p.Prime, log p / p - log n| < 2 := by
   by_cases hn : n = 0
   · simp_all
@@ -479,7 +479,7 @@ theorem mertens_first_theorem_nat {n : ℕ} :
     nlinarith [mul_lt_mul_of_pos_left (finite_primeLogDivMulPred_lt_one (n := n)) hnpos,
       log_factorial_le_mul_primeLogSum_add_error (n := n), hfactorial_lower]
   · calc
-    _ ≤ Chebyshev.theta n / n := primeLogSum_sub_log_lt_theta_div hn
+    _ ≤ Chebyshev.theta n / n := primeLogSum_sub_log_le_theta_div hn
     _ ≤ log 4 := by
       have hnpos : (0 : ℝ) < n := by exact_mod_cast (by lia)
       simpa [div_le_iff₀ hnpos, mul_comm] using Chebyshev.theta_le_log4_mul_x (by positivity)
