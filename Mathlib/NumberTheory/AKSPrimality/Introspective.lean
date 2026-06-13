@@ -32,6 +32,8 @@ prime number, polynomial prime number test, AKS, Agrawal-Kayal-Saxena, Introspec
 
 open Polynomial Nat Ideal Ideal.Quotient
 
+
+/-- The introspective relation, currently only useful for the proof of the AKS primality theorem. -/
 def Introspective {n : ℕ} (f : (ZMod n)[X]) (e r : ℕ) : Prop :=
   mk (span ({(X : (ZMod n)[X]) ^ r - C 1})) (f ^ e) =
   mk (span ({(X : (ZMod n)[X]) ^ r - C 1})) (f.comp (X ^ e))
