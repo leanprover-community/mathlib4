@@ -7,11 +7,13 @@ module
 
 public import Mathlib.Algebra.Algebra.RestrictScalars
 public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.Data.Complex.Basic
 public import Mathlib.Data.Real.Star
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.Algebra.Module.Torsion.Field
+import Mathlib.Algebra.Order.Monoid.Submonoid
 
 /-!
 # Complex number as a vector space over `ℝ`
@@ -163,13 +165,13 @@ theorem coe_basisOneI : ⇑basisOneI = ![1, I] :=
 
 end Complex
 
-/- Register as an instance (with low priority) the fact that a complex vector space is also a real
+/-- Register as an instance (with low priority) the fact that a complex vector space is also a real
 vector space. -/
 instance (priority := 900) Module.complexToReal (E : Type*) [AddCommGroup E] [Module ℂ E] :
     Module ℝ E :=
   .restrictScalars ℝ ℂ E
 
-/- Register as an instance (with low priority) the fact that a complex algebra is also a real
+/-- Register as an instance (with low priority) the fact that a complex algebra is also a real
 algebra. -/
 instance (priority := 900) Algebra.complexToReal {A : Type*} [Semiring A] [Algebra ℂ A] :
     Algebra ℝ A :=
@@ -503,7 +505,7 @@ theorem ker_imaginaryPart : imaginaryPart.ker = selfAdjoint.submodule ℝ A := b
 
 @[simp]
 lemma imaginaryPart_eq_zero_iff {x : A} : ℑ x = 0 ↔ IsSelfAdjoint x := by
-  simpa [-ker_imaginaryPart] using SetLike.ext_iff.mp ker_imaginaryPart x
+  simpa [-ker_imaginaryPart] using! SetLike.ext_iff.mp ker_imaginaryPart x
 
 open Submodule
 
@@ -594,6 +596,42 @@ lemma star_mul_self_eq_realPart_sq_add_imaginaryPart_sq (x : A) [hx : IsStarNorm
   _ = _ := by simp [Commute.realPart_imaginaryPart x |>.eq]
 
 end NonUnitalNonAssocRing
+
+section StarOrderedRing
+
+variable [NonUnitalRing A] [StarRing A] [PartialOrder A]
+    [StarOrderedRing A] [Module ℂ A] [StarModule ℂ A]
+
+lemma nonneg_iff_realPart_imaginaryPart {a : A} :
+    0 ≤ a ↔ 0 ≤ ℜ a ∧ ℑ a = 0 := by
+  refine ⟨fun h ↦ ⟨?_, h.isSelfAdjoint.imaginaryPart⟩, fun h ↦ ?_⟩
+  · simpa +singlePass [← h.isSelfAdjoint.coe_realPart] using! h
+  · rw [← realPart_add_I_smul_imaginaryPart a, h.2]
+    simpa using! h.1
+
+lemma nonpos_iff_realPart_imaginaryPart {a : A} :
+    a ≤ 0 ↔ ℜ a ≤ 0 ∧ ℑ a = 0 := by
+  simpa using nonneg_iff_realPart_imaginaryPart (a := -a)
+
+lemma realPart_nonneg_of_nonneg {a : A} (ha : 0 ≤ a) : 0 ≤ ℜ a :=
+  nonneg_iff_realPart_imaginaryPart.mp ha |>.1
+
+lemma realPart_nonpos_of_nonpos {a : A} (ha : a ≤ 0) : ℜ a ≤ 0 :=
+  nonpos_iff_realPart_imaginaryPart.mp ha |>.1
+
+lemma le_iff_realPart_imaginaryPart {a b : A} :
+    a ≤ b ↔ ℜ a ≤ ℜ b ∧ ℑ a = ℑ b := by
+  simpa [sub_eq_zero, eq_comm (a := ℑ a)] using nonneg_iff_realPart_imaginaryPart (a := b - a)
+
+lemma imaginaryPart_eq_of_le {a b : A} (hab : a ≤ b) :
+    ℑ a = ℑ b :=
+  le_iff_realPart_imaginaryPart.mp hab |>.2
+
+lemma realPart_mono {a b : A} (hab : a ≤ b) :
+    ℜ a ≤ ℜ b :=
+  le_iff_realPart_imaginaryPart.mp hab |>.1
+
+end StarOrderedRing
 
 @[simp]
 lemma realPart_one [Ring A] [StarRing A] [Module ℂ A] [StarModule ℂ A] :

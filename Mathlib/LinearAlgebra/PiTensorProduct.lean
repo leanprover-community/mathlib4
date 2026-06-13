@@ -172,7 +172,7 @@ def liftAddHom (φ : (R × Π i, s i) → F)
       φ (r, update f i (r' • f i)) = φ (r' * r, f)) :
     (⨂[R] i, s i) →+ F :=
   (addConGen (PiTensorProduct.Eqv R s)).lift (FreeAddMonoid.lift φ) <|
-    AddCon.addConGen_le fun x y hxy ↦
+    AddCon.addConGen_le.2 fun x y hxy ↦
       match hxy with
       | Eqv.of_zero r' f i hf =>
         (AddCon.ker_rel _).2 <| by simp [FreeAddMonoid.lift_eval_of, C0 r' f i hf]
@@ -911,7 +911,7 @@ open TensorProduct
 variable {ι : Type*} {R : Type*} [CommRing R]
 variable {s : ι → Type*} [∀ i, AddCommGroup (s i)] [∀ i, Module R (s i)]
 
-/- Unlike for the binary tensor product, we require `R` to be a `CommRing` here, otherwise
+/-- Unlike for the binary tensor product, we require `R` to be a `CommRing` here, otherwise
 this is false in the case where `ι` is empty. -/
 instance : AddCommGroup (⨂[R] i, s i) :=
   Module.addCommMonoidToAddCommGroup R

@@ -97,7 +97,7 @@ lemma _root_.OrderHomClass.of_map_cstarMatrix_nonneg
     (h : ∀ (φ : F) (k : ℕ) (M : CStarMatrix (Fin k) (Fin k) A₁), 0 ≤ M → 0 ≤ M.map φ) :
     OrderHomClass F A₁ A₂ := .of_addMonoidHom <| by
   intro φ a ha
-  simpa using map_nonneg (toOneByOne (Fin 1) ℂ A₂).symm <|
+  simpa using! map_nonneg (toOneByOne (Fin 1) ℂ A₂).symm <|
     h φ 1 _ <| map_nonneg (toOneByOne (Fin 1) ℂ A₁) ha
 
 instance [CompletelyPositiveMapClass F A₁ A₂] : OrderHomClass F A₁ A₂ :=
@@ -113,11 +113,11 @@ variable {A₁ A₂ : Type*} [NonUnitalCStarAlgebra A₁]
 
 instance : FunLike (A₁ →CP A₂) A₁ A₂ where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
-    apply DFunLike.coe_injective'
+    apply DFunLike.coe_injective
     exact h
 
 instance : LinearMapClass (A₁ →CP A₂) ℂ A₁ A₂ where

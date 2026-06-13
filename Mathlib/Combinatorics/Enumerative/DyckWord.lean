@@ -221,7 +221,7 @@ def denest (hn : p.IsNested) : DyckWord where
 
 variable (p) in
 lemma nest_denest (hn) : (p.denest hn).nest = p := by
-  simpa [DyckWord.ext_iff] using p.cons_tail_dropLast_concat hn.1
+  simpa [DyckWord.ext_iff] using! p.cons_tail_dropLast_concat hn.1
 
 variable (p) in
 lemma denest_nest : p.nest.denest .nest = p := by
@@ -282,7 +282,7 @@ lemma count_take_firstReturn_add_one :
     (p.toList.take (p.firstReturn + 1)).count U = (p.toList.take (p.firstReturn + 1)).count D := by
   have := findIdx_getElem
     (w := (length_range (n := p.toList.length)).symm ▸ firstReturn_lt_length h)
-  simpa using this
+  simpa using! this
 
 lemma count_D_lt_count_U_of_lt_firstReturn {i : ℕ} (hi : i < p.firstReturn) :
     (p.toList.take (i + 1)).count D < (p.toList.take (i + 1)).count U := by
@@ -474,9 +474,9 @@ lemma strictMono_semilength : StrictMono semilength := fun p q pq ↦ by
 
 end Order
 
-section Tree
+section BinaryTree
 
-open Tree
+open BinaryTree
 
 /-- Convert a Dyck word to a binary rooted tree.
 
@@ -485,7 +485,7 @@ which has index `p.firstReturn`, then let `x` be everything strictly between sai
 and `y` be everything strictly after said `D`. `p = x.nest + y` with `x, y` (possibly empty)
 Dyck words. `f(p) = f(x) △ f(y)`, where △ (defined in `Mathlib/Data/Tree/Basic.lean`) joins two
 subtrees to a new root node. -/
-def toTree (p : DyckWord) : Tree Unit :=
+def toTree (p : DyckWord) : BinaryTree Unit :=
   if p = 0 then nil else p.insidePart.toTree △ p.outsidePart.toTree
 termination_by p.semilength
 decreasing_by exacts [semilength_insidePart_lt ‹_›, semilength_outsidePart_lt ‹_›]
@@ -494,9 +494,9 @@ decreasing_by exacts [semilength_insidePart_lt ‹_›, semilength_outsidePart_l
 
 `g(nil) = 0`. A nonempty tree with left subtree `l` and right subtree `r`
 is sent to `g(l).nest + g(r)`. -/
-def ofTree : Tree Unit → DyckWord
-  | Tree.nil => 0
-  | Tree.node _ l r => (ofTree l).nest + ofTree r
+def ofTree : BinaryTree Unit → DyckWord
+  | BinaryTree.nil => 0
+  | BinaryTree.node _ l r => (ofTree l).nest + ofTree r
 
 lemma ofTree_toTree (p) : ofTree p.toTree = p := by
   by_cases h : p = 0
@@ -509,11 +509,11 @@ termination_by p.semilength
 decreasing_by exacts [semilength_insidePart_lt h, semilength_outsidePart_lt h]
 
 lemma toTree_ofTree : ∀ t, (ofTree t).toTree = t
-  | Tree.nil => by simp [ofTree, toTree]
-  | Tree.node _ _ _ => by simp [ofTree, toTree, toTree_ofTree]
+  | BinaryTree.nil => by simp [ofTree, toTree]
+  | BinaryTree.node _ _ _ => by simp [ofTree, toTree, toTree_ofTree]
 
 /-- Equivalence between Dyck words and rooted binary trees. -/
-@[simps] def equivTree : DyckWord ≃ Tree Unit where
+@[simps] def equivTree : DyckWord ≃ BinaryTree Unit where
   toFun := toTree
   invFun := ofTree
   left_inv := ofTree_toTree
@@ -547,7 +547,7 @@ theorem card_dyckWord_semilength_eq_catalan (n : ℕ) :
   rw [← Fintype.ofEquiv_card (equivTreesOfNumNodesEq n), ← treesOfNumNodesEq_card_eq_catalan]
   convert! Fintype.card_coe _
 
-end Tree
+end BinaryTree
 
 end DyckWord
 
