@@ -115,17 +115,17 @@ theorem fderiv_smul (hc : DifferentiableAt 𝕜 c x) (hf : DifferentiableAt 𝕜
 @[fun_prop]
 theorem HasStrictFDerivAt.smul_const (hc : HasStrictFDerivAt c c' x) (f : F) :
     HasStrictFDerivAt (fun y => c y • f) (c'.smulRight f) x := by
-  simpa only [smul_zero, zero_add] using hc.smul (hasStrictFDerivAt_const f x)
+  simpa only [smul_zero, zero_add] using! hc.smul (hasStrictFDerivAt_const f x)
 
 @[fun_prop]
 theorem HasFDerivWithinAt.smul_const (hc : HasFDerivWithinAt c c' s x) (f : F) :
     HasFDerivWithinAt (fun y => c y • f) (c'.smulRight f) s x := by
-  simpa only [smul_zero, zero_add] using hc.smul (hasFDerivWithinAt_const f x s)
+  simpa only [smul_zero, zero_add] using! hc.smul (hasFDerivWithinAt_const f x s)
 
 @[fun_prop]
 theorem HasFDerivAt.smul_const (hc : HasFDerivAt c c' x) (f : F) :
     HasFDerivAt (fun y => c y • f) (c'.smulRight f) x := by
-  simpa only [smul_zero, zero_add] using hc.smul (hasFDerivAt_const f x)
+  simpa only [smul_zero, zero_add] using! hc.smul (hasFDerivAt_const f x)
 
 @[fun_prop]
 theorem DifferentiableWithinAt.smul_const (hc : DifferentiableWithinAt 𝕜 c s x) (f : F) :
@@ -176,7 +176,7 @@ theorem HasStrictFDerivAt.mul' {x : E} (ha : HasStrictFDerivAt a a' x)
 @[to_fun (attr := fun_prop)]
 theorem HasStrictFDerivAt.mul (hc : HasStrictFDerivAt c c' x) (hd : HasStrictFDerivAt d d' x) :
     HasStrictFDerivAt (c * d) (c x • d' + d x • c') x := by
-  convert hc.mul' hd
+  convert! hc.mul' hd
   ext z
   apply mul_comm
 
@@ -190,7 +190,7 @@ theorem HasFDerivWithinAt.mul' (ha : HasFDerivWithinAt a a' s x) (hb : HasFDeriv
 @[to_fun (attr := fun_prop)]
 theorem HasFDerivWithinAt.mul (hc : HasFDerivWithinAt c c' s x) (hd : HasFDerivWithinAt d d' s x) :
     HasFDerivWithinAt (c * d) (c x • d' + d x • c') s x := by
-  convert hc.mul' hd
+  convert! hc.mul' hd
   ext z
   apply mul_comm
 
@@ -204,7 +204,7 @@ theorem HasFDerivAt.mul' (ha : HasFDerivAt a a' x) (hb : HasFDerivAt b b' x) :
 @[to_fun (attr := fun_prop)]
 theorem HasFDerivAt.mul (hc : HasFDerivAt c c' x) (hd : HasFDerivAt d d' x) :
     HasFDerivAt (c * d) (c x • d' + d x • c') x := by
-  convert hc.mul' hd
+  convert! hc.mul' hd
   ext z
   apply mul_comm
 
@@ -274,7 +274,7 @@ theorem HasStrictFDerivAt.mul_const' (ha : HasStrictFDerivAt a a' x) (b : 𝔸) 
 @[fun_prop]
 theorem HasStrictFDerivAt.mul_const (hc : HasStrictFDerivAt c c' x) (d : 𝔸') :
     HasStrictFDerivAt (fun y => c y * d) (d • c') x := by
-  convert hc.mul_const' d
+  convert! hc.mul_const' d
   ext z
   apply mul_comm
 
@@ -286,7 +286,7 @@ theorem HasFDerivWithinAt.mul_const' (ha : HasFDerivWithinAt a a' s x) (b : 𝔸
 @[fun_prop]
 theorem HasFDerivWithinAt.mul_const (hc : HasFDerivWithinAt c c' s x) (d : 𝔸') :
     HasFDerivWithinAt (fun y => c y * d) (d • c') s x := by
-  convert hc.mul_const' d
+  convert! hc.mul_const' d
   ext z
   apply mul_comm
 
@@ -298,7 +298,7 @@ theorem HasFDerivAt.mul_const' (ha : HasFDerivAt a a' x) (b : 𝔸) :
 @[fun_prop]
 theorem HasFDerivAt.mul_const (hc : HasFDerivAt c c' x) (d : 𝔸') :
     HasFDerivAt (fun y => c y * d) (d • c') x := by
-  convert hc.mul_const' d
+  convert! hc.mul_const' d
   ext z
   apply mul_comm
 
@@ -662,7 +662,7 @@ theorem hasFDerivAt_ringInverse (x : Rˣ) :
     HasFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x := by
   have : (fun t : R => Ring.inverse (↑x + t) - ↑x⁻¹ + ↑x⁻¹ * t * ↑x⁻¹) =o[𝓝 0] id :=
     (inverse_add_norm_diff_second_order x).trans_isLittleO (isLittleO_norm_pow_id one_lt_two)
-  simpa [hasFDerivAt_iff_isLittleO_nhds_zero] using this
+  simpa [hasFDerivAt_iff_isLittleO_nhds_zero] using! this
 
 @[fun_prop]
 theorem differentiableAt_inverse {x : R} (hx : IsUnit x) :
@@ -683,7 +683,7 @@ theorem fderiv_inverse (x : Rˣ) : fderiv 𝕜 (@Ring.inverse R _) x = -mulLeftR
 
 theorem hasStrictFDerivAt_ringInverse (x : Rˣ) :
     HasStrictFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x := by
-  convert (analyticAt_inverse (𝕜 := 𝕜) x).hasStrictFDerivAt
+  convert! (analyticAt_inverse (𝕜 := 𝕜) x).hasStrictFDerivAt
   exact (fderiv_inverse x).symm
 
 variable {h : E → R} {z : E} {S : Set E}

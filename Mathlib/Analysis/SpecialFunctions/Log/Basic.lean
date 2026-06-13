@@ -165,6 +165,18 @@ theorem le_log_iff_exp_le (hy : 0 < y) : x ≤ log y ↔ exp x ≤ y := by rw [�
 
 theorem lt_log_iff_exp_lt (hy : 0 < y) : x < log y ↔ exp x < y := by rw [← exp_lt_exp, exp_log hy]
 
+/-- One direction of `Real.log_le_iff_le_exp` without positivity assumption. -/
+lemma le_exp_of_log_le (h : log x ≤ y) : x ≤ exp y := by
+  rcases le_or_gt x 0 with hx | hx
+  · exact hx.trans <| exp_nonneg y
+  · exact (log_le_iff_le_exp hx).mp h
+
+/-- One direction of `Real.log_lt_iff_lt_exp` without positivity assumption. -/
+lemma lt_exp_of_log_lt (h : log x < y) : x < exp y := by
+  rcases le_or_gt x 0 with hx | hx
+  · exact hx.trans_lt <| exp_pos y
+  · exact (log_lt_iff_lt_exp hx).mp h
+
 theorem log_pos_iff (hx : 0 ≤ x) : 0 < log x ↔ 1 < x := by
   rcases hx.eq_or_lt with (rfl | hx)
   · simp [zero_le_one]
@@ -293,7 +305,7 @@ theorem log_sqrt {x : ℝ} (hx : 0 ≤ x) : log (√x) = log x / 2 := by
 
 theorem log_le_sub_one_of_pos {x : ℝ} (hx : 0 < x) : log x ≤ x - 1 := by
   rw [le_sub_iff_add_le]
-  convert add_one_le_exp (log x)
+  convert! add_one_le_exp (log x)
   rw [exp_log hx]
 
 lemma one_sub_inv_le_log_of_pos (hx : 0 < x) : 1 - x⁻¹ ≤ log x := by
@@ -324,12 +336,22 @@ theorem abs_log_mul_self_lt (x : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) : |log x * x| 
   rw [← abs_of_nonneg aux, neg_mul, abs_neg] at this
   exact this
 
+lemma le_log_one_add_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 2 * x / (x + 2) ≤ log (1 + x) := by
+  rw [le_log_iff_exp_le (by grind)]
+  convert exp_le_two_add_div_two_sub (x := 2 * x / (x + 2)) (by positivity) _ using 1
+  all_goals field_simp; grind
+
+lemma lt_log_one_add_of_pos {x : ℝ} (hx : 0 < x) : 2 * x / (x + 2) < log (1 + x) := by
+  rw [lt_log_iff_exp_lt (by grind)]
+  convert exp_lt_two_add_div_two_sub (x := 2 * x / (x + 2)) (by positivity) _ using 1
+  all_goals field_simp; grind
+
 /-- The real logarithm function tends to `+∞` at `+∞`. -/
 theorem tendsto_log_atTop : Tendsto log atTop atTop :=
-  tendsto_comp_exp_atTop.1 <| by simpa only [log_exp] using tendsto_id
+  tendsto_comp_exp_atTop.1 <| by simpa only [log_exp] using! tendsto_id
 
 lemma tendsto_log_nhdsGT_zero : Tendsto log (𝓝[>] 0) atBot := by
-  simpa [← tendsto_comp_exp_atBot] using tendsto_id
+  simpa [← tendsto_comp_exp_atBot] using! tendsto_id
 
 theorem tendsto_log_nhdsNE_zero : Tendsto log (𝓝[≠] 0) atBot := by
   simpa [comp_def] using tendsto_log_nhdsGT_zero.comp tendsto_abs_nhdsNE_zero
@@ -449,6 +471,15 @@ theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
   continuousOn_invFun x hx := (continuousAt_log (ne_of_gt hx)).continuousWithinAt
 
 end Real
+
+namespace Nat.Prime
+
+theorem log_pos {p : ℕ} (hp : p.Prime) : 0 < Real.log p :=
+  Real.log_pos <| mod_cast hp.one_lt
+
+theorem log_ne_zero {p : ℕ} (hp : p.Prime) : Real.log p ≠ 0 := hp.log_pos.ne'
+
+end Nat.Prime
 
 section Continuity
 

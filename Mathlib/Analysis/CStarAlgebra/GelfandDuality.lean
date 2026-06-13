@@ -91,7 +91,7 @@ noncomputable def Ideal.toCharacterSpace : characterSpace ℂ A :=
 theorem Ideal.toCharacterSpace_apply_eq_zero_of_mem {a : A} (ha : a ∈ I) :
     I.toCharacterSpace a = 0 := by
   unfold Ideal.toCharacterSpace
-  simp only [CharacterSpace.equivAlgHom_symm_coe, AlgHom.coe_comp, AlgHom.coe_coe,
+  simp only [CharacterSpace.equivAlgHom_symm_coe, AlgHom.coe_comp, AlgEquiv.coe_algHom,
     Quotient.mkₐ_eq_mk, Function.comp_apply, NormedRing.algEquivComplexOfComplete_symm_apply]
   simp_rw [Quotient.eq_zero_iff_mem.mpr ha, spectrum.zero_eq]
   exact Set.eq_of_mem_singleton (Set.singleton_nonempty (0 : ℂ)).some_mem
@@ -152,9 +152,10 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
   rw [map_mul, (IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnnorm, gelfandTransform_map_star,
     (IsSelfAdjoint.star_mul_self (gelfandTransform ℂ A a)).spectralRadius_eq_nnnorm] at this
   simp only [ENNReal.coe_inj, CStarRing.nnnorm_star_mul_self, ← sq] at this
-  simpa only [Function.comp_apply, NNReal.sqrt_sq] using
+  simpa only [Function.comp_apply, NNReal.sqrt_sq] using!
     congr_arg (((↑) : ℝ≥0 → ℝ) ∘ ⇑NNReal.sqrt) this
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The Gelfand transform is bijective when the algebra is a C⋆-algebra over `ℂ`. -/
 theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A) := by
   refine ⟨(gelfandTransform_isometry A).injective, ?_⟩

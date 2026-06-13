@@ -162,7 +162,7 @@ theorem spectralValue_X_pow (n : ℕ) : spectralValue (X ^ n : R[X]) = 0 := by
   rw [spectralValue]
   unfold spectralValueTerms
   simp_rw [coeff_X_pow n, natDegree_X_pow]
-  convert ciSup_const using 2
+  convert! ciSup_const using 2
   · ext m
     by_cases hmn : m < n
     · rw [if_pos hmn, rpow_eq_zero_iff_of_nonneg (norm_nonneg _), if_neg (_root_.ne_of_lt hmn),
@@ -182,23 +182,14 @@ variable [NormedRing R]
 theorem spectralValue_eq_zero_iff [Nontrivial R] {p : R[X]} (hp : p.Monic) :
     spectralValue p = 0 ↔ p = X ^ p.natDegree := by
   refine ⟨fun h ↦ ?_, fun h ↦ h ▸ spectralValue_X_pow p.natDegree⟩
-  rw [spectralValue] at h
-  ext n
-  rw [coeff_X_pow]
-  split_ifs with hn
-  · rw [hn, coeff_natDegree]; exact hp
-  · by_cases hn' : n < p.natDegree
-    · have h_le : iSup (spectralValueTerms p) ≤ 0 := h.le
-      have h_exp : 0 < 1 / ((p.natDegree : ℝ) - n) := by
-        rw [one_div_pos, ← cast_sub (le_of_lt hn'), cast_pos]
-        exact Nat.sub_pos_of_lt hn'
-      have h0 : (0 : ℝ) = 0 ^ (1 / ((p.natDegree : ℝ) - n)) := by rw [zero_rpow (ne_of_gt h_exp)]
-      rw [iSup, csSup_le_iff (spectralValueTerms_bddAbove p) (Set.range_nonempty _)] at h_le
-      specialize h_le (spectralValueTerms p n) ⟨n, rfl⟩
-      simp only [spectralValueTerms, if_pos hn'] at h_le
-      rw [h0, rpow_le_rpow_iff (norm_nonneg _) (le_refl _) h_exp] at h_le
-      exact norm_eq_zero.mp (le_antisymm h_le (norm_nonneg _))
-    · exact coeff_eq_zero_of_natDegree_lt (lt_of_le_of_ne (le_of_not_gt hn') (ne_comm.mpr hn))
+  refine hp.eq_X_pow_iff_natDegree_le_natTrailingDegree.mpr <|
+    le_natTrailingDegree hp.ne_zero fun n hn ↦ ?_
+  have h0 : spectralValueTerms p n = 0 := by
+    apply le_antisymm ((le_ciSup (spectralValueTerms_bddAbove p) n).trans h.le)
+    exact spectralValueTerms_nonneg _ _
+  rw [spectralValueTerms_of_lt_natDegree _ hn,
+    Real.rpow_eq_zero_iff_of_nonneg (norm_nonneg _)] at h0
+  exact norm_eq_zero.mp h0.1
 
 end Normed
 
@@ -355,7 +346,7 @@ theorem max_norm_root_eq_spectralValue [DecidableEq L] {f : AlgebraNorm K L} (hf
           exact hzr ▸ hy_max _ (hts _ hzt)
         have : (map g t).prod ≤ g y ^ (p.natDegree - m) := h_card ▸ prod_le_pow_card _ _ hx_le
         simpa [g, ← NNReal.coe_le_coe, NNReal.coe_pow, NNReal.coe_mk, NNReal.coe_multiset_prod,
-          map_map, Function.comp_apply, NNReal.coe_mk] using this
+          map_map, Function.comp_apply, NNReal.coe_mk] using! this
       have h_bdd : BddAbove (Set.range fun x : L ↦ ite (x ∈ s) (f x) 0) := by
         use f y
         intro r hr
@@ -406,12 +397,7 @@ theorem spectralNorm.eq_of_normalClosure' (x : E) :
     spectralNorm K (normalClosure K E (AlgebraicClosure E))
       (algebraMap E (normalClosure K E (AlgebraicClosure E)) x) =
     spectralNorm K L (algebraMap E L x) := by
-  simp only [spectralNorm, spectralValue]
-  have h_min : minpoly K (algebraMap (↥E) (↥(normalClosure K (↥E) (AlgebraicClosure ↥E))) x) =
-      minpoly K (algebraMap (↥E) L x) := by
-    rw [minpoly.algebraMap_eq (algebraMap (↥E) ↥(normalClosure K E (AlgebraicClosure E))).injective
-      x, ← minpoly.algebraMap_eq (algebraMap (↥E) L).injective x]
-  simp_rw [h_min]
+  simp_rw [← spectralNorm.eq_of_tower]
 
 /-- If `L/E/K` is a tower of fields and `x = algebraMap E L g`, then the spectral norm
   of `g : E` when regarded as an element of the normal closure of `E` equals the spectral norm
@@ -711,8 +697,8 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
   apply eq_of_powMul_faithful f hf_pm _ spectralAlgNorm_isPowMul
   intro x
   let E : Type v := id K⟮x⟯
-  let : Field E := show Field K⟮x⟯ by infer_instance
-  let : Module K E := show Module K K⟮x⟯ by infer_instance
+  let : Field E := id <| show Field K⟮x⟯ by infer_instance
+  let : Module K E := id <| show Module K K⟮x⟯ by infer_instance
   let id1 : K⟮x⟯ →ₗ[K] E := LinearMap.id
   let id2 : E →ₗ[K] K⟮x⟯ := LinearMap.id
   set hs_norm : RingNorm E :=
@@ -727,7 +713,7 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
         exact map_mul_le_mul _ _ _
       eq_zero_of_map_eq_zero' a ha := by
         simpa [id_eq, eq_mpr_eq_cast, cast_eq, LinearMap.coe_mk, ← spectralAlgNorm_def,
-          map_eq_zero_iff_eq_zero, ZeroMemClass.coe_eq_zero] using ha }
+          map_eq_zero_iff_eq_zero, ZeroMemClass.coe_eq_zero] using! ha }
   let n1 : NormedRing E := RingNorm.toNormedRing hs_norm
   let N1 : NormedSpace K E :=
     { one_smul e := by simp [one_smul]
@@ -747,7 +733,7 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
       neg' y := by simp [(algebraMap K⟮x⟯ L).map_neg y]
       mul_le' a b := map_mul_le_mul _ _ _
       eq_zero_of_map_eq_zero' a ha := by
-        simpa [map_eq_zero_iff_eq_zero, map_eq_zero] using ha }
+        simpa [map_eq_zero_iff_eq_zero, map_eq_zero] using! ha }
   let n2 : NormedRing K⟮x⟯ := RingNorm.toNormedRing hf_norm
   let N2 : NormedSpace K K⟮x⟯ :=
     { one_smul e := by simp [one_smul]

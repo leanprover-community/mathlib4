@@ -90,6 +90,11 @@ theorem inertiaDeg_pos [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : 0 < in
   have : Nontrivial (S ⧸ P) := Quotient.nontrivial_of_liesOver_of_isPrime P p
   finrank_pos.trans_eq (inertiaDeg_algebraMap p P).symm
 
+/-- Variant with a weaker constraint, but on the prime upstairs instead. -/
+theorem inertiaDeg_pos' [P.IsPrime] [Module.Finite R S] [P.LiesOver p] : 0 < inertiaDeg p P :=
+  have : p.IsPrime := Ideal.over_def P p ▸ inferInstance
+  Module.finrank_pos.trans_eq (inertiaDeg_algebraMap p P).symm
+
 theorem inertiaDeg_ne_zero [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : inertiaDeg p P ≠ 0 :=
   (Nat.ne_of_lt (inertiaDeg_pos p P)).symm
 

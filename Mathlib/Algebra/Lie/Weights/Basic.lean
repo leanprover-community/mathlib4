@@ -110,7 +110,6 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
     abel
   rsuffices ⟨k, hk⟩ : ∃ k : ℕ, ((f₁ + f₂) ^ k) (m₁ ⊗ₜ m₂) = 0
   · use k
-    change (F ^ k) (g.toLinearMap (m₁ ⊗ₜ[R] m₂)) = 0
     rw [← LinearMap.comp_apply, Module.End.commute_pow_left_of_commute h_comm_square,
       LinearMap.comp_apply, hk, map_zero]
   -- Unpack the information we have about `m₁`, `m₂`.
@@ -215,7 +214,7 @@ namespace Weight
 
 instance instFunLike : FunLike (Weight R L M) L R where
   coe χ := χ.1
-  coe_injective' χ₁ χ₂ h := by cases χ₁; cases χ₂; simp_all
+  coe_injective χ₁ χ₂ h := by cases χ₁; cases χ₂; simp_all
 
 @[simp] lemma coe_weight_mk (χ : L → R) (h) :
     (↑(⟨χ, h⟩ : Weight R L M) : L → R) = χ :=
@@ -552,7 +551,7 @@ lemma map_posFittingComp_eq (e : M ≃ₗ⁅R,L⁆ M₂) :
     rw [this]
     exact LieSubmodule.map_mono (map_posFittingComp_le _)
   rw [← LieSubmodule.map_comp]
-  convert LieSubmodule.map_id
+  convert! LieSubmodule.map_id
   ext
   simp
 
@@ -585,7 +584,7 @@ lemma isCompl_genWeightSpaceOf_zero_posFittingCompOf (x : L) :
     IsCompl (genWeightSpaceOf M 0 x) (posFittingCompOf R M x) := by
   simpa only [isCompl_iff, codisjoint_iff, disjoint_iff, ← LieSubmodule.toSubmodule_inj,
     LieSubmodule.sup_toSubmodule, LieSubmodule.inf_toSubmodule,
-    LieSubmodule.top_toSubmodule, LieSubmodule.bot_toSubmodule, coe_genWeightSpaceOf_zero] using
+    LieSubmodule.top_toSubmodule, LieSubmodule.bot_toSubmodule, coe_genWeightSpaceOf_zero] using!
     (toEnd R L M x).isCompl_iSup_ker_pow_iInf_range_pow
 
 /-- This lemma exists only to simplify the proof of
@@ -706,6 +705,8 @@ instance (L' : LieSubalgebra R L) [IsTriangularizable R L M] : IsTriangularizabl
 
 instance (I : LieIdeal R L) [IsTriangularizable R L M] : IsTriangularizable R I M where
   maxGenEigenspace_eq_top x := IsTriangularizable.maxGenEigenspace_eq_top (x : L)
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 instance [IsTriangularizable R L M] : IsTriangularizable R (LieModule.toEnd R L M).range M where
   maxGenEigenspace_eq_top := by

@@ -85,7 +85,7 @@ variable [CompleteLattice α] {P Q : Partition s}
 
 instance {s : α} : SetLike (Partition s) α where
   coe := Partition.parts
-  coe_injective' p p' h := by cases p; cases p'; simpa using h
+  coe_injective p p' h := by cases p; cases p'; simpa using h
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe {s : α} (P : Partition s) : Set α := P
@@ -158,7 +158,7 @@ def partscopyEquiv (P : Partition s) (hst : s = t) : ↥(P.copy hst) ≃ ↥P :=
 @[simps]
 def removeBot (P : Set α) (indep : _root_.sSupIndep P) (sSup_eq : sSup P = s) : Partition s where
   parts := P \ {⊥}
-  sSupIndep' := indep.mono diff_subset
+  sSupIndep' := indep.mono sdiff_subset
   bot_notMem' := by simp
   sSup_eq' := by simp [← sSup_eq]
 
@@ -546,7 +546,7 @@ lemma exists_extend_partial (P : Partition u) (f₀ : t → α)
 equal to the identity on `t`. -/
 lemma exists_extend_partial' (P : Partition u)
     (h : ∀ ⦃x y⦄, x ∈ t → y ∈ t → P.Rel x y → x = y) : ∃ f, IsRepFun P f ∧ EqOn f id t := by
-  simpa using exists_extend_partial P (fun x : t ↦ x) (by simp) (by simp) (fun x y ↦ h x.2 y.2)
+  simpa using! exists_extend_partial P (fun x : t ↦ x) (by simp) (by simp) (fun x y ↦ h x.2 y.2)
 
 /-- Every partition has a representative function. -/
 lemma nonempty (P : Partition u) : ∃ f, IsRepFun P f := by

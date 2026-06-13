@@ -232,7 +232,7 @@ theorem HasFTaylorSeriesUpToOn.hasFDerivWithinAt (h : HasFTaylorSeriesUpToOn n f
     (continuousMultilinearCurryFin1 𝕜 E F (p x 1)) s x from H.congr A (A x hx)
   rw [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff']
   have : ((0 : ℕ) : ℕ∞) < n := pos_iff_ne_zero.mpr hn
-  convert h.fderivWithin _ this x hx
+  convert! h.fderivWithin _ this x hx
   ext y v
   change (p x 1) (snoc 0 y) = (p x 1) (cons y v)
   congr with i
@@ -301,7 +301,7 @@ theorem HasFTaylorSeriesUpToOn.shift_of_succ
     change HasFDerivWithinAt (continuousMultilinearCurryRightEquiv' 𝕜 m E F ∘ (p · m.succ))
       (p x m.succ.succ).curryRight.curryLeft s x
     rw [(continuousMultilinearCurryRightEquiv' 𝕜 m E F).comp_hasFDerivWithinAt_iff']
-    convert H.fderivWithin _ A x hx
+    convert! H.fderivWithin _ A x hx
     ext y v
     change p x (m + 2) (snoc (cons y (init v)) (v (last _))) = p x (m + 2) (cons y v)
     rw [← cons_snoc_eq_snoc_cons, snoc_init_self]
@@ -338,7 +338,7 @@ theorem hasFTaylorSeriesUpToOn_succ_nat_iff_right {n : ℕ} :
             ((p x).shift m.succ).curryLeft s x := Htaylor.fderivWithin _ A x hx
         rw [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff'
             (f' := ((p x).shift m.succ).curryLeft)] at this
-        convert this
+        convert! this
         ext y v
         change
           (p x (Nat.succ (Nat.succ m))) (cons y v) =
@@ -873,11 +873,10 @@ theorem iteratedFDerivWithin_univ {n : ℕ} :
 
 variable (𝕜) in
 /-- If two functions agree in a neighborhood, then so do their iterated derivatives. -/
-theorem Filter.EventuallyEq.iteratedFDeriv
+protected theorem Filter.EventuallyEq.iteratedFDeriv
     {f₁ f₂ : E → F} {x : E} (h : f₁ =ᶠ[𝓝 x] f₂) (n : ℕ) :
     iteratedFDeriv 𝕜 n f₁ =ᶠ[𝓝 x] iteratedFDeriv 𝕜 n f₂ := by
-  simp_all [← nhdsWithin_univ, ← iteratedFDerivWithin_univ,
-    Filter.EventuallyEq.iteratedFDerivWithin]
+  simp_all [← nhdsWithin_univ, ← iteratedFDerivWithin_univ, EventuallyEq.iteratedFDerivWithin]
 
 variable (𝕜) in
 /-- If two functions agree in a neighborhood, then so do their Taylor series. -/
@@ -885,7 +884,7 @@ protected theorem Filter.EventuallyEq.ftaylorSeries (h : f₁ =ᶠ[𝓝 x] f) :
     ftaylorSeries 𝕜 f₁ =ᶠ[𝓝 x] ftaylorSeries 𝕜 f := by
   filter_upwards [eventually_eventuallyEq_nhds.2 h] with e₁ he₁
   ext n : 1
-  exact (Filter.EventuallyEq.iteratedFDeriv 𝕜 he₁ n).eq_of_nhds
+  exact (he₁.iteratedFDeriv 𝕜 n).eq_of_nhds
 
 theorem HasFTaylorSeriesUpTo.eq_iteratedFDeriv
     (h : HasFTaylorSeriesUpTo n f p) {m : ℕ} (hmn : m ≤ n) (x : E) :
