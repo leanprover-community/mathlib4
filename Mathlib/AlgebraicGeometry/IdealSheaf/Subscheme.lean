@@ -447,14 +447,14 @@ def gluedHomeo : I.glueData.glued ≃ₜ I.support :=
 /-- The subscheme associated to an ideal sheaf. -/
 noncomputable def subscheme : Scheme :=
   I.glueData.glued.restrict
-    (f := TopCat.ofHom (toContinuousMap I.gluedHomeo.symm))
+    (f := TopCat.ofHom (ContinuousMap.ofClass I.gluedHomeo.symm))
     I.gluedHomeo.symm.isOpenEmbedding
 
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) The isomorphism between the subscheme and the glued scheme. -/
 noncomputable
 def subschemeIso : I.subscheme ≅ I.glueData.glued :=
-  letI F := I.glueData.glued.ofRestrict (f := TopCat.ofHom (toContinuousMap I.gluedHomeo.symm))
+  letI F := I.glueData.glued.ofRestrict (f := TopCat.ofHom (.ofClass I.gluedHomeo.symm))
     I.gluedHomeo.symm.isOpenEmbedding
   have : Epi F.base := ConcreteCategory.epi_of_surjective _ I.gluedHomeo.symm.surjective
   letI := IsOpenImmersion.isIso F

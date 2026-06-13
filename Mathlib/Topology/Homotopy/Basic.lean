@@ -296,7 +296,7 @@ def compContinuousMap {g₀ g₁ : C(Y, Z)} (G : Homotopy g₀ g₁) (f : C(X, Y
 `f₁.prodMk g₁` that sends `p` to `(F p, G p)`. -/
 nonrec def prodMk {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(X, Z)} (F : Homotopy f₀ f₁) (G : Homotopy g₀ g₁) :
     Homotopy (f₀.prodMk g₀) (f₁.prodMk g₁) where
-  toContinuousMap := F.prodMk G
+  toContinuousMap := F.prodMk <| ContinuousMap.ofClass G
   map_zero_left _ := Prod.ext (F.map_zero_left _) (G.map_zero_left _)
   map_one_left _ := Prod.ext (F.map_one_left _) (G.map_one_left _)
 
@@ -312,7 +312,7 @@ homotopy between `ContinuousMap.pi f₀` and `ContinuousMap.pi f₁`. -/
 protected def pi {Y : ι → Type*} [∀ i, TopologicalSpace (Y i)] {f₀ f₁ : ∀ i, C(X, Y i)}
     (F : ∀ i, Homotopy (f₀ i) (f₁ i)) :
     Homotopy (.pi f₀) (.pi f₁) where
-  toContinuousMap := .pi fun i ↦ F i
+  toContinuousMap := .pi fun i ↦ ContinuousMap.ofClass <| F i
   map_zero_left x := funext fun i ↦ (F i).map_zero_left x
   map_one_left x := funext fun i ↦ (F i).map_one_left x
 

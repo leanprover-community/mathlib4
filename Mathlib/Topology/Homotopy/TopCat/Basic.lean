@@ -36,7 +36,8 @@ variable {f₀ f₁ f₂ : X ⟶ Y} (F : Homotopy f₀ f₁) (G : Homotopy f₁ 
 
 /-- The morphism `X ⊗ I ⟶ Y` that is part of a homotopy between two morphisms in `TopCat`. -/
 def h (H : Homotopy f₀ f₁) : X ⊗ I ⟶ Y :=
-  (β_ _ _).hom ≫ ofHom (H.toContinuousMap.comp (ContinuousMap.prodMap I.homeomorph (.id _)))
+  (β_ _ _).hom ≫ ofHom (H.toContinuousMap.comp
+    (ContinuousMap.prodMap (ContinuousMap.ofClass I.homeomorph) (.id _)))
 
 -- simps generates the wrong apply lemma
 @[simp]

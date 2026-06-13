@@ -62,8 +62,8 @@ lemma coe_of (α : Type*) [TopologicalSpace α] [AlexandrovDiscrete α] : ↥(of
 /-- Constructs an equivalence between preorders from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : AlexDisc} (e : α ≃ₜ β) : α ≅ β where
-  hom := ConcreteCategory.ofHom (e : ContinuousMap α β)
-  inv := ConcreteCategory.ofHom (e.symm : ContinuousMap β α)
+  hom := ConcreteCategory.ofHom (ContinuousMap.ofClass e)
+  inv := ConcreteCategory.ofHom (ContinuousMap.ofClass e.symm)
   hom_inv_id := by ext; apply e.symm_apply_apply
   inv_hom_id := by ext; apply e.apply_symm_apply
 

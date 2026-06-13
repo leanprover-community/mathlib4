@@ -496,23 +496,24 @@ instance instContinuousMapClass : ContinuousMapClass (α ≃ₜ β) α β where
   map_continuous f := f.continuous_toFun
 
 @[simp]
-theorem coe_refl : (Homeomorph.refl α : C(α, α)) = ContinuousMap.id α :=
+theorem coe_refl : ContinuousMap.ofClass (Homeomorph.refl α) = ContinuousMap.id α :=
   rfl
 
 @[simp]
-theorem coe_trans : (f.trans g : C(α, γ)) = (g : C(β, γ)).comp f :=
+theorem coe_trans :
+    ContinuousMap.ofClass (f.trans g) = (ContinuousMap.ofClass g).comp (ContinuousMap.ofClass f) :=
   rfl
 
 /-- Left inverse to a continuous map from a homeomorphism, mirroring `Equiv.symm_comp_self`. -/
 @[simp]
 theorem symm_comp_toContinuousMap :
-    (f.symm : C(β, α)).comp (f : C(α, β)) = ContinuousMap.id α := by
+    (ContinuousMap.ofClass f.symm).comp (ContinuousMap.ofClass f) = ContinuousMap.id α := by
   rw [← coe_trans, self_trans_symm, coe_refl]
 
 /-- Right inverse to a continuous map from a homeomorphism, mirroring `Equiv.self_comp_symm`. -/
 @[simp]
 theorem toContinuousMap_comp_symm :
-    (f : C(α, β)).comp (f.symm : C(β, α)) = ContinuousMap.id β := by
+    (ContinuousMap.ofClass f).comp (ContinuousMap.ofClass f.symm) = ContinuousMap.id β := by
   rw [← coe_trans, symm_trans_self, coe_refl]
 
 end Homeomorph
