@@ -87,7 +87,6 @@ lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max uι u𝕜 uE))
   intro p G _ _ hp x
   simpa [hp] using toDualContinuousMultilinearMap_le_projectiveSeminorm _
 
-set_option linter.deprecated false in
 @[deprecated
   "`injectiveSeminorm` is deprecated in favor of the extensionally equal `projectiveSeminorm`"
   (since := "2026-06-10")]
@@ -100,7 +99,6 @@ theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     using Seminorm.sSup_apply dualSeminorms_bounded
 
 attribute [-instance] instSeminormedAddCommGroup in
-set_option linter.deprecated false in
 @[deprecated
   "`injectiveSeminorm` is deprecated in favor of the extensionally equal `projectiveSeminorm`"
   (since := "2026-06-10")]
@@ -157,7 +155,6 @@ theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (
   rw [mul_comm]
   exact ContinuousLinearMap.le_opNorm _ _
 
-set_option linter.deprecated false in
 @[deprecated
   "`injectiveSeminorm` is deprecated in favor of the extensionally equal `projectiveSeminorm`"
   (since := "2026-06-10")]
@@ -178,7 +175,6 @@ theorem injectiveSeminorm_le_projectiveSeminorm :
     rw [h]; intro x; simp only [Seminorm.comp_apply, coe_normSeminorm]
     exact toDualContinuousMultilinearMap_le_projectiveSeminorm _
 
-set_option linter.deprecated false in
 @[deprecated
   "`injectiveSeminorm` is deprecated in favor of the extensionally equal `projectiveSeminorm`"
   (since := "2026-06-10")]
