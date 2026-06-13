@@ -238,8 +238,7 @@ instance instPreInnerProductSpaceCoreH₀ : PreInnerProductSpace.Core 𝕜 (H₀
   smul_left _ _ _ := by
     rw [Finsupp.sum_smul_index] <;> simp [Finsupp.mul_sum, ← mul_assoc]
   re_inner_nonneg := by
-    have := posSemidef_iff_re_sum_kernel.mp (Fact.out : K.PosSemidef)
-    exact this.2
+    exact (posSemidef_iff_re_sum_kernel.mp (Fact.out : K.PosSemidef)).2
 
 instance instSeminormedAddCommGroupH₀ : SeminormedAddCommGroup (H₀ K) :=
   InnerProductSpace.Core.toSeminormedAddCommGroup (𝕜 := 𝕜)
@@ -324,26 +323,26 @@ def outerKernel (f : X → V) : Matrix X X (V →L[𝕜] V) :=
 
 omit [CompleteSpace V] in
 variable (𝕜) in
-@[simp]
-lemma outerKernel_def (f : X → V) (x y) :
+lemma outerKernel_apply (f : X → V) (x y) :
     (outerKernel 𝕜 f) x y = InnerProductSpace.rankOne 𝕜 (f x) (f y) :=
   coe_inj.mp rfl
 
 omit [CompleteSpace V] in
 variable (𝕜) in
-lemma outerKernel_apply (f : X → V) (xv₁ xv₂ : X × V) :
+@[simp]
+lemma outerKernel_inner (f : X → V) (xv₁ xv₂ : X × V) :
     ⟪(outerKernel 𝕜 f xv₂.1 xv₁.1) xv₁.2, xv₂.2⟫_𝕜
     = (starRingEnd 𝕜) ⟪ f xv₁.1, xv₁.2⟫_𝕜 * ⟪ f xv₂.1, xv₂.2⟫_𝕜 := by
-  simp_rw [outerKernel_def, rankOne_apply, inner_smul_left]
+  simp_rw [outerKernel_apply, rankOne_apply, inner_smul_left]
 
 variable (𝕜) in
-lemma outerKernel_posSemidef (f : X → V) : (outerKernel 𝕜 f).PosSemidef := by
+lemma posSemidef_outerKernel (f : X → V) : (outerKernel 𝕜 f).PosSemidef := by
   rw [posSemidef_iff_re_sum_kernel']
   refine ⟨?_, fun x ↦ ?_⟩
   · ext
-    simp_rw [Matrix.conjTranspose_apply, outerKernel_def, star_eq_adjoint,
+    simp_rw [Matrix.conjTranspose_apply, outerKernel_apply, star_eq_adjoint,
       InnerProductSpace.adjoint_rankOne]
-  · simp_rw [outerKernel_def, rankOne_apply, inner_smul_left, Finsupp.sum, <-Finset.mul_sum,
+  · simp_rw [outerKernel_apply, rankOne_apply, inner_smul_left, Finsupp.sum, <-Finset.mul_sum,
       <-Finset.sum_mul, ← map_sum, RCLike.conj_mul]
     simp
 
@@ -351,11 +350,11 @@ lemma posSemidef_of_mem (f : H) : ((‖f‖ : 𝕜) ^ 2 • kernel H - outerKern
   rw [posSemidef_iff_re_sum_kernel']
   refine ⟨((posSemidef_kernel H).1.smul
     (by rw [← RCLike.im_eq_zero_iff_isSelfAdjoint, RCLike.im_ofReal_pow])).sub
-    (outerKernel_posSemidef 𝕜 f).1, fun x ↦ ?_⟩
+    (posSemidef_outerKernel 𝕜 f).1, fun x ↦ ?_⟩
   calc
     _ = ∑ x_1 ∈ x.support, ∑ x_2 ∈ x.support, RCLike.re ⟪(‖f‖ ^ 2: 𝕜) • (kernel H x_2 x_1) (x x_1)
         - ⟪f x_1, x x_1⟫_𝕜 • f x_2, x x_2⟫_𝕜 := by
-      simp [Finsupp.sum, map_sum]
+      simp [Finsupp.sum, map_sum, outerKernel_apply]
     _ = ∑ x_1 ∈ x.support, ∑ x_2 ∈ x.support, (‖f‖ ^ 2 * RCLike.re
         ⟪(kernel H x_2 x_1) (x x_1), x x_2⟫_𝕜 - RCLike.re (⟪x x_1, f x_1⟫_𝕜 • ⟪ f x_2, x x_2⟫_𝕜))
         := by
@@ -368,7 +367,8 @@ lemma posSemidef_of_mem (f : H) : ((‖f‖ : 𝕜) ^ 2 • kernel H - outerKern
       congr 1
       · simp_rw [kernel_inner, ← inner_sum, ← sum_inner]
         simp
-      · simp_rw [RCLike.norm_sq_eq_def, ← Finset.smul_sum, ← Finset.sum_smul, ← map_sum, ← inner_sum]
+      · simp_rw [RCLike.norm_sq_eq_def, ← Finset.smul_sum, ← Finset.sum_smul, ← map_sum,
+          ← inner_sum]
         simp [-inner_conj_symm, smul_eq_mul, RCLike.mul_re, RCLike.conj_im]
     _ ≥ 0 := by
       grw [ge_iff_le, sub_nonneg, norm_inner_le_norm]
@@ -387,7 +387,7 @@ lemma mem_of_posSemidef (f : X → V) {c : ℝ}
     simp_rw [map_pow _ c 2]
     rw [← le_add_neg_iff_le]
     simp_rw [← AddMonoidHom.map_add_neg, ← sub_eq_add_neg, sum_inner, inner_sum, inner_smul_right,
-      inner_smul_left, Finset.mul_sum, <-kernel_inner, RCLike.inner_apply', ← outerKernel_apply,
+      inner_smul_left, Finset.mul_sum, <-kernel_inner, RCLike.inner_apply', ← outerKernel_inner,
       ← Finset.sum_sub_distrib, mul_comm, mul_left_comm, ← mul_assoc, mul_comm,
       ← mul_sub_left_distrib, ← mul_sub_right_distrib, mul_comm ⟪(kernel H _ _) _, _⟫_𝕜  _,
       ← inner_smul_left, ← inner_sub_left, mul_comm _ (φ _), ← mul_assoc, ← smul_apply, ← sub_apply,
