@@ -45,7 +45,7 @@ open Function
 
 namespace SimpleGraph
 
-variable {V W X : Type*} (G : SimpleGraph V) (G' : SimpleGraph W) {u v : V}
+variable {V W X Y : Type*} (G : SimpleGraph V) (G' : SimpleGraph W) {u v : V}
 
 /-! ## Map and comap -/
 
@@ -420,7 +420,7 @@ theorem le_comap (f : H →g G) : H ≤ G.comap f :=
 theorem nonempty_hom_iff_exists_le_comap : Nonempty (H →g G) ↔ ∃ f, H ≤ G.comap f :=
   ⟨fun ⟨f⟩ ↦ ⟨f, f.le_comap⟩, fun ⟨f, h⟩ ↦ ⟨f, (h ·)⟩⟩
 
-variable {G'' : SimpleGraph X}
+variable {G'' : SimpleGraph X} {G''' : SimpleGraph Y}
 
 /-- Composition of graph homomorphisms. -/
 abbrev comp (f' : G' →g G'') (f : G →g G') : G →g G'' :=
@@ -429,6 +429,15 @@ abbrev comp (f' : G' →g G'') (f : G →g G') : G →g G'' :=
 @[simp]
 theorem coe_comp (f' : G' →g G'') (f : G →g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
+
+theorem comp_assoc (f : G'' →g G''') (g : G' →g G'') (h : G →g G') :
+    f.comp (g.comp h) = (f.comp g).comp h := rfl
+
+@[simp]
+theorem comp_id (f : G →g G') : f.comp .id = f := rfl
+
+@[simp]
+theorem id_comp (f : G →g G') : .comp .id f = f := rfl
 
 @[simp]
 theorem comp_comap_ofLE (f : H →g G) : .comp (.comap f G) (.ofLE f.le_comap) = f :=
@@ -533,7 +542,7 @@ protected def completeGraph {α β : Type*} (f : α ↪ β) : completeGraph α �
 
 @[simp] lemma coe_completeGraph {α β : Type*} (f : α ↪ β) : ⇑(Embedding.completeGraph f) = f := rfl
 
-variable {G'' : SimpleGraph X}
+variable {G'' : SimpleGraph X} {G''' : SimpleGraph Y}
 
 /-- Composition of graph embeddings. -/
 abbrev comp (f' : G' ↪g G'') (f : G ↪g G') : G ↪g G'' :=
@@ -542,6 +551,15 @@ abbrev comp (f' : G' ↪g G'') (f : G ↪g G') : G ↪g G'' :=
 @[simp]
 theorem coe_comp (f' : G' ↪g G'') (f : G ↪g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
+
+theorem comp_assoc (f : G'' ↪g G''') (g : G' ↪g G'') (h : G ↪g G') :
+    f.comp (g.comp h) = (f.comp g).comp h := rfl
+
+@[simp]
+theorem comp_refl (f : G ↪g G') : f.comp .refl = f := rfl
+
+@[simp]
+theorem refl_comp (f : G ↪g G') : .comp .refl f = f := rfl
 
 /-- Graph embeddings from `G` to `H` are the same thing as graph embeddings from `Gᶜ` to `Hᶜ`. -/
 def complEquiv : G ↪g H ≃ Gᶜ ↪g Hᶜ where
@@ -713,7 +731,7 @@ theorem toEmbedding_completeGraph {α β : Type*} (f : α ≃ β) :
     (Iso.completeGraph f).toEmbedding = Embedding.completeGraph f.toEmbedding :=
   rfl
 
-variable {G'' : SimpleGraph X}
+variable {G'' : SimpleGraph X} {G''' : SimpleGraph Y}
 
 /-- Composition of graph isomorphisms. -/
 abbrev comp (f' : G' ≃g G'') (f : G ≃g G') : G ≃g G'' :=
@@ -722,6 +740,15 @@ abbrev comp (f' : G' ≃g G'') (f : G ≃g G') : G ≃g G'' :=
 @[simp]
 theorem coe_comp (f' : G' ≃g G'') (f : G ≃g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
+
+theorem comp_assoc (f : G'' ≃g G''') (g : G' ≃g G'') (h : G ≃g G') :
+    f.comp (g.comp h) = (f.comp g).comp h := rfl
+
+@[simp]
+theorem comp_refl (f : G ≃g G') : f.comp .refl = f := rfl
+
+@[simp]
+theorem refl_comp (f : G ≃g G') : .comp .refl f = f := rfl
 
 section induce
 
