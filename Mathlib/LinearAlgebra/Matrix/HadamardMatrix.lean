@@ -215,7 +215,7 @@ theorem IsHadamard.isRegular_det (hA : A.IsHadamard)
   have : IsRegular (A.det * star A.det) := by
     rw [hA.det_mul_star_det]
     exact hcard.pow _
-  exact (isRegular_mul_iff.mp this).1
+  exact this.of_mul_left
 
 /-- Build a Hadamard matrix from the one-sided row-orthogonality condition, provided the order is
 regular in `R`.
@@ -232,7 +232,7 @@ theorem IsHadamard.of_mul_conjTranspose
     rw [this]
     exact hcard.pow _
   have hreg : IsLeftRegular A :=
-    (isRegular_of_isLeftRegular_det (isRegular_mul_iff.mp hdet).1.left).left
+    (isRegular_of_isLeftRegular_det hdet.of_mul_left.left).left
   exact hreg <| show A * (Aᴴ * A) = A * ((Fintype.card n : R) • 1) by
     rw [← mul_assoc, hmul, smul_mul_assoc, one_mul, mul_smul_comm, mul_one]
 
