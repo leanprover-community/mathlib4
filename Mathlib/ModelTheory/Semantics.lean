@@ -626,9 +626,39 @@ nonrec def Sentence.Realize (φ : L.Sentence) : Prop :=
 @[inherit_doc Sentence.Realize]
 infixl:51 " ⊨ " => Sentence.Realize
 
+namespace Sentence
+
+variable {φ ψ : L.Sentence}
+
 @[simp]
-theorem Sentence.realize_not {φ : L.Sentence} : M ⊨ φ.not ↔ ¬M ⊨ φ :=
+theorem realize_not : M ⊨ φ.not ↔ ¬M ⊨ φ :=
   Iff.rfl
+
+@[simp]
+theorem not_realize_bot : ¬(M ⊨ (⊥ : L.Sentence)) :=
+  False.elim
+
+@[simp]
+theorem realize_top : M ⊨ (⊤ : L.Sentence) :=
+  False.elim
+
+@[simp]
+theorem realize_inf : M ⊨ φ ⊓ ψ ↔ M ⊨ φ ∧ M ⊨ ψ :=
+  Formula.realize_inf
+
+@[simp]
+theorem realize_sup : M ⊨ φ ⊔ ψ ↔ M ⊨ φ ∨ M ⊨ ψ :=
+  Formula.realize_sup
+
+@[simp]
+theorem realize_imp : M ⊨ φ.imp ψ ↔ M ⊨ φ → M ⊨ ψ :=
+  Formula.realize_imp
+
+@[simp]
+theorem realize_iff : M ⊨ φ.iff ψ ↔ (M ⊨ φ ↔ M ⊨ ψ) :=
+  Formula.realize_iff
+
+end Sentence
 
 namespace Formula
 
@@ -968,8 +998,9 @@ theorem realize_irreflexive : M ⊨ r.irreflexive ↔ Std.Irrefl fun x y : M => 
   exact forall_congr' fun _ ↦ not_congr realize_rel₂
 
 @[simp]
-theorem realize_symmetric : M ⊨ r.symmetric ↔ Symmetric fun x y : M => RelMap r ![x, y] :=
-  forall₂_congr fun _ _ ↦ imp_congr realize_rel₂ realize_rel₂
+theorem realize_symmetric : M ⊨ r.symmetric ↔ Std.Symm fun x y : M => RelMap r ![x, y] := by
+  rw [symm_def]
+  exact forall₂_congr fun _ _ ↦ imp_congr realize_rel₂ realize_rel₂
 
 @[simp]
 theorem realize_antisymmetric :

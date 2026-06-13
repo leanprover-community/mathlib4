@@ -798,3 +798,16 @@ lemma toAlgHom_ofComp_localizationAway (g : S) [IsLocalization.Away g T] :
 end Hom
 
 end Algebra.Generators
+
+namespace Algebra.Extension
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+/-- The canonical homomorphism of extensions from the universal extension `R[S] → S`
+(given by `Generators.self R S`) to any extension `P` defined via the designated section `P.σ`. -/
+@[simps!]
+noncomputable
+def defaultHom (P : Extension.{w} R S) : (Generators.self R S).toExtension.Hom P :=
+  .ofAlgHom (MvPolynomial.aeval P.σ) (by dsimp; ext; simp)
+
+end Algebra.Extension

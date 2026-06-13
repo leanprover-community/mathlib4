@@ -14,7 +14,7 @@ public import Mathlib.Geometry.Manifold.Notation
 /-!
 # Vector fields in manifolds
 
-We study functions of the form `V : Π (x : M) → TangentSpace I x` on a manifold, i.e.,
+We study functions of the form `V : Π (x : M), TangentSpace I x` on a manifold, i.e.,
 vector fields.
 
 We define the pullback of a vector field under a map, as
