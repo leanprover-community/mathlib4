@@ -159,21 +159,13 @@ theorem subst_exp_log : (exp A).subst (log A) = 1 + X := by
   simpa using eq_of_deriv_mul_one_add_X_eq_self hderiv hconst
 
 variable (A) in
-theorem subst_log_exp_sub_one [IsAddTorsionFree A] :
-    (log A).subst (exp A - 1) = X := by
-  apply derivative.ext
-  · rw [derivative_X, derivative_subst (hg := HasSubst.exp_sub_one), deriv_log, map_sub,
-      derivative_exp, (d⁄dX A).map_one_eq_zero, sub_zero]
-    have h : ((mk fun n ↦ algebraMap ℚ A ((-1 : ℚ) ^ n)) * (1 + X : A⟦X⟧)).subst
-        (exp A - 1) = (1 : A⟦X⟧).subst (exp A - 1) := congrArg _ geom_mul_one_add_X
-    rw [subst_mul HasSubst.exp_sub_one, subst_add HasSubst.exp_sub_one,
-      ← coe_substAlgHom HasSubst.exp_sub_one (R := A), map_one,
-      coe_substAlgHom, subst_X HasSubst.exp_sub_one] at h
-    have hone_add : (1 : A⟦X⟧) + (exp A - 1) = exp A := by ring
-    rwa [hone_add] at h
-  · have hconst : constantCoeff (exp A - 1 : A⟦X⟧) = 0 := by simp [constantCoeff_exp]
-    rw [constantCoeff_eq, constantCoeff_subst_of_constantCoeff_zero hconst, constantCoeff_log,
-      map_zero, constantCoeff_X]
+theorem subst_log_exp_sub_one : (log A).subst (exp A - 1) = X := by
+  apply subst_eq_X_of_subst_eq_X (P := exp A - 1)
+  · simp [constantCoeff_exp]
+  · simp [coeff_exp]
+  · exact HasSubst.log
+  · rw [subst_sub HasSubst.log, subst_exp_log, ← coe_substAlgHom HasSubst.log (R := A), map_one]
+    ring
 
 variable (A) in
 theorem logOf_exp : logOf (exp A) = X :=
