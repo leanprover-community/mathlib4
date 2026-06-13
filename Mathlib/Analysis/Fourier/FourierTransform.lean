@@ -206,7 +206,7 @@ theorem integral_fourierIntegral_swap
     apply hM.comp_aestronglyMeasurable A' -- `exact` works, but `apply` is 10x faster!
   · filter_upwards with ⟨ξ, x⟩
     simp only [Function.uncurry_apply_pair, norm_mul, norm_norm, ge_iff_le, ← mul_assoc]
-    convert M.le_opNorm₂ (g ξ) (e (-L x ξ) • f x) using 2
+    convert! M.le_opNorm₂ (g ξ) (e (-L x ξ) • f x) using 2
     simp
 
 variable [CompleteSpace E] [CompleteSpace F]
@@ -231,7 +231,7 @@ theorem integral_bilin_fourierIntegral_eq_flip
     integral_fourierIntegral_swap M.flip he hL hf hg
   _ = ∫ x, (∫ ξ, M (f x) (e (-L.flip ξ x) • g ξ) ∂ν) ∂μ := by
     simp only [ContinuousLinearMap.flip_apply, ContinuousLinearMap.map_smul_of_tower,
-      ContinuousLinearMap.coe_smul', Pi.smul_apply, LinearMap.flip_apply]
+      smul_apply, LinearMap.flip_apply]
   _ = ∫ x, M (f x) (∫ ξ, e (-L.flip ξ x) • g ξ ∂ν) ∂μ := by
     congr with x
     apply ContinuousLinearMap.integral_comp_comm

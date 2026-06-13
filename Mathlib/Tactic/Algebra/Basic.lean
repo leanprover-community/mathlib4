@@ -195,9 +195,14 @@ def cast (cR : Algebra.Cache sR) (u' : Level) (R' : Q(Type u'))
   let ⟨r, pf_smul⟩ ← evalSMulCast q($sAlg) q($_smul) r'
   let ⟨_r'', vr, pr⟩ ←
     Common.eval rcℕ (Ring.ringCompute cR.toCache) cR.toCache q($r)
-  assumeInstancesCommute
-  return ⟨_, Common.ExSum.add (Common.ExProd.const (.mk _ vr)) .zero,
-    q(cast_smul_eq_mul $pr $pf_smul)⟩
+  match vr with
+  | .zero .. =>
+    assumeInstancesCommute
+    return ⟨_, .zero, q(cast_zero_smul_eq_zero_mul $pr $pf_smul)⟩
+  | vr =>
+    assumeInstancesCommute
+    return ⟨_, Common.ExSum.add (Common.ExProd.const (.mk _ vr)) .zero,
+      q(cast_smul_eq_mul $pr $pf_smul)⟩
 
 /-- Evaluate the product of two normalized expressions in `R` using `ring`. -/
 def neg (cR : Algebra.Cache sR) {a : Q($A)} (_rA : Q(CommRing $A)) (za : BaseType sAlg a) :

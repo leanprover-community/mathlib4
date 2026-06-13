@@ -7,7 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 public import Mathlib.Topology.Algebra.ContinuousAffineMap
-public import Mathlib.Topology.Algebra.Group.AddTorsor
+public import Mathlib.Topology.Algebra.Group.Torsor
 
 /-!
 # Topology of affine subspaces.

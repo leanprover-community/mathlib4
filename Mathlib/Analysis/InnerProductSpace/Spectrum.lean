@@ -161,7 +161,7 @@ noncomputable instance directSumDecomposition [hT : Fact T.IsSymmetric] :
 
 theorem directSum_decompose_apply [_hT : Fact T.IsSymmetric] (x : E) (μ : Eigenvalues T) :
     DirectSum.decompose (fun μ : Eigenvalues T => eigenspace T μ) x μ =
-      (eigenspace T μ).orthogonalProjection x :=
+      (eigenspace T μ).orthogonalProjectionOnto x :=
   rfl
 
 /-- The eigenspaces of a self-adjoint operator on a finite-dimensional inner product space `E` gives
@@ -234,8 +234,9 @@ private theorem card_filter_unsortedEigenvalues_eq (hT : T.IsSymmetric)
     (hn : Module.finrank 𝕜 E = n) (μ : 𝕜) :
     Finset.card {i | hT.unsortedEigenvalues hn i = μ} = Module.finrank 𝕜 (eigenspace T μ) := by
   by_cases hμ : HasEigenvalue T μ
-  · convert hT.direct_sum_isInternal.card_filter_subordinateOrthonormalBasisIndex_eq hn
-      hT.orthogonalFamily_eigenspaces' ⟨μ, hμ⟩ with i
+  · convert!
+      hT.direct_sum_isInternal.card_filter_subordinateOrthonormalBasisIndex_eq hn
+        hT.orthogonalFamily_eigenspaces' ⟨μ, hμ⟩ with i
     unfold unsortedEigenvalues
     let ⟨x, hx⟩ := hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
       hT.orthogonalFamily_eigenspaces'
@@ -370,9 +371,9 @@ theorem sort_roots_charpoly_eq_eigenvalues (hT : T.IsSymmetric) (hn : Module.fin
   simp_rw [hT.roots_charpoly_eq_eigenvalues, Fin.univ_val_map, Multiset.map_coe, List.map_ofFn,
     Function.comp_def, RCLike.ofReal_re, Multiset.coe_sort]
   have := hn.symm
-  convert List.mergeSort_of_pairwise ?_
+  convert! List.mergeSort_of_pairwise ?_
   simp_rw [decide_eq_true_eq, ← List.sortedGE_iff_pairwise]
-  convert (hT.eigenvalues_antitone hn).sortedGE_ofFn
+  convert! (hT.eigenvalues_antitone hn).sortedGE_ofFn
 
 theorem eigenvalues_eq_eigenvalues_iff {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
     [FiniteDimensional 𝕜 E'] {T' : E' →ₗ[𝕜] E'} (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
