@@ -5,7 +5,7 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.Algebra.Group.AddTorsor
+public import Mathlib.Topology.Algebra.Group.Torsor
 public import Mathlib.Topology.Algebra.ProperAction.Basic
 
 /-!
