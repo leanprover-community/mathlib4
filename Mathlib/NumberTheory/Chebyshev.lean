@@ -39,8 +39,9 @@ These give logarithmically weighted sums of primes and prime powers.
 - `Chebyshev.psi_eq_log_lcmUpto` shows that `ψ n` is the log of the lcm of `{1,...,n}`.
 - `Chebyshev.psi_eq_sum_theta` and `Chebyshev.psi_eq_theta_add_sum_theta` relate `ψ` to `θ`.
 - `Chebyshev.psi_sub_theta_le_mul_sqrt` gives an upper bound on `ψ - θ`.
-- `Chebyshev.psi_le_ge_theta_add_psi_add_psi_add_psi` establishes the Costa-Pereira inequalities
-  for `ψ - θ`.
+- `Chebyshev.psi_sub_theta_le_psi_add_psi_add_psi` and
+   `Chebyshev.psi_sub_theta_ge_psi_add_psi_add_psi` establish the Costa-Pereira inequalities
+   for `ψ - θ`.
 - `Chebyshev.psi_le_const_mul_self` gives Chebyshev's upper bound on `ψ`.
 - `Chebyshev.psi_ge` gives Chebyshev's lower bound on `ψ`.
 - `Chebyshev.primeCounting_eq_theta_div_log_add_integral` relates the prime counting function to `θ`
@@ -497,7 +498,7 @@ analytic number theory. -/
 
 variable (x : ℝ) (n : ℕ)
 
-private noncomputable def b := θ (x ^ (1 / (n : ℝ)))
+private noncomputable def b := θ (x ^ (n : ℝ)⁻¹)
 
 private noncomputable def c := b x (6 * n - 1) - b x (6 * n) + b x (6 * n + 1)
 
@@ -507,18 +508,20 @@ private theorem b_antitone (hx : 0 ≤ x) : AntitoneOn (b x) (.Ici 1) := by
   rcases le_or_gt x 1 with h | h
   · repeat rw [theta_eq_zero_of_le_one (rpow_le_one hx h (by positivity))]
   apply theta_mono (monotone_rpow_of_base_ge_one h.le _)
-  field_simp; norm_num [hnm]
+  field_simp
+  norm_num [hnm]
 
 private theorem psi_pow_eq_sum_b (hx : 0 ≤ x) : ∃ M, ∀ N ≥ M,
-    ψ (x ^ (1 / (n : ℝ))) = ∑ k ∈ .Icc 1 N, b x (n * k) := by
+    ψ (x ^ (n : ℝ)⁻¹) = ∑ k ∈ Icc 1 N, b x (n * k) := by
   have : 0 ≤ x ^ ((n : ℝ)⁻¹) := by positivity
-  use ⌊log (x ^ (n : ℝ)⁻¹) / log 2⌋₊; intro N hN
+  use ⌊log (x ^ (n : ℝ)⁻¹) / log 2⌋₊
+  intro N hN
   simp only [one_div, psi_eq_sum_theta' this hN, b, cast_mul, mul_inv_rev]
   exact sum_congr rfl (fun k hk ↦ by rw [← rpow_mul (by positivity), mul_comm])
 
-private theorem sum_b_eq_b_add_sum_add_sum_add_sum (N : ℕ) : ∑ n ∈ .Icc 1 (1 + 6 * N), b x n =
-    b x 1 + ∑ n ∈ .Icc 1 (3 * N), b x (2 * n) + ∑ n ∈ .Icc 1 (2 * N), b x (3 * n) +
-    ∑ n ∈ .Icc 1 N, c x n := by
+private theorem sum_b_eq_b_add_sum_add_sum_add_sum (N : ℕ) : ∑ n ∈ Icc 1 (1 + 6 * N), b x n =
+    b x 1 + ∑ n ∈ Icc 1 (3 * N), b x (2 * n) + ∑ n ∈ Icc 1 (2 * N), b x (3 * n) +
+    ∑ n ∈ Icc 1 N, c x n := by
   induction N with
   | zero => simp
   | succ N ih =>
@@ -529,9 +532,9 @@ private theorem sum_b_eq_b_add_sum_add_sum_add_sum (N : ℕ) : ∑ n ∈ .Icc 1 
     rw [show 6 * (N + 1) - 1 = 6 * N + 5 by lia]
     ring_nf
 
-theorem psi_sub_theta_bounds {x : ℝ} (hx : 0 ≤ x) :
-    ψ x - θ x ≤ ψ (x ^ (1 / (2 : ℝ))) + ψ (x ^ (1 / (3 : ℝ))) + ψ (x ^ (1 / (5 : ℝ))) ∧
-    ψ (x ^ (1 / (2 : ℝ))) + ψ (x ^ (1 / (3 : ℝ))) + ψ (x ^ (1 / (7 : ℝ))) ≤ ψ x - θ x := by
+private theorem psi_sub_theta_bounds {x : ℝ} (hx : 0 ≤ x) :
+    ψ x - θ x ≤ ψ (x ^ (2 : ℝ)⁻¹) + ψ (x ^ (3 : ℝ)⁻¹) + ψ (x ^ (5 : ℝ)⁻¹) ∧
+    ψ (x ^ (2 : ℝ)⁻¹) + ψ (x ^ (3 : ℝ)⁻¹) + ψ (x ^ (7 : ℝ)⁻¹) ≤ ψ x - θ x := by
   obtain ⟨N₁, h1⟩ := psi_pow_eq_sum_b x 1 hx
   obtain ⟨N₂, h2⟩ := psi_pow_eq_sum_b x 2 hx
   obtain ⟨N₃, h3⟩ := psi_pow_eq_sum_b x 3 hx
@@ -543,27 +546,38 @@ theorem psi_sub_theta_bounds {x : ℝ} (hx : 0 ≤ x) :
   specialize h3 (2 * N) (by lia)
   specialize h5 N (by lia)
   specialize h7 N (by lia)
-  have : ∑ n ∈ .Icc 1 N, c x n ≤ ∑ n ∈ .Icc 1 N, b x (5 * n) := by
-    apply sum_le_sum; intro n hn; unfold c
+  have : ∑ n ∈ Icc 1 N, c x n ≤ ∑ n ∈ Icc 1 N, b x (5 * n) := by
+    apply sum_le_sum
+    intro n hn
+    unfold c
     linarith [(b_antitone x hx (by grind) (by grind) (by lia) : b x (6 * n + 1) ≤ b x (6 * n)),
       (b_antitone x hx (by grind) (by grind) (by lia) : b x (6 * n - 1) ≤ b x (5 * n))]
-  have : ∑ n ∈ .Icc 1 N, b x (7 * n) ≤ ∑ n ∈ .Icc 1 N, c x n := by
+  have : ∑ n ∈ Icc 1 N, b x (7 * n) ≤ ∑ n ∈ Icc 1 N, c x n := by
     apply sum_le_sum; intro n hn; simp only [mem_Icc, c] at hn ⊢
     linarith [(b_antitone x hx (by grind) (by grind) (by lia) : b x (6 * n) ≤ b x (6 * n - 1)),
       (b_antitone x hx (by grind) (by grind) (by lia) : b x (7 * n) ≤ b x (6 * n + 1))]
   have : b x 1 = θ x := by simp [b]
-  simp only [cast_one, ne_eq, one_ne_zero, not_false_eq_true, div_self, rpow_one, one_mul,
-    sum_b_eq_b_add_sum_add_sum_add_sum, cast_ofNat, one_div] at h1 h2 h3 h5 h7 ⊢
+  simp only [cast_one, one_mul, sum_b_eq_b_add_sum_add_sum_add_sum, cast_ofNat, inv_one,
+    rpow_one] at h1 h2 h3 h5 h7 ⊢
   split_ands <;> linarith
+
+theorem psi_sub_theta_le_psi_add_psi_add_psi {x : ℝ} (hx : 0 ≤ x) :
+    ψ x - θ x ≤ ψ (x ^ (2 : ℝ)⁻¹) + ψ (x ^ (3 : ℝ)⁻¹) + ψ (x ^ (5 : ℝ)⁻¹) :=
+  (psi_sub_theta_bounds hx).1
+
+theorem psi_sub_theta_ge_psi_add_psi_add_psi {x : ℝ} (hx : 0 ≤ x) :
+    ψ (x ^ (2 : ℝ)⁻¹) + ψ (x ^ (3 : ℝ)⁻¹) + ψ (x ^ (7 : ℝ)⁻¹) ≤ ψ x - θ x :=
+  (psi_sub_theta_bounds hx).2
 
 /-- `ψ x = θ x + O( √x )`. -/
 theorem psi_sub_theta_le_mul_sqrt : ∃ C, ∀ x ≥ 0, ψ x - θ x ≤ C * x.sqrt := by
-  use (log 4 + 4) * 3; intro x hx
+  use (log 4 + 4) * 3
+  intro x hx
   rcases le_total x 1 with h | h
   · rw [theta_eq_zero_of_le_one h, psi_eq_zero_of_le_one h, sub_self]; positivity
   have (n : ℕ) (hn : 2 ≤ n) : ψ (x ^ (1 / (n : ℝ))) ≤ (log 4 + 4) * x.sqrt := by
     grw [psi_le_const_mul_self (by positivity), sqrt_eq_rpow x]; gcongr; norm_cast
-  linarith [(psi_sub_theta_bounds hx).1, this 2 (le_refl _), this 3 (by norm_num),
+  linarith [psi_sub_theta_le_psi_add_psi_add_psi hx, this 2 (le_refl _), this 3 (by norm_num),
     this 5 (by norm_num)]
 
 end CostaPereira
