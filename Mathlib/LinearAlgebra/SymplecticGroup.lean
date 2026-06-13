@@ -273,9 +273,9 @@ private lemma exists_symmetric_X_invertible_add_mul_diagonal {R : Type*} [Field 
     if i ∈ s ∧ j ∈ s then (if i = j then 1 else 0) - A i j else 0 with X1_def
   have hX_symm : Xᵀ = X := by
     ext i j
-    simp [X1_def]; grind
+    simp only [X1_def, transpose_apply]; grind
   have hM1 (i : l) (hi : i ∈ s) (j : l) : (A + X * D) i j = if i = j then 1 else 0 := by
-    simp [X1_def, D_def]; grind
+    simp only [X1_def, D_def, Matrix.add_apply, mul_diagonal, mul_ite, mul_one, mul_zero]; grind
   set M := A + X * D with M_def
   refine ⟨X, hX_symm, M.isUnit_iff_isUnit_det.1 <|
     isUnit_toLin'_iff.1 <| M.toLin'.isUnit_iff_ker_eq_bot.2 <|
@@ -311,7 +311,7 @@ private lemma exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot {R : Typ
   refine ⟨Vᵀ * X * V, ?_, ?_⟩
   · rw [transpose_mul, transpose_mul, hX_symm, transpose_transpose, mul_assoc]
   · convert_to IsUnit (Vᵀ * (A' + X * C') * U⁻¹).det
-    · simp only [mul_assoc, mul_nonsing_inv_cancel_right U _ hU,
+    · simp [mul_nonsing_inv_cancel_right U _ hU,
       mul_nonsing_inv_cancel_left Vᵀ _ (isUnit_det_transpose V hV),
       mul_add, add_mul, mul_assoc, A'_def, C'_def]
     rw [det_mul, det_mul]

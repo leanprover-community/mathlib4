@@ -752,7 +752,8 @@ theorem exists_rank_normal_form (M : Matrix n n 𝕜) :
     exact IsUnit.mk0 _ <| Finset.prod_ne_zero_iff.2 (by grind)
   have h2 : diagonal E * diagonal D = diagonal (fun i ↦ if i ∈ s then 1 else 0) := by
     ext i j
-    simp [E_def, diagonal_apply, s_def]; grind
+    simp only [E_def, mul_diagonal, diagonal_apply, ite_mul, one_mul, zero_mul, s_def, ne_eq,
+      Finset.mem_filter, Finset.mem_univ, true_and, ite_not]; grind
   refine ⟨diagonal E * (L.reverse.map (toMatrix ∘ .inv)).prod,
     (L'.reverse.map (toMatrix ∘ .inv)).prod, s, ?_, hBinv_unit, ?_⟩
   · rw [det_mul]; exact hS_unit.mul hAinv_unit
