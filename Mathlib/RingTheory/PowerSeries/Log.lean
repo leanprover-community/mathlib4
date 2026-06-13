@@ -176,7 +176,7 @@ theorem subst_log_exp_sub_one [IsAddTorsionFree A] :
       map_zero, constantCoeff_X]
 
 variable (A) in
-theorem logOf_exp [IsAddTorsionFree A] : logOf (exp A) = X :=
+theorem logOf_exp : logOf (exp A) = X :=
   subst_log_exp_sub_one A
 
 end PowerSeries
