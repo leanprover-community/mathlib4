@@ -5682,6 +5682,7 @@ public import Mathlib.NumberTheory.DirichletCharacter.GaussSum
 public import Mathlib.NumberTheory.DirichletCharacter.Orthogonality
 public import Mathlib.NumberTheory.Divisors
 public import Mathlib.NumberTheory.EllipticDivisibilitySequence
+public import Mathlib.NumberTheory.EulerMaclaurin
 public import Mathlib.NumberTheory.EulerProduct.Basic
 public import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
 public import Mathlib.NumberTheory.EulerProduct.ExpLog
