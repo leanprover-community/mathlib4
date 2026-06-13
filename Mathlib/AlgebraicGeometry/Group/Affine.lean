@@ -43,6 +43,8 @@ so that in particular we do not easily know that its inverse is given by `Γ`.
 
 @[expose] public section
 
+suppress_compilation
+
 open AlgebraicGeometry Coalgebra Scheme CategoryTheory MonoidalCategory Functor Monoidal Opposite
   Limits TensorProduct MonObj GrpObj
 open scoped SpecOfNotation
@@ -54,7 +56,7 @@ variable {R : CommRingCat.{u}}
 ### Left edge: `R`-Hopf algebras correspond to cogroup objects under `R`
 
 Ways to turn an unbundled `R`-Hopf algebra into a bundled cogroup object under `R`, and vice versa,
-are already provided in `Toric.Mathlib.Algebra.Category.CommHopfAlgCat`.
+are already provided in `Mathlib.Algebra.Category.CommHopfAlgCat`.
 
 ### Top edge: `Spec` as a functor on Hopf algebras
 
@@ -62,20 +64,18 @@ In this section we construct `Spec` as a functor from `R`-Hopf algebras to affin
 `Spec R`.
 -/
 
-section topEdge
+namespace AlgebraicGeometry
 
-set_option allowUnsafeReducibility true in
-attribute [implicit_reducible] commAlgCatEquivUnder Over.opEquivOpUnder Over.post
-  CommRingCat.mkUnder CommRingCat.of
+section topEdge
 
 variable (R) in
 /-- `Spec` as a functor from `R`-algebras to schemes over `Spec R`. -/
-noncomputable abbrev algSpec : (CommAlgCat R)ᵒᵖ ⥤ Over (Spec R) :=
+abbrev algSpec : (CommAlgCat R)ᵒᵖ ⥤ Over (Spec R) :=
   (commAlgCatEquivUnder R).op.functor ⋙ (Over.opEquivOpUnder R).inverse ⋙ Over.post Scheme.Spec
 
 variable (R) in
 /-- The Gamma functor as a functor from schemes over `Spec R` to `R`-algebras. -/
-noncomputable abbrev algΓ : Over (Spec R) ⥤ (CommAlgCat R)ᵒᵖ :=
+abbrev algΓ : Over (Spec R) ⥤ (CommAlgCat R)ᵒᵖ :=
   Over.post Γ.rightOp ⋙ Over.map (ΓSpecIso R).inv.op ⋙
     (Over.opEquivOpUnder R).functor ⋙ (commAlgCatEquivUnder R).inverse.op
 
@@ -87,7 +87,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance preservesColimitsOfSize_algΓ : PreservesColimitsOfSize.{w, v} (algΓ R) := by
   unfold algΓ; infer_instance
 
-noncomputable instance braidedAlgSpec : (algSpec R).Braided := .ofChosenFiniteProducts _
+instance braidedAlgSpec : (algSpec R).Braided := .ofChosenFiniteProducts _
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -147,13 +147,13 @@ instance algSpec.instFaithful : (algSpec R).Faithful :=
     (commAlgCatEquivUnder R).op.functor ⋙ (Over.opEquivOpUnder R).inverse ⋙ Over.post Scheme.Spec
 
 /-- `Spec` is fully faithful on `R`-algebras, with inverse `Gamma`. -/
-noncomputable def algSpec.fullyFaithful : (algSpec R).FullyFaithful :=
+def algSpec.fullyFaithful : (algSpec R).FullyFaithful :=
   ((commAlgCatEquivUnder R).op.trans (Over.opEquivOpUnder R).symm).fullyFaithfulFunctor.comp <|
     Spec.fullyFaithful.over _
 
 variable (R) in
 /-- `Spec` as a functor from `R`-bialgebras to monoid schemes over `Spec R`. -/
-noncomputable abbrev bialgSpec : (CommBialgCat R)ᵒᵖ ⥤ Mon (Over <| Spec R) :=
+abbrev bialgSpec : (CommBialgCat R)ᵒᵖ ⥤ Mon (Over <| Spec R) :=
   (commBialgCatEquivComonCommAlgCat R).functor.leftOp ⋙ (algSpec R).mapMon
 
 /-- `Spec` is full on `R`-bialgebras. -/
@@ -163,13 +163,13 @@ instance bialgSpec.instFull : (bialgSpec R).Full := inferInstance
 instance bialgSpec.instFaithful : (bialgSpec R).Faithful := inferInstance
 
 /-- `Spec` is fully faithful on `R`-bialgebras, with inverse `Gamma`. -/
-noncomputable def bialgSpec.fullyFaithful : (bialgSpec R).FullyFaithful :=
+def bialgSpec.fullyFaithful : (bialgSpec R).FullyFaithful :=
   (commBialgCatEquivComonCommAlgCat R).fullyFaithfulFunctor.leftOp.comp
     algSpec.fullyFaithful.mapMon
 
 variable (R) in
 /-- `Spec` as a functor from `R`-Hopf algebras to group schemes over `Spec R`. -/
-noncomputable abbrev hopfSpec : (CommHopfAlgCat R)ᵒᵖ ⥤ Grp (Over <| Spec R) :=
+abbrev hopfSpec : (CommHopfAlgCat R)ᵒᵖ ⥤ Grp (Over <| Spec R) :=
   (commHopfAlgCatEquivCogrpCommAlgCat R).functor.leftOp ⋙ (algSpec R).mapGrp
 
 /-- `Spec` is full on `R`-Hopf algebras. -/
@@ -179,14 +179,13 @@ instance hopfSpec.instFull : (hopfSpec R).Full := inferInstance
 instance hopfSpec.instFaithful : (hopfSpec R).Faithful := inferInstance
 
 /-- `Spec` is fully faithful on `R`-Hopf algebras, with inverse `Gamma`. -/
-noncomputable def hopfSpec.fullyFaithful : (hopfSpec R).FullyFaithful :=
+def hopfSpec.fullyFaithful : (hopfSpec R).FullyFaithful :=
   (commHopfAlgCatEquivCogrpCommAlgCat R).fullyFaithfulFunctor.leftOp.comp
     algSpec.fullyFaithful.mapGrp
 
-namespace AlgebraicGeometry.Scheme
-variable {R A : CommRingCat.{u}} {X M G : Scheme.{u}}
-
-suppress_compilation
+namespace Scheme
+section universe_polymorphic
+variable {R A : CommRingCat.{u}} {X M G : Scheme.{v}}
 
 @[simps -isSimp]
 instance specOverSpec [Algebra R A] : (Spec A).Over (Spec R) where
@@ -306,9 +305,14 @@ set_option backward.defeqAttrib.useBackward true in
 /-- The adjunction between `Spec` and `Γ` as functors between commutative `R`-algebras and
 schemes over `Spec R`. -/
 def algΓAlgSpecAdjunction (R : CommRingCat) : algΓ R ⊣ algSpec R := by
-  have foo := Over.postAdjunctionRight (Y := .op <| R) ΓSpec.adjunction
-  have bar := ((Over.opEquivOpUnder R).trans (commAlgCatEquivUnder R).op.symm).toAdjunction
-  simpa using! foo.comp bar
+  have overAdjunction := Over.postAdjunctionRight (Y := .op <| R) ΓSpec.adjunction
+  have overEquivAlg := ((Over.opEquivOpUnder R).trans (commAlgCatEquivUnder R).op.symm).toAdjunction
+  simpa using! overAdjunction.comp overEquivAlg
+
+end universe_polymorphic
+
+section universe_monomorphic
+variable {R A : CommRingCat.{u}} {X M G : Scheme.{u}}
 
 /-- The global sections of an affine scheme over `Spec R` are a `R`-algebra. -/
 instance [X.Over (Spec R)] [IsAffine X] : Algebra R Γ(X, ⊤) :=
@@ -325,7 +329,7 @@ attribute [local simp] specOverSpec_over algebraMap_Γ in
 instance [X.Over (Spec R)] [IsAffine X] : X.isoSpec.inv.IsOver (Spec R) where
 
 /-- The global sections of an affine monoid scheme over `Spec R` are a `R`-bialgebra. -/
-noncomputable instance [M.Over (Spec R)] [MonObj (M.asOver (Spec R))] [IsAffine M] :
+instance [M.Over (Spec R)] [MonObj (M.asOver (Spec R))] [IsAffine M] :
     Bialgebra R Γ(M, ⊤) := by
   have : MonObj ((algSpec R).obj <| .op <| CommAlgCat.of R Γ(M, ⊤)) :=
     .ofIso <| M.isoSpec.asOver (Spec R)
@@ -334,7 +338,7 @@ noncomputable instance [M.Over (Spec R)] [MonObj (M.asOver (Spec R))] [IsAffine 
     .op <| .mk <| .op <| .of R Γ(M, ⊤)).bialgebra
 
 /-- The global sections of an affine group scheme over `Spec R` are a `R`-Hopf algebra. -/
-noncomputable instance [G.Over (Spec R)] [GrpObj (G.asOver (Spec R))] [IsAffine G] :
+instance [G.Over (Spec R)] [GrpObj (G.asOver (Spec R))] [IsAffine G] :
     HopfAlgebra R Γ(G, ⊤) := by
   have : GrpObj ((algSpec R).obj <| .op <| CommAlgCat.of R Γ(G, ⊤)) :=
     .ofIso <| G.isoSpec.asOver (Spec R)
@@ -349,9 +353,8 @@ open TensorProduct Algebra.TensorProduct CommRingCat RingHomClass
 variable (R S T) in
 /-- The isomorphism between the fiber product of two schemes `Spec S` and `Spec T`
 over a scheme `Spec R` and the `Spec` of the tensor product `S ⊗[R] T`. -/
-noncomputable
 def pullbackSpecIso' [Algebra R T] :
-    pullback (Spec(S) ↘ Spec(R)) (Spec(T) ↘  Spec(R)) ≅ Spec (.of <| S ⊗[R] T) := pullbackSpecIso ..
+    pullback (Spec(S) ↘ Spec(R)) (Spec(T) ↘ Spec(R)) ≅ Spec (.of <| S ⊗[R] T) := pullbackSpecIso ..
 
 set_option backward.defeqAttrib.useBackward true in
 lemma pullbackSpecIso'_symmetry [Algebra R T] :
@@ -439,8 +442,8 @@ instance [Bialgebra R T] :
       · simp [pullbackSpecIso', specOverSpec_over, OverClass.asOver, Hom.asOver, ← Spec.map_comp,
           OverClass.asOverHom, mul_left, ← CommRingCat.ofHom_comp, ← Bialgebra.comul_includeRight]
 
-end AlgebraicGeometry.Scheme
-
+end universe_monomorphic
+end Scheme
 end topEdge
 
 /-!
@@ -474,3 +477,5 @@ lemma essImage_hopfSpec {G : Grp <| Over <| Spec R} :
     (hopfSpec R).essImage G ↔ IsAffine G.X.left := by simp
 
 end rightEdge
+
+end AlgebraicGeometry
