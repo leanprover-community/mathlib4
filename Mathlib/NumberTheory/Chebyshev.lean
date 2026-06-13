@@ -514,7 +514,7 @@ private theorem psi_pow_eq_sum_b (hx : 0 ≤ x) : ∃ M, ∀ N ≥ M,
   have : 0 ≤ x ^ ((n : ℝ)⁻¹) := by positivity
   use ⌊log (x ^ (n : ℝ)⁻¹) / log 2⌋₊; intro N hN
   simp only [one_div, psi_eq_sum_theta' this hN, b, cast_mul, mul_inv_rev]
-  exact sum_congr rfl (fun k hk ↦ by rw [← rpow_mul (by positivity), mul_comm])
+  simp_rw [mul_comm, ← rpow_mul (by positivity)]
 
 private theorem sum_b_eq_b_add_sum_add_sum_add_sum (N : ℕ) : ∑ n ∈ .Icc 1 (1 + 6 * N), b x n =
     b x 1 + ∑ n ∈ .Icc 1 (3 * N), b x (2 * n) + ∑ n ∈ .Icc 1 (2 * N), b x (3 * n) +
