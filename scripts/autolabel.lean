@@ -221,6 +221,7 @@ def mathlibLabelData : (l : Label) → LabelData l
   | .«t-linter» => {
     dirs := #[
       "Mathlib" / "Tactic" / "Linter",
+      "MathlibTest" / "Linter",
       "scripts" / "lint-style.lean",
       "scripts" / "lint-style.py",
     ] }
@@ -238,7 +239,8 @@ def mathlibLabelData : (l : Label) → LabelData l
     dirs := #[
       "Mathlib" / "Lean",
       "Mathlib" / "Tactic",
-      "Mathlib" / "Util"],
+      "Mathlib" / "Util",
+      "MathlibTest" / "Tactic", ],
     exclusions := #["Mathlib" / "Tactic" / "Linter"] }
   | .«t-number-theory» => {}
   | .«t-order» => {
