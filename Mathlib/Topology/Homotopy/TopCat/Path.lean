@@ -42,11 +42,11 @@ variable {X} in
 @[simps!]
 def pathEquiv {x y : X} : X.Path x y ≃ _root_.Path x y where
   toFun p :=
-    { toContinuousMap := p.hom.hom.comp <| ContinuousMap.ofClass TopCat.I.homeomorph.symm
+    { toContinuousMap := p.hom.hom.comp TopCat.I.homeomorph.symm
       source' := p.hom₀
       target' := p.hom₁ }
   invFun p :=
-    { hom := ofHom (p.toContinuousMap.comp (ContinuousMap.ofClass TopCat.I.homeomorph))
+    { hom := ofHom (p.toContinuousMap.comp (toContinuousMap TopCat.I.homeomorph))
       hom₀ := p.source'
       hom₁ := p.target' }
 

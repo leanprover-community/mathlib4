@@ -59,7 +59,7 @@ variable [FunLike F α β] [CocompactMapClass F α β]
 `CocompactMap`. This is declared as the default coercion from `F` to `CocompactMap α β`. -/
 @[coe]
 def toCocompactMap (f : F) : CocompactMap α β :=
-  { ContinuousMap.ofClass f with
+  { (f : C(α, β)) with
     cocompact_tendsto' := cocompact_tendsto f }
 
 instance : CoeTC F (CocompactMap α β) :=
@@ -137,8 +137,7 @@ instance : Inhabited (CocompactMap α α) :=
 
 /-- The composition of cocompact continuous maps, as a cocompact continuous map. -/
 def comp (f : CocompactMap β γ) (g : CocompactMap α β) : CocompactMap α γ :=
-  ⟨(ContinuousMap.ofClass f).comp (ContinuousMap.ofClass g),
-   (cocompact_tendsto f).comp (cocompact_tendsto g)⟩
+  ⟨f.toContinuousMap.comp g, (cocompact_tendsto f).comp (cocompact_tendsto g)⟩
 
 @[simp]
 theorem coe_comp (f : CocompactMap β γ) (g : CocompactMap α β) : ⇑(comp f g) = f ∘ g :=

@@ -159,16 +159,16 @@ variable [ContinuousStar A] [Algebra 𝕜 A]
 actually a homeomorphism. -/
 @[simps]
 def compStarAlgEquiv' (f : X ≃ₜ Y) : C(Y, A) ≃⋆ₐ[𝕜] C(X, A) :=
-  { (ContinuousMap.ofClass f).compStarAlgHom' 𝕜 A with
-    toFun := (ContinuousMap.ofClass f).compStarAlgHom' 𝕜 A
-    invFun := (ContinuousMap.ofClass f.symm).compStarAlgHom' 𝕜 A
+  { (f : C(X, Y)).compStarAlgHom' 𝕜 A with
+    toFun := (f : C(X, Y)).compStarAlgHom' 𝕜 A
+    invFun := (f.symm : C(Y, X)).compStarAlgHom' 𝕜 A
     left_inv := fun g => by
       simp only [ContinuousMap.compStarAlgHom'_apply, ContinuousMap.comp_assoc,
         toContinuousMap_comp_symm, ContinuousMap.comp_id]
     right_inv := fun g => by
       simp only [ContinuousMap.compStarAlgHom'_apply, ContinuousMap.comp_assoc,
         symm_comp_toContinuousMap, ContinuousMap.comp_id]
-    map_smul' := fun k a => map_smul ((ContinuousMap.ofClass f).compStarAlgHom' 𝕜 A) k a }
+    map_smul' := fun k a => map_smul ((f : C(X, Y)).compStarAlgHom' 𝕜 A) k a }
 
 end Homeomorph
 

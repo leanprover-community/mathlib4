@@ -73,8 +73,8 @@ namespace Homeomorph
 /-- Any homeomorphism is a homotopy equivalence.
 -/
 def toHomotopyEquiv (h : X ≃ₜ Y) : X ≃ₕ Y where
-  toFun := ContinuousMap.ofClass h
-  invFun := ContinuousMap.ofClass h.symm
+  toFun := h
+  invFun := h.symm
   left_inv := by rw [symm_comp_toContinuousMap]
   right_inv := by rw [toContinuousMap_comp_symm]
 

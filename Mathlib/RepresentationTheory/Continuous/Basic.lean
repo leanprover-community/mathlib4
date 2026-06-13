@@ -326,7 +326,7 @@ twisted so that the map `const : V → C(G,V)` is an intertwining map. -/
 def coind₁ (π : ContRepresentation R G V) :
     ContRepresentation R G C(G, V) where
   toFun g := {
-    toFun f := .comp (ContinuousMap.ofClass <| π g) (f.comp (ContinuousMap.mulLeft g⁻¹))
+    toFun f := .comp (π g) (f.comp (ContinuousMap.mulLeft g⁻¹))
     map_add' _ _ := by ext; simp
     map_smul' _ _ := by ext; simp
     cont := (continuous_postcomp _).comp (continuous_precomp _)
@@ -338,7 +338,7 @@ def coind₁ (π : ContRepresentation R G V) :
 @[simps]
 def coind₁_map (π₁ : ContRepresentation R G V) (π₂ : ContRepresentation R G W) (f : π₁ →ⁱL π₂) :
     coind₁ π₁ →ⁱL coind₁ π₂ where
-  toFun := (ContinuousMap.ofClass f).comp
+  toFun := (f : ContinuousMap _ _).comp
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
   isIntertwining' g := by ext; simp [f.isIntertwining]

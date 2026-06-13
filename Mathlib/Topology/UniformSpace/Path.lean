@@ -31,10 +31,9 @@ variable {X : Type*} [UniformSpace X] {x y z : X}
 namespace Path
 
 instance instUniformSpace : UniformSpace (Path x y) :=
-  .comap ContinuousMap.ofClass ContinuousMap.compactConvergenceUniformSpace
+  .comap ((↑) : _ → C(I, X)) ContinuousMap.compactConvergenceUniformSpace
 
-theorem isUniformEmbedding_coe :
-    IsUniformEmbedding (ContinuousMap.ofClass : Path x y → C(I, X)) where
+theorem isUniformEmbedding_coe : IsUniformEmbedding ((↑) : Path x y → C(I, X)) where
   comap_uniformity := rfl
   injective := ContinuousMap.coe_injective'
 

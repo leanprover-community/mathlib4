@@ -290,8 +290,8 @@ theorem uniformContinuous_comp_left (g : C(α, γ)) :
 to an isomorphism `C(X, Y) ≃ᵤ C(Z, T)`. -/
 protected def _root_.UniformEquiv.arrowCongr (φ : α ≃ₜ γ) (ψ : β ≃ᵤ δ) :
     C(α, β) ≃ᵤ C(γ, δ) where
-  toFun f := .comp (ContinuousMap.ofClass ψ.toHomeomorph) <| f.comp (ContinuousMap.ofClass φ.symm)
-  invFun f := .comp (ContinuousMap.ofClass ψ.symm.toHomeomorph) <| f.comp (ContinuousMap.ofClass φ)
+  toFun f := .comp ψ.toHomeomorph <| f.comp φ.symm
+  invFun f := .comp ψ.symm.toHomeomorph <| f.comp φ
   left_inv f := ext fun _ ↦ ψ.left_inv (f _) |>.trans <| congrArg f <| φ.left_inv _
   right_inv f := ext fun _ ↦ ψ.right_inv (f _) |>.trans <| congrArg f <| φ.right_inv _
   uniformContinuous_toFun := uniformContinuous_comp _ ψ.uniformContinuous |>.comp <|

@@ -172,8 +172,8 @@ def compRightContinuousMap (f : C(X, Y)) :
 `C(X, Y) ≃ₜ C(Z, T)`. -/
 protected def _root_.Homeomorph.arrowCongr (φ : X ≃ₜ Z) (ψ : Y ≃ₜ T) :
     C(X, Y) ≃ₜ C(Z, T) where
-  toFun f := .comp (ContinuousMap.ofClass ψ) <| f.comp (ContinuousMap.ofClass φ.symm)
-  invFun f := .comp (ContinuousMap.ofClass ψ.symm) <| f.comp (ContinuousMap.ofClass φ)
+  toFun f := .comp ψ <| f.comp φ.symm
+  invFun f := .comp ψ.symm <| f.comp φ
   left_inv f := ext fun _ ↦ ψ.left_inv (f _) |>.trans <| congrArg f <| φ.left_inv _
   right_inv f := ext fun _ ↦ ψ.right_inv (f _) |>.trans <| congrArg f <| φ.right_inv _
   continuous_toFun := continuous_postcomp _ |>.comp <| continuous_precomp _

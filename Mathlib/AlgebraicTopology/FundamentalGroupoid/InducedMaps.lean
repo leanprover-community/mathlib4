@@ -45,7 +45,7 @@ theorem Path.Homotopic.map_trans_evalAt {X Y : Type*} [TopologicalSpace X] [Topo
   /- Let `G` be the continuous map on the unit square sending `(t, s)` to `F(t, p(s))`.
   Then our homotopy is the image under `G` of a homotopy
   between the two paths from `(0, 0)` to `(1, 1)` along the sides of the square. -/
-  set G : C(I × I, Y) := F.toContinuousMap.comp (.prodMap (.id _) <| ContinuousMap.ofClass p)
+  set G : C(I × I, Y) := F.toContinuousMap.comp (.prodMap (.id _) p)
   set p₁ : Path ((0, 0) : I × I) (1, 1) := .prod (.trans (.refl _) .id) (.trans .id (.refl _))
   set p₂ : Path ((0, 0) : I × I) (1, 1) := .prod (.trans .id (.refl _)) (.trans (.refl _) .id)
   set Fsq : p₁.Homotopy p₂ :=

@@ -154,7 +154,7 @@ theorem locallyCompactSpace_of_equicontinuousAt (U : Set X) (V : Set Y)
   obtain ⟨W, hWo, hWV, hWc⟩ := local_compact_nhds hV
   let S1 : Set (X →* Y) := {f | Set.MapsTo f U W}
   let S2 : Set (ContinuousMonoidHom X Y) := {f | Set.MapsTo f U W}
-  let S3 : Set C(X, Y) := ContinuousMap.ofClass  '' S2
+  let S3 : Set C(X, Y) := (↑) '' S2
   let S4 : Set (X → Y) := (↑) '' S3
   replace h : Equicontinuous ((↑) : S1 → X → Y) :=
     h.comp (Subtype.map _root_.id fun f hf ↦ hf.mono_right hWV)
