@@ -72,13 +72,14 @@ lemma comp_toCopy_injective (f : Copy G H) :
 
 /-- The unique automorphism of `G` relating two copies of `G` in `H` with the same image
 subgraph. -/
-noncomputable def fiberAut (f₀ f : Copy G H) (h : f.toSubgraph = f₀.toSubgraph) : G.Aut := by
+@[expose] noncomputable def fiberAut (f₀ f : Copy G H) (h : f.toSubgraph = f₀.toSubgraph) :
+    G.Aut := by
   refine ⟨equivOfToSubgraphEq h, fun {_ _} ↦ ?_⟩
   simp only [f₀.toSubgraph_adj_iff.symm, equivOfToSubgraphEq_apply, ← h, f.toSubgraph_adj_iff]
 
 lemma fiberAut_spec (f₀ f : Copy G H) (h : f.toSubgraph = f₀.toSubgraph) :
     f = f₀.comp (fiberAut f₀ f h).toCopy := by
-  ext v; simpa only [comp_apply] using (equivOfToSubgraphEq_apply h v).symm
+  ext v; simp [fiberAut]
 
 /-- The fiber of `Copy.toSubgraph` over `f₀.toSubgraph` is equivalent to `Aut G`. -/
 noncomputable def fiberEquivAut (f₀ : Copy G H) :
@@ -125,14 +126,14 @@ lemma comp_toEmbedding_injective (f : Embedding G H) :
 
 /-- The unique automorphism of `G` relating two embeddings of `G` in `H` with the same image
 subgraph. -/
-noncomputable def fiberAut (f₀ f : Embedding G H) (h : f.toSubgraph = f₀.toSubgraph) :
+@[expose] noncomputable def fiberAut (f₀ f : Embedding G H) (h : f.toSubgraph = f₀.toSubgraph) :
     G.Aut := by
   refine ⟨equivOfToSubgraphEq h, fun {_ _} ↦ ?_⟩
   simp only [f₀.toSubgraph_adj_iff.symm, equivOfToSubgraphEq_apply, ← h, f.toSubgraph_adj_iff]
 
 lemma fiberAut_spec (f₀ f : Embedding G H) (h : f.toSubgraph = f₀.toSubgraph) :
     f = f₀.comp (fiberAut f₀ f h).toEmbedding := by
-  ext v; exact (equivOfToSubgraphEq_apply h v).symm
+  ext v; simp [fiberAut]
 
 /-- The fiber of `Embedding.toSubgraph` over `f₀.toSubgraph` is equivalent to `Aut G`. -/
 noncomputable def fiberEquivAut (f₀ : Embedding G H) :
