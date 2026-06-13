@@ -3,7 +3,6 @@ Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Jon Eugster
 -/
-import Std.Data.TreeSet
 import Cache.Lean
 import Lake.Load.Toml
 import Batteries.Tactic.OpenPrivate
@@ -29,6 +28,7 @@ TODO: write a better predicate. -/
 def isPartOfMathlibCache (mod : Name) : Bool := #[
   `Mathlib,
   `Batteries,
+  `BatteriesRecycling,
   `Aesop,
   `Cli,
   `ImportGraph,
@@ -503,8 +503,6 @@ def lookup (hashMap : ModuleHashMap) (modules : List Name) : IO Unit := do
       println! "  comment: {line}"
   if err then IO.Process.exit 1
 
-open private Lake.Glob.ofString? from Lake.Load.Toml in
-
 /--
 Parse a string as either a path or a Lean module name.
 If the argument describes a folder, use `walkDir` to find all `.lean` files within.
@@ -595,7 +593,7 @@ where
   This assumes the `folder` exists.
   -/
   walkDir (sp : SearchPath) (folder : FilePath) (mod : Name) : IO <| Array (Name × FilePath) := do
-    -- The source direcory where `mod` is located
+    -- The source directory where `mod` is located
     let srcDir ← getSrcDir sp mod
     -- find all Lean files in the folder only skipping special entries such as `.` and `..`
     let files ← folder.walkDir (pure ·.fileName.isSome)

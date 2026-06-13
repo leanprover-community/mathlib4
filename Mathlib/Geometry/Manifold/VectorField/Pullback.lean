@@ -14,7 +14,7 @@ public import Mathlib.Geometry.Manifold.Notation
 /-!
 # Vector fields in manifolds
 
-We study functions of the form `V : Π (x : M) → TangentSpace I x` on a manifold, i.e.,
+We study functions of the form `V : Π (x : M), TangentSpace I x` on a manifold, i.e.,
 vector fields.
 
 We define the pullback of a vector field under a map, as
@@ -373,7 +373,7 @@ protected lemma _root_.MDifferentiableAt.mpullback_vectorField
     (hV : MDiffAt (T% V) (f x₀)) (hf : CMDiffAt n f x₀)
     (hf' : (mfderiv% f x₀).IsInvertible) (hmn : 2 ≤ n) :
     MDiffAt (T% (mpullback I I' f V)) x₀ := by
-  simpa using MDifferentiableWithinAt.mpullback_vectorField_preimage hV hf hf' hmn
+  simpa using! MDifferentiableWithinAt.mpullback_vectorField_preimage hV hf hf' hmn
 
 /-- The pullback of a differentiable vector field by a `C^n` function with `2 ≤ n` is
 differentiable. -/
@@ -514,7 +514,7 @@ protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField' {u : Set M
     CMDiffAt[s] m (T% (mpullbackWithin I I' f V u)) x₀ := by
   have hn : 1 ≤ n := le_trans (by simp) hmn
   have hh : (mfderiv[s] f x₀).IsInvertible := by
-    convert hf' using 1
+    convert! hf' using 1
     exact (hf.mdifferentiableWithinAt <| by positivity).mfderivWithin_mono (hs _ hx₀) hu
   apply (hV.mpullbackWithin_vectorField_of_mem (hf.mono hu) hh hx₀ hs hmn
     hst).congr_of_eventuallyEq_of_mem _ hx₀
