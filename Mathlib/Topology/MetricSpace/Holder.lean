@@ -6,6 +6,8 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Topology.MetricSpace.Lipschitz
+public import Mathlib.Data.Real.Pointwise
+public import Mathlib.Order.ConditionallyCompleteLattice.Finset
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.Analysis.Convex.NNReal
 
@@ -38,7 +40,7 @@ Hölder continuity, Lipschitz continuity
 @[expose] public section
 
 
-variable {X Y Z : Type*}
+variable {ι X Y Z : Type*}
 
 open Filter Set Metric
 open scoped NNReal ENNReal Topology
@@ -237,6 +239,16 @@ lemma of_le_of_le {C₁ C₂ s t : ℝ≥0} {A : Set X}
   exact convex_setOf_holderOnWith f (max C₁ C₂) A |>.segment_subset hf₁ hf₂
     (NNReal.Icc_subset_segment ⟨hrt, hts⟩)
 
+/-- The pointwise limit of a sequence of functions that are Hölder continuous on `s` is Hölder
+continuous on `s`. -/
+lemma tendsto {l : Filter ι} {f : ι → X → Y} {g : X → Y} {C : ι → ℝ≥0} {C' : ℝ≥0}
+    (hf : ∀ i, HolderOnWith (C i) r (f i) s) (hC : ∃ᶠ i in l, C i ≤ C')
+    (hg : ∀ x ∈ s, Tendsto (f · x) l (𝓝 (g x))) :
+    HolderOnWith C' r g s := by
+  refine fun x hx y hy => le_of_tendsto_of_frequently ((hg x hx).edist (hg y hy))
+    (hC.mono fun i hi => ?_)
+  grw [hf i x hx y hy, hi]
+
 end HolderOnWith
 
 namespace HolderWith
@@ -327,6 +339,13 @@ lemma of_le_of_le {C₁ C₂ s t : ℝ≥0}
     (hf₁ : HolderWith C₁ r f) (hf₂ : HolderWith C₂ s f) (hrt : r ≤ t)
     (hts : t ≤ s) : HolderWith (max C₁ C₂) t f :=
   holderOnWith_univ.1 ((holderOnWith_univ.2 hf₁).of_le_of_le (holderOnWith_univ.2 hf₂) hrt hts)
+
+/-- The pointwise limit of a sequence of Hölder continuous functions is Hölder continuous. -/
+lemma tendsto {l : Filter ι} {f : ι → X → Y} {g : X → Y} {C : ι → ℝ≥0} {C' : ℝ≥0}
+    (hf : ∀ i, HolderWith (C i) r (f i)) (hC : ∃ᶠ i in l, C i ≤ C') (hg : Tendsto f l (𝓝 g)) :
+    HolderWith C' r g := by
+  simp_all only [← holderOnWith_univ]
+  exact HolderOnWith.tendsto hf hC fun x _ => hg.apply_nhds x
 
 end HolderWith
 
