@@ -5,6 +5,7 @@ Authors: Heather Macbeth, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Order.CompleteLattice.Finset
 public import Mathlib.Topology.Order.Basic
 
 /-!
@@ -163,6 +164,35 @@ theorem tendsto_atTop_iInf (h_anti : Antitone f) : Tendsto f atTop (𝓝 (⨅ i,
 end iInf
 
 end
+
+section FinsetSup
+
+variable {ι α : Type*} [TopologicalSpace α]
+
+theorem tendsto_finset_sup_iSup [CompleteLattice α] [SupConvergenceClass α] (a : ι → α) :
+    Tendsto (fun F : Finset ι => F.sup a) atTop (𝓝 (⨆ i, a i)) := by
+  have hmono : Monotone (fun F : Finset ι => F.sup a) :=
+    fun F G hFG => Finset.sup_mono hFG
+  simpa [Finset.sup_eq_iSup, ← iSup_eq_iSup_finset a] using tendsto_atTop_iSup hmono
+
+theorem tendsto_finset_sup_ciSup [ConditionallyCompleteLattice α] [OrderBot α]
+    [SupConvergenceClass α] [Nonempty ι] (a : ι → α) (ha : BddAbove (Set.range a)) :
+    Tendsto (fun F : Finset ι => F.sup a) atTop (𝓝 (⨆ i, a i)) := by
+  have hmono : Monotone (fun F : Finset ι => F.sup a) :=
+    fun F G hFG => Finset.sup_mono hFG
+  have hbdd : BddAbove (Set.range fun F : Finset ι => F.sup a) := by
+    refine ⟨⨆ i, a i, ?_⟩
+    rintro _ ⟨F, rfl⟩
+    exact Finset.sup_le fun i _ => le_ciSup ha i
+  have hsup : (⨆ F : Finset ι, F.sup a) = ⨆ i, a i := by
+    refine le_antisymm ?_ ?_
+    · exact ciSup_le fun F => Finset.sup_le fun i _ => le_ciSup ha i
+    · exact ciSup_le fun i =>
+        (Finset.le_sup (s := ({i} : Finset ι)) (f := a) (by simp)).trans
+          (le_ciSup hbdd ({i} : Finset ι))
+  simpa [hsup] using tendsto_atTop_ciSup hmono hbdd
+
+end FinsetSup
 
 instance Prod.supConvergenceClass
     [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
