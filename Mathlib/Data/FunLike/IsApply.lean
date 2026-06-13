@@ -197,6 +197,14 @@ section Coercion
 @[to_additive (attr := norm_cast)]
 theorem coe_one [One F] [One β] [IsOneApply F α β] : ↑(1 : F) = (1 : α → β) := by ext; simp
 
+@[to_additive (attr := simp)]
+theorem coe_one_iff [One F] [One β] [IsOneApply F α β] (f : F) : (f : α → β) = 1 ↔ f = 1 := by
+  constructor
+  · intro h
+    simp [DFunLike.ext_iff, h]
+  · intro h
+    simp [funext_iff, h]
+
 @[to_additive (attr := norm_cast)]
 theorem coe_mul [Mul F] [Mul β] [IsMulApply F α β] (f g : F) : ↑(f * g) = (f : α → β) * g := by
   ext; simp
@@ -224,6 +232,14 @@ attribute [norm_cast] coe_pow
 @[norm_cast]
 theorem coe_one_eq_id [One F'] [IsOneApplyEqSelf F' α] : ↑(1 : F') = id := by
   ext; simp
+
+@[simp]
+theorem coe_one_eq_id_iff [One F'] [IsOneApplyEqSelf F' α] (f : F') : (f : α → α) = id ↔ f = 1 := by
+  constructor
+  · intro h
+    simp [DFunLike.ext_iff, h]
+  · intro h
+    simp [funext_iff, h]
 
 @[norm_cast]
 theorem coe_mul_eq_comp [Mul F'] [IsMulApplyEqComp F' α] (f g : F') : ↑(f * g) = f ∘ g := by

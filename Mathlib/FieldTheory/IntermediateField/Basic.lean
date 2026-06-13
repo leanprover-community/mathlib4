@@ -546,6 +546,16 @@ variable {f}
 theorem mem_fieldRange {y : L'} : y ∈ f.fieldRange ↔ ∃ x, f x = y :=
   Iff.rfl
 
+/-- An algebra homomorphism between fields restricts to an algebra equivalence onto its range. -/
+noncomputable def equivFieldRange : L ≃ₐ[K] f.fieldRange :=
+  AlgEquiv.ofBijective
+    (f.codRestrict f.range fun x ↦ mem_fieldRange.mpr ⟨x, rfl⟩)
+    ⟨fun _ _ h ↦ f.injective (congr_arg Subtype.val h),
+     fun ⟨_, hy⟩ ↦ (mem_fieldRange.mp hy).imp fun _ hx => Subtype.ext hx⟩
+
+@[simp]
+theorem equivFieldRange_apply (x : L) : f.equivFieldRange x = f x := rfl
+
 end AlgHom
 
 namespace IntermediateField

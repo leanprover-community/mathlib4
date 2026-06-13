@@ -48,6 +48,7 @@ theorem le_cof_iff {c : Cardinal} : c ≤ cof α ↔ ∀ s : Set α, IsCofinal s
 @[deprecated (since := "2026-02-18")] alias le_cof := le_cof_iff
 
 variable (α) in
+/-- Every well-order has a cofinal subset of cardinal `cof α`. -/
 theorem exists_cof_eq : ∃ s : Set α, IsCofinal s ∧ #s = cof α := by
   obtain ⟨s, hs⟩ := ciInf_mem fun s : {s : Set α // IsCofinal s} ↦ #s
   exact ⟨s.1, s.2, hs⟩
@@ -132,6 +133,9 @@ theorem lift_cof_congr_of_strictMono {f : α → β} (hf : StrictMono f) (hf' : 
 theorem cof_congr_of_strictMono {f : α → γ} (hf : StrictMono f) (hf' : IsCofinal (range f)) :
     cof α = cof γ := by
   simpa using lift_cof_congr_of_strictMono hf hf'
+
+theorem cof_eq_of_isCofinal {s : Set α} (hs : IsCofinal s) : cof s = cof α :=
+  cof_congr_of_strictMono (Subtype.strictMono_coe _) (by simpa)
 
 @[simp]
 theorem cof_lt_aleph0_iff : cof α < ℵ₀ ↔ cof α ≤ 1 := by
