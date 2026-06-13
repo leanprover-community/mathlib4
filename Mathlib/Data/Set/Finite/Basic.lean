@@ -176,10 +176,12 @@ protected theorem toFinset_union [DecidableEq α] (hs : s.Finite) (ht : t.Finite
   ext
   simp
 
-protected theorem toFinset_diff [DecidableEq α] (hs : s.Finite) (ht : t.Finite)
+protected theorem toFinset_sdiff [DecidableEq α] (hs : s.Finite) (ht : t.Finite)
     (h : (s \ t).Finite) : h.toFinset = hs.toFinset \ ht.toFinset := by
   ext
   simp
+
+@[deprecated (since := "2026-06-03")] alias toFinset_diff := toFinset_sdiff
 
 open scoped symmDiff in
 protected theorem toFinset_symmDiff [DecidableEq α] (hs : s.Finite) (ht : t.Finite)
@@ -374,6 +376,12 @@ lemma «exists» {p : Finset α → Prop} :
   mp := fun ⟨s, hs⟩ ↦ ⟨s, s.finite_toSet, by simpa⟩
   mpr := fun ⟨s, hs, hs'⟩ ↦ ⟨hs.toFinset, hs'⟩
 
+lemma mem_range_coe_iff {s : Set α} : s ∈ Set.range ((↑) : Finset α → Set α) ↔ s.Finite where
+  mp := by
+    rintro ⟨t, rfl⟩
+    simp
+  mpr hs := ⟨hs.toFinset, by simp⟩
+
 end Finset
 
 namespace Multiset
@@ -450,7 +458,7 @@ instance finite_inter_of_left (s t : Set α) [Finite s] : Finite (s ∩ t : Set 
   Finite.Set.subset s inter_subset_left
 
 instance finite_diff (s t : Set α) [Finite s] : Finite (s \ t : Set α) :=
-  Finite.Set.subset s diff_subset
+  Finite.Set.subset s sdiff_subset
 
 instance finite_insert (a : α) (s : Set α) [Finite s] : Finite (insert a s : Set α) :=
   Finite.Set.finite_union {a} s
@@ -519,13 +527,17 @@ theorem Finite.inf_of_right {s : Set α} (h : s.Finite) (t : Set α) : (t ⊓ s)
 protected lemma Infinite.mono {s t : Set α} (h : s ⊆ t) : s.Infinite → t.Infinite :=
   mt fun ht ↦ ht.subset h
 
-@[simp] theorem Finite.diff (hs : s.Finite) : (s \ t).Finite := hs.subset diff_subset
+@[simp] theorem Finite.sdiff (hs : s.Finite) : (s \ t).Finite := hs.subset sdiff_subset
 
-theorem Finite.of_diff {s t : Set α} (hd : (s \ t).Finite) (ht : t.Finite) : s.Finite :=
-  (hd.union ht).subset <| subset_diff_union _ _
+@[deprecated (since := "2026-06-03")] alias Finite.diff := Finite.sdiff
+
+theorem Finite.of_sdiff {s t : Set α} (hd : (s \ t).Finite) (ht : t.Finite) : s.Finite :=
+  (hd.union ht).subset <| subset_sdiff_union _ _
+
+@[deprecated (since := "2026-06-03")] alias Finite.of_diff := Finite.of_sdiff
 
 @[simp]
-lemma Finite.symmDiff (hs : s.Finite) (ht : t.Finite) : (s ∆ t).Finite := hs.diff.union ht.diff
+lemma Finite.symmDiff (hs : s.Finite) (ht : t.Finite) : (s ∆ t).Finite := hs.sdiff.union ht.sdiff
 
 lemma Finite.symmDiff_congr (hst : (s ∆ t).Finite) : (s ∆ u).Finite ↔ (t ∆ u).Finite where
   mp hsu := (hst.union hsu).subset (symmDiff_comm s t ▸ symmDiff_triangle ..)
@@ -848,12 +860,17 @@ theorem infinite_of_finite_compl [Infinite α] {s : Set α} (hs : sᶜ.Finite) :
 theorem Finite.infinite_compl [Infinite α] {s : Set α} (hs : s.Finite) : sᶜ.Infinite := fun h =>
   Set.infinite_univ (α := α) (by simpa using hs.union h)
 
-theorem Infinite.diff {s t : Set α} (hs : s.Infinite) (ht : t.Finite) : (s \ t).Infinite := fun h =>
-  hs <| h.of_diff ht
+theorem Infinite.sdiff {s t : Set α} (hs : s.Infinite) (ht : t.Finite) :
+    (s \ t).Infinite := fun h => hs <| h.of_sdiff ht
 
-lemma Infinite.inter_of_finite_diff {α : Type*} {s t : Set α} (hs : s.Infinite)
+@[deprecated (since := "2026-06-03")] alias Infinite.diff := Infinite.sdiff
+
+lemma Infinite.inter_of_finite_sdiff {α : Type*} {s t : Set α} (hs : s.Infinite)
     (ht : (s \ t).Finite) : (s ∩ t).Infinite := by
-  simpa using hs.diff ht
+  simpa using hs.sdiff ht
+
+@[deprecated (since := "2026-06-03")]
+alias Infinite.inter_of_finite_diff := Infinite.inter_of_finite_sdiff
 
 @[simp]
 theorem infinite_union {s t : Set α} : (s ∪ t).Infinite ↔ s.Infinite ∨ t.Infinite := by

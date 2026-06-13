@@ -49,7 +49,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- The `Spec` functor from affine `P`-schemes over `S` to `P`-schemes over `S` is dense
 if `P` is local at the source. -/
 instance isCoverDense_toOver_Spec :
-    (CostructuredArrow.toOver P Scheme.Spec S).IsCoverDense (smallGrothendieckTopology P) where
+    (CostructuredArrow.toOver P Scheme.Spec S).IsCoverDense (S.smallGrothendieckTopology P) where
   is_cover U := by
     rw [Scheme.mem_smallGrothendieckTopology]
     let 𝒰 : Cover.{u} (precoverage P) U.left :=
@@ -66,8 +66,8 @@ instance isCoverDense_toOver_Spec :
 
 instance isOneHypercoverDense_toOver_Spec :
     Functor.IsOneHypercoverDense.{u} (CostructuredArrow.toOver P Scheme.Spec S)
-      ((CostructuredArrow.toOver P Scheme.Spec S).inducedTopology (smallGrothendieckTopology P))
-      (smallGrothendieckTopology P) :=
+      ((CostructuredArrow.toOver P Scheme.Spec S).inducedTopology (S.smallGrothendieckTopology P))
+      (S.smallGrothendieckTopology P) :=
   Functor.IsOneHypercoverDense.of_hasPullbacks fun X ↦ by
     let 𝒰 := affineOpenCover X.left
     let 𝒱 : Cover (precoverage P) X.left :=

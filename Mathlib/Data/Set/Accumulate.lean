@@ -6,7 +6,7 @@ Authors: Floris van Doorn
 
 module
 
-public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Order.Lattice.Nat
 public import Mathlib.Order.PartialSups
 
 /-!
