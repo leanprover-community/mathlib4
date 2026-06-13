@@ -497,8 +497,6 @@ analytic number theory. -/
 
 variable (x : ℝ) (n : ℕ)
 
-private noncomputable def a := ψ (x ^ (1 / (n : ℝ)))
-
 private noncomputable def b := θ (x ^ (1 / (n : ℝ)))
 
 private noncomputable def c := b x (6 * n - 1) - b x (6 * n) + b x (6 * n + 1)
@@ -507,25 +505,15 @@ private theorem b_antitone (hx : 0 ≤ x) : AntitoneOn (b x) (.Ici 1) := by
   intro n hn m hm hnm; unfold b
   simp at hn hm
   rcases le_or_gt x 1 with h | h
-  · rw [theta_eq_zero_of_le_one, theta_eq_zero_of_le_one]
-    <;> exact rpow_le_one hx h (by positivity)
+  · repeat rw [theta_eq_zero_of_le_one (rpow_le_one hx h (by positivity))]
   apply theta_mono (monotone_rpow_of_base_ge_one h.le _)
   field_simp; norm_num [hnm]
 
-private theorem c_le (hx : 0 ≤ x) (hn : 1 ≤ n) : c x n ≤ b x (5 * n) := by
-  have : b x (6 * n + 1) ≤ b x (6 * n) := b_antitone x hx (by grind) (by grind) (by lia)
-  have : b x (6 * n - 1) ≤ b x (5 * n) := b_antitone x hx (by grind) (by grind) (by lia)
-  unfold c; linarith
-
-private theorem c_ge (hx : 0 ≤ x) (hn : 1 ≤ n) : b x (7 * n) ≤ c x n := by
-  have : b x (6 * n) ≤ b x (6 * n - 1) := b_antitone x hx (by grind) (by grind) (by lia)
-  have : b x (7 * n) ≤ b x (6 * n + 1) := b_antitone x hx (by grind) (by grind) (by lia)
-  unfold c; linarith
-
-private theorem a_eq_sum_b (hx : 0 ≤ x) : ∃ M, ∀ N ≥ M, a x n = ∑ k ∈ .Icc 1 N, b x (n * k) := by
+private theorem psi_pow_eq_sum_b (hx : 0 ≤ x) : ∃ M, ∀ N ≥ M,
+    ψ (x ^ (1 / (n : ℝ))) = ∑ k ∈ .Icc 1 N, b x (n * k) := by
   have : 0 ≤ x ^ ((n : ℝ)⁻¹) := by positivity
   use ⌊log (x ^ (n : ℝ)⁻¹) / log 2⌋₊; intro N hN
-  simp only [a, one_div, psi_eq_sum_theta' this hN, b, cast_mul, mul_inv_rev]
+  simp only [one_div, psi_eq_sum_theta' this hN, b, cast_mul, mul_inv_rev]
   exact sum_congr rfl (fun k hk ↦ by rw [← rpow_mul (by positivity), mul_comm])
 
 private theorem sum_b_eq_b_add_sum_add_sum_add_sum (N : ℕ) : ∑ n ∈ .Icc 1 (1 + 6 * N), b x n =
@@ -538,27 +526,35 @@ private theorem sum_b_eq_b_add_sum_add_sum_add_sum (N : ℕ) : ∑ n ∈ .Icc 1 
       show 3 * (N + 1) = 3 * N + 1 + 1 + 1 by ring,
       show 2 * (N + 1) = 2 * N + 1 + 1 by ring]
     simp only [le_add_iff_nonneg_left, _root_.zero_le, sum_Icc_succ_top, ih, c]
-    rw [show 6 * (N + 1) - 1 = 6 * N + 5 by omega]
+    rw [show 6 * (N + 1) - 1 = 6 * N + 5 by lia]
     ring_nf
 
 theorem psi_sub_theta_bounds {x : ℝ} (hx : 0 ≤ x) :
     ψ x - θ x ≤ ψ (x ^ (1 / (2 : ℝ))) + ψ (x ^ (1 / (3 : ℝ))) + ψ (x ^ (1 / (5 : ℝ))) ∧
     ψ (x ^ (1 / (2 : ℝ))) + ψ (x ^ (1 / (3 : ℝ))) + ψ (x ^ (1 / (7 : ℝ))) ≤ ψ x - θ x := by
-  obtain ⟨N₁, hN₁⟩ := a_eq_sum_b x 1 hx
-  obtain ⟨N₂, hN₂⟩ := a_eq_sum_b x 2 hx
-  obtain ⟨N₃, hN₃⟩ := a_eq_sum_b x 3 hx
-  obtain ⟨N₅, hN₅⟩ := a_eq_sum_b x 5 hx
-  obtain ⟨N₇, hN₇⟩ := a_eq_sum_b x 7 hx
-  let N := max (max N₁ N₂) (max N₃ (max N₅ N₇))
-  have h1 := hN₁ (1 + 6 * N) (by grind)
-  have h2 := hN₂ (3 * N) (by grind)
-  have h3 := hN₃ (2 * N) (by grind)
-  have h5 := hN₅ N (by grind)
-  have h7 := hN₇ N (by grind)
-  have : ∑ n ∈ .Icc 1 N, c x n ≤ ∑ n ∈ .Icc 1 N, b x (5 * n) := sum_le_sum (by grind [c_le])
-  have : ∑ n ∈ .Icc 1 N, b x (7 * n) ≤ ∑ n ∈ .Icc 1 N, c x n := sum_le_sum (by grind [c_ge])
+  obtain ⟨N₁, h1⟩ := psi_pow_eq_sum_b x 1 hx
+  obtain ⟨N₂, h2⟩ := psi_pow_eq_sum_b x 2 hx
+  obtain ⟨N₃, h3⟩ := psi_pow_eq_sum_b x 3 hx
+  obtain ⟨N₅, h5⟩ := psi_pow_eq_sum_b x 5 hx
+  obtain ⟨N₇, h7⟩ := psi_pow_eq_sum_b x 7 hx
+  let N := N₁ + N₂ + N₃ + N₅ + N₇
+  specialize h1 (1 + 6 * N) (by lia)
+  specialize h2 (3 * N) (by lia)
+  specialize h3 (2 * N) (by lia)
+  specialize h5 N (by lia)
+  specialize h7 N (by lia)
+  have : ∑ n ∈ .Icc 1 N, c x n ≤ ∑ n ∈ .Icc 1 N, b x (5 * n) := by
+    apply sum_le_sum; intro n hn
+    have : b x (6 * n + 1) ≤ b x (6 * n) := b_antitone x hx (by grind) (by grind) (by lia)
+    have : b x (6 * n - 1) ≤ b x (5 * n) := b_antitone x hx (by grind) (by grind) (by lia)
+    unfold c; linarith
+  have : ∑ n ∈ .Icc 1 N, b x (7 * n) ≤ ∑ n ∈ .Icc 1 N, c x n := by
+    apply sum_le_sum; intro n hn; simp only [mem_Icc] at hn
+    have : b x (6 * n) ≤ b x (6 * n - 1) := b_antitone x hx (by grind) (by grind) (by lia)
+    have : b x (7 * n) ≤ b x (6 * n + 1) := b_antitone x hx (by grind) (by grind) (by lia)
+    unfold c; linarith
   have : b x 1 = θ x := by simp [b]
-  simp only [a, cast_one, ne_eq, one_ne_zero, not_false_eq_true, div_self, rpow_one, one_mul,
+  simp only [cast_one, ne_eq, one_ne_zero, not_false_eq_true, div_self, rpow_one, one_mul,
     sum_b_eq_b_add_sum_add_sum_add_sum, cast_ofNat, one_div] at h1 h2 h3 h5 h7 ⊢
   split_ands <;> linarith
 
@@ -568,9 +564,9 @@ theorem psi_sub_theta_le_mul_sqrt : ∃ C, ∀ x ≥ 0, ψ x - θ x ≤ C * x.sq
   rcases le_or_gt x 1 with h | h
   · rw [theta_eq_zero_of_le_one h, psi_eq_zero_of_le_one h, sub_self]; positivity
   grw [(psi_sub_theta_bounds hx).1, psi_le_const_mul_self (by positivity),
-  psi_le_const_mul_self (by positivity), psi_le_const_mul_self (by positivity),
-  show x ^ (1 / (3 : ℝ)) ≤ x ^ (1 / (2 : ℝ)) by gcongr <;> linarith,
-  show x ^ (1 / (5 : ℝ)) ≤ x ^ (1 / (2 : ℝ)) by gcongr <;> linarith, sqrt_eq_rpow x]
+    psi_le_const_mul_self (by positivity), psi_le_const_mul_self (by positivity),
+    show x ^ (1 / (3 : ℝ)) ≤ x ^ (1 / (2 : ℝ)) by gcongr <;> linarith,
+    show x ^ (1 / (5 : ℝ)) ≤ x ^ (1 / (2 : ℝ)) by gcongr <;> linarith, sqrt_eq_rpow x]
   grind
 
 end CostaPereira
