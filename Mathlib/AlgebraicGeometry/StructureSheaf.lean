@@ -227,7 +227,6 @@ def structurePresheafInCommRingCat : Presheaf CommRingCat (PrimeSpectrum.Top R) 
       map_one' := rfl
       map_zero' := rfl }
 
-set_option backward.isDefEq.respectTransparency false in
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     Module ((structureSheafInType R R).obj.obj U) ((structureSheafInType R M).obj.obj U) :=
   inferInstanceAs (Module (sectionsSubalgebra R _) (sectionsSubalgebraSubmodule M _))

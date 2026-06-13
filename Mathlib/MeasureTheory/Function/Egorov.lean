@@ -159,7 +159,7 @@ theorem iUnionNotConvergentSeq_subset (hε : 0 < ε)
   rw [iUnionNotConvergentSeq, ← Set.inter_iUnion]
   exact Set.inter_subset_left
 
-theorem tendstoUniformlyOn_diff_iUnionNotConvergentSeq (hε : 0 < ε)
+theorem tendstoUniformlyOn_sdiff_iUnionNotConvergentSeq (hε : 0 < ε)
     (hf : ∀ n, Measurable (fun a ↦ edist (f n a) (g a))) (hsm : MeasurableSet s)
     (hs : μ s ≠ ∞) (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     TendstoUniformlyOn f g atTop (s \ Egorov.iUnionNotConvergentSeq hε hf hsm hs hfg) := by
@@ -172,6 +172,10 @@ theorem tendstoUniformlyOn_diff_iUnionNotConvergentSeq (hε : 0 < ε)
   have : edist (f n x) (g x) ≤ (N : ℝ≥0∞)⁻¹ :=
     not_lt.mp fun h ↦ hx.2 <| Set.mem_iUnion.2 ⟨N, hx.1, mem_notConvergentSeq_iff.2 ⟨n, hn, h⟩⟩
   simpa [edist_comm]
+
+@[deprecated (since := "2026-06-03")]
+alias tendstoUniformlyOn_diff_iUnionNotConvergentSeq :=
+  tendstoUniformlyOn_sdiff_iUnionNotConvergentSeq
 
 end Egorov
 
@@ -195,7 +199,7 @@ theorem tendstoUniformlyOn_of_ae_tendsto_of_measurable_edist
     Egorov.iUnionNotConvergentSeq_subset hε hf hsm hs hfg,
     Egorov.iUnionNotConvergentSeq_measurableSet hε hf hsm hs hfg,
     Egorov.measure_iUnionNotConvergentSeq hε hf hsm hs hfg,
-    Egorov.tendstoUniformlyOn_diff_iUnionNotConvergentSeq hε hf hsm hs hfg⟩
+    Egorov.tendstoUniformlyOn_sdiff_iUnionNotConvergentSeq hε hf hsm hs hfg⟩
 
 /-- **Egorov's theorem**: If `f : ι → α → β` is a sequence of strongly measurable functions that
 converges to `g : α → β` almost everywhere on a measurable set `s` of finite measure,
@@ -221,7 +225,7 @@ theorem tendstoUniformlyOn_of_ae_tendsto_of_measurable_edist' [IsFiniteMeasure �
     tendstoUniformlyOn_of_ae_tendsto_of_measurable_edist hf MeasurableSet.univ
     (measure_ne_top μ Set.univ) (by filter_upwards [hfg] with _ htendsto _ using htendsto) hε
   refine ⟨_, ht, ?_⟩
-  rwa [Set.compl_eq_univ_diff]
+  rwa [Set.compl_eq_univ_sdiff]
 
 /-- Egorov's theorem for finite measure spaces. -/
 theorem tendstoUniformlyOn_of_ae_tendsto' [IsFiniteMeasure μ] (hf : ∀ n, StronglyMeasurable (f n))
