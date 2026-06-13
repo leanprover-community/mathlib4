@@ -81,6 +81,19 @@ theorem IsHadamard.conjTranspose (hA : A.IsHadamard) : Aᴴ.IsHadamard := by
 theorem isHadamard_conjTranspose_iff : Aᴴ.IsHadamard ↔ A.IsHadamard :=
   ⟨fun hA => by simpa using hA.conjTranspose, (·.conjTranspose)⟩
 
+/-- Permuting the rows and columns of a Hadamard matrix gives a Hadamard matrix. -/
+theorem IsHadamard.reindex (e₁ e₂ : n ≃ m) (hA : A.IsHadamard) :
+    (reindex e₁ e₂ A).IsHadamard := by
+  refine ⟨fun i j => hA.1 _ _, ?_, ?_⟩ <;>
+    simp [reindex_apply, submatrix_mul_equiv, hA.mul_conjTranspose, hA.conjTranspose_mul,
+      Fintype.card_congr e₁, submatrix_smul, Pi.smul_apply]
+
+@[simp]
+theorem isHadamard_submatrix_equiv_iff (e₁ e₂ : m ≃ n) :
+    (A.submatrix e₁ e₂).IsHadamard ↔ A.IsHadamard :=
+  ⟨fun h => by simpa using h.reindex e₁ e₂,
+    fun h => by simpa [reindex_apply] using h.reindex e₁.symm e₂.symm⟩
+
 /-- The Kronecker product of two Hadamard matrices is Hadamard. -/
 theorem IsHadamard.kronecker {A : Matrix m m R} {B : Matrix n n R}
     (hA : A.IsHadamard) (hB : B.IsHadamard) : (A ⊗ₖ B).IsHadamard := by
