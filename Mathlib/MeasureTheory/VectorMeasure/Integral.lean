@@ -126,6 +126,12 @@ theorem dominatedFinMeasAdditive_cbmApplyMeasure (μ : VectorMeasure X F) (B : E
   gcongr
   exact norm_measure_le_variation hsf.ne
 
+theorem dominatedFinMeasAdditive_transpose_cbmApplyMeasure
+    (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) :
+    DominatedFinMeasAdditive (μ.transpose B).variation (μ.transpose B) 1 := by
+  refine ⟨fun s t hs ht _ _ hdisj ↦ cbmApplyMeasure_union μ B hs ht hdisj, fun s hs hsf ↦ ?_⟩
+  simpa using! norm_measure_le_variation hsf.ne
+
 end cbmApplyMeasure
 
 namespace VectorMeasure
@@ -279,6 +285,11 @@ variable {μ ν B}
 
 lemma integral_eq_setToFun : ∫ᵛ x, f x ∂[B; μ] = setToFun μ.variation (μ.transpose B)
     (dominatedFinMeasAdditive_cbmApplyMeasure μ B) f := by rfl
+
+lemma integral_eq_setToFun_transpose (hf : μ.Integrable f) :
+    ∫ᵛ x, f x ∂[B; μ] = setToFun (μ.transpose B).variation (μ.transpose B)
+      (dominatedFinMeasAdditive_transpose_cbmApplyMeasure μ B) f :=
+  setToFun_congr_measure_of_integrable _ (by simp) (variation_transpose_le _ _) _ _ _ hf
 
 theorem integral_of_not_completeSpace (hG : ¬CompleteSpace G) :
     ∫ᵛ x, f x ∂[B; μ] = 0 := by
@@ -622,6 +633,13 @@ theorem enorm_integral_le_lintegral_enorm :
   apply (enorm_setToFun_le _ (by simp)).trans
   gcongr
   simp [← coe_nnnorm]
+
+theorem enorm_integral_le_lintegral_enorm_transpose :
+    ‖∫ᵛ a, f a ∂[B; μ]‖ₑ ≤ ∫⁻ a, ‖f a‖ₑ ∂(μ.transpose B).variation := by
+  by_cases hf : μ.Integrable f
+  · rw [integral_eq_setToFun_transpose hf]
+    apply (enorm_setToFun_le _ (by simp)).trans (by simp)
+  · simp [integral_undef hf]
 
 theorem dist_integral_le_lintegral_edist (hf : μ.Integrable f) (hg : μ.Integrable g) :
     dist (∫ᵛ a, f a ∂[B; μ]) (∫ᵛ a, g a ∂[B; μ]) ≤

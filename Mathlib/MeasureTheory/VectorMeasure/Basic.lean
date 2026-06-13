@@ -248,6 +248,23 @@ theorem tendsto_vectorMeasure_iInter_atTop_nat
   exact tendsto_vectorMeasure_iUnion_atTop_nat (fun i j hij ↦ by simpa using hm hij)
     (fun i ↦ (hs i).compl)
 
+/-- If two vector measures give the same mass to the whole space and coincide on a
+generating π-system, then they coincide. -/
+theorem ext_of_generateFrom
+    {M : Type*} [AddCommGroup M] [TopologicalSpace M] [T2Space M] [ContinuousSub M]
+    {X : Type*} {mX : MeasurableSpace X} {μ ν : VectorMeasure X M}
+    (C : Set (Set X)) (hμν : ∀ s ∈ C, μ s = ν s)
+    (hA : mX = MeasurableSpace.generateFrom C) (hC : IsPiSystem C)
+    (h_univ : μ Set.univ = ν Set.univ) : μ = ν := by
+  ext s hs
+  induction s, hs using MeasurableSpace.induction_on_inter hA hC with
+  | empty => simp
+  | basic t ht => exact hμν t ht
+  | compl t htm iht =>
+    simp [of_compl, iht, htm, h_univ]
+  | iUnion f hfd hfm ihf =>
+    simp [of_disjoint_iUnion, hfm, hfd, ihf]
+
 end
 
 section SMul

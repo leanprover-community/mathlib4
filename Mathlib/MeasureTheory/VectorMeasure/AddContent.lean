@@ -369,12 +369,8 @@ theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
       refine Summable.hasSum (Summable.of_enorm ?_)
       apply ne_of_lt (lt_of_le_of_lt ?_ I)
       gcongr with i
-      apply enorm_integral_le_lintegral_enorm.trans
-      grw [lintegral_mono' m'_le le_rfl]
-      rw [hμ', lintegral_trim _ (by fun_prop)]
-      apply mul_le_of_le_one_left (by positivity)
-      apply ContinuousLinearMap.opENorm_lsmul_le
-      }
+      grw [enorm_integral_le_lintegral_enorm, ContinuousLinearMap.opENorm_lsmul_le, one_mul,
+        lintegral_mono' m'_le le_rfl, hμ', lintegral_trim _ (by fun_prop)] }
   refine ⟨m'', fun s hs ↦ ?_, fun s ↦ ?_⟩
   · simp only [h'C s hs, ↓reduceIte, m'']
     have : ∫ᵛ (x : α), μ[s.indicator 1 | M] x ∂•m' = ∫ᵛ (x : α), s.indicator 1 x ∂•m' := by
@@ -385,15 +381,15 @@ theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
           (measurableSet_generateFrom hs)
       · exact (integrable_const 1).indicator (h'C s hs)
     rw [this, integral_indicator (measurableSet_generateFrom hs)]
-    have : IsFiniteMeasure (m'.transpose (ContinuousLinearMap.lsmul ℝ ℝ)).variation :=
+    have : IsFiniteMeasure m'.variation :=
       isFiniteMeasure_of_le _ m'_le
     simp only [Pi.one_apply, setIntegral_const]
     simp [m'C s hs]
   · by_cases hs : MeasurableSet s; swap
     · simp [not_measurable _ hs]
     simp only [hs, ↓reduceIte, m'']
-    apply enorm_integral_le_lintegral_enorm.trans
-    apply (lintegral_mono' m'_le le_rfl).trans_eq
-    rw [hμ', lintegral_trim _ (by fun_prop), lintegral_enorm_condExp_indicator Mle hs]
+    grw [enorm_integral_le_lintegral_enorm, ContinuousLinearMap.opENorm_lsmul_le, one_mul,
+      lintegral_mono' m'_le le_rfl, hμ', lintegral_trim _ (by fun_prop),
+      lintegral_enorm_condExp_indicator Mle hs]
 
 end MeasureTheory.VectorMeasure
