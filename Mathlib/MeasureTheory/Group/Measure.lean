@@ -54,6 +54,15 @@ theorem map_mul_left_eq_self (μ : Measure G) [IsMulLeftInvariant μ] (g : G) :
 theorem map_mul_right_eq_self (μ : Measure G) [IsMulRightInvariant μ] (g : G) : map (· * g) μ = μ :=
   IsMulRightInvariant.map_mul_right_eq_self g
 
+/-- Translating a right-invariant measure restricted to a set `s` by `· * g` amounts to restricting
+to the preimage `(· * g) ⁻¹' s`. -/
+@[to_additive /-- Translating a right-invariant measure restricted to a set `s` by `· + g` amounts
+to restricting to the preimage `(· + g) ⁻¹' s`. -/]
+theorem map_mul_right_restrict [MeasurableMul G] (μ : Measure G) [IsMulRightInvariant μ] (g : G)
+    {s : Set G} (hs : MeasurableSet s) :
+    map (· * g) (μ.restrict ((· * g) ⁻¹' s)) = μ.restrict s := by
+  rw [← Measure.restrict_map (by fun_prop) hs, map_mul_right_eq_self]
+
 @[to_additive MeasureTheory.isAddLeftInvariant_smul]
 instance isMulLeftInvariant_smul [IsMulLeftInvariant μ] (c : ℝ≥0∞) : IsMulLeftInvariant (c • μ) :=
   ⟨fun g => by rw [Measure.map_smul, map_mul_left_eq_self]⟩

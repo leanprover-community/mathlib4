@@ -847,6 +847,19 @@ theorem _root_.aestronglyMeasurable_const_smul_iff₀ {c : G₀} (hc : c ≠ 0) 
     AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ :=
   (IsUnit.mk0 _ hc).aestronglyMeasurable_const_smul_iff
 
+/-- Multiplying by an almost-everywhere nonzero scalar *function* preserves a.e. strong
+measurability. This is the varying-scalar analogue of `aestronglyMeasurable_const_smul_iff₀`.
+
+Note there is no `Integrable` analogue: an a.e. nonzero function may be unbounded and so does not
+preserve integrability. -/
+theorem _root_.aestronglyMeasurable_smul_iff₀ {𝕜 : Type*} [GroupWithZero 𝕜] [TopologicalSpace 𝕜]
+    [ContinuousInv₀ 𝕜] [MetrizableSpace 𝕜] [MulAction 𝕜 β] [ContinuousSMul 𝕜 β] {c : α → 𝕜}
+    (hc : AEStronglyMeasurable c μ) (hc0 : ∀ᵐ x ∂μ, c x ≠ 0) :
+    AEStronglyMeasurable (fun x => c x • f x) μ ↔ AEStronglyMeasurable f μ := by
+  refine ⟨fun h => (hc.inv₀.smul h).congr ?_, fun h => hc.smul h⟩
+  filter_upwards [hc0] with x hx
+  rw [Pi.inv_apply, smul_smul, inv_mul_cancel₀ hx, one_smul]
+
 end MulAction
 
 end AEStronglyMeasurable

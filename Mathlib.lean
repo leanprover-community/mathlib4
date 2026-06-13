@@ -2064,6 +2064,7 @@ public import Mathlib.Analysis.InnerProductSpace.TwoDim
 public import Mathlib.Analysis.InnerProductSpace.WeakOperatorTopology
 public import Mathlib.Analysis.InnerProductSpace.l2Space
 public import Mathlib.Analysis.LConvolution
+public import Mathlib.Analysis.LaplaceTransform
 public import Mathlib.Analysis.LocallyConvex.AbsConvex
 public import Mathlib.Analysis.LocallyConvex.AbsConvexOpen
 public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull

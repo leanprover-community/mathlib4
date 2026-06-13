@@ -24,7 +24,7 @@ public section
 
 noncomputable section
 
-open Real intervalIntegral MeasureTheory Set Filter
+open Real intervalIntegral MeasureTheory Set Filter Asymptotics
 
 open scoped Topology
 
@@ -45,3 +45,20 @@ theorem integrable_of_isBigO_exp_neg {f : ℝ → ℝ} {a b : ℝ} (h0 : 0 < b)
   integrableOn_Ici_iff_integrableOn_Ioi (by finiteness) |>.mp <|
     (hf.locallyIntegrableOn measurableSet_Ici).integrableOn_of_isBigO_atTop
     ho ⟨Ioi b, Ioi_mem_atTop b, exp_neg_integrableOn_Ioi b h0⟩
+
+/-- Exponential decay beats exponential growth: if `f` is locally integrable on `[c, ∞)` and
+`f x = O(exp (a * x))` at `∞`, then `exp (-b * x) * ‖f x‖` is integrable on `(c, ∞)`
+for every `a < b`. -/
+theorem integrableOn_exp_neg_mul_norm_of_isBigO_exp {E : Type*} [NormedAddCommGroup E]
+    {a b c : ℝ} {f : ℝ → E} (hfc : LocallyIntegrableOn f (Ici c))
+    (hf : f =O[atTop] fun x : ℝ => exp (a * x)) (hab : a < b) :
+    IntegrableOn (fun x : ℝ => exp (-b * x) * ‖f x‖) (Ioi c) := by
+  refine integrableOn_Ici_iff_integrableOn_Ioi (by finiteness) |>.mp ?_
+  have hloc : LocallyIntegrableOn (fun x : ℝ => exp (-b * x) * ‖f x‖) (Ici c) := by
+    simpa [mul_comm] using hfc.norm.mul_continuousOn
+      ((by fun_prop : Continuous fun x : ℝ => exp (-b * x)).continuousOn)
+      isClosed_Ici.isLocallyClosed
+  refine hloc.integrableOn_of_isBigO_atTop (g := fun x : ℝ => exp ((a - b) * x))
+    (((isBigO_refl _ atTop).mul hf.norm_left).congr_right fun x => by rw [← exp_add]; ring_nf)
+    ⟨Ioi c, Ioi_mem_atTop c, by
+      simpa [neg_sub] using exp_neg_integrableOn_Ioi c (sub_pos.mpr hab)⟩
