@@ -737,7 +737,6 @@ lemma affineCombination_mem_surface_iff [IsOrderedAddMonoid k] {n : ℕ} [NeZero
 
 lemma point_mem_surface [Nontrivial k] [ZeroLEOneClass k] {n : ℕ} [NeZero n] (s : Simplex k P n)
     (i : Fin (n + 1)) : s.points i ∈ s.surface := by
-  haveI : Nontrivial (Fin (n + 1)) := Fin.nontrivial_iff_two_le.mpr (by have := NeZero.ne n; omega)
   obtain ⟨j, hj⟩ := exists_ne i
   exact s.closedInterior_faceOpposite_subset_surface j
     (s.point_mem_closedInterior_faceOpposite_iff.mpr hj.symm)
