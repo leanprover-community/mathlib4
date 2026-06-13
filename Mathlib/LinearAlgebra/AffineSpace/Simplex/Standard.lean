@@ -54,13 +54,7 @@ def mkOfAffineBasis (b : AffineBasis (Fin (n + 1)) k P) : Simplex k P n := mk b 
 
 /-- The simplex in `V` whose vertices are `0` together with the vectors of a basis indexed by
 `Fin n`. -/
-def mkOfBasis (b : Basis (Fin n) k V) : Simplex k V n :=
-  mk (Fin.cons 0 b) <| by
-    rw [affineIndependent_iff_linearIndependent_vsub k (Fin.cons 0 (⇑b)) 0,
-      ← linearIndependent_equiv' (finSuccAboveEquiv 0) (g := b) ?_]
-    · exact b.linearIndependent
-    · ext j
-      simp [finSuccAboveEquiv_apply]
+def mkOfBasis (b : Basis (Fin n) k V) : Simplex k V n := mkOfAffineBasis b.toAffineBasis
 
 @[simp] lemma mkOfAffineBasis_points (b : AffineBasis (Fin (n + 1)) k P) :
     (mkOfAffineBasis b).points = ⇑b :=
