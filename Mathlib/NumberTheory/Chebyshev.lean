@@ -544,15 +544,13 @@ theorem psi_sub_theta_bounds {x : ℝ} (hx : 0 ≤ x) :
   specialize h5 N (by lia)
   specialize h7 N (by lia)
   have : ∑ n ∈ .Icc 1 N, c x n ≤ ∑ n ∈ .Icc 1 N, b x (5 * n) := by
-    apply sum_le_sum; intro n hn
-    have : b x (6 * n + 1) ≤ b x (6 * n) := b_antitone x hx (by grind) (by grind) (by lia)
-    have : b x (6 * n - 1) ≤ b x (5 * n) := b_antitone x hx (by grind) (by grind) (by lia)
-    unfold c; linarith
+    apply sum_le_sum; intro n hn; unfold c
+    linarith [(b_antitone x hx (by grind) (by grind) (by lia) : b x (6 * n + 1) ≤ b x (6 * n)),
+      (b_antitone x hx (by grind) (by grind) (by lia) : b x (6 * n - 1) ≤ b x (5 * n))]
   have : ∑ n ∈ .Icc 1 N, b x (7 * n) ≤ ∑ n ∈ .Icc 1 N, c x n := by
-    apply sum_le_sum; intro n hn; simp only [mem_Icc] at hn
-    have : b x (6 * n) ≤ b x (6 * n - 1) := b_antitone x hx (by grind) (by grind) (by lia)
-    have : b x (7 * n) ≤ b x (6 * n + 1) := b_antitone x hx (by grind) (by grind) (by lia)
-    unfold c; linarith
+    apply sum_le_sum; intro n hn; simp only [mem_Icc, c] at hn ⊢
+    linarith [(b_antitone x hx (by grind) (by grind) (by lia) : b x (6 * n) ≤ b x (6 * n - 1)),
+      (b_antitone x hx (by grind) (by grind) (by lia) : b x (7 * n) ≤ b x (6 * n + 1))]
   have : b x 1 = θ x := by simp [b]
   simp only [cast_one, ne_eq, one_ne_zero, not_false_eq_true, div_self, rpow_one, one_mul,
     sum_b_eq_b_add_sum_add_sum_add_sum, cast_ofNat, one_div] at h1 h2 h3 h5 h7 ⊢
@@ -561,13 +559,12 @@ theorem psi_sub_theta_bounds {x : ℝ} (hx : 0 ≤ x) :
 /-- `ψ x = θ x + O( √x )`. -/
 theorem psi_sub_theta_le_mul_sqrt : ∃ C, ∀ x ≥ 0, ψ x - θ x ≤ C * x.sqrt := by
   use (log 4 + 4) * 3; intro x hx
-  rcases le_or_gt x 1 with h | h
+  rcases le_total x 1 with h | h
   · rw [theta_eq_zero_of_le_one h, psi_eq_zero_of_le_one h, sub_self]; positivity
-  grw [(psi_sub_theta_bounds hx).1, psi_le_const_mul_self (by positivity),
-    psi_le_const_mul_self (by positivity), psi_le_const_mul_self (by positivity),
-    show x ^ (1 / (3 : ℝ)) ≤ x ^ (1 / (2 : ℝ)) by gcongr <;> linarith,
-    show x ^ (1 / (5 : ℝ)) ≤ x ^ (1 / (2 : ℝ)) by gcongr <;> linarith, sqrt_eq_rpow x]
-  grind
+  have (n : ℕ) (hn : 2 ≤ n) : ψ (x ^ (1 / (n : ℝ))) ≤ (log 4 + 4) * x.sqrt := by
+    grw [psi_le_const_mul_self (by positivity), sqrt_eq_rpow x]; gcongr; norm_cast
+  linarith [(psi_sub_theta_bounds hx).1, this 2 (le_refl _), this 3 (by norm_num),
+    this 5 (by norm_num)]
 
 end CostaPereira
 
