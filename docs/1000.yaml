@@ -2482,7 +2482,9 @@ Q3527162:
 
 Q3527166:
   title: Steinhaus theorem
-  # not difficult, but seemingly missing
+  decls:
+    - MeasureTheory.Measure.div_mem_nhds_one_of_haar_pos
+    - MeasureTheory.Measure.sub_mem_nhds_zero_of_addHaar_pos
 
 Q3527171:
   title: Synge's theorem
