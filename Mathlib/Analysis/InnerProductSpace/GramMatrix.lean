@@ -13,9 +13,13 @@ import Mathlib.LinearAlgebra.Isomorphisms
 
 /-! # Gram Matrices
 
-This file defines Gram matrices and proves their positive semidefiniteness, and
-the *Gram rigidity* (exact Procrustes) theorems: two families of vectors with
-equal pairwise inner products are related by a linear isometry.
+This file defines Gram matrices and proves their positive semidefiniteness. It also
+shows that a finite family of vectors is determined, up to a linear isometry, by
+its pairwise inner products (equivalently, by its Gram matrix): if two families
+have equal pairwise inner products, the map sending one to the other extends to a
+linear isometry. In the language of finite frames, two frames are equivalent under
+a linear isometry (a unitary or orthogonal map) iff their Gram matrices coincide;
+this is also the exact (noise-free) case of the Procrustes alignment problem.
 Results require `RCLike 𝕜`.
 
 ## Main definition
@@ -31,12 +35,24 @@ Results require `RCLike 𝕜`.
 * `exists_linearIsometryEquiv_span_map_eq_of_inner_eq`: two families `φ`, `ψ` (in
   possibly different inner product spaces) with equal pairwise inner products are
   related by a linear isometry equivalence of their spans, `span 𝕜 (range φ) ≃ₗᵢ
-  span 𝕜 (range ψ)`, sending `φ i` to `ψ i` (Gram rigidity).
+  span 𝕜 (range ψ)`, sending `φ i` to `ψ i`.
 * `exists_linearIsometryEquiv_map_eq_of_inner_eq`: in finite dimension, this
   extends to a linear isometry equivalence of the ambient space.
 * `Matrix.gram_eq_gram_iff_exists_linearIsometryEquiv_map_eq`: in finite
   dimension, two families have equal Gram matrices iff a linear isometry
   equivalence of the ambient space maps one to the other.
+
+## References
+
+* R. A. Horn and C. R. Johnson, *Matrix Analysis*, 2nd ed., Cambridge University
+  Press, 2013 — Gram matrices and factorization up to a unitary factor.
+* P. H. Schönemann, *A generalized solution of the orthogonal Procrustes
+  problem*, Psychometrika **31** (1966), 1–10 — the (least-squares) Procrustes
+  problem, of which this is the exact, zero-residual case.
+* T.-Y. Chien and S. Waldron, *A characterisation of projective unitary
+  equivalence of finite frames*, Linear Algebra Appl. (2015), arXiv:1312.5393 —
+  the frame-theoretic form: finite frames are unitarily equivalent iff their Gram
+  matrices coincide.
 -/
 
 @[expose] public section
@@ -171,12 +187,13 @@ end NormedInnerProductSpace
 
 end Matrix
 
-/-! ### Gram rigidity (exact Procrustes)
+/-! ### Isometries from equal inner products
 
 Two families of vectors with equal pairwise inner products are related by a linear
 isometry: the map `φ i ↦ ψ i` extends to a linear isometry equivalence of their
 spans, in finite dimension to a linear isometry equivalence of the ambient space,
-and the hypothesis can be packaged as equality of `Matrix.gram` matrices. -/
+and the hypothesis can be packaged as equality of `Matrix.gram` matrices. This is
+the exact case of the Procrustes alignment problem. -/
 
 section Rigidity
 
@@ -184,19 +201,7 @@ variable {F ι : Type*} [RCLike 𝕜]
   [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
   [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
 
-/-- The inner product of two finite linear combinations `Σ aᵢ • v i` and
-`Σ bⱼ • v j`, expanded over the family's Gram data `⟪v i, v j⟫`. -/
-private theorem inner_linearCombination_linearCombination (v : ι → E) (a b : ι →₀ 𝕜) :
-    ⟪Finsupp.linearCombination 𝕜 v a, Finsupp.linearCombination 𝕜 v b⟫_𝕜
-      = a.sum fun i s => b.sum fun j t => starRingEnd 𝕜 s * t * ⟪v i, v j⟫_𝕜 := by
-  classical
-  rw [Finsupp.linearCombination_apply, Finsupp.linearCombination_apply, Finsupp.sum_inner]
-  refine Finsupp.sum_congr fun i _ => ?_
-  rw [Finsupp.inner_sum]
-  refine Finsupp.sum_congr fun j _ => ?_
-  rw [inner_smul_left, inner_smul_right, ← mul_assoc]
-
-/-- **Gram rigidity (span form).** If a family `φ : ι → E` and a family `ψ : ι → F`
+/-- If a family `φ : ι → E` and a family `ψ : ι → F`
 in two inner product spaces over `𝕜` have equal pairwise inner products, then the
 map `φ i ↦ ψ i` extends to a linear isometry equivalence of the span of the `φ i`
 onto the span of the `ψ i`. No finiteness is required, and the ambient spaces need
@@ -295,31 +300,28 @@ theorem exists_linearIsometryEquiv_span_map_eq_of_inner_eq {φ : ι → E} {ψ :
   rw [hf', LinearMap.codRestrict_apply]
   exact hfφ
 
-/-- **Gram rigidity (ambient form).** If two families `φ ψ : ι → E` in a
+/-- If two families `φ ψ : ι → E` in a
 finite-dimensional inner product space have equal pairwise inner products, then
 there is a linear isometry equivalence `W` of `E` with `W (φ i) = ψ i` for every
 `i`. The span-level equivalence is extended to the whole space by
-`LinearIsometry.extend`, then upgraded to an equivalence by finite
-dimensionality. -/
+`LinearIsometry.extend` and bundled as an equivalence by finite dimensionality
+(`LinearIsometry.toLinearIsometryEquiv`). -/
 theorem exists_linearIsometryEquiv_map_eq_of_inner_eq [FiniteDimensional 𝕜 E] {φ ψ : ι → E}
     (h : ∀ i j, ⟪φ i, φ j⟫_𝕜 = ⟪ψ i, ψ j⟫_𝕜) :
     ∃ W : E ≃ₗᵢ[𝕜] E, ∀ i, W (φ i) = ψ i := by
   obtain ⟨L, hL⟩ := exists_linearIsometryEquiv_span_map_eq_of_inner_eq h
-  -- The span-to-ambient isometry, then extend to `E` and upgrade to an equivalence.
+  -- Extend the span-to-ambient isometry to `E`, then bundle it as an equivalence.
   set L' : (Submodule.span 𝕜 (Set.range φ)) →ₗᵢ[𝕜] E :=
     (Submodule.span 𝕜 (Set.range ψ)).subtypeₗᵢ.comp L.toLinearIsometry with hL'
-  set W₀ : E →ₗᵢ[𝕜] E := L'.extend with hW₀
-  have hW₀_surj : Function.Surjective W₀ :=
-    LinearMap.injective_iff_surjective.mp W₀.injective
-  refine ⟨LinearIsometryEquiv.ofSurjective W₀ hW₀_surj, fun i => ?_⟩
-  rw [LinearIsometryEquiv.coe_ofSurjective, hW₀,
+  refine ⟨L'.extend.toLinearIsometryEquiv rfl, fun i => ?_⟩
+  rw [LinearIsometry.coe_toLinearIsometryEquiv,
     show φ i = ((⟨φ i, Submodule.subset_span ⟨i, rfl⟩⟩ :
       Submodule.span 𝕜 (Set.range φ)) : E) from rfl, L'.extend_apply]
   exact hL i
 
 namespace Matrix
 
-/-- **Gram rigidity, `Matrix.gram` form.** Two families of vectors in a
+/-- Two families of vectors in a
 finite-dimensional inner product space have equal Gram matrices if and only if a
 linear isometry equivalence of the ambient space maps one family to the other. -/
 theorem gram_eq_gram_iff_exists_linearIsometryEquiv_map_eq [FiniteDimensional 𝕜 E]
