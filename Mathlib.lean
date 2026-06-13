@@ -6491,6 +6491,7 @@ public import Mathlib.RingTheory.Extension.Cotangent.Basic
 public import Mathlib.RingTheory.Extension.Cotangent.Basis
 public import Mathlib.RingTheory.Extension.Cotangent.Free
 public import Mathlib.RingTheory.Extension.Cotangent.LocalizationAway
+public import Mathlib.RingTheory.Extension.ExtendScalars
 public import Mathlib.RingTheory.Extension.Generators
 public import Mathlib.RingTheory.Extension.Presentation.Basic
 public import Mathlib.RingTheory.Extension.Presentation.Core
