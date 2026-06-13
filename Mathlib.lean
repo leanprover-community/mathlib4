@@ -983,7 +983,6 @@ public import Mathlib.Algebra.Order.Group.Multiset
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Order.Group.Opposite
 public import Mathlib.Algebra.Order.Group.OrderIso
-public import Mathlib.Algebra.Order.Group.Parity
 public import Mathlib.Algebra.Order.Group.PartialSups
 public import Mathlib.Algebra.Order.Group.PiLex
 public import Mathlib.Algebra.Order.Group.Pointwise.Bounds
