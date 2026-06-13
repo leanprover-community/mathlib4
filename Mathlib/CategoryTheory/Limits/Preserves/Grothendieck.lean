@@ -33,6 +33,7 @@ variable {H : Type u₂} [Category.{v₂} H]
 variable {J : Type u₃} [Category.{v₃} J]
 variable {F : C ⥤ Cat.{v₄, u₄}}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `colim` on each fiber `F.obj c` of a functor `F : C ⥤ Cat` preserves limits of shape `J`,
 then the fiberwise colimit of the limit of a functor `K : J ⥤ Grothendieck F ⥤ H` is naturally
@@ -62,6 +63,7 @@ def fiberwiseColimitLimitIso (K : J ⥤ Grothendieck F ⥤ H)
       intro e
       simp [← NatTrans.comp_app_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (C) (F) in
 /-- If `colim` on a category `C` preserves limits of shape `J` and if it does so for `colim` on
@@ -83,7 +85,7 @@ instance preservesLimitsOfShape_colim_grothendieck [HasColimitsOfShape C H] [Has
       HasLimit.isoOfNatIso
        (associator _ _ _ ≪≫ isoWhiskerLeft _ fiberwiseColimCompColimIso)
   haveI : IsIso (limit.post K colim) := by
-    convert Iso.isIso_hom i₂
+    convert! Iso.isIso_hom i₂
     ext
     simp only [colim_obj, Functor.comp_obj, limit.post_π, colim_map, Iso.trans_def,
       Iso.trans_assoc, Iso.trans_hom, Category.assoc, HasLimit.isoOfNatIso_hom_π,
