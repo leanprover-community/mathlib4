@@ -34,9 +34,7 @@ The relationship between `Affine.stdSimplex` and the standard simplex `stdSimple
 established in `Mathlib/Analysis/Convex/StdSimplex.lean`.
 -/
 
-@[expose] public section
-
-noncomputable section
+@[expose] public noncomputable section
 
 open Finset Function Module
 open scoped Affine
@@ -121,43 +119,42 @@ variable (n) (k)
 
 namespace Affine
 
-open Affine Affine.Simplex
+open Affine Affine.Simplex Set Pi
 
 /-- The simplex in `Fin n → k` whose vertices are `0` and the standard basis vectors. -/
-def stdSimplex : Simplex k (Fin n → k) n := mkOfBasis <| Pi.basisFun k (Fin n)
+def stdAffineSimplex : Simplex k (Fin n → k) n := mkOfBasis <| basisFun k (Fin n)
 
-namespace stdSimplex
+namespace stdAffineSimplex
 
 /-- The points of `stdSimplex` at successor indices are the standard basis vectors. -/
 lemma points_succ (i : Fin n) :
-    (Affine.stdSimplex n k).points i.succ = Pi.single i (1 : k) := by
-  simp [Affine.stdSimplex]
+    (Affine.stdAffineSimplex n k).points i.succ = Pi.single i (1 : k) := by
+  simp [Affine.stdAffineSimplex]
 
-/-- `stdSimplex n k` is the solid, full-dimensional simplex in `kⁿ`: its closed interior is the
+/-- The closed interior of `Affine.stdSimplex n k` is the filled-in standard `n`-simplex: the
 "corner" region `{x | (∀ i, 0 ≤ x i) ∧ ∑ i, x i ≤ 1}` (vertices `0` and the standard basis). -/
 lemma closedInterior_eq [PartialOrder k] [IsOrderedRing k] :
-    (Affine.stdSimplex n k).closedInterior
+    (Affine.stdAffineSimplex n k).closedInterior
       = {x : Fin n → k | (∀ i, 0 ≤ x i) ∧ ∑ i, x i ≤ 1} := by
   ext x
   have hw : ∑ i, Fin.cons (1 - ∑ i, x i) x i = 1 := by simp
-  have hx : Finset.univ.affineCombination k (Affine.stdSimplex n k).points
+  have hx : Finset.univ.affineCombination k (Affine.stdAffineSimplex n k).points
       (Fin.cons (1 - ∑ i, x i) x) = x := by
     rw [Finset.affineCombination_eq_linear_combination _ _ _ hw]
-    simp [Fin.sum_univ_succ, Affine.stdSimplex, ← Pi.single_smul', Finset.univ_sum_single]
+    simp [Fin.sum_univ_succ, Affine.stdAffineSimplex, ← Pi.single_smul', Finset.univ_sum_single]
   conv_lhs => rw [← hx]
-  rw [affineCombination_mem_closedInterior_iff hw, Fin.forall_fin_succ]
-  simp only [Fin.cons_zero, Fin.cons_succ, Set.mem_Icc, Set.mem_setOf_eq]
-  have hle : ∀ i, (∀ j, 0 ≤ x j) → x i ≤ ∑ j, x j :=
-    fun i h => Finset.single_le_sum (fun j _ => h j) (Finset.mem_univ i)
-  grind [Finset.sum_nonneg, sub_nonneg, sub_le_self]
+  rw [affineCombination_mem_closedInterior_iff hw]
+  refine ⟨fun h => ⟨fun i => (h i.succ).1, sub_nonneg.mp (h 0).1⟩, ?_⟩
+  · rintro ⟨hpos, hsum⟩
+    exact mem_Icc_of_mem_stdSimplex ⟨Fin.cases (sub_nonneg.mpr hsum) hpos, hw⟩
 
 /-- The vertices of the face of `Affine.stdSimplex` opposite the vertex `0` are the standard
 basis vectors. -/
-lemma range_faceOpposite_zero_points [NeZero n] : Set.range ((stdSimplex n ℝ).faceOpposite 0).points
-    = Set.range (fun i : Fin n => Pi.single i (1 : ℝ)) := by
+lemma range_faceOpposite_zero_points [NeZero n] :
+    range ((stdAffineSimplex n k).faceOpposite 0).points = range (fun i : Fin n => single i 1) := by
   rw [range_faceOpposite_points]
   ext x
-  simp only [Set.mem_image, Set.mem_compl_iff, Set.mem_singleton_iff, Set.mem_range]
+  simp only [mem_image, mem_compl_iff, mem_singleton_iff, Set.mem_range]
   constructor
   · rintro ⟨i, hi, rfl⟩
     obtain ⟨j, rfl⟩ := Fin.exists_succ_eq.mpr hi
@@ -167,14 +164,15 @@ lemma range_faceOpposite_zero_points [NeZero n] : Set.range ((stdSimplex n ℝ).
     refine ⟨j.succ, Fin.succ_ne_zero j, ?_⟩
     rw [points_succ]
 
-/-- The closed interior of the face of `Affine.stdSimplex` opposite the vertex `0` is the
-standard simplex `stdSimplex ℝ (Fin n)`. -/
-lemma faceOpposite_zero_eq_stdSimplex [NeZero n] :
-    ((Affine.stdSimplex n ℝ).faceOpposite 0).closedInterior = _root_.stdSimplex ℝ (Fin n) := by
+/-- The closed interior of the face of `Affine.stdAffineSimplex` opposite the vertex `0` is the
+standard simplex `stdSimplex 𝕜 (Fin n)`. -/
+lemma faceOpposite_zero_eq_stdSimplex [NeZero n] (𝕜 : Type*) [Field 𝕜] [LinearOrder 𝕜]
+    [IsStrictOrderedRing 𝕜] :
+    ((stdAffineSimplex n 𝕜).faceOpposite 0).closedInterior = stdSimplex 𝕜 (Fin n) := by
   rw [← convexHull_eq_closedInterior, range_faceOpposite_zero_points]
-  exact convexHull_rangle_single_eq_stdSimplex ℝ (Fin n)
+  exact convexHull_rangle_single_eq_stdSimplex 𝕜 (Fin n)
 
-end stdSimplex
+end stdAffineSimplex
 
 end Affine
 
