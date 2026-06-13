@@ -333,9 +333,7 @@ theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
     apply exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom hC (fun s hs ↦ ?_) rfl
     apply (hm s hs).trans_eq
     exact (MeasureTheory.trim_measurableSet_eq Mle (measurableSet_generateFrom hs)).symm
-  have m'_le : (m'.transpose (ContinuousLinearMap.lsmul ℝ ℝ)).variation ≤ μ' := by
-    apply (variation_transpose_le _ _).trans
-    grw [ContinuousLinearMap.opNNNorm_lsmul_le, one_smul]
+  have m'_le : m'.variation ≤ μ' := by
     exact variation_le_of_forall_enorm_le (fun s hs ↦ hm' _)
   -- next line is to make sure that the default instance is picked below when defininig `m''`.
   let : MeasurableSpace α := hα
@@ -372,8 +370,11 @@ theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
       apply ne_of_lt (lt_of_le_of_lt ?_ I)
       gcongr with i
       apply enorm_integral_le_lintegral_enorm.trans
-      apply (lintegral_mono' m'_le le_rfl).trans_eq
-      rw [hμ', lintegral_trim _ (by fun_prop)] }
+      grw [lintegral_mono' m'_le le_rfl]
+      rw [hμ', lintegral_trim _ (by fun_prop)]
+      apply mul_le_of_le_one_left (by positivity)
+      apply ContinuousLinearMap.opENorm_lsmul_le
+      }
   refine ⟨m'', fun s hs ↦ ?_, fun s ↦ ?_⟩
   · simp only [h'C s hs, ↓reduceIte, m'']
     have : ∫ᵛ (x : α), μ[s.indicator 1 | M] x ∂•m' = ∫ᵛ (x : α), s.indicator 1 x ∂•m' := by
