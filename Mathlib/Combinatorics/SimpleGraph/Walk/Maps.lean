@@ -231,7 +231,7 @@ with those edges deleted. -/
 abbrev toDeleteEdges (s : Set (Sym2 V)) {v w : V} (p : G.Walk v w)
     (hp : ∀ e, e ∈ p.edges → e ∉ s) : (G.deleteEdges s).Walk v w :=
   p.transfer _ <| by
-    simp only [edgeSet_deleteEdges, Set.mem_diff]
+    simp only [edgeSet_deleteEdges, Set.mem_sdiff]
     exact fun e ep => ⟨edges_subset_edgeSet p ep, hp e ep⟩
 
 @[simp]
