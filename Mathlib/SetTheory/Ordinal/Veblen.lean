@@ -753,8 +753,8 @@ theorem card_nfp_le_of_forall_le {f : Ordinal → Ordinal}
     mul_le_mul' (le_refl _) (ciSup_le (c := max ℵ₀ o.card) fun i => ?_) |>.trans ?_
   · rw [mul_eq_max] <;> simp
   · induction i with
-    | zero => exact le_max_right _ _
-    | succ i ih => grw [Function.iterate_succ_apply', hf, ih]; simp
+    | zero => apply le_max_right
+    | succ i ih => grw [Function.iterate_succ_apply', hf, ih, ← max_assoc, max_self]
 
 theorem card_deriv_le_of_forall_le {f : Ordinal → Ordinal}
     (hf : ∀ x, (f x).card ≤ max ℵ₀ x.card) :
@@ -764,20 +764,20 @@ theorem card_deriv_le_of_forall_le {f : Ordinal → Ordinal}
   | add_one o ih =>
     rw [deriv_add_one]
     apply card_nfp_le_of_forall_le hf |>.trans
-    suffices (deriv f o).card ≤ ℵ₀ ∨ ℵ₀ ≤ o.card + 1 ∧ (deriv f o).card ≤ o.card by simpa
-    obtain ⟨h1, h2⟩ | ⟨h1, h2⟩ := max_cases ℵ₀ o.card <;> rw [h1] at ih
-    · exact Or.inl ih
-    · right
-      simpa [ih] using aleph0_le_add_iff.mpr <| Or.inl <| h2.le
+    grw [card_add_one, ih]
+    suffices o.card ≤ ℵ₀ ∨ ℵ₀ ≤ o.card + 1 by simp [this]
+    rcases lt_or_ge o.card ℵ₀ with ho | ho
+    · simp [ho.le]
+    · simp [ho]
   | limit o ho ih =>
     rw [deriv_limit f ho]
     apply card_iSup_Iio_le_card_mul_iSup _ |>.trans
     trans o.card * max ℵ₀ o.card
-    · simp only [Cardinal.lift_id]
+    · rw [Cardinal.lift_id]
       apply mul_le_mul' (le_refl _) <| ciSup_le' fun i => ?_
       exact le_trans (ih _ i.2) <| max_le_max_left _ <| card_le_card i.2.le
-    · rw [mul_eq_max (aleph0_le_card.mpr <| omega0_le_of_isSuccLimit ho) (le_max_left _ _)]
-      simp
+    · rw [mul_eq_max (aleph0_le_card.mpr <| omega0_le_of_isSuccLimit ho) (le_max_left _ _),
+        max_left_comm, max_self]
 
 theorem card_nfpFamily_le {f : ι → Ordinal → Ordinal}
     {c : Cardinal} (hc : ℵ₀ ≤ c) (hι : #(Shrink ι) ≤ c)
@@ -796,8 +796,7 @@ theorem card_nfpFamily_le {f : ι → Ordinal → Ordinal}
     induction σ i with
     | nil => simp
     | cons => grind
-  · rw [Cardinal.mul_eq_max hc (le_trans hc (le_max_left _ _))]
-    simp
+  · rw [Cardinal.mul_eq_max hc (le_trans hc (le_max_left _ _)), ← max_assoc, max_self]
 
 theorem card_derivFamily_le {f : ι → Ordinal → Ordinal}
     {c : Cardinal} (hc : ℵ₀ ≤ c) (hι : #(Shrink ι) ≤ c)
@@ -807,13 +806,11 @@ theorem card_derivFamily_le {f : ι → Ordinal → Ordinal}
   | zero => simpa using card_nfpFamily_le hc hι hf 0
   | add_one o ih =>
     simp only [derivFamily_add_one, card_add_one]
-    grw [card_nfpFamily_le hc hι hf ((derivFamily f o) + 1)]
-    obtain ⟨h1, h2⟩ | ⟨h1, h2⟩ := max_cases c o.card <;> rw [h1] at ih
-    · suffices (derivFamily f o).card + 1 ≤ c by simp [this]
-      by_cases h : (derivFamily f o).card < ℵ₀
-      · grw [h, add_one_of_aleph0_le (le_refl ℵ₀), hc]
-      · grw [add_one_of_aleph0_le (not_lt.mp h), ih]
-    · refine sup_le_sup_left ?_ c; simpa
+    grw [card_nfpFamily_le hc hι hf ((derivFamily f o) + 1), card_add_one, ih]
+    suffices max c o.card + 1 ≤ c ∨ c ≤ o.card + 1 ∧ c ≤ o.card by simp [this]
+    rcases lt_or_ge c o.card with ho | ho
+    · simp [ho.le, hc.trans ho.le]
+    · simp [ho, hc]
   | limit o ho ih =>
     rw [derivFamily_limit f ho]
     apply card_iSup_Iio_le_card_mul_iSup _ |>.trans <|
@@ -834,7 +831,7 @@ theorem card_veblen_le (a b : Ordinal) : (veblen a b).card ≤ max ℵ₀ (max a
       rw [Cardinal.mk_Iio_ordinal, Cardinal.lift_lift, Cardinal.lift_inj]
     · intro i x
       grw [ih i i.2 x, max_assoc]
-      refine sup_le_sup_left (c := ℵ₀) <| sup_le_sup_right ?_ x.card
+      apply sup_le_sup_left (c := ℵ₀) <| sup_le_sup_right ?_ x.card
       simp [card_le_card i.2.le]
 
 theorem card_epsilon (o : Ordinal) : (ε_ o).card = max ℵ₀ o.card := by
@@ -851,7 +848,7 @@ theorem card_gamma (o : Ordinal) : (Γ_ o).card = max ℵ₀ o.card := by
   · exact card_deriv_le_of_forall_le (by simpa using card_veblen_le · 0)
   apply max_le
   · exact aleph0_le_card.mpr <| omega0_lt_gamma o |>.le
-  · exact card_le_card <| StrictMono.le_apply isNormal_gamma.strictMono
+  · exact card_le_card isNormal_gamma.strictMono.le_apply
 
 theorem epsilon_lt_omega_one_of_lt_omega_one (ho : o < ω₁) : ε_ o < ω₁ := by
   simp_all [card_epsilon, lt_omega_iff_card_lt]
