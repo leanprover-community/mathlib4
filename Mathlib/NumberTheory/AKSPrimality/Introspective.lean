@@ -101,7 +101,7 @@ theorem of_mul {m : ℕ} (h : Introspective ((X : (ZMod p)[X]) - C (a : (ZMod p)
   set g : (ZMod p)[X] := X - C (a : ZMod p)
   have rn0 : r ≠ 0 := by grind [coprime_zero_right, prime_one_false]
   rw [pow_mul] at h
-  haveI :  IsReduced ((ZMod p)[X] ⧸ span {(X : (ZMod p)[X]) ^ r - C 1}) := by
+  have _ :  IsReduced ((ZMod p)[X] ⧸ span {(X : (ZMod p)[X]) ^ r - C 1}) := by
     apply (isRadical_iff_quotient_reduced _).mp
     apply (Ideal.isRadical_iff_pow_one_lt 2 (by grind)).mpr
     intro s hs
@@ -109,11 +109,11 @@ theorem of_mul {m : ℕ} (h : Introspective ((X : (ZMod p)[X]) - C (a : (ZMod p)
     refine (Squarefree.dvd_pow_iff_dvd ?_ (by lia)).mp hs
     apply Separable.squarefree
     apply separable_X_pow_sub_C
-    · apply ((cast_zero (R:= ZMod p)) ▸ (ZMod.natCast_eq_natCast_iff r 0 p).mp).mt
+    · apply ((cast_zero (R := ZMod p)) ▸ (ZMod.natCast_eq_natCast_iff r 0 p).mp).mt
       apply modEq_zero_iff_dvd.mp.mt
       exact (Nat.Prime.coprime_iff_not_dvd hp).mp hcprm
     · simp
-  have ddd := CharP.quotient' p (Ideal.span {(X : (ZMod p)[X]) ^ r - C 1}) (by
+  have _ := CharP.quotient' p (Ideal.span {(X : (ZMod p)[X]) ^ r - C 1}) (by
     intro z hz
     by_contra!
     obtain ⟨ y, hy ⟩ := Ideal.mem_span_singleton'.mp hz
