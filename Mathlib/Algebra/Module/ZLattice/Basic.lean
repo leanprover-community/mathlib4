@@ -678,8 +678,8 @@ theorem setFinrank_real_eq_setFinrank_int_of_discrete {E : Type*} [NormedAddComm
 @[deprecated (since := "2026-05-31")]
 alias Real.finrank_eq_int_finrank_of_discrete := setFinrank_real_eq_setFinrank_int_of_discrete
 
-omit [DiscreteTopology L] [ProperSpace E] in
-theorem setFinrank_real_eq_setFinrank_int_of_subset_discreteTopology [DiscreteTopology L]
+omit [ProperSpace E] in
+theorem setFinrank_real_eq_setFinrank_int_of_subset_discreteTopology
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] {s : Set E} (hs : s ⊆ L) :
     Set.finrank ℝ s = Set.finrank ℤ s := by
   have hd : DiscreteTopology (span ℤ s) := ‹DiscreteTopology L›.of_subset (span_le.mpr hs)
