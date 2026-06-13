@@ -503,6 +503,37 @@ theorem of_card_aut_eq_finrank [FiniteDimensional F E]
 variable {F} {E}
 variable {p : F[X]}
 
+@[deprecated Algebra.isSeparable_of_separable_splitting_field (since := "2026-06-12")]
+theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E]
+    [sp : p.IsSplittingField F E] (hp : p.Separable) (K : Type*) [Field K] [Algebra F K]
+    [Algebra K E] [IsScalarTower F K E] {x : E} (hx : x ∈ p.aroots E) :
+    Nat.card (K⟮x⟯.restrictScalars F →ₐ[F] E) = Nat.card (K →ₐ[F] E) * finrank K K⟮x⟯ := by
+  have h : IsIntegral K x := (isIntegral_of_noetherian (IsNoetherian.iff_fg.2 hFE) x).tower_top
+  have h1 : p ≠ 0 := fun hp => by
+    rw [hp, Polynomial.aroots_zero] at hx
+    exact Multiset.notMem_zero x hx
+  have h2 : minpoly K x ∣ p.map (algebraMap F K) := by
+    apply minpoly.dvd
+    rw [Polynomial.aeval_def, Polynomial.eval₂_map, ← Polynomial.eval_map, ←
+      IsScalarTower.algebraMap_eq]
+    exact (Polynomial.mem_roots (Polynomial.map_ne_zero h1)).mp hx
+  let key_equiv : (K⟮x⟯.restrictScalars F →ₐ[F] E) ≃
+      Σ f : K →ₐ[F] E, @AlgHom K K⟮x⟯ E _ _ _ _ (RingHom.toAlgebra f) := by
+    change (K⟮x⟯ →ₐ[F] E) ≃ Σ f : K →ₐ[F] E, _
+    exact algHomEquivSigma
+  haveI : ∀ f : K →ₐ[F] E, Finite (@AlgHom K K⟮x⟯ E _ _ _ _ (RingHom.toAlgebra f)) := fun f => by
+    have := Finite.of_equiv _ key_equiv
+    apply Finite.of_injective (Sigma.mk f) fun _ _ H => eq_of_heq (Sigma.ext_iff.mp H).2
+  have : FiniteDimensional F K := FiniteDimensional.left F K E
+  rw [Nat.card_congr key_equiv, Nat.card_sigma, IntermediateField.adjoin.finrank h,
+    Nat.card_eq_fintype_card]
+  apply Finset.sum_const_nat
+  intro f _
+  rw [← @IntermediateField.card_algHom_adjoin_integral K _ E _ _ x E _ (RingHom.toAlgebra f) h]
+  · exact Polynomial.Separable.of_dvd ((Polynomial.separable_map (algebraMap F K)).mpr hp) h2
+  · apply sp.splits.of_dvd (Polynomial.map_ne_zero h1)
+    rwa [← f.comp_algebraMap, ← p.map_map, RingHom.algebraMap_toAlgebra, Polynomial.map_dvd_map']
+
 theorem of_separable_splitting_field [p.IsSplittingField F E] (hp : p.Separable) :
     IsGalois F E :=
   { to_isSeparable := Algebra.isSeparable_of_separable_splitting_field hp,
