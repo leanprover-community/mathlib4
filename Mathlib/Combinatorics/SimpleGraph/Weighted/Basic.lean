@@ -224,7 +224,6 @@ lemma associatedFormBilinearMap :
     ring
   smul_left c f g := by
     unfold associatedFormFun
-    field_simp
     ring_nf
     simp [sum_add_distrib]
     ring_nf
