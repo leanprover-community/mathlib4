@@ -535,4 +535,14 @@ instance forget_preservesLimitsOfSize [UnivLE.{v, u}] :
 instance forget_preservesLimits : PreservesLimits (forget CommRingCat.{u}) :=
   CommRingCat.forget_preservesLimitsOfSize.{u, u}
 
+instance forget₂CommMon_preservesLimits :
+    PreservesLimits (forget₂ CommRingCat CommMonCat.{u}) := by
+  have : ReflectsLimitsOfSize.{u, u} (forget CommMonCat.{u}) :=
+    reflectsLimits_of_reflectsIsomorphisms
+  have : PreservesLimitsOfSize.{u, u}
+      (forget₂ CommRingCat CommMonCat.{u} ⋙ forget CommMonCat.{u}) :=
+    preservesLimits_of_natIso (eqToIso HasForget₂.forget_comp).symm
+  exact preservesLimits_of_reflects_of_preserves
+    (forget₂ CommRingCat CommMonCat.{u}) (forget CommMonCat.{u})
+
 end CommRingCat
