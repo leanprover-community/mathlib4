@@ -6,7 +6,6 @@ Authors: Yuxuan Xiao
 module
 
 public import Mathlib.Algebra.MvPolynomial.Initial
-public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.TriangularSet
 
 /-!
 # Reduction relation
@@ -116,23 +115,5 @@ theorem initial_reducedToSet {α : Type*} [Membership (MvPolynomial σ R) α] {p
   fun h q hq1 ↦ initial_reducedTo (h q hq1)
 
 end Initial
-
-section TriangularSet
-
-open TriangularSet
-
-variable {S T : TriangularSet σ R} {p q : MvPolynomial σ R}
-
-theorem reducedToSet_empty (q : MvPolynomial σ R) : q.reducedToSet (∅ : TriangularSet σ R) :=
-  fun p hp ↦ absurd hp (notMem_empty p)
-
-theorem reducedToSet_iff : q.reducedToSet S ↔ ∀ i < S.length, q.reducedTo (S i) :=
-  Iff.trans Iff.rfl S.forall_mem_iff_forall_index
-
-noncomputable instance instDecidableRelReducedToSet :
-    @DecidableRel _ (TriangularSet σ R) reducedToSet :=
-  fun _ S ↦ @decidable_of_iff _ _ reducedToSet_iff.symm (S.length.decidableBallLT _)
-
-end TriangularSet
 
 end MvPolynomial

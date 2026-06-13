@@ -21,24 +21,15 @@ a fundamental operation in the Characteristic Set Method.
   Pseudo-division of `g` by `f` with respect to a variable `i` (over commutative rings).
 * `MvPolynomial.pseudo`:
   General pseudo-division that handles constants and zero (over fields).
-* `MvPolynomial.setPseudo`:
-  Successive pseudo-division by all polynomials in a triangular set.
-* `MvPolynomial.setPseudoRem`:
-  Computes only the remainder (more efficient when quotients are not needed).
 * `MvPolynomial.isRemainder`:
   A predicate stating that `r` is a valid remainder of `g` by `f`,
   meaning `r` is reduced w.r.t. `f` and `init(f)^s * g = q * f + r` for some `s, q`.
-* `MvPolynomial.isSetRemainder`:
-  A predicate stating that `r` is a valid remainder of `g` by a triangular set `S`,
-  meaning `r` is reduced w.r.t. `S` and satisfies the extended division equation.
 
 ## Main results
 
 * `pseudoOf_equation`: `init(f) ^ s * g = q * f + r` where `deg(r) < deg(f)`
 * `pseudoOf_remainder_reducedTo`: The remainder is reduced w.r.t. the divisor
 * `pseudo_remainder_isRemainder`: The remainder satisfies the `isRemainder` predicate
-* `setPseudo_remainder_isSetRemainder`: The remainder satisfies the `isSetRemainder` predicate
-* `setPseudo_remainder_eq_zero_of_mem`: Elements of `S` have zero remainder when divided by `S`
 
 ## References
 * [Wen-Tsun Wu, *Basic principles of mechanical theorem proving in elementary geometries*]
@@ -254,20 +245,6 @@ omit [NoZeroDivisors R] in
 theorem isRemainder_def (r g f : MvPolynomial σ R) : r.IsRemainder g f ↔
     r.reducedTo f ∧ ∃ (s : ℕ) (q : MvPolynomial σ R), f.initial ^ s * g = q * f + r := Iff.rfl
 
-/-- A remainder `r` of `g` by `S` is a polynomial which is reduced with respect to `S` and
-suffices `(∏ i, (S i).initial ^ es[i]) * g = (∑ i, qs[i] * S i) + r`
-for some `es : List ℕ` and `qs : List (MvPolynomial σ R)`. -/
-def IsSetRemainder (r g : MvPolynomial σ R) (S : TriangularSet σ R) : Prop := r.reducedToSet S ∧
-  ∃ (es : List ℕ) (qs : List (MvPolynomial σ R)), (es.length = S.length ∧ qs.length = S.length) ∧
-    (∏ i : Fin es.length, (S i).initial ^ es[i]) * g = (∑ i : Fin qs.length, qs[i] * S i) + r
-
-omit [NoZeroDivisors R] in
-theorem isSetRemainder_def (r g : MvPolynomial σ R) (S : TriangularSet σ R) :
-    r.IsSetRemainder g S ↔ r.reducedToSet S ∧ ∃ (es : List ℕ) (qs : List (MvPolynomial σ R)),
-      (es.length = S.length ∧ qs.length = S.length) ∧
-      (∏ i : Fin es.length, (S i).initial ^ es[i]) * g = (∑ i : Fin qs.length, qs[i] * S i) + r
-  := Iff.rfl
-
 end CommRing
 
 section Field
@@ -366,220 +343,6 @@ theorem pseudo_remainder_eq_of_degreeOf_eq_zero {g f : MvPolynomial σ R} {c : �
   · simp only
   simp only [h1]
   exact pseudoOf_remainder_eq_of_degreeOf_eq_zero h2 <| degreeOf_max_vars_ne_zero h1
-
-open TriangularSet List
-
-variable (S : TriangularSet σ R)
-
-/-- The recursive algorithm of successive pseudo-division by a triangular set -/
-noncomputable def setPseudo.go (f : ℕ → MvPolynomial σ R) (fuel : ℕ) (es : List ℕ)
-    (qs : List (MvPolynomial σ R)) (r : MvPolynomial σ R) : SetPseudoResult (MvPolynomial σ R) :=
-  if fuel = 0 then ⟨es, qs, r⟩
-  else
-    let p := r.pseudo (f (fuel - 1))
-    let es' := p.exponent :: es
-    let qs' := p.quotient :: qs.map (· * (f (fuel - 1)).initial ^ p.exponent)
-    let r' := p.remainder
-    go f (fuel - 1) es' qs' r'
-
-/-- Pseudo-divides `g` successively by elements of `S`.
-Typically, this involves dividing by `Sₗ₋₁`, then `Sₗ₋₂`, ..., down to `S₀`. -/
-noncomputable def setPseudo : SetPseudoResult (MvPolynomial σ R) :=
-  setPseudo.go S S.length [] [] g
-
-lemma length_setPseudoGo (f : ℕ → MvPolynomial σ R) (fuel : ℕ) : ∀ (es : List ℕ) (qs) (r),
-    (setPseudo.go f fuel es qs r).exponents.length = es.length + fuel ∧
-    (setPseudo.go f fuel es qs r).quotients.length = qs.length + fuel := by
-  induction fuel with
-  | zero => simp only [setPseudo.go, ↓reduceIte, add_zero, and_self, implies_true]
-  | succ fuel ih =>
-    intro eq qs r
-    unfold setPseudo.go
-    simp only [Nat.add_eq_zero_iff, one_ne_zero, and_false, ↓reduceIte, add_tsub_cancel_right]
-    simp only [(ih ..).1, (ih ..).2, length_cons, length_map]
-    exact ⟨by ring, by ring⟩
-
-theorem length_setPseudo_exponents : (g.setPseudo S).exponents.length = S.length := by
-  rw [setPseudo, (length_setPseudoGo ..).1, length_nil, zero_add]
-
-theorem length_setPseudo_quotients : (g.setPseudo S).quotients.length = S.length := by
-  rw [setPseudo, (length_setPseudoGo ..).2, length_nil, zero_add]
-
-lemma setPseudoGo_equation (f : ℕ → MvPolynomial σ R) (fuel : ℕ) : ∀ (es : List ℕ) (qs) (r),
-    es.foldrIdx (fun i e I ↦ (f i).initial ^ e * I) 1 fuel * g =
-      qs.foldrIdx (fun i q Q ↦ q * f i + Q) 0 fuel + r →
-    letI result := setPseudo.go f fuel es qs r;
-    result.exponents.foldrIdx (fun i e I ↦ (f i).initial ^ e * I) 1 * g =
-      result.quotients.foldrIdx (fun i q Q ↦ q * f i + Q) 0 + result.remainder := by
-  induction fuel with
-  | zero => simp only [setPseudo.go, ↓reduceIte, imp_self, implies_true]
-  | succ fuel ih =>
-    intro es qs r heq
-    let p := r.pseudo (f fuel)
-    let es' := p.exponent :: es
-    let qs' := p.quotient :: qs.map (· * (f fuel).initial ^ p.exponent)
-    let r' := p.remainder
-    have hp : (f fuel).initial ^ p.exponent * r = p.quotient * f fuel + p.remainder :=
-      r.pseudo_equation (f fuel)
-    have : setPseudo.go f (fuel + 1) es qs r = setPseudo.go f fuel es' qs' r' := by
-      rw [setPseudo.go]; simp; rfl
-    have heq' : es'.foldrIdx (fun i e I ↦ (f i).initial ^ e * I) 1 fuel * g =
-        qs'.foldrIdx (fun i q Q ↦ q * f i + Q) 0 fuel + r' := by
-      unfold es' qs' r'
-      simp only [foldrIdx]
-      have (n : ℕ) (r : MvPolynomial σ R) (qs : List (MvPolynomial σ R)) :
-          r * qs.foldrIdx (fun i q Q ↦ q * f i + Q) 0 n
-            = (qs.map (fun q ↦ q * r)).foldrIdx (fun i q Q ↦ q * f i + Q) 0 n := by
-        induction qs generalizing n with
-        | nil => simp only [foldrIdx, mul_zero, map_nil]
-        | cons q qs hq =>
-          simp only [foldrIdx, map_cons, foldrIdx_cons]
-          rw [mul_add, hq (n + 1), mul_comm q r, mul_assoc]
-      rw [mul_assoc, heq, mul_add, hp, ← this]
-      ring
-    rw [this, ih es' qs' r' heq']
-
-theorem setPseudo_equation' : letI result := g.setPseudo S
-    result.exponents.foldrIdx (fun i e I ↦ (S i).initial ^ e * I) 1 * g
-      = result.quotients.foldrIdx (fun i q Q ↦ q * S i + Q) 0 + result.remainder :=
-  g.setPseudoGo_equation _ _ _ _ _ (by simp only [foldrIdx, one_mul, zero_add])
-
-theorem setPseudo_equation : letI result := g.setPseudo S
-    (∏ i : Fin result.exponents.length, (S i).initial ^ result.exponents[i]) * g
-    = (∑ i : Fin result.quotients.length, result.quotients[i] * S i) + result.remainder := by
-  have hes (es : List ℕ) (S : ℕ → MvPolynomial σ R) : es.foldrIdx (fun i e I ↦ (S i) ^ e * I) 1
-      = (∏ i ∈ Finset.range es.length, (S i) ^ es.getD i 0) := by
-    induction es generalizing S with
-    | nil => simp
-    | cons e es ih =>
-      simp only [foldrIdx, zero_add, length_cons]
-      rw [foldrIdx_start, ih, add_comm _ 1, Finset.prod_range_add, Finset.prod_range_one]
-      simp [add_comm]
-  have hqs (qs : List (MvPolynomial σ R)) (S : ℕ → MvPolynomial σ R) :
-      qs.foldrIdx (fun i q Q ↦ q * S i + Q) 0
-        = (∑ i ∈ Finset.range qs.length, qs.getD i 0 * S i) := by
-    induction qs generalizing S with
-    | nil => simp
-    | cons q qs ih =>
-      simp only [foldrIdx, zero_add, length_cons]
-      rw [foldrIdx_start, ih, add_comm _ 1, Finset.sum_range_add, Finset.sum_range_one]
-      simp [add_comm]
-  simpa [hes, hqs, Finset.prod_range, Finset.sum_range] using g.setPseudo_equation' S
-
-/-- The remainder of pseudo-dividing `g` by the set `S`.
-This is computationally simpler than `setPseudo` if only the remainder is needed. -/
-noncomputable def setPseudoRem : MvPolynomial σ R :=
-  S.toList.foldr (fun p r ↦ (r.pseudo p).remainder) g
-
-theorem zero_setPseudoRem (l : List (MvPolynomial σ R)) :
-    l.foldr (fun p r : MvPolynomial σ R ↦ (r.pseudo p).remainder) 0 = 0 := by
-  induction l with
-  | nil => simp only [foldr_nil]
-  | cons a l ih => simp only [foldr_cons, ih, zero_pseudo]
-
-lemma setPseudoGo_drop_succ_remainder_eq {k n : ℕ} (hn : n < k) (hk : k ≤ S.length) : ∀ es qs r,
-    (setPseudo.go (S.drop (k - (n + 1))) (n + 1) es qs r).remainder =
-    ((setPseudo.go (S.drop (k - n)) n es qs r).remainder.pseudo (S (k - (n + 1)))).remainder := by
-  induction n generalizing k with
-  | zero => simp [setPseudo.go]
-  | succ n ih =>
-    intro es qs r
-    have ih := ih (Nat.lt_sub_of_add_lt hn) (le_trans (Nat.sub_le k 1) hk)
-    rw [Nat.Simproc.sub_add_eq_comm k (n + 1) 1, setPseudo.go]
-    nth_rw 2 [setPseudo.go]
-    simp only [Nat.add_eq_zero_iff, one_ne_zero, and_false, and_self, ↓reduceIte,
-      add_tsub_cancel_right, drop_apply, ih]
-    have : k - 1 - (n + 1) + (n + 1) = (k - (n + 1)) + n := by grind
-    rw [this, Nat.Simproc.sub_add_eq_comm]
-
-theorem setPseudo_remainder_eq_setPseudoRem : (g.setPseudo S).remainder = g.setPseudoRem S := by
-  unfold setPseudo setPseudoRem
-  induction h : S.length generalizing S with
-  | zero => simp [setPseudo.go, List.eq_nil_of_length_eq_zero (h ▸ length_toList S)]
-  | succ n ih =>
-    have := setPseudoGo_drop_succ_remainder_eq S (lt_add_one n) (h ▸ le_refl _) ([]) ([]) g
-    simp only [tsub_self, TriangularSet.drop_zero, add_tsub_cancel_left] at this
-    rw [this, ih _ (by simp [h, add_tsub_cancel_right]), toList_drop, drop_one]
-    have h : S.toList ≠ [] := length_pos_iff.mp (length_toList S ▸ h ▸ Nat.zero_lt_succ n)
-    rw [← cons_head_tail h, foldr_cons, cons_head_tail, head_eq_getElem_zero, toList_getElem]
-
-lemma setPseudoRem_reducedTo (l : List (MvPolynomial σ R)) (hl1 : ∀ ⦃p⦄, p ∈ l → p ≠ 0)
-    (hl2 : l.Pairwise fun p q ↦ p.vars.max < q.vars.max) : ∀ g p : MvPolynomial σ R, p ∈ l →
-    (l.foldr (fun p r ↦ (r.pseudo p).remainder) g).reducedTo p := by
-  induction l with
-  | nil => simp only [not_mem_nil, foldr_nil, IsEmpty.forall_iff, implies_true]
-  | cons a l ih =>
-    intro g p hp
-    rw [foldr_cons]
-    rcases eq_or_mem_of_mem_cons hp with hp | hp
-    · exact hp.symm ▸ pseudo_remainder_reducedTo _ a (hl1 mem_cons_self)
-    have ih := ih (fun p hp ↦ hl1 <| mem_cons_of_mem _ hp) (pairwise_cons.mp hl2).2 g p hp
-    set r' := l.foldr (fun p r ↦ (r.pseudo p).remainder) g
-    rw [reducedTo] at ih ⊢
-    split_ifs with hr'
-    have r'_ne_zero : r' ≠ 0 := fun h ↦ by absurd hr'; simp only [h, zero_pseudo]
-    rw [if_neg r'_ne_zero] at ih
-    split at ih <;> expose_names
-    · exact ih
-    suffices (r'.pseudo a).remainder.degreeOf c ≤ r'.degreeOf c by exact lt_of_le_of_lt this ih
-    apply degreeOf_pseudo_remainder_le_of_degreeOf_eq_zero
-    apply (iff_not_comm.mpr mem_vars_iff_degreeOf_ne_zero).mpr
-    apply Finset.notMem_of_max_lt_coe
-    apply heq ▸ (pairwise_cons.mp hl2).1 p hp
-
-theorem setPseudo_remainder_reducedToSet : (g.setPseudo S).remainder.reducedToSet S := by
-  rw [reducedToSet_iff, setPseudo_remainder_eq_setPseudoRem, setPseudoRem]
-  intro i hi
-  apply setPseudoRem_reducedTo _ S.toList_non_zero S.toList_pairwise
-  exact mem_toList_iff.mpr <| apply_mem hi
-
-theorem setPseudo_remainder_isSetRemainder : (g.setPseudo S).remainder.IsSetRemainder g S :=
-  ⟨g.setPseudo_remainder_reducedToSet S, _, _,
-    ⟨g.length_setPseudo_exponents S, g.length_setPseudo_quotients S⟩, g.setPseudo_equation S⟩
-
-theorem isSetRemainder_of_eq_setPseudo_remainder {r g : MvPolynomial σ R}
-    {S : TriangularSet σ R} : (g.setPseudo S).remainder = r → r.IsSetRemainder g S := fun h ↦
-  h ▸ g.setPseudo_remainder_isSetRemainder S
-
-lemma setPseudoRem_eq_self_of_max_vars_lt (l : List (MvPolynomial σ R))
-    (hl1 : ∀ ⦃p⦄, p ∈ l → p ≠ 0) (hl2 : l.Pairwise fun p q ↦ p.vars.max < q.vars.max) :
-    ∀ ⦃g : MvPolynomial σ R⦄, (∀ p ∈ l, g.vars.max < p.vars.max) →
-    l.foldr (fun p r ↦ (r.pseudo p).remainder) g = g := by
-  induction l with
-  | nil => simp only [foldr_nil, implies_true]
-  | cons a l ih =>
-    intro g hg
-    simp only [mem_cons, forall_eq_or_imp] at hg
-    rcases WithBot.ne_bot_iff_exists.mp <| LT.lt.ne_bot hg.1 with ⟨c, hc⟩
-    have ih := ih (fun p hp ↦ hl1 <| mem_cons_of_mem _ hp) (pairwise_cons.mp hl2).2 hg.2
-    rw [foldr_cons, ih, pseudo_remainder_eq_of_degreeOf_eq_zero hc.symm]
-    apply (iff_not_comm.mpr mem_vars_iff_degreeOf_ne_zero).mpr
-    apply Finset.notMem_of_max_lt_coe <| hc ▸ hg.1
-
-theorem setPseudo_remainder_eq_zero_of_mem {p : MvPolynomial σ R} (hp : p ∈ S) :
-    (p.setPseudo S).remainder = 0 := by
-  rcases hp with ⟨n, hn1, hn2⟩
-  rw [setPseudo_remainder_eq_setPseudoRem, setPseudoRem]
-  let l1 := S.toList.drop (n + 1)
-  let l2 := S.toList.take n
-  have hmin : min n S.length = n := Nat.min_eq_left (le_of_lt hn1)
-  have : S.toList = l2 ++ [p] ++ l1 := by
-    have : (l2 ++ [p]).length = n + 1 := by simpa [l2] using (le_of_lt hn1)
-    simp only [l1, ← this]
-    refine prefix_append_drop <| prefix_iff_eq_take.mpr ?_
-    have := S.length_toList ▸ hn1
-    simp [l2, hmin, take_add_one, hn2 ▸ toList_getElem this ▸ getElem?_eq_getElem this]
-  simp only [this, append_assoc, cons_append, nil_append, foldr_append, foldr_cons]
-  suffices ((l1.foldr (fun p r ↦ (r.pseudo p).remainder) p).pseudo p).remainder = 0 by
-    rw [this, zero_setPseudoRem]
-  simp only [← toList_drop, l1]
-  refine pseudo_remainder_eq_zero_of_dvd (dvd_of_eq <| Eq.symm ?_)
-  refine setPseudoRem_eq_self_of_max_vars_lt _ (toList_non_zero _) (toList_pairwise _) ?_
-  intro q hq
-  rcases mem_toList_iff.mp hq with ⟨i, hi1, hi2⟩
-  rw [← hn2, ← hi2, drop_apply]
-  refine max_vars_lt_of_index_lt ?_ (Nat.lt_add_right i (lt_add_one n))
-  exact Nat.add_lt_of_lt_sub' (S.length_drop _ ▸ hi1)
 
 end Field
 

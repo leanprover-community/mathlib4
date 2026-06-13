@@ -874,7 +874,6 @@ public import Mathlib.Algebra.MvPolynomial.Basic
 public import Mathlib.Algebra.MvPolynomial.Cardinal
 public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.PseudoDivision
 public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.Reduced
-public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.TriangularSet
 public import Mathlib.Algebra.MvPolynomial.Coeff
 public import Mathlib.Algebra.MvPolynomial.Comap
 public import Mathlib.Algebra.MvPolynomial.CommRing
