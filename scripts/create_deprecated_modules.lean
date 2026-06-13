@@ -376,7 +376,7 @@ replaced by the suggestion, which means that you can click on multiple suggestio
 the deprecations later on.
 -/
 
--- #find_deleted_files 0
+#find_deleted_files 500 10%
 
 /--
 info: import Std.Time.Format
