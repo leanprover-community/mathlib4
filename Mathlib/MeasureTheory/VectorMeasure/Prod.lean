@@ -204,7 +204,7 @@ theorem lintegral_fn_integral_sub ⦃f g : X × Y → G⦄ {μ : Measure X}
   filter_upwards [hf.prod_right_ae, hg.prod_right_ae] with x h2f h2g
   simp [integral_fun_sub h2f h2g]
 
-/-- The map that sends an L¹-function `f : α × β → E` to `∫∫f` is continuous. -/
+/-- The map that sends an L¹-function `f : X × Y → G` to `∫∫f` is continuous. -/
 theorem continuous_integral_integral {B : G →L[ℝ] F →L[ℝ] H} {C : H →L[ℝ] E →L[ℝ] I}
     [SFinite (ν.transpose B).variation] [SFinite (μ.transpose C).variation] :
     Continuous fun f : X × Y →₁[(μ.transpose C).variation.prod (ν.transpose B).variation] G ↦
@@ -226,5 +226,32 @@ theorem continuous_integral_integral {B : G →L[ℝ] F →L[ℝ] H} {C : H →L
     ofReal_norm]
   rw [← tendsto_iff_enorm_sub_tendsto_zero]
   exact tendsto_id
+
+
+/-- **Fubini's Theorem**: For integrable functions on `X × Y`,
+the vector measure integral of `f` is equal to the iterated vector measure integral. -/
+theorem integral_prod {B : G →L[ℝ] F →L[ℝ] H} {C : H →L[ℝ] E →L[ℝ] I}
+    {A : E →L[ℝ] F →L[ℝ] H} {D : G →L[ℝ] H →L[ℝ] I} [CompleteSpace H]
+    [IsFiniteMeasure (ν.transpose B).variation] [SFinite (μ.transpose C).variation]
+    {f : X × Y → G} (hf : Integrable f ((μ.transpose C).variation.prod (ν.transpose B).variation)) :
+    ∫ᵛ z, f z ∂[D; μ.prod ν A] = ∫ᵛ x, ∫ᵛ y, f (x, y) ∂[B; ν] ∂[C; μ] := by
+  by_cases hI : CompleteSpace I; swap
+  · simp only [integral_of_not_completeSpace hI]
+  revert f
+  apply Integrable.induction
+  · intro c s hs h2s
+    simp_rw [integral_indicator hs, ← indicator_comp_right, Function.comp_def,
+      integral_indicator (measurable_prodMk_left hs), setIntegral_const, integral_smul_const,
+      measureReal_def,
+      integral_toReal (measurable_measure_prodMk_left hs).aemeasurable
+        (ae_measure_lt_top hs h2s.ne)]
+    rw [Measure.prod_apply hs]
+  · rintro f g - i_f i_g hf hg
+    simp_rw [integral_add' i_f i_g, integral_integral_add' i_f i_g, hf, hg]
+  · exact isClosed_eq continuous_integral continuous_integral_integral
+  · rintro f g hfg - hf; convert! hf using 1
+    · exact integral_congr_ae hfg.symm
+    · apply integral_congr_ae
+      filter_upwards [ae_ae_of_ae_prod hfg] with x hfgx using integral_congr_ae (ae_eq_symm hfgx)
 
 end MeasureTheory.VectorMeasure
