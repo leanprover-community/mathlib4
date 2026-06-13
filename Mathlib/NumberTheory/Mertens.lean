@@ -73,10 +73,10 @@ lemma oddLogDivMulPred_le {x : ℝ} (hx : 1 ≤ x) :
 private lemma hasDerivAt_neg_log_add_one_div :
     ∀ u ∈ Set.Ici 5, HasDerivAt (fun u ↦ -((log u + 1) / u)) (log u / u ^ 2) u := by
   intro u hu
-  have hu_ne : u ≠ 0 := by grind
-  have h := ((hasDerivAt_log hu_ne).add_const 1).div (hasDerivAt_id u) hu_ne
-  convert h.neg using 1
-  simp [id_eq, field]
+  have hu_pos : 0 < u := by grind
+  have h := (((hasDerivAt_log hu_pos.ne').add_const 1).div (hasDerivAt_id u) hu_pos.ne').neg
+  refine h.congr_deriv ?_
+  simp [hu_pos.ne', field]
 
 private lemma tendsto_neg_log_add_one_div_atTop :
     Filter.Tendsto (fun u ↦ -((log u + 1) / u)) Filter.atTop (nhds 0) := by
@@ -131,12 +131,10 @@ lemma integral_oddLogDivMulPred_converges : IntegrableOn oddLogDivMulPred (Set.I
     let F : ℝ → ℝ := fun x ↦ -4 * x ^ (-(1 / 2 : ℝ))
     have hderiv : ∀ x ∈ Set.Ici 2, HasDerivAt F (2 * x ^ (-(3 / 2 : ℝ))) x := by
       intro x hx
-      have hx2 : 2 ≤ x := hx
-      have hxpos : 0 < x := by linarith
+      have hxpos : 0 < x := by grind
       have h := (hasDerivAt_rpow_const (p := -(1 / 2)) (Or.inl (ne_of_gt hxpos))).const_mul (-4)
-      have h' : HasDerivAt (fun y ↦ -4 * y ^ (-(1 / 2 : ℝ))) (2 * x ^ (-(3 / 2 : ℝ))) x := by
-        convert h using 1
-        ring_nf
+      have h' : HasDerivAt (fun y ↦ -4 * y ^ (-(1 / 2 : ℝ))) (2 * x ^ (-(3 / 2 : ℝ))) x :=
+        h.congr_deriv (by ring_nf)
       simpa [F] using h'
     have hpos : ∀ x ∈ Set.Ioi (2 : ℝ), 0 ≤ 2 * x ^ (-(3 / 2 : ℝ)) := by
       intro x hx
@@ -320,8 +318,12 @@ lemma half_integral_log_div_mul_pred_le : 1 / 2 * ∫ u in Set.Ioi 5, log u / (u
   have hmono : ∫ u in Set.Ioi 5, log u / (u * (u - 1))
       ≤ ∫ u in Set.Ioi 5, 5 / 4 * (log u / u ^ 2) :=
     setIntegral_mono_on hpred_int hbound_int measurableSet_Ioi hpoint
-  convert mul_le_mul_of_nonneg_left hmono (by norm_num : (0 : ℝ) ≤ 1 / 2) using 1
-  grind [integral_const_mul]
+  calc
+    _ ≤ 1 / 2 * ∫ u in Set.Ioi 5, 5 / 4 * (log u / u ^ 2) :=
+      mul_le_mul_of_nonneg_left hmono (by norm_num)
+    _ = 5 / 8 * ∫ u in Set.Ioi 5, log u / u ^ 2 := by
+      rw [integral_const_mul]
+      ring
 
 lemma integral_oddLogDivMulPred_le_log_five_add_one_div_eight :
     ∫ x in Set.Ioi 2, oddLogDivMulPred x ≤ (log 5 + 1) / 8 := by
