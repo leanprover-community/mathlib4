@@ -732,14 +732,12 @@ lemma affineCombination_mem_surface_iff [IsOrderedAddMonoid k] {n : ℕ} [NeZero
     (s : Simplex k P n) {w : Fin (n + 1) → k} (hw : ∑ i, w i = 1) :
     Finset.univ.affineCombination k s.points w ∈ s.surface ↔
       (∀ j, 0 ≤ w j) ∧ ∃ i, w i = 0 := by
-  simp_rw [mem_surface_iff, s.affineCombination_mem_closedInterior_faceOpposite_iff hw,
-    exists_and_left]
+  simp [mem_surface_iff, s.affineCombination_mem_closedInterior_faceOpposite_iff hw]
 
 lemma point_mem_surface [Nontrivial k] [ZeroLEOneClass k] {n : ℕ} [NeZero n] (s : Simplex k P n)
     (i : Fin (n + 1)) : s.points i ∈ s.surface := by
   obtain ⟨j, hj⟩ := exists_ne i
-  exact s.closedInterior_faceOpposite_subset_surface j
-    (s.point_mem_closedInterior_faceOpposite_iff.mpr hj.symm)
+  exact mem_surface_iff.mpr ⟨j, s.point_mem_closedInterior_faceOpposite_iff.mpr hj.symm⟩
 
 lemma disjoint_interior_surface [Nontrivial k] [ZeroLEOneClass k] {n : ℕ} [NeZero n]
     (s : Simplex k P n) : Disjoint s.interior s.surface :=
@@ -747,16 +745,14 @@ lemma disjoint_interior_surface [Nontrivial k] [ZeroLEOneClass k] {n : ℕ} [NeZ
 
 lemma surface_map {n : ℕ} [NeZero n] (s : Simplex k P n) {f : P →ᵃ[k] P₂}
     (hf : Function.Injective f) : (s.map f hf).surface = f '' s.surface := by
-  simp_rw [surface_eq_iUnion_closedInterior_faceOpposite, faceOpposite_map, closedInterior_map,
-    Set.image_iUnion]
+  simp [surface_eq_iUnion_closedInterior_faceOpposite, closedInterior_map, Set.image_iUnion]
 
 lemma surface_restrict {n : ℕ} [NeZero n] (s : Simplex k P n) {S : AffineSubspace k P}
     (hS : affineSpan k (Set.range s.points) ≤ S) :
     letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).surface = S.subtype ⁻¹' s.surface := by
-  letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
-  simp_rw [surface_eq_iUnion_closedInterior_faceOpposite, faceOpposite_restrict,
-    closedInterior_restrict, Set.preimage_iUnion]
+  simp [surface_eq_iUnion_closedInterior_faceOpposite, faceOpposite_restrict,
+    closedInterior_restrict]
 
 @[simp] lemma surface_reindex [Nontrivial k] {m n : ℕ} [NeZero n] [NeZero m] (s : Simplex k P n)
     (e : Fin (n + 1) ≃ Fin (m + 1)) : (s.reindex e).surface = s.surface := by
