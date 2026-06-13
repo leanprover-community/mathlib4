@@ -147,7 +147,7 @@ theorem frontier_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a = y i } := by
   rw [frontier, closure_halfSpace, interior_halfSpace]
   ext y
-  simpa only [mem_diff, mem_setOf_eq, not_lt] using antisymm_iff
+  simpa only [mem_sdiff, mem_setOf_eq, not_lt] using antisymm_iff
 theorem range_euclideanQuadrant (n : ℕ) :
     range (Subtype.val : EuclideanQuadrant n → _) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val
@@ -430,7 +430,7 @@ lemma boundary_Icc : (𝓡∂ 1).boundary (Icc x y) = {⊥, ⊤} := by
     rw [this]
     apply iff_of_true Icc_isBoundaryPoint_top (mem_insert_of_mem ⊥ rfl)
   · apply iff_of_false
-    · simpa [← mem_compl_iff, ModelWithCorners.compl_boundary] using
+    · simpa [← mem_compl_iff, ModelWithCorners.compl_boundary] using!
         Icc_isInteriorPoint_interior hp
     · rintro (rfl | rfl) <;> simp at hp
 

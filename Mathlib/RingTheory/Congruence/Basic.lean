@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Hom
 public import Mathlib.Algebra.Ring.Action.Basic
 public import Mathlib.GroupTheory.Congruence.Basic
 public import Mathlib.RingTheory.Congruence.Defs
@@ -95,6 +96,30 @@ instance [Monoid α] [Semiring R] [MulSemiringAction α R] [IsScalarTower α R R
   smul_one := fun _ => congr_arg toQuotient <| smul_one _
   smul_mul := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <|
     MulSemiringAction.smul_mul _ _ _
+
+section
+variable [CommSemiring α] [Semiring R] [Algebra α R]
+
+instance (c : RingCon R) : Algebra α c.Quotient where
+  algebraMap := c.mk'.comp (algebraMap α R)
+  commutes' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.commutes _ _
+  smul_def' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.smul_def _ _
+
+@[simp, norm_cast]
+theorem coe_algebraMap (c : RingCon R) (s : α) :
+    (algebraMap α R s : c.Quotient) = algebraMap α c.Quotient s :=
+  rfl
+
+variable (α) in
+/-- The algebra morphism from `R` to the quotient by a ring congruence. -/
+@[simps!] def mkₐ (c : RingCon R) : R →ₐ[α] c.Quotient :=
+  { mk' c with commutes' _ := rfl }
+
+theorem mkₐ_surjective (c : RingCon R) :
+    Function.Surjective (c.mkₐ (α := α)) :=
+  mk'_surjective c
+
+end
 
 end Algebraic
 
@@ -218,6 +243,9 @@ theorem nontrivial_iff : Nontrivial (RingCon R) ↔ Nontrivial R := by
 theorem subsingleton_iff : Subsingleton (RingCon R) ↔ Subsingleton R := by
   simp_rw [← not_nontrivial_iff_subsingleton, nontrivial_iff]
 
+theorem le_ringConGen {r : R → R → Prop} : r ≤ ⇑(ringConGen r) :=
+  RingConGen.Rel.of
+
 /-- The inductively defined smallest congruence relation containing a binary relation `r` equals
 the infimum of the set of congruence relations containing `r`. -/
 theorem ringConGen_eq (r : R → R → Prop) :
@@ -228,69 +256,74 @@ theorem ringConGen_eq (r : R → R → Prop) :
         (fun _ => RingCon.symm _) (fun _ _ => RingCon.trans _)
         (fun _ _ h1 h2 c hc => c.add (h1 c hc) <| h2 c hc)
         (fun _ _ h1 h2 c hc => c.mul (h1 c hc) <| h2 c hc))
-    (sInf_le fun _ _ => RingConGen.Rel.of _ _)
+    (sInf_le le_ringConGen)
+
 
 /-- The smallest congruence relation containing a binary relation `r` is contained in any
 congruence relation containing `r`. -/
-theorem ringConGen_le {r : R → R → Prop} {c : RingCon R}
-    (h : ∀ x y, r x y → c x y) : ringConGen r ≤ c := by
-  rw [ringConGen_eq]; exact sInf_le h
+theorem ringConGen_le {r : R → R → Prop} {c : RingCon R} : ringConGen r ≤ c ↔ r ≤ ⇑c :=
+  ⟨le_trans le_ringConGen, ringConGen_eq r ▸ fun h => sInf_le h⟩
+
+variable (R) in
+/-- There is a Galois insertion of congruence relations on a type with multiplication and addition
+`R` into binary relations on `R`. -/
+protected def gi : GaloisInsertion (ringConGen (R := R)) (⇑) where
+  choice r _h := ringConGen r
+  gc _r _ := ringConGen_le
+  le_l_u _ := le_ringConGen
+  choice_eq _ _ := rfl
+
+theorem ringConGen_monotone : Monotone (ringConGen (R := R)) :=
+  RingCon.gi R |>.gc.monotone_l
 
 /-- Given binary relations `r, s` with `r` contained in `s`, the smallest congruence relation
 containing `s` contains the smallest congruence relation containing `r`. -/
+@[gcongr]
 theorem ringConGen_mono {r s : R → R → Prop} (h : ∀ x y, r x y → s x y) :
     ringConGen r ≤ ringConGen s :=
-  ringConGen_le fun x y hr => RingConGen.Rel.of _ _ <| h x y hr
+  ringConGen_monotone h
 
 /-- Congruence relations equal the smallest congruence relation in which they are contained. -/
 theorem ringConGen_of_ringCon (c : RingCon R) : ringConGen c = c :=
-  le_antisymm (by rw [ringConGen_eq]; exact sInf_le fun _ _ => id) RingConGen.Rel.of
+  RingCon.gi R |>.l_u_eq _
 
 /-- The map sending a binary relation to the smallest congruence relation in which it is
 contained is idempotent. -/
 theorem ringConGen_idem (r : R → R → Prop) : ringConGen (ringConGen r) = ringConGen r :=
-  ringConGen_of_ringCon _
+  RingCon.gi R |>.gc.l_u_l_eq_l _
 
-/-- The supremum of congruence relations `c, d` equals the smallest congruence relation containing
-the binary relation '`x` is related to `y` by `c` or `d`'. -/
-theorem sup_eq_ringConGen (c d : RingCon R) : c ⊔ d = ringConGen fun x y => c x y ∨ d x y := by
-  rw [ringConGen_eq]
-  apply congr_arg sInf
-  simp only [le_def, or_imp, ← forall_and]
+theorem ringConGen_sup (r s : R → R → Prop) : ringConGen (r ⊔ s) = ringConGen r ⊔ ringConGen s :=
+  RingCon.gi R |>.gc.l_sup
+
+theorem ringConGen_sSup (rs : Set (R → R → Prop)) : ringConGen (sSup rs) = ⨆ r ∈ rs, ringConGen r :=
+  RingCon.gi R |>.gc.l_sSup
+
+theorem ringConGen_iSup {ι : Sort*} (r : ι → R → R → Prop) :
+    ringConGen (iSup r) = ⨆ i, ringConGen (r i) :=
+  RingCon.gi R |>.gc.l_iSup
 
 /-- The supremum of two congruence relations equals the smallest congruence relation containing
 the supremum of the underlying binary operations. -/
-theorem sup_def {c d : RingCon R} : c ⊔ d = ringConGen (⇑c ⊔ ⇑d) := by
-  rw [sup_eq_ringConGen]; rfl
+theorem sup_def (c d : RingCon R) : c ⊔ d = ringConGen (⇑c ⊔ ⇑d) :=
+  RingCon.gi R |>.l_sup_u _ _ |>.symm
+
+/-- The supremum of congruence relations `c, d` equals the smallest congruence relation containing
+the binary relation '`x` is related to `y` by `c` or `d`'. -/
+theorem sup_eq_ringConGen (c d : RingCon R) : c ⊔ d = ringConGen fun x y => c x y ∨ d x y :=
+  sup_def c d
+
+/-- The supremum of a set of congruence relations is the same as the smallest congruence relation
+containing the supremum of the set's image under the map to the underlying binary relation. -/
+theorem sSup_def (S : Set (RingCon R)) : sSup S = ringConGen (sSup ((⇑) '' S)) :=
+  RingCon.gi R |>.l_sSup_u_image _ |>.symm
 
 /-- The supremum of a set of congruence relations `S` equals the smallest congruence relation
 containing the binary relation 'there exists `c ∈ S` such that `x` is related to `y` by `c`'. -/
 theorem sSup_eq_ringConGen (S : Set (RingCon R)) :
     sSup S = ringConGen fun x y => ∃ c : RingCon R, c ∈ S ∧ c x y := by
-  rw [ringConGen_eq]
-  apply congr_arg sInf
-  ext
-  exact ⟨fun h _ _ ⟨r, hr⟩ => h hr.1 hr.2, fun h r hS _ _ hr => h _ _ ⟨r, hS, hr⟩⟩
-
-/-- The supremum of a set of congruence relations is the same as the smallest congruence relation
-containing the supremum of the set's image under the map to the underlying binary relation. -/
-theorem sSup_def {S : Set (RingCon R)} :
-    sSup S = ringConGen (sSup (@Set.image (RingCon R) (R → R → Prop) (⇑) S)) := by
-  rw [sSup_eq_ringConGen, sSup_image]
-  congr with (x y)
-  simp only [iSup_apply, iSup_Prop_eq, exists_prop]
-
-variable (R)
-
-/-- There is a Galois insertion of congruence relations on a type with multiplication and addition
-`R` into binary relations on `R`. -/
-protected def gi : @GaloisInsertion (R → R → Prop) (RingCon R) _ _ ringConGen (⇑) where
-  choice r _h := ringConGen r
-  gc _r c :=
-    ⟨fun H _ _ h => H <| RingConGen.Rel.of _ _ h, fun H =>
-      ringConGen_of_ringCon c ▸ ringConGen_mono H⟩
-  le_l_u x := (ringConGen_of_ringCon x).symm ▸ le_refl x
-  choice_eq _ _ := rfl
+  rw [sSup_def]
+  congr! with x y
+  simp
 
 end Lattice
 

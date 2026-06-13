@@ -44,7 +44,7 @@ variable [Zero α]
 section OrderedAddCommMonoid
 variable [AddCommMonoid β] [Preorder β] [IsOrderedAddMonoid β] {f : ι →₀ α} {h₁ h₂ : ι → α → β}
 
-@[gcongr]
+@[gcongr only]
 lemma sum_le_sum (h : ∀ i ∈ f.support, h₁ i (f i) ≤ h₂ i (f i)) : f.sum h₁ ≤ f.sum h₂ :=
   Finset.sum_le_sum h
 
@@ -299,6 +299,16 @@ lemma mapDomain_tsub {f : ι → κ} (h : f.Injective) (f1 f2 : ι →₀ α) :
 lemma embDomain_tsub (f : ι ↪ κ) (f1 f2 : ι →₀ α) :
     (f1 - f2).embDomain f = f1.embDomain f - f2.embDomain f := by
   simp_rw [embDomain_eq_mapDomain, mapDomain_tsub f.injective]
+
+/-- The support of a sum is the union of the supports, when the coefficients satisfy
+`CanonicallyOrderedAdd`.
+
+In the case where the supports are disjoint, there is also `Finsupp.support_add_eq`,
+which holds in any `AddZeroClass`. -/
+lemma support_add_eq_union {f1 f2 : ι →₀ α} [DecidableEq ι] :
+    (f1 + f2).support = f1.support ∪ f2.support :=
+  le_antisymm support_add <| Finset.union_subset
+    (support_mono le_self_add) (support_mono le_add_self)
 
 end PartialOrder
 
