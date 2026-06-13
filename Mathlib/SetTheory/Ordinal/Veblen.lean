@@ -744,41 +744,6 @@ instance [h : Fact <| o < ω₁] : Countable (Iio o) := countable_Iio_of_lt_omeg
 
 instance [h : Fact <| o < ω₁] : Countable (ToType o) := countable_toType_of_lt_omega_one h.out
 
-theorem card_nfp_le_of_forall_le {f : Ordinal → Ordinal}
-    (hf : ∀ x, (f x).card ≤ max ℵ₀ x.card) :
-    (nfp f o).card ≤ max ℵ₀ o.card := by
-  rw [← iSup_iterate_eq_nfp]
-  apply card_iSup_le_sum_card _ |>.trans <|
-    sum_le_lift_mk_mul_iSup _ |>.trans <|
-    mul_le_mul' (le_refl _) (ciSup_le (c := max ℵ₀ o.card) fun i => ?_) |>.trans ?_
-  · rw [mul_eq_max] <;> simp
-  · induction i with
-    | zero => apply le_max_right
-    | succ i ih => grw [Function.iterate_succ_apply', hf, ih, ← max_assoc, max_self]
-
-theorem card_deriv_le_of_forall_le {f : Ordinal → Ordinal}
-    (hf : ∀ x, (f x).card ≤ max ℵ₀ x.card) :
-    (deriv f o).card ≤ max ℵ₀ o.card := by
-  induction o using limitRecOn with
-  | zero => grw [deriv_zero_right, card_nfp_le_of_forall_le hf]
-  | add_one o ih =>
-    rw [deriv_add_one]
-    apply card_nfp_le_of_forall_le hf |>.trans
-    grw [card_add_one, ih]
-    suffices o.card ≤ ℵ₀ ∨ ℵ₀ ≤ o.card + 1 by simp [this]
-    rcases lt_or_ge o.card ℵ₀ with ho | ho
-    · simp [ho.le]
-    · simp [ho]
-  | limit o ho ih =>
-    rw [deriv_limit f ho]
-    apply card_iSup_Iio_le_card_mul_iSup _ |>.trans
-    trans o.card * max ℵ₀ o.card
-    · rw [Cardinal.lift_id]
-      apply mul_le_mul' (le_refl _) <| ciSup_le' fun i => ?_
-      exact le_trans (ih _ i.2) <| max_le_max_left _ <| card_le_card i.2.le
-    · rw [mul_eq_max (aleph0_le_card.mpr <| omega0_le_of_isSuccLimit ho) (le_max_left _ _),
-        max_left_comm, max_self]
-
 theorem card_nfpFamily_le {f : ι → Ordinal → Ordinal}
     {c : Cardinal} (hc : ℵ₀ ≤ c) (hι : #(Shrink ι) ≤ c)
     (hf : ∀ i x, (f i x).card ≤ max c x.card) (o : Ordinal) :
@@ -818,6 +783,20 @@ theorem card_derivFamily_le {f : ι → Ordinal → Ordinal}
         (ciSup_le' (a := max c o.card) ?_) |>.trans ?_
     · exact fun ⟨i, hi⟩ => ih _ hi |>.trans <| max_le_max_left _ (card_le_card hi.le)
     · grw [Cardinal.lift_id, ← sq, power_nat_le (by simp [hc])]
+
+theorem card_nfp_le_of_forall_le {f : Ordinal → Ordinal}
+    (hf : ∀ x, (f x).card ≤ max ℵ₀ x.card) :
+    (nfp f o).card ≤ max ℵ₀ o.card := by
+  apply card_nfpFamily_le (le_refl ℵ₀) ?_ (fun () => hf)
+  grw [← Cardinal.lift_le.{u, u}, lift_mk_shrink,
+    Cardinal.lift_id, mk_unit, Cardinal.lift_one, one_le_aleph0]
+
+theorem card_deriv_le_of_forall_le {f : Ordinal → Ordinal}
+    (hf : ∀ x, (f x).card ≤ max ℵ₀ x.card) :
+    (deriv f o).card ≤ max ℵ₀ o.card := by
+  apply card_derivFamily_le (le_refl ℵ₀) ?_ (fun () => hf)
+  grw [← Cardinal.lift_le.{u, u}, lift_mk_shrink,
+    Cardinal.lift_id, mk_unit, Cardinal.lift_one, one_le_aleph0]
 
 theorem card_veblen_le (a b : Ordinal) : (veblen a b).card ≤ max ℵ₀ (max a.card b.card) := by
   induction a using WellFoundedLT.induction generalizing b with
