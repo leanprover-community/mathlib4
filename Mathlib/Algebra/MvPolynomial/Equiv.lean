@@ -406,11 +406,23 @@ lemma sumAlgEquiv_C_inl (r : R) : sumAlgEquiv R S₁ S₂ (C r) = C (C r) := by
   ext; simp [sumAlgEquiv, C, monomial, coeff]
 
 @[simp]
+lemma sumAlgEquiv_symm_C_C (r : R) : (sumAlgEquiv R S₁ S₂).symm (C <| C r) = C r := by
+  ext; simp [sumAlgEquiv, C, monomial, coeff]
+
+@[simp]
 lemma sumAlgEquiv_X_inl (c : S₁) : sumAlgEquiv R S₁ S₂ (X <| .inl c) = X c := by
   ext; simp [sumAlgEquiv, X, monomial, coeff, AddMonoidAlgebra.one_def]
 
 @[simp]
+lemma sumAlgEquiv_symm_X (c : S₁) : (sumAlgEquiv R S₁ S₂).symm (X c) = (X <| .inl c) := by
+  ext; simp [sumAlgEquiv, X, monomial, coeff, AddMonoidAlgebra.one_def]
+
+@[simp]
 lemma sumAlgEquiv_X_inr (c : S₂) : sumAlgEquiv R S₁ S₂ (X <| .inr c) = C (X c) := by
+  ext; simp [sumAlgEquiv, C, X, monomial, coeff]
+
+@[simp]
+lemma sumAlgEquiv_symm_C_X (c : S₂) : (sumAlgEquiv R S₁ S₂).symm (C <| X c) = X (.inr c) := by
   ext; simp [sumAlgEquiv, C, X, monomial, coeff]
 
 lemma sumAlgEquiv_comp_rename_inr :

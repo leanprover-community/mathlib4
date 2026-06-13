@@ -40,6 +40,8 @@ left adjoint to the functor equipping a module with the trivial representation.
 
 @[expose] public section
 
+open scoped MonoidAlgebra
+
 universe w w' u u' v v'
 
 namespace Representation
@@ -267,12 +269,13 @@ lemma Coinvariants.mk_tmul_inv (x : V) (y : W) (g : G) :
 `⟦v ⊗ single g r⟧ ↦ r • ρ(g⁻¹)(v)`. -/
 noncomputable def ofCoinvariantsTprodLeftRegular :
     Coinvariants (ρ.tprod (leftRegular k G)) →ₗ[k] V :=
-  Coinvariants.lift _ (TensorProduct.lift (Finsupp.linearCombination _ fun g => ρ g⁻¹) ∘ₗ
+  Coinvariants.lift _ (TensorProduct.lift ((Finsupp.linearCombination _ fun g => ρ g⁻¹) ∘ₗ
+    (MonoidAlgebra.coeffLinearEquiv k).toLinearMap) ∘ₗ
     (_root_.TensorProduct.comm _ _ _).toLinearMap) fun _ => by ext; simp
 
 @[simp]
 lemma ofCoinvariantsTprodLeftRegular_mk_tmul_single (x : V) (g : G) (r : k) :
-    ofCoinvariantsTprodLeftRegular ρ (Coinvariants.mk _ (x ⊗ₜ Finsupp.single g r)) = r • ρ g⁻¹ x :=
+    ofCoinvariantsTprodLeftRegular ρ (Coinvariants.mk _ (x ⊗ₜ .single g r)) = r • ρ g⁻¹ x :=
   congr($(Finsupp.linearCombination_single k (v := fun g => ρ g⁻¹) r g) x)
 
 /-- Given a `k`-linear `G`-representation `(V, ρ)`, this is the linear equivalence
@@ -281,7 +284,7 @@ lemma ofCoinvariantsTprodLeftRegular_mk_tmul_single (x : V) (g : G) (r : k) :
 noncomputable def coinvariantsTprodLeftRegularLEquiv :
     Coinvariants (ρ.tprod (leftRegular k G)) ≃ₗ[k] V :=
   LinearEquiv.ofLinear (ofCoinvariantsTprodLeftRegular ρ)
-    (Coinvariants.mk _ ∘ₗ (TensorProduct.mk k V (G →₀ k)).flip (single 1 1))
+    (Coinvariants.mk _ ∘ₗ (TensorProduct.mk k V k[G]).flip (.single 1 1))
     (by ext; simp) (by ext; simp)
 
 @[simp]
@@ -455,6 +458,8 @@ section Finsupp
 open MonoidalCategory Finsupp
 
 variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G) (α : Type u) [DecidableEq α]
+set_option maxHeartbeats 800000 in
+-- unification of the equivalence composition is slow after the `MonoidAlgebra` refactor
 /-- Given a `k`-linear `G`-representation `(A, ρ)` and a type `α`, this is the map
 `(A ⊗ (α →₀ k[G]))_G →ₗ[k] (α →₀ A)` sending
 `⟦a ⊗ single x (single g r)⟧ ↦ single x (r • ρ(g⁻¹)(a)).` -/
@@ -466,16 +471,20 @@ noncomputable def coinvariantsTensorFreeToFinsupp :
 
 variable {α}
 
+set_option maxHeartbeats 400000 in
+-- unification of the equivalence composition is slow after the `MonoidAlgebra` refactor
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma coinvariantsTensorFreeToFinsupp_mk_tmul_single (x : A) (i : α) (g : G) (r : k) :
     DFunLike.coe (F := (A.ρ.tprod (Representation.free k G α)).Coinvariants →ₗ[k] α →₀ A.V)
-      (coinvariantsTensorFreeToFinsupp A α) (Coinvariants.mk _ (x ⊗ₜ single i (single g r))) =
+      (coinvariantsTensorFreeToFinsupp A α) (Coinvariants.mk _ (x ⊗ₜ single i (.single g r))) =
       single i (r • A.ρ g⁻¹ x) := by
   simp [coinvariantsTensorFreeToFinsupp, Representation.finsuppTensorRight]
 
 variable (α)
 
+set_option maxHeartbeats 400000 in
+-- unification of the equivalence composition is slow after the `MonoidAlgebra` refactor
 /-- Given a `k`-linear `G`-representation `(A, ρ)` and a type `α`, this is the map
 `(α →₀ A) →ₗ[k] (A ⊗ (α →₀ k[G]))_G` sending `single x a ↦ ⟦a ⊗ₜ single x 1⟧.` -/
 noncomputable def finsuppToCoinvariantsTensorFree :
@@ -486,13 +495,15 @@ noncomputable def finsuppToCoinvariantsTensorFree :
 
 variable {A α}
 
+set_option maxHeartbeats 800000 in
+-- unification of the equivalence composition is slow after the `MonoidAlgebra` refactor
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma finsuppToCoinvariantsTensorFree_single (i : α) (x : A) :
     DFunLike.coe (F := (α →₀ A.V) →ₗ[k] (A.ρ.tprod (Representation.free k G α)).Coinvariants)
       (finsuppToCoinvariantsTensorFree A α) (single i x) =
-      Coinvariants.mk _ (x ⊗ₜ single i (single (1 : G) (1 : k))) := by
+      Coinvariants.mk _ (x ⊗ₜ single i (.single (1 : G) (1 : k))) := by
   simp [finsuppToCoinvariantsTensorFree, Representation.finsuppTensorRight, Equiv.mk_symm]
 
 variable (A α)
@@ -508,7 +519,7 @@ noncomputable abbrev coinvariantsTensorFreeLEquiv :
       simp [finsuppToCoinvariantsTensorFree_single,
         coinvariantsTensorFreeToFinsupp_mk_tmul_single]) <|
     Coinvariants.hom_ext <| TensorProduct.ext <| LinearMap.ext fun a => lhom_ext' fun i =>
-      lhom_ext fun g r => by
+      MonoidAlgebra.lhom_ext' fun g => LinearMap.ext fun r => by
         simp [coinvariantsTensorFreeToFinsupp_mk_tmul_single _,
           finsuppToCoinvariantsTensorFree_single (A := A) i, TensorProduct.smul_tmul]
 

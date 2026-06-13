@@ -142,12 +142,6 @@ def single (n : ℕ) (m : M) : PolynomialModule R M := .ofCoeff R <| .single n m
 lemma single_add (n : ℕ) (m₁ m₂ : M) :
     single R n (m₁ + m₂) = single R n m₁ + single R n m₂ := by ext; simp
 
-/-- Workaround to defeq problems: if we interpret a `PolynomialModule` as a `Finsupp`, also transfer
-the `DFunLike` instance. -/
-@[simp]
-theorem funLike_eq (x : PolynomialModule R M) :
-    DFunLike.coe (self := Finsupp.instFunLike) x = x := rfl
-
 /-- This is required to have the `IsScalarTower S R M` instance to avoid diamonds. -/
 instance : Module S (PolynomialModule R M) := (coeffEquiv R).module _
 

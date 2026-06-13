@@ -300,7 +300,6 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     intro x hx
     obtain ⟨l, hl⟩ := (Finsupp.mem_span_iff_linearCombination _ _ _).mp (H _ ⟨x, hx, rfl⟩)
     replace hl := congr_arg (fun f : PolynomialModule R M => f.coeff (n + 1)) hl
-    dsimp only at hl
     rw [PolynomialModule.coeff_single, Finsupp.single_apply, if_pos rfl] at hl
     rw [← hl, Finsupp.linearCombination_apply, PolynomialModule.coeff_finsuppSum, Finsupp.sum_apply]
     apply Submodule.sum_mem _ _

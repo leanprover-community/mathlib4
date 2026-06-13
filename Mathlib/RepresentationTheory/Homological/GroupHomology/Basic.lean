@@ -151,6 +151,8 @@ theorem d_eq [DecidableEq G] :
 
 end inhomogeneousChains
 
+set_option maxHeartbeats 1600000 in
+-- unification through the coinvariants equivalences is slow after the `MonoidAlgebra` refactor
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, this is the complex of inhomogeneous chains
 $$\dots \to \bigoplus_{G^1} A \to \bigoplus_{G^0} A \to 0$$

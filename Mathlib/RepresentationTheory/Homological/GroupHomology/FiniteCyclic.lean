@@ -44,6 +44,8 @@ namespace Rep.FiniteCyclicGroup
 
 variable {k G : Type u} [CommRing k] [CommGroup G] [Fintype G] (A : Rep k G) (g : G)
 
+set_option maxHeartbeats 1600000 in
+-- unification through the coinvariants equivalences is slow after the `MonoidAlgebra` refactor
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open ModuleCat.MonoidalCategory in
@@ -58,7 +60,8 @@ noncomputable def coinvariantsTensorResolutionIso (hg : ∀ x, x ∈ Subgroup.zp
       moduleCatChainComplex A g :=
   HomologicalComplex.Hom.isoOfComponents
     (fun _ => (coinvariantsTprodLeftRegularLEquiv A.ρ).toModuleIso) fun i j h =>
-    coinvariantsTensor_hom_ext (LinearMap.ext fun a => lhom_ext' fun g => LinearMap.ext_ring (by
+    coinvariantsTensor_hom_ext (LinearMap.ext fun a =>
+      MonoidAlgebra.lhom_ext' fun g => LinearMap.ext_ring (by
     subst h
     by_cases hj : Even (j + 1)
     · simpa [hj, coinvariantsTensorMk, ofCoinvariantsTprodLeftRegular, Rep.norm,

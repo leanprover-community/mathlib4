@@ -384,7 +384,7 @@ lemma addMonoidHom_ext [AddZeroClass N] ⦃f g : R[M] →+ N⦄
     (h : ∀ m r, f (single m r) = g (single m r)) : f = g := by
   have : f.comp coeffAddEquiv.symm.toAddMonoidHom = g.comp coeffAddEquiv.symm.toAddMonoidHom :=
     Finsupp.addHom_ext h
-  convert congr(($this).comp coeffAddEquiv.toAddMonoidHom)
+  convert congr(($this).comp coeffAddEquiv.toAddMonoidHom) <;> ext <;> simp
 
 /-- If two additive homomorphisms from `R[M]` are equal on each `single r m`,
 then they are equal.

@@ -60,7 +60,7 @@ theorem mapDomain_one [One M] [One N] {F : Type*} [FunLike F M N] [OneHomClass F
 
 /-- Given a map `f : R →+ S`, return the corresponding map `R[M] → S[M]` obtained by mapping
 each coefficient along `f`. -/
-@[to_additive (attr := simps!)
+@[to_additive
 /-- Given a map `f : R →+ S`, return the corresponding map `R[M] → S[M]` obtained by mapping
 each coefficient along `f`. -/]
 def map (f : R →+ S) (x : R[M]) : S[M] := .ofCoeff <| x.coeff.mapRange f f.map_zero
@@ -438,7 +438,8 @@ lemma commRingEquiv_single_single (m : M) (n : N) (r : R) :
 lemma commRingEquiv_single_one (m : M) :
     commRingEquiv (single m (1 : R[N])) = single 1 (single m 1) := commRingEquiv_single_single ..
 
-@[to_additive (dont_translate := R) (attr := simp)]
+-- We want this to have higher priority than `commRingEquiv_single_single`
+@[to_additive (dont_translate := R) (attr := simp high)]
 lemma commRingEquiv_single_one_single (m : M) :
     commRingEquiv (single 1 <| single m 1) = (single m (1 : R[N])) := commRingEquiv_single_single ..
 

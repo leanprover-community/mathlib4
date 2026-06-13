@@ -950,7 +950,7 @@ instance : (linearization k G).Monoidal where
   δ X Y := ofHom (δ X Y)
   δ_natural_left f Z := hom_ext <| rTensor_comp_δ Z f
   δ_natural_right Z f := hom_ext <| lTensor_comp_δ Z f
-  oplax_associativity X Y Z := hom_ext <| by convert assoc_comp_δ X Y Z (k := k) using 0
+  oplax_associativity X Y Z := hom_ext <| by simpa using assoc_comp_δ X Y Z (k := k)
   oplax_left_unitality X := hom_ext <| leftUnitor_δ X
   oplax_right_unitality X := hom_ext <| rightUnitor_δ X
   ε_η := hom_ext <| η_ε k G

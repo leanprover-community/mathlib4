@@ -260,7 +260,9 @@ lemma basis_apply [Nontrivial S] (r : Unit ⊕ σ) :
   · rw [basis_inr, cotangentEquivProd_symm_apply, cotangentCompLocalizationAwayEquiv_symm_inl,
       basisLeft, Module.Basis.map_apply, tensorCotangentEquiv_symm_apply,
       LinearMap.liftBaseChange_tmul, one_smul, Extension.Cotangent.map_mk]
-    simp
+    simp only [Extension.Hom.toAlgHom_apply, Hom.toExtensionHom_toRingHom, AlgHom.toRingHom_eq_coe]
+    congr! 2 with x
+    simp [pres, Presentation.comp_relation_inr, kerGen, presLeft, Generators.toComp_toAlgHom]
     rfl
 
 end PresentationOfFreeCotangent.Aux

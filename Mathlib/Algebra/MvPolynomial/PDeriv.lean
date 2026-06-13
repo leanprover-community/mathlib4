@@ -149,6 +149,7 @@ lemma aeval_sumElim_pderiv_inl {S τ : Type*} [CommRing S] [Algebra R S]
     simp only [Derivation.leibniz, pderiv_X, smul_eq_mul, map_add, map_mul, aeval_X, h]
     cases q <;> simp [Pi.single_apply]
 
+@[simp]
 lemma pderiv_sumRingEquiv {σ ι} (p i) :
     (sumRingEquiv R σ ι p).pderiv i = sumRingEquiv R σ ι (p.pderiv (.inl i)) := by
   classical
@@ -156,6 +157,12 @@ lemma pderiv_sumRingEquiv {σ ι} (p i) :
   | C a => simp
   | add p q _ _ => simp_all
   | mul_X p n _ => cases n <;> simp_all [pderiv_X, Pi.single_apply, apply_ite]
+
+@[simp]
+lemma pderiv_sumAlgEquiv {R S₁ S₂ : Type*} [CommSemiring R]
+    (b : S₁) (p : MvPolynomial (S₁ ⊕ S₂) R) :
+    pderiv b (sumAlgEquiv R S₁ S₂ p) = sumAlgEquiv R S₁ S₂ (pderiv (Sum.inl b) p) :=
+  pderiv_sumRingEquiv ..
 
 end PDeriv
 

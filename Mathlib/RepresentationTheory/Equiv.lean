@@ -142,7 +142,7 @@ lemma finsuppTensorRight_symm_apply_single {α : Type w'} [DecidableEq α] (i : 
   `α →₀ G →₀ k`. -/
 def leftRegularTensorTrivialIsoFree (α : Type w') :
     ((leftRegular k G).tprod (trivial k G k[α])).Equiv (free k G α) :=
-  .mk (TensorProduct.congr (MonoidAlgebra.coeffLinearEquiv _) (.refl _ _) ≪≫ₗ
+  .mk (TensorProduct.congr (MonoidAlgebra.coeffLinearEquiv _) (MonoidAlgebra.coeffLinearEquiv _) ≪≫ₗ
     finsuppTensorFinsupp' k G α ≪≫ₗ Finsupp.domLCongr (Equiv.prodComm G α) ≪≫ₗ curryLinearEquiv k
       ≪≫ₗ Finsupp.mapRange.linearEquiv (MonoidAlgebra.coeffLinearEquiv _).symm) fun g ↦ by ext; simp
 
