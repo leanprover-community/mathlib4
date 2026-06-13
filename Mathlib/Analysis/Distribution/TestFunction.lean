@@ -117,7 +117,7 @@ namespace TestFunction
 
 instance toTestFunctionClass : TestFunctionClass 𝓓^{n}(Ω, F) Ω F n where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
   map_contDiff f := f.contDiff'
   map_hasCompactSupport f := f.hasCompactSupport'
   tsupport_map_subset f := f.tsupport_subset'
@@ -309,7 +309,6 @@ noncomputable def ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
   toFun f := ofSupportedIn K_sub_Ω f
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  cont := continuous_ofSupportedIn K_sub_Ω
 
 @[deprecated (since := "2025-12-10")] alias ofSupportedInLM := ofSupportedInCLM
 
@@ -568,7 +567,7 @@ lemma lineDerivCLM_apply {f : 𝓓^{n}(Ω, F)} {v : E} {x : E} :
     (lineDerivCLM 𝕜 v f : 𝓓^{k}(Ω, F)) x = if k + 1 ≤ n then lineDeriv ℝ f x v else 0 := by
   rw [lineDerivCLM_eq_fderivCLM, fderivCLM_apply]
   split_ifs with hk
-  · have hk' : 0 < (n : ℕ∞ω) := mod_cast (ENat.add_one_pos.trans_le hk)
+  · have hk' : 0 < (n : ℕ∞ω) := mod_cast (add_pos_of_right zero_lt_one k).trans_le hk
     rw [(f.contDiff.differentiable hk'.ne').differentiableAt.lineDeriv_eq_fderiv]
   · rfl
 

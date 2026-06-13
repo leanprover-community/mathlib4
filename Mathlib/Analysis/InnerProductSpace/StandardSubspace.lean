@@ -81,7 +81,7 @@ noncomputable scoped instance : InnerProductSpace ℝ H where
 lemma inner_real_eq_re_inner (x y : H) : inner ℝ x y = ⟪x, y⟫.re := rfl
 
 /-- The imaginary unit as an invertible element. -/
-@[simps]
+@[simps val]
 def _root_.Complex.UnitI : ℂˣ where
   val := I
   inv := -I
@@ -107,10 +107,10 @@ lemma mem_symplComp_iff {x : H} {S : ClosedSubmodule ℝ H} :
   · intro h y hy
     have hiy := h (I • y)
     simp only [← smul_assoc, smul_eq_mul, I_mul_I, neg_smul, one_smul, neg_neg] at hiy
-    simpa [inner_real_eq_re_inner] using hiy hy
+    simpa [inner_real_eq_re_inner] using! hiy hy
   · intro h _ hy
     have hiy := h _ hy
-    simpa [inner_smul_left] using hiy
+    simpa [inner_smul_left] using! hiy
 
 lemma mulI_orthogonal_eq_symplComp (S : ClosedSubmodule ℝ H) : Sᗮ.mulI = S.symplComp := by
   ext x

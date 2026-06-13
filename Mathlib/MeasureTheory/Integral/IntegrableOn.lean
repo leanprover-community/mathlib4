@@ -402,7 +402,7 @@ variable {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε'] [PseudoMetr
 -- by merely assuming ‖f x‖ₑ vanishes on t \ s
 /-- If a function is integrable on a set `s`, and its enorm vanishes on `t \ s`,
 then it is integrable on `t` if `t` is null-measurable. -/
-theorem IntegrableOn.of_ae_diff_eq_zero {f : α → ε'}
+theorem IntegrableOn.of_ae_sdiff_eq_zero {f : α → ε'}
     (hf : IntegrableOn f s μ) (ht : NullMeasurableSet t μ)
     (h't : ∀ᵐ x ∂μ, x ∈ t \ s → f x = 0) : IntegrableOn f t μ := by
   let u := { x ∈ s | f x ≠ 0 }
@@ -421,22 +421,28 @@ theorem IntegrableOn.of_ae_diff_eq_zero {f : α → ε'}
       exact hx.2 (subset_toMeasurable μ u ⟨h'x, Ne.symm H⟩)
     · exact (hxt ⟨hx.1, h'x⟩).symm
   apply (A.union B).mono_set _
-  rw [union_diff_self]
+  rw [union_sdiff_self]
   exact subset_union_right
+
+@[deprecated (since := "2026-06-03")]
+alias IntegrableOn.of_ae_diff_eq_zero := IntegrableOn.of_ae_sdiff_eq_zero
 
 /-- If a function is integrable on a set `s`, and vanishes on `t \ s`, then it is integrable on `t`
 if `t` is measurable. -/
-theorem IntegrableOn.of_forall_diff_eq_zero {f : α → ε'}
+theorem IntegrableOn.of_forall_sdiff_eq_zero {f : α → ε'}
     (hf : IntegrableOn f s μ) (ht : MeasurableSet t)
     (h't : ∀ x ∈ t \ s, f x = 0) : IntegrableOn f t μ :=
-  hf.of_ae_diff_eq_zero ht.nullMeasurableSet (Eventually.of_forall h't)
+  hf.of_ae_sdiff_eq_zero ht.nullMeasurableSet (Eventually.of_forall h't)
+
+@[deprecated (since := "2026-06-03")]
+alias IntegrableOn.of_forall_diff_eq_zero := IntegrableOn.of_forall_sdiff_eq_zero
 
 /-- If a function is integrable on a set `s` and vanishes almost everywhere on its complement,
 then it is integrable. -/
 theorem IntegrableOn.integrable_of_ae_notMem_eq_zero
     {f : α → ε'} (hf : IntegrableOn f s μ) (h't : ∀ᵐ x ∂μ, x ∉ s → f x = 0) : Integrable f μ := by
   rw [← integrableOn_univ]
-  apply hf.of_ae_diff_eq_zero nullMeasurableSet_univ
+  apply hf.of_ae_sdiff_eq_zero nullMeasurableSet_univ
   filter_upwards [h't] with x hx h'x using hx h'x.2
 
 /-- If a function is integrable on a set `s` and vanishes everywhere on its complement,
@@ -448,7 +454,7 @@ theorem IntegrableOn.integrable_of_forall_notMem_eq_zero
 theorem IntegrableOn.of_inter_support {f : α → ε'}
     (hs : MeasurableSet s) (hf : IntegrableOn f (s ∩ support f) μ) :
     IntegrableOn f s μ := by
-  simpa using hf.of_forall_diff_eq_zero hs
+  simpa using hf.of_forall_sdiff_eq_zero hs
 
 theorem integrableOn_iff_integrable_of_support_subset
     {f : α → ε'} (h1s : support f ⊆ s) : IntegrableOn f s μ ↔ Integrable f μ := by
@@ -539,6 +545,16 @@ lemma integrableAtFilter_congr (h : f =ᵐ[μ] g) :
     IntegrableAtFilter f l μ ↔ IntegrableAtFilter g l μ :=
   ⟨(·.congr h), (·.congr h.symm)⟩
 
+lemma IntegrableAtFilter.congr'_enorm {ε'' : Type*} [TopologicalSpace ε''] [ContinuousENorm ε'']
+    {g : α → ε''} (hf : IntegrableAtFilter f l μ) (hg : AEStronglyMeasurable g μ)
+    (h : ∀ᵐ a ∂μ, ‖f a‖ₑ = ‖g a‖ₑ) :
+    IntegrableAtFilter g l μ :=
+  let ⟨s, hs, hf⟩ := hf; ⟨s, hs, hf.congr'_enorm hg.restrict (ae_restrict_le h)⟩
+
+@[simp]
+lemma integrableAtFilter_zero : IntegrableAtFilter (0 : α → E) l μ :=
+  ⟨univ, by simp, integrableOn_univ.mpr (integrable_zero ..)⟩
+
 protected theorem IntegrableAtFilter.add [ContinuousAdd ε'] {f g : α → ε'}
     (hf : IntegrableAtFilter f l μ) (hg : IntegrableAtFilter g l μ) :
     IntegrableAtFilter (f + g) l μ := by
@@ -552,6 +568,12 @@ protected theorem IntegrableAtFilter.neg {f : α → E} (hf : IntegrableAtFilter
   rcases hf with ⟨s, sl, hs⟩
   exact ⟨s, sl, hs.neg⟩
 
+@[simp]
+protected theorem integrableAtFilter_neg_iff {f : α → E} :
+    IntegrableAtFilter (-f) l μ ↔ IntegrableAtFilter f l μ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.neg⟩
+  convert! h.neg; simp
+
 protected theorem IntegrableAtFilter.sub {f g : α → E}
     (hf : IntegrableAtFilter f l μ) (hg : IntegrableAtFilter g l μ) :
     IntegrableAtFilter (f - g) l μ := by
@@ -563,6 +585,21 @@ protected theorem IntegrableAtFilter.smul {𝕜 : Type*} [NormedAddCommGroup �
     IntegrableAtFilter (c • f) l μ := by
   rcases hf with ⟨s, sl, hs⟩
   exact ⟨s, sl, hs.smul c⟩
+
+-- See `integrableAtFilter_smul_iff` below for the fully general version.
+private theorem integrableAtFilter_smul_iff' {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+    {f : α → E} {c : 𝕜} (hc : c ≠ 0) :
+    IntegrableAtFilter (c • f) l μ ↔ IntegrableAtFilter f l μ := by
+  refine ⟨fun hf ↦ ?_, fun h ↦ h.smul c⟩
+  convert! hf.smul c⁻¹
+  simp [← smul_assoc, inv_mul_cancel₀ hc]
+
+theorem integrableAtFilter_smul_iff {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+    {f : α → E} (c : 𝕜) :
+    IntegrableAtFilter (c • f) l μ ↔ c = 0 ∨ IntegrableAtFilter f l μ := by
+  by_cases hc : c = 0
+  · simp [hc]
+  · simpa [hc] using MeasureTheory.integrableAtFilter_smul_iff' hc
 
 protected theorem IntegrableAtFilter.enorm (hf : IntegrableAtFilter f l μ) :
     IntegrableAtFilter (fun x => ‖f x‖ₑ) l μ :=

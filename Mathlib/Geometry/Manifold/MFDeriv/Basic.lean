@@ -223,9 +223,9 @@ theorem mdifferentiableWithinAt_iff_target :
         ContinuousWithinAt f s x :=
       and_iff_left_of_imp <| (continuousAt_extChartAt _).comp_continuousWithinAt
   simp_rw [cont, DifferentiableWithinAtProp, extChartAt, OpenPartialHomeomorph.extend,
-    PartialEquiv.coe_trans,
-    ModelWithCorners.toPartialEquiv_coe, OpenPartialHomeomorph.coe_coe, modelWithCornersSelf_coe,
-    chartAt_self_eq, OpenPartialHomeomorph.refl_apply]
+    PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
+    OpenPartialHomeomorph.coe_toPartialEquiv, modelWithCornersSelf_coe, chartAt_self_eq,
+    OpenPartialHomeomorph.refl_apply]
   rfl
 
 theorem mdifferentiableAt_iff_target {x : M} :
@@ -290,8 +290,6 @@ theorem mdifferentiableAt_iff_target_of_mem_source
   rw [← mdifferentiableWithinAt_univ, mdifferentiableWithinAt_iff_target_of_mem_source hy,
     continuousWithinAt_univ, ← mdifferentiableWithinAt_univ]
 
-variable [IsManifold I 1 M] [IsManifold I' 1 M']
-
 theorem mdifferentiableWithinAt_iff_of_mem_maximalAtlas {x : M} (he : e ∈ maximalAtlas I 1 M)
     (he' : e' ∈ maximalAtlas I' 1 M') (hx : x ∈ e.source) (hy : f x ∈ e'.source) :
     MDifferentiableWithinAt I I' f s x ↔
@@ -315,8 +313,8 @@ theorem mdifferentiableWithinAt_iff_image {x : M} (he : e ∈ maximalAtlas I 1 M
 
 /-- One can reformulate smoothness within a set at a point as continuity within this set at this
 point, and smoothness in any chart containing that point. -/
-theorem mdifferentiableWithinAt_iff_of_mem_source {x' : M} {y : M'} (hx : x' ∈ (chartAt H x).source)
-    (hy : f x' ∈ (chartAt H' y).source) :
+theorem mdifferentiableWithinAt_iff_of_mem_source [IsManifold I 1 M] [IsManifold I' 1 M']
+    {x' : M} {y : M'} (hx : x' ∈ (chartAt H x).source) (hy : f x' ∈ (chartAt H' y).source) :
     MDifferentiableWithinAt I I' f s x' ↔
       ContinuousWithinAt f s x' ∧
         DifferentiableWithinAt 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
@@ -327,8 +325,8 @@ theorem mdifferentiableWithinAt_iff_of_mem_source {x' : M} {y : M'} (hx : x' ∈
 /-- One can reformulate smoothness within a set at a point as continuity within this set at this
 point, and smoothness in any chart containing that point. Version requiring differentiability
 in the target instead of `range I`. -/
-theorem mdifferentiableWithinAt_iff_of_mem_source' {x' : M} {y : M'}
-    (hx : x' ∈ (chartAt H x).source) (hy : f x' ∈ (chartAt H' y).source) :
+theorem mdifferentiableWithinAt_iff_of_mem_source' [IsManifold I 1 M] [IsManifold I' 1 M']
+    {x' : M} {y : M'} (hx : x' ∈ (chartAt H x).source) (hy : f x' ∈ (chartAt H' y).source) :
     MDifferentiableWithinAt I I' f s x' ↔
       ContinuousWithinAt f s x' ∧
         DifferentiableWithinAt 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
@@ -344,8 +342,8 @@ theorem mdifferentiableWithinAt_iff_of_mem_source' {x' : M} {y : M'}
     ← map_extChartAt_nhdsWithin' hx, inter_comm, nhdsWithin_inter_of_mem]
   exact hc (extChartAt_source_mem_nhds' hy)
 
-theorem mdifferentiableAt_iff_of_mem_source {x' : M} {y : M'} (hx : x' ∈ (chartAt H x).source)
-    (hy : f x' ∈ (chartAt H' y).source) :
+theorem mdifferentiableAt_iff_of_mem_source [IsManifold I 1 M] [IsManifold I' 1 M']
+    {x' : M} {y : M'} (hx : x' ∈ (chartAt H x).source) (hy : f x' ∈ (chartAt H' y).source) :
     MDifferentiableAt I I' f x' ↔
       ContinuousAt f x' ∧
         DifferentiableWithinAt 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm) (range I)
@@ -369,13 +367,15 @@ theorem mdifferentiableOn_iff_of_mem_maximalAtlas' (he : e ∈ maximalAtlas I 1 
   (mdifferentiableOn_iff_of_mem_maximalAtlas he he' hs h2s).trans <| and_iff_right_of_imp fun h ↦
     (e.continuousOn_writtenInExtend_iff hs h2s).1 h.continuousOn
 
+variable [IsManifold I 1 M] [IsManifold I' 1 M']
+
 /-- If the set where you want `f` to be smooth lies entirely in a single chart, and `f` maps it
 into a single chart, the smoothness of `f` on that set can be expressed by purely looking in
 these charts.
 Note: this lemma uses `extChartAt I x '' s` instead of `(extChartAt I x).symm ⁻¹' s` to ensure
 that this set lies in `(extChartAt I x).target`. -/
-theorem mdifferentiableOn_iff_of_subset_source {x : M} {y : M'} (hs : s ⊆ (chartAt H x).source)
-    (h2s : MapsTo f s (chartAt H' y).source) :
+theorem mdifferentiableOn_iff_of_subset_source
+    {x : M} {y : M'} (hs : s ⊆ (chartAt H x).source) (h2s : MapsTo f s (chartAt H' y).source) :
     MDifferentiableOn I I' f s ↔
       ContinuousOn f s ∧
         DifferentiableOn 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm) (extChartAt I x '' s) :=
@@ -387,7 +387,8 @@ into a single chart, the smoothness of `f` on that set can be expressed by purel
 these charts.
 Note: this lemma uses `extChartAt I x '' s` instead of `(extChartAt I x).symm ⁻¹' s` to ensure
 that this set lies in `(extChartAt I x).target`. -/
-theorem mdifferentiableOn_iff_of_subset_source' {x : M} {y : M'} (hs : s ⊆ (extChartAt I x).source)
+theorem mdifferentiableOn_iff_of_subset_source'
+    {x : M} {y : M'} (hs : s ⊆ (extChartAt I x).source)
     (h2s : MapsTo f s (extChartAt I' y).source) :
     MDifferentiableOn I I' f s ↔
         DifferentiableOn 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm) (extChartAt I x '' s) := by
@@ -413,14 +414,14 @@ theorem mdifferentiableOn_iff :
     specialize h w this
     have w1 : w ∈ (chartAt H x).source := by simp only [w, hz, mfld_simps]
     have w2 : f w ∈ (chartAt H' y).source := by simp only [w, hz, mfld_simps]
-    convert ((mdifferentiableWithinAt_iff_of_mem_source w1 w2).mp h).2.mono _
+    convert! ((mdifferentiableWithinAt_iff_of_mem_source w1 w2).mp h).2.mono _
     · simp only [w, hz, mfld_simps]
     · mfld_set_tac
   · rintro ⟨hcont, hdiff⟩ x hx
     refine differentiableWithinAt_localInvariantProp.liftPropWithinAt_iff.mpr ?_
     refine ⟨hcont x hx, ?_⟩
     dsimp [DifferentiableWithinAtProp]
-    convert hdiff x (f x) (extChartAt I x x) (by simp only [hx, mfld_simps]) using 1
+    convert! hdiff x (f x) (extChartAt I x x) (by simp only [hx, mfld_simps]) using 1
     mfld_set_tac
 
 /-- One can reformulate smoothness on a set as continuity on this set, and smoothness in any
@@ -437,7 +438,7 @@ theorem mdifferentiableOn_iff_target :
   constructor
   · refine fun h' y => ⟨?_, fun x _ => h' x y⟩
     have h'' : ContinuousOn _ univ := (ModelWithCorners.continuous I').continuousOn
-    convert (h''.comp_inter (chartAt H' y).continuousOn_toFun).comp_inter h
+    convert! (h''.comp_inter (chartAt H' y).continuousOn_toFun).comp_inter h
     simp
   · exact fun h' x y => (h' y).2 x 0
 
@@ -514,6 +515,7 @@ theorem writtenInExtChartAt_comp (h : ContinuousWithinAt f s x) :
 variable {f' f₀' f₁' : TangentSpace I x →L[𝕜] TangentSpace I' (f x)}
   {g' : TangentSpace I' (f x) →L[𝕜] TangentSpace I'' (g (f x))}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `UniqueMDiffWithinAt` achieves its goal: it implies the uniqueness of the derivative. -/
 protected nonrec theorem UniqueMDiffWithinAt.eq (U : UniqueMDiffWithinAt I s x)
     (h : HasMFDerivWithinAt I I' f s x f') (h₁ : HasMFDerivWithinAt I I' f s x f₁') : f' = f₁' := by
@@ -625,7 +627,7 @@ theorem HasMFDerivWithinAt.union (hs : HasMFDerivWithinAt I I' f s x f')
     (ht : HasMFDerivWithinAt I I' f t x f') : HasMFDerivWithinAt I I' f (s ∪ t) x f' := by
   constructor
   · exact ContinuousWithinAt.union hs.1 ht.1
-  · convert HasFDerivWithinAt.union hs.2 ht.2 using 1
+  · convert! HasFDerivWithinAt.union hs.2 ht.2 using 1
     simp only [union_inter_distrib_right, preimage_union]
 
 theorem HasMFDerivWithinAt.mono_of_mem_nhdsWithin
@@ -717,6 +719,7 @@ lemma mfderivWithin_of_isOpen (hs : IsOpen s) (hx : x ∈ s) :
     mfderivWithin I I' f s x = mfderiv I I' f x :=
   mfderivWithin_of_mem_nhds (hs.mem_nhds hx)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasMFDerivWithinAt_insert {y : M} :
     HasMFDerivWithinAt I I' f (insert y s) x f' ↔ HasMFDerivWithinAt I I' f s x f' := by
   have : T1Space M := I.t1Space M
@@ -745,9 +748,12 @@ protected theorem HasMFDerivWithinAt.insert (h : HasMFDerivWithinAt I I' f s x f
     HasMFDerivWithinAt I I' f (insert x s) x f' :=
   h.insert'
 
-theorem hasMFDerivWithinAt_diff_singleton (y : M) :
+theorem hasMFDerivWithinAt_sdiff_singleton (y : M) :
     HasMFDerivWithinAt I I' f (s \ {y}) x f' ↔ HasMFDerivWithinAt I I' f s x f' := by
-  rw [← hasMFDerivWithinAt_insert, insert_diff_singleton, hasMFDerivWithinAt_insert]
+  rw [← hasMFDerivWithinAt_insert, insert_sdiff_singleton, hasMFDerivWithinAt_insert]
+
+@[deprecated (since := "2026-06-03")]
+alias hasMFDerivWithinAt_diff_singleton := hasMFDerivWithinAt_sdiff_singleton
 
 theorem mfderivWithin_eq_mfderiv (hs : UniqueMDiffWithinAt I s x) (h : MDifferentiableAt I I' f x) :
     mfderivWithin I I' f s x = mfderiv I I' f x := by
@@ -1115,6 +1121,7 @@ theorem mfderiv_congr {f' : M → M'} (h : f = f') :
 
 variable (x)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem HasMFDerivWithinAt.comp (hg : HasMFDerivWithinAt I' I'' g u (f x) g')
     (hf : HasMFDerivWithinAt I I' f s x f') (hst : s ⊆ f ⁻¹' u) :
     HasMFDerivWithinAt I I'' (g ∘ f) s x (g'.comp f') := by

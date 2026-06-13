@@ -6,7 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.Data.Fintype.Sigma
 
 /-!
@@ -45,7 +46,7 @@ open Simplicial
 
 universe u
 
-variable {C : Type*} [Category* C]
+variable {C D : Type*} [Category* C] [Category* D]
 
 namespace CategoryTheory.SimplicialObject
 
@@ -271,6 +272,7 @@ theorem ι_desc {Z : C} (Δ : SimplexCategoryᵒᵖ) (F : ∀ A : IndexSet Δ, s
     (A : IndexSet Δ) : (s.cofan Δ).inj A ≫ s.desc Δ F = F A := by
   apply Cofan.IsColimit.fac
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A simplicial object that is isomorphic to a split simplicial object is split. -/
 @[simps]
 def ofIso (e : X ≅ Y) : Splitting Y where
@@ -279,12 +281,25 @@ def ofIso (e : X ≅ Y) : Splitting Y where
   isColimit' Δ := IsColimit.ofIsoColimit (s.isColimit Δ) (Cofan.ext (e.app Δ)
     (fun A => by simp [cofan, cofan']))
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 theorem cofan_inj_epi_naturality {Δ₁ Δ₂ : SimplexCategoryᵒᵖ} (A : IndexSet Δ₁) (p : Δ₁ ⟶ Δ₂)
     [Epi p.unop] : (s.cofan Δ₁).inj A ≫ X.map p = (s.cofan Δ₂).inj (A.epiComp p) := by
   dsimp [cofan]
   rw [assoc, ← X.map_comp]
   rfl
+
+set_option backward.defeqAttrib.useBackward true in
+/-- The image of a splitting of simplicial object by a functor which preserves
+finite coproducts -/
+@[simps]
+def map (F : C ⥤ D) [PreservesFiniteCoproducts F] :
+    Splitting (X ⋙ F) where
+  N n := F.obj (s.N n)
+  ι n := F.map (s.ι n)
+  isColimit' n :=
+    IsColimit.ofIsoColimit (isColimitCofanMkObjOfIsColimit F _ _ (s.isColimit n))
+      (Cofan.ext (Iso.refl _))
 
 end Splitting
 

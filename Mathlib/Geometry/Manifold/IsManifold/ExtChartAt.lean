@@ -408,7 +408,7 @@ lemma isInvertible_fderivWithin_extendCoordChange (hn : n ≠ 0)
     · exact I.uniqueDiffOn_extendCoordChange_source _ (φ.map_source hx)
     · exact (φ.left_inv hx ▸ ((hφ _ hx).differentiableWithinAt hn) :)
     · exact (hφ' _ (φ.map_source hx)).differentiableWithinAt hn
-    · exact φ.symm_mapsTo
+    · exact φ.mapsTo_symm
     · exact I.uniqueDiffOn_extendCoordChange_source _ (φ.map_source hx)
   · rw [← fderivWithin_comp, fderivWithin_congr' φ.leftInvOn.eqOn hx, fderivWithin_id]
     · exact I.uniqueDiffOn_extendCoordChange_source _ hx
@@ -569,7 +569,7 @@ theorem isOpen_extChartAt_target [I.Boundaryless] (x : M) : IsOpen (extChartAt I
 /-- If we're boundaryless, `(extChartAt I x).target` is a neighborhood of the key point -/
 theorem extChartAt_target_mem_nhds [I.Boundaryless] (x : M) :
     (extChartAt I x).target ∈ 𝓝 (extChartAt I x x) := by
-  convert extChartAt_target_mem_nhdsWithin x
+  convert! extChartAt_target_mem_nhdsWithin x
   simp only [I.range_eq_univ, nhdsWithin_univ]
 
 /-- If we're boundaryless, `(extChartAt I x).target` is a neighborhood of any of its points -/
