@@ -78,6 +78,18 @@ theorem image_injOn_powerset_of_injOn {β : Type*} [DecidableEq β] {f : α → 
   have {z a} (_ : z ⊆ s) (_ : a ∈ s) : a ∈ z ↔ f a ∈ z.image f := by grind [H.eq_iff]
   exact fun _ _ _ _ _ => by grind
 
+/-- Variant of `Finset.image_injOn_powerset_of_injOn` for a family `S` of finsets whose
+union supports an `InjOn` hypothesis, rather than the full powerset of a set. -/
+theorem injOn_image_of_biUnion_injOn {β : Type*} [DecidableEq α] [DecidableEq β]
+    {S : Finset (Finset α)} {f : α → β} (hf : (S.biUnion id : Set α).InjOn f) :
+    (S : Set (Finset α)).InjOn (·.image f) :=
+  (image_injOn_powerset_of_injOn hf).mono (by aesop (add simp Set.subset_def))
+
+/-- `s.biUnion id ⊆ t` iff every member of `s` is a subset of `t`, i.e. `s ⊆ t.powerset`. -/
+lemma biUnion_id_subset_iff_subset_powerset [DecidableEq α] {s : Finset (Finset α)} :
+    s.biUnion id ⊆ t ↔ s ⊆ t.powerset := by
+  aesop (add simp subset_iff)
+
 theorem image_surjOn_powerset {β : Type*} [DecidableEq β] {f : α → β} :
     Set.SurjOn (α := Finset α) (·.image f) s.powerset (s.image f).powerset :=
   fun t ht => ⟨{ x ∈ s | f x ∈ t}, by grind⟩
@@ -215,7 +227,7 @@ theorem filter_powersetCard_subset [DecidableEq α] (s t : Finset α) (n : ℕ)
   · rintro ⟨y, ⟨hyt, hyn⟩, rfl⟩
     refine ⟨⟨union_subset (hyt.trans sdiff_subset) hst, ?_⟩, subset_union_right⟩
     rw [card_union_of_disjoint (disjoint_of_subset_left hyt disjoint_sdiff_self_left), hyn]
-    omega
+    lia
 
 /-- The number of `n`-element subsets of `t` containing `s` equals
 `Nat.choose (#t - #s) (n - #s)`. -/
@@ -319,6 +331,26 @@ theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.
     refine ⟨insert x t, ?_, mem_insert_self _ _⟩
     rw [← insert_erase hx, powersetCard_succ_insert (notMem_erase _ _)]
     exact mem_union_right _ (mem_image_of_mem _ ht)
+
+/-- The union of all `r`-element subsets of `s` is `s`, provided `1 ≤ r ≤ #s`. -/
+lemma powersetCard_biUnion [DecidableEq α] {r : ℕ} (hr : r ≠ 0) (hrs : r ≤ #s) :
+    (s.powersetCard r).biUnion id = s := by
+  obtain ⟨r, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hr
+  rw [← sup_eq_biUnion]
+  exact powersetCard_sup _ _ hrs
+
+/-- If two finsets of equal cardinality have the same `r`-element subsets for some `1 ≤ r ≤ #a`,
+they are equal. -/
+lemma eq_of_powersetCard_eq {a b : Finset α} {r : ℕ}
+    (hab : #a = #b) (hr₀ : r ≠ 0) (hra : r ≤ #a)
+    (h : a.powersetCard r = b.powersetCard r) : a = b := by
+  classical
+  simpa [powersetCard_biUnion hr₀, ← hab, hra] using congr(($h).biUnion id)
+
+/-- For `1 ≤ r ≤ q`, the map `powersetCard r` is injective on the finsets of cardinality `q`. -/
+lemma powersetCard_injOn {q r : ℕ} (hr₀ : r ≠ 0) (hrq : r ≤ q) :
+    Set.InjOn (fun a ↦ a.powersetCard r) {a : Finset α | #a = q}
+  | _, rfl, _, hbq, h => eq_of_powersetCard_eq hbq.symm hr₀ hrq h
 
 theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (mapEmbedding f).toEmbedding :=

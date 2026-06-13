@@ -78,7 +78,7 @@ theorem eq_top_of_disjoint [FiniteDimensional K V] (s t : Submodule K V)
   replace hdim : finrank K V = finrank K s + finrank K t :=
     le_antisymm hdim (finrank_add_finrank_le_of_disjoint hdisjoint)
   rw [hdim]
-  convert s.finrank_sup_add_finrank_inf_eq t
+  convert! s.finrank_sup_add_finrank_inf_eq t
   rw [h_finrank_inf, add_zero]
 
 theorem isCompl_iff_disjoint [FiniteDimensional K V] (s t : Submodule K V)
@@ -356,7 +356,7 @@ theorem is_simple_module_of_finrank_eq_one {A} [Semiring A] [Module A V] [SMul K
   rw [← restrictScalars_inj K] at hn ⊢
   haveI : FiniteDimensional _ _ := .of_finrank_eq_succ h
   refine eq_top_of_finrank_eq ((Submodule.finrank_le _).antisymm ?_)
-  simpa only [h, finrank_bot] using Submodule.finrank_strictMono (Ne.bot_lt hn)
+  simpa only [h, finrank_bot] using! Submodule.finrank_strictMono (Ne.bot_lt hn)
 
 end finrank_eq_one
 
@@ -444,3 +444,24 @@ theorem ker_pow_le_ker_pow_finrank [FiniteDimensional K V] (f : End K V) (m : �
 end End
 
 end Module
+
+namespace Submodule
+
+section DivisionRing
+
+variable {W : Type v'} [DivisionRing K] [AddCommGroup W] [AddCommGroup V] [Module K V] [Module K W]
+  {f : V →ₗ[K] W}
+
+instance (p : Submodule K W) [FiniteDimensional K p] [FiniteDimensional K f.ker] :
+    FiniteDimensional K (comap f p) := by
+  grw [FiniteDimensional, ← rank_lt_aleph0_iff, ← lift_lt, f.lift_rank_comap_le p, lift_aleph0]
+  apply add_lt_aleph0 <;> rwa [lift_lt_aleph0, rank_lt_aleph0_iff]
+
+instance (p : Submodule K V) [FiniteDimensional K (V ⧸ p)] [FiniteDimensional K (W ⧸ f.range)] :
+    FiniteDimensional K (W ⧸ map f p) := by
+  grw [FiniteDimensional, ← rank_lt_aleph0_iff, ← lift_lt, f.lift_rank_quot_map_le p, lift_aleph0]
+  apply add_lt_aleph0 <;> rwa [lift_lt_aleph0, rank_lt_aleph0_iff]
+
+end DivisionRing
+
+end Submodule
