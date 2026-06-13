@@ -1215,8 +1215,7 @@ lemma mk_uniformity_basis_of_tendsto {β : Type*} {p : β → Prop} {f : β → 
     (𝓤 α).HasBasis p fun i ↦ {x | dist x.1 x.2 < f i} := by
   apply Metric.mk_uniformity_basis hf₀
   rw [nhds_basis_closedBall.tendsto_right_iff] at hf
-  refine fun ε hε ↦ hf₁.and (hf ε hε) |>.exists |>.imp fun i ↦ and_imp.mpr fun hp ↦ ?_
-  intro hi
+  refine fun ε hε ↦ hf₁.and (hf ε hε) |>.exists.imp fun i ↦ and_imp.mpr fun hp hi ↦ ?_
   exact ⟨hp, by
     simpa [Metric.mem_closedBall, Real.dist_eq, abs_of_nonneg (hf₀ i hp).le] using hi⟩
 

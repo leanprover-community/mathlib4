@@ -73,9 +73,9 @@ deriving instance
   [DiscreteTopology A] → CompactSpace _
 for PontryaginDual A
 
-@[simp]
-theorem map_pow (ψ : PontryaginDual A) (a : A) (n : ℕ) : ψ (a ^ n) = ψ a ^ n :=
-  _root_.map_pow (ψ : A →ₜ* Circle) a n
+@[ext]
+theorem ext {ψ φ : PontryaginDual A} (h : ∀ a, ψ a = φ a) : ψ = φ :=
+  DFunLike.ext _ _ h
 
 @[simp]
 theorem one_apply (a : A) : (1 : PontryaginDual A) a = 1 :=
@@ -95,12 +95,9 @@ instance [CompactSpace A] : DiscreteTopology (PontryaginDual A) := by
     ext ψ
     rw [Set.mem_singleton_iff]
     refine ⟨fun hψ ↦ ?_, ?_⟩
-    · apply ContinuousMonoidHom.ext
-      intro a
+    · ext1 a
       refine Circle.eq_one_of_forall_pow_mem_centeredArc_pi_div_two fun n hn ↦ ?_
-      change ((ψ : A →ₜ* Circle) a) ^ n ∈ Circle.centeredArc (π / 2)
-      rw [← PontryaginDual.map_pow ψ a n]
-      exact hψ (Set.mem_univ (a ^ n))
+      simpa using hψ (Set.mem_univ (a ^ n))
     · rintro rfl _ _
       rw [Circle.mem_centeredArc (by linarith [pi_pos])]
       simp [pi_pos]
@@ -124,16 +121,16 @@ theorem map_apply (f : A →ₜ* B) (x : PontryaginDual B) (y : A) :
 
 @[simp]
 theorem map_one : map (1 : A →ₜ* B) = 1 :=
-  ext fun x => ext (fun _y => OneHomClass.map_one x)
+  ContinuousMonoidHom.ext fun x => PontryaginDual.ext fun _y => OneHomClass.map_one x
 
 @[simp]
 theorem map_comp (g : B →ₜ* C) (f : A →ₜ* B) :
     map (comp g f) = ContinuousMonoidHom.comp (map f) (map g) :=
-  ext fun _x => ext fun _y => rfl
+  ContinuousMonoidHom.ext fun _x => PontryaginDual.ext fun _y => rfl
 
 @[simp]
 nonrec theorem map_mul (f g : A →ₜ* G) : map (f * g) = map f * map g :=
-  ext fun x => ext fun y => map_mul x (f y) (g y)
+  ContinuousMonoidHom.ext fun x => PontryaginDual.ext fun y => map_mul x (f y) (g y)
 
 variable (A B C G)
 
