@@ -44,15 +44,11 @@ Results require `RCLike 𝕜`.
 
 ## References
 
-* R. A. Horn and C. R. Johnson, *Matrix Analysis*, 2nd ed., Cambridge University
-  Press, 2013 — Gram matrices and factorization up to a unitary factor.
-* P. H. Schönemann, *A generalized solution of the orthogonal Procrustes
-  problem*, Psychometrika **31** (1966), 1–10 — the (least-squares) Procrustes
-  problem, of which this is the exact, zero-residual case.
-* T.-Y. Chien and S. Waldron, *A characterisation of projective unitary
-  equivalence of finite frames*, Linear Algebra Appl. (2015), arXiv:1312.5393 —
-  the frame-theoretic form: finite frames are unitarily equivalent iff their Gram
-  matrices coincide.
+* [R. A. Horn, C. R. Johnson, *Matrix Analysis*][horn_johnson_2013]
+* [P. H. Schönemann, *A generalized solution of the orthogonal Procrustes
+  problem*][schonemann1966]
+* [T.-Y. Chien, S. Waldron, *A Characterization of Projective Unitary Equivalence
+  of Finite Frames and Applications*][chien_waldron_2016]
 -/
 
 @[expose] public section
