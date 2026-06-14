@@ -311,7 +311,7 @@ private lemma exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot {R : Typ
     · simp [U.mul_nonsing_inv_cancel_right _ hU, mul_add, add_mul, mul_assoc, A'_def, C'_def,
         Vᵀ.mul_nonsing_inv_cancel_left _ (V.isUnit_det_transpose hV)]
     rw [det_mul, det_mul, hR1_eq]
-    exact ((det_transpose V ▸ hV).mul hM1).mul <| U.isUnit_nonsing_inv_det hU
+    exact ((V.det_transpose ▸ hV).mul hM1).mul <| U.isUnit_nonsing_inv_det hU
 
 private lemma exists_symmetric_X_isUnit_det_add_mul_of_symplectic [IsLocalRing R]
     (hA : fromBlocks A B C D ∈ symplecticGroup l R) :
