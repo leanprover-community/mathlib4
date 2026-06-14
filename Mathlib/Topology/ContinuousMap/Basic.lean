@@ -442,7 +442,7 @@ noncomputable def homeomorph (hf : IsQuotientMap f) : Quotient (Setoid.ker f) â‰
   continuous_toFun := isQuotientMap_quot_mk.continuous_iff.mpr hf.continuous
   continuous_invFun := by
     rw [hf.continuous_iff]
-    convert continuous_quotient_mk'
+    convert! continuous_quotient_mk'
     ext
     simp only [Equiv.invFun_as_coe, Function.comp_apply,
       (Setoid.quotientKerEquivOfSurjective f hf.surjective).symm_apply_eq]

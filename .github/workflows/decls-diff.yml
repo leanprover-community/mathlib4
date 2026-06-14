@@ -1,0 +1,190 @@
+# Post-build workflow that patches the `### PR summary` comment with a
+# Lean-aware declarations diff after each successful PR build. Consumes the
+# `import-graph` artifact uploaded by `build_template.yml` on both sides
+# (PR head + master merge-base), computes the diff via mathlib-ci's
+# `decls-diff` action, and replaces the `#### Declarations diff (Lean ...)`
+# region of the comment (the regex block is left untouched). On a cache miss
+# it marks that region unavailable instead.
+
+name: Declarations diff (post-build)
+
+on:
+  workflow_run:
+    # Match the build workflows by their `name:` — `build.yml` (non-fork PRs,
+    # push-triggered) and `build_fork.yml` (fork PRs, pull_request_target).
+    workflows: ["continuous integration", "continuous integration (mathlib forks)"]
+    types: [completed]
+
+# Per upstream PR (repo + branch), keep only the latest post-build run so rapid
+# pushes don't race to patch the comment with a stale diff.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read           # for cross-workflow artifact downloads
+  pull-requests: write    # for PATCHing the `### PR summary` comment
+
+jobs:
+  diff:
+    # The build never runs on a `pull_request` event: non-fork PRs build via
+    # `build.yml` on `push` (head_branch = the PR branch), fork PRs via
+    # `build_fork.yml` on `pull_request_target`. Accept both, and for `push`
+    # exclude master and the non-PR maintenance branches.
+    if: >-
+      github.repository == 'leanprover-community/mathlib4'
+      && github.event.workflow_run.conclusion == 'success'
+      && (
+        github.event.workflow_run.event == 'pull_request_target'
+        || (
+          github.event.workflow_run.event == 'push'
+          && github.event.workflow_run.head_branch != 'master'
+          && github.event.workflow_run.head_branch != 'nightly-testing'
+          && !startsWith(github.event.workflow_run.head_branch, 'lean-pr-testing-')
+        )
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve Build run + SHA
+        id: meta
+        run: |
+          set -euo pipefail
+          RUN_ID="${{ github.event.workflow_run.id }}"
+          NEW_SHA="${{ github.event.workflow_run.head_sha }}"
+          {
+            echo "run-id=$RUN_ID"
+            echo "new-sha=$NEW_SHA"
+          } | tee -a "$GITHUB_OUTPUT"
+
+      - name: Checkout new commit
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          ref: ${{ steps.meta.outputs.new-sha }}
+          fetch-depth: 0
+
+      - name: Resolve merge-base against master
+        id: resolve
+        env:
+          NEW_SHA: ${{ steps.meta.outputs.new-sha }}
+        run: |
+          set -euo pipefail
+          git fetch --quiet origin master
+          MB="$(git merge-base "$NEW_SHA" origin/master)"
+          echo "merge-base=$MB" | tee -a "$GITHUB_OUTPUT"
+
+      - name: Download new-side artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: import-graph
+          path: ./new-artifact
+          run-id: ${{ steps.meta.outputs.run-id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve PR number
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          NEW_SHA: ${{ steps.meta.outputs.new-sha }}
+        run: |
+          set -euo pipefail
+          # The build records the PR number in the artifact — reliable for fork
+          # PRs, where the commit-SHA search API lags or misses. Fall back to the
+          # commit's associated PRs for same-repo pushes (commit is on this repo).
+          PR_NUMBER="$(tr -dc '0-9' < ./new-artifact/pr_number.txt 2>/dev/null || true)"
+          if [ -z "$PR_NUMBER" ]; then
+            PR_NUMBER="$(gh api "repos/$REPO/commits/$NEW_SHA/pulls" --jq '.[0].number // empty')"
+          fi
+          echo "pr-number=$PR_NUMBER" | tee -a "$GITHUB_OUTPUT"
+
+      - name: Find master Build for the merge-base
+        id: master-run
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          MB: ${{ steps.resolve.outputs.merge-base }}
+        run: |
+          set -euo pipefail
+          RUN="$(gh api "repos/$REPO/actions/runs?head_sha=$MB&event=push&status=success&branch=master" \
+                  --jq '[.workflow_runs[] | select(.name=="continuous integration")] | .[0].id // ""')"
+          # A successful run is not enough: it must also carry the `import-graph` artifact.
+          HAS_ARTIFACT=""
+          if [ -n "$RUN" ]; then
+            HAS_ARTIFACT="$(gh api "repos/$REPO/actions/runs/$RUN/artifacts" \
+                    --jq '[.artifacts[] | select(.name=="import-graph")] | length')"
+          fi
+          if [ -n "$RUN" ] && [ "${HAS_ARTIFACT:-0}" -gt 0 ]; then
+            {
+              echo "found=true"
+              echo "run-id=$RUN"
+            } | tee -a "$GITHUB_OUTPUT"
+          else
+            echo "found=false" | tee -a "$GITHUB_OUTPUT"
+            echo "No usable master Build for merge-base $MB (no run, or run lacks the import-graph artifact)."
+          fi
+
+      - name: Download master-side artifact
+        if: steps.master-run.outputs.found == 'true'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: import-graph
+          path: ./ref-artifact
+          run-id: ${{ steps.master-run.outputs.run-id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Tooling is checked out unconditionally: the patcher (from CI_SCRIPTS_DIR)
+      # is needed on the cache-miss path too, to post the warning notice.
+      - name: Checkout local actions
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+
+      - name: Get mathlib-ci
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+
+      - name: Compute Lean-aware declarations diff
+        if: steps.master-run.outputs.found == 'true'
+        id: diff
+        uses: ./ci-tools/.github/actions/decls-diff
+        with:
+          reference-decls-file:   ${{ github.workspace }}/ref-artifact/decls.txt
+          reference-imports-file: ${{ github.workspace }}/ref-artifact/imports.json
+          new-decls-file:         ${{ github.workspace }}/new-artifact/decls.txt
+          new-imports-file:       ${{ github.workspace }}/new-artifact/imports.json
+          new-sha:                ${{ steps.meta.outputs.new-sha }}
+          with-heading:           'true'
+
+      - name: Patch PR summary comment (success)
+        if: steps.master-run.outputs.found == 'true'
+        env:
+          GH_TOKEN:      ${{ secrets.GITHUB_TOKEN }}
+          REPO:          ${{ github.repository }}
+          PR_HEAD_SHA:   ${{ steps.meta.outputs.new-sha }}
+          PR_NUMBER:     ${{ steps.pr.outputs.pr-number }}
+          MODE:          success
+          OVERRIDE_FILE: ${{ steps.diff.outputs.decls-override-file }}
+        run: python3 "$CI_SCRIPTS_DIR/pr_summary/updateDeclsDiffSection.py"
+
+      - name: Note cache miss
+        if: steps.master-run.outputs.found != 'true'
+        env:
+          GH_TOKEN:       ${{ secrets.GITHUB_TOKEN }}
+          REPO:           ${{ github.repository }}
+          PR_HEAD_SHA:    ${{ steps.meta.outputs.new-sha }}
+          PR_NUMBER:      ${{ steps.pr.outputs.pr-number }}
+          MODE:           warning
+          DEFAULT_BRANCH: master
+        run: |
+          # Record the cache miss in the step summary first, so a later patcher
+          # error (e.g. a transient GitHub failure) still leaves this run-local
+          # note; then mark the comment's Lean region unavailable.
+          {
+            echo "## Declarations diff"
+            echo
+            echo "⚠️ The Mathlib cache for this PR's merge-base \`${{ steps.resolve.outputs.merge-base }}\` isn't on the server (typically because the merge-base is a bors-batch intermediate that CI never built). Merge \`master\` into this PR and push to retrigger the build."
+          } >> "$GITHUB_STEP_SUMMARY"
+          python3 "$CI_SCRIPTS_DIR/pr_summary/updateDeclsDiffSection.py"

@@ -56,7 +56,7 @@ theorem Module.lift_rank_of_isLocalizedModule_of_free
   have := (IsLocalizedModule.isBaseChange S Rₛ f).equiv.lift_rank_eq.symm
   simp only [rank_tensorProduct, rank_self,
     Cardinal.lift_one, one_mul, Cardinal.lift_lift] at this ⊢
-  convert this
+  convert! this
   exact Cardinal.lift_umax
 
 theorem Module.finrank_of_isLocalizedModule_of_free
@@ -65,7 +65,7 @@ theorem Module.finrank_of_isLocalizedModule_of_free
     (f : M →ₗ[R] Mₛ) [IsLocalization S Rₛ] [IsLocalizedModule S f] [Module.Free R M]
     [Nontrivial Rₛ] :
     Module.finrank Rₛ Mₛ = Module.finrank R M := by
-  simpa using congr(Cardinal.toNat $(Module.lift_rank_of_isLocalizedModule_of_free Rₛ S f))
+  simpa using! congr(Cardinal.toNat $(Module.lift_rank_of_isLocalizedModule_of_free Rₛ S f))
 
 theorem Module.projective_of_isLocalizedModule {Rₛ Mₛ} [AddCommGroup Mₛ] [Module R Mₛ]
     [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ]
@@ -92,7 +92,7 @@ theorem LinearMap.split_surjective_of_localization_maximal
   rw [LocalizedModule.map_id]
   have : LinearMap.id ∈ LinearMap.range (LinearMap.llcomp _
     (LocalizedModule I.primeCompl N) _ _ (LocalizedModule.map I.primeCompl f)) := H I hI
-  convert this
+  convert! this
   · ext f
     constructor
     · intro hf
@@ -137,7 +137,7 @@ theorem Module.projective_of_localization_maximal (H : ∀ (I : Ideal R) (_ : I.
   let f : N →ₗ[R] M := Finsupp.linearCombination R (Subtype.val : s → M)
   have hf : Function.Surjective f := by
     rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination, Subtype.range_val]
-    convert hs
+    convert! hs
   have (I : Ideal R) (hI : I.IsMaximal) :=
     letI := H I hI
     Module.projective_lifting_property (LocalizedModule.map I.primeCompl f) LinearMap.id
@@ -158,6 +158,7 @@ variable
   (f : ∀ (P : Ideal R) [P.IsMaximal], M →ₗ[R] Mₚ P)
   [inst : ∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] RingHomInvPair.of_ringEquiv RingHomInvPair.of_ringEquiv_symm in
 include f in
 /--

@@ -42,7 +42,7 @@ private lemma MDifferentiable.slash_of_pos {f : ℍ → ℂ} (hf : MDiff f)
     (k : ℤ) {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) :
     MDiff (f ∣[k] g) := by
   refine .mul (.mul ?_ mdifferentiable_const) (mdifferentiable_denom_zpow g _)
-  simpa only [σ, hg, ↓reduceIte] using hf.comp (mdifferentiable_smul hg)
+  simpa only [σ, hg, ↓reduceIte] using! hf.comp (mdifferentiable_smul hg)
 
 private lemma slash_J (f : ℍ → ℂ) (k : ℤ) :
     f ∣[k] J = fun τ : ℍ ↦ conj (f <| ofComplex <| -(conj ↑τ)) := by
@@ -56,9 +56,9 @@ private lemma MDifferentiable.slashJ {f : ℍ → ℂ} (hf : MDiff f) (k : ℤ) 
   have : {z | 0 < z.im}.EqOn (fun x ↦ conj (f <| ofComplex <| -conj ↑(ofComplex x)))
       (fun x ↦ conj (f <| ofComplex <| -conj x)) := fun z h ↦ by simp [ofComplex_apply_of_im_pos h]
   refine .congr (fun z hz ↦ DifferentiableAt.differentiableWithinAt ?_) this
-  have : 0 < (-conj z).im := by simpa using hz
+  have : 0 < (-conj z).im := by simpa using! hz
   have := hf.differentiableAt (isOpen_upperHalfPlaneSet.mem_nhds this)
-  simpa using (this.comp _ differentiable_neg.differentiableAt).star_star.neg
+  simpa using! (this.comp _ differentiable_neg.differentiableAt).star_star.neg
 
 /-- The weight `k` slash action of `GL(2, ℝ)` preserves holomorphic functions. -/
 lemma MDifferentiable.slash {f : ℍ → ℂ} (hf : MDiff f)
@@ -106,7 +106,7 @@ class CuspFormClass (F : Type*) (Γ : outParam <| Subgroup (GL (Fin 2) ℝ)) (k 
 instance (priority := 100) ModularForm.funLike :
     FunLike (ModularForm Γ k) ℍ ℂ where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.ext' h
+  coe_injective f g h := by cases f; cases g; congr; exact DFunLike.ext' h
 
 instance (priority := 100) ModularForm.instModularFormClass :
     ModularFormClass (ModularForm Γ k) Γ k where
@@ -122,7 +122,7 @@ lemma ModularFormClass.continuous {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)}
 
 instance (priority := 100) CuspForm.funLike : FunLike (CuspForm Γ k) ℍ ℂ where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.ext' h
+  coe_injective f g h := by cases f; cases g; congr; exact DFunLike.ext' h
 
 instance (priority := 100) CuspFormClass.cuspForm : CuspFormClass (CuspForm Γ k) Γ k where
   slash_action_eq f := f.slash_action_eq'
@@ -290,7 +290,7 @@ instance instNeg : Neg (ModularForm Γ k) :=
   ⟨fun f =>
     { toSlashInvariantForm := -f.1
       holo' := f.holo'.neg
-      bdd_at_cusps' := fun hc g hg => by simpa using (f.bdd_at_cusps' hc g hg).neg }⟩
+      bdd_at_cusps' := fun hc g hg => by simpa using! (f.bdd_at_cusps' hc g hg).neg }⟩
 
 @[simp]
 theorem coe_neg (f : ModularForm Γ k) : ⇑(-f) = -f :=
@@ -338,7 +338,7 @@ def mul {k_1 k_2 : ℤ} [Γ.HasDetPlusMinusOne] (f : ModularForm Γ k_1) (g : Mo
   toSlashInvariantForm := f.1.mul g.1
   holo' := f.holo'.mul g.holo'
   bdd_at_cusps' hc γ hγ := by
-    simpa [mul_slash] using ((f.bdd_at_cusps' hc γ hγ).mul (g.bdd_at_cusps' hc γ hγ)).smul _
+    simpa [mul_slash] using! ((f.bdd_at_cusps' hc γ hγ).mul (g.bdd_at_cusps' hc γ hγ)).smul _
 
 @[deprecated (since := "2025-12-06")] alias mul_coe := coe_mul
 
@@ -347,7 +347,7 @@ def mul {k_1 k_2 : ℤ} [Γ.HasDetPlusMinusOne] (f : ModularForm Γ k_1) (g : Mo
   toSlashInvariantForm := .const x
   holo' _ := mdifferentiableAt_const
   bdd_at_cusps' hc g hg := by simpa only [coe_const, slash_def, SlashInvariantForm.toFun_eq_coe,
-      Function.const_apply, neg_zero, zpow_zero] using atImInfty.const_boundedAtFilter _
+      Function.const_apply, neg_zero, zpow_zero] using! atImInfty.const_boundedAtFilter _
 
 @[deprecated (since := "2025-12-06")] alias const_toFun := coe_const
 
@@ -359,7 +359,7 @@ lemma const_apply [Γ.HasDetOne] (x : ℂ) (τ : ℍ) : (const x : ModularForm �
   toSlashInvariantForm := .constℝ x
   holo' _ := mdifferentiableAt_const
   bdd_at_cusps' hc g hg := by simpa only [coe_constℝ, slash_def, SlashInvariantForm.toFun_eq_coe,
-      Function.const_apply, neg_zero, zpow_zero] using atImInfty.const_boundedAtFilter _
+      Function.const_apply, neg_zero, zpow_zero] using! atImInfty.const_boundedAtFilter _
 
 @[deprecated (since := "2025-12-06")] alias constℝ_toFun := coe_constℝ
 
@@ -420,7 +420,7 @@ theorem add_apply (f g : CuspForm Γ k) (z : ℍ) : (f + g) z = f z + g z :=
 instance instZero : Zero (CuspForm Γ k) :=
   ⟨ { toSlashInvariantForm := 0
       holo' := fun _ => mdifferentiableAt_const
-      zero_at_cusps' hc g hg := by simpa using Filter.zero_zeroAtFilter _ } ⟩
+      zero_at_cusps' hc g hg := by simpa using! Filter.zero_zeroAtFilter _ } ⟩
 
 @[simp]
 theorem coe_zero : ⇑(0 : CuspForm Γ k) = (0 : ℍ → ℂ) :=
@@ -484,7 +484,7 @@ instance instNeg : Neg (CuspForm Γ k) :=
   ⟨fun f =>
     { toSlashInvariantForm := -f.1
       holo' := f.holo'.neg
-      zero_at_cusps' hc g hg := by simpa using (f.zero_at_cusps' hc g hg).neg }⟩
+      zero_at_cusps' hc g hg := by simpa using! (f.zero_at_cusps' hc g hg).neg }⟩
 
 @[simp]
 theorem coe_neg (f : CuspForm Γ k) : ⇑(-f) = -f :=
@@ -537,7 +537,7 @@ def mulModularForm [Γ.HasDetPlusMinusOne] {k₁ k₂ : ℤ} (f : CuspForm Γ k�
   toSlashInvariantForm := f.1.mul g.1
   holo' := f.holo'.mul g.holo'
   zero_at_cusps' hc γ hγ := by
-    simpa [mul_slash] using
+    simpa [mul_slash] using!
       ((f.zero_at_cusps' hc γ hγ).mul_boundedAtFilter (g.bdd_at_cusps' hc γ hγ)).smul _
 
 /-- Cast for cusp forms, which is useful for avoiding `Heq`s. Optionally transports along
@@ -557,6 +557,7 @@ section GradedRing
 
 /-- Cast for modular forms, which is useful for avoiding `Heq`s. Optionally transports along
 an equality of subgroups. -/
+@[simps -fullyApplied coe]
 def mcast {a b : ℤ} {Γ Γ' : Subgroup (GL (Fin 2) ℝ)} (h : a = b) (f : ModularForm Γ a)
     (hΓ : Γ' = Γ := by rfl) : ModularForm Γ' b where
   toFun := (f : ℍ → ℂ)
@@ -564,12 +565,29 @@ def mcast {a b : ℤ} {Γ Γ' : Subgroup (GL (Fin 2) ℝ)} (h : a = b) (f : Modu
   holo' := f.holo'
   bdd_at_cusps' hc := h ▸ f.bdd_at_cusps' (hΓ ▸ hc)
 
+@[simp]
+lemma mcast_eq_zero_iff {a b : ℤ} {Γ Γ' : Subgroup (GL (Fin 2) ℝ)} (h : a = b)
+    (hΓ : Γ' = Γ) (f : ModularForm Γ a) : mcast h f hΓ = 0 ↔ f = 0 := by
+  simp [← coe_eq_zero_iff, ← coe_eq_zero_iff (f := f)]
+
 @[ext (iff := false)]
 theorem gradedMonoid_eq_of_cast {Γ : Subgroup (GL (Fin 2) ℝ)} {a b : GradedMonoid (ModularForm Γ)}
     (h : a.fst = b.fst) (h2 : mcast h a.snd = b.snd) : a = b := by
   obtain ⟨i, a⟩ := a
   cases h
   exact congr_arg _ h2
+
+/-- The `n`-th power of a modular form, as a modular form of weight `n * k`. -/
+def pow {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne] {k : ℤ} (f : ModularForm Γ k)
+    (n : ℕ) : ModularForm Γ (n * k) :=
+  n.rec (mcast (by simp) (1 : ModularForm Γ 0)) (fun n g ↦ (g.mul f).mcast (by grind))
+
+@[simp]
+lemma coe_pow {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne] {k : ℤ}
+    (f : ModularForm Γ k) (n : ℕ) : ⇑(f.pow n) = (⇑f) ^ n := by
+  induction n with
+  | zero => simp [pow]
+  | succ n ih => simp_all only [pow, coe_mcast, coe_mul, pow_succ]
 
 instance (Γ : Subgroup (GL (Fin 2) ℝ)) [Γ.HasDetPlusMinusOne] :
     GradedMonoid.GOne (ModularForm Γ) where
@@ -608,6 +626,29 @@ open scoped DirectSum in
 example (Γ : Subgroup (GL (Fin 2) ℝ)) [Γ.HasDetOne] : Algebra ℂ (⨁ i, ModularForm Γ i) :=
 inferInstance
 
+/-- Bridge between the auto-derived graded-monoid power `GradedMonoid.GMonoid.gnpow` and the
+bespoke `ModularForm.pow`: as elements of `GradedMonoid (ModularForm Γ)`, the pair
+`⟨n • k, gnpow n f⟩` agrees with `⟨n * k, f.pow n⟩`. -/
+theorem gnpow_eq_pow {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
+    {k : ℤ} (f : ModularForm Γ k) (n : ℕ) :
+    (⟨n • k, GradedMonoid.GMonoid.gnpow n f⟩ : GradedMonoid (ModularForm Γ)) =
+      ⟨(n : ℤ) * k, f.pow n⟩ := by
+  induction n with
+  | zero =>
+    refine (GradedMonoid.GMonoid.gnpow_zero' ⟨k, f⟩).trans ?_
+    exact gradedMonoid_eq_of_cast (zero_mul k).symm (ModularForm.ext fun _ ↦ rfl)
+  | succ n ih =>
+    refine (GradedMonoid.GMonoid.gnpow_succ' n ⟨k, f⟩).trans ?_
+    refine (congrArg (fun x : GradedMonoid (ModularForm Γ) ↦ x * ⟨k, f⟩) ih).trans ?_
+    exact gradedMonoid_eq_of_cast (show ((n : ℤ) * k + k = (n + 1) * k) by ring)
+      (ModularForm.ext fun _ ↦ rfl)
+
+/-- The `n`-th power of `DirectSum.of _ k f` lands in grade `n * k` and is given by `f.pow n`. -/
+lemma directSum_of_pow {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
+    {k : ℤ} (f : ModularForm Γ k) (n : ℕ) :
+    (DirectSum.of (ModularForm Γ) k f) ^ n = .of (ModularForm Γ) ((n : ℤ) * k) (f.pow n) := by
+  grind [DirectSum.ofPow, DirectSum.of_eq_of_gradedMonoid_eq (gnpow_eq_pow f n)]
+
 open Filter SlashInvariantForm
 
 /-- Given `ModularForm`'s `F i` of weight `k i` for `i : ι`, define the form which as a
@@ -618,13 +659,13 @@ def prod {ι : Type} {s : Finset ι} {k : ι → ℤ} (m : ℤ)
     (F : (i : ι) → ModularForm Γ (k i)) : ModularForm Γ m where
   toSlashInvariantForm := SlashInvariantForm.prod m hm (fun i ↦ (F i))
   holo' := MDifferentiable.prod (t := s) (f := fun (i : ι) ↦ (F i).1)
-      (by intro (i : ι) hi; simpa using (F i).holo')
+      (by intro (i : ι) hi; simpa using! (F i).holo')
   bdd_at_cusps' hc γ hγ := by
     simp only [SlashInvariantForm.toFun_eq_coe, coe_prod, SlashInvariantForm.coe_mk, hm,
       prod_slash_sum_weights, IsBoundedAtImInfty]
     refine BoundedAtFilter.smul _ (BoundedAtFilter.prod (s := s) ?_)
     intro i hi
-    simpa using (F i).bdd_at_cusps' hc γ hγ
+    simpa using! (F i).bdd_at_cusps' hc γ hγ
 
 /-- Given `ModularForm`'s `F i` of weight `k`, define the form which as a function is a product of
 those indexed by `s : Finset ι` with weight `#s * k`. -/
