@@ -152,7 +152,6 @@ family's pairwise inner products `⟪v i, v j⟫`. -/
 theorem inner_linearCombination_linearCombination (v : ι → E) (l₁ l₂ : ι →₀ 𝕜) :
     ⟪linearCombination 𝕜 v l₁, linearCombination 𝕜 v l₂⟫
       = l₁.sum fun i a => l₂.sum fun j b => conj a * b * ⟪v i, v j⟫ := by
-  classical
   rw [linearCombination_apply, linearCombination_apply, Finsupp.sum_inner]
   refine Finsupp.sum_congr fun i _ => ?_
   rw [Finsupp.inner_sum]
