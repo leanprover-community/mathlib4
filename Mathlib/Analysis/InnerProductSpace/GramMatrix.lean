@@ -228,13 +228,8 @@ theorem exists_linearIsometryEquiv_span_map_eq_of_inner_eq {φ : ι → E} {ψ :
     (LinearMap.ker Tφ).liftQ Tψ hker with hf₀
   set f : (LinearMap.range Tφ) →ₗ[𝕜] F :=
     f₀.comp (Tφ.quotKerEquivRange.symm.toLinearMap) with hf
-  have hf_apply : ∀ c : ι →₀ 𝕜,
-      f ⟨Tφ c, LinearMap.mem_range_self Tφ c⟩ = Tψ c := by
-    intro c
-    rw [hf]
-    simp only [LinearMap.comp_apply, LinearEquiv.coe_coe]
-    rw [Tφ.quotKerEquivRange_symm_apply_image c (LinearMap.mem_range_self Tφ c)]
-    rw [hf₀, Submodule.mkQ_apply, Submodule.liftQ_apply]
+  have hf_apply (c : ι →₀ 𝕜) : f ⟨Tφ c, LinearMap.mem_range_self Tφ c⟩ = Tψ c := by
+    simp [hf, hf₀]
   -- `f` is norm preserving and lands in `range Tψ`.
   have hf_isom : ∀ s : (LinearMap.range Tφ), ‖f s‖ = ‖s‖ := by
     intro s
