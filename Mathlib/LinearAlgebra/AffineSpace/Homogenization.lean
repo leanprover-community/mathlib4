@@ -53,21 +53,14 @@ variable
   {W : Type*} [AddCommGroup W] [Module k W]
 
 variable (k V P) in
-/-- A formal expression representing an element of `Homogenization k P`. -/
-inductive HomogenizationExpr where
+/-- A formal expression representing an element of `Homogenization k P`. This is an implementation
+detail, use the API of `Homogenization` instead. -/
+inductive Homogenization.Pre where
   /-- The formal expression `v + c • p`. -/
   | mk (v : V) (c : k) (p : P)
   /-- The embedding of the vector space into the homogenization. This constructor is used for
   defining `Homogenization.ofVector` in a computable way. -/
   | ofVector (v : V)
-
-/-- The equivalence relation on `HomogenizationExpr`. -/
-inductive HomogenizationExpr.Equiv :
-    HomogenizationExpr k V P → HomogenizationExpr k V P → Prop where
-  | mk_mk {c v₁ p₁ v₂ p₂} (h : v₁ - v₂ = c • (p₂ -ᵥ p₁)) : Equiv (mk v₁ c p₁) (mk v₂ c p₂)
-  | mk_ofVector {v p} : Equiv (mk v 0 p) (ofVector v)
-  | ofVector_mk {v p} : Equiv (ofVector v) (mk v 0 p)
-  | ofVector_ofVector {v} : Equiv (ofVector v) (ofVector v)
 
 -- TODO: generalize and improve performance
 local macro "affine" P:term : tactic => `(tactic|
@@ -75,8 +68,17 @@ local macro "affine" P:term : tactic => `(tactic|
   simp +singlePass only [← vsub_sub_vsub_cancel_right _ _ q] <;>
   match_scalars <;> solve | noncomm_ring -failIfUnchanged | ring)
 
+namespace Homogenization.Pre
+
+/-- The equivalence relation on `Homogenization.Pre`. -/
+inductive Equiv : Pre k V P → Pre k V P → Prop where
+  | mk_mk {c v₁ p₁ v₂ p₂} (h : v₁ - v₂ = c • (p₂ -ᵥ p₁)) : Equiv (mk v₁ c p₁) (mk v₂ c p₂)
+  | mk_ofVector {v p} : Equiv (mk v 0 p) (ofVector v)
+  | ofVector_mk {v p} : Equiv (ofVector v) (mk v 0 p)
+  | ofVector_ofVector {v} : Equiv (ofVector v) (ofVector v)
+
 variable (k P) in
-instance HomogenizationExpr.setoid : Setoid (HomogenizationExpr k V P) where
+instance setoid : Setoid (Pre k V P) where
   r := Equiv
   iseqv.refl x := by
     cases x <;> constructor
@@ -91,8 +93,8 @@ instance HomogenizationExpr.setoid : Setoid (HomogenizationExpr k V P) where
     · linear_combination (norm := affine P) h₁ + h₂
     · simp
 
-instance HomogenizationExpr.decidableEquiv [DecidableEq k] [DecidableEq V] :
-    ∀ {x y : HomogenizationExpr k V P}, Decidable (x ≈ y)
+instance decidableEquiv [DecidableEq k] [DecidableEq V] :
+    ∀ {x y : Homogenization.Pre k V P}, Decidable (x ≈ y)
   | .mk v₁ c₁ p₁, .mk v₂ c₂ p₂ =>
     decidable_of_iff (c₁ = c₂ ∧ v₁ - v₂ = c₁ • (p₂ -ᵥ p₁))
       ⟨fun ⟨rfl, h⟩ => .mk_mk h, fun | .mk_mk h => ⟨rfl, h⟩⟩
@@ -106,6 +108,8 @@ instance HomogenizationExpr.decidableEquiv [DecidableEq k] [DecidableEq V] :
     decidable_of_iff (v₁ = v₂)
       ⟨fun | rfl => .ofVector_ofVector, fun | .ofVector_ofVector => rfl⟩
 
+end Homogenization.Pre
+
 variable (k P) in
 /-- Given an affine space `P` over `k`, `Homogenization k P` is a vector space containing `P` as a
 hyperplane that does not pass through the origin.
@@ -113,14 +117,14 @@ hyperplane that does not pass through the origin.
 Values of type `Homogenization k P` can be constructed as linear combinations of
 `Homogenization.ofPoint` and `Homogenization.ofVector`. To define a linear map on
 `Homogenization k P`, use `Homogenization.lift`. -/
-def Homogenization := Quotient (HomogenizationExpr.setoid k P)
+def Homogenization := Quotient (Homogenization.Pre.setoid k P)
 
 namespace Homogenization
 
-/-- Creates an element of `Homogenization` from a `HomogenizationExpr`. This is an
+/-- Creates an element of `Homogenization` from a `Homogenization.Pre`. This is an
 implementation detail, use `Homogenization.ofPoint` and `Homogenization.ofVector` instead for
 constructing elements of `Homogenization.` -/
-def mk : HomogenizationExpr k V P → Homogenization k P :=
+def mk : Pre k V P → Homogenization k P :=
   Quotient.mk _
 
 private theorem mk_induction_of_point (p : P) {motive : Homogenization k P → Prop}
