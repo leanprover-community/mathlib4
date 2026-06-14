@@ -249,7 +249,7 @@ theorem _root_.Disjoint.of_span (hst : Disjoint (span R s) (span R t)) :
 
 theorem _root_.Disjoint.of_span₀ (hst : Disjoint (span R s) (span R t)) (h0s : 0 ∉ s) :
     Disjoint s t := by
-  rw [← diff_singleton_eq_self h0s]
+  rw [← sdiff_singleton_eq_self h0s]
   exact hst.of_span
 
 section

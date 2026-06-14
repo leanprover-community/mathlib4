@@ -195,6 +195,7 @@ namespace IsKilling
 
 variable [FiniteDimensional K L] (H : LieSubalgebra K L) [H.IsCartanSubalgebra]
 variable [IsKilling K L]
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- If a Lie algebra `L` has non-degenerate Killing form, the only element of a Cartan subalgebra
 whose adjoint action on `L` is nilpotent, is the zero element.
@@ -608,7 +609,7 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
     finrank K (rootSpace H α) = 1 := by
   suffices ¬ 1 < finrank K (rootSpace H α) by
     have h₀ : finrank K (rootSpace H α) ≠ 0 := by
-      convert_to finrank K (rootSpace H α).toSubmodule ≠ 0
+      convert_to! finrank K (rootSpace H α).toSubmodule ≠ 0
       simpa using! α.genWeightSpace_ne_bot
     lia
   intro contra

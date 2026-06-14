@@ -158,6 +158,12 @@ lemma eventually_star_eq {l : Filter A} (hl : l.IsIncreasingApproximateUnit) :
     ∀ᶠ x in l, star x = x :=
   hl.eventually_isSelfAdjoint.mp <| .of_forall fun _ ↦ IsSelfAdjoint.star_eq
 
+lemma pure_one (A : Type*) [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A] :
+    (pure 1 : Filter A).IsIncreasingApproximateUnit where
+  toIsApproximateUnit := .pure_one A
+  eventually_nonneg := by simp
+  eventually_norm := by nontriviality A; simp
+
 end Filter.IsIncreasingApproximateUnit
 
 namespace CStarAlgebra

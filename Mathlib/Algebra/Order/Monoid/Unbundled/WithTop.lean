@@ -634,8 +634,17 @@ end AddMonoid
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithBot α) :=
   inferInstanceAs <| AddCommMonoid (WithTop α)
 
-instance natCast [NatCast α] : NatCast (WithBot α) :=
-  ⟨fun n ↦ (n : α)⟩
+section NatCast
+variable [NatCast α]
+
+instance : NatCast (WithBot α) where natCast n := (n : α)
+
+@[to_dual (attr := simp)] lemma unbotD_natCast (d : α) (n : ℕ) : unbotD d n = n := rfl
+
+@[to_dual (attr := simp)]
+lemma unbotD_ofNat (d : α) (n : ℕ) [n.AtLeastTwo] : unbotD d ofNat(n) = ofNat(n) := rfl
+
+end NatCast
 
 section AddMonoidWithOne
 variable [AddMonoidWithOne α]
