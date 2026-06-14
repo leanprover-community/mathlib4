@@ -135,12 +135,12 @@ noncomputable def realContinuousMapOfNNReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥
     obtain (hr | hr) := le_total 0 r
     · lift r to ℝ≥0 using hr
       simpa only [ContinuousMap.toNNReal_algebraMap, ContinuousMap.toNNReal_neg_algebraMap,
-        map_zero, sub_zero] using AlgHomClass.commutes φ r
+        map_zero, sub_zero] using! AlgHomClass.commutes φ r
     · rw [← neg_neg r, ← map_neg, neg_neg (-r)]
       rw [← neg_nonneg] at hr
       lift -r to ℝ≥0 using hr with r
       simpa only [map_neg, ContinuousMap.toNNReal_neg_algebraMap, map_zero,
-        ContinuousMap.toNNReal_algebraMap, zero_sub, neg_inj] using AlgHomClass.commutes φ r
+        ContinuousMap.toNNReal_algebraMap, zero_sub, neg_inj] using! AlgHomClass.commutes φ r
   map_star' f := by simp only [star_trivial, star_sub, ← map_star]
 
 @[fun_prop]
@@ -238,7 +238,7 @@ lemma toNNReal_apply (f : C(X, ℝ)₀) (x : X) : f.toNNReal x = Real.toNNReal (
 @[fun_prop]
 lemma continuous_toNNReal : Continuous (toNNReal (X := X)) := by
   rw [continuous_induced_rng]
-  convert_to Continuous (ContinuousMap.toNNReal ∘ ((↑) : C(X, ℝ)₀ → C(X, ℝ))) using 1
+  convert_to! Continuous (ContinuousMap.toNNReal ∘ ((↑) : C(X, ℝ)₀ → C(X, ℝ))) using 1
   exact ContinuousMap.continuous_postcomp _ |>.comp continuous_induced_dom
 
 lemma toContinuousMapHom_toNNReal (f : C(X, ℝ)₀) :
@@ -263,14 +263,14 @@ lemma toNNReal_mul_add_neg_mul_add_mul_neg_eq (f g : C(X, ℝ)₀) :
     ((-(f * g)).toNNReal + f.toNNReal * g.toNNReal + (-f).toNNReal * (-g).toNNReal) := by
   apply toContinuousMap_injective
   simpa only [← toContinuousMapHom_apply, map_add, map_mul, map_neg, toContinuousMapHom_toNNReal]
-    using (f : C(X, ℝ)).toNNReal_mul_add_neg_mul_add_mul_neg_eq g
+    using! (f : C(X, ℝ)).toNNReal_mul_add_neg_mul_add_mul_neg_eq g
 
 lemma toNNReal_add_add_neg_add_neg_eq (f g : C(X, ℝ)₀) :
     ((f + g).toNNReal + (-f).toNNReal + (-g).toNNReal) =
       ((-(f + g)).toNNReal + f.toNNReal + g.toNNReal) := by
   apply toContinuousMap_injective
   simpa only [← toContinuousMapHom_apply, map_add, map_mul, map_neg, toContinuousMapHom_toNNReal]
-    using (f : C(X, ℝ)).toNNReal_add_add_neg_add_neg_eq g
+    using! (f : C(X, ℝ)).toNNReal_add_add_neg_add_neg_eq g
 
 end ContinuousMapZero
 

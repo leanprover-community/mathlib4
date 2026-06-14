@@ -372,6 +372,15 @@ theorem count_withDensity [MeasurableSingletonClass α] (f : α → ℝ≥0∞) 
     count.withDensity f = sum (fun a ↦ f a • dirac a) := by
   simp [count, withDensity_sum, dirac_withDensity]
 
+@[fun_prop]
+theorem measurable_withDensity {β : Type*} [MeasurableSpace β] {f : β → α → ℝ≥0∞}
+    [SFinite μ] (hf : Measurable f.uncurry) :
+    Measurable fun b ↦ μ.withDensity (f b) := by
+  rw [Measure.measurable_measure]
+  intro s hs
+  simp only [withDensity_apply _ hs]
+  fun_prop
+
 open MeasureTheory.SimpleFunc
 
 /-- This is Exercise 1.2.1 from [tao2010]. It allows you to express integration of a measurable

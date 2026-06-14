@@ -157,7 +157,7 @@ lemma pathELength_comp_of_monotoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : Monot
     · rw [uniqueMDiffWithinAt_iff_uniqueDiffWithinAt]
       exact uniqueDiffOn_Icc h _ ht
   rw [this]
-  simp only [Function.comp_apply, ContinuousLinearMap.coe_comp']
+  simp only [Function.comp_apply, ContinuousLinearMap.comp_apply]
   have : mfderiv[Icc a b] f t 1 = derivWithin f (Icc a b) t • (1 : TangentSpace 𝓘(ℝ) (f t)) := by
     simp only [mfderivWithin_eq_fderivWithin, ← fderivWithin_derivWithin, smul_eq_mul, mul_one]
     rfl
@@ -189,7 +189,7 @@ lemma pathELength_comp_of_antitoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : Antit
     · rw [uniqueMDiffWithinAt_iff_uniqueDiffWithinAt]
       exact uniqueDiffOn_Icc h _ ht
   rw [this]
-  simp only [Function.comp_apply, ContinuousLinearMap.coe_comp']
+  simp only [Function.comp_apply, ContinuousLinearMap.comp_apply]
   have : mfderiv[Icc a b] f t 1
       = derivWithin f (Icc a b) t • (1 : TangentSpace 𝓘(ℝ) (f t)) := by
     simp only [mfderivWithin_eq_fderivWithin, ← fderivWithin_derivWithin, smul_eq_mul, mul_one]
@@ -335,7 +335,6 @@ lemma riemannianEDist_comm : riemannianEDist I x y = riemannianEDist I y x := by
   ext t
   simp [η]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma riemannianEDist_triangle :
     riemannianEDist I x z ≤ riemannianEDist I x y + riemannianEDist I y z := by
   apply le_of_forall_gt (fun r hr ↦ ?_)

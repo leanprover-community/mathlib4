@@ -275,7 +275,7 @@ lemma eraseLead_mul_eq_mul_eraseLead_of_nextCoeff_zero {R : Type*} [Ring R] [NoZ
       linarith [eraseLead_support_card_lt he₂,
         eraseLead_support_card_lt (mul_ne_zero (X_sub_C_ne_zero x) hp)]
     have h₂ : #(X - C x).support = 2 := by
-      simpa [← sub_eq_add_neg] using
+      simpa [← sub_eq_add_neg] using!
         card_support_binomial one_ne_zero one_ne_zero (neg_ne_zero.mpr hx)
     have hmul := card_support_mul_le (p := X - C x) (q := P)
     rw [h₂] at hmul
@@ -300,15 +300,15 @@ lemma eraseLead_mul_eq_mul_eraseLead_of_nextCoeff_zero {R : Type*} [Ring R] [NoZ
     rw [← self_sub_monomial_natDegree_leadingCoeff, mul_sub, coeff_sub,
       sub_zero, sub_zero, eq_sub_iff_add_eq, add_eq_left]
     rcases hn₂ : n
-    · simpa [coeff_monomial, hp] using fun _ ↦ by lia
+    · simpa [coeff_monomial, hp] using! fun _ ↦ by lia
     · rw [coeff_X_sub_C_mul, coeff_monomial, coeff_monomial, if_neg (by lia),
         if_neg (by lia), mul_zero, sub_zero]
   · --n ≥ P.natDegree, so all the coefficients are zero.
     trans 0 <;> rw [coeff_eq_zero_of_natDegree_lt]
     · grw [eraseLead_natDegree_le, eraseLead_natDegree_le]
-      simpa [h₁, hdP] using hn
+      simpa [h₁, hdP] using! hn
     · grw [natDegree_mul (X_sub_C_ne_zero x) he, natDegree_eraseLead_le_of_nextCoeff_eq_zero h]
-      simpa [add_comm, hdP] using hn
+      simpa [add_comm, hdP] using! hn
 
 end EraseLead
 

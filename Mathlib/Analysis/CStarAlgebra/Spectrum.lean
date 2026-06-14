@@ -176,11 +176,11 @@ theorem IsSelfAdjoint.mem_spectrum_eq_re {a : A} (ha : IsSelfAdjoint a) {z : ℂ
   have hu := exp_mem_unitary_of_mem_skewAdjoint (ha.smul_mem_skewAdjoint conj_I)
   let Iu := Units.mk0 I I_ne_zero
   have : NormedSpace.exp (I • z) ∈ spectrum ℂ (NormedSpace.exp (I • a)) := by
-    simpa only [Units.smul_def, Units.val_mk0] using
+    simpa only [Units.smul_def, Units.val_mk0] using!
       spectrum.exp_mem_exp (Iu • a) (smul_mem_smul_iff.mpr hz)
   exact Complex.ext (ofReal_re _) <| by
     simpa only [← Complex.exp_eq_exp_ℂ, mem_sphere_zero_iff_norm, norm_exp, Real.exp_eq_one_iff,
-      smul_eq_mul, I_mul, neg_eq_zero] using
+      smul_eq_mul, I_mul, neg_eq_zero] using!
       spectrum.subset_circle_of_unitary hu this
 
 /-- Any element of the spectrum of a selfadjoint is real. -/
@@ -289,7 +289,7 @@ See note [lower instance priority] -/
 lemma instContinuousLinearMapClassComplex : ContinuousLinearMapClass F ℂ A B :=
   { NonUnitalAlgHomClass.instLinearMapClass with
     map_continuous := fun φ =>
-      AddMonoidHomClass.continuous_of_bound φ 1 (by simpa only [one_mul] using nnnorm_apply_le φ) }
+      AddMonoidHomClass.continuous_of_bound φ 1 (by simpa only [one_mul] using! nnnorm_apply_le φ) }
 
 scoped[CStarAlgebra] attribute [instance] NonUnitalStarAlgHom.instContinuousLinearMapClassComplex
 
@@ -302,7 +302,7 @@ variable [NonUnitalAlgEquivClass F ℂ A B] [StarHomClass F A B]
 
 lemma nnnorm_map (φ : F) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
   le_antisymm (NonUnitalStarAlgHom.nnnorm_apply_le φ a) <| by
-    simpa using NonUnitalStarAlgHom.nnnorm_apply_le (symm (φ : A ≃⋆ₐ[ℂ] B)) ((φ : A ≃⋆ₐ[ℂ] B) a)
+    simpa using! NonUnitalStarAlgHom.nnnorm_apply_le (symm (φ : A ≃⋆ₐ[ℂ] B)) ((φ : A ≃⋆ₐ[ℂ] B) a)
 
 lemma norm_map (φ : F) (a : A) : ‖φ a‖ = ‖a‖ :=
   congr_arg NNReal.toReal (nnnorm_map φ a)

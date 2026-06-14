@@ -71,7 +71,7 @@ theorem trans_apply {x : X} : (e.trans e') x = e' (e x) :=
 
 theorem trans_symm_eq_symm_trans_symm : (e.trans e').symm = e'.symm.trans e.symm := rfl
 
-/- This could be considered as a simp lemma, but there are many situations where it makes something
+/-- This could be considered as a simp lemma, but there are many situations where it makes something
 simple into something more complicated. -/
 theorem trans_source : (e.trans e').source = e.source ∩ e ⁻¹' e'.source :=
   PartialEquiv.trans_source e.toPartialEquiv e'.toPartialEquiv

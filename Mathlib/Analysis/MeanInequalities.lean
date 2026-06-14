@@ -196,8 +196,12 @@ theorem geom_mean_eq_arith_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ
   rw [geom_mean_weighted_of_constant, arith_mean_weighted_of_constant] <;> assumption
 
 /-- **AM-GM inequality - equality condition**: This theorem provides the equality condition for the
-*positive* weighted version of the AM-GM inequality for real-valued nonnegative functions. -/
-theorem geom_mean_eq_arith_mean_weighted_iff' (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
+*positive* weighted version of the AM-GM inequality for real-valued nonnegative functions.
+
+The condition is that all elements of `z` are equal to their center of mass `∑ i ∈ s, w i * z i`;
+see `geom_mean_eq_arith_mean_weighted_iff_of_pos` for a version that compares the elements to each
+other instead. -/
+theorem geom_mean_eq_arith_mean_weighted_iff_of_pos' (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
     ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i ↔ ∀ j ∈ s, z j = ∑ i ∈ s, w i * z i := by
   by_cases! A : ∃ i ∈ s, z i = 0 ∧ w i ≠ 0
@@ -233,31 +237,93 @@ theorem geom_mean_eq_arith_mean_weighted_iff' (w z : ι → ℝ) (hw : ∀ i ∈
         intro x hx
         simp only [log_injOn_pos (hz' j hj) (hz' x hx), h j hj, h x hx]
 
+@[deprecated (since := "2026-06-07")]
+alias geom_mean_eq_arith_mean_weighted_iff' := geom_mean_eq_arith_mean_weighted_iff_of_pos'
+
 /-- **AM-GM inequality - equality condition**: This theorem provides the equality condition for the
-weighted version of the AM-GM inequality for real-valued nonnegative functions. -/
-theorem geom_mean_eq_arith_mean_weighted_iff (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
+weighted version of the AM-GM inequality for real-valued nonnegative functions.
+
+The condition is that all elements of `z` with a nonzero weight are equal to their center of mass
+`∑ i ∈ s, w i * z i`; see `geom_mean_eq_arith_mean_weighted_iff_of_nonneg` for a version that
+compares the elements to each other instead. -/
+theorem geom_mean_eq_arith_mean_weighted_iff_of_nonneg' (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
     ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i ↔ ∀ j ∈ s, w j ≠ 0 → z j = ∑ i ∈ s, w i * z i := by
-  have h (i) (_ : i ∈ s) : w i * z i ≠ 0 → w i ≠ 0 := by apply left_ne_zero_of_mul
-  have h' (i) (_ : i ∈ s) : z i ^ w i ≠ 1 → w i ≠ 0 := by
-    by_contra! ⟨h1, h2⟩
-    simp only [h2, rpow_zero, ne_self_iff_false] at h1
-  rw [← sum_filter_of_ne h, ← prod_filter_of_ne h', geom_mean_eq_arith_mean_weighted_iff']
-  · simp
-  · simp +contextual [(hw _ _).lt_iff_ne']
-  · rwa [sum_filter_ne_zero]
-  · simp_all only [ne_eq, mul_eq_zero, not_or, not_false_eq_true, implies_true, mem_filter]
+  have :
+      ∏ i ∈ s with w i ≠ 0, z i ^ w i = ∑ i ∈ s with w i ≠ 0, w i * z i ↔
+        ∀ j ∈ {x ∈ s | w x ≠ 0}, z j = ∑ i ∈ s with w i ≠ 0, w i * z i :=
+    geom_mean_eq_arith_mean_weighted_iff_of_pos' _ w z (by grind)
+      (sum_filter_ne_zero _ |>.trans hw') (hz _ <| mem_of_mem_filter · ·)
+  grind [prod_filter_of_ne, sum_filter_of_ne, rpow_zero]
+
+@[deprecated (since := "2026-06-07")]
+alias geom_mean_eq_arith_mean_weighted_iff := geom_mean_eq_arith_mean_weighted_iff_of_nonneg'
+
+/-- **AM-GM inequality - equality condition**.
+The condition is that all elements of `z` are equal to each other;
+see `geom_mean_eq_arith_mean_weighted_iff_of_pos'` for a version that compares the elements to their
+center of mass `∑ i ∈ s, w i * z i` instead. -/
+theorem geom_mean_eq_arith_mean_weighted_iff_of_pos (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
+    (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
+    ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i ↔ ∀ j ∈ s, ∀ k ∈ s, z j = z k := by
+  refine ⟨by grind [geom_mean_eq_arith_mean_weighted_iff_of_pos' s w z hw hw' hz], fun h ↦ ?_⟩
+  have ⟨k, hk⟩ : s.Nonempty := by grind [s.eq_empty_or_nonempty]
+  suffices ∏ i ∈ s, z k ^ w i = ∑ i ∈ s, w i * z k by convert this using 3 <;> grind
+  rw [← rpow_sum_of_nonneg (hz k hk) (hw · · |>.le), ← sum_mul, hw', rpow_one, one_mul]
+
+/-- **AM-GM inequality - equality condition**.
+The condition is that all elements of `z` with a nonzero weight are equal to each other;
+see `geom_mean_eq_arith_mean_weighted_iff_of_nonneg'` for a version that compares the elements to
+their center of mass `∑ i ∈ s, w i * z i` instead. -/
+theorem geom_mean_eq_arith_mean_weighted_iff_of_nonneg (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
+    (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
+    ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i ↔ ∀ j ∈ s, w j ≠ 0 → ∀ k ∈ s, w k ≠ 0 → z j = z k := by
+  have :
+      ∏ i ∈ s with w i ≠ 0, z i ^ w i = ∑ i ∈ s with w i ≠ 0, w i * z i ↔
+        ∀ j ∈ {x ∈ s | w x ≠ 0}, ∀ k ∈ {x ∈ s | w x ≠ 0}, z j = z k :=
+    geom_mean_eq_arith_mean_weighted_iff_of_pos _ w z (by grind)
+      (sum_filter_ne_zero _ |>.trans hw') (hz _ <| mem_of_mem_filter · ·)
+  grind [prod_filter_of_ne, sum_filter_of_ne, rpow_zero]
+
+/-- **AM-GM inequality - strict inequality condition**.
+The condition is that not all elements of `z` are equal to their center of mass
+`∑ i ∈ s, w i * z i`; see `geom_mean_lt_arith_mean_weighted_iff_of_pos` for a version that compares
+the elements to each other instead. -/
+theorem geom_mean_lt_arith_mean_weighted_iff_of_pos' (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
+    (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
+    ∏ i ∈ s, z i ^ w i < ∑ i ∈ s, w i * z i ↔ ∃ j ∈ s, z j ≠ ∑ i ∈ s, w i * z i := by
+  contrapose!
+  rw [← geom_mean_eq_arith_mean_weighted_iff_of_pos' s w z hw hw' hz]
+  exact geom_mean_le_arith_mean_weighted s w z (hw · · |>.le) hw' hz |>.ge_iff_eq
+
+/-- **AM-GM inequality - strict inequality condition**.
+The condition is that not all elements of `z` with a nonzero weight are equal to their center of
+mass `∑ i ∈ s, w i * z i`; see `geom_mean_lt_arith_mean_weighted_iff_of_nonneg` for a version that
+compares the elements to each other instead. -/
+theorem geom_mean_lt_arith_mean_weighted_iff_of_nonneg' (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
+    (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
+    ∏ i ∈ s, z i ^ w i < ∑ i ∈ s, w i * z i ↔ ∃ j ∈ s, w j ≠ 0 ∧ z j ≠ ∑ i ∈ s, w i * z i := by
+  have :
+      ∏ i ∈ s with w i ≠ 0, z i ^ w i < ∑ i ∈ s with w i ≠ 0, w i * z i ↔
+        ∃ j ∈ {x ∈ s | w x ≠ 0}, z j ≠ ∑ i ∈ s with w i ≠ 0, w i * z i :=
+    geom_mean_lt_arith_mean_weighted_iff_of_pos' _ w z (by grind)
+      (sum_filter_ne_zero _ |>.trans hw') (hz _ <| mem_of_mem_filter · ·)
+  grind [prod_filter_of_ne, sum_filter_of_ne, rpow_zero]
 
 /-- **AM-GM inequality - strict inequality condition**: This theorem provides the strict inequality
 condition for the *positive* weighted version of the AM-GM inequality for real-valued nonnegative
-functions. -/
+functions.
+
+The condition is that not all elements of `z` are equal to each other;
+see `geom_mean_lt_arith_mean_weighted_iff_of_pos'` for a version that compares the elements to their
+center of mass `∑ i ∈ s, w i * z i` instead. -/
 theorem geom_mean_lt_arith_mean_weighted_iff_of_pos (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
     ∏ i ∈ s, z i ^ w i < ∑ i ∈ s, w i * z i ↔ ∃ j ∈ s, ∃ k ∈ s, z j ≠ z k := by
   constructor
   · intro h
     by_contra! h_contra
-    rw [(geom_mean_eq_arith_mean_weighted_iff' s w z hw hw' hz).mpr ?_] at h
+    rw [(geom_mean_eq_arith_mean_weighted_iff_of_pos' s w z hw hw' hz).mpr ?_] at h
     · exact (lt_self_iff_false _).mp h
     · intro j hjs
       rw [← arith_mean_weighted_of_constant s w (fun _ => z j) (z j) hw' fun _ _ => congrFun rfl]
@@ -266,8 +332,22 @@ theorem geom_mean_lt_arith_mean_weighted_iff_of_pos (w z : ι → ℝ) (hw : ∀
     have := geom_mean_le_arith_mean_weighted s w z (fun i a => le_of_lt (hw i a)) hw' hz
     by_contra! h
     apply le_antisymm this at h
-    apply (geom_mean_eq_arith_mean_weighted_iff' s w z hw hw' hz).mp at h
+    apply (geom_mean_eq_arith_mean_weighted_iff_of_pos' s w z hw hw' hz).mp at h
     simp only [h j hjs, h k hks, ne_eq, not_true_eq_false] at hzjk
+
+/-- **AM-GM inequality - strict inequality condition**.
+The condition is that not all elements of `z` with a nonzero weight are equal to each other;
+see `geom_mean_lt_arith_mean_weighted_iff_of_nonneg'` for a version that compares the elements to
+their center of mass `∑ i ∈ s, w i * z i` instead. -/
+theorem geom_mean_lt_arith_mean_weighted_iff_of_nonneg (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
+    (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
+    ∏ i ∈ s, z i ^ w i < ∑ i ∈ s, w i * z i ↔ ∃ j ∈ s, ∃ k ∈ s, w j ≠ 0 ∧ w k ≠ 0 ∧ z j ≠ z k := by
+  have :
+      ∏ i ∈ s with w i ≠ 0, z i ^ w i < ∑ i ∈ s with w i ≠ 0, w i * z i ↔
+        ∃ j ∈ {x ∈ s | w x ≠ 0}, ∃ k ∈ {x ∈ s | w x ≠ 0}, z j ≠ z k :=
+    geom_mean_lt_arith_mean_weighted_iff_of_pos _ w z (by grind)
+      (sum_filter_ne_zero _ |>.trans hw') (hz _ <| mem_of_mem_filter · ·)
+  grind [prod_filter_of_ne, sum_filter_of_ne, rpow_zero]
 
 end Real
 
@@ -286,7 +366,7 @@ version for two `NNReal` numbers. -/
 theorem geom_mean_le_arith_mean2_weighted (w₁ w₂ p₁ p₂ : ℝ≥0) :
     w₁ + w₂ = 1 → p₁ ^ (w₁ : ℝ) * p₂ ^ (w₂ : ℝ) ≤ w₁ * p₁ + w₂ * p₂ := by
   simpa only [Fin.prod_univ_succ, Fin.sum_univ_succ, Finset.prod_empty, Finset.sum_empty,
-    Finset.univ_eq_empty, Fin.cons_succ, Fin.cons_zero, add_zero, mul_one] using
+    Finset.univ_eq_empty, Fin.cons_succ, Fin.cons_zero, add_zero, mul_one] using!
     geom_mean_le_arith_mean_weighted univ ![w₁, w₂] ![p₁, p₂]
 
 theorem geom_mean_le_arith_mean3_weighted (w₁ w₂ w₃ p₁ p₂ p₃ : ℝ≥0) :
@@ -294,7 +374,7 @@ theorem geom_mean_le_arith_mean3_weighted (w₁ w₂ w₃ p₁ p₂ p₃ : ℝ�
       p₁ ^ (w₁ : ℝ) * p₂ ^ (w₂ : ℝ) * p₃ ^ (w₃ : ℝ) ≤ w₁ * p₁ + w₂ * p₂ + w₃ * p₃ := by
   simpa only [Fin.prod_univ_succ, Fin.sum_univ_succ, Finset.prod_empty, Finset.sum_empty,
     Finset.univ_eq_empty, Fin.cons_succ, Fin.cons_zero, add_zero, mul_one, ← add_assoc,
-    mul_assoc] using geom_mean_le_arith_mean_weighted univ ![w₁, w₂, w₃] ![p₁, p₂, p₃]
+    mul_assoc] using! geom_mean_le_arith_mean_weighted univ ![w₁, w₂, w₃] ![p₁, p₂, p₃]
 
 theorem geom_mean_le_arith_mean4_weighted (w₁ w₂ w₃ w₄ p₁ p₂ p₃ p₄ : ℝ≥0) :
     w₁ + w₂ + w₃ + w₄ = 1 →
@@ -302,7 +382,7 @@ theorem geom_mean_le_arith_mean4_weighted (w₁ w₂ w₃ w₄ p₁ p₂ p₃ p�
         w₁ * p₁ + w₂ * p₂ + w₃ * p₃ + w₄ * p₄ := by
   simpa only [Fin.prod_univ_succ, Fin.sum_univ_succ, Finset.prod_empty, Finset.sum_empty,
     Finset.univ_eq_empty, Fin.cons_succ, Fin.cons_zero, add_zero, mul_one, ← add_assoc,
-    mul_assoc] using geom_mean_le_arith_mean_weighted univ ![w₁, w₂, w₃, w₄] ![p₁, p₂, p₃, p₄]
+    mul_assoc] using! geom_mean_le_arith_mean_weighted univ ![w₁, w₂, w₃, w₄] ![p₁, p₂, p₃, p₄]
 
 end NNReal
 
@@ -327,6 +407,34 @@ theorem geom_mean_le_arith_mean4_weighted {w₁ w₂ w₃ w₄ p₁ p₂ p₃ p�
   NNReal.geom_mean_le_arith_mean4_weighted ⟨w₁, hw₁⟩ ⟨w₂, hw₂⟩ ⟨w₃, hw₃⟩ ⟨w₄, hw₄⟩ ⟨p₁, hp₁⟩
       ⟨p₂, hp₂⟩ ⟨p₃, hp₃⟩ ⟨p₄, hp₄⟩ <|
     NNReal.coe_inj.1 <| by assumption
+
+theorem geom_mean_eq_arith_mean2_weighted_iff_of_pos {w₁ w₂ p₁ p₂ : ℝ} (hw₁ : 0 < w₁) (hw₂ : 0 < w₂)
+    (hp₁ : 0 ≤ p₁) (hp₂ : 0 ≤ p₂) (hw : w₁ + w₂ = 1) :
+    p₁ ^ w₁ * p₂ ^ w₂ = w₁ * p₁ + w₂ * p₂ ↔ p₁ = p₂ := by
+  have := geom_mean_eq_arith_mean_weighted_iff_of_pos univ ![w₁, w₂] ![p₁, p₂]
+  simp at this
+  grind
+
+theorem geom_mean_eq_arith_mean2_weighted_iff_of_nonneg {w₁ w₂ p₁ p₂ : ℝ} (hw₁ : 0 ≤ w₁)
+    (hw₂ : 0 ≤ w₂) (hp₁ : 0 ≤ p₁) (hp₂ : 0 ≤ p₂) (hw : w₁ + w₂ = 1) :
+    p₁ ^ w₁ * p₂ ^ w₂ = w₁ * p₁ + w₂ * p₂ ↔ w₁ = 0 ∨ w₂ = 0 ∨ p₁ = p₂ := by
+  have := geom_mean_eq_arith_mean_weighted_iff_of_nonneg univ ![w₁, w₂] ![p₁, p₂]
+  simp at this
+  grind
+
+theorem geom_mean_lt_arith_mean2_weighted_iff_of_pos {w₁ w₂ p₁ p₂ : ℝ} (hw₁ : 0 < w₁) (hw₂ : 0 < w₂)
+    (hp₁ : 0 ≤ p₁) (hp₂ : 0 ≤ p₂) (hw : w₁ + w₂ = 1) :
+    p₁ ^ w₁ * p₂ ^ w₂ < w₁ * p₁ + w₂ * p₂ ↔ p₁ ≠ p₂ := by
+  have := geom_mean_lt_arith_mean_weighted_iff_of_pos univ ![w₁, w₂] ![p₁, p₂]
+  simp at this
+  grind
+
+theorem geom_mean_lt_arith_mean2_weighted_iff_of_nonneg {w₁ w₂ p₁ p₂ : ℝ} (hw₁ : 0 ≤ w₁)
+    (hw₂ : 0 ≤ w₂) (hp₁ : 0 ≤ p₁) (hp₂ : 0 ≤ p₂) (hw : w₁ + w₂ = 1) :
+    p₁ ^ w₁ * p₂ ^ w₂ < w₁ * p₁ + w₂ * p₂ ↔ w₁ ≠ 0 ∧ w₂ ≠ 0 ∧ p₁ ≠ p₂ := by
+  have := geom_mean_lt_arith_mean_weighted_iff_of_nonneg univ ![w₁, w₂] ![p₁, p₂]
+  simp at this
+  grind
 
 end Real
 
@@ -365,8 +473,7 @@ theorem harm_mean_le_geom_mean {ι : Type*} (s : Finset ι) (hs : s.Nonempty) (w
     (z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i) (hw' : 0 < ∑ i ∈ s, w i) (hz : ∀ i ∈ s, 0 < z i) :
     (∑ i ∈ s, w i) / (∑ i ∈ s, w i / z i) ≤ (∏ i ∈ s, z i ^ w i) ^ (∑ i ∈ s, w i)⁻¹ := by
   have := harm_mean_le_geom_mean_weighted s (fun i => (w i) / ∑ i ∈ s, w i) z hs ?_ ?_ hz
-  · simp only at this
-    set n := ∑ i ∈ s, w i
+  · set n := ∑ i ∈ s, w i
     nth_rw 1 [div_eq_mul_inv, (show n = (n⁻¹)⁻¹ by simp), ← mul_inv, Finset.mul_sum _ _ n⁻¹]
     simp_rw [inv_mul_eq_div n ((w _) / (z _)), div_right_comm _ _ n]
     convert! this
@@ -736,7 +843,7 @@ the product of their `L^p` and `L^q` norms when `p`, `q` and `r` form a `Real.Ho
 Version for sums over finite sets, with real-valued functions. -/
 theorem Lr_rpow_le_Lp_mul_Lq (hpqr : HolderTriple p q r) :
     ∑ i ∈ s, |f i * g i| ^ r ≤ (∑ i ∈ s, |f i| ^ p) ^ (r / p) * (∑ i ∈ s, |g i| ^ q) ^ (r / q) := by
-  simpa using NNReal.coe_le_coe.2 <| NNReal.Lr_rpow_le_Lp_mul_Lq s (fun i ↦ ⟨_, abs_nonneg (f i)⟩)
+  simpa using! NNReal.coe_le_coe.2 <| NNReal.Lr_rpow_le_Lp_mul_Lq s (fun i ↦ ⟨_, abs_nonneg (f i)⟩)
     (fun i ↦ ⟨_, abs_nonneg (g i)⟩) hpqr
 
 /-- **Hölder inequality**: the scalar product of two functions is bounded by the product of their
@@ -1013,9 +1120,10 @@ lemma inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) 
   have := coe_le_coe.2 <| NNReal.inner_le_weight_mul_Lp s hp.le (fun i ↦ ENNReal.toNNReal (w i))
     fun i ↦ ENNReal.toNNReal (f i)
   rw [coe_mul] at this
-  simp_rw [coe_rpow_of_nonneg _ <| inv_nonneg.2 hp₀.le, coe_finsetSum, ← ENNReal.toNNReal_rpow,
+  simp_rw [coe_rpow_of_nonneg _ <| inv_nonneg.2 hp₀.le, ofNNReal_finsetSum, ← ENNReal.toNNReal_rpow,
     ← ENNReal.toNNReal_mul, sum_congr rfl fun i hi ↦ coe_toNNReal (H'.2 i hi)] at this
-  simp only [toNNReal_mul, coe_mul, sub_nonneg, hp₁.le, coe_rpow_of_nonneg, coe_finsetSum] at this
+  simp only [toNNReal_mul, coe_mul, sub_nonneg, hp₁.le, coe_rpow_of_nonneg, ofNNReal_finsetSum]
+    at this
   convert! this using 2 with i hi
   · obtain hw | hw := eq_or_ne (w i) 0
     · simp [hw]
