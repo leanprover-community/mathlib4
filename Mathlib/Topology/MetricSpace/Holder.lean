@@ -6,8 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Topology.MetricSpace.Lipschitz
-public import Mathlib.Data.Real.Pointwise
-public import Mathlib.Order.ConditionallyCompleteLattice.Finset
+public import Mathlib.Topology.Order.MonotoneConvergence
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.Analysis.Convex.NNReal
 
@@ -44,6 +43,53 @@ variable {ι X Y Z : Type*}
 
 open Filter Set Metric
 open scoped NNReal ENNReal Topology
+
+private instance [Nonempty ι] : Nonempty {F : Finset ι // F.Nonempty} :=
+  ⟨⟨{Classical.arbitrary ι}, Finset.singleton_nonempty (Classical.arbitrary ι)⟩⟩
+
+private instance [Nonempty ι] : IsDirectedOrder {F : Finset ι // F.Nonempty} where
+  directed F G := by
+    classical
+    exact ⟨⟨F.1 ∪ G.1, F.2.mono Finset.subset_union_left⟩,
+      (show F.1 ⊆ F.1 ∪ G.1 from Finset.subset_union_left),
+      (show G.1 ⊆ F.1 ∪ G.1 from Finset.subset_union_right)⟩
+
+private theorem ciSup_eq_ciSup_finset_nonempty {α : Type*} [ConditionallyCompleteLattice α]
+    [Nonempty ι] {a : ι → α} (ha : BddAbove (range a)) :
+    ⨆ i, a i = ⨆ F : {F : Finset ι // F.Nonempty}, F.1.sup' F.2 a := by
+  have hbdd : BddAbove (Set.range fun F : {F : Finset ι // F.Nonempty} =>
+      F.1.sup' F.2 a) := by
+    refine ⟨⨆ i, a i, ?_⟩
+    rintro _ ⟨F, rfl⟩
+    exact Finset.sup'_le F.2 _ fun i _ => le_ciSup ha i
+  refine le_antisymm ?_ ?_
+  · exact ciSup_le fun i =>
+      (show a i ≤ ({i} : Finset ι).sup' (Finset.singleton_nonempty i) a by
+        simp).trans (le_ciSup hbdd ⟨{i}, Finset.singleton_nonempty i⟩)
+  · exact ciSup_le fun F => Finset.sup'_le F.2 _ fun i _ => le_ciSup ha i
+
+private theorem tendsto_finset_sup'_ciSup {α : Type*} [TopologicalSpace α]
+    [ConditionallyCompleteLattice α] [SupConvergenceClass α] [Nonempty ι] {a : ι → α}
+    (ha : BddAbove (range a)) :
+    Tendsto (fun F : {F : Finset ι // F.Nonempty} => F.1.sup' F.2 a) atTop
+      (𝓝 (⨆ i, a i)) := by
+  have hmono : Monotone (fun F : {F : Finset ι // F.Nonempty} => F.1.sup' F.2 a) :=
+    fun F G hFG => by
+      have hFG' : F.1 ⊆ G.1 := hFG
+      simpa using Finset.sup'_mono (f := a) hFG' F.2
+  have hbdd : BddAbove (Set.range fun F : {F : Finset ι // F.Nonempty} =>
+      F.1.sup' F.2 a) := by
+    refine ⟨⨆ i, a i, ?_⟩
+    rintro _ ⟨F, rfl⟩
+    exact Finset.sup'_le F.2 _ fun i _ => le_ciSup ha i
+  simpa [← ciSup_eq_ciSup_finset_nonempty ha] using tendsto_atTop_ciSup hmono hbdd
+
+private theorem tendsto_finset_inf'_ciInf {α : Type*} [TopologicalSpace α]
+    [ConditionallyCompleteLattice α] [InfConvergenceClass α] [Nonempty ι] (a : ι → α)
+    (ha : BddBelow (range a)) :
+    Tendsto (fun F : {F : Finset ι // F.Nonempty} => F.1.inf' F.2 a) atTop
+      (𝓝 (⨅ i, a i)) :=
+  tendsto_finset_sup'_ciSup (α := αᵒᵈ) ha
 
 section EMetric
 
@@ -95,7 +141,7 @@ protected theorem HolderWith.holderOnWith {C r : ℝ≥0} {f : X → Y} (h : Hol
 
 namespace HolderOnWith
 
-variable {C r : ℝ≥0} {f : X → Y} {s t : Set X}
+variable {C C₁ C₂ C' r : ℝ≥0} {f g : X → Y} {s t : Set X}
 
 theorem edist_le (h : HolderOnWith C r f s) {x y : X} (hx : x ∈ s) (hy : y ∈ s) :
     edist (f x) (f y) ≤ (C : ℝ≥0∞) * edist x y ^ (r : ℝ) :=
@@ -117,6 +163,21 @@ theorem comp_holderWith {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : Holder
     {Cf rf : ℝ≥0} {f : X → Y} (hf : HolderWith Cf rf f) (ht : ∀ x, f x ∈ t) :
     HolderWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) :=
   holderOnWith_univ.mp <| hg.comp (hf.holderOnWith univ) fun x _ => ht x
+
+protected theorem prodMk {C₁ C₂ r : ℝ≥0} {f : X → Y} {g : X → Z} {s : Set X}
+    (hf : HolderOnWith C₁ r f s) (hg : HolderOnWith C₂ r g s) :
+    HolderOnWith (max C₁ C₂) r (fun x => (f x, g x)) s := by
+  intro x hx y hy
+  rw [Prod.edist_eq, ENNReal.coe_max]
+  exact max_le
+    ((hf x hx y hy).trans <| by
+      gcongr
+      rw [← ENNReal.coe_max]
+      exact ENNReal.coe_le_coe.2 (le_max_left C₁ C₂))
+    ((hg x hx y hy).trans <| by
+      gcongr
+      rw [← ENNReal.coe_max]
+      exact ENNReal.coe_le_coe.2 (le_max_right C₁ C₂))
 
 /-- A Hölder continuous function is uniformly continuous -/
 protected theorem uniformContinuousOn (hf : HolderOnWith C r f s) (h0 : 0 < r) :
@@ -241,13 +302,38 @@ lemma of_le_of_le {C₁ C₂ s t : ℝ≥0} {A : Set X}
 
 /-- The pointwise limit of a sequence of functions that are Hölder continuous on `s` is Hölder
 continuous on `s`. -/
-lemma tendsto {l : Filter ι} {f : ι → X → Y} {g : X → Y} {C : ι → ℝ≥0} {C' : ℝ≥0}
-    (hf : ∀ i, HolderOnWith (C i) r (f i) s) (hC : ∃ᶠ i in l, C i ≤ C')
-    (hg : ∀ x ∈ s, Tendsto (f · x) l (𝓝 (g x))) :
+lemma tendsto {l : Filter ι} {f : ι → X → Y} {C : ι → ℝ≥0} (hf : ∀ i, HolderOnWith (C i) r (f i) s)
+    (hC : ∃ᶠ i in l, C i ≤ C') (hg : ∀ x ∈ s, Tendsto (f · x) l (𝓝 (g x))) :
     HolderOnWith C' r g s := by
   refine fun x hx y hy => le_of_tendsto_of_frequently ((hg x hx).edist (hg y hy))
     (hC.mono fun i hi => ?_)
   grw [hf i x hx y hy, hi]
+
+section Real
+
+protected lemma sup {f g : X → ℝ} (hf : HolderOnWith C₁ r f s) (hg : HolderOnWith C₂ r g s) :
+    HolderOnWith (max C₁ C₂) r (f ⊔ g) s := by
+  convert
+    ((show HolderWith 1 1 (fun p : ℝ × ℝ => max p.1 p.2) from
+      lipschitzWith_max.holderWith).holderOnWith univ).comp (hf.prodMk hg) (fun _ _ => trivial)
+    using 1
+  · simp
+  · simp
+  · funext x
+    simp [Pi.sup_apply, max_def]
+
+protected lemma inf {f g : X → ℝ} (hf : HolderOnWith C₁ r f s) (hg : HolderOnWith C₂ r g s) :
+    HolderOnWith (max C₁ C₂) r (f ⊓ g) s := by
+  convert
+    ((show HolderWith 1 1 (fun p : ℝ × ℝ => min p.1 p.2) from
+      lipschitzWith_min.holderWith).holderOnWith univ).comp (hf.prodMk hg) (fun _ _ => trivial)
+    using 1
+  · simp
+  · simp
+  · funext x
+    simp [Pi.inf_apply, min_def]
+
+end Real
 
 end HolderOnWith
 
@@ -276,6 +362,11 @@ theorem comp_holderOnWith {Cg rg : ℝ≥0} {g : Y → Z} (hg : HolderWith Cg rg
     {f : X → Y} {s : Set X} (hf : HolderOnWith Cf rf f s) :
     HolderOnWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) s :=
   (hg.holderOnWith univ).comp hf fun _ _ => trivial
+
+protected theorem prodMk {C₁ C₂ r : ℝ≥0} {f : X → Y} {g : X → Z}
+    (hf : HolderWith C₁ r f) (hg : HolderWith C₂ r g) :
+    HolderWith (max C₁ C₂) r (fun x => (f x, g x)) :=
+  holderOnWith_univ.1 <| (hf.holderOnWith univ).prodMk (hg.holderOnWith univ)
 
 /-- A Hölder continuous function is uniformly continuous -/
 protected theorem uniformContinuous (hf : HolderWith C r f) (h0 : 0 < r) : UniformContinuous f :=
@@ -346,6 +437,108 @@ lemma tendsto {l : Filter ι} {f : ι → X → Y} {g : X → Y} {C : ι → ℝ
     HolderWith C' r g := by
   simp_all only [← holderOnWith_univ]
   exact HolderOnWith.tendsto hf hC fun x _ => hg.apply_nhds x
+
+end HolderWith
+
+namespace HolderOnWith
+
+variable {C C₁ C₂ C' r : ℝ≥0} {f g : X → ℝ} {s : Set X}
+
+/-- A nonempty finite supremum of Hölder continuous functions is Hölder continuous. -/
+lemma finset_sup' {C : ι → ℝ≥0} {f : ι → X → ℝ} {F : Finset ι} (hF : F.Nonempty)
+    (hf : ∀ i ∈ F, HolderOnWith (C i) r (f i) s) :
+    HolderOnWith (F.sup' hF C) r (fun x => F.sup' hF fun i => f i x) s := by
+  induction hF using Finset.Nonempty.cons_induction with
+  | singleton i => simpa using hf i (by simp)
+  | cons i F hi hF ih =>
+      convert (hf i (by simp)).sup (ih fun j hj => hf j (by simp [hj])) using 1
+      · rw [Finset.sup'_cons (H := hF)]
+      · ext x
+        rw [Finset.sup'_cons (H := hF), Pi.sup_apply]
+
+/-- A nonempty finite infimum of Hölder continuous functions is Hölder continuous. -/
+lemma finset_inf' {C : ι → ℝ≥0} {f : ι → X → ℝ} {F : Finset ι} (hF : F.Nonempty)
+    (hf : ∀ i ∈ F, HolderOnWith (C i) r (f i) s) :
+    HolderOnWith (F.sup' hF C) r (fun x => F.inf' hF fun i => f i x) s := by
+  induction hF using Finset.Nonempty.cons_induction with
+  | singleton i => simpa using hf i (by simp)
+  | cons i F hi hF ih =>
+      convert (hf i (by simp)).inf (ih fun j hj => hf j (by simp [hj])) using 1
+      · rw [Finset.sup'_cons (H := hF)]
+      · ext x
+        rw [Finset.inf'_cons (H := hF), Pi.inf_apply]
+
+/-- The supremum of a pointwise bounded-above family of real-valued Hölder continuous functions is
+Hölder continuous, provided that the Hölder constants are uniformly bounded. -/
+lemma ciSup [Nonempty ι] {C : ι → ℝ≥0} {f : ι → X → ℝ}
+    (hf : ∀ i, HolderOnWith (C i) r (f i) s) (hC : ∀ i, C i ≤ C')
+    (hbdd : ∀ x ∈ s, BddAbove (range fun i => f i x)) :
+    HolderOnWith C' r (fun x => ⨆ i, f i x) s := by
+  refine .tendsto (l := atTop)
+    (f := fun F : {F : Finset ι // F.Nonempty} => fun x => F.1.sup' F.2 fun i => f i x)
+    (C := fun F : {F : Finset ι // F.Nonempty} => F.1.sup' F.2 C) ?_ ?_ ?_
+  · intro F
+    exact finset_sup' F.2 fun i _ => hf i
+  · exact Frequently.of_forall fun F => Finset.sup'_le F.2 _ fun i _ => hC i
+  · exact fun x hx => tendsto_finset_sup'_ciSup (hbdd x hx)
+
+/-- The infimum of a pointwise bounded-below family of real-valued Hölder continuous functions is
+Hölder continuous, provided that the Hölder constants are uniformly bounded. -/
+lemma ciInf [Nonempty ι] {C : ι → ℝ≥0} {f : ι → X → ℝ}
+    (hf : ∀ i, HolderOnWith (C i) r (f i) s) (hC : ∀ i, C i ≤ C')
+    (hbdd : ∀ x ∈ s, BddBelow (range fun i => f i x)) :
+    HolderOnWith C' r (fun x => ⨅ i, f i x) s := by
+  refine .tendsto (l := atTop)
+    (f := fun F : {F : Finset ι // F.Nonempty} => fun x => F.1.inf' F.2 fun i => f i x)
+    (C := fun F : {F : Finset ι // F.Nonempty} => F.1.sup' F.2 C) ?_ ?_ ?_
+  · intro F
+    exact finset_inf' F.2 fun i _ => hf i
+  · exact Frequently.of_forall fun F => Finset.sup'_le F.2 _ fun i _ => hC i
+  · exact fun x hx => tendsto_finset_inf'_ciInf (fun i => f i x) (hbdd x hx)
+
+end HolderOnWith
+
+namespace HolderWith
+
+variable {C C₁ C₂ C' r : ℝ≥0} {f g : X → ℝ}
+
+protected lemma sup (hf : HolderWith C₁ r f) (hg : HolderWith C₂ r g) :
+    HolderWith (max C₁ C₂) r (f ⊔ g) :=
+  holderOnWith_univ.1 <| (hf.holderOnWith univ).sup (hg.holderOnWith univ)
+
+protected lemma inf (hf : HolderWith C₁ r f) (hg : HolderWith C₂ r g) :
+    HolderWith (max C₁ C₂) r (f ⊓ g) :=
+  holderOnWith_univ.1 <| (hf.holderOnWith univ).inf (hg.holderOnWith univ)
+
+/-- A nonempty finite supremum of Hölder continuous functions is Hölder continuous. -/
+lemma finset_sup' {C : ι → ℝ≥0} {f : ι → X → ℝ} {F : Finset ι} (hF : F.Nonempty)
+    (hf : ∀ i ∈ F, HolderWith (C i) r (f i)) :
+    HolderWith (F.sup' hF C) r (fun x => F.sup' hF fun i => f i x) :=
+  holderOnWith_univ.1 <| HolderOnWith.finset_sup' hF fun i hi => (hf i hi).holderOnWith univ
+
+/-- A nonempty finite infimum of Hölder continuous functions is Hölder continuous. -/
+lemma finset_inf' {C : ι → ℝ≥0} {f : ι → X → ℝ} {F : Finset ι} (hF : F.Nonempty)
+    (hf : ∀ i ∈ F, HolderWith (C i) r (f i)) :
+    HolderWith (F.sup' hF C) r (fun x => F.inf' hF fun i => f i x) :=
+  holderOnWith_univ.1 <| HolderOnWith.finset_inf' hF fun i hi => (hf i hi).holderOnWith univ
+
+/-- The supremum of a pointwise bounded-above family of real-valued Hölder continuous functions is
+Hölder continuous, provided that the Hölder constants are uniformly bounded. -/
+lemma ciSup [Nonempty ι] {C : ι → ℝ≥0} {f : ι → X → ℝ}
+    (hf : ∀ i, HolderWith (C i) r (f i)) (hC : ∀ i, C i ≤ C')
+    (hbdd : ∀ x, BddAbove (range fun i => f i x)) :
+    HolderWith C' r (fun x => ⨆ i, f i x) :=
+  holderOnWith_univ.1 <| HolderOnWith.ciSup (fun i => (hf i).holderOnWith univ) hC
+    fun x _ => hbdd x
+
+/-- The infimum of a pointwise bounded-below family of real-valued Hölder continuous functions is
+Hölder continuous, provided that the Hölder constants are uniformly bounded. -/
+lemma ciInf [Nonempty ι] {C : ι → ℝ≥0} {f : ι → X → ℝ}
+    (hf : ∀ i, HolderWith (C i) r (f i)) (hC : ∀ i, C i ≤ C')
+    (hbdd : ∀ x, BddBelow (range fun i => f i x)) :
+    HolderWith C' r (fun x => ⨅ i, f i x) :=
+  holderOnWith_univ.1 <| HolderOnWith.ciInf (fun i => (hf i).holderOnWith univ) hC
+    fun x _ => hbdd x
 
 end HolderWith
 
