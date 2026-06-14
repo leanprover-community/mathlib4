@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Data.SubtypeNeLift
+public import Mathlib.Data.Set.Card
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Map
@@ -123,7 +124,7 @@ lemma ext_of_span_eq_top
         rw [Function.subtypeNeLift_of_neq _ _ _ _ (by assumption)]
         rfl
       simpa only [lift.equiv_symm_apply, this] using h (Function.subtypeNeLift i₀ j g₀)
-    · exact Nat.card_compl_of_card_eq_add _ (by simpa)
+    · exact Set.ncard_compl_of_ncard_eq_add _ (by simpa)
 
 lemma _root_.MultilinearMap.ext_of_span_eq_top
     (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤)
