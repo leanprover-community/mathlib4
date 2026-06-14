@@ -396,8 +396,7 @@ theorem contMDiffAt_iff_of_mem_maximalAtlas {x : M} (he : e ∈ maximalAtlas I n
     (he' : e' ∈ maximalAtlas I' n M') (hx : x ∈ e.source) (hy : f x ∈ e'.source) :
     ContMDiffAt I I' n f x ↔
       ContinuousAt f x ∧
-        ContDiffWithinAt 𝕜 n (e'.extend I' ∘ f ∘ (e.extend I).symm)
-          (range I) (e.extend I x) := by
+        ContDiffWithinAt 𝕜 n (e'.extend I' ∘ f ∘ (e.extend I).symm) (range I) (e.extend I x) := by
   rw [← contMDiffWithinAt_univ,
     contMDiffWithinAt_iff_of_mem_maximalAtlas he he' hx hy,
     continuousWithinAt_univ, preimage_univ, univ_inter]
