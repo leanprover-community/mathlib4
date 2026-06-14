@@ -27,8 +27,6 @@ properties of their minimum Hamming distance.
 
 ## Main statements
 
-* `minDist_eq_sInf`: The minimum distance of `C`, defined via `Set.infsep`, equals the infimum
-  of the Hamming distances between distinct codewords.
 * `minDist_eq_sInf_weights`: The minimum distance of `C` equals the infimum of Hamming weights
   of nonzero codewords.
 * `disjoint_hammingSphere`: If $2t < d$, the Hamming spheres of radius $t$ centred at distinct
