@@ -44,18 +44,9 @@ open Bornology
 
 theorem Asymptotics.isLittleO_pow_pow_cobounded_of_lt (hpq : p < q) :
     (· ^ p) =o[cobounded R] (· ^ q) := by
-  nontriviality R
-  have noc : NormOneClass R := NormMulClass.toNormOneClass
-  refine IsLittleO.of_bound fun c cpos ↦ ?_
-  rw [← Nat.sub_add_cancel hpq.le]
-  simp_rw [pow_add, norm_mul, norm_pow, eventually_iff_exists_mem]
-  refine ⟨{y | c⁻¹ ≤ ‖y‖ ^ (q - p)}, ?_, fun y my ↦ ?_⟩
-  · have key : Tendsto (‖·‖ ^ (q - p)) (cobounded R) atTop :=
-      (tendsto_pow_atTop (Nat.sub_ne_zero_iff_lt.mpr hpq)).comp tendsto_norm_cobounded_atTop
-    rw [tendsto_atTop] at key
-    exact mem_map.mp (key c⁻¹)
-  · rw [← inv_mul_le_iff₀ cpos]
-    gcongr; exact my
+  rw [← Nat.add_sub_of_le hpq.le]
+  simpa [pow_add] using (isBigO_refl (· ^ p) (cobounded R)).mul_isLittleO
+    ((isLittleO_const_id_cobounded 1).pow (Nat.sub_pos_of_lt hpq))
 
 theorem Asymptotics.isBigO_pow_pow_cobounded_of_le (hpq : p ≤ q) :
     (· ^ p) =O[cobounded R] (· ^ q) := by
@@ -110,7 +101,7 @@ theorem Asymptotics.IsBigO.trans_tendsto_norm_atTop {α : Type*} {u v : α → �
     Tendsto (fun x => ‖v x‖) l atTop := by
   rcases huv.exists_pos with ⟨c, hc, hcuv⟩
   rw [IsBigOWith] at hcuv
-  convert Tendsto.atTop_div_const hc (tendsto_atTop_mono' l hcuv hu)
+  convert! Tendsto.atTop_div_const hc (tendsto_atTop_mono' l hcuv hu)
   rw [mul_div_cancel_left₀ _ hc.ne.symm]
 
 end NormedLinearOrderedField

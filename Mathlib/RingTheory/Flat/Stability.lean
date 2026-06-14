@@ -18,7 +18,7 @@ We show that flatness is stable under composition and base change.
 
 ## Main theorems
 
-* `Module.Flat.comp`: if `S` is a flat `R`-algebra and `M` is a flat `S`-module,
+* `Module.Flat.trans`: if `S` is a flat `R`-algebra and `M` is a flat `S`-module,
                       then `M` is a flat `R`-module
 * `Module.Flat.baseChange`: if `M` is a flat `R`-module and `S` is any `R`-algebra,
                             then `S ⊗[R] M` is `S`-flat.

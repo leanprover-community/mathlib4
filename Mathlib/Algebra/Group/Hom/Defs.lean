@@ -191,7 +191,7 @@ class OneHomClass (F : Type*) (M N : outParam Type*) [One M] [One N] [FunLike F 
 @[to_additive]
 instance OneHom.funLike : FunLike (OneHom M N) M N where
   coe := OneHom.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[to_additive]
 instance OneHom.oneHomClass : OneHomClass (OneHom M N) M N where
@@ -312,7 +312,7 @@ class MulHomClass (F : Type*) (M N : outParam Type*) [Mul M] [Mul N] [FunLike F 
 @[to_additive]
 instance MulHom.funLike : FunLike (M →ₙ* N) M N where
   coe := MulHom.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 /-- `MulHom` is a type of multiplication-preserving homomorphisms -/
 @[to_additive /-- `AddHom` is a type of addition-preserving homomorphisms -/]
@@ -362,7 +362,7 @@ you should parametrize over `(F : Type*) [MonoidHomClass F M N] (f : F)`.
 
 When you extend this structure, make sure to extend `MonoidHomClass`.
 -/
-@[to_additive]
+@[to_additive (attr := wikidata Q868169)]
 structure MonoidHom (M : Type*) (N : Type*) [MulOne M] [MulOne N]
   extends OneHom M N, M →ₙ* N
 
@@ -382,11 +382,11 @@ class MonoidHomClass (F : Type*) (M N : outParam Type*) [MulOne M] [MulOne N]
 @[to_additive]
 instance MonoidHom.instFunLike : FunLike (M →* N) M N where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
-    apply DFunLike.coe_injective'
+    apply DFunLike.coe_injective
     exact h
 
 @[to_additive]
@@ -717,19 +717,22 @@ alias isDedekindFiniteMonoid_of_injective := IsDedekindFiniteMonoid.of_injective
 end MonoidHom
 
 /-- The identity map from a type with 1 to itself. -/
-@[to_additive (attr := simps) /-- The identity map from a type with zero to itself. -/]
+@[to_additive (attr := simps, implicit_reducible)
+/-- The identity map from a type with zero to itself. -/]
 def OneHom.id (M : Type*) [One M] : OneHom M M where
   toFun x := x
   map_one' := rfl
 
 /-- The identity map from a type with multiplication to itself. -/
-@[to_additive (attr := simps) /-- The identity map from a type with addition to itself. -/]
+@[to_additive (attr := simps, implicit_reducible)
+/-- The identity map from a type with addition to itself. -/]
 def MulHom.id (M : Type*) [Mul M] : M →ₙ* M where
   toFun x := x
   map_mul' _ _ := rfl
 
 /-- The identity map from a monoid to itself. -/
-@[to_additive (attr := simps) /-- The identity map from an additive monoid to itself. -/]
+@[to_additive (attr := simps, implicit_reducible)
+/-- The identity map from an additive monoid to itself. -/]
 def MonoidHom.id (M : Type*) [MulOne M] : M →* M where
   toFun x := x
   map_one' := rfl
@@ -745,22 +748,23 @@ lemma MulHom.coe_id {M : Type*} [Mul M] : (MulHom.id M : M → M) = _root_.id :=
 lemma MonoidHom.coe_id {M : Type*} [MulOne M] : (MonoidHom.id M : M → M) = _root_.id := rfl
 
 /-- Composition of `OneHom`s as a `OneHom`. -/
-@[to_additive /-- Composition of `ZeroHom`s as a `ZeroHom`. -/]
+@[to_additive (attr := implicit_reducible) /-- Composition of `ZeroHom`s as a `ZeroHom`. -/]
 def OneHom.comp [One M] [One N] [One P] (hnp : OneHom N P) (hmn : OneHom M N) : OneHom M P where
-  toFun := hnp ∘ hmn
+  toFun x := hnp (hmn x)
   map_one' := by simp
 
 /-- Composition of `MulHom`s as a `MulHom`. -/
-@[to_additive /-- Composition of `AddHom`s as an `AddHom`. -/]
+@[to_additive (attr := implicit_reducible) /-- Composition of `AddHom`s as an `AddHom`. -/]
 def MulHom.comp [Mul M] [Mul N] [Mul P] (hnp : N →ₙ* P) (hmn : M →ₙ* N) : M →ₙ* P where
-  toFun := hnp ∘ hmn
+  toFun x := hnp (hmn x)
   map_mul' x y := by simp
 
 /-- Composition of monoid morphisms as a monoid morphism. -/
-@[to_additive /-- Composition of additive monoid morphisms as an additive monoid morphism. -/]
+@[to_additive (attr := implicit_reducible)
+/-- Composition of additive monoid morphisms as an additive monoid morphism. -/]
 def MonoidHom.comp [MulOne M] [MulOne N] [MulOne P] (hnp : N →* P) (hmn : M →* N) :
     M →* P where
-  toFun := hnp ∘ hmn
+  toFun x := hnp (hmn x)
   map_one' := by simp
   map_mul' := by simp
 
