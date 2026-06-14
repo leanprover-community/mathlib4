@@ -202,11 +202,11 @@ theorem sup_parts_apply {β : Type*} [SemilatticeSup β] [OrderBot β] {f : α �
 
 /-- The image of a `Finpartition` under an inf-bot-preserving map is pairwise disjoint. -/
 theorem pairwiseDisjoint_apply {β : Type*} [SemilatticeInf β] [OrderBot β] {f : α → β}
-    (hinf : ∀ x y, f (x ⊓ y) = f x ⊓ f y) (hbot : f ⊥ = ⊥) :
+    (hf : ∀ x y, f (x ⊓ y) = f x ⊓ f y) (hbot : f ⊥ = ⊥) :
     (P.parts : Set α).PairwiseDisjoint f := by
   intro _ hx _ hy hxy
   have := (P.disjoint hx hy hxy).eq_bot
-  simp_all [disjoint_iff, ← hinf]
+  simp_all [disjoint_iff, ← hf]
 
 variable {P}
 
