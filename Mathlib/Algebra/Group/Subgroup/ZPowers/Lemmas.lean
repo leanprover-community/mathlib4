@@ -75,4 +75,13 @@ theorem closure_eq_zmultiples (a b : ℤ) : closure {a, b} = zmultiples (a.gcd b
   · grind [closure_le, mem_zmultiples_iff, SetLike.mem_coe, gcd_dvd_left, gcd_dvd_right]
   · simp [zmultiples_le, mem_closure_pair, gcd_eq_gcd_ab, mul_comm]
 
+theorem zmultiples_sup_zmultiples (a b : ℤ) :
+    zmultiples a ⊔ zmultiples b = zmultiples (a.gcd b : ℤ) := by
+  rw [zmultiples_eq_closure, zmultiples_eq_closure, ← closure_union, Set.singleton_union,
+    closure_eq_zmultiples]
+
+theorem zmultiples_le_zmultiples_iff {a b : ℤ} :
+    zmultiples a ≤ zmultiples b ↔ b ∣ a := by
+  rw [zmultiples_le, mem_zmultiples_iff]
+
 end Int

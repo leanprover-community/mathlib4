@@ -405,6 +405,10 @@ theorem orderOf_pow' (h : n ≠ 0) : orderOf (x ^ n) = orderOf x / Nat.gcd (orde
   rw [← minimalPeriod_iterate_eq_div_gcd h, mul_left_iterate]
 
 @[to_additive]
+theorem orderOf_pow_natAbs (n : ℤ) (x : G) : orderOf (x ^ n.natAbs) = orderOf (x ^ n) := by
+  obtain ⟨a, (rfl | rfl)⟩ := Int.eq_nat_or_neg n <;> simp
+
+@[to_additive]
 lemma orderOf_pow_of_dvd {x : G} {n : ℕ} (hn : n ≠ 0) (dvd : n ∣ orderOf x) :
     orderOf (x ^ n) = orderOf x / n := by rw [orderOf_pow' _ hn, Nat.gcd_eq_right dvd]
 
@@ -984,6 +988,16 @@ automatic in the case of a finite cancellative monoid. -/
 finite cancellative additive monoid. -/]
 theorem orderOf_pow (x : G) : orderOf (x ^ n) = orderOf x / Nat.gcd (orderOf x) n :=
   (isOfFinOrder_of_finite _).orderOf_pow ..
+
+@[to_additive]
+theorem orderOf_zpow [Finite G] (x : G) (n : ℤ) :
+    orderOf (x ^ n) = orderOf x / (orderOf x).gcd n.natAbs := by
+  rw [← orderOf_pow, orderOf_pow_natAbs]
+
+@[to_additive]
+theorem orderOf_zpow' (x : G) {n : ℤ} (h : n ≠ 0) :
+    orderOf (x ^ n) = orderOf x / (orderOf x).gcd n.natAbs := by
+  rw [← orderOf_pow' _ (Int.natAbs_ne_zero.mpr h), orderOf_pow_natAbs]
 
 @[to_additive]
 theorem mem_powers_iff_mem_range_orderOf [DecidableEq G] :
