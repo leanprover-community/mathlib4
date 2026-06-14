@@ -14,11 +14,11 @@ public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 This file defines two related tactics: `compute_degree` and `monicity`.
 
 Using `compute_degree` when the goal is of one of the seven forms
-*  `natDegree f ≤ d` (or `<`),
-*  `degree f ≤ d` (or `<`),
-*  `natDegree f = d`,
-*  `degree f = d`,
-*  `coeff f d = r`, if `d` is the degree of `f`,
+* `natDegree f ≤ d` (or `<`),
+* `degree f ≤ d` (or `<`),
+* `natDegree f = d`,
+* `degree f = d`,
+* `coeff f d = r`, if `d` is the degree of `f`,
 
 tries to solve the goal.
 It may leave side-goals, in case it is not entirely successful.
@@ -366,7 +366,7 @@ def dispatchLemma
           π ``natDegree_smul_le_of_le ``degree_smul_le_of_le ``coeff_smul
         | _ => π ``le_rfl ``le_rfl ``rfl
 
-/-- `try_rfl mvs` takes as input a list of `MVarId`s, scans them partitioning them into two
+/-- `tryRfl mvs` takes as input a list of `MVarId`s, scans them partitioning them into two
 lists: the goals containing some metavariables and the goals not containing any metavariable.
 
 If a goal containing a metavariable has the form `?_ = x`, `x = ?_`, where `?_` is a metavariable
@@ -378,7 +378,7 @@ If a goal does not contain metavariables, it tries `rfl` on it.
 It returns the list of `MVarId`s, beginning with the ones that initially involved (`Expr`)
 metavariables followed by the rest.
 -/
-def try_rfl (mvs : List MVarId) : MetaM (List MVarId) := do
+def tryRfl (mvs : List MVarId) : MetaM (List MVarId) := do
   let (yesMV, noMV) := ← mvs.partitionM fun mv =>
                           return hasExprMVar (← instantiateMVars (← mv.getDecl).type)
   let tried_rfl := ← noMV.mapM fun g => g.applyConst ``rfl <|> return [g]
@@ -393,6 +393,8 @@ def try_rfl (mvs : List MVarId) : MetaM (List MVarId) := do
       | none =>
         return [g]
   return (assignable.flatten ++ tried_rfl.flatten)
+
+@[deprecated (since := "2026-05-27")] alias try_rfl := tryRfl
 
 /--
 `splitApply mvs static` takes two lists of `MVarId`s.  The first list, `mvs`,
@@ -413,19 +415,19 @@ def splitApply (mvs static : List MVarId) : MetaM ((List MVarId) × (List MVarId
   return (progress.flatten, static ++ curr_static)
 
 /-- `miscomputedDegree? deg false_goals` takes as input
-*  an `Expr`ession `deg`, representing the degree of a polynomial
+* an `Expr`ession `deg`, representing the degree of a polynomial
   (i.e. an `Expr`ession of inferred type either `ℕ` or `WithBot ℕ`);
-*  a list of `MVarId`s `false_goals`.
+* a list of `MVarId`s `false_goals`.
 
 Although inconsequential for this function, the list of goals `false_goals` reduces to `False`
 if `norm_num`med.
 `miscomputedDegree?` extracts error information from goals of the form
-*  `a ≠ b`, assuming it comes from `⊢ coeff_of_given_degree ≠ 0`
-  --- reducing to `False` means that the coefficient that was supposed to vanish, does not;
-*  `a ≤ b`, assuming it comes from `⊢ degree_of_subterm ≤ degree_of_polynomial`
-  --- reducing to `False` means that there is a term of degree that is apparently too large;
-*  `a = b`, assuming it comes from `⊢ computed_degree ≤ given_degree`
-  --- reducing to `False` means that there is a term of degree that is apparently too large.
+* `a ≠ b`, assuming it comes from `⊢ coeff_of_given_degree ≠ 0` —
+  reducing to `False` means that the coefficient that was supposed to vanish, does not;
+* `a ≤ b`, assuming it comes from `⊢ degree_of_subterm ≤ degree_of_polynomial` —
+  reducing to `False` means that there is a term of degree that is apparently too large;
+* `a = b`, assuming it comes from `⊢ computed_degree ≤ given_degree` —
+  reducing to `False` means that there is a term of degree that is apparently too large.
 
 The cases `a ≠ b` and `a = b` are not a perfect match with the top coefficient:
 reducing to `False` is not exactly correlated with a coefficient being non-zero.
@@ -487,7 +489,7 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
         f!"'compute_degree' first applies lemma '{lem.lastComponentAsString}'"
       let mut (gls, static) := (← goal.applyConst lem, [])
       while gls != [] do (gls, static) ← splitApply gls static
-      let rfled ← try_rfl static
+      let rfled ← tryRfl static
       setGoals rfled
       --  simplify the left-hand sides, since this is where the degree computations leave
       --  expressions such as `max (0 * 1) (max (1 + 0 + 3 * 4) (7 * 0))`

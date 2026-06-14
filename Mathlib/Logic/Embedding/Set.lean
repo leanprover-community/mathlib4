@@ -162,6 +162,7 @@ the natural injection from the sigma-type `(i : ι) × ↑(s i)` to `α`. -/
     obtain rfl : i = j := h.eq (not_disjoint_iff.2 ⟨_, hx, hx'⟩)
     rfl
 
+set_option warning.simp.otherHead false in
 @[norm_cast] lemma Function.Embedding.coe_sigmaSet {s : ι → Set α} (h) :
     (Function.Embedding.sigmaSet h : ((i : ι) × s i) → α) = fun x ↦ x.2.1 := rfl
 

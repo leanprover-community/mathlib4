@@ -131,7 +131,7 @@ variable (D : Sort*) [Category* D]
 
 /--
 error: stuck at solving universe constraint
-  max u_1 (u_2+1) =?= _+1
+  max u_1 (u_2 + 1) =?= _ + 1
 while trying to unify
   Sort (max u_1 (u_2 + 1)) : Type (max u_1 (u_2 + 1))
 with
@@ -142,7 +142,7 @@ variable (E : Sort*) (F : Type*) [Category* (E → F)]
 
 /--
 error: stuck at solving universe constraint
-  imax (u_2+1) u_1 =?= _+1
+  imax (u_2 + 1) u_1 =?= _ + 1
 while trying to unify
   Sort (imax (u_2 + 1) u_1) : Type (imax (u_2 + 1) u_1)
 with

@@ -40,9 +40,9 @@ in the basis `[b₂, ..., bₙ]` (`basis_tl`).
 
 @[expose] public section
 
-namespace ComputeAsymptotics
+namespace Tactic.ComputeAsymptotics
 
-open Filter Topology Stream'
+open Filter Stream'
 
 /-- List of functions used to construct monomials in multiseries. -/
 abbrev Basis := List (ℝ → ℝ)
@@ -609,8 +609,6 @@ end Sorted
 
 section Approximates
 
-open Tactic.ComputeAsymptotics
-
 /-- Coinductive predicate stating that `ms` approximates its attached function on `basis`.
 * If `basis = []`, i.e. `ms` is just a real number, `Approximates` holds unconditionally.
 * If `basis = basis_hd :: basis_tl` and `ms = nil`, then `f =ᶠ[atTop] 0`.
@@ -686,7 +684,7 @@ theorem elim_cons {exp : ℝ}
   cases h <;> simp at h_ms; grind
 
 /-- One can replace `f` in `Approximates` with the funcion that eventually equals `f`. -/
-theorem replaceFun_Approximates {ms : MultiseriesExpansion (basis_hd :: basis_tl)} {f : ℝ → ℝ}
+theorem replaceFun {ms : MultiseriesExpansion (basis_hd :: basis_tl)} {f : ℝ → ℝ}
     (h_equiv : ms.toFun =ᶠ[atTop] f) (h_approx : ms.Approximates) :
     (ms.replaceFun f).Approximates := by
   let motive (ms : MultiseriesExpansion (basis_hd :: basis_tl)) : Prop :=
@@ -724,4 +722,4 @@ end Approximates
 
 end MultiseriesExpansion
 
-end ComputeAsymptotics
+end Tactic.ComputeAsymptotics

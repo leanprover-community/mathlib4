@@ -200,7 +200,7 @@ monotonically maps `s` onto `t`, then `φ` is just a translation (on `s`).
 theorem unique_unit_speed {φ : ℝ → ℝ} (φm : MonotoneOn φ s) (hfφ : HasUnitSpeedOn (f ∘ φ) s)
     (hf : HasUnitSpeedOn f (φ '' s)) ⦃x : ℝ⦄ (xs : x ∈ s) : EqOn φ (fun y => y - x + φ x) s := by
   dsimp only [HasUnitSpeedOn] at hf hfφ
-  convert HasConstantSpeedOnWith.ratio one_ne_zero φm hfφ hf xs using 3
+  convert! HasConstantSpeedOnWith.ratio one_ne_zero φm hfφ hf xs using 3
   simp
 
 /-- If both `f` and `f ∘ φ` have unit speed (on `Icc 0 t` and `Icc 0 s` respectively)
@@ -211,7 +211,7 @@ theorem unique_unit_speed_on_Icc_zero {s t : ℝ} (hs : 0 ≤ s) (ht : 0 ≤ t) 
     (hfφ : HasUnitSpeedOn (f ∘ φ) (Icc 0 s)) (hf : HasUnitSpeedOn f (Icc 0 t)) :
     EqOn φ id (Icc 0 s) := by
   rw [← φst] at hf
-  convert unique_unit_speed φm hfφ hf ⟨le_rfl, hs⟩ using 1
+  convert! unique_unit_speed φm hfφ hf ⟨le_rfl, hs⟩ using 1
   have : φ 0 = 0 := by
     have hm : 0 ∈ φ '' Icc 0 s := by simp only [φst, ht, mem_Icc, le_refl, and_self]
     obtain ⟨x, xs, hx⟩ := hm

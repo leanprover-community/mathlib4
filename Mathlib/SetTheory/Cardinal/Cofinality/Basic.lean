@@ -48,9 +48,12 @@ theorem le_cof_iff {c : Cardinal} : c ≤ cof α ↔ ∀ s : Set α, IsCofinal s
 @[deprecated (since := "2026-02-18")] alias le_cof := le_cof_iff
 
 variable (α) in
-theorem cof_eq : ∃ s : Set α, IsCofinal s ∧ #s = cof α := by
+/-- Every well-order has a cofinal subset of cardinal `cof α`. -/
+theorem exists_cof_eq : ∃ s : Set α, IsCofinal s ∧ #s = cof α := by
   obtain ⟨s, hs⟩ := ciInf_mem fun s : {s : Set α // IsCofinal s} ↦ #s
   exact ⟨s.1, s.2, hs⟩
+
+@[deprecated (since := "2026-05-25")] alias cof_eq := exists_cof_eq
 
 variable (α) in
 theorem cof_le_cardinalMk : cof α ≤ #α :=
@@ -58,7 +61,7 @@ theorem cof_le_cardinalMk : cof α ≤ #α :=
 
 theorem cof_eq_zero_iff : cof α = 0 ↔ IsEmpty α := by
   refine ⟨fun _ ↦ ?_, fun _ ↦ by simp [cof]⟩
-  obtain ⟨s, hs, hs'⟩ := cof_eq α
+  obtain ⟨s, hs, hs'⟩ := exists_cof_eq α
   simp_all [mk_eq_zero_iff, isCofinal_empty_iff]
 
 @[simp]
@@ -74,7 +77,7 @@ theorem cof_ne_zero [h : Nonempty α] : cof α ≠ 0 :=
 
 theorem cof_eq_one_iff : cof α = 1 ↔ ∃ x : α, IsTop x := by
   refine ⟨fun h ↦ ?_, fun ⟨t, ht⟩ ↦ ?_⟩
-  · obtain ⟨s, hs, hs'⟩ := cof_eq α
+  · obtain ⟨s, hs, hs'⟩ := exists_cof_eq α
     rw [h, mk_set_eq_one_iff] at hs'
     obtain ⟨t, rfl⟩ := hs'
     use t
@@ -131,10 +134,13 @@ theorem cof_congr_of_strictMono {f : α → γ} (hf : StrictMono f) (hf' : IsCof
     cof α = cof γ := by
   simpa using lift_cof_congr_of_strictMono hf hf'
 
+theorem cof_eq_of_isCofinal {s : Set α} (hs : IsCofinal s) : cof s = cof α :=
+  cof_congr_of_strictMono (Subtype.strictMono_coe _) (by simpa)
+
 @[simp]
-theorem cof_lt_aleph0_iff : Order.cof α < ℵ₀ ↔ Order.cof α ≤ 1 := by
+theorem cof_lt_aleph0_iff : cof α < ℵ₀ ↔ cof α ≤ 1 := by
   refine ⟨fun h ↦ ?_, (lt_of_le_of_lt · one_lt_aleph0)⟩
-  obtain ⟨s, hs, hs'⟩ := Order.cof_eq α
+  obtain ⟨s, hs, hs'⟩ := exists_cof_eq α
   have hf : s.Finite := by
     rw [Set.Finite, ← mk_lt_aleph0_iff]
     exact hs'.trans_lt h
@@ -143,8 +149,11 @@ theorem cof_lt_aleph0_iff : Order.cof α < ℵ₀ ↔ Order.cof α ≤ 1 := by
   simpa
 
 @[simp]
-theorem aleph0_le_cof_iff : ℵ₀ ≤ Order.cof α ↔ 1 < Order.cof α := by
+theorem aleph0_le_cof_iff : ℵ₀ ≤ cof α ↔ 1 < cof α := by
   simp [← not_lt]
+
+theorem aleph0_le_cof [Nonempty α] [NoMaxOrder α] : ℵ₀ ≤ cof α := by
+  simp
 
 @[simp]
 theorem cof_eq_aleph0 [NoMaxOrder α] [Nonempty α] [Countable α] : cof α = ℵ₀ :=
