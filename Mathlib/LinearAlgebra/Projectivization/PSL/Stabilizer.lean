@@ -20,8 +20,7 @@ variable {F : Type*} [Field F] {ι : Type*} [DecidableEq ι] [Fintype ι]
 
 /-- The "unipotent radical" attached to a subspace `L ⊆ ι → F`: the subgroup of
 `SL ι F` consisting of matrices `A` such that `A - 1` sends every vector into `L`.
-When `L` is one-dimensional this is an abelian subgroup of the stabilizer of `L`
-(in `SL`) and corresponds to the subgroup `U` from Conrad's note. -/
+When `L` is one-dimensional this is an abelian subgroup of the stabilizer of `L` in `SL`. -/
 def Matrix.SpecialLinearGroup.lineStab (L : Submodule F (ι → F)) :
     Subgroup (Matrix.SpecialLinearGroup ι F) where
   carrier := {A | ∀ w : ι → F, A • w - w ∈ L}
@@ -42,8 +41,7 @@ lemma mem_lineStab_iff (A : Matrix.SpecialLinearGroup ι F) (L : Submodule F (ι
 open scoped LinearAlgebra.Projectivization
 
 /-- The candidate family of subgroups for the Iwasawa structure on
-`PSL ι F` acting on the projective space `ℙ F (ι → F)`: the image in `PSL` of
-`Matrix.SpecialLinearGroup.lineStab p.submodule`, i.e. of the unipotent radical
+`PSL ι F` acting on the projective space `ℙ F (ι → F)`: the unipotent radical
 attached to the line through `p`. -/
 noncomputable abbrev PSL.iwasawaT (p : ℙ F (ι → F)) :
     Subgroup (Matrix.ProjectiveSpecialLinearGroup ι F) :=
@@ -66,14 +64,10 @@ lemma Matrix.SpecialLinearGroup.lineStab_smul
   rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
   simp only [mem_lineStab_iff, Submodule.mem_smul_pointwise_iff_exists, MulAut.smul_def,
     MulAut.inv_apply, MulAut.conj_symm_apply]
-  refine ⟨fun hA w ↦ ?_, fun hA w ↦ ⟨g⁻¹ • (A • w - w), ?_, ?_⟩⟩
-  · obtain ⟨v, hv, hvw⟩ := hA (g •  w)
-    rw [eq_comm, sub_eq_iff_eq_add] at hvw
-    convert hv using 1
-    rw [mul_smul, mul_smul]
-    simp [hvw]
-  · convert hA (g⁻¹ • w) using 1; simp [mul_smul, smul_sub]
-  · rw [← mul_smul, mul_inv_cancel, one_smul]
+  refine ⟨fun hA w ↦ ?_, fun hA w ↦ ⟨g⁻¹ • (A • w - w), ?_, by simp⟩⟩
+  · obtain ⟨v, hv, hvw⟩ := hA (g • w)
+    simp_all [eq_comm (a := g • v), sub_eq_iff_eq_add, mul_smul]
+  · simpa [mul_smul, smul_sub] using hA (g⁻¹ • w)
 
 /-- The SL-level equivariance pushed through the quotient: the image in `PSL` of
 the conjugate `MulAut.conj g_SL • H` equals `MulAut.conj (mk g_SL) • (image of H)`. -/
@@ -89,7 +83,7 @@ lemma PSL.iwasawaT_map_conj (g : Matrix.SpecialLinearGroup ι F)
   exact ⟨fun ⟨a, ha, ha'⟩ ↦ ⟨g⁻¹ * a * g, ha, by simp [ha']⟩,
     fun ⟨a, ha, hx⟩ ↦ ⟨g * a * g⁻¹, by simp [mul_assoc, ha], by simp [hx, mul_assoc]⟩⟩
 
-lemma LinearMap.exists_restrict_span_singleton_eq_smul_id
+private lemma LinearMap.exists_restrict_span_singleton_eq_smul_id
     {R V : Type*} [CommSemiring R] [AddCommMonoid V] [Module R V]
     {v : V} {A : V →ₗ[R] V} (hAv : A v ∈ Submodule.span R {v}) :
     ∃ c : R, A v = c • v ∧ ∃ hcomap : Submodule.span R {v} ≤ (Submodule.span R {v}).comap A,
