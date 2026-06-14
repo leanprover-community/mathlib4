@@ -198,7 +198,7 @@ protected theorem disjoint : (P.parts : Set α).PairwiseDisjoint id :=
 /-- The `sup` of a sup-bot-preserving map `f` over the parts of a `Finpartition` equals `f a`. -/
 theorem sup_parts_apply {β : Type*} [SemilatticeSup β] [OrderBot β] {f : α → β}
     (hsup : ∀ x y, f (x ⊔ y) = f x ⊔ f y) (hbot : f ⊥ = ⊥) : P.parts.sup f = f a :=
-  (comp_sup_eq_sup_comp f hsup hbot).symm.trans (congrArg f P.sup_parts)
+  (apply_sup_eq_sup_comp f hsup hbot).symm.trans (congrArg f P.sup_parts)
 
 /-- The image of a `Finpartition` under an inf-bot-preserving map is pairwise disjoint. -/
 theorem pairwiseDisjoint_apply {β : Type*} [SemilatticeInf β] [OrderBot β] {f : α → β}
