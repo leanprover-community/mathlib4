@@ -67,11 +67,6 @@ instance {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) : One (TangentSpace (𝓡�
 
 variable {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ∞}
 
--- def bars : EuclideanSpace ℝ (Fin 1) → ℝ := fun z' ↦ (z' 0 : ℝ)
-
--- set_option backward.isDefEq.respectTransparency false in
--- def barz : ℝ → EuclideanSpace ℝ (Fin 1) := fun z' ↦ toLp 2 <| fun _ ↦ z'
-
 -- TODO: name appropriately! and does/should this exist already?
 def bar (α : Type*) [Unique α] : EuclideanSpace ℝ α ≃L[ℝ] ℝ where
   toFun := fun z' ↦ (z' default : ℝ)
@@ -98,22 +93,24 @@ def myflip (x : ℝ) : ℝ ≃ₜ ℝ where
 
 -- TODO: all these lemmas are technically misnamed; the relevant coercion is Subtype.val!
 
--- -- TODO: generalise to all manifolds!
--- lemma Diffeomorph.mem_maximalAtlas (φ : Diffeomorph 𝓘(ℝ) 𝓘(ℝ) ℝ ℝ n) :
---     φ.toHomeomorph.toOpenPartialHomeomorph ∈ maximalAtlas 𝓘(ℝ, ℝ) n ℝ := by
---   simp only [maximalAtlas, StructureGroupoid.maximalAtlas, chartedSpaceSelf_atlas, forall_eq,
---      mem_setOf_eq, contDiffGroupoid, mem_groupoid_of_pregroupoid, contDiffPregroupoid]
---   refine ⟨⟨?_, ?_⟩, ?_, ?_⟩
---   all_goals simp [contDiffOn_univ, φ.symm.contDiff, φ.contDiff]
-
--- TODO: generalise this lemma to all manifolds... will require work!
-lemma Homeomorph.mem_maximalAtlas_of_contMDiff
-    (φ : Homeomorph ℝ ℝ) (hφ : ContDiff ℝ n φ) (hφ' : ContDiff ℝ n φ.symm) :
-    φ.toOpenPartialHomeomorph ∈ maximalAtlas 𝓘(ℝ, ℝ) n ℝ := by
+lemma Homeomorph.mem_maximalAtlas_of_contDiff
+    (φ : Homeomorph E E) (hφ : ContDiff ℝ n φ) (hφ' : ContDiff ℝ n φ.symm) :
+    φ.toOpenPartialHomeomorph ∈ maximalAtlas 𝓘(ℝ, E) n E := by
   simp only [maximalAtlas, StructureGroupoid.maximalAtlas, chartedSpaceSelf_atlas, forall_eq,
      mem_setOf_eq, contDiffGroupoid, mem_groupoid_of_pregroupoid, contDiffPregroupoid]
   refine ⟨⟨?_, ?_⟩, ?_, ?_⟩
   all_goals simp [contDiffOn_univ, hφ, hφ']
+
+-- attempted generalisation of the previous lemma to manifolds
+lemma Homeomorph.mem_maximalAtlas_of_contDiff'
+    (φ : Homeomorph H H) (hφ : CMDiff n φ) (hφ' : CMDiff n φ.symm) :
+    φ.toOpenPartialHomeomorph ∈ maximalAtlas I n H := by
+  simp only [mfld_simps, maximalAtlas, StructureGroupoid.maximalAtlas, forall_eq,
+    contDiffGroupoid, mem_groupoid_of_pregroupoid, contDiffPregroupoid]
+  -- lemming: f : H → H is smooth, then I ∘ f ∘ I.symm is smooth on range I
+  -- is this always true? if so, why? (otherwise, this lemma needs a different proof)
+  refine ⟨⟨?_, ?_⟩, ?_, ?_⟩
+  all_goals sorry
 
 set_option linter.flexible false in
 -- TODO: the proof works, except that some details with the chosen computation are not right
@@ -130,7 +127,7 @@ lemma isImmersionOfComplement_subtype_coe_Icc :
     apply IsImmersionAtOfComplement.mk_of_continuousAt (by fun_prop) φ
       (chartAt (EuclideanHalfSpace 1) z) (Homeomorph.addLeft (-x)).toOpenPartialHomeomorph
       (mem_chart_source _ z) (by simp [Homeomorph.addLeft]) (chart_mem_maximalAtlas _) ?_; swap
-    · apply Homeomorph.mem_maximalAtlas_of_contMDiff <;> simp [Homeomorph.addLeft] <;> fun_prop
+    · apply Homeomorph.mem_maximalAtlas_of_contDiff <;> simp [Homeomorph.addLeft] <;> fun_prop
     intro z' hz'
     simp [hz, IccLeftChart, modelWithCornersEuclideanHalfSpace]
     simp [hz, IccLeftChart] at hz'
@@ -147,7 +144,7 @@ lemma isImmersionOfComplement_subtype_coe_Icc :
     apply IsImmersionAtOfComplement.mk_of_continuousAt (by fun_prop) φ
       (chartAt (EuclideanHalfSpace 1) z) (myflip y).toOpenPartialHomeomorph (mem_chart_source _ z)
       (by simp [myflip]) (chart_mem_maximalAtlas _) ?_; swap
-    · apply Homeomorph.mem_maximalAtlas_of_contMDiff <;> simp [myflip] <;> fun_prop
+    · apply Homeomorph.mem_maximalAtlas_of_contDiff <;> simp [myflip] <;> fun_prop
     intro z' hz'
     simp [hz, IccRightChart, modelWithCornersEuclideanHalfSpace]
     simp [hz, IccRightChart] at hz'
