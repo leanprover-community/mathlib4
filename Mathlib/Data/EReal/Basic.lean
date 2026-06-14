@@ -31,6 +31,7 @@ open Function ENNReal NNReal Set
 noncomputable section
 
 /-- The type of extended real numbers `[-∞, ∞]`, constructed as `WithBot (WithTop ℝ)`. -/
+@[wikidata Q2039387]
 def EReal := WithBot (WithTop ℝ)
 deriving Nontrivial,
   Zero, One, AddMonoid, AddCommMonoid, AddCommMonoidWithOne, CharZero,
@@ -641,7 +642,7 @@ theorem coe_ennreal_ne_one {x : ℝ≥0∞} : (x : EReal) ≠ 1 ↔ x ≠ 1 :=
   coe_ennreal_eq_one.not
 
 theorem coe_ennreal_nonneg (x : ℝ≥0∞) : (0 : EReal) ≤ x :=
-  coe_ennreal_le_coe_ennreal_iff.2 (zero_le x)
+  coe_ennreal_le_coe_ennreal_iff.2 zero_le
 
 @[simp] theorem range_coe_ennreal : range ((↑) : ℝ≥0∞ → EReal) = Set.Ici 0 :=
   Subset.antisymm (range_subset_iff.2 coe_ennreal_nonneg) fun x => match x with
@@ -902,7 +903,7 @@ meta def evalERealToENNReal : PositivityExt where eval {u α} _zα _pα e := do
     assertInstancesCommute
     match ← core q(inferInstance) q(inferInstance) a with
     | .positive pa => pure (.positive q(EReal.toENNReal_pos_iff.2 $pa))
-    | _ => pure (.nonnegative q(zero_le $e))
+    | _ => pure (.nonnegative q(zero_le (a := $e)))
   | _, _, _ => throwError "not EReal.toENNReal"
 
 end Mathlib.Meta.Positivity

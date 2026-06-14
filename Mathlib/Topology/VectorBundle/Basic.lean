@@ -504,7 +504,7 @@ theorem comp_continuousLinearEquivAt_eq_coord_change (e e' : Trivialization F (�
 
 end Bundle.Trivialization
 
-variable (F E) [TopologicalSpace (TotalSpace F E)] [FiberBundle F E] [VectorBundle R F E] in
+variable (F E) [VectorBundle R F E] in
 /-- A continuous linear equivalence between the fiber at `b` and the model fiber,
 induced by the preferred trivialisation at each `b`. -/
 @[simps!]
@@ -951,7 +951,7 @@ theorem inCoordinates_eq {x₀ x : B} {y₀ y : B'} {ϕ : E x →SL[σ] E' y}
         (ϕ.comp <|
           (((trivializationAt F E x₀).continuousLinearEquivAt 𝕜₁ x hx).symm : F →L[𝕜₁] E x)) := by
   ext
-  simp_rw [inCoordinates, ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe,
+  simp_rw [inCoordinates, ContinuousLinearMap.coe_comp, ContinuousLinearEquiv.coe_coe,
     Trivialization.coe_continuousLinearEquivAt_eq, Trivialization.symm_continuousLinearEquivAt_eq]
 
 set_option backward.isDefEq.respectTransparency false in

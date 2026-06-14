@@ -105,7 +105,7 @@ theorem Seminorm.continuous_iSup
   refine Seminorm.continuous_of_lowerSemicontinuous _ ?_
   rw [Seminorm.coe_iSup_eq bdd]
   rw [Seminorm.bddAbove_range_iff] at bdd
-  convert lowerSemicontinuous_ciSup (f := fun i x ↦ p i x) bdd (fun i ↦ (hp i).lowerSemicontinuous)
+  convert! lowerSemicontinuous_ciSup (f := fun i x ↦ p i x) bdd (fun i ↦ (hp i).lowerSemicontinuous)
   exact iSup_apply
 
 end defs
@@ -127,7 +127,7 @@ instance BaireSpace.instBarrelledSpace [TopologicalSpace E] [IsTopologicalAddGro
     -- Consider the family of all `p`-closed-balls with integer radius.
     -- By lower semicontinuity, each of these closed balls is indeed closed...
     have h₁ : ∀ n : ℕ, IsClosed (p.closedBall (0 : E) n) := fun n ↦ by
-      simpa [p.closedBall_zero_eq] using hp.isClosed_preimage n
+      simpa [p.closedBall_zero_eq] using! hp.isClosed_preimage n
     -- ... and clearly they cover the whole space.
     have h₂ : (⋃ n : ℕ, p.closedBall (0 : E) n) = univ :=
       eq_univ_of_forall fun x ↦ mem_iUnion.mpr (exists_nat_ge <| p (x - 0))
@@ -138,7 +138,7 @@ instance BaireSpace.instBarrelledSpace [TopologicalSpace E] [IsTopologicalAddGro
     -- radius `2*n` is a neighborhood of zero.
     refine Seminorm.continuous' (r := n + n) ?_
     rw [p.closedBall_zero_eq] at hxn ⊢
-    have hxn' : p x ≤ n := by convert interior_subset hxn
+    have hxn' : p x ≤ n := by convert! interior_subset hxn
     -- By definition, we have `p x' ≤ n` for `x'` sufficiently close to `x`.
     -- In other words, `p (x + y) ≤ n` for `y` sufficiently close to `0`.
     rw [mem_interior_iff_mem_nhds, ← map_add_left_nhds_zero] at hxn

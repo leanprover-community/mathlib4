@@ -318,7 +318,7 @@ namespace qNF
 /-- Extract a common factor `L` of two products-of-powers `l₁` and `l₂` in `M`, in the sense that
 both `l₁` and `l₂` are quotients by `L` of products of *positive* powers.
 
-The variable `cond` specifies whether we extract a *certified nonzero[/positive]* (and therefore
+The variable `cond` specifies whether we extract a *certified nonzero(/positive)* (and therefore
 potentially smaller) common factor. If so, the metaprogram returns a "proof" that this common factor
 is nonzero/positive, i.e. an expression `Q(NF.eval $(L.toNF) ≠ 0)` / `Q(0 < NF.eval $(L.toNF))`. -/
 partial def gcd (iM : Q(CommGroupWithZero $M)) (l₁ l₂ : qNF M)
@@ -665,10 +665,10 @@ def parseDischarger (d : Option (TSyntax ``discharger)) (args : Option (TSyntax 
     | _ => throwError "could not parse the provided discharger {d}"
 
 /--
-`field_simp` normalizes expressions in (semi-)fields by rewriting them to a common denominator,
-i.e. to reduce them to expressions of the form `n / d` where neither `n` nor `d` contains any
-division symbol. The `field_simp` tactic will also clear denominators in field *(in)equalities*, by
-cross-multiplying.
+`field_simp` normalizes expressions in (semi-)fields (i.e., does not require additive inverses)
+by rewriting them to a common denominator, i.e. to reduce them to expressions of the form `n / d`
+where neither `n` nor `d` contains any division symbol. The `field_simp` tactic will also clear
+denominators in field *(in)equalities*, by cross-multiplying.
 
 A very common pattern is `field_simp; ring` (clear denominators, then the resulting goal is
 solvable by the axioms of a commutative ring). The finishing tactic `field` is a shorthand for this

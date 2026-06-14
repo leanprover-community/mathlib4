@@ -714,6 +714,28 @@ lemma Nat.stabilises_of_monotone {f : ℕ → ℕ} {b n : ℕ} (hfmono : Monoton
     (congr_arg f (Nat.add_sub_of_le hk)).symm.trans (key (k - m)).2
   exact (key n (hmb.trans hbn)).trans (key b hmb).symm
 
+/-- An antitone function `f : ℕ → ℕ` which is constant after stabilising for the first time,
+stabilises in at most `f 0` steps.
+
+Compared to `WellFoundedLT.antitone_chain_condition`, this lemma requires the extra hypothesis
+`hfstab` and only applies to `ℕ`-valued functions, but in return it gives an explicit bound on the
+stabilisation index. -/
+lemma Nat.stabilises_of_antitone {f : ℕ → ℕ} (hfmono : Antitone f)
+    (hfstab : ∀ m, f m = f (m + 1) → f (m + 1) = f (m + 2)) :
+    ∃ n ≤ f 0, ∀ m, n ≤ m → f m = f n := by
+  induction h : f 0 using Nat.strongRecOn generalizing f with
+  | ind n ih =>
+    by_cases heq : f 0 = f 1
+    · have flat (j : ℕ) : f j = f (j + 1) := by induction j with grind
+      exact ⟨0, Nat.zero_le _, fun m _ => by induction m with grind⟩
+    · have hlt : f 1 < f 0 := (hfmono (Nat.le_succ 0)).lt_of_ne' heq
+      let g (i : ℕ) := f (i + 1)
+      have hg_anti : Antitone g := by grind [Antitone]
+      obtain ⟨p, hp, hp'⟩ := ih (f 1) (by grind) hg_anti (by grind) rfl
+      refine ⟨p + 1, by omega, fun m hm => ?_⟩
+      specialize hp' (m - 1) (by lia)
+      grind
+
 /-- A bounded monotone function `ℕ → ℕ` converges. -/
 lemma converges_of_monotone_of_bounded {f : ℕ → ℕ} (mono_f : Monotone f)
     {c : ℕ} (hc : ∀ n, f n ≤ c) : ∃ b N, ∀ n ≥ N, f n = b := by

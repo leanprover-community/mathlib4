@@ -14,6 +14,7 @@ public import Lean.Parser.Command
 The "emptyLine" linter emits a warning on empty lines inside a command, but outside of a
 doc-string/module-doc.
 -/
+
 public meta section
 
 open Lean Elab Linter
@@ -26,7 +27,7 @@ def Substring.Raw.getRange : Substring.Raw → Syntax.Range
 
 namespace Syntax
 /-!
-# `Syntax` filters
+### `Syntax` filters
 -/
 
 /--

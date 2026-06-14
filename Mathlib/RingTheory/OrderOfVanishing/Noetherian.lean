@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.OrderOfVanishing.Basic
 public import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 public import Mathlib.RingTheory.Valuation.Discrete.Basic
+public import Mathlib.RingTheory.Valuation.Discrete.IsDiscreteValuationRing
 
 /-!
 # Order of vanishing in Noetherian rings.
@@ -96,7 +97,7 @@ lemma ord_eq_addVal (x : R) : ord R x = IsDiscreteValuationRing.addVal R x := by
     rw [Ideal.span_singleton_zero] at art
     have : IsArtinianRing R :=
       (LinearEquiv.isArtinian_iff (Submodule.quotEquivOfEqBot ⊥ rfl).symm).mpr art
-    exact (IsDiscreteValuationRing.not_krullDimLE_zero R) (PrimeSpectrum.instKrullDimLEOfNatNat R)
+    exact IsDiscreteValuationRing.not_krullDimLE_zero R inferInstance
   obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
   obtain ⟨m, α, rfl⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible hx hϖ
   rw [ord_mul, ord_pow, ord_of_irreducible hϖ]

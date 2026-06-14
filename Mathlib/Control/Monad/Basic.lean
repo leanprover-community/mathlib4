@@ -15,9 +15,9 @@ import Mathlib.Tactic.Attr.Register
 
 ## Attributes
 
-* ext
-* functor_norm
-* monad_norm
+* `ext`
+* `functor_norm`
+* `monad_norm`
 
 ## Implementation Details
 

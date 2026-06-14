@@ -181,7 +181,7 @@ lemma ae_forall_memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (p : ℝ≥0) :
     rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (mod_cast hp) (by simp),
       ENNReal.coe_toReal]
     have hf := (hi (p * t)).lintegral_lt_top
-    convert hf using 3 with ω
+    convert! hf using 3 with ω
     rw [enorm_eq_ofReal (by positivity), ENNReal.ofReal_rpow_of_nonneg (by positivity),
       ← exp_mul, mul_comm, ← mul_assoc]
     positivity
@@ -196,7 +196,7 @@ lemma memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (t : ℝ) (p : ℝ≥0) :
     simp only [ENNReal.coe_toReal]
     have h' := (h.integrable_exp_mul (p * t)).2
     rw [hasFiniteIntegral_def] at h'
-    convert h' using 3 with ω
+    convert! h' using 3 with ω
     rw [enorm_eq_ofReal (by positivity), enorm_eq_ofReal (by positivity),
       ENNReal.ofReal_rpow_of_nonneg (by positivity), ← exp_mul, mul_comm, ← mul_assoc]
     positivity
@@ -247,7 +247,7 @@ protected lemma of_rat (h_int : ∀ t : ℝ, Integrable (fun ω ↦ exp (t * X �
 lemma fun_zero [IsFiniteMeasure ν] [IsZeroOrMarkovKernel κ] :
     HasSubgaussianMGF (fun _ ↦ 0) 0 κ ν where
   integrable_exp_mul := by simp
-  mgf_le := by simpa using ae_of_all _ fun _ ↦ measureReal_le_one
+  mgf_le := by simp
 
 @[simp]
 lemma zero [IsFiniteMeasure ν] [IsZeroOrMarkovKernel κ] : HasSubgaussianMGF 0 0 κ ν := fun_zero
@@ -289,10 +289,10 @@ lemma of_map {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {κ : Kernel Ω' Ω''
       at h1
   mgf_le := by
     filter_upwards [h.ae_forall_integrable_exp_mul, h.mgf_le] with ω' h_int h_mgf t
-    convert h_mgf t
+    convert! h_mgf t
     ext t
     rw [map_apply _ hY, mgf_map hY.aemeasurable]
-    convert (h_int t).1
+    convert! (h_int t).1
     rw [map_apply _ hY]
 
 lemma id_map_iff (hX : Measurable X) :
@@ -418,7 +418,7 @@ lemma add {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX κ ν)
   exact
   { integrable_exp_mul t := by
       simp_rw [mul_add, exp_add]
-      convert MemLp.integrable_mul (hX.memLp_exp_mul t 2) (hY.memLp_exp_mul t 2)
+      convert! MemLp.integrable_mul (hX.memLp_exp_mul t 2) (hY.memLp_exp_mul t 2)
       norm_cast
       infer_instance
     mgf_le := by
@@ -653,7 +653,7 @@ lemma of_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
     have h1 := h.integrable_exp_mul t
     rwa [integrable_map_measure h1.aestronglyMeasurable (by fun_prop)] at h1
   mgf_le t := by
-    convert h.mgf_le t using 1
+    convert! h.mgf_le t using 1
     rw [mgf_map hY (h.integrable_exp_mul t).1]
 
 lemma id_map_iff (hX : AEMeasurable X μ) :
@@ -690,7 +690,7 @@ protected lemma const_mul (h : HasSubgaussianMGF X c μ) (r : ℝ) :
 lemma integrableExpSet_eq_univ (hX : HasSubgaussianMGF X c μ) :
     integrableExpSet X μ = Set.univ := by
   ext t
-  simpa using hX.integrable_exp_mul t
+  simpa using! hX.integrable_exp_mul t
 
 lemma memLp (hX : HasSubgaussianMGF X c μ) (p : ℝ≥0) : MemLp X p μ :=
   memLp_of_mem_interior_integrableExpSet (by simp [integrableExpSet_eq_univ hX]) p
@@ -728,7 +728,7 @@ lemma add_of_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF
     HasSubgaussianMGF (fun ω ↦ X ω + Y ω) (cX + cY) μ where
   integrable_exp_mul t := by
     simp_rw [mul_add, exp_add]
-    convert MemLp.integrable_mul (hX.memLp_exp_mul t 2) (hY.memLp_exp_mul t 2)
+    convert! MemLp.integrable_mul (hX.memLp_exp_mul t 2) (hY.memLp_exp_mul t 2)
     norm_cast
     infer_instance
   mgf_le t := by
@@ -759,10 +759,10 @@ private lemma sum_of_iIndepFun_of_forall_aemeasurable
   | empty => simp
   | insert i s his h =>
     simp_rw [← Finset.sum_apply, Finset.sum_insert his, Pi.add_apply, Finset.sum_apply]
-    have h_indep' := (h_indep.indepFun_finset_sum_of_notMem₀ h_meas his).symm
+    have h_indep' := (h_indep.indepFun_finsetSum_of_notMem₀ h_meas his).symm
     refine add_of_indepFun (h_subG _ (Finset.mem_insert_self _ _)) (h ?_) ?_
     · exact fun i hi ↦ h_subG _ (Finset.mem_insert_of_mem hi)
-    · convert h_indep'
+    · convert! h_indep'
       rw [Finset.sum_apply]
 
 lemma sum_of_iIndepFun {ι : Type*} {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ι → ℝ≥0}
@@ -831,7 +831,7 @@ protected lemma mgf_le_of_mem_Icc_of_integral_eq_zero [IsProbabilityMeasure μ] 
   _ = Var[X; μ.tilted (u * X ·)] := by
     rw [← variance_tilted_mul (hs (Set.mem_Icc_of_Ioo h1))]
   _ ≤ ((b - a) / 2) ^ 2 := by
-    convert variance_le_sq_of_bounded ((tilted_absolutelyContinuous μ (u * X ·)) hb) _
+    convert! variance_le_sq_of_bounded ((tilted_absolutelyContinuous μ (u * X ·)) hb) _
     · exact isProbabilityMeasure_tilted (hi u)
     · exact hm.mono_ac (tilted_absolutelyContinuous μ (u * X ·))
   _ = (‖b - a‖₊ / 2) ^ 2 := by simp [field]
@@ -891,7 +891,7 @@ lemma HasSubgaussianMGF.add_of_hasCondSubgaussianMGF [IsFiniteMeasure μ]
   rw [HasSubgaussianMGF_iff_kernel] at hX ⊢
   have hY' : Kernel.HasSubgaussianMGF Y cY (condExpKernel μ m)
       (Kernel.const Unit (μ.trim hm) ∘ₘ Measure.dirac ()) := by simpa
-  convert hX.add_comp hY'
+  convert! hX.add_comp hY'
   ext
   rw [Kernel.const_apply, ← Measure.compProd, compProd_trim_condExpKernel]
 
