@@ -369,8 +369,7 @@ private lemma det_eq_one_of_isLocalRing [IsLocalRing R] {M : Matrix (l ⊕ l) (l
   obtain ⟨X, hX_symm, hA_isUnit⟩ := exists_symmetric_X_isUnit_det_add_mul_of_symplectic
     <| hM_blocks ▸ hM
   set Lx : Matrix (l ⊕ l) (l ⊕ l) R := fromBlocks 1 X 0 1 with Lx_def
-  have Lx_mul : Lx * fromBlocks A B C D =
-      fromBlocks (A + X * C) (B + X * D) C D := by
+  have Lx_mul : Lx * fromBlocks A B C D = fromBlocks (A + X * C) (B + X * D) C D := by
     simp [Lx_def, fromBlocks_multiply]
   set M' : Matrix (l ⊕ l) (l ⊕ l) R := Lx * M with M'_def
   have h_fromBlocks2_in : fromBlocks (A + X * C) (B + X * D) C D ∈ symplecticGroup l R := by
