@@ -230,6 +230,15 @@ jobs:
         echo "Compute technical debt changes"
         techDebtVar="$("${CI_SCRIPTS_DIR}/reporting/technical-debt-metrics.sh" pr_summary)"
 
+        # If the PR decreased technical debt, add the `tech debt` label.
+        # The metrics script emits a summary line "Decrease in '<level>' tech debt:" for each
+        # level (strong/weak) that went down (and "Increase ..."/"No changes ..." otherwise),
+        # so matching either of those two lines means the PR reduced some tech debt.
+        if grep -qE "Decrease in '(strong|weak)' tech debt" <<< "${techDebtVar}"
+        then
+          gh pr edit "${PR}" --add-label "tech debt"
+        fi
+
         echo "Compute documentation reminder"
         workflowFilesChanged="$(grep '^\.github/workflows/' changed_files.txt || true)"
         if [ -n "${workflowFilesChanged}" ]
