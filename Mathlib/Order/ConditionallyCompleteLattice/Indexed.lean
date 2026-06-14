@@ -324,7 +324,7 @@ theorem ciInf_inf_le {f g : ι → α} : (⨅ x, f x) ⊓ (⨅ x, g x) ≤ ⨅ x
 /-- Indexed version of `exists_lt_of_lt_csSup`.
 When `b < iSup f`, there is an element `i` such that `b < f i`.
 -/
-@[to_dual
+@[to_dual exists_lt_of_ciInf_lt
 /-- Indexed version of `exists_lt_of_csInf_lt`.
 When `iInf f < a`, there is an element `i` such that `f i < a`.
 -/]
