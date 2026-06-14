@@ -94,6 +94,7 @@ lemma le : x ≤ y := by
     ← this]
   exact ⟨(SimplexCategory.δ _).op, rfl⟩
 
+set_option backward.defeqAttrib.useBackward true in
 include hxy in
 lemma unique (f : ⦋d⦌ ⟶ ⦋d + 1⦌) [Mono f]
     (hf : X.map f.op (y.cast (by rw [hxy.dim_eq, hd])).simplex = (x.cast hd).simplex) :
@@ -113,6 +114,7 @@ lemma op : (S.opEquiv.symm x).IsUniquelyCodimOneFace (S.opEquiv.symm y) := by
   obtain ⟨i, rfl⟩ := i.rev_surjective
   simpa [← hxy.δ_eq_iff rfl] using hi
 
+set_option backward.defeqAttrib.useBackward true in
 include hxy in
 lemma of_iso {Y : SSet.{u}} (e : X ≅ Y) :
     (S.mk (e.hom.app _ x.simplex)).IsUniquelyCodimOneFace (S.mk (e.hom.app _ y.simplex)) := by
@@ -126,6 +128,16 @@ lemma iff_of_iso {Y : SSet.{u}} (e : X ≅ Y) (x y : X.S) :
     (S.mk (e.hom.app _ x.simplex)).IsUniquelyCodimOneFace (S.mk (e.hom.app _ y.simplex)) ↔
       x.IsUniquelyCodimOneFace y :=
   ⟨fun hxy' ↦ by simpa using hxy'.of_iso e.symm, fun hxy ↦ hxy.of_iso e⟩
+
+lemma index_of_iso {Y : SSet.{u}} (e : X ≅ Y) {d : ℕ} (hd : x.dim = d) :
+    (hxy.of_iso e).index hd = hxy.index hd := by
+  obtain ⟨dx, x, rfl⟩ := x.mk_surjective
+  obtain ⟨dy, y, rfl⟩ := y.mk_surjective
+  obtain rfl : dy = dx + 1 := hxy.dim_eq
+  obtain rfl : dx = d := hd
+  symm
+  simp [← (hxy.of_iso e).δ_eq_iff rfl,
+    ← SSet.δ_naturality_apply, dsimp% hxy.δ_index rfl]
 
 end IsUniquelyCodimOneFace
 

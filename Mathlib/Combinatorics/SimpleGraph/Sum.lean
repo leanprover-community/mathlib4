@@ -6,7 +6,7 @@ Authors: Iván Renison
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Basic
-public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 public import Mathlib.Combinatorics.SimpleGraph.Maps
 
 /-!
@@ -38,11 +38,10 @@ protected def sum (G : SimpleGraph V) (H : SimpleGraph W) : SimpleGraph (V ⊕ W
     | Sum.inl u, Sum.inl v => G.Adj u v
     | Sum.inr u, Sum.inr v => H.Adj u v
     | _, _ => false
-  symm
+  symm.symm
     | Sum.inl u, Sum.inl v => G.adj_symm
     | Sum.inr u, Sum.inr v => H.adj_symm
     | Sum.inl _, Sum.inr _ | Sum.inr _, Sum.inl _ => id
-  loopless := ⟨fun u ↦ by cases u <;> simp⟩
 
 @[inherit_doc] infixl:60 " ⊕g " => SimpleGraph.sum
 
@@ -126,6 +125,25 @@ lemma Iso.sumComm_comp_sumCongr (f : G ≃g G') (g : H ≃g H') :
 lemma Iso.sumAssoc_comp_sumCongr (f : G ≃g G') (g : H ≃g H') (h : I ≃g I') :
     comp sumAssoc (sumCongr (sumCongr f g) h) = comp (sumCongr f (sumCongr g h)) sumAssoc := by
   ext ((v | w) | u) <;> simp
+
+
+lemma not_adj_sum_inl_inr (v w) : ¬(G ⊕g H).Adj (.inl v) (.inr w) := by simp
+
+lemma not_reachable_sum_inl_inr (v w) : ¬(G ⊕g H).Reachable (.inl v) (.inr w) := by
+  rintro ⟨p⟩
+  have hs : ∀ x : V ⊕ W, x ∉ Set.range .inl ↔ x ∈ Set.range .inr := by simp
+  obtain ⟨⟨d, hadj⟩, _, hd1, hd2⟩ := p.exists_boundary_dart (Set.range .inl) (by simp) (by simp)
+  simp only [hs] at hadj hd1 hd2
+  obtain ⟨v', hv'⟩ := hd1
+  obtain ⟨w', hw'⟩ := hd2
+  rw [← hv', ← hw'] at hadj
+  exact not_adj_sum_inl_inr _ _ hadj
+
+lemma not_preconnected_sum [Nonempty V] [Nonempty W] : ¬(G ⊕g H).Preconnected :=
+  fun h ↦ not_reachable_sum_inl_inr (Classical.arbitrary _) (Classical.arbitrary _) (h ..)
+
+lemma not_connected_sum [Nonempty V] [Nonempty W] : ¬(G ⊕g H).Connected := by
+  simp [connected_iff, not_preconnected_sum]
 
 lemma Reachable.sum_sup_edge (hv : G.Reachable v v') (hw : H.Reachable w w') :
     (G.sum H ⊔ edge (.inl v) (.inr w)).Reachable (.inl v') (.inr w') :=

@@ -129,7 +129,7 @@ theorem single_add [AddZeroClass α] (i : m) (j : n) (a b : α) :
 
 lemma single_neg [NegZeroClass α] (i j : n) (b : α) :
     - single i j b = single i j (-b) :=
-  neg_of _|>.trans congr(of $(by simp_rw [Pi.neg_def, neg_ite, neg_zero]))
+  neg_of _ |>.trans <| ext fun x y ↦ by simp [single, neg_ite]
 
 theorem single_mulVec [NonUnitalNonAssocSemiring α] [Fintype m]
     (i : n) (j : m) (c : α) (x : m → α) :
@@ -143,7 +143,7 @@ theorem single_mulVec [NonUnitalNonAssocSemiring α] [Fintype m]
 lemma single_mulVec_eq [Fintype n] [NonAssocSemiring α] (i j : n) (b : α) (w : n → α) :
     single i j b *ᵥ w = (b * w j) • Pi.single i (1 : α) := by
   ext
-  simp [Matrix.single_mulVec, Pi.smul_apply, smul_eq_mul, Function.update_apply, Pi.single_apply]
+  simp [Matrix.single_mulVec, Function.update_apply, Pi.single_apply]
 
 lemma sum_single_eq_diagonal [AddCommMonoid α] [Fintype m] (f : m → α) :
     ∑ i : m, single i i (f i) = Matrix.diagonal f := by
@@ -266,6 +266,7 @@ theorem liftLinear_apply (f : m → n → α →ₗ[R] β) (M : Matrix m n α) :
     liftLinear S f M = ∑ i, ∑ j, f i j (M i j) := by
   simp [liftLinear, map_sum, LinearEquiv.congrLeft]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem liftLinear_single (f : m → n → α →ₗ[R] β) (i : m) (j : n) (a : α) :
     liftLinear S f (Matrix.single i j a) = f i j a := by

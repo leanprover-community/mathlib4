@@ -88,6 +88,7 @@ theorem augment_d_succ_succ (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (
     (i j : ℕ) : (augment C f w).d (i + 1) (j + 1) = C.d i j := by
   cases i <;> rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Truncating an augmented chain complex is isomorphic (with components the identity)
 to the original complex.
 -/
@@ -118,6 +119,7 @@ theorem chainComplex_d_succ_succ_zero (C : ChainComplex V ℕ) (i : ℕ) : C.d (
   rw [C.shape]
   exact i.succ_succ_ne_one.symm
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Augmenting a truncated complex with the original object and morphism is isomorphic
 (with components the identity) to the original complex.
 -/
@@ -243,6 +245,7 @@ theorem augment_d_succ_succ (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0)
     (i j : ℕ) : (augment C f w).d (i + 1) (j + 1) = C.d i j :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Truncating an augmented cochain complex is isomorphic (with components the identity)
 to the original complex.
 -/
@@ -277,6 +280,7 @@ theorem cochainComplex_d_succ_succ_zero (C : CochainComplex V ℕ) (i : ℕ) : C
   simp only [ComplexShape.up_Rel, zero_add]
   exact (Nat.one_lt_succ_succ _).ne
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Augmenting a truncated complex with the original object and morphism is isomorphic
 (with components the identity) to the original complex.
 -/

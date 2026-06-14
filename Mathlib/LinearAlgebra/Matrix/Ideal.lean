@@ -295,7 +295,7 @@ theorem coe_equivMatrix_symm_apply (I : TwoSidedIdeal (Matrix n n R)) (i j : n) 
   ext r
   constructor
   · intro h
-    exact ⟨single i j r, by simpa using h i j, by simp⟩
+    exact ⟨single i j r, by simpa using! h i j, by simp⟩
   · rintro ⟨n, hn, rfl⟩
     rw [SetLike.mem_coe, mem_iff, equivMatrix_symm_apply_ringCon,
       RingCon.coe_ofMatrix_eq_relationMap i j]
@@ -350,7 +350,7 @@ private lemma jacobson_matrix_le (I : TwoSidedIdeal R) :
   specialize Mmem (y • single p p 1)
   have ⟨N, NxMI⟩ := Mmem
   use N p p
-  simpa [mul_apply, single, ite_and] using NxMI p p
+  simpa [mul_apply, single, ite_and] using! NxMI p p
 
 /-- For any two-sided ideal $I ≤ R$, we have $J(Mₙ(I)) = Mₙ(J(I))$. -/
 theorem jacobson_matrix (I : TwoSidedIdeal R) :

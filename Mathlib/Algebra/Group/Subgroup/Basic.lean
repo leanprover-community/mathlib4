@@ -133,16 +133,16 @@ theorem bot_prod_bot : (⊥ : Subgroup G).prod (⊥ : Subgroup N) = ⊥ :=
 @[to_additive le_prod_iff]
 theorem le_prod_iff {H : Subgroup G} {K : Subgroup N} {J : Subgroup (G × N)} :
     J ≤ H.prod K ↔ map (MonoidHom.fst G N) J ≤ H ∧ map (MonoidHom.snd G N) J ≤ K := by
-  simpa only [← Subgroup.toSubmonoid_le] using Submonoid.le_prod_iff
+  simpa only [← Subgroup.toSubmonoid_le] using! Submonoid.le_prod_iff
 
 @[to_additive prod_le_iff]
 theorem prod_le_iff {H : Subgroup G} {K : Subgroup N} {J : Subgroup (G × N)} :
     H.prod K ≤ J ↔ map (MonoidHom.inl G N) H ≤ J ∧ map (MonoidHom.inr G N) K ≤ J := by
-  simpa only [← Subgroup.toSubmonoid_le] using Submonoid.prod_le_iff
+  simpa only [← Subgroup.toSubmonoid_le] using! Submonoid.prod_le_iff
 
 @[to_additive (attr := simp) prod_eq_bot_iff]
 theorem prod_eq_bot_iff {H : Subgroup G} {K : Subgroup N} : H.prod K = ⊥ ↔ H = ⊥ ∧ K = ⊥ := by
-  simpa only [← Subgroup.toSubmonoid_inj] using Submonoid.prod_eq_bot_iff
+  simpa only [← Subgroup.toSubmonoid_inj] using! Submonoid.prod_eq_bot_iff
 
 @[to_additive closure_prod]
 theorem closure_prod {s : Set G} {t : Set N} (hs : 1 ∈ s) (ht : 1 ∈ t) :
@@ -391,7 +391,7 @@ theorem le_normalizer_closure_iff {s : Set G} :
     H ≤ normalizer (closure s) ↔ ∀ h ∈ H, ∀ g ∈ s, h * g * h⁻¹ ∈ closure s := by
   refine ⟨fun hH h hh g hg ↦ hH hh g |>.mp <| mem_closure_of_mem hg, fun hH h hh ↦ ?_⟩
   rw [mem_normalizer_iff_map_conj_eq, MonoidHom.map_closure]
-  apply le_antisymm <| by simpa using hH h hh
+  apply le_antisymm <| by simpa using! hH h hh
   rw [closure_le, ← MonoidHom.map_closure]
   exact fun g hg ↦ ⟨_, hH _ (inv_mem hh) g hg, by simp [mul_assoc]⟩
 
@@ -462,6 +462,11 @@ theorem le_normalizer_of_normal [H.Normal] : K ≤ normalizer H := subset_normal
 theorem inf_normalizer_le_normalizer_inf :
     normalizer H ⊓ normalizer K ≤ normalizer ((H ⊓ K :) : Set G) :=
   fun _ h g ↦ and_congr (h.1 g) (h.2 g)
+
+@[to_additive]
+theorem iInf_normalizer_le_normalizer_iInf {ι : Sort*} (H : ι → Subgroup G) :
+    ⨅ i, normalizer (H i) ≤ normalizer ((⨅ i, H i : Subgroup G) : Set G) := by
+  grind [le_normalizer_iff, mem_iInf, mem_normalizer_iff]
 
 variable (G) in
 /-- Every proper subgroup `H` of `G` is a proper normal subgroup of the normalizer of `H` in `G`. -/
