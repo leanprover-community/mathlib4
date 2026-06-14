@@ -268,7 +268,7 @@ theorem exists_linearIsometryEquiv_span_map_eq_of_inner_eq {φ : ι → E} {ψ :
   have hrangeφ : LinearMap.range Tφ = Submodule.span 𝕜 (Set.range φ) := by
     rw [hTφ]; exact Finsupp.range_linearCombination 𝕜
   have hrangeψ : LinearMap.range Tψ = Submodule.span 𝕜 (Set.range ψ) := by
-    rw [hTψ]; exact Finsupp.range_linearCombination 𝕜
+    simpa [hTψ] using Finsupp.range_linearCombination 𝕜
   refine ⟨((LinearIsometryEquiv.ofEq _ _ hrangeφ).symm.trans
       (LinearIsometryEquiv.ofSurjective Lr hsurj)).trans
       (LinearIsometryEquiv.ofEq _ _ hrangeψ), fun i => ?_⟩
