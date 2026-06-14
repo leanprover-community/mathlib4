@@ -175,7 +175,7 @@ variable [Top β] [Top γ] [Top δ]
 @[to_dual]
 instance : FunLike (TopHom α β) α β where
   coe := TopHom.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[to_dual]
 instance : TopHomClass (TopHom α β) α β where
@@ -371,7 +371,7 @@ def toTopHom (f : BoundedOrderHom α β) : TopHom α β where
 
 instance : FunLike (BoundedOrderHom α β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
+  coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
 
 instance : BoundedOrderHomClass (BoundedOrderHom α β) α β where
   map_rel f := @(f.monotone')

@@ -328,7 +328,7 @@ theorem isOpen_setOf_affineIndependent {ι : Type*} [Finite ι] :
     let ι' := { x // x ≠ i₀ }
     cases nonempty_fintype ι
     haveI : Fintype ι' := Subtype.fintype _
-    convert_to
+    convert_to!
       IsOpen ((fun (p : ι → E) (i : ι') ↦ p i -ᵥ p i₀) ⁻¹' {p : ι' → E | LinearIndependent 𝕜 p})
     exact isOpen_setOf_linearIndependent.preimage (by fun_prop)
 
@@ -527,7 +527,7 @@ theorem FiniteDimensional.proper [FiniteDimensional 𝕜 E] : ProperSpace E := b
 
 end LocallyCompactField
 
-/- Over the real numbers, we can register the previous statement as an instance as it will not
+/-- Over the real numbers, we can register the previous statement as an instance as it will not
 cause problems in instance resolution since the properness of `ℝ` is already known. -/
 instance (priority := 900) FiniteDimensional.proper_real (E : Type u) [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] : ProperSpace E :=

@@ -47,7 +47,7 @@ variable {Q₃ : QuadraticMap R M₃ N} {Q₄ : QuadraticMap R M₄ N}
 
 instance instFunLike : FunLike (Q₁ →qᵢ Q₂) M₁ M₂ where
   coe f := f.toLinearMap
-  coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.coe_injective h
+  coe_injective f g h := by cases f; cases g; congr; exact DFunLike.coe_injective h
 
 instance instLinearMapClass : LinearMapClass (Q₁ →qᵢ Q₂) R M₁ M₂ where
   map_add f := f.toLinearMap.map_add
