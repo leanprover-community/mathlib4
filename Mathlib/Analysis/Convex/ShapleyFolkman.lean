@@ -116,8 +116,11 @@ A `Decomposition` of a point `x` over a family of sets `S` indexed by `t` is a c
 points `fᵢ ∈ convexHull ℝ (S i)` for each `i ∈ t` such that `∑ i ∈ t, fᵢ = x`.
 -/
 structure Decomposition {ι : Type*} (S : ι → Set E) (t : Finset ι) (x : E) where
+  /-- The chosen point `fᵢ` for each index `i`. -/
   point : ι → E
+  /-- Each `fᵢ` belongs to `convexHull ℝ (S i)` for `i ∈ t`. -/
   mem_convexHull : ∀ i ∈ t, point i ∈ convexHull ℝ (S i)
+  /-- The points sum to `x`. -/
   sum_eq : ∑ i ∈ t, point i = x
 
 /--
@@ -367,13 +370,21 @@ strictly positive weights `w_{i,e} > 0` with `Σ_{e ∈ Vᵢ} w_{i,e} = 1` such 
 The *excess* of vertex set `Vᵢ` is `|Vᵢ| - 1`. The anchor is used to absorb the
 perturbation when we find a linear dependence among the excess vectors `e - aᵢ`. -/
 structure FlatRepr {ι : Type*} (S : ι → Set E) (t : Finset ι) (x : E) where
+  /-- Finite vertex set `Vᵢ ⊆ S i` for each `i ∈ t`. -/
   verts : (i : t) → Finset E
+  /-- Each vertex in `verts i` belongs to `S i.val`. -/
   h_verts_sub : ∀ (i : t), ↑(verts i) ⊆ S i.val
+  /-- Distinguished anchor vertex `aᵢ ∈ Vᵢ`. -/
   anchor : (i : t) → E
+  /-- The anchor belongs to its vertex set. -/
   h_anchor : ∀ (i : t), anchor i ∈ verts i
+  /-- Strictly positive convex weights `w_{i,e} > 0`. -/
   w : (i : t) → E → ℝ
+  /-- All weights are strictly positive on the vertex set. -/
   hw_pos : ∀ (i : t) e, e ∈ verts i → 0 < w i e
+  /-- The weights sum to 1 over each vertex set. -/
   hw_sum : ∀ (i : t), ∑ e ∈ verts i, w i e = 1
+  /-- The weighted sum of vertices equals `x`. -/
   h_sum : ∑ i : t, ∑ e ∈ verts i, w i e • e = x
 
 namespace FlatRepr
