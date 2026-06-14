@@ -22,14 +22,15 @@ the interval in `ℝ` (see `contMDiffOn_comp_projIcc_iff` and friends).
 
 We also define `1 : TangentSpace (𝓡∂ 1) z`, and relate it to `1` in the real line.
 
-- the inclusion `Icc x y → ℝ` is a smooth embedding, and in particular smooth
+- `isSmoothEmbedding_subtype_coe_Icc`: the inclusion `Icc x y → ℝ` is a smooth embedding,
+  and in particular smooth (`contMDiff_subtype_coe_Icc`)
+- `contMDiff_iff_comp_subtype_coe_Icc`: a function `f : M → Icc x y` is smooth iff
+  its composition with the inclusion into `ℝ` is smooth
 
 ## TODO
 
 This file can be thoroughly rewritten once mathlib has a good theory of smooth submersions.
 Once this is done,
-- deduce the dual result: a function `f : M → Icc x y` is smooth iff
-  its composition with the inclusion into `ℝ` is smooth
 - prove the projection `ℝ → Icc x y` is a smooth submersion, hence smooth
 - use this to simplify the proof that `f : Icc x y → M` is smooth iff the composition `ℝ → M`
   with the projection `ℝ → Icc x y` is
@@ -90,7 +91,7 @@ set_option linter.flexible false in
 -- TODO: the proof works, except that some details with the chosen computation are not right
 /-- The inclusion map from a closed segment to `ℝ` is a smooth immersion -/
 lemma isImmersionOfComplement_subtype_coe_Icc :
-    IsImmersionOfComplement (EuclideanSpace ℝ (Fin 0)) (𝓡∂ 1) 𝓘(ℝ) ⊤
+    IsImmersionOfComplement (EuclideanSpace ℝ (Fin 0)) (𝓡∂ 1) 𝓘(ℝ) n
       (fun (z : Icc x y) ↦ (z : ℝ)) := by
   intro z
   letI φ₀ := ContinuousLinearEquiv.prodUnique ℝ
@@ -129,13 +130,19 @@ lemma isImmersionOfComplement_subtype_coe_Icc :
 
 /-- The inclusion map from a closed segment to `ℝ` is a smooth embedding -/
 lemma isSmoothEmbedding_subtype_coe_Icc :
-    IsSmoothEmbedding (𝓡∂ 1) 𝓘(ℝ) ⊤ (fun (z : Icc x y) ↦ (z : ℝ)) :=
+    IsSmoothEmbedding (𝓡∂ 1) 𝓘(ℝ) n (fun (z : Icc x y) ↦ (z : ℝ)) :=
   ⟨isImmersionOfComplement_subtype_coe_Icc.isImmersion, Topology.IsEmbedding.subtypeVal⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion map from of a closed segment to `ℝ` is smooth in the manifold sense. -/
 lemma contMDiff_subtype_coe_Icc : CMDiff n (fun (z : Icc x y) ↦ (z : ℝ)) :=
   (isImmersionOfComplement_subtype_coe_Icc (x := x) (y := y)).contMDiff.of_le (OrderTop.le_top n)
+
+/-- A function `f : M → Icc x y` is smooth iff its composition with the inclusion
+into `ℝ` is smooth. -/
+lemma contMDiff_iff_comp_subtype_coe_Icc {f : M → Icc x y} [IsManifold I n M] :
+    CMDiff n f ↔ Continuous f ∧ CMDiff n ((fun (z : Icc x y) ↦ (z : ℝ)) ∘ f) := by
+  rw [← ContMDiff.iff_comp_isImmersionOfComplement (f := f) isImmersionOfComplement_subtype_coe_Icc]
 
 /-- The projection from `ℝ` to a closed segment is smooth on the segment, in the manifold sense. -/
 lemma contMDiffOn_projIcc : CMDiff[Icc x y] n (Set.projIcc x y h.out.le) := by
