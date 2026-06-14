@@ -805,7 +805,7 @@ jobs:
           lake env lean scripts/create_deprecated_modules.lean
           lake env lean scripts/autolabel.lean
           lake exe check_title_labels --labels "t-algebra" "feat: dummy PR for testing" "dummy PR body" > title_output.txt
-          if grep -qE "Redundant positional argument " "title_output.txt"; then
+          if grep -qE "Missing positional argument " "title_output.txt"; then
               echo ""
               echo "=============================================================================="
               echo "ERROR: Your branch predates the current 'check title' configuration."
