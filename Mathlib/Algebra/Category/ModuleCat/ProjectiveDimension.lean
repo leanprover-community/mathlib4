@@ -16,7 +16,7 @@ public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 
 -/
 
-@[expose] public section
+public section
 
 universe v v' u u'
 
@@ -93,7 +93,10 @@ variable [Small.{v} R] [Small.{v'} R] {M : ModuleCat.{v} R} {N : ModuleCat.{v'} 
 
 lemma hasProjectiveDimensionLE_of_linearEquiv (e : M ≃ₗ[R] N)
     (n : ℕ) [HasProjectiveDimensionLE M n] : HasProjectiveDimensionLE N n :=
-  hasProjectiveDimensionLE_of_semiLinearEquiv (RingEquiv.refl R) e n
+  #adaptation_note /-- 2026-05-20 (kmill) #13807, instances are more eager to apply, but the
+  `univ_out_params` attribute for `Small` doesn't seem to restrict local instances, so the
+  wrong universe levels are inferred. Added `.{v, v'}`. -/
+  hasProjectiveDimensionLE_of_semiLinearEquiv.{v, v'} (RingEquiv.refl R) e n
 
 @[deprecated (since := "2026-04-04")]
 alias _root_.CategoryTheory.hasProjectiveDimensionLE_of_linearEquiv :=
@@ -101,7 +104,10 @@ alias _root_.CategoryTheory.hasProjectiveDimensionLE_of_linearEquiv :=
 
 lemma projectiveDimension_eq_of_linearEquiv (e : M ≃ₗ[R] N) :
     projectiveDimension M = projectiveDimension N :=
-  projectiveDimension_eq_of_semiLinearEquiv (M := M) (N := N) (RingEquiv.refl R) e
+  #adaptation_note /-- 2026-05-20 (kmill) #13807, instances are more eager to apply, but the
+  `univ_out_params` attribute for `Small` doesn't seem to restrict local instances, so the
+  wrong universe levels are inferred. Added `.{v, v'}`. -/
+  projectiveDimension_eq_of_semiLinearEquiv.{v, v'} (M := M) (N := N) (RingEquiv.refl R) e
 
 @[deprecated (since := "2026-04-04")]
 alias _root_.CategoryTheory.projectiveDimension_eq_of_linearEquiv :=

@@ -16,7 +16,7 @@ i.e. all nondegenerate simplices of `X` are of dimension `< d`.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

@@ -239,7 +239,7 @@ instance : LargeCategory.{u} SemiNormedGrp₁ where
 instance instFunLike (X Y : SemiNormedGrp₁) :
     FunLike { f : NormedAddGroupHom X Y // f.NormNoninc } X Y where
   coe f := f.1.toFun
-  coe_injective' _ _ h := Subtype.val_inj.mp (NormedAddGroupHom.coe_injective h)
+  coe_injective _ _ h := Subtype.val_inj.mp (NormedAddGroupHom.coe_injective h)
 
 instance : ConcreteCategory SemiNormedGrp₁
     fun X Y => { f : NormedAddGroupHom X Y // f.NormNoninc } where

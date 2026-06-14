@@ -308,7 +308,7 @@ Comparison is whitespace-insensitive to handle cases where LHS and RHS are seman
 but rendered with different line breaks or spacing.
 TODO: once https://github.com/leanprover/lean4/pull/12698 is available, refactor to use
 `TraceData.result?` and compare the LHS/RHS `Expr`s structurally instead of string-matching. -/
-private def isIdenticalSidesStr (raw : String) : Bool :=
+def isIdenticalSidesStr (raw : String) : Bool :=
   if let [lhsRaw, rhs] := raw.splitOn " =?= " then
     -- Strip the leading status emoji/word (first whitespace-delimited token).
     let lhs := match lhsRaw.splitOn " " with
@@ -324,7 +324,7 @@ private def isIdenticalSidesStr (raw : String) : Bool :=
 Each level adds more detail to pretty-printed expressions.
 We prefer symmetric options (`pp.universes`, `pp.explicit`) over `pp.analyze`,
 which is context-dependent and can add annotations to only one side. -/
-private def ppEscalations : List (Options → Options) :=
+def ppEscalations : List (Options → Options) :=
   [ fun o => o.setBool `pp.universes true
   , fun o => o.setBool `pp.explicit true
   ]

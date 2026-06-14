@@ -63,9 +63,7 @@ theorem holderOnWith_empty (C r : ℝ≥0) (f : X → Y) : HolderOnWith C r f �
 
 @[simp]
 theorem holderOnWith_singleton (C r : ℝ≥0) (f : X → Y) (x : X) : HolderOnWith C r f {x} := by
-  rintro a (rfl : a = x) b (rfl : b = a)
-  rw [edist_self]
-  exact zero_le _
+  simp [HolderOnWith]
 
 theorem Set.Subsingleton.holderOnWith {s : Set X} (hs : s.Subsingleton) (C r : ℝ≥0) (f : X → Y) :
     HolderOnWith C r f s :=
@@ -219,7 +217,7 @@ then it is `(C, r * t₁ + s * t₂)`-Hölder for all `t₁ t₂ : ℝ≥0` such
 lemma interpolate_const {C s t₁ t₂ : ℝ≥0} {A : Set X}
     (hf₁ : HolderOnWith C r f A) (hf₂ : HolderOnWith C s f A) (ht : t₁ + t₂ = 1) :
     HolderOnWith C (r * t₁ + s * t₂) f A := by
-  convert hf₁.interpolate hf₂ ht
+  convert! hf₁.interpolate hf₂ ht
   simp [← NNReal.rpow_add_of_nonneg, ← NNReal.coe_add, ht]
 
 variable (f) in

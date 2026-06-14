@@ -24,7 +24,7 @@ inherits a metric space structure from the Hausdorff distance, as the Hausdorff 
 always finite in this context.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -42,7 +42,7 @@ theorem mem_hausdorffEntourage_of_hausdorffEDist_lt {s t : Set α} {δ : ℝ≥0
   have {s t : Set α} (h : ⨆ x ∈ s, infEDist x t < δ) :
       s ⊆ SetRel.preimage {p | edist p.1 p.2 < δ} t := by
     intro x hx
-    simpa only [infEDist, iInf_lt_iff, exists_prop] using (le_iSup₂ x hx).trans_lt h
+    simpa only [infEDist, iInf_lt_iff, exists_prop] using! (le_iSup₂ x hx).trans_lt h
   exact ⟨this h.1, this h.2⟩
 
 theorem hausdorffEDist_le_of_mem_hausdorffEntourage {s t : Set α} {δ : ℝ≥0∞}

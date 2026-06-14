@@ -59,6 +59,8 @@ Angelo Vistoli
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory.Pseudofunctor
@@ -166,6 +168,7 @@ attribute [local simp]
 variable {F} {G : Pseudofunctor (LocallyDiscrete 𝒮) Cat.{v₂, u₂}}
   {H : Pseudofunctor (LocallyDiscrete 𝒮) Cat.{v₂, u₂}}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The Grothendieck construction is functorial: a strong natural transformation `α : F ⟶ G`
 induces a functor `Grothendieck.map : ∫ F ⥤ ∫ G`. -/
@@ -190,6 +193,7 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
         NatTrans.naturality_assoc]
       simp [naturality_comp_inv_app, ← Functor.map_comp, ← reassoc_of% Cat.Hom₂.comp_app]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map_id_map {x y : ∫ F} (f : x ⟶ y) : (map (𝟙 F)).map f = f := by
@@ -212,6 +216,7 @@ lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ F) :=
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism witnessing the pseudo-functoriality of `Grothendieck.map`. -/
 def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β :=
@@ -324,6 +329,7 @@ attribute [local simp]
 variable {F} {G : LocallyDiscrete 𝒮ᵒᵖ ⥤ᵖ Cat.{v₂, u₂}}
   {H : LocallyDiscrete 𝒮ᵒᵖ ⥤ᵖ Cat.{v₂, u₂}}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The CoGrothendieck construction is functorial: a strong natural transformation `α : F ⟶ G`
 induces a functor `CoGrothendieck.map : ∫ᶜ F ⥤ ∫ᶜ G`. -/
@@ -346,7 +352,7 @@ def map (α : F ⟶ G) : ∫ᶜ F ⥤ ∫ᶜ G where
     · dsimp
     · simp only [categoryStruct_comp_base, op_comp, Quiver.Hom.comp_toLoc,
         categoryStruct_comp_fiber, Cat.Hom.comp_toFunctor, map_comp, naturality_comp_hom_app, assoc,
-        eqToHom_refl, comp_id]
+        eqToHom_refl, comp_id, id_comp]
       slice_lhs 2 4 => simp [← Cat.Hom.toNatIso_inv, Cat.Hom.comp_toFunctor,
         ← Cat.Hom.toNatIso_hom, ← map_comp, Iso.inv_hom_id_app, comp_obj, map_id, comp_id]
       simp only [assoc, ← reassoc_of% Cat.Hom.comp_map,

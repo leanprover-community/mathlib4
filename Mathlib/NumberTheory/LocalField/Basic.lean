@@ -88,8 +88,9 @@ lemma isCompact_closedBall (γ : ValueGroupWithZero K) : IsCompact { x | valuati
       dsimp at hx ⊢
       exact hx.trans_lt (hr.trans_le hr1)
   simp_rw [← (valuation K).restrict_le_iff] at H ⊢
-  convert (hs'.of_isClosed_subset (Valued.isClosed_closedBall K _) H).image
-    (Homeomorph.mulLeft₀ (γ / r) (by simp [hr, div_eq_zero_iff, hγ])).continuous using 1
+  convert!
+    (hs'.of_isClosed_subset (Valued.isClosed_closedBall K _) H).image
+      (Homeomorph.mulLeft₀ (γ / r) (by simp [hr, div_eq_zero_iff, hγ])).continuous using 1
   refine .trans ?_ (Equiv.image_eq_preimage_symm _ _).symm
   ext x
   simp only [Set.mem_setOf_eq, Homeomorph.coe_symm_toEquiv, Homeomorph.mulLeft₀_symm_apply, inv_div,
@@ -125,6 +126,9 @@ def valueGroupWithZeroIsoInt : ValueGroupWithZero K ≃*o ℤᵐ⁰ := by
   have : Nontrivial (↥(MonoidHom.mrange (valuation K)))ˣ :=
     (Units.map_injective (f := e.symm.toMonoidHom) e.symm.injective).nontrivial
   exact ⟨e.symm.trans (LocallyFiniteOrder.orderMonoidWithZeroEquiv _)⟩
+
+instance : IsCyclic (ValueGroupWithZero K)ˣ :=
+  (Units.mapEquiv (valueGroupWithZeroIsoInt K).toMulEquiv).isCyclic.mpr inferInstance
 
 instance : ValuativeRel.IsDiscrete K :=
   (ValuativeRel.nonempty_orderIso_withZeroMul_int_iff.mp ⟨valueGroupWithZeroIsoInt K⟩).1
@@ -177,7 +181,7 @@ instance : IsAdicComplete 𝓂[K] 𝒪[K] where
       simpa [S] using (hf n.le_succ).symm
     have h n : IsClosed (S n) := (IsNoetherianRing.isClosed_ideal (𝓂[K] ^ n)).vadd (f n)
     obtain ⟨L, hL⟩ := (h 0).isCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed S hS
-      (by simp [S, Submodule.nonempty]) h
+      (by simp [S]) h
     refine ⟨L, fun n ↦ ?_⟩
     obtain ⟨y, hy, rfl⟩ := Set.mem_iInter.mp hL n
     simpa [SModEq.sub_mem] using hy

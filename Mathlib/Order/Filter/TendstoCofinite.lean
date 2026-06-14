@@ -49,8 +49,8 @@ namespace Filter
 
 lemma TendstoCofinite.finite_preimage [TendstoCofinite f] {s : Set β} (hs : s.Finite) :
     Set.Finite (f ⁻¹' s) := by
-  simpa [compl_eq_univ_diff] using TendstoCofinite.tendsto_cofinite f
-    (show univ \ s ∈ cofinite by simpa [compl_eq_univ_diff])
+  simpa [compl_eq_univ_sdiff] using TendstoCofinite.tendsto_cofinite f
+    (show univ \ s ∈ cofinite by simpa [compl_eq_univ_sdiff])
 
 lemma TendstoCofinite.finite_preimage_singleton [TendstoCofinite f] (b : β) :
     Set.Finite (f ⁻¹' {b}) := by simpa using TendstoCofinite.finite_preimage f (by simp)
@@ -71,7 +71,7 @@ namespace TendstoCofinite
 @[instance]
 lemma comp [TendstoCofinite g] [TendstoCofinite f] : TendstoCofinite (g ∘ f) :=
   (tendstoCofinite_iff_finite_preimage_singleton _).mpr (fun r ↦ by
-    simpa using TendstoCofinite.finite_preimage f (TendstoCofinite.finite_preimage g (by simp)))
+    simpa using! TendstoCofinite.finite_preimage f (TendstoCofinite.finite_preimage g (by simp)))
 
 @[instance]
 lemma id : TendstoCofinite (id : α → α) := by simp [tendstoCofinite_iff_finite_preimage_singleton]
@@ -117,7 +117,7 @@ theorem Finsupp.mapDomain_tendstoCofinite [TendstoCofinite f] :
   simp only [Set.subset_def, Set.mem_preimage, Set.mem_singleton_iff, Set.mem_image,
     Set.mem_setOf_eq]
   refine fun y hy ↦ ⟨y.comapDomain e e.injective.injOn, ?_, embDomain_comapDomain ?_⟩
-  · rw [← hy, degree_mapDomain_eq_of_subsingletonAddUnits]
+  · rw [← hy, degree_mapDomain]
     exact degree_comapDomain_le_of_canonicallyOrderedAdd ..
   · suffices y.support ⊆ s by simpa [e]
     simpa [← hy, mapDomain, sum, Finset.subset_iff, single_apply, s] using

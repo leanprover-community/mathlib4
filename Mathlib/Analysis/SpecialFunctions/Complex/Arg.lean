@@ -65,11 +65,11 @@ theorem norm_mul_cos_add_sin_mul_I (x : ℂ) : (‖x‖ * (cos (arg x) + sin (ar
 
 @[simp]
 lemma norm_mul_cos_arg (x : ℂ) : ‖x‖ * Real.cos (arg x) = x.re := by
-  simpa [-norm_mul_cos_add_sin_mul_I] using congr_arg re (norm_mul_cos_add_sin_mul_I x)
+  simpa [-norm_mul_cos_add_sin_mul_I] using! congr_arg re (norm_mul_cos_add_sin_mul_I x)
 
 @[simp]
 lemma norm_mul_sin_arg (x : ℂ) : ‖x‖ * Real.sin (arg x) = x.im := by
-  simpa [-norm_mul_cos_add_sin_mul_I] using congr_arg im (norm_mul_cos_add_sin_mul_I x)
+  simpa [-norm_mul_cos_add_sin_mul_I] using! congr_arg im (norm_mul_cos_add_sin_mul_I x)
 
 theorem norm_eq_one_iff (z : ℂ) : ‖z‖ = 1 ↔ ∃ θ : ℝ, exp (θ * I) = z := by
   refine ⟨fun hz => ⟨arg z, ?_⟩, ?_⟩
@@ -111,12 +111,13 @@ theorem arg_cos_add_sin_mul_I {θ : ℝ} (hθ : θ ∈ Set.Ioc (-π) π) : arg (
   rw [← one_mul (_ + _), ← ofReal_one, arg_mul_cos_add_sin_mul_I zero_lt_one hθ]
 
 theorem arg_exp (z : ℂ) : arg (exp z) = toIocMod Real.two_pi_pos (-π) z.im := by
-  convert arg_mul_cos_add_sin_mul_I (Real.exp_pos z.re)
-    (θ := toIocMod Real.two_pi_pos (-π) z.im) _ using 1
+  convert!
+    arg_mul_cos_add_sin_mul_I (Real.exp_pos z.re) (θ := toIocMod Real.two_pi_pos (-π) z.im) _
+    using 1
   · rw [← exp_mul_I, ofReal_exp, toIocMod]
     push_cast
     rw [exp_mul_I_periodic.sub_zsmul_eq, ← exp_add, re_add_im]
-  · convert toIocMod_mem_Ioc ..
+  · convert! toIocMod_mem_Ioc ..
     ring
 
 lemma arg_exp_mul_I (θ : ℝ) :
@@ -156,6 +157,12 @@ theorem arg_le_pi (x : ℂ) : arg x ≤ π :=
 
 theorem neg_pi_lt_arg (x : ℂ) : -π < arg x :=
   (arg_mem_Ioc x).1
+
+theorem arg_lt_arg_add_two_pi (x y : ℂ) : x.arg < y.arg + 2 * π := by
+  grind [arg_le_pi x, neg_pi_lt_arg y]
+
+theorem abs_arg_sub_arg_lt (x y : ℂ) : |x.arg - y.arg| < 2 * π := by
+  grind [arg_lt_arg_add_two_pi x y, arg_lt_arg_add_two_pi y x]
 
 theorem abs_arg_le_pi (z : ℂ) : |arg z| ≤ π :=
   abs_le.2 ⟨(neg_pi_lt_arg z).le, arg_le_pi z⟩
@@ -329,7 +336,7 @@ lemma norm_eq_one_iff' : ‖x‖ = 1 ↔ ∃ θ ∈ Set.Ioc (-π) π, exp (θ * 
   constructor
   · rintro ⟨θ, rfl⟩
     refine ⟨toIocMod (mul_pos two_pos Real.pi_pos) (-π) θ, ?_, ?_⟩
-    · convert toIocMod_mem_Ioc _ _ _
+    · convert! toIocMod_mem_Ioc _ _ _
       ring
     · rw [eq_sub_of_add_eq <| toIocMod_add_toIocDiv_zsmul _ _ θ, ofReal_sub,
       ofReal_zsmul, ofReal_mul, ofReal_ofNat, exp_mul_I_periodic.sub_zsmul_eq]
@@ -480,7 +487,8 @@ theorem arg_cos_add_sin_mul_I_coe_angle (θ : Real.Angle) :
 
 theorem arg_mul_coe_angle {x y : ℂ} (hx : x ≠ 0) (hy : y ≠ 0) :
     (arg (x * y) : Real.Angle) = arg x + arg y := by
-  convert arg_mul_cos_add_sin_mul_I_coe_angle (mul_pos (norm_pos_iff.mpr hx) (norm_pos_iff.mpr hy))
+  convert!
+    arg_mul_cos_add_sin_mul_I_coe_angle (mul_pos (norm_pos_iff.mpr hx) (norm_pos_iff.mpr hy))
       (arg x + arg y : Real.Angle) using 3
   simp_rw [← Real.Angle.coe_add, Real.Angle.sin_coe, Real.Angle.cos_coe, ofReal_cos, ofReal_sin,
     cos_add_sin_I, ofReal_add, add_mul, exp_add, ofReal_mul]
@@ -596,9 +604,11 @@ theorem tendsto_arg_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re
     have : ∀ᶠ x : ℂ in 𝓝 z, x.re < 0 := continuous_re.tendsto z (gt_mem_nhds hre)
     filter_upwards [self_mem_nhdsWithin, mem_nhdsWithin_of_mem_nhds this] with _ him hre
     rw [arg, if_neg hre.not_ge, if_neg him.not_ge]
-  convert (Real.continuousAt_arcsin.comp_continuousWithinAt
-    ((continuous_im.continuousAt.comp_continuousWithinAt continuousWithinAt_neg).div
-      continuous_norm.continuousWithinAt _)).sub_const π using 1
+  convert!
+    (Real.continuousAt_arcsin.comp_continuousWithinAt
+          ((continuous_im.continuousAt.comp_continuousWithinAt continuousWithinAt_neg).div
+            continuous_norm.continuousWithinAt _)).sub_const
+      π using 1
   · simp [him]
   · lift z to ℝ using him
     simpa using hre.ne

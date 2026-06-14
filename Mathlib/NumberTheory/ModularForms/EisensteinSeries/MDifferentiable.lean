@@ -54,7 +54,8 @@ theorem eisensteinSeriesSIF_mdifferentiable {k : ℤ} {N : ℕ} (hk : 3 ≤ k) (
     MDiff (eisensteinSeriesSIF a k) := by
   intro τ
   suffices DifferentiableAt ℂ (↑ₕeisensteinSeriesSIF a k) τ.1 by
-    convert MDifferentiableAt.comp τ (DifferentiableAt.mdifferentiableAt this) τ.mdifferentiable_coe
+    convert!
+      MDifferentiableAt.comp τ (DifferentiableAt.mdifferentiableAt this) τ.mdifferentiable_coe
     exact funext fun z ↦ (comp_ofComplex (eisensteinSeriesSIF a k) z).symm
   refine DifferentiableOn.differentiableAt ?_ (isOpen_upperHalfPlaneSet.mem_nhds τ.2)
   exact (eisensteinSeries_tendstoLocallyUniformlyOn hk a).differentiableOn

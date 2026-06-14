@@ -19,7 +19,7 @@ This file contains the commutative ring instance on `ℤ`.
 See note [foundational algebra order theory].
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists DenselyOrdered Set.Subsingleton
 

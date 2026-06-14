@@ -93,7 +93,7 @@ def Seminorm.ofSMulLE [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E
     rw [inv_mul_cancel_left₀ (norm_ne_zero_iff.mpr h)]
     specialize smul_le r⁻¹ (r • x)
     rw [norm_inv] at smul_le
-    convert smul_le
+    convert! smul_le
     simp [h]
 
 end Of
@@ -114,7 +114,7 @@ variable [SMul 𝕜 E]
 
 instance instFunLike : FunLike (Seminorm 𝕜 E) E ℝ where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     rcases f with ⟨⟨_⟩⟩
     rcases g with ⟨⟨_⟩⟩
     congr
@@ -373,7 +373,7 @@ theorem finset_sup_le_sum (p : ι → Seminorm 𝕜 E) (s : Finset ι) : s.sup p
   classical
   refine Finset.sup_le_iff.mpr ?_
   intro i hi
-  rw [Finset.sum_eq_sum_diff_singleton_add hi, le_add_iff_nonneg_left]
+  rw [Finset.sum_eq_sum_sdiff_singleton_add hi, le_add_iff_nonneg_left]
   exact bot_le
 
 theorem finset_sup_apply_le {p : ι → Seminorm 𝕜 E} {s : Finset ι} {x : E} {a : ℝ} (ha : 0 ≤ a)
@@ -1015,7 +1015,7 @@ variable [Module ℝ E] [IsScalarTower ℝ 𝕜 E] (p : Seminorm 𝕜 E) (x : E)
 
 /-- Seminorm-balls are convex. -/
 theorem convex_ball : Convex ℝ (ball p x r) := by
-  convert (p.convexOn.translate_left (-x)).convex_lt r
+  convert! (p.convexOn.translate_left (-x)).convex_lt r
   ext y
   rw [preimage_univ, sep_univ, p.mem_ball, sub_eq_add_neg]
   rfl
@@ -1174,10 +1174,24 @@ theorem continuous_of_le [TopologicalSpace E] [IsTopologicalAddGroup E]
   rw [ball_zero_eq]
   exact isOpen_lt hq continuous_const
 
+/-- The sum over a finite set of continuous seminorms is continuous. -/
+theorem continuous_finsetSum [TopologicalSpace E] [IsTopologicalAddGroup E]
+    {p : ι → Seminorm 𝕝 E} {s : Finset ι} (hp : ∀ i ∈ s, Continuous (p i)) :
+    Continuous ((∑ i ∈ s, p i : Seminorm 𝕝 E) : E → ℝ) := by
+  change Continuous (fun x ↦ coeFnAddMonoidHom _ _ (∑ i ∈ s, p i) x)
+  simp_rw [map_sum, Finset.sum_apply]
+  exact _root_.continuous_finsetSum s hp
+
+/-- The supremum over a finite set of continuous seminorms is continuous. -/
+theorem continuous_finsetSup [TopologicalSpace E] [IsTopologicalAddGroup E]
+    {p : ι → Seminorm 𝕝 E} {s : Finset ι} (hp : ∀ i ∈ s, Continuous (p i)) :
+    Continuous ((s.sup p : Seminorm 𝕝 E) : E → ℝ) := by
+  exact continuous_of_le (continuous_finsetSum hp) (finset_sup_le_sum p s)
+
 lemma ball_mem_nhds [TopologicalSpace E] {p : Seminorm 𝕝 E} (hp : Continuous p) {r : ℝ}
     (hr : 0 < r) : p.ball 0 r ∈ (𝓝 0 : Filter E) := by
   have this : Tendsto p (𝓝 0) (𝓝 0) := map_zero p ▸ hp.tendsto 0
-  simpa only [p.ball_zero_eq] using this (Iio_mem_nhds hr)
+  simpa only [p.ball_zero_eq] using! this (Iio_mem_nhds hr)
 
 lemma uniformSpace_eq_of_hasBasis
     {ι} [UniformSpace E] [IsUniformAddGroup E] [ContinuousConstSMul 𝕜 E]
@@ -1193,7 +1207,7 @@ lemma uniformSpace_eq_of_hasBasis
     exact p.continuous' hr
   · rw [(@NormedAddGroup.nhds_zero_basis_norm_lt E
       p.toAddGroupSeminorm.toSeminormedAddGroup).le_basis_iff hb]
-    simpa only [subset_def, mem_ball_zero] using h₂
+    simpa only [subset_def, mem_ball_zero] using! h₂
 
 lemma uniformity_eq_of_hasBasis
     {ι} [UniformSpace E] [IsUniformAddGroup E] [ContinuousConstSMul 𝕜 E]

@@ -5,9 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Tactic.StacksAttribute
 public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Topology.Maps.Proper.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Spectral maps
@@ -111,7 +111,7 @@ def toContinuousMap (f : SpectralMap α β) : ContinuousMap α β :=
 
 instance instFunLike : FunLike (SpectralMap α β) α β where
   coe := SpectralMap.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 instance : SpectralMapClass (SpectralMap α β) α β where
   map_spectral f := f.spectral'

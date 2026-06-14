@@ -6,8 +6,8 @@ Authors: Yury Kudryashov, Bhavik Mehta
 module
 
 public import Mathlib.Algebra.Group.Action.Defs
-public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.ENat.Basic
+public import Mathlib.Order.Lattice.Nat
 
 /-!
 # Extended natural numbers form a complete linear order
@@ -69,7 +69,7 @@ lemma iInf_toNat : (⨅ i, (f i : ℕ∞)).toNat = ⨅ i, f i := by
   · norm_cast
 
 @[simp] lemma iInf_eq_zero {f : ι → ℕ∞} : ⨅ i, f i = 0 ↔ ∃ i, f i = 0 := by
-  simpa [lt_one_iff_eq_zero] using iInf_lt_iff (α := ℕ∞) (a := 1)
+  simpa [Order.lt_one_iff] using iInf_lt_iff (α := ℕ∞) (a := 1)
 
 variable {f : ι → ℕ∞} {s : Set ℕ∞}
 
@@ -77,8 +77,8 @@ lemma sSup_eq_zero : sSup s = 0 ↔ ∀ a ∈ s, a = 0 :=
   sSup_eq_bot
 
 lemma sInf_eq_zero : sInf s = 0 ↔ 0 ∈ s := by
-  rw [← lt_one_iff_eq_zero]
-  simp only [sInf_lt_iff, lt_one_iff_eq_zero, exists_eq_right]
+  rw [← Order.lt_one_iff, sInf_lt_iff]
+  simp
 
 lemma sSup_eq_zero' : sSup s = 0 ↔ s = ∅ ∨ s = {0} :=
   sSup_eq_bot'
@@ -123,7 +123,7 @@ lemma exists_eq_iSup₂_of_lt_top {ι₁ ι₂ : Type*} {f : ι₁ → ι₂ →
 variable {ι κ : Sort*} {f g : ι → ℕ∞} {s : Set ℕ∞} {a : ℕ∞}
 
 lemma iSup_natCast : ⨆ n : ℕ, (n : ℕ∞) = ⊤ :=
-  (iSup_eq_top _).2 fun _b hb ↦ ENat.exists_nat_gt (lt_top_iff_ne_top.1 hb)
+  iSup_eq_top.2 fun _b hb ↦ ENat.exists_nat_gt (lt_top_iff_ne_top.1 hb)
 
 lemma mul_iSup (a : ℕ∞) (f : ι → ℕ∞) : a * ⨆ i, f i = ⨆ i, a * f i := by
   refine (iSup_le fun i ↦ mul_le_mul' rfl.le <| le_iSup_iff.2 fun _ a ↦ a i).antisymm' <|
@@ -228,7 +228,7 @@ lemma biSup_add_biSup_le {ι κ : Type*} {s : Set ι} {t : Set κ} (hs : s.Nonem
 
 lemma iSup_add_iSup (h : ∀ i j, ∃ k, f i + g j ≤ f k + g k) : iSup f + iSup g = ⨆ i, f i + g i := by
   cases isEmpty_or_nonempty ι
-  · simp only [iSup_of_empty, bot_eq_zero, zero_add]
+  · simp
   · refine le_antisymm ?_ (iSup_le fun a => add_le_add (le_iSup _ _) (le_iSup _ _))
     refine iSup_add_iSup_le fun i j => ?_
     rcases h i j with ⟨k, hk⟩
@@ -248,7 +248,7 @@ lemma smul_sSup {R} [SMul R ℕ∞] [IsScalarTower R ℕ∞ ℕ∞] (s : Set ℕ
 
 lemma sub_iSup [Nonempty ι] (ha : a ≠ ⊤) : a - ⨆ i, f i = ⨅ i, a - f i := by
   obtain ⟨i, hi⟩ | h := em (∃ i, a < f i)
-  · rw [tsub_eq_zero_iff_le.2 <| le_iSup_of_le _ hi.le, (iInf_eq_bot _).2, bot_eq_zero]
+  · rw [tsub_eq_zero_iff_le.2 <| le_iSup_of_le _ hi.le, iInf_eq_bot.2, bot_eq_zero]
     exact fun x hx ↦ ⟨i, by simpa [hi.le, tsub_eq_zero_of_le]⟩
   simp_rw [not_exists, not_lt] at h
   refine le_antisymm (le_iInf fun i ↦ tsub_le_tsub_left (le_iSup ..) _) <|

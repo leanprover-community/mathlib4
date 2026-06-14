@@ -307,10 +307,10 @@ lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ 
   set s' : Finset L := s.preimage (↑) Subtype.coe_injective.injOn
   set t' : Finset L := t.preimage (↑) Subtype.coe_injective.injOn
   have hs' : s'.map ⟨L.subtype, Subtype.coe_injective⟩ = s := by
-    simpa [s', map_eq_image, image_preimage, filter_eq_self] using
+    simpa [s', map_eq_image, image_preimage, filter_eq_self] using!
       fun a ha ↦ subset_latticeClosure <| Set.subset_union_left ha
   have ht' : t'.map ⟨L.subtype, Subtype.coe_injective⟩ = t := by
-    simpa [t', map_eq_image, image_preimage, filter_eq_self] using
+    simpa [t', map_eq_image, image_preimage, filter_eq_self] using!
       fun a ha ↦ subset_latticeClosure <| Set.subset_union_right ha
   clear_value s' t'
   obtain ⟨β, _, _, g, hg⟩ := exists_birkhoff_representation L
@@ -319,16 +319,16 @@ lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ 
     (extend_nonneg (fun _ ↦ h₂ _) le_rfl) (extend_nonneg (fun _ ↦ h₃ _) le_rfl)
     (extend_nonneg (fun _ ↦ h₄ _) le_rfl) ?_ (s'.map ⟨g, hg⟩) (t'.map ⟨g, hg⟩)
   · simpa only [← hs', ← ht', ← map_sups, ← map_infs, sum_map, Embedding.coeFn_mk, hg.extend_apply]
-      using this
+      using! this
   rintro s t
   classical
   obtain ⟨a, rfl⟩ | hs := em (∃ a, g a = s)
   · obtain ⟨b, rfl⟩ | ht := em (∃ b, g b = t)
     · simp_rw [← sup_eq_union, ← inf_eq_inter, ← map_sup, ← map_inf, hg.extend_apply]
       exact h _ _
-    · simpa [extend_apply' _ _ _ ht] using mul_nonneg
+    · simpa [extend_apply' _ _ _ ht] using! mul_nonneg
         (extend_nonneg (fun a : L ↦ h₃ a) le_rfl _) (extend_nonneg (fun a : L ↦ h₄ a) le_rfl _)
-  · simpa [extend_apply' _ _ _ hs] using mul_nonneg
+  · simpa [extend_apply' _ _ _ hs] using! mul_nonneg
       (extend_nonneg (fun a : L ↦ h₃ a) le_rfl _) (extend_nonneg (fun a : L ↦ h₄ a) le_rfl _)
 
 /-- An inequality of Daykin. Interestingly, any lattice in which this inequality holds is
@@ -395,5 +395,5 @@ lemma Finset.le_card_diffs_mul_card_diffs (s t : Finset α) :
 
 /-- The **Marica-Schönheim Inequality**. -/
 lemma Finset.card_le_card_diffs (s : Finset α) : #s ≤ #(s \\ s) :=
-  le_of_pow_le_pow_left₀ two_ne_zero (zero_le _) <| by
+  le_of_pow_le_pow_left₀ two_ne_zero zero_le <| by
     simpa [← sq] using s.le_card_diffs_mul_card_diffs s

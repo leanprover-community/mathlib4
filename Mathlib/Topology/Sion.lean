@@ -27,7 +27,7 @@ The classical case of the theorem assumes that `f` is continuous,
 As a particular case, one get the von Neumann theorem where
 `f` is bilinear and `E`, `F` are finite dimensional.
 
-We follow the proof of [Komiya-1988][Komiya (1988)].
+We follow the proof of [Komiya (1988)][Komiya-1988].
 
 ## Remark on implementation
 
@@ -52,14 +52,14 @@ We follow the proof of [Komiya-1988][Komiya (1988)].
 
 ## References
 
-- [vonNeumann-1928][Neumann, John von (1928).
-  ”Zur Theorie der Gesellschaftsspiele”. *Mathematische Annalen* 100 (1): 295‑320]
+- [Neumann, John von (1928).
+  ”Zur Theorie der Gesellschaftsspiele”. *Mathematische Annalen* 100 (1): 295‑320][vonNeumann-1928]
 
-- [Sion-1958][Sion, Maurice (1958).
-  ”On general minimax theorems”. *Pacific Journal of Mathematics* 8 (1): 171‑76.]
+- [Sion, Maurice (1958).
+  ”On general minimax theorems”. *Pacific Journal of Mathematics* 8 (1): 171‑76.][Sion-1958]
 
-- [Komiya-1988][Komiya, Hidetoshi (1988).
-  “Elementary Proof for Sion’s Minimax Theorem”. *Kodai Mathematical Journal* 11 (1).]
+- [Komiya, Hidetoshi (1988).
+  “Elementary Proof for Sion’s Minimax Theorem”. *Kodai Mathematical Journal* 11 (1).][Komiya-1988]
 
 -/
 
@@ -486,9 +486,8 @@ variable [TopologicalSpace F] [AddCommGroup F] [Module ℝ F]
   (hfx : ∀ x ∈ X, UpperSemicontinuousOn (fun y : F => f x y) Y)
   (hfx' : ∀ x ∈ X, QuasiconcaveOn ℝ Y fun y => f x y)
 
-/- The following lines essentially assume that `β` has a Dedekind MacNeille completion,
-but this is not in mathlib yet.
-One could then take `ι` to be the embedding of `β` into its DM completion. -/
+/- The following lines essentially assume that `β` has a densely ordered completion.
+(The Dedekind MacNeille completion is not densely ordered unless `β` is.) -/
 variable [TopologicalSpace β] [OrderTopology β]
 variable {γ : Type*} [CompleteLinearOrder γ] [DenselyOrdered γ]
   [TopologicalSpace γ] [OrderTopology γ]
@@ -503,13 +502,13 @@ public theorem DMCompletion.exists_isSaddlePointOn :
   let φ : E → F → γ := fun x y ↦ ι (f x y)
   -- suffices : ∃ a ∈ X, ∃ b ∈ Y, IsSaddlePointOn X Y φ a b
   have hφx (x) (hx : x ∈ X) : UpperSemicontinuousOn (fun y ↦ φ x y) Y := by
-    convert Continuous.comp_upperSemicontinuousOn hι (hfx x hx) ι.monotone
+    convert! Continuous.comp_upperSemicontinuousOn hι (hfx x hx) ι.monotone
   have hφx' (x) (hx : x ∈ X) : QuasiconcaveOn ℝ Y fun y ↦ φ x y := by
-    convert (hfx' x hx).monotone_comp ι.monotone
+    convert! (hfx' x hx).monotone_comp ι.monotone
   have hφy (y) (hy : y ∈ Y) : LowerSemicontinuousOn (fun x ↦ φ x y) X := by
-    convert Continuous.comp_lowerSemicontinuousOn hι (hfy y hy) ι.monotone
+    convert! Continuous.comp_lowerSemicontinuousOn hι (hfy y hy) ι.monotone
   have hφy' (y) (hy : y ∈ Y) : QuasiconvexOn ℝ X fun x ↦ φ x y := by
-    convert (hfy' y hy).monotone_comp ι.monotone
+    convert! (hfy' y hy).monotone_comp ι.monotone
   obtain ⟨a, ha, b, hb, hab⟩ :=
     exists_isSaddlePointOn' ne_X kX hφy hφy' cY kY hφx hφx' cX ne_Y
   use a, ha, b, hb
