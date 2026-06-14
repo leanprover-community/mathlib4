@@ -249,10 +249,20 @@ instance PSL_nontrivial [Nontrivial ι] :
 
 end SL2Simple
 
-/-- **The PSL₂ simplicity theorem**: when `Fintype.card ι = 2` and `|F| ≥ 4`
-(witnessed by `∃ a : F, a ≠ 0 ∧ a² ≠ 1`), the group `PSL ι F` is simple. -/
-theorem Matrix.ProjectiveSpecialLinearGroup.rank_two_simple
+theorem Matrix.ProjectiveSpecialLinearGroup.rank_two_simple'
     (hF : ∃ a : F, a ≠ 0 ∧ a ^ 2 ≠ 1) :
     IsSimpleGroup PSL(2, F) :=
   MulAction.IwasawaStructure.isSimpleGroup
     (SL2Simple.PSL_commutator_eq_top hF) PSL2.Iwasawa inferInstance
+
+private lemma field_cond_of_four_le_card [Finite F] (hF : 4 ≤ Nat.card F) :
+    ∃ a : F, a ≠ 0 ∧ a ^ 2 ≠ 1 := by
+  obtain ⟨x, hx⟩ : IsCyclic Fˣ := by infer_instance
+  refine ⟨x, Units.ne_zero x, fun h ↦ ?_⟩
+  grw [Nat.card_eq_card_units_add_one F, ← orderOf_eq_card_of_forall_mem_zpowers hx,
+    orderOf_le_of_pow_eq_one zero_lt_two (Units.ext <| by simpa using h)] at hF
+  omega
+
+theorem Matrix.ProjectiveSpecialLinearGroup.rank_two_simple [Finite F] (hF : 4 ≤ Nat.card F) :
+    IsSimpleGroup PSL(2, F) :=
+  Matrix.ProjectiveSpecialLinearGroup.rank_two_simple' (field_cond_of_four_le_card hF)
