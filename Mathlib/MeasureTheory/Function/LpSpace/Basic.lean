@@ -232,7 +232,6 @@ theorem nnnorm_def (f : Lp E p μ) : ‖f‖₊ = ENNReal.toNNReal (eLpNorm f p 
 protected theorem coe_nnnorm (f : Lp E p μ) : (‖f‖₊ : ℝ) = ‖f‖ :=
   rfl
 
-@[simp]
 theorem enorm_def (f : Lp E p μ) : ‖f‖ₑ = eLpNorm f p μ :=
   ENNReal.coe_toNNReal <| Lp.eLpNorm_ne_top f
 
@@ -912,7 +911,7 @@ lemma norm_LpToLpOfMeasureLeSMulₗ_apply_le
   rw [ENNReal.toReal_rpow, ← ENNReal.toReal_mul]
   apply (ENNReal.toReal_le_toReal (by simp only [ne_eq, enorm_ne_top, not_false_eq_true]) _).2
     (enorm_LpToLpOfMeasureLeSMulₗ_apply_le hc h)
-  simp [ENNReal.mul_eq_top, -Lp.enorm_def, hc]
+  simp [ENNReal.mul_eq_top, hc]
 
 /-- The canonical map from `Lᵖ ν` to `Lᵖ μ` when `μ` is bounded by a multiple of `ν`. -/
 noncomputable def LpToLpOfMeasureLeSMul [Fact (1 ≤ p)] (hc : c ≠ ∞) (h : μ ≤ c • ν) :
