@@ -207,7 +207,6 @@ theorem exists_linearIsometryEquiv_span_map_eq_of_inner_eq {φ : ι → E} {ψ :
     ∃ L :
       (Submodule.span 𝕜 (Set.range φ)) ≃ₗᵢ[𝕜] (Submodule.span 𝕜 (Set.range ψ)),
       ∀ i, (L ⟨φ i, Submodule.subset_span ⟨i, rfl⟩⟩ : F) = ψ i := by
-  classical
   -- Linear-combination maps of the two families.
   set Tφ : (ι →₀ 𝕜) →ₗ[𝕜] E := Finsupp.linearCombination 𝕜 φ with hTφ
   set Tψ : (ι →₀ 𝕜) →ₗ[𝕜] F := Finsupp.linearCombination 𝕜 ψ with hTψ
