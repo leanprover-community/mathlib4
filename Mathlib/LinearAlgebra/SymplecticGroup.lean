@@ -208,7 +208,7 @@ theorem fromBlocks_mem_iff [Finite l] {A B C D : Matrix l l R} :
       Aᵀ * D - Cᵀ * B = 1 := by
   refine ⟨fun h ↦ ?_, fun h ↦ mem_iff'.2 ?_⟩
   · have h_final : fromBlocks (Cᵀ * A - Aᵀ * C) (Cᵀ * B - Aᵀ * D)
-      (Dᵀ * A - Bᵀ * C) (Dᵀ * B - Bᵀ * D) = J l R:= by
+      (Dᵀ * A - Bᵀ * C) (Dᵀ * B - Bᵀ * D) = J l R := by
       simpa [mem_iff, fromBlocks_transpose, J, fromBlocks_multiply,
         sub_eq_add_neg] using transpose_mem h
     obtain ⟨h_eq1, h_eq2, _, h_eq3⟩ := fromBlocks_inj.1 h_final
@@ -262,12 +262,12 @@ private lemma eq_zero_and_symm_on_support_of_diagonal_symm {s : Finset l}
     rwa [if_pos hj, if_pos hi] at this
 
 private lemma exists_symmetric_X_invertible_add_mul_diagonal {R : Type*} [Field R] {s : Finset l}
-  {A : Matrix l l R} (h1 : ∀ (i j : l), i ∈ s → j ∉ s → A i j = 0)
-  (h2 : ∀ (i j : l), i ∈ s → j ∈ s → A i j = A j i)
-  (h_rank1 : ∀ (x : l → R), (A • x = 0) →
-    ((diagonal (fun i ↦ if i ∈ s then 1 else (0 : R))) • x = 0) → x = 0) :
-  ∃ (X : Matrix l l R), Xᵀ = X ∧
-    IsUnit (A + X * (diagonal (fun i : l ↦ if i ∈ s then 1 else 0))).det := by
+    {A : Matrix l l R} (h1 : ∀ (i j : l), i ∈ s → j ∉ s → A i j = 0)
+    (h2 : ∀ (i j : l), i ∈ s → j ∈ s → A i j = A j i)
+    (h_rank1 : ∀ (x : l → R), (A • x = 0) →
+      ((diagonal (fun i ↦ if i ∈ s then 1 else (0 : R))) • x = 0) → x = 0) :
+    ∃ (X : Matrix l l R), Xᵀ = X ∧
+      IsUnit (A + X * (diagonal (fun i : l ↦ if i ∈ s then 1 else 0))).det := by
   set D : Matrix l l R := diagonal (fun i : l ↦ if i ∈ s then 1 else 0) with D_def
   set X : Matrix l l R := fun i j ↦
     if i ∈ s ∧ j ∈ s then (if i = j then 1 else 0) - A i j else 0 with X1_def
@@ -293,8 +293,8 @@ private lemma exists_symmetric_X_invertible_add_mul_diagonal {R : Type*} [Field 
   exact h_rank1 x hAx hDx
 
 private lemma exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot {R : Type*} [Field R]
-  {A C : Matrix l l R} (h_rank : ∀ (x : l → R), (A • x = 0) → (C • x = 0) → x = 0)
-  (h_symm : Aᵀ * C = Cᵀ * A) :
+    {A C : Matrix l l R} (h_rank : ∀ (x : l → R), (A • x = 0) → (C • x = 0) → x = 0)
+    (h_symm : Aᵀ * C = Cᵀ * A) :
     ∃ (X : Matrix l l R), Xᵀ = X ∧ IsUnit (A + X * C).det := by
   rcases exists_rank_normal_form C with ⟨V, U, s, hV, hU, hR1_eq⟩
   set C' := V * C * U with C'_def

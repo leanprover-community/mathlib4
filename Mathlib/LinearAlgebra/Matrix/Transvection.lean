@@ -736,9 +736,9 @@ theorem diagonal_transvection_induction_of_det_ne_zero (P : Matrix n n 𝕜 → 
   exact this.2
 
 theorem exists_rank_normal_form (M : Matrix n n 𝕜) :
-  ∃ (V U : Matrix n n 𝕜) (s : Finset n),
-    IsUnit V.det ∧ IsUnit U.det ∧
-    V * M * U = diagonal (fun i ↦ if i ∈ s then 1 else 0) := by
+    ∃ (V U : Matrix n n 𝕜) (s : Finset n),
+      IsUnit V.det ∧ IsUnit U.det ∧
+      V * M * U = diagonal (fun i ↦ if i ∈ s then 1 else 0) := by
   classical
   obtain ⟨L, L', D, hM_eq⟩ := exists_list_transvec_mul_diagonal_mul_list_transvec M
   set E := fun i ↦ if D i = 0 then 1 else (D i)⁻¹ with E_def
