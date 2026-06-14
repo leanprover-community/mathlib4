@@ -231,7 +231,7 @@ lemma parts_top_subset : ((⊤ : Partition s) : Set α) ⊆ {s} := by simp
 
 end Order
 
-variable {S : Set (Set α)} {u s t : Set α} {a b c : α} {P Q : Partition u}
+variable {S : Set (Set α)} {u u' s t : Set α} {a b c : α} {P Q : Partition u}
 
 section Set
 
@@ -302,6 +302,9 @@ lemma rel_le_iff_le : P.Rel ≤ Q.Rel ↔ P ≤ Q := by
 lemma ext_rel_iff (P Q : Partition u) : (∀ x y, P.Rel x y ↔ Q.Rel x y) ↔ P = Q := by
   rw [le_antisymm_iff, ← rel_le_iff_le, ← rel_le_iff_le, ← le_antisymm_iff]
   exact ⟨fun h ↦ funext₂ fun x y ↦ iff_eq_eq ▸ h x y, fun h ↦ by simp [h]⟩
+
+@[simp, grind =]
+lemma rel_copy {h : u = u'} : (P.copy h).Rel x y ↔ P.Rel x y := by simp [Rel]
 
 lemma Rel.exists (h : P.Rel x y) : ∃ t ∈ P, x ∈ t ∧ y ∈ t := h
 
@@ -390,32 +393,30 @@ section ofRel
 
 variable {u : Set α}
 
-/-- A transitive, symmetric Binary relation `r` induces a partition of the set of elements on
-  which it is reflexive. -/
-def ofRel (r : α → α → Prop) [Std.Symm r] [IsTrans α r] (h : {x | r x x} = u) : Partition u where
-  parts := ({a | r · a}) '' u
+/-- A transitive, symmetric binary relation `r` induces a partition of the set of elements on
+which it is reflexive. -/
+def ofRel (r : α → α → Prop) [Std.Symm r] [IsTrans α r] : Partition {x | r x x} where
+  parts := ({a | r · a}) '' {x | r x x}
   sSupIndep' := by
     rintro s ⟨x, hx, rfl⟩
     simp only [sSup_eq_sUnion, disjoint_sUnion_right, mem_diff, mem_image, mem_singleton_iff,
       and_imp, forall_exists_index, forall_apply_eq_imp_iff₂, ← ne_eq]
     exact fun y hy ↦ Not.imp_symm fun hdj ↦ by grind [trans_of r, symm_of r]
   bot_notMem' := by
-    subst u
     simp only [bot_eq_empty, mem_image, not_exists, not_and, ← ne_eq, ← nonempty_iff_ne_empty]
     exact (⟨·, ·⟩)
   sSup_eq' := by grind [trans_of r, symm_of r, sSup_eq_sUnion, sUnion_image, mem_iUnion]
 
 @[simp]
-lemma rel_ofRel (r : α → α → Prop) [Std.Symm r] [IsTrans α r] (h : {x | r x x} = u) :
-    (ofRel r h).Rel x y ↔ r x y := by
+lemma rel_ofRel (r : α → α → Prop) [Std.Symm r] [IsTrans α r] : (ofRel r).Rel x y ↔ r x y := by
   refine ⟨fun ⟨t, ht, hx, hy⟩ ↦ ?_, fun hxy ↦ ⟨{a | r y a}, ?_, symm hxy,
     trans_of r (symm hxy) hxy⟩⟩
   · obtain ⟨z, hzu, rfl⟩ := ht
     grind [trans_of r, symm_of r]
-  use y, h ▸ trans_of r (symm hxy) hxy
+  use y, trans_of r (symm hxy) hxy
 
 @[simp]
-lemma ofRel_rel (P : Partition u) : ofRel P.Rel (Set.ext fun _ ↦ P.rel_rfl_iff) = P := by
+lemma ofRel_rel (P : Partition u) : (ofRel P.Rel).copy (Set.ext fun _ ↦ P.rel_rfl_iff) = P := by
   simp [← ext_rel_iff]
 
 end ofRel
