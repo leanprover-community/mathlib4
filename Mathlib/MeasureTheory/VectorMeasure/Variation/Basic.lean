@@ -338,7 +338,6 @@ lemma iSup_sum_finpartition_parts (μ : VectorMeasure X ℝ≥0∞) {s : Set X} 
   exact le_iSup_of_le P (μ.sum_finpartition P).symm.le
 
 /-- For `μ : VectorMeasure X ℝ≥0∞`, `preVariationFun μ s = μ s` for any `s`. -/
-@[simp]
 lemma preVariationFun_apply_of_ENNReal (s : Set X) : preVariationFun μ s = μ s := by
   unfold preVariationFun
   split_ifs with hs
@@ -347,7 +346,8 @@ lemma preVariationFun_apply_of_ENNReal (s : Set X) : preVariationFun μ s = μ s
 
 theorem variation_eq_ennrealToMeasure : μ.variation = μ.ennrealToMeasure := by
   ext _ hs
-  simp [variation_apply, preVariation_apply, ennrealPreVariation_apply, ennrealToMeasure_apply hs]
+  simp [preVariationFun_apply_of_ENNReal, variation_apply, preVariation_apply,
+    ennrealPreVariation_apply, ennrealToMeasure_apply hs]
 
 @[simp]
 theorem ennrealVariation_eq : μ.ennrealVariation = μ := by
