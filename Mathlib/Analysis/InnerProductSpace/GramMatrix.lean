@@ -261,9 +261,7 @@ theorem exists_linearIsometryEquiv_span_map_eq_of_inner_eq {φ : ι → E} {ψ :
     intro t
     obtain ⟨c, hc⟩ := LinearMap.mem_range.mp t.2
     refine ⟨⟨Tφ c, LinearMap.mem_range_self Tφ c⟩, Subtype.ext ?_⟩
-    change ((f' ⟨Tφ c, LinearMap.mem_range_self Tφ c⟩ : LinearMap.range Tψ) : F) = (t : F)
-    rw [hf', LinearMap.codRestrict_apply, hf_apply c]
-    exact hc
+    simpa [hLr, hf', hf_apply] using hc
   -- Transport both sides along `range T = span (range ·)`.
   have hrangeφ : LinearMap.range Tφ = Submodule.span 𝕜 (Set.range φ) := by
     simpa [hTφ] using Finsupp.range_linearCombination 𝕜
