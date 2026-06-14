@@ -319,11 +319,11 @@ theorem integral_prod {B : G →L[ℝ] F →L[ℝ] J} {C : J →L[ℝ] E →L[�
     rw [integral_fun_add hx h'x]
   · apply isClosed_eq ?_  continuous_integral_integral
     let P : Lp G 1 (μ.variation.prod ν.variation) →L[ℝ] Lp G 1 (μ.prod ν A).variation :=
-      LpToLpOfMeasureLeSMul (by simp) variation_prod_le
+      Lp.LpToLpOfMeasureLeSMul (by simp) variation_prod_le
     have M (f : Lp G 1 (μ.variation.prod ν.variation)) :
         ∫ᵛ z, f z ∂[D; μ.prod ν A] = ∫ᵛ z, (P f) z ∂[D; μ.prod ν A] := by
       apply integral_congr_ae
-      grw [coeFn_LpToLpOfMeasureLeSMul]
+      grw [Lp.coeFn_LpToLpOfMeasureLeSMul]
     simp_rw [M]
     exact Continuous.comp continuous_integral P.continuous
   · intro f g hfg hf h'f
@@ -342,6 +342,5 @@ theorem integral_prod_smul [CompleteSpace H] [CompleteSpace F] {B : E →L[ℝ] 
     {f : X × Y → ℝ} (hf : Integrable f (μ.variation.prod ν.variation)) :
     ∫ᵛ z, f z ∂•(μ.prod ν B) = ∫ᵛ x, (∫ᵛ y, f (x, y) ∂•ν) ∂[B.flip; μ] :=
   integral_prod hf (fun x y z ↦ by simp)
-
 
 end MeasureTheory.VectorMeasure
