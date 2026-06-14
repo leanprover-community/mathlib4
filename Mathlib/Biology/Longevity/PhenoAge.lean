@@ -65,16 +65,22 @@ lemma gamma_pos : (0 : ℝ) < gamma_param := by norm_num [gamma_param]
 
 lemma tau_pos : (0 : ℝ) < tau := Real.exp_pos _
 
+/-- The product exp(gamma*(xb-B)) * tau is strictly positive. -/
 lemma exp_gamma_tau_pos (xb : ℝ) : 0 < Real.exp (gamma_param * (xb - B_param)) * tau :=
   mul_pos (Real.exp_pos _) tau_pos
+
+/-- The negated product -(exp(gamma*(xb-B)) * tau) is strictly negative. -/
+lemma neg_exp_mul_tau_neg (xb : ℝ) : -(Real.exp (gamma_param * (xb - B_param)) * tau) < 0 :=
+  neg_lt_zero.mpr (exp_gamma_tau_pos xb)
 
 -- Theorems
 
 /-- The mortality score is strictly positive for any linear score xb. -/
 theorem mortalityScore_pos (xb : ℝ) : 0 < mortalityScore xb := by
   simp only [mortalityScore]
-  linarith [Real.exp_pos (-(Real.exp (gamma_param * (xb - B_param)) * tau)),
-            Real.exp_lt_one_iff.mpr (neg_lt_zero.mpr (exp_gamma_tau_pos xb))]
+  have hlt : Real.exp (-(Real.exp (gamma_param * (xb - B_param)) * tau)) < 1 :=
+    Real.exp_lt_one_iff.mpr (neg_exp_mul_tau_neg xb)
+  linarith
 
 /-- The mortality score is strictly less than 1 for any linear score xb. -/
 theorem mortalityScore_lt_one (xb : ℝ) : mortalityScore xb < 1 := by
