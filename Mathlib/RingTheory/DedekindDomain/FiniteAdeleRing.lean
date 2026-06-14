@@ -93,16 +93,6 @@ are in `R_v` for all but finitely many `v`.
 abbrev FiniteAdeleRing : Type _ :=
   Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
 
-instance : CommRing (FiniteAdeleRing R K) := inferInstanceAs <|
-  CommRing <| Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
-
-instance : TopologicalSpace (FiniteAdeleRing R K) := inferInstanceAs <|
-  TopologicalSpace <| Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
-
-instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion K) where
-  coe a := a.1
-  coe_injective' _ _ := Subtype.ext
-
 namespace FiniteAdeleRing
 
 /--
