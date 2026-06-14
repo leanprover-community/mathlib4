@@ -285,9 +285,7 @@ theorem exists_linearIsometryEquiv_span_map_eq_of_inner_eq {φ : ι → E} {ψ :
     rw [hsubtype, hf_apply, hTψ, Finsupp.linearCombination_single, one_smul]
   simp only [LinearIsometryEquiv.trans_apply]
   rw [LinearIsometryEquiv.coe_ofEq_apply, htransφ, LinearIsometryEquiv.coe_ofSurjective]
-  change ((f' ⟨φ i, hmemRφ⟩ : LinearMap.range Tψ) : F) = ψ i
-  rw [hf', LinearMap.codRestrict_apply]
-  exact hfφ
+  simp [hLr, hf', hfφ]
 
 /-- If two families `φ ψ : ι → E` in a
 finite-dimensional inner product space have equal pairwise inner products, then
