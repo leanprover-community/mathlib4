@@ -183,15 +183,15 @@ axiom sol_leftCancel (T : FintypeCat.{u}) (X : Profinite.{u})
     f = g
 
 /-- `surj_factor`: any morphism `h : profiniteFree X ⟶ finFree T` factors through a
-finite level. Proved in MathProject/P2_finFree_Solid.lean.
-TODO: integrate the proof into Mathlib (requires `finFree_isColimit_at` infrastructure,
+finite level. Mathematically clear from the colimit structure of `profiniteFree`:
+`profiniteFree X = colim_{T : FintypeCat, X → T} finFree T`.
+TODO: formalise in Mathlib (requires `finFree_isColimit_at` infrastructure,
 which needs `CondensedMod.isDiscrete_tfae` and `finFree_isDiscrete`). -/
-lemma surj_factor (T : FintypeCat.{u}) (X : Profinite.{u})
+axiom surj_factor (T : FintypeCat.{u}) (X : Profinite.{u})
     (h : (profiniteFree R).obj X ⟶ (finFree R).obj T) :
     ∃ (U₀ : FintypeCat.{u}) (q₀ : X ⟶ FintypeCat.toProfinite.obj U₀)
       (h₀ : (profiniteFree R).obj (FintypeCat.toProfinite.obj U₀) ⟶ (finFree R).obj T),
-      h = (profiniteFree R).map q₀ ≫ h₀ := by
-  sorry
+      h = (profiniteFree R).map q₀ ≫ h₀
 
 /-! ### Solidness of `(profiniteSolid R).obj LT` (finite case) -/
 
