@@ -8,7 +8,7 @@ module
 public import Mathlib.Combinatorics.Pigeonhole
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
-public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Analysis.Real.Sqrt
 
 /-!
 # The Erdős-Stone-Simonovits theorem
@@ -74,7 +74,7 @@ lemma degree_between_verts_lt_of_mem_sdiff
   conv =>
     enter [1, 1, 2]
     unfold CompleteEquipartiteSubgraph.verts
-  rw [filter_disjiUnion, card_disjiUnion, sum_eq_sum_diff_singleton_add hp]
+  rw [filter_disjiUnion, card_disjiUnion, sum_eq_sum_sdiff_singleton_add hp]
   apply add_lt_add_of_le_of_lt
   · conv_rhs =>
       rw [K.card_verts, ← Nat.sub_one_mul, ← K.card_parts.resolve_right ht'_pos.ne',
