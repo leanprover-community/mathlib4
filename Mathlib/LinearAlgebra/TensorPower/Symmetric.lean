@@ -56,7 +56,7 @@ inductive Rel (r : M → M → Prop) : M → M → Prop
 
 end ModuleConGen
 
-variable {R : Type u} {M : Type v} [Semiring R] gin
+variable {R : Type u} {M : Type v} [Semiring R] 
 def moduleConGen [AddZeroClass M] [SMul R M] (r : M → M → Prop) : ModuleCon R M :=
  { r := ModuleConGen.Rel r
    iseqv := {
@@ -77,13 +77,20 @@ if they are related by a permutation of `ι`. -/
 inductive SymmetricPower.Rel : (⨂[R] _, M) → (⨂[R] _, M) → Prop
   | perm : (e : Perm ι) → (f : ι → M) → Rel (⨂ₜ[R] i, f i) (⨂ₜ[R] i, f (e i))
 
+def SymmetricCon : ModuleCon R (⨂[R] (_ : ι), M) :=
+    moduleConGen (R := R) (SymmetricPower.Rel R ι M)
 
 /-- The `ι`-indexed symmetric tensor power of a semimodule `M` over a commutative semiring `R`
 is the quotient of the `ι`-indexed tensor power of `M` by the relation that two tensors are equal
 if they are related by a permutation of `ι`. -/
 def SymmetricPower : Type max u v :=
-  (addConGen (SymmetricPower.Rel R ι M)).Quotient
-deriving AddCommMonoid
+ (SymmetricCon R ι M).Quotient
+
+instance : AddCommMonoid (SymmetricPower R ι M) :=
+  show AddCommMonoid (SymmetricCon R ι M).Quotient from inferInstance
+
+instance : Module R (SymmetricPower R ι M) :=
+  show Module R (SymmetricCon R ι M).Quotient from inferInstance
 
 @[inherit_doc]
 scoped[TensorProduct] notation:max "Sym[" R "] " ι:arg M:arg => SymmetricPower R ι M
@@ -92,49 +99,6 @@ scoped[TensorProduct] notation:max "Sym[" R "] " ι:arg M:arg => SymmetricPower 
 scoped[TensorProduct] notation:max "Sym[" R "]^" n:arg M:arg => Sym[R] (Fin n) M
 
 namespace SymmetricPower
-
-instance (R : Type u) [CommRing R] (M : Type v) [AddCommGroup M] [Module R M] :
-    AddCommGroup (Sym[R] ι M) :=
-  inferInstanceAs <| AddCommGroup (AddCon.Quotient _)
-
-variable {R ι M} in
-lemma smul (r : R) (x y : ⨂[R] _, M) (h : addConGen (Rel R ι M) x y) :
-    addConGen (Rel R ι M) (r • x) (r • y) := by
-  induction h with
-  | of x y h => cases h with
-    | perm e f =>
-      apply isEmpty_or_nonempty ι |>.elim <;> intro h
-      · convert! addConGen (Rel R ι M) |>.refl _
-      · let i := Nonempty.some h
-        classical
-        convert!
-          AddConGen.Rel.of _ _ <|
-            SymmetricPower.Rel.perm (R := R) (ι := ι) e <| Function.update f i (r • f i)
-        · rw [MultilinearMap.map_update_smul, Function.update_eq_self]
-        · simp_rw [Function.update_apply_equiv_apply, MultilinearMap.map_update_smul,
-              ← Function.update_comp_equiv, Function.update_eq_self]; rfl
-  | refl => exact AddCon.refl _ _
-  | symm => apply AddCon.symm; assumption
-  | trans => apply AddCon.trans <;> assumption
-  | add => rw [smul_add, smul_add]; apply AddCon.add <;> assumption
-
-variable {R} in
-/-- Scalar multiplication by `r : R`. Use `•` instead. -/
-def smul' (r : R) : Sym[R] ι M →+ Sym[R] ι M :=
-  AddCon.lift _ (AddMonoidHom.comp (AddCon.mk' _) {
-      toFun := (r • ·)
-      map_zero' := smul_zero r
-      map_add' := smul_add r })
-    (fun x y h ↦ Quotient.sound (smul r x y h))
-
-instance module : Module R (Sym[R] ι M) where
-  smul r x := smul' ι M r x
-  one_smul x := AddCon.induction_on x <| fun x ↦ congr_arg _ <| one_smul R x
-  mul_smul r s x := AddCon.induction_on x <| fun x ↦ congr_arg _ <| mul_smul r s x
-  smul_zero r := congr_arg _ <| smul_zero r
-  smul_add r x y := AddCon.induction_on₂ x y <| fun x y ↦ congr_arg _ <| smul_add r x y
-  add_smul r s x := AddCon.induction_on x <| fun x ↦ congr_arg _ <| add_smul r s x
-  zero_smul x := AddCon.induction_on x <| fun x ↦ congr_arg _ <| zero_smul R x
 
 /-- The canonical map from the `ι`-indexed tensor power to the symmetric tensor power. -/
 def mk : (⨂[R] (_ : ι), M) →ₗ[R] Sym[R] ι M where
@@ -154,7 +118,7 @@ notation3:100 "⨂ₛ["R"] "(...)", "r:(scoped f => tprod R f) => r
 variable {R ι M} in
 @[simp] lemma tprod_equiv (e : Perm ι) (f : ι → M) :
     (⨂ₛ[R] i, f (e i)) = ⨂ₛ[R] i, f i :=
-  Eq.symm <| Quot.sound <| AddConGen.Rel.of _ _ <| Rel.perm e f
+  Eq.symm <| Quot.sound <| ModuleConGen.Rel.of <| Rel.perm e f
 
 variable {R M n} in
 @[simp] lemma domDomCongr_tprod (e : Perm ι) :
@@ -184,8 +148,6 @@ def lift {N : Type*} [AddCommMonoid N] [Module R N] :
     right_inv := fun g => sorry 
   }
 
-#check PiTensorProduct.lift
-
 example (N : Type*) [AddCommMonoid N] [Module R N] (f : (M [Σ^ι]→ₗ[R] N))
   : (⨂[R] (_:ι), M) →ₗ[R] N  := by
   exact PiTensorProduct.lift f 
@@ -196,9 +158,6 @@ example (N : Type) [AddCommGroup N] [Module R N] (φ : Sym[R] ι M →ₗ[R] N)
   let π : (⨂[R] (_ : ι), M) →ₗ[R] (Sym[R] ι M) := mk R ι M
   exact φ ∘ₗ π
     
-
-    
-
     
 end SymmetricPower
 
