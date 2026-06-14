@@ -154,6 +154,8 @@ end Commute
 
 variable {A} [NonUnitalNonAssocCommRing A]
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-!
 The endomorphisms on an additive monoid `AddMonoid.End` form a `Ring`, and this may be equipped
 with a Lie Bracket via `Ring.bracket`.
