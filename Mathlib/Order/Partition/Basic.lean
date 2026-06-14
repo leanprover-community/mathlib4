@@ -438,7 +438,7 @@ def ofRel (r : α → α → Prop) [Std.Symm r] [IsTrans α r] : Partition {x | 
   parts := ({a | r · a}) '' {x | r x x}
   sSupIndep' := by
     rintro s ⟨x, hx, rfl⟩
-    simp only [sSup_eq_sUnion, disjoint_sUnion_right, mem_diff, mem_image, mem_singleton_iff,
+    simp only [sSup_eq_sUnion, disjoint_sUnion_right, mem_sdiff, mem_image, mem_singleton_iff,
       and_imp, forall_exists_index, forall_apply_eq_imp_iff₂, ← ne_eq]
     exact fun y hy ↦ Not.imp_symm fun hdj ↦ by grind [trans_of r, symm_of r]
   bot_notMem' := by
