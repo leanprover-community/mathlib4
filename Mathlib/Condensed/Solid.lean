@@ -30,8 +30,9 @@ groups were introduced in [scholze2019condensed], Definition 5.1.
 * `CondensedMod.isSolid_of_isLimit_gen`: if a condensed `R`-module is the limit of solid
   modules, then it is solid (fully proved).
 * `CondensedMod.profiniteSolid_obj_isSolid`: `((profiniteSolid R).obj S).IsSolid`
-  for `S : Profinite`. Architecture complete; one sorry remains:
-  `surj_factor` (proved in MathProject/P2_finFree_Solid.lean; requires `finFree_isColimit_at`).
+  for `S : Profinite`. Architecture complete: `surj_factor` is declared as an axiom
+  (proved in MathProject/P2_finFree_Solid.lean via `isColimitLocallyConstantPresheafDiagram`;
+  integration requires `finFree_isColimit_at` infrastructure not yet in Mathlib).
 
 ## Axioms
 
@@ -198,7 +199,7 @@ axiom surj_factor (T : FintypeCat.{u}) (X : Profinite.{u})
 /-- `((profiniteSolid R).obj LT).IsSolid` for any `T : FintypeCat`.
 **Surjectivity** (proved): uses `surj_factor` and `sol_map_counit`.
 **Injectivity** (proved): uses `sol_leftCancel` axiom.
-One sorry remains in `surj_factor` (colimit infrastructure). -/
+The axiom `surj_factor` captures the colimit factorisation property; see MathProject/P2. -/
 theorem profiniteSolid_fintype_isSolid (T : FintypeCat.{u}) :
     ((profiniteSolid R).obj (FintypeCat.toProfinite.obj T)).IsSolid := by
   constructor; intro X
