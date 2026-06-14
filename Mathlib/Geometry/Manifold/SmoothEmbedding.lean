@@ -97,12 +97,12 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
 /-- Given `C^n` manifolds `M` and `N`, `Sum.inl : M → M ⊕ N` is a `C^n` embedding. -/
 lemma sumInl {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
     [IsManifold I n M] [IsManifold I n M'] : IsSmoothEmbedding I I n (@Sum.inl M M') :=
-  ⟨IsImmersion.sumInl, Topology.IsEmbedding.inl⟩
+  ⟨IsImmersionOfComplement.sumInl.isImmersion, Topology.IsEmbedding.inl⟩
 
 /-- Given `C^n` manifolds `M` and `N`, `Sum.inr : N → M ⊕ N` is a `C^n` embedding. -/
 lemma sumInr {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
     [IsManifold I n M] [IsManifold I n M'] : IsSmoothEmbedding I I n (@Sum.inr M M') :=
-  ⟨IsImmersion.sumInr, Topology.IsEmbedding.inr⟩
+  ⟨IsImmersionOfComplement.sumInr.isImmersion, Topology.IsEmbedding.inr⟩
 
 /-- A smooth embedding is automatically smooth. -/
 lemma contMDiff [IsManifold I n M] [IsManifold J n N] (hf : IsSmoothEmbedding I J n f) :
