@@ -166,6 +166,7 @@ lemma prod_apply_eq_integral [CompleteSpace G] [IsFiniteMeasure μ.variation]
   rw [this]
   simp [prodOfIsFiniteMeasureLeft, hs]
 
+/-
 lemma compl_prod_eq_union' {α β : Type*} (s : Set α) (t : Set β) :
     (s ×ˢ t)ᶜ = (sᶜ ×ˢ tᶜ) ∪ (s ×ˢ tᶜ) ∪ (sᶜ ×ˢ t) := by
   grind
@@ -248,6 +249,16 @@ lemma variation_prod_le [SFinite ν.variation] :
       apply hasSum_of_disjoint_iUnion
       exacts [fun i ↦ measurable_prodMk_left (hfm i), hfd.mono fun _ _ ↦ .preimage _]
     exact StronglyMeasurable.hasSum ihf this
+
+-/
+
+lemma variation_prod_le [CompleteSpace G] [IsFiniteMeasure μ.variation] [SFinite ν.variation] :
+    (μ.prod ν B).variation ≤ ‖B‖ₑ • μ.variation.prod ν.variation := by
+  apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
+  rw [prod_apply_eq_integral hs]
+  simp only [Measure.smul_apply, smul_eq_mul]
+  rw [Measure.prod_apply hs]
+  grw [enorm_integral_le_lintegral_enorm, ContinuousLinearMap.opENorm_flip]
 
 
 
