@@ -33,29 +33,20 @@ Extension of `iSup` and `iInf` from a preorder `α` to `WithTop α` and `WithBot
 
 variable [Preorder α]
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem WithTop.iInf_empty [IsEmpty ι] [InfSet α] (f : ι → WithTop α) :
-    ⨅ i, f i = ⊤ := by rw [iInf, range_eq_empty, WithTop.sInf_empty]
+    ⨅ i, f i = ⊤ := by
+  rw [iInf_of_isEmpty, WithTop.sInf_empty]
 
-@[norm_cast]
+@[to_dual (attr := norm_cast)]
 theorem WithTop.coe_iInf [Nonempty ι] [InfSet α] {f : ι → α} (hf : BddBelow (range f)) :
     ↑(⨅ i, f i) = (⨅ i, f i : WithTop α) := by
   rw [iInf, iInf, WithTop.coe_sInf' (range_nonempty f) hf, ← range_comp, Function.comp_def]
 
-@[norm_cast]
+@[to_dual (attr := norm_cast)]
 theorem WithTop.coe_iSup [SupSet α] (f : ι → α) (h : BddAbove (Set.range f)) :
     ↑(⨆ i, f i) = (⨆ i, f i : WithTop α) := by
   rw [iSup, iSup, WithTop.coe_sSup' h, ← range_comp, Function.comp_def]
-
-@[simp]
-theorem WithBot.ciSup_empty [IsEmpty ι] [SupSet α] (f : ι → WithBot α) :
-    ⨆ i, f i = ⊥ :=
-  WithTop.iInf_empty (α := αᵒᵈ) _
-
-@[norm_cast]
-theorem WithBot.coe_iSup [Nonempty ι] [SupSet α] {f : ι → α} (hf : BddAbove (range f)) :
-    ↑(⨆ i, f i) = (⨆ i, f i : WithBot α) :=
-  WithTop.coe_iInf (α := αᵒᵈ) hf
 
 theorem WithBot.coe_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty)
     {α : Type*} [CompleteLattice α] (f : ι → α) :
@@ -68,11 +59,6 @@ theorem WithBot.coe_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty)
   by_cases h : i ∈ s
   · simpa only [iSup_pos h] using by apply le_biSup _ h
   · simpa only [iSup_neg h] using le_trans (by simp) (le_biSup _ hj)
-
-@[norm_cast]
-theorem WithBot.coe_iInf [InfSet α] (f : ι → α) (h : BddBelow (Set.range f)) :
-    ↑(⨅ i, f i) = (⨅ i, f i : WithBot α) :=
-  WithTop.coe_iSup (α := αᵒᵈ) _ h
 
 theorem WithBot.coe_biInf {ι : Type*} {s : Set ι} {α : Type*} [CompleteLattice α] (f : ι → α) :
     ⨅ i ∈ s, f i = ⨅ i ∈ s, (f i : WithBot α) := by
@@ -88,65 +74,56 @@ section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α] {a b : α}
 
+@[to_dual]
 theorem isLUB_ciSup [Nonempty ι] {f : ι → α} (H : BddAbove (range f)) :
     IsLUB (range f) (⨆ i, f i) :=
   isLUB_csSup (range_nonempty f) H
 
+@[to_dual]
 theorem isLUB_ciSup_set {f : β → α} {s : Set β} (H : BddAbove (f '' s)) (Hne : s.Nonempty) :
     IsLUB (f '' s) (⨆ i : s, f i) := by
   rw [← sSup_image']
   exact isLUB_csSup (Hne.image _) H
 
-theorem isGLB_ciInf [Nonempty ι] {f : ι → α} (H : BddBelow (range f)) :
-    IsGLB (range f) (⨅ i, f i) :=
-  isGLB_csInf (range_nonempty f) H
-
-theorem isGLB_ciInf_set {f : β → α} {s : Set β} (H : BddBelow (f '' s)) (Hne : s.Nonempty) :
-    IsGLB (f '' s) (⨅ i : s, f i) :=
-  isLUB_ciSup_set (α := αᵒᵈ) H Hne
-
+@[to_dual le_ciInf_iff]
 theorem ciSup_le_iff [Nonempty ι] {f : ι → α} {a : α} (hf : BddAbove (range f)) :
     iSup f ≤ a ↔ ∀ i, f i ≤ a :=
   (isLUB_le_iff <| isLUB_ciSup hf).trans forall_mem_range
 
-theorem le_ciInf_iff [Nonempty ι] {f : ι → α} {a : α} (hf : BddBelow (range f)) :
-    a ≤ iInf f ↔ ∀ i, a ≤ f i :=
-  (le_isGLB_iff <| isGLB_ciInf hf).trans forall_mem_range
-
+@[to_dual le_ciInf_set_iff]
 theorem ciSup_set_le_iff {ι : Type*} {s : Set ι} {f : ι → α} {a : α} (hs : s.Nonempty)
     (hf : BddAbove (f '' s)) : ⨆ i : s, f i ≤ a ↔ ∀ i ∈ s, f i ≤ a :=
   (isLUB_le_iff <| isLUB_ciSup_set hf hs).trans forall_mem_image
 
-theorem le_ciInf_set_iff {ι : Type*} {s : Set ι} {f : ι → α} {a : α} (hs : s.Nonempty)
-    (hf : BddBelow (f '' s)) : (a ≤ ⨅ i : s, f i) ↔ ∀ i ∈ s, a ≤ f i :=
-  (le_isGLB_iff <| isGLB_ciInf_set hf hs).trans forall_mem_image
-
+@[to_dual]
 theorem IsLUB.ciSup_eq [Nonempty ι] {f : ι → α} (H : IsLUB (range f) a) : ⨆ i, f i = a :=
   H.csSup_eq (range_nonempty f)
 
+@[to_dual]
 theorem IsLUB.ciSup_set_eq {s : Set β} {f : β → α} (H : IsLUB (f '' s) a) (Hne : s.Nonempty) :
     ⨆ i : s, f i = a :=
   IsLUB.csSup_eq (image_eq_range f s ▸ H) (image_eq_range f s ▸ Hne.image f)
 
-theorem IsGLB.ciInf_eq [Nonempty ι] {f : ι → α} (H : IsGLB (range f) a) : ⨅ i, f i = a :=
-  H.csInf_eq (range_nonempty f)
-
-theorem IsGLB.ciInf_set_eq {s : Set β} {f : β → α} (H : IsGLB (f '' s) a) (Hne : s.Nonempty) :
-    ⨅ i : s, f i = a :=
-  IsGLB.csInf_eq (image_eq_range f s ▸ H) (image_eq_range f s ▸ Hne.image f)
-
-/-- The indexed supremum of a function is bounded above by a uniform bound -/
+/-- The indexed supremum of a function is bounded above by a uniform bound. -/
+@[to_dual le_ciInf /-- The indexed minimum of a function is bounded below by a uniform lower
+bound. -/]
 theorem ciSup_le [Nonempty ι] {f : ι → α} {c : α} (H : ∀ x, f x ≤ c) : iSup f ≤ c :=
   csSup_le (range_nonempty f) (by rwa [forall_mem_range])
 
 /-- The indexed supremum of a function is bounded below by the value taken at one point -/
+@[to_dual ciInf_le /-- The indexed infimum of a function is bounded above by the value taken
+at one point. -/]
 theorem le_ciSup {f : ι → α} (H : BddAbove (range f)) (c : ι) : f c ≤ iSup f :=
   le_csSup H (mem_range_self _)
 
+@[to_dual ciInf_le_of_le]
 theorem le_ciSup_of_le {f : ι → α} (H : BddAbove (range f)) (c : ι) (h : a ≤ f c) : a ≤ iSup f :=
   le_trans h (le_ciSup H c)
 
 /-- If the set of all `f i j` is bounded above, then so is the set of the supremums of every row -/
+@[to_dual
+  /-- If the set of all `f i j` is bounded below, then so is the set of the infimums
+  of every row -/]
 theorem BddAbove.range_iSup_of_iUnion_range {κ : ι → Sort*} {f : ∀ i, κ i → α}
     (H : BddAbove <| ⋃ i, range (f i)) : BddAbove <| range fun i ↦ ⨆ j, f i j := by
   have ⟨a, h⟩ := H
@@ -155,19 +132,23 @@ theorem BddAbove.range_iSup_of_iUnion_range {κ : ι → Sort*} {f : ∀ i, κ i
   · exact iSup_of_empty' (f i) ▸ le_sup_right
   exact ciSup_le fun j ↦ le_sup_of_le_left <| h ⟨_, ⟨i, rfl⟩, ⟨j, rfl⟩⟩
 
+@[to_dual ciInf₂_le]
 theorem le_ciSup₂ {κ : ι → Sort*} {f : ∀ i, κ i → α} (H : BddAbove <| ⋃ i, range (f i)) (i : ι)
     (j : κ i) : f i j ≤ ⨆ (i) (j), f i j :=
   le_ciSup_of_le H.range_iSup_of_iUnion_range i <|
     le_ciSup (H.mono <| subset_iUnion (range <| f ·) i) j
 
 /-- The indexed suprema of two functions are comparable if the functions are pointwise comparable -/
-@[gcongr low]
+@[to_dual (attr := gcongr low)
+/-- The indexed infimum of two functions are comparable if the functions are pointwise
+comparable -/]
 theorem ciSup_mono {f g : ι → α} (B : BddAbove (range g)) (H : ∀ x, f x ≤ g x) :
     iSup f ≤ iSup g := by
   cases isEmpty_or_nonempty ι
   · rw [iSup_of_empty', iSup_of_empty']
   · exact ciSup_le fun x => le_ciSup_of_le B x (H x)
 
+@[to_dual]
 theorem ciSup_sup_eq {f g : ι → α} (Hf : BddAbove <| range f) (Hg : BddAbove <| range g) :
     ⨆ x, f x ⊔ g x = (⨆ x, f x) ⊔ (⨆ x, g x) := by
   cases isEmpty_or_nonempty ι
@@ -176,60 +157,21 @@ theorem ciSup_sup_eq {f g : ι → α} (Hf : BddAbove <| range f) (Hg : BddAbove
   have := bbdAbove_range_sup Hf Hg
   exact sup_le (ciSup_mono this fun _ ↦ le_sup_left) (ciSup_mono this fun _ ↦ le_sup_right)
 
+@[to_dual ciInf_set_le]
 theorem le_ciSup_set {f : β → α} {s : Set β} (H : BddAbove (f '' s)) {c : β} (hc : c ∈ s) :
     f c ≤ ⨆ i : s, f i :=
   (le_csSup H <| mem_image_of_mem f hc).trans_eq sSup_image'
 
-/-- The indexed infimum of two functions are comparable if the functions are pointwise comparable -/
-@[gcongr low]
-theorem ciInf_mono {f g : ι → α} (B : BddBelow (range f)) (H : ∀ x, f x ≤ g x) : iInf f ≤ iInf g :=
-  ciSup_mono (α := αᵒᵈ) B H
-
-theorem ciInf_inf_eq {f g : ι → α} (Hf : BddBelow <| range f) (Hg : BddBelow <| range g) :
-    ⨅ x, f x ⊓ g x = (⨅ x, f x) ⊓ (⨅ x, g x) :=
-  ciSup_sup_eq (α := αᵒᵈ) Hf Hg
-
-/-- The indexed minimum of a function is bounded below by a uniform lower bound -/
-theorem le_ciInf [Nonempty ι] {f : ι → α} {c : α} (H : ∀ x, c ≤ f x) : c ≤ iInf f :=
-  ciSup_le (α := αᵒᵈ) H
-
-/-- The indexed infimum of a function is bounded above by the value taken at one point -/
-theorem ciInf_le {f : ι → α} (H : BddBelow (range f)) (c : ι) : iInf f ≤ f c :=
-  le_ciSup (α := αᵒᵈ) H c
-
-theorem ciInf_le_of_le {f : ι → α} (H : BddBelow (range f)) (c : ι) (h : f c ≤ a) : iInf f ≤ a :=
-  le_ciSup_of_le (α := αᵒᵈ) H c h
-
+@[to_dual]
 theorem ciSup_mono_of_forall_exists {ι'} [Nonempty ι] {f : ι → α} {g : ι' → α}
     (hg : BddAbove <| range g) (h : ∀ i, ∃ i', f i ≤ g i') : ⨆ i, f i ≤ ⨆ i', g i' :=
   ciSup_le fun i ↦ h i |>.elim <| le_ciSup_of_le hg
-
-theorem ciInf_mono_of_forall_exists {ι'} [Nonempty ι'] {f : ι → α} {g : ι' → α}
-    (hf : BddBelow <| range f) (h : ∀ i', ∃ i, f i ≤ g i') : ⨅ i, f i ≤ ⨅ i', g i' :=
-  ciSup_mono_of_forall_exists (α := αᵒᵈ) hf h
-
-/-- If the set of all `f i j` is bounded below, then so is the set of the infimums of every row -/
-theorem BddBelow.range_iInf_of_iUnion_range {κ : ι → Sort*} {f : ∀ i, κ i → α}
-    (H : BddBelow <| ⋃ i, range (f i)) : BddBelow <| range fun i ↦ ⨅ j, f i j := by
-  have ⟨a, h⟩ := H
-  refine ⟨a ⊓ (sInf ∅), fun x ⟨i, hx⟩ ↦ hx ▸ ?_⟩
-  cases isEmpty_or_nonempty <| κ i
-  · exact iInf_of_isEmpty (f i) ▸ inf_le_right
-  exact le_ciInf fun j ↦ inf_le_of_left_le <| h ⟨_, ⟨i, rfl⟩, ⟨j, rfl⟩⟩
-
-theorem ciInf₂_le {κ : ι → Sort*} {f : ∀ i, κ i → α} (H : BddBelow <| ⋃ i, range (f i)) (i : ι)
-    (j : κ i) : ⨅ (i) (j), f i j ≤ f i j :=
-  ciInf_le_of_le H.range_iInf_of_iUnion_range i <|
-    ciInf_le (H.mono <| subset_iUnion (range <| f ·) i) j
-
-theorem ciInf_set_le {f : β → α} {s : Set β} (H : BddBelow (f '' s)) {c : β} (hc : c ∈ s) :
-    ⨅ i : s, f i ≤ f c :=
-  le_ciSup_set (α := αᵒᵈ) H hc
 
 lemma ciInf_le_ciSup [Nonempty ι] {f : ι → α} (hf : BddBelow (range f)) (hf' : BddAbove (range f)) :
     ⨅ i, f i ≤ ⨆ i, f i :=
   (ciInf_le hf (Classical.arbitrary _)).trans <| le_ciSup hf' (Classical.arbitrary _)
 
+@[to_dual]
 lemma ciSup_prod {f : β × γ → α} (hf : BddAbove (Set.range f)) :
     ⨆ p, f p = ⨆ b, ⨆ c, f (b, c) := by
   rcases isEmpty_or_nonempty β
@@ -251,34 +193,25 @@ lemma ciSup_prod {f : β × γ → α} (hf : BddAbove (Set.range f)) :
   conv_rhs => enter [b]; rw [ciSup_le_iff (h₂ b)]
   simp [Prod.forall]
 
-lemma ciInf_prod {f : β × γ → α} (hf : BddBelow (Set.range f)) :
-    ⨅ p, f p = ⨅ b, ⨅ c, f (b, c) :=
-  ciSup_prod (α := αᵒᵈ) hf
-
 /-- Introduction rule to prove that `b` is the supremum of `f`: it suffices to check that `b`
 is larger than `f i` for all `i`, and that this is not the case of any `w<b`.
 See `iSup_eq_of_forall_le_of_forall_lt_exists_gt` for a version in complete lattices. -/
+@[to_dual ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
+/-- Introduction rule to prove that `b` is the infimum of `f`: it suffices to check that `b`
+is smaller than `f i` for all `i`, and that this is not the case of any `w>b`.
+See `iInf_eq_of_forall_ge_of_forall_gt_exists_lt` for a version in complete lattices. -/]
 theorem ciSup_eq_of_forall_le_of_forall_lt_exists_gt [Nonempty ι] {f : ι → α} (h₁ : ∀ i, f i ≤ b)
     (h₂ : ∀ w, w < b → ∃ i, w < f i) : ⨆ i : ι, f i = b :=
   csSup_eq_of_forall_le_of_forall_lt_exists_gt (range_nonempty f) (forall_mem_range.mpr h₁)
     fun w hw => exists_range_iff.mpr <| h₂ w hw
 
-/-- Introduction rule to prove that `b` is the infimum of `f`: it suffices to check that `b`
-is smaller than `f i` for all `i`, and that this is not the case of any `w>b`.
-See `iInf_eq_of_forall_ge_of_forall_gt_exists_lt` for a version in complete lattices. -/
-theorem ciInf_eq_of_forall_ge_of_forall_gt_exists_lt [Nonempty ι] {f : ι → α} (h₁ : ∀ i, b ≤ f i)
-    (h₂ : ∀ w, b < w → ∃ i, f i < w) : ⨅ i : ι, f i = b :=
-  ciSup_eq_of_forall_le_of_forall_lt_exists_gt (α := αᵒᵈ) h₁ h₂
-
+@[to_dual]
 lemma Set.Iic_ciInf [Nonempty ι] {f : ι → α} (hf : BddBelow (range f)) :
     Iic (⨅ i, f i) = ⋂ i, Iic (f i) := by
   ext
   simpa using le_ciInf_iff hf
 
-lemma Set.Ici_ciSup [Nonempty ι] {f : ι → α} (hf : BddAbove (range f)) :
-    Ici (⨆ i, f i) = ⋂ i, Ici (f i) :=
-  Iic_ciInf (α := αᵒᵈ) hf
-
+@[to_dual]
 theorem ciSup_subtype {p : ι → Prop} {f : Subtype p → α}
     (hf : BddAbove (Set.range f)) (hf' : sSup ∅ ≤ iSup f) :
     iSup f = ⨆ (i) (h : p i), f ⟨i, h⟩ := by
@@ -300,11 +233,7 @@ theorem ciSup_subtype {p : ι → Prop} {f : Subtype p → α}
     · exact le_ciSup hf ?_
     · exact hf'
 
-theorem ciInf_subtype {p : ι → Prop} {f : Subtype p → α}
-    (hf : BddBelow (Set.range f)) (hf' : iInf f ≤ sInf ∅) :
-    iInf f = ⨅ (i) (h : p i), f ⟨i, h⟩ :=
-  ciSup_subtype (α := αᵒᵈ) hf hf'
-
+@[to_dual]
 theorem cbiSup_eq_ciSup_subtype {p : ι → Prop} {f : ∀ i, p i → α}
     (hf : BddAbove (Set.range (fun i : Subtype p ↦ f i i.prop)))
     (hf' : sSup ∅ ≤ ⨆ (i : Subtype p), f i i.prop) :
@@ -313,14 +242,9 @@ theorem cbiSup_eq_ciSup_subtype {p : ι → Prop} {f : ∀ i, p i → α}
 
 @[deprecated (since := "2026-04-04")] alias ciSup_subtype' := cbiSup_eq_ciSup_subtype
 
-theorem cbiInf_eq_ciInf_subtype {p : ι → Prop} {f : ∀ i, p i → α}
-    (hf : BddBelow (Set.range (fun i : Subtype p ↦ f i i.prop)))
-    (hf' : ⨅ (i : Subtype p), f i i.prop ≤ sInf ∅) :
-    ⨅ (i) (h), f i h = ⨅ x : Subtype p, f x x.property :=
-  (ciInf_subtype (f := fun x => f x.val x.property) hf hf').symm
-
 @[deprecated (since := "2026-04-04")] alias ciInf_subtype' := cbiInf_eq_ciInf_subtype
 
+@[to_dual]
 theorem ciSup_subtype_fun {ι} {s : Set ι} {f : ι → α}
     (hf : BddAbove (Set.range fun i : s ↦ f i)) (hf' : sSup ∅ ≤ ⨆ i : s, f i) :
     ⨆ i : s, f i = ⨆ (t : ι) (_ : t ∈ s), f t :=
@@ -328,33 +252,21 @@ theorem ciSup_subtype_fun {ι} {s : Set ι} {f : ι → α}
 
 @[deprecated (since := "2026-04-04")] alias ciSup_subtype'' := ciSup_subtype_fun
 
-theorem ciInf_subtype_fun {ι} {s : Set ι} {f : ι → α}
-    (hf : BddBelow (Set.range fun i : s ↦ f i)) (hf' : ⨅ i : s, f i ≤ sInf ∅) :
-    ⨅ i : s, f i = ⨅ (t : ι) (_ : t ∈ s), f t :=
-  ciInf_subtype hf hf'
-
 @[deprecated (since := "2026-04-04")] alias ciInf_subtype'' := ciInf_subtype_fun
 
+@[to_dual]
 theorem csSup_image {s : Set β} {f : β → α}
     (hf : BddAbove (Set.range fun i : s ↦ f i)) (hf' : sSup ∅ ≤ ⨆ i : s, f i) :
     sSup (f '' s) = ⨆ a ∈ s, f a := by
   rw [← ciSup_subtype_fun hf hf', iSup, Set.image_eq_range]
 
-theorem csInf_image {s : Set β} {f : β → α}
-    (hf : BddBelow (Set.range fun i : s ↦ f i)) (hf' : ⨅ i : s, f i ≤ sInf ∅) :
-    sInf (f '' s) = ⨅ a ∈ s, f a :=
-  csSup_image (α := αᵒᵈ) hf hf'
-
+@[to_dual]
 theorem cbiSup_id {s : Set α} (hs : BddAbove s) (h : sSup ∅ ≤ sSup s) : ⨆ i ∈ s, i = sSup s := by
   rw [← csSup_image (Subtype.range_coe ▸ hs), Set.image_id']
   · convert! h
     rw [← sSup_range, Subtype.range_coe]
 
-theorem cbiInf_id {s : Set α} (hs : BddBelow s) (h : sInf s ≤ sInf ∅) : ⨅ i ∈ s, i = sInf s := by
-  rw [← csInf_image (Subtype.range_coe ▸ hs), Set.image_id']
-  · convert! h
-    rw [← sInf_range, Subtype.range_coe]
-
+@[to_dual]
 lemma ciSup_image {ι ι' : Type*} {s : Set ι} {f : ι → ι'} {g : ι' → α}
     (hf : BddAbove (Set.range fun i : s ↦ g (f i))) (hg' : sSup ∅ ≤ ⨆ i : s, g (f i)) :
     ⨆ i ∈ (f '' s), g i = ⨆ x ∈ s, g (f x) := by
@@ -375,13 +287,9 @@ lemma ciSup_image {ι ι' : Type*} {s : Set ι} {f : ι → ι'} {g : ι' → α
     simpa [bddAbove_def] using hf
   rw [← csSup_image hg hf', ← csSup_image hf hg', ← Set.image_comp, comp_def]
 
-lemma ciInf_image {ι ι' : Type*} {s : Set ι} {f : ι → ι'} {g : ι' → α}
-    (hf : BddBelow (Set.range fun i : s ↦ g (f i))) (hg' : ⨅ i : s, g (f i) ≤ sInf ∅) :
-    ⨅ i ∈ (f '' s), g i = ⨅ x ∈ s, g (f x) :=
-  ciSup_image (α := αᵒᵈ) hf hg'
-
 /-- Note that equality need not hold: consider `ι := Bool, p := (·), α := ℤ, f := fun _ ↦ -1`,
 then the LHS is `-1` but the RHS is `-1 ⊔ sSup ∅ = -1 ⊔ 0 = 0`. -/
+@[to_dual]
 theorem ciSup_exists_le {p : ι → Prop} {f : Exists p → α} : ⨆ ih, f ih ≤ ⨆ (i) (h), f ⟨i, h⟩ := by
   by_cases! h : Exists p
   · have : Nonempty <| Exists p := ⟨h⟩
@@ -391,14 +299,9 @@ theorem ciSup_exists_le {p : ι → Prop} {f : Exists p → α} : ⨆ ih, f ih �
   · cases isEmpty_or_nonempty ι <;>
       simp [h, iSup_of_empty', ciSup_const]
 
-theorem le_ciInf_exists {p : ι → Prop} {f : Exists p → α} : ⨅ (i) (h), f ⟨i, h⟩ ≤ ⨅ ih, f ih :=
-  ciSup_exists_le (α := αᵒᵈ)
-
+@[to_dual]
 theorem ciSup_and {p q : Prop} {f : p ∧ q → α} : ⨆ ih, f ih = ⨆ (h₁) (h₂), f ⟨h₁, h₂⟩ := by
   by_cases hp : p <;> by_cases hq : q <;> simp [hp, hq, iSup_of_empty']
-
-theorem ciInf_and {p q : Prop} {f : p ∧ q → α} : ⨅ ih, f ih = ⨅ (h₁) (h₂), f ⟨h₁, h₂⟩ :=
-  ciSup_and (α := αᵒᵈ)
 
 end ConditionallyCompleteLattice
 
@@ -421,15 +324,13 @@ theorem ciInf_inf_le {f g : ι → α} : (⨅ x, f x) ⊓ (⨅ x, g x) ≤ ⨅ x
 /-- Indexed version of `exists_lt_of_lt_csSup`.
 When `b < iSup f`, there is an element `i` such that `b < f i`.
 -/
+@[to_dual exists_lt_of_ciInf_lt
+/-- Indexed version of `exists_lt_of_csInf_lt`.
+When `iInf f < a`, there is an element `i` such that `f i < a`.
+-/]
 theorem exists_lt_of_lt_ciSup [Nonempty ι] {f : ι → α} (h : b < iSup f) : ∃ i, b < f i :=
   let ⟨_, ⟨i, rfl⟩, h⟩ := exists_lt_of_lt_csSup (range_nonempty f) h
   ⟨i, h⟩
-
-/-- Indexed version of `exists_lt_of_csInf_lt`.
-When `iInf f < a`, there is an element `i` such that `f i < a`.
--/
-theorem exists_lt_of_ciInf_lt [Nonempty ι] {f : ι → α} (h : iInf f < a) : ∃ i, f i < a :=
-  exists_lt_of_lt_ciSup (α := αᵒᵈ) h
 
 theorem lt_ciSup_iff [Nonempty ι] {f : ι → α} (hb : BddAbove (range f)) :
     a < iSup f ↔ ∃ i, a < f i := by
@@ -566,37 +467,25 @@ namespace GaloisConnection
 variable [ConditionallyCompleteLattice α] [ConditionallyCompleteLattice β] [Nonempty ι] {l : α → β}
   {u : β → α}
 
+@[to_dual u_csInf]
 theorem l_csSup (gc : GaloisConnection l u) {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s) :
     l (sSup s) = ⨆ x : s, l x :=
   Eq.symm <| IsLUB.ciSup_set_eq (gc.isLUB_l_image <| isLUB_csSup hne hbdd) hne
 
+@[to_dual u_csInf']
 theorem l_csSup' (gc : GaloisConnection l u) {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s) :
     l (sSup s) = sSup (l '' s) := by rw [gc.l_csSup hne hbdd, sSup_image']
 
+@[to_dual u_ciInf]
 theorem l_ciSup (gc : GaloisConnection l u) {f : ι → α} (hf : BddAbove (range f)) :
     l (⨆ i, f i) = ⨆ i, l (f i) := by rw [iSup, gc.l_csSup (range_nonempty _) hf, iSup_range']
 
+@[to_dual u_ciInf_set]
 theorem l_ciSup_set (gc : GaloisConnection l u) {s : Set γ} {f : γ → α} (hf : BddAbove (f '' s))
     (hne : s.Nonempty) : l (⨆ i : s, f i) = ⨆ i : s, l (f i) := by
   haveI := hne.to_subtype
   rw [image_eq_range] at hf
   exact gc.l_ciSup hf
-
-theorem u_csInf (gc : GaloisConnection l u) {s : Set β} (hne : s.Nonempty) (hbdd : BddBelow s) :
-    u (sInf s) = ⨅ x : s, u x :=
-  gc.dual.l_csSup hne hbdd
-
-theorem u_csInf' (gc : GaloisConnection l u) {s : Set β} (hne : s.Nonempty) (hbdd : BddBelow s) :
-    u (sInf s) = sInf (u '' s) :=
-  gc.dual.l_csSup' hne hbdd
-
-theorem u_ciInf (gc : GaloisConnection l u) {f : ι → β} (hf : BddBelow (range f)) :
-    u (⨅ i, f i) = ⨅ i, u (f i) :=
-  gc.dual.l_ciSup hf
-
-theorem u_ciInf_set (gc : GaloisConnection l u) {s : Set γ} {f : γ → β} (hf : BddBelow (f '' s))
-    (hne : s.Nonempty) : u (⨅ i : s, f i) = ⨅ i : s, u (f i) :=
-  gc.dual.l_ciSup_set hf hne
 
 end GaloisConnection
 
@@ -605,37 +494,25 @@ namespace OrderIso
 section ConditionallyCompleteLattice
 variable [ConditionallyCompleteLattice α] [ConditionallyCompleteLattice β] [Nonempty ι]
 
+@[to_dual]
 theorem map_csSup (e : α ≃o β) {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s) :
     e (sSup s) = ⨆ x : s, e x :=
   e.to_galoisConnection.l_csSup hne hbdd
 
+@[to_dual]
 theorem map_csSup' (e : α ≃o β) {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s) :
     e (sSup s) = sSup (e '' s) :=
   e.to_galoisConnection.l_csSup' hne hbdd
 
+@[to_dual]
 theorem map_ciSup (e : α ≃o β) {f : ι → α} (hf : BddAbove (range f)) :
     e (⨆ i, f i) = ⨆ i, e (f i) :=
   e.to_galoisConnection.l_ciSup hf
 
+@[to_dual]
 theorem map_ciSup_set (e : α ≃o β) {s : Set γ} {f : γ → α} (hf : BddAbove (f '' s))
     (hne : s.Nonempty) : e (⨆ i : s, f i) = ⨆ i : s, e (f i) :=
   e.to_galoisConnection.l_ciSup_set hf hne
-
-theorem map_csInf (e : α ≃o β) {s : Set α} (hne : s.Nonempty) (hbdd : BddBelow s) :
-    e (sInf s) = ⨅ x : s, e x :=
-  e.dual.map_csSup hne hbdd
-
-theorem map_csInf' (e : α ≃o β) {s : Set α} (hne : s.Nonempty) (hbdd : BddBelow s) :
-    e (sInf s) = sInf (e '' s) :=
-  e.dual.map_csSup' hne hbdd
-
-theorem map_ciInf (e : α ≃o β) {f : ι → α} (hf : BddBelow (range f)) :
-    e (⨅ i, f i) = ⨅ i, e (f i) :=
-  e.dual.map_ciSup hf
-
-theorem map_ciInf_set (e : α ≃o β) {s : Set γ} {f : γ → α} (hf : BddBelow (f '' s))
-    (hne : s.Nonempty) : e (⨅ i : s, f i) = ⨅ i : s, e (f i) :=
-  e.dual.map_ciSup_set hf hne
 
 end ConditionallyCompleteLattice
 
