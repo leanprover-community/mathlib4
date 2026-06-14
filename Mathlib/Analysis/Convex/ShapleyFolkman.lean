@@ -29,12 +29,12 @@ preferences*][starr1969].
 * [Starr, *Quasi-equilibria in markets with non-convex preferences*][starr1969]
 -/
 open Finset
-set_option linter.style.openClassical false
 open scoped Pointwise Classical
 namespace ShapleyFolkman
 variable {E : Type*} [AddCommGroup E] [Module ℝ E]
 
--- Step 1: points outside the set need ≥2 Carathéodory vertices
+/-- If `x ∈ convexHull ℝ s` but `x ∉ s`, then `x` can be written as a convex combination
+of at least two points of `s`. This is the key observation that starts the depth argument. -/
 theorem convexHull_not_mem_requires_two {s : Set E} {x : E}
     (hx_hull : x ∈ convexHull ℝ s) (hx_not : x ∉ s) :
     ∃ (n : ℕ) (f : Fin n → E) (w : Fin n → ℝ),
@@ -71,7 +71,8 @@ theorem convexHull_not_mem_requires_two {s : Set E} {x : E}
         = ∑ j : ι, w j • z j := Equiv.sum_comp e (fun j => w j • z j)
     _ = x := hx_eq
 
--- Step 2: binary representation
+/-- If `x ∈ convexHull ℝ s \ s`, then `x = t·a + (1-t)·b` with `a ∈ s`, `b ∈ convexHull ℝ s`,
+and `0 < t < 1`. This binary representation is used to reduce depth. -/
 lemma binary_repr_of_mem_convexHull_not_mem {s : Set E} {x : E}
     (hx : x ∈ convexHull ℝ s) (hxs : x ∉ s) :
     ∃ (a b : E) (t : ℝ), a ∈ s ∧ b ∈ convexHull ℝ s ∧ 0 < t ∧ t < 1 ∧
@@ -107,28 +108,40 @@ lemma binary_repr_of_mem_convexHull_not_mem {s : Set E} {x : E}
     _ = w 0 • a + (1 - w 0) • (r⁻¹ • ∑ i : Fin (m + 1), w i.succ • f i.succ) := by rw [hr_eq]
     _ = w 0 • a + (1 - w 0) • b := by rw [hb_def]
 
--- Step 3: Decomposition & depth
+/--
+A `Decomposition` of a point `x` over a family of sets `S` indexed by `t` is a choice of
+points `fᵢ ∈ convexHull ℝ (S i)` for each `i ∈ t` such that `∑ i ∈ t, fᵢ = x`.
+-/
 structure Decomposition {ι : Type*} (S : ι → Set E) (t : Finset ι) (x : E) where
   point : ι → E
   mem_convexHull : ∀ i ∈ t, point i ∈ convexHull ℝ (S i)
   sum_eq : ∑ i ∈ t, point i = x
 
+/--
+The set of indices `i ∈ t` where `d.point i` lies outside `S i`. These are the "bad" indices
+that require a nontrivial convex combination.
+-/
 noncomputable def Decomposition.excessIndices {ι : Type*} {S : ι → Set E}
     {t : Finset ι} {x : E} (d : Decomposition S t x) : Finset ι := by
   classical
     exact t.filter (fun i => d.point i ∉ S i)
 
--- Carathéodory depth: minimum number of vertices from s needed
+/--
+The Carathéodory depth of `x` with respect to `s` is the minimum number `n` such that
+`x` can be written as a convex combination of `n` points of `s` with strictly positive weights.
+-/
 noncomputable def caraDepth (s : Set E) (x : E) : ℕ :=
   sInf {n : ℕ | ∃ (f : Fin n → E) (w : Fin n → ℝ),
     (∀ i, f i ∈ s) ∧ (∀ i, 0 < w i) ∧ ∑ i, w i = 1 ∧ ∑ i, w i • f i = x}
 
+/-- A witness of depth `n` gives `caraDepth s x ≤ n`. -/
 lemma caraDepth_le {s : Set E} {x : E} {n : ℕ}
     (f : Fin n → E) (w : Fin n → ℝ)
     (hf : ∀ i, f i ∈ s) (hw : ∀ i, 0 < w i) (hsum : ∑ i, w i = 1) (heq : ∑ i, w i • f i = x) :
     caraDepth s x ≤ n :=
   Nat.sInf_le ⟨f, w, hf, hw, hsum, heq⟩
 
+/-- If `x ∈ convexHull ℝ s` but `x ∉ s`, then `caraDepth s x ≥ 2`. -/
 lemma caraDepth_ge_two {s : Set E} {x : E}
     (hx : x ∈ convexHull ℝ s) (hxs : x ∉ s) : 2 ≤ caraDepth s x := by
   classical
@@ -161,6 +174,9 @@ lemma caraDepth_ge_two {s : Set E} {x : E}
       simpa [Fin.sum_univ_one, hw0] using hxe.symm
     exact hxs (hx0 ▸ hf 0)
 
+/-- If `x ∈ convexHull ℝ s` and `x ∉ s`, then there exists `a ∈ s` and
+`b ∈ convexHull ℝ s` with `caraDepth s b ≤ caraDepth s x - 1` and `x = t·a + (1-t)·b`
+for some `0 < t < 1`. This is the key depth-reduction step. -/
 lemma caraDepth_decr {s : Set E} {x : E} (hx : x ∈ convexHull ℝ s) (hxs : x ∉ s) :
     ∃ (a b : E) (t : ℝ), a ∈ s ∧ b ∈ convexHull ℝ s ∧ 0 < t ∧ t < 1 ∧
     x = t • a + (1 - t) • b ∧ caraDepth s b ≤ caraDepth s x - 1 := by
@@ -226,7 +242,8 @@ lemma caraDepth_decr {s : Set E} {x : E} (hx : x ∈ convexHull ℝ s) (hxs : x 
     omega
   exact ⟨a, b, w 0, hf 0, hb_mem, hw 0, hw0_lt1, hx_eq', hb_depth⟩
 
--- Step 4: Linear dependence of > d vectors in ℝᵈ
+/-- In a finite-dimensional vector space, any family of more than `d = finrank ℝ E` vectors
+is linearly dependent. Returns nontrivial coefficients `cᵢ` such that `∑ cᵢ • vᵢ = 0`. -/
 lemma exists_relation_finset [FiniteDimensional ℝ E]
     {ι : Type*} (L : Finset ι) (v : ι → E) (hcard : Module.finrank ℝ E < L.card) :
     ∃ (c : ι → ℝ), (∃ i ∈ L, c i ≠ 0) ∧ ∑ i ∈ L, c i • v i = 0 := by
@@ -265,7 +282,8 @@ lemma exists_relation_finset [FiniteDimensional ℝ E]
       _ = ∑ x : S, c_sub x • v x.val := rfl
       _ = 0 := hsum'
 
--- Step 5: Convex combination with an S-point bound on caraDepth
+/-- Taking a convex combination of an S-point `a` and a point `y` of depth `k`
+yields depth at most `k + 1`. -/
 lemma caraDepth_le_add_one_of_S {s : Set E} {a y : E} (ha : a ∈ s)
     (hy : y ∈ convexHull ℝ s) (t' : ℝ) (ht : 0 ≤ t') (ht' : t' ≤ 1) :
     caraDepth s (t' • a + (1 - t') • y) ≤ 1 + caraDepth s y := by
@@ -338,10 +356,13 @@ lemma caraDepth_le_add_one_of_S {s : Set E} {a y : E} (ha : a ∈ s)
 
 -- Step 6: Flat representation (Lemma 1.3)
 
-/-- Equation (1) from Anderson: x = Σ_{i∈t} Σ_{e∈V_i} w_{i,e} · e,
-    where V_i ⊆ S_i, Σ_e w_{i,e} = 1, all w_{i,e} > 0.
-    Excess = Σ_i (|V_i| - 1). The anchor vertex a_i ∈ V_i anchors
-    the perturbation for excess reduction. -/
+/-- A flat representation of `x` over the family `S` indexed by `t`: for each `i ∈ t` we
+have a finite vertex set `Vᵢ ⊆ S i`, a distinguished anchor vertex `aᵢ ∈ Vᵢ`, and
+strictly positive weights `w_{i,e} > 0` with `Σ_{e ∈ Vᵢ} w_{i,e} = 1` such that
+`x = Σ_i Σ_{e ∈ Vᵢ} w_{i,e}·e`.
+
+The *excess* of vertex set `Vᵢ` is `|Vᵢ| - 1`. The anchor is used to absorb the
+perturbation when we find a linear dependence among the excess vectors `e - aᵢ`. -/
 structure FlatRepr {ι : Type*} (S : ι → Set E) (t : Finset ι) (x : E) where
   verts : (i : t) → Finset E
   h_verts_sub : ∀ (i : t), ↑(verts i) ⊆ S i.val
@@ -356,11 +377,11 @@ namespace FlatRepr
 
 /-- Total excess = cardinality of the sigma set of excess pairs (i, e ≠ anchor_i).
     Defined as sigma cardinality so that EIdx.card = totalExcess is definitional. -/
-noncomputable def totalExcess {S : ι → Set E} {t : Finset ι} {x : E}
+noncomputable def totalExcess {ι : Type*} {S : ι → Set E} {t : Finset ι} {x : E}
     (d : FlatRepr S t x) : ℕ := ∑ i : t, ((d.verts i).card - 1)
 
 /-- Each point in the final decomposition: f_i = Σ_{e∈V_i} w_{i,e}·e ∈ conv(S_i) -/
-noncomputable def toDecomposition {S : ι → Set E} {t : Finset ι} {x : E}
+noncomputable def toDecomposition {ι : Type*} {S : ι → Set E} {t : Finset ι} {x : E}
     (d : FlatRepr S t x) : Decomposition S t x where
   point i :=
     if hi : i ∈ t then
@@ -400,8 +421,80 @@ noncomputable def toDecomposition {S : ι → Set E} {t : Finset ι} {x : E}
 
 end FlatRepr
 
+/-- Given a linear relation `c` on the excess set of `d`, construct perturbation coefficients
+`β_{i,e}` satisfying `Σ_e β_{i,e} = 0` for each `i` and `Σ_{i,e} β_{i,e}·e = 0`.
+
+Used in `flatRepr_reduce` to perturb weights while preserving the sum. -/
+noncomputable def betaPerturbation {ι : Type*} {S : ι → Set E} {t : Finset ι} {x : E}
+    (d : FlatRepr S t x) (c : (Σ (_ : t), E) → ℝ) (i : t) (e : E) : ℝ :=
+  if e = d.anchor i then
+    -(∑ e' ∈ (d.verts i).erase (d.anchor i), c ⟨i, e'⟩)
+  else if e ∈ (d.verts i).erase (d.anchor i) then c ⟨i, e⟩ else 0
+
+lemma betaPerturbation_anchor {ι : Type*} {S : ι → Set E} {t : Finset ι} {x : E}
+    (d : FlatRepr S t x) (c : (Σ (_ : t), E) → ℝ) (i : t) :
+    betaPerturbation d c i (d.anchor i) =
+      -(∑ e' ∈ (d.verts i).erase (d.anchor i), c ⟨i, e'⟩) := by
+  dsimp [betaPerturbation]; rw [if_pos rfl]
+
+lemma betaPerturbation_erase {ι : Type*} {S : ι → Set E} {t : Finset ι} {x : E}
+    (d : FlatRepr S t x) (c : (Σ (_ : t), E) → ℝ) (i : t) (e : E)
+    (he : e ∈ (d.verts i).erase (d.anchor i)) : betaPerturbation d c i e = c ⟨i, e⟩ := by
+  dsimp [betaPerturbation]; rw [if_neg (Finset.ne_of_mem_erase he), if_pos he]
+
+/-- The perturbation coefficients have zero sum over each vertex set: `Σ_{e∈Vᵢ} β_{i,e} = 0`. -/
+lemma betaPerturbation_sum_zero {ι : Type*} {S : ι → Set E} {t : Finset ι} {x : E}
+    (d : FlatRepr S t x) (c : (Σ (_ : t), E) → ℝ) (i : t) :
+    ∑ e ∈ d.verts i, betaPerturbation d c i e = 0 := by
+  rw [← Finset.insert_erase (d.h_anchor i),
+    Finset.sum_insert (Finset.notMem_erase _ _), betaPerturbation_anchor d c i]
+  have h_erase : ∑ e ∈ (d.verts i).erase (d.anchor i), betaPerturbation d c i e =
+      ∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩ :=
+    Finset.sum_congr rfl (fun e he => betaPerturbation_erase d c i e he)
+  rw [h_erase]; ring
+
+/-- The perturbation coefficients have zero weighted sum:
+`Σ_{i∈t} Σ_{e∈Vᵢ} β_{i,e}·e = 0`, assuming `c` is a linear relation on `e - aᵢ`. -/
+lemma betaPerturbation_smul_zero {ι : Type*} {S : ι → Set E} {t : Finset ι} {x : E}
+    (d : FlatRepr S t x) (c : (Σ (_ : t), E) → ℝ)
+    (hc : ∑ i : t, ∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩ • (e - d.anchor i) = 0) :
+    ∑ i : t, ∑ e ∈ d.verts i, betaPerturbation d c i e • e = 0 := by
+  have h_perturbation_zero : (∑ i : t, ∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩ • e)
+      - (∑ i : t, (∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩) • d.anchor i) = 0 := by
+    calc
+      (∑ i : t, ∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩ • e)
+          - (∑ i : t, (∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩) • d.anchor i)
+        = ∑ i : t, ((∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩ • e)
+            - (∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩) • d.anchor i) := by
+          rw [Finset.sum_sub_distrib]
+      _ = ∑ i : t, ((∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩ • e)
+            - (∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩ • d.anchor i)) := by
+          simp [Finset.sum_smul]
+      _ = ∑ i : t, ∑ e ∈ (d.verts i).erase (d.anchor i),
+          (c ⟨i, e⟩ • e - c ⟨i, e⟩ • d.anchor i) := by
+          refine Finset.sum_congr rfl (fun i _ => ?_); rw [Finset.sum_sub_distrib]
+      _ = ∑ i : t, ∑ e ∈ (d.verts i).erase (d.anchor i),
+          c ⟨i, e⟩ • (e - d.anchor i) := by
+          refine Finset.sum_congr rfl (fun i _ => ?_)
+          refine Finset.sum_congr rfl (fun e _ => ?_); rw [smul_sub]
+      _ = 0 := hc
+  have key (i : t) : ∑ e ∈ d.verts i, betaPerturbation d c i e • e =
+      (∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩ • e)
+        - (∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩) • d.anchor i := by
+    rw [← Finset.insert_erase (d.h_anchor i),
+      Finset.sum_insert (Finset.notMem_erase _ _), betaPerturbation_anchor d c i]
+    have h_erase : ∑ e ∈ (d.verts i).erase (d.anchor i), betaPerturbation d c i e • e =
+        ∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩ • e :=
+      Finset.sum_congr rfl (fun e he => by rw [betaPerturbation_erase d c i e he])
+    rw [h_erase]
+    simp [neg_smul, add_comm, sub_eq_add_neg]
+  rw [Finset.sum_congr rfl (fun i _ => key i), Finset.sum_sub_distrib]
+  exact h_perturbation_zero
+
 omit [Module ℝ E] in
-private lemma mem_finset_sum_sets {ι : Type*} {S : ι → Set E} (t : Finset ι) (y : E)
+/-- If `y ∈ ∑ i ∈ t, S i` (Minkowski sum), then `y` can be written as `∑ p i` where each
+`p i ∈ S i`. -/
+lemma mem_finset_sum_sets {ι : Type*} {S : ι → Set E} (t : Finset ι) (y : E)
     (hy : y ∈ ∑ i ∈ t, S i) : ∃ p : ι → E, (∀ i ∈ t, p i ∈ S i) ∧ y = ∑ i ∈ t, p i := by
   induction t using Finset.induction_on generalizing y with
   | empty =>
@@ -433,6 +526,9 @@ section Construction
 variable [FiniteDimensional ℝ E] {ι : Type*}
 
 omit [FiniteDimensional ℝ E] in
+/-- Given `x ∈ convexHull ℝ (∑ S i)`, construct an initial `FlatRepr` for `x`.
+This uses Carathéodory's theorem to write `x` as a convex combination of summands,
+then expands each summand via `mem_finset_sum_sets`. -/
 lemma exists_flatRepr_of_mem {S : ι → Set E} {t : Finset ι} {x : E}
     (hx : x ∈ convexHull ℝ (∑ i ∈ t, S i)) :
     ∃ (_ : FlatRepr S t x), True := by
@@ -531,7 +627,9 @@ lemma exists_flatRepr_of_mem {S : ι → Set E} {t : Finset ι} {x : E}
 
 end Construction
 
-lemma card_sigma_totalExcess {S : ι → Set E} {t : Finset ι} {x : E}
+/-- The cardinality of the sigma set of excess pairs `(i, e ≠ aᵢ)` equals `totalExcess`.
+This lemma is a technical bridge between the sigma-based construction and the sum formula. -/
+lemma card_sigma_totalExcess {ι : Type*} {S : ι → Set E} {t : Finset ι} {x : E}
     (d : FlatRepr S t x) :
     (Finset.sigma Finset.univ (fun (i : t) => (d.verts i).erase (d.anchor i))).card
     = d.totalExcess := by
@@ -555,6 +653,10 @@ section Reduction
 
 variable [FiniteDimensional ℝ E] {ι : Type*}
 
+/-- **Core reduction**: if `totalExcess > finrank ℝ E`, we can perturb the flat representation
+to strictly decrease `totalExcess`. The construction uses a linear dependence among the vectors
+`e - aᵢ` (for `e ∈ Vᵢ \ {aᵢ}`) to define perturbation coefficients `β_{i,e}`, then picks
+the maximal feasible scaling `tmax` so that one weight hits zero and the excess decreases. -/
 lemma flatRepr_reduce {S : ι → Set E} {t : Finset ι} {x : E}
     (d : FlatRepr S t x) (h_exceed : Module.finrank ℝ E < d.totalExcess) :
     ∃ (d' : FlatRepr S t x), d'.totalExcess < d.totalExcess := by
@@ -572,60 +674,13 @@ lemma flatRepr_reduce {S : ι → Set E} {t : Finset ι} {x : E}
   have hc_nested : ∑ i : t, ∑ e ∈ (d.verts i).erase (d.anchor i),
       c ⟨i, e⟩ • (e - d.anchor i) = 0 := by
     simpa [EIdx, Finset.sum_sigma, v] using hc_sum
-  have h_perturbation_zero : (∑ i : t, ∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩ • e)
-      - (∑ i : t, (∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩) • d.anchor i) = 0 := by
-    calc
-      (∑ i : t, ∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩ • e)
-          - (∑ i : t, (∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩) • d.anchor i)
-        = ∑ i : t, ((∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩ • e)
-            - (∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩) • d.anchor i) := by
-          rw [Finset.sum_sub_distrib]
-      _ = ∑ i : t, ((∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩ • e)
-            - (∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩ • d.anchor i)) := by
-          simp [Finset.sum_smul]
-      _ = ∑ i : t, ∑ e ∈ (d.verts i).erase (d.anchor i),
-          (c ⟨i, e⟩ • e - c ⟨i, e⟩ • d.anchor i) := by
-          refine Finset.sum_congr rfl (fun i _ => ?_); rw [Finset.sum_sub_distrib]
-      _ = ∑ i : t, ∑ e ∈ (d.verts i).erase (d.anchor i),
-          c ⟨i, e⟩ • (e - d.anchor i) := by
-          refine Finset.sum_congr rfl (fun i _ => ?_)
-          refine Finset.sum_congr rfl (fun e _ => ?_); rw [smul_sub]
-      _ = 0 := hc_nested
-  -- β: perturbation per vertex. Inline formula to avoid `let` scope issues in sum_congr.
-  let β (i : t) (e : E) : ℝ :=
-    if e = d.anchor i then
-      -(∑ e' ∈ (d.verts i).erase (d.anchor i), c ⟨i, e'⟩)
-    else if e ∈ (d.verts i).erase (d.anchor i) then c ⟨i, e⟩ else 0
-  have hβ_anchor (i : t) : β i (d.anchor i) =
-      -(∑ e' ∈ (d.verts i).erase (d.anchor i), c ⟨i, e'⟩) := by
-    dsimp [β]; rw [if_pos rfl]
-  have hβ_erase (i : t) (e : E) (he : e ∈ (d.verts i).erase (d.anchor i)) :
-      β i e = c ⟨i, e⟩ := by
-    dsimp [β]; rw [if_neg (Finset.ne_of_mem_erase he), if_pos he]
-  -- Step A: Σ_e β(i,e) = 0 and Σ_i Σ_e β(i,e)·e = 0
-  have hβ_sum_zero (i : t) : ∑ e ∈ d.verts i, β i e = 0 := by
-    rw [← Finset.insert_erase (d.h_anchor i),
-      Finset.sum_insert (Finset.notMem_erase _ _), hβ_anchor i]
-    have h_erase : ∑ e ∈ (d.verts i).erase (d.anchor i), β i e =
-        ∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩ :=
-      Finset.sum_congr rfl (fun e he => hβ_erase i e he)
-    rw [h_erase]; ring
-  have hβ_smul_zero : ∑ i : t, ∑ e ∈ d.verts i, β i e • e = 0 := by
-    have key (i : t) : ∑ e ∈ d.verts i, β i e • e =
-        (∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩ • e)
-          - (∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩) • d.anchor i := by
-      rw [← Finset.insert_erase (d.h_anchor i),
-        Finset.sum_insert (Finset.notMem_erase _ _), hβ_anchor i]
-      have h_erase : ∑ e ∈ (d.verts i).erase (d.anchor i), β i e • e =
-          ∑ e ∈ (d.verts i).erase (d.anchor i), c ⟨i, e⟩ • e :=
-        Finset.sum_congr rfl (fun e he => by rw [hβ_erase i e he])
-      rw [h_erase]
-      simp [neg_smul, add_comm, sub_eq_add_neg]
-    rw [Finset.sum_congr rfl (fun i _ => key i), Finset.sum_sub_distrib]
-    exact h_perturbation_zero
-  -- Step B: Some β is negative
+  have hβ_sum_zero (i : t) : ∑ e ∈ d.verts i, betaPerturbation d c i e = 0 :=
+    betaPerturbation_sum_zero d c i
+  have hβ_smul_zero : ∑ i : t, ∑ e ∈ d.verts i, betaPerturbation d c i e • e = 0 :=
+    betaPerturbation_smul_zero d c hc_nested
+  -- Step B: Some betaPerturbation d c is negative
   let AllIdx : Finset (Σ i : t, E) := Finset.sigma Finset.univ (fun i => d.verts i)
-  let Neg : Finset (Σ i : t, E) := AllIdx.filter (fun idx => β idx.1 idx.2 < 0)
+  let Neg : Finset (Σ i : t, E) := AllIdx.filter (fun idx => betaPerturbation d c idx.1 idx.2 < 0)
   have hNeg_ne : Neg.Nonempty := by
     -- hc_ne gives a specific p₀ where c p₀ ≠ 0, via `hp₀ : p₀ ∈ EIdx`
     have he₁ : p₀.2 ∈ (d.verts p₀.1).erase (d.anchor p₀.1) := (Finset.mem_sigma.mp hp₀).2
@@ -635,7 +690,7 @@ lemma flatRepr_reduce {S : ι → Set E} {t : Finset ι} {x : E}
         (Finset.mem_sigma.mp hidx₀_mem).2
       refine ⟨idx₀, Finset.mem_filter.mpr ⟨
         Finset.mem_sigma.mpr ⟨Finset.mem_univ _, Finset.mem_of_mem_erase he₀⟩, ?_⟩⟩
-      rw [hβ_erase idx₀.1 idx₀.2 he₀]; exact hlt₀
+      rw [betaPerturbation_erase d c idx₀.1 idx₀.2 he₀]; exact hlt₀
     · -- No c < 0 exists. Then c p₀ ≥ 0, and since c p₀ ≠ 0, we have c p₀ > 0.
       -- This makes Σ c > 0, so β(anchor) = -Σ c < 0, giving a negative β witness.
       have h_nonneg_c : ∀ idx ∈ EIdx, 0 ≤ c idx := by
@@ -654,40 +709,42 @@ lemma flatRepr_reduce {S : ι → Set E} {t : Finset ι} {x : E}
         linarith
       refine ⟨⟨p₀.1, d.anchor p₀.1⟩, Finset.mem_filter.mpr ⟨
         Finset.mem_sigma.mpr ⟨Finset.mem_univ _, d.h_anchor p₀.1⟩, ?_⟩⟩
-      rw [hβ_anchor p₀.1]
+      rw [betaPerturbation_anchor d c p₀.1]
       linarith
   -- Steps C-E: t_max, feasibility, boundary
   obtain ⟨idxM, hidxM_mem, hidxM_min⟩ :=
-    Finset.exists_min_image Neg (fun idx => d.w idx.1 idx.2 / (-β idx.1 idx.2)) hNeg_ne
-  have hβM : β idxM.1 idxM.2 < 0 := (Finset.mem_filter.mp hidxM_mem).2
+    Finset.exists_min_image Neg
+      (fun idx => d.w idx.1 idx.2 / (-betaPerturbation d c idx.1 idx.2)) hNeg_ne
+  have hβM : betaPerturbation d c idxM.1 idxM.2 < 0 := (Finset.mem_filter.mp hidxM_mem).2
   have hidxM_verts : idxM.2 ∈ d.verts idxM.1 :=
     (Finset.mem_sigma.mp (Finset.mem_filter.mp hidxM_mem).1).2
-  let tmax : ℝ := d.w idxM.1 idxM.2 / (-β idxM.1 idxM.2)
+  let tmax : ℝ := d.w idxM.1 idxM.2 / (-betaPerturbation d c idxM.1 idxM.2)
   -- Step D: feasibility
-  have feasible (i : t) (e : E) (he : e ∈ d.verts i) : 0 ≤ d.w i e + tmax * β i e := by
-    rcases lt_or_ge (β i e) 0 with (hb | hb)
+  have feasible (i : t) (e : E) (he : e ∈ d.verts i) :
+      0 ≤ d.w i e + tmax * betaPerturbation d c i e := by
+    rcases lt_or_ge (betaPerturbation d c i e) 0 with (hb | hb)
     · have hmem : (⟨i, e⟩ : Σ i : t, E) ∈ Neg :=
         Finset.mem_filter.mpr ⟨Finset.mem_sigma.mpr ⟨Finset.mem_univ _, he⟩, hb⟩
       have hmin := hidxM_min ⟨i, e⟩ hmem
       dsimp only [] at hmin
-      have hnegβ : 0 < -β i e := by linarith
+      have hnegβ : 0 < -betaPerturbation d c i e := by linarith
       rw [le_div_iff₀ hnegβ] at hmin
-      -- hmin: tmax * (-β i e) ≤ d.w i e
-      have hkey : tmax * β i e = -(tmax * (-β i e)) := by ring
+      -- hmin: tmax * (-betaPerturbation d c i e) ≤ d.w i e
+      have hkey : tmax * betaPerturbation d c i e = -(tmax * (-betaPerturbation d c i e)) := by ring
       rw [hkey]
       exact sub_nonneg.mpr hmin
     · have htpos : 0 ≤ tmax := by
         apply div_nonneg (le_of_lt (d.hw_pos idxM.1 idxM.2 hidxM_verts)); linarith
-      have hmul : 0 ≤ tmax * β i e := mul_nonneg htpos hb
+      have hmul : 0 ≤ tmax * betaPerturbation d c i e := mul_nonneg htpos hb
       nlinarith [d.hw_pos i e he, hmul]
   -- Step E: boundary
-  have hboundary : d.w idxM.1 idxM.2 + tmax * β idxM.1 idxM.2 = 0 := by
+  have hboundary : d.w idxM.1 idxM.2 + tmax * betaPerturbation d c idxM.1 idxM.2 = 0 := by
     dsimp [tmax]
-    have hβne : β idxM.1 idxM.2 ≠ 0 := by linarith
+    have hβne : betaPerturbation d c idxM.1 idxM.2 ≠ 0 := by linarith
     field_simp [hβne]
     ring
   -- Step F: construct new FlatRepr d' and prove totalExcess < d.totalExcess
-  set w' := (fun (i : t) (e : E) => d.w i e + tmax * β i e) with hw'_def
+  set w' := (fun (i : t) (e : E) => d.w i e + tmax * betaPerturbation d c i e) with hw'_def
   set verts' := (fun (i : t) => (d.verts i).filter (fun e => 0 < w' i e)) with hverts'_def
   have hw'_nonneg : ∀ (i : t) e, e ∈ d.verts i → 0 ≤ w' i e := by
     intro i e he; dsimp [w']; exact feasible i e he
@@ -738,24 +795,25 @@ lemma flatRepr_reduce {S : ι → Set E} {t : Finset ι} {x : E}
           = ∑ i : t, ∑ e ∈ d.verts i, w' i e • e := by
             refine Finset.sum_congr rfl (fun i _ => ?_)
             rw [hsum_w'_smul_filter i]
-      _ = ∑ i : t, ∑ e ∈ d.verts i, (d.w i e + tmax * β i e) • e := rfl
-      _ = ∑ i : t, ∑ e ∈ d.verts i, (d.w i e • e + (tmax * β i e) • e) := by
+      _ = ∑ i : t, ∑ e ∈ d.verts i, (d.w i e + tmax * betaPerturbation d c i e) • e := rfl
+      _ = ∑ i : t, ∑ e ∈ d.verts i, (d.w i e • e + (tmax * betaPerturbation d c i e) • e) := by
         refine Finset.sum_congr rfl (fun i _ => ?_)
         refine Finset.sum_congr rfl (fun e _ => ?_)
         rw [add_smul]
       _ = ∑ i : t, ((∑ e ∈ d.verts i, d.w i e • e) +
-                     (∑ e ∈ d.verts i, (tmax * β i e) • e)) := by
+                     (∑ e ∈ d.verts i, (tmax * betaPerturbation d c i e) • e)) := by
         refine Finset.sum_congr rfl (fun i _ => ?_); rw [Finset.sum_add_distrib]
       _ = (∑ i : t, ∑ e ∈ d.verts i, d.w i e • e) +
-          (∑ i : t, ∑ e ∈ d.verts i, (tmax * β i e) • e) := by rw [Finset.sum_add_distrib]
-      _ = x + (∑ i : t, ∑ e ∈ d.verts i, (tmax * β i e) • e) := by rw [d.h_sum]
-      _ = x + (∑ i : t, ∑ e ∈ d.verts i, tmax • (β i e • e)) := by
+          (∑ i : t, ∑ e ∈ d.verts i, (tmax * betaPerturbation d c i e) • e) :=
+          by rw [Finset.sum_add_distrib]
+      _ = x + (∑ i : t, ∑ e ∈ d.verts i, (tmax * betaPerturbation d c i e) • e) := by rw [d.h_sum]
+      _ = x + (∑ i : t, ∑ e ∈ d.verts i, tmax • (betaPerturbation d c i e • e)) := by
         refine congrArg (fun s => x + s) (Finset.sum_congr rfl (fun i _ => ?_))
         refine Finset.sum_congr rfl (fun e _ => ?_); rw [mul_smul]
-      _ = x + (∑ i : t, tmax • (∑ e ∈ d.verts i, β i e • e)) := by
+      _ = x + (∑ i : t, tmax • (∑ e ∈ d.verts i, betaPerturbation d c i e • e)) := by
         refine congrArg (fun s => x + s) (Finset.sum_congr rfl (fun i _ => ?_))
         rw [← Finset.smul_sum]
-      _ = x + tmax • (∑ i : t, ∑ e ∈ d.verts i, β i e • e) := by
+      _ = x + tmax • (∑ i : t, ∑ e ∈ d.verts i, betaPerturbation d c i e • e) := by
         rw [← Finset.smul_sum]
       _ = x + tmax • (0 : E) := by rw [hβ_smul_zero]
       _ = x := by simp
@@ -794,7 +852,13 @@ lemma flatRepr_reduce {S : ι → Set E} {t : Finset ι} {x : E}
 
 end Reduction
 
--- Step 7: Main Shapley-Folkman Theorem
+/-- **Shapley-Folkman Lemma**: For a finite family of nonempty subsets `Sᵢ ⊆ ℝᵈ`, any point
+in the convex hull of the Minkowski sum `∑ Sᵢ` can be written as `∑ fᵢ` where each
+`fᵢ ∈ convexHull ℝ (S i)`, and the number of indices with `fᵢ ∉ S i` is at most `d`.
+
+The proof uses Carathéodory's theorem to build an initial flat representation, then
+iteratively reduces the excess via linear dependence among the excess vectors, following
+the standard proof (see e.g. Anderson, Khan and Rashid [anderson1982]). -/
 theorem shapley_folkman [FiniteDimensional ℝ E] {ι : Type*}
     {S : ι → Set E} (t : Finset ι) (x : E)
     (hx : x ∈ convexHull ℝ (∑ i ∈ t, S i)) :
