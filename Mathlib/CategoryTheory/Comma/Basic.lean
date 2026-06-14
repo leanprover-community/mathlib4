@@ -282,10 +282,14 @@ instance full_map [F.Faithful] [F₁.Full] [F₂.Full] [IsIso α] [IsIso β] : (
       right := F₂.preimage φ.right
       w := F.map_injective (by
         rw [← cancel_mono (β.app _), ← cancel_epi (α.app _), F.map_comp, F.map_comp, assoc, assoc]
-        erw [← α.naturality_assoc, β.naturality]
-        dsimp
-        rw [F₁.map_preimage, F₂.map_preimage]
-        simpa using φ.w) }, by cat_disch⟩
+        calc
+        _ = (F₁ ⋙ L').map (F₁.preimage φ.left) ≫ α.app Y.left ≫ F.map Y.hom ≫ β.app Y.right := by
+          rw [← Functor.comp_map, ← α.naturality_assoc]
+        _ = α.app X.left ≫ F.map X.hom ≫ β.app X.right ≫ (F₂ ⋙ R').map (F₂.preimage φ.right) := by
+          simp only [Functor.comp_map, Functor.map_preimage, ← map_obj_hom α β Y, φ.w,
+            map_obj_hom α β X, assoc]
+        _ = _ := by rw [← Functor.comp_map, β.naturality] )},
+      by cat_disch⟩
 
 set_option backward.defeqAttrib.useBackward true in
 instance essSurj_map [F₁.EssSurj] [F₂.EssSurj] [F.Full] [IsIso α] [IsIso β] :

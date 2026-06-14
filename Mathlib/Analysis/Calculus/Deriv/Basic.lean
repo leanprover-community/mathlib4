@@ -238,14 +238,14 @@ variable {s t : Set 𝕜}
 variable {L L₁ L₂ : Filter (𝕜 × 𝕜)}
 
 theorem derivWithin_zero_of_not_accPt (h : ¬AccPt x (𝓟 s)) : derivWithin f s x = 0 := by
-  rw [derivWithin, fderivWithin_zero_of_not_accPt h, ContinuousLinearMap.zero_apply]
+  rw [derivWithin, fderivWithin_zero_of_not_accPt h, zero_apply]
 
 theorem derivWithin_zero_of_not_uniqueDiffWithinAt (h : ¬UniqueDiffWithinAt 𝕜 s x) :
     derivWithin f s x = 0 :=
   derivWithin_zero_of_not_accPt <| mt AccPt.uniqueDiffWithinAt h
 
 theorem derivWithin_zero_of_notMem_closure (h : x ∉ closure s) : derivWithin f s x = 0 := by
-  rw [derivWithin, fderivWithin_zero_of_notMem_closure h, ContinuousLinearMap.zero_apply]
+  rw [derivWithin, fderivWithin_zero_of_notMem_closure h, zero_apply]
 
 theorem deriv_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : deriv f x = 0 := by
   unfold deriv
@@ -335,21 +335,24 @@ theorem hasDerivWithinAt_congr_set {s t : Set 𝕜} (h : s =ᶠ[𝓝 x] t) :
 alias ⟨HasDerivWithinAt.congr_set, _⟩ := hasDerivWithinAt_congr_set
 
 @[simp]
-theorem hasDerivWithinAt_diff_singleton :
+theorem hasDerivWithinAt_sdiff_singleton :
     HasDerivWithinAt f f' (s \ {x}) x ↔ HasDerivWithinAt f f' s x :=
-  hasFDerivWithinAt_diff_singleton _
+  hasFDerivWithinAt_sdiff_singleton _
+
+@[deprecated (since := "2026-06-03")]
+alias hasDerivWithinAt_diff_singleton := hasDerivWithinAt_sdiff_singleton
 
 @[simp]
 theorem hasDerivWithinAt_Ioi_iff_Ici [PartialOrder 𝕜] :
     HasDerivWithinAt f f' (Ioi x) x ↔ HasDerivWithinAt f f' (Ici x) x := by
-  rw [← Ici_diff_left, hasDerivWithinAt_diff_singleton]
+  rw [← Ici_sdiff_left, hasDerivWithinAt_sdiff_singleton]
 
 alias ⟨HasDerivWithinAt.Ici_of_Ioi, HasDerivWithinAt.Ioi_of_Ici⟩ := hasDerivWithinAt_Ioi_iff_Ici
 
 @[simp]
 theorem hasDerivWithinAt_Iio_iff_Iic [PartialOrder 𝕜] :
     HasDerivWithinAt f f' (Iio x) x ↔ HasDerivWithinAt f f' (Iic x) x := by
-  rw [← Iic_diff_right, hasDerivWithinAt_diff_singleton]
+  rw [← Iic_sdiff_right, hasDerivWithinAt_sdiff_singleton]
 
 alias ⟨HasDerivWithinAt.Iic_of_Iio, HasDerivWithinAt.Iio_of_Iic⟩ := hasDerivWithinAt_Iio_iff_Iic
 

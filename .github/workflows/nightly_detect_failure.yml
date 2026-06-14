@@ -23,7 +23,7 @@ jobs:
 
     steps:
     - name: Send message on Zulip
-      uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+      uses: zulip/github-actions-zulip/send-message@bd8ec52de371d139ae8313661b7d8318c19266aa # v2.0.1
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
         email: 'github-mathlib4-bot@leanprover.zulipchat.com'
@@ -122,7 +122,7 @@ jobs:
 
     # This token is masked by the token minting action and will not be logged accidentally.
     - name: Checkout code
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:
         # Pin to the SHA whose CI just succeeded, not the current tip of `nightly-testing`,
         # which may have advanced while CI was running. Without this, the tag and
@@ -192,7 +192,7 @@ jobs:
     - name: Generate lean-pr-testing app token
       if: steps.tag.outputs.is_nightly == 'true'
       id: lean-pr-testing-token
-      uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+      uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
       with:
         app-id: ${{ secrets.MATHLIB_LEAN_PR_TESTING_APP_ID }}
         private-key: ${{ secrets.MATHLIB_LEAN_PR_TESTING_PRIVATE_KEY }}
@@ -202,7 +202,7 @@ jobs:
     # The create-github-app-token README states that this token is masked and will not be logged accidentally.
     - name: Checkout Lean repository
       if: steps.tag.outputs.is_nightly == 'true'
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:
         repository: leanprover/lean4
         token: ${{ steps.lean-pr-testing-token.outputs.token }}
@@ -348,7 +348,7 @@ jobs:
 
     - name: Send warning message on Zulip if pattern doesn't match
       if: steps.tag.outputs.is_nightly == 'true' && failure() && steps.bump_version.outcome == 'failure'
-      uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+      uses: zulip/github-actions-zulip/send-message@bd8ec52de371d139ae8313661b7d8318c19266aa # v2.0.1
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
         email: 'github-mathlib4-bot@leanprover.zulipchat.com'
@@ -404,7 +404,7 @@ jobs:
         azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_NIGHTLY_TESTING }}
         azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
     - name: Checkout Mathlib4 repository
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false'
       with:
         ref: nightly-testing # checkout nightly-testing branch (shouldn't matter which)
@@ -413,7 +413,7 @@ jobs:
 
     - name: Checkout local actions
       if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false'
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:
         ref: ${{ github.workflow_sha }}
         fetch-depth: 1
@@ -532,7 +532,7 @@ jobs:
     # own dedicated ⚠️ warning step above (otherwise we would double-post).
     - name: Report housekeeping failure to Zulip
       if: failure() && steps.bump_version.outcome != 'failure'
-      uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+      uses: zulip/github-actions-zulip/send-message@bd8ec52de371d139ae8313661b7d8318c19266aa # v2.0.1
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
         email: 'github-mathlib4-bot@leanprover.zulipchat.com'
