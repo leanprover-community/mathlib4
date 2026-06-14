@@ -281,7 +281,7 @@ theorem exists_linearIsometryEquiv_span_map_eq_of_inner_eq {φ : ι → E} {ψ :
       (LinearIsometryEquiv.ofEq _ _ hrangeψ), fun i => ?_⟩
   -- Carrier bookkeeping: `(L ⟨φ i, _⟩ : F) = f ⟨φ i, _⟩ = ψ i`.
   have hmemRφ : φ i ∈ LinearMap.range Tφ := by
-    rw [hrangeφ]; exact Submodule.subset_span ⟨i, rfl⟩
+    simpa [hrangeφ] using Submodule.mem_span_of_mem (Set.mem_range_self i)
   have htransφ : (LinearIsometryEquiv.ofEq _ _ hrangeφ).symm
       ⟨φ i, Submodule.subset_span ⟨i, rfl⟩⟩ = ⟨φ i, hmemRφ⟩ := Subtype.ext rfl
   have hfφ : f ⟨φ i, hmemRφ⟩ = ψ i := by
