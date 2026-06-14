@@ -49,6 +49,7 @@ def coconeTypesEquiv : CoconeTypes.{u} F ≃ Cocone F where
 
 variable {F}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma CoconeTypes.isColimit_iff (c : CoconeTypes.{u} F) :
     c.IsColimit ↔ Nonempty (Limits.IsColimit (F.coconeTypesEquiv c)) := by
@@ -214,8 +215,9 @@ theorem colimit_eq {j j' : J} {x : F.obj j} {x' : F.obj j'}
     (w : colimit.ι F j x = colimit.ι F j' x') :
       Relation.EqvGen F.ColimitTypeRel ⟨j, x⟩ ⟨j', x'⟩ := by
   apply Quot.eq.1
-  simpa using congr_arg (colimitEquivColimitType F) w
+  simpa using! congr_arg (colimitEquivColimitType F) w
 
+set_option backward.defeqAttrib.useBackward true in
 theorem jointly_surjective_of_isColimit {F : J ⥤ Type u} {t : Cocone F} (h : IsColimit t)
     (x : t.pt) : ∃ j y, t.ι.app j y = x := by
   by_contra hx

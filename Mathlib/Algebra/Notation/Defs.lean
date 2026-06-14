@@ -20,7 +20,7 @@ We introduce the notation typeclass `Star` for algebraic structures with a star 
 accommodate diverse notational preferences, no default notation is provided for `Star.star`.
 
 `SMul` is typically, but not exclusively, used for scalar multiplication-like operators.
-See the module `Algebra.AddTorsor` for a motivating example for the name `VAdd` (vector addition).
+See the module `Algebra.Torsor.Defs` for a motivating example for the name `VAdd` (vector addition).
 
 Note `Zero` has already been defined in core Lean.
 
@@ -63,6 +63,13 @@ class VSub (G : outParam Type*) (P : Type*) where
   type-dependent, but it is intended to be used for additive torsors. -/
   vsub : P → P → G
 
+/-- Type class for the `/ₛ` notation. -/
+@[to_additive (attr := ext)]
+class SDiv (G : outParam Type*) (P : Type*) where
+  /-- `a /ₛ b` computes the quotient of `a` and `b`. The meaning of this notation is
+  type-dependent, but it is intended to be used for multiplicative torsors. -/
+  sdiv : P → P → G
+
 attribute [to_additive existing] SMul HSMul
 attribute [to_additive (attr := default_instance)] instHSMul
 
@@ -70,9 +77,11 @@ attribute [ext] SMul VAdd
 
 @[inherit_doc] infixr:65 " +ᵥ " => HVAdd.hVAdd
 @[inherit_doc] infixl:65 " -ᵥ " => VSub.vsub
+@[inherit_doc] infixl:65 " /ₛ " => SDiv.sdiv
 
 recommended_spelling "vadd" for "+ᵥ" in [HVAdd.hVAdd, «term_+ᵥ_»]
 recommended_spelling "vsub" for "-ᵥ" in [VSub.vsub, «term_-ᵥ_»]
+recommended_spelling "sdiv" for "/ₛ" in [SDiv.sdiv, «term_/ₛ_»]
 
 variable {G : Type*}
 

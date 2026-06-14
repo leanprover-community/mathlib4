@@ -87,6 +87,7 @@ theorem IsPushout.IsVanKampen.flip {H : IsPushout f g h i} (H' : H.IsVanKampen) 
   simpa only [IsPushout.flip_iff, IsPullback.flip_iff, and_comm] using
     H' g' f' i' h' αW αY αX αZ hg hf hi hh w.flip
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
     H.IsVanKampen ↔ IsVanKampenColimit (PushoutCocone.mk h i H.w) := by

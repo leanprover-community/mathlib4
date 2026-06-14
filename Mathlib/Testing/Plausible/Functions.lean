@@ -92,7 +92,6 @@ def zeroDefault : TotalFunction α β → TotalFunction α β
   | .withDefault A _ => .withDefault A 0
 
 /-- The support of a zero default `TotalFunction`. -/
-@[simp]
 def zeroDefaultSupp : TotalFunction α β → Finset α
   | .withDefault A _ =>
     List.toFinset <| (A.dedupKeys.filter fun ab => Sigma.snd ab ≠ 0).map Sigma.fst

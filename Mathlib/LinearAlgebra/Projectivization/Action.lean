@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.SpecialLinearGroup
 public import Mathlib.LinearAlgebra.Transvection.Basic
 public import Mathlib.LinearAlgebra.Matrix.IsDiag
 public import Mathlib.LinearAlgebra.Matrix.ProjectiveSpecialLinearGroup
+public import Mathlib.LinearAlgebra.Center
 
 /-!
 # Group actions on projectivization
@@ -192,40 +193,17 @@ lemma SL_mulAction_ker :
   simp only [MonoidHom.mem_ker, toPermHom_apply, Equiv.Perm.one_def, DFunLike.ext_iff, toPerm_apply,
     Equiv.refl_apply, Matrix.SpecialLinearGroup.mem_center_iff]
   refine ⟨fun hm ↦ ?_, fun ⟨r, hr1, hr2⟩ l ↦ ?_⟩
-  · if hι : IsEmpty ι then simp [← Matrix.ext_iff] else
-    have (i : ι) := by
-      simpa [mk_eq_mk_iff'] using hm (.mk K (Pi.single i 1) (by simp : Pi.single i 1 ≠ 0))
-    obtain ⟨i⟩ := by simpa using hι
-    simp only [Matrix.SpecialLinearGroup.smul_def, Matrix.smul_eq_mulVec, Matrix.mulVec_single,
-      MulOpposite.op_one, one_smul, funext_iff, Pi.smul_apply, Pi.single_apply, smul_eq_mul,
-      mul_ite, mul_one, mul_zero, Matrix.col_apply] at this
-    have hm1 (i j : ι) (h : i ≠ j) : m i j = 0 := by
-      simpa [h] using ((this j).choose_spec i).symm
-    have hm2 (i j : ι) : m i i = m j j := by
-      by_cases hij : i = j
-      · rw [hij]
-      replace hm (v : ι → K) (hv : v ≠ 0) := hm (.mk K v hv)
-      simp only [ne_eq, smul_mk, mk_eq_mk_iff'] at hm
-      have hv : (Pi.single i 1 + Pi.single j 1 : ι → K) ≠ 0 := by
-        intro h
-        have h1 := congr_fun h i
-        simp [hij] at h1
-      obtain ⟨a, ha⟩ := hm _ hv
-      have hi := congr_fun ha i
-      have hj := congr_fun ha j
-      simp only [Pi.smul_apply, Pi.add_apply, Pi.single_eq_same, ne_eq, hij, not_false_eq_true,
-        Pi.single_eq_of_ne, add_zero, smul_eq_mul, mul_one, smul_add,
-        Matrix.SpecialLinearGroup.smul_def, Matrix.smul_eq_mulVec, Matrix.mulVec_single,
-        MulOpposite.op_one, one_smul, Matrix.col_apply, hm1 i j hij, Ne.symm hij, zero_add,
-        hm1 j i (Ne.symm hij)] at hi hj
-      rw [← hi, ← hj]
-    use m i i
-    have := m.2
-    rw [← Matrix.IsDiag.diagonal_diag hm1, Matrix.det_diagonal] at this
-    simp only [Matrix.diag_apply] at this
-    rw [Finset.prod_eq_pow_card (b := m i i) (fun j _ ↦ hm2 j i), Finset.card_univ] at this
-    nth_rw 3 [← Matrix.IsDiag.diagonal_diag hm1]
-    simpa [this, funext_iff] using hm2 i
+  · set f : (ι → K) →ₗ[K] ι → K := (Matrix.SpecialLinearGroup.toLin' m).toLinearMap with hf
+    obtain ⟨a, ha⟩ := f.exists_eq_smul_id_of_forall_notLinearIndependent fun (v : ι → K) ↦ by
+      by_cases hv : v = 0
+      · simp [hv, linearIndependent_fin2]
+      · simpa [LinearIndependent.pair_iff' hv, mk_eq_mk_iff'] using! hm (.mk K v hv)
+    have hscalar : m.1 = Matrix.scalar ι a := calc
+      m.1 = LinearMap.toMatrix' f := by
+        rw [hf, Matrix.SpecialLinearGroup.toLin'_to_linearMap, LinearMap.toMatrix'_toLin']
+      _ = (algebraMap K (Module.End K (ι → K)) a).toMatrix' := congrArg LinearMap.toMatrix' ha
+      _ = Matrix.scalar ι a := LinearMap.toMatrix'_algebraMap a
+    exact ⟨a, by simpa [hscalar] using m.2, hscalar.symm⟩
   · induction l using Projectivization.ind with | _ v hv =>
     simp only [smul_mk, mk_eq_mk_iff']
     use r
@@ -244,7 +222,7 @@ instance : MulAction (Matrix.ProjectiveSpecialLinearGroup ι K) (ℙ K (ι → K
 lemma _root_.Matrix.ProjectiveSpecialLinearGroup.smul_proj_mk (g : Matrix.SpecialLinearGroup ι K)
     (p : ℙ K (ι → K)) : (g : Matrix.ProjectiveSpecialLinearGroup ι K) • p = g • p := rfl
 
-theorem Matrix.ProjectiveSpecialLinearGroup.toPermHom_injective :
+theorem _root_.Matrix.ProjectiveSpecialLinearGroup.toPermHom_injective :
     Function.Injective (PSLAction.toPermHom (K := K) (ι := ι)) := by
   rw [injective_iff_map_eq_one]
   intro g hg
@@ -255,7 +233,7 @@ theorem Matrix.ProjectiveSpecialLinearGroup.toPermHom_injective :
 instance : FaithfulSMul (Matrix.ProjectiveSpecialLinearGroup ι K) (ℙ K (ι → K)) :=
   faithfulSMul_iff.2 fun g hg ↦
     Matrix.ProjectiveSpecialLinearGroup.toPermHom_injective <| Equiv.ext fun x ↦ by
-      simpa using hg x
+      simpa using! hg x
 
 instance : IsPreprimitive (Matrix.ProjectiveSpecialLinearGroup ι K) (ℙ K (ι → K)) :=
   @MulAction.IsPreprimitive.of_surjective _ _ _ _ _ _ _ _ (QuotientGroup.mk' _)
