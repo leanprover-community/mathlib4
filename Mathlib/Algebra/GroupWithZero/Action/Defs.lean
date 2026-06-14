@@ -429,12 +429,23 @@ lemma smul_ne_zero_iff_ne (a : α) {x : β} : a • x ≠ 0 ↔ x ≠ 0 :=
 end DistribMulAction
 
 section MulDistribMulAction
-variable [Group α] [GroupWithZero β] [MulDistribMulAction α β]
+variable [Group α] [MonoidWithZero β] [MulDistribMulAction α β]
 
-instance : SMulZeroClass α β where
-  smul_zero g := not_imp_comm.mp mul_inv_cancel₀ <| by
-    rw [← smul_one g, ← inv_smul_eq_iff, smul_mul', inv_smul_smul, zero_mul]
-    exact zero_ne_one
+/-- For a group acting on a monoid with zero via `MulDistribMulAction`, the action sends zero to
+zero. The proof uses only `smul_mul'`, `smul_inv_smul` (group invertibility), and `mul_zero`. -/
+theorem MulDistribMulAction.smul_zero (g : α) : g • (0 : β) = 0 := by
+  have h : g • (0 : β) = (g • (0 : β)) * 0 := by
+    conv_lhs => rw [show (0 : β) = 0 * (g⁻¹ • (0 : β)) from (zero_mul _).symm]
+    rw [smul_mul', smul_inv_smul]
+  exact h.trans (mul_zero _)
+
+instance MulDistribMulAction.instSMulZeroClass : SMulZeroClass α β where
+  smul_zero g := MulDistribMulAction.smul_zero g
+
+end MulDistribMulAction
+
+section MulDistribMulAction
+variable [Group α] [GroupWithZero β] [MulDistribMulAction α β]
 
 /-- A version of `smul_inv'` for groups with zero. -/
 @[simp] theorem smul_inv₀' (g : α) (x : β) : g • x⁻¹ = (g • x)⁻¹ := by
