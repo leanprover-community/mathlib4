@@ -586,14 +586,17 @@ lemma subst_substInvOfIsUnit_left : (P.substInvOfIsUnit hP').subst P = X := by
   rw [P.substInvOfIsUnit_eq_substInv hP', P.subst_substInv_left hP]
 
 include hP hP' in
+lemma eq_substInvOfIsUnit_of_subst_eq_X {Q : R⟦X⟧} (hQ : HasSubst Q) (hPQ : P.subst Q = X) :
+    Q = P.substInvOfIsUnit hP' := calc
+  _ = PowerSeries.subst Q X := (subst_X hQ).symm
+  _ = _ := by
+    rw [← P.subst_substInvOfIsUnit_left hP hP',
+      subst_comp_subst_apply (HasSubst.of_constantCoeff_zero' hP) hQ _, hPQ, X_subst _]
+
+include hP hP' in
 lemma subst_eq_X_of_subst_eq_X {Q : R⟦X⟧} (hQ : HasSubst Q) (hPQ : P.subst Q = X) :
     Q.subst P = X := by
-  have hQI : Q = P.substInvOfIsUnit hP' := calc
-    _ = PowerSeries.subst Q X := (subst_X hQ).symm
-    _ = _ := by
-      rw [← P.subst_substInvOfIsUnit_left hP hP',
-        subst_comp_subst_apply (HasSubst.of_constantCoeff_zero' hP) hQ _, hPQ, X_subst _]
-  rw [hQI, P.subst_substInvOfIsUnit_left hP hP']
+  rw [P.eq_substInvOfIsUnit_of_subst_eq_X hP hP' hQ hPQ, P.subst_substInvOfIsUnit_left hP hP']
 
 end IsUnit
 
