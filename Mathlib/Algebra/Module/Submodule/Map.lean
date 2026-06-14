@@ -272,6 +272,16 @@ section submoduleOf
 def submoduleOf (p q : Submodule R M) : Submodule R q :=
   Submodule.comap q.subtype p
 
+theorem map_subtype_submoduleOf (p q : Submodule R M) :
+    map q.subtype (p.submoduleOf q) = (p ⊓ q :) := by
+  ext; simp [submoduleOf]
+
+def submoduleOfEquivInf (p q : Submodule R M) : p.submoduleOf q ≃ₗ[R] (p ⊓ q :) where
+  toFun m := ⟨m.1, m.2, coe_mem m.1⟩
+  invFun m := ⟨⟨m.1, m.2.2⟩, m.2.1⟩
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
 /-- If `p ≤ q`, then `p` as a subgroup of `q` is isomorphic to `p`. -/
 def submoduleOfEquivOfLe {p q : Submodule R M} (h : p ≤ q) : p.submoduleOf q ≃ₗ[R] p where
   toFun m := ⟨m.1, m.2⟩
