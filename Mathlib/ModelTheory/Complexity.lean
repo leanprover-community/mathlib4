@@ -482,6 +482,25 @@ end Relations
 theorem Formula.isAtomic_graph (f : L.Functions n) : (Formula.graph f).IsAtomic :=
   BoundedFormula.IsAtomic.equal _ _
 
+/-- If `v` and `w` realize the same quantifier-free formulas, they agree on every atomic equality
+of terms. -/
+theorem Formula.realize_equal_iff_of_agree_qf {N : Type*} [L.Structure N] {v : α → M} {w : α → N}
+    (hQF : ∀ ψ : L.Formula α, ψ.IsQF → (ψ.Realize v ↔ ψ.Realize w)) (t u : L.Term α) :
+    (t.equal u).Realize v ↔ (t.equal u).Realize w :=
+  hQF _ <| by
+    simpa [Term.equal] using
+      (BoundedFormula.IsAtomic.equal (t.relabel Sum.inl) (u.relabel Sum.inl)).isQF
+
+/-- If `v` and `w` realize the same quantifier-free formulas, they agree on every atomic relation
+applied to terms. -/
+theorem Formula.realize_rel_iff_of_agree_qf {N : Type*} [L.Structure N] {v : α → M} {w : α → N}
+    (hQF : ∀ ψ : L.Formula α, ψ.IsQF → (ψ.Realize v ↔ ψ.Realize w))
+    {k : ℕ} (R : L.Relations k) (ts : Fin k → L.Term α) :
+    (R.formula ts).Realize v ↔ (R.formula ts).Realize w :=
+  hQF _ <| by
+    simpa [Relations.formula] using
+      (BoundedFormula.IsAtomic.rel R fun i => (ts i).relabel Sum.inl).isQF
+
 end Language
 
 end FirstOrder
