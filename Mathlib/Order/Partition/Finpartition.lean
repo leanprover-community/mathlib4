@@ -196,6 +196,7 @@ protected theorem disjoint : (P.parts : Set α).PairwiseDisjoint id :=
   P.supIndep.pairwiseDisjoint
 
 section Apply
+
 variable {β : Type*} {f : α → β}
 
 /-- The `sup` of a sup-bot-preserving map `f` over the parts of a `Finpartition` equals `f a`. -/
