@@ -161,6 +161,8 @@ omit [P.IsReduced] [IsDomain R] [DecidableEq ι] in
   let σ : ι ≃ ι := Function.Involutive.toPerm _ neg_involutive
   exact σ.sum_comp (P.pairingIn ℤ · i)
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 open LinearMap LieModule in
 /-- This is the main result of lemma 4.1 from [Geck](Geck2017). -/
 lemma trace_toEnd_eq_zero (x : lieAlgebra b) :
