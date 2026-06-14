@@ -19,7 +19,7 @@ reals, any set has nonnegative or nonnegative measure, so that the variation is 
 a subset (up to a factor of at most `2`). This property is inherited by the semivariation in
 general: one has the inequalities
 ```
-sup_{t ⊆ s} ‖μ t‖ₑ ≤ μ.semivariation s ≤ 2 sup_{t ⊆ s} ‖μ t‖ₑ
+‖μ s‖ₑ ≤ μ.semivariation s ≤ 2 sup_{t ⊆ s} ‖μ t‖ₑ
 ```
 
 The notion of semivariation can in particular be used to show that any vector measure is bounded:
@@ -107,8 +107,6 @@ lemma exists_subset_lt_enorm_apply_of_lt_semivariation (hs : MeasurableSet s)
 private lemma exists_one_le_enorm_apply_of_semivariation_eq_top
     (hs : MeasurableSet s) (h's : μ.semivariation s = ∞) :
     ∃ t, MeasurableSet t ∧ t ⊆ s ∧ μ.semivariation t = ∞ ∧ 1 ≤ ‖μ (s \ t)‖ₑ := by
-  /- We can find a subset `t` of `s` with large `‖μ t‖ₑ`, by the semivariation assumption.
-  By subadditivity, `t` or `s \ t` has infinite semivariation. This one will do. -/
   obtain ⟨t, ts, t_meas, ht⟩ : ∃ t ⊆ s, MeasurableSet t ∧ 2 * ‖μ s‖ₑ + 2 < 2 * ‖μ t‖ₑ := by
     apply exists_subset_lt_enorm_apply_of_lt_semivariation hs
     rw [h's]
@@ -125,21 +123,16 @@ private lemma exists_one_le_enorm_apply_of_semivariation_eq_top
   · refine ⟨t, t_meas, ts, hI, ?_⟩
     have : 1 + ‖μ s‖ₑ ≤ ‖μ (s \ t)‖ₑ + ‖μ s‖ₑ := by
       apply h't.trans
-      have : μ t = μ s - μ (s \ t) := by rw [← of_add_of_diff t_meas hs ts]; abel
+      have : μ t = μ s - μ (s \ t) := by rw [← of_add_of_sdiff t_meas hs ts]; abel
       rw [this, add_comm]
       exact enorm_sub_le
     rwa [ENNReal.add_le_add_iff_right (by simp)] at this
-  · refine ⟨s \ t, hs.diff t_meas, diff_subset, hI, ?_⟩
-    simp only [sdiff_sdiff_right_self, Set.le_eq_subset, ts, inf_of_le_right]
+  · refine ⟨s \ t, hs.diff t_meas, sdiff_subset, hI, ?_⟩
+    simp only [_root_.sdiff_sdiff_right_self, le_eq_subset, ts, inf_of_le_right]
     exact le_trans (by simp) h't
 
 private lemma semivariation_univ_lt_top : μ.semivariation univ < ∞ := by
   apply Ne.lt_top (fun h ↦ ?_)
-  /- Assume `univ` has infinite semivariation. Applying inductively
-  `exists_one_le_enorm_apply_of_semivariation_eq_top`, we get a decreasing sequence of sets `s n`
-  of infinite semivariation such that `u n = s n \ s (n + 1)` satisfies `‖μ (u n)‖ ≥ 1`. As the sets
-  `u n` are pairwise disjoint, `μ (u n)` should sum to `μ (⋃ n, u n)`, and therefore `μ (u n)`
-  should tend to zero. This is a contradiction with the lower bound on its norm. -/
   have A (s : Set X) (hs : MeasurableSet s) (h's : μ.semivariation s = ∞) :
       ∃ t, MeasurableSet t ∧ t ⊆ s ∧ μ.semivariation t = ∞ ∧ 1 ≤ ‖μ (s \ t)‖ₑ :=
     exists_one_le_enorm_apply_of_semivariation_eq_top hs h's
@@ -181,7 +174,7 @@ lemma semivariation_apply_le_bound : μ.semivariation s ≤ μ.bound := by
   rw [ENNReal.coe_toNNReal semivariation_univ_lt_top.ne]
 
 lemma enorm_apply_le_bound : ‖μ s‖ₑ ≤ μ.bound :=
-  enorm_apply_le_semivariation.trans semivariation_apply_le_bound
+  (enorm_apply_le_semivariation).trans semivariation_apply_le_bound
 
 lemma nnnorm_apply_le_bound : ‖μ s‖₊ ≤ μ.bound := by
   rw [← ENNReal.coe_le_coe, ← enorm_eq_nnnorm]
