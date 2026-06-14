@@ -57,6 +57,9 @@ This shortens the overall argument, as the definition of submersions has the sam
 * `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
 * `IsImmersion.contMDiff`: if f is a `C^n` immersion, it is automatically `C^n`
   in the sense of `ContMDiff`.
+* `ContMDiffAt.iff_comp_isImmersionAt` and `ContMDiff.iff_comp_isImmersion`: a function `f : M → N`
+  between `C^k` manifolds is `C^k` (at `x`) if and only if it is continuous (at `x`)
+  and its composition `φ ∘ f` with a `C^k` immersion `φ : N → P` (at `f x`) is `C^k`.
 
 ## Implementation notes
 
@@ -423,6 +426,107 @@ theorem contMDiffOn (h : IsImmersionAtOfComplement F I J n f x) :
 theorem contMDiffAt (h : IsImmersionAtOfComplement F I J n f x) : CMDiffAt n f x :=
   h.contMDiffOn.contMDiffAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
 
+lemma aux' {f : M → N} {φ : N → N'} [IsManifold I n M]
+    (h : IsImmersionAtOfComplement F J J' n φ (f x)) (h' : CMDiffAt n (φ ∘ f) x)
+    {t : Set M} (ht : t ⊆ f ⁻¹' h.domChart.source) (hxt : x ∈ t)
+    (e : OpenPartialHomeomorph M H) (hxe : x ∈ e.source) (he : e ∈ IsManifold.maximalAtlas I n M) :
+    ContDiffWithinAt 𝕜 n ((h.domChart.extend J) ∘ f ∘ (e.extend I).symm)
+      ((e.extend I).symm ⁻¹' t ∩ range I) ((e.extend I) x) := by
+  set f' := (h.domChart.extend J) ∘ f ∘ (e.extend I).symm
+  set φ' := (h.codChart.extend J') ∘ φ ∘ (h.domChart.extend J).symm
+  set x' := (e.extend I) x
+  set s := (e.extend I).symm ⁻¹' t ∩ range I
+  have hx' : (e.extend I) x ∈ s := ⟨by simp [e.left_inv hxe, hxt], mem_range_self _⟩
+  replace h' : CMDiffAt[t] n (φ ∘ f) x := h'.contMDiffWithinAt
+  rw [contMDiffWithinAt_iff_of_mem_maximalAtlas
+    (IsManifold.chart_mem_maximalAtlas x) h.codChart_mem_maximalAtlas (mem_chart_source H x)
+    h.mem_codChart_source] at h'
+  replace h' := h'.2
+  have := h.writtenInCharts
+  have h'' : ContDiffWithinAt 𝕜 n (φ' ∘ f') s x' := by
+    --simp [φ', f']
+    --have := h'
+    --apply h'.congr_of_mem
+    --congr
+    /-apply h'.congr_of_mem (fun y hy ↦ ?_) hx'
+    simp [φ', f']
+    congr
+    exact h.domChart.left_inv (ht hy.1) -/
+    sorry
+  set f'' := ((h.equiv ∘ fun x ↦ (x, 0)) ∘ f')
+  have h''' : ContDiffWithinAt 𝕜 n f'' s x' := by
+    refine h''.congr_of_mem (fun y hy ↦ ?_) hx'
+    simp only [f'', φ', f']
+    nth_rw 2 [comp_apply]
+    rw [Function.comp_apply, h.writtenInCharts]
+    rw [h.domChart.extend_target_eq_image_source]
+    sorry--exact ⟨(f ∘ ((chartAt H x).extend I).symm) y, ht hy.1, by simp⟩
+  -- Compose with a suitable projection to cancel the inclusion.
+  have h'''' : ContDiffWithinAt 𝕜 n ((Prod.fst ∘ h.equiv.symm) ∘ f'') s x' := by
+    refine ContDiffWithinAt.comp x' ?_ h''' (mapsTo_univ _ _)
+    rw [contDiffWithinAt_univ]
+    exact contDiffAt_fst.comp _ h.equiv.symm.contDiff.contDiffAt
+  exact h''''.congr_of_mem (fun y hy ↦ by simp [f'']) hx'
+
+-- TODO: give a nice name and clean up proof!
+lemma aux {f : M → N} {φ : N → N'} [IsManifold I n M]
+    (h : IsImmersionAtOfComplement F J J' n φ (f x)) (h' : CMDiffAt n (φ ∘ f) x)
+    {t : Set M} (ht : t ⊆ f ⁻¹' h.domChart.source) (hxt : x ∈ t) :
+    ContDiffWithinAt 𝕜 n ((h.domChart.extend J) ∘ f ∘ ((chartAt H x).extend I).symm)
+      (((chartAt H x).extend I).symm ⁻¹' t ∩ range I) (((chartAt H x).extend I) x) := by
+  set f' := (h.domChart.extend J) ∘ f ∘ ↑((chartAt H x).extend I).symm
+  set φ' := (h.codChart.extend J') ∘ φ ∘ (h.domChart.extend J).symm
+  set x' := (((chartAt H x).extend I) x)
+  set s := (extChartAt I x).symm ⁻¹' t ∩ range I
+  have hx' : (((chartAt H x).extend I) x) ∈ s := by
+    refine ⟨?_, mem_range_self _⟩
+    rw [mem_preimage, ← (extChartAt I x).left_inv (mem_extChartAt_source x)]
+    simpa
+  replace h' : CMDiffAt[t] n (φ ∘ f) x := h'.contMDiffWithinAt
+  rw [contMDiffWithinAt_iff_of_mem_maximalAtlas
+    (IsManifold.chart_mem_maximalAtlas x) h.codChart_mem_maximalAtlas (mem_chart_source H x)
+    h.mem_codChart_source] at h'
+  replace h' := h'.2
+  have := h.writtenInCharts
+  have h'' : ContDiffWithinAt 𝕜 n (φ' ∘ f') s x' := by
+    apply h'.congr_of_mem (fun y hy ↦ ?_) hx'
+    simp [φ', f']
+    congr
+    exact h.domChart.left_inv (ht hy.1)
+  set f'' := ((h.equiv ∘ fun x ↦ (x, 0)) ∘ f')
+  have h''' : ContDiffWithinAt 𝕜 n f'' s x' := by
+    refine h''.congr_of_mem (fun y hy ↦ ?_) hx'
+    simp only [f'', φ', f']
+    nth_rw 2 [comp_apply]
+    rw [Function.comp_apply, h.writtenInCharts]
+    rw [h.domChart.extend_target_eq_image_source]
+    exact ⟨(f ∘ ((chartAt H x).extend I).symm) y, ht hy.1, by simp⟩
+  -- Compose with a suitable projection to cancel the inclusion.
+  have h'''' : ContDiffWithinAt 𝕜 n ((Prod.fst ∘ h.equiv.symm) ∘ f'') s x' := by
+    refine ContDiffWithinAt.comp x' ?_ h''' (mapsTo_univ _ _)
+    rw [contDiffWithinAt_univ]
+    exact contDiffAt_fst.comp _ h.equiv.symm.contDiff.contDiffAt
+  exact h''''.congr_of_mem (fun y hy ↦ by simp [f'']) hx'
+
+/-- A function `f : M → N` between `C^k` manifolds is `C^k` at `x` if and only if it is continuous
+at `x` and its composition `φ ∘ f` with a `C^k` immersion `φ : N → P` at `f x` is `C^k` at `x`. -/
+lemma _root_.ContMDiffAt.iff_comp_isImmersionAtOfComplement [IsManifold I n M]
+    {f : M → N} {φ : N → N'} (hφ : IsImmersionAtOfComplement F J J' n φ (f x))
+    -- Note: `φ` need not be inducing, so continuity of `φ ∘ f` at `x`
+    -- generally does not imply continuity of `f`
+    (hf : ContinuousAt f x) :
+    CMDiffAt n f x ↔ CMDiffAt n (φ ∘ f) x := by
+  refine ⟨fun hf ↦ hφ.contMDiffAt.comp x hf, fun h' ↦ ?_⟩
+  -- Since `f` is continuous at `x`, some neighbourhood `t` of `x` is mapped
+  -- into `h.domChart.source` under `f`. By restriction, we may assume `t` is open.
+  have : hφ.domChart.source ∈ 𝓝 (f x) := hφ.domChart.open_source.mem_nhds hφ.mem_domChart_source
+  obtain ⟨t, ht, htopen, hxt⟩ := mem_nhds_iff.mp (hf this)
+  suffices CMDiffAt[t] n f x from this.contMDiffAt <| htopen.mem_nhds hxt
+  rw [contMDiffWithinAt_iff_of_mem_maximalAtlas (IsManifold.chart_mem_maximalAtlas x)
+    hφ.domChart_mem_maximalAtlas (mem_chart_source H x) hφ.mem_domChart_source]
+  refine ⟨hf.continuousWithinAt, ?_⟩
+  exact aux hφ h' ht hxt
+
 end IsImmersionAtOfComplement
 
 namespace IsImmersionAt
@@ -603,105 +707,15 @@ theorem contMDiffOn (h : IsImmersionAt I J n f x) : CMDiff[h.domChart.source] n 
 theorem contMDiffAt (h : IsImmersionAt I J n f x) : CMDiffAt n f x :=
   h.isImmersionAtOfComplement_complement.contMDiffAt
 
-lemma aux' {f : M → N} {φ : N → N'} [IsManifold I n M]
-    (h : IsImmersionAtOfComplement F J J' n φ (f x)) (h' : CMDiffAt n (φ ∘ f) x)
-    {t : Set M} (ht : t ⊆ f ⁻¹' h.domChart.source) (hxt : x ∈ t)
-    (e : OpenPartialHomeomorph M H) (hxe : x ∈ e.source) (he : e ∈ IsManifold.maximalAtlas I n M) :
-    ContDiffWithinAt 𝕜 n ((h.domChart.extend J) ∘ f ∘ (e.extend I).symm)
-      ((e.extend I).symm ⁻¹' t ∩ range I) ((e.extend I) x) := by
-  set f' := (h.domChart.extend J) ∘ f ∘ (e.extend I).symm
-  set φ' := (h.codChart.extend J') ∘ φ ∘ (h.domChart.extend J).symm
-  set x' := (e.extend I) x
-  set s := (e.extend I).symm ⁻¹' t ∩ range I
-  have hx' : (e.extend I) x ∈ s := ⟨by simp [e.left_inv hxe, hxt], mem_range_self _⟩
-  replace h' : CMDiffAt[t] n (φ ∘ f) x := h'.contMDiffWithinAt
-  rw [contMDiffWithinAt_iff_of_mem_maximalAtlas
-    (IsManifold.chart_mem_maximalAtlas x) h.codChart_mem_maximalAtlas (mem_chart_source H x)
-    h.mem_codChart_source] at h'
-  replace h' := h'.2
-  have := h.writtenInCharts
-  have h'' : ContDiffWithinAt 𝕜 n (φ' ∘ f') s x' := by
-    --simp [φ', f']
-    --have := h'
-    --apply h'.congr_of_mem
-    --congr
-    /-apply h'.congr_of_mem (fun y hy ↦ ?_) hx'
-    simp [φ', f']
-    congr
-    exact h.domChart.left_inv (ht hy.1) -/
-    sorry
-  set f'' := ((h.equiv ∘ fun x ↦ (x, 0)) ∘ f')
-  have h''' : ContDiffWithinAt 𝕜 n f'' s x' := by
-    refine h''.congr_of_mem (fun y hy ↦ ?_) hx'
-    simp only [f'', φ', f']
-    nth_rw 2 [comp_apply]
-    rw [Function.comp_apply, h.writtenInCharts]
-    rw [h.domChart.extend_target_eq_image_source]
-    sorry--exact ⟨(f ∘ ((chartAt H x).extend I).symm) y, ht hy.1, by simp⟩
-  -- Compose with a suitable projection to cancel the inclusion.
-  have h'''' : ContDiffWithinAt 𝕜 n ((Prod.fst ∘ h.equiv.symm) ∘ f'') s x' := by
-    refine ContDiffWithinAt.comp x' ?_ h''' (mapsTo_univ _ _)
-    rw [contDiffWithinAt_univ]
-    exact contDiffAt_fst.comp _ h.equiv.symm.contDiff.contDiffAt
-  exact h''''.congr_of_mem (fun y hy ↦ by simp [f'']) hx'
-
--- TODO: give a nice name and clean up proof!
-lemma aux {f : M → N} {φ : N → N'} [IsManifold I n M]
-    (h : IsImmersionAtOfComplement F J J' n φ (f x)) (h' : CMDiffAt n (φ ∘ f) x)
-    {t : Set M} (ht : t ⊆ f ⁻¹' h.domChart.source) (hxt : x ∈ t) :
-    ContDiffWithinAt 𝕜 n ((h.domChart.extend J) ∘ f ∘ ((chartAt H x).extend I).symm)
-      (((chartAt H x).extend I).symm ⁻¹' t ∩ range I) (((chartAt H x).extend I) x) := by
-  set f' := (h.domChart.extend J) ∘ f ∘ ↑((chartAt H x).extend I).symm
-  set φ' := (h.codChart.extend J') ∘ φ ∘ (h.domChart.extend J).symm
-  set x' := (((chartAt H x).extend I) x)
-  set s := (extChartAt I x).symm ⁻¹' t ∩ range I
-  have hx' : (((chartAt H x).extend I) x) ∈ s := by
-    refine ⟨?_, mem_range_self _⟩
-    rw [mem_preimage, ← (extChartAt I x).left_inv (mem_extChartAt_source x)]
-    simpa
-  replace h' : CMDiffAt[t] n (φ ∘ f) x := h'.contMDiffWithinAt
-  rw [contMDiffWithinAt_iff_of_mem_maximalAtlas
-    (IsManifold.chart_mem_maximalAtlas x) h.codChart_mem_maximalAtlas (mem_chart_source H x)
-    h.mem_codChart_source] at h'
-  replace h' := h'.2
-  have := h.writtenInCharts
-  have h'' : ContDiffWithinAt 𝕜 n (φ' ∘ f') s x' := by
-    apply h'.congr_of_mem (fun y hy ↦ ?_) hx'
-    simp [φ', f']
-    congr
-    exact h.domChart.left_inv (ht hy.1)
-  set f'' := ((h.equiv ∘ fun x ↦ (x, 0)) ∘ f')
-  have h''' : ContDiffWithinAt 𝕜 n f'' s x' := by
-    refine h''.congr_of_mem (fun y hy ↦ ?_) hx'
-    simp only [f'', φ', f']
-    nth_rw 2 [comp_apply]
-    rw [Function.comp_apply, h.writtenInCharts]
-    rw [h.domChart.extend_target_eq_image_source]
-    exact ⟨(f ∘ ((chartAt H x).extend I).symm) y, ht hy.1, by simp⟩
-  -- Compose with a suitable projection to cancel the inclusion.
-  have h'''' : ContDiffWithinAt 𝕜 n ((Prod.fst ∘ h.equiv.symm) ∘ f'') s x' := by
-    refine ContDiffWithinAt.comp x' ?_ h''' (mapsTo_univ _ _)
-    rw [contDiffWithinAt_univ]
-    exact contDiffAt_fst.comp _ h.equiv.symm.contDiff.contDiffAt
-  exact h''''.congr_of_mem (fun y hy ↦ by simp [f'']) hx'
-
--- XXX: do I really need the maximal atlas
-lemma ContMDiffAt.iff_comp_isImmersionAt [IsManifold I n M] {f : M → N} {φ : N → N'}
-    (hφ : IsImmersionAtOfComplement F J J' n φ (f x))
+/-- A function `f : M → N` between `C^k` manifolds is `C^k` at `x` if and only if it is continuous
+at `x` and its composition `φ ∘ f` with a `C^k` immersion `φ : N → P` at `f x` is `C^k` at `x`. -/
+lemma _root_.ContMDiffAt.iff_comp_isImmersionAt [IsManifold I n M] {f : M → N} {φ : N → N'}
+    (hφ : IsImmersionAt J J' n φ (f x))
     -- Note: `φ` need not be inducing, so continuity of `φ ∘ f` at `x`
     -- generally does not imply continuity of `f`
     (hf : ContinuousAt f x) :
     CMDiffAt n f x ↔ CMDiffAt n (φ ∘ f) x := by
-  refine ⟨fun hf ↦ hφ.contMDiffAt.comp x hf, fun h' ↦ ?_⟩
-  -- Since `f` is continuous at `x`, some neighbourhood `t` of `x` is mapped
-  -- into `h.domChart.source` under `f`. By restriction, we may assume `t` is open.
-  have : hφ.domChart.source ∈ 𝓝 (f x) := hφ.domChart.open_source.mem_nhds hφ.mem_domChart_source
-  obtain ⟨t, ht, htopen, hxt⟩ := mem_nhds_iff.mp (hf this)
-  suffices CMDiffAt[t] n f x from this.contMDiffAt <| htopen.mem_nhds hxt
-  rw [contMDiffWithinAt_iff_of_mem_maximalAtlas (IsManifold.chart_mem_maximalAtlas x)
-    hφ.domChart_mem_maximalAtlas (mem_chart_source H x) hφ.mem_domChart_source]
-  refine ⟨hf.continuousWithinAt, ?_⟩
-  exact aux hφ h' ht hxt
+  rw [← ContMDiffAt.iff_comp_isImmersionAtOfComplement hφ.isImmersionAtOfComplement_complement hf]
 
 end IsImmersionAt
 
@@ -799,9 +813,19 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
 @[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
 
 /-- A `C^n` immersion is `C^n`. -/
-theorem contMDiff
-    (h : IsImmersionOfComplement F I J n f) : CMDiff n f :=
+theorem contMDiff (h : IsImmersionOfComplement F I J n f) : CMDiff n f :=
   fun x ↦ (h x).contMDiffAt
+
+/-- A function `f : M → N` between `C^k` manifolds is `C^k` if and only if it is continuous
+and its composition `φ ∘ f` with a `C^k` immersion `φ : N → P` is `C^k`. -/
+lemma _root_.ContMDiff.iff_comp_isImmersionOfComplement [IsManifold I n M] {f : M → N} {φ : N → N'}
+    (hφ : IsImmersionOfComplement F J J' n φ) (hf : Continuous f) :
+    CMDiff n f ↔ CMDiff n (φ ∘ f) := by
+  refine ⟨fun h x ↦ ?_, fun h x ↦ ?_⟩
+  · rw [← ContMDiffAt.iff_comp_isImmersionAtOfComplement (hφ (f x)) hf.continuousAt]
+    exact h x
+  · rw [ContMDiffAt.iff_comp_isImmersionAtOfComplement (hφ (f x)) hf.continuousAt]
+    exact h x
 
 end IsImmersionOfComplement
 
@@ -869,6 +893,13 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
 theorem contMDiff
     (h : IsImmersion I J n f) : CMDiff n f :=
   h.isImmersionOfComplement_complement.contMDiff
+
+/-- A function `f : M → N` between `C^k` manifolds is `C^k` if and only if it is continuous
+and its composition `φ ∘ f` with a `C^k` immersion `φ : N → P` is `C^k`. -/
+lemma _root_.ContMDiff.iff_comp_isImmersion [IsManifold I n M] {f : M → N} {φ : N → N'}
+    (hφ : IsImmersion J J' n φ) (hf : Continuous f) :
+    CMDiff n f ↔ CMDiff n (φ ∘ f) := by
+  rw [ContMDiff.iff_comp_isImmersionOfComplement hφ.isImmersionOfComplement_complement hf]
 
 end IsImmersion
 
