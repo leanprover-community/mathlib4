@@ -10,7 +10,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Maps
 
-import Mathlib.Data.Real.Archimedean
+import Mathlib.Algebra.Order.Archimedean.Real.Basic
 import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Tactic.Rify
 
@@ -59,11 +59,15 @@ theorem zarankiewicz_of_fintypeCard_eq
     simp_rw [Finset.sup_le_iff, mem_filter, mem_univ, true_and]
     intro G ⟨h_le, h_free⟩
     simp_rw [Iso.card_edgeFinset_eq (.map e₁.toEquiv G)]
-    replace h' : G.map e₁.toEquiv.toEmbedding ∈ univ.filter fun G ↦
+    have h' : G.map e₁.toEquiv.toEmbedding ∈ univ.filter fun G ↦
         G ≤ completeBipartiteGraph _ _ ∧ K.Free G := by
-      rw [mem_filter, map_le_iff_le_comap, ← free_congr e₂ (.map e₁.toEquiv G)]
-      refine ⟨mem_univ _, fun _ _ hadj ↦ ?_, h_free⟩
-      simpa only [← Embedding.map_adj_iff e₁.toEmbedding, ← comap_adj] using h_le hadj
+      rw [mem_filter_univ, map_le_iff_le_comap]
+      refine ⟨fun _ _ hadj ↦ ?_, ?_⟩
+      · replace h_le := h_le hadj
+        rw [← Embedding.map_adj_iff e₁.toEmbedding, ← comap_adj] at h_le
+        exact h_le
+      · rw [Function.Embedding.coeFn_mk, ← free_congr e₂ (.map e₁.toEquiv G)]
+        exact h_free
     have h_le_sup := @le_sup _ _ _ _ _ (#·.edgeFinset) (G.map e₁.toEquiv.toEmbedding) h'
     simp_rw [← card_coe, mem_edgeFinset] at h_le_sup ⊢
     exact h_le_sup
@@ -77,7 +81,7 @@ theorem zarankiewicz_le_iff
         (completeBipartiteGraph α β).Free G → #G.edgeFinset ≤ x := by
   simp_rw [zarankiewicz_of_fintypeCard_eq hm hn hs ht,
     Finset.sup_le_iff, mem_filter, mem_univ, true_and]
-  exact ⟨fun h _ _ h_le h_free ↦ by convert h _ ⟨h_le, h_free⟩,
+  exact ⟨fun h _ _ h_le h_free ↦ (h _ ⟨h_le, h_free⟩).trans_eq' <| by convert rfl,
     fun h _ ⟨h_le, h_free⟩ ↦ by convert h h_le h_free⟩
 
 /-- `zarankiewicz m n s t` is greater than `x` if and only if there
@@ -90,7 +94,7 @@ theorem lt_zarankiewicz_iff
   simp_rw [zarankiewicz_of_fintypeCard_eq hm hn hs ht,
     Finset.lt_sup_iff, mem_filter, mem_univ, true_and]
   exact ⟨fun ⟨_, ⟨h_le, h_free⟩, h_lt⟩ ↦ ⟨_, _, h_le, h_free, by convert h_lt⟩,
-    fun ⟨_, _, ⟨h_le, h_free, h_lt⟩⟩ ↦ ⟨_, ⟨h_le, h_free⟩, by convert h_lt⟩⟩
+    fun ⟨_, _, ⟨h_le, h_free, h_lt⟩⟩ ↦ ⟨_, ⟨h_le, h_free⟩, h_lt.trans_eq <| by convert rfl⟩⟩
 
 variable {R : Type*} [Semiring R] [LinearOrder R] [FloorSemiring R]
 
