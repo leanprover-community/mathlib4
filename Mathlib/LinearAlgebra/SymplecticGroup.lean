@@ -272,8 +272,7 @@ private lemma exists_symmetric_X_invertible_add_mul_diagonal {R : Type*} [Field 
   set X : Matrix l l R := fun i j ↦
     if i ∈ s ∧ j ∈ s then (if i = j then 1 else 0) - A i j else 0 with X1_def
   have hX_symm : X.IsSymm := by
-    ext i j
-    simp only [X1_def, transpose_apply]; grind
+    ext; simp only [X1_def, transpose_apply]; grind
   have hM1 (i : l) (hi : i ∈ s) (j : l) : (A + X * D) i j = if i = j then 1 else 0 := by
     simp only [X1_def, D_def, Matrix.add_apply, mul_diagonal, mul_ite, mul_one, mul_zero]; grind
   set M := A + X * D with M_def
@@ -319,31 +318,16 @@ private lemma exists_symmetric_X_isUnit_det_add_mul_of_symplectic [IsLocalRing R
     (hA : fromBlocks A B C D ∈ symplecticGroup l R) :
     ∃ (X : Matrix l l R), X.IsSymm ∧ IsUnit (A + X * C).det := by
   set k := IsLocalRing.ResidueField R; set f := IsLocalRing.residue R
-  set A' := f.mapMatrix A; set B' := f.mapMatrix B
-  set C' := f.mapMatrix C; set D' := f.mapMatrix D
-  set F' := fromBlocks A' B' C' D' with F'_def
+  set A' := f.mapMatrix A; set C' := f.mapMatrix C
+  set F' := fromBlocks A' (f.mapMatrix B) C' (f.mapMatrix D) with F'_def
   have h15' : IsUnit F' := by
     refine F'.isUnit_iff_isUnit_det.2 ?_
     convert (symplectic_det hA).map f
     rw [RingHom.map_det, RingHom.mapMatrix_apply, Matrix.fromBlocks_map]; rfl
   have h_rank (x : l → k) (hx1 : A' *ᵥ x = 0) (hx2 : C' *ᵥ x = 0) : x = 0 := by
-    set v : l ⊕ l → k := Sum.elim x (fun _ ↦ 0) with v_def
-    have h_v0 : F' *ᵥ v = 0 := by
-      ext s; cases s with
-      | inl i =>
-        rw [mulVec_apply, Fintype.sum_sum_type, Finset.sum_congr rfl fun _ _ ↦ rfl]
-        simp only [F'_def, fromBlocks, of_apply, Sum.elim_inl, v_def, Sum.elim_inr, mul_zero,
-          Finset.sum_const_zero, add_zero, Pi.zero_apply]
-        rw [← mulVec_apply, hx1, Pi.zero_apply]
-      | inr i =>
-        rw [mulVec_apply, Fintype.sum_sum_type, Finset.sum_congr rfl fun _ _ ↦ rfl]
-        simp only [F'_def, fromBlocks_apply₂₁, v_def, Sum.elim_inl, fromBlocks_apply₂₂,
-          Sum.elim_inr, mul_zero, Finset.sum_const_zero, add_zero, Pi.zero_apply]
-        rw [← mulVec_apply, hx2, Pi.zero_apply]
-    funext i
-    convert_to v (Sum.inl i) = _
-    · rw [v_def, Sum.elim_inl]
-    · exact congrFun (mulVec_injective_iff_isUnit.2 h15' (F'.mulVec_zero.symm ▸ h_v0)) _
+    have h_v0 : F' *ᵥ Sum.elim x 0 = F' *ᵥ Sum.elim 0 0 := by
+      simp [fromBlocks_mulVec, hx1, hx2, F'_def]
+    exact (Sum.elim_eq_iff.1 (mulVec_injective_iff_isUnit.2 h15' h_v0)).1
   obtain ⟨Y, hY_symm, hY_det⟩ :=
     exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot h_rank <| by
       change f.mapMatrix Aᵀ * f.mapMatrix C = f.mapMatrix Cᵀ * f.mapMatrix A
@@ -358,8 +342,8 @@ private lemma det_eq_one_of_isLocalRing [IsLocalRing R] {M : Matrix (l ⊕ l) (l
     (hM : M ∈ symplecticGroup l R) : M.det = 1 := by
   set A := M.toBlocks₁₁; set B := M.toBlocks₁₂
   set C := M.toBlocks₂₁; set D := M.toBlocks₂₂
-  obtain ⟨X, hX_symm, hA_isUnit⟩ := exists_symmetric_X_isUnit_det_add_mul_of_symplectic
-    <| M.fromBlocks_toBlocks ▸ hM
+  obtain ⟨X, hX_symm, hA_isUnit⟩ := exists_symmetric_X_isUnit_det_add_mul_of_symplectic <|
+    M.fromBlocks_toBlocks ▸ hM
   have Lx_mul : (fromBlocks 1 X 0 1) * M = fromBlocks (A + X * C) (B + X * D) C D := by
     rw [← M.fromBlocks_toBlocks, fromBlocks_multiply]
     simp only [one_mul, zero_mul, zero_add]; rfl
