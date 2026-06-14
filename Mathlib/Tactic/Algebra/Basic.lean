@@ -128,7 +128,7 @@ def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)):
 into casts. -/
 def pushCast (e : Expr) : MetaM Simp.Result := do
   -- collect the available `push_cast` lemmas
-  let mut thms : SimpTheorems := ← NormCast.pushCastExt.getTheorems
+  let mut thms : SimpTheorems ← NormCast.pushCastExt.getTheorems
   let simps : Array Name := #[``eq_natCast, ``eq_intCast, ``eq_ratCast]
   for thm in simps do
     let ⟨levelParams, _, proof⟩ ← abstractMVars (mkConst thm)
