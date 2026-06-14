@@ -34,6 +34,10 @@ noncomputable abbrev over {S : Cᵒᵖ ⥤ RingCat.{u}} (M : PresheafOfModules.{
     PresheafOfModules.{v} ((Over.forget X).op ⋙ S) :=
   (pushforward.{v} (F := Over.forget X) (𝟙 _)).obj M
 
+noncomputable abbrev Hom.over {S : Cᵒᵖ ⥤ RingCat.{u}} {M N : PresheafOfModules.{v} S} (φ : M ⟶ N)
+    (X : C) : M.over X ⟶ N.over X :=
+  (pushforward.{v} (F := Over.forget X) (𝟙 _)).map φ
+
 @[simps -isSimp]
 instance smulOver (U : Cᵒᵖ)
     (F G : (PresheafOfModules ((Over.forget U.unop).op ⋙ R ⋙ forget₂ _ _))) :
@@ -69,8 +73,8 @@ open ConcreteCategory
 instance (U : Cᵒᵖ) :
     Linear (R.obj U) (PresheafOfModules ((Over.forget U.unop).op ⋙ R ⋙ forget₂ _ _)) where
   homModule F G :=
-    { zero_smul _ := by ext; simp [map_zero, zero_smul]
-      one_smul _ := by ext; simp [map_one, one_smul]
+    { zero_smul _ := by ext; simp
+      one_smul _ := by ext; simp
       mul_smul _ _ _ := by ext; simp [map_mul, mul_smul]
       add_smul _ _ _ := by ext; simp [map_add, add_smul]
       smul_zero _ := by ext; exact smul_zero _
@@ -84,7 +88,7 @@ instance (U : Cᵒᵖ) :
     rfl
   comp_smul _ _ _ _ _ _ := rfl
 
-variable (F G : PresheafOfModules.{u} (R ⋙ forget₂ _ _))
+variable (F G H : PresheafOfModules.{u} (R ⋙ forget₂ _ _))
 
 @[simps]
 noncomputable def internalHomMap {U V : C} (f : V ⟶ U) (φ : F.over U ⟶ G.over U) :
@@ -125,6 +129,37 @@ variable (U : C)
 @[simp]
 lemma internalHom_map_op_apply (U V : C) (f : V ⟶ U) (φ : F.over U ⟶ G.over U) :
     (internalHom F G).map f.op φ = internalHomMap F G f φ := rfl
+
+variable {G H} in
+noncomputable def internalHom.map (φ : G ⟶ H) : internalHom F G ⟶ internalHom F H :=
+  { app V := ModuleCat.ofHom
+      { toFun s := s ≫ φ.over (unop V)
+        map_smul' b s := by simp
+        map_add' := by simp }
+  }
+
+@[simps]
+noncomputable def internalHomFunctor :
+    PresheafOfModules.{u} (R ⋙ forget₂ _ _) ⥤
+      PresheafOfModules.{max u u₁ v₁} (R ⋙ forget₂ _ _) where
+  obj G := internalHom F G
+  map φ := internalHom.map F φ
+
+@[simps]
+noncomputable def internalHomYoneda :
+    (PresheafOfModules.{u} (R ⋙ forget₂ _ _))ᵒᵖ ⥤
+      PresheafOfModules.{u} (R ⋙ forget₂ _ _) ⥤
+      PresheafOfModules.{max u u₁ v₁} (R ⋙ forget₂ _ _) where
+  obj F := internalHomFunctor (unop F)
+  map φ :=
+    { app G :=
+      { app V := ModuleCat.ofHom
+          { toFun s := φ.unop.over (unop V) ≫ s
+            map_add' := by simp
+            map_smul' := by simp
+          }
+      }
+    }
 
 noncomputable section
 
