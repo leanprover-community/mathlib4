@@ -475,12 +475,11 @@ private lemma aux {f : M → N} {φ : N → N'}
 /-- A function `f : M → N` between `C^k` manifolds is `C^k` at `x` if and only if it is continuous
 at `x` and its composition `φ ∘ f` with a `C^k` immersion `φ : N → P` at `f x` is `C^k` at `x`. -/
 lemma _root_.ContMDiffAt.iff_comp_isImmersionAtOfComplement [IsManifold I n M]
-    {f : M → N} {φ : N → N'} (hφ : IsImmersionAtOfComplement F J J' n φ (f x))
+    {f : M → N} {φ : N → N'} (hφ : IsImmersionAtOfComplement F J J' n φ (f x)) :
     -- Note: `φ` need not be inducing, so continuity of `φ ∘ f` at `x`
     -- generally does not imply continuity of `f`
-    (hf : ContinuousAt f x) :
-    CMDiffAt n f x ↔ CMDiffAt n (φ ∘ f) x := by
-  refine ⟨fun hf ↦ hφ.contMDiffAt.comp x hf, fun h' ↦ ?_⟩
+    CMDiffAt n f x ↔ ContinuousAt f x ∧ CMDiffAt n (φ ∘ f) x := by
+  refine ⟨fun hf ↦ ⟨hf.continuousAt, hφ.contMDiffAt.comp x hf⟩, fun ⟨hf, h'⟩ ↦ ?_⟩
   -- Since `f` is continuous at `x`, some neighbourhood `t` of `x` is mapped
   -- into `hφ.domChart.source` under `f`. By restriction, we may assume `t` is open,
   -- so it suffices to test smoothness on `t`.
@@ -676,12 +675,11 @@ theorem contMDiffAt (h : IsImmersionAt I J n f x) : CMDiffAt n f x :=
 /-- A function `f : M → N` between `C^k` manifolds is `C^k` at `x` if and only if it is continuous
 at `x` and its composition `φ ∘ f` with a `C^k` immersion `φ : N → P` at `f x` is `C^k` at `x`. -/
 lemma _root_.ContMDiffAt.iff_comp_isImmersionAt [IsManifold I n M] {f : M → N} {φ : N → N'}
-    (hφ : IsImmersionAt J J' n φ (f x))
+    (hφ : IsImmersionAt J J' n φ (f x)) :
     -- Note: `φ` need not be inducing, so continuity of `φ ∘ f` at `x`
     -- generally does not imply continuity of `f`
-    (hf : ContinuousAt f x) :
-    CMDiffAt n f x ↔ CMDiffAt n (φ ∘ f) x := by
-  rw [← ContMDiffAt.iff_comp_isImmersionAtOfComplement hφ.isImmersionAtOfComplement_complement hf]
+    CMDiffAt n f x ↔ ContinuousAt f x ∧ CMDiffAt n (φ ∘ f) x := by
+  rw [← ContMDiffAt.iff_comp_isImmersionAtOfComplement hφ.isImmersionAtOfComplement_complement]
 
 end IsImmersionAt
 
@@ -786,13 +784,11 @@ theorem contMDiff (h : IsImmersionOfComplement F I J n f) : CMDiff n f :=
 /-- A function `f : M → N` between `C^k` manifolds is `C^k` if and only if it is continuous
 and its composition `φ ∘ f` with a `C^k` immersion `φ : N → P` is `C^k`. -/
 lemma _root_.ContMDiff.iff_comp_isImmersionOfComplement [IsManifold I n M] {f : M → N} {φ : N → N'}
-    (hφ : IsImmersionOfComplement F J J' n φ) (hf : Continuous f) :
-    CMDiff n f ↔ CMDiff n (φ ∘ f) := by
-  refine ⟨fun h x ↦ ?_, fun h x ↦ ?_⟩
-  · rw [← ContMDiffAt.iff_comp_isImmersionAtOfComplement (hφ (f x)) hf.continuousAt]
-    exact h x
-  · rw [ContMDiffAt.iff_comp_isImmersionAtOfComplement (hφ (f x)) hf.continuousAt]
-    exact h x
+    (hφ : IsImmersionOfComplement F J J' n φ) :
+    CMDiff n f ↔ Continuous f ∧ CMDiff n (φ ∘ f) := by
+  refine ⟨fun h ↦ ⟨h.continuous, hφ.contMDiff.comp h⟩, fun ⟨h, h'⟩ x ↦ ?_⟩
+  rw [ContMDiffAt.iff_comp_isImmersionAtOfComplement (hφ (f x))]
+  exact ⟨h.continuousAt, h' x⟩
 
 end IsImmersionOfComplement
 
@@ -864,9 +860,9 @@ theorem contMDiff
 /-- A function `f : M → N` between `C^k` manifolds is `C^k` if and only if it is continuous
 and its composition `φ ∘ f` with a `C^k` immersion `φ : N → P` is `C^k`. -/
 lemma _root_.ContMDiff.iff_comp_isImmersion [IsManifold I n M] {f : M → N} {φ : N → N'}
-    (hφ : IsImmersion J J' n φ) (hf : Continuous f) :
-    CMDiff n f ↔ CMDiff n (φ ∘ f) := by
-  rw [ContMDiff.iff_comp_isImmersionOfComplement hφ.isImmersionOfComplement_complement hf]
+    (hφ : IsImmersion J J' n φ) :
+    CMDiff n f ↔ Continuous f ∧ CMDiff n (φ ∘ f) := by
+  rw [ContMDiff.iff_comp_isImmersionOfComplement hφ.isImmersionOfComplement_complement]
 
 end IsImmersion
 
