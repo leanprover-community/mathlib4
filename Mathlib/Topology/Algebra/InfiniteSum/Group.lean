@@ -419,6 +419,7 @@ end IsTopologicalGroup
 section CommGroupWithZero
 variable {K : Type*} [CommGroupWithZero K] [TopologicalSpace K] [SeparatelyContinuousMul K]
   {f g : α → K}
+  {L : SummationFilter α}
 /-!
 ## Groups with a zero
 
@@ -462,16 +463,16 @@ lemma Multipliable.congr_cofinite₀ (hf : Multipliable f) (hf' : ∀ a, f a ≠
   exact (hc.congr_cofinite₀ (fun a _ ↦ hf' a) hs).multipliable
 
 omit [SeparatelyContinuousMul K] in
-theorem HasProd.inv₀ {a : K} [ContinuousInv₀ K] (h : HasProd f a) (ha : a ≠ 0) :
-    HasProd (fun x ↦ (f x)⁻¹) a⁻¹ := by
+theorem HasProd.inv₀ {a : K} [ContinuousInv₀ K] (h : HasProd f a L) (ha : a ≠ 0) :
+    HasProd (fun x ↦ (f x)⁻¹) a⁻¹ L := by
   unfold HasProd
   convert Filter.Tendsto.inv₀ h ha
   rw [Finset.prod_inv_distrib]
 
 omit [SeparatelyContinuousMul K] in
 theorem HasProd.div₀ [ContinuousInv₀ K] [ContinuousMul K] {a b : K}
-    (hf : HasProd f a) (hg : HasProd g b) (hb : b ≠ 0) :
-    HasProd (fun x ↦ f x / g x) (a / b) := by
+    (hf : HasProd f a L) (hg : HasProd g b L) (hb : b ≠ 0) :
+    HasProd (fun x ↦ f x / g x) (a / b) L := by
   simp only [div_eq_mul_inv]
   exact hf.mul <| hg.inv₀ hb
 
