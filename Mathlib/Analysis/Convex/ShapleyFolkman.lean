@@ -11,11 +11,22 @@ import Mathlib.LinearAlgebra.LinearIndependent.Defs
 /-!
 # Shapley-Folkman Lemma
 
-The Shapley-Folkman lemma: for finite collections of subsets `Sᵢ ⊆ ℝᵈ`, any
-`x ∈ convexHull(∑ Sᵢ)` decomposes as `x = ∑ fᵢ` with `fᵢ ∈ conv(Sᵢ)` where
-at most `d` summands satisfy `fᵢ ∉ Sᵢ`.
+The Shapley-Folkman lemma states that for a finite family of nonempty subsets `Sᵢ ⊆ ℝᵈ`,
+any `x ∈ convexHull ℝ (∑ Sᵢ)` can be written as `x = ∑ fᵢ` with `fᵢ ∈ convexHull ℝ (Sᵢ)`
+where `fᵢ ∉ Sᵢ` for at most `d` indices.
 
-The proof follows Anderson's NonconvexHandout Lemma 1.3.
+The lemma originated in the study of approximate equilibria in non-convex economies
+[Anderson, Khan and Rashid, *Approximate equilibria with bounds independent of
+preferences*][anderson1982]; see also [Geller, *An improved bound for approximate
+equilibria*][geller1986] and [Starr, *Quasi-equilibria in markets with non-convex
+preferences*][starr1969].
+
+## References
+
+* [Anderson, Khan and Rashid, *Approximate equilibria with bounds independent of
+  preferences*][anderson1982]
+* [Geller, *An improved bound for approximate equilibria*][geller1986]
+* [Starr, *Quasi-equilibria in markets with non-convex preferences*][starr1969]
 -/
 open Finset
 set_option linter.style.openClassical false
