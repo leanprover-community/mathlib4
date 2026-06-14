@@ -123,12 +123,12 @@ private lemma exists_one_le_enorm_apply_of_semivariation_eq_top
   · refine ⟨t, t_meas, ts, hI, ?_⟩
     have : 1 + ‖μ s‖ₑ ≤ ‖μ (s \ t)‖ₑ + ‖μ s‖ₑ := by
       apply h't.trans
-      have : μ t = μ s - μ (s \ t) := by rw [← of_add_of_diff t_meas hs ts]; abel
+      have : μ t = μ s - μ (s \ t) := by rw [← of_add_of_sdiff t_meas hs ts]; abel
       rw [this, add_comm]
       exact enorm_sub_le
     rwa [ENNReal.add_le_add_iff_right (by simp)] at this
-  · refine ⟨s \ t, hs.diff t_meas, diff_subset, hI, ?_⟩
-    simp only [sdiff_sdiff_right_self, Set.le_eq_subset, ts, inf_of_le_right]
+  · refine ⟨s \ t, hs.diff t_meas, sdiff_subset, hI, ?_⟩
+    simp only [_root_.sdiff_sdiff_right_self, le_eq_subset, ts, inf_of_le_right]
     exact le_trans (by simp) h't
 
 private lemma semivariation_univ_lt_top : μ.semivariation univ < ∞ := by

@@ -110,17 +110,17 @@ theorem setIntegral_union (hst : Disjoint s t) (hs : MeasurableSet s) (ht : Meas
     ∫ᵛ x in s ∪ t, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] + ∫ᵛ x in t, f x ∂[B; μ] := by
   rw [← integral_add_vectorMeasure hfs hft, μ.restrict_union hst hs ht]
 
-theorem setIntegral_diff (hs : MeasurableSet s) (ht : MeasurableSet t)
+theorem setIntegral_sdiff (hs : MeasurableSet s) (ht : MeasurableSet t)
     (hfs : μ.IntegrableOn f s) (hts : t ⊆ s) :
     ∫ᵛ x in s \ t, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] - ∫ᵛ x in t, f x ∂[B; μ] := by
-  rw [eq_sub_iff_add_eq, ← setIntegral_union (by grind) (hs.diff ht) ht (hfs.mono hs diff_subset)
-    (hfs.mono hs hts), diff_union_of_subset hts]
+  rw [eq_sub_iff_add_eq, ← setIntegral_union (by grind) (hs.diff ht) ht (hfs.mono hs sdiff_subset)
+    (hfs.mono hs hts), sdiff_union_of_subset hts]
 
-theorem setIntegral_inter_add_diff (hs : MeasurableSet s) (ht : MeasurableSet t)
+theorem setIntegral_inter_add_sdiff (hs : MeasurableSet s) (ht : MeasurableSet t)
     (hfs : μ.IntegrableOn f s) :
     ∫ᵛ x in s ∩ t, f x ∂[B; μ] + ∫ᵛ x in s \ t, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] := by
-  rw [← μ.restrict_inter_add_diff hs ht,
-    integral_add_vectorMeasure (hfs.mono hs inter_subset_left) (hfs.mono hs diff_subset)]
+  rw [← μ.restrict_inter_add_sdiff hs ht,
+    integral_add_vectorMeasure (hfs.mono hs inter_subset_left) (hfs.mono hs sdiff_subset)]
 
 theorem setIntegral_biUnion_finset {ι : Type*} (t : Finset ι) {s : ι → Set X}
     (hs : ∀ i ∈ t, MeasurableSet (s i)) (h's : Set.Pairwise (↑t) (Disjoint on s))
@@ -295,17 +295,17 @@ theorem setIntegral_union_eq_left_of_forall (hs : MeasurableSet s) (ht : Measura
   rw [ae_restrict_iff' ht]
   filter_upwards with x using ht_eq x
 
-theorem setIntegral_eq_of_subset_of_ae_diff_eq_zero (hs : MeasurableSet s) (ht : MeasurableSet t)
+theorem setIntegral_eq_of_subset_of_ae_sdiff_eq_zero (hs : MeasurableSet s) (ht : MeasurableSet t)
     (hts : s ⊆ t) (h't : ∀ᵐ x ∂μ.variation.restrict (t \ s), f x = 0) :
     ∫ᵛ x in t, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] := by
-  rwa [← union_diff_cancel hts, setIntegral_union_eq_left_of_ae hs (ht.diff hs)]
+  rwa [← union_sdiff_cancel hts, setIntegral_union_eq_left_of_ae hs (ht.diff hs)]
 
 /-- If a function vanishes on `t \ s` with `s ⊆ t`, then its integrals on `s`
 and `t` coincide. -/
-theorem setIntegral_eq_of_subset_of_forall_diff_eq_zero
+theorem setIntegral_eq_of_subset_of_forall_sdiff_eq_zero
     (hs : MeasurableSet s) (ht : MeasurableSet t) (hts : s ⊆ t)
     (h't : ∀ x ∈ t \ s, f x = 0) : ∫ᵛ x in t, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] := by
-  apply setIntegral_eq_of_subset_of_ae_diff_eq_zero hs ht hts
+  apply setIntegral_eq_of_subset_of_ae_sdiff_eq_zero hs ht hts
   apply (ae_restrict_iff' (ht.diff hs)).2
   filter_upwards with x using h't x
 
@@ -316,7 +316,7 @@ theorem setIntegral_eq_integral_of_ae_compl_eq_zero (hs : MeasurableSet s)
     ∫ᵛ x in s, f x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] := by
   symm
   nth_rw 1 [← setIntegral_univ]
-  apply setIntegral_eq_of_subset_of_ae_diff_eq_zero hs MeasurableSet.univ (subset_univ _)
+  apply setIntegral_eq_of_subset_of_ae_sdiff_eq_zero hs MeasurableSet.univ (subset_univ _)
   apply (ae_restrict_iff' (MeasurableSet.univ.diff hs)).2
   filter_upwards [h] with x hx h'x using hx h'x.2
 
