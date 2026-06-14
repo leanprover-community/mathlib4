@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Order.Preorder.Finite
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public import Mathlib.Combinatorics.Enumerative.DoubleCounting
+import Mathlib.Combinatorics.Enumerative.DoubleCounting
 
 /-!
 # Pigeonhole principles
@@ -306,7 +306,7 @@ this formulation handles a *set-valued* assignment where elements may belong to
 multiple sets simultaneously. -/
 lemma exists_mem_biUnion_inf'_card_lt [DecidableEq α] [Fintype α] {f : α → Finset β}
     (h₁ : s.Nonempty) (h₂ : ∀ j ∈ s, 0 < #(f j)) (h₃ : #(s.biUnion f) < #s) :
-    ∃ x ∈ s.biUnion f, s.inf' h₁ (fun j ↦ #(f j)) < #{j | j ∈ s ∧ x ∈ f j} := by
+    ∃ x, (∃ a ∈ s, x ∈ f a) ∧ (s.inf' h₁ fun j ↦ #(f j)) < #{j | j ∈ s ∧ x ∈ f j} := by
   set k := s.inf' h₁ (fun j ↦ #(f j)) with hk
   contrapose! h₃
   suffices #s • k ≤ #(s.biUnion f) • k by simp_all
@@ -314,7 +314,12 @@ lemma exists_mem_biUnion_inf'_card_lt [DecidableEq α] [Fintype α] {f : α → 
   calc ∑ j ∈ s, k
     _ ≤ ∑ j ∈ s, #(f j) := by gcongr with i hi; exact inf'_le _ hi
     _ = ∑ x ∈ s.biUnion f, #{j | j ∈ s ∧ x ∈ f j} := by rw [sum_card_eq_sum_biUnion_card]
-    _ ≤ ∑ x ∈ s.biUnion f, k := by gcongr; grind
+    _ ≤ ∑ x ∈ s.biUnion f, k := by
+      gcongr
+      rename_i i a
+      specialize h₃ i
+      rw[mem_biUnion] at a
+      grind
 
 end Finset
 
