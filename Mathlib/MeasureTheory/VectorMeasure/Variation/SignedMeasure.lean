@@ -57,8 +57,8 @@ lemma toMeasureOfLEZero_apply_eq_enorm {i j : Set X} (him : MeasurableSet i)
     μ.toMeasureOfLEZero i him hi j = ‖μ (i ∩ j)‖ₑ := by
   have : μ (i ∩ j) ≤ 0 :=
     μ.nonpos_of_restrict_le_zero (μ.restrict_le_zero_subset ‹_› Set.inter_subset_left ‹_›)
-  have := Real.enorm_of_nonneg (neg_nonneg.mpr this)
-  grind [μ.toMeasureOfLEZero_apply, ← enorm_neg, neg_nonneg, ENNReal.ofReal_eq_coe_nnreal]
+  rw [← enorm_neg, Real.enorm_of_nonneg (neg_nonneg.mpr this), μ.toMeasureOfLEZero_apply hi him hjm,
+    ENNReal.ofReal_eq_coe_nnreal]
 
 open VectorMeasure in
 /-- The Hahn–Jordan-based `totalVariation` agrees with the supremum-based `variation`. -/
