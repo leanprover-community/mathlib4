@@ -79,7 +79,7 @@ theorem add_pow [CommSemiring R] (x y : R) (n : ℕ) :
 
 /-- A version of  the **binomial theorem** that avoids ℕ-subtraction by summing over the
 antidiagonal and also with the binomial coefficient applied via scalar action of ℕ. -/
-theorem _root_.add_pow' [CommSemiring R] (x y : R) (n : ℕ) :
+theorem add_pow' [CommSemiring R] (x y : R) (n : ℕ) :
     (x + y) ^ n = ∑ m ∈ antidiagonal n, n.choose m.1 • (x ^ m.1 * y ^ m.2) :=
   (Commute.all x y).add_pow' n
 

@@ -12,8 +12,9 @@ public import Mathlib.RingTheory.PowerSeries.Substitution
 /-! # Exponential module of a commutative ring
 
 Let `R` be a commutative ring. The exponential module of `R` is the set of all power series
-`f : R⟦X⟧` that are of exponential type : `f (X + Y) = f X * f Y` where `X` and `Y` are two
-indeterminates. It is an abelian group under multiplication, and an `R`-module under rescaling.
+`f : R⟦X⟧` that are *exponential* or *of exponential type*, i.e.,  `f (X₀ + X₁) = f X₀ * f X₁`
+where `X₀` and `X₁` are two indeterminates. It is an abelian group under multiplication, and an
+`R`-module under rescaling.
 
 ## Main Definitions
 
@@ -30,8 +31,8 @@ indeterminates. It is an abelian group under multiplication, and an `R`-module u
 * `PowerSeries.IsExponential.neg` : if `f : R⟦X⟧` is an exponential power series, then the power
   series `f(-X)` is exponential.
 
-* `PowerSeries.IsExponential.invOfUnit_eq_rescale_neg_one` : if `f : R⟦X⟧`, then the inverse of `f`
-  is equal to the power series `f(-X)`.
+* `PowerSeries.IsExponential.invOfUnit_eq_rescale_neg_one` : if `f : R⟦X⟧` is of exponential type,
+  then the inverse of `f` is equal to the power series `f(-X)`.
 
 ## TODO
 
@@ -58,13 +59,13 @@ variable [CommSemiring A] [CommRing R] [Algebra A R] [CommSemiring S] [Algebra A
 
 /-- A power series `f : R⟦X⟧` is exponential if `f(X + Y) = f(X)*f(Y)` and `f(0) = 1`. -/
 structure IsExponential (f : R⟦X⟧) : Prop where
-  add_mul : subst (S := R) (X₀ + X₁) f = subst X₀ f * subst X₁ f
+  subst_add_eq_mul : subst (X₀ + X₁) f = subst X₀ f * subst X₁ f
   constantCoeff : constantCoeff f = 1
 
 /-- A power series `f` satisfies `f(X + Y) = f(X)*f(Y)` iff its coefficients `f n` satisfy
   the relations `(p + q).choose p * f (p + q)= f p * f q`. -/
 theorem subst_add_eq_mul_iff (f : R⟦X⟧) :
-    (subst (S := R) (X₀ + X₁) f) = (subst X₀ f) * (subst X₁ f) ↔
+    (subst (X₀ + X₁) f) = (subst X₀ f) * (subst X₁ f) ↔
       ∀ (p q : ℕ), (p + q).choose p * (coeff (p + q) f) = coeff p f * coeff q f := by
   rw [MvPowerSeries.ext_iff]
   exact forall_congr_curry₀
@@ -76,28 +77,27 @@ theorem isExponential_iff {f : R⟦X⟧} :
     IsExponential f ↔ (∀ p q, (p + q).choose p * coeff (p + q) f = coeff p f * coeff q f) ∧
       (constantCoeff f = 1) := by
   rw [← subst_add_eq_mul_iff]
-  exact ⟨fun hf ↦ ⟨hf.add_mul, hf.constantCoeff⟩, fun hf ↦ ⟨hf.1, hf.2⟩⟩
+  exact ⟨fun hf ↦ ⟨hf.subst_add_eq_mul, hf.constantCoeff⟩, fun hf ↦ ⟨hf.1, hf.2⟩⟩
 
 namespace IsExponential
 
 /-- The unit power series is exponential. -/
 protected theorem one : IsExponential (1 : R⟦X⟧) where
-  add_mul := by
+  subst_add_eq_mul := by
     rw [← Polynomial.coe_one, subst_coe (HasSubst.X 1), subst_coe (HasSubst.X 0),
       subst_coe ((HasSubst.X 0).add (HasSubst.X 1))]
     simp
   constantCoeff := by simp only [map_one]
 
 /-- If `f` and `g` are exponential, then so is `f * g`. -/
-protected theorem mul {f g : PowerSeries R} (hf : IsExponential f) (hg : IsExponential g) :
+protected theorem mul {f g : R⟦X⟧} (hf : IsExponential f) (hg : IsExponential g) :
     IsExponential (f * g) where
-  add_mul := by
+  subst_add_eq_mul := by
     repeat rw [← coe_substAlgHom (HasSubst.of_constantCoeff_zero (by simp))]
-    simp only [map_mul, coe_substAlgHom, hf.add_mul, hg.add_mul]
+    simp only [map_mul, coe_substAlgHom, hf.subst_add_eq_mul, hg.subst_add_eq_mul]
     ring
   constantCoeff := by simp only [map_mul, hf.constantCoeff, hg.constantCoeff, mul_one]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is exponential and  `n : ℕ`, then `f ^ n` is exponential. -/
 protected theorem npow {f : R⟦X⟧} (hf : IsExponential f) (n : ℕ) :
     IsExponential (f ^ n) := by
@@ -106,7 +106,7 @@ protected theorem npow {f : R⟦X⟧} (hf : IsExponential f) (n : ℕ) :
   | succ n hn => simp [pow_succ, hn.mul hf]
 
 /-- If `f` is exponential, then `f(r • T)` is exponential, for any `r : R`. -/
-protected theorem rescale (a : A) {f : PowerSeries R} (hf : IsExponential f) :
+protected theorem rescale (a : A) {f : R⟦X⟧} (hf : IsExponential f) :
     IsExponential (rescale (algebraMap A R a) f) := by
   rw [isExponential_iff] at hf ⊢
   refine ⟨fun p q ↦ ?_, ?_⟩
@@ -142,7 +142,6 @@ lemma toAdditive_smul_coe (r : A) (f : R⟦X⟧) :
 lemma toAdditive_smul_coe' (r : A) (f : Additive R⟦X⟧) :
   toMul (r • f) = rescale (algebraMap A R r) (toMul f) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : DistribMulAction A (Additive R⟦X⟧) where
   one_smul := by simp [toAdditive_smul_coe]
   mul_smul := by
@@ -156,9 +155,8 @@ noncomputable instance : DistribMulAction A (Additive R⟦X⟧) where
 
 end Instances
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
-/-- The `R`-module of exponential power series `f : R⟦X⟧` satisfying `f(X+Y) = f(X) f(Y)` and
+/-- The `R`-module of exponential power series `f : R⟦X⟧` satisfying `f(X₀ + X₁) = f(X₀) f(X₁)` and
   `f(0) = 1`. The addition law is the multiplication of power series.
   The scalar multiplication law is given by `PowerSeries.rescale`.
   This is implemented as an `AddSubmonoid (Additive R⟦X⟧) `. -/
@@ -208,7 +206,6 @@ noncomputable instance instSMul : SMul A (ExponentialModule R) where
 theorem smul_def (r : A) (f : ExponentialModule R) :
   (r • f : ExponentialModule R) = r • (f : Additive R⟦X⟧) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance instModule : Module A (ExponentialModule R) where
   one_smul f := by rw [← Subtype.coe_inj, smul_def, one_smul]
   mul_smul r s f := by simp [← Subtype.coe_inj, smul_def, mul_smul]
@@ -224,7 +221,6 @@ noncomputable instance instModule : Module A (ExponentialModule R) where
     have hf : constantCoeff f = (1 : R) := f.prop.constantCoeff
     simp [toAdditive_smul_coe', toMul_val_eq_coe, hf]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coe_add (f g : ExponentialModule R) : (↑(f + g) : R⟦X⟧) = ↑f * ↑g := by
   simp only [toPowerSeries, AddSubmonoid.coe_add, toMul_add]
 
@@ -251,11 +247,9 @@ protected theorem self_mul_neg_eq_one {f : R⟦X⟧} (hf : IsExponential f) :
     RingHom.coe_comp, Function.comp_apply, rescale_one] at hadd
   rw [← hadd, hf.constantCoeff, map_one]
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem neg_mul_self_eq_one {f : R⟦X⟧} (hf : IsExponential f) :
     (rescale (-1) f) * f = 1 := by rw [mul_comm, hf.self_mul_neg_eq_one]
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem isUnit {f : R⟦X⟧} (hf : IsExponential f) : IsUnit f :=
   isUnit_iff_exists_inv'.mpr ⟨(rescale (-1) f),  hf.neg_mul_self_eq_one⟩
 
@@ -264,7 +258,6 @@ protected theorem inverse_eq_neg_mul_self {f : R⟦X⟧} (hf : IsExponential f) 
   rw [Ring.inverse, dif_pos hf.isUnit]
   exact hf.isUnit.unit.inv_eq_of_mul_eq_one_left hf.neg_mul_self_eq_one
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem invOfUnit_eq_rescale_neg_one {f : R⟦X⟧} (hf : IsExponential f) :
     (f.invOfUnit 1) = rescale (-1) f := by
   rw [← IsUnit.mul_right_inj hf.isUnit, f.mul_invOfUnit, hf.self_mul_neg_eq_one]
@@ -291,7 +284,6 @@ open PowerSeries Additive
 
 variable [CommRing R]
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance instAddCommGroup : AddCommGroup (ExponentialModule R) where
   neg f := (-1 : ℤ) • f
   zsmul n f := n • f
@@ -327,10 +319,10 @@ lemma constantCoeff_coe (f : ExponentialModule R) : constantCoeff (f : R⟦X⟧)
   f.prop.constantCoeff
 
 lemma subst_add_coe_eq_mul (f : ExponentialModule R) :
-    subst (S := R) (X₀ + X₁) (f : R⟦X⟧) = (subst X₀ (f : R⟦X⟧)) * (subst X₁ (f : R⟦X⟧)) := by
+    subst (X₀ + X₁) (f : R⟦X⟧) = (subst X₀ (f : R⟦X⟧)) * (subst X₁ (f : R⟦X⟧)) := by
   have hf := f.prop
   rw [mem_exponentialModule_iff'] at hf
-  exact hf.add_mul
+  exact hf.subst_add_eq_mul
 
 lemma choose_mul_coeff_add_eq (f : ExponentialModule R) (p q : ℕ) :
     (p + q).choose p * (coeff (p + q) (f : R⟦X⟧)) = coeff p f * coeff q f :=
@@ -338,7 +330,6 @@ lemma choose_mul_coeff_add_eq (f : ExponentialModule R) (p q : ℕ) :
 
 variable [CommRing A] [Algebra A R] {S : Type*} [CommRing S] [Algebra A S] (φ : R →ₐ[A] S)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `A`-algebras `R` and `S`, this is the linear map between their respective exponential
 modules induced by an `A`-algebra map on the coefficients. -/
 noncomputable def linearMap :
