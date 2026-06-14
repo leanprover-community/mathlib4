@@ -13,10 +13,14 @@ public import Mathlib.Data.FunLike.IsApply
 /-!
 # Relation isomorphisms form a group
 
+This file contains `Monoid` instances for `RelHom` and `OrderHom`, where multiplication is
+given by composition. Likewise there is a `Group` instance for `RelIso`. Because `OrderIso`
+is an abbreviation for `RelIso`, there is no need for an additional instance.
+
 ## TODO
 
-+ rename the `mul_def`/`one_def lemmas to `mul_eq_comp`/`one_eq_id`.
-+ use the `IsMulApplyEqComp` and `IsOneApplyEqSelf` classes for `RelHom` and `RelIso`.
++ Rename the `mul_def`/`one_def` lemmas to `mul_eq_comp`/`one_eq_id`.
++ Use the `IsMulApplyEqComp` and `IsOneApplyEqSelf` classes for `RelHom` and `RelIso`.
 -/
 
 @[expose] public section
