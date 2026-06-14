@@ -20,6 +20,7 @@ namespace CategoryTheory
 
 open Opposite MonoidalCategory
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] types_tensorObj_def types_tensorUnit_def in
 instance (C : Type u) [Category.{v} C] [MonoidalCategory C] :
     (coyoneda.obj (op (𝟙_ C))).LaxMonoidal :=
