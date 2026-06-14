@@ -28,13 +28,16 @@ variable {C : Type u₁} [Category.{v₁} C] {R : Cᵒᵖ ⥤ CommRingCat.{u}}
 
 namespace PresheafOfModules
 
+noncomputable section
+
 /-- Given `X : C`, this is the presheaf of modules on `Over X` that
 is obtained from a presheaf of modules on `C`. -/
-noncomputable abbrev over {S : Cᵒᵖ ⥤ RingCat.{u}} (M : PresheafOfModules.{v} S) (X : C) :
+abbrev over {S : Cᵒᵖ ⥤ RingCat.{u}} (M : PresheafOfModules.{v} S) (X : C) :
     PresheafOfModules.{v} ((Over.forget X).op ⋙ S) :=
   (pushforward.{v} (F := Over.forget X) (𝟙 _)).obj M
 
-noncomputable abbrev Hom.over {S : Cᵒᵖ ⥤ RingCat.{u}} {M N : PresheafOfModules.{v} S} (φ : M ⟶ N)
+/-- The induced map on the restrictions presheaves of modules to `Over X` -/
+abbrev Hom.over {S : Cᵒᵖ ⥤ RingCat.{u}} {M N : PresheafOfModules.{v} S} (φ : M ⟶ N)
     (X : C) : M.over X ⟶ N.over X :=
   (pushforward.{v} (F := Over.forget X) (𝟙 _)).map φ
 
@@ -88,15 +91,21 @@ instance (U : Cᵒᵖ) :
     rfl
   comp_smul _ _ _ _ _ _ := rfl
 
-variable (F G H : PresheafOfModules.{u} (R ⋙ forget₂ _ _))
+variable (F G : PresheafOfModules.{u} (R ⋙ forget₂ _ _))
 
+/-- The restriction map sending `φ : F.over U ⟶ G.over U` to `F.over V ⟶ G.over V` -/
 @[simps]
-noncomputable def internalHomMap {U V : C} (f : V ⟶ U) (φ : F.over U ⟶ G.over U) :
+def internalHomMap {U V : C} (f : V ⟶ U) (φ : F.over U ⟶ G.over U) :
     F.over V ⟶ G.over V where
   app W := φ.app ((Over.map f).op.obj W)
   naturality g := φ.naturality ((Over.map f).op.map g)
 
-noncomputable def internalHom : PresheafOfModules.{max u u₁ v₁} (R ⋙ forget₂ _ _) where
+/-- The Hom presheaf for presheaves of modules. Given `F G : PresheafOfModules`, this is the
+sheaf whose value on `U : Cᵒᵖ` is `F.over U.unop ⟶ G.over U.unop` and whose restriction maps
+are `internalHomMap`. Note that `internalHom` lives in the universe `max u u₁ v₁` so it is
+only truly "internal" when `C` is a small category of type `u`. -/
+@[simps]
+def internalHom : PresheafOfModules.{max u u₁ v₁} (R ⋙ forget₂ _ _) where
   obj U := ModuleCat.of (R.obj U) (F.over U.unop ⟶ G.over U.unop)
   map {U V} f := ConcreteCategory.ofHom (C := ModuleCat (R.obj U))
     { toFun := internalHomMap _ _ f.unop
@@ -120,33 +129,23 @@ noncomputable def internalHom : PresheafOfModules.{max u u₁ v₁} (R ⋙ forge
     congr 2
     simp [Over.mapComp_eq]
 
-@[simp]
-lemma internalHom_obj (U : Cᵒᵖ) : ((internalHom F G).obj U).carrier =
-    (F.over (unop U) ⟶ G.over (unop U)) := rfl
-
-variable (U : C)
-
-@[simp]
-lemma internalHom_map_op_apply (U V : C) (f : V ⟶ U) (φ : F.over U ⟶ G.over U) :
-    (internalHom F G).map f.op φ = internalHomMap F G f φ := rfl
-
-variable {G H} in
-noncomputable def internalHom.map (φ : G ⟶ H) : internalHom F G ⟶ internalHom F H :=
-  { app V := ModuleCat.ofHom
-      { toFun s := s ≫ φ.over (unop V)
-        map_smul' b s := by simp
-        map_add' := by simp }
-  }
-
+/-- This is the functor that sends `G : PresheafOfModules` to `internalHom F G`.
+TODO: Show this is right adjoint to `MonoidalCategory.tensorLeft F`, giving `PresheafOfModules`
+the structure of a closed monoidal category. -/
 @[simps]
-noncomputable def internalHomFunctor :
-    PresheafOfModules.{u} (R ⋙ forget₂ _ _) ⥤
-      PresheafOfModules.{max u u₁ v₁} (R ⋙ forget₂ _ _) where
+def internalHomFunctor : PresheafOfModules.{u} (R ⋙ forget₂ _ _) ⥤
+    PresheafOfModules.{max u u₁ v₁} (R ⋙ forget₂ _ _) where
   obj G := internalHom F G
-  map φ := internalHom.map F φ
+  map φ :=
+    { app V := ModuleCat.ofHom
+        { toFun s := s ≫ φ.over (unop V)
+          map_smul' b s := by simp
+          map_add' := by simp }
+    }
 
+/-- Internal version of the co-Yoneda functor `CategoryTheory.coyoneda` -/
 @[simps]
-noncomputable def internalHomYoneda :
+def internalHomCoyoneda :
     (PresheafOfModules.{u} (R ⋙ forget₂ _ _))ᵒᵖ ⥤
       PresheafOfModules.{u} (R ⋙ forget₂ _ _) ⥤
       PresheafOfModules.{max u u₁ v₁} (R ⋙ forget₂ _ _) where
@@ -160,8 +159,6 @@ noncomputable def internalHomYoneda :
           }
       }
     }
-
-noncomputable section
 
 variable {J : GrothendieckTopology C} [J.HasSheafCompose (forget AddCommGrpCat.{u})]
 

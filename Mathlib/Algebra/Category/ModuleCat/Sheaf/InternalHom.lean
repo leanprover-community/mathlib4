@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Presheaf.InternalHom
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
 
 /-!
-# The internal hom for presheaves of modules
+# The internal hom for Sheaves of Modules
 
 
 -/
@@ -25,24 +25,39 @@ set_option backward.defeqAttrib.useBackward true
 
 namespace SheafOfModules
 
+noncomputable section
+
 variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C}
   {R : Sheaf J CommRingCat.{u}}
   [J.HasSheafCompose (CategoryTheory.forget AddCommGrpCat.{u})]
   [J.HasSheafCompose (forget₂ CommRingCat RingCat)]
-  {F G : SheafOfModules.{u} ((sheafCompose J (forget₂ _ _)).obj R)}
+  (F G : SheafOfModules.{u} ((sheafCompose J (forget₂ _ _)).obj R))
 
+/-- The Hom sheaf for sheaves of modules. -/
 @[simps]
-noncomputable def internalHom (F G : SheafOfModules.{u} ((sheafCompose J (forget₂ _ _)).obj R)) :
-    SheafOfModules ((sheafCompose J (forget₂ _ _)).obj R) where
+def internalHom : SheafOfModules.{max u u₁ v₁} ((sheafCompose J (forget₂ _ _)).obj R) where
   val := PresheafOfModules.internalHom F.val G.val
   isSheaf := PresheafOfModules.internalHom_presheaf_isSheaf F.val G.val G.isSheaf
 
-variable (U : Cᵒᵖ)
+/-- Implimintation note: For `X : Cᵒᵖ`, `((internalHom F G).val.obj X).carrier` is by definition
+`F.val.over X.unop ⟶ G.val.over X.unop` rather than `F.over X.unop ⟶ G.over X.unop`. -/
+abbrev asInternalHom {X : C} (φ : F.over X ⟶ G.over X) :
+    ((internalHom F G).val.obj (op X)).carrier := φ.val
 
-#simp (internalHom F G).val
+/-- This is the functor that sends `F : SheafOfModules` to `internalHom F G`.
+TODO: Once the monoidal category structure for `SheafOfModules` enters mathlib, show this is right
+adjoint to `MonoidalCategory.tensorLeft F`, giving `SheafOfModules`
+the structure of a closed monoidal category. -/
+@[simps]
+def internalHomFunctor : SheafOfModules.{u} ((sheafCompose J (forget₂ _ _)).obj R) ⥤
+    SheafOfModules.{max u u₁ v₁} ((sheafCompose J (forget₂ _ _)).obj R) where
+  obj G := internalHom F G
+  map φ := { val := (PresheafOfModules.internalHomFunctor F.val).map φ.val}
 
-#simp ((internalHom F G).val.obj U).carrier
+/-- `internalHom` commutes with `SheafOfModules.forget`. -/
+def InternalHomFunctorForget : internalHomFunctor F ⋙ forget _ ≅
+    forget _ ⋙ PresheafOfModules.internalHomFunctor F.val := Iso.refl _
 
-example (U : C) : F.val.over U = (F.over U).val := rfl
+end
 
 end SheafOfModules
