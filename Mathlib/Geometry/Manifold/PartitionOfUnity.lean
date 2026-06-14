@@ -139,7 +139,7 @@ variable {s : Set M} (f : SmoothPartitionOfUnity ι I M s) {n : ℕ∞}
 
 instance {s : Set M} : FunLike (SmoothPartitionOfUnity ι I M s) ι C^∞⟮I, M; 𝓘(ℝ), ℝ⟯ where
   coe := toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 protected theorem locallyFinite : LocallyFinite fun i => support (f i) :=
   f.locallyFinite'

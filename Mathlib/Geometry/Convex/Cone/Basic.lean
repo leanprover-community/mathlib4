@@ -75,7 +75,7 @@ variable [SMul R M] {C C₁ C₂ : ConvexCone R M} {s : Set M} {c : R} {x : M}
 
 instance : SetLike (ConvexCone R M) M where
   coe := carrier
-  coe_injective' C₁ C₂ h := by cases C₁; congr!
+  coe_injective C₁ C₂ h := by cases C₁; congr!
 
 instance : PartialOrder (ConvexCone R M) := .ofSetLike (ConvexCone R M) M
 
