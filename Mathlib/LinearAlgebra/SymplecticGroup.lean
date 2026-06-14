@@ -245,7 +245,7 @@ private lemma symm_condition_of_rank_normal_form (hV : IsUnit V.det)
   convert_to Uᵀ * (Aᵀ * (V⁻¹ * V) * C * U) = Uᵀ * (Cᵀ * (Vᵀ * Vᵀ⁻¹) * A * U)
   · ac_rfl
   · ac_rfl
-  · rw [nonsing_inv_mul _ hV, mul_nonsing_inv _ (isUnit_det_transpose _ hV),
+  · rw [V.nonsing_inv_mul hV, mul_nonsing_inv _ (V.isUnit_det_transpose hV),
       mul_one, mul_one, h_symm]
 
 private lemma eq_zero_and_symm_on_support_of_diagonal_symm {s : Finset l}
@@ -266,12 +266,12 @@ private lemma exists_symmetric_X_invertible_add_mul_diagonal {R : Type*} [Field 
     (h2 : ∀ (i j : l), i ∈ s → j ∈ s → A i j = A j i)
     (h_rank1 : ∀ (x : l → R), (A • x = 0) →
       ((diagonal (fun i ↦ if i ∈ s then 1 else (0 : R))) • x = 0) → x = 0) :
-    ∃ (X : Matrix l l R), Xᵀ = X ∧
+    ∃ (X : Matrix l l R), X.IsSymm ∧
       IsUnit (A + X * (diagonal (fun i : l ↦ if i ∈ s then 1 else 0))).det := by
   set D : Matrix l l R := diagonal (fun i : l ↦ if i ∈ s then 1 else 0) with D_def
   set X : Matrix l l R := fun i j ↦
     if i ∈ s ∧ j ∈ s then (if i = j then 1 else 0) - A i j else 0 with X1_def
-  have hX_symm : Xᵀ = X := by
+  have hX_symm : X.IsSymm := by
     ext i j
     simp only [X1_def, transpose_apply]; grind
   have hM1 (i : l) (hi : i ∈ s) (j : l) : (A + X * D) i j = if i = j then 1 else 0 := by
@@ -295,7 +295,7 @@ private lemma exists_symmetric_X_invertible_add_mul_diagonal {R : Type*} [Field 
 private lemma exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot {R : Type*} [Field R]
     {A C : Matrix l l R} (h_rank : ∀ (x : l → R), (A • x = 0) → (C • x = 0) → x = 0)
     (h_symm : Aᵀ * C = Cᵀ * A) :
-    ∃ (X : Matrix l l R), Xᵀ = X ∧ IsUnit (A + X * C).det := by
+    ∃ (X : Matrix l l R), X.IsSymm ∧ IsUnit (A + X * C).det := by
   rcases exists_rank_normal_form C with ⟨V, U, s, hV, hU, hR1_eq⟩
   set C' := V * C * U with C'_def
   set D := diagonal (fun i ↦ if i ∈ s then 1 else 0) with D_def
@@ -309,18 +309,16 @@ private lemma exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot {R : Typ
     h_main1.1 h_main1.2 <| fun x hP1x hDx ↦
       ker_inter_eq_bot_of_rank_normal_form hU hV h_rank x hP1x (hR1_eq ▸ hDx : C' *ᵥ x = 0)
   refine ⟨Vᵀ * X * V, ?_, ?_⟩
-  · rw [transpose_mul, transpose_mul, hX_symm, transpose_transpose, mul_assoc]
+  · rw [Matrix.IsSymm, transpose_mul, transpose_mul, hX_symm, transpose_transpose, mul_assoc]
   · convert_to IsUnit (Vᵀ * (A' + X * C') * U⁻¹).det
-    · simp [mul_nonsing_inv_cancel_right U _ hU,
-        mul_nonsing_inv_cancel_left Vᵀ _ (isUnit_det_transpose V hV),
-        mul_add, add_mul, mul_assoc, A'_def, C'_def]
-    rw [det_mul, det_mul]
-    exact IsUnit.mul (IsUnit.mul (det_transpose V ▸ hV) (by rwa [hR1_eq]))
-      (isUnit_nonsing_inv_det U hU)
+    · simp [U.mul_nonsing_inv_cancel_right _ hU, mul_add, add_mul, mul_assoc, A'_def, C'_def,
+        Vᵀ.mul_nonsing_inv_cancel_left _ (V.isUnit_det_transpose hV)]
+    rw [det_mul, det_mul, hR1_eq]
+    exact ((det_transpose V ▸ hV).mul hM1).mul <| U.isUnit_nonsing_inv_det hU
 
 private lemma exists_symmetric_X_isUnit_det_add_mul_of_symplectic [IsLocalRing R]
     (hA : fromBlocks A B C D ∈ symplecticGroup l R) :
-    ∃ (X : Matrix l l R), Xᵀ = X ∧ IsUnit (A + X * C).det := by
+    ∃ (X : Matrix l l R), X.IsSymm ∧ IsUnit (A + X * C).det := by
   set k := IsLocalRing.ResidueField R; set f := IsLocalRing.residue R
   set A' := f.mapMatrix A; set B' := f.mapMatrix B
   set C' := f.mapMatrix C; set D' := f.mapMatrix D
@@ -347,14 +345,13 @@ private lemma exists_symmetric_X_isUnit_det_add_mul_of_symplectic [IsLocalRing R
     convert_to v (Sum.inl i) = _
     · rw [v_def, Sum.elim_inl]
     · exact congrFun (mulVec_injective_iff_isUnit.2 h15' (F'.mulVec_zero.symm ▸ h_v0)) _
-  obtain ⟨Xbar, hXbar_symm, hXbar_det⟩ :=
+  obtain ⟨Y, hY_symm, hXbar_det⟩ :=
     exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot h_rank <| by
       change f.mapMatrix Aᵀ * f.mapMatrix C = f.mapMatrix Cᵀ * f.mapMatrix A
       rw [← map_mul, (fromBlocks_mem_iff.1 hA).1, map_mul]
-  obtain ⟨X, hX_symm, hX_lift⟩ := IsSymm.exists_map_eq_of_surjective
-    IsLocalRing.residue_surjective hXbar_symm
+  obtain ⟨X, hX_symm, hXY⟩ := hY_symm.exists_map_eq_of_surjective IsLocalRing.residue_surjective
   refine ⟨X, hX_symm, (IsLocalRing.residue_ne_zero_iff_isUnit _).1 ?_⟩
-  rw [RingHom.map_det, map_add, map_mul, RingHom.mapMatrix_apply _ X, hX_lift]
+  rw [RingHom.map_det, map_add, map_mul, RingHom.mapMatrix_apply _ X, hXY]
   exact hXbar_det.ne_zero
 
 /-- Over any local ring, every symplectic matrix has determinant 1. -/
@@ -372,19 +369,19 @@ private lemma det_eq_one_of_isLocalRing [IsLocalRing R] {M : Matrix (l ⊕ l) (l
   have Lx_mul : Lx * fromBlocks A B C D = fromBlocks (A + X * C) (B + X * D) C D := by
     simp [Lx_def, fromBlocks_multiply]
   set M' : Matrix (l ⊕ l) (l ⊕ l) R := Lx * M with M'_def
-  have h_fromBlocks2_in : fromBlocks (A + X * C) (B + X * D) C D ∈ symplecticGroup l R := by
+  have h_fromBlocks_in : fromBlocks (A + X * C) (B + X * D) C D ∈ symplecticGroup l R := by
     rw [← Lx_mul, ← hM_blocks, ← M'_def]
     refine (symplecticGroup l R).mul_mem ?_ hM
-    simp [mem_iff, fromBlocks_transpose, hX_symm, Lx_def, J, fromBlocks_multiply]
+    simp [mem_iff, fromBlocks_transpose, hX_symm.eq, Lx_def, J, fromBlocks_multiply]
   have _ : Invertible (A + X * C) := (A + X * C).invertibleOfIsUnitDet hA_isUnit
   have h_main : M'.det = 1 := by
-    rw [M'_def, hM_blocks, Lx_mul, det_one_if_fromBlocks_invertible h_fromBlocks2_in]
-  rwa [det_mul, det_fromBlocks_zero₂₁ 1 X 1, det_one, one_mul, one_mul] at h_main
+    rw [M'_def, hM_blocks, Lx_mul, det_one_if_fromBlocks_invertible h_fromBlocks_in]
+  rwa [det_mul, det_fromBlocks_zero₂₁, det_one, one_mul, one_mul] at h_main
 
 /-- Symplectic matrices have determinant 1. -/
 theorem det_eq_one {M : Matrix (l ⊕ l) (l ⊕ l) R} (hM : M ∈ symplecticGroup l R) :
     M.det = 1 := by
-  refine sub_eq_zero.1 <| eq_zero_of_localization _ fun J _ ↦ ?_
+  refine sub_eq_zero.1 <| eq_zero_of_localization _ fun _ _ ↦ ?_
   rw [map_sub, RingHom.map_det, det_eq_one_of_isLocalRing <| map_mem _ hM, map_one, sub_self]
 
 end Determinant
