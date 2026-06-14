@@ -211,12 +211,9 @@ theorem exists_linearIsometryEquiv_span_map_eq_of_inner_eq {φ : ι → E} {ψ :
   set Tφ : (ι →₀ 𝕜) →ₗ[𝕜] E := Finsupp.linearCombination 𝕜 φ with hTφ
   set Tψ : (ι →₀ 𝕜) →ₗ[𝕜] F := Finsupp.linearCombination 𝕜 ψ with hTψ
   -- The two maps preserve the same inner products on all linear combinations.
-  have key : ∀ c c' : ι →₀ 𝕜, ⟪Tφ c, Tφ c'⟫_𝕜 = ⟪Tψ c, Tψ c'⟫_𝕜 := by
-    intro c c'
-    rw [hTφ, hTψ, inner_linearCombination_linearCombination,
-      inner_linearCombination_linearCombination]
-    refine Finsupp.sum_congr fun i _ => Finsupp.sum_congr fun j _ => ?_
-    rw [h i j]
+  have key (c c' : ι →₀ 𝕜) : ⟪Tφ c, Tφ c'⟫_𝕜 = ⟪Tψ c, Tψ c'⟫_𝕜 := by
+    simp [hTφ, hTψ, inner_linearCombination_linearCombination,
+      inner_linearCombination_linearCombination, h]
   -- Equal norms, hence `ker Tφ ≤ ker Tψ`.
   have norm_eq : ∀ c : ι →₀ 𝕜, ‖Tψ c‖ = ‖Tφ c‖ := by
     intro c
