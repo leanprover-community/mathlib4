@@ -150,7 +150,7 @@ theorem profiniteSolid_isSolid_at_fintype
 /-- The isomorphism `(profiniteSolid R).obj LT ≅ (finFree R).obj T`, for `T : FintypeCat`.
 This is the counit of the right Kan extension, which is an isomorphism by
 `profiniteSolidCounit_isIso`. -/
-noncomputable def finFree_iso_solid (T : FintypeCat.{u}) :
+noncomputable def finFreeIsoSolid (T : FintypeCat.{u}) :
     (profiniteSolid R).obj (FintypeCat.toProfinite.obj T) ≅ (finFree R).obj T :=
   @asIso _ _ _ _ ((profiniteSolidCounit R).app T) (profiniteSolidCounit_isIso R T)
 
@@ -161,9 +161,9 @@ lemma sol_map_counit (T : FintypeCat.{u}) (X : Profinite.{u})
     (ψ : X ⟶ FintypeCat.toProfinite.obj T) :
     (profiniteSolidification R).app X ≫
     (profiniteSolid R).map ψ ≫
-    (finFree_iso_solid R T).hom = (profiniteFree R).map ψ := by
+    (finFreeIsoSolid R T).hom = (profiniteFree R).map ψ := by
   have nat := (profiniteSolidification R).naturality ψ
-  have hcounit : (finFree_iso_solid R T).hom = (profiniteSolidCounit R).app T := rfl
+  have hcounit : (finFreeIsoSolid R T).hom = (profiniteSolidCounit R).app T := rfl
   rw [hcounit, ← Category.assoc, ← nat, Category.assoc, profiniteSolidification_comp_counit]
   exact Category.comp_id _
 
@@ -207,17 +207,17 @@ theorem profiniteSolid_fintype_isSolid (T : FintypeCat.{u}) :
   · -- INJECTIVITY: proved via sol_leftCancel axiom
     intro g g' hgg'
     -- Step 1: lift hgg' to a statement about g ≫ iso.hom = g' ≫ iso.hom
-    have h_step : g ≫ (finFree_iso_solid R T).hom = g' ≫ (finFree_iso_solid R T).hom :=
+    have h_step : g ≫ (finFreeIsoSolid R T).hom = g' ≫ (finFreeIsoSolid R T).hom :=
       sol_leftCancel R T X _ _ (by
         -- hgg' has Yoneda type; coerce so that congrArg produces left-assoc syntactically
         -- Note: 'sol' is not in scope here; use the full name
         have hgg'' : (profiniteSolidification R).app X ≫ g =
                      (profiniteSolidification R).app X ≫ g' := hgg'
-        have h1 := congrArg (· ≫ (finFree_iso_solid R T).hom) hgg''
+        have h1 := congrArg (· ≫ (finFreeIsoSolid R T).hom) hgg''
         simp only [Category.assoc] at h1
         exact h1)
     -- Step 2: cancel iso.hom on the right using iso.inv
-    have key := congrArg (· ≫ (finFree_iso_solid R T).inv) h_step
+    have key := congrArg (· ≫ (finFreeIsoSolid R T).inv) h_step
     simp only [Category.assoc, Iso.hom_inv_id, Category.comp_id] at key
     exact key
   · -- SURJECTIVITY (proved 2026-06-14, congrArg approach)
@@ -227,26 +227,26 @@ theorem profiniteSolid_fintype_isSolid (T : FintypeCat.{u}) :
              (profiniteSolid R).obj (FintypeCat.toProfinite.obj T) := h
     -- h': image of hm under iso_T.hom (transparent let, so h' = hm ≫ iso_T.hom by rfl)
     let h' : (profiniteFree R).obj X ⟶ (finFree R).obj T :=
-      hm ≫ (finFree_iso_solid R T).hom
+      hm ≫ (finFreeIsoSolid R T).hom
     obtain ⟨U₀, q₀, h₀, hfact⟩ := surj_factor R T X h'
-    refine ⟨(profiniteSolid R).map q₀ ≫ (finFree_iso_solid R U₀).hom ≫
-            h₀ ≫ (finFree_iso_solid R T).inv, ?_⟩
+    refine ⟨(profiniteSolid R).map q₀ ≫ (finFreeIsoSolid R U₀).hom ≫
+            h₀ ≫ (finFreeIsoSolid R T).inv, ?_⟩
     have hmid := sol_map_counit R U₀ X q₀
     -- Step 1: sol ≫ solid.map q₀ ≫ iso_U₀.hom ≫ h₀ ≫ iso_T.inv
     --         = profiniteFree.map q₀ ≫ h₀ ≫ iso_T.inv  (via congrArg + hmid)
     have step1 : (profiniteSolidification R).app X ≫ (profiniteSolid R).map q₀ ≫
-        (finFree_iso_solid R U₀).hom ≫ h₀ ≫ (finFree_iso_solid R T).inv =
-        (profiniteFree R).map q₀ ≫ h₀ ≫ (finFree_iso_solid R T).inv := by
-      have key := congrArg (· ≫ h₀ ≫ (finFree_iso_solid R T).inv) hmid
+        (finFreeIsoSolid R U₀).hom ≫ h₀ ≫ (finFreeIsoSolid R T).inv =
+        (profiniteFree R).map q₀ ≫ h₀ ≫ (finFreeIsoSolid R T).inv := by
+      have key := congrArg (· ≫ h₀ ≫ (finFreeIsoSolid R T).inv) hmid
       exact key
     -- Step 2: profiniteFree.map q₀ ≫ h₀ ≫ iso_T.inv = h
     -- (hfact: h' = map q₀ ≫ h₀; h' = hm ≫ iso_T.hom; hm := h; iso cancel)
-    have step2 : (profiniteFree R).map q₀ ≫ h₀ ≫ (finFree_iso_solid R T).inv = h := by
-      have key2 := congrArg (· ≫ (finFree_iso_solid R T).inv) hfact.symm
+    have step2 : (profiniteFree R).map q₀ ≫ h₀ ≫ (finFreeIsoSolid R T).inv = h := by
+      have key2 := congrArg (· ≫ (finFreeIsoSolid R T).inv) hfact.symm
       simp only [Category.assoc] at key2
       -- key2: map q₀ ≫ h₀ ≫ iso_T.inv = h' ≫ iso_T.inv; expand h' to trigger hom_inv_id
-      rw [key2, show h' = hm ≫ (finFree_iso_solid R T).hom from rfl,
-          Category.assoc, (finFree_iso_solid R T).hom_inv_id, Category.comp_id]
+      rw [key2, show h' = hm ≫ (finFreeIsoSolid R T).hom from rfl,
+          Category.assoc, (finFreeIsoSolid R T).hom_inv_id, Category.comp_id]
     exact step1.trans step2
 
 /-! ### Limits of solid modules are solid -/
@@ -294,7 +294,7 @@ lemma isSolid_of_isLimit_gen
 /-! ### `finFree R T` is solid -/
 
 /-- `(finFree R).obj T` is a solid condensed `R`-module, for any `T : FintypeCat`.
-Proof: transfer solidness from `profiniteSolid_fintype_isSolid` via `finFree_iso_solid R T`
+Proof: transfer solidness from `profiniteSolid_fintype_isSolid` via `finFreeIsoSolid R T`
 using Yoneda. Proved without additional axioms (uses `sol_leftCancel` indirectly via
 `profiniteSolid_fintype_isSolid`). -/
 theorem finFree_isSolid (T : FintypeCat.{u}) : ((finFree R).obj T).IsSolid := by
@@ -302,7 +302,7 @@ theorem finFree_isSolid (T : FintypeCat.{u}) : ((finFree R).obj T).IsSolid := by
   rw [isIso_iff_bijective]
   have hM := (profiniteSolid_fintype_isSolid R T).isIso_solidification_map X
   rw [isIso_iff_bijective] at hM
-  have e := finFree_iso_solid R T
+  have e := finFreeIsoSolid R T
   constructor
   · -- INJECTIVITY: transfer via post-composition with e.inv / e.hom
     intro f g hfg
