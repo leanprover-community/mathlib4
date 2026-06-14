@@ -195,18 +195,22 @@ theorem ne_bot {b : α} (hb : b ∈ P.parts) : b ≠ ⊥ := by
 protected theorem disjoint : (P.parts : Set α).PairwiseDisjoint id :=
   P.supIndep.pairwiseDisjoint
 
+section Apply
+variable {β : Type*} {f : α → β}
+
 /-- The `sup` of a sup-bot-preserving map `f` over the parts of a `Finpartition` equals `f a`. -/
-theorem sup_parts_apply {β : Type*} [SemilatticeSup β] [OrderBot β] {f : α → β}
-    (hsup : ∀ x y, f (x ⊔ y) = f x ⊔ f y) (hbot : f ⊥ = ⊥) : P.parts.sup f = f a :=
-  (apply_sup_eq_sup_comp f hsup hbot).symm.trans (congrArg f P.sup_parts)
+theorem sup_parts_apply [SemilatticeSup β] [OrderBot β] (hf : ∀ x y, f (x ⊔ y) = f x ⊔ f y)
+    (hbot : f ⊥ = ⊥) : P.parts.sup f = f a :=
+  (apply_sup_eq_sup_comp f hf hbot).symm.trans (congrArg f P.sup_parts)
 
 /-- The image of a `Finpartition` under an inf-bot-preserving map is pairwise disjoint. -/
-theorem pairwiseDisjoint_apply {β : Type*} [SemilatticeInf β] [OrderBot β] {f : α → β}
-    (hf : ∀ x y, f (x ⊓ y) = f x ⊓ f y) (hbot : f ⊥ = ⊥) :
-    (P.parts : Set α).PairwiseDisjoint f := by
+theorem pairwiseDisjoint_apply [SemilatticeInf β] [OrderBot β] (hf : ∀ x y, f (x ⊓ y) = f x ⊓ f y)
+    (hbot : f ⊥ = ⊥) : (P.parts : Set α).PairwiseDisjoint f := by
   intro _ hx _ hy hxy
   have := (P.disjoint hx hy hxy).eq_bot
   simp_all [disjoint_iff, ← hf]
+
+end Apply
 
 variable {P}
 
