@@ -499,7 +499,6 @@ lemma HasMFDerivWithinAt.prodMap {s : Set <| M × M'} {p : M × M'} {f : M → N
   apply HasFDerivWithinAt.prodMap
   exacts [hf.2.mono (fst_image_prod_subset ..), hg.2.mono (snd_image_prod_subset ..)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma HasMFDerivAt.prodMap {p : M × M'} {f : M → N} {g : M' → N'}
     {df : TangentSpace I p.1 →L[𝕜] TangentSpace J (f p.1)} (hf : HasMFDerivAt% f p.1 df)
     {dg : TangentSpace I' p.2 →L[𝕜] TangentSpace J' (g p.2)} (hg : HasMFDerivAt% g p.2 dg) :
@@ -507,8 +506,7 @@ lemma HasMFDerivAt.prodMap {p : M × M'} {f : M → N} {g : M' → N'}
       ((mfderiv% f p.1).prodMap (mfderiv% g p.2)) := by
   simp_rw [← hasMFDerivWithinAt_univ, ← mfderivWithin_univ, ← univ_prod_univ]
   convert! hf.hasMFDerivWithinAt.prodMap hg.hasMFDerivWithinAt
-  · rw [mfderivWithin_univ]; exact hf.mfderiv
-  · rw [mfderivWithin_univ]; exact hg.mfderiv
+  simp [mfderivWithin_univ, hf.mfderiv, hg.mfderiv]
 
 -- Note: this lemma does not apply easily to an arbitrary subset `s ⊆ M × M'` as
 -- unique differentiability on `(Prod.fst '' s)` and `(Prod.snd '' s)` does not imply
@@ -784,20 +782,6 @@ theorem MDifferentiableOn.add {s : Set M} (hf : MDiff[s] f) (hg : MDiff[s] g) : 
 theorem MDifferentiable.add (hf : MDiff f) (hg : MDiff g) : MDiff (f + g) :=
   fun x ↦ (hf x).add (hg x)
 
--- TODO: this lemma (and others below) uses the identification of tangent spaces silently
--- Deprecate all these lemmas in favour of a version using `mvfderiv(Within)`
--- Porting note: forcing types using `by exact`
-theorem mfderiv_add (hf : MDiffAt f z) (hg : MDiffAt g z) :
-    (mfderiv% (f + g) z : TangentSpace I z →L[𝕜] E') =
-      (by exact mfderiv% f z) + (by exact mfderiv% g z) :=
-  (hf.hasMFDerivAt.add hg.hasMFDerivAt).mfderiv
-
-theorem mfderivWithin_add (hf : MDiffAt[s] f z) (hg : MDiffAt[s] g z)
-    (hs : UniqueMDiffWithinAt I s z) :
-    (mfderiv[s] (f + g) z : TangentSpace I z →L[𝕜] E') =
-      (by exact mfderiv[s] f z) + (by exact mfderiv[s] g z) :=
-  (hf.hasMFDerivWithinAt.add hg.hasMFDerivWithinAt).mfderivWithin hs
-
 section sum
 variable {ι : Type} {t : Finset ι} {f : ι → M → E'} {f' : ι → TangentSpace I z →L[𝕜] E'}
 
@@ -849,6 +833,8 @@ theorem MDifferentiableOn.const_smul (a : 𝕜) (hf : MDiff[s] f) : MDiff[s] (a 
 theorem MDifferentiable.const_smul (s : 𝕜) (hf : MDiff f) : MDiff (s • f) :=
   fun x ↦ (hf x).const_smul s
 
+-- Note: this silently abuses the defeq between tangent spaces and normed spaces.
+-- TODO: should this use `mvfderiv` instead?
 theorem const_smul_mfderiv (hf : MDiffAt f z) (s : 𝕜) : mfderiv% (s • f) z = s • mfderiv% f z :=
   (hf.hasMFDerivAt.const_smul s).mfderiv
 
@@ -879,17 +865,6 @@ theorem mdifferentiableAt_neg : MDiffAt (-f) z ↔ MDiffAt f z :=
 
 theorem MDifferentiable.neg (hf : MDiff f) : MDiff (-f) := fun x ↦ (hf x).neg
 
-set_option backward.isDefEq.respectTransparency false in
-theorem mfderivWithin_neg (hs : UniqueMDiffWithinAt I s x) :
-    mfderiv[s] (-f) x = -mfderiv[s] f x := by
-  simp_rw [mfderivWithin]
-  by_cases hf : MDiffAt[s] f x
-  · exact hf.hasMFDerivWithinAt.neg.mfderivWithin hs
-  · rw [if_neg hf]; rw [← mdifferentiableWithinAt_neg] at hf; rw [if_neg hf, neg_zero]
-
-theorem mfderiv_neg : mfderiv% (-f) x = -mfderiv% f x := by
-  rw [← mfderivWithin_univ, mfderivWithin_neg (uniqueMDiffWithinAt_univ I), mfderivWithin_univ]
-
 theorem HasMFDerivWithinAt.sub (hf : HasMFDerivAt[s] f z f') (hg : HasMFDerivAt[s] g z g') :
     HasMFDerivAt[s] (f - g) z (f' - g') :=
   ⟨hf.1.sub hg.1, hf.2.sub hg.2⟩
@@ -911,17 +886,6 @@ theorem MDifferentiableOn.sub (hf : MDiff[s] f) (hg : MDiff[s] g) :
 
 theorem MDifferentiable.sub (hf : MDiff f) (hg : MDiff g) : MDiff (f - g) :=
   fun x ↦ (hf x).sub (hg x)
-
-theorem mfderivWithin_sub (hf : MDiffAt[s] f z) (hg : MDiffAt[s] g z)
-    (hs : UniqueMDiffWithinAt I s z) :
-    (mfderiv[s] (f - g) z : TangentSpace I z →L[𝕜] E') =
-      (by exact mfderiv[s] f z) - (by exact mfderiv[s] g z) :=
-  (hf.hasMFDerivWithinAt.sub hg.hasMFDerivWithinAt).mfderivWithin hs
-
-theorem mfderiv_sub (hf : MDiffAt f z) (hg : MDiffAt g z) :
-    (mfderiv% (f - g) z : TangentSpace I z →L[𝕜] E') =
-      (by exact mfderiv% f z) - (by exact mfderiv% g z) :=
-  (hf.hasMFDerivAt.sub hg.hasMFDerivAt).mfderiv
 
 end Group
 
