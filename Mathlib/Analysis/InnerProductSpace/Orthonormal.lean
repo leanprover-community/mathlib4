@@ -147,17 +147,6 @@ theorem Orthonormal.inner_left_fintype [Fintype ι] {v : ι → E} (hv : Orthono
     (i : ι) : ⟪∑ i : ι, l i • v i, v i⟫ = conj (l i) :=
   hv.inner_left_sum l (Finset.mem_univ _)
 
-/-- The inner product of two linear combinations of a family of vectors, expanded over the
-family's pairwise inner products `⟪v i, v j⟫`. -/
-theorem inner_linearCombination_linearCombination (v : ι → E) (l₁ l₂ : ι →₀ 𝕜) :
-    ⟪linearCombination 𝕜 v l₁, linearCombination 𝕜 v l₂⟫
-      = l₁.sum fun i a => l₂.sum fun j b => conj a * b * ⟪v i, v j⟫ := by
-  rw [linearCombination_apply, linearCombination_apply, Finsupp.sum_inner]
-  refine Finsupp.sum_congr fun i _ => ?_
-  rw [Finsupp.inner_sum]
-  refine Finsupp.sum_congr fun j _ => ?_
-  rw [inner_smul_left, inner_smul_right, ← mul_assoc]
-
 /-- The inner product of two linear combinations of a set of orthonormal vectors, expressed as
 a sum over the first `Finsupp`. -/
 theorem Orthonormal.inner_finsupp_eq_sum_left {v : ι → E} (hv : Orthonormal 𝕜 v) (l₁ l₂ : ι →₀ 𝕜) :

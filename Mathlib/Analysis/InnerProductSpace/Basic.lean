@@ -186,6 +186,17 @@ protected theorem DFinsupp.inner_sum {ι : Type*} [DecidableEq ι] {α : ι → 
     (l : Π₀ i, α i) (x : E) : ⟪x, l.sum f⟫ = l.sum fun i a => ⟪x, f i a⟫ := by
   simp +contextual only [DFinsupp.sum, inner_sum]
 
+/-- The inner product of two linear combinations of a family of vectors, expanded over the
+family's pairwise inner products `⟪v i, v j⟫`. -/
+theorem inner_linearCombination_linearCombination {ι : Type*} (v : ι → E) (l₁ l₂ : ι →₀ 𝕜) :
+    ⟪linearCombination 𝕜 v l₁, linearCombination 𝕜 v l₂⟫
+      = l₁.sum fun i a => l₂.sum fun j b => conj a * b * ⟪v i, v j⟫ := by
+  rw [linearCombination_apply, linearCombination_apply, Finsupp.sum_inner]
+  refine Finsupp.sum_congr fun i _ => ?_
+  rw [Finsupp.inner_sum]
+  refine Finsupp.sum_congr fun j _ => ?_
+  rw [inner_smul_left, inner_smul_right, ← mul_assoc]
+
 @[simp]
 theorem inner_zero_left (x : E) : ⟪0, x⟫ = 0 := by
   rw [← zero_smul 𝕜 (0 : E), inner_smul_left, map_zero, zero_mul]
