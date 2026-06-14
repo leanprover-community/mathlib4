@@ -464,6 +464,7 @@ lemma Multipliable.congr_cofinite₀ (hf : Multipliable f) (hf' : ∀ a, f a ≠
 omit [SeparatelyContinuousMul K] in
 theorem HasProd.inv₀ {a : K} [ContinuousInv₀ K] (h : HasProd f a) (ha : a ≠ 0) :
     HasProd (fun x ↦ (f x )⁻¹) a⁻¹ := by
+  unfold HasProd
   convert Filter.Tendsto.inv₀ h ha
   rw [Finset.prod_inv_distrib]
 
