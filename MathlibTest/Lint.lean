@@ -7,7 +7,7 @@ warning: The namespace 'add' is duplicated in the declaration 'add.add'
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/
 #guard_msgs in
-def add.add := True
+def add.add := 0
 
 namespace Foo
 
@@ -17,7 +17,7 @@ warning: The namespace 'Foo' is duplicated in the declaration 'Foo.Foo.foo'
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/
 #guard_msgs in
-def Foo.foo := True
+def Foo.foo := 0
 
 set_option linter.translateRedundant false in
 /--
