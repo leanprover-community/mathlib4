@@ -121,19 +121,19 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
     have : edist s t = edist (s : MeasuredSets μ) t := rfl
     simp only [ENNReal.coe_one, one_mul, this, MeasuredSets.edist_def, m₀, edist_eq_enorm_sub]
     rw [measure_symmDiff_eq (by exact s.1.2.nullMeasurableSet) (by exact t.1.2.nullMeasurableSet)]
-    have Is : ((s : Set α) ∩ t) ∪ (s \ t) = (s : Set α) := Set.inter_union_diff _ _
-    have It : ((t : Set α) ∩ s) ∪ (t \ s) = (t : Set α) := Set.inter_union_diff _ _
+    have Is : ((s : Set α) ∩ t) ∪ (s \ t) = (s : Set α) := Set.inter_union_sdiff _ _
+    have It : ((t : Set α) ∩ s) ∪ (t \ s) = (t : Set α) := Set.inter_union_sdiff _ _
     nth_rewrite 1 [← Is]
     nth_rewrite 3 [← It]
     rw [addContent_union hC (hC.inter_mem (C'C _ t.2) (C'C _ s.2))
-        (hC.diff_mem (C'C _ t.2) (C'C _ s.2)) Set.disjoint_sdiff_inter.symm,
+        (hC.sdiff_mem (C'C _ t.2) (C'C _ s.2)) Set.disjoint_sdiff_inter.symm,
       addContent_union hC (hC.inter_mem (C'C _ s.2) (C'C _ t.2))
-        (hC.diff_mem (C'C _ s.2) (C'C _ t.2)) Set.disjoint_sdiff_inter.symm, Set.inter_comm]
+        (hC.sdiff_mem (C'C _ s.2) (C'C _ t.2)) Set.disjoint_sdiff_inter.symm, Set.inter_comm]
     simp only [add_sub_add_left_eq_sub, ge_iff_le]
     apply enorm_sub_le.trans
     gcongr
-    · exact hm _ (hC.diff_mem (C'C _ s.2) (C'C _ t.2))
-    · exact hm _ (hC.diff_mem (C'C _ t.2) (C'C _ s.2))
+    · exact hm _ (hC.sdiff_mem (C'C _ s.2) (C'C _ t.2))
+    · exact hm _ (hC.sdiff_mem (C'C _ t.2) (C'C _ s.2))
   -- Let `m₁` be the extension of `m₀` to all elements of `MeasuredSets μ` by continuity
   let m₁ : MeasuredSets μ → E := C'_dense.extend m₀
   -- It is again Lipschitz continuous and bounded by `μ`
@@ -179,7 +179,7 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
     -- Therefore, the set `s'' := s' \ t'` still approximates well the original set `s`, it belongs
     -- to `C`, and moreover `s''` and `t'` are disjoint.
     let s'' := s' \ t'
-    have s''C : s'' ∈ C := hC.diff_mem s'C t'C
+    have s''C : s'' ∈ C := hC.sdiff_mem s'C t'C
     have hs'' : μ (s'' ∆ s) < 3 * δ := calc
       μ (s'' ∆ s)
       _ ≤ μ (s'' ∆ s') + μ (s' ∆ s) := measure_symmDiff_le _ _ _

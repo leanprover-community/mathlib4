@@ -256,7 +256,7 @@ theorem _root_.MeasurableEmbedding.variation_map (hφ : MeasurableEmbedding φ) 
   apply Measure.le_iff.2 (fun s hs ↦ ?_)
   simp only [hφ.measurable, hs, Measure.map_apply]
   have : (μ.map φ).variation s = (μ.map φ).variation (s ∩ range φ) := by
-    nth_rw 1 [← inter_union_diff s (range φ)]
+    nth_rw 1 [← inter_union_sdiff s (range φ)]
     have : (μ.map φ).variation (s \ range φ) = 0 := by
       apply (variation_apply_eq_zero (hs.diff hφ.measurableSet_range)).2 (fun t ht t_meas ↦ ?_)
       have : φ ⁻¹' t = ∅ := by grind
