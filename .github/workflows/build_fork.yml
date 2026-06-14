@@ -25,6 +25,7 @@ concurrency:
 permissions:
   contents: read
   id-token: write
+  actions: read  # Allow get-tools to download the prebuilt tools artifact from master's publish_tools runs
   pull-requests: write  # Only allow PR comments/labels
   # All other permissions are implicitly 'none'
 

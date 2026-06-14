@@ -93,17 +93,6 @@ jobs:
       - name: 'Setup jq'
         uses: dcarbone/install-jq-action@b7ef57d46ece78760b4019dbc4080a1ba2a40b45 # v3.2.0
 
-      # Checkout a trusted branch to build the tooling from
-      - name: Checkout tools branch
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-        with:
-          # Recall that on the `leanprover-community/mathlib4-nightly-testing` repository,
-          # we don't maintain a `master` branch at all.
-          # For PRs and pushes to this repository, we will use `nightly-testing-green` instead,
-          # so that even when `nightly-testing` is broken, we can still build tools from a known good state.
-          ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing-green' || 'master') }}
-          path: tools-branch
-
       - name: Checkout local actions
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
@@ -208,14 +197,22 @@ jobs:
           # Set it as an environment variable for subsequent steps
           echo "LEAN_SRC_PATH=$LEAN_SRC_PATH" >> "$GITHUB_ENV"
 
-      - name: build tools-branch tools
-        shell: bash # We're only building a trusted branch with the tools, so no need to run inside landrun.
-        run: |
-          cd tools-branch
-          lake build cache check-yaml graph
-          ls .lake/build/bin/cache
-          ls .lake/build/bin/check-yaml
-          ls .lake/packages/importGraph/.lake/build/bin/graph
+      # Populate `tools-branch/` with the trusted CI tooling (the `cache` binary and
+      # the `lake-build-*` helper scripts invoked by path below). On the common path
+      # this downloads the prebuilt `tools-bin` artifact published from `master` by
+      # `publish_tools.yml`; otherwise (bors/ci_dev overrides, nightly-testing, or any
+      # download failure) it falls back to checking out and building from source.
+      #
+      # Recall that on the `leanprover-community/mathlib4-nightly-testing` repository,
+      # we don't maintain a `master` branch at all. For PRs and pushes to this
+      # repository, we build tools from `nightly-testing-green` instead, so that even
+      # when `nightly-testing` is broken, we can still build tools from a known good state.
+      - name: Get CI tools
+        uses: ./workflow-actions/.github/actions/get-tools
+        with:
+          use_artifact: ${{ inputs.tools_branch_ref == '' && github.repository == 'leanprover-community/mathlib4' }}
+          tools_source_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing-green' || 'master') }}
+          github_token: ${{ github.token }}
 
       - name: download dependencies
         # We need network access to download dependencies
@@ -617,7 +614,11 @@ jobs:
     # Pins the OIDC `sub` claim to `...:environment:<cache_environment>`, which the Azure cache
     # app's federated credential is scoped to. A token minted by any job without this environment
     # (e.g. the untrusted build/post_steps/style_lint jobs) cannot satisfy that trust.
-    environment: ${{ inputs.cache_environment }}
+    environment:
+      name: ${{ inputs.cache_environment }}
+      # Skip creating a GitHub deployment record/UI; we use the environment only to
+      # pin the OIDC `sub` claim and gate access to its federated credential.
+      deployment: false
     permissions:
       contents: read
       id-token: write
@@ -767,6 +768,21 @@ jobs:
         run: |
           lake env lean --run "${CI_SCRIPTS_DIR}/pr_summary/dumpReasonableDecls.lean" \
             --out decls.txt --imports-out imports.json Mathlib
+          ## Record the PR number so the post-build `decls-diff` workflow can find
+          ## the comment to patch without the (laggy) commit-SHA search API. Empty
+          ## for non-PR builds (push to master / bors); the consumer then falls
+          ## back to the commit's associated PRs.
+          printf '%s' "${{ github.event.pull_request.number }}" > pr_number.txt
+
+      - name: ensure dump outputs are regular files
+        run: |
+          for f in decls.txt imports.json import_graph.dot pr_number.txt; do
+            if [ -L "$f" ] || [ ! -f "$f" ]; then
+              echo "Refusing to upload: $f is not a regular file." >&2
+              ls -la -- "$f" >&2 || true
+              exit 1
+            fi
+          done
 
       - name: upload the import graph
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -776,12 +792,13 @@ jobs:
             import_graph.dot
             decls.txt
             imports.json
+            pr_number.txt
           ## Master pushes: 90 days, so later PRs forked from these commits
           ## can consume the dumps from the artifact. Other branches: 7 days.
           retention-days: ${{ github.ref == 'refs/heads/master' && '90' || '7' }}
 
       - name: clean up the import graph file
-        run: rm -f import_graph.dot decls.txt imports.json
+        run: rm -f import_graph.dot decls.txt imports.json pr_number.txt
 
       - name: check all scripts build successfully
         run: |
@@ -871,7 +888,7 @@ jobs:
                     nodes {
                       ... on LabeledEvent {
                         createdAt
-                        actor { login }
+                        actor { login __typename }
                         label { name }
                       }
                     }
@@ -891,16 +908,20 @@ jobs:
         run: |
           # Parse the GraphQL response and filter for the specific label
           echo '${{ steps.get-timeline.outputs.data }}'
-          USERNAME=$(echo '${{ steps.get-timeline.outputs.data }}' | jq -r '
+          ACTOR=$(echo '${{ steps.get-timeline.outputs.data }}' | jq -c '
             .repository.pullRequest.timelineItems.nodes
             | map(select(.label.name == "auto-merge-after-CI"))
             | sort_by(.createdAt)
             | last
-            | .actor.login // empty
+            | .actor // empty
           ')
+          USERNAME=$(echo "$ACTOR" | jq -r '.login // empty')
+          # 'Bot' for GitHub App actors (whose GraphQL logins lack the '[bot]' suffix),
+          # 'User' for regular accounts
+          ACTOR_TYPE=$(echo "$ACTOR" | jq -r '.__typename // empty')
 
           # Validate username format (GitHub usernames are alphanumeric + hyphens, max 39 chars)
-          printf 'USERNAME: %s\n' "$USERNAME"
+          printf 'USERNAME: %s\nACTOR_TYPE: %s\n' "$USERNAME" "$ACTOR_TYPE"
           if [[ -z "$USERNAME" ]]; then
             echo "Error: No actor found for the specified label"
             exit 1
@@ -910,13 +931,14 @@ jobs:
           fi
 
           echo "username=$USERNAME" >> "$GITHUB_OUTPUT"
-          echo "Found label actor: $USERNAME"
+          echo "actor_type=$ACTOR_TYPE" >> "$GITHUB_OUTPUT"
+          echo "Found label actor: $USERNAME ($ACTOR_TYPE)"
 
-      - if: >- # bot usernames will cause this step to error with "Could not resolve to a User..."
+      # bot usernames will cause this step to error with "Could not resolve to a User...",
+      # so we skip it for all non-user actors; allowed bots are validated in the next step
+      - if: >-
           contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI') &&
-          steps.get-label-actor.outputs.username != 'mathlib-nolints' &&
-          steps.get-label-actor.outputs.username != 'mathlib-update-dependencies' &&
-          steps.get-label-actor.outputs.username != 'mathlib-splicebot'
+          steps.get-label-actor.outputs.actor_type == 'User'
         name: check team membership
         uses: tspascoal/get-user-teams-membership@b2546c5affc730fd8e3d8483ae9ad3621938c2f9 # v4.0.2
         id: actorTeams
@@ -929,9 +951,14 @@ jobs:
       - if: >-
           contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI') &&
           (
-            steps.get-label-actor.outputs.username == 'mathlib-nolints' ||
-            steps.get-label-actor.outputs.username == 'mathlib-update-dependencies' ||
-            steps.get-label-actor.outputs.username == 'mathlib-splicebot' ||
+            (
+              steps.get-label-actor.outputs.actor_type == 'Bot' &&
+              (
+                steps.get-label-actor.outputs.username == 'mathlib-nolints' ||
+                steps.get-label-actor.outputs.username == 'mathlib-update-dependencies' ||
+                steps.get-label-actor.outputs.username == 'mathlib-splicebot'
+              )
+            ) ||
             contains(steps.actorTeams.outputs.teams, 'mathlib-maintainers') ||
             contains(steps.actorTeams.outputs.teams, 'lean-release-managers') ||
             contains(steps.actorTeams.outputs.teams, 'bot-users')
