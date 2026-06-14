@@ -12,6 +12,15 @@ public import Mathlib.LinearAlgebra.Projectivization.Action
 This file contains key constructions to prove that `PSL(n, F)` is simple via
 showing it has an Iwasawa structure.
 
+## Main definitions
+
+* `Matrix.SpecialLinearGroup.lineStab` : the unipotent radical attached to a subspace `L ⊆ ι → F`
+  defined as the subgroup of `SL ι F` consisting of matrices `A` such that `A - 1`
+  sends every vector into `L`.
+
+* `PSL.iwasawaT` : the candidate family of subgroups for the Iwasawa structure on
+  `PSL ι F` acting on the projective space `ℙ F (ι → F)` from `Matrix.SpecialLinearGroup.lineStab`.
+
 -/
 
 @[expose] public section
@@ -89,16 +98,10 @@ private lemma LinearMap.exists_restrict_span_singleton_eq_smul_id
     ∃ c : R, A v = c • v ∧ ∃ hcomap : Submodule.span R {v} ≤ (Submodule.span R {v}).comap A,
       A.restrict hcomap = (c • LinearMap.id : Submodule.span R {v} →ₗ[R] _) := by
   obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.1 hAv
-  refine ⟨c, hc.symm, ?_, ?_⟩
-  · intro w hw
-    obtain ⟨a, rfl⟩ := Submodule.mem_span_singleton.1 hw
-    rw [Submodule.mem_comap, map_smul]
-    exact Submodule.smul_mem _ _ hAv
-  · refine LinearMap.ext fun ⟨w, hw⟩ ↦ ?_
-    obtain ⟨a, rfl⟩ := Submodule.mem_span_singleton.1 hw
-    apply Subtype.ext
-    change A (a • v) = c • (a • v)
-    rw [map_smul, ← hc, smul_comm]
+  refine ⟨c, hc.symm, fun w hw ↦ ?_, LinearMap.ext fun ⟨w, hw⟩ ↦ ?_⟩
+  <;> obtain ⟨a, rfl⟩ := Submodule.mem_span_singleton.1 hw
+  · simpa [Submodule.mem_comap, map_smul] using Submodule.smul_mem _ _ hAv
+  · simp [Subtype.ext_iff, ← hc, smul_comm a c v]
 
 lemma Matrix.SpecialLinearGroup.lineStab_fix_of_span
     (v : ι → F) (hv : v ≠ 0)
@@ -109,13 +112,11 @@ lemma Matrix.SpecialLinearGroup.lineStab_fix_of_span
   obtain ⟨c, hcv, hcomap, hres⟩ :=
     LinearMap.exists_restrict_span_singleton_eq_smul_id (A := A.toLin'.toLinearMap)
       (by simpa using! add_mem (hA v) (Submodule.mem_span_singleton_self v))
-  have hQ : L.mapQ L A.toLin'.toLinearMap hcomap = LinearMap.id := by
-    refine LinearMap.ext fun x ↦ ?_
+  have hQ : L.mapQ L A.toLin'.toLinearMap hcomap = LinearMap.id := LinearMap.ext fun x ↦ by
     induction x using Submodule.Quotient.induction_on with
-    | _ w => rw [Submodule.mapQ_apply, LinearMap.id_apply, (Submodule.Quotient.eq L).2]; exact hA w
-  have hdet := LinearMap.det_eq_det_mul_det L A.toLin'.toLinearMap hcomap
-  rw [show LinearMap.det A.toLin'.toLinearMap = 1 by
-        change LinearMap.det (Matrix.toLin' A.1) = 1; rw [LinearMap.det_toLin']; exact A.2,
+    | _ w => simpa [Submodule.Quotient.eq] using! hA w
+  have hdet := A.toLin'.toLinearMap.det_eq_det_mul_det L hcomap
+  rw [show LinearMap.det A.toLin'.toLinearMap = 1 by simp [toLin'_to_linearMap],
       hres, hQ, LinearMap.det_smul, finrank_span_singleton hv, pow_one,
       LinearMap.det_id, LinearMap.det_id, mul_one, mul_one] at hdet
   exact hcv.trans (hdet ▸ one_smul F v)
