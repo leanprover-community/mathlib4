@@ -81,7 +81,7 @@ class StarOrderedRing (R : Type*) [NonUnitalSemiring R] [PartialOrder R] [StarRi
   le_iff :
     ∀ x y : R, x ≤ y ↔ ∃ p, p ∈ AddSubmonoid.closure (Set.range fun s => star s * s) ∧ y = x + p
 
-/-- A class to encode that selfadjoint elements may be expressed as the
+/-- A class to encode that self-adjoint elements may be expressed as the
 difference of nonnegative elements. This is satisfied by any type with a
 `NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint` instance.
 However, it can also be satisfied by continuous linear functionals equipped
@@ -90,7 +90,7 @@ with the intrinsic star operation.
 This type class can be used to guarantee `PositiveLinearMap` is a `StarHomClass`. -/
 class SelfAdjointDecompose (R : Type*) [AddGroup R] [Star R]
     [PartialOrder R] where
-  /-- Every self-adjoint element is the difference of nonnegatives elements. -/
+  /-- Every self-adjoint element is the difference of nonnegative elements. -/
   exists_nonneg_sub_nonneg {a : R} (ha : IsSelfAdjoint a) :
     ∃ (b c : R), 0 ≤ b ∧ 0 ≤ c ∧ a = b - c
 
@@ -459,7 +459,7 @@ instance (priority := 100) StarRingEquivClass.instOrderIsoClass [EquivLike F R S
 lemma IsSelfAdjoint.map' {F E R : Type*} [AddCommGroup E] [PartialOrder E] [StarAddMonoid E]
     [NonUnitalRing R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
     [SelfAdjointDecompose E] [FunLike F E R] [OrderHomClass F E R] [AddMonoidHomClass F E R]
-    (f : F) {a : E} (ha : IsSelfAdjoint a) :
+    {a : E} (ha : IsSelfAdjoint a) (f : F) :
     IsSelfAdjoint (f a) := by
   obtain ⟨b, c, hb, hc, rfl⟩ := ha.exists_nonneg_sub_nonneg
   have h₁ := OrderHomClass.mono f hb
