@@ -536,12 +536,10 @@ theorem map_surjective {f : P1 →ᵃ[k] P2} : Function.Surjective (map f) ↔ F
     obtain ⟨q, rfl⟩ := this
     rw [map_apply_ofPoint] at hx
     exact ⟨q, ofPoint_injective hx⟩
-  mpr hf x := by
-    cases x with | _ v c p
-    obtain ⟨q, rfl⟩ := hf p
-    obtain ⟨u, rfl⟩ := f.linear_surjective_iff.mpr hf v
-    exists ofVector u + c • ofPoint q
-    simp
+  mpr hf := by
+    rw [← LinearMap.range_eq_top, ← top_le_iff, ← span_range_ofPoint, Submodule.span_le,
+      Set.range_subset_iff, hf.forall]
+    exact fun p => ⟨ofPoint p, map_apply_ofPoint⟩
 
 /-- An affine isomorphism between two affine spaces extends to a linear isomorphism between their
 homogenizations. -/
