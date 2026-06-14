@@ -52,7 +52,6 @@ noncomputable abbrev PSL.iwasawaT (p : ℙ F (ι → F)) :
 
 open scoped Pointwise
 
-/-- The submodule of `g • p` is the image of `p.submodule` under multiplication by `g.1`. -/
 lemma PSL.smul_submodule (g : Matrix.SpecialLinearGroup ι F) (p : ℙ F (ι → F)) :
     (g • p).submodule = g • p.submodule:= by
   induction p using Projectivization.ind with | _ v hv => ?_
@@ -63,13 +62,6 @@ lemma Matrix.SpecialLinearGroup.lineStab_smul
     (g : Matrix.SpecialLinearGroup ι F) (L : Submodule F (ι → F)) :
     Matrix.SpecialLinearGroup.lineStab (g • L) =
       MulAut.conj g • Matrix.SpecialLinearGroup.lineStab L := by
-  -- Useful facts:
-  have hgg : g.1 * g⁻¹.1 = 1 := by
-    rw [← Matrix.SpecialLinearGroup.coe_mul, mul_inv_cancel,
-      Matrix.SpecialLinearGroup.coe_one]
-  have hg'g : g⁻¹.1 * g.1 = 1 := by
-    rw [← Matrix.SpecialLinearGroup.coe_mul, inv_mul_cancel,
-      Matrix.SpecialLinearGroup.coe_one]
   ext A
   rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
   simp only [mem_lineStab_iff, Submodule.mem_smul_pointwise_iff_exists, MulAut.smul_def,
