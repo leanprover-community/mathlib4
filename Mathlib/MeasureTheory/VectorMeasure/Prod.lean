@@ -58,8 +58,7 @@ lemma prod_eq_zero_of_not_hasProd (h : ¬HasProd μ ν B) :
   rcases eq_or_ne t ∅ with rfl | ht
   · simp
   by_cases h's : MeasurableSet s; swap
-  · simp only [h's, not_false_eq_true, not_measurable, _root_.map_zero,
-      ContinuousLinearMap.zero_apply]
+  · simp only [h's, not_false_eq_true, not_measurable, _root_.map_zero, _root_.zero_apply]
     rw [not_measurable]
     simp [measurableSet_prod, hs, ht, h's]
   by_cases h't : MeasurableSet t; swap
@@ -358,11 +357,13 @@ theorem integral_prod {B : G →L[ℝ] F →L[ℝ] J} {C : J →L[ℝ] E →L[�
 /-- **Fubini's Theorem**: For integrable functions on `X × Y`,
 the vector measure integral of `f` for the product vector measure is equal to the iterated vector
 measure integral. Version where `f` is scalar. -/
-theorem integral_prod_smul [CompleteSpace H] [CompleteSpace F] {B : E →L[ℝ] F →L[ℝ] H}
+theorem integral_prod_smul [CompleteSpace F] {B : E →L[ℝ] F →L[ℝ] H}
     [IsFiniteMeasure ν.variation] [IsFiniteMeasure μ.variation]
     {f : X × Y → ℝ} (hf : Integrable f (μ.variation.prod ν.variation)) :
-    ∫ᵛ z, f z ∂•(μ.prod ν B) = ∫ᵛ x, (∫ᵛ y, f (x, y) ∂•ν) ∂[B.flip; μ] :=
-  integral_prod hf (fun x y z ↦ by simp)
+    ∫ᵛ z, f z ∂•(μ.prod ν B) = ∫ᵛ x, (∫ᵛ y, f (x, y) ∂•ν) ∂[B.flip; μ] := by
+  by_cases h : CompleteSpace H
+  · exact integral_prod hf (fun x y z ↦ by simp)
+  · simp [integral_of_not_completeSpace, h]
 
 /-- Symmetric version of **Fubini's Theorem**: For integrable functions on `X × Y`,
 the vector measure integral of `f` for the product vector measure is equal to the iterated vector
@@ -383,11 +384,13 @@ theorem integral_prod_symm {B : G →L[ℝ] E →L[ℝ] J} {C : J →L[ℝ] F �
 the vector measure integral of `f` for the product vector measure is equal to the iterated vector
 measure integral. Version where `f` is scalar.
 This version has the integrals on the right-hand side in the other order. -/
-theorem integral_prod_smul_symm [CompleteSpace H] [CompleteSpace E] {B : E →L[ℝ] F →L[ℝ] H}
+theorem integral_prod_smul_symm [CompleteSpace E] {B : E →L[ℝ] F →L[ℝ] H}
     [IsFiniteMeasure ν.variation] [IsFiniteMeasure μ.variation]
     {f : X × Y → ℝ} (hf : Integrable f (μ.variation.prod ν.variation)) :
-    ∫ᵛ z, f z ∂•(μ.prod ν B) = ∫ᵛ y, (∫ᵛ x, f (x, y) ∂•μ) ∂[B; ν] :=
-  integral_prod_symm hf (fun x y z ↦ by simp)
+    ∫ᵛ z, f z ∂•(μ.prod ν B) = ∫ᵛ y, (∫ᵛ x, f (x, y) ∂•μ) ∂[B; ν] := by
+  by_cases h : CompleteSpace H
+  · exact integral_prod_symm hf (fun x y z ↦ by simp)
+  · simp [integral_of_not_completeSpace, h]
 
 /-- Reversed version of **Fubini's Theorem**. -/
 theorem integral_integral {B : G →L[ℝ] F →L[ℝ] J} {C : J →L[ℝ] E →L[ℝ] I}
@@ -400,7 +403,7 @@ theorem integral_integral {B : G →L[ℝ] F →L[ℝ] J} {C : J →L[ℝ] E →
   (integral_prod hf h).symm
 
 /-- Reversed version of **Fubini's Theorem**, version with a scalar function. -/
-theorem integral_integral_smul [CompleteSpace H] [CompleteSpace F] {B : E →L[ℝ] F →L[ℝ] H}
+theorem integral_integral_smul [CompleteSpace F] {B : E →L[ℝ] F →L[ℝ] H}
     [IsFiniteMeasure ν.variation] [IsFiniteMeasure μ.variation]
     {f : X → Y → ℝ} (hf : Integrable (uncurry f) (μ.variation.prod ν.variation)) :
     ∫ᵛ x, (∫ᵛ y, f x y ∂•ν) ∂[B.flip; μ] = ∫ᵛ z, f z.1 z.2 ∂•(μ.prod ν B) :=
@@ -417,7 +420,7 @@ theorem integral_integral_symm {B : G →L[ℝ] E →L[ℝ] J} {C : J →L[ℝ] 
   (integral_prod_symm hf h).symm
 
 /-- Reversed version of **Fubini's Theorem** (symmetric version), version with a scalar function. -/
-theorem integral_integral_smul_symm [CompleteSpace H] [CompleteSpace E] {B : E →L[ℝ] F →L[ℝ] H}
+theorem integral_integral_smul_symm [CompleteSpace E] {B : E →L[ℝ] F →L[ℝ] H}
     [IsFiniteMeasure ν.variation] [IsFiniteMeasure μ.variation]
     {f : X → Y → ℝ} (hf : Integrable (uncurry f) (μ.variation.prod ν.variation)) :
     ∫ᵛ y, (∫ᵛ x, f x y ∂•μ) ∂[B; ν] = ∫ᵛ z, f z.1 z.2 ∂•(μ.prod ν B) :=
@@ -428,12 +431,14 @@ We express this with respect to general pairing functions, with a compatibility
 condition saying that the compositions coincide up to reordering. -/
 theorem integral_integral_swap
     [IsFiniteMeasure ν.variation] [IsFiniteMeasure μ.variation]
-    ⦃f : X → Y → G⦄ [CompleteSpace H] [CompleteSpace I] [CompleteSpace J]
+    ⦃f : X → Y → G⦄ [CompleteSpace H] [CompleteSpace J]
     {B : G →L[ℝ] F →L[ℝ] H} {C : H →L[ℝ] E →L[ℝ] I}
     {A : G →L[ℝ] E →L[ℝ] J} {D : J →L[ℝ] F →L[ℝ] I}
     (hf : Integrable (uncurry f) (μ.variation.prod ν.variation))
     (h : ∀ x y z, C (B x y) z = D (A x z) y) :
     ∫ᵛ x, ∫ᵛ y, f x y ∂[B; ν] ∂[C; μ] = ∫ᵛ y, ∫ᵛ x, f x y ∂[A; μ] ∂[D; ν] := by
+  by_cases hI : CompleteSpace I; swap
+  · simp [integral_of_not_completeSpace, hI]
   let P : (H →L[ℝ] I) →L[ℝ] (G →L[ℝ] H) →L[ℝ] (G →L[ℝ] I) :=
     ContinuousLinearMap.compL ℝ G H I
   let A' := ContinuousLinearMap.bilinearComp P C.flip B.flip
@@ -443,7 +448,7 @@ theorem integral_integral_swap
 
 /-- Change the order of Bochner integration in integrals wrt vector measures.
 Case where `f` is scalar. -/
-theorem integral_integral_smul_swap [CompleteSpace E] [CompleteSpace F] [CompleteSpace G]
+theorem integral_integral_smul_swap [CompleteSpace E] [CompleteSpace F]
     [IsFiniteMeasure ν.variation] [IsFiniteMeasure μ.variation]
     ⦃f : X → Y → ℝ⦄ {B : E →L[ℝ] F →L[ℝ] G}
     (hf : Integrable (uncurry f) (μ.variation.prod ν.variation)) :
