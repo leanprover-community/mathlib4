@@ -1391,8 +1391,9 @@ theorem tendsto_setToFun_filter_of_norm_le_const (hT : DominatedFinMeasAdditive 
     C h_meas h_boundc (integrable_const c) h_lim
 
 omit [NormedSpace ℝ E] in
-theorem measurableSet_integrable {β : Type*} {mβ : MeasurableSpace β} [SFinite μ] ⦃f : β → α → E⦄
-    (hf : StronglyMeasurable (Function.uncurry f)) : MeasurableSet {x | Integrable (f x) μ} := by
+theorem _root_.measurableSet_integrable {β : Type*} {mβ : MeasurableSpace β} [SFinite μ]
+    ⦃f : β → α → E⦄ (hf : StronglyMeasurable (Function.uncurry f)) :
+    MeasurableSet {x | Integrable (f x) μ} := by
   simp_rw [Integrable, hf.of_uncurry_left.aestronglyMeasurable, true_and]
   exact measurableSet_lt (Measurable.lintegral_prod_right hf.enorm) measurable_const
 
