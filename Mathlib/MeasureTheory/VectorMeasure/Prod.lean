@@ -18,12 +18,13 @@ public section
 open Filter Function MeasureTheory RCLike Set TopologicalSpace Topology
 open scoped ENNReal NNReal Finset
 
-variable {ι X Y E F G H I : Type*} {mX : MeasurableSpace X} {mY : MeasurableSpace Y}
+variable {ι X Y E F G H I J : Type*} {mX : MeasurableSpace X} {mY : MeasurableSpace Y}
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
   [NormedAddCommGroup H] [NormedSpace ℝ H]
   [NormedAddCommGroup I] [NormedSpace ℝ I]
+  [NormedAddCommGroup J] [NormedSpace ℝ J]
   {μ : VectorMeasure X E} {ν : VectorMeasure Y F}
   {B : E →L[ℝ] F →L[ℝ] G} {f g : X → E} {s t : Set X}
 
@@ -170,7 +171,7 @@ lemma prod_apply_eq_integral [CompleteSpace G] [IsFiniteMeasure μ.variation]
   rw [this]
   simp [prodOfIsFiniteMeasureLeft, hs]
 
-lemma prod_apply_eq_integral' [CompleteSpace G] [IsFiniteMeasure μ.variation]
+lemma prod_flip_apply_eq_integral [CompleteSpace G] [IsFiniteMeasure μ.variation]
     {B : F →L[ℝ] E →L[ℝ] G} {s : Set (X × Y)} (hs : MeasurableSet s) :
     μ.prod ν B.flip s = ∫ᵛ x, ν (Prod.mk x ⁻¹' s) ∂[B; μ] := by
   simp [prod_apply_eq_integral hs]
@@ -284,54 +285,17 @@ theorem continuous_integral_integral {B : G →L[ℝ] F →L[ℝ] H} {C : H →L
   rw [← tendsto_iff_enorm_sub_tendsto_zero]
   exact tendsto_id
 
-section
-
-#check MemLp.of_measure_le_smul
-
-variable {α : Type*} {m : MeasurableSpace α} {μ ν : Measure α} {c : ℝ≥0∞} {p : ℝ≥0∞}
-
-noncomputable def foo (hc : c ≠ ∞) (h : μ ≤ c • ν) : Lp E p ν →ₗ[ℝ] Lp E p μ where
-  toFun f := ((Lp.memLp f).of_measure_le_smul hc h).toLp f
-  map_add' f g := by
-    ext
-    grw [MemLp.coeFn_toLp, Lp.coeFn_add, MemLp.coeFn_toLp, MemLp.coeFn_toLp]
-    have : μ ≪ ν := Measure.absolutelyContinuous_of_le_smul h
-    apply Measure.AbsolutelyContinuous.ae_eq this
-    grw [Lp.coeFn_add]
-  map_smul' c f := by
-    ext
-    grw [MemLp.coeFn_toLp, Lp.coeFn_smul, MemLp.coeFn_toLp]
-    have : μ ≪ ν := Measure.absolutelyContinuous_of_le_smul h
-    apply Measure.AbsolutelyContinuous.ae_eq this
-    grw [Lp.coeFn_smul]
-    rfl
-
-lemma coeFn_foo (hc : c ≠ ∞) (h : μ ≤ c • ν) (f : Lp E p ν) : foo hc h f =ᵐ[μ] f := by
-  simp [foo, MemLp.coeFn_toLp]
-
-lemma norm_foo
-    (hc : c ≠ ∞) (h : μ ≤ c • ν) [Fact (1 ≤ p)] {f : Lp E p ν} :
-    ‖foo hc h f‖ₑ ≤ c * ‖f‖ₑ := by
-  simp only [Lp.enorm_def]
-  rw [eLpNorm_congr_ae (coeFn_foo hc h f)]
-  apply eLpNorm_mono_measure
-
-
-
-
-
-#exit
-
 /-- **Fubini's Theorem**: For integrable functions on `X × Y`,
 the vector measure integral of `f` for the product vector measure is equal to the iterated vector
 measure integral. We express this with respect to general pairing functions, with a compatibility
 condition saying that the compositions coincide up to reordering. -/
-theorem integral_prod {B : G →L[ℝ] F →L[ℝ] H} {C : H →L[ℝ] E →L[ℝ] I}
-    {A : E →L[ℝ] F →L[ℝ] H} {D : G →L[ℝ] H →L[ℝ] I} [CompleteSpace G] [CompleteSpace H]
+theorem integral_prod {B : G →L[ℝ] F →L[ℝ] J} {C : J →L[ℝ] E →L[ℝ] I}
+    {A : E →L[ℝ] F →L[ℝ] H} {D : G →L[ℝ] H →L[ℝ] I}
+    [CompleteSpace H] [CompleteSpace J]
     [IsFiniteMeasure ν.variation] [IsFiniteMeasure μ.variation]
     {f : X × Y → G} (hf : Integrable f (μ.variation.prod ν.variation))
     (h : ∀ x y z, D x (A y z) = C (B x z) y) :
-    ∫ᵛ z, f z ∂[D; μ.prod ν A] = ∫ᵛ x, ∫ᵛ y, f (x, y) ∂[B; ν] ∂[C; μ] := by
+    ∫ᵛ z, f z ∂[D; μ.prod ν A] = ∫ᵛ x, (∫ᵛ y, f (x, y) ∂[B; ν]) ∂[C; μ] := by
   by_cases hI : CompleteSpace I; swap
   · simp only [integral_of_not_completeSpace hI]
   revert f
@@ -339,8 +303,8 @@ theorem integral_prod {B : G →L[ℝ] F →L[ℝ] H} {C : H →L[ℝ] E →L[�
   · intro c s hs h2s
     simp_rw [integral_indicator hs, ← indicator_comp_right, Function.comp_def,
       integral_indicator (measurable_prodMk_left hs), setIntegral_const]
-    rw [integral_continuousLinearMap_comp, ← prod_apply_eq_integral' hs]; swap
-    · exact integrable_vectorMeasure_prodMk_left hs
+    rw [integral_continuousLinearMap_comp (integrable_vectorMeasure_prodMk_left hs),
+      ← prod_flip_apply_eq_integral hs]
     suffices (μ.prod ν A).mapRange (D c) (D c).continuous = μ.prod ν (C ∘SL B c).flip by
       simp [← this]
     apply (prod_eq_of_forall_apply_prod _).symm
@@ -353,39 +317,31 @@ theorem integral_prod {B : G →L[ℝ] F →L[ℝ] H} {C : H →L[ℝ] E →L[�
     filter_upwards [fint.prod_right_ae, gint.prod_right_ae] with x hx h'x
     simp only [Pi.add_apply]
     rw [integral_fun_add hx h'x]
-  · apply isClosed_eq
-    ·
-      sorry
-    sorry
+  · apply isClosed_eq ?_  continuous_integral_integral
+    let P : Lp G 1 (μ.variation.prod ν.variation) →L[ℝ] Lp G 1 (μ.prod ν A).variation :=
+      LpToLpOfMeasureLeSMul (by simp) variation_prod_le
+    have M (f : Lp G 1 (μ.variation.prod ν.variation)) :
+        ∫ᵛ z, f z ∂[D; μ.prod ν A] = ∫ᵛ z, (P f) z ∂[D; μ.prod ν A] := by
+      apply integral_congr_ae
+      grw [coeFn_LpToLpOfMeasureLeSMul]
+    simp_rw [M]
+    exact Continuous.comp continuous_integral P.continuous
+  · intro f g hfg hf h'f
+    have ac : (μ.prod ν A).variation ≪ μ.variation.prod ν.variation :=
+      Measure.absolutelyContinuous_of_le_smul variation_prod_le
+    rw [← integral_congr_ae (ac.ae_eq hfg), h'f]
+    apply integral_congr_ae
+    filter_upwards [Measure.ae_ae_of_ae_prod hfg] with x hx
+    exact integral_congr_ae hx
 
+/-- **Fubini's Theorem**: For integrable functions on `X × Y`,
+the vector measure integral of `f` for the product vector measure is equal to the iterated vector
+measure integral. Version where `f` is scalar. -/
+theorem integral_prod_smul [CompleteSpace H] [CompleteSpace F] {B : E →L[ℝ] F →L[ℝ] H}
+    [IsFiniteMeasure ν.variation] [IsFiniteMeasure μ.variation]
+    {f : X × Y → ℝ} (hf : Integrable f (μ.variation.prod ν.variation)) :
+    ∫ᵛ z, f z ∂•(μ.prod ν B) = ∫ᵛ x, (∫ᵛ y, f (x, y) ∂•ν) ∂[B.flip; μ] :=
+  integral_prod hf (fun x y z ↦ by simp)
 
-
-
-Lp ?_ ?_ ?_ →L[?_] Lp ?_ ?_ ?_
-
-
-
-
-
-#exit
-
-(D c) (↑(μ.prod ν A) s) = ↑(μ.prod ν (C ∘SL B c).flip) s
-
-(D c) ((A (↑μ s)) (↑ν t)) = (C ((B c) (↑ν t))) (↑μ s)
-
-      measureReal_def,
-      integral_toReal (measurable_measure_prodMk_left hs).aemeasurable
-        (ae_measure_lt_top hs h2s.ne)]
-    rw [Measure.prod_apply hs]
-
-#exit
-
-  · rintro f g - i_f i_g hf hg
-    simp_rw [integral_add' i_f i_g, integral_integral_add' i_f i_g, hf, hg]
-  · exact isClosed_eq continuous_integral continuous_integral_integral
-  · rintro f g hfg - hf; convert! hf using 1
-    · exact integral_congr_ae hfg.symm
-    · apply integral_congr_ae
-      filter_upwards [ae_ae_of_ae_prod hfg] with x hfgx using integral_congr_ae (ae_eq_symm hfgx)
 
 end MeasureTheory.VectorMeasure

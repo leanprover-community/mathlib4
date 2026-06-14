@@ -870,6 +870,66 @@ end ContinuousLinearMap
 
 namespace MeasureTheory.Lp
 
+section LpToLpOfMeasureLeSMul
+
+variable [NormedSpace ℝ E] {ν : Measure α} {c : ℝ≥0∞}
+
+/-- The canonical map from `Lᵖ ν` to `Lᵖ μ` when `μ` is bounded by a multiple of `ν`.
+This is the linear map version. Use instead the continuous linear map
+version `LpToLpOfMeasureLeSMul` -/
+noncomputable def LpToLpOfMeasureLeSMulₗ (hc : c ≠ ∞) (h : μ ≤ c • ν) :
+    Lp E p ν →ₗ[ℝ] Lp E p μ where
+  toFun f := ((Lp.memLp f).of_measure_le_smul hc h).toLp f
+  map_add' f g := by
+    ext
+    grw [MemLp.coeFn_toLp, Lp.coeFn_add, MemLp.coeFn_toLp, MemLp.coeFn_toLp]
+    have : μ ≪ ν := Measure.absolutelyContinuous_of_le_smul h
+    apply Measure.AbsolutelyContinuous.ae_eq this
+    grw [Lp.coeFn_add]
+  map_smul' c f := by
+    ext
+    grw [MemLp.coeFn_toLp, Lp.coeFn_smul, MemLp.coeFn_toLp]
+    have : μ ≪ ν := Measure.absolutelyContinuous_of_le_smul h
+    apply Measure.AbsolutelyContinuous.ae_eq this
+    grw [Lp.coeFn_smul]
+    rfl
+
+lemma coeFn_LpToLpOfMeasureLeSMulₗ (hc : c ≠ ∞) (h : μ ≤ c • ν) (f : Lp E p ν) :
+    LpToLpOfMeasureLeSMulₗ hc h f =ᵐ[μ] f := by
+  simp [LpToLpOfMeasureLeSMulₗ, MemLp.coeFn_toLp]
+
+lemma enorm_LpToLpOfMeasureLeSMulₗ_apply_le
+    (hc : c ≠ ∞) (h : μ ≤ c • ν) [Fact (1 ≤ p)] {f : Lp E p ν} :
+    ‖LpToLpOfMeasureLeSMulₗ hc h f‖ₑ ≤ c ^ (1 / p).toReal * ‖f‖ₑ := by
+  simp only [Lp.enorm_def]
+  grw [eLpNorm_congr_ae (coeFn_LpToLpOfMeasureLeSMulₗ hc h f)]
+  exact eLpNorm_le_of_measure_le_smul h
+
+lemma norm_LpToLpOfMeasureLeSMulₗ_apply_le
+    (hc : c ≠ ∞) (h : μ ≤ c • ν) [Fact (1 ≤ p)] {f : Lp E p ν} :
+    ‖LpToLpOfMeasureLeSMulₗ hc h f‖ ≤ c.toReal ^ (1 / p).toReal * ‖f‖ := by
+  simp only [← toReal_enorm]
+  rw [ENNReal.toReal_rpow, ← ENNReal.toReal_mul]
+  apply (ENNReal.toReal_le_toReal (by simp only [ne_eq, enorm_ne_top, not_false_eq_true]) _).2
+    (enorm_LpToLpOfMeasureLeSMulₗ_apply_le hc h)
+  simp [ENNReal.mul_eq_top, -Lp.enorm_def, hc]
+
+/-- The canonical map from `Lᵖ ν` to `Lᵖ μ` when `μ` is bounded by a multiple of `ν`. -/
+noncomputable def LpToLpOfMeasureLeSMul [Fact (1 ≤ p)] (hc : c ≠ ∞) (h : μ ≤ c • ν) :
+    Lp E p ν →L[ℝ] Lp E p μ :=
+  LinearMap.mkContinuous (LpToLpOfMeasureLeSMulₗ hc h) (c.toReal ^ (1 / p).toReal)
+    (fun _ ↦ norm_LpToLpOfMeasureLeSMulₗ_apply_le hc h)
+
+lemma coeFn_LpToLpOfMeasureLeSMul [Fact (1 ≤ p)] (hc : c ≠ ∞) (h : μ ≤ c • ν) (f : Lp E p ν) :
+    LpToLpOfMeasureLeSMul hc h f =ᵐ[μ] f :=
+  coeFn_LpToLpOfMeasureLeSMulₗ hc h f
+
+lemma norm_LpToLpOfMeasureLeSMul [Fact (1 ≤ p)] (hc : c ≠ ∞) (h : μ ≤ c • ν) :
+    ‖(LpToLpOfMeasureLeSMul hc h : Lp E p ν →L[ℝ] Lp E p μ)‖ ≤ c.toReal ^ (1 / p).toReal :=
+  LinearMap.mkContinuous_norm_le _ (Real.rpow_nonneg (by simp) _) _
+
+end LpToLpOfMeasureLeSMul
+
 section PosPart
 
 theorem lipschitzWith_pos_part : LipschitzWith 1 fun x : ℝ => max x 0 :=
