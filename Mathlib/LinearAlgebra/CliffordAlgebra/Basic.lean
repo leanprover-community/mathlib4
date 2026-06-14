@@ -347,7 +347,7 @@ a linear retraction `g` that also preserves the quadratic forms, then `CliffordA
 is a retraction of `CliffordAlgebra.map f`. -/
 lemma leftInverse_map_of_leftInverse {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     (f : Q₁ →qᵢ Q₂) (g : Q₂ →qᵢ Q₁) (h : LeftInverse g f) : LeftInverse (map g) (map f) := by
-  intro
+  intro x
   replace h : g.comp f = QuadraticMap.Isometry.id Q₁ := DFunLike.ext _ _ h
   rw [← AlgHom.comp_apply, map_comp_map, h, map_id, AlgHom.coe_id, id_eq]
 
