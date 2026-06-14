@@ -25,7 +25,7 @@ When `L` is one-dimensional this is an abelian subgroup of the stabilizer of `L`
 def Matrix.SpecialLinearGroup.lineStab (L : Submodule F (ι → F)) :
     Subgroup (Matrix.SpecialLinearGroup ι F) where
   carrier := {A | ∀ w : ι → F, A • w - w ∈ L}
-  one_mem' := by intro w; simp
+  one_mem' := by simp
   mul_mem' {A B} hA hB := fun w ↦ by
     simp only [Set.mem_setOf_eq, mul_smul] at hA hB ⊢
     rw [show A • B • w - w = ((A • (B • w) - A • w) - (B • w - w)) +
@@ -56,8 +56,7 @@ open scoped Pointwise
 lemma PSL.smul_submodule (g : Matrix.SpecialLinearGroup ι F) (p : ℙ F (ι → F)) :
     (g • p).submodule = g • p.submodule:= by
   induction p using Projectivization.ind with | _ v hv => ?_
-  ext
-  simp [Submodule.pointwise_smul_def, Submodule.mem_span_singleton, smul_comm]
+  simp [Submodule.ext_iff, Submodule.pointwise_smul_def, Submodule.mem_span_singleton, smul_comm]
 
 /-- Equivariance of `lineStab` under conjugation by elements of `SL`. -/
 lemma Matrix.SpecialLinearGroup.lineStab_smul
@@ -98,9 +97,6 @@ lemma PSL.iwasawaT_map_conj (g : Matrix.SpecialLinearGroup ι F)
   exact ⟨fun ⟨a, ha, ha'⟩ ↦ ⟨g⁻¹ * a * g, ha, by simp [ha']⟩,
     fun ⟨a, ha, hx⟩ ↦ ⟨g * a * g⁻¹, by simp [mul_assoc, ha], by simp [hx, mul_assoc]⟩⟩
 
-/-- Cyclic-submodule fact (no determinant or finite-dimensionality needed):
-a linear endomorphism `A` sending `v` into `R • v` preserves `R • v` and restricts
-to scalar multiplication by the (unique, when `v ≠ 0`) scalar `c` with `A v = c • v`. -/
 lemma LinearMap.exists_restrict_span_singleton_eq_smul_id
     {R V : Type*} [CommSemiring R] [AddCommMonoid V] [Module R V]
     {v : V} {A : V →ₗ[R] V} (hAv : A v ∈ Submodule.span R {v}) :
@@ -118,11 +114,6 @@ lemma LinearMap.exists_restrict_span_singleton_eq_smul_id
     change A (a • v) = c • (a • v)
     rw [map_smul, ← hc, smul_comm]
 
-/-- Key lemma: if `A ∈ lineStab (F·v)` with `v ≠ 0`, then `A` fixes `v`.
-
-Two pieces: (1) the cyclic-submodule fact gives a scalar `c` with `A • v = c • v`
-and `A | L = c • id`; (2) the block-triangular det formula combined with `det A = 1`
-and `A` acting as the identity on `(ι → F) ⧸ F·v` forces `c = 1`. -/
 lemma Matrix.SpecialLinearGroup.lineStab_fix_of_span
     (v : ι → F) (hv : v ≠ 0)
     (A : Matrix.SpecialLinearGroup ι F)
@@ -143,20 +134,17 @@ lemma Matrix.SpecialLinearGroup.lineStab_fix_of_span
       LinearMap.det_id, LinearMap.det_id, mul_one, mul_one] at hdet
   exact hcv.trans (hdet ▸ one_smul F v)
 
-lemma Matrix.SpecialLinearGroup.ext_iff_smul {A B : Matrix.SpecialLinearGroup ι F} :
-    A = B ↔ ∀ v : ι → F, A • v = B • v := by
-  refine ⟨fun h v => by rw [h], fun h => Subtype.ext (Matrix.ext_iff_mulVec.2 h)⟩
-
 /-- The subgroup `lineStab (span F {v})` is commutative when `v ≠ 0`. -/
 lemma Matrix.SpecialLinearGroup.lineStab_isMulCommutative_of_span'
     (v : ι → F) (hv : v ≠ 0) (A B : SpecialLinearGroup ι F)
     (hA : A ∈ SpecialLinearGroup.lineStab (Submodule.span F {v}))
     (hB : B ∈ SpecialLinearGroup.lineStab (Submodule.span F {v})) :
     A * B = B * A := by
-  refine ext_iff_smul.2 fun w ↦ ?_
+  refine Subtype.ext <| ext_iff_smul.2 fun w ↦ ?_
   obtain ⟨α, hα⟩ := Submodule.mem_span_singleton.mp (hA w)
   obtain ⟨β, hβ⟩ := Submodule.mem_span_singleton.mp (hB w)
-  rw [mul_smul, mul_smul, ← sub_add_cancel (A • w) w, ← hα, ← sub_add_cancel (B • w) w,
+  simp only [coe_mul, mul_smul, ← Matrix.SpecialLinearGroup.smul_def]
+  rw [← sub_add_cancel (A • w) w, ← hα, ← sub_add_cancel (B • w) w,
     ← hβ, smul_add, smul_add, ← sub_left_inj (a := w), ← add_sub, ← hα, ← add_sub, ← hβ,
     smul_comm, lineStab_fix_of_span v hv A hA, smul_comm, lineStab_fix_of_span v hv B hB, add_comm]
 
