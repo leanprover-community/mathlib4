@@ -227,6 +227,7 @@ ambient spaces need not coincide.
 
 It is the unique such isometry: a linear isometry equivalence of the spans sending `φ i ↦ ψ i` is
 determined on the spanning family `φ` (`LinearMap.eqOn_span`). -/
+variable (φ ψ)
 noncomputable def linearIsometryEquivSpanOfInnerEq :
     (Submodule.span 𝕜 (Set.range φ)) ≃ₗᵢ[𝕜] (Submodule.span 𝕜 (Set.range ψ)) :=
   (LinearIsometryEquiv.ofEq _ _ (Finsupp.range_linearCombination 𝕜)).symm.trans
