@@ -426,29 +426,38 @@ theorem contMDiffOn (h : IsImmersionAtOfComplement F I J n f x) :
 theorem contMDiffAt (h : IsImmersionAtOfComplement F I J n f x) : CMDiffAt n f x :=
   h.contMDiffOn.contMDiffAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
 
--- TODO: give a nice name and clean up proof!
-lemma aux {f : M → N} {φ : N → N'}
+/-- Let `f : M → N` be a function, and suppose `φ : N → P` is a `C^k` immersion at `f x`, such
+that `φ ∘ f` is `C^k` at `x`. Let `x ∈ t ⊆ M` be contained in the slice chart at `f x`.
+Then `f` seen in the slice chart at `φ (f x)` and any chart `e` in the maximal atlas
+is `C^n` at (the image of) `x` within (the image of) `t`. -/
+private lemma aux {f : M → N} {φ : N → N'}
     (h : IsImmersionAtOfComplement F J J' n φ (f x)) (h' : CMDiffAt n (φ ∘ f) x)
     {t : Set M} (ht : t ⊆ f ⁻¹' h.domChart.source) (hxt : x ∈ t)
     (e : OpenPartialHomeomorph M H) (hxe : x ∈ e.source) (he : e ∈ IsManifold.maximalAtlas I n M) :
     ContDiffWithinAt 𝕜 n ((h.domChart.extend J) ∘ f ∘ (e.extend I).symm)
       ((e.extend I).symm ⁻¹' t ∩ range I) ((e.extend I) x) := by
+  -- Consider the local expressions of `f`, `φ`, `x` and `s'` in the charts we're considering.
   set f' := (h.domChart.extend J) ∘ f ∘ (e.extend I).symm
   set φ' := (h.codChart.extend J') ∘ φ ∘ (h.domChart.extend J).symm
   set x' := (e.extend I) x
   set s := (e.extend I).symm ⁻¹' t ∩ range I
   have hx' : (e.extend I) x ∈ s := ⟨by simp [e.left_inv hxe, hxt], mem_range_self _⟩
-  replace h' : CMDiffAt[t] n (φ ∘ f) x := h'.contMDiffWithinAt
-  rw [contMDiffWithinAt_iff_of_mem_maximalAtlas he h.codChart_mem_maximalAtlas hxe
-    h.mem_codChart_source] at h'
-  replace h' := h'.2
-  have := h.writtenInCharts
+  have h'loc : ContDiffWithinAt 𝕜 n ((h.codChart.extend J') ∘ (φ ∘ f) ∘ (e.extend I).symm)
+      ((e.extend I).symm ⁻¹' t ∩ range I) (e.extend I x) := by
+    replace h' : CMDiffAt[t] n (φ ∘ f) x := h'.contMDiffWithinAt
+    rw [contMDiffWithinAt_iff_of_mem_maximalAtlas he h.codChart_mem_maximalAtlas hxe
+      h.mem_codChart_source] at h'
+    exact h'.2
+  -- By hypothesis, `φ ∘ f` (read in our charts) is `C^n` at `x'` within `s`.
   have h'' : ContDiffWithinAt 𝕜 n (φ' ∘ f') s x' := by
-    apply h'.congr_of_mem (fun y hy ↦ ?_) hx'
+    apply h'loc.congr_of_mem (fun y hy ↦ ?_) hx'
     simp only [mfld_simps, φ', f']
     rw [h.domChart.left_inv]
     apply ht hy.1
-  set f'' := ((h.equiv ∘ fun x ↦ (x, 0)) ∘ f')
+  -- On the other hand, composing `f'` with the inclusion `u ↦ (u, 0)` is also `C^n`
+  -- (as a composition of `C^n` functions); this locally equals `φ ∘ f` in coordinates
+  -- (since `f` is an immersion).
+  set f'' := (h.equiv ∘ fun x ↦ (x, 0)) ∘ f'
   have h''' : ContDiffWithinAt 𝕜 n f'' s x' := by
     refine h''.congr_of_mem (fun y hy ↦ ?_) hx'
     simp only [f'', φ', f']
@@ -456,7 +465,7 @@ lemma aux {f : M → N} {φ : N → N'}
     rw [Function.comp_apply, h.writtenInCharts]
     rw [h.domChart.extend_target_eq_image_source]
     exact ⟨(f ∘ (e.extend I).symm) y, ht hy.1, by simp⟩
-  -- Compose with a suitable projection to cancel the inclusion.
+  -- Composing with a suitable projection to cancel the inclusion, we deduce that `f` is `C^n`.
   have h'''' : ContDiffWithinAt 𝕜 n ((Prod.fst ∘ h.equiv.symm) ∘ f'') s x' := by
     refine ContDiffWithinAt.comp x' ?_ h''' (mapsTo_univ _ _)
     rw [contDiffWithinAt_univ]
