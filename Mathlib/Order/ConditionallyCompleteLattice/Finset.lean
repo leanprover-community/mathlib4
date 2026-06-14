@@ -36,7 +36,7 @@ theorem ciSup_eq_ciSup_finset [OrderBot α] [Nonempty ι] {a : ι → α}
     rintro _ ⟨F, rfl⟩
     exact Finset.sup_le fun i _ => le_ciSup ha i
   refine le_antisymm ?_ ?_
-  · exact ciSup_le fun i => (Finset.le_sup (by simp)).trans (le_ciSup hbdd ({i} : Finset ι))
+  · exact ciSup_le fun i => (Finset.le_sup (by simp)).trans (le_ciSup hbdd {i})
   · exact ciSup_le fun F => Finset.sup_le fun i _ => le_ciSup ha i
 
 end ConditionallyCompleteLattice
