@@ -1,93 +1,81 @@
 /-
-Copyright (c) 2026 Kenosian. All rights reserved.
+Copyright (c) 2026 Peter Jang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Peter Jang (Kenosian Protocol Platform)
+Authors: Peter Jang
 -/
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Biology.Longevity.Basic
 
 /-!
-# PhenoAge -- Biological Age Estimation (Levine 2018)
+# Mathlib.Biology.Longevity.PhenoAge
 
 Formal contract for the PhenoAge biological age algorithm.
 
-## Reference
-Levine et al. "An epigenetic biomarker of aging for lifespan and healthspan."
-*Aging* (Albany NY). 2018; 10(4):573-591.
-PLOS Medicine correction (2019): divisor = 0.090165.
+## Main definitions
 
-## Mathematical structure
-Given a linear score `xb = Sigma beta_i x_i + intercept`:
-1. Mortality score:  `M  = 1 - exp(-exp(gamma(xb - B)) * tau)`
-2. PhenoAge:         `PA = ln(-ln(1 - M)) / gamma + B`
+* `mortalityScore`: M(xb) = 1 − exp(−exp(γ · (xb − B)) · τ)
+* `phenoAge`: PA(xb) = ln(−ln(1 − M(xb))) / γ + B
 
-where gamma = 0.0076927, B = 141.50225, tau = exp(-0.00553 * 120).
+## Main results
 
-## K-Lean Phase A
-Schema-contract verification (machine-checked without Lean 4):
-`POST /api/v1/verify/klean` on kpp.kenosian.com
+* `mortalityScore_pos`: `0 < mortalityScore xb` for all `xb : ℝ`
+* `mortalityScore_lt_one`: `mortalityScore xb < 1` for all `xb : ℝ`
+* `phenoAge_wellDefined`: PhenoAge is a well-defined real number for all `xb : ℝ`
 
-## Theorems
-- `mortalityScore_pos`: M > 0 for any xb
-- `mortalityScore_lt_one`: M < 1 for any xb
-- `phenoAge_wellDefined`: PA is a well-defined real number for any xb
+## References
+
+* Levine et al. "An epigenetic biomarker of aging for lifespan and healthspan."
+  *Aging* (Albany NY). 2018; 10(4):573–591.
+* PLOS Medicine correction (2019): divisor corrected to 0.090165.
+
+## Notes
+
+K-Lean Phase A provides schema-contract verification of this algorithm via REST API
+(`POST /api/v1/verify/klean` on kpp.kenosian.com). This file is Phase B: a Lean 4
+formal proof of the mathematical contract.
 -/
 
 namespace Mathlib.Biology.Longevity.PhenoAge
 
 open Real
 
--- Levine 2018 constants
+/-- Shape parameter from Levine 2018 Table S6. -/
+noncomputable def γ : ℝ := 0.0076927
 
-/-- Shape parameter (Levine 2018 Table S6). -/
-noncomputable def gamma_param : ℝ := 0.0076927
+/-- Offset constant from Levine 2018. -/
+noncomputable def B : ℝ := 141.50225
 
-/-- Offset constant (Levine 2018). -/
-noncomputable def B_param : ℝ := 141.50225
+/-- Time-horizon factor: exp(−0.00553 × 120). -/
+noncomputable def τ : ℝ := Real.exp (-0.00553 * 120)
 
-/-- Time-horizon factor: exp(-0.00553 * 120). -/
-noncomputable def tau : ℝ := Real.exp (-0.00553 * 120)
-
--- Core functions
-
-/-- Mortality score M(xb) = 1 - exp(-exp(gamma(xb - B)) * tau). -/
+/-- Mortality score: M(xb) = 1 − exp(−exp(γ · (xb − B)) · τ). -/
 noncomputable def mortalityScore (xb : ℝ) : ℝ :=
-  1 - Real.exp (-(Real.exp (gamma_param * (xb - B_param)) * tau))
+  1 - Real.exp (-(Real.exp (γ * (xb - B)) * τ))
 
-/-- PhenoAge PA(xb) = ln(-ln(1 - M(xb))) / gamma + B. -/
+/-- PhenoAge: PA(xb) = ln(−ln(1 − M(xb))) / γ + B. -/
 noncomputable def phenoAge (xb : ℝ) : ℝ :=
-  Real.log (-(Real.log (1 - mortalityScore xb))) / gamma_param + B_param
+  Real.log (-(Real.log (1 - mortalityScore xb))) / γ + B
 
--- Lemmas
+lemma γ_pos : (0 : ℝ) < γ := by norm_num [γ]
 
-lemma gamma_pos : (0 : ℝ) < gamma_param := by norm_num [gamma_param]
+lemma τ_pos : (0 : ℝ) < τ := Real.exp_pos _
 
-lemma tau_pos : (0 : ℝ) < tau := Real.exp_pos _
+lemma exp_γ_τ_pos (xb : ℝ) : 0 < Real.exp (γ * (xb - B)) * τ :=
+  mul_pos (Real.exp_pos _) τ_pos
 
-/-- The product exp(gamma*(xb-B)) * tau is strictly positive. -/
-lemma exp_gamma_tau_pos (xb : ℝ) : 0 < Real.exp (gamma_param * (xb - B_param)) * tau :=
-  mul_pos (Real.exp_pos _) tau_pos
-
-/-- The negated product -(exp(gamma*(xb-B)) * tau) is strictly negative. -/
-lemma neg_exp_mul_tau_neg (xb : ℝ) : -(Real.exp (gamma_param * (xb - B_param)) * tau) < 0 :=
-  neg_lt_zero.mpr (exp_gamma_tau_pos xb)
-
--- Theorems
-
-/-- The mortality score is strictly positive for any linear score xb. -/
+/-- The mortality score is strictly positive for any linear score `xb`. -/
 theorem mortalityScore_pos (xb : ℝ) : 0 < mortalityScore xb := by
   simp only [mortalityScore]
-  have hlt : Real.exp (-(Real.exp (gamma_param * (xb - B_param)) * tau)) < 1 :=
-    Real.exp_lt_one_iff.mpr (neg_exp_mul_tau_neg xb)
-  linarith
+  linarith [Real.exp_pos (-(Real.exp (γ * (xb - B)) * τ)),
+            Real.exp_lt_one_iff.mpr (neg_lt_zero.mpr (exp_γ_τ_pos xb))]
 
-/-- The mortality score is strictly less than 1 for any linear score xb. -/
+/-- The mortality score is strictly less than 1 for any linear score `xb`. -/
 theorem mortalityScore_lt_one (xb : ℝ) : mortalityScore xb < 1 := by
   simp only [mortalityScore]
-  linarith [Real.exp_pos (-(Real.exp (gamma_param * (xb - B_param)) * tau))]
+  linarith [Real.exp_pos (-(Real.exp (γ * (xb - B)) * τ))]
 
-/-- PhenoAge is a well-defined real number for any xb. -/
+/-- PhenoAge is a well-defined real number for any `xb : ℝ`. -/
 theorem phenoAge_wellDefined (xb : ℝ) : ∃ pa : ℝ, pa = phenoAge xb :=
   ⟨phenoAge xb, rfl⟩
 
