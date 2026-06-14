@@ -73,19 +73,47 @@ variable {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ∞}
 -- def barz : ℝ → EuclideanSpace ℝ (Fin 1) := fun z' ↦ toLp 2 <| fun _ ↦ z'
 
 -- TODO: name appropriately! and does/should this exist already?
-def bar : EuclideanSpace ℝ (Fin 1) ≃L[ℝ] ℝ where
-  toFun := fun z' ↦ (z' 0 : ℝ)
+def bar (α : Type*) [Unique α] : EuclideanSpace ℝ α ≃L[ℝ] ℝ where
+  toFun := fun z' ↦ (z' default : ℝ)
   invFun := fun z ↦ toLp 2 <| fun _ ↦ z
-  left_inv z := by ext; rw [← Fin.eq_zero _]
+  left_inv z := by
+    ext
+    dsimp
+    apply congrArg
+    exact Subsingleton.elim ..
   map_add' := by intro; simp
   map_smul' := by intro; simp
 
 @[simp]
-lemma bar_apply (z : EuclideanSpace ℝ (Fin 1)) : bar z = z 0 := rfl
+lemma bar_apply {α : Type*} [Unique α] (z : EuclideanSpace ℝ α) : bar α z = z default := rfl
 
 open Manifold IsManifold
 
+-- maps y to x - y; TODO does this exist already?
+def myflip (x : ℝ) : ℝ ≃ₜ ℝ where
+  toFun y := x - y
+  invFun y := x - y
+  left_inv y := by simp
+  right_inv y := by simp
+
 -- TODO: all these lemmas are technically misnamed; the relevant coercion is Subtype.val!
+
+-- -- TODO: generalise to all manifolds!
+-- lemma Diffeomorph.mem_maximalAtlas (φ : Diffeomorph 𝓘(ℝ) 𝓘(ℝ) ℝ ℝ n) :
+--     φ.toHomeomorph.toOpenPartialHomeomorph ∈ maximalAtlas 𝓘(ℝ, ℝ) n ℝ := by
+--   simp only [maximalAtlas, StructureGroupoid.maximalAtlas, chartedSpaceSelf_atlas, forall_eq,
+--      mem_setOf_eq, contDiffGroupoid, mem_groupoid_of_pregroupoid, contDiffPregroupoid]
+--   refine ⟨⟨?_, ?_⟩, ?_, ?_⟩
+--   all_goals simp [contDiffOn_univ, φ.symm.contDiff, φ.contDiff]
+
+-- TODO: generalise this lemma to all manifolds... will require work!
+lemma Homeomorph.mem_maximalAtlas_of_contMDiff
+    (φ : Homeomorph ℝ ℝ) (hφ : ContDiff ℝ n φ) (hφ' : ContDiff ℝ n φ.symm) :
+    φ.toOpenPartialHomeomorph ∈ maximalAtlas 𝓘(ℝ, ℝ) n ℝ := by
+  simp only [maximalAtlas, StructureGroupoid.maximalAtlas, chartedSpaceSelf_atlas, forall_eq,
+     mem_setOf_eq, contDiffGroupoid, mem_groupoid_of_pregroupoid, contDiffPregroupoid]
+  refine ⟨⟨?_, ?_⟩, ?_, ?_⟩
+  all_goals simp [contDiffOn_univ, hφ, hφ']
 
 set_option linter.flexible false in
 -- TODO: the proof works, except that some details with the chosen computation are not right
@@ -96,33 +124,38 @@ lemma isImmersionOfComplement_subtype_coe_Icc :
   intro z
   letI φ₀ := ContinuousLinearEquiv.prodUnique ℝ
     (EuclideanSpace ℝ (Fin 1)) (EuclideanSpace ℝ (Fin 0))
-  let φ : (EuclideanSpace ℝ (Fin 1) × EuclideanSpace ℝ (Fin 0)) ≃L[ℝ] ℝ := φ₀.trans bar
-  -- TODO: make convenience constructor with the charts being the default ones?
-  apply IsImmersionAtOfComplement.mk_of_continuousAt (by fun_prop) φ
-    (chartAt (EuclideanHalfSpace 1) z) (chartAt ℝ (z : ℝ)) (mem_chart_source _ z)
-    (mem_chart_source ..) (chart_mem_maximalAtlas _) (chart_mem_maximalAtlas _)
-  intro z' hz'
+  let φ : (EuclideanSpace ℝ (Fin 1) × EuclideanSpace ℝ (Fin 0)) ≃L[ℝ] ℝ := φ₀.trans (bar (Fin 1))
   by_cases hz : ↑z < y
-  · simp [hz, IccLeftChart, modelWithCornersEuclideanHalfSpace]
+  · -- At all points but `y`, the correct codomain chart maps `a` to `a + x`.
+    apply IsImmersionAtOfComplement.mk_of_continuousAt (by fun_prop) φ
+      (chartAt (EuclideanHalfSpace 1) z) (Homeomorph.addLeft (-x)).toOpenPartialHomeomorph
+      (mem_chart_source _ z) (by simp [Homeomorph.addLeft]) (chart_mem_maximalAtlas _) ?_; swap
+    · apply Homeomorph.mem_maximalAtlas_of_contMDiff <;> simp [Homeomorph.addLeft] <;> fun_prop
+    intro z' hz'
+    simp [hz, IccLeftChart, modelWithCornersEuclideanHalfSpace]
     simp [hz, IccLeftChart] at hz'
     have : 0 ≤ z' 0 := by
       obtain ⟨⟨y', hy'⟩, rfl⟩ := hz'.1
       simpa [modelWithCornersEuclideanHalfSpace]
     rw [min_eq_left, max_eq_left this]
     · simp [φ, φ₀, add_comm]
-      sorry -- trouble: I need to pick a slightly different chart, to translate by x!
     · replace hz' := hz'.2
       simp [modelWithCornersEuclideanHalfSpace] at hz'
       rw [max_eq_left this]
       linarith
-  · simp [hz, IccRightChart, modelWithCornersEuclideanHalfSpace]
+  · -- At the right boundary point, the correct codomain chart is mapping `a` to `y - a`.
+    apply IsImmersionAtOfComplement.mk_of_continuousAt (by fun_prop) φ
+      (chartAt (EuclideanHalfSpace 1) z) (myflip y).toOpenPartialHomeomorph (mem_chart_source _ z)
+      (by simp [myflip]) (chart_mem_maximalAtlas _) ?_; swap
+    · apply Homeomorph.mem_maximalAtlas_of_contMDiff <;> simp [myflip] <;> fun_prop
+    intro z' hz'
+    simp [hz, IccRightChart, modelWithCornersEuclideanHalfSpace]
     simp [hz, IccRightChart] at hz'
     have : 0 ≤ z' 0 := by
       obtain ⟨⟨y', hy'⟩, rfl⟩ := hz'.1
       simpa [modelWithCornersEuclideanHalfSpace]
     rw [max_eq_left, max_eq_left this]
-    · simp [φ, φ₀]
-      sorry -- trouble: I need to pick a slightly different chart, to translate by x!
+    · simp [φ, φ₀, myflip]
     · replace hz' := hz'.2
       simp [modelWithCornersEuclideanHalfSpace] at hz'
       rw [max_eq_left this]
