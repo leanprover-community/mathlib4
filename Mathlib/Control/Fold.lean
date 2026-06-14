@@ -110,6 +110,9 @@ how the monoid of endofunctions define `Foldl`.
 abbrev Foldl (α : Type u) : Type u :=
   (End α)ᵐᵒᵖ
 
+/--
+Construct a `Foldl` from a function `f : α → α`.
+-/
 def Foldl.mk (f : α → α) : Foldl α :=
   op (↾f)
 
