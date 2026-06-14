@@ -215,12 +215,9 @@ theorem exists_linearIsometryEquiv_span_map_eq_of_inner_eq {φ : ι → E} {ψ :
     simp [hTφ, hTψ, inner_linearCombination_linearCombination,
       inner_linearCombination_linearCombination, h]
   -- Equal norms, hence `ker Tφ ≤ ker Tψ`.
-  have norm_eq : ∀ c : ι →₀ 𝕜, ‖Tψ c‖ = ‖Tφ c‖ := by
-    intro c
-    have hsq : ‖Tψ c‖ ^ 2 = ‖Tφ c‖ ^ 2 := by
-      rw [← inner_self_eq_norm_sq (𝕜 := 𝕜) (Tψ c),
-        ← inner_self_eq_norm_sq (𝕜 := 𝕜) (Tφ c), key c c]
-    exact (sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)).mp hsq
+  have norm_eq (c : ι →₀ 𝕜) : ‖Tψ c‖ = ‖Tφ c‖ := by
+    rw [← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _), norm_sq_eq_re_inner (𝕜 := 𝕜), 
+      norm_sq_eq_re_inner (𝕜 := 𝕜), key]
   have hker : LinearMap.ker Tφ ≤ LinearMap.ker Tψ := by
     intro c hc
     have hφ0 : Tφ c = 0 := by simpa [LinearMap.mem_ker] using hc
