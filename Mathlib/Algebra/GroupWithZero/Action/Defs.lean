@@ -431,16 +431,12 @@ end DistribMulAction
 section MulDistribMulAction
 variable [Group α] [MonoidWithZero β] [MulDistribMulAction α β]
 
-/-- For a group acting on a monoid with zero via `MulDistribMulAction`, the action sends zero to
-zero. The proof uses only `smul_mul'`, `smul_inv_smul` (group invertibility), and `mul_zero`. -/
-theorem MulDistribMulAction.smul_zero (g : α) : g • (0 : β) = 0 := by
-  have h : g • (0 : β) = (g • (0 : β)) * 0 := by
-    conv_lhs => rw [show (0 : β) = 0 * (g⁻¹ • (0 : β)) from (zero_mul _).symm]
-    rw [smul_mul', smul_inv_smul]
-  exact h.trans (mul_zero _)
-
 instance MulDistribMulAction.instSMulZeroClass : SMulZeroClass α β where
-  smul_zero g := MulDistribMulAction.smul_zero g
+  smul_zero g := by
+    have h : g • (0 : β) = (g • (0 : β)) * 0 := by
+      conv_lhs => rw [show (0 : β) = 0 * (g⁻¹ • (0 : β)) from (zero_mul _).symm]
+      rw [smul_mul', smul_inv_smul]
+    exact h.trans (mul_zero _)
 
 end MulDistribMulAction
 

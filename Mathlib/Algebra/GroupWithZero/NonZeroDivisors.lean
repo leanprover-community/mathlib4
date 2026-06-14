@@ -427,3 +427,49 @@ lemma associatesNonZeroDivisorsEquiv_symm_mk_mk (a : M₀) (ha) :
   rfl
 
 end CommMonoidWithZero
+
+section MulDistribMulAction
+
+variable {G M₀ : Type*} [Group G] [MonoidWithZero M₀] [MulDistribMulAction G M₀]
+
+theorem smul_mem_nonZeroDivisorsLeft (g : G) {m : M₀} (hm : m ∈ nonZeroDivisorsLeft M₀) :
+    g • m ∈ nonZeroDivisorsLeft M₀ := fun y hy => by
+  have h : m * (g⁻¹ • y) = 0 := by
+    have := congr_arg (g⁻¹ • ·) hy
+    rwa [smul_zero, smul_mul', inv_smul_smul] at this
+  have h0 := hm _ h
+  calc y = g • (g⁻¹ • y) := (smul_inv_smul g y).symm
+    _ = g • (0 : M₀) := by rw [h0]
+    _ = 0 := smul_zero g
+
+theorem smul_mem_nonZeroDivisorsRight (g : G) {m : M₀} (hm : m ∈ nonZeroDivisorsRight M₀) :
+    g • m ∈ nonZeroDivisorsRight M₀ := fun y hy => by
+  have h : (g⁻¹ • y) * m = 0 := by
+    have := congr_arg (g⁻¹ • ·) hy
+    rwa [smul_zero, smul_mul', inv_smul_smul] at this
+  have h0 := hm _ h
+  calc y = g • (g⁻¹ • y) := (smul_inv_smul g y).symm
+    _ = g • (0 : M₀) := by rw [h0]
+    _ = 0 := smul_zero g
+
+theorem smul_mem_nonZeroDivisors (g : G) {m : M₀} (hm : m ∈ nonZeroDivisors M₀) :
+    g • m ∈ nonZeroDivisors M₀ :=
+  mem_nonZeroDivisors_iff'.mpr
+    ⟨smul_mem_nonZeroDivisorsLeft g hm.1, smul_mem_nonZeroDivisorsRight g hm.2⟩
+
+instance instSMulNonZeroDivisors : SMul G M₀⁰ where
+  smul g m := ⟨g • m, smul_mem_nonZeroDivisors g m.prop⟩
+
+@[simp]
+theorem nonZeroDivisors.val_smul (g : G) (m : M₀⁰) :
+    (g • m : M₀⁰).val = g • m.val := rfl
+
+instance instMulActionNonZeroDivisors : MulAction G M₀⁰ where
+  one_smul m := Subtype.val_injective (by simp)
+  mul_smul g h m := Subtype.val_injective (by simp [mul_smul])
+
+instance instMulDistribMulActionNonZeroDivisors : MulDistribMulAction G M₀⁰ where
+  smul_one g := Subtype.val_injective (by simp [MulDistribMulAction.smul_one])
+  smul_mul g m n := Subtype.val_injective (by simp [smul_mul'])
+
+end MulDistribMulAction
