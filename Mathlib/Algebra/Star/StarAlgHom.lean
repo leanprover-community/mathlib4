@@ -931,7 +931,7 @@ theorem arrowCongr'_trans (e₁ : A₁ ≃⋆ₐ[R] A₂) (e₁' : A₁' ≃⋆�
   rfl
 
 @[simp]
-theorem arrowCongr'_symm (e₁ : A₁ ≃⋆ₐ[R] A₁') (e₂ : A₂ ≃⋆ₐ[R] A₂') :
+theorem symm_arrowCongr' (e₁ : A₁ ≃⋆ₐ[R] A₁') (e₂ : A₂ ≃⋆ₐ[R] A₂') :
     (arrowCongr' e₁ e₂).symm = arrowCongr' e₁.symm e₂.symm :=
   rfl
 
@@ -980,9 +980,7 @@ variable {R A₁ A₂ A₃ A₁' A₂' A₃' : Type*}
 def toStarAlgHom : A₁ →⋆ₐ[R] A₂ :=
   { e with
     toFun := e
-    map_zero' := map_zero e
-    map_one' := map_one e
-    commutes' := e.toAlgEquiv.commutes }
+    __ := e.toAlgEquiv.toAlgHom }
 
 @[simp]
 lemma toNonUnitalStarAlgHom_toStarAlgHom (e : A₁ ≃⋆ₐ[R] A₂) :
@@ -1023,7 +1021,7 @@ theorem arrowCongr_trans (e₁ : A₁ ≃⋆ₐ[R] A₂) (e₁' : A₁' ≃⋆�
   rfl
 
 @[simp]
-theorem arrowCongr_symm (e₁ : A₁ ≃⋆ₐ[R] A₁') (e₂ : A₂ ≃⋆ₐ[R] A₂') :
+theorem symm_arrowCongr (e₁ : A₁ ≃⋆ₐ[R] A₁') (e₂ : A₂ ≃⋆ₐ[R] A₂') :
     (arrowCongr e₁ e₂).symm = arrowCongr e₁.symm e₂.symm :=
   rfl
 
@@ -1038,7 +1036,7 @@ def ofStarAlgHom {R A B : Type*} [CommSemiring R]
     invFun := g
     left_inv x := congr($h₁ x)
     right_inv x := congr($h₂ x)
-    map_smul' := map_smul f}
+    map_smul' := map_smul f }
 
 @[simp]
 lemma toStarAlgHom_ofStarAlgHom (f : A₁ →⋆ₐ[R] A₂) (g : A₂ →⋆ₐ[R] A₁)
