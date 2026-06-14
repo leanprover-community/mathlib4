@@ -209,6 +209,70 @@ private theorem exists_substructure_embedding_of_agree_qf
   obtain ⟨g, hg⟩ := exists_embedding_of_agree_qf v w hQF
   exact ⟨_, g, fun i => ⟨v i, Substructure.subset_closure ⟨i, rfl⟩⟩, rfl, funext hg⟩
 
+/-- Henkin-style compactness core shared by the two model constructions below: given a "seed"
+formula `extra` and a predicate `P` on quantifier-free formulas such that no finite conjunction of
+quantifier-free `P`-formulas `θ` satisfies `extra ⟹[T] θ.not`, there is a model of `T` with
+constants `v : α → K` realizing `extra` and every quantifier-free `P`-formula.
+
+The hypothesis is the finite-consistency input to compactness: failing `extra ⟹[T] θ.not` means
+some model of `T` realizes both `extra` and `θ`. -/
+private theorem exists_model_realize_of_forall_not_imp_not
+    {T : L.Theory} {α : Type u'} (P : L.Formula α → Prop) (extra : L.Formula α)
+    (hkey : ∀ l : List {ψ : L.Formula α // ψ.IsQF ∧ P ψ}, ¬ (extra ⟹[T] (qfConj l).not)) :
+    ∃ (K : Theory.ModelType.{u, v, max u v u'} T) (v : α → K),
+      extra.Realize v ∧ ∀ q : {ψ : L.Formula α // ψ.IsQF ∧ P ψ}, q.1.Realize v := by
+  -- Work in `L[[α]]` with a constant for each variable: the target theory is `T`, the sentence
+  -- `extra`, and every quantifier-free `P`-formula; a model of it provides `v`.
+  let base : L[[α]].Theory :=
+    (L.lhomWithConstants α).onTheory T ∪ {Formula.equivSentence extra}
+  let U : Option {ψ : L.Formula α // ψ.IsQF ∧ P ψ} → L[[α]].Theory
+    | none => base
+    | some q => base ∪ {Formula.equivSentence q.1}
+  -- By compactness it suffices to satisfy every finite subset. An unsatisfiable finite subset `s`
+  -- would give `extra ⟹[T] θ.not` for `θ` the conjunction of the formulas it mentions,
+  -- contradicting `hkey`.
+  have hsat : Theory.IsSatisfiable (⋃ i, U i) := by
+    by_contra hsat
+    rw [Theory.isSatisfiable_iUnion_iff_isSatisfiable_iUnion_finset] at hsat
+    push Not at hsat
+    rcases hsat with ⟨s, hs⟩
+    let qfs : Finset {ψ : L.Formula α // ψ.IsQF ∧ P ψ} :=
+      s.filterMap id (by intro a a' b ha ha'; simpa using ha.trans ha'.symm)
+    let lqfs := qfs.toList
+    apply hkey lqfs
+    intro M v xs hextra
+    rw [BoundedFormula.realize_not]
+    intro hθ
+    letI : (constantsOn α).Structure M := constantsOn.structure v
+    have hθall : ∀ q ∈ lqfs, BoundedFormula.Realize q.1 v xs :=
+      (realize_qfConj lqfs v xs).mp hθ
+    have hbase : ∀ τ ∈ base, M ⊨ τ := by
+      rintro τ (hT | hex)
+      · exact ((LHom.onTheory_model _ _).mpr inferInstance).realize_of_mem _ hT
+      · rw [Set.mem_singleton_iff] at hex
+        subst hex
+        exact (Formula.realize_equivSentence (M := M) extra).mpr
+          ((Formula.boundedFormula_realize_eq_realize ..).mp hextra)
+    have hmodel : M ⊨ ⋃ i ∈ s, U i := by
+      refine model_iUnion_option_of_base_of_extra U base
+        (fun q => Formula.equivSentence q.1) s rfl (fun _ => rfl) hbase ?_
+      intro q hq
+      refine (Formula.realize_equivSentence (M := M) q.1).mpr ?_
+      have hqlist : q ∈ lqfs := Finset.mem_toList.mpr (by simpa [qfs] using hq)
+      exact (Formula.boundedFormula_realize_eq_realize ..).mp (hθall q hqlist)
+    exact hs (Theory.Model.isSatisfiable M)
+  -- Reduce a model to an `L`-structure modelling `T` and read off its constants as `v`.
+  obtain ⟨K⟩ := hsat
+  letI : L.Structure K := (L.lhomWithConstants α).reduct K
+  haveI : T.Model K := (LHom.onTheory_model _ _).mp <| K.is_model.mono fun _ hσ =>
+    Set.mem_iUnion.mpr ⟨none, .inl hσ⟩
+  haveI : (L.lhomWithConstants α).IsExpansionOn K := LHom.isExpansionOn_reduct _ _
+  refine ⟨Theory.ModelType.of T K, fun i => (L.con i : K), ?_, fun q => ?_⟩
+  · exact (Formula.realize_equivSentence (M := K) extra).mp
+      (K.is_model.realize_of_mem _ (Set.mem_iUnion.mpr ⟨none, by simp [U, base]⟩))
+  · exact (Formula.realize_equivSentence (M := K) q.1).mp
+      (K.is_model.realize_of_mem _ (Set.mem_iUnion.mpr ⟨some q, by simp [U, base]⟩))
+
 /-- Henkin-style construction: if `φ` is not equivalent over `T` to any quantifier-free formula,
 there is a model of `T` containing constants `v0 : α → M1` that fail to realize `φ` yet realize
 every quantifier-free consequence of `φ` over `T`. -/
@@ -216,71 +280,21 @@ private theorem exists_model_not_realize_with_qf_consequences
     {T : L.Theory} {α : Type u'} {φ : L.Formula α} (hqe : ¬ T.IsQFEquivalent φ) :
     ∃ (M1 : Theory.ModelType.{u, v, max u v u'} T) (v0 : α → M1), ¬ φ.Realize v0 ∧
       ∀ q : {ψ : L.Formula α // ψ.IsQF ∧ φ ⟹[T] ψ}, q.1.Realize v0 := by
-  -- Work in `L[[α]]` with a constant for each variable. The target theory is `T`, the sentence
-  -- `¬φ`, and every quantifier-free consequence `ψ` of `φ`; a model of it provides `v0`.
-  let Q1 : Type _ := {ψ : L.Formula α // ψ.IsQF ∧ φ ⟹[T] ψ}
-  let base1 : L[[α]].Theory :=
-    (L.lhomWithConstants α).onTheory T ∪ {Formula.equivSentence φ.not}
-  let U1 : Option Q1 → L[[α]].Theory
-    | none => base1
-    | some ψ => base1 ∪ {Formula.equivSentence ψ.1}
-  -- By compactness it suffices to satisfy every finite subset; suppose some finite subset `s` is
-  -- unsatisfiable and let `θ` be the conjunction of the quantifier-free consequences it mentions.
-  have hsat1 : Theory.IsSatisfiable (⋃ i, U1 i) := by
-    by_contra hsat1
-    rw [Theory.isSatisfiable_iUnion_iff_isSatisfiable_iUnion_finset] at hsat1
-    push Not at hsat1
-    rcases hsat1 with ⟨s, hs⟩
-    let qfs : Finset Q1 :=
-      s.filterMap id (by intro a a' b ha ha'; simpa using ha.trans ha'.symm)
-    let lqfs : List Q1 := qfs.toList
-    let θ : L.Formula α := qfConj lqfs
-    have hθQF : θ.IsQF := qfConj_isQF lqfs
-    -- `φ` implies `θ`, since each conjunct is a consequence of `φ`.
-    have hφθ : φ ⟹[T] θ := fun M v xs hφ => by
-      change BoundedFormula.Realize (qfConj lqfs) v xs
-      rw [realize_qfConj]
-      exact fun q _ => q.2.2 M v xs hφ
-    -- Conversely `θ` implies `φ`: a `T`-model of `θ` with `¬φ` would satisfy the finite subset `s`,
-    -- contradicting its unsatisfiability. Thus `θ` is a quantifier-free formula equivalent to `φ`.
-    have hθφ : θ ⟹[T] φ := by
-      intro M v xs hθ
-      by_contra hφ
-      letI : (constantsOn α).Structure M := constantsOn.structure v
-      have hθall : ∀ q ∈ lqfs, BoundedFormula.Realize q.1 v xs := by
-        change BoundedFormula.Realize (qfConj lqfs) v xs at hθ
-        exact (realize_qfConj lqfs v xs).mp hθ
-      have hbase : ∀ τ ∈ base1, M ⊨ τ := by
-        rintro τ (hT | hnot)
-        · exact ((LHom.onTheory_model _ _).mpr inferInstance).realize_of_mem _ hT
-        · rw [Set.mem_singleton_iff] at hnot
-          subst hnot
-          refine (Formula.realize_equivSentence (M := M) φ.not).mpr ?_
-          exact Formula.realize_not.mpr fun h =>
-            hφ ((Formula.boundedFormula_realize_eq_realize φ v xs).mpr h)
-      have hmodel : M ⊨ ⋃ i ∈ s, U1 i := by
-        refine model_iUnion_option_of_base_of_extra U1 base1
-          (fun q : Q1 => Formula.equivSentence q.1) s rfl (fun _ => rfl) hbase ?_
-        intro q hq
-        refine (Formula.realize_equivSentence (M := M) q.1).mpr ?_
-        have hqlist : q ∈ lqfs := Finset.mem_toList.mpr (by simpa [qfs] using hq)
-        exact (Formula.boundedFormula_realize_eq_realize ..).mp (hθall q hqlist)
-      exact hs (Theory.Model.isSatisfiable M)
-    exact hqe ⟨θ, hθQF, Theory.imp_antisymm hφθ hθφ⟩
-  -- Reduce a model to an `L`-structure modelling `T`, and read off its constants as `v0`: it fails
-  -- `φ` (from the `¬φ` sentence) and realizes every quantifier-free consequence of `φ`.
-  obtain ⟨M1⟩ := hsat1
-  letI : L.Structure M1 := (L.lhomWithConstants α).reduct M1
-  haveI : T.Model M1 := (LHom.onTheory_model _ _).mp <| M1.is_model.mono fun _ hσ =>
-    Set.mem_iUnion.mpr ⟨none, .inl hσ⟩
-  haveI : (L.lhomWithConstants α).IsExpansionOn M1 := LHom.isExpansionOn_reduct _ _
-  refine ⟨Theory.ModelType.of T M1, fun i => (L.con i : M1), ?_, ?_⟩
-  · have := (Formula.realize_equivSentence (M := M1) φ.not).mp
-      (M1.is_model.realize_of_mem _ (Set.mem_iUnion.mpr ⟨none, by simp [U1, base1]⟩))
-    exact Formula.realize_not.mp this
-  · intro q
-    exact (Formula.realize_equivSentence (M := M1) q.1).mp
-      (M1.is_model.realize_of_mem _ (Set.mem_iUnion.mpr ⟨some q, by simp [U1, base1]⟩))
+  -- Apply the compactness core with seed `¬φ` and predicate "is a consequence of `φ`": a finite
+  -- conjunction `θ` of consequences with `φ.not ⟹[T] θ.not`, i.e. `θ ⟹[T] φ`, would together with
+  -- `φ ⟹[T] θ` make `θ` a quantifier-free equivalent of `φ`, contradicting `hqe`.
+  obtain ⟨M1, v0, hnotφ, hcons⟩ :=
+    exists_model_realize_of_forall_not_imp_not (fun ψ => φ ⟹[T] ψ) φ.not fun l h => by
+      have hφθ : φ ⟹[T] qfConj l := fun M v xs hφ => by
+        change BoundedFormula.Realize (qfConj l) v xs
+        rw [realize_qfConj]
+        exact fun q _ => q.2.2 M v xs hφ
+      have hθφ : qfConj l ⟹[T] φ := fun M v xs hθ => by
+        by_contra hφ
+        exact BoundedFormula.realize_not.mp
+          (h M v xs (BoundedFormula.realize_not.mpr hφ)) hθ
+      exact hqe ⟨qfConj l, qfConj_isQF l, Theory.imp_antisymm hφθ hθφ⟩
+  exact ⟨M1, v0, Formula.realize_not.mp hnotφ, hcons⟩
 
 /-- Henkin-style construction: given constants `v0 : α → M1` in a model of `T` such that every
 quantifier-free consequence of `φ` is realized at `v0`, there is a model `N1` of `T` with constants
@@ -291,74 +305,22 @@ private theorem exists_model_realize_with_qf_realized_at
     (hqfConseq : ∀ q : {ψ : L.Formula α // ψ.IsQF ∧ φ ⟹[T] ψ}, q.1.Realize v0) :
     ∃ (N1 : Theory.ModelType.{u, v, max u v u'} T) (w : α → N1),
       φ.Realize w ∧ ∀ ψ : L.Formula α, ψ.IsQF → (ψ.Realize v0 ↔ ψ.Realize w) := by
-  -- Work in `L[[α]]`. The target theory is `T`, the sentence `φ`, and every quantifier-free formula
-  -- `ψ` realized at `v0`; a model of it provides `w` realizing `φ` and agreeing with `v0`.
-  let P : Type _ := {ψ : L.Formula α // ψ.IsQF ∧ ψ.Realize v0}
-  let base2 : L[[α]].Theory :=
-    (L.lhomWithConstants α).onTheory T ∪ {Formula.equivSentence φ}
-  let U2 : Option P → L[[α]].Theory
-    | none => base2
-    | some ψ => base2 ∪ {Formula.equivSentence ψ.1}
-  -- By compactness, satisfy each finite subset. If some finite subset `s` were unsatisfiable, the
-  -- conjunction `θ` of its quantifier-free formulas would give `φ ⟹ ¬θ` while `θ` holds at `v0`.
-  have hsat2 : Theory.IsSatisfiable (⋃ i, U2 i) := by
-    by_contra hsat2
-    rw [Theory.isSatisfiable_iUnion_iff_isSatisfiable_iUnion_finset] at hsat2
-    push Not at hsat2
-    rcases hsat2 with ⟨s, hs⟩
-    let qfs : Finset P :=
-      s.filterMap id (by intro a a' b ha ha'; simpa using ha.trans ha'.symm)
-    let lqfs : List P := qfs.toList
-    let θ : L.Formula α := qfConj lqfs
-    have hθQF : θ.IsQF := qfConj_isQF lqfs
-    have hφnotθ : φ ⟹[T] θ.not := by
-      intro M v xs hφ
-      by_contra hnotθ
-      have hθ : BoundedFormula.Realize θ v xs := by
-        simpa [BoundedFormula.realize_not] using hnotθ
-      letI : (constantsOn α).Structure M := constantsOn.structure v
-      have hθall : ∀ q ∈ lqfs, BoundedFormula.Realize q.1 v xs := by
-        change BoundedFormula.Realize (qfConj lqfs) v xs at hθ
-        exact (realize_qfConj lqfs v xs).mp hθ
-      have hbase : ∀ τ ∈ base2, M ⊨ τ := by
-        rintro τ (hT | hφ')
-        · exact ((LHom.onTheory_model _ _).mpr inferInstance).realize_of_mem _ hT
-        · rw [Set.mem_singleton_iff] at hφ'
-          subst hφ'
-          exact (Formula.realize_equivSentence (M := M) φ).mpr
-            ((Formula.boundedFormula_realize_eq_realize ..).mp hφ)
-      have hmodel : M ⊨ ⋃ i ∈ s, U2 i := by
-        refine model_iUnion_option_of_base_of_extra U2 base2
-          (fun q : P => Formula.equivSentence q.1) s rfl (fun _ => rfl) hbase ?_
-        intro q hq
-        refine (Formula.realize_equivSentence (M := M) q.1).mpr ?_
-        have hqlist : q ∈ lqfs := Finset.mem_toList.mpr (by simpa [qfs] using hq)
-        exact (Formula.boundedFormula_realize_eq_realize ..).mp (hθall q hqlist)
-      exact hs (Theory.Model.isSatisfiable M)
-    have hθv0 : θ.Realize v0 := by
-      change BoundedFormula.Realize (qfConj lqfs) v0 default
-      rw [realize_qfConj]
-      exact fun q _ => q.2.2
-    -- But then `¬θ` is a quantifier-free consequence of `φ`, so it holds at `v0`, contradiction.
-    exact hqfConseq ⟨θ.not, hθQF.not, hφnotθ⟩ hθv0
-  obtain ⟨N1⟩ := hsat2
-  letI : L.Structure N1 := (L.lhomWithConstants α).reduct N1
-  haveI : T.Model N1 := (LHom.onTheory_model _ _).mp <| N1.is_model.mono fun _ hσ =>
-    Set.mem_iUnion.mpr ⟨none, .inl hσ⟩
-  haveI : (L.lhomWithConstants α).IsExpansionOn N1 := LHom.isExpansionOn_reduct _ _
-  let w : α → N1 := fun i => (L.con i : N1)
-  have hφw : φ.Realize w :=
-    (Formula.realize_equivSentence (M := N1) φ).mp
-      (N1.is_model.realize_of_mem _ (Set.mem_iUnion.mpr ⟨none, by simp [U2, base2]⟩))
-  have hqfIncl : ∀ ψ : L.Formula α, ψ.IsQF → ψ.Realize v0 → ψ.Realize w :=
-    fun ψ hψ hψv0 => (Formula.realize_equivSentence (M := N1) ψ).mp
-      (N1.is_model.realize_of_mem _
-        (Set.mem_iUnion.mpr ⟨some ⟨ψ, hψ, hψv0⟩, .inr rfl⟩))
-  -- Agreement on `ψ`: forward is `hqfIncl`; the reverse follows by applying it to `ψ.not`.
-  refine ⟨Theory.ModelType.of T N1, w, hφw, fun ψ hψ =>
-    ⟨hqfIncl ψ hψ, fun hψw => ?_⟩⟩
+  -- Apply the compactness core with seed `φ` and predicate "is realized at `v0`": a finite
+  -- conjunction `θ` of formulas realized at `v0` with `φ ⟹[T] θ.not` would make `θ.not` a
+  -- quantifier-free consequence of `φ`, hence realized at `v0`, contradicting `θ.Realize v0`.
+  obtain ⟨N1, w, hφw, hqfIncl⟩ :=
+    exists_model_realize_of_forall_not_imp_not (fun ψ => ψ.Realize v0) φ fun l h => by
+      have hθv0 : (qfConj l).Realize v0 := by
+        change BoundedFormula.Realize (qfConj l) v0 default
+        rw [realize_qfConj]
+        exact fun q _ => q.2.2
+      exact hqfConseq ⟨(qfConj l).not, (qfConj_isQF l).not, h⟩ hθv0
+  -- Agreement on `ψ`: forward is the inclusion `hqfIncl`; the reverse applies it to `ψ.not`.
+  refine ⟨N1, w, hφw, fun ψ hψ => ⟨fun hψv0 => hqfIncl ⟨ψ, hψ, hψv0⟩, fun hψw => ?_⟩⟩
   by_contra hψv0
-  exact hqfIncl ψ.not hψ.not (by simpa [Formula.realize_not] using hψv0) hψw
+  have hnot : (ψ.not).Realize w :=
+    hqfIncl ⟨ψ.not, hψ.not, by simpa [Formula.realize_not] using hψv0⟩
+  exact hnot hψw
 
 /-- Forward direction of `isQFEquivalent_iff_realize_iff_of_embeddings`: a quantifier-free
 equivalent of `φ` is preserved by embeddings, so `φ`'s realization on the image of a common
