@@ -7,7 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
-public import Mathlib.MeasureTheory.Integral.SetToL1Prod
+public import Mathlib.MeasureTheory.Integral.SetToL1
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.MeasureTheory.Measure.Prod
 

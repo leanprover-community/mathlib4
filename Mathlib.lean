@@ -5505,7 +5505,6 @@ public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.NNReal
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 public import Mathlib.MeasureTheory.Integral.SetToL1
-public import Mathlib.MeasureTheory.Integral.SetToL1Prod
 public import Mathlib.MeasureTheory.Integral.TorusIntegral
 public import Mathlib.MeasureTheory.MeasurableSpace.Basic
 public import Mathlib.MeasureTheory.MeasurableSpace.Card
