@@ -187,4 +187,3 @@ theorem val_signDet_mk (g : GL n R) : (signDet (mk g) : SignType) = .sign g.det.
 end ProjGenLinGroup
 
 end Matrix
-#min_imports
