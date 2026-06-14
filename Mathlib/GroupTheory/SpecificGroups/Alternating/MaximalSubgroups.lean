@@ -154,7 +154,7 @@ theorem exists_mem_stabilizer_smul_eq (hα : 4 ≤ Nat.card α) {t : Set α} :
     simpa
   by_cases ht : 2 < t.ncard
   · rw [← Set.ncard_pair hab] at ht
-    replace ht := Set.diff_nonempty_of_ncard_lt_ncard ht
+    replace ht := Set.sdiff_nonempty_of_ncard_lt_ncard ht
     obtain ⟨c, hct, hc⟩ := ht
     simp only [mem_insert_iff, not_or] at hc
     refine ⟨⟨swap c a * swap a b, by simp [hab, hc.1]⟩, ?_, ?_⟩

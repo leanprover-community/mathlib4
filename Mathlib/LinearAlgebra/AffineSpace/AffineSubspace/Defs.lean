@@ -161,7 +161,7 @@ variable (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddCommGroup V] [Module k
 
 instance : SetLike (AffineSubspace k P) P where
   coe := carrier
-  coe_injective' p q _ := by cases p; cases q; congr
+  coe_injective p q _ := by cases p; cases q; congr
 
 instance : PartialOrder (AffineSubspace k P) := .ofSetLike (AffineSubspace k P) P
 

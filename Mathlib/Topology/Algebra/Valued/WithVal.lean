@@ -418,14 +418,16 @@ variable {R : Type*} [Ring R] (v : Valuation R Γ₀)
 
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
-theorem valueGroup_eq : valueGroup (valuation v) = valueGroup v := by
+theorem valueGroup_eq : valueGroup (.ofClass (Valued.v (R := WithVal v))) =
+    valueGroup (.ofClass v) := by
   simp [valueGroup, valueMonoid, ← (WithVal.ofVal_surjective v).range_comp]
   rfl
 
 /-- The multiplicative equivalence between the `valueGroup` of the valuation on `WithVal v`
 and the valuation `v`. -/
 @[simps! apply symm_apply]
-def valueGroupEquiv : valueGroup (valuation v) ≃* valueGroup v where
+def valueGroupEquiv :
+    valueGroup (.ofClass (Valued.v (R := WithVal v))) ≃* valueGroup (.ofClass v) where
   __ := Equiv.setCongr (by simp [valueGroup_eq v])
   map_mul' := by simp [Equiv.setCongr, Equiv.subtypeEquivProp]
 
@@ -438,7 +440,8 @@ theorem strictMono_valueGroupEquiv_symm : StrictMono (valueGroupEquiv v).symm :=
 /-- The order-preserving, multiplicative equivalence between the `ValueGroup₀` of the valuation
 on `WithVal v` and the valuation `v`. -/
 @[simps!]
-def valueGroupOrderIso₀ : ValueGroup₀ (valuation v) ≃*o ValueGroup₀ v where
+def valueGroupOrderIso₀ : ValueGroup₀ (.ofClass (Valued.v (R := WithVal v))) ≃*o
+    ValueGroup₀ (.ofClass v) where
   toFun := WithZero.map' (valueGroupEquiv v)
   invFun := WithZero.map' (valueGroupEquiv v).symm
   left_inv x := by
@@ -520,7 +523,6 @@ theorem IsEquiv.orderRingIso_symm_apply (h : v.IsEquiv w) (x : WithVal w) :
 
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v = w)
     (h : v.IsEquiv w) : UniformContinuous (WithVal.equiv v) := by
   refine uniformContinuous_of_continuousAt_zero _ ?_
@@ -540,10 +542,11 @@ theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v 
   have h' : v.restrict.IsEquiv w.restrict := h.restrict
   rw [← hr, equiv_apply, Set.mem_setOf_eq, lt_div_iff₀ ((restrict_pos_iff Valued.v s).mpr hs₀), hv,
     ← map_mul, ← lt_def, ← ofVal_mul,
-    ← hy, ← toVal_mul, ← h'.orderRingIso_apply, ← h'.orderRingIso.lt_symm_apply, lt_def]
-  simpa [lt_div_iff₀ hs0', ← map_mul] using! hx
+    ← hy, ← toVal_mul, ←  h'.orderRingIso_apply, ← h'.orderRingIso.lt_symm_apply]
+  simp only [toVal_mul, orderRingIso_symm_apply, lt_def, ofVal_mul, restrict_lt_iff]
+  simp only [equiv_symm_apply, Units.val_mk0, Set.mem_setOf_eq, lt_div_iff₀ hs0'] at hx
+  rwa [← map_mul, restrict_lt_iff] at hx
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valued.v = w)
     (h : w.IsEquiv v) : UniformContinuous (WithVal.equiv v).symm := by
   refine uniformContinuous_of_continuousAt_zero _ ?_
@@ -554,8 +557,9 @@ theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valu
   have h' : w.restrict.IsEquiv v.restrict := h.restrict
   use .mk0 ((Valued.v.restrict ((WithVal.equiv v) r)) /
     (Valued.v.restrict ((WithVal.equiv v) s))) (by
-    simp only [equiv_apply, restrict_def, restrict₀_eq_zero_iff, ne_eq, div_eq_zero_iff, not_or,
-      hv, (eq_zero h (r := r.ofVal)).ne, (eq_zero h (r := s.ofVal)).ne]
+    simp only [equiv_apply, restrict_def, ne_eq, div_eq_zero_iff, restrict₀_eq_zero_iff, hv,
+      MonoidWithZeroHom.coe_ofClass, not_or, (eq_zero h (r := r.ofVal)).ne,
+      (eq_zero h (r := s.ofVal)).ne]
     exact ⟨hr₀.ne', hs₀.ne'⟩)
   intro x hx
   simp only [equiv_symm_apply, Set.mem_setOf_eq]
@@ -569,7 +573,6 @@ theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valu
   · rw [restrict_pos_iff, hv, h.pos_iff]
     exact hs₀
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsEquiv.uniformContinuous (h : v.IsEquiv w) :
     @UniformContinuous R R (Valued.mk' w).toUniformSpace (Valued.mk' v).toUniformSpace
       (RingHom.id R) := by
@@ -630,17 +633,15 @@ theorem exists_div_eq_of_surjective {K : Type*} [DivisionRing K] {Γ₀ : Type*}
 
 theorem restrict_exists_div_eq {K : Type*} [DivisionRing K] {Γ₀ : Type*}
     [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀)
-    (γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ) :
+    (γ : (ValueGroup₀ (.ofClass v))ˣ) :
     ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
-  obtain ⟨r, hr⟩ := MonoidWithZeroHom.ValueGroup₀.restrict₀_surjective v γ
+  obtain ⟨r, hr⟩ := ValueGroup₀.restrict₀_surjective (.ofClass v) γ
   classical
   exact ⟨r, 1, by
     simp only [map_one, zero_lt_one, restrict_def, hr, div_one, and_self, and_true]
-    rw [← map_zero v, ← embedding_restrict₀,  ← embedding_restrict₀ r, hr,
-      embedding_strictMono.lt_iff_lt, map_zero]
-    refine WithZero.pos_iff_ne_zero.mpr (Units.ne_zero γ)⟩
+    rw [← map_zero v]
+    simpa [← hr] using embedding_strictMono (WithZero.pos_iff_ne_zero.mpr (Units.ne_zero γ))⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open UniformSpace.Completion in
 theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation K Γ₀}
     {w : Valuation K Γ₀'} (h : v.IsEquiv w) {x : v.Completion} :
