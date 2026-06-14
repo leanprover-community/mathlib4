@@ -5,7 +5,6 @@ Authors: Kexing Ying
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Hahn
 public import Mathlib.MeasureTheory.Measure.MutuallySingular
 public import Mathlib.Topology.Algebra.UniformMulAction
@@ -476,26 +475,14 @@ theorem apply_eq_posPart_real_sub_negPart_real (s : SignedMeasure α) {i : Set �
     s i = s.toJordanDecomposition.posPart.real i - s.toJordanDecomposition.negPart.real i := by
   grind [Measure.toSignedMeasure_sub_apply, toSignedMeasure, toSignedMeasure_toJordanDecomposition]
 
-/-- The pointwise bound `‖s i‖ ≤ s.totalVariation.real i` for any signed measure. -/
-theorem norm_le_totalVariation (s : SignedMeasure α) (i : Set α) :
-    ‖s i‖ ≤ s.totalVariation.real i := by
-  by_cases hi : MeasurableSet i
-  · rw [s.apply_eq_posPart_real_sub_negPart_real hi, totalVariation, measureReal_add_apply]
-    grind [measureReal_nonneg, Real.norm_eq_abs]
-  · simp [s.not_measurable' hi, measureReal_nonneg]
-
-/-- The pointwise bound `‖s i‖ₑ ≤ s.totalVariation i` for any signed measure. -/
-theorem enorm_le_totalVariation (s : SignedMeasure α) (i : Set α) :
-    ‖s i‖ₑ ≤ s.totalVariation i := calc
-  _ = ENNReal.ofReal ‖s i‖ := (ofReal_norm_eq_enorm _).symm
-  _ ≤ ENNReal.ofReal (s.totalVariation.real i) :=
-    ENNReal.ofReal_le_ofReal (s.norm_le_totalVariation i)
-  _ = _ := by rw [measureReal_def, ENNReal.ofReal_toReal (measure_ne_top _ _)]
-
 theorem null_of_totalVariation_zero (s : SignedMeasure α) {i : Set α}
     (hs : s.totalVariation i = 0) : s i = 0 := by
-  have : ‖s i‖ₑ = 0 := nonpos_iff_eq_zero.mp <| hs ▸ s.enorm_le_totalVariation i
-  grind [Real.enorm_eq_ofReal_abs, ENNReal.ofReal_eq_zero]
+  rw [totalVariation, Measure.coe_add, Pi.add_apply, add_eq_zero] at hs
+  rw [← toSignedMeasure_toJordanDecomposition s, toSignedMeasure, VectorMeasure.coe_sub,
+    Pi.sub_apply, Measure.toSignedMeasure_apply, Measure.toSignedMeasure_apply]
+  by_cases hi : MeasurableSet i
+  · simp [hs.1, hs.2, measureReal_def]
+  · simp [if_neg hi]
 
 theorem absolutelyContinuous_ennreal_iff (s : SignedMeasure α) (μ : VectorMeasure α ℝ≥0∞) :
     s ≪ᵥ μ ↔ s.totalVariation ≪ μ.ennrealToMeasure := by

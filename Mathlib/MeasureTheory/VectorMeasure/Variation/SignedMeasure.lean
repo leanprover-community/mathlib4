@@ -26,34 +26,31 @@ public section
 
 open scoped ENNReal NNReal
 
--- TODO(mathlib4#26165): the following `Finpartition` lemmas are scheduled to be added in
--- PR https://github.com/leanprover-community/mathlib4/pull/26165 .
-namespace Finpartition
-
-variable {α : Type*} [Lattice α] [OrderBot α] {a : α} (P : Finpartition a)
-
-theorem sup_parts_apply {β : Type*} [SemilatticeSup β] [OrderBot β] {f : α → β}
-    (hsup : ∀ x y, f (x ⊔ y) = f x ⊔ f y) (hbot : f ⊥ = ⊥) : P.parts.sup f = f a :=
-  (Finset.comp_sup_eq_sup_comp f hsup hbot).symm.trans (congrArg f P.sup_parts)
-
-theorem pairwiseDisjoint_apply {β : Type*} [SemilatticeInf β] [OrderBot β] {f : α → β}
-    (hinf : ∀ x y, f (x ⊓ y) = f x ⊓ f y) (hbot : f ⊥ = ⊥) :
-    (P.parts : Set α).PairwiseDisjoint f := fun _ hx _ hy hxy => by
-  have h := (P.disjoint hx hy hxy).eq_bot
-  simp only [id_eq] at h
-  rw [Function.onFun, disjoint_iff, ← hinf, h, hbot]
-
-end Finpartition
-
 namespace MeasureTheory.SignedMeasure
 
 variable {X : Type*} {mX : MeasurableSpace X} (μ : SignedMeasure X)
+
+/-- The pointwise bound `‖s i‖ ≤ s.totalVariation.real i` for any signed measure. -/
+theorem norm_le_totalVariation (s : SignedMeasure X) (i : Set X) :
+    ‖s i‖ ≤ s.totalVariation.real i := by
+  by_cases hi : MeasurableSet i
+  · rw [s.apply_eq_posPart_real_sub_negPart_real hi, totalVariation, measureReal_add_apply]
+    grind [measureReal_nonneg, Real.norm_eq_abs]
+  · simp [s.not_measurable' hi, measureReal_nonneg]
+
+/-- The pointwise bound `‖s i‖ₑ ≤ s.totalVariation i` for any signed measure. -/
+theorem enorm_le_totalVariation (s : SignedMeasure X) (i : Set X) :
+    ‖s i‖ₑ ≤ s.totalVariation i := calc
+  _ = ENNReal.ofReal ‖s i‖ := (ofReal_norm _).symm
+  _ ≤ ENNReal.ofReal (s.totalVariation.real i) :=
+    ENNReal.ofReal_le_ofReal (s.norm_le_totalVariation i)
+  _ = _ := by rw [measureReal_def, ENNReal.ofReal_toReal (measure_ne_top _ _)]
 
 lemma toMeasureOfZeroLE_apply_eq_enorm {i j : Set X} (him : MeasurableSet i) (hi : 0 ≤[i] μ)
     (hjm : MeasurableSet j) : μ.toMeasureOfZeroLE i him hi j = ‖μ (i ∩ j)‖ₑ := by
   have : 0 ≤ μ (i ∩ j) :=
     μ.nonneg_of_zero_le_restrict (μ.zero_le_restrict_subset ‹_› Set.inter_subset_left ‹_›)
-  grind [μ.toMeasureOfZeroLE_apply, Real.enorm_of_nonneg, ENNReal.ofReal_eq_coe_nnreal]
+  rw [Real.enorm_of_nonneg this, μ.toMeasureOfZeroLE_apply hi him hjm, ENNReal.ofReal_eq_coe_nnreal]
 
 lemma toMeasureOfLEZero_apply_eq_enorm {i j : Set X} (him : MeasurableSet i)
     (hi : μ ≤[i] 0) (hjm : MeasurableSet j) :
