@@ -262,6 +262,12 @@ lemma div_mul_div (hkm : m ∣ k) (hkn : n ∣ m) : (k / m) * (m / n) = k / n :=
 lemma div_dvd_div_left (hkm : m ∣ k) (hkn : n ∣ m) : k / m ∣ k / n :=
   ⟨_, (div_mul_div hkm hkn).symm⟩
 
+/-- `a / b ∣ a / d` iff `d ∣ b`, when both `b` and `d` divide `a`. -/
+lemma div_dvd_div_iff (ha : 0 < a) (hb : 0 < b) (h₁ : b ∣ a) (h₂ : d ∣ a) :
+    a / b ∣ a / d ↔ d ∣ b := by
+  rw [Nat.div_dvd_iff_dvd_mul h₁ hb, ← Nat.mul_div_assoc _ h₂,
+    Nat.dvd_div_iff_mul_dvd (h₂.mul_left b), Nat.mul_dvd_mul_iff_right ha]
+
 lemma div_lcm_eq_div_gcd (hkm : m ∣ k) (hkn : n ∣ k) : (k / m).lcm (k / n) = k / (m.gcd n) := by
   rw [Nat.lcm_eq_iff]
   refine ⟨div_dvd_div_left hkm (Nat.gcd_dvd_left m n),

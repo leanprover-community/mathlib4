@@ -880,11 +880,6 @@ end WithZero
 
 section SubgroupCard
 
-private theorem Nat.div_dvd_div_iff {a b d : ℕ} (ha : 0 < a) (hb : 0 < b) (h₁ : b ∣ a) (h₂ : d ∣ a) :
-    a / b ∣ a / d ↔ d ∣ b := by
-  rw [Nat.div_dvd_iff_dvd_mul h₁ hb, ← Nat.mul_div_assoc _ h₂,
-    Nat.dvd_div_iff_mul_dvd (h₂.mul_left b), Nat.mul_dvd_mul_iff_right ha]
-
 /-- In a finite cyclic group, `H ≤ K` iff `Nat.card H ∣ Nat.card K`. -/
 @[to_additive "In a finite additive cyclic group, `H ≤ K` iff `Nat.card H ∣ Nat.card K`."]
 theorem IsCyclic.subgroup_le_subgroup_iff [Group G] [Finite G] [IsCyclic G]
