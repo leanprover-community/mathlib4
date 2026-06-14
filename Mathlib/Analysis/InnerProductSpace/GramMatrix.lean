@@ -234,11 +234,10 @@ theorem exists_linearIsometryEquiv_span_map_eq_of_inner_eq {φ : ι → E} {ψ :
     obtain ⟨c, hc⟩ := LinearMap.mem_range.mp s.2
     have hs : s = ⟨Tφ c, LinearMap.mem_range_self Tφ c⟩ := Subtype.ext hc.symm
     simp [hs, hf_apply, norm_eq]
-  have hf_mem : ∀ s : (LinearMap.range Tφ), f s ∈ LinearMap.range Tψ := by
-    intro s
+  have hf_mem (s : LinearMap.range Tφ) : f s ∈ LinearMap.range Tψ := by
     obtain ⟨c, hc⟩ := LinearMap.mem_range.mp s.2
-    rw [show s = ⟨Tφ c, LinearMap.mem_range_self Tφ c⟩ from Subtype.ext hc.symm, hf_apply c]
-    exact LinearMap.mem_range_self Tψ c
+    have hs : s = ⟨Tφ c, LinearMap.mem_range_self Tφ c⟩ := Subtype.ext hc.symm
+    simp [hs, hf_apply]
   -- Corestrict `f` to `range Tψ` as a linear isometry.
   set f' : (LinearMap.range Tφ) →ₗ[𝕜] (LinearMap.range Tψ) :=
     LinearMap.codRestrict (LinearMap.range Tψ) f hf_mem with hf'
