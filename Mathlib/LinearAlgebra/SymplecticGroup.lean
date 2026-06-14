@@ -278,17 +278,16 @@ private lemma exists_symmetric_X_invertible_add_mul_diagonal {R : Type*} [Field 
   set M := A + X * D with M_def
   refine ⟨X, hX_symm, M.isUnit_iff_isUnit_det.1 <|
     isUnit_toLin'_iff.1 <| M.toLin'.isUnit_iff_ker_eq_bot.2 <|
-      ker_toLin'_eq_bot_iff.2 <| fun x hx ↦ ?_⟩
+      ker_toLin'_eq_bot_iff.2 <| fun x (hx : M • x = 0) ↦ ?_⟩
   have hDx : D • x = 0 := by
     ext i
-    convert_to (if i ∈ s then x i else 0) = _
-    · simp [D_def, Finset.sum_ite_eq, mulVec_apply, diagonal_apply]
-    · refine ite_eq_right_iff.2 fun hi ↦ ?_
-      simpa [hM1 i hi] using (show ∑ j : l, M i j * x j = 0 from congrFun hx i)
+    simp only [D_def, smul_eq_mulVec, mulVec_apply, diagonal_apply, ite_mul, one_mul, zero_mul,
+      Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, Pi.zero_apply, ite_eq_right_iff]
+    intro hi
+    simpa [hM1 i hi] using (show ∑ j : l, M i j * x j = 0 from congrFun hx i)
   have hAx : A • x = 0 := by
-    convert_to A • x + (X * D) • x = 0
-    · rw [left_eq_add, mul_smul, hDx, smul_zero]
-    · rwa [← add_smul]
+    rw [← left_eq_add (a := (X * D) • x), ← add_smul, add_comm,
+      ← M_def, hx, mul_smul, hDx, smul_zero]
   exact h_rank1 x hAx hDx
 
 private lemma exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot {R : Type*} [Field R]
