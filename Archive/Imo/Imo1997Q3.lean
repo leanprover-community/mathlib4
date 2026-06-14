@@ -3,12 +3,15 @@ Copyright (c) 2025 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Sign.Defs
-import Mathlib.GroupTheory.Perm.Sign
-import Mathlib.Tactic.Linarith
+
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Data.Sign.Defs
+public import Mathlib.GroupTheory.Perm.Sign
+public import Mathlib.Tactic.Linarith
 
 /-!
 # IMO 1997 Q3
@@ -36,6 +39,8 @@ Since $S(1)$ and $S(R)$ have the same sign yet are strictly larger than $\frac{n
 absolute value, $|S(1) + S(R)| > n + 1$, which yields a contradiction. Therefore the initial
 assumption that all permutations satisfy $\frac{n+1}2 < |S(π)|$ must be false; the result follows.
 -/
+
+@[expose] public section
 
 namespace Imo1997Q3
 

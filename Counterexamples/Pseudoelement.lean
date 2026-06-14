@@ -3,8 +3,11 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.CategoryTheory.Abelian.Pseudoelements
-import Mathlib.Algebra.Category.ModuleCat.Biproducts
+
+module
+
+public import Mathlib.CategoryTheory.Abelian.Pseudoelements
+public import Mathlib.Algebra.Category.ModuleCat.Biproducts
 
 /-!
 # Pseudoelements and pullbacks
@@ -28,6 +31,7 @@ given by `t ↦ (t, 2 * t)` and `y : ℚ ⟶ ℚ ⊞ ℚ` given by `t ↦ (t, t)
 * [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
 -/
 
+@[expose] public section
 
 open CategoryTheory.Abelian CategoryTheory CategoryTheory.Limits ModuleCat LinearMap
 

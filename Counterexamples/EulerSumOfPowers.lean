@@ -3,7 +3,10 @@ Copyright (c) 2025 Snir Broshi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Snir Broshi, Michael Stoll
 -/
-import Mathlib.NumberTheory.FLT.Three
+
+module
+
+public import Mathlib.NumberTheory.FLT.Three
 
 /-!
 # Euler's sum of powers conjecture
@@ -27,6 +30,7 @@ http://euler.free.fr/
   https://www.ams.org/journals/mcom/1988-51-184/S0025-5718-1988-0930224-9/S0025-5718-1988-0930224-9.pdf
 -/
 
+@[expose] public section
 
 namespace Counterexample
 

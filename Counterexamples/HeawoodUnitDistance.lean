@@ -3,8 +3,11 @@ Copyright (c) 2025 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Combinatorics.SimpleGraph.UnitDistance.Basic
+
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Combinatorics.SimpleGraph.UnitDistance.Basic
 
 /-!
 # A simple planar unit-distance embedding of the Heawood graph
@@ -24,6 +27,8 @@ This file formalises a much simpler embedding, independently found by Moritz Fir
 and Jeremy Tan [in August 2025](https://github.com/Parcly-Taxel/Shibuya/commit/b5c86cbf1c8b2e1211b160f266480e7115a7e43a).
 Its coordinates are polynomials in the unique real root of `2c^3 + 3c + 1`.
 -/
+
+@[expose] public section
 
 namespace SimpleGraph
 

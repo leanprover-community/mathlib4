@@ -3,11 +3,14 @@ Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
 -/
-import Mathlib.Data.Real.Basic
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Field
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Ring
+
+module
+
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Tactic.Positivity
+public import Mathlib.Tactic.Field
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Ring
 
 /-!
 # IMO 2005 Q3
@@ -21,6 +24,7 @@ factoring `(x^5-x^2)/(x^5+y^2+z^2) - (x^5-x^2)/(x^3*(x^2+y^2+z^2))` into a non-n
 and then making use of `xyz ≥ 1` to show `(x^5-x^2)/(x^3*(x^2+y^2+z^2)) ≥ (x^2-y*z)/(x^2+y^2+z^2)`.
 -/
 
+@[expose] public section
 
 namespace Imo2005Q3
 

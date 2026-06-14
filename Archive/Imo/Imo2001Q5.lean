@@ -3,7 +3,10 @@ Copyright (c) 2025 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Geometry.Euclidean.Triangle
+
+module
+
+public import Mathlib.Geometry.Euclidean.Triangle
 
 /-!
 # IMO 2001 Q5
@@ -21,6 +24,8 @@ Let `x = ∠ABQ = ∠QBC`; it must be in `(0°, 60°)`. By angle chasing and the
 ```
 Solving this equation gives `x = 40°`, yielding `∠ABC = 80°` and `∠ACB = 40°`.
 -/
+
+@[expose] public section
 
 open Affine EuclideanGeometry
 open scoped Real

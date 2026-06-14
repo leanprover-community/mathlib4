@@ -3,10 +3,13 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Module.HahnBanach
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.Topology.ContinuousMap.Bounded.Star
+
+module
+
+public import Mathlib.Analysis.Normed.Module.HahnBanach
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.Topology.ContinuousMap.Bounded.Star
 
 /-!
 # A counterexample on Pettis integrability
@@ -72,6 +75,7 @@ on a discrete copy of the original type, as mathlib only contains the space of a
 continuous functions (which is the useful one).
 -/
 
+@[expose] public section
 
 namespace Counterexample
 

@@ -3,7 +3,10 @@ Copyright (c) 2021 Tian Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tian Chen
 -/
-import Mathlib.Data.PNat.Basic
+
+module
+
+public import Mathlib.Data.PNat.Basic
 
 /-!
 # IMO 1977 Q6
@@ -15,6 +18,7 @@ We first prove the problem statement for `f : ℕ → ℕ`
 then we use it to prove the statement for positive naturals.
 -/
 
+@[expose] public section
 
 namespace Imo1977Q6
 

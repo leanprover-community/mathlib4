@@ -3,9 +3,12 @@ Copyright (c) 2025 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Data.Int.Interval
-import Mathlib.GroupTheory.Perm.Fin
+
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Data.Int.Interval
+public import Mathlib.GroupTheory.Perm.Fin
 
 /-!
 # IMO 2001 Q4
@@ -23,6 +26,8 @@ $$= n! \frac{n+1}2 \sum_i c_i ≡ 0 \bmod n$$
 where the last equality relies on $n$ being odd. But $\sum_{i=0}^{n!-1} i = \frac{n!(n!-1)}2$
 is not divisible by $n!$, since the quotient is $\frac{n!-1}2$ and $n!$ is even when $n > 1$.
 -/
+
+@[expose] public section
 
 namespace Imo2001Q4
 

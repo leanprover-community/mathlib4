@@ -3,8 +3,11 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-import Mathlib.Analysis.Real.Pi.Bounds
-import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
+
+module
+
+public import Mathlib.Analysis.Real.Pi.Bounds
+public import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
 
 /-!
 # Weierstrass function: a function that is continuous everywhere but differentiable nowhere
@@ -28,6 +31,8 @@ which is the original bound given by Karl Weierstrass. There is a better bound $
 * [G. H. Hardy, *Weierstrass's Non-Differentiable Function*][hardyweierstrass]
 
 -/
+
+@[expose] public section
 
 namespace NowhereDifferentiable
 open Real Topology Filter

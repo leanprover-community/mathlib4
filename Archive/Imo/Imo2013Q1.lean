@@ -3,11 +3,14 @@ Copyright (c) 2021 David Renshaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
-import Mathlib.Algebra.Order.Field.Rat
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Ring
+
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+public import Mathlib.Algebra.Order.Field.Rat
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.Positivity.Basic
+public import Mathlib.Tactic.Ring
 
 /-!
 # IMO 2013 Q1
@@ -24,6 +27,7 @@ Adaptation of the solution found in https://www.imo-official.org/problems/IMO201
 We prove a slightly more general version where k does not need to be strictly positive.
 -/
 
+@[expose] public section
 
 namespace Imo2013Q1
 

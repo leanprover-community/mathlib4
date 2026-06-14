@@ -3,8 +3,11 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
-import Mathlib.Tactic.NormNum.Prime
+
+module
+
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
+public import Mathlib.Tactic.NormNum.Prime
 
 /-!
 # Not all coefficients of cyclotomic polynomials are -1, 0, or 1
@@ -14,6 +17,7 @@ theorem `not_forall_coeff_cyclotomic_neg_one_zero_one`. We prove this with the c
 `coeff_cyclotomic_105 : coeff (cyclotomic 105 ℤ) 7 = -2`.
 -/
 
+@[expose] public section
 
 open Nat (properDivisors)
 
