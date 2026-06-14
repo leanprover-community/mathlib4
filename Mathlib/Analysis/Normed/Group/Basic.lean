@@ -869,8 +869,8 @@ theorem ball_eq' (y : E) (ε : ℝ) : ball y ε = { x | ‖x / y‖ < ε } := by
 theorem mem_ball_iff_norm'' : b ∈ ball a r ↔ ‖b / a‖ < r := by
   rw [mem_ball, dist_eq_norm_div]
 
-@[to_additive mem_ball_iff_norm']
-theorem mem_ball_iff_norm''' : b ∈ ball a r ↔ ‖a / b‖ < r := by
+@[to_additive mem_ball_iff_left_div_norm ]
+theorem mem_ball_iff_left_div_norm : b ∈ ball a r ↔ ‖a / b‖ < r := by
   rw [mem_ball', dist_eq_norm_div]
 
 @[to_additive mem_closedBall_iff_norm]
