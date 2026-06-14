@@ -384,8 +384,7 @@ theorem coe_toContinuousLinearEquiv' (e : E ≃ₗ[𝕜] F) : (e.toContinuousLin
 
 @[simp]
 theorem coe_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
-    (e.toContinuousLinearEquiv.symm : F →ₗ[𝕜] E) = e.symm :=
-  rfl
+    (e.toContinuousLinearEquiv.toLinearEquiv.symm : F →ₗ[𝕜] E) = e.symm := rfl
 
 @[simp]
 theorem coe_toContinuousLinearEquiv_symm' (e : E ≃ₗ[𝕜] F) :
@@ -635,7 +634,7 @@ theorem FiniteDimensional.of_totallyBounded_nhds_zero {U : Set Eᵤ} (hU_nhds : 
     exact ⟨f, Submodule.subset_span hf, y, hy, rfl⟩
   have h_ind (n : ℕ) : U ⊆ M + c ^ n • U := by
     induction n with
-    | zero => simpa using fun x hx ↦ ⟨0, M.zero_mem, x, hx, zero_add x⟩
+    | zero => simpa using! fun x hx ↦ ⟨0, M.zero_mem, x, hx, zero_add x⟩
     | succ n ih =>
       calc
         U ⊆ M + c ^ n • U := ih
@@ -655,7 +654,7 @@ theorem FiniteDimensional.of_totallyBounded_nhds_zero {U : Set Eᵤ} (hU_nhds : 
       intro W hW
       exact (tendsto_smallSets_iff.mp h_small W hW).mono fun n hn ↦ hn (hu n)
     have hm_tendsto : Tendsto m atTop (𝓝 x) := by
-      simpa [show m = fun n ↦ x - u n by grind] using tendsto_const_nhds.sub hu_tendsto
+      simpa [show m = fun n ↦ x - u n by grind] using! tendsto_const_nhds.sub hu_tendsto
     exact M.closed_of_finiteDimensional.mem_of_tendsto hm_tendsto (Eventually.of_forall hm)
   have hM_top : M = ⊤ := absorbent_nhds_zero (𝕜 := 𝕜) hU_nhds |>.mono hU_sub_M |>.submodule_eq_top
   exact FiniteDimensional.of_surjective M.subtype fun x ↦ ⟨⟨x, by simp [hM_top]⟩, rfl⟩
@@ -739,6 +738,14 @@ theorem Submodule.ClosedComplemented.of_finiteDimensional_quotient {p : Submodul
 @[deprecated (since := "2026-05-09")]
 alias Submodule.ClosedComplemented.of_quotient_finiteDimensional :=
   Submodule.ClosedComplemented.of_finiteDimensional_quotient
+
+lemma Submodule.ClosedComplemented.of_finiteDimensional_of_le
+    {A B : Submodule 𝕜 E} [FiniteDimensional 𝕜 A] (hA : A.ClosedComplemented) [T2Space A]
+    (hB : B ≤ A) : B.ClosedComplemented := by
+  obtain ⟨p, hp⟩ := hA
+  obtain ⟨C, hBC⟩ := B.exists_isCompl
+  refine ⟨((projectionOnto B C hBC).domRestrict A).toContinuousLinearMap ∘SL p, fun x ↦ ?_⟩
+  simp [hp ⟨x, hB x.2⟩]
 
 omit [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] in
 theorem ContinuousLinearMap.ker_closedComplemented_of_finiteDimensional_range [T2Space F]

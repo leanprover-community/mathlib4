@@ -375,7 +375,7 @@ theorem _root_.iInf_iSup_eq_of_finite {ι : Sort v} {κ : ι → Sort w} [Order.
   suffices ∀ {ι : Type v} {κ : ι → Type w} [Finite ι] (f : Π a, κ a → α),
       ⨅ a, ⨆ b, f a b = ⨆ g : (Π a, κ a), ⨅ a, f a (g a) by
     simpa [← Equiv.plift.symm.iInf_comp, ← Equiv.plift.symm.iSup_comp,
-        ← (Equiv.plift.piCongr fun a => @Equiv.plift (κ a.down)).symm.iSup_comp] using
+        ← (Equiv.plift.piCongr fun a => @Equiv.plift (κ a.down)).symm.iSup_comp] using!
       this (κ := fun a => PLift (κ a.down)) fun (a : PLift ι) b => f a.down b.down
   intro ι κ _ f
   induction ι using Finite.induction_empty_option with
@@ -443,12 +443,18 @@ protected theorem Finset.bddAbove [SemilatticeSup α] [Nonempty α] (s : Finset 
 section LinearOrder
 variable [LinearOrder α] {s : Set α}
 
-lemma Set.finite_diff_iUnion_Ioo (s : Set α) : (s \ ⋃ (x ∈ s) (y ∈ s), Ioo x y).Finite :=
+lemma Set.finite_sdiff_iUnion_Ioo (s : Set α) : (s \ ⋃ (x ∈ s) (y ∈ s), Ioo x y).Finite :=
   Set.finite_of_forall_not_lt_lt fun _x hx _y hy _z hz hxy hyz => hy.2 <| mem_iUnion₂_of_mem hx.1 <|
     mem_iUnion₂_of_mem hz.1 ⟨hxy, hyz⟩
 
-lemma Set.finite_diff_iUnion_Ioo' (s : Set α) : (s \ ⋃ x : s × s, Ioo x.1 x.2).Finite := by
-  simpa only [iUnion, iSup_prod, iSup_subtype] using s.finite_diff_iUnion_Ioo
+@[deprecated (since := "2026-06-03")]
+alias Set.finite_diff_iUnion_Ioo := Set.finite_sdiff_iUnion_Ioo
+
+lemma Set.finite_sdiff_iUnion_Ioo' (s : Set α) : (s \ ⋃ x : s × s, Ioo x.1 x.2).Finite := by
+  simpa only [iUnion, iSup_prod, iSup_subtype] using s.finite_sdiff_iUnion_Ioo
+
+@[deprecated (since := "2026-06-03")]
+alias Set.finite_diff_iUnion_Ioo' := Set.finite_sdiff_iUnion_Ioo'
 
 lemma Directed.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} [Nonempty ι]
     {f : ι → Set α} (h : Directed (· ⊆ ·) f) {s : Finset α} (hs : (s : Set α) ⊆ ⋃ i, f i) :

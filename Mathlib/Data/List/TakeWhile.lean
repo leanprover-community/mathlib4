@@ -114,7 +114,7 @@ lemma find?_eq_head?_dropWhile_not :
 
 lemma find?_not_eq_head?_dropWhile :
     l.find? (fun x ↦ !(p x)) = (l.dropWhile p).head? := by
-  convert l.find?_eq_head?_dropWhile_not ?_
+  convert! l.find?_eq_head?_dropWhile_not ?_
   simp
 
 variable {p} {l}
@@ -125,7 +125,7 @@ lemma find?_eq_head_dropWhile_not (h : ∃ x ∈ l, p x) :
 
 lemma find?_not_eq_head_dropWhile (h : ∃ x ∈ l, ¬p x) :
     l.find? (fun x ↦ !(p x)) = some ((l.dropWhile p).head (by simpa using h)) := by
-  convert l.find?_eq_head_dropWhile_not ?_
+  convert! l.find?_eq_head_dropWhile_not ?_
   · simp
   · simpa using h
 

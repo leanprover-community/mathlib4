@@ -32,7 +32,7 @@ noncomputable def adjoin.powerBasisAux {x : S} (hx : IsIntegral K x) :
   have hx' :
     IsIntegral K (⟨x, subset_adjoin (Set.mem_singleton x)⟩ : K[(x : S)]) := by
     apply (isIntegral_algebraMap_iff hST).mp
-    convert hx
+    convert! hx
   apply Basis.mk (v := fun i : Fin _ ↦ ⟨x, subset_adjoin (Set.mem_singleton x)⟩ ^ (i : ℕ))
   · have : LinearIndependent K _ := linearIndependent_pow
       (⟨x, self_mem_adjoin_singleton _ _⟩ : K[x])
