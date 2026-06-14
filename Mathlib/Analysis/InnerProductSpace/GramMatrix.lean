@@ -229,9 +229,7 @@ noncomputable def linearIsometryEquivSpanOfInnerEq :
           (Finsupp.linearCombination 𝕜 ψ).quotKerEquivRange)).isometryOfInner fun x y => by
         obtain ⟨_, c, rfl⟩ := x
         obtain ⟨_, c', rfl⟩ := y
-        simpa only [LinearEquiv.trans_apply, LinearMap.quotKerEquivRange_symm_apply_image,
-          Submodule.mkQ_apply, Submodule.quotEquivOfEq_mk, LinearMap.quotKerEquivRange_apply_mk,
-          Submodule.coe_inner] using (inner_linearCombination_eq_of_inner_eq h c c').symm).trans
+        simp [inner_linearCombination_eq_of_inner_eq h c c']).trans
       (LinearIsometryEquiv.ofEq _ _ (Finsupp.range_linearCombination 𝕜)))
 
 @[simp]
