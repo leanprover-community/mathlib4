@@ -14,13 +14,8 @@ import Mathlib.LinearAlgebra.Isomorphisms
 /-! # Gram Matrices
 
 This file defines Gram matrices and proves their positive semidefiniteness. It also
-shows that a finite family of vectors is determined, up to a linear isometry, by
-its pairwise inner products (equivalently, by its Gram matrix): if two families
-have equal pairwise inner products, the map sending one to the other extends to a
-linear isometry. In the language of finite frames, two frames are equivalent under
-a linear isometry (a unitary or orthogonal map) iff their Gram matrices coincide;
-this is also the exact (noise-free) case of the Procrustes alignment problem.
-Results require `RCLike 𝕜`.
+shows that a pair of equal Gram matrices induces a linear isometry. Results require
+`RCLike 𝕜`.
 
 ## Main definition
 
@@ -32,10 +27,10 @@ Results require `RCLike 𝕜`.
 * `Matrix.posSemidef_gram`: Gram matrices are positive semidefinite.
 * `Matrix.posDef_gram_iff_linearIndependent`: Linear independence of `v` is
   equivalent to positive definiteness of `gram 𝕜 v`.
-* `exists_linearIsometryEquiv_span_map_eq_of_inner_eq`: two families `φ`, `ψ` (in
-  possibly different inner product spaces) with equal pairwise inner products are
-  related by a linear isometry equivalence of their spans, `span 𝕜 (range φ) ≃ₗᵢ
-  span 𝕜 (range ψ)`, sending `φ i` to `ψ i`.
+* `linearIsometryEquivSpanOfInnerEq`: two families `φ`, `ψ` (in possibly different
+  inner product spaces) with equal pairwise inner products are related by a linear
+  isometry equivalence of their spans, `span 𝕜 (range φ) ≃ₗᵢ span 𝕜 (range ψ)`,
+  sending `φ i` to `ψ i`.
 * `exists_linearIsometryEquiv_map_eq_of_inner_eq`: in finite dimension, this
   extends to a linear isometry equivalence of the ambient space.
 * `Matrix.gram_eq_gram_iff_exists_linearIsometryEquiv_map_eq`: in finite
@@ -45,8 +40,6 @@ Results require `RCLike 𝕜`.
 ## References
 
 * [R. A. Horn, C. R. Johnson, *Matrix Analysis*][horn_johnson_2013]
-* [P. H. Schönemann, *A generalized solution of the orthogonal Procrustes
-  problem*][schonemann1966]
 * [T.-Y. Chien, S. Waldron, *A Characterization of Projective Unitary Equivalence
   of Finite Frames and Applications*][chien_waldron_2016]
 -/
@@ -188,8 +181,7 @@ end Matrix
 Two families of vectors with equal pairwise inner products are related by a linear
 isometry: the map `φ i ↦ ψ i` extends to a linear isometry equivalence of their
 spans, in finite dimension to a linear isometry equivalence of the ambient space,
-and the hypothesis can be packaged as equality of `Matrix.gram` matrices. This is
-the exact case of the Procrustes alignment problem. -/
+and the hypothesis can be packaged as equality of `Matrix.gram` matrices. -/
 
 section Rigidity
 
@@ -218,6 +210,8 @@ theorem ker_linearCombination_eq_of_inner_eq :
     ← inner_self_eq_zero (𝕜 := 𝕜) (x := Finsupp.linearCombination 𝕜 φ c),
     inner_linearCombination_eq_of_inner_eq h c c, inner_self_eq_zero]
 
+variable (φ ψ)
+
 /-- The (unique) linear isometry equivalence `span 𝕜 (range φ) ≃ₗᵢ span 𝕜 (range ψ)` sending each
 `φ i` to `ψ i`, when the families `φ`, `ψ` (in possibly different inner product spaces over `𝕜`)
 have equal pairwise inner products.  It is the map of linear combinations `∑ cᵢ • φ i ↦ ∑ cᵢ • ψ i`
@@ -227,7 +221,6 @@ ambient spaces need not coincide.
 
 It is the unique such isometry: a linear isometry equivalence of the spans sending `φ i ↦ ψ i` is
 determined on the spanning family `φ` (`LinearMap.eqOn_span`). -/
-variable (φ ψ)
 noncomputable def linearIsometryEquivSpanOfInnerEq :
     (Submodule.span 𝕜 (Set.range φ)) ≃ₗᵢ[𝕜] (Submodule.span 𝕜 (Set.range ψ)) :=
   (LinearIsometryEquiv.ofEq _ _ (Finsupp.range_linearCombination 𝕜)).symm.trans
@@ -244,7 +237,7 @@ noncomputable def linearIsometryEquivSpanOfInnerEq :
 
 @[simp]
 theorem linearIsometryEquivSpanOfInnerEq_apply (i : ι) :
-    (linearIsometryEquivSpanOfInnerEq h ⟨φ i, Submodule.subset_span ⟨i, rfl⟩⟩ : F) = ψ i := by
+    (linearIsometryEquivSpanOfInnerEq φ ψ h ⟨φ i, Submodule.subset_span ⟨i, rfl⟩⟩ : F) = ψ i := by
   simp only [linearIsometryEquivSpanOfInnerEq, LinearIsometryEquiv.trans_apply]
   rw [show ((LinearIsometryEquiv.ofEq _ _ (Finsupp.range_linearCombination 𝕜 (v := φ))).symm
         ⟨φ i, Submodule.subset_span ⟨i, rfl⟩⟩ :
@@ -255,17 +248,6 @@ theorem linearIsometryEquivSpanOfInnerEq_apply (i : ι) :
     LinearMap.quotKerEquivRange_symm_apply_image, Submodule.mkQ_apply, Submodule.quotEquivOfEq_mk,
     LinearMap.quotKerEquivRange_apply_mk, LinearIsometryEquiv.coe_ofEq_apply]
   simp [Finsupp.linearCombination_single]
-
-/-- If a family `φ : ι → E` and a family `ψ : ι → F`
-in two inner product spaces over `𝕜` have equal pairwise inner products, then the
-map `φ i ↦ ψ i` extends to a linear isometry equivalence of the span of the `φ i`
-onto the span of the `ψ i`. No finiteness is required, and the ambient spaces need
-not coincide. See `linearIsometryEquivSpanOfInnerEq` for the construction. -/
-theorem exists_linearIsometryEquiv_span_map_eq_of_inner_eq :
-    ∃ L :
-      (Submodule.span 𝕜 (Set.range φ)) ≃ₗᵢ[𝕜] (Submodule.span 𝕜 (Set.range ψ)),
-      ∀ i, (L ⟨φ i, Submodule.subset_span ⟨i, rfl⟩⟩ : F) = ψ i :=
-  ⟨linearIsometryEquivSpanOfInnerEq h, linearIsometryEquivSpanOfInnerEq_apply h⟩
 
 end
 
@@ -278,15 +260,15 @@ there is a linear isometry equivalence `W` of `E` with `W (φ i) = ψ i` for eve
 theorem exists_linearIsometryEquiv_map_eq_of_inner_eq [FiniteDimensional 𝕜 E] {φ ψ : ι → E}
     (h : ∀ i j, ⟪φ i, φ j⟫_𝕜 = ⟪ψ i, ψ j⟫_𝕜) :
     ∃ W : E ≃ₗᵢ[𝕜] E, ∀ i, W (φ i) = ψ i := by
-  obtain ⟨L, hL⟩ := exists_linearIsometryEquiv_span_map_eq_of_inner_eq h
-  -- Extend the span-to-ambient isometry to `E`, then bundle it as an equivalence.
+  -- Extend the span-to-span isometry to `E`, then bundle it as an equivalence.
   set L' : (Submodule.span 𝕜 (Set.range φ)) →ₗᵢ[𝕜] E :=
-    (Submodule.span 𝕜 (Set.range ψ)).subtypeₗᵢ.comp L.toLinearIsometry with hL'
+    (Submodule.span 𝕜 (Set.range ψ)).subtypeₗᵢ.comp
+      (linearIsometryEquivSpanOfInnerEq φ ψ h).toLinearIsometry with hL'
   refine ⟨L'.extend.toLinearIsometryEquiv rfl, fun i => ?_⟩
   rw [LinearIsometry.coe_toLinearIsometryEquiv,
     show φ i = ((⟨φ i, Submodule.subset_span ⟨i, rfl⟩⟩ :
       Submodule.span 𝕜 (Set.range φ)) : E) from rfl, L'.extend_apply]
-  exact hL i
+  exact linearIsometryEquivSpanOfInnerEq_apply φ ψ h i
 
 namespace Matrix
 
