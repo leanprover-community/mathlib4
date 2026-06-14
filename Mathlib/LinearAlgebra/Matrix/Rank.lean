@@ -60,8 +60,7 @@ lemma lift_cRank_submatrix_le (A : Matrix m n R) (r : m₀ → m) (c : n₀ → 
     Submodule.rank_mono <| span_mono <| by rintro _ ⟨x, rfl⟩; exact ⟨c x, rfl⟩
   refine (Cardinal.lift_monotone h).trans ?_
   let f : (m → R) →ₗ[R] (m₀ → R) := LinearMap.funLeft R R r
-  have h_eq : Submodule.map f (span R (range A.col)) =
-      span R (range (A.submatrix r id).col) := by
+  have h_eq : Submodule.map f (span R (range A.col)) = span R (range (A.submatrix r id).col) := by
     rw [LinearMap.map_span, ← image_univ, image_image, col_eq_transpose, col_eq_transpose,
       transpose_submatrix]
     aesop
@@ -82,7 +81,7 @@ lemma cRank_le_card_height [StrongRankCondition R] [Fintype m] (A : Matrix m n R
 lemma cRank_le_card_width [StrongRankCondition R] [Fintype n] (A : Matrix m n R) :
     A.cRank ≤ Fintype.card n :=
   (rank_span_le ..).trans <|
-    by simpa [col_eq_transpose] using Cardinal.mk_range_le_lift (f := of.symm Aᵀ)
+    by simpa [col_eq_transpose] using Cardinal.mk_range_le_lift (f := A.col)
 
 /-- The rank of a matrix, defined as the dimension of its column space, as a term in `ℕ∞`. -/
 noncomputable def eRank (A : Matrix m n R) : ℕ∞ := A.cRank.toENat
@@ -129,11 +128,10 @@ theorem rank_subsingleton [CommSemiring R] [Subsingleton R] (A : Matrix m n R) :
 @[simp]
 theorem cRank_one [Semiring R] [Nontrivial R] [DecidableEq m] [StrongRankCondition R] :
     (cRank (1 : Matrix m m R)) = lift.{uR} #m := by
-  have h : LinearIndependent R <| of.symm (1 : Matrix m m R)ᵀ := by
+  have h : LinearIndependent R (1 : Matrix m m R).col := by
     convert! Pi.linearIndependent_single_one m R
-    simp [funext_iff, Matrix.one_eq_pi_single]
-  rw [cRank, col_eq_transpose, rank_span h, ← lift_umax,
-    ← Cardinal.mk_range_eq_of_injective h.injective, lift_id']
+    simp [funext_iff, one_apply, Pi.single_apply]
+  rw [cRank, rank_span h, ← lift_umax, ← Cardinal.mk_range_eq_of_injective h.injective, lift_id']
 
 @[simp] theorem eRank_one [Semiring R] [Nontrivial R] [DecidableEq m] [StrongRankCondition R] :
     (eRank (1 : Matrix m m R)) = ENat.card m := by
