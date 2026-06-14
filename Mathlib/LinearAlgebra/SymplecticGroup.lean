@@ -298,7 +298,6 @@ private lemma exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot {R : Typ
     ∃ (X : Matrix l l R), X.IsSymm ∧ IsUnit (A + X * C).det := by
   rcases exists_rank_normal_form C with ⟨V, U, s, hV, hU, hR1_eq⟩
   set C' := V * C * U with C'_def
-  set D := diagonal (fun i ↦ if i ∈ s then 1 else 0) with D_def
   set A' := Vᵀ⁻¹ * A * U with A'_def
   have h_main1 : (∀ (i j : l), i ∈ s → j ∉ s → A' i j = 0) ∧
       (∀ (i j : l), i ∈ s → j ∈ s → A' i j = A' j i) := by
@@ -345,37 +344,32 @@ private lemma exists_symmetric_X_isUnit_det_add_mul_of_symplectic [IsLocalRing R
     convert_to v (Sum.inl i) = _
     · rw [v_def, Sum.elim_inl]
     · exact congrFun (mulVec_injective_iff_isUnit.2 h15' (F'.mulVec_zero.symm ▸ h_v0)) _
-  obtain ⟨Y, hY_symm, hXbar_det⟩ :=
+  obtain ⟨Y, hY_symm, hY_det⟩ :=
     exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot h_rank <| by
       change f.mapMatrix Aᵀ * f.mapMatrix C = f.mapMatrix Cᵀ * f.mapMatrix A
       rw [← map_mul, (fromBlocks_mem_iff.1 hA).1, map_mul]
   obtain ⟨X, hX_symm, hXY⟩ := hY_symm.exists_map_eq_of_surjective IsLocalRing.residue_surjective
   refine ⟨X, hX_symm, (IsLocalRing.residue_ne_zero_iff_isUnit _).1 ?_⟩
   rw [RingHom.map_det, map_add, map_mul, RingHom.mapMatrix_apply _ X, hXY]
-  exact hXbar_det.ne_zero
+  exact hY_det.ne_zero
 
 /-- Over any local ring, every symplectic matrix has determinant 1. -/
 private lemma det_eq_one_of_isLocalRing [IsLocalRing R] {M : Matrix (l ⊕ l) (l ⊕ l) R}
     (hM : M ∈ symplecticGroup l R) : M.det = 1 := by
-  let A : Matrix l l R := fun i j ↦ M (Sum.inl i) (Sum.inl j)
-  let B : Matrix l l R := fun i j ↦ M (Sum.inl i) (Sum.inr j)
-  let C : Matrix l l R := fun i j ↦ M (Sum.inr i) (Sum.inl j)
-  let D : Matrix l l R := fun i j ↦ M (Sum.inr i) (Sum.inr j)
-  have hM_blocks : M = fromBlocks A B C D := by
-    ext i j; cases i <;> cases j <;> rfl
+  set A := M.toBlocks₁₁; set B := M.toBlocks₁₂
+  set C := M.toBlocks₂₁; set D := M.toBlocks₂₂
   obtain ⟨X, hX_symm, hA_isUnit⟩ := exists_symmetric_X_isUnit_det_add_mul_of_symplectic
-    <| hM_blocks ▸ hM
-  set Lx : Matrix (l ⊕ l) (l ⊕ l) R := fromBlocks 1 X 0 1 with Lx_def
-  have Lx_mul : Lx * fromBlocks A B C D = fromBlocks (A + X * C) (B + X * D) C D := by
-    simp [Lx_def, fromBlocks_multiply]
-  set M' : Matrix (l ⊕ l) (l ⊕ l) R := Lx * M with M'_def
+    <| M.fromBlocks_toBlocks ▸ hM
+  have Lx_mul : (fromBlocks 1 X 0 1) * M = fromBlocks (A + X * C) (B + X * D) C D := by
+    rw [← M.fromBlocks_toBlocks, fromBlocks_multiply]
+    simp only [one_mul, zero_mul, zero_add]; rfl
   have h_fromBlocks_in : fromBlocks (A + X * C) (B + X * D) C D ∈ symplecticGroup l R := by
-    rw [← Lx_mul, ← hM_blocks, ← M'_def]
+    rw [← Lx_mul]
     refine (symplecticGroup l R).mul_mem ?_ hM
-    simp [mem_iff, fromBlocks_transpose, hX_symm.eq, Lx_def, J, fromBlocks_multiply]
+    simp [mem_iff, fromBlocks_transpose, hX_symm.eq, J, fromBlocks_multiply]
   have _ : Invertible (A + X * C) := (A + X * C).invertibleOfIsUnitDet hA_isUnit
-  have h_main : M'.det = 1 := by
-    rw [M'_def, hM_blocks, Lx_mul, det_one_if_fromBlocks_invertible h_fromBlocks_in]
+  have h_main : ((fromBlocks 1 X 0 1) * M).det = 1 := by
+    rw [Lx_mul, det_one_if_fromBlocks_invertible h_fromBlocks_in]
   rwa [det_mul, det_fromBlocks_zero₂₁, det_one, one_mul, one_mul] at h_main
 
 /-- Symplectic matrices have determinant 1. -/
