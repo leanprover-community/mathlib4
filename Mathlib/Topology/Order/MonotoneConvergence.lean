@@ -168,53 +168,32 @@ section FinsetSupInf
 
 variable {ι α : Type*}
 
-theorem ciSup_eq_ciSup_finset [ConditionallyCompleteLattice α] [OrderBot α] [Nonempty ι]
-    (a : ι → α) (ha : BddAbove (Set.range a)) :
-    ⨆ i, a i = ⨆ F : Finset ι, F.sup a := by
-  have hbdd : BddAbove (Set.range fun F : Finset ι => F.sup a) := by
-    refine ⟨⨆ i, a i, ?_⟩
-    rintro _ ⟨F, rfl⟩
-    exact Finset.sup_le fun i _ => le_ciSup ha i
-  refine le_antisymm ?_ ?_
-  · exact ciSup_le fun i =>
-      (Finset.le_sup (s := ({i} : Finset ι)) (f := a) (by simp)).trans
-        (le_ciSup hbdd ({i} : Finset ι))
-  · exact ciSup_le fun F => Finset.sup_le fun i _ => le_ciSup ha i
-
-theorem ciInf_eq_ciInf_finset [ConditionallyCompleteLattice α] [OrderTop α] [Nonempty ι]
-    (a : ι → α) (ha : BddBelow (Set.range a)) :
-    ⨅ i, a i = ⨅ F : Finset ι, F.inf a := by
-  rw [← OrderDual.toDual_inj]
-  simpa using ciSup_eq_ciSup_finset (α := αᵒᵈ) (OrderDual.toDual ∘ a) ha
-
 variable [TopologicalSpace α]
 
 theorem tendsto_finset_sup_ciSup [ConditionallyCompleteLattice α] [OrderBot α]
-    [SupConvergenceClass α] [Nonempty ι] (a : ι → α) (ha : BddAbove (Set.range a)) :
+    [SupConvergenceClass α] [Nonempty ι] {a : ι → α} (ha : BddAbove (range a)) :
     Tendsto (fun F : Finset ι => F.sup a) atTop (𝓝 (⨆ i, a i)) := by
   have hmono : Monotone (fun F : Finset ι => F.sup a) := fun F G hFG => Finset.sup_mono hFG
   have hbdd : BddAbove (Set.range fun F : Finset ι => F.sup a) := by
     refine ⟨⨆ i, a i, ?_⟩
     rintro _ ⟨F, rfl⟩
     exact Finset.sup_le fun i _ => le_ciSup ha i
-  simpa [ciSup_eq_ciSup_finset a ha] using tendsto_atTop_ciSup hmono hbdd
+  simpa [ciSup_eq_ciSup_finset ha] using tendsto_atTop_ciSup hmono hbdd
 
 theorem tendsto_finset_inf_ciInf [ConditionallyCompleteLattice α] [OrderTop α]
-    [InfConvergenceClass α] [Nonempty ι] (a : ι → α) (ha : BddBelow (Set.range a)) :
-    Tendsto (fun F : Finset ι => F.inf a) atTop (𝓝 (⨅ i, a i)) := by
-  convert! tendsto_finset_sup_ciSup (α := αᵒᵈ) (OrderDual.toDual ∘ a) ha using 1
+    [InfConvergenceClass α] [Nonempty ι] (a : ι → α) (ha : BddBelow (range a)) :
+    Tendsto (fun F : Finset ι => F.inf a) atTop (𝓝 (⨅ i, a i)) :=
+  tendsto_finset_sup_ciSup (α := αᵒᵈ) ha
 
 theorem tendsto_finset_sup_iSup [CompleteLattice α] [SupConvergenceClass α] (a : ι → α) :
     Tendsto (fun F : Finset ι => F.sup a) atTop (𝓝 (⨆ i, a i)) := by
-  cases isEmpty_or_nonempty ι
-  · simp_all [iSup_of_empty, tendsto_const_nhds]
-  · exact tendsto_finset_sup_ciSup a (OrderTop.bddAbove _)
+  have hmono : Monotone (fun F : Finset ι => F.sup a) := fun F G hFG => Finset.sup_mono hFG
+  simpa [Finset.sup_eq_iSup, ← iSup_eq_iSup_finset a] using tendsto_atTop_iSup hmono
 
 theorem tendsto_finset_inf_iInf [CompleteLattice α] [InfConvergenceClass α] (a : ι → α) :
     Tendsto (fun F : Finset ι => F.inf a) atTop (𝓝 (⨅ i, a i)) := by
-  cases isEmpty_or_nonempty ι
-  · simp_all [iInf_of_empty, tendsto_const_nhds]
-  · exact tendsto_finset_inf_ciInf a (OrderBot.bddBelow _)
+  have hanti : Antitone (fun F : Finset ι => F.inf a) := fun F G hFG => Finset.inf_mono hFG
+  simpa [Finset.inf_eq_iInf, ← iInf_eq_iInf_finset a] using tendsto_atTop_iInf hanti
 
 end FinsetSupInf
 
