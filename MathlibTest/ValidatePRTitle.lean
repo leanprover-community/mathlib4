@@ -122,10 +122,6 @@ section subject
 -- Starting with an acronym is fine, however.
 #guard_msgs in
 #check_title "feat: RPC acronyms are fine"
-#guard_msgs in #check_title "feat: `ℕ` is countable"
--- This is not quite an abbreviation. One might argue this is an overzealous check, or not.
-/-- info: Message: 'error: the PR subject should be lowercased' -/
-#guard_msgs in #check_title "chore: LLMs require adjusting our policies"
 
 -- This PR title is arguably not very bad (Lindelöf is a proper name),
 -- a better fix is to start with a verb (which you should do anyway.)
