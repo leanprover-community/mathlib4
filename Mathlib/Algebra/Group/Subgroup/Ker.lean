@@ -82,6 +82,7 @@ theorem mem_range {f : G →* N} {y : N} : y ∈ f.range ↔ ∃ x, f x = y :=
 @[to_additive]
 theorem range_eq_map (f : G →* N) : f.range = (⊤ : Subgroup G).map f := by ext; simp
 
+/-- The image of `⊤` under a group homomorphism equals its range. -/
 @[to_additive]
 theorem _root_.Subgroup.map_top (f : G →* N) : (⊤ : Subgroup G).map f = f.range :=
   (range_eq_map f).symm

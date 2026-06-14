@@ -405,7 +405,7 @@ theorem orderOf_pow' (h : n ≠ 0) : orderOf (x ^ n) = orderOf x / Nat.gcd (orde
   rw [← minimalPeriod_iterate_eq_div_gcd h, mul_left_iterate]
 
 @[to_additive]
-theorem orderOf_pow_natAbs (n : ℤ) (x : G) : orderOf (x ^ n.natAbs) = orderOf (x ^ n) := by
+theorem orderOf_pow_natAbs (n : ℤ) : orderOf (x ^ n.natAbs) = orderOf (x ^ n) := by
   obtain ⟨a, (rfl | rfl)⟩ := Int.eq_nat_or_neg n <;> simp
 
 @[to_additive]
