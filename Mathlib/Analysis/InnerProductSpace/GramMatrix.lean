@@ -230,11 +230,10 @@ theorem exists_linearIsometryEquiv_span_map_eq_of_inner_eq {φ : ι → E} {ψ :
   have hf_apply (c : ι →₀ 𝕜) : f ⟨Tφ c, LinearMap.mem_range_self Tφ c⟩ = Tψ c := by
     simp [hf, hf₀]
   -- `f` is norm preserving and lands in `range Tψ`.
-  have hf_isom : ∀ s : (LinearMap.range Tφ), ‖f s‖ = ‖s‖ := by
-    intro s
+  have hf_isom (s : LinearMap.range Tφ) : ‖f s‖ = ‖s‖ := by
     obtain ⟨c, hc⟩ := LinearMap.mem_range.mp s.2
     have hs : s = ⟨Tφ c, LinearMap.mem_range_self Tφ c⟩ := Subtype.ext hc.symm
-    rw [hs, hf_apply c, Submodule.coe_norm ⟨Tφ c, LinearMap.mem_range_self Tφ c⟩, norm_eq c]
+    simp [hs, hf_apply, norm_eq]
   have hf_mem : ∀ s : (LinearMap.range Tφ), f s ∈ LinearMap.range Tψ := by
     intro s
     obtain ⟨c, hc⟩ := LinearMap.mem_range.mp s.2
