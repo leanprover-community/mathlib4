@@ -220,9 +220,8 @@ theorem exists_linearIsometryEquiv_span_map_eq_of_inner_eq {φ : ι → E} {ψ :
       norm_sq_eq_re_inner (𝕜 := 𝕜), key]
   have hker : LinearMap.ker Tφ ≤ LinearMap.ker Tψ := by
     intro c hc
-    have hφ0 : Tφ c = 0 := by simpa [LinearMap.mem_ker] using hc
-    have : ‖Tψ c‖ = 0 := by rw [norm_eq c, hφ0, norm_zero]
-    simpa [LinearMap.mem_ker] using norm_eq_zero.mp this
+    rw [LinearMap.mem_ker, ← norm_eq_zero] at ⊢ hc
+    rw [norm_eq, hc]
   -- Factor `Tψ` through `(ι →₀ 𝕜) ⧸ ker Tφ ≃ range Tφ` to get `f : range Tφ → F`.
   set f₀ : ((ι →₀ 𝕜) ⧸ LinearMap.ker Tφ) →ₗ[𝕜] F :=
     (LinearMap.ker Tφ).liftQ Tψ hker with hf₀
