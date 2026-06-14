@@ -208,7 +208,7 @@ theorem fromBlocks_mem_iff [Finite l] {A B C D : Matrix l l R} :
       Aᵀ * D - Cᵀ * B = 1 := by
   refine ⟨fun h ↦ ?_, fun h ↦ mem_iff'.2 ?_⟩
   · have h_final : fromBlocks (Cᵀ * A - Aᵀ * C) (Cᵀ * B - Aᵀ * D)
-      (Dᵀ * A - Bᵀ * C) (Dᵀ * B - Bᵀ * D) = J l R := by
+        (Dᵀ * A - Bᵀ * C) (Dᵀ * B - Bᵀ * D) = J l R := by
       simpa [mem_iff, fromBlocks_transpose, J, fromBlocks_multiply,
         sub_eq_add_neg] using transpose_mem h
     obtain ⟨h_eq1, h_eq2, _, h_eq3⟩ := fromBlocks_inj.1 h_final
@@ -312,8 +312,8 @@ private lemma exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot {R : Typ
   · rw [transpose_mul, transpose_mul, hX_symm, transpose_transpose, mul_assoc]
   · convert_to IsUnit (Vᵀ * (A' + X * C') * U⁻¹).det
     · simp [mul_nonsing_inv_cancel_right U _ hU,
-      mul_nonsing_inv_cancel_left Vᵀ _ (isUnit_det_transpose V hV),
-      mul_add, add_mul, mul_assoc, A'_def, C'_def]
+        mul_nonsing_inv_cancel_left Vᵀ _ (isUnit_det_transpose V hV),
+        mul_add, add_mul, mul_assoc, A'_def, C'_def]
     rw [det_mul, det_mul]
     exact IsUnit.mul (IsUnit.mul (det_transpose V ▸ hV) (by rwa [hR1_eq]))
       (isUnit_nonsing_inv_det U hU)
