@@ -4658,6 +4658,7 @@ public import Mathlib.Geometry.Manifold.SmoothApprox
 public import Mathlib.Geometry.Manifold.SmoothEmbedding
 public import Mathlib.Geometry.Manifold.StructureGroupoid
 public import Mathlib.Geometry.Manifold.Submersion
+public import Mathlib.Geometry.Manifold.VectorBundle.Algebra
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
