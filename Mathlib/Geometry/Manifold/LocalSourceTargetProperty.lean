@@ -53,7 +53,7 @@ variable {𝕜 E E' F F' H H' G G' : Type*} [NontriviallyNormedField 𝕜]
   {M M' N N' : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [TopologicalSpace M'] [ChartedSpace H' M']
   [TopologicalSpace N] [ChartedSpace G N] [TopologicalSpace N'] [ChartedSpace G' N']
-  {n : WithTop ℕ∞}
+  {n : ℕ∞ω}
 
 namespace Manifold
 
@@ -102,6 +102,17 @@ def LiftSourceTargetPropertyAt (f : M → N) (x : M)
     (P : (M → N) → OpenPartialHomeomorph M H → OpenPartialHomeomorph N G → Prop) : Prop :=
   Nonempty (LocalPresentationAt I J n f x P)
 
+namespace LocalPresentationAt
+
+variable {f g : M → N} {x : M}
+  {P : (M → N) → OpenPartialHomeomorph M H → OpenPartialHomeomorph N G → Prop}
+
+lemma mapsto_domChart_source_codChart_source (h : LocalPresentationAt I J n f x P) :
+    MapsTo f h.domChart.source h.codChart.source :=
+  h.source_subset_preimage_source
+
+end LocalPresentationAt
+
 namespace LiftSourceTargetPropertyAt
 
 variable {f g : M → N} {x : M}
@@ -142,8 +153,7 @@ lemma codChart_mem_maximalAtlas (h : LiftSourceTargetPropertyAt I J n f x P) :
     h.codChart ∈ IsManifold.maximalAtlas J n N :=
   h.localPresentationAt.codChart_mem_maximalAtlas
 
-lemma source_subset_preimage_source
- (h : LiftSourceTargetPropertyAt I J n f x P) :
+lemma source_subset_preimage_source (h : LiftSourceTargetPropertyAt I J n f x P) :
     h.domChart.source ⊆ f ⁻¹' h.codChart.source :=
   h.localPresentationAt.source_subset_preimage_source
 

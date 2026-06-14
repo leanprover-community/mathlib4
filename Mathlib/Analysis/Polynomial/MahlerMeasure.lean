@@ -281,8 +281,8 @@ theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum
   use {x : ℝ | eval (circleMap 0 1 x) p ≠ 0}
   constructor
   · rw [mem_ae_iff, compl_def, Measure.restrict_apply' (by simp)]
-    apply (Finite.of_diff _ <| finite_singleton (2 * π)).measure_zero
-    simp only [ne_eq, mem_setOf_eq, Decidable.not_not, inter_diff_assoc, Icc_diff_right]
+    apply (Finite.of_sdiff _ <| finite_singleton (2 * π)).measure_zero
+    simp only [ne_eq, mem_setOf_eq, Decidable.not_not, inter_sdiff_assoc, Icc_sdiff_right]
     rw [setOf_inter_eq_sep]
     apply Finite.of_finite_image (f := circleMap 0 1) ((Multiset.finite_toSet p.roots).subset _)
       <| fun _ h _ k l ↦ injOn_circleMap_of_abs_sub_le' one_ne_zero (by linarith) h.1 k.1 l
@@ -319,7 +319,7 @@ theorem mahlerMeasure_le_sqrt_sum_sq_norm_coeff (p : Polynomial ℂ) :
     refine Finite.of_finite_image (f := circleMap 0 1) (p.roots.finite_toSet.subset ?_) ?_
     · rintro z ⟨θ, ⟨_, heval⟩, rfl⟩
       exact (mem_roots hp).mpr heval
-    · apply InjOn.mono fun _ h ↦ h.1
+    · grw [setOf_and, inter_subset_left]
       exact injOn_circleMap_of_abs_sub_le one_ne_zero (by simp [abs_of_pos pi_pos])
   have hlogAe : ∀ᵐ (θ : ℝ) ∂volume.restrict (uIoc 0 (2 * π)),
       exp (log ‖p.eval (circleMap 0 1 θ)‖) = ‖p.eval (circleMap 0 1 θ)‖ := by
@@ -336,17 +336,17 @@ theorem mahlerMeasure_le_sqrt_sum_sq_norm_coeff (p : Polynomial ℂ) :
           exact ((analyticOnNhd_id.aeval_polynomial p).meromorphicOn.circleIntegrable_log_norm).1
         · exact (integrable_congr hlogAe).mpr hcont.integrableOn_uIoc
     _ = ⨍ (θ : ℝ) in 0..(2 * π), ‖p.eval (circleMap 0 1 θ)‖ := average_congr hlogAe
-    _ = √ ((⨍ (θ : ℝ) in 0..(2 * π), ‖p.eval (circleMap 0 1 θ)‖) ^ 2) := by
+    _ = √((⨍ (θ : ℝ) in 0..(2 * π), ‖p.eval (circleMap 0 1 θ)‖) ^ 2) := by
         rw [sqrt_sq]; exact integral_nonneg (fun _ ↦ norm_nonneg _)
-    _ ≤ √ (⨍ (θ : ℝ) in 0..(2 * π),  ‖p.eval (circleMap 0 1 θ)‖ ^ 2) := by
+    _ ≤ √(⨍ (θ : ℝ) in 0..(2 * π), ‖p.eval (circleMap 0 1 θ)‖ ^ 2) := by
         -- Second Jensen's inequality invocation
         gcongr
         refine (convexOn_pow 2).map_average_le (continuousOn_pow 2)
             isClosed_Ici (by filter_upwards; simp) ?_ ?_
         · exact hcont.integrableOn_Icc.mono_set Set.Ioc_subset_Icc_self
         · exact ((continuous_pow 2).comp hcont).integrableOn_Icc.mono_set Set.Ioc_subset_Icc_self
-    _ = √ (circleAverage (fun θ ↦ ‖p.eval θ‖ ^ 2) 0 1) := by simp [circleAverage_eq_intervalAverage]
-    _ = √ (∑ i ∈ p.support, ‖p.coeff i‖ ^ 2) := by simp [p.sum_sq_norm_coeff_eq_circleAverage]
+    _ = √(circleAverage (fun θ ↦ ‖p.eval θ‖ ^ 2) 0 1) := by simp [circleAverage_eq_intervalAverage]
+    _ = √(∑ i ∈ p.support, ‖p.coeff i‖ ^ 2) := by simp [p.sum_sq_norm_coeff_eq_circleAverage]
 
 /-- The Mahler measure of a polynomial is at most the sup norm of the polynomial times the square
 root of its degree plus one. -/

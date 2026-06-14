@@ -46,7 +46,6 @@ private lemma Convex.condExp_mem_of_hereditarilyLindelofSpace [IsFiniteMeasure �
   simp_all only [condExp_const, comp_apply]
   exact hb
 
-set_option backward.isDefEq.respectTransparency false
 private lemma Convex.condExp_mem_of_isFiniteMeasure [IsFiniteMeasure μ] (hm : m ≤ mα)
     (hf_int : Integrable f μ) (hs : IsClosed s) (hc : Convex ℝ s) (hf : ∀ᵐ a ∂μ, f a ∈ s) :
     ∀ᵐ a ∂μ, μ[f | m] a ∈ s := by
@@ -111,9 +110,8 @@ private lemma ConvexOn.map_condExp_le_of_hereditarilyLindelofSpace [IsFiniteMeas
     · filter_upwards [hf] with a ha using hLc1 i ⟨f a, ha⟩
   filter_upwards [hp, hw, hφ_cvx.1.condExp_mem hm hf_int hs hf] with a hp hw hq
   rw [show φ (μ[f | m] a) = s.restrict φ ⟨μ[f | m] a, hq⟩ by simp, ← hLc2]
-  simpa [iSup_congr hp] using ciSup_le hw
+  simpa [iSup_congr hp] using! ciSup_le hw
 
-set_option backward.isDefEq.respectTransparency false
 /-- Conditional Jensen's inequality for finite measures. -/
 private theorem ConvexOn.map_condExp_le_of_isFiniteMeasure [IsFiniteMeasure μ] (hm : m ≤ mα)
     (hφ_cvx : ConvexOn ℝ s φ) (hφ_cont : LowerSemicontinuousOn φ s) (hf : ∀ᵐ a ∂μ, f a ∈ s)
@@ -183,6 +181,15 @@ theorem ConvexOn.map_condExp_le (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
   filter_upwards [h1, h2, h3] with a ha hb hc
   simpa [← ha, ← hb]
 
+theorem ConvexOn.map_condExp_le_trim {mE : MeasurableSpace E} [BorelSpace E]
+    (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
+    (hφ_cvx : ConvexOn ℝ s φ) (hφ_cont : LowerSemicontinuousOn φ s)
+    (hφ_meas : StronglyMeasurable φ) (hf : ∀ᵐ a ∂μ, f a ∈ s)
+    (hs : IsClosed s) (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
+    φ ∘ μ[f | m] ≤ᵐ[μ.trim hm] μ[φ ∘ f | m] := by
+  rw [StronglyMeasurable.ae_le_trim_iff hm (by fun_prop) (by fun_prop)]
+  exact hφ_cvx.map_condExp_le hm hφ_cont hf hs hf_int hφ_int
+
 theorem ConcaveOn.condExp_map_le (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
     (hφ_cvx : ConcaveOn ℝ s φ) (hφ_cont : UpperSemicontinuousOn φ s) (hf : ∀ᵐ a ∂μ, f a ∈ s)
     (hs : IsClosed s) (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
@@ -190,6 +197,15 @@ theorem ConcaveOn.condExp_map_le (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
   filter_upwards [hφ_cvx.neg.map_condExp_le hm hφ_cont.neg hf hs hf_int hφ_int.neg,
     condExp_neg (φ ∘ f) m] with a h ha
   simp_all [Pi.neg_comp]
+
+theorem ConcaveOn.condExp_map_le_trim {mE : MeasurableSpace E} [BorelSpace E]
+    (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
+    (hφ_cvx : ConcaveOn ℝ s φ) (hφ_cont : UpperSemicontinuousOn φ s)
+    (hφ_meas : StronglyMeasurable φ) (hf : ∀ᵐ a ∂μ, f a ∈ s)
+    (hs : IsClosed s) (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
+    μ[φ ∘ f | m] ≤ᵐ[μ.trim hm] φ ∘ μ[f | m] := by
+  rw [StronglyMeasurable.ae_le_trim_iff hm (by fun_prop) (by fun_prop)]
+  exact hφ_cvx.condExp_map_le hm hφ_cont hf hs hf_int hφ_int
 
 /-- **Conditional Jensen's inequality**: in a Banach space `E` with a measure `μ` that is σ-finite
 on a sub-σ-algebra `m`, if `φ : E → ℝ` is convex and lower-semicontinuous, then for any `f : α → E`
@@ -201,6 +217,14 @@ theorem ConvexOn.map_condExp_le_univ (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
   ConvexOn.map_condExp_le hm hφ_cvx (lowerSemicontinuousOn_univ_iff.2 hφ_cont) (by simp)
     isClosed_univ hf_int hφ_int
 
+theorem ConvexOn.map_condExp_le_trim_univ {mE : MeasurableSpace E} [BorelSpace E]
+    (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
+    (hφ_cvx : ConvexOn ℝ univ φ) (hφ_cont : LowerSemicontinuous φ)
+    (hφ_meas : StronglyMeasurable φ) (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
+    φ ∘ μ[f | m] ≤ᵐ[μ.trim hm] μ[φ ∘ f | m] := by
+  rw [StronglyMeasurable.ae_le_trim_iff hm (by fun_prop) (by fun_prop)]
+  exact hφ_cvx.map_condExp_le_univ hm hφ_cont hf_int hφ_int
+
 theorem ConcaveOn.condExp_map_le_univ (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
     (hφ_cvx : ConcaveOn ℝ univ φ) (hφ_cont : UpperSemicontinuous φ)
     (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
@@ -208,6 +232,14 @@ theorem ConcaveOn.condExp_map_le_univ (hm : m ≤ mα) [SigmaFinite (μ.trim hm)
   filter_upwards [hφ_cvx.neg.map_condExp_le_univ hm hφ_cont.neg hf_int hφ_int.neg,
     condExp_neg (φ ∘ f) m] with a h ha
   simp_all [Pi.neg_comp]
+
+theorem ConcaveOn.condExp_map_le_trim_univ {mE : MeasurableSpace E} [BorelSpace E]
+    (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
+    (hφ_cvx : ConcaveOn ℝ univ φ) (hφ_cont : UpperSemicontinuous φ)
+    (hφ_meas : StronglyMeasurable φ) (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
+    μ[φ ∘ f | m] ≤ᵐ[μ.trim hm] φ ∘ μ[f | m] := by
+  rw [StronglyMeasurable.ae_le_trim_iff hm (by fun_prop) (by fun_prop)]
+  exact hφ_cvx.condExp_map_le_univ hm hφ_cont hf_int hφ_int
 
 /-- In a Banach space `E` with a measure `μ`, then for any `f : α → E`, we have
 `‖𝔼[f | m]‖ ≤ᵐ[μ] 𝔼[‖f‖ | m]`. -/

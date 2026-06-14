@@ -5,6 +5,7 @@ Authors: Winston Yin
 -/
 module
 
+public import Mathlib.Analysis.ODE.ExistUnique
 public import Mathlib.Analysis.ODE.Gronwall
 public import Mathlib.Analysis.ODE.PicardLindelof
 public import Mathlib.Geometry.Manifold.IntegralCurve.Transform
@@ -57,6 +58,7 @@ variable
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M]
   {γ γ' : ℝ → M} {v : (x : M) → TangentSpace I x} {s s' : Set ℝ} (t₀ : ℝ) {x₀ : M}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Existence of local integral curves for a $C^1$ vector field at interior points of a `C^1`
 manifold. -/
 theorem exists_isMIntegralCurveAt_of_contMDiffAt [CompleteSpace E]
@@ -266,7 +268,7 @@ lemma IsMIntegralCurve.periodic_of_eq [BoundarylessManifold I M]
 lemma IsMIntegralCurve.periodic_xor_injective [BoundarylessManifold I M]
     (hγ : IsMIntegralCurve γ v)
     (hv : CMDiff 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) :
-    Xor' (∃ T > 0, Periodic γ T) (Injective γ) := by
+    Xor (∃ T > 0, Periodic γ T) (Injective γ) := by
   rw [xor_iff_iff_not]
   refine ⟨fun ⟨T, hT, hf⟩ ↦ hf.not_injective (ne_of_gt hT), ?_⟩
   intro h

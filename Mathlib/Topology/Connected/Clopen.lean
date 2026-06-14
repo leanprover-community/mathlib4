@@ -159,7 +159,7 @@ lemma subsingleton_of_disjoint_isOpen_iUnion_eq_univ
     (h_open : ∀ i, IsOpen (s i)) (h_Union : ⋃ i, s i = univ) :
     Subsingleton ι := by
   refine subsingleton_of_disjoint_isClopen h_nonempty h_disj (fun i ↦ ⟨?_, h_open i⟩)
-  rw [← isOpen_compl_iff, compl_eq_univ_diff, ← h_Union, iUnion_diff]
+  rw [← isOpen_compl_iff, compl_eq_univ_sdiff, ← h_Union, iUnion_sdiff]
   refine isOpen_iUnion (fun j ↦ ?_)
   rcases eq_or_ne i j with rfl | h_ne
   · simp
@@ -171,7 +171,7 @@ lemma subsingleton_of_disjoint_isClosed_iUnion_eq_univ [Finite ι]
     (h_closed : ∀ i, IsClosed (s i)) (h_Union : ⋃ i, s i = univ) :
     Subsingleton ι := by
   refine subsingleton_of_disjoint_isClopen h_nonempty h_disj (fun i ↦ ⟨h_closed i, ?_⟩)
-  rw [← isClosed_compl_iff, compl_eq_univ_diff, ← h_Union, iUnion_diff]
+  rw [← isClosed_compl_iff, compl_eq_univ_sdiff, ← h_Union, iUnion_sdiff]
   refine isClosed_iUnion_of_finite (fun j ↦ ?_)
   rcases eq_or_ne i j with rfl | h_ne
   · simp
@@ -210,12 +210,11 @@ lemma PreconnectedSpace.induction₂' [PreconnectedSpace α] (P : α → α → 
 /-- In a preconnected space, if a symmetric transitive relation `P x y` is true for `y` close
 enough to `x`, then it holds for all `x, y`. This is a version of the fact that, if an equivalence
 relation has open classes, then it has a single equivalence class. -/
-lemma PreconnectedSpace.induction₂ [PreconnectedSpace α] (P : α → α → Prop)
-    (h : ∀ x, ∀ᶠ y in 𝓝 x, P x y) (h' : IsTrans α P) (h'' : Symmetric P) (x y : α) :
-    P x y := by
+lemma PreconnectedSpace.induction₂ [PreconnectedSpace α] (P : α → α → Prop) [Std.Symm P]
+    (h : ∀ x, ∀ᶠ y in 𝓝 x, P x y) (h' : IsTrans α P) (x y : α) : P x y := by
   refine PreconnectedSpace.induction₂' P (fun z ↦ ?_) h' x y
   filter_upwards [h z] with a ha
-  exact ⟨ha, h'' ha⟩
+  exact ⟨ha, symm ha⟩
 
 /-- In a preconnected set, given a transitive relation `P`, if `P x y` and `P y x` are true
 for `y` close enough to `x`, then `P x y` holds for all `x, y`. This is a version of the fact
@@ -653,7 +652,7 @@ lemma exists_fun_isClopen_of_infinite [Infinite (ConnectedComponents α)] (n : �
     · simpa [Fin.forall_iff_succ, *] using fun x ↦ h₂ (Equiv.swap 0 i (.succ x))
     · have h₃' (j : _) : Disjoint (U j) a ∧ Disjoint (U j) b := by
         simpa [onFun] using h₃ ((Equiv.swap 0 i).injective.ne (Fin.succ_ne_zero j))
-      simpa [Pairwise, Fin.forall_iff_succ, onFun, hab,  disjoint_comm (a := a),
+      simpa [Pairwise, Fin.forall_iff_succ, onFun, hab, disjoint_comm (a := a),
         disjoint_comm (a := b), h₃'] using
         h₃.comp_of_injective ((Equiv.swap 0 i).injective.comp (Fin.succ_injective _))
     · simpa [← union_assoc, (Equiv.surjective _).iUnion_comp] using h₄

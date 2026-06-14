@@ -155,7 +155,7 @@ theorem lift_ι_apply (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = algebraMap 
 @[simp]
 theorem lift_unique (f : M →ₗ[R] A) (cond : ∀ m : M, f m * f m = algebraMap _ _ (Q m))
     (g : CliffordAlgebra Q →ₐ[R] A) : g.toLinearMap.comp (ι Q) = f ↔ g = lift Q ⟨f, cond⟩ := by
-  convert (lift Q : _ ≃ (CliffordAlgebra Q →ₐ[R] A)).symm_apply_eq
+  convert! (lift Q : _ ≃ (CliffordAlgebra Q →ₐ[R] A)).symm_apply_eq
   rw [lift_symm_apply, Subtype.mk_eq_mk]
 
 @[simp]
@@ -191,7 +191,7 @@ theorem induction {C : CliffordAlgebra Q → Prop}
       mul_mem' := @mul
       add_mem' := @add
       algebraMap_mem' := algebraMap }
-  let of : { f : M →ₗ[R] s // ∀ m, f m * f m = _root_.algebraMap _ _ (Q m) } :=
+  let of : { f : M →ₗ[R] s // ∀ m, f m * f m = Algebra.algebraMap _ _ (Q m) } :=
     ⟨(CliffordAlgebra.ι Q).codRestrict (Subalgebra.toSubmodule s) ι,
       fun m => Subtype.ext <| ι_sq_scalar Q m⟩
   -- the mapping through the subalgebra is the identity
@@ -260,7 +260,7 @@ theorem ι_mul_ι_comm (a b : M) :
 theorem mul_ι_mul_ι_mul_comm (x : CliffordAlgebra Q) (a b : M) (y : CliffordAlgebra Q) :
     (x * ι Q a) * (ι Q b * y) =
       algebraMap R _ (QuadraticMap.polar Q a b) * (x * y) - (x * ι Q b) * (ι Q a * y) := by
-  rw [mul_assoc, ← mul_assoc _ _ y, ι_mul_ι_comm, sub_mul, mul_sub, Algebra.left_comm,  mul_assoc,
+  rw [mul_assoc, ← mul_assoc _ _ y, ι_mul_ι_comm, sub_mul, mul_sub, Algebra.left_comm, mul_assoc,
     mul_assoc]
 
 section isOrtho
@@ -347,7 +347,7 @@ a linear retraction `g` that also preserves the quadratic forms, then `CliffordA
 is a retraction of `CliffordAlgebra.map f`. -/
 lemma leftInverse_map_of_leftInverse {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     (f : Q₁ →qᵢ Q₂) (g : Q₂ →qᵢ Q₁) (h : LeftInverse g f) : LeftInverse (map g) (map f) := by
-  refine fun x => ?_
+  intro x
   replace h : g.comp f = QuadraticMap.Isometry.id Q₁ := DFunLike.ext _ _ h
   rw [← AlgHom.comp_apply, map_comp_map, h, map_id, AlgHom.coe_id, id_eq]
 
@@ -367,11 +367,11 @@ equivalent. -/
 def equivOfIsometry (e : Q₁.IsometryEquiv Q₂) : CliffordAlgebra Q₁ ≃ₐ[R] CliffordAlgebra Q₂ :=
   AlgEquiv.ofAlgHom (map e.toIsometry) (map e.symm.toIsometry)
     ((map_comp_map _ _).trans <| by
-      convert map_id Q₂ using 2
+      convert! map_id Q₂ using 2
       ext m
       exact e.toLinearEquiv.apply_symm_apply m)
     ((map_comp_map _ _).trans <| by
-      convert map_id Q₁ using 2
+      convert! map_id Q₁ using 2
       ext m
       exact e.toLinearEquiv.symm_apply_apply m)
 

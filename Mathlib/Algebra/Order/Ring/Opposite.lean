@@ -15,7 +15,7 @@ public import Mathlib.Algebra.Ring.Opposite
 This file transfers ordered (semi)ring instances from `R` to `Rᵐᵒᵖ` and `Rᵃᵒᵖ`.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*}
 

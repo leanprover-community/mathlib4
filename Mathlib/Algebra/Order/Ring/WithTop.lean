@@ -112,7 +112,7 @@ protected lemma mul_left_strictMono [MulPosStrictMono α] (h₀ : 0 < a) (hinf :
   | ⊤ => simp [← coe_mul, top_mul h₀.ne']
   | (c : α) =>
   simp only [coe_pos, coe_lt_coe, ← coe_mul, gt_iff_lt] at *
-  exact mul_lt_mul_of_pos_right hbc h₀
+  gcongr
 
 end MulZeroClass
 
@@ -280,7 +280,7 @@ variable [NoZeroDivisors α] [Nontrivial α] {a b : WithTop α}
 
 protected lemma pow_right_strictMono : ∀ {n : ℕ}, n ≠ 0 → StrictMono fun a : WithTop α ↦ a ^ n
   | 0, h => absurd rfl h
-  | 1, _ => by simpa only [pow_one] using strictMono_id
+  | 1, _ => by simpa only [pow_one] using! strictMono_id
   | n + 2, _ => fun x y h ↦ by
     simp_rw [pow_succ _ (n + 1)]
     exact WithTop.mul_lt_mul (WithTop.pow_right_strictMono n.succ_ne_zero h) h
@@ -425,7 +425,7 @@ instance [MulZeroClass α] [Preorder α] [MulPosStrictMono α] : MulPosStrictMon
     · simp_rw [bot_mul x0.ne.symm, ← coe_mul, bot_lt_coe]
     simp only [← coe_mul, coe_lt_coe] at *
     norm_cast at x0
-    exact mul_lt_mul_of_pos_right h x0
+    gcongr
 
 instance [MulZeroClass α] [Preorder α] [PosMulReflectLT α] : PosMulReflectLT (WithBot α) where
   elim := by

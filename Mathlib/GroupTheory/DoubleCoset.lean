@@ -148,7 +148,7 @@ lemma mem_quotToDoubleCoset_iff {H K : Subgroup G} (i : Quotient (H : Set G) K) 
 
 lemma disjoint_out {H K : Subgroup G} {a b : Quotient H K} :
     a ≠ b → Disjoint (doubleCoset a.out H K) (doubleCoset b.out (H : Set G) K) := by
-  contrapose!
+  contrapose
   intro h
   simpa [out_eq'] using mk_eq_of_doubleCoset_eq (eq_of_not_disjoint h)
 
@@ -211,14 +211,14 @@ lemma finite_quotient_iff_exists_finset_iUnion_eq_univ (H K : Subgroup G) :
   constructor
   · intro _
     cases nonempty_fintype (Quotient (H : Set G) K)
-    exact ⟨Finset.univ, by simpa using iUnion_quotToDoubleCoset _ _⟩
+    exact ⟨Finset.univ, by simpa using! iUnion_quotToDoubleCoset _ _⟩
   · rintro ⟨I, hI⟩
     suffices (I : Set (Quotient (H : Set G) K)) = Set.univ by
       simp_rw [← Set.finite_univ_iff, ← this, I.finite_toSet]
     rw [Set.eq_univ_iff_forall] at hI ⊢
     rintro ⟨g⟩
     obtain ⟨_, ⟨i, _, rfl⟩, T, ⟨hi, rfl⟩, hT : g ∈ quotToDoubleCoset H K i⟩ := hI g
-    simpa [← (mem_quotToDoubleCoset_iff _ _).mp hT] using hi
+    simpa [← (mem_quotToDoubleCoset_iff _ _).mp hT] using! hi
 
 lemma iUnion_image_mk_leftRel {H K : Subgroup G} :
     ⋃ q : Quotient H K, Quot.mk (leftRel K) '' doubleCoset (out q : G) H K = Set.univ := by
@@ -226,9 +226,9 @@ lemma iUnion_image_mk_leftRel {H K : Subgroup G} :
   rw [Set.iUnion_eq_univ_iff]
   intro x
   obtain ⟨y, hy⟩ := exists_rep x
-  have ⟨i, hi⟩ : ∃ i : Quotient H K, y ∈ doubleCoset (out i) H K  := by
+  have ⟨i, hi⟩ : ∃ i : Quotient H K, y ∈ doubleCoset (out i) H K := by
     contrapose cover
-    exact (Set.ne_univ_iff_exists_notMem _).mpr ⟨y, by simpa using cover⟩
+    exact (Set.ne_univ_iff_exists_notMem _).mpr ⟨y, by simpa using! cover⟩
   exact ⟨i, y, hi, hy⟩
 
 lemma iUnion_image_mk_rightRel {H K : Subgroup G} :
@@ -237,9 +237,9 @@ lemma iUnion_image_mk_rightRel {H K : Subgroup G} :
   rw [Set.iUnion_eq_univ_iff]
   intro x
   obtain ⟨y, hy⟩ := exists_rep x
-  have ⟨i, hi⟩ : ∃ i : Quotient H K, y ∈ doubleCoset (out i) H K  := by
+  have ⟨i, hi⟩ : ∃ i : Quotient H K, y ∈ doubleCoset (out i) H K := by
     contrapose cover
-    exact (Set.ne_univ_iff_exists_notMem _).mpr ⟨y, by simpa using cover⟩
+    exact (Set.ne_univ_iff_exists_notMem _).mpr ⟨y, by simpa using! cover⟩
   exact ⟨i, y, hi, hy⟩
 
 lemma iUnion_finset_leftRel_eq_univ_of_leftRel {H K : Subgroup G} {t : Finset (Quotient H K)}
@@ -251,10 +251,10 @@ lemma iUnion_finset_leftRel_eq_univ_of_leftRel {H K : Subgroup G} {t : Finset (Q
   refine (Set.ne_univ_iff_exists_notMem _).mpr ⟨Quot.mk (leftRel K) x, ?_⟩
   simp only [Set.mem_iUnion, Set.mem_image, exists_prop, not_exists, not_and]
   intro y hy q hq
-  contrapose! hx
+  contrapose hx
   simp only [Set.mem_iUnion, exists_prop]
   refine ⟨y, hy, ?_⟩
-  rw [← doubleCoset_eq_of_mem hq,  mem_doubleCoset]
+  rw [← doubleCoset_eq_of_mem hq, mem_doubleCoset]
   obtain ⟨a', ha'⟩ := Quotient.eq.mp hx
   exact ⟨1, one_mem H, MulOpposite.unop a'⁻¹, Subgroup.mem_op.mp (by simp), by simpa
     using (eq_mul_inv_of_mul_eq ha')⟩
@@ -268,7 +268,7 @@ lemma iUnion_finset_rightRel_eq_univ_of_rightRel {H K : Subgroup G} {t : Finset 
   refine (Set.ne_univ_iff_exists_notMem _).mpr ⟨Quot.mk (rightRel H) x, ?_⟩
   simp only [Set.mem_iUnion, Set.mem_image, exists_prop, not_exists, not_and]
   intro y hy q hq
-  contrapose! hx
+  contrapose hx
   simp only [Set.mem_iUnion, exists_prop]
   refine ⟨y, hy, ?_⟩
   rw [← doubleCoset_eq_of_mem hq, mem_doubleCoset]

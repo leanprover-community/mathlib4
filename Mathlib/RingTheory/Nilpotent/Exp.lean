@@ -199,10 +199,11 @@ theorem exp_smul {G : Type*} [Monoid G] [MulSemiringAction G A]
     exp (g • a) = g • exp a :=
   (map_exp ha (MulSemiringAction.toRingHom G A g)).symm
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 theorem isNilpotent_exp_sub_one {a : A} (ha : IsNilpotent a) : IsNilpotent (exp a - 1) := by
   nontriviality A
   rw [exp, ← Nat.sub_add_cancel (pos_nilpotencyClass_iff.2 ha), Finset.sum_range_succ']
-  norm_num
+  simp
   apply Commute.isNilpotent_sum fun _ _ ↦ smul (pow_of_pos ha <| by positivity) _
   simp [Nat.factorial_ne_zero]
 
@@ -243,7 +244,7 @@ theorem exp_mul_of_derivation (R B : Type*) [CommRing R] [NonUnitalNonAssocRing 
   have h_comm : Commute DL DR := by ext; simp [DL, DR]
   set m : B ⊗[R] B →ₗ[R] B := LinearMap.mul' R B with hm
   have h₁ : exp D (x * y) = m (exp (DL + DR) (x ⊗ₜ[R] y)) := by
-    suffices exp D ∘ₗ m = m ∘ₗ exp (DL + DR) by simpa using LinearMap.congr_fun this (x ⊗ₜ[R] y)
+    suffices exp D ∘ₗ m = m ∘ₗ exp (DL + DR) by simpa using! LinearMap.congr_fun this (x ⊗ₜ[R] y)
     apply commute_exp_left_of_commute (h_comm.isNilpotent_add h_nilL h_nilR) h_nil
     ext
     simp [DL, DR, hm, h_der]
