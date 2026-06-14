@@ -131,7 +131,7 @@ lemma Matrix.SpecialLinearGroup.lineStab_fix_of_span
   set L : Submodule F (ι → F) := Submodule.span F {v}
   obtain ⟨c, hcv, hcomap, hres⟩ :=
     LinearMap.exists_restrict_span_singleton_eq_smul_id (A := A.toLin'.toLinearMap)
-      (by simpa using add_mem (hA v) (Submodule.mem_span_singleton_self v))
+      (by simpa using! add_mem (hA v) (Submodule.mem_span_singleton_self v))
   have hQ : L.mapQ L A.toLin'.toLinearMap hcomap = LinearMap.id := by
     refine LinearMap.ext fun x ↦ ?_
     induction x using Submodule.Quotient.induction_on with
