@@ -24,7 +24,7 @@ namespace SL2Gen
 
 /-- A transvection `transvection i j hij b` lies in `lineStab (span F {Pi.single i 1})`. -/
 lemma transvection_mem_lineStab (i j : ι) (hij : i ≠ j) (b : F) :
-    transvection i j hij b ∈ lineStab (Submodule.span F {(Pi.single i (1 : F) : ι → F)}) :=
+    transvection hij b ∈ lineStab (Submodule.span F {(Pi.single i (1 : F) : ι → F)}) :=
   fun w ↦ Submodule.mem_span_singleton.2 ⟨b * w j, by simp [mul_smul,
     Matrix.SpecialLinearGroup.smul_def, transvection_coe, add_smul, Matrix.single_mulVec_eq]⟩
 
@@ -38,9 +38,9 @@ lemma transvection_mem_lineStab_sup (t : Matrix.TransvectionStruct (Fin 2) F) :
   obtain ⟨i, j, hij_t, c⟩ := t
   fin_cases i <;> fin_cases j
   · exact absurd rfl hij_t
-  · exact ⟨transvection 0 1 zero_ne_one c, rfl,
+  · exact ⟨transvection zero_ne_one c, rfl,
       Subgroup.mem_sup_left <| transvection_mem_lineStab 0 1 zero_ne_one c⟩
-  · exact ⟨transvection 1 0 one_ne_zero c, rfl,
+  · exact ⟨transvection one_ne_zero c, rfl,
       Subgroup.mem_sup_right <| transvection_mem_lineStab 1 0 one_ne_zero c⟩
   · exact absurd rfl hij_t
 
@@ -59,8 +59,8 @@ lemma diag_alpha_in_lineStab_sup (i₁ i₂ : ι) (hij : i₁ ≠ i₂) (α : F)
             (Submodule.span F {(Pi.single i₂ (1 : F) : ι → F)}) := by
   -- U(b) = transvection i₁ i₂ b ∈ lineStab(span F {e_{i₁}})
   -- L(b) = transvection i₂ i₁ b ∈ lineStab(span F {e_{i₂}})
-  set U : F → Matrix.SpecialLinearGroup ι F := fun b => transvection i₁ i₂ hij b with hU_def
-  set L : F → Matrix.SpecialLinearGroup ι F := fun b => transvection i₂ i₁ hij.symm b with hL_def
+  set U : F → Matrix.SpecialLinearGroup ι F := fun b => transvection hij b with hU_def
+  set L : F → Matrix.SpecialLinearGroup ι F := fun b => transvection hij.symm b with hL_def
   -- A = U(α) · L(-α⁻¹) · U(α) · U(-1) · L(1) · U(-1)
   let A : Matrix.SpecialLinearGroup ι F :=
     U α * L (-α⁻¹) * U α * U (-1) * L 1 * U (-1)
@@ -202,7 +202,7 @@ lemma lineStab_le_commutator_of_card_two (a : F) (ha : a ≠ 0) (hasq : a ^ 2 �
     Matrix.SpecialLinearGroup.lineStab_fix_of_span (Pi.single 0 1) he1 A hA
   -- A.1 *ᵥ e_{i₂} = e_{i₂} + c • e_{i₁} for some c (using membership).
   obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.mp <| hA <| Pi.single 1 1
-  have hAeq : A = transvection 0 1 zero_ne_one c := Subtype.ext <| by
+  have hAeq : A = transvection zero_ne_one c := Subtype.ext <| by
     simp [Fin.isValue, Matrix.SpecialLinearGroup.smul_def, funext_iff, Pi.smul_apply,
       eq_comm (a := c), eq_comm (a := (0 : F)), sub_eq_zero] at hc hAe1
     simp [Fin.isValue, transvection_coe, ← Matrix.ext_iff, hc, hAe1]
@@ -242,7 +242,7 @@ hence in particular nontrivial). -/
 instance PSL_nontrivial [Nontrivial ι] :
     Nontrivial (Matrix.ProjectiveSpecialLinearGroup ι F) := by
   obtain ⟨i₁, i₂, hij⟩ := exists_pair_ne ι
-  set g : Matrix.SpecialLinearGroup ι F := transvection i₁ i₂ hij 1
+  set g : Matrix.SpecialLinearGroup ι F := transvection hij 1
   refine ⟨⟨(QuotientGroup.mk g : Matrix.ProjectiveSpecialLinearGroup ι F),
     1, fun h ↦ one_ne_zero (α := F) ?_⟩⟩
   rwa [QuotientGroup.eq_one_iff, transvection_mem_center_iff] at h
