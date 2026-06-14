@@ -179,7 +179,8 @@ lemma IsMIntegralCurveOn.hasDerivWithinAt (hγ : IsMIntegralCurveOn γ v s) {t :
   rw [ContinuousLinearMap.ext_iff]
   intro a
   rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.smulRight_apply, map_smul,
-    ← ContinuousLinearMap.one_apply (R₁ := ℝ) a, ← ContinuousLinearMap.smulRight_apply,
+    ← one_apply_eq_self (F := TangentSpace 𝓘(ℝ, ℝ) t →L[ℝ] TangentSpace 𝓘(ℝ, ℝ) t) a,
+    ← ContinuousLinearMap.smulRight_apply,
     mfderiv_chartAt_eq_tangentCoordChange hsrc]
   rfl
 
@@ -197,6 +198,7 @@ lemma IsMIntegralCurveAt.eventually_hasDerivAt (hγ : IsMIntegralCurveAt γ v t�
   rw [ContinuousLinearMap.ext_iff]
   intro a
   rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.smulRight_apply, map_smul,
-    ← ContinuousLinearMap.one_apply (R₁ := ℝ) a, ← ContinuousLinearMap.smulRight_apply,
+    ← one_apply_eq_self (F := TangentSpace 𝓘(ℝ, ℝ) t →L[ℝ] TangentSpace 𝓘(ℝ, ℝ) t) a,
+    ← ContinuousLinearMap.smulRight_apply,
     mfderiv_chartAt_eq_tangentCoordChange hsrc]
   rfl

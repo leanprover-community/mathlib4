@@ -551,11 +551,13 @@ theorem has_union {s₁ s₂ : Set α} (h₁ : d.Has s₁) (h₂ : d.Has s₂) (
   rw [union_eq_iUnion]
   exact d.has_iUnion (pairwise_disjoint_on_bool.2 h) (Bool.forall_bool.2 ⟨h₂, h₁⟩)
 
-theorem has_diff {s₁ s₂ : Set α} (h₁ : d.Has s₁) (h₂ : d.Has s₂) (h : s₂ ⊆ s₁) :
+theorem has_sdiff {s₁ s₂ : Set α} (h₁ : d.Has s₁) (h₂ : d.Has s₂) (h : s₂ ⊆ s₁) :
     d.Has (s₁ \ s₂) := by
   apply d.has_compl_iff.1
-  simp only [diff_eq, compl_inter, compl_compl]
+  simp only [sdiff_eq, compl_inter, compl_compl]
   exact d.has_union (d.has_compl h₁) h₂ (disjoint_compl_left.mono_right h)
+
+@[deprecated (since := "2026-06-03")] alias has_diff := has_sdiff
 
 instance instLEDynkinSystem : LE (DynkinSystem α) where le m₁ m₂ := m₁.Has ≤ m₂.Has
 
@@ -633,7 +635,7 @@ def restrictOn {s : Set α} (h : d.Has s) : DynkinSystem α where
     have : tᶜ ∩ s = (t ∩ s)ᶜ \ sᶜ := Set.ext fun x => by by_cases h : x ∈ s <;> simp [h]
     simp_rw [this]
     exact
-      d.has_diff (d.has_compl hts) (d.has_compl h)
+      d.has_sdiff (d.has_compl hts) (d.has_compl h)
         (compl_subset_compl.mpr inter_subset_right)
   has_iUnion_nat {f} hd hf := by
     rw [iUnion_inter]

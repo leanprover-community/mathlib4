@@ -44,7 +44,7 @@ variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Alg
 
 instance : SetLike (Subalgebra R A) A where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+  coe_injective p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
 instance : PartialOrder (Subalgebra R A) := .ofSetLike (Subalgebra R A) A
 
