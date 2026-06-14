@@ -9,6 +9,8 @@ public import Mathlib.LinearAlgebra.TensorProduct.SymmetricMap
 public import Mathlib.LinearAlgebra.PiTensorProduct
 public import Mathlib.Tactic.SuppressCompilation
 
+public import Mathlib.Algebra.Module.Congruence.Defs
+
 /-!
 # Symmetric tensor power of a semimodule over a commutative semiring
 
@@ -35,8 +37,36 @@ from `ι → M` to `Sym[R] ι M` by `⨂ₛ[R] i, f i`. We also reserve the nota
 @[expose] public section
 
 suppress_compilation
-
 universe u v
+
+namespace ModuleConGen
+
+variable {R : Type u} {M : Type v} [Semiring R] [AddZeroClass M] [SMul R M]
+
+/-- The inductively defined smallest congruence relation compatible with a module structure 
+containing a given binary relation. -/
+inductive Rel (r : M → M → Prop) : M → M → Prop
+  | of {x y} : r x y → Rel r x y
+  | refl {x} :  Rel r x x
+  | symm {x y} : Rel r x y → Rel r y x
+  | trans {x y z} : Rel r x y → Rel r y z → Rel r x z
+  | add {w x y z} : Rel r w x → Rel r y z → Rel r (w + y) (x + z)     
+  | smul  (s : R) {x y : M} :  Rel r x y → Rel r (s • x) (s • y)    
+  
+
+end ModuleConGen
+
+variable {R : Type u} {M : Type v} [Semiring R] gin
+def moduleConGen [AddZeroClass M] [SMul R M] (r : M → M → Prop) : ModuleCon R M :=
+ { r := ModuleConGen.Rel r
+   iseqv := {
+     refl := fun _ => .refl
+     symm := .symm
+     trans := .trans
+     }
+   add' := .add
+   smul := .smul
+   }
 
 open TensorProduct Equiv
 
@@ -46,6 +76,7 @@ variable (R ι : Type u) [CommSemiring R] (M : Type v) [AddCommMonoid M] [Module
 if they are related by a permutation of `ι`. -/
 inductive SymmetricPower.Rel : (⨂[R] _, M) → (⨂[R] _, M) → Prop
   | perm : (e : Perm ι) → (f : ι → M) → Rel (⨂ₜ[R] i, f i) (⨂ₜ[R] i, f (e i))
+
 
 /-- The `ι`-indexed symmetric tensor power of a semimodule `M` over a commutative semiring `R`
 is the quotient of the `ι`-indexed tensor power of `M` by the relation that two tensors are equal
@@ -144,6 +175,7 @@ theorem span_tprod_eq_top : Submodule.span R (Set.range (tprod R (ι := ι) (M :
 def lift {N : Type*} [AddCommMonoid N] [Module R N] :
     (M [Σ^ι]→ₗ[R] N) ≃ₗ[R] ((Sym[R] ι M) →ₗ[R] N) := 
   { toFun := fun f => by
+      have := PiTensorProduct.lift f.toMultilinearMap
       sorry
     map_add' := fun f g => sorry
     map_smul' := fun r f => sorry
@@ -151,6 +183,12 @@ def lift {N : Type*} [AddCommMonoid N] [Module R N] :
     left_inv := fun f => sorry
     right_inv := fun g => sorry 
   }
+
+#check PiTensorProduct.lift
+
+example (N : Type*) [AddCommMonoid N] [Module R N] (f : (M [Σ^ι]→ₗ[R] N))
+  : (⨂[R] (_:ι), M) →ₗ[R] N  := by
+  exact PiTensorProduct.lift f 
 
     
 example (N : Type) [AddCommGroup N] [Module R N] (φ : Sym[R] ι M →ₗ[R] N)
