@@ -355,7 +355,7 @@ theorem neighborFinset_eq_filter {v : V} [DecidableRel G.Adj] :
 
 theorem neighborFinset_compl [DecidableEq V] [DecidableRel G.Adj] (v : V) :
     Gᶜ.neighborFinset v = (G.neighborFinset v)ᶜ \ {v} := by
-  simp only [neighborFinset, neighborSet_compl, Set.toFinset_diff, Set.toFinset_compl,
+  simp only [neighborFinset, neighborSet_compl, Set.toFinset_sdiff, Set.toFinset_compl,
     Set.toFinset_singleton]
 
 @[simp]

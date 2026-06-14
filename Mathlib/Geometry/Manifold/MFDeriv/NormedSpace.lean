@@ -510,7 +510,7 @@ lemma mvfderivWithin_smul {a : M → 𝕜} (ha : MDiffAt[s] a x) {g : M → F} (
     d[s](a • g) x =
       a x • d[s] g x + (d[s] a x).smulRight (g x) := by
   refine HasMFDerivWithinAt.mfderivWithin ⟨ha.1.smul hg.1, ?_⟩ hs
-  convert ha.hasMFDerivWithinAt.2.smul hg.hasMFDerivWithinAt.2
+  convert! ha.hasMFDerivWithinAt.2.smul hg.hasMFDerivWithinAt.2
   simp
   rfl
 
@@ -518,7 +518,7 @@ lemma mvfderivWithin_smul {a : M → 𝕜} (ha : MDiffAt[s] a x) {g : M → F} (
 lemma mvfderivWithin_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x)
     (hs : UniqueMDiffWithinAt I s x) :
     d[s](f * g) x = f x • d[s]g x + (g x) • (d[s]f x) := by
-  convert mvfderivWithin_smul hf hg hs
+  convert! mvfderivWithin_smul hf hg hs
   ext v
   simp [mul_comm]
 

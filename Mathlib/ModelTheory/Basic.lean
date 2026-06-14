@@ -282,7 +282,7 @@ namespace Hom
 
 instance instFunLike : FunLike (M →[L] N) M N where
   coe := Hom.toFun
-  coe_injective' f g h := by cases f; cases g; cases h; rfl
+  coe_injective f g h := by cases f; cases g; cases h; rfl
 
 instance homClass : HomClass L (M →[L] N) M N where
   map_fun := map_fun'
@@ -366,7 +366,7 @@ namespace Embedding
 
 instance funLike : FunLike (M ↪[L] N) M N where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
