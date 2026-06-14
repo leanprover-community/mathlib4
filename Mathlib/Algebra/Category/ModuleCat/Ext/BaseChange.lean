@@ -243,10 +243,8 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
   · have : Module.FinitePresentation R M := Module.finitePresentation_of_finite R M
     have isb : IsBaseChange S (extendScalars'.mapLinearMap.{v, v'} S M N) :=
       ModuleCat.isBaseChange_hom.{v, v'} S M N
-    convert ((IsBaseChange.ofEquiv linearEquiv₀).comp isb).comp
+    convert! ((IsBaseChange.ofEquiv linearEquiv₀).comp isb).comp
       (IsBaseChange.ofEquiv linearEquiv₀.symm)
-    · rfl
-    · rfl
     ext x
     rcases (Ext.mk₀_bijective M N).2 x with ⟨y, hy⟩
     simp only [← hy, extendScalars'.mapExtLinearMap_eq_mapExt, mapExactFunctor_mk₀, linearEquiv₀,
