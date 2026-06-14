@@ -19,7 +19,7 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
   (the image of) `A`.
 -/
 
-@[expose] public section
+public section
 
 /-- `IsIntegralClosure A R B` is the characteristic predicate stating `A` is
 the integral closure of `R` in `B`,

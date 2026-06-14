@@ -98,11 +98,9 @@ lemma subsingleton_of_subsingleton_inter_right (h : (s ∪ t).Subsingleton) :
 theorem subsingleton_of_subsingleton [Subsingleton α] {s : Set α} : s.Subsingleton :=
   subsingleton_univ.anti (subset_univ s)
 
+@[to_dual]
 theorem subsingleton_isTop (α : Type*) [PartialOrder α] : { x : α | IsTop x }.Subsingleton :=
   fun x hx _ hy => hx.isMax.eq_of_le (hy x)
-
-theorem subsingleton_isBot (α : Type*) [PartialOrder α] : { x : α | IsBot x }.Subsingleton :=
-  fun x hx _ hy => hx.isMin.eq_of_ge (hy x)
 
 theorem exists_eq_singleton_iff_nonempty_subsingleton :
     (∃ a : α, s = {a}) ↔ s.Nonempty ∧ s.Subsingleton := by

@@ -27,7 +27,7 @@ and unique types.
 The results here should be used to golf the basic `Group` lemmas.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Multiplicative MonoidWithZero DenselyOrdered
 

@@ -18,7 +18,7 @@ using the Gamma function.
 open scoped Nat
 open Real MeasureTheory Set Filter
 
-@[expose] public section
+public section
 
 lemma intervalIntegral_pow_mul_exp_neg_le {k : ℕ} {M c : ℝ} (hM : 0 ≤ M) (hc : 0 < c) :
     ∫ x in (0 : ℝ)..M, x ^ k * rexp (- (c * x)) ≤ k ! / c ^ (k + 1) := by

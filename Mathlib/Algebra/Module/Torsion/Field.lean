@@ -17,7 +17,7 @@ In this file, we show that any module over a division semiring is torsion-free.
 Note that more generally any reflexive module is torsion-free.
 -/
 
-@[expose] public section
+public section
 
 open Module
 

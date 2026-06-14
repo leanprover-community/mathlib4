@@ -12,7 +12,7 @@ public import Mathlib.Data.Fintype.EquivFin
 # Fintype instance for `Shrink`
 -/
 
-@[expose] public section
+public section
 
 universe u v
 variable {α : Type u} [Fintype α]

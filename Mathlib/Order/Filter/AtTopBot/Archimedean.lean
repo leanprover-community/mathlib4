@@ -20,7 +20,7 @@ does `f`. We also prove that `Nat.cast : ℕ → R` tends to `Filter.atTop` alon
 well as version of these two results for `ℤ` (and a ring `R`) and `ℚ` (and a field `R`).
 -/
 
-@[expose] public section
+public section
 
 
 variable {α R : Type*}

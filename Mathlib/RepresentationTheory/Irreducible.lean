@@ -16,7 +16,7 @@ This file defines irreducible monoid representations.
 
 -/
 
-@[expose] public section
+public section
 
 namespace Representation
 

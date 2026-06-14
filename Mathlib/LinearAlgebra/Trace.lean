@@ -115,6 +115,11 @@ lemma trace_mul_cycle' (f g h : M →ₗ[R] M) :
     trace R M (f * (g * h)) = trace R M (h * (f * g)) := by
   rw [← mul_assoc, LinearMap.trace_mul_comm]
 
+lemma trace_lie_mul_eq {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+    (f g h : M →ₗ[R] M) : trace R M (⁅f, g⁆ * h) = trace R M (f * ⁅g, h⁆) := by
+  simp only [Ring.lie_def, sub_mul, mul_sub, map_sub, mul_assoc]
+  rw [trace_mul_comm R g (f * h), mul_assoc]
+
 /-- The trace of an endomorphism is invariant under conjugation -/
 @[simp]
 theorem trace_conj (g : M →ₗ[R] M) (f : (M →ₗ[R] M)ˣ) :
@@ -330,6 +335,25 @@ theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [M
     [Module.Finite R p] [Module.Free R (ker f)] [Module.Finite R (ker f)] :
     trace R M f = (finrank R p : R) := by
   rw [h.eq_conj_prodMap, trace_conj', trace_prodMap', trace_id, map_zero, add_zero]
+
+open LinearMap in
+/-- An idempotent endomorphism of a module over a characteristic-zero commutative ring
+with vanishing trace is the zero map, provided its range and kernel are finite and free.
+
+The `Module.Free` and `Module.Finite` instance arguments on `range e` and `ker e` are
+automatic over a field, and more generally over any principal ideal domain `R` for which
+`M` itself is finite and free (submodules of finite free modules over a PID are finite
+and free). -/
+theorem IsIdempotentElem.trace_eq_zero_iff {R : Type*} [CommRing R] [CharZero R]
+    {M : Type*} [AddCommGroup M] [Module R M]
+    {e : M →ₗ[R] M} (he : IsIdempotentElem e)
+    [Module.Free R (range e)] [Module.Finite R (range e)]
+    [Module.Free R (ker e)] [Module.Finite R (ker e)] :
+    trace R M e = 0 ↔ e = 0 := by
+  rw [he.isProj_range.trace, Nat.cast_eq_zero, finrank_eq_zero_iff_of_free,
+    Submodule.subsingleton_iff_eq_bot, range_eq_bot]
+
+alias ⟨IsIdempotentElem.eq_zero_of_trace_eq_zero, _⟩ := IsIdempotentElem.trace_eq_zero_iff
 
 lemma isNilpotent_trace_of_isNilpotent {f : M →ₗ[R] M} (hf : IsNilpotent f) :
     IsNilpotent (trace R M f) := by
