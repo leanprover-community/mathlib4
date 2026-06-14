@@ -5,11 +5,11 @@ Authors: Mai Zhang
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Analysis.Convex.Caratheodory
-import Mathlib.Data.Real.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional.Basic
-import Mathlib.LinearAlgebra.LinearIndependent.Defs
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Analysis.Convex.Caratheodory
+public import Mathlib.Data.Real.Basic
+public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 /-!
 # Shapley-Folkman Lemma
 
@@ -30,6 +30,7 @@ preferences*][starr1969].
 * [Geller, *An improved bound for approximate equilibria*][geller1986]
 * [Starr, *Quasi-equilibria in markets with non-convex preferences*][starr1969]
 -/
+@[expose] public section
 open Finset
 open scoped Pointwise Classical
 namespace ShapleyFolkman
