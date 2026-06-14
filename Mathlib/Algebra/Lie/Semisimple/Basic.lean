@@ -136,7 +136,7 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
         -- in the supremum of `I` and the atoms not equal to `I`.
         have hx : x ∈ I ⊔ sSup ({I' : LieIdeal R L | IsAtom I'} \ {I}) := by
           nth_rewrite 1 [← sSup_singleton (a := I)]
-          rw [← sSup_union, Set.union_diff_self, Set.union_eq_self_of_subset_left,
+          rw [← sSup_union, Set.union_sdiff_self, Set.union_eq_self_of_subset_left,
             IsSemisimple.sSup_atoms_eq_top]
           · apply LieSubmodule.mem_top
           · simp only [Set.singleton_subset_iff, Set.mem_setOf_eq, hI]

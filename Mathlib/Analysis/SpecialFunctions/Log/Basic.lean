@@ -336,6 +336,16 @@ theorem abs_log_mul_self_lt (x : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) : |log x * x| 
   rw [← abs_of_nonneg aux, neg_mul, abs_neg] at this
   exact this
 
+lemma le_log_one_add_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 2 * x / (x + 2) ≤ log (1 + x) := by
+  rw [le_log_iff_exp_le (by grind)]
+  convert exp_le_two_add_div_two_sub (x := 2 * x / (x + 2)) (by positivity) _ using 1
+  all_goals field_simp; grind
+
+lemma lt_log_one_add_of_pos {x : ℝ} (hx : 0 < x) : 2 * x / (x + 2) < log (1 + x) := by
+  rw [lt_log_iff_exp_lt (by grind)]
+  convert exp_lt_two_add_div_two_sub (x := 2 * x / (x + 2)) (by positivity) _ using 1
+  all_goals field_simp; grind
+
 /-- The real logarithm function tends to `+∞` at `+∞`. -/
 theorem tendsto_log_atTop : Tendsto log atTop atTop :=
   tendsto_comp_exp_atTop.1 <| by simpa only [log_exp] using! tendsto_id

@@ -114,9 +114,9 @@ lemma isEdgeReachable_add_one (hk : k ≠ 0) :
     exact ENat.add_lt_add_iff_right ENat.one_ne_top |>.mpr hk
   obtain rfl | ⟨e, he⟩ := s.eq_empty_or_nonempty
   · simpa using (h s(u, u)).reachable hk
-  · rw [← Set.insert_diff_self_of_mem he, Set.insert_eq, ← deleteEdges_deleteEdges]
+  · rw [← Set.insert_sdiff_self_of_mem he, Set.insert_eq, ← deleteEdges_deleteEdges]
     refine h e <| ENat.add_lt_add_iff_right ENat.one_ne_top |>.mp ?_
-    rwa [Set.encard_diff_singleton_add_one he]
+    rwa [Set.encard_sdiff_singleton_add_one he]
 
 lemma isEdgeConnected_add_one (hk : k ≠ 0) :
     G.IsEdgeConnected (k + 1) ↔ ∀ e, (G.deleteEdges {e}).IsEdgeConnected k := by
