@@ -198,6 +198,7 @@ theorem ciSup_eq_ciSup_finset [OrderBot α] [Nonempty ι] {a : ι → α}
   · exact ciSup_le fun F => Finset.sup_le fun i _ => le_ciSup ha i
 
 end ConditionallyCompleteLattice
+
 section CompleteLinearOrder
 
 variable {α : Type*} [CompleteLinearOrder α] {ι : Sort*}
