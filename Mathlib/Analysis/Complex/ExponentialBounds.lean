@@ -77,7 +77,6 @@ theorem log_two_near_10 : |log 2 - 287209 / 414355| ≤ 1 / 10 ^ 10 := by
   norm_num1 at z
   rw [one_div (2 : ℝ), log_inv, ← sub_eq_add_neg, _root_.abs_sub_comm] at z
   apply le_trans (_root_.abs_sub_le _ _ _) (add_le_add z _)
-  simp_rw [sum_range_succ]
   norm_num
 
 theorem log_two_gt_d9 : 0.6931471803 < log 2 :=
@@ -85,5 +84,41 @@ theorem log_two_gt_d9 : 0.6931471803 < log 2 :=
 
 theorem log_two_lt_d9 : log 2 < 0.6931471808 :=
   lt_of_le_of_lt (sub_le_iff_le_add.1 (abs_sub_le_iff.1 log_two_near_10).1) (by norm_num)
+
+theorem log_three_near_10 : |log 3 - 109861228867 / 100000000000| ≤ 1 / 10 ^ 10 := by
+  suffices |log 3 - 109861228867 / 100000000000| ≤
+      (2 / 3) ^ 71 / 3⁻¹ + (1 / 10 ^ 10 - (2 / 3) ^ 71 / 3⁻¹) by
+    norm_num1 at *
+    assumption
+  have t : |2 / 3| = (2 : ℝ) / 3 := by norm_num
+  have z := abs_log_sub_add_sum_range_le (x := 2 / 3) (by norm_num) 70
+  rw [t, show (1 - (2 : ℝ) / 3) = (1 / 3 : ℝ) by norm_num, one_div (3 : ℝ), log_inv,
+    ← sub_eq_add_neg, _root_.abs_sub_comm] at z
+  apply le_trans (_root_.abs_sub_le _ _ _) (add_le_add z _)
+  norm_num [sum_range_succ]
+
+theorem log_three_gt_d9 : 1.0986122885 < log 3 :=
+  lt_of_lt_of_le (by norm_num1) (sub_le_comm.1 (abs_sub_le_iff.1 log_three_near_10).2)
+
+theorem log_three_lt_d9 : log 3 < 1.0986122888 :=
+  lt_of_le_of_lt (sub_le_iff_le_add.1 (abs_sub_le_iff.1 log_three_near_10).1) (by norm_num)
+
+theorem log_five_near_10 : |log 5 - 160943791243 / 100000000000| ≤ 1 / 10 ^ 10 := by
+  suffices |log 5 - 160943791243 / 100000000000| ≤
+      (4 / 5) ^ 131 / 5⁻¹ + (1 / 10 ^ 10 - (4 / 5) ^ 131 / 5⁻¹) by
+    norm_num1 at *
+    assumption
+  have t : |4 / 5| = (4 : ℝ) / 5 := by norm_num
+  have z := abs_log_sub_add_sum_range_le (x := 4 / 5) (by norm_num) 130
+  rw [t, show (1 - (4 : ℝ) / 5) = (1 / 5 : ℝ) by norm_num, one_div (5 : ℝ), log_inv,
+    ← sub_eq_add_neg, _root_.abs_sub_comm] at z
+  apply le_trans (_root_.abs_sub_le _ _ _) (add_le_add z _)
+  norm_num [sum_range_succ]
+
+theorem log_five_gt_d9 : 1.6094379123 < log 5 :=
+  lt_of_lt_of_le (by norm_num1) (sub_le_comm.1 (abs_sub_le_iff.1 log_five_near_10).2)
+
+theorem log_five_lt_d9 : log 5 < 1.6094379126 :=
+  lt_of_le_of_lt (sub_le_iff_le_add.1 (abs_sub_le_iff.1 log_five_near_10).1) (by norm_num)
 
 end Real

@@ -173,7 +173,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
     calc
       μ (s ∩ t) + μ (S n) = μ (s ∩ t ∪ S n) := Eq.symm <| hm _ _ <| (Ssep' n).symm
       _ ≤ μ (s ∩ t ∪ s \ t) := μ.mono <| union_subset_union_right _ <| S_sub n
-      _ = μ s := by rw [inter_union_diff]
+      _ = μ s := by rw [inter_union_sdiff]
   have iUnion_S : ⋃ n, S n = s \ t := by
     refine Subset.antisymm (iUnion_subset S_sub) ?_
     rintro x ⟨hxs, hxt⟩
@@ -185,7 +185,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
     `μ` is only an outer measure. -/
   by_cases htop : μ (s \ t) = ∞
   · rw [htop, add_top, ← htop]
-    exact μ.mono diff_subset
+    exact μ.mono sdiff_subset
   suffices μ (⋃ n, S n) ≤ ⨆ n, μ (S n) by calc
     μ (s ∩ t) + μ (s \ t) = μ (s ∩ t) + μ (⋃ n, S n) := by rw [iUnion_S]
     _ ≤ μ (s ∩ t) + ⨆ n, μ (S n) := by gcongr
@@ -347,7 +347,7 @@ theorem mkMetric_top : (mkMetric (fun _ => ∞ : ℝ≥0∞ → ℝ≥0∞) : Ou
 `mkMetric m₁ hm₁ ≤ mkMetric m₂ hm₂`. -/
 theorem mkMetric_mono {m₁ m₂ : ℝ≥0∞ → ℝ≥0∞} (hle : m₁ ≤ᶠ[𝓝[≥] 0] m₂) :
     (mkMetric m₁ : OuterMeasure X) ≤ mkMetric m₂ := by
-  convert @mkMetric_mono_smul X _ _ m₂ _ ENNReal.one_ne_top one_ne_zero _ <;> simp [*]
+  convert! @mkMetric_mono_smul X _ _ m₂ _ ENNReal.one_ne_top one_ne_zero _ <;> simp [*]
 
 theorem isometry_comap_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) {f : X → Y} (hf : Isometry f)
     (H : Monotone m ∨ Surjective f) : comap f (mkMetric m) = mkMetric m := by
@@ -459,7 +459,7 @@ theorem mkMetric_top : (mkMetric (fun _ => ∞ : ℝ≥0∞ → ℝ≥0∞) : Me
 `mkMetric m₁ hm₁ ≤ mkMetric m₂ hm₂`. -/
 theorem mkMetric_mono {m₁ m₂ : ℝ≥0∞ → ℝ≥0∞} (hle : m₁ ≤ᶠ[𝓝[≥] 0] m₂) :
     (mkMetric m₁ : Measure X) ≤ mkMetric m₂ := by
-  convert @mkMetric_mono_smul X _ _ _ _ m₂ _ ENNReal.one_ne_top one_ne_zero _ <;> simp [*]
+  convert! @mkMetric_mono_smul X _ _ _ _ m₂ _ ENNReal.one_ne_top one_ne_zero _ <;> simp [*]
 
 /-- A formula for `MeasureTheory.Measure.mkMetric`. -/
 theorem mkMetric_apply (m : ℝ≥0∞ → ℝ≥0∞) (s : Set X) :
@@ -624,7 +624,7 @@ theorem hausdorffMeasure_zero_singleton (x : X) : μH[0] ({x} : Set X) = 1 := by
         ⨅ (t : ℕ → Set X) (_ : {x} ⊆ ⋃ n, t n) (_ : ∀ n, ediam (t n) ≤ 1),
           ∑' n, ⨆ _ : (t n).Nonempty, ediam (t n) ^ (0 : ℝ) by
       apply le_trans this _
-      convert le_iSup₂ (α := ℝ≥0∞) (1 : ℝ≥0∞) zero_lt_one
+      convert! le_iSup₂ (α := ℝ≥0∞) (1 : ℝ≥0∞) zero_lt_one
       rfl
     simp only [ENNReal.rpow_zero, le_iInf_iff]
     intro t hst _
@@ -1104,12 +1104,15 @@ Let `s` be a subset of `𝕜`-inner product space, and `K` a subspace. Then the 
 Hausdorff measure of the orthogonal projection of `s` onto `K` is less than or equal to the
 `d`-dimensional Hausdorff measure of `s`.
 -/
-theorem hausdorffMeasure_orthogonalProjection_le [RCLike 𝕜]
+theorem hausdorffMeasure_orthogonalProjectionOnto_le [RCLike 𝕜]
     [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
     (K : Submodule 𝕜 E) [K.HasOrthogonalProjection]
     (d : ℝ) (s : Set E) (hs : 0 ≤ d) :
-    μH[d] (K.orthogonalProjection '' s) ≤ μH[d] s := by
-  simpa using K.lipschitzWith_orthogonalProjection.hausdorffMeasure_image_le hs s
+    μH[d] (K.orthogonalProjectionOnto '' s) ≤ μH[d] s := by
+  simpa using K.lipschitzWith_orthogonalProjectionOnto.hausdorffMeasure_image_le hs s
+
+@[deprecated (since := "2026-05-05")] alias hausdorffMeasure_orthogonalProjection_le :=
+  hausdorffMeasure_orthogonalProjectionOnto_le
 
 end Geometric
 

@@ -49,8 +49,8 @@ namespace Filter
 
 lemma TendstoCofinite.finite_preimage [TendstoCofinite f] {s : Set β} (hs : s.Finite) :
     Set.Finite (f ⁻¹' s) := by
-  simpa [compl_eq_univ_diff] using TendstoCofinite.tendsto_cofinite f
-    (show univ \ s ∈ cofinite by simpa [compl_eq_univ_diff])
+  simpa [compl_eq_univ_sdiff] using TendstoCofinite.tendsto_cofinite f
+    (show univ \ s ∈ cofinite by simpa [compl_eq_univ_sdiff])
 
 lemma TendstoCofinite.finite_preimage_singleton [TendstoCofinite f] (b : β) :
     Set.Finite (f ⁻¹' {b}) := by simpa using TendstoCofinite.finite_preimage f (by simp)
@@ -71,7 +71,7 @@ namespace TendstoCofinite
 @[instance]
 lemma comp [TendstoCofinite g] [TendstoCofinite f] : TendstoCofinite (g ∘ f) :=
   (tendstoCofinite_iff_finite_preimage_singleton _).mpr (fun r ↦ by
-    simpa using TendstoCofinite.finite_preimage f (TendstoCofinite.finite_preimage g (by simp)))
+    simpa using! TendstoCofinite.finite_preimage f (TendstoCofinite.finite_preimage g (by simp)))
 
 @[instance]
 lemma id : TendstoCofinite (id : α → α) := by simp [tendstoCofinite_iff_finite_preimage_singleton]

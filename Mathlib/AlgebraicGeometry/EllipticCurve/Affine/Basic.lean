@@ -255,7 +255,6 @@ lemma equation_iff_nonsingular [Nontrivial R] [W.IsElliptic] {x y : R} :
 variable (W) (f : R →+* S)
 
 /-- The Weierstrass curve in affine coordinates mapped over a ring homomorphism `f : R →+* S`. -/
-@[simps!]
 abbrev map : Affine S :=
   WeierstrassCurve.map W f
 
@@ -306,7 +305,7 @@ lemma baseChange_polynomial : (W⁄B).polynomial = (W⁄A).polynomial.map (mapRi
 
 variable {W} in
 lemma Equation.baseChange {x y : A} (h : (W⁄A).Equation x y) : (W⁄B).Equation (f x) (f y) := by
-  convert Equation.map f.toRingHom h using 1
+  convert! Equation.map f.toRingHom h using 1
   rw [AlgHom.toRingHom_eq_coe, map_baseChange]
 
 variable {f} in
