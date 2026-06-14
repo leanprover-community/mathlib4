@@ -110,7 +110,8 @@ lemma extendScalars'_map_exact [Module.Flat R S]
     simp only [ExtendScalars'.map', hom_ofHom, LinearMap.exact_iff, LinearEquiv.range_comp]
     rw [LinearMap.comp_assoc, LinearEquiv.ker_comp]
     ext x
-    simp only [LinearMap.mem_ker, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
+    simp only [LinearMap.mem_ker, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+      ModuleCat.ExtendScalars'.obj']
     convert exac ((Shrink.linearEquiv S (TensorProduct R S T.X₂)) x)
     rw [LinearMap.range_comp, ← Submodule.comap_equiv_eq_map_symm, Submodule.mem_comap]
     rfl
@@ -244,6 +245,8 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
       ModuleCat.isBaseChange_hom.{v, v'} S M N
     convert ((IsBaseChange.ofEquiv linearEquiv₀).comp isb).comp
       (IsBaseChange.ofEquiv linearEquiv₀.symm)
+    · rfl
+    · rfl
     ext x
     rcases (Ext.mk₀_bijective M N).2 x with ⟨y, hy⟩
     simp only [← hy, extendScalars'.mapExtLinearMap_eq_mapExt, mapExactFunctor_mk₀, linearEquiv₀,
