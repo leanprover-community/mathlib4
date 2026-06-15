@@ -44,8 +44,7 @@ section Infinite
 variable [Semiring R]
 
 /-- The rank of a matrix, defined as the dimension of its column space, as a cardinal. -/
-noncomputable def cRank (A : Matrix m n R) : Cardinal :=
-  Module.rank R <| span R <| range A.col
+noncomputable def cRank (A : Matrix m n R) : Cardinal := Module.rank R <| span R <| range A.col
 
 @[simp]
 theorem cRank_subsingleton [Subsingleton R] (A : Matrix m n R) : A.cRank = 1 :=
