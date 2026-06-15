@@ -192,7 +192,7 @@ lemma Sheaf.ΓObjEquivSections_naturality [HasWeakSheafify J (Type w)]
     (ΓObjEquivSections J G) ((Γ J _).map f x) =
       (Functor.sectionsFunctor _).map f.hom ((ΓObjEquivSections J F) x) := by
   dsimp [ΓObjEquivSections]
-  exact (congr_arg _ (ΓHomEquiv_naturality_right_symm (TypeCat.ofHom (uniqueElim x)) f)).trans
+  exact (congr_arg _ (ΓHomEquiv_naturality_right_symm (↾(uniqueElim x)) f)).trans
     (Functor.sectionsEquivHom_naturality_symm _ _ _)
 
 lemma Sheaf.ΓObjEquivSections_naturality_symm [HasWeakSheafify J (Type w)]
@@ -217,13 +217,12 @@ noncomputable def Sheaf.ΓObjEquivHom [HasWeakSheafify J (Type w)]
   ((Equiv.funUnique X _).symm.trans TypeCat.homEquiv.symm).trans
     ((constantSheafΓAdj J (Type w)).homEquiv _ _).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Sheaf.ΓObjEquivHom_naturality [HasWeakSheafify J (Type w)]
     [HasGlobalSectionsFunctor J (Type w)] (X : Type w) [Unique X]
     {F G : Sheaf J (Type w)} (f : F ⟶ G) (x : (Γ J (Type w)).obj F) :
     (ΓObjEquivHom J G X) ((Γ J (Type w)).map f x) = (ΓObjEquivHom J F X) x ≫ f :=
   (constantSheafΓAdj J (Type w)).homEquiv_naturality_right_symm
-    (TypeCat.ofHom (uniqueElim x)) f
+    (↾(uniqueElim x)) f
 
 lemma Sheaf.ΓObjEquivHom_naturality_symm [HasWeakSheafify J (Type w)]
     [HasGlobalSectionsFunctor J (Type w)] {X : Type w} [Unique X]

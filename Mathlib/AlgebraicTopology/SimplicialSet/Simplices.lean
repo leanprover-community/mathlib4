@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Elements
+public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 
 /-!
@@ -163,6 +164,12 @@ lemma le_iff_nonempty_hom (x y : X.S) :
     exact ⟨⟨f.op, hf⟩⟩
   · rintro ⟨f, hf⟩
     exact ⟨f.unop, hf⟩
+
+/-- The bijection `X.op.S ≃ X.S`. -/
+@[simps -isSimp apply symm_apply]
+def opEquiv : X.op.S ≃ X.S where
+  toFun x := S.mk (opObjEquiv x.simplex)
+  invFun y := S.mk (opObjEquiv.symm y.simplex)
 
 /-- The bijection `X.S ≃ Y.S` on simplices of simplicial sets that
 is induced by an isomorphism `X ≅ Y`. -/

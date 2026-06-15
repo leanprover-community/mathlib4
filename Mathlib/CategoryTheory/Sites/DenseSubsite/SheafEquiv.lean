@@ -24,7 +24,7 @@ which is defined in the file `Mathlib/CategoryTheory/Sites/DenseSubsite/Basic.le
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u w'
 
@@ -38,6 +38,7 @@ variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 variable {A : Type w} [Category.{w'} A] [∀ X, Limits.HasLimitsOfShape (StructuredArrow X G.op) A]
 variable [G.IsDenseSubsite J K]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include K in
 lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
@@ -52,7 +53,7 @@ lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
     have := congr($e ≫ Y.1.map iVU.op)
     dsimp at this ⊢
     simp only [Category.assoc, ← NatTrans.naturality] at this ⊢
-    simpa [h] using this
+    simpa [h] using! this
   · intro f
     have (X Y Z) (f : X ⟶ Y) (g : G.obj Y ⟶ G.obj Z) (hf : G.imageSieve g f) : Exists _ := hf
     choose l hl using this
@@ -101,7 +102,7 @@ instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.a
   rw [NatTrans.isIso_iff_isIso_app]
   intro ⟨X⟩
   simpa [sheafAdjunctionCocontinuous_counit_app_hom]
-    using isIso_ranCounit_app_of_isDenseSubsite G J K Y U X
+    using! isIso_ranCounit_app_of_isDenseSubsite G J K Y U X
 
 instance : (G.sheafPushforwardContinuous A J K).IsEquivalence :=
   (G.sheafAdjunctionCocontinuous A J K).toEquivalence.isEquivalence_functor

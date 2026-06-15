@@ -38,7 +38,7 @@ variable (M : Type*) [Monoid M] (X : Type u) [MulAction M X]
 @[simps obj map]
 def actionAsFunctor : SingleObj M ⥤ Type u where
   obj _ := X
-  map f := TypeCat.ofHom (f • ·)
+  map f := ↾(f • ·)
   map_id _ := by ext; exact MulAction.one_smul _
   map_comp f g := by ext x; exact (smul_smul g f x).symm
 
@@ -162,6 +162,7 @@ protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort*
 
 variable {H : Type*} [Group H]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given `G` acting on `X`, a functor from the corresponding action groupoid to a group `H`
 can be curried to a group homomorphism `G →* (X → H) ⋊ G`. -/
 @[simps]

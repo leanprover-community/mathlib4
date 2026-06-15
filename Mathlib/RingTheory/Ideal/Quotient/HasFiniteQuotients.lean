@@ -6,7 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Data.ZMod.QuotientRing
-public import Mathlib.NumberTheory.Height.Northcott
+public import Mathlib.Order.Northcott
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.IntegralDomain
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
@@ -26,7 +26,7 @@ quotient `R ⧸ I` is finite.
 
 -/
 
-@[expose] public section
+public section
 
 /--
 A ring `R` has finite quotients if the quotient `R ⧸ I` is finite for all nonzero ideals of `R`.
@@ -68,6 +68,13 @@ instance : IsNoetherianRing R := by
   · rw [Submodule.ker_mkQ, inf_eq_right.mpr ((Ideal.span_singleton_le_iff_mem I).mpr hx₁)]
     exact Submodule.fg_span_singleton x
 
+instance [IsDomain R] [PerfectField (FractionRing R)] (P : Ideal R) [P.IsPrime] :
+    PerfectField P.ResidueField := by
+  rcases eq_or_ne P ⊥ with rfl | hP
+  · exact PerfectField.of_ringEquiv (FractionRing.algEquiv R _).toRingEquiv
+  · have : Finite (R ⧸ P) := Ring.HasFiniteQuotients.finiteQuotient hP
+    infer_instance
+
 theorem cardQuot_pos (I : Ideal R) (hI : I ≠ ⊥) : 0 < I.cardQuot := by
   have := finiteQuotient hI
   rw [Submodule.cardQuot_apply]
@@ -79,7 +86,7 @@ theorem finite_setOf_mem (x : R) (hx : x ≠ 0) : {I : Ideal R | x ∈ I}.Finite
     .of_equiv _ (Ideal.relIsoOfSurjective _ Ideal.Quotient.mk_surjective).toEquiv
   simpa [← RingHom.ker_eq_comap_bot] using this
 
-open Pointwise in
+open scoped Pointwise in
 /-- For every bound `B`, a ring with finite quotients has only finitely many ideals of norm bounded
 by `B`. -/
 theorem finite_cardQuot_le (B : ℕ) : {I : Ideal R | I.cardQuot ≤ B}.Finite := by
@@ -90,13 +97,13 @@ theorem finite_cardQuot_le (B : ℕ) : {I : Ideal R | I.cardQuot ≤ B}.Finite :
   obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq R (B + 1)
   -- and consider the finite set `t` of nonzero differences
   let t := (s - s) \ {0}
-  refine Set.Finite.of_diff ?_ (Set.finite_singleton ⊥)
+  refine Set.Finite.of_sdiff ?_ (Set.finite_singleton ⊥)
   -- in a ring with finite quotients, each nonzero element is contained in only finitely many ideals
   -- so it is enough to show that each ideal `I` of norm at most `B` contains some element of `t`
   suffices {I | Submodule.cardQuot I ≤ B} \ {⊥} ⊆ ⋃ x ∈ t, {I | x ∈ I} from
     (t.finite_toSet.biUnion fun x hx ↦ finite_setOf_mem x (by grind)).subset this
   intro I hI
-  rw [Set.mem_diff, Set.mem_setOf, Submodule.cardQuot_apply] at hI
+  rw [Set.mem_sdiff, Set.mem_setOf, Submodule.cardQuot_apply] at hI
   simp_rw [Set.mem_iUnion, exists_prop, Set.mem_setOf_eq]
   -- `s` has cardinality `B + 1`, but the quotient `R ⧸ I` has cardinality at most `B`
   replace hs : (s.image (Ideal.Quotient.mk I)).card < s.card := by

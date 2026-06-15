@@ -202,7 +202,7 @@ variable (R)
 commutative semiring, by applying to each `S`-component the algebra-map from `S` into a specified
 `S`-algebra `R`. -/
 def algebraMap [CommSemiring S] [Semiring R] [Algebra S R] (l : NF S M) : NF R M :=
-  l.map (fun ⟨s, x⟩ ↦ (_root_.algebraMap S R s, x))
+  l.map (fun ⟨s, x⟩ ↦ (Algebra.algebraMap S R s, x))
 
 theorem eval_algebraMap [CommSemiring S] [Semiring R] [Algebra S R] [AddMonoid M] [SMul S M]
     [MulAction R M] [IsScalarTower S R M] (l : NF S M) :
@@ -571,7 +571,7 @@ most commonly occurring `algebraMap`s (those out of `ℕ`, `ℤ` and `ℚ`) into
 (`ℕ`, `ℤ` and `ℚ` casts) and then try to disperse the casts using the various `push_cast` lemmas. -/
 def postprocess (mvarId : MVarId) : MetaM MVarId := do
   -- collect the available `push_cast` lemmas
-  let mut thms : SimpTheorems := ← NormCast.pushCastExt.getTheorems
+  let mut thms : SimpTheorems ← NormCast.pushCastExt.getTheorems
   -- augment this list with the `algebraMapThms` lemmas, which handle `algebraMap` operations
   for thm in algebraMapThms do
     let ⟨levelParams, _, proof⟩ ← abstractMVars (mkConst thm)

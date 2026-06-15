@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Sigma.Lex
 public import Mathlib.Util.Notation3
-public import Init.NotationExtra
 public import Mathlib.Data.Sigma.Basic
 public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.Lattice
@@ -18,8 +17,10 @@ public import Mathlib.Order.Lex
 This file defines the lexicographic order on `Σₗ' i, α i`. `a` is less than `b` if its summand is
 strictly less than the summand of `b` or they are in the same summand and `a` is less than `b`
 there.
+
 ## Notation
 * `Σₗ' i, α i`: Sigma type equipped with the lexicographic order. A type synonym of `Σ' i, α i`.
+
 ## See also
 Related files are:
 * `Data.Finset.Colex`: Colexicographic order on finite sets.
@@ -27,13 +28,14 @@ Related files are:
 * `Data.Pi.Lex`: Lexicographic order on `Πₗ i, α i`.
 * `Data.Sigma.Order`: Lexicographic order on `Σₗ i, α i`. Basically a twin of this file.
 * `Data.Prod.Lex`: Lexicographic order on `α × β`.
+
 ## TODO
 Define the disjoint order on `Σ' i, α i`, where `x ≤ y` only if `x.fst = y.fst`.
 Prove that a sigma type is a `NoMaxOrder`, `NoMinOrder`, `DenselyOrdered` when its summands
 are.
 -/
 
-@[expose] public section
+public section
 
 
 variable {ι : Type*} {α : ι → Type*}

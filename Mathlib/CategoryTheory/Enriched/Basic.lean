@@ -127,14 +127,14 @@ instance : EnrichedCategory W (TransportEnrichment F C) where
     simp only [comp_whiskerRight, Category.assoc, Functor.LaxMonoidal.μ_natural_left_assoc,
       Functor.LaxMonoidal.left_unitality_inv_assoc]
     simp_rw [← F.map_comp]
-    convert F.map_id _
+    convert! F.map_id _
     simp
   comp_id X Y := by
     simp only [MonoidalCategory.whiskerLeft_comp, Category.assoc,
       Functor.LaxMonoidal.μ_natural_right_assoc,
       Functor.LaxMonoidal.right_unitality_inv_assoc]
     simp_rw [← F.map_comp]
-    convert F.map_id _
+    convert! F.map_id _
     simp
   assoc P Q R S := by
     rw [comp_whiskerRight, Category.assoc, μ_natural_left_assoc,
@@ -165,15 +165,14 @@ def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Typ
   assoc f g h := ConcreteCategory.congr_hom (e_assoc (Type v) _ _ _ _) ⟨f, g, h⟩
 
 attribute [local simp] types_tensorObj_def in
-set_option backward.isDefEq.respectTransparency false in
 /-- Construct a `Type v`-enriched category from an honest category.
 -/
 @[implicit_reducible]
 def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] :
     EnrichedCategory (Type v) C where
   Hom X Y := 𝒞.Hom X Y
-  id X := TypeCat.ofHom (fun _ ↦ 𝟙 _)
-  comp _ _ _ := TypeCat.ofHom (fun p ↦ p.1 ≫ p.2)
+  id X := ↾fun _ ↦ 𝟙 _
+  comp _ _ _ := ↾fun p ↦ p.1 ≫ p.2
 
 /-- We verify that an enriched category in `Type u` is just the same thing as an honest category.
 -/
@@ -357,12 +356,14 @@ def forget (F : EnrichedFunctor W C D) :
       rfl
     · intro f g w; apply_fun ForgetEnrichment.homOf W at w; simpa using w
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `EnrichedFunctor.forget` distributes over composition of enriched functors up to isomorphism. -/
 @[simps!]
 def forgetComp (F : EnrichedFunctor W C D) (G : EnrichedFunctor W D E) :
     (F.comp W G).forget ≅ F.forget ⋙ G.forget :=
   NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp [comp, forget])
 
+set_option backward.defeqAttrib.useBackward true in
 variable (W) (C) in
 /-- `EnrichedFunctor.forget` maps the identity enriched functor to a functor isomorphic to
 `Functor.id`. -/
@@ -477,13 +478,14 @@ variable [BraidedCategory V]
 
 open BraidedCategory
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A presheaf isomorphic to the Yoneda embedding of
 the `V`-object of natural transformations from `F` to `G`.
 -/
 @[simps]
 def enrichedNatTransYoneda (F G : EnrichedFunctor V C D) : Vᵒᵖ ⥤ Type (max u₁ w) where
   obj A := GradedNatTrans ((Center.ofBraided V).obj (unop A)) F G
-  map f := TypeCat.ofHom fun σ ↦
+  map f := ↾fun σ ↦
     { app X := f.unop ≫ σ.app X
       naturality X Y := by
         have p := σ.naturality X Y
@@ -514,7 +516,7 @@ def enrichedFunctorTypeEquivFunctor {C : Type u₁} [𝒞 : EnrichedCategory (Ty
       map_comp := fun f g => ConcreteCategory.congr_hom (F.map_comp _ _ _) ⟨f, g⟩ }
   invFun F :=
     { obj := fun X => F.obj X
-      map := fun _ _ => TypeCat.ofHom (fun f => F.map f)
+      map := fun _ _ => ↾fun f => F.map f
       map_id := fun X => by ext ⟨⟩; exact F.map_id X
       map_comp := fun X Y Z => by ext ⟨f, g⟩; exact F.map_comp f g }
 
@@ -529,11 +531,11 @@ def enrichedNatTransYonedaTypeIsoYonedaNatTrans {C : Type v} [EnrichedCategory (
         enrichedFunctorTypeEquivFunctor G) :=
   NatIso.ofComponents
     (fun α =>
-      { hom := TypeCat.ofHom fun σ ↦ TypeCat.ofHom fun x =>
+      { hom := ↾fun σ ↦ ↾fun x =>
           { app X := σ.app X x
             naturality X Y f := ConcreteCategory.congr_hom (σ.naturality X Y) ⟨x, f⟩ }
-        inv := TypeCat.ofHom fun σ ↦
-          { app X := TypeCat.ofHom (fun x => (σ.hom x).app X)
+        inv := ↾fun σ ↦
+          { app X := ↾fun x => (σ.hom x).app X
             naturality X Y := by ext ⟨x, f⟩; exact (σ.hom x).naturality f } })
     (by cat_disch)
 

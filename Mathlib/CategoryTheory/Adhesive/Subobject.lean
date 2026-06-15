@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Adhesive.Basic
 public import Mathlib.CategoryTheory.Subobject.Basic
-public import Mathlib.CategoryTheory.Subobject.Lattice
 
 /-!
 
@@ -41,7 +40,7 @@ noncomputable def isColimitBinaryCofan (a b : Subobject X) :
       (by ext; simp [pullback.condition])) (by cat_disch)).hom)
     (by intros; rfl) (by intros; rfl) (by intros; rfl)
 
-instance [Adhesive C] {X : C} : HasBinaryCoproducts (Subobject X) where
+instance : HasBinaryCoproducts (Subobject X) where
   has_colimit F := by
     have : HasColimit (pair (F.obj ⟨WalkingPair.left⟩) (F.obj ⟨WalkingPair.right⟩)) :=
       ⟨⟨⟨_, isColimitBinaryCofan (F.obj ⟨WalkingPair.left⟩) (F.obj ⟨WalkingPair.right⟩)⟩⟩⟩
