@@ -721,10 +721,12 @@ theorem isClosed_eball_top : IsClosed (eball x ⊤) :=
     ⟨⊤, ENNReal.coe_lt_top, fun _z hzy hzx =>
       hy (edistLtTopSetoid.trans (edistLtTopSetoid.symm hzy) hzx)⟩
 
-theorem eball_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : eball x ε ∈ 𝓝 x :=
+variable (x)
+
+theorem eball_mem_nhds (ε0 : 0 < ε) : eball x ε ∈ 𝓝 x :=
   isOpen_eball.mem_nhds (mem_eball_self ε0)
 
-theorem closedEBall_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : closedEBall x ε ∈ 𝓝 x :=
+theorem closedEBall_mem_nhds (ε0 : 0 < ε) : closedEBall x ε ∈ 𝓝 x :=
   mem_of_superset (eball_mem_nhds x ε0) eball_subset_closedEBall
 
 theorem eball_prod_same [PseudoEMetricSpace β] (x : α) (y : β) (r : ℝ≥0∞) :
@@ -793,14 +795,15 @@ end EMetric
 
 namespace Subtype
 
-instance {α : Type*} [EDist α] {p : α → Prop} :
-    EDist (Subtype p) where
+variable {α : Type*} [EDist α] {p : α → Prop}
+
+instance : EDist (Subtype p) where
   edist x y := edist x.val y.val
 
 open Metric
 
 @[simp]
-theorem preimage_eball {α : Type*} [EDist α] {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
+theorem preimage_eball (a : {a // p a}) (r : ℝ≥0∞) :
     Subtype.val ⁻¹' (eball a.1 r) = eball a r :=
   rfl
 
@@ -808,7 +811,7 @@ theorem preimage_eball {α : Type*} [EDist α] {p : α → Prop} (a : {a // p a}
 alias preimage_emetricBall := preimage_eball
 
 @[simp]
-theorem preimage_closedEBall {α : Type*} [EDist α] {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
+theorem preimage_closedEBall (a : {a // p a}) (r : ℝ≥0∞) :
     Subtype.val ⁻¹' (closedEBall a.1 r) = closedEBall a r :=
   rfl
 
@@ -816,7 +819,7 @@ theorem preimage_closedEBall {α : Type*} [EDist α] {p : α → Prop} (a : {a /
 alias preimage_emetricClosedBall := preimage_closedEBall
 
 @[simp]
-theorem image_eball {α : Type*} [EDist α] {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
+theorem image_eball (a : {a // p a}) (r : ℝ≥0∞) :
     Subtype.val '' (eball a r) = eball a.1 r ∩ {a | p a} := by
   rw [← preimage_eball, image_preimage_eq_inter_range, range_val_subtype]
 
@@ -824,7 +827,7 @@ theorem image_eball {α : Type*} [EDist α] {p : α → Prop} (a : {a // p a}) (
 alias image_emetricBall := image_eball
 
 @[simp]
-theorem image_closedEBall {α : Type*} [EDist α] {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
+theorem image_closedEBall (a : {a // p a}) (r : ℝ≥0∞) :
     Subtype.val '' (closedEBall a r) = closedEBall a.1 r ∩ {a | p a} := by
   rw [← preimage_closedEBall, image_preimage_eq_inter_range, range_val_subtype]
 
