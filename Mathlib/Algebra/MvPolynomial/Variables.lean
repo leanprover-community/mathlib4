@@ -382,59 +382,6 @@ theorem card_mainDegree_eq_zero_iff : p.mainDegree.card = 0 ↔ p.vars.max = ⊥
     apply Multiset.toFinset_eq_empty.mp
     exact Finset.max_eq_bot.mp h
 
-
-/-- The "main degree" of `p`: the degree of `p` with respect to its max variable.
-If `p.vars.max = ⊥` (i.e., `p` is a constant), the degree is 0. -/
-def degreeOfMain (p : MvPolynomial σ R) : ℕ :=
-  match p.vars.max with
-  | ⊥ => 0
-  | Option.some c => p.degreeOf c
-
-theorem degreeOfMain_of_max_vars_isSome (h : p.vars.max = c) : p.degreeOfMain = p.degreeOf c := by
-  rw [degreeOfMain, h]
-
-theorem degreeOfMain_eq_zero_iff : p.degreeOfMain = 0 ↔ p.vars.max = ⊥ where
-  mp h :=
-    match hc : p.vars.max with
-    | ⊥ => rfl
-    | Option.some c => by
-      absurd Finset.mem_of_max hc
-      rw [degreeOfMain_of_max_vars_isSome hc, degreeOf] at h
-      simpa only [vars_def, Multiset.mem_toFinset, Multiset.count_eq_zero] using h
-  mpr h := by rw [degreeOfMain, h]
-
-theorem degreeOfMain_eq_zero_iff_eq_C : p.degreeOfMain = 0 ↔ p = C (p.coeff 0) := by
-  rw [degreeOfMain_eq_zero_iff, Finset.max_eq_bot, vars_eq_empty_iff_eq_C]
-
-@[simp]
-theorem degreeOfMain_zero : (0 : MvPolynomial σ R).degreeOfMain = 0 := rfl
-
-theorem degreeOfMain_monomial {s : σ →₀ ℕ} {r : R} (hr : r ≠ 0)
-    (hs : s.support.max = c) : (monomial s r).degreeOfMain = s c := by
-  have :((monomial s) r).vars.max = c := by rw [vars_monomial hr, hs]
-  rw [degreeOfMain_of_max_vars_isSome this]
-  exact degreeOf_monomial_eq s c hr
-
-@[simp]
-theorem degreeOfMain_C (r : R) : (C r : MvPolynomial σ R).degreeOfMain = 0 :=
-  degreeOfMain_eq_zero_iff.mpr <| congrArg _ (vars_C)
-
-@[simp]
-theorem degreeOfMain_X_pow [Nontrivial R] (i : σ) (k : ℕ) :
-    ((X i : MvPolynomial σ R) ^ k).degreeOfMain = k := by
-  by_cases hk : k = 0
-  · rw [hk, pow_zero]
-    exact degreeOfMain_C 1
-  have : (Finsupp.single i k).support.max = i := by rw [Finsupp.support_single i hk]; rfl
-  rw [X_pow_eq_monomial, degreeOfMain_monomial one_ne_zero this, Finsupp.single_eq_same]
-
-@[simp]
-theorem degreeOfMain_X [Nontrivial R] (i : σ) : (X i : MvPolynomial σ R).degreeOfMain = 1 := by
-  rw [← pow_one (X i : MvPolynomial σ R), degreeOfMain_X_pow]
-
-
-
-
 end MainDegree
 
 end CommSemiring
