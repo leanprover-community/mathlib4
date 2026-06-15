@@ -17,6 +17,7 @@ public import Mathlib.RingTheory.Finiteness.Cardinality
 public import Mathlib.Tactic.FieldSimp
 
 import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
+import Mathlib.RingTheory.Algebraic.Integral
 import Mathlib.RingTheory.SimpleRing.Matrix
 
 /-!
@@ -475,23 +476,12 @@ end LinearEquiv
     LinearMap.det_map ((Matrix.toLinAlgEquiv'.symm.trans
       (AlgEquivClass.toAlgEquiv f)).trans Matrix.toLinAlgEquiv') x.toLin'
 
-@[simp]
-theorem Matrix.det_map' {K m F : Type*} [Field K] [Fintype m] [DecidableEq m]
-    [FunLike F (Matrix m m K) (Matrix m m K)] [AlgHomClass F K _ _] (f : F)
-    (x : Matrix m m K) :
+@[simp] theorem Matrix.det_map' {K m F : Type*} [Field K] [Fintype m] [DecidableEq m]
+    [FunLike F (Matrix m m K) (Matrix m m K)] [AlgHomClass F K _ _] (f : F) (x : Matrix m m K) :
     (f x).det = x.det := by
-  classical
-  by_cases hm : Nonempty m
-  · haveI := hm
-    let φ : Matrix m m K →ₐ[K] Matrix m m K := AlgHomClass.toAlgHom f
-    have hφinj : Function.Injective φ :=
-      RingHom.injective (φ : Matrix m m K →+* Matrix m m K)
-    have hφsurj : Function.Surjective φ :=
-      (LinearMap.injective_iff_surjective
-        (f := (φ : Matrix m m K →ₗ[K] Matrix m m K))).mp hφinj
-    simpa [φ] using Matrix.det_map (AlgEquiv.ofBijective φ ⟨hφinj, hφsurj⟩) x
-  · haveI : IsEmpty m := not_nonempty_iff.mp hm
-    simp
+  by_cases! Nonempty m
+  · simpa using det_map (AlgEquiv.ofBijective _ (AlgHomClass.toAlgHom f).bijective) x
+  · simp
 
 /-- The determinants of a `LinearEquiv` and its inverse multiply to 1. -/
 @[simp]
