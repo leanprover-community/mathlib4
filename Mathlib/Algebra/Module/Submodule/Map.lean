@@ -273,7 +273,7 @@ def submoduleOf (p q : Submodule R M) : Submodule R q :=
   Submodule.comap q.subtype p
 
 theorem map_subtype_submoduleOf (p q : Submodule R M) :
-    map q.subtype (p.submoduleOf q) = (p ⊓ q :) := by
+    map q.subtype (p.submoduleOf q) = p ⊓ q := by
   ext; simp [submoduleOf]
 
 /-- `p` as a submodule of `q` is isomorphic to `p ⊓ q`. -/
