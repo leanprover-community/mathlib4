@@ -316,8 +316,8 @@ lemma exists_mem_biUnion_inf'_card_lt [DecidableEq α] [Fintype α] {f : α → 
     _ = ∑ x ∈ s.biUnion f, #{j | j ∈ s ∧ x ∈ f j} := by rw [sum_card_eq_sum_biUnion_card]
     _ ≤ ∑ x ∈ s.biUnion f, k := by
       gcongr
-      rename_i i a
-      specialize h₃ i
+      rename_i x a
+      specialize h₃ x
       rw[mem_biUnion] at a
       grind
 
