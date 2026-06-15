@@ -11,6 +11,7 @@ public import Mathlib.Data.Rel
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Sym.Sym2
 public import Mathlib.Order.CompleteBooleanAlgebra
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Simple graphs
@@ -88,7 +89,7 @@ The relation describes which pairs of vertices are adjacent.
 There is exactly one edge for every pair of adjacent vertices;
 see `SimpleGraph.edgeSet` for the corresponding edge set.
 -/
-@[ext, aesop safe constructors (rule_sets := [SimpleGraph])]
+@[ext, aesop safe constructors (rule_sets := [SimpleGraph]), wikidata Q141488]
 structure SimpleGraph (V : Type u) where
   /-- The adjacency relation of a simple graph. -/
   Adj : V → V → Prop

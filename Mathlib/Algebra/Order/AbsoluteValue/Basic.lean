@@ -9,6 +9,7 @@ public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Algebra.Order.Hom.Basic
 public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Positivity.Core
 
 /-!
@@ -33,6 +34,7 @@ variable {ι α R S : Type*}
 /-- `AbsoluteValue R S` is the type of absolute values on `R` mapping to `S`:
 the maps that preserve `*`, are nonnegative, positive definite and satisfy
 the triangle inequality. -/
+@[wikidata Q120812]
 structure AbsoluteValue (R S : Type*) [Semiring R] [Semiring S] [PartialOrder S]
     extends R →ₙ* S where
   /-- The absolute value is nonnegative -/

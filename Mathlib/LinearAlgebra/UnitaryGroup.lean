@@ -10,6 +10,7 @@ public import Mathlib.Data.Matrix.Reflection
 public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # The Unitary Group
@@ -292,6 +293,7 @@ attribute [local instance] starRingOfComm
 
 /-- `Matrix.orthogonalGroup n` is the group of `n` by `n` matrices where the transpose is the
 inverse. -/
+@[wikidata Q1783179]
 abbrev orthogonalGroup := unitaryGroup n R
 
 theorem mem_orthogonalGroup_iff {A : Matrix n n R} :

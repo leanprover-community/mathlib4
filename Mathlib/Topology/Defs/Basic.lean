@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.SetNotation
 public import Mathlib.Tactic.Continuity
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.FunProp
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Data.Nat.Notation
@@ -89,6 +90,7 @@ section Defs
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
 /-- `IsOpen s` means that `s` is open in the ambient topological space on `X` -/
+@[wikidata Q213363]
 def IsOpen : Set X → Prop := TopologicalSpace.IsOpen
 
 @[simp] theorem isOpen_univ : IsOpen (univ : Set X) := TopologicalSpace.isOpen_univ
@@ -147,7 +149,7 @@ def DenseRange {α : Type*} (f : α → X) := Dense (range f)
 
 /-- A function between topological spaces is continuous if the preimage
   of every open set is open. Registered as a structure to make sure it is not unfolded by Lean. -/
-@[fun_prop]
+@[fun_prop, wikidata Q170058]
 structure Continuous (f : X → Y) : Prop where
   /-- The preimage of an open set under a continuous function is an open set. Use `IsOpen.preimage`
   instead. -/
