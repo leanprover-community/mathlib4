@@ -804,7 +804,22 @@ jobs:
         run: |
           lake env lean scripts/create_deprecated_modules.lean
           lake env lean scripts/autolabel.lean
-          lake exe check_title_labels --labels "t-algebra" "feat: dummy PR for testing"
+          lake exe check_title_labels --labels "t-algebra" "feat: dummy PR for testing" "dummy PR body" > title_output.txt
+          if grep -qE "Missing positional argument " "title_output.txt"; then
+              echo ""
+              echo "=============================================================================="
+              echo "ERROR: Your branch predates the current 'check title' configuration."
+              echo "Please merge 'master' into your PR branch and push again."
+              echo ""
+              echo "You can do this with:"
+              echo "  git fetch upstream"
+              echo "  git merge upstream/master"
+              echo "  git push"
+              echo "=============================================================================="
+              echo ""
+              exit 1
+          fi
+          cat title_output.txt
 
       - name: build everything
         # make sure everything is available for test/import_all.lean
