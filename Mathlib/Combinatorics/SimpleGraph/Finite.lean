@@ -206,7 +206,7 @@ theorem card_neighborFinset_eq_degree : #(G.neighborFinset v) = G.degree v := rf
 theorem card_neighborSet_eq_degree : Fintype.card (G.neighborSet v) = G.degree v :=
   (Set.toFinset_card _).symm
 
--- TODO: extract to a separate PR
+-- #40624
 @[simp]
 theorem ncard_neighborSet : (G.neighborSet v).ncard = G.degree v := by
   simp [Set.ncard_eq_toFinset_card', card_neighborSet_eq_degree, -Set.fintypeCard_eq_ncard]
@@ -528,8 +528,8 @@ theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
   simp [commonNeighbors_top_eq, ← Set.toFinset_card, Finset.card_sdiff, h,
     -Set.fintypeCard_eq_ncard]
 
--- TODO: extract to a separate PR
-omit [Fintype V]
+-- #40624
+omit [Fintype V] in
 theorem encard_commonNeighbors_top {u v : V} (h : u ≠ v) :
     (commonNeighbors ⊤ u v).encard = ENat.card V - 2 := by
   simp [commonNeighbors_top_eq, Set.encard_sdiff, Set.encard_pair h]
