@@ -108,6 +108,19 @@ info: Message: 'error: a PR's scope must not contain backslashes; use forward sl
 #guard_msgs in
 #check_title "feat(Algebra/Too): title"
 
+#guard_msgs in
+#check_title "doc(1000.yaml): add missing theorem"
+
+#guard_msgs in
+#check_title "doc(100.yml): add missing theorem"
+
+#guard_msgs in
+#check_title "doc(100.yml,README.md,foo.json): add missing theorem"
+
+#guard_msgs in
+#check_title "doc(README.md): fix typo"
+
+
 end scope
 
 section subject

@@ -8,6 +8,7 @@ module
 
 import Mathlib.Init
 import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
+import Batteries.Data.String.Matcher
 
 /-!
 # Checker for well-formed title and labels
@@ -110,8 +111,16 @@ public def validateTitle (title : String) : Array String := Id.run do
       if scope.endsWith ".lean" then
         errors := errors.push s!"error: a PR's scope must not end with '.lean'"
       else if scope.contains '.' then
-        errors := errors.push s!"error: a PR's scope should be a directory or file name, \
-          not a module name\nhint: the scope contains a dot, use forward slashes instead"
+        -- Exception: file endings `.md`, `.yml`, `.yaml` are fine.
+        let extensions := #["bib", "json", "md", "py", "sh", "toml", "txt", "yaml", "yml"]
+        let allOccurrences := scope.count '.'
+        let mut recognised := 0
+        for ext in extensions do
+          if recognised == allOccurrences then break
+          recognised := recognised + (scope.findAllSubstr ("." ++ ext)).size
+        if scope.count '.' != recognised then
+          errors := errors.push s!"error: a PR's scope should be a directory or file name, \
+            not a module name\nhint: the scope contains a dot, use forward slashes instead"
       -- Future: we could check if `scope` describes a directory that actually exist.
       -- Should we allow special syntax such as `Data/*/Basic` or `{Set,Group}Theory`?
 
