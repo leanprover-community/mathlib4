@@ -233,7 +233,7 @@ def deprecateFilePath (fname : String) (rename comment : Option String) :
   -- Retrieve the final version of the file, before it was deleted.
   let file ← runCmd s!"git show {modifiedHash}:{fname}"
   -- Generate a module deprecation for the file `fname`.
-  let fileHeader := ← match rename with
+  let fileHeader ← match rename with
     | some rename => do
       let modName := mkModName rename
       pure s!"import {modName}"
