@@ -318,7 +318,6 @@ lemma exists_mem_biUnion_inf'_card_lt [DecidableEq α] [Fintype α] {f : α → 
       gcongr
       rename_i x a
       specialize h₃ x
-      rw[mem_biUnion] at a
       grind
 
 end Finset
