@@ -325,7 +325,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- Skip linting the library root file itself.
     -- In practice, the `inLibraryRoot?` check above already covers this (a well-formed
     -- `<root>.lean` does not import itself), but a root module could appear in `headerTestFiles`.
-    mainModule == mainModule.getRoot
+    mainModule matches .str .anonymous _libroot
   then return
   unless stx.isOfKind ``Parser.Command.moduleDoc do
     Linter.logLint linter.style.header stx
