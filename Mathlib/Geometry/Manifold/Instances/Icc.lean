@@ -69,17 +69,6 @@ variable {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ∞}
 
 open Manifold IsManifold
 
-/-- `Equiv.pointReflection` as a homeomorphism -/
-def Homeomorph.pointReflection {X : Type*} [AddGroup X] [TopologicalSpace X]
-    [ContinuousAdd X] [ContinuousSub X] [ContinuousNeg X] (x : X) : X ≃ₜ X where
-  toEquiv := Equiv.pointReflection x
-  continuous_toFun := by
-    dsimp [Equiv.pointReflection]
-    fun_prop
-  continuous_invFun := by
-    dsimp [Equiv.pointReflection]
-    fun_prop
-
 -- TODO: all these lemmas are technically misnamed; the relevant coercion is Subtype.val!
 
 set_option linter.flexible false in
@@ -129,7 +118,7 @@ lemma isImmersionOfComplement_subtype_coe_Icc :
       obtain ⟨⟨y', hy'⟩, rfl⟩ := hz'.1
       simpa [modelWithCornersEuclideanHalfSpace]
     rw [max_eq_left, max_eq_left this]
-    · simp [φ, φ₀, Homeomorph.pointReflection, Equiv.pointReflection]
+    · simp [φ, φ₀, Equiv.pointReflection]
       ring_nf
     · replace hz' := hz'.2
       simp [modelWithCornersEuclideanHalfSpace] at hz'

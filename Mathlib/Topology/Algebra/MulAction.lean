@@ -358,9 +358,12 @@ protected theorem AddTorsor.connectedSpace : ConnectedSpace P :=
 
 end AddTorsor
 
+variable {X : Type*} [AddGroup X] [TopologicalSpace X]
+  [ContinuousAdd X] [ContinuousSub X] [ContinuousNeg X]
+
 /-- `Equiv.pointReflection` as a homeomorphism -/
-def Homeomorph.pointReflection {X : Type*} [AddGroup X] [TopologicalSpace X]
-    [ContinuousAdd X] [ContinuousSub X] [ContinuousNeg X] (x : X) : X ≃ₜ X where
+@[expose]
+def Homeomorph.pointReflection (x : X) : X ≃ₜ X where
   toEquiv := Equiv.pointReflection x
   continuous_toFun := by
     dsimp [Equiv.pointReflection]
@@ -368,3 +371,7 @@ def Homeomorph.pointReflection {X : Type*} [AddGroup X] [TopologicalSpace X]
   continuous_invFun := by
     dsimp [Equiv.pointReflection]
     fun_prop
+
+@[simp]
+lemma Homeomorph.coe_pointReflection (x : X) :
+    (Homeomorph.pointReflection x : X → X) = Equiv.pointReflection x := rfl
