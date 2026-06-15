@@ -217,7 +217,8 @@ instance connectedSpace : ConnectedSpace MoebiusBand := by
       · exact ⟨(0 : Z.Fiber b), rfl⟩
       · exact (isConnected_range
           (Bundle.contMDiff_zeroSection (n := ⊤) ℝ Z.Fiber (IB := 𝓡 1)).continuous).isPreconnected
-      · exact (isConnected_range
+      · have : ConnectedSpace (Z.Fiber b) := inferInstanceAs (ConnectedSpace ℝ)
+        exact (isConnected_range
           (FiberBundle.continuous_totalSpaceMk ℝ Z.Fiber b)).isPreconnected
     · intro i j
       apply Relation.ReflTransGen.single
