@@ -66,6 +66,7 @@ abbrev HoCat := Quotient (BifibrantObject.homRel C)
 
 /-- The quotient functor from the category of bifibrant objects to its
 homotopy category. -/
+@[implicit_reducible]
 def toHoCat : BifibrantObject C ⥤ HoCat C := Quotient.functor _
 
 lemma toHoCat_obj_surjective : Function.Surjective (toHoCat (C := C)).obj :=
@@ -204,6 +205,7 @@ def toHoCatCompιFibrantObject :
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The inclusion functor `BifibrantObject.HoCat C ⥤ CofibrantObject.HoCat C`. -/
+@[implicit_reducible]
 def HoCat.ιCofibrantObject : HoCat C ⥤ CofibrantObject.HoCat C :=
   CategoryTheory.Quotient.lift _
     (BifibrantObject.ιCofibrantObject ⋙ CofibrantObject.toHoCat) (fun _ _ _ _ h ↦ by
@@ -334,7 +336,7 @@ lemma bifibrantResolutionObj_hom_ext
 set_option backward.isDefEq.respectTransparency false in
 /-- The bifibrant resolution functor from the category of cofibrant objects
 to the homotopy category of bifibrant objects. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def HoCat.bifibrantResolution' : CofibrantObject C ⥤ BifibrantObject.HoCat C where
   obj X := BifibrantObject.toHoCat.obj (bifibrantResolutionObj X)
   map f := BifibrantObject.toHoCat.map (bifibrantResolutionMap f)
@@ -345,6 +347,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The bifibrant resolution functor from the homotopy category of
 cofibrant objects to the homotopy category of bifibrant objects. -/
+@[implicit_reducible]
 noncomputable def HoCat.bifibrantResolution :
     CofibrantObject.HoCat C ⥤ BifibrantObject.HoCat C :=
   CategoryTheory.Quotient.lift _ CofibrantObject.HoCat.bifibrantResolution' (by

@@ -188,7 +188,7 @@ lemma sheafComposeNatTrans_app_uniq (P : Cᵒᵖ ⥤ A)
         whiskerRight (adj₁.unit.app P) F) :
     α = (sheafComposeNatTrans J F adj₁ adj₂).app P := by
   apply (adj₂.homEquiv _ _).injective
-  dsimp [sheafComposeNatTrans]
+  dsimp [ObjectProperty.ι_obj, sheafComposeNatTrans, id_obj]
   erw [Equiv.apply_symm_apply]
   rw [← hα]
   apply adj₂.homEquiv_unit
