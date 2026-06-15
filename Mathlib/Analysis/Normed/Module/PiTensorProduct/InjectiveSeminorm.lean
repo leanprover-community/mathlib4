@@ -25,18 +25,22 @@ https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/injective
   `f ↦ f x`.
 
 ## TODO
+
 * Reimplement `injectiveSeminorm`.
 
 -/
 
 @[expose] public section
 
-universe uι u𝕜 uE uF
+-- These explicit universe variables are required by `norm_eval_le_injectiveSeminorm`, which
+-- has been marked as deprecated on 2026-06-10. TBD: delete the variables after the
+-- deprecated material has been removed.
+universe uι u𝕜 uE
 
 variable {ι : Type uι} [Fintype ι]
 variable {𝕜 : Type u𝕜} [NontriviallyNormedField 𝕜]
 variable {E : ι → Type uE} [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
-variable {F : Type uF} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 open scoped TensorProduct
 
