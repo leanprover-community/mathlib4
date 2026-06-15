@@ -252,7 +252,7 @@ private theorem det_coordChangeL_eq_det_tangentBundleCore_coordChange
       (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) p).baseSet ∩
       (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
       (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) q).baseSet) :
-    LinearMap.det (Trivialization.coordChangeL ℝ
+    LinearMap.det (Bundle.Trivialization.coordChangeL ℝ
       (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
         (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) p)
       (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
@@ -265,14 +265,14 @@ private theorem det_coordChangeL_eq_det_tangentBundleCore_coordChange
   set E1 := EuclideanSpace ℝ (Fin 1) with hE1
   set Z := tangentBundleCore I MoebiusBand
   haveI : IsManifold I 1 MoebiusBand := IsManifold.of_le (n := ⊤) le_top
-  change LinearMap.det (Trivialization.coordChangeL ℝ
+  change LinearMap.det (Bundle.Trivialization.coordChangeL ℝ
     (trivializationAt (E1 × ℝ) (TangentSpace I) p)
     (trivializationAt (E1 × ℝ) (TangentSpace I) q) z).toLinearEquiv.toLinearMap =
     LinearMap.det (Z.coordChange (Z.indexAt p) (Z.indexAt q) z : (E1 × ℝ) →ₗ[ℝ] E1 × ℝ)
   congr 1
   apply LinearMap.ext
   intro v
-  change (Trivialization.coordChangeL ℝ _ _ z) v = Z.coordChange _ _ z v
+  change (Bundle.Trivialization.coordChangeL ℝ _ _ z) v = Z.coordChange _ _ z v
   exact Z.trivializationAt_coordChange_eq hmem v
 
 private theorem extChartAt_zeroSection_eq
@@ -306,13 +306,13 @@ private theorem moebius_coordChange_eventually_const
     have h := hmem_p
     rw [FiberBundle.chartedSpace_chartAt, OpenPartialHomeomorph.trans_source] at h
     have h1 := h.1
-    rwa [Trivialization.mem_source, mbc.trivializationAt, VectorBundleCore.localTrivAt,
+    rwa [Bundle.Trivialization.mem_source, mbc.trivializationAt, VectorBundleCore.localTrivAt,
       ← mbc.baseSet_at] at h1
   have hzp_iq : z.proj ∈ mbc.baseSet iq := by
     have h := hmem_q
     rw [FiberBundle.chartedSpace_chartAt, OpenPartialHomeomorph.trans_source] at h
     have h1 := h.1
-    rwa [Trivialization.mem_source, mbc.trivializationAt, VectorBundleCore.localTrivAt,
+    rwa [Bundle.Trivialization.mem_source, mbc.trivializationAt, VectorBundleCore.localTrivAt,
       ← mbc.baseSet_at] at h1
   have him_cont : Continuous (fun (c : Circle) => (c : ℂ).im) :=
     Complex.continuous_im.comp continuous_subtype_val
@@ -427,7 +427,7 @@ private theorem extChart_transition_eventually_formula_on_overlap
     rw [extChartAt_source, FiberBundle.chartedSpace_chartAt,
       OpenPartialHomeomorph.trans_source] at h
     have h1 := h.1
-    rw [Trivialization.mem_source, mbc.trivializationAt, VectorBundleCore.localTrivAt,
+    rw [Bundle.Trivialization.mem_source, mbc.trivializationAt, VectorBundleCore.localTrivAt,
       ← mbc.baseSet_at] at h1
     rwa [hproj] at h1
   have hb_iq : b ∈ mbc.baseSet iq := by
@@ -435,7 +435,7 @@ private theorem extChart_transition_eventually_formula_on_overlap
     rw [extChartAt_source, FiberBundle.chartedSpace_chartAt,
       OpenPartialHomeomorph.trans_source] at h
     have h1 := h.1
-    rw [Trivialization.mem_source, mbc.trivializationAt, VectorBundleCore.localTrivAt,
+    rw [Bundle.Trivialization.mem_source, mbc.trivializationAt, VectorBundleCore.localTrivAt,
       ← mbc.baseSet_at] at h1
     rwa [hproj] at h1
   simp only [Function.comp_def, show I = (𝓡 1).prod 𝓘(ℝ, ℝ) from rfl, FiberBundle.extChartAt]
@@ -572,7 +572,7 @@ private theorem det_tangent_coordChangeL_eq_mul
       (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) p).baseSet ∩
       (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ)
       (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) q).baseSet) :
-    LinearMap.det (Trivialization.coordChangeL ℝ
+    LinearMap.det (Bundle.Trivialization.coordChangeL ℝ
       (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ) (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) p)
       (trivializationAt (EuclideanSpace ℝ (Fin 1) × ℝ) (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) q)
       z).toLinearEquiv.toLinearMap =
@@ -590,7 +590,7 @@ private theorem det_tangent_coordChangeL_eq_mul
             (moebiusBundleCore.indexAt q.proj) z.proj) := by
     simpa [I] using fderiv_extChart_transition_eq_prodMap p q z hz hmem.1 hmem.2
   have hcl_det :
-      LinearMap.det (Trivialization.coordChangeL ℝ
+      LinearMap.det (Bundle.Trivialization.coordChangeL ℝ
         (trivializationAt (E1 × ℝ) (TangentSpace I) p)
         (trivializationAt (E1 × ℝ) (TangentSpace I) q) z).toLinearEquiv.toLinearMap =
       LinearMap.det (Z.coordChange (Z.indexAt p) (Z.indexAt q) z : (E1 × ℝ) →ₗ[ℝ] E1 × ℝ) := by
@@ -930,8 +930,8 @@ private theorem mem_tangent_triv_overlap_of_proj_ne_endpoints
         simp [moebiusBundleCore, p, Circle.one_ne_negOne]
       rw [hidx]
       simpa [MoebiusBand.baseSet, MoebiusBand.U₀] using hne_neg
-    exact ⟨(Trivialization.mem_source _).mpr hmem, by
-      rw [Trivialization.coe_fst' _ hmem, chartAt_p, stereographic'_source,
+    exact ⟨(Bundle.Trivialization.mem_source _).mpr hmem, by
+      rw [Bundle.Trivialization.coe_fst' _ hmem, chartAt_p, stereographic'_source,
         Set.mem_compl_iff, Set.mem_singleton_iff]
       intro heq
       apply hne_neg
@@ -941,8 +941,8 @@ private theorem mem_tangent_triv_overlap_of_proj_ne_endpoints
       rw [moebius_triv_baseSet_eq_index_baseSet]
       simp only [moebiusBundleCore, Circle.negOne, q]
       exact hne_one
-    exact ⟨(Trivialization.mem_source _).mpr hmem, by
-      rw [Trivialization.coe_fst' _ hmem, chartAt_q, stereographic'_source,
+    exact ⟨(Bundle.Trivialization.mem_source _).mpr hmem, by
+      rw [Bundle.Trivialization.coe_fst' _ hmem, chartAt_q, stereographic'_source,
         Set.mem_compl_iff, Set.mem_singleton_iff]
       intro heq
       apply hne_one
