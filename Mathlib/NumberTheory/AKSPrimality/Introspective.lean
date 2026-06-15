@@ -95,6 +95,36 @@ protected theorem mul [CommRing R] {f g : R[X]} (hf : Introspective f e r)
   convert Ideal.zero_mem _
   grind [mul_pow]
 
+/-- The product of coprime exponents is Introspective. -/
+theorem mul_of_coprime [CommRing R] {f : R[X]} {d e : ℕ} (hf : Introspective f e r)
+    (hg : Introspective f d r) (h : e.Coprime r) : Introspective f (e * d) r := by
+  by_cases hr : r = 0
+  · grind
+  · simp only [Introspective] at *
+    set I := mk (span {(X : R[X]) ^ r - C 1})
+    have ⟨ w, hw ⟩ := mem_span_singleton.mp (Ideal.Quotient.eq.mp hg)
+    have hw2 := congrArg₂ comp hw (Eq.refl (X ^ e))
+    simp only [sub_comp, pow_comp, map_one, mul_comp, X_comp, one_comp, comp_assoc] at hw2
+    obtain ⟨ z, hz ⟩  : ((X : R[X]) ^ r - 1 ) ∣ ((X ^ e) ^ r - 1) := by
+      simp only [← pow_mul]
+      by_cases he : 1 < e
+      · exact X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd _ (by
+          simp only [mem_properDivisors, dvd_mul_left, true_and]
+          exact lt_mul_left (by lia) (by lia)) |> dvd_of_mul_right_dvd
+      -- I feel like grind should handle this case split.
+      · by_cases he2 : e = 0
+        · simp [he2]
+        · grind [dvd_refl]
+    calc
+      _ = I (f ^ e) ^ d := by simp [pow_mul]
+      _ = _ := congrArg₂ HPow.hPow hf (Eq.refl d)
+      _ = _ := by
+        simp only [pow_mul]
+        apply Ideal.Quotient.eq.mpr
+        apply mem_span_singleton.mpr
+        use z * w.comp (X ^ e)
+        grind
+
 variable [Field R] [CharP R p] [Fact p.Prime]
 
 theorem of_mul {m : ℕ} (h : Introspective ((X : R[X]) - C (a : R)) (m * p) r)
@@ -158,38 +188,8 @@ protected theorem div (h : Introspective ((X : R[X]) - C (a : R)) n r)
     (hd : p ∣ n) (hcprm : p.Coprime r) : Introspective ((X : R[X]) - C (a : R)) (n / p) r := by
   grind [of_mul, Nat.div_mul_cancel hd]
 
-/-- The product of coprime exponents is Introspective. -/
-theorem mul_of_coprime {d e : ℕ} (hf : Introspective f e r)
-    (hg : Introspective f d r) (h : e.Coprime r) : Introspective f (e * d) r := by
-  by_cases hr : r = 0
-  · grind
-  · simp only [Introspective] at *
-    set I := mk (span {(X : (ZMod n)[X]) ^ r - C 1})
-    have ⟨ w, hw ⟩ := mem_span_singleton.mp (Ideal.Quotient.eq.mp hg)
-    have hw2 := congrArg₂ comp hw (Eq.refl (X ^ e))
-    simp only [sub_comp, pow_comp, map_one, mul_comp, X_comp, one_comp, comp_assoc] at hw2
-    obtain ⟨ z, hz ⟩  : ((X : (ZMod n)[X]) ^ r - 1 ) ∣ ((X ^ e) ^ r - 1) := by
-      simp only [← pow_mul]
-      by_cases he : 1 < e
-      · exact X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd _ (by
-          simp only [mem_properDivisors, dvd_mul_left, true_and]
-          exact lt_mul_left (by lia) (by lia)) |> dvd_of_mul_right_dvd
-      -- I feel like grind should handle this case split.
-      · by_cases he2 : e = 0
-        · simp [he2]
-        · grind [dvd_refl]
-    calc
-      _ = I (f ^ e) ^ d := by simp [pow_mul]
-      _ = _ := congrArg₂ HPow.hPow hf (Eq.refl d)
-      _ = _ := by
-        simp only [pow_mul]
-        apply Ideal.Quotient.eq.mpr
-        apply mem_span_singleton.mpr
-        use z * w.comp (X ^ e)
-        grind
-
 /-- Necessary condition for the auxilliary proof. -/
-theorem of_multiset (s : Multiset (Fin b)) (hcprm : n.Coprime r) [Fact p.Prime]
+theorem of_multiset (s : Multiset (Fin b)) (hcprm : n.Coprime r)
     (hs : ∀ x : Fin b, Introspective (ofMultiset {(x.val : (ZMod p))}) n r) (hdiv : p ∣ n) :
     Introspective (ofMultiset (s.map fun x ↦ (x.val : (ZMod p)))) (p ^ d * (n / p) ^ e) r := by
   simp only [ofMultiset_apply]
