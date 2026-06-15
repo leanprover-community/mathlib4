@@ -140,6 +140,7 @@ def lift {N : Type*} [AddCommMonoid N] [Module R N] :
     (M [Σ^ι]→ₗ[R] N) ≃ₗ[R] ((Sym[R] ι M) →ₗ[R] N) := 
   { toFun := fun f => by
       have := PiTensorProduct.lift f.toMultilinearMap
+--      apply Quotient.lift this
       sorry
     map_add' := fun f g => sorry
     map_smul' := fun r f => sorry
@@ -151,6 +152,11 @@ def lift {N : Type*} [AddCommMonoid N] [Module R N] :
 example (N : Type*) [AddCommMonoid N] [Module R N] (f : (M [Σ^ι]→ₗ[R] N))
   : (⨂[R] (_:ι), M) →ₗ[R] N  := by
   exact PiTensorProduct.lift f 
+
+example (N : Type*) [AddCommMonoid N] [Module R N] (f : (M [Σ^ι]→ₗ[R] N))
+  : (⨂[R] (_:ι), M) →ₗ[R] N  := by
+  exact PiTensorProduct.lift f 
+
 
     
 example (N : Type) [AddCommGroup N] [Module R N] (φ : Sym[R] ι M →ₗ[R] N)

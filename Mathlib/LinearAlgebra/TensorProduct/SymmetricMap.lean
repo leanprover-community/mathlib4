@@ -117,7 +117,7 @@ lemma toMultilinearMap_injective :
   ⇑(⟨f, h⟩ : M [Σ^ι]→ₗ[R] N) = f := rfl
 
 @[simp] lemma map_perm (e : Perm ι) (x : ι → M) : (f fun i ↦ x (e i)) = f x :=
-  f.2 x e
+  f.map_perm' x e
 
 @[simp] lemma comp_domDomCongr (e : Perm ι) : f.1.domDomCongr e = f :=
   MultilinearMap.ext (f.2 · e)
