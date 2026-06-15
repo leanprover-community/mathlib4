@@ -27,7 +27,7 @@ variable {α : Type*} [TopologicalSpace α] [WeakPseudoEMetricSpace α]
 weak pseudoemetric space. -/
 @[to_additive
 /-- Weak pseudoemetric space instance on the additive opposite of a weak pseudoemetric space. -/]
-instance {α : Type*} [n : TopologicalSpace α] [WeakPseudoEMetricSpace α] :
+instance {α : Type*} [TopologicalSpace α] [WeakPseudoEMetricSpace α] :
     WeakPseudoEMetricSpace αᵐᵒᵖ :=
   WeakPseudoEMetricSpace.IsInducing MulOpposite.opHomeomorph.symm.isInducing ‹_›
 
