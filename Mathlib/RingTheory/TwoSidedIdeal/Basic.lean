@@ -27,8 +27,6 @@ In this file, for any `Ring R`, we reinterpret `I : RingCon R` as a two-sided-id
 
 @[expose] public section
 
-assert_not_exists LinearMap
-
 open MulOpposite
 
 section definitions
