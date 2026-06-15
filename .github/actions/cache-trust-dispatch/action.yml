@@ -70,10 +70,17 @@ runs:
           "leanprover-community/mathlib4")
             case "$BRANCH" in
               "master"|"staging")
-                # Master / staging: trusted writers. Default read chain
-                # [master, legacy] from defaultContainersForRepo is correct,
-                # so MATHLIB_CACHE_FROM is left unset (strict).
+                # Master / staging are the only writers that feed `master`
+                # (`staging` is bors's merge candidate, which fast-forwards to
+                # `master`). Read `master` only, not the default [master,
+                # legacy]: files the read chain serves are skipped at stage
+                # time, so keeping `legacy` would leave legacy-only files out of
+                # `master` for good. Reading `master` alone turns them into
+                # misses that get rebuilt and uploaded, so `master` fills itself
+                # into a standalone cache. (Only PRIMARY=master does this; other
+                # runs write to `forks` and keep the wider chain.)
                 PRIMARY="master"
+                READ_CHAIN="master"
                 ;;
               *)
                 # `bors trying`, `ci-dev/*`, maintainer dev branches on the
