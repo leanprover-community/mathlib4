@@ -244,6 +244,7 @@ lemma forall_finset_card_le_card_biUnion {α : Type*} [DecidableEq α] {n : Type
       simp_rw [h₂, Finset.inf'_const]
     have h := Finset.exists_mem_biUnion_inf'_card_lt (s := s) (f := B)
       (by grind [Finset.one_le_card]) (by grind) (by grind)
+    simp only [Finset.mem_biUnion]
     grind
   obtain ⟨ x, hx ⟩ := hcount
   specialize h₃ x s
