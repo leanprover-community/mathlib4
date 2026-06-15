@@ -262,8 +262,7 @@ def broadImportsCheck (imports : Array ImportRef) (mainModule : Name) : CommandE
     match i.module with
     | `Mathlib.Tactic | `Lean | `Lean.Elab | `Std =>
       Linter.logLint linter.style.header i.getIdent
-
-        s!"Files in mathlib cannot import the whole `{i.getId}` folder. \
+        s!"Files in mathlib cannot import the whole `{i.module}` folder. \
         Doing so would cause imports to be unnecessarily slow."
     | `Mathlib.Tactic.Replace =>
       if mainModule != `Mathlib.Tactic then
