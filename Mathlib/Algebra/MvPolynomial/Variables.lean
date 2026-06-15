@@ -362,7 +362,6 @@ theorem card_mainDegree_eq_degreeOf (h : p.vars.max = c) : p.mainDegree.card = p
   · apply Multiset.mem_toFinset.mp
     exact Finset.mem_of_max h
   intro j hj
-  rw [← Multiset.mem_toFinset] at hj
   have := Finset.le_max hj
   simp only [h, WithBot.coe_le_coe] at this
   exact this
@@ -377,7 +376,7 @@ theorem card_mainDegree_eq_zero_iff : p.mainDegree.card = 0 ↔ p.vars.max = ⊥
       simpa only [vars_def, Multiset.mem_toFinset, Multiset.count_eq_zero] using h
   mpr h := by
     simp only [mainDegree, Multiset.card_eq_zero]
-    suffices p.degrees = 0 by rw [this, Multiset.filter_zero]
+    suffices p.degrees = 0 by simp [this, Multiset.filter_zero]
     rw [vars_def] at h
     apply Multiset.toFinset_eq_empty.mp
     exact Finset.max_eq_bot.mp h
