@@ -49,11 +49,17 @@ open MulAction Subgroup
 
 variable {M G}
 
-instance [Group G] : Group (ConjAct G) := ‹Group G›
+instance [One G] : One (ConjAct G) := inferInstanceAs <| One G
 
-instance [DivInvMonoid G] : DivInvMonoid (ConjAct G) := ‹DivInvMonoid G›
+instance [Inv G] : Inv (ConjAct G) := inferInstanceAs <| Inv G
 
-instance [Fintype G] : Fintype (ConjAct G) := ‹Fintype G›
+instance [Div G] : Div (ConjAct G) := inferInstanceAs <| Div G
+
+instance [DivInvMonoid G] : DivInvMonoid (ConjAct G) := inferInstanceAs <| DivInvMonoid G
+
+instance [Group G] : Group (ConjAct G) := inferInstanceAs <| Group G
+
+instance [Fintype G] : Fintype (ConjAct G) := inferInstanceAs <| Fintype G
 
 @[simp]
 theorem card [Fintype G] : Fintype.card (ConjAct G) = Fintype.card G :=
