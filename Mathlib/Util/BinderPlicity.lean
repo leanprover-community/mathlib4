@@ -38,4 +38,3 @@ def binderPlicity : CodeActionProvider := fun params snap => do
       let some newText := newStx.unsetTrailing.reprint | continue
       codeActions := codeActions.push <| mkCodeAction "explicit" lspRange newText
   return codeActions
-where 
