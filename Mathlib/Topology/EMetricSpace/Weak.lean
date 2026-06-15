@@ -199,6 +199,7 @@ instance [EDist α] : EDist (WithTop α) where
 
 /-- If `α` has a topology induced by a linear order and is a weak pseudo extended metric space,
 so is `WithTop α` -/
+@[to_dual]
 instance instWeakPseudoEMetricSpaceWithTop [m : WeakPseudoEMetricSpace α] :
     WeakPseudoEMetricSpace (WithTop α) :=
   letI : TopologicalSpace (Option α) := TopologicalSpace.instWithTopOfOrderTopology
@@ -209,27 +210,11 @@ instance instWeakPseudoEMetricSpaceWithTop [m : WeakPseudoEMetricSpace α] :
 
 /-- If `α` has a topology induced by a linear order and is a weak extended metric space,
 so is `WithTop α` -/
+@[to_dual]
 instance instWeakEMetricSpaceWithTop [m : WeakEMetricSpace α] : WeakEMetricSpace (WithTop α) :=
   let : TopologicalSpace (Option α) := TopologicalSpace.instWithTopOfOrderTopology
   let : WeakEMetricSpace (Option α) := Option.WeakEMetricSpace.OfIsOpenEmbedding
     (inst := instEDistWithTop) rfl WithTop.isOpenEmbedding_some
-  inferInstanceAs <| WeakEMetricSpace (Option α)
-
-/-- If `α` has a topology induced by a linear order and is a weak pseudo extended metric space,
-so is `WithBot α` -/
-instance instWeakPseudoEMetricSpaceWithBot [m : WeakPseudoEMetricSpace α] :
-    WeakPseudoEMetricSpace (WithBot α) :=
-  let : TopologicalSpace (Option α) := TopologicalSpace.instWithBotOfOrderTopology
-  let : WeakPseudoEMetricSpace (Option α) := Option.WeakPseudoEMetricSpace.OfIsOpenEmbedding
-    (inst := instEDistWithBot) rfl WithBot.isOpenEmbedding_some
-  inferInstanceAs <| WeakPseudoEMetricSpace (Option α)
-
-/-- If `α` has a topology induced by a linear order and is a weak extended metric space,
-so is `WithTop α` -/
-instance instWeakEMetricSpaceWithBot [m : WeakEMetricSpace α] : WeakEMetricSpace (WithBot α) :=
-  let : TopologicalSpace (Option α) := TopologicalSpace.instWithBotOfOrderTopology
-  let : WeakEMetricSpace (Option α) := Option.WeakEMetricSpace.OfIsOpenEmbedding
-    (inst := instEDistWithBot) rfl WithBot.isOpenEmbedding_some
   inferInstanceAs <| WeakEMetricSpace (Option α)
 
 open scoped OnePoint in
