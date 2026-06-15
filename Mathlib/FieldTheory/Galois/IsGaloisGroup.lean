@@ -668,42 +668,18 @@ theorem isGaloisGroup_fixingSubgroup_range_algebraMap [Finite G] (A B C : Type*)
   exact of_isScalarTower G K L F
 
 open Pointwise in
-/-- If `G` is a finite Galois group for `L/K`, `H` is a Galois group for `L/F`, and `F/K` is
+/-- If `G` is a finite Galois group for `L/K`, `H` is a Galois group for `L/E`, and `E/K` is
 Galois, then `H` is a normal subgroup of `G`. -/
-theorem normal_of_isGalois [Finite G] [hFL : IsGaloisGroup H F L] [IsGalois K F] : H.Normal := by
+theorem normal_of_isGalois (E : Type*) [Field E] [Algebra K E] [Algebra E L] [IsScalarTower K E L]
+    [Finite G] [IsGaloisGroup H E L] [IsGalois K E] : H.Normal := by
+  let F := (IsScalarTower.toAlgHom K E L).fieldRange
+  have : IsGalois K F := .of_algEquiv (IsScalarTower.toAlgHom K E L).equivFieldRange
+  have hFL : IsGaloisGroup H F L := of_toAlgHom_fieldRange G K L H E
   have := isGalois G K L
   have : Finite Gal(L/K) := Finite.of_equiv _ (mulEquivAlgEquiv G K L).toEquiv
   rw [← fixingSubgroup_fixedPoints G K L H, subgroup_iff.mp hFL,
     ← mulEquivCongr_mapSubgroup_fixingSubgroup Gal(L/K) G K, MulEquiv.normal_map_iff ]
   exact IsGalois.fixingSubgroup_normal_of_isGalois F
-
-attribute [local instance] FractionRing.liftAlgebra in
-/-- In a tower of rings `A ≤ B ≤ C`, if `G` is a Galois group on `C/A`, `G'` is a Galois group
-on `B/A`, and `H ≤ G` is a Galois group on `FractionRing C / FractionRing B`, then `H` is a
-normal subgroup of `G`. -/
-theorem normal_of_isGaloisGroup [Finite G] [Finite G'] (A B C : Type*) [CommRing A]
-    [CommRing B] [CommRing C] [IsDomain C] [Algebra A B] [Algebra A C]
-    [Algebra B C] [FaithfulSMul B C] [FaithfulSMul A B] [IsScalarTower A B C]
-    [MulSemiringAction G C] [IsGaloisGroup G A C] [MulSemiringAction G (FractionRing C)]
-    [SMulDistribClass G C (FractionRing C)]
-    [MulSemiringAction G' B] [IsGaloisGroup G' A B]
-    [IsGaloisGroup H (FractionRing B) (FractionRing C)] :
-    H.Normal := by
-  have : IsDomain B := (FaithfulSMul.algebraMap_injective B C).isDomain
-  have : IsDomain A := (FaithfulSMul.algebraMap_injective A B).isDomain
-  haveI : FaithfulSMul A C := FaithfulSMul.trans A B C
-  let K := FractionRing A
-  let L := FractionRing C
-  let F' := FractionRing B
-  let F := (IsScalarTower.toAlgHom K F' L).fieldRange
-  let : MulSemiringAction G' F' := IsFractionRing.mulSemiringAction G' A B K F'
-  have : IsGaloisGroup G K L := IsGaloisGroup.to_isFractionRing G A C _ _
-  have : IsGaloisGroup G' K F' := IsGaloisGroup.toFractionRing G' A B
-  have := of_isScalarTower G K L F
-  have := isGalois G' K F'
-  have : IsGalois K F := IsGalois.of_algEquiv (IsScalarTower.toAlgHom K F' L).equivFieldRange
-  have : IsGaloisGroup H F L := of_toAlgHom_fieldRange G K L H F'
-  exact normal_of_isGalois G K L H F
 
 end IsGaloisGroup
 
@@ -868,7 +844,8 @@ noncomputable def restrictHom [Finite G] [Finite G'] [MulSemiringAction G C] [Is
     IsFractionRing.mulSemiringAction G' A B (FractionRing A) (FractionRing B)
   haveI : IsGaloisGroup G' (FractionRing A) (FractionRing B) := to_isFractionRing G' A B _ _
   haveI : IsGaloisGroup G (FractionRing A) (FractionRing C) := toFractionRing G A C
-  haveI : N.Normal := normal_of_isGaloisGroup G G' N A B C
+  haveI := isGalois G' (FractionRing A) (FractionRing B)
+  haveI : N.Normal := normal_of_isGalois G (FractionRing A) (FractionRing C) N (FractionRing B)
   (quotientMulEquiv G G' (FractionRing A) (FractionRing B) (FractionRing C) N).toMonoidHom.comp
     (QuotientGroup.mk' N)
 
@@ -908,7 +885,8 @@ theorem restrictHom_surjective [Finite G] [Finite G'] [MulSemiringAction G C]
     IsFractionRing.mulSemiringAction G' A B (FractionRing A) (FractionRing B)
   have : IsGaloisGroup G' (FractionRing A) (FractionRing B) := to_isFractionRing G' A B _ _
   have : IsGaloisGroup G (FractionRing A) (FractionRing C) := toFractionRing G A C
-  have : N.Normal := normal_of_isGaloisGroup G G' N A B C
+  have := isGalois G' (FractionRing A) (FractionRing B)
+  have : N.Normal := normal_of_isGalois G (FractionRing A) (FractionRing C) N (FractionRing B)
   simpa [restrictHom] using QuotientGroup.mk_surjective
 
 end Domain
