@@ -362,8 +362,8 @@ theorem to_reflTransGen : ∀ {a b}, ReflGen r a b → ReflTransGen r a b
   | _, _, single h => ReflTransGen.tail ReflTransGen.refl h
 
 theorem to_eqvGen : ∀ {a b}, ReflGen r a b → EqvGen r a b
-  | a, _, refl => EqvGen.refl a
-  | _, _, single h => EqvGen.rel _ _ h
+  | a, _, refl => .refl a
+  | _, _, single h => .rel _ _ h
 
 theorem mono {p : α → α → Prop} (hp : ∀ a b, r a b → p a b) : ∀ {a b}, ReflGen r a b → ReflGen p a b
   | a, _, ReflGen.refl => by rfl
@@ -438,7 +438,7 @@ namespace ReflTransGen
 
 theorem to_eqvGen {a b} (h : ReflTransGen r a b) : EqvGen r a b := by
   induction h with
-  | refl => exact EqvGen.refl a
+  | refl => exact .refl a
   | tail _ bc ab => grind [eqvGen_iff]
 
 @[trans]
@@ -520,7 +520,7 @@ theorem to_reflTransGen {a b} (h : TransGen r a b) : ReflTransGen r a b := by
 
 theorem to_eqvGen {a b} (h : TransGen r a b) : EqvGen r a b := by
   induction h with
-  | single h => exact EqvGen.rel _ _ h
+  | single h => exact .rel _ _ h
   | tail _ bc ab => grind [eqvGen_iff]
 
 theorem trans_left (hab : TransGen r a b) (hbc : ReflTransGen r b c) : TransGen r a c := by
