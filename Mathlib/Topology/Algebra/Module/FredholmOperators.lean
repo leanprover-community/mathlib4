@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Filippo A. E. Nuccio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: ...
+Authors: Jon Bannon, Anatole Dedecker, Patrick Massot, Aaron Liu, Oliver Nash, Filippo A. E. Nuccio
 -/
 module
 
@@ -568,7 +568,7 @@ omit [IsTopologicalAddGroup F] in
 theorem ContinuousLinearMap.id_sub_comp_ker_coFG (hgf : v ∘L u ≈ .id 𝕜 E) :
     (.id 𝕜 E - v ∘L u).ker.CoFG := by
   rw [← range_fg_iff_ker_cofg, Submodule.fg_iff_finiteDimensional]
-  simpa [equiv_iff, LinearMap.FiniteRankSetoid.equiv_iff] using Setoid.symm hgf
+  simp [equiv_iff, LinearMap.FiniteRankSetoid.equiv_iff] using Setoid.symm hgf
 
 variable [T1Space E] [T1Space F] [ContinuousConstSMul 𝕜 F]
 
@@ -604,7 +604,8 @@ theorem Topology.IsClosedEmbedding.isFredholmStruct {f : E →L[𝕜] F} [Comple
     IsFredholmStruct f := by
   constructor
   · exact hf.isStrictMap
-  · simpa using hf.isClosed_range
+  · simp
+    exact hf.isClosed_range
   · rw [LinearMap.ker_eq_bot.2 hf.injective]
     exact Module.Finite.bot 𝕜 E
   · simp [hc]
@@ -869,7 +870,7 @@ theorem FredholmDecomposition_SurjectiveOn₁ :
     ContinuousLinearMap.toLinearMap_domRestrict, ContinuousLinearMap.toLinearMap_codRestrict]
   rw [← LinearMap.range_eq_top, LinearMap.domRestrict_range_eq]
   · simp
-  simpa only [LinearMap.ker_codRestrict] using ((FredholmDecomposition huF).1.topCompl).isCompl
+  simpa! [LinearMap.ker_codRestrict] using ((FredholmDecomposition huF).1.topCompl).isCompl
 
 
 namespace ContinuousLinearEquiv
@@ -1066,13 +1067,7 @@ theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
       IsFredholmStruct u,
       ∃ (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F), IsClosed E₁.carrier ∧ E₁.CoFG ∧
         IsClosed F₁.carrier ∧ F₁.CoFG ∧ ∃ h : MapsTo u E₁ F₁,
-          (u.restrict h).IsInvertible,
-      -- TODO: Filippo, quel est l'énoncé ci-dessous ?
-      Nonempty (FredholmDecomposition' 𝕜 u)] := by
-      -- ∃ (E₁ E₂ : Submodule 𝕜 E) (F₁ F₂ : Submodule 𝕜 F), E₂.FG ∧ F₂.FG ∧
-      --   ∃ E_compl : IsTopCompl E₁ E₂, ∃ F_compl : IsTopCompl F₁ F₂,
-      --   ∃ u' : E₁ ≃L[𝕜] F₁, u = F₁.subtypeL ∘L u' ∘L E₁.projectionOntoL E₂ E_compl
-    -- ] := by
+          (u.restrict h).IsInvertible, Nonempty (FredholmDecomposition' 𝕜 u)] := by
   tfae_have 1 → 3 := aaron
   tfae_have 3 → 2 := by
     rintro ⟨E₁, F₁, E₁_closed, E₁_coFG, F₁_closed, F₁_coFG, u_mapsto, u_invertible⟩
@@ -1083,26 +1078,6 @@ theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
     have hcompl_left := FD.1.topCompl
     have hcompl_right := FD.2.topCompl
     obtain ⟨φ, hφ⟩ := FD.5
-    -- set ψ := φ.symm.toContinuousLinearMap with hψ_def
-    -- set ψ := (u.restrict FD.mapsto).inverse with hψ_def
-    -- set φ := FD.5.choose.symm with hφ_def
-    -- have hφ (x : FD.dec_right.X₁) : u.restrict FD.mapsto (φ x) = x := by
-    --   rw [hφ_def]
-    --   have := FD.5.self_apply_inverse x
-    --   convert this
-    --   sorry
-
-      -- show u.restrict FD.mapsto (_) = x
-    /- **FAE** Now I see two options:
-    `1.` either use `ContinuousLinearMap.ofIsTopCompl` but at the price of composing it
-      with the embedding `FD.dec_left.X₁ ↪ E`; or
-    `2.` define everything in terms of the product and use that under `hcompl` the product
-      identifies with the whole space.
-    -/
-    -- Let's try `1`.
-
-    -- set v := subtypeL _ ∘L ContinuousLinearMap.ofIsTopCompl hcompl_right φ.toContinuousLinearMap 0
-    --   with hv_def
     set v' := subtypeL _ ∘L ContinuousLinearMap.ofIsTopCompl hcompl_right
       φ.symm.toContinuousLinearMap 0 with hv'_def
     refine ⟨v', ?_, ?_⟩
@@ -1113,48 +1088,32 @@ theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
       rintro x ⟨y, rfl⟩
       obtain ⟨⟨a, _⟩, ⟨rfl, -⟩⟩ := Submodule.existsUnique_add_of_isCompl_prod hcompl_right.isCompl y
       have h_uva : u (v' a) = a := by
-        rw [hv'_def, coe_comp', coe_subtypeL, coe_subtype, Function.comp_apply,
-          ofIsTopCompl_apply, ContinuousLinearMap.coe_zero, LinearMap.ofIsCompl_apply_left, coe_coe,
-          ContinuousLinearEquiv.coe_coe]
+        rw [hv'_def, coe_comp, coe_subtypeL, coe_subtype, Function.comp_apply,
+          ofIsTopCompl_apply, ContinuousLinearMap.toLinearMap_zero, LinearMap.ofIsCompl_apply_left,
+          coe_coe, ContinuousLinearEquiv.coe_coe]
         simp [show u (φ.symm a) = u.restrict FD.4 (φ.symm a) from coe_restrict_apply FD.4 _, ← hφ]
       simp_all
-    · sorry
-
-
-    --
-    -- and now `2`:
-  -- #exit
-    -- let w₀ := prodMap φ.toContinuousLinearMap (0 : FD.dec_right.X₂ →L[𝕜] FD.dec_left.X₂)
-    -- let e := (Submodule.prodEquivOfIsTopCompl _ _ hcompl_left)
-    -- let e' := (Submodule.prodEquivOfIsTopCompl _ _ hcompl_right).symm
-    -- let w := e.toContinuousLinearMap ∘L w₀ ∘L e'.toContinuousLinearMap
-    -- refine ⟨w, ?_, ?_⟩
-    -- sorry
-    -- sorry
-
-    -- let v := ContinuousLinearMap.ofIsTopCompl
-    -- intro H
-    -- obtain ⟨⟨E₁, E₂, E_compl, E₂_FG⟩, ⟨F₁, F₂, F_compl, F₂_FG⟩⟩ := H.some--u', h⟩
-    -- -- rintro ⟨E₁, E₂, F₁, F₂, E₂_FG, F₂_FG, E_compl, F_compl, u', h⟩
-    -- refine ⟨(E₁.subtypeL ∘L u'.symm.toContinuousLinearMap).ofIsTopCompl F_compl 0, ?_, ?_⟩
-    -- <;> simp only [ContinuousLinearMap.FiniteRankSetoid.equiv_iff, ContinuousLinearMap.coe_comp,
-    --   ContinuousLinearMap.toLinearMap_ofIsTopCompl, toLinearMap_subtypeL,
-    --   ContinuousLinearMap.coe_zero, ContinuousLinearMap.coe_id,
-    --   LinearMap.FiniteRankSetoid.equiv_iff, LinearMap.HasFiniteRank,
-    --   ← Submodule.fg_iff_finiteDimensional]
-    -- · have : (u ∘ₗ LinearMap.ofIsCompl F_compl.isCompl
-    --     (E₁.subtype ∘ₗ u'.symm) 0 - LinearMap.id).range = F₂ := by
-    --     have : u ∘ₗ LinearMap.ofIsCompl F_compl.isCompl
-    --       (E₁.subtype ∘ₗ u'.symm) 0 = F₁.projection F₂ F_compl.isCompl := by
-    --       ext; simp [LinearMap.ofIsCompl, h]
-    --     simp [this, F₂.projection_eq_id_sub_projection F_compl.isCompl.symm]
-    --   rwa [this]
-    -- · have : (LinearMap.ofIsCompl F_compl.isCompl (E₁.subtype ∘ₗ u'.symm) 0 ∘ₗ u -
-    --     LinearMap.id).range = E₂ := by
-    --     have : LinearMap.ofIsCompl F_compl.isCompl
-    --       (E₁.subtype ∘ₗ u'.symm) 0 ∘ₗ u = E₁.projection E₂ E_compl.isCompl := by ext; simp [h]
-    --     simp [this, E₂.projection_eq_id_sub_projection E_compl.isCompl.symm]
-    --   rwa [this]
+    · rw [FiniteRankSetoid.equiv_iff, LinearMap.FiniteRankSetoid.equiv_iff]
+      have := FD.dec_left.fin_dim
+      suffices ((v'.toLinearMap ∘ₗ u.toLinearMap - LinearMap.id).range : Submodule 𝕜 E)
+        ≤ FD.dec_left.X₂ by apply finiteDimensional_of_le this
+      rintro x ⟨y, rfl⟩
+      obtain ⟨⟨a, b⟩, ⟨rfl, -⟩⟩ := Submodule.existsUnique_add_of_isCompl_prod hcompl_left.isCompl y
+      have h_uva : v' (u a) = a := by
+        rw [hv'_def, coe_comp, coe_subtypeL, coe_subtype, Function.comp_apply,
+          ofIsTopCompl_apply, ContinuousLinearMap.toLinearMap_zero]
+        have := @LinearMap.ofIsCompl_apply_left
+          (φ := φ.symm.toLinearMap) (h := hcompl_right.isCompl) (ψ := 0) (u := ⟨u a, FD.4 a a.2⟩)
+        simp only [ContinuousLinearEquiv.toLinearEquiv_symm, LinearEquiv.coe_coe,
+          ContinuousLinearEquiv.coe_symm_toLinearEquiv] at this
+        erw [this, SetLike.coe_eq_coe]
+        apply_fun φ using φ.injective
+        simp only [ContinuousLinearEquiv.apply_symm_apply]
+        change _ = φ.toContinuousLinearMap a
+        simp_rw [hφ, ← coe_restrict_apply FD.4 a]
+      have hub : u b = 0 := by
+        simp [← domRestrict_apply (f := u) (p := FD.dec_left.X₂) b, FD.3]
+      simp_all
   tfae_finish
 
 #print axioms isFredholmTFAE
