@@ -330,7 +330,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless stx.isOfKind ``Parser.Command.moduleDoc do
     Linter.logLint linter.style.header stx
       m!"The module doc-string for a file should be the first command after the imports.\n\
-        Please, add a module doc-string (`/-! ... -/`) before `{stx}`.\n\
+        Please, add a module doc-string (`/-! ... -/`) before `{stx}`.\
         {.hint' m!"Type `m(odule docstring) + [tab]` to insert a template via snippet."}"
   let inLibraryRoot? ← inLibraryRootMutex.atomically do
     match ← get with
