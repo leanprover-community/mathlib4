@@ -18,6 +18,8 @@ and similarly for sums.
 We prove it for lists, multisets, and finsets, as well as for natural and integer numbers.
 -/
 
+-- CI: verifying multi-container fork-PR cache upload (#40035 follow-up); safe to revert.
+
 public section
 
 namespace Nat
