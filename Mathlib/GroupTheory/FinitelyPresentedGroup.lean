@@ -116,8 +116,7 @@ instance [hg : IsFinitelyPresented G] [hh : IsFinitelyPresented H] :
   use ng + nh
   let s := (FreeGroup.map Sum.inl '' setg ∪ FreeGroup.map Sum.inr '' seth)
   suffices ∃ ψ : FreeGroup (Fin ng ⊕ Fin nh) →* PresentedGroup s,
-    Function.Surjective ψ ∧ ψ.ker.IsNormalClosureFG
-  by
+    Function.Surjective ψ ∧ ψ.ker.IsNormalClosureFG by
     rcases this with ⟨ψ, hsurj, hfg⟩
     let toDisjoint : FreeGroup (Fin (ng + nh)) ≃* FreeGroup (Fin ng ⊕ Fin nh) :=
       FreeGroup.freeGroupCongr (finSumFinEquiv).symm
