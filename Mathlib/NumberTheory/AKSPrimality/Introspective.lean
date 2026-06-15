@@ -171,7 +171,7 @@ theorem of_mul {m : ℕ} (h : Introspective ((X : R[X]) - C (a : R)) (m * p) r)
   have hrh : mk (span {(X : R[X]) ^ r - C 1}) (g.comp (X ^ (m * p))) =
       frobenius _ p (mk (Ideal.span {(X : R[X]) ^ r - C 1}) (g.comp (X ^ m))) := by
     simp only [frobenius, RingHom.coe_mk, powMonoidHom_apply]
-    rw[← map_pow]
+    rw [← map_pow]
     congr
     simp only [sub_comp, X_comp, g]
     -- Does this really not exist in mathlib?
@@ -207,12 +207,12 @@ theorem of_multiset (s : Multiset (Fin b)) (hcprm : n.Coprime r)
     clear h1
     refine mul_of_coprime ?_ ?_ ?_
     · induction d with
-      | zero => simp [Introspective.one]
+      | zero => simp
       | succ i hi =>
         simp only [map_natCast, pow_succ, mul_comm]
         exact mul_of_coprime Introspective.X_sub_C hi hcprm2
     · induction e with
-      | zero => simp [Introspective.one]
+      | zero => simp
       | succ i hi =>
         simp only [pow_succ, mul_comm]
         refine mul_of_coprime ?_ hi ?_
