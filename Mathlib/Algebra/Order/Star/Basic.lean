@@ -454,7 +454,6 @@ instance (priority := 100) StarRingEquivClass.instOrderIsoClass [EquivLike F R S
     rw [← f_inv_f x, ← f_inv_f y]
     exact NonUnitalStarRingHom.map_le_map_of_map_star f_inv h
 
-
 /-- While `IsSelfAdjoint.map` assumes the map is star-preserving, this lemma instead assumes the
 map is an order-preserving additive map from a space where self-adjoint elements can be expressed as
 differences of nonnegative elemens, and whose codomain is a star-ordered ring. When such maps are
