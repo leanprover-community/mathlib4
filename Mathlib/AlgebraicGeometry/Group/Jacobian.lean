@@ -3,9 +3,11 @@ Copyright (c) 2026 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Kim Morrison
 -/
-import Mathlib.AlgebraicGeometry.Geometrically.Irreducible
-import Mathlib.AlgebraicGeometry.Morphisms.Proper
-import Mathlib.AlgebraicGeometry.Morphisms.Smooth
+module
+
+public import Mathlib.AlgebraicGeometry.Geometrically.Irreducible
+public import Mathlib.AlgebraicGeometry.Morphisms.Proper
+public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 
 /-!
 # Preliminary design for Jacobians in algebraic geometry
@@ -22,6 +24,10 @@ recorded placeholder types carry the full dependency graph.
 By a smooth curve we mean a geometrically irreducible, smooth scheme of relative dimension one
 over a field.
 -/
+
+-- Every declaration here is an intentionally private `def_wanted` / `theorem_wanted` /
+-- `instance_wanted` placeholder, so the module exports nothing.
+set_option linter.privateModule false
 
 universe u
 
