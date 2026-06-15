@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.RingTheory.TensorProduct.Free
 
 import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
-import Mathlib.RingTheory.Algebraic.Integral
 import Mathlib.RingTheory.SimpleRing.Matrix
 
 /-!

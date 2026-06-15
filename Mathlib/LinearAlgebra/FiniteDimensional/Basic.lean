@@ -666,3 +666,7 @@ theorem ker_pow_constant {f : End K V} {k : ℕ}
 end End
 
 end Module
+
+theorem AlgHom.bijective {K S : Type*} [Field K] [Ring S] [IsSimpleRing S]
+    [Algebra K S] [FiniteDimensional K S] (f : S →ₐ[K] S) : Function.Bijective f :=
+  ⟨f.toRingHom.injective, f.toLinearMap.injective_iff_surjective.mp f.toRingHom.injective⟩

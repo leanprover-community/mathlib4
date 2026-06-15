@@ -129,10 +129,6 @@ theorem transcendental_aeval_iff {r : A} {f : K[X]} :
 
 variable [Field L] [Algebra K L]
 
-theorem AlgHom.bijective {K S : Type*} [Field K] [Ring S] [IsSimpleRing S]
-    [Algebra K S] [FiniteDimensional K S] (f : S →ₐ[K] S) : Function.Bijective f :=
-  ⟨f.toRingHom.injective, f.toLinearMap.injective_iff_surjective.mp f.toRingHom.injective⟩
-
 variable (K L) in
 /-- Bijection between algebra equivalences and algebra homomorphisms -/
 noncomputable abbrev algEquivEquivAlgHom [FiniteDimensional K L] :
