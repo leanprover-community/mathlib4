@@ -8,12 +8,13 @@ import Mathlib.AlgebraicGeometry.Morphisms.Proper
 import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 
 /-!
-# Jacobians in algebraic geometry, expressed via `theorem_wanted` / `def_wanted`
+# Preliminary design for Jacobians in algebraic geometry
 
-Christian Merten's `JacobianChallenge.lean`
-(https://github.com/leanprover/lean-eval/blob/main/LeanEval/AlgebraicGeometry/JacobianChallenge.lean)
-demonstrating Batteries' `def_wanted` / `theorem_wanted` infrastructure
-(https://github.com/leanprover-community/batteries/pull/1818).
+We use `theorem_wanted` / `def_wanted` to describe the types and universal characterisations
+we want to see completed in Mathlib.
+
+This is based on Christian Merten's `JacobianChallenge.lean`
+(https://github.com/leanprover/lean-eval/blob/main/LeanEval/AlgebraicGeometry/JacobianChallenge.lean).
 
 Every dependency between "wanted" declarations is expressed via the `❰…❱` bracket syntax, so the
 recorded placeholder types carry the full dependency graph.
