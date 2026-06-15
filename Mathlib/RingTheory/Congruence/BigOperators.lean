@@ -150,7 +150,7 @@ protected lemma coe_dfinsuppSum {ι : Type*} {β : ι → Type*} {M : Type*}
   c.toAddCon.coe_dfinsuppSum h f
 
 protected lemma dfinsuppSumAddHom {ι : Type*} {β : ι → Type*} {M : Type*}
-    [DecidableEq ι] [NonUnitalNonAssocSemiring M] [∀ i, AddCommMonoid (β i)]
+    [DecidableEq ι] [AddCommMonoid M] [Mul M] [∀ i, AddCommMonoid (β i)]
     (c : RingCon M) (h : (i : ι) → β i →+ M) (h' : (i : ι) → β i →+ M) {f g : Π₀ i, β i}
     (H : ∀ i, c (h i (f i)) (h' i (g i))) :
     c (f.sumAddHom h) (g.sumAddHom h') :=
