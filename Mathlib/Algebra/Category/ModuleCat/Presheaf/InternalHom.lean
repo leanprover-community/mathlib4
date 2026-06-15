@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
 public import Mathlib.CategoryTheory.Sites.SheafHom
 public import Mathlib.CategoryTheory.Sites.Whiskering
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Monoidal
 
 /-!
 # The internal hom for presheaves of modules
@@ -21,26 +22,23 @@ open CategoryTheory Category Opposite
 
 universe w v u v₁ u₁
 
-set_option backward.isDefEq.respectTransparency false
-set_option backward.defeqAttrib.useBackward true
-
-variable {C : Type u₁} [Category.{v₁} C] {R : Cᵒᵖ ⥤ CommRingCat.{u}}
-
 namespace PresheafOfModules
 
 noncomputable section
 
+variable {C : Type u₁} [Category.{v₁} C] {R : Cᵒᵖ ⥤ CommRingCat.{u}}
+
 /-- Given `X : C`, this is the presheaf of modules on `Over X` that
 is obtained from a presheaf of modules on `C`. -/
 abbrev over {S : Cᵒᵖ ⥤ RingCat.{u}} (M : PresheafOfModules.{v} S) (X : C) :
-    PresheafOfModules.{v} ((Over.forget X).op ⋙ S) :=
-  (pushforward.{v} (F := Over.forget X) (𝟙 _)).obj M
+    PresheafOfModules.{v} ((Over.forget X).op ⋙ S) := (pushforward.{v} (𝟙 _)).obj M
 
 /-- The induced map on the restrictions presheaves of modules to `Over X` -/
 abbrev Hom.over {S : Cᵒᵖ ⥤ RingCat.{u}} {M N : PresheafOfModules.{v} S} (φ : M ⟶ N)
-    (X : C) : M.over X ⟶ N.over X :=
-  (pushforward.{v} (F := Over.forget X) (𝟙 _)).map φ
+    (X : C) : M.over X ⟶ N.over X := (pushforward.{v} (𝟙 _)).map φ
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 @[simps -isSimp]
 instance smulOver (U : Cᵒᵖ)
     (F G : (PresheafOfModules ((Over.forget U.unop).op ⋙ R ⋙ forget₂ _ _))) :
@@ -73,8 +71,9 @@ attribute [local simp] smulOver_smul_app
 
 open ConcreteCategory
 
+set_option backward.isDefEq.respectTransparency false in
 instance (U : Cᵒᵖ) :
-    Linear (R.obj U) (PresheafOfModules ((Over.forget U.unop).op ⋙ R ⋙ forget₂ _ _)) where
+    Linear (R.obj U) (PresheafOfModules.{w} ((Over.forget U.unop).op ⋙ R ⋙ forget₂ _ _)) where
   homModule F G :=
     { zero_smul _ := by ext; simp
       one_smul _ := by ext; simp
@@ -100,6 +99,8 @@ def internalHomMap {U V : C} (f : V ⟶ U) (φ : F.over U ⟶ G.over U) :
   app W := φ.app ((Over.map f).op.obj W)
   naturality g := φ.naturality ((Over.map f).op.map g)
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The Hom presheaf for presheaves of modules. Given `F G : PresheafOfModules`, this is the
 sheaf whose value on `U : Cᵒᵖ` is `F.over U.unop ⟶ G.over U.unop` and whose restriction maps
 are `internalHomMap`. Note that `internalHom` lives in the universe `max u u₁ v₁` so it is
