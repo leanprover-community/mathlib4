@@ -64,7 +64,7 @@ theorem bot_strongly_regular : (⊥ : SimpleGraph V).IsSRGWith (Fintype.card V) 
   of_not_adj v w _ := by
     simp only [card_eq_zero, Fintype.card_ofFinset, forall_true_left, not_false_iff, bot_adj]
     ext
-    simp [mem_commonNeighbors]
+    simp
 
 theorem IsSRGWith.ediam_eq_two [Nontrivial V] (h : G.IsSRGWith n k ℓ μ) (ht : G ≠ ⊤) (hm : μ ≠ 0) :
     G.ediam = 2 := by
@@ -74,14 +74,10 @@ theorem IsSRGWith.ediam_eq_two [Nontrivial V] (h : G.IsSRGWith n k ℓ μ) (ht :
     by_contra! hc
     obtain ⟨hn, ha, he⟩ := two_lt_edist_iff.mp hc
     have h := h.of_not_adj hn ha
-    simp_rw [he, Fintype.card_eq_zero] at h
-    exact false_of_ne (h ▸ hm)
-  · by_contra! hc
-    cases ENat.le_one_iff_eq_zero_or_eq_one.mp (Order.le_of_lt_succ hc) with
-    | inl hc =>
-      rw [ediam_eq_zero_iff_subsingleton] at hc
-      exact false_of_nontrivial_of_subsingleton V
-    | inr hc => exact ht.elim (ediam_eq_one.mp hc)
+    simp_all
+  · by_contra
+    have := not_subsingleton V
+    simp_all [Order.le_one_iff]
 
 /-- **Conway's 99-graph problem** (from https://oeis.org/A248380/a248380.pdf)
 can be reformulated as the existence of a strongly regular graph with params (99, 14, 1, 2).
@@ -141,7 +137,7 @@ theorem IsSRGWith.compl_is_regular (h : G.IsSRGWith n k ℓ μ) :
 theorem IsSRGWith.card_commonNeighbors_eq_of_adj_compl (h : G.IsSRGWith n k ℓ μ) {v w : V}
     (ha : Gᶜ.Adj v w) : Fintype.card (Gᶜ.commonNeighbors v w) = n - (2 * k - μ) - 2 := by
   simp only [← Set.toFinset_card, commonNeighbors, Set.toFinset_inter, neighborSet_compl,
-    Set.toFinset_diff, Set.toFinset_singleton, Set.toFinset_compl, ← neighborFinset_def]
+    Set.toFinset_sdiff, Set.toFinset_singleton, Set.toFinset_compl, ← neighborFinset_def]
   simp_rw [compl_neighborFinset_sdiff_inter_eq]
   have hne : v ≠ w := ne_of_adj _ ha
   rw [compl_adj] at ha
@@ -157,7 +153,7 @@ theorem IsSRGWith.card_commonNeighbors_eq_of_not_adj_compl (h : G.IsSRGWith n k 
     (hn : v ≠ w) (hna : ¬Gᶜ.Adj v w) :
     Fintype.card (Gᶜ.commonNeighbors v w) = n - (2 * k - ℓ) := by
   simp only [← Set.toFinset_card, commonNeighbors, Set.toFinset_inter, neighborSet_compl,
-    Set.toFinset_diff, Set.toFinset_singleton, Set.toFinset_compl, ← neighborFinset_def]
+    Set.toFinset_sdiff, Set.toFinset_singleton, Set.toFinset_compl, ← neighborFinset_def]
   simp only [not_and, Classical.not_not, compl_adj] at hna
   have h2' := hna hn
   simp_rw [compl_neighborFinset_sdiff_inter_eq, sdiff_compl_neighborFinset_inter_eq h2']
@@ -180,7 +176,7 @@ theorem IsSRGWith.param_eq
   letI := Classical.decEq V
   rw [← h.card, Fintype.card_pos_iff] at hn
   obtain ⟨v⟩ := hn
-  convert card_mul_eq_card_mul G.Adj (s := G.neighborFinset v) (t := Gᶜ.neighborFinset v) _ _
+  convert! card_mul_eq_card_mul G.Adj (s := G.neighborFinset v) (t := Gᶜ.neighborFinset v) _ _
   · simp [h.regular v]
   · simp [h.compl.regular v]
   · intro w hw

@@ -58,6 +58,9 @@ noncomputable instance Quotient.functor_commShift [r.IsCompatibleWithShift A] :
     (Quotient.functor r).CommShift A :=
   Functor.CommShift.ofInduced _ _ _ _
 
+lemma Quotient.functor_obj_shift [r.IsCompatibleWithShift A] (X : C) (n : A) :
+    ((Quotient.functor r).obj X)⟦n⟧ = (Quotient.functor r).obj (X⟦n⟧) := rfl
+
 -- the construction is made irreducible in order to prevent timeouts and abuse of defeq
 attribute [irreducible] HasShift.quotient Quotient.functor_commShift
 
@@ -78,6 +81,7 @@ noncomputable def iso (a : A) :
     Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft _ (lift.isLift r F hF) ≪≫ F.commShiftIso a ≪≫
     Functor.isoWhiskerRight (lift.isLift r F hF).symm _ ≪≫ Functor.associator _ _ _)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma iso_hom_app (a : A) (X : C) :
     (iso F r hF a).hom.app ((functor r).obj X) =
@@ -85,6 +89,7 @@ lemma iso_hom_app (a : A) (X : C) :
       (F.commShiftIso a).hom.app X := by
   simp [iso, lift_obj_functor_obj]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma iso_inv_app (a : A) (X : C) :
@@ -97,6 +102,7 @@ attribute [irreducible] iso
 
 end LiftCommShift
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- When `r : HomRel C` is compatible with the shift by an additive monoid, and
 `F : C ⥤ D` is a functor which commutes with the shift and is compatible with `r`, then
@@ -134,6 +140,7 @@ noncomputable instance liftCommShift :
       Functor.comp_map, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app,
       Functor.map_id, id_comp, lift_obj_functor_obj]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance liftCommShift_compatibility :
     NatTrans.CommShift (Quotient.lift.isLift r F hF).hom A where

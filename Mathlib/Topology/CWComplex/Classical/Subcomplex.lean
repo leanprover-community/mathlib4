@@ -32,6 +32,7 @@ namespace Topology
 
 variable {X : Type*} [t : TopologicalSpace X] {C D : Set X}
 
+@[alias_in CWComplex.Subcomplex]
 lemma RelCWComplex.Subcomplex.closedCell_subset_of_mem [T2Space X] [RelCWComplex C D]
     (E : Subcomplex C) {n : ℕ} {i : cell C n} (hi : i ∈ E.I n) :
     closedCell n i ⊆ E := by
@@ -40,11 +41,13 @@ lemma RelCWComplex.Subcomplex.closedCell_subset_of_mem [T2Space X] [RelCWComplex
   exact subset_iUnion_of_subset n
     (subset_iUnion (fun (j : ↑(E.I n)) ↦ openCell (C := C) n j) ⟨i, hi⟩)
 
+@[alias_in CWComplex.Subcomplex]
 lemma RelCWComplex.Subcomplex.openCell_subset_of_mem [T2Space X] [RelCWComplex C D]
     (E : Subcomplex C) {n : ℕ} {i : cell C n} (hi : i ∈ E.I n) :
     openCell n i ⊆ E :=
   (openCell_subset_closedCell n i).trans (closedCell_subset_of_mem E hi)
 
+@[alias_in CWComplex.Subcomplex]
 lemma RelCWComplex.Subcomplex.cellFrontier_subset_of_mem [T2Space X] [RelCWComplex C D]
     (E : Subcomplex C) {n : ℕ} {i : cell C n} (hi : i ∈ E.I n) :
     cellFrontier n i ⊆ E :=
@@ -66,6 +69,7 @@ lemma CWComplex.Subcomplex.union_closedCell [T2Space X] [CWComplex C] (E : Subco
     ⋃ (n : ℕ) (j : E.I n), closedCell (C := C) n j = E :=
   (empty_union _).symm.trans (RelCWComplex.Subcomplex.union_closedCell E)
 
+@[alias_in CWComplex.Subcomplex]
 lemma RelCWComplex.Subcomplex.disjoint_openCell_subcomplex_of_not_mem [RelCWComplex C D]
     (E : Subcomplex C) {n : ℕ} {i : cell C n} (h : i ∉ E.I n) : Disjoint (openCell n i) E := by
   simp_rw [← union, disjoint_union_right, disjoint_iUnion_right]
@@ -142,12 +146,14 @@ lemma RelCWComplex.Subcomplex.cellFrontier_eq [T2Space X] [RelCWComplex C D] (E 
     (n : ℕ) (i : E.I n) : cellFrontier (C := E) n i = cellFrontier n (i : cell C n) := by
   rfl
 
+@[alias_in CWComplex.Subcomplex]
 instance RelCWComplex.Subcomplex.finiteType_subcomplex_of_finiteType [T2Space X]
     [RelCWComplex C D] [FiniteType C] (E : Subcomplex C) : FiniteType (E : Set X) where
   finite_cell n :=
     let _ := FiniteType.finite_cell (C := C) (D := D) n
     Subtype.finite
 
+@[alias_in CWComplex.Subcomplex]
 instance RelCWComplex.Subcomplex.finiteDimensional_subcomplex_of_finiteDimensional
     [T2Space X] [RelCWComplex C D] [FiniteDimensional C] (E : Subcomplex C) :
     FiniteDimensional (E : Set X) where
@@ -156,17 +162,9 @@ instance RelCWComplex.Subcomplex.finiteDimensional_subcomplex_of_finiteDimension
     simp [isEmpty_subtype]
 
 /-- A subcomplex of a finite CW complex is again finite. -/
+@[alias_in CWComplex.Subcomplex]
 instance RelCWComplex.Subcomplex.finite_subcomplex_of_finite [T2Space X] [RelCWComplex C D]
     [Finite C] (E : Subcomplex C) : Finite (E : Set X) :=
   finite_of_finiteDimensional_finiteType _
-
-namespace CWComplex.Subcomplex
-
-export RelCWComplex.Subcomplex (closedCell_subset_of_mem openCell_subset_of_mem
-  cellFrontier_subset_of_mem disjoint_openCell_subcomplex_of_not_mem subset_complex
-  finiteType_subcomplex_of_finiteType finiteDimensional_subcomplex_of_finiteDimensional
-  finite_subcomplex_of_finite)
-
-end CWComplex.Subcomplex
 
 end Topology

@@ -213,7 +213,7 @@ lemma permMatrix_mem_colStochastic {σ : Equiv.Perm n} :
   rw [mem_colStochastic_iff_sum]
   refine ⟨fun i j => ?g1, ?g2⟩
   case g1 => aesop
-  case g2 => simp [Equiv.toPEquiv_apply, ← Equiv.eq_symm_apply]
+  case g2 => simp [Equiv.toPEquiv_apply, ← Equiv.eq_symm_apply σ]
 
 /-- The transpose of a matrix is row stochastic matrix if it is column stochastic. -/
 @[grind =]
