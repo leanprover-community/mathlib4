@@ -995,8 +995,8 @@ theorem exists_relSeries_covBy
         obtain rfl : m = 0 := by simpa [t₃] using! (congr_arg Fin.val eq).trans_lt (i j).2
         cases (h (.last _)).ne' (h₂.symm.trans h₁)
     · refine funext (Fin.lastCases ?_ fun j ↦ ?_)
-      · convert h₂; simpa using! RelSeries.last_smash ..
-      convert congr_fun ht j using 1
+      · convert! h₂; simpa using! RelSeries.last_smash ..
+      convert! congr_fun ht j using 1
       simp [RelSeries.smash_castLE]
     all_goals simp [Fin.snoc, Fin.castPred_zero, hi₁]
 
