@@ -373,7 +373,7 @@ theorem symm_comp_eq {α : Type*} (e : M ≃* N) (f : α → M) (g : α → N) :
     e.symm ∘ g = f ↔ g = e ∘ f :=
   e.toEquiv.symm_comp_eq f g
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem _root_.MulEquivClass.apply_coe_symm_apply {α β} [Mul α] [Mul β] {F} [EquivLike F α β]
     [MulEquivClass F α β] (e : F) (x : β) :
     e ((e : α ≃* β).symm x) = x :=
