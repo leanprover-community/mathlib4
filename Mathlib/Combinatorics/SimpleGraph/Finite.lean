@@ -126,7 +126,7 @@ theorem card_edgeSet : Fintype.card G.edgeSet = #G.edgeFinset :=
   .symm <| Set.toFinset_card _
 
 theorem edgeSet_univ_card : #(univ : Finset G.edgeSet) = #G.edgeFinset := by
-  simp [card_edgeSet]
+  simp [card_edgeSet, -Set.fintypeCard_eq_ncard]
 
 variable [Fintype V]
 
@@ -208,7 +208,7 @@ theorem card_neighborSet_eq_degree : Fintype.card (G.neighborSet v) = G.degree v
 
 @[simp]
 theorem ncard_neighborSet : (G.neighborSet v).ncard = G.degree v := by
-  simp [Set.ncard_eq_toFinset_card']
+  simp [Set.ncard_eq_toFinset_card', card_neighborSet_eq_degree, -Set.fintypeCard_eq_ncard]
 
 lemma degree_eq_zero : G.degree v = 0 ↔ G.IsIsolated v := by simp [← card_neighborFinset_eq_degree]
 lemma degree_pos : 0 < G.degree v ↔ ¬ G.IsIsolated v := by simp [← card_neighborFinset_eq_degree]
@@ -255,8 +255,7 @@ theorem degree_compl [Fintype (Gᶜ.neighborSet v)] [Fintype V] :
     Gᶜ.degree v = Fintype.card V - 1 - G.degree v := by
   classical
     rw [← card_neighborSet_union_compl_neighborSet G v, Set.toFinset_union]
-    simp [card_union_of_disjoint (Set.disjoint_toFinset.mpr (compl_neighborSet_disjoint G v)),
-      card_neighborSet_eq_degree]
+    simp [card_union_of_disjoint (Set.disjoint_toFinset.mpr (compl_neighborSet_disjoint G v))]
 
 instance incidenceSetFintype [DecidableEq V] : Fintype (G.incidenceSet v) :=
   Fintype.ofEquiv (G.neighborSet v) (G.incidenceSetEquivNeighborSet v).symm
@@ -550,12 +549,13 @@ theorem Adj.card_commonNeighbors_lt_degree {G : SimpleGraph V} [DecidableRel G.A
 
 theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
     Fintype.card (commonNeighbors ⊤ v w) = Fintype.card V - 2 := by
-  simp [commonNeighbors_top_eq, ← Set.toFinset_card, Finset.card_sdiff, h]
+  simp [commonNeighbors_top_eq, ← Set.toFinset_card, Finset.card_sdiff, h,
+    -Set.fintypeCard_eq_ncard]
 
 omit [Fintype V]
 theorem encard_commonNeighbors_top {u v : V} (h : u ≠ v) :
     (commonNeighbors ⊤ u v).encard = ENat.card V - 2 := by
-  simp [commonNeighbors_top_eq, Set.encard_diff, Set.encard_pair h]
+  simp [commonNeighbors_top_eq, Set.encard_sdiff, Set.encard_pair h]
 
 end Finite
 
