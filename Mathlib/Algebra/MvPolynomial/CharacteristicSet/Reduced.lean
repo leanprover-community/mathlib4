@@ -73,7 +73,9 @@ theorem reducedTo_of_max_vars_lt (h : q.vars.max < p.vars.max) : q.reducedTo p :
     apply (reducedTo_iff hc.symm hq).mpr
     rw [(iff_not_comm.mpr mem_vars_iff_degreeOf_ne_zero).mpr <|
       Finset.notMem_of_max_lt_coe (hc ▸ h)]
-    exact Nat.pos_of_ne_zero <| degreeOf_max_vars_ne_zero hc.symm
+    apply Nat.pos_of_ne_zero
+    refine mem_vars_iff_degreeOf_ne_zero.mp ?_
+    exact Finset.mem_of_max hc.symm
 
 theorem not_reduceTo_self (h : p ≠ 0) : ¬p.reducedTo p := by
   rw [reducedTo, if_neg h]

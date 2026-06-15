@@ -15,7 +15,7 @@ which are essential for the Characteristic Set Method (Wu's Method).
 
 ## Main definitions
 
-* `MvPolynomial.rank`: The rank of a polynomial `p` is the pair `(max_vars p, mainDegree p)`,
+* `MvPolynomial.rank`: The rank of a polynomial `p` is the pair `(max_vars p, mainDegree.card p)`,
   ordered lexicographically. This defines a well-ordering on polynomials when the variable type
   is well-founded.
 
@@ -48,10 +48,10 @@ section Rank
 
 /-- The rank of a polynomial `p` is the pair `(max_vars p, degree p)`,
 which is ordered lexicographically. -/
-noncomputable def rank (p : MvPolynomial σ R) : WithBot σ ×ₗ ℕ := (p.vars.max, p.mainDegree)
+noncomputable def rank (p : MvPolynomial σ R) : WithBot σ ×ₗ ℕ := (p.vars.max, p.mainDegree.card)
 
 theorem rank_eq_iff : p.rank = q.rank ↔
-    p.vars.max = q.vars.max ∧ p.mainDegree = q.mainDegree := Prod.mk_inj
+    p.vars.max = q.vars.max ∧ p.mainDegree.card = q.mainDegree.card := Prod.mk_inj
 
 instance instPreorder : Preorder (MvPolynomial σ R) where
   le := InvImage (· ≤ ·) rank
@@ -69,10 +69,10 @@ instance instIsTotalLe : Std.Total (@LE.le (MvPolynomial σ R) _) where
   total p q := le_total p.rank q.rank
 
 theorem le_def : p ≤ q ↔ p.vars.max < q.vars.max ∨
-    p.vars.max = q.vars.max ∧ p.mainDegree ≤ q.mainDegree := Prod.lex_def
+    p.vars.max = q.vars.max ∧ p.mainDegree.card ≤ q.mainDegree.card := Prod.lex_def
 
 theorem le_iff_not_imp : p ≤ q ↔ ¬p.vars.max < q.vars.max →
-    p.vars.max = q.vars.max ∧ p.mainDegree ≤ q.mainDegree :=
+    p.vars.max = q.vars.max ∧ p.mainDegree.card ≤ q.mainDegree.card :=
   Iff.trans le_def <| Decidable.or_iff_not_imp_left
 
 theorem max_vars_le_of_le : p ≤ q → p.vars.max ≤ q.vars.max :=
@@ -83,11 +83,11 @@ theorem lt_def' : p < q ↔ p.rank < q.rank := Iff.trans lt_iff_le_not_ge (by
   exact le_of_lt)
 
 theorem lt_def : p < q ↔ p.vars.max < q.vars.max ∨
-    p.vars.max = q.vars.max ∧ p.mainDegree < q.mainDegree :=
+    p.vars.max = q.vars.max ∧ p.mainDegree.card < q.mainDegree.card :=
   Iff.trans lt_def' Prod.lex_def
 
 theorem lt_iff_not_imp : p < q ↔ ¬p.vars.max < q.vars.max
-    → p.vars.max = q.vars.max ∧ p.mainDegree < q.mainDegree :=
+    → p.vars.max = q.vars.max ∧ p.mainDegree.card < q.mainDegree.card :=
   Iff.trans lt_def <| Decidable.or_iff_not_imp_left
 
 theorem lt_of_max_vars_lt : p.vars.max < q.vars.max → p < q :=
@@ -113,7 +113,7 @@ theorem equiv_def' : p ≈ q ↔ p.rank = q.rank := Iff.trans equiv_def''
 theorem equiv_def : p ≈ q ↔ ¬p < q ∧ ¬q < p := Iff.trans equiv_def''
   (by rw [not_lt_iff_ge, not_lt_iff_ge, and_comm])
 
-theorem equiv_iff : p ≈ q ↔ p.vars.max = q.vars.max ∧ p.mainDegree = q.mainDegree :=
+theorem equiv_iff : p ≈ q ↔ p.vars.max = q.vars.max ∧ p.mainDegree.card = q.mainDegree.card :=
   Iff.trans equiv_def' rank_eq_iff
 
 theorem le_iff_lt_or_equiv : p ≤ q ↔ p < q ∨ p ≈ q := le_iff_lt_or_antisymmRel
@@ -165,15 +165,15 @@ theorem reducedTo_congr_right (h : p ≈ q) : (r.reducedTo p ↔ r.reducedTo q) 
   suffices ∀ (p q : MvPolynomial σ R) (h : p ≈ q), r.reducedTo p → r.reducedTo q from
     ⟨this p q h, this q p h.symm⟩
   intro p q h
-  have : p.vars.max = q.vars.max ∧ p.mainDegree = q.mainDegree := equiv_iff.mp h
+  have : p.vars.max = q.vars.max ∧ p.mainDegree.card = q.mainDegree.card := equiv_iff.mp h
   simp only [reducedTo, if_true_left]
   intro hr1 hr2
   match hc : q.vars.max with
   | none => simp [hr2, hc ▸ this.1] at hr1
   | some c =>
     have hc' := hc ▸ this.1
-    simp [hr2, hc', mainDegree_of_max_vars_isSome hc' ▸ this.2] at hr1
-    simp only [mainDegree_of_max_vars_isSome hc ▸ hr1]
+    simp [hr2, hc', card_mainDegree_eq_degreeOf hc' ▸ this.2] at hr1
+    simp only [card_mainDegree_eq_degreeOf hc ▸ hr1]
 
 theorem reducedTo_iff_gt_of_max_vars_eq (hq : q ≠ 0) (h : q.vars.max = p.vars.max) :
     q.reducedTo p ↔ q < p where
@@ -181,16 +181,16 @@ theorem reducedTo_iff_gt_of_max_vars_eq (hq : q ≠ 0) (h : q.vars.max = p.vars.
     match hp : p.vars.max with
     | ⊥ => absurd hl <| not_reducedTo_of_bot_max_vars hq hp
     | some c => lt_def.mpr <| Or.inr ⟨h, by
-      rw [mainDegree_of_max_vars_isSome hp, mainDegree_of_max_vars_isSome <| h.trans hp]
+      rw [card_mainDegree_eq_degreeOf hp, card_mainDegree_eq_degreeOf <| h.trans hp]
       exact (reducedTo_iff hp hq).mp hl⟩
   mpr hr :=
-    have : q.mainDegree < p.mainDegree := (lt_iff_not_imp.mp hr <| Eq.not_lt h).2
+    have : q.mainDegree.card < p.mainDegree.card := (lt_iff_not_imp.mp hr <| Eq.not_lt h).2
     match hp : p.vars.max with
     | ⊥ => by
-      rw [mainDegree_eq_zero_iff.mpr hp, mainDegree_eq_zero_iff.mpr (h ▸ hp)] at this
+      rw [card_mainDegree_eq_zero_iff.mpr hp, card_mainDegree_eq_zero_iff.mpr (h ▸ hp)] at this
       exact absurd this <| Nat.not_lt_zero 0
     | some c => by
-      rw [mainDegree_of_max_vars_isSome hp, mainDegree_of_max_vars_isSome (h ▸ hp)] at this
+      rw [card_mainDegree_eq_degreeOf hp, card_mainDegree_eq_degreeOf (h ▸ hp)] at this
       exact (reducedTo_iff hp hq).mpr this
 
 theorem max_vars_lt_of_reducedTo_of_le (h1 : q ≠ 0) (h2 : p ≤ q) (h3 : q.reducedTo p) :

@@ -21,9 +21,6 @@ that appears in a monomial in $P$.
 
 * `MvPolynomial.vars p` : the finset of variables occurring in `p`.
   For example if `p = x⁴y+yz` then `vars p = {x, y, z}`
-* `MvPolynomial.mainDegree p`:
-  The degree of `p` with respect to its main variable.
-  If `max_vars p = ⊥` (i.e., `p` is a constant or zero), the degree is `0`.
 
 ## Notation
 
@@ -359,57 +356,94 @@ section MainDegree
 
 variable [LinearOrder σ] {i j c : σ}
 
-/-- The "main degree" of `p`: the degree of `p` with respect to its max variable.
-If `p.vars.max = ⊥` (i.e., `p` is a constant), the degree is 0. -/
-noncomputable def mainDegree (p : MvPolynomial σ R) : ℕ :=
-  match p.vars.max with
-  | ⊥ => 0
-  | Option.some c => p.degreeOf c
+theorem forall_degrees_le_of_max_vars_eq (h : p.vars.max = c) : ∀ j ∈ p.degrees, j ≤ c := by
+  rw [vars_def] at h
+  intro j hj
+  rw [← Multiset.mem_toFinset] at hj
+  have := Finset.le_max hj
+  simp only [h, WithBot.coe_le_coe] at this
+  exact this
 
-theorem mainDegree_of_max_vars_isSome (h : p.vars.max = c) : p.mainDegree = p.degreeOf c := by
-  rw [mainDegree, h]
+theorem forall_mainDegree_eq_of_max_vars_eq (h : p.vars.max = c) : ∀ j ∈ p.mainDegree, c = j := by
+  apply forall_mainDegree_eq_of_forall_degrees_le
+  · rw [vars_def] at h
+    apply Multiset.mem_toFinset.mp
+    exact Finset.mem_of_max h
+  exact forall_degrees_le_of_max_vars_eq h
 
-theorem mainDegree_eq_zero_iff : p.mainDegree = 0 ↔ p.vars.max = ⊥ where
+theorem card_mainDegree_eq_degreeOf (h : p.vars.max = c) : p.mainDegree.card = p.degreeOf c := by
+  have : ∀ j ∈ p.mainDegree, c = j := forall_mainDegree_eq_of_max_vars_eq h
+  rw [← Multiset.count_eq_card.mpr this]
+  have : ∀ j ∈ p.degrees, j ≤ c := forall_degrees_le_of_max_vars_eq h
+  rw [degreeOf_def, mainDegree, Multiset.count_filter, if_pos this]
+
+theorem card_mainDegree_eq_zero_iff : p.mainDegree.card = 0 ↔ p.vars.max = ⊥ where
   mp h :=
     match hc : p.vars.max with
     | ⊥ => rfl
     | Option.some c => by
       absurd Finset.mem_of_max hc
-      rw [mainDegree_of_max_vars_isSome hc, degreeOf] at h
+      rw [card_mainDegree_eq_degreeOf hc, degreeOf] at h
       simpa only [vars_def, Multiset.mem_toFinset, Multiset.count_eq_zero] using h
-  mpr h := by rw [mainDegree, h]
+  mpr h := by
+    simp only [mainDegree, Multiset.card_eq_zero]
+    suffices p.degrees = 0 by rw [this, Multiset.filter_zero]
+    rw [vars_def] at h
+    apply Multiset.toFinset_eq_empty.mp
+    exact Finset.max_eq_bot.mp h
 
-theorem mainDegree_eq_zero_iff_eq_C : p.mainDegree = 0 ↔ p = C (p.coeff 0) := by
-  rw [mainDegree_eq_zero_iff, Finset.max_eq_bot, vars_eq_empty_iff_eq_C]
 
-theorem degreeOf_max_vars_ne_zero (h : p.vars.max = c) : p.degreeOf c ≠ 0 := by
-  simp [← mainDegree_of_max_vars_isSome h, mainDegree_eq_zero_iff, h]
+/-- The "main degree" of `p`: the degree of `p` with respect to its max variable.
+If `p.vars.max = ⊥` (i.e., `p` is a constant), the degree is 0. -/
+def degreeOfMain (p : MvPolynomial σ R) : ℕ :=
+  match p.vars.max with
+  | ⊥ => 0
+  | Option.some c => p.degreeOf c
 
-theorem max_vars_mem_degrees (h : p.vars.max = c) : c ∈ p.degrees := by
-  rw [← Multiset.count_ne_zero, ← degreeOf_def]
-  exact degreeOf_max_vars_ne_zero h
+theorem degreeOfMain_of_max_vars_isSome (h : p.vars.max = c) : p.degreeOfMain = p.degreeOf c := by
+  rw [degreeOfMain, h]
 
-@[simp] theorem mainDegree_zero : (0 : MvPolynomial σ R).mainDegree = 0 := rfl
+theorem degreeOfMain_eq_zero_iff : p.degreeOfMain = 0 ↔ p.vars.max = ⊥ where
+  mp h :=
+    match hc : p.vars.max with
+    | ⊥ => rfl
+    | Option.some c => by
+      absurd Finset.mem_of_max hc
+      rw [degreeOfMain_of_max_vars_isSome hc, degreeOf] at h
+      simpa only [vars_def, Multiset.mem_toFinset, Multiset.count_eq_zero] using h
+  mpr h := by rw [degreeOfMain, h]
 
-theorem mainDegree_monomial {s : σ →₀ ℕ} {r : R} (hr : r ≠ 0)
-    (hs : s.support.max = c) : (monomial s r).mainDegree = s c := by
+theorem degreeOfMain_eq_zero_iff_eq_C : p.degreeOfMain = 0 ↔ p = C (p.coeff 0) := by
+  rw [degreeOfMain_eq_zero_iff, Finset.max_eq_bot, vars_eq_empty_iff_eq_C]
+
+@[simp]
+theorem degreeOfMain_zero : (0 : MvPolynomial σ R).degreeOfMain = 0 := rfl
+
+theorem degreeOfMain_monomial {s : σ →₀ ℕ} {r : R} (hr : r ≠ 0)
+    (hs : s.support.max = c) : (monomial s r).degreeOfMain = s c := by
   have :((monomial s) r).vars.max = c := by rw [vars_monomial hr, hs]
-  rw [mainDegree_of_max_vars_isSome this]
+  rw [degreeOfMain_of_max_vars_isSome this]
   exact degreeOf_monomial_eq s c hr
 
-@[simp] theorem mainDegree_C (r : R) : (C r : MvPolynomial σ R).mainDegree = 0 :=
-  mainDegree_eq_zero_iff.mpr <| congrArg _ (vars_C)
+@[simp]
+theorem degreeOfMain_C (r : R) : (C r : MvPolynomial σ R).degreeOfMain = 0 :=
+  degreeOfMain_eq_zero_iff.mpr <| congrArg _ (vars_C)
 
-@[simp] theorem mainDegree_X_pow [Nontrivial R] (i : σ) (k : ℕ) :
-    ((X i : MvPolynomial σ R) ^ k).mainDegree = k := by
+@[simp]
+theorem degreeOfMain_X_pow [Nontrivial R] (i : σ) (k : ℕ) :
+    ((X i : MvPolynomial σ R) ^ k).degreeOfMain = k := by
   by_cases hk : k = 0
   · rw [hk, pow_zero]
-    exact mainDegree_C 1
+    exact degreeOfMain_C 1
   have : (Finsupp.single i k).support.max = i := by rw [Finsupp.support_single i hk]; rfl
-  rw [X_pow_eq_monomial, mainDegree_monomial one_ne_zero this, Finsupp.single_eq_same]
+  rw [X_pow_eq_monomial, degreeOfMain_monomial one_ne_zero this, Finsupp.single_eq_same]
 
-@[simp] theorem mainDegree_X [Nontrivial R] (i : σ) : (X i : MvPolynomial σ R).mainDegree = 1 := by
-  rw [← pow_one (X i : MvPolynomial σ R), mainDegree_X_pow]
+@[simp]
+theorem degreeOfMain_X [Nontrivial R] (i : σ) : (X i : MvPolynomial σ R).degreeOfMain = 1 := by
+  rw [← pow_one (X i : MvPolynomial σ R), degreeOfMain_X_pow]
+
+
+
 
 end MainDegree
 

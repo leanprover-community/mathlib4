@@ -239,7 +239,7 @@ variable [DecidableEq R] [LinearOrder σ]
 
 theorem pseudoOf_remainder_reducedTo {c : σ} (g : MvPolynomial σ R) {f : MvPolynomial σ R}
     (hc : f.vars.max = c) : (g.pseudoOf c f).remainder.reducedTo f := by
-  have : f.degreeOf c ≠ 0 := degreeOf_max_vars_ne_zero hc
+  have : f.degreeOf c ≠ 0 := mem_vars_iff_degreeOf_ne_zero.mp <| Finset.mem_of_max hc
   by_cases r_zero : (g.pseudoOf c f).remainder = 0
   · simp only [r_zero, reducedTo, ↓reduceIte]
   apply (reducedTo_iff hc r_zero).mpr
@@ -299,7 +299,9 @@ noncomputable def pseudo : PseudoResult (MvPolynomial σ R) :=
   | ⊥ => simp only
   | some c =>
     simp only [PseudoResult.mk.injEq, and_self, and_true]
-    rw [Nat.sub_eq_zero_of_le (Nat.pos_of_ne_zero <| degreeOf_max_vars_ne_zero hc)]
+    rw [Nat.sub_eq_zero_of_le ?_]
+    apply Nat.pos_of_ne_zero
+    exact mem_vars_iff_degreeOf_ne_zero.mp <| Finset.mem_of_max hc
 
 @[simp] theorem pseudo_remainder_self : (f.pseudo f).remainder = 0 := by
   simp only [pseudo, pseudoOf_self]
@@ -334,8 +336,11 @@ theorem degreeOf_pseudo_remainder_le_of_degreeOf_eq_zero {i : σ} {f : MvPolynom
   match hc : f.vars.max with
   | ⊥ => simp only [degreeOf_zero, zero_le]
   | some c =>
-    have : c ≠ i := by contrapose! h; exact degreeOf_max_vars_ne_zero <| h ▸ hc
-    exact degreeOf_pseudoOf_remainder_le_of_degreeOf_eq_zero g this h
+    suffices c ≠ i from degreeOf_pseudoOf_remainder_le_of_degreeOf_eq_zero g this h
+    contrapose! h
+    rw [← h]
+    apply mem_vars_iff_degreeOf_ne_zero.mp
+    exact Finset.mem_of_max hc
 
 theorem pseudo_remainder_reducedTo (h : f ≠ 0) : (g.pseudo f).remainder.reducedTo f := by
   rw [pseudo, if_neg h]
@@ -357,7 +362,10 @@ theorem pseudo_remainder_eq_zero_of_dvd {g f : MvPolynomial σ R} (h : f ∣ g) 
   · simpa [h_1] using h
   match hc : f.vars.max with
   | ⊥ => simp only
-  | some c => exact pseudoOf_remainder_eq_zero_of_dvd h <| degreeOf_max_vars_ne_zero hc
+  | some c =>
+    apply pseudoOf_remainder_eq_zero_of_dvd h
+    apply mem_vars_iff_degreeOf_ne_zero.mp
+    exact Finset.mem_of_max hc
 
 theorem pseudo_remainder_eq_of_degreeOf_eq_zero {g f : MvPolynomial σ R} {c : σ}
     (h1 : f.vars.max = some c) (h2 : g.degreeOf c = 0) : (g.pseudo f).remainder = g := by
@@ -365,7 +373,9 @@ theorem pseudo_remainder_eq_of_degreeOf_eq_zero {g f : MvPolynomial σ R} {c : �
   split <;> expose_names
   · simp only
   simp only [h1]
-  exact pseudoOf_remainder_eq_of_degreeOf_eq_zero h2 <| degreeOf_max_vars_ne_zero h1
+  apply pseudoOf_remainder_eq_of_degreeOf_eq_zero h2
+  apply mem_vars_iff_degreeOf_ne_zero.mp
+  exact Finset.mem_of_max h1
 
 open TriangularSet List
 

@@ -30,6 +30,11 @@ monomial of $P$.
   the max of the sizes of the multisets `s` whose monomials `X^s` occur in `p`.
   For example if `p = x⁴y+yz` then `totalDegree p = 5`.
 
+* `MvPolynomial.mainDegree p : Multiset σ` :
+  the multiset of variables whose degree in `p` is maximal among all variables
+  appearing in `p`.
+  For example if `p = x²y+y³` with `x < y` then `mainDegree p = {y, y, y}`
+
 ## Notation
 
 As in other polynomial files, we typically use the notation:
@@ -658,6 +663,42 @@ lemma degreesLE_nsmul : ∀ n, degreesLE R σ (n • s) = degreesLE R σ s ^ n
   | k + 1 => by simp only [pow_succ, degreesLE_nsmul, degreesLE_add, add_smul, one_smul]
 
 end degreesLE
+
+section mainDegree
+
+variable [LinearOrder σ] {i j c : σ}
+
+/-- The multiset of variables whose degree in `p` is maximal among all variables
+appearing in `p`.
+
+(For example, `mainDegrees (x^2 * y + y^3)` would be `{y, y, y}`.
+-/
+def mainDegree (p : MvPolynomial σ R) : Multiset σ :=
+  p.degrees.filter (fun i => ∀ j ∈ p.degrees, j ≤ i)
+
+theorem forall_mainDegree_eq_of_forall_degrees_le (i : σ) (h1 : i ∈ p.degrees)
+    (h2 : ∀ j ∈ p.degrees, j ≤ i) : ∀ j ∈ p.mainDegree, i = j := by
+  intro j hj
+  rw [mainDegree] at hj
+  apply le_antisymm
+  · apply (Multiset.mem_filter.mp hj).2
+    exact h1
+  apply h2
+  exact Multiset.mem_of_mem_filter hj
+
+@[simp]
+theorem mainDegree_zero : (0 : MvPolynomial σ R).mainDegree = 0 := rfl
+
+@[simp]
+theorem mainDegree_C (r : R) : (C r : MvPolynomial σ R).mainDegree = 0 := by
+  rw [mainDegree, degrees_C, Multiset.filter_zero]
+
+@[simp]
+theorem mainDegree_X [Nontrivial R] (i : σ) : (X i : MvPolynomial σ R).mainDegree = {i} := by
+  simp [mainDegree, degrees_X]
+
+end mainDegree
+
 end CommSemiring
 
 end MvPolynomial
