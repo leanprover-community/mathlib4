@@ -178,22 +178,22 @@ namespace WithTop
 
 variable [ConditionallyCompleteLinearOrderBot α]
 
--- TODO: extract after #38612
+-- #40620
 theorem sSup_eq_top_iff_lt {s : Set (WithTop α)} : sSup s = ⊤ ↔ ∀ a : α, ∃ b ∈ s, a < b := by
   rw [sSup_eq_top]
   exact forall_lt_top
 
--- TODO: extract after #38612
+-- #40620
 theorem iSup_eq_top_iff_lt {f : ι → WithTop α} : iSup f = ⊤ ↔ ∀ a : α, ∃ i, a < f i :=
   sSup_eq_top_iff_lt.trans <| forall_congr' fun _ ↦ exists_range_iff
 
--- TODO: extract after #38612
+-- #40620
 theorem sSup_eq_top_iff_le [NoMaxOrder α] {s : Set (WithTop α)} :
     sSup s = ⊤ ↔ ∀ a : α, ∃ b ∈ s, a ≤ b := by
   rw [eq_top_iff, isSuccPrelimit_top.le_sSup_iff]
   exact forall_lt_top
 
--- TODO: extract after #38612
+-- #40620
 theorem iSup_eq_top_iff_le [NoMaxOrder α] {f : ι → WithTop α} :
     iSup f = ⊤ ↔ ∀ a : α, ∃ i, a ≤ f i :=
   sSup_eq_top_iff_le.trans <| forall_congr' fun _ ↦ exists_range_iff
