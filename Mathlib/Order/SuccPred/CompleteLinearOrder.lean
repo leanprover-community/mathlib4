@@ -210,3 +210,25 @@ theorem Order.IsSuccPrelimit.le_iSup_iff (h : IsSuccPrelimit x) :
   h.le_sSup_iff.trans <| forall₂_congr fun _ _ ↦ exists_range_iff
 
 end CompleteLinearOrder
+
+namespace WithTop
+
+variable [ConditionallyCompleteLinearOrderBot α]
+
+theorem sSup_eq_top_iff_lt {s : Set (WithTop α)} : sSup s = ⊤ ↔ ∀ a : α, ∃ b ∈ s, a < b := by
+  rw [sSup_eq_top]
+  exact forall_lt_top
+
+theorem iSup_eq_top_iff_lt {f : ι → WithTop α} : iSup f = ⊤ ↔ ∀ a : α, ∃ i, a < f i :=
+  sSup_eq_top_iff_lt.trans <| forall_congr' fun _ ↦ exists_range_iff
+
+theorem sSup_eq_top_iff_le [NoMaxOrder α] {s : Set (WithTop α)} :
+    sSup s = ⊤ ↔ ∀ a : α, ∃ b ∈ s, a ≤ b := by
+  rw [eq_top_iff, isSuccPrelimit_top.le_sSup_iff]
+  exact forall_lt_top
+
+theorem iSup_eq_top_iff_le [NoMaxOrder α] {f : ι → WithTop α} :
+    iSup f = ⊤ ↔ ∀ a : α, ∃ i, a ≤ f i :=
+  sSup_eq_top_iff_le.trans <| forall_congr' fun _ ↦ exists_range_iff
+
+end WithTop
