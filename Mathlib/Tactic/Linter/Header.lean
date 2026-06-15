@@ -301,29 +301,31 @@ public register_option linter.style.header : Bool := {
 
 namespace Style.header
 
-/-- Check the `Syntax` `imports` for broad imports:
-`Mathlib.Tactic`, any import starting with `Lake`, or `Mathlib.Tactic.{Have,Replace}`. -/
-def broadImportsCheck (imports : Array Syntax) (mainModule : Name) : CommandElabM Unit := do
-  for i in imports do
-    match i.getId with
+/-- Check the imported modules for broad imports:
+- `Lean`, `Std`, `Mathlib.Tactic` and any import starting with `Lake` are too broad.
+- `Mathlib.Tactic.{Have,Replace}` are not allowed in mathlib. -/
+def broadImportsCheck (ref : Syntax) (mainModule : Name) : CommandElabM Unit := do
+  -- Loop in reverse order, so that explicitly written imports are checked first.
+  (← getEnv).allImportedModuleNames.forRevM fun i ↦ do
+    match i with
     | `Mathlib.Tactic | `Lean | `Lean.Elab | `Std =>
-      Linter.logLint linter.style.header i
-        s!"Files in mathlib cannot import the whole `{i.getId}` folder. \
+      Linter.logLint linter.style.header ref
+        s!"Files in mathlib cannot import the whole `{i}` folder. \
         Doing so would cause imports to be unnecessarily slow."
     | `Mathlib.Tactic.Replace =>
       if mainModule != `Mathlib.Tactic then
-        Linter.logLint linter.style.header i
-          "'Mathlib.Tactic.Replace' defines a deprecated form of the 'replace' tactic; \
+        Linter.logLint linter.style.header ref
+          "`Mathlib.Tactic.Replace` defines a deprecated form of the 'replace' tactic; \
           please do not use it in mathlib."
     | `Mathlib.Tactic.Have =>
       if ![`Mathlib.Tactic, `Mathlib.Tactic.Replace].contains mainModule then
-        Linter.logLint linter.style.header i
-          "'Mathlib.Tactic.Have' defines a deprecated form of the 'have' tactic; \
+        Linter.logLint linter.style.header ref
+          "`Mathlib.Tactic.Have` defines a deprecated form of the 'have' tactic; \
           please do not use it in mathlib."
     | modName =>
       if modName.getRoot == `Lake then
-      Linter.logLint linter.style.header i
-        "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter \
+      Linter.logLint linter.style.header ref
+        "In the past, importing `Lake` in mathlib has led to dramatic slow-downs of the linter \
         (see e.g. https://github.com/leanprover-community/mathlib4/pull/13779). Please consider carefully if this import is useful and \
         make sure to benchmark it. If this is fine, feel free to silence this linter."
 
@@ -422,7 +424,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- directory dependency, etc.) since they are just import-redirect stubs.
   if let some (.node _ ``Lean.Parser.Command.deprecated_module _) := afterImports then return
   -- Report on broad or duplicate imports.
-  broadImportsCheck importIds mainModule
+  broadImportsCheck upToStx mainModule
   duplicateImportsCheck imports
   let errors ← directoryDependencyCheck mainModule
   if errors.size > 0 then
