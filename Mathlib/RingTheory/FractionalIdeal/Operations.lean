@@ -647,6 +647,13 @@ theorem spanSingleton_pow (x : P) (n : ℕ) : spanSingleton S x ^ n = spanSingle
   | zero => rw [pow_zero, pow_zero, spanSingleton_one]
   | succ n hn => rw [pow_succ, hn, spanSingleton_mul_spanSingleton, pow_succ]
 
+/-- `spanSingleton` as a multiplicative monoid homomorphism from `P` to `FractionalIdeal S P`. -/
+@[simps]
+def spanSingletonHom : P →* FractionalIdeal S P where
+  toFun := spanSingleton S
+  map_one' := spanSingleton_one
+  map_mul' x y := (spanSingleton_mul_spanSingleton x y).symm
+
 @[simp]
 theorem coeIdeal_span_singleton (x : R) :
     (↑(Ideal.span {x} : Ideal R) : FractionalIdeal S P) = spanSingleton S (algebraMap R P x) := by
@@ -829,6 +836,39 @@ theorem isPrincipal_of_isPrincipal_num [IsDomain R]
   Module.isPrincipal_submodule_iff.mp
     <| (FractionalIdeal.equivNumOfIsLocalization I).isPrincipal_iff.mpr
     <| Module.isPrincipal_submodule_iff.mpr hI
+
+/-- If the ideal monoid of `R` is torsion-free and `S ≤ R⁰`, then the monoid of fractional
+ideals of `R` (localized at `S`) is also torsion-free. -/
+theorem isMulTorsionFree_of_le_nonZeroDivisors (h : S ≤ nonZeroDivisors R)
+    [IsMulTorsionFree (Ideal R)] : IsMulTorsionFree (FractionalIdeal S P) where
+  pow_left_injective {n} hn I J hIJ := by
+    let a := algebraMap R P I.den
+    let b := algebraMap R P J.den
+    suffices spanSingleton S (a * b) * I = spanSingleton S (a * b) * J by
+      refine IsUnit.mul_left_cancel ?_ this
+      rw [← spanSingleton_mul_spanSingleton]
+      exact ((IsLocalization.map_units _ I.den).map spanSingletonHom).mul <|
+        (IsLocalization.map_units _ J.den).map spanSingletonHom
+    have main : Ideal.span {J.den.val} * I.num = Ideal.span {I.den.val} * J.num := by
+      dsimp at hIJ
+      rw [← (IsMulTorsionFree.pow_left_injective hn).eq_iff, ← coeIdeal_inj' (P := P) h]
+      simp only [mul_pow, coeIdeal_mul, coeIdeal_pow, coeIdeal_span_singleton]
+      rw [← den_mul_self_eq_num', mul_pow, hIJ, ← mul_assoc, mul_right_comm,
+        ← mul_pow, den_mul_self_eq_num', mul_comm]
+    calc spanSingleton S (a * b) * I
+        = spanSingleton S a * spanSingleton S b * I := by rw [← spanSingleton_mul_spanSingleton]
+      _ = spanSingleton S b * (spanSingleton S a * I) := by ring
+      _ = spanSingleton S b * ↑I.num := by rw [I.den_mul_self_eq_num']
+      _ = ↑(Ideal.span {(J.den : R)} * I.num) := by rw [← coeIdeal_span_singleton, ← coeIdeal_mul]
+      _ = ↑(Ideal.span {(I.den : R)} * J.num) := by rw [main]
+      _ = spanSingleton S a * ↑J.num := by rw [coeIdeal_mul, coeIdeal_span_singleton]
+      _ = spanSingleton S a * (spanSingleton S b * J) := by rw [J.den_mul_self_eq_num']
+      _ = spanSingleton S a * spanSingleton S b * J := by ring
+      _ = spanSingleton S (a * b) * J := by rw [spanSingleton_mul_spanSingleton]
+
+instance instIsMulTorsionFree [IsLocalization (nonZeroDivisors R) P]
+    [IsMulTorsionFree (Ideal R)] : IsMulTorsionFree (FractionalIdeal (nonZeroDivisors R) P) :=
+  isMulTorsionFree_of_le_nonZeroDivisors le_rfl
 
 end PrincipalIdeal
 
