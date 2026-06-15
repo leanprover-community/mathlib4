@@ -19,28 +19,26 @@ def binderPlicity : CodeActionProvider := fun params snap => do
   for stx in snap.stx.topDown do
     let some stxRange := stx.getRange? | continue
     let lspRange := doc.meta.text.utf8RangeToLspRange stxRange
-    unless lspRange.start.line ≤ params.range.end.line do continue
-    unless params.range.start.line ≤ lspRange.end.line do continue
+    unless lspRange.start ≤ params.range.end do continue
+    unless params.range.start ≤ lspRange.end do continue
     if stx.isOfKind ``explicitBinder then
       -- This code action does not support explicit binders with optional values
       unless stx[3]!.isNone do continue
       let newStx := stx.modifyArg 0 (fun lparen => .atom lparen.getHeadInfo "{")
       let newStx := newStx.modifyArg 4 (fun rparen => .atom rparen.getHeadInfo "}")
-      binders := binders.push (BinderInfo.default, newStx, lspRange)
+      binders := binders.push (false, newStx, lspRange)
     if stx.isOfKind ``implicitBinder then
       let newStx := stx.modifyArg 0 (fun lparen => .atom lparen.getHeadInfo "(")
       let newStx := newStx.modifyArg 3 (fun rparen => .atom rparen.getHeadInfo ")")
-      binders := binders.push (BinderInfo.implicit, newStx, lspRange)
+      binders := binders.push (true, newStx, lspRange)
 
   let mut codeActions := #[]
-  for (bi, stx, range) in binders do
+  for (isExplicit, stx, range) in binders do
     let some s := stx.unsetTrailing.reprint | continue
     let edit : TextEdit := { range, newText := s }
-    let title? := match bi with
-      | .default => some s!"Make explicit: {s}"
-      | .implicit => some s!"Make implicit: {s}"
-      | _ => none -- TODO: This is currently unreachable
-    let some title := title? | continue -- TODO: I can't do `continue` inside the match :/
+    let title := if isExplicit then
+        s!"Make explicit: {s}"
+      else s!"Make implicit: {s}"
     codeActions := codeActions.push {
       eager.title := title
       eager.kind? := "refactor.rewrite"
