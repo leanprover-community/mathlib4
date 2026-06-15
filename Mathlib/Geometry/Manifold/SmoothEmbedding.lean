@@ -93,7 +93,7 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
   exact ⟨IsImmersion.of_opens s, IsEmbedding.subtypeVal⟩
 
 /-- A smooth embedding is automatically smooth. -/
-lemma contMDiff [IsManifold I n M] [IsManifold J n N] (hf : IsSmoothEmbedding I J n f) :
+lemma contMDiff (hf : IsSmoothEmbedding I J n f) :
     ContMDiff I J n f :=
   hf.isImmersion.contMDiff
 
@@ -106,6 +106,7 @@ proof_wanted comp -- [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F] [Com
 end IsSmoothEmbedding
 
 -- TODO: prove the same result for local diffeomorphisms and deduce it as a corollary
-proof_wanted Diffeomorph.isSmoothEmbedding (φ : Diffeomorph I I M M n) : IsSmoothEmbedding I I n φ
+proof_wanted Diffeomorph.isSmoothEmbedding [IsManifold I n M]
+    (φ : Diffeomorph I I M M n) : IsSmoothEmbedding I I n φ
 
 end Manifold
