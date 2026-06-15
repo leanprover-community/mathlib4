@@ -145,6 +145,8 @@ noncomputable def isoPSLOfAlgClosedOfNonempty [Nonempty n] {F : Type*} [Field F]
   exact ⟨⟨x, x⁻¹, mul_inv_cancel₀ hx', inv_mul_cancel₀ hx'⟩, by
     simpa [Units.ext_iff, sub_eq_zero] using hx⟩⟩)
 
+/-- An isomorphism between `PGL(n, F)` and `PSL(n, F)` in the case of an algebraically closed field
+  induced from the natural inclusion map where when `n` is empty it gives a junk isomorphism. -/
 noncomputable def isoPSLOfAlgClosed {F : Type*} [Field F] [IsAlgClosed F] :
     PGL(n, F) ≃* ProjectiveSpecialLinearGroup n F :=
   open scoped Classical in
