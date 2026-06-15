@@ -31,8 +31,7 @@ monomial of $P$.
   For example if `p = x⁴y+yz` then `totalDegree p = 5`.
 
 * `MvPolynomial.mainDegree p : Multiset σ` :
-  the multiset of variables whose degree in `p` is maximal among all variables
-  appearing in `p`.
+  the multiset of variables in `p` is maximal among all variables appearing in `p`.
   For example if `p = x²y+y³` with `x < y` then `mainDegree p = {y, y, y}`
 
 ## Notation
@@ -668,8 +667,7 @@ section mainDegree
 
 variable [LinearOrder σ] {i : σ}
 
-/-- The multiset of variables whose degree in `p` is maximal among all variables
-appearing in `p`.
+/-- The multiset of variables in `p` is maximal among all variables appearing in `p`.
 
 (For example, `mainDegrees (x^2 * y + y^3)` would be `{y, y, y}`.
 -/
