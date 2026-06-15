@@ -190,22 +190,27 @@ theorem EuclideanSpace.sphere_zero_eq {n : Type*} [Fintype n] (r : ℝ) (hr : 0 
 
 section
 
-/-- The natural equivalence between `EuclideanSpace 𝕜 α` and `𝕜`,
-for any index type `α` with a unique element. -/
-def EuclideanSpace.equivOfUnique (α : Type*) [Unique α] : EuclideanSpace 𝕜 α ≃L[𝕜] 𝕜 where
+variable (𝕜) in
+/-- The natural equivalence between `PiLp p α` and `α default`,
+for any index type `ι` with a unique element. -/
+def PiLp.equivOfUnique {ι : Type*} [Unique ι] (p : ℝ≥0∞) (α : ι → Type*)
+    [∀ i, NormedAddCommGroup (α i)] [∀ i, NormedSpace 𝕜 (α i)] :
+    PiLp p α ≃L[𝕜] α default where
   toFun z := z default
-  invFun z := toLp 2 <| fun _ ↦ z
+  invFun := PiLp.single (β := α) p default
   left_inv z := by
-    ext
-    dsimp
-    apply congrArg
-    exact Subsingleton.elim ..
+    ext i
+    rw [Unique.default_eq i]
+    simp
+  right_inv z := by simp
   map_add' := by intro; simp
   map_smul' := by intro; simp
+  continuous_invFun := by fun_prop [PiLp.single]
 
 @[simp]
-lemma EuclideanSpace.equivOfUnique_apply {α : Type*} [Unique α] (z : EuclideanSpace ℝ α) :
-    EuclideanSpace.equivOfUnique α z = z default := rfl
+lemma PiLp.equivOfUnique_apply [Unique ι] (p : ℝ≥0∞) (α : ι → Type*)
+    [∀ i, NormedAddCommGroup (α i)] [∀ i, NormedSpace 𝕜 (α i)] (z : PiLp p α) :
+    PiLp.equivOfUnique 𝕜 p α z = z default := rfl
 
 instance EuclideanSpace.infinite [Nonempty ι] : Infinite (EuclideanSpace 𝕜 ι) :=
   Module.Free.infinite 𝕜 _
