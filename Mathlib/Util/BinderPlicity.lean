@@ -5,12 +5,12 @@ Authors: Fernando Leal, Thomas Murrills
 -/
 module
 
-public meta import Lean
+public meta import Lean.Server.CodeActions.Basic
 
 public meta section
-open Lean Meta Server Lsp
 
-open Lean.Parser.Term in
+open Lean Server Lsp Parser.Term
+
 /-- A code action to switch between explicit and implicit binders -/
 @[code_action_provider]
 def binderPlicity : CodeActionProvider := fun params snap => do
