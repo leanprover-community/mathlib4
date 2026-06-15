@@ -125,19 +125,19 @@ lemma comp_isLocalDiffeomorphAt_left (hf : IsImmersedPoint I I' f x)
     IsImmersedPoint J I' (f ∘ f₀) y :=
   (hxy ▸ hf).comp (hf₀.isImmersedPoint hn)
 
--- TODO: is this true? do we need it?
-lemma comp_isInvertible_mfderiv_left_iff {f₀ : N → M} {y : N} (hxy : f₀ y = x)
-    (hf₀ : (mfderiv% f₀ y) |>.IsInvertible) (hn : n ≠ 0) :
-    IsImmersedPoint I I' f x ↔ IsImmersedPoint J I' (f ∘ f₀) y := by
-  refine ⟨fun hf ↦ hf.comp_isInvertible_mfderiv_left hxy hf₀, fun h ↦ ?_⟩
-  unfold IsImmersedPoint at h ⊢
-  have h' : ((mfderiv% f (f₀ y)).comp (mfderiv% f₀ y)).HasLeftInverse := by
-    convert h <;>
-    sorry /-rw [← mfderiv_comp]
-    · sorry -- this might not be true!
-    · sorry -- easy from hf₀ -/
-  --apply ContinuousLinearMap.HasLeftInverse.of_comp h' gives the wrong result!
-  sorry
+-- unsure if this is true (e.g. in the presence of boundary)
+-- lemma comp_isInvertible_mfderiv_left_iff {f₀ : N → M} {y : N} (hxy : f₀ y = x)
+--     (hf₀ : (mfderiv% f₀ y) |>.IsInvertible) (hn : n ≠ 0) :
+--     IsImmersedPoint I I' f x ↔ IsImmersedPoint J I' (f ∘ f₀) y := by
+--   refine ⟨fun hf ↦ hf.comp_isInvertible_mfderiv_left hxy hf₀, fun h ↦ ?_⟩
+--   unfold IsImmersedPoint at h ⊢
+--   have h' : ((mfderiv% f (f₀ y)).comp (mfderiv% f₀ y)).HasLeftInverse := by
+--     convert h <;>
+--     sorry /-rw [← mfderiv_comp]
+--     · sorry -- this might not be true!
+--     · sorry -- easy from hf₀ -/
+--   --apply ContinuousLinearMap.HasLeftInverse.of_comp h' gives the wrong result!
+--   sorry
 
 lemma comp_isLocalDiffeomorphAt_left_iff {f₀ : N → M} {y : N} (hxy : f₀ y = x)
     (hf₀ : IsLocalDiffeomorphAt J I n f₀ y) (hn : n ≠ 0) :
