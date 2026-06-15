@@ -6,12 +6,12 @@ Authors: Michael Lee
 module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Data.Finite.Card
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 public import Mathlib.Geometry.Manifold.IsManifold.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.Orientation
+public import Mathlib.SetTheory.Cardinal.NatCard
 public import Mathlib.Topology.LocallyConstant.Algebra
 
 /-!
@@ -57,6 +57,14 @@ noncomputable def signedOrientation (s : ZMod 2)
   if s = 0 then o else -o
 
 omit [FiniteDimensional ℝ E] in
+@[simp] theorem signedOrientation_zero (o : Orientation ℝ E (Fin (Module.finrank ℝ E))) :
+    signedOrientation 0 o = o := if_pos rfl
+
+omit [FiniteDimensional ℝ E] in
+@[simp] theorem signedOrientation_one (o : Orientation ℝ E (Fin (Module.finrank ℝ E))) :
+    signedOrientation 1 o = -o := if_neg (by decide)
+
+omit [FiniteDimensional ℝ E] in
 theorem signedOrientation_add (a b : ZMod 2)
     (o : Orientation ℝ E (Fin (Module.finrank ℝ E))) :
     signedOrientation (a + b) o =
@@ -84,14 +92,16 @@ omit [FiniteDimensional ℝ E] in
 theorem signedOrientation_injective
     (o : Orientation ℝ E (Fin (Module.finrank ℝ E))) :
     Function.Injective (fun s : ZMod 2 => signedOrientation s o) := by
+  have key : ∀ s : ZMod 2, s ≠ 0 → s = 1 := by decide
   intro a b h
-  fin_cases a <;> fin_cases b
-  · rfl
-  · exfalso
-    exact (Module.Ray.ne_neg_self o) (by simpa [signedOrientation] using h)
-  · exfalso
-    exact (Module.Ray.ne_neg_self o) (by simpa [signedOrientation] using h.symm)
-  · rfl
+  simp only [signedOrientation] at h
+  by_cases ha : a = 0 <;> by_cases hb : b = 0
+  · rw [ha, hb]
+  · rw [if_pos ha, if_neg hb] at h
+    exact absurd h (Module.Ray.ne_neg_self o)
+  · rw [if_neg ha, if_pos hb] at h
+    exact absurd h.symm (Module.Ray.ne_neg_self o)
+  · rw [key a ha, key b hb]
 
 namespace Orientation
 
@@ -100,7 +110,7 @@ theorem map_signedOrientation (f : E ≃ₗ[ℝ] E) (s : ZMod 2)
     (o : Orientation ℝ E (Fin (Module.finrank ℝ E))) :
     Orientation.map (Fin (Module.finrank ℝ E)) f (signedOrientation s o) =
       signedOrientation s (Orientation.map (Fin (Module.finrank ℝ E)) f o) := by
-  fin_cases s <;> simp [signedOrientation, Orientation.map_neg]
+  by_cases hs : s = 0 <;> simp [signedOrientation, hs, Orientation.map_neg]
 
 end Orientation
 
@@ -185,15 +195,11 @@ theorem point_has_two_manifoldOrientations :
   let oPos : ManifoldOrientation (𝓘(ℝ, EuclideanSpace ℝ (Fin 0)))
       (EuclideanSpace ℝ (Fin 0)) :=
     { chartSign := fun _ => LocallyConstant.const _ (0 : ZMod 2)
-      compatible := by
-        intro x y z hz
-        simpa using compatible_const_chartSign 0 x y z }
+      compatible := fun x y z _ => compatible_const_chartSign 0 x y z }
   let oNeg : ManifoldOrientation (𝓘(ℝ, EuclideanSpace ℝ (Fin 0)))
       (EuclideanSpace ℝ (Fin 0)) :=
     { chartSign := fun _ => LocallyConstant.const _ (1 : ZMod 2)
-      compatible := by
-        intro x y z hz
-        simpa using compatible_const_chartSign 1 x y z }
+      compatible := fun x y z _ => compatible_const_chartSign 1 x y z }
   let x0 : EuclideanSpace ℝ (Fin 0) := default
   let z0 :
       {z // z ∈ (trivializationAt (EuclideanSpace ℝ (Fin 0))
@@ -203,9 +209,8 @@ theorem point_has_two_manifoldOrientations :
   refine ⟨oPos, oNeg, ?_, ?_⟩
   · intro h
     have hchart : oPos.chartSign = oNeg.chartSign := congrArg ManifoldOrientation.chartSign h
-    have hpt : (0 : ZMod 2) = 1 := by
-      simpa [oPos, oNeg, x0, z0] using congrArg (fun f => f x0 z0) hchart
-    exact Fin.zero_ne_one hpt
+    have hpt : (0 : ZMod 2) = 1 := congrArg (fun f => (f x0) z0) hchart
+    exact absurd hpt (by decide)
   · intro o
     have hval : o.chartSign x0 z0 = (0 : ZMod 2) ∨ o.chartSign x0 z0 = (1 : ZMod 2) := by
       refine Fin.cases ?_ ?_ (o.chartSign x0 z0)
@@ -221,8 +226,7 @@ theorem point_has_two_manifoldOrientations :
       ext z
       have hz : z = z0 := Subsingleton.elim z z0
       subst hz
-      have hPos : (oPos.chartSign x0) z0 = 0 := by
-        simp [oPos]
+      have hPos : (oPos.chartSign x0) z0 = 0 := rfl
       exact h0.trans hPos.symm
     · right
       apply mo_eq_of_chartSign_eq
@@ -231,8 +235,7 @@ theorem point_has_two_manifoldOrientations :
       ext z
       have hz : z = z0 := Subsingleton.elim z z0
       subst hz
-      have hNeg : (oNeg.chartSign x0) z0 = 1 := by
-        simp [oNeg]
+      have hNeg : (oNeg.chartSign x0) z0 = 1 := rfl
       exact h1.trans hNeg.symm
 
 section Cardinality
@@ -254,12 +257,10 @@ theorem sub_eq_of_signedOrientation_map_eq
     sx - s0x = sy - s0y := by
   have hsx : signedOrientation sx o =
       signedOrientation (sx - s0x) (signedOrientation s0x o) := by
-    fin_cases sx <;> fin_cases s0x <;>
-      (simp [signedOrientation]; try exact (neg_neg o).symm)
+    rw [← signedOrientation_add, show sx - s0x + s0x = sx from by ring]
   have hsy : signedOrientation sy o =
       signedOrientation (sy - s0y) (signedOrientation s0y o) := by
-    fin_cases sy <;> fin_cases s0y <;>
-      (simp [signedOrientation]; try exact (neg_neg o).symm)
+    rw [← signedOrientation_add, show sy - s0y + s0y = sy from by ring]
   have h1 : Orientation.map (Fin (Module.finrank ℝ E)) L
       (signedOrientation (sx - s0x) (signedOrientation s0x o)) =
       signedOrientation sy o := by
@@ -279,7 +280,7 @@ theorem sub_eq_of_signedOrientation_map_eq
             simp [h0]
   have h3 : signedOrientation (sx - s0x) (signedOrientation s0y o) =
       signedOrientation (sy - s0y) (signedOrientation s0y o) := by
-    exact (h2.symm.trans h1).trans (by simp [hsy])
+    exact (h2.symm.trans h1).trans hsy
   exact (signedOrientation_injective
     (signedOrientation s0y o)) h3
 
@@ -396,7 +397,7 @@ def twist (o₀ : ManifoldOrientation I M) (δ : LocallyConstant M (ZMod 2)) :
           (((δ.comap ⟨((↑) : {z // z ∈ (trivializationAt E (TangentSpace I) y).baseSet} → M),
               continuous_subtype_val⟩) ⟨z, hz.2⟩) + o₀.chartSign y ⟨z, hz.2⟩)
           (baseOrientation) := by
-          simp [signedOrientation_add]
+          rw [signedOrientation_add]; rfl
 
 noncomputable def manifoldOrientationEquivLocallyConstant (o₀ : ManifoldOrientation I M) :
     ManifoldOrientation I M ≃ LocallyConstant M (ZMod 2) where
@@ -418,7 +419,8 @@ noncomputable def manifoldOrientationEquivLocallyConstant (o₀ : ManifoldOrient
               (neg_add_cancel_left (o₀.chartSign x z) (o.chartSign x z))
   right_inv δ := by
     ext z
-    simp [deltaLC, deltaFn, chartDelta, twist]
+    simp only [deltaLC, deltaFn, chartDelta, twist, LocallyConstant.coe_mk,
+      LocallyConstant.coe_comap_apply, ContinuousMap.coe_mk, add_sub_cancel_right]
 
 noncomputable def locallyConstantEquivConnectedComponents [LocallyConnectedSpace M] :
     LocallyConstant M (ZMod 2) ≃ (ConnectedComponents M → ZMod 2) where
