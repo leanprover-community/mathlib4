@@ -55,7 +55,7 @@ example {a b c : NotQuiteNat} (h : a + b = c) : True := by
 
 /--
 error: setm: pattern
-  @Eq Nat (?A✝ + ?B✝) ?m.11
+  @Eq Nat (?A✝ + ?B✝) ?m.12
 is not defeq to goal
   @Eq NotQuiteNat (a + b) c
 -/

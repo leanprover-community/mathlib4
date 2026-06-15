@@ -14,58 +14,34 @@ public meta import Lean.Elab.BuiltinTerm
 This module defines the `setm` tactic.
 -/
 
-public meta section
+meta section
 
 open Lean Elab Tactic Meta Term Syntax
 
 namespace Mathlib.Tactic.SetM
 
-/-- This parser is declared inside a hidden namespace and should never be used. Its
-purpose is to register the ``Hidden.setmSyntheticHole` syntaax node kind in
-the environment. -/
-scoped syntax:max (name := Hidden.setmSyntheticHole)
-  "?" (ident <|> "_") : term
-
-open Hidden in
-/-- We give a distinguished name to the named holes appearing in the `setm` match pattern,
-to avoid unifying them with other metavariables in the context which have the same name. The
-distinguished name is reused across all holes with the same name in the pattern. -/
-meta partial def wrapSyntheticHoles : Syntax → StateT (NameMap Name) TacticM Syntax :=
+partial def wrapSyntheticHoles : Syntax → StateT (NameMap MVarId) TacticM Syntax :=
   fun stx => do
     if stx.isOfKind ``Lean.Parser.Term.syntheticHole && stx[1].isIdent then
-      let name ←
+      let mvar ←
         if let .some old := (← get).get? stx[1].getId then
           pure old
         else
-          let unique ← mkFreshUserName stx[1].getId
-          modify (.insert · stx[1].getId unique)
-          pure unique
-      return stx.setKind ``setmSyntheticHole |>.setArg 1 (mkIdent name)
+          let name ← mkFreshUserName stx[1].getId
+          let mvar := (← mkFreshExprMVar .none (userName := name)).mvarId!
+          modify (.insert · stx[1].getId mvar)
+          pure mvar
+      let ident : Ident := mkIdent (← mvar.getTag)
+      return ← withRef stx <| `(? $ident)
     match stx with
     | .node info kind args => return .node info kind (← args.mapM wrapSyntheticHoles)
     | _ => return stx
-
-open Hidden in
-/-- Elaborate the named `setm` holes, creating metavariables for them. -/
-@[term_elab Hidden.setmSyntheticHole]
-def elabSetmSyntheticHole : Term.TermElab := fun stx expectedType? => do
-  unless stx.isOfKind ``setmSyntheticHole do
-    throwUnsupportedSyntax
-  if let .ident _ _ n _ := stx[1] then
-    -- Reuse metavariables in the context who have the same name.
-    -- nb: at this point, they already have the distinguished names, so this is safe.
-    for (id, decl) in (← getMCtx).decls do
-      if decl.userName == n then return .mvar id
-    let mvar ← mkFreshExprMVar expectedType? (userName := n)
-    registerMVarErrorHoleInfo mvar.mvarId! stx
-    return mvar
-  else elabHole stx expectedType?
 
 syntax (name := setMStx) "setm " term (Parser.Tactic.location)? : tactic
 
 -- This code was copied from the `change` tactic in core. I am not sure if in our context,
 -- all of it is necessary (could there be other synthetic opaque MVars that were not holes?).
-meta def elabSetM (e : Expr) (p : Syntax) : TacticM Expr := do
+def elabSetM (e : Expr) (p : Syntax) : TacticM Expr := do
   let p ← runTermElab do
     let p ← Term.elabTermEnsuringType p (← inferType e)
     unless ← isDefEq p e do
@@ -80,25 +56,16 @@ meta def elabSetM (e : Expr) (p : Syntax) : TacticM Expr := do
     return ← instantiateMVars p
 
 @[tactic setMStx]
-meta def evalSetM : Tactic
+public def evalSetM : Tactic
   | `(tactic| setm $pat:term $[$loc:location]?) => withReducibleAndInstances do
-    let (pat, names) ← StateT.run (wrapSyntheticHoles pat) .empty
+    let (pat, mvars) ← StateT.run (wrapSyntheticHoles pat) .empty
     let locations := expandOptLocation (Lean.mkOptionalNode loc)
     -- First, unify the pattern with the target of each location.
     withLocation locations
       (atLocal := unify pat ∘ .some)
       (atTarget := unify pat .none)
       (failed := fun _ ↦ throwError "'setm' tactic failed")
-    -- Now, make a mapping of hole names to the metavariables that appeared in the pattern.
-    let mctx ← getMCtx
-    let mvars : NameMap MVarId := mctx.decls.foldl (init := {}) fun acc id decl =>
-      if let Option.some n := Id.run <| do
-        for (n, un) in names do
-          if un == decl.userName then return .some n
-        return .none
-      then acc.insert n id
-      else acc
-    -- Finally, for each metavariable...
+    -- The, for each metavariable...
     for (n, m) in mvars do
       -- ... instantiate it and introduce a let into the context...
       let val ← instantiateMVars (.mvar m)
