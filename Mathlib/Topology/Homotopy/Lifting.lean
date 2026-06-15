@@ -412,9 +412,6 @@ lemma injective_path_homotopic_map (e₀ e₁ : E) :
   iterate 2 rw [Path.Homotopic.Quotient.eq]
   exact (cov.homotopicRel_iff_comp ⟨0, .inl rfl, γ₀.source.trans γ₁.source.symm⟩).mpr
 
-@[deprecated (since := "2025-11-20")]
-alias injective_path_homotopic_mapFn := injective_path_homotopic_map
-
 /-- A continuous map `f` from a simply-connected, locally path-connected space `A` to another
   space `X` lifts uniquely through a covering map `p : E → X`, after specifying any lift
   `e₀ : E` of any point `a₀ : A`. -/

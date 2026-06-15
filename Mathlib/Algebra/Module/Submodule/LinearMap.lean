@@ -278,9 +278,6 @@ theorem coe_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M
              map_zero' := rfl
              map_add' := fun _ _ => rfl }) _ _
 
-@[deprecated (since := "2025-11-24")]
-alias coeFn_sum := coe_sum
-
 theorem _root_.Module.End.submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M}
     {g : Module.End R N} {G : Module.End R M} (h : G.comp N.subtype = N.subtype.comp g) {k : ℕ}
     (hG : G ^ k = 0) : g ^ k = 0 := by

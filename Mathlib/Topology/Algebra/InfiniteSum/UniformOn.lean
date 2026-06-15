@@ -98,12 +98,6 @@ theorem HasProdUniformlyOn.tprod_eqOn [T2Space α] (h : HasProdUniformlyOn f g s
     s.EqOn (∏' b, f b ·) g :=
   fun _ hx ↦ (h.hasProd hx).tprod_eq
 
-@[deprecated (since := "2025-11-23")]
-alias HasProdUniformlyOn.tprod_eq := HasProdUniformlyOn.tprod_eqOn
-
-@[deprecated (since := "2025-11-23")]
-alias HasSumUniformlyOn.tsum_eq := HasSumUniformlyOn.tsum_eqOn
-
 @[to_additive]
 theorem MultipliableUniformlyOn.multipliable (h : MultipliableUniformlyOn f s) (hx : x ∈ s) :
     Multipliable (f · x) :=

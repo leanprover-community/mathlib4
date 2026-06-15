@@ -440,9 +440,6 @@ lemma unbot_le_unbot_iff (hx : x ≠ ⊥) (hy : y ≠ ⊥) : x.unbot hx ≤ y.un
 @[to_dual]
 alias ⟨_, unbot_mono⟩ := unbot_le_unbot_iff
 
-@[deprecated (since := "2025-12-05")]
-alias unbot_le_unbot := unbot_le_unbot_iff
-
 @[to_dual untopD_le_iff]
 lemma le_unbotD_iff (hx : x ≠ ⊥) : b ≤ x.unbotD a ↔ b ≤ x := by lift x to α using hx; simp
 @[to_dual le_untopD_iff]
@@ -499,9 +496,6 @@ lemma unbot_lt_iff (hx : x ≠ ⊥) : unbot x hx < b ↔ x < b := by lift x to �
 
 @[to_dual (reorder := hx hy)]
 lemma unbot_lt_unbot_iff (hx hy) : unbot x hx < unbot y hy ↔ x < y := by simp
-
-@[deprecated (since := "2025-12-05")]
-alias unbot_lt_unbot := unbot_lt_unbot_iff
 
 @[to_dual untopD_lt_iff]
 lemma lt_unbotD_iff (hx : x ≠ ⊥) : b < x.unbotD a ↔ b < x := by lift x to α using hx; simp

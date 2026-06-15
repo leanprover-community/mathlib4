@@ -95,9 +95,6 @@ theorem coe_algebraMapCLM : ⇑(algebraMapCLM R A) = algebraMap R A :=
 theorem toLinearMap_algebraMapCLM : (algebraMapCLM R A).toLinearMap = Algebra.linearMap R A :=
   rfl
 
-@[deprecated (since := "2025-12-05")] alias algebraMapCLM_toLinearMap := toLinearMap_algebraMapCLM
-@[deprecated (since := "2025-12-05")] alias algebraMapCLM_coe := coe_algebraMapCLM
-
 lemma ContinuousLinearMap.toSpanSingleton_one_eq_algebraMapCLM :
     toSpanSingleton R (M₁ := A) 1 = algebraMapCLM R A := by
   ext; simp

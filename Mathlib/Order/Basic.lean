@@ -73,12 +73,6 @@ variable [LE α] {a b c : α}
 @[to_dual self] protected lemma LE.le.ge (h : a ≤ b) : b ≥ a := h
 @[to_dual self] protected lemma GE.ge.le (h : a ≥ b) : b ≤ a := h
 
-@[deprecated le_of_eq_of_le (since := "2025-11-29")]
-theorem le_of_le_of_eq' : b ≤ c → a = b → a ≤ c := flip le_of_eq_of_le
-
-@[deprecated le_of_le_of_eq (since := "2025-11-29")]
-theorem le_of_eq_of_le' : b = c → a ≤ b → a ≤ c := flip le_of_le_of_eq
-
 @[to_dual trans_eq'] alias LE.le.trans_eq := le_of_le_of_eq
 @[to_dual trans_ge] alias Eq.trans_le := le_of_eq_of_le
 
@@ -90,12 +84,6 @@ variable [LT α] {a b c : α}
 
 @[to_dual self] protected lemma LT.lt.gt (h : a < b) : b > a := h
 @[to_dual self] protected lemma GT.gt.lt (h : a > b) : b < a := h
-
-@[deprecated lt_of_eq_of_lt (since := "2025-11-29")]
-theorem lt_of_lt_of_eq' : b < c → a = b → a < c := flip lt_of_eq_of_lt
-
-@[deprecated lt_of_lt_of_eq (since := "2025-11-29")]
-theorem lt_of_eq_of_lt' : b = c → a < b → a < c := flip lt_of_lt_of_eq
 
 @[to_dual trans_eq'] alias LT.lt.trans_eq := lt_of_lt_of_eq
 @[to_dual trans_gt] alias Eq.trans_lt := lt_of_eq_of_lt

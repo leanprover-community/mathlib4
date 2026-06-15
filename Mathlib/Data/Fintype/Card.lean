@@ -352,12 +352,6 @@ alias ⟨_root_.Function.Injective.surjective_of_finite,
     _root_.Function.Surjective.injective_of_finite⟩ :=
   injective_iff_surjective_of_equiv
 
-@[deprecated (since := "2025-11-28")]
-alias _root_.Function.Injective.surjective_of_fintype := Injective.surjective_of_finite
-
-@[deprecated (since := "2025-11-28")]
-alias _root_.Function.Surjective.injective_of_fintype := Surjective.injective_of_finite
-
 end Finite
 
 @[simp]

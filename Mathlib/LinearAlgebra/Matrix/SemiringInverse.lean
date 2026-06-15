@@ -232,36 +232,8 @@ instance (priority := low) instIsStablyFiniteRingOfCommSemiring : IsStablyFinite
     ((isAddUnit_detp_smul_mul_adjp hAB).add
       ((isAddUnit_detp_mul_detp hAB).smul_right _)).add_left_inj] at h
 
-@[deprecated (since := "2025-11-29")] protected alias mul_eq_one_comm := mul_eq_one_comm
-
 variable (A B)
 
-/-- We can construct an instance of invertible A if A has a left inverse. -/
-@[deprecated invertibleOfLeftInverse (since := "2025-12-06"), implicit_reducible]
-protected def invertibleOfLeftInverse (h : B * A = 1) : Invertible A :=
-  invertibleOfLeftInverse _ _ h
-
-/-- We can construct an instance of invertible A if A has a right inverse. -/
-@[deprecated invertibleOfRightInverse (since := "2025-12-06"), implicit_reducible]
-protected def invertibleOfRightInverse (h : A * B = 1) : Invertible A :=
-  invertibleOfRightInverse _ _ h
-
 variable {A B}
-
-@[deprecated IsUnit.of_mul_eq_one_right (since := "2025-12-06")]
-theorem isUnit_of_left_inverse (h : B * A = 1) : IsUnit A :=
-  .of_mul_eq_one_right _ h
-
-@[deprecated isUnit_iff_exists_inv' (since := "2025-12-06")]
-theorem exists_left_inverse_iff_isUnit : (∃ B, B * A = 1) ↔ IsUnit A :=
-  isUnit_iff_exists_inv'.symm
-
-@[deprecated IsUnit.of_mul_eq_one (since := "2025-12-06")]
-theorem isUnit_of_right_inverse (h : A * B = 1) : IsUnit A :=
-  .of_mul_eq_one _ h
-
-@[deprecated isUnit_iff_exists_inv (since := "2025-12-06")]
-theorem exists_right_inverse_iff_isUnit : (∃ B, A * B = 1) ↔ IsUnit A :=
-  isUnit_iff_exists_inv.symm
 
 end Matrix

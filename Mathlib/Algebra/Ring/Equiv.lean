@@ -889,10 +889,6 @@ def ofNonUnitalRingHom (hom : R →ₙ+* S) (inv : S →ₙ+* R)
 
 attribute [simp] ofNonUnitalRingHom_apply
 
-@[deprecated (since := "2025-12-04")] alias ofHomInv' := ofNonUnitalRingHom
-@[deprecated (since := "2025-12-04")] alias ofHomInv'_apply := ofNonUnitalRingHom_apply
-@[deprecated (since := "2025-12-04")] alias ofHomInv'_symm_apply := ofNonUnitalRingHom_symm_apply
-
 @[simp]
 theorem symm_ofNonUnitalRingHom (f : R →ₙ+* S) (g : S →ₙ+* R) (h₁ h₂) :
     (ofNonUnitalRingHom f g h₁ h₂).symm = ofNonUnitalRingHom g f h₂ h₁ :=
@@ -915,10 +911,6 @@ def ofRingHom (f : R →+* S) (g : S →+* R) (h₁ : f.comp g = RingHom.id S)
     right_inv := RingHom.ext_iff.1 h₁ }
 
 attribute [simp] ofRingHom_apply
-
-@[deprecated (since := "2025-12-04")] alias ofHomInv := ofRingHom
-@[deprecated (since := "2025-12-04")] alias ofHomInv_apply := ofRingHom_apply
-@[deprecated (since := "2025-12-04")] alias ofHomInv_symm_apply := ofRingHom_symm_apply
 
 theorem coe_ringHom_ofRingHom (f : R →+* S) (g : S →+* R) (h₁ h₂) : ofRingHom f g h₁ h₂ = f :=
   rfl

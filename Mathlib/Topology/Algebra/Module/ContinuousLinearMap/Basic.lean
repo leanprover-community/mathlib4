@@ -764,8 +764,6 @@ theorem toSpanSingleton_zero : toSpanSingleton R₁ (0 : M₁) = 0 := by ext; si
 theorem toSpanSingleton_apply_one (x : M₁) : toSpanSingleton R₁ x 1 = x :=
   one_smul _ _
 
-@[deprecated (since := "2025-12-05")] alias toSpanSingleton_one := toSpanSingleton_apply_one
-
 @[simp] theorem toSpanSingleton_apply_map_one (c : R₁ →L[R₁] M₂) :
     toSpanSingleton R₁ (c 1) = c := by
   ext
@@ -787,9 +785,6 @@ theorem smulRight_id : smulRight (.id R₁ R₁) = toSpanSingleton R₁ (M₁ :=
 theorem smulRight_one_eq_toSpanSingleton (x : M₁) :
     (1 : R₁ →L[R₁] R₁).smulRight x = toSpanSingleton R₁ x :=
   rfl
-
-@[deprecated (since := "2025-12-05")] alias one_smulRight_eq_toSpanSingleton :=
-  smulRight_one_eq_toSpanSingleton
 
 @[simp]
 theorem toLinearMap_toSpanSingleton (x : M₁) :

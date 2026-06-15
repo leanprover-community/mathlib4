@@ -101,15 +101,9 @@ theorem Lex.lt_iff_of_unique [Unique ι] [∀ i, LT (β i)] [Preorder ι] {x y :
     x < y ↔ x default < y default :=
   lex_iff_of_unique
 
-@[deprecated (since := "2025-11-29")]
-alias lex_lt_iff_of_unique := Lex.lt_iff_of_unique
-
 theorem Colex.lt_iff_of_unique [Unique ι] [∀ i, LT (β i)] [Preorder ι] {x y : Colex (∀ i, β i)} :
     x < y ↔ x default < y default :=
   lex_iff_of_unique
-
-@[deprecated (since := "2025-11-29")]
-alias colex_lt_iff_of_unique := Colex.lt_iff_of_unique
 
 instance Lex.isStrictOrder [LinearOrder ι] [∀ a, PartialOrder (β a)] :
     IsStrictOrder (Lex (∀ i, β i)) (· < ·) where

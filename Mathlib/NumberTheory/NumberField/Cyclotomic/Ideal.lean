@@ -224,9 +224,6 @@ theorem ramificationIdxIn_eq_of_prime :
   rw [← pow_one p] at hK
   rw [ramificationIdxIn_eq_of_prime_pow p 0, pow_zero, one_mul]
 
-@[deprecated (since := "2025-12-03")] alias ramificationIdxIn_of_prime :=
-  ramificationIdxIn_eq_of_prime
-
 end Prime
 
 section notDvd
@@ -254,9 +251,6 @@ theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
       ← (zeta_spec m ℚ K).coe_toInteger, ← RingOfIntegers.minpoly_coe ζ]
     simp [ζ]
 
-@[deprecated (since := "2025-12-10")]
-alias inertiaDeg_of_not_dvd := inertiaDeg_eq_of_not_dvd
-
 theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
     ramificationIdx 𝒑 P = 1 := by
   let ζ := (zeta_spec m ℚ K).toInteger
@@ -276,9 +270,6 @@ theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
   · rw [ENat.coe_one]
     exact Order.one_le_iff_pos.mpr <| emultiplicity_pos_of_dvd h₂.2.2
 
-@[deprecated (since := "2025-12-10")]
-alias ramificationIdx_of_not_dvd := ramificationIdx_eq_of_not_dvd
-
 theorem inertiaDegIn_eq_of_not_dvd (hm : ¬ p ∣ m) :
     𝒑.inertiaDegIn (𝓞 K) = orderOf (p : ZMod m) := by
   have : IsGalois ℚ K := isGalois {m} ℚ K
@@ -290,10 +281,6 @@ theorem ramificationIdxIn_eq_of_not_dvd (hm : ¬ p ∣ m) :
   have : IsGalois ℚ K := isGalois {m} ℚ K
   obtain ⟨⟨P, _, _⟩⟩ := 𝒑.nonempty_primesOver (S := 𝓞 K)
   rw [ramificationIdxIn_eq_ramificationIdx 𝒑 P Gal(K/ℚ), ramificationIdx_eq_of_not_dvd p K P hm]
-
-@[deprecated (since := "2025-12-03")] alias inertiaDegIn_of_not_dvd := inertiaDegIn_eq_of_not_dvd
-@[deprecated (since := "2025-12-03")] alias ramificationIdxIn_of_not_dvd :=
-  ramificationIdxIn_eq_of_not_dvd
 
 end notDvd
 
