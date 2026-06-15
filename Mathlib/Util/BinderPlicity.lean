@@ -6,7 +6,6 @@ Authors: Fernando Leal
 module
 
 public meta import Lean
-public import Mathlib
 
 public meta section
 open Lean Meta Server Lsp
@@ -14,7 +13,6 @@ open Lean Meta Server Lsp
 open Lean.Parser.Term in
 @[code_action_provider]
 def binderPlicity : CodeActionProvider := fun params snap => do
-  /- TODO: Options for finding things in syntax -/
   let mut binders := #[]
   let doc ← RequestM.readDoc
   for stx in snap.stx.topDown do
