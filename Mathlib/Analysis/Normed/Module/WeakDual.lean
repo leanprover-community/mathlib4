@@ -404,40 +404,50 @@ theorem continuous_of_continuous_eval_re {g : α → WeakDual 𝕜 F}
 
 variable [ContinuousConstSMul 𝕜 F] [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
 
-set_option backward.isDefEq.respectTransparency false in
-open StrongDual in
+open StrongDual
+
 /-- The extension `StrongDual.extendRCLike` as a continuous linear equivalence between
 the weak duals. -/
+@[simps! -isSimp apply symm_apply]
 noncomputable def extendRCLikeL : WeakDual ℝ F ≃L[ℝ] WeakDual 𝕜 F where
   toLinearEquiv := toStrongDual ≪≫ₗ extendRCLikeₗ ≪≫ₗ toWeakDual.restrictScalars ℝ
-  continuous_toFun := WeakBilin.continuous_of_continuous_eval_re _ fun x ↦ by
+  continuous_toFun := continuous_of_continuous_eval_re fun x ↦ by
     simpa [extendRCLikeₗ_apply, toWeakDual_apply _ x] using eval_continuous x
   continuous_invFun :=
     continuous_of_continuous_eval fun x ↦ RCLike.continuous_re.comp (eval_continuous x)
 
-set_option backward.isDefEq.respectTransparency false in
-open StrongDual in
+@[simp]
 lemma toLinearEquiv_extendRCLikeL :
     (extendRCLikeL (𝕜 := 𝕜) (F := F)).toLinearEquiv =
       toStrongDual ≪≫ₗ extendRCLikeₗ ≪≫ₗ toWeakDual.restrictScalars ℝ := by
   rfl
 
 lemma extendRCLikeL_apply_apply (f : WeakDual ℝ F) (x : F) :
-    extendRCLikeL (𝕜 := 𝕜) f x = f x - (I : 𝕜) • f ((I : 𝕜) • x) :=
-  (toStrongDual f).extendRCLike_apply x
+    extendRCLikeL (𝕜 := 𝕜) f x = f x - (I : 𝕜) • f ((I : 𝕜) • x) := by
+  rfl
 
 lemma extendRCLikeL_symm_apply_apply (f : WeakDual 𝕜 F) (x : F) :
     extendRCLikeL.symm f x = re (f x) :=
   rfl
 
+@[simp]
+lemma re_extendRCLikeL_apply_apply (f : WeakDual ℝ F) (x : F) :
+    re (extendRCLikeL (𝕜 := 𝕜) f x) = f x := by
+  simp [extendRCLikeL_apply_apply]
+
+@[simp]
+lemma im_extendRCLikeL_apply_apply (f : WeakDual ℝ F) (x : F) :
+    im (extendRCLikeL (𝕜 := 𝕜) f x) = - f ((I : 𝕜) • x) := by
+  obtain (h | h) := RCLike.I_eq_zero_or_im_I_eq_one (K := 𝕜) <;> simp [extendRCLikeL_apply_apply, h]
+
 @[simp high]
 lemma toStrongDual_extendRCLikeL_apply (f : WeakDual ℝ F) :
-    (extendRCLikeL (𝕜 := 𝕜) f).toStrongDual = StrongDual.extendRCLikeₗ f.toStrongDual :=
+    (extendRCLikeL (𝕜 := 𝕜) f).toStrongDual = extendRCLikeₗ f :=
   rfl
 
 @[simp high]
 lemma _root_.StrongDual.toWeakDual_extendRCLikeₗ_apply (f : StrongDual ℝ F) :
-    (StrongDual.extendRCLikeₗ f).toWeakDual = extendRCLikeL (𝕜 := 𝕜) f.toWeakDual :=
+    (extendRCLikeₗ f).toWeakDual = extendRCLikeL (𝕜 := 𝕜) f.toWeakDual :=
   rfl
 
 end WeakDual
