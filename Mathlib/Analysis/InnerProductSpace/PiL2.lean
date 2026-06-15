@@ -190,6 +190,23 @@ theorem EuclideanSpace.sphere_zero_eq {n : Type*} [Fintype n] (r : ℝ) (hr : 0 
 
 section
 
+/-- The natural equivalence between `EuclideanSpace 𝕜 α` and `𝕜`,
+for any index type `α` with a unique element. -/
+def EuclideanSpace.equivOfUnique (α : Type*) [Unique α] : EuclideanSpace 𝕜 α ≃L[𝕜] 𝕜 where
+  toFun z := z default
+  invFun z := toLp 2 <| fun _ ↦ z
+  left_inv z := by
+    ext
+    dsimp
+    apply congrArg
+    exact Subsingleton.elim ..
+  map_add' := by intro; simp
+  map_smul' := by intro; simp
+
+@[simp]
+lemma EuclideanSpace.equivOfUnique_apply {α : Type*} [Unique α] (z : EuclideanSpace ℝ α) :
+    EuclideanSpace.equivOfUnique α z = z default := rfl
+
 instance EuclideanSpace.infinite [Nonempty ι] : Infinite (EuclideanSpace 𝕜 ι) :=
   Module.Free.infinite 𝕜 _
 
