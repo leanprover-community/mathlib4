@@ -382,13 +382,6 @@ theorem mainDegree_eq_zero_iff : p.mainDegree = 0 ↔ p.vars.max = ⊥ where
 theorem mainDegree_eq_zero_iff_eq_C : p.mainDegree = 0 ↔ p = C (p.coeff 0) := by
   rw [mainDegree_eq_zero_iff, Finset.max_eq_bot, vars_eq_empty_iff_eq_C]
 
-theorem degreeOf_max_vars_ne_zero (h : p.vars.max = c) : p.degreeOf c ≠ 0 := by
-  simp [← mainDegree_of_max_vars_isSome h, mainDegree_eq_zero_iff, h]
-
-theorem max_vars_mem_degrees (h : p.vars.max = c) : c ∈ p.degrees := by
-  rw [← Multiset.count_ne_zero, ← degreeOf_def]
-  exact degreeOf_max_vars_ne_zero h
-
 @[simp] theorem mainDegree_zero : (0 : MvPolynomial σ R).mainDegree = 0 := rfl
 
 theorem mainDegree_monomial {s : σ →₀ ℕ} {r : R} (hr : r ≠ 0)
