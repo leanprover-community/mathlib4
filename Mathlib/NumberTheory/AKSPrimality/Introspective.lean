@@ -41,9 +41,9 @@ def Introspective {R : Type*} [CommRing R] (f : R[X]) (e r : ℕ) : Prop :=
 
 namespace Introspective
 
-variable {b d r p a n e : ℕ} {f g : (ZMod n)[X]} {R : Type*}
+variable {b d r p a n e : ℕ} {R : Type*}
 
-theorem dvd_of_introspective (h : Introspective f e r) (hd : p ∣ n) :
+theorem dvd_of_introspective {f : (ZMod n)[X]} (h : Introspective f e r) (hd : p ∣ n) :
     Introspective (R:= ZMod p) (f.map (ZMod.castHom hd _)) e r := by
   simp only [Introspective] at *
   let g := lift (span {(X : (ZMod n)[X]) ^ r - C 1}) (RingHom.comp (mk (span
@@ -61,11 +61,16 @@ theorem dvd_of_introspective (h : Introspective f e r) (hd : p ∣ n) :
     congr
     simp
 
-theorem aeval_of_primitive_roots {K : Type*} [CommRing K] [IsDomain K] [Algebra (ZMod n) K]
+section CommRing
+
+variable [CommRing R] {f g : R[X]}
+
+
+theorem aeval_of_primitive_roots {K : Type*} [CommRing K] [IsDomain K] [Algebra R K]
     (h : Introspective f e r) : ∀ μ ∈ (primitiveRoots r K), f.aeval μ ^ e = f.aeval (μ ^ e) := by
   intro μ hμ
   simp only [Introspective] at h
-  let g := lift (S := K) (span ({(X : (ZMod n)[X]) ^ r - C 1})) (aeval (R := (ZMod n)) μ) (by
+  let g := lift (S := K) (span ({(X : R[X]) ^ r - C 1})) (aeval (R := R) μ) (by
     intro a ha
     simp only [RingHom.coe_coe]
     obtain ⟨ l , ee ⟩ := mem_span_singleton.mp ha
@@ -73,10 +78,11 @@ theorem aeval_of_primitive_roots {K : Type*} [CommRing K] [IsDomain K] [Algebra 
   exact (Iff.mp (Eq.congr (by simp [g]) (by simp [g, aeval_comp]))) (congrArg g h)
 
 @[simp]
-protected theorem one [CommRing R] (f : R[X]) : Introspective f 1 r := by
+protected theorem one (f : R[X]) : Introspective f 1 r := by
   simp [Introspective]
 
-protected theorem X_sub_C {a : ℕ} [Fact n.Prime] [CommRing R] [CharP R n] :
+
+protected theorem X_sub_C {a : ℕ} [Fact n.Prime] [CharP R n] :
     Introspective ((X : R[X]) - C (a : R)) n r := by
   simp only [Introspective]
   apply Ideal.Quotient.eq.mpr
@@ -87,8 +93,8 @@ protected theorem X_sub_C {a : ℕ} [Fact n.Prime] [CommRing R] [CharP R n] :
   simp
 
 /-- The product of two polynomials is introspective. -/
-protected theorem mul [CommRing R] {f g : R[X]} (hf : Introspective f e r)
-    (hg : Introspective g e r) : Introspective (f * g) e r := by
+protected theorem mul (hf : Introspective f e r) (hg : Introspective g e r) :
+    Introspective (f * g) e r := by
   simp_all only [Introspective, map_pow, map_mul, mul_comp]
   rw [← hf, ← hg]
   apply Ideal.Quotient.eq.mpr
@@ -96,8 +102,8 @@ protected theorem mul [CommRing R] {f g : R[X]} (hf : Introspective f e r)
   grind [mul_pow]
 
 /-- The product of coprime exponents is Introspective. -/
-theorem mul_of_coprime [CommRing R] {f : R[X]} {d e : ℕ} (hf : Introspective f e r)
-    (hg : Introspective f d r) (h : e.Coprime r) : Introspective f (e * d) r := by
+theorem mul_of_coprime (hf : Introspective f e r) (hg : Introspective f d r) (h : e.Coprime r) :
+    Introspective f (e * d) r := by
   by_cases hr : r = 0
   · grind
   · simp only [Introspective] at *
@@ -124,6 +130,8 @@ theorem mul_of_coprime [CommRing R] {f : R[X]} {d e : ℕ} (hf : Introspective f
         apply mem_span_singleton.mpr
         use z * w.comp (X ^ e)
         grind
+
+end CommRing
 
 variable [Field R] [CharP R p] [Fact p.Prime]
 
@@ -190,8 +198,8 @@ protected theorem div (h : Introspective ((X : R[X]) - C (a : R)) n r)
 
 /-- Necessary condition for the auxilliary proof. -/
 theorem of_multiset (s : Multiset (Fin b)) (hcprm : n.Coprime r)
-    (hs : ∀ x : Fin b, Introspective (ofMultiset {(x.val : (ZMod p))}) n r) (hdiv : p ∣ n) :
-    Introspective (ofMultiset (s.map fun x ↦ (x.val : (ZMod p)))) (p ^ d * (n / p) ^ e) r := by
+    (hs : ∀ x : Fin b, Introspective (ofMultiset {(x.val : R)}) n r) (hdiv : p ∣ n) :
+    Introspective (ofMultiset (s.map fun x ↦ (x.val : R))) (p ^ d * (n / p) ^ e) r := by
   simp only [ofMultiset_apply]
   have hcprm2 := Coprime.coprime_mul_right (Eq.symm (Nat.mul_div_cancel' hdiv) ▸ hcprm)
   induction s using Multiset.induction_on with
