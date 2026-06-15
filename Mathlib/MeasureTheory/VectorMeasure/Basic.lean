@@ -441,7 +441,7 @@ end VectorMeasure
 
 namespace Measure
 
-open Classical in
+open scoped Classical in
 /-- A finite measure coerced into a real function is a signed measure. -/
 def toSignedMeasure (μ : Measure α) [hμ : IsFiniteMeasure μ] : SignedMeasure α where
   measureOf' s := if MeasurableSet s then μ.real s else 0
@@ -452,7 +452,7 @@ def toSignedMeasure (μ : Measure α) [hμ : IsFiniteMeasure μ] : SignedMeasure
     rw [ENNReal.tsum_toReal_eq]
     exacts [(summable_measure_toReal hf₁ hf₂).hasSum, fun _ ↦ measure_ne_top _ _]
 
-open Classical in
+open scoped Classical in
 @[simp]
 theorem toSignedMeasure_apply (μ : Measure α) [hμ : IsFiniteMeasure μ] (i : Set α) :
     μ.toSignedMeasure i = if MeasurableSet i then μ.real i else 0 := rfl
@@ -497,7 +497,7 @@ theorem toSignedMeasure_smul (μ : Measure α) [IsFiniteMeasure μ] (r : ℝ≥0
     toSignedMeasure_apply_measurable hi, measureReal_nnreal_smul_apply]
   rfl
 
-open Classical in
+open scoped Classical in
 /-- A measure is a vector measure over `ℝ≥0∞`. -/
 def toENNRealVectorMeasure (μ : Measure α) : VectorMeasure α ℝ≥0∞ where
   measureOf' i := if MeasurableSet i then μ i else 0
@@ -508,7 +508,7 @@ def toENNRealVectorMeasure (μ : Measure α) : VectorMeasure α ℝ≥0∞ where
       MeasureTheory.measure_iUnion hf₂ hf₁]
     exact tsum_congr fun n => if_pos (hf₁ n)
 
-open Classical in
+open scoped Classical in
 @[simp]
 theorem toENNRealVectorMeasure_apply (μ : Measure α) (i : Set α) :
     μ.toENNRealVectorMeasure i = if MeasurableSet i then μ i else 0 := rfl
