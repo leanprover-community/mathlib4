@@ -52,6 +52,7 @@ abbrev map : PullbackCone (G.map f) (G.map g) :=
   PullbackCone.mk (G.map c.fst) (G.map c.snd)
     (by simpa using G.congr_map c.condition)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The map (as a cone) of a pullback cone is limit iff
 the map (as a pullback cone) is limit. -/
 def isLimitMapConeEquiv :
@@ -179,6 +180,7 @@ variable {W X Y : C} {f : W ⟶ X} {g : W ⟶ Y} (c : PushoutCocone f g) (G : C 
 abbrev map : PushoutCocone (G.map f) (G.map g) :=
   PushoutCocone.mk (G.map c.inl) (G.map c.inr) (by simpa using G.congr_map c.condition)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The map (as a cocone) of a pushout cocone is colimit iff
 the map (as a pushout cocone) is limit. -/
 def isColimitMapCoconeEquiv :
@@ -196,6 +198,7 @@ end PushoutCocone
 variable (G : C ⥤ D)
 variable {W X Y Z : C} {h : X ⟶ Z} {k : Y ⟶ Z} {f : W ⟶ X} {g : W ⟶ Y} (comm : f ≫ h = g ≫ k)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The map of a pushout cocone is a colimit iff the cofork consisting of the mapped morphisms is a
 colimit. This essentially lets us commute `PushoutCocone.mk` with `Functor.mapCocone`. -/
 def isColimitMapCoconePushoutCoconeEquiv :
@@ -330,6 +333,7 @@ instance : IsIso (pushoutComparison G f g) := by
   rw [← PreservesPushout.iso_hom]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A pushout cocone in `C` is colimit iff it becomes limit
 after the application of `yoneda.obj X` for all `X : C`. -/
 def PushoutCocone.isColimitYonedaEquiv (c : PushoutCocone f g) :

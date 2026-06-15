@@ -16,6 +16,8 @@ is Guitart exact.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory
@@ -41,6 +43,7 @@ def whiskerVertical (α : L ⟶ L') (β : R' ⟶ R) :
 
 namespace GuitartExact
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A 2-square stays Guitart exact if we replace the left and right functors
 by isomorphic functors. See also `whiskerVertical_iff`. -/
 lemma whiskerVertical [w.GuitartExact] (α : L ≅ L') (β : R ≅ R') :
@@ -117,6 +120,32 @@ instance vComp' [GuitartExact w] [GuitartExact w'] {L₁₂ : C₁ ⥤ C₃}
     (eR : R₁ ⋙ R₂ ≅ R₁₂) : (w.vComp' w' eL eR).GuitartExact := by
   dsimp only [TwoSquare.vComp']
   infer_instance
+
+set_option backward.isDefEq.respectTransparency false in
+lemma of_vComp [R₁.EssSurj] [w.GuitartExact] [(w ≫ᵥ w').GuitartExact] :
+    w'.GuitartExact := by
+  rw [guitartExact_iff_initial]
+  intro Y₂
+  rw [structuredArrowDownwards_initial_iff_of_iso _ (R₁.objObjPreimageIso Y₂).symm]
+  have := Functor.initial_of_natIso (structuredArrowDownwardsComp w w' (R₁.objPreimage Y₂)).symm
+  exact Functor.initial_of_initial_comp (w.structuredArrowDownwards (R₁.objPreimage Y₂)) _
+
+lemma of_vComp' {L₁₂ : C₁ ⥤ C₃} {R₁₂ : D₁ ⥤ D₃} (eL : L₁ ⋙ L₂ ≅ L₁₂) (eR : R₁ ⋙ R₂ ≅ R₁₂)
+    [R₁.EssSurj] [w.GuitartExact] [h : (w.vComp' w' eL eR).GuitartExact] :
+    w'.GuitartExact := by
+  dsimp [TwoSquare.vComp'] at h
+  rw [whiskerVertical_iff] at h
+  exact of_vComp w w'
+
+lemma vComp_iff_of_essSurj [R₁.EssSurj] [w.GuitartExact] :
+    (w ≫ᵥ w').GuitartExact ↔ w'.GuitartExact :=
+  ⟨fun _ ↦ of_vComp w w', fun _ ↦ inferInstance⟩
+
+lemma vComp'_iff_of_essSurj
+    {L₁₂ : C₁ ⥤ C₃} {R₁₂ : D₁ ⥤ D₃} (eL : L₁ ⋙ L₂ ≅ L₁₂) (eR : R₁ ⋙ R₂ ≅ R₁₂)
+    [R₁.EssSurj] [w.GuitartExact] :
+    (w.vComp' w' eL eR).GuitartExact ↔ w'.GuitartExact :=
+  ⟨fun _ ↦ of_vComp' w w' eL eR, fun _ ↦ inferInstance⟩
 
 set_option backward.isDefEq.respectTransparency false in
 lemma vComp_iff_of_equivalences (eL : C₂ ≌ C₃) (eR : D₂ ≌ D₃)

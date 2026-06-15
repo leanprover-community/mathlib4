@@ -5,7 +5,7 @@ Authors: Violeta Hernández Palacios, Mario Carneiro
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Cofinality
+public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 
 /-!
 # Fundamental sequences
@@ -33,7 +33,7 @@ variable {a b o : Ordinal}
 cofinal range. We provide `a = o.cof.ord` explicitly to avoid type rewrites. -/
 structure IsFundamentalSeq (f : Iio a → Iio o) : Prop where
   /-- This condition alongside the others is enough to conclude `o.cof.ord = a`, see
-  `IsFundamentalSeq.ord_cof_eq`. -/
+  `IsFundamentalSeq.ord_cof`. -/
   le_ord_cof : a ≤ o.cof.ord
   /-- A fundamental sequence is strictly monotonic. -/
   strictMono : StrictMono f
@@ -75,7 +75,7 @@ protected theorem id (ho : o ≤ o.cof.ord) : IsFundamentalSeq (o := o) id where
 protected theorem zero (f : Iio 0 → Iio 0) : IsFundamentalSeq f where
   strictMono _ := by simp
   le_ord_cof := by simp
-  isCofinal_range := by rw [range_eq_empty, isCofinal_empty_iff]; infer_instance
+  isCofinal_range := .of_isEmpty
 
 /-- The length one sequence `(o)` is a fundamental sequence for `o + 1`. -/
 protected theorem add_one (o : Ordinal) :
@@ -111,7 +111,7 @@ end IsFundamentalSeq
 /-- Every ordinal has a fundamental sequence. -/
 theorem exists_isFundamentalSeq (ha : o.cof.ord = a) : ∃ f : Iio a → Iio o, IsFundamentalSeq f := by
   subst ha
-  obtain ⟨s, hs, hs'⟩ := ord_cof_eq o.ToType
+  obtain ⟨s, hs, hs'⟩ := exists_ord_cof_eq o.ToType
   rw [cof_toType] at hs'
   let g := (OrderIso.setCongr _ _ (congrArg _ hs'.symm)).trans <|
     .ofRelIsoLT (enum (α := s) (· < ·))
@@ -121,7 +121,6 @@ theorem exists_isFundamentalSeq (ha : o.cof.ord = a) : ∃ f : Iio a → Iio o, 
 
 /-! ### Deprecated material -/
 
-set_option linter.deprecated false in
 /-- A fundamental sequence for `a` is an increasing sequence of length `o = cof a` that converges at
     `a`. We provide `o` explicitly in order to avoid type rewrites. -/
 @[deprecated IsFundamentalSeq (since := "2026-03-23")]
@@ -132,25 +131,21 @@ namespace IsFundamentalSequence
 
 variable {a o : Ordinal.{u}} {f : ∀ b < o, Ordinal.{u}}
 
-set_option linter.deprecated false in
 @[deprecated IsFundamentalSeq.ord_cof (since := "2026-03-23")]
 protected theorem cof_eq (hf : IsFundamentalSequence a o f) : a.cof.ord = o :=
   hf.1.antisymm' <| by
     rw [← hf.2.2]
     exact (ord_le_ord.2 (cof_blsub_le f)).trans (ord_card_le o)
 
-set_option linter.deprecated false in
 @[deprecated IsFundamentalSeq.strictMono (since := "2026-03-23")]
 protected theorem strict_mono (hf : IsFundamentalSequence a o f) {i j} :
     ∀ hi hj, i < j → f i hi < f j hj :=
   hf.2.1
 
-set_option linter.deprecated false in
 @[deprecated IsFundamentalSeq.iSup_add_one_eq (since := "2026-03-23")]
 theorem blsub_eq (hf : IsFundamentalSequence a o f) : blsub.{u, u} o f = a :=
   hf.2.2
 
-set_option linter.deprecated false in
 @[deprecated IsFundamentalSeq (since := "2026-03-23")]
 theorem ord_cof (hf : IsFundamentalSequence a o f) :
     IsFundamentalSequence a a.cof.ord fun i hi => f i (hi.trans_le (by rw [hf.cof_eq])) := by
@@ -158,17 +153,14 @@ theorem ord_cof (hf : IsFundamentalSequence a o f) :
   subst H
   exact hf
 
-set_option linter.deprecated false in
 @[deprecated IsFundamentalSeq.id (since := "2026-03-23")]
 theorem id_of_le_cof (h : o ≤ o.cof.ord) : IsFundamentalSequence o o fun a _ => a :=
   ⟨h, @fun _ _ _ _ => id, blsub_id o⟩
 
-set_option linter.deprecated false in
 @[deprecated IsFundamentalSeq.zero (since := "2026-03-23")]
 protected theorem zero {f : ∀ b < (0 : Ordinal), Ordinal} : IsFundamentalSequence 0 0 f :=
   ⟨by rw [cof_zero, ord_zero], @fun i _ hi => (not_lt_zero hi).elim, blsub_zero f⟩
 
-set_option linter.deprecated false in
 @[deprecated IsFundamentalSeq.add_one (since := "2026-03-23")]
 protected theorem succ : IsFundamentalSequence (succ o) 1 fun _ _ => o := by
   refine ⟨?_, @fun i j hi hj h => ?_, blsub_const Ordinal.one_ne_zero o⟩
@@ -177,7 +169,6 @@ protected theorem succ : IsFundamentalSequence (succ o) 1 fun _ _ => o := by
     rw [hi, hj] at h
     exact h.false.elim
 
-set_option linter.deprecated false in
 @[deprecated IsFundamentalSeq.strictMono (since := "2026-03-23")]
 protected theorem monotone (hf : IsFundamentalSequence a o f) {i j : Ordinal} (hi : i < o)
     (hj : j < o) (hij : i ≤ j) : f i hi ≤ f j hj := by
@@ -185,7 +176,6 @@ protected theorem monotone (hf : IsFundamentalSequence a o f) {i j : Ordinal} (h
   · exact (hf.2.1 hi hj hij).le
   · rfl
 
-set_option linter.deprecated false in
 @[deprecated IsFundamentalSeq.comp (since := "2026-03-23")]
 theorem trans {a o o' : Ordinal.{u}} {f : ∀ b < o, Ordinal.{u}} (hf : IsFundamentalSequence a o f)
     {g : ∀ b < o', Ordinal.{u}} (hg : IsFundamentalSequence o o' g) :
@@ -198,7 +188,6 @@ theorem trans {a o o' : Ordinal.{u}} {f : ∀ b < o, Ordinal.{u}} (hf : IsFundam
     · exact hf.2.2
     · exact hg.2.2
 
-set_option linter.deprecated false in
 @[deprecated IsFundamentalSeq (since := "2026-03-23")]
 protected theorem lt {a o : Ordinal} {s : Π p < o, Ordinal}
     (h : IsFundamentalSequence a o s) {p : Ordinal} (hp : p < o) : s p hp < a :=
@@ -206,7 +195,6 @@ protected theorem lt {a o : Ordinal} {s : Π p < o, Ordinal}
 
 end IsFundamentalSequence
 
-set_option linter.deprecated false in
 /-- Every ordinal has a fundamental sequence. -/
 @[deprecated exists_isFundamentalSeq (since := "2026-03-23")]
 theorem exists_fundamental_sequence (a : Ordinal.{u}) :

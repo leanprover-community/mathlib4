@@ -46,7 +46,6 @@ theorem congr {f₁ f₂ : G →* H} (h : f₁ = f₂) {φ : res f₁ A ⟶ B} {
   subst h
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the chain map sending `x : Hⁿ → A` to `(g : Gⁿ) ↦ φ (x (f ∘ g))`. -/
 @[simps! -isSimp f f_hom]
@@ -58,7 +57,7 @@ noncomputable def cochainsMap :
     subst hij
     ext
     simpa [inhomogeneousCochains.d_hom_apply, Fin.comp_contractNth, CochainComplex.of.d]
-      using (hom_comm_apply φ _ _).symm
+      using! (hom_comm_apply φ _ _).symm
 
 @[simp]
 lemma cochainsMap_id :
@@ -88,22 +87,20 @@ lemma cochainsMap_zero : cochainsMap (A := A) (B := B) f 0 = 0 := by rfl
 
 lemma cochainsMap_f_map_mono (hf : Function.Surjective f) [Mono φ] (i : ℕ) :
     Mono ((cochainsMap f φ).f i) := by
-  simpa [ModuleCat.mono_iff_injective] using
+  simpa [ModuleCat.mono_iff_injective] using!
     ((Rep.mono_iff_injective φ).1 inferInstance).comp_left.comp <|
     LinearMap.funLeft_injective_of_surjective k A _ hf.comp_left
 
-set_option backward.isDefEq.respectTransparency false in
 instance cochainsMap_id_f_map_mono {A B : Rep k G} (φ : A ⟶ B) [Mono φ] (i : ℕ) :
     Mono ((cochainsMap (MonoidHom.id G) φ).f i) :=
   cochainsMap_f_map_mono (MonoidHom.id G) φ (fun x => ⟨x, rfl⟩) i
 
 lemma cochainsMap_f_map_epi (hf : Function.Injective f) [Epi φ] (i : ℕ) :
     Epi ((cochainsMap f φ).f i) := by
-  simpa [ModuleCat.epi_iff_surjective] using
+  simpa [ModuleCat.epi_iff_surjective] using!
     ((Rep.epi_iff_surjective φ).1 inferInstance).comp_left.comp <|
     LinearMap.funLeft_surjective_of_injective k A _ hf.comp_left
 
-set_option backward.isDefEq.respectTransparency false in
 instance cochainsMap_id_f_map_epi {A B : Rep k G} (φ : A ⟶ B) [Epi φ] (i : ℕ) :
     Epi ((cochainsMap (MonoidHom.id G) φ).f i) :=
   cochainsMap_f_map_epi (MonoidHom.id G) φ (fun _ _ h => h) i
@@ -313,6 +310,7 @@ lemma cocyclesMap_comp_isoCocycles₁_hom :
     cocyclesMap f φ 1 ≫ (isoCocycles₁ B).hom = (isoCocycles₁ A).hom ≫ mapCocycles₁.{u, u} f φ := by
   simp [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapCocycles₁_one (φ : res 1 A ⟶ B) :
@@ -351,6 +349,7 @@ noncomputable def H1InfRes :
   zero := by rw [← map_comp, Category.comp_id, congr (QuotientGroup.mk'_comp_subtype S)
     (fun f φ => map f φ 1), map₁_one]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The inflation map `H¹(G ⧸ S, A^S) ⟶ H¹(G, A)` is a monomorphism. -/
 instance : Mono (H1InfRes A S).f := by
@@ -360,10 +359,11 @@ instance : Mono (H1InfRes A S).f := by
   simp_all only [H1InfRes_X₂, H1InfRes_X₁, H1InfRes_f, H1π_comp_map_apply (QuotientGroup.mk' S)]
   rcases (H1π_eq_zero_iff _).1 hx with ⟨y, hy⟩
   refine (H1π_eq_zero_iff _).2 ⟨⟨y, fun s => ?_⟩, funext fun g => QuotientGroup.induction_on g
-    fun g => Subtype.ext <| by simpa [-SetLike.coe_eq_coe] using congr_fun hy g⟩
-  simpa [coe_mapCocycles₁ (x := x), sub_eq_zero, (QuotientGroup.eq_one_iff s.1).2 s.2] using
+    fun g => Subtype.ext <| by simpa [-SetLike.coe_eq_coe] using! congr_fun hy g⟩
+  simpa [coe_mapCocycles₁ (x := x), sub_eq_zero, (QuotientGroup.eq_one_iff s.1).2 s.2] using!
     congr_fun hy s.1
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, the short complex
 `H¹(G ⧸ S, A^S) ⟶ H¹(G, A) ⟶ H¹(S, A)` is exact. -/
@@ -521,7 +521,7 @@ noncomputable def resNatTrans (n : ℕ) :
     functor k H n ⟶ resFunctor f ⋙ functor k G n where
   app X := map f (𝟙 _) n
   naturality {X Y} φ := by
-    simp only [functor_obj, Functor.comp_obj, functor_map, Functor.comp_map,
+    simp only [functor_map, Functor.comp_map,
       ← cancel_epi (groupCohomology.π _ n), HomologicalComplex.homologyπ_naturality_assoc,
       HomologicalComplex.homologyπ_naturality, ← HomologicalComplex.cyclesMap_comp_assoc,
       ← cochainsMap_comp, res_obj_ρ, Category.comp_id, Rep.hom_id]
