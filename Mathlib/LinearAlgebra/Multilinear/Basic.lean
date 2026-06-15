@@ -107,7 +107,7 @@ variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, AddCommMonoid (M₁ i
 
 instance : FunLike (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; cases h; rfl
+  coe_injective f g h := by cases f; cases g; cases h; rfl
 
 initialize_simps_projections MultilinearMap (toFun → apply)
 
@@ -273,9 +273,9 @@ def ofSubsingleton [Subsingleton ι] (i : ι) :
   invFun f :=
     { toFun := fun x ↦ f fun _ ↦ x
       map_add' := fun x y ↦ by
-        simpa [update_eq_const_of_subsingleton] using f.map_update_add 0 i x y
+        simpa [update_eq_const_of_subsingleton] using! f.map_update_add 0 i x y
       map_smul' := fun c x ↦ by
-        simpa [update_eq_const_of_subsingleton] using f.map_update_smul 0 i c x }
+        simpa [update_eq_const_of_subsingleton] using! f.map_update_smul 0 i c x }
   right_inv f := by ext x; refine congr_arg f ?_; exact (eq_const_of_subsingleton _ _).symm
 
 variable (M₁) {M₂}
@@ -525,7 +525,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     intro i
     by_cases hi : i = i₀
     · rw [hi]
-      simp only [B, sdiff_subset, update_self]
+      simp only [B, Finset.sdiff_subset, update_self]
     · simp only [B, hi, update_of_ne, Ne, not_false_iff, Finset.Subset.refl]
   have C_subset_A : ∀ i, C i ⊆ A i := by
     intro i
@@ -550,7 +550,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
       have : j = j₂ := by
         simpa [C] using hj
       rw [this]
-      simp only [B, mem_sdiff, not_true, not_false_iff, Finset.mem_singleton,
+      simp only [B, Finset.mem_sdiff, not_true, not_false_iff, Finset.mem_singleton,
         update_self, and_false]
     · simp [hi]
   have Beq :

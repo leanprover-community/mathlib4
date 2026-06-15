@@ -328,7 +328,7 @@ theorem isOpen_setOf_affineIndependent {ι : Type*} [Finite ι] :
     let ι' := { x // x ≠ i₀ }
     cases nonempty_fintype ι
     haveI : Fintype ι' := Subtype.fintype _
-    convert_to
+    convert_to!
       IsOpen ((fun (p : ι → E) (i : ι') ↦ p i -ᵥ p i₀) ⁻¹' {p : ι' → E | LinearIndependent 𝕜 p})
     exact isOpen_setOf_linearIndependent.preimage (by fun_prop)
 
@@ -355,7 +355,7 @@ theorem opNNNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[
 theorem opNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[𝕜] F} {M : ℝ}
     (hM : 0 ≤ M) (hu : ∀ i, ‖u (v i)‖ ≤ M) :
     ‖u‖ ≤ Fintype.card ι • ‖v.equivFunL.toContinuousLinearMap‖ * M := by
-  simpa using NNReal.coe_le_coe.mpr (v.opNNNorm_le ⟨M, hM⟩ hu)
+  simpa using! NNReal.coe_le_coe.mpr (v.opNNNorm_le ⟨M, hM⟩ hu)
 
 /-- A weaker version of `Basis.opNNNorm_le` that abstracts away the value of `C`. -/
 theorem exists_opNNNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
@@ -372,7 +372,7 @@ theorem exists_opNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
   obtain ⟨C, hC, h⟩ := v.exists_opNNNorm_le (F := F)
   refine ⟨C, hC, ?_⟩
   intro u M hM H
-  simpa using h ⟨M, hM⟩ H
+  simpa using! h ⟨M, hM⟩ H
 
 end Module.Basis
 
@@ -527,7 +527,7 @@ theorem FiniteDimensional.proper [FiniteDimensional 𝕜 E] : ProperSpace E := b
 
 end LocallyCompactField
 
-/- Over the real numbers, we can register the previous statement as an instance as it will not
+/-- Over the real numbers, we can register the previous statement as an instance as it will not
 cause problems in instance resolution since the properness of `ℝ` is already known. -/
 instance (priority := 900) FiniteDimensional.proper_real (E : Type u) [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] : ProperSpace E :=

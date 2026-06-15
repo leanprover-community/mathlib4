@@ -803,6 +803,9 @@ Q737892:
 
 Q739403:
   title: Stewart's theorem
+  decl: EuclideanGeometry.dist_sq_mul_dist_add_dist_sq_mul_dist
+  authors: Manuel Candales
+  date: 2021
 
 Q740093:
   title: Peano existence theorem
@@ -1013,6 +1016,9 @@ Q872088:
 
 Q877489:
   title: Apollonius's theorem
+  decl: EuclideanGeometry.dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq
+  authors: Manuel Candales
+  date: 2021
 
 Q890875:
   title: Bohr–van Leeuwen theorem

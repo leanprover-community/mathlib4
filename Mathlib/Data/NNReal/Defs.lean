@@ -6,8 +6,8 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Algebra.Order.Nonneg.Module
-public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
@@ -115,9 +115,14 @@ noncomputable instance : Semifield ℝ≥0 := fast_instance%
     rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
 
-noncomputable section
-deriving instance LinearOrderedCommGroupWithZero for NNReal
-end
+instance : IsOrderedRing ℝ≥0 :=
+  Nonneg.isOrderedRing
+
+instance : IsStrictOrderedRing ℝ≥0 :=
+  Nonneg.isStrictOrderedRing
+
+noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 where
+  bot_le h := h.2
 
 example {p q : ℝ≥0} (h1p : 0 < p) (h2p : p ≤ q) : q⁻¹ ≤ p⁻¹ := by
   with_reducible_and_instances exact inv_anti₀ h1p h2p
