@@ -35,22 +35,22 @@ namespace EdgeOrientation
 
 variable {α : Type*}
 
-/- Whether a given edge is undirected. -/
+/-- Whether a given edge is undirected. -/
 def IsUndirected : EdgeOrientation α → Prop
   | directed _ _ => False
   | undirected _ => True
 
-/- Directed link for a mixed graph -/
+/-- Directed link for a mixed graph -/
 def IsStep : EdgeOrientation α → α → α → Prop
   | directed a b, c, d => a = c ∧ b = d
   | undirected e, c, d => e = .mk c d
 
-/- The vertices for a given edge. -/
+/-- The vertices for a given edge. -/
 def support : EdgeOrientation α → Sym2 α
   | directed s t => .mk s t
   | undirected e => e
 
-/- Reverses the edge. -/
+/-- Reverses the edge. -/
 def reverse : EdgeOrientation α → EdgeOrientation α
   | directed s t => directed t s
   | undirected e => undirected e
