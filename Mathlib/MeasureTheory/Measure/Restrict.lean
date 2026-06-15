@@ -128,7 +128,7 @@ theorem _root_.IsCountablySpanning.null_of_forall_restrict_null {C : Set (Set α
     (hC : IsCountablySpanning C) (hm : C ⊆ MeasurableSet) (ht : ∀ t ∈ C, μ.restrict t s = 0) :
     μ s = 0 := by
   rw [← forall_measure_inter_isCountablySpanning_eq_zero hC]
-  refine fun t htc => ?_
+  intro t htc
   simpa [← μ.restrict_apply' (hm htc)] using ht t htc
 
 theorem restrict_apply₀' (hs : NullMeasurableSet s μ) : μ.restrict s t = μ (t ∩ s) := by
