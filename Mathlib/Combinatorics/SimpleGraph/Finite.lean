@@ -406,7 +406,7 @@ lemma minDegree_of_subsingleton [DecidableRel G.Adj] [Subsingleton V] : G.minDeg
   cases isEmpty_or_nonempty V <;>
     simp [minDegree, Finset.image_const]
 
-@[deprecated (since := "2026-04-05")] alias minDegree_of_isEmpty := minDegree_of_subsingleton
+@[deprecated (since := "2026-06-15")] alias minDegree_of_isEmpty := minDegree_of_subsingleton
 
 variable {G} in
 /-- If `G` is a subgraph of `H` then `G.minDegree ≤ H.minDegree`. -/
@@ -446,7 +446,7 @@ lemma maxDegree_of_subsingleton [DecidableRel G.Adj] [Subsingleton V] : G.maxDeg
   cases isEmpty_or_nonempty V <;>
     simp [maxDegree, Finset.image_const]
 
-@[deprecated (since := "2026-04-05")] alias maxDegree_of_isEmpty := maxDegree_of_subsingleton
+@[deprecated (since := "2026-06-15")] alias maxDegree_of_isEmpty := maxDegree_of_subsingleton
 
 /-- In a graph, if `k` is at least the degree of every vertex, then it is at least the maximum
 degree. -/
