@@ -47,8 +47,6 @@ adjoint
 
 -/
 
-@[expose] public section
-
 noncomputable section
 
 open Module RCLike
@@ -75,7 +73,7 @@ variable [CompleteSpace E] [CompleteSpace G]
 /-- The adjoint, as a continuous conjugate-linear map. This is only meant as an auxiliary
 definition for the main definition `adjoint`, where this is bundled as a conjugate-linear isometric
 equivalence. -/
-noncomputable def adjointAux : (E →L[𝕜] F) →L⋆[𝕜] F →L[𝕜] E :=
+def adjointAux : (E →L[𝕜] F) →L⋆[𝕜] F →L[𝕜] E :=
   (ContinuousLinearMap.compSL _ _ _ _ _ ((toDual 𝕜 E).symm : StrongDual 𝕜 E →L⋆[𝕜] E)).comp
     (toSesqForm : (E →L[𝕜] F) →L[𝕜] F →L⋆[𝕜] StrongDual 𝕜 E)
 
@@ -85,8 +83,7 @@ theorem adjointAux_apply (A : E →L[𝕜] F) (x : F) :
   rfl
 
 theorem adjointAux_inner_left (A : E →L[𝕜] F) (x : E) (y : F) : ⟪adjointAux A y, x⟫ = ⟪y, A x⟫ := by
-  rw [adjointAux_apply, toDual_symm_apply, toSesqForm_apply_coe, coe_comp', coe_innerSL_apply,
-    Function.comp_apply]
+  simp
 
 theorem adjointAux_inner_right (A : E →L[𝕜] F) (x : E) (y : F) :
     ⟪x, adjointAux A y⟫ = ⟪A x, y⟫ := by
@@ -109,6 +106,8 @@ theorem adjointAux_norm (A : E →L[𝕜] F) : ‖adjointAux A‖ = ‖A‖ := b
     refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun x => ?_
     rw [adjointAux_apply, LinearIsometryEquiv.norm_map]
     exact toSesqForm_apply_norm_le
+
+public section
 
 /-- The adjoint of a bounded operator `A` from a Hilbert space `E` to another Hilbert space `F`,
   denoted as `A†`. -/
@@ -139,7 +138,7 @@ in reverse order. -/
 theorem adjoint_comp (A : F →L[𝕜] G) (B : E →L[𝕜] F) : (A ∘L B)† = B† ∘L A† := by
   ext v
   refine ext_inner_left 𝕜 fun w => ?_
-  simp only [adjoint_inner_right, ContinuousLinearMap.coe_comp', Function.comp_apply]
+  simp [adjoint_inner_right]
 
 theorem apply_norm_sq_eq_inner_adjoint_left (A : E →L[𝕜] F) (x : E) :
     ‖A x‖ ^ 2 = re ⟪(A† ∘L A) x, x⟫ := by
@@ -175,13 +174,16 @@ lemma adjoint_id : (.id 𝕜 E)† = .id 𝕜 E := by simp
 lemma adjoint_one : (1 : E →L[𝕜] E)† = 1 := by simp
 
 theorem _root_.Submodule.adjoint_subtypeL (U : Submodule 𝕜 E) [CompleteSpace U] :
-    U.subtypeL† = U.orthogonalProjection := by
+    U.subtypeL† = U.orthogonalProjectionOnto := by
   symm
   simp [eq_adjoint_iff]
 
-theorem _root_.Submodule.adjoint_orthogonalProjection (U : Submodule 𝕜 E) [CompleteSpace U] :
-    (U.orthogonalProjection : E →L[𝕜] U)† = U.subtypeL := by
+theorem _root_.Submodule.adjoint_orthogonalProjectionOnto (U : Submodule 𝕜 E) [CompleteSpace U] :
+    (U.orthogonalProjectionOnto : E →L[𝕜] U)† = U.subtypeL := by
   rw [← U.adjoint_subtypeL, adjoint_adjoint]
+
+@[deprecated (since := "2026-05-05")] alias _root_.Submodule.adjoint_orthogonalProjection :=
+  Submodule.adjoint_orthogonalProjectionOnto
 
 theorem orthogonal_ker (T : E →L[𝕜] F) :
     T.kerᗮ = T†.range.topologicalClosure := by
@@ -221,7 +223,7 @@ You may need to rewrite with `ContinuousLinearMap.coe_comp'` before applying thi
 -/
 lemma adjoint_comp_self_injective_iff (T : E →L[𝕜] F) :
     Function.Injective (T† ∘ T) ↔ Function.Injective T := by
-  rw [← coe_comp', ← coe_coe, ← LinearMap.ker_eq_bot, ← coe_coe, ← LinearMap.ker_eq_bot,
+  rw [← coe_comp, ← coe_coe, ← LinearMap.ker_eq_bot, ← coe_coe, ← LinearMap.ker_eq_bot,
     ker_adjoint_comp_self]
 
 /--
@@ -318,7 +320,11 @@ lemma _root_.InnerProductSpace.rankOne_comp {E G : Type*} [SeminormedAddCommGrou
     rankOne 𝕜 x y ∘L f = rankOne 𝕜 x (adjoint f y) := by
   simp_rw [rankOne_def', comp_assoc, innerSL_apply_comp]
 
+end
+
 end ContinuousLinearMap
+
+@[expose] public section
 
 /-! ### Self-adjoint operators -/
 
@@ -383,11 +389,12 @@ variable {T : E →L[𝕜] E} [CompleteSpace E]
 theorem isStarNormal_iff_norm_eq_adjoint :
     IsStarNormal T ↔ ∀ v : E, ‖T v‖ = ‖adjoint T v‖ := by
   rw [isStarNormal_iff, Commute, SemiconjBy, ← sub_eq_zero]
-  simp_rw [ContinuousLinearMap.ext_iff, ← coe_coe, coe_sub, ← LinearMap.ext_iff, coe_zero]
-  have := star_eq_adjoint T ▸ coe_sub (star _ * T) _ ▸
+  simp_rw [ContinuousLinearMap.ext_iff, ← coe_coe, toLinearMap_sub, ← LinearMap.ext_iff,
+    toLinearMap_zero]
+  have := star_eq_adjoint T ▸ toLinearMap_sub (star _ * T) _ ▸
     ((IsSelfAdjoint.star_mul_self T).sub (IsSelfAdjoint.mul_star_self T)).isSymmetric
   simp_rw [star_eq_adjoint, ← LinearMap.IsSymmetric.inner_map_self_eq_zero this,
-    LinearMap.sub_apply, inner_sub_left, coe_coe, mul_apply, adjoint_inner_left,
+    LinearMap.sub_apply, inner_sub_left, coe_coe, mul_apply_eq_comp, adjoint_inner_left,
     inner_self_eq_norm_sq_to_K, ← adjoint_inner_right T, inner_self_eq_norm_sq_to_K,
     sub_eq_zero, ← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)]
   norm_cast
@@ -438,7 +445,7 @@ theorem isStarProjection_iff_isIdempotentElem_and_isStarNormal :
 theorem isStarProjection_iff_isSymmetricProjection :
     IsStarProjection T ↔ T.IsSymmetricProjection := by
   simp [isStarProjection_iff, LinearMap.isSymmetricProjection_iff,
-    isSelfAdjoint_iff_isSymmetric, IsIdempotentElem, End.mul_eq_comp, ← coe_comp, mul_def]
+    isSelfAdjoint_iff_isSymmetric, IsIdempotentElem, End.mul_eq_comp, ← toLinearMap_comp, mul_def]
 
 alias ⟨IsStarProjection.isSymmetricProjection, LinearMap.IsSymmetricProjection.isStarProjection⟩ :=
   isStarProjection_iff_isSymmetricProjection
@@ -541,6 +548,12 @@ theorem adjoint_eq_toCLM_adjoint (A : E →ₗ[𝕜] F) :
     haveI := FiniteDimensional.complete 𝕜 E
     haveI := FiniteDimensional.complete 𝕜 F
     A.adjoint = A.toContinuousLinearMap.adjoint :=
+  rfl
+
+theorem _root_.ContinuousLinearMap.adjoint_toLinearMap (A : E →L[𝕜] F) :
+    haveI := FiniteDimensional.complete 𝕜 E
+    haveI := FiniteDimensional.complete 𝕜 F
+    A.toLinearMap.adjoint = A.adjoint.toLinearMap :=
   rfl
 
 /-- The fundamental property of the adjoint. -/
@@ -1046,13 +1059,3 @@ theorem LinearIsometry.adjoint_comp_self' {E E' : Type*}
   haveI := FiniteDimensional.complete 𝕜 E'
   ext x
   exact congr($(f.adjoint_comp_self) x)
-
-theorem LinearIsometryEquiv.toMatrix_mem_unitaryGroup {ι E E' : Type*} [Fintype ι] [DecidableEq ι]
-    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
-    (f : E ≃ₗᵢ[𝕜] E') (b : OrthonormalBasis ι 𝕜 E) (b' : OrthonormalBasis ι 𝕜 E') :
-    f.toMatrix b.toBasis b'.toBasis ∈ Matrix.unitaryGroup ι 𝕜 := by
-  have : FiniteDimensional 𝕜 E := Module.Basis.finiteDimensional_of_finite b.toBasis
-  have : FiniteDimensional 𝕜 E' := Module.Basis.finiteDimensional_of_finite b'.toBasis
-  simp [Matrix.mem_unitaryGroup_iff, Matrix.star_eq_conjTranspose, ← LinearMap.toMatrix_adjoint,
-    ← LinearMap.toMatrix_comp, LinearIsometryEquiv.adjoint_toLinearMap_eq_symm,
-    -OrthonormalBasis.coe_toBasis]

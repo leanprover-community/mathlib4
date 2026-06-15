@@ -233,5 +233,5 @@ issue: 64 < 42 does not hold
 -------------------
 -/
 #guard_msgs in
-example (x : PNat) : x^3 < 2*x^2 + 10:= by
+example (x : PNat) : x^3 < 2*x^2 + 10 := by
   plausible (config := { randomSeed := some 257 })
