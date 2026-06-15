@@ -15,7 +15,7 @@ This file proves that if `α` is some (weak) pseudo extended metric space, so it
 We do this in this file instead of Mathlib.Topology.EMetricSpace.MulOpposite to avoid imports.
 -/
 
-@[expose] public section
+public section
 
 open Filter Set Topology Set.Notation
 
