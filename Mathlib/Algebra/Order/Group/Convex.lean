@@ -206,7 +206,7 @@ theorem coe_min : min G H = (G : Set α) ∩ H := rfl
 /-- The quotient map by a convex subgroup as an ordered group homomorphism. -/
 @[to_additive
 /-- The quotient map by a convex subgroup as an ordered additive group homomorphism. -/]
-def QuotientGroup.mkOrderedMonoidHom : α →*o α ⧸ G where
+def QuotientGroup.mkOrderMonoidHom : α →*o α ⧸ G where
   __ := QuotientGroup.mk' G.toSubgroup
   monotone' _ _ le := Quotient.mk_le_mk.mpr (.inl le)
 
