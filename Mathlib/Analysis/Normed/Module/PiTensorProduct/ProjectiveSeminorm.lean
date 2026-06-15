@@ -55,11 +55,9 @@ for every `m` in `Π i, Eᵢ` is bounded above by the projective seminorm.
 
 @[expose] public section
 
-universe uι u𝕜 uE uF
-
-variable {ι : Type uι} [Fintype ι]
-variable {𝕜 : Type u𝕜}
-variable {E : ι → Type uE} [∀ i, SeminormedAddCommGroup (E i)]
+variable {ι : Type*} [Fintype ι]
+variable {𝕜 : Type*}
+variable {E : ι → Type*} [∀ i, SeminormedAddCommGroup (E i)]
 
 open scoped TensorProduct
 
@@ -157,7 +155,7 @@ theorem norm_eval_le_projectiveSeminorm {G : Type*} [SeminormedAddCommGroup G]
   simpa [norm_smul, ← mul_assoc, mul_comm ‖f‖ _] using
     fun a m _ ↦ mul_le_mul_of_nonneg_left (f.le_opNorm _) (norm_nonneg _)
 
-variable {F : Type uF} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 variable (𝕜 E F)
 
@@ -190,7 +188,6 @@ noncomputable def liftIsometry : ContinuousMultilinearMap 𝕜 E F ≃ₗᵢ[�
 
 variable {𝕜 E F}
 
--- API missing for `LinearIsometryEquiv.ofBounds`?
 @[simp]
 theorem liftIsometry_apply_apply (f : ContinuousMultilinearMap 𝕜 E F) (x : ⨂[𝕜] i, E i) :
     liftIsometry 𝕜 E F f x = lift f.toMultilinearMap x := by
@@ -280,9 +277,9 @@ protected theorem mapL_pow (f : Π i, E i →L[𝕜] E i) (n : ℕ) :
 -- We redeclare `ι` here, and later dependent arguments,
 -- to avoid the `[Fintype ι]` assumption present throughout the rest of the file.
 open Function in
-private theorem mapL_add_smul_aux {ι : Type uι}
-    {E : ι → Type uE} [(i : ι) → SeminormedAddCommGroup (E i)] [(i : ι) → NormedSpace 𝕜 (E i)]
-    {E' : ι → Type u_1} [(i : ι) → SeminormedAddCommGroup (E' i)] [(i : ι) → NormedSpace 𝕜 (E' i)]
+private theorem mapL_add_smul_aux {ι : Type*}
+    {E : ι → Type*} [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+    {E' : ι → Type*} [∀ i, SeminormedAddCommGroup (E' i)] [∀ i, NormedSpace 𝕜 (E' i)]
     (f : (i : ι) → E i →L[𝕜] E' i) [DecidableEq ι] (i : ι) (u : E i →L[𝕜] E' i) :
     (fun j ↦ (update f i u j).toLinearMap) =
       update (fun j ↦ (f j).toLinearMap) i u.toLinearMap := by
