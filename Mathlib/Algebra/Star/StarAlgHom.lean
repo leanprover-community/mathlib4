@@ -907,7 +907,7 @@ lemma toNonUnitalStarAlgHom_comp (e₁ : A₁ ≃⋆ₐ[R] A₂) (e₂ : A₂ �
 /-- If `A₁` is equivalent to `A₁'` and `A₂` is equivalent to `A₂'` as star algebras, then the type
 of maps `A₁ →⋆ₙₐ[R] A₂` is equivalent to the type of maps `A₁' →⋆ₙₐ[R] A₂'`.
 
-For unital star algebra homomorphisms, see `arrowCongr`. -/
+For unital star algebra homomorphisms, see `StarAlgEquiv.arrowCongr`. -/
 @[simps apply]
 def arrowCongr' (e₁ : A₁ ≃⋆ₐ[R] A₁') (e₂ : A₂ ≃⋆ₐ[R] A₂') :
     (A₁ →⋆ₙₐ[R] A₂) ≃ (A₁' →⋆ₙₐ[R] A₂') where
@@ -998,7 +998,9 @@ lemma toStarAlgHom_comp (e₁ : A₁ ≃⋆ₐ[R] A₂) (e₂ : A₂ ≃⋆ₐ[R
     e₂.toStarAlgHom.comp e₁.toStarAlgHom = (e₁.trans e₂).toStarAlgHom := rfl
 
 /-- If `A₁` is equivalent to `A₁'` and `A₂` is equivalent to `A₂'` as star algebras, then the type
-of maps `A₁ →⋆ₐ[R] A₂` is equivalent to the type of maps `A₁' →⋆ₐ[R] A₂'`. -/
+of maps `A₁ →⋆ₐ[R] A₂` is equivalent to the type of maps `A₁' →⋆ₐ[R] A₂'`.
+
+For non-unital star algebra homomorphisms, see `StarAlgEquiv.arrowCongr'`. -/
 @[simps apply]
 def arrowCongr (e₁ : A₁ ≃⋆ₐ[R] A₁') (e₂ : A₂ ≃⋆ₐ[R] A₂') : (A₁ →⋆ₐ[R] A₂) ≃ (A₁' →⋆ₐ[R] A₂') where
   toFun f := (e₂.toStarAlgHom.comp f).comp e₁.symm.toStarAlgHom
