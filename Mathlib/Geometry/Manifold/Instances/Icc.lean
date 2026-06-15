@@ -69,38 +69,15 @@ variable {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ∞}
 
 open Manifold IsManifold
 
-section
-
-variable (k : Type*) {P₁ : Type*} {P₂ : Type*} {P₃ : Type*} {P₄ : Type*} {V₁ : Type*} {V₂ : Type*}
-  [Ring k] [AddCommGroup V₁] [AddCommGroup V₂] [Module k V₁]
-  [Module k V₂] [AddTorsor V₁ P₁] [AddTorsor V₂ P₂]
-  [TopologicalSpace P₁] [TopologicalSpace P₂] --[ContinuousConstVAdd k P₁]
-   [ContinuousConstVAdd V₁ P₁]
-
-def ContinuousAffineEquiv.pointReflection (x : P₁) : P₁ ≃ᴬ[k] P₁ where
-  toAffineEquiv := AffineEquiv.pointReflection k x
+/-- `Equiv.pointReflection` as a homeomorphism -/
+def Homeomorph.pointReflection {X : Type*} [AddGroup X] [TopologicalSpace X]
+    [ContinuousAdd X] [ContinuousSub X] [ContinuousNeg X] (x : X) : X ≃ₜ X where
+  toEquiv := Equiv.pointReflection x
   continuous_toFun := by
-    dsimp [AffineEquiv.pointReflection]
-    sorry -- fun_prop
-  continuous_invFun := sorry
-
-end
-
--- TODO does this exist already?
-/-- `reflect x : ℝ → ℝ` is the reflection mapping `a ↦ x - a` -/
-def Homeomorph.pointReflection (x : ℝ) : ℝ ≃ₜ ℝ where
-  toEquiv := AffineEquiv.pointReflection ℝ (x / 2)
-  continuous_toFun := by
-    dsimp [AffineEquiv.pointReflection]
+    dsimp [Equiv.pointReflection]
     fun_prop
   continuous_invFun := by
-    suffices h : Continuous ((fun v ↦ v + x / 2) ∘ fun y ↦ x / 2 - y) by
-      apply h.congr
-      intro z
-      dsimp [AffineEquiv.pointReflection_apply]
-      -- why does the symm lemma not fire??
-      rw [AffineEquiv.pointReflection]
-      sorry
+    dsimp [Equiv.pointReflection]
     fun_prop
 
 -- TODO: all these lemmas are technically misnamed; the relevant coercion is Subtype.val!
@@ -138,13 +115,13 @@ lemma isImmersionOfComplement_subtype_coe_Icc :
       linarith
   · -- At the right boundary point, the correct codomain chart is mapping `a` to `y - a`.
     apply IsImmersionAtOfComplement.mk_of_continuousAt (by fun_prop) φ
-      (chartAt (EuclideanHalfSpace 1) z) (Homeomorph.pointReflection y).toOpenPartialHomeomorph (mem_chart_source _ z)
+      (chartAt (EuclideanHalfSpace 1) z)
+      (Homeomorph.pointReflection (y / 2)).toOpenPartialHomeomorph (mem_chart_source _ z)
       (by simp [Homeomorph.pointReflection]) (chart_mem_maximalAtlas _) ?_; swap
     · apply OpenPartialHomeomorph.mem_maximalAtlas_of_contMDiffOn
       all_goals
-        simp [Homeomorph.pointReflection, contMDiffOn_iff_contDiffOn]
-        rw [AffineEquiv.pointReflection]
-        sorry -- fun_prop
+        simp [Homeomorph.pointReflection, contMDiffOn_iff_contDiffOn, Equiv.pointReflection]
+        fun_prop
     intro z' hz'
     simp [hz, IccRightChart, modelWithCornersEuclideanHalfSpace]
     simp [hz, IccRightChart] at hz'
@@ -152,7 +129,7 @@ lemma isImmersionOfComplement_subtype_coe_Icc :
       obtain ⟨⟨y', hy'⟩, rfl⟩ := hz'.1
       simpa [modelWithCornersEuclideanHalfSpace]
     rw [max_eq_left, max_eq_left this]
-    · simp [φ, φ₀, Homeomorph.pointReflection, Equiv.pointReflection_apply]
+    · simp [φ, φ₀, Homeomorph.pointReflection, Equiv.pointReflection]
       ring_nf
     · replace hz' := hz'.2
       simp [modelWithCornersEuclideanHalfSpace] at hz'
