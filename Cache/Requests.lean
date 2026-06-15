@@ -508,10 +508,22 @@ per-file transfer failure. Any other status is a real failure.
 def isCacheMissStatus (httpCode : Nat) (treatForbiddenAsMiss : Bool) : Bool :=
   httpCode == 404 || (httpCode == 403 && treatForbiddenAsMiss)
 
+/--
+Whether an HTTP status is the one Azure returns for a blob that already exists,
+which a non-overwrite `put` (`If-None-Match: *`) hits when it declines to
+overwrite. Azure reports it as 409 (the `BlobAlreadyExists` error, what it
+returns in practice) or 412 (the conditional-header spec's code for an unmet
+`If-None-Match`), so we accept both. Whether that's benign is the caller's call:
+the upload path skips it, reads don't.
+-/
+def isAlreadyPresentStatus (httpCode : Nat) : Bool :=
+  httpCode == 409 || httpCode == 412
+
 def monitorCurl (args : Array String) (size : Nat)
     (caption : String) (speedVar : String) (removeOnError := false)
     (decompConfig : Option DecompConfig := none)
-    (treatForbiddenAsMiss : Bool := false) : IO TransferState := do
+    (treatForbiddenAsMiss : Bool := false)
+    (treatExistsAsSkip : Bool := false) : IO TransferState := do
   let useAnsi := (← IO.getEnv "TERM").isSome
   let mkStatus (s : TransferState) : String := Id.run do
     let speedStr :=
@@ -576,12 +588,16 @@ def monitorCurl (args : Array String) (size : Nat)
                   pending := #[]
           success := success + 1
         -- A cache miss (404, or 403 from a retiring `legacy`) just falls through
-        -- to the next container; anything else is a transfer failure we report.
+        -- to the next container; a blob already on the server (409/412 from a
+        -- non-overwrite put) is expected, not a failure; anything else fails.
         | code? =>
+          let alreadyPresent := match code? with
+            | .ok c     => isAlreadyPresentStatus c
+            | .error _  => false
           let isMiss := match code? with
             | .ok c     => isCacheMissStatus c treatForbiddenAsMiss
             | .error _  => false
-          unless isMiss do
+          unless isMiss || (treatExistsAsSkip && alreadyPresent) do
             failed := failed + 1
             let mkFailureMsg code? fn? msg? : String := Id.run do
               let mut msg := "Transfer failed"
@@ -1003,7 +1019,6 @@ def putFilesAbsolute
   (files : Array FilePath) (tempConfigFilePath : FilePath)
   (overwrite : Bool) (auth : UploadAuth) : IO Unit := do
   -- TODO: reimplement using HEAD requests?
-  let _ := overwrite
   let size := files.size
   if size > 0 then
     let (urlContainer?, uploadURL) ← effectiveUploadURL container
@@ -1030,7 +1045,8 @@ def putFilesAbsolute
       "-X", "PUT", "--parallel",
       "--retry", "5", -- there seem to be some intermittent failures
       "--write-out", "%{json}\n", "--config", tempConfigFilePath.toString]
-    discard <| monitorCurl args size "Uploaded" "speed_upload" (removeOnError := false) (decompConfig := none)
+    discard <| monitorCurl args size "Uploaded" "speed_upload" (removeOnError := false)
+      (decompConfig := none) (treatExistsAsSkip := !overwrite)
     IO.FS.removeFile tempConfigFilePath
   else IO.println "No files to upload"
 

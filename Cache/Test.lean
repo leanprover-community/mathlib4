@@ -893,6 +893,22 @@ def test_isCacheMissStatus : IO Unit := do
 
 end CacheMissStatus
 
+section AlreadyPresentStatus
+
+/-- A non-overwrite `put` (`If-None-Match: *`) gets a 409 or 412 back for a blob
+that already exists; both mean "present", not a failure. -/
+def test_isAlreadyPresentStatus : IO Unit := do
+  IO.println "isAlreadyPresentStatus:"
+  -- 409/412 are the codes Azure returns for a blob that already exists.
+  assert "409 is already-present" (isAlreadyPresentStatus 409)
+  assert "412 is already-present" (isAlreadyPresentStatus 412)
+  -- Successes, misses, and server errors are not.
+  assert "201 is not already-present" (!isAlreadyPresentStatus 201)
+  assert "404 is not already-present" (!isAlreadyPresentStatus 404)
+  assert "500 is not already-present" (!isAlreadyPresentStatus 500)
+
+end AlreadyPresentStatus
+
 section UnsafeRounds
 
 /-- `expandDownloadRounds` turns the trust-ordered container list into the
@@ -974,6 +990,7 @@ def runAll : IO Unit := do
   test_parseNamedOpt
   test_parseFlagOpt
   test_isCacheMissStatus
+  test_isAlreadyPresentStatus
   test_expandDownloadRounds
 
 end Cache.Test
