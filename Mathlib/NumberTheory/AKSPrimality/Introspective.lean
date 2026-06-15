@@ -34,17 +34,17 @@ open Polynomial Nat Ideal Ideal.Quotient
 
 
 /-- The introspective relation, currently only useful for the proof of the AKS primality theorem. -/
-def Introspective {n : ℕ} (f : (ZMod n)[X]) (e r : ℕ) : Prop :=
-  mk (span ({(X : (ZMod n)[X]) ^ r - C 1})) (f ^ e) =
-  mk (span ({(X : (ZMod n)[X]) ^ r - C 1})) (f.comp (X ^ e))
+def Introspective {R : Type*} [CommRing R] (f : R[X]) (e r : ℕ) : Prop :=
+  mk (span ({(X : R[X]) ^ r - C 1})) (f ^ e) =
+  mk (span ({(X : R[X]) ^ r - C 1})) (f.comp (X ^ e))
 
 
 namespace Introspective
 
-variable {b d r p a n e : ℕ} {f g : (ZMod n)[X]}
+variable {b d r p a n e : ℕ} {f g : (ZMod n)[X]} {R : Type*} [CommRing R]
 
 theorem dvd_of_introspective (h : Introspective f e r) (hd : p ∣ n) :
-    Introspective (f.map (ZMod.castHom hd _)) e r := by
+    Introspective (R:= ZMod p) (f.map (ZMod.castHom hd _)) e r := by
   simp only [Introspective] at *
   let g := lift (span {(X : (ZMod n)[X]) ^ r - C 1}) (RingHom.comp (mk (span
       ({(X : (ZMod p)[X]) ^ r - C 1})))  (Polynomial.mapRingHom (ZMod.castHom hd (ZMod p)))) (by
@@ -73,27 +73,29 @@ theorem aeval_of_primitive_roots {K : Type*} [CommRing K] [IsDomain K] [Algebra 
   exact (Iff.mp (Eq.congr (by simp [g]) (by simp [g, aeval_comp]))) (congrArg g h)
 
 @[simp]
-protected theorem one : Introspective f 1 r := by
+protected theorem one (f : R[X]) : Introspective f 1 r := by
   simp [Introspective]
 
-protected theorem X_sub_C {a : ℕ} [Fact n.Prime] :
-    Introspective ((X : (ZMod n)[X]) - C (a : ZMod n)) n r := by
+protected theorem X_sub_C {a : ℕ} [Fact n.Prime] [CharP R n] :
+    Introspective ((X : R[X]) - C (a : R)) n r := by
   simp only [Introspective]
   apply Ideal.Quotient.eq.mpr
   convert Ideal.zero_mem _
-  suffices ((X : (ZMod n)[X]) - C (a : ZMod n)) ^ n = ((X : (ZMod n)[X]) ^ n) - C (a : ZMod n) by
+  suffices ((X : R[X]) - C (a : R)) ^ n = ((X : R[X]) ^ n) - C (a : R) by
     simp_all
   change (frobenius _ n) _ = (frobenius _ n) _ - _
   simp
 
 /-- The product of two polynomials is introspective. -/
-protected theorem mul (hf : Introspective f e r) (hg : Introspective g e r) :
+protected theorem mul {f g : R[X]} (hf : Introspective f e r) (hg : Introspective g e r) :
     Introspective (f * g) e r := by
   simp_all only [Introspective, map_pow, map_mul, mul_comp]
   rw [← hf, ← hg]
   apply Ideal.Quotient.eq.mpr
   convert Ideal.zero_mem _
   grind [mul_pow]
+
+
 
 theorem of_mul {m : ℕ} (h : Introspective ((X : (ZMod p)[X]) - C (a : (ZMod p))) (m * p) r)
     [Fact p.Prime] (hcprm : p.Coprime r) :
