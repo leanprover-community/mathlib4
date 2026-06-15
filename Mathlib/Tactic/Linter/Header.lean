@@ -273,7 +273,7 @@ namespace Style.header
 def broadImportsCheck (imports : Array ImportRef) (mainModule : Name) : CommandElabM Unit := do
   for i in imports do
     match i.module with
-    | `Mathlib.Tactic | `Lean | `Lean.Elab | `Std =>
+    | `Mathlib.Tactic | `Lean | `Lean.Meta | `Lean.Elab | `Lean.Elab.Tactic | `Std =>
       Linter.logLint linter.style.header i.getIdent
         s!"Files in mathlib cannot import the whole `{i.module}` folder. \
         Doing so would cause imports to be unnecessarily slow."
