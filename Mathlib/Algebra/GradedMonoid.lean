@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Data.List.FinRange
 public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Data.Sigma.Basic
-public import Lean.Elab.Tactic
+public import Lean
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
