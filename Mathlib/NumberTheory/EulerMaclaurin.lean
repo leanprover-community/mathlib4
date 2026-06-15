@@ -141,16 +141,9 @@ private lemma integral_deriv_mul_floor_add_one (ha : 0 ≤ a) (hab : a ≤ b)
     conv => lhs; arg 1; arg 1; ext t; rw [mul_comm]
     rw [integral_deriv_mul_add_const _ hab h_cont.intervalIntegrable hf_diff]
 
-/-- **First-order Euler-Maclaurin summation formula**. For `f : ℝ → 𝕜` with `[RCLike 𝕜]`,
-`0 ≤ a ≤ b`, `f` differentiable on `Set.Icc a b` and `deriv f` continuous on `[[a, b]]`, the sum of
-`f` over the integers in `Finset.Ioc ⌊a⌋ ⌊b⌋` equals its integral plus a boundary correction and
-an error integral against the periodized first Bernoulli function. -/
-theorem sum_eq_integral_add_integral_deriv_mul_periodizedBernoulli1 (ha : 0 ≤ a) (hab : a ≤ b)
-    (hf_diff : ∀ t ∈ Set.Icc a b, DifferentiableAt ℝ f t)
-    (h_cont : ContinuousOn (deriv f) [[a, b]]) :
-    ∑ k ∈ Ioc ⌊a⌋ ⌊b⌋, f k =
-      f a * periodizedBernoulli1 a - f b * periodizedBernoulli1 b + (∫ t in a..b, f t)
-        + ∫ t in a..b, deriv f t * periodizedBernoulli1 t := by
+/-- Reindex the nonnegative integer interval between its `Int.floor` and `Nat.floor` endpoints. -/
+private lemma sum_Ioc_intFloor_eq_sum_Ioc_natFloor (ha : 0 ≤ a) (hab : a ≤ b) :
+    (∑ k ∈ Ioc ⌊a⌋ ⌊b⌋, f k) = ∑ k ∈ Ioc ⌊a⌋₊ ⌊b⌋₊, f k := by
   have hIoc : (Ioc ⌊a⌋ ⌊b⌋ : Finset ℤ) =
       (Ioc ⌊a⌋₊ ⌊b⌋₊).map (Nat.castEmbedding (R := ℤ)) := by
     have hfa : ((⌊a⌋₊ : ℤ)) = ⌊a⌋ := Int.natCast_floor_eq_floor ha
@@ -173,11 +166,20 @@ theorem sum_eq_integral_add_integral_deriv_mul_periodizedBernoulli1 (ha : 0 ≤ 
       constructor
       · exact_mod_cast hn.1
       · exact_mod_cast hn.2
-  have hsum_reindex :
-      (∑ k ∈ Ioc ⌊a⌋ ⌊b⌋, f k) = ∑ k ∈ Ioc ⌊a⌋₊ ⌊b⌋₊, f k := by
-    rw [hIoc, sum_map]
-    rfl
-  rw [hsum_reindex]
+  rw [hIoc, sum_map]
+  rfl
+
+/-- **First-order Euler-Maclaurin summation formula**. For `f : ℝ → 𝕜` with `[RCLike 𝕜]`,
+`0 ≤ a ≤ b`, `f` differentiable on `Set.Icc a b` and `deriv f` continuous on `[[a, b]]`, the sum of
+`f` over the integers in `Finset.Ioc ⌊a⌋ ⌊b⌋` equals its integral plus a boundary correction and
+an error integral against the periodized first Bernoulli function. -/
+theorem sum_eq_integral_add_integral_deriv_mul_periodizedBernoulli1 (ha : 0 ≤ a) (hab : a ≤ b)
+    (hf_diff : ∀ t ∈ Set.Icc a b, DifferentiableAt ℝ f t)
+    (h_cont : ContinuousOn (deriv f) [[a, b]]) :
+    ∑ k ∈ Ioc ⌊a⌋ ⌊b⌋, f k =
+      f a * periodizedBernoulli1 a - f b * periodizedBernoulli1 b + (∫ t in a..b, f t)
+        + ∫ t in a..b, deriv f t * periodizedBernoulli1 t := by
+  rw [sum_Ioc_intFloor_eq_sum_Ioc_natFloor ha hab]
   have h_sum := sum_mul_eq_sub_sub_integral_mul (fun _ ↦ 1) ha hab hf_diff
     (Set.uIcc_of_le hab ▸ h_cont).integrableOn_Icc
   simp only [mul_one, sum_const, Nat.card_Icc, tsub_zero, nsmul_eq_mul, Nat.cast_add,
@@ -206,3 +208,18 @@ theorem sum_eq_integral_add_integral_deriv_mul_periodizedBernoulli1 (ha : 0 ≤ 
     exact_mod_cast hfloor_int
   rw [hfloor_a, hfloor_b]
   ring_nf
+
+/-- Nat-endpoint version of the first-order Euler-Maclaurin summation formula. -/
+theorem sum_natFloor_eq_integral_add_integral_deriv_mul_periodizedBernoulli1
+    (ha : 0 ≤ a) (hab : a ≤ b)
+    (hf_diff : ∀ t ∈ Set.Icc a b, DifferentiableAt ℝ f t)
+    (h_cont : ContinuousOn (deriv f) [[a, b]]) :
+    ∑ k ∈ Ioc ⌊a⌋₊ ⌊b⌋₊, f (k : ℝ) =
+      f a * periodizedBernoulli1 a - f b * periodizedBernoulli1 b + (∫ t in a..b, f t)
+        + ∫ t in a..b, deriv f t * periodizedBernoulli1 t := by
+  calc
+    ∑ k ∈ Ioc ⌊a⌋₊ ⌊b⌋₊, f (k : ℝ) = ∑ k ∈ Ioc ⌊a⌋ ⌊b⌋, f (k : ℝ) := by
+      exact (sum_Ioc_intFloor_eq_sum_Ioc_natFloor (f := f) ha hab).symm
+    _ = f a * periodizedBernoulli1 a - f b * periodizedBernoulli1 b + (∫ t in a..b, f t)
+          + ∫ t in a..b, deriv f t * periodizedBernoulli1 t :=
+      sum_eq_integral_add_integral_deriv_mul_periodizedBernoulli1 ha hab hf_diff h_cont
