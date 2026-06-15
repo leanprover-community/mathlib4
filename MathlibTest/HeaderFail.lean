@@ -14,6 +14,8 @@ warning: The module doc-string for a file should be the first command after the 
 Please, add a module doc-string (`/-! ... -/`) before `def foo :=
   37`.
 
+Hint: Type `m(odule docstring) + [tab]` to insert a template via snippet.
+
 Note: This linter can be disabled with `set_option linter.style.header false`
 -/
 #guard_msgs in
