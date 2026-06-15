@@ -242,16 +242,17 @@ together with the import syntax that gave rise to them. See also `headerToImport
 def headerToImportRefs (header : TSyntax ``Parser.Module.header) : Array ImportRef :=
   match header with
   | `(Parser.Module.header| $[module%$moduleTk]? $[prelude]? $imports*) =>
-    imports.map fun
+    imports.filterMap fun
       | stx@`(Parser.Module.import|
           $[public%$publicTk]? $[meta%$metaTk]? import $[all%$allTk]? $n:ident) =>
-        { module := n.getId
+        some {
+          module := n.getId
           importAll := allTk.isSome
           isExported := publicTk.isSome || moduleTk.isNone
           isMeta := metaTk.isSome
           stx := ⟨stx⟩ }
-      | _ => { module := `illformedStx, stx := ⟨.missing⟩ }
-  | _ => #[{ module := `illformedStx, stx := ⟨.missing⟩ }]
+      | _ => none
+  | _ => #[]
 
 namespace Style.header
 
