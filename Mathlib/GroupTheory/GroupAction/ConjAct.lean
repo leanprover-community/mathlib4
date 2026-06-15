@@ -49,21 +49,6 @@ open MulAction Subgroup
 
 variable {M G}
 
-/-- Canonical bijection between `ConjAct G` and `G`. Use instead the bundled version `ofConjAct`. -/
-def ofConjActEquiv : ConjAct G ≃ G := Equiv.refl G
-
-instance [One G] : One (ConjAct G) where
-  one := ofConjActEquiv.symm (1 : G)
-
-instance [Mul G] : Mul (ConjAct G) where
-  mul x y := ofConjActEquiv.symm (ofConjActEquiv x * ofConjActEquiv y)
-
-instance [Inv G] : Inv (ConjAct G) where
-  inv x := ofConjActEquiv.symm (ofConjActEquiv x)⁻¹
-
-instance [Div G] : Div (ConjAct G) where
-  div x y := ofConjActEquiv.symm (ofConjActEquiv x / ofConjActEquiv y)
-
 instance [DivInvMonoid G] : DivInvMonoid (ConjAct G) := inferInstanceAs <| DivInvMonoid G
 
 instance [Group G] : Group (ConjAct G) := inferInstanceAs <| Group G
@@ -83,7 +68,8 @@ instance : Inhabited (ConjAct G) :=
 
 /-- Reinterpret `g : ConjAct G` as an element of `G`. -/
 def ofConjAct : ConjAct G ≃* G where
-  __ := ofConjActEquiv
+  toFun := id
+  invFun := id
   map_mul' := fun _ _ => rfl
 
 /-- Reinterpret `g : G` as an element of `ConjAct G`. -/
@@ -269,7 +255,7 @@ theorem _root_.MulAut.conjNormal_apply {H : Subgroup G} [H.Normal] (g : G) (h : 
 @[simp]
 theorem _root_.MulAut.conjNormal_symm_apply {H : Subgroup G} [H.Normal] (g : G) (h : H) :
     ↑((MulAut.conjNormal g).symm h) = g⁻¹ * h * g := by
-  change _ * _⁻¹⁻¹ = _
+  change _ * g⁻¹⁻¹ = _
   rw [inv_inv]
   rfl
 
