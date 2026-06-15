@@ -389,8 +389,7 @@ variable (F : StrictPseudofunctor B C) (adj : f ⊣ g)
 
 /-- A strict pseudofunctor carries an adjunction `f ⊣ g` to an adjunction
 `F.map f ⊣ F.map g`. -/
-def mapAdjunction : F.map f ⊣ F.map g :=
-  F.toPseudofunctor.mapAdjunction adj
+def mapAdjunction : F.map f ⊣ F.map g := F.toPseudofunctor.mapAdjunction adj
 
 lemma mapAdjunction_unit :
     (F.mapAdjunction adj).unit =
