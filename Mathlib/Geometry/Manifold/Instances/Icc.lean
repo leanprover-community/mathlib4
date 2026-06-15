@@ -67,29 +67,41 @@ instance {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) : One (TangentSpace (𝓡�
 
 variable {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ∞}
 
--- TODO: name appropriately! and does/should this exist already?
-def bar (α : Type*) [Unique α] : EuclideanSpace ℝ α ≃L[ℝ] ℝ where
-  toFun := fun z' ↦ (z' default : ℝ)
-  invFun := fun z ↦ toLp 2 <| fun _ ↦ z
-  left_inv z := by
-    ext
-    dsimp
-    apply congrArg
-    exact Subsingleton.elim ..
-  map_add' := by intro; simp
-  map_smul' := by intro; simp
-
-@[simp]
-lemma bar_apply {α : Type*} [Unique α] (z : EuclideanSpace ℝ α) : bar α z = z default := rfl
-
 open Manifold IsManifold
 
--- maps y to x - y; TODO does this exist already?
-def myflip (x : ℝ) : ℝ ≃ₜ ℝ where
-  toFun y := x - y
-  invFun y := x - y
-  left_inv y := by simp
-  right_inv y := by simp
+section
+
+variable (k : Type*) {P₁ : Type*} {P₂ : Type*} {P₃ : Type*} {P₄ : Type*} {V₁ : Type*} {V₂ : Type*}
+  [Ring k] [AddCommGroup V₁] [AddCommGroup V₂] [Module k V₁]
+  [Module k V₂] [AddTorsor V₁ P₁] [AddTorsor V₂ P₂]
+  [TopologicalSpace P₁] [TopologicalSpace P₂] --[ContinuousConstVAdd k P₁]
+   [ContinuousConstVAdd V₁ P₁]
+
+def ContinuousAffineEquiv.pointReflection (x : P₁) : P₁ ≃ᴬ[k] P₁ where
+  toAffineEquiv := AffineEquiv.pointReflection k x
+  continuous_toFun := by
+    dsimp [AffineEquiv.pointReflection]
+    sorry -- fun_prop
+  continuous_invFun := sorry
+
+end
+
+-- TODO does this exist already?
+/-- `reflect x : ℝ → ℝ` is the reflection mapping `a ↦ x - a` -/
+def Homeomorph.pointReflection (x : ℝ) : ℝ ≃ₜ ℝ where
+  toEquiv := AffineEquiv.pointReflection ℝ (x / 2)
+  continuous_toFun := by
+    dsimp [AffineEquiv.pointReflection]
+    fun_prop
+  continuous_invFun := by
+    suffices h : Continuous ((fun v ↦ v + x / 2) ∘ fun y ↦ x / 2 - y) by
+      apply h.congr
+      intro z
+      dsimp [AffineEquiv.pointReflection_apply]
+      -- why does the symm lemma not fire??
+      rw [AffineEquiv.pointReflection]
+      sorry
+    fun_prop
 
 -- TODO: all these lemmas are technically misnamed; the relevant coercion is Subtype.val!
 
@@ -101,7 +113,8 @@ lemma isImmersionOfComplement_subtype_coe_Icc :
   intro z
   letI φ₀ := ContinuousLinearEquiv.prodUnique ℝ
     (EuclideanSpace ℝ (Fin 1)) (EuclideanSpace ℝ (Fin 0))
-  let φ : (EuclideanSpace ℝ (Fin 1) × EuclideanSpace ℝ (Fin 0)) ≃L[ℝ] ℝ := φ₀.trans (bar (Fin 1))
+  let φ : (EuclideanSpace ℝ (Fin 1) × EuclideanSpace ℝ (Fin 0)) ≃L[ℝ] ℝ :=
+    φ₀.trans (EuclideanSpace.equivOfUnique (Fin 1))
   by_cases hz : ↑z < y
   · -- At all points but `y`, the correct codomain chart maps `a` to `a + x`.
     apply IsImmersionAtOfComplement.mk_of_continuousAt (by fun_prop) φ
@@ -125,12 +138,13 @@ lemma isImmersionOfComplement_subtype_coe_Icc :
       linarith
   · -- At the right boundary point, the correct codomain chart is mapping `a` to `y - a`.
     apply IsImmersionAtOfComplement.mk_of_continuousAt (by fun_prop) φ
-      (chartAt (EuclideanHalfSpace 1) z) (myflip y).toOpenPartialHomeomorph (mem_chart_source _ z)
-      (by simp [myflip]) (chart_mem_maximalAtlas _) ?_; swap
+      (chartAt (EuclideanHalfSpace 1) z) (Homeomorph.pointReflection y).toOpenPartialHomeomorph (mem_chart_source _ z)
+      (by simp [Homeomorph.pointReflection]) (chart_mem_maximalAtlas _) ?_; swap
     · apply OpenPartialHomeomorph.mem_maximalAtlas_of_contMDiffOn
       all_goals
-        simp [myflip, contMDiffOn_iff_contDiffOn]
-        fun_prop
+        simp [Homeomorph.pointReflection, contMDiffOn_iff_contDiffOn]
+        rw [AffineEquiv.pointReflection]
+        sorry -- fun_prop
     intro z' hz'
     simp [hz, IccRightChart, modelWithCornersEuclideanHalfSpace]
     simp [hz, IccRightChart] at hz'
@@ -138,7 +152,8 @@ lemma isImmersionOfComplement_subtype_coe_Icc :
       obtain ⟨⟨y', hy'⟩, rfl⟩ := hz'.1
       simpa [modelWithCornersEuclideanHalfSpace]
     rw [max_eq_left, max_eq_left this]
-    · simp [φ, φ₀, myflip]
+    · simp [φ, φ₀, Homeomorph.pointReflection, Equiv.pointReflection_apply]
+      ring_nf
     · replace hz' := hz'.2
       simp [modelWithCornersEuclideanHalfSpace] at hz'
       rw [max_eq_left this]

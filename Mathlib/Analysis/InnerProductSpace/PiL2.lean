@@ -190,6 +190,21 @@ theorem EuclideanSpace.sphere_zero_eq {n : Type*} [Fintype n] (r : ℝ) (hr : 0 
 
 section
 
+def EuclideanSpace.equivOfUnique (α : Type*) [Unique α] : EuclideanSpace ℝ α ≃L[ℝ] ℝ where
+  toFun := fun z' ↦ (z' default : ℝ)
+  invFun := fun z ↦ toLp 2 <| fun _ ↦ z
+  left_inv z := by
+    ext
+    dsimp
+    apply congrArg
+    exact Subsingleton.elim ..
+  map_add' := by intro; simp
+  map_smul' := by intro; simp
+
+@[simp]
+lemma EuclideanSpace.equivOfUnique_apply {α : Type*} [Unique α] (z : EuclideanSpace ℝ α) :
+    EuclideanSpace.equivOfUnique α z = z default := rfl
+
 instance EuclideanSpace.infinite [Nonempty ι] : Infinite (EuclideanSpace 𝕜 ι) :=
   Module.Free.infinite 𝕜 _
 
