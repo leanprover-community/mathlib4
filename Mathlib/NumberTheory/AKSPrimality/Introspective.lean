@@ -41,7 +41,7 @@ def Introspective {R : Type*} [CommRing R] (f : R[X]) (e r : ℕ) : Prop :=
 
 namespace Introspective
 
-variable {b d r p a n e : ℕ} {f g : (ZMod n)[X]} {R : Type*} [CommRing R]
+variable {b d r p a n e : ℕ} {f g : (ZMod n)[X]} {R : Type*}
 
 theorem dvd_of_introspective (h : Introspective f e r) (hd : p ∣ n) :
     Introspective (R:= ZMod p) (f.map (ZMod.castHom hd _)) e r := by
@@ -73,10 +73,10 @@ theorem aeval_of_primitive_roots {K : Type*} [CommRing K] [IsDomain K] [Algebra 
   exact (Iff.mp (Eq.congr (by simp [g]) (by simp [g, aeval_comp]))) (congrArg g h)
 
 @[simp]
-protected theorem one (f : R[X]) : Introspective f 1 r := by
+protected theorem one [CommRing R] (f : R[X]) : Introspective f 1 r := by
   simp [Introspective]
 
-protected theorem X_sub_C {a : ℕ} [Fact n.Prime] [CharP R n] :
+protected theorem X_sub_C {a : ℕ} [Fact n.Prime] [CommRing R] [CharP R n] :
     Introspective ((X : R[X]) - C (a : R)) n r := by
   simp only [Introspective]
   apply Ideal.Quotient.eq.mpr
@@ -87,25 +87,24 @@ protected theorem X_sub_C {a : ℕ} [Fact n.Prime] [CharP R n] :
   simp
 
 /-- The product of two polynomials is introspective. -/
-protected theorem mul {f g : R[X]} (hf : Introspective f e r) (hg : Introspective g e r) :
-    Introspective (f * g) e r := by
+protected theorem mul [CommRing R] {f g : R[X]} (hf : Introspective f e r)
+    (hg : Introspective g e r) : Introspective (f * g) e r := by
   simp_all only [Introspective, map_pow, map_mul, mul_comp]
   rw [← hf, ← hg]
   apply Ideal.Quotient.eq.mpr
   convert Ideal.zero_mem _
   grind [mul_pow]
 
+variable [Field R] [CharP R p] [Fact p.Prime]
 
-
-theorem of_mul {m : ℕ} (h : Introspective ((X : (ZMod p)[X]) - C (a : (ZMod p))) (m * p) r)
-    [Fact p.Prime] (hcprm : p.Coprime r) :
-    Introspective ((X : (ZMod p)[X]) - C (a : (ZMod p))) m r := by
+theorem of_mul {m : ℕ} (h : Introspective ((X : R[X]) - C (a : R)) (m * p) r)
+    (hcprm : p.Coprime r) : Introspective ((X : R[X]) - C (a : R)) m r := by
   have hp : p.Prime := Fact.out
   simp only [Introspective] at h ⊢
-  set g : (ZMod p)[X] := X - C (a : ZMod p)
+  set g : R[X] := (X : R[X]) - C (a : R)
   have rn0 : r ≠ 0 := by grind [coprime_zero_right, prime_one_false]
   rw [pow_mul] at h
-  have _ :  IsReduced ((ZMod p)[X] ⧸ span {(X : (ZMod p)[X]) ^ r - C 1}) := by
+  have _ :  IsReduced (R[X] ⧸ span {(X : R[X]) ^ r - C 1}) := by
     apply (isRadical_iff_quotient_reduced _).mp
     apply (Ideal.isRadical_iff_pow_one_lt 2 (by grind)).mpr
     intro s hs
@@ -113,33 +112,41 @@ theorem of_mul {m : ℕ} (h : Introspective ((X : (ZMod p)[X]) - C (a : (ZMod p)
     refine (Squarefree.dvd_pow_iff_dvd ?_ (by lia)).mp hs
     apply Separable.squarefree
     apply separable_X_pow_sub_C
-    · apply ((cast_zero (R := ZMod p)) ▸ (ZMod.natCast_eq_natCast_iff r 0 p).mp).mt
+    · rw[← cast_zero (R := R)]
+      apply ((CharP.natCast_eq_natCast R p).mp).mt
       apply modEq_zero_iff_dvd.mp.mt
       exact (Nat.Prime.coprime_iff_not_dvd hp).mp hcprm
     · simp
-  have _ := CharP.quotient' p (Ideal.span {(X : (ZMod p)[X]) ^ r - C 1}) (by
+  have _ := CharP.quotient' p (Ideal.span {(X : R[X]) ^ r - C 1}) (by
     intro z hz
     by_contra!
     obtain ⟨ y, hy ⟩ := Ideal.mem_span_singleton'.mp hz
     by_cases hc : y = 0
     · grind
-    · have _ :  (z : (ZMod p)[X]).natDegree = 0 := by simp
-      have _ : r ≤ (z : (ZMod p)[X]).natDegree := by
+    · have _ :  (z : R[X]).natDegree = 0 := by simp
+      have _ : r ≤ (z : R[X]).natDegree := by
         rw [← hy, natDegree_mul]
-        · suffices ((X : (ZMod p)[X]) ^ r - C 1).natDegree = r by lia
+        · suffices ((X : R[X]) ^ r - C 1).natDegree = r by lia
           exact natDegree_X_pow_sub_C
         · exact hc
         exact X_pow_sub_C_ne_zero (show 0 < r by lia) _
       grind)
   simp only [map_pow] at h
   replace h : (frobenius _ p) _ = _ := h
-  have hrh : mk (span {(X : (ZMod p)[X]) ^ r - C 1}) (g.comp (X ^ (m * p))) =
-      frobenius _ p (mk (Ideal.span {(X : (ZMod p)[X]) ^ r - C 1}) (g.comp (X ^ m))) := by
+  have hrh : mk (span {(X : R[X]) ^ r - C 1}) (g.comp (X ^ (m * p))) =
+      frobenius _ p (mk (Ideal.span {(X : R[X]) ^ r - C 1}) (g.comp (X ^ m))) := by
     simp only [frobenius, RingHom.coe_mk, powMonoidHom_apply]
     rw[← map_pow]
     congr
     simp only [sub_comp, X_comp, g]
-    nth_rw 1 [← ZMod.pow_card (a: ZMod p)]
+    -- Does this really not exist in mathlib?
+    have aaa : (a : R) ^ p = a := by
+      norm_cast
+      apply (CharP.natCast_eq_natCast R p).mpr
+      rw [← ZMod.natCast_eq_natCast_iff]
+      push_cast
+      rw [ZMod.pow_card]
+    nth_rw 1 [← aaa]
     simp only [C_comp]
     simp only [C_pow, pow_mul]
     change (frobenius _ _) _  - (frobenius _ _) _= (frobenius _ _ ) _
@@ -147,9 +154,8 @@ theorem of_mul {m : ℕ} (h : Introspective ((X : (ZMod p)[X]) - C (a : (ZMod p)
   rw [hrh] at h
   exact (frobenius_inj _ _) h
 
-protected theorem div (h : Introspective ((X : (ZMod p)[X]) - C (a : (ZMod p))) n r) [Fact p.Prime]
-    (hd : p ∣ n) (hcprm : p.Coprime r) :
-    Introspective ((X : (ZMod p)[X]) - C (a : (ZMod p))) (n / p) r := by
+protected theorem div (h : Introspective ((X : R[X]) - C (a : R)) n r)
+    (hd : p ∣ n) (hcprm : p.Coprime r) : Introspective ((X : R[X]) - C (a : R)) (n / p) r := by
   grind [of_mul, Nat.div_mul_cancel hd]
 
 /-- The product of coprime exponents is Introspective. -/
