@@ -34,6 +34,7 @@ jobs:
         if: github.event.pull_request.draft == false && github.event.pull_request.base.ref == 'master'
         env:
           TITLE: ${{ github.event.pull_request.title }}
+          BODY: ${{ github.event.pull_request.body }}
           PR_LABELS: ${{ toJson(github.event.pull_request.labels) }}
         run: |
           set -o pipefail
@@ -53,7 +54,7 @@ jobs:
 
           set +e
           # Capture output and exit code
-          output=$(lake exe check_title_labels --labels "$label_names" "$TITLE" 2>&1)
+          output=$(lake exe check_title_labels --labels "$label_names" "$TITLE" "$BODY" 2>&1)
           exit_code=$?
           set -e
 

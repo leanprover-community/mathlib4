@@ -21,8 +21,11 @@ open Cli in
 The exit code is the number of violations found. -/
 def checkTitleLabelsCLI (args : Parsed) : IO UInt32 := do
   let title := (args.positionalArg! "title").value
-  let labels : Array String := args.variableArgsAs! String
-  -- We not validate titles of WIP PRs.
+  let body := (args.positionalArg! "body").value
+  let labels : List String := match args.flag? "labels" with
+  | some f => (f.as! String).splitOn "\n"
+  | none => []
+  -- We do not validate titles of WIP PRs.
   if labels.contains "WIP" then return 0
 
   let mut numberErrors := 0
@@ -30,6 +33,11 @@ def checkTitleLabelsCLI (args : Parsed) : IO UInt32 := do
   let titleErrors : Array String := validateTitle title
   numberErrors := UInt32.ofNat titleErrors.size
   for err in titleErrors do
+    IO.println err
+  -- Enforce some properties of the PR description.
+  let descriptionErrors : Array String := validatePRBody body (labels.contains "easy")
+  numberErrors := numberErrors + UInt32.ofNat descriptionErrors.size
+  for err in descriptionErrors do
     IO.println err
   return min numberErrors 125
 
@@ -42,16 +50,18 @@ def checkTitleLabels : Cmd := `[Cli|
   If this PR is a feature PR, also verify that it has a topic label,
   and that there are no contradictory labels.
 
-  If the inpupt title does not pass validation, output a list of errors."
+  If the input title does not pass validation, output a list of errors."
 
   FLAGS:
-    "labels" : Array String; "list of label names of this PR\
-      These are optional; we merely use a WIP label to skip any checks of the PR title"
+    "labels" : String; "newline-separated list of label names of this PR\
+      These are optional; we use a WIP label to skip all checks, and an `easy` label \
+      to skip some PR description checks"
 
   ARGS:
     title : String; "this PR's title"
+    body : String; "this PR's body"
 
 ]
 
-/-- The entrypoint to the `lake exe check-title-labels` command. -/
+/-- The entrypoint to the `lake exe check_title_labels` command. -/
 def main (args : List String) : IO UInt32 := checkTitleLabels.validate args

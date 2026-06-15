@@ -8,14 +8,16 @@ module
 
 import Mathlib.Init
 import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
-import Std.Internal.Parsec.String
 
 /-!
 # Checker for well-formed title and labels
+
 This script checks if a PR title matches
 [mathlib's commit conventions](https://leanprover-community.github.io/contribute/commit.html).
 Not all checks from the commit conventions are implemented: for instance, no effort is made to
 verify whether the title or body are written in present imperative tense.
+
+It also verifies if the PR description matches some basic sanity checks for good descriptions.
 -/
 
 open Std.Internal.Parsec String
@@ -137,3 +139,48 @@ public def validateTitle (title : String) : Array String := Id.run do
       errors := errors.push s!"error: the PR contains {badChars.length} Unicode characters \
         which are not allowed: {err}"
     return errors
+
+/-- Check if `description` matches some basic checks for good PR descriptions
+(a subset of the ones at <https://leanprover-community.github.io/contribute/commit.html>,
+plus a few basic sanity checks).
+
+`isLabelledEasy` denotes whether a PR is labelled as easy: if so, an empty description is allowed.
+
+Return all error messages for violations found.
+-/
+public def validatePRBody (description : String) (isLabelledEasy : Bool) : Array String := Id.run do
+  if description.trimAscii.isEmpty && !isLabelledEasy then
+    return #["error: the PR description is empty"]
+
+  -- Find all lines in the PR description before a "fold". bors truncates the squash
+  -- commit message at the first line starting with "---" (its `cut_body_after = "\n---"`),
+  -- so that is exactly what we treat as a fold here.
+  let before := description.lines.toList.takeWhile (fun l ↦ !l.startsWith "---")
+  -- If `after` is non-empty, there is a fold.
+  let after := description.lines.toList.drop before.length
+  let mut errors := #[]
+  if let some l := before.getLast? then
+    if !after.isEmpty && l != "" then
+      errors := errors.push
+        "error: there should be a blank line between the PR description and the fold"
+  if before.any (· == "## Summary") then
+    errors := errors.push "error: do not include a 'summary' header in the PR body"
+  if before.any (· == "## Testing plan") then
+    errors := errors.push "error: usually, a section 'Testing plan' is superfluous \
+      (particularly if it only mentions checks done in CI anyway)\n\
+      If you have done particular testing, please mention this --- but no need for the header."
+  -- Should this error on any headings in the PR description?
+
+  -- Just whitespace, or a period before the fold also count as empty descriptions.
+  let beforeContainsText := before.any (·.any (·.isAlpha))
+  if !beforeContainsText then
+    -- We drop the leading "---" line.
+    let afterContainsText := after.drop 1 |>.any (·.any (·.isAlpha))
+    if afterContainsText then
+      errors := errors.push
+        "warning: your PR description is non-empty, but everything is after the '---' line\n\
+        note: the final PR commit message only uses what is above that line"
+    else
+      errors := errors.push "error: the PR description is empty"
+
+  return errors

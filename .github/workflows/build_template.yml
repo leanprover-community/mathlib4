@@ -614,7 +614,11 @@ jobs:
     # Pins the OIDC `sub` claim to `...:environment:<cache_environment>`, which the Azure cache
     # app's federated credential is scoped to. A token minted by any job without this environment
     # (e.g. the untrusted build/post_steps/style_lint jobs) cannot satisfy that trust.
-    environment: ${{ inputs.cache_environment }}
+    environment:
+      name: ${{ inputs.cache_environment }}
+      # Skip creating a GitHub deployment record/UI; we use the environment only to
+      # pin the OIDC `sub` claim and gate access to its federated credential.
+      deployment: false
     permissions:
       contents: read
       id-token: write
@@ -800,7 +804,22 @@ jobs:
         run: |
           lake env lean scripts/create_deprecated_modules.lean
           lake env lean scripts/autolabel.lean
-          lake exe check_title_labels --labels "t-algebra" "feat: dummy PR for testing"
+          lake exe check_title_labels --labels "t-algebra" "feat: dummy PR for testing" "dummy PR body" > title_output.txt
+          if grep -qE "Missing positional argument " "title_output.txt"; then
+              echo ""
+              echo "=============================================================================="
+              echo "ERROR: Your branch predates the current 'check title' configuration."
+              echo "Please merge 'master' into your PR branch and push again."
+              echo ""
+              echo "You can do this with:"
+              echo "  git fetch upstream"
+              echo "  git merge upstream/master"
+              echo "  git push"
+              echo "=============================================================================="
+              echo ""
+              exit 1
+          fi
+          cat title_output.txt
 
       - name: build everything
         # make sure everything is available for test/import_all.lean
@@ -884,7 +903,7 @@ jobs:
                     nodes {
                       ... on LabeledEvent {
                         createdAt
-                        actor { login }
+                        actor { login __typename }
                         label { name }
                       }
                     }
@@ -904,16 +923,20 @@ jobs:
         run: |
           # Parse the GraphQL response and filter for the specific label
           echo '${{ steps.get-timeline.outputs.data }}'
-          USERNAME=$(echo '${{ steps.get-timeline.outputs.data }}' | jq -r '
+          ACTOR=$(echo '${{ steps.get-timeline.outputs.data }}' | jq -c '
             .repository.pullRequest.timelineItems.nodes
             | map(select(.label.name == "auto-merge-after-CI"))
             | sort_by(.createdAt)
             | last
-            | .actor.login // empty
+            | .actor // empty
           ')
+          USERNAME=$(echo "$ACTOR" | jq -r '.login // empty')
+          # 'Bot' for GitHub App actors (whose GraphQL logins lack the '[bot]' suffix),
+          # 'User' for regular accounts
+          ACTOR_TYPE=$(echo "$ACTOR" | jq -r '.__typename // empty')
 
           # Validate username format (GitHub usernames are alphanumeric + hyphens, max 39 chars)
-          printf 'USERNAME: %s\n' "$USERNAME"
+          printf 'USERNAME: %s\nACTOR_TYPE: %s\n' "$USERNAME" "$ACTOR_TYPE"
           if [[ -z "$USERNAME" ]]; then
             echo "Error: No actor found for the specified label"
             exit 1
@@ -923,13 +946,14 @@ jobs:
           fi
 
           echo "username=$USERNAME" >> "$GITHUB_OUTPUT"
-          echo "Found label actor: $USERNAME"
+          echo "actor_type=$ACTOR_TYPE" >> "$GITHUB_OUTPUT"
+          echo "Found label actor: $USERNAME ($ACTOR_TYPE)"
 
-      - if: >- # bot usernames will cause this step to error with "Could not resolve to a User..."
+      # bot usernames will cause this step to error with "Could not resolve to a User...",
+      # so we skip it for all non-user actors; allowed bots are validated in the next step
+      - if: >-
           contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI') &&
-          steps.get-label-actor.outputs.username != 'mathlib-nolints' &&
-          steps.get-label-actor.outputs.username != 'mathlib-update-dependencies' &&
-          steps.get-label-actor.outputs.username != 'mathlib-splicebot'
+          steps.get-label-actor.outputs.actor_type == 'User'
         name: check team membership
         uses: tspascoal/get-user-teams-membership@b2546c5affc730fd8e3d8483ae9ad3621938c2f9 # v4.0.2
         id: actorTeams
@@ -942,9 +966,14 @@ jobs:
       - if: >-
           contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI') &&
           (
-            steps.get-label-actor.outputs.username == 'mathlib-nolints' ||
-            steps.get-label-actor.outputs.username == 'mathlib-update-dependencies' ||
-            steps.get-label-actor.outputs.username == 'mathlib-splicebot' ||
+            (
+              steps.get-label-actor.outputs.actor_type == 'Bot' &&
+              (
+                steps.get-label-actor.outputs.username == 'mathlib-nolints' ||
+                steps.get-label-actor.outputs.username == 'mathlib-update-dependencies' ||
+                steps.get-label-actor.outputs.username == 'mathlib-splicebot'
+              )
+            ) ||
             contains(steps.actorTeams.outputs.teams, 'mathlib-maintainers') ||
             contains(steps.actorTeams.outputs.teams, 'lean-release-managers') ||
             contains(steps.actorTeams.outputs.teams, 'bot-users')
