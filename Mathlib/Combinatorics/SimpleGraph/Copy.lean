@@ -357,7 +357,7 @@ theorem Hom.minDegree_mono [Fintype V] [Fintype W] [DecidableRel G.Adj] [Decidab
 
 theorem maxDegree_induce_of_support_subset [Fintype V] [DecidableRel G.Adj] {s : Set V}
     [DecidablePred (· ∈ s)] (h : G.support ⊆ s) : (G.induce s).maxDegree = G.maxDegree := by
-  apply le_antisymm <| Copy.max_degree_le <| Embedding.induce s |>.toCopy
+  apply le_antisymm <| Copy.maxDegree_mono <| Embedding.induce s |>.toCopy
   refine G.maxDegree_le_of_forall_degree_le _ fun v ↦ ?_
   by_cases hv : G.IsIsolated v
   · simp [hv]
