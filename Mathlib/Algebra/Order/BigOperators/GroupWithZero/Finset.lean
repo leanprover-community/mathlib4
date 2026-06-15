@@ -6,7 +6,7 @@ Authors: Michael Stoll, Floris van Doorn
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Tactic.Ring
 
 /-!

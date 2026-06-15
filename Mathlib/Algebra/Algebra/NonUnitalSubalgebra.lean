@@ -82,7 +82,7 @@ lemma toNonUnitalSubsemiring_injective :
 
 instance : SetLike (NonUnitalSubalgebra R A) A where
   coe s := s.carrier
-  coe_injective' := SetLike.coe_injective.comp toNonUnitalSubsemiring_injective
+  coe_injective := SetLike.coe_injective.comp toNonUnitalSubsemiring_injective
 
 lemma toSubmodule_injective : (toSubmodule : NonUnitalSubalgebra R A → Submodule R A).Injective :=
   fun _ _ h ↦ SetLike.ext (SetLike.ext_iff.mp h :)
