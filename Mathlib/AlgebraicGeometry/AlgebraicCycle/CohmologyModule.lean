@@ -10,6 +10,8 @@ public import Mathlib.Combinatorics.Quiver.ReflQuiver
 
 open CategoryTheory AlgebraicGeometry Scheme
 
+@[expose] public section
+
 universe u
 
 variable {X : Scheme.{u}} {R : CommRingCat} [X.Over (Spec R)] (F : X.Modules)
