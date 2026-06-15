@@ -26,19 +26,17 @@ def binderPlicity : CodeActionProvider := fun params snap => do
       unless stx[3]!.isNone do continue
       let newStx := stx.modifyArg 0 (fun lparen => .atom lparen.getHeadInfo "{")
       let newStx := newStx.modifyArg 4 (fun rparen => .atom rparen.getHeadInfo "}")
-      binders := binders.push (false, newStx, lspRange)
+      binders := binders.push ("implicit", newStx, lspRange)
     if stx.isOfKind ``implicitBinder then
       let newStx := stx.modifyArg 0 (fun lparen => .atom lparen.getHeadInfo "(")
       let newStx := newStx.modifyArg 3 (fun rparen => .atom rparen.getHeadInfo ")")
-      binders := binders.push (true, newStx, lspRange)
+      binders := binders.push ("explicit", newStx, lspRange)
 
   let mut codeActions := #[]
-  for (isExplicit, stx, range) in binders do
-    let some s := stx.unsetTrailing.reprint | continue
-    let edit : TextEdit := { range, newText := s }
-    let title := if isExplicit then
-        s!"Make explicit: {s}"
-      else s!"Make implicit: {s}"
+  for (kind, stx, range) in binders do
+    let some newText := stx.unsetTrailing.reprint | continue
+    let edit : TextEdit := { range, newText }
+    let title := s!"Make {kind}: {newText}"
     codeActions := codeActions.push {
       eager.title := title
       eager.kind? := "refactor.rewrite"
