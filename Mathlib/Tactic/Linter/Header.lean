@@ -313,6 +313,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if (← get).messages.hasErrors then
     return
   let map ← getFileMap
+  -- This is essentially the same as calling `parseImports'`, but we need access to `s.pos`.
   let s := ParseImports.main map.source (ParseImports.whitespace map.source {})
   unless (← read).cmdPos == s.pos do
     return
