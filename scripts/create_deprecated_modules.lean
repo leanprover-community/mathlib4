@@ -237,8 +237,8 @@ def deprecateFilePath (fname : String) (rename comment : Option String) :
   -- Retrieve the final version of the file, before it was deleted.
   let file ← runCmd s!"git show {modifiedHash}:{fname}"
   -- Generate a module deprecation for the file `fname`.
-  -- As mathlib uses the module system, it is fine to always generated a module.
-  let fileHeader := ← match rename with
+  -- As mathlib uses the module system, it is fine to always generate a module.
+  let fileHeader ← match rename with
     | some rename => do
       let modName := mkModName rename
       pure s!"module -- shake: keep-all\n\npublic import {modName}"
@@ -381,7 +381,7 @@ replaced by the suggestion, which means that you can click on multiple suggestio
 the deprecations later on.
 -/
 
--- #find_deleted_files 0
+#find_deleted_files 500 10%
 
 /--
 info: import Std.Time.Format
