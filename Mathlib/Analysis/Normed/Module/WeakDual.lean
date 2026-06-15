@@ -287,7 +287,7 @@ theorem polar_def (s : Set M) : polar 𝕜 s = { f : WeakDual 𝕜 M | ∀ x ∈
 is used. -/
 theorem isClosed_polar (s : Set M) : IsClosed (polar 𝕜 s) := by
   simp only [polar_def, setOf_forall]
-  exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
+  exact isClosed_biInter fun x hx => isClosed_Iic.preimage (eval_continuous x).norm
 
 /-- Polar sets of neighborhoods of the origin are bounded in the weak dual. -/
 theorem isBounded_polar {s : Set E} (s_nhds : s ∈ 𝓝 (0 : E)) : IsBounded (polar 𝕜 s) :=

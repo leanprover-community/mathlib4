@@ -162,7 +162,7 @@ def equivWeakDual : (E →Lₚₜ[𝕜] 𝕜) ≃L[𝕜] WeakDual 𝕜 E where
   __ := LinearEquiv.refl 𝕜 (E →L[𝕜] 𝕜)
   continuous_toFun :=
     WeakDual.continuous_of_continuous_eval (fun y ↦ (evalCLM _ 𝕜 y).continuous)
-  continuous_invFun := continuous_of_continuous_eval (WeakBilin.eval_continuous _)
+  continuous_invFun := continuous_of_continuous_eval WeakDual.eval_continuous
 
 section Pi
 
