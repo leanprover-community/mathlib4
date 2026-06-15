@@ -101,8 +101,8 @@ theorem map_addHaar {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E] [Normed
   rw [eq_comm, Basis.addHaar_eq_iff, Measure.map_apply f.continuous.measurable
     (PositiveCompacts.isCompact _).measurableSet, Basis.coe_parallelepiped, Basis.coe_map,
     ← addHaar_self b, ← f.toEquiv.preimage_image (_root_.parallelepiped ⇑b)]
-  congr 2
-  exact (image_parallelepiped f.toLinearMap (⇑b : ι → E)).symm
+  have := image_parallelepiped f.toLinearMap (⇑b : ι → E)
+  simp_all
 
 end Module.Basis
 
