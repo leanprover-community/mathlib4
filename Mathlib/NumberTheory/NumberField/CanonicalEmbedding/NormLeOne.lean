@@ -542,10 +542,10 @@ theorem logMap_expMapBasis (x : realSpace K) :
   conv_lhs =>
     enter [2, 1, 2, w, 2, i]
     rw [if_neg i.prop]
-  simp_rw [sum_apply, ← sum_fn, map_sum, Pi.smul_apply, ← Pi.smul_def, map_smul,
+  simp_rw [Finset.sum_apply, ← sum_fn, map_sum, Pi.smul_apply, ← Pi.smul_def, map_smul,
     completeBasis_apply_of_ne, expMap_symm_apply, normAtAllPlaces_mixedEmbedding,
     ← logEmbedding_component, logEmbedding_fundSystem, Finsupp.coe_finsetSum, Finsupp.coe_smul,
-    sum_apply, Pi.smul_apply, Basis.ofZLatticeBasis_repr_apply, Basis.repr_self,
+    Finset.sum_apply, Pi.smul_apply, Basis.ofZLatticeBasis_repr_apply, Basis.repr_self,
     Finsupp.single_apply, EmbeddingLike.apply_eq_iff_eq, Int.cast_ite, Int.cast_one, Int.cast_zero,
     smul_ite, smul_eq_mul, mul_one, mul_zero, Fintype.sum_ite_eq']
 
@@ -588,9 +588,10 @@ theorem abs_det_fderiv_expMapBasis (x : realSpace K) :
       Real.exp (x w₀ * Module.finrank ℚ K) *
       (∏ w : {w // IsComplex w}, expMapBasis x w.1)⁻¹ * 2⁻¹ ^ nrComplexPlaces K *
         (Module.finrank ℚ K) * regulator K := by
-  simp_rw [fderiv_expMapBasis, det, coe_comp, LinearMap.det_comp, fderiv_expMap, coe_pi, coe_comp,
-    coe_proj, LinearMap.det_pi, LinearMap.det_ring, ContinuousLinearMap.coe_coe, smulRight_apply,
-    one_apply, one_smul, abs_mul, abs_det_completeBasis_equivFunL_symm, prod_deriv_expMap_single]
+  simp_rw [fderiv_expMapBasis, det, toLinearMap_comp, LinearMap.det_comp, fderiv_expMap, coe_pi,
+    toLinearMap_comp, coe_proj, LinearMap.det_pi, LinearMap.det_ring, ContinuousLinearMap.coe_coe,
+    smulRight_apply, one_apply_eq_self, one_smul, abs_mul, abs_det_completeBasis_equivFunL_symm,
+    prod_deriv_expMap_single]
   simp_rw [abs_mul, Real.exp_mul, abs_pow, Real.rpow_natCast, abs_of_nonneg (Real.exp_nonneg _),
     abs_inv, abs_prod, abs_of_nonneg (expMapBasis_nonneg _ _), Nat.abs_ofNat]
   ring
