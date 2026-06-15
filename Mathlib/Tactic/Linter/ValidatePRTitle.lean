@@ -173,9 +173,14 @@ public def validatePRBody (description : String) (isLabelledEasy : Bool) : Array
 
   -- Just whitespace, or a period before the fold also count as empty descriptions.
   let beforeContainsText := before.any (·.any (·.isAlpha))
-  if !beforeContainsText && !after.isEmpty then
-    errors := errors.push
-      "warning: your PR description is non-empty, but everything is after the '---' line\n\
-      note: the final PR commit message only uses what is above that line"
+  if !beforeContainsText then
+    -- We drop the leading "---" line.
+    let afterContainsText := after.drop 1 |>.any (·.any (·.isAlpha))
+    if afterContainsText then
+      errors := errors.push
+        "warning: your PR description is non-empty, but everything is after the '---' line\n\
+        note: the final PR commit message only uses what is above that line"
+    else
+      errors := errors.push "error: the PR description is empty"
 
   return errors

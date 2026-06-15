@@ -213,17 +213,11 @@ elab "#check_description " desc:str : command => do
 #check_description "    " -- whitespace only PR bodies should also get linted
 
 -- This description is virtually empty: just whitespace.
-/--
-info: Message: 'warning: your PR description is non-empty, but everything is after the '---' line
-note: the final PR commit message only uses what is above that line'
--/
+/-- info: Message: 'error: the PR description is empty' -/
 #guard_msgs in
 #check_description "\n\n---"
 
-/--
-info: Message: 'warning: your PR description is non-empty, but everything is after the '---' line
-note: the final PR commit message only uses what is above that line'
--/
+/-- info: Message: 'error: the PR description is empty' -/
 #guard_msgs in
 #check_description ".\n\n---"
 
@@ -235,11 +229,8 @@ note: the final PR commit message only uses what is above that line'
 #guard_msgs in
 #check_description "A word\n----\nSome content\nAnother fold\n"
 
--- Regression test against confusing errors with just a fold. TODO fix
-/--
-info: Message: 'warning: your PR description is non-empty, but everything is after the '---' line
-note: the final PR commit message only uses what is above that line'
--/
+-- Regression test against confusing errors with just a fold.
+/-- info: Message: 'error: the PR description is empty' -/
 #guard_msgs in
 #check_description "---"
 
