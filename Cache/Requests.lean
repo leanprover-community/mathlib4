@@ -1045,9 +1045,15 @@ def putFilesAbsolute
       "-X", "PUT", "--parallel",
       "--retry", "5", -- there seem to be some intermittent failures
       "--write-out", "%{json}\n", "--config", tempConfigFilePath.toString]
-    discard <| monitorCurl args size "Uploaded" "speed_upload" (removeOnError := false)
+    let s ← monitorCurl args size "Uploaded" "speed_upload" (removeOnError := false)
       (decompConfig := none) (treatExistsAsSkip := !overwrite)
     IO.FS.removeFile tempConfigFilePath
+    -- Surface genuine upload failures. Already-present blobs (409/412 on a
+    -- non-overwrite put) are excused in `monitorCurl`, so this won't trip on a
+    -- re-upload of files the server already has.
+    if s.failed > 0 then
+      IO.eprintln s!"Uploading {s.failed} file(s) failed"
+      IO.Process.exit 1
   else IO.println "No files to upload"
 
 /-- Calls `curl` to send a set of cached files to the server. -/
