@@ -479,6 +479,13 @@ nonrec theorem cos_eq_neg_one_iff_angle_eq_pi {p₁ p₂ p₃ : P} :
     Real.cos (∠ p₁ p₂ p₃) = -1 ↔ ∠ p₁ p₂ p₃ = π :=
   cos_eq_neg_one_iff_angle_eq_pi
 
+/-- The cosine of the angle between three points, times the product of the distances from the
+middle point to the other two, is the inner product `⟪p₁ -ᵥ p₂, p₃ -ᵥ p₂⟫`. -/
+theorem cos_angle_mul_dist_mul_dist (p₁ p₂ p₃ : P) :
+    Real.cos (∠ p₁ p₂ p₃) * (dist p₁ p₂ * dist p₃ p₂) = ⟪p₁ -ᵥ p₂, p₃ -ᵥ p₂⟫ := by
+  rw [dist_eq_norm_vsub V p₁ p₂, dist_eq_norm_vsub V p₃ p₂, EuclideanGeometry.angle,
+    InnerProductGeometry.cos_angle_mul_norm_mul_norm]
+
 /-- The sine of the angle between three points is 0 if and only if the angle is 0 or π. -/
 nonrec theorem sin_eq_zero_iff_angle_eq_zero_or_angle_eq_pi {p₁ p₂ p₃ : P} :
     Real.sin (∠ p₁ p₂ p₃) = 0 ↔ ∠ p₁ p₂ p₃ = 0 ∨ ∠ p₁ p₂ p₃ = π :=

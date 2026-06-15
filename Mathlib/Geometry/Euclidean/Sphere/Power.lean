@@ -5,12 +5,9 @@ Authors: Manuel Candales, Benjamin Davidson, Li Jiale
 -/
 module
 
-
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 public import Mathlib.Geometry.Euclidean.Sphere.Tangent
-
-import Mathlib.Geometry.Euclidean.Angle.Sphere
-import Mathlib.Geometry.Euclidean.Similarity
+public import Mathlib.Geometry.Euclidean.Circumcenter
 
 /-!
 # Power of a point (intersecting chords and secants)
@@ -27,13 +24,20 @@ secants) in spheres in real inner product spaces and Euclidean affine spaces.
 * `mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_pi`: Intersecting Chords Theorem (Freek No. 55).
 * `mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero`: Intersecting Secants Theorem.
 * `Sphere.mul_dist_eq_abs_power`: The product of distances equals the absolute value of power.
+* `Sphere.inner_vsub_vsub_eq_power`: The signed power of a point, `⟪a -ᵥ p, b -ᵥ p⟫`, equals the
+  power of `p`; this unifies the chord and secant cases without splitting on the sign.
 * `Sphere.dist_sq_eq_mul_dist_of_tangent_and_secant`: Tangent-Secant Theorem.
+* `cospherical_of_inner_vsub_eq_inner_vsub`: A dimension-free converse to power of a point, stated
+  with the signed invariant.
+* `cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi`: Converse of the Intersecting Chords Theorem.
+* `cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_zero`: Converse of the Intersecting Secants
+  Theorem.
 -/
 
 @[expose] public section
 
 
-open Real EuclideanGeometry RealInnerProductSpace Real Module FiniteDimensional
+open Real EuclideanGeometry RealInnerProductSpace
 
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 
@@ -120,92 +124,6 @@ theorem mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_pi {a b c d p : P}
     dist a p * dist b p = dist c p * dist d p := by
   rw [EuclideanGeometry.angle_eq_pi_iff_sbtw] at hapb hcpd
   exact mul_dist_eq_mul_dist_of_cospherical h hapb.wbtw.mem_affineSpan hcpd.wbtw.mem_affineSpan
-
-private lemma cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi_aux
-    [Fact (finrank ℝ V = 2)] [Oriented ℝ V (Fin 2)] {p₁ p₂ p₃ p₄ p : P}
-    (h : dist p₁ p * dist p₂ p = dist p₃ p * dist p₄ p)
-    (hp₁p₂ : ∠ p₁ p p₂ = π) (hp₃p₄ : ∠ p₃ p p₄ = π) (hn : ¬ Collinear ℝ ({p₁, p, p₃} : Set P)) :
-    Cospherical ({p₁, p₂, p₃, p₄} : Set P) := by
-  suffices h_equiv : Cospherical ({p₁, p₂, p₄, p₃} : Set P) by grind [Set.pair_comm p₄ p₃]
-  have h_angle_eq : ∠ p₁ p p₄ = ∠ p₃ p p₂ := by
-    grind [angle_comm, angle_eq_angle_of_angle_eq_pi_of_angle_eq_pi hp₃p₄]
-  rw [angle_eq_pi_iff_sbtw] at hp₁p₂ hp₃p₄
-  have hcol_p₁pp₂ := hp₁p₂.wbtw.collinear
-  have hcol_p₃pp₄ := hp₃p₄.wbtw.collinear
-  have h_notcol_p₁p₂p₃ : ¬ Collinear ℝ ({p₁, p₂, p₃} : Set P) := by
-    have : AffineIndependent ℝ ![p₁, p, p₃] := affineIndependent_iff_not_collinear_set.mpr hn
-    rw [← affineIndependent_iff_not_collinear_set]
-    grind [hp₁p₂.left_ne_right, affineIndependent_of_affineIndependent_collinear_ne,
-      AffineIndependent.comm_left, AffineIndependent.comm_right]
-  apply cospherical_of_two_zsmul_oangle_eq_of_not_collinear ?_ h_notcol_p₁p₂p₃
-  suffices ∡ p₁ p₂ p₃ = ∡ p₁ p₄ p₃ by grind
-  suffices ∠ p₁ p₂ p₃ = ∠ p₁ p₄ p₃ by
-    grind [oangle_eq_of_angle_eq_of_sign_eq, Sbtw.oangle_sign_eq_of_sbtw]
-  rw [angle_comm, ← angle_eq_angle_of_angle_eq_pi p₃ hp₁p₂.angle₃₂₁_eq_pi,
-    ← angle_eq_angle_of_angle_eq_pi p₁ hp₃p₄.angle₃₂₁_eq_pi]
-  suffices h_sim : Similar ![p₁, p, p₄] ![p₃, p, p₂] by
-    grind [angle_comm, h_sim.angle_eq_all.right.left]
-  have h_notcol_p₁pp₄ : ¬ Collinear ℝ ({p₁, p, p₄} : Set P) := by
-    intro hcol
-    suffices hcol : Collinear ℝ ({p₁, p, p₃} : Set P) by grind
-    suffices hcol : Collinear ℝ ({p₁, p₃, p, p₄} : Set P) by grind [Collinear.subset _ hcol]
-    have hne_pp₄ := hp₃p₄.ne_right
-    grind [collinear_insert_insert_of_mem_affineSpan_pair, Collinear.mem_affineSpan_of_mem_of_ne]
-  have h_notcol_p₃pp₂ : ¬ Collinear ℝ ({p₃, p, p₂} : Set P) := by
-    intro hcol
-    suffices hcol : Collinear ℝ ({p₁, p, p₃} : Set P) by grind
-    suffices hcol : Collinear ℝ ({p₃, p₁, p, p₂} : Set P) by grind [Collinear.subset _ hcol]
-    have hne_pp₂ := hp₁p₂.ne_right
-    grind [collinear_insert_insert_of_mem_affineSpan_pair, Collinear.mem_affineSpan_of_mem_of_ne]
-  apply similar_of_side_angle_side h_notcol_p₁pp₄ h_notcol_p₃pp₂ h_angle_eq ?_
-  grind [dist_comm]
-
-/-- If `p` lies strictly between `p₁` and `p₂` on one line and strictly between `p₃` and `p₄`
-on another line, and if `dist p₁ p * dist p₂ p = dist p₃ p * dist p₄ p`,
-then the points `p₁`, `p₂`, `p₃`, and `p₄` are cospherical. -/
-theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi {p₁ p₂ p₃ p₄ p : P}
-    (h : dist p₁ p * dist p₂ p = dist p₃ p * dist p₄ p)
-    (hp₁p₂ : ∠ p₁ p p₂ = π) (hp₃p₄ : ∠ p₃ p p₄ = π) (hn : ¬ Collinear ℝ ({p₁, p, p₃} : Set P)) :
-    Cospherical ({p₁, p₂, p₃, p₄} : Set P) := by
-  have hp₁p₂_sbtw : Sbtw ℝ p₁ p p₂ := angle_eq_pi_iff_sbtw.mp hp₁p₂
-  have hp₃p₄_sbtw : Sbtw ℝ p₃ p p₄ := angle_eq_pi_iff_sbtw.mp hp₃p₄
-  have hindep : AffineIndependent ℝ ![p₁, p, p₃] := affineIndependent_iff_not_collinear_set.mpr hn
-  set t : Affine.Triangle ℝ P := ⟨_, hindep⟩ with ht
-  set S : AffineSubspace ℝ P := affineSpan ℝ (Set.range t.points) with hS
-  have hp₂ : p₂ ∈ S := by
-    suffices hmem : p₂ ∈ affineSpan ℝ {p₁, p} by exact affineSpan_mono ℝ (by simp [ht]; grind) hmem
-    simp [hp₁p₂_sbtw.wbtw.collinear.mem_affineSpan_of_mem_of_ne _ _ _ hp₁p₂_sbtw.left_ne]
-  have hp₄ : p₄ ∈ S := by
-    suffices hmem : p₄ ∈ affineSpan ℝ {p₃, p} by exact affineSpan_mono ℝ (by simp [ht]; grind) hmem
-    simp [hp₃p₄_sbtw.wbtw.collinear.mem_affineSpan_of_mem_of_ne _ _ _ hp₃p₄_sbtw.left_ne]
-  let s_isom : AffineIsometry ℝ S P := S.subtypeₐᵢ
-  let p₁' : S := ⟨p₁, mem_affineSpan ℝ (s := Set.range t.points) (by aesop)⟩
-  let p' : S := ⟨p, mem_affineSpan ℝ (s := Set.range t.points) (by aesop)⟩
-  let p₃' : S := ⟨p₃, mem_affineSpan ℝ (s := Set.range t.points) (by aesop)⟩
-  let p₂' : S := ⟨p₂, hp₂⟩
-  let p₄' : S := ⟨p₄, hp₄⟩
-  have h_dist' : dist p₁' p' * dist p₂' p' = dist p₃' p' * dist p₄' p' := by
-    simpa [dist_eq_norm_vsub, ← s_isom.dist_map] using h
-  have hp₁'p₂' : ∠ p₁' p' p₂' = π := by simpa [AffineIsometry.angle_map s_isom]
-  have hp₃'p₄' : ∠ p₃' p' p₄' = π := by simpa [AffineIsometry.angle_map s_isom]
-  suffices h_cospherical' : Cospherical {p₁', p₂', p₃', p₄'} by
-    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
-    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
-    It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
-    canonicalizer; a minimization would help. The original proof was:
-    `grind [Set.image_insert_eq, Set.image_singleton]` -/
-    simpa [Set.image_insert_eq, Set.image_singleton] using Cospherical.subtype_val h_cospherical'
-  have hf2 : Fact (finrank ℝ S.direction = 2) := ⟨by
-    rw [hS, direction_affineSpan, t.independent.finrank_vectorSpan]
-    simp⟩
-  letI : Module.Oriented ℝ S.direction (Fin 2) :=
-    ⟨Basis.orientation (finBasisOfFinrankEq _ _ hf2.out)⟩
-  have hncol : ¬ Collinear ℝ {p₁', p', p₃'} := by
-    rw [← affineIndependent_iff_not_collinear_set,
-      ← s_isom.toAffineMap.affineIndependent_iff s_isom.injective]
-    convert! hindep
-    ext i; fin_cases i <;> rfl
-  exact cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi_aux h_dist' hp₁'p₂' hp₃'p₄' hncol
 
 /-- **Intersecting Secants Theorem**. -/
 theorem mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero {a b c d p : P}
@@ -297,6 +215,54 @@ theorem mul_dist_eq_neg_power_of_dist_center_le_radius {s : Sphere P} {p a b : P
   rw [mul_dist_eq_abs_power hp ha hb,
     abs_of_nonpos <| (power_nonpos_iff_dist_center_le_radius hr).mpr hle]
 
+/-- Signed power of a point on a secant line: if `a` and `b` lie on `s` and `p` lies on the
+line `ab`, then `⟪a -ᵥ p, b -ᵥ p⟫` is exactly the power of `p` with respect to `s`. -/
+theorem inner_vsub_vsub_eq_power {s : Sphere P} {a b p : P}
+    (ha : a ∈ s) (hb : b ∈ s) (hp : p ∈ line[ℝ, a, b]) :
+    ⟪a -ᵥ p, b -ᵥ p⟫ = s.power p := by
+  obtain ⟨t, rfl⟩ := mem_affineSpan_pair_iff_exists_lineMap_eq.mp hp
+  set A : V := a -ᵥ s.center with hA
+  set B : V := b -ᵥ s.center with hB
+  have ha' : ⟪A, A⟫ = s.radius ^ 2 := by
+    rw [hA, real_inner_self_eq_norm_sq, ← dist_eq_norm_vsub V, mem_sphere.mp ha]
+  have hb' : ⟪B, B⟫ = s.radius ^ 2 := by
+    rw [hB, real_inner_self_eq_norm_sq, ← dist_eq_norm_vsub V, mem_sphere.mp hb]
+  have hap : (a -ᵥ AffineMap.lineMap a b t : V) = t • (A - B) := by
+    rw [AffineMap.left_vsub_lineMap, hA, hB, vsub_sub_vsub_cancel_right]
+  have hbp : (b -ᵥ AffineMap.lineMap a b t : V) = (1 - t) • (B - A) := by
+    rw [AffineMap.right_vsub_lineMap, hA, hB, vsub_sub_vsub_cancel_right]
+  have hpc : (AffineMap.lineMap a b t -ᵥ s.center : V) = A + t • (B - A) := by
+    rw [← vsub_add_vsub_cancel (AffineMap.lineMap a b t) a s.center,
+      AffineMap.lineMap_vsub_left, hA, hB, vsub_sub_vsub_cancel_right, add_comm]
+  rw [Sphere.power, dist_eq_norm_vsub V, ← real_inner_self_eq_norm_sq, hap, hbp, hpc]
+  simp only [inner_sub_left, inner_sub_right, inner_add_left, inner_add_right,
+    real_inner_smul_left, real_inner_smul_right]
+  linear_combination (t - 1) * ha' - t * hb'
+
+/-- A one-secant converse to signed power.  If `a ∈ s`, `x` lies on the line `pa`, and the
+signed product `⟪a -ᵥ p, x -ᵥ p⟫` equals the power of `p`, then `x ∈ s`. -/
+theorem mem_of_inner_vsub_vsub_eq_power_of_mem_line {s : Sphere P} {a p x : P}
+    (ha : a ∈ s) (hx : x ∈ line[ℝ, p, a])
+    (hpow : ⟪a -ᵥ p, x -ᵥ p⟫ = s.power p) :
+    x ∈ s := by
+  obtain ⟨t, rfl⟩ := mem_affineSpan_pair_iff_exists_lineMap_eq.mp hx
+  set A : V := a -ᵥ s.center with hA
+  set y : V := p -ᵥ s.center with hy
+  have ha' : ⟪A, A⟫ = s.radius ^ 2 := by
+    rw [hA, real_inner_self_eq_norm_sq, ← dist_eq_norm_vsub V, mem_sphere.mp ha]
+  have hap : (a -ᵥ p : V) = A - y := by rw [hA, hy, vsub_sub_vsub_cancel_right]
+  have hxp : (AffineMap.lineMap p a t -ᵥ p : V) = t • (A - y) := by
+    rw [AffineMap.lineMap_vsub_left, hap]
+  have hxc : (AffineMap.lineMap p a t -ᵥ s.center : V) = y + t • (A - y) := by
+    rw [← vsub_add_vsub_cancel (AffineMap.lineMap p a t) p s.center, hxp, ← hy]; abel
+  rw [hap, hxp, Sphere.power, dist_eq_norm_vsub V, ← real_inner_self_eq_norm_sq, ← hy] at hpow
+  rw [mem_sphere, dist_eq_norm_vsub V,
+    ← pow_left_inj₀ (norm_nonneg _) (radius_nonneg_of_mem ha) two_ne_zero,
+    ← real_inner_self_eq_norm_sq, hxc]
+  simp only [inner_sub_left, inner_sub_right, inner_add_left, inner_add_right,
+    real_inner_smul_left, real_inner_smul_right] at hpow ⊢
+  linear_combination t * ha' + (t - 1) * hpow
+
 /-- **Tangent-Secant Theorem**. The square of the tangent length equals
     the product of secant segment lengths. -/
 theorem dist_sq_eq_mul_dist_of_tangent_and_secant {a b t p : P} {s : Sphere P}
@@ -334,5 +300,82 @@ theorem isTangentAt_iff_dist_sq_eq_power {t p : P} {s : Sphere P} (ht : t ∈ s)
 alias ⟨_, isTangentAt_of_dist_sq_eq_power⟩ := isTangentAt_iff_dist_sq_eq_power
 
 end Sphere
+
+/-! ### Converse direction: equal products imply cospherical -/
+
+/-- A dimension-free converse to power of a point in signed form.  If `p` lies on both lines
+`p₁p₂` and `p₃p₄`, and the two signed power products are equal, then the four endpoints are
+cospherical. -/
+theorem cospherical_of_inner_vsub_eq_inner_vsub {p₁ p₂ p₃ p₄ p : P}
+    (h₁₂ : p ∈ line[ℝ, p₁, p₂]) (h₃₄ : p ∈ line[ℝ, p₃, p₄])
+    (hn : ¬ Collinear ℝ ({p₁, p, p₃} : Set P))
+    (hpow : ⟪p₁ -ᵥ p, p₂ -ᵥ p⟫ = ⟪p₃ -ᵥ p, p₄ -ᵥ p⟫) :
+    Cospherical ({p₁, p₂, p₃, p₄} : Set P) := by
+  have hpp₃ : p ≠ p₃ := by
+    rintro rfl; exact hn (by simpa using collinear_pair ℝ p₁ p)
+  have hp₁p₃ : p₁ ≠ p₃ := by
+    rintro rfl; exact hn (by simpa using collinear_pair ℝ p p₁)
+  have hp₁p₂ : p₁ ≠ p₂ := by
+    rintro rfl
+    have hpeq : p = p₁ := by simpa using h₁₂
+    exact hn (by rw [hpeq]; simpa using collinear_pair ℝ p₁ p₃)
+  have hn₁₂₃ : ¬ Collinear ℝ ({p₁, p₂, p₃} : Set P) := by
+    intro hcol
+    apply hn
+    have hp₂_mem : p₂ ∈ line[ℝ, p₁, p₃] :=
+      hcol.mem_affineSpan_of_mem_of_ne (by simp) (by simp) (by simp) hp₁p₃
+    have hp_mem : p ∈ line[ℝ, p₁, p₃] := by
+      rwa [affineSpan_pair_eq_of_right_mem_of_ne hp₂_mem hp₁p₂.symm] at h₁₂
+    simpa [Set.insert_comm] using collinear_insert_of_mem_affineSpan_pair hp_mem
+  let t : Affine.Triangle ℝ P :=
+    ⟨![p₁, p₂, p₃], affineIndependent_iff_not_collinear_set.mpr hn₁₂₃⟩
+  have hp₁_mem : p₁ ∈ t.circumsphere := t.mem_circumsphere 0
+  have hp₂_mem : p₂ ∈ t.circumsphere := t.mem_circumsphere 1
+  have hp₃_mem : p₃ ∈ t.circumsphere := t.mem_circumsphere 2
+  have hleft : ⟪p₁ -ᵥ p, p₂ -ᵥ p⟫ = t.circumsphere.power p :=
+    Sphere.inner_vsub_vsub_eq_power hp₁_mem hp₂_mem h₁₂
+  have hp₄_line : p₄ ∈ line[ℝ, p, p₃] :=
+    (collinear_insert_of_mem_affineSpan_pair h₃₄).mem_affineSpan_of_mem_of_ne
+      (by simp) (by simp) (by simp) hpp₃
+  have hp₄_mem : p₄ ∈ t.circumsphere :=
+    Sphere.mem_of_inner_vsub_vsub_eq_power_of_mem_line hp₃_mem hp₄_line
+      (hpow.symm.trans hleft)
+  rw [cospherical_iff_exists_sphere]
+  refine ⟨t.circumsphere, ?_⟩
+  simp only [Set.insert_subset_iff, Set.singleton_subset_iff]
+  exact ⟨hp₁_mem, hp₂_mem, hp₃_mem, hp₄_mem⟩
+
+/-- **Converse of the Intersecting Chords Theorem**.  If
+`dist p₁ p * dist p₂ p = dist p₃ p * dist p₄ p`, and `p` lies strictly between `p₁` and `p₂`
+(`∠ p₁ p p₂ = π`) and strictly between `p₃` and `p₄`, with `{p₁, p, p₃}` not collinear, then
+`p₁, p₂, p₃, p₄` are cospherical. -/
+theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi {p₁ p₂ p₃ p₄ p : P}
+    (h : dist p₁ p * dist p₂ p = dist p₃ p * dist p₄ p)
+    (hp₁p₂ : ∠ p₁ p p₂ = π) (hp₃p₄ : ∠ p₃ p p₄ = π)
+    (hn : ¬ Collinear ℝ ({p₁, p, p₃} : Set P)) :
+    Cospherical ({p₁, p₂, p₃, p₄} : Set P) := by
+  refine cospherical_of_inner_vsub_eq_inner_vsub
+    (angle_eq_pi_iff_sbtw.mp hp₁p₂).wbtw.mem_affineSpan
+    (angle_eq_pi_iff_sbtw.mp hp₃p₄).wbtw.mem_affineSpan hn ?_
+  rw [← cos_angle_mul_dist_mul_dist, ← cos_angle_mul_dist_mul_dist, hp₁p₂, hp₃p₄, h]
+
+/-- **Converse of the Intersecting Secants Theorem**.  If
+`dist p₁ p * dist p₂ p = dist p₃ p * dist p₄ p`, and `p₁, p₂` lie on a common ray from `p`
+(`∠ p₁ p p₂ = 0`) and `p₃, p₄` on another, with `{p₁, p, p₃}` not collinear, then
+`p₁, p₂, p₃, p₄` are cospherical.  As in Mathlib's forward secant theorem, `p₁ ≠ p₂` and
+`p₃ ≠ p₄` are required: unlike `∠ = π`, the condition `∠ = 0` does not force the endpoints to
+be distinct. -/
+theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_zero {p₁ p₂ p₃ p₄ p : P}
+    (h : dist p₁ p * dist p₂ p = dist p₃ p * dist p₄ p)
+    (h₁₂ : p₁ ≠ p₂) (h₃₄ : p₃ ≠ p₄)
+    (hp₁p₂ : ∠ p₁ p p₂ = 0) (hp₃p₄ : ∠ p₃ p p₄ = 0)
+    (hn : ¬ Collinear ℝ ({p₁, p, p₃} : Set P)) :
+    Cospherical ({p₁, p₂, p₃, p₄} : Set P) := by
+  refine cospherical_of_inner_vsub_eq_inner_vsub
+    ((collinear_of_angle_eq_zero hp₁p₂).mem_affineSpan_of_mem_of_ne
+      (by simp) (by simp) (by simp) h₁₂)
+    ((collinear_of_angle_eq_zero hp₃p₄).mem_affineSpan_of_mem_of_ne
+      (by simp) (by simp) (by simp) h₃₄) hn ?_
+  rw [← cos_angle_mul_dist_mul_dist, ← cos_angle_mul_dist_mul_dist, hp₁p₂, hp₃p₄, h]
 
 end EuclideanGeometry
