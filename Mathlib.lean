@@ -873,7 +873,6 @@ public import Mathlib.Algebra.MonoidAlgebra.ToDirectSum
 public import Mathlib.Algebra.MvPolynomial.Basic
 public import Mathlib.Algebra.MvPolynomial.Cardinal
 public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.Rank
-public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.Reduced
 public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.TriangularSet
 public import Mathlib.Algebra.MvPolynomial.Coeff
 public import Mathlib.Algebra.MvPolynomial.Comap

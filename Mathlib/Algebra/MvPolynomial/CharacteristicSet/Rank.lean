@@ -5,7 +5,7 @@ Authors: Yuxuan Xiao
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.Reduced
+public import Mathlib.Algebra.MvPolynomial.CharacteristicSet.TriangularSet
 
 /-!
 # Rank and Orderings on polynomials and triangular sets
@@ -156,55 +156,6 @@ noncomputable def Set.min (h : PS.Nonempty) : MvPolynomial σ R := Exists.choose
 theorem Set.min_mem (h : PS.Nonempty) : (min PS h) ∈ PS := (Exists.choose_spec (has_min PS h)).1
 
 end WellFounded
-
-section Reduced
-
-variable [DecidableEq R] {p q r : MvPolynomial σ R}
-
-theorem reducedTo_congr_right (h : p ≈ q) : (r.reducedTo p ↔ r.reducedTo q) := by
-  suffices ∀ (p q : MvPolynomial σ R) (h : p ≈ q), r.reducedTo p → r.reducedTo q from
-    ⟨this p q h, this q p h.symm⟩
-  intro p q h
-  have : p.vars.max = q.vars.max ∧ p.mainDegree = q.mainDegree := equiv_iff.mp h
-  simp only [reducedTo, if_true_left]
-  intro hr1 hr2
-  match hc : q.vars.max with
-  | none => simp [hr2, hc ▸ this.1] at hr1
-  | some c =>
-    have hc' := hc ▸ this.1
-    simp [hr2, hc', mainDegree_of_max_vars_isSome hc' ▸ this.2] at hr1
-    simp only [mainDegree_of_max_vars_isSome hc ▸ hr1]
-
-theorem reducedTo_iff_gt_of_max_vars_eq (hq : q ≠ 0) (h : q.vars.max = p.vars.max) :
-    q.reducedTo p ↔ q < p where
-  mp hl :=
-    match hp : p.vars.max with
-    | ⊥ => absurd hl <| not_reducedTo_of_bot_max_vars hq hp
-    | some c => lt_def.mpr <| Or.inr ⟨h, by
-      rw [mainDegree_of_max_vars_isSome hp, mainDegree_of_max_vars_isSome <| h.trans hp]
-      exact (reducedTo_iff hp hq).mp hl⟩
-  mpr hr :=
-    have : q.mainDegree < p.mainDegree := (lt_iff_not_imp.mp hr <| Eq.not_lt h).2
-    match hp : p.vars.max with
-    | ⊥ => by
-      rw [mainDegree_eq_zero_iff.mpr hp, mainDegree_eq_zero_iff.mpr (h ▸ hp)] at this
-      exact absurd this <| Nat.not_lt_zero 0
-    | some c => by
-      rw [mainDegree_of_max_vars_isSome hp, mainDegree_of_max_vars_isSome (h ▸ hp)] at this
-      exact (reducedTo_iff hp hq).mpr this
-
-theorem max_vars_lt_of_reducedTo_of_le (h1 : q ≠ 0) (h2 : p ≤ q) (h3 : q.reducedTo p) :
-    p.vars.max < q.vars.max := by
-  by_contra con
-  have con : q.vars.max = p.vars.max :=
-    le_antisymm (not_lt.mp con) (max_vars_le_of_le h2)
-  have := (reducedTo_iff_gt_of_max_vars_eq h1 con).mp h3
-  exact absurd h2 <| not_le_iff_gt.mpr this
-
-theorem lt_of_reducedTo_of_le (h1 : q ≠ 0) (h2 : p ≤ q) (h3 : q.reducedTo p) : p < q :=
-  lt_of_max_vars_lt <| max_vars_lt_of_reducedTo_of_le h1 h2 h3
-
-end Reduced
 
 end MvPolynomial
 
@@ -569,55 +520,5 @@ theorem Set.min_le (h : S'.Nonempty) : ∀ T ∈ S', min S' h ≤ T :=
   (Exists.choose_spec (has_min S' h)).2
 
 end WellFounded
-
-section Reduced
-
-variable [DecidableEq R] {p q r : MvPolynomial σ R}
-
-theorem reducedToSet_congr_right : S ≈ T → (q.reducedToSet S ↔ q.reducedToSet T) := fun h ↦ by
-  have := TriangularSet.equiv_iff.mp h
-  rw [reducedToSet_iff, reducedToSet_iff, ← this.1, forall_congr']
-  refine fun i ↦ imp_congr_right fun _ ↦ reducedTo_congr_right <| this.2 i
-
-/--
-Key Lemma for the Basic Set Algorithm:
-If `p` is non-zero and reduced with respect to `S`, then modifying `S`
-by appending `p` (using `takeConcat`) strictly decreases the order of the triangular set.
-This order decrease is what guarantees the termination of the characteristic set computation.
--/
-theorem _root_.TriangularSet.takeConcat_lt_of_reducedToSet
-    (p_ne_zero : p ≠ 0) (hp : p.reducedToSet S) : S.takeConcat p < S := by
-  unfold takeConcat
-  rw [reducedToSet_iff] at hp
-  split_ifs with hS hc
-  · exact hS ▸ single_lt_empty p_ne_zero
-  · refine gt_single_of_first_gt p_ne_zero ?_
-    rcases lt_or_eq_of_le hc with h | h
-    · exact MvPolynomial.lt_of_max_vars_lt h
-    apply (MvPolynomial.reducedTo_iff_gt_of_max_vars_eq p_ne_zero h).mp
-    exact hp 0 <| length_ge_one_iff.mpr hS
-  let k := Nat.find <| exists_index_max_vars_between_of_max_vars_first_lt <| lt_of_not_ge hc
-  have hk : k ≤ S.length ∧ (S (k - 1)).vars.max < p.vars.max ∧
-      (p.vars.max ≤ (S k).vars.max ∨ k = S.length) :=
-    Nat.find_spec <| exists_index_max_vars_between_of_max_vars_first_lt <| lt_of_not_ge hc
-  have length_tk : (S.take k).length = k := S.length_take k ▸ (min_eq_left hk.1)
-  change (S.take k).concat p _ < S
-  by_cases keq : k = S.length
-  · refine TriangularSet.lt_def.mpr <| Or.inr ?_
-    rw [length_concat, length_tk]
-    refine ⟨keq ▸ lt_add_one S.length, fun i hi ↦ ?_⟩
-    rw [concat_apply, length_tk, keq, take_length, if_pos hi]
-  refine TriangularSet.lt_def.mpr <| Or.inl ?_
-  simp only [length_concat, concat_apply, length_tk]
-  refine ⟨k, lt_add_one k, ?_, fun i hi ↦ by rw [take_apply, if_pos hi, if_pos hi]⟩
-  rw [if_neg <| Nat.lt_irrefl k, if_pos rfl]
-  by_cases max_vars_lt' : p.vars.max < (S k).vars.max
-  · exact MvPolynomial.lt_of_max_vars_lt max_vars_lt'
-  have : p.vars.max ≤ (S k).vars.max := (or_iff_left keq).mp hk.2.2
-  have : p.vars.max = (S k).vars.max := eq_of_le_of_ge this <| le_of_not_gt max_vars_lt'
-  have := MvPolynomial.reducedTo_iff_gt_of_max_vars_eq p_ne_zero this
-  exact this.mp <| hp k <| Nat.lt_of_le_of_ne hk.1 keq
-
-end Reduced
 
 end TriangularSet
