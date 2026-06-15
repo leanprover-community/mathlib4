@@ -82,7 +82,7 @@ lemma toNonUnitalSubsemiring_injective :
 
 instance : SetLike (NonUnitalSubalgebra R A) A where
   coe s := s.carrier
-  coe_injective' := SetLike.coe_injective.comp toNonUnitalSubsemiring_injective
+  coe_injective := SetLike.coe_injective.comp toNonUnitalSubsemiring_injective
 
 lemma toSubmodule_injective : (toSubmodule : NonUnitalSubalgebra R A → Submodule R A).Injective :=
   fun _ _ h ↦ SetLike.ext (SetLike.ext_iff.mp h :)
@@ -1109,6 +1109,11 @@ theorem center_toNonUnitalSubsemiring :
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] :
     (center R A).toNonUnitalSubring = NonUnitalSubring.center A :=
   rfl
+
+protected theorem center_prod {B : Type*} [NonUnitalNonAssocSemiring B] [Module R B]
+    [IsScalarTower R B B] [SMulCommClass R B B] :
+    center R (A × B) = prod (center R A) (center R B) :=
+  SetLike.coe_injective Set.center_prod
 
 end NonUnitalNonAssocSemiring
 

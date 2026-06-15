@@ -606,13 +606,13 @@ end AddGroupWithOne
 
 section Mul
 
-/- Interaction of `sum` and `•` assuming some multiplication structure. -/
+/-- Interaction of `sum` and `•` assuming some multiplication structure. -/
 theorem sum_smul_index {N : Type*} [AddCommMonoid N] [NonUnitalNonAssocSemiring k]
     {g : SkewMonoidAlgebra k G} {b : k} {h : G → k → N} (h0 : ∀ i, h i 0 = 0) :
     (b • g).sum h = g.sum (h · <| b * ·) := by
   simp [sum_def, Finsupp.sum_smul_index' h0]
 
-/- Variant of the interaction of `sum` and `•` assuming some scalar multiplication structure. -/
+/-- Variant of the interaction of `sum` and `•` assuming some scalar multiplication structure. -/
 theorem sum_smul_index' {N R : Type*} [AddCommMonoid k]
     [DistribSMul R k] [AddCommMonoid N]
     {g : SkewMonoidAlgebra k G} {b : R} {h : G → k → N} (h0 : ∀ i, h i 0 = 0) :
@@ -1062,7 +1062,7 @@ theorem mapDomain_one [MonoidHomClass F α α₂] (f : F) :
       (1 : SkewMonoidAlgebra β α₂) := by
   simp_rw [one_def, mapDomain_single, map_one]
 
-/- Like `mapDomain_add`, but for the skewed convolutive multiplication we define in this
+/-- Like `mapDomain_add`, but for the skewed convolutive multiplication we define in this
   file. This theorem holds assuming that `(hf : ∀ (a : α) (x : β), a • x = (f a) • x)`. -/
 theorem mapDomain_mul [MulSemiringAction α β] [MulSemiringAction α₂ β]
     [MulHomClass F α α₂] {f : F} (x y : SkewMonoidAlgebra β α)
@@ -1185,10 +1185,14 @@ theorem distribMulActionHom_ext' [DistribMulAction R M] [DistribMulAction R N] {
     f = g :=
   distribMulActionHom_ext fun a ↦ DistribMulActionHom.congr_fun (h a)
 
+variable (R) in
 /-- Interpret `single a` as a linear map. -/
 def lsingle {α : Type*} (a : α) [Module R M] : M →ₗ[R] (SkewMonoidAlgebra M α) where
   __ := singleAddHom a
   map_smul' _ _ := (smul_single _ _ _).symm
+
+lemma lsingle_apply {α : Type*} (a : α) [Module R M] (m : M) :
+  lsingle R a m = single a m := rfl
 
 /-- Two `R`-linear maps from `SkewMonoidAlgebra M α` which agree on each `single x y`
   agree everywhere. -/
@@ -1198,7 +1202,7 @@ theorem lhom_ext {α : Type*} [Module R M] [Module R N] ⦃φ ψ : SkewMonoidAlg
 
 @[ext high]
 theorem lhom_ext' {α : Type*} [Module R M] [Module R N] ⦃φ ψ : SkewMonoidAlgebra M α →ₗ[R] N⦄
-    (h : ∀ a, φ.comp (lsingle a) = ψ.comp (lsingle a)) : φ = ψ :=
+    (h : ∀ a, φ.comp (lsingle R a) = ψ.comp (lsingle R a)) : φ = ψ :=
   lhom_ext fun a ↦ LinearMap.congr_fun (h a)
 
 variable {A : Type*} [NonUnitalNonAssocSemiring A] [Monoid G] [Semiring k] [MulSemiringAction G k]

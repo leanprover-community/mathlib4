@@ -638,7 +638,7 @@ instance : Algebra R (DirectLimit G f) where
     rw [smul_def, map₀_algebraMap i, mul_def, Algebra.smul_def']
 
 lemma algebraMap_def (i : ι) (r : R) :
-    algebraMap R (DirectLimit G f) r = ⟦⟨i, algebraMap R (G i) r⟩⟧:=
+    algebraMap R (DirectLimit G f) r = ⟦⟨i, algebraMap R (G i) r⟩⟧ :=
   map₀_algebraMap i r
 
 end Algebra
@@ -858,7 +858,7 @@ to a unique map out of the direct limit.
 def lift (g : ∀ i, G i →ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f →ₐ[R] P where
   toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
-  __ := DirectLimit.Ring.lift G f P (g:= fun i => (g i).toRingHom) (Hg:=Hg)
+  __ := DirectLimit.Ring.lift G f P (g := fun i => (g i).toRingHom) (Hg := Hg)
   commutes' r := by
     let i := Classical.arbitrary ι
     rw [algebraMap_def i r, lift_def, AlgHom.commutes]
@@ -907,7 +907,7 @@ to a unique map out of the direct limit.
 def lift (g : ∀ i, G i →ₙₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f →ₙₐ[R] P where
   toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
-  __ := DirectLimit.NonUnitalRing.lift G f P (g:= fun i => (g i)) (Hg:=Hg)
+  __ := DirectLimit.NonUnitalRing.lift G f P (g := fun i => (g i)) (Hg := Hg)
   map_smul' m := by apply lift_smul
 
 variable (g : ∀ i, G i →ₙₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)

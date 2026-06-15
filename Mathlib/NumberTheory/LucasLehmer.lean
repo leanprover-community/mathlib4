@@ -574,6 +574,8 @@ export LucasLehmer (LucasLehmerTest lucasLehmerResidue)
 
 open LucasLehmer
 
+/-- **Lucas–Lehmer primality test**: sufficiency direction. -/
+@[wikidata Q1138992]
 theorem lucas_lehmer_sufficiency (p : ℕ) (w : 1 < p) : LucasLehmerTest p → (mersenne p).Prime := by
   set p' := p - 2 with hp'
   clear_value p'
@@ -648,28 +650,31 @@ termination_by structural x => x
 Generalization of `sModNat` with arbitrary base case,
 useful for proving `sModNatTR` and `sModNat` agree.
 -/
-def sModNat_aux (b q : ℕ) : ℕ → ℕ
+def sModNatAux (b q : ℕ) : ℕ → ℕ
   | 0 => b
-  | i + 1 => (sModNat_aux b q i ^ 2 + (q - 2)) % q
+  | i + 1 => (sModNatAux b q i ^ 2 + (q - 2)) % q
 
-theorem sModNat_aux_eq (q k : ℕ) : sModNat_aux (4 % q) q k = sModNat q k := by
+theorem sModNatAux_eq (q k : ℕ) : sModNatAux (4 % q) q k = sModNat q k := by
   induction k with
   | zero => rfl
-  | succ k ih => rw [sModNat_aux, ih, sModNat, ← ih]
+  | succ k ih => rw [sModNatAux, ih, sModNat, ← ih]
+
+@[deprecated (since := "2026-06-06")] alias sModNat_aux := sModNatAux
+@[deprecated (since := "2026-06-06")] alias sModNat_aux_eq := sModNatAux_eq
 
 theorem sModNatTR_eq_sModNat (q i : ℕ) : sModNatTR q i = sModNat q i := by
-  rw [sModNatTR, helper, sModNat_aux_eq]
+  rw [sModNatTR, helper, sModNatAux_eq]
 where
-  helper b q k : sModNatTR.go q k b = sModNat_aux b q k := by
+  helper b q k : sModNatTR.go q k b = sModNatAux b q k := by
     induction k generalizing b with
     | zero => rfl
     | succ k ih =>
-      rw [sModNatTR.go, ih, sModNat_aux]
+      rw [sModNatTR.go, ih, sModNatAux]
       clear ih
       induction k with
       | zero => rfl
       | succ k ih =>
-        rw [sModNat_aux, ih, sModNat_aux]
+        rw [sModNatAux, ih, sModNatAux]
 
 lemma testTrueHelper (p : ℕ) (hp : Nat.blt 1 p = true) (h : sModNatTR (2 ^ p - 1) (p - 2) = 0) :
     LucasLehmerTest p := by
