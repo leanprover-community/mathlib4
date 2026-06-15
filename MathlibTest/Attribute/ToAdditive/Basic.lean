@@ -45,6 +45,19 @@ Note: This linter can be disabled with `set_option linter.translateGenerateName 
 @[to_additive AddCommGroup.foo]
 lemma _root_.CommGroup.foo {g h : G} : g * h = h * g := mul_comm g h
 
+#guard_msgs in
+@[to_additive _root_.AddCommGroup.bar]
+lemma _root_.CommGroup.Bar.foo {g h : G} : g * h = h * g := mul_comm g h
+#guard_msgs(drop info) in #check AddCommGroup.bar
+
+#guard_msgs in
+@[to_additive _root_.fooz]
+lemma _root_.CommGroup.Bar.bar {g h : G} : g * h = h * g := mul_comm g h
+/-- info: fooz.{u_1} {G : Type u_1} [AddCommGroup G] {g h : G} : g + h = h + g -/
+#guard_msgs in #check fooz
+/-- error: Unknown constant `AddCommGroup._root_.fooz` -/
+#guard_msgs in #check AddCommGroup._root_.fooz -- this name was previously generated, due to a bug
+
 end
 
 @[to_additive bar0]
