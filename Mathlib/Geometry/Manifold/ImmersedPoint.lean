@@ -173,7 +173,8 @@ lemma comp_isLocalDiffeomorphAt_right_iff (hf : ContinuousAt f x)
 lemma of_injective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E']
     (hf' : Injective (mfderiv% f x)) : IsImmersedPoint I I' f x := by
   have : FiniteDimensional 𝕜 (TangentSpace I' (f x)) := inferInstanceAs (FiniteDimensional 𝕜 E')
-  sorry -- exact ContinuousLinearMap.HasLeftInverse.of_injective_of_finiteDimensional hf'
+  have : T2Space (TangentSpace% (f x)) := inferInstanceAs (T2Space E')
+  exact ContinuousLinearMap.HasLeftInverse.of_injective_of_finiteDimensional hf'
 
 end IsImmersedPoint
 

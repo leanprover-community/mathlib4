@@ -458,6 +458,50 @@ lemma isImmersedPoint (h : IsImmersionAtOfComplement F I J n f x) (hn : n ≠ 0)
   -- now, argue rhs and φ have the same fderiv: needs a small detour, see my voice message
   sorry
 
+-- The hard direction, using the inverse function theorem.
+-- TODO: will this use boundaryless-ness, or something about the boundary?
+lemma of_isImmersedPoint [IsManifold I n M] (hf : IsImmersedPoint I J f x) :
+    IsImmersionAt I J n f x := by
+  have hfx : ContinuousAt f x := hf.mdifferentiableAt.continuousAt
+  rw [isImmersedPoint_iff] at hf
+  have : NormedSpace 𝕜 hf.complement :=
+    sorry -- TODO: need to ensure this is actually a normed space...
+  let a : hf.complement →L[𝕜] E'' := hf.complement.subtypeL -- canonical inclusion
+  -- the equivalence we want.
+  let φ : (E × hf.complement) →L[𝕜] E'' := by refine {
+    -- TODO: bad defeq abuse going on here, E'' versus the tangent space
+    toFun z :=
+      letI v : E'' := mfderiv% f x z.1
+      v + a z.2
+    map_add' z z' := by simp; sorry
+    map_smul' := sorry
+  }
+  let φ : (E × hf.complement) ≃L[𝕜] E'' := by
+    refine {
+      toLinearMap := φ
+      invFun z := by
+        -- second factor is just the projection we get from the complement
+        -- first factor is the left inverse, up to lots of defeq abuse `hf.leftInverse`
+        sorry
+      continuous_invFun := sorry
+      left_inv := sorry
+      right_inv := sorry
+    }
+  use hf.complement, by infer_instance, this
+  apply IsImmersionAtOfComplement.mk_of_continuousAt hfx (chartAt H x) sorry /- codChart -/
+      (equiv := sorry /- φ-/)
+  · apply (mem_chart_source H x)
+  · sorry -- codChart source
+  · apply IsManifold.chart_mem_maximalAtlas
+  · sorry -- codChart in maximal atlas
+  · sorry -- eqon
+/-
+the complement F := hf.complement gives us a projection P : TangentSpace% I x → (range df x),
+thus P ∘ mfderiv% f x is invertible
+*somehow*, cook up a local diffeomorphism from that... that will be the inverse we want??
+
+-/
+#exit
 end IsImmersionAtOfComplement
 
 namespace IsImmersionAt
