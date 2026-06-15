@@ -55,8 +55,7 @@ As in other polynomial files, we typically use the notation:
 
 -/
 
-/- @[expose] -/
-public section
+@[expose] public section
 
 
 noncomputable section
@@ -690,7 +689,6 @@ theorem mainDegree_def (p : MvPolynomial σ R) :
 
 theorem forall_mainDegree_eq_of_forall_degrees_le (h1 : i ∈ p.degrees)
     (h2 : IsMaxOn id p.degrees.toFinset i) : ∀ j ∈ p.mainDegree, i = j := by
-  classical
   intro j hj
   rw [mainDegree_def] at hj
   apply le_antisymm
