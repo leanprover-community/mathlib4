@@ -521,7 +521,6 @@ variable [P.IsPrime] [Q.IsPrime] (K L : Type*) [Field K] [Field L] [Algebra K L]
     [Algebra (A ⧸ P) K] [IsFractionRing (A ⧸ P) K] [Algebra (B ⧸ Q) L] [IsFractionRing (B ⧸ Q) L]
     [Algebra (A ⧸ P) L] [IsScalarTower (A ⧸ P) (B ⧸ Q) L] [IsScalarTower (A ⧸ P) K L]
 
--- PR ready!
 open Polynomial in
 include P Q G in
 lemma normal : Normal K L := by
@@ -580,15 +579,15 @@ include G in
 For any domain `k` containing `B ⧸ Q`,
 any endomorphism of `k` can be restricted to an endomorphism of `B ⧸ Q`. -/
 lemma Ideal.Quotient.normal [P.IsMaximal] [Q.IsMaximal] :
-    Normal (A ⧸ P) (B ⧸ Q) := by
-  exact IsFractionRing.normal G P Q (A ⧸ P) (B ⧸ Q)
+    Normal (A ⧸ P) (B ⧸ Q) :=
+  IsFractionRing.normal G P Q (A ⧸ P) (B ⧸ Q)
 
 attribute [local instance] Ideal.Quotient.field in
 /-- If the extension `B/Q` over `A/P` is separable, then it is finite dimensional. -/
 lemma Ideal.Quotient.finite_of_isInvariant [P.IsMaximal] [Q.IsMaximal]
     [SMulCommClass G A B] [Algebra.IsSeparable (A ⧸ P) (B ⧸ Q)] :
-    Module.Finite (A ⧸ P) (B ⧸ Q) := by
-  exact IsFractionRing.finite_of_isInvariant G P Q (A ⧸ P) (B ⧸ Q)
+    Module.Finite (A ⧸ P) (B ⧸ Q) :=
+  IsFractionRing.finite_of_isInvariant G P Q (A ⧸ P) (B ⧸ Q)
 
 end normal
 
