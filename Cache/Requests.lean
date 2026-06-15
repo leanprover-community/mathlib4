@@ -900,7 +900,7 @@ def getFiles
   -- Skip when forceDownload is set, since downloadFiles will re-download (and pipeline-decompress)
   -- all files including already-cached ones, which would race with this background task.
   let bgDecomp ← if decompress && !forceDownload then
-    if let some plan := ← IO.prepareDecompConfig hashMap forceUnpack then
+    if let some plan ← IO.prepareDecompConfig hashMap forceUnpack then
       if plan.alreadyDecompressed > 0 then
         IO.println s!"Decompressing {plan.needsDecomp} already-cached file(s) \
           ({plan.alreadyDecompressed} already decompressed)"
