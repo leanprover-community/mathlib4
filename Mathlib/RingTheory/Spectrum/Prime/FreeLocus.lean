@@ -168,7 +168,7 @@ lemma freeLocus_eq_univ [Module.Finite R M] [Module.Flat R M] :
 
 lemma basicOpen_subset_freeLocus_iff [Module.FinitePresentation R M] {f : R} :
     (basicOpen f : Set (PrimeSpectrum R)) ⊆ freeLocus R M ↔
-      Module.Projective (Localization.Away f) (LocalizedModule (.powers f) M) := by
+      Module.Projective (Localization.Away f) (LocalizedModule.Away f M) := by
   rw [← freeLocus_eq_univ_iff, freeLocus_localization,
     Set.preimage_eq_univ_iff, localization_away_comap_range _ f]
 
@@ -229,7 +229,7 @@ lemma isLocallyConstant_rankAtStalk [Module.FinitePresentation R M] [Module.Flat
     IsLocallyConstant (rankAtStalk (R := R) M) := by
   let e : freeLocus R M ≃ₜ PrimeSpectrum R :=
     (Homeomorph.setCongr freeLocus_eq_univ).trans (Homeomorph.Set.univ (PrimeSpectrum R))
-  convert isLocallyConstant_rankAtStalk_freeLocus.comp_continuous e.symm.continuous
+  convert! isLocallyConstant_rankAtStalk_freeLocus.comp_continuous e.symm.continuous
 
 @[simp]
 lemma rankAtStalk_eq_zero_of_subsingleton [Subsingleton M] :
@@ -326,6 +326,7 @@ lemma rankAtStalk_prod (N : Type*) [AddCommGroup N] [Module R N]
 lemma rankAtStalk_baseChange {S : Type*} [CommRing S] [Algebra R S] (p : PrimeSpectrum S) :
     rankAtStalk (S ⊗[R] M) p = rankAtStalk M (p.comap (algebraMap R S)) := by
   let q : PrimeSpectrum R := p.comap (algebraMap R S)
+  let := Localization.AtPrime.algebraOfLiesOver q.asIdeal p.asIdeal
   let e : LocalizedModule p.asIdeal.primeCompl (S ⊗[R] M) ≃ₗ[Localization.AtPrime p.asIdeal]
       Localization.AtPrime p.asIdeal ⊗[Localization.AtPrime q.asIdeal]
         LocalizedModule q.asIdeal.primeCompl M :=
@@ -370,5 +371,14 @@ lemma rankAtStalk_eq (p : PrimeSpectrum R) :
 lemma _root_.Ideal.finrank_fiber_eq_rankAtStalk (p : Ideal R) [hp : p.IsPrime] :
     finrank p.ResidueField (p.Fiber M) = rankAtStalk M ⟨p, hp⟩ :=
   (rankAtStalk_eq ⟨p, hp⟩).symm
+
+lemma _root_.Ideal.finrank_fiber_eq_finrank [IsDomain R] (p : Ideal R) [p.IsPrime] :
+    finrank p.ResidueField (p.Fiber M) = finrank R M := by
+  let K := FractionRing R
+  let Rp := Localization.AtPrime p
+  let Mp := LocalizedModule.AtPrime p M
+  rw [p.finrank_fiber_eq_rankAtStalk, rankAtStalk, ← (isBaseChange Rp Mp K).finrank_eq,
+    (((LocalizedModule.equivTensorProduct p.primeCompl M).baseChange Rp K Mp _)).finrank_eq,
+    (AlgebraTensorModule.cancelBaseChange R Rp K K M).finrank_eq, (isBaseChange R M K).finrank_eq]
 
 end Module

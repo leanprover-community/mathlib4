@@ -5,8 +5,9 @@ Authors: Yury G. Kudryashov
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.Data.Sign.Basic
+import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 
 /-!
 # Projective general linear group
@@ -46,6 +47,10 @@ theorem mk_surjective : Function.Surjective (mk : GL n R → PGL(n, R)) :=
 
 @[simp]
 theorem ker_mk : mk.ker = Subgroup.center (GL n R) := QuotientGroup.ker_mk' _
+
+@[simp]
+theorem mk_eq_one {g : GL n R} : mk g = 1 ↔ g ∈ Subgroup.center (GL n R) := by
+  rw [← MonoidHom.mem_ker, ker_mk]
 
 @[simp]
 theorem mk_scalar (u : Rˣ) : mk (.scalar n u) = 1 := by

@@ -102,7 +102,7 @@ theorem mem_theFourteen_iff_isObtainable {s t : Set X} :
 complement operations from a single set `s` is at most 14. -/
 theorem ncard_isObtainable_le_fourteen (s : Set X) : {t | IsObtainable s t}.ncard ≤ 14 := by
   classical
-  convert Set.ncard_coe_finset _ ▸ (theFourteen s).toFinset_card_le
+  convert! Set.ncard_coe_finset _ ▸ (theFourteen s).toFinset_card_le
   simp [Set.ext_iff, mem_theFourteen_iff_isObtainable]
 
 end Topology.ClosureCompl

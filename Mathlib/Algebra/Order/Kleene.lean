@@ -197,7 +197,7 @@ theorem kstar_le_of_mul_le_right (hb : 1 ≤ b) : a * b ≤ b → a∗ ≤ b := 
 theorem le_kstar : a ≤ a∗ :=
   le_trans (le_mul_of_one_le_left' one_le_kstar) kstar_mul_le_kstar
 
-@[mono]
+@[gcongr, mono]
 theorem kstar_mono : Monotone (KStar.kstar : α → α) :=
   fun _ _ h ↦
     kstar_le_of_mul_le_left one_le_kstar <| kstar_mul_le (h.trans le_kstar) <| mul_kstar_le_kstar

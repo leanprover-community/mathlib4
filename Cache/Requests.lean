@@ -94,7 +94,7 @@ def findMathlibRemote (mathlibDepPath : FilePath) : IO String := do
       let remoteUrl := parts[1]!.takeWhile (· != ' ') |>.copy -- Remove (fetch) or (push) suffix
 
       -- Check if this remote points to leanprover-community/mathlib4
-      let isMathlibRepo := remoteUrl.containsSubstr "leanprover-community/mathlib4"
+      let isMathlibRepo := remoteUrl.contains "leanprover-community/mathlib4"
 
       if isMathlibRepo then
         if remoteName == "origin" then
@@ -669,7 +669,7 @@ def getFiles
   -- Skip when forceDownload is set, since downloadFiles will re-download (and pipeline-decompress)
   -- all files including already-cached ones, which would race with this background task.
   let bgDecomp ← if decompress && !forceDownload then
-    if let some plan := ← IO.prepareDecompConfig hashMap forceUnpack then
+    if let some plan ← IO.prepareDecompConfig hashMap forceUnpack then
       if plan.alreadyDecompressed > 0 then
         IO.println s!"Decompressing {plan.needsDecomp} already-cached file(s) \
           ({plan.alreadyDecompressed} already decompressed)"
@@ -702,7 +702,7 @@ def getFiles
 
     let mut failed : Nat := 0
     for h : i in [0:repos.length] do
-      failed := ← downloadFiles repos[i] hashMap forceDownload parallel
+      failed ← downloadFiles repos[i] hashMap forceDownload parallel
         (warnOnMissing := i = repos.length - 1)
         (decompress := decompress) (forceUnpack := forceUnpack)
         isMathlibRoot mathlibDepPath

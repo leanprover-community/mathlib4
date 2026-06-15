@@ -122,12 +122,11 @@ lemma edgeFinset_nonempty : G.edgeFinset.Nonempty ↔ G ≠ ⊥ := by
 theorem edgeFinset_card : #G.edgeFinset = Fintype.card G.edgeSet :=
   Set.toFinset_card _
 
-@[simp]
 theorem card_edgeSet : Fintype.card G.edgeSet = #G.edgeFinset :=
   .symm <| Set.toFinset_card _
 
 theorem edgeSet_univ_card : #(univ : Finset G.edgeSet) = #G.edgeFinset := by
-  simp
+  simp [card_edgeSet]
 
 variable [Fintype V]
 
@@ -204,7 +203,6 @@ def degree : ℕ := #(G.neighborFinset v)
 @[simp]
 theorem card_neighborFinset_eq_degree : #(G.neighborFinset v) = G.degree v := rfl
 
-@[simp]
 theorem card_neighborSet_eq_degree : Fintype.card (G.neighborSet v) = G.degree v :=
   (Set.toFinset_card _).symm
 
@@ -257,7 +255,8 @@ theorem degree_compl [Fintype (Gᶜ.neighborSet v)] [Fintype V] :
     Gᶜ.degree v = Fintype.card V - 1 - G.degree v := by
   classical
     rw [← card_neighborSet_union_compl_neighborSet G v, Set.toFinset_union]
-    simp [card_union_of_disjoint (Set.disjoint_toFinset.mpr (compl_neighborSet_disjoint G v))]
+    simp [card_union_of_disjoint (Set.disjoint_toFinset.mpr (compl_neighborSet_disjoint G v)),
+      card_neighborSet_eq_degree]
 
 instance incidenceSetFintype [DecidableEq V] : Fintype (G.incidenceSet v) :=
   Fintype.ofEquiv (G.neighborSet v) (G.incidenceSetEquivNeighborSet v).symm
@@ -266,11 +265,9 @@ instance incidenceSetFintype [DecidableEq V] : Fintype (G.incidenceSet v) :=
 def incidenceFinset [DecidableEq V] : Finset (Sym2 V) :=
   (G.incidenceSet v).toFinset
 
-@[simp]
 theorem card_incidenceSet_eq_degree [DecidableEq V] :
     Fintype.card (G.incidenceSet v) = G.degree v := by
-  rw [Fintype.card_congr (G.incidenceSetEquivNeighborSet v)]
-  simp
+  rw [Fintype.card_congr (G.incidenceSetEquivNeighborSet v), card_neighborSet_eq_degree]
 
 @[simp, norm_cast]
 theorem coe_incidenceFinset [DecidableEq V] :
@@ -360,7 +357,7 @@ theorem neighborFinset_eq_filter {v : V} [DecidableRel G.Adj] :
 
 theorem neighborFinset_compl [DecidableEq V] [DecidableRel G.Adj] (v : V) :
     Gᶜ.neighborFinset v = (G.neighborFinset v)ᶜ \ {v} := by
-  simp only [neighborFinset, neighborSet_compl, Set.toFinset_diff, Set.toFinset_compl,
+  simp only [neighborFinset, neighborSet_compl, Set.toFinset_sdiff, Set.toFinset_compl,
     Set.toFinset_singleton]
 
 @[simp]
@@ -369,7 +366,6 @@ theorem complete_graph_degree [DecidableEq V] (v : V) :
   simp_rw [degree, neighborFinset_eq_filter, top_adj, filter_ne]
   rw [card_erase_of_mem (mem_univ v), card_univ]
 
--- #38747
 theorem bot_degree (v : V) : (⊥ : SimpleGraph V).degree v = 0 := by
   simp
 
@@ -598,10 +594,8 @@ variable {s : Set V} [DecidablePred (· ∈ s)] [Fintype V] {G : SimpleGraph V} 
 
 lemma edgeFinset_subset_sym2_of_support_subset (h : G.support ⊆ s) :
     G.edgeFinset ⊆ s.toFinset.sym2 := by
-  simp_rw [subset_iff, Sym2.forall,
-    mem_edgeFinset, mem_edgeSet, mk_mem_sym2_iff, Set.mem_toFinset]
-  intro _ _ hadj
-  exact ⟨h ⟨_, hadj⟩, h ⟨_, hadj.symm⟩⟩
+  rw [← coe_subset, coe_sym2, edgeFinset, Set.coe_toFinset, Set.coe_toFinset]
+  exact edgeSet_subset_sym2_iff.mpr h
 
 instance : DecidablePred (· ∈ G.support) :=
   inferInstanceAs <| DecidablePred (· ∈ { v | ∃ w, G.Adj v w })
