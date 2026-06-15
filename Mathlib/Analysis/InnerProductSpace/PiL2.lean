@@ -133,7 +133,7 @@ meta def EuclideanSpace.delabVecNotation : Delab :=
     let p : Term ← withNaryArg 0 <| delab
     -- to be conservative, only allow subscripts which are numerals
     guard <| p matches `($_:num)
-    let `(![$elems,*]) := ← withNaryArg 2 delab | failure
+    let `(![$elems,*]) ← withNaryArg 2 delab | failure
     `(!$p[$elems,*])
 
 end Notation
