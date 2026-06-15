@@ -32,9 +32,9 @@ https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/injective
 
 @[expose] public section
 
--- These explicit universe variables are required by `norm_eval_le_injectiveSeminorm`, which
+-- These explicit universe variables are required by `injectiveSeminorm`, which
 -- has been marked as deprecated on 2026-06-10. TBD: delete the variables after the
--- deprecated material has been removed.
+-- deprecated material has been removed or re-implemented.
 universe uι u𝕜 uE
 
 variable {ι : Type uι} [Fintype ι]
