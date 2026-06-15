@@ -27,14 +27,14 @@ def binderPlicity : CodeActionProvider := fun params snap => do
     unless params.range.start ≤ lspRange.end do continue
     if stx.isOfKind ``explicitBinder then
       -- This code action does not support explicit binders with optional values
-      unless stx[3]!.isNone do continue
-      let newStx := stx.modifyArg 0 (fun lparen => .atom lparen.getHeadInfo "{")
-                     |>.modifyArg 4 (fun rparen => .atom rparen.getHeadInfo "}")
+      unless stx[3].isNone do continue
+      let newStx := stx.modifyArg 0 fun lparen => Syntax.atom lparen.getHeadInfo "{"
+                     |>.modifyArg 4 fun rparen => Syntax.atom rparen.getHeadInfo "}"
       let some newText := newStx.unsetTrailing.reprint | continue
       codeActions := codeActions.push <| mkCodeAction "implicit" lspRange newText
     else if stx.isOfKind ``implicitBinder then
-      let newStx := stx.modifyArg 0 (fun lparen => .atom lparen.getHeadInfo "(")
-                     |>.modifyArg 3 (fun rparen => .atom rparen.getHeadInfo ")")
+      let newStx := stx.modifyArg 0 fun lparen => Syntax.atom lparen.getHeadInfo "("
+                     |>.modifyArg 3 fun rparen => Syntax.atom rparen.getHeadInfo ")"
       let some newText := newStx.unsetTrailing.reprint | continue
       codeActions := codeActions.push <| mkCodeAction "explicit" lspRange newText
   return codeActions
