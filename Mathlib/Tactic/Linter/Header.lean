@@ -254,6 +254,18 @@ def headerToImportRefs (header : TSyntax ``Parser.Module.header) : Array ImportR
       | _ => none
   | _ => #[]
 
+/-- Returns the `module` token from header syntax, if there is one. -/
+def headerToModuleTk (header : TSyntax ``Parser.Module.header) : Option Syntax :=
+  match header with
+  | `(Parser.Module.header| $[module%$tk]? $[prelude]? $_*) => tk
+  | _ => none
+
+/-- Returns the `prelude` token from header syntax, if there is one. -/
+def headerToPreludeTk (header : TSyntax ``Parser.Module.header) : Option Syntax :=
+  match header with
+  | `(Parser.Module.header| $[module]? $[prelude%$tk]? $_*) => tk
+  | _ => none
+
 namespace Style.header
 
 /-- Check the `Syntax` `imports` for broad imports:
