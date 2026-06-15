@@ -157,8 +157,8 @@ theorem chineseRemainderOfMultiset_lt_prod {m : Multiset ι}
     chineseRemainderOfMultiset a s nod hs pp < (m.map s).prod := by
   induction m using Quot.ind with | _ l
   unfold chineseRemainderOfMultiset
-  simpa using chineseRemainderOfList_lt_prod a s l
-    (List.Nodup.pairwise_of_forall_ne nod pp) (by simpa using hs)
+  simpa using! chineseRemainderOfList_lt_prod a s l
+    (List.Nodup.pairwise_of_forall_ne nod pp) (by simpa using! hs)
 
 /-- The natural number less than `∏ i ∈ t, s i` congruent to
 `a i` mod `s i` for all  `i ∈ t`. -/

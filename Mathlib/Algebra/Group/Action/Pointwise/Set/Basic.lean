@@ -238,7 +238,7 @@ theorem smul_set_iInter {ι : Sort*}
 
 @[to_additive]
 theorem smul_set_sdiff : a • (s \ t) = a • s \ a • t :=
-  image_diff (MulAction.injective a) _ _
+  image_sdiff (MulAction.injective a) _ _
 
 open scoped symmDiff in
 @[to_additive]
@@ -260,7 +260,7 @@ theorem smul_univ {s : Set α} (hs : s.Nonempty) : s • (univ : Set β) = univ 
 
 @[to_additive]
 theorem smul_set_compl : a • sᶜ = (a • s)ᶜ := by
-  simp_rw [Set.compl_eq_univ_diff, smul_set_sdiff, smul_set_univ]
+  simp_rw [Set.compl_eq_univ_sdiff, smul_set_sdiff, smul_set_univ]
 
 @[to_additive]
 theorem smul_inter_nonempty_iff {s t : Set α} {x : α} :

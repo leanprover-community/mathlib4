@@ -380,7 +380,7 @@ theorem mulRothNumber_map_mul_left :
     exact (threeGPFree_smul_set.1 hu).le_mulRothNumber hus
   · obtain ⟨u, hus, hcard, hu⟩ := mulRothNumber_spec s
     have h : ThreeGPFree (u.map <| mulLeftEmbedding a : Set α) := by rw [coe_map]; exact hu.smul_set
-    convert h.le_mulRothNumber (map_subset_map.2 hus) using 1
+    convert! h.le_mulRothNumber (map_subset_map.2 hus) using 1
     rw [card_map, hcard]
 
 @[to_additive (attr := simp)]
@@ -438,9 +438,9 @@ theorem rothNumberNat_zero : rothNumberNat 0 = 0 :=
 theorem addRothNumber_Ico (a b : ℕ) : addRothNumber (Ico a b) = rothNumberNat (b - a) := by
   obtain h | h := le_total b a
   · rw [Nat.sub_eq_zero_of_le h, Ico_eq_empty_of_le h, rothNumberNat_zero, addRothNumber_empty]
-  convert addRothNumber_map_add_left _ a
+  convert! addRothNumber_map_add_left _ a
   rw [range_eq_Ico, map_eq_image]
-  convert (image_add_left_Ico 0 (b - a) _).symm
+  convert! (image_add_left_Ico 0 (b - a) _).symm
   exact (add_tsub_cancel_of_le h).symm
 
 open Fin.NatCast in -- TODO: should this be refactored to avoid needing the coercion?
@@ -454,7 +454,7 @@ lemma Fin.addRothNumber_le_rothNumberNat (k n : ℕ) (hkn : k ≤ n) :
   suffices h : Set.BijOn (Nat.cast : ℕ → Fin n.succ) (range k) (Iio k : Finset (Fin n.succ)) by
     exact (AddHomClass.isAddFreimanHom (Nat.castRingHom _) h.mapsTo).addRothNumber_mono h
   refine ⟨?_, (CharP.natCast_injOn_Iio _ n.succ).mono (by simp; lia), ?_⟩
-  · simpa using fun x ↦ natCast_strictMono hkn
+  · simpa using! fun x ↦ natCast_strictMono hkn
   simp only [Set.SurjOn, coe_Iio, Set.subset_def, Set.mem_Iio, Set.mem_image, lt_def,
     val_cast_of_lt, Nat.lt_succ_iff.2 hkn, coe_range]
   exact fun x hx ↦ ⟨x, hx, by simp⟩

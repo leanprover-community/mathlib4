@@ -124,7 +124,7 @@ theorem of_contDiffOn_holderOnWith {s : Set E} {C : ℝ≥0} (hf : ContDiffOn �
   contDiffAt := hf.contDiffAt hs
   isBigO := .of_bound C <| mem_of_superset hs fun x hx ↦ by
     simpa [Real.abs_rpow_of_nonneg, ← dist_eq_norm, dist_nonneg]
-      using hd.dist_le hx (mem_of_mem_nhds hs)
+      using! hd.dist_le hx (mem_of_mem_nhds hs)
 
 theorem fst {a : E × F} : ContDiffPointwiseHolderAt k α Prod.fst a :=
   contDiffAt_fst.contDiffPointwiseHolderAt (WithTop.coe_lt_top _) α
