@@ -30,6 +30,12 @@ monomial of $P$.
   the max of the sizes of the multisets `s` whose monomials `X^s` occur in `p`.
   For example if `p = x⁴y+yz` then `totalDegree p = 5`.
 
+* `MvPolynomial.mainDegree p : Multiset σ` :
+  When `σ` is a linear order, `mainDegree p` is the multiset consisting of the maximal variable
+  among all variables appearing in `p`, appearing with its largest multiplicity among all monomials
+  in `p`.
+  For example, if `p = x²y+xy³` with `x < y` then `mainDegree p = {y, y, y}`.
+
 ## Notation
 
 As in other polynomial files, we typically use the notation:
@@ -49,7 +55,8 @@ As in other polynomial files, we typically use the notation:
 
 -/
 
-@[expose] public section
+/- @[expose] -/
+public section
 
 
 noncomputable section
@@ -658,6 +665,59 @@ lemma degreesLE_nsmul : ∀ n, degreesLE R σ (n • s) = degreesLE R σ s ^ n
   | k + 1 => by simp only [pow_succ, degreesLE_nsmul, degreesLE_add, add_smul, one_smul]
 
 end degreesLE
+
+section mainDegree
+
+variable [LinearOrder σ] {i : σ} {p : MvPolynomial σ R}
+
+instance decidablePredIsMaxOnDegrees : DecidablePred (IsMaxOn id (p.degrees.toFinset : Set σ)) := by
+  intro i
+  rw [isMaxOn_iff]
+  infer_instance
+
+/--
+When `σ` is a linear order, `mainDegree p` is the multiset consisting of the maximal variable
+among all variables appearing in `p`, appearing with its largest multiplicity among all monomials
+in `p`.
+
+For example, `mainDegree (x^2 * y + x * y^3)` is `{y, y, y}` when `x < y`.
+-/
+def mainDegree (p : MvPolynomial σ R) : Multiset σ :=
+  p.degrees.filter (IsMaxOn id p.degrees.toFinset)
+
+theorem mainDegree_def (p : MvPolynomial σ R) :
+    p.mainDegree = p.degrees.filter (IsMaxOn id p.degrees.toFinset) := Eq.refl _
+
+theorem forall_mainDegree_eq_of_forall_degrees_le (h1 : i ∈ p.degrees)
+    (h2 : IsMaxOn id p.degrees.toFinset i) : ∀ j ∈ p.mainDegree, i = j := by
+  classical
+  intro j hj
+  rw [mainDegree_def] at hj
+  apply le_antisymm
+  · apply (Multiset.mem_filter.mp hj).2
+    exact Multiset.mem_toFinset.mpr h1
+  apply h2
+  apply Multiset.mem_toFinset.mpr
+  exact Multiset.mem_of_mem_filter hj
+
+theorem card_mainDegree_eq_degreeOf_of_forall_degrees_le (h1 : i ∈ p.degrees)
+    (h2 : IsMaxOn id p.degrees.toFinset i) : p.mainDegree.card = p.degreeOf i := by
+  have := forall_mainDegree_eq_of_forall_degrees_le h1 h2
+  rw [← Multiset.count_eq_card.mpr this]
+  rw [degreeOf_def, mainDegree, Multiset.count_filter, if_pos h2]
+
+@[simp]
+theorem mainDegree_zero : (0 : MvPolynomial σ R).mainDegree = 0 := Eq.refl _
+
+theorem mainDegree_C (r : R) : (C r : MvPolynomial σ R).mainDegree = 0 := by
+  simp [mainDegree_def, degrees_C, Multiset.filter_zero]
+
+@[simp]
+theorem mainDegree_X [Nontrivial R] (i : σ) : (X i : MvPolynomial σ R).mainDegree = {i} := by
+  simp [mainDegree_def, degrees_X, isMaxOn_iff]
+
+end mainDegree
+
 end CommSemiring
 
 end MvPolynomial
