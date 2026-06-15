@@ -357,8 +357,6 @@ abbrev mapAdjunctionUnit : 𝟙 (F.obj a) ⟶ F.map f ≫ F.map g :=
 def mapAdjunctionCounit : F.map g ≫ F.map f ⟶ 𝟙 (F.obj b) :=
   (F.mapComp g f).inv ≫ F.map₂ adj.counit ≫ (F.mapId b).hom
 
-/-- The left zigzag of the conjugated images of a pair of 2-morphisms is the conjugated image
-of their left zigzag. -/
 lemma leftZigzag_map :
     leftZigzag (F.mapAdjunctionUnit adj) (F.mapAdjunctionCounit adj) =
       (F.mapId a).inv ▷ F.map f ⊗≫ (F.mapComp (𝟙 a) f).inv ≫
@@ -366,8 +364,6 @@ lemma leftZigzag_map :
           (F.mapComp f (𝟙 b)).hom ⊗≫ F.map f ◁ (F.mapId b).hom := by
   simp [mapAdjunctionUnit, mapAdjunctionCounit, leftZigzag, bicategoricalComp]
 
-/-- The right zigzag of the conjugated images of a pair of 2-morphisms is the conjugated image
-of their right zigzag. -/
 lemma rightZigzag_map :
     rightZigzag (F.mapAdjunctionUnit adj) (F.mapAdjunctionCounit adj) =
       F.map g ◁ (F.mapId a).inv ⊗≫ (F.mapComp g (𝟙 a)).inv ≫
