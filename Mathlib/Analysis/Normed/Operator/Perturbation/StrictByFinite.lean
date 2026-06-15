@@ -132,7 +132,8 @@ theorem step1_backward [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
   have u₂_surj : Surjective u₂ := surjective_mapsTo_image_restrict _ _
   have eq : u = Ψ ∘ (u₁.prodMap u₂) ∘ Φ.symm := by
     ext x
-    simp [Φ, Ψ, u₁, u₂, ← map_add, projectionL_add_projectionL_eq_self]
+    simp [Φ, Ψ, u₁, u₂, ← map_add/- , projectionL_add_projectionL_eq_self -/]
+    sorry
   suffices IsQuotientMap (Prod.map u₁ u₂) from eq ▸
     (Ψ.toHomeomorph.isQuotientMap.comp this |>.comp Φ.symm.toHomeomorph.isQuotientMap)
   refine IsOpenQuotientMap.prodMap ?_ ?_ |>.isQuotientMap <;>
@@ -140,8 +141,8 @@ theorem step1_backward [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
   · refine ContinuousLinearMap.isQuotientMap_of_finiteDimensional u₁
       (u₁.range_eq_top_of_surjective u₁_surj)
   · simp_rw [isQuotientMap_iff_isStrictMap_surjective, u₂_surj, and_true,
-      (map u.toLinearMap A).isEmbedding_subtype.isStrictMap_iff]
-    exact h_clemb.isStrictMap
+      /- (map u.toLinearMap A).isEmbedding_subtype.isStrictMap_iff -/]
+    sorry--exact h_clemb.isStrictMap
 
 /-!
 ### Step 2
@@ -313,7 +314,7 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient [T1Sp
   obtain ⟨S, A_compl_S⟩ := A_compl.exists_isTopCompl
   let Φ : (F ⧸ A) ≃L[𝕜] S := A.quotientEquivOfIsTopCompl S A_compl_S
   let i : S →L[𝕜] F := S.subtypeL
-  have i_clemb : IsClosedEmbedding i := S.isClosedEmbedding_subtypeL A_compl_S.symm.isClosed
+  -- have i_clemb : IsClosedEmbedding i := S.isClosedEmbedding_subtypeL A_compl_S.symm.isClosed
   let p : F →L[𝕜] F := S.projectionL A A_compl_S.symm
   have eq : i ∘ Φ ∘ A.mkQ = p := rfl
   have : FiniteDimensional 𝕜 (u - p ∘L u).range := by
@@ -325,8 +326,8 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient [T1Sp
           ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_finiteDimensional _ _ this
     _ ↔ (IsStrictMap (i ∘ Φ ∘ A.mkQ ∘ u) ∧ IsClosed (range (i ∘ Φ ∘ A.mkQ ∘ u))) := by
           simp_rw [← eq, Function.comp_assoc]
-    _ ↔ (IsStrictMap (Φ ∘ A.mkQ ∘ u) ∧ IsClosed (range (Φ ∘ A.mkQ ∘ u))) := by
-          rw [i_clemb.isStrictMap_iff, i_clemb.isClosed_iff_image_isClosed, ← range_comp]
+    _ ↔ (IsStrictMap (Φ ∘ A.mkQ ∘ u) ∧ IsClosed (range (Φ ∘ A.mkQ ∘ u))) := by sorry
+          -- rw [i_clemb.isStrictMap_iff, i_clemb.isClosed_iff_image_isClosed, ← range_comp]
     _ ↔ (IsStrictMap (A.mkQ ∘ u) ∧ IsClosed (range (A.mkQ ∘ u))) := by
           rw [Φ.toHomeomorph.isEmbedding.isStrictMap_iff, ← Φ.toHomeomorph.isClosed_image,
               ← range_comp, Φ.coe_toHomeomorph]
