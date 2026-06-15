@@ -387,7 +387,6 @@ private theorem lift.aux_ofPoint {f : P →ᵃ[k] W} {p : P} : aux f (ofPoint p)
 `Homogenization k P`.
 
 See also `Homogenization.liftₗ` for a version that is linear over some ring. -/
-@[expose]
 def lift : (P →ᵃ[k] W) ≃+ (Homogenization k P →ₗ[k] W) where
   toFun f :=
     { toFun := lift.aux f
@@ -446,7 +445,6 @@ theorem lift_symm_smul {f : Homogenization k P →ₗ[k] W} {c : R} :
 
 variable (R) in
 /-- Linear version of `Homogenization.lift`. -/
-@[expose]
 def liftₗ : (P →ᵃ[k] W) ≃ₗ[R] (Homogenization k P →ₗ[k] W) :=
   lift.toLinearEquiv fun _ _ => lift_smul
 
@@ -489,7 +487,6 @@ theorem lift_const_apply {u : W} {x : Homogenization k P} :
 
 /-- An affine map between two affine spaces extends to a linear map between their homogenizations.
 -/
-@[expose]
 def map (f : P1 →ᵃ[k] P2) : Homogenization k P1 →ₗ[k] Homogenization k P2 :=
   lift (ofPoint.comp f)
 
@@ -547,7 +544,6 @@ theorem map_surjective {f : P1 →ᵃ[k] P2} : Function.Surjective (map f) ↔ F
 
 /-- An affine isomorphism between two affine spaces extends to a linear isomorphism between their
 homogenizations. -/
-@[expose]
 def congr (f : P1 ≃ᵃ[k] P2) : Homogenization k P1 ≃ₗ[k] Homogenization k P2 :=
   .ofLinear (map f) (map f.symm) (hom_ext <| by simp) (hom_ext <| by simp)
 
@@ -572,7 +568,7 @@ theorem congr_trans (f : P1 ≃ᵃ[k] P2) (g : P2 ≃ᵃ[k] P3) :
   ext; simp [map_comp]
 
 /-- The homogenization of a vector space `V` over `k` is canonically isomorphic to `V × k` -/
-@[expose, simps! -isSimp]
+@[simps! -isSimp]
 def toProd : Homogenization k V ≃ₗ[k] V × k where
   __ := (lift (.id ..)).prod weight
   invFun x := ofVector x.1 + x.2 • ofPoint 0
