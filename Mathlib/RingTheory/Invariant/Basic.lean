@@ -97,10 +97,10 @@ variable {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 instance (H : Subgroup G) [H.Normal] :
     MulSemiringAction (G ⧸ H) (FixedPoints.subring B H) where
   smul := Quotient.lift (fun g x ↦ ⟨g • x, fun h ↦ by
-    simpa [mul_smul] using congr(g • $(x.2 ⟨_, ‹H.Normal›.conj_mem' _ h.2 g⟩))⟩) (by
+    simpa [mul_smul] using! congr(g • $(x.2 ⟨_, ‹H.Normal›.conj_mem' _ h.2 g⟩))⟩) (by
     rintro _ a ⟨⟨⟨b⟩, hb⟩, rfl⟩
     ext c
-    simpa [mul_smul] using congr(a • $(c.2 ⟨b, hb⟩)))
+    simpa [mul_smul] using! congr(a • $(c.2 ⟨b, hb⟩)))
   one_smul b := Subtype.ext (one_smul G b.1)
   mul_smul := Quotient.ind₂ fun _ _ _ ↦ Subtype.ext (mul_smul _ _ _)
   smul_zero := Quotient.ind fun _ ↦ Subtype.ext (smul_zero _)
@@ -357,6 +357,12 @@ theorem IsFractionRing.stabilizerHom_apply_apply_mk (σ : MulAction.stabilizer G
       algebraMap _ L (Ideal.Quotient.mk Q (σ.val • x)) := by
   simp [IsFractionRing.stabilizerHom, MulAction.subgroup_smul_def]
 
+omit [Finite G] [Q.IsPrime] [Algebra.IsInvariant A B G] in
+theorem IsFractionRing.ker_stabilizerHom :
+    (stabilizerHom G P Q K L).ker = Q.inertia (MulAction.stabilizer G Q) := by
+  rw [stabilizerHom, MonoidHom.ker_comp_of_injective, Ideal.Quotient.ker_stabilizerHom]
+  apply fieldEquivOfAlgEquivHom_injective
+
 /-- This theorem will be made redundant by `IsFractionRing.stabilizerHom_surjective`. -/
 private theorem fixed_of_fixed2 (f : Gal(L/K)) (x : L)
     (hx : ∀ g : MulAction.stabilizer G Q, IsFractionRing.stabilizerHom G P Q K L g x = x) :
@@ -401,15 +407,28 @@ theorem Ideal.Quotient.stabilizerHom_surjective :
     (FractionRing (A ⧸ P)) (FractionRing (B ⧸ Q)))
 
 /--
+The isomorphism between `stabilizer G Q ⧸ inertia G Q` and the Galois group of the residue fields.
+-/
+noncomputable def IsFractionRing.stabilizerQuotientInertiaEquiv :
+    MulAction.stabilizer G Q ⧸ Q.inertia (MulAction.stabilizer G Q) ≃* Gal(L/K) :=
+  QuotientGroup.liftEquiv (N := Q.inertia (MulAction.stabilizer G Q))
+    (stabilizerHom_surjective G P Q K L) (ker_stabilizerHom G P Q K L).symm
+
+@[simp]
+theorem IsFractionRing.stabilizerQuotientInertiaEquiv_mk (g : MulAction.stabilizer G Q) :
+    stabilizerQuotientInertiaEquiv G P Q K L g = stabilizerHom G P Q K L g := rfl
+
+/--
 The isomorphism between `stabilizer G Q ⧸ inertia G Q` and the Galois group of the residue fields
 extension `B ⧸ Q` over `A ⧸ P`.
 -/
 noncomputable def Ideal.Quotient.stabilizerQuotientInertiaEquiv :
-    MulAction.stabilizer G Q ⧸ (Q.inertia G).subgroupOf (MulAction.stabilizer G Q) ≃*
+    MulAction.stabilizer G Q ⧸ Q.inertia (MulAction.stabilizer G Q) ≃*
       Gal((B ⧸ Q)/(A ⧸ P)) :=
-  QuotientGroup.liftEquiv (N := (Q.inertia G).subgroupOf (MulAction.stabilizer G Q))
+  QuotientGroup.liftEquiv (N := Q.inertia (MulAction.stabilizer G Q))
     (stabilizerHom_surjective G P Q) (ker_stabilizerHom Q P G).symm
 
+@[simp]
 theorem Ideal.Quotient.stabilizerQuotientInertiaEquiv_mk (g : MulAction.stabilizer G Q) :
     stabilizerQuotientInertiaEquiv G P Q g = stabilizerHom Q P G g := rfl
 
@@ -460,7 +479,7 @@ lemma Ideal.Quotient.exists_algHom_fixedPoint_quotient_under
       map_zero, map_zero]
   rw [← Polynomial.aeval_map_algebraMap B, ← Polynomial.coe_mapRingHom, hp] at this
   obtain ⟨τ, hτ⟩ : ∃ τ : G, σ (algebraMap _ _ x) = algebraMap _ _ (τ • x) := by
-    simpa [MulSemiringAction.charpoly, sub_eq_zero, Finset.prod_eq_zero_iff] using this
+    simpa [MulSemiringAction.charpoly, sub_eq_zero, Finset.prod_eq_zero_iff] using! this
   exact ⟨Ideal.Quotient.mk _ (τ • x), hτ.symm⟩
 
 include G in

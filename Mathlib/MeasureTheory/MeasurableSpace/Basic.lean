@@ -64,7 +64,7 @@ protected def map (f : α → β) (m : MeasurableSpace α) : MeasurableSpace β 
   MeasurableSet' s := MeasurableSet[m] <| f ⁻¹' s
   measurableSet_empty := m.measurableSet_empty
   measurableSet_compl _ hs := m.measurableSet_compl _ hs
-  measurableSet_iUnion f hf := by simpa only [preimage_iUnion] using m.measurableSet_iUnion _ hf
+  measurableSet_iUnion f hf := by simpa only [preimage_iUnion] using! m.measurableSet_iUnion _ hf
 
 lemma map_def {s : Set β} : MeasurableSet[m.map f] s ↔ MeasurableSet[m] (f ⁻¹' s) := Iff.rfl
 

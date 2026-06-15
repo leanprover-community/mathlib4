@@ -629,19 +629,19 @@ theorem iUnion_Iic_coe_nat : ⋃ n : ℕ, Iic (n : ℝ≥0∞) = {∞}ᶜ :=
 
 @[simp]
 theorem iUnion_Ioc_coe_nat : ⋃ n : ℕ, Ioc a n = Ioi a \ {∞} := by
-  simp only [← Ioi_inter_Iic, ← inter_iUnion, iUnion_Iic_coe_nat, diff_eq]
+  simp only [← Ioi_inter_Iic, ← inter_iUnion, iUnion_Iic_coe_nat, sdiff_eq]
 
 @[simp]
 theorem iUnion_Ioo_coe_nat : ⋃ n : ℕ, Ioo a n = Ioi a \ {∞} := by
-  simp only [← Ioi_inter_Iio, ← inter_iUnion, iUnion_Iio_coe_nat, diff_eq]
+  simp only [← Ioi_inter_Iio, ← inter_iUnion, iUnion_Iio_coe_nat, sdiff_eq]
 
 @[simp]
 theorem iUnion_Icc_coe_nat : ⋃ n : ℕ, Icc a n = Ici a \ {∞} := by
-  simp only [← Ici_inter_Iic, ← inter_iUnion, iUnion_Iic_coe_nat, diff_eq]
+  simp only [← Ici_inter_Iic, ← inter_iUnion, iUnion_Iic_coe_nat, sdiff_eq]
 
 @[simp]
 theorem iUnion_Ico_coe_nat : ⋃ n : ℕ, Ico a n = Ici a \ {∞} := by
-  simp only [← Ici_inter_Iio, ← inter_iUnion, iUnion_Iio_coe_nat, diff_eq]
+  simp only [← Ici_inter_Iio, ← inter_iUnion, iUnion_Iio_coe_nat, sdiff_eq]
 
 @[simp]
 theorem iInter_Ici_coe_nat : ⋂ n : ℕ, Ici (n : ℝ≥0∞) = {∞} := by
@@ -723,7 +723,7 @@ theorem preimage_ennreal_ofReal (h : u.OrdConnected) : (ENNReal.ofReal ⁻¹' u)
   h.preimage_coe_nnreal_ennreal.preimage_real_toNNReal
 
 theorem image_ennreal_ofReal (h : s.OrdConnected) : (ENNReal.ofReal '' s).OrdConnected := by
-  simpa only [image_image] using h.image_real_toNNReal.image_coe_nnreal_ennreal
+  simpa only [image_image] using! h.image_real_toNNReal.image_coe_nnreal_ennreal
 
 end OrdConnected
 

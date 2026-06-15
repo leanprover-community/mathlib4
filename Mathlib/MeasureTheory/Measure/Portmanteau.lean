@@ -6,9 +6,9 @@ Authors: Kalle Kytölä
 module
 
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-public import Mathlib.MeasureTheory.Integral.Layercake
-public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+public import Mathlib.MeasureTheory.Measure.Tight
+
+import Mathlib.MeasureTheory.Integral.Layercake
 
 /-!
 # Characterizations of weak convergence of finite measures and probability measures
@@ -51,6 +51,9 @@ Assume that, applied to all the elements of a π-system, a sequence of probabili
 converges to a limiting probability measure. Assume also that the π-system contains arbitrarily
 small neighborhoods of any point. Then the sequence of probability measures converges for the
 weak topology.
+
+In case the set of measures is tight, (C) implies (T) even when 'closed' is replaced by 'compact'.
+This is shown in `MeasureTheory.tendsto_of_forall_isCompact_of_isTightMeasureSet`.
 
 ## Implementation notes
 
@@ -401,7 +404,7 @@ theorem exists_null_frontier_thickening (μ : Measure Ω) [SFinite μ] (s : Set 
     fun r ↦ isClosed_frontier.measurableSet
   have disjs := Metric.frontier_thickening_disjoint s
   have key := Measure.countable_meas_pos_of_disjoint_iUnion (μ := μ) mbles disjs
-  have aux := measure_diff_null (s := Ioo a b) (Set.Countable.measure_zero key volume)
+  have aux := measure_sdiff_null (s := Ioo a b) (Set.Countable.measure_zero key volume)
   have len_pos : 0 < ENNReal.ofReal (b - a) := by simp only [hab, ENNReal.ofReal_pos, sub_pos]
   rw [← Real.volume_Ioo, ← aux] at len_pos
   simpa [Set.Nonempty] using nonempty_of_measure_ne_zero len_pos.ne'
@@ -451,7 +454,7 @@ lemma limsup_measure_closed_le_of_forall_tendsto_measure
   have nhds : Iio (μ F + ε) ∈ 𝓝 (μ F) :=
     Iio_mem_nhds <| ENNReal.lt_add_right μF_finite.ne (ENNReal.coe_pos.mpr ε_pos).ne'
   specialize rs_lim (keyB nhds)
-  simp only [mem_map, mem_atTop_sets, ge_iff_le, mem_preimage, mem_Iio] at rs_lim
+  simp only [mem_map, mem_atTop_sets, mem_preimage, mem_Iio] at rs_lim
   obtain ⟨m, hm⟩ := rs_lim
   have aux : (fun i ↦ (μs i F)) ≤ᶠ[L] (fun i ↦ μs i (Metric.thickening (rs m) F)) :=
     .of_forall <| fun i ↦ measure_mono (Metric.self_subset_thickening (rs_pos m) F)
@@ -522,7 +525,7 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
                         f.continuous.measurable.aestronglyMeasurable]
     let g := BoundedContinuousFunction.comp _ Real.lipschitzWith_toNNReal f
     have bound : ∀ i, ∫⁻ x, ENNReal.ofReal (f x) ∂(μs i) ≤ nndist 0 g := fun i ↦ by
-      simpa only [coe_nnreal_ennreal_nndist, measure_univ, mul_one, ge_iff_le] using
+      simpa only [coe_nnreal_ennreal_nndist, measure_univ, mul_one, ge_iff_le] using!
             BoundedContinuousFunction.lintegral_le_edist_mul (μ := μs i) g
     apply ENNReal.liminf_toReal_eq ENNReal.coe_ne_top (Eventually.of_forall bound)
   · apply ne_of_lt
@@ -647,6 +650,34 @@ lemma tendsto_of_forall_isClosed_limsup_real_le' {L : Filter ι} [L.IsCountablyG
       limsup (fun i ↦ (μs i : Measure Ω).real F) L ≤ (μ : Measure Ω).real F) :
     Tendsto μs L (𝓝 μ) := tendsto_of_forall_isClosed_limsup_le (by simpa using h)
 
+/-- A different version of the (C) → (T) implication of the portmanteau theorem:
+If the set of measures is tight, a `limsup` inequality for compact sets implies weak convergence. -/
+theorem tendsto_of_forall_isCompact_of_isTightMeasureSet
+    (h₁ : IsTightMeasureSet (range (ProbabilityMeasure.toMeasure ∘ μs)))
+    (h₂ : ∀ F, IsCompact F → limsup (μs · F) L ≤ μ F) :
+    Tendsto μs L (𝓝 μ) := by
+  obtain rfl | _ := L.eq_or_neBot
+  · simp
+  refine tendsto_of_forall_isClosed_limsup_le <| fun F hF_closed ↦ ?_
+  rw [← ENNReal.coe_le_coe, ENNReal.ofNNReal_limsup <|
+      isBoundedUnder_of_eventually_le (a := 1) (by simp)]
+  refine ENNReal.le_of_forall_pos_le_add <| fun ε hε _ ↦ ?_
+  obtain ⟨K, hKc, hK_le⟩ := isTightMeasureSet_iff_exists_isCompact_measure_compl_le.mp
+    h₁ ε (by positivity)
+  grw [limsup_le_limsup (v := fun i ↦ μs i (F ∩ K) + (ε : ENNReal))]
+  · rw [limsup_add_const _ _ _ (by isBoundedDefault) (by isBoundedDefault)]
+    apply add_le_add _ (by simp)
+    specialize h₂ (F ∩ K) <| hKc.inter_left hF_closed
+    rw [← ENNReal.coe_le_coe, ENNReal.ofNNReal_limsup <|
+      isBoundedUnder_of_eventually_le (a := 1) (by simp)] at h₂
+    grw [h₂]
+    simp [measure_mono]
+  · refine .of_forall (fun i ↦ ?_)
+    simp_rw [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
+    grw [measure_mono (t := (F ∩ K) ∪ F \ K) (by simp), measure_union_le]
+    gcongr
+    exact le_trans (measure_mono (by simp)) <| hK_le (μs i) <| by simp
+
 end Closed
 
 section Lipschitz
@@ -669,7 +700,7 @@ theorem tendsto_iff_forall_lipschitz_integral_tendsto {γ Ω : Type*} {mΩ : Mea
     { toFun := f
       continuous_toFun := hf_lip.choose_spec.continuous
       map_bounded' := hf_bounded }
-    simpa using h f'
+    simpa using! h f'
   -- To prove the other direction, we prove convergence of the measure of closed sets.
   -- We approximate the indicator function of a closed set by bounded Lipschitz functions.
   rcases F.eq_or_neBot with rfl | hne
@@ -698,7 +729,7 @@ theorem tendsto_iff_forall_lipschitz_integral_tendsto {γ Ω : Type*} {mΩ : Mea
     · exact (integrable_indicator_iff hs.measurableSet).mpr (integrable_const _).integrableOn
     · have h : _ ≤ fs M :=
         indicator_le_thickenedIndicator (δ := (1 : ℝ) / (M + 1)) (by positivity) s
-      simpa using h
+      simpa using! h
   apply (Filter.limsup_le_of_le ?_ ev_near).trans
   · apply (add_le_add (hM M rfl.le).le (le_refl (ε / 2))).trans_eq
     ring

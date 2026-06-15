@@ -217,6 +217,7 @@ alias iff_of_zeroHypercover_source := IsLocalAtSource.iff_of_zeroHypercover
 
 end MorphismProperty
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 Let `J` be a precoverage for which isomorphisms are local at the target. Let
 `f, g : X ⟶ Y` be two morphisms over `S` and `𝒰` a `J`-cover of `S`.

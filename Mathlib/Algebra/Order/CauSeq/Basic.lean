@@ -414,10 +414,10 @@ instance equiv : Setoid (CauSeq β abv) :=
     fun fg gh => by simpa using add_limZero fg gh⟩⟩
 
 theorem add_equiv_add {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 ≈ g2) :
-    f1 + g1 ≈ f2 + g2 := by simpa only [← add_sub_add_comm] using add_limZero hf hg
+    f1 + g1 ≈ f2 + g2 := by simpa only [← add_sub_add_comm] using! add_limZero hf hg
 
 theorem neg_equiv_neg {f g : CauSeq β abv} (hf : f ≈ g) : -f ≈ -g := by
-  simpa only [neg_sub'] using neg_limZero hf
+  simpa only [neg_sub'] using! neg_limZero hf
 
 theorem sub_equiv_sub {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 ≈ g2) :
     f1 - g1 ≈ f2 - g2 := by simpa only [sub_eq_add_neg] using add_equiv_add hf (neg_equiv_neg hg)
@@ -492,7 +492,7 @@ theorem const_equiv {x y : β} : const x ≈ const y ↔ x = y :=
 theorem mul_equiv_mul {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 ≈ g2) :
     f1 * g1 ≈ f2 * g2 := by
   simpa only [mul_sub, sub_mul, sub_add_sub_cancel]
-    using add_limZero (mul_limZero_left g1 hf) (mul_limZero_right f2 hg)
+    using! add_limZero (mul_limZero_left g1 hf) (mul_limZero_right f2 hg)
 
 theorem smul_equiv_smul {G : Type*} [SMul G β] [IsScalarTower G β β] {f1 f2 : CauSeq β abv} (c : G)
     (hf : f1 ≈ f2) : c • f1 ≈ c • f2 := by

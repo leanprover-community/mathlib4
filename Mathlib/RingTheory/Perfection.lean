@@ -828,9 +828,11 @@ def Tilt [Fact p.Prime] [hvp : Fact (v p ≠ 1)] :=
 namespace Tilt
 
 noncomputable instance [Fact p.Prime] [hvp : Fact (v p ≠ 1)] : Field (Tilt K v O hv p) :=
-  haveI := Fact.mk <| mt hv.one_of_isUnit <| (map_natCast (algebraMap O K) p).symm ▸ hvp.1
+  #adaptation_note /-- This type ascription was not needed prior to nightly-2026-05-17. -/
+  haveI : Fact ¬IsUnit (p : O) :=
+    Fact.mk <| mt hv.one_of_isUnit <| (map_natCast (algebraMap O K) p).symm ▸ hvp.1
   haveI := PreTilt.isDomain K v O hv p
-  inferInstanceAs <| Field (FractionRing _)
+  inferInstanceAs <| Field (FractionRing (PreTilt O p))
 
 end Tilt
 

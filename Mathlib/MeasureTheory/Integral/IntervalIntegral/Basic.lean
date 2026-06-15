@@ -94,10 +94,20 @@ theorem intervalIntegrable_congr_ae {g : ℝ → ε} (h : f =ᵐ[μ.restrict (Ι
     IntervalIntegrable f μ a b ↔ IntervalIntegrable g μ a b := by
   rw [intervalIntegrable_iff, integrableOn_congr_fun_ae h, intervalIntegrable_iff]
 
+theorem intervalIntegrable_congr_uIoo [NoAtoms μ] {g : ℝ → ε} (h : EqOn f g (uIoo a b)) :
+    IntervalIntegrable f μ a b ↔ IntervalIntegrable g μ a b := by
+  apply intervalIntegrable_congr_ae
+  rw [uIoc, ← restrict_Ioo_eq_restrict_Ioc]
+  apply ae_restrict_of_forall_mem measurableSet_Ioo h
+
 theorem IntervalIntegrable.congr_ae {g : ℝ → ε} (hf : IntervalIntegrable f μ a b)
     (h : f =ᵐ[μ.restrict (Ι a b)] g) :
     IntervalIntegrable g μ a b := by
   rwa [← intervalIntegrable_congr_ae h]
+
+theorem IntervalIntegrable.congr_uIoo [NoAtoms μ] {g : ℝ → ε} (hf : IntervalIntegrable f μ a b)
+    (h : EqOn f g (uIoo a b)) : IntervalIntegrable g μ a b :=
+  intervalIntegrable_congr_uIoo h |>.mp hf
 
 theorem intervalIntegrable_congr {g : ℝ → ε} (h : EqOn f g (Ι a b)) :
     IntervalIntegrable f μ a b ↔ IntervalIntegrable g μ a b :=
@@ -455,7 +465,7 @@ theorem comp_add_left_iff {c : ℝ} (h : ‖f (min a b)‖ₑ ≠ ⊤ := by fini
 theorem comp_sub_right (hf : IntervalIntegrable f volume a b) (c : ℝ)
     (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness) :
     IntervalIntegrable (fun x ↦ f (x - c)) volume (a + c) (b + c) := by
-  simpa only [sub_neg_eq_add] using IntervalIntegrable.comp_add_right hf (-c) h
+  simpa only [sub_neg_eq_add] using! IntervalIntegrable.comp_add_right hf (-c) h
 
 theorem comp_sub_right_iff {c : ℝ} (h : ‖f (min a b)‖ₑ ≠ ⊤ := by finiteness) :
     IntervalIntegrable (fun x ↦ f (x - c)) volume (a + c) (b + c)
@@ -780,7 +790,7 @@ nonrec theorem integral_neg : ∫ x in a..b, -f x ∂μ = -∫ x in a..b, f x �
 @[simp]
 theorem integral_sub (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegrable g μ a b) :
     ∫ x in a..b, f x - g x ∂μ = (∫ x in a..b, f x ∂μ) - ∫ x in a..b, g x ∂μ := by
-  simpa only [sub_eq_add_neg] using (integral_add hf hg.neg).trans (congr_arg _ integral_neg)
+  simpa only [sub_eq_add_neg] using! (integral_add hf hg.neg).trans (congr_arg _ integral_neg)
 
 /-- Compatibility with scalar multiplication. Note this assumes `𝕜` is a division ring in order to
 ensure that for `c ≠ 0`, `c • f` is integrable iff `f` is. For scalar multiplication by more
@@ -853,7 +863,7 @@ open ContinuousLinearMap
 theorem _root_.ContinuousLinearMap.intervalIntegral_apply {a b : ℝ} {φ : ℝ → F →L[𝕜] E}
     (hφ : IntervalIntegrable φ μ a b) (v : F) :
     (∫ x in a..b, φ x ∂μ) v = ∫ x in a..b, φ x v ∂μ := by
-  simp_rw [intervalIntegral_eq_integral_uIoc, ← integral_apply hφ.def' v, coe_smul', Pi.smul_apply]
+  simp_rw [intervalIntegral_eq_integral_uIoc, ← integral_apply hφ.def' v, smul_apply]
 
 variable [NormedSpace ℝ F] [CompleteSpace F]
 
@@ -862,6 +872,19 @@ theorem _root_.ContinuousLinearMap.intervalIntegral_comp_comm [CompleteSpace E] 
   simp_rw [intervalIntegral, L.integral_comp_comm hf.1, L.integral_comp_comm hf.2, L.map_sub]
 
 end ContinuousLinearMap
+
+section LinearIsometry
+
+variable {a b : ℝ} {μ : Measure ℝ} {f : ℝ → E} [RCLike 𝕜]
+variable [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
+
+variable [NormedSpace ℝ F] [CompleteSpace E] [CompleteSpace F]
+
+theorem _root_.LinearIsometry.intervalIntegral_comp_comm (L : E →ₗᵢ[𝕜] F) (f : ℝ → E) :
+    ∫ x in a..b, L (f x) ∂μ = L (∫ x in a..b, f x ∂μ) := by
+  simp_rw [intervalIntegral, L.integral_comp_comm, L.map_sub]
+
+end LinearIsometry
 
 section RCLike
 
@@ -874,6 +897,10 @@ theorem intervalIntegral_re (hf : IntervalIntegrable f μ a b) :
 theorem intervalIntegral_im (hf : IntervalIntegrable f μ a b) :
     ∫ x in a..b, RCLike.im (f x) ∂μ = RCLike.im (∫ x in a..b, f x ∂μ) :=
   RCLike.imCLM.intervalIntegral_comp_comm hf
+
+open scoped ComplexConjugate in
+theorem intervalIntegral_conj : ∫ x in a..b, conj (f x) ∂μ = conj (∫ x in a..b, f x ∂μ) :=
+  RCLike.conjLIE.toLinearIsometry.intervalIntegral_comp_comm f
 
 end RCLike
 
@@ -916,7 +943,7 @@ theorem smul_integral_comp_mul_left (c) :
 @[simp]
 theorem integral_comp_div (hc : c ≠ 0) :
     (∫ x in a..b, f (x / c)) = c • ∫ x in a / c..b / c, f x := by
-  simpa only [inv_inv] using integral_comp_mul_right f (inv_ne_zero hc)
+  simpa only [inv_inv] using! integral_comp_mul_right f (inv_ne_zero hc)
 
 @[simp]
 theorem inv_smul_integral_comp_div (c) :
@@ -1216,6 +1243,16 @@ theorem integral_congr_ae (h : ∀ᵐ x ∂μ, x ∈ Ι a b → f x = g x) :
     ∫ x in a..b, f x ∂μ = ∫ x in a..b, g x ∂μ :=
   integral_congr_ae' (ae_uIoc_iff.mp h).1 (ae_uIoc_iff.mp h).2
 
+theorem integral_congr_uIoo [NoAtoms μ] (h : (uIoo a b).EqOn f g) :
+    ∫ x in a..b, f x ∂μ = ∫ x in a..b, g x ∂μ := by
+  apply integral_congr_ae
+  filter_upwards [μ.ae_ne <| a ⊔ b] with x _ hx
+  exact h ⟨hx.left, lt_of_le_of_ne hx.right ‹_›⟩
+
+theorem integral_congr_Ioo_of_le [NoAtoms μ] (hab : a ≤ b) (h : (Ioo a b).EqOn f g) :
+    ∫ x in a..b, f x ∂μ = ∫ x in a..b, g x ∂μ :=
+  integral_congr_uIoo <| uIoo_of_le hab ▸ h
+
 /-- Integrals are equal for functions that agree almost everywhere for the restricted measure. -/
 theorem integral_congr_ae_restrict {a b : ℝ} {f g : ℝ → E} {μ : Measure ℝ}
     (h : f =ᵐ[μ.restrict (Ι a b)] g) :
@@ -1326,7 +1363,7 @@ theorem integral_lt_integral_of_continuousOn_of_le_of_exists_lt {f g : ℝ → �
   apply integral_lt_integral_of_ae_le_of_measure_setOf_lt_ne_zero hab.le
     (hfc.intervalIntegrable_of_Icc hab.le) (hgc.intervalIntegrable_of_Icc hab.le)
   · simpa only [measurableSet_Ioc, ae_restrict_eq]
-      using (ae_restrict_mem measurableSet_Ioc).mono hle
+      using! (ae_restrict_mem measurableSet_Ioc).mono hle
   contrapose! hlt
   have h_eq : f =ᵐ[volume.restrict (Ioc a b)] g := by
     simp only [← not_le, ← ae_iff] at hlt
