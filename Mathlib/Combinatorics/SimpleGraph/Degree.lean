@@ -70,7 +70,7 @@ theorem edegree_ne_top_of_finite [Finite V] (G : SimpleGraph V) (v : V) : G.edeg
   edegree_ne_top_iff_finite_neighborSet.mpr <| Set.toFinite _
 
 theorem coe_degree_eq_edegree [Fintype <| G.neighborSet v] : G.degree v = G.edegree v := by
-  simp [← encard_neighborSet, ← card_neighborSet_eq_degree]
+  simp [encard_neighborSet, ← ncard_neighborSet]
 
 variable {G v} in
 theorem edegree_eq_coe_iff [Fintype <| G.neighborSet v] {n : ℕ} :
@@ -230,7 +230,7 @@ theorem coe_minDegree_eq_minEDegree [Nonempty V] [Fintype V] (G : SimpleGraph V)
     [DecidableRel G.Adj] : G.minDegree = G.minEDegree := by
   rw [minEDegree_eq_iInf, minDegree, ← Finset.coe_min' <| by simp, Finset.min'_eq_inf',
     Finset.inf'_image, Finset.inf'_univ_eq_ciInf]
-  simpa [← coe_degree_eq_edegree] using ENat.coe_iInf
+  simpa [← coe_degree_eq_edegree] using! ENat.coe_iInf
 
 variable {G} in
 theorem maxEDegree_eq_coe_iff [Fintype V] (G : SimpleGraph V) [DecidableRel G.Adj] {n : ℕ} :
@@ -278,12 +278,10 @@ theorem Hom.minEDegree_le {f : G →g H} (hf : Function.Bijective f) : G.minEDeg
   Copy.minEDegree_le (f := ⟨f, hf.injective⟩) hf.surjective
 
 variable {G H} in
-@[gcongr]
 theorem Iso.maxEDegree_eq (f : G ≃g H) : G.maxEDegree = H.maxEDegree :=
   f.toEquiv.iSup_congr f.edegree_eq
 
 variable {G H} in
-@[gcongr]
 theorem Iso.minEDegree_eq (f : G ≃g H) : G.minEDegree = H.minEDegree :=
   f.toEquiv.iInf_congr f.edegree_eq
 
