@@ -198,7 +198,7 @@ theorem integral_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) : P[X] = p.
     _ = p * ∑ x ∈ Finset.range (n + 1), n.choose x * (n + 1) * p.val ^ x * (1 - p) ^ (n - x) := by
       congrm p * ∑ x ∈ Finset.range (n + 1), ?_ * p.val ^ x * (1 - p) ^ (n - x)
       norm_cast
-      rw [Nat.choose_succ_right_eq (n + 1) x, Nat.choose_mul_succ_eq n x]
+      rw [← Nat.add_one_mul_choose_eq n x, mul_comm]
     _ = p * (n + 1) * ∑ x ∈ Finset.range (n + 1), n.choose x * p.val ^ x * (1 - p) ^ (n - x) := by
       rw [mul_assoc, Finset.mul_sum (a := (n : ℝ) + 1)]
       group
