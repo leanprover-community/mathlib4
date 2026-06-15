@@ -436,11 +436,6 @@ end SymmGen
 
 namespace ReflTransGen
 
-theorem to_eqvGen {a b} (h : ReflTransGen r a b) : EqvGen r a b := by
-  induction h with
-  | refl => exact .refl a
-  | tail _ bc ab => grind [eqvGen_iff]
-
 @[trans]
 theorem trans (hab : ReflTransGen r a b) (hbc : ReflTransGen r b c) : ReflTransGen r a c := by
   induction hbc with
@@ -509,6 +504,12 @@ theorem total_of_right_unique (U : Relator.RightUnique r) (ab : ReflTransGen r a
         exact Or.inl ec
     · exact Or.inr (IH.tail bd)
 
+theorem to_eqvGen {a b} (h : ReflTransGen r a b) : EqvGen r a b := by
+  induction h using trans_induction_on with
+  | refl a => exact .refl a
+  | single hab => exact .rel _ _ hab
+  | trans _ _ hab hbc => exact .trans _ _ _ hab hbc
+
 end ReflTransGen
 
 namespace TransGen
@@ -517,11 +518,6 @@ theorem to_reflTransGen {a b} (h : TransGen r a b) : ReflTransGen r a b := by
   induction h with
   | single h => exact ReflTransGen.single h
   | tail _ bc ab => exact ReflTransGen.tail ab bc
-
-theorem to_eqvGen {a b} (h : TransGen r a b) : EqvGen r a b := by
-  induction h with
-  | single h => exact .rel _ _ h
-  | tail _ bc ab => grind [eqvGen_iff]
 
 theorem trans_left (hab : TransGen r a b) (hbc : ReflTransGen r b c) : TransGen r a c := by
   induction hbc with
@@ -562,6 +558,11 @@ theorem trans_induction_on {motive : ∀ {a b : α}, TransGen r a b → Prop} {a
   induction h with
   | single h => exact single h
   | tail hab hbc h_ih => exact trans hab (.single hbc) h_ih (single hbc)
+
+theorem to_eqvGen {a b} (h : TransGen r a b) : EqvGen r a b := by
+  induction h using trans_induction_on with
+  | single h => exact .rel _ _ h
+  | trans _ _ hab hbc => exact .trans _ _ _ hab hbc
 
 theorem trans_right (hab : ReflTransGen r a b) (hbc : TransGen r b c) : TransGen r a c := by
   induction hbc with
