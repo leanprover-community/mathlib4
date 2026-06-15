@@ -53,7 +53,7 @@ def checkTitleLabels : Cmd := `[Cli|
   If the input title does not pass validation, output a list of errors."
 
   FLAGS:
-    "labels" : String; "newline-separated list of label names of this PR\
+    "labels" : String; "newline-separated list of label names of this PR\n\
       These are optional; we use a WIP label to skip all checks, and an `easy` label \
       to skip some PR description checks"
 
