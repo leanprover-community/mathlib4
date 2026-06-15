@@ -300,7 +300,7 @@ protected theorem mapL_smul [DecidableEq ι] (i : ι) (c : 𝕜) (u : E i →L[�
   ext
   simp [mapL_add_smul_aux, PiTensorProduct.map_update_smul]
 
-theorem mapL_opNorm : ‖mapL f‖ ≤ ∏ i, ‖f i‖ := by
+theorem opNorm_mapL : ‖mapL f‖ ≤ ∏ i, ‖f i‖ := by
   refine (ContinuousLinearMap.opNorm_le_iff (by positivity)).mpr fun x ↦ ?_
   apply le_trans (norm_eval_le_projectiveSeminorm ..) (mul_le_mul_of_nonneg_right _ (norm_nonneg x))
   refine (ContinuousMultilinearMap.opNorm_le_iff (by positivity)).mpr fun m ↦ ?_
@@ -320,7 +320,7 @@ noncomputable def mapLMultilinear : ContinuousMultilinearMap 𝕜 (fun (i : ι) 
   { toFun := mapL
     map_update_smul' := fun _ _ _ _ ↦ PiTensorProduct.mapL_smul _ _ _ _
     map_update_add' := fun _ _ _ _ ↦ PiTensorProduct.mapL_add _ _ _ _ }
-  1 (fun f ↦ by rw [one_mul]; exact mapL_opNorm f)
+  1 (fun f ↦ by rw [one_mul]; exact opNorm_mapL f)
 
 variable {𝕜 E E'}
 
