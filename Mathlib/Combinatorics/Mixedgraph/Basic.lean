@@ -119,7 +119,7 @@ def IsUndirected : Prop :=
   ∀e, (h : e ∈ G.edgeSet) → (G.get h).IsUndirected
 
 /-- Restricts a graph to a subset, analogous to `Graph.restrict`. -/
-def restrict (b : Set β) [DecidableEq β] [DecidablePred (· ∈ b)] : MixedGraph α β where
+def restrict (b : Set β) [DecidablePred (· ∈ b)] : MixedGraph α β where
   vertexSet := G.vertexSet
   edgeOrientation := b.piecewise (G.edgeOrientation) (fun _ => .none)
   is_compatible_edge e h := by
@@ -131,7 +131,7 @@ def restrict (b : Set β) [DecidableEq β] [DecidablePred (· ∈ b)] : MixedGra
     grind
 
 /-- Deletes edges from a graph, analogous to `Graph.deleteEdges`. -/
-def deleteEdges (b : Set β) [DecidableEq β] [DecidablePred (· ∈ b)] : MixedGraph α β where
+def deleteEdges (b : Set β) [DecidablePred (· ∈ b)] : MixedGraph α β where
   vertexSet := G.vertexSet
   edgeOrientation := b.piecewise (fun _ => .none) (G.edgeOrientation)
   is_compatible_edge e h := by
@@ -143,7 +143,7 @@ def deleteEdges (b : Set β) [DecidableEq β] [DecidablePred (· ∈ b)] : Mixed
     grind
 
 
-theorem delete_edges_eq_restrict_diff (b : Set β) [DecidableEq β] [DecidablePred (· ∈ b)]
+theorem delete_edges_eq_restrict_diff (b : Set β) [DecidablePred (· ∈ b)]
     [DecidablePred (· ∈ G.edgeSet)] : G.deleteEdges b = G.restrict (G.edgeSet \ b) := by
   simp only [deleteEdges, restrict, mk.injEq, true_and]
   ext e f
@@ -163,7 +163,7 @@ structure IsSubgraph (H G : MixedGraph α β) where
   vertexSet_mono : H.vertexSet ⊆ G.vertexSet
   edges_eq : ∀ e ∈ H.edgeSet, H.edgeOrientation e = G.edgeOrientation e
 
-theorem subgraph_delete_edges {b : Set β} [DecidableEq β] [DecidablePred (· ∈ b)] :
+theorem subgraph_delete_edges {b : Set β} [DecidablePred (· ∈ b)] :
     IsSubgraph (G.deleteEdges b) G := by
   apply IsSubgraph.mk
   · simp [deleteEdges]
