@@ -37,7 +37,7 @@ def binderPlicity : CodeActionProvider := fun params snap => do
   for (bi, stx, range) in binders do
     let some s := stx.unsetTrailing.reprint | continue
     let edit : TextEdit := { range, newText := s }
-    let title? := match bi with 
+    let title? := match bi with
       | .default => some s!"Make explicit: {s}"
       | .implicit => some s!"Make implicit: {s}"
       | _ => none -- TODO: This is currently unreachable
