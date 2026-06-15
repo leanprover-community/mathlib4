@@ -136,7 +136,7 @@ lemma norm_sub_le_mul_volume_of_norm_lineDeriv_le
     have := (hfd t ht).hasLineDerivAt.scomp_of_eq (𝕜 := ℝ) t ((hasDerivAt_id t).sub_const t)
     simpa [g, lineMap_apply_module', Function.comp_def, sub_smul, add_comm _ a] using this
   suffices ‖g 1 - g 0‖ ≤ C * volume.real {t ∈ Ioo 0 1 | deriv g t ≠ 0} by
-    convert this using 1
+    convert! this using 1
     · simp [g]
     · congr 2 with t
       simp +contextual [(hdg _ _).deriv]

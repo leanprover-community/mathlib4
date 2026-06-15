@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Tactic.Algebra.Lemmas
 public import Mathlib.Tactic.Ring.RingNF
 
-import Mathlib.Tactic.Algebra.Lemmas
 
 /-!
 # The `algebra` tactic
@@ -128,7 +128,7 @@ def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)):
 into casts. -/
 def pushCast (e : Expr) : MetaM Simp.Result := do
   -- collect the available `push_cast` lemmas
-  let mut thms : SimpTheorems := ← NormCast.pushCastExt.getTheorems
+  let mut thms : SimpTheorems ← NormCast.pushCastExt.getTheorems
   let simps : Array Name := #[``eq_natCast, ``eq_intCast, ``eq_ratCast]
   for thm in simps do
     let ⟨levelParams, _, proof⟩ ← abstractMVars (mkConst thm)
@@ -195,9 +195,14 @@ def cast (cR : Algebra.Cache sR) (u' : Level) (R' : Q(Type u'))
   let ⟨r, pf_smul⟩ ← evalSMulCast q($sAlg) q($_smul) r'
   let ⟨_r'', vr, pr⟩ ←
     Common.eval rcℕ (Ring.ringCompute cR.toCache) cR.toCache q($r)
-  assumeInstancesCommute
-  return ⟨_, Common.ExSum.add (Common.ExProd.const (.mk _ vr)) .zero,
-    q(cast_smul_eq_mul $pr $pf_smul)⟩
+  match vr with
+  | .zero .. =>
+    assumeInstancesCommute
+    return ⟨_, .zero, q(cast_zero_smul_eq_zero_mul $pr $pf_smul)⟩
+  | vr =>
+    assumeInstancesCommute
+    return ⟨_, Common.ExSum.add (Common.ExProd.const (.mk _ vr)) .zero,
+      q(cast_smul_eq_mul $pr $pf_smul)⟩
 
 /-- Evaluate the product of two normalized expressions in `R` using `ring`. -/
 def neg (cR : Algebra.Cache sR) {a : Q($A)} (_rA : Q(CommRing $A)) (za : BaseType sAlg a) :
@@ -401,8 +406,8 @@ variable {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring
   {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (a : Q($A)) (b : Q($A))
 
 /-- Infer from the expression what base ring the normalization should use.
- Finds all scalar rings in the expression and picks the 'larger' one in the sense that
- it is an algebra over the smaller rings. -/
+Finds all scalar rings in the expression and picks the 'larger' one in the sense that
+it is an algebra over the smaller rings. -/
 def inferBase (ca : Cache q($sA)) (e : Expr) : MetaM <| Σ u : Lean.Level, Q(Type u) := do
   let rings ← (← collectScalarRings e).mapM getLevelQ'
   let res ← match rings with

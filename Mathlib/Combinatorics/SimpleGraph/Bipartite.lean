@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Combinatorics.Enumerative.DoubleCounting
-public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
@@ -306,6 +306,16 @@ theorem isBipartite_iff_exists_isBipartiteWith :
     G.IsBipartite ↔ ∃ s t : Set V, G.IsBipartiteWith s t :=
   ⟨IsBipartite.exists_isBipartiteWith, fun ⟨_, _, h⟩ ↦ h.isBipartite⟩
 
+theorem chromaticNumber_le_two_iff_isBipartite : G.chromaticNumber ≤ 2 ↔ G.IsBipartite :=
+  chromaticNumber_le_iff_colorable
+
+theorem chromaticNumber_eq_two_iff : G.chromaticNumber = 2 ↔ G.IsBipartite ∧ G ≠ ⊥ :=
+  ⟨fun h ↦ ⟨chromaticNumber_le_two_iff_isBipartite.mp (by simp [h]),
+            two_le_chromaticNumber_iff_ne_bot.mp (by simp [h])⟩,
+   fun ⟨h₁, h₂⟩ ↦ ENat.eq_of_forall_natCast_le_iff fun _ ↦
+      ⟨fun h ↦ h.trans <| chromaticNumber_le_two_iff_isBipartite.mpr h₁,
+       fun h ↦ h.trans <| two_le_chromaticNumber_iff_ne_bot.mpr h₂⟩⟩
+
 end IsBipartite
 
 section Copy
@@ -380,7 +390,7 @@ section Between
 set `t`. -/
 def between (s t : Set V) (G : SimpleGraph V) : SimpleGraph V where
   Adj v w := G.Adj v w ∧ (v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s)
-  symm v w := by tauto
+  symm.symm v w := by tauto
 
 lemma between_adj : (G.between s t).Adj v w ↔ G.Adj v w ∧ (v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s) := by rfl
 
@@ -518,7 +528,7 @@ such that `inl v` (`inr v`) is adjacent to `inr w` (`inl w`) iff `v` is adjacent
   Adj
   | .inl v', .inr w' | .inr v', .inl w' => G.Adj v' w'
   | _, _ => False
-  symm _ _ := by grind [adj_symm]
+  symm.symm _ _ := by grind [adj_symm]
 
 instance [h : DecidableRel G.Adj] : DecidableRel G.bipartiteDoubleCover.Adj
   | .inl _, .inr _ | .inr _, .inl _ => h _ _

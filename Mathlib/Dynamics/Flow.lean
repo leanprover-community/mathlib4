@@ -5,9 +5,7 @@ Authors: Jean Lo
 -/
 module
 
-public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Topology.Algebra.Monoid
-public import Mathlib.Topology.Algebra.Group.Defs
 public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
@@ -63,7 +61,7 @@ theorem IsInvariant.isForwardInvariant [Preorder τ] [Zero τ] {ϕ : τ → α �
 `IsForwardInvariant` and `IsInvariant` are equivalent. -/
 theorem IsForwardInvariant.isInvariant [AddMonoid τ] [PartialOrder τ] [CanonicallyOrderedAdd τ]
     {ϕ : τ → α → α} {s : Set α}
-    (h : IsForwardInvariant ϕ s) : IsInvariant ϕ s := fun t => h (zero_le t)
+    (h : IsForwardInvariant ϕ s) : IsInvariant ϕ s := fun _ => h zero_le
 
 /-- If `τ` is a `CanonicallyOrderedAdd` monoid (e.g., `ℕ` or `ℝ≥0`), then the notions
 `IsForwardInvariant` and `IsInvariant` are equivalent. -/
@@ -249,7 +247,7 @@ theorem IsFactorOf.trans (h₁ : IsFactorOf ϕ ψ) (h₂ : IsFactorOf ψ χ) : I
   h₁.elim fun π hπ => h₂.elim fun ρ hρ => ⟨π ∘ ρ, hρ.comp χ ψ ϕ hπ⟩
 
 /-- Every flow is a factor of itself. -/
-theorem IsFactorOf.self : IsFactorOf ϕ ϕ := ⟨id, (isSemiconjugacy_id_iff_eq ϕ ϕ).mpr (by rfl)⟩
+theorem IsFactorOf.self : IsFactorOf ϕ ϕ := ⟨id, (isSemiconjugacy_id_iff_eq ϕ ϕ).mpr rfl⟩
 
 end Flow
 

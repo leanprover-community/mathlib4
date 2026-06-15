@@ -31,7 +31,7 @@ See Proposition 2.3.9 and Problem 63 in [F. Q. Gouvêa, *p-adic numbers*][gouvea
 
 public section
 
-open Pointwise TopologicalSpace
+open scoped Pointwise
 
 variable {G : Type*} [TopologicalSpace G] [Group G] [NonarchimedeanGroup G] [T2Space G]
 

@@ -252,9 +252,11 @@ We first prove that the module topology on `R` considered as a module over itsel
 is `R`'s topology.
 -/
 
+-- see Note [higher instance priority]
 /-- The topology on a topological semiring `R` agrees with the module topology when considering
 `R` as an `R`-module in the obvious way (i.e., via `Semiring.toModule`). -/
-instance _root_.IsTopologicalSemiring.toIsModuleTopology : IsModuleTopology R R := by
+instance (priority := 1100) _root_.IsTopologicalSemiring.toIsModuleTopology :
+    IsModuleTopology R R := by
   /- By a previous lemma it suffices to show that the identity from (R,usual) to
   (R, module topology) is continuous. -/
   apply of_continuous_id

@@ -86,7 +86,7 @@ variable {R S A B}
 theorem of_surjective [FiniteType R A] (f : A →ₐ[R] B) (hf : Surjective f) : FiniteType R B :=
   ⟨by
     convert ‹FiniteType R A›.1.map f
-    simpa only [map_top f, @eq_comm _ ⊤, eq_top_iff, AlgHom.mem_range] using hf⟩
+    simpa only [map_top f, @eq_comm _ ⊤, eq_top_iff, AlgHom.mem_range] using! hf⟩
 
 theorem equiv (hRA : FiniteType R A) (e : A ≃ₐ[R] B) : FiniteType R B :=
   hRA.of_surjective e e.surjective
@@ -230,7 +230,6 @@ end Finite
 
 namespace FiniteType
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: should infer_instance be marked as normalising?
 set_option linter.flexible false in
 variable (A) in

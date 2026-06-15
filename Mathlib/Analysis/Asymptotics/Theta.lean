@@ -284,7 +284,7 @@ theorem isTheta_of_div_tendsto_nhds_ne_zero {c : 𝕜} {f g : α → 𝕜}
     f =Θ[l] g := by
   refine ⟨isBigO_of_div_tendsto_nhds_of_ne_zero h hc,
     isBigO_of_div_tendsto_nhds_of_ne_zero ?_ (inv_ne_zero hc)⟩
-  convert h.inv₀ hc using 1
+  convert! h.inv₀ hc using 1
   ext
   simp
 

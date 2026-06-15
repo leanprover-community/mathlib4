@@ -30,7 +30,6 @@ with continuous addition/multiplication. See also `Submonoid.top_closure_mul_sel
 `Topology.Algebra.Monoid`.
 -/
 
-
 section ContinuousConstSMul
 
 variable [TopologicalSpace β] [Group α] [MulAction α β] [ContinuousConstSMul α β] {s : Set α}
@@ -68,7 +67,7 @@ theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
     invFun := fun gx ↦ (gx.1, (gx.1 : α)⁻¹ • gx.2)
     left_inv := fun _ ↦ by simp
     right_inv := fun _ ↦ by simp }
-  have : s • t = (snd ∘ Φ) '' (snd ⁻¹' t) :=
+  have : s • t = (snd ∘ Φ) '' snd ⁻¹' t :=
     subset_antisymm
       (smul_subset_iff.mpr fun g hg x hx ↦ mem_image_of_mem (snd ∘ Φ) (x := ⟨⟨g, hg⟩, x⟩) hx)
       (image_subset_iff.mpr fun ⟨⟨g, hg⟩, x⟩ hx ↦ smul_mem_smul hg hx)
@@ -84,7 +83,7 @@ theorem MulAction.isClosedMap_quotient [CompactSpace α] :
   intro t ht
   rw [← isQuotientMap_quotient_mk'.isClosed_preimage,
     MulAction.quotient_preimage_image_eq_union_mul]
-  convert ht.smul_left_of_isCompact (isCompact_univ (X := α))
+  convert! ht.smul_left_of_isCompact (isCompact_univ (X := α))
   rw [← biUnion_univ, ← iUnion_smul_left_image]
   simp only [image_smul]
 
@@ -143,6 +142,44 @@ theorem mul_singleton_mem_nhds_of_nhds_one (a : α) (h : s ∈ 𝓝 (1 : α)) : 
   simpa only [one_mul] using mul_singleton_mem_nhds a h
 
 end ContinuousConstSMulOp
+
+section SeparatelyContinuousMul
+
+variable [TopologicalSpace G] [Group G] [SeparatelyContinuousMul G]
+
+@[to_additive]
+theorem closure_subset_mul_left_of_mem_nhds_one_of_inv {s : Set G} (s' : Set G)
+    (hs₀ : s ∈ 𝓝 1) (h_symm : ∀ x ∈ s, x⁻¹ ∈ s) :
+    closure s' ⊆ s * s' := by
+  intro y hy
+  obtain ⟨_, ⟨b, hb, rfl⟩, hc⟩ :=
+    mem_closure_iff_nhds.mp hy ((· * y) '' s)
+      (by simpa using (isOpenMap_mul_right y).image_mem_nhds hs₀)
+  simpa using Set.mul_mem_mul (h_symm b hb) hc
+
+@[to_additive]
+theorem closure_subset_mul_right_of_mem_nhds_one_of_inv (s : Set G) {s' : Set G}
+    (hs'₀ : s' ∈ 𝓝 1) (h_symm : ∀ x ∈ s', x⁻¹ ∈ s') :
+    closure s ⊆ s * s' := by
+  intro y hy
+  obtain ⟨_, ⟨b, hb, rfl⟩, hc⟩ :=
+    mem_closure_iff_nhds.mp hy ((y * ·) '' s')
+      (by simpa using (isOpenMap_mul_left y).image_mem_nhds hs'₀)
+  simpa using Set.mul_mem_mul hc (h_symm b hb)
+
+@[to_additive]
+theorem closure_subset_of_mem_nhds_one_of_inv_mul_left_subset {s s' t : Set G}
+    (hs₀ : s ∈ 𝓝 1) (h_symm : ∀ x ∈ s, x⁻¹ ∈ s) (hs : s * s' ⊆ t) :
+    closure s' ⊆ t :=
+  closure_subset_mul_left_of_mem_nhds_one_of_inv s' hs₀ h_symm |>.trans hs
+
+@[to_additive]
+theorem closure_subset_of_mem_nhds_one_of_inv_mul_right_subset {s s' t : Set G}
+    (hs'₀ : s' ∈ 𝓝 1) (h_symm : ∀ x ∈ s', x⁻¹ ∈ s') (hs : s * s' ⊆ t) :
+    closure s ⊆ t :=
+  closure_subset_mul_right_of_mem_nhds_one_of_inv s hs'₀ h_symm |>.trans hs
+
+end SeparatelyContinuousMul
 
 section IsTopologicalGroup
 
@@ -252,6 +289,16 @@ lemma compl_mul_closure_one_eq_iff {t : Set G} :
 lemma IsOpen.mul_closure_one_eq {U : Set G} (hU : IsOpen U) :
     U * (closure {1} : Set G) = U :=
   compl_mul_closure_one_eq_iff.1 (hU.isClosed_compl.mul_closure_one_eq)
+
+@[to_additive]
+theorem closure_subset_mul_self_of_mem_nhds_one {U : Set G} (hU : U ∈ 𝓝 1) :
+    closure U ⊆ U * U := by
+  intro x hx
+  rw [mem_closure_iff_nhds] at hx
+  have hkey : (fun y => x / y) ⁻¹' U ∈ 𝓝 x :=
+    ContinuousAt.preimage_mem_nhds (by fun_prop) (by simpa)
+  obtain ⟨a, ha_mem, ha_s⟩ := hx _ hkey
+  exact Set.mem_mul.mpr ⟨x / a, ha_mem, a, ha_s, div_mul_cancel x a⟩
 
 end IsTopologicalGroup
 
