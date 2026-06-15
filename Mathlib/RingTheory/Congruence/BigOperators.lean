@@ -11,8 +11,6 @@ public import Mathlib.RingTheory.Congruence.Defs
 /-!
 # Interactions between `∑, ∏` and `RingCon`
 
-TODO: some of the typeclass assumptions in this file can be weakened if more instances are added
-for `RingCon.Quotient`.
 -/
 
 public section
