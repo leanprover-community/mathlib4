@@ -666,7 +666,7 @@ end degreesLE
 
 section mainDegree
 
-variable [LinearOrder σ] {i j c : σ}
+variable [LinearOrder σ] {i : σ}
 
 /-- The multiset of variables whose degree in `p` is maximal among all variables
 appearing in `p`.
@@ -676,7 +676,7 @@ appearing in `p`.
 def mainDegree (p : MvPolynomial σ R) : Multiset σ :=
   p.degrees.filter (fun i => ∀ j ∈ p.degrees, j ≤ i)
 
-theorem forall_mainDegree_eq_of_forall_degrees_le (i : σ) (h1 : i ∈ p.degrees)
+theorem forall_mainDegree_eq_of_forall_degrees_le (h1 : i ∈ p.degrees)
     (h2 : ∀ j ∈ p.degrees, j ≤ i) : ∀ j ∈ p.mainDegree, i = j := by
   intro j hj
   rw [mainDegree] at hj
@@ -685,6 +685,12 @@ theorem forall_mainDegree_eq_of_forall_degrees_le (i : σ) (h1 : i ∈ p.degrees
     exact h1
   apply h2
   exact Multiset.mem_of_mem_filter hj
+
+theorem card_mainDegree_eq_degreeOf_of_forall_degrees_le (h1 : i ∈ p.degrees)
+    (h2 : ∀ j ∈ p.degrees, j ≤ i) : p.mainDegree.card = p.degreeOf i := by
+  have := forall_mainDegree_eq_of_forall_degrees_le h1 h2
+  rw [← Multiset.count_eq_card.mpr this]
+  rw [degreeOf_def, mainDegree, Multiset.count_filter, if_pos h2]
 
 @[simp]
 theorem mainDegree_zero : (0 : MvPolynomial σ R).mainDegree = 0 := rfl

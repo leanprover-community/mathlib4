@@ -354,28 +354,18 @@ end Lex
 
 section MainDegree
 
-variable [LinearOrder σ] {i j c : σ}
+variable [LinearOrder σ] {c : σ}
 
-theorem forall_degrees_le_of_max_vars_eq (h : p.vars.max = c) : ∀ j ∈ p.degrees, j ≤ c := by
+theorem card_mainDegree_eq_degreeOf (h : p.vars.max = c) : p.mainDegree.card = p.degreeOf c := by
   rw [vars_def] at h
+  apply card_mainDegree_eq_degreeOf_of_forall_degrees_le
+  · apply Multiset.mem_toFinset.mp
+    exact Finset.mem_of_max h
   intro j hj
   rw [← Multiset.mem_toFinset] at hj
   have := Finset.le_max hj
   simp only [h, WithBot.coe_le_coe] at this
   exact this
-
-theorem forall_mainDegree_eq_of_max_vars_eq (h : p.vars.max = c) : ∀ j ∈ p.mainDegree, c = j := by
-  apply forall_mainDegree_eq_of_forall_degrees_le
-  · rw [vars_def] at h
-    apply Multiset.mem_toFinset.mp
-    exact Finset.mem_of_max h
-  exact forall_degrees_le_of_max_vars_eq h
-
-theorem card_mainDegree_eq_degreeOf (h : p.vars.max = c) : p.mainDegree.card = p.degreeOf c := by
-  have : ∀ j ∈ p.mainDegree, c = j := forall_mainDegree_eq_of_max_vars_eq h
-  rw [← Multiset.count_eq_card.mpr this]
-  have : ∀ j ∈ p.degrees, j ≤ c := forall_degrees_le_of_max_vars_eq h
-  rw [degreeOf_def, mainDegree, Multiset.count_filter, if_pos this]
 
 theorem card_mainDegree_eq_zero_iff : p.mainDegree.card = 0 ↔ p.vars.max = ⊥ where
   mp h :=
