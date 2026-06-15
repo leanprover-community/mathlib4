@@ -10,7 +10,6 @@ public import Mathlib.Algebra.BigOperators.Group.List.Lemmas
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Data.DFinsupp.BigOperators
-public import Mathlib.GroupTheory.Congruence.Defs
 public import Mathlib.GroupTheory.Congruence.Basic
 
 /-!
