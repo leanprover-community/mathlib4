@@ -396,7 +396,8 @@ noncomputable def killingCompl : LieIdeal R L :=
   rfl
 
 @[simp] lemma mem_killingCompl {x : L} :
-    x ∈ I.killingCompl ↔ ∀ y ∈ I, killingForm R L y x = 0 := by rfl
+    x ∈ I.killingCompl ↔ ∀ y ∈ I, killingForm R L y x = 0 := by
+  rfl
 
 lemma coe_killingCompl_top :
     killingCompl R L ⊤ = LinearMap.ker (killingForm R L) := by

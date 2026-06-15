@@ -103,7 +103,8 @@ lemma transpose_eq_cbmApplyMeasure (μ : VectorMeasure X F) (B : E →L[ℝ] F �
 
 @[simp]
 theorem cbmApplyMeasure_apply (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) (s : Set X) (x : E) :
-    cbmApplyMeasure μ B s x = B x (μ s) := by rfl
+    cbmApplyMeasure μ B s x = B x (μ s) := by
+  rfl
 
 theorem cbmApplyMeasure_union (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) {s t : Set X}
     (hs : MeasurableSet s) (ht : MeasurableSet t) (hdisj : Disjoint s t) :

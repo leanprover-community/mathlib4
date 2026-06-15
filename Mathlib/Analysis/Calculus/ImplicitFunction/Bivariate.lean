@@ -53,7 +53,8 @@ noncomputable def implicitFunctionOfBivariate : E₁ → E₂ :=
 theorem implicitFunctionOfBivariate_def :
     implicitFunctionOfBivariate df₁ df₂ cf₁ cf₂ if₂u =
       HasStrictFDerivAt.implicitFunctionOfProdDomain
-        (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) (by simpa using! if₂u) := by rfl
+        (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) (by simpa using! if₂u) := by
+  rfl
 
 theorem tendsto_implicitFunctionOfBivariate :
     Tendsto (implicitFunctionOfBivariate df₁ df₂ cf₁ cf₂ if₂u) (𝓝 u.1) (𝓝 u.2) := by

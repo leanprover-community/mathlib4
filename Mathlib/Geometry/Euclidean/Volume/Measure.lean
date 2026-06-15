@@ -77,7 +77,8 @@ proof_wanted MeasureTheory.Measure.addHaarScalarFactor_hausdorffMeasure_eq (d : 
 
 theorem MeasureTheory.Measure.euclideanHausdorffMeasure_def (d : ℕ) :
     (μHE[d] : Measure X) =
-    addHaarScalarFactor (volume : Measure (EuclideanSpace ℝ (Fin d))) μH[d] • μH[d] := by rfl
+    addHaarScalarFactor (volume : Measure (EuclideanSpace ℝ (Fin d))) μH[d] • μH[d] := by
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in -- needed by simplifying `1 • _`
 /-- `μHE[0]` and `μH[0]` are equal. -/

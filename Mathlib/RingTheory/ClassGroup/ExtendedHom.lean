@@ -58,7 +58,8 @@ noncomputable def extendedHom : ClassGroup A →* ClassGroup B :=
 @[simp]
 lemma extendedHom_quotientMk (α : (FractionalIdeal A⁰ (FractionRing A))ˣ) :
     extendedHom A B (QuotientGroup.mk α) = QuotientGroup.mk
-      (Units.map (FractionalIdeal.extendedHom (FractionRing B) B).toMonoidHom α) := by rfl
+      (Units.map (FractionalIdeal.extendedHom (FractionRing B) B).toMonoidHom α) := by
+  rfl
 
 @[simp]
 theorem extendedHom_mk (I : (FractionalIdeal A⁰ (FractionRing A))ˣ) :
