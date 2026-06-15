@@ -38,13 +38,12 @@ def Introspective {R : Type*} [CommRing R] (f : R[X]) (e r : ℕ) : Prop :=
   mk (span ({(X : R[X]) ^ r - C 1})) (f ^ e) =
   mk (span ({(X : R[X]) ^ r - C 1})) (f.comp (X ^ e))
 
-
 namespace Introspective
 
 variable {b d r p a n e : ℕ} {R : Type*}
 
 theorem dvd_of_introspective {f : (ZMod n)[X]} (h : Introspective f e r) (hd : p ∣ n) :
-    Introspective (R:= ZMod p) (f.map (ZMod.castHom hd _)) e r := by
+    Introspective (R := ZMod p) (f.map (ZMod.castHom hd _)) e r := by
   simp only [Introspective] at *
   let g := lift (span {(X : (ZMod n)[X]) ^ r - C 1}) (RingHom.comp (mk (span
       ({(X : (ZMod p)[X]) ^ r - C 1})))  (Polynomial.mapRingHom (ZMod.castHom hd (ZMod p)))) (by
@@ -65,7 +64,6 @@ section CommRing
 
 variable [CommRing R] {f g : R[X]}
 
-
 theorem aeval_of_primitive_roots {K : Type*} [CommRing K] [IsDomain K] [Algebra R K]
     (h : Introspective f e r) : ∀ μ ∈ (primitiveRoots r K), f.aeval μ ^ e = f.aeval (μ ^ e) := by
   intro μ hμ
@@ -80,7 +78,6 @@ theorem aeval_of_primitive_roots {K : Type*} [CommRing K] [IsDomain K] [Algebra 
 @[simp]
 protected theorem one (f : R[X]) : Introspective f 1 r := by
   simp [Introspective]
-
 
 protected theorem X_sub_C {a : ℕ} [Fact n.Prime] [CharP R n] :
     Introspective ((X : R[X]) - C (a : R)) n r := by
