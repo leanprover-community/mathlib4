@@ -8,8 +8,8 @@ module
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.MeasureTheory.Measure.Tight
 
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-import Mathlib.Order.CompletePartialOrder
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
+import Mathlib.Order.Filter.ENNReal
 
 /-!
 # Tight sets of measures in normed spaces

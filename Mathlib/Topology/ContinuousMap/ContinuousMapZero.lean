@@ -48,7 +48,7 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace R]
 
 instance instFunLike : FunLike C(X, R)₀ X R where
   coe f := f.toFun
-  coe_injective' _ _ h := congr(⟨⟨$(h), _⟩, _⟩)
+  coe_injective _ _ h := congr(⟨⟨$(h), _⟩, _⟩)
 
 instance instContinuousMapClass : ContinuousMapClass C(X, R)₀ X R where
   map_continuous f := f.continuous
@@ -87,7 +87,7 @@ def comp (g : C(Y, R)₀) (f : C(X, Y)₀) : C(X, R)₀ where
 lemma comp_apply (g : C(Y, R)₀) (f : C(X, Y)₀) (x : X) : g.comp f x = g (f x) := rfl
 
 instance instPartialOrder [PartialOrder R] : PartialOrder C(X, R)₀ := fast_instance%
-  .lift _ DFunLike.coe_injective'
+  .lift _ DFunLike.coe_injective
 
 lemma le_def [PartialOrder R] (f g : C(X, R)₀) : f ≤ g ↔ ∀ x, f x ≤ g x := Iff.rfl
 

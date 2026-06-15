@@ -43,6 +43,8 @@ section ScottContinuous
 variable [Preorder α] [Preorder β] [Preorder γ] {D D₁ D₂ : Set (Set α)}
   {f : α → β}
 
+-- Allow `to_fun` to eta-expand `g ∘ f`. Ideally, `Function.comp_def` would be a global pull lemma
+-- instead, which is not supported yet: see https://github.com/leanprover-community/mathlib4/issues/40183.
 attribute [local push ←] Function.comp_def
 attribute [local push] Function.const_def
 

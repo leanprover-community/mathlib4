@@ -142,8 +142,10 @@ theorem covering_mem {p : X × Set X} (hp : p ∈ h.index) : h.covering p ∈ f 
 theorem covering_mem_family {p : X × Set X} (hp : p ∈ h.index) : h.covering p ∈ v.setsAt p.1 :=
   (h.exists_disjoint_covering_ae.choose_spec.2.2.1 p hp).1
 
-theorem measure_diff_biUnion : μ (s \ ⋃ p ∈ h.index, h.covering p) = 0 :=
+theorem measure_sdiff_biUnion : μ (s \ ⋃ p ∈ h.index, h.covering p) = 0 :=
   h.exists_disjoint_covering_ae.choose_spec.2.2.2
+
+@[deprecated (since := "2026-06-03")] alias measure_diff_biUnion := measure_sdiff_biUnion
 
 theorem index_countable [SecondCountableTopology X] : h.index.Countable :=
   h.covering_disjoint.countable_of_nonempty_interior fun _ hx =>
@@ -157,11 +159,11 @@ theorem measure_le_tsum_of_absolutelyContinuous [SecondCountableTopology X] {ρ 
     (hρ : ρ ≪ μ) : ρ s ≤ ∑' p : h.index, ρ (h.covering p) :=
   calc
     ρ s ≤ ρ ((s \ ⋃ p ∈ h.index, h.covering p) ∪ ⋃ p ∈ h.index, h.covering p) :=
-      measure_mono (by simp only [subset_union_left, diff_union_self])
+      measure_mono (by simp only [subset_union_left, sdiff_union_self])
     _ ≤ ρ (s \ ⋃ p ∈ h.index, h.covering p) + ρ (⋃ p ∈ h.index, h.covering p) :=
       (measure_union_le _ _)
     _ = ∑' p : h.index, ρ (h.covering p) := by
-      rw [hρ h.measure_diff_biUnion, zero_add,
+      rw [hρ h.measure_sdiff_biUnion, zero_add,
         measure_biUnion h.index_countable h.covering_disjoint fun x hx => h.measurableSet_u hx]
 
 theorem measure_le_tsum [SecondCountableTopology X] : μ s ≤ ∑' x : h.index, μ (h.covering x) :=

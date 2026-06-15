@@ -241,9 +241,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
   rw [adjoin_singleton_eq_range_aeval] at hz
   obtain ⟨Q₁, hQ⟩ := hz
   set Q := Q₁ %ₘ P with hQ₁
-  replace hQ : aeval B.gen Q = p • z := by
-    rw [← modByMonic_add_div Q₁ (minpoly R B.gen)] at hQ
-    simpa using hQ
+  replace hQ : aeval B.gen Q = p • z := by simpa [hQ₁, hP] using hQ
   by_cases hQzero : Q = 0
   · simp only [hQzero, Algebra.smul_def, zero_eq_mul, aeval_zero] at hQ
     rcases hQ with H | H₁
