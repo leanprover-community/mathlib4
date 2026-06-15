@@ -491,7 +491,13 @@ private theorem Icc_coordChangeL_neg (p q r : Set.Icc x y)
     (v : EuclideanSpace ℝ (Fin 1)) :
     (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).coordChangeL ℝ
       (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) q) r v = -v := by
-  rw [VectorBundleCore.trivializationAt_coordChange_eq _ hr,
+  rw [show (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).coordChangeL ℝ
+          (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) q) r v =
+        (tangentBundleCore (𝓡∂ 1) (Set.Icc x y)).coordChange
+          ((tangentBundleCore (𝓡∂ 1) (Set.Icc x y)).indexAt p)
+          ((tangentBundleCore (𝓡∂ 1) (Set.Icc x y)).indexAt q) r v from
+      VectorBundleCore.trivializationAt_coordChange_eq
+        (tangentBundleCore (𝓡∂ 1) (Set.Icc x y)) hr v,
     tangentBundleCore_indexAt, tangentBundleCore_indexAt,
     tangentBundleCore_coordChange_achart]
   -- Decompose the cross-chart assumption into the two cases
@@ -533,8 +539,8 @@ private theorem Icc_coordChangeL_neg (p q r : Set.Icc x y)
       hw_range.elim fun h hx ↦ hx ▸ (𝓡∂ 1).uniqueDiffWithinAt_image
     rw [(hEqOn.eventuallyEq_of_mem
       (extChartAt_target_mem_nhdsWithin_of_mem hw_mem)).fderivWithin_eq (hEqOn hw_mem)]
-    let c : EuclideanSpace ℝ (Fin 1) :=
-      (WithLp.equiv 2 (Fin 1 → ℝ)).symm (fun _ ↦ y - x)
+    set c : EuclideanSpace ℝ (Fin 1) :=
+      (WithLp.equiv 2 (Fin 1 → ℝ)).symm (fun _ ↦ y - x) with hc
     have hderiv :
         fderivWithin ℝ (fun z : EuclideanSpace ℝ (Fin 1) ↦ c - z)
             (Set.range (𝓡∂ 1)) (extChartAt (𝓡∂ 1) p r) =
@@ -570,59 +576,28 @@ private theorem Icc_signedOrientation_compatible_right_left (p q r : Set.Icc x y
       (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) q).baseSet)
     (hp : ¬p.1 < y) (hq : q.1 < y) :
     (Orientation.map (Fin (Module.finrank ℝ (EuclideanSpace ℝ (Fin 1))))
-        ((Trivialization.linearEquivAt ℝ (FiberBundle.trivializationAt' p) r hr.1).symm ≪≫ₗ
-          Trivialization.linearEquivAt ℝ (FiberBundle.trivializationAt' q) r hr.2))
+        (((trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).linearEquivAt ℝ r
+              hr.1).symm ≪≫ₗ
+          (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) q).linearEquivAt ℝ r
+              hr.2))
     (Manifold.signedOrientation (E := EuclideanSpace ℝ (Fin 1)) (if p.1 < y then 0 else 1)
         (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1)))) =
     Manifold.signedOrientation (E := EuclideanSpace ℝ (Fin 1)) (if q.1 < y then 0 else 1)
       (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1))) := by
-  simp only [Manifold.signedOrientation, hp, hq, ↓reduceIte,
-    show (1 : ZMod 2) = 0 ↔ False from by decide]
-  rw [Orientation.map_neg]
-  classical
-  have hrSrc :
-      r ∈ (if p.1 < y then IccLeftChart x y else IccRightChart x y).source ∩
-          (if q.1 < y then IccLeftChart x y else IccRightChart x y).source := by
-    simpa [Icc_chartedSpaceChartAt, trivializationAt, hp, hq] using hr
-  have hmap :
-      (Orientation.map (Fin (Module.finrank ℝ (EuclideanSpace ℝ (Fin 1))))
-          (((trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).coordChangeL
-              ℝ (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) q)
-              r).toLinearEquiv))
-        (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1))) =
-      -Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1)) := by
-    exact Icc_map_neg_orientation _ (fun v ↦ by
-      simpa using Icc_coordChangeL_neg p q r hr (by simp [hp, hq]) v)
-  have hmapIf :
-      (Orientation.map (Fin (Module.finrank ℝ (EuclideanSpace ℝ (Fin 1))))
-          (if hb :
-              r ∈ (if p.1 < y then IccLeftChart x y else IccRightChart x y).source ∩
-                  (if q.1 < y then IccLeftChart x y else IccRightChart x y).source then
-            (Trivialization.linearEquivAt ℝ (FiberBundle.trivializationAt' p) r hr.1).symm ≪≫ₗ
-              Trivialization.linearEquivAt ℝ (FiberBundle.trivializationAt' q) r hr.2
-          else LinearEquiv.refl ℝ (EuclideanSpace ℝ (Fin 1))))
-        (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1))) =
-      -Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1)) := by
-    simpa [Trivialization.coordChangeL, trivializationAt, Icc_chartedSpaceChartAt, hp, hq]
-      using hmap
-  have hmap' :
-      (Orientation.map (Fin (Module.finrank ℝ (EuclideanSpace ℝ (Fin 1))))
-          ((Trivialization.linearEquivAt ℝ (FiberBundle.trivializationAt' p) r hr.1).symm ≪≫ₗ
-            Trivialization.linearEquivAt ℝ (FiberBundle.trivializationAt' q) r hr.2))
-        (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1))) =
-      -Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1)) := by
-    simpa [hrSrc] using hmapIf
-  calc
-    -(Orientation.map (Fin (Module.finrank ℝ (EuclideanSpace ℝ (Fin 1))))
-        ((Trivialization.linearEquivAt ℝ (FiberBundle.trivializationAt' p) r hr.1).symm ≪≫ₗ
-          Trivialization.linearEquivAt ℝ (FiberBundle.trivializationAt' q) r hr.2))
-        (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1))) =
-        -(-Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1))) := by simp [hmap']
-    _ = Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1)) := by
-      exact neg_neg (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1)))
+  have hneg : Orientation.map (Fin (Module.finrank ℝ (EuclideanSpace ℝ (Fin 1))))
+      (((trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).coordChangeL ℝ
+          (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) q) r).toLinearEquiv)
+      (Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1))) =
+      -Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1)) :=
+    Icc_map_neg_orientation _ (fun v ↦ Icc_coordChangeL_neg p q r hr (by simp [hp, hq]) v)
+  rw [← Bundle.Trivialization.coe_coordChangeL' _ _ hr,
+    show (if p.1 < y then (0 : ZMod 2) else 1) = 1 from by simp [hp],
+    show (if q.1 < y then (0 : ZMod 2) else 1) = 0 from by simp [hq],
+    Manifold.signedOrientation_one, Manifold.signedOrientation_zero, Orientation.map_neg, hneg,
+    neg_neg]
 
 /-- Compatibility equation for the interval orientation with a chart-sign cocycle. -/
-private theorem Icc_signedOrientation_compatible (p q r : Set.Icc x y)
+theorem Icc_signedOrientation_compatible (p q r : Set.Icc x y)
     (hr : r ∈ (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) p).baseSet ∩
       (trivializationAt (EuclideanSpace ℝ (Fin 1)) (TangentSpace (𝓡∂ 1)) q).baseSet) :
     (Orientation.map (Fin (Module.finrank ℝ (EuclideanSpace ℝ (Fin 1))))
@@ -644,8 +619,7 @@ private theorem Icc_signedOrientation_compatible (p q r : Set.Icc x y)
         -Manifold.baseOrientation (E := EuclideanSpace ℝ (Fin 1)) :=
     Icc_map_neg_orientation f hf
   -- Main case split on which charts p and q use (left chart when p.1 < y, right otherwise)
-  simp only [Trivialization.coordChangeL, trivializationAt]
-  rw [dif_pos hr]
+  rw [Bundle.Trivialization.coe_coordChangeL' _ _ hr]
   by_cases hp : p.1 < y
   · by_cases hq : q.1 < y
     · -- Same chart (both left): coordChange = id, orientation preserved
@@ -656,7 +630,7 @@ private theorem Icc_signedOrientation_compatible (p q r : Set.Icc x y)
       simp only [Manifold.signedOrientation, hp, hq, ↓reduceIte]
       exact map_neg_orientation _ (fun v ↦ by
         have := coordChangeL_neg (by simp [hp, hq]) v
-        rwa [Trivialization.coe_coordChangeL _ _ hr] at this)
+        rwa [Bundle.Trivialization.coe_coordChangeL _ _ hr] at this)
   · by_cases hq : q.1 < y
     · -- Cross chart (right → left): coordChange negates, map(-baseOri) = baseOri
       exact Icc_signedOrientation_compatible_right_left p q r hr hp hq
@@ -668,7 +642,7 @@ private theorem Icc_signedOrientation_compatible (p q r : Set.Icc x y)
 instance instOrientedManifoldIcc : Manifold.OrientedManifold (𝓡∂ 1) (Set.Icc x y) where
   manifoldOrientation :=
     { chartSign := fun p => LocallyConstant.const _ (if p.1 < y then (0 : ZMod 2) else 1)
-      compatible := by simpa using Icc_signedOrientation_compatible }
+      compatible := fun p q r hr => Icc_signedOrientation_compatible p q r hr }
 
 instance instOrientableIcc : Manifold.Orientable (𝓡∂ 1) (Set.Icc x y) := by infer_instance
 
