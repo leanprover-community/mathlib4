@@ -120,10 +120,21 @@ lemma _root_.Matrix.ProjectiveSpecialLinearGroup.toPGL_surj_of_roots
   simp only [Units.val_mul, coe_GL_coe_matrix,GeneralLinearGroup.val_scalar_apply]
   simp [← Matrix.mul_smul, ← Matrix.diagonal_smul, Pi.smul_def, smul_eq_mul]
 
+lemma _root_.Matrix.ProjectiveSpecialLinearGroup.toPGL_surj_iff [Nonempty n] :
+    Function.Surjective (ProjectiveSpecialLinearGroup.toPGL (n := n) (R := R)) ↔
+      ∀ r : Rˣ, ∃ k : Rˣ, k ^ Fintype.card n = r := by
+  refine ⟨fun h r ↦ ?_, ProjectiveSpecialLinearGroup.toPGL_surj_of_roots⟩
+  obtain ⟨A, hA⟩ := GeneralLinearGroup.det_surjective (n := n) r
+  obtain ⟨X, hX⟩ := h (.mk A)
+  induction X using QuotientGroup.induction_on with | H X =>
+  obtain ⟨u, hu⟩ : ∃ u, toGL X * (GeneralLinearGroup.scalar n) u = A := by
+    simpa [mk_eq_mk_iff] using hX
+  exact ⟨u, by simpa [hA] using congr(Matrix.GeneralLinearGroup.det $hu)⟩
+
 open Polynomial in
 /-- An isomorphism between `PGL(n, F)` and `PSL(n, F)` in the case of an algebraically closed field
   induced from the natural inclusion map. -/
-noncomputable def isoPSLOfAlgClosed [Nonempty n] {F : Type*} [Field F] [IsAlgClosed F] :
+noncomputable def isoPSLOfAlgClosedOfNonempty [Nonempty n] {F : Type*} [Field F] [IsAlgClosed F] :
     PGL(n, F) ≃* ProjectiveSpecialLinearGroup n F :=
   MulEquiv.symm (MulEquiv.ofBijective Matrix.ProjectiveSpecialLinearGroup.toPGL
     ⟨Matrix.ProjectiveSpecialLinearGroup.toPGL_injective,
@@ -133,6 +144,15 @@ noncomputable def isoPSLOfAlgClosed [Nonempty n] {F : Type*} [Field F] [IsAlgClo
   have hx' : x ≠ 0 := by aesop
   exact ⟨⟨x, x⁻¹, mul_inv_cancel₀ hx', inv_mul_cancel₀ hx'⟩, by
     simpa [Units.ext_iff, sub_eq_zero] using hx⟩⟩)
+
+noncomputable def isoPSLOfAlgClosed {F : Type*} [Field F] [IsAlgClosed F] :
+    PGL(n, F) ≃* ProjectiveSpecialLinearGroup n F :=
+  open scoped Classical in
+  if h : Nonempty n then isoPSLOfAlgClosedOfNonempty else
+  have : IsEmpty n := by simpa using h
+  have : Subsingleton (PGL(n, F)) := mk_surjective.subsingleton
+  MulEquiv.symm (MulEquiv.ofBijective Matrix.ProjectiveSpecialLinearGroup.toPGL
+    ⟨Matrix.ProjectiveSpecialLinearGroup.toPGL_injective, Function.surjective_to_subsingleton _⟩)
 
 end isoPSL
 
