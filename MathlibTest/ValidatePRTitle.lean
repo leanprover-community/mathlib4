@@ -192,7 +192,7 @@ info: Message: 'error: the PR title contains multiple consecutive spaces; please
 end title
 
 -- Tests for the PR description validation logic.
-section scope
+section description
 
 open Lean in
 /--
@@ -212,6 +212,21 @@ elab "#check_description " desc:str : command => do
 #guard_msgs in
 #check_description "    " -- whitespace only PR bodies should also get linted
 
+-- This description is virtually empty: just whitespace.
+/--
+info: Message: 'warning: your PR description is non-empty, but everything is after the '---' line
+note: the final PR commit message only uses what is above that line'
+-/
+#guard_msgs in
+#check_description "\n\n---"
+
+/--
+info: Message: 'warning: your PR description is non-empty, but everything is after the '---' line
+note: the final PR commit message only uses what is above that line'
+-/
+#guard_msgs in
+#check_description ".\n\n---"
+
 /-- info: Message: 'error: there should be a blank line between the PR description and the fold' -/
 #guard_msgs in
 #check_description "A word\n----\n"
@@ -219,6 +234,14 @@ elab "#check_description " desc:str : command => do
 /-- info: Message: 'error: there should be a blank line between the PR description and the fold' -/
 #guard_msgs in
 #check_description "A word\n----\nSome content\nAnother fold\n"
+
+-- Regression test against confusing errors with just a fold. TODO fix
+/--
+info: Message: 'warning: your PR description is non-empty, but everything is after the '---' line
+note: the final PR commit message only uses what is above that line'
+-/
+#guard_msgs in
+#check_description "---"
 
 /--
 info: Message: 'warning: your PR description is non-empty, but everything is after the '---' line
@@ -252,4 +275,4 @@ If you have done particular testing, please mention this --- but no need for the
 
 #guard_msgs in #check_description "My description.\n\n---\n\nMeta info after the fold.\n"
 
-end scope
+end description

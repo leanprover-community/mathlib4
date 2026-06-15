@@ -171,7 +171,9 @@ public def validatePRBody (description : String) (isLabelledEasy : Bool) : Array
       If you have done particular testing, please mention this --- but no need for the header."
   -- Should this error on any headings in the PR description?
 
-  if before.isEmpty && !after.isEmpty then
+  -- Just whitespace, or a period before the fold also count as empty descriptions.
+  let beforeContainsText := before.any (·.any (·.isAlpha))
+  if !beforeContainsText && !after.isEmpty then
     errors := errors.push
       "warning: your PR description is non-empty, but everything is after the '---' line\n\
       note: the final PR commit message only uses what is above that line"
