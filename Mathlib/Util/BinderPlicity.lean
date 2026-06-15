@@ -14,8 +14,12 @@ open Lean.Parser.Term in
 /-- A code action to switch between explicit and implicit binders -/
 @[code_action_provider]
 def binderPlicity : CodeActionProvider := fun params snap => do
-  let mut binders := #[]
   let doc ← RequestM.readDoc
+  let mkCodeAction kind range newText : LazyCodeAction := {
+      eager.title := s!"Make {kind}: {newText}"
+      eager.kind? := "refactor.rewrite"
+      eager.edit? := some <| .ofTextEdit doc.versionedIdentifier { range, newText } }
+  let mut codeActions := #[]
   for stx in snap.stx.topDown do
     let some stxRange := stx.getRange? | continue
     let lspRange := doc.meta.text.utf8RangeToLspRange stxRange
@@ -26,20 +30,12 @@ def binderPlicity : CodeActionProvider := fun params snap => do
       unless stx[3]!.isNone do continue
       let newStx := stx.modifyArg 0 (fun lparen => .atom lparen.getHeadInfo "{")
       let newStx := newStx.modifyArg 4 (fun rparen => .atom rparen.getHeadInfo "}")
-      binders := binders.push ("implicit", newStx, lspRange)
+      let some newText := newStx.unsetTrailing.reprint | continue
+      codeActions := codeActions.push <| mkCodeAction "implicit" lspRange newText
     if stx.isOfKind ``implicitBinder then
       let newStx := stx.modifyArg 0 (fun lparen => .atom lparen.getHeadInfo "(")
       let newStx := newStx.modifyArg 3 (fun rparen => .atom rparen.getHeadInfo ")")
-      binders := binders.push ("explicit", newStx, lspRange)
-
-  let mut codeActions := #[]
-  for (kind, stx, range) in binders do
-    let some newText := stx.unsetTrailing.reprint | continue
-    let edit : TextEdit := { range, newText }
-    let title := s!"Make {kind}: {newText}"
-    codeActions := codeActions.push {
-      eager.title := title
-      eager.kind? := "refactor.rewrite"
-      eager.edit? := some <| .ofTextEdit doc.versionedIdentifier edit
-    }
+      let some newText := newStx.unsetTrailing.reprint | continue
+      codeActions := codeActions.push <| mkCodeAction "explicit" lspRange newText
   return codeActions
+where 
