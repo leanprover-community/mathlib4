@@ -61,8 +61,7 @@ lemma lift_cRank_submatrix_le (A : Matrix m n R) (r : m₀ → m) (c : n₀ → 
   refine (Cardinal.lift_monotone h).trans ?_
   let f : (m → R) →ₗ[R] (m₀ → R) := LinearMap.funLeft R R r
   have h_eq : Submodule.map f (span R (range A.col)) = span R (range (A.submatrix r id).col) := by
-    rw [LinearMap.map_span, ← image_univ, image_image, col_eq_transpose, col_eq_transpose,
-      transpose_submatrix]
+    simp_rw [LinearMap.map_span, ← image_univ, image_image, col_eq_transpose, transpose_submatrix]
     aesop
   rw [cRank, ← h_eq]
   have hwin := lift_rank_map_le f (span R (range Aᵀ))
