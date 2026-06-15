@@ -357,3 +357,14 @@ protected theorem AddTorsor.connectedSpace : ConnectedSpace P :=
     toNonempty := inferInstance }
 
 end AddTorsor
+
+/-- `Equiv.pointReflection` as a homeomorphism -/
+def Homeomorph.pointReflection {X : Type*} [AddGroup X] [TopologicalSpace X]
+    [ContinuousAdd X] [ContinuousSub X] [ContinuousNeg X] (x : X) : X ≃ₜ X where
+  toEquiv := Equiv.pointReflection x
+  continuous_toFun := by
+    dsimp [Equiv.pointReflection]
+    fun_prop
+  continuous_invFun := by
+    dsimp [Equiv.pointReflection]
+    fun_prop
