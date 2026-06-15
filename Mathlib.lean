@@ -3568,6 +3568,7 @@ public import Mathlib.Combinatorics.Matroid.Rank.Cardinal
 public import Mathlib.Combinatorics.Matroid.Rank.ENat
 public import Mathlib.Combinatorics.Matroid.Rank.Finite
 public import Mathlib.Combinatorics.Matroid.Sum
+public import Mathlib.Combinatorics.Mixedgraph.Basic
 public import Mathlib.Combinatorics.Nullstellensatz
 public import Mathlib.Combinatorics.Optimization.ValuedCSP
 public import Mathlib.Combinatorics.Pigeonhole
