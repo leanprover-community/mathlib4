@@ -63,7 +63,7 @@ protected theorem center_prod : center R (A × B) = prod (center R A) (center R 
   SetLike.coe_injective Set.center_prod
 
 @[simp]
-theorem range_prodMap (f : A →ₐ[R] B) (g : C →ₐ[R] D) :
+theorem _root_.AlgHom.range_prodMap (f : A →ₐ[R] B) (g : C →ₐ[R] D) :
     (f.prodMap g).range = f.range.prod g.range :=
   SetLike.coe_injective Set.range_prodMap
 

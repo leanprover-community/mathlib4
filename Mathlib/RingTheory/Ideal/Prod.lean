@@ -37,10 +37,10 @@ theorem mem_prod {x : R × S} : x ∈ prod I J ↔ x.1 ∈ I ∧ x.2 ∈ J :=
   Iff.rfl
 
 @[simp]
-theorem RingHom.ker_prodMap {U T : Type*} [Semiring T] [Semiring U] (f : R →+* S) (g : T →+* U) :
-    RingHom.ker (f.prodMap g) = Ideal.prod (RingHom.ker f) (RingHom.ker g) := by
-  ext x
-  simp [Prod.map_def]
+theorem _root_.RingHom.ker_prodMap {T U : Type*} [Semiring T] [Semiring U]
+(f : R →+* S) (g : T →+* U) :
+RingHom.ker (f.prodMap g) = Ideal.prod (RingHom.ker f) (RingHom.ker g) := by
+  ext ⟨⟩; simp
 
 @[simp]
 theorem prod_top_top : prod (⊤ : Ideal R) (⊤ : Ideal S) = ⊤ :=

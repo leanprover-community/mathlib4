@@ -663,7 +663,7 @@ theorem top_prod_top : (⊤ : Subsemiring R).prod (⊤ : Subsemiring S) = ⊤ :=
   (top_prod _).trans <| comap_top _
 
 @[simp]
-theorem rangeS_prodMap (f : R →+* S) (g : S →+* T) :
+theorem _root_.RingHom.rangeS_prodMap (f : R →+* S) (g : S →+* T) :
     (f.prodMap g).rangeS = Subsemiring.prod f.rangeS g.rangeS :=
   SetLike.coe_injective Set.range_prodMap
 
