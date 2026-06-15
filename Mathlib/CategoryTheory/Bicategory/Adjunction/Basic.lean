@@ -1,10 +1,12 @@
 /-
 Copyright (c) 2023 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yuma Mizuno
+Authors: Yuma Mizuno, Fernando Chu
 -/
 module
 
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+public import Mathlib.CategoryTheory.Bicategory.Functor.StrictPseudofunctor
 public import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
 public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
@@ -22,6 +24,9 @@ identities. The 2-morphism `η` is called the unit and `ε` is called the counit
 * `Bicategory.Equivalence.mkOfAdjointifyCounit`: construct an adjoint equivalence from
   2-isomorphisms
   `η : 𝟙 a ≅ f ≫ g` and `ε : g ≫ f ≅ 𝟙 b`, by upgrading `ε` to a counit.
+* `Pseudofunctor.mapAdjunction`: a pseudofunctor `F` carries an adjunction `f ⊣ g`
+  between 1-morphisms to an adjunction `F.map f ⊣ F.map g`. An analogous definition is given
+  for `StrictPseudofunctor`.
 
 ## TODO
 
@@ -34,15 +39,14 @@ identities. The 2-morphism `η` is called the unit and `ε` is called the counit
 
 namespace CategoryTheory
 
+open Category Bicategory
+
+universe w₁ w₂ v₁ v₂ u₁ u₂
+
+variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
+  {a b c : B} {f : a ⟶ b} {g : b ⟶ a}
+
 namespace Bicategory
-
-open Category
-
-open scoped Bicategory
-
-universe w v u
-
-variable {B : Type u} [Bicategory.{w, v} B] {a b c : B} {f : a ⟶ b} {g : b ⟶ a}
 
 /-- The 2-morphism defined by the following pasting diagram:
 ```
@@ -340,5 +344,68 @@ def Adjunction.ofIsRightAdjoint (f : b ⟶ a) [IsRightAdjoint f] : leftAdjoint f
 end
 
 end Bicategory
+
+namespace Pseudofunctor
+
+variable (F : Pseudofunctor B C) (adj : f ⊣ g)
+
+/-- The image of an adjunction unit under a pseudofunctor. -/
+abbrev mapAdjunctionUnit : 𝟙 (F.obj a) ⟶ F.map f ≫ F.map g :=
+  (F.mapId a).inv ≫ F.map₂ adj.unit ≫ (F.mapComp f g).hom
+
+/-- The image of an adjunction counit under a pseudofunctor. -/
+def mapAdjunctionCounit : F.map g ≫ F.map f ⟶ 𝟙 (F.obj b) :=
+  (F.mapComp g f).inv ≫ F.map₂ adj.counit ≫ (F.mapId b).hom
+
+/-- The left zigzag of the conjugated images of a pair of 2-morphisms is the conjugated image
+of their left zigzag. -/
+lemma leftZigzag_map :
+    leftZigzag (F.mapAdjunctionUnit adj) (F.mapAdjunctionCounit adj) =
+      (F.mapId a).inv ▷ F.map f ⊗≫ (F.mapComp (𝟙 a) f).inv ≫
+        F.map₂ (leftZigzag adj.unit adj.counit) ≫
+          (F.mapComp f (𝟙 b)).hom ⊗≫ F.map f ◁ (F.mapId b).hom := by
+  simp [mapAdjunctionUnit, mapAdjunctionCounit, leftZigzag, bicategoricalComp]
+
+/-- The right zigzag of the conjugated images of a pair of 2-morphisms is the conjugated image
+of their right zigzag. -/
+lemma rightZigzag_map :
+    rightZigzag (F.mapAdjunctionUnit adj) (F.mapAdjunctionCounit adj) =
+      F.map g ◁ (F.mapId a).inv ⊗≫ (F.mapComp g (𝟙 a)).inv ≫
+        F.map₂ (rightZigzag adj.unit adj.counit) ≫
+          (F.mapComp (𝟙 b) g).hom ⊗≫ (F.mapId b).hom ▷ F.map g := by
+  simp [mapAdjunctionUnit, mapAdjunctionCounit, rightZigzag, bicategoricalComp, F.map₂_iso_inv]
+
+/-- A pseudofunctor carries an adjunction `f ⊣ g` to an adjunction `F.map f ⊣ F.map g`. -/
+@[simps]
+def mapAdjunction : F.map f ⊣ F.map g where
+  unit := F.mapAdjunctionUnit adj
+  counit := F.mapAdjunctionCounit adj
+  left_triangle := by
+    simp [F.leftZigzag_map, adj.left_triangle, bicategoricalComp, F.map₂_iso_inv]
+  right_triangle := by
+    simp [F.rightZigzag_map, adj.right_triangle, bicategoricalComp, F.map₂_iso_inv]
+
+end Pseudofunctor
+
+namespace StrictPseudofunctor
+
+variable (F : StrictPseudofunctor B C) (adj : f ⊣ g)
+
+/-- A strict pseudofunctor carries an adjunction `f ⊣ g` to an adjunction
+`F.map f ⊣ F.map g`. -/
+def mapAdjunction : F.map f ⊣ F.map g :=
+  F.toPseudofunctor.mapAdjunction adj
+
+lemma mapAdjunction_unit :
+    (F.mapAdjunction adj).unit =
+      eqToHom (F.map_id a).symm ≫ F.map₂ adj.unit ≫ eqToHom (F.map_comp f g) := by
+  simp [mapAdjunction, Pseudofunctor.mapAdjunctionUnit, F.mapId_eq_eqToIso, F.mapComp_eq_eqToIso]
+
+lemma mapAdjunction_counit :
+    (F.mapAdjunction adj).counit =
+      eqToHom (F.map_comp g f).symm ≫ F.map₂ adj.counit ≫ eqToHom (F.map_id b) := by
+  simp [mapAdjunction, Pseudofunctor.mapAdjunctionCounit, F.mapId_eq_eqToIso, F.mapComp_eq_eqToIso]
+
+end StrictPseudofunctor
 
 end CategoryTheory
