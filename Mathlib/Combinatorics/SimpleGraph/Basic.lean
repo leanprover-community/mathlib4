@@ -1037,9 +1037,20 @@ def IsUniversal (G : SimpleGraph V) (v : V) : Prop := ∀ ⦃w⦄, v ≠ w → G
   grind [insert_neighborSet_eq_univ, notMem_neighborSet_self]
 
 @[simp]
-theorem IsUniversal.of_subsingleton [Subsingleton V] (G : SimpleGraph V) (v : V) :
-    G.IsUniversal v :=
-  fun _ hne ↦ False.elim <| hne (of_decide_eq_true rfl)
+theorem IsUniversal.of_subsingleton [Subsingleton V] (v : V) : G.IsUniversal v :=
+  fun _ hne ↦ False.elim <| hne (Subsingleton.elim ..)
+
+theorem IsUniversal.not_isIsolated [Nontrivial V] {v : V} (h : G.IsUniversal v) (w : V) :
+    ¬G.IsIsolated w := by
+  by_cases h' : v = w
+  · obtain ⟨u, hu⟩ := exists_ne v
+    exact h' ▸ Adj.not_isIsolated_left (h hu.symm)
+  · exact Adj.not_isIsolated_right (h h')
+
+theorem IsUniversal.support_eq [Nontrivial V] {v : V} (h : G.IsUniversal v) :
+    G.support = .univ := by
+  refine Set.eq_univ_iff_forall.mpr fun x ↦ mem_support_iff_not_isIsolated _ |>.mpr ?_
+  exact not_isIsolated G h x
 
 theorem eq_top_iff_forall_isUniversal : G = ⊤ ↔ ∀ v, G.IsUniversal v := by
   simp [eq_top_iff_forall_ne_adj, IsUniversal]
