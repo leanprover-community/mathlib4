@@ -36,7 +36,7 @@ variable (R : Type u) [Semiring R] (M : Type v) [AddCommMonoid M] [Module R M]
 is a multilinear map that stays the same when its arguments are permuted. -/
 public structure SymmetricMap extends MultilinearMap R (fun _ : ι => M) N where
   /-- The map is symmetric: if the arguments of `v` are permuted, the result does not change. -/
-  map_perm_apply' (v : ι → M) (e : Perm ι) : (toFun fun i ↦ v (e i)) = toFun v
+  map_perm' (v : ι → M) (e : Perm ι) : (toFun fun i ↦ v (e i)) = toFun v
 
 @[inherit_doc]
 notation M:arg " [Σ^" ι "]→ₗ[" R "] " N:arg => SymmetricMap R M N ι
@@ -116,7 +116,7 @@ lemma toMultilinearMap_injective :
 @[simp] lemma coe_mk (f : MultilinearMap R (fun _ : ι ↦ M) N) (h) :
   ⇑(⟨f, h⟩ : M [Σ^ι]→ₗ[R] N) = f := rfl
 
-@[simp] lemma map_perm_apply (e : Perm ι) (x : ι → M) : (f fun i ↦ x (e i)) = f x :=
+@[simp] lemma map_perm (e : Perm ι) (x : ι → M) : (f fun i ↦ x (e i)) = f x :=
   f.2 x e
 
 @[simp] lemma comp_domDomCongr (e : Perm ι) : f.1.domDomCongr e = f :=
@@ -210,7 +210,7 @@ end Module
 
 def compLinearMap (f : N [Σ^ι]→ₗ[R] P) (g : M →ₗ[R] N) :
     M [Σ^ι]→ₗ[R] P :=
-  ⟨f.1.compLinearMap fun _ ↦ g, fun x e ↦ f.map_perm_apply e (g ∘ x)⟩
+  ⟨f.1.compLinearMap fun _ ↦ g, fun x e ↦ f.map_perm e (g ∘ x)⟩
 
 @[simp] lemma compLinearMap_coe (f : N [Σ^ι]→ₗ[R] P) (g : M →ₗ[R] N) :
     ⇑(f.compLinearMap g) = ⇑f ∘ fun x i ↦ g (x i) := rfl
@@ -259,7 +259,7 @@ variable {R M N P ι}
 
 def compSymmetricMap
     (f : N →ₗ[R] P) (g : SymmetricMap R M N ι) : SymmetricMap R M P ι :=
-  ⟨f.compMultilinearMap g, fun x e ↦ f.congr_arg <| g.map_perm_apply e x⟩
+  ⟨f.compMultilinearMap g, fun x e ↦ f.congr_arg <| g.map_perm e x⟩
 
 @[simp] lemma compSymmetricMap_coe
     (f : N →ₗ[R] P) (g : SymmetricMap R M N ι) :
@@ -298,7 +298,7 @@ namespace SymmetricMap
   invFun n := { toFun _ := n
                 map_update_add' _ := isEmptyElim
                 map_update_smul' _ := isEmptyElim
-                map_perm_apply' _ _ := rfl }
+                map_perm' _ _ := rfl }
   map_add' _ _ := rfl
   left_inv f := ext fun _ ↦ congrArg f <| Subsingleton.elim _ _
   right_inv _ := rfl
