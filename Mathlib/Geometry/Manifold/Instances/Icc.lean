@@ -93,27 +93,42 @@ def myflip (x : ℝ) : ℝ ≃ₜ ℝ where
 
 -- TODO: all these lemmas are technically misnamed; the relevant coercion is Subtype.val!
 
-lemma Homeomorph.mem_maximalAtlas_of_contDiff
-    (φ : Homeomorph E E) (hφ : ContDiff ℝ n φ) (hφ' : ContDiff ℝ n φ.symm) :
-    φ.toOpenPartialHomeomorph ∈ maximalAtlas 𝓘(ℝ, E) n E := by
-  simp only [maximalAtlas, StructureGroupoid.maximalAtlas, chartedSpaceSelf_atlas, forall_eq,
-     mem_setOf_eq, contDiffGroupoid, mem_groupoid_of_pregroupoid, contDiffPregroupoid]
-  refine ⟨⟨?_, ?_⟩, ?_, ?_⟩
-  all_goals simp [contDiffOn_univ, hφ, hφ']
+lemma ModelWithCorners.contMDiff (I : ModelWithCorners ℝ E H) : CMDiff n I := by
+  intro x
+  rw [contMDiffAt_iff]
+  refine ⟨by fun_prop, ?_⟩
+  simpa using contDiffWithinAt_id.congr (fun y hy ↦ by simp [hy]) (by simp)
 
--- attempted generalisation of the previous lemma to manifolds
-lemma Homeomorph.mem_maximalAtlas_of_contDiff'
-    (φ : Homeomorph H H) (hφ : CMDiff n φ) (hφ' : CMDiff n φ.symm) :
-    φ.toOpenPartialHomeomorph ∈ maximalAtlas I n H := by
-  simp only [mfld_simps, maximalAtlas, StructureGroupoid.maximalAtlas, forall_eq,
-    contDiffGroupoid, mem_groupoid_of_pregroupoid, contDiffPregroupoid]
-  -- lemming: f : H → H is smooth, then I ∘ f ∘ I.symm is smooth on range I
-  -- is this always true? if so, why? (otherwise, this lemma needs a different proof)
+lemma ModelWithCorners.contMDiffOn_symm (I : ModelWithCorners ℝ E H) :
+    CMDiff[range I] n I.symm := by
+  intro x hx
+  rw [contMDiffWithinAt_iff]
+  refine ⟨by fun_prop, ?_⟩
+  simpa using contDiffWithinAt_id.congr (fun y hy ↦ by simp [hy]) (by simp [hx])
+
+lemma OpenPartialHomeomorph.mem_maximalAtlas_of_contMDiffOn (φ : OpenPartialHomeomorph H H)
+    (hφ : CMDiff[φ.source] n φ) (hφ' : CMDiff[φ.target] n φ.symm) : φ ∈ maximalAtlas I n H := by
+  simp only [mfld_simps, IsManifold.mem_maximalAtlas_iff, StructureGroupoid.maximalAtlas, forall_eq,
+    contDiffGroupoid, mem_groupoid_of_pregroupoid, contDiffPregroupoid,
+    ← contMDiffOn_iff_contDiffOn]
   refine ⟨⟨?_, ?_⟩, ?_, ?_⟩
-  all_goals sorry
+  all_goals apply I.contMDiff.comp_contMDiffOn
+  · exact hφ'.comp (I.contMDiffOn_symm.mono (by simp)) (by simp)
+  · exact hφ.comp (I.contMDiffOn_symm.mono (by simp)) (by simp)
+  · exact hφ.comp (I.contMDiffOn_symm.mono (by simp)) (by simp)
+  · exact hφ'.comp (I.contMDiffOn_symm.mono (by simp)) (by simp)
+
+-- This lemma could be nice to prove, but I won't need it right now
+lemma IsManifold.mem_maximalAtlas_iff_contMDiffOn (φ : OpenPartialHomeomorph H H) :
+    φ ∈ maximalAtlas I n H ↔ CMDiff[φ.source] n φ ∧ CMDiff[φ.target] n φ.symm := by
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨hφ, hφ'⟩ ↦ φ.mem_maximalAtlas_of_contMDiffOn hφ hφ'⟩
+  · simp only [mfld_simps, mem_maximalAtlas_iff, StructureGroupoid.maximalAtlas,
+      forall_eq, contDiffGroupoid, mem_groupoid_of_pregroupoid, contDiffPregroupoid] at h
+    let h' := h.1.2
+    sorry
+  sorry
 
 set_option linter.flexible false in
--- TODO: the proof works, except that some details with the chosen computation are not right
 /-- The inclusion map from a closed segment to `ℝ` is a smooth immersion -/
 lemma isImmersionOfComplement_subtype_coe_Icc :
     IsImmersionOfComplement (EuclideanSpace ℝ (Fin 0)) (𝓡∂ 1) 𝓘(ℝ) n
@@ -127,7 +142,10 @@ lemma isImmersionOfComplement_subtype_coe_Icc :
     apply IsImmersionAtOfComplement.mk_of_continuousAt (by fun_prop) φ
       (chartAt (EuclideanHalfSpace 1) z) (Homeomorph.addLeft (-x)).toOpenPartialHomeomorph
       (mem_chart_source _ z) (by simp [Homeomorph.addLeft]) (chart_mem_maximalAtlas _) ?_; swap
-    · apply Homeomorph.mem_maximalAtlas_of_contDiff <;> simp [Homeomorph.addLeft] <;> fun_prop
+    · apply OpenPartialHomeomorph.mem_maximalAtlas_of_contMDiffOn
+      all_goals
+        simp [Homeomorph.addLeft, contMDiffOn_iff_contDiffOn]
+        fun_prop
     intro z' hz'
     simp [hz, IccLeftChart, modelWithCornersEuclideanHalfSpace]
     simp [hz, IccLeftChart] at hz'
@@ -144,7 +162,10 @@ lemma isImmersionOfComplement_subtype_coe_Icc :
     apply IsImmersionAtOfComplement.mk_of_continuousAt (by fun_prop) φ
       (chartAt (EuclideanHalfSpace 1) z) (myflip y).toOpenPartialHomeomorph (mem_chart_source _ z)
       (by simp [myflip]) (chart_mem_maximalAtlas _) ?_; swap
-    · apply Homeomorph.mem_maximalAtlas_of_contDiff <;> simp [myflip] <;> fun_prop
+    · apply OpenPartialHomeomorph.mem_maximalAtlas_of_contMDiffOn
+      all_goals
+        simp [myflip, contMDiffOn_iff_contDiffOn]
+        fun_prop
     intro z' hz'
     simp [hz, IccRightChart, modelWithCornersEuclideanHalfSpace]
     simp [hz, IccRightChart] at hz'
