@@ -229,7 +229,7 @@ lemma IsBasis.contract_sdiff_isBasis_sdiff (hIX : M.IsBasis I X) (hJY : M.IsBasi
       hIX.eq_of_subset_indep (hJY.indep.inter_right X) (subset_inter hIJ hIX.subset)
       inter_subset_right, sdiff_self_inter]
     exact disjoint_sdiff_left
-  exact diff_subset_sdiff_right hIX.subset
+  exact sdiff_subset_sdiff_right hIX.subset
 
 @[deprecated (since := "2026-06-03")]
 alias IsBasis.contract_diff_isBasis_diff := IsBasis.contract_sdiff_isBasis_sdiff
