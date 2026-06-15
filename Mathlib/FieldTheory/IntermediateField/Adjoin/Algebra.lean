@@ -149,17 +149,9 @@ theorem adjoin_toSubalgebra_of_isAlgebraic {S : Set E} (hS : ∀ x ∈ S, IsAlge
   adjoin_eq_algebra_adjoin _ _ fun _ ↦
     (Algebra.IsIntegral.adjoin fun x hx ↦ (hS x hx).isIntegral).inv_mem
 
-@[deprecated (since := "2025-11-24")] alias adjoin_algebraic_toSubalgebra :=
-  adjoin_toSubalgebra_of_isAlgebraic
-
 theorem adjoin_simple_toSubalgebra_of_isAlgebraic (hα : IsAlgebraic F α) :
     F⟮α⟯.toSubalgebra = F[α] :=
   adjoin_toSubalgebra_of_isAlgebraic <| by simpa
-
-@[deprecated "Use `adjoin_simple_toSubalgebra_of_isAlgebraic` instead" (since := "2025-11-24")]
-theorem adjoin_simple_toSubalgebra_of_integral (hα : IsIntegral F α) :
-    F⟮α⟯.toSubalgebra = F[α] :=
-  adjoin_toSubalgebra_of_isAlgebraic <| by simpa [isAlgebraic_iff_isIntegral]
 
 @[simp]
 theorem adjoin_toSubalgebra [Algebra.IsAlgebraic F E] (S : Set E) :
@@ -194,9 +186,6 @@ lemma _root_.Algebra.finite_of_essFiniteType_of_isAlgebraic
     rw [← adjoin_toSubalgebra_of_isAlgebraic fun x hx ↦ Algebra.IsAlgebraic.isAlgebraic x]
     simpa [← toSubalgebra_inj] using hs
   exact Algebra.IsIntegral.finite
-
-@[deprecated (since := "2025-12-08")]
-alias finite_of_fg_of_isAlgebraic := Algebra.finite_of_essFiniteType_of_isAlgebraic
 
 section RingHom
 
@@ -287,16 +276,10 @@ theorem adjoin_intermediateField_toSubalgebra_of_isAlgebraic_left (L : Intermedi
     (adjoin E (L : Set K)).toSubalgebra = Algebra.adjoin E (L : Set K) :=
   adjoin_intermediateField_toSubalgebra_of_isAlgebraic E L (Or.inl halg)
 
-@[deprecated (since := "2025-11-24")] alias adjoin_toSubalgebra_of_isAlgebraic_left :=
-  adjoin_intermediateField_toSubalgebra_of_isAlgebraic_left
-
 theorem adjoin_intermediateField_toSubalgebra_of_isAlgebraic_right (L : IntermediateField F K)
     [halg : Algebra.IsAlgebraic F L] :
     (adjoin E (L : Set K)).toSubalgebra = Algebra.adjoin E (L : Set K) :=
   adjoin_intermediateField_toSubalgebra_of_isAlgebraic E L (Or.inr halg)
-
-@[deprecated (since := "2025-11-24")] alias adjoin_toSubalgebra_of_isAlgebraic_right :=
-  adjoin_intermediateField_toSubalgebra_of_isAlgebraic_right
 
 end Tower
 

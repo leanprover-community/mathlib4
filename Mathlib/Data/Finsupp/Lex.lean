@@ -56,9 +56,6 @@ theorem Lex.lt_iff [LT α] [LT N] {a b : Lex (α →₀ N)} :
     a < b ↔ ∃ i, (∀ j, j < i → a j = b j) ∧ a i < b i :=
   .rfl
 
-@[deprecated (since := "2025-11-29")]
-alias lex_lt_iff := Lex.lt_iff
-
 theorem Colex.lt_iff [LT α] [LT N] {a b : Colex (α →₀ N)} :
     a < b ↔ ∃ i, (∀ j, i < j → a j = b j) ∧ a i < b i :=
   .rfl
@@ -78,9 +75,6 @@ theorem lex_iff_of_unique [Unique α] [LT N] {r} [Std.Irrefl r] {x y : α →₀
 theorem Lex.lt_iff_of_unique [Unique α] [LT N] [Preorder α] {x y : Lex (α →₀ N)} :
     x < y ↔ x default < y default :=
   lex_iff_of_unique
-
-@[deprecated (since := "2025-11-29")]
-alias lex_lt_iff_of_unique := Lex.lt_iff_of_unique
 
 theorem Colex.lt_iff_of_unique [Unique α] [LT N] [Preorder α] {x y : Colex (α →₀ N)} :
     x < y ↔ x default < y default :=
@@ -125,9 +119,6 @@ instance Colex.linearOrder [LinearOrder N] : LinearOrder (Colex (α →₀ N)) w
 theorem Lex.le_iff_of_unique [Unique α] [PartialOrder N] {x y : Lex (α →₀ N)} :
     x ≤ y ↔ x default ≤ y default :=
   Pi.lex_le_iff_of_unique
-
-@[deprecated (since := "2025-11-29")]
-alias lex_le_iff_of_unique := Lex.le_iff_of_unique
 
 theorem Colex.le_iff_of_unique [Unique α] [PartialOrder N] {x y : Colex (α →₀ N)} :
     x ≤ y ↔ x default ≤ y default :=

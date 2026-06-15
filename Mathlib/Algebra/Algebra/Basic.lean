@@ -121,16 +121,6 @@ theorem algebraMap_ofSubring {R : Type*} [CommRing R] (S : Subring R) :
     (algebraMap S R : S →+* R) = S.subtype :=
   rfl
 
-@[deprecated coe_algebraMap_ofSubsemiring (since := "2025-11-23")]
-theorem coe_algebraMap_ofSubring {R : Type*} [CommRing R] (S : Subring R) :
-    (algebraMap S R : S → R) = Subtype.val :=
-  rfl
-
-@[deprecated algebraMap_ofSubsemiring_apply (since := "2025-11-23")]
-theorem algebraMap_ofSubring_apply {R : Type*} [CommRing R] (S : Subring R) (x : S) :
-    algebraMap S R x = x :=
-  rfl
-
 end SubsemiringAlgebra
 
 /-- Explicit characterization of the submonoid map in the case of an algebra.

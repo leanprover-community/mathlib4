@@ -476,7 +476,4 @@ theorem discreteTopology_iUnion_finite {ι : Type*} [Finite ι] {s : ι → Set 
   simp only [← isDiscrete_iff_discreteTopology] at *
   exact .iUnion hs hs'
 
-@[deprecated (since := "2025-11-28")]
-alias discreteTopology_iUnion_fintype := discreteTopology_iUnion_finite
-
 end discrete_union

@@ -146,15 +146,9 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
     · apply Complex.mem_slitPlane_of_norm_lt_one
       simpa [B] using hz
 
-@[deprecated (since := "2025-12-08")]
-alias _root_.one_add_cpow_hasFPowerSeriesOnBall_zero := one_add_cpow_hasFPowerSeriesOnBall_zero
-
 theorem one_add_cpow_hasFPowerSeriesAt_zero {a : ℂ} :
     HasFPowerSeriesAt (fun x ↦ (1 + x) ^ a) (binomialSeries ℂ a) 0 :=
   one_add_cpow_hasFPowerSeriesOnBall_zero.hasFPowerSeriesAt
-
-@[deprecated (since := "2025-12-08")]
-alias _root_.one_add_cpow_hasFPowerSeriesAt_zero := one_add_cpow_hasFPowerSeriesAt_zero
 
 theorem one_div_one_sub_cpow_hasFPowerSeriesOnBall_zero (a : ℂ) :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x) ^ a)
@@ -247,15 +241,9 @@ theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
   · simp
   · intro x hx; simp_all; norm_cast
 
-@[deprecated (since := "2025-12-08")]
-alias _root_.one_add_rpow_hasFPowerSeriesOnBall_zero := one_add_rpow_hasFPowerSeriesOnBall_zero
-
 theorem one_add_rpow_hasFPowerSeriesAt_zero {a : ℝ} :
     HasFPowerSeriesAt (fun x ↦ (1 + x) ^ a) (binomialSeries ℝ a) 0 :=
   one_add_rpow_hasFPowerSeriesOnBall_zero.hasFPowerSeriesAt
-
-@[deprecated (since := "2025-12-08")]
-alias _root_.one_add_rpow_hasFPowerSeriesAt_zero := one_add_rpow_hasFPowerSeriesAt_zero
 
 theorem one_div_one_sub_rpow_hasFPowerSeriesOnBall_zero (a : ℝ) :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x) ^ a)

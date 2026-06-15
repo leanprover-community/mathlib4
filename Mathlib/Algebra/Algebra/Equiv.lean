@@ -900,8 +900,6 @@ endomorphisms. -/
   __ := e.conjRingEquiv
   commutes' _ := by ext; change e.restrictScalars R _ = _; simp
 
-@[deprecated (since := "2025-12-06")] alias algConj := conjAlgEquiv
-
 theorem conjAlgEquiv_apply (e : M₁ ≃ₗ[S] M₂) (f : Module.End S M₁) :
     e.conjAlgEquiv R f = e.toLinearMap ∘ₗ f ∘ₗ e.symm.toLinearMap := rfl
 

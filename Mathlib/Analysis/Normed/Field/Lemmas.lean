@@ -84,8 +84,6 @@ lemma inv_cobounded₀ : (cobounded α)⁻¹ = 𝓝[≠] 0 := by
 lemma inv_nhdsNE_zero : (𝓝[≠] (0 : α))⁻¹ = cobounded α := by
   rw [← inv_cobounded₀, inv_inv]
 
-@[deprecated (since := "2025-11-26")] alias inv_nhdsWithin_ne_zero := inv_nhdsNE_zero
-
 lemma tendsto_inv₀_cobounded' : Tendsto Inv.inv (cobounded α) (𝓝[≠] 0) :=
   inv_cobounded₀.le
 
@@ -94,9 +92,6 @@ theorem tendsto_inv₀_cobounded : Tendsto Inv.inv (cobounded α) (𝓝 0) :=
 
 lemma tendsto_inv₀_nhdsNE_zero : Tendsto Inv.inv (𝓝[≠] 0) (cobounded α) :=
   inv_nhdsNE_zero.le
-
-@[deprecated (since := "2025-11-26")]
-alias tendsto_inv₀_nhdsWithin_ne_zero := tendsto_inv₀_nhdsNE_zero
 
 end Filter
 
@@ -207,20 +202,12 @@ instance (priority := 100) NormedDivisionRing.to_isTopologicalDivisionRing :
 lemma tendsto_norm_inv_nhdsNE_zero_atTop : Tendsto (fun x : α ↦ ‖x⁻¹‖) (𝓝[≠] 0) atTop :=
   tendsto_norm_cobounded_atTop.comp tendsto_inv₀_nhdsNE_zero
 
-@[deprecated (since := "2025-11-26")]
-alias NormedField.tendsto_norm_inv_nhdsNE_zero_atTop := tendsto_norm_inv_nhdsNE_zero_atTop
-
 lemma tendsto_zpow_nhdsNE_zero_cobounded {m : ℤ} (hm : m < 0) :
     Tendsto (· ^ m) (𝓝[≠] 0) (cobounded α) := by
   obtain ⟨m, rfl⟩ := neg_surjective m
   lift m to ℕ using by lia
   simpa [Function.comp_def] using
     (tendsto_pow_cobounded_cobounded (by lia)).comp tendsto_inv₀_nhdsNE_zero
-
-@[deprecated tendsto_zpow_nhdsNE_zero_cobounded (since := "2025-11-26")]
-lemma NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop {m : ℤ} (hm : m < 0) :
-    Tendsto (fun x : α ↦ ‖x ^ m‖) (𝓝[≠] 0) atTop :=
-  tendsto_norm_cobounded_atTop.comp (tendsto_zpow_nhdsNE_zero_cobounded hm)
 
 end NormedDivisionRing
 

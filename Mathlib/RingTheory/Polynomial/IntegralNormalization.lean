@@ -125,9 +125,6 @@ theorem integralNormalization_mul_C_leadingCoeff (p : R[X]) :
       exact coe_lt_degree.mp h'
     · simp [coeff_eq_zero_of_degree_lt (lt_of_le_of_ne (le_of_not_gt h') h)]
 
-@[deprecated (since := "2025-11-24")] alias integralNormalization_degree :=
-  degree_integralNormalization
-
 variable {A : Type*} [CommSemiring S] [Semiring A]
 
 theorem leadingCoeff_smul_integralNormalization (p : S[X]) :

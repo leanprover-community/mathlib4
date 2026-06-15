@@ -337,6 +337,4 @@ def toMatrixInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
     InnerProductSpace 𝕜 (Matrix n n 𝕜) :=
   InnerProductSpace.ofCore _
 
-@[deprecated (since := "2025-11-18")] alias PosDef.matrixNormedAddCommGroup :=
-  toMatrixNormedAddCommGroup
 end Matrix

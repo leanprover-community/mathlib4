@@ -399,10 +399,6 @@ lemma exists_finset_maximalFor_isTranscendenceBasis_separableClosure
     inferInstanceAs <| Module.Finite (separableClosure (adjoin F (s : Set E)) E) E
   exact d.not_lt_argminOn _ ht (by apply finrank_lt_of_gt H)
 
-@[deprecated (since := "2025-12-08")]
-alias FG.exists_finset_maximalFor_isTranscendenceBasis_separableClosure :=
-  IntermediateField.exists_finset_maximalFor_isTranscendenceBasis_separableClosure
-
 @[simp]
 theorem sepDegree_bot : sepDegree F (⊥ : IntermediateField F E) = 1 := by
   have := lift_sepDegree_eq_of_equiv _ _ _ (botEquiv F E)

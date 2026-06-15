@@ -193,9 +193,6 @@ theorem bernoulli'_eq_zero_of_odd {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bern
     simpa [mul_assoc, sub_mul, mul_comm (evalNegHom (exp ℚ)), exp_mul_exp_neg_eq_one]
   congr
 
-@[deprecated (since := "2025-12-09")]
-alias bernoulli'_odd_eq_zero := bernoulli'_eq_zero_of_odd
-
 /-- The Bernoulli numbers are defined to be `bernoulli'` with a parity sign. -/
 def bernoulli (n : ℕ) : ℚ :=
   (-1) ^ n * bernoulli' n

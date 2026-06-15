@@ -372,18 +372,6 @@ namespace EMetric
 
 open Metric
 
-@[deprecated (since := "2025-11-19")]
-alias NonemptyCompacts.continuous_toCloseds :=
-  TopologicalSpace.NonemptyCompacts.continuous_toCloseds
-
-@[deprecated (since := "2025-11-19")]
-alias NonemptyCompacts.isClosed_subsets_of_isClosed :=
-  TopologicalSpace.NonemptyCompacts.isClosed_subsets_of_isClosed
-
-@[deprecated (since := "2025-11-19")]
-alias Closeds.isClosed_subsets_of_isClosed :=
-  TopologicalSpace.Closeds.isClosed_subsets_of_isClosed
-
 @[deprecated (since := "2026-01-08")]
 alias mem_hausdorffEntourage_of_hausdorffEdist_lt :=
   mem_hausdorffEntourage_of_hausdorffEDist_lt
@@ -407,10 +395,6 @@ alias Closeds.lipschitz_sup := TopologicalSpace.Closeds.lipschitz_sup
 @[deprecated (since := "2026-01-08")]
 alias NonemptyCompacts.isometry_toCloseds :=
   TopologicalSpace.NonemptyCompacts.isometry_toCloseds
-
-@[deprecated (since := "2025-11-19")]
-alias NonemptyCompacts.isUniformEmbedding_toCloseds :=
-  TopologicalSpace.NonemptyCompacts.isUniformEmbedding_toCloseds
 
 @[deprecated (since := "2026-01-08")]
 alias NonemptyCompacts.isClosed_in_closeds :=

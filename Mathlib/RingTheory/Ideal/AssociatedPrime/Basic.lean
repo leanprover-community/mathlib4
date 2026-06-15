@@ -107,9 +107,6 @@ variable {I J M} {M' : Type*} [AddCommMonoid M'] [Module R M'] (f : M →ₗ[R] 
 
 theorem AssociatedPrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPrime I M := Iff.rfl
 
-@[deprecated (since := "2025-11-24")]
-alias AssociatePrimes.mem_iff := AssociatedPrimes.mem_iff
-
 theorem IsAssociatedPrime.isPrime (h : IsAssociatedPrime I M) : I.IsPrime := h.1
 
 instance (I : associatedPrimes R M) : I.1.IsPrime := I.2.1

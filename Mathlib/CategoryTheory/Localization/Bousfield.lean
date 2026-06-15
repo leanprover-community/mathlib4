@@ -298,27 +298,9 @@ lemma MorphismProperty.le_isColocal_isColocal (W : MorphismProperty C) :
     W ≤ W.isColocal.isColocal := by
   rw [ObjectProperty.le_isColocal_iff]
 
-@[deprecated (since := "2025-11-20")] alias ObjectProperty.le_isLocal_W :=
-  ObjectProperty.le_isLocal_isLocal
-@[deprecated (since := "2025-11-20")] alias MorphismProperty.le_leftBousfieldW_isLocal :=
-  MorphismProperty.le_isLocal_isLocal
-
 namespace Localization.LeftBousfield
 
 open ObjectProperty
-
-@[deprecated (since := "2025-11-20")] alias W := isLocal
-@[deprecated (since := "2025-11-20")] alias W.homEquiv := isLocal.homEquiv
-@[deprecated (since := "2025-11-20")] alias W_isoClosure := isoClosure_isLocal
-@[deprecated (since := "2025-11-20")] alias W_of_isIso := isLocal_of_isIso
-@[deprecated (since := "2025-11-20")] alias W_iff_isIso := isLocal_iff_isIso
-@[deprecated (since := "2025-11-20")] alias le_W_iff := le_isLocal_iff
-@[deprecated (since := "2025-11-20")] alias galoisConnection := galoisConnection_isLocal
-@[deprecated (since := "2025-11-20")] alias W_adj_unit_app := isLocal_adj_unit_app
-@[deprecated (since := "2025-11-20")] alias W_iff_isIso_map := isLocal_iff_isIso_map
-@[deprecated (since := "2025-11-20")] alias W_eq_inverseImage_isomorphisms :=
-  isLocal_eq_inverseImage_isomorphisms
-@[deprecated (since := "2025-11-20")] alias isLocalization := isLocalization_isLocal
 
 end Localization.LeftBousfield
 

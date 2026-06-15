@@ -847,10 +847,6 @@ theorem IntermediateField.isSeparable_adjoin_pair_of_isSeparable {x y : E}
 
 namespace Field
 
-/-- Any element `x` of `F` is a separable element of `E / F` when embedded into `E`. -/
-@[deprecated (since := "2025-11-21")]
-protected alias isSeparable_algebraMap := _root_.isSeparable_algebraMap
-
 variable {F E}
 
 /-- If `x` and `y` are both separable elements, then `x * y` is also a separable element. -/

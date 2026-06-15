@@ -350,5 +350,3 @@ lemma Unitary.mem_pathComponentOne_iff {u : unitary A} :
     | nil => simp
     | cons x xs ih => simpa using! (joined_one_expUnitary x).mul ih
 
-@[deprecated (since := "2025-10-29")] alias unitary.mem_pathComponentOne_iff :=
-  Unitary.mem_pathComponentOne_iff

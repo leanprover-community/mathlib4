@@ -496,9 +496,6 @@ theorem support_mul_subset [NonUnitalNonAssocSemiring R] {x y : R⟦Γ⟧} :
   rw [← of_symm_smul_of_eq_mul, ← vadd_eq_add]
   exact HahnModule.support_smul_subset_vadd_support
 
-@[deprecated (since := "2025-12-09")]
-alias support_mul_subset_add_support := support_mul_subset
-
 instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring R⟦Γ⟧ where
   zero_mul _ := by
     ext
