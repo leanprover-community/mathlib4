@@ -7,7 +7,7 @@ Authors: Damiano Testa
 import Mathlib.Tactic.Linter.Header
 import Lake
 import Mathlib.Tactic.Linter.Header
-import /- -/ Mathlib.Tactic -- the `TextBased` linter does not flag this `broadImport`
+-- import /- -/ Mathlib.Tactic -- the `TextBased` linter does not flag this `broadImport`
 import Mathlib.Tactic.Have
 import Mathlib.Deprecated.Aliases
 
@@ -15,6 +15,8 @@ import Mathlib.Deprecated.Aliases
 warning: The module doc-string for a file should be the first command after the imports.
 Please, add a module doc-string (`/-! ... -/`) before `example :=
   trivial`.
+
+Hint: Type `m(odule docstring) + [tab]` to insert a template via snippet.
 
 Note: This linter can be disabled with `set_option linter.style.header false`
 ---
