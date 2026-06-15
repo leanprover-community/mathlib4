@@ -163,6 +163,15 @@ private lemma isZero_outside_Ico (C : ChainComplex (ModuleCat k) ℤ) (a b i : �
   simp only [Finset.coe_Ico, Set.mem_Ico, not_and, not_lt] at hi
   exact if h : i < a then hbelow i h else habove i (by omega)
 
+theorem eulerChar_eq_homologyEulerChar'
+    (C : CochainComplex (ModuleCat k) ℕ)
+    (a b : ℕ) (hab : a ≤ b)
+    [∀ i : ℕ, C.HasHomology i]
+    [∀ i : ℕ, Module.Finite k (C.X i)]
+    (hC_bounded_below : ∀ i < a, IsZero (C.X i))
+    (hC_bounded_above : ∀ i > b, IsZero (C.X i)) :
+    C.eulerChar = C.homologyEulerChar := sorry
+
 /-- **Euler-Poincaré formula**: for bounded chain complexes that vanish outside `[a, b]`,
 the Euler characteristic equals the homological Euler characteristic. -/
 theorem eulerChar_eq_homologyEulerChar
