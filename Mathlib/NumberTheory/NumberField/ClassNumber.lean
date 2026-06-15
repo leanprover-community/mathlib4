@@ -143,7 +143,7 @@ The way this theorem should be used is to first compute `⌊(M K)⌋₊` and the
 to deal with the finite number of primes `p` in the interval. -/
 theorem isPrincipalIdealRing_of_isPrincipal_of_pow_le_of_mem_primesOver_of_mem_Icc
     (h : ∀ p ∈ Finset.Icc 1 ⌊(M K)⌋₊, p.Prime → ∀ (P : Ideal (𝓞 K)),
-      P ∈ primesOver (span {(p : ℤ)}) (𝓞 K) → p ^ (P.inertiaDeg' ℤ) ≤ ⌊(M K)⌋₊ →
+      P ∈ primesOver (span {(p : ℤ)}) (𝓞 K) → p ^ P.inertiaDeg' ℤ ≤ ⌊(M K)⌋₊ →
       Submodule.IsPrincipal P) : IsPrincipalIdealRing (𝓞 K) := by
   refine isPrincipalIdealRing_of_isPrincipal_of_norm_le_of_isPrime <|
     fun ⟨P, HP⟩ hP hPN ↦ ?_
@@ -161,9 +161,8 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_pow_le_of_mem_primesOver_of_mem_I
     refine le_floor ?_
     have : P.IsMaximal := hP.isMaximal (by simpa using HP.2)
     have : (span {p}).IsMaximal := (hpprime (.under ℤ P)).isMaximal_span_singleton
-    have := absNorm_eq_pow_inertiaDeg P (hpprime (hP.under _))
-    rw [inertiaDeg_eq_inertiaDeg'] at this
-    simpa only [hspan, ← cast_pow, this] using hPN
+    simpa only [hspan, ← cast_pow, absNorm_eq_pow_inertiaDeg P (hpprime (hP.under _)),
+      inertiaDeg_eq_inertiaDeg'] using hPN
   have hpabsprime := Int.prime_iff_natAbs_prime.mp (hpprime (hP.under _))
   refine h _ ?_ hpabsprime _ ⟨hP, ?_⟩ hple
   · suffices 0 < P.inertiaDeg' ℤ by
@@ -185,7 +184,7 @@ to deal with the finite number of primes `p` in the interval. -/
 theorem isPrincipalIdealRing_of_isPrincipal_of_lt_or_isPrincipal_of_mem_primesOver_of_mem_Icc
     [IsGalois ℚ K] (h : ∀ p ∈ Finset.Icc 1 ⌊(M K)⌋₊, p.Prime →
       ∃ P ∈ primesOver (span {(p : ℤ)}) (𝓞 K),
-        ⌊(M K)⌋₊ < p ^ (P.inertiaDeg' ℤ) ∨
+        ⌊(M K)⌋₊ < p ^ P.inertiaDeg' ℤ ∨
           Submodule.IsPrincipal P) :
       IsPrincipalIdealRing (𝓞 K) := by
   refine isPrincipalIdealRing_of_isPrincipal_of_pow_le_of_mem_primesOver_of_mem_Icc
@@ -193,9 +192,9 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_lt_or_isPrincipal_of_mem_primesOv
   obtain ⟨Q, ⟨hQ1, hQ2⟩, H⟩ := h p hpmem hp
   have := (isPrime_of_prime (prime_span_singleton_iff.mpr (prime_iff_prime_int.mp hp))).isMaximal
     (by simp [hp.ne_zero])
-  by_cases h : ⌊(M K)⌋₊ < p ^ (P.inertiaDeg' ℤ)
+  by_cases h : ⌊(M K)⌋₊ < p ^ P.inertiaDeg' ℤ
   · linarith
-  rw [inertiaDeg_eq_of_isGaloisGroup (span ({↑p} : Set ℤ)) Q P (K ≃ₐ[ℚ] K)] at H
+  rw [inertiaDeg_eq_of_isGaloisGroup (span {↑p}) Q P (K ≃ₐ[ℚ] K)] at H
   obtain ⟨σ, rfl⟩ := exists_smul_eq_of_isGaloisGroup (span ({↑p} : Set ℤ)) Q P (K ≃ₐ[ℚ] K)
   exact (H.resolve_left h).map_ringHom (MulSemiringAction.toRingHom (K ≃ₐ[ℚ] K) (𝓞 K) σ)
 

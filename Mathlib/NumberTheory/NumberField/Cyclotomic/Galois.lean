@@ -146,10 +146,9 @@ theorem galEquivZMod_stabilizer :
     rw [Fintype.card_eq_nat_card, Fintype.card_eq_nat_card, SetLike.coe_sort_coe, Nat.card_zpowers,
       MulEquiv.mapSubgroup_apply, Subgroup.coe_map]
     change _ ≤ Nat.card ((galEquivZMod n K).toEquiv '' _)
-    rw [Nat.card_image_equiv, SetLike.coe_sort_coe, Ideal.card_stabilizer_eq (span {(p : ℤ)}) P,
-      inertiaDegIn_eq_of_not_dvd p K hn,
+    rw [Nat.card_image_equiv, SetLike.coe_sort_coe, Ideal.card_stabilizer_eq (span {(p : ℤ)}),
       ramificationIdxIn_eq_of_not_dvd p K hn, one_mul, ← orderOf_injective _ Units.coeHom_injective,
-      Units.coeHom_apply, ZMod.coe_unitOfCoprime]
+      Units.coeHom_apply, ZMod.coe_unitOfCoprime, inertiaDegIn_eq_of_not_dvd p K hn]
 
 end stabilizer
 

@@ -90,10 +90,10 @@ instance liesOver_span_zeta_sub_one : (span {hζ.toInteger - 1}).LiesOver 𝒑 :
   exact p_mem_span_zeta_sub_one p k hζ
 
 theorem inertiaDeg_span_zeta_sub_one : inertiaDeg' (span {hζ.toInteger - 1}) ℤ = 1 := by
-  have := liesOver_span_zeta_sub_one p k hζ
   have : IsMaximal (span {hζ.toInteger - 1}) := .of_liesOver_isMaximal _ 𝒑
-  rw [← inertiaDeg_eq_inertiaDeg' 𝒑, ← Nat.pow_right_inj hp.out.one_lt, pow_one,
-    ← absNorm_eq_pow_inertiaDeg' _ hp.out, absNorm_span_zeta_sub_one]
+  rw [← inertiaDeg_eq_inertiaDeg' 𝒑]
+  rw [← Nat.pow_right_inj hp.out.one_lt, pow_one, ← absNorm_eq_pow_inertiaDeg' _ hp.out,
+    absNorm_span_zeta_sub_one]
 
 attribute [local instance] FractionRing.liftAlgebra in
 theorem map_eq_span_zeta_sub_one_pow :
@@ -130,7 +130,6 @@ include hK in
 theorem ncard_primesOver_of_prime_pow :
     (primesOver 𝒑 (𝓞 K)).ncard = 1 := by
   have : IsGalois ℚ K := isGalois {p ^ (k + 1)} ℚ K
-  have : 𝒑 ≠ ⊥ := by simpa using hp.out.ne_zero
   have h_main := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn 𝒑 (𝓞 K) Gal(K/ℚ)
   have hζ := hK.zeta_spec
   have := liesOver_span_zeta_sub_one p k hζ
