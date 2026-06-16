@@ -58,7 +58,8 @@ lemma injective_diracProba {X : Type*} [MeasurableSpace X] [MeasurableSpace.Sepa
   intro x y x_eq_y
   rw [← dirac_eq_dirac_iff]
   unfold ProbabilityMeasure at x_eq_y
-  rwa [Subtype.ext_iff] at x_eq_y
+  simp_rw [Subtype.ext_iff, diracProba] at x_eq_y
+  exact x_eq_y
 
 @[simp] lemma diracProba_toMeasure_apply' (x : X) {A : Set X} (A_mble : MeasurableSet A) :
     (diracProba x).toMeasure A = A.indicator 1 x := Measure.dirac_apply' x A_mble
