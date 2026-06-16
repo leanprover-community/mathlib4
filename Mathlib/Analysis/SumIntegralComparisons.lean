@@ -237,8 +237,7 @@ lemma integral_le_sum_mul_Ico_of_antitone_monotone
     have I2 : x ∈ Icc (a : ℝ) b := mem_Icc.mpr ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans (by grind)⟩
     gcongr
     · exact gpos.trans <| hg (by simp [hab]) (by simpa using I2) (by simpa using I2.1)
-    · exact fpos.trans (hf ⟨mod_cast hi.1, mod_cast hi.2.le⟩ (by simpa using hab)
-        (mod_cast hi.2.le))
+    · exact fpos.trans <| by apply hf <;> { simp; grind }
     · exact hf (by simpa using ⟨hi.1, hi.2.le⟩) I2 hx.1
     · apply hg _ I1 (by simpa [sub_le_iff_le_add] using hx.2.le)
       simp only [mem_Icc, tsub_le_iff_right, sub_add_cancel]
