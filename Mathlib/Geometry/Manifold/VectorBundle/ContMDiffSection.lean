@@ -5,7 +5,7 @@ Authors: Heather Macbeth, Floris van Doorn, Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Algebra.LieGroup
+public import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
 public import Mathlib.Geometry.Manifold.VectorBundle.Algebra
 
 /-!
@@ -405,6 +405,36 @@ theorem coe_smul (r : 𝕜) (s : Cₛ^n⟮I; F, V⟯) :
 
 instance instModule : Module 𝕜 Cₛ^n⟮I; F, V⟯ :=
   coe_injective.module 𝕜 (coeAddHom I F n V) coe_smul
+
+section SMul
+
+variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
+  {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
+  {V : M → Type*} [∀ x, TopologicalSpace (V x)]
+  [TopologicalSpace (TotalSpace F V)] [FiberBundle F V]
+  [∀ x, SMul N (V x)] [ContMDiffSMul I' (I.prod 𝓘(𝕜, F)) n N (TotalSpace F V)]
+  {f : M → N}
+
+instance : SMul C^n⟮I, M; I', N⟯ Cₛ^n⟮I; F, V⟯ where
+  smul f s := ⟨fun x ↦ f x • s x, f.contMDiff.smul s.contMDiff⟩
+
+@[simp]
+lemma coe_smul' (f : C^n⟮I, M; I', N⟯) (s : Cₛ^n⟮I; F, V⟯) (x : M) : (f • s) x = f x • s x :=
+  rfl
+
+end SMul
+
+instance : IsScalarTower 𝕜 C^n⟮I, M; 𝕜⟯ Cₛ^n⟮I; F, V⟯ where
+  smul_assoc a f s := by ext x; simp [mul_smul]
+
+instance : Module C^n⟮I, M; 𝕜⟯ Cₛ^n⟮I; F, V⟯ where
+  mul_smul f g s := by ext; simp [mul_smul]
+  one_smul s := by ext; simp
+  smul_zero f := by ext; simp
+  smul_add f s t := by ext; simp
+  add_smul f g s := by ext; simp [add_smul]
+  zero_smul s := by ext; simp
 
 end
 
