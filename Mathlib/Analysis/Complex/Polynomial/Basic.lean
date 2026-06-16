@@ -10,7 +10,6 @@ public import Mathlib.Analysis.Complex.Liouville
 public import Mathlib.FieldTheory.PolynomialGaloisGroup
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.Topology.Algebra.Polynomial
-public import Mathlib.LinearAlgebra.Charpoly.Basic
 
 /-!
 # The fundamental theorem of algebra
@@ -25,7 +24,7 @@ of non-real roots.
 We also show that an irreducible real polynomial has degree at most two.
 -/
 
-@[expose] public section
+public section
 
 open Polynomial Bornology Complex
 
@@ -48,6 +47,8 @@ theorem exists_root {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z :
   obtain rfl : f = C 0 := Polynomial.funext fun z ↦ inv_injective <| by simp [this]
   simp at hf
 
+/-- **Fundamental theorem of algebra**: the field `ℂ` of complex numbers is algebraically closed. -/
+@[wikidata Q192760]
 instance isAlgClosed : IsAlgClosed ℂ :=
   IsAlgClosed.of_exists_root _ fun _p _ hp => Complex.exists_root <| degree_pos_of_irreducible hp
 
@@ -186,7 +187,7 @@ then `p` is divisible by a quadratic polynomial. -/
 lemma Polynomial.quadratic_dvd_of_aeval_eq_zero_im_ne_zero (p : ℝ[X]) {z : ℂ} (h0 : aeval z p = 0)
     (hz : z.im ≠ 0) : X ^ 2 - C (2 * z.re) * X + C (‖z‖ ^ 2) ∣ p := by
   rw [← map_dvd_map' (algebraMap ℝ ℂ)]
-  convert p.mul_star_dvd_of_aeval_eq_zero_im_ne_zero h0 hz
+  convert! p.mul_star_dvd_of_aeval_eq_zero_im_ne_zero h0 hz
   calc
     map (algebraMap ℝ ℂ) (X ^ 2 - C (2 * z.re) * X + C (‖z‖ ^ 2))
     _ = X ^ 2 - C (↑(2 * z.re) : ℂ) * X + C (‖z‖ ^ 2 : ℂ) := by simp
@@ -199,7 +200,7 @@ lemma Irreducible.natDegree_le_two {p : ℝ[X]} (hp : Irreducible p) : natDegree
   obtain ⟨z, hz⟩ : ∃ z : ℂ, aeval z p = 0 :=
     IsAlgClosed.exists_aeval_eq_zero _ p (degree_pos_of_irreducible hp).ne'
   rw [← finrank_real_complex]
-  suffices p.natDegree = (minpoly ℝ z).natDegree from this ▸ minpoly.natDegree_le (R := ℝ) z
+  suffices p.natDegree = (minpoly ℝ z).natDegree from this ▸ minpoly.natDegree_le (A := ℝ) z
   rw [← minpoly.eq_of_irreducible hp hz, natDegree_mul hp.ne_zero (by simpa using hp.ne_zero),
     natDegree_C, add_zero]
 

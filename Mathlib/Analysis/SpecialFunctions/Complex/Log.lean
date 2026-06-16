@@ -185,8 +185,8 @@ theorem log_exp_exists (z : ℂ) :
 theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Countable := by
   refine ⟨fun hs => ?_, fun hs => ?_⟩
   · refine ((hs.image exp).insert 0).mono ?_
-    rw [Set.image_preimage_eq_inter_range, range_exp, ← Set.diff_eq, ← Set.union_singleton,
-        Set.diff_union_self]
+    rw [Set.image_preimage_eq_inter_range, range_exp, ← Set.sdiff_eq, ← Set.union_singleton,
+        Set.sdiff_union_self]
     exact Set.subset_union_left
   · rw [← Set.biUnion_preimage_singleton]
     refine hs.biUnion fun z hz => ?_
@@ -200,9 +200,9 @@ alias ⟨_, _root_.Set.Countable.preimage_cexp⟩ := countable_preimage_exp
 
 theorem tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0)
     (him : z.im = 0) : Tendsto log (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 <| Real.log ‖z‖ - π * I) := by
-  convert
+  convert!
     (continuous_ofReal.continuousAt.comp_continuousWithinAt
-            (continuous_norm.continuousWithinAt.log _)).tendsto.add
+          (continuous_norm.continuousWithinAt.log _)).tendsto.add
       (((continuous_ofReal.tendsto _).comp <|
             tendsto_arg_nhdsWithin_im_neg_of_re_neg_of_im_zero hre him).mul
         tendsto_const_nhds) using 1
@@ -212,9 +212,9 @@ theorem tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re
 
 theorem continuousWithinAt_log_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0) (him : z.im = 0) :
     ContinuousWithinAt log { z : ℂ | 0 ≤ z.im } z := by
-  convert
+  convert!
     (continuous_ofReal.continuousAt.comp_continuousWithinAt
-            (continuous_norm.continuousWithinAt.log _)).tendsto.add
+          (continuous_norm.continuousWithinAt.log _)).tendsto.add
       ((continuous_ofReal.continuousAt.comp_continuousWithinAt <|
             continuousWithinAt_arg_of_re_neg_of_im_zero hre him).mul
         tendsto_const_nhds) using 1

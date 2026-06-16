@@ -220,6 +220,7 @@ instance : Small.{w} (D₂ (W := W) (Z := Z)) := by
   dsimp [D₂]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Small.{w} (D₂.multispanShape W Z).L := by dsimp; infer_instance
 
 attribute [local instance] essentiallySmall_of_small_of_locallySmall in
@@ -241,7 +242,7 @@ noncomputable def D₂.multispanIndex : MultispanIndex (multispanShape W Z) C wh
 variable [HasMulticoequalizer (D₂.multispanIndex W Z)]
 
 /-- The object `succ W Z` is the multicoequalizer of all pairs of morphisms
- `g₁ g₂ : Y ⟶ step W Z` with a `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
+`g₁ g₂ : Y ⟶ step W Z` with a `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
 noncomputable abbrev succ := multicoequalizer (D₂.multispanIndex W Z)
 
 /-- The projection from `Z` to the multicoequalizer of all morphisms `g₁ g₂ : Y ⟶ step W Z` with
@@ -274,6 +275,7 @@ lemma toSucc_surjectivity {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
   ⟨D₁.ιRight f hf g ≫ pushout.inl _ _ ≫ fromStep W Z, by
     simp [← D₁.ιLeft_comp_t_assoc, pushout.condition_assoc]⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isLocal_isLocal_toSucc :
     W.isLocal.isLocal (toSucc W Z) := by
@@ -292,6 +294,7 @@ lemma isLocal_isLocal_toSucc :
 @[deprecated (since := "2025-11-20")] alias leftBousfieldW_isLocal_toSucc :=
   isLocal_isLocal_toSucc
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isIso_toSucc_iff :
     IsIso (toSucc W Z) ↔ W.isLocal Z := by
@@ -404,6 +407,7 @@ variable {W} {κ} [Fact κ.IsRegular]
 
 include hW
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isLocal_reflectionObj :
     W.isLocal (reflectionObj W Z κ) := by
@@ -448,7 +452,7 @@ lemma isRightAdjoint_ι :
     W.isLocal.ι.IsRightAdjoint := by
   rw [Functor.isRightAdjoint_iff_leftAdjointObjIsDefined_eq_top]
   ext Z
-  simpa using (corepresentableBy Z hW).isCorepresentable
+  simpa using! (corepresentableBy Z hW).isCorepresentable
 
 end OrthogonalReflection
 
@@ -461,8 +465,8 @@ lemma isRightAdjoint_ι_isLocal
     (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ)
     [HasColimitsOfSize.{w, w} C] :
     W.isLocal.ι.IsRightAdjoint := by
-  let : OrderBot κ.ord.ToType :=
-    Cardinal.toTypeOrderBot (Cardinal.IsRegular.ne_zero Fact.out)
+  have : Nonempty κ.ord.ToType := by simpa using Cardinal.IsRegular.ne_zero Fact.out
+  have := WellFoundedLT.toOrderBot κ.ord.ToType
   have := D₁.hasCoproductsOfShape.{w} W
   have := D₂.hasColimitsOfShape.{w} W
   exact isRightAdjoint_ι W κ hW

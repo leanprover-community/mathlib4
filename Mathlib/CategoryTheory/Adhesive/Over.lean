@@ -17,7 +17,7 @@ base category.
 - The dual result for `Under B`.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

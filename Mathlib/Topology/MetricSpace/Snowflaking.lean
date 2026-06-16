@@ -139,7 +139,7 @@ theorem image_ofSnowflaking_eq_preimage (s : Set (Snowflaking X α hα₀ hα₁
 
 @[simp]
 theorem image_toSnowflaking_image_ofSnowflaking (s : Set (Snowflaking X α hα₀ hα₁)) :
-    toSnowflaking '' (ofSnowflaking '' s) = s :=
+    toSnowflaking '' ofSnowflaking '' s = s :=
   ofSnowflaking.symm_image_image _
 
 @[simp]

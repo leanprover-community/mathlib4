@@ -25,8 +25,8 @@ saying that `R` is endowed with an equivalence class of valuations.
 
 ## Main Definitions
 
-- `ValuativeRel R` endows a commutative ring `R` with a relation arising from a valuation.
-  This is equivalent to fixing an equivalence class of valuations on `R`.
+- `ValuativeRel R` endows a semiring `R` with a relation "arising from a valuation". When `R` is a
+  ring, this is equivalent to fixing an equivalence class of valuations on `R`.
   Use the notation `x ≤ᵥ y` for this relation.
 - `ValuativeRel.valuation R` is the "canonical" valuation associated to `ValuativeRel R`,
   taking values in `ValuativeRel.ValueGroupWithZero R`.
@@ -66,12 +66,12 @@ Split this file. For instance, the universal properties of `ValueGroupWithZero` 
 noncomputable section
 
 /-- The class `[ValuativeRel R]` class introduces an operator `x ≤ᵥ y : Prop` for `x y : R`
-which is the natural relation arising from (the equivalence class of) a valuation on `R`.
-More precisely, if v is a valuation on R then the associated relation is `x ≤ᵥ y ↔ v x ≤ v y`.
-Use this class to talk about the case where `R` is equipped with an equivalence class
-of valuations. -/
+which is the natural relation arising from (the equivalence class of) a valuation on `R` when `R`
+is a ring. More precisely, if `v` is a valuation on `R` then the associated relation is
+`x ≤ᵥ y ↔ v x ≤ v y`. Use this class to talk about the case where `R` is equipped
+with an equivalence class of valuations. -/
 @[ext]
-class ValuativeRel (R : Type*) [CommRing R] where
+class ValuativeRel (R : Type*) [Semiring R] where
   /-- The valuation less-equal operator arising from `ValuativeRel`. -/
   vle : R → R → Prop
   vle_total (x y) : vle x y ∨ vle y x
@@ -80,6 +80,7 @@ class ValuativeRel (R : Type*) [CommRing R] where
   mul_vle_mul_left {x y} (h : vle x y) (z) : vle (x * z) (y * z)
   vle_mul_cancel {x y z} : ¬ vle z 0 → vle (x * z) (y * z) → vle x y
   not_vle_one_zero : ¬ vle 1 0
+  vle_mul_comm {x y} : vle (x * y) (y * x)
 
 @[inherit_doc] infix:50 " ≤ᵥ " => ValuativeRel.vle
 
@@ -87,7 +88,7 @@ macro_rules | `($a ≤ᵥ $b) => `(binrel% ValuativeRel.vle $a $b)
 
 namespace Valuation
 
-variable {R Γ : Type*} [CommRing R] [LinearOrderedCommMonoidWithZero Γ]
+variable {R Γ : Type*} [Ring R] [LinearOrderedCommMonoidWithZero Γ]
   (v : Valuation R Γ)
 
 /-- We say that a valuation `v` is `Compatible` if the relation `x ≤ᵥ y`
@@ -99,7 +100,7 @@ end Valuation
 
 /-- A preorder on a ring is said to be "valuative" if it agrees with the
 valuative relation. -/
-class ValuativePreorder (R : Type*) [CommRing R] [ValuativeRel R] [Preorder R] where
+class ValuativePreorder (R : Type*) [Semiring R] [ValuativeRel R] [Preorder R] where
   vle_iff_le (x y : R) : x ≤ᵥ y ↔ x ≤ y
 
 namespace ValuativeRel
@@ -112,7 +113,7 @@ namespace ValuativeRel
 @[deprecated (since := "2025-12-20")] alias rel_mul_cancel := vle_mul_cancel
 @[deprecated (since := "2025-12-20")] alias not_rel_one_zero := not_vle_one_zero
 
-variable {R : Type*} [CommRing R] [ValuativeRel R] {x y z : R}
+variable {R : Type*} [Semiring R] [ValuativeRel R] {x x' y y' z : R}
 
 /-- The valuation less-than relation, defined as `x <ᵥ y ↔ ¬ y ≤ᵥ x`. -/
 def vlt (x y : R) : Prop := ¬ y ≤ᵥ x
@@ -128,40 +129,42 @@ def veq : R → R → Prop := AntisymmRel (· ≤ᵥ ·)
 
 @[inherit_doc] infix:50 " =ᵥ " => ValuativeRel.veq
 
+lemma veq_mul_comm (x y : R) : x * y =ᵥ y * x := ⟨vle_mul_comm, vle_mul_comm⟩
+
 macro_rules | `($a =ᵥ $b) => `(binrel% ValuativeRel.veq $a $b)
 
-@[simp, grind =] lemma not_vle {x y : R} : ¬ x ≤ᵥ y ↔ y <ᵥ x := .rfl
-@[simp, grind =] lemma not_vlt {x y : R} : ¬ x <ᵥ y ↔ y ≤ᵥ x := not_vle.not_left
-lemma veq_def {x y : R} : x =ᵥ y ↔ x ≤ᵥ y ∧ y ≤ᵥ x := .rfl
+@[simp, grind =] lemma not_vle : ¬ x ≤ᵥ y ↔ y <ᵥ x := .rfl
+@[simp, grind =] lemma not_vlt : ¬ x <ᵥ y ↔ y ≤ᵥ x := not_vle.not_left
+lemma veq_def : x =ᵥ y ↔ x ≤ᵥ y ∧ y ≤ᵥ x := .rfl
 
 @[deprecated not_vle (since := "2025-12-20")]
-lemma srel_iff {x y : R} : x <ᵥ y ↔ ¬ y ≤ᵥ x := Iff.rfl
+lemma srel_iff : x <ᵥ y ↔ ¬ y ≤ᵥ x := Iff.rfl
 
 @[deprecated (since := "2025-12-20")] alias not_srel_iff := not_vlt
 
 protected alias ⟨_, vle.not_vlt⟩ := not_vlt
 protected alias ⟨_, vlt.not_vle⟩ := not_vle
 
-lemma veq_comm {x y : R} : x =ᵥ y ↔ y =ᵥ x := antisymmRel_comm
+lemma veq_comm : x =ᵥ y ↔ y =ᵥ x := antisymmRel_comm
 @[symm] protected alias ⟨veq.symm, _⟩ := veq_comm
 
 instance : @Std.Symm R (· =ᵥ ·) where
   symm _ _ := veq.symm
 
-lemma vle_of_veq {x y : R} (h : x =ᵥ y) : x ≤ᵥ y := h.1
-lemma vge_of_veq {x y : R} (h : x =ᵥ y) : y ≤ᵥ x := h.2
+lemma vle_of_veq (h : x =ᵥ y) : x ≤ᵥ y := h.1
+lemma vge_of_veq (h : x =ᵥ y) : y ≤ᵥ x := h.2
 
 protected alias veq.vle := vle_of_veq
 protected alias veq.vge := vge_of_veq
 
-lemma not_vlt_of_veq {x y : R} (h : x =ᵥ y) : ¬ x <ᵥ y := h.vge.not_vlt
-lemma not_vgt_of_veq {x y : R} (h : x =ᵥ y) : ¬ y <ᵥ x := h.vle.not_vlt
+lemma not_vlt_of_veq (h : x =ᵥ y) : ¬ x <ᵥ y := h.vge.not_vlt
+lemma not_vgt_of_veq (h : x =ᵥ y) : ¬ y <ᵥ x := h.vle.not_vlt
 
 protected alias veq.not_vlt := not_vlt_of_veq
 protected alias veq.not_vgt := not_vgt_of_veq
 
 @[simp, refl] lemma vle_refl (x : R) : x ≤ᵥ x := or_self_iff.1 <| vle_total x x
-lemma vle_rfl {x : R} : x ≤ᵥ x := vle_refl x
+lemma vle_rfl : x ≤ᵥ x := vle_refl x
 
 @[deprecated (since := "2025-12-20")] alias rel_refl := vle_refl
 @[deprecated (since := "2025-12-20")] alias rel_rfl := vle_rfl
@@ -176,7 +179,7 @@ instance : @Std.Refl R (· ≤ᵥ ·) where
 @[deprecated (since := "2025-12-20")] protected alias Rel.rfl := vle.rfl
 
 @[simp, refl] lemma veq_refl (x : R) : x =ᵥ x := AntisymmRel.rfl
-lemma veq_rfl {x : R} : x =ᵥ x := veq_refl x
+lemma veq_rfl : x =ᵥ x := veq_refl x
 
 protected alias veq.refl := veq_refl
 protected alias veq.rfl := veq_rfl
@@ -204,12 +207,11 @@ lemma zero_vlt_one : (0 : R) <ᵥ 1 :=
 @[deprecated (since := "2025-12-20")] alias zero_srel_one := zero_vlt_one
 
 @[deprecated mul_vle_mul_left (since := "2026-01-06")]
-lemma vle_mul_right {x y : R} (z) (h : x ≤ᵥ y) : x * z ≤ᵥ y * z :=
+lemma vle_mul_right (z) (h : x ≤ᵥ y) : x * z ≤ᵥ y * z :=
   mul_vle_mul_left h z
 
-lemma mul_vle_mul_right {x y : R} (h : x ≤ᵥ y) (z) : z * x ≤ᵥ z * y := by
-  rw [mul_comm z x, mul_comm z y]
-  exact mul_vle_mul_left h z
+lemma mul_vle_mul_right (h : x ≤ᵥ y) (z) : z * x ≤ᵥ z * y :=
+  vle_trans (veq_mul_comm _ _).1 (vle_trans (mul_vle_mul_left h z) ((veq_mul_comm _ _).1))
 
 @[deprecated (since := "2025-12-20")] alias rel_mul_left := mul_vle_mul_right
 
@@ -220,7 +222,7 @@ protected alias vle.trans := vle_trans
 
 @[deprecated (since := "2025-12-20")] protected alias Rel.trans := vle.trans
 
-lemma vle_trans' {x y z : R} (h1 : y ≤ᵥ z) (h2 : x ≤ᵥ y) : x ≤ᵥ z :=
+lemma vle_trans' (h1 : y ≤ᵥ z) (h2 : x ≤ᵥ y) : x ≤ᵥ z :=
   h2.trans h1
 
 @[deprecated (since := "2025-12-20")] alias rel_trans' := vle_trans'
@@ -229,11 +231,76 @@ protected alias vle.trans' := vle_trans'
 
 @[deprecated (since := "2025-12-20")] protected alias Rel.trans' := vle.trans'
 
-lemma veq_trans {x y z : R} (h1 : x =ᵥ y) (h2 : y =ᵥ z) : x =ᵥ z :=
+lemma veq_trans (h1 : x =ᵥ y) (h2 : y =ᵥ z) : x =ᵥ z :=
   AntisymmRel.trans h1 h2
 
 instance : @Trans R R R veq veq veq where
   trans := veq_trans
+
+lemma vle_of_veq_of_vle (h1 : x =ᵥ y) (h2 : y ≤ᵥ z) : x ≤ᵥ z :=
+  h1.1.trans h2
+
+lemma vle_of_vle_of_veq (h1 : x ≤ᵥ y) (h2 : y =ᵥ z) : x ≤ᵥ z :=
+  h1.trans h2.1
+
+instance : @Trans R R R veq vle vle where
+  trans := vle_of_veq_of_vle
+
+instance : @Trans R R R vle veq vle where
+  trans := vle_of_vle_of_veq
+
+lemma vlt_of_vlt_of_vle (h1 : x <ᵥ y) (h2 : y ≤ᵥ z) : x <ᵥ z :=
+  fun h ↦ (h1 (vle_trans h2 h)).elim
+
+@[deprecated (since := "2025-12-20")] alias srel_of_srel_of_rel := vlt_of_vlt_of_vle
+
+alias vlt.trans_vle := vlt_of_vlt_of_vle
+
+@[deprecated (since := "2025-12-20")] alias SRel.trans_rel := vlt.trans_vle
+
+lemma vlt_of_vle_of_vlt (h1 : x ≤ᵥ y) (h2 : y <ᵥ z) : x <ᵥ z :=
+  fun h ↦ (h2 (vle_trans h h1)).elim
+
+@[deprecated (since := "2025-12-20")] alias srel_of_rel_of_srel := vlt_of_vle_of_vlt
+
+alias vle.trans_vlt := vlt_of_vle_of_vlt
+
+@[deprecated (since := "2025-12-20")] alias Rel.trans_srel := srel_of_rel_of_srel
+
+instance : @Trans R R R vlt vle vlt where
+  trans := vlt_of_vlt_of_vle
+
+instance : @Trans R R R vle vlt vlt where
+  trans := vlt_of_vle_of_vlt
+
+lemma vlt.vle (h : x <ᵥ y) : x ≤ᵥ y :=
+  (vle_total _ _).resolve_right h
+
+@[deprecated (since := "2025-12-20")] alias SRel.rel := vlt.vle
+
+lemma vlt.trans (h1 : x <ᵥ y) (h2 : y <ᵥ z) : x <ᵥ z :=
+  h1.trans_vle h2.vle
+
+@[deprecated (since := "2025-12-20")] alias SRel.trans := vlt.trans
+
+instance : @Trans R R R vlt vlt vlt where
+  trans := vlt.trans
+
+lemma vlt_of_veq_of_vlt (h1 : x =ᵥ y) (h2 : y <ᵥ z) : x <ᵥ z :=
+  h1.vle.trans_vlt h2
+
+lemma vlt_of_vlt_of_veq (h1 : x <ᵥ y) (h2 : y =ᵥ z) : x <ᵥ z :=
+  h1.trans_vle h2.vle
+
+instance : @Trans R R R veq vlt vlt where
+  trans := vlt_of_veq_of_vlt
+
+instance : @Trans R R R vlt veq vlt where
+  trans := vlt_of_vlt_of_veq
+
+@[gcongr]
+theorem vlt_imp_vlt_of_vle_of_vle (h1 : x ≤ᵥ x') (h2 : y' ≤ᵥ y) : x' <ᵥ y' → x <ᵥ y :=
+  (h1.trans_vlt <| ·.trans_vle h2)
 
 @[gcongr]
 lemma mul_vle_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : x * x' ≤ᵥ y * y' :=
@@ -247,7 +314,11 @@ lemma mul_vle_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : x * x'
 @[deprecated (since := "2025-12-20")] alias mul_rel_mul_iff_left := mul_vle_mul_iff_left
 
 @[simp] lemma mul_vle_mul_iff_right (hx : 0 <ᵥ x) : x * y ≤ᵥ x * z ↔ y ≤ᵥ z := by
-  simp [mul_comm x, hx]
+  refine ⟨fun h ↦ ?_ , fun h ↦ ?_⟩
+  · grw [veq_mul_comm, veq_mul_comm (x := x)] at h
+    rwa [mul_vle_mul_iff_left hx] at h
+  · grw [veq_mul_comm, veq_mul_comm (x := x)]
+    rwa [mul_vle_mul_iff_left hx]
 
 @[deprecated (since := "2025-12-20")] alias mul_rel_mul_iff_right := mul_vle_mul_iff_right
 
@@ -267,11 +338,15 @@ lemma mul_vle_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : x * x'
 
 @[deprecated (since := "2025-12-20")] alias mul_srel_mul_iff_right := mul_vlt_mul_iff_right
 
-@[deprecated (since := "2025-11-04")] alias rel_mul := mul_vle_mul
-
 @[gcongr]
-lemma mul_veq_mul {x x' y y' : R} (h1 : x =ᵥ y) (h2 : x' =ᵥ y') : x * x' =ᵥ y * y' :=
+lemma mul_veq_mul (h1 : x =ᵥ y) (h2 : x' =ᵥ y') : x * x' =ᵥ y * y' :=
   ⟨mul_vle_mul h1.vle h2.vle, mul_vle_mul h1.vge h2.vge⟩
+
+lemma veq_mul_right_comm (x y z : R) : x * y * z =ᵥ x * z * y := by
+  grw [mul_assoc, veq_mul_comm y, mul_assoc]
+
+lemma veq_mul_mul_mul_comm (x y z w : R) : x * y * (z * w) =ᵥ x * z * (y * w) := by
+  grw [← mul_assoc, veq_mul_right_comm x, mul_assoc]
 
 theorem vle_add_cases (x y : R) : x + y ≤ᵥ x ∨ x + y ≤ᵥ y :=
   (vle_total y x).imp (fun h => vle_add .rfl h) (fun h => vle_add h .rfl)
@@ -281,7 +356,7 @@ theorem vle_add_cases (x y : R) : x + y ≤ᵥ x ∨ x + y ≤ᵥ y :=
 @[simp] lemma zero_vlt_mul (hx : 0 <ᵥ x) (hy : 0 <ᵥ y) : 0 <ᵥ x * y := by
   contrapose hy
   rw [not_vlt] at hy ⊢
-  rw [show (0 : R) = x * 0 by simp, mul_comm x y, mul_comm x 0] at hy
+  grw [show (0 : R) = x * 0 by simp, veq_mul_comm, veq_mul_comm x] at hy
   exact vle_mul_cancel hx hy
 
 @[deprecated (since := "2025-12-20")] alias zero_srel_mul := zero_vlt_mul
@@ -325,14 +400,14 @@ def valueSetoid : Setoid (R × posSubmonoid R) where
       rintro ⟨r, u⟩ ⟨s, v⟩ ⟨t, w⟩ ⟨h1, h2⟩ ⟨h3, h4⟩
       constructor
       · have := mul_vle_mul h1 (vle_refl ↑w)
-        rw [mul_right_comm s] at this
+        grw [veq_mul_right_comm (x := s)] at this
         have := vle_trans this (mul_vle_mul h3 (vle_refl _))
-        rw [mul_right_comm r, mul_right_comm t] at this
+        grw [veq_mul_right_comm r, veq_mul_right_comm t] at this
         simpa using this
       · have := mul_vle_mul h4 (vle_refl ↑u)
-        rw [mul_right_comm s] at this
+        grw [veq_mul_right_comm s] at this
         have := vle_trans this (mul_vle_mul h2 (vle_refl _))
-        rw [mul_right_comm t, mul_right_comm r] at this
+        grw [veq_mul_right_comm t, veq_mul_right_comm r] at this
         simpa using this
   }
 
@@ -347,13 +422,13 @@ def ValueGroupWithZero.mk (x : R) (y : posSubmonoid R) : ValueGroupWithZero R :=
   Quotient.mk _ (x, y)
 
 protected
-theorem ValueGroupWithZero.sound {x y : R} {t s : posSubmonoid R}
+theorem ValueGroupWithZero.sound {t s : posSubmonoid R}
     (h₁ : x * s ≤ᵥ y * t) (h₂ : y * t ≤ᵥ x * s) :
     ValueGroupWithZero.mk x t = ValueGroupWithZero.mk y s :=
   Quotient.sound ⟨h₁, h₂⟩
 
 protected
-theorem ValueGroupWithZero.exact {x y : R} {t s : posSubmonoid R}
+theorem ValueGroupWithZero.exact {t s : posSubmonoid R}
     (h : ValueGroupWithZero.mk x t = ValueGroupWithZero.mk y s) :
     x * s ≤ᵥ y * t ∧ y * t ≤ᵥ x * s :=
   Quotient.exact h
@@ -394,7 +469,7 @@ lemma ValueGroupWithZero.lift₂_mk {α : Sort*} (f : R → posSubmonoid R → R
     (x y : R) (z w : posSubmonoid R) :
     ValueGroupWithZero.lift₂ f hf (.mk x z) (.mk y w) = f x z y w := rfl
 
-theorem ValueGroupWithZero.mk_eq_mk {x y : R} {t s : posSubmonoid R} :
+theorem ValueGroupWithZero.mk_eq_mk {t s : posSubmonoid R} :
     ValueGroupWithZero.mk x t = ValueGroupWithZero.mk y s ↔ x * s ≤ᵥ y * t ∧ y * t ≤ᵥ x * s :=
   Quotient.eq
 
@@ -442,11 +517,11 @@ instance : Mul (ValueGroupWithZero R) where
   mul := ValueGroupWithZero.lift₂ (fun a b c d => .mk (a * c) (b * d)) <| by
     intro x y z w t s u v h₁ h₂ h₃ h₄
     apply ValueGroupWithZero.sound
-    · rw [Submonoid.coe_mul, Submonoid.coe_mul,
-        mul_mul_mul_comm x, mul_mul_mul_comm y]
+    · grw [Submonoid.coe_mul, Submonoid.coe_mul,
+        veq_mul_mul_mul_comm x, veq_mul_mul_mul_comm y]
       exact mul_vle_mul h₁ h₃
-    · rw [Submonoid.coe_mul, Submonoid.coe_mul,
-        mul_mul_mul_comm x, mul_mul_mul_comm y]
+    · grw [Submonoid.coe_mul, Submonoid.coe_mul,
+        veq_mul_mul_mul_comm x, veq_mul_mul_mul_comm y]
       exact mul_vle_mul h₂ h₄
 
 @[simp]
@@ -481,7 +556,10 @@ instance : CommMonoidWithZero (ValueGroupWithZero R) where
   mul_comm a b := by
     induction a using ValueGroupWithZero.ind
     induction b using ValueGroupWithZero.ind
-    simp [mul_comm]
+    apply ValuativeRel.ValueGroupWithZero.sound <;>
+    · simp only [Submonoid.coe_mul]
+      nth_grw 2 [veq_mul_comm]
+      nth_grw 6 [veq_mul_comm]
   npow n := ValueGroupWithZero.lift (fun a b => ValueGroupWithZero.mk (a ^ n) (b ^ n)) <| by
     intro x y t s h₁ h₂
     induction n with
@@ -499,16 +577,16 @@ instance : LE (ValueGroupWithZero R) where
     by_cases hw : w ≤ᵥ 0 <;> by_cases hz : z ≤ᵥ 0
     · refine propext ⟨fun h => vle_trans ?_ (zero_vle _), fun h => vle_trans ?_ (zero_vle _)⟩
       · apply vle_mul_cancel (s * v).prop
-        rw [mul_right_comm, Submonoid.coe_mul, ← mul_assoc]
+        grw [veq_mul_right_comm, Submonoid.coe_mul, ← mul_assoc]
         apply (mul_vle_mul_left (mul_vle_mul_left h₂ v) u).trans
-        rw [mul_right_comm x]
+        grw [veq_mul_right_comm x]
         apply (mul_vle_mul_left (mul_vle_mul_left h t) u).trans
         apply vle_trans (mul_vle_mul_left (mul_vle_mul_left (mul_vle_mul_left hz s) t) u)
         simp
       · apply vle_mul_cancel (t * u).prop
-        rw [mul_right_comm, Submonoid.coe_mul, ← mul_assoc]
+        grw [veq_mul_right_comm, Submonoid.coe_mul, ← mul_assoc]
         apply (mul_vle_mul_left (mul_vle_mul_left h₁ u) v).trans
-        rw [mul_right_comm y]
+        grw [veq_mul_right_comm y]
         apply (mul_vle_mul_left (mul_vle_mul_left h s) v).trans
         apply vle_trans (mul_vle_mul_left (mul_vle_mul_left (mul_vle_mul_left hw t) s) v)
         simp
@@ -522,19 +600,19 @@ instance : LE (ValueGroupWithZero R) where
       · apply vle_mul_cancel s.prop
         apply vle_mul_cancel hz
         calc y * u * s * z
-          _ = y * s * (z * u) := by ring
+          _ =ᵥ y * s * (z * u) := by grw [veq_mul_comm z, veq_mul_mul_mul_comm, mul_assoc]
           _ ≤ᵥ x * t * (w * v) := by gcongr
-          _ = x * v * (t * w) := by ring
+          _ =ᵥ x * v * (t * w) := by grw [veq_mul_comm w, veq_mul_mul_mul_comm, mul_assoc]
           _ ≤ᵥ z * s * (t * w) := by gcongr
-          _ = w * t * s * z := by ring
+          _ =ᵥ w * t * s * z := by grw [veq_mul_comm, veq_mul_comm _ w, veq_mul_comm z, ← mul_assoc]
       · apply vle_mul_cancel t.prop
         apply vle_mul_cancel hw
         calc x * v * t * w
-          _ = x * t * (w * v) := by ring
+          _ =ᵥ x * t * (w * v) := by grw [veq_mul_comm w, veq_mul_mul_mul_comm, mul_assoc]
           _ ≤ᵥ y * s * (z * u) := by gcongr
-          _ = y * u * (s * z) := by ring
+          _ =ᵥ y * u * (s * z) := by grw [veq_mul_comm z, veq_mul_mul_mul_comm, mul_assoc]
           _ ≤ᵥ w * t * (s * z) := by gcongr
-          _ = z * s * t * w := by ring
+          _ =ᵥ z * s * t * w := by grw [veq_mul_comm, veq_mul_comm _ z, veq_mul_comm w, ← mul_assoc]
 
 @[simp]
 theorem ValueGroupWithZero.mk_le_mk (x y : R) (t s : posSubmonoid R) :
@@ -549,11 +627,11 @@ instance : LinearOrder (ValueGroupWithZero R) where
     rw [ValueGroupWithZero.mk_le_mk] at hab hbc ⊢
     apply vle_mul_cancel b₂.prop
     calc a₁ * c₂ * b₂
-      _ = a₁ * b₂ * c₂ := by rw [mul_right_comm]
+      _ =ᵥ a₁ * b₂ * c₂ := by grw [veq_mul_right_comm]
       _ ≤ᵥ b₁ * a₂ * c₂ := mul_vle_mul_left hab _
-      _ = b₁ * c₂ * a₂ := by rw [mul_right_comm]
+      _ =ᵥ b₁ * c₂ * a₂ := by grw [veq_mul_right_comm]
       _ ≤ᵥ c₁ * b₂ * a₂ := mul_vle_mul_left hbc _
-      _ = c₁ * a₂ * b₂ := by rw [mul_right_comm]
+      _ =ᵥ c₁ * a₂ * b₂ := by grw [veq_mul_right_comm]
   le_antisymm a b hab hba := by
     induction a using ValueGroupWithZero.ind
     induction b using ValueGroupWithZero.ind
@@ -571,7 +649,7 @@ theorem ValueGroupWithZero.mk_lt_mk (x y : R) (t s : posSubmonoid R) :
   rw [lt_iff_not_ge, ← not_vle, mk_le_mk]
 
 @[simp]
-lemma ValueGroupWithZero.mk_pos {x : R} {s : posSubmonoid R} :
+lemma ValueGroupWithZero.mk_pos {s : posSubmonoid R} :
     0 < ValueGroupWithZero.mk x s ↔ 0 <ᵥ x := by rw [← mk_zero 1]; simp [-mk_zero]
 
 instance : Bot (ValueGroupWithZero R) where
@@ -590,8 +668,8 @@ instance : IsOrderedMonoid (ValueGroupWithZero R) where
     induction b using ValueGroupWithZero.ind
     induction c using ValueGroupWithZero.ind
     simp only [ValueGroupWithZero.mk_mul_mk, ValueGroupWithZero.mk_le_mk, Submonoid.coe_mul]
-    conv_lhs => apply mul_mul_mul_comm
-    conv_rhs => apply mul_mul_mul_comm
+    nth_grw 1 [veq_mul_mul_mul_comm]
+    nth_grw 2 [veq_mul_mul_mul_comm]
     exact mul_vle_mul_left hab _
 
 instance : Inv (ValueGroupWithZero R) where
@@ -608,8 +686,10 @@ instance : Inv (ValueGroupWithZero R) where
       simpa using vle_trans h₁ (mul_vle_mul_left hy s)
     · simp only [dif_neg hx, dif_neg hy]
       apply ValueGroupWithZero.sound
-      · simpa [mul_comm] using h₂
-      · simpa [mul_comm] using h₁
+      · grw [veq_mul_comm, veq_mul_comm _ x]
+        simpa using h₂
+      · grw [veq_mul_comm, veq_mul_comm _ y]
+        simpa [mul_comm] using h₁
 
 @[simp]
 theorem ValueGroupWithZero.inv_mk (x : R) (y : posSubmonoid R) (hx : ¬x ≤ᵥ 0) :
@@ -617,7 +697,7 @@ theorem ValueGroupWithZero.inv_mk (x : R) (y : posSubmonoid R) (hx : ¬x ≤ᵥ 
 
 /-- The value group-with-zero is a linearly ordered commutative group with zero. -/
 instance : LinearOrderedCommGroupWithZero (ValueGroupWithZero R) where
-  zero_le _ := bot_le
+  isBot_zero _ := bot_le
   exists_pair_ne := by
     refine ⟨0, 1, fun h => ?_⟩
     apply ge_of_eq at h
@@ -628,11 +708,19 @@ instance : LinearOrderedCommGroupWithZero (ValueGroupWithZero R) where
   mul_inv_cancel := ValueGroupWithZero.ind fun x y h => by
     rw [ne_eq, ← ValueGroupWithZero.mk_zero 1, ValueGroupWithZero.mk_eq_mk] at h
     simp only [Submonoid.coe_one, mul_one, zero_mul, zero_vle, and_true] at h
-    rw [ValueGroupWithZero.inv_mk x y h, ← ValueGroupWithZero.mk_one_one,
-      ValueGroupWithZero.mk_mul_mk, ValueGroupWithZero.mk_eq_mk]
-    simp [mul_comm]
+    grw [ValueGroupWithZero.inv_mk x y h, ← ValueGroupWithZero.mk_one_one,
+      ValueGroupWithZero.mk_mul_mk, ValueGroupWithZero.mk_eq_mk, veq_mul_comm x]
+    simp
   mul_lt_mul_of_pos_left := ValueGroupWithZero.ind fun a x ha ↦ ValueGroupWithZero.ind fun b y ↦
-    ValueGroupWithZero.ind fun c z hbc ↦ by simp_all [mul_mul_mul_comm _ _ (x : R)]
+    ValueGroupWithZero.ind fun c z hbc ↦ by
+      simp only [ValueGroupWithZero.mk_lt_mk,
+        ValueGroupWithZero.mk_mul_mk, Submonoid.coe_mul]
+      grw [veq_mul_mul_mul_comm, veq_mul_mul_mul_comm _ c]
+      simp_all
+
+section Valuation
+
+variable {R : Type*} [Ring R] [ValuativeRel R] {x : R}
 
 variable (R) in
 /-- The "canonical" valuation associated to a valuative relation. -/
@@ -653,8 +741,7 @@ lemma ValueGroupWithZero.lift_valuation {α : Sort*} (f : R → posSubmonoid R �
     ValueGroupWithZero.lift f hf (valuation R x) = f x 1 :=
   rfl
 
-lemma valuation_eq_zero_iff {x : R} :
-    valuation R x = 0 ↔ x ≤ᵥ 0 :=
+lemma valuation_eq_zero_iff : valuation R x = 0 ↔ x ≤ᵥ 0 :=
   ValueGroupWithZero.mk_eq_zero _ _
 
 lemma valuation_posSubmonoid_ne_zero (x : posSubmonoid R) :
@@ -670,7 +757,7 @@ lemma ValueGroupWithZero.mk_eq_div (r : R) (s : posSubmonoid R) :
 /-- Construct a valuative relation on a ring using a valuation. -/
 @[implicit_reducible]
 def ofValuation
-    {S Γ : Type*} [CommRing S]
+    {S Γ : Type*} [Ring S]
     [LinearOrderedCommGroupWithZero Γ]
     (v : Valuation S Γ) : ValuativeRel S where
   vle x y := v x ≤ v y
@@ -679,13 +766,14 @@ def ofValuation
   vle_add hab hbc := (map_add_le_max v _ _).trans (sup_le hab hbc)
   mul_vle_mul_left _ h := by simp only [map_mul]; gcongr
   vle_mul_cancel h0 h := by
-    rw [map_zero, le_zero_iff] at h0
     simp only [map_mul] at h
-    exact le_of_mul_le_mul_right h (lt_of_le_of_ne' zero_le' h0)
+    apply le_of_mul_le_mul_right h
+    simpa [pos_iff_ne_zero] using h0
   not_vle_one_zero := by simp
+  vle_mul_comm := by simp [map_mul, mul_comm]
 
 lemma _root_.Valuation.Compatible.ofValuation
-    {S Γ : Type*} [CommRing S]
+    {S Γ : Type*} [Ring S]
     [LinearOrderedCommGroupWithZero Γ]
     (v : Valuation S Γ) :
     letI := ValuativeRel.ofValuation v  -- letI so that instance is inlined directly in declaration
@@ -703,13 +791,15 @@ lemma isEquiv {Γ₁ Γ₂ : Type*}
   intro x y
   simp_rw [← Valuation.Compatible.vle_iff_le]
 
+end Valuation
+
 end ValuativeRel
 
 namespace Valuation
 
 open ValuativeRel
 
-variable {R : Type*} [CommRing R] [ValuativeRel R]
+variable {R : Type*} [Ring R] [ValuativeRel R]
 variable {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀] (v : Valuation R Γ₀) [v.Compatible]
 variable {x y : R}
 
@@ -722,9 +812,6 @@ lemma vlt_iff_lt : x <ᵥ y ↔ v x < v y := by
   simp [lt_iff_not_ge, ← Compatible.vle_iff_le]
 
 @[deprecated (since := "2025-12-20")] alias srel_iff_lt := vlt_iff_lt
-
-@[deprecated (since := "2025-10-09")]
-alias Compatible.srel_iff_lt := vlt_iff_lt
 
 lemma veq_iff_eq : x =ᵥ y ↔ v x = v y := by
   simp_rw [veq_def, vle_iff_le v, antisymm_iff]
@@ -751,14 +838,14 @@ end Valuation
 
 namespace ValuativeRel
 
-variable {R : Type*} [CommRing R] [ValuativeRel R]
+variable {R : Type*} [Semiring R] [ValuativeRel R]
 
 variable (R) in
 /-- An alias for endowing a ring with a preorder defined as the valuative relation. -/
 def WithPreorder := R
 
 /-- The ring instance on `WithPreorder R` arising from the ring structure on `R`. -/
-instance : CommRing (WithPreorder R) := inferInstanceAs (CommRing R)
+instance : Semiring (WithPreorder R) := inferInstanceAs (Semiring R)
 
 /-- The preorder on `WithPreorder R` arising from the valuative relation on `R`. -/
 instance : Preorder (WithPreorder R) where
@@ -778,6 +865,7 @@ instance : ValuativeRel (WithPreorder R) where
   mul_vle_mul_left := mul_vle_mul_left (R := R)
   vle_mul_cancel := vle_mul_cancel (R := R)
   not_vle_one_zero := not_vle_one_zero (R := R)
+  vle_mul_comm := vle_mul_comm (R := R)
 
 instance : ValuativePreorder (WithPreorder R) where
   vle_iff_le _ _ := Iff.rfl
@@ -790,48 +878,29 @@ def supp : Ideal R where
   zero_mem' := vle_refl _
   smul_mem' x _ h := by simpa using mul_vle_mul_right h _
 
+instance : (supp R).IsTwoSided where
+  mul_mem_of_left _ h := by simpa [supp] using mul_vle_mul_left h _
+
 @[simp]
 lemma supp_def (x : R) : x ∈ supp R ↔ x ≤ᵥ 0 := Iff.refl _
 
-lemma supp_eq_valuation_supp : supp R = (valuation R).supp := by
+lemma supp_eq_valuation_supp {R : Type*} [CommRing R] [ValuativeRel R] :
+    supp R = (valuation R).supp := by
   ext
   simpa using valuation_eq_zero_iff.symm
 
-instance : (supp R).IsPrime := by
-  rw [supp_eq_valuation_supp]
-  infer_instance
+instance : (supp R).IsPrime where
+  ne_top' := by
+    rw [Ideal.ne_top_iff_one]
+    exact not_vle_one_zero
+  mem_or_mem' h := by
+    by_contra! h'
+    simp only [supp_def, not_vle] at h h'
+    exact vlt.not_vle (zero_vlt_mul h'.1 h'.2) h
 
-section CommRing
+section Ring
 
-variable {R : Type*} [CommRing R] [ValuativeRel R] {a b c d : R}
-
-lemma vlt_of_vlt_of_vle (hab : a <ᵥ b) (hbc : b ≤ᵥ c) : a <ᵥ c :=
-  lt_of_lt_of_le (α := WithPreorder R) hab hbc
-
-@[deprecated (since := "2025-12-20")] alias srel_of_srel_of_rel := vlt_of_vlt_of_vle
-
-alias vlt.trans_vle := vlt_of_vlt_of_vle
-
-@[deprecated (since := "2025-12-20")] alias SRel.trans_rel := vlt.trans_vle
-
-lemma vlt_of_vle_of_vlt (hab : a ≤ᵥ b) (hbc : b <ᵥ c) : a <ᵥ c :=
-  lt_of_le_of_lt (α := WithPreorder R) hab hbc
-
-@[deprecated (since := "2025-12-20")] alias srel_of_rel_of_srel := mul_vlt_mul_iff_left
-
-alias vle.trans_vlt := vlt_of_vle_of_vlt
-
-@[deprecated (since := "2025-12-20")] alias Rel.trans_srel := srel_of_rel_of_srel
-
-lemma vlt.vle (hab : a <ᵥ b) : a ≤ᵥ b :=
-  le_of_lt (α := WithPreorder R) hab
-
-@[deprecated (since := "2025-12-20")] alias SRel.rel := vlt.vle
-
-lemma vlt.trans (hab : a <ᵥ b) (hbc : b <ᵥ c) : a <ᵥ c :=
-  hab.trans_vle hbc.vle
-
-@[deprecated (since := "2025-12-20")] alias SRel.trans := vlt.trans
+variable {R : Type*} [Ring R] [ValuativeRel R] {a b c d : R}
 
 @[deprecated (since := "2026-01-06")] alias vle_mul_right_iff := mul_vle_mul_iff_left
 
@@ -898,11 +967,11 @@ lemma pow_vle_pow_of_one_vle (ha : 1 ≤ᵥ a) {n m : ℕ} (hnm : n ≤ m) : a ^
 
 @[deprecated (since := "2025-12-20")] alias pow_rel_pow_of_one_rel := pow_vle_pow_of_one_vle
 
-end CommRing
+end Ring
 
-section Field
+section DivisionRing
 
-variable {K : Type*} [Field K] [ValuativeRel K] {a b c x : K}
+variable {K : Type*} [DivisionRing K] [ValuativeRel K] {a b c x : K}
 
 @[simp]
 lemma vle_zero_iff : a ≤ᵥ 0 ↔ a = 0 := by
@@ -965,7 +1034,7 @@ lemma one_vlt_inv (hx : x ≠ 0) : 1 <ᵥ x⁻¹ ↔ x <ᵥ 1 :=
 
 @[deprecated (since := "2025-12-20")] alias one_srel_inv := one_vlt_inv
 
-end Field
+end DivisionRing
 
 open NNReal in variable (R) in
 /-- An auxiliary structure used to define `IsRankLeOne`. -/
@@ -1007,6 +1076,10 @@ lemma isNontrivial_iff_nontrivial_units :
     · exact ⟨s.val, by simp, by simpa using h.symm⟩
     · exact ⟨r.val, by simp, by simpa using hr⟩
 
+section Valuation
+
+variable {R : Type*} [Ring R] [ValuativeRel R]
+
 lemma isNontrivial_iff_isNontrivial
     {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀] (v : Valuation R Γ₀) [v.Compatible] :
     IsNontrivial R ↔ v.IsNontrivial := by
@@ -1027,7 +1100,7 @@ instance {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀]
     [IsNontrivial R] (v : Valuation R Γ₀) [v.Compatible] :
     v.IsNontrivial := by rwa [← isNontrivial_iff_isNontrivial]
 
-lemma ValueGroupWithZero.mk_eq_valuation {K : Type*} [Field K] [ValuativeRel K]
+lemma ValueGroupWithZero.mk_eq_valuation {K : Type*} [DivisionRing K] [ValuativeRel K]
     (x : K) (y : posSubmonoid K) :
     ValueGroupWithZero.mk x y = valuation K (x / y) := by
   rw [Valuation.map_div, ValueGroupWithZero.mk_eq_div]
@@ -1048,9 +1121,11 @@ lemma exists_valuation_posSubmonoid_div_valuation_posSubmonoid_eq (γ : (ValueGr
   use a, b
 
 -- See `exists_valuation_div_valuation_eq` for the version that works for all rings.
-theorem valuation_surjective {K : Type*} [Field K] [ValuativeRel K] :
+theorem valuation_surjective {K : Type*} [DivisionRing K] [ValuativeRel K] :
     Function.Surjective (valuation K) :=
   ValueGroupWithZero.ind (ValueGroupWithZero.mk_eq_valuation · · ▸ ⟨_, rfl⟩)
+
+end Valuation
 
 variable (R) in
 /-- A ring with a valuative relation is discrete if its value group-with-zero
@@ -1092,7 +1167,7 @@ lemma uniformizer_inv_le_iff [IsDiscrete R] [IsNontrivial R] {a : ValueGroupWith
   replace ha : 0 < a := bot_lt_iff_ne_bot.mpr ha
   rw [inv_le_comm₀ uniformizer_pos ha, le_uniformizer_iff, inv_lt_one₀ ha]
 
-variable {R Γ : Type*} [CommRing R] [ValuativeRel R] [LinearOrderedCommGroupWithZero Γ]
+variable {R Γ : Type*} [Ring R] [ValuativeRel R] [LinearOrderedCommGroupWithZero Γ]
   (v : Valuation R Γ)
 
 open MonoidWithZeroHom ValueGroup₀
@@ -1105,35 +1180,32 @@ isomorphic to the subgroup (with zero) generated by `v '' R` for any compatible 
 `ValueGroupWithZero.embed v` is exactly this isomorphism map; it will later be upgraded to
 `ValueGroupWithZero.orderMonoidIso v`. -/
 noncomputable
-def embed [v.Compatible] : ValueGroupWithZero R →*₀ ValueGroup₀ v where
+def embed [v.Compatible] : ValueGroupWithZero R →*₀ ValueGroup₀ (.ofClass v) where
   toFun := ValueGroupWithZero.lift
-    (fun r s ↦ (ValueGroup₀.restrict₀ v r / (ValueGroup₀.restrict₀ v (s : R)))) <| by
+    (fun r s ↦ (restrict₀ (.ofClass v) r / (restrict₀ (.ofClass v) s))) <| by
     intro x y r s
     simp only [Valuation.Compatible.vle_iff_le (v := v), map_mul, ← and_imp, ← le_antisymm_iff]
     rw [div_eq_div_iff]
-    · simp only [ValueGroup₀.restrict₀_apply, Valuation.apply_posSubmonoid_ne_zero, ↓reduceDIte,
-      dite_mul, zero_mul]
-      split_ifs
-      all_goals try simp_all [← WithZero.coe_mul, ← Units.val_inj]
-    · simp [ValueGroup₀.restrict₀]
-    · simp [ValueGroup₀.restrict₀]
+    · simp only [ValueGroup₀.restrict₀_apply, dite_mul, zero_mul]
+      split_ifs with h1 h2 h3 <;>
+      simp_all [← WithZero.coe_mul, ← Units.val_inj] <;> simpa
+    all_goals simp [ValueGroup₀.restrict₀]
   map_zero' := by simp [lift_zero, ValueGroup₀.restrict₀]
   map_one' := by simp [ValueGroup₀.restrict₀]
   map_mul' _ _ := by
     apply lift_mul
     simp only [map_mul, ValueGroup₀.restrict₀_apply, mul_dite, mul_zero, dite_mul, zero_mul,
-      Submonoid.coe_mul, Valuation.apply_posSubmonoid_ne_zero, ↓reduceDIte, Subtype.forall,
-      posSubmonoid_def]
+      Submonoid.coe_mul, Subtype.forall, posSubmonoid_def]
     intro x y z hz w hw
     split_ifs
-    all_goals try simp_all
+    all_goals simp_all
     simp [field, ← WithZero.coe_mul, ← Units.val_inj]
 
 /-- The element `.mk x s` in `ValueGroupWithZero R` is sent to `v x / v s` in the
 image group of `v`. -/
 @[simp]
 lemma embed_mk [v.Compatible] (x : R) (s : posSubmonoid R) :
-    embed v (.mk x s) = (restrict₀ v x / (restrict₀ v (s : R))) :=
+    embed v (.mk x s) = (restrict₀ (.ofClass v) x / (restrict₀ (.ofClass v) s)) :=
   rfl
 
 /--
@@ -1151,8 +1223,8 @@ where the first row is the map `v` factored through its image group (with zero) 
 -/
 @[simp]
 lemma embed_valuation_eq_restrict₀ [v.Compatible] (x : R) :
-    embed v (valuation R x) = ValueGroup₀.restrict₀ v x := by
-  convert embed_mk v x 1
+    embed v (valuation R x) = ValueGroup₀.restrict₀ (.ofClass v) x := by
+  convert! embed_mk v x 1
   simp
 
 /--
@@ -1175,7 +1247,6 @@ lemma embedding_embed_valuation_eq (γ : ValueGroupWithZero R) :
   induction γ using ValueGroupWithZero.ind
   simp [mk_eq_div]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map `embed v` is strictly monotone. -/
 lemma embed_strictMono [v.Compatible] : StrictMono (embed v) := by
   intro a b h
@@ -1188,7 +1259,7 @@ lemma embed_strictMono [v.Compatible] : StrictMono (embed v) := by
   · rw [← map_mul, ← map_mul, (isEquiv (valuation R) v).lt_iff_lt] at h
     simp only [embed, coe_mk, ZeroHom.coe_mk, lift_valuation,
       OneMemClass.coe_one, map_one, div_one]
-    erw [embedding_restrict₀ a, embedding_restrict₀ b, embedding_restrict₀ r.1,
+    rw [embedding_restrict₀ a, embedding_restrict₀ b, embedding_restrict₀ r.1,
       embedding_restrict₀ s.1]
     simpa using h
   · simp [restrict₀_apply, embed]
@@ -1214,15 +1285,15 @@ theorem orderMonoidIso_embed [v.Compatible] {Γ' : Type*} [LinearOrderedCommGrou
     (w : Valuation R Γ') [w.Compatible] (x : ValueGroupWithZero R) (h : w.IsEquiv v) :
     h.orderMonoidIso
     (embed w x) = embed v x := by
-simp only [embed, ← Valuation.restrict_def, coe_mk, ZeroHom.coe_mk]
-induction x using ValueGroupWithZero.ind with
-| mk r s =>
-  simp
+  simp only [embed, ← Valuation.restrict_def, coe_mk, ZeroHom.coe_mk]
+  induction x using ValueGroupWithZero.ind with
+  | mk r s =>
+    simp
 
 /-- If a valuation `v` is compatible with the valuative relation, then `ValueGroupWithZero R`
 is isomorphic to the image group (with zero) of `v` as an ordered group with zero. -/
 noncomputable
-def orderMonoidIso [v.Compatible] : ValueGroupWithZero R ≃*o ValueGroup₀ v where
+def orderMonoidIso [v.Compatible] : ValueGroupWithZero R ≃*o ValueGroup₀ (.ofClass v) where
   __ := embed v
   invFun x := embedding ((isEquiv v (valuation R)).orderMonoidIso x)
   left_inv x := by simp
@@ -1235,14 +1306,14 @@ def orderMonoidIso [v.Compatible] : ValueGroupWithZero R ≃*o ValueGroup₀ v w
 `orderMonoidIso`. -/
 @[simp]
 lemma orderMonoidIso_mk [v.Compatible] (x : R) (s : posSubmonoid R) :
-    orderMonoidIso v (.mk x s) = (restrict₀ v x / (restrict₀ v (s : R))) :=
+    orderMonoidIso v (.mk x s) = restrict₀ (.ofClass v) x / (restrict₀ (.ofClass v) s) :=
   rfl
 
 /-- This is the same as `ValuativeRel.ValueGroupWithZero.embed_valuation_eq_restrict₀`,
 where `embed` is upgraded to `orderMonoidIso`. -/
 @[simp]
 lemma orderMonoidIso_valuation_eq_restrict₀ [v.Compatible] (x : R) :
-    orderMonoidIso v (valuation R x) = restrict₀ v x :=
+    orderMonoidIso v (valuation R x) = restrict₀ (.ofClass v) x :=
   embed_valuation_eq_restrict₀ v x
 
 /-- This is the same as `ValuativeRel.ValueGroupWithZero.embedding_embed_valuation_eq`, where
@@ -1269,9 +1340,8 @@ end ValueGroupWithZero
 
 open ValueGroupWithZero
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma valuation_lt_symm_orderMonoidIso [v.Compatible] (γ : ValueGroup₀ v) (x : R) :
+lemma valuation_lt_symm_orderMonoidIso [v.Compatible] (γ : ValueGroup₀ (.ofClass v)) (x : R) :
     valuation R x < (orderMonoidIso v).symm γ ↔ v.restrict x < γ :=
   calc
     _ ↔ orderMonoidIso v _ < orderMonoidIso v _ := (map_lt_map_iff (orderMonoidIso v)).symm
@@ -1294,16 +1364,20 @@ end ValuativeRel
 /-- If `B` is an `A` algebra and both `A` and `B` have valuative relations,
 we say that `B|A` is a valuative extension if the valuative relation on `A` is
 induced by the one on `B`. -/
-class ValuativeExtension (A B : Type*) [CommRing A] [CommRing B] [ValuativeRel A] [ValuativeRel B]
-    [Algebra A B] where
+class ValuativeExtension (A B : Type*) [CommSemiring A] [Semiring B] [ValuativeRel A]
+    [ValuativeRel B] [Algebra A B] where
   vle_iff_vle (a b : A) : algebraMap A B a ≤ᵥ algebraMap A B b ↔ a ≤ᵥ b
 
 namespace ValuativeExtension
 
 open ValuativeRel ValueGroupWithZero MonoidWithZeroHom ValueGroup₀
 
-variable {A B : Type*} [CommRing A] [CommRing B] [ValuativeRel A] [ValuativeRel B] [Algebra A B]
-  [ValuativeExtension A B]
+variable {A B : Type*}
+
+section Semiring
+
+variable [CommSemiring A] [Semiring B] [ValuativeRel A] [ValuativeRel B]
+  [Algebra A B] [ValuativeExtension A B]
 
 lemma vlt_iff_vlt {a b : A} : algebraMap A B a <ᵥ algebraMap A B b ↔ a <ᵥ b := by
   rw [← not_vle, vle_iff_vle, not_vle]
@@ -1319,6 +1393,13 @@ def mapPosSubmonoid : posSubmonoid A →* posSubmonoid B where
     by simpa only [posSubmonoid_def, ← (algebraMap A B).map_zero, vlt_iff_vlt] using ha⟩
   map_one' := by simp
   map_mul' := by simp
+
+end Semiring
+
+section Ring
+
+variable [CommRing A] [Ring B] [ValuativeRel A] [ValuativeRel B]
+  [Algebra A B] [ValuativeExtension A B]
 
 variable (A) in
 instance compatible_comap {Γ : Type*}
@@ -1351,11 +1432,13 @@ lemma _root_.ValuativeRel.IsRankLeOne.of_valuativeExtension [IsRankLeOne B] : Is
   obtain ⟨⟨f, hf⟩⟩ := IsRankLeOne.nonempty (R := B)
   exact ⟨⟨f.comp (mapValueGroupWithZero _ _), hf.comp mapValueGroupWithZero_strictMono⟩⟩
 
+end Ring
+
 end ValuativeExtension
 
 namespace ValuativeRel
 
-variable {R : Type*} [CommRing R] [ValuativeRel R]
+variable {R : Type*} [Semiring R] [ValuativeRel R]
 
 /-- Any rank-at-most-one valuation has a mul-archimedean value group.
 The converse (for any compatible valuation) is `ValuativeRel.isRankLeOne_iff_mulArchimedean`

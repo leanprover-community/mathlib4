@@ -90,7 +90,7 @@ variable (p)
 theorem coeff_mk (x : ℕ → R) : (mk p x).coeff = x :=
   rfl
 
-/- These instances are not needed for the rest of the development,
+/-- These instances are not needed for the rest of the development,
 but it is interesting to establish early on that `WittVector p` is a lawful functor. -/
 instance : Functor (WittVector p) where
   map f v := mk p (f ∘ v.coeff)
