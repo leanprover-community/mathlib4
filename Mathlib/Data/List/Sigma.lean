@@ -646,7 +646,7 @@ theorem dlookup_dedupKeys (a : α) (l : List (Sigma β)) : dlookup a (dedupKeys 
       exact h
 
 omit [DecidableEq α] in
-theorem cons_sizeOf_le_cons_sizeOf [SizeOf α] {l r : List α} (a : α)
+theorem sizeOf_cons_le_sizeOf_cons [SizeOf α] {l r : List α} (a : α)
     (h : SizeOf.sizeOf l ≤ SizeOf.sizeOf r) :
     SizeOf.sizeOf (a :: l) ≤ SizeOf.sizeOf (a :: r) := by
   rw [cons.sizeOf_spec, cons.sizeOf_spec]
@@ -658,7 +658,7 @@ theorem sizeOf_dedupKeys [SizeOf (Sigma β)]
   | nil => simp [dedupKeys]
   | cons x xs h =>
     simp only [dedupKeys_cons, kinsert_def, Sigma.eta]
-    exact cons_sizeOf_le_cons_sizeOf x (le_trans (sizeOf_kerase x.fst xs.dedupKeys) h)
+    exact sizeOf_cons_le_sizeOf_cons x (le_trans (sizeOf_kerase x.fst xs.dedupKeys) h)
 
 /-! ### `kunion` -/
 
