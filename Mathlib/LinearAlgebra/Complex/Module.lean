@@ -362,26 +362,26 @@ section AddCommGroup
 
 variable [AddCommGroup A] [Module ℂ A] [StarAddMonoid A] [StarModule ℂ A]
 
+lemma Complex.I_mem_skewAdjoint : I ∈ skewAdjoint ℂ := by simp [skewAdjoint.mem_iff]
+
+@[simp] lemma Complex.I_smul_mem_skewAdjoint_iff_isSelfAdjoint {a : A} :
+    I • a ∈ skewAdjoint A ↔ IsSelfAdjoint a := by
+  simp [skewAdjoint.mem_iff, IsSelfAdjoint, smul_right_inj]
+
+@[simp] lemma Complex.isSelfAdjoint_I_smul_iff_mem_skewAdjoint {a : A} :
+    IsSelfAdjoint (I • a) ↔ a ∈ skewAdjoint A := by
+  simp [← I_smul_mem_skewAdjoint_iff_isSelfAdjoint, smul_smul]
+
 /-- Create a `selfAdjoint` element from a `skewAdjoint` element by multiplying by the scalar
 `-Complex.I`. -/
 @[simps]
 def skewAdjoint.negISMul : skewAdjoint A →ₗ[ℝ] selfAdjoint A where
-  toFun a :=
-    ⟨-I • ↑a, by
-      simp only [neg_smul, neg_mem_iff, selfAdjoint.mem_iff, star_smul, star_def, conj_I,
-        star_val_eq, smul_neg, neg_neg]⟩
-  map_add' a b := by
-    ext
-    simp only [AddSubgroup.coe_add, smul_add, AddMemClass.mk_add_mk]
-  map_smul' a b := by
-    ext
-    simp only [neg_smul, skewAdjoint.val_smul, RingHom.id_apply,
-      selfAdjoint.val_smul, smul_neg, neg_inj]
-    rw [smul_comm]
+  toFun a := ⟨-I • ↑a, by simp [selfAdjoint.mem_iff]⟩
+  map_add' a b := by simp
+  map_smul' a b := by ext; simp [smul_comm I]
 
 theorem skewAdjoint.I_smul_neg_I (a : skewAdjoint A) : I • (skewAdjoint.negISMul a : A) = a := by
-  simp only [smul_smul, skewAdjoint.negISMul_apply_coe, neg_smul, smul_neg, I_mul_I, one_smul,
-    neg_neg]
+  simp [smul_smul]
 
 /-- The real part `ℜ a` of an element `a` of a star module over `ℂ`, as a linear map. This is just
 `selfAdjointPart ℝ`, but we provide it as a separate definition in order to link it with lemmas
