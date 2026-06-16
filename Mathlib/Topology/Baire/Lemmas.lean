@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Topology.GDelta.Basic
 public import Mathlib.Topology.Constructions
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Baire spaces
@@ -127,6 +128,7 @@ theorem dense_biInter_of_isOpen {S : Set α} {f : α → Set X} (ho : ∀ s ∈ 
 
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with
 an index set which is a countable type. -/
+@[wikidata Q1052678]
 theorem dense_iInter_of_isOpen [Countable ι] {f : ι → Set X} (ho : ∀ i, IsOpen (f i))
     (hd : ∀ i, Dense (f i)) : Dense (⋂ s, f s) :=
   dense_sInter_of_isOpen (forall_mem_range.2 ho) (countable_range _) (forall_mem_range.2 hd)
@@ -202,7 +204,7 @@ theorem IsGδ.dense_iUnion_interior_of_closed [Countable ι] {s : Set X} (hs : I
   rintro x ⟨hxs, hxg⟩
   rw [mem_iInter] at hxg
   rcases mem_iUnion.1 (hU hxs) with ⟨i, hi⟩
-  exact mem_iUnion.2 ⟨i, self_diff_frontier (f i) ▸ ⟨hi, hxg _⟩⟩
+  exact mem_iUnion.2 ⟨i, self_sdiff_frontier (f i) ▸ ⟨hi, hxg _⟩⟩
 
 /-- If a countable family of closed sets cover a dense `Gδ` set, then the union of their interiors
 is dense. Formulated here with a union over a countable set in any type. -/

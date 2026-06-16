@@ -41,7 +41,7 @@ its element is transcendental. -/
 theorem algebraicIndependent_unique_type_iff [Unique ι] :
     AlgebraicIndependent R x ↔ Transcendental R (x default) := by
   rw [transcendental_iff_injective, algebraicIndependent_iff_injective_aeval]
-  let i := (renameEquiv R (Equiv.equivPUnit.{_, 1} ι)).trans (pUnitAlgEquiv R)
+  let i := uniqueAlgEquiv R ι
   have key : aeval (R := R) x = (Polynomial.aeval (R := R) (x default)).comp i := by
     ext y
     simp [i, Subsingleton.elim y default]
@@ -83,7 +83,7 @@ theorem trdeg_eq_zero [Algebra.IsAlgebraic R A] : trdeg R A = 0 :=
 variable (R A) in
 theorem trdeg_pos [Algebra.Transcendental R A] : 0 < trdeg R A :=
   have ⟨x, hx⟩ := Algebra.Transcendental.transcendental (R := R) (A := A)
-  zero_lt_one.trans_le <| le_ciSup_of_le (Cardinal.bddAbove_range _)
+  zero_lt_one.trans_le <| le_ciSup_of_le Cardinal.bddAbove_of_small
     ⟨{x}, algebraicIndependent_unique_type_iff.mpr hx⟩ (by simp)
 
 theorem trdeg_eq_zero_iff : trdeg R A = 0 ↔ Algebra.IsAlgebraic R A := by
@@ -98,7 +98,6 @@ theorem trdeg_ne_zero_iff : trdeg R A ≠ 0 ↔ Algebra.Transcendental R A := by
 
 open AlgebraicIndependent
 
-set_option backward.isDefEq.respectTransparency false in
 theorem AlgebraicIndependent.option_iff_transcendental (hx : AlgebraicIndependent R x) (a : A) :
     AlgebraicIndependent R (fun o : Option ι ↦ o.elim a x) ↔
       Transcendental (adjoin R (range x)) a := by
@@ -108,24 +107,21 @@ theorem AlgebraicIndependent.option_iff_transcendental (hx : AlgebraicIndependen
   exact Injective.of_comp_iff' (Polynomial.aeval a)
     (mvPolynomialOptionEquivPolynomialAdjoin hx).bijective
 
-set_option backward.isDefEq.respectTransparency false in
 theorem AlgebraicIndependent.option_iff {a : A} :
     AlgebraicIndependent R (fun o : Option ι ↦ o.elim a x) ↔
       AlgebraicIndependent R x ∧ Transcendental (adjoin R (range x)) a :=
   ⟨fun h ↦ have := h.comp _ (Option.some_injective _); ⟨this,
     (this.option_iff_transcendental _).mp h⟩, fun h ↦ (h.1.option_iff_transcendental _).mpr h.2⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem AlgebraicIndepOn.insert_iff {s : Set ι} {i : ι} (h : i ∉ s) :
     AlgebraicIndepOn R x (insert i s) ↔
       AlgebraicIndepOn R x s ∧ Transcendental (adjoin R (x '' s)) (x i) := by
   classical simp_rw [← algebraicIndependent_equiv (subtypeInsertEquivOption h).symm,
     AlgebraicIndepOn]
-  convert option_iff (x := fun i : s ↦ x i) (a := x i) using 2
+  convert! option_iff (x := fun i : s ↦ x i) (a := x i) using 2
   · ext (_ | _) <;> rfl
   · rw [Set.image_eq_range]
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem AlgebraicIndepOn.insert {s : Set ι} {i : ι} (hs : AlgebraicIndepOn R x s)
     (hi : Transcendental (adjoin R (x '' s)) (x i)) : AlgebraicIndepOn R x (insert i s) := by
   nontriviality R
@@ -133,7 +129,6 @@ protected theorem AlgebraicIndepOn.insert {s : Set ι} {i : ι} (hs : AlgebraicI
   exact (insert_iff fun h ↦ hi <| isAlgebraic_algebraMap
     (⟨_, subset_adjoin ⟨i, h, rfl⟩⟩ : adjoin R (x '' s))).mpr ⟨hs, hi⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem algebraicIndependent_of_set_of_finite (s : Set ι)
     (ind : AlgebraicIndependent R fun i : s ↦ x i)
     (H : ∀ t : Set ι, t.Finite → AlgebraicIndependent R (fun i : t ↦ x i) →
@@ -142,17 +137,19 @@ theorem algebraicIndependent_of_set_of_finite (s : Set ι)
   classical
   refine algebraicIndependent_of_finite_type fun t hfin ↦ ?_
   suffices AlgebraicIndependent R fun i : ↥(t ∩ s ∪ t \ s) ↦ x i from
-    this.comp (Equiv.setCongr (t.inter_union_diff s).symm) (Equiv.injective _)
-  refine hfin.diff.induction_on_subset _ (ind.comp (inclusion <| by simp) (inclusion_injective _))
+    this.comp (Equiv.setCongr (t.inter_union_sdiff s).symm) (Equiv.injective _)
+  refine hfin.sdiff.induction_on_subset _ (ind.comp (inclusion <| by simp) (inclusion_injective _))
     fun {a u} ha hu ha' h ↦ ?_
   have : a ∉ t ∩ s ∪ u := (·.elim (ha.2 ·.2) ha')
-  convert (((image_eq_range .. ▸ h.option_iff_transcendental <| x a).2 <| H _ (hfin.subset
-      (union_subset inter_subset_left <| hu.trans diff_subset)) h a ha.2 this).comp _
-      (subtypeInsertEquivOption this).injective).comp
-    (Equiv.setCongr union_insert) (Equiv.injective _) with x
+  convert!
+    (((image_eq_range .. ▸ h.option_iff_transcendental <| x a).2 <|
+              H _ (hfin.subset (union_subset inter_subset_left <| hu.trans sdiff_subset)) h a ha.2
+                this).comp
+          _ (subtypeInsertEquivOption this).injective).comp
+      (Equiv.setCongr union_insert) (Equiv.injective _) with
+    x
   by_cases h : ↑x = a <;> simp [h, Set.subtypeInsertEquivOption]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Variant of `algebraicIndependent_of_finite_type` using `Transcendental`. -/
 theorem algebraicIndependent_of_finite_type'
     (hinj : Injective (algebraMap R A))
@@ -162,7 +159,6 @@ theorem algebraicIndependent_of_finite_type'
   algebraicIndependent_of_set_of_finite ∅ (algebraicIndependent_empty_type_iff.mpr hinj)
     fun t ht ind i _ ↦ H t ht ind i
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Variant of `algebraicIndependent_of_finite` using `Transcendental`. -/
 theorem algebraicIndependent_of_finite' (s : Set A)
     (hinj : Injective (algebraMap R A))
@@ -175,7 +171,6 @@ theorem algebraicIndependent_of_finite' (s : Set A)
 
 namespace AlgebraicIndependent
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sumElim_iff {ι'} {y : ι' → A} : AlgebraicIndependent R (Sum.elim y x) ↔
     AlgebraicIndependent R x ∧ AlgebraicIndependent (adjoin R (range x)) y := by
   by_cases hx : AlgebraicIndependent R x; swap
@@ -185,22 +180,19 @@ theorem sumElim_iff {ι'} {y : ι' → A} : AlgebraicIndependent R (Sum.elim y x
     ext (_ | _) <;> simp [e]
   simp_rw [hx, AlgebraicIndependent, this]; simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iff_adjoin_image (s : Set ι) :
     AlgebraicIndependent R x ↔ AlgebraicIndependent R (fun i : s ↦ x i) ∧
       AlgebraicIndepOn (adjoin R (x '' s)) x sᶜ := by
   rw [show x '' s = range fun i : s ↦ x i by ext; simp]
-  convert ← sumElim_iff
+  convert! ← sumElim_iff
   classical apply algebraicIndependent_equiv' ((Equiv.sumComm ..).trans (Equiv.Set.sumCompl ..))
   ext (_ | _) <;> rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iff_adjoin_image_compl (s : Set ι) :
     AlgebraicIndependent R x ↔ AlgebraicIndependent R (fun i : ↥sᶜ ↦ x i) ∧
       AlgebraicIndepOn (adjoin R (x '' sᶜ)) x s := by
-  convert ← iff_adjoin_image _; apply compl_compl
+  convert! ← iff_adjoin_image _; apply compl_compl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iff_transcendental_adjoin_image (i : ι) :
     AlgebraicIndependent R x ↔ AlgebraicIndependent R (fun j : {j // j ≠ i} ↦ x j) ∧
       Transcendental (adjoin R (x '' {i}ᶜ)) (x i) :=
@@ -210,12 +202,10 @@ theorem iff_transcendental_adjoin_image (i : ι) :
 variable (hx : AlgebraicIndependent R x)
 include hx
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sumElim {ι'} {y : ι' → A} (hy : AlgebraicIndependent (adjoin R (range x)) y) :
     AlgebraicIndependent R (Sum.elim y x) :=
   sumElim_iff.mpr ⟨hx, hy⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sumElim_of_tower {ι'} {y : ι' → A} (hxS : range x ⊆ range (algebraMap S A))
     (hy : AlgebraicIndependent S y) : AlgebraicIndependent R (Sum.elim y x) := by
   let e := AlgEquiv.ofInjective (IsScalarTower.toAlgHom R S A) hy.algebraMap_injective
@@ -232,12 +222,10 @@ theorem sumElim_comp {ι'} {x : ι → S} {y : ι' → A} (hx : AlgebraicIndepen
   (hx.map' (f := IsScalarTower.toAlgHom R S A) hy.algebraMap_injective).sumElim_of_tower
     (range_comp_subset_range ..) hy
 
-set_option backward.isDefEq.respectTransparency false in
 theorem adjoin_of_disjoint {s t : Set ι} (h : Disjoint s t) :
     AlgebraicIndependent (adjoin R (x '' s)) fun i : t ↦ x i :=
   ((iff_adjoin_image s).mp hx).2.comp (inclusion _) (inclusion_injective h.subset_compl_left)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem adjoin_iff_disjoint [Nontrivial A] {s t : Set ι} :
     (AlgebraicIndependent (adjoin R (x '' s)) fun i : t ↦ x i) ↔ Disjoint s t := by
   refine ⟨fun ind ↦ of_not_not fun ndisj ↦ ?_, adjoin_of_disjoint hx⟩
@@ -245,17 +233,15 @@ theorem adjoin_iff_disjoint [Nontrivial A] {s t : Set ι} :
   refine ind.transcendental ⟨i, ht⟩ (isAlgebraic_algebraMap (⟨_, subset_adjoin ?_⟩ : adjoin R _))
   exact ⟨i, hs, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem transcendental_adjoin {s : Set ι} {i : ι} (hi : i ∉ s) :
     Transcendental (adjoin R (x '' s)) (x i) := by
-  convert ← hx.adjoin_of_disjoint (Set.disjoint_singleton_right.mpr hi)
+  convert! ← hx.adjoin_of_disjoint (Set.disjoint_singleton_right.mpr hi)
   rw [algebraicIndependent_singleton_iff ⟨i, rfl⟩]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem transcendental_adjoin_iff [Nontrivial A] {s : Set ι} {i : ι} :
     Transcendental (adjoin R (x '' s)) (x i) ↔ i ∉ s := by
   rw [← Set.disjoint_singleton_right]
-  convert ← hx.adjoin_iff_disjoint (t := {i})
+  convert! ← hx.adjoin_iff_disjoint (t := { i })
   rw [algebraicIndependent_singleton_iff ⟨i, rfl⟩]
 
 end AlgebraicIndependent
@@ -263,12 +249,12 @@ end AlgebraicIndependent
 open Cardinal in
 theorem lift_trdeg_add_le [Nontrivial R] [FaithfulSMul R S] [FaithfulSMul S A] :
     lift.{v} (trdeg R S) + lift.{u} (trdeg S A) ≤ lift.{u} (trdeg R A) := by
-  simp_rw [trdeg, lift_iSup (bddAbove_range _)]
-  simp_rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range _) _ (bddAbove_range _),
+  simp_rw [trdeg, lift_iSup bddAbove_of_small]
+  simp_rw [Cardinal.ciSup_add_ciSup _ bddAbove_of_small _ bddAbove_of_small,
     add_comm (lift.{v, u} _), ← mk_sum]
   refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
   have := hs.sumElim_comp ht
-  refine le_ciSup_of_le (bddAbove_range _) ⟨_, this.to_subtype_range⟩ ?_
+  refine le_ciSup_of_le bddAbove_of_small ⟨_, this.to_subtype_range⟩ ?_
   rw [← lift_umax, mk_range_eq_of_injective this.injective, lift_id']
 
 theorem trdeg_add_le [Nontrivial R] {A : Type u} [CommRing A] [Algebra R A] [Algebra S A]
@@ -299,6 +285,6 @@ theorem AlgebraicIndependent.polynomial_aeval_of_transcendental
     (hx : AlgebraicIndependent R x)
     {f : ι → Polynomial R} (hf : ∀ i, Transcendental R (f i)) :
     AlgebraicIndependent R fun i ↦ Polynomial.aeval (x i) (f i) := by
-  convert aeval_of_algebraicIndependent hx (algebraicIndependent_polynomial_aeval_X _ hf)
+  convert! aeval_of_algebraicIndependent hx (algebraicIndependent_polynomial_aeval_X _ hf)
   rw [← AlgHom.comp_apply]
   congr 1; ext1; simp

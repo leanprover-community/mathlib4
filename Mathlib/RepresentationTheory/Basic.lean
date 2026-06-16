@@ -366,11 +366,10 @@ end OfQuotient
 
 section AddCommGroup
 
-variable {k G V : Type*} [Ring k] [Monoid G] [I : AddCommGroup V] [Module k V]
+variable {k G V : Type*} [Ring k] [Monoid G] [AddCommGroup V] [Module k V]
 variable (ρ : Representation k G V)
 
-instance : AddCommGroup ρ.asModule :=
-  I
+instance : AddCommGroup ρ.asModule := inferInstanceAs <| AddCommGroup V
 
 /- Given a representation `(V, ρ)` of a monoid `G`, this says
 `(ρ(g) - Id)(x + ρ(g)(x) + ... + ρ(gⁿ)(x)) = ρ(gⁿ⁺¹)(x) - x` for all `n : ℕ, g : G` and `x : V`. -/
@@ -725,7 +724,7 @@ noncomputable abbrev free (k G : Type*) [CommSemiring k] [Monoid G] (α : Type*)
 
 noncomputable instance (k G : Type*) [CommRing k] [Monoid G] (α : Type*) :
     AddCommGroup (free k G α).asModule :=
-  Finsupp.instAddCommGroup
+  inferInstanceAs <| AddCommGroup (α →₀ G →₀ k)
 
 lemma free_single_single (g h : G) (i : α) (r : k) :
     free k G α g (single i (single h r)) = single i (single (g * h) r) := by

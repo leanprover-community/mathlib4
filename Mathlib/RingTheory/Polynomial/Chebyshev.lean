@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Algebra.Polynomial.Sequence
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.Tactic.LinearCombination
 public import Mathlib.LinearAlgebra.Span.Basic
@@ -82,7 +83,7 @@ protected theorem induct (motive : ℤ → Prop)
     (neg_add_one : ∀ (n : ℕ), motive (-↑n) → motive (-↑n + 1) → motive (-↑n - 1)) :
     ∀ (a : ℤ), motive a :=
   T.induct motive zero one add_two fun n hn hnm => by
-    simpa only [Int.negSucc_eq, neg_add] using neg_add_one n hn hnm
+    simpa only [Int.negSucc_eq, neg_add] using! neg_add_one n hn hnm
 
 /-- Another induction principle used for proving facts about Chebyshev polynomials,
     which is sometimes easier to use -/
@@ -95,13 +96,13 @@ protected theorem induct' (motive : ℤ → Prop)
     ∀ (a : ℤ), motive a := by
   refine Chebyshev.induct motive zero one add_two ?_
   have neg' (n : ℤ) (h : motive (-n)) : motive n := by
-    convert neg (-n) h; rw [neg_neg]
+    convert! neg (-n) h; rw [neg_neg]
   intro n h₀ h₁
   cases n with
   | zero => exact neg 1 h₁
   | succ n =>
     apply neg (n + 2) (add_two n (neg' _ h₀) (neg' n ?_))
-    convert h₁ using 1; omega
+    convert! h₁ using 1; omega
 
 @[simp]
 theorem T_add_two : ∀ n, T R (n + 2) = 2 * X * T R (n + 1) - T R n
@@ -254,6 +255,11 @@ theorem T_eval_neg (n : ℤ) (x : R) : (T R n).eval (-x) = n.negOnePow * (T R n)
 
 theorem T_ne_zero (n : ℤ) [IsDomain R] [NeZero (2 : R)] : T R n ≠ 0 :=
   (T R n).degree_ne_bot.mp (by simp [degree_T R n])
+
+/-- ChebyshevT as a polynomial sequence. -/
+noncomputable def chebyshevTsequence [IsDomain R] [NeZero (2 : R)] : Polynomial.Sequence R where
+  elems' n := T R n
+  degree_eq' n := by simp [degree_T]
 
 /-- `U n` is the `n`-th Chebyshev polynomial of the second kind. -/
 noncomputable def U : ℤ → R[X]
@@ -870,7 +876,7 @@ theorem T_derivative_mem_span_T (n : ℕ) :
   · simp [hn]
   rw [T_derivative_eq_U, ← smul_eq_mul]; norm_cast
   refine Submodule.smul_of_tower_mem _ n ?_
-  convert U_mem_span_T R (n - 1) using 2 <;> grind
+  convert! U_mem_span_T R (n - 1) using 2 <;> grind
 
 theorem T_iterate_derivative_mem_span_T (n k : ℕ) :
     derivative^[k] (T R n) ∈ Submodule.span ℕ ((fun m : ℕ => T R m) '' Set.Icc 0 (n - k)) := by
@@ -883,7 +889,7 @@ theorem T_iterate_derivative_mem_span_T (n k : ℕ) :
     suffices Submodule.span ℕ ((fun m : ℕ => derivative (T R m)) '' Set.Icc 0 (n - k)) ≤
       Submodule.span ℕ ((fun m : ℕ => T R m) '' Set.Icc 0 (n - (k + 1))) by
       apply this
-      convert Submodule.apply_mem_span_image_of_mem_span (derivative.restrictScalars ℕ) ih using 2
+      convert! Submodule.apply_mem_span_image_of_mem_span (derivative.restrictScalars ℕ) ih using 2
       simp [Set.image]
     refine Submodule.span_le.mpr (fun x hx => ?_)
     obtain ⟨m, hm, rfl⟩ := hx

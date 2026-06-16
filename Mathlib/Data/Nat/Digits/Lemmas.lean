@@ -41,7 +41,7 @@ theorem ofDigits_eq_sum_mapIdx (b : ℕ) (L : List ℕ) :
   induction L with
   | nil => simp
   | cons hd tl hl =>
-    simpa [List.range_succ_eq_map, List.zipWith_map_right, ofDigits_eq_sum_mapIdx_aux] using
+    simpa [List.range_succ_eq_map, List.zipWith_map_right, ofDigits_eq_sum_mapIdx_aux] using!
       Or.inl hl
 
 /-!
@@ -50,7 +50,8 @@ theorem ofDigits_eq_sum_mapIdx (b : ℕ) (L : List ℕ) :
 This section contains various lemmas of properties relating to `digits` and `ofDigits`.
 -/
 
-theorem digits_len (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) : (b.digits n).length = b.log n + 1 := by
+theorem length_digits (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) :
+    (b.digits n).length = b.log n + 1 := by
   induction n using Nat.strong_induction_on with | _ n IH
   rw [digits_eq_cons_digits_div hb hn, List.length]
   by_cases h : n / b = 0
@@ -62,12 +63,14 @@ theorem digits_len (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) : (b.digits n).length
     contrapose! h
     exact div_eq_of_lt h
 
+@[deprecated (since := "2026-03-18")] alias digits_len := length_digits
+
 theorem digits_length_le_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
     (b.digits n).length ≤ k ↔ n < b ^ k := by
   by_cases h : n = 0
   · have : 0 < b ^ k := by positivity
     simpa [h]
-  rw [digits_len b n hb h, ← log_lt_iff_lt_pow hb h]
+  rw [length_digits b n hb h, ← log_lt_iff_lt_pow hb h]
   exact add_one_le_iff
 
 theorem lt_digits_length_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
@@ -112,16 +115,21 @@ theorem digits_append_zeroes_append_digits {b k m n : ℕ} (hb : 1 < b) (hm : 0 
   simp only [digits_append_digits (zero_lt_of_lt hb), digits_inj_iff, add_right_inj]
   ring
 
-theorem digits_len_le_digits_len_succ (b n : ℕ) :
+theorem length_digits_le_length_digits_succ (b n : ℕ) :
     (digits b n).length ≤ (digits b (n + 1)).length := by
   rcases Decidable.eq_or_ne n 0 with (rfl | hn)
   · simp
   rcases le_or_gt b 1 with hb | hb
   · interval_cases b <;> simp +arith [digits_zero_succ', hn]
-  simpa [digits_len, hb, hn] using log_mono_right (le_succ _)
+  simpa [length_digits, hb, hn] using log_mono_right (le_succ _)
 
-theorem le_digits_len_le (b n m : ℕ) (h : n ≤ m) : (digits b n).length ≤ (digits b m).length :=
-  monotone_nat_of_le_succ (digits_len_le_digits_len_succ b) h
+@[deprecated (since := "2026-03-18")]
+alias digits_len_le_digits_len_succ := length_digits_le_length_digits_succ
+
+theorem le_length_digits_le (b n m : ℕ) (h : n ≤ m) : (digits b n).length ≤ (digits b m).length :=
+  monotone_nat_of_le_succ (length_digits_le_length_digits_succ b) h
+
+@[deprecated (since := "2026-03-18")] alias le_digits_len_le := le_length_digits_le
 
 theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2 : l.getLast hl ≠ 0) :
     (b + 2) ^ l.length ≤ (b + 2) * ofDigits (b + 2) l := by
@@ -131,7 +139,7 @@ theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2
   apply Nat.mul_le_mul_left
   refine le_trans ?_ (Nat.le_add_left _ _)
   have : 0 < l.getLast hl := by rwa [pos_iff_ne_zero]
-  convert Nat.mul_le_mul_left ((b + 2) ^ (l.length - 1)) this using 1
+  convert! Nat.mul_le_mul_left ((b + 2) ^ (l.length - 1)) this using 1
   rw [Nat.mul_one]
 
 /-- Any non-zero natural number `m` is greater than
@@ -140,8 +148,7 @@ theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2
 theorem base_pow_length_digits_le' (b m : ℕ) (hm : m ≠ 0) :
     (b + 2) ^ (digits (b + 2) m).length ≤ (b + 2) * m := by
   have : digits (b + 2) m ≠ [] := digits_ne_nil_iff_ne_zero.mpr hm
-  convert @pow_length_le_mul_ofDigits b (digits (b + 2) m)
-    this (getLast_digit_ne_zero _ hm)
+  convert! @pow_length_le_mul_ofDigits b (digits (b + 2) m) this (getLast_digit_ne_zero _ hm)
   rw [ofDigits_digits]
 
 /-- Any non-zero natural number `m` is greater than
@@ -193,9 +200,10 @@ theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits {p : ℕ} (n : ℕ) :
   obtain h | rfl | h : 1 < p ∨ 1 = p ∨ p < 1 := trichotomous 1 p
   · rcases eq_or_ne n 0 with rfl | hn
     · simp
-    · convert sub_one_mul_sum_div_pow_eq_sub_sum_digits (p.digits n) (getLast_digit_ne_zero p hn) <|
-          (fun l a ↦ digits_lt_base h a)
-      · refine (digits_len p n h hn).symm
+    · convert!
+      sub_one_mul_sum_div_pow_eq_sub_sum_digits (p.digits n) (getLast_digit_ne_zero p hn) <|
+        (fun l a ↦ digits_lt_base h a)
+      · refine (length_digits p n h hn).symm
       all_goals exact (ofDigits_digits p n).symm
   · simp
   · simp [lt_one_iff.mp h]
@@ -280,7 +288,7 @@ theorem modEq_digits_sum (b b' : ℕ) (h : b' % b = 1) (n : ℕ) : n ≡ (digits
     congr
     · skip
     · rw [← ofDigits_digits b' n]
-  convert ofDigits_modEq b' b (digits b' n)
+  convert! ofDigits_modEq b' b (digits b' n)
   exact h.symm
 
 theorem zmodeq_ofDigits_digits (b b' : ℕ) (c : ℤ) (h : b' ≡ c [ZMOD b]) (n : ℕ) :
@@ -413,7 +421,7 @@ This spelling can be helpful for some proofs.
 theorem _root_.Nat.bijOn_ofDigits' {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.BijOn (ofDigits b) (fixedLengthDigits hb l) (Finset.range (b ^ l)) := by
   rw [fixedLengthDigits, Set.coe_toFinset]
-  convert bijOn_ofDigits hb l
+  convert! bijOn_ofDigits hb l
   ext; simp
 
 /--
@@ -423,7 +431,7 @@ This spelling can be helpful for some proofs.
 theorem _root_.Nat.bijOn_digitsAppend' {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.BijOn (digitsAppend b l) (Finset.range (b ^ l)) (fixedLengthDigits hb l) := by
   rw [fixedLengthDigits, Set.coe_toFinset]
-  convert bijOn_digitsAppend hb l
+  convert! bijOn_digitsAppend hb l
   ext; simp
 
 @[simp]

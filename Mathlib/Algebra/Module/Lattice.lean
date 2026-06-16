@@ -66,7 +66,7 @@ Note 2: In the case `R = ℤ` and `A = K` a field, there is also `IsZLattice` wh
 generated condition is replaced by having the discrete topology. -/
 class IsLattice (A : outParam Type*) [CommRing A] [Algebra R A]
     {V : Type*} [AddCommMonoid V] [Module R V] [Module A V] [IsScalarTower R A V]
-    [Algebra R A] [IsScalarTower R A V] (M : Submodule R V) : Prop where
+    [IsScalarTower R A V] (M : Submodule R V) : Prop where
   fg : M.FG
   span_eq_top : Submodule.span A (M : Set V) = ⊤
 

@@ -71,6 +71,20 @@ theorem sign_discr :
   · rw [Int.sign_eq_neg_one_of_neg h, Odd.neg_one_pow]
     rwa [← Nat.not_even_iff_odd, ← this, Int.cast_nonneg_iff, not_le]
 
+section rootDiscr
+
+/-- The root discriminant of a number field `K`. -/
+noncomputable def rootDiscr : ℝ :=
+  |discr K| ^ (finrank ℚ K : ℝ)⁻¹
+
+theorem rootDiscr_def : rootDiscr K = |discr K| ^ (finrank ℚ K : ℝ)⁻¹ := by
+  rw [rootDiscr]
+
+theorem rootDiscr_rat : rootDiscr ℚ = 1 := by
+  simp [rootDiscr_def]
+
+end rootDiscr
+
 open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :
     volume (fundamentalDomain (latticeBasis K)) =
@@ -143,7 +157,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
       mul_one]
     · exact mul_ne_top (ne_of_lt (minkowskiBound_lt_top K I)) coe_ne_top
     · exact (Nat.cast_ne_zero.mpr (ne_of_gt finrank_pos))
-  convert exists_ne_zero_mem_ideal_of_norm_le K I h_le
+  convert! exists_ne_zero_mem_ideal_of_norm_le K I h_le
   rw [div_pow B, ← Real.rpow_natCast B, ← Real.rpow_mul (by positivity), div_mul_cancel₀ _
     (Nat.cast_ne_zero.mpr <| ne_of_gt finrank_pos), Real.rpow_one, mul_comm_div, mul_div_assoc']
   congr 1
@@ -187,7 +201,6 @@ theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
   simp_rw [Units.val_one, FractionalIdeal.absNorm_one, Rat.cast_one, one_mul] at h_nm
   exact h_nm
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The Minkowski lower bound `n^{2n}/((4/pi)^{2r_2}*n!^2)` for the absolute value of the discriminant
 of a number field of degree n.
@@ -251,7 +264,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
           simp [field, div_pow]
           ring
         · rw [_root_.le_div_iff₀ (by positivity), pow_succ]
-          convert (mul_le_mul h_m this (by positivity) (by positivity)) using 1
+          convert! (mul_le_mul h_m this (by positivity) (by positivity)) using 1
           field
       refine le_trans (le_of_eq (by simp [field]; norm_num)) (one_add_mul_le_pow ?_ (2 * m))
       exact le_trans (by norm_num : (-2 : ℝ) ≤ 0) (by positivity)
@@ -309,7 +322,7 @@ theorem finite_of_finite_generating_set {p : IntermediateField ℚ A → Prop}
   refine Set.finite_coe_iff.mp <| Finite.of_injective
     (fun ⟨F, hF⟩ ↦ (⟨(h F hF).choose, (h F hF).choose_spec.1⟩ : T)) (fun _ _ h_eq ↦ ?_)
   rw [Subtype.ext_iff, Subtype.ext_iff]
-  convert congr_arg (ℚ⟮·⟯) (Subtype.mk_eq_mk.mp h_eq)
+  convert! congr_arg (ℚ⟮·⟯) (Subtype.mk_eq_mk.mp h_eq)
   all_goals exact (h _ (Subtype.mem _)).choose_spec.2
 
 variable (N : ℕ)
@@ -420,7 +433,7 @@ theorem finite_of_discr_bdd_of_isReal :
     · refine mem_rootSet.mpr ⟨minpoly.ne_zero hx, ?_⟩
       exact (aeval_algebraMap_eq_zero_iff A (x : K) _).mpr (minpoly.aeval ℤ (x : K))
     · rw [← (IntermediateField.lift_injective _).eq_iff, eq_comm] at hx₁
-      convert hx₁
+      convert! hx₁
       · simp only [IntermediateField.lift_top]
       · simp only [IntermediateField.lift_adjoin, Set.image_singleton]
   calc
@@ -470,7 +483,7 @@ theorem finite_of_discr_bdd_of_isComplex :
     · refine mem_rootSet.mpr ⟨minpoly.ne_zero hx, ?_⟩
       exact (aeval_algebraMap_eq_zero_iff A (x : K) _).mpr (minpoly.aeval ℤ (x : K))
     · rw [← (IntermediateField.lift_injective _).eq_iff, eq_comm] at hx₁
-      convert hx₁
+      convert! hx₁
       · simp only [IntermediateField.lift_top]
       · simp only [IntermediateField.lift_adjoin, Set.image_singleton]
   calc

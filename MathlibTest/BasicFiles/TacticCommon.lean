@@ -32,6 +32,6 @@ theorem test_count_heartbeats : True := trivial
 theorem test_print_sorries : True := sorry
 
 -- Guard against the shake tool modifying our imports
-/-- info: [public import Init, import Mathlib.Tactic.Common] -/
+/-- info: [public import Init, public meta import Init, import Mathlib.Tactic.Common] -/
 #guard_msgs in
 run_elab Lean.logInfo m!"{(← Lean.MonadEnv.getEnv).imports}"

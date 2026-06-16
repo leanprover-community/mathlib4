@@ -34,8 +34,9 @@ namespace CochainComplex
 
 open HomologicalComplex
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The collection of all single functors `C ⥤ CochainComplex C ℤ` along with
-their compatibilites with shifts. (This definition has purposely no `simps`
+their compatibilities with shifts. (This definition has purposely no `simps`
 attribute, as the generated lemmas would not be very useful.) -/
 noncomputable def singleFunctors : SingleFunctors C (CochainComplex C ℤ) ℤ where
   functor n := single _ _ n

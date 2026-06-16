@@ -81,7 +81,7 @@ lemma isPrimary_decomposition_pairwise_ne_radical {N : Submodule R M}
     obtain ⟨I', hI', hI⟩ := hI
     obtain ⟨J', hJ', hJ⟩ := hJ
     simp only [Function.onFun, ne_eq]
-    contrapose! hIJ
+    contrapose hIJ
     suffices (I'.colon Set.univ).radical = (J'.colon Set.univ).radical by
       rw [← hI, ← hJ, this]
     · rw [← hI, colon_finsetInf,
@@ -182,7 +182,7 @@ lemma comap_localized₀_eq_ite
     apply (hqp.mem_or_mem hb).resolve_right
     grind [Submonoid.mem_iInf, mem_primeCompl_iff]
   · replace hq : ¬ (q.colon Set.univ : Set R) ⊆ ⋃ r ∈ s₀, r := by
-      contrapose! hp
+      contrapose hp
       obtain ⟨r, hrs, h⟩ := (subset_union_prime p p fun i _ _ _ ↦ i.2.1).mp hp
       rw [← r.2.1.radical_le_iff, hq] at h
       exact hs₀ h hrs
@@ -190,7 +190,7 @@ lemma comap_localized₀_eq_ite
     replace hy2 : y ∈ S := by
       simp only [Submonoid.mem_iInf, Ideal.mem_primeCompl_iff, Subtype.forall, S]
       intro r hrI hrs
-      contrapose! hy2
+      contrapose hy2
       exact Set.mem_biUnion hrs hy2
     rw [eq_top_iff, ← map_le_iff_le_comap, map_top]
     rintro - ⟨x, rfl⟩
@@ -263,7 +263,7 @@ namespace Submodule
 
 section Noetherian
 
-open Pointwise
+open scoped Pointwise
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] [IsNoetherian R M]
 
@@ -277,7 +277,7 @@ lemma _root_.InfIrred.isPrimary {N : Submodule R M} (h : InfIrred N) : N.IsPrima
     smul_mem' x y h := by simp [smul_comm _ x, N.smul_mem x h] }
   have hf : Monotone f := by
     intro n m hnm x hx
-    simpa [hnm, smul_smul, ← pow_add] using N.smul_mem (a ^ (m - n)) hx
+    simpa [hnm, smul_smul, ← pow_add] using! N.smul_mem (a ^ (m - n)) hx
   obtain ⟨n, hn⟩ := monotone_stabilizes_iff_noetherian.mpr ‹_› ⟨f, hf⟩
   rcases h with ⟨-, h⟩
   specialize @h (f n) (N + a ^ n • ⊤) ?_
@@ -292,7 +292,7 @@ lemma _root_.InfIrred.isPrimary {N : Submodule R M} (h : InfIrred N) : N.IsPrima
   replace hn : f n = f (n + 1) := hn (n + 1) n.le_succ
   rw [← h, hn]
   rw [← h] at hab
-  simpa [f, pow_succ, mul_smul] using hab
+  simpa [f, pow_succ, mul_smul] using! hab
 
 variable (R M) in
 /-- The Lasker--Noether theorem: every submodule in a Noetherian module admits a decomposition into

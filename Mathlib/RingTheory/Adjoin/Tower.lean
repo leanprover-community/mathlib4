@@ -21,7 +21,7 @@ public import Mathlib.RingTheory.Adjoin.FG
 public section
 
 
-open Pointwise
+open scoped Pointwise
 
 universe u v w u₁
 
@@ -122,7 +122,7 @@ theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : 
                   mem_image₂_of_mem (mem_union_right _ <| mul_mem_mul hyi hyj) hyk⟩
               (subset_span <| Set.mem_insert_of_mem _ hyk : yk ∈ _))
   refine ⟨Algebra.adjoin A (↑s : Set B), Subalgebra.fg_adjoin_finset _, insert 1 y, ?_⟩
-  convert restrictScalars_injective A (Algebra.adjoin A (s : Set B)) C _
+  convert! restrictScalars_injective A (Algebra.adjoin A (s : Set B)) C _
   rw [restrictScalars_top, eq_top_iff, ← Algebra.top_toSubmodule, ← hx, Algebra.adjoin_eq_span,
     span_le]
   refine fun r hr =>
@@ -136,7 +136,6 @@ section Ring
 variable [CommRing A] [CommRing B] [CommRing C]
 variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Artin--Tate lemma**: if A ⊆ B ⊆ C is a chain of subrings of commutative rings, and
 A is Noetherian, and C is algebra-finite over A, and C is module-finite over B,
 then B is algebra-finite over A.

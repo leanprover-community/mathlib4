@@ -28,7 +28,7 @@ We do **not** define a separate class of graded ring homomorphisms; instead, we 
 ## Implementation notes
 
 * We don't really need the fact that they are graded rings until the theorem
-`DirectSum.decompose_map` which describes how the decomposition interacts with the map.
+  `DirectSum.decompose_map` which describes how the decomposition interacts with the map.
 -/
 
 @[expose] public section
@@ -72,11 +72,11 @@ section coe
 
 instance : FunLike (𝒜 →+*ᵍ ℬ) A B where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
-    apply DFunLike.coe_injective'
+    apply DFunLike.coe_injective
     exact h
 
 instance : GradedFunLike (𝒜 →+*ᵍ ℬ) 𝒜 ℬ where

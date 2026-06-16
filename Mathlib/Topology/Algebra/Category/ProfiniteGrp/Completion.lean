@@ -5,7 +5,8 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.GroupTheory.FiniteIndexNormalSubgroup
+public import Mathlib.Algebra.Category.Grp.EpiMono
+public import Mathlib.GroupTheory.ResiduallyFinite
 public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Limits
 
 /-!
@@ -79,6 +80,18 @@ def eta : G ⟶ GrpCat.of (completion G) := GrpCat.ofHom {
 }
 
 set_option backward.isDefEq.respectTransparency false in
+theorem mono_eta_iff_residuallyFinite : Mono (eta G) ↔ Group.ResiduallyFinite G := by
+  rw [GrpCat.mono_iff_injective, injective_iff_map_eq_one,
+    Group.residuallyFinite_iff_forall_finiteIndexNormalSubgroup]
+  refine forall_congr' fun g ↦ imp_congr_left ?_
+  rw [Subtype.ext_iff, funext_iff]
+  exact forall_congr' fun H ↦ QuotientGroup.eq_one_iff g
+
+theorem etaFn_injective_iff_residuallyFinite :
+    Function.Injective (etaFn G) ↔ Group.ResiduallyFinite G :=
+  (GrpCat.mono_iff_injective (eta G)).symm.trans (mono_eta_iff_residuallyFinite G)
+
+set_option backward.isDefEq.respectTransparency false in
 lemma denseRange : DenseRange (etaFn G) := by
   apply dense_iff_inter_open.mpr
   rintro U ⟨s, hsO, hsv⟩ ⟨⟨spc, hspc⟩, uDefaultSpec⟩
@@ -139,6 +152,7 @@ def lift (f : G ⟶ GrpCat.of P) : completion G ⟶ P :=
       exact this
   }⟩
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma lift_eta (f : G ⟶ GrpCat.of P) : eta G ≫ (forget₂ _ _).map (lift f) = f := by
   let e := isoLimittoFiniteQuotientFunctor P
@@ -155,7 +169,7 @@ lemma lift_unique (f g : completion G ⟶ P)
   apply congrFun
   refine (denseRange (G := G)).equalizer f.hom.continuous_toFun g.hom.continuous_toFun ?_
   funext y
-  simpa [GrpCat.comp_apply] using (ConcreteCategory.congr_hom h y)
+  simpa [GrpCat.comp_apply] using! (ConcreteCategory.congr_hom h y)
 
 end ProfiniteCompletion
 

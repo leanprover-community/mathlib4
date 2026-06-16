@@ -37,7 +37,7 @@ the concept of strict monoidal categories due to the feature of dependent type t
 normalization tactic can remove associators and unitors from the expression, extracting the
 necessary data for drawing string diagrams.
 
-The string diagrams widget is to use Penrose (https://github.com/penrose) via ProofWidget.
+The string diagrams widget is to use Penrose (https://github.com/penrose) via ProofWidgets.
 However, it should be noted that the normalization procedure in this file does not rely on specific
 settings, allowing for broader application. Future plans include the following. At least I (Yuma)
 would like to work on these in the future, but it might not be immediate. If anyone is interested,
@@ -516,7 +516,7 @@ variable {ρ : Type}
 
 /-- Trace the proof of the normalization. -/
 def traceProof (nm : Name) (result : Expr) : CoherenceM ρ Unit := do
-  withTraceNode nm (fun _ => return m!"{checkEmoji} {← inferType result}") do
+  withTraceNode nm (fun _ => return m!"{← inferType result}") do
     if ← isTracingEnabledFor nm then addTrace nm m!"proof: {result}"
 
 -- TODO: It takes a while to compile. Find out why.

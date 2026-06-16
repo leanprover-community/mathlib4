@@ -92,6 +92,7 @@ lemma _root_.algebraMap.coe_logDeriv {F K : Type*} [Field F] [Field K] [Differen
 
 variable {F : Type*} [Field F] [Differential F] [CharZero F]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
     Differential (AdjoinRoot p) where
   deriv := Derivation.liftOfSurjective (f := (AdjoinRoot.mk p).toIntAlgHom) AdjoinRoot.mk_surjective
@@ -113,10 +114,11 @@ noncomputable instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
       have : 0 < p.natDegree := Irreducible.natDegree_pos (Fact.out)
       apply not_dvd_of_natDegree_lt
       · intro nh
-        simp [natDegree_eq_zero_of_derivative_eq_zero nh] at this
+        simp_all
       apply natDegree_derivative_lt
       exact Nat.ne_zero_of_lt this)
 
+set_option backward.isDefEq.respectTransparency false in
 instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
     DifferentialAlgebra F (AdjoinRoot p) where
   deriv_algebraMap a := by
@@ -174,19 +176,16 @@ noncomputable def uniqueDifferentialAlgebraFiniteDimensional [FiniteDimensional 
       (minpoly.irreducible (Algebra.IsIntegral.isIntegral _))
     apply not_dvd_of_natDegree_lt
     · intro nh
-      simp [natDegree_eq_zero_of_derivative_eq_zero nh] at this
+      simp_all
     apply natDegree_derivative_lt
     exact Nat.ne_zero_of_lt this
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (B : IntermediateField F K) [FiniteDimensional F B] : Differential B :=
   differentialFiniteDimensional F B
 
-set_option backward.isDefEq.respectTransparency false in
 instance (B : IntermediateField F K) [FiniteDimensional F B] :
     DifferentialAlgebra F B := differentialAlgebraFiniteDimensional
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Differential K] [DifferentialAlgebra F K] (B : IntermediateField F K)
     [FiniteDimensional F B] : DifferentialAlgebra B K where
   deriv_algebraMap a := by

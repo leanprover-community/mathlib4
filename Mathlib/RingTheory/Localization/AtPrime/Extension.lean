@@ -78,7 +78,6 @@ theorem liesOver_map_of_liesOver [Algebra R Sₚ] [IsScalarTower R S Sₚ] [IsSc
 
 attribute [local instance] Ideal.Quotient.field
 
-set_option backward.isDefEq.respectTransparency false in
 include p in
 theorem exists_algebraMap_quot_eq_of_mem_quot [P.IsMaximal]
     (x : Sₚ ⧸ P.map (algebraMap S Sₚ)) :
@@ -104,7 +103,7 @@ the complement of `p` and `P` is a maximal ideal of `S` above `p`.
 Note that this isomorphism makes the obvious diagram involving `R ⧸ p ≃+* Rₚ ⧸ maximalIdeal Rₚ`
 commute, see `IsLocalization.AtPrime.algebraMap_equivQuotMaximalIdeal_symm_apply`.
 -/
-noncomputable def equivQuotientMapOfIsMaximal [p.IsPrime] [P.IsMaximal] :
+noncomputable def equivQuotientMapOfIsMaximal [P.IsMaximal] :
     S ⧸ P ≃+* Sₚ ⧸ P.map (algebraMap S Sₚ) :=
   .trans
     (Ideal.quotEquivOfEq (by
@@ -118,7 +117,6 @@ theorem equivQuotientMapOfIsMaximal_apply_mk [P.IsMaximal] (x : S) :
     equivQuotientMapOfIsMaximal p Sₚ P (Ideal.Quotient.mk _ x) =
       (Ideal.Quotient.mk _ (algebraMap S Sₚ x)) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem equivQuotientMapOfIsMaximal_symm_apply_mk [P.IsMaximal] (x : S)
     (s : algebraMapSubmonoid S p.primeCompl) :
@@ -180,8 +178,8 @@ theorem inertiaDeg_map_eq_inertiaDeg [p.IsMaximal] [P.IsMaximal]
 theorem ramificationIdx_map_eq_ramificationIdx [IsDomain R] [IsTorsionFree R S] [IsTorsionFree R Rₚ]
     [IsTorsionFree S Sₚ] [IsTorsionFree Rₚ Sₚ] [IsDedekindDomain S] [IsDedekindDomain Rₚ]
     [IsDedekindDomain Sₚ] (hp : p ≠ ⊥) [P.IsPrime] :
-    (maximalIdeal Rₚ).ramificationIdx (algebraMap Rₚ Sₚ) (P.map (algebraMap S Sₚ)) =
-      p.ramificationIdx (algebraMap R S) P := by
+    (maximalIdeal Rₚ).ramificationIdx (P.map (algebraMap S Sₚ)) =
+      p.ramificationIdx P := by
   have h₁ : maximalIdeal Rₚ ≠ ⊥ := by
     rw [← map_eq_maximalIdeal p]
     exact map_ne_bot_of_ne_bot hp
@@ -226,14 +224,14 @@ noncomputable def primesOverEquivPrimesOver (hp : p ≠ ⊥) :
     refine ⟨fun h ↦ ?_, fun h ↦ map_mono h⟩
     have : Q'.1.IsMaximal :=
       (primesOver.isPrime p Q').isMaximal (ne_bot_of_mem_primesOver hp Q'.prop)
-    simpa [comap_map_of_isMaximal S p] using le_comap_of_map_le h
+    simpa [under_map_of_isMaximal S p] using le_comap_of_map_le h
   invFun Q := ⟨comap (algebraMap S Sₚ) Q.1, IsPrime.under S Q.1,
     liesOver_comap_of_liesOver p Rₚ Q.1⟩
   left_inv P := by
     have : P.val.IsMaximal := Ring.DimensionLEOne.maximalOfPrime
       (ne_bot_of_mem_primesOver hp P.prop) (primesOver.isPrime p P)
-    exact SetCoe.ext <| IsLocalization.AtPrime.comap_map_of_isMaximal S p Sₚ P.1
-  right_inv Q := SetCoe.ext <| map_comap (algebraMapSubmonoid S p.primeCompl) Sₚ Q
+    exact SetCoe.ext <| IsLocalization.AtPrime.under_map_of_isMaximal S p Sₚ P.1
+  right_inv Q := SetCoe.ext <| map_under (algebraMapSubmonoid S p.primeCompl) Sₚ Q
 
 @[simp]
 theorem primesOverEquivPrimesOver_apply (hp : p ≠ ⊥) (P : p.primesOver S) :
@@ -255,9 +253,9 @@ theorem primesOverEquivPrimesOver_inertiagDeg_eq [p.IsMaximal] (hp : p ≠ ⊥) 
 theorem primesOverEquivPrimesOver_ramificationIdx_eq (hp : p ≠ ⊥) [NoZeroSMulDivisors R Rₚ]
     [NoZeroSMulDivisors S Sₚ] [NoZeroSMulDivisors Rₚ Sₚ] [IsDedekindDomain Rₚ] [IsDedekindDomain Sₚ]
     (P : p.primesOver S) :
-    (maximalIdeal Rₚ).ramificationIdx (algebraMap Rₚ Sₚ)
+    (maximalIdeal Rₚ).ramificationIdx
       (primesOverEquivPrimesOver p Rₚ Sₚ hp P : Ideal Sₚ) =
-        p.ramificationIdx (algebraMap R S) P.val :=
+        p.ramificationIdx P.val :=
   ramificationIdx_map_eq_ramificationIdx p _ _ _ hp
 
 end IsDedekindDomain

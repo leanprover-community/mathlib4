@@ -173,12 +173,7 @@ theorem content_eq_gcd_range_of_lt (p : R[X]) (n : ℕ) (h : p.natDegree < n) :
   · rw [Finset.dvd_gcd_iff]
     intro i _
     apply content_dvd_coeff _
-  · apply Finset.gcd_mono
-    intro i
-    simp only [mem_support_iff, Ne, Finset.mem_range]
-    contrapose!
-    intro h1
-    apply coeff_eq_zero_of_natDegree_lt (lt_of_lt_of_le h h1)
+  · exact Finset.gcd_mono (supp_subset_range h)
 
 theorem content_eq_gcd_range_succ (p : R[X]) :
     p.content = (Finset.range p.natDegree.succ).gcd p.coeff :=
@@ -394,7 +389,7 @@ theorem exists_primitive_lcm_of_isPrimitive {p q : R[X]} (hp : p.IsPrimitive) (h
     by_contra! con
     rcases Nat.find_spec con with ⟨s, sdeg, ⟨ps, qs⟩, rs⟩
     have s0 : s ≠ 0 := by
-      contrapose! rs
+      contrapose rs
       simp [rs]
     have hs :=
       Nat.find_min' h

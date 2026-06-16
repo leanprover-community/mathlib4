@@ -137,6 +137,7 @@ def toLax : B ⥤ᴸ C where
 instance hasCoeToLax : Coe (B ⥤ᵖ C) (B ⥤ᴸ C) :=
   ⟨toLax⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The identity pseudofunctor. -/
 @[simps]
@@ -148,6 +149,7 @@ def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : B ⥤ᵖ B where
 instance : Inhabited (B ⥤ᵖ B) :=
   ⟨id B⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Composition of pseudofunctors. -/
 @[simps]
@@ -155,12 +157,6 @@ def comp (F : B ⥤ᵖ C) (G : C ⥤ᵖ D) : B ⥤ᵖ D where
   toPrelaxFunctor := F.toPrelaxFunctor.comp G.toPrelaxFunctor
   mapId := fun a => G.map₂Iso (F.mapId a) ≪≫ G.mapId (F.obj a)
   mapComp := fun f g => (G.map₂Iso (F.mapComp f g)) ≪≫ G.mapComp (F.map f) (F.map g)
-  -- Note: whilst these are all provable by `cat_disch`, the proof is very slow
-  map₂_whisker_left f η := by simp
-  map₂_whisker_right η h := by simp
-  map₂_associator f g h := by simp
-  map₂_left_unitor f := by simp
-  map₂_right_unitor f := by simp
 
 section
 
@@ -256,6 +252,7 @@ def mapId' {b : B} (f : b ⟶ b) (hf : f = 𝟙 b := by cat_disch) :
     F.map f ≅ 𝟙 (F.obj b) :=
   F.map₂Iso (eqToIso (by rw [hf])) ≪≫ F.mapId _
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mapId'_eq_mapId (b : B) :
     F.mapId' (𝟙 b) rfl = F.mapId b := by
   simp [mapId']
@@ -277,6 +274,7 @@ def mapComp' {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) (fg : 
     F.map fg ≅ F.map f ≫ F.map g :=
   F.map₂Iso (eqToIso (by rw [h])) ≪≫ F.mapComp f g
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mapComp'_eq_mapComp {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) :
     F.mapComp' f g _ rfl = F.mapComp f g := by
   simp [mapComp']

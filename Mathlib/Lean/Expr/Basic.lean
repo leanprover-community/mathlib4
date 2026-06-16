@@ -199,7 +199,7 @@ Each entry in the array is an `Expr.app`,
 and this array has the same length as the one returned by `Lean.Expr.getAppArgs`. -/
 @[inline]
 def getAppApps (e : Expr) : Array Expr :=
-  let dummy := mkSort levelZero
+  let dummy := mkSort .zero
   let nargs := e.getAppNumArgs
   getAppAppsAux e (.replicate nargs dummy) (nargs-1)
 

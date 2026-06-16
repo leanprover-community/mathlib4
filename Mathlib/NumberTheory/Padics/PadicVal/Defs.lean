@@ -32,7 +32,6 @@ open Nat
 
 variable {p : ℕ}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem padicValNat_eq_emultiplicity_of_ne_one (hp : p ≠ 1) {n : ℕ} (hn : n ≠ 0) :
     padicValNat p n = emultiplicity p n := by
   rw [eq_comm, emultiplicity_eq_coe, pow_dvd_iff_le_padicValNat hp hn,
@@ -94,7 +93,6 @@ theorem le_emultiplicity_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n :
   (replicate_subperm_primeFactorsList_iff ha hb).trans
     pow_dvd_iff_le_emultiplicity |>.symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_padicValNat_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : ℕ} (ha : a.Prime)
     (hb : b ≠ 0) :
     n ≤ padicValNat a b ↔ replicate n a <+~ b.primeFactorsList := by

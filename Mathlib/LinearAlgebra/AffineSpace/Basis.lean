@@ -106,7 +106,7 @@ instance : Inhabited (AffineBasis PUnit k PUnit) :=
 
 instance instFunLike : FunLike (AffineBasis ι k P) ι P where
   coe := AffineBasis.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[ext]
 theorem ext {b₁ b₂ : AffineBasis ι k P} (h : (b₁ : ι → P) = b₂) : b₁ = b₂ :=
@@ -118,7 +118,6 @@ theorem ind : AffineIndependent k b :=
 theorem tot : affineSpan k (range b) = ⊤ :=
   b.tot'
 
-set_option backward.isDefEq.respectTransparency false in
 include b in
 protected theorem nonempty : Nonempty ι :=
   not_isEmpty_iff.mp fun hι => by
@@ -220,7 +219,7 @@ theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : ∑ i, b.coord i q = 1 := 
     rw [b.tot]
     exact AffineSubspace.mem_top k V q
   obtain ⟨w, hw, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype hq
-  convert hw
+  convert! hw
   exact b.coord_apply_combination_of_mem (Finset.mem_univ _) hw
 
 @[simp]

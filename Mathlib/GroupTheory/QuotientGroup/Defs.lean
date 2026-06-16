@@ -70,7 +70,7 @@ protected def con : Con G where
 
 @[to_additive]
 instance Quotient.group : Group (G ⧸ N) :=
-  (QuotientGroup.con N).group
+  inferInstanceAs <| Group (delta% QuotientGroup.con N).Quotient
 
 /--
 The congruence relation defined by the kernel of a group homomorphism is equal to its kernel
@@ -124,9 +124,9 @@ theorem eq_one_iff {N : Subgroup G} [N.Normal] (x : G) : (x : G ⧸ N) = 1 ↔ x
 @[to_additive (attr := simp)]
 lemma mk'_comp_subtype : (mk' N).comp N.subtype = 1 := by ext; simp
 
-/- Note: `range_mk'` is a lemma about the primed constructor `QuotientGroup.mk'`, not a
-  modified version of some `range_mk`. -/
 set_option linter.docPrime false in
+/-- Note: `range_mk'` is a lemma about the primed constructor `QuotientGroup.mk'`, not a
+  modified version of some `range_mk`. -/
 @[to_additive (attr := simp)]
 theorem range_mk' : (QuotientGroup.mk' N).range = ⊤ :=
   MonoidHom.range_eq_top.mpr (mk'_surjective N)
@@ -148,11 +148,9 @@ theorem eq_iff_div_mem {N : Subgroup G} [nN : N.Normal] {x y : G} :
   rw [nN.mem_comm_iff, div_eq_mul_inv]
 
 -- for commutative groups we don't need normality assumption
-
 @[to_additive]
-instance Quotient.commGroup {G : Type*} [CommGroup G] (N : Subgroup G) : CommGroup (G ⧸ N) :=
-  { toGroup := have := N.normal_of_comm; QuotientGroup.Quotient.group N
-    mul_comm := fun a b => Quotient.inductionOn₂' a b fun a b => congr_arg mk (mul_comm a b) }
+instance Quotient.commGroup {G : Type*} [CommGroup G] (N : Subgroup G) : CommGroup (G ⧸ N) where
+  mul_comm := fun a b => Quotient.inductionOn₂' a b fun a b => congr_arg mk (mul_comm a b)
 
 local notation " Q" => G ⧸ N
 

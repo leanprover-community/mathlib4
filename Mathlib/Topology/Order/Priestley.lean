@@ -30,7 +30,7 @@ We do not include compactness in the definition, so a Priestley space is to be d
 * [Davey, Priestley *Introduction to Lattices and Order*][davey_priestley]
 -/
 
-@[expose] public section
+public section
 
 
 open Set

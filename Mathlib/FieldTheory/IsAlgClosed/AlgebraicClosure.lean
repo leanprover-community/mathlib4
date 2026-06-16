@@ -129,22 +129,21 @@ def AlgebraicClosure : Type u :=
 
 namespace AlgebraicClosure
 
-instance instCommRing : CommRing (AlgebraicClosure k) := Ideal.Quotient.commRing _
-instance instInhabited : Inhabited (AlgebraicClosure k) := ⟨37⟩
+deriving instance CommRing, Inhabited for AlgebraicClosure
 
-set_option backward.isDefEq.respectTransparency false in
 instance {S : Type*} [DistribSMul S k] [IsScalarTower S k k] : SMul S (AlgebraicClosure k) :=
-  Submodule.Quotient.instSMul' _
+  inferInstanceAs <| SMul S (_ ⧸ _)
 
 instance instAlgebra {R : Type*} [CommSemiring R] [Algebra R k] : Algebra R (AlgebraicClosure k) :=
-  Ideal.Quotient.algebra _
+  inferInstanceAs <| Algebra R (_ ⧸ _)
 
 instance {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [Algebra S k] [Algebra R k]
     [IsScalarTower R S k] : IsScalarTower R S (AlgebraicClosure k) :=
-  Ideal.Quotient.isScalarTower _ _ _
+  inferInstanceAs <| IsScalarTower R S (_ ⧸ _)
 
-instance instGroupWithZero : GroupWithZero (AlgebraicClosure k) where
-  __ := Ideal.Quotient.field _
+attribute [local instance] Ideal.Quotient.field in
+instance instGroupWithZero : GroupWithZero (AlgebraicClosure k) :=
+  inferInstanceAs <| GroupWithZero (_ ⧸ _)
 
 instance instField : Field (AlgebraicClosure k) where
   __ := instCommRing _
@@ -214,7 +213,6 @@ namespace IntermediateField
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (E : IntermediateField K L)
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Algebra.IsAlgebraic K E] : IsAlgClosure K (AlgebraicClosure E) :=
   ⟨AlgebraicClosure.isAlgClosed E, Algebra.IsAlgebraic.trans K E (AlgebraicClosure E)⟩
 

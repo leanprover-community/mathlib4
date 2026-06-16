@@ -1,4 +1,5 @@
 -- tests for by_contra! tactic
+module
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.Set
@@ -17,7 +18,7 @@ example (a b : ℕ) (h : False) : a < b := by
   exact h
 
 example (a b : ℕ) (h : False) : a < b := by
-  by_contra! foo : ¬ a < b -- can avoid push_neg
+  by_contra! foo : ¬ a < b -- can avoid push Not
   guard_hyp foo : ¬ a < b
   exact h
 
