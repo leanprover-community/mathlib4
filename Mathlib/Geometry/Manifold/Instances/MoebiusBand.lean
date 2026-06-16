@@ -55,7 +55,7 @@ theorem isOpen_U₁ : IsOpen U₁ := isOpen_ne
 
 theorem U₀_union_U₁ : U₀ ∪ U₁ = univ := by
   ext z; simp only [mem_union, mem_setOf_eq, mem_univ, iff_true, U₀, U₁]
-  by_contra h; push_neg at h
+  by_contra h; simp only [not_or, not_not] at h
   exact Circle.one_ne_negOne (h.2.symm ▸ h.1)
 
 /-- The base sets for the Möbius bundle, indexed by `ZMod 2`. -/
@@ -259,7 +259,10 @@ private theorem extChartAt_zeroSection_eq
     mbc.trivializationAt, VectorBundleCore.localTrivAt, id]
   change (extChartAt (𝓡 1) p.proj ((mbc.localTriv ip z).1), (mbc.localTriv ip z).2) =
     (extChartAt (𝓡 1) p.proj z.proj, 0)
-  rw [mbc.localTriv_apply]; simp [hz]; exact ContinuousLinearMap.map_zero _
+  rw [mbc.localTriv_apply]
+  refine Prod.ext rfl ?_
+  simp only [hz]
+  exact ContinuousLinearMap.map_zero _
 
 private theorem moebius_coordChange_eventually_const
     (p q z : MoebiusBand)
@@ -579,13 +582,13 @@ private theorem det_tangent_coordChangeL_eq_mul
 
 /-- Complex conjugation negates the orthogonal projection onto `(ℝ ∙ v)ᗮ` for real `v`. -/
 private theorem orthogonalProjection_conj (v : ℂ) (hv : starRingEnd ℂ v = v) (hne : v ≠ 0)
-    (z : ℂ) : Submodule.orthogonalProjection (ℝ ∙ v)ᗮ (starRingEnd ℂ z) =
-    -Submodule.orthogonalProjection (ℝ ∙ v)ᗮ z := by
-  suffices h : Submodule.orthogonalProjection (ℝ ∙ v)ᗮ (starRingEnd ℂ z + z) = 0 by
-    have heq := (map_add (Submodule.orthogonalProjection (ℝ ∙ v)ᗮ)
+    (z : ℂ) : Submodule.orthogonalProjectionOnto (ℝ ∙ v)ᗮ (starRingEnd ℂ z) =
+    -Submodule.orthogonalProjectionOnto (ℝ ∙ v)ᗮ z := by
+  suffices h : Submodule.orthogonalProjectionOnto (ℝ ∙ v)ᗮ (starRingEnd ℂ z + z) = 0 by
+    have heq := (map_add (Submodule.orthogonalProjectionOnto (ℝ ∙ v)ᗮ)
       (starRingEnd ℂ z) z).symm
     rw [h] at heq; rwa [add_eq_zero_iff_eq_neg] at heq
-  apply Submodule.orthogonalProjection_orthogonal_apply_eq_zero
+  apply Submodule.orthogonalProjectionOnto_orthogonal_apply_eq_zero
   have hv_im : v.im = 0 := by
     have := congr_arg Complex.im hv; simp at this; linarith
   have hv_re : v.re ≠ 0 := by
@@ -811,7 +814,7 @@ private theorem fderiv_eq_at_neg_of_odd
   have hfn : fderiv ℝ (Neg.neg : EuclideanSpace ℝ (Fin 1) → _) t₀ =
       -(ContinuousLinearMap.id ℝ _) := by
     change fderiv ℝ (-fun y => y) t₀ = _
-    rw [fderiv_neg, fderiv_id']
+    rw [fderiv_neg, fderiv_fun_id]
   rw [hfn] at h1
   simp only [ContinuousLinearMap.comp_neg, ContinuousLinearMap.comp_id] at h1
   exact neg_inj.mp h1
