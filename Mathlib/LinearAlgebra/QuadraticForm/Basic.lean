@@ -173,7 +173,7 @@ variable {Q Q' : QuadraticMap R M N}
 
 instance instFunLike : FunLike (QuadraticMap R M N) M N where
   coe := toFun
-  coe_injective' x y h := by cases x; cases y; congr
+  coe_injective x y h := by cases x; cases y; congr
 
 variable (Q)
 

@@ -171,7 +171,7 @@ def vertexSubgroup {c : C} (hc : c ∈ S.objs) : Subgroup (c ⟶ c) where
 
 instance : SetLike (Subgroupoid C) (Σ c d : C, c ⟶ d) where
   coe := toSet
-  coe_injective' := fun ⟨S, _, _⟩ ⟨T, _, _⟩ h => by ext c d f; apply Set.ext_iff.1 h ⟨c, d, f⟩
+  coe_injective := fun ⟨S, _, _⟩ ⟨T, _, _⟩ h => by ext c d f; apply Set.ext_iff.1 h ⟨c, d, f⟩
 
 instance : PartialOrder (Subgroupoid C) := .ofSetLike (Subgroupoid C) (Σ c d : C, c ⟶ d)
 
