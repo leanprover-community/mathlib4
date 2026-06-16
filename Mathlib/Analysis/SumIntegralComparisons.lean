@@ -36,11 +36,6 @@ At the moment it contains several lemmas in this direction, for antitone or mono
   by the integral of `f x * g (x - 1)` if `f` is monotone and `g` is antitone.
 * `integral_le_sum_mul_Ico_of_antitone_monotone`: the sum of `f i * g i` on an interval is bounded
   below by the integral of `f x * g (x - 1)` if `f` is antitone and `g` is monotone.
-* `AntitoneOn.summable_of_integrable`: a nonnegative antitone function that is integrable on
-  `(0, ∞)` is summable over `ℕ`.
-* `AntitoneOn.sum_range_le_integral`, `AntitoneOn.tsum_add_one_le_integral`,
-  `AntitoneOn.tsum_le_integral`: bounds on (partial) sums of a nonnegative antitone function by its
-  integral over `(0, ∞)`.
 
 ## Tags
 
