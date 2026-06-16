@@ -17,7 +17,7 @@ This file provides a means to run `RequestM` and `CodeActionProvider` inside of 
 for testing purposes.
 -/
 
-public meta section -- TODO: unmeta
+meta section -- TODO: unmeta
 
 open Lean Server FileWorker Elab Command
 
@@ -190,7 +190,6 @@ def _root_.Lean.Lsp.WorkspaceEdit.toMessageData (we : Lsp.WorkspaceEdit)
 
 end WorkspaceEditDiff
 
-
 def String.Slice.toSyntaxRange (s : String.Slice) : Syntax.Range where
   start := s.startInclusive.offset
   stop  := s.endExclusive.offset
@@ -247,12 +246,16 @@ def Lean.Lsp.CodeAction.toMessageData (action : Lsp.CodeAction)
     msg := m!"{msg}\n{← edit.toMessageData showHeader}"
   return msg
 
+public section
+
+/-- For testing only. Code actions appearing above `--^^^` indicators are logged as messages. -/
 register_option linter.test.logCodeActions : Bool := {
   defValue := false
   descr :=
     "For testing only. Code actions appearing above `--^^^` indicators are logged as messages."
 }
 
+/-- Logs code actions appearing above `--^^^` indicators as messages. -/
 def testCodeActions : Linter where
   run cmd := cmd |> withSetOptionIn fun _ => do
     unless Linter.getLinterValue linter.test.logCodeActions (← Linter.getLinterOptions) do
