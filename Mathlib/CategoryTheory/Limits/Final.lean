@@ -139,6 +139,7 @@ theorem final_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Final 
             (show Zag u g from
               Or.inl ⟨StructuredArrow.homMk ((adj.homEquiv c g.right).symm g.hom) (by simp [u])⟩)) }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If a functor `L : C ⥤ D` is a left adjoint, it is initial. -/
 theorem initial_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Initial L :=
   { out := fun d =>
@@ -216,6 +217,7 @@ def induction {d : D} (Z : ∀ (X : C) (_ : d ⟶ F.obj X), Sort*)
 
 variable {F G}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a cocone over `F ⋙ G`, we can construct a `Cocone G` with the same cocone point.
 -/
@@ -240,6 +242,7 @@ def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G where
             · rw [← Functor.map_comp_assoc] } }
   map f := { hom := f.hom }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Alternative equational lemma for `(extendCocone c).ι.app` in case a lift of the object
 is given explicitly. -/
@@ -261,15 +264,16 @@ theorem colimit_cocone_comp_aux (s : Cocone (F ⋙ G)) (j : C) :
   · intro j₁ j₂ k₁ k₂ f w h
     rw [← w]
     rw [← s.w f] at h
-    simpa using h
+    simpa using! h
   · intro j₁ j₂ k₁ k₂ f w h
     rw [← w] at h
     rw [← s.w f]
-    simpa using h
+    simpa using! h
   · exact s.w (𝟙 _)
 
 variable (F G)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `F` is final,
 the category of cocones on `F ⋙ G` is equivalent to the category of cocones on `G`,
@@ -306,6 +310,7 @@ def colimitCoconeComp (t : ColimitCocone G) : ColimitCocone (F ⋙ G) where
 instance (priority := 100) comp_hasColimit [HasColimit G] : HasColimit (F ⋙ G) :=
   HasColimit.mk (colimitCoconeComp F (getColimitCocone G))
 
+set_option backward.defeqAttrib.useBackward true in
 instance (priority := 100) comp_preservesColimit {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [PreservesColimit G H] : PreservesColimit (F ⋙ G) H where
   preserves {c} hc := by
@@ -313,6 +318,7 @@ instance (priority := 100) comp_preservesColimit {B : Type u₄} [Category.{v₄
     let hc' := isColimitOfPreserves H ((isColimitExtendCoconeEquiv F c).symm hc)
     exact IsColimit.ofIsoColimit hc' (Cocone.ext (Iso.refl _) (by simp))
 
+set_option backward.defeqAttrib.useBackward true in
 instance (priority := 100) comp_reflectsColimit {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [ReflectsColimit G H] : ReflectsColimit (F ⋙ G) H where
   reflects {c} hc := by
@@ -327,6 +333,7 @@ instance (priority := 100) compCreatesColimit {B : Type u₄} [Category.{v₄} B
     let i := liftedColimitMapsToOriginal ((isColimitExtendCoconeEquiv F (G := G ⋙ H) _).symm hc)
     exact (Cocone.whiskering F).mapIso i ≪≫ ((coconesEquiv F (G ⋙ H)).unitIso.app _).symm
 
+set_option backward.defeqAttrib.useBackward true in
 instance colimit_pre_isIso [HasColimit G] : IsIso (colimit.pre G F) := by
   simp only [colimit.pre_eq (colimitCoconeComp F (getColimitCocone G)) (getColimitCocone G),
     colimitCoconeComp_cocone, IsColimit.desc_self]
@@ -342,7 +349,6 @@ variable (G)
 def colimitIso [HasColimit G] : colimit (F ⋙ G) ≅ colimit G :=
   asIso (colimit.pre G F)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ι_colimitIso_hom [HasColimit G] (X : C) :
     colimit.ι (F ⋙ G) X ≫ (colimitIso F G).hom = colimit.ι G (F.obj X) := by
@@ -353,6 +359,7 @@ theorem ι_colimitIso_inv [HasColimit G] (X : C) :
     colimit.ι G (F.obj X) ≫ (colimitIso F G).inv = colimit.ι (F ⋙ G) X := by
   simp [colimitIso]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A pointfree version of `colimitIso`, stating that whiskering by `F` followed by taking the
 colimit is isomorphic to taking the colimit on the codomain of `F`. -/
@@ -385,6 +392,7 @@ lemma hasColimit_comp_iff :
     HasColimit (F ⋙ G) ↔ HasColimit G :=
   ⟨fun _ ↦ Functor.Final.hasColimit_of_comp F, fun _ ↦ inferInstance⟩
 
+set_option backward.defeqAttrib.useBackward true in
 theorem preservesColimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [PreservesColimit (F ⋙ G) H] : PreservesColimit G H where
   preserves {c} hc := by
@@ -392,6 +400,7 @@ theorem preservesColimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ 
     let hc' := isColimitOfPreserves H ((isColimitWhiskerEquiv F _).symm hc)
     exact IsColimit.ofIsoColimit hc' (Cocone.ext (Iso.refl _) (by simp))
 
+set_option backward.defeqAttrib.useBackward true in
 theorem reflectsColimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [ReflectsColimit (F ⋙ G) H] : ReflectsColimit G H where
   reflects {c} hc := by
@@ -399,6 +408,7 @@ theorem reflectsColimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B
     let hc' := (isColimitWhiskerEquiv F _).symm hc
     exact IsColimit.ofIsoColimit hc' (Cocone.ext (Iso.refl _) (by simp))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is final and `F ⋙ G` creates colimits of `H`, then so does `G`. -/
 @[implicit_reducible]
 def createsColimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
@@ -454,13 +464,8 @@ theorem zigzag_of_eqvGen_colimitTypeRel {F : C ⥤ D} {d : D} {f₁ f₂ : Σ X,
     left; fconstructor
     exact StructuredArrow.homMk f
   | refl => fconstructor
-  | symm x y _ ih =>
-    apply zigzag_symmetric
-    exact ih
-  | trans x y z _ _ ih₁ ih₂ =>
-    apply Relation.ReflTransGen.trans
-    · exact ih₁
-    · exact ih₂
+  | symm x y _ ih => exact ih.symm
+  | trans x y z _ _ ih₁ ih₂ => exact ih₁.trans ih₂
 
 end Final
 
@@ -537,6 +542,7 @@ def lift (d : D) : C :=
 def homToLift (d : D) : F.obj (lift F d) ⟶ d :=
   (Classical.arbitrary (CostructuredArrow F d)).hom
 
+set_option backward.defeqAttrib.useBackward true in
 /-- We provide an induction principle for reasoning about `lift` and `homToLift`.
 We want to perform some construction (usually just a proof) about
 the particular choices `lift F d` and `homToLift F d`,
@@ -568,6 +574,7 @@ def induction {d : D} (Z : ∀ (X : C) (_ : F.obj X ⟶ d), Sort*)
 
 variable {F G}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a cone over `F ⋙ G`, we can construct a `Cone G` with the same cocone point.
 -/
@@ -607,6 +614,7 @@ lemma extendCone_obj_π_app' (c : Cone (F ⋙ G)) {X : C} {Y : D} (f : F.obj X �
   · intro _ _ _ _ _ h₁ h₂
     simp [← h₁, ← Functor.comp_map, h₂]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem limit_cone_comp_aux (s : Cone (F ⋙ G)) (j : C) :
     s.π.app (lift F (F.obj j)) ≫ G.map (homToLift F (F.obj j)) = s.π.app j := by
@@ -625,6 +633,7 @@ theorem limit_cone_comp_aux (s : Cone (F ⋙ G)) (j : C) :
 
 variable (F G)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `F` is initial,
 the category of cones on `F ⋙ G` is equivalent to the category of cones on `G`,
@@ -660,6 +669,7 @@ def limitConeComp (t : LimitCone G) : LimitCone (F ⋙ G) where
 instance (priority := 100) comp_hasLimit [HasLimit G] : HasLimit (F ⋙ G) :=
   HasLimit.mk (limitConeComp F (getLimitCone G))
 
+set_option backward.defeqAttrib.useBackward true in
 instance (priority := 100) comp_preservesLimit {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [PreservesLimit G H] : PreservesLimit (F ⋙ G) H where
   preserves {c} hc := by
@@ -667,6 +677,7 @@ instance (priority := 100) comp_preservesLimit {B : Type u₄} [Category.{v₄} 
     let hc' := isLimitOfPreserves H ((isLimitExtendConeEquiv F c).symm hc)
     exact IsLimit.ofIsoLimit hc' (Cone.ext (Iso.refl _) (by simp))
 
+set_option backward.defeqAttrib.useBackward true in
 instance (priority := 100) comp_reflectsLimit {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [ReflectsLimit G H] : ReflectsLimit (F ⋙ G) H where
   reflects {c} hc := by
@@ -681,6 +692,7 @@ instance (priority := 100) compCreatesLimit {B : Type u₄} [Category.{v₄} B] 
     let i := liftedLimitMapsToOriginal ((isLimitExtendConeEquiv F (G := G ⋙ H) _).symm hc)
     exact (Cone.whiskering F).mapIso i ≪≫ ((conesEquiv F (G ⋙ H)).unitIso.app _).symm
 
+set_option backward.defeqAttrib.useBackward true in
 instance limit_pre_isIso [HasLimit G] : IsIso (limit.pre G F) := by
   rw [limit.pre_eq (limitConeComp F (getLimitCone G)) (getLimitCone G)]
   simp only [limitConeComp_cone, Cone.whisker_pt, limitConeComp_isLimit, IsLimit.lift_self,
@@ -697,6 +709,7 @@ variable (G)
 def limitIso [HasLimit G] : limit (F ⋙ G) ≅ limit G :=
   (asIso (limit.pre G F)).symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A pointfree version of `limitIso`, stating that whiskering by `F` followed by taking the
 limit is isomorphic to taking the limit on the codomain of `F`. -/
@@ -728,6 +741,7 @@ lemma hasLimit_comp_iff :
     HasLimit (F ⋙ G) ↔ HasLimit G :=
   ⟨fun _ ↦ Functor.Initial.hasLimit_of_comp F, fun _ ↦ inferInstance⟩
 
+set_option backward.defeqAttrib.useBackward true in
 theorem preservesLimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [PreservesLimit (F ⋙ G) H] : PreservesLimit G H where
   preserves {c} hc := by
@@ -735,6 +749,7 @@ theorem preservesLimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     let hc' := isLimitOfPreserves H ((isLimitWhiskerEquiv F _).symm hc)
     exact IsLimit.ofIsoLimit hc' (Cone.ext (Iso.refl _) (by simp))
 
+set_option backward.defeqAttrib.useBackward true in
 theorem reflectsLimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [ReflectsLimit (F ⋙ G) H] : ReflectsLimit G H where
   reflects {c} hc := by
@@ -742,6 +757,7 @@ theorem reflectsLimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     let hc' := (isLimitWhiskerEquiv F _).symm hc
     exact IsLimit.ofIsoLimit hc' (Cone.ext (Iso.refl _) (by simp))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is initial and `F ⋙ G` creates limits of `H`, then so does `G`. -/
 @[implicit_reducible]
 def createsLimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
@@ -1062,6 +1078,7 @@ def Grothendieck.structuredArrowToStructuredArrowPre (d : D) (f : F.obj d) :
       generalize_proofs
       apply Grothendieck.ext <;> simp)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final := by
   constructor
@@ -1085,6 +1102,7 @@ instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final :=
 
 open Limits
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A natural transformation `α : F ⟶ G` between functors `F G : C ⥤ Cat` which is final on each
 fiber `(α.app X)` induces an equivalence of fiberwise colimits of `map α ⋙ H` and `H` for each
@@ -1110,6 +1128,7 @@ def Grothendieck.fiberwiseColimitMapCompEquivalence {C : Type u₁} [Category.{v
       congr
       apply eqToHom_heq_id_dom)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- This is the small version of the more general lemma `Grothendieck.final_map` below. -/
 private lemma Grothendieck.final_map_small {C : Type u₁} [SmallCategory C] {F G : C ⥤ Cat.{u₁, u₁}}
@@ -1123,6 +1142,7 @@ private lemma Grothendieck.final_map_small {C : Type u₁} [SmallCategory C] {F 
   intro X
   simp [i, fiberwiseColimitMapCompEquivalence]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Grothendieck.map α` for a natural transformation `α : F ⟶ G`, with
 `F G : C ⥤ Cat`, is final if for each `X : C`, the functor `α.app X` is final. -/
@@ -1181,6 +1201,7 @@ section Restriction
 
 variable {J C : Type*} [Category* J] [Category* C] {D : J ⥤ C}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `Over j ⥤ J` is initial, restricting a limit cone to the diagram above `j`,
 preserves the limit. -/
 noncomputable def Limits.IsLimit.overPost {c : Cone D} (hc : IsLimit c) (j : J)
@@ -1195,6 +1216,7 @@ noncomputable def Limits.IsLimit.overPost {c : Cone D} (hc : IsLimit c) (j : J)
   · exact NatIso.ofComponents (fun k ↦ CategoryTheory.Over.isoMk (Iso.refl _))
   · exact Cone.ext (Iso.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `Over j ⥤ J` is final, restricting a colimit cocone to the diagram below `j`,
 preserves the limit. -/
 noncomputable def Limits.IsColimit.underPost {c : Cocone D} (hc : IsColimit c) (j : J)

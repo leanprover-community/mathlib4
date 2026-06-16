@@ -15,7 +15,7 @@ public import Qq.Typ
 This file contains some additional functions for using the quote4 library more conveniently.
 -/
 
-public meta section
+public section
 
 open Lean Elab Tactic Meta
 

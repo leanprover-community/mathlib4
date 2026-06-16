@@ -403,7 +403,7 @@ theorem weightedHomogeneousComponent_finsupp :
   intro m hm
   by_contra hm'
   apply hm (weightedHomogeneousComponent_eq_zero' m φ _)
-  simpa only [Set.mem_image, not_exists, not_and] using hm'
+  simpa only [Set.mem_image, not_exists, not_and] using! hm'
 
 variable (w)
 
