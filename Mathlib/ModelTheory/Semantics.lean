@@ -941,26 +941,27 @@ theorem realize_exClosure [DecidableEq α] (φ : L.Formula α) :
       ∃ v : φ.freeVarFinset → M, Formula.Realize (φ.restrictFreeVar id) v := by
   simp [Sentence.Realize, Formula.exClosure, Formula.realize_iExs]
 
-theorem realize_exClosure_of_realize_equivSentence [DecidableEq α] [L[[α]].Structure M]
-    [(L.lhomWithConstants α).IsExpansionOn M] {φ : L.Formula α}
-    (h : (Formula.equivSentence φ).Realize M) : φ.exClosure.Realize M := by
-  rw [Formula.realize_exClosure]
-  exists fun a => (L.con (a : α) : M)
-  simpa [Formula.Realize, BoundedFormula.realize_restrictFreeVar] using h
-
-theorem exists_realize_equivSentence_of_realize_exClosure [DecidableEq α] [Nonempty M]
-    {φ : L.Formula α} (h : φ.exClosure.Realize M) :
-    ∃ v : α → M,
-      @Sentence.Realize _ M (@Language.withConstantsStructure L M _ α (constantsOn.structure v))
-        (Formula.equivSentence φ) := by
-  classical
-  obtain ⟨v, hv⟩ := (Formula.realize_exClosure φ).1 h
-  let v' := fun a =>if hmem : a ∈ φ.freeVarFinset
-    then v ⟨a, hmem⟩ else Classical.choice inferInstance
-  exists v'
-  simpa [Formula.realize_equivSentence, Formula.Realize] using
-    (BoundedFormula.realize_restrictFreeVar v'
-      (by aesop)).1 hv
+theorem exists_realize_equivSentence_iff_realize_exClosure
+    [DecidableEq α] [Nonempty M] {φ : L.Formula α} :
+    (∃ v : α → M,
+      letI := (constantsOn.structure v);
+      (Formula.equivSentence φ).Realize M) ↔ (φ.exClosure.Realize M) := by
+  constructor
+  · rintro ⟨v, hv⟩
+    exact (Formula.realize_exClosure φ).mpr ⟨fun a => v a,
+      (BoundedFormula.realize_restrictFreeVar (φ := φ) (f := id) (v := fun a => v a) (v' := v)
+        (fun _ => rfl)).2
+        (by simpa [Formula.Realize]
+          using (realize_equivSentence_symm M (Formula.equivSentence φ) v).2 hv)⟩
+  · intro h
+    classical
+    obtain ⟨v, hv⟩ := (Formula.realize_exClosure φ).1 h
+    let v' := fun a => if hmem : a ∈ φ.freeVarFinset
+      then v ⟨a, hmem⟩ else Classical.choice inferInstance
+    exists v'
+    refine (Formula.realize_equivSentence_symm M (Formula.equivSentence φ) v').mp ?_
+    simpa [Equiv.symm_apply_apply, Formula.Realize] using
+      (BoundedFormula.realize_restrictFreeVar v' (by grind)).1 hv
 
 end Formula
 
