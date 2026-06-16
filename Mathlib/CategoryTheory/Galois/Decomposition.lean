@@ -58,6 +58,7 @@ non-trivial subobjects which have strictly smaller fiber and conclude by the ind
 
 -/
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The trivial case if `X` is connected. -/
 private lemma has_decomp_connected_components_aux_conn (X : C) [IsConnected X] :
     ∃ (ι : Type) (f : ι → C) (g : (i : ι) → (f i) ⟶ X) (_ : IsColimit (Cofan.mk X g)),
@@ -255,7 +256,7 @@ private lemma selfProdTermIncl_fib_eq (b : F.obj A) :
   · simp only [selfProdProj, map_comp, FintypeCat.comp_apply]; rfl
   · dsimp only [selfProdPermIncl, Pi.whiskerEquiv]
     rw [map_comp, FintypeCat.comp_apply, h]
-    convert_to F.map (selfProdProj u t) b =
+    convert_to! F.map (selfProdProj u t) b =
       (F.map (Pi.map' (fiberPerm h b) fun _ ↦ 𝟙 X) ≫
       F.map (Pi.π (fun _ ↦ X) t)) (mkSelfProdFib F X)
     rw [← map_comp, Pi.map'_comp_π, Category.comp_id, mkSelfProdFib_map_π F X (fiberPerm h b t)]

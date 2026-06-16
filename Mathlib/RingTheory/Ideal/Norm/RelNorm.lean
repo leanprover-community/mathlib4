@@ -192,6 +192,8 @@ theorem spanNorm_le_comap (I : Ideal S) : spanNorm R I ≤ comap (algebraMap R S
   | add _ _ _ _ hx hy => exact Submodule.add_mem _ hx hy
   | smul _ _ _ hx => exact Submodule.smul_mem _ _ hx
 
+set_option linter.overlappingInstances false
+
 /-- Multiplicativity of `Ideal.spanNorm`. simp-normal form is `map_mul (Ideal.relNorm R)`. -/
 theorem spanNorm_mul [IsDedekindDomain R] [IsDedekindDomain S] (I J : Ideal S) :
     spanNorm R (I * J) = spanNorm R I * spanNorm R J := by

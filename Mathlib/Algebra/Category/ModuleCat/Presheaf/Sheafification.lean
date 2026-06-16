@@ -95,6 +95,7 @@ lemma toPresheaf_map_sheafificationHomEquiv_def
     (toPresheaf R₀).map (sheafificationHomEquiv α f) =
       CategoryTheory.toSheafify J P.presheaf ≫ (toPresheaf R.obj).map f.val := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma toPresheaf_map_sheafificationHomEquiv
     {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R}
@@ -116,6 +117,7 @@ lemma toSheaf_map_sheafificationHomEquiv_symm
   rw [Equiv.apply_symm_apply, Adjunction.homEquiv_unit, Equiv.symm_apply_apply]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings, this is the adjunction
@@ -160,8 +162,7 @@ instance : IsIso (sheafificationAdjunction α).counit := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro F
   rw [← isIso_iff_of_reflects_iso _ (SheafOfModules.toSheaf.{v} R)]
-  simp only [Functor.comp_obj, SheafOfModules.forget_obj, restrictScalars_obj, Functor.id_obj,
-    toSheaf_map_sheafificationAdjunction_counit_app]
+  simp only [Functor.id_obj, toSheaf_map_sheafificationAdjunction_counit_app]
   infer_instance
 
 instance : (SheafOfModules.forget.{v} R ⋙ restrictScalars α).Full :=

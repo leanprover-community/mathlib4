@@ -83,7 +83,7 @@ theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a 
       ?_⟩
   · apply_fun fun x : R[A] => x 0
     refine ne_of_eq_of_ne (?_ : (_ : R) = 1) one_ne_zero
-    dsimp only; rw [Finset.sum_apply']
+    rw [Finset.sum_apply']
     refine (Finset.sum_eq_single 0 ?_ ?_).trans ?_
     · intro b hb b0
       rw [single_pow, one_pow, single_eq_of_ne']
