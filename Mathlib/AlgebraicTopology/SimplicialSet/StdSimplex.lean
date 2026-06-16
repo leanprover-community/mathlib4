@@ -829,7 +829,7 @@ instance : Epi (toOfSimplex x) := by
   refine ⟨u, ?_⟩
   dsimp
   ext
-  conv_rhs => rw [← yonedaEquiv.right_inv x]
+  rw [← yonedaEquiv.right_inv x]
   aesop
 
 lemma isIso_toOfSimplex_iff :
