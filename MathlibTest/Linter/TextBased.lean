@@ -201,7 +201,6 @@ set_option linter.style.cdot true
 set_option allowUnsafeReducibility true in
 attribute [instance_reducible] Int.add
 
-set_option linter.globalAttributeIn false in
 /--
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
 
@@ -216,7 +215,6 @@ warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
 Note: This linter can be disabled with `set_option linter.style.cdot false`
 -/
 #guard_msgs in
-attribute [instance] Int.add in
 instance : Inhabited Nat where
   default := by
     . have := 0
@@ -276,7 +274,6 @@ example : True := by
 end cdotLinter
 set_option linter.style.dollarSyntax true
 
-set_option linter.globalAttributeIn false in
 /--
 warning: Please use '<|' instead of '$' for the pipe operator.
 
@@ -287,8 +284,8 @@ warning: Please use '<|' instead of '$' for the pipe operator.
 Note: This linter can be disabled with `set_option linter.style.dollarSyntax false`
 -/
 #guard_msgs in
-attribute [instance] Int.add in
-instance (f g : Nat → Nat) : Inhabited Nat where
+@[reducible]
+def test (f g : Nat → Nat) : Inhabited Nat where
   default := by
     · have := 0
       · have : Nat := f $ g $ 0
@@ -459,9 +456,10 @@ open Mathlib.Linter.Style.nameCheck
 #guard isBadNameWithUnderscore `_fooFoo == true
 #guard isBadNameWithUnderscore `Foo._bar == true
 -- A namespace `Mathlib` in the middle does not silence the linter: we only test for a *prefix*
--- `Mathlib`, `Mathlib.Parser` or `Mathlib.Tactic`.
+-- `Mathlib`, `Parser` or `Mathlib.Tactic`.
 #guard isBadNameWithUnderscore `Nat.Mathlib.foo_bar == true
-#guard isBadNameWithUnderscore `Mathlib.Parser.foo_bar == false
+#guard isBadNameWithUnderscore `Parser.foo_bar == false
+#guard isBadNameWithUnderscore `Parser.Attr.coassoc_simps == false
 #guard isBadNameWithUnderscore `Mathlib.Tactic.foo_bar == false
 #guard isBadNameWithUnderscore `AlgebraicGeometry.Scheme.IdealSheafData.Simps.coe_support == false
 

@@ -104,6 +104,7 @@ theorem algHom_ext' {f g : A[X] →ₐ[R] B}
     (hX : f X = g X) : f = g :=
   AlgHom.coe_ringHom_injective (ringHom_ext' (congr_arg AlgHom.toRingHom hC) hX)
 
+set_option backward.defeqAttrib.useBackward true in
 variable (R) in
 open AddMonoidAlgebra in
 /-- Algebra isomorphism between `R[X]` and `R[ℕ]`. This is just an
@@ -318,6 +319,9 @@ theorem aeval_comp {A : Type*} [Semiring A] [Algebra R A] (x : A) :
     aeval x (p.comp q) = aeval (aeval x q) p :=
   eval₂_comp' x p q
 
+@[gcongr]
+theorem aeval_dvd (h : p ∣ q) : p.aeval x ∣ q.aeval x := _root_.map_dvd (aeval x) h
+
 section IsScalarTower
 
 variable {A : Type*} (B C : Type*) [CommSemiring A] [CommSemiring B] [Semiring C]
@@ -334,7 +338,7 @@ end IsScalarTower
 
 /-- Two polynomials `p` and `q` such that `p(q(X))=X` and `q(p(X))=X`
   induces an automorphism of the polynomial algebra. -/
-@[simps!]
+@[simps! apply]
 def algEquivOfCompEqX (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p = X) : R[X] ≃ₐ[R] R[X] := by
   refine AlgEquiv.ofAlgHom (aeval p) (aeval q) ?_ ?_ <;>
     exact AlgHom.ext fun _ ↦ by simp [← comp_eq_aeval, comp_assoc, hpq, hqp]
@@ -365,7 +369,7 @@ theorem algEquivCMulXAddC_symm_eq {R : Type*} [CommRing R] (a b : R) [Invertible
 
 /-- The automorphism of the polynomial algebra given by `p(X) ↦ p(X+t)`,
   with inverse `p(X) ↦ p(X-t)`. -/
-@[simps!]
+@[simps! apply]
 def algEquivAevalXAddC {R : Type*} [CommRing R] (t : R) : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (X + C t) (X - C t) (by simp) (by simp)
 
@@ -504,10 +508,8 @@ theorem aeval_eq_aeval_map [Semiring S] [CommSemiring T] [Algebra R S]
     (p : R[X]) (a : S) : aeval a p = aeval a (p.map φ) :=
   map_aeval_eq_aeval_map (by rwa [RingHom.id_comp]) p a
 
-theorem aeval_eq_zero_of_dvd_aeval_eq_zero [CommSemiring S] [CommSemiring T] [Algebra S T]
-    {p q : S[X]} (h₁ : p ∣ q) {a : T} (h₂ : aeval a p = 0) : aeval a q = 0 := by
-  rw [← eval_map_algebraMap] at h₂ ⊢
-  exact eval_eq_zero_of_dvd_of_eval_eq_zero (Polynomial.map_dvd (algebraMap S T) h₁) h₂
+theorem aeval_eq_zero_of_dvd_aeval_eq_zero {x : B} (h₁ : p ∣ q) (h₂ : aeval x p = 0) :
+    aeval x q = 0 := zero_dvd_iff.mp (h₂ ▸ aeval_dvd _ h₁)
 
 section Semiring
 
@@ -675,11 +677,11 @@ lemma dvd_comp_C_mul_X_add_C_iff (p q : R[X]) (a b : R) [Invertible a] :
 lemma dvd_comp_X_sub_C_iff (p q : R[X]) (a : R) :
     p ∣ q.comp (X - C a) ↔ p.comp (X + C a) ∣ q := by
   let _ := invertibleOne (α := R)
-  simpa using dvd_comp_C_mul_X_add_C_iff p q 1 (-a)
+  simpa using! dvd_comp_C_mul_X_add_C_iff p q 1 (-a)
 
 lemma dvd_comp_X_add_C_iff (p q : R[X]) (a : R) :
     p ∣ q.comp (X + C a) ↔ p.comp (X - C a) ∣ q := by
-  simpa using dvd_comp_X_sub_C_iff p q (-a)
+  simpa using! dvd_comp_X_sub_C_iff p q (-a)
 
 lemma dvd_comp_neg_X_iff (p q : R[X]) : p ∣ q.comp (-X) ↔ p.comp (-X) ∣ q := by
   let _ := invertibleOne (α := R)
@@ -708,7 +710,6 @@ lemma aeval_apply_smul_mem_of_le_comap'
     simp_rw [map_add, add_smul]
     exact Submodule.add_mem q h₁ h₂
   | monomial n t hmq =>
-    dsimp only at hmq ⊢
     rw [pow_succ', mul_left_comm, map_mul, aeval_X, mul_smul]
     solve_by_elim
 

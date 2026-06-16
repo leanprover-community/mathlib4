@@ -144,7 +144,7 @@ lemma toSubsemigroup_inj {s t : Submonoid M} : s.toSubsemigroup = t.toSubsemigro
 @[to_additive]
 instance : SetLike (Submonoid M) M where
   coe s := s.carrier
-  coe_injective' := SetLike.coe_injective.comp toSubsemigroup_injective
+  coe_injective := SetLike.coe_injective.comp toSubsemigroup_injective
 
 @[to_additive] instance : PartialOrder (Submonoid M) := .ofSetLike (Submonoid M) M
 

@@ -80,7 +80,7 @@ variable {A B C D E}
 @[to_additive]
 instance instFunLike : FunLike (A →ₜ* B) A B where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g
     congr

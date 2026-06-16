@@ -73,7 +73,7 @@ namespace YoungDiagram
 
 instance : SetLike YoungDiagram (ℕ × ℕ) where
   coe y := y.cells
-  coe_injective' μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
+  coe_injective μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
 
 instance : PartialOrder YoungDiagram := .ofSetLike YoungDiagram (ℕ × ℕ)
 

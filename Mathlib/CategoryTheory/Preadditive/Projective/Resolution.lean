@@ -103,6 +103,7 @@ theorem complex_d_succ_comp (n : ℕ) :
 noncomputable def cokernelCofork : CokernelCofork (P.complex.d 1 0) :=
   CokernelCofork.ofπ _ P.complex_d_comp_π_f_zero
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Z` is the cokernel of `P.complex.X 1 ⟶ P.complex.X 0` when `P : ProjectiveResolution Z`. -/
 noncomputable def isColimitCokernelCofork : IsColimit (P.cokernelCofork) := by
   refine IsColimit.ofIsoColimit (P.complex.opcyclesIsCokernel 1 0 (by simp)) ?_

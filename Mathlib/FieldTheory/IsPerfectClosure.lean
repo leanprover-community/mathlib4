@@ -261,7 +261,7 @@ theorem injective_comp_of_pNilradical_eq_bot [IsPRadical i p] (h : pNilradical M
   ext x
   obtain ⟨n, y, hx⟩ := IsPRadical.pow_mem i p x
   apply_fun _ using pow_expChar_pow_inj_of_pNilradical_eq_bot M p h n
-  simpa only [← map_pow, ← hx] using congr($(heq) y)
+  simpa only [← map_pow, ← hx] using! congr($(heq) y)
 
 variable (M)
 

@@ -40,6 +40,7 @@ section
 
 variable [PreservesLimit F G]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem preserves_lift_mapCone (c₁ c₂ : Cone F) (t : IsLimit c₁) :
     (isLimitOfPreserves G t).lift (G.mapCone c₂) = G.map (t.lift c₂) :=
@@ -76,6 +77,7 @@ instance : IsIso (limit.post F G) :=
 
 variable [PreservesLimitsOfShape J G] [HasLimitsOfShape J D] [HasLimitsOfShape J C]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `C, D` has all limits of shape `J`, and `G` preserves them, then `preservesLimitsIso` is
 functorial w.r.t. `F`. -/
@@ -146,6 +148,7 @@ instance : IsIso (colimit.post F G) :=
 
 variable [PreservesColimitsOfShape J G] [HasColimitsOfShape J D] [HasColimitsOfShape J C]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `C, D` has all colimits of shape `J`, and `G` preserves them, then `preservesColimitIso`
 is functorial w.r.t. `F`. -/
