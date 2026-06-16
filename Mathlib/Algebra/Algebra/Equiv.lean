@@ -340,6 +340,9 @@ theorem leftInverse_symm (e : A₁ ≃ₐ[R] A₂) : Function.LeftInverse e.symm
 theorem rightInverse_symm (e : A₁ ≃ₐ[R] A₂) : Function.RightInverse e.symm e :=
   e.right_inv
 
+lemma image_symm_eq_preimage (e : A₁ ≃ₐ[R] A₂) (s : Set A₂) : e.symm '' s = e ⁻¹' s :=
+  e.toLinearEquiv.image_symm_eq_preimage _
+
 end symm
 
 section simps
