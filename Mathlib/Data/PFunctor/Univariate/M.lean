@@ -22,7 +22,7 @@ deriving DecidableEq, Repr
 
 def ListPFunctor.{u} (α : Type u) : PFunctor.{u, u} where
   A := ListA α
-  B := fun
+  B
   | .nil => PEmpty
   | .cons _ => PUnit
 
