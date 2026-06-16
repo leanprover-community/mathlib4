@@ -87,7 +87,7 @@ theorem AntitoneOn.integral_le_sum (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :
     rw [uIcc_of_le]
     · apply Icc_subset_Icc
       · simp
-      · simp [-Nat.cast_one, -Nat.cast_add, hk]
+      · simp [-Nat.cast_add, hk]
     · simp
   calc
     ∫ x in x₀..x₀ + a, f x = ∑ i ∈ .range a, ∫ x in x₀ + i..x₀ + (i + 1 : ℕ), f x := by
