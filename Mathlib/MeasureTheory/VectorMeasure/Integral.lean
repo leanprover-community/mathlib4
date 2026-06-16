@@ -479,7 +479,7 @@ lemma Integrable.restrict (hf : μ.Integrable f B) {s : Set X} :
 
 @[simp]
 theorem integral_zero_vectorMeasure :
-    ∫ᵛ x, f x ∂[B; (0 : VectorMeasure X F)] = 0 := by simp [integral]
+    ∫ᵛ x, f x ∂[B; (0 : VectorMeasure X F)] = 0 := by simp [integral, FunLike.coe_zero]
 
 lemma integral_of_isEmpty [IsEmpty X] : ∫ᵛ x, f x ∂[B; μ] = 0 := by simp [eq_zero_of_isEmpty]
 
@@ -493,7 +493,7 @@ theorem integral_smul_vectorMeasure (f : X → E) (c : ℝ) :
     simp [transpose, mapRange_smul, variation_smul]
   simp only [this, mul_one]
   have : DominatedFinMeasAdditive (μ.transpose B).variation ((c • μ).transpose B) ‖c‖ := by
-    simp only [transpose_smul, coe_smul, Real.norm_eq_abs]
+    simp only [transpose_smul, FunLike.coe_smul, Real.norm_eq_abs]
     simpa using! (dominatedFinMeasAdditive_cbmApplyMeasure μ B).smul c
   rw! [← setToFun_congr_smul_measure' _ this, transpose_smul]
   rfl
@@ -522,7 +522,7 @@ theorem integral_finsetSum_vectorMeasure {μ : ι → VectorMeasure X F}
 @[integral_simps]
 theorem integral_neg_vectorMeasure :
     ∫ᵛ x, f x ∂[B; -μ] = -∫ᵛ x, f x ∂[B; μ] := by
-  simp [integral, ← setToFun_neg']
+  simp [integral, ← setToFun_neg', FunLike.coe_neg]
 
 theorem integral_sub_vectorMeasure (hμ : μ.Integrable f B) (hν : ν.Integrable f B) :
     ∫ᵛ x, f x ∂[B; μ - ν] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x, f x ∂[B; ν] := by
@@ -568,7 +568,7 @@ variable (f μ) in
 @[simp]
 theorem integral_zero_cbm :
     ∫ᵛ x, f x ∂[(0 : E →L[ℝ] F →L[ℝ] G); μ] = 0 := by
-  simp [integral]
+  simp [integral, FunLike.coe_zero]
 
 theorem integral_add_cbm (hB : μ.Integrable f B) (hC : μ.Integrable f C) :
     ∫ᵛ x, f x ∂[B + C; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, f x ∂[C; μ] :=
@@ -589,7 +589,7 @@ theorem integral_finsetSum_cbm {B : ι → E →L[ℝ] F →L[ℝ] G}
 @[integral_simps]
 theorem integral_neg_cbm :
     ∫ᵛ x, f x ∂[-B; μ] = -∫ᵛ x, f x ∂[B; μ] := by
-  simp [integral, ← setToFun_neg']
+  simp [integral, ← setToFun_neg', FunLike.coe_neg]
 
 theorem integral_sub_cbm (hB : μ.Integrable f B) (hC : μ.Integrable f C) :
     ∫ᵛ x, f x ∂[B - C; μ] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x, f x ∂[C; μ] := by
@@ -646,7 +646,7 @@ theorem exists_ne_zero_of_integral_ne_zero
   simp only [variation_transpose_lsmul_flip, Measure.variation_toSignedMeasure]
   apply setToFun_congr_left' _ _ (fun s hs h's ↦ ?_)
   simp only [transpose, ContinuousLinearMap.flip_flip, mapRange_apply,
-    Measure.toSignedMeasure_apply, hs, ↓reduceIte, LinearMap.toAddMonoidHom_coe,
+    Measure.toSignedMeasure_apply_measurable hs, LinearMap.toAddMonoidHom_coe,
     ContinuousLinearMap.coe_coe, weightedSMul]
   rfl
 
