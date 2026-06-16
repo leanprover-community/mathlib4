@@ -98,6 +98,21 @@ theorem IsTopologicalTorsor.to_isTopologicalGroup : IsTopologicalGroup V where
 def Homeomorph.smulConst (p : P) : V ≃ₜ P where
   __ := Equiv.smulConst p
 
+/-- The map `v ↦ v /ₛ p` as a homeomorphism: `Equiv.constSDiv` as a homeomorphism -/
+@[to_additive (attr := simps!)
+/-- The map `v ↦ v -ᵥ p` as a homeomorphism: `Equiv.constVSub` as a homeomorphism -/]
+def Homeomorph.constSDiv [ContinuousInv V] (p : P) : P ≃ₜ V where
+  __ := Equiv.constSDiv p
+
+/-- `Equiv.pointReflection` as a homeomorphism -/
+def Homeomorph.pointReflection {V P : Type*} [AddGroup V] [TopologicalSpace V] [AddTorsor V P]
+    [TopologicalSpace P] [IsTopologicalAddTorsor P] [ContinuousNeg V] (p : P) : P ≃ₜ P :=
+  (Homeomorph.constVSub p).trans (Homeomorph.vaddConst p)
+
+@[simp]
+lemma Homeomorph.coe_pointReflection (x : X) :
+    (Homeomorph.pointReflection x : X → X) = Equiv.pointReflection x := rfl
+
 end Torsor
 
 section Group
