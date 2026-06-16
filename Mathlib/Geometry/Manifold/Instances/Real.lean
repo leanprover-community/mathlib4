@@ -552,7 +552,7 @@ private theorem Icc_coordChangeL_neg (p q r : Set.Icc x y)
           (hasFDerivAt_id (𝕜 := ℝ) (extChartAt (𝓡∂ 1) p r))
         rwa [zero_sub] at h
       exact hfd.hasFDerivWithinAt.fderivWithin huniq
-    simpa [ContinuousLinearMap.neg_apply] using
+    simpa [neg_apply] using
       congrArg (fun L : EuclideanSpace ℝ (Fin 1) →L[ℝ] EuclideanSpace ℝ (Fin 1) ↦ L v) hderiv
 
 /-- If `f` acts as `v ↦ -v` on `EuclideanSpace ℝ (Fin 1)`, it flips `baseOrientation`. -/
