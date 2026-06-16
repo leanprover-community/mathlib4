@@ -15,25 +15,26 @@ noncomputable section KroneckerWeber
 
 variable (K : Type*) [Field K] [CharZero K] [IsAbelianGalois ℚ K]
 
-
-proof_wanted IsAbelianGalois.le_isCyclotomic : ∃ S : Set ℕ,
+theorem_wanted IsAbelianGalois.le_isCyclotomic
+  (K : Type*) [Field K] [NumberField K] [IsAbelianGalois ℚ K] : ∃ S : Set ℕ,
   (IsAlgClosed.lift (S := K)).range ≤
     Algebra.adjoin ℚ {b : AlgebraicClosure ℚ | ∃ n ∈ S, n ≠ 0 ∧ b ^ n = 1}
 
-theorem IsAbelianGalois.le_cyclotomicField [NumberField K] :
-    ∃ d : ℕ, Nonempty (K →ₐ[ℚ] CyclotomicField d ℚ) := by sorry
+theorem_wanted IsAbelianGalois.le_cyclotomicField
+  (K : Type*) [Field K] [NumberField K] [IsAbelianGalois ℚ K] :
+    ∃ d : ℕ, Nonempty (K →ₐ[ℚ] CyclotomicField d ℚ)
 
-open Classical
+open Classical in
+def_wanted IsAbelianGalois.conductor' [NumberField K] : ℕ :=
+    Nat.find <| ❰IsAbelianGalois.le_cyclotomicField❱ K
 
-def IsAbelianGalois.conductor [NumberField K] : ℕ :=
-    Nat.find <| IsAbelianGalois.le_cyclotomicField K
 
-theorem IsAbelianGalois.le_cyclotomic_conductor [NumberField K] :
-    Nonempty (K →ₐ[ℚ] CyclotomicField (conductor K) ℚ) :=
-  Nat.find_spec <| IsAbelianGalois.le_cyclotomicField K
+-- proof_wanted IsAbelianGalois.le_cyclotomic_conductor [NumberField K] :
+--     Nonempty (K →ₐ[ℚ] CyclotomicField (❰IsAbelianGalois.conductor'❱ K) ℚ) :=
+--   Nat.find_spec <| ❰IsAbelianGalois.le_cyclotomicField❱ K
 
 proof_wanted IsAbelianGalois.conductorDvd [NumberField K] {p : ℤ} (hp : Prime p) :
-    p ∣ discr K → p ∣ IsAbelianGalois.conductor K
+    p ∣ discr K → p ∣ ❰IsAbelianGalois.conductor'❱ K
 
 end KroneckerWeber
 
