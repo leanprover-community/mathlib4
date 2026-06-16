@@ -429,7 +429,7 @@ variable {A K B L : Type*} [CommRing A] [CommRing B] [CommRing K] [CommRing L]
 /-- Given rings `A, B` and localization maps to their fraction rings
 `f : A →+* K, g : B →+* L`, an isomorphism `h : A ≃+* B` induces an isomorphism of
 fraction rings `K ≃+* L`. -/
-@[simps!]
+@[simps! apply]
 noncomputable def ringEquivOfRingEquiv : K ≃+* L :=
   IsLocalization.ringEquivOfRingEquiv K L h (MulEquivClass.map_nonZeroDivisors h)
 
@@ -600,7 +600,7 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
     IsFractionRing R S ↔
       @IsFractionRing P _ S _ ((algebraMap R S).comp h.symm.toRingHom).toAlgebra := by
   delta IsFractionRing
-  convert isLocalization_iff_of_base_ringEquiv (nonZeroDivisors R) S h
+  convert! isLocalization_iff_of_base_ringEquiv (nonZeroDivisors R) S h
   exact (MulEquivClass.map_nonZeroDivisors h).symm
 
 variable (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] [h : IsFractionRing R S]

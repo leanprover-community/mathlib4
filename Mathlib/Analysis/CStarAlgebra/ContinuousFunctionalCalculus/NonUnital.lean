@@ -475,7 +475,7 @@ lemma cfcₙ_comp (g f : R → R) (a : A)
     ext
     simp
   rw [cfcₙ_apply .., cfcₙ_apply f a,
-    cfcₙ_apply _ _ (by convert hg) (ha := cfcₙHom_predicate (show p a from ha) _),
+    cfcₙ_apply _ _ (by convert! hg) (ha := cfcₙHom_predicate (show p a from ha) _),
     ← cfcₙHom_comp _ _]
   swap
   · exact ⟨.mk _ <| hf.restrict.codRestrict fun x ↦ by rw [sp_eq]; use x.1; simp, Subtype.ext hf0⟩
@@ -840,7 +840,7 @@ lemma isClosedEmbedding_cfcₙHom_of_cfcHom [ClosedEmbeddingContinuousFunctional
     Filter.comap_comap]
   refine .symm <| inf_eq_left.mpr <| le_top.trans <| eq_top_iff.mp ?_
   have : ∀ U ∈ 𝓤 (C(Unit, R)), (0, 0) ∈ U := fun U hU ↦ refl_mem_uniformity hU
-  convert Filter.comap_const_of_mem this with ⟨u, v⟩ <;>
+  convert! Filter.comap_const_of_mem this with ⟨u, v⟩ <;>
   ext ⟨x, rfl⟩ <;> [exact map_zero u; exact map_zero v]
 
 instance ContinuousFunctionalCalculus.toNonUnital [ContinuousFunctionalCalculus R A p] :
@@ -863,7 +863,7 @@ lemma cfcₙHom_eq_cfcₙHom_of_cfcHom [ContinuousFunctionalCalculus R A p]
     [ContinuousMapZero.UniqueHom R A] {a : A} (ha : p a) :
     cfcₙHom ha = cfcₙHom_of_cfcHom R ha :=
   cfcₙHom_eq_of_continuous_of_map_id ha _ (continuous_cfcₙHom_of_cfcHom ha) <| by
-    simpa only [cfcₙHom_id ha] using cfcHom_id ha
+    simpa only [cfcₙHom_id ha] using! cfcHom_id ha
 
 /-- When `cfc` is applied to a function that maps zero to zero, it is equivalent to using
 `cfcₙ`. -/

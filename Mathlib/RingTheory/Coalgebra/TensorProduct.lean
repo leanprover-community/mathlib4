@@ -90,6 +90,7 @@ scoped macro "hopf_tensor_induction " var:elimTarget "with " var₁:ident var₂
           tmul_add, add_tmul, add_mul, mul_add, h₁, h₂]
       | tmul $var₁ $var₂ => ?_))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.privateInPublic true in
 private lemma coassoc :
     TensorProduct.assoc S (A ⊗[R] B) (A ⊗[R] B) (A ⊗[R] B) ∘ₗ
@@ -107,7 +108,7 @@ private lemma coassoc :
       A ⊗[R] B ⊗[S] (A ⊗[R] B ⊗[S] (A ⊗[R] B)) :=
     TensorProduct.mapOfCompatibleSMul .. ∘ₗ
         TensorProduct.map .id (TensorProduct.mapOfCompatibleSMul ..) ∘ₗ F.toLinearMap
-  convert congr(F ($(Coalgebra.coassoc_apply x) ⊗ₜ[R] $(Coalgebra.coassoc_apply y))) using 1
+  convert! congr(F ($(Coalgebra.coassoc_apply x) ⊗ₜ[R] $(Coalgebra.coassoc_apply y))) using 1
   · dsimp
     hopf_tensor_induction comul (R := S) x with x₁ x₂
     hopf_tensor_induction comul (R := R) y with y₁ y₂
@@ -123,6 +124,7 @@ private lemma coassoc :
     hopf_tensor_induction comul (R := R) y₂ with y₂₁ y₂₂
     rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 noncomputable
@@ -130,9 +132,10 @@ instance instCoalgebra : Coalgebra S (A ⊗[R] B) where
   coassoc := coassoc (R := R)
   rTensor_counit_comp_comul := by
     ext x y
-    convert congr((TensorProduct.lid S _).symm
-      (TensorProduct.lid _ _ $(rTensor_counit_comul (R := S) x) ⊗ₜ[R]
-        TensorProduct.lid _ _ $(rTensor_counit_comul (R := R) y)))
+    convert!
+      congr((TensorProduct.lid S _).symm
+        (TensorProduct.lid _ _ $(rTensor_counit_comul (R := S) x) ⊗ₜ[R]
+          TensorProduct.lid _ _ $(rTensor_counit_comul (R := R) y)))
     · dsimp
       hopf_tensor_induction comul (R := S) x with x₁ x₂
       hopf_tensor_induction comul (R := R) y with y₁ y₂
@@ -143,9 +146,10 @@ instance instCoalgebra : Coalgebra S (A ⊗[R] B) where
       simp only [one_smul]
   lTensor_counit_comp_comul := by
     ext x y
-    convert congr((TensorProduct.rid S _).symm
-      (TensorProduct.rid _ _ $(lTensor_counit_comul (R := S) x) ⊗ₜ[R]
-        TensorProduct.rid _ _ $(lTensor_counit_comul (R := R) y)))
+    convert!
+      congr((TensorProduct.rid S _).symm
+        (TensorProduct.rid _ _ $(lTensor_counit_comul (R := S) x) ⊗ₜ[R]
+          TensorProduct.rid _ _ $(lTensor_counit_comul (R := R) y)))
     · dsimp
       hopf_tensor_induction comul (R := S) x with x₁ x₂
       hopf_tensor_induction comul (R := R) y with y₁ y₂
@@ -155,6 +159,7 @@ instance instCoalgebra : Coalgebra S (A ⊗[R] B) where
     · dsimp
       simp only [one_smul]
 
+set_option backward.defeqAttrib.useBackward true in
 instance [IsCocomm S A] [IsCocomm R B] : IsCocomm S (A ⊗[R] B) where
   comm_comp_comul := by
     ext x y
@@ -176,6 +181,7 @@ variable {R S M N P Q : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
 
 section
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The tensor product of two coalgebra morphisms as a coalgebra morphism. -/
 noncomputable def map (f : M →ₗc[S] N) (g : P →ₗc[R] Q) :
     M ⊗[R] P →ₗc[S] N ⊗[R] Q where
@@ -200,6 +206,7 @@ theorem map_toLinearMap (f : M →ₗc[S] N) (g : P →ₗc[R] Q) :
 
 variable (R S M N P)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The associator for tensor products of R-coalgebras, as a coalgebra equivalence. -/
 protected noncomputable def assoc :
     (M ⊗[S] N) ⊗[R] P ≃ₗc[S] M ⊗[S] (N ⊗[R] P) :=
@@ -231,6 +238,7 @@ theorem assoc_toLinearEquiv :
 
 variable (R P)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The base ring is a left identity for the tensor product of coalgebras, up to
 coalgebra equivalence. -/
 protected noncomputable def lid : R ⊗[R] P ≃ₗc[R] P :=
@@ -255,6 +263,7 @@ theorem lid_tmul (r : R) (a : P) : Coalgebra.TensorProduct.lid R P (r ⊗ₜ a) 
 @[simp]
 theorem lid_symm_apply (a : P) : (Coalgebra.TensorProduct.lid R P).symm a = 1 ⊗ₜ a := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 variable (R S M) in
 /-- The base ring is a right identity for the tensor product of coalgebras, up to
 coalgebra equivalence. -/

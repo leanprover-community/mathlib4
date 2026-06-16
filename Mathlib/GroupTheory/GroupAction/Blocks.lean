@@ -158,7 +158,7 @@ theorem IsTrivialBlock.smul_iff {B : Set α} (g : M) :
     IsTrivialBlock (g • B) ↔ IsTrivialBlock B := by
   constructor
   · intro H
-    convert IsTrivialBlock.smul H g⁻¹
+    convert! IsTrivialBlock.smul H g⁻¹
     simp only [inv_smul_smul]
   · intro H
     exact IsTrivialBlock.smul H g
@@ -371,24 +371,7 @@ theorem isBlock_subtypeVal {C : SubMulAction G X} {B : Set C} :
   rw [← SubMulAction.inclusion.coe_eq, ← image_smul_set, ← image_smul_set, ne_eq,
     Set.image_eq_image C.inclusion_injective, disjoint_image_iff C.inclusion_injective]
 
-theorem _root_.AddAction.IsBlock.of_addSubgroup_of_conjugate
-    {G : Type*} [AddGroup G] {X : Type*} [AddAction G X] {B : Set X}
-    {H : AddSubgroup G} (hB : AddAction.IsBlock H B) (g : G) :
-    AddAction.IsBlock (H.map (AddAut.conj g).toMul.toAddMonoidHom) (g +ᵥ B) := by
-  rw [AddAction.isBlock_iff_vadd_eq_or_disjoint]
-  intro h'
-  obtain ⟨h, hH, hh⟩ := AddSubgroup.mem_map.mp (SetLike.coe_mem h')
-  simp only [AddEquiv.coe_toAddMonoidHom, AddAut.conj_apply] at hh
-  suffices h' +ᵥ (g +ᵥ B) = g +ᵥ (h +ᵥ B) by
-    simp only [this]
-    apply (hB.vadd_eq_or_disjoint ⟨h, hH⟩).imp
-    · intro hB'; congr
-    · exact Set.disjoint_image_of_injective (AddAction.injective g)
-  suffices (h' : G) +ᵥ (g +ᵥ B) = g +ᵥ (h +ᵥ B) by
-    exact this
-  rw [← hh, vadd_vadd, vadd_vadd]
-  simp
-
+@[to_additive]
 theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g : G) :
     IsBlock (H.map (MulAut.conj g).toMonoidHom) (g • B) := by
   rw [isBlock_iff_smul_eq_or_disjoint]
@@ -405,18 +388,7 @@ theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g 
   rw [← hh, smul_smul (g * h * g⁻¹) g B, smul_smul g h B, inv_mul_cancel_right]
 
 /-- A translate of a block is a block -/
-theorem _root_.AddAction.IsBlock.translate
-    {G : Type*} [AddGroup G] {X : Type*} [AddAction G X] (B : Set X)
-    (g : G) (hB : AddAction.IsBlock G B) :
-    AddAction.IsBlock G (g +ᵥ B) := by
-  rw [← AddAction.isBlock_top] at hB ⊢
-  rw [← AddSubgroup.map_comap_eq_self_of_surjective (G := G) ?_ ⊤]
-  · apply AddAction.IsBlock.of_addSubgroup_of_conjugate
-    rwa [AddSubgroup.comap_top]
-  · exact (AddAut.conj g).surjective
-
-/-- A translate of a block is a block -/
-@[to_additive existing]
+@[to_additive]
 theorem IsBlock.translate (g : G) (hB : IsBlock G B) :
     IsBlock G (g • B) := by
   rw [← isBlock_top] at hB ⊢

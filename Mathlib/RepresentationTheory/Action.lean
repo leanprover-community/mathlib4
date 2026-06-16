@@ -154,7 +154,7 @@ lemma μ_comp_assoc : ((linearizeMap (α_ X Y Z).hom).comp
     TensorProduct.assoc_tmul, LinearMap.lTensor_tmul, toLinearMap_apply]
   -- after fixing the defeq problems in `Action` and in the monoidal category structure of `types`
   -- this line should close the goal so this is left as an indicator.
-  with_reducible convert dsimp% linearizeMap_single (α_ X Y Z).hom ((x, y), z) (1 : k)
+  convert dsimp% linearizeMap_single (α_ X Y Z).hom ((x, y), z) (1 : k)
   all_goals with_reducible simp
 
 variable (X) in
@@ -237,7 +237,7 @@ lemma linearizeTrivial_def (X : Type w) (g : G) :
     linearize k G (Action.trivial _ X) g = LinearMap.id := by
   ext (x : X) : 2
   rw [LinearMap.comp_apply, LinearMap.id_comp, Finsupp.lsingle_apply, linearize_single]
-  simp only [Action.trivial_V, Action.trivial_ρ]
+  simp only [Action.trivial_ρ]
   rfl
 
 variable (k G) in
@@ -246,7 +246,7 @@ variable (k G) in
 def linearizeTrivialIso (X : Type w) : (linearize k G (Action.trivial _ X)).Equiv
     (trivial k G (X →₀ k)) :=
   .mk (LinearEquiv.refl _ _) fun g ↦ by
-    simpa using linearizeTrivial_def (k := k) X g
+    simpa using! linearizeTrivial_def (k := k) X g
 
 open CategoryTheory
 lemma linearizeTrivialIso_apply {X : Type w} (f : (Action.trivial _ X).V →₀ k) :

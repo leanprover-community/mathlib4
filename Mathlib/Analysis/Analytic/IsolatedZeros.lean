@@ -52,7 +52,7 @@ namespace HasSum
 variable {a : ℕ → E}
 
 theorem hasSum_at_zero (a : ℕ → E) : HasSum (fun n => (0 : 𝕜) ^ n • a n) (a 0) := by
-  convert hasSum_single (α := E) 0 fun b h ↦ _ <;> simp [*]
+  convert! hasSum_single (α := E) 0 fun b h ↦ _ <;> simp [*]
 
 theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m) s)
     (ha : ∀ k < n, a k = 0) : ∃ t : E, z ^ n • t = s ∧ HasSum (fun m => z ^ m • a (m + n)) t := by
@@ -66,7 +66,7 @@ theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m
       Finset.sum_eq_zero fun k hk => by simp [ha k (Finset.mem_range.mp hk)]
     have h2 : HasSum (fun m => z ^ (m + n) • a (m + n)) s := by
       simpa [h1] using (hasSum_nat_add_iff' n).mpr hs
-    convert h2.const_smul (z⁻¹ ^ n) using 2 with x
+    convert! h2.const_smul (z⁻¹ ^ n) using 2 with x
     · match_scalars
       simp [field, pow_add]
     · simp only [inv_pow]
@@ -82,7 +82,7 @@ theorem has_fpower_series_dslope_fslope (hp : HasFPowerSeriesAt f p z₀) :
   simp only [hasFPowerSeriesAt_iff, coeff_fslope] at hp ⊢
   refine hp.mono fun x hx => ?_
   by_cases h : x = 0
-  · convert hasSum_single (α := E) 0 _ <;> intros <;> simp [*]
+  · convert! hasSum_single (α := E) 0 _ <;> intros <;> simp [*]
   · have hxx : ∀ n : ℕ, x⁻¹ * x ^ (n + 1) = x ^ n := fun n => by simp [field, _root_.pow_succ]
     suffices HasSum (fun n => x⁻¹ • x ^ (n + 1) • p.coeff (n + 1)) (x⁻¹ • (f (z₀ + x) - f z₀)) by
       simpa [dslope, slope, h, smul_smul, hxx] using this
@@ -239,7 +239,7 @@ theorem eqOn_of_preconnected_of_frequently_eq (hf : AnalyticOnNhd 𝕜 f U) (hg 
     (hU : IsPreconnected U) (h₀ : z₀ ∈ U) (hfg : ∃ᶠ z in 𝓝[≠] z₀, f z = g z) : EqOn f g U := by
   have hfg' : ∃ᶠ z in 𝓝[≠] z₀, (f - g) z = 0 :=
     hfg.mono fun z h => by rw [Pi.sub_apply, h, sub_self]
-  simpa [sub_eq_zero] using fun z hz =>
+  simpa [sub_eq_zero] using! fun z hz =>
     (hf.sub hg).eqOn_zero_of_preconnected_of_frequently_eq_zero hU h₀ hfg' hz
 
 theorem eqOn_or_eventually_ne_of_preconnected (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
@@ -347,15 +347,10 @@ theorem AnalyticOnNhd.preimage_mem_codiscreteWithin {U : Set 𝕜} {s : Set E} {
     (hfU : AnalyticOnNhd 𝕜 f U) (h₂f : ∀ x ∈ U, ¬EventuallyConst f (𝓝 x))
     (hs : s ∈ codiscreteWithin (f '' U)) :
     f ⁻¹' s ∈ codiscreteWithin U := by
-  simp_rw [mem_codiscreteWithin, disjoint_principal_right, Set.compl_diff] at *
+  simp_rw [mem_codiscreteWithin, disjoint_principal_right, Set.compl_sdiff] at *
   intro x hx
   apply mem_of_superset ((hfU x hx).preimage_of_nhdsNE (h₂f x hx) (hs (f x) (by tauto)))
-  rw [preimage_union, preimage_compl]
-  apply union_subset_union_right (f ⁻¹' s)
-  intro x hx
-  push _ ∈ _ at hx ⊢
-  push Not at hx
-  tauto
+  grind
 
 /-- Preimages of codiscrete sets, filter version: if `f` is analytic on a neighbourhood of `U` and
 not locally constant, then the push-forward of the filter of sets codiscrete within `U` is less
