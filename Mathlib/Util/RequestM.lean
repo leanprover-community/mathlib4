@@ -242,7 +242,7 @@ instance : ToMessageData RequestError where
 
 def Lean.Lsp.CodeAction.toMessageData (action : Lsp.CodeAction)
     (showHeader : Option (Option Nat) := none) : RequestM MessageData := do
-  let mut msg := m!"Code action{action.kind?.elim "" (s!" ({·})")}:\n💡 {action.title}"
+  let mut msg := m!"Code action{action.kind?.elim "" (s!" ({·})")}:\n💡️ {action.title}"
   if let some edit := action.edit? then
     msg := m!"{msg}\n{← edit.toMessageData showHeader}"
   return msg
