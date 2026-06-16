@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury G. Kudryashov, Edison Xie
 -/
 module
 
@@ -71,41 +71,43 @@ theorem induction_on {motive : PGL(n, R) → Prop} (g : PGL(n, R))
     (mk : ∀ g : GL n R, motive (ProjGenLinGroup.mk g)) : motive g :=
   Quotient.inductionOn g mk
 
+end ProjGenLinGroup
+
 section isoPSL
+
+variable {n R : Type*} [Fintype n] [DecidableEq n] [CommRing R]
+
+open Matrix.ProjGenLinGroup
+
+namespace SpecialLinearGroup
+
+abbrev toPGL : SpecialLinearGroup n R →* PGL(n, R) := mk.comp toGL
+
+lemma toPGL_ker : toPGL.ker = Subgroup.center (SpecialLinearGroup n R) := by
+  ext; simp [toGL_mem_center_iff]
+
+end SpecialLinearGroup
+
+namespace ProjectiveSpecialLinearGroup
 
 open Matrix.SpecialLinearGroup
 
 /-- The natural inclusion map from `PSL(n, R)` to `PGL(n, R)` induced by the inclusion
   map from `SL(n, R)` to `GL(n, R)`. -/
 @[expose]
-def _root_.Matrix.ProjectiveSpecialLinearGroup.toPGL :
+def toPGL :
     ProjectiveSpecialLinearGroup n R →* PGL(n, R) :=
-  QuotientGroup.lift _ (mk.comp toGL) fun x hx ↦ by
-    simp only [mem_center_iff, scalar_apply, MonoidHom.mem_ker, MonoidHom.coe_comp,
-      Function.comp_apply, mk_eq_one, GeneralLinearGroup.mem_center_iff_val_mem_range_scalar,
-      coe_GL_coe_matrix, Set.mem_range] at hx ⊢
-    exact ⟨hx.choose, hx.choose_spec.2⟩
+  QuotientGroup.lift _ SpecialLinearGroup.toPGL <| le_of_eq toPGL_ker.symm
 
 @[simp]
-lemma _root_.Matrix.ProjectiveSpecialLinearGroup.toPGL_mk (g : SpecialLinearGroup n R) :
+lemma toPGL_mk (g : SpecialLinearGroup n R) :
     ProjectiveSpecialLinearGroup.toPGL g = mk (toGL g) := rfl
 
-lemma _root_.Matrix.ProjectiveSpecialLinearGroup.toPGL_injective :
-    Function.Injective (ProjectiveSpecialLinearGroup.toPGL (n := n) (R := R)) := fun x y h ↦ by
-  induction x using QuotientGroup.induction_on with | H x =>
-  induction y using QuotientGroup.induction_on with | H y =>
-  simp only [ProjectiveSpecialLinearGroup.toPGL_mk, mk_eq_mk_iff] at h
-  rw [← QuotientGroup.mk'_apply, ← QuotientGroup.mk'_apply]
-  simp only [QuotientGroup.mk'_eq_mk', mem_center_iff]
-  obtain ⟨u, hu'⟩ := h
-  have hu : u.1 ^ Fintype.card n = 1 := by
-    simpa [Units.ext_iff] using congr(Matrix.GeneralLinearGroup.det $hu')
-  set z : SpecialLinearGroup n R := ⟨scalar n u.1, by simpa using hu⟩ with hz_eq
-  have hz : (GeneralLinearGroup.scalar n) u = toGL z := by ext; simp [hz_eq]
-  refine ⟨z, ⟨u.1, hu, by simp [hz_eq]⟩, ?_⟩
-  rwa [hz, ← map_mul, toGL_inj] at hu'
+lemma toPGL_injective :
+    Function.Injective (ProjectiveSpecialLinearGroup.toPGL (n := n) (R := R)) :=
+  QuotientGroup.injective_lift_iff _ _ _ |>.2 toPGL_ker.symm
 
-lemma _root_.Matrix.ProjectiveSpecialLinearGroup.toPGL_surj_of_roots
+lemma toPGL_surj_of_roots
     (hR : ∀ r : Rˣ, ∃ k : Rˣ, k ^ Fintype.card n = r) :
     Function.Surjective (ProjectiveSpecialLinearGroup.toPGL (n := n) (R := R)) := fun g ↦ by
   induction g using Matrix.ProjGenLinGroup.induction_on with | mk g =>
@@ -120,7 +122,7 @@ lemma _root_.Matrix.ProjectiveSpecialLinearGroup.toPGL_surj_of_roots
   simp only [Units.val_mul, coe_GL_coe_matrix,GeneralLinearGroup.val_scalar_apply]
   simp [← Matrix.mul_smul, ← Matrix.diagonal_smul, Pi.smul_def, smul_eq_mul]
 
-lemma _root_.Matrix.ProjectiveSpecialLinearGroup.toPGL_surj_iff [Nonempty n] :
+lemma toPGL_surj_iff [Nonempty n] :
     Function.Surjective (ProjectiveSpecialLinearGroup.toPGL (n := n) (R := R)) ↔
       ∀ r : Rˣ, ∃ k : Rˣ, k ^ Fintype.card n = r := by
   refine ⟨fun h r ↦ ?_, ProjectiveSpecialLinearGroup.toPGL_surj_of_roots⟩
@@ -156,9 +158,13 @@ noncomputable def isoPSLOfAlgClosed {F : Type*} [Field F] [IsAlgClosed F] :
   MulEquiv.symm (MulEquiv.ofBijective Matrix.ProjectiveSpecialLinearGroup.toPGL
     ⟨Matrix.ProjectiveSpecialLinearGroup.toPGL_injective, Function.surjective_to_subsingleton _⟩)
 
+end ProjectiveSpecialLinearGroup
+
 end isoPSL
 
-variable {M : Type*} [Monoid M]
+namespace ProjGenLinGroup
+
+variable {n R : Type*} [Fintype n] [DecidableEq n] [CommRing R] {M : Type*} [Monoid M]
 
 /-- Lift a monoid homomorphism `f : GL n R →* M` that vanishes on all scalar matrices
 to a homomorphism from `PGL(n, R)`. -/

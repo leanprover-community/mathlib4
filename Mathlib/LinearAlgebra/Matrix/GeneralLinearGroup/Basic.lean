@@ -78,4 +78,20 @@ end Center
 
 end GeneralLinearGroup
 
+lemma SpecialLinearGroup.toGL_mem_center_iff {n R : Type*} [Fintype n] [DecidableEq n] [CommRing R]
+    (g : SpecialLinearGroup n R) :
+    toGL g ∈ Subgroup.center (GL n R) ↔ g ∈ Subgroup.center (SpecialLinearGroup n R) := by
+  if hn : IsEmpty n then simp [Subgroup.center_eq_top] else
+  replace hn : Nonempty n := by simpa using hn
+  obtain ⟨i⟩ := hn
+  simp only [GeneralLinearGroup.center_eq_range_scalar, MonoidHom.mem_range,
+    mem_center_iff, scalar_apply]
+  refine ⟨fun ⟨r, hr⟩ ↦ ⟨r, by simpa [Units.ext_iff] using congr(GeneralLinearGroup.det $hr),
+    by simpa [Units.ext_iff] using hr⟩, fun ⟨r, hr1, hr⟩ ↦ ⟨⟨r, g⁻¹.1 i i, ?_, ?_⟩,
+      by simp [Units.ext_iff, hr]⟩⟩
+  · simpa [-mul_inv_cancel, ← hr, ← pow_succ',
+      Nat.sub_one_add_one Fintype.card_pos.ne.symm] using
+        Matrix.ext_iff.2 (Subtype.ext_iff.1 (mul_inv_cancel g)) i i
+  · simpa [-inv_mul_cancel, ← hr] using Matrix.ext_iff.2 (Subtype.ext_iff.1 (inv_mul_cancel g)) i i
+
 end Matrix
