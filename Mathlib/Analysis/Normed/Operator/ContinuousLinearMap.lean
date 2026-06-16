@@ -65,9 +65,9 @@ def LinearMap.mkContinuousOfExistsBound (h : ∃ C, ∀ x, ‖f x‖ ≤ C * ‖
 
 theorem continuous_of_linear_of_boundₛₗ {f : E → F} (h_add : ∀ x y, f (x + y) = f x + f y)
     (h_smul : ∀ (c : 𝕜) (x), f (c • x) = σ c • f x) {C : ℝ} (h_bound : ∀ x, ‖f x‖ ≤ C * ‖x‖) :
-    Continuous f := by
+    Continuous f :=
   let φ : E →ₛₗ[σ] F := LinearMap.mk ⟨f, h_add⟩ h_smul
-  exact (φ.mkContinuous C h_bound).continuous
+  (φ.mkContinuous C h_bound).continuous
 
 theorem continuous_of_linear_of_bound {f : E → G} (h_add : ∀ x y, f (x + y) = f x + f y)
     (h_smul : ∀ (c : 𝕜) (x), f (c • x) = c • f x) {C : ℝ} (h_bound : ∀ x, ‖f x‖ ≤ C * ‖x‖) :
