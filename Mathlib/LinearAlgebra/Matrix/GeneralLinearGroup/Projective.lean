@@ -211,6 +211,13 @@ theorem mk_smul {α : Type*} [MulAction (GL n R) α] (h) (g : GL n R) (a : α) :
     mk g • a = g • a := by
   rfl
 
+abbrev map {S : Type*} [CommRing S] (f : R →+* S) : PGL(n, R) →* PGL(n, S) :=
+  QuotientGroup.map _ _ (GeneralLinearGroup.map (n := n) f) <| fun u hu ↦ by
+    simp only [GeneralLinearGroup.center_eq_range_scalar, MonoidHom.mem_range,
+      Subgroup.mem_comap] at hu ⊢
+    obtain ⟨r, rfl⟩ := hu
+    exact ⟨(Units.map f) r, GeneralLinearGroup.map_scalar _ _ |>.symm⟩
+
 variable [Fact (Even (Fintype.card n))] [LinearOrder R] [IsStrictOrderedRing R]
 
 /-- In case of an even dimension, the sign of the determinant of `g : PGL(n, R)` is well-defined. -/

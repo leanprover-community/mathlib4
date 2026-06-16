@@ -222,6 +222,11 @@ lemma coe_map_inv_mul_map (g : GL n R) : g.val⁻¹.map f * g.val.map f = 1 := b
   rw [← Matrix.map_mul]
   simp only [isUnits_det_units, nonsing_inv_mul, map_zero, map_one, Matrix.map_one]
 
+lemma map_scalar (u : Rˣ) : map f (scalar n u) = scalar n (Units.map f u) := by
+  ext
+  simp [Matrix.diagonal_apply]
+  split <;> simp
+
 section kronecker
 variable {R m : Type*} [CommSemiring R] [Fintype m] [DecidableEq m]
 
