@@ -392,7 +392,7 @@ theorem constFormalMultilinearSeries_apply_of_nonzero [NontriviallyNormedField �
 lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
     [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] :
     constFormalMultilinearSeries 𝕜 E (0 : F) = 0 := by
-  ext n x
+  ext n
   induction n <;> simp
 
 @[simp]
