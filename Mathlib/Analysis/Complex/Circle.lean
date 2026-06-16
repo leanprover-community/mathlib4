@@ -79,6 +79,24 @@ lemma norm_coe (z : Circle) : ‖(z : ℂ)‖ = 1 := mem_sphere_zero_iff_norm.1 
 lemma coe_inv_eq_conj (z : Circle) : ↑z⁻¹ = conj (z : ℂ) := by
   rw [coe_inv, inv_def, normSq_coe, inv_one, ofReal_one, mul_one]
 
+/-- The point `-1` on the circle. -/
+def negOne : Circle := ⟨-1, by simp [Submonoid.unitSphere]⟩
+
+@[simp]
+theorem coe_negOne : (negOne : ℂ) = -1 := rfl
+
+theorem one_ne_negOne : (1 : Circle) ≠ negOne := by
+  intro h; have := congr_arg Subtype.val h; norm_num [negOne, coe_one] at this
+
+/-- On `Circle`, `z ≠ 1` and `z ≠ -1` implies `(z : ℂ).im ≠ 0`. -/
+theorem im_ne_zero_of_ne {z : Circle} (h1 : z ≠ 1) (h2 : z ≠ negOne) : (z : ℂ).im ≠ 0 := by
+  intro him
+  have hnsq : normSq (z : ℂ) = 1 := normSq_coe z
+  rw [normSq_apply] at hnsq; simp only [him, mul_zero, add_zero] at hnsq
+  rcases mul_self_eq_one_iff.mp hnsq with hre | hre
+  · exact h1 (Subtype.ext (Complex.ext hre him))
+  · exact h2 (Subtype.ext (Complex.ext (by simpa using hre) (by simpa using him)))
+
 @[simp, norm_cast] lemma coe_div (z w : Circle) : ↑(z / w) = (z : ℂ) / w := rfl
 @[simp, norm_cast] lemma coe_pow (z : Circle) (n : ℕ) : ↑(z ^ n) = (z : ℂ) ^ n := rfl
 @[simp, norm_cast] lemma coe_zpow (z : Circle) (n : ℤ) : ↑(z ^ n) = (z : ℂ) ^ n := rfl

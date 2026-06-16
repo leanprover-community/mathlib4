@@ -5,11 +5,11 @@ Authors: Michael Lee
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.Connected
-public import Mathlib.Geometry.Manifold.Instances.Sphere
-public import Mathlib.Geometry.Manifold.VectorBundle.Basic
-public import Mathlib.Geometry.Manifold.Orientation
 public import Mathlib.Analysis.Calculus.FDeriv.Prod
+public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+public import Mathlib.Geometry.Manifold.Instances.Sphere
+public import Mathlib.Geometry.Manifold.Orientation
+public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 /-!
 # The Möbius band
@@ -39,34 +39,6 @@ noncomputable section
 
 open scoped Manifold
 open Set Complex
-
-/-! ### Circle helpers -/
-
-instance : ConnectedSpace Circle :=
-  Subtype.connectedSpace (isConnected_sphere
-    (by rw [Complex.rank_real_complex]; norm_num) (0 : ℂ) (by norm_num : (0 : ℝ) ≤ 1))
-
-namespace Circle
-
-/-- The point `-1` on the circle. -/
-def negOne : Circle := ⟨-1, by simp [Submonoid.unitSphere]⟩
-
-@[simp]
-theorem coe_negOne : (negOne : ℂ) = -1 := rfl
-
-theorem one_ne_negOne : (1 : Circle) ≠ negOne := by
-  intro h; have := congr_arg Subtype.val h; norm_num [negOne, coe_one] at this
-
-/-- On `Circle`, `z ≠ 1` and `z ≠ -1` implies `(z : ℂ).im ≠ 0`. -/
-theorem im_ne_zero_of_ne {z : Circle} (h1 : z ≠ 1) (h2 : z ≠ negOne) : (z : ℂ).im ≠ 0 := by
-  intro him
-  have hnsq : normSq (z : ℂ) = 1 := by rw [normSq_eq_norm_sq]; simp [norm_coe z]
-  rw [normSq_apply] at hnsq; simp only [him, mul_zero, add_zero] at hnsq
-  rcases mul_self_eq_one_iff.mp hnsq with hre | hre
-  · exact h1 (Subtype.ext (Complex.ext hre him))
-  · exact h2 (Subtype.ext (Complex.ext (by simpa using hre) (by simpa using him)))
-
-end Circle
 
 /-! ### Möbius bundle core -/
 
