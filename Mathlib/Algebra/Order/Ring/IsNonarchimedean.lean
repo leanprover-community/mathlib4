@@ -170,7 +170,7 @@ omit [Semiring R] in
 theorem finset_image_add_of_nonempty {α β : Type*} [AddCommMonoid α] {f : α → R}
     (hna : IsNonarchimedean f) (g : β → α) {t : Finset β} (ht : t.Nonempty) :
     ∃ b ∈ t, f (t.sum g) ≤ f (g b) := by
-  simpa [Finset.le_sup'_iff] using IsNonarchimedean.apply_sum_le_sup_of_isNonarchimedean hna ht
+  simpa [Finset.le_sup'_iff] using IsNonarchimedean.apply_sum_le_sup hna ht
 
 /-- Given a nonnegative nonarchimedean function `α → R` such that `f 0 = 0`, a function `g : β → α`
   and a multiset `s : Multiset β`, we can always find `b : β`, belonging to `s` if `s` is nonempty,
@@ -185,6 +185,9 @@ theorem multiset_image_add {F α β : Type*} [AddCommMonoid α] [FunLike F α R]
       hna g Multiset.cons_ne_zero
     exact ⟨b, fun _ ↦ hb1, hb2⟩
 
+/-- Given a nonnegative nonarchimedean function `α → R` such that `f 0 = 0`, a function `g : β → α`
+  and a finset `t : Finset β`, we can always find `b : β`, belonging to `t` if `t` is nonempty,
+  such that `f (t.sum g) ≤ f (g b)` . -/
 lemma finset_image_add {α β : Type*} [AddCommMonoid α] [Nonempty β] {f : α → R} (f_zero : f 0 = 0)
     (f_nonneg : ∀ x, 0 ≤ f x) (hna : IsNonarchimedean f) (g : β → α) (t : Finset β) :
     ∃ i, (t.Nonempty → i ∈ t) ∧ f (t.sum g) ≤ f (g i) := by
@@ -229,7 +232,7 @@ lemma apply_sum_eq_of_lt {α β : Type*} [AddCommGroup α] {f : α → R} (fna :
     rw [← Finset.add_sum_erase _ _ hk]
     have hNonempty : (s.erase k).Nonempty :=
       Finset.Nontrivial.erase_nonempty (Finset.one_lt_card_iff_nontrivial.mp (by grind))
-    have hrest_le := IsNonarchimedean.apply_sum_le_sup_of_isNonarchimedean fna hNonempty (l := l)
+    have hrest_le := IsNonarchimedean.apply_sum_le_sup fna hNonempty (l := l)
     simp only [Finset.le_sup'_iff, Finset.mem_erase, ne_eq] at hrest_le
     rw [add_eq_max_of_ne' f fna f_neg (by grind), max_eq_left (le_of_lt (by grind))]
 
