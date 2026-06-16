@@ -714,6 +714,34 @@ theorem map_exists_left_inv (f : F) {x : M} (hx : ∃ y, y * x = 1) : ∃ y, y *
 @[deprecated (since := "2025-12-14")]
 alias isDedekindFiniteMonoid_of_injective := IsDedekindFiniteMonoid.of_injective
 
+/-- A mul homomorphism with a left cancelable codomain can be turned into a monoid homomorphism.
+This is particularly useful when the domain is a group, since then the codomain is automatically
+left cancellable.
+-/
+@[to_additive
+  /-- An add homomorphism with a left cancelable codomain can be turned into an additive monoid
+  homomorphism. This is particularly useful when the domain is an additive group, since then the
+  codomain is automatically left cancellable. -/ ]
+def ofMulHom {M N : Type*} [Monoid M] [LeftCancelMonoid N]
+    (f : M →ₙ* N) : M →* N :=
+  { toFun := f, map_mul' := f.map_mul', map_one' := by
+      have h : f 1 * 1 = f 1 * f 1 := by simpa using f.map_mul' 1 1
+      exact (mul_left_cancel h).symm }
+
+@[to_additive]
+lemma ofMulHom_apply {M N : Type*} [Monoid M] [LeftCancelMonoid N]
+    (f : M →ₙ* N) (x : M) : MonoidHom.ofMulHom f x = f x := (rfl)
+
+@[to_additive]
+lemma ofMulHom_injective {M N : Type*} [Monoid M] [LeftCancelMonoid N] :
+    Function.Injective (MonoidHom.ofMulHom (M := M) (N := N)) :=
+  fun _ _ h ↦ MulHom.ext fun _ ↦ DFunLike.congr_fun h _
+
+@[to_additive]
+lemma ofMulHom_map_injective {M N : Type*} [Monoid M] [LeftCancelMonoid N]
+    {f : M →ₙ* N} (hf : Function.Injective f) : Function.Injective (MonoidHom.ofMulHom f) :=
+  hf
+
 end MonoidHom
 
 /-- The identity map from a type with 1 to itself. -/
