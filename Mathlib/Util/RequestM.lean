@@ -285,3 +285,6 @@ def testCodeActions : Linter where
             logInfoAt (.ofRange stxRange) action
 
 initialize addLinter testCodeActions
+
+-- TODO: remove after #39890
+attribute [nolint defsWithUnderscore] instReprErrorCode_mathlib.repr
