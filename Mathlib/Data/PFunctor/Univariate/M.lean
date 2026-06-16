@@ -15,14 +15,17 @@ as the greatest fixpoint of a polynomial functor.
 
 Example usage:
 ```
-/-- Shape type for the polynomial functor of lists and streams. -/
+/-- Shape type for the polynomial functor of lists and streams. 
+More generally, polynomial functors use a shape type to determine the manner in which terms of its fixpoints will branch;
+terms of the shape type may be thought of as nodes of a tree. -/
 inductive ListA (α : Type u)
 | nil
 | cons : α -> ListA α
 deriving DecidableEq, Repr
 
-/-- Polynomial functor for lists. Its smallest fixpoint, (PFunctor.W ·), produces the usual inductive type for lists;
-its greatest fixpoint, (PFunctor.M ·), produces the coinductive type of streams. -/
+/-- Polynomial functor for lists. Its smallest fixpoint, (PFunctor.W ·), produces the usual inductive type for lists; 
+its greatest fixpoint, (PFunctor.M ·), produces the coinductive type of streams. The defined branching structure, `ListPFunctor.B` states:
+on a ListA.nil node, a term does not branch anymore. On a `ListA.cons ..` node, a term branches once. -/
 def ListPFunctor.{u} (α : Type u) : PFunctor.{u, u} where
   A := ListA α
   B
