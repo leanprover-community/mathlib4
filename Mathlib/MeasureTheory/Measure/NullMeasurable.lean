@@ -99,7 +99,7 @@ theorem _root_.MeasurableSet.nullMeasurableSet (h : MeasurableSet s) : NullMeasu
 
 theorem _root_.MeasureTheory.nullMeasurableSet_iff_eventuallyMeasurableSet (s : Set α) :
   NullMeasurableSet s μ ↔ EventuallyMeasurableSet m0 (ae μ) s := by
-  unfold NullMeasurableSet
+  unfold NullMeasurableSet EventuallyMeasurableSet
   rfl
 
 theorem nullMeasurableSet_empty : NullMeasurableSet ∅ μ :=
