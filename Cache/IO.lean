@@ -3,7 +3,6 @@ Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Jon Eugster
 -/
-import Std.Data.TreeSet
 import Cache.Lean
 import Lake.Load.Toml
 import Batteries.Tactic.OpenPrivate
@@ -29,6 +28,7 @@ TODO: write a better predicate. -/
 def isPartOfMathlibCache (mod : Name) : Bool := #[
   `Mathlib,
   `Batteries,
+  `BatteriesRecycling,
   `Aesop,
   `Cli,
   `ImportGraph,

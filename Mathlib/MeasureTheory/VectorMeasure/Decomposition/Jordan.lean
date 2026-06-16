@@ -152,7 +152,7 @@ def toSignedMeasure : SignedMeasure α :=
 theorem toSignedMeasure_zero : (0 : JordanDecomposition α).toSignedMeasure = 0 := by
   ext1 i hi
   rw [toSignedMeasure, toSignedMeasure_sub_apply hi, zero_posPart, zero_negPart, sub_self,
-    VectorMeasure.coe_zero, Pi.zero_apply]
+    FunLike.coe_zero, Pi.zero_apply]
 
 theorem toSignedMeasure_neg : (-j).toSignedMeasure = -j.toSignedMeasure := by
   ext1 i hi
@@ -161,7 +161,7 @@ theorem toSignedMeasure_neg : (-j).toSignedMeasure = -j.toSignedMeasure := by
 
 theorem toSignedMeasure_smul (r : ℝ≥0) : (r • j).toSignedMeasure = r • j.toSignedMeasure := by
   ext1 i hi
-  rw [VectorMeasure.smul_apply, toSignedMeasure, toSignedMeasure,
+  rw [_root_.smul_apply, toSignedMeasure, toSignedMeasure,
     toSignedMeasure_sub_apply hi, toSignedMeasure_sub_apply hi, smul_sub, smul_posPart,
     smul_negPart, measureReal_nnreal_smul_apply, measureReal_nnreal_smul_apply]
   rfl
@@ -247,12 +247,12 @@ theorem subset_positive_null_set (hu : MeasurableSet u) (hv : MeasurableSet v)
     (hw : MeasurableSet w) (hsu : 0 ≤[u] s) (hw₁ : s w = 0) (hw₂ : w ⊆ u) (hwt : v ⊆ w) :
     s v = 0 := by
   have : s v + s (w \ v) = 0 := by
-    rw [← hw₁, ← of_union Set.disjoint_sdiff_right hv (hw.diff hv), Set.union_diff_self,
+    rw [← hw₁, ← of_union Set.disjoint_sdiff_right hv (hw.diff hv), Set.union_sdiff_self,
       Set.union_eq_self_of_subset_left hwt]
   have h₁ := nonneg_of_zero_le_restrict _ (restrict_le_restrict_subset _ _ hu hsu (hwt.trans hw₂))
   have h₂ : 0 ≤ s (w \ v) :=
     nonneg_of_zero_le_restrict _
-      (restrict_le_restrict_subset _ _ hu hsu (diff_subset.trans hw₂))
+      (restrict_le_restrict_subset _ _ hu hsu (sdiff_subset.trans hw₂))
   linarith
 
 /-- A subset `v` of a null-set `w` has zero measure if `w` is a subset of a negative set `u`. -/
@@ -261,21 +261,21 @@ theorem subset_negative_null_set (hu : MeasurableSet u) (hv : MeasurableSet v)
     s v = 0 := by
   rw [← s.neg_le_neg_iff _ hu, neg_zero] at hsu
   have := subset_positive_null_set hu hv hw hsu
-  simp only [Pi.neg_apply, neg_eq_zero, coe_neg] at this
+  simp only [neg_apply, neg_eq_zero] at this
   exact this hw₁ hw₂ hwt
 
 open scoped symmDiff
 
 /-- If the symmetric difference of two positive sets is a null-set, then so are the differences
 between the two sets. -/
-theorem of_diff_eq_zero_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv : MeasurableSet v)
+theorem of_sdiff_eq_zero_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv : MeasurableSet v)
     (hsu : 0 ≤[u] s) (hsv : 0 ≤[v] s) (hs : s (u ∆ v) = 0) : s (u \ v) = 0 ∧ s (v \ u) = 0 := by
   rw [restrict_le_restrict_iff] at hsu hsv
   on_goal 1 =>
-    have a := hsu (hu.diff hv) diff_subset
-    have b := hsv (hv.diff hu) diff_subset
+    have a := hsu (hu.diff hv) sdiff_subset
+    have b := hsv (hv.diff hu) sdiff_subset
     rw [Set.symmDiff_def,
-      of_union (v := s) (Set.disjoint_of_subset_left diff_subset disjoint_sdiff_self_right)
+      of_union (v := s) (Set.disjoint_of_subset_left sdiff_subset disjoint_sdiff_self_right)
         (hu.diff hv) (hv.diff hu)] at hs
     rw [zero_apply] at a b
     constructor
@@ -284,15 +284,21 @@ theorem of_diff_eq_zero_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv 
   · assumption
   · assumption
 
+@[deprecated (since := "2026-06-03")]
+alias of_diff_eq_zero_of_symmDiff_eq_zero_positive := of_sdiff_eq_zero_of_symmDiff_eq_zero_positive
+
 /-- If the symmetric difference of two negative sets is a null-set, then so are the differences
 between the two sets. -/
-theorem of_diff_eq_zero_of_symmDiff_eq_zero_negative (hu : MeasurableSet u) (hv : MeasurableSet v)
+theorem of_sdiff_eq_zero_of_symmDiff_eq_zero_negative (hu : MeasurableSet u) (hv : MeasurableSet v)
     (hsu : s ≤[u] 0) (hsv : s ≤[v] 0) (hs : s (u ∆ v) = 0) : s (u \ v) = 0 ∧ s (v \ u) = 0 := by
   rw [← s.neg_le_neg_iff _ hu, neg_zero] at hsu
   rw [← s.neg_le_neg_iff _ hv, neg_zero] at hsv
-  have := of_diff_eq_zero_of_symmDiff_eq_zero_positive hu hv hsu hsv
-  simp only [Pi.neg_apply, neg_eq_zero, coe_neg] at this
+  have := of_sdiff_eq_zero_of_symmDiff_eq_zero_positive hu hv hsu hsv
+  simp only [neg_apply, neg_eq_zero] at this
   exact this hs
+
+@[deprecated (since := "2026-06-03")]
+alias of_diff_eq_zero_of_symmDiff_eq_zero_negative := of_sdiff_eq_zero_of_symmDiff_eq_zero_negative
 
 theorem of_inter_eq_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv : MeasurableSet v)
     (hw : MeasurableSet w) (hsu : 0 ≤[u] s) (hsv : 0 ≤[v] s) (hs : s (u ∆ v) = 0) :
@@ -305,10 +311,10 @@ theorem of_inter_eq_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv : Me
     rw [← Set.inter_symmDiff_distrib_left]
     exact Set.inter_subset_right
   obtain ⟨huv, hvu⟩ :=
-    of_diff_eq_zero_of_symmDiff_eq_zero_positive (hw.inter hu) (hw.inter hv)
+    of_sdiff_eq_zero_of_symmDiff_eq_zero_positive (hw.inter hu) (hw.inter hv)
       (restrict_le_restrict_subset _ _ hu hsu (w.inter_subset_right))
       (restrict_le_restrict_subset _ _ hv hsv (w.inter_subset_right)) hwuv
-  rw [← of_diff_of_diff_eq_zero (hw.inter hu) (hw.inter hv) hvu, huv, zero_add]
+  rw [← of_sdiff_of_sdiff_eq_zero (hw.inter hu) (hw.inter hv) hvu, huv, zero_add]
 
 theorem of_inter_eq_of_symmDiff_eq_zero_negative (hu : MeasurableSet u) (hv : MeasurableSet v)
     (hw : MeasurableSet w) (hsu : s ≤[u] 0) (hsv : s ≤[v] 0) (hs : s (u ∆ v) = 0) :
@@ -316,7 +322,7 @@ theorem of_inter_eq_of_symmDiff_eq_zero_negative (hu : MeasurableSet u) (hv : Me
   rw [← s.neg_le_neg_iff _ hu, neg_zero] at hsu
   rw [← s.neg_le_neg_iff _ hv, neg_zero] at hsv
   have := of_inter_eq_of_symmDiff_eq_zero_positive hu hv hw hsu hsv
-  simp only [Pi.neg_apply, neg_inj, neg_eq_zero, coe_neg] at this
+  simp only [neg_apply, neg_inj, neg_eq_zero] at this
   exact this hs
 
 end
@@ -463,11 +469,10 @@ theorem totalVariation_neg (s : SignedMeasure α) : (-s).totalVariation = s.tota
 theorem null_of_totalVariation_zero (s : SignedMeasure α) {i : Set α}
     (hs : s.totalVariation i = 0) : s i = 0 := by
   rw [totalVariation, Measure.coe_add, Pi.add_apply, add_eq_zero] at hs
-  rw [← toSignedMeasure_toJordanDecomposition s, toSignedMeasure, VectorMeasure.coe_sub,
-    Pi.sub_apply, Measure.toSignedMeasure_apply, Measure.toSignedMeasure_apply]
   by_cases hi : MeasurableSet i
-  · simp [hs.1, hs.2, measureReal_def]
-  · simp [if_neg hi]
+  · rw [← toSignedMeasure_toJordanDecomposition s, toSignedMeasure]
+    simp [hi, measureReal_def, hs.1, hs.2]
+  · simp [hi]
 
 theorem absolutelyContinuous_ennreal_iff (s : SignedMeasure α) (μ : VectorMeasure α ℝ≥0∞) :
     s ≪ᵥ μ ↔ s.totalVariation ≪ μ.ennrealToMeasure := by

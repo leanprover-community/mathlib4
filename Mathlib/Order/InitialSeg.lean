@@ -73,7 +73,7 @@ instance : Coe (r ≼i s) (r ↪r s) :=
 
 instance : FunLike (r ≼i s) α β where
   coe f := f.toFun
-  coe_injective' := by
+  coe_injective := by
     rintro ⟨f, hf⟩ ⟨g, hg⟩ h
     congr with x
     exact congr_fun h x
