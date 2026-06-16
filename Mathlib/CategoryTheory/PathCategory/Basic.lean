@@ -251,7 +251,7 @@ def pathComposition : Paths C ⥤ C where
 Assistance investigating this would be appreciated. -/
 /-- The canonical relation on the path category of a category:
 two paths are related if they compose to the same morphism. -/
-@[simp, nolint simpNF]
+@[simp]
 def pathsHomRel : HomRel (Paths C) := fun _ _ p q =>
   (pathComposition C).map p = (pathComposition C).map q
 

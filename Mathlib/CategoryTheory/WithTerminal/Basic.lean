@@ -86,7 +86,7 @@ def id : ∀ X : WithTerminal C, Hom X X
 #adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
 Assistance investigating this would be appreciated. -/
 /-- Composition of morphisms for `WithTerminal C`. -/
-@[simp, nolint simpNF]
+@[simp]
 def comp : ∀ {X Y Z : WithTerminal C}, Hom X Y → Hom Y Z → Hom X Z
   | of _X, of _Y, of _Z => fun f g => f ≫ g
   | of _X, _, star => fun _f _g => PUnit.unit
