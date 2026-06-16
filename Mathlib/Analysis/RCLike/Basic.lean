@@ -765,18 +765,20 @@ theorem isCauSeq_norm {f : ℕ → K} (hf : IsCauSeq norm f) : IsCauSeq abs (nor
 
 lemma I_mem_skewAdjoint : I ∈ skewAdjoint K := by simp [skewAdjoint.mem_iff]
 
+end RCLike
+
 section
 variable {A : Type*} [AddCommGroup A] [StarAddMonoid A] [Module K A] [StarModule K A] {a : A}
 
-lemma _root_.IsSelfAdjoint.I_smul_mem_skewAdjoint (h : IsSelfAdjoint a) :
+open RCLike
+
+lemma IsSelfAdjoint.I_smul_mem_skewAdjoint (h : IsSelfAdjoint a) :
     (I : K) • a ∈ skewAdjoint A := h.smul_mem_skewAdjoint I_mem_skewAdjoint
 
-lemma _root_.IsSelfAdjoint.I_smul_of_mem_skewAdjoint (h : a ∈ skewAdjoint A) :
+lemma IsSelfAdjoint.I_smul_of_mem_skewAdjoint (h : a ∈ skewAdjoint A) :
     IsSelfAdjoint ((I : K) • a) := isSelfAdjoint_smul_of_mem_skewAdjoint I_mem_skewAdjoint h
 
 end
-
-end RCLike
 
 section Instances
 
