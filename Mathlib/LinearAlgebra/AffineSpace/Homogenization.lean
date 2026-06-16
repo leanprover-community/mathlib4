@@ -227,20 +227,12 @@ instance : AddCommGroup (Homogenization k P) where
     cases y using mk_induction_of_point p
     cases z using mk_induction_of_point p
     simp_rw [mk_add_mk, add_assoc]
-  neg := Quotient.map
-    (fun
-      | .mk v c p => .mk (- v) (- c) p
-      | .ofVector v => .ofVector (- v))
-    (by
-      rintro _ _ (h | _) <;>
-        simp only [neg_zero] <;>
-        constructor
-      rw [← neg_sub', h, neg_smul])
+  neg x := (-1 : k) • x
   neg_add_cancel x := by
     obtain ⟨p⟩ : Nonempty P := inferInstance
     cases x using mk_induction_of_point p
     change mk (.mk ..) + _ = _
-    simp_rw [mk_add_mk, neg_add_cancel]
+    simp_rw [mk_add_mk, neg_one_smul, neg_add_cancel]
     exact Quot.sound .mk_ofVector
   nsmul := (· • ·)
   nsmul_zero _ := by exact zero_smul
@@ -252,7 +244,7 @@ instance : AddCommGroup (Homogenization k P) where
     obtain ⟨p⟩ : Nonempty P := inferInstance
     cases x using mk_induction_of_point p
     change mk (.mk ..) = mk (.mk ..)
-    simp_rw [Int.negSucc_eq, Nat.cast_succ, ← neg_smul]
+    simp_rw [Int.negSucc_eq, Nat.cast_succ, neg_one_smul, neg_smul]
 
 instance : Module R (Homogenization k P) where
   zero_smul _ := by exact zero_smul
