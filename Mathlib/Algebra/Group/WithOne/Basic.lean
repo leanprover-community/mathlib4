@@ -147,4 +147,41 @@ theorem _root_.MulEquiv.withOneCongr_trans (e₁ : α ≃* β) (e₂ : β ≃* �
 
 end Map
 
+section Cancel
+
+variable [Mul α]
+
+@[to_additive]
+lemma isLeftCancelMul_of_no_right_identities [IsLeftCancelMul α] (h : ∀ a b : α, a * b ≠ a) :
+    IsLeftCancelMul (WithOne α) where
+  mul_left_cancel x y z h' := by
+    induction x
+    · simp_all
+    induction y <;> induction z <;> rename_i y z
+    · simp
+    · simp [← WithOne.coe_mul, (h y z).symm] at h'
+    · simp [← WithOne.coe_mul, (h y z)] at h'
+    · simp_all [← WithOne.coe_mul]
+
+@[to_additive]
+lemma isRightCancelMul_of_no_left_identities [IsRightCancelMul α] (h : ∀ a b : α, a * b ≠ b) :
+    IsRightCancelMul (WithOne α) where
+  mul_right_cancel x y z h' := by
+    induction x
+    · simp_all
+    induction y <;> induction z <;> rename_i y z
+    · simp
+    · simp [← WithOne.coe_mul, (h z y).symm] at h'
+    · simp [← WithOne.coe_mul, (h z y)] at h'
+    · simp_all [← WithOne.coe_mul]
+
+@[to_additive]
+lemma isCancelMul_of_no_identities [IsCancelMul α]
+    (hright : ∀ a b : α, a * b ≠ a) (hleft : ∀ a b : α, a * b ≠ b) :
+    IsCancelMul (WithOne α) where
+  __ := isLeftCancelMul_of_no_right_identities hright
+  __ := isRightCancelMul_of_no_left_identities hleft
+
+end Cancel
+
 end WithOne
