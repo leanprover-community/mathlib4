@@ -112,6 +112,60 @@ open RequestM in
 def simple : CodeActionProvider := fun params _ => return #[{
     eager.title := s!"{params.range.start} → {params.range.end}"}]
 
+namespace WorkspaceEditDiff
+
+-- First draft of this by claude
+
+/-- Extract the substring of `src` between two raw byte positions. -/
+private def slice (src : String) (a b : String.Pos.Raw) : String :=
+  src.extract (src.pos! a) (src.pos! b)
+
+/-- Render one `TextEdit` against `text`: the exact removed span (`-`) vs. its replacement (`+`).
+Each side is split across lines if it spans several; an empty side is omitted. -/
+def renderEdit (text : FileMap) (e : Lsp.TextEdit) : MessageData :=
+  let s := e.range.start
+  let f := e.range.«end»
+  let old := slice text.source (text.lspPosToUtf8Pos s) (text.lspPosToUtf8Pos f)
+  let header := m!"@@ {s.line + 1}:{s.character + 1}-{f.line + 1}:{f.character + 1} @@"
+  let side (mark : String) (str : String) : List MessageData :=
+    if str.isEmpty then [] else (str.splitOn "\n").map (m!"{mark} {·}")
+  MessageData.joinSep (header :: side "-" old ++ side "+" e.newText) "\n"
+
+/-- Render all edits for a single document. -/
+private def renderDoc (uri : Lsp.DocumentUri) (text? : Option FileMap) (edits : Array Lsp.TextEdit) :
+    MessageData :=
+  let body := match text? with
+    | some text => MessageData.joinSep (edits.toList.map (renderEdit text)) "\n"
+    | none =>      -- no source available: show only the location and the inserted text
+      MessageData.joinSep (edits.toList.map fun e =>
+        m!"@@ {e.range.start.line + 1}:{e.range.start.character + 1} @@\n+ {e.newText}") "\n"
+  m!"--- {uri}\n{body}"
+
+def _root_.Lean.Lsp.WorkspaceEdit.toMessageData
+    (we : Lsp.WorkspaceEdit) (fileMapFor : Lsp.DocumentUri → Option FileMap) : MessageData :=
+  let fromChanges : List (Lsp.DocumentUri × Lsp.TextEditBatch) :=
+    (we.changes?.map (·.toList)).getD []
+  let dcs := (we.documentChanges?.getD #[]).toList
+  let fromDocs : List (Lsp.DocumentUri × Lsp.TextEditBatch) := dcs.filterMap fun
+    | .edit e => some (e.textDocument.uri, e.edits)
+    | _ => none
+  let resourceOps : List MessageData := dcs.filterMap fun
+    | .create c => some m!"create {c.uri}"
+    | .rename r => some m!"rename {r.oldUri} → {r.newUri}"
+    | .delete d => some m!"delete {d.uri}"
+    | .edit _ => none
+  let docMsgs := (fromChanges ++ fromDocs).map fun (uri, edits) => renderDoc uri (fileMapFor uri) edits
+  match docMsgs ++ resourceOps with
+  | [] => m!"(empty workspace edit)"
+  | msgs => MessageData.joinSep msgs "\n\n"
+
+def _root_.Lean.Lsp.WorkspaceEdit.toMessageDataFor (we : Lsp.WorkspaceEdit) (text : FileMap) :
+    MessageData :=
+  we.toMessageData (fun _ => some text)
+
+end WorkspaceEditDiff
+
+
 def String.Slice.toSyntaxRange (s : String.Slice) : Syntax.Range where
   start := s.startInclusive.offset
   stop  := s.endExclusive.offset
