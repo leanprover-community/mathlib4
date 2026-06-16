@@ -1,5 +1,8 @@
-import Lean.Server.Requests
-import Lean.Server.CodeActions.Basic
+module
+
+public import Lean.Server.Requests
+public import Lean.Server.CodeActions.Basic
+import Lean.Linter.Basic
 
 /-!
 # Utilities for `RequestM`
@@ -57,9 +60,10 @@ def Lean.FileMap.mkDummyRequestContext (map : FileMap) (fileName : System.FilePa
 
 /-- Fabricate a `Snapshots.Snapshot` from the current `CommandElabM` state. -/
 def mkDummySnapshot (cmd : Syntax) : CommandElabM Snapshots.Snapshot := do
+  let some pos := cmd.getTrailingTailPos? | throwError "Could not find trailing tail pos for {cmd}"
   return {
   stx      := cmd
-  mpState  := { pos := cmd.getTrailingTailPos?.get! } -- wrong? end of `stx` instead?
+  mpState  := { pos }
   cmdState := ← get }
 
 def mkDummyRequestContext (cmd : Syntax)
@@ -76,10 +80,6 @@ def liftRequestM {α} (cmd : Syntax)
   match ← (action.run (← mkDummyRequestContext cmd)).toBaseIO.toIO with -- TODO: lifting?
   | .ok a    => return a
   | .error e => throwError "`RequestM` action failed with code [{repr e.code}]:\n{e.message}"
-
-
-
-#check Lsp.CodeActionParams
 
 @[inline] def Lean.Server.CodeActionProvider.runRequestM (cmd : Syntax)
     (params : Lsp.CodeActionParams) (snap : Snapshots.Snapshot) (action : CodeActionProvider) :
@@ -119,14 +119,14 @@ namespace WorkspaceEditDiff
 def _root_.Lean.Lsp.Range.asDiffHeader (range : Lsp.Range) : String :=
   let s := range.start
   let f := range.end
-  s!"@@ {s.line + 1}:{s.character + 1}-{f.line + 1}:{f.character + 1} @@"
+  s!"@@ {s.line + 1}:{s.character}-{f.line + 1}:{f.character} @@"
 
 def _root_.Lean.Lsp.Range.asDiffHeaderFromLine (line : Nat) (range : Lsp.Range) : String :=
   let s := range.start
   let f := range.end
   let showSign (x : Int) := if x < 0 then s!"{x}" else s!"+{x}"
-  s!"@@ {showSign <| (s.line : Int) - line}:{s.character + 1}-\
-    {showSign <| (f.line : Int) - line}:{f.character + 1} @@"
+  s!"@@ {showSign <| (s.line : Int) - line}:{s.character}-\
+    {showSign <| (f.line : Int) - line}:{f.character} @@"
 
 /-- Render one `TextEdit` against `text`: the exact removed span (`-`) vs. its replacement (`+`).
 Each side is split across lines if it spans several; an empty side is omitted. -/
@@ -145,39 +145,48 @@ def renderEdit (text : FileMap) (e : Lsp.TextEdit) (showHeader : Option (Option 
     ((str.split "\n").map fun line => if line.isEmpty then mark else s!"{mark} {line}").toList
   "\n".intercalate <| header :: (side "-" old.toString ++ side "+" e.newText)
 
-/-- Render all edits for a single document. -/
-private def renderDoc (uri : Lsp.DocumentUri) (text? : Option FileMap) (edits : Array Lsp.TextEdit) :
+/-- Render all edits for a single document, labelled by its module `Name`. -/
+private def renderDoc (text? : Option FileMap) (edits : Array Lsp.TextEdit) (mod? : Option Name := none) (showHeader : Option (Option Nat) := none) :
     MessageData :=
   let body := match text? with
-    | some text => MessageData.joinSep (edits.toList.map (renderEdit text)) "\n\n"
+    | some text => MessageData.joinSep (edits.toList.map (renderEdit text · showHeader)) "\n\n"
     | none =>      -- no source available: show only the location and the inserted text
       MessageData.joinSep (edits.toList.map fun e =>s!"Edit (source unavailable):\n+ {e.newText}") "\n\n"
-  m!"--- {uri}\n{body}" -- TODO: should normalize or use filename instead?
+  m!"{if let some mod := mod? then s!"\n[{mod}]" else ""}\n{body}"
 
-def _root_.Lean.Lsp.WorkspaceEdit.toMessageData
-    (we : Lsp.WorkspaceEdit) (fileMapFor : Lsp.DocumentUri → Option FileMap) : MessageData :=
+open RequestM in
+-- TODO: we don't actually use the name when we can find the filemap
+/-- Resolve a document URI to its machine-stable module `Name`, together with its contents when it
+is the current request's document (the only one whose `FileMap` we have on hand). -/
+private def resolveDoc (uri : Lsp.DocumentUri) : RequestM (Name × Option FileMap) := do
+  let «meta» := (← readDoc).meta
+  if uri = meta.uri then
+    return (meta.mod, some meta.text)
+  else
+    return (← moduleFromDocumentUri uri, none)
+
+open RequestM in
+/-- Render an `Lsp.WorkspaceEdit` as `MessageData`, showing a diff of each text edit. Documents are
+labelled by their (machine-stable) module name rather than their URI; the removed side of the diff
+is shown for the current request's document, whose contents are available. -/
+def _root_.Lean.Lsp.WorkspaceEdit.toMessageData (we : Lsp.WorkspaceEdit) (showHeader : Option (Option Nat) := none) : RequestM MessageData := do
   let dcs := (we.documentChanges?.getD #[]).toList
   let fromDocs : List (Lsp.DocumentUri × Lsp.TextEditBatch) := dcs.filterMap fun
     | .edit e => some (e.textDocument.uri, e.edits)
     | _ => none
-  let resourceOps : List MessageData := dcs.filterMap fun
-    | .create c => some m!"create {c.uri}"
-    | .rename r => some m!"rename {r.oldUri} → {r.newUri}"
-    | .delete d => some m!"delete {d.uri}"
-    | .edit _ => none
+  let resourceOps ← dcs.filterMapM fun
+    | .create c => return m!"create {(← resolveDoc c.uri).1}"
+    | .rename r => return m!"rename {(← resolveDoc r.oldUri).1} → {(← resolveDoc r.newUri).1}"
+    | .delete d => return m!"delete {(← resolveDoc d.uri).1}"
+    | .edit _ => pure none
   let fromChanges : List (Lsp.DocumentUri × Lsp.TextEditBatch) :=
     (we.changes?.map (·.toList)).getD []
-  let docMsgs := (fromChanges ++ fromDocs).map fun (uri, edits) => renderDoc uri (fileMapFor uri) edits
+  let docMsgs ← (fromChanges ++ fromDocs).mapM fun (uri, edits) => do
+    let (mod, text?) ← resolveDoc uri
+    return renderDoc text? edits (if text?.isSome then none else mod) showHeader
   match docMsgs ++ resourceOps with
-  | [] => m!"(empty workspace edit)"
-  | msgs => MessageData.joinSep msgs "\n\n"
-
-def _root_.Lean.Lsp.WorkspaceEdit.toMessageDataFor (we : Lsp.WorkspaceEdit) :
-    CommandElabM MessageData := do
-  let fileName ← getFileName
-  let map ← getFileMap
-  return we.toMessageData fun uri =>
-    if uri = System.Uri.pathToUri ⟨fileName⟩ then some map else none
+  | [] => return m!"(empty workspace edit)"
+  | msgs => return MessageData.joinSep msgs "\n\n"
 
 end WorkspaceEditDiff
 
@@ -231,19 +240,25 @@ def getCaretRanges (cmd : Syntax) : CommandElabM <|
 instance : ToMessageData RequestError where
   toMessageData e := m!"[error code: {repr e.code}]\n{e.message}"
 
-nonrec def Lean.Lsp.CodeAction.logAt (stx : Syntax) (action : Lsp.CodeAction)
-    (severity := MessageSeverity.information) : CommandElabM Unit := do
-  let mut msg := m!"Code action{action.kind?.elim "" (s!"({·})")}: {action.title}\n"
-  -- if let some edit := action.edit? then
-    -- msg := msg ++ m!"{edit.documentChanges?}"
-  -- let anyExtraData := action.command?.isSome || action.data?.isSome || action.diagnostics?.isSome || action.isPreferred?.isSome || action.disabled?.isSome
-  -- if anyExtraData then
-  --   pure () -- TODO: add metadata
-  logAt stx msg severity
+def Lean.Lsp.CodeAction.toMessageData (action : Lsp.CodeAction) (showHeader : Option (Option Nat) := none) : RequestM MessageData := do
+  let mut msg := m!"Code action{action.kind?.elim "" (s!" ({·})")}:\n💡 {action.title}"
+  if let some edit := action.edit? then
+    msg := m!"{msg}\n{← edit.toMessageData showHeader}"
+  return msg
+
+register_option linter.test.logCodeActions : Bool := {
+  defValue := false
+  descr :=
+    "For testing only. Code actions appearing above `--^^^` indicators are logged as messages."
+}
 
 def testCodeActions : Linter where
-  run cmd := do
+  run cmd := cmd |> withSetOptionIn fun _ => do
+    unless Linter.getLinterValue linter.test.logCodeActions (← Linter.getLinterOptions) do
+      return
     let caretRanges ← getCaretRanges cmd
+    let some pos := cmd.getPos? | return
+    let lspLine := (← getFileMap).utf8PosToLspPos pos |>.line
     for range in caretRanges do
       match range with
       | .error orig =>
@@ -254,11 +269,15 @@ def testCodeActions : Linter where
         let actions ← liftRequestM cmd do
           let params ← mkCodeActionParams lspRange
           let task ← handleCodeAction params
-          let s := (← simple params snap).map (·.eager)
-          return task.get.map (· ++ s)
+          let result : Except RequestError (Array MessageData) ← match task.get with
+            | .error e => pure <| Except.error e
+            | .ok action => do
+              pure <| .ok <|← action.mapM (·.toMessageData lspLine)
+          return result
         match actions with
         | .error e => logErrorAt (.ofRange stxRange) m!"{e}"
         | .ok actions =>
-          for action in actions do action.logAt (.ofRange stxRange)
+          for action in actions do
+            logInfoAt (.ofRange stxRange) action
 
 initialize addLinter testCodeActions
