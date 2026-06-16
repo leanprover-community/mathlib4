@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Ben Eltschig, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn, Heather Macbeth
+Authors: Ben Eltschig
 -/
 module
 
