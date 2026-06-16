@@ -99,12 +99,12 @@ theorem iteratedDerivedSet_constant_iff_preperfect :
   · intro a
     induction a using Ordinal.limitRecOn with
     | zero => simp
-    | add_one a ha => nth_rw 2 [h] ; simp [ha]
+    | add_one a ha => nth_rw 2 [h]; simp [ha]
     | limit a ha ih =>
       simp only [iteratedDerivedSet_limit ha]
       haveI : Nonempty ↑(Iio a) := nonempty_subtype.mpr ⟨0, mem_Iio.mpr ha.bot_lt⟩
       exact iInter_eq_const (by simpa using ih)
-  · specialize h 1 ; symm
+  · specialize h 1; symm
     rwa [← zero_add 1, iteratedDerivedSet_succ, iteratedDerivedSet_zero] at h
 
 theorem isClosed_iteratedDerivedSet (hs : IsClosed s) :
