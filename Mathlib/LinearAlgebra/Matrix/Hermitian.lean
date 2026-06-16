@@ -51,6 +51,8 @@ theorem IsHermitian.eq {A : Matrix n n α} (h : A.IsHermitian) : Aᴴ = A := h
 theorem isHermitian_iff_isSelfAdjoint {A : Matrix n n α} :
     A.IsHermitian ↔ IsSelfAdjoint A := Iff.rfl
 
+theorem IsHermitian.star_eq (hA : A.IsHermitian) : star A = A := hA
+
 protected alias ⟨IsHermitian.isSelfAdjoint, _root_.IsSelfAdjoint.isHermitian⟩ :=
   isHermitian_iff_isSelfAdjoint
 
