@@ -287,7 +287,7 @@ private theorem extChartAt_zeroSection_eq
     mbc.trivializationAt, VectorBundleCore.localTrivAt, id]
   change (extChartAt (𝓡 1) p.proj ((mbc.localTriv ip z).1), (mbc.localTriv ip z).2) =
     (extChartAt (𝓡 1) p.proj z.proj, 0)
-  rw [mbc.localTriv_apply, hz, map_zero]
+  rw [mbc.localTriv_apply]; simp [hz]; exact ContinuousLinearMap.map_zero _
 
 private theorem moebius_coordChange_eventually_const
     (p q z : MoebiusBand)
@@ -506,10 +506,7 @@ private theorem extChart_transition_eventually_eq_prod
         (by
           simpa [I, x₀] using hext_p_z)
   rw [hext_p_z]
-  simpa [E1, x₀, mbc, ip, iq, L₀, baseTransition] using
-    extChart_transition_eventually_eq_prod_core p q z
-      (by simpa [E1, x₀, mbc, ip, iq, baseTransition] using hformula)
-      (by simpa [E1, x₀, mbc, ip, iq, L₀] using hpullback_prod)
+  exact extChart_transition_eventually_eq_prod_core p q z hformula hpullback_prod
 
 private theorem base_chart_transition_differentiableAt
     (p q z : MoebiusBand)
@@ -713,7 +710,6 @@ private theorem circle_I_mem_extChartAt_one_source
     show chartAt (EuclideanSpace ℝ (Fin 1)) (1 : Circle) =
       stereographic' 1 (-(1 : ↥(Metric.sphere (0 : ℂ) 1))) from rfl,
     stereographic'_source (n := 1) (-(1 : ↥(Metric.sphere (0 : ℂ) 1)))]
-  simp only [Set.mem_compl_iff, Set.mem_singleton_iff]
   intro h
   have := congr_arg (fun z : Circle => (z : ℂ).im) h
   simp at this
@@ -726,7 +722,6 @@ private theorem circle_negI_mem_extChartAt_one_source
     show chartAt (EuclideanSpace ℝ (Fin 1)) (1 : Circle) =
       stereographic' 1 (-(1 : ↥(Metric.sphere (0 : ℂ) 1))) from rfl,
     stereographic'_source (n := 1) (-(1 : ↥(Metric.sphere (0 : ℂ) 1)))]
-  simp only [Set.mem_compl_iff, Set.mem_singleton_iff]
   intro h
   have := congr_arg (fun z : Circle => (z : ℂ).im) h
   simp at this
@@ -740,9 +735,13 @@ private theorem extChartAt_one_negI_eq_neg_extChartAt_one_I
       (extChartAt (𝓡 1) (1 : Circle)) z = (chartAt (EuclideanSpace ℝ (Fin 1)) (1 : Circle)) z :=
     fun _ => rfl
   rw [hext, hext]
-  have hchart : chartAt (EuclideanSpace ℝ (Fin 1)) (1 : ↥(Metric.sphere (0 : ℂ) 1)) =
+  have hchart : chartAt (EuclideanSpace ℝ (Fin 1)) (1 : Circle) =
       stereographic' 1 (-(1 : ↥(Metric.sphere (0 : ℂ) 1))) := rfl
   rw [hchart]
+  change (stereographic' 1 (-(1 : ↥(Metric.sphere (0 : ℂ) 1))))
+      (⟨-Complex.I, by simp⟩ : ↥(Metric.sphere (0 : ℂ) 1)) =
+    -(stereographic' 1 (-(1 : ↥(Metric.sphere (0 : ℂ) 1))))
+      (⟨Complex.I, by simp⟩ : ↥(Metric.sphere (0 : ℂ) 1))
   unfold stereographic'
   simp only [OpenPartialHomeomorph.trans_apply, Homeomorph.toOpenPartialHomeomorph_apply,
     LinearIsometryEquiv.coe_toHomeomorph]
@@ -803,7 +802,7 @@ private theorem trans_source_mem_at
       show chartAt (EuclideanSpace ℝ (Fin 1)) Circle.negOne =
         stereographic' 1 (-(-(1 : ↥(Metric.sphere (0 : ℂ) 1)))) from rfl,
       stereographic'_source (n := 1) (-(-(1 : ↥(Metric.sphere (0 : ℂ) 1))))]
-    simpa [Set.mem_compl_iff, Set.mem_singleton_iff] using hz_ne_one
+    simp only [neg_neg]; exact hz_ne_one
 
 private theorem trans_source_mem_at_t0
     [Fact (Module.finrank ℝ ℂ = 1 + 1)] :
@@ -832,7 +831,6 @@ private theorem fderiv_eq_at_neg_of_odd
     (hdiff_nt : DifferentiableAt ℝ g (-t₀)) :
     fderiv ℝ g (-t₀) = fderiv ℝ g t₀ := by
   have h1 := congr_arg (fun f => fderiv ℝ f t₀) h_odd
-  dsimp only at h1
   have hdn : DifferentiableAt ℝ (Neg.neg : EuclideanSpace ℝ (Fin 1) → _) t₀ :=
     differentiableAt_id.neg
   rw [fderiv_comp t₀ hdiff_nt hdn] at h1
@@ -930,10 +928,9 @@ private theorem mem_tangent_triv_overlap_of_proj_ne_endpoints
       have hidx : moebiusBundleCore.indexAt p.proj = 0 := by
         simp [moebiusBundleCore, p, Circle.one_ne_negOne]
       rw [hidx]
-      simpa [MoebiusBand.baseSet, MoebiusBand.U₀] using hne_neg
+      exact hne_neg
     exact ⟨(Bundle.Trivialization.mem_source _).mpr hmem, by
-      rw [Bundle.Trivialization.coe_fst' _ hmem, chartAt_p, stereographic'_source,
-        Set.mem_compl_iff, Set.mem_singleton_iff]
+      rw [Bundle.Trivialization.coe_fst' _ hmem, chartAt_p, stereographic'_source]
       intro heq
       apply hne_neg
       exact Subtype.ext (congr_arg Subtype.val heq)⟩
@@ -943,8 +940,7 @@ private theorem mem_tangent_triv_overlap_of_proj_ne_endpoints
       simp only [moebiusBundleCore, Circle.negOne, q]
       exact hne_one
     exact ⟨(Bundle.Trivialization.mem_source _).mpr hmem, by
-      rw [Bundle.Trivialization.coe_fst' _ hmem, chartAt_q, stereographic'_source,
-        Set.mem_compl_iff, Set.mem_singleton_iff]
+      rw [Bundle.Trivialization.coe_fst' _ hmem, chartAt_q, stereographic'_source]
       intro heq
       apply hne_one
       exact Subtype.ext (congr_arg Subtype.val heq)⟩
@@ -986,26 +982,22 @@ private theorem tangentCoordChange_det_ne_zero_at_posI
         (extChartAt (𝓡 1) (1 : Circle)).source := by
       simp only [extChartAt_source, mem_inter_iff]
       refine ⟨⟨?_, ?_⟩, ?_⟩
-      · rw [chartAt_one_eq_stereographic_negOne, stereographic'_source, mem_compl_iff,
-          mem_singleton_iff]
+      · rw [chartAt_one_eq_stereographic_negOne, stereographic'_source]
         intro h
         have := congr_arg (fun z : Circle => (z : ℂ).im) h
         simp at this
-      · rw [chartAt_negOne_eq_stereographic_posOne, stereographic'_source, mem_compl_iff,
-          mem_singleton_iff]
+      · rw [chartAt_negOne_eq_stereographic_posOne, stereographic'_source]
         intro h
         have := congr_arg (fun z : Circle => (z : ℂ).im) h
         simp at this
-      · rw [chartAt_one_eq_stereographic_negOne, stereographic'_source, mem_compl_iff,
-          mem_singleton_iff]
+      · rw [chartAt_one_eq_stereographic_negOne, stereographic'_source]
         intro h
         have := congr_arg (fun z : Circle => (z : ℂ).im) h
         simp at this
     rw [tangentCoordChange_comp (I := (𝓡 1)) (w := (1 : Circle)) (x := Circle.negOne)
       (y := (1 : Circle)) (z := (⟨Complex.I, by simp [Submonoid.unitSphere]⟩ : Circle)) hmem_src]
     exact tangentCoordChange_self (by
-      rw [extChartAt_source, chartAt_one_eq_stereographic_negOne, stereographic'_source,
-        mem_compl_iff, mem_singleton_iff]
+      rw [extChartAt_source, chartAt_one_eq_stereographic_negOne, stereographic'_source]
       intro h
       have := congr_arg (fun z : Circle => (z : ℂ).im) h
       simp at this)
@@ -1068,17 +1060,13 @@ private theorem preconnected_univ_tangent_triv_baseSet_at_one
       (TangentSpace ((𝓡 1).prod 𝓘(ℝ, ℝ))) (⟨(1 : Circle), (0 : ℝ)⟩ : MoebiusBand)).baseSet) := by
   have hbs : (trivializationAt ℝ moebiusBundleCore.Fiber (1 : Circle)).baseSet =
       (chartAt (EuclideanSpace ℝ (Fin 1)) (1 : Circle)).source := by
-    have neg_one_eq : Circle.negOne = -(1 : ↥(Metric.sphere (0 : ℂ) 1)) :=
-      Subtype.ext (by simp [Circle.negOne])
     rw [moebius_triv_baseSet_eq_index_baseSet, chartAt_one_eq_stereographic_negOne,
       stereographic'_source]
     have hidx : moebiusBundleCore.indexAt (1 : Circle) = 0 := by
       simp [moebiusBundleCore, Circle.one_ne_negOne]
     rw [hidx]
     ext z
-    simp only [mem_compl_iff, mem_singleton_iff]
-    change z ∈ MoebiusBand.U₀ ↔ _
-    simp [MoebiusBand.U₀, neg_one_eq]
+    exact Iff.rfl
   have he₂t : ((chartAt (EuclideanSpace ℝ (Fin 1)) (1 : Circle)).prod
       (OpenPartialHomeomorph.refl ℝ)).target = univ := by
     rw [chartAt_one_eq_stereographic_negOne]
@@ -1095,9 +1083,7 @@ private theorem preconnected_univ_tangent_triv_baseSet_at_negOne
       stereographic'_source]
     simp only [moebiusBundleCore, Circle.negOne]
     ext z
-    simp only [mem_compl_iff, mem_singleton_iff]
-    change z ∈ MoebiusBand.U₁ ↔ _
-    simp [MoebiusBand.U₁]
+    exact Iff.rfl
   have he₂t : ((chartAt (EuclideanSpace ℝ (Fin 1)) Circle.negOne).prod
       (OpenPartialHomeomorph.refl ℝ)).target = univ := by
     rw [chartAt_negOne_eq_stereographic_posOne]
