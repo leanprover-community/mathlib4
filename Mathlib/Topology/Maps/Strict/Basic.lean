@@ -184,20 +184,27 @@ variable {G H G' H' : Type*} [Group G'] [Group H'] [Group G] [Group H] (f : G �
   [TopologicalSpace G] [IsTopologicalGroup G] [TopologicalSpace H]
 
 /-- A group homomorphism is strict if and only if its rangeRestrict is an open quotient map. -/
-lemma isStrictMap_iff_isOpenQuotientMap_rangeRestrict :
+@[to_additive] lemma isStrictMap_iff_isOpenQuotientMap_rangeRestrict :
     IsStrictMap f ↔ IsOpenQuotientMap f.rangeRestrict := by
   rw [isQuotientMap_iff_isOpenQuotientMap]
   rfl
 
-variable [TopologicalSpace G'] [IsTopologicalGroup G'] [TopologicalSpace H']
+variable {f g} [TopologicalSpace G'] [IsTopologicalGroup G'] [TopologicalSpace H']
 
-/-- The product (in the sense of `Prod.map`) of group homomorphisms is strict -/
-lemma isStrictMap_prodMap (hf : IsStrictMap f) (hg : IsStrictMap g) :
-    IsStrictMap (f.prodMap g) := by
-  rw [isStrictMap_iff_isOpenQuotientMap_rangeRestrict] at hf hg ⊢
-  let aux : (f.prodMap g).range ≃ₜ f.range × g.range :=
+/-- The product (in the sense of `Prod.map`) of group homomorphisms is strict if and only if each
+of the morphisms is strict. -/
+@[to_additive] lemma isStrictMap_prodMap_iff :
+    IsStrictMap (f.prodMap g) ↔ IsStrictMap f ∧ IsStrictMap g := by
+  simp_rw [isStrictMap_iff_isOpenQuotientMap_rangeRestrict]
+  let Φ : (f.prodMap g).range ≃ₜ f.range × g.range :=
     (Homeomorph.setCongr (by simp)).trans (Homeomorph.Set.prod _ _)
-  exact aux.symm.isOpenQuotientMap.comp (hf.prodMap hg)
+  have eq : Φ ∘ (f.prodMap g).rangeRestrict = f.rangeRestrict.prodMap g.rangeRestrict := rfl
+  rw [← Φ.comp_isOpenQuotientMap_iff, eq, MonoidHom.coe_prodMap, isOpenQuotientMap_prodMap_iff]
+
+/-- The product (in the sense of `Prod.map`) of strict group homomorphisms is strict -/
+@[to_additive] lemma IsStrictMap.prodMap (hf : IsStrictMap f) (hg : IsStrictMap g) :
+    IsStrictMap (f.prodMap g) :=
+  isStrictMap_prodMap_iff.mpr ⟨hf, hg⟩
 
 -- TODO Add the lemma `isStrictMap_piMap` once `MonoidHom.piMap` has been defined.
 

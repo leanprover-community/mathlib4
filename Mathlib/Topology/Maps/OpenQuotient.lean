@@ -29,7 +29,8 @@ public section
 
 open Filter Function Set Topology
 
-variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] {f : X → Y}
+variable {X Y Z W : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+  [TopologicalSpace Z] [TopologicalSpace W] {f : X → Y}
 
 namespace IsOpenQuotientMap
 
@@ -50,6 +51,15 @@ theorem comp {g : Y → Z} (hg : IsOpenQuotientMap g) (hf : IsOpenQuotientMap f)
     IsOpenQuotientMap (g ∘ f) :=
   ⟨.comp hg.1 hf.1, .comp hg.2 hf.2, .comp hg.3 hf.3⟩
 
+theorem of_comp {g : Y → Z} (hf : Continuous f) (f_surj : Surjective f) (hg : Continuous g)
+    (h : IsOpenQuotientMap (g ∘ f)) : IsOpenQuotientMap g :=
+  ⟨.of_comp h.surjective, hg, .of_comp hf f_surj h.isOpenMap ⟩
+
+theorem of_comp_iff {g : Y → Z} (hf : IsOpenQuotientMap f) :
+    IsOpenQuotientMap (g ∘ f) ↔ IsOpenQuotientMap g :=
+  ⟨fun h ↦ .of_comp hf.continuous hf.surjective
+    (hf.isQuotientMap.continuous_iff.mpr h.continuous) h, fun hg ↦ hg.comp hf⟩
+
 theorem map_nhds_eq (h : IsOpenQuotientMap f) (x : X) : map f (𝓝 x) = 𝓝 (f x) :=
   le_antisymm h.continuous.continuousAt <| h.isOpenMap.nhds_le _
 
@@ -60,6 +70,10 @@ theorem continuous_comp_iff (h : IsOpenQuotientMap f) {g : Y → Z} :
 theorem continuousAt_comp_iff (h : IsOpenQuotientMap f) {g : Y → Z} {x : X} :
     ContinuousAt (g ∘ f) x ↔ ContinuousAt g (f x) := by
   simp only [ContinuousAt, ← h.map_nhds_eq, tendsto_map'_iff, comp_def]
+
+theorem isOpenMap_iff (hf : IsOpenQuotientMap f) {g : Y → Z} :
+    IsOpenMap g ↔ IsOpenMap (g ∘ f) :=
+  ⟨fun hg ↦ hg.comp hf.isOpenMap, fun h ↦ .of_comp hf.continuous hf.surjective h⟩
 
 theorem dense_preimage_iff (h : IsOpenQuotientMap f) {s : Set Y} : Dense (f ⁻¹' s) ↔ Dense s :=
   ⟨fun hs ↦ h.surjective.denseRange.dense_of_mapsTo h.continuous hs (mapsTo_preimage _ _),
@@ -75,6 +89,48 @@ theorem baireSpace {f : X → Y} [BaireSpace X] (hf : IsOpenQuotientMap f) :
   simp_all [← preimage_iInter, IsOpenQuotientMap.dense_preimage_iff]
 
 end IsOpenQuotientMap
+
+section Prod
+
+theorem isOpenQuotientMap_fst [Nonempty Y] : IsOpenQuotientMap (Prod.fst : X × Y → X) :=
+  ⟨Prod.fst_surjective, continuous_fst, isOpenMap_fst⟩
+
+theorem isOpenQuotientMap_snd [Nonempty X] : IsOpenQuotientMap (Prod.snd : X × Y → Y) :=
+  ⟨Prod.snd_surjective, continuous_snd, isOpenMap_snd⟩
+
+theorem isQuotientMap_fst [Nonempty Y] : IsQuotientMap (Prod.fst : X × Y → X) :=
+  isOpenQuotientMap_fst.isQuotientMap
+
+theorem isQuotientMap_snd [Nonempty X] : IsQuotientMap (Prod.snd : X × Y → Y) :=
+  isOpenQuotientMap_snd.isQuotientMap
+
+theorem IsOpenQuotientMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenQuotientMap f)
+    (hg : IsOpenQuotientMap g) : IsOpenQuotientMap (Prod.map f g) :=
+  ⟨.prodMap hf.1 hg.1, .prodMap hf.2 hg.2, .prodMap hf.3 hg.3⟩
+
+theorem isOpenQuotientMap_prodMap_iff [Nonempty X] [Nonempty Z] {f : X → Y} {g : Z → W} :
+    IsOpenQuotientMap (Prod.map f g) ↔ IsOpenQuotientMap f ∧ IsOpenQuotientMap g := by
+  have : Nonempty Y := .map f inferInstance
+  have : Nonempty W := .map g inferInstance
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨hf, hg⟩ ↦ hf.prodMap hg⟩
+  · rw [← (isOpenQuotientMap_fst (Y := Z)).of_comp_iff]
+    exact isOpenQuotientMap_fst.comp h
+  · rw [← (isOpenQuotientMap_snd (X := X)).of_comp_iff]
+    exact isOpenQuotientMap_snd.comp h
+
+end Prod
+
+/-- Open quotient maps are preserved by precomposing with a homeomorphism. -/
+lemma Homeomorph.isOpenQuotient_comp_iff (e : X ≃ₜ Y) {f : Y → Z} :
+    IsOpenQuotientMap (f ∘ e) ↔ IsOpenQuotientMap f :=
+  ⟨fun h ↦ by simpa [comp_assoc] using h.comp e.symm.isOpenQuotientMap,
+    fun hf ↦ hf.comp e.isOpenQuotientMap⟩
+
+/-- Open quotient maps are preserved by postcomposing with a homeomorphism. -/
+lemma Homeomorph.comp_isOpenQuotientMap_iff (e : Y ≃ₜ Z) {f : X → Y} :
+    IsOpenQuotientMap (e ∘ f) ↔ IsOpenQuotientMap f :=
+  ⟨fun h ↦ by simpa [← comp_assoc] using e.symm.isOpenQuotientMap.comp h,
+    fun hf ↦ e.isOpenQuotientMap.comp hf⟩
 
 theorem Topology.IsInducing.isOpenQuotientMap_of_surjective (ind : IsInducing f)
     (surj : Function.Surjective f) : IsOpenQuotientMap f where
