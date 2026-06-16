@@ -190,29 +190,6 @@ theorem EuclideanSpace.sphere_zero_eq {n : Type*} [Fintype n] (r : ℝ) (hr : 0 
 
 section
 
-variable (𝕜) in
-/-- The natural equivalence between `PiLp p α` and `α default`,
-for any index type `ι` with a unique element. -/
-def PiLp.equivOfUnique {ι : Type*} [Unique ι] (p : ℝ≥0∞) (α : ι → Type*)
-    [Π i, AddCommGroup (α i)] [Π i, Module 𝕜 (α i)] [Π i, TopologicalSpace (α i)] :
-    PiLp p α ≃L[𝕜] α default where
-  toFun z := z default
-  invFun := PiLp.single (β := α) p default
-  left_inv z := by
-    ext i
-    rw [Unique.default_eq i]
-    simp
-  right_inv z := by simp
-  -- Each of these `simp`s is very slow when un-squeezed.
-  map_add' := by intros; simp only [ofLp_add p, Pi.add_apply]
-  map_smul' := by intros; simp only [ofLp_smul, Pi.smul_apply, RingHom.id_apply]
-  continuous_invFun := by fun_prop [PiLp.single]
-
-@[simp]
-lemma PiLp.equivOfUnique_apply [Unique ι] (p : ℝ≥0∞) (α : ι → Type*)
-    [∀ i, NormedAddCommGroup (α i)] [∀ i, NormedSpace 𝕜 (α i)] (z : PiLp p α) :
-    PiLp.equivOfUnique 𝕜 p α z = z default := rfl
-
 instance EuclideanSpace.infinite [Nonempty ι] : Infinite (EuclideanSpace 𝕜 ι) :=
   Module.Free.infinite 𝕜 _
 
