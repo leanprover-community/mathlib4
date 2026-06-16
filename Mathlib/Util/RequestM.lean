@@ -116,35 +116,46 @@ namespace WorkspaceEditDiff
 
 -- First draft of this by claude
 
-/-- Extract the substring of `src` between two raw byte positions. -/
-private def slice (src : String) (a b : String.Pos.Raw) : String :=
-  src.extract (src.pos! a) (src.pos! b)
+def _root_.Lean.Lsp.Range.asDiffHeader (range : Lsp.Range) : String :=
+  let s := range.start
+  let f := range.end
+  s!"@@ {s.line + 1}:{s.character + 1}-{f.line + 1}:{f.character + 1} @@"
+
+def _root_.Lean.Lsp.Range.asDiffHeaderFromLine (line : Nat) (range : Lsp.Range) : String :=
+  let s := range.start
+  let f := range.end
+  let showSign (x : Int) := if x < 0 then s!"{x}" else s!"+{x}"
+  s!"@@ {showSign <| (s.line : Int) - line}:{s.character + 1}-\
+    {showSign <| (f.line : Int) - line}:{f.character + 1} @@"
 
 /-- Render one `TextEdit` against `text`: the exact removed span (`-`) vs. its replacement (`+`).
 Each side is split across lines if it spans several; an empty side is omitted. -/
-def renderEdit (text : FileMap) (e : Lsp.TextEdit) : MessageData :=
+def renderEdit (text : FileMap) (e : Lsp.TextEdit) (showHeader : Option (Option Nat) := none) : MessageData :=
   let s := e.range.start
-  let f := e.range.«end»
-  let old := slice text.source (text.lspPosToUtf8Pos s) (text.lspPosToUtf8Pos f)
-  let header := m!"@@ {s.line + 1}:{s.character + 1}-{f.line + 1}:{f.character + 1} @@"
-  let side (mark : String) (str : String) : List MessageData :=
-    if str.isEmpty then [] else (str.splitOn "\n").map (m!"{mark} {·}")
-  MessageData.joinSep (header :: side "-" old ++ side "+" e.newText) "\n"
+  let f := e.range.end
+  let old := text.source.slice!
+    (text.source.pos! <| text.lspPosToUtf8Pos s)
+    (text.source.pos! <| text.lspPosToUtf8Pos f)
+  let header :=
+    match showHeader with
+    | some (some line) => e.range.asDiffHeaderFromLine line
+    | some none => e.range.asDiffHeader
+    | none => "Edit:"
+  let side (mark : String) (str : String) : List String :=
+    ((str.split "\n").map fun line => if line.isEmpty then mark else s!"{mark} {line}").toList
+  "\n".intercalate <| header :: (side "-" old.toString ++ side "+" e.newText)
 
 /-- Render all edits for a single document. -/
 private def renderDoc (uri : Lsp.DocumentUri) (text? : Option FileMap) (edits : Array Lsp.TextEdit) :
     MessageData :=
   let body := match text? with
-    | some text => MessageData.joinSep (edits.toList.map (renderEdit text)) "\n"
+    | some text => MessageData.joinSep (edits.toList.map (renderEdit text)) "\n\n"
     | none =>      -- no source available: show only the location and the inserted text
-      MessageData.joinSep (edits.toList.map fun e =>
-        m!"@@ {e.range.start.line + 1}:{e.range.start.character + 1} @@\n+ {e.newText}") "\n"
-  m!"--- {uri}\n{body}"
+      MessageData.joinSep (edits.toList.map fun e =>s!"Edit (source unavailable):\n+ {e.newText}") "\n\n"
+  m!"--- {uri}\n{body}" -- TODO: should normalize or use filename instead?
 
 def _root_.Lean.Lsp.WorkspaceEdit.toMessageData
     (we : Lsp.WorkspaceEdit) (fileMapFor : Lsp.DocumentUri → Option FileMap) : MessageData :=
-  let fromChanges : List (Lsp.DocumentUri × Lsp.TextEditBatch) :=
-    (we.changes?.map (·.toList)).getD []
   let dcs := (we.documentChanges?.getD #[]).toList
   let fromDocs : List (Lsp.DocumentUri × Lsp.TextEditBatch) := dcs.filterMap fun
     | .edit e => some (e.textDocument.uri, e.edits)
@@ -154,14 +165,19 @@ def _root_.Lean.Lsp.WorkspaceEdit.toMessageData
     | .rename r => some m!"rename {r.oldUri} → {r.newUri}"
     | .delete d => some m!"delete {d.uri}"
     | .edit _ => none
+  let fromChanges : List (Lsp.DocumentUri × Lsp.TextEditBatch) :=
+    (we.changes?.map (·.toList)).getD []
   let docMsgs := (fromChanges ++ fromDocs).map fun (uri, edits) => renderDoc uri (fileMapFor uri) edits
   match docMsgs ++ resourceOps with
   | [] => m!"(empty workspace edit)"
   | msgs => MessageData.joinSep msgs "\n\n"
 
-def _root_.Lean.Lsp.WorkspaceEdit.toMessageDataFor (we : Lsp.WorkspaceEdit) (text : FileMap) :
-    MessageData :=
-  we.toMessageData (fun _ => some text)
+def _root_.Lean.Lsp.WorkspaceEdit.toMessageDataFor (we : Lsp.WorkspaceEdit) :
+    CommandElabM MessageData := do
+  let fileName ← getFileName
+  let map ← getFileMap
+  return we.toMessageData fun uri =>
+    if uri = System.Uri.pathToUri ⟨fileName⟩ then some map else none
 
 end WorkspaceEditDiff
 
