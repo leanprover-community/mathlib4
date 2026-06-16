@@ -84,12 +84,11 @@ theorem turanGraph_eq_top : turanGraph n r = ⊤ ↔ r = 0 ∨ n ≤ r := by
 
 theorem turanGraph_cliqueFree (hr : 0 < r) : (turanGraph n r).CliqueFree (r + 1) := by
   rw [cliqueFree_iff]
-  by_contra! ⟨f, ha⟩
-  simp_rw [turanGraph_adj] at ha
+  by_contra! ⟨f⟩
   obtain ⟨x, y, d, c⟩ := exists_ne_map_eq_of_card_lt (fun x ↦
     (⟨(f x).1 % r, Nat.mod_lt _ hr⟩ : Fin r)) (by simp)
   rw [Fin.mk.injEq] at c
-  exact absurd c ((@ha x y).mpr d)
+  exact absurd c <| f.toHom.map_adj d
 
 /-- An `r + 1`-cliquefree Turán-maximal graph is _not_ `r`-cliquefree
 if it can accommodate such a clique. -/
@@ -182,7 +181,6 @@ lemma not_adj_iff_part_eq [DecidableEq V] :
   change t ∈ fp.part s ↔ fp.part s = fp.part t
   rw [fp.mem_part_iff_part_eq_part (mem_univ t) (mem_univ s), eq_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma degree_eq_card_sub_part_card [DecidableEq V] :
     G.degree s = card V - #(h.finpartition.part s) :=
   calc
@@ -192,7 +190,7 @@ lemma degree_eq_card_sub_part_card [DecidableEq V] :
       eq_tsub_of_add_eq (card_filter_add_card_filter_not _)
     _ = _ := by
       congr; ext; rw [mem_filter]
-      convert Finpartition.mem_part_ofSetoid_iff_rel.symm
+      convert! Finpartition.mem_part_ofSetoid_iff_rel.symm
       simp +instances [setoid]
 
 /-- The parts of a Turán-maximal graph form an equipartition. -/
@@ -221,7 +219,7 @@ lemma card_parts_le [DecidableEq V] : #h.finpartition.parts ≤ r := by
   obtain ⟨z, -, hz⟩ := h.finpartition.exists_subset_part_bijOn
   have ncf : ¬G.CliqueFree #z := by
     refine IsNClique.not_cliqueFree ⟨fun v hv w hw hn ↦ ?_, rfl⟩
-    contrapose! hn
+    contrapose hn
     exact hz.injOn hv hw (by rwa [← h.not_adj_iff_part_eq])
   rw [Finset.card_eq_of_equiv hz.equiv] at ncf
   exact absurd (h.1.mono (Nat.succ_le_of_lt l)) ncf
@@ -245,8 +243,8 @@ theorem card_parts [DecidableEq V] : #h.finpartition.parts = min (card V) r := b
     exact exists_ne_map_eq_of_card_lt_of_maps_to (zc.symm ▸ l.2) fun a _ ↦
       fp.part_mem.2 (mem_univ a)
   use G ⊔ edge x y, inferInstance, cf.sup_edge x y
-  convert Nat.lt_add_one #G.edgeFinset
-  convert G.card_edgeFinset_sup_edge _ hn
+  convert! Nat.lt_add_one #G.edgeFinset
+  convert! G.card_edgeFinset_sup_edge _ hn
   rwa [h.not_adj_iff_part_eq]
 
 /-- **Turán's theorem**, forward direction.
@@ -277,7 +275,7 @@ theorem isTuranMaximal_of_iso (f : G ≃g turanGraph n r) (hr : 0 < r) : G.IsTur
   obtain ⟨J, _, j⟩ := exists_isTuranMaximal (V := V) hr
   obtain ⟨g⟩ := j.nonempty_iso_turanGraph
   rw [f.card_eq, Fintype.card_fin] at g
-  use (turanGraph_cliqueFree (n := n) hr).comap f,
+  use (turanGraph_cliqueFree (n := n) hr).comap f.isContained,
     fun H _ cf ↦ (f.symm.comp g).card_edgeFinset_eq ▸ j.2 cf
 
 /-- Turán-maximality with `0 < r` transfers across graph isomorphisms. -/
@@ -375,7 +373,7 @@ theorem card_edgeFinset_turanGraph {n r : ℕ} :
   rcases r.eq_zero_or_pos with rfl | hr
   · rw [Nat.mod_zero, tsub_self, zero_mul, Nat.zero_div, zero_add]
     have := card_edgeFinset_top_eq_card_choose_two (V := Fin n)
-    rw [Fintype.card_fin] at this; convert this; exact turanGraph_zero
+    rw [Fintype.card_fin] at this; convert! this; exact turanGraph_zero
   · have ring₁ (n) : (n ^ 2 - (n % r) ^ 2) * (r - 1) / (2 * r) =
         n % r * (n / r) * (r - 1) + r * (r - 1) * (n / r) ^ 2 / 2 := by
       nth_rw 1 [← Nat.mod_add_div n r, Nat.sq_sub_sq, add_tsub_cancel_left,
@@ -385,7 +383,7 @@ theorem card_edgeFinset_turanGraph {n r : ℕ} :
     rcases lt_or_ge n r with h | h
     · rw [Nat.mod_eq_of_lt h, tsub_self, zero_mul, Nat.zero_div, zero_add]
       have := card_edgeFinset_top_eq_card_choose_two (V := Fin n)
-      rw [Fintype.card_fin] at this; convert this
+      rw [Fintype.card_fin] at this; convert! this
       rw [turanGraph_eq_top]; exact .inr h.le
     · let n' := n - r
       have n'r : n = n' + r := by lia
@@ -427,7 +425,7 @@ theorem CliqueFree.card_edgeFinset_le (cf : G.CliqueFree (r + 1)) :
     simp_rw [zero_tsub, mul_zero, Nat.mod_zero, Nat.div_zero, zero_add]
     exact card_edgeFinset_le_card_choose_two
   · obtain ⟨H, _, maxH⟩ := exists_isTuranMaximal (V := V) hr
-    convert maxH.2 cf
+    convert! maxH.2 cf
     rw [((isTuranMaximal_iff_nonempty_iso_turanGraph hr).mp maxH).some.card_edgeFinset_eq,
       card_edgeFinset_turanGraph]
 

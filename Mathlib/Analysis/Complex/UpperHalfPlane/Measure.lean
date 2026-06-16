@@ -28,11 +28,6 @@ open scoped NNReal
 
 public noncomputable section
 
--- backward-compatibility fixes
-instance : MeasureSpace ℂ := inferInstance
-
-instance : FiniteDimensional ℝ ℂ := inferInstance
-
 namespace UpperHalfPlane
 
 instance : MeasurableSpace ℍ := .comap UpperHalfPlane.coe inferInstance
@@ -42,7 +37,7 @@ instance : BorelSpace ℍ := ⟨borel_comap.symm⟩
 lemma measurableEmbedding_coe : MeasurableEmbedding UpperHalfPlane.coe :=
   isOpenEmbedding_coe.measurableEmbedding
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_coe : Measurable UpperHalfPlane.coe :=
   measurableEmbedding_coe.measurable
 
@@ -105,7 +100,7 @@ instance : SMulInvariantMeasure (GL (Fin 2) ℝ) ℍ volume := by
         (hasStrictFDerivAt_smul g _).hasFDerivAt.hasFDerivWithinAt)
       hinj
       (fun z ↦ ↑((1 / ‖z.im‖₊) ^ 2 : NNReal))
-  convert main using 1
+  convert! main using 1
   · simp [Set.image_image]
   · apply setLIntegral_congr_fun (measurableEmbedding_coe.measurableSet_image.mpr hs)
     rintro _ ⟨τ, -, rfl⟩

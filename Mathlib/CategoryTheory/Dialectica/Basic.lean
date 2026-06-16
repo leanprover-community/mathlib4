@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.CategoryTheory.Subobject.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Dialectica category

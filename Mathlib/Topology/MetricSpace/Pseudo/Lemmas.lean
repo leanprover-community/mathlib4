@@ -13,7 +13,7 @@ public import Mathlib.Topology.UniformSpace.Compact
 # Extra lemmas about pseudo-metric spaces
 -/
 
-@[expose] public section
+public section
 
 open Bornology Filter Metric Set
 open scoped NNReal Topology

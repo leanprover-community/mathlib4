@@ -181,7 +181,6 @@ section principal
 
 variable {S : Set ι}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem topologicalSpace_eq_of_principal :
     topologicalSpace R A (𝓟 S) =
       .induced ((↑) : Πʳ i, [R i, A i]_[𝓟 S] → Π i, R i) inferInstance :=
@@ -345,7 +344,8 @@ include hAopen in
 theorem isOpen_forall_imp_mem_of_principal {S : Set ι} (hS : cofinite ≤ 𝓟 S) {p : ι → Prop} :
     IsOpen {f : Πʳ i, [R i, A i]_[𝓟 S] | ∀ i, p i → f.1 i ∈ A i} := by
   rw [le_principal_iff] at hS
-  convert isOpen_set_pi (hS.inter_of_left {i | p i}) (fun i _ ↦ hAopen i) |>.preimage continuous_coe
+  convert!
+    isOpen_set_pi (hS.inter_of_left {i | p i}) (fun i _ ↦ hAopen i) |>.preimage continuous_coe
   ext f
   refine ⟨fun H i hi ↦ H i hi.2, fun H i hiT ↦ ?_⟩
   by_cases hiS : i ∈ S
@@ -355,7 +355,7 @@ theorem isOpen_forall_imp_mem_of_principal {S : Set ι} (hS : cofinite ≤ 𝓟 
 include hAopen in
 theorem isOpen_forall_mem_of_principal {S : Set ι} (hS : cofinite ≤ 𝓟 S) :
     IsOpen {f : Πʳ i, [R i, A i]_[𝓟 S] | ∀ i, f.1 i ∈ A i} := by
-  convert isOpen_forall_imp_mem_of_principal hAopen hS (p := fun _ ↦ True)
+  convert! isOpen_forall_imp_mem_of_principal hAopen hS (p := fun _ ↦ True)
   simp
 
 include hAopen in
@@ -626,7 +626,7 @@ theorem locallyCompactSpace_of_group [Π i, Group (R i)] [∀ i, SubgroupClass (
     weaklyLocallyCompactSpace_of_cofinite hBopen.out hBcompact
   inferInstance
 
-open Pointwise in
+open scoped Pointwise in
 @[to_additive]
 instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, IsTopologicalGroup (R i)]
     [hAcompact : ∀ i, CompactSpace (B i)] : LocallyCompactSpace (Πʳ i, [R i, B i]) :=

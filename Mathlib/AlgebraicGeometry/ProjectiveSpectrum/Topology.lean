@@ -137,7 +137,7 @@ theorem gc_homogeneousIdeal :
     @GaloisConnection (HomogeneousIdeal 𝒜) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _
       (fun I => zeroLocus 𝒜 I) fun t => vanishingIdeal t :=
   fun I t => by
-  simpa [show I.toIdeal ≤ (vanishingIdeal t).toIdeal ↔ I ≤ vanishingIdeal t from Iff.rfl] using
+  simpa [show I.toIdeal ≤ (vanishingIdeal t).toIdeal ↔ I ≤ vanishingIdeal t from Iff.rfl] using!
     subset_zeroLocus_iff_le_vanishingIdeal t I.toIdeal
 
 theorem subset_zeroLocus_iff_subset_vanishingIdeal (t : Set (ProjectiveSpectrum 𝒜)) (s : Set A) :
@@ -187,7 +187,7 @@ theorem zeroLocus_empty : zeroLocus 𝒜 (∅ : Set A) = Set.univ :=
 
 @[simp]
 theorem vanishingIdeal_univ : vanishingIdeal (∅ : Set (ProjectiveSpectrum 𝒜)) = ⊤ := by
-  simpa using (gc_ideal _).u_top
+  simpa using! (gc_ideal _).u_top
 
 theorem zeroLocus_empty_of_one_mem {s : Set A} (h : (1 : A) ∈ s) : zeroLocus 𝒜 s = ∅ :=
   Set.eq_empty_iff_forall_notMem.mpr fun x hx =>
@@ -236,7 +236,7 @@ theorem zeroLocus_bUnion (s : Set (Set A)) :
 theorem vanishingIdeal_iUnion {γ : Sort*} (t : γ → Set (ProjectiveSpectrum 𝒜)) :
     vanishingIdeal (⋃ i, t i) = ⨅ i, vanishingIdeal (t i) :=
   HomogeneousIdeal.toIdeal_injective <| by
-    convert (gc_ideal 𝒜).u_iInf; exact HomogeneousIdeal.toIdeal_iInf _
+    convert! (gc_ideal 𝒜).u_iInf; exact HomogeneousIdeal.toIdeal_iInf _
 
 theorem zeroLocus_inf (I J : Ideal A) :
     zeroLocus 𝒜 ((I ⊓ J : Ideal A) : Set A) = zeroLocus 𝒜 I ∪ zeroLocus 𝒜 J :=
@@ -287,7 +287,7 @@ instance zariskiTopology : TopologicalSpace (ProjectiveSpectrum 𝒜) :=
       let f : Zs → Set _ := fun i => Classical.choose (h i.2)
       have H : (Set.iInter fun i ↦ zeroLocus 𝒜 (f i)) ∈ Set.range (zeroLocus 𝒜) :=
         ⟨_, zeroLocus_iUnion 𝒜 _⟩
-      convert H using 2
+      convert! H using 2
       funext i
       exact (Classical.choose_spec (h i.2)).symm)
     (by
@@ -353,7 +353,6 @@ theorem basicOpen_eq_zeroLocus_compl (r : A) :
 theorem basicOpen_one : basicOpen 𝒜 (1 : A) = ⊤ :=
   TopologicalSpace.Opens.ext <| by simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem basicOpen_zero : basicOpen 𝒜 (0 : A) = ⊥ :=
   TopologicalSpace.Opens.ext <| by simp

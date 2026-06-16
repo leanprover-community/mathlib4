@@ -29,7 +29,7 @@ theorem AccPt.map {β : Type*} [TopologicalSpace β] {F : Filter X} {x : X}
   rw [Filter.map_inf hf2]
   gcongr
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hf1.continuousWithinAt
-  simpa [hf2.eq_iff] using eventually_mem_nhdsWithin
+  simpa [hf2.eq_iff] using! eventually_mem_nhdsWithin
 
 /--
 The derived set of a set is the set of all accumulation points of it.
@@ -48,8 +48,10 @@ lemma derivedSet_mono (A B : Set X) (h : A ⊆ B) : derivedSet A ⊆ derivedSet 
 
 /-- The relative derived set operator viewed as a monotone self-map of `Set X`. -/
 def relDerivedSet : Set X →o Set X where
-  toFun := fun s => derivedSet s ∩ s
-  monotone' := fun _ _ h ↦ Set.inter_subset_inter (derivedSet_mono _ _ h) (h)
+  toFun s := derivedSet s ∩ s
+  monotone' s t h := Set.inter_subset_inter (derivedSet_mono s t h) h
+
+@[simp] lemma relDerivedSet_apply (A : Set X) : relDerivedSet A = derivedSet A ∩ A := rfl
 
 lemma relDerivedSet_subset {A : Set X} : relDerivedSet A ⊆ A :=
   Set.inter_subset_right
@@ -60,7 +62,7 @@ theorem Continuous.image_derivedSet {β : Type*} [TopologicalSpace β] {A : Set 
   intro x hx
   simp only [Set.mem_image, mem_derivedSet] at hx
   obtain ⟨y, hy1, rfl⟩ := hx
-  convert hy1.map hf1.continuousAt hf2
+  convert! hy1.map hf1.continuousAt hf2
   simp
 
 lemma derivedSet_subset_closure (A : Set X) : derivedSet A ⊆ closure A :=
@@ -78,7 +80,7 @@ lemma isClosed_iff_derivedSet_subset (A : Set X) : IsClosed A ↔ derivedSet A �
 
 lemma IsClosed.relDerivedSet_eq {A : Set X} (hA : IsClosed A) :
     relDerivedSet A = derivedSet A := by
-  simpa [relDerivedSet] using (isClosed_iff_derivedSet_subset A).mp hA
+  simpa using (isClosed_iff_derivedSet_subset A).mp hA
 
 lemma closure_eq_self_union_derivedSet (A : Set X) : closure A = A ∪ derivedSet A := by
   ext
@@ -108,7 +110,7 @@ lemma preperfect_iff_subset_derivedSet {U : Set X} : Preperfect U ↔ U ⊆ deri
   Iff.rfl
 
 lemma preperfect_iff_eq_relDerivedSet {U : Set X} : Preperfect U ↔ U = relDerivedSet U := by
-  simp [preperfect_iff_subset_derivedSet, relDerivedSet]
+  simp [preperfect_iff_subset_derivedSet]
 
 lemma perfect_iff_eq_derivedSet {U : Set X} : Perfect U ↔ U = derivedSet U := by
   rw [perfect_def, isClosed_iff_derivedSet_subset, preperfect_iff_subset_derivedSet,

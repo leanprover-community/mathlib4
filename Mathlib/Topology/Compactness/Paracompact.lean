@@ -46,7 +46,7 @@ Prove (some of) [Michael's theorems](https://ncatlab.org/nlab/show/Michael%27s+t
 compact space, paracompact space, locally finite covering
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter Function
@@ -131,11 +131,11 @@ theorem Topology.IsClosedEmbedding.paracompactSpace [ParacompactSpace Y] {e : X 
     choose U hUo hU using fun a ↦ he.isOpen_iff.1 (ho a)
     simp only [← hU] at hu ⊢
     have heU : range e ⊆ ⋃ i, U i := by
-      simpa only [range_subset_iff, mem_iUnion, iUnion_eq_univ_iff] using hu
+      simpa only [range_subset_iff, mem_iUnion, iUnion_eq_univ_iff] using! hu
     rcases precise_refinement_set he.isClosed_range U hUo heU with ⟨V, hVo, heV, hVf, hVU⟩
     refine ⟨α, fun a ↦ e ⁻¹' (V a), fun a ↦ (hVo a).preimage he.continuous, ?_,
       hVf.preimage_continuous he.continuous, fun a ↦ ⟨a, preimage_mono (hVU a)⟩⟩
-    simpa only [range_subset_iff, mem_iUnion, iUnion_eq_univ_iff] using heV
+    simpa only [range_subset_iff, mem_iUnion, iUnion_eq_univ_iff] using! heV
 
 theorem Homeomorph.paracompactSpace_iff (e : X ≃ₜ Y) : ParacompactSpace X ↔ ParacompactSpace Y :=
   ⟨fun _ ↦ e.symm.isClosedEmbedding.paracompactSpace, fun _ ↦ e.isClosedEmbedding.paracompactSpace⟩
@@ -219,7 +219,7 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [WeaklyLocal
     -- Now we restate some properties of `CompactExhaustion` for `K`/`Kdiff`
     have hKcov : ∀ x, x ∈ Kdiff (K'.find x + 1) := fun x ↦ by
       simpa only [K'.find_shiftr] using
-        diff_subset_diff_right interior_subset (K'.shiftr.mem_diff_shiftr_find x)
+        sdiff_subset_sdiff_right interior_subset (K'.shiftr.mem_sdiff_shiftr_find x)
     have Kdiffc : ∀ n, IsCompact (Kdiff n ∩ s) :=
       fun n ↦ ((K.isCompact _).diff isOpen_interior).inter_right hs
     -- Next we choose a finite covering `B (c n i) (r n i)` of each

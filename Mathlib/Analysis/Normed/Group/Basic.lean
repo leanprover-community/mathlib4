@@ -352,7 +352,7 @@ theorem NormedGroup.nhds_basis_norm_lt (x : E) :
 @[to_additive]
 theorem NormedGroup.nhds_one_basis_norm_lt :
     (𝓝 (1 : E)).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { y | ‖y‖ < ε } := by
-  convert NormedGroup.nhds_basis_norm_lt (1 : E) using 1
+  convert! NormedGroup.nhds_basis_norm_lt (1 : E) using 1
   simp
 
 @[deprecated (since := "2026-02-17")]
@@ -364,7 +364,7 @@ alias NormedAddCommGroup.nhds_zero_basis_norm_lt := NormedAddGroup.nhds_zero_bas
 @[to_additive]
 theorem NormedGroup.uniformity_basis_dist :
     (𝓤 E).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { p : E × E | ‖p.fst⁻¹ * p.snd‖ < ε } := by
-  convert Metric.uniformity_basis_dist (α := E) using 1
+  convert! Metric.uniformity_basis_dist (α := E) using 1
   simp [dist_eq_norm_inv_mul]
 
 open Finset
@@ -393,8 +393,11 @@ theorem norm_toNNReal' : ‖a‖.toNNReal = ‖a‖₊ :=
 lemma toReal_enorm' (x : E) : ‖x‖ₑ.toReal = ‖x‖ := by simp [enorm]
 
 @[to_additive (attr := simp) ofReal_norm]
-lemma ofReal_norm' (x : E) : .ofReal ‖x‖ = ‖x‖ₑ := by
-  simp [enorm, ENNReal.ofReal, Real.toNNReal, nnnorm]
+lemma ofReal_norm' (x : E) : .ofReal ‖x‖ = ‖x‖ₑ := ENNReal.ofReal_eq_coe_nnreal _
+
+@[deprecated (since := "2026-05-25")] alias ofReal_norm_eq_enorm := ofReal_norm
+
+@[deprecated (since := "2026-05-25")] alias ofReal_norm_eq_enorm' := ofReal_norm'
 
 @[to_additive enorm_eq_iff_norm_eq]
 theorem enorm'_eq_iff_norm_eq {x : E} {y : F} : ‖x‖ₑ = ‖y‖ₑ ↔ ‖x‖ = ‖y‖ := by
@@ -444,7 +447,7 @@ lemma norm_pow_le_mul_norm : ∀ {n : ℕ}, ‖a ^ n‖ ≤ n * ‖a‖
 
 @[to_additive nnnorm_nsmul_le]
 lemma nnnorm_pow_le_mul_norm {n : ℕ} : ‖a ^ n‖₊ ≤ n * ‖a‖₊ := by
-  simpa only [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_natCast] using norm_pow_le_mul_norm
+  simpa only [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_natCast] using! norm_pow_le_mul_norm
 
 @[to_additive (attr := simp) nnnorm_abs_zsmul]
 theorem nnnorm_zpow_abs (a : E) (n : ℤ) : ‖a ^ |n|‖₊ = ‖a ^ n‖₊ :=
@@ -621,12 +624,9 @@ lemma exists_enorm_lt' (E : Type*) [TopologicalSpace E] [ESeminormedMonoid E]
 @[to_additive (attr := simp) enorm_neg]
 lemma enorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [enorm]
 
-@[to_additive ofReal_norm_eq_enorm]
-lemma ofReal_norm_eq_enorm' (a : E) : .ofReal ‖a‖ = ‖a‖ₑ := ENNReal.ofReal_eq_coe_nnreal _
-
 @[to_additive]
 theorem edist_eq_enorm_inv_mul (a b : E) : edist a b = ‖a⁻¹ * b‖ₑ := by
-  rw [edist_dist, dist_eq_norm_inv_mul, ofReal_norm_eq_enorm']
+  rw [edist_dist, dist_eq_norm_inv_mul, ofReal_norm']
 
 @[deprecated (since := "2026-02-11")] alias edist_one_eq_enorm := edist_one_right
 
@@ -713,7 +713,7 @@ structure on the domain. -/
 `SeminormedAddGroup` induces a `SeminormedAddGroup` structure on the domain. -/]
 abbrev SeminormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     SeminormedGroup E :=
-  { PseudoMetricSpace.induced f toPseudoMetricSpace with
+  fast_instance% { PseudoMetricSpace.induced f toPseudoMetricSpace with
     norm := fun x => ‖f x‖
     dist_eq := fun x y => by simp only [map_mul, map_inv, ← dist_eq_norm_inv_mul]; rfl }
 
@@ -725,7 +725,7 @@ abbrev SeminormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass �
 abbrev SeminormedCommGroup.induced
     [CommGroup E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     SeminormedCommGroup E :=
-  { SeminormedGroup.induced E F f with
+  fast_instance% { SeminormedGroup.induced E F f with
     mul_comm := mul_comm }
 
 -- See note [reducible non-instances].
@@ -736,7 +736,7 @@ structure on the domain. -/
 abbrev NormedGroup.induced
     [Group E] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) (h : Injective f) :
     NormedGroup E :=
-  { SeminormedGroup.induced E F f, MetricSpace.induced f h _ with }
+  fast_instance% { SeminormedGroup.induced E F f, MetricSpace.induced f h _ with }
 
 -- See note [reducible non-instances].
 /-- An injective group homomorphism from a `CommGroup` to a `NormedGroup` induces a
@@ -745,8 +745,7 @@ abbrev NormedGroup.induced
 `NormedCommGroup` induces a `NormedCommGroup` structure on the domain. -/]
 abbrev NormedCommGroup.induced [CommGroup E] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕)
     (h : Injective f) : NormedCommGroup E :=
-  { SeminormedGroup.induced E F f, MetricSpace.induced f h _ with
-    mul_comm := mul_comm }
+  fast_instance% { SeminormedCommGroup.induced E F f, MetricSpace.induced f h _ with }
 
 end Induced
 
@@ -795,7 +794,7 @@ alias nndist_eq_nnnorm := nndist_eq_nnnorm_sub
 
 @[to_additive]
 theorem edist_eq_enorm_div (a b : E) : edist a b = ‖a / b‖ₑ := by
-  rw [edist_dist, dist_eq_norm_div, ofReal_norm_eq_enorm']
+  rw [edist_dist, dist_eq_norm_div, ofReal_norm']
 
 @[to_additive]
 theorem dist_inv (x y : E) : dist x⁻¹ y = dist x y⁻¹ := by

@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Generators
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
-public import Mathlib.CategoryTheory.Comma.Over.Pullback
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Generators
+public import Mathlib.CategoryTheory.Sites.CoversTop.Over
 
 /-!
 # Quasicoherent sheaves
@@ -51,10 +51,14 @@ structure Presentation (M : SheafOfModules.{u} R) where
 of generators and relations are finite. -/
 class Presentation.IsFinite {M : SheafOfModules.{u} R} (p : M.Presentation) : Prop where
   isFiniteType_generators : p.generators.IsFiniteType := by infer_instance
-  finite_relations : Finite p.relations.I := by infer_instance
+  isFiniteType_relations : p.relations.IsFiniteType := by infer_instance
 
 attribute [instance] Presentation.IsFinite.isFiniteType_generators
-  Presentation.IsFinite.finite_relations
+  Presentation.IsFinite.isFiniteType_relations
+
+@[deprecated Presentation.IsFinite.isFiniteType_relations (since := "2026-04-14")]
+lemma Presentation.IsFinite.finite_relations {M : SheafOfModules.{u} R} (p : M.Presentation)
+    [p.IsFinite] : Finite p.relations.I := GeneratingSections.IsFiniteType.finite
 
 end
 
@@ -73,7 +77,7 @@ def generatorsOfIsCokernelFree {M : SheafOfModules.{u} R}
     (H' : IsColimit (CokernelCofork.ofπ g H)) : M.GeneratingSections where
   I := σ
   s := M.freeHomEquiv g
-  epi := by simpa using epi_of_isColimit_cofork H'
+  epi := by simpa using! epi_of_isColimit_cofork H'
 
 @[simp]
 theorem generatorsOfIsCokernelFree_π {M : SheafOfModules.{u} R}
@@ -123,12 +127,20 @@ def Presentation.isColimit {M : SheafOfModules.{u} R} (P : Presentation M) :
   isCokernelEpiComp (c := CokernelCofork.ofπ _ (kernel.condition P.generators.π))
       (Abelian.epiIsCokernelOfKernel _ <| limit.isLimit _) _ rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Mapping a presentation under an isomorphism. -/
 @[simps]
-noncomputable def Presentation.of_isIso {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
+noncomputable def Presentation.ofIsIso {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
     (σ : M.Presentation) : N.Presentation where
   generators := σ.generators.ofEpi f
   relations := σ.relations.ofEpi ((kernelCompMono _ f).symm.trans <| eqToIso (by simp)).hom
+
+@[deprecated (since := "2026-04-15")] alias Presentation.of_isIso := Presentation.ofIsIso
+
+instance {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
+    (σ : M.Presentation) [σ.IsFinite] : (σ.ofIsIso f).IsFinite where
+  isFiniteType_generators := inferInstanceAs (σ.generators.ofEpi _).IsFiniteType
+  isFiniteType_relations := inferInstanceAs (σ.relations.ofEpi _).IsFiniteType
 
 variable {C' : Type u₂} [Category.{v₂} C'] {J' : GrothendieckTopology C'} {S : Sheaf J' RingCat.{u}}
   [HasSheafify J' AddCommGrpCat] [J'.WEqualsLocallyBijective AddCommGrpCat]
@@ -136,7 +148,7 @@ variable {C' : Type u₂} [Category.{v₂} C'] {J' : GrothendieckTopology C'} {S
 
 variable {M : SheafOfModules.{u} R} (P : Presentation M)
   (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S) [PreservesColimitsOfSize.{u, u} F]
-  (η : F.obj (unit R) ≅ unit S)
+  (η : unit S ≅ F.obj (unit R))
 
 -- `preservesColimitsOfSize_shrink` is not a global instance because it loops indefinitely.
 -- But here it is fine as an instance since the universe `u` is inferrable from the type of `F`.
@@ -146,21 +158,21 @@ local instance : PreservesColimitsOfSize.{0, 0} F := preservesColimitsOfSize_shr
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will obtain
 relations of `Presentation (F.obj M)`. -/
 def Presentation.mapRelations : free P.relations.I (R := S) ⟶ free P.generators.I :=
-  (mapFree F η P.relations.I).inv ≫ F.map ((freeHomEquiv _).symm P.relations.s) ≫
-    F.map (kernel.ι _) ≫ (mapFree F η P.generators.I).hom
+  (mapFreeIso F P.relations.I η).hom ≫ F.map ((freeHomEquiv _).symm P.relations.s) ≫
+    F.map (kernel.ι _) ≫ (mapFreeIso F P.generators.I η).inv
 
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will obtain
 generators of `Presentation (F.obj M)`. -/
-def Presentation.mapGenerators : free P.generators.I ⟶ F.obj M :=
-  (mapFree F η P.generators.I).inv ≫ F.map (P.generators.π)
+abbrev Presentation.mapGenerators : free P.generators.I ⟶ F.obj M := P.generators.mapFreeHom F η
 
 @[reassoc (attr := simp)]
 theorem Presentation.mapRelations_mapGenerators :
     P.mapRelations F η ≫ P.mapGenerators F η = 0 := by
-  simp only [mapRelations, mapGenerators, Category.assoc, Iso.hom_inv_id_assoc,
+  simp only [mapRelations, GeneratingSections.mapFreeHom, Category.assoc, Iso.inv_hom_id_assoc,
     ← Functor.map_comp, kernel.condition, Functor.map_zero, comp_zero]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will get a
 `Presentation (F.obj M)`. -/
@@ -168,13 +180,14 @@ colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we 
 def Presentation.map : Presentation (F.obj M) :=
   presentationOfIsCokernelFree (P.mapRelations F η) (P.mapGenerators F η)
     (P.mapRelations_mapGenerators F η) <| by
-    refine IsColimit.equivOfNatIsoOfIso (parallelPairIsoMk (mapFree F η _) (mapFree F η _)
-      (by simp [Presentation.mapRelations]) (by simp)) _ _ ?_ (isColimitOfPreserves F P.isColimit)
+    refine IsColimit.equivOfNatIsoOfIso
+      (parallelPairIsoMk (mapFreeIso F _ η).symm (mapFreeIso F _ η).symm
+        (by simp [Presentation.mapRelations]) (by simp)) _ _ ?_ (isColimitOfPreserves F P.isColimit)
     exact (Cocone.ext (Iso.refl _) <| by rintro (_ | _)
-      <;> simp [Presentation.mapRelations, Presentation.mapGenerators, ← Functor.map_comp])
+      <;> simp [Presentation.mapRelations, GeneratingSections.mapFreeHom, ← Functor.map_comp])
 
 theorem Presentation.map_π_eq :
-    (P.map F η).generators.π = (mapFree F η _).inv ≫ F.map (P.generators.π) :=
+    (P.map F η).generators.π = (mapFreeIso F _ η).hom ≫ F.map (P.generators.π) :=
   (F.obj M).freeHomEquiv.symm_apply_eq.mpr rfl
 
 end
@@ -226,6 +239,7 @@ class IsFinitePresentation {M : SheafOfModules.{u} R} (q : M.QuasicoherentData) 
 
 attribute [instance] IsFinitePresentation.isFinite_presentation
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance {M : SheafOfModules.{u} R} (q : M.QuasicoherentData) [q.IsFinitePresentation] :
     q.localGeneratorsData.IsFiniteType where
@@ -268,13 +282,6 @@ instance (M : SheafOfModules.{u} R) [M.IsFinitePresentation] :
     obtain ⟨σ, _⟩ := IsFinitePresentation.exists_quasicoherentData M
     exact ⟨σ.localGeneratorsData, inferInstance⟩
 
-/-- A choice of local presentations when `M` is a sheaf of modules of finite presentation. -/
-@[deprecated "Use the lemma `IsFinitePresentation.exists_quasicoherentData` instead."
-  (since := "2025-10-28")]
-noncomputable def quasicoherentDataOfIsFinitePresentation
-    (M : SheafOfModules.{u} R) [M.IsFinitePresentation] : M.QuasicoherentData :=
-  (IsFinitePresentation.exists_quasicoherentData M).choose
-
 end
 
 noncomputable section
@@ -299,7 +306,7 @@ def Presentation.quasicoherentData {M : SheafOfModules.{u} R} (P : Presentation 
   coversTop x := GrothendieckTopology.covering_of_eq_top J <| by
     rw [Sieve.ext_iff]
     intro _ f
-    simpa [Sieve.top_apply, iff_true] using ⟨x, Nonempty.intro f⟩
+    simp [Sieve.top_apply]
   presentation x := P.map (pushforward (𝟙 (R.over x))) (by rfl)
 
 /-- If a sheaf of `R`-modules `M` has a presentation, then `M` is quasi-coherent. -/
@@ -307,7 +314,34 @@ theorem Presentation.isQuasicoherent {M : SheafOfModules.{u} R} (P : Presentatio
     IsQuasicoherent M where
   nonempty_quasicoherentData := Nonempty.intro (Presentation.quasicoherentData P)
 
+/-- Mapping quasicoherent data under an isomorphism. -/
+@[simps]
+noncomputable def QuasicoherentData.ofIsIso {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
+    (σ : M.QuasicoherentData) : N.QuasicoherentData where
+  I := σ.I
+  X := σ.X
+  coversTop := σ.coversTop
+  presentation i := Presentation.ofIsIso (f.over (σ.X i)) (σ.presentation i)
+
+instance : (isQuasicoherent R).IsClosedUnderIsomorphisms where
+  of_iso e := by
+    intro ⟨⟨q⟩⟩
+    exact ⟨⟨q.ofIsIso e.hom⟩⟩
+
+set_option backward.defeqAttrib.useBackward true in
+instance {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f] (σ : M.QuasicoherentData)
+    [σ.IsFinitePresentation] : (σ.ofIsIso f).IsFinitePresentation where
+  isFinite_presentation i := by
+    dsimp
+    exact inferInstanceAs ((σ.presentation i).ofIsIso _).IsFinite
+
+instance : (isFinitePresentation R).IsClosedUnderIsomorphisms where
+  of_iso e := by
+    intro ⟨σ, hσ⟩
+    exact ⟨σ.ofIsIso e.hom, inferInstance⟩
+
 end
+
 section bind
 
 variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
@@ -317,23 +351,20 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
   [∀ X Y, HasSheafify ((J.over X).over Y) AddCommGrpCat.{u}]
   [∀ X Y, ((J.over X).over Y).WEqualsLocallyBijective AddCommGrpCat.{u}]
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 /-- Given an cover `X` and a quasicoherent data for `M` restricted onto each `Mᵢ`, we may glue them
 into a quasicoherent data of `M` itself. -/
 noncomputable def QuasicoherentData.bind {R : Sheaf J RingCat.{u}}
     (M : SheafOfModules.{u} R) {I : Type u}
     (X : I → C) (hX : J.CoversTop X) (D : Π i, QuasicoherentData (M.over (X i))) :
     M.QuasicoherentData where
-  I := Σ i, (D i).I
+  I := (i : I) × (D i).I
   X ij := ((D ij.1).X ij.2).left
-  coversTop Y := J.transitive (hX Y) _ fun Z f ⟨i, ⟨g⟩⟩ ↦
-      J.superset_covering ((Sieve.functorPushforward_ofObjects_le _ _ _).trans
-      (Sieve.ofObjects_mono fun i' ↦ by aesop)) ((D i).coversTop (.mk g))
+  coversTop := hX.over (fun i ↦ (D i).coversTop)
   presentation i :=
     letI e := pushforwardPushforwardEquivalence (Over.iteratedSliceEquiv ((D i.1).X i.2))
       (S := (R.over _).over _) (R := R.over _) (𝟙 _) (𝟙 _)
       (by ext : 2; exact R.1.map_id _) (by ext : 2; exact R.1.map_id _)
-    (((D i.1).presentation i.2).map e.inverse (.refl _)).of_isIso
+    (((D i.1).presentation i.2).map e.inverse (.refl _)).ofIsIso
       (e.fullyFaithfulFunctor.preimageIso
       (by exact e.counitIso.app ((M.over (X i.1)).over ((D i.1).X i.2)))).hom
 

@@ -340,7 +340,7 @@ noncomputable def comapQuotientEquivOfSurj
 @[simp] lemma comapQuotientEquivOfSurj_symm_mk' (c : RingCon M) (f : N ≃+* M)
     {d : RingCon N} (hcd : d = c.comap f) (x : N) :
     (comapQuotientEquivOfSurj c (f : N →+* M) f.surjective hcd).symm ⟦f x⟧ = ↑x := by
-  convert RingEquiv.symm_apply_apply _ _
+  convert! RingEquiv.symm_apply_apply _ _
   rw [comapQuotientEquivOfSurj_mk, RingEquiv.coe_toRingHom]
   rfl
 
@@ -489,6 +489,13 @@ as the homomorphism that `f` induces on the quotient. -/
 theorem liftₐ_range (H : c ≤ ker f.toRingHom) :
     AlgHom.range (liftₐ c f H) = f.range :=
   Subalgebra.toSubsemiring_injective <| rangeS_lift H
+
+/-- Homomorphisms on the quotient of a ring by a ring congruence relation are
+equal if they are equal on elements that are coercions from the ring. -/
+@[ext high] -- This should have higher priority than `AlgHom.ext`
+theorem Quotient.hom_extₐ {f g : c.Quotient →ₐ[R] P}
+    (h : f.comp (c.mkₐ R) = g.comp (c.mkₐ R)) : f = g :=
+  DFunLike.ext _ _ <| c.mk'_surjective.forall.mpr fun x ↦ by exact congr($h x)
 
 variable (f) in
 /-- The homomorphism induced on the quotient of a ring by the kernel of a ring homomorphism. -/

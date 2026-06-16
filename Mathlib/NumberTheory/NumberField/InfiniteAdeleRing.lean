@@ -50,23 +50,14 @@ infinite places. See `NumberField.InfinitePlace` for the definition of an infini
 
 /-- The infinite adele ring of a number field. -/
 def InfiniteAdeleRing (K : Type*) [Field K] := (v : InfinitePlace K) → v.Completion
+deriving CommRing, Inhabited, TopologicalSpace, IsTopologicalRing, Algebra K
 
 namespace InfiniteAdeleRing
 
 variable (K : Type*) [Field K]
 
-instance : CommRing (InfiniteAdeleRing K) := fast_instance% Pi.commRing
-
-instance : Inhabited (InfiniteAdeleRing K) := ⟨0⟩
-
 instance [NumberField K] : Nontrivial (InfiniteAdeleRing K) :=
   (inferInstance : Nonempty (InfinitePlace K)).elim fun w => Pi.nontrivial_at w
-
-instance : TopologicalSpace (InfiniteAdeleRing K) := Pi.topologicalSpace
-
-instance : IsTopologicalRing (InfiniteAdeleRing K) := Pi.instIsTopologicalRing
-
-instance : Algebra K (InfiniteAdeleRing K) := Pi.algebra (InfinitePlace K) InfinitePlace.Completion
 
 @[simp]
 theorem algebraMap_apply (x : K) (v : InfinitePlace K) :
@@ -137,7 +128,7 @@ theorem norm_eq_zero_of_not_isUnit [NumberField K] {x : InfiniteAdeleRing K} (hx
 `NumberField.InfinitePlace.prod_eq_abs_norm`. -/
 theorem coe_norm_eq_abs_norm [NumberField K] (x : K) :
     ‖algebraMap K (InfiniteAdeleRing K) x‖ = |Algebra.norm ℚ x| := by
-  simpa [-Rat.cast_abs, norm_def] using InfinitePlace.prod_eq_abs_norm x
+  simpa [-Rat.cast_abs, norm_def] using! InfinitePlace.prod_eq_abs_norm x
 
 end InfiniteAdeleRing
 

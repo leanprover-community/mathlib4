@@ -68,7 +68,6 @@ private lemma height_eq_height_add_one_of_isMaximal (p : Ideal R) [p.IsMaximal] 
   have : P'.height = 1 := IsPrincipalIdealRing.height_eq_one_of_isMaximal P' polynomial_not_isField
   rwa [← e.height_map <| P.map (Ideal.Quotient.mk <| p.map (algebraMap R R[X]))]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `p` be a maximal ideal of `R`. Then the height of `p[X]` equals the height of `p`. -/
 lemma height_map_C (p : Ideal R) [p.IsMaximal] : (p.map C).height = p.height := by
   have : (p.map C).LiesOver p := ⟨IsMaximal.eq_of_le inferInstance IsPrime.ne_top' le_comap_map⟩
@@ -90,8 +89,8 @@ lemma height_eq_height_add_one (p : Ideal R)
   have disj : Disjoint (p.primeCompl.map C : Set R[X]) P := by
     refine Set.disjoint_left.mpr fun a ⟨b, hb⟩ ha ↦ hb.1 ?_
     rwa [SetLike.mem_coe, LiesOver.over (P := P) (p := p), mem_comap, algebraMap_eq, hb.2]
-  have eq := comap_map_of_isPrime_disjoint _ Rₚ[X] ‹P.IsMaximal›.isPrime disj
-  have : (comap (algebraMap R[X] Rₚ[X]) P').IsMaximal := eq.symm ▸ ‹P.IsMaximal›
+  have eq := under_map_of_isPrime_disjoint _ Rₚ[X] ‹P.IsMaximal›.isPrime disj
+  have : (P'.under R[X]).IsMaximal := eq.symm ▸ ‹P.IsMaximal›
   have : P'.IsMaximal := .of_isLocalization_of_disjoint (p.primeCompl.map C)
   have : P'.LiesOver p' := liesOver_of_isPrime_of_disjoint p.primeCompl _ _ disj
   have eq1 : p.height = p'.height := by
@@ -121,7 +120,7 @@ lemma MvPolynomial.ringKrullDim_of_isNoetherianRing {ι : Type*} [Finite ι] :
     ringKrullDim (MvPolynomial ι R) = ringKrullDim R + Nat.card ι := by
   induction ι using Finite.induction_empty_option with
   | of_equiv e H =>
-    convert ← H using 1
+    convert! ← H using 1
     · exact ringKrullDim_eq_of_ringEquiv (renameEquiv _ e).toRingEquiv
     · rw [Nat.card_congr e]
   | h_empty => simp

@@ -49,13 +49,11 @@ variable [CommRing P] [Algebra R P] [Algebra P S] [IsScalarTower R P S]
 
 section IsLocalRing
 
-set_option backward.isDefEq.respectTransparency false
-
 variable [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)]
   [Algebra.FormallySmooth 𝓀[R] (𝓀[R] ⊗[R] S)]
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
-attribute [local irreducible] KaehlerDifferential in
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] TensorProduct.rightAlgebra in
 /--
 Let `(R, m, k)` be a local ring, `(S, M, K)` be a local `R`-algebra that is `R`-flat such that
@@ -128,7 +126,7 @@ private lemma FormallySmooth.of_formallySmooth_residueField_tensor_aux
     (AlgebraTensorModule.congr (.refl 𝓀[S] 𝓀[S]) e₁).restrictScalars S ≪≫ₗ
       (AlgebraTensorModule.cancelBaseChange P Pp Sp 𝓀[S] _).restrictScalars S
   -- It remains to check that the two maps are equal under the identifications above.
-  convert (eᵣ.injective.comp this).comp eₗ.symm.injective
+  convert! (eᵣ.injective.comp this).comp eₗ.symm.injective
   ext x
   dsimp
   induction x with
@@ -172,7 +170,7 @@ lemma FormallySmooth.of_formallySmooth_residueField_tensor (M : Submonoid P)
     simp [fP, IsLocalization.lift_mk', Units.mul_inv_eq_iff_eq_mul, IsUnit.liftRight]
   have hfP : (RingHom.ker fP).FG := by
     have := Algebra.FinitePresentation.ker_fG_of_surjective _ hf₀
-    convert this.map (algebraMap _ P')
+    convert! this.map (algebraMap _ P')
     refine le_antisymm ?_ (Ideal.map_le_iff_le_comap.mpr fun x hx ↦ by simp_all [fP])
     intro x hx
     obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq M' x
@@ -201,10 +199,11 @@ lemma IsSmoothAt.of_formallySmooth_fiber
   let Rp := Localization.AtPrime p
   let Sp := Localization (algebraMapSubmonoid S p.primeCompl)
   let Sq := Localization.AtPrime q
+  let := Localization.AtPrime.algebraOfLiesOver p q
   let f : Sp →ₐ[S] Sq := IsLocalization.liftAlgHom (M := algebraMapSubmonoid S p.primeCompl)
         (f := Algebra.ofId _ _) (by
       rintro ⟨_, x, hx, rfl⟩
-      simpa using IsLocalization.map_units (M := q.primeCompl) Sq ⟨algebraMap _ _ x,
+      simpa using! IsLocalization.map_units (M := q.primeCompl) Sq ⟨algebraMap _ _ x,
         by simp_all [q.over_def p]⟩)
   algebraize [f.toRingHom]
   have : IsScalarTower R Sp Sq := .to₁₃₄ _ S _ _
