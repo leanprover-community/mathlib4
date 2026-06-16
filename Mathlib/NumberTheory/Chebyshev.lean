@@ -523,7 +523,7 @@ private noncomputable def c := b x (6 * n - 1) - b x (6 * n) + b x (6 * n + 1)
 
 private theorem b_antitone (hx : 0 ≤ x) : AntitoneOn (b x) (.Ici 1) := by
   intro n hn m hm hnm; unfold b
-  simp at hn hm
+  simp only [Set.mem_Ici] at hn hm
   rcases le_or_gt x 1 with h | h
   · repeat rw [theta_eq_zero_of_le_one (rpow_le_one hx h (by positivity))]
   apply theta_mono (monotone_rpow_of_base_ge_one h.le _)
@@ -535,12 +535,15 @@ private theorem psi_pow_eq_sum_b (hx : 0 ≤ x) : ∃ M, ∀ N ≥ M,
   have : 0 ≤ x ^ ((n : ℝ)⁻¹) := by positivity
   use ⌊log (x ^ (n : ℝ)⁻¹) / log 2⌋₊
   intro N hN
-  simp only [one_div, psi_eq_sum_theta' this hN, b, cast_mul, mul_inv_rev]
-  simp_rw [mul_comm, ← rpow_mul (by positivity)]
+  simp_rw [psi_eq_sum_theta' this hN, one_div, b, cast_mul, mul_inv_rev, mul_comm,
+    ← rpow_mul (by positivity)]
 
-private theorem sum_b_eq_b_add_sum_add_sum_add_sum (N : ℕ) : ∑ n ∈ Icc 1 (1 + 6 * N), b x n =
-    b x 1 + ∑ n ∈ Icc 1 (3 * N), b x (2 * n) + ∑ n ∈ Icc 1 (2 * N), b x (3 * n) +
-    ∑ n ∈ Icc 1 N, c x n := by
+private theorem sum_b_eq_b_add_sum_add_sum_add_sum (N : ℕ) :
+    ∑ n ∈ Icc 1 (1 + 6 * N), b x n =
+      b x 1 +
+      ∑ n ∈ Icc 1 (3 * N), b x (2 * n) +
+      ∑ n ∈ Icc 1 (2 * N), b x (3 * n) +
+      ∑ n ∈ Icc 1 N, c x n := by
   induction N with
   | zero => simp
   | succ N ih =>
@@ -576,13 +579,14 @@ private theorem psi_sub_theta_bounds {x : ℝ} (hx : 0 ≤ x) :
     linarith [(b_antitone x hx (by grind) (by grind) (by lia) : b x (6 * n) ≤ b x (6 * n - 1)),
       (b_antitone x hx (by grind) (by grind) (by lia) : b x (7 * n) ≤ b x (6 * n + 1))]
   have : b x 1 = θ x := by simp [b]
-  simp only [cast_one, one_mul, sum_b_eq_b_add_sum_add_sum_add_sum, cast_ofNat, inv_one,
-    rpow_one] at h1 h2 h3 h5 h7 ⊢
-  split_ands <;> linarith
+  simp only [cast_one, one_mul, sum_b_eq_b_add_sum_add_sum_add_sum, inv_one, rpow_one] at h1
+  grind
 
-theorem psi_sub_theta_le_psi_add_psi_add_psi {x : ℝ} (hx : 0 ≤ x) :
-    ψ x - θ x ≤ ψ (x ^ (2 : ℝ)⁻¹) + ψ (x ^ (3 : ℝ)⁻¹) + ψ (x ^ (5 : ℝ)⁻¹) :=
-  (psi_sub_theta_bounds hx).1
+theorem psi_sub_theta_le_psi_add_psi_add_psi (x : ℝ) :
+    ψ x - θ x ≤ ψ (x ^ (2 : ℝ)⁻¹) + ψ (x ^ (3 : ℝ)⁻¹) + ψ (x ^ (5 : ℝ)⁻¹) := by
+  rcases le_total x 0 with hx | hx
+  · grind [theta_eq_zero_iff, psi_eq_zero_iff, psi_nonneg]
+  · exact (psi_sub_theta_bounds hx).1
 
 theorem psi_sub_theta_ge_psi_add_psi_add_psi {x : ℝ} (hx : 0 ≤ x) :
     ψ (x ^ (2 : ℝ)⁻¹) + ψ (x ^ (3 : ℝ)⁻¹) + ψ (x ^ (7 : ℝ)⁻¹) ≤ ψ x - θ x :=
@@ -594,18 +598,16 @@ theorem psi_sub_theta_le_mul_sqrt : ∃ C, ∀ x, ψ x - θ x ≤ C * x.sqrt := 
   intro x
   rcases le_total x 1 with h | h
   · rw [theta_eq_zero_of_le_one h, psi_eq_zero_of_le_one h, sub_self]; positivity
-  have hx : 0 ≤ x := by linarith
   have (n : ℕ) (hn : 2 ≤ n) : ψ (x ^ (1 / (n : ℝ))) ≤ (log 4 + 4) * x.sqrt := by
     grw [psi_le_const_mul_self (by positivity), sqrt_eq_rpow x]; gcongr; norm_cast
-  linarith [psi_sub_theta_le_psi_add_psi_add_psi hx, this 2 (le_refl _), this 3 (by norm_num),
+  linarith [psi_sub_theta_le_psi_add_psi_add_psi x, this 2 (le_refl _), this 3 (by norm_num),
     this 5 (by norm_num)]
 
 open Asymptotics Filter in
 theorem isBigO_psi_sub_theta_sqrt : IsBigO atTop (ψ - θ) sqrt := by
-  rw [isBigO_iff]
-  simp only [Pi.sub_apply, norm_eq_abs, eventually_atTop]
-  obtain ⟨ C, hC ⟩ := psi_sub_theta_le_mul_sqrt
-  refine ⟨ C, 0, fun x _ ↦ ?_ ⟩
+  simp_rw [isBigO_iff, Pi.sub_apply, norm_eq_abs, eventually_atTop]
+  obtain ⟨C, hC⟩ := psi_sub_theta_le_mul_sqrt
+  refine ⟨C, 0, fun x _ ↦ ?_⟩
   have := theta_le_psi x
   rw [abs_of_nonneg (by positivity), abs_of_nonneg (by positivity)]
   exact hC x
