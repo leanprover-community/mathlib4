@@ -48,7 +48,6 @@ comma, slice, coslice, over, under, arrow
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 open Category
@@ -65,7 +64,7 @@ variable {T' : Type u₆} [Category.{v₆} T']
 
 /-- The objects of the comma category are triples of an object `left : A`, an object
 `right : B` and a morphism `hom : L.obj left ⟶ R.obj right`. -/
-@[to_dual self (reorder := A B, 2 4, L R)]
+@[to_dual self (reorder := A B, 2 4, L R), wikidata Q1780005]
 structure Comma (L : A ⥤ T) (R : B ⥤ T) : Type max u₁ u₂ v₃ where
   /-- The left subobject -/
   left : A
@@ -166,6 +165,7 @@ def snd : Comma L R ⥤ B where
   obj X := X.right
   map f := f.right
 
+set_option backward.defeqAttrib.useBackward true in
 /-- We can interpret the commutative square constituting a morphism in the comma category as a
 natural transformation between the functors `fst ⋙ L` and `snd ⋙ R` from the comma category
 to `T`, where the components are given by the morphism that constitutes an object of the comma
@@ -282,11 +282,16 @@ instance full_map [F.Faithful] [F₁.Full] [F₂.Full] [IsIso α] [IsIso β] : (
       right := F₂.preimage φ.right
       w := F.map_injective (by
         rw [← cancel_mono (β.app _), ← cancel_epi (α.app _), F.map_comp, F.map_comp, assoc, assoc]
-        erw [← α.naturality_assoc, β.naturality]
-        dsimp
-        rw [F₁.map_preimage, F₂.map_preimage]
-        simpa using φ.w) }, by cat_disch⟩
+        calc
+        _ = (F₁ ⋙ L').map (F₁.preimage φ.left) ≫ α.app Y.left ≫ F.map Y.hom ≫ β.app Y.right := by
+          rw [← Functor.comp_map, ← α.naturality_assoc]
+        _ = α.app X.left ≫ F.map X.hom ≫ β.app X.right ≫ (F₂ ⋙ R').map (F₂.preimage φ.right) := by
+          simp only [Functor.comp_map, Functor.map_preimage, ← map_obj_hom α β Y, φ.w,
+            map_obj_hom α β X, assoc]
+        _ = _ := by rw [← Functor.comp_map, β.naturality] )},
+      by cat_disch⟩
 
+set_option backward.defeqAttrib.useBackward true in
 instance essSurj_map [F₁.EssSurj] [F₂.EssSurj] [F.Full] [IsIso α] [IsIso β] :
     (map α β).EssSurj where
   mem_essImage X :=
@@ -341,12 +346,14 @@ def mapLeft (l : L₁ ⟶ L₂) : Comma L₂ R ⥤ Comma L₁ R where
     { left := f.left
       right := f.right }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor `Comma L R ⥤ Comma L R` induced by the identity natural transformation on `L` is
 naturally isomorphic to the identity functor. -/
 @[simps!]
 def mapLeftId : mapLeft R (𝟙 L) ≅ 𝟭 _ :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor `Comma L₁ R ⥤ Comma L₃ R` induced by the composition of two natural transformations
 `l : L₁ ⟶ L₂` and `l' : L₂ ⟶ L₃` is naturally isomorphic to the composition of the two functors
 induced by these natural transformations. -/
@@ -361,6 +368,7 @@ def mapLeftComp (l : L₁ ⟶ L₂) (l' : L₂ ⟶ L₃) :
 def mapLeftEq (l l' : L₁ ⟶ L₂) (h : l = l') : mapLeft R l ≅ mapLeft R l' :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A natural isomorphism `L₁ ≅ L₂` induces an equivalence of categories
 `Comma L₁ R ≌ Comma L₂ R`. -/
 @[simps!]
@@ -381,12 +389,14 @@ def mapRight (r : R₁ ⟶ R₂) : Comma L R₁ ⥤ Comma L R₂ where
     { left := f.left
       right := f.right }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor `Comma L R ⥤ Comma L R` induced by the identity natural transformation on `R` is
 naturally isomorphic to the identity functor. -/
 @[simps!]
 def mapRightId : mapRight L (𝟙 R) ≅ 𝟭 _ :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor `Comma L R₁ ⥤ Comma L R₃` induced by the composition of the natural transformations
 `r : R₁ ⟶ R₂` and `r' : R₂ ⟶ R₃` is naturally isomorphic to the composition of the functors
 induced by these natural transformations. -/
@@ -401,6 +411,7 @@ def mapRightComp (r : R₁ ⟶ R₂) (r' : R₂ ⟶ R₃) :
 def mapRightEq (r r' : R₁ ⟶ R₂) (h : r = r') : mapRight L r ≅ mapRight L r' :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A natural isomorphism `R₁ ≅ R₂` induces an equivalence of categories
 `Comma L R₁ ≌ Comma L R₂`. -/
 @[simps!]
@@ -426,8 +437,9 @@ def preLeft (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) : Comma (F ⋙ L) R ⥤ Co
   map f :=
     { left := F.map f.left
       right := f.right
-      w := by simpa using f.w }
+      w := by simpa using! f.w }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Comma.preLeft` is a particular case of `Comma.map`,
 but with better definitional properties. -/
 def preLeftIso (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) :
@@ -459,6 +471,7 @@ def preRight (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) : Comma L (F ⋙ R) ⥤ C
     { left := f.left
       right := F.map f.right }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Comma.preRight` is a particular case of `Comma.map`,
 but with better definitional properties. -/
 def preRightIso (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) :
@@ -491,6 +504,7 @@ def post (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) : Comma L R ⥤ Comma (L ⋙ 
       right := f.right
       w := by simp only [Functor.comp_map, ← F.map_comp, f.w] }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Comma.post` is a particular case of `Comma.map`, but with better definitional properties. -/
 def postIso (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) :
     post L R F ≅ map (F₁ := 𝟭 _) (F₂ := 𝟭 _) (L ⋙ F).leftUnitor.hom (R ⋙ F).leftUnitor.inv :=
@@ -522,6 +536,7 @@ def fromProd (L : A ⥤ Discrete PUnit) (R : B ⥤ Discrete PUnit) :
     { left := f.1
       right := f.2 }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Taking the comma category of two functors into `Discrete PUnit` results in something
 is equivalent to their product. -/
 @[simps!]
@@ -534,7 +549,6 @@ def equivProd (L : A ⥤ Discrete PUnit) (R : B ⥤ Discrete PUnit) :
 
 /-- Taking the comma category of a functor into `A ⥤ Discrete PUnit` and the identity
 `Discrete PUnit ⥤ Discrete PUnit` results in a category equivalent to `A`. -/
-@[simps!]
 def toPUnitIdEquiv (L : A ⥤ Discrete PUnit) (R : Discrete PUnit ⥤ Discrete PUnit) :
     Comma L R ≌ A :=
   (equivProd L _).trans (prod.rightUnitorEquivalence A)
@@ -547,7 +561,6 @@ theorem toPUnitIdEquiv_functor_iso {L : A ⥤ Discrete PUnit}
 
 /-- Taking the comma category of the identity `Discrete PUnit ⥤ Discrete PUnit`
 and a functor `B ⥤ Discrete PUnit` results in a category equivalent to `B`. -/
-@[simps!]
 def toIdPUnitEquiv (L : Discrete PUnit ⥤ Discrete PUnit) (R : B ⥤ Discrete PUnit) :
     Comma L R ≌ B :=
   (equivProd _ R).trans (prod.leftUnitorEquivalence B)
@@ -564,6 +577,7 @@ section Opposite
 
 open Opposite
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical functor from `Comma L R` to `(Comma R.op L.op)ᵒᵖ`. -/
 @[simps]
 def opFunctor : Comma L R ⥤ (Comma R.op L.op)ᵒᵖ where
@@ -586,7 +600,7 @@ def opFunctorCompSnd : (opFunctor L R).leftOp ⋙ snd _ _ ≅ (fst _ _).op :=
 @[simps]
 def unopFunctor : Comma L.op R.op ⥤ (Comma R L)ᵒᵖ where
   obj X := ⟨X.right.unop, X.left.unop, X.hom.unop⟩
-  map f := ⟨f.right.unop, f.left.unop, Quiver.Hom.op_inj (by simpa using f.w.symm)⟩
+  map f := ⟨f.right.unop, f.left.unop, Quiver.Hom.op_inj (by simpa using! f.w.symm)⟩
 
 /-- Composing `unopFunctor L R` with `(fst L R).op` is isomorphic to `snd L.op R.op`. -/
 @[simps!]
@@ -598,6 +612,7 @@ def unopFunctorCompFst : unopFunctor L R ⋙ (fst _ _).op ≅ snd _ _ :=
 def unopFunctorCompSnd : unopFunctor L R ⋙ (snd _ _).op ≅ fst _ _ :=
   Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The canonical equivalence between `Comma L R` and `(Comma R.op L.op)ᵒᵖ`. -/
 @[simps]

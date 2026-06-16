@@ -6,8 +6,8 @@ Authors: Kim Morrison, Simon Hudon
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
 /-!
 # The natural monoidal structure on any category with finite (co)products.
@@ -143,5 +143,71 @@ def symmetricOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] :
   symmetry X Y := by simp
 
 end
+
+namespace monoidalOfHasFiniteProducts
+
+variable {C}
+variable {D : Type*} [Category* D] (F : C ⥤ D)
+  [HasTerminal C] [HasBinaryProducts C]
+  [HasTerminal D] [HasBinaryProducts D]
+
+@[deprecated Functor.OplaxMonoidal.ofChosenFiniteProducts (since := "2025-10-19")]
+instance :
+    have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
+    have : HasFiniteProducts D := hasFiniteProducts_of_has_binary_and_terminal
+    let : CartesianMonoidalCategory C := .ofHasFiniteProducts
+    let : CartesianMonoidalCategory D := .ofHasFiniteProducts
+    F.OplaxMonoidal := by extract_lets; exact .ofChosenFiniteProducts F
+
+open Functor.OplaxMonoidal
+
+@[deprecated "No replacement" (since := "2025-10-19")]
+lemma η_eq :
+    have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
+    have : HasFiniteProducts D := hasFiniteProducts_of_has_binary_and_terminal
+    let : CartesianMonoidalCategory C := .ofHasFiniteProducts
+    let : CartesianMonoidalCategory D := .ofHasFiniteProducts
+    η F = terminalComparison F := rfl
+
+@[deprecated "No replacement" (since := "2025-10-19")]
+lemma δ_eq (X Y : C) :
+    have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
+    have : HasFiniteProducts D := hasFiniteProducts_of_has_binary_and_terminal
+    let : CartesianMonoidalCategory C := .ofHasFiniteProducts
+    let : CartesianMonoidalCategory D := .ofHasFiniteProducts
+    δ F X Y = prodComparison F X Y := rfl
+
+variable [PreservesLimit (Functor.empty.{0} C) F]
+  [PreservesLimitsOfShape (Discrete WalkingPair) F]
+
+set_option backward.defeqAttrib.useBackward true in
+@[deprecated inferInstance (since := "2025-10-19")]
+instance :
+    have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
+    have : HasFiniteProducts D := hasFiniteProducts_of_has_binary_and_terminal
+    let : CartesianMonoidalCategory C := .ofHasFiniteProducts
+    let : CartesianMonoidalCategory D := .ofHasFiniteProducts
+    IsIso (η F) := by dsimp [η_eq]; apply instIsIsoTerminalComparison
+
+set_option backward.defeqAttrib.useBackward true in
+@[deprecated inferInstance (since := "2025-10-19")]
+instance (X Y : C) :
+    have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
+    have : HasFiniteProducts D := hasFiniteProducts_of_has_binary_and_terminal
+    let : CartesianMonoidalCategory C := .ofHasFiniteProducts
+    let : CartesianMonoidalCategory D := .ofHasFiniteProducts
+    IsIso (δ F X Y) := by dsimp [δ_eq]; apply instIsIsoProdComparison
+
+/-- Promote a functor that preserves finite products to a monoidal functor between
+categories equipped with the monoidal category structure given by finite products. -/
+@[deprecated Functor.Monoidal.ofChosenFiniteProducts (since := "2025-10-19")]
+instance :
+    have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
+    have : HasFiniteProducts D := hasFiniteProducts_of_has_binary_and_terminal
+    let : CartesianMonoidalCategory C := .ofHasFiniteProducts
+    let : CartesianMonoidalCategory D := .ofHasFiniteProducts
+    F.Monoidal := by extract_lets; exact .ofOplaxMonoidal F
+
+end monoidalOfHasFiniteProducts
 
 end CategoryTheory

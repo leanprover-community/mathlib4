@@ -270,7 +270,7 @@ variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [MulOneClass α
 @[to_additive]
 instance : FunLike (α →*o β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := g
     congr
@@ -320,11 +320,11 @@ theorem coe_orderHom (f : α →*o β) : ((f : α →o β) : α → β) = f :=
 
 @[to_additive]
 theorem toMonoidHom_injective : Injective (toMonoidHom : _ → α →* β) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h using 0
+  ext <| by convert! DFunLike.ext_iff.1 h using 0
 
 @[to_additive]
 theorem toOrderHom_injective : Injective (toOrderHom : _ → α →o β) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h using 0
+  ext <| by convert! DFunLike.ext_iff.1 h using 0
 
 /-- Copy of an `OrderMonoidHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
@@ -548,11 +548,11 @@ theorem coe_orderIso (f : α ≃*o β) : ((f : α →o β) : α → β) = f :=
 
 @[to_additive]
 theorem toMulEquiv_injective : Injective (toMulEquiv : _ → α ≃* β) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h using 0
+  ext <| by convert! DFunLike.ext_iff.1 h using 0
 
 @[to_additive]
 theorem toOrderIso_injective : Injective (toOrderIso : _ → α ≃o β) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h using 0
+  ext <| by convert! DFunLike.ext_iff.1 h using 0
 
 variable (α)
 
@@ -736,7 +736,7 @@ protected lemma strictMono : StrictMono f :=
 protected lemma strictMono_symm : StrictMono f.symm :=
   strictMono_of_le_iff_le <| fun a b ↦ by
     rw [← map_le_map_iff f]
-    convert Iff.rfl <;>
+    convert! Iff.rfl <;>
     exact f.toEquiv.apply_symm_apply _
 
 end Preorder

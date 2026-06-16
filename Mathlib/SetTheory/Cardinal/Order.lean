@@ -330,7 +330,7 @@ theorem power_le_power_left : ∀ {a b c : Cardinal}, a ≠ 0 → b ≤ c → a 
 theorem self_le_power (a : Cardinal) {b : Cardinal} (hb : 1 ≤ b) : a ≤ a ^ b := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · exact zero_le
-  · convert power_le_power_left ha hb
+  · convert! power_le_power_left ha hb
     exact (power_one a).symm
 
 /-- **Cantor's theorem** -/
@@ -501,7 +501,7 @@ theorem sum_le_sum {ι} (f g : ι → Cardinal) (H : ∀ i, f i ≤ g i) : sum f
 
 theorem mk_le_mk_mul_of_mk_preimage_le {c : Cardinal} (f : α → β) (hf : ∀ b : β, #(f ⁻¹' {b}) ≤ c) :
     #α ≤ #β * c := by
-  simpa only [← mk_congr (@Equiv.sigmaFiberEquiv α β f), mk_sigma, ← sum_const'] using
+  simpa only [← mk_congr (@Equiv.sigmaFiberEquiv α β f), mk_sigma, ← sum_const'] using!
     sum_le_sum _ _ hf
 
 theorem lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le {α : Type u} {β : Type v} {c : Cardinal}
@@ -551,7 +551,7 @@ every type has a linear order which satisfies `WellFoundedGT` -/
 lemma exists_wellFoundedGT : ∃ (_ : LinearOrder α), WellFoundedGT α := by
   classical
   exact ⟨linearOrderOfSTO (Function.swap WellOrderingRel),
-    by simpa [isWellFounded_iff] using WellOrderingRel.isWellOrder.wf⟩
+    by simpa [isWellFounded_iff] using! WellOrderingRel.isWellOrder.wf⟩
 
 variable (α) in
 /-- The **well-ordering theorem** (or **Zermelo's theorem**): every type has a well-order -/
@@ -564,13 +564,13 @@ theorem exists_wellFoundedLT : ∃ (_ : LinearOrder α), WellFoundedLT α := by
 
 namespace Cardinal
 
-@[deprecated exists_eq_ciSup_of_not_isSuccPrelimit' (since := "2026-04-13")]
+@[deprecated exists_eq_ciSup_of_not_isSuccPrelimit (since := "2026-04-13")]
 lemma exists_eq_of_iSup_eq_of_not_isSuccPrelimit
     {ι : Type u} (f : ι → Cardinal.{v}) (ω : Cardinal.{v})
     (hω : ¬ IsSuccPrelimit ω)
     (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω := by
   subst h
-  exact exists_eq_ciSup_of_not_isSuccPrelimit' hω
+  exact exists_eq_ciSup_of_not_isSuccPrelimit hω
 
 @[deprecated exists_eq_ciSup_of_not_isSuccLimit (since := "2026-04-13")]
 lemma exists_eq_of_iSup_eq_of_not_isSuccLimit

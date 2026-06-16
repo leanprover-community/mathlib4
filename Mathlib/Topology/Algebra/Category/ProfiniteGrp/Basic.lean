@@ -319,7 +319,6 @@ def limitConePtAux : Subgroup (Π j : J, F.obj j) where
   one_mem' := by simp only [Set.mem_setOf_eq, Pi.one_apply, map_one, implies_true]
   inv_mem' h _ _ π := by simp only [Pi.inv_apply, map_inv, h π]
 
-set_option backward.inferInstanceAs.wrap false in
 @[to_additive]
 instance : Group (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt :=
   inferInstanceAs (Group (limitConePtAux F))
@@ -328,6 +327,7 @@ instance : Group (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))
 instance : IsTopologicalGroup (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt :=
   inferInstanceAs (IsTopologicalGroup (limitConePtAux F))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The explicit limit cone in `ProfiniteGrp`. -/
@@ -359,7 +359,7 @@ def limitConeIsLimit : Limits.IsLimit (limitCone F) where
       map_mul' := fun _ _ ↦ Subtype.ext (funext fun j ↦ map_mul (cone.π.app j).hom _ _) }
   uniq cone m h := by
     apply (forget₂ ProfiniteGrp Profinite).map_injective
-    simpa using (Profinite.limitConeIsLimit (F ⋙ (forget₂ ProfiniteGrp Profinite))).uniq
+    simpa using! (Profinite.limitConeIsLimit (F ⋙ (forget₂ ProfiniteGrp Profinite))).uniq
       ((forget₂ ProfiniteGrp Profinite).mapCone cone) ((forget₂ ProfiniteGrp Profinite).map m)
       (fun j ↦ congrArg (forget₂ ProfiniteGrp Profinite).map (h j))
 
@@ -375,7 +375,6 @@ instance : Limits.PreservesLimits (forget₂ ProfiniteGrp Profinite) where
     preservesLimit := fun {F} ↦ CategoryTheory.Limits.preservesLimit_of_preserves_limit_cone
       (limitConeIsLimit F) (Profinite.limitConeIsLimit (F ⋙ (forget₂ ProfiniteGrp Profinite))) }
 
-set_option backward.inferInstanceAs.wrap false in
 @[to_additive]
 instance : CompactSpace (limitConePtAux F) :=
   inferInstanceAs (CompactSpace (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt)

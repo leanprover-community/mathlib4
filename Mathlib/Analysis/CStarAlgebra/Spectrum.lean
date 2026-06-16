@@ -118,7 +118,7 @@ theorem IsSelfAdjoint.spectralRadius_eq_nnnorm {a : A} (ha : IsSelfAdjoint a) :
     spectralRadius ℂ a = ‖a‖₊ := by
   have hconst : Tendsto (fun _n : ℕ => (‖a‖₊ : ℝ≥0∞)) atTop _ := tendsto_const_nhds
   refine tendsto_nhds_unique ?_ hconst
-  convert
+  convert!
     (spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a : A)).comp
       (tendsto_pow_atTop_atTop_of_one_lt one_lt_two) using 1
   refine funext fun n => ?_
@@ -145,7 +145,7 @@ theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
     ((ENNReal.continuous_pow 2).tendsto (spectralRadius ℂ a)).comp
       (spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius a)
   rw [← heq] at h₂
-  convert tendsto_nhds_unique h₂ (pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a⋆ * a))
+  convert! tendsto_nhds_unique h₂ (pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a⋆ * a))
   rw [(IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnnorm, sq, nnnorm_star_mul_self, coe_mul]
 
 namespace CStarAlgebra
@@ -169,8 +169,6 @@ theorem sqrt_toReal_spectralRadius_self_mul_star_eq_norm (a : A) :
 
 end CStarAlgebra
 
-variable [StarModule ℂ A]
-
 /-- Any element of the spectrum of a selfadjoint is real. -/
 theorem IsSelfAdjoint.mem_spectrum_eq_re {a : A} (ha : IsSelfAdjoint a) {z : ℂ}
     (hz : z ∈ spectrum ℂ a) : z = z.re := by
@@ -178,11 +176,11 @@ theorem IsSelfAdjoint.mem_spectrum_eq_re {a : A} (ha : IsSelfAdjoint a) {z : ℂ
   have hu := exp_mem_unitary_of_mem_skewAdjoint (ha.smul_mem_skewAdjoint conj_I)
   let Iu := Units.mk0 I I_ne_zero
   have : NormedSpace.exp (I • z) ∈ spectrum ℂ (NormedSpace.exp (I • a)) := by
-    simpa only [Units.smul_def, Units.val_mk0] using
+    simpa only [Units.smul_def, Units.val_mk0] using!
       spectrum.exp_mem_exp (Iu • a) (smul_mem_smul_iff.mpr hz)
   exact Complex.ext (ofReal_re _) <| by
     simpa only [← Complex.exp_eq_exp_ℂ, mem_sphere_zero_iff_norm, norm_exp, Real.exp_eq_one_iff,
-      smul_eq_mul, I_mul, neg_eq_zero] using
+      smul_eq_mul, I_mul, neg_eq_zero] using!
       spectrum.subset_circle_of_unitary hu this
 
 /-- Any element of the spectrum of a selfadjoint is real. -/
@@ -213,7 +211,7 @@ lemma IsSelfAdjoint.isConnected_spectrum_compl {a : A} (ha : IsSelfAdjoint a) :
   suffices IsConnected (((σ ℂ a)ᶜ ∩ {z | 0 ≤ z.im}) ∪ (σ ℂ a)ᶜ ∩ {z | z.im ≤ 0}) by
     rw [← Set.inter_union_distrib_left, ← Set.setOf_or] at this
     rw [← Set.inter_univ (σ ℂ a)ᶜ]
-    convert this using 2
+    convert! this using 2
     exact Eq.symm <| Set.eq_univ_of_forall (fun z ↦ le_total 0 z.im)
   refine IsConnected.union ?nonempty ?upper ?lower
   case nonempty =>
@@ -272,7 +270,7 @@ lemma nnnorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
   have h (ψ : Unitization ℂ A →⋆ₐ[ℂ] Unitization ℂ B) (x : Unitization ℂ A) :
       ‖ψ x‖₊ ≤ ‖x‖₊ := by
     suffices ∀ {s}, IsSelfAdjoint s → ‖ψ s‖₊ ≤ ‖s‖₊ by
-      refine nonneg_le_nonneg_of_sq_le_sq zero_le' ?_
+      refine nonneg_le_nonneg_of_sq_le_sq zero_le ?_
       simp_rw [← nnnorm_star_mul_self, ← map_star, ← map_mul]
       exact this <| .star_mul_self x
     intro s hs
@@ -291,7 +289,7 @@ See note [lower instance priority] -/
 lemma instContinuousLinearMapClassComplex : ContinuousLinearMapClass F ℂ A B :=
   { NonUnitalAlgHomClass.instLinearMapClass with
     map_continuous := fun φ =>
-      AddMonoidHomClass.continuous_of_bound φ 1 (by simpa only [one_mul] using nnnorm_apply_le φ) }
+      AddMonoidHomClass.continuous_of_bound φ 1 (by simpa only [one_mul] using! nnnorm_apply_le φ) }
 
 scoped[CStarAlgebra] attribute [instance] NonUnitalStarAlgHom.instContinuousLinearMapClassComplex
 
@@ -304,7 +302,7 @@ variable [NonUnitalAlgEquivClass F ℂ A B] [StarHomClass F A B]
 
 lemma nnnorm_map (φ : F) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
   le_antisymm (NonUnitalStarAlgHom.nnnorm_apply_le φ a) <| by
-    simpa using NonUnitalStarAlgHom.nnnorm_apply_le (symm (φ : A ≃⋆ₐ[ℂ] B)) ((φ : A ≃⋆ₐ[ℂ] B) a)
+    simpa using! NonUnitalStarAlgHom.nnnorm_apply_le (symm (φ : A ≃⋆ₐ[ℂ] B)) ((φ : A ≃⋆ₐ[ℂ] B) a)
 
 lemma norm_map (φ : F) (a : A) : ‖φ a‖ = ‖a‖ :=
   congr_arg NNReal.toReal (nnnorm_map φ a)

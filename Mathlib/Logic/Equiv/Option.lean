@@ -71,7 +71,7 @@ variable (e : Option α ≃ Option β)
 /-- If we have a value on one side of an `Equiv` of `Option`
 we also have a value on the other side of the equivalence
 -/
-def removeNone_aux (x : α) : β :=
+def removeNoneAux (x : α) : β :=
   if h : (e (some x)).isSome then Option.get _ h
   else
     Option.get _ <|
@@ -81,35 +81,41 @@ def removeNone_aux (x : α) : β :=
         rw [Option.not_isSome_iff_eq_none, ← hn] at h
         exact Option.some_ne_none _ (e.injective h)
 
-theorem removeNone_aux_some {x : α} (h : ∃ x', e (some x) = some x') :
-    some (removeNone_aux e x) = e (some x) := by
-  simp [removeNone_aux, Option.isSome_iff_exists.mpr h]
+theorem removeNoneAux_some {x : α} (h : ∃ x', e (some x) = some x') :
+    some (removeNoneAux e x) = e (some x) := by
+  simp [removeNoneAux, Option.isSome_iff_exists.mpr h]
 
-theorem removeNone_aux_none {x : α} (h : e (some x) = none) :
-    some (removeNone_aux e x) = e none := by
-  simp [removeNone_aux, Option.not_isSome_iff_eq_none.mpr h]
+theorem removeNoneAux_none {x : α} (h : e (some x) = none) :
+    some (removeNoneAux e x) = e none := by
+  simp [removeNoneAux, Option.not_isSome_iff_eq_none.mpr h]
 
-theorem removeNone_aux_inv (x : α) : removeNone_aux e.symm (removeNone_aux e x) = x :=
+-- FIXME: This declaration is misnamed.
+theorem removeNoneAux_inv (x : α) : removeNoneAux e.symm (removeNoneAux e x) = x :=
   Option.some_injective _
     (by
-      cases h1 : e.symm (some (removeNone_aux e x)) <;> cases h2 : e (some x)
-      · rw [removeNone_aux_none _ h1]
+      cases h1 : e.symm (some (removeNoneAux e x)) <;> cases h2 : e (some x)
+      · rw [removeNoneAux_none _ h1]
         exact (e.eq_symm_apply.mpr h2).symm
-      · rw [removeNone_aux_some _ ⟨_, h2⟩] at h1
+      · rw [removeNoneAux_some _ ⟨_, h2⟩] at h1
         simp at h1
-      · rw [removeNone_aux_none _ h2] at h1
+      · rw [removeNoneAux_none _ h2] at h1
         simp at h1
-      · rw [removeNone_aux_some _ ⟨_, h1⟩]
-        rw [removeNone_aux_some _ ⟨_, h2⟩]
+      · rw [removeNoneAux_some _ ⟨_, h1⟩]
+        rw [removeNoneAux_some _ ⟨_, h2⟩]
         simp)
+
+@[deprecated (since := "2026-06-06")] alias removeNone_aux := removeNoneAux
+@[deprecated (since := "2026-06-06")] alias removeNone_aux_none := removeNoneAux_none
+@[deprecated (since := "2026-06-06")] alias removeNone_aux_some := removeNoneAux_some
+@[deprecated (since := "2026-06-06")] alias removeNone_aux_inv := removeNoneAux_inv
 
 /-- Given an equivalence between two `Option` types, eliminate `none` from that equivalence by
 mapping `e.symm none` to `e none`. -/
 def removeNone : α ≃ β where
-  toFun := removeNone_aux e
-  invFun := removeNone_aux e.symm
-  left_inv := removeNone_aux_inv e
-  right_inv := removeNone_aux_inv e.symm
+  toFun := removeNoneAux e
+  invFun := removeNoneAux e.symm
+  left_inv := removeNoneAux_inv e
+  right_inv := removeNoneAux_inv e.symm
 
 @[simp]
 theorem removeNone_symm : (removeNone e).symm = removeNone e.symm :=
@@ -117,10 +123,10 @@ theorem removeNone_symm : (removeNone e).symm = removeNone e.symm :=
 
 theorem removeNone_some {x : α} (h : ∃ x', e (some x) = some x') :
     some (removeNone e x) = e (some x) :=
-  removeNone_aux_some e h
+  removeNoneAux_some e h
 
 theorem removeNone_none {x : α} (h : e (some x) = none) : some (removeNone e x) = e none :=
-  removeNone_aux_none e h
+  removeNoneAux_none e h
 
 @[simp]
 theorem option_symm_apply_none_iff : e.symm none = none ↔ e none = none :=

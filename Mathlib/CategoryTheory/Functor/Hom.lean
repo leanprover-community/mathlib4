@@ -5,7 +5,6 @@ Authors: Reid Barton, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Products.Basic
 public import Mathlib.CategoryTheory.Types.Basic
 
 /-!
