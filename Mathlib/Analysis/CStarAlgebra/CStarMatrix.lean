@@ -485,13 +485,13 @@ noncomputable def toCLM : CStarMatrix m n A →ₗ[ℂ] C⋆ᵐᵒᵈ(A, m → A
     ext
     simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
       WithCStarModule.equivL_apply, WithCStarModule.equivL_symm_apply,
-      WithCStarModule.equiv_symm_pi_apply, ContinuousLinearMap.add_apply, WithCStarModule.add_apply]
+      WithCStarModule.equiv_symm_pi_apply, _root_.add_apply, WithCStarModule.add_apply]
     rw [Matrix.vecMul_add, Pi.add_apply]
   map_smul' c M := by
     ext x i
     simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
       WithCStarModule.equivL_apply, WithCStarModule.equivL_symm_apply,
-      WithCStarModule.equiv_symm_pi_apply, ContinuousLinearMap.smul_apply,
+      WithCStarModule.equiv_symm_pi_apply, _root_.smul_apply,
       WithCStarModule.smul_apply, RingHom.id_apply]
     rw [Matrix.vecMul_smul, Pi.smul_apply]
 
@@ -579,9 +579,9 @@ lemma norm_def' {M : CStarMatrix n n A} : ‖M‖ = ‖toCLMNonUnitalAlgHom (A :
 lemma normedSpaceCore : NormedSpace.Core ℂ (CStarMatrix m n A) where
   norm_nonneg M := (toCLM M).opNorm_nonneg
   norm_smul c M := by rw [norm_def, norm_def, map_smul, norm_smul _ (toCLM M)]
-  norm_triangle M₁ M₂ := by simpa [← map_add] using norm_add_le (toCLM M₁) (toCLM M₂)
+  norm_triangle M₁ M₂ := by simpa [← map_add] using! norm_add_le (toCLM M₁) (toCLM M₂)
   norm_eq_zero_iff := by
-    simpa only [norm_def, norm_eq_zero, ← injective_iff_map_eq_zero'] using toCLM_injective
+    simpa only [norm_def, norm_eq_zero, ← injective_iff_map_eq_zero'] using! toCLM_injective
 
 open WithCStarModule in
 lemma norm_entry_le_norm {M : CStarMatrix m n A} {i : m} {j : n} :

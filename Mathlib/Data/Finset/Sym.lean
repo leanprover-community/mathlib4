@@ -64,7 +64,7 @@ theorem sym2_insert [DecidableEq α] (a : α) (s : Finset α) :
   obtain ha | ha := Decidable.em (a ∈ s)
   · simp only [insert_eq_of_mem ha, right_eq_union, image_subset_iff]
     simp_all
-  · simpa [map_eq_image] using sym2_cons a s ha
+  · simpa [map_eq_image] using! sym2_cons a s ha
 
 theorem sym2_map (f : α ↪ β) (s : Finset α) : (s.map f).sym2 = s.sym2.map (.sym2Map f) :=
   val_injective <| s.val.sym2_map _
@@ -212,7 +212,8 @@ lemma sym_map [DecidableEq β] {n : ℕ} (g : α ↪ β) (s : Finset α) :
     obtain ⟨a, ha, rfl⟩ := hd
     exact ⟨a, hb a ha, rfl⟩
 
--- @[simp] /- adaption note for https://github.com/leanprover/lean4/pull/8419: the simpNF complained -/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/8419: the simpNF complained -/
+-- @[simp]
 theorem sym_empty (n : ℕ) : (∅ : Finset α).sym (n + 1) = ∅ := rfl
 
 theorem replicate_mem_sym (ha : a ∈ s) (n : ℕ) : Sym.replicate n a ∈ s.sym n :=

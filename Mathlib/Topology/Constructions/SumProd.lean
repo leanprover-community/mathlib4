@@ -151,7 +151,7 @@ theorem Continuous.prodMk_left (y : Y) : Continuous fun x : X => (x, y) := by fu
 then the set of `x` such that `f x` maps `s` to `t` is closed. -/
 lemma IsClosed.setOf_mapsTo {α : Type*} {f : X → α → Z} {s : Set α} {t : Set Z} (ht : IsClosed t)
     (hf : ∀ a ∈ s, Continuous (f · a)) : IsClosed {x | MapsTo (f x) s t} := by
-  simpa only [MapsTo, setOf_forall] using isClosed_biInter fun y hy ↦ ht.preimage (hf y hy)
+  simpa only [MapsTo, setOf_forall] using! isClosed_biInter fun y hy ↦ ht.preimage (hf y hy)
 
 theorem Continuous.comp₂ {g : X × Y → Z} (hg : Continuous g) {e : W → X} (he : Continuous e)
     {f : W → Y} (hf : Continuous f) : Continuous fun w => g (e w, f w) :=
@@ -508,7 +508,7 @@ theorem interior_prod_eq (s : Set X) (t : Set Y) : interior (s ×ˢ t) = interio
 
 theorem frontier_prod_eq (s : Set X) (t : Set Y) :
     frontier (s ×ˢ t) = closure s ×ˢ frontier t ∪ frontier s ×ˢ closure t := by
-  simp only [frontier, closure_prod_eq, interior_prod_eq, prod_diff_prod]
+  simp only [frontier, closure_prod_eq, interior_prod_eq, prod_sdiff_prod]
 
 @[simp]
 theorem frontier_prod_univ_eq (s : Set X) :
@@ -551,7 +551,7 @@ theorem Dense.prod {s : Set X} {t : Set Y} (hs : Dense s) (ht : Dense t) : Dense
 /-- If `f` and `g` are maps with dense range, then `Prod.map f g` has dense range. -/
 theorem DenseRange.prodMap {ι : Type*} {κ : Type*} {f : ι → Y} {g : κ → Z} (hf : DenseRange f)
     (hg : DenseRange g) : DenseRange (Prod.map f g) := by
-  simpa only [DenseRange, prod_range_range_eq] using hf.prod hg
+  simpa only [DenseRange, prod_range_range_eq] using! hf.prod hg
 
 lemma Topology.IsInducing.prodMap {f : X → Y} {g : Z → W} (hf : IsInducing f) (hg : IsInducing g) :
     IsInducing (Prod.map f g) :=
@@ -619,6 +619,7 @@ namespace Homeomorph
 
 variable {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Product of two homeomorphisms. -/
 def prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X × Y ≃ₜ X' × Y' where
   toEquiv := h₁.toEquiv.prodCongr h₂.toEquiv
@@ -836,6 +837,7 @@ namespace Homeomorph
 
 variable {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Sum of two homeomorphisms. -/
 def sumCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X ⊕ Y ≃ₜ X' ⊕ Y' where
   toEquiv := h₁.toEquiv.sumCongr h₂.toEquiv
@@ -885,6 +887,7 @@ def sumAssoc : (X ⊕ Y) ⊕ Z ≃ₜ X ⊕ Y ⊕ Z where
 @[simp]
 lemma sumAssoc_toEquiv : (sumAssoc X Y Z).toEquiv = Equiv.sumAssoc X Y Z := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Four-way commutativity of the disjoint union. The name matches `add_add_add_comm`. -/
 def sumSumSumComm : (X ⊕ Y) ⊕ W ⊕ Z ≃ₜ (X ⊕ W) ⊕ Y ⊕ Z where
   toEquiv := Equiv.sumSumSumComm X Y W Z

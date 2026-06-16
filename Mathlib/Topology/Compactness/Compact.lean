@@ -270,11 +270,11 @@ theorem IsCompact.elim_directed_family_closed {ι : Type v} [Nonempty ι] (hs : 
     hs.elim_directed_cover (compl ∘ t) (fun i => (htc i).isOpen_compl)
       (by
         simpa only [subset_def, not_forall, eq_empty_iff_forall_notMem, mem_iUnion, exists_prop,
-          mem_inter_iff, not_and, mem_iInter, mem_compl_iff] using hst)
+          mem_inter_iff, not_and, mem_iInter, mem_compl_iff] using! hst)
       (hdt.mono_comp _ fun _ _ => compl_subset_compl.mpr)
   ⟨t, by
     simpa only [subset_def, not_forall, eq_empty_iff_forall_notMem, mem_iUnion, exists_prop,
-      mem_inter_iff, not_and, mem_iInter, mem_compl_iff] using ht⟩
+      mem_inter_iff, not_and, mem_iInter, mem_compl_iff] using! ht⟩
 
 -- TODO: reformulate using `Disjoint`
 /-- For every family of closed sets whose intersection avoids a compact set,
@@ -429,7 +429,7 @@ theorem IsCompact.mem_prod_nhdsSet_of_forall {K : Set Y} {X} {l : Filter X} {s :
 theorem IsCompact.nhdsSet_inf_eq_biSup {K : Set X} (hK : IsCompact K) (l : Filter X) :
     (𝓝ˢ K) ⊓ l = ⨆ x ∈ K, 𝓝 x ⊓ l := by
   have : ∀ f : Filter X, f ⊓ l = comap (fun x ↦ (x, x)) (f ×ˢ l) := fun f ↦ by
-    simpa only [comap_prod] using congrArg₂ (· ⊓ ·) comap_id.symm comap_id.symm
+    simpa only [comap_prod] using! congrArg₂ (· ⊓ ·) comap_id.symm comap_id.symm
   simp_rw [this, ← comap_iSup, hK.nhdsSet_prod_eq_biSup]
 
 theorem IsCompact.inf_nhdsSet_eq_biSup {K : Set X} (hK : IsCompact K) (l : Filter X) :
@@ -960,6 +960,12 @@ theorem disjoint_map_cocompact {g : X → Y} {f : Filter X} (hg : Continuous g)
 
 theorem isCompact_range [CompactSpace X] {f : X → Y} (hf : Continuous f) : IsCompact (range f) := by
   rw [← image_univ]; exact isCompact_univ.image hf
+
+lemma Function.Surjective.compactSpace {f : X → Y} (hf : Continuous f) [CompactSpace X]
+    (hf' : f.Surjective) : CompactSpace Y where
+  isCompact_univ := by
+    rw [← hf'.range_eq]
+    exact isCompact_range hf
 
 theorem isCompact_diagonal [CompactSpace X] : IsCompact (diagonal X) :=
   @range_diag X ▸ isCompact_range (continuous_id.prodMk continuous_id)
