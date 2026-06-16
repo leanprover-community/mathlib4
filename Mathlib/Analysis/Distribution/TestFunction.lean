@@ -214,6 +214,8 @@ instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstS
     IsSMulApply R 𝓓^{n}(Ω, F) E F where
   smul_apply _ _ _ := rfl
 
+@[deprecated (since := "2026-06-15")] alias coe_smul := FunLike.coe_smul
+
 instance : AddCommGroup 𝓓^{n}(Ω, F) := fast_instance% FunLike.addCommGroup
 
 @[deprecated (since := "2026-06-15")] alias coeFnAddMonoidHom := FunLike.coeAddMonoidHom
