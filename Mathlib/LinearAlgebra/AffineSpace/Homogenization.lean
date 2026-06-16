@@ -94,7 +94,7 @@ instance setoid : Setoid (Pre k V P) where
     · simp
 
 instance decidableEquiv [DecidableEq k] [DecidableEq V] :
-    ∀ {x y : Homogenization.Pre k V P}, Decidable (x ≈ y)
+    ∀ {x y : Pre k V P}, Decidable (x ≈ y)
   | .mk v₁ c₁ p₁, .mk v₂ c₂ p₂ =>
     decidable_of_iff (c₁ = c₂ ∧ v₁ - v₂ = c₁ • (p₂ -ᵥ p₁))
       ⟨fun ⟨rfl, h⟩ => .mk_mk h, fun | .mk_mk h => ⟨rfl, h⟩⟩
@@ -107,6 +107,41 @@ instance decidableEquiv [DecidableEq k] [DecidableEq V] :
   | .ofVector v₁, .ofVector v₂ =>
     decidable_of_iff (v₁ = v₂)
       ⟨fun | rfl => .ofVector_ofVector, fun | .ofVector_ofVector => rfl⟩
+
+@[simps -isSimp]
+instance : Add (Pre k V P) where
+  add
+    | .mk v₁ c₁ p₁, .mk v₂ c₂ p₂ => .mk (v₁ + v₂ + c₂ • (p₂ -ᵥ p₁)) (c₁ + c₂) p₁
+    | .mk v₁ c p, .ofVector v₂ => .mk (v₁ + v₂) c p
+    | .ofVector v₁, .mk v₂ c p => .mk (v₁ + v₂) c p
+    | .ofVector v₁, .ofVector v₂ => .ofVector (v₁ + v₂)
+
+theorem add_congr {x x' y y' : Pre k V P} (hx : x ≈ x') (hy : y ≈ y') : x + y ≈ x' + y' := by
+  -- We add dummy equations so that we can use `linear_combination` uniformly across all subgoals
+  have h₁ : (0 : V) = 0 := rfl
+  have h₂ := h₁
+  rcases hx with h₁ | _ <;> rcases hy with h₂ | _ <;>
+    simp only [add_def, zero_smul, add_zero, zero_add] <;>
+    constructor <;>
+    linear_combination (norm := affine P) h₁ + h₂
+
+section SMul
+
+variable {R : Type*} [Semiring R] [Module R k] [Module R V] [IsScalarTower R k V]
+
+@[simps -isSimp]
+instance : SMul R (Pre k V P) where
+  smul r
+    | .mk v c p => .mk (r • v) (r • c) p
+    | .ofVector v => .ofVector (r • v)
+
+theorem smul_congr (r : R) {x x' : Pre k V P} (hx : x ≈ x') : r • x ≈ r • x' := by
+  rcases hx with h | _ <;>
+    simp only [smul_def, smul_zero] <;>
+    constructor
+  rw [← smul_sub, h, smul_assoc]
+
+end SMul
 
 end Homogenization.Pre
 
@@ -151,37 +186,14 @@ instance : Zero (Homogenization k P) where
   zero := mk (.ofVector 0)
 
 instance : Add (Homogenization k P) where
-  add := Quot.map₂
-    (fun
-      | .mk v₁ c₁ p₁, .mk v₂ c₂ p₂ => .mk (v₁ + v₂ + c₂ • (p₂ -ᵥ p₁)) (c₁ + c₂) p₁
-      | .mk v₁ c p, .ofVector v₂ => .mk (v₁ + v₂) c p
-      | .ofVector v₁, .mk v₂ c p => .mk (v₁ + v₂) c p
-      | .ofVector v₁, .ofVector v₂ => .ofVector (v₁ + v₂))
-    (by
-      rintro (_ | _) _ _ (h | _) <;>
-        simp only [add_zero] <;>
-        constructor <;>
-        solve | affine P | linear_combination (norm := affine P) h)
-    (by
-      rintro _ _ (_ | _) (h | _) <;>
-        simp only [zero_add] <;>
-        constructor <;>
-        solve | affine P | linear_combination (norm := affine P) h)
+  add := Quotient.map₂ (· + ·) (fun _ _ h₁ _ _ h₂ => Pre.add_congr h₁ h₂)
 
 private theorem mk_add_mk {v₁ v₂ : V} {c₁ c₂ : k} {p : P} :
     mk (.mk v₁ c₁ p) + mk (.mk v₂ c₂ p) = mk (.mk (v₁ + v₂) (c₁ + c₂) p) :=
   Quot.sound <| .mk_mk <| by affine P
 
 instance : SMul R (Homogenization k P) where
-  smul r := Quotient.map
-    (fun
-      | .mk v c p => .mk (r • v) (r • c) p
-      | .ofVector v => .ofVector (r • v))
-    (fun _ _ h => by
-      rcases h with h | _ <;>
-        simp only [smul_zero] <;>
-        constructor
-      rw [← smul_sub, h, smul_assoc])
+  smul r := Quotient.map (r • ·) (fun _ _ => Pre.smul_congr r)
 
 private theorem smul_mk {r : R} {v : V} {c : k} {p : P} :
     r • mk (.mk v c p) = mk (.mk (r • v) (r • c) p) :=
