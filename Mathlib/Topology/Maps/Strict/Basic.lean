@@ -9,6 +9,8 @@ public import Mathlib.Topology.Maps.Basic
 public import Mathlib.Topology.Homeomorph.Quotient
 public import Mathlib.Topology.Constructions
 public import Mathlib.Data.Setoid.Basic
+public import Mathlib.Topology.Algebra.Group.Quotient
+
 /-!
 # Bourbaki Strict Maps
 
@@ -33,6 +35,17 @@ We provide several equivalent ways to characterize a strict map `f`:
   the canonical bijection `Quotient (Setoid.ker f) ≃ Set.range f` is a homeomorphism.
 * `Topology.isStrictMap_iff_isEmbedding_kerLift`: `f` is strict if and only if
   the canonical injection `Quotient (Setoid.ker f) → Y` (`Setoid.kerLift f`) is an embedding.
+
+### Group homomorphisms
+
+In general, the product (in the sense of `Prod.map`) of two strict maps need not be strict.
+But thanks to `MonoidHom.isOpenQuotientMap_of_isQuotientMap`, we can replace `IsQuotientMap`
+by `IsOpenQuotientMap` in the setting of group homomorphisms. Therefore we provide several
+important properties of a strict group homomorphisms `f` :
+
+* `isStrictMap_iff_isOpenQuotientMap_rangeRestrict`: `f` is a strict group homomorphism if
+  and only if the `rangeRestrict` of `f` is an open quotient map.
+* `isStrictMap_prodMap`: The product (in the sense of Prod.map) of group homomorphisms is strict
 -/
 
 @[expose] public section
@@ -153,4 +166,46 @@ lemma isEmbedding_iff_isStrictMap_injective :
     (Homeomorph.Quotient.congrRight <| by simp [f_inj.eq_iff]).trans Homeomorph.quotientBot
   exact f_strict.comp Φ.symm.isEmbedding
 
+/-- Strict maps are preserved and reflected when precomposing with a homeomorphism. -/
+lemma Homeomorph.isStrictMap_comp_iff (e : X ≃ₜ Y) {f : Y → Z} :
+    IsStrictMap (f ∘ e) ↔ IsStrictMap f :=
+  e.isQuotientMap.isStrictMap_iff.symm
+
+/-- Strict maps are preserved and reflected when postcomposing with a homeomorphism. -/
+lemma Homeomorph.comp_isStrictMap_iff (e : Y ≃ₜ Z) {f : X → Y} :
+    IsStrictMap (e ∘ f) ↔ IsStrictMap f :=
+  e.isEmbedding.isStrictMap_iff.symm
+
 end Topology
+
+namespace MonoidHom
+
+variable {G H G' H' : Type*} [Group G'] [Group H'] [Group G] [Group H] (f : G →* H) (g : G' →* H')
+  [TopologicalSpace G] [IsTopologicalGroup G] [TopologicalSpace H]
+
+/-- A group homomorphism is strict if and only if its rangeRestrict is an open quotient map. -/
+@[to_additive] lemma isStrictMap_iff_isOpenQuotientMap_rangeRestrict :
+    IsStrictMap f ↔ IsOpenQuotientMap f.rangeRestrict := by
+  rw [isQuotientMap_iff_isOpenQuotientMap]
+  rfl
+
+variable {f g} [TopologicalSpace G'] [IsTopologicalGroup G'] [TopologicalSpace H']
+
+/-- The product (in the sense of `Prod.map`) of group homomorphisms is strict if and only if each
+of the morphisms is strict. -/
+@[to_additive] lemma isStrictMap_prodMap_iff :
+    IsStrictMap (f.prodMap g) ↔ IsStrictMap f ∧ IsStrictMap g := by
+  simp_rw [isStrictMap_iff_isOpenQuotientMap_rangeRestrict]
+  let Φ : (f.prodMap g).range ≃ₜ f.range × g.range :=
+    (Homeomorph.setCongr (by simp)).trans (Homeomorph.Set.prod _ _)
+  have eq : Φ ∘ (f.prodMap g).rangeRestrict = f.rangeRestrict.prodMap g.rangeRestrict := rfl
+  rw [← Φ.comp_isOpenQuotientMap_iff, eq, MonoidHom.coe_prodMap, isOpenQuotientMap_prodMap_iff]
+
+/-- The product (in the sense of `Prod.map`) of strict group homomorphisms is strict -/
+@[to_additive] lemma IsStrictMap.prodMap (hf : IsStrictMap f) (hg : IsStrictMap g) :
+    IsStrictMap (f.prodMap g) :=
+  isStrictMap_prodMap_iff.mpr ⟨hf, hg⟩
+
+-- TODO Add the lemma `isStrictMap_piMap` once `MonoidHom.piMap` has been defined.
+
+end MonoidHom
