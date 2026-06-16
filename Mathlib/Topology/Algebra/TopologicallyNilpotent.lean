@@ -240,7 +240,8 @@ theorem mul_left_of_commute_isPowerBounded {a b : R} (h : Commute a b) (ha : IsP
   obtain ⟨V, hV, hSV⟩ := ha U hU
   rw [Filter.mem_map, h]
   refine Filter.mem_of_superset (Filter.mem_map.mp (hb hV)) ?_
-  simpa [Commute.mul_pow h.symm] using fun n hn ↦ (hSV (Set.mul_mem_mul hn ⟨n, rfl⟩))
+  simp_rw [Commute.mul_pow h.symm]
+  exact fun n hn ↦ (hSV (Set.mul_mem_mul hn ⟨n, rfl⟩))
 
 /-- Product of topologically nilpotent and power bounded is topologically nilpotent. -/
 theorem mul_right_of_commute_isPowerBounded {a b : R} (h : Commute a b)
