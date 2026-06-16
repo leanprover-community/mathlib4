@@ -84,11 +84,11 @@ theorem iteratedDerivedSet_zero :
 theorem iteratedDerivedSet_succ :
     sᵈ[a + 1] = relDerivedSet (sᵈ[a]) := by
   simpa [iteratedDerivedSet] using
-    gfpApprox_add_one relDerivedSet s relDerivedSet_subset a
+    gfpApprox_add_one relDerivedSet relDerivedSet_subset a
 
 theorem iteratedDerivedSet_limit (ha : Order.IsSuccLimit a) :
     sᵈ[a] = ⋂ b : Set.Iio a, sᵈ[b] := by
-  simpa [iteratedDerivedSet] using gfpApprox_limit _ s ha
+  simpa [iteratedDerivedSet] using gfpApprox_limit relDerivedSet ha
 
 /-- A set is preperfect if and only if every stage of its iterated relative derived-set sequence
 is equal to the original set. -/
@@ -99,7 +99,7 @@ theorem iteratedDerivedSet_constant_iff_preperfect :
   · intro a
     induction a using Ordinal.limitRecOn with
     | zero => simp
-    | succ a ha => nth_rw 2 [h] ; simp [ha]
+    | add_one a ha => nth_rw 2 [h] ; simp [ha]
     | limit a ha ih =>
       simp only [iteratedDerivedSet_limit ha]
       haveI : Nonempty ↑(Iio a) := nonempty_subtype.mpr ⟨0, mem_Iio.mpr ha.bot_lt⟩
@@ -112,14 +112,14 @@ theorem isClosed_iteratedDerivedSet (hs : IsClosed s) :
   intro a
   induction a using Ordinal.limitRecOn with
   | zero => simpa only [iteratedDerivedSet_zero]
-  | succ a ha =>
+  | add_one a ha =>
     simp_all [ha.relDerivedSet_eq, isClosed_iff_derivedSet_subset, derivedSet_mono]
   | limit a ha ih =>
     simpa [iteratedDerivedSet_limit ha] using
       isClosed_iInter fun i => isClosed_iInter fun hi => ih i hi
 
 theorem iteratedDerivedSet_antitone (s : Set X) :
-    Antitone (iteratedDerivedSet s) := gfpApprox_antitone _ s
+    Antitone (iteratedDerivedSet s) := gfpApprox_anti_right relDerivedSet
 
 theorem iteratedDerivedSet_mono :
     Monotone (fun s : Set X => iteratedDerivedSet s) :=
@@ -138,17 +138,18 @@ theorem stayOn.mono (h : stayOn s a) (hle : a ≤ b) :
 /-- If the iterated derived set stops changing at a successor stage, then it stays constant. -/
 theorem stayOn_of_iteratedDerivedSet_succ_eq (ha : sᵈ[a + 1] = sᵈ[a]) :
     stayOn s a := by
-  exact fun b hab =>
-    gfpApprox_eq_of_mem_fixedPoints _ s hab <|
-      Function.mem_fixedPoints_iff.mpr <| by simpa using ha
+  intro b hab
+  apply gfpApprox_eq_of_mem_fixedPoints _ hab
+  rw [Function.mem_fixedPoints_iff, ← iteratedDerivedSet]
+  simpa using ha
 
 variable (s)
 
 theorem iteratedDerivedSet_stay :
     ∃ a : Ordinal, stayOn s a := by
   exact ⟨(Order.succ #(Set X)).ord, fun b hb =>
-    gfpApprox_eq_of_mem_fixedPoints _ s hb <|
-      gfpApprox_ord_mem_fixedPoint _ s relDerivedSet_subset⟩
+    gfpApprox_eq_of_mem_fixedPoints _ hb <|
+      gfpApprox_ord_mem_fixedPoint relDerivedSet relDerivedSet_subset⟩
 
 /-- The perfect kernel of a set, defined as the intersection of all iterated derived sets. It is
 the largest perfect subset of the original set. -/
