@@ -110,7 +110,7 @@ lemma exists_variation_le_add (μ : VectorMeasure X V) {s : Set X} (hs : Measura
 theorem enorm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
     ‖μ E‖ₑ ≤ variation μ E := by
   by_cases hE : MeasurableSet E
-  swap; · simp [μ.not_measurable' hE]
+  swap; · simp [hE]
   by_cases hE' : (⟨E, hE⟩ : Subtype MeasurableSet) = ⊥
   · simp_all
   simp only [variation_apply, preVariation, ennrealToMeasure_apply hE, ennrealPreVariation_apply]
@@ -120,7 +120,7 @@ theorem enorm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
 
 @[simp]
 lemma variation_zero : (0 : VectorMeasure X V).variation = 0 := by
-  simp only [variation, coe_zero, Pi.zero_apply, enorm_zero]
+  simp only [variation, zero_apply, enorm_zero]
   exact preVariation_zero
 
 lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.ennrealVariation := by
@@ -128,7 +128,7 @@ lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.ennrealVariat
   by_cases hsm : MeasurableSet s
   · suffices ‖μ s‖ₑ ≤ 0 by simp_all
     grw [enorm_measure_le_variation, ← ennrealVariation_apply _ hsm, hs]
-  · exact μ.not_measurable' hsm
+  · exact μ.not_measurable hsm
 
 lemma variation_apply_le_of_forall_enorm_le {m : Measure X} (hs : MeasurableSet s)
     (h : ∀ E, MeasurableSet E → E ⊆ s → ‖μ E‖ₑ ≤ m E) :
@@ -273,7 +273,7 @@ lemma variation_sub_le : (μ - ν).variation ≤ μ.variation + ν.variation := 
 private lemma variation_smul_le {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] {c : 𝕜} :
     (c • μ).variation ≤ ‖c‖₊ • μ.variation := by
   apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
-  simp only [coe_smul, Pi.smul_apply, enorm_smul, Measure.smul_apply, Measure.nnreal_smul_coe_apply]
+  simp only [smul_apply, enorm_smul, Measure.smul_apply, Measure.nnreal_smul_coe_apply]
   grw [enorm_measure_le_variation, enorm_eq_nnnorm]
 
 lemma variation_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] {c : 𝕜} :
@@ -311,10 +311,10 @@ instance {x : X} {v : V} : IsFiniteMeasure (VectorMeasure.dirac x v).variation :
     μ.toSignedMeasure.variation = μ := by
   apply le_antisymm
   · apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
-    simp [Measure.toSignedMeasure_apply, hs, Measure.real, Real.enorm_eq_ofReal]
+    simp [hs, Measure.real, Real.enorm_eq_ofReal]
   · apply Measure.le_iff.2 (fun s hs ↦ ?_)
     apply le_trans ?_ (enorm_measure_le_variation _ _)
-    simp [Measure.toSignedMeasure_apply, hs, Measure.real, Real.enorm_eq_ofReal]
+    simp [hs, Measure.real, Real.enorm_eq_ofReal]
 
 end NormedAddCommGroup
 
