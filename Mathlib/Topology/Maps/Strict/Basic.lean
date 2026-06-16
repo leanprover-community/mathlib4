@@ -193,7 +193,7 @@ variable {f g} [TopologicalSpace G'] [IsTopologicalGroup G'] [TopologicalSpace H
 
 /-- The product (in the sense of `Prod.map`) of group homomorphisms is strict if and only if each
 of the morphisms is strict. -/
-@[to_additive] lemma isStrictMap_prodMap_iff :
+@[to_additive isStrictMap_prodMap_iff] lemma isStrictMap_prodMap_iff :
     IsStrictMap (f.prodMap g) ↔ IsStrictMap f ∧ IsStrictMap g := by
   simp_rw [isStrictMap_iff_isOpenQuotientMap_rangeRestrict]
   let Φ : (f.prodMap g).range ≃ₜ f.range × g.range :=

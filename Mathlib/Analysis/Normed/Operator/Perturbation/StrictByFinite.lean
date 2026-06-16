@@ -89,7 +89,7 @@ theorem new_step1 (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
     · rw [codisjoint_iff, ← Submodule.map_sup, S_compl_A.sup_eq_top, Submodule.map_top,
         h_range]
   -- Because `A` (resp. `map u A`) is closed and `S` (resp `map u S`) is closed, `A` and `S`
-  -- (resp `map u A` and `map u A`) are in fact *topological* complements of each other.
+  -- (resp `map u A` and `map u S`) are in fact *topological* complements of each other.
   replace S_compl_A : IsTopCompl S A :=
     S_compl_A.symm.isTopCompl_of_finiteDimensional_quotient A_closed |>.symm
   replace uS_compl_uA : IsTopCompl (map u.toLinearMap S) (map u.toLinearMap A) :=
@@ -110,7 +110,7 @@ theorem new_step1 (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
     ext x
     simp [Φ, Ψ, uₛ, uₐ, ← map_add, projection_add_projection_eq_self]
   have u_restr_eq : u.domRestrict A = (map u.toLinearMap A).subtypeL ∘ uₐ := rfl
-  suffices IsStrictMap (Prod.map uₛ uₐ) ↔ IsStrictMap uₐ by
+  suffices IsStrictMap (uₛ.prodMap uₐ) ↔ IsStrictMap uₐ by
     rw [u_restr_eq, u_eq, ← (isEmbedding_subtypeL _).isStrictMap_iff]
     sorry -- easy, missing API
   sorry -- easy, missing API
