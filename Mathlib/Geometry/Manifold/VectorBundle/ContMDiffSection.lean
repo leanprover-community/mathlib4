@@ -5,12 +5,8 @@ Authors: Heather Macbeth, Floris van Doorn, Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Algebra.SMul
 public import Mathlib.Geometry.Manifold.Algebra.LieGroup
-public import Mathlib.Geometry.Manifold.MFDeriv.Basic
-public import Mathlib.Topology.ContinuousMap.Basic
-public import Mathlib.Geometry.Manifold.VectorBundle.Basic
-public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.VectorBundle.Algebra
 
 /-!
 # `C^n` sections
@@ -115,42 +111,51 @@ lemma ContMDiffOn.sub_section (hs : CMDiff[u] n (T% s)) (ht : CMDiff[u] n (T% t)
 lemma ContMDiff.sub_section (hs : CMDiff n (T% s)) (ht : CMDiff n (T% t)) : CMDiff n (T% (s - t)) :=
   fun x₀ ↦ (hs x₀).sub_section (ht x₀)
 
+section SMul
+
+variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
+  {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
+  {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
+  [ChartedSpace (ModelProd H F) (TotalSpace F V)]
+  [∀ x, SMul N (V x)] [ContMDiffSMul I' (I.prod 𝓘(𝕜, F)) n N (TotalSpace F V)]
+  {f : M → N} {a : N} {s t : Π x : M, V x}
+
 lemma ContMDiffWithinAt.smul_section (hf : CMDiffAt[u] n f x₀) (hs : CMDiffAt[u] n (T% s) x₀) :
-    CMDiffAt[u] n (T% (f • s)) x₀ := by
-  rw [contMDiffWithinAt_section] at hs ⊢
-  set e := trivializationAt F V x₀
-  refine (hf.smul hs).congr_of_eventuallyEq ?_ ?_
-  · apply eventually_of_mem (U := e.baseSet)
-    · exact mem_nhdsWithin_of_mem_nhds <|
-        (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀)
-    · intro x hx
-      apply (e.linear 𝕜 hx).2
-  · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).2
+    CMDiffAt[u] n (T% (f • s)) x₀ :=
+  hf.smul hs
 
 lemma ContMDiffAt.smul_section (hf : CMDiffAt n f x₀) (hs : CMDiffAt n (T% s) x₀) :
-    CMDiffAt n (T% (f • s)) x₀ := by
-  rw [← contMDiffWithinAt_univ] at hs ⊢
-  exact .smul_section hf hs
+    CMDiffAt n (T% (f • s)) x₀ :=
+  hf.smul hs
 
 lemma ContMDiffOn.smul_section (hf : CMDiff[u] n f) (hs : CMDiff[u] n (T% s)) :
     CMDiff[u] n (T% (f • s)) :=
-  fun x₀ hx₀ ↦ (hf x₀ hx₀).smul_section (hs x₀ hx₀)
+  hf.smul hs
 
 lemma ContMDiff.smul_section (hf : CMDiff n f) (hs : CMDiff n (T% s)) : CMDiff n (T% (f • s)) :=
-  fun x₀ ↦ (hf x₀).smul_section (hs x₀)
+  hf.smul hs
 
+variable (I')
+
+include I' in
 lemma ContMDiffWithinAt.const_smul_section
     (hs : CMDiffAt[u] n (T% s) x₀) : CMDiffAt[u] n (T% (a • s)) x₀ :=
-  contMDiffWithinAt_const.smul_section hs
+  (contMDiffWithinAt_const (I' := I')).smul_section hs
 
+include I' in
 lemma ContMDiffAt.const_smul_section (hs : CMDiffAt n (T% s) x₀) : CMDiffAt n (T% (a • s)) x₀ :=
-  contMDiffAt_const.smul_section hs
+  (contMDiffWithinAt_const (I' := I')).smul_section hs
 
+include I' in
 lemma ContMDiffOn.const_smul_section (hs : CMDiff[u] n (T% s)) : CMDiff[u] n (T% (a • s)) :=
-  contMDiffOn_const.smul_section hs
+  (contMDiffOn_const (I' := I')).smul_section hs
 
+include I' in
 lemma ContMDiff.const_smul_section (hs : CMDiff n (T% s)) : CMDiff n (T% (a • s)) :=
-  fun x₀ ↦ (hs x₀).const_smul_section
+  fun x₀ ↦ (hs x₀).const_smul_section I'
+
+end SMul
 
 variable {ι : Type*} {t : ι → (x : M) → V x}
 
@@ -185,7 +190,8 @@ lemma ContMDiff.sum_section {s : Finset ι} (hs : ∀ i ∈ s, CMDiff n (T% (t i
 bundle `V → M` is `C^k` once `s` is `C^k` on an open set containing `tsupport ψ`.
 
 This is a vector bundle analogue of `contMDiff_of_tsupport`. -/
-lemma ContMDiffOn.smul_section_of_tsupport {s : Π (x : M), V x} {ψ : M → 𝕜} (hψ : CMDiff[u] n ψ)
+lemma ContMDiffOn.smul_section_of_tsupport [ContMDiffVectorBundle n F V I]
+    {s : Π (x : M), V x} {ψ : M → 𝕜} (hψ : CMDiff[u] n ψ)
     (ht : IsOpen u) (ht' : tsupport ψ ⊆ u) (hs : CMDiff[u] n (T% s)) :
     CMDiff n (T% (ψ • s)) := by
   apply contMDiff_of_contMDiffOn_union_of_isOpen (hψ.smul_section hs) ?_ ?_ ht
@@ -377,13 +383,6 @@ theorem coe_zsmul (s : Cₛ^n⟮I; F, V⟯) (z : ℤ) : ⇑(z • s : Cₛ^n⟮I
 instance instAddCommGroup : AddCommGroup Cₛ^n⟮I; F, V⟯ :=
   coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
 
-instance instSMul : SMul 𝕜 Cₛ^n⟮I; F, V⟯ :=
-  ⟨fun c s ↦ ⟨c • ⇑s, s.contMDiff.const_smul_section⟩⟩
-
-@[simp]
-theorem coe_smul (r : 𝕜) (s : Cₛ^n⟮I; F, V⟯) : ⇑(r • s : Cₛ^n⟮I; F, V⟯) = r • ⇑s :=
-  rfl
-
 variable (I F V n) in
 /-- The additive morphism from `C^n` sections to dependent maps. -/
 def coeAddHom : Cₛ^n⟮I; F, V⟯ →+ ∀ x, V x where
@@ -393,6 +392,16 @@ def coeAddHom : Cₛ^n⟮I; F, V⟯ →+ ∀ x, V x where
 
 @[simp]
 theorem coeAddHom_apply (s : Cₛ^n⟮I; F, V⟯) : coeAddHom I F n V s = s := rfl
+
+variable [ContMDiffVectorBundle n F V I]
+
+instance instSMul : SMul 𝕜 Cₛ^n⟮I; F, V⟯ :=
+  ⟨fun c s ↦ ⟨c • ⇑s, s.contMDiff.const_smul_section 𝓘(𝕜)⟩⟩
+
+@[simp]
+theorem coe_smul (r : 𝕜) (s : Cₛ^n⟮I; F, V⟯) :
+    ⇑(r • s : Cₛ^n⟮I; F, V⟯) = r • ⇑s :=
+  rfl
 
 instance instModule : Module 𝕜 Cₛ^n⟮I; F, V⟯ :=
   coe_injective.module 𝕜 (coeAddHom I F n V) coe_smul
