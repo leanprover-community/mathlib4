@@ -395,9 +395,7 @@ lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAd
   ext n x
   simp only [FormalMultilinearSeries.zero_apply, ContinuousMultilinearMap.zero_apply,
     constFormalMultilinearSeries]
-  induction n
-  · simp only [ContinuousMultilinearMap.uncurry0_apply]
-  · simp only [ContinuousMultilinearMap.zero_apply]
+  induction n <;> simp
 
 @[simp]
 lemma compContinuousLinearMap_zero [NontriviallyNormedField 𝕜]
