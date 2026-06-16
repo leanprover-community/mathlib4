@@ -239,9 +239,7 @@ lemma integral_le_sum_mul_Ico_of_antitone_monotone
     · exact gpos.trans <| hg (by simp [hab]) (by simpa using I2) (by simpa using I2.1)
     · exact fpos.trans <| by apply hf <;> { simp; grind }
     · exact hf (by simpa using ⟨hi.1, hi.2.le⟩) I2 hx.1
-    · apply hg _ I1 (by simpa [sub_le_iff_le_add] using hx.2.le)
-      simp only [mem_Icc, tsub_le_iff_right, sub_add_cancel]
-      exact ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans (by grind)⟩
+    · apply hg _ I1 (by simpa using hx.2.le); grind
   · apply Integrable.mono_measure _ (Measure.restrict_mono_set _ Ico_subset_Icc_self)
     apply (hf.integrableOn_isCompact isCompact_Icc).mul_of_top_left
     apply MonotoneOn.memLp_isCompact isCompact_Icc
