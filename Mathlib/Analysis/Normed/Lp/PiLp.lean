@@ -1137,11 +1137,12 @@ section
 
 variable [Semiring 𝕜] [∀ i, AddCommGroup (β i)] [∀ i, Module 𝕜 (β i)] [∀ i, TopologicalSpace (β i)]
 
-set_option backward.defeqAttrib.useBackward true in
+set_option linter.flexible false in -- simp followed by fun_prop
 /-- `WithLp.linearEquiv` as a continuous linear equivalence. -/
 @[simps! apply symm_apply]
 def continuousLinearEquiv : PiLp p β ≃L[𝕜] ∀ i, β i where
   toLinearEquiv := WithLp.linearEquiv _ _ _
+  continuous_invFun := by eta_expand; simp; fun_prop
 
 lemma coe_continuousLinearEquiv :
     ⇑(PiLp.continuousLinearEquiv p 𝕜 β) = ofLp := rfl
@@ -1151,17 +1152,16 @@ lemma coe_symm_continuousLinearEquiv :
 
 /-- The natural equivalence between `PiLp p β` and `β default`,
 for any index type `ι` with a unique element. -/
+@[simps! apply symm_apply]
 def equivOfUnique [Unique ι] : PiLp p β ≃L[𝕜] β default :=
   (continuousLinearEquiv p 𝕜 β).trans <| ContinuousLinearEquiv.piUnique 𝕜 β
-
-@[simp]
-lemma equivOfUnique_apply [Unique ι] (z : PiLp p β) : PiLp.equivOfUnique p 𝕜 β z = z default := rfl
 
 end
 
 section
 
 variable [Semiring 𝕜] [∀ i, NormedAddCommGroup (β i)] [∀ i, Module 𝕜 (β i)]
+
 set_option backward.defeqAttrib.useBackward true in
 variable {𝕜} in
 /-- The projection on the `i`-th coordinate of `PiLp p β`, as a continuous linear map. -/
