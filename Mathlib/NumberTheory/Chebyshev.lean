@@ -117,6 +117,15 @@ theorem psi_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : ψ x = 0 := by
   norm_cast at this
   linarith
 
+@[simp]
+theorem psi_eq_zero_iff {x : ℝ} : ψ x = 0 ↔ x < 2 := by
+  refine ⟨fun h₀ ↦ ?_, psi_eq_zero_of_lt_two⟩
+  by_contra! contra
+  replace contra : 2 ∈ Ioc 0 ⌊x⌋₊ := by rw [mem_Ioc, le_floor_iff (by grind)]; grind
+  have : Λ 2 ≤ ψ x := single_le_sum (fun n _ ↦ vonMangoldt_nonneg (n := n)) contra
+  have := vonMangoldt_pos_iff.mpr prime_two.isPrimePow
+  linarith
+
 theorem psi_eq_zero_of_le_one {x : ℝ} (hx : x ≤ 1) : ψ x = 0 :=
   psi_eq_zero_of_lt_two (by linarith)
 
@@ -133,6 +142,16 @@ theorem theta_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : θ x = 0 := by
   have := lt_of_le_of_lt (le_floor_iff' hn.1.1.ne' |>.mp hn.1.2) hx
   norm_cast at ⊢ this
   linarith
+
+@[simp]
+theorem theta_eq_zero_iff {x : ℝ} : θ x = 0 ↔ x < 2 := by
+  refine ⟨fun h₀ ↦ ?_, theta_eq_zero_of_lt_two⟩
+  by_contra! contra
+  replace contra : 2 ∈ Ioc 0 ⌊x⌋₊ := by rw [mem_Ioc, le_floor_iff (by grind)]; grind
+  have h₁ : log (↑(2 : ℕ) : ℝ) ≤ θ x :=
+    single_le_sum (fun p hp ↦ log_nonneg (by aesop)) (by aesop (add simp prime_two))
+  have := Real.log_pos one_lt_two
+  grind
 
 theorem theta_eq_zero_of_le_one {x : ℝ} (hx : x ≤ 1) : θ x = 0 :=
   theta_eq_zero_of_lt_two (by linarith)
@@ -570,15 +589,26 @@ theorem psi_sub_theta_ge_psi_add_psi_add_psi {x : ℝ} (hx : 0 ≤ x) :
   (psi_sub_theta_bounds hx).2
 
 /-- `ψ x = θ x + O( √x )`. -/
-theorem psi_sub_theta_le_mul_sqrt : ∃ C, ∀ x ≥ 0, ψ x - θ x ≤ C * x.sqrt := by
+theorem psi_sub_theta_le_mul_sqrt : ∃ C, ∀ x, ψ x - θ x ≤ C * x.sqrt := by
   use (log 4 + 4) * 3
-  intro x hx
+  intro x
   rcases le_total x 1 with h | h
   · rw [theta_eq_zero_of_le_one h, psi_eq_zero_of_le_one h, sub_self]; positivity
+  have hx : 0 ≤ x := by linarith
   have (n : ℕ) (hn : 2 ≤ n) : ψ (x ^ (1 / (n : ℝ))) ≤ (log 4 + 4) * x.sqrt := by
     grw [psi_le_const_mul_self (by positivity), sqrt_eq_rpow x]; gcongr; norm_cast
   linarith [psi_sub_theta_le_psi_add_psi_add_psi hx, this 2 (le_refl _), this 3 (by norm_num),
     this 5 (by norm_num)]
+
+open Asymptotics Filter in
+theorem isBigO_psi_sub_theta_sqrt : IsBigO atTop (ψ - θ) sqrt := by
+  rw [isBigO_iff]
+  simp only [Pi.sub_apply, norm_eq_abs, eventually_atTop]
+  obtain ⟨ C, hC ⟩ := psi_sub_theta_le_mul_sqrt
+  refine ⟨ C, 0, fun x _ ↦ ?_ ⟩
+  have := theta_le_psi x
+  rw [abs_of_nonneg (by positivity), abs_of_nonneg (by positivity)]
+  exact hC x
 
 end CostaPereira
 
