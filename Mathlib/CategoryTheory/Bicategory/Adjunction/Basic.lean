@@ -349,37 +349,29 @@ namespace Pseudofunctor
 
 variable (F : Pseudofunctor B C) (adj : f ⊣ g)
 
-/-- The image of an adjunction unit under a pseudofunctor. -/
-abbrev mapAdjunctionUnit : 𝟙 (F.obj a) ⟶ F.map f ≫ F.map g :=
-  (F.mapId a).inv ≫ F.map₂ adj.unit ≫ (F.mapComp f g).hom
-
-/-- The image of an adjunction counit under a pseudofunctor. -/
-def mapAdjunctionCounit : F.map g ≫ F.map f ⟶ 𝟙 (F.obj b) :=
-  (F.mapComp g f).inv ≫ F.map₂ adj.counit ≫ (F.mapId b).hom
-
 lemma leftZigzag_map :
-    leftZigzag (F.mapAdjunctionUnit adj) (F.mapAdjunctionCounit adj) =
-      (F.mapId a).inv ▷ F.map f ⊗≫ (F.mapComp (𝟙 a) f).inv ≫
-        F.map₂ (leftZigzag adj.unit adj.counit) ≫
-          (F.mapComp f (𝟙 b)).hom ⊗≫ F.map f ◁ (F.mapId b).hom := by
-  simp [mapAdjunctionUnit, mapAdjunctionCounit, leftZigzag, bicategoricalComp]
+    leftZigzag ((F.mapId a).inv ≫ F.map₂ adj.unit ≫ (F.mapComp f g).hom)
+      ((F.mapComp g f).inv ≫ F.map₂ adj.counit ≫ (F.mapId b).hom) =
+    (F.mapId a).inv ▷ F.map f ⊗≫ (F.mapComp (𝟙 a) f).inv ≫
+      F.map₂ (leftZigzag adj.unit adj.counit) ≫
+        (F.mapComp f (𝟙 b)).hom ⊗≫ F.map f ◁ (F.mapId b).hom := by
+  simp [leftZigzag, bicategoricalComp]
 
 lemma rightZigzag_map :
-    rightZigzag (F.mapAdjunctionUnit adj) (F.mapAdjunctionCounit adj) =
-      F.map g ◁ (F.mapId a).inv ⊗≫ (F.mapComp g (𝟙 a)).inv ≫
-        F.map₂ (rightZigzag adj.unit adj.counit) ≫
-          (F.mapComp (𝟙 b) g).hom ⊗≫ (F.mapId b).hom ▷ F.map g := by
-  simp [mapAdjunctionUnit, mapAdjunctionCounit, rightZigzag, bicategoricalComp, F.map₂_iso_inv]
+    rightZigzag ((F.mapId a).inv ≫ F.map₂ adj.unit ≫ (F.mapComp f g).hom)
+      ((F.mapComp g f).inv ≫ F.map₂ adj.counit ≫ (F.mapId b).hom) =
+    F.map g ◁ (F.mapId a).inv ⊗≫ (F.mapComp g (𝟙 a)).inv ≫
+      F.map₂ (rightZigzag adj.unit adj.counit) ≫
+        (F.mapComp (𝟙 b) g).hom ⊗≫ (F.mapId b).hom ▷ F.map g := by
+  simp [rightZigzag, bicategoricalComp, F.map₂_iso_inv]
 
 /-- A pseudofunctor carries an adjunction `f ⊣ g` to an adjunction `F.map f ⊣ F.map g`. -/
 @[simps]
 def mapAdjunction : F.map f ⊣ F.map g where
-  unit := F.mapAdjunctionUnit adj
-  counit := F.mapAdjunctionCounit adj
-  left_triangle := by
-    simp [F.leftZigzag_map, adj.left_triangle, bicategoricalComp, F.map₂_iso_inv]
-  right_triangle := by
-    simp [F.rightZigzag_map, adj.right_triangle, bicategoricalComp, F.map₂_iso_inv]
+  unit := (F.mapId a).inv ≫ F.map₂ adj.unit ≫ (F.mapComp f g).hom
+  counit := (F.mapComp g f).inv ≫ F.map₂ adj.counit ≫ (F.mapId b).hom
+  left_triangle := by simp [leftZigzag_map, bicategoricalComp, F.map₂_iso_inv]
+  right_triangle := by simp [rightZigzag_map, bicategoricalComp, F.map₂_iso_inv]
 
 end Pseudofunctor
 
@@ -389,17 +381,18 @@ variable (F : StrictPseudofunctor B C) (adj : f ⊣ g)
 
 /-- A strict pseudofunctor carries an adjunction `f ⊣ g` to an adjunction
 `F.map f ⊣ F.map g`. -/
+@[simps!]
 def mapAdjunction : F.map f ⊣ F.map g := F.toPseudofunctor.mapAdjunction adj
 
-lemma mapAdjunction_unit :
+lemma mapAdjunction_unit' :
     (F.mapAdjunction adj).unit =
       eqToHom (F.map_id a).symm ≫ F.map₂ adj.unit ≫ eqToHom (F.map_comp f g) := by
-  simp [mapAdjunction, Pseudofunctor.mapAdjunctionUnit, F.mapId_eq_eqToIso, F.mapComp_eq_eqToIso]
+  simp [F.mapId_eq_eqToIso, F.mapComp_eq_eqToIso]
 
-lemma mapAdjunction_counit :
+lemma mapAdjunction_counit' :
     (F.mapAdjunction adj).counit =
       eqToHom (F.map_comp g f).symm ≫ F.map₂ adj.counit ≫ eqToHom (F.map_id b) := by
-  simp [mapAdjunction, Pseudofunctor.mapAdjunctionCounit, F.mapId_eq_eqToIso, F.mapComp_eq_eqToIso]
+  simp [F.mapId_eq_eqToIso, F.mapComp_eq_eqToIso]
 
 end StrictPseudofunctor
 
