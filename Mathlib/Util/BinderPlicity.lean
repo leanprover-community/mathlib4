@@ -17,6 +17,13 @@ A code action that allows one to switch between explicit and implicit binders.
  - `(x : Nat)` turns into `{x : Nat}`
  - `{x : nat}` turns into `(x : Nat)`
 
+## Implementation notes
+
+We make use of `Syntax.reprint` to transform our new syntax into 
+a `String`. Since `Syntax.reprint` adds whitespace when working 
+over synthetic syntax nodes, we produce the new syntax by modifying 
+the old one instead of creating it from scratch.
+
 -/
 
 namespace Mathlib.CodeAction
