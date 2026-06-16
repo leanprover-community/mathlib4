@@ -257,6 +257,12 @@ abbrev Category.mk' {obj : Type u} [CategoryStruct.{v} obj]
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : 𝟙 X ≫ f = f := by simp
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : f ≫ 𝟙 Y = f := by simp
 
+
+example {C} [Category C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : f ≫ g = f ≫ 𝟙 Y ≫ g := by simp
+
+example {C} [Category C] {W X Y Z : C} (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z) :
+    (f ≫ g) ≫ h = f ≫ g ≫ h := by rw [Category.assoc]
+
 /-- A `LargeCategory` has objects in one universe level higher than the universe level of
 the morphisms. It is useful for examples such as the category of types, or the category
 of groups, etc.

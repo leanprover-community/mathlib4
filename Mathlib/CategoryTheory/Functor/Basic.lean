@@ -67,6 +67,16 @@ lemma Functor.map_comp_assoc {C : Type u₁} [Category* C] {D : Type u₂} [Cate
     (F.map (f ≫ g)) ≫ h = F.map f ≫ F.map g ≫ h := by
   grind
 
+section
+
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+
+example (F : C ⥤ D) (X : C) : F.map (𝟙 X) = 𝟙 (F.obj X) := by simpa using Functor.map_id F X
+
+example (F : C ⥤ D) {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    F.map (f ≫ g) = F.map f ≫ F.map g := by simpa using F.map_comp f g
+
+end
 namespace Functor
 
 section
