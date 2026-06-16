@@ -234,7 +234,7 @@ lemma integral_le_sum_mul_Ico_of_antitone_monotone
     have I1 : (i : ℝ) ∈ Icc (a - 1 : ℝ) (b - 1) := by
       simp only [mem_Icc, tsub_le_iff_right]
       exact ⟨by norm_cast; lia, I0⟩
-    have I2 : x ∈ Icc (a : ℝ) b := ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans (by grind)⟩
+    have I2 : x ∈ Icc (a : ℝ) b := mem_Icc.mpr ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans (by grind)⟩
     gcongr
     · exact gpos.trans (hg (by simp [hab]) (by simpa using I2) (by simpa using I2.1))
     · exact fpos.trans (hf ⟨mod_cast hi.1, mod_cast hi.2.le⟩ (by simpa using hab)
