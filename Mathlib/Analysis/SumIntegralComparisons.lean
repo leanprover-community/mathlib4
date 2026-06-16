@@ -2,6 +2,7 @@
 Copyright (c) 2022 Kevin H. Wilson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin H. Wilson
+-/
 module
 
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
