@@ -38,13 +38,7 @@ def range : (ListPFunctor Nat).M :=
     (fun n => .mk (.cons n) fun .unit => n.succ)
     0
 
-/--
-info: [ListA.cons 0,
- ListA.cons 1,
- ListA.cons 2,
- ListA.cons 3,
- ListA.cons 4]
--/
+/-- info: [ListA.cons 0, ListA.cons 1, ListA.cons 2, ListA.cons 3, ListA.cons 4] -/
 #guard_msgs in
 #eval List.iterate
   (fun x =>
