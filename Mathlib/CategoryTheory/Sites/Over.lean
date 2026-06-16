@@ -522,7 +522,7 @@ lemma over_toGrothendieck_eq_toGrothendieck_comap_forget (X : C) :
   refine le_antisymm ?_ ?_
   · intro ⟨Y, right, (s : Y ⟶ X)⟩ R hR
     obtain ⟨(R : Sieve Y), rfl⟩ := (Sieve.overEquiv _).symm.surjective R
-    simp +instances only [GrothendieckTopology.mem_over_iff, Equiv.apply_symm_apply,
+    simp only [GrothendieckTopology.mem_over_iff, Equiv.apply_symm_apply,
       ← Precoverage.toGrothendieck_toCoverage, Coverage.mem_toGrothendieck,
       Over.left] at hR
     induction hR with
