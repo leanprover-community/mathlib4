@@ -44,7 +44,7 @@ namespace RingHom
 variable {R S T : Type*} [Ring R] [Ring S] [Semiring T]
 
 theorem isLocalRing_eqLocus [IsLocalRing R] (f g : R →+* T) : IsLocalRing (f.eqLocus g) :=
-  Subring.isLocalRing_of_unit _ fun _ h ↦ (RingHom.isUnit_eqLocus_mk_iff f g h).mpr
+  (f.eqLocus g).subtype.domain_isLocalRing
 
 /-- The subring of pairs `(r, s) : R × S` such that `f r = g s`, i.e.,
   the pullback of `f : R →+* T` and `g : S →+* T` as a subring of `R × S`. -/
