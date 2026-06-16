@@ -205,7 +205,7 @@ lemma sum_mul_Ico_le_integral_of_monotone_antitone
   apply sum_Ico_le_integral_of_le (f := fun x ↦ f x * g x) hab
   · intro i hi x hx
     simp only [Nat.cast_add, Nat.cast_one, mem_Ico] at hx hi
-    have I0 : (i : ℝ) ≤ b - 1 := by simp only [le_sub_iff_add_le]; norm_cast; lia
+    have I0 : (i : ℝ) ≤ b - 1 := by norm_cast; lia
     have I1 : (i : ℝ) ∈ Icc (a - 1 : ℝ) (b - 1) := by
       simp only [mem_Icc, tsub_le_iff_right]
       exact ⟨by norm_cast; lia, I0⟩
