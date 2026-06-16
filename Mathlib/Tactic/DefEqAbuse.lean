@@ -166,19 +166,6 @@ namespace Mathlib.Tactic.DefEqAbuse
     unless (`Meta.isDefEq).isPrefixOf td.cls do return .descend
     f td header children
 
-/-- Strip the leading status emoji that `withTraceNodeBefore` prepends to trace headers.
-`withTraceNodeBefore` stores `m!"{result.toEmoji} {content}"` as the header; this strips the
-emoji prefix using the structured `TraceData.result?` to know exactly what was prepended.
-Needed because the same isDefEq check has different emoji prefixes across trace runs
-(✅️ when it succeeds, ❌️ when it fails), but we need to compare the content.
-See https://github.com/leanprover/lean4/pull/13070 for the upstream fix. -/
-private def stripHeaderEmoji (s : String) (result? : Option Lean.TraceResult) : String :=
-  match result? with
-  | some result =>
-    let emojiPrefix := s!"{result.toEmoji} "
-    if s.startsWith emojiPrefix then (s.drop emojiPrefix.length).toString else s
-  | none => s
-
 /-- Find the deepest failing `Meta.isDefEq` trace nodes (leaf failures).
 Skips `onFailure` retry nodes and ignores ✅️ branches (recovered failures aren't root causes). -/
 partial def findLeafFailures (msg : MessageData) : BaseIO (Array MessageData) :=
@@ -190,13 +177,13 @@ partial def findLeafFailures (msg : MessageData) : BaseIO (Array MessageData) :=
     return .ascend <| if childFailures.isEmpty then #[header] else childFailures
 
 /-- Collect rendered check strings from `Meta.isDefEq` trace nodes matching a status predicate.
-Returns a `HashSet` of emoji-stripped header strings. -/
+Returns a `HashSet` of header strings. -/
 partial def collectIsDefEqChecks (pred : Lean.TraceResult → Bool)
     (msg : MessageData) : BaseIO (Std.HashSet String) :=
   msg.visitTraceNodesM <| onlyOnDefEqNodes fun td header children => do
     if let some status := td.result? then
       if pred status then
-        let headerStr := stripHeaderEmoji (← header.toString) td.result?
+        let headerStr ← header.toString
         return .descend (butFirst := some {headerStr})
     return .descend
 
@@ -212,7 +199,7 @@ partial def findTransitionFailures (permSuccesses : Std.HashSet String)
   if permSuccesses.isEmpty then findLeafFailures msg
   else msg.visitTraceNodesM <| onlyOnDefEqNodes fun td header children => do
     unless td.result? matches some .failure do return .descend
-    let headerStr := stripHeaderEmoji (← header.toString) td.result?
+    let headerStr ← header.toString
     if permSuccesses.contains headerStr && !permFailures.contains headerStr then
       -- Transition point: fails strict, succeeds permissive, doesn't also fail permissive.
       -- Look for deeper transition points among children.
@@ -344,13 +331,14 @@ def disambiguateFailures (failures : Array MessageData) : BaseIO (Array MessageD
 def reportDefEqAbuse {m : Type → Type} [Monad m] [MonadLog m] [AddMessageContext m]
     [MonadOptions m] (kind : String) (uniqueFailures : Array MessageData)
     (synthResults : Array (MessageData × Array MessageData)) : m Unit := do
+  let failureEmoji := Lean.TraceResult.failure.toEmoji
   if !synthResults.isEmpty then
     -- Structured report: group by instance application
     let mut entries : Array MessageData := #[]
     for (app, failures) in synthResults do
       let failureList := joinSep
-        (failures.toList.map fun f => m!"    {f}") "\n"
-      entries := entries.push m!"  {app}\n{failureList}"
+        (failures.toList.map fun f => m!"    {failureEmoji} {f}") "\n"
+      entries := entries.push m!"  {failureEmoji} {app}\n{failureList}"
     let report := joinSep entries.toList "\n"
     logWarning
       m!"#defeq_abuse: {kind} fails with \
@@ -363,7 +351,7 @@ def reportDefEqAbuse {m : Type → Type} [Monad m] [MonadLog m] [AddMessageConte
         Could not identify specific failing isDefEq checks from traces."
   else
     let failureList := joinSep
-      (uniqueFailures.toList.map fun f => m!"  {f}") "\n"
+      (uniqueFailures.toList.map fun f => m!"  {failureEmoji} {f}") "\n"
     logWarning
       m!"#defeq_abuse: {kind} fails with \
         `backward.isDefEq.respectTransparency true` but succeeds with `false`.\n\

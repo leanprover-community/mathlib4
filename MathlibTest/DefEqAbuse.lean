@@ -31,7 +31,7 @@ go through `Pi`. This caused `rw` failures when matching lemmas against goals wh
 ```lean
 example (s : Set ℕ) (a : ℕ) (ha : a ∉ s) : Disjoint s {a} := by
   #defeq_abuse in rw [Set.disjoint_singleton_right]
-  -- reported: (i : ℕ) → (fun a => Prop) i =?= Set ℕ
+  -- reported: ❌️ (i : ℕ) → (fun a => Prop) i =?= Set ℕ
   exact ha
 ```
 
@@ -67,7 +67,7 @@ noncomputable instance myPredCompleteLattice : CompleteLattice (MyPred ℕ) wher
 /--
 warning: #defeq_abuse: tactic fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
 The following isDefEq checks are the root causes of the failure:
-  (i : ℕ) → (fun a => Prop) i =?= MyPred ℕ
+  ❌️ (i : ℕ) → (fun a => Prop) i =?= MyPred ℕ
 -/
 #guard_msgs in
 noncomputable example (s : MyPred ℕ) (a : ℕ) (ha : a ∉ s) : Disjoint s {a} := by
@@ -90,8 +90,8 @@ looked like:
 instance {V : Type} [AddCommGroup V] [Module ℝ V] {l : Submodule ℝ V} :
     Module.Free ℝ l := Module.Free.of_divisionRing ℝ l
 -- reported:
---   apply @Submodule.module to Module ℝ ↥l
---     l.toAddSubgroup =?= l.toAddSubmonoid
+--   ❌️ apply @Submodule.module to Module ℝ ↥l
+--     ❌️ l.toAddSubgroup =?= l.toAddSubmonoid
 ```
 
 The test below reproduces this pattern with `MySub₂`, a structure extending `AddSubmonoid`
@@ -187,7 +187,7 @@ theorem zoC_eq_iff {α} [GrC α] (a : α) : NumC.fromNat 0 = a ↔ a = GrC.add a
 /--
 warning: #defeq_abuse: tactic fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
 The following isDefEq checks are the root causes of the failure:
-  @ZoC.zo Int instZoCInt =?= @ZoC.zo Int (@GrC.toZoC Int ?m.11)
+  ❌️ @ZoC.zo Int instZoCInt =?= @ZoC.zo Int (@GrC.toZoC Int ?m.11)
 -/
 #guard_msgs in
 example (a : Int) : NumC.fromNat 0 = a ↔ a = GrC.add a a := by
