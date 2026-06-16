@@ -51,12 +51,13 @@ jobs:
       archive-outcome: ${{ steps.archive.outcome }}
       counterexamples-outcome: ${{ steps.counterexamples.outcome }}
       cache-staging-has-files: ${{ steps.cache_staging_check.outputs.has_files }}
+      full-cache-outcome: ${{ steps.upload_full_cache.outcome }}
       get-cache-outcome: ${{ steps.get.outcome }}
-      lint-outcome: ${{ steps.lint.outcome }}
       mk_all-outcome: ${{ steps.mk_all.outcome }}
       noisy-outcome: ${{ steps.noisy.outcome }}
       # shake-outcome: ${{ steps.shake.outcome }}
-      test-outcome: ${{ steps.test.outcome }}
+      # `test`/`lint` now run in the separate `test_lint` job; their outcomes are
+      # exposed there (and consumed by that job's nightly-testing comment step).
     defaults: # On Hoskinson runners, landrun is already installed.
       run: # note that .pr-branch/.lake must be created in a step below before we use this
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
@@ -475,6 +476,28 @@ jobs:
           ../tools-branch/scripts/lake-build-with-retry.sh Counterexamples
           # results of build at pr-branch/.lake/build_summary_Counterexamples.json
 
+      # Moved here from after `lint` (which now lives in the `test_lint` job) so it
+      # stays in the build job: it only needs the freshly-built Mathlib/Archive/
+      # Counterexamples oleans, which are present here, and keeping it in `build`
+      # spares `test_lint` from having to fetch Archive/Counterexamples too.
+      - name: check for noisy stdout lines
+        id: noisy
+        run: |
+          cd pr-branch
+          buildMsgs="$(
+            ##  we exploit `lake`s replay feature: since the cache is present, running
+            ##  `lake build` will reproduce all the outputs without having to recompute
+            lake build Mathlib Archive Counterexamples |
+            ##  we filter out the output lines that begin with `✔ [xx/yy]`, where xx, yy
+            ##  are either numbers or ?, and the "Build completed successfully." message.
+            ##  We keep the rest, which are actual outputs of the files
+            awk '!($0 ~ "^\\s*✔ \\[[?0-9]*/[?0-9]*\\]" || $0 ~ "^Build completed successfully( \\([0-9]+ jobs\\))?\\.?$"){ print $0 }')"
+          if [ -n "${buildMsgs}" ]
+          then
+            printf $'%s\n' "${buildMsgs}"
+            exit 1
+          fi
+
       - name: prepare staging directory
         if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
         shell: bash
@@ -522,6 +545,25 @@ jobs:
           name: cache-staging
           path: cache-staging/
 
+      # At this point `~/.cache/mathlib` holds the complete `.ltar` set for this commit: 
+      # everything `cache get` downloaded into the (initially empty) directory, plus 
+      # everything the stage steps packed. Ship the whole set to `test_lint` as an 
+      # artifact so its `cache get` resolves entirely from local files.
+      # Skipped on cancellation (unlike the stage steps): `test_lint` doesn't
+      # run on a cancelled build, so the multi-GB upload would be wasted.
+      - name: upload full cache artifact
+        id: upload_full_cache
+        if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure') }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: full-cache
+          path: /home/lean/.cache/mathlib/*.ltar
+          # The `.ltar` files are already zstd-compressed; recompressing wastes CPU.
+          compression-level: 0
+          # Only `test_lint` (in this same run) consumes this artifact, so the
+          # default retention would just hold gigabytes per run for no reader.
+          retention-days: 1
+
       - name: Check if building Archive or Counterexamples failed
         if: steps.archive.outcome == 'failure' || steps.counterexamples.outcome == 'failure'
         run: |
@@ -543,23 +585,260 @@ jobs:
             echo "'mk_all --check' passed successfully."
           fi
 
+  test_lint:
+    name: Test and lint
+    needs: [build]
+    # `test` and `lint` were peeled out of the `build` job. They run on the SAME
+    # self-hosted pool, but as a separate job they start as soon as `build`
+    # finishes -- IN PARALLEL with the GitHub-hosted post-build chain
+    # (upload_cache -> post_steps), which no longer waits behind the ~300s
+    # test+lint tail. The cost is one re-paid setup prefix (this job is a fresh
+    # runner) and no increase in per-run PEAK pool concurrency (build and
+    # test_lint run sequentially on the pool).
+    #
+    # This job does NOT depend on `upload_cache`: it sources this run's oleans
+    # from the `full-cache` artifact uploaded by `build` (see that step for the
+    # cost rationale), not from the Azure cache, so it neither waits for the
+    # Azure upload nor re-downloads from paid storage.
+    #
+    # Gating: run when the build job SUCCEEDED or FAILED (not cancelled/skipped).
+    # We deliberately run on build FAILURE too, to preserve the old monolith's
+    # behavior of still reporting `lint` results on a failed build (best-effort,
+    # on whatever oleans were built). The individual `test`/`lint` steps below
+    # reproduce the monolith's per-step conditions: `test` only on a clean build,
+    # `lint` on success-or-failure.
+    #
+    # We do NOT gate on `full-cache-outcome == 'success'`: if the upload failed we
+    # want this job to RUN and fail loudly at `download full-cache`, not silently
+    # SKIP. A skipped job doesn't fail the run, so gating on it would let a green
+    # `build` with a broken cache handoff report overall SUCCESS though test+lint
+    # never ran.
+    if: ${{ always() && (needs.build.result == 'success' || needs.build.result == 'failure') }}
+    runs-on: ${{ inputs.runs_on }}
+    outputs:
+      lint-outcome: ${{ steps.lint.outcome }}
+      test-outcome: ${{ steps.test.outcome }}
+    defaults: # On Hoskinson runners, landrun is already installed.
+      run: # note that pr-branch/.lake must be created in a step below before we use this
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+    steps:
+      - name: cleanup
+        shell: bash    # This *just* deletes old files, so is safe to run outside landrun.
+        run: |
+          if ! find . -mindepth 1 -exec rm -rf -- {} +; then
+            echo "ERROR: Initial cleanup failed, waiting 5 seconds and retrying..."
+            sleep 5
+            find . -mindepth 1 -exec rm -rf -- {} +
+          fi
+          # Delete all but the 5 most recent toolchains.
+          # Make sure to delete both the `~/.elan/toolchains/X` directory and the `~/.elan/update-hashes/X` file.
+          # Skip symbolic links (`-type d`), the current directory (`! -name .`), and `nightly` and `stable`.
+          if cd ~/.elan/toolchains && find . -maxdepth 1 -type d ! -name . -print0 | xargs -0 ls -1td | grep -v 'nightly$' | grep -v 'stable$' | tail -n +6 | xargs -I {} sh -c 'echo {} && rm -rf "{}" && rm "../update-hashes/{}"'; then
+              : # Do nothing on success
+          else
+              : # Do nothing on failure, but suppress errors
+          fi
+
+      # The Hoskinson runners may not have jq installed, so do that now.
+      - name: 'Setup jq'
+        uses: dcarbone/install-jq-action@b7ef57d46ece78760b4019dbc4080a1ba2a40b45 # v3.2.0
+
+      - name: Checkout local actions
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+
+      # See the build job for why this `uses:` step is duplicated.
+      # In this job, mathlib-ci (CI_SCRIPTS_DIR) is only consumed by the
+      # lean-pr-testing comments step at the end, which runs only on the
+      # nightly-testing repository — so skip the checkout everywhere else.
+      - name: Get mathlib-ci
+        if: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' && inputs.mathlib_ci_ref == '' }}
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+
+      - name: Get mathlib-ci
+        if: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' && inputs.mathlib_ci_ref != '' }}
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+        with:
+          ref: ${{ inputs.mathlib_ci_ref }}
+
+      # Same trust dispatch as in the `build` and `post_steps` jobs, loaded from
+      # the trust-rooted `workflow-actions/` checkout. In the happy path the
+      # `cache get` below resolves everything from the unpacked `full-cache`
+      # artifact and never touches the network; this dispatch exists so that any
+      # FALLBACK download (a file unexpectedly missing from the artifact) uses
+      # the same trust-classified read chain and per-commit scope as every other
+      # cache read in this workflow.
+      - name: Compute cache trust dispatch
+        uses: ./workflow-actions/.github/actions/cache-trust-dispatch
+        with:
+          repo: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          branch: ${{ github.head_ref || github.ref_name }}
+          head-sha: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      # Checkout the PR branch into a subdirectory.
+      - name: Checkout PR branch
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          ref: ${{ inputs.pr_branch_ref }}
+          # Shallow (depth 1) is correct here: unlike `build`, this job does NOT
+          # do the parent-commit cache warmup, so it only needs the PR head commit
+          # to run test+lint. (build uses fetch-depth: 2 precisely for that warmup.)
+          fetch-depth: 1
+          path: pr-branch
+          # This is an untrusted (potentially fork) checkout whose code we build.
+          # Don't leave the GITHUB_TOKEN in pr-branch/.git/config, where that code could read it.
+          persist-credentials: false
+
+      # Create empty directories so landrun doesn't complain
+      - name: Create empty directories
+        shell: bash # We need to run this outside landrun, as it is a prerequisite for landrun!
+        run: |
+          mkdir -p pr-branch/.lake/
+          mkdir -p .cache/mathlib/
+          mkdir -p _work
+
+      # NOTE: if you copy this, consider using `leanprover/lean-action` instead.
+      # We install manually, to avoid running lean outside landrun.
+      - name: install elan
+        shell: bash
+        run: |
+          set -o pipefail
+          curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
+          chmod +x elan-init.sh
+          ./elan-init.sh -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      - name: set toolchain directory
+        shell: bash
+        run: |
+          cd pr-branch
+          # Get the lake binary path from elan and extract toolchain directory
+          LAKE_PATH=$(elan which lake)
+          echo "Lake path: $LAKE_PATH"
+
+          # Extract the toolchain directory by removing /bin/lake from the end
+          TOOLCHAIN_DIR=$(dirname "$LAKE_PATH")
+          TOOLCHAIN_DIR=$(dirname "$TOOLCHAIN_DIR")
+          echo "Toolchain directory: $TOOLCHAIN_DIR"
+
+          # Set it as an environment variable for subsequent steps
+          echo "TOOLCHAIN_DIR=$TOOLCHAIN_DIR" >> "$GITHUB_ENV"
+
+      - name: set LEAN_SRC_PATH
+        shell: bash
+        run: |
+          cd pr-branch
+
+          # Start with the base paths
+          LEAN_SRC_PATH=".:$TOOLCHAIN_DIR/src/lean/lake"
+
+          # Extract package names from lake-manifest.json and validate them
+          # Only allow A-Z, a-z, 0-9, _, and - characters
+          # Build the LEAN_SRC_PATH by appending each validated package
+          PACKAGE_NAMES=$(jq -r '.packages[].name' lake-manifest.json)
+          for pkg in $PACKAGE_NAMES; do
+            if [[ "$pkg" =~ ^[A-Za-z0-9_-]+$ ]]; then
+              LEAN_SRC_PATH="$LEAN_SRC_PATH:.lake/packages/$pkg"
+            else
+              echo "Warning: Skipping invalid package name: $pkg"
+            fi
+          done
+
+          echo "LEAN_SRC_PATH=$LEAN_SRC_PATH"
+
+          # Set it as an environment variable for subsequent steps
+          echo "LEAN_SRC_PATH=$LEAN_SRC_PATH" >> "$GITHUB_ENV"
+
+      # Populate `tools-branch/` exactly as in the `build` job (see the comment
+      # there): prebuilt `tools-bin` artifact on the common path, source build
+      # otherwise. This job uses the `cache` binary and `lake-build-wrapper.py`
+      # from it; the `test`/`lint` drivers come from the PR branch's own lake config.
+      - name: Get CI tools
+        uses: ./workflow-actions/.github/actions/get-tools
+        with:
+          use_artifact: ${{ inputs.tools_branch_ref == '' && github.repository == 'leanprover-community/mathlib4' }}
+          tools_source_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.event.pull_request.head.repo.fork && 'master' || inputs.pr_branch_ref) }}
+          source_dir: ${{ github.event.pull_request.head.repo.fork != true && 'pr-branch' || '' }}
+          github_token: ${{ github.token }}
+
+      - name: download dependencies
+        # We need network access to download dependencies
+        # We run this inside landrun, but restrict disk access.
+        shell: landrun --unrestricted-network --rox /etc --rox /usr --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        run: |
+          cd pr-branch
+          lake env
+
+      # Populate the (empty, ephemeral) local cache directory with the complete
+      # `.ltar` set the build job assembled for this commit, so the `cache get`
+      # below resolves from local files instead of re-downloading ~the whole
+      # cache from paid Azure storage.
+      - name: download full cache artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: full-cache
+          path: /home/lean/.cache/mathlib
+
+      - name: get cache (unpack this run's oleans)
+        shell: bash # only runs `cache get` from the trusted tools-branch, so doesn't need to be inside landrun
+        env:
+          CACHE_REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+        run: |
+          cd pr-branch
+          echo "Removing old Mathlib build directories prior to cache unpack..."
+          rm -rf .lake/build/lib/lean/Mathlib
+          # The full-cache artifact has pre-populated `~/.cache/mathlib`, so this
+          # decompresses local files and only downloads (via the trust-dispatch
+          # read chain in env) anything unexpectedly missing -- no parent-commit
+          # warmup needed (that is the build job's concern).
+          ../tools-branch/.lake/build/bin/cache get
+          # Run again with --repo, as a fallback to ensure we actually get the oleans.
+          ../tools-branch/.lake/build/bin/cache --repo="$CACHE_REPO" get
+
+      - name: verify the Mathlib cache is complete
+        # Only enforced when the build SUCCEEDED (then the cache must be complete):
+        # fail fast rather than silently trying to rebuild under landrun (which has
+        # no network). On a failed build the cache is expected to be partial, so we
+        # skip this and let `lint` run best-effort below (preserving the old
+        # monolith's lint-on-failure reporting).
+        if: ${{ needs.build.outputs.build-outcome == 'success' }}
+        run: |
+          cd pr-branch
+          lake build --no-build --rehash -v Mathlib
+
+      # `test` runs only on a clean build, exactly as in the monolith (there it
+      # had no `if:` so it was skipped whenever `build`, the `mk_all` check, or the
+      # archive/counterexamples checks failed). Reproduce that here via the build
+      # job's outputs. The problem-matcher wrap is gated identically to bracket it.
       - name: begin gh-problem-match-wrap for test step
+        if: ${{ needs.build.outputs.build-outcome == 'success' && needs.build.outputs.mk_all-outcome == 'success' && needs.build.outputs.archive-outcome == 'success' && needs.build.outputs.counterexamples-outcome == 'success' }}
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
           action: add # In order to be able to run a multiline script, we need to add/remove the problem matcher before and after.
           linters: lean
       - name: test mathlib
+        if: ${{ needs.build.outputs.build-outcome == 'success' && needs.build.outputs.mk_all-outcome == 'success' && needs.build.outputs.archive-outcome == 'success' && needs.build.outputs.counterexamples-outcome == 'success' }}
         id: test
         run: |
           cd pr-branch
           ../tools-branch/scripts/lake-build-wrapper.py .lake/build_summary_MathlibTest.json lake --iofail test
       - name: end gh-problem-match-wrap for test step
+        if: ${{ needs.build.outputs.build-outcome == 'success' && needs.build.outputs.mk_all-outcome == 'success' && needs.build.outputs.archive-outcome == 'success' && needs.build.outputs.counterexamples-outcome == 'success' }}
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
           action: remove
           linters: lean
 
+      # `lint` runs on a build that SUCCEEDED or FAILED (not cancelled), matching
+      # the monolith's `if: always() && (build success || failure)`. On a failed
+      # build it lints best-effort over whatever oleans the cache has, so partial
+      # lint feedback is still reported. The problem-matcher wrap is gated to match.
       - name: begin gh-problem-match-wrap for shake and lint steps
+        if: ${{ always() && (needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') }}
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
           action: add # In order to be able to run a multiline script, we need to add/remove the problem matcher before and after.
@@ -573,7 +852,7 @@ jobs:
       #     cd pr-branch
       #     env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
       - name: lint mathlib
-        if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
+        if: ${{ always() && (needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') }}
         id: lint
         timeout-minutes: 40
         run: |
@@ -612,28 +891,11 @@ jobs:
           done
 
       - name: end gh-problem-match-wrap for shake and lint steps
+        if: ${{ always() && (needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') }}
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
           action: remove
           linters: gcc
-
-      - name: check for noisy stdout lines
-        id: noisy
-        run: |
-          cd pr-branch
-          buildMsgs="$(
-            ##  we exploit `lake`s replay feature: since the cache is present, running
-            ##  `lake build` will reproduce all the outputs without having to recompute
-            lake build Mathlib Archive Counterexamples |
-            ##  we filter out the output lines that begin with `✔ [xx/yy]`, where xx, yy
-            ##  are either numbers or ?, and the "Build completed successfully." message.
-            ##  We keep the rest, which are actual outputs of the files
-            awk '!($0 ~ "^\\s*✔ \\[[?0-9]*/[?0-9]*\\]" || $0 ~ "^Build completed successfully( \\([0-9]+ jobs\\))?\\.?$"){ print $0 }')"
-          if [ -n "${buildMsgs}" ]
-          then
-            printf $'%s\n' "${buildMsgs}"
-            exit 1
-          fi
 
       # Generate a fresh token just before posting comments.
       # GitHub App tokens expire after 1 hour, and the build can take longer than that.
@@ -656,10 +918,12 @@ jobs:
           TOKEN: ${{ steps.lean-pr-testing-token.outputs.token }}
           GITHUB_CONTEXT: ${{ toJson(github) }}
           WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          BUILD_OUTCOME: ${{ steps.build.outcome }}
-          NOISY_OUTCOME: ${{ steps.noisy.outcome }}
-          ARCHIVE_OUTCOME: ${{ steps.archive.outcome }}
-          COUNTEREXAMPLES_OUTCOME: ${{ steps.counterexamples.outcome }}
+          # build/archive/counterexamples/noisy ran in the `build` job; read their
+          # outcomes from its outputs. test/lint are local to this job.
+          BUILD_OUTCOME: ${{ needs.build.outputs.build-outcome }}
+          NOISY_OUTCOME: ${{ needs.build.outputs.noisy-outcome }}
+          ARCHIVE_OUTCOME: ${{ needs.build.outputs.archive-outcome }}
+          COUNTEREXAMPLES_OUTCOME: ${{ needs.build.outputs.counterexamples-outcome }}
           LINT_OUTCOME: ${{ steps.lint.outcome }}
           TEST_OUTCOME: ${{ steps.test.outcome }}
           NIGHTLY_TESTING_REPO: leanprover-community/mathlib4-nightly-testing
@@ -935,8 +1199,9 @@ jobs:
   final:
     name: Post-CI job
     # ensure that this runs iff direct dependencies succeeded even if transitive dependencies  were skipped
-    if: ${{ always() && inputs.run_post_ci && needs.style_lint.result == 'success' && needs.build.result == 'success' && needs.post_steps.result == 'success' }}
-    needs: [style_lint, build, post_steps]
+    # `test_lint` was split out of `build`, so it is now a direct dependency too.
+    if: ${{ always() && inputs.run_post_ci && needs.style_lint.result == 'success' && needs.build.result == 'success' && needs.test_lint.result == 'success' && needs.post_steps.result == 'success' }}
+    needs: [style_lint, build, test_lint, post_steps]
     runs-on: ubuntu-latest
     steps:
       - id: PR
