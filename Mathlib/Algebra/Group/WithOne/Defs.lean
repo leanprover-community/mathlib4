@@ -85,6 +85,14 @@ instance inhabited : Inhabited (WithOne α) :=
 instance instNontrivial [Nonempty α] : Nontrivial (WithOne α) :=
   Option.nontrivial
 
+-- TODO: Add similar for WithTop
+@[to_additive]
+instance instSubsingleton [IsEmpty α] : Subsingleton (WithOne α) := by
+  constructor
+  intro a b
+  induction a <;> induction b <;>
+  · first | exact isEmptyElim (‹_› : α) | simp_all
+
 /-- The canonical map from `α` into `WithOne α` -/
 @[to_additive (attr := coe, match_pattern) /-- The canonical map from `α` into `WithZero α` -/]
 def coe : α → WithOne α :=
