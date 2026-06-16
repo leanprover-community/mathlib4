@@ -310,23 +310,15 @@ theorem not_isCycle_nil {u : V} : ¬(nil : G.Walk u u).IsCycle :=
 lemma IsCircuit.ne_bot : ∀ {p : G.Walk u u}, p.IsCircuit → G ≠ ⊥
   | cons h _, hp => by rintro rfl; exact h
 
-lemma IsCycle.ne_bot {p : G.Walk u u} (hp : p.IsCycle) : G ≠ ⊥ :=
-  hp.isCircuit.ne_bot
-
 lemma IsCircuit.three_le_length {p : G.Walk v v} (hp : p.IsCircuit) : 3 ≤ p.length := by
   match p with
   | .cons hadj .nil => simp at hadj
   | .cons _ <| .cons _ .nil => simpa using hp.isTrail
   | .cons _ <| .cons _ <| .cons _ _ => grind [length_cons]
 
-lemma IsCycle.three_le_length {p : G.Walk v v} (hp : p.IsCycle) : 3 ≤ p.length :=
-  hp.isCircuit.three_le_length
-
 lemma not_nil_of_isCycle_cons {p : G.Walk u v} {h : G.Adj v u} (hc : (Walk.cons h p).IsCycle) :
     ¬ p.Nil := by
-  have := Walk.length_cons _ _ ▸ Walk.IsCycle.three_le_length hc
-  rw [Walk.not_nil_iff_lt_length]
-  lia
+  grind [not_nil_iff_lt_length, hc.three_le_length, length_cons]
 
 theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
     (Walk.cons h p).IsCycle ↔ p.IsPath ∧ s(u, v) ∉ p.edges := by
