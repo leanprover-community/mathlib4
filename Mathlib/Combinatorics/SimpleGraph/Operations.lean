@@ -196,7 +196,7 @@ lemma sdiff_edge {u v : V} (h : ¬G.Adj u v) : G \ edge u v = G := by
   simp [disjoint_edge, h]
 
 theorem biSup_fromEdgeSet_singleton_eq : ⨆ e ∈ G.edgeSet, fromEdgeSet {e} = G := by
-  simp_rw [← edgeSet_inj, ← iSup_subtype'', edgeSet_iSup, edgeSet_fromEdgeSet, ← Set.iUnion_diff,
+  simp_rw [← edgeSet_inj, ← iSup_subtype'', edgeSet_iSup, edgeSet_fromEdgeSet, ← Set.iUnion_sdiff,
     Set.iUnion_coe_set, Set.biUnion_of_singleton]
   exact Set.disjoint_left.mpr G.edgeSet_subset_compl_diagSet |>.sdiff_eq_left
 
