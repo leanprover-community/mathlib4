@@ -980,7 +980,7 @@ private theorem tangentCoordChange_det_ne_zero_at_posI
         (extChartAt (𝓡 1) (1 : Circle)).source ∩
         (extChartAt (𝓡 1) Circle.negOne).source ∩
         (extChartAt (𝓡 1) (1 : Circle)).source := by
-      simp only [extChartAt_source, mem_inter_iff]
+      simp only [extChartAt_source]
       refine ⟨⟨?_, ?_⟩, ?_⟩
       · rw [chartAt_one_eq_stereographic_negOne, stereographic'_source]
         intro h
