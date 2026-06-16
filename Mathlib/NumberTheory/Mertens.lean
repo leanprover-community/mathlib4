@@ -200,25 +200,26 @@ theorem E₁p_le_E₁Λ : E₁p x ≤ E₁Λ x := by
 
 theorem E₁p_le {x : ℝ} (hx : 1 ≤ x) : E₁p x ≤ log 4 + 4 := by linarith [E₁Λ_le hx, E₁p_le_E₁Λ x]
 
+/-- The summand defining the constant `E₁` below. -/
 noncomputable def e₁ : ℕ → ℝ := fun p ↦ if p.Prime then log p / (p * (p - 1)) else 0
 
 /-- The constant `E₁ = 0.755366...` (https://oeis.org/A138312) is defined as the sum of
 `log p / (p * (p-1))` over primes `p`. -/
 noncomputable def E₁ : ℝ := ∑' p : ℕ, e₁ p
 
-lemma E₁_summand_nonneg (p : ℕ) : 0 ≤ e₁ p := by
+lemma e₁_nonneg (p : ℕ) : 0 ≤ e₁ p := by
   unfold e₁
   split_ifs with h
-  · have : 1 ≤ (p : ℝ) := by exact_mod_cast h.one_le
+  · have : 1 ≤ (p : ℝ) := mod_cast h.one_le
     positivity
   rfl
 
 theorem E₁_summable : Summable e₁ := by
   refine (summable_one_div_nat_rpow.mpr (by norm_num : 1 < (3 : ℝ) / 2) |>.const_div
-    4).of_nonneg_of_le E₁_summand_nonneg fun p ↦ ?_
+    4).of_nonneg_of_le e₁_nonneg fun p ↦ ?_
   unfold e₁
   split_ifs with h
-  · have : 2 ≤ (p : ℝ) := by exact_mod_cast h.two_le
+  · have : 2 ≤ (p : ℝ) := mod_cast h.two_le
     have denom : (p : ℝ) * ((p : ℝ) - 1) ≥ p ^ 2 / 2 := by
       rw [sq, mul_div_assoc]; gcongr; linarith
     grw [log_le_rpow_div (cast_nonneg _) (by norm_num : 0 < (1 : ℝ) / 2), denom]
@@ -258,8 +259,7 @@ private lemma log_div_sq_is_deriv : ∀ x ∈ Set.Ici 0,
   intro t ht
   simp at ht
   apply HasDerivAt.comp_add_const (f := (fun t ↦ (-log t - 1)/ t)) t 2
-  convert HasDerivAt.fun_div (c' := -1 / (t + 2)) (d' := (1 : ℝ)) _ _  _ using 1
-  · rfl
+  convert! HasDerivAt.fun_div (c' := -1 / (t + 2)) (d' := (1 : ℝ)) _ _  _ using 1
   · field
   · apply HasDerivAt.sub_const
     convert (hasDerivAt_log (by linarith : t + 2 ≠ 0)).neg using 1
@@ -293,8 +293,7 @@ private lemma integral_log_div_sq : ∫ t in .Ioi 0, log (t + 2) / (t + 2) ^ 2 =
 private lemma summable_log_div_sq : Summable (fun (n : ℕ) ↦ log (n + 3) / (n + 3) ^ 2) := by
   let g : ℝ → ℝ := (fun n ↦ log (n + 2) / (n + 2) ^ 2)
   suffices Summable (fun (n : ℕ) ↦ g n ) by
-    convert summable_nat_add_iff 1|>.mpr this using 2
-    · rfl
+    convert! summable_nat_add_iff 1|>.mpr this using 2
     simp [g]; ring_nf
   exact antitoneOn_log_div_sq.summable_of_integrable integrableOn_log_div_sq log_div_sq_nonneg
 
@@ -317,8 +316,7 @@ theorem E₁_le : E₁ ≤ (5 * log 2 + 3) / 4 := by
     ring_nf
   _ ≤ log 2 / 2 + ∑' (n : ℕ), (3 / 2) * (log (n + 3) / (n + 3) ^ 2) := by
     gcongr with n
-    · convert summable_nat_add_iff 3|>.mpr E₁_summable using 4
-      · rfl
+    · convert! summable_nat_add_iff 3|>.mpr E₁_summable using 4
       simp [e₁]; ring_nf
     · exact summable_log_div_sq.mul_left _
     · split_ifs with h
@@ -328,7 +326,7 @@ theorem E₁_le : E₁ ≤ (5 * log 2 + 3) / 4 := by
       · exact mul_nonneg (by norm_num) (div_nonneg (log_nonneg (by grind)) (by positivity))
   _ ≤ _ := by grw [tsum_mul_left, sum_log_div_sq_le]; ring_nf; rfl
 
-theorem E₁_nonneg : 0 ≤ E₁ := tsum_nonneg E₁_summand_nonneg
+theorem E₁_nonneg : 0 ≤ E₁ := tsum_nonneg e₁_nonneg
 
 theorem E₁Λ_le_E₁p_add_E₁ {x : ℝ} (hx : 1 ≤ x) :
     E₁Λ x ≤ E₁p x + E₁ := by
@@ -370,12 +368,12 @@ theorem E₁Λ_le_E₁p_add_E₁ {x : ℝ} (hx : 1 ≤ x) :
       rw [(by rfl : Ioc 1 (max 1 ⌊log x / log 2⌋₊) = Ico 2 (max 1 ⌊log x / log 2⌋₊  + 1))]
       grw [geom_sum_Ico_le_of_lt_one (by simp)]
       · apply le_of_eq
-        have : (p : ℝ) ≠ 0 := by exact_mod_cast hp.1.1.ne.symm
+        have : (p : ℝ) ≠ 0 := mod_cast hp.1.1.ne.symm
         field
       · simpa using inv_lt_one_of_one_lt₀ (mod_cast hp.2.one_lt)
     _ ≤ _ := by
       rw [primesLE_eq_filter_Ioc_zero, sum_filter]
-      exact E₁_summable.sum_le_tsum _ fun p hp ↦ E₁_summand_nonneg p
+      exact E₁_summable.sum_le_tsum _ fun p hp ↦ e₁_nonneg p
 
 theorem le_E₁p {x : ℝ} (hx : 1 ≤ x) : -2 - E₁ ≤ E₁p x := by
   linarith [E₁Λ_le_E₁p_add_E₁ hx, le_E₁Λ hx]
@@ -397,7 +395,7 @@ theorem sum_log_prime_div_eq_log_add_bounded : E₁p =O[atTop] (fun _ ↦ (1 : �
 theorem sum_log_prime_div_sim_log : (fun x ↦ ∑ p ∈ primesLE ⌊x⌋₊, log p / p)
     ~[atTop] log := by
   apply IsLittleO.isEquivalent (IsBigO.trans_isLittleO _ (isLittleO_const_log_atTop (c := 1)))
-  convert sum_log_prime_div_eq_log_add_bounded using 1 <;> rfl
+  convert! sum_log_prime_div_eq_log_add_bounded using 1
 
 end FirstTheorem
 
