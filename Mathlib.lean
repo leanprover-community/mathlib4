@@ -4312,7 +4312,6 @@ public import Mathlib.Data.Seq.Basic
 public import Mathlib.Data.Seq.Computation
 public import Mathlib.Data.Seq.Defs
 public import Mathlib.Data.Seq.Parallel
-public import Mathlib.Data.Set.Accumulate
 public import Mathlib.Data.Set.Basic
 public import Mathlib.Data.Set.BoolIndicator
 public import Mathlib.Data.Set.BooleanAlgebra
@@ -4323,7 +4322,6 @@ public import Mathlib.Data.Set.Constructions
 public import Mathlib.Data.Set.Countable
 public import Mathlib.Data.Set.Defs
 public import Mathlib.Data.Set.Disjoint
-public import Mathlib.Data.Set.Dissipate
 public import Mathlib.Data.Set.Enumerate
 public import Mathlib.Data.Set.Equitable
 public import Mathlib.Data.Set.Finite.Basic
@@ -5087,6 +5085,7 @@ public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.MvPolynomial
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Projective
 public import Mathlib.LinearAlgebra.Matrix.Gershgorin
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
+public import Mathlib.LinearAlgebra.Matrix.HadamardMatrix
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
 public import Mathlib.LinearAlgebra.Matrix.Ideal
 public import Mathlib.LinearAlgebra.Matrix.Integer
@@ -6152,6 +6151,8 @@ public import Mathlib.Order.ScottContinuity.Complete
 public import Mathlib.Order.ScottContinuity.Prod
 public import Mathlib.Order.SemiconjSup
 public import Mathlib.Order.Set
+public import Mathlib.Order.SetAccumulate
+public import Mathlib.Order.SetDissipate
 public import Mathlib.Order.SetIsMax
 public import Mathlib.Order.SetNotation
 public import Mathlib.Order.Shrink
@@ -6419,6 +6420,7 @@ public import Mathlib.RingTheory.Bialgebra.Equiv
 public import Mathlib.RingTheory.Bialgebra.GroupLike
 public import Mathlib.RingTheory.Bialgebra.Hom
 public import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
+public import Mathlib.RingTheory.Bialgebra.Quotient
 public import Mathlib.RingTheory.Bialgebra.SymmetricAlgebra
 public import Mathlib.RingTheory.Bialgebra.TensorProduct
 public import Mathlib.RingTheory.Binomial
@@ -6434,6 +6436,7 @@ public import Mathlib.RingTheory.Coalgebra.GroupLike
 public import Mathlib.RingTheory.Coalgebra.Hom
 public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 public import Mathlib.RingTheory.Coalgebra.MulOpposite
+public import Mathlib.RingTheory.Coalgebra.Quotient
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
 public import Mathlib.RingTheory.Complex
 public import Mathlib.RingTheory.Conductor
@@ -6576,6 +6579,7 @@ public import Mathlib.RingTheory.HopfAlgebra.Basic
 public import Mathlib.RingTheory.HopfAlgebra.Convolution
 public import Mathlib.RingTheory.HopfAlgebra.GroupLike
 public import Mathlib.RingTheory.HopfAlgebra.MonoidAlgebra
+public import Mathlib.RingTheory.HopfAlgebra.Quotient
 public import Mathlib.RingTheory.HopfAlgebra.TensorProduct
 public import Mathlib.RingTheory.HopkinsLevitzki
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
