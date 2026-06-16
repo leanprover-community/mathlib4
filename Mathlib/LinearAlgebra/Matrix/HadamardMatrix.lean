@@ -61,7 +61,7 @@ theorem IsHadamard.isStarNormal (hA : A.IsHadamard) : IsStarNormal A where
 
 /-- The conjugate transpose of a Hadamard matrix is Hadamard. -/
 theorem IsHadamard.conjTranspose (hA : A.IsHadamard) : Aᴴ.IsHadamard := by
-  exact ⟨fun i j => Unitary.star_mem (hA.1 j i),
+  exact ⟨fun i j => Unitary.star_mem (hA.apply_mem j i),
     by simpa using hA.conjTranspose_mul,
     by simpa using hA.mul_conjTranspose⟩
 
@@ -72,7 +72,7 @@ theorem isHadamard_conjTranspose_iff : Aᴴ.IsHadamard ↔ A.IsHadamard :=
 /-- Permuting the rows and columns of a Hadamard matrix gives a Hadamard matrix. -/
 theorem IsHadamard.reindex (e₁ e₂ : n ≃ m) (hA : A.IsHadamard) :
     (reindex e₁ e₂ A).IsHadamard := by
-  refine ⟨fun i j => hA.1 _ _, ?_, ?_⟩ <;>
+  refine ⟨fun i j => hA.apply_mem _ _, ?_, ?_⟩ <;>
     simp [reindex_apply, submatrix_mul_equiv, hA.mul_conjTranspose, hA.conjTranspose_mul,
       Fintype.card_congr e₁, submatrix_smul, Pi.smul_apply]
 
@@ -150,12 +150,14 @@ variable [CommSemiring R] [StarRing R] {A : Matrix n n R}
 
 Unlike `IsHadamard.conjTranspose` this requires commutativity: over a noncommutative ring the
 transpose of a Hadamard matrix need not be Hadamard. -/
-theorem IsHadamard.transpose (hA : A.IsHadamard) : Aᵀ.IsHadamard := by
-  refine ⟨fun i j => hA.1 j i, ?_, ?_⟩
-  · rw [show Aᵀᴴ = Aᴴᵀ from rfl, ← transpose_mul, hA.conjTranspose_mul, transpose_smul,
-      transpose_one]
-  · rw [show Aᵀᴴ = Aᴴᵀ from rfl, ← transpose_mul, hA.mul_conjTranspose, transpose_smul,
-      transpose_one]
+theorem IsHadamard.transpose (hA : A.IsHadamard) : Aᵀ.IsHadamard where
+  apply_mem i j := hA.apply_mem j i
+  mul_conjTranspose := by
+    rw [conjTranspose_transpose_eq_transpose_conjTranspose, ← transpose_mul, hA.conjTranspose_mul,
+      transpose_smul, transpose_one]
+  conjTranspose_mul := by
+    rw [conjTranspose_transpose_eq_transpose_conjTranspose, ← transpose_mul, hA.mul_conjTranspose,
+      transpose_smul, transpose_one]
 
 @[simp]
 theorem isHadamard_transpose_iff : Aᵀ.IsHadamard ↔ A.IsHadamard :=
@@ -229,7 +231,7 @@ theorem isHadamard_iff_mul_conjTranspose
     A.IsHadamard ↔
       (∀ i j, A i j ∈ unitary R) ∧
         A * Aᴴ = (Fintype.card n : R) • (1 : Matrix n n R) :=
-  ⟨fun hA => ⟨hA.1, hA.mul_conjTranspose⟩,
+  ⟨fun hA => ⟨hA.apply_mem, hA.mul_conjTranspose⟩,
    fun hA => IsHadamard.of_mul_conjTranspose hA.1 hA.2 hcard⟩
 
 end CommRing
@@ -240,7 +242,7 @@ This is the standard divisibility obstruction in [Section 2.3][deLauneyFlannery2
 theorem IsHadamard.four_dvd_card {A : Matrix n n ℤ}
     (hA : A.IsHadamard) (hcard : 2 < Fintype.card n) : 4 ∣ Fintype.card n := by
   have hpm : ∀ i j, A i j = 1 ∨ A i j = -1 := fun i j =>
-    Unitary.mem_iff_eq_one_or_eq_neg_one.1 (hA.1 i j)
+    Unitary.mem_iff_eq_one_or_eq_neg_one.mp (hA.apply_mem i j)
   obtain ⟨r, s, t, hrs, hrt, hst⟩ := Fintype.two_lt_card_iff.mp hcard
   have horth ⦃i k : n⦄ (hik : i ≠ k) : ∑ j, A i j * A k j = 0 := by
     simpa [Matrix.mul_apply, hik] using congr_fun (congr_fun hA.mul_conjTranspose i) k
