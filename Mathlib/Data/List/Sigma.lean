@@ -616,7 +616,6 @@ theorem dedupKeys_cons {x : Sigma β} (l : List (Sigma β)) :
     dedupKeys (x :: l) = kinsert x.1 x.2 (dedupKeys l) :=
   rfl
 
-
 theorem nodupKeys_dedupKeys (l : List (Sigma β)) : NodupKeys (dedupKeys l) := by
   dsimp [dedupKeys]
   generalize hl : nil = l'
@@ -645,8 +644,7 @@ theorem dlookup_dedupKeys (a : α) (l : List (Sigma β)) : dlookup a (dedupKeys 
     · rw [dedupKeys_cons, dlookup_kinsert_ne h, l_ih, dlookup_cons_ne]
       exact h
 
-omit [DecidableEq α] in
-theorem sizeOf_cons_le_sizeOf_cons [SizeOf α] {l r : List α} (a : α)
+theorem sizeOf_cons_le_sizeOf_cons {α : Type*} [SizeOf α] {l r : List α} (a : α)
     (h : SizeOf.sizeOf l ≤ SizeOf.sizeOf r) :
     SizeOf.sizeOf (a :: l) ≤ SizeOf.sizeOf (a :: r) := by
   rw [cons.sizeOf_spec, cons.sizeOf_spec]
