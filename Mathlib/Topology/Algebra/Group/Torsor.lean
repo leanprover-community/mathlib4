@@ -98,9 +98,9 @@ theorem IsTopologicalTorsor.to_isTopologicalGroup : IsTopologicalGroup V where
 def Homeomorph.smulConst (p : P) : V ≃ₜ P where
   __ := Equiv.smulConst p
 
-/-- The map `p' ↦ p' /ₛ p` as a homeomorphism: `Equiv.constSDiv` as a homeomorphism -/
+/-- The map `p' ↦ p /ₛ p'` as a homeomorphism: `Equiv.constSDiv` as a homeomorphism -/
 @[to_additive (attr := simps!)
-/-- The map `p' ↦ p' -ᵥ p` as a homeomorphism: `Equiv.constVSub` as a homeomorphism -/]
+/-- The map `p' ↦ p -ᵥ p'` as a homeomorphism: `Equiv.constVSub` as a homeomorphism -/]
 def Homeomorph.constSDiv [ContinuousInv V] (p : P) : P ≃ₜ V where
   __ := Equiv.constSDiv p
 
