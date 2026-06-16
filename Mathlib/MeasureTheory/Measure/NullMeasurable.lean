@@ -97,6 +97,11 @@ def NullMeasurableSet [MeasurableSpace α] (s : Set α)
 theorem _root_.MeasurableSet.nullMeasurableSet (h : MeasurableSet s) : NullMeasurableSet s μ :=
   h.eventuallyMeasurableSet
 
+theorem _root_.MeasureTheory.nullMeasurableSet_iff_eventuallyMeasurableSet (s : Set α) :
+  NullMeasurableSet s μ ↔ EventuallyMeasurableSet m0 (ae μ) s := by
+  unfold NullMeasurableSet EventuallyMeasurableSet
+  rfl
+
 theorem nullMeasurableSet_empty : NullMeasurableSet ∅ μ :=
   MeasurableSet.empty
 
@@ -121,11 +126,6 @@ theorem compl_iff : NullMeasurableSet sᶜ μ ↔ NullMeasurableSet s μ :=
 @[nontriviality]
 theorem of_subsingleton [Subsingleton α] : NullMeasurableSet s μ :=
   Subsingleton.measurableSet
-
-theorem _root_.MeasureTheory.nullMeasurableSet_iff_eventuallyMeasurableSet (s : Set α) :
-  NullMeasurableSet s μ ↔ EventuallyMeasurableSet m0 (ae μ) s := by
-  unfold NullMeasurableSet EventuallyMeasurableSet
-  rfl
 
 protected theorem congr (hs : NullMeasurableSet s μ) (h : s =ᵐ[μ] t) : NullMeasurableSet t μ := by
   rw [nullMeasurableSet_iff_eventuallyMeasurableSet]
