@@ -338,10 +338,9 @@ See `Nat.div_mod_unique` for a similar propositional statement. -/
 @[simps]
 def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n where
   toFun a := (a / n, Fin.ofNat n a)
-  invFun ai := n.mkDivMod ai.1 ai.2.val
+  invFun ai := n.mkDivMod ai.1 ai.2
   left_inv _ := n.mkDivMod_div_mod
-  right_inv ai := Prod.ext (n.div_mkDivMod_of_lt ai.2.is_lt)
-    (Fin.ext <| mod_mkDivMod_of_lt ai.2.is_lt)
+  right_inv _ := Prod.ext (by simp) (by simp [Fin.ext_iff, Nat.mod_eq_of_lt])
 
 /-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
 See `Int.ediv_emod_unique` for a similar propositional statement. -/
