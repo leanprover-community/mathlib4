@@ -1135,7 +1135,7 @@ end Fintype
 
 section
 
-variable [Semiring 𝕜] [∀ i, SeminormedAddCommGroup (β i)] [∀ i, Module 𝕜 (β i)]
+variable [Semiring 𝕜] [∀ i, AddCommGroup (β i)] [∀ i, Module 𝕜 (β i)] [∀ i, TopologicalSpace (β i)]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- `WithLp.linearEquiv` as a continuous linear equivalence. -/
@@ -1149,6 +1149,19 @@ lemma coe_continuousLinearEquiv :
 lemma coe_symm_continuousLinearEquiv :
     ⇑(PiLp.continuousLinearEquiv p 𝕜 β).symm = toLp p := rfl
 
+/-- The natural equivalence between `PiLp p β` and `β default`,
+for any index type `ι` with a unique element. -/
+def equivOfUnique [Unique ι] : PiLp p β ≃L[𝕜] β default :=
+  (continuousLinearEquiv p 𝕜 β).trans <| ContinuousLinearEquiv.piUnique 𝕜 β
+
+@[simp]
+lemma equivOfUnique_apply [Unique ι] (z : PiLp p β) : PiLp.equivOfUnique p 𝕜 β z = z default := rfl
+
+end
+
+section
+
+variable [Semiring 𝕜] [∀ i, NormedAddCommGroup (β i)] [∀ i, Module 𝕜 (β i)]
 set_option backward.defeqAttrib.useBackward true in
 variable {𝕜} in
 /-- The projection on the `i`-th coordinate of `PiLp p β`, as a continuous linear map. -/
@@ -1157,28 +1170,6 @@ def proj (i : ι) : PiLp p β →L[𝕜] β i where
   __ := projₗ p β i
 
 end
-
-/-- The natural equivalence between `PiLp p α` and `α default`,
-for any index type `ι` with a unique element. -/
-def equivOfUnique [Semiring 𝕜] [Unique ι]
-    [Π i, AddCommGroup (α i)] [Π i, Module 𝕜 (α i)] [Π i, TopologicalSpace (α i)] :
-    PiLp p α ≃L[𝕜] α default where
-  toFun z := z default
-  invFun := PiLp.single (β := α) p default
-  left_inv z := by
-    ext i
-    rw [Unique.default_eq i]
-    simp
-  right_inv z := by simp
-  -- Each of these `simp`s is very slow when un-squeezed.
-  map_add' := by intros; simp only [ofLp_add p, Pi.add_apply]
-  map_smul' := by intros; simp only [ofLp_smul, Pi.smul_apply, RingHom.id_apply]
-  continuous_invFun := by fun_prop [PiLp.single]
-
-@[simp]
-lemma equivOfUnique_apply [Semiring 𝕜] [Unique ι]
-    [Π i, AddCommGroup (α i)] [Π i, Module 𝕜 (α i)] [Π i, TopologicalSpace (α i)] (z : PiLp p α) :
-    PiLp.equivOfUnique p 𝕜 α z = z default := rfl
 
 section Basis
 
