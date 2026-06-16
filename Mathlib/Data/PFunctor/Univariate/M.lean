@@ -15,7 +15,7 @@ as the greatest fixpoint of a polynomial functor.
 
 Example usage:
 ```
-inductive ListA (α : Type u) 
+inductive ListA (α : Type u)
 | nil
 | cons : α -> ListA α
 deriving DecidableEq, Repr
@@ -27,8 +27,8 @@ def ListPFunctor.{u} (α : Type u) : PFunctor.{u, u} where
   | .cons _ => PUnit
 
 def range : (ListPFunctor Nat).M :=
-  PFunctor.M.corec 
-    (X := Nat) 
+  PFunctor.M.corec
+    (X := Nat)
     (fun n => .mk (.cons n) fun .unit => n.succ)
     0
 
@@ -45,8 +45,8 @@ info: [ListA.cons 0,
  ListA.cons 9]
 -/
 #guard_msgs in
-#eval List.iterate (fun x => 
-  match h : x.head with 
+#eval List.iterate (fun x =>
+  match h : x.head with
   | .nil => .mk ⟨.nil, nofun⟩ -- not reached in this example
   | .cons _ => x.children (h ▸ .unit)) range 10
   |>.map (·.head)
