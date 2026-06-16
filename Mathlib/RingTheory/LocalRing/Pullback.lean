@@ -6,7 +6,7 @@ Authors: Bingyu Xia
 
 module
 
-public import Mathlib.Algebra.AddTorsor.Defs
+public import Mathlib.Algebra.Torsor.Defs
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 import Mathlib.Algebra.Ring.Subring.Units
