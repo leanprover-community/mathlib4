@@ -20,6 +20,8 @@ that.
 At the moment it contains several lemmas in this direction, for antitone or monotone functions
 (or products of antitone and monotone functions), formulated for sums on `range i` or `Ico a b`.
 
+`TODO`: Add more lemmas to the API to directly address limiting issues
+
 ## Main Results
 
 * `AntitoneOn.integral_le_sum`: The integral of an antitone function is at most the sum of its
