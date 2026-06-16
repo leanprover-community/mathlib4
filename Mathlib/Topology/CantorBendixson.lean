@@ -27,9 +27,6 @@ Cantor-Bendixson derivative sequence of a closed set.
 
 ## Main statements
 
-* `CantorBendixson.iteratedDerivedSet_zero`
-* `CantorBendixson.iteratedDerivedSet_succ`
-* `CantorBendixson.iteratedDerivedSet_limit`
 * `CantorBendixson.iteratedDerivedSet_constant_iff_preperfect`: a set is preperfect if and only
   if every iterated derived set is equal to the original set.
 * `CantorBendixson.iteratedDerivedSet_stay`: the iterated derived-set sequence eventually
@@ -48,8 +45,6 @@ Cantor-Bendixson derivative sequence of a closed set.
   This keeps the transfinite sequence antitone for arbitrary sets.
 * If `s` is closed, then `relDerivedSet s = derivedSet s`, so successor stages agree with the
   ambient derived-set operator.
-* The current implementation is not universe polymorphic because it uses `gfpApprox`. A universe
-  polymorphic implementation depends on upstream support in that module.
 
 ## TODO
 
