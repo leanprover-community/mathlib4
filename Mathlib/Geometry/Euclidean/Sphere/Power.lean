@@ -79,7 +79,7 @@ This section develops some results on spheres in Euclidean affine spaces.
 -/
 
 
-open InnerProductGeometry EuclideanGeometry
+open InnerProductGeometry
 
 variable {P : Type*} [MetricSpace P] [NormedAddTorsor V P]
 
@@ -345,10 +345,9 @@ theorem cospherical_of_inner_vsub_eq_inner_vsub {p₁ p₂ p₃ p₄ p : P}
   simp only [Set.insert_subset_iff, Set.singleton_subset_iff]
   exact ⟨hp₁_mem, hp₂_mem, hp₃_mem, hp₄_mem⟩
 
-/-- **Converse of the Intersecting Chords Theorem**.  If
-`dist p₁ p * dist p₂ p = dist p₃ p * dist p₄ p`, and `p` lies strictly between `p₁` and `p₂`
-(`∠ p₁ p p₂ = π`) and strictly between `p₃` and `p₄`, with `{p₁, p, p₃}` not collinear, then
-`p₁, p₂, p₃, p₄` are cospherical. -/
+/-- **Converse of the Intersecting Chords Theorem**. If `p` lies between `p₁` and `p₂` and
+between `p₃` and `p₄`, and `dist p₁ p * dist p₂ p = dist p₃ p * dist p₄ p`, then the four
+points are cospherical. -/
 theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi {p₁ p₂ p₃ p₄ p : P}
     (h : dist p₁ p * dist p₂ p = dist p₃ p * dist p₄ p)
     (hp₁p₂ : ∠ p₁ p p₂ = π) (hp₃p₄ : ∠ p₃ p p₄ = π)
@@ -359,12 +358,10 @@ theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi {p₁ p₂ p₃ p₄ 
     (angle_eq_pi_iff_sbtw.mp hp₃p₄).wbtw.mem_affineSpan hn ?_
   rw [← cos_angle_mul_dist_mul_dist, ← cos_angle_mul_dist_mul_dist, hp₁p₂, hp₃p₄, h]
 
-/-- **Converse of the Intersecting Secants Theorem**.  If
-`dist p₁ p * dist p₂ p = dist p₃ p * dist p₄ p`, and `p₁, p₂` lie on a common ray from `p`
-(`∠ p₁ p p₂ = 0`) and `p₃, p₄` on another, with `{p₁, p, p₃}` not collinear, then
-`p₁, p₂, p₃, p₄` are cospherical.  As in Mathlib's forward secant theorem, `p₁ ≠ p₂` and
-`p₃ ≠ p₄` are required: unlike `∠ = π`, the condition `∠ = 0` does not force the endpoints to
-be distinct. -/
+/-- **Converse of the Intersecting Secants Theorem**. If `p₁` and `p₂` lie on one ray from
+`p` and `p₃` and `p₄` on another, and `dist p₁ p * dist p₂ p = dist p₃ p * dist p₄ p`, then
+the four points are cospherical. The hypotheses `p₁ ≠ p₂` and `p₃ ≠ p₄` are needed because
+`∠ p₁ p p₂ = 0` does not force the endpoints to be distinct. -/
 theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_zero {p₁ p₂ p₃ p₄ p : P}
     (h : dist p₁ p * dist p₂ p = dist p₃ p * dist p₄ p)
     (h₁₂ : p₁ ≠ p₂) (h₃₄ : p₃ ≠ p₄)
