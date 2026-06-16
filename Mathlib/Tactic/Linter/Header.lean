@@ -366,7 +366,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   duplicateImportsCheck importRefs
   let errors ← directoryDependencyCheck mainModule
   if errors.size > 0 then
-    Linter.logLint linter.directoryDependency (importRefs.back?.elim stx (·.stx)) <|
+    Linter.logLint linter.directoryDependency (importRefs.back?.elim headerStx (·.stx)) <|
       m!"\n\n".joinSep errors.toList
   -- Report any errors about the copyright line.
   if mainModule != `Mathlib.Init && mainModule != `Mathlib.Tactic then
