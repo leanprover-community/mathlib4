@@ -75,6 +75,7 @@ def Hom : WithTerminal C → WithTerminal C → Type v
   | of X, of Y => X ⟶ Y
   | star, of _ => PEmpty
   | _, star => PUnit
+attribute [nolint simpNF] Hom.eq_3
 
 /-- Identity morphisms for `WithTerminal C`. -/
 @[simp]
@@ -92,6 +93,9 @@ def comp : ∀ {X Y Z : WithTerminal C}, Hom X Y → Hom Y Z → Hom X Z
   | star, of _X, _ => fun f _g => PEmpty.elim f
   | _, star, of _Y => fun _f g => PEmpty.elim g
   | star, star, star => fun _ _ => PUnit.unit
+#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
+Assistance investigating this would be appreciated. -/
+attribute [nolint simpNF] comp.eq_2 comp.eq_4
 
 @[aesop safe destruct (rule_sets := [CategoryTheory])]
 lemma false_of_from_star' {X : C} (f : Hom star (of X)) : False := (f : PEmpty).elim
@@ -489,6 +493,7 @@ def Hom : WithInitial C → WithInitial C → Type v
   | of X, of Y => X ⟶ Y
   | of _, _ => PEmpty
   | star, _ => PUnit
+attribute [nolint simpNF] Hom.eq_2
 
 /-- Identity morphisms for `WithInitial C`. -/
 @[simp]
