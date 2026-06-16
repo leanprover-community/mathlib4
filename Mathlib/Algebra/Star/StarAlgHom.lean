@@ -101,7 +101,7 @@ variable [NonUnitalNonAssocSemiring D] [DistribMulAction R D] [Star D]
 
 instance : FunLike (A →⋆ₙₐ[R] B) A B where
   coe f := f.toFun
-  coe_injective' := by rintro ⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩ h; congr
+  coe_injective := by rintro ⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩ h; congr
 
 instance : NonUnitalAlgHomClass (A →⋆ₙₐ[R] B) R A B where
   map_smulₛₗ f := f.map_smul'
@@ -323,7 +323,7 @@ variable {F R A B C D : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Star
 
 instance : FunLike (A →⋆ₐ[R] B) A B where
   coe f := f.toFun
-  coe_injective' := by rintro ⟨⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩, _⟩ h; congr
+  coe_injective := by rintro ⟨⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩, _⟩ h; congr
 
 instance : AlgHomClass (A →⋆ₐ[R] B) R A B where
   map_mul f := f.map_mul'
@@ -711,7 +711,7 @@ instance : StarRingEquivClass (A ≃⋆ₐ[R] B) A B where
 /-- Helper instance for cases where the inference via `EquivLike` is too hard. -/
 instance : FunLike (A ≃⋆ₐ[R] B) A B where
   coe f := f.toFun
-  coe_injective' := DFunLike.coe_injective
+  coe_injective := DFunLike.coe_injective
 
 @[simp]
 theorem toStarRingEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toStarRingEquiv = e := rfl
@@ -741,7 +741,7 @@ theorem coe_refl : ⇑(refl : A ≃⋆ₐ[R] A) = id :=
 nonrec def symm (e : A ≃⋆ₐ[R] B) : B ≃⋆ₐ[R] A :=
   { e.symm with
     map_smul' := fun r b => by
-      simpa only [apply_inv_apply, inv_apply_apply] using
+      simpa only [apply_inv_apply, inv_apply_apply] using!
         congr_arg (inv e) (map_smul e r (inv e b)).symm }
 
 /-- See Note [custom simps projection] -/
@@ -767,16 +767,11 @@ theorem coe_mk (e h) : ⇑(⟨e, h⟩ : A ≃⋆ₐ[R] B) = e := rfl
 theorem mk_coe (e : A ≃⋆ₐ[R] B) (e' h₁ h₂ h₃ h₄ h₅ h₆) :
     (⟨⟨⟨⟨e, e', h₁, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A ≃⋆ₐ[R] B) = e := ext fun _ => rfl
 
-/-- Auxiliary definition to avoid looping in `dsimp` with `StarAlgEquiv.symm_mk`. -/
-protected def symm_mk.aux (f f') (h₁ h₂ h₃ h₄ h₅ h₆) :=
-  (⟨⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A ≃⋆ₐ[R] B).symm
-
 @[simp]
-theorem symm_mk (f f') (h₁ h₂ h₃ h₄ h₅ h₆) :
-    (⟨⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A ≃⋆ₐ[R] B).symm =
-      { symm_mk.aux f f' h₁ h₂ h₃ h₄ h₅ h₆ with
-        toFun := f'
-        invFun := f } :=
+theorem symm_mk (e : A ≃⋆+* B) (h₁) : dsimp%
+    (⟨e, h₁⟩ : A ≃⋆ₐ[R] B).symm =
+      { (⟨e, h₁⟩ : A ≃⋆ₐ[R] B).symm with
+        toStarRingEquiv := e.symm } :=
   rfl
 
 @[simp]

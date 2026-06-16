@@ -171,6 +171,6 @@ noncomputable def toChainHomotopy (H : Homotopy f g) :
 theorem map_homology_eq [CategoryWithHomology C] (H : Homotopy f g) (n : ℕ) :
     (HomologicalComplex.homologyFunctor C _ n).map ((alternatingFaceMapComplex C).map f) =
     (HomologicalComplex.homologyFunctor C _ n).map ((alternatingFaceMapComplex C).map g) := by
-  simpa using (H.toChainHomotopy).homologyMap_eq n
+  simpa using! (H.toChainHomotopy).homologyMap_eq n
 
 end CategoryTheory.SimplicialObject.Homotopy

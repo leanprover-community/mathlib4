@@ -141,6 +141,11 @@ lemma closure_eq_preimage_closure_image (hf : IsInducing f) (s : Set X) :
 theorem isClosed_iff (hf : IsInducing f) {s : Set X} :
     IsClosed s ↔ ∃ t, IsClosed t ∧ f ⁻¹' t = s := by rw [hf.eq_induced, isClosed_induced_iff]
 
+theorem image_eq_isClosed_inter_range (hf : IsInducing f) {s : Set X} (hs : IsClosed s) :
+    ∃ c, IsClosed c ∧ f '' s = c ∩ range f := by
+  obtain ⟨c, hc, rfl⟩ := hf.isClosed_iff.1 hs
+  exact ⟨c, hc, image_preimage_eq_inter_range⟩
+
 theorem isClosed_iff' (hf : IsInducing f) {s : Set X} :
     IsClosed s ↔ ∀ x, f x ∈ closure (f '' s) → x ∈ s := by rw [hf.eq_induced, isClosed_induced_iff']
 
@@ -150,6 +155,11 @@ theorem isClosed_preimage (h : IsInducing f) (s : Set Y) (hs : IsClosed s) :
 
 theorem isOpen_iff (hf : IsInducing f) {s : Set X} :
     IsOpen s ↔ ∃ t, IsOpen t ∧ f ⁻¹' t = s := by rw [hf.eq_induced, isOpen_induced_iff]
+
+theorem image_eq_isOpen_inter_range (hf : IsInducing f) {s : Set X} (hs : IsOpen s) :
+    ∃ c, IsOpen c ∧ f '' s = c ∩ range f := by
+  obtain ⟨c, hc, rfl⟩ := hf.isOpen_iff.1 hs
+  exact ⟨c, hc, image_preimage_eq_inter_range⟩
 
 theorem setOf_isOpen (hf : IsInducing f) :
     {s : Set X | IsOpen s} = preimage f '' {t | IsOpen t} :=
@@ -328,6 +338,10 @@ theorem of_comp_of_isCoinducing (hgf : IsQuotientMap (g ∘ f)) (hf : IsCoinduci
 @[deprecated (since := "2026-03-21")]
 alias of_comp_of_eq_coinduced := of_comp_of_isCoinducing
 
+protected theorem of_comp_iff (hf : IsQuotientMap f) :
+    IsQuotientMap (g ∘ f) ↔ IsQuotientMap g := by
+  rw [isQuotientMap_iff, isQuotientMap_iff, hf.isCoinducing.of_comp_iff, hf.surjective.of_comp_iff]
+
 theorem of_comp_isQuotientMap (hf : IsQuotientMap f) (hgf : IsQuotientMap (g ∘ f)) :
     IsQuotientMap g := of_comp_of_isCoinducing hgf hf.isCoinducing
 
@@ -434,7 +448,7 @@ lemma preimage_closure_image (h₁ : IsOpenMap f) (h₂ : Function.Injective f)
 
 theorem preimage_frontier_subset_frontier_preimage (hf : IsOpenMap f) {s : Set Y} :
     f ⁻¹' frontier s ⊆ frontier (f ⁻¹' s) := by
-  simpa only [frontier_eq_closure_inter_closure, preimage_inter] using
+  simpa only [frontier_eq_closure_inter_closure, preimage_inter] using!
     inter_subset_inter hf.preimage_closure_subset_closure_preimage
       hf.preimage_closure_subset_closure_preimage
 
@@ -692,7 +706,9 @@ theorem IsOpenEmbedding.map_nhds_eq (hf : IsOpenEmbedding f) (x : X) :
 lemma IsOpenEmbedding.isOpen_iff_image_isOpen (hf : IsOpenEmbedding f) {s : Set X} :
     IsOpen s ↔ IsOpen (f '' s) where
   mp := hf.isOpenMap s
-  mpr h := by convert ← h.preimage hf.isEmbedding.continuous; apply preimage_image_eq _ hf.injective
+  mpr h := by
+    convert! ← h.preimage hf.isEmbedding.continuous
+    apply preimage_image_eq _ hf.injective
 
 theorem IsOpenEmbedding.tendsto_nhds_iff [TopologicalSpace Z] {f : ι → Y} {l : Filter ι} {y : Y}
     (hg : IsOpenEmbedding g) : Tendsto f l (𝓝 y) ↔ Tendsto (g ∘ f) l (𝓝 (g y)) :=
@@ -843,7 +859,7 @@ protected lemma of_comp (hg : IsEmbedding g) (hgf : IsClosedEmbedding (g ∘ f))
     IsClosedEmbedding f where
   __ := hg.of_comp_iff.mp hgf.isEmbedding
   isClosed_range := by
-    convert hg.isClosed_preimage _ hgf.isClosed_range
+    convert! hg.isClosed_preimage _ hgf.isClosed_range
     rw [range_comp, hg.injective.preimage_image]
 
 theorem closure_image_eq (hf : IsClosedEmbedding f) (s : Set X) :

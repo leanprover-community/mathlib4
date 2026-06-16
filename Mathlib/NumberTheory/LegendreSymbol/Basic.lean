@@ -128,7 +128,7 @@ theorem eq_pow (a : ℤ) : (legendreSym p a : ZMod p) = (a : ZMod p) ^ (p / 2) :
       generalize (a : ZMod 2) = b; fin_cases b
       · tauto
       · simp
-  · convert quadraticChar_eq_pow_of_char_ne_two' hc (a : ZMod p)
+  · convert! quadraticChar_eq_pow_of_char_ne_two' hc (a : ZMod p)
     exact (card p).symm
 
 /-- If `p ∤ a`, then `legendreSym p a` is `1` or `-1`. -/

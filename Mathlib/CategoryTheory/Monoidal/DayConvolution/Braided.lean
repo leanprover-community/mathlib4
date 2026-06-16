@@ -55,6 +55,7 @@ def braidingInvCorepresenting : G ⊠ F ⟶ tensor C ⋙ F ⊛ G where
   app _ := (β_ _ _).inv ≫ (unit F G).app (_, _) ≫ (F ⊛ G).map (β_ _ _).inv
   naturality {x y} f := by simp [tensorHom_def, ← Functor.map_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The braiding isomorphism for Day convolution. -/
 def braiding : F ⊛ G ≅ G ⊛ F where
@@ -69,6 +70,7 @@ def braiding : F ⊛ G ≅ G ⊛ F where
     ext
     simp [-tensor_obj]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma unit_app_braiding_hom_app (x y : C) :
@@ -78,6 +80,7 @@ lemma unit_app_braiding_hom_app (x y : C) :
     (unit F G).app (x, y) ≫ (braiding F G).hom.app ((tensor C).obj (x, y)) = _
   simp [braiding, braidingHomCorepresenting, -tensor_obj]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma unit_app_braiding_inv_app (x y : C) :
@@ -91,6 +94,7 @@ end
 
 variable {F G}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma braiding_naturality_right (H : C ⥤ V) (η : F ⟶ G)
@@ -102,6 +106,7 @@ lemma braiding_naturality_right (H : C ⥤ V) (η : F ⟶ G)
   ext ⟨_, _⟩
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma braiding_naturality_left (η : F ⟶ G) (H : C ⥤ V)
@@ -119,6 +124,7 @@ variable
   [∀ (v : V) (d : C),
     Limits.PreservesColimitsOfShape (CostructuredArrow (tensor C) d) (tensorRight v)]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (F G) in
 lemma hexagon_forward (H : C ⥤ V)
@@ -157,6 +163,7 @@ lemma hexagon_forward (H : C ⥤ V)
   rw [← this, whiskerLeft_comp_assoc]
   simp [← Functor.map_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (F G) in
 lemma hexagon_reverse (H : C ⥤ V)
@@ -205,6 +212,7 @@ variable {C : Type u₁} [Category.{v₁} C] {V : Type u₂} [Category.{v₂} V]
   [MonoidalCategory V] [SymmetricCategory V]
   (F G : C ⥤ V)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma symmetry [DayConvolution F G] [DayConvolution G F] :
     (braiding F G).hom ≫ (braiding G F).hom = 𝟙 _ := by
