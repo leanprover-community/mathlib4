@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2026 Michael Rothgang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Michael Rothgang
+-/
 module
 
 public import Mathlib.Geometry.Manifold.Diffeomorph
@@ -32,43 +37,15 @@ def IsOpenSmoothEmbedding (f : M → N) : Prop :=
   ∃ U : Opens N, ∃ φ : Diffeomorph I J M U n, (Subtype.val ∘ φ) = f
 
 open IsManifold in
-lemma bar (φ : OpenPartialHomeomorph H H) (hφ : CMDiff[φ.source] n φ) :
-    φ ∈ contDiffGroupoid n I := by
-  rw [contDiffGroupoid, mem_groupoid_of_pregroupoid]
-  constructor
-  · rw [contDiffPregroupoid]
-    dsimp
-    rw [← contMDiffOn_iff_contDiffOn]
-    sorry -- is this kind of obvious, as I is smooth??
-  sorry
-
-open IsManifold in
-lemma foo [IsManifold I n M]
+lemma OpenPartialHomeomorph.diffeomorph_trans_mem_maximalAtlas [IsManifold I n M]
     (φ : OpenPartialHomeomorph M H) (hφ : φ ∈ maximalAtlas I n M) (Φ : Diffeomorph I I M M n) :
     Φ.toHomeomorph.toOpenPartialHomeomorph.symm.trans φ ∈ maximalAtlas I n M := by
-  rw [IsManifold.mem_maximalAtlas_iff, _root_.mem_maximalAtlas_iff]
-  intro e he
-  constructor
-  · apply bar
-    simp
-    -- φ and e are smooth... hopefully!
-    -- then, composition of smooth functions!
-    sorry
-    /- rw [OpenPartialHomeomorph.trans_symm_eq_symm_trans_symm, OpenPartialHomeomorph.symm_symm]
-    rw [IsManifold.mem_maximalAtlas_iff, _root_.mem_maximalAtlas_iff] at hφ
-    have aux := (hφ e he).1
-    -- dubious now...
-    rw [contDiffGroupoid, mem_groupoid_of_pregroupoid]
-    constructor
-    · simp
-      rw [contDiffPregroupoid]
-      dsimp
-      sorry
-    · sorry -- analogous to upstairs -/
-  · apply bar
-    sorry
+  apply OpenPartialHomeomorph.mem_maximalAtlas_of_contMDiffOn
+  · exact (contMDiffOn_of_mem_maximalAtlas hφ).comp Φ.contMDiff_invFun.contMDiffOn (by simp)
+  · exact Φ.contMDiff_toFun.contMDiffOn.comp (t := Set.univ)
+      ((contMDiffOn_symm_of_mem_maximalAtlas hφ).mono (by simp)) (by simp)
 
--- TODO: once we have a better characterisatio of local diffeomorphisms, replace this proof by
+-- TODO: once we have a better characterisation of local diffeomorphisms, replace this proof by
 -- "mfderiv% Φ is invertible, hence has a left inverse, thus Φ is an immersion"
 lemma Diffeomorph.isImmersionOfComplement [IsManifold I n M] (Φ : Diffeomorph I I M M n) :
     IsImmersionOfComplement Unit I I n Φ := by
@@ -77,8 +54,8 @@ lemma Diffeomorph.isImmersionOfComplement [IsManifold I n M] (Φ : Diffeomorph I
     Φ.toHomeomorph.toOpenPartialHomeomorph.symm.trans (chartAt H x)
   apply IsImmersionAtOfComplement.mk_of_continuousAt (codChart := b) (equiv := (.prodUnique 𝕜 E _))
     _ _ (mem_chart_source H x) ?_ (IsManifold.chart_mem_maximalAtlas x)
-  · simp [b]
-    sorry -- missing lemma: post-composing with a maximal atlas
+  · simp [b, (chartAt H x).diffeomorph_trans_mem_maximalAtlas
+      <| IsManifold.chart_mem_maximalAtlas x]
   · intro y hy
     have : I ((chartAt H x) ((chartAt H x).symm (I.symm y))) = y := by
       rw [(chartAt H x).right_inv (by simp_all), I.right_inv (by simp_all)]
@@ -119,7 +96,6 @@ def of_isSmoothEmbedding_of_isOpen (hf : IsSmoothEmbedding I J n f) (hran : IsOp
   -- missing lemma: IsSmoothEmbedding is a diffeo to its range
   sorry
 
-variable [IsManifold I n M] [IsManifold J n N] in -- remove after merging master
 lemma contMDiff (hf : IsOpenSmoothEmbedding I J n f) : CMDiff n f := hf.isSmoothEmbedding.contMDiff
 
 def _root_.Diffeomorph.of_le (φ : Diffeomorph I J M N n) (hmn : m ≤ n) :
