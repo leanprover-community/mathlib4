@@ -31,6 +31,12 @@ theorem dissipate_def [LE α] {x : α} : dissipate s x = ⋂ y ≤ x, s y := rfl
 theorem dissipate_eq_biInter_lt {s : ℕ → Set β} {n : ℕ} : dissipate s n = ⋂ k < n + 1, s k := by
   simp_rw [Nat.lt_add_one_iff, dissipate]
 
+theorem dissipate_eq_ofFin {s : ℕ → Set β} {n : ℕ} : dissipate s n = ⋂ (k : Fin (n + 1)), s k := by
+  rw [dissipate]
+  ext x
+  simp only [mem_iInter]
+  refine ⟨fun h i ↦ h i.val (Fin.is_le i), fun h i hi ↦ h ⟨i, Nat.lt_succ_of_le hi⟩⟩
+
 @[simp]
 theorem mem_dissipate [LE α] {x : α} {z : β} : z ∈ dissipate s x ↔ ∀ y ≤ x, z ∈ s y := by
   simp [dissipate_def]
