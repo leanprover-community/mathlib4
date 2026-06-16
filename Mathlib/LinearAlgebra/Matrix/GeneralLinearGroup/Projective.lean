@@ -32,7 +32,7 @@ If `n` is a number, then `PGL(n, R)` is interpreted as `PGL(Fin n, R)`.
 
 open scoped MatrixGroups
 
-public section
+@[expose] public section
 
 namespace Matrix
 
@@ -73,6 +73,9 @@ theorem mk_eq_one {g : GL n R} : mk g = 1 ↔ g ∈ Subgroup.center (GL n R) := 
   rw [← MonoidHom.mem_ker, ker_mk]
 
 @[simp]
+lemma mk_one : mk (1 : GL n R) = 1 := rfl
+
+@[simp]
 theorem mk_scalar (u : Rˣ) : mk (.scalar n u) = 1 := by
   rw [← MonoidHom.mem_ker, ker_mk, GeneralLinearGroup.center_eq_range_scalar]
   simp
@@ -107,7 +110,6 @@ open Matrix.SpecialLinearGroup
 
 /-- The natural inclusion map from `PSL(n, R)` to `PGL(n, R)` induced by the inclusion
   map from `SL(n, R)` to `GL(n, R)`. -/
-@[expose]
 def toPGL : ProjectiveSpecialLinearGroup n R →* PGL(n, R) :=
   QuotientGroup.lift _ SpecialLinearGroup.toPGL <| le_of_eq toPGL_ker.symm
 
@@ -131,7 +133,7 @@ lemma toPGL_surj_of_roots
   use QuotientGroup.mk ⟨r.1 • g.1, hr⟩
   simp only [ProjectiveSpecialLinearGroup.toPGL_mk, mk_eq_mk_iff]
   refine ⟨r⁻¹, Units.ext ?_⟩
-  simp only [Units.val_mul, coe_GL_coe_matrix,GeneralLinearGroup.val_scalar_apply]
+  simp only [Units.val_mul, coe_GL_coe_matrix, GeneralLinearGroup.coe_scalar]
   simp [← Matrix.mul_smul, ← Matrix.diagonal_smul, Pi.smul_def, smul_eq_mul]
 
 lemma toPGL_surj_iff [Nonempty n] :

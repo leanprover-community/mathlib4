@@ -11,7 +11,7 @@ public import Mathlib.LinearAlgebra.Projectivization.Basic
 public import Mathlib.LinearAlgebra.SpecialLinearGroup
 public import Mathlib.LinearAlgebra.Transvection.Basic
 public import Mathlib.LinearAlgebra.Matrix.IsDiag
-public import Mathlib.LinearAlgebra.Matrix.ProjectiveSpecialLinearGroup
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Projective
 public import Mathlib.LinearAlgebra.Center
 
 /-!
@@ -239,6 +239,41 @@ instance : IsPreprimitive (Matrix.ProjectiveSpecialLinearGroup ι K) (ℙ K (ι 
   @MulAction.IsPreprimitive.of_surjective _ _ _ _ _ _ _ _ (QuotientGroup.mk' _)
     {toFun := id, map_smul' := by intros; simp; rfl} (prePrimitive_SL (ι := ι) (K := K))
     Function.surjective_id
+
+open MatrixGroups Matrix.GeneralLinearGroup
+
+instance : SMul PGL(ι, K) (ℙ K (ι → K)) where
+  smul := Quotient.lift HSMul.hSMul <| fun a b h ↦ funext fun v ↦ by
+    induction v using Projectivization.ind with | _ v hv =>
+    obtain ⟨k, hk⟩ : ∃ x, b = (scalar ι) x * a := by
+      simpa [eq_comm, inv_mul_eq_iff_eq_mul, center_eq_range_scalar, scalar_commute] using
+        QuotientGroup.leftRel_apply.1 h
+    simp only [smul_mk, mk_eq_mk_iff]
+    refine ⟨k⁻¹, ?_⟩
+    rw [inv_smul_eq_iff, Units.smul_def, Units.smul_def, Units.smul_def, ← smul_assoc]
+    congr 1
+    simpa [Units.ext_iff, Matrix.smul_eq_diagonal_mul] using hk
+
+@[simp]
+lemma PGL.mk_smul_mk (g : GL ι K) {v : ι → K} (hv : v ≠ 0) :
+    (.mk g : PGL(ι, K)) • mk K v hv = mk K (g • v) (smul_ne_zero_iff_ne g|>.2 hv) := rfl
+
+lemma PGL.one_smul' (x : ℙ K (ι → K)) : (1 : PGL(ι, K)) • x = x := by
+  induction x using Projectivization.ind with | _ v hv =>
+  rw [← Matrix.ProjGenLinGroup.mk_one, PGL.mk_smul_mk]
+  simp_rw [one_smul]
+
+lemma PGL.mul_smul' (g g' : PGL(ι, K)) (x : ℙ K (ι → K)) :
+    (g * g') • x = g • g' • x := by
+  induction x using Projectivization.ind with | _ v hv =>
+  induction g using Matrix.ProjGenLinGroup.induction_on with | mk g =>
+  induction g' using Matrix.ProjGenLinGroup.induction_on with | mk g' =>
+  rw [← map_mul, PGL.mk_smul_mk, PGL.mk_smul_mk, PGL.mk_smul_mk]
+  simp_rw [mul_smul]
+
+instance : MulAction PGL(ι, K) (ℙ K (ι → K)) where
+  one_smul := PGL.one_smul'
+  mul_smul := PGL.mul_smul'
 
 end Field
 

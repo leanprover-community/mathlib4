@@ -46,7 +46,7 @@ lemma mem_center_iff_val_mem_range_scalar {g : GL n R} :
     refine Matrix.mem_range_scalar_of_commute_transvectionStruct fun t ↦ ?_
     simpa [Units.ext_iff] using! Subgroup.mem_center_iff.mp hg (.mk _ _ t.mul_inv t.inv_mul)
   · refine fun ⟨a, ha⟩ ↦ Subgroup.mem_center_iff.mpr fun h ↦ ?_
-    simpa [Units.ext_iff, ← ha] using! (scalar_commute a (mul_comm a ·) h.val).symm
+    simp [-scalar_apply, Units.ext_iff, ← ha, Matrix.scalar_comm a (Commute.all _)]
 
 @[deprecated (since := "2026-02-08")]
 alias mem_center_iff_val_eq_scalar := mem_center_iff_val_mem_range_scalar
