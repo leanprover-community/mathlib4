@@ -194,7 +194,7 @@ variable (𝕜) in
 /-- The natural equivalence between `PiLp p α` and `α default`,
 for any index type `ι` with a unique element. -/
 def PiLp.equivOfUnique {ι : Type*} [Unique ι] (p : ℝ≥0∞) (α : ι → Type*)
-    [∀ i, NormedAddCommGroup (α i)] [∀ i, NormedSpace 𝕜 (α i)] :
+    [∀ i, SeminormedAddCommGroup (α i)] [∀ i, NormedSpace 𝕜 (α i)] :
     PiLp p α ≃L[𝕜] α default where
   toFun z := z default
   invFun := PiLp.single (β := α) p default
@@ -203,8 +203,8 @@ def PiLp.equivOfUnique {ι : Type*} [Unique ι] (p : ℝ≥0∞) (α : ι → Ty
     rw [Unique.default_eq i]
     simp
   right_inv z := by simp
-  map_add' := by intro; simp
-  map_smul' := by intro; simp
+  map_add' := by simp
+  map_smul' := by simp
   continuous_invFun := by fun_prop [PiLp.single]
 
 @[simp]
