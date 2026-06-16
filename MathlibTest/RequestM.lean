@@ -11,7 +11,7 @@ info: Try this:
 ---
 @ +1:26...29
 info: Code action (quickfix):
-💡 Try this: exact True.intro
+💡️ Try this: exact True.intro
 
 @@ +0:25-+0:31 @@
 - exact?
