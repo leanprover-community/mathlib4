@@ -43,6 +43,12 @@ def coeMulHom [Mul α] : α →ₙ* WithOne α where
   toFun := coe
   map_mul' _ _ := rfl
 
+-- TODO: update when we have `pnpow`
+@[to_additive]
+lemma coe_pnpow [Semigroup α] (a : α) {n : ℕ} (hn : n ≠ 0) :
+    (↑a : WithOne α) ^ n = (a * ·)^[n - 1] a :=
+  coeMulHom.map_pnpow a hn
+
 end
 
 section lift
