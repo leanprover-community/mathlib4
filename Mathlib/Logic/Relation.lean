@@ -853,7 +853,7 @@ theorem lift' {p : β → β → Prop} {a b : α} (f : α → β) (h : ∀ a b, 
     (hab : EqvGen r a b) : EqvGen p (f a) (f b) := by
   simpa [eqvGen_idem] using hab.lift f h
 
-theorem _root_.Relation.reflTransGen_eqvGen_eq [Std.Symm r] : ReflTransGen r = EqvGen r := by
+theorem _root_.Relation.reflTransGen_eq_eqvGen [Std.Symm r] : ReflTransGen r = EqvGen r := by
   ext a b
   refine ⟨ReflTransGen.to_eqvGen, fun hab => ?_⟩
   induction hab with
