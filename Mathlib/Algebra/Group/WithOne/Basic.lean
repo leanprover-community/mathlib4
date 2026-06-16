@@ -82,6 +82,11 @@ theorem lift_unique (f : WithOne α →* β) : f = lift (f.toMulHom.comp coeMulH
 @[to_additive (attr := simp)]
 theorem lift_symm_apply (f : WithOne α →* β) (x : α) : lift.symm f x = f x := rfl
 
+@[to_additive]
+lemma lift_symm_injective {f : WithOne α →* β} (hf : Function.Injective f) :
+    Function.Injective (lift.symm f) :=
+  fun _ _ ↦ by simp [hf.eq_iff]
+
 end lift
 
 section Map
