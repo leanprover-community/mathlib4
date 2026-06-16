@@ -479,7 +479,7 @@ end LinearEquiv
     [FunLike F (Matrix m m K) (Matrix m m K)] [AlgHomClass F K _ _] (f : F) (x : Matrix m m K) :
     (f x).det = x.det := by
   by_cases! Nonempty m
-  · simpa using det_map (AlgEquiv.ofBijective _ (AlgHomClass.toAlgHom f).bijective) x
+  · exact det_map (AlgEquiv.ofBijective _ (AlgHomClass.toAlgHom f).bijective) x
   · simp
 
 /-- The determinants of a `LinearEquiv` and its inverse multiply to 1. -/
