@@ -77,7 +77,7 @@ theorem log_two_near_10 : |log 2 - 287209 / 414355| ≤ 1 / 10 ^ 10 := by
   norm_num1 at z
   rw [one_div (2 : ℝ), log_inv, ← sub_eq_add_neg, _root_.abs_sub_comm] at z
   apply le_trans (_root_.abs_sub_le _ _ _) (add_le_add z _)
-  norm_num [sum_range_succ]
+  norm_num
 
 theorem log_two_gt_d9 : 0.6931471803 < log 2 :=
   lt_of_lt_of_le (by norm_num1) (sub_le_comm.1 (abs_sub_le_iff.1 log_two_near_10).2)
