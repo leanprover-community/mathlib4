@@ -975,7 +975,7 @@ theorem map_isTrail_iff_of_injective (hinj : Function.Injective f) :
 
 alias ⟨_, IsTrail.map⟩ := map_isTrail_iff_of_injective
 
-@[deprecated (since := "2026-04-25")] alias map_isTrail_of_injective := IsTrail.map
+@[deprecated (since := "2026-06-16")] alias map_isTrail_of_injective := IsTrail.map
 
 protected theorem IsPath.of_map (hp : (p.map f).IsPath) : p.IsPath := by
   rw [isPath_def]
@@ -988,7 +988,7 @@ theorem map_isPath_iff_of_injective (hinj : Function.Injective f) :
 
 alias ⟨_, IsPath.map⟩ := map_isPath_iff_of_injective
 
-@[deprecated (since := "2026-04-25")] alias map_isPath_of_injective := IsPath.map
+@[deprecated (since := "2026-06-16")] alias map_isPath_of_injective := IsPath.map
 
 protected theorem IsCircuit.of_map {p : G.Walk u u} (hp : (p.map f).IsCircuit) : p.IsCircuit := by
   rw [isCircuit_def, ne_eq, eq_nil_iff_nil]
@@ -1015,32 +1015,38 @@ theorem map_isCycle_iff_of_injective {p : G.Walk u u} (hinj : Function.Injective
 alias ⟨_, IsCycle.map⟩ := map_isCycle_iff_of_injective
 
 @[simp]
-theorem mapLe_isTrail {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} {p : G.Walk u v} :
+theorem isTrail_mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} {p : G.Walk u v} :
     (p.mapLe h).IsTrail ↔ p.IsTrail :=
   map_isTrail_iff_of_injective Function.injective_id
 
-alias ⟨IsTrail.of_mapLe, IsTrail.mapLe⟩ := mapLe_isTrail
+@[deprecated (since := "2026-06-16")] alias mapLe_isTrail := isTrail_mapLe
+
+alias ⟨IsTrail.of_mapLe, IsTrail.mapLe⟩ := isTrail_mapLe
 
 @[simp]
-theorem mapLe_isPath {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} {p : G.Walk u v} :
+theorem isPath_mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} {p : G.Walk u v} :
     (p.mapLe h).IsPath ↔ p.IsPath :=
   map_isPath_iff_of_injective Function.injective_id
 
-alias ⟨IsPath.of_mapLe, IsPath.mapLe⟩ := mapLe_isPath
+@[deprecated (since := "2026-06-16")] alias mapLe_isPath := isPath_mapLe
+
+alias ⟨IsPath.of_mapLe, IsPath.mapLe⟩ := isPath_mapLe
 
 @[simp]
-theorem mapLe_isCircuit {G G' : SimpleGraph V} (h : G ≤ G') {u : V} {p : G.Walk u u} :
+theorem isCircuit_mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u : V} {p : G.Walk u u} :
     (p.mapLe h).IsCircuit ↔ p.IsCircuit :=
   map_isCircuit_iff_of_injective Function.injective_id
 
-alias ⟨IsCircuit.of_mapLe, IsCircuit.mapLe⟩ := mapLe_isCircuit
+alias ⟨IsCircuit.of_mapLe, IsCircuit.mapLe⟩ := isCircuit_mapLe
 
 @[simp]
-theorem mapLe_isCycle {G G' : SimpleGraph V} (h : G ≤ G') {u : V} {p : G.Walk u u} :
+theorem isCycle_mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u : V} {p : G.Walk u u} :
     (p.mapLe h).IsCycle ↔ p.IsCycle :=
   map_isCycle_iff_of_injective Function.injective_id
 
-alias ⟨IsCycle.of_mapLe, IsCycle.mapLe⟩ := mapLe_isCycle
+@[deprecated (since := "2026-06-16")] alias mapLe_isCycle := isCycle_mapLe
+
+alias ⟨IsCycle.of_mapLe, IsCycle.mapLe⟩ := isCycle_mapLe
 
 end Walk
 
