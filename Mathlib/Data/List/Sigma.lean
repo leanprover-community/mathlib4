@@ -547,10 +547,8 @@ theorem kerase_comm (a₁ a₂) (l : List (Sigma β)) :
       else by simp [ha₂, mt mem_keys_of_mem_keys_kerase ha₂]
     else by simp [ha₁, mt mem_keys_of_mem_keys_kerase ha₁]
 
-set_option linter.auxLemma false in
 theorem sizeOf_kerase [SizeOf (Sigma β)] (x : α)
     (xs : List (Sigma β)) : SizeOf.sizeOf (List.kerase x xs) ≤ SizeOf.sizeOf xs := by
-  simp only [SizeOf.sizeOf, _sizeOf_1]
   induction xs with
   | nil => simp
   | cons y ys => by_cases x = y.1 <;> simp [*]
@@ -647,17 +645,20 @@ theorem dlookup_dedupKeys (a : α) (l : List (Sigma β)) : dlookup a (dedupKeys 
     · rw [dedupKeys_cons, dlookup_kinsert_ne h, l_ih, dlookup_cons_ne]
       exact h
 
-set_option linter.auxLemma false in
+omit [DecidableEq α] in
+theorem cons_sizeOf_le_cons_sizeOf [SizeOf α] {l r : List α} (a : α)
+    (h : SizeOf.sizeOf l ≤ SizeOf.sizeOf r) :
+    SizeOf.sizeOf (a :: l) ≤ SizeOf.sizeOf (a :: r) := by
+  rw [cons.sizeOf_spec, cons.sizeOf_spec]
+  exact Nat.add_le_add_iff_left.mpr h
+
 theorem sizeOf_dedupKeys [SizeOf (Sigma β)]
     (xs : List (Sigma β)) : SizeOf.sizeOf (dedupKeys xs) ≤ SizeOf.sizeOf xs := by
-  simp only [SizeOf.sizeOf, _sizeOf_1]
   induction xs with
   | nil => simp [dedupKeys]
-  | cons x xs =>
-    simp only [dedupKeys_cons, kinsert_def, Nat.add_le_add_iff_left, Sigma.eta]
-    trans
-    · apply sizeOf_kerase
-    · assumption
+  | cons x xs h =>
+    simp only [dedupKeys_cons, kinsert_def, Sigma.eta]
+    exact cons_sizeOf_le_cons_sizeOf x (le_trans (sizeOf_kerase x.fst xs.dedupKeys) h)
 
 /-! ### `kunion` -/
 
