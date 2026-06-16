@@ -65,7 +65,7 @@ def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
       Real.Angle.sin θ • (LinearIsometryEquiv.toLinearEquiv J).toLinearMap)
     (by
       ext x
-      convert congr_arg (fun t : ℝ => t • x) θ.cos_sq_add_sin_sq using 1
+      convert! congr_arg (fun t : ℝ => t • x) θ.cos_sq_add_sin_sq using 1
       · simp only [o.rightAngleRotation_rightAngleRotation, o.rotationAux_apply,
           Function.comp_apply, id, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
           LinearIsometryEquiv.coe_toLinearEquiv, map_smul, map_sub, LinearMap.coe_comp,
@@ -74,7 +74,7 @@ def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
       · simp)
     (by
       ext x
-      convert congr_arg (fun t : ℝ => t • x) θ.cos_sq_add_sin_sq using 1
+      convert! congr_arg (fun t : ℝ => t • x) θ.cos_sq_add_sin_sq using 1
       · simp only [o.rightAngleRotation_rightAngleRotation, o.rotationAux_apply,
           Function.comp_apply, id, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
           LinearIsometryEquiv.coe_toLinearEquiv, map_add, map_smul, LinearMap.coe_comp,
@@ -421,7 +421,7 @@ theorem inner_smul_rotation_pi_div_two_smul_right (x : V) (r₁ r₂ : ℝ) :
 the second is a multiple of a `π / 2` rotation of that vector. -/
 theorem inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two {x y : V} :
     ⟪x, y⟫ = 0 ↔ x = 0 ∨ ∃ r : ℝ, r • o.rotation (π / 2 : ℝ) x = y := by
-  wlog! +distrib H : x ≠ 0 ∧ y ≠ 0
+  by_cases! +distrib H : x = 0 ∨ y = 0
   · rcases H with (rfl | rfl) <;> simp
   simp only [← o.eq_zero_or_oangle_eq_iff_inner_eq_zero, H, ← neg_smul, false_or,
     o.oangle_eq_iff_eq_pos_smul_rotation_of_ne_zero H.1 H.2, ← o.neg_rotation_pi_div_two, smul_neg]

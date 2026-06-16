@@ -85,6 +85,7 @@ theorem _root_.Prefunctor.map_reverse (φ : U ⥤q V) [φ.MapReverse]
     {u v : U} (e : u ⟶ v) : φ.map (reverse e) = reverse (φ.map e) :=
   Prefunctor.MapReverse.map_reverse' e
 
+set_option backward.isDefEq.respectTransparency false in
 instance _root_.Prefunctor.mapReverseComp
     (φ : U ⥤q V) (ψ : V ⥤q W) [φ.MapReverse] [ψ.MapReverse] :
     (φ ⋙q ψ).MapReverse where
@@ -230,6 +231,7 @@ theorem of_reverse [HasInvolutiveReverse V] (X Y : V) (f : X ⟶ Y) :
     (reverse <| (Push.of σ).map f) = (Push.of σ).map (reverse f) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance ofMapReverse [h : HasInvolutiveReverse V] : (Push.of σ).MapReverse :=
   ⟨by simp [of_reverse]⟩
 

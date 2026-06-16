@@ -11,7 +11,6 @@ public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Topology.Algebra.Algebra.Equiv
 
-import Mathlib.Algebra.Central.Basic
 
 /-!
 # Continuous (star-)algebra equivalences between continuous endomorphisms are (isometrically) inner
@@ -30,10 +29,13 @@ The proof follows the same idea as the non-continuous version.
 
 open ContinuousLinearMap ContinuousLinearEquiv
 
+section
+variable {𝕜 V W : Type*} [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup V]
+  [SeminormedAddCommGroup W] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [SeparatingDual 𝕜 V]
+  [SeparatingDual 𝕜 W]
+
 /-- This is the continuous version of `AlgEquiv.eq_linearEquivConjAlgEquiv`. -/
-public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv {𝕜 V W : Type*}
-    [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup V] [SeminormedAddCommGroup W]
-    [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [SeparatingDual 𝕜 V] [SeparatingDual 𝕜 W]
+public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
     (f : (V →L[𝕜] V) ≃A[𝕜] (W →L[𝕜] W)) :
     ∃ U : V ≃L[𝕜] W, f = U.conjContinuousAlgEquiv := by
   /- The proof goes as follows:
@@ -66,7 +68,7 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
   set T := apply' _ (.id 𝕜) z ∘L f.toContinuousAlgHom.toContinuousLinearMap ∘L smulRightL 𝕜 _ _ v
   have hT x : T x = f (smulRight v x) z := rfl
   have this A x : T (A x) = f A (T x) := by
-    simp only [hT, ← mul_apply, ← map_mul]
+    simp only [hT, ← mul_apply_eq_comp, ← map_mul]
     congr; ext; simp
   have ⟨d, hd⟩ := SeparatingDual.exists_eq_one (R := 𝕜) hz
   have surj : Function.Surjective T := fun w ↦ ⟨f.symm (smulRight d w) u, by simp [T, this, hd]⟩
@@ -86,6 +88,13 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
       suffices T'.toLinearMap = Tₗ.symm from this ▸ T'.continuous
       simp [LinearMap.ext_iff, ← Tₗ.injective.eq_iff, T', this, hT, hd, Tₗ] }
   exact ⟨TL, fun A ↦ (ContinuousLinearMap.ext <| this A).symm⟩
+
+variable (𝕜 V W) in
+public theorem ContinuousLinearEquiv.conjContinuousAlgEquiv_surjective :
+    Function.Surjective (conjContinuousAlgEquiv (𝕜 := 𝕜) (G := V) (H := W)) :=
+  fun f ↦ f.eq_continuousLinearEquivConjContinuousAlgEquiv.imp fun _ h ↦ h.symm
+
+end
 
 variable {𝕜 V W : Type*} [RCLike 𝕜] [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
   [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
@@ -160,7 +169,7 @@ public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
     we know there exists a continuous linear equivalence `y : V ≃L[𝕜] W` such that
     `f = y.conjAlgEquiv`.
     Our goal will be to construct an isometry from `y`. We do this by first showing
-    `adjoint y ∘ y` is in the center of the endormorphisms, and as the algebra of endomorphisms
+    `adjoint y ∘ y` is in the center of the endomorphisms, and as the algebra of endomorphisms
     are central, `adjoint y ∘ y` is a scalar multiple of the identity. -/
   obtain ⟨y, hy⟩ := (ContinuousAlgEquiv.mk f.toAlgEquiv hf
     (f.toAlgEquiv.toLinearEquiv.continuous_symm hf)).eq_continuousLinearEquivConjContinuousAlgEquiv
@@ -224,6 +233,6 @@ public instance (priority := 100) {F : Type*} [EquivLike F (V →L[𝕜] V) (W �
   map_le_map_iff f x y := by
     obtain ⟨U, hU⟩ := StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
       (StarAlgEquivClass.toStarAlgEquiv f : _ ≃⋆ₐ[𝕜] _) (map_continuous f)
-    have this a : f a = U.conjStarAlgEquiv a := by simpa using congr($hU a)
+    have this a : f a = U.conjStarAlgEquiv a := by simpa using! congr($hU a)
     simp_rw [le_def, ← _root_.map_sub, ← isPositive_toLinearMap_iff, this]
     exact LinearMap.isPositive_linearIsometryEquiv_conj_iff U

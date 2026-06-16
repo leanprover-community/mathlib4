@@ -16,18 +16,18 @@ In this file we provide two different ways to extend a continuous linear map def
 subspace to the entire Banach space.
 
 * `ContinuousLinearMap.extend`: Extend `f : E →SL[σ₁₂] F` to a continuous linear map
-`Eₗ →SL[σ₁₂] F`, where `e : E →ₗ[𝕜] Eₗ` is a dense map that is `IsUniformInducing`.
+  `Eₗ →SL[σ₁₂] F`, where `e : E →ₗ[𝕜] Eₗ` is a dense map that is `IsUniformInducing`.
 * `LinearMap.extendOfNorm`: Extend `f : E →ₛₗ[σ₁₂] F` to a continuous linear map
-`Eₗ →SL[σ₁₂] F`, where `e : E →ₗ[𝕜] Eₗ` is a dense map and we have the norm estimate
-`‖f x‖ ≤ C * ‖e x‖` for all `x : E`.
+  `Eₗ →SL[σ₁₂] F`, where `e : E →ₗ[𝕜] Eₗ` is a dense map and we have the norm estimate
+  `‖f x‖ ≤ C * ‖e x‖` for all `x : E`.
 
 Moreover, we can extend a linear equivalence:
 * `LinearEquiv.extend`: Extend a linear equivalence between normed spaces to a continuous linear
-equivalence between Banach spaces with two dense maps `e₁` and `e₂` and the corresponding norm
-estimates.
+  equivalence between Banach spaces with two dense maps `e₁` and `e₂` and the corresponding norm
+  estimates.
 * `LinearEquiv.extendOfIsometry`: Extend `f : E ≃ₗ[𝕜] F` to a linear isometry equivalence
-`Eₗ →ₗᵢ[𝕜] Fₗ`, where `e₁ : E →ₗ[𝕜] Eₗ` and `e₂ : F →ₗ[𝕜] Fₗ` are dense maps into Banach spaces
-and `f` preserves the norm.
+  `Eₗ →ₗᵢ[𝕜] Fₗ`, where `e₁ : E →ₗ[𝕜] Eₗ` and `e₂ : F →ₗ[𝕜] Fₗ` are dense maps into Banach spaces
+  and `f` preserves the norm.
 
 -/
 
@@ -129,7 +129,7 @@ theorem opNorm_extend_le (h_dense : DenseRange e) (h_e : ∀ x, ‖x‖ ≤ N * 
   · rw [extend_eq _ h_dense (isUniformEmbedding_of_bound _ h_e).isUniformInducing]
     calc
       ‖f x‖ ≤ ‖f‖ * ‖x‖ := le_opNorm _ _
-      _ ≤ ‖f‖ * (N * ‖e x‖) := mul_le_mul_of_nonneg_left (h_e x) (norm_nonneg _)
+      _ ≤ ‖f‖ * (N * ‖e x‖) := by gcongr; exact h_e x
       _ ≤ N * ‖f‖ * ‖e x‖ := by rw [mul_comm ↑N ‖f‖, mul_assoc]
 
 
@@ -194,8 +194,8 @@ variable {f e}
 theorem extendOfNorm_eq (h_dense : DenseRange e) (h_norm : ∃ C, ∀ x, ‖f x‖ ≤ C * ‖e x‖)
     (x : E) : f.extendOfNorm e (e x) = f x := by
   have := (f.compLeftInverse e).extend_eq (e := (LinearMap.range e).subtypeL)
-    (by simpa using h_dense) isUniformEmbedding_subtype_val.isUniformInducing
-  convert this ⟨e x, LinearMap.mem_range_self e x⟩
+    (by simpa using! h_dense) isUniformEmbedding_subtype_val.isUniformInducing
+  convert! this ⟨e x, LinearMap.mem_range_self e x⟩
   exact (compLeftInverse_apply_of_bdd _ _ h_norm _ _ rfl).symm
 
 theorem norm_extendOfNorm_apply_le (h_dense : DenseRange e) (C : ℝ)
@@ -209,7 +209,7 @@ theorem norm_extendOfNorm_apply_le (h_dense : DenseRange e) (C : ℝ)
 theorem extendOfNorm_unique (h_dense : DenseRange e) (C : ℝ) (h_norm : ∀ (x : E), ‖f x‖ ≤ C * ‖e x‖)
     (g : Eₗ →SL[σ₁₂] F) (H : g.toLinearMap.comp e = f) : extendOfNorm f e = g := by
   apply ContinuousLinearMap.extend_unique
-  · simpa using h_dense
+  · simpa using! h_dense
   · exact isUniformEmbedding_subtype_val.isUniformInducing
   ext ⟨y, x, hxy⟩
   rw [compLeftInverse_apply_of_bdd _ _ ⟨C, h_norm⟩ x y hxy]
@@ -327,7 +327,7 @@ def extendOfIsometry (h_dense₁ : DenseRange e₁) (h_dense₂ : DenseRange e�
       refine h_dense₁.induction ?_ (isClosed_eq (by
         simp only [ContinuousLinearEquiv.coe_toLinearEquiv]; fun_prop) continuous_norm)
       rintro x ⟨y, rfl⟩
-      convert h_norm y
+      convert! h_norm y
       apply LinearMap.extendOfNorm_eq h_dense₁ (by use 1; simp [h_norm]) }
 
 theorem extendOfIsometry_apply (h_dense₁ : DenseRange e₁) (h_dense₂ : DenseRange e₂)

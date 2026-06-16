@@ -15,6 +15,7 @@ concurrency:
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
   contents: read
+  id-token: write
   pull-requests: write  # Only allow PR comments/labels
   # All other permissions are implicitly 'none'
 
@@ -26,6 +27,49 @@ jobs:
     with:
       concurrency_group: ${{ github.workflow }}-${{ github.ref }}-${{ github.run_id }}
       pr_branch_ref: ${{ github.sha }}
-      # We don't wan't 'bors try' runs to compete with merge-candidates, so we pool trying with PR runs
+      # Trust-level dispatch for the cache writer app (bors runs on
+      # `staging` = real merge candidate; `trying` = experimental).
+      # Each case is spelled out so the trust mapping is unambiguous:
+      #   - mathlib4/staging                       → MASTER writer
+      #   - mathlib4/trying                        → NON_MASTER (FORKS) writer
+      #                                              (explicitly NOT master-trust)
+      #   - mathlib4-nightly-testing/staging       → NIGHTLY_TESTING writer
+      #   - mathlib4-nightly-testing/trying        → PR_TOOLCHAIN_TESTS writer
+      #                                              (least-trust on the nightly repo)
+      #   - any other ref on either repo           → NON_MASTER (FORKS) writer
+      cache_application_id: >-
+        ${{
+             (github.repository == 'leanprover-community/mathlib4'
+               && github.ref_name == 'staging')
+               && vars.CACHE_MASTER_WRITER_AZURE_APP_ID
+          || (github.repository == 'leanprover-community/mathlib4'
+               && github.ref_name == 'trying')
+               && vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID
+          || (github.repository == 'leanprover-community/mathlib4-nightly-testing'
+               && github.ref_name == 'staging')
+               && vars.CACHE_NIGHTLY_TESTING_WRITER_AZURE_APP_ID
+          || (github.repository == 'leanprover-community/mathlib4-nightly-testing'
+               && github.ref_name == 'trying')
+               && vars.CACHE_PR_TOOLCHAIN_TESTS_WRITER_AZURE_APP_ID
+          || vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID
+        }}
+      # OIDC environment binding for the upload_cache job. MUST track the cache_application_id
+      # mapping above so the minted token's `:environment:` subject matches the writer app's
+      # federated credential. mathlib4-nightly-testing intentionally uses branch/ref-scoped
+      # trust instead of an environment: each nightly writer app is RBAC-isolated to its own
+      # container, so branch scoping is sufficient there.
+      cache_environment: >-
+        ${{
+             (github.repository == 'leanprover-community/mathlib4'
+               && github.ref_name == 'staging')
+               && 'cache-upload-master'
+          || (github.repository == 'leanprover-community/mathlib4')
+               && 'cache-upload-forks'
+          || ''
+        }}
+      # bors runs should build the tools from their commit-under-test: after all, we are trying to
+      # test 'what would happen if this was merged', so we need to use the 'would-be-post-merge' tools
+      tools_branch_ref: ${{ github.sha }}
+      # We don't want 'bors try' runs to compete with merge-candidates, so we pool trying with PR runs
       runs_on: ${{ github.ref_name == 'trying' && 'pr' || 'bors' }}
     secrets: inherit

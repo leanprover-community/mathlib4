@@ -20,6 +20,8 @@ This file defines pointwise scalar-flavored algebraic operations on sets.
 For sets `s` and `t` and scalar `a`:
 
 * `s • t`: Scalar multiplication, set of all `x • y` where `x ∈ s` and `y ∈ t`.
+* `s /ₛ t`: Scalar division, set of all `x /ₛ y` where `x ∈ s` and `y ∈ t`. Available in
+  multiplicative torsors.
 * `s +ᵥ t`: Scalar addition, set of all `x +ᵥ y` where `x ∈ s` and `y ∈ t`.
 * `s -ᵥ t`: Scalar subtraction, set of all `x -ᵥ y` where `x ∈ s` and `y ∈ t`.
 * `a • s`: Scaling, set of all `a • x` where `x ∈ s`.
@@ -64,13 +66,13 @@ namespace Set
 section SMul
 
 /-- The dilation of set `x • s` is defined as `{x • y | y ∈ s}` in scope `Pointwise`. -/
-@[to_additive
+@[to_additive (attr := implicit_reducible)
 /-- The translation of set `x +ᵥ s` is defined as `{x +ᵥ y | y ∈ s}` in scope `Pointwise`. -/]
 protected def smulSet [SMul α β] : SMul α (Set β) where smul a := image (a • ·)
 
 /-- The pointwise scalar multiplication of sets `s • t` is defined as `{x • y | x ∈ s, y ∈ t}` in
 scope `Pointwise`. -/
-@[to_additive
+@[to_additive (attr := implicit_reducible)
 /-- The pointwise scalar addition of sets `s +ᵥ t` is defined as `{x +ᵥ y | x ∈ s, y ∈ t}` in locale
 `Pointwise`. -/]
 protected def smul [SMul α β] : SMul (Set α) (Set β) where smul := image2 (· • ·)
@@ -78,7 +80,7 @@ protected def smul [SMul α β] : SMul (Set α) (Set β) where smul := image2 (�
 scoped[Pointwise] attribute [instance] Set.smulSet Set.smul
 scoped[Pointwise] attribute [instance] Set.vaddSet Set.vadd
 
-open Pointwise
+open scoped Pointwise
 
 section SMul
 variable {ι : Sort*} {κ : ι → Sort*} [SMul α β] {s s₁ s₂ : Set α} {t t₁ t₂ u : Set β} {a : α}
@@ -221,64 +223,93 @@ lemma smul_set_range [SMul α β] {ι : Sort*} (a : α) (f : ι → β) :
 
 end SMul
 
-section VSub
-variable {ι : Sort*} {κ : ι → Sort*} [VSub α β] {s s₁ s₂ t t₁ t₂ : Set β} {u : Set α} {a : α}
+section SDiv
+variable {ι : Sort*} {κ : ι → Sort*} [SDiv α β] {s s₁ s₂ t t₁ t₂ : Set β} {u : Set α} {a : α}
   {b c : β}
 
-instance vsub : VSub (Set α) (Set β) where vsub := image2 (· -ᵥ ·)
+@[to_additive]
+instance sdiv : SDiv (Set α) (Set β) where sdiv := image2 (· /ₛ ·)
 
-@[simp] lemma image2_vsub : image2 (· -ᵥ ·) s t = s -ᵥ t := rfl
+@[to_additive (attr := simp)]
+lemma image2_sdiv : image2 (· /ₛ ·) s t = s /ₛ t := rfl
 
-lemma image_vsub_prod : (fun x : β × β ↦ x.fst -ᵥ x.snd) '' s ×ˢ t = s -ᵥ t := image_prod _
+@[to_additive Set.image_vsub_prod]
+lemma image_sdiv_prod : (fun x : β × β ↦ x.fst /ₛ x.snd) '' s ×ˢ t = s /ₛ t := image_prod _
 
-lemma mem_vsub : a ∈ s -ᵥ t ↔ ∃ x ∈ s, ∃ y ∈ t, x -ᵥ y = a := Iff.rfl
+@[to_additive]
+lemma mem_sdiv : a ∈ s /ₛ t ↔ ∃ x ∈ s, ∃ y ∈ t, x /ₛ y = a := Iff.rfl
 
-lemma vsub_mem_vsub (hb : b ∈ s) (hc : c ∈ t) : b -ᵥ c ∈ s -ᵥ t := mem_image2_of_mem hb hc
+@[to_additive]
+lemma sdiv_mem_sdiv (hb : b ∈ s) (hc : c ∈ t) : b /ₛ c ∈ s /ₛ t := mem_image2_of_mem hb hc
 
-@[simp] lemma empty_vsub (t : Set β) : ∅ -ᵥ t = ∅ := image2_empty_left
-@[simp] lemma vsub_empty (s : Set β) : s -ᵥ ∅ = ∅ := image2_empty_right
+@[to_additive (attr := simp)]
+lemma empty_sdiv (t : Set β) : ∅ /ₛ t = ∅ := image2_empty_left
 
-@[simp] lemma vsub_eq_empty : s -ᵥ t = ∅ ↔ s = ∅ ∨ t = ∅ := image2_eq_empty_iff
+@[to_additive (attr := simp)]
+lemma sdiv_empty (s : Set β) : s /ₛ ∅ = ∅ := image2_empty_right
 
-@[simp]
-lemma vsub_nonempty : (s -ᵥ t : Set α).Nonempty ↔ s.Nonempty ∧ t.Nonempty := image2_nonempty_iff
+@[to_additive (attr := simp)]
+lemma sdiv_eq_empty : s /ₛ t = ∅ ↔ s = ∅ ∨ t = ∅ := image2_eq_empty_iff
 
-lemma Nonempty.vsub : s.Nonempty → t.Nonempty → (s -ᵥ t : Set α).Nonempty := .image2
-lemma Nonempty.of_vsub_left : (s -ᵥ t : Set α).Nonempty → s.Nonempty := .of_image2_left
-lemma Nonempty.of_vsub_right : (s -ᵥ t : Set α).Nonempty → t.Nonempty := .of_image2_right
+@[to_additive (attr := simp)]
+lemma sdiv_nonempty : (s /ₛ t : Set α).Nonempty ↔ s.Nonempty ∧ t.Nonempty := image2_nonempty_iff
 
-@[simp low + 1]
-lemma vsub_singleton (s : Set β) (b : β) : s -ᵥ {b} = (· -ᵥ b) '' s := image2_singleton_right
+@[to_additive]
+lemma Nonempty.sdiv : s.Nonempty → t.Nonempty → (s /ₛ t : Set α).Nonempty := .image2
 
-@[simp low + 1]
-lemma singleton_vsub (t : Set β) (b : β) : {b} -ᵥ t = (b -ᵥ ·) '' t := image2_singleton_left
+@[to_additive]
+lemma Nonempty.of_sdiv_left : (s /ₛ t : Set α).Nonempty → s.Nonempty := .of_image2_left
 
-@[simp high] lemma singleton_vsub_singleton : ({b} : Set β) -ᵥ {c} = {b -ᵥ c} := image2_singleton
+@[to_additive]
+lemma Nonempty.of_sdiv_right : (s /ₛ t : Set α).Nonempty → t.Nonempty := .of_image2_right
 
-@[mono, gcongr] lemma vsub_subset_vsub : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ -ᵥ t₁ ⊆ s₂ -ᵥ t₂ := image2_subset
+@[to_additive (attr := simp low + 1)]
+lemma sdiv_singleton (s : Set β) (b : β) : s /ₛ {b} = (· /ₛ b) '' s := image2_singleton_right
 
-lemma vsub_subset_vsub_left : t₁ ⊆ t₂ → s -ᵥ t₁ ⊆ s -ᵥ t₂ := image2_subset_left
-lemma vsub_subset_vsub_right : s₁ ⊆ s₂ → s₁ -ᵥ t ⊆ s₂ -ᵥ t := image2_subset_right
+@[to_additive (attr := simp low + 1)]
+lemma singleton_sdiv (t : Set β) (b : β) : {b} /ₛ t = (b /ₛ ·) '' t := image2_singleton_left
 
-lemma vsub_subset_iff : s -ᵥ t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, x -ᵥ y ∈ u := image2_subset_iff
+@[to_additive (attr := simp high)]
+lemma singleton_sdiv_singleton : ({b} : Set β) /ₛ {c} = {b /ₛ c} := image2_singleton
 
-lemma vsub_self_mono (h : s ⊆ t) : s -ᵥ s ⊆ t -ᵥ t := vsub_subset_vsub h h
+@[to_additive (attr := mono, gcongr)]
+lemma sdiv_subset_sdiv : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ /ₛ t₁ ⊆ s₂ /ₛ t₂ := image2_subset
 
-lemma union_vsub : s₁ ∪ s₂ -ᵥ t = s₁ -ᵥ t ∪ (s₂ -ᵥ t) := image2_union_left
-lemma vsub_union : s -ᵥ (t₁ ∪ t₂) = s -ᵥ t₁ ∪ (s -ᵥ t₂) := image2_union_right
+@[to_additive]
+lemma sdiv_subset_sdiv_left : t₁ ⊆ t₂ → s /ₛ t₁ ⊆ s /ₛ t₂ := image2_subset_left
 
-lemma inter_vsub_subset : s₁ ∩ s₂ -ᵥ t ⊆ (s₁ -ᵥ t) ∩ (s₂ -ᵥ t) := image2_inter_subset_left
-lemma vsub_inter_subset : s -ᵥ t₁ ∩ t₂ ⊆ (s -ᵥ t₁) ∩ (s -ᵥ t₂) := image2_inter_subset_right
+@[to_additive]
+lemma sdiv_subset_sdiv_right : s₁ ⊆ s₂ → s₁ /ₛ t ⊆ s₂ /ₛ t := image2_subset_right
 
-lemma inter_vsub_union_subset_union : s₁ ∩ s₂ -ᵥ (t₁ ∪ t₂) ⊆ s₁ -ᵥ t₁ ∪ (s₂ -ᵥ t₂) :=
+@[to_additive]
+lemma sdiv_subset_iff : s /ₛ t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, x /ₛ y ∈ u := image2_subset_iff
+
+@[to_additive]
+lemma sdiv_self_mono (h : s ⊆ t) : s /ₛ s ⊆ t /ₛ t := sdiv_subset_sdiv h h
+
+@[to_additive]
+lemma union_sdiv : s₁ ∪ s₂ /ₛ t = s₁ /ₛ t ∪ (s₂ /ₛ t) := image2_union_left
+
+@[to_additive]
+lemma sdiv_union : s /ₛ (t₁ ∪ t₂) = s /ₛ t₁ ∪ (s /ₛ t₂) := image2_union_right
+
+@[to_additive]
+lemma inter_sdiv_subset : s₁ ∩ s₂ /ₛ t ⊆ (s₁ /ₛ t) ∩ (s₂ /ₛ t) := image2_inter_subset_left
+
+@[to_additive]
+lemma sdiv_inter_subset : s /ₛ t₁ ∩ t₂ ⊆ (s /ₛ t₁) ∩ (s /ₛ t₂) := image2_inter_subset_right
+
+@[to_additive]
+lemma inter_sdiv_union_subset_union : s₁ ∩ s₂ /ₛ (t₁ ∪ t₂) ⊆ s₁ /ₛ t₁ ∪ (s₂ /ₛ t₂) :=
   image2_inter_union_subset_union
 
-lemma union_vsub_inter_subset_union : s₁ ∪ s₂ -ᵥ t₁ ∩ t₂ ⊆ s₁ -ᵥ t₁ ∪ (s₂ -ᵥ t₂) :=
+@[to_additive]
+lemma union_sdiv_inter_subset_union : s₁ ∪ s₂ /ₛ t₁ ∩ t₂ ⊆ s₁ /ₛ t₁ ∪ (s₂ /ₛ t₂) :=
   image2_union_inter_subset_union
 
-end VSub
+end SDiv
 
-open Pointwise
+open scoped Pointwise
 
 @[to_additive]
 lemma image_smul_comm [SMul α β] [SMul α γ] (f : β → γ) (a : α) (s : Set β) :

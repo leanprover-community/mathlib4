@@ -88,9 +88,7 @@ theorem mul_self_mem_kIdeal_of_X_Y_Z_mul_mem {x : MvPolynomial (Fin 3) (ZMod 2)}
   refine ⟨i, Nat.add_le_add ?_ ?_⟩ <;> rwa [Nat.one_le_iff_ne_zero]
 
 /-- `𝔽₂[α, β, γ] / (α², β², γ²)` -/
-def K : Type _ := _ ⧸ kIdeal
-
-instance : CommRing K := Ideal.Quotient.commRing _
+abbrev K : Type _ := _ ⧸ kIdeal
 
 theorem comap_C_kIdeal : kIdeal.comap (C : ZMod 2 →+* MvPolynomial (Fin 3) (ZMod 2)) = ⊥ := by
   refine bot_unique ?_
@@ -236,7 +234,7 @@ theorem quot_obv : α • x' - β • y' - γ • z' = 0 := by
   dsimp only [gen]
   simp_rw [← map_smul, ← map_sub, ← Submodule.Quotient.mk_smul _ (_ : K),
     ← Submodule.Quotient.mk_sub]
-  convert LinearMap.map_zero _ using 2
+  convert! LinearMap.map_zero _ using 2
   rw [Submodule.Quotient.mk_eq_zero]
   simp +decide [sub_zero]
 
@@ -244,7 +242,6 @@ theorem quot_obv : α • x' - β • y' - γ • z' = 0 := by
 theorem αβγ_smul_eq_zero : (α * β * γ) • (1 : CliffordAlgebra Q) = 0 := by
   suffices α • 1 - β • (y' * x') - γ • (z' * x') = 0 by
     have := congr_arg (fun x => (β * γ) • x) this
-    dsimp only at this
     simp_rw [smul_sub, smul_smul] at this
     rwa [mul_assoc β γ γ, mul_right_comm β γ β, mul_right_comm β γ α, mul_comm β α, X_sq, X_sq,
       zero_mul, mul_zero, zero_smul, zero_smul, sub_zero, sub_zero, smul_zero] at this

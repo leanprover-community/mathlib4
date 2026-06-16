@@ -50,6 +50,7 @@ protected def map {α β : Type u} (f : α → β) (x : t' α) : t' β :=
 
 /-- The function `Equiv.map` transfers the functoriality of `t` to
 `t'` using the equivalences `eqv`. -/
+@[implicit_reducible]
 protected def functor : Functor t' where map := Equiv.map eqv
 
 variable [LawfulFunctor t]
@@ -77,7 +78,7 @@ protected theorem lawfulFunctor' [F : Functor t']
   have : F = Equiv.functor eqv := by
     cases F
     dsimp [Equiv.functor]
-    congr <;> ext <;> dsimp only <;> [rw [← h₀]; rw [← h₁]] <;> rfl
+    congr <;> ext <;> [rw [← h₀]; rw [← h₁]] <;> rfl
   subst this
   exact Equiv.lawfulFunctor eqv
 
@@ -102,6 +103,7 @@ theorem traverse_def (f : α → m β) (x : t' α) :
 
 /-- The function `Equiv.traverse` transfers a traversable functor
 instance across the equivalences `eqv`. -/
+@[implicit_reducible]
 protected def traversable : Traversable t' where
   toFunctor := Equiv.functor eqv
   traverse := Equiv.traverse eqv

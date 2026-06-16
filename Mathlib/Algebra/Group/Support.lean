@@ -50,9 +50,6 @@ theorem mulSupport_fun_inv : (mulSupport fun x => (f x)⁻¹) = mulSupport f :=
 theorem mulSupport_inv : mulSupport f⁻¹ = mulSupport f :=
   mulSupport_fun_inv f
 
-@[deprecated (since := "2025-07-31")] alias support_neg' := support_neg
-@[deprecated (since := "2025-07-31")] alias mulSupport_inv' := mulSupport_inv
-
 @[to_additive]
 theorem mulSupport_mul_inv : (mulSupport fun x => f x * (g x)⁻¹) ⊆ mulSupport f ∪ mulSupport g :=
   mulSupport_binop_subset (fun a b => a * b⁻¹) (by simp) f g

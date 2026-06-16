@@ -5,16 +5,15 @@ Authors: Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
 module
 
-public meta import Lean
 public meta import Batteries.Lean.Except
-public meta import Mathlib.Tactic.GCongr.ForwardAttr
-import all Lean.Meta.Tactic.Apply
 public import Batteries.Tactic.Exact
+public meta import Lean.Meta.Tactic.Rfl
+public meta import Lean.Meta.Tactic.Symm
 public import Mathlib.Order.Defs.Unbundled
 public import Mathlib.Tactic.Core
 public import Mathlib.Tactic.GCongr.ForwardAttr
-public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.TypeStar
+
+import all Lean.Meta.Tactic.Apply
 
 /-!
 # The `gcongr` ("generalized congruence") tactic
@@ -159,17 +158,30 @@ deriving Inhabited, BEq
 instance : Ord GCongrKey where
   compare a b := a.1.quickCmp b.1 |>.then (a.2.quickCmp b.2) |>.then (compare a.3 b.3)
 
+/-- The data for a "main" hypothesis of a `gcongr` lemma.
+That is a hypothesis of the form `∀ xs, a xs' ~ b xs'` where `xs'` is a subset of `xs`,
+and `a` and `b` form a "varying pair" in the conclusion of the `gcongr` lemma. -/
+structure GCongrHyp where
+  /-- Index of the left varying argument. -/
+  lhsIdx : Nat
+  /-- Index of the right varying argument. -/
+  rhsIdx : Nat
+  /-- Index of the hypothesis itself. -/
+  hypIdx : Nat
+  /-- In `∀ xs, a xs' ~ b xs'`, for each `x` in `xs`, the position it appears in `xs'`.
+  This information is used to infer suitable names when introducing these variables. -/
+  hypsPos : List (Option Nat)
+  /-- Whether the order of the two varying arguments is the opposite from in the conclusion. -/
+  isContra : Bool
+
 /-- Structure recording the data for a "generalized congruence" (`gcongr`) lemma. -/
 structure GCongrLemma where
   /-- The key under which the lemma is stored. -/
   key : GCongrKey
   /-- The name of the lemma. -/
   declName : Name
-  /-- `mainSubgoals` are the subgoals on which `gcongr` will be recursively called. They store
-  - the index of the hypothesis
-  - the number of parameters in the hypothesis
-  - whether it is contravariant (i.e. switches the order of the two arguments) -/
-  mainSubgoals : Array (Nat × Nat × Bool)
+  /-- `mainSubgoals` are the subgoals on which `gcongr` will be recursively called. -/
+  mainSubgoals : Array GCongrHyp
   /-- The number of arguments that `declName` takes when applying it. -/
   numHyps : Nat
   /-- The given priority of the lemma, for example as `@[gcongr high]`. -/
@@ -178,6 +190,9 @@ structure GCongrLemma where
   This is used for sorting the lemmas.
   For example, `a + b ≤ a + c` has `numVarying := 1`. -/
   numVarying : Nat
+  /-- Whether the lemma is suitable for use in `grw`. For most lemmas this is `true`,
+  but there are lemmas that aren't quite congruence lemmas, but can still be used in `gcongr`. -/
+  forGrw : Bool
   deriving Inhabited
 
 /-- A collection of `GCongrLemma`, to be stored in the environment extension. -/
@@ -229,7 +244,7 @@ def getRel (e : Expr) : Option (Name × Expr × Expr) :=
       none
   | _ => none
 
-/-- If `e` is of the form `r a b`, replace either `a` or `b` with `e`. -/
+/-- If `r` is of the form `rel a b`, replace either `a` or `b` with `e`. -/
 def updateRel (r e : Expr) (isLhs : Bool) : Expr :=
   match r with
   | .forallE _ d b _ => if isLhs then r.updateForallE! e b else r.updateForallE! d e
@@ -238,8 +253,8 @@ def updateRel (r e : Expr) (isLhs : Bool) : Expr :=
 
 /-- Try to construct the `GCongrLemma` for a lemma with hypotheses `hyps` and
 conclusion `target`. -/
-def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio : Nat) :
-    MetaM GCongrLemma := do
+def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio : Nat)
+    (forGrw : Bool) : MetaM GCongrLemma := do
   let fail {α} (m : MessageData) : MetaM α := throwError "\
     @[gcongr] attribute only applies to lemmas proving f x₁ ... xₙ ∼ f x₁' ... xₙ'.\n \
     {m} in {target}"
@@ -253,53 +268,60 @@ def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio 
   let mut pairs := #[]
   -- iterate through each pair of corresponding (LHS/RHS) inputs to the head function `head` in
   -- the conclusion of the lemma
-  for e1 in lhsArgs, e2 in rhsArgs do
+  for lhs in lhsArgs, rhs in rhsArgs do
     -- we call such a pair a "varying argument" pair if the LHS/RHS inputs are not defeq
     -- (and not proofs)
-    let isEq ← isDefEq e1 e2 <||> (isProof e1 <&&> isProof e2)
-    if !isEq then
-      -- verify that the "varying argument" pairs are free variables (after eta-reduction)
-      let .fvar e1 := e1.eta | fail "Not all varying arguments are free variables"
-      let .fvar e2 := e2.eta | fail "Not all varying arguments are free variables"
-      -- add such a pair to the `pairs` array
-      pairs := pairs.push (e1, e2)
+    if ← isDefEq lhs rhs <||> (isProof lhs <&&> isProof rhs) then continue
+    let lhs := lhs.eta; let rhs := rhs.eta
+    -- verify that the "varying argument" pairs are free variables (after eta-reduction)
+    unless lhs.isFVar && rhs.isFVar do fail "Not all varying arguments are free variables"
+    -- Instance implicit arguments should be synthesized, rather than solved by congruence
+    if (← lhs.fvarId!.getBinderInfo).isInstImplicit &&
+      (← rhs.fvarId!.getBinderInfo).isInstImplicit then
+      continue
+    -- add such a pair to the `pairs` array
+    pairs := pairs.push (lhs, rhs)
   let numVarying := pairs.size
   if numVarying = 0 then
     fail "LHS and RHS are the same"
   let mut mainSubgoals := #[]
-  let mut i := 0
   -- iterate over antecedents `hyp` to the lemma
-  for hyp in hyps do
-    mainSubgoals ← forallTelescopeReducing (← inferType hyp) fun args hypTy => do
-      -- pull out the conclusion `hypTy` of the antecedent, and check whether it is of the form
-      -- `lhs₁ _ ... _ ≈ rhs₁ _ ... _` (for a possibly different relation `≈` than the relation
-      -- `rel` above)
-      let hypTy ← whnf hypTy
-      let findPair (lhs rhs : FVarId) : Option Bool :=
-        pairs.findSome? fun pair =>
-          if (lhs, rhs) == pair then false else if (rhs, lhs) == pair then true else none
-      if let some (_, lhs₁, rhs₁) := getRel hypTy then
-        if let .fvar lhs₁ := lhs₁.getAppFn then
-        if let .fvar rhs₁ := rhs₁.getAppFn then
-        -- check whether `(lhs₁, rhs₁)` is in some order one of the "varying argument" pairs from
-        -- the conclusion to the lemma
-        if let some isContra := findPair lhs₁ rhs₁ then
-          -- if yes, record the index of this antecedent as a "main subgoal", together with the
-          -- index of the "varying argument" pair it corresponds to
-          return mainSubgoals.push (i, args.size, isContra)
-      else
-        -- now check whether `hypTy` is of the form `rhs₁ _ ... _`,
-        -- and whether the last hypothesis is of the form `lhs₁ _ ... _`.
-        if let .fvar rhs₁ := hypTy.getAppFn then
-        if let some lastFVar := args.back? then
-        if let .fvar lhs₁ := (← inferType lastFVar).getAppFn then
-        if let some isContra := findPair lhs₁ rhs₁ then
-          return mainSubgoals.push (i, args.size - 1, isContra)
-      return mainSubgoals
-    i := i + 1
+  for hyp in hyps, i in 0...* do
+    -- Checks if `∀ xs, lhs ~ rhs` is a valid "main goal".
+    let isMainGoal? (lhs rhs : Expr) (xs : Array Expr) : Option (GCongrHyp × Expr × Expr) :=
+      lhs.withApp fun lhs lhsArgs => rhs.withApp fun rhs rhsArgs => do
+      /- The relation needs to be of the form `lhs y₁ ... yₙ ~ rhs y₁ ... yₙ`,
+      where `yᵢ` are free variables from `xs`,
+      and `(lhs, rhs)` is a varying argument pair from the conclusion to the lemma
+      We relax these conditions for lemmas that are not used by `grw`. -/
+      guard <| !forGrw || lhsArgs.all xs.contains && lhsArgs == rhsArgs
+      let lhsIdx ← hyps.idxOf? lhs
+      let rhsIdx ← hyps.idxOf? rhs
+      let (pair, isContra) ← pairs.findSome? fun pair =>
+        if (lhs, rhs) == pair then some (pair, false) else
+        if (rhs, lhs) == pair then some (pair, true) else none
+      let hypsPos := xs.toList.map lhsArgs.idxOf?
+      some ({ lhsIdx, rhsIdx, hypIdx := i, hypsPos, isContra }, pair)
+    -- Checks if `hyp` is a valid "main goal".
+    let go := forallTelescopeReducing (← inferType hyp) fun xs hypTy => do
+      if let some (_, lhs₁, rhs₁) := getRel (← whnf hypTy) then
+        return isMainGoal? lhs₁ rhs₁ xs
+      else if let some lastFVar := xs.back? then
+        return isMainGoal? (← inferType lastFVar) hypTy xs.pop
+      return none
+    if let some (mainSubgoal, pair) ← go then
+      mainSubgoals := mainSubgoals.push mainSubgoal
+      -- Erase the varying argument pair, to make sure each pair corresponds to just one hypothesis.
+      pairs := pairs.erase pair
+  if h : forGrw ∧ pairs.size ≠ 0 then
+    let (lhs, rhs) := pairs[0]
+    throwError "`{lhs}` appears on the LHS and `{rhs}` on the RHS, \
+      but there is no corresponding hypothesis `{lhs} ~ {rhs}` or `{rhs} ~ {lhs}`.\n\n\
+      This means that the `@[gcongr]` lemma cannot be used in the `grw` tactic. \
+      Please use `@[gcongr only]` instead."
   -- store all the information from this parse of the lemma's structure in a `GCongrLemma`
   let key := { relName, head, arity := lhsArgs.size }
-  return { key, declName, mainSubgoals, numHyps := hyps.size, prio, numVarying }
+  return { key, declName, mainSubgoals, numHyps := hyps.size, prio, numVarying, forGrw }
 
 
 /-- Attribute marking "generalized congruence" (`gcongr`) lemmas.  Such lemmas must have a
@@ -310,8 +332,9 @@ a function to two argument lists, in which the "varying argument" pairs (here `x
 The antecedents of such a lemma are classified as generating "main goals" if they are of the form
 `x₁ ≈ x₂` for some "varying argument" pair `x₁`/`x₂` (and a possibly different relation `≈` to `∼`),
 or more generally of the form `∀ i h h' j h'', f₁ i j ≈ f₂ i j` (say) for some "varying argument"
-pair `f₁`/`f₂`. (Other antecedents are considered to generate "side goals".) The index of the
-"varying argument" pair corresponding to each "main" antecedent is recorded.
+pair `f₁`/`f₂`, where the arguments of `f₁` and `f₂` are the same list of variables which have to
+be bound by the preceding `∀`. (Other antecedents are considered to generate "side goals".)
+Use `gcongr only` to relax these conditions. A `gcongr only` lemma is not used by `grw`.
 
 If a lemma such as `add_le_add : a ≤ b → c ≤ d → a + c ≤ b + d` has been tagged with `gcongr`,
 then a direct consequence like `a ≤ b → a + c ≤ b + c` does *not* need to be tagged.
@@ -319,11 +342,15 @@ However, if a more specific lemma has fewer side conditions, it should also be t
 For example, `mul_le_mul_of_nonneg_right` and `mul_le_mul_of_nonneg_left` are both tagged.
 
 Lemmas involving `<` or `≤` can also be marked `@[bound]` for use in the related `bound` tactic. -/
+syntax (name := gcongrAttr) "gcongr" (&" only")? (prio)? : attr
+
+@[inherit_doc gcongrAttr]
 initialize registerBuiltinAttribute {
-  name := `gcongr
+  name := `gcongrAttr
   descr := "generalized congruence"
   add := fun declName stx kind ↦ MetaM.run' do withReducible do
-    let prio ← getAttrParamOptPrio stx[1]
+    let forGrw := stx[1].isNone
+    let prio ← getAttrParamOptPrio stx[2]
     let cinfo ← getConstInfo declName
     let type := cinfo.type
     forallTelescope type fun xs type => do
@@ -332,17 +359,17 @@ initialize registerBuiltinAttribute {
         `Monotone | `Antitone | `StrictMono | `StrictAnti |
         `MonotoneOn | `AntitoneOn | `StrictMonoOn | `StrictAntiOn then
       forallTelescope (← withDefault <| unfoldDefinition type) fun xs' type => do
-        gcongrExt.add (← makeGCongrLemma (xs ++ xs') type declName prio) kind
+        gcongrExt.add (← makeGCongrLemma (xs ++ xs') type declName prio forGrw) kind
       return
     -- If the conclusion is a free variable, it is a lemma like `imp_imp_imp` or `forall_imp`,
     -- so we revert the last two variables.
     if type.getAppFn.isFVar then
       let type ← mkForallFVars xs[(xs.size-2)...xs.size] type
-      gcongrExt.add (← makeGCongrLemma xs.pop.pop type declName prio) kind
+      gcongrExt.add (← makeGCongrLemma xs.pop.pop type declName prio forGrw) kind
       return
     try
       -- Add a `gcongr` lemma in the "normal" way.
-      gcongrExt.add (← makeGCongrLemma xs type declName prio) kind
+      gcongrExt.add (← makeGCongrLemma xs type declName prio forGrw) kind
     catch e => try
       match_expr type with
       | Iff lhs rhs =>
@@ -350,7 +377,7 @@ initialize registerBuiltinAttribute {
         try
           -- Try using the `←` implication.
           withLocalDeclD `_a rhs fun x => do
-            let gcongrLemma ← makeGCongrLemma (xs.push x) lhs declName prio
+            let gcongrLemma ← makeGCongrLemma (xs.push x) lhs declName prio forGrw
             let auxType ← mkForallFVars (xs.push x) lhs
             let auxValue ← mkLambdaFVars xs <| mkApp3 (.const ``Iff.mpr []) lhs rhs <|
               mkAppN (.const declName (cinfo.levelParams.map .param)) xs
@@ -359,7 +386,7 @@ initialize registerBuiltinAttribute {
         catch _ =>
           -- Try using the `→` implication.
           withLocalDeclD `_a lhs fun x => do
-            let gcongrLemma ← makeGCongrLemma (xs.push x) rhs declName prio
+            let gcongrLemma ← makeGCongrLemma (xs.push x) rhs declName prio forGrw
             let auxType ← mkForallFVars (xs.push x) rhs
             let auxValue ← mkLambdaFVars xs <| mkApp3 (.const ``Iff.mp []) lhs rhs <|
               mkAppN (.const declName (cinfo.levelParams.map .param)) xs
@@ -383,7 +410,7 @@ initialize registerBuiltinAttribute {
         let i ← findIdx xs.size xs.size.le_refl
         let type ← mkForallFVars #[xs[i]] type
         let xs' :=  xs.eraseIdx i i.isLt
-        let gcongrLemma ← makeGCongrLemma xs' type declName prio
+        let gcongrLemma ← makeGCongrLemma xs' type declName prio forGrw
         if i == xs.size - 1 then
           -- The argument order is already correct.
           gcongrExt.add gcongrLemma kind
@@ -400,6 +427,18 @@ initialize registerBuiltinAttribute {
 }
 
 initialize registerTraceClass `Meta.gcongr
+
+/-- A version of the `rfl` tactic that also closes goals of the form `⊢ p → p`. -/
+def _root_.Lean.MVarId.applyRflOrId (goal : MVarId) : MetaM Unit := goal.withContext do
+  let t ← whnfR (← goal.getType)
+  if t.isForall then
+    let lhs := t.bindingDomain!
+    let rhs := t.bindingBody!
+    guard !rhs.hasLooseBVars
+    guard <| ← isDefEq lhs rhs
+    goal.assign (.lam t.bindingName! lhs (.bvar 0) t.bindingInfo!)
+  else
+    goal.applyRfl
 
 /-- `gcongr_discharger` is used by `gcongr` to discharge side goals.
 
@@ -428,30 +467,32 @@ open Elab Tactic
     goal.assignIfDefEq (← mkAppOptM ``Eq.subst #[h, m])
     goal.applyRfl
 
-/-- See if the term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`. -/
-@[gcongr_forward] def symmExact : ForwardExt where
-  eval h goal := do (← goal.applySymm).assignIfDefEq h
-
 @[gcongr_forward] def exact : ForwardExt where
   eval e m := m.assignIfDefEq e
 
 /-- Attempt to resolve an (implicitly) relational goal by one of a provided list of hypotheses,
 either with such a hypothesis directly or by a limited palette of relational forward-reasoning from
 these hypotheses. -/
-def _root_.Lean.MVarId.gcongrForward (hs : Array Expr) (g : MVarId) : MetaM Bool :=
-  withReducible do
-    let s ← saveState
-    withTraceNode `Meta.gcongr (fun _ => return m!"gcongr_forward: ⊢ {← g.getType}") do
-    -- Iterate over a list of terms
-    let tacs := (forwardExt.getState (← getEnv)).2
-    for h in hs do
-      try
-        tacs.firstM fun (n, tac) =>
-          withTraceNode `Meta.gcongr (return m!"{·.emoji} trying {n} on {h} : {← inferType h}") do
-            tac.eval h g
-        return true
-      catch _ => s.restore
-    return false
+def _root_.Lean.MVarId.gcongrForward (hs : Array Expr) (g : MVarId) : MetaM Bool := withReducible do
+  withTraceNode `Meta.gcongr (fun _ => return m!"gcongr_forward: ⊢ {← g.getType}") do
+  -- Iterate over a list of terms
+  let tacs := (forwardExt.getState (← getEnv)).2
+  let mctx ← getMCtx
+  for h in hs do
+    try
+      tacs.firstM fun (n, tac) =>
+        withTraceNode `Meta.gcongr (return m!"{·.emoji} trying {n} on {h} : {← inferType h}") do
+          tac.eval h g
+      return true
+    catch _ => setMCtx mctx
+    try
+      let h ← h.applySymm
+      tacs.firstM fun (n, tac) =>
+        withTraceNode `Meta.gcongr (return m!"{·.emoji} trying {n} on {h} : {← inferType h}") do
+          tac.eval h g
+      return true
+    catch _ => setMCtx mctx
+  return false
 
 /--
 This is used as the default main-goal discharger,
@@ -493,8 +534,8 @@ def elabCHoleExpand : Term.TermElab := fun stx expectedType? => do
 section Trans
 
 /-!
-The lemmas `rel_imp_rel`, `rel_trans` and `rel_trans'` are too general to be tagged with
-`@[gcongr]`, so instead we use `getTransLemma?` to look up these lemmas.
+The lemma `rel_imp_rel` is too general to be tagged with `@[gcongr]`,
+so instead we use `relImpRelLemma` to look it up.
 -/
 
 variable {α : Sort*} {r : α → α → Prop} [IsTrans α r] {a b c d : α}
@@ -506,53 +547,116 @@ lemma rel_imp_rel (h₁ : r c a) (h₂ : r b d) : r a b → r c d :=
 Construct a `GCongrLemma` for `gcongr` goals of the form `a ≺ b → c ≺ d`.
 This will be tried if there is no other available `@[gcongr]` lemma.
 For example, the relation `a ≡ b [ZMOD n]` has an instance of `IsTrans`, so a congruence of the form
-`a ≡ b [ZMOD n] → c ≡ d [ZMOD n]` can be solved with `rel_imp_rel`, `rel_trans` or `rel_trans'`.
+`a ≡ b [ZMOD n] → c ≡ d [ZMOD n]` can be solved with `rel_imp_rel`.
 -/
 def relImpRelLemma (arity : Nat) : List GCongrLemma :=
   if arity < 2 then [] else [{
     declName := ``rel_imp_rel
-    mainSubgoals := #[(7, 0, true), (8, 0, false)]
+    mainSubgoals := #[⟨5, 3, 7, [], true⟩, ⟨4, 6, 8, [], false⟩]
     numHyps := 9
-    key := default, prio := default, numVarying := default
+    key := default, prio := default, numVarying := default, forGrw := true
   }]
 
 end Trans
 
-/--
-`Lean.MVarId.applyWithArity` is a copy of `Lean.MVarId.apply`, where the arity of the
-applied function is given explicitly instead of being inferred.
+/-- The state used by `GCongrM`. -/
+structure State where
+  /-- The new goals produced by `gcongr`. This includes side-goals and main goals.
+  TODO?: split this into separate side and main goals, so that the side goals can be
+  discharged using a nested `gcongr by ...` syntax. -/
+  newGoals : Array MVarId := #[]
+  /-- Patterns to use when doing intro. -/
+  patterns : List (TSyntax `rintroPat)
 
-TODO: make `Lean.MVarId.apply` take a configuration argument to do this itself
--/
-def _root_.Lean.MVarId.applyWithArity (mvarId : MVarId) (e : Expr) (arity : Nat)
-    (cfg : ApplyConfig := {}) (term? : Option MessageData := none) : MetaM (List MVarId) :=
-  mvarId.withContext do
-    mvarId.checkNotAssigned `apply
-    let targetType ← mvarId.getType
-    let eType      ← inferType e
-    let (newMVars, binderInfos) ← do
-      -- we use `withDefault` so that we can unfold `Monotone`
-      let (newMVars, binderInfos, eType) ← withDefault <| forallMetaTelescopeReducing eType arity
-      if (← isDefEqApply cfg.approx eType targetType) then
-        pure (newMVars, binderInfos)
-      else
-        let conclusionType? ← if arity = 0 then
-          pure none
-        else
-          let (_, _, r) ← withDefault <| forallMetaTelescopeReducing eType arity
-          pure (some r)
-        throwApplyError mvarId eType conclusionType? targetType term?
-    postprocessAppMVars `apply mvarId newMVars binderInfos
-      cfg.synthAssignedInstances cfg.allowSynthFailures
-    let e ← instantiateMVars e
-    mvarId.assign (mkAppN e newMVars)
-    let newMVars ← newMVars.filterM fun mvar => not <$> mvar.mvarId!.isAssigned
-    let otherMVarIds ← getMVarsNoDelayed e
-    let newMVarIds ← reorderGoals newMVars cfg.newGoals
-    let otherMVarIds := otherMVarIds.filter fun mvarId => !newMVarIds.contains mvarId
-    let result := newMVarIds ++ otherMVarIds.toList
-    result.forM (·.headBetaType)
-    return result
+/-- The context used by `GCongrM`. -/
+structure Context where
+  /-- The discharger for main goals. -/
+  mainGoalDischarger : MVarId → MetaM Bool
+  /-- The discharger for side goals. -/
+  sideGoalDischarger : MVarId → MetaM Unit
+
+/-- The monad used internally in the `gcongr` tactic. -/
+abbrev GCongrM := ReaderT Context <| StateRefT State MetaM
+
+/-- Run a `GCongrM` computation in `MetaM`. -/
+def GCongrM.run {α} (x : GCongrM α) (patterns : List (TSyntax `rintroPat) := [])
+    (mainGoalDischarger : MVarId → MetaM Bool := gcongrForwardDischarger)
+    (sideGoalDischarger : MVarId → MetaM Unit := gcongrDischarger) :
+    MetaM (α × Array MVarId) := do
+  let (a, s) ← (x { mainGoalDischarger, sideGoalDischarger }).run { patterns }
+  return (a, s.newGoals)
+
+/-- Add an unsolved goal to the `newGoals` array in the state. -/
+def pushNewGoal (g : MVarId) : GCongrM Unit :=
+  modify fun s ↦ { s with newGoals := s.newGoals.push g}
+
+/-- Run the `intro` tactic `n` times on the given goal. -/
+private def introN (goal : MVarId) (n : Nat) : GCongrM (List MVarId) := do
+  let (goals, patterns) ← goal.rintroWithPats (← get).patterns n
+  modify ({· with patterns})
+  return goals
+
+/-- Run the discharger for main goals. -/
+private def dischargeMain (mvarId : MVarId) : GCongrM Bool := do
+  (← read).mainGoalDischarger mvarId
+
+/-- Run the discharger for side goals. -/
+def dischargeSide (mvarId : MVarId) : GCongrM Unit := do
+  let mctx ← getMCtx
+  try (← read).sideGoalDischarger (← mvarId.intros).2
+  catch _ => setMCtx mctx; pushNewGoal mvarId
+
+/-- Apply generalized congruence lemma `lem` to goal `g`, throwing an error if it fails.
+Return an array of main subgoals and an array of side goals.
+For each main subgoal, also return whether the sides of the relation are swapped
+(i.e. whether it is contravariant).
+
+This function is used by both the `gcongr` and `grw` tactic.
+In the case of `grw`, one of the two sides of the goal is a metavariable that is filled in
+by this function. -/
+def applyGCongrLemma (g : MVarId) (lem : GCongr.GCongrLemma) :
+    GCongrM (Array (MVarId × Bool) × Array MVarId) := do
+  let const ← mkConstWithFreshMVarLevels lem.declName
+  let type ← inferType const
+  -- Use `withDefault` so that we can unfold `Monotone`.
+  let (mvars, bis, type) ← withDefault <| forallMetaTelescopeReducing type lem.numHyps
+  guard <| ← approxDefEq <| isDefEq (← g.getType) type
+  g.assign (mkAppN const mvars)
+  let mut sideGoals := #[]
+  for mvar in mvars, i in 0...* do
+    let mvarId := mvar.mvarId!
+    if ← mvarId.isAssigned then continue
+    -- Filter out metavariables from the main subgoals
+    if lem.mainSubgoals.any (fun h ↦ h.lhsIdx == i || h.rhsIdx == i || h.hypIdx == i) then continue
+    -- Synthesize instance implicit arguments.
+    -- We allow synthesis to get stuck, because in the case of `grw`
+    -- there may be unassigned metavariables in the type.
+    if bis[i]!.isInstImplicit then
+      match ← trySynthInstance (← mvarId.getType) with
+      | .some inst => mvarId.assign inst; continue
+      | .none => failure
+      | .undef => sideGoals := sideGoals.push mvarId
+    else
+      sideGoals := sideGoals.push mvarId
+  let mainGoals ← lem.mainSubgoals.flatMapM fun h ↦ do
+    let mvarId := mvars[h.hypIdx]!.mvarId!
+    if (← get).patterns.isEmpty then
+      -- If the user did not provide binders (using `gcongr with ...`),
+      -- instead use binder names appearing in the LHS/RHS of the target relation.
+      let lhsNames := lambdaBinderNames (← instantiateMVars mvars[h.lhsIdx]!)
+      let rhsNames := lambdaBinderNames (← instantiateMVars mvars[h.rhsIdx]!)
+      let lambdaNames := if lhsNames.size ≥ rhsNames.size then lhsNames else rhsNames
+      let names := h.hypsPos.map (·.elim `_ (lambdaNames.getD · `_))
+      return #[((← mvarId.introN h.hypsPos.length names).2, h.isContra)]
+    else
+      return (← introN mvarId h.hypsPos.length).toArray.map (·, h.isContra)
+  return (mainGoals, sideGoals)
+where
+  /-- Get the binder names from a lambda function. -/
+  lambdaBinderNames (e : Expr) (acc : Array Name := #[]) : Array Name :=
+    match e with
+    | .lam n _ b _ => lambdaBinderNames b (acc.push n)
+    | _ => acc
 
 /-- The core of the `gcongr` tactic.  Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
 look up any relevant `@[gcongr]` lemmas, try to apply them, recursively run the tactic itself on
@@ -560,20 +664,19 @@ look up any relevant `@[gcongr]` lemmas, try to apply them, recursively run the 
 is a user-provided template, first check that the template asks us to descend this far into the
 match. -/
 partial def _root_.Lean.MVarId.gcongr
-    (g : MVarId) (mdataLhs? : Option Bool) (names : List (TSyntax ``binderIdent))
-    (depth : Nat := 1000000)
-    (mainGoalDischarger : MVarId → MetaM Bool := gcongrForwardDischarger)
-    (sideGoalDischarger : MVarId → MetaM Unit := gcongrDischarger) :
-    MetaM (Bool × List (TSyntax ``binderIdent) × Array MVarId) := g.withContext do
+    (g : MVarId) (mdataLhs? : Option Bool)
+    (depth : Nat := 1000000) :
+    GCongrM Bool := g.withContext do
   withTraceNode `Meta.gcongr (fun _ => return m!"gcongr: ⊢ {← g.getType}") do
   if mdataLhs?.isNone then
     -- A. If there is no pattern annotation, try to resolve the goal by reflexivity, or
     -- by the provided tactic `mainGoalDischarger`, and continue on if this fails.
-    let success ← try withReducible g.applyRfl; pure true catch _ => mainGoalDischarger g
-    if success then
-      return (true, names, #[])
+    try withReducible g.applyRflOrId; return true
+    catch _ =>
+      if ← dischargeMain g then
+        return true
   -- If we have reached the depth limit, return the unsolved goal
-  let depth + 1 := depth | return (false, names, #[g]) -- we know that there is no mdata to remove
+  let depth + 1 := depth | pushNewGoal g; return false -- we know that there is no mdata to remove
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let rel ← withReducible g.getType'
   let some (relName, lhs, rhs) := getRel rel | throwTacticEx `gcongr g m!"{rel} is not a relation"
@@ -584,16 +687,15 @@ partial def _root_.Lean.MVarId.gcongr
     -- then try to resolve the goal by the provided tactic `mainGoalDischarger`;
     -- if this fails, stop and report the existing goal.
     if hasHoleAnnotation mdataExpr then
-      if ← mainGoalDischarger g then
-        return (true, names, #[])
-      else
-        -- clear the mdata from the goal
-        let g ← g.replaceTargetDefEq (updateRel rel mdataExpr.mdataExpr! mdataLhs)
-        return (false, names, #[g])
+      if ← dischargeMain g then
+        return true
+      -- clear the mdata from the goal
+      pushNewGoal <| ← g.replaceTargetDefEq (updateRel rel mdataExpr.mdataExpr! mdataLhs)
+      return false
     -- If there are no annotations at all, we close the goal with `rfl`. Otherwise,
     -- we report that the provided pattern doesn't apply.
     unless containsHoleAnnotation mdataExpr do
-      try withDefault g.applyRfl; return (true, names, #[])
+      try withDefault g.applyRflOrId; return true
       catch _ => throwTacticEx `gcongr g m!"\
         subgoal {← withReducible g.getType'} is not allowed by the provided pattern \
         and is not closed by `rfl`"
@@ -602,15 +704,15 @@ partial def _root_.Lean.MVarId.gcongr
   let lhs ← if relName == `_Implies then whnfR lhs else pure lhs
   let rhs ← if relName == `_Implies then whnfR rhs else pure rhs
   let some (lhsHead, lhsArgs) := getCongrAppFnArgs lhs |
-    if mdataLhs?.isNone then return (false, names, #[g])
+    if mdataLhs?.isNone then pushNewGoal g; return false
     throwTacticEx `gcongr g m!"the head of {lhs} is not a constant"
   let some (rhsHead, rhsArgs) := getCongrAppFnArgs rhs |
-    if mdataLhs?.isNone then return (false, names, #[g])
+    if mdataLhs?.isNone then pushNewGoal g; return false
     throwTacticEx `gcongr g m!"the head of {rhs} is not a constant"
   unless lhsHead == rhsHead && lhsArgs.size == rhsArgs.size do
-    if mdataLhs?.isNone then return (false, names, #[g])
+    if mdataLhs?.isNone then pushNewGoal g; return false
     throwTacticEx `gcongr g m!"{lhs} and {rhs} are not of the same shape"
-  let s ← saveState
+  let mctx ← getMCtx
   -- Look up the `@[gcongr]` lemmas whose conclusion has the same relation and head function as
   -- the goal
   let key := { relName, head := lhsHead, arity := lhsArgs.size }
@@ -618,47 +720,21 @@ partial def _root_.Lean.MVarId.gcongr
   if relName == `_Implies then
     lemmas := lemmas ++ relImpRelLemma lhsArgs.size
   for lem in lemmas do
-    let gs ← try
-      -- Try `apply`-ing such a lemma to the goal.
-      let const ← mkConstWithFreshMVarLevels lem.declName
-      withReducible (g.applyWithArity const lem.numHyps { synthAssignedInstances := false })
+    let (mainGoals, sideGoals) ← try
+      withReducible <| applyGCongrLemma g lem
     catch _ =>
-      s.restore
+      setMCtx mctx
       continue
-    let some e ← getExprMVarAssignment? g | panic! "unassigned?"
-    let args := e.getAppArgs
-    let mut subgoals := #[]
-    let mut names := names
-    -- If the `apply` succeeds, iterate over the lemma's `mainSubgoals` list.
-    for (i, numHyps, isContra) in lem.mainSubgoals do
-      -- We anticipate that such a "main" subgoal should not have been solved by the `apply` by
-      -- unification ...
-      let some (.mvar mvarId) := args[i]? | panic! "what kind of lemma is this?"
-      -- Introduce all variables and hypotheses in this subgoal.
-      let (names2, _vs, mvarId) ← mvarId.introsWithBinderIdents names (maxIntros? := numHyps)
-      -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal with (if available) the
-      -- appropriate template
+    sideGoals.forM dischargeSide
+    for (mvarId, isContra) in mainGoals do
       let mdataLhs?' := mdataLhs?.map (· != isContra)
-      let (_, names2, subgoals2) ← mvarId.gcongr mdataLhs?' names2 depth mainGoalDischarger
-        sideGoalDischarger
-      (names, subgoals) := (names2, subgoals ++ subgoals2)
-    let mut out := #[]
-    -- Also try the discharger on any "side" (i.e., non-"main") goals which were not resolved
-    -- by the `apply`.
-    for g in gs do
-      if !(← g.isAssigned) && !subgoals.contains g then
-        let s ← saveState
-        try
-          sideGoalDischarger (← g.intros).2
-        catch _ =>
-          s.restore
-          out := out.push g
-    -- Return all unresolved subgoals, "main" or "side"
-    return (true, names, out ++ subgoals)
+      -- Recurse on the subgoal.
+      discard <| mvarId.gcongr mdataLhs?' depth
+    return true
   -- A. If there is no template, and there was no `@[gcongr]` lemma which matched the goal,
   -- report this goal back.
   if mdataLhs?.isNone then
-    return (false, names, #[g])
+    pushNewGoal g; return false
   -- B. If there is a template, and there was no `@[gcongr]` lemma which matched the template,
   -- fail.
   if lemmas.isEmpty then
@@ -668,65 +744,75 @@ partial def _root_.Lean.MVarId.gcongr
     throwTacticEx `gcongr g m!"none of the `@[gcongr]` lemmas were applicable to the goal {rel}.\
       \n  attempted lemmas: {lemmas.map (·.declName)}"
 
-/-- The `gcongr` tactic applies "generalized congruence" rules, reducing a relational goal
-between an LHS and RHS.  For example,
+/-- `gcongr` applies "generalized congruence" rules to recursively reduce a goal of form
+`⊢ R (f a₁ ... aₙ) (f b₁ ... bₙ)` to (possibly multiple) goal(s) `⊢ Rᵢ aᵢ bᵢ`, keeping only the
+distinct pairs `aᵢ ≠ bᵢ`, where `Rᵢ` is a possibly different relation (depending on the
+precise rule). The relations `R`, `Rᵢ` can be any two-argument relation, including `· → ·`.
+
+This tactic is extensible: to add a "generalized congruence" rule, tag a theorem with the attribute
+`@[gcongr]`.
+
+If a "generalized congruence" lemma has a side goal, `gcongr` will try to discharge it using
+`gcongr_discharger`, which is an extensible tactic based on `positivity`. Side goals not discharged
+in this way are left for the user.
+
+* `gcongr with x y ... z` names the variables that are introduced by descending into binders (for
+  example sums or suprema).
+* `gcongr n`, where `n` is a natural number literal, limits the depth of the recursive applications.
+  This is useful if `gcongr` is too aggressive in breaking down the goal.
+* `gcongr t`, where `t` is a term with `?_` holes, performs congruence up to the holes in `t`.
+  In other words, `gcongr f ?_` turns a goal `⊢ R (f x) (f y)` into `⊢ R x y` (but no further).
+  This is useful if `gcongr` is too aggressive in breaking down the goal.
+
+Examples:
 ```
 example {a b x c d : ℝ} (h1 : a + 1 ≤ b + 1) (h2 : c + 2 ≤ d + 2) :
     x ^ 2 * a + c ≤ x ^ 2 * b + d := by
+  -- LHS and RHS both have the form x ^ 2 * ?_ + ?_
   gcongr
-  · linarith
-  · linarith
+  · -- New goal: ⊢ a ≤ b
+    linarith
+  · -- ⊢ New goal: c ≤ d
+    linarith
+-- Resulting proof term is:
+--   add_le_add (mul_le_mul_of_nonneg_left ?_ (Even.pow_nonneg (even_two_mul 1) x)) ?_
+-- where `add_le_add` and `mul_le_mul_of_nonneg_left` are generalized congruence lemmas
+-- and the side goal `0 ≤ x ^ 2` is discharged by `gcongr_discharger`.
 ```
-This example has the goal of proving the relation `≤` between an LHS and RHS both of the pattern
-```
-x ^ 2 * ?_ + ?_
-```
-(with inputs `a`, `c` on the left and `b`, `d` on the right); after the use of
-`gcongr`, we have the simpler goals `a ≤ b` and `c ≤ d`.
 
-A depth limit or a pattern can be provided explicitly;
-this is useful if a non-maximal match is desired:
 ```
 example {a b c d x : ℝ} (h : a + c + 1 ≤ b + d + 1) :
     x ^ 2 * (a + c) + 5 ≤ x ^ 2 * (b + d) + 5 := by
+  -- Using a pattern to limit the depth.
   gcongr x ^ 2 * ?_ + 5 -- or `gcongr 2`
+  -- New goal: ⊢ a + c ≤ b + d
   linarith
 ```
 
-The "generalized congruence" rules are the library lemmas which have been tagged with the
-attribute `@[gcongr]`.  For example, the first example constructs the proof term
 ```
-add_le_add (mul_le_mul_of_nonneg_left ?_ (Even.pow_nonneg (even_two_mul 1) x)) ?_
-```
-using the generalized congruence lemmas `add_le_add` and `mul_le_mul_of_nonneg_left`.
-
-The tactic attempts to discharge side goals to these "generalized congruence" lemmas (such as the
-side goal `0 ≤ x ^ 2` in the above application of `mul_le_mul_of_nonneg_left`) using the tactic
-`gcongr_discharger`, which wraps `positivity` but can also be extended. Side goals not discharged
-in this way are left for the user.
-
-`gcongr` will descend into binders (for example sums or suprema). To name the bound variables,
-use `with`:
-```
+-- Descending into binders (here: ⨆).
 example {f g : ℕ → ℝ≥0∞} (h : ∀ n, f n ≤ g n) : ⨆ n, f n ≤ ⨆ n, g n := by
   gcongr with i
   exact h i
 ```
 -/
-elab "gcongr" template:(ppSpace colGt term)?
-    withArg:((" with" (ppSpace colGt binderIdent)+)?) : tactic => do
+syntax (name := gcongr) "gcongr" (ppSpace colGt term)?
+  (" with" (ppSpace colGt rintroPat)*)? : tactic
+
+elab_rules : tactic
+| `(tactic| gcongr $[$template]? $[with $ps?*]?) => do
   let g ← getMainGoal
   g.withContext do
   let type ← withReducible g.getType'
   let some (_rel, lhs, _rhs) := getRel type
     | throwError "gcongr failed, not a relation"
-  -- Get the names from the `with x y z` list
-  let names := (withArg.raw[1].getArgs.map TSyntax.mk).toList
+  -- The patterns from the `with x y z` list
+  let patterns := (ps?.getD #[]).toList
   -- Time to actually run the core tactic `Lean.MVarId.gcongr`!
-  let (progress, _, unsolvedGoalStates) ← do
-    let some e := template | g.gcongr none names
+  let (progress, unsolvedGoals) ← do
+    let some e := template | g.gcongr none |>.run patterns
     if let some depth := e.raw.isNatLit? then
-      g.gcongr none names (depth := depth)
+      g.gcongr none depth |>.run patterns
     else
       -- Elaborate the template (e.g. `x * ?_ + _`)
       -- First, we replace occurrences of `?_` with `gcongrHole% ?_`
@@ -740,34 +826,35 @@ elab "gcongr" template:(ppSpace colGt term)?
         throwError "invalid pattern {patt}, it does not match with {lhs}"
       let patt ← instantiateMVars patt
       let g ← g.replaceTargetDefEq (updateRel type patt true)
-      g.gcongr true names
+      g.gcongr true |>.run patterns
   if progress then
-    replaceMainGoal unsolvedGoalStates.toList
+    replaceMainGoal unsolvedGoals.toList
   else
     throwError "gcongr did not make progress"
 
-/-- The `rel` tactic applies "generalized congruence" rules to solve a relational goal by
-"substitution".  For example,
+/-- `rel [h₁, ..., hₙ]` uses "generalized congruence" rules to solve a goal of form
+`⊢ R (f a₁ ... aₙ) (f b₁ ... bₙ)` by substituting with the terms `hᵢ : Rᵢ aᵢ bᵢ`. The relations
+`R`, `Rᵢ` can be any two-argument relation, including `· → ·`.
+
+This tactic is extensible: to add a "generalized congruence" rule, tag a theorem with the attribute
+`@[gcongr]`.
+
+If a "generalized congruence" lemma has a side goal, `rel` will try to discharge it using
+`gcongr_discharger`, which is an extensible tactic based on `positivity`. If side goals cannot be
+discharged, or the terms `h₁`, ..., `hₙ` cannot solve the goals, the tactic fails.
+
+Examples:
 ```
 example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) :
     x ^ 2 * a + c ≤ x ^ 2 * b + d := by
   rel [h1, h2]
+-- In this example we "substitute" the hypotheses `a ≤ b` and `c ≤ d` into the LHS `x ^ 2 * a + c`
+-- of the goal and obtain the RHS `x ^ 2 * b + d`, thus proving the goal.
+-- This constructs the proof term:
+--   add_le_add (mul_le_mul_of_nonneg_left h1 (pow_bit0_nonneg x 1)) h2
+-- using the generalized congruence lemmas `add_le_add` and `mul_le_mul_of_nonneg_left`.
 ```
-In this example we "substitute" the hypotheses `a ≤ b` and `c ≤ d` into the LHS `x ^ 2 * a + c` of
-the goal and obtain the RHS `x ^ 2 * b + d`, thus proving the goal.
-
-The "generalized congruence" rules used are the library lemmas which have been tagged with the
-attribute `@[gcongr]`.  For example, the first example constructs the proof term
-```
-add_le_add (mul_le_mul_of_nonneg_left h1 (pow_bit0_nonneg x 1)) h2
-```
-using the generalized congruence lemmas `add_le_add` and `mul_le_mul_of_nonneg_left`.  If there are
-no applicable generalized congruence lemmas, the tactic fails.
-
-The tactic attempts to discharge side goals to these "generalized congruence" lemmas (such as the
-side goal `0 ≤ x ^ 2` in the above application of `mul_le_mul_of_nonneg_left`) using the tactic
-`gcongr_discharger`, which wraps `positivity` but can also be extended. If the side goals cannot
-be discharged in this way, the tactic fails. -/
+-/
 syntax "rel" " [" term,* "]" : tactic
 
 elab_rules : tactic
@@ -784,13 +871,13 @@ elab_rules : tactic
     -- forward-reasoning on that term) on each of the listed terms.
     let assum g := g.gcongrForward hyps
     -- Time to actually run the core tactic `Lean.MVarId.gcongr`!
-    let (_, _, unsolvedGoalStates) ← g.gcongr none [] (mainGoalDischarger := assum)
-    match unsolvedGoalStates.toList with
+    let (_, unsolvedGoals) ← g.gcongr none |>.run [] assum
+    match unsolvedGoals.toList with
     -- if all goals are solved, succeed!
     | [] => pure ()
     -- if not, fail and report the unsolved goals
-    | unsolvedGoalStates => do
-      let unsolvedGoals ← liftMetaM <| List.mapM MVarId.getType unsolvedGoalStates
+    | unsolvedGoals => do
+      let unsolvedGoals ← liftMetaM <| List.mapM MVarId.getType unsolvedGoals
       let g := Lean.MessageData.joinSep (unsolvedGoals.map Lean.MessageData.ofExpr) Format.line
       throwError "rel failed, cannot prove goal by 'substituting' the listed relationships. \
         The steps which could not be automatically justified were:\n{g}"

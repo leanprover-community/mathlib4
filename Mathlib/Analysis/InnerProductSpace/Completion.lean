@@ -15,7 +15,7 @@ We show that the separation quotient and the completion of an inner product spac
 product spaces.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -100,7 +100,7 @@ instance innerProductSpace : InnerProductSpace 𝕜 (Completion E) where
   smul_left x y c :=
     Completion.induction_on₂ x y
       (isClosed_eq (Continuous.inner (continuous_fst.const_smul c) continuous_snd)
-        ((continuous_mul_left _).comp (by fun_prop)))
+        ((continuous_const_mul _).comp (by fun_prop)))
       fun a b => by simp only [← coe_smul c a, inner_coe, inner_smul_left]
 
 end UniformSpace.Completion

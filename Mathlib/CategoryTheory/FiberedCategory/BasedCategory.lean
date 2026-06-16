@@ -109,6 +109,7 @@ section
 
 variable (F : 𝒳 ⥤ᵇ 𝒴) {R S : 𝒮} {a b : 𝒳.obj} (f : R ⟶ S) (φ : a ⟶ b)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- For a based functor `F : 𝒳 ⟶ 𝒴`, then whenever an arrow `φ` in `𝒳` lifts some `f` in `𝒮`,
 then `F(φ)` also lifts `f`. -/
 instance preserves_isHomLift [IsHomLift 𝒳.p f φ] : IsHomLift 𝒴.p f (F.map φ) := by
@@ -117,6 +118,7 @@ instance preserves_isHomLift [IsHomLift 𝒳.p f φ] : IsHomLift 𝒴.p f (F.map
   rw [← Functor.comp_map, congr_hom F.w]
   simpa using (fac 𝒳.p f φ)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- For a based functor `F : 𝒳 ⟶ 𝒴`, and an arrow `φ` in `𝒳`, then `φ` lifts an arrow `f` in `𝒮`
 if `F(φ)` does. -/
 lemma isHomLift_map [IsHomLift 𝒴.p f (F.map φ)] : IsHomLift 𝒳.p f φ := by
@@ -198,6 +200,7 @@ def forgetful (𝒳 : BasedCategory.{v₂, u₂} 𝒮) (𝒴 : BasedCategory.{v�
   obj := fun F ↦ F.toFunctor
   map := fun α ↦ α.toNatTrans
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (forgetful 𝒳 𝒴).ReflectsIsomorphisms where
   reflects {F G} α _ := by
     constructor
@@ -206,6 +209,7 @@ instance : (forgetful 𝒳 𝒴).ReflectsIsomorphisms where
       isHomLift' := fun a ↦ by simp [lift_id_inv_isIso] }
     aesop
 
+set_option backward.isDefEq.respectTransparency false in
 instance {F G : 𝒳 ⥤ᵇ 𝒴} (α : F ⟶ G) [IsIso α] : IsIso (X := F.toFunctor) α.toNatTrans := by
   rw [← forgetful_map]; infer_instance
 
@@ -237,6 +241,7 @@ def mkNatIso (α : F.toFunctor ≅ G.toFunctor)
       rw [← Iso.app_inv]
       apply IsHomLift.lift_id_inv }
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isIso_of_toNatTrans_isIso (α : F ⟶ G) [IsIso (X := F.toFunctor) α.toNatTrans] : IsIso α :=
   have : IsIso ((forgetful 𝒳 𝒴).map α) := by simp_all
   Functor.ReflectsIsomorphisms.reflects (forgetful 𝒳 𝒴) α
@@ -276,6 +281,7 @@ instance : Category (BasedCategory.{v₂, u₂} 𝒮) where
   id := id
   comp := comp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The bicategory of based categories. -/
 instance bicategory : Bicategory (BasedCategory.{v₂, u₂} 𝒮) where
   Hom 𝒳 𝒴 := 𝒳 ⥤ᵇ 𝒴

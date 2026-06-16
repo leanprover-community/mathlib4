@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Jacobson.Ring
 
 ## Main results
 - `Module.finite_iff_isArtinianRing`: If `A` is a finite type algebra over an Artinian ring `R`,
-then `A` is finite over `R` if and only if `A` is an Artinian ring.
+  then `A` is finite over `R` if and only if `A` is an Artinian ring.
 
 -/
 

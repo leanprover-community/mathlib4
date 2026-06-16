@@ -352,14 +352,14 @@ private lemma chain_is_bddAbove (C : Set (IsLocalIntegralCurveOn v t₀ x₀))
   -- This is exactly what `chain_has_upper_bound_explicit` provides.
   exact chain_has_upper_bound_explicit v t₀ x₀ C hC hCne
 
-private def isLocalIntegralCurveOnNonempty [CompleteSpace E]
+@[reducible] private def isLocalIntegralCurveOnNonempty [CompleteSpace E]
     (tMin tMax : ℝ) (a r L K : ℝ≥0) (t₀' : Icc tMin tMax)
     (ht₀'_eq : (t₀' : ℝ) = t₀) (htMin_lt_t₀ : tMin < t₀) (ht₀_lt_tMax : t₀ < tMax)
     (hpl_instance : IsPicardLindelof v t₀' x₀ a r L K) :
     Nonempty (IsLocalIntegralCurveOn v t₀ x₀) := by
   -- Picard-Lindelöf gives an integral curve `f₀` on `Icc tMin tMax`.
   have hx₀ : x₀ ∈ Metric.closedBall x₀ r := by simp
-  rcases (IsPicardLindelof.exists_eq_isIntegralCurveOn hpl_instance hx₀) with
+  rcases (IsPicardLindelof.exists_eq_forall_mem_Icc_hasDerivWithinAt hpl_instance hx₀) with
     ⟨f₀, hf₀_t₀, hf₀_isIntegralCurveOn⟩
   -- Construct the initial local integral curve.
   let p₀ : IsLocalIntegralCurveOn v t₀ x₀ := {
@@ -367,7 +367,7 @@ private def isLocalIntegralCurveOnNonempty [CompleteSpace E]
     I := Ioo tMin tMax
     isOpen_domain := isOpen_Ioo
     isPreconnected_domain := (isConnected_Ioo (htMin_lt_t₀.trans ht₀_lt_tMax)).isPreconnected
-    isIntegralCurveOn := hf₀_isIntegralCurveOn.mono Ioo_subset_Icc_self
+    isIntegralCurveOn := IsIntegralCurveOn.mono hf₀_isIntegralCurveOn Ioo_subset_Icc_self
     t₀_mem := ⟨htMin_lt_t₀, ht₀_lt_tMax⟩
     f_t₀ := by simpa [ht₀'_eq] using hf₀_t₀
   }

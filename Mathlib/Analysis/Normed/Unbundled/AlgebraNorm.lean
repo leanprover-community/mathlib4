@@ -58,7 +58,7 @@ def toRingSeminorm' (f : AlgebraNorm R S) : RingSeminorm S :=
 
 instance : FunLike (AlgebraNorm R S) S ℝ where
   coe f := f.toFun
-  coe_injective' f f' h := by
+  coe_injective f f' h := by
     simp only [AddGroupSeminorm.toFun_eq_coe, RingSeminorm.toFun_eq_coe] at h
     cases f; cases f'; congr
     simp only at h
@@ -150,7 +150,7 @@ variable {R S : outParam <| Type*} [SeminormedCommRing R] [Ring S] [Algebra R S]
 
 instance : FunLike (MulAlgebraNorm R S) S ℝ where
   coe f := f.toFun
-  coe_injective' f f' h := by
+  coe_injective f f' h := by
     simp only [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe, DFunLike.coe_fn_eq] at h
     obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := f'; congr
 
@@ -178,7 +178,34 @@ theorem extends_norm' (f : MulAlgebraNorm R S) (a : R) : f (a • (1 : S)) = ‖
 theorem extends_norm (f : MulAlgebraNorm R S) (a : R) : f (algebraMap R S a) = ‖a‖ := by
   rw [Algebra.algebraMap_eq_smul_one]; exact extends_norm' _ _
 
+/-- The algebra norm underlying an multiplicative algebra norm. -/
+def toAlgebraNorm (f : MulAlgebraNorm R S) : AlgebraNorm R S where
+  __ := f
+  mul_le' _ _ := (f.map_mul' _ _).le
+
+instance instCoeAlgebraNorm : Coe (MulAlgebraNorm R S) (AlgebraNorm R S) := ⟨toAlgebraNorm⟩
+
+@[simp]
+lemma coe_AlgebraNorm (f : MulAlgebraNorm R S) : ⇑(f : AlgebraNorm R S) = ⇑f := rfl
+
 end MulAlgebraNorm
+
+namespace NormedAlgebra
+
+variable (K L : Type*) [NormedField K] [NormedField L] [NormedAlgebra K L]
+
+/-- Given a normed field extension `L / K`, the norm on `L` is a multiplicative `K`-algebra norm. -/
+def toMulAlgebraNorm : MulAlgebraNorm K L where
+  __ := NormedField.toMulRingNorm L
+  smul' r x := by
+    simp only [Algebra.smul_def, AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe,
+      map_mul, mul_eq_mul_right_iff, map_eq_zero]
+    exact Or.inl <| norm_algebraMap' L r
+
+@[simp]
+lemma toMulAlgebraNorm_apply (x : L) : toMulAlgebraNorm K L x = ‖x‖ := rfl
+
+end NormedAlgebra
 
 namespace MulRingNorm
 

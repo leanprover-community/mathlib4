@@ -6,7 +6,6 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Congr
-import Mathlib.Analysis.Asymptotics.Lemmas
 
 /-!
 # Fréchet derivative of constant functions
@@ -36,10 +35,32 @@ variable {f : E → F} {x : E} {s : Set E}
 
 section Const
 
+theorem hasFDerivAtFilter_const (c : F) (L : Filter (E × E)) :
+    HasFDerivAtFilter (fun _ => c) (0 : E →L[𝕜] F) L :=
+  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun _ => by simp
+
+theorem hasFDerivAtFilter_zero (L : Filter (E × E)) :
+    HasFDerivAtFilter (0 : E → F) (0 : E →L[𝕜] F) L := hasFDerivAtFilter_const _ _
+
+theorem hasFDerivAtFilter_one [One F] (L : Filter (E × E)) :
+    HasFDerivAtFilter (1 : E → F) (0 : E →L[𝕜] F) L := hasFDerivAtFilter_const _ _
+
+theorem hasFDerivAtFilter_natCast [NatCast F] (n : ℕ) (L : Filter (E × E)) :
+    HasFDerivAtFilter (n : E → F) (0 : E →L[𝕜] F) L :=
+  hasFDerivAtFilter_const _ _
+
+theorem hasFDerivAtFilter_intCast [IntCast F] (z : ℤ) (L : Filter (E × E)) :
+    HasFDerivAtFilter (z : E → F) (0 : E →L[𝕜] F) L :=
+  hasFDerivAtFilter_const _ _
+
+theorem hasFDerivAtFilter_ofNat (n : ℕ) [OfNat F n] (L : Filter (E × E)) :
+    HasFDerivAtFilter (ofNat(n) : E → F) (0 : E →L[𝕜] F) L :=
+  hasFDerivAtFilter_const _ _
+
 @[fun_prop]
 theorem hasStrictFDerivAt_const (c : F) (x : E) :
     HasStrictFDerivAt (fun _ => c) (0 : E →L[𝕜] F) x :=
-  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun _ => by simp
+  hasFDerivAtFilter_const _ _
 
 @[fun_prop]
 theorem hasStrictFDerivAt_zero (x : E) :
@@ -61,32 +82,10 @@ theorem hasStrictFDerivAt_intCast [IntCast F] (z : ℤ) (x : E) :
 theorem hasStrictFDerivAt_ofNat (n : ℕ) [OfNat F n] (x : E) :
     HasStrictFDerivAt (ofNat(n) : E → F) (0 : E →L[𝕜] F) x := hasStrictFDerivAt_const _ _
 
-theorem hasFDerivAtFilter_const (c : F) (x : E) (L : Filter E) :
-    HasFDerivAtFilter (fun _ => c) (0 : E →L[𝕜] F) x L :=
-  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun _ => by simp
-
-theorem hasFDerivAtFilter_zero (x : E) (L : Filter E) :
-    HasFDerivAtFilter (0 : E → F) (0 : E →L[𝕜] F) x L := hasFDerivAtFilter_const _ _ _
-
-theorem hasFDerivAtFilter_one [One F] (x : E) (L : Filter E) :
-    HasFDerivAtFilter (1 : E → F) (0 : E →L[𝕜] F) x L := hasFDerivAtFilter_const _ _ _
-
-theorem hasFDerivAtFilter_natCast [NatCast F] (n : ℕ) (x : E) (L : Filter E) :
-    HasFDerivAtFilter (n : E → F) (0 : E →L[𝕜] F) x L :=
-  hasFDerivAtFilter_const _ _ _
-
-theorem hasFDerivAtFilter_intCast [IntCast F] (z : ℤ) (x : E) (L : Filter E) :
-    HasFDerivAtFilter (z : E → F) (0 : E →L[𝕜] F) x L :=
-  hasFDerivAtFilter_const _ _ _
-
-theorem hasFDerivAtFilter_ofNat (n : ℕ) [OfNat F n] (x : E) (L : Filter E) :
-    HasFDerivAtFilter (ofNat(n) : E → F) (0 : E →L[𝕜] F) x L :=
-  hasFDerivAtFilter_const _ _ _
-
 @[fun_prop]
 theorem hasFDerivWithinAt_const (c : F) (x : E) (s : Set E) :
     HasFDerivWithinAt (fun _ => c) (0 : E →L[𝕜] F) s x :=
-  hasFDerivAtFilter_const _ _ _
+  hasFDerivAtFilter_const _ _
 
 @[fun_prop]
 theorem hasFDerivWithinAt_zero (x : E) (s : Set E) :
@@ -113,7 +112,7 @@ theorem hasFDerivWithinAt_ofNat (n : ℕ) [OfNat F n] (x : E) (s : Set E) :
 
 @[fun_prop]
 theorem hasFDerivAt_const (c : F) (x : E) : HasFDerivAt (fun _ => c) (0 : E →L[𝕜] F) x :=
-  hasFDerivAtFilter_const _ _ _
+  hasFDerivAtFilter_const _ _
 
 @[fun_prop]
 theorem hasFDerivAt_zero (x : E) :
@@ -295,21 +294,27 @@ theorem hasFDerivWithinAt_singleton (f : E → F) (x : E) :
   rw [accPt_iff_clusterPt, inf_principal]
   simp [ClusterPt]
 
-@[fun_prop]
+@[fun_prop, nontriviality]
 theorem hasFDerivWithinAt_of_subsingleton [h : Subsingleton E] (f : E → F) (s : Set E) (x : E) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) s x := by
   obtain rfl | ⟨a, rfl⟩ := s.eq_empty_or_singleton_of_subsingleton
   · simp
   · exact HasFDerivWithinAt.singleton
 
-@[fun_prop]
+@[fun_prop, nontriviality]
 theorem hasFDerivAt_of_subsingleton [h : Subsingleton E] (f : E → F) (x : E) :
     HasFDerivAt f (0 : E →L[𝕜] F) x := by
   rw [← hasFDerivWithinAt_univ, subsingleton_univ.eq_singleton_of_mem (mem_univ x)]
   exact hasFDerivWithinAt_singleton f x
 
+@[nontriviality]
 theorem differentiable_of_subsingleton [Subsingleton E] {f : E → F} : Differentiable 𝕜 f :=
   fun x ↦ (hasFDerivAt_of_subsingleton f x (𝕜 := 𝕜)).differentiableAt
+
+@[nontriviality]
+theorem differentiableWithinAt_of_subsingleton [Subsingleton E] :
+    DifferentiableWithinAt 𝕜 f s x :=
+  (differentiable_of_subsingleton x).differentiableWithinAt
 
 @[fun_prop]
 theorem differentiableOn_singleton : DifferentiableOn 𝕜 f {x} :=
@@ -325,18 +330,28 @@ theorem hasFDerivAt_zero_of_eventually_const (c : F) (hf : f =ᶠ[𝓝 x] fun _ 
 
 end Const
 
-theorem differentiableWithinAt_of_isInvertible_fderivWithin
-    (hf : (fderivWithin 𝕜 f s x).IsInvertible) : DifferentiableWithinAt 𝕜 f s x := by
+/-- If `f : E → F` has injective differential within `s` at `x`,
+it is differentiable within `s` at `x`. -/
+lemma differentiableWithinAt_of_fderivWithin_injective (hf : Injective (fderivWithin 𝕜 f s x)) :
+    DifferentiableWithinAt 𝕜 f s x := by
+  nontriviality E
   contrapose hf
   rw [fderivWithin_zero_of_not_differentiableWithinAt hf]
-  contrapose! hf
-  rcases ContinuousLinearMap.isInvertible_zero_iff.1 hf with ⟨hE, hF⟩
-  exact (hasFDerivAt_of_subsingleton _ _).differentiableAt.differentiableWithinAt
+  exact not_injective_const
+
+/-- If `f : E → F` has injective differential at `x`, it is differentiable at `x`. -/
+lemma differentiableAt_of_fderiv_injective (hf : Injective (fderiv 𝕜 f x)) :
+    DifferentiableAt 𝕜 f x := by
+  simp only [← differentiableWithinAt_univ, ← fderivWithin_univ] at hf ⊢
+  exact differentiableWithinAt_of_fderivWithin_injective hf
+
+theorem differentiableWithinAt_of_isInvertible_fderivWithin
+    (hf : (fderivWithin 𝕜 f s x).IsInvertible) : DifferentiableWithinAt 𝕜 f s x :=
+  differentiableWithinAt_of_fderivWithin_injective hf.injective
 
 theorem differentiableAt_of_isInvertible_fderiv
-    (hf : (fderiv 𝕜 f x).IsInvertible) : DifferentiableAt 𝕜 f x := by
-  simp only [← differentiableWithinAt_univ, ← fderivWithin_univ] at hf ⊢
-  exact differentiableWithinAt_of_isInvertible_fderivWithin hf
+    (hf : (fderiv 𝕜 f x).IsInvertible) : DifferentiableAt 𝕜 f x :=
+  differentiableAt_of_fderiv_injective hf.injective
 
 /-! ### Support of derivatives -/
 

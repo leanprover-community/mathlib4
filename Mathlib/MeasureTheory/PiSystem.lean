@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Martin Zinkevich, Rémy Degenne
 -/
 module
 
+public import Mathlib.Data.Set.Dissipate
 public import Mathlib.Logic.Encodable.Lattice
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 public import Mathlib.Order.Disjointed
@@ -106,6 +107,17 @@ theorem IsPiSystem.comap {α β} {S : Set (Set β)} (h_pi : IsPiSystem S) (f : �
   rintro _ ⟨s, hs_mem, rfl⟩ _ ⟨t, ht_mem, rfl⟩ hst
   rw [← Set.preimage_inter] at hst ⊢
   exact ⟨s ∩ t, h_pi s hs_mem t ht_mem (nonempty_of_nonempty_preimage hst), rfl⟩
+
+/-- For a `π`-system `C` over `α` and a sequence of sets `s` belonging to `C`,
+`dissipate s n` belongs to `C`. -/
+lemma IsPiSystem.dissipate_mem {s : ℕ → Set α} {C : Set (Set α)}
+    (hC : IsPiSystem C) (h : ∀ n, s n ∈ C) (n : ℕ) (h' : (dissipate s n).Nonempty) :
+    dissipate s n ∈ C := by
+  induction n with
+  | zero => simpa using h 0
+  | succ n hn =>
+    rw [dissipate_succ] at h' ⊢
+    exact hC (dissipate s n) (hn h'.left) (s (n + 1)) (h (n + 1)) h'
 
 theorem isPiSystem_iUnion_of_directed_le {α ι} (p : ι → Set (Set α))
     (hp_pi : ∀ n, IsPiSystem (p n)) (hp_directed : Directed (· ≤ ·) p) :
@@ -374,7 +386,7 @@ theorem piiUnionInter_singleton (π : ι → Set (Set α)) (i : ι) :
     · refine ⟨∅, ?_⟩
       simpa only [Finset.coe_empty, subset_singleton_iff, mem_empty_iff_false, IsEmpty.forall_iff,
         imp_true_iff, Finset.notMem_empty, iInter_false, iInter_univ, true_and,
-        exists_const] using hs
+        exists_const] using! hs
 
 theorem piiUnionInter_singleton_left (s : ι → Set α) (S : Set ι) :
     piiUnionInter (fun i => ({s i} : Set (Set α))) S =
@@ -539,11 +551,13 @@ theorem has_union {s₁ s₂ : Set α} (h₁ : d.Has s₁) (h₂ : d.Has s₂) (
   rw [union_eq_iUnion]
   exact d.has_iUnion (pairwise_disjoint_on_bool.2 h) (Bool.forall_bool.2 ⟨h₂, h₁⟩)
 
-theorem has_diff {s₁ s₂ : Set α} (h₁ : d.Has s₁) (h₂ : d.Has s₂) (h : s₂ ⊆ s₁) :
+theorem has_sdiff {s₁ s₂ : Set α} (h₁ : d.Has s₁) (h₂ : d.Has s₂) (h : s₂ ⊆ s₁) :
     d.Has (s₁ \ s₂) := by
   apply d.has_compl_iff.1
-  simp only [diff_eq, compl_inter, compl_compl]
+  simp only [sdiff_eq, compl_inter, compl_compl]
   exact d.has_union (d.has_compl h₁) h₂ (disjoint_compl_left.mono_right h)
+
+@[deprecated (since := "2026-06-03")] alias has_diff := has_sdiff
 
 instance instLEDynkinSystem : LE (DynkinSystem α) where le m₁ m₂ := m₁.Has ≤ m₂.Has
 
@@ -579,7 +593,7 @@ inductive GenerateHas (s : Set (Set α)) : Set α → Prop
 theorem generateHas_compl {C : Set (Set α)} {s : Set α} : GenerateHas C sᶜ ↔ GenerateHas C s := by
   refine ⟨?_, GenerateHas.compl⟩
   intro h
-  convert GenerateHas.compl h
+  convert! GenerateHas.compl h
   simp
 
 /-- The least Dynkin system containing a collection of basic sets. -/
@@ -596,6 +610,7 @@ instance : Inhabited (DynkinSystem α) :=
   ⟨generate univ⟩
 
 /-- If a Dynkin system is closed under binary intersection, then it forms a `σ`-algebra. -/
+@[implicit_reducible]
 def toMeasurableSpace (h_inter : ∀ s₁ s₂, d.Has s₁ → d.Has s₂ → d.Has (s₁ ∩ s₂)) :
     MeasurableSpace α where
   MeasurableSet' := d.Has
@@ -620,7 +635,7 @@ def restrictOn {s : Set α} (h : d.Has s) : DynkinSystem α where
     have : tᶜ ∩ s = (t ∩ s)ᶜ \ sᶜ := Set.ext fun x => by by_cases h : x ∈ s <;> simp [h]
     simp_rw [this]
     exact
-      d.has_diff (d.has_compl hts) (d.has_compl h)
+      d.has_sdiff (d.has_compl hts) (d.has_compl h)
         (compl_subset_compl.mpr inter_subset_right)
   has_iUnion_nat {f} hd hf := by
     rw [iUnion_inter]

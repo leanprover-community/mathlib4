@@ -47,13 +47,12 @@ section SMul
 
 variable (𝕜) [SMul 𝕜 E] {s : Set E} {x y : E}
 
-/-- Segments in a vector space. -/
+/-- Segments in a vector space. Denoted as `[x -[𝕜] y]` within the `Convex` namespace. -/
 def segment (x y : E) : Set E :=
   { z : E | ∃ a b : 𝕜, 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ a • x + b • y = z }
 
 /-- Open segment in a vector space. Note that `openSegment 𝕜 x x = {x}` instead of being `∅` when
-the base semiring has some element between `0` and `1`.
-Denoted as `[x -[𝕜] y]` within the `Convex` namespace. -/
+the base semiring has some element between `0` and `1`. -/
 def openSegment (x y : E) : Set E :=
   { z : E | ∃ a b : 𝕜, 0 < a ∧ 0 < b ∧ a + b = 1 ∧ a • x + b • y = z }
 
@@ -207,29 +206,33 @@ theorem openSegment_eq_image (x y : E) :
 
 theorem segment_eq_image' (x y : E) :
     [x -[𝕜] y] = (fun θ : 𝕜 => x + θ • (y - x)) '' Icc (0 : 𝕜) 1 := by
-  convert segment_eq_image 𝕜 x y using 2
+  convert! segment_eq_image 𝕜 x y using 2
   simp only [smul_sub, sub_smul, one_smul]
   abel
 
 theorem openSegment_eq_image' (x y : E) :
     openSegment 𝕜 x y = (fun θ : 𝕜 => x + θ • (y - x)) '' Ioo (0 : 𝕜) 1 := by
-  convert openSegment_eq_image 𝕜 x y using 2
+  convert! openSegment_eq_image 𝕜 x y using 2
   simp only [smul_sub, sub_smul, one_smul]
   abel
 
 theorem segment_eq_image_lineMap (x y : E) : [x -[𝕜] y] =
     AffineMap.lineMap x y '' Icc (0 : 𝕜) 1 := by
-  convert segment_eq_image 𝕜 x y using 2
+  convert! segment_eq_image 𝕜 x y using 2
   exact AffineMap.lineMap_apply_module _ _ _
 
 theorem openSegment_eq_image_lineMap (x y : E) :
     openSegment 𝕜 x y = AffineMap.lineMap x y '' Ioo (0 : 𝕜) 1 := by
-  convert openSegment_eq_image 𝕜 x y using 2
+  convert! openSegment_eq_image 𝕜 x y using 2
   exact AffineMap.lineMap_apply_module _ _ _
 
 theorem lineMap_mem_openSegment (a b : E) {t : 𝕜} (ht : t ∈ Ioo 0 1) :
     AffineMap.lineMap a b t ∈ openSegment 𝕜 a b :=
   openSegment_eq_image_lineMap 𝕜 a b ▸ mem_image_of_mem _ ht
+
+theorem lineMap_mem_segment (a b : E) {t : 𝕜} (ht : t ∈ Icc 0 1) :
+    AffineMap.lineMap a b t ∈ [a -[𝕜] b] :=
+  segment_eq_image_lineMap 𝕜 a b ▸ mem_image_of_mem _ ht
 
 @[simp]
 theorem image_segment (f : E →ᵃ[𝕜] F) (a b : E) : f '' [a -[𝕜] b] = [f a -[𝕜] f b] :=
@@ -246,11 +249,17 @@ theorem image_openSegment (f : E →ᵃ[𝕜] F) (a b : E) :
 @[simp]
 theorem vadd_segment [AddTorsor G E] [VAddCommClass G E E] (a : G) (b c : E) :
     a +ᵥ [b -[𝕜] c] = [a +ᵥ b -[𝕜] a +ᵥ c] :=
+  #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12286/
+  we didn't need this `let` statement. -/
+  let : AddTorsor E E := AddGroup.instAddTorsor E
   image_segment 𝕜 ⟨_, LinearMap.id, fun _ _ => vadd_comm _ _ _⟩ b c
 
 @[simp]
 theorem vadd_openSegment [AddTorsor G E] [VAddCommClass G E E] (a : G) (b c : E) :
     a +ᵥ openSegment 𝕜 b c = openSegment 𝕜 (a +ᵥ b) (a +ᵥ c) :=
+  #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12286/
+  we didn't need this `let` statement. -/
+  let : AddTorsor E E := AddGroup.instAddTorsor E
   image_openSegment 𝕜 ⟨_, LinearMap.id, fun _ _ => vadd_comm _ _ _⟩ b c
 
 @[simp]
@@ -288,7 +297,7 @@ lemma segment_inter_subset_endpoint_of_linearIndependent_sub
   have Hy : y = (y - c) + c := by abel
   rw [Hx, Hy, smul_add, smul_add] at H
   have : c + q • (y - c) = c + p • (x - c) := by
-    convert H using 1 <;> simp [sub_smul]
+    convert! H using 1 <;> simp [sub_smul]
   obtain ⟨rfl, rfl⟩ : p = 0 ∧ q = 0 := h.eq_zero_of_pair' ((add_right_inj c).1 this).symm
   simp
 
@@ -315,7 +324,7 @@ lemma segment_inter_eq_endpoint_of_linearIndependent_of_ne
   apply segment_inter_eq_endpoint_of_linearIndependent_sub
   simp only [add_sub_add_left_eq_sub]
   suffices H : LinearIndependent 𝕜 ![(-1 : 𝕜) • x + t • y, (-1 : 𝕜) • x + s • y] by
-    convert H using 1; simp only [neg_smul, one_smul]; abel_nf
+    convert! H using 1; simp only [neg_smul, one_smul]; abel_nf
   nontriviality 𝕜
   rw [LinearIndependent.pair_add_smul_add_smul_iff]
   aesop
@@ -324,17 +333,29 @@ section LinearOrderedRing
 
 variable [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {x y : E}
 
-theorem midpoint_mem_segment [Invertible (2 : 𝕜)] (x y : E) : midpoint 𝕜 x y ∈ [x -[𝕜] y] := by
-  rw [segment_eq_image_lineMap]
-  exact ⟨⅟2, ⟨invOf_nonneg.mpr zero_le_two, invOf_le_one one_le_two⟩, rfl⟩
+theorem midpoint_mem_openSegment [Invertible (2 : 𝕜)] (x y : E) :
+    midpoint 𝕜 x y ∈ openSegment 𝕜 x y := by
+  rw [openSegment_eq_image_lineMap]
+  exact ⟨⅟2, ⟨invOf_pos.mpr two_pos, invOf_lt_one one_lt_two⟩, rfl⟩
 
-theorem mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[𝕜] x + y] := by
-  convert midpoint_mem_segment (𝕜 := 𝕜) (x - y) (x + y)
+theorem midpoint_mem_segment [Invertible (2 : 𝕜)] (x y : E) : midpoint 𝕜 x y ∈ [x -[𝕜] y] :=
+  openSegment_subset_segment _ _ _ <| midpoint_mem_openSegment _ _
+
+theorem mem_openSegment_sub_add [Invertible (2 : 𝕜)] (x y : E) :
+    x ∈ openSegment 𝕜 (x - y) (x + y) := by
+  convert! midpoint_mem_openSegment (𝕜 := 𝕜) (x - y) (x + y)
   rw [midpoint_sub_add]
 
-theorem mem_segment_add_sub [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x + y -[𝕜] x - y] := by
-  convert midpoint_mem_segment (𝕜 := 𝕜) (x + y) (x - y)
+theorem mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[𝕜] x + y] :=
+  openSegment_subset_segment _ _ _ <| mem_openSegment_sub_add _ _
+
+theorem mem_openSegment_add_sub [Invertible (2 : 𝕜)] (x y : E) :
+    x ∈ openSegment 𝕜 (x + y) (x - y) := by
+  convert! midpoint_mem_openSegment (𝕜 := 𝕜) (x + y) (x - y)
   rw [midpoint_add_sub]
+
+theorem mem_segment_add_sub [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x + y -[𝕜] x - y] :=
+  openSegment_subset_segment _ _ _ <| mem_openSegment_add_sub _ _
 
 @[simp]
 theorem left_mem_openSegment_iff [DenselyOrdered 𝕜] [IsTorsionFree 𝕜 E] :
@@ -589,7 +610,7 @@ protected lemma Icc_subset_segment {x y : {t : 𝕜 // 0 ≤ t}} :
   intro a ⟨hxa, hay⟩
   rw [← Subtype.coe_le_coe] at hxa hay
   rcases Icc_subset_segment ⟨hxa, hay⟩ with ⟨t₁, t₂, t₁_nonneg, t₂_nonneg, t_add, hta⟩
-  refine ⟨⟨t₁, t₁_nonneg⟩, ⟨t₂, t₂_nonneg⟩, zero_le _, zero_le _, ?_, ?_⟩ <;>
+  refine ⟨⟨t₁, t₁_nonneg⟩, ⟨t₂, t₂_nonneg⟩, zero_le, zero_le, ?_, ?_⟩ <;>
   ext <;> simpa
 
 protected lemma segment_eq_Icc {x y : {t : 𝕜 // 0 ≤ t}} (hxy : x ≤ y) :

@@ -25,7 +25,8 @@ Also see `AlgebraicGeometry/AffineSpace` for the affine space over arbitrary sch
 - `Polynomial.exists_image_comap_of_monic`:
   If `g : R[X]` is monic, the image of `Z(g) ∩ D(f) : Spec R[X]` in `Spec R` is compact open.
 - `Polynomial.isOpenMap_comap_C`: The structure map `Spec R[X] → Spec R` is an open map.
-- `MvPolynomial.isOpenMap_comap_C`: The structure map `Spec R[X̲] → Spec R` is an open map.
+- `MvPolynomial.isOpenMap_comap_C`:
+  The structure map `Spec (MvPolynomial σ R) → Spec R` is an open map.
 
 -/
 
@@ -50,8 +51,9 @@ lemma isNilpotent_tensor_residueField_iff
   simp only [Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply,
     Algebra.coe_lmul_eq_mul, Algebra.TensorProduct.comm_tmul]
   rw [← IsNilpotent.map_iff (Algebra.lmul_injective (R := I.ResidueField)),
-    LinearMap.isNilpotent_iff_charpoly, ← Algebra.baseChange_lmul, LinearMap.charpoly_baseChange]
-  simp_rw [this, ← ((LinearMap.mul R A) f).charpoly_natDegree]
+    LinearMap.isNilpotent_iff_charpoly, ← Algebra.baseChange_lmul, LinearMap.charpoly_baseChange,
+    this]
+  simp_rw [← ((LinearMap.mul R A) f).charpoly_natDegree]
   constructor
   · intro e i hi
     replace e := congr(($e).coeff i)
@@ -68,6 +70,7 @@ lemma isNilpotent_tensor_residueField_iff
 
 namespace PrimeSpectrum
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `A` be an `R`-algebra.
 `𝔭 : Spec R` is in the image of `Z(I) ∩ D(f) ⊆ Spec S`
 if and only if `f` is not nilpotent on `κ(𝔭) ⊗ A ⧸ I`. -/
@@ -115,7 +118,7 @@ lemma mem_image_comap_basicOpen (f : A) (x) :
     rw [Ideal.span_empty]
     exact { __ := (RingEquiv.quotientBot A).symm, __ := Algebra.ofId _ _ }
   rw [← IsNilpotent.map_iff e.injective, AlgEquiv.commutes,
-    ← mem_image_comap_zeroLocus_sdiff f ∅ x, zeroLocus_empty, ← Set.compl_eq_univ_diff,
+    ← mem_image_comap_zeroLocus_sdiff f ∅ x, zeroLocus_empty, ← Set.compl_eq_univ_sdiff,
     basicOpen_eq_zeroLocus_compl]
 
 /-- Let `A` be an `R`-algebra. If `A ⧸ I` is finite free over `R`,
@@ -142,11 +145,7 @@ lemma mem_image_comap_C_basicOpen (f : R[X]) (x : PrimeSpectrum R) :
     let e : R[X] ⊗[R] x.asIdeal.ResidueField ≃ₐ[R] x.asIdeal.ResidueField[X] :=
       (Algebra.TensorProduct.comm R _ _).trans (polyEquivTensor R x.asIdeal.ResidueField).symm
     rw [← IsNilpotent.map_iff e.injective, isNilpotent_iff_eq_zero]
-    change (e.toAlgHom.toRingHom).comp (algebraMap _ _) f = 0 ↔ Polynomial.mapRingHom _ f = 0
-    congr!
-    ext1
-    · ext; simp [e]
-    · simp [e]
+    simp [e]
   · simp [Polynomial.ext_iff]
 
 lemma image_comap_C_basicOpen (f : R[X]) :
@@ -209,7 +208,7 @@ lemma mem_image_comap_C_basicOpen (f : MvPolynomial σ R) (x : PrimeSpectrum R) 
     ext
     · simp [scalarRTensorAlgEquiv, e, coeff_map,
         Algebra.smul_def, apply_ite (f := algebraMap _ _)]
-    · simp [e, scalarRTensorAlgEquiv, coeff_map, coeff_X']
+    · simp [e, scalarRTensorAlgEquiv, coeff_map, coeff_X]
   · simp [MvPolynomial.ext_iff, coeff_map]
 
 lemma image_comap_C_basicOpen (f : MvPolynomial σ R) :

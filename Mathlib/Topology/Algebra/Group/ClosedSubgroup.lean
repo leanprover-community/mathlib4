@@ -26,7 +26,7 @@ and its additive version `ClosedAddSubgroup`.
 Actually provide the `Order.Frame (ClosedSubgroup G)` instance.
 -/
 
-@[expose] public section
+public section
 
 section
 
@@ -62,7 +62,7 @@ theorem toSubgroup_injective : Function.Injective
 @[to_additive]
 instance : SetLike (ClosedSubgroup G) G where
   coe U := U.1
-  coe_injective' _ _ h := toSubgroup_injective <| SetLike.ext' h
+  coe_injective _ _ h := toSubgroup_injective <| SetLike.ext' h
 
 @[to_additive] instance : PartialOrder (ClosedSubgroup G) := .ofSetLike (ClosedSubgroup G) G
 
@@ -82,7 +82,7 @@ instance instInfClosedSubgroup : Min (ClosedSubgroup G) :=
 
 @[to_additive]
 instance instSemilatticeInfClosedSubgroup : SemilatticeInf (ClosedSubgroup G) :=
-  SetLike.coe_injective.semilatticeInf ((↑) : ClosedSubgroup G → Set G) fun _ _ ↦ rfl
+  SetLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[to_additive]
 instance [CompactSpace G] (H : ClosedSubgroup G) : CompactSpace H :=
@@ -94,16 +94,16 @@ open scoped Pointwise
 
 namespace Subgroup
 
-variable {G : Type u} [Group G] [TopologicalSpace G] [ContinuousMul G]
+variable {G : Type u} [Group G] [TopologicalSpace G] [SeparatelyContinuousMul G]
 
+@[to_additive]
 lemma normalCore_isClosed (H : Subgroup G) (h : IsClosed (H : Set G)) :
     IsClosed (H.normalCore : Set G) := by
-  rw [normalCore_eq_iInf_conjAct]
+  rw [normalCore_eq_iInf_comap_conj]
   push_cast
   apply isClosed_iInter
   intro g
-  convert IsClosed.preimage (IsTopologicalGroup.continuous_conj (ConjAct.ofConjAct g⁻¹)) h using 1
-  exact Set.ext (fun t ↦ Set.mem_smul_set_iff_inv_smul_mem)
+  exact h.preimage (IsTopologicalGroup.continuous_conj g)
 
 @[to_additive]
 lemma isOpen_of_isClosed_of_finiteIndex (H : Subgroup G) [H.FiniteIndex]

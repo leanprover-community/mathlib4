@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
 public import Mathlib.MeasureTheory.Function.Holder
-public import Mathlib.Topology.Algebra.Module.PointwiseConvergence
+public import Mathlib.Topology.Algebra.Module.Spaces.PointwiseConvergenceCLM
 
 /-!
 # TemperedDistribution
@@ -16,22 +16,22 @@ public import Mathlib.Topology.Algebra.Module.PointwiseConvergence
 ## Main definitions
 
 * `TemperedDistribution E F`: The space `𝓢(E, ℂ) →L[ℂ] F` equipped with the pointwise
-convergence topology.
+  convergence topology.
 * `MeasureTheory.Measure.toTemperedDistribution`: Every measure of temperate growth is a tempered
-distribution.
+  distribution.
 * `Function.HasTemperateGrowth.toTemperedDistribution`: Every function of temperate growth is a
-tempered distribution.
+  tempered distribution.
 * `SchwartzMap.toTemperedDistributionCLM`: The canonical map from `𝓢` to `𝓢'` as a continuous linear
-map.
+  map.
 * `MeasureTheory.Lp.toTemperedDistribution`: Every `Lp` function is a tempered distribution.
 * `TemperedDistribution.mulLeftCLM`: Multiplication with temperate growth function as a continuous
-linear map.
+  linear map.
 * `TemperedDistribution.instLineDeriv`: The directional derivative on tempered distributions.
 * `TemperedDistribution.fourierTransformCLM`: The Fourier transform on tempered distributions.
 
 ## Notation
 * `𝓢'(E, F)`: The space of tempered distributions `TemperedDistribution E F` scoped in
-`SchwartzMap`
+  `SchwartzMap`
 -/
 
 @[expose] public noncomputable section
@@ -44,7 +44,8 @@ variable {ι 𝕜 E F F₁ F₂ : Type*}
 
 section definition
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℂ F]
+variable [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [TopologicalSpace F] [AddCommGroup F] [Module ℂ F]
 
 variable (E F) in
 /-- The space of tempered distribution is the space of continuous linear maps from the Schwartz to
@@ -53,7 +54,7 @@ abbrev TemperedDistribution := 𝓢(E, ℂ) →Lₚₜ[ℂ] F
 /- Since mathlib is missing quite a few results that show that continuity of linear maps and
 convergence of sequences can be checked for strong duals of Fréchet-Montel spaces pointwise, we
 use the pointwise topology for now and not the strong topology. The pointwise topology is
-conventially used in PDE texts, but has the downside that it is not barrelled, hence the uniform
+conventionally used in PDE texts, but has the downside that it is not barrelled, hence the uniform
 boundedness principle does not hold. -/
 
 @[inherit_doc]
@@ -65,7 +66,8 @@ end definition
 
 section Embeddings
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℂ F]
+variable [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [NormedAddCommGroup F] [NormedSpace ℂ F]
 
 namespace MeasureTheory.Measure
 
@@ -109,6 +111,7 @@ section MeasurableSpace
 
 variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (E F) in
 /-- The canonical embedding of `𝓢(E, F)` into `𝓢'(E, F)` as a continuous linear map. -/
 def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
@@ -119,6 +122,7 @@ def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [hμ : μ.HasTem
   cont := PointwiseConvergenceCLM.continuous_of_continuous_eval
     fun g ↦ (integralCLM ℂ μ).cont.comp <| pairing_continuous_left (lsmul ℂ ℂ).flip g
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toTemperedDistributionCLM_apply_apply (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] (f : 𝓢(E, F)) (g : 𝓢(E, ℂ)) :
@@ -160,6 +164,7 @@ def toTemperedDistribution {p : ℝ≥0∞}
   toPointwiseConvergenceCLM _ _ _ _ <|
     (lsmul ℂ ℂ).flip.lpPairing μ p (1 - p⁻¹)⁻¹ f ∘L toLpCLM ℂ ℂ (1 - p⁻¹)⁻¹ μ
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toTemperedDistribution_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ)
     (g : 𝓢(E, ℂ)) :
@@ -183,6 +188,7 @@ theorem toTemperedDistribution_toLp_eq [SecondCountableTopology E] {p : ℝ≥0�
   filter_upwards [f.coeFn_toLp p μ] with x hf
   rw [hf]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (F) in
 /-- The natural embedding of L^p into tempered distributions. -/
 def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [μ.HasTemperateGrowth]
@@ -229,8 +235,12 @@ namespace TemperedDistribution
 
 section Multiplication
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
-  [NormedSpace ℝ E] [NormedSpace ℂ F]
+variable [NormedAddCommGroup E] [NormedSpace ℝ E]
+
+section TVS
+
+variable [AddCommGroup F] [Module ℂ F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+  [ContinuousConstSMul ℂ F]
 
 variable (F) in
 /-- Multiplication with a temperate growth function as a continuous linear map on `𝓢'(E, F)`. -/
@@ -285,10 +295,12 @@ theorem smulLeftCLM_sum {g : ι → E → ℂ} {s : Finset ι} (hg : ∀ i ∈ s
   ext f u
   simp [SchwartzMap.smulLeftCLM_sum hg]
 
+end TVS
+
 open ENNReal MeasureTheory
 
-variable [MeasurableSpace E] [BorelSpace E] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
-  [CompleteSpace F]
+variable [NormedAddCommGroup F] [NormedSpace ℂ F] [CompleteSpace F]
+  [MeasurableSpace E] [BorelSpace E] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
 
 /-- Coercion of the product of two `Lp` functions to a tempered distribution is equal to the left
 multiplication if the left factor is a function of temperate growth. -/
@@ -308,7 +320,10 @@ end Multiplication
 
 section deriv
 
-variable [NormedAddCommGroup F] [NormedSpace ℂ F]
+section TVS
+
+variable [AddCommGroup F] [Module ℂ F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+  [ContinuousConstSMul ℂ F]
 
 variable (F) in
 /-- The 1-dimensional derivative on tempered distribution as a continuous `ℂ`-linear map. -/
@@ -319,7 +334,9 @@ def derivCLM : 𝓢'(ℝ, F) →L[ℂ] 𝓢'(ℝ, F) :=
 theorem derivCLM_apply_apply (f : 𝓢'(ℝ, F)) (g : 𝓢(ℝ, ℂ)) :
     derivCLM F f g = f (-SchwartzMap.derivCLM ℂ ℂ g) := rfl
 
-variable [RCLike 𝕜] [NormedSpace 𝕜 F]
+end TVS
+
+variable [RCLike 𝕜] [NormedAddCommGroup F] [NormedSpace ℂ F] [NormedSpace 𝕜 F]
 
 variable (𝕜) in
 theorem derivCLM_toTemperedDistributionCLM_eq (f : 𝓢(ℝ, F)) :
@@ -333,12 +350,17 @@ section lineDeriv
 
 open LineDeriv
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℂ F]
+variable [NormedAddCommGroup E] [NormedSpace ℝ E]
+
+section TVS
+
+variable [AddCommGroup F] [Module ℂ F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+  [ContinuousConstSMul ℂ F]
 
 /-- The partial derivative (or directional derivative) in the direction `m : E` as a
 continuous linear map on tempered distributions. -/
 instance instLineDeriv : LineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
-  lineDerivOp m f := PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m) f
+  lineDerivOp m := PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)
 
 @[simp]
 theorem lineDerivOp_apply_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) (m : E) :
@@ -348,7 +370,7 @@ instance : LineDerivAdd E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp_add m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_add
   lineDerivOp_left_add x y f := by
     ext u
-    simp [lineDerivOp_left_add, UniformConvergenceCLM.add_apply, add_comm]
+    simp [lineDerivOp_left_add, add_comm]
 
 instance : LineDerivSMul ℂ E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp_smul m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_smul
@@ -357,11 +379,6 @@ instance : LineDerivSMul ℝ E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp_smul m :=
     (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_smul_of_tower
 
-instance : LineDerivLeftSMul ℝ E 𝓢'(E, F) 𝓢'(E, F) where
-  lineDerivOp_left_smul r x f := by
-    ext u
-    simp [lineDerivOp_left_smul, map_smul_of_tower f]
-
 instance : ContinuousLineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
   continuous_lineDerivOp m :=
     (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).continuous
@@ -369,7 +386,18 @@ instance : ContinuousLineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
 theorem lineDerivOpCLM_eq (m : E) : lineDerivOpCLM ℂ 𝓢'(E, F) m =
   PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m) := rfl
 
-variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E] [FiniteDimensional ℝ E]
+end TVS
+
+variable [NormedAddCommGroup F] [NormedSpace ℂ F]
+
+set_option backward.isDefEq.respectTransparency false in
+instance : LineDerivLeftSMul ℝ E 𝓢'(E, F) 𝓢'(E, F) where
+  lineDerivOp_left_smul r x f := by
+    ext u
+    simp [lineDerivOp_left_smul, map_smul_of_tower f]
+
+variable
+  [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E] [FiniteDimensional ℝ E]
   {μ : Measure E} [μ.IsAddHaarMeasure]
 
 theorem lineDerivOp_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) (m : E) :
@@ -386,8 +414,12 @@ section Laplacian
 open Laplacian LineDeriv
 open scoped SchwartzMap
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
-  [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [NormedSpace ℂ F]
+variable [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+
+section TVS
+
+variable [AddCommGroup F] [Module ℂ F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+  [ContinuousConstSMul ℂ F]
 
 instance : Laplacian 𝓢'(E, F) 𝓢'(E, F) where
   laplacian := LineDeriv.laplacianCLM ℝ E 𝓢'(E, F)
@@ -396,14 +428,17 @@ instance : Laplacian 𝓢'(E, F) 𝓢'(E, F) where
 theorem laplacianCLM_apply (f : 𝓢'(E, F)) : laplacianCLM ℂ E 𝓢'(E, F) f = Δ f := by
   simp [laplacianCLM, laplacian]
 
+end TVS
+
+variable [NormedAddCommGroup F] [NormedSpace ℂ F]
+
 theorem laplacian_eq_sum [Fintype ι] (b : OrthonormalBasis ι ℝ E) (f : 𝓢'(E, F)) :
     Δ f = ∑ i, ∂_{b i} (∂_{b i} f) := LineDeriv.laplacianCLM_eq_sum b f
 
 @[simp]
 theorem laplacian_apply_apply (f : 𝓢'(E, F)) (u : 𝓢(E, ℂ)) : (Δ f) u = f (Δ u) := by
   simp [laplacian_eq_sum (stdOrthonormalBasis ℝ E),
-    SchwartzMap.laplacian_eq_sum (stdOrthonormalBasis ℝ E),
-    UniformConvergenceCLM.sum_apply, map_neg, neg_neg]
+    SchwartzMap.laplacian_eq_sum (stdOrthonormalBasis ℝ E), map_neg, neg_neg]
 
 variable [MeasurableSpace E] [BorelSpace E]
 
@@ -422,9 +457,13 @@ section Fourier
 
 open FourierTransform
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
-  [InnerProductSpace ℝ E] [NormedSpace ℂ F]
+variable [NormedAddCommGroup E] [InnerProductSpace ℝ E]
   [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
+
+section TVS
+
+variable [AddCommGroup F] [Module ℂ F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+  [ContinuousConstSMul ℂ F]
 
 instance instFourierTransform : FourierTransform 𝓢'(E, F) 𝓢'(E, F) where
   fourier := PointwiseConvergenceCLM.precomp F (fourierCLM ℂ 𝓢(E, ℂ))
@@ -480,9 +519,11 @@ instance instFourierPair : FourierPair 𝓢'(E, F) 𝓢'(E, F) where
 instance instFourierPairInv : FourierInvPair 𝓢'(E, F) 𝓢'(E, F) where
   fourier_fourierInv_eq f := by ext; simp
 
+end TVS
+
 section embedding
 
-variable [CompleteSpace F]
+variable [NormedAddCommGroup F] [NormedSpace ℂ F] [CompleteSpace F]
 
 /-- The distributional Fourier transform and the classical Fourier transform coincide on
 `𝓢(E, F)`. -/
@@ -511,7 +552,9 @@ end embedding
 
 open LineDeriv Real
 
-/- The line derivative in direction `m` of the Fourier transform is given by the Fourier transform
+variable [NormedAddCommGroup F] [NormedSpace ℂ F]
+
+/-- The line derivative in direction `m` of the Fourier transform is given by the Fourier transform
 of the multiplication with `-(2 * π * Complex.I) • (inner ℝ · m)`. -/
 theorem lineDerivOp_fourier_eq (f : 𝓢'(E, F)) (m : E) :
     ∂_{m} (𝓕 f) = 𝓕 (- (2 * π * Complex.I) • smulLeftCLM F (inner ℝ · m) f) := by
@@ -519,7 +562,7 @@ theorem lineDerivOp_fourier_eq (f : 𝓢'(E, F)) (m : E) :
   have : (inner ℝ · m).HasTemperateGrowth := by fun_prop
   simp [SchwartzMap.fourier_lineDerivOp_eq, ← smulLeftCLM_ofReal ℂ this]
 
-/- The Fourier transform of line derivative in direction `m` is given by multiplication of
+/-- The Fourier transform of line derivative in direction `m` is given by multiplication of
 `(2 * π * Complex.I) • (inner ℝ · m)` with the Fourier transform. -/
 theorem fourier_lineDerivOp_eq (f : 𝓢'(E, F)) (m : E) :
     𝓕 (∂_{m} f) = (2 * π * Complex.I) • smulLeftCLM F (inner ℝ · m) (𝓕 f) := by
@@ -527,7 +570,7 @@ theorem fourier_lineDerivOp_eq (f : 𝓢'(E, F)) (m : E) :
   have : (inner ℝ · m).HasTemperateGrowth := by fun_prop
   simp [SchwartzMap.lineDerivOp_fourier_eq, ← smulLeftCLM_ofReal ℂ this]
 
-/- The line derivative in direction `m` of the inverse Fourier transform is given by the inverse
+/-- The line derivative in direction `m` of the inverse Fourier transform is given by the inverse
 Fourier transform of the multiplication with `(2 * π * Complex.I) • (inner ℝ · m)`. -/
 theorem lineDerivOp_fourierInv_eq (f : 𝓢'(E, F)) (m : E) :
     ∂_{m} (𝓕⁻ f) = 𝓕⁻ ((2 * π * Complex.I) • smulLeftCLM F (inner ℝ · m) f) := by
@@ -535,7 +578,7 @@ theorem lineDerivOp_fourierInv_eq (f : 𝓢'(E, F)) (m : E) :
   have : (inner ℝ · m).HasTemperateGrowth := by fun_prop
   simp [SchwartzMap.fourierInv_lineDerivOp_eq, ← smulLeftCLM_ofReal ℂ this]
 
-/- The inverse Fourier transform of line derivative in direction `m` is given by multiplication of
+/-- The inverse Fourier transform of line derivative in direction `m` is given by multiplication of
 `-(2 * π * Complex.I) • (inner ℝ · m)` with the inverse Fourier transform. -/
 theorem fourierInv_lineDerivOp_eq (f : 𝓢'(E, F)) (m : E) :
     𝓕⁻ (∂_{m} f) = -(2 * π * Complex.I) • smulLeftCLM F (inner ℝ · m) (𝓕⁻ f) := by

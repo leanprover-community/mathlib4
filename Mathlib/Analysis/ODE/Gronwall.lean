@@ -55,17 +55,18 @@ theorem hasDerivAt_gronwallBound (δ K ε x : ℝ) :
   by_cases hK : K = 0
   · subst K
     simp only [gronwallBound_K0, zero_mul, zero_add]
-    convert ((hasDerivAt_id x).const_mul ε).const_add δ
+    convert! ((hasDerivAt_id x).const_mul ε).const_add δ
     rw [mul_one]
   · simp only [gronwallBound_of_K_ne_0 hK]
-    convert (((hasDerivAt_id x).const_mul K).exp.const_mul δ).add
-      ((((hasDerivAt_id x).const_mul K).exp.sub_const 1).const_mul (ε / K)) using 1
-    simp only [id, mul_add, (mul_assoc _ _ _).symm, mul_comm _ K, mul_div_cancel₀ _ hK]
-    ring
+    convert!
+      (((hasDerivAt_id x).const_mul K).exp.const_mul δ).add
+        ((((hasDerivAt_id x).const_mul K).exp.sub_const 1).const_mul (ε / K)) using 1
+    simp only [id]
+    field
 
 theorem hasDerivAt_gronwallBound_shift (δ K ε x a : ℝ) :
     HasDerivAt (fun y => gronwallBound δ K ε (y - a)) (K * gronwallBound δ K ε (x - a) + ε) x := by
-  convert (hasDerivAt_gronwallBound δ K ε _).comp x ((hasDerivAt_id x).sub_const a) using 1
+  convert! (hasDerivAt_gronwallBound δ K ε _).comp x ((hasDerivAt_id x).sub_const a) using 1
   rw [id, mul_one]
 
 theorem gronwallBound_x0 (δ K ε : ℝ) : gronwallBound δ K ε 0 = δ := by
@@ -89,7 +90,7 @@ theorem gronwallBound_continuous_ε (δ K x : ℝ) : Continuous fun ε => gronwa
   · simp only [gronwallBound_of_K_ne_0 hK]
     fun_prop
 
-/-- The Gronwall bound is monotone with respect to the time variable `x`. -/
+/-- The Grönwall bound is monotone with respect to the time variable `x`. -/
 lemma gronwallBound_mono {δ K ε : ℝ} (hδ : 0 ≤ δ) (hε : 0 ≤ ε) (hK : 0 ≤ K) :
     Monotone (gronwallBound δ K ε) := by
   intro x₁ x₂ hx
@@ -118,13 +119,11 @@ theorem le_gronwallBound_of_liminf_deriv_right_le {f f' : ℝ → ℝ} {δ K ε 
     apply image_le_of_liminf_slope_right_lt_deriv_boundary hf hf'
     · rwa [sub_self, gronwallBound_x0]
     · exact fun x => hasDerivAt_gronwallBound_shift δ K ε' x a
-    · intro x hx hfB
-      grw [← hfB, bound x hx]
-      gcongr
+    · grind
     · exact hx
   intro x hx
   change f x ≤ (fun ε' => gronwallBound δ K ε' (x - a)) ε
-  convert continuousWithinAt_const.closure_le _ _ (H x hx)
+  convert! continuousWithinAt_const.closure_le _ _ (H x hx)
   · simp only [closure_Ioi, self_mem_Ici]
   exact (gronwallBound_continuous_ε δ K (x - a)).continuousWithinAt
 
@@ -178,10 +177,8 @@ theorem dist_le_of_approx_trajectories_ODE_of_mem
   apply norm_le_gronwallBound_of_norm_deriv_right_le (hf.sub hg) h_deriv ha
   intro t ht
   have := dist_triangle4_right (f' t) (g' t) (v t (f t)) (v t (g t))
-  have hv := (hv t ht).dist_le_mul _ (hfs t ht) _ (hgs t ht)
-  rw [← dist_eq_norm, ← dist_eq_norm]
-  refine this.trans ((add_le_add (add_le_add (f_bound t ht) (g_bound t ht)) hv).trans ?_)
-  rw [add_comm]
+  have := (hv t ht).dist_le_mul _ (hfs t ht) _ (hgs t ht)
+  grind [dist_eq_norm]
 
 /-- If `f` and `g` are two approximate solutions of the same ODE, then the distance between them
 can't grow faster than exponentially. This is a simple corollary of Grönwall's inequality, and some

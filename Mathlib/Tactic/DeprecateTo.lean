@@ -5,11 +5,9 @@ Authors: Damiano Testa
 -/
 module
 
-public meta import Lean.Meta.Tactic.TryThis
-public meta import Mathlib.Lean.Expr.Basic
 public meta import Std.Time.Format
 public import Batteries.Tactic.Alias
-public import Mathlib.Tactic.Lemma
+public import Mathlib.Init
 
 /-!
 # `deprecate to` -- a deprecation tool
@@ -131,7 +129,7 @@ elab tk:"deprecate" "to" id:ident* dat:(ppSpace str ppSpace)? ppLine cmd:command
       for i in id.toList.drop news.size do logErrorAt i ""
       warn := warn.push s!"Unused names: {id.toList.drop news.size}"
     let (oldId, newCmd) := renameTheorem id[0]! cmd
-    let oldNames := ← resolveGlobalName (oldId.raw.getArg 0).getId.eraseMacroScopes
+    let oldNames ← resolveGlobalName (oldId.raw.getArg 0).getId.eraseMacroScopes
     let fil := news.filter fun n => n.toString.endsWith oldNames[0]!.1.toString
     if fil.size != 1 && oldId != default then
       logError m!"Expected to find one declaration called {oldNames[0]!.1}, found {fil.size}"

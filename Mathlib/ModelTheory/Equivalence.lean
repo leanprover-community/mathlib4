@@ -201,6 +201,7 @@ protected theorem imp {φ ψ φ' ψ' : L.BoundedFormula α n} (h : φ ⇔[T] ψ)
 end Iff
 
 /-- Semantic equivalence forms an equivalence relation on formulas. -/
+@[implicit_reducible]
 def iffSetoid (T : L.Theory) : Setoid (L.BoundedFormula α n) where
   r := T.Iff
   iseqv := ⟨fun _ => refl _, fun {_ _} h => h.symm, fun {_ _ _} h1 h2 => h1.trans h2⟩

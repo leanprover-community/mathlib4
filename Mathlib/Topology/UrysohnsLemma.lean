@@ -181,7 +181,7 @@ theorem approx_nonneg (c : CU P) (n : ℕ) (x : X) : 0 ≤ c.approx n x := by
   induction n generalizing c with
   | zero => exact indicator_nonneg (fun _ _ => zero_le_one) _
   | succ n ihn =>
-    simp only [approx, midpoint_eq_smul_add, invOf_eq_inv]
+    simp only [approx, midpoint_eq_smul_add]
     refine mul_nonneg (inv_nonneg.2 zero_le_two) (add_nonneg ?_ ?_) <;> apply ihn
 
 theorem approx_le_one (c : CU P) (n : ℕ) (x : X) : c.approx n x ≤ 1 := by
@@ -318,6 +318,7 @@ then there exists a continuous function `f : X → ℝ` such that
 * `f` equals one on `t`;
 * `0 ≤ f x ≤ 1` for all `x`.
 -/
+@[wikidata Q1816967]
 theorem exists_continuous_zero_one_of_isClosed [NormalSpace X]
     {s t : Set X} (hs : IsClosed s) (ht : IsClosed t)
     (hd : Disjoint s t) : ∃ f : C(X, ℝ), EqOn f 0 s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
@@ -413,7 +414,7 @@ theorem exists_continuous_one_zero_of_isCompact [RegularSpace X] [LocallyCompact
   · apply HasCompactSupport.intro' k_comp k_closed (fun x hx ↦ ?_)
     simp only [ContinuousMap.coe_mk, sub_eq_zero]
     apply (hft _).symm
-    contrapose! hx
+    contrapose hx
     simp only [mem_compl_iff, not_not] at hx
     exact interior_subset hx
   · have : 0 ≤ f x ∧ f x ≤ 1 := by simpa using h'f x

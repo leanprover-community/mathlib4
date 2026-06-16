@@ -189,7 +189,7 @@ example {α β : Type} (f : β → α) {p : α → Prop} :
   refine Exists.intro (f b) ?_
   -- then we traverse `newBody` and goal simultaneously
   refine And.intro ?_ ?_
-  -- at branches outside the path `h` must concide with goal
+  -- at branches outside the path `h` must coincide with goal
   · replace h := h.left
     exact h
   -- inside path we substitute variables from `fvars` into existential quantifiers.
@@ -341,7 +341,7 @@ example {α β : Type} (f : β → α) {p : α → Prop} :
   have h' := ha
   refine Exists.intro b ?_
   refine And.intro ?_ ?_
-  -- outside the path goal must concide with `h_eq ▸ h'`
+  -- outside the path goal must coincide with `h_eq ▸ h'`
   · replace h' := h'.left
     exact Eq.mp (congrArg (fun t ↦ p t) h_eq) h'
   -- inside the path:

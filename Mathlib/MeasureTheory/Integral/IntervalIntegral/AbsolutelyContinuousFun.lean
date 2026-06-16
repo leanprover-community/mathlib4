@@ -15,18 +15,18 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferenti
 
 This file proves that:
 * `AbsolutelyContinuousOnInterval.integral_deriv_eq_sub`: If `f` is absolutely continuous on
-`uIcc a b`, then *Fundamental Theorem of Calculus* holds for `f'` on `a..b`, i.e.
-`∫ (x : ℝ) in a..b, deriv f x = f b - f a`.
+  `uIcc a b`, then *Fundamental Theorem of Calculus* holds for `f'` on `a..b`, i.e.
+  `∫ (x : ℝ) in a..b, deriv f x = f b - f a`.
 * `AbsolutelyContinuousOnInterval.integral_mul_deriv_eq_deriv_mul`:
-*Integration by Parts* holds for absolutely continuous functions, i.e. if `f` and `g` are
-absolutely continuous on `uIcc a b`, then
-`∫ x in a..b, f x * deriv g x = f b * g b - f a * g a - ∫ x in a..b, deriv f x * g x`.
+  *Integration by Parts* holds for absolutely continuous functions, i.e. if `f` and `g` are
+  absolutely continuous on `uIcc a b`, then
+  `∫ x in a..b, f x * deriv g x = f b * g b - f a * g a - ∫ x in a..b, deriv f x * g x`.
 
 ## Tags
 absolutely continuous, fundamental theorem of calculus, integration by parts
 -/
 
-@[expose] public section
+public section
 
 variable {X F : Type*} [PseudoMetricSpace X] [NormedAddCommGroup F] [NormedSpace ℝ F]
 
@@ -87,16 +87,15 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
     filter_upwards [hf, hu₄] with x hx₁ hx₂
     grind
   have vol_sum : volume (⋃ z : u, Icc z.val.1 z.val.2) = ENNReal.ofReal (b - d) := by
-    convert Real.volume_Ioo ▸
-      measure_eq_measure_of_null_diff (by simp only [iUnion_subset_iff]; grind) hu₄
-      using 2
+    convert!
+      Real.volume_Ioo ▸
+        measure_eq_measure_of_null_sdiff (by simp only [iUnion_subset_iff]; grind) hu₄ using 2
     simp
   rw [measure_iUnion this (by simp)] at vol_sum
   simp_rw [Real.volume_Icc] at vol_sum
   apply_fun fun x ↦ x.toReal at vol_sum
   rw [ENNReal.tsum_toReal_eq (by simp), ENNReal.toReal_ofReal (by linarith),
       ← Summable.hasSum_iff (by grind [tsum_def])] at vol_sum
-  convert vol_sum with z
   grind [ENNReal.toReal_ofReal]
 
 /-- If `f` is absolutely continuous on `[d, b]` and there is a collection of pairwise disjoint
@@ -129,7 +128,13 @@ lemma AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum {f : ℝ
   have hT₄ (s : Finset u) := (u_coe s).intervalGapsWithin_pairwiseDisjoint_Ioc rfl (hu₁ s)
   have hT : univ.MapsTo T (disjWithin d b) := by
     intro s _
-    grind [disjWithin, uIcc_of_le]
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+    without the `simp`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+    problem in the new canonicalizer; a minimization would help. The original proof was:
+    `grind [disjWithin, uIcc_of_le]` -/
+    simp [disjWithin]
+    grind [uIcc_of_le]
   have u_coe_sum (s : Finset u) (g : ℝ → ℝ → ℝ) :
       ∑ b ∈ s, (g b.val.1 b.val.2) = ∑ z ∈ u_coe s, (g z.1 z.2) :=
     Finset.sum_nbij Subtype.val (by simp [u_coe]) (by simp)
@@ -137,11 +142,11 @@ lemma AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum {f : ℝ
   replace hu₃ : Tendsto T atTop (totalLengthFilter ⊓ 𝓟 (disjWithin d b)) := by
     refine tendsto_inf.mpr ⟨?_, hT.tendsto.mono_left (by simp)⟩
     simp only [totalLengthFilter, tendsto_comap_iff]
-    convert hu₃.const_sub (b - d) with s
+    convert! hu₃.const_sub (b - d) with s
     · simp only [comp_apply]
       rw [Finset.sum_congr rfl (g := fun i ↦ ((T s).2 i).2 - ((T s).2 i).1)
             (fun i hi ↦ by rw [dist_comm, Real.dist_eq, abs_of_nonneg (by grind)])]
-      convert (u_coe s).sum_intervalGapsWithin_eq_sub_sub_sum rfl id
+      convert! (u_coe s).sum_intervalGapsWithin_eq_sub_sub_sum rfl id
       exact u_coe_sum s fun x y ↦ y - x
     · abel
   rw [HasSum] at hu₄
@@ -188,7 +193,7 @@ theorem AbsolutelyContinuousOnInterval.const_of_ae_hasDerivAt_zero {f : ℝ → 
   · simp [hr.le]
   replace hf₀ : ∀ᵐ x, x ∈ Ioo d b → HasDerivAt f 0 x := by
     filter_upwards [hf₀] with x _ _ using by grind
-  have hfdb': 0 < r / (b - d) := by apply div_pos <;> linarith
+  have hfdb' : 0 < r / (b - d) := by apply div_pos <;> linarith
   have ⟨u, hu₁, hu₂, hu₃⟩ :=
     exists_dist_slope_lt_pairwiseDisjoint_hasSum hd.right hf₀ hfdb'
   let g := fun (z : u) ↦ dist (f z.val.1) (f z.val.2)
@@ -198,7 +203,7 @@ theorem AbsolutelyContinuousOnInterval.const_of_ae_hasDerivAt_zero {f : ℝ → 
       have slope_bound := hu₁ z (by simp) |>.right |>.le
       have : 0 < z.val.2 - z.val.1 := by linarith [hu₁ z (by simp)]
       grw [← slope_bound]
-      simp only [dist_eq_norm, slope, vsub_eq_sub, sub_zero, ge_iff_le, g, mul_comm]
+      simp only [dist_eq_norm, slope, vsub_eq_sub, sub_zero, g, mul_comm]
       nth_rw 1 [← Real.norm_of_nonneg this.le]
       simp only [norm_smul, Real.norm_eq_abs, norm_inv]
       field_simp
@@ -229,7 +234,7 @@ theorem AbsolutelyContinuousOnInterval.integral_deriv_eq_sub {f : ℝ → ℝ} {
   have g_ae_deriv_zero : ∀ᵐ x, x ∈ uIcc a b → HasDerivAt g 0 x := by
     filter_upwards [hf.ae_differentiableAt, hf.intervalIntegrable_deriv.ae_hasDerivAt_integral]
       with x hx₁ hx₂ hx₃
-    convert (hx₁ hx₃).hasDerivAt.sub (hx₂ hx₃ a (by simp))
+    convert! (hx₁ hx₃).hasDerivAt.sub (hx₂ hx₃ a (by simp))
     abel
   obtain ⟨C, hC⟩ := g_ac.const_of_ae_hasDerivAt_zero g_ae_deriv_zero
   have : f a = g a := by simp [g]
@@ -245,7 +250,7 @@ theorem AbsolutelyContinuousOnInterval.integral_deriv_mul_eq_sub
   rw [← (hf.fun_mul hg).integral_deriv_eq_sub]
   apply intervalIntegral.integral_congr_ae
   filter_upwards [hf.ae_differentiableAt, hg.ae_differentiableAt] with x hx₁ hx₂ hx₃
-  have hx₄ : x ∈ uIcc a b := by grind [uIcc, uIoc]
+  have hx₄ : x ∈ uIcc a b := uIoc_subset_uIcc hx₃
   have hx₅ := (hx₁ hx₄).hasDerivAt.mul (hx₂ hx₄).hasDerivAt
   exact hx₅.deriv.symm
 

@@ -152,10 +152,9 @@ instance : LawfulMonad Semiquot := LawfulMonad.mk'
   (bind_pure_comp := fun {α β} f s => ext.2 <| by simp [eq_comm])
 
 instance : LE (Semiquot α) :=
-  ⟨fun s t => s.s ⊆ t.s⟩
+  ⟨fun s t => ∀ ⦃x⦄, x ∈ s → x ∈ t⟩
 
 instance partialOrder : PartialOrder (Semiquot α) where
-  le s t := ∀ ⦃x⦄, x ∈ s → x ∈ t
   le_refl _ := Set.Subset.refl _
   le_trans _ _ _ := Set.Subset.trans
   le_antisymm _ _ h₁ h₂ := ext_s.2 (Set.Subset.antisymm h₁ h₂)

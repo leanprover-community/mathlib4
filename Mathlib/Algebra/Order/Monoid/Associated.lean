@@ -14,13 +14,13 @@ public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 This file shows that divisibility makes associates into a canonically ordered monoid.
 -/
 
-@[expose] public section
+public section
 
 variable {M : Type*} [CommMonoidWithZero M]
 
 namespace Associates
 
-instance instIsOrderedMonoid [IsCancelMulZero M] : IsOrderedMonoid (Associates M) where
+instance instIsOrderedMonoid : IsOrderedMonoid (Associates M) where
   mul_le_mul_left := by rintro a _ ⟨d, rfl⟩ c; exact ⟨d, mul_right_comm ..⟩
 
 instance : CanonicallyOrderedMul (Associates M) where

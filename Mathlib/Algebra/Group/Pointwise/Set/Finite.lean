@@ -11,11 +11,11 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-! # Finiteness lemmas for pointwise operations on sets -/
 
-@[expose] public section
+public section
 
 assert_not_exists MulAction MonoidWithZero
 
-open Pointwise
+open scoped Pointwise
 
 variable {F α β γ : Type*}
 
@@ -182,7 +182,7 @@ theorem card_pow_eq_card_pow_card_univ [∀ k : ℕ, DecidablePred (· ∈ S ^ k
       apply fintypeMul
     refine Set.eq_of_subset_of_card_le ?_ (le_trans (ge_of_eq h) ?_)
     · exact mul_subset_mul Set.Subset.rfl (Set.singleton_subset_iff.mpr ha)
-    · convert key a (S ^ n) (S ^ n * {a}) fun b hb ↦ Set.mul_mem_mul hb (Set.mem_singleton a)
+    · convert! key a (S ^ n) (S ^ n * { a }) fun b hb ↦ Set.mul_mem_mul hb (Set.mem_singleton a)
   rw [pow_succ', ← h₂, ← mul_assoc, ← pow_succ', h₂, mul_singleton, forall_mem_image]
   intro x hx
   rwa [mul_inv_cancel_right]
