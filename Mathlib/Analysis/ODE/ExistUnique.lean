@@ -437,4 +437,3 @@ theorem IsIntegralCurveOn.eqOn_inter {I J : Set ℝ}
       (hg.mono ((Ico_subset_Icc_self.trans hss).trans inter_subset_right))
       (fun t' ht' ↦ hgs t' (hss (Ico_subset_Icc_self ht')))
       heq ⟨h, le_rfl⟩
-
