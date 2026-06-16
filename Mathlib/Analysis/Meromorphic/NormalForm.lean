@@ -746,7 +746,7 @@ theorem meromorphicNFOn_fun_inv {f : 𝕜 → 𝕜} :
 @[simp] theorem meromorphicNFOn_ball_comp_sub_const_iff_meromorphicNFOn_ball {c : 𝕜} {R : ℝ} :
     MeromorphicNFOn (f ∘ (· - c)) (ball c R) ↔ MeromorphicNFOn f (ball 0 R) := by
   convert meromorphicNFOn_comp_sub_const_iff_meromorphicNFOn
-  rw [ball_eq_setOf_sub_mem_ball]
+  rw [setOf_sub_mem_ball_eq_ball]
 
 /-- `MeromorphicNFOn` is invariant under translation, special case where the set is a ball. -/
 @[simp] theorem meromorphicNFOn_ball_fun_comp_sub_const_iff_meromorphicNFOn_ball {c : 𝕜} {R : ℝ} :
@@ -760,7 +760,7 @@ theorem meromorphicNFOn_fun_inv {f : 𝕜 → 𝕜} :
     {R : ℝ} :
     MeromorphicNFOn (f ∘ (· - c)) (closedBall c R) ↔ MeromorphicNFOn f (closedBall 0 R) := by
   convert meromorphicNFOn_comp_sub_const_iff_meromorphicNFOn
-  rw [closedBall_eq_setOf_sub_mem_closedBall]
+  rw [setOf_sub_mem_closedBall_eq_closedBall]
 
 /--
 `MeromorphicNFOn` is invariant under translation, special case where the set is a closed ball.
@@ -774,7 +774,7 @@ theorem meromorphicNFOn_fun_inv {f : 𝕜 → 𝕜} :
 @[simp] theorem meromorphicNFOn_sphere_comp_sub_const_iff_meromorphicNFOn_sphere {c : 𝕜} {R : ℝ} :
     MeromorphicNFOn (f ∘ (· - c)) (sphere c R) ↔ MeromorphicNFOn f (sphere 0 R) := by
   convert meromorphicNFOn_comp_sub_const_iff_meromorphicNFOn
-  rw [sphere_eq_setOf_sub_mem_sphere]
+  rw [setOf_sub_mem_sphere_eq_sphere]
 
 /-- `MeromorphicNFOn` is invariant under translation, special case where the set is a sphere. -/
 @[simp] theorem meromorphicNFOn_sphere_fun_comp_sub_const_iff_meromorphicNFOn_sphere {c : 𝕜}

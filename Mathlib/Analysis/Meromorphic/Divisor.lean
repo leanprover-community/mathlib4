@@ -509,7 +509,7 @@ lemma divisor_sub_const_self {z₀ : 𝕜} {U : Set 𝕜} (h : z₀ ∈ U) : div
   nth_rw 2 [← divisor_comp_sub_const_eq_divisor (c := c)]
   congr
   all_goals
-    rw [ball_eq_setOf_sub_mem_ball]
+    rw [setOf_sub_mem_ball_eq_ball]
 
 /-- Divisors are invariant under translation, special case where the set is a ball. -/
 @[simp] theorem divisor_ball_fun_comp_add_const_eq_divisor_ball {c : 𝕜} {R : ℝ} {f : 𝕜 → E} :
@@ -523,7 +523,7 @@ lemma divisor_sub_const_self {z₀ : 𝕜} {U : Set 𝕜} (h : z₀ ∈ U) : div
   nth_rw 2 [← divisor_comp_sub_const_eq_divisor (c := c)]
   congr
   all_goals
-    rw [closedBall_eq_setOf_sub_mem_closedBall]
+    rw [setOf_sub_mem_closedBall_eq_closedBall]
 
 /-- Divisors are invariant under translation, special case where the set is a closed ball. -/
 @[simp] theorem divisor_closedBall_fun_comp_add_const_eq_divisor_closedBall {c : 𝕜} {R : ℝ}
@@ -537,7 +537,7 @@ lemma divisor_sub_const_self {z₀ : 𝕜} {U : Set 𝕜} (h : z₀ ∈ U) : div
   nth_rw 2 [← divisor_comp_sub_const_eq_divisor (c := c)]
   congr
   all_goals
-    rw [sphere_eq_setOf_sub_mem_sphere]
+    rw [setOf_sub_mem_sphere_eq_sphere]
 
 /-- Divisors are invariant under translation, special case where the set is a sphere. -/
 @[simp] theorem divisor_sphere_fun_comp_add_const_eq_divisor_sphere {c : 𝕜} {R : ℝ} {f : 𝕜 → E} :

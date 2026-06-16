@@ -680,7 +680,7 @@ theorem fun_iterated_deriv [CompleteSpace E] {n : ℕ} :
 @[simp] theorem meromorphicOn_ball_comp_sub_const_iff_meromorphicOn_ball {c : 𝕜} {R : ℝ} :
     MeromorphicOn (f ∘ (· - c)) (ball c R) ↔ MeromorphicOn f (ball 0 R) := by
   convert meromorphicOn_comp_sub_const_iff_meromorphicOn
-  rw [ball_eq_setOf_sub_mem_ball]
+  rw [setOf_sub_mem_ball_eq_ball]
 
 /-- `MeromorphicOn` is invariant under translation, special case where the set is a ball. -/
 @[simp] theorem meromorphicOn_ball_fun_comp_sub_const_iff_meromorphicOn_ball {c : 𝕜} {R : ℝ} :
@@ -692,7 +692,7 @@ theorem fun_iterated_deriv [CompleteSpace E] {n : ℕ} :
     {R : ℝ} :
     MeromorphicOn (f ∘ (· - c)) (closedBall c R) ↔ MeromorphicOn f (closedBall 0 R) := by
   convert meromorphicOn_comp_sub_const_iff_meromorphicOn
-  rw [closedBall_eq_setOf_sub_mem_closedBall]
+  rw [setOf_sub_mem_closedBall_eq_closedBall]
 
 /-- `MeromorphicOn` is invariant under translation, special case where the set is a closed ball. -/
 @[simp] theorem meromorphicOn_closedBall_fun_comp_sub_const_iff_meromorphicOn_closedBall {c : 𝕜}
@@ -704,7 +704,7 @@ theorem fun_iterated_deriv [CompleteSpace E] {n : ℕ} :
 @[simp] theorem meromorphicOn_sphere_comp_sub_const_iff_meromorphicOn_sphere {c : 𝕜} {R : ℝ} :
     MeromorphicOn (f ∘ (· - c)) (sphere c R) ↔ MeromorphicOn f (sphere 0 R) := by
   convert meromorphicOn_comp_sub_const_iff_meromorphicOn
-  rw [sphere_eq_setOf_sub_mem_sphere]
+  rw [setOf_sub_mem_sphere_eq_sphere]
 
 /-- `MeromorphicOn` is invariant under translation, special case where the set is a sphere. -/
 @[simp] theorem meromorphicOn_sphere_fun_comp_sub_const_iff_meromorphicOn_sphere {c : 𝕜} {R : ℝ} :
