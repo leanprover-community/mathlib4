@@ -24,7 +24,7 @@ Note that we don't require quasi-compact, since this is implied by universally c
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -117,8 +117,6 @@ instance [UniversallyClosed f] : UniversallyClosed f.toImage :=
 @[stacks 01W6 "(2)"]
 lemma IsProper.of_comp [IsProper (f ≫ g)] [IsSeparated g] : IsProper f :=
   MorphismProperty.of_postcomp _ _ g ‹_› ‹_›
-
-@[deprecated (since := "2025-10-15")] alias IsProper.of_comp_of_isSeparated := IsProper.of_comp
 
 lemma IsProper.comp_iff {f : X ⟶ Y} {g : Y ⟶ Z} [IsProper g] :
     IsProper (f ≫ g) ↔ IsProper f :=

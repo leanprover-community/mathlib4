@@ -5,6 +5,7 @@ Authors: Joël Riou, Jack McKoen
 -/
 module
 
+public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
@@ -34,59 +35,60 @@ namespace SSet
 
 @[simp]
 lemma leftUnitor_hom_app_apply (K : SSet.{u}) {Δ : SimplexCategoryᵒᵖ} (x : (𝟙_ _ ⊗ K).obj Δ) :
-    (λ_ K).hom.app Δ x = x.2 := rfl
+    dsimp% (λ_ K).hom.app Δ x = x.2 := rfl
 
 @[simp]
 lemma leftUnitor_inv_app_apply (K : SSet.{u}) {Δ : SimplexCategoryᵒᵖ} (x : K.obj Δ) :
-    (λ_ K).inv.app Δ x = ⟨PUnit.unit, x⟩ := rfl
+    dsimp% (λ_ K).inv.app Δ x = ⟨PUnit.unit, x⟩ := rfl
 
 @[simp]
 lemma rightUnitor_hom_app_apply (K : SSet.{u}) {Δ : SimplexCategoryᵒᵖ} (x : (K ⊗ 𝟙_ _).obj Δ) :
-    (ρ_ K).hom.app Δ x = x.1 := rfl
+    dsimp% (ρ_ K).hom.app Δ x = x.1 := rfl
 
 @[simp]
 lemma rightUnitor_inv_app_apply (K : SSet.{u}) {Δ : SimplexCategoryᵒᵖ} (x : K.obj Δ) :
-    (ρ_ K).inv.app Δ x = ⟨x, PUnit.unit⟩ := rfl
+    dsimp% (ρ_ K).inv.app Δ x = ⟨x, PUnit.unit⟩ := rfl
 
 @[simp]
 lemma tensorHom_app_apply {K K' L L' : SSet.{u}} (f : K ⟶ K') (g : L ⟶ L')
     {Δ : SimplexCategoryᵒᵖ} (x : (K ⊗ L).obj Δ) :
-    (f ⊗ₘ g).app Δ x = ⟨f.app Δ x.1, g.app Δ x.2⟩ := rfl
+    dsimp% (f ⊗ₘ g).app Δ x = ⟨f.app Δ x.1, g.app Δ x.2⟩ := rfl
 
 @[simp]
 lemma whiskerLeft_app_apply (K : SSet.{u}) {L L' : SSet.{u}} (g : L ⟶ L')
     {Δ : SimplexCategoryᵒᵖ} (x : (K ⊗ L).obj Δ) :
-    (K ◁ g).app Δ x = ⟨x.1, g.app Δ x.2⟩ := rfl
+    dsimp% (K ◁ g).app Δ x = ⟨x.1, g.app Δ x.2⟩ := rfl
 
 @[simp]
 lemma whiskerRight_app_apply {K K' : SSet.{u}} (f : K ⟶ K') (L : SSet.{u})
     {Δ : SimplexCategoryᵒᵖ} (x : (K ⊗ L).obj Δ) :
-    (f ▷ L).app Δ x = ⟨f.app Δ x.1, x.2⟩ := rfl
+    dsimp% (f ▷ L).app Δ x = ⟨f.app Δ x.1, x.2⟩ := rfl
 
 @[simp]
 lemma associator_hom_app_apply (K L M : SSet.{u}) {Δ : SimplexCategoryᵒᵖ}
     (x : ((K ⊗ L) ⊗ M).obj Δ) :
-    (α_ K L M).hom.app Δ x = ⟨x.1.1, x.1.2, x.2⟩ := rfl
+    dsimp% (α_ K L M).hom.app Δ x = ⟨x.1.1, x.1.2, x.2⟩ := rfl
 
 @[simp]
 lemma associator_inv_app_apply (K L M : SSet.{u}) {Δ : SimplexCategoryᵒᵖ}
     (x : (K ⊗ L ⊗ M).obj Δ) :
-    (α_ K L M).inv.app Δ x = ⟨⟨x.1, x.2.1⟩, x.2.2⟩ := rfl
+    dsimp% (α_ K L M).inv.app Δ x = ⟨⟨x.1, x.2.1⟩, x.2.2⟩ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `(𝟙_ SSet ⟶ K) ≃ K _⦋0⦌`. -/
 def unitHomEquiv (K : SSet.{u}) : (𝟙_ _ ⟶ K) ≃ K _⦋0⦌ where
   toFun φ := φ.app _ PUnit.unit
   invFun x :=
-    { app := fun Δ _ => K.map (SimplexCategory.const Δ.unop ⦋0⦌ 0).op x
+    { app := fun Δ => ↾fun _ => K.map (SimplexCategory.const Δ.unop ⦋0⦌ 0).op x
       naturality := fun Δ Δ' f => by
         ext ⟨⟩
         dsimp
-        rw [← FunctorToTypes.map_comp_apply]
+        rw [← Functor.map_comp_apply]
         rfl }
   left_inv φ := by
     ext Δ ⟨⟩
-    dsimp
-    rw [← FunctorToTypes.naturality]
+    dsimp [-Monoidal.tensorUnit_obj]
+    rw [← NatTrans.naturality_apply]
     rfl
   right_inv x := by simp
 
@@ -113,6 +115,11 @@ instance : (𝟙_ SSet.{u}).Finite :=
 instance : HasDimensionLE (𝟙_ SSet.{u}) 0 :=
   (hasDimensionLT_iff_of_iso (stdSimplex.isTerminalObj₀.{u}.uniqueUpToIso
     CartesianMonoidalCategory.isTerminalTensorUnit) _).1 inferInstance
+
+instance : opFunctor.{u}.Monoidal :=
+  Functor.CoreMonoidal.toMonoidal
+    { εIso := Iso.refl _
+      μIso _ _ := Iso.refl _ }
 
 namespace Subcomplex
 
@@ -178,11 +185,11 @@ lemma ι₀_fst (X : SSet.{u}) : ι₀ ≫ fst X _ = 𝟙 X := rfl
 lemma ι₀_snd (X : SSet.{u}) : ι₀ ≫ snd X _ = const (stdSimplex.obj₀Equiv.{u}.symm 0) := rfl
 
 @[simp]
-lemma ι₀_app_fst {X : SSet.{u}} {m} (x : X.obj m) : (ι₀.app _ x).1 = x := rfl
+lemma ι₀_app_fst {X : SSet.{u}} {m} (x : X.obj m) : dsimp% (ι₀.app _ x).1 = x := rfl
 
 @[simp]
 lemma ι₀_app_snd_apply {X : SSet.{u}} {m : ℕ} (x : X _⦋m⦌) (k : Fin (m + 1)) :
-    (ι₀.app _ x).2 k = 0 := rfl
+    dsimp% (ι₀.app _ x).2 k = 0 := rfl
 
 /-- The inclusion `X ⟶ X ⊗ Δ[1]` which is `1` on the second factor. -/
 noncomputable def ι₁ {X : SSet.{u}} : X ⟶ X ⊗ Δ[1] :=
@@ -199,11 +206,11 @@ lemma ι₁_comp {X Y : SSet.{u}} (f : X ⟶ Y) :
     ι₁ ≫ f ▷ _ = f ≫ ι₁ := rfl
 
 @[simp]
-lemma ι₁_app_fst {X : SSet.{u}} {m} (x : X.obj m) : (ι₁.app _ x).1 = x := rfl
+lemma ι₁_app_fst {X : SSet.{u}} {m} (x : X.obj m) : dsimp% (ι₁.app _ x).1 = x := rfl
 
 @[simp]
 lemma ι₁_app_snd_apply {X : SSet.{u}} {m : ℕ} (x : X _⦋m⦌) (k : Fin (m + 1)) :
-    (ι₁.app _ x).2 k = 1 := rfl
+    dsimp% (ι₁.app _ x).2 k = 1 := rfl
 
 section
 
@@ -212,22 +219,22 @@ variable (X Y : SSet.{u})
 section
 
 variable {m n : SimplexCategoryᵒᵖ} (f : m ⟶ n) (z : (X ⊗ Y).obj m)
-@[simp high, grind =] lemma prod_map_fst : ((X ⊗ Y).map f z).1 = X.map f z.1 := rfl
-@[simp high, grind =] lemma prod_map_snd : ((X ⊗ Y).map f z).2 = Y.map f z.2 := rfl
+@[simp high, grind =] lemma prod_map_fst : dsimp% ((X ⊗ Y).map f z).1 = X.map f z.1 := rfl
+@[simp high, grind =] lemma prod_map_snd : dsimp% ((X ⊗ Y).map f z).2 = Y.map f z.2 := rfl
 
 end
 
 @[simp, grind =] lemma prod_δ_fst {n : ℕ} (i : Fin (n + 2)) (z : (X ⊗ Y : SSet.{u}) _⦋n + 1⦌) :
-    ((X ⊗ Y).δ i z).1 = X.δ i z.1 := rfl
+    dsimp% ((X ⊗ Y).δ i z).1 = X.δ i z.1 := rfl
 
 @[simp, grind =] lemma prod_δ_snd {n : ℕ} (i : Fin (n + 2)) (z : (X ⊗ Y : SSet.{u}) _⦋n + 1⦌) :
-    ((X ⊗ Y).δ i z).2 = Y.δ i z.2 := rfl
+    dsimp% ((X ⊗ Y).δ i z).2 = Y.δ i z.2 := rfl
 
 @[simp, grind =] lemma prod_σ_fst {n : ℕ} (i : Fin (n + 1)) (z : (X ⊗ Y : SSet.{u}) _⦋n⦌) :
-    ((X ⊗ Y).σ i z).1 = X.σ i z.1 := rfl
+    dsimp% ((X ⊗ Y).σ i z).1 = X.σ i z.1 := rfl
 
 @[simp, grind =] lemma prod_σ_snd {n : ℕ} (i : Fin (n + 1)) (z : (X ⊗ Y : SSet.{u}) _⦋n⦌) :
-    ((X ⊗ Y).σ i z).2 = Y.σ i z.2 := rfl
+    dsimp% ((X ⊗ Y).σ i z).2 = Y.σ i z.2 := rfl
 
 end
 
@@ -240,8 +247,9 @@ variable {X Y : SSet.{u}} (S : X.Subcomplex) (T : Y.Subcomplex)
 /-- Given `S ≤ X` and `T ≤ Y`, this is the subcomplex of `X ⊗ Y` given by `(X ⊗ T) ⊔ (S ⊗ Y)`. -/
 def unionProd : (X ⊗ Y).Subcomplex := ((⊤ : X.Subcomplex).prod T) ⊔ (S.prod ⊤)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mem_unionProd_iff {n : SimplexCategoryᵒᵖ} (x : (X ⊗ Y).obj n) :
-    x ∈ (unionProd S T).obj _ ↔ x.2 ∈ T.obj _ ∨ x.1 ∈ S.obj _ := by
+    dsimp% x ∈ (unionProd S T).obj _ ↔ x.2 ∈ T.obj _ ∨ x.1 ∈ S.obj _ := by
   dsimp [unionProd, Set.prod]
   cat_disch
 
@@ -251,6 +259,14 @@ lemma prod_top_le_unionProd : (S.prod ⊤) ≤ S.unionProd T := le_sup_right
 
 lemma prod_le_unionProd : S.prod T ≤ S.unionProd T :=
   (prod_le_prod_top S T).trans (prod_top_le_unionProd S T)
+
+lemma preimage_op_unionProd :
+    (unionProd S T).op.preimage (Functor.LaxMonoidal.μ opFunctor _ _) =
+      unionProd S.op T.op := rfl
+
+lemma preimage_unionProd {X' Y' : SSet.{u}} (f : X' ⟶ X) (g : Y' ⟶ Y) :
+    (unionProd S T).preimage (f ⊗ₘ g) =
+      unionProd (S.preimage f) (T.preimage g) := rfl
 
 namespace unionProd
 
@@ -290,7 +306,9 @@ lemma isPushout : IsPushout (S.ι ▷ (T : SSet)) ((S : SSet) ◁ T.ι)
 @[simp]
 lemma preimage_β_hom : (unionProd S T).preimage (β_ _ _).hom = unionProd T S := by
   ext n ⟨x, y⟩
-  simp only [mem_unionProd_iff, preimage_obj, Set.mem_preimage]
+  dsimp
+  simp only [mem_unionProd_iff, preimage_obj, Monoidal.tensorObj_obj,
+    dsimp% Set.mem_preimage (f := (β_ Y X).hom.app n)]
   tauto
 
 @[simp]
@@ -331,12 +349,12 @@ variable {n} {X Y : Truncated.{u} n}
 @[simp]
 lemma tensor_map_apply_fst {d e : (SimplexCategory.Truncated n)ᵒᵖ}
     (f : d ⟶ e) (x : (X ⊗ Y : Truncated _).obj d) :
-    ((X ⊗ Y : Truncated _).map f x).1 = X.map f x.1 := rfl
+    dsimp% ((X ⊗ Y : Truncated _).map f x).1 = X.map f x.1 := rfl
 
 @[simp]
 lemma tensor_map_apply_snd {d e : (SimplexCategory.Truncated n)ᵒᵖ}
     (f : d ⟶ e) (x : (X ⊗ Y : Truncated _).obj d) :
-    ((X ⊗ Y : Truncated _).map f x).2 = Y.map f x.2 := rfl
+    dsimp% ((X ⊗ Y : Truncated _).map f x).2 = Y.map f x.2 := rfl
 
 end Truncated
 

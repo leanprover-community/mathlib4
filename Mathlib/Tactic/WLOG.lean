@@ -133,7 +133,7 @@ def wlogCore (h : TSyntax ``binderIdent) (P : Term) (xs : Option (TSyntaxArray `
     reductionGoal.withContext do
       let negHygName := mkIdent <| ← reductionFVarIds.2.getUserName
       Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[(negHygName)] false)
-          (failIfUnchanged := false)
+        (ifUnchanged := .error)
 
 /-- `wlog h : P` adds an assumption `h : P` to the main goal, and adds a side goal that
 requires showing that the case `h : ¬ P` can be reduced to the case where `P` holds

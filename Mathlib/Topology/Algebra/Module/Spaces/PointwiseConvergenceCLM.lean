@@ -56,7 +56,7 @@ variable (σ E F) in
 sometimes also called the *strong operator topology*. We avoid this terminology since so many other
 things share similar names, and using "pointwise convergence" in the name is more informative.
 
-This topology is also known as the weak*-topology in the case that `σ = RingHom.id 𝕜` and `F = 𝕜` -/
+This topology is also known as the weak⋆-topology in the case that `σ = RingHom.id 𝕜` and `F = 𝕜` -/
 abbrev PointwiseConvergenceCLM := UniformConvergenceCLM σ F {s : Set E | Finite s}
 
 @[inherit_doc]
@@ -132,8 +132,7 @@ variable (G) in
 /-- Pre-composition by a *fixed* continuous linear map as a continuous linear map for the pointwise
 convergence topology. -/
 @[simps! apply]
-def precomp [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] (L : E →SL[σ] F) :
-    (F →SLₚₜ[τ] G) →L[𝕜₃] E →SLₚₜ[ρ] G where
+def precomp [ContinuousConstSMul 𝕜₃ G] (L : E →SL[σ] F) : (F →SLₚₜ[τ] G) →L[𝕜₃] E →SLₚₜ[ρ] G where
   toFun f := f.comp L
   __ := ContinuousLinearMap.precompUniformConvergenceCLM G {(S : Set E) | Finite S}
     {(S : Set F) | Finite S} L (fun S hS ↦ letI : Finite S := hS; Finite.Set.finite_image _ _)
@@ -157,12 +156,37 @@ def _root_.ContinuousLinearMap.toPointwiseConvergenceCLM [ContinuousSMul 𝕜₁
     (fun _ ↦ Set.Finite.isVonNBounded)
 
 variable (𝕜 E) in
-/-- The topology of pointwise convergence on `E →Lₚₜ[𝕜] 𝕜` coincides with the weak-* topology. -/
+/-- The topology of pointwise convergence on `E →Lₚₜ[𝕜] 𝕜` coincides with the weak-\* topology. -/
 @[simps!]
 def equivWeakDual : (E →Lₚₜ[𝕜] 𝕜) ≃L[𝕜] WeakDual 𝕜 E where
   __ := LinearEquiv.refl 𝕜 (E →L[𝕜] 𝕜)
   continuous_toFun :=
     WeakDual.continuous_of_continuous_eval (fun y ↦ (evalCLM _ 𝕜 y).continuous)
   continuous_invFun := continuous_of_continuous_eval (WeakBilin.eval_continuous _)
+
+section Pi
+
+variable {ι : Type*} (F : ι → Type*)
+  [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜 (F i)] [∀ i, TopologicalSpace (F i)]
+  [∀ i, IsTopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜 (F i)]
+
+variable (𝕜 E) in
+/-- `ContinuousLinearMap.pi`, upgraded to a continuous linear equivalence between
+`Π i, E →Lₚₜ[𝕜] F i` and `E →Lₚₜ[𝕜] Π i, F i`. -/
+def piEquivL :
+    (Π i, E →Lₚₜ[𝕜] F i) ≃L[𝕜] (E →Lₚₜ[𝕜] Π i, F i) where
+  toFun F := ContinuousLinearMap.pi F
+  invFun f i := (ContinuousLinearMap.proj i).comp f
+  __ := UniformConvergenceCLM.piEquivL _ _ _
+
+@[simp]
+lemma piEquivL_apply (T : Π i, E →Lₚₜ[𝕜] F i) (e : E) (i : ι) :
+    piEquivL 𝕜 E F T e i = T i e := rfl
+
+@[simp]
+lemma piEquivL_symm_apply (T : E →Lₚₜ[𝕜] Π i, F i) (e : E) (i : ι) :
+    (piEquivL 𝕜 E F).symm T i e = T e i := rfl
+
+end Pi
 
 end PointwiseConvergenceCLM

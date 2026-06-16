@@ -117,11 +117,13 @@ def functorOfLocallyDirected : 𝒰.I₀ ⥤ Scheme.{u} where
   obj := 𝒰.X
   map := 𝒰.trans
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : (𝒰.functorOfLocallyDirected ⋙ Scheme.forget).IsLocallyDirected where
   cond {i j k} fi fj xi xj hxij := by
-    simp only [Functor.comp_obj, Cover.functorOfLocallyDirected_obj, forget_obj, Functor.comp_map,
-      Cover.functorOfLocallyDirected_map, forget_map] at hxij
+    simp only [Functor.comp_obj, functorOfLocallyDirected_obj, forget_obj, Functor.comp_map,
+      functorOfLocallyDirected_map, forget_map, ConcreteCategory.hom_ofHom,
+      TypeCat.Fun.coe_mk] at hxij
     have : 𝒰.f i xi = 𝒰.f j xj := by
       rw [← 𝒰.trans_map fi, ← 𝒰.trans_map fj, Hom.comp_base, Hom.comp_base,
         ConcreteCategory.comp_apply, hxij, ConcreteCategory.comp_apply]
@@ -129,6 +131,7 @@ instance : (𝒰.functorOfLocallyDirected ⋙ Scheme.forget).IsLocallyDirected w
     obtain ⟨l, gi, gj, y, rfl⟩ := 𝒰.exists_lift_trans_eq z
     refine ⟨l, gi, gj, y, ?_, ?_⟩ <;> simp [← Scheme.Hom.comp_apply]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The structure maps to `S` as a natural transformation. -/
 @[simps]
 def functorOfLocallyDirectedHomBase :
@@ -151,6 +154,7 @@ variable [P.IsStableUnderBaseChange] (𝒰 : X.Cover (precoverage P))
 
 instance : Category (𝒰.pullback₁ f).I₀ := inferInstanceAs <| Category 𝒰.I₀
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance locallyDirectedPullbackCover : Cover.LocallyDirected (𝒰.pullback₁ f) where
   trans {i j} hij := pullback.map f (𝒰.f i) f (𝒰.f j) (𝟙 _) (𝒰.trans hij) (𝟙 _)
@@ -185,7 +189,7 @@ instance locallyDirectedPullbackCover : Cover.LocallyDirected (𝒰.pullback₁ 
     simp only [Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover,
       PreZeroHypercover.pullback₁_X, Iso.trans_inv, Iso.symm_inv, pullback.congrHom_inv,
       Category.assoc, iso]
-    convert P.pullback_fst (pullback.snd f (𝒰.f j)) _ (𝒰.property_trans hij)
+    convert! P.pullback_fst (pullback.snd f (𝒰.f j)) _ (𝒰.property_trans hij)
     apply pullback.hom_ext <;> simp [pullback.condition]
 
 end BaseChange
@@ -224,13 +228,13 @@ lemma map_glueMorphismsOfLocallyDirected {Y : Scheme.{u}} (g : ∀ i, 𝒰.X i �
     𝒰.f i ≫ 𝒰.glueMorphismsOfLocallyDirected g h = g i := by
   simp [glueMorphismsOfLocallyDirected]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `𝒰` is an open cover of `X` that is locally directed, `X` is
 the colimit of the components of `𝒰`. -/
 def isColimitCoconeOfLocallyDirected : IsColimit 𝒰.coconeOfLocallyDirected where
   desc s := 𝒰.glueMorphismsOfLocallyDirected s.ι.app fun _ ↦ s.ι.naturality _
   uniq s m hm := 𝒰.hom_ext _ _ fun j ↦ by simpa using hm j
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `𝒰` is a directed open cover of `X`, to glue morphisms `{gᵢ : 𝒰ᵢ ⟶ Y}` over `S` it suffices
 to check compatibility with the transition maps. -/
 def glueMorphismsOverOfLocallyDirected {S : Scheme.{u}} {X : Over S}
@@ -313,9 +317,10 @@ def directedAffineCover : X.OpenCover where
 
 instance : Preorder X.directedAffineCover.I₀ := inferInstanceAs <| Preorder X.affineOpens
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Scheme.Cover.LocallyDirected X.directedAffineCover :=
   .ofIsBasisOpensRange (by intros; simp; rfl) <| by
-    convert X.isBasis_affineOpens
+    convert! X.isBasis_affineOpens
     simp
 
 @[simp]

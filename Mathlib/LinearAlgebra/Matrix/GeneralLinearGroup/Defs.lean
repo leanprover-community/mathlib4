@@ -56,6 +56,10 @@ variable (n) in
 def scalar [Semiring R] : Rˣ →* GL n R :=
   Units.map (Matrix.scalar n).toMonoidHom
 
+#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
+Assistance investigating this would be appreciated. -/
+attribute [nolint simpNF] _root_.Matrix.GeneralLinearGroup.val_inv_scalar_apply
+
 section CoeFnInstance
 
 instance instCoeFun [Semiring R] : CoeFun (GL n R) fun _ => n → n → R where
@@ -83,6 +87,14 @@ lemma det_ne_zero [Nontrivial R] (g : GL n R) : g.val.det ≠ 0 :=
 theorem det_scalar (u : Rˣ) : det (scalar n u) = u ^ Fintype.card n := by
   ext
   simp
+
+lemma det_surjective [Nonempty n] : Function.Surjective (det : GL n R → Rˣ) := fun r ↦ by
+  obtain ⟨i⟩ := ‹Nonempty n›
+  refine ⟨⟨diagonal fun j ↦ if j = i then r else 1, diagonal fun j ↦ if j = i then r⁻¹.1 else 1,
+    ?_, ?_⟩, by simp [det]⟩
+  <;> simp only [diagonal_mul_diagonal, mul_ite, ite_mul, Units.mul_inv, one_mul, mul_one,
+      diagonal_eq_one]
+  <;> funext j <;> split_ifs <;> simp
 
 /-- The groups `GL n R` (notation for `Matrix.GeneralLinearGroup n R`) and
 `LinearMap.GeneralLinearGroup R (n → R)` are multiplicatively equivalent -/
@@ -244,7 +256,7 @@ instance hasCoeToGeneralLinearGroup : Coe (SpecialLinearGroup n R) (GL n R) :=
 
 lemma toGL_injective :
     Function.Injective (toGL : SpecialLinearGroup n R → GL n R) := fun g g' ↦ by
-  simpa [toGL] using fun h _ ↦ Subtype.ext h
+  simpa [toGL] using! fun h _ ↦ Subtype.ext h
 
 @[simp]
 lemma toGL_inj (g g' : SpecialLinearGroup n R) :

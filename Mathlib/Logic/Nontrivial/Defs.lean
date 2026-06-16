@@ -19,7 +19,7 @@ We introduce a typeclass `Nontrivial` formalizing this property.
 Basic results about nontrivial types are in `Mathlib/Logic/Nontrivial/Basic.lean`.
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*} {β : Type*}
 

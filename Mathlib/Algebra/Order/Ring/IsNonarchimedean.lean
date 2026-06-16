@@ -53,20 +53,26 @@ theorem nmul_le {F α : Type*} [NonAssocSemiring α] [FunLike F α R] [ZeroHomCl
   rw [← nsmul_eq_mul]
   exact nsmul_le hna
 
-lemma apply_natCast_le_one_of_isNonarchimedean {F α : Type*} [AddMonoidWithOne α] [FunLike F α R]
+lemma apply_natCast_le_one {F α : Type*} [AddMonoidWithOne α] [FunLike F α R]
     [ZeroHomClass F α R] [NonnegHomClass F α R] [OneHomClass F α R] {f : F}
     (hna : IsNonarchimedean f) {n : ℕ} : f n ≤ 1 := by
   rw [← nsmul_one n, ← map_one f]
   exact nsmul_le hna
 
+@[deprecated (since := "2026-04-27")]
+alias apply_natCast_le_one_of_isNonarchimedean := apply_natCast_le_one
+
 /-- If `f` is a nonarchimedean additive group seminorm on `α` with `f 1 = 1`, then for every `n : ℤ`
   we have `f n ≤ 1`. -/
-theorem apply_intCast_le_one_of_isNonarchimedean [IsStrictOrderedRing R]
+theorem apply_intCast_le_one [IsStrictOrderedRing R]
     {F α : Type*} [AddGroupWithOne α] [FunLike F α R]
     [AddGroupSeminormClass F α R] [OneHomClass F α R] {f : F}
     (hna : IsNonarchimedean f) {n : ℤ} : f n ≤ 1 := by
   obtain ⟨a, rfl | rfl⟩ := Int.eq_nat_or_neg n <;>
-  simp [apply_natCast_le_one_of_isNonarchimedean hna]
+  simp [apply_natCast_le_one hna]
+
+@[deprecated (since := "2026-04-27")]
+alias apply_intCast_le_one_of_isNonarchimedean := apply_intCast_le_one
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma add_eq_right_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
@@ -125,7 +131,7 @@ lemma add_eq_max_of_ne' {α S : Type*} [Semiring S] [LinearOrder S] [AddCommGrou
 omit [Semiring R] in
 open Finset in
 /-- Ultrametric inequality with `Finset.sum`. -/
-lemma apply_sum_le_sup_of_isNonarchimedean {α β : Type*} [AddCommMonoid α] {f : α → R}
+lemma apply_sum_le_sup {α β : Type*} [AddCommMonoid α] {f : α → R}
     (nonarch : IsNonarchimedean f) {s : Finset β} (hnonempty : s.Nonempty) {l : β → α} :
     f (∑ i ∈ s, l i) ≤ s.sup' hnonempty fun i => f (l i) := by
   induction hnonempty using Nonempty.cons_induction with
@@ -136,6 +142,9 @@ lemma apply_sum_le_sup_of_isNonarchimedean {α β : Type*} [AddCommMonoid α] {f
     rcases le_max_iff.mp <| nonarch (l i) (∑ i ∈ s, l i) with h₁ | h₂
     · exact .inl h₁
     · exact .inr <| le_trans h₂ hind
+
+@[deprecated (since := "2026-04-27")]
+alias apply_sum_le_sup_of_isNonarchimedean := apply_sum_le_sup
 
 omit [Semiring R] in
 /-- Given a nonarchimedean function `α → R`, a function `g : β → α` and a nonempty multiset

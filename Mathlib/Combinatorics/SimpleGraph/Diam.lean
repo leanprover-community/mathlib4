@@ -114,7 +114,7 @@ lemma eccent_le_one_iff (u : α) : G.eccent u ≤ 1 ↔ ∀ v, u ≠ v → G.Adj
 
 lemma eccent_eq_one_iff [Nontrivial α] (u : α) :
     G.eccent u = 1 ↔ ∀ v, u ≠ v → G.Adj u v := by
-  have h : 1 ≤ G.eccent u := ENat.one_le_iff_ne_zero.mpr (eccent_ne_zero u)
+  have h : 1 ≤ G.eccent u := Order.one_le_iff_ne_zero.mpr (eccent_ne_zero u)
   rw [← h.ge_iff_eq']
   exact eccent_le_one_iff u
 
@@ -151,8 +151,7 @@ lemma ediam_eq_top : G.ediam = ⊤ ↔ ∀ b < ⊤, ∃ u v, b < G.edist u v := 
   simp only [ediam, eccent, iSup_eq_top, lt_iSup_iff]
 
 lemma ediam_eq_zero_of_subsingleton [Subsingleton α] : G.ediam = 0 := by
-  rw [ediam_def, ENat.iSup_eq_zero]
-  simpa [edist_eq_zero_iff, Prod.forall] using subsingleton_iff.mp ‹_›
+  simp [ediam_def]
 
 lemma nontrivial_of_ediam_ne_zero (h : G.ediam ≠ 0) : Nontrivial α := by
   contrapose! h
@@ -369,9 +368,9 @@ lemma radius_ne_top_iff [Nonempty α] [Finite α] : G.radius ≠ ⊤ ↔ G.Conne
   exact h u v
 
 lemma radius_ne_zero_of_nontrivial [Nontrivial α] : G.radius ≠ 0 := by
-  rw [← ENat.one_le_iff_ne_zero]
+  rw [← Order.one_le_iff_ne_zero]
   apply le_iInf
-  simp [ENat.one_le_iff_ne_zero, G.eccent_ne_zero]
+  simp [Order.one_le_iff_ne_zero, G.eccent_ne_zero]
 
 lemma radius_eq_zero_iff : G.radius = 0 ↔ Nonempty α ∧ Subsingleton α := by
   refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨_, _⟩ ↦ ?_⟩

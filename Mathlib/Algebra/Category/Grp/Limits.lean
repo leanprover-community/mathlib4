@@ -39,6 +39,7 @@ variable (F : J ⥤ GrpCat.{u})
 instance groupObj (j) : Group ((F ⋙ forget GrpCat).obj j) :=
   inferInstanceAs <| Group (F.obj j)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The flat sections of a functor into `GrpCat` form a subgroup of all sections. -/
 @[to_additive
 /-- The flat sections of a functor into `AddGrpCat` form an additive subgroup of all sections. -/]

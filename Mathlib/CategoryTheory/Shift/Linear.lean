@@ -18,7 +18,7 @@ then the shift functors on `D` are `R`-linear.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

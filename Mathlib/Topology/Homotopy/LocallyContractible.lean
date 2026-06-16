@@ -179,7 +179,7 @@ theorem StronglyLocallyContractibleSpace.locallyContractible [StronglyLocallyCon
   obtain ⟨v₀, hid⟩ := id_nullhomotopic V
   -- The inclusion V ↪ U is homotopic to the constant map at (inclusion v₀)
   refine ⟨ContinuousMap.inclusion hVU v₀, ?_⟩
-  convert Homotopic.comp (.refl _) hid
+  convert! Homotopic.comp (.refl _) hid
   ext
   simp
 

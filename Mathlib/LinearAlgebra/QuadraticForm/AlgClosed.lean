@@ -19,9 +19,11 @@ TODO: generalize `QuadraticForm.isometryEquivSumSquares` to quadratically closed
 
 public section
 
+
+open QuadraticMap
 namespace QuadraticForm
 
-open Finset QuadraticMap
+open Finset
 
 variable {ι : Type*} [Fintype ι] {K : Type*} [Field K] [IsAlgClosed K]
 
