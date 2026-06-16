@@ -17,6 +17,17 @@ In this file we define `Matrix.ProjGenLinGroup n R` as the quotient of `GL n R` 
 We introduce notation `PGL(n, R)` for this group,
 which works if `n` is either a finite type or a natural number.
 If `n` is a number, then `PGL(n, R)` is interpreted as `PGL(Fin n, R)`.
+
+## Main definitions
+
+* `Matrix.SpecialLinearGroup.toPGL` is the natural map from `SL(n, R)` to `PGL(n, R)`.
+
+* `Matrix.ProjectiveSpecialLinearGroup.toPGL` is the natural
+  inclusion from `PSL(n, R)` to `PGL(n, R)`.
+
+* `Matrix.ProjectiveSpecialLinearGroup.isoPSLOfAlgClosed` is an isomorphism between
+  `PGL(n, F)` and `PSL(n, F)` in the case of an algebraically closed field.
+
 -/
 
 open scoped MatrixGroups
@@ -97,8 +108,7 @@ open Matrix.SpecialLinearGroup
 /-- The natural inclusion map from `PSL(n, R)` to `PGL(n, R)` induced by the inclusion
   map from `SL(n, R)` to `GL(n, R)`. -/
 @[expose]
-def toPGL :
-    ProjectiveSpecialLinearGroup n R →* PGL(n, R) :=
+def toPGL : ProjectiveSpecialLinearGroup n R →* PGL(n, R) :=
   QuotientGroup.lift _ SpecialLinearGroup.toPGL <| le_of_eq toPGL_ker.symm
 
 @[simp]
