@@ -492,9 +492,9 @@ vanishing above some degree `N`, the Euler characteristics satisfy `χ(X₂) = �
 The proof splices the long exact cohomology sequence into one bounded exact `ℕ`-indexed cochain
 complex of `k`-vector spaces and applies the Euler–Poincaré formula. -/
 theorem eulerChar_additive
-    (hf₁ : ∀ n, Module.Finite k (lesH (CommRingCat.of k) S.X₁ n))
-    (hf₂ : ∀ n, Module.Finite k (lesH (CommRingCat.of k) S.X₂ n))
-    (hf₃ : ∀ n, Module.Finite k (lesH (CommRingCat.of k) S.X₃ n))
+    [hf₁ : ∀ n, Module.Finite k (lesH (CommRingCat.of k) S.X₁ n)]
+    [hf₂ : ∀ n, Module.Finite k (lesH (CommRingCat.of k) S.X₂ n)]
+    [hf₃ : ∀ n, Module.Finite k (lesH (CommRingCat.of k) S.X₃ n)]
     (hb₁ : ∀ n, N < n → IsZero (lesH (CommRingCat.of k) S.X₁ n))
     (hb₂ : ∀ n, N < n → IsZero (lesH (CommRingCat.of k) S.X₂ n))
     (hb₃ : ∀ n, N < n → IsZero (lesH (CommRingCat.of k) S.X₃ n)) :

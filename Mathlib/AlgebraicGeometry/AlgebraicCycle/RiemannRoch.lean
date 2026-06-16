@@ -1,5 +1,6 @@
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.Sheaf
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.SkyscraperEulerChar
+import Mathlib.AlgebraicGeometry.AlgebraicCycle.ExactSequence
 
 namespace Function.locallyFinsupp
 
@@ -134,10 +135,52 @@ open AlgebraicGeometry Order CategoryTheory Limits
 
 universe u
 
-variable {X : Scheme.{u}} (k : Type u) [Field k] [X.Over (Spec (CommRingCat.of k))]
-    (D : AlgebraicCycle X ℤ)
+variable {X : Scheme.{u}} (k : Type u) [Field k]
+    (D : AlgebraicCycle X ℤ) [X.Over (Spec (CommRingCat.of k))]
 
 noncomputable def degree : ℤ := ∑ᶠ (x : X), (D x) * (Module.finrank k (X.residueField x))
+
+@[simp]
+lemma degree_sum (D D' : AlgebraicCycle X ℤ) [CompactSpace X]
+    : degree k (D + D') = degree k D + degree k D' := by
+  simp [degree]
+  ring_nf
+  rw [finsum_add_distrib]
+  · have :=
+      LocallyFiniteSupport.finite_inter_support_of_isCompact D.locallyFiniteSupport
+      CompactSpace.isCompact_univ
+    simp only [Function.locallyFinsuppWithin.toFun_eq_coe, Set.univ_inter,
+      Function.HasFiniteSupport, Function.support_mul] at this ⊢
+    exact Set.Finite.inter_of_left this _
+  · have :=
+      LocallyFiniteSupport.finite_inter_support_of_isCompact D'.locallyFiniteSupport
+      CompactSpace.isCompact_univ
+    simp only [Function.locallyFinsuppWithin.toFun_eq_coe, Set.univ_inter,
+      Function.HasFiniteSupport, Function.support_mul] at this ⊢
+    exact Set.Finite.inter_of_left this _
+
+
+@[simp]
+lemma degree_neg (D : AlgebraicCycle X ℤ)
+    : degree k (-D) = - degree k D := by simp [degree, finsum_neg_distrib]
+
+@[simp]
+lemma degree_minus (D D' : AlgebraicCycle X ℤ) [CompactSpace X]
+    : degree k (D - D') = degree k D - degree k D' := by
+  have := degree_sum k D (-D')
+  simp [-degree_sum] at this
+  ring_nf at this
+  rw [← this]
+  congr
+
+open Function.locallyFinsuppWithin Classical in
+@[simp]
+lemma degree_single (p : X) {n : ℤ} : degree k (single p n) =
+    n * (Module.finrank k (X.residueField p)):= by
+  simp only [degree]
+  rw [finsum_eq_finsetSum_of_support_subset (s := {p})]
+  · simp
+  · simp
 
 variable [IsIntegral X] [IsNoetherian X] [IsRegularInCodimensionOne X]
   (hD : D.support ⊆ {x | coheight x = 1})
@@ -159,12 +202,30 @@ points are closed)
 -/
 variable (hX : ∀ x : X, coheight x = 1 → ∀ p, x ≤ p → x = p)
 
+open AlgebraicCycle.Sheaf Function.locallyFinsuppWithin in
 theorem riemann_roch (hD : D.support ⊆ {x | coheight x = 1}) : D.sheaf.eulerChar k =
     D.degree k + (0 : AlgebraicCycle X ℤ).sheaf.eulerChar k := by
   classical
   induction D, hD using Function.locallyFinsupp.inductionOn with
   | zero => simp [degree]
-  | add E hE ih p hp => sorry
-  | minus E hE ih p hp => sorry
+  | add E hE ih p hp =>
+    have : Scheme.Modules.eulerChar k (sheaf (E + Function.locallyFinsuppWithin.single p 1))
+      = Scheme.Modules.eulerChar k (sheaf E) +
+        (Module.finrank k (X.residueField p)) := by
+      have : IsDiscreteValuationRing (X.presheaf.stalk p) := sorry
+      obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible (X.presheaf.stalk p)
+      have : (E + single p 1) - E = single p 1 := by simp
+      let o := twistedClosedSubschemeComplex₂ p hE ϖ hϖ hp this
+      let m := o.X₁
+        --twistedClosedSubschemeComplex' p hE ϖ hϖ hp this
+      sorry
+    simp [this, ih]
+    ring
+  | minus E hE ih p hp =>
+    have : Scheme.Modules.eulerChar k (sheaf (E - Function.locallyFinsuppWithin.single p 1))
+      = Scheme.Modules.eulerChar k (sheaf E) -
+        (Module.finrank k (X.residueField p)) := sorry
+    simp [this, ih]
+    ring
 
 end AlgebraicCycle

@@ -284,7 +284,6 @@ def skyscraperSheafOfModules : SheafOfModules R where
     (skyscraperSheaf p (AddCommGrpCat.of M)).2
 end Iso
 
-
 /--
 The residue field at `p` is a module over the `RingCat`-valued stalk of the structure sheaf,
 via the canonical comparison map to the `CommRingCat`-valued stalk followed by the residue map.
@@ -303,8 +302,8 @@ through its `RingCat`-valued germ is multiplication by the evaluation of the sec
 TODO: Move this somewhere sensible
 -/
 lemma residueField_compHom_smul_eq {U : X.Opens} (hp' : p ∈ U)
-    (a : ↑Γ(X, U)) (m : ↑(X.residueField p)) :
-    letI : Module ↑Γ(X, U) ↑(X.residueField p) :=
+    (a : ↑(X.ringCatSheaf.presheaf.obj (op U))) (m : ↑(X.residueField p)) :
+    letI : Module ↑(X.ringCatSheaf.presheaf.obj (op U)) ↑(X.residueField p) :=
       Module.compHom ↑(X.residueField p) (X.ringCatSheaf.presheaf.germ U p hp').hom
     a • m = (X.evaluation U p hp').hom a * m := by
   -- The comparison map `colimit.post` intertwines the `RingCat`- and `CommRingCat`-germs.

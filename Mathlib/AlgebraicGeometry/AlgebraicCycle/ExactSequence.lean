@@ -378,7 +378,7 @@ lemma toSkyscraperFun_compHom_smul {U : X.Opens} (hD : support D ⊆ {x | coheig
       (letI : Module ↑Γ(X, U) ↑(X.residueField p) :=
         Module.compHom ↑(X.residueField p) (X.ringCatSheaf.presheaf.germ U p hp').hom
        a • toSkyscraperFun p D hD ϖ hϖ hp hp' t) := by
-  rw [residueField_compHom_smul_eq p hp' a]
+  erw [residueField_compHom_smul_eq p hp' a]
   letI : Module ↑Γ(X, U) ↑(X.residueField p) := (X.evaluation U p hp').hom.toModule
   exact (toSkyscraperFun p D hD ϖ hϖ hp hp').map_smul' a t
 
@@ -589,6 +589,39 @@ def extendLe {D₁ D₂ : AlgebraicCycle X ℤ} (h : D₁ ≤ D₂) :
       simp only [mapFun]
       split_ifs <;> rfl
   }
+
+open Classical in
+noncomputable
+def twistedClosedSubschemeComplex₁
+    {D D' : AlgebraicCycle X ℤ}
+    (hD : support D ⊆ {x | coheight x = 1}) (ϖ : X.presheaf.stalk p)
+    (hϖ : Irreducible ϖ) (hp : coheight p = 1)
+    (hD' : D - D' = single p 1)
+    : ShortComplex X.Modules where
+  X₁ := D'.sheaf
+  X₂ := D.sheaf
+  X₃ := skyscraperSheafOfModules p X.ringCatSheaf ↑(X.residueField p)
+  f := extendLe (by sorry)
+  g := toSkyscraperHom p D hD ϖ hϖ hp
+  zero := sorry
+
+open Classical in
+noncomputable
+def twistedClosedSubschemeComplex₂
+    {D D' : AlgebraicCycle X ℤ}
+    (hD : support D ⊆ {x | coheight x = 1}) (ϖ : X.presheaf.stalk p)
+    (hϖ : Irreducible ϖ) (hp : coheight p = 1)
+    (hD' : D' - D = single p 1)
+    : ShortComplex X.Modules where
+  X₁ := D.sheaf
+  X₂ := D'.sheaf
+  X₃ := skyscraperSheafOfModules p X.ringCatSheaf ↑(X.residueField p)
+  f := extendLe (by sorry)
+  g :=
+    have : support D' ⊆ {x | coheight x = 1} := sorry
+    toSkyscraperHom p D' this ϖ hϖ hp
+  zero := sorry
+
 
 open Classical in
 noncomputable
