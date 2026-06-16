@@ -1,13 +1,20 @@
+/-
+Copyright (c) 2026 Thomas R. Murrills. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Thomas R. Murrills
+-/
 module
 
 public meta import Lean.Server.Requests
 public meta import Lean.Server.CodeActions.Basic
 public meta import Lean.Linter.Basic
+public import Mathlib.Init
 
 /-!
 # Utilities for `RequestM`
 
-This file provides a means to run `RequestM` and `CodeActionProvider` inside of other meta monads for testing purposes.
+This file provides a means to run `RequestM` and `CodeActionProvider` inside of other meta monads
+for testing purposes.
 -/
 
 public meta section -- TODO: unmeta
@@ -75,7 +82,8 @@ def mkDummyRequestContext (cmd : Syntax)
 
 deriving instance Repr for JsonRpc.ErrorCode
 
--- Ultimately, the `cmd` is responible for giving the `cmdSnaps` in the `RequestM` context appropriate position info, such that `withWaitForSnap` in `handleCodeAction` accepts it.
+/- Ultimately, the `cmd` is responible for giving the `cmdSnaps` in the `RequestM` context
+appropriate position info, such that `withWaitForSnap` in `handleCodeAction` accepts it. -/
 /-- Run a `RequestM` action against a context, surfacing `RequestError` as an elaboration error. -/
 def liftRequestM {α} (cmd : Syntax)
     (action : RequestM α) : CommandElabM α := do
@@ -101,19 +109,6 @@ def Lean.Server.CodeActionProvider.run (cmd : Syntax)
   liftRequestM cmd do
     action (← mkCodeActionParams range context) snap
 
-open RequestM in
-
--- def Lean.Server.CodeActionProvider.runSyntax
---     (range : Syntax.Range) (action : CodeActionProvider) (context : Lsp.CodeActionContext := {}) :
---     CommandElabM (Array LazyCodeAction) := do
---   let snap ← mkDummySnapshot
---   liftRequestM do
---     let m := (← readDoc).meta
---     action { textDocument := ⟨m.uri⟩, range := m.text.utf8RangeToLspRange range, context } snap
-
-def simple : CodeActionProvider := fun params _ => return #[{
-    eager.title := s!"{params.range.start} → {params.range.end}"}]
-
 namespace WorkspaceEditDiff
 
 -- First draft of this by claude
@@ -132,7 +127,8 @@ def _root_.Lean.Lsp.Range.asDiffHeaderFromLine (line : Nat) (range : Lsp.Range) 
 
 /-- Render one `TextEdit` against `text`: the exact removed span (`-`) vs. its replacement (`+`).
 Each side is split across lines if it spans several; an empty side is omitted. -/
-def renderEdit (text : FileMap) (e : Lsp.TextEdit) (showHeader : Option (Option Nat) := none) : MessageData :=
+def renderEdit (text : FileMap) (e : Lsp.TextEdit) (showHeader : Option (Option Nat) := none) :
+    MessageData :=
   let s := e.range.start
   let f := e.range.end
   let old := text.source.slice!
@@ -148,12 +144,13 @@ def renderEdit (text : FileMap) (e : Lsp.TextEdit) (showHeader : Option (Option 
   "\n".intercalate <| header :: (side "-" old.toString ++ side "+" e.newText)
 
 /-- Render all edits for a single document, labelled by its module `Name`. -/
-private def renderDoc (text? : Option FileMap) (edits : Array Lsp.TextEdit) (mod? : Option Name := none) (showHeader : Option (Option Nat) := none) :
+private def renderDoc (text? : Option FileMap) (edits : Array Lsp.TextEdit)
+    (mod? : Option Name := none) (showHeader : Option (Option Nat) := none) :
     MessageData :=
   let body := match text? with
     | some text => MessageData.joinSep (edits.toList.map (renderEdit text · showHeader)) "\n\n"
     | none =>      -- no source available: show only the location and the inserted text
-      MessageData.joinSep (edits.toList.map fun e =>s!"Edit (source unavailable):\n+ {e.newText}") "\n\n"
+      m!"\n\n".joinSep (edits.toList.map fun e =>s!"Edit (source unavailable):\n+ {e.newText}")
   m!"{if let some mod := mod? then s!"\n[{mod}]" else ""}\n{body}"
 
 open RequestM in
@@ -171,7 +168,8 @@ open RequestM in
 /-- Render an `Lsp.WorkspaceEdit` as `MessageData`, showing a diff of each text edit. Documents are
 labelled by their (machine-stable) module name rather than their URI; the removed side of the diff
 is shown for the current request's document, whose contents are available. -/
-def _root_.Lean.Lsp.WorkspaceEdit.toMessageData (we : Lsp.WorkspaceEdit) (showHeader : Option (Option Nat) := none) : RequestM MessageData := do
+def _root_.Lean.Lsp.WorkspaceEdit.toMessageData (we : Lsp.WorkspaceEdit)
+    (showHeader : Option (Option Nat) := none) : RequestM MessageData := do
   let dcs := (we.documentChanges?.getD #[]).toList
   let fromDocs : List (Lsp.DocumentUri × Lsp.TextEditBatch) := dcs.filterMap fun
     | .edit e => some (e.textDocument.uri, e.edits)
@@ -242,7 +240,8 @@ def getCaretRanges (cmd : Syntax) : CommandElabM <|
 instance : ToMessageData RequestError where
   toMessageData e := m!"[error code: {repr e.code}]\n{e.message}"
 
-def Lean.Lsp.CodeAction.toMessageData (action : Lsp.CodeAction) (showHeader : Option (Option Nat) := none) : RequestM MessageData := do
+def Lean.Lsp.CodeAction.toMessageData (action : Lsp.CodeAction)
+    (showHeader : Option (Option Nat) := none) : RequestM MessageData := do
   let mut msg := m!"Code action{action.kind?.elim "" (s!" ({·})")}:\n💡 {action.title}"
   if let some edit := action.edit? then
     msg := m!"{msg}\n{← edit.toMessageData showHeader}"
