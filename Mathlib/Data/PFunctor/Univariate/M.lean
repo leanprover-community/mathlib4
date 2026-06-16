@@ -35,7 +35,6 @@ def ListPFunctor.{u} (α : Type u) : PFunctor.{u, u} where
 /-- A stream whose ith value is the ith natural number. -/
 def range : (ListPFunctor Nat).M :=
   PFunctor.M.corec
-    (X := Nat)
     (fun n => .mk (.cons n) fun .unit => n.succ)
     0
 
