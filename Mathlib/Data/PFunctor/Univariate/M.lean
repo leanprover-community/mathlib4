@@ -28,7 +28,7 @@ def ListPFunctor.{u} (α : Type u) : PFunctor.{u, u} where
   | .nil => PEmpty
   | .cons _ => PUnit
 
--- A stream whose ith value is the ith natural number. 
+-- A stream whose ith value is the ith natural number.
 def range : (ListPFunctor Nat).M :=
   PFunctor.M.corec
     (X := Nat)
