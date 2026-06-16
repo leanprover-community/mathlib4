@@ -297,23 +297,20 @@ theorem MeromorphicAt.exists_analytic_extension_if_order_nonneg (hf : Meromorphi
     (nneg : 0 ≤ meromorphicOrderAt f x) :
     ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g x ∧ f =ᶠ[𝓝[≠] x] g := by
   by_cases h' : meromorphicOrderAt f x = ⊤
-  · use 0
-    exact ⟨analyticAt_const, meromorphicOrderAt_eq_top_iff.mp h'⟩
+  · exact ⟨0, ⟨analyticAt_const, meromorphicOrderAt_eq_top_iff.mp h'⟩⟩
   · let n := (meromorphicOrderAt f x).untop (LT.lt.ne_top (WithTop.lt_top_iff_ne_top.mpr h'))
     have h₀ : meromorphicOrderAt f x = n := by simp [n]
     obtain ⟨g, hg, hfg⟩ := (meromorphicOrderAt_eq_int_iff hf).mp h₀
-    use (fun z ↦ (z - x) ^ n • g z)
-    constructor
-    · apply AnalyticAt.smul _ hg
-      · simp only [h₀, WithTop.coe_nonneg] at nneg
-        obtain ⟨a, ha⟩ := Int.eq_ofNat_of_zero_le nneg
-        simp only [ha, zpow_natCast]
-        apply (analyticAt_id.sub analyticAt_const).pow
-    · exact hfg.2
+    refine ⟨fun z ↦ (z - x) ^ n • g z, ?_, hfg.2⟩
+    apply AnalyticAt.smul _ hg
+    · simp only [h₀, WithTop.coe_nonneg] at nneg
+      obtain ⟨a, ha⟩ := Int.eq_ofNat_of_zero_le nneg
+      simp only [ha, zpow_natCast]
+      apply (analyticAt_id.sub analyticAt_const).pow
 
 /-- A meromorphic function has non-negative order iff there exists an analytic extension. -/
 theorem MeromorphicAt.order_nonneg_iff_exists_analytic_extension (hf : MeromorphicAt f x) :
-    0 ≤ meromorphicOrderAt f x ↔ ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g x ∧ f =ᶠ[𝓝[≠] x] g := by
+    0 ≤ meromorphicOrderAt f x ↔ ∃ g : 𝕜 → E, AnalyticAt 𝕜 g x ∧ f =ᶠ[𝓝[≠] x] g := by
   refine ⟨hf.exists_analytic_extension_if_order_nonneg, ?_⟩
   rintro ⟨g, hg₁, hg₂⟩
   rw [meromorphicOrderAt_congr hg₂]
