@@ -122,9 +122,14 @@ theorem compl_iff : NullMeasurableSet sᶜ μ ↔ NullMeasurableSet s μ :=
 theorem of_subsingleton [Subsingleton α] : NullMeasurableSet s μ :=
   Subsingleton.measurableSet
 
-set_option backward.isDefEq.respectTransparency false in
-protected theorem congr (hs : NullMeasurableSet s μ) (h : s =ᵐ[μ] t) : NullMeasurableSet t μ :=
-  EventuallyMeasurableSet.congr hs h.symm
+theorem _root_.MeasureTheory.nullMeasurableSet_iff_eventuallyMeasurableSet (s : Set α) :
+  NullMeasurableSet s μ ↔ EventuallyMeasurableSet m0 (ae μ) s := by
+  unfold NullMeasurableSet EventuallyMeasurableSet
+  rfl
+
+protected theorem congr (hs : NullMeasurableSet s μ) (h : s =ᵐ[μ] t) : NullMeasurableSet t μ := by
+  rw [nullMeasurableSet_iff_eventuallyMeasurableSet]
+  exact EventuallyMeasurableSet.congr hs h.symm
 
 @[measurability]
 protected theorem iUnion {ι : Sort*} [Countable ι] {s : ι → Set α}
@@ -379,7 +384,7 @@ end
 
 section NullMeasurable
 
-variable [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ] {f : α → β} {μ : Measure α}
+variable [m : MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ] {f : α → β} {μ : Measure α}
 
 /-- A function `f : α → β` is null measurable if the preimage of a measurable set is a null
 measurable set.
@@ -389,6 +394,9 @@ the σ-algebra on the codomain is countably generated, but stronger in general. 
 def NullMeasurable (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∀ ⦃s : Set β⦄, MeasurableSet s → NullMeasurableSet (f ⁻¹' s) μ
 
+theorem _root_.MeasureTheory.nullMeasurable_iff_eventuallyMeasurable (f : α → β) :
+    NullMeasurable f μ ↔ EventuallyMeasurable m (ae μ) f := by rfl
+
 protected theorem _root_.Measurable.nullMeasurable (h : Measurable f) : NullMeasurable f μ :=
   h.eventuallyMeasurable
 
@@ -396,15 +404,15 @@ protected theorem NullMeasurable.measurable' (h : NullMeasurable f μ) :
     @Measurable (NullMeasurableSpace α μ) β _ _ f :=
   h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Measurable.comp_nullMeasurable {g : β → γ} (hg : Measurable g) (hf : NullMeasurable f μ) :
-    NullMeasurable (g ∘ f) μ :=
-  hg.comp_eventuallyMeasurable hf
+    NullMeasurable (g ∘ f) μ := by
+  rw [nullMeasurable_iff_eventuallyMeasurable]
+  exact hg.comp_eventuallyMeasurable hf
 
-set_option backward.isDefEq.respectTransparency false in
 theorem NullMeasurable.congr {g : α → β} (hf : NullMeasurable f μ) (hg : f =ᵐ[μ] g) :
-    NullMeasurable g μ :=
-  EventuallyMeasurable.congr hf hg.symm
+    NullMeasurable g μ := by
+  rw [nullMeasurable_iff_eventuallyMeasurable]
+  exact EventuallyMeasurable.congr hf hg.symm
 
 end NullMeasurable
 
