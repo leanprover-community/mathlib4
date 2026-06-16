@@ -622,8 +622,8 @@ theorem map_smul_le_map [RingHomSurjective σ] (f : M →ₛₗ[σ] N) (c : S) :
   grw [map_le_iff_le_comap, ← comap_le_comap_smul (map f p) f c, ← map_le_iff_le_comap]
 
 -- TODO: This declaration can be semi-linearized for free
-/-- Given modules `M`, `M₂` over a commutative ring, together with submodules `p ⊆ M`, `q ⊆ M₂`,
-the set of maps $\{f ∈ Hom(M, M₂) | f(p) ⊆ q \}$ is a submodule of `Hom(M, M₂)`. -/
+/-- Given modules `M`, `N` over a commutative ring, together with submodules `p ⊆ M`, `q ⊆ N`,
+the set of maps $\{f ∈ Hom(M, N) | f(p) ⊆ q \}$ is a submodule of `Hom(M, N)`. -/
 def compatibleMaps : Submodule S (N₁ →ₗ[S] N₂) where
   carrier := { fₗ | pₗ ≤ comap fₗ qₗ }
   zero_mem' := by simp
