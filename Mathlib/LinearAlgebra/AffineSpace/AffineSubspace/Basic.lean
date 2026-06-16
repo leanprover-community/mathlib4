@@ -236,7 +236,7 @@ theorem vectorSpan_eq_span_vsub_set_left_ne {s : Set P} {p : P} (hp : p ∈ s) :
     vectorSpan k s = Submodule.span k ((p -ᵥ ·) '' (s \ {p})) := by
   conv_lhs =>
     rw [vectorSpan_eq_span_vsub_set_left k hp, ← Set.insert_eq_of_mem hp, ←
-      Set.insert_diff_singleton, Set.image_insert_eq]
+      Set.insert_sdiff_singleton, Set.image_insert_eq]
   simp [Submodule.span_insert_eq_span]
 
 /-- The `vectorSpan` is the span of the pairwise subtractions with a given point on the right,
@@ -245,7 +245,7 @@ theorem vectorSpan_eq_span_vsub_set_right_ne {s : Set P} {p : P} (hp : p ∈ s) 
     vectorSpan k s = Submodule.span k ((· -ᵥ p) '' (s \ {p})) := by
   conv_lhs =>
     rw [vectorSpan_eq_span_vsub_set_right k hp, ← Set.insert_eq_of_mem hp, ←
-      Set.insert_diff_singleton, Set.image_insert_eq]
+      Set.insert_sdiff_singleton, Set.image_insert_eq]
   simp [Submodule.span_insert_eq_span]
 
 /-- The `vectorSpan` is the span of the pairwise subtractions with a given point on the right,
@@ -261,7 +261,7 @@ theorem vectorSpan_image_eq_span_vsub_set_left_ne (p : ι → P) {s : Set ι} {i
     vectorSpan k (p '' s) = Submodule.span k ((p i -ᵥ ·) '' p '' (s \ {i})) := by
   conv_lhs =>
     rw [vectorSpan_eq_span_vsub_set_left k (Set.mem_image_of_mem p hi), ← Set.insert_eq_of_mem hi, ←
-      Set.insert_diff_singleton, Set.image_insert_eq, Set.image_insert_eq]
+      Set.insert_sdiff_singleton, Set.image_insert_eq, Set.image_insert_eq]
   simp [Submodule.span_insert_eq_span]
 
 /-- The `vectorSpan` of the image of a function is the span of the pairwise subtractions with a
@@ -270,7 +270,7 @@ theorem vectorSpan_image_eq_span_vsub_set_right_ne (p : ι → P) {s : Set ι} {
     vectorSpan k (p '' s) = Submodule.span k ((· -ᵥ p i) '' p '' (s \ {i})) := by
   conv_lhs =>
     rw [vectorSpan_eq_span_vsub_set_right k (Set.mem_image_of_mem p hi), ← Set.insert_eq_of_mem hi,
-      ← Set.insert_diff_singleton, Set.image_insert_eq, Set.image_insert_eq]
+      ← Set.insert_sdiff_singleton, Set.image_insert_eq, Set.image_insert_eq]
   simp [Submodule.span_insert_eq_span]
 
 /-- The `vectorSpan` of an indexed family is the span of the pairwise subtractions with a given
@@ -294,7 +294,7 @@ theorem vectorSpan_range_eq_span_range_vsub_left_ne (p : ι → P) (i₀ : ι) :
       Submodule.span k (Set.range fun i : { x // x ≠ i₀ } => p i₀ -ᵥ p i) := by
   rw [← Set.image_univ, vectorSpan_image_eq_span_vsub_set_left_ne k _ (Set.mem_univ i₀)]
   congr with v
-  simp only [Set.mem_range, Set.mem_image, Set.mem_diff, Set.mem_singleton_iff, Subtype.exists]
+  simp only [Set.mem_range, Set.mem_image, Set.mem_sdiff, Set.mem_singleton_iff, Subtype.exists]
   constructor
   · rintro ⟨x, ⟨i₁, ⟨⟨_, hi₁⟩, rfl⟩⟩, hv⟩
     exact ⟨i₁, hi₁, hv⟩
@@ -307,7 +307,7 @@ theorem vectorSpan_range_eq_span_range_vsub_right_ne (p : ι → P) (i₀ : ι) 
       Submodule.span k (Set.range fun i : { x // x ≠ i₀ } => p i -ᵥ p i₀) := by
   rw [← Set.image_univ, vectorSpan_image_eq_span_vsub_set_right_ne k _ (Set.mem_univ i₀)]
   congr with v
-  simp only [Set.mem_range, Set.mem_image, Set.mem_diff, Set.mem_singleton_iff, Subtype.exists]
+  simp only [Set.mem_range, Set.mem_image, Set.mem_sdiff, Set.mem_singleton_iff, Subtype.exists]
   constructor
   · rintro ⟨x, ⟨i₁, ⟨⟨_, hi₁⟩, rfl⟩⟩, hv⟩
     exact ⟨i₁, hi₁, hv⟩

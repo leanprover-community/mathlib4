@@ -110,7 +110,7 @@ include hG in
 theorem degree_eq_of_not_adj {v w : V} (hvw : ¬G.Adj v w) : degree G v = degree G w := by
   rw [← Nat.cast_id (G.degree v), ← Nat.cast_id (G.degree w),
     ← adjMatrix_pow_three_of_not_adj ℕ hG hvw,
-    ← adjMatrix_pow_three_of_not_adj ℕ hG fun h => hvw (G.symm h)]
+    ← adjMatrix_pow_three_of_not_adj ℕ hG fun h ↦ hvw h.symm]
   conv_lhs => rw [← transpose_adjMatrix]
   simp only [pow_succ _ 2, sq, ← transpose_mul, transpose_apply]
   simp only [mul_assoc]
@@ -168,8 +168,8 @@ theorem isRegularOf_not_existsPolitician (hG' : ¬ExistsPolitician G) :
     rw [h, mem_singleton] at h'
     injection h'
   apply hxy'
-  rw [key ((mem_commonNeighbors G).mpr ⟨hvx, G.symm hxw⟩),
-    key ((mem_commonNeighbors G).mpr ⟨hvy, G.symm hcontra⟩)]
+  rw [key ((mem_commonNeighbors G).mpr ⟨hvx, hxw.symm⟩),
+    key ((mem_commonNeighbors G).mpr ⟨hvy, hcontra.symm⟩)]
 
 open scoped Classical in
 include hG in
