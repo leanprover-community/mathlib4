@@ -23,9 +23,9 @@ inductive ListA (α : Type u)
 | cons : α -> ListA α
 deriving DecidableEq, Repr
 
-/-- Polynomial functor for lists. Its smallest fixpoint, (PFunctor.W ·), produces the usual inductive type for lists;
-its greatest fixpoint, (PFunctor.M ·), produces the coinductive type of streams. The defined branching structure, `ListPFunctor.B` states:
-on a ListA.nil node, a term does not branch anymore. On a `ListA.cons ..` node, a term branches once. -/
+/-- Polynomial functor for lists. Its smallest fixpoint, `(PFunctor.W ·)`, produces the usual inductive type for lists;
+its greatest fixpoint, `(PFunctor.M ·)`, produces the coinductive type of streams. The defined branching structure, `ListPFunctor.B` states:
+on a `ListA.nil` node, a term does not branch anymore. On a `ListA.cons ..` node, a term branches once. -/
 def ListPFunctor.{u} (α : Type u) : PFunctor.{u, u} where
   A := ListA α
   B
