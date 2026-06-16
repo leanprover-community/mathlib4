@@ -21,14 +21,15 @@ inductive ListA (α : Type u)
 | cons : α -> ListA α
 deriving DecidableEq, Repr
 
--- Polynomial functor for lists. Its smallest fixpoint, (PFunctor.W ·), produces the usual inductive type for lists; its greatest fixpoint, (PFunctor.M ·), produces the coinductive type of streams.
+/-- Polynomial functor for lists. Its smallest fixpoint, (PFunctor.W ·), produces the usual inductive type for lists; 
+its greatest fixpoint, (PFunctor.M ·), produces the coinductive type of streams. -/
 def ListPFunctor.{u} (α : Type u) : PFunctor.{u, u} where
   A := ListA α
   B
   | .nil => PEmpty
   | .cons _ => PUnit
 
--- A stream whose ith value is the ith natural number.
+/-- A stream whose ith value is the ith natural number. -/
 def range : (ListPFunctor Nat).M :=
   PFunctor.M.corec
     (X := Nat)
