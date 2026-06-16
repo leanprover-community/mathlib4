@@ -8165,6 +8165,7 @@ public import Mathlib.Util.PPOptions
 public import Mathlib.Util.ParseCommand
 public import Mathlib.Util.PrintSorries
 public import Mathlib.Util.Qq
+public import Mathlib.Util.RequestM
 public import Mathlib.Util.Simp
 public import Mathlib.Util.SleepHeartbeats
 public import Mathlib.Util.Superscript
