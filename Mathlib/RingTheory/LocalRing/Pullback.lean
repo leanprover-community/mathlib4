@@ -66,14 +66,14 @@ theorem isUnit_pullback_mk_iff (f : R →+* T) (g : S →+* T) {a : R × S} (a_i
     IsUnit (⟨a, a_in⟩ : f.pullback g) ↔ IsUnit a.1 ∧ IsUnit a.2 := by
   rw [isUnit_eqLocus_mk_iff, Prod.isUnit_iff]
 
-theorem isLocalHom_pullbackFst (f : R →+* T) (g : S →+* T) [IsLocalHom g] :
+instance isLocalHom_pullbackFst (f : R →+* T) (g : S →+* T) [IsLocalHom g] :
     IsLocalHom (f.pullbackFst g) where
   map_nonunit a ha := by
     rcases a with ⟨⟨r, s⟩, hrs⟩
     rw [isUnit_pullback_mk_iff]
     exact ⟨ha, isUnit_of_map_unit g _ (hrs ▸ ha.map f)⟩
 
-theorem isLocalHom_pullbackSnd (f : R →+* T) (g : S →+* T) [IsLocalHom f] :
+instance isLocalHom_pullbackSnd (f : R →+* T) (g : S →+* T) [IsLocalHom f] :
     IsLocalHom (f.pullbackSnd g) where
   map_nonunit a ha := by
     rcases a with ⟨⟨r, s⟩, hrs⟩
@@ -99,18 +99,7 @@ theorem map_pullbackSnd_ker_pullbackFst_eq (f : R →+* T) (g : S →+* T) :
       (I := RingHom.ker (f.pullbackFst g)) (by simp)
 
 theorem isLocalRing_pullback [IsLocalRing R] (f : R →+* T) (g : S →+* T) (hg : IsLocalHom g) :
-    IsLocalRing (f.pullback g) where
-  isUnit_or_isUnit_of_add_one {a b} h := by
-    rcases a with ⟨⟨u, v⟩, huv⟩
-    rcases b with ⟨⟨s, t⟩, hst⟩
-    replace h : u + s = 1 ∧ v + t = 1 := by simpa [← Subtype.val_inj] using h
-    replace huv : f u = g v := by simpa using huv
-    replace hst : f s = g t := by simpa using hst
-    rcases IsLocalRing.isUnit_or_isUnit_of_add_one h.left with hu | hs
-    · left; rw [isUnit_pullback_mk_iff]
-      exact ⟨hu, IsLocalHom.map_nonunit (f := g) _ <| huv ▸ IsUnit.map f hu⟩
-    right; rw [isUnit_pullback_mk_iff]
-    exact ⟨hs, IsLocalHom.map_nonunit (f := g) _ <| hst ▸ IsUnit.map f hs⟩
+    IsLocalRing (f.pullback g) := (f.pullbackFst g).domain_isLocalRing
 
 end RingHom
 
