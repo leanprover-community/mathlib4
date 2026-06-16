@@ -114,12 +114,6 @@ protected theorem MeasurableSet.disjointed {f : ℕ → Set α} (h : ∀ i, Meas
     MeasurableSet (disjointed f n) :=
   disjointedRec (fun _ _ ht => MeasurableSet.diff ht <| h _) (h n)
 
-theorem preimage_find_eq_disjointed_to_set {α : Type*} {p : α → ℕ → Prop}
-    (H : ∀ (x : α), ∃ n, p x n) [inst : (x : α) → (n : ℕ) → Decidable (p x n)] (n : ℕ) :
-    (fun x => Nat.find (H x)) ⁻¹' {n} = disjointed (fun k ↦ {x | p x k}) n := by --MOVE THIS
-  ext
-  simp [Nat.find_eq_iff, disjointed_eq_inter_compl]
-
 theorem measurable_find {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] (hp : ∀ x, ∃ N, p x N)
     (hm : ∀ k, MeasurableSet { x | p x k }) : Measurable fun x => Nat.find (hp x) := by
   refine measurable_to_nat fun x => ?_
