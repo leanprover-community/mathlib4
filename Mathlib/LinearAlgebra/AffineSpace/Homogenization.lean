@@ -312,26 +312,23 @@ theorem ofVector_injective : Function.Injective (ofVector (k := k) (P := P)) := 
 theorem ofPoint_injective : Function.Injective (ofPoint (k := k) (P := P)) :=
   ofPoint.linear_injective_iff.mp ofVector_injective
 
+/-- Every element of the homogenization can be written in the form `ofVector v + c • ofPoint p`,
+where `p` can be chosen arbitrarily. -/
+theorem induction_of_point {motive : Homogenization k P → Prop} (p : P) (x : Homogenization k P)
+    (h : ∀ (v : V) (c : k), motive (ofVector v + c • ofPoint p)) : motive x := by
+  cases x using mk_induction_of_point p with | mk_mk v c
+  convert h v c
+  change mk (.mk ..) = mk (.mk ..)
+  simp
+
 /-- Every element of the homogenization can be written in the form `ofVector v + c • ofPoint p`.
 
 See also `induction_of_point` and `ofVector_ofPoint_cases`. -/
 @[induction_eliminator, cases_eliminator]
 theorem induction_on {motive : Homogenization k P → Prop} (x : Homogenization k P)
-    (h : ∀ (v : V) (c : k) (p : P), motive (ofVector v + c • ofPoint p)) : motive x := by
-  obtain ⟨p⟩ : Nonempty P := inferInstance
-  cases x using mk_induction_of_point p with | mk_mk v c
-  convert h v c p
-  change mk (.mk ..) = mk (.mk ..)
-  simp
-
-/-- Every element of the homogenization can be written in the form `ofVector v + c • ofPoint p`,
-where `p` can be chosen arbitrarily. -/
-theorem induction_of_point {motive : Homogenization k P → Prop} (p : P) (x : Homogenization k P)
-    (h : ∀ (v : V) (c : k), motive (ofVector v + c • ofPoint p)) : motive x := by
-  cases x with | _ v c q =>
-  convert h (v - c • (p -ᵥ q)) c using 1
-  simp only [map_sub, map_smul, ofVector_vsub]
-  match_scalars <;> norm_num
+    (h : ∀ (v : V) (c : k) (p : P), motive (ofVector v + c • ofPoint p)) : motive x :=
+  have ⟨p⟩ : Nonempty P := inferInstance
+  x.induction_of_point p (h (p := p))
 
 /-- Over a division ring `k`, every element of `Homogenization k P` is either a nonzero multiple of
 a point of `P`, or an element of the vector space associated to `P`. -/
