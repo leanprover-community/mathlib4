@@ -71,7 +71,6 @@ theorem map_toAddSubmonoid' (f : M →ₛₗ[σ] N) (p : Submodule R M) :
     (p.map f).toAddSubmonoid = p.toAddSubmonoid.map f :=
   SetLike.coe_injective rfl
 
--- TODO: move to `Mathlib.Algebra.Module.Submodule.Lattice`?
 @[simp]
 theorem _root_.AddMonoidHom.coe_toIntLinearMap_map {A A₂ : Type*} [AddCommGroup A] [AddCommGroup A₂]
     (f : A →+ A₂) (s : AddSubgroup A) :
