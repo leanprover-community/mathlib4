@@ -46,10 +46,13 @@ info: [ListA.cons 0,
  ListA.cons 4]
 -/
 #guard_msgs in
-#eval List.iterate (fun x =>
-  match h : x.head with
-  | .nil => .mk ⟨.nil, nofun⟩ -- not reached in this example
-  | .cons _ => x.children (h ▸ .unit)) range 5
+#eval List.iterate
+  (fun x =>
+    match h : x.head with
+    | .nil => .mk ⟨.nil, nofun⟩ -- not reached in this example
+    | .cons _ => x.children (h ▸ .unit))
+  range
+  5
   |>.map (·.head)
 ```
 -/
