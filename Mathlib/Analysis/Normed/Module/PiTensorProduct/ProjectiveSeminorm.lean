@@ -127,7 +127,7 @@ noncomputable instance : SeminormedAddCommGroup (⨂[𝕜] i, E i) :=
 
 noncomputable instance : NormedSpace 𝕜 (⨂[𝕜] i, E i) := ⟨projectiveSeminorm_smul_le⟩
 
-@[deprecated norm_def (since := "2026-10-06")]
+@[deprecated norm_def (since := "2026-06-10")]
 theorem projectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     projectiveSeminorm x = iInf (fun (p : lifts x) ↦ projectiveSeminormAux p.1) := rfl
 
