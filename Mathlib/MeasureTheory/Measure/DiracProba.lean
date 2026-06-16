@@ -98,8 +98,7 @@ lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace X] {x : X} (
   refine ⟨Ioi 0, Ioi_mem_nhds (by simp only [ENNReal.coe_one, zero_lt_one]),
           hU.mp (Eventually.of_forall ?_)⟩
   intro x x_notin_U
-  rw [f_vanishes_outside x
-        (compl_subset_compl.mpr (show interior U ⊆ U from interior_subset) x_notin_U)]
+  rw [f_vanishes_outside x (compl_subset_compl.mpr interior_subset x_notin_U)]
   simp only [ENNReal.coe_zero, mem_Ioi, lt_self_iff_false, not_false_eq_true]
 
 lemma tendsto_diracProba_iff_tendsto [CompletelyRegularSpace X] {x : X} (L : Filter X) :
