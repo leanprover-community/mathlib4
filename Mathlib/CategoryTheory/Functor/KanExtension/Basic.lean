@@ -619,10 +619,6 @@ def LeftExtension.precomp₂
     L'.LeftExtension F₁ ⥤ (L ⋙ L').LeftExtension F₀ :=
   LeftExtension.precomp L' F₁ L ⋙ StructuredArrow.map α
 
-#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
-Assistance investigating this would be appreciated. -/
-attribute [nolint simpNF] _root_.CategoryTheory.Functor.LeftExtension.precomp₂_map_left
-
 variable
     {L : C ⥤ D} {L' : D ⥤ D'}
     {F₀ : C ⥤ H} {F₁ : D ⥤ H} {F₂ : D' ⥤ H}
