@@ -48,11 +48,10 @@ open Set MeasureTheory MeasureSpace intervalIntegral
 
 variable {x₀ : ℝ} {a b : ℕ} {f g : ℝ → ℝ}
 
-lemma sum_Ico_le_integral_of_le
-    (hab : a ≤ b) (h : ∀ i ∈ Ico a b, ∀ x ∈ Ico (i : ℝ) (i + 1 : ℕ), f i ≤ g x)
-    (hg : IntegrableOn g (Ico a b)) :
-    ∑ i ∈ .Ico a b, f i ≤ ∫ x in a..b, g x := by
-  have A i (hi : i ∈ Finset.Ico a b) : IntervalIntegrable g volume i (i + 1 : ℕ) := by
+lemma sum_Ico_le_integral_of_le (hab : a ≤ b)
+    (h : ∀ i ∈ Ico a b, ∀ x ∈ Ico (i : ℝ) ↑(i + 1), f i ≤ g x)
+    (hg : IntegrableOn g (Ico a b)) : ∑ i ∈ .Ico a b, f i ≤ ∫ x in a..b, g x := by
+  have A i (hi : i ∈ Finset.Ico a b) : IntervalIntegrable g volume i ↑(i + 1) := by
     rw [intervalIntegrable_iff_integrableOn_Ico_of_le (by simp)]
     apply hg.mono _ le_rfl
     rintro x ⟨hx, h'x⟩
@@ -60,24 +59,21 @@ lemma sum_Ico_le_integral_of_le
     exact ⟨le_trans (mod_cast hi.1) hx, h'x.trans_le (mod_cast hi.2)⟩
   calc
   ∑ i ∈ Finset.Ico a b, f i
-  _ = ∑ i ∈ Finset.Ico a b, (∫ x in (i : ℝ)..(i + 1 : ℕ), f i) := by simp
-  _ ≤ ∑ i ∈ Finset.Ico a b, (∫ x in (i : ℝ)..(i + 1 : ℕ), g x) := by
+  _ = ∑ i ∈ Finset.Ico a b, (∫ x in (i : ℝ)..↑(i + 1), f i) := by simp
+  _ ≤ ∑ i ∈ Finset.Ico a b, (∫ x in (i : ℝ)..↑(i + 1), g x) := by
     gcongr with i hi
     apply integral_mono_on_of_le_Ioo (by simp) (by simp) (A _ hi) (fun x hx ↦ ?_)
     exact h _ (by simpa using hi) _ (Ioo_subset_Ico_self hx)
   _ = ∫ x in a..b, g x := by
     rw [sum_integral_adjacent_intervals_Ico (a := fun i ↦ i) hab]
-    intro i hi
-    exact A _ (by simpa using hi)
+    grind
 
-lemma integral_le_sum_Ico_of_le
-    (hab : a ≤ b) (h : ∀ i ∈ Ico a b, ∀ x ∈ Ico (i : ℝ) (i + 1 : ℕ), g x ≤ f i)
-    (hg : IntegrableOn g (Ico a b)) :
-    ∫ x in a..b, g x ≤ ∑ i ∈ .Ico a b, f i := by
+lemma integral_le_sum_Ico_of_le (hab : a ≤ b)
+    (h : ∀ i ∈ Ico a b, ∀ x ∈ Ico (i : ℝ) ↑(i + 1), g x ≤ f i)
+    (hg : IntegrableOn g (Ico a b)) : ∫ x in a..b, g x ≤ ∑ i ∈ .Ico a b, f i := by
   convert!
-    neg_le_neg
-      (sum_Ico_le_integral_of_le (f := -f) (g := -g) hab (fun i hi x hx ↦ neg_le_neg (h i hi x hx))
-        hg.neg) <;> simp
+    neg_le_neg (sum_Ico_le_integral_of_le (f := -f) (g := -g) hab (fun i hi x hx ↦ neg_le_neg
+      (h i hi x hx)) hg.neg) <;> simp
 
 theorem AntitoneOn.integral_le_sum (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :
     (∫ x in x₀..x₀ + a, f x) ≤ ∑ i ∈ .range a, f (x₀ + i) := by
@@ -106,75 +102,38 @@ theorem AntitoneOn.integral_le_sum (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :
 
 theorem AntitoneOn.integral_le_sum_Ico (hab : a ≤ b) (hf : AntitoneOn f (Set.Icc a b)) :
     (∫ x in a..b, f x) ≤ ∑ x ∈ Finset.Ico a b, f x := by
-  rw [(Nat.sub_add_cancel hab).symm, Nat.cast_add]
-  conv =>
-    congr
-    congr
-    · skip
-    · skip
-    rw [add_comm]
-    · skip
-    · skip
-    congr
-    congr
-    rw [← zero_add a]
+  suffices ∫ x in a..a + ↑(b - a), f x ≤ ∑ x ∈ .Ico (0 + a) (b - a + a), f x by simp_all
   rw [← Finset.sum_Ico_add, Nat.Ico_zero_eq_range]
-  conv =>
-    rhs
-    congr
-    · skip
-    ext
-    rw [Nat.cast_add]
+  suffices ∫ x in a..a + ↑(b - a), f x ≤ ∑ x ∈ .range (b - a), f (a + x) by simp_all
   apply AntitoneOn.integral_le_sum
   simp only [hf, hab, Nat.cast_sub, add_sub_cancel]
 
 theorem AntitoneOn.sum_le_integral (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :
     (∑ i ∈ .range a, f (x₀ + (i + 1 : ℕ))) ≤ ∫ x in x₀..x₀ + a, f x := by
   have hint : ∀ k : ℕ, k < a → IntervalIntegrable f volume (x₀ + k) (x₀ + (k + 1 : ℕ)) := by
-    intro k hk
-    refine (hf.mono ?_).intervalIntegrable
-    rw [uIcc_of_le]
-    · apply Icc_subset_Icc
-      · simp only [le_add_iff_nonneg_right, Nat.cast_nonneg]
-      · simp only [add_le_add_iff_left, Nat.cast_le, Nat.succ_le_of_lt hk]
-    · simp only [add_le_add_iff_left, Nat.cast_le, Nat.le_succ]
+    refine fun k hk ↦ (hf.mono ?_).intervalIntegrable
+    rw [uIcc_of_le (by simp [-Nat.cast_add])]
+    apply Icc_subset_Icc <;> simp [-Nat.cast_add, hk]
   calc
     (∑ i ∈ .range a, f (x₀ + (i + 1 : ℕ))) =
         ∑ i ∈ .range a, ∫ _ in x₀ + i..x₀ + (i + 1 : ℕ), f (x₀ + (i + 1 : ℕ)) := by simp
     _ ≤ ∑ i ∈ .range a, ∫ x in x₀ + i..x₀ + (i + 1 : ℕ), f x := by
       apply Finset.sum_le_sum fun i hi => ?_
       have ia : i + 1 ≤ a := Finset.mem_range.1 hi
-      refine integral_mono_on (by simp) (by simp) (hint _ ia) fun x hx => ?_
-      apply hf _ _ hx.2
-      · refine mem_Icc.2 ⟨le_trans (le_add_of_nonneg_right (Nat.cast_nonneg _)) hx.1,
-          le_trans hx.2 ?_⟩
-        simp only [Nat.cast_le, add_le_add_iff_left, ia]
-      · refine mem_Icc.2 ⟨le_add_of_nonneg_right (Nat.cast_nonneg _), ?_⟩
-        simp only [add_le_add_iff_left, Nat.cast_le, ia]
+      refine integral_mono_on (by simp) (by simp) (hint _ ia) fun x hx ↦ ?_
+      apply hf (mem_Icc.2 _) (mem_Icc.2 _) hx.2
+      · exact ⟨by grind, le_trans hx.2 (by simp [-Nat.cast_add, ia])⟩
+      · exact ⟨by grind, by simp [-Nat.cast_add, ia]⟩
     _ = ∫ x in x₀..x₀ + a, f x := by
       convert! sum_integral_adjacent_intervals hint
       simp only [Nat.cast_zero, add_zero]
 
 theorem AntitoneOn.sum_le_integral_Ico (hab : a ≤ b) (hf : AntitoneOn f (Icc a b)) :
     (∑ i ∈ .Ico a b, f (i + 1 : ℕ)) ≤ ∫ x in a..b, f x := by
-  rw [(Nat.sub_add_cancel hab).symm, Nat.cast_add]
-  conv =>
-    congr
-    congr
-    congr
-    rw [← zero_add a]
-    · skip
-    · skip
-    · skip
-    rw [add_comm]
+  suffices ∑ i ∈ .Ico (0 + a) (b - a + a), f ↑(i + 1) ≤ ∫ x in a..a + ↑(b - a), f x by simp_all
   rw [← Finset.sum_Ico_add, Nat.Ico_zero_eq_range]
-  conv =>
-    lhs
-    congr
-    congr
-    · skip
-    ext
-    rw [add_assoc, Nat.cast_add]
+  suffices ∑ x ∈ .range (b - a), f (a + ↑(x + 1)) ≤ ∫ x in a..a + ↑(b - a), f x by
+    simp_all [add_assoc]
   apply AntitoneOn.sum_le_integral
   simp only [hf, hab, Nat.cast_sub, add_sub_cancel]
 
@@ -209,14 +168,12 @@ lemma sum_mul_Ico_le_integral_of_monotone_antitone
     have I1 : (i : ℝ) ∈ Icc (a - 1 : ℝ) (b - 1) := by
       simp only [mem_Icc, tsub_le_iff_right]
       exact ⟨by norm_cast; lia, I0⟩
-    have I2 : x ∈ Icc (a : ℝ) b := ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans (by grind)⟩
+    have I2 : x ∈ Icc (a : ℝ) b := mem_Icc.mpr ⟨le_trans (mod_cast hi.1) hx.1, by grind⟩
     gcongr
-    · exact gpos.trans (hg I1 (by simp [hab]) I0)
-    · exact fpos.trans (hf (by simp [hab]) I2 (le_trans (mod_cast hi.1) hx.1))
+    · grw [gpos]; apply hg <;> grind
+    · grw [fpos]; apply hf <;> grind
     · exact hf (by simpa using ⟨hi.1, hi.2.le⟩) I2 hx.1
-    · apply hg _ I1 (by simpa [sub_le_iff_le_add] using hx.2.le)
-      simp only [mem_Icc, tsub_le_iff_right, sub_add_cancel]
-      exact ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans (by grind)⟩
+    · apply hg <;> grind
   · apply Integrable.mono_measure _ (Measure.restrict_mono_set _ Ico_subset_Icc_self)
     apply (hf.integrableOn_isCompact isCompact_Icc).mul_of_top_left
     apply AntitoneOn.memLp_isCompact isCompact_Icc
@@ -234,14 +191,14 @@ lemma integral_le_sum_mul_Ico_of_antitone_monotone
     have I1 : (i : ℝ) ∈ Icc (a - 1 : ℝ) (b - 1) := by
       simp only [mem_Icc, tsub_le_iff_right]
       exact ⟨by norm_cast; lia, I0⟩
-    have I2 : x ∈ Icc (a : ℝ) b := mem_Icc.mpr ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans (by grind)⟩
+    have I2 : x ∈ Icc (a : ℝ) b := mem_Icc.mpr ⟨le_trans (mod_cast hi.1) hx.1, by grind⟩
     gcongr
-    · exact gpos.trans <| hg (by simp [hab]) (by simpa using I2) (by simpa using I2.1)
-    · exact fpos.trans <| by apply hf <;> { simp; grind }
+    · grw [gpos]; apply hg <;> grind
+    · grw [fpos]; apply hf <;> { simp; grind }
     · exact hf (by simpa using ⟨hi.1, hi.2.le⟩) I2 hx.1
-    · apply hg _ I1 (by simpa using hx.2.le); grind
+    · apply hg <;> grind
   · apply Integrable.mono_measure _ (Measure.restrict_mono_set _ Ico_subset_Icc_self)
     apply (hf.integrableOn_isCompact isCompact_Icc).mul_of_top_left
     apply MonotoneOn.memLp_isCompact isCompact_Icc
-    intros x hx y hy hxy
+    intros _ _ _ _ _
     apply hg <;> grind
