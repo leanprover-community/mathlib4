@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 public import Mathlib.CategoryTheory.Monoidal.Skeleton
 public import Mathlib.LinearAlgebra.Contraction
 public import Mathlib.LinearAlgebra.LinearDisjoint
-public import Mathlib.RingTheory.ClassGroup
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 public import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.RingTheory.UniqueFactorizationDomain.ClassGroup
@@ -246,16 +245,10 @@ theorem free_iff_linearEquiv : Free R M ↔ Nonempty (M ≃ₗ[R] R) := by
     (Fintype.card_eq_one_iff_nonempty_unique.mp (by simpa using this)).some
   exact ⟨e ≪≫ₗ uniqueLinearEquiv R R default⟩
 
-/- TODO: The ≤ direction holds for arbitrary invertible modules over any commutative **ring** by
-considering the localization at a prime (which is free of rank 1) using the strong rank condition.
-The ≥ direction fails in general but holds for domains and Noetherian rings,
-see https://math.stackexchange.com/q/5089900 and https://mathoverflow.net/a/499611. -/
-protected theorem finrank_eq_one [StrongRankCondition R] [Free R M] : finrank R M = 1 := by
-  cases subsingleton_or_nontrivial R
-  · rw [← rank_eq_one_iff_finrank_eq_one, rank_subsingleton]
-  · rw [(free_iff_linearEquiv.mp ‹_›).some.finrank_eq, finrank_self]
+protected theorem finrank_eq_one [Free R M] : finrank R M = 1 := by
+  rw [(free_iff_linearEquiv.mp ‹_›).some.finrank_eq, CommSemiring.finrank_self]
 
-theorem rank_eq_one [StrongRankCondition R] [Free R M] : Module.rank R M = 1 :=
+theorem rank_eq_one [Free R M] : Module.rank R M = 1 :=
   rank_eq_one_iff_finrank_eq_one.mpr (Invertible.finrank_eq_one R M)
 
 open TensorProduct (comm lid) in
@@ -884,11 +877,11 @@ theorem Module.Invertible.exists_linearEquiv_ideal [Subsingleton (Pic (FractionR
   ⟨_, ⟨e ≪≫ₗ FractionalIdeal.equivNumOfIsLocalization
     ⟨_, I.submodule_isFractional (S := nonZeroDivisors R)⟩⟩⟩
 
-/- Every invertible module over a domain is isomorphic to an ideal. -/
+/-- Every invertible module over a domain is isomorphic to an ideal. -/
 example [IsDomain R] : ∃ I : Ideal R, Nonempty (M ≃ₗ[R] I) :=
   Module.Invertible.exists_linearEquiv_ideal R M
 
-/- Every invertible module over a Noetherian ring is isomorphic to an ideal.
+/-- Every invertible module over a Noetherian ring is isomorphic to an ideal.
 See https://mathoverflow.net/a/499611. -/
 example [IsNoetherianRing R] : ∃ I : Ideal R, Nonempty (M ≃ₗ[R] I) :=
   Module.Invertible.exists_linearEquiv_ideal R M
