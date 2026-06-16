@@ -82,7 +82,6 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
 
     set πinv := Quotient.mk_surjective.hasRightInverse.choose
 
-    --- renaming
     set φy := chartAt H (πinv y)
     set φx := chartAt H (πinv x)
 
@@ -105,9 +104,8 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
     set Uq := πinvy.target ∩ φy.source -- U H y
 
     have heq : (⟦φx.symm h⟧ : orbitRel.Quotient G M) = ⟦πinvy (πinvx.symm (φx.symm h))⟧ := by
-      rw [← hQ.localInverseAt_symm (πinv y)]
-      rw [OpenPartialHomeomorph.left_inv _ hh3]
-      rw [hQ.localInverseAt_symm, hQ.localInverseAt_symm]
+      rw [← hQ.localInverseAt_symm (πinv y), OpenPartialHomeomorph.left_inv _ hh3,
+        hQ.localInverseAt_symm, hQ.localInverseAt_symm]
 
     obtain ⟨g0, hg0⟩ := MulAction.orbitRel_apply.mp (Quotient.exact heq.symm)
     simp only at hg0
@@ -133,27 +131,26 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
       refine ⟨φx.symm h, ?_, OpenPartialHomeomorph.right_inv φx hh1⟩
       refine ⟨⟨hh2, OpenPartialHomeomorph.map_target φx hh1⟩, ?_⟩
       use πinvy (πinvx.symm (φx.symm h))
-      refine ⟨⟨OpenPartialHomeomorph.map_source πinvy hh3, hh4⟩, ((Homeomorph.smul g0).injective ?_)⟩
+      refine ⟨⟨OpenPartialHomeomorph.map_source _ hh3, hh4⟩, ((Homeomorph.smul g0).injective ?_)⟩
       simp only [Homeomorph.smul_apply, smul_inv_smul, hg0]
 
     refine ⟨t, is_open_t, h_in_t, ?_⟩
     set f := (φx.symm.trans ((πinvx.symm.trans πinvy).trans φy))
 
     have f_source_t : (f.restr t).source ⊆ t := by
-      rw [OpenPartialHomeomorph.restr_source, IsOpen.interior_eq is_open_t]
-      exact Set.inter_subset_right
+      simp [IsOpen.interior_eq is_open_t]
 
     have f_eq_φρφ_t : ∀ x ∈ (f.restr t).source, f x = φy (Homeomorph.smul g0 (φx.symm x)) := by
       intro z hz
       obtain ⟨u, hu, hz⟩ := f_source_t hz
       simp only [f, OpenPartialHomeomorph.coe_trans, Function.comp_apply]
-      rw [← hz, φx.left_inv hu.left.right, hQ.localInverseAt_symm, quotient_ignores_smul g0 u]
+      rw [← hz, φx.left_inv hu.1.2, hQ.localInverseAt_symm, quotient_ignores_smul g0 u]
       apply Set.mem_image_of_mem (Homeomorph.smul g0) at hu
       simp only [Up', ← Homeomorph.smul_symm, Homeomorph.image_symm,
         Homeomorph.smul_apply, Set.mem_image, Set.mem_inter_iff, Set.mem_preimage,
         smul_left_cancel_iff, exists_eq_right] at hu
       rw [← hQ.localInverseAt_symm, ← Homeomorph.smul_apply,
-        πinvy.right_inv (by exact hu.right.left)]
+        πinvy.right_inv (by exact hu.2.1)]
 
     have hfg_t : OpenPartialHomeomorph.EqOnSource
         ((φx.symm.trans (((Homeomorph.smul g0).toOpenPartialHomeomorph).trans φy)).restr
@@ -162,7 +159,7 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
       refine ⟨?_, ?_⟩
       · ext z
         refine ⟨?_, ?_⟩
-        · intro ⟨hz, hzt⟩
+        · intro ⟨_, hzt⟩
           rw [IsOpen.interior_eq (IsOpen.inter is_open_t f.open_source)] at hzt
           rw [OpenPartialHomeomorph.restr_source, IsOpen.interior_eq is_open_t, Set.inter_comm]
           exact hzt
@@ -173,18 +170,15 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
           · rw [← hz]
             refine ⟨φx.map_source' hu.1.2, ?_⟩
             obtain ⟨u', hu'⟩ := hu.2
-            simp only [OpenPartialHomeomorph.symm_symm, OpenPartialHomeomorph.trans_source,
-              Homeomorph.toOpenPartialHomeomorph_source, Homeomorph.toOpenPartialHomeomorph_apply,
-              Set.univ_inter, Set.mem_preimage]
-            rw [φx.left_inv hu.1.2, ← hu'.2]
-            simp only [Homeomorph.smul_apply, smul_inv_smul]
+            suffices h : (Homeomorph.smul g0) (φx.symm (φx u)) ∈ φy.source by simpa using h
+            rw [φx.left_inv hu.1.2, ← hu'.2, Homeomorph.smul_apply, Homeomorph.smul_apply,
+              smul_inv_smul]
             exact hu'.1.2
           · rw [interior_inter, IsOpen.interior_eq is_open_t, IsOpen.interior_eq f.open_source]
-            refine ⟨⟨u, by trivial⟩, hzf⟩
+            exact ⟨⟨u, by trivial⟩, hzf⟩
       · intro z ⟨_, hz⟩
         refine Eq.symm (f_eq_φρφ_t z ?_)
-        rw [interior_inter,IsOpen.interior_eq f.open_source] at hz
-        exact hz.symm
+        simpa [interior_inter,IsOpen.interior_eq f.open_source, And.comm] using hz
 
     apply (StructureGroupoid.mem_iff_of_eqOnSource hfg_t).mp
 
