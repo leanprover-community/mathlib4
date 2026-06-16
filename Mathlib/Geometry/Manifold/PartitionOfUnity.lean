@@ -601,6 +601,7 @@ theorem exists_contMDiffSection_forall_mem_convex_of_local
     {F_fiber : Type*} [NormedAddCommGroup F_fiber] [NormedSpace ℝ F_fiber]
     (V : M → Type*) [∀ x, AddCommGroup (V x)] [∀ x, TopologicalSpace (V x)] [∀ x, Module ℝ (V x)]
     [TopologicalSpace (TotalSpace F_fiber V)] [FiberBundle F_fiber V] [VectorBundle ℝ F_fiber V]
+    [ContMDiffVectorBundle n F_fiber V I]
     (t : ∀ x, Set (V x)) (ht_conv : ∀ x, Convex ℝ (t x))
     (Hloc :
       ∀ x₀ : M, ∃ U_x₀ ∈ 𝓝 x₀, ∃ (s_loc : (x : M) → V x),

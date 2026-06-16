@@ -33,7 +33,8 @@ variable {n : ℕ∞ω} {𝕜 B B' F M : Type*} {E : B → Type*}
   [FiberBundle F E] [VectorBundle 𝕜 F E] [ContMDiffVectorBundle n F E IB]
 
 /-- The action of `𝕜` on the total space of any Cⁿ bundle of `𝕜`-vector spaces is Cⁿ. -/
-instance : ContMDiffSMul 𝓘(𝕜, 𝕜) (IB.prod 𝓘(𝕜, F)) n 𝕜 (TotalSpace F E) where
+instance ContMDiffVectorBundle.instContMDiffSMul :
+    ContMDiffSMul 𝓘(𝕜, 𝕜) (IB.prod 𝓘(𝕜, F)) n 𝕜 (TotalSpace F E) where
   contMDiff_smul := by
     suffices h : ∀ b, ContMDiffOn (𝓘(𝕜, 𝕜).prod (IB.prod 𝓘(𝕜, F))) (IB.prod 𝓘(𝕜, F)) n
         (fun x : 𝕜 × TotalSpace F E ↦ x.1 • x.2)

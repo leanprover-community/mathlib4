@@ -248,7 +248,7 @@ lemma eq_iff_coeff [VectorBundle 𝕜 F V] [FiniteDimensional 𝕜 F]
   let := fintypeOfFiniteDimensional hs hx
   exact ⟨fun h i ↦ hs.coeff_congr h i, fun h ↦ hs.eq_of_coeff_eq hx h⟩
 
-variable (hs : IsLocalFrameOn I F n s u) [VectorBundle 𝕜 F V]
+variable (hs : IsLocalFrameOn I F n s u) [VectorBundle 𝕜 F V] [ContMDiffVectorBundle n F V I]
 
 /-- Given a local frame `s i ` on `u`, if a section `t` has `C^k` coefficients on `u` w.r.t. `s i`,
 then `t` is `C^n` on `u`. -/
