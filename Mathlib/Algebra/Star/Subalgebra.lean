@@ -41,7 +41,7 @@ variable [Semiring C] [StarRing C] [Algebra R C] [StarModule R C]
 
 instance setLike : SetLike (StarSubalgebra R A) A where
   coe S := S.carrier
-  coe_injective' p q h := by obtain ⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩ := p; cases q; congr
+  coe_injective p q h := by obtain ⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩ := p; cases q; congr
 
 instance : PartialOrder (StarSubalgebra R A) := .ofSetLike (StarSubalgebra R A) A
 
@@ -869,6 +869,32 @@ end StarAlgHom
 
 section RestrictScalars
 
+section Equiv
+
+variable (R : Type*) {S A B : Type*} [CommSemiring R] [CommSemiring S]
+  [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B] [MulAction R S] [Module S A]
+  [Module S B] [Module R A] [Module R B] [IsScalarTower R S A] [IsScalarTower R S B]
+  [Star A] [Star B]
+
+/-- Restrict the scalar ring of a star algebra equivalence. -/
+@[simps]
+def StarAlgEquiv.restrictScalars (f : A ≃⋆ₐ[S] B) : A ≃⋆ₐ[R] B :=
+  { (f : A →ₗ[S] B).restrictScalars R, f with
+    toFun := f }
+
+theorem StarAlgEquiv.restrictScalars_injective :
+    Function.Injective (StarAlgEquiv.restrictScalars R : (A ≃⋆ₐ[S] B) → A ≃⋆ₐ[R] B) :=
+  fun _ _ h => ext (DFunLike.congr_fun h ·)
+
+@[simp]
+theorem StarAlgEquiv.toNonUnitalStarAlgHom_restrictScalars (e : A ≃⋆ₐ[S] B) :
+    (e.restrictScalars R).toNonUnitalStarAlgHom = e.toNonUnitalStarAlgHom.restrictScalars R :=
+  rfl
+
+end Equiv
+
+section Unital
+
 variable (R : Type*) {S A B : Type*} [CommSemiring R]
   [CommSemiring S] [Semiring A] [Semiring B] [Algebra R S] [Algebra S A] [Algebra S B]
   [Algebra R A] [Algebra R B] [IsScalarTower R S A] [IsScalarTower R S B] [Star A] [Star B]
@@ -883,16 +909,12 @@ theorem StarAlgHom.restrictScalars_injective :
   fun f g h => StarAlgHom.ext fun x =>
     show f.restrictScalars R x = g.restrictScalars R x from DFunLike.congr_fun h x
 
-@[simps]
-def StarAlgEquiv.restrictScalars (f : A ≃⋆ₐ[S] B) : A ≃⋆ₐ[R] B :=
-  { (f : A →⋆ₐ[S] B).restrictScalars R, f with
-    toFun := f
-    map_smul' := map_smul ((f : A →⋆ₐ[S] B).restrictScalars R) }
+@[simp]
+theorem StarAlgEquiv.toStarAlgHom_restrictScalars (e : A ≃⋆ₐ[S] B) :
+    (e.restrictScalars R).toStarAlgHom = e.toStarAlgHom.restrictScalars R :=
+  rfl
 
-theorem StarAlgEquiv.restrictScalars_injective :
-    Function.Injective (StarAlgEquiv.restrictScalars R : (A ≃⋆ₐ[S] B) → A ≃⋆ₐ[R] B) :=
-  fun f g h => StarAlgEquiv.ext fun x =>
-    show f.restrictScalars R x = g.restrictScalars R x from DFunLike.congr_fun h x
+end Unital
 
 end RestrictScalars
 

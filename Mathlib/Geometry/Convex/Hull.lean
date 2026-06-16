@@ -108,7 +108,7 @@ lemma IsConvexSet.sdiff_singleton_iff_notMem_convexHull (hs : IsConvexSet R s) :
   mpr hx := by
     rw [← convexHull_subset_self]
     rintro y hy
-    exact ⟨convexHull_min diff_subset hs hy, by rintro rfl; exact hx hy⟩
+    exact ⟨convexHull_min sdiff_subset hs hy, by rintro rfl; exact hx hy⟩
 
 lemma IsAffineMap.image_convexHull {f : X → Y} (hf : IsAffineMap R f) (s : Set X) :
     f '' convexHull R s = convexHull R (f '' s) := by
