@@ -48,34 +48,22 @@ Over a commutative ring in which the order is regular, the one-sided condition f
 condition becomes `A i j = 1 ∨ A i j = -1`. Over `ℂ`, the entry condition becomes `‖A i j‖ = 1`,
 generalizing the fourth-root complex Hadamard matrices of
 [Definition 2.7.1][deLauneyFlannery2011]. -/
-def IsHadamard (A : Matrix n n R) : Prop :=
-  (∀ i j, A i j ∈ unitary R) ∧
-    A * Aᴴ = (Fintype.card n : R) • (1 : Matrix n n R) ∧
-      Aᴴ * A = (Fintype.card n : R) • (1 : Matrix n n R)
+@[mk_iff] structure IsHadamard (A : Matrix n n R) : Prop where
+  apply (i j : n) : A i j ∈ unitary R
+  mul_conjTranspose : A * Aᴴ = (Fintype.card n : R) • (1 : Matrix n n R)
+  conjTranspose_mul : Aᴴ * A = (Fintype.card n : R) • (1 : Matrix n n R)
 
 variable {A : Matrix n n R}
 
-theorem IsHadamard.apply (hA : A.IsHadamard) (i j : n) : A i j ∈ unitary R :=
-  hA.1 i j
-
-theorem IsHadamard.mul_conjTranspose (hA : A.IsHadamard) :
-    A * Aᴴ = (Fintype.card n : R) • (1 : Matrix n n R) :=
-  hA.2.1
-
-theorem IsHadamard.conjTranspose_mul (hA : A.IsHadamard) :
-    Aᴴ * A = (Fintype.card n : R) • (1 : Matrix n n R) :=
-  hA.2.2
-
 theorem IsHadamard.isStarNormal (hA : A.IsHadamard) : IsStarNormal A where
   star_comm_self := by
-    change Aᴴ * A = A * Aᴴ
-    rw [hA.conjTranspose_mul, hA.mul_conjTranspose]
+    rw [commute_iff_eq, star_eq_conjTranspose, hA.conjTranspose_mul, hA.mul_conjTranspose]
 
 /-- The conjugate transpose of a Hadamard matrix is Hadamard. -/
 theorem IsHadamard.conjTranspose (hA : A.IsHadamard) : Aᴴ.IsHadamard := by
   exact ⟨fun i j => Unitary.star_mem (hA.1 j i),
-    by simpa [conjTranspose_conjTranspose] using hA.2.2,
-    by simpa [conjTranspose_conjTranspose] using hA.2.1⟩
+    by simpa using hA.conjTranspose_mul,
+    by simpa using hA.mul_conjTranspose⟩
 
 @[simp]
 theorem isHadamard_conjTranspose_iff : Aᴴ.IsHadamard ↔ A.IsHadamard :=
@@ -180,7 +168,7 @@ variable [Ring R] [StarRing R] {A : Matrix n n R}
 
 /-- Negating a Hadamard matrix gives a Hadamard matrix. -/
 theorem IsHadamard.neg (hA : A.IsHadamard) : (-A).IsHadamard := by
-  simpa [IsHadamard, Unitary.mem_iff] using hA
+  simpa [isHadamard_iff, Unitary.mem_iff] using hA
 
 /-- A matrix is Hadamard iff its negation is. -/
 @[simp]
@@ -241,7 +229,8 @@ theorem isHadamard_iff_mul_conjTranspose
     A.IsHadamard ↔
       (∀ i j, A i j ∈ unitary R) ∧
         A * Aᴴ = (Fintype.card n : R) • (1 : Matrix n n R) :=
-  ⟨fun hA => ⟨hA.1, hA.2.1⟩, fun hA => IsHadamard.of_mul_conjTranspose hA.1 hA.2 hcard⟩
+  ⟨fun hA => ⟨hA.1, hA.mul_conjTranspose⟩,
+   fun hA => IsHadamard.of_mul_conjTranspose hA.1 hA.2 hcard⟩
 
 end CommRing
 
@@ -254,7 +243,7 @@ theorem IsHadamard.four_dvd_card {A : Matrix n n ℤ}
     Unitary.mem_iff_eq_one_or_eq_neg_one.1 (hA.1 i j)
   obtain ⟨r, s, t, hrs, hrt, hst⟩ := Fintype.two_lt_card_iff.mp hcard
   have horth ⦃i k : n⦄ (hik : i ≠ k) : ∑ j, A i j * A k j = 0 := by
-    simpa [Matrix.mul_apply, hik] using congr_fun (congr_fun hA.2.1 i) k
+    simpa [Matrix.mul_apply, hik] using congr_fun (congr_fun hA.mul_conjTranspose i) k
   have hexpand : ∀ j, (1 + A s j * A r j) * (1 + A t j * A r j) =
       1 + A s j * A r j + A t j * A r j + A s j * A t j := fun j => by
     obtain hr | hr := hpm r j <;> simp [hr] <;> ring
