@@ -21,7 +21,7 @@ inductive ListA (α : Type u)
 | cons : α -> ListA α
 deriving DecidableEq, Repr
 
-/-- Polynomial functor for lists. Its smallest fixpoint, (PFunctor.W ·), produces the usual inductive type for lists; 
+/-- Polynomial functor for lists. Its smallest fixpoint, (PFunctor.W ·), produces the usual inductive type for lists;
 its greatest fixpoint, (PFunctor.M ·), produces the coinductive type of streams. -/
 def ListPFunctor.{u} (α : Type u) : PFunctor.{u, u} where
   A := ListA α
