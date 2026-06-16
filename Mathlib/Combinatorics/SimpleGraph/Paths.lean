@@ -298,12 +298,14 @@ lemma IsPath.ne_of_mem_support_of_append {p : G.Walk u v} {q : G.Walk v w}
   exact IsPath.disjoint_support_of_append hpq hq hx hx'
 
 @[simp]
-theorem IsCircuit.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCircuit :=
+theorem not_isCircuit_nil {u : V} : ¬(nil : G.Walk u u).IsCircuit :=
   (·.ne_nil rfl)
 
 @[simp]
-theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle :=
+theorem not_isCycle_nil {u : V} : ¬(nil : G.Walk u u).IsCycle :=
   (·.ne_nil rfl)
+
+@[deprecated (since := "2026-06-16")] alias IsCycle.not_of_nil := not_isCycle_nil
 
 lemma IsCircuit.ne_bot : ∀ {p : G.Walk u u}, p.IsCircuit → G ≠ ⊥
   | cons h _, hp => by rintro rfl; exact h
