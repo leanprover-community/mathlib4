@@ -1,14 +1,16 @@
 module
 
-public import Lean.Server.Requests
-public import Lean.Server.CodeActions.Basic
-import Lean.Linter.Basic
+public meta import Lean.Server.Requests
+public meta import Lean.Server.CodeActions.Basic
+public meta import Lean.Linter.Basic
 
 /-!
 # Utilities for `RequestM`
 
 This file provides a means to run `RequestM` and `CodeActionProvider` inside of other meta monads for testing purposes.
 -/
+
+public meta section -- TODO: unmeta
 
 open Lean Server FileWorker Elab Command
 
