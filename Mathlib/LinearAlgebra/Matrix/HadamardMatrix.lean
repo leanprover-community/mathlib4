@@ -49,7 +49,7 @@ condition becomes `A i j = 1 ∨ A i j = -1`. Over `ℂ`, the entry condition be
 generalizing the fourth-root complex Hadamard matrices of
 [Definition 2.7.1][deLauneyFlannery2011]. -/
 @[mk_iff] structure IsHadamard (A : Matrix n n R) : Prop where
-  apply (i j : n) : A i j ∈ unitary R
+  apply_mem (i j : n) : A i j ∈ unitary R
   mul_conjTranspose : A * Aᴴ = (Fintype.card n : R) • (1 : Matrix n n R)
   conjTranspose_mul : Aᴴ * A = (Fintype.card n : R) • (1 : Matrix n n R)
 
@@ -85,7 +85,7 @@ theorem isHadamard_submatrix_equiv_iff (e₁ e₂ : m ≃ n) :
 /-- The Kronecker product of two Hadamard matrices is Hadamard. -/
 theorem IsHadamard.kronecker {A : Matrix m m R} {B : Matrix n n R}
     (hA : A.IsHadamard) (hB : B.IsHadamard) : (A ⊗ₖ B).IsHadamard := by
-  refine ⟨fun _ _ ↦ mul_mem (hA.apply _ _) (hB.apply _ _), ?_, ?_⟩ <;> ext ⟨i, i'⟩ ⟨j, j'⟩
+  refine ⟨fun _ _ ↦ mul_mem (hA.apply_mem _ _) (hB.apply_mem _ _), ?_, ?_⟩ <;> ext ⟨i, i'⟩ ⟨j, j'⟩
   · calc
       _ = ∑ x₁, ∑ x₂, A i x₁ * (B i' x₂ * Bᴴ x₂ j') * Aᴴ x₁ j := by
         simp [conjTranspose_kronecker', mul_apply, mul_assoc, ← Finset.sum_product']
