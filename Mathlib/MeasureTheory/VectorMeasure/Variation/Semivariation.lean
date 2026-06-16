@@ -15,7 +15,7 @@ import Mathlib.Analysis.Normed.Operator.NormedSpace
 
 The semivariation of a vector measure is the supremum of the variations of its push-forwards
 to `ℝ` through all linear forms of norm at most `1`. The interest of this notion is that, in the
-reals, any set has nonnegative or nonnegative measure, so that the variation is realized by
+reals, any set has nonnegative or nonpositive measure, so that the variation is realized by
 a subset (up to a factor of at most `2`). This property is inherited by the semivariation in
 general: one has the inequalities
 ```
