@@ -147,8 +147,9 @@ abbrev Orientable (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [IsManifol
   Nonempty (ManifoldOrientation I M)
 
 /-- Typeclass choosing a specific orientation on a manifold. -/
-class OrientedManifold (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M]
-    where manifoldOrientation : ManifoldOrientation I M
+class OrientedManifold (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M] where
+  /-- The chosen orientation of the manifold. -/
+  manifoldOrientation : ManifoldOrientation I M
 
 /-- An oriented manifold is orientable. -/
 instance (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M]
@@ -242,6 +243,8 @@ section Cardinality
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M]
 
+/-- The pointwise sign difference (in `ZMod 2`) between two manifold orientations,
+over the tangent trivialization domain at `x`. -/
 def chartDelta (o₀ o : ManifoldOrientation I M) (x : M) :
     LocallyConstant {z // z ∈ (trivializationAt E (TangentSpace I) x).baseSet} (ZMod 2) :=
   o.chartSign x - o₀.chartSign x
@@ -308,6 +311,8 @@ theorem chartDelta_eq_on_overlap (o₀ o : ManifoldOrientation I M)
   exact sub_eq_of_signedOrientation_map_eq L sx sy s0x s0y (baseOrientation)
     h h0
 
+/-- The function recording, at each point of `M`, the sign difference (in `ZMod 2`)
+between two manifold orientations. -/
 def deltaFn (o₀ o : ManifoldOrientation I M) (z : M) : ZMod 2 :=
   chartDelta I o₀ o z ⟨z, mem_baseSet_trivializationAt E (TangentSpace I) z⟩
 
@@ -347,9 +352,13 @@ theorem deltaFn_isLocallyConstant (o₀ o : ManifoldOrientation I M) :
               deltaFn_eq_chartDelta I o₀ o
                 (mem_baseSet_trivializationAt E (TangentSpace I) x)
 
+/-- The sign difference between two manifold orientations, as a `LocallyConstant` function
+`M → ZMod 2`. -/
 def deltaLC (o₀ o : ManifoldOrientation I M) : LocallyConstant M (ZMod 2) :=
   ⟨deltaFn I o₀ o, deltaFn_isLocallyConstant I o₀ o⟩
 
+/-- Modify a manifold orientation by flipping its chart-signs according to a locally constant
+`ZMod 2`-valued function. -/
 def twist (o₀ : ManifoldOrientation I M) (δ : LocallyConstant M (ZMod 2)) :
     ManifoldOrientation I M where
   chartSign x :=
@@ -399,6 +408,8 @@ def twist (o₀ : ManifoldOrientation I M) (δ : LocallyConstant M (ZMod 2)) :
           (baseOrientation) := by
           rw [signedOrientation_add]; rfl
 
+/-- Relative to a fixed base orientation `o₀`, the manifold orientations are in bijection with
+locally constant `ZMod 2`-valued functions on `M`. -/
 noncomputable def manifoldOrientationEquivLocallyConstant (o₀ : ManifoldOrientation I M) :
     ManifoldOrientation I M ≃ LocallyConstant M (ZMod 2) where
   toFun o := deltaLC I o₀ o
@@ -422,6 +433,8 @@ noncomputable def manifoldOrientationEquivLocallyConstant (o₀ : ManifoldOrient
     simp only [deltaLC, deltaFn, chartDelta, twist, LocallyConstant.coe_mk,
       LocallyConstant.coe_comap_apply, ContinuousMap.coe_mk, add_sub_cancel_right]
 
+/-- On a locally connected space, locally constant `ZMod 2`-valued functions correspond to
+arbitrary functions on the connected components. -/
 noncomputable def locallyConstantEquivConnectedComponents [LocallyConnectedSpace M] :
     LocallyConstant M (ZMod 2) ≃ (ConnectedComponents M → ZMod 2) where
   toFun f := Quotient.lift (fun x : M => f x) (by
