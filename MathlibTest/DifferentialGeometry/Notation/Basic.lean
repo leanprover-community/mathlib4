@@ -931,7 +931,7 @@ info: ContMDiffWithinAt (modelWithCornersSelf 𝕜 E) (modelWithCornersSelf 𝕜
 
 end smoothness
 
--- Inferring the type of `x` for all ContMDiff/MDifferentiable{Within}At elaborators.
+/-! Inferring the type of `x` for all ContMDiff/MDifferentiable{Within}At elaborators. -/
 section
 
 variable {EM' : Type*} [NormedAddCommGroup EM']
@@ -967,6 +967,33 @@ open ContDiff in -- for the ∞ notation
 /-- info: setOf fun x ↦ Surjective ⇑(mfderivWithin I I' f s x) : Set M -/
 #guard_msgs in
 #check {x | Function.Surjective (mfderiv[s] f x) }
+
+end
+
+/-! Tests for the elaborators for `tangentMap(Within)` and `TangentSpace` -/
+section
+
+variable {f : M → M} {s : Set M} {x : M} {X : TangentSpace% x}
+
+/-- info: TangentSpace I x : Type u_2 -/
+#guard_msgs in
+#check TangentSpace% x
+
+/-- info: tangentMap I I f : TangentBundle I M → TangentBundle I M -/
+#guard_msgs in
+#check tangentMap% f
+
+/-- info: tangentMapWithin I I f s : TangentBundle I M → TangentBundle I M -/
+#guard_msgs in
+#check tangentMap[s] f
+
+/-- info: tangentMap I I f { proj := x, snd := X } : TangentBundle I M -/
+#guard_msgs in
+#check tangentMap% f X
+
+/-- info: tangentMapWithin I I f s { proj := x, snd := X } : TangentBundle I M -/
+#guard_msgs in
+#check tangentMap[s] f X
 
 end
 
