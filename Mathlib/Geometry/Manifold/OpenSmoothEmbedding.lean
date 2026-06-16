@@ -32,10 +32,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {I₀ : ModelWithCorners 𝕜 F H''} {M₀ : Type*} [TopologicalSpace M₀] [ChartedSpace H'' M₀]
   {m n : ℕ∞ω}
 
-variable (I J n) in
-def IsOpenSmoothEmbedding (f : M → N) : Prop :=
-  ∃ U : Opens N, ∃ φ : Diffeomorph I J M U n, (Subtype.val ∘ φ) = f
-
 open IsManifold in
 lemma OpenPartialHomeomorph.diffeomorph_trans_mem_maximalAtlas [IsManifold I n M]
     (φ : OpenPartialHomeomorph M H) (hφ : φ ∈ maximalAtlas I n M) (Φ : Diffeomorph I I M M n) :
@@ -66,6 +62,13 @@ lemma Diffeomorph.isImmersionOfComplement [IsManifold I n M] (Φ : Diffeomorph I
 lemma Diffeomorph.isSmoothEmbedding [IsManifold I n M] (Φ : Diffeomorph I I M M n) :
     IsSmoothEmbedding I I n Φ :=
   ⟨Φ.isImmersionOfComplement.isImmersion, Φ.toHomeomorph.isEmbedding⟩
+
+-- XXX: have a version for any n (for now), as opposed to one for ∞
+variable (I J n) in
+def IsOpenSmoothEmbedding (f : M → N) : Prop :=
+  ∃ U : Opens N, ∃ φ : Diffeomorph I J M U n, (Subtype.val ∘ φ) = f
+
+-- lemma: inclusion of an open is a smooth embedding
 
 namespace IsOpenSmoothEmbedding
 
@@ -118,5 +121,14 @@ lemma _root_.Diffeomorph.coe_of_le (Φ : Diffeomorph I J M N n) (hmn : m ≤ n) 
 lemma mono_n (hf : IsOpenSmoothEmbedding I J n f) (hmn : m ≤ n) : IsOpenSmoothEmbedding I J m f := by
   choose U φ hφ using hf
   exact ⟨U, φ.of_le hmn, by simp [hφ]⟩
+
+lemma surjective_mfderiv (hf : IsOpenSmoothEmbedding I J n f) (x : M) :
+    Function.Surjective <| mfderiv% f x := by
+  sorry
+
+-- lemma foo (φ : OpenPartialHomeomorph M H) -- := chartAt H z
+--     (hφ : φ ∈ IsManifold.maximalAtlas I n M) :
+--     letI := TopologicalSpace.Opens.instChartedSpace ⟨φ.target, sorry⟩
+--     IsOpenSmoothEmbedding I I n (φ.target.restrict φ.symm) := sorry
 
 end IsOpenSmoothEmbedding
