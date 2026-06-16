@@ -41,7 +41,7 @@ for every `m` in `Π i, Eᵢ` is bounded above by the projective seminorm.
   `E = Π i, Eᵢ` and `x` is in `⨂[𝕜] i, Eᵢ`, then `‖f.lift x‖ ≤ projectiveSeminorm x * ‖f‖`.
 * `PiTensorProduct.mapL_opNorm`: If `f` is a family of continuous linear maps
   `fᵢ : Eᵢ →L[𝕜] Fᵢ`, then `‖PiTensorProduct.mapL f‖ ≤ ∏ i, ‖fᵢ‖`.
-* `PiTensorProduct.mapLMultilinear_opNorm` : If `F` is a normed vecteor space, then
+* `PiTensorProduct.opNorm_mapLMultilinear_le` : If `F` is a normed vecteor space, then
   `‖mapLMultilinear 𝕜 E F‖ ≤ 1`.
 
 ## TODO
@@ -321,7 +321,7 @@ noncomputable def mapLMultilinear : ContinuousMultilinearMap 𝕜 (fun (i : ι) 
 
 variable {𝕜 E E'}
 
-theorem mapLMultilinear_opNorm : ‖mapLMultilinear 𝕜 E E'‖ ≤ 1 :=
+theorem opNorm_mapLMultilinear_le : ‖mapLMultilinear 𝕜 E E'‖ ≤ 1 :=
   MultilinearMap.mkContinuous_norm_le _ zero_le_one _
 
 end map
