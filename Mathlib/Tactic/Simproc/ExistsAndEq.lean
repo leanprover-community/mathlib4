@@ -217,7 +217,7 @@ where
     | ⟨v, γ, c⟩ :: exsTail =>
     let _ : u_1 =QL v := ⟨⟩
     let _ : $γ =Q $β := ⟨⟩
-    let pf1 : Q($pb $c) := ← go h exsTail path
+    let pf1 : Q($pb $c) ← go h exsTail path
     return q(Exists.intro $c $pf1)
   | ~q(And $L $R) =>
     let ~q($L' ∧ $R') := P
@@ -381,7 +381,7 @@ where
     | [] => assertUnreachable "mkBeforeToAfter: `P` is `Exists` but `hs` is empty"
     | ⟨H, hb⟩ :: hsTail =>
     let _ : $H =Q $pb $b := ⟨⟩
-    let pf : Q($goal) := ← go hb exsTail hsTail path h_eq
+    let pf : Q($goal) ← go hb exsTail hsTail path h_eq
     return pf
   | ~q(And $L $R) =>
     let ~q($L' ∧ $R') := goal
