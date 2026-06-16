@@ -108,15 +108,19 @@ theorem IsOpenQuotientMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenQuotie
     (hg : IsOpenQuotientMap g) : IsOpenQuotientMap (Prod.map f g) :=
   ⟨.prodMap hf.1 hg.1, .prodMap hf.2 hg.2, .prodMap hf.3 hg.3⟩
 
+theorem isOpenMap_prodMap_iff [Nonempty X] [Nonempty Z] {f : X → Y} {g : Z → W} :
+    IsOpenMap (Prod.map f g) ↔ IsOpenMap f ∧ IsOpenMap g := by
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨hf, hg⟩ ↦ hf.prodMap hg⟩
+  · rw [(isOpenQuotientMap_fst (Y := Z)).isOpenMap_iff]
+    exact isOpenMap_fst.comp h
+  · rw [(isOpenQuotientMap_snd (X := X)).isOpenMap_iff]
+    exact isOpenMap_snd.comp h
+
 theorem isOpenQuotientMap_prodMap_iff [Nonempty X] [Nonempty Z] {f : X → Y} {g : Z → W} :
     IsOpenQuotientMap (Prod.map f g) ↔ IsOpenQuotientMap f ∧ IsOpenQuotientMap g := by
   have : Nonempty Y := .map f inferInstance
   have : Nonempty W := .map g inferInstance
-  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨hf, hg⟩ ↦ hf.prodMap hg⟩
-  · rw [← (isOpenQuotientMap_fst (Y := Z)).of_comp_iff]
-    exact isOpenQuotientMap_fst.comp h
-  · rw [← (isOpenQuotientMap_snd (X := X)).of_comp_iff]
-    exact isOpenQuotientMap_snd.comp h
+  grind [isOpenQuotientMap_iff, continuous_prodMap_iff, isOpenMap_prodMap_iff, Prod.map_surjective]
 
 end Prod
 
