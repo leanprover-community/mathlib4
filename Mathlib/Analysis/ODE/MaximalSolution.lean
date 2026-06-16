@@ -329,9 +329,9 @@ private lemma chainSup_is_upper_bound (C : Set (IsLocalIntegralCurveOn v t₀ x�
         t ∈ ⋃ (p : IsLocalIntegralCurveOn v t₀ x₀) (hp : p ∈ C), p.I from
       Set.mem_iUnion₂.mpr ⟨hp, hpC, ht⟩
     refine (chain_solutions_agree v t₀ x₀ hC hpC hchoose.1 t ht hchoose.2).trans ?_
-    simp only [chainSup, dif_pos (show
-      t ∈ ⋃ (p : IsLocalIntegralCurveOn v t₀ x₀) (hp : p ∈ C), p.I from
-        Set.mem_iUnion₂.mpr ⟨hp, hpC, ht⟩)]
+    simp only [chainSup]
+    rw [dif_pos (show t ∈ ⋃ (p : IsLocalIntegralCurveOn v t₀ x₀) (hp : p ∈ C), p.I from
+      Set.mem_iUnion₂.mpr ⟨hp, hpC, ht⟩)]
 
 /--
 Helper lemma stating that any non-empty chain `C` has an upper bound.
