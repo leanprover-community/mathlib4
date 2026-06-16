@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Torsor.Defs
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 import Mathlib.Algebra.Ring.Subring.Units
+import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 /-!
 # Local Ring Properties of Equalizers and Pullbacks
