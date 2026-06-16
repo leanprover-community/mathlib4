@@ -153,8 +153,8 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
 theorem norm_smul {ι : Type*} [Fintype ι] [Nonempty ι] {B : Basis ι K L} {i : ι}
     (hBi : B i = (1 : L)) (k : K) (y : L) :
     B.norm ((algebraMap K L) k * y) = B.norm ((algebraMap K L) k) * B.norm y := by
-  rw [norm_extends hBi, Basis.norm, Basis.norm]
-  rw [Finset.mul₀_sup' (norm_nonneg _) (fun j : ι ↦ ‖B.repr y j‖) univ univ_nonempty]
+  rw [norm_extends hBi, Basis.norm, Basis.norm,
+    Finset.mul₀_sup' (norm_nonneg _) (fun j : ι ↦ ‖B.repr y j‖) univ univ_nonempty]
   congr with j
   rw [repr_smul', norm_mul]
 

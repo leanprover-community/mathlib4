@@ -294,18 +294,14 @@ theorem integral_gaussian_complex_Ioi {b : ℂ} (hb : 0 < re b) :
     ∫ x : ℝ in Ioi 0, cexp (-b * (x : ℂ) ^ 2) = (π / b) ^ (1 / 2 : ℂ) / 2 := by
   let f : ℝ → ℂ := fun x => cexp (-b * (x : ℂ) ^ 2)
   have full_integral := integral_gaussian_complex hb
-  have h_eq : ∫ x : ℝ in Iic 0, f x = ∫ x : ℝ in Ioi 0, f x := by
-    calc
-      ∫ x : ℝ in Iic 0, f x = ∫ x : ℝ in Ioi 0, f (-x) := by
-        simpa [f] using (integral_comp_neg_Ioi 0 f).symm
-      _ = ∫ x : ℝ in Ioi 0, f x := by
-        refine setIntegral_congr_fun measurableSet_Ioi ?_
-        intro x hx
-        simp [f]
-  have hmeas : MeasurableSet (Ioi (0 : ℝ)) := measurableSet_Ioi
-  rw [← integral_add_compl hmeas (integrable_cexp_neg_mul_sq hb), compl_Ioi, h_eq, ← mul_two]
-    at full_integral
-  exact (eq_div_iff two_ne_zero).2 (by simpa [mul_comm] using full_integral)
+  have h_eq := calc
+    ∫ x : ℝ in Iic 0, f x = ∫ x : ℝ in Ioi 0, f (-x) := by
+      simpa [f] using (integral_comp_neg_Ioi 0 f).symm
+    _ = ∫ x : ℝ in Ioi 0, f x :=
+      setIntegral_congr_fun measurableSet_Ioi fun _ _ ↦ (by simp [f])
+  rw [← integral_add_compl (s := Ioi 0) (by simp) (integrable_cexp_neg_mul_sq hb), compl_Ioi, h_eq,
+    ← mul_two] at full_integral
+  exact (eq_div_iff two_ne_zero).2 (by simpa using full_integral)
 
 -- The Gaussian integral on the half-line, `∫ x in Ioi 0, exp (-b * x^2)`, for real `b`.
 theorem integral_gaussian_Ioi (b : ℝ) :
