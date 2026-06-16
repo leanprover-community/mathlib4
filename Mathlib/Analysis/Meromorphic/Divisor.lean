@@ -498,6 +498,11 @@ lemma divisor_sub_const_self {z₀ : 𝕜} {U : Set 𝕜} (h : z₀ ∈ U) : div
   congr 2
   <;> simp [sub_eq_add_neg]
 
+/-- Divisors are invariant under translation. -/
+@[simp] theorem divisor_fun_comp_sub_const_eq_divisor {c : 𝕜} {f : 𝕜 → E} :
+    divisor (fun z ↦ f (z - c)) {x | x - c ∈ U} (z + c) = divisor f U z :=
+  divisor_comp_sub_const_eq_divisor
+
 /-- Divisors are invariant under translation, special case where the set is a ball.. -/
 @[simp] theorem divisor_ball_comp_add_const_eq_divisor_ball {c : 𝕜} {R : ℝ} {f : 𝕜 → E} :
     divisor (f ∘ (· - c)) (ball c R) (z + c) = divisor f (ball 0 R) z := by
