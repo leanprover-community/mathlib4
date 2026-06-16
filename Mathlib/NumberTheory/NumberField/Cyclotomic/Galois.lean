@@ -102,7 +102,8 @@ end restrict
 
 section stabilizer
 
-open Pointwise MulAction Ideal
+open scoped Pointwise
+open MulAction Ideal
 
 variable (p : ℕ) [hp : Fact (Nat.Prime p)] (P : Ideal (𝓞 K)) [P.IsMaximal]
   [P.LiesOver (Ideal.span {(p : ℤ)})] (hn : p.Coprime n)
@@ -179,7 +180,12 @@ theorem mem_subgroupGalEquivSubgroupChar_symm_iff (σ : Gal(K/ℚ))
     MulEquiv.coe_mapSubgroup, Subgroup.mem_map_equiv, MulEquiv.symm_symm,
     mem_subgroupOrderIsoSubgroupMulChar_symm_iff]
 
-variable [IsGalois ℚ K]
+theorem card_subgroupGalEquivSubgroupChar [IsMulCommutative Gal(K/ℚ)] (H : Subgroup Gal(K/ℚ)) :
+    Nat.card (subgroupGalEquivSubgroupChar n K R H).ofDual = Nat.card (Gal(K/ℚ) ⧸ H) := by
+  rw [subgroupGalEquivSubgroupChar, OrderIso.trans_apply, card_subgroupOrderIsoSubgroupMulChar]
+  exact Nat.card_congr (QuotientGroup.congr _ _ (galEquivZMod n K) rfl).symm.toEquiv
+
+variable [IsAbelianGalois ℚ K]
 
 /--
 The bijection between the intermediate fields of `ℚ(ζₙ)/ℚ` and the subgroups of the group
@@ -189,6 +195,16 @@ noncomputable def intermediateFieldEquivSubgroupChar :
     IntermediateField ℚ K ≃o Subgroup (DirichletCharacter R n) :=
   IsGalois.intermediateFieldEquivSubgroup.trans <|
       (subgroupGalEquivSubgroupChar n K R).dual.trans (OrderIso.dualDual _).symm
+
+/-- The cardinality of the subgroup of Dirichlet characters of level `n` associated to an
+intermediate field `F` of `ℚ(ζₙ)/ℚ` equals the degree `[F : ℚ]`. -/
+theorem card_intermediateFieldEquivSubgroupChar (F : IntermediateField ℚ K) :
+    Nat.card (intermediateFieldEquivSubgroupChar n K R F) = Module.finrank ℚ F := by
+  unfold intermediateFieldEquivSubgroupChar
+  rw [OrderIso.trans_apply, OrderIso.trans_apply, OrderIso.dualDual_symm_apply,
+    IsGalois.intermediateFieldEquivSubgroup_apply, OrderIso.dual_apply, OrderDual.ofDual_toDual,
+    OrderDual.ofDual_toDual, card_subgroupGalEquivSubgroupChar, finrank_eq_fixingSubgroup_index,
+    ← Subgroup.index_eq_card]
 
 @[simp]
 theorem mem_intermediateFieldEquivSubgroupChar_iff (F : IntermediateField ℚ K)

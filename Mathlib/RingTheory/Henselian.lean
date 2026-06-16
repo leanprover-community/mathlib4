@@ -54,7 +54,7 @@ https://gist.github.com/jcommelin/47d94e4af092641017a97f7f02bf9598
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -200,12 +200,12 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         intro n
         haveI := isLocalHom_of_le_jacobson_bot I (IsAdicComplete.le_jacobson_bot I)
         apply IsUnit.of_map (Ideal.Quotient.mk I)
-        convert h₂ using 1
+        convert! h₂ using 1
         exact SModEq.def.mp ((hc_mod n).eval _)
       have hfcI : ∀ n, f.eval (c n) ∈ I ^ (n + 1) := by
         intro n
         induction n with
-        | zero => simpa only [Nat.rec_zero, zero_add, pow_one] using h₁
+        | zero => simpa only [Nat.rec_zero, zero_add, pow_one] using! h₁
         | succ n ih => ?_
         rw [← taylor_eval_sub (c n), hc, sub_eq_add_neg, sub_eq_add_neg,
           add_neg_cancel_comm]

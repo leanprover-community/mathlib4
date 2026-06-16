@@ -86,7 +86,7 @@ lemma three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : ℤ} (ha : a ≠ 0)
     refine IsCoprime.neg_neg ?_
     rw [add_comm (a ^ 3), add_assoc, add_comm (a ^ 3), ← add_assoc] at HF
     refine isCoprime_of_gcd_eq_one_of_FLT ?_ HF
-    convert Hgcd using 2
+    convert! Hgcd using 2
     rw [Finset.pair_comm, Finset.insert_comm]
   by_contra! h3b
   by_cases h3c : 3 ∣ c
@@ -433,7 +433,7 @@ lemma associated_of_dvd_a_add_b_of_dvd_a_add_eta_sq_mul_b {p : 𝓞 K} (hp : Pri
   rw [← one_mul S.a] at hpaηsqb
   have := dvd_mul_sub_mul_mul_gcd_of_dvd hpab hpaηsqb
   rw [one_mul, mul_one, IsUnit.dvd_mul_right <| (gcd_isUnit_iff _ _).2 S.coprime, ← dvd_neg] at this
-  convert dvd_mul_of_dvd_left this η using 1
+  convert! dvd_mul_of_dvd_left this η using 1
   rw [eta_sq, neg_sub, sub_mul, sub_mul, neg_mul, ← pow_two, eta_sq, coe_eta]
   ring
 
@@ -446,7 +446,7 @@ lemma associated_of_dvd_a_add_eta_mul_b_of_dvd_a_add_eta_sq_mul_b {p : 𝓞 K} (
   rw [← one_mul S.a] at hpaηsqb
   have := dvd_mul_sub_mul_mul_gcd_of_dvd hpaηb hpaηsqb
   rw [one_mul, mul_one, IsUnit.dvd_mul_right <| (gcd_isUnit_iff _ _).2 S.coprime] at this
-  convert (dvd_mul_of_dvd_left (dvd_mul_of_dvd_left this η) η) using 1
+  convert! (dvd_mul_of_dvd_left (dvd_mul_of_dvd_left this η) η) using 1
   symm
   calc _ = (-η.1 - 1 - η) * (-η - 1) := by rw [eta_sq, mul_assoc, ← pow_two, eta_sq]
   _ = 2 * η.1 ^ 2 + 3 * η + 1 := by ring
@@ -557,7 +557,7 @@ lemma x_mul_y_mul_z_eq_u_mul_w_cube : S.x * S.y * S.z = S.u * S.w ^ 3 := by
       mul_assoc] at hh
     simp only [mul_eq_mul_left_iff, pow_eq_zero_iff', hζ.zeta_sub_one_prime'.ne_zero, ne_eq,
       mul_eq_zero, OfNat.ofNat_ne_zero, false_or, false_and, or_false] at hh
-    convert hh using 1
+    convert! hh using 1
     ring
   simp only [← x_spec, mul_assoc, ← y_spec, ← z_spec]
   rw [mul_comm 3, pow_mul, ← mul_pow, ← w_spec, ← S.H, a_cube_add_b_cube_eq_mul]

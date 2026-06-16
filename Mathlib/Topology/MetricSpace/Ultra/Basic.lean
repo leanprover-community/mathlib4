@@ -37,7 +37,7 @@ TODO: Generalize to ultrametric uniformities
 ultrametric, nonarchimedean
 -/
 
-@[expose] public section
+public section
 
 variable {X : Type*}
 
@@ -163,7 +163,7 @@ lemma frontier_closedBall_eq_empty {r : ℝ} (hr : r ≠ 0) : frontier (closedBa
   isClopen_iff_frontier_eq_empty.mp (isClopen_closedBall x hr)
 
 lemma isOpen_sphere {r : ℝ} (hr : r ≠ 0) : IsOpen (sphere x r) := by
-  rw [← closedBall_diff_ball, sdiff_eq]
+  rw [← closedBall_sdiff_ball, sdiff_eq]
   exact (isOpen_closedBall x hr).inter (isClosed_ball x r).isOpen_compl
 
 lemma isClopen_sphere {r : ℝ} (hr : r ≠ 0) : IsClopen (sphere x r) :=

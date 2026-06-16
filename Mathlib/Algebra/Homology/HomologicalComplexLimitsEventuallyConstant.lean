@@ -20,7 +20,7 @@ isomorphism, and that `cf.π.app j` is a quasi-isomorphism in degree `q`.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Category Limits
 

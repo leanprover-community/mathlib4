@@ -133,7 +133,7 @@ theorem le_weight (w : σ → ℕ) {s : σ} (hs : w s ≠ 0) (f : σ →₀ ℕ)
   classical
   simp only [weight_apply, Finsupp.sum]
   by_cases h : s ∈ f.support
-  · rw [Finset.sum_eq_add_sum_diff_singleton_of_mem h]
+  · rw [Finset.sum_eq_add_sum_sdiff_singleton_of_mem h]
     refine le_trans ?_ (Nat.le_add_right _ _)
     apply Nat.le_mul_of_pos_right
     exact Nat.zero_lt_of_ne_zero hs
@@ -154,7 +154,7 @@ theorem le_weight_of_ne_zero (hw : ∀ s, 0 ≤ w s) {s : σ} {f : σ →₀ ℕ
   · apply le_smul_of_one_le_left (hw s)
     exact Nat.one_le_iff_ne_zero.mpr hs
   · rw [← Finsupp.mem_support_iff] at hs
-    rw [Finset.sum_eq_add_sum_diff_singleton_of_mem hs]
+    rw [Finset.sum_eq_add_sum_sdiff_singleton_of_mem hs]
     exact le_add_of_nonneg_right <| Finset.sum_nonneg <|
       fun i _ ↦ nsmul_nonneg (hw i) (f i)
 
@@ -165,9 +165,8 @@ section CanonicallyOrderedAddCommMonoid
 variable {M : Type*} [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
   [CanonicallyOrderedAdd M] (w : σ → M)
 
-theorem le_weight_of_ne_zero' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :
-    w s ≤ weight w f :=
-  le_weight_of_ne_zero (fun _ ↦ zero_le _) hs
+theorem le_weight_of_ne_zero' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) : w s ≤ weight w f :=
+  le_weight_of_ne_zero (fun _ ↦ zero_le) hs
 
 /-- If `M` is a `CanonicallyOrderedAddCommMonoid`, then `weight f` is zero iff `f = 0`. -/
 theorem weight_eq_zero_iff_eq_zero
@@ -266,13 +265,14 @@ lemma range_single_one :
     obtain ⟨a, rfl⟩ := (Finsupp.sum_eq_one_iff _).mp hp
     use a
 
-theorem degree_mapDomain_eq_of_subsingletonAddUnits {τ : Type*} (f : σ → τ) [AddCommMonoid M]
-    [Subsingleton (AddUnits M)] (x : σ →₀ M) : degree (x.mapDomain f) = degree x := by
-  classical
-  trans (x.mapDomain f).sum (fun _ ↦ id)
-  · simp [degree, sum]
-  · simpa [sum, mapDomain_support_of_subsingletonAddUnits, degree] using Finset.sum_image' _
-      (fun _ _ ↦ mapDomain_apply_eq_sum ..)
+@[simp]
+theorem degree_mapDomain {τ : Type*} (f : σ → τ) [AddCommMonoid M] (x : σ →₀ M) :
+    degree (x.mapDomain f) = degree x := by
+  simp [mapDomain, sum]
+  dsimp [degree_apply]
+
+@[deprecated (since := "2026-04-27")]
+alias degree_mapDomain_eq_of_subsingletonAddUnits := degree_mapDomain
 
 theorem degree_comapDomain_le_of_canonicallyOrderedAdd {τ : Type*} {f : σ → τ} [AddCommMonoid M]
     [PartialOrder M] [CanonicallyOrderedAdd M] {x : τ →₀ M} (hf : Set.InjOn f (f ⁻¹' x.support)) :

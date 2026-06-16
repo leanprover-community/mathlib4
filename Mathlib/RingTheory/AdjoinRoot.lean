@@ -177,7 +177,7 @@ lemma ringHom_ext {f g : AdjoinRoot p →+* T} (hAlg : f.comp (of p) = g.comp (o
     (hRoot : f (root p) = g (root p)) : f = g := by
   apply Ideal.Quotient.ringHom_ext
   ext x
-  · simpa using congr($(hAlg) x)
+  · simpa using! congr($(hAlg) x)
   · simpa
 
 @[ext high] -- This should have higher precedence than `AlgHom.ext`.
@@ -344,7 +344,7 @@ section AdjoinInv
 
 @[simp]
 theorem root_isInv (r : R) : of _ r * root (C r * X - 1) = 1 := by
-  convert sub_eq_zero.1 ((eval₂_sub _).symm.trans <| eval₂_root <| C r * X - 1) <;>
+  convert! sub_eq_zero.1 ((eval₂_sub _).symm.trans <| eval₂_root <| C r * X - 1) <;>
     simp only [eval₂_mul, eval₂_C, eval₂_X, eval₂_one]
 
 theorem algHom_subsingleton {S : Type*} [CommRing S] [Algebra R S] {r : R} :
@@ -419,7 +419,7 @@ lemma mapAlgHom_comp_mapAlghom (f : S →ₐ[R] T) (g : T →ₐ[R] U) (p : S[X]
     (hf hg) :
     (mapAlgHom g q r hg).comp (mapAlgHom f p q hf) =
       mapAlgHom (g.comp f) p r
-        (hg.trans <| by simpa [Polynomial.map_map] using Polynomial.map_dvd g.toRingHom hf) := by
+        (hg.trans <| by simpa [Polynomial.map_map] using! Polynomial.map_dvd g.toRingHom hf) := by
   aesop
 
 /-- `AdjoinRoot.map` as an `AlgEquiv`. -/
@@ -431,7 +431,7 @@ def mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h : Associated (p.map
       -- FIXME: Coercion hell. See https://github.com/leanprover-community/mathlib4/issues/31365.
       have : (RingHomClass.toRingHom f.toRingEquiv.symm).comp (RingHomClass.toRingHom f) =
         .id S := by ext; exact f.symm_apply_apply _
-      simpa [Polynomial.map_map, this] using map_dvd f.symm.toRingHom h.dvd)
+      simpa [Polynomial.map_map, -RingEquiv.symm_mk, this] using! map_dvd f.symm.toRingHom h.dvd)
     (by ext <;> simp) (by ext <;> simp)
 
 @[simp] lemma coe_mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h) :
@@ -442,7 +442,8 @@ def mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h : Associated (p.map
       -- FIXME: Coercion hell. See https://github.com/leanprover-community/mathlib4/issues/31365.
       have : (RingHomClass.toRingHom f.toRingEquiv.symm).comp (RingHomClass.toRingHom f) =
         .id S := by ext; exact f.symm_apply_apply _
-      simpa [Polynomial.map_map, this] using associated_map_map f.symm.toRingHom h.symm) := rfl
+      simpa [Polynomial.map_map, -RingEquiv.symm_mk, this]
+        using! associated_map_map f.symm.toRingHom h.symm) := rfl
 
 variable (R) in
 /-- The canonical algebraic homomorphism from `AdjoinRoot f` to `AdjoinRoot g`, where
@@ -599,7 +600,7 @@ def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
         funext fun i => by
           nontriviality R
           simp only [modByMonicHom_mk]
-          rw [(modByMonic_eq_self_iff hg).mpr, finset_sum_coeff]
+          rw [(modByMonic_eq_self_iff hg).mpr, finsetSum_coeff]
           · simp_rw [coeff_monomial, Fin.val_eq_val, Finset.sum_ite_eq', if_pos (Finset.mem_univ _)]
           · simp_rw [← C_mul_X_pow_eq_monomial]
             exact (degree_eq_natDegree <| hg.ne_zero).symm ▸ degree_sum_fin_lt _ }
@@ -956,7 +957,6 @@ noncomputable def quotEquivQuotMap (f : R[X]) (I : Ideal R) :
       rw [this, quotAdjoinRootEquivQuotPolynomialQuot_mk_of, map_C, Quotient.alg_map_eq]
       simp only [RingHom.comp_apply, Quotient.algebraMap_eq, Polynomial.algebraMap_apply])
 
-@[simp]
 theorem quotEquivQuotMap_apply_mk (f g : R[X]) (I : Ideal R) :
     AdjoinRoot.quotEquivQuotMap f I (Ideal.Quotient.mk (Ideal.map (of f) I) (AdjoinRoot.mk f g)) =
       Ideal.Quotient.mk (Ideal.span ({Polynomial.map (Ideal.Quotient.mk I) f} : Set (R ⧸ I)[X]))

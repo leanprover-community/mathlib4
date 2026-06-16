@@ -8,8 +8,8 @@ module
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.MeasureTheory.Measure.Tight
 
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-import Mathlib.Order.CompletePartialOrder
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
+import Mathlib.Order.Filter.ENNReal
 
 /-!
 # Tight sets of measures in normed spaces
@@ -49,7 +49,7 @@ variable [PseudoMetricSpace E]
 lemma tendsto_measure_compl_closedBall_of_isTightMeasureSet (hS : IsTightMeasureSet S) (x : E) :
     Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ (Metric.closedBall x r)ᶜ) atTop (𝓝 0) := by
   suffices Tendsto ((⨆ μ ∈ S, μ) ∘ (fun r ↦ (Metric.closedBall x r)ᶜ)) atTop (𝓝 0) by
-    convert this with r
+    convert! this with r
     simp
   refine hS.comp <| .mono_right ?_ <| monotone_smallSets Metric.cobounded_le_cocompact
   exact (Metric.hasAntitoneBasis_cobounded_compl_closedBall _).tendsto_smallSets
@@ -78,7 +78,7 @@ variable [NormedAddCommGroup E]
 lemma tendsto_measure_norm_gt_of_isTightMeasureSet (hS : IsTightMeasureSet S) :
     Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ {x | r < ‖x‖}) atTop (𝓝 0) := by
   have h := tendsto_measure_compl_closedBall_of_isTightMeasureSet hS 0
-  convert h using 6 with r
+  convert! h using 6 with r
   ext
   simp
 
@@ -86,7 +86,7 @@ lemma isTightMeasureSet_of_tendsto_measure_norm_gt [ProperSpace E]
     (h : Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ {x | r < ‖x‖}) atTop (𝓝 0)) :
     IsTightMeasureSet S := by
   refine isTightMeasureSet_of_tendsto_measure_compl_closedBall (x := 0) ?_
-  convert h using 6 with r
+  convert! h using 6 with r
   ext
   simp
 
@@ -123,7 +123,7 @@ lemma isTightMeasureSet_range_iff_tendsto_limsup_measure_norm_gt :
       ↔ Tendsto (fun r : ℝ ↦ limsup (fun n ↦ μ n {x | r < ‖x‖}) atTop) atTop (𝓝 0) := by
   refine ⟨fun h ↦ ?_, isTightMeasureSet_range_of_tendsto_limsup_measure_norm_gt⟩
   have h_sup := tendsto_measure_norm_gt_of_isTightMeasureSet h
-  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h_sup (fun _ ↦ zero_le _) ?_
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h_sup (fun _ ↦ zero_le) ?_
   intro r
   simp_rw [iSup_range]
   exact limsup_le_iSup
@@ -139,7 +139,7 @@ lemma isTightMeasureSet_of_forall_basis_tendsto (b : OrthonormalBasis ι 𝕜 E)
     IsTightMeasureSet S := by
   rcases subsingleton_or_nontrivial E with hE | hE
   · simp only [IsTightMeasureSet, cocompact_eq_bot, smallSets_bot]
-    convert tendsto_pure_nhds (a := ∅) _
+    convert! tendsto_pure_nhds (a := ∅) _
     simp
   have h_rank : (0 : ℝ) < Fintype.card ι := by
     simpa [← Module.finrank_eq_card_basis b.toBasis, Module.finrank_pos_iff]
@@ -166,9 +166,9 @@ lemma isTightMeasureSet_of_forall_basis_tendsto (b : OrthonormalBasis ι 𝕜 E)
       refine iSup_le fun μ ↦ (iSup_le fun hμS ↦ ?_)
       gcongr with i
       exact le_biSup (fun μ ↦ μ {x | r / √(Fintype.card ι) < ‖⟪b i, x⟫_𝕜‖}) hμS
-  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_ (fun _ ↦ zero_le _) h_le
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_ (fun _ ↦ zero_le) h_le
   rw [← Finset.sum_const_zero]
-  refine tendsto_finset_sum Finset.univ fun i _ ↦ (h i).comp ?_
+  refine tendsto_finsetSum Finset.univ fun i _ ↦ (h i).comp ?_
   exact tendsto_id.atTop_div_const (by positivity)
 
 variable (𝕜)
@@ -195,7 +195,7 @@ lemma isTightMeasureSet_iff_inner_tendsto :
     simp [not_lt.mpr hr]
   have h' : Tendsto (fun r ↦ ⨆ μ ∈ S, μ {x | r * ‖y‖⁻¹ < ‖x‖}) atTop (𝓝 0) :=
     h.comp <| (tendsto_mul_const_atTop_of_pos (by positivity)).mpr tendsto_id
-  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h' (fun _ ↦ zero_le _) ?_
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h' (fun _ ↦ zero_le) ?_
   intro r
   have h_le (μ : Measure E) : μ {x | r < ‖⟪y, x⟫_𝕜‖} ≤ μ {x | r * ‖y‖⁻¹ < ‖x‖} := by
     refine measure_mono fun x hx ↦ ?_
@@ -232,7 +232,7 @@ lemma isTightMeasureSet_range_iff_tendsto_limsup_inner :
   refine ⟨fun h z ↦ ?_, isTightMeasureSet_range_of_tendsto_limsup_inner 𝕜⟩
   rw [isTightMeasureSet_iff_inner_tendsto 𝕜] at h
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds (h z)
-    (fun _ ↦ zero_le _) fun r ↦ ?_
+    (fun _ ↦ zero_le) fun r ↦ ?_
   simp_rw [iSup_range]
   exact limsup_le_iSup
 
@@ -252,7 +252,7 @@ lemma isTightMeasureSet_range_of_tendsto_limsup_inner_of_norm_eq_one
     · simp only [norm_smul, norm_inv, norm_algebraMap', Real.norm_eq_abs, abs_norm]
       rw [inv_mul_cancel₀ (by positivity)]
     exact h.comp <| (tendsto_const_mul_atTop_of_pos (by positivity)).mpr tendsto_id
-  convert h' using 7 with r n x
+  convert! h' using 7 with r n x
   rw [inner_smul_left]
   simp only [map_inv₀, RCLike.conj_ofReal, norm_mul, norm_inv, norm_algebraMap', norm_norm]
   rw [mul_lt_mul_iff_right₀]
