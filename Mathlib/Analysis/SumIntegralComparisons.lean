@@ -33,6 +33,11 @@ At the moment it contains several lemmas in this direction, for antitone or mono
   by the integral of `f x * g (x - 1)` if `f` is monotone and `g` is antitone.
 * `integral_le_sum_mul_Ico_of_antitone_monotone`: the sum of `f i * g i` on an interval is bounded
   below by the integral of `f x * g (x - 1)` if `f` is antitone and `g` is monotone.
+* `AntitoneOn.summable_of_integrable`: a nonnegative antitone function that is integrable on
+  `(0, ∞)` is summable over `ℕ`.
+* `AntitoneOn.sum_range_le_integral`, `AntitoneOn.tsum_add_one_le_integral`,
+  `AntitoneOn.tsum_le_integral`: bounds on (partial) sums of a nonnegative antitone function by its
+  integral over `(0, ∞)`.
 
 ## Tags
 
@@ -241,7 +246,11 @@ lemma integral_le_sum_mul_Ico_of_antitone_monotone
       simp only [mem_Icc, tsub_le_iff_right, sub_add_cancel]
       exact ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans (by grind)⟩
   · apply Integrable.mono_measure _ (Measure.restrict_mono_set _ Ico_subset_Icc_self)
-    apply (hf.integrableOn_isCompact isCompact_Icc).mul_of_top_left
-    apply MonotoneOn.memLp_isCompact isCompact_Icc
-    intros x hx y hy hxy
-    apply hg <;> grind
+    apply Integrable.mul_of_top_left
+    · exact hf.integrableOn_isCompact isCompact_Icc
+    · apply MonotoneOn.memLp_isCompact isCompact_Icc
+      intro x hx y hy hxy
+      apply hg
+      · simpa using hx
+      · simpa using hy
+      · simpa using hxy
