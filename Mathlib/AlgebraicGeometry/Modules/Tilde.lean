@@ -555,6 +555,12 @@ end IsLocalizing
 
 end IsQuasicoherent
 
+variable (X : Scheme.{u}) (M : X.Modules) (U : X.Opens)
+
+example : (M.restrict U.ι).IsQuasicoherent ↔ (M.over U).IsQuasicoherent := sorry
+
+#check M.restrict U.ι
+
 end AlgebraicGeometry
 
 namespace ModuleCat
