@@ -64,7 +64,7 @@ attribute [instance 1100, to_additive /-- See also `AddMonoid.toAddAction` -/] i
 /-- Like `Mul.toSMul`, but multiplies on the right.
 
 See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWithZero`. -/
-@[to_additive /-- Like `Add.toVAdd`, but adds on the right.
+@[no_expose, to_additive /-- Like `Add.toVAdd`, but adds on the right.
 
   See also `AddMonoid.toOppositeAddAction`. -/]
 instance (priority := 910) Mul.toSMulMulOpposite (α : Type*) [Mul α] : SMul αᵐᵒᵖ α where
@@ -74,10 +74,10 @@ instance (priority := 910) Mul.toSMulMulOpposite (α : Type*) [Mul α] : SMul α
 lemma smul_eq_mul {α : Type*} [Mul α] (a b : α) : a • b = a * b := rfl
 
 @[to_additive]
-lemma op_smul_eq_mul {α : Type*} [Mul α] (a b : α) : MulOpposite.op a • b = b * a := rfl
+lemma op_smul_eq_mul {α : Type*} [Mul α] (a b : α) : MulOpposite.op a • b = b * a := (rfl)
 
 @[to_additive (attr := simp)]
-lemma MulOpposite.smul_eq_mul_unop [Mul α] (a : αᵐᵒᵖ) (b : α) : a • b = b * a.unop := rfl
+lemma MulOpposite.smul_eq_mul_unop [Mul α] (a : αᵐᵒᵖ) (b : α) : a • b = b * a.unop := (rfl)
 
 /-- Type class for actions by additive semigroups, with notation `g +ᵥ p`.
 
