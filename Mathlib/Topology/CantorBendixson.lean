@@ -169,7 +169,7 @@ theorem perfectKernel_eq_iteratedDerivedSet_of_mem_fixedPoints
   · exact (gfpApprox_eq_of_mem_fixedPoints relDerivedSet hi ha).ge
 
 /-- Every perfect subset of a set is contained in its perfect kernel. -/
-theorem subset_perfectKernel_of_perfect
+theorem _root_.Perfect.subset_perfectKernel
     {P : Set X} (hP : Perfect P) (hPs : P ⊆ s) :
     P ⊆ perfectKernel s := by
   refine Set.subset_iInter fun i => ?_
@@ -187,9 +187,9 @@ theorem perfect_perfectKernel (hs : IsClosed s) :
 
 /-- Taking the perfect kernel of a closed set is idempotent. -/
 theorem perfectKernel_idem (hs : IsClosed s) :
-    perfectKernel (perfectKernel s) = perfectKernel s := by
-  exact subset_antisymm (perfectKernel_subset _) <|
-    subset_perfectKernel_of_perfect (perfect_perfectKernel hs) Subset.rfl
+    perfectKernel (perfectKernel s) = perfectKernel s :=
+  subset_antisymm (perfectKernel_subset _) <|
+    (perfect_perfectKernel hs).subset_perfectKernel Subset.rfl
 
 end
 
