@@ -4,6 +4,8 @@ public import Std
 public import Batteries
 public import Mathlib.Algebra.AddConstMap.Basic
 public import Mathlib.Algebra.AddConstMap.Equiv
+public import Mathlib.Algebra.AddTorsor.Basic
+public import Mathlib.Algebra.AddTorsor.Defs
 public import Mathlib.Algebra.AffineMonoid.Basic
 public import Mathlib.Algebra.AffineMonoid.Embedding
 public import Mathlib.Algebra.AffineMonoid.Irreducible
@@ -7499,6 +7501,7 @@ public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.Equicontinuity
 public import Mathlib.Topology.Algebra.Field
 public import Mathlib.Topology.Algebra.FilterBasis
+public import Mathlib.Topology.Algebra.Group.AddTorsor
 public import Mathlib.Topology.Algebra.Group.Basic
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 public import Mathlib.Topology.Algebra.Group.Compact
@@ -7613,6 +7616,7 @@ public import Mathlib.Topology.Algebra.Order.Support
 public import Mathlib.Topology.Algebra.Order.UpperLower
 public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.Algebra.PontryaginDual
+public import Mathlib.Topology.Algebra.ProperAction.AddTorsor
 public import Mathlib.Topology.Algebra.ProperAction.Basic
 public import Mathlib.Topology.Algebra.ProperAction.CompactlyGenerated
 public import Mathlib.Topology.Algebra.ProperAction.ProperlyDiscontinuous
