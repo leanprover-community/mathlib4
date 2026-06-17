@@ -1055,14 +1055,15 @@ theorem IsIsolated.not_isUniversal [Nontrivial V] {v : V} (h : G.IsIsolated v) (
   exact h.not_isIsolated v
 
 variable {G} in
-theorem IsUniversal.compl_isIsolated {v : V} (h : G.IsIsolated v) : Gᶜ.IsUniversal v := by
+theorem IsUniversal.of_isIsolated_compl {v : V} (h : Gᶜ.IsIsolated v) : G.IsUniversal v := by
   intro x hx
-  simp [hx, h x]
+  simpa [hx] using h x
 
 variable {G} in
-theorem IsIsolated.compl_isUniversal {v : V} (h : G.IsUniversal v) : Gᶜ.IsIsolated v := by
+theorem IsIsolated.of_isUniversal_compl {v : V} (h : Gᶜ.IsUniversal v) : G.IsIsolated v := by
   intro x
-  grind [compl_adj, @h x]
+  have := @h x
+  grind [compl_adj, Adj.ne]
 
 theorem eq_top_iff_forall_isUniversal : G = ⊤ ↔ ∀ v, G.IsUniversal v := by
   simp [eq_top_iff_forall_ne_adj, IsUniversal]
