@@ -525,7 +525,7 @@ theorem comap_comp (c : Con P) (g : N → P) (f : M → N) (hg) (hf) :
     c.comap (g ∘ f) (by grind) = (c.comap g hg).comap f hf := rfl
 
 @[to_additive]
-theorem le_comap_ringConGen (r : N → N → Prop) (f : M → N) (hf) :
+theorem le_comap_conGen (r : N → N → Prop) (f : M → N) (hf) :
     conGen (r.onFun f) ≤ (conGen r).comap f hf :=
   conGen_le.2 fun _ _ h => ConGen.Rel.of _ _ h
 
