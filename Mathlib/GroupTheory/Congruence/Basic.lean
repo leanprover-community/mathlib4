@@ -75,22 +75,11 @@ protected def congr {c d : Con M} (h : c = d) : c.Quotient ≃* d.Quotient :=
 theorem congr_mk {c d : Con M} (h : c = d) (a : M) :
     Con.congr h (a : c.Quotient) = (a : d.Quotient) := rfl
 
-@[to_additive]
-theorem le_comap_conGen {M N : Type*} [Mul M] [Mul N] (f : M → N)
-    (H : ∀ (x y : M), f (x * y) = f x * f y) (rel : N → N → Prop) :
-    conGen (fun x y ↦ rel (f x) (f y)) ≤ Con.comap f H (conGen rel) := by
-  intro x y h
-  simp only [Con.comap_rel]
-  exact .rec (fun x y h ↦ .of (f x) (f y) h) (fun x ↦ .refl (f x))
-    (fun _ h ↦ .symm h) (fun _ _ h1 h2 ↦ h1.trans h2) (fun {w x y z} _ _ h1 h2 ↦
-    (congrArg (fun a ↦ conGen rel a (f (x * z))) (H w y)).mpr
-    (((congrArg (fun a ↦ conGen rel (f w * f y) a) (H x z))).mpr
-    (.mul h1 h2))) h
 
 @[to_additive]
 theorem comap_conGen_equiv {M N : Type*} [Mul M] [Mul N] (f : MulEquiv M N) (rel : N → N → Prop) :
     Con.comap f (map_mul f) (conGen rel) = conGen (fun x y ↦ rel (f x) (f y)) := by
-  apply le_antisymm _ (le_comap_conGen f (map_mul f) rel)
+  apply le_antisymm _ (le_comap_conGen rel f (map_mul f))
   intro a b h
   simp only [Con.comap_rel] at h
   have H : ∀ n1 n2, (conGen rel) n1 n2 → ∀ a b, f a = n1 → f b = n2 →
