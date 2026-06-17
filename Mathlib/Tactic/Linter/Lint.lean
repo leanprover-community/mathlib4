@@ -11,8 +11,6 @@ module
 public import Batteries.Tactic.Lint -- shake: keep
 public import Lean.Linter.Deprecated
 public import Mathlib.Tactic.DeclarationNames
-public import Batteries.Tactic.Lint.Basic
-public meta import Batteries.Data.List.Basic
 
 /-!
 # Linters for Mathlib
@@ -100,7 +98,7 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
       if declName.hasMacroScopes || isPrivateName declName then continue
       let nm := declName.components
       -- Collect distinct components which appear more than once.
-      let duplicated := List.pwFilter (· ≠ ·) <| nm.filter (fun comp ↦ nm.count comp > 1)
+      let duplicated := List.eraseDups <| nm.filter (fun comp ↦ nm.count comp > 1)
       match duplicated with
       | [] => continue
       | [ns] =>
