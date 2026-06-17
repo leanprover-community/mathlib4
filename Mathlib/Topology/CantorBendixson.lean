@@ -56,7 +56,7 @@ Cantor-Bendixson derivative sequence of a closed set.
 
 @[expose] public section
 
-open Filter Set Cardinal OrdinalApprox
+open Filter Set Cardinal OrdinalApprox Function
 
 universe u
 
@@ -116,31 +116,19 @@ theorem iteratedDerivedSet_mono :
     Monotone (fun s : Set X => iteratedDerivedSet s) :=
   gfpApprox_mono_mid _
 
-/-- `stayOn s a` means that the iterated derived-set sequence of `s` is constant from stage `a`
-onward. -/
-abbrev stayOn (s : Set X) (a : Ordinal) : Prop :=
-  ∀ b : Ordinal, a ≤ b → sᵈ[b] = sᵈ[a]
-
-theorem stayOn.mono (h : stayOn s a) (hle : a ≤ b) :
-    stayOn s b := by
-  simp only [stayOn] at *
-  exact fun c hle' => by simpa [h b hle] using h c (le_trans hle hle')
-
-/-- If the iterated derived set stops changing at a successor stage, then it stays constant. -/
-theorem stayOn_of_iteratedDerivedSet_succ_eq (ha : sᵈ[a + 1] = sᵈ[a]) :
-    stayOn s a := by
-  intro b hab
-  apply gfpApprox_eq_of_mem_fixedPoints _ hab
-  rw [Function.mem_fixedPoints_iff, ← iteratedDerivedSet]
-  simpa using ha
+/-- If the iterated derived set stops changing at a successor stage, then `sᵈ[a]` is a fixed
+point of `relDerivSet`. -/
+theorem mem_fixedPoints_of_iteratedDerivedSet_succ_eq (ha : sᵈ[a + 1] = sᵈ[a]) :
+    sᵈ[a] ∈ fixedPoints relDerivedSet := by
+  rw [Function.mem_fixedPoints_iff]
+  simpa [iteratedDerivedSet_succ] using ha.symm
 
 variable (s)
 
-theorem iteratedDerivedSet_stay :
-    ∃ a : Ordinal, stayOn s a := by
-  exact ⟨(Order.succ #(Set X)).ord, fun b hb =>
-    gfpApprox_eq_of_mem_fixedPoints _ hb <|
-      gfpApprox_ord_mem_fixedPoint relDerivedSet relDerivedSet_subset⟩
+theorem iteratedDerivedSet_mem_fixedPoints :
+    ∃ a : Ordinal, sᵈ[a] ∈ fixedPoints relDerivedSet := by
+  refine ⟨(Order.succ #(Set X)).ord,
+    gfpApprox_ord_mem_fixedPoint relDerivedSet relDerivedSet_subset⟩
 
 /-- The perfect kernel of a set, defined as the intersection of all iterated derived sets. It is
 the largest perfect subset of the original set. -/
@@ -170,15 +158,15 @@ theorem perfectKernel_empty :
     perfectKernel (∅ : Set X) = ∅ := by
   simpa using perfectKernel_subset ∅
 
-/-- Once the iterated derived-set sequence stabilizes, the perfect kernel is equal to its eventual
-value. -/
-theorem perfectKernel_eq_iteratedDerivedSet_of_stayOn (ha : stayOn s a) :
+/-- Once `sᵈ[a]` is a fixed point of `relDerivSet`, the perfect kernel equals `sᵈ[a]`. -/
+theorem perfectKernel_eq_iteratedDerivedSet_of_mem_fixedPoints
+    (ha : sᵈ[a] ∈ fixedPoints relDerivedSet) :
     perfectKernel s = sᵈ[a] := by
   refine le_antisymm (perfectKernel_subset_iteratedDerivedSet s a) ?_
   refine Set.subset_iInter fun i => ?_
   rcases lt_or_ge i a with hi | hi
   · exact iteratedDerivedSet_antitone s hi.le
-  · simp [ha i hi]
+  · exact (gfpApprox_eq_of_mem_fixedPoints relDerivedSet hi ha).ge
 
 /-- Every perfect subset of a set is contained in its perfect kernel. -/
 theorem subset_perfectKernel_of_perfect
@@ -191,11 +179,11 @@ theorem subset_perfectKernel_of_perfect
 /-- The perfect kernel of a closed set is perfect. -/
 theorem perfect_perfectKernel (hs : IsClosed s) :
     Perfect (perfectKernel s) := by
-  obtain ⟨a, ha⟩ := iteratedDerivedSet_stay s
-  rw [perfectKernel_eq_iteratedDerivedSet_of_stayOn ha]
+  obtain ⟨a, ha⟩ := iteratedDerivedSet_mem_fixedPoints s
+  rw [perfectKernel_eq_iteratedDerivedSet_of_mem_fixedPoints ha]
   refine perfect_iff_eq_derivedSet.mpr ?_
-  simpa [iteratedDerivedSet_succ, (isClosed_iteratedDerivedSet hs a).relDerivedSet_eq] using
-    (ha (a + 1) le_self_add).symm
+  simpa [(isClosed_iteratedDerivedSet hs a).relDerivedSet_eq] using
+    (Function.mem_fixedPoints_iff.mp ha).symm
 
 /-- Taking the perfect kernel of a closed set is idempotent. -/
 theorem perfectKernel_idem (hs : IsClosed s) :
