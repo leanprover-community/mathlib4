@@ -54,10 +54,10 @@ instance autMulFiber (F : C ⥤ FintypeCat.{w}) (X : C) : MulAction (Aut X) (F.o
   smul σ a := F.map σ.hom a
   one_smul a := by
     change F.map (𝟙 X) a = a
-    simp only [map_id, FintypeCat.id_apply]
+    simp
   mul_smul g h a := by
     change F.map (h.hom ≫ g.hom) a = (F.map h.hom ≫ F.map g.hom) a
-    simp only [map_comp, FintypeCat.comp_apply]
+    simp
 
 variable [GaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
 
