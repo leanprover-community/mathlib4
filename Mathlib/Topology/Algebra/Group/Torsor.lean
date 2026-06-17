@@ -101,10 +101,11 @@ def Homeomorph.smulConst (p : P) : V ≃ₜ P where
 /-- The map `p' ↦ p /ₛ p'` as a homeomorphism: `Equiv.constSDiv` as a homeomorphism -/
 @[to_additive (attr := simps!)
 /-- The map `p' ↦ p -ᵥ p'` as a homeomorphism: `Equiv.constVSub` as a homeomorphism -/]
-def Homeomorph.constSDiv (p : P) : P ≃ₜ V := by
-  let : ContinuousInv V :=
-    IsTopologicalTorsor.to_isTopologicalGroup (V := V) (P := P) |>.toContinuousInv
-  exact { toEquiv := Equiv.constSDiv p }
+def Homeomorph.constSDiv (p : P) : P ≃ₜ V where
+  toEquiv := Equiv.constSDiv p
+  continuous_invFun := by
+    have := IsTopologicalTorsor.to_isTopologicalGroup V P
+    fun_prop
 
 /-- `Equiv.pointReflection` as a homeomorphism -/
 def Homeomorph.pointReflection {V P : Type*} [AddGroup V] [TopologicalSpace V] [AddTorsor V P]

@@ -509,8 +509,8 @@ variable {P₁}
 
 open Function
 
-/-- Point reflection in `x` as a permutation:
-this is `Equiv.pointReflection` as an affine equivalence. -/
+/-- The affine equivalence given by reflection about the point `x`.
+This is `Equiv.pointReflection` as an `AffineEquiv`. -/
 def pointReflection (x : P₁) : P₁ ≃ᵃ[k] P₁ :=
   (constVSub k x).trans (vaddConst k x)
 

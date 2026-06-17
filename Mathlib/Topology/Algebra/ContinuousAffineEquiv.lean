@@ -312,8 +312,8 @@ section
 variable (k)
 variable [TopologicalSpace V₁] [IsTopologicalAddTorsor P₁]
 
-/-- Point reflection in `x` as a permutation:
-this is `Equiv.pointReflection` as a continuous affine equivalence. -/
+/-- The affine homeomorphism given by reflection about the point `x`. 
+This is `Equiv.pointReflection` as a `ContinuousAffineEquiv`. -/
 @[simps toAffineEquiv]
 def pointReflection (x : P₁) : P₁ ≃ᴬ[k] P₁ where
   toAffineEquiv := AffineEquiv.pointReflection k x
