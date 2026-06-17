@@ -211,6 +211,8 @@ theorem mk_smul {α : Type*} [MulAction (GL n R) α] (h) (g : GL n R) (a : α) :
     mk g • a = g • a := by
   rfl
 
+/-- The monoid hom between `PGL(n, R)` and `PGL(n, S)` induced by a
+  ring homomorphism `f : R →+* S`. -/
 abbrev map {S : Type*} [CommRing S] (f : R →+* S) : PGL(n, R) →* PGL(n, S) :=
   QuotientGroup.map _ _ (GeneralLinearGroup.map (n := n) f) <| fun u hu ↦ by
     simp only [GeneralLinearGroup.center_eq_range_scalar, MonoidHom.mem_range,
