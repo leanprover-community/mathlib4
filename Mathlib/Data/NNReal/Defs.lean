@@ -24,7 +24,7 @@ a.k.a. the interval `[0, ∞)`. We also define the following operations and stru
   complete linear ordered archimedean commutative semifield; we have no typeclass for this in
   `mathlib` yet, so we define the following instances instead:
 
-  - `LinearOrderedSemiring ℝ≥0`;
+  - `IsOrderedRing ℝ≥0`;
   - `OrderedCommSemiring ℝ≥0`;
   - `CanonicallyOrderedAdd ℝ≥0`;
   - `LinearOrderedCommGroupWithZero ℝ≥0`;
@@ -126,6 +126,8 @@ noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 where
 
 example {p q : ℝ≥0} (h1p : 0 < p) (h2p : p ≤ q) : q⁻¹ ≤ p⁻¹ := by
   with_reducible_and_instances exact inv_anti₀ h1p h2p
+
+@[simp] lemma mk_coe (a : ℝ≥0) (ha : 0 ≤ (a : ℝ)) : NNReal.mk (a : ℝ) ha = a := rfl
 
 -- Simp lemma to put back `n.val` into the normal form given by the coercion.
 @[simp]
