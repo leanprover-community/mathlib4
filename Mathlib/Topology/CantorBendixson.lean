@@ -99,7 +99,7 @@ theorem iteratedDerivedSet_constant_iff_preperfect :
   simp [iteratedDerivedSet]
 
 theorem isClosed_iteratedDerivedSet (hs : IsClosed s) :
-    ∀ a : Ordinal, IsClosed (sᵈ[a]) := by
+    ∀ a : Ordinal, IsClosed sᵈ[a] := by
   intro a
   induction a using Ordinal.limitRecOn with
   | zero => simpa only [iteratedDerivedSet_zero]
