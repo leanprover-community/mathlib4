@@ -531,7 +531,7 @@ non-zero-divisor. -/
 lemma LinearIndependent.update {ι : Type*} [DecidableEq ι] {R G : Type*} [CommRing R]
     [AddCommGroup G] [Module R G]
     {f : ι → G} (hf : LinearIndependent R f) (i : ι) (g : G) (l : ι →₀ R)
-    (r : R) (hσ : r ∈ nonZeroDivisors R) (hg : r • g = linearCombination R f l)
+    (r : R) (hr : r ∈ nonZeroDivisors R) (hg : r • g = linearCombination R f l)
     (hl : l i ∈ nonZeroDivisors R) :
     LinearIndependent R (Function.update f i g) := by
   rw [linearIndependent_iff] at hf ⊢
