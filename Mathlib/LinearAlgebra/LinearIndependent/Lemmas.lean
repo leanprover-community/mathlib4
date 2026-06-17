@@ -530,18 +530,18 @@ by `g` keeps the family linearly independent, provided the `i`-th coefficient `l
 non-zero-divisor. -/
 lemma LinearIndependent.update {ι : Type*} [DecidableEq ι] {R G : Type*} [CommRing R]
     [AddCommGroup G] [Module R G]
-    (f : ι → G) (l : ι →₀ R) (i : ι) (g : G) (σ : R)
-    (hσ : σ ∈ nonZeroDivisors R) (hg : σ • g = linearCombination R f l)
+    (f : ι → G) (l : ι →₀ R) (i : ι) (g : G) (r : R)
+    (hσ : r ∈ nonZeroDivisors R) (hg : r • g = linearCombination R f l)
     (hl : l i ∈ nonZeroDivisors R) (hf : LinearIndependent R f) :
     LinearIndependent R (Function.update f i g) := by
   rw [linearIndependent_iff] at hf ⊢
   intros l' hl'
-  apply_fun (σ • ·) at hl'
+  apply_fun (r • ·) at hl'
   simp_rw [Pi.update_eq_sub_add_single, ← bilinearCombination_apply _ (S := R), map_add, map_sub,
     bilinearCombination_apply, LinearMap.add_apply, LinearMap.sub_apply,
-    linearCombination_single_index, smul_add, smul_sub, smul_zero, smul_comm σ (l' i) g,
+    linearCombination_single_index, smul_add, smul_sub, smul_zero, smul_comm r (l' i) g,
     hg, ← LinearMap.map_smul, smul_smul, ← linearCombination_single, ← map_sub, ← map_add] at hl'
-  replace hl' : ∀ j, (σ * l' j - (single i (σ * l' i)) j) + l' i * l j = 0 :=
+  replace hl' : ∀ j, (r * l' j - (single i (r * l' i)) j) + l' i * l j = 0 :=
     fun j ↦ DFunLike.congr_fun (hf _ hl') j
   grind [mem_nonZeroDivisors_iff]
 
