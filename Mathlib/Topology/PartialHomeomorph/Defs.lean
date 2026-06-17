@@ -95,8 +95,6 @@ theorem continuousOn_symm : ContinuousOn e.symm e.target :=
 @[simp]
 theorem coe_mk (e : PartialEquiv X Y) (h₁ h₂) : (PartialHomeomorph.mk e h₁ h₂ : X → Y) = e := rfl
 
-@[deprecated (since := "2026-05-20")] alias mk_coe := coe_mk
-
 @[simp]
 theorem coe_mk_symm (e : PartialEquiv X Y) (h₁ h₂) :
     ((PartialHomeomorph.mk e h₁ h₂).symm : Y → X) = e.symm :=
