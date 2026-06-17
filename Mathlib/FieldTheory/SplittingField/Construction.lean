@@ -214,7 +214,7 @@ end SplittingFieldAux
 def SplittingField (f : K[X]) :=
   MvPolynomial (SplittingFieldAux f.natDegree f) K ⧸
     RingHom.ker (MvPolynomial.aeval (R := K) id).toRingHom
-deriving Inhabited, CommRing
+deriving Inhabited
 
 namespace SplittingField
 
@@ -222,6 +222,11 @@ variable (f : K[X])
 
 variable {S : Type*} [DistribSMul S K] [IsScalarTower S K K] in
 deriving instance SMul S for SplittingField f
+
+instance : CommRing (SplittingField f) where
+  nsmul := letI := instSMulOfIsScalarTower f (S := ℕ); (· • ·)
+  zsmul := letI := instSMulOfIsScalarTower f (S := ℤ); (· • ·)
+  __ : CommRing (SplittingField f) := inferInstanceAs <| CommRing (_ ⧸ _)
 
 variable {R : Type*} [CommSemiring R] [Algebra R K] in
 deriving instance Algebra R, IsScalarTower R K for SplittingField f
