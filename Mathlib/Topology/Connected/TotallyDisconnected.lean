@@ -353,3 +353,12 @@ theorem IsPreconnected.eqOn_const_of_mapsTo {S : Set α} (hS : IsPreconnected S)
   rcases S.eq_empty_or_nonempty with (rfl | ⟨x, hx⟩)
   · exact hne.imp fun _ hy => ⟨hy, eqOn_empty _ _⟩
   · exact ⟨f x, hTm hx, fun x' hx' => hS.constant_of_mapsTo hT hc hTm hx' hx⟩
+
+theorem IsPreconnected.isDiscrete_iff_subsingleton {S : Set α} (hS : IsPreconnected S) :
+    IsDiscrete S ↔ S.Subsingleton where
+  mp h := by
+    have : DiscreteTopology S := isDiscrete_iff_discreteTopology.mp h
+    have : PreconnectedSpace S := isPreconnected_iff_preconnectedSpace.mp hS
+    have : Subsingleton S := subsingleton_of_preconnected_totallyDisconnected
+    simpa using this
+  mpr h := h.isDiscrete

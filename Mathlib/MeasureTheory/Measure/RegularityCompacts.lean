@@ -78,9 +78,10 @@ theorem innerRegularWRT_of_exists_compl_lt {p q : Set α → Prop} (hpq : ∀ A 
     obtain ⟨K', hpK', hK'_lt⟩ := hμ (μ A - r) (tsub_pos_of_lt hr)
     refine ⟨K' ∩ A, hpq K' A hpK' hA, inter_subset_right, ?_⟩
     · refine (measure_mono fun x ↦ ?_).trans_lt hK'_lt
-      simp only [diff_inter_self_eq_diff, mem_diff, mem_compl_iff, and_imp, imp_self, imp_true_iff]
+      simp only [sdiff_inter_self_eq_sdiff, mem_sdiff, mem_compl_iff, and_imp, imp_self,
+        imp_true_iff]
   refine ⟨K, hK_subset, hK, ?_⟩
-  have h_lt' : μ A - μ K < μ A - r := le_measure_diff.trans_lt h_lt
+  have h_lt' : μ A - μ K < μ A - r := le_measure_sdiff.trans_lt h_lt
   exact lt_of_tsub_lt_tsub_left h_lt'
 
 theorem innerRegularWRT_isCompact_closure_of_univ [TopologicalSpace α]
@@ -214,7 +215,7 @@ theorem innerRegular_isCompact_isClosed_measurableSet_of_finite [TopologicalSpac
   refine Measure.InnerRegularWRT.measurableSet_of_isOpen ?_ ?_
   · exact innerRegularWRT_isCompact_isClosed_isOpen P
   · rintro s t ⟨hs_compact, hs_closed⟩ ht_open
-    rw [diff_eq]
+    rw [sdiff_eq]
     exact ⟨hs_compact.inter_right ht_open.isClosed_compl,
       hs_closed.inter (isClosed_compl_iff.mpr ht_open)⟩
 
