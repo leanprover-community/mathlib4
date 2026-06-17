@@ -85,12 +85,9 @@ private theorem forall_le_or_forall_le_of_forall_le_abs {a b : ℝ}
     {L : ℝ} (hL : 0 < L) {f : ℝ → ℝ} (hfcont : ContinuousOn f [[a, b]])
     (hf : ∀ x ∈ [[a, b]], L ≤ |f x|) :
     (∀ x ∈ [[a, b]], L ≤ f x) ∨ (∀ x ∈ [[a, b]], L ≤ -f x) := by
-  rcases isPreconnected_uIcc.mapsTo_Ioi_or_Iio (b := (0 : ℝ)) hfcont
-      (fun x hx h ↦ not_le_of_gt hL <| by simpa [h] using hf x hx) with hp | hn
-  · left; intro x hx
-    simpa [abs_of_nonneg (show 0 ≤ f x from (hp hx).le)] using hf x hx
-  · right; intro x hx
-    simpa [le_neg, abs_of_nonpos (show f x ≤ 0 from (hn hx).le)] using hf x hx
+  obtain (h | h) := isPreconnected_uIcc.mapsTo_Ioi_or_Iio (b := (0 : ℝ)) hfcont
+    (fun x hx h ↦ not_le_of_gt hL <| by simpa [h] using hf x hx)
+  all_goals grind [MapsTo]
 
 /-- Auxiliary lemma used in the higher-order proof -/
 private theorem exists_le_abs_of_le_derivWithin
