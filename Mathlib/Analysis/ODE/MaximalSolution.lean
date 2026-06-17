@@ -83,16 +83,18 @@ lemma IsIntegralCurveOn.subset_maximal_domain_with_lipschitz
     {K : ℝ≥0} (h_v_lipschitz : ∀ t ∈ I_loc ∩ I_max, LipschitzWith K (v t)) :
     I_loc ⊆ I_max := by
   have h_agree : EqOn f_loc f_max (I_loc ∩ I_max) :=
-    IsIntegralCurveOn.eqOn_inter (v := v) (s := fun _ ↦ univ) (t₀ := t₀)
+    IsIntegralCurveOn.eqOn_inter (s := fun _ ↦ univ)
       (fun t ht ↦ (h_v_lipschitz t ht).lipschitzOnWith)
       h_loc_preconn h_max.isPreconnected_domain ht₀_loc ht₀_max
-      h_loc (fun _ _ ↦ mem_univ _)
-      h_max.isIntegralCurveOn (fun _ _ ↦ mem_univ _)
+      h_loc (by simp)
+      h_max.isIntegralCurveOn (by simp)
       (by simp [hf_loc_t₀, hf_max_t₀])
   -- Glue the two integral curves along the overlap.
   let f_union (t : ℝ) : E := if t ∈ I_max then f_max t else f_loc t
   have h_eq : I_max = I_loc ∪ I_max := by
-    refine h_max.is_maximal (g := f_union) (J := I_loc ∪ I_max) ?_ ?_ ?_ ?_ ?_
+    refine h_max.is_maximal (g := f_union) ?_ (h_loc_open.union h_max.isOpen_domain)
+      (IsPreconnected.union t₀ ht₀_loc ht₀_max h_loc_preconn h_max.isPreconnected_domain)
+      subset_union_right fun t ht ↦ (if_pos ht).symm
     · rintro t ht
       by_cases ht_max : t ∈ I_max
       · have heq : f_union =ᶠ[𝓝 t] f_max :=
@@ -109,47 +111,52 @@ lemma IsIntegralCurveOn.subset_maximal_domain_with_lipschitz
         simp only [f_union, if_neg ht_max]
         exact ((h_loc t ht_loc).hasDerivAt
           (h_loc_open.mem_nhds ht_loc)).congr_of_eventuallyEq heq |>.hasDerivWithinAt
-    · exact h_loc_open.union h_max.isOpen_domain
-    · exact IsPreconnected.union t₀ ht₀_loc ht₀_max h_loc_preconn h_max.isPreconnected_domain
-    · exact subset_union_right
-    · intro t ht
-      exact (if_pos ht).symm
   rw [h_eq]
   exact subset_union_left
 
 /--
 If `(f₁, I₁)` and `(f₂, I₂)` are two maximal integral curves of `y' = v(t,y)`
 passing through `(t₀, x₀)`, and `v(t,·)` is Lipschitz continuous with a uniform constant `K`
-on the intersection of their domains `I₁ ∩ I₂`, then the maximal integral curves are identical:
-their domains are equal (`I₁ = I₂`), and the functions agree on this common domain.
+on the intersection of their domains `I₁ ∩ I₂`, then their domains are equal.
 -/
-theorem IsMaximalIntegralCurveOn.unique
-  {f₁ f₂ : ℝ → E} {I₁ I₂ : Set ℝ}
-  (h₁_max : IsMaximalIntegralCurveOn v f₁ I₁)
-  (h₂_max : IsMaximalIntegralCurveOn v f₂ I₂)
-  (ht₀₁ : t₀ ∈ I₁) (ht₀₂ : t₀ ∈ I₂)
-  (hf₁_t₀ : f₁ t₀ = x₀) (hf₂_t₀ : f₂ t₀ = x₀)
-  {K : ℝ≥0}
-  (hv_lip : ∀ t ∈ I₁ ∩ I₂, LipschitzWith K (v t)) :
-  I₁ = I₂ ∧ EqOn f₁ f₂ I₁ := by
-  have h_I₁_subset : I₁ ⊆ I₂ :=
-    h₁_max.isIntegralCurveOn.subset_maximal_domain_with_lipschitz v t₀ x₀ h₁_max.isOpen_domain
-      h₁_max.isPreconnected_domain ht₀₁ hf₁_t₀ h₂_max ht₀₂ hf₂_t₀ hv_lip
-  have h_I₂_subset : I₂ ⊆ I₁ :=
-    h₂_max.isIntegralCurveOn.subset_maximal_domain_with_lipschitz v t₀ x₀ h₂_max.isOpen_domain
-      h₂_max.isPreconnected_domain ht₀₂ hf₂_t₀ h₁_max ht₀₁ hf₁_t₀
-      (fun t ht ↦ hv_lip t ht.symm)
-  have h_I_eq : I₁ = I₂ := h_I₁_subset.antisymm h_I₂_subset
-  refine ⟨h_I_eq, ?_⟩
-  convert IsIntegralCurveOn.eqOn_inter
-    (fun t ht ↦ (hv_lip t ⟨ht.1, h_I_eq ▸ ht.1⟩).lipschitzOnWith)
+theorem IsMaximalIntegralCurveOn.domain_eq
+    {f₁ f₂ : ℝ → E} {I₁ I₂ : Set ℝ}
+    (h₁_max : IsMaximalIntegralCurveOn v f₁ I₁)
+    (h₂_max : IsMaximalIntegralCurveOn v f₂ I₂)
+    (ht₀₁ : t₀ ∈ I₁) (ht₀₂ : t₀ ∈ I₂)
+    (hf₁_t₀ : f₁ t₀ = x₀) (hf₂_t₀ : f₂ t₀ = x₀)
+    {K : ℝ≥0}
+    (hv_lip : ∀ t ∈ I₁ ∩ I₂, LipschitzWith K (v t)) :
+    I₁ = I₂ :=
+  (h₁_max.isIntegralCurveOn.subset_maximal_domain_with_lipschitz v t₀ x₀ h₁_max.isOpen_domain
+    h₁_max.isPreconnected_domain ht₀₁ hf₁_t₀ h₂_max ht₀₂ hf₂_t₀ hv_lip).antisymm
+    (h₂_max.isIntegralCurveOn.subset_maximal_domain_with_lipschitz v t₀ x₀ h₂_max.isOpen_domain
+      h₂_max.isPreconnected_domain ht₀₂ hf₂_t₀ h₁_max ht₀₁ hf₁_t₀ fun t ht ↦ hv_lip t ht.symm)
+
+/--
+If `(f₁, I₁)` and `(f₂, I₂)` are two maximal integral curves of `y' = v(t,y)`
+passing through `(t₀, x₀)`, and `v(t,·)` is Lipschitz continuous with a uniform constant `K`
+on the intersection of their domains `I₁ ∩ I₂`, then the functions agree on the common domain `I₁`.
+-/
+theorem IsMaximalIntegralCurveOn.eqOn
+    {f₁ f₂ : ℝ → E} {I₁ I₂ : Set ℝ}
+    (h₁_max : IsMaximalIntegralCurveOn v f₁ I₁)
+    (h₂_max : IsMaximalIntegralCurveOn v f₂ I₂)
+    (ht₀₁ : t₀ ∈ I₁) (ht₀₂ : t₀ ∈ I₂)
+    (hf₁_t₀ : f₁ t₀ = x₀) (hf₂_t₀ : f₂ t₀ = x₀)
+    {K : ℝ≥0}
+    (hv_lip : ∀ t ∈ I₁ ∩ I₂, LipschitzWith K (v t)) :
+    EqOn f₁ f₂ I₁ := by
+  obtain rfl : I₁ = I₂ := h₁_max.domain_eq v t₀ x₀ h₂_max ht₀₁ ht₀₂ hf₁_t₀ hf₂_t₀ hv_lip
+  convert IsIntegralCurveOn.eqOn_inter (s := fun _ ↦ univ)
+    (fun t ht ↦ (hv_lip t ht).lipschitzOnWith)
     h₁_max.isPreconnected_domain
-    (h_I_eq ▸ h₂_max.isPreconnected_domain)
-    ht₀₁ (h_I_eq ▸ ht₀₂)
-    h₁_max.isIntegralCurveOn (fun _ _ ↦ mem_univ _)
-    (h_I_eq ▸ h₂_max.isIntegralCurveOn) (fun _ _ ↦ mem_univ _)
+    h₂_max.isPreconnected_domain
+    ht₀₁ ht₀₂
+    h₁_max.isIntegralCurveOn (by simp)
+    h₂_max.isIntegralCurveOn (by simp)
     (hf₁_t₀.trans hf₂_t₀.symm) using 1
-  simp [h_I_eq]
+  simp
 
 /-! ### Proof of Existence of Maximal Solutions -/
 
@@ -291,15 +298,13 @@ private def chainSup (C : Set (IsLocalIntegralCurveOn v t₀ x₀))
         then (Classical.choose (Set.mem_iUnion₂.mp ht)).f t else x₀) =ᶠ[𝓝 t] p.f := by
       filter_upwards [p.isOpen_domain.mem_nhds htp] with y hy
       simp only [dif_pos (Set.mem_biUnion hp hy)]
-      exact chain_solutions_agree (v := v) (t₀ := t₀) (x₀ := x₀) (C := C)
-        hC (Classical.choose_spec (Set.mem_iUnion₂.mp (Set.mem_biUnion hp hy))).1 hp y
-        (Classical.choose_spec (Set.mem_iUnion₂.mp (Set.mem_biUnion hp hy))).2 hy
+      have hspec := Classical.choose_spec (Set.mem_iUnion₂.mp (Set.mem_biUnion hp hy))
+      exact chain_solutions_agree v t₀ x₀ hC hspec.1 hp y hspec.2 hy
     have hft : (if ht' : t ∈ ⋃ q ∈ C, q.I
         then (Classical.choose (Set.mem_iUnion₂.mp ht')).f t else x₀) = p.f t := by
       simp only [dif_pos ht]
-      exact chain_solutions_agree (v := v) (t₀ := t₀) (x₀ := x₀) (C := C)
-        hC (Classical.choose_spec (Set.mem_iUnion₂.mp ht)).1 hp t
-        (Classical.choose_spec (Set.mem_iUnion₂.mp ht)).2 htp
+      have hspec := Classical.choose_spec (Set.mem_iUnion₂.mp ht)
+      exact chain_solutions_agree v t₀ x₀ hC hspec.1 hp t hspec.2 htp
     exact (((p.isIntegralCurveOn t htp).hasDerivAt
         (p.isOpen_domain.mem_nhds htp)).congr_of_eventuallyEq heq |>.hasDerivWithinAt).congr_deriv
       (congr_arg (v t) hft.symm)
@@ -545,7 +550,7 @@ lemma maximalIntegralCurve_isSolution [CompleteSpace E]
   (maximalIntegralCurve_isMaximal v t₀ x₀ tMin tMax a r L K t₀' ht₀'_eq htMin_lt_t₀ ht₀_lt_tMax
     hpl_instance).isIntegralCurveOn
 
-theorem maximalIntegralCurve_unique [CompleteSpace E]
+theorem maximalIntegralCurve_domain_eq [CompleteSpace E]
     (tMin tMax : ℝ) (a r L K : ℝ≥0) (t₀' : Icc tMin tMax)
     (ht₀'_eq : (t₀' : ℝ) = t₀) (htMin_lt_t₀ : tMin < t₀) (ht₀_lt_tMax : t₀ < tMax)
     (hpl_instance : IsPicardLindelof v t₀' x₀ a r L K)
@@ -556,10 +561,30 @@ theorem maximalIntegralCurve_unique [CompleteSpace E]
     (hv_lip : ∀ t ∈ maximalIntegralCurveDomain v t₀ x₀ tMin tMax a r L K t₀' ht₀'_eq htMin_lt_t₀
       ht₀_lt_tMax hpl_instance ∩ I₂, LipschitzWith K' (v t)) :
     maximalIntegralCurveDomain v t₀ x₀ tMin tMax a r L K t₀' ht₀'_eq htMin_lt_t₀ ht₀_lt_tMax
-        hpl_instance = I₂ ∧ EqOn (maximalIntegralCurve v t₀ x₀ tMin tMax a r L K t₀' ht₀'_eq
-          htMin_lt_t₀ ht₀_lt_tMax hpl_instance) f₂ (maximalIntegralCurveDomain v t₀ x₀ tMin tMax a r
-            L K t₀' ht₀'_eq htMin_lt_t₀ ht₀_lt_tMax hpl_instance) := by
-  exact (maximalIntegralCurve_isMaximal v t₀ x₀ tMin tMax a r L K t₀' ht₀'_eq htMin_lt_t₀
-      ht₀_lt_tMax hpl_instance).unique v t₀ x₀ h₂_max (maximalIntegralCurve_t₀_mem v t₀ x₀ tMin tMax
-        a r L K t₀' ht₀'_eq htMin_lt_t₀ ht₀_lt_tMax hpl_instance) ht₀₂ (maximalIntegralCurve_t₀_eq v
-          t₀ x₀ tMin tMax a r L K t₀' ht₀'_eq htMin_lt_t₀ ht₀_lt_tMax hpl_instance) hf₂_t₀ hv_lip
+      hpl_instance = I₂ :=
+  (maximalIntegralCurve_isMaximal v t₀ x₀ tMin tMax a r L K t₀' ht₀'_eq htMin_lt_t₀ ht₀_lt_tMax
+    hpl_instance).domain_eq v t₀ x₀ h₂_max
+    (maximalIntegralCurve_t₀_mem v t₀ x₀ tMin tMax a r L K t₀' ht₀'_eq htMin_lt_t₀ ht₀_lt_tMax
+      hpl_instance) ht₀₂
+    (maximalIntegralCurve_t₀_eq v t₀ x₀ tMin tMax a r L K t₀' ht₀'_eq htMin_lt_t₀ ht₀_lt_tMax
+      hpl_instance) hf₂_t₀ hv_lip
+
+theorem maximalIntegralCurve_eqOn [CompleteSpace E]
+    (tMin tMax : ℝ) (a r L K : ℝ≥0) (t₀' : Icc tMin tMax)
+    (ht₀'_eq : (t₀' : ℝ) = t₀) (htMin_lt_t₀ : tMin < t₀) (ht₀_lt_tMax : t₀ < tMax)
+    (hpl_instance : IsPicardLindelof v t₀' x₀ a r L K)
+    {f₂ : ℝ → E} {I₂ : Set ℝ}
+    (h₂_max : IsMaximalIntegralCurveOn v f₂ I₂)
+    (ht₀₂ : t₀ ∈ I₂) (hf₂_t₀ : f₂ t₀ = x₀)
+    {K' : ℝ≥0}
+    (hv_lip : ∀ t ∈ maximalIntegralCurveDomain v t₀ x₀ tMin tMax a r L K t₀' ht₀'_eq htMin_lt_t₀
+      ht₀_lt_tMax hpl_instance ∩ I₂, LipschitzWith K' (v t)) :
+    EqOn (maximalIntegralCurve v t₀ x₀ tMin tMax a r L K t₀' ht₀'_eq htMin_lt_t₀ ht₀_lt_tMax
+      hpl_instance) f₂ (maximalIntegralCurveDomain v t₀ x₀ tMin tMax a r L K t₀' ht₀'_eq htMin_lt_t₀
+        ht₀_lt_tMax hpl_instance) :=
+  (maximalIntegralCurve_isMaximal v t₀ x₀ tMin tMax a r L K t₀' ht₀'_eq htMin_lt_t₀ ht₀_lt_tMax
+    hpl_instance).eqOn v t₀ x₀ h₂_max
+    (maximalIntegralCurve_t₀_mem v t₀ x₀ tMin tMax a r L K t₀' ht₀'_eq htMin_lt_t₀ ht₀_lt_tMax
+      hpl_instance) ht₀₂
+    (maximalIntegralCurve_t₀_eq v t₀ x₀ tMin tMax a r L K t₀' ht₀'_eq htMin_lt_t₀ ht₀_lt_tMax
+      hpl_instance) hf₂_t₀ hv_lip
