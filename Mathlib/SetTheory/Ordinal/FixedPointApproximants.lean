@@ -234,10 +234,6 @@ theorem gfpApprox_of_isSuccLimit {a : Ordinal} (ha : Order.IsSuccLimit a) :
     gfpApprox f x a = ⨅ b : Set.Iio a, gfpApprox f x b :=
   lfpApprox_of_isSuccLimit f.dual ha
 
-theorem gfpApprox_limit {a : Ordinal} (ha : Order.IsSuccLimit a) :
-    gfpApprox f x a = ⨅ b : Set.Iio a, gfpApprox f x b :=
-  lfpApprox_of_isSuccLimit f.dual ha
-
 theorem gfpApprox_mono_left : Monotone (gfpApprox : (α →o α) → _) := by
   intro f g h
   have : g.dual ≤ f.dual := h
