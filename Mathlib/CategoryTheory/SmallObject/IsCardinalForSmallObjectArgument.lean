@@ -477,6 +477,18 @@ lemma llp_rlp_of_isCardinalForSmallObjectArgument' :
     { i := Arrow.homMk (𝟙 _) sq.lift
       r := Arrow.homMk (𝟙 _) (πObj I κ f) }
 
+omit κ in
+attribute [local instance] Cardinal.fact_isRegular_aleph0
+  Cardinal.orderBotAleph0OrdToType in
+lemma llp_rlp_of_isCardinalForSmallObjectArgument_aleph0
+    [I.IsCardinalForSmallObjectArgument Cardinal.aleph0.{w}] :
+    I.rlp.llp = (transfiniteCompositionsOfShape (coproducts.{w} I).pushouts ℕ).retracts := by
+  let e : ℕ ≃o Cardinal.aleph0.{w}.ord.ToType :=
+    ULift.orderIso.{w}.symm.trans
+      (OrderIso.ofRelIsoLT (Nonempty.some (by simp [← Ordinal.type_eq])))
+  rw [SmallObject.llp_rlp_of_isCardinalForSmallObjectArgument' _ Cardinal.aleph0,
+    MorphismProperty.transfiniteCompositionsOfShape_eq_of_orderIso _ e]
+
 /-- If `κ` is a suitable cardinal for the small object argument for `I : MorphismProperty C`,
 then the class `I.rlp.llp` is exactly the class of morphisms that are retracts
 of transfinite compositions of pushouts of coproducts of maps in `I`. -/

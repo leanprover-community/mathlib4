@@ -17,7 +17,7 @@ to a specific `Fin` instance.
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace Fin

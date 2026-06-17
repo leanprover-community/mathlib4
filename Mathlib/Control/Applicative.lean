@@ -21,7 +21,7 @@ This file provides `Applicative` instances for concrete functors:
 * `Functor.add_const`
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 

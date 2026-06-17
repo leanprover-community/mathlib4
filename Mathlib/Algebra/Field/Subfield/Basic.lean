@@ -550,7 +550,7 @@ protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → K} (h : ∀ 
   prod_mem h
 
 instance toAlgebra : Algebra s K :=
-  RingHom.toAlgebra s.subtype
+  fast_instance% RingHom.toAlgebra s.subtype
 
 theorem algebraMap_ofSubfield : algebraMap s K = s.subtype :=
   rfl

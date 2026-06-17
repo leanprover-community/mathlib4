@@ -114,16 +114,16 @@ lemma op_smul_set_mul_eq_mul_smul_set (a : α) (s : Set α) (t : Set α) :
 
 end Semigroup
 
-section IsLeftCancelMul
+section IsLeftCancelSMul
 
-variable [Mul α] [IsLeftCancelMul α] {s t : Set α}
+variable [SMul α β] [IsLeftCancelSMul α β] {s : Set α} {t : Set β}
 
 @[to_additive]
 theorem pairwiseDisjoint_smul_iff :
-    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t).InjOn fun p ↦ p.1 * p.2 :=
-  pairwiseDisjoint_image_right_iff fun _ _ ↦ mul_right_injective _
+    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t).InjOn fun p ↦ p.1 • p.2 :=
+  pairwiseDisjoint_image_right_iff fun a _ _ _ h ↦ IsLeftCancelSMul.left_cancel a _ _ h
 
-end IsLeftCancelMul
+end IsLeftCancelSMul
 
 @[to_additive]
 instance smulCommClass_set [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :

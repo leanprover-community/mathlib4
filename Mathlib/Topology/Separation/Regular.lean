@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.StacksAttribute
 public import Mathlib.Topology.Compactness.Lindelof
 public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Topology.Connected.Clopen
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Regular, normal, T₃, T₄ and T₅ spaces
@@ -60,7 +60,7 @@ If the space is also Lindelöf:
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists UniformSpace
 

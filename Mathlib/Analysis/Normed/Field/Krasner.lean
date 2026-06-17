@@ -40,7 +40,7 @@ For the classical statement of Krasner's lemma, please see the
 Krasner's lemma, normed field
 -/
 
-@[expose] public section
+public section
 
 open IntermediateField
 

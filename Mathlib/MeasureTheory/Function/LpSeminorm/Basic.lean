@@ -278,12 +278,8 @@ lemma eLpNorm'_mono_enorm_ae {f : α → ε} {g : α → ε'} (hq : 0 ≤ q) (h 
   gcongr
 
 lemma eLpNorm'_mono_nnnorm_ae {f : α → F} {g : α → G} (hq : 0 ≤ q) (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ ‖g x‖₊) :
-    eLpNorm' f q μ ≤ eLpNorm' g q μ := by
-  simp only [eLpNorm'_eq_lintegral_enorm]
-  gcongr ?_ ^ (1 / q)
-  refine lintegral_mono_ae (h.mono fun x hx => ?_)
-  dsimp [enorm]
-  gcongr
+    eLpNorm' f q μ ≤ eLpNorm' g q μ :=
+  eLpNorm'_mono_enorm_ae hq <| h.mono fun _ hx => ENNReal.coe_le_coe.mpr hx
 
 theorem eLpNorm'_mono_ae {f : α → F} {g : α → G} (hq : 0 ≤ q) (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
     eLpNorm' f q μ ≤ eLpNorm' g q μ :=
@@ -327,12 +323,8 @@ theorem eLpNorm_mono_enorm_ae {f : α → ε} {g : α → ε'} (h : ∀ᵐ x ∂
   · exact eLpNorm'_mono_enorm_ae ENNReal.toReal_nonneg h
 
 theorem eLpNorm_mono_nnnorm_ae {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ ‖g x‖₊) :
-    eLpNorm f p μ ≤ eLpNorm g p μ := by
-  simp only [eLpNorm]
-  split_ifs
-  · exact le_rfl
-  · exact essSup_mono_ae (h.mono fun x hx => ENNReal.coe_le_coe.mpr hx)
-  · exact eLpNorm'_mono_nnnorm_ae ENNReal.toReal_nonneg h
+    eLpNorm f p μ ≤ eLpNorm g p μ :=
+  eLpNorm_mono_enorm_ae <| h.mono fun _ hx => ENNReal.coe_le_coe.mpr hx
 
 theorem eLpNorm_mono_ae {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
@@ -401,13 +393,9 @@ theorem eLpNorm_le_of_ae_enorm_bound {ε} [TopologicalSpace ε] [ESeminormedAddM
 
 theorem eLpNorm_le_of_ae_nnnorm_bound {f : α → F} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) :
     eLpNorm f p μ ≤ C • μ Set.univ ^ p.toReal⁻¹ := by
-  rcases eq_zero_or_neZero μ with rfl | hμ
-  · simp
-  by_cases hp : p = 0
-  · simp [hp]
-  have : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ ‖(C : ℝ)‖₊ := hfC.mono fun x hx => hx.trans_eq C.nnnorm_eq.symm
-  refine (eLpNorm_mono_ae this).trans_eq ?_
-  rw [eLpNorm_const _ hp (NeZero.ne μ), C.enorm_eq, one_div, ENNReal.smul_def, smul_eq_mul]
+  simpa [C.enorm_eq, ENNReal.smul_def, smul_eq_mul] using
+    (eLpNorm_le_of_ae_enorm_bound (f := f) (C := (C : ℝ≥0∞))
+      (hfC.mono fun _ hx => by simpa using hx))
 
 theorem eLpNorm_le_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
     eLpNorm f p μ ≤ μ Set.univ ^ p.toReal⁻¹ * ENNReal.ofReal C := by

@@ -238,6 +238,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Logic.Fin.Rotate, `Mathlib.Algebra.Group.Fin.Basic),
   (`Mathlib.Logic, `Mathlib.Algebra.Notation),
   (`Mathlib.Logic, `Mathlib.Algebra.NeZero),
+  (`Mathlib.Logic, `Mathlib.Algebra.Order),
   (`Mathlib.Logic, `Mathlib.Data),
   -- TODO: this next dependency should be made more fine-grained.
   (`Mathlib.Logic, `Mathlib.Order),
@@ -592,6 +593,7 @@ def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Algebra.Lie, `Mathlib.RepresentationTheory),
   (`Mathlib.Algebra.Module.ZLattice, `Mathlib.Analysis),
   (`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation),
+  (`Mathlib.AlgebraicGeometry.EllipticCurve, `Mathlib.Probability), -- For L-functions
   (`Mathlib.AlgebraicGeometry.Sites, `Mathlib.AlgebraicTopology), -- Homotopical methods for sheaf cohomology
   (`Mathlib.AlgebraicGeometry.Sites, `Mathlib.NumberTheory), -- For arithmetic applications
   (`Mathlib.Deprecated, `Mathlib.Deprecated),

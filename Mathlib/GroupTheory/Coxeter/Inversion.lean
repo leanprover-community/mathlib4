@@ -95,14 +95,14 @@ theorem odd_length : Odd (ℓ t) := by
 
 theorem length_mul_left_ne (w : W) : ℓ (w * t) ≠ ℓ w := by
   suffices cs.lengthParity (w * t) ≠ cs.lengthParity w by
-    contrapose! this
+    contrapose this
     simp only [lengthParity_eq_ofAdd_length, this]
   rcases ht with ⟨w, i, rfl⟩
   simp [lengthParity_simple]
 
 theorem length_mul_right_ne (w : W) : ℓ (t * w) ≠ ℓ w := by
   suffices cs.lengthParity (t * w) ≠ cs.lengthParity w by
-    contrapose! this
+    contrapose this
     simp only [lengthParity_eq_ofAdd_length, this]
   rcases ht with ⟨w, i, rfl⟩
   simp [lengthParity_simple]
@@ -424,12 +424,6 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
   set! t := (ris ω).getD j 1 with h₁
   set! t' := (ris (ω.eraseIdx j)).getD (j' - 1) 1 with h₂
   have h₃ : t' = (ris ω).getD j' 1 := by
-    #adaptation_note
-    /--
-    This was previously `grind [cs.getD_rightInvSeq, drop_of_length_le, drop_drop]`,
-    which no longer works after changes to `grind` annotation lemmas in
-    https://github.com/leanprover/lean4/pull/12170
-    -/
     grind only [cs.getD_rightInvSeq, = eraseIdx_eq_take_drop_succ, = getElem?_eraseIdx,
       = drop_append, drop_of_length_le, drop_drop, = length_append, = length_take, = length_drop,
       = min_def]

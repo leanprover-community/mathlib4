@@ -98,10 +98,10 @@ def IsCompatible.sectionPairwise {sf} (h : IsCompatible F U sf) :
   refine ⟨objPairwiseOfFamily sf, ?_⟩
   let G := (Pairwise.diagram U).op ⋙ F
   rintro (i | ⟨i, j⟩) (i' | ⟨i', j'⟩) (_ | _ | _ | _)
-  · exact congr_fun (G.map_id <| op <| Pairwise.single i) _
+  · exact ConcreteCategory.congr_hom (G.map_id <| op <| Pairwise.single i) _
   · rfl
   · exact (h i' i).symm
-  · exact congr_fun (G.map_id <| op <| Pairwise.pair i j) _
+  · exact ConcreteCategory.congr_hom (G.map_id <| op <| Pairwise.pair i j) _
 
 theorem isGluing_iff_pairwise {sf s} : IsGluing F U sf s ↔
     ∀ i, (F.mapCone (Pairwise.cocone U).op).π.app i s = objPairwiseOfFamily sf i := by

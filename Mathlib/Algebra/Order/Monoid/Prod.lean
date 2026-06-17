@@ -12,7 +12,7 @@ public import Mathlib.Data.Prod.Lex
 
 /-! # Products of ordered monoids -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 

@@ -447,7 +447,7 @@ protected lemma exists_pos_mul_lt (ha : a ≠ ∞) (hb₀ : b ≠ 0) : ∃ c, 0 
   · exact ⟨1, by simpa [lt_top_iff_ne_top]⟩
   refine ⟨b / (a + 1), ENNReal.div_pos hb₀ (by finiteness), ENNReal.mul_lt_of_lt_div ?_⟩
   gcongr
-  exacts [hb, ENNReal.lt_add_right ha one_ne_zero]
+  exact ENNReal.lt_add_right ha one_ne_zero
 
 theorem inv_le_iff_le_mul (h₁ : b = ∞ → a ≠ 0) (h₂ : a = ∞ → b ≠ 0) : a⁻¹ ≤ b ↔ 1 ≤ a * b := by
   rw [← one_div, ENNReal.div_le_iff_le_mul, mul_comm]
@@ -493,7 +493,7 @@ lemma eq_of_forall_le_nnreal_iff {x y : ℝ≥0∞} : (∀ r : ℝ≥0, x ≤ r 
 
 theorem le_of_forall_pos_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, 0 < r → ↑r < x → ↑r ≤ y) : x ≤ y :=
   le_of_forall_nnreal_lt fun r hr =>
-    (zero_le r).eq_or_lt.elim (fun h => h ▸ zero_le _) fun h0 => h r h0 hr
+    (eq_zero_or_pos r).elim (fun h => h ▸ zero_le) fun h0 => h r h0 hr
 
 theorem eq_top_of_forall_nnreal_le {x : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r ≤ x) : x = ∞ :=
   top_unique <| le_of_forall_nnreal_lt fun r _ => h r
@@ -646,7 +646,7 @@ theorem exists_inv_nat_lt {a : ℝ≥0∞} (h : a ≠ 0) : ∃ n : ℕ, (n : ℝ
 
 theorem exists_nat_pos_mul_gt (ha : a ≠ 0) (hb : b ≠ ∞) : ∃ n > 0, b < (n : ℕ) * a :=
   let ⟨n, hn⟩ := ENNReal.exists_nat_gt (div_lt_top hb ha).ne
-  ⟨n, Nat.cast_pos.1 ((zero_le _).trans_lt hn), by
+  ⟨n, Nat.cast_pos.1 hn.pos, by
     rwa [← ENNReal.div_lt_iff (Or.inl ha) (Or.inr hb)]⟩
 
 theorem exists_nat_mul_gt (ha : a ≠ 0) (hb : b ≠ ∞) : ∃ n : ℕ, b < n * a :=
@@ -839,7 +839,7 @@ lemma mul_iInf' (hinfty : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0) (h₀ :
   · simp [h₀ rfl]
   obtain rfl | ha := eq_or_ne a ∞
   · obtain ⟨i, hi⟩ | hf := em (∃ i, f i = 0)
-    · rw [(iInf_eq_bot _).2, (iInf_eq_bot _).2, bot_eq_zero, mul_zero] <;>
+    · rw [iInf_eq_bot.2, iInf_eq_bot.2, bot_eq_zero, mul_zero] <;>
         exact fun _ _ ↦ ⟨i, by simpa [hi]⟩
     · rw [top_mul (mt (hinfty rfl) hf), eq_comm, iInf_eq_top]
       exact fun i ↦ top_mul fun hi ↦ hf ⟨i, hi⟩

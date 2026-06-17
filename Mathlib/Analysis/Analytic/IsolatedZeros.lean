@@ -192,7 +192,7 @@ theorem exists_eventuallyEq_pow_smul_nonzero_iff (hf : AnalyticAt 𝕜 f z₀) :
     ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z) ↔ (¬∀ᶠ z in 𝓝 z₀, f z = 0) := by
   constructor
   · rintro ⟨n, g, hg_an, hg_ne, hg_eq⟩
-    contrapose! hg_ne
+    contrapose hg_ne
     apply EventuallyEq.eq_of_nhds
     rw [EventuallyEq, ← AnalyticAt.frequently_eq_iff_eventually_eq hg_an analyticAt_const]
     refine (eventually_nhdsWithin_iff.mpr ?_).frequently
@@ -324,7 +324,7 @@ theorem AnalyticAt.preimage_of_nhdsNE {x : 𝕜} {f : 𝕜 → E} {s : Set E} (h
   have : ∀ᶠ (z : 𝕜) in 𝓝 x, f z ∈ insert (f x) s := by
     filter_upwards [hfx.continuousAt.preimage_mem_nhds (insert_mem_nhds_iff.2 hs)]
     tauto
-  contrapose! h₂f with h
+  contrapose h₂f with h
   rw [eventuallyConst_iff_exists_eventuallyEq]
   use f x
   rw [EventuallyEq, ← hfx.frequently_eq_iff_eventually_eq analyticAt_const]

@@ -142,6 +142,6 @@ lemma pullbackObjFreeIso_hom_naturality {I J : Type u} (f : I → J) :
 continuous map between ringed sites, when the underlying functor between the sites
 is final. -/
 noncomputable def freeFunctorCompPullbackIso : freeFunctor ⋙ pullback φ ≅ freeFunctor :=
-  NatIso.ofComponents (pullbackObjFreeIso φ)
+  NatIso.ofComponents (fun X ↦ pullbackObjFreeIso φ X)
 
 end SheafOfModules

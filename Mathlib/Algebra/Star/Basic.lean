@@ -115,7 +115,7 @@ export TrivialStar (star_trivial)
 
 attribute [simp] star_trivial
 
-/-- A `*`-magma is a magma `R` with an involutive operation `star`
+/-- A \*-magma is a magma `R` with an involutive operation `star`
 such that `star (r * s) = star s * star r`.
 -/
 class StarMul (R : Type u) [Mul R] extends InvolutiveStar R where
@@ -202,7 +202,7 @@ theorem star_zpow [Group R] [StarMul R] (x : R) (z : ℤ) : star (x ^ z) = star 
 theorem star_div [CommGroup R] [StarMul R] (x y : R) : star (x / y) = star x / star y :=
   map_div (starMulAut : R ≃* R) _ _
 
-/-- Any commutative monoid admits the trivial `*`-structure.
+/-- Any commutative monoid admits the trivial \*-structure.
 
 See note [reducible non-instances].
 -/
@@ -221,7 +221,7 @@ theorem star_id_of_comm {R : Type*} [CommMonoid R] {x : R} : star x = x :=
 
 end
 
-/-- A `*`-additive monoid `R` is an additive monoid with an involutive `star` operation which
+/-- A \*-additive monoid `R` is an additive monoid with an involutive `star` operation which
 preserves addition. -/
 class StarAddMonoid (R : Type u) [AddMonoid R] extends InvolutiveStar R where
   /-- `star` commutes with addition -/
@@ -269,8 +269,8 @@ theorem star_nsmul [AddMonoid R] [StarAddMonoid R] (n : ℕ) (x : R) : star (n �
 theorem star_zsmul [AddGroup R] [StarAddMonoid R] (n : ℤ) (x : R) : star (n • x) = n • star x :=
   (starAddEquiv : R ≃+ R).toAddMonoidHom.map_zsmul _ _
 
-/-- A `*`-ring `R` is a non-unital, non-associative (semi)ring with an involutive `star` operation
-which is additive which makes `R` with its multiplicative structure into a `*`-multiplication
+/-- A \*-ring `R` is a non-unital, non-associative (semi)ring with an involutive `star` operation
+which is additive which makes `R` with its multiplicative structure into a \*-multiplication
 (i.e. `star (r * s) = star s * star r`). -/
 class StarRing (R : Type u) [NonUnitalNonAssocSemiring R] extends StarMul R where
   /-- `star` commutes with addition -/
@@ -370,7 +370,7 @@ theorem star_div₀ [CommGroupWithZero R] [StarMul R] (x y : R) : star (x / y) =
   apply op_injective
   rw [division_def, op_div, mul_comm, star_mul, star_inv₀, op_mul, op_inv]
 
-/-- Any commutative semiring admits the trivial `*`-structure.
+/-- Any commutative semiring admits the trivial \*-structure.
 
 See note [reducible non-instances].
 -/

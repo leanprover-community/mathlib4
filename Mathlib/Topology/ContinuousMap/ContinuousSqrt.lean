@@ -15,7 +15,7 @@ This provides the instances of `ContinuousSqrt` for `ℝ`, `ℝ≥0`, and `ℂ`,
 of `StarOrderedRing C(α, R)` and `StarOrderedRing C(α, R)₀` for any topological space `α` and `R`
 among `ℝ≥0`, `ℝ`, and `ℂ`. -/
 
-@[expose] public section
+public section
 
 open scoped NNReal
 

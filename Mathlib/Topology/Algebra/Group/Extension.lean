@@ -21,7 +21,7 @@ followed by an open quotient map `ψ` satisfying `φ.range = ψ.ker`.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 

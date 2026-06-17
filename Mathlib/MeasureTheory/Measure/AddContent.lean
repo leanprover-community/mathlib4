@@ -364,7 +364,7 @@ lemma addContent_le_sum_of_subset_sUnion {m : AddContent G C} (hC : IsSetSemirin
     rintro u hu rfl
     exact hC.inter_mem _ ht _ (h_ss hu)
   · rwa [← ht_eq]
-  · refine (Finset.sum_image_le_of_nonneg fun _ _ ↦ zero_le _).trans (sum_le_sum fun u hu ↦ ?_)
+  · refine (Finset.sum_image_le_of_nonneg fun _ _ ↦ zero_le).trans (sum_le_sum fun u hu ↦ ?_)
     exact addContent_mono hC (hC.inter_mem _ ht _ (h_ss hu)) (h_ss hu) inter_subset_right
 
 /-- If an `AddContent` is σ-subadditive on a semi-ring of sets, then it is σ-additive. -/

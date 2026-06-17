@@ -60,7 +60,7 @@ so don't hesitate to have a look!
 * [Stacks: Characterizing proper maps](https://stacks.math.columbia.edu/tag/005M)
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists StoneCech
 

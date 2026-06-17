@@ -161,7 +161,7 @@ theorem finSuccEquiv'_ne_last_apply {i j : Fin (n + 1)} (hi : i ≠ Fin.last n) 
   rcases Fin.exists_castSucc_eq.2 hi with ⟨i, rfl⟩
   simp
 
-/-- `Fin.succAbove` as an order isomorphism between `Fin n` and `{x : Fin (n + 1) // x ≠ p}`. -/
+/-- `Fin.succAbove` as a bijection between `Fin n` and `{x : Fin (n + 1) // x ≠ p}`. -/
 def finSuccAboveEquiv (p : Fin (n + 1)) : Fin n ≃ { x : Fin (n + 1) // x ≠ p } :=
   .optionSubtype p ⟨(finSuccEquiv' p).symm, rfl⟩
 

@@ -62,13 +62,11 @@ open Limits
 
 variable {X : C} (Y Z : Over X)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The binary fan provided by `fst'` and `snd'`. -/
 abbrev binaryFan [ChosenPullbacksAlong Z.hom] : BinaryFan Y Z :=
   BinaryFan.mk (P := (pullback Z.hom ⋙ Over.map Z.hom).obj (Over.mk Y.hom))
     (fst' Y.hom Z.hom) (snd' Y.hom Z.hom)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The binary fan provided by `fst'` and `snd'` is a binary product in `Over X`. -/
 def binaryFanIsBinaryProduct [ChosenPullbacksAlong Z.hom] :
     IsLimit (binaryFan Y Z) :=
@@ -128,7 +126,6 @@ lemma snd_eq_snd' (Y Z : Over X) :
     CartesianMonoidalCategory.snd Y Z = snd' Y.hom Z.hom :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma lift_left {W Y Z : Over X} (f : W ⟶ Y) (g : W ⟶ Z) :
     (CartesianMonoidalCategory.lift f g).left = lift f.left g.left := rfl
@@ -200,7 +197,6 @@ lemma rightUnitor_inv_left_snd (Y : Over X) :
     (ρ_ Y).inv.left ≫ snd Y.hom (𝟙 X) = Y.hom :=
   congr_arg CommaMorphism.left (rightUnitor_inv_snd Y)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma whiskerLeft_left {R S T : Over X} (f : S ⟶ T) :
     (R ◁ f).left = pullbackMap R.hom T.hom R.hom S.hom (𝟙 _) f.left (𝟙 _) :=
   rfl
@@ -215,7 +211,6 @@ lemma whiskerLeft_left_snd {R S T : Over X} (f : S ⟶ T) :
     (R ◁ f).left ≫ snd R.hom T.hom = snd R.hom S.hom ≫ f.left :=
   congr_arg CommaMorphism.left (whiskerLeft_snd R f)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma whiskerRight_left {R S T : Over X} (f : S ⟶ T) :
     (f ▷ R).left = pullbackMap T.hom R.hom S.hom R.hom f.left (𝟙 _) (𝟙 _) :=
   rfl
@@ -230,7 +225,6 @@ lemma whiskerRight_left_snd {R S T : Over X} (f : S ⟶ T) :
     (f ▷ R).left ≫ snd T.hom R.hom = snd S.hom R.hom :=
   congr_arg CommaMorphism.left (whiskerRight_snd f R)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tensorHom_left {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
     (f ⊗ₘ g).left = pullbackMap S.hom U.hom R.hom T.hom f.left g.left (𝟙 _) :=
   rfl
@@ -294,7 +288,6 @@ def toOverUnitPullback (X : C) :
     toOverUnit C ⋙ pullback (toUnit X) ≅ toOver X :=
   NatIso.ofComponents fun X => Iso.refl _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `toOver X` is the right adjoint to the functor `Over.forget X`. -/
 @[simps! unit_app counit_app]
 def forgetAdjToOver (X : C) : Over.forget X ⊣ toOver X where

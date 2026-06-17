@@ -986,6 +986,18 @@ theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalSubalgebra R A}
     (iSup_le fun i ↦ le_iSup (fun i ↦ (S i : Set A)) i) (Set.iUnion_subset fun _ ↦ le_iSup S _)
   this.symm ▸ rfl
 
+theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι] {S : ι → NonUnitalSubalgebra R A}
+    [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
+    IsMulCommutative (⨆ i, S i : NonUnitalSubalgebra R A) := by
+  have := NonUnitalSubsemiring.isMulCommutative_iSup dir
+  simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_directed dir,
+    NonUnitalSubsemiring.coe_iSup_of_directed dir]
+
+instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
+    {S : ι →o NonUnitalSubalgebra R A} [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : NonUnitalSubalgebra R A) :=
+  isMulCommutative_iSup S.monotone.directed_le
+
 /-- Define an algebra homomorphism on a directed supremum of non-unital subalgebras by defining
 it on each non-unital subalgebra, and proving that it agrees on the intersection of
 non-unital subalgebras. -/
@@ -1083,11 +1095,11 @@ theorem coe_center : (center R A : Set A) = Set.center A :=
 
 /-- The center of a non-unital algebra is commutative and associative -/
 instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R A) :=
-  NonUnitalSubsemiring.center.instNonUnitalCommSemiring _
+  inferInstanceAs <| NonUnitalCommSemiring (NonUnitalSubsemiring.center A)
 
 instance center.instNonUnitalCommRing {A : Type*} [NonUnitalNonAssocRing A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : NonUnitalCommRing (center R A) :=
-  NonUnitalSubring.center.instNonUnitalCommRing _
+  inferInstanceAs <| NonUnitalCommRing (NonUnitalSubring.center A)
 
 @[simp]
 theorem center_toNonUnitalSubsemiring :
@@ -1104,7 +1116,6 @@ end NonUnitalNonAssocSemiring
 variable (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
   [SMulCommClass R A A]
 
-set_option backward.isDefEq.respectTransparency false in
 -- no instance diamond, as the `npow` field isn't present in the non-unital case.
 example : center.instNonUnitalCommSemiring.toNonUnitalSemiring =
     NonUnitalSubsemiringClass.toNonUnitalSemiring (center R A) := by

@@ -36,7 +36,7 @@ jobs:
           fetch-depth: 0
 
       - name: Configure Lean
-        uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
+        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
         with:
           auto-config: false
           use-github-cache: false

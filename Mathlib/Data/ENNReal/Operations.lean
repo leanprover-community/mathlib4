@@ -20,7 +20,7 @@ Note: the definitions of the operations included in this file can be found in
 `Mathlib/Data/ENNReal/Basic.lean`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 
@@ -352,7 +352,7 @@ protected theorem add_sub_cancel_right (hb : b ≠ ∞) : a + b - b = a := by
 protected theorem sub_add_eq_add_sub (hab : b ≤ a) (b_ne_top : b ≠ ∞) :
     a - b + c = a + c - b := by
   by_cases c_top : c = ∞
-  · simpa [c_top] using ENNReal.eq_sub_of_add_eq b_ne_top rfl
+  · simpa [c_top, eqComm]
   refine ENNReal.eq_sub_of_add_eq b_ne_top ?_
   simp only [add_assoc, add_comm c b]
   simpa only [← add_assoc] using (add_left_inj c_top).mpr <| tsub_add_cancel_of_le hab
@@ -419,7 +419,7 @@ theorem sub_right_inj {a b c : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≤ a) (hc :
 
 protected theorem sub_mul (h : 0 < b → b < a → c ≠ ∞) : (a - b) * c = a * c - b * c := by
   rcases le_or_gt a b with hab | hab; · simp [hab, mul_left_mono hab, tsub_eq_zero_of_le]
-  rcases eq_or_lt_of_le (zero_le b) with (rfl | hb); · simp
+  rcases eq_zero_or_pos b with (rfl | hb); · simp
   exact (cancel_of_ne <| mul_ne_top hab.ne_top (h hb hab)).tsub_mul
 
 protected theorem mul_sub (h : 0 < c → c < b → a ≠ ∞) : a * (b - c) = a * b - a * c := by
@@ -500,7 +500,6 @@ theorem image_coe_Ioc (x y : ℝ≥0) : (↑) '' Ioc x y = Ioc (x : ℝ≥0∞) 
 @[simp]
 theorem image_coe_Ioo (x y : ℝ≥0) : (↑) '' Ioo x y = Ioo (x : ℝ≥0∞) y := WithTop.image_coe_Ioo
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem image_coe_uIcc (x y : ℝ≥0) : (↑) '' uIcc x y = uIcc (x : ℝ≥0∞) y := by simp [uIcc]
 
@@ -538,7 +537,7 @@ theorem toReal_sInf (s : Set ℝ≥0∞) (hf : ∀ r ∈ s, r ≠ ∞) :
 @[simp] lemma ofReal_iInf [Nonempty ι] (f : ι → ℝ) :
     ENNReal.ofReal (⨅ i, f i) = ⨅ i, ENNReal.ofReal (f i) := by
   obtain ⟨i, hi⟩ | h := em (∃ i, f i ≤ 0)
-  · rw [(iInf_eq_bot _).2 fun _ _ ↦ ⟨i, by simpa [ofReal_of_nonpos hi]⟩]
+  · rw [iInf_eq_bot.2 fun _ _ ↦ ⟨i, by simpa [ofReal_of_nonpos hi]⟩]
     simp [Real.iInf_nonpos' ⟨i, hi⟩]
   replace h i : 0 ≤ f i := le_of_not_ge fun hi ↦ h ⟨i, hi⟩
   refine eq_of_forall_le_iff fun a ↦ ?_
@@ -643,7 +642,7 @@ theorem iSup_sub : (⨆ i, f i) - a = ⨆ i, f i - a :=
 @[simp] lemma iSup_zero : ⨆ _ : ι, (0 : ℝ≥0∞) = 0 := by simp
 
 lemma iSup_natCast : ⨆ n : ℕ, (n : ℝ≥0∞) = ∞ :=
-  (iSup_eq_top _).2 fun _b hb => ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 hb)
+  iSup_eq_top.2 fun _b hb => ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 hb)
 
 lemma add_iSup [Nonempty ι] (f : ι → ℝ≥0∞) : a + ⨆ i, f i = ⨆ i, a + f i := by
   obtain rfl | ha := eq_or_ne a ∞
@@ -690,7 +689,7 @@ lemma biSup_add_biSup_le {ι κ : Type*} {s : Set ι} {t : Set κ} (hs : s.Nonem
 
 lemma iSup_add_iSup (h : ∀ i j, ∃ k, f i + g j ≤ f k + g k) : iSup f + iSup g = ⨆ i, f i + g i := by
   cases isEmpty_or_nonempty ι
-  · simp only [iSup_of_empty, bot_eq_zero, zero_add]
+  · simp
   · refine le_antisymm ?_ (iSup_le fun a => add_le_add (le_iSup _ _) (le_iSup _ _))
     refine iSup_add_iSup_le fun i j => ?_
     rcases h i j with ⟨k, hk⟩
@@ -702,7 +701,7 @@ lemma iSup_add_iSup_of_monotone {ι : Type*} [Preorder ι] [IsDirectedOrder ι] 
 
 lemma sub_iSup [Nonempty ι] (ha : a ≠ ∞) : a - ⨆ i, f i = ⨅ i, a - f i := by
   obtain ⟨i, hi⟩ | h := em (∃ i, a < f i)
-  · rw [tsub_eq_zero_iff_le.2 <| le_iSup_of_le _ hi.le, (iInf_eq_bot _).2, bot_eq_zero]
+  · rw [tsub_eq_zero_iff_le.2 <| le_iSup_of_le _ hi.le, iInf_eq_bot.2, bot_eq_zero]
     exact fun x hx ↦ ⟨i, by simpa [hi.le, tsub_eq_zero_of_le]⟩
   simp_rw [not_exists, not_lt] at h
   refine le_antisymm (le_iInf fun i ↦ tsub_le_tsub_left (le_iSup ..) _) <|

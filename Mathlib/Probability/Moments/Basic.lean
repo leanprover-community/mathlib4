@@ -358,7 +358,7 @@ theorem iIndepFun.integrable_exp_mul_sum [IsFiniteMeasure μ] {X : ι → Ω →
     specialize h_rec this
     rw [sum_insert hi_notin_s]
     refine IndepFun.integrable_exp_mul_add ?_ (h_int i (mem_insert_self _ _)) h_rec
-    exact (h_indep.indepFun_finset_sum_of_notMem h_meas hi_notin_s).symm
+    exact (h_indep.indepFun_finsetSum_of_notMem h_meas hi_notin_s).symm
 
 theorem iIndepFun.mgf_sum₀ {X : ι → Ω → ℝ}
     (h_indep : iIndepFun X μ) (h_meas : ∀ i, AEMeasurable (X i) μ)
@@ -371,7 +371,7 @@ theorem iIndepFun.mgf_sum₀ {X : ι → Ω → ℝ}
     have h_int' : ∀ i : ι, AEStronglyMeasurable (fun ω : Ω => exp (t * X i ω)) μ := fun i =>
       ((h_meas i).const_mul t).exp.aestronglyMeasurable
     rw [sum_insert hi_notin_s,
-      IndepFun.mgf_add (h_indep.indepFun_finset_sum_of_notMem₀ h_meas hi_notin_s).symm (h_int' i)
+      IndepFun.mgf_add (h_indep.indepFun_finsetSum_of_notMem₀ h_meas hi_notin_s).symm (h_int' i)
         (aestronglyMeasurable_exp_mul_sum fun i _ => h_int' i),
       h_rec, prod_insert hi_notin_s]
 

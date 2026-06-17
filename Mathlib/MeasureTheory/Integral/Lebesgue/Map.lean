@@ -72,8 +72,8 @@ theorem setLIntegral_map {f : β → ℝ≥0∞} {g : α → β} {s : Set β}
 theorem lintegral_indicator_const_comp {f : α → β} {s : Set β}
     (hf : Measurable f) (hs : MeasurableSet s) (c : ℝ≥0∞) :
     ∫⁻ a, s.indicator (fun _ => c) (f a) ∂μ = c * μ (f ⁻¹' s) := by
-  erw [lintegral_comp (measurable_const.indicator hs) hf]
-  rw [lintegral_indicator_const hs, Measure.map_apply hf hs]
+  rw [← lintegral_map (measurable_const.indicator hs) hf, lintegral_indicator_const hs,
+    Measure.map_apply hf hs]
 
 /-- If `g : α → β` is a measurable embedding and `f : β → ℝ≥0∞` is any function (not necessarily
 measurable), then `∫⁻ a, f a ∂(map g μ) = ∫⁻ a, f (g a) ∂μ`. Compare with `lintegral_map` which

@@ -394,7 +394,7 @@ nonrec lemma Scheme.Hom.quasiFiniteAt_iff_isOpen_singleton_asFiber
     · exact (RingHom.QuasiFinite.respectsIso.arrow_mk_iso_iff
         (Scheme.stalkMapIsoOfIsPullback (.of_hasPullback f ι) x))
     have H : pullback.snd f ι ⁻¹' {pullback.snd f ι x} =
-        pullback.fst f ι ⁻¹' (f ⁻¹' {f (pullback.fst f ι x)}) := by
+        pullback.fst f ι ⁻¹' f ⁻¹' {f (pullback.fst f ι x)} := by
       rw [← Set.preimage_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base, ← Scheme.Hom.comp_apply,
         pullback.condition]
       simp [← Set.image_singleton, Set.preimage_comp, Set.preimage_image_eq _ ι.injective]
@@ -419,6 +419,7 @@ nonrec lemma Scheme.Hom.quasiFiniteAt_iff_isOpen_singleton_asFiber
   rw [HasRingHomProperty.Spec_iff (P := @LocallyOfFiniteType)] at ‹LocallyOfFiniteType (Spec.map φ)›
   algebraize [φ.hom]
   rw [← Algebra.quasiFiniteAt_iff_isOpen_singleton_fiber]
+  let := Localization.AtPrime.algebraOfLiesOver (x.asIdeal.under R) x.asIdeal
   trans Algebra.QuasiFinite (Localization.AtPrime (x.asIdeal.under R))
     (Localization.AtPrime x.asIdeal)
   · rw [← RingHom.quasiFinite_algebraMap]

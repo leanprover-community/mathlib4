@@ -74,20 +74,19 @@ instance instFunLike : FunLike (M ↪ₑ[L] N) M N where
 theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.BoundedFormula α n)
     (v : α → M) (xs : Fin n → M) : φ.Realize (f ∘ v) (f ∘ xs) ↔ φ.Realize v xs := by
   classical
-    rw [← BoundedFormula.realize_restrictFreeVar' Set.Subset.rfl, Set.inclusion_eq_id, iff_eq_eq]
+    rw [← BoundedFormula.realize_restrictFreeVar' Set.Subset.rfl, Set.inclusion_eq_id]
     have h :=
       f.map_formula' ((φ.restrictFreeVar id).toFormula.relabel (Fintype.equivFin _))
         (Sum.elim (v ∘ (↑)) xs ∘ (Fintype.equivFin _).symm)
-    simp only [Formula.realize_relabel, BoundedFormula.realize_toFormula, iff_eq_eq] at h
+    simp only [Formula.realize_relabel, BoundedFormula.realize_toFormula] at h
     rw [← Function.comp_assoc _ _ (Fintype.equivFin _).symm,
       Function.comp_assoc _ (Fintype.equivFin _).symm (Fintype.equivFin _),
       _root_.Equiv.symm_comp_self, Function.comp_id, Function.comp_assoc, Sum.elim_comp_inl,
       Function.comp_assoc _ _ Sum.inr, Sum.elim_comp_inr, ← Function.comp_assoc] at h
     refine h.trans ?_
-    erw [Function.comp_assoc _ _ (Fintype.equivFin _), _root_.Equiv.symm_comp_self,
+    rw [Function.comp_assoc _ _ (Fintype.equivFin _), _root_.Equiv.symm_comp_self,
       Function.comp_id, Sum.elim_comp_inl, Sum.elim_comp_inr (v ∘ Subtype.val) xs,
-      ← Set.inclusion_eq_id (s := (BoundedFormula.freeVarFinset φ : Set α)) Set.Subset.rfl,
-      BoundedFormula.realize_restrictFreeVar' Set.Subset.rfl]
+      BoundedFormula.realize_restrictFreeVar v (by simp)]
 
 @[simp]
 theorem map_formula (f : M ↪ₑ[L] N) {α : Type*} (φ : L.Formula α) (x : α → M) :
@@ -257,9 +256,12 @@ theorem isElementary_of_exists (f : M ↪[L] N)
   · exact fun {_} _ => Iff.rfl
   · intros
     simp [BoundedFormula.Realize, ← Sum.comp_elim, HomClass.realize_term]
-  · intros
+  · intro _ _ R ts xs
     simp only [BoundedFormula.Realize, ← Sum.comp_elim, HomClass.realize_term]
-    erw [map_rel f]
+    simp_rw [← Function.comp_apply (f := (f : M → N)),
+      ← Function.comp_apply (f := Term.realize (Sum.elim default xs)),
+      ← Function.comp_apply (f := (f : M → N) ∘ Term.realize (Sum.elim default xs))]
+    rw [Function.comp_assoc, map_rel f]
   · intro _ _ _ ih1 ih2 _
     simp [ih1, ih2]
   · intro n φ ih xs

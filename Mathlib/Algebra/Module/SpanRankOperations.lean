@@ -26,7 +26,7 @@ In this file we show how operations on submodules interact with `Submodule.spanR
 
 -/
 
-@[expose] public section
+public section
 
 open IsLocalRing TensorProduct Submodule
 

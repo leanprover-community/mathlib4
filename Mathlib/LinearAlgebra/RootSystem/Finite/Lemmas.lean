@@ -230,7 +230,7 @@ lemma root_add_root_mem_of_pairingIn_neg (h : P.pairingIn ℤ i j < 0) (h' : α 
     α i + α j ∈ Φ := by
   let _i := P.indexNeg
   replace h : 0 < P.pairingIn ℤ i (-j) := by simpa
-  replace h' : i ≠ -j := by contrapose! h'; simp [h']
+  replace h' : i ≠ -j := by contrapose h'; simp [h']
   simpa using P.root_sub_root_mem_of_pairingIn_pos h h'
 
 lemma pairingIn_eq_zero_of_add_notMem_of_sub_notMem (hp : i ≠ j) (hn : α i ≠ -α j)
@@ -300,7 +300,7 @@ lemma apply_eq_or (i j : ι) :
     B.form (α j) (α j) = 3 * B.form (α i) (α i) := by
   obtain ⟨j', h₁, h₂⟩ := P.exists_form_eq_form_and_form_ne_zero B i j
   suffices P.pairingIn ℤ i j' ≠ 0 by simp only [← h₁, B.apply_eq_or_aux i j' this]
-  contrapose! h₂
+  contrapose h₂
   replace h₂ : P.pairing i j' = 0 := by rw [← P.algebraMap_pairingIn ℤ, h₂, map_zero]
   exact (B.apply_root_root_zero_iff i j').mpr h₂
 

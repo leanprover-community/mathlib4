@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 # Ring-theoretic results in terms of categorical language
 -/
 
-@[expose] public section
+public section
 
 universe u
 

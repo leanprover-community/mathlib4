@@ -185,7 +185,6 @@ variable {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [Module
   [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]
   [NonUnitalContinuousFunctionalCalculus ℂ A IsStarNormal]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An element in a non-unital C⋆-algebra is selfadjoint if and only if it is normal and its
 quasispectrum is contained in `ℝ`. -/
 lemma isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts {a : A} :
@@ -211,7 +210,6 @@ lemma QuasispectrumRestricts.isSelfAdjoint (a : A) (ha : QuasispectrumRestricts 
     [IsStarNormal a] : IsSelfAdjoint a :=
   isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts.mpr ⟨‹_›, ha⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance IsSelfAdjoint.instNonUnitalContinuousFunctionalCalculus :
     NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint :=
   QuasispectrumRestricts.cfc (q := IsStarNormal) (p := IsSelfAdjoint) Complex.reCLM
@@ -230,7 +228,6 @@ lemma IsSelfAdjoint.spectrumRestricts {a : A} (ha : IsSelfAdjoint a) :
     SpectrumRestricts a Complex.reCLM :=
   ha.quasispectrumRestricts
 
-set_option backward.isDefEq.respectTransparency false in
 instance IsSelfAdjoint.instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℝ A IsSelfAdjoint :=
   SpectrumRestricts.cfc (q := IsStarNormal) (p := IsSelfAdjoint) Complex.reCLM
@@ -343,14 +340,12 @@ section RealEqComplex
 variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [Algebra ℂ A]
   [ContinuousFunctionalCalculus ℂ A IsStarNormal] [T2Space A]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cfcHom_real_eq_restrict {a : A} (ha : IsSelfAdjoint a) :
     cfcHom ha =
       ha.spectrumRestricts.starAlgHom (R := ℝ) (S := ℂ)
         (cfcHom ha.isStarNormal) (f := Complex.reCLM) :=
   ha.spectrumRestricts.cfcHom_eq_restrict _ ha ha.isStarNormal
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cfc_real_eq_complex {a : A} (f : ℝ → ℝ) (ha : IsSelfAdjoint a := by cfc_tac) :
     cfc f a = cfc (fun x ↦ f x.re : ℂ → ℂ) a := by
   exact ha.spectrumRestricts.cfc_eq_restrict (f := Complex.reCLM)
@@ -373,13 +368,11 @@ variable {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [Module
   [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [T2Space A]
   [NonUnitalContinuousFunctionalCalculus ℂ A IsStarNormal]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cfcₙHom_real_eq_restrict {a : A} (ha : IsSelfAdjoint a) :
     cfcₙHom ha = ha.quasispectrumRestricts.nonUnitalStarAlgHom (cfcₙHom ha.isStarNormal)
       (R := ℝ) (S := ℂ) (f := Complex.reCLM) :=
   ha.quasispectrumRestricts.cfcₙHom_eq_restrict _ ha ha.isStarNormal
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cfcₙ_real_eq_complex {a : A} (f : ℝ → ℝ) (ha : IsSelfAdjoint a := by cfc_tac) :
     cfcₙ f a = cfcₙ (fun x ↦ f x.re : ℂ → ℂ) a := by
   exact ha.quasispectrumRestricts.cfcₙ_eq_restrict (f := Complex.reCLM)

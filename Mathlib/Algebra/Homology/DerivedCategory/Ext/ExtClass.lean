@@ -27,9 +27,7 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
 
-open Localization Limits ZeroObject DerivedCategory Pretriangulated
-
-open Abelian
+open Localization Limits ZeroObject DerivedCategory Pretriangulated Abelian
 
 namespace ShortComplex
 

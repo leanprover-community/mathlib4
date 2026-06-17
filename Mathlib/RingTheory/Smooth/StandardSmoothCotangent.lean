@@ -76,7 +76,7 @@ namespace SubmersivePresentation
 variable [Finite σ] (P : SubmersivePresentation R S ι σ)
 
 set_option backward.isDefEq.respectTransparency false in
-lemma cotangentComplexAux_injective [Finite σ] : Function.Injective P.cotangentComplexAux := by
+lemma cotangentComplexAux_injective : Function.Injective P.cotangentComplexAux := by
   rw [← LinearMap.ker_eq_bot, eq_bot_iff]
   intro x hx
   obtain ⟨(x : P.ker), rfl⟩ := Cotangent.mk_surjective x
@@ -113,7 +113,7 @@ lemma cotangentComplexAux_injective [Finite σ] : Function.Injective P.cotangent
     simpa using this i
   · exact P.relation_mem_ker i
 
-lemma cotangentComplexAux_surjective [Finite σ] : Function.Surjective P.cotangentComplexAux := by
+lemma cotangentComplexAux_surjective : Function.Surjective P.cotangentComplexAux := by
   rw [← LinearMap.range_eq_top, _root_.eq_top_iff, ← P.basisDeriv.span_eq, Submodule.span_le]
   rintro - ⟨i, rfl⟩
   use Cotangent.mk ⟨P.relation i, P.relation_mem_ker i⟩
@@ -166,8 +166,7 @@ noncomputable def sectionCotangent : P.toExtension.CotangentSpace →ₗ[S] P.to
   (cotangentEquiv P).symm ∘ₗ (Finsupp.linearEquivFunOnFinite S S σ).toLinearMap ∘ₗ
     Finsupp.lcomapDomain _ P.map_inj ∘ₗ P.cotangentSpaceBasis.repr.toLinearMap
 
-lemma sectionCotangent_eq_iff [Finite σ]
-    (x : P.toExtension.CotangentSpace) (y : P.toExtension.Cotangent) :
+lemma sectionCotangent_eq_iff (x : P.toExtension.CotangentSpace) (y : P.toExtension.Cotangent) :
     sectionCotangent P x = y ↔
       ∀ i : σ, P.cotangentSpaceBasis.repr x (P.map i) = (P.cotangentComplexAux y) i := by
   simp only [sectionCotangent, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]

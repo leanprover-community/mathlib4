@@ -354,9 +354,6 @@ protected theorem not_lt_zero (o : Ordinal) : ¬o < 0 :=
 @[deprecated eq_zero_or_pos (since := "2025-11-21")]
 protected theorem eq_zero_or_pos : ∀ a : Ordinal, a = 0 ∨ 0 < a := eq_bot_or_bot_lt
 
-instance : ZeroLEOneClass Ordinal :=
-  ⟨bot_le⟩
-
 instance instNeZeroOne : NeZero (1 : Ordinal) :=
   ⟨Ordinal.one_ne_zero⟩
 
@@ -374,12 +371,14 @@ theorem type_lt_iff {α β} {r : α → α → Prop} {s : β → β → Prop} [I
 
 /-- Given two ordinals `α ≤ β`, then `initialSegToType α β` is the initial segment embedding of
 `α.ToType` into `β.ToType`. -/
+@[deprecated type_le_iff (since := "2026-04-12")]
 def initialSegToType {α β : Ordinal} (h : α ≤ β) : α.ToType ≤i β.ToType := by
   apply Classical.choice (type_le_iff.mp _)
   rwa [type_toType, type_toType]
 
 /-- Given two ordinals `α < β`, then `principalSegToType α β` is the principal segment embedding
 of `α.ToType` into `β.ToType`. -/
+@[deprecated type_lt_iff (since := "2026-04-12")]
 def principalSegToType {α β : Ordinal} (h : α < β) : α.ToType <i β.ToType := by
   apply Classical.choice (type_lt_iff.mp _)
   rwa [type_toType, type_toType]
@@ -549,11 +548,14 @@ instance small_Ioo (a b : Ordinal.{u}) : Small.{u} (Ioo a b) := small_subset Ioo
 instance small_Ioc (a b : Ordinal.{u}) : Small.{u} (Ioc a b) := small_subset Ioc_subset_Iic_self
 
 /-- `o.ToType` is an `OrderBot` whenever `o ≠ 0`. -/
-@[implicit_reducible]
+@[implicit_reducible, deprecated WellFoundedLT.toOrderBot (since := "2026-04-12")]
 def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.ToType where
   bot := (enum (· < ·)) ⟨0, _⟩
   bot_le := enum_zero_le' (bot_lt_iff_ne_bot.2 ho)
 
+set_option linter.deprecated false in
+@[deprecated "use `WellFoundedLT.toOrderBot` if you need an `OrderBot` instance"
+(since := "2026-04-12")]
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
     enum (α := o.ToType) (· < ·) ⟨0, by rwa [type_toType]⟩ =
       have H := toTypeOrderBot (o := o) (by rintro rfl; simp at ho)
@@ -818,13 +820,7 @@ instance addMonoidWithOne : AddMonoidWithOne Ordinal.{u} where
   zero_add o := inductionOn o fun α _ _ => (RelIso.emptySumLex _ _).ordinal_type_eq
   add_zero o := inductionOn o fun α _ _ => (RelIso.sumLexEmpty _ _).ordinal_type_eq
   add_assoc o₁ o₂ o₃ :=
-    Quotient.inductionOn₃ o₁ o₂ o₃ fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ =>
-      Quot.sound
-        ⟨⟨sumAssoc _ _ _, by
-          intro a b
-          rcases a with (⟨a | a⟩ | a) <;> rcases b with (⟨b | b⟩ | b) <;>
-            simp only [sumAssoc_apply_inl_inl, sumAssoc_apply_inl_inr, sumAssoc_apply_inr,
-              Sum.lex_inl_inl, Sum.lex_inr_inr, Sum.Lex.sep, Sum.lex_inr_inl]⟩⟩
+    Quotient.inductionOn₃ o₁ o₂ o₃ fun _ _ _ ↦ Quot.sound ⟨⟨sumAssoc .., by simp⟩⟩
   nsmul := nsmulRec
 
 @[simp]
@@ -876,15 +872,17 @@ protected theorem le_add_right (a b : Ordinal) : a ≤ a + b := le_self_add
 @[deprecated le_add_self (since := "2025-11-21")]
 protected theorem le_add_left (a b : Ordinal) : a ≤ b + a := le_add_self
 
+@[deprecated zero_max (since := "2026-05-07")]
 theorem max_zero_left : ∀ a : Ordinal, max 0 a = a :=
-  max_bot_left
+  zero_max
 
+@[deprecated max_zero (since := "2026-05-07")]
 theorem max_zero_right : ∀ a : Ordinal, max a 0 = a :=
-  max_bot_right
+  max_zero
 
-@[simp]
-theorem max_eq_zero {a b : Ordinal} : max a b = 0 ↔ a = 0 ∧ b = 0 :=
-  max_eq_bot
+@[deprecated _root_.max_eq_zero (since := "2026-05-07")]
+protected theorem max_eq_zero {a b : Ordinal} : max a b = 0 ↔ a = 0 ∧ b = 0 :=
+  max_eq_zero
 
 @[simp]
 theorem sInf_empty : sInf (∅ : Set Ordinal) = 0 :=
@@ -993,7 +991,8 @@ theorem type_lt_mem_range_succ [LinearOrder α] [WellFoundedLT α] [OrderTop α]
 
 theorem isSuccPrelimit_type_lt_iff [LinearOrder α] [WellFoundedLT α] :
     IsSuccPrelimit (typeLT α) ↔ NoMaxOrder α := by
-  rw [← not_iff_not, noMaxOrder_iff, not_isSuccPrelimit_iff', type_lt_mem_range_succ_iff]
+  rw [← not_iff_not, noMaxOrder_iff, not_isSuccPrelimit_iff_mem_range_succ,
+    type_lt_mem_range_succ_iff]
   simp [IsMax]
 
 theorem isSuccPrelimit_type_lt [LinearOrder α] [WellFoundedLT α] [h : NoMaxOrder α] :
@@ -1112,11 +1111,11 @@ The converse, however, is false (for instance, `o = ω+1` and `c = ℵ₀`).
 lemma card_le_of_le_ord {o : Ordinal} {c : Cardinal} (ho : o ≤ c.ord) : o.card ≤ c := by
   rw [← card_ord c]; exact Ordinal.card_le_card ho
 
-@[mono]
+@[gcongr, mono]
 theorem ord_strictMono : StrictMono ord :=
   gciOrdCard.strictMono_l
 
-@[mono]
+@[gcongr, mono]
 theorem ord_mono : Monotone ord :=
   gc_ord_card.monotone_l
 
@@ -1136,8 +1135,8 @@ theorem ord_zero : ord 0 = 0 :=
 theorem ord_nat (n : ℕ) : ord n = n := by
   apply (ord_le.2 (card_nat n).ge).antisymm
   induction n with
-  | zero => exact _root_.zero_le _
-  | succ n IH => exact (IH.trans_lt <| by simpa using Nat.cast_lt.2 n.lt_succ_self).succ_le
+  | zero => exact zero_le
+  | succ n IH => exact (IH.trans_lt <| by simp).succ_le
 
 @[simp]
 theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord ofNat(n) = OfNat.ofNat n :=
@@ -1179,12 +1178,18 @@ theorem mk_Iio_lt [LinearOrder α] [WellFoundedLT α] (i : α) (h : ord #α = ty
     #(Iio i) < #α :=
   card_typein_lt (r := LT.lt) i h
 
+theorem mk_Ioi_lt {α : Type*} [LinearOrder α] [WellFoundedGT α] (i : α) (h : ord #α = typeLT αᵒᵈ) :
+    #(Ioi i) < #α :=
+  mk_Iio_lt (OrderDual.toDual i) h
+
+@[deprecated mk_Iio_lt (since := "2026-04-12")]
 theorem mk_Iio_toType_ord_lt {c : Cardinal} (i : c.ord.ToType) : #(Iio i) < c := by
   simpa using mk_Iio_lt i
 
 @[deprecated (since := "2026-03-20")] alias mk_Iio_ord_toType := mk_Iio_toType_ord_lt
 
-@[deprecated mk_Iio_toType_ord_lt (since := "2026-03-20")]
+set_option linter.deprecated false in
+@[deprecated mk_Iio_lt (since := "2026-03-20")]
 theorem card_typein_toType_lt (c : Cardinal) (x : c.ord.ToType) :
     card (typein (α := c.ord.ToType) (· < ·) x) < c :=
   mk_Iio_toType_ord_lt x
@@ -1240,8 +1245,9 @@ def ord.orderEmbedding : Cardinal ↪o Ordinal :=
 theorem ord.orderEmbedding_coe : (ord.orderEmbedding : Cardinal → Ordinal) = ord :=
   rfl
 
+set_option linter.deprecated false in
 /-- If a cardinal `c` is nonzero, then `c.ord.ToType` has a least element. -/
-@[implicit_reducible]
+@[implicit_reducible, deprecated WellFoundedLT.toOrderBot (since := "2025-04-12")]
 noncomputable def toTypeOrderBot {c : Cardinal} (hc : c ≠ 0) :
     OrderBot c.ord.ToType :=
   Ordinal.toTypeOrderBot (fun h ↦ hc (ord_injective (by simpa using h)))
@@ -1273,7 +1279,7 @@ theorem card_lt_aleph0 {o} : card o < ℵ₀ ↔ o < ω :=
 
 @[simp]
 theorem nat_lt_card {o} {n : ℕ} : (n : Cardinal) < card o ↔ (n : Ordinal) < o := by
-  rw [← succ_le_iff, ← succ_le_iff, ← nat_succ, nat_le_card]
+  rw [← natCast_add_one_le_iff, ← succ_le_iff, ← Nat.cast_add_one, nat_le_card]
   rfl
 
 @[simp]

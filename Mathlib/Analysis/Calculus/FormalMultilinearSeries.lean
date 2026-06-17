@@ -52,8 +52,16 @@ def FormalMultilinearSeries (𝕜 : Type*) (E : Type*) (F : Type*) [Semiring �
   ∀ n : ℕ, E [×n]→L[𝕜] F
 deriving Inhabited
 
-set_option backward.inferInstanceAs.wrap.data false in
-deriving instance AddCommMonoid for FormalMultilinearSeries
+section AddCommMonoid
+
+/-- Copy `Pi.addCommMonoid`, ensuring the pointwise operations hold by defeq. -/
+instance : AddCommMonoid (FormalMultilinearSeries 𝕜 E F) where
+  __ := Pi.addCommMonoid
+  zero _ := 0
+  add x y n := x n + y n
+  nsmul k x n := k • x n
+
+end AddCommMonoid
 
 section Module
 

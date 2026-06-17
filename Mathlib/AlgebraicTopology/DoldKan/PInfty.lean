@@ -50,7 +50,7 @@ theorem Q_is_eventually_constant {q n : ℕ} (hqn : n ≤ q) :
 
 /-- The endomorphism `PInfty : K[X] ⟶ K[X]` obtained from the `P q` by passing to the limit. -/
 noncomputable def PInfty : K[X] ⟶ K[X] :=
-  ChainComplex.ofHom _ _ _ _ _ _ (fun n => ((P n).f n : X _⦋n⦌ ⟶ _)) fun n => by
+  ChainComplex.ofHom (fun n => ((P n).f n : X _⦋n⦌ ⟶ _)) fun n => by
     simpa only [← P_is_eventually_constant (show n ≤ n by rfl),
       AlternatingFaceMapComplex.obj_d_eq] using (P (n + 1) : K[X] ⟶ _).comm (n + 1) n
 
@@ -59,8 +59,7 @@ noncomputable def QInfty : K[X] ⟶ K[X] :=
   𝟙 _ - PInfty
 
 @[simp]
-theorem PInfty_f_0 : (PInfty.f 0 : X _⦋0⦌ ⟶ X _⦋0⦌) = 𝟙 _ :=
-  rfl
+theorem PInfty_f_0 : (PInfty.f 0 : X _⦋0⦌ ⟶ X _⦋0⦌) = 𝟙 _ := rfl
 
 theorem PInfty_f (n : ℕ) : (PInfty.f n : X _⦋n⦌ ⟶ X _⦋n⦌) = (P n).f n :=
   rfl

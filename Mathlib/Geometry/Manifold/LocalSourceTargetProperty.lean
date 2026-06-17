@@ -53,7 +53,7 @@ variable {𝕜 E E' F F' H H' G G' : Type*} [NontriviallyNormedField 𝕜]
   {M M' N N' : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [TopologicalSpace M'] [ChartedSpace H' M']
   [TopologicalSpace N] [ChartedSpace G N] [TopologicalSpace N'] [ChartedSpace G' N']
-  {n : WithTop ℕ∞}
+  {n : ℕ∞ω}
 
 namespace Manifold
 

@@ -116,7 +116,6 @@ def mateEquiv : TwoSquare G L₁ L₂ H ≃ TwoSquare R₁ H G R₂ where
     rw [← assoc, ← Functor.comp_map, assoc, ← β.natTrans.naturality, ← assoc, Functor.comp_map,
       ← G.map_comp, right_triangle_components, map_id, id_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A component of a transposed version of the mates correspondence. -/
 theorem mateEquiv_counit (α : TwoSquare G L₁ L₂ H) (d : D) :
     L₂.map ((mateEquiv adj₁ adj₂ α).app _) ≫ adj₂.counit.app _ =
@@ -278,7 +277,6 @@ def conjugateEquiv : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
     _ ≃ (R₁ ⋙ 𝟭 C ⟶ 𝟭 D ⋙ R₂) := TwoSquare.equivNatTrans _ _ _ _
     _ ≃ (R₁ ⟶ R₂) := R₁.rightUnitor.homCongr R₂.leftUnitor
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A component of a transposed form of the conjugation definition. -/
 theorem conjugateEquiv_counit (α : L₂ ⟶ L₁) (d : D) :
     L₂.map ((conjugateEquiv adj₁ adj₂ α).app _) ≫ adj₂.counit.app d =

@@ -109,7 +109,7 @@ the module topology.
 
 -/
 
-@[expose] public section
+public section
 
 section basics
 

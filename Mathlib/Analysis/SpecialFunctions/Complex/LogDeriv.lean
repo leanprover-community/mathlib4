@@ -16,7 +16,7 @@ public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsConformalMap Conformal
 

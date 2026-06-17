@@ -27,7 +27,7 @@ to develop relative versions `ContinuousOn` and `ContinuousWithinAt` of `Continu
 
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Function Topology
 

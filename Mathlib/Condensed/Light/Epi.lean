@@ -20,7 +20,7 @@ of light profinite sets.
 Further, we prove that the functor `lim : Discrete ℕ ⥤ LightCondMod R` preserves epimorphisms.
 -/
 
-@[expose] public section
+public section
 
 universe v u w u' v'
 
@@ -134,20 +134,14 @@ instance : Epi (Limits.Pi.map f) :=
       Functor.ofOpSequence_map_homOfLE_succ]
     infer_instance)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (lim (J := Discrete ℕ) (C := LightCondMod R)).PreservesEpimorphisms where
   preserves f _ := by
     have : lim.map f = (Pi.isoLimit _).inv ≫ Limits.Pi.map (f.app ⟨·⟩) ≫ (Pi.isoLimit _).hom := by
       apply limit.hom_ext
       intro ⟨n⟩
-      simp only [lim_obj, lim_map, limMap, IsLimit.map, limit.isLimit_lift, limit.lift_π,
-        Cone.postcompose_obj_pt, limit.cone_x, Cone.postcompose_obj_π, NatTrans.comp_app,
-        Functor.const_obj_obj, limit.cone_π, Pi.isoLimit, Limits.Pi.map, Category.assoc,
-        limit.conePointUniqueUpToIso_hom_comp, Pi.cone_pt, Pi.cone_π, Discrete.natTrans_app,
-        Discrete.functor_obj_eq_as]
-      erw [IsLimit.conePointUniqueUpToIso_inv_comp_assoc]
-      rfl
+      simp
     rw [this]
+    dsimp
     infer_instance
 
 end LightCondensed

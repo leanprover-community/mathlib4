@@ -301,7 +301,7 @@ lemma sum_meas_smul_cond_fiber {X : Ω → α} (hX : Measurable X) (μ : Measure
   ext E hE
   calc
     _ = ∑ x, μ (X ⁻¹' {x} ∩ E) := by
-      simp only [Measure.coe_finset_sum, Measure.coe_smul, Finset.sum_apply,
+      simp only [Measure.coe_finsetSum, Measure.coe_smul, Finset.sum_apply,
         Pi.smul_apply, smul_eq_mul]
       simp_rw [mul_comm (μ _), cond_mul_eq_inter (hX (.singleton _))]
     _ = _ := by

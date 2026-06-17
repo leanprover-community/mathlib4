@@ -127,9 +127,8 @@ instance sum : Denumerable (α ⊕ β) :=
   ⟨fun n => by
     suffices ∃ a ∈ @decodeSum α β _ _ n, encodeSum a = bit (bodd n) (div2 n) by
       simpa [bit_bodd_div2]
-    simp only [decodeSum, boddDiv2_eq, decode_eq_ofNat, Option.map_some,
-      Option.mem_def, Sum.exists]
-    cases bodd n <;> simp [bit, encodeSum, Nat.two_mul]⟩
+    simp only [decodeSum, decode_eq_ofNat, Option.map_some, Sum.exists]
+    cases bodd n <;> simp [bit_val, encodeSum]⟩
 
 section Sigma
 
@@ -157,10 +156,10 @@ theorem prod_ofNat_val (n : ℕ) :
 theorem prod_nat_ofNat : ofNat (ℕ × ℕ) = unpair := by funext; simp
 
 instance int : Denumerable ℤ :=
-  Denumerable.mk' Equiv.intEquivNat
+  fast_instance% Denumerable.mk' Equiv.intEquivNat
 
 instance pnat : Denumerable ℕ+ :=
-  Denumerable.mk' Equiv.pnatEquivNat
+  fast_instance% Denumerable.mk' Equiv.pnatEquivNat
 
 /-- The lift of a denumerable type is denumerable. -/
 instance ulift : Denumerable (ULift α) :=

@@ -19,7 +19,7 @@ In this file, we formalize the result [Stacks 031L] : For flat ring homomorphism
 
 -/
 
-@[expose] public section
+public section
 
 open IsLocalRing
 

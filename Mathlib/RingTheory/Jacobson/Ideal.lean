@@ -221,7 +221,7 @@ theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f
     haveI : J.IsMaximal := hJ.right
     exact sInf_le ⟨comap_mono hJ.left, comap_isMaximal_of_surjective _ hf⟩
 
-@[mono]
+@[gcongr, mono]
 theorem jacobson_mono {I J : Ideal R} : I ≤ J → I.jacobson ≤ J.jacobson := by
   intro h x hx
   rw [jacobson, mem_sInf] at hx ⊢

@@ -373,6 +373,10 @@ theorem subgroupOf_eq_top {H K : Subgroup G} : H.subgroupOf K = ⊤ ↔ K ≤ H 
 variable (H : Subgroup G)
 
 @[to_additive]
+instance [IsMulCommutative G] : IsMulCommutative H :=
+  IsMulCommutative.of_setLike_mul_comm fun a _ b _ ↦ mul_comm' a b
+
+@[to_additive]
 instance map_isMulCommutative (f : G →* G') [IsMulCommutative H] : IsMulCommutative (H.map f) := by
   refine .of_setLike_mul_comm ?_
   rintro - ⟨a, ha, rfl⟩ - ⟨b, hb, rfl⟩

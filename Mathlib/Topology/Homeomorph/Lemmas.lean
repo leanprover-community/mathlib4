@@ -514,11 +514,25 @@ lemma isHomeomorph_iff_exists_inverse : IsHomeomorph f ↔ Continuous f ∧ ∃ 
     exact ⟨h.symm, h.left_inv, h.right_inv, h.continuous_invFun⟩
   · exact (Homeomorph.mk ⟨f, g, hg.1, hg.2.1⟩ hf hg.2.2).isHomeomorph
 
+/-- An equivalence between topological spaces is a homeomorphism iff it is continuous in both
+directions. -/
+theorem Equiv.isHomeomorph_iff (e : X ≃ Y) :
+    IsHomeomorph e ↔ Continuous e ∧ Continuous e.symm := by
+  rw [e.continuous_symm_iff]
+  exact ⟨fun h ↦ ⟨h.continuous, h.isOpenMap⟩, fun ⟨hc, ho⟩ ↦ ⟨hc, ho, e.bijective⟩⟩
+
 /-- A map is a homeomorphism iff it is a surjective embedding. -/
 lemma isHomeomorph_iff_isEmbedding_surjective : IsHomeomorph f ↔ IsEmbedding f ∧ Surjective f where
   mp hf := ⟨hf.isEmbedding, hf.surjective⟩
   mpr h := ⟨h.1.continuous, ((isOpenEmbedding_iff f).2 ⟨h.1, h.2.range_eq ▸ isOpen_univ⟩).isOpenMap,
     h.1.injective, h.2⟩
+
+/-- A map is a homeomorphism iff it is a quotient map and injective. -/
+lemma isHomeomorph_iff_isQuotientMap_injective {f : X → Y} :
+    IsHomeomorph f ↔ IsQuotientMap f ∧ Injective f := by
+  refine ⟨fun h ↦ ⟨h.isQuotientMap, h.injective⟩,
+    fun h ↦ ⟨h.1.continuous, fun s hs ↦ ?_, h.2, h.1.surjective⟩⟩
+  rwa [← h.1.isOpen_preimage, Set.preimage_image_eq _ h.2]
 
 /-- A map is a homeomorphism iff it is continuous, closed and bijective. -/
 lemma isHomeomorph_iff_continuous_isClosedMap_bijective : IsHomeomorph f ↔

@@ -625,7 +625,7 @@ theorem locallyCompactSpace_of_group [Π i, Group (R i)] [∀ i, SubgroupClass (
     weaklyLocallyCompactSpace_of_cofinite hBopen.out hBcompact
   inferInstance
 
-open Pointwise in
+open scoped Pointwise in
 @[to_additive]
 instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, IsTopologicalGroup (R i)]
     [hAcompact : ∀ i, CompactSpace (B i)] : LocallyCompactSpace (Πʳ i, [R i, B i]) :=

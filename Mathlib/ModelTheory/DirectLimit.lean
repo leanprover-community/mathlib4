@@ -64,8 +64,7 @@ theorem coe_natLERec (m n : ℕ) (h : m ≤ n) :
   induction k with
   | zero => simp [natLERec, Nat.leRecOn_self]
   | succ k ih =>
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [Nat.leRecOn_succ le_self_add, natLERec, Nat.leRecOn_succ le_self_add, ← natLERec,
+    rw [Nat.leRecOn_succ le_self_add, natLERec, Nat.leRecOn_succ le_self_add, ← natLERec,
       Embedding.comp_apply, ih]
 
 instance natLERec.directedSystem : DirectedSystem G' fun i j h => natLERec f' i j h :=

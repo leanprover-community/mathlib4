@@ -35,7 +35,7 @@ noncomputable section
 
 open Finsupp
 
-open Pointwise
+open scoped Pointwise
 
 variable {ι α : Type*} [Zero α] {s : Finset ι} {f : ι →₀ α}
 

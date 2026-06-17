@@ -19,7 +19,7 @@ This file expands on the development in the core library.
 ## Main definitions
 
 * `finZeroElim` : Elimination principle for the empty set `Fin 0`, generalizes `Fin.elim0`.
-Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
+  Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
 * `Fin.equivSubtype` : Equivalence between `Fin n` and `{ i // i < n }`.
 
 -/
@@ -538,14 +538,6 @@ section Mul
 /-!
 ### mul
 -/
-
-@[deprecated (since := "2025-10-06")] alias mul_one' := Fin.mul_one
-
-@[deprecated (since := "2025-10-06")] alias one_mul' := Fin.one_mul
-
-@[deprecated (since := "2025-10-06")] alias mul_zero' := Fin.mul_zero
-
-@[deprecated (since := "2025-10-06")] alias zero_mul' := Fin.zero_mul
 
 end Mul
 

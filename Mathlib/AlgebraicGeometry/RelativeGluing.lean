@@ -24,6 +24,7 @@ open CategoryTheory Limits
 
 namespace AlgebraicGeometry
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.isLocallyDirected_of_equifibered_of_injective {J : Type*} [Category J]
     {F G : J ⥤ Scheme.{u}} (s : F ⟶ G) [Quiver.IsThin J] (hs : s.Equifibered)
     (H : ∀ {i j} (hij : i ⟶ j), Function.Injective (F.map hij))
@@ -33,7 +34,9 @@ lemma Scheme.isLocallyDirected_of_equifibered_of_injective {J : Type*} [Category
     simp only [Functor.comp_obj, Scheme.forget_obj, Functor.comp_map, Scheme.forget_map] at heq
     obtain ⟨l, fli, flj, x, hi, hj⟩ := (G ⋙ Scheme.forget).exists_map_eq_of_isLocallyDirected fi fj
         (s.app i xi) (s.app j xj) <| by
-      simp only [Functor.comp_obj, Scheme.forget_obj, Functor.comp_map, Scheme.forget_map]
+      simp only [Functor.comp_obj, forget_obj, Functor.comp_map, forget_map,
+        ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk]
+      dsimp at heq
       rw [← Scheme.Hom.comp_apply, ← s.naturality, Scheme.Hom.comp_apply, heq,
         ← Scheme.Hom.comp_apply, s.naturality]
       simp
@@ -43,8 +46,10 @@ lemma Scheme.isLocallyDirected_of_equifibered_of_injective {J : Type*} [Category
     refine ⟨e.inv z, ?_, ?_⟩
     · simp [← h1, ← Scheme.Hom.comp_apply, e]
     · apply H fj
-      simp only [Functor.comp_map, Scheme.forget_map, ← Scheme.Hom.comp_apply,
+      simp only [Functor.comp_obj, forget_obj, Functor.comp_map, forget_map,
+        ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, ← Scheme.Hom.comp_apply,
         Category.assoc, ← Functor.map_comp, show flj ≫ fj = fli ≫ fi by subsingleton]
+      dsimp at heq
       simp [e, Functor.map_comp, ← heq, h1]
 
 namespace Scheme.Cover

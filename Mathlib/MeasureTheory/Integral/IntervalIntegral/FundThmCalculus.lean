@@ -143,7 +143,7 @@ Other instances could be added when needed (in that case, one also needs to add 
 integral, fundamental theorem of calculus, FTC-1, FTC-2
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists HasDerivAt.mul -- guard against import creep
 

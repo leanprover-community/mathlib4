@@ -249,12 +249,13 @@ theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn :
     (primesOver p B).ncard * (ramificationIdxIn p B * inertiaDegIn p B) = Nat.card G := by
   let K := FractionRing A
   let L := FractionRing B
-  let _ := FractionRing.mulSemiringAction_of_isGaloisGroup G A B
-  rw [← smul_eq_mul, ← coe_primesOverFinset hpb B, Set.ncard_coe_finset, ← Finset.sum_const]
+  let := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
+  rw [← smul_eq_mul, ← IsDedekindDomain.coe_primesOverFinset hpb B, Set.ncard_coe_finset,
+    ← Finset.sum_const]
   rw [(IsGaloisGroup.toFractionRing G A B).card_eq_finrank, ← sum_ramification_inertia B K L hpb]
   apply Finset.sum_congr rfl
   intro P hp
-  rw [← Finset.mem_coe, coe_primesOverFinset hpb B] at hp
+  rw [← Finset.mem_coe, IsDedekindDomain.coe_primesOverFinset hpb B] at hp
   obtain ⟨_, _⟩ := hp
   rw [ramificationIdxIn_eq_ramificationIdx p P G, inertiaDegIn_eq_inertiaDeg p P G]
 
@@ -275,9 +276,9 @@ include G GAC GBC in
 theorem ncard_primesOver_mul_ncard_primesOver (hp : p ≠ ⊥) :
     (p.primesOver B).ncard * (P.primesOver C).ncard = (p.primesOver C).ncard := by
   have hP : P ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp P
-  let _ := FractionRing.mulSemiringAction_of_isGaloisGroup G A B
-  let _ := FractionRing.mulSemiringAction_of_isGaloisGroup GAC A C
-  let _ := FractionRing.mulSemiringAction_of_isGaloisGroup GBC B C
+  let := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
+  let := IsFractionRing.mulSemiringAction GAC A C (FractionRing A) (FractionRing C)
+  let := IsFractionRing.mulSemiringAction GBC B C (FractionRing B) (FractionRing C)
   have : p.ramificationIdxIn C * p.inertiaDegIn C ≠ 0 :=
     mul_ne_zero (ramificationIdxIn_ne_zero GAC hp) (inertiaDegIn_ne_zero GAC)
   rw [← Nat.mul_left_inj this, ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp C GAC]
@@ -335,7 +336,7 @@ lemma card_inertia_eq_ramificationIdxIn
     Nat.card (P.inertia G) = Ideal.ramificationIdxIn p S := by
   have := (show p.IsPrime from P.over_def p ▸ inferInstance).isMaximal hp
   have H := ncard_primesOver_mul_card_inertia_mul_finrank (G := G) p P
-  refine mul_right_injective₀ (primesOver_ncard_ne_zero p S) ?_
+  refine mul_right_injective₀ (IsDedekindDomain.primesOver_ncard_ne_zero p S) ?_
   refine mul_left_injective₀ (b := Module.finrank (R ⧸ p) (S ⧸ P)) ?_ ?_
   · intro e; simp [e, eq_comm, Nat.card_eq_zero, ‹Finite G›.not_infinite] at H
   dsimp only

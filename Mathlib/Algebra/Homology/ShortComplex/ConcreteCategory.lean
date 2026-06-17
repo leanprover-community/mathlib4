@@ -58,7 +58,7 @@ lemma Preadditive.mono_iff_injective {X Y : C} (f : X ⟶ Y) :
 
 lemma Preadditive.mono_iff_injective' {X Y : C} (f : X ⟶ Y) :
     Mono f ↔ Function.Injective f := by
-  simp only [mono_iff_injective, ← CategoryTheory.mono_iff_injective]
+  simp only [mono_iff_injective, ← CategoryTheory.ofHom_mono_iff_injective]
   apply (MorphismProperty.monomorphisms (Type w)).arrow_mk_iso_iff
   have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
   exact Arrow.isoOfNatIso e (Arrow.mk f)
@@ -73,7 +73,7 @@ lemma Preadditive.epi_iff_surjective {X Y : C} (f : X ⟶ Y) :
 
 lemma Preadditive.epi_iff_surjective' {X Y : C} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective f := by
-  simp only [epi_iff_surjective, ← CategoryTheory.epi_iff_surjective]
+  simp only [epi_iff_surjective, ← CategoryTheory.ofHom_epi_iff_surjective]
   apply (MorphismProperty.epimorphisms (Type w)).arrow_mk_iso_iff
   have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
   exact Arrow.isoOfNatIso e (Arrow.mk f)
@@ -165,6 +165,7 @@ lemma δ_apply (x₃ : ToType (D.L₀.X₃)) (x₂ : ToType (D.L₁.X₂)) (x₁
   rw [ConcreteCategory.comp_apply, eq₁]
   exact h₁.symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This lemma allows the computation of the connecting homomorphism
 `D.δ` when `D : SnakeInput C` and `C` is a concrete category. -/
 lemma δ_apply' (x₃ : (forget₂ C Ab).obj D.L₀.X₃)
@@ -173,12 +174,12 @@ lemma δ_apply' (x₃ : (forget₂ C Ab).obj D.L₀.X₃)
     (h₁ : (forget₂ C Ab).map D.L₂.f x₁ = (forget₂ C Ab).map D.v₁₂.τ₂ x₂) :
     (forget₂ C Ab).map D.δ x₃ = (forget₂ C Ab).map D.v₂₃.τ₁ x₁ := by
   have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
-  apply (mono_iff_injective (e.hom.app _)).1 inferInstance
+  apply (ofHom_mono_iff_injective (e.hom.app _)).1 inferInstance
   exact (ConcreteCategory.congr_hom (e.hom.naturality D.δ) x₃).trans ((D.δ_apply _ _ _
-    (((congr_fun (e.hom.naturality D.L₁.g) x₂).symm.trans (by simp [h₂])).trans
-      (congr_fun (e.hom.naturality D.v₀₁.τ₃) x₃))
-    (((congr_fun (e.hom.naturality D.L₂.f) x₁).symm.trans (by simp [h₁])).trans
-      (congr_fun (e.hom.naturality D.v₁₂.τ₂) x₂))).trans
+    (((ConcreteCategory.congr_hom (e.hom.naturality D.L₁.g) x₂).symm.trans (by simp_all)).trans
+      (ConcreteCategory.congr_hom (e.hom.naturality D.v₀₁.τ₃) x₃))
+    (((ConcreteCategory.congr_hom (e.hom.naturality D.L₂.f) x₁).symm.trans (by simp_all)).trans
+      (ConcreteCategory.congr_hom (e.hom.naturality D.v₁₂.τ₂) x₂))).trans
     (ConcreteCategory.congr_hom (e.hom.naturality D.v₂₃.τ₁).symm x₁))
 
 

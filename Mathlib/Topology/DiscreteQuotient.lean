@@ -179,7 +179,7 @@ theorem comap_id : S.comap (ContinuousMap.id X) = S := rfl
 theorem comap_comp (S : DiscreteQuotient Z) : S.comap (g.comp f) = (S.comap g).comap f :=
   rfl
 
-@[mono]
+@[gcongr, mono]
 theorem comap_mono {A B : DiscreteQuotient Y} (h : A ≤ B) : A.comap f ≤ B.comap f := by tauto
 
 end Comap
@@ -267,7 +267,7 @@ theorem leComap_id_iff : LEComap (ContinuousMap.id X) A A' ↔ A ≤ A' :=
 
 theorem LEComap.comp : LEComap g B C → LEComap f A B → LEComap (g.comp f) A C := by tauto
 
-@[mono]
+@[gcongr, mono]
 theorem LEComap.mono (h : LEComap f A B) (hA : A' ≤ A) (hB : B ≤ B') : LEComap f A' B' :=
   hA.trans <| h.trans <| comap_mono _ hB
 

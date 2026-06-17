@@ -138,23 +138,23 @@ lemma single_add_apply (a : ι) (m₁ m₂ : M) (b : ι) :
 lemma support_single_add {a : ι} {b : M} {f : ι →₀ M} (ha : a ∉ f.support) (hb : b ≠ 0) :
     support (single a b + f) = cons a f.support ha := by
   classical
-  have H := support_single_ne_zero a hb
+  have H := support_single a hb
   rw [support_add_eq, H, cons_eq_insert, insert_eq]
   rwa [H, disjoint_singleton_left]
 
 lemma support_add_single {a : ι} {b : M} {f : ι →₀ M} (ha : a ∉ f.support) (hb : b ≠ 0) :
     support (f + single a b) = cons a f.support ha := by
   classical
-  have H := support_single_ne_zero a hb
+  have H := support_single a hb
   rw [support_add_eq, H, union_comm, cons_eq_insert, insert_eq]
   rwa [H, disjoint_singleton_right]
 
 lemma support_single_add_single [DecidableEq ι] {f₁ f₂ : ι} {g₁ g₂ : M}
     (H : f₁ ≠ f₂) (hg₁ : g₁ ≠ 0) (hg₂ : g₂ ≠ 0) :
     (single f₁ g₁ + single f₂ g₂).support = {f₁, f₂} := by
-  rw [support_add_eq, support_single_ne_zero _ hg₁, support_single_ne_zero _ hg₂]
+  rw [support_add_eq, support_single _ hg₁, support_single _ hg₂]
   · simp
-  · simp [support_single_ne_zero, *]
+  · simp [support_single, *]
 
 lemma support_single_add_single_subset [DecidableEq ι] {f₁ f₂ : ι} {g₁ g₂ : M} :
     (single f₁ g₁ + single f₂ g₂).support ⊆ {f₁, f₂} := by
@@ -257,7 +257,7 @@ lemma induction₂ {motive : (ι →₀ M) → Prop} (f : ι →₀ M) (zero : m
   refine f.induction zero ?_
   convert add_single using 7
   apply (addCommute_of_disjoint _).eq
-  simp_all [disjoint_iff_inter_eq_empty, eq_empty_iff_forall_notMem, single_apply]
+  simp_all
 
 @[elab_as_elim]
 lemma induction_linear {motive : (ι →₀ M) → Prop} (f : ι →₀ M) (zero : motive 0)
@@ -304,7 +304,7 @@ lemma induction_on_max₂ (f : ι →₀ M) (zero : motive 0)
   convert add_single using 7 with _ _ _ H
   have := fun c hc ↦ (H c hc).ne
   apply (addCommute_of_disjoint _).eq
-  simp_all [disjoint_iff_inter_eq_empty, eq_empty_iff_forall_notMem, single_apply, not_imp_not]
+  simp_all [not_imp_not]
 
 /-- A finitely supported function can be built by adding up `single a b` for decreasing `a`.
 

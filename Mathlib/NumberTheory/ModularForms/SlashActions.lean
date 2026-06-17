@@ -208,14 +208,18 @@ theorem mul_slash (k1 k2 : ℤ) (A : GL (Fin 2) ℝ) (f g : ℍ → ℂ) :
   rw [h1]
   ring
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] A = f ∣[k1] A * g ∣[k2] A := by
   simp [SL_slash, mul_slash]
 
+theorem div_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
+    (f / g) ∣[k1 - k2] A = f ∣[k1] A / g ∣[k2] A := by
+  ext τ
+  simp [SL_slash_apply, zpow_sub₀ (denom_ne_zero A τ)]
+  grind
+
 open Finset
 
-set_option backward.isDefEq.respectTransparency false in
 lemma prod_slash_sum_weights {ι : Type*} {k : ι → ℤ} {g : GL (Fin 2) ℝ} {f : ι → ℍ → ℂ}
     {s : Finset ι} :
     (∏ i ∈ s, f i) ∣[∑ i ∈ s, k i] g = |g.det.val| ^ (#s - 1 : ℤ) • (∏ i ∈ s, f i ∣[k i] g) := by

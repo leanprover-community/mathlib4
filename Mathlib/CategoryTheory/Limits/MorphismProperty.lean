@@ -92,7 +92,7 @@ instance hasColimitsOfShape_of_closedUnderColimitsOfShape [HasColimitsOfShape J 
 
 end MorphismProperty.Comma
 
-section
+section CostructuredArrow
 
 variable {A : Type*} [Category* A] {L : A ⥤ T}
 
@@ -100,13 +100,11 @@ instance CostructuredArrow.closedUnderLimitsOfShape_discrete_empty [L.Faithful] 
     [P.ContainsIdentities] [P.RespectsIso] :
     (P.costructuredArrowObj L (X := L.obj Y)).IsClosedUnderLimitsOfShape (Discrete PEmpty.{1}) where
   limitsOfShape_le := by
-    rintro X ⟨p⟩
-    let e : X ≅ CostructuredArrow.mk (𝟙 (L.obj Y)) :=
-      p.isLimit.conePointUniqueUpToIso ((IsLimit.postcomposeInvEquiv
-        (Functor.emptyExt _ _) _).2 CostructuredArrow.mkIdTerminal)
-    rw [MorphismProperty.costructuredArrowObj_iff,
-      P.costructuredArrow_iso_iff e]
-    simpa using P.id_mem (L.obj Y)
+    rintro X p
+    letI t : IsTerminal X := (ObjectProperty.limitsOfShape_isEmpty_iff _ _ _ |>.mp p).some
+    let e : X ≅ CostructuredArrow.mk (𝟙 (L.obj Y)) := t.uniqueUpToIso CostructuredArrow.mkIdTerminal
+    simpa [MorphismProperty.costructuredArrowObj_iff,
+      P.costructuredArrow_iso_iff e] using P.id_mem (L.obj Y)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma CostructuredArrow.isClosedUnderColimitsOfShape {J : Type*} [Category* J]
@@ -128,6 +126,86 @@ lemma CostructuredArrow.isClosedUnderColimitsOfShape {J : Type*} [Category* J]
       P.cancel_left_of_respectsIso]
     exact H _ _ d.prop_diag_obj
 
+lemma CostructuredArrow.closedUnderLimitsOfShape_walkingCospan [HasPullbacks A] [HasPullbacks T]
+    [PreservesLimitsOfShape WalkingCospan L] (X : T)
+    [P.IsStableUnderComposition] [P.IsStableUnderBaseChange]
+    [P.HasOfPostcompProperty P] :
+    (P.costructuredArrowObj L (X := X)).IsClosedUnderLimitsOfShape WalkingCospan where
+  limitsOfShape_le := by
+    rintro Y ⟨pres, hpres⟩
+    have h : IsPullback (L.map (pres.π.app .left).left) (L.map (pres.π.app .right).left)
+        (L.map (pres.diag.map WalkingCospan.Hom.inl).left)
+          (L.map (pres.diag.map WalkingCospan.Hom.inr).left) :=
+      IsPullback.of_isLimit_cone <| isLimitOfPreserves
+        (CategoryTheory.CostructuredArrow.toOver L X ⋙ CategoryTheory.Over.forget X) pres.isLimit
+    rw [MorphismProperty.costructuredArrowObj_iff]
+    rw [show Y.hom = L.map (pres.π.app .left).left ≫ (pres.diag.obj .left).hom by simp]
+    apply P.comp_mem _ _ (P.of_isPullback h.flip ?_) (hpres _)
+    exact P.of_postcomp _ (pres.diag.obj WalkingCospan.one).hom (hpres .one)
+      (by simpa using hpres .right)
+
+namespace MorphismProperty.CostructuredArrow
+
+variable (X : T) [P.IsStableUnderComposition] [P.IsStableUnderBaseChange]
+  [P.HasOfPostcompProperty P] [HasPullbacks A] [HasPullbacks T]
+  [PreservesLimitsOfShape WalkingCospan L]
+
+noncomputable instance createsLimitsOfShape_walkingCospan :
+    CreatesLimitsOfShape WalkingCospan (CostructuredArrow.forget P ⊤ L X) := by
+  apply +allowSynthFailures forgetCreatesLimitsOfShapeOfClosed
+  · exact inferInstanceAs (HasLimitsOfShape WalkingCospan (CostructuredArrow L X))
+  · exact CostructuredArrow.closedUnderLimitsOfShape_walkingCospan _ _
+
+instance hasPullbacks : HasPullbacks (P.CostructuredArrow ⊤ L X) := by
+  apply +allowSynthFailures hasLimitsOfShape_of_closedUnderLimitsOfShape
+  · exact inferInstanceAs (HasLimitsOfShape WalkingCospan (CostructuredArrow L X))
+  · exact CostructuredArrow.closedUnderLimitsOfShape_walkingCospan _ _
+
+instance : PreservesLimitsOfShape WalkingCospan (CostructuredArrow.toOver P L X) :=
+  have : PreservesLimitsOfShape WalkingCospan
+      (CostructuredArrow.toOver P L X ⋙ Over.forget P ⊤ X) :=
+    inferInstanceAs <| PreservesLimitsOfShape WalkingCospan <|
+      CostructuredArrow.forget P ⊤ L X ⋙ CategoryTheory.CostructuredArrow.toOver L X
+  preservesLimitsOfShape_of_reflects_of_preserves _ (Over.forget _ _ X)
+
+end MorphismProperty.CostructuredArrow
+
+end CostructuredArrow
+
+section
+
+variable {A : Type*} [Category* A] {L : A ⥤ T}
+
+instance StructuredArrow.closedUnderColimitsOfShape_discrete_empty [L.Faithful] [L.Full] {Y : A}
+    [P.ContainsIdentities] [P.RespectsIso] :
+    (P.structuredArrowObj L (X := L.obj Y)).IsClosedUnderColimitsOfShape (Discrete PEmpty.{1}) where
+  colimitsOfShape_le := by
+    rintro X p
+    letI t : IsInitial X := (ObjectProperty.colimitsOfShape_isEmpty_iff _ _ _ |>.mp p).some
+    let e : X ≅ StructuredArrow.mk (𝟙 (L.obj Y)) := t.uniqueUpToIso StructuredArrow.mkIdInitial
+    simpa [MorphismProperty.structuredArrowObj_iff,
+      P.structuredArrow_iso_iff e] using P.id_mem (L.obj Y)
+
+set_option backward.isDefEq.respectTransparency false in
+lemma StructuredArrow.isClosedUnderLimitsOfShape {J : Type*} [Category* J]
+    {P : MorphismProperty T} [P.RespectsIso] [PreservesLimitsOfShape J L] [HasLimitsOfShape J A]
+    (c : ∀ (D : J ⥤ T) [HasLimit D], Cone D)
+    (hc : ∀ (D : J ⥤ T) [HasLimit D], IsLimit (c D))
+    (H : ∀ (D : J ⥤ T) [HasLimit D] {X : T} (s : (Functor.const J).obj X ⟶ D),
+      (∀ j, P (s.app j)) → P ((hc D).lift (Cone.mk X s))) (X : T) :
+    (P.structuredArrowObj L (X := X)).IsClosedUnderLimitsOfShape J where
+  limitsOfShape_le Y := by
+    intro ⟨d⟩
+    let hd : IsLimit ((CategoryTheory.StructuredArrow.proj X L ⋙ L).mapCone d.cone) :=
+      isLimitOfPreserves _ d.isLimit
+    have heq : Y.hom = hd.lift { pt := X, π := { app j := (d.diag.obj j).hom } } := by
+      refine hd.hom_ext fun j ↦ ?_
+      simp only [IsLimit.fac]
+      simp
+    rw [P.structuredArrowObj_iff, heq, ← (hc _).lift_comp_conePointUniqueUpToIso_hom hd,
+      P.cancel_right_of_respectsIso]
+    exact H _ _ d.prop_diag_obj
+
 end
 
 section
@@ -138,7 +216,6 @@ instance Over.closedUnderLimitsOfShape_discrete_empty [P.ContainsIdentities] [P.
     (P.overObj (X := X)).IsClosedUnderLimitsOfShape (Discrete PEmpty.{1}) :=
   CostructuredArrow.closedUnderLimitsOfShape_discrete_empty P
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `P` be stable under composition and base change. If `P` satisfies cancellation on the right,
 the subcategory of `Over X` defined by `P` is closed under pullbacks.
 
@@ -146,16 +223,29 @@ Without the cancellation property, this does not in general. Consider for exampl
 `P = Function.Surjective` on `Type`. -/
 instance Over.closedUnderLimitsOfShape_pullback [HasPullbacks T]
     [P.IsStableUnderComposition] [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] :
-    (P.overObj (X := X)).IsClosedUnderLimitsOfShape WalkingCospan where
-  limitsOfShape_le := by
-    rintro Y ⟨p⟩
-    have h := IsPullback.of_isLimit_cone <|
-        Limits.isLimitOfPreserves (CategoryTheory.Over.forget X) p.isLimit
-    rw [MorphismProperty.overObj_iff,
-      show Y.hom = (p.π.app .left).left ≫ (p.diag.obj .left).hom by simp]
-    apply P.comp_mem _ _ (P.of_isPullback h.flip ?_) (p.prop_diag_obj _)
-    exact P.of_postcomp _ (p.diag.obj WalkingCospan.one).hom (p.prop_diag_obj .one)
-      (by simpa using p.prop_diag_obj .right)
+    (P.overObj (X := X)).IsClosedUnderLimitsOfShape WalkingCospan :=
+  CostructuredArrow.closedUnderLimitsOfShape_walkingCospan _ _
+
+end
+
+section
+
+variable {X : T}
+
+instance Under.closedUnderColimitsOfShape_discrete_empty [P.ContainsIdentities] [P.RespectsIso] :
+    (P.underObj (X := X)).IsClosedUnderColimitsOfShape (Discrete PEmpty.{1}) :=
+  StructuredArrow.closedUnderColimitsOfShape_discrete_empty (L := 𝟭 _) P
+
+/-- Let `P` be stable under composition and cobase change. If `P` satisfies cancellation on the
+left, the subcategory of `Under X` defined by `P` is closed under pushouts. -/
+instance Under.closedUnderColimitsOfShape_pushout [HasPushouts T]
+    [P.IsStableUnderComposition] [P.IsStableUnderCobaseChange] [P.HasOfPrecompProperty P] :
+    (P.underObj (X := X)).IsClosedUnderColimitsOfShape WalkingSpan := by
+  rw [ObjectProperty.isClosedUnderColimitsOfShape_iff_op, ←
+    ObjectProperty.isClosedUnderLimitsOfShape_inverseImage_iff _ _ (Over.opEquivOpUnder _),
+    MorphismProperty.inverseImage_op_underObj,
+    ObjectProperty.isClosedUnderLimitsOfShape_iff_of_equivalence _ walkingSpanOpEquiv]
+  infer_instance
 
 end
 
@@ -192,18 +282,14 @@ instance [P.ContainsIdentities] : HasTerminal (P.Over ⊤ X) :=
 `Over.forget P ⊤ X` creates pullbacks. -/
 noncomputable instance createsLimitsOfShape_walkingCospan [HasPullbacks T]
     [P.IsStableUnderComposition] [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] :
-    CreatesLimitsOfShape WalkingCospan (Over.forget P ⊤ X) := by
-  apply +allowSynthFailures forgetCreatesLimitsOfShapeOfClosed
-  · exact inferInstanceAs (HasLimitsOfShape WalkingCospan (Over X))
-  · apply Over.closedUnderLimitsOfShape_pullback
+    CreatesLimitsOfShape WalkingCospan (Over.forget P ⊤ X) :=
+  CostructuredArrow.createsLimitsOfShape_walkingCospan _ _
 
 /-- If `P` is stable under composition, base change and satisfies post-cancellation,
 `P.Over ⊤ X` has pullbacks -/
 instance (priority := 900) hasPullbacks [HasPullbacks T] [P.IsStableUnderComposition]
-    [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] : HasPullbacks (P.Over ⊤ X) := by
-  apply +allowSynthFailures hasLimitsOfShape_of_closedUnderLimitsOfShape
-  · exact inferInstanceAs (HasLimitsOfShape WalkingCospan (Over X))
-  · apply Over.closedUnderLimitsOfShape_pullback
+    [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] : HasPullbacks (P.Over ⊤ X) :=
+  CostructuredArrow.hasPullbacks _ _
 
 variable [HasPullbacks T] [P.IsStableUnderComposition] [P.ContainsIdentities]
   [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P]
@@ -227,5 +313,61 @@ instance {X Y : T} (f : X ⟶ Y) : PreservesFiniteLimits (pullback P ⊤ f) wher
       (MorphismProperty.Over.pullback P ⊤ f) (MorphismProperty.Over.forget _ _ _)
 
 end MorphismProperty.Over
+
+namespace MorphismProperty.Under
+
+variable (X : T)
+
+noncomputable instance [P.ContainsIdentities] [P.RespectsIso] :
+    CreatesColimitsOfShape (Discrete PEmpty.{1}) (Under.forget P ⊤ X) := by
+  apply +allowSynthFailures forgetCreatesColimitsOfShapeOfClosed
+  · exact inferInstanceAs (HasColimitsOfShape _ (Under X))
+  · apply Under.closedUnderColimitsOfShape_discrete_empty _
+
+set_option backward.isDefEq.respectTransparency false in
+variable {X} in
+instance [P.ContainsIdentities] (Y : P.Under ⊤ X) :
+    Unique (Under.mk ⊤ (𝟙 X) (P.id_mem X) ⟶ Y) where
+  default := Under.homMk Y.hom (by simp)
+  uniq a := by ext; simp [← Under.w a]
+
+/-- `X ⟶ X` is the initial object of `P.Under ⊤ X`. -/
+def mkIdInitial [P.ContainsIdentities] :
+    IsInitial (Under.mk ⊤ (𝟙 X) (P.id_mem X)) :=
+  .ofUnique _
+
+instance [P.ContainsIdentities] : HasInitial (P.Under ⊤ X) :=
+  (Under.mkIdInitial P X).hasInitial
+
+/-- If `P` is stable under composition, cobase change and satisfies pre-cancellation,
+`Under.forget P ⊤ X` creates pushouts. -/
+noncomputable instance [HasPushouts T]
+    [P.IsStableUnderComposition] [P.IsStableUnderCobaseChange] [P.HasOfPrecompProperty P] :
+    CreatesColimitsOfShape WalkingSpan (Under.forget P ⊤ X) := by
+  apply +allowSynthFailures forgetCreatesColimitsOfShapeOfClosed
+  · exact inferInstanceAs (HasColimitsOfShape WalkingSpan (Under X))
+  · apply Under.closedUnderColimitsOfShape_pushout
+
+/-- If `P` is stable under composition, cobase change and satisfies pre-cancellation,
+`P.Under ⊤ X` has pushouts. -/
+instance (priority := 900) [HasPushouts T] [P.IsStableUnderComposition]
+    [P.IsStableUnderCobaseChange] [P.HasOfPrecompProperty P] : HasPushouts (P.Under ⊤ X) := by
+  apply +allowSynthFailures hasColimitsOfShape_of_closedUnderColimitsOfShape
+  · exact inferInstanceAs (HasColimitsOfShape WalkingSpan (Under X))
+  · apply Under.closedUnderColimitsOfShape_pushout
+
+variable [HasPushouts T] [P.IsStableUnderComposition] [P.ContainsIdentities]
+  [P.IsStableUnderCobaseChange] [P.HasOfPrecompProperty P]
+
+noncomputable instance : CreatesFiniteColimits (Under.forget P ⊤ X) :=
+  createsFiniteColimitsOfCreatesInitialAndPushouts _
+
+instance [HasFiniteWidePushouts T] : HasFiniteColimits (P.Under ⊤ X) :=
+  hasFiniteColimits_of_hasColimits_of_createsFiniteColimits (Under.forget P ⊤ X)
+
+instance : PreservesFiniteColimits (Under.forget P ⊤ X) :=
+  preservesFiniteColimits_of_preservesInitial_and_pushouts (Under.forget P ⊤ X)
+
+end MorphismProperty.Under
 
 end CategoryTheory

@@ -74,7 +74,7 @@ together.
 
 noncomputable section
 
-open Metric Set
+open Metric Set Function
 
 namespace Topology
 
@@ -356,6 +356,60 @@ lemma RelCWComplex.openCell_zero_eq_singleton [RelCWComplex C D] {j : cell C 0} 
 lemma RelCWComplex.cellFrontier_zero_eq_empty [RelCWComplex C D] {j : cell C 0} :
     cellFrontier 0 j = ∅ := by
   simp [cellFrontier, sphere_eq_empty_of_subsingleton]
+
+lemma RelCWComplex.nonempty_cellFrontier [CWComplex C] {n : ℕ} (hn : n ≠ 0) (j : cell C n) :
+    (cellFrontier n j).Nonempty := by
+  letI : NeZero n := ⟨hn⟩
+  use map n j (Pi.single 0 1)
+  simp only [cellFrontier, mem_image, mem_sphere_iff_norm, sub_zero]
+  use Pi.single 0 1, by simp [Pi.norm_single]
+
+/-- If two 0-cells have the same characteristic image point, they are equal. -/
+lemma RelCWComplex.injective_map_zero (C : Set X) [RelCWComplex C D] :
+    Injective ((map 0 · ![]) : cell C 0 → X) := by
+  rintro x z h
+  by_contra hne
+  exact not_disjoint_iff.mpr ⟨map 0 x ![], by simp [openCell_zero_eq_singleton, h]⟩
+    <| disjoint_openCell_of_ne (by grind : (⟨0, x⟩ : Σ n, cell C n) ≠ ⟨0, z⟩)
+
+@[simp]
+lemma RelCWComplex.map_zero_eq_self_iff (C : Set X) [RelCWComplex C D] {x z : cell C 0} :
+    map 0 x ![] = map 0 z ![] ↔ x = z :=
+  ⟨fun h ↦ injective_map_zero C h, fun h ↦ h ▸ rfl⟩
+
+lemma RelCWComplex.closedCell_zero_injective (C : Set X) [RelCWComplex C D] :
+    Injective (closedCell 0 : cell C 0 → _) := by
+  intro x y h
+  rw [closedCell_zero_eq_singleton, closedCell_zero_eq_singleton, singleton_eq_singleton_iff] at h
+  exact injective_map_zero C h
+
+lemma RelCWComplex.openCell_zero_injective (C : Set X) [RelCWComplex C D] :
+    Injective (openCell 0 : cell C 0 → _) := by
+  intro x y h
+  rw [openCell_zero_eq_singleton, openCell_zero_eq_singleton, singleton_eq_singleton_iff] at h
+  exact injective_map_zero C h
+
+lemma RelCWComplex.cellFrontier_one_eq [RelCWComplex C D] (e : cell C 1) :
+    cellFrontier 1 e = map 1 e '' {-1, 1} := by
+  rw [cellFrontier]
+  congr 1
+  ext f
+  simp only [mem_sphere_iff_norm, sub_zero, Pi.norm_def, Finset.univ_unique, Fin.default_eq_zero,
+    Fin.isValue, Finset.sup_singleton, coe_nnnorm, Real.norm_eq_abs, abs_eq (zero_le_one' ℝ),
+    mem_insert_iff, mem_singleton_iff]
+  rw [eq_const_of_unique (f := f), ← funext_iff_of_subsingleton (x := 0) (y := 0)]
+  simp [const_apply, or_comm]
+
+lemma CWComplex.exists_cellFrontier_one_eq [CWComplex C] (e : cell C 1) :
+    ∃ x y : cell C 0, cellFrontier 1 e = closedCell 0 x ∪ closedCell 0 y := by
+  obtain ⟨f, h⟩ := cellFrontier_subset_finite_closedCell 1 e
+  simp only [RelCWComplex.cellFrontier_one_eq, image_pair, Order.lt_one_iff, iUnion_iUnion_eq_left,
+    RelCWComplex.closedCell_zero_eq_singleton, pair_subset_iff, mem_iUnion, mem_singleton_iff,
+    exists_prop] at h
+  obtain ⟨⟨u, hu, hun1⟩, v, hv, hv1⟩ := h
+  use u, v
+  simp [RelCWComplex.cellFrontier_one_eq, image_pair, RelCWComplex.closedCell_zero_eq_singleton,
+    hun1, hv1, pair_comm]
 
 lemma RelCWComplex.base_subset_complex [RelCWComplex C D] : D ⊆ C := by
   simp_rw [← union]

@@ -189,6 +189,14 @@ lemma meromorphicAt_add_iff_meromorphicAt₁ {f g : 𝕜 → E} (hf : Meromorphi
   exact ⟨fun h ↦ by simpa using h.sub hf, fun _ ↦ by fun_prop⟩
 
 /--
+If `f` is meromorphic at `x`, then `f + g` is meromorphic at `x` if and only if `g` is meromorphic
+at `x`.
+-/
+lemma meromorphicAt_fun_add_iff_meromorphicAt₁ {f g : 𝕜 → E} (hf : MeromorphicAt f x) :
+    MeromorphicAt (fun z ↦ f z + g z) x ↔ MeromorphicAt g x :=
+  meromorphicAt_add_iff_meromorphicAt₁ hf
+
+/--
 If `g` is meromorphic at `x`, then `f + g` is meromorphic at `x` if and only if `f` is meromorphic
 at `x`.
 -/
@@ -196,6 +204,14 @@ lemma meromorphicAt_add_iff_meromorphicAt₂ {f g : 𝕜 → E} (hg : Meromorphi
     MeromorphicAt (f + g) x ↔ MeromorphicAt f x := by
   rw [add_comm]
   exact meromorphicAt_add_iff_meromorphicAt₁ hg
+
+/--
+If `g` is meromorphic at `x`, then `f + g` is meromorphic at `x` if and only if `f` is meromorphic
+at `x`.
+-/
+lemma meromorphicAt_fun_add_iff_meromorphicAt₂ {f g : 𝕜 → E} (hg : MeromorphicAt g x) :
+    MeromorphicAt (fun z ↦ f z + g z) x ↔ MeromorphicAt f x :=
+  meromorphicAt_add_iff_meromorphicAt₂ hg
 
 /--
 If `f` is meromorphic at `x`, then `f - g` is meromorphic at `x` if and only if `g` is meromorphic
@@ -206,12 +222,28 @@ lemma meromorphicAt_sub_iff_meromorphicAt₁ {f g : 𝕜 → E} (hf : Meromorphi
   exact ⟨fun h ↦ by simpa using h.sub hf, fun _ ↦ by fun_prop⟩
 
 /--
+If `f` is meromorphic at `x`, then `f - g` is meromorphic at `x` if and only if `g` is meromorphic
+at `x`.
+-/
+lemma meromorphicAt_fun_sub_iff_meromorphicAt₁ {f g : 𝕜 → E} (hf : MeromorphicAt f x) :
+    MeromorphicAt (fun z ↦ f z - g z) x ↔ MeromorphicAt g x :=
+  meromorphicAt_sub_iff_meromorphicAt₁ hf
+
+/--
 If `g` is meromorphic at `x`, then `f - g` is meromorphic at `x` if and only if `f` is meromorphic
 at `x`.
 -/
 lemma meromorphicAt_sub_iff_meromorphicAt₂ {f g : 𝕜 → E} (hg : MeromorphicAt g x) :
     MeromorphicAt (f - g) x ↔ MeromorphicAt f x := by
   exact ⟨fun h ↦ by simpa using h.add hg, fun _ ↦ by fun_prop⟩
+
+/--
+If `g` is meromorphic at `x`, then `f - g` is meromorphic at `x` if and only if `f` is meromorphic
+at `x`.
+-/
+lemma meromorphicAt_fun_sub_iff_meromorphicAt₂ {f g : 𝕜 → E} (hg : MeromorphicAt g x) :
+    MeromorphicAt (fun z ↦ f z - g z) x ↔ MeromorphicAt f x :=
+  meromorphicAt_sub_iff_meromorphicAt₂ hg
 
 /-- With our definitions, `MeromorphicAt f x` depends only on the values of `f` on a punctured
 neighbourhood of `x` (not on `f x`) -/

@@ -17,7 +17,7 @@ if it is a.e.-invariant under each scalar multiplication `(g • ·)`, `g : G`,
 then it is either null or conull.
 -/
 
-@[expose] public section
+public section
 
 open Set Filter MeasureTheory MulAction
 open scoped Pointwise

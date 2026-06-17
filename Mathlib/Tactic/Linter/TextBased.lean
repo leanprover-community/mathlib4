@@ -32,8 +32,8 @@ Currently, this file contains linters checking
 - for module names to be in upper camel case,
 - for module names to be valid Windows filenames, and containing no forbidden characters such as
   `!`, `.` or spaces.
-- for any code containing blocklisted unicode characters
-- bad unicode characters
+- for any code containing unicode characters not on the allowlist
+- for incorrect usage of unicode variant selectors
 
 For historic reasons, some further such checks are written in a Python script `lint-style.py`:
 these are gradually being rewritten in Lean.
@@ -394,7 +394,10 @@ def findBadUnicode (s : String) : Array StyleError :=
 
 end UnicodeLinter
 
-/-- Lint a collection of input strings for disallowed unicode characters. -/
+/-- Lint a collection of input strings for disallowed unicode characters.
+
+This is implemented using an allowlist, see
+`Mathlib.Linter.TextBased.UnicodeLinter.isAllowedCharacter`. -/
 public register_option linter.unicodeLinter : Bool := { defValue := true }
 
 @[inherit_doc linter.unicodeLinter]
@@ -587,7 +590,8 @@ COM6, COM7, COM8, COM9, COM¹, COM², COM³, LPT1, LPT2, LPT3, LPT4, LPT5, LPT6,
 LPT¹, LPT² or LPT³ in its filename, as these are forbidden on Windows.
 
 Also verify that module names contain no forbidden characters such as `*`, `?` (Windows),
-`!` (forbidden on Nix OS) or `.` (might result from confusion with a module name).
+`!` (forbidden on Nix OS), `.` (might result from confusion with a module name)
+or `'` (causes shell escaping issues in scripts).
 
 Source: https://learn.microsoft.com/en-gb/windows/win32/fileio/naming-a-file.
 Return the number of module names violating this rule. -/
@@ -619,6 +623,10 @@ public def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name)
         else if s.contains '.' then
           isBad := true
           IO.eprintln s!"error: module name '{name}' contains forbidden character '.'"
+        else if s.contains '\'' then
+          isBad := true
+          IO.eprintln s!"error: module name '{name}' contains a prime ('), \
+            which causes shell escaping issues"
         else if s.contains ' ' || s.contains '\t' || s.contains '\n' then
           isBad := true
           IO.eprintln s!"error: module name '{name}' contains a whitespace character"

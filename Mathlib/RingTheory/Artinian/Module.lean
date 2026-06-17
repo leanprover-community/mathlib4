@@ -161,7 +161,7 @@ open Function
 
 /-- Any injective endomorphism of an Artinian module is surjective. -/
 theorem surjective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective f) : Surjective f := by
-  have h := ‹IsArtinian R M›; contrapose! h
+  have h := ‹IsArtinian R M›; contrapose h
   rw [IsArtinian, WellFoundedLT, isWellFounded_iff]
   refine (RelEmbedding.natGT (LinearMap.range <| f ^ ·) ?_).not_wellFounded
   intro n
@@ -624,7 +624,6 @@ noncomputable def equivPi [IsReduced R] : R ≃ₐ[R] ∀ I : MaximalSpectrum R,
   .trans (.symm <| .quotientBot R R) <| .trans
     (Ideal.quotientEquivAlgOfEq R (nilradical_eq_zero R).symm) (quotNilradicalEquivPi R)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isSemisimpleRing_of_isReduced [IsReduced R] : IsSemisimpleRing R :=
   (equivPi R).symm.isSemisimpleRing
 

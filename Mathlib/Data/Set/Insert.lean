@@ -257,6 +257,9 @@ theorem eq_singleton_iff_nonempty_unique_mem : s = {a} ↔ s.Nonempty ∧ ∀ x 
   eq_singleton_iff_unique_mem.trans <|
     and_congr_left fun H => ⟨fun h' => ⟨_, h'⟩, fun ⟨x, h⟩ => H x h ▸ h⟩
 
+theorem singleton_iff_unique_mem : (∃ a, s = {a}) ↔ ∃! a, a ∈ s :=
+  ⟨fun ⟨a, h⟩ ↦ ⟨a, by grind⟩, fun ⟨a, h⟩ ↦ ⟨a, by grind⟩⟩
+
 theorem setOf_mem_list_eq_replicate {l : List α} {a : α} :
     { x | x ∈ l } = {a} ↔ ∃ n > 0, l = List.replicate n a := by
   simpa +contextual [Set.ext_iff, iff_iff_implies_and_implies, forall_and, List.eq_replicate_iff,

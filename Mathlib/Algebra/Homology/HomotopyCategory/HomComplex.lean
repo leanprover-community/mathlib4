@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
-/-! The cochain complex of homomorphisms between cochain complexes
+/-! # The cochain complex of homomorphisms between cochain complexes
 
 If `F` and `G` are cochain complexes (indexed by `ℤ`) in a preadditive category,
 there is a cochain complex of abelian groups whose `0`-cocycles identify to

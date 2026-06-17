@@ -16,7 +16,7 @@ In this file we prove that a linear order with order topology is a completely no
 topological space.
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Set Function OrderDual Topology Interval

@@ -327,7 +327,7 @@ theorem exists_mem_subalgebra_near_continuous_of_isCompact_of_separatesPoints
   let restrict_on_K : C(X, ℝ) →⋆ₐ[ℝ] C(K, ℝ) :=
     ContinuousMap.compStarAlgHom' ℝ ℝ ⟨(Subtype.val), continuous_subtype_val⟩
   --consider the subalgebra AK of functions with domain K
-  let AK : Subalgebra ℝ C(K, ℝ) := Subalgebra.map (restrict_on_K) A
+  let AK : Subalgebra ℝ C(K, ℝ) := Subalgebra.map restrict_on_K A
   have hsep : AK.SeparatesPoints := by
     intro x y hxy
     obtain ⟨_, ⟨g, hg1, hg2⟩, hg_sep⟩ := hA (Subtype.coe_ne_coe.mpr hxy)
@@ -336,7 +336,7 @@ theorem exists_mem_subalgebra_near_continuous_of_isCompact_of_separatesPoints
     refine ⟨Subalgebra.mem_map.mpr ?_,
       by simpa only [compStarAlgHom'_apply, comp_apply, coe_mk, ne_eq, restrict_on_K, hg2]⟩
     use g, hg1
-    simp [AlgHom.coe_coe]
+    simp
   obtain ⟨⟨gK, hgKAK⟩, hgapprox⟩ :=
     @ContinuousMap.exists_mem_subalgebra_near_continuous_of_separatesPoints _ _
     (isCompact_iff_compactSpace.mp hK) AK hsep (K.restrict f)
@@ -544,7 +544,7 @@ lemma adjoin_id_eq_span_one_union (s : Set 𝕜) :
     ← StarSubalgebra.mem_toSubalgebra, ← Subalgebra.mem_toSubmodule,
     StarAlgebra.adjoin_nonUnitalStarSubalgebra_eq_span, span_union, span_eq_toSubmodule]
 
-open Pointwise in
+open scoped Pointwise in
 lemma adjoin_id_eq_span_one_add (s : Set 𝕜) :
     ((StarAlgebra.adjoin 𝕜 {(restrict s (.id 𝕜) : C(s, 𝕜))}) : Set C(s, 𝕜)) =
       (span 𝕜 {(1 : C(s, 𝕜))} : Set C(s, 𝕜)) + (adjoin 𝕜 {(restrict s (.id 𝕜) : C(s, 𝕜))}) := by
@@ -639,7 +639,6 @@ lemma ContinuousMapZero.adjoin_id_dense (s : Set 𝕜) [Fact (0 ∈ s)]
     ContinuousMap.evalStarAlgHom_apply, ContinuousMap.coe_coe]
   exact map_zero f
 
-set_option backward.isDefEq.respectTransparency false in
 open NonUnitalStarAlgebra in
 lemma ContinuousMapZero.elemental_eq_top {𝕜 : Type*} [RCLike 𝕜] (s : Set 𝕜) [Fact (0 ∈ s)]
     [CompactSpace s] : elemental 𝕜 (ContinuousMapZero.id s) = ⊤ :=

@@ -162,4 +162,8 @@ lemma isKInjective_of_injective (L : CochainComplex C ℤ) (d : ℤ)
       limitSequence_eqUpTo φ hφ x₀ k₀ n (n - 1) (by lia) (by lia),
       limitSequence_eqUpTo φ hφ x₀ k₀ (n + 1) n (by lia) (by lia)]
 
+instance (K : CochainComplex C ℕ) [∀ n, Injective (K.X n)] :
+    IsKInjective (K.extend ComplexShape.embeddingUpNat) :=
+  isKInjective_of_injective _ 0
+
 end CochainComplex

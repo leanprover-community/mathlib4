@@ -310,7 +310,7 @@ lemma left_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
 lemma val_posSubmonoid_ne_zero (x : posSubmonoid R) : (x : R) ≠ 0 := by
   have := x.prop
   rw [posSubmonoid_def] at this
-  contrapose! this
+  contrapose this
   simp [this]
 
 variable (R) in
@@ -617,7 +617,7 @@ theorem ValueGroupWithZero.inv_mk (x : R) (y : posSubmonoid R) (hx : ¬x ≤ᵥ 
 
 /-- The value group-with-zero is a linearly ordered commutative group with zero. -/
 instance : LinearOrderedCommGroupWithZero (ValueGroupWithZero R) where
-  zero_le _ := bot_le
+  isBot_zero _ := bot_le
   exists_pair_ne := by
     refine ⟨0, 1, fun h => ?_⟩
     apply ge_of_eq at h
@@ -722,9 +722,6 @@ lemma vlt_iff_lt : x <ᵥ y ↔ v x < v y := by
   simp [lt_iff_not_ge, ← Compatible.vle_iff_le]
 
 @[deprecated (since := "2025-12-20")] alias srel_iff_lt := vlt_iff_lt
-
-@[deprecated (since := "2025-10-09")]
-alias Compatible.srel_iff_lt := vlt_iff_lt
 
 lemma veq_iff_eq : x =ᵥ y ↔ v x = v y := by
   simp_rw [veq_def, vle_iff_le v, antisymm_iff]
@@ -1112,7 +1109,7 @@ def embed [v.Compatible] : ValueGroupWithZero R →*₀ ValueGroup₀ v where
     simp only [Valuation.Compatible.vle_iff_le (v := v), map_mul, ← and_imp, ← le_antisymm_iff]
     rw [div_eq_div_iff]
     · simp only [ValueGroup₀.restrict₀_apply, Valuation.apply_posSubmonoid_ne_zero, ↓reduceDIte,
-      dite_mul, zero_mul]
+        dite_mul, zero_mul]
       split_ifs
       all_goals try simp_all [← WithZero.coe_mul, ← Units.val_inj]
     · simp [ValueGroup₀.restrict₀]

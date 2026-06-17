@@ -20,14 +20,7 @@ and its submodules. This immediately implies that the category of `R`-modules is
 
 @[expose] public section
 
-
-open CategoryTheory
-
-open CategoryTheory.Subobject
-
-open CategoryTheory.Limits
-
-open ModuleCat
+open CategoryTheory Subobject Limits
 
 universe v u
 

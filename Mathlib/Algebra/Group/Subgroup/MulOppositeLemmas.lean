@@ -22,7 +22,7 @@ subgroup, subgroups
 
 -/
 
-@[expose] public section
+public section
 
 variable {ι : Sort*} {G : Type*} [Group G]
 

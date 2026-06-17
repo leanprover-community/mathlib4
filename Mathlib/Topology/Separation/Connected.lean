@@ -12,7 +12,7 @@ public import Mathlib.Topology.Connected.TotallyDisconnected
 # Interaction of separation properties with connectedness properties
 -/
 
-@[expose] public section
+public section
 
 variable {X : Type*} [TopologicalSpace X]
 

@@ -783,6 +783,12 @@ theorem subtype_comp_codRestrict (f : M →[L] N) (p : L.Substructure N) (h : �
     p.subtype.toHom.comp (codRestrict p f h) = f :=
   ext fun _ => rfl
 
+@[simp]
+theorem domRestrict_comp_codRestrict (g : N →[L] P) (f : M →[L] N) (p : L.Substructure N)
+    (h : ∀ b, f b ∈ p) :
+    (g.domRestrict p).comp (f.codRestrict p h) = g.comp f :=
+  rfl
+
 /-- The range of a first-order hom `f : M → N` is a submodule of `N`.
 See Note [range copy pattern]. -/
 def range (f : M →[L] N) : L.Substructure N :=

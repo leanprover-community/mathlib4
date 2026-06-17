@@ -48,13 +48,6 @@ and it's unclear if projective modules are even a useful notion.
 
 https://en.wikipedia.org/wiki/Projective_module
 
-## TODO
-
-- Direct sum of two projective modules is projective.
-- Arbitrary sum of projective modules is projective.
-
-All of these should be relatively straightforward.
-
 ## Tags
 
 projective module
@@ -195,6 +188,18 @@ theorem Projective.of_equiv' [Module.Projective R M]
   .of_equiv e
 
 @[deprecated (since := "2026-02-14")] alias Projective.of_ringEquiv := Projective.of_equiv
+
+instance [Projective R M] : Projective R (ULift.{w} M) :=
+  Projective.of_equiv' ULift.moduleEquiv.symm
+
+theorem Projective.of_ulift [Projective R (ULift.{w} M)] : Projective R M :=
+  Projective.of_equiv' ULift.moduleEquiv
+
+instance [Small.{w} M] [Projective R M] : Projective R (Shrink.{w} M) :=
+  Projective.of_equiv' (Shrink.linearEquiv R M).symm
+
+theorem Projective.of_shrink [Small.{w} M] [Projective R (Shrink.{w} M)] : Projective R M :=
+  Projective.of_equiv' (Shrink.linearEquiv R M)
 
 /-- A quotient of a projective module is projective iff it is a direct summand. -/
 theorem Projective.iff_split_of_projective [Module.Projective R M] (s : M →ₗ[R] P)

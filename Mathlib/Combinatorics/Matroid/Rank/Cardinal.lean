@@ -84,17 +84,17 @@ as a `Cardinal`. See `Matroid.eRk` for a better-behaved `ℕ∞`-valued version.
 noncomputable def cRk (M : Matroid α) (X : Set α) := (M ↾ X).cRank
 
 theorem IsBase.cardinalMk_le_cRank (hB : M.IsBase B) : #B ≤ M.cRank :=
-  le_ciSup (f := fun B : {B // M.IsBase B} ↦ #B.1) (bddAbove_range _) ⟨B, hB⟩
+  le_ciSup (f := fun B : {B // M.IsBase B} ↦ #B.1) bddAbove_of_small ⟨B, hB⟩
 
 theorem Indep.cardinalMk_le_cRank (ind : M.Indep I) : #I ≤ M.cRank :=
   have ⟨B, isBase, hIB⟩ := ind.exists_isBase_superset
-  le_ciSup_of_le (bddAbove_range _) ⟨B, isBase⟩ (mk_le_mk_of_subset hIB)
+  le_ciSup_of_le bddAbove_of_small ⟨B, isBase⟩ (mk_le_mk_of_subset hIB)
 
 theorem cRank_eq_iSup_cardinalMk_indep : M.cRank = ⨆ I : {I // M.Indep I}, #I :=
-  (ciSup_le' fun B ↦ le_ciSup_of_le (bddAbove_range _) ⟨B, B.2.indep⟩ <| by rfl).antisymm <|
+  (ciSup_le' fun B ↦ le_ciSup_of_le bddAbove_of_small ⟨B, B.2.indep⟩ <| by rfl).antisymm <|
     ciSup_le' fun I ↦
       have ⟨B, isBase, hIB⟩ := I.2.exists_isBase_superset
-      le_ciSup_of_le (bddAbove_range _) ⟨B, isBase⟩ (mk_le_mk_of_subset hIB)
+      le_ciSup_of_le bddAbove_of_small ⟨B, isBase⟩ (mk_le_mk_of_subset hIB)
 
 theorem IsBasis'.cardinalMk_le_cRk (hIX : M.IsBasis' I X) : #I ≤ M.cRk X :=
   (isBase_restrict_iff'.2 hIX).cardinalMk_le_cRank
@@ -149,9 +149,9 @@ theorem Indep.cRk_eq_cardinalMk (hI : M.Indep I) : #I = M.cRk I :=
 
 @[simp] theorem cRk_map_image_lift (M : Matroid α) (hf : InjOn f M.E) (X : Set α)
     (hX : X ⊆ M.E := by aesop_mat) : lift.{u, v} ((M.map f hf).cRk (f '' X)) = lift (M.cRk X) := by
-  nth_rw 1 [cRk, cRank, le_antisymm_iff, lift_iSup (bddAbove_range _), cRk, cRank, cRk, cRank]
-  nth_rw 2 [lift_iSup (bddAbove_range _)]
-  simp only [ciSup_le_iff (bddAbove_range _), Subtype.forall, isBase_restrict_iff',
+  nth_rw 1 [cRk, cRank, le_antisymm_iff, lift_iSup bddAbove_of_small, cRk, cRank, cRk, cRank]
+  nth_rw 2 [lift_iSup bddAbove_of_small]
+  simp only [ciSup_le_iff bddAbove_of_small, Subtype.forall, isBase_restrict_iff',
     isBasis'_iff_isBasis hX, isBasis'_iff_isBasis (show f '' X ⊆ (M.map f hf).E from image_mono hX)]
   refine ⟨fun I hI ↦ ?_, fun I hI ↦ ?_⟩
   · obtain ⟨I, X', hIX, rfl, hXX'⟩ := map_isBasis_iff'.1 hI
@@ -172,9 +172,9 @@ theorem cRk_map_eq {β : Type u} {f : α → β} {X : Set β} (M : Matroid α) (
 
 @[simp] theorem cRk_comap_lift (M : Matroid β) (f : α → β) (X : Set α) :
     lift.{v, u} ((M.comap f).cRk X) = lift (M.cRk (f '' X)) := by
-  nth_rw 1 [cRk, cRank, le_antisymm_iff, lift_iSup (bddAbove_range _), cRk, cRank, cRk, cRank]
-  nth_rw 2 [lift_iSup (bddAbove_range _)]
-  simp only [ciSup_le_iff (bddAbove_range _), Subtype.forall, isBase_restrict_iff',
+  nth_rw 1 [cRk, cRank, le_antisymm_iff, lift_iSup bddAbove_of_small, cRk, cRank, cRk, cRank]
+  nth_rw 2 [lift_iSup bddAbove_of_small]
+  simp only [ciSup_le_iff bddAbove_of_small, Subtype.forall, isBase_restrict_iff',
     comap_isBasis'_iff, and_imp]
   refine ⟨fun I hI hfI hIX ↦ ?_, fun I hIX ↦ ?_⟩
   · rw [← mk_image_eq_of_injOn_lift _ _ hfI, lift_le]
@@ -247,8 +247,7 @@ theorem IsBase.cardinalMk_eq_cRank (hB : M.IsBase B) : #B = M.cRank := by
   simp [cRank, hrw]
 
 /-- Restrictions of matroids with cardinal rank functions have cardinal rank functions. -/
-instance invariantCardinalRank_restrict [InvariantCardinalRank M] :
-    InvariantCardinalRank (M ↾ X) := by
+instance invariantCardinalRank_restrict : InvariantCardinalRank (M ↾ X) := by
   refine ⟨fun I J Y hI hJ ↦ ?_⟩
   rw [isBasis_restrict_iff'] at hI hJ
   exact hI.1.cardinalMk_diff_comm hJ.1

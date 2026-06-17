@@ -21,7 +21,7 @@ A graph-specialized version is in development and will hopefully be added under 
 sometime soon.
 -/
 
-@[expose] public section
+public section
 
 assert_not_imported Mathlib.Algebra.Order.Group.Nat
 

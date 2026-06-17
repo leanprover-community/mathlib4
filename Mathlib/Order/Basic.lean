@@ -36,7 +36,7 @@ classes and allows to transfer order instances.
 
 `≤` and `<` are highly favored over `≥` and `>` in mathlib. The reason is that we can formulate all
 lemmas using `≤`/`<`, and `rw` has trouble unifying `≤` and `≥`. Hence choosing one direction spares
-us useless duplication. This is enforced by a linter. See Note [nolint_ge] for more infos.
+us useless duplication.
 
 Dot notation is particularly useful on `≤` (`LE.le`) and `<` (`LT.lt`). To that end, we
 provide many aliases to dot notation-less lemmas. For example, `le_trans` is aliased with
@@ -536,6 +536,7 @@ instance Ne.instIsEquiv_compl : IsEquiv α (· ≠ ·)ᶜ := by
 instance Pi.hasLe [∀ i, LE (π i)] :
     LE (∀ i, π i) where le x y := ∀ i, x i ≤ y i
 
+@[to_dual self]
 theorem Pi.le_def [∀ i, LE (π i)] {x y : ∀ i, π i} :
     x ≤ y ↔ ∀ i, x i ≤ y i :=
   Iff.rfl
@@ -545,6 +546,7 @@ instance Pi.preorder [∀ i, Preorder (π i)] : Preorder (∀ i, π i) where
   le_refl := fun a i ↦ le_refl (a i)
   le_trans := fun _ _ _ h₁ h₂ i ↦ le_trans (h₁ i) (h₂ i)
 
+@[to_dual self]
 theorem Pi.lt_def [∀ i, Preorder (π i)] {x y : ∀ i, π i} :
     x < y ↔ x ≤ y ∧ ∃ i, x i < y i := by
   simp +contextual [lt_iff_le_not_ge, Pi.le_def]

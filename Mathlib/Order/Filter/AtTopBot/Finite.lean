@@ -67,7 +67,6 @@ theorem high_scores [LinearOrder β] [NoMaxOrder β] {u : ℕ → β} (hu : Tend
   use n, hnN
   grind
 
--- see Note [nolint_ge]
 /-- If `u` is a sequence which is unbounded below,
 then after any point, it reaches a value strictly smaller than all previous values.
 -/

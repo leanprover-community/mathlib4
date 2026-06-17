@@ -257,7 +257,7 @@ theorem IsLocalization.scaleRoots_commonDenom_mem_lifts (p : Rₘ[X])
 theorem IsIntegral.exists_multiple_integral_of_isLocalization [Algebra Rₘ S] [IsScalarTower R Rₘ S]
     (x : S) (hx : IsIntegral Rₘ x) : ∃ m : M, IsIntegral R (m • x) := by
   rcases subsingleton_or_nontrivial Rₘ with _ | nontriv
-  · haveI := (_root_.algebraMap Rₘ S).codomain_trivial
+  · haveI := (algebraMap Rₘ S).codomain_trivial
     exact ⟨1, Polynomial.X, Polynomial.monic_X, Subsingleton.elim _ _⟩
   obtain ⟨p, hp₁, hp₂⟩ := hx
   -- Porting note: obtain doesn't support side goals
@@ -342,7 +342,7 @@ lemma isIntegral_of_isIntegral_adjoin_of_mul_eq_one
     · refine natDegree_sum_le_of_forall_le _ _ fun i hi ↦ ?_
       grw [natDegree_mul_le, natDegree_pow_le, natDegree_X_le, natDegree_reflect_le]
       simp [max_eq_left (hN _), le_natDegree_of_mem_supp _ hi]
-    · simp only [sum, finset_sum_coeff, coeff_X_pow_mul', coeff_reflect, q']
+    · simp only [sum, finsetSum_coeff, coeff_X_pow_mul', coeff_reflect, q']
       rw [Finset.sum_eq_single q.natDegree]
       · simp [hqm.leadingCoeff]
       · intro i hi₁ hi₂

@@ -54,7 +54,7 @@ but we could also consider a version of `NormalDomain` that only requires the lo
 `IsIntegrallyClosed` (even for Noetherian rings?).
 -/
 
-@[expose] public section
+public section
 
 
 open scoped nonZeroDivisors Polynomial

@@ -94,7 +94,7 @@ lemma angle_le_angle_add_angle_aux :
   simp only [one_pow, smul_eq_mul]
   have H : 1 - ⟪x, y⟫ ^ 2 ≠ 0 := by
     rw [sub_ne_zero, ne_comm, sq_ne_one_iff]
-    constructor <;> contrapose! hxy
+    constructor <;> contrapose hxy
     · rw [inner_eq_one_iff_of_norm_eq_one hx hy] at hxy
       simp [hy, hxy]
     · rw [inner_eq_neg_one_iff_of_norm_eq_one hx hy] at hxy
@@ -208,7 +208,7 @@ public theorem angle_eq_angle_add_add_angle_add_of_mem_span {x y z : V} (hy : y 
     (h_mem : y ∈ Submodule.span ℝ≥0 {x, z}) : angle x z = angle x y + angle y z := by
   rw [Submodule.mem_span_pair] at h_mem
   obtain ⟨kx, kz, rfl⟩ := h_mem
-  rcases (zero_le kx).eq_or_lt with rfl | hkx <;> rcases (zero_le kz).eq_or_lt with rfl | hkz
+  rcases eq_zero_or_pos kx with rfl | hkx <;> rcases eq_zero_or_pos kz with rfl | hkz
   · simp at hy
   · simp_all [NNReal.smul_def]
   · simp_all [NNReal.smul_def]

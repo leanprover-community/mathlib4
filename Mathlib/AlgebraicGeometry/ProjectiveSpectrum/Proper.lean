@@ -20,7 +20,7 @@ This contribution was created as part of the Durham Computational Algebraic Geom
 
 -/
 
-@[expose] public section
+public section
 
 namespace AlgebraicGeometry.Proj
 
@@ -33,7 +33,6 @@ open Scheme CategoryTheory Limits pullback HomogeneousLocalization
 
 section IsSeparated
 
-set_option backward.isDefEq.respectTransparency false in
 lemma lift_awayMapₐ_awayMapₐ_surjective {d e : ℕ} {f : A} (hf : f ∈ 𝒜 d)
     {g : A} (hg : g ∈ 𝒜 e) {x : A} (hx : x = f * g) (hd : 0 < d) :
     Function.Surjective
@@ -280,7 +279,7 @@ theorem valuativeCriterion_existence_aux
           rw [Localization.mk_eq_mk_iff, Localization.r_iff_exists]
           use 1
           simp only [OneMemClass.coe_one, ← pow_mul, Submonoid.coe_mul,
-            SubmonoidClass.coe_finset_prod, one_mul]
+            SubmonoidClass.coe_finsetProd, one_mul]
           simp_rw [← mul_assoc, Finset.prod_erase_mul _ d (h := Finset.mem_univ _), mul_assoc,
             ← mul_assoc (Finset.prod ..), Finset.prod_erase_mul _ d (h := Finset.mem_univ _),
             SubmonoidClass.coe_pow, ← pow_mul, Finset.prod_pow_eq_pow_sum,

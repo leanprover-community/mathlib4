@@ -265,6 +265,19 @@ lemma MultipliableLocallyUniformlyOn_congr
   exact (h2.hasProdLocallyUniformlyOn).congr fun v ↦ eqOn_fun_finsetProd h v
 
 @[to_additive]
+theorem HasProdLocallyUniformlyOn.comp {γ : Type*} [TopologicalSpace γ] {t : Set γ}
+    (h : HasProdLocallyUniformlyOn f g s) (h' : γ → β) (hh : Set.MapsTo h' t s)
+    (chh : ContinuousOn h' t) :
+    HasProdLocallyUniformlyOn (fun i y ↦ f i (h' y)) (g ∘ h') t :=
+  TendstoLocallyUniformlyOn.comp h h' hh chh
+
+@[to_additive]
+theorem MultipliableLocallyUniformlyOn.comp {γ : Type*} [TopologicalSpace γ] {t : Set γ}
+    (h : MultipliableLocallyUniformlyOn f s) (h' : γ → β) (hh : Set.MapsTo h' t s)
+    (chh : ContinuousOn h' t) : MultipliableLocallyUniformlyOn (fun i y ↦ f i (h' y)) t :=
+  (h.hasProdLocallyUniformlyOn.comp h' hh chh).multipliableLocallyUniformlyOn
+
+@[to_additive]
 lemma HasProdLocallyUniformlyOn.tendstoLocallyUniformlyOn_finsetRange
     {f : ℕ → β → α} (h : HasProdLocallyUniformlyOn f g s) :
     TendstoLocallyUniformlyOn (fun N b ↦ ∏ i ∈ Finset.range N, f i b) g atTop s := by

@@ -252,7 +252,7 @@ theorem IsRamified.ne_conjugate {w₁ w₂ : InfinitePlace K} (h : w₂.IsRamifi
   by_cases h_eq : w₁ = w₂
   · rw [isRamified_iff, isComplex_iff] at h
     exact Ne.symm (h_eq ▸ h.1)
-  · contrapose! h_eq
+  · contrapose h_eq
     rw [← mk_embedding w₁, h_eq, mk_conjugate_eq, mk_embedding]
 
 lemma IsRamified.comap_embedding {w : InfinitePlace K} (h : w.IsRamified k) :

@@ -221,7 +221,7 @@ theorem finite_of_finiteIndex (P : Sylow p G) [P.FiniteIndex] : Finite (Sylow p 
   rw [QuotientGroup.ker_mk']
   exact P.isPGroup'.to_le P.normalCore_le
 
-open Pointwise
+open scoped Pointwise
 
 /-- `Subgroup.pointwiseMulAction` preserves Sylow subgroups. -/
 instance pointwiseMulAction {α : Type*} [Group α] [MulDistribMulAction α G] :

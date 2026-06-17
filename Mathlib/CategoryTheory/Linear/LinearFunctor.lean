@@ -121,10 +121,10 @@ section
 variable {R} [Additive F]
 
 instance natLinear : F.Linear ℕ where
-  map_smul := F.mapAddHom.map_nsmul
+  map_smul f r := F.mapAddHom.map_nsmul r f
 
 instance intLinear : F.Linear ℤ where
-  map_smul f r := F.mapAddHom.map_zsmul f r
+  map_smul f r := F.mapAddHom.map_zsmul r f
 
 variable [CategoryTheory.Linear ℚ C] [CategoryTheory.Linear ℚ D]
 

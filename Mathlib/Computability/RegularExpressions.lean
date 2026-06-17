@@ -36,7 +36,7 @@ variable {α β γ : Type*}
 set_option genSizeOfSpec false in
 set_option genInjectivity false in
 /-- This is the definition of regular expressions. The names used here are meant to mirror the
-definition of a Kleene algebra (https://en.wikipedia.org/wiki/Kleene_algebra).
+[definition of a Kleene algebra](https://en.wikipedia.org/wiki/Kleene_algebra).
 * `0` (`zero`) matches nothing
 * `1` (`epsilon`) matches only the empty string
 * `char a` matches only the string 'a'

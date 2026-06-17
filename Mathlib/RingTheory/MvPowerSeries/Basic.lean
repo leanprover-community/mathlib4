@@ -564,8 +564,8 @@ section toSubring
 variable [Ring R] (p : MvPowerSeries σ R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T)
 
 /-- Given a multivariate formal power series `p` and a subring `T` that contains the
- coefficients of `p`, return the corresponding multivariate formal power series
- whose coefficients are in `T`. -/
+coefficients of `p`, return the corresponding multivariate formal power series
+whose coefficients are in `T`. -/
 def toSubring : MvPowerSeries σ T := fun n => ⟨p.coeff n, hp n⟩
 
 @[simp]
@@ -718,7 +718,7 @@ theorem monomial_pow (m : σ →₀ ℕ) (a : R) (n : ℕ) :
 
 /-- Vanishing of coefficients of powers of multivariate power series
 when the constant coefficient is nilpotent
-[N. Bourbaki, *Algebra {II}*, Chapter 4, §4, n°2, proposition 3][bourbaki1981] -/
+[N. Bourbaki, *Algebra II*, Chapter 4, §4, n°2, proposition 3][bourbaki1981] -/
 theorem coeff_eq_zero_of_constantCoeff_nilpotent {f : MvPowerSeries σ R} {m : ℕ}
     (hf : constantCoeff f ^ m = 0) {d : σ →₀ ℕ} {n : ℕ} (hn : m + degree d ≤ n) :
     coeff d (f ^ n) = 0 := by
@@ -927,6 +927,11 @@ theorem _root_.MvPowerSeries.monomial_smul_eq (e : σ →₀ ℕ) (p : ℕ) (r :
   rw [MvPowerSeries.monomial_eq', Finsupp.prod_of_support_subset _ Finsupp.support_smul _
     (by simp), Finsupp.prod]
   simp [pow_mul]
+
+theorem _root_.MvPowerSeries.monomial_mapDomain_apply_one {τ : Type*} (d : σ →₀ ℕ) (f : σ → τ) :
+    MvPowerSeries.monomial (mapDomain f d) (1 : R) =
+      d.prod fun s e ↦ MvPowerSeries.X (f s) ^ e := by
+  simp [pow_add, prod_sum_index, MvPowerSeries.monomial_one_eq, mapDomain]
 
 section Algebra
 

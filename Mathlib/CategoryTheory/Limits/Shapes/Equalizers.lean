@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 This file defines (co)equalizers as special cases of (co)limits.
 
-An equalizer is the categorical generalization of the subobject {a ∈ A | f(a) = g(a)} known
+An equalizer is the categorical generalization of the subobject ${a ∈ A | f(a) = g(a)}$ known
 from abelian groups or modules. It is a limit cone over the diagram formed by `f` and `g`.
 
 A coequalizer is the dual concept.

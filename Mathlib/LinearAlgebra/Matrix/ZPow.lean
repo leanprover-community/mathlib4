@@ -186,9 +186,9 @@ theorem SemiconjBy.zpow_right {A X Y : M} (hx : IsUnit X.det) (hy : IsUnit Y.det
     rw [zpow_negSucc, zpow_negSucc, nonsing_inv_apply _ hx', nonsing_inv_apply _ hy', SemiconjBy]
     refine (isRegular_of_isLeftRegular_det hy'.isRegular.left).left ?_
     dsimp only
-    rw [← mul_assoc, ← (h.pow_right n.succ).eq, mul_assoc, mul_smul,
-      mul_adjugate, ← Matrix.mul_assoc,
-      mul_smul (Y ^ _) (↑hy'.unit⁻¹ : R), mul_adjugate, smul_smul, smul_smul, hx'.val_inv_mul,
+    rw [← mul_assoc, ← (h.pow_right n.succ).eq, mul_assoc, Matrix.mul_smul,
+      mul_adjugate, ← Matrix.mul_assoc, Matrix.mul_smul (Y ^ _) (↑hy'.unit⁻¹ : R),
+      mul_adjugate, smul_smul, smul_smul, hx'.val_inv_mul,
       hy'.val_inv_mul, one_smul, Matrix.mul_one, Matrix.one_mul]
 
 theorem Commute.zpow_right {A B : M} (h : Commute A B) (m : ℤ) : Commute A (B ^ m) := by
@@ -249,7 +249,7 @@ theorem coe_units_zpow (u : Mˣ) : ∀ n : ℤ, ((u ^ n : Mˣ) : M) = (u : M) ^ 
 theorem zpow_ne_zero_of_isUnit_det [Nonempty n'] [Nontrivial R] {A : M} (ha : IsUnit A.det)
     (z : ℤ) : A ^ z ≠ 0 := by
   have := ha.det_zpow z
-  contrapose! this
+  contrapose this
   rw [this, det_zero ‹_›]
   exact not_isUnit_zero
 

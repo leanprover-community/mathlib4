@@ -449,8 +449,8 @@ theorem isNonarchimedean_smoothingFun (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedea
     simp only [EventuallyEq, Function.comp_apply, eventually_atTop, ge_iff_le]
     use 1
     intro m hm
-    have h0 : (ψ m : ℝ) ≠ 0 := cast_ne_zero.mpr (_root_.ne_of_gt (lt_of_le_of_lt (_root_.zero_le _)
-      (hψ_mono (Nat.pos_of_ne_zero (one_le_iff_ne_zero.mp hm)))))
+    have h0 : (ψ m : ℝ) ≠ 0 := cast_ne_zero.mpr
+      (hψ_mono (Nat.pos_of_ne_zero (one_le_iff_ne_zero.mp hm))).ne_zero
     rw [← div_self h0, ← sub_div, cast_sub (hmu_le _)]
   have b_in : b ∈ Set.Icc (0 : ℝ) 1 := Set.Icc.mem_iff_one_sub_mem.mp a_in
   have hnu_le : ∀ n : ℕ, nu n ≤ n := fun n => by simp only [hnu, tsub_le_self]
@@ -507,9 +507,8 @@ theorem isNonarchimedean_smoothingFun (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedea
   obtain ⟨N, hN⟩ := hex
   /- By definition of `smoothingFun`, and applying the inequality `hN`, it suffices to show that
     `μ ((x + y) ^ ψ N) ^ (1 / ψ N) ≤ μ (x ^ mu (ψ N)) ^ (1 / ψ N) * μ (y ^ nu ψ N) ^ (1 / ψ N)`. -/
-  apply le_trans (ciInf_le (smoothingSeminormSeq_bddBelow μ _)
-    ⟨ψ N, lt_of_le_of_lt (_root_.zero_le (ψ 0)) (hψ_mono.lt_iff_lt.mpr N.pos)⟩)
-  apply le_trans _ hN.le
+  apply (ciInf_le (smoothingSeminormSeq_bddBelow μ _)
+    ⟨ψ N, (hψ_mono.lt_iff_lt.mpr N.pos).pos⟩).trans (hN.le.trans' _)
   simpa [PNat.mk_coe, hnu, ← mul_rpow (apply_nonneg μ _) (apply_nonneg μ _)] using
     mu_property μ hn (ψ N)
 

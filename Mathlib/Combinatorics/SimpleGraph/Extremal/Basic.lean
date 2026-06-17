@@ -165,7 +165,7 @@ theorem extremalNumber_congr {n₁ n₂ : ℕ} {W₁ W₂ : Type*} {H₁ : Simpl
     rw [← Fintype.card_fin n₂, extremalNumber_le_iff]
     intro G _ h
     apply card_edgeFinset_le_extremalNumber
-    contrapose! h
+    contrapose h
     exact h.trans' ⟨e.toCopy⟩
 
 /-- If `H₁ ≃g H₂`, then `extremalNumber n H₁` equals `extremalNumber n H₂`. -/
@@ -189,7 +189,7 @@ theorem card_edgeFinset_deleteIncidenceSet_le_extremalNumber
     #(G.deleteIncidenceSet v).edgeFinset ≤ extremalNumber (card V - 1) H := by
   rw [← card_edgeFinset_induce_compl_singleton, ← @card_unique ({v} : Set V), ← card_compl_set]
   apply card_edgeFinset_le_extremalNumber
-  contrapose! h
+  contrapose h
   exact h.trans ⟨Copy.induce G {v}ᶜ⟩
 
 end ExtremalNumber

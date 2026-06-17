@@ -311,7 +311,6 @@ theorem oangle_eq_oangle_of_dist_eq {p₁ p₂ p₃ : P} (h : dist p₁ p₂ = d
   rw [oangle, oangle, ← vsub_sub_vsub_cancel_left p₃ p₂ p₁, ← vsub_sub_vsub_cancel_left p₂ p₃ p₁,
     o.oangle_sub_eq_oangle_sub_rev_of_norm_eq h]
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 /-- The angle at the apex of an isosceles triangle is `π` minus twice a base angle, oriented
 angle-at-point form. -/
 theorem oangle_eq_pi_sub_two_zsmul_oangle_of_dist_eq {p₁ p₂ p₃ : P} (hn : p₂ ≠ p₃)
@@ -671,7 +670,6 @@ theorem dist_eq_iff_eq_smul_rotation_pi_div_two_vadd_midpoint {p₁ p₂ p : P} 
 
 open AffineSubspace
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given two pairs of distinct points on the same line, such that the vectors between those
 pairs of points are on the same ray (oriented in the same direction on that line), and a fifth
 point, the angles at the fifth point between each of those two pairs of points have the same

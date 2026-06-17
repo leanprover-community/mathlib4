@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.PrincipalIdealDomain
 In this file, we proved some results about the dimension of a principal ideal domain.
 -/
 
-@[expose] public section
+public section
 
 instance IsPrincipalIdealRing.krullDimLE_one (R : Type*) [CommRing R]
     [IsPrincipalIdealRing R] : Ring.KrullDimLE 1 R := by

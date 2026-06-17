@@ -17,7 +17,7 @@ We introduce the following typeclasses for measures:
 * `IsProbabilityMeasure μ`: `μ univ = 1`.
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 
@@ -110,7 +110,7 @@ instance isProbabilityMeasure_ite {p : Prop} [Decidable p] {μ ν : Measure α}
 open unitInterval in
 instance {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {p : I} :
     IsProbabilityMeasure (toNNReal p • μ + toNNReal (σ p) • ν) where
-  measure_univ := by simp [← add_smul]
+  measure_univ := by simp [← ENNReal.coe_add]
 
 variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
 

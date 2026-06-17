@@ -26,8 +26,8 @@ structures.
 ## References
 
 For the Flypitch project:
-- [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
-  [flypitch_cpp]
+- [J. Han, F. van Doorn, *A formal proof of the independence of the continuum
+  hypothesis*][flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
   the continuum hypothesis*][flypitch_itp]
 
@@ -449,19 +449,18 @@ end
 
 open FirstOrder
 
-instance constantsOnSelfStructure : (constantsOn M).Structure M :=
-  constantsOn.structure id
-
-instance withConstantsSelfStructure : L[[M]].Structure M :=
-  inferInstanceAs <| (L.sum _).Structure M
-
-instance withConstants_self_expansion : (lhomWithConstants L M).IsExpansionOn M :=
-  ⟨fun _ _ => rfl, fun _ _ => rfl⟩
-
 variable (α : Type*) [(constantsOn α).Structure M]
 
 instance withConstantsStructure : L[[α]].Structure M :=
   inferInstanceAs <| (L.sum _).Structure M
+
+instance constantsOnSelfStructure : (constantsOn M).Structure M :=
+  fast_instance% constantsOn.structure id
+
+instance withConstantsSelfStructure : L[[M]].Structure M := inferInstance
+
+instance withConstants_self_expansion : (lhomWithConstants L M).IsExpansionOn M :=
+  ⟨fun _ _ => rfl, fun _ _ => rfl⟩
 
 instance withConstants_expansion : (L.lhomWithConstants α).IsExpansionOn M :=
   ⟨fun _ _ => rfl, fun _ _ => rfl⟩
@@ -510,9 +509,9 @@ def Embedding.withConstants (_f : M ↪[L] N) (_A : Set M) : Type w' := N
 deriving L.Structure
 
 instance (f : M ↪[L] N) : (constantsOn A).Structure (f.withConstants A) :=
-  constantsOn.structure fun a => f a
+  fast_instance% constantsOn.structure fun a => f a
 
-instance : L[[A]].Structure (f.withConstants A) := L.withConstantsStructure A
+instance : L[[A]].Structure (f.withConstants A) := inferInstance
 
 /-- Lifts an embedding to the expanded language with constants. -/
 def Embedding.liftWithConstants :

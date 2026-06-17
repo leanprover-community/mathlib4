@@ -75,7 +75,7 @@ lemma indicator_biUnion_eq_sum_powerset (s : Finset ι) (S : ι → Set α) (f :
     intro t hts ht
     rw [Set.indicator_of_notMem]
     · simp
-    · contrapose! ha
+    · contrapose ha
       simp only [Set.mem_iInter] at ha
       rcases ht with ⟨i, hi⟩
       simp only [Set.mem_iUnion, exists_prop]

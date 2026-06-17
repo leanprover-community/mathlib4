@@ -33,7 +33,7 @@ if `E : C ≌ D` is an equivalence of pretriangulated categories, then
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists TwoSidedIdeal
 

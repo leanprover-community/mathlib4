@@ -45,7 +45,7 @@ noncomputable section
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {n : WithTop ℕ∞}
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {n : ℕ∞ω}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 namespace Manifold
@@ -300,7 +300,6 @@ lemma exists_lt_locally_constant_of_riemannianEDist_lt
       intro t u htu
       dsimp only
       gcongr
-      simpa only [inv_nonneg, sub_nonneg] using ha'b'.le
     · simp only [η]
       apply (ContDiff.contDiffOn _).differentiableOn one_ne_zero
       fun_prop

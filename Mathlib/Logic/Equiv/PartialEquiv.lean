@@ -430,7 +430,7 @@ theorem symm_image_target_inter_eq' (s : Set β) : e.symm '' (e.target ∩ s) = 
   e.symm.image_source_inter_eq' _
 
 theorem source_inter_preimage_inv_preimage (s : Set α) :
-    e.source ∩ e ⁻¹' (e.symm ⁻¹' s) = e.source ∩ s :=
+    e.source ∩ e ⁻¹' e.symm ⁻¹' s = e.source ∩ s :=
   Set.ext fun x => and_congr_right_iff.2 fun hx =>
     by simp only [mem_preimage, e.left_inv hx]
 
@@ -439,13 +439,13 @@ theorem source_inter_preimage_target_inter (s : Set β) :
   ext fun _ => ⟨fun hx => ⟨hx.1, hx.2.2⟩, fun hx => ⟨hx.1, e.map_source hx.1, hx.2⟩⟩
 
 theorem target_inter_inv_preimage_preimage (s : Set β) :
-    e.target ∩ e.symm ⁻¹' (e ⁻¹' s) = e.target ∩ s :=
+    e.target ∩ e.symm ⁻¹' e ⁻¹' s = e.target ∩ s :=
   e.symm.source_inter_preimage_inv_preimage _
 
-theorem symm_image_image_of_subset_source {s : Set α} (h : s ⊆ e.source) : e.symm '' (e '' s) = s :=
+theorem symm_image_image_of_subset_source {s : Set α} (h : s ⊆ e.source) : e.symm '' e '' s = s :=
   (e.leftInvOn.mono h).image_image
 
-theorem image_symm_image_of_subset_target {s : Set β} (h : s ⊆ e.target) : e '' (e.symm '' s) = s :=
+theorem image_symm_image_of_subset_target {s : Set β} (h : s ⊆ e.target) : e '' e.symm '' s = s :=
   e.symm.symm_image_image_of_subset_source h
 
 theorem source_subset_preimage_target : e.source ⊆ e ⁻¹' e.target :=
@@ -958,6 +958,15 @@ theorem trans_transPartialEquiv (e : α ≃ β) (e' : β ≃ γ) (f'' : PartialE
     (e.trans e').transPartialEquiv f'' = e.transPartialEquiv (e'.transPartialEquiv f'') := by
   simp only [transPartialEquiv_eq_trans, PartialEquiv.trans_assoc, trans_toPartialEquiv]
 
+@[simp]
+lemma coe_transPartialEquiv {f : α ≃ β} {g : PartialEquiv β γ} : f.transPartialEquiv g = g ∘ f :=
+  rfl
+
+@[simp]
+lemma coe_transPartialEquiv_symm {f : α ≃ β} {g : PartialEquiv β γ} :
+    (f.transPartialEquiv g).symm = f.symm ∘ g.symm :=
+  rfl
+
 end Equiv
 
 namespace PartialEquiv
@@ -982,5 +991,12 @@ theorem transEquiv_transEquiv (e : PartialEquiv α β) (f' : β ≃ γ) (f'' : �
 theorem trans_transEquiv (e : PartialEquiv α β) (e' : PartialEquiv β γ) (f'' : γ ≃ δ) :
     (e.trans e').transEquiv f'' = e.trans (e'.transEquiv f'') := by
   simp only [transEquiv_eq_trans, trans_assoc]
+
+@[simp] lemma coe_transEquiv {f : PartialEquiv α β} {g : β ≃ γ} : f.transEquiv g = g ∘ f := rfl
+
+@[simp]
+lemma coe_transEquiv_symm {f : PartialEquiv α β} {g : β ≃ γ} :
+    (f.transEquiv g).symm = f.symm ∘ g.symm :=
+  rfl
 
 end PartialEquiv

@@ -702,6 +702,12 @@ theorem continuous_quot_lift {f : X → Y} (hr : ∀ a b, r a b → f a = f b) (
     Continuous (Quot.lift f hr : Quot r → Y) :=
   continuous_coinduced_dom.2 h
 
+@[continuity, fun_prop]
+theorem continuous_quot_map {r' : Y → Y → Prop} {f : X → Y} (hr : ∀ a b, r a b → r' (f a) (f b))
+    (h : Continuous f) :
+    Continuous (Quot.map f hr : Quot r → Quot r') :=
+  continuous_quot_lift _ (continuous_quot_mk.comp h)
+
 theorem isQuotientMap_quotient_mk' : IsQuotientMap (@Quotient.mk' X s) :=
   isQuotientMap_quot_mk
 

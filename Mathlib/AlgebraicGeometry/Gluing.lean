@@ -77,6 +77,7 @@ namespace Scheme
   limits library easier.)
 4. An open immersion `f i j : V i j ⟶ U i` for each `i j : ι`.
 5. A transition map `t i j : V i j ⟶ V j i` for each `i j : ι`.
+
 such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
@@ -403,12 +404,8 @@ theorem isOpenMap_fromGlued : IsOpenMap 𝒰.fromGlued := by
     exact Set.preimage_image_eq _ 𝒰.fromGlued_injective
   · exact ⟨hx, 𝒰.covers x⟩
 
-@[deprecated (since := "2025-10-07")] alias fromGlued_open_map := isOpenMap_fromGlued
-
 theorem isOpenEmbedding_fromGlued : IsOpenEmbedding 𝒰.fromGlued :=
   .of_continuous_injective_isOpenMap (by fun_prop) 𝒰.fromGlued_injective 𝒰.isOpenMap_fromGlued
-
-@[deprecated (since := "2025-10-07")] alias fromGlued_isOpenEmbedding := isOpenEmbedding_fromGlued
 
 instance : Epi 𝒰.fromGlued.base := by
   rw [TopCat.epi_iff_surjective]
@@ -504,6 +501,7 @@ For such a diagram, we can glue them directly since the gluing conditions are al
 The intended usage is to provide the following instances:
 - `∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f)`
 - `(F ⋙ forget).IsLocallyDirected`
+
 and to directly use the `colimit` API.
 Also see `AlgebraicGeometry.Scheme.IsLocallyDirected.openCover` for the open cover of the `colimit`.
 
@@ -578,8 +576,10 @@ lemma fst_inv_eq_snd_inv
   obtain ⟨l, hli, hlj, y, hy₁, hy₂⟩ := (F ⋙ forget).exists_map_eq_of_isLocallyDirected k₁.2.1 k₂.2.1
     ((pullback.fst _ _ ≫ (F.map k₁.2.1).isoOpensRange.inv) x)
     ((pullback.snd _ _ ≫ (F.map k₂.2.1).isoOpensRange.inv) x) (by
-      simp only [Functor.comp_obj, forget_obj, Functor.comp_map, forget_map, ← Hom.comp_apply,
-        Category.assoc, Hom.isoOpensRange_inv_comp]
+      simp only [Functor.comp_obj, forget_obj, Functor.comp_map, forget_map,
+        ConcreteCategory.hom_ofHom, Hom.comp_base, TopCat.hom_comp, ContinuousMap.comp_apply,
+        TypeCat.Fun.coe_mk]
+      simp only [← Hom.comp_apply]
       congr 5
       simpa using congr($(pullback.condition (f := (F.obj i).homOfLE h₁)
         (g := (F.obj i).homOfLE h₂)) ≫ Scheme.Opens.ι _))
@@ -598,7 +598,7 @@ lemma fst_inv_eq_snd_inv
       TopCat.hom_comp, ContinuousMap.comp_apply] at hy₁
     apply (pullback.fst ((F.obj i).homOfLE h₁) _).isOpenEmbedding.injective
     simp only [← Scheme.Hom.comp_apply, α, pullback.lift_fst]
-    simp [hy₁]
+    simp_all
   refine ⟨α.opensRange, ⟨y, this⟩, ?_⟩
   rw [← cancel_epi α.isoOpensRange.hom]
   simp [α, ← Functor.map_comp, Subsingleton.elim (hli ≫ k₁.2.2) (hlj ≫ k₂.2.2)]

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Equivalence
 
-/-! Tools for compatibilities between Dold-Kan equivalences
+/-! # Tools for compatibilities between Dold-Kan equivalences
 
 The purpose of this file is to introduce tools which will enable the
 construction of the Dold-Kan equivalence `SimplicialObject C ≌ ChainComplex C ℕ`

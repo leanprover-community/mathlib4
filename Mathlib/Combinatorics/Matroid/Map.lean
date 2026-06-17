@@ -209,7 +209,7 @@ lemma comap_indep_iff_of_injOn (hf : InjOn f (f ⁻¹' N.E)) :
   exact h.1.mem_of_insert_indep (mem_image_of_mem f heX)
 
 @[simp] lemma comap_isBase_iff {B : Set α} :
-    (N.comap f).IsBase B ↔ N.IsBasis (f '' B) (f '' (f ⁻¹' N.E)) ∧ B.InjOn f ∧ B ⊆ f ⁻¹' N.E := by
+    (N.comap f).IsBase B ↔ N.IsBasis (f '' B) (f '' f ⁻¹' N.E) ∧ B.InjOn f ∧ B ⊆ f ⁻¹' N.E := by
   rw [← isBasis_ground_iff, comap_isBasis_iff]; rfl
 
 @[simp] lemma comap_isBasis'_iff {I X : Set α} :

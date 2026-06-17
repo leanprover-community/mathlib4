@@ -30,7 +30,7 @@ assert_not_exists Finset
 
 open Set
 
-open Pointwise
+open scoped Pointwise
 
 variable {ι : Sort*} {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 

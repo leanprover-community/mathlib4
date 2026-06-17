@@ -186,10 +186,7 @@ private def coconeQuotientDiagDesc
         s.ι.naturality m
       conv_rhs => rw [← h1]
       have h2 : (J'.map m).hom (u.inv.hom ⟦τ⟧) = u.inv.hom ⟦σ⟧ := by
-        simp only [comp_obj, quotientDiag_obj, Functor.comp_map, quotientDiag_map, J',
-          functorToAction_map_quotientToEndObjectHom V h u m]
-        change (u.inv ≫ u.hom ≫ _ ≫ u.inv).hom ⟦τ⟧ = u.inv.hom ⟦σ⟧
-        simp [m]
+        simp [J', functorToAction_map_quotientToEndObjectHom V h u m, ← comp_apply, m]
       simp [← h2, J'])
   comm g := by
     ext (x : Aut F ⧸ V.toSubgroup)
@@ -253,7 +250,7 @@ lemma exists_lift_of_quotient_openSubgroup (V : OpenSubgroup (Aut F)) :
     let p : A ⟶ X := f ≫ Pi.π (fun Z : I => (Z : C)) ⟨X, hX⟩
     have : IsConnected X := hc X hX
     obtain ⟨a, rfl⟩ := surjective_of_nonempty_fiber_of_isConnected F p x
-    simp only [FintypeCat.id_apply, FunctorToFintypeCat.naturality, h1 σ σinU]
+    simp only [FintypeCat.id_apply, NatTrans.naturality_apply, h1 σ σinU]
   have hUinV : (U : Set (Aut F)) ≤ V := fun u uinU ↦ hi u (h2 u uinU)
   have := V.quotient_finite_of_isOpen' (U.subgroupOf V) V.isOpen (V.subgroupOf_isOpen U U.isOpen)
   exact ⟨colimit (quotientDiag V hUnormal u),

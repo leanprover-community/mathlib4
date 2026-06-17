@@ -18,7 +18,7 @@ See `Mathlib/Analysis/Normed/Order/Hom/Ultra.lean` for further upgrades to nonar
 groups.
 -/
 
-@[expose] public section
+public section
 
 variable {F α : Type*} [FunLike F α ℝ]
 

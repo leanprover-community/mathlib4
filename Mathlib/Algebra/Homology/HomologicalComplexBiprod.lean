@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 public import Mathlib.Algebra.Homology.Additive
 
-/-! Binary biproducts of homological complexes
+/-! # Binary biproducts of homological complexes
 
 In this file, it is shown that if two homological complex `K` and `L` in
 a preadditive category are such that for all `i : ι`, the binary biproduct

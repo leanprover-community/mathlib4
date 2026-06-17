@@ -62,7 +62,7 @@ theorem natDegree_cancelLeads_lt_of_natDegree_le_natDegree_of_comm
   apply lt_of_le_of_ne
   · compute_degree!
     rwa [Nat.sub_add_cancel]
-  · contrapose! h0
+  · contrapose h0
     rw [← leadingCoeff_eq_zero, leadingCoeff, h0, mul_assoc, X_pow_mul, ← tsub_add_cancel_of_le h,
       add_comm _ p.natDegree]
     simp only [coeff_mul_X_pow, coeff_neg, coeff_C_mul, add_tsub_cancel_left, coeff_add]

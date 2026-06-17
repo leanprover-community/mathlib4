@@ -185,7 +185,7 @@ noncomputable def contract (p : ℕ) (f : R[X]) : R[X] :=
 
 theorem coeff_contract {p : ℕ} (hp : p ≠ 0) (f : R[X]) (n : ℕ) :
     (contract p f).coeff n = f.coeff (n * p) := by
-  simp only [contract, coeff_monomial, sum_ite_eq', finset_sum_coeff, mem_range, not_lt,
+  simp only [contract, coeff_monomial, sum_ite_eq', finsetSum_coeff, mem_range, not_lt,
     ite_eq_left_iff]
   intro hn
   apply (coeff_eq_zero_of_natDegree_lt _).symm

@@ -76,6 +76,13 @@ attribute [to_additive] OneMemClass
 
 attribute [simp, aesop safe (rule_sets := [SetLike])] one_mem zero_mem
 
+/-- The underlying set of a term of a `OneMemClass` is nonempty. -/
+@[to_additive (attr := simp)
+/-- The underlying set of a term of a `ZeroMemClass` is nonempty. -/]
+theorem OneMemClass.coe_nonempty {S M : Type*} [One M] [SetLike S M] [OneMemClass S M] (s : S) :
+    (s : Set M).Nonempty :=
+  ⟨1, one_mem s⟩
+
 section
 
 /-- A submonoid of a monoid `M` is a subset containing 1 and closed under multiplication. -/
@@ -461,9 +468,8 @@ theorem one_def : (1 : S) = ⟨1, S.one_mem⟩ :=
 /-- A submonoid of a unital magma inherits a unital magma structure. -/
 @[to_additive
   /-- An `AddSubmonoid` of a unital additive magma inherits a unital additive magma structure. -/]
-instance toMulOneClass {M : Type*} [MulOneClass M] (S : Submonoid M) :
-    MulOneClass S := fast_instance%
-  Subtype.coe_injective.mulOneClass Subtype.val rfl fun _ _ => rfl
+instance toMulOneClass {M : Type*} [MulOneClass M] (S : Submonoid M) : MulOneClass S :=
+  SubmonoidClass.toMulOneClass S
 
 @[to_additive]
 protected theorem pow_mem {M : Type*} [Monoid M] (S : Submonoid M) {x : M} (hx : x ∈ S) (n : ℕ) :
@@ -472,13 +478,13 @@ protected theorem pow_mem {M : Type*} [Monoid M] (S : Submonoid M) {x : M} (hx :
 
 /-- A submonoid of a monoid inherits a monoid structure. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure. -/]
-instance toMonoid {M : Type*} [Monoid M] (S : Submonoid M) : Monoid S := fast_instance%
-  Subtype.coe_injective.monoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
+instance toMonoid {M : Type*} [Monoid M] (S : Submonoid M) : Monoid S :=
+  SubmonoidClass.toMonoid S
 
 /-- A submonoid of a `CommMonoid` is a `CommMonoid`. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`. -/]
-instance toCommMonoid {M} [CommMonoid M] (S : Submonoid M) : CommMonoid S := fast_instance%
-  Subtype.coe_injective.commMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
+instance toCommMonoid {M} [CommMonoid M] (S : Submonoid M) : CommMonoid S :=
+  SubmonoidClass.toCommMonoid S
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
 @[to_additive /-- The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`. -/]

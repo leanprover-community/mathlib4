@@ -20,7 +20,7 @@ generated (i.e. FG).
 
 -/
 
-@[expose] public section
+public section
 
 namespace Submodule
 

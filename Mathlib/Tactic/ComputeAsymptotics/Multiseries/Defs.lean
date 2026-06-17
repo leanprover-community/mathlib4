@@ -6,7 +6,7 @@ Authors: Vasilii Nesterov
 module
 
 public import Mathlib.Data.Seq.Basic
-public import Mathlib.Data.Real.Basic
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Majorized
 
 /-!
 
@@ -26,6 +26,10 @@ in the basis `[b₂, ..., bₙ]` (`basis_tl`).
 * `MultiseriesExpansion basis` is a multiseries expansion of some function `f : ℝ → ℝ`.
   If `basis = []`, then the multiseries represents a constant function, otherwise it is
   a pair of a multiseries `ms : Multiseries basis_hd basis_tl` and a function `f : ℝ → ℝ`.
+* `Multiseries.Sorted ms` means that at each level of `ms` as a nested tree all exponents are
+  strictly decreasing.
+* `MultiseriesExpansion.Approximates ms` means that the multiseries `ms` can be used to obtain
+  an asymptotical approximation of its attached function.
 
 ## Implementation details
 
@@ -38,7 +42,7 @@ in the basis `[b₂, ..., bₙ]` (`basis_tl`).
 
 namespace ComputeAsymptotics
 
-open Stream'
+open Filter Topology Stream'
 
 /-- List of functions used to construct monomials in multiseries. -/
 abbrev Basis := List (ℝ → ℝ)
@@ -403,6 +407,320 @@ theorem replaceFun_toFun {basis_hd basis_tl}
 theorem replaceFun_seq {basis_hd basis_tl}
     (ms : MultiseriesExpansion (basis_hd :: basis_tl)) (f : ℝ → ℝ) :
     (ms.replaceFun f).seq = ms.seq := rfl
+
+section leadingExp
+
+variable {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+  {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
+
+namespace Multiseries
+
+/-- The leading exponent of a multiseries with non-empty basis. For `ms = []` it is `⊥`. -/
+def leadingExp (s : Multiseries basis_hd basis_tl) : WithBot ℝ :=
+  match s.head with
+  | none => ⊥
+  | some (exp, _) => exp
+
+@[simp]
+theorem leadingExp_nil : (nil : Multiseries basis_hd basis_tl).leadingExp = ⊥ :=
+  rfl
+
+@[simp]
+theorem leadingExp_cons {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl} :
+    (cons exp coef tl).leadingExp = exp :=
+  rfl
+
+/-- `ms.leadingExp = ⊥` iff `ms = []`. -/
+@[simp]
+theorem leadingExp_eq_bot (s : Multiseries basis_hd basis_tl) :
+    s.leadingExp = ⊥ ↔ s = nil := by
+  cases s <;> simp
+
+end Multiseries
+
+/-- The leading exponent of a multiseries with non-empty basis. For `ms = []` it is `⊥`. -/
+def leadingExp (ms : MultiseriesExpansion (basis_hd :: basis_tl)) : WithBot ℝ :=
+  ms.seq.leadingExp
+
+@[simp]
+theorem leadingExp_def (ms : MultiseriesExpansion (basis_hd :: basis_tl)) :
+    leadingExp ms = ms.seq.leadingExp := rfl
+
+end leadingExp
+
+section Sorted
+
+/-- Auxiliary instance for the order on pairs `(exp, coef)` used below to define `Sorted` in terms
+of `Stream'.Seq.Pairwise`. `(exp₁, coef₁) ≤ (exp₂, coef₂)` iff `exp₁ ≤ exp₂`. -/
+scoped instance {basis} : Preorder (ℝ × MultiseriesExpansion basis) := Preorder.lift Prod.fst
+
+private theorem lt_iff_lt {basis} {exp1 exp2 : ℝ} {coef1 coef2 : MultiseriesExpansion basis} :
+    (exp1, coef1) < (exp2, coef2) ↔ exp1 < exp2 := by
+  rfl
+
+/-- A multiseries `ms` is `Sorted` when the exponents at each of its levels are sorted. -/
+inductive Sorted : {basis : Basis} → (MultiseriesExpansion basis) → Prop
+| const (ms : MultiseriesExpansion []) : ms.Sorted
+| seq {hd} {tl} (ms : MultiseriesExpansion (hd :: tl))
+    (h_coef : ∀ x ∈ ms.seq, x.2.Sorted)
+    (h_Pairwise : Seq.Pairwise (· > ·) ms.seq) : ms.Sorted
+
+/-- A multiseries `ms` is `Sorted` when the exponents at each of its levels are sorted. -/
+def Multiseries.Sorted {basis_hd basis_tl} (s : Multiseries basis_hd basis_tl) : Prop :=
+  (mk s 0).Sorted (basis := basis_hd :: basis_tl)
+
+variable {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+
+@[simp]
+theorem sorted_iff_seq_sorted {ms : MultiseriesExpansion (basis_hd :: basis_tl)} :
+    ms.Sorted ↔ ms.seq.Sorted where
+  mp h := by
+    cases h with | seq _ h_coef h_Pairwise =>
+    constructor
+    · simpa using h_coef
+    · simpa using h_Pairwise
+  mpr h := by
+    cases h with | seq _ h_coef h_Pairwise =>
+    constructor
+    · simpa using h_coef
+    · simpa using h_Pairwise
+
+namespace Multiseries.Sorted
+
+@[simp]
+theorem nil : Sorted (nil : Multiseries basis_hd basis_tl) := by
+  constructor <;> simp
+
+/-- `[(exp, coef)]` is `Sorted` when `coef` is `Sorted`. -/
+theorem cons_nil {basis_hd basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+    (h_coef : coef.Sorted) :
+    Sorted (cons exp coef (.nil : Multiseries basis_hd basis_tl)) := by
+  constructor
+  · simpa
+  · simp
+
+theorem cons {basis_hd basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl}
+    (h_coef : coef.Sorted)
+    (h_comp : leadingExp tl < exp)
+    (h_tl : tl.Sorted) :
+    Sorted (cons exp coef tl) := by
+  cases h_tl with | seq _ h_tl_coef h_tl_tl =>
+  constructor
+  · simp at h_tl_coef ⊢
+    grind
+  · cases tl
+    · exact Seq.Pairwise_cons_nil
+    · exact h_tl_tl.cons_cons_of_trans (by simpa [lt_iff_lt] using h_comp)
+
+/-- If `cons (exp, coef) tl` is `Sorted`, then `coef` and `tl` are `Sorted`, and the
+leading exponent of `tl` is less than `exp`. -/
+theorem elim_cons {basis_hd basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl} (h : (Multiseries.cons exp coef tl).Sorted) :
+    coef.Sorted ∧ leadingExp tl < exp ∧ tl.Sorted := by
+  cases h with | seq _ h_coef h_Pairwise =>
+  constructor
+  · simpa using h_coef (exp, coef) (by simp)
+  cases tl with
+  | nil => simp
+  | cons tl_exp tl_coef tl_tl =>
+  obtain ⟨h_all, h_Pairwise⟩ := h_Pairwise.cons_elim
+  constructor
+  · simp only [leadingExp_cons, WithBot.coe_lt_coe]
+    exact h_all (tl_exp, tl_coef) (by simp [Multiseries.cons])
+  · exact Sorted.seq _ (fun x hx ↦ h_coef _ (by simp_all)) h_Pairwise
+
+theorem tail {ms : Multiseries basis_hd basis_tl} (h : ms.Sorted) :
+    ms.tail.Sorted := by
+  cases ms with
+  | nil => simp
+  | cons exp coef tl => simpa using h.elim_cons.right.right
+
+/-- Coinduction principle for proving `Sorted`. Given a predicate `motive` on multiseries,
+if `motive ms` holds (base case) and the predicate "survives" destruction of its argument, then
+`ms` is `Sorted`. Here "survives" means that if `x = cons (exp, coef) tl`, then `motive x` must
+imply `coef.Sorted`, `tl.leadingExp < exp`, and `motive tl`. -/
+theorem coind {s : Multiseries basis_hd basis_tl}
+    (motive : (ms : Multiseries basis_hd basis_tl) → Prop)
+    (h_base : motive s)
+    (h_step : ∀ exp coef tl, motive (.cons exp coef tl) →
+        coef.Sorted ∧
+        leadingExp tl < exp ∧
+        motive tl) :
+    s.Sorted := by
+  constructor
+  · apply Seq.all_coind
+    · exact h_base
+    · intro (exp, coef) tl h
+      grind [h_step exp coef tl h]
+  · apply Seq.Pairwise.coind_trans
+    · exact h_base
+    · intro (exp, coef) tl h
+      constructor
+      · intro (tl_exp, tl_coef) h_tl
+        rw [gt_iff_lt, lt_iff_lt]
+        replace h_step := (h_step exp coef tl h).right.left
+        cases tl <;> simp [leadingExp, head] at h_tl h_step
+        grind
+      · grind [h_step exp coef tl h]
+
+end Multiseries.Sorted
+
+namespace Sorted
+
+/-- `[]` is `Sorted`. -/
+theorem nil (f : ℝ → ℝ) : Sorted (basis := basis_hd :: basis_tl) (mk .nil f) := by
+  simp
+
+/-- `[(exp, coef)]` is `Sorted` when `coef` is `Sorted`. -/
+theorem cons_nil {exp : ℝ} {coef : MultiseriesExpansion basis_tl} {f : ℝ → ℝ}
+    (h_coef : coef.Sorted) :
+    Sorted (basis := basis_hd :: basis_tl) (mk (.cons exp coef .nil) f) := by
+  simp [Multiseries.Sorted.cons_nil h_coef]
+
+/-- `cons (exp, coef) tl` is `Sorted` when `coef` and `tl` are `Sorted` and the leading
+exponent of `tl` is less than `exp`. -/
+theorem cons {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl}
+    {f : ℝ → ℝ}
+    (h_coef : coef.Sorted)
+    (h_comp : tl.leadingExp < exp)
+    (h_tl : tl.Sorted) :
+    Sorted (basis := basis_hd :: basis_tl) (mk (.cons exp coef tl) f) := by
+  simp [Multiseries.Sorted.cons h_coef h_comp h_tl]
+
+/-- If `cons (exp, coef) tl` is `Sorted`, then `coef` and `tl` are `Sorted`, and the
+leading exponent of `tl` is less than `exp`. -/
+theorem elim_cons {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl} {f : ℝ → ℝ}
+    (h : Sorted (basis := basis_hd :: basis_tl) (mk (.cons exp coef tl) f)) :
+    coef.Sorted ∧ tl.leadingExp < exp ∧ tl.Sorted := by
+  apply Multiseries.Sorted.elim_cons (by simpa using h)
+
+theorem replaceFun {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
+    {f : ℝ → ℝ} (h_sorted : ms.Sorted) :
+    (ms.replaceFun f).Sorted := by
+  simpa using h_sorted
+
+end Sorted
+
+end Sorted
+
+section Approximates
+
+open Tactic.ComputeAsymptotics
+
+/-- Coinductive predicate stating that `ms` approximates its attached function on `basis`.
+* If `basis = []`, i.e. `ms` is just a real number, `Approximates` holds unconditionally.
+* If `basis = basis_hd :: basis_tl` and `ms = nil`, then `f =ᶠ[atTop] 0`.
+* If `basis = basis_hd :: basis_tl` and `ms = cons exp coef tl`, then
+  `f` is `Majorized` with exponent `exp` by `basis_hd`,
+  `coef` approximates its attached function, and
+  `tl` approximates `f - basis_hd ^ exp * coef.toFun`.
+-/
+coinductive Approximates : {basis : Basis} → (ms : MultiseriesExpansion basis) → Prop
+/-- Constant multiseries always approximates its attached function. -/
+| const (ms : MultiseriesExpansion []) : Approximates ms
+/-- Empty multiseries approximates (eventually) zero function. -/
+| nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ} (hf : f =ᶠ[atTop] 0) :
+  Approximates (mk (@Multiseries.nil basis_hd basis_tl) f)
+/-- `cons (exp, coef) tl` approximates `f` when `coef` approximates some function `fC`, `f` is
+majorized with exponent `exp` by `basis_hd`, and `tl` approximates `f - fC * basis_hd ^ exp`. -/
+| cons {basis_hd f : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl}
+    (h_coef : Approximates coef) (h_maj : Majorized f basis_hd exp)
+    (h_tl : Approximates (mk tl (f - basis_hd ^ exp * coef.toFun))) :
+  Approximates (mk (.cons exp coef tl) f)
+
+variable {f basis_hd : ℝ → ℝ} {basis_tl : Basis}
+
+attribute [simp] Approximates.const
+
+namespace Approximates
+
+theorem coind {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
+    (motive : MultiseriesExpansion (basis_hd :: basis_tl) → Prop)
+    (h_base : motive ms)
+    (h_step : ∀ ms, motive ms →
+      (ms.seq = .nil ∧ ms.toFun =ᶠ[atTop] 0) ∨
+      (∃ exp coef tl, ms.seq = .cons exp coef tl ∧
+        coef.Approximates ∧
+        Majorized ms.toFun basis_hd exp ∧
+        motive (mk (basis_hd := basis_hd) tl (ms.toFun - basis_hd ^ exp * coef.toFun)))) :
+    ms.Approximates := by
+  apply coinduct fun {basis} ms =>
+    ms.Approximates ∨ ∃ (h_basis : basis = basis_hd :: basis_tl), (motive (h_basis ▸ ms))
+  · rintro basis ms (h_ms | ⟨rfl, h_ms⟩)
+    · cases h_ms <;> grind
+    simp only [reduceCtorEq, List.cons.injEq, ↓existsAndEq, and_true, heq_eq_eq, ms_eq_mk_iff,
+      true_and, exists_eq_right_right', exists_and_left, false_or] at h_ms ⊢
+    rcases h_step _ h_ms with h_step | ⟨exp, coef, tl, h_seq, h_coef, h_maj, h_tl⟩
+    · grind
+    · refine .inr ⟨basis_hd, ms.toFun, basis_tl, exp, coef, by simpa, ‹_›, tl, ?_⟩
+      simp
+      grind
+  · grind
+
+/-- If `[]` approximates `f`, then `f = 0` eventually. -/
+theorem elim_nil (h : @Approximates (basis_hd :: basis_tl) (mk .nil f)) :
+    f =ᶠ[atTop] 0 := by
+  generalize h_ms : (mk .nil f) = ms at h
+  cases h <;> simp at h_ms; grind
+
+@[simp]
+theorem nil_iff {f : ℝ → ℝ} :
+    (mk (basis_hd := basis_hd) (basis_tl := basis_tl) .nil f).Approximates ↔ f =ᶠ[atTop] 0 :=
+  ⟨elim_nil, nil⟩
+
+/-- If `cons (exp, coef) tl` approximates `f`, then `f` can be Majorized with exponent `exp`, and
+there exists function `fC` such that `coef` approximates `fC` and `tl` approximates
+`f - fC * basis_hd ^ exp`. -/
+theorem elim_cons {exp : ℝ}
+    {coef : MultiseriesExpansion basis_tl} {tl : Multiseries basis_hd basis_tl}
+    (h : Approximates (basis := basis_hd :: basis_tl) (mk (.cons exp coef tl) f)) :
+    coef.Approximates ∧
+    Majorized f basis_hd exp ∧
+    (mk (basis_hd := basis_hd) tl (f - basis_hd ^ exp * coef.toFun)).Approximates := by
+  generalize h_ms : (mk (.cons exp coef tl) f) = ms at h
+  cases h <;> simp at h_ms; grind
+
+/-- One can replace `f` in `Approximates` with the funcion that eventually equals `f`. -/
+theorem replaceFun_Approximates {ms : MultiseriesExpansion (basis_hd :: basis_tl)} {f : ℝ → ℝ}
+    (h_equiv : ms.toFun =ᶠ[atTop] f) (h_approx : ms.Approximates) :
+    (ms.replaceFun f).Approximates := by
+  let motive (ms : MultiseriesExpansion (basis_hd :: basis_tl)) : Prop :=
+      ∃ (ms' : MultiseriesExpansion (basis_hd :: basis_tl)) (f' : ℝ → ℝ),
+      ms = ms'.replaceFun f' ∧ ms'.Approximates ∧ ms'.toFun =ᶠ[atTop] f'
+  apply Approximates.coind motive ⟨ms, f, by grind⟩
+  rintro _ ⟨ms, f, rfl, h_approx, h_eq⟩
+  cases ms with
+  | nil g =>
+    simp only [nil_iff, mk_toFun, mk_replaceFun, mk_seq, true_and,
+      Multiseries.nil_ne_cons, false_and, exists_const, or_false] at h_approx h_eq ⊢
+    grw [← h_eq, h_approx]
+  | cons exp coef tl g =>
+    obtain ⟨h_coef, h_maj, h_tl⟩ := h_approx.elim_cons
+    refine .inr ⟨exp, coef, tl, ?_⟩
+    simp only [mk_replaceFun, mk_seq, h_coef, mk_toFun, true_and]
+    simp only [mk_toFun] at h_eq
+    refine ⟨h_maj.of_eventuallyEq h_eq.symm, mk tl (g - basis_hd ^ exp * coef.toFun), _, rfl,
+      h_tl, ?_⟩
+    grw [mk_toFun, h_eq]
+
+end Approximates
+
+instance (basis_hd : ℝ → ℝ) (basis_tl : Basis) :
+    Setoid (MultiseriesExpansion (basis_hd :: basis_tl)) where
+  r x y := x.seq = y.seq ∧ x.toFun =ᶠ[atTop] y.toFun
+  iseqv := ⟨by simp, by grind [EventuallyEq.symm], by grind [EventuallyEq.trans]⟩
+
+@[simp]
+theorem equiv_def {x y : MultiseriesExpansion (basis_hd :: basis_tl)} :
+    x ≈ y ↔ x.seq = y.seq ∧ x.toFun =ᶠ[atTop] y.toFun := by
+  rfl
+
+end Approximates
 
 end MultiseriesExpansion
 

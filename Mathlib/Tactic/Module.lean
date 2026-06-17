@@ -202,7 +202,7 @@ variable (R)
 commutative semiring, by applying to each `S`-component the algebra-map from `S` into a specified
 `S`-algebra `R`. -/
 def algebraMap [CommSemiring S] [Semiring R] [Algebra S R] (l : NF S M) : NF R M :=
-  l.map (fun ⟨s, x⟩ ↦ (_root_.algebraMap S R s, x))
+  l.map (fun ⟨s, x⟩ ↦ (Algebra.algebraMap S R s, x))
 
 theorem eval_algebraMap [CommSemiring S] [Semiring R] [Algebra S R] [AddMonoid M] [SMul S M]
     [MulAction R M] [IsScalarTower S R M] (l : NF S M) :

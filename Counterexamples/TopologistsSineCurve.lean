@@ -152,7 +152,6 @@ lemma exists_mem_Ioc_of_y {y : ℝ} (hy : y ∈ Icc (-1) 1) {a : ℝ} (ha : 0 < 
   rw [dist_eq, sub_zero, abs_of_pos (xSeq_pos _ N)] at h_dist
   linarith
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The set `T` is not path-connected. -/
 theorem not_isPathConnected_T : ¬ IsPathConnected T := by
   -- **Step 1**:
@@ -173,7 +172,7 @@ theorem not_isPathConnected_T : ¬ IsPathConnected T := by
   -- connected subset of `ℝ` is an interval, we have `[0, a] ⊂ x(p([t0, t1]))`.
   obtain ⟨t₁, ht₁⟩ : ∃ t₁, t₀ < t₁ ∧ dist t₀ t₁ < δ := by
     refine exists_unitInterval_gt (lt_of_le_of_ne (unitInterval.le_one t₀) fun ht₀' ↦ ?_) hδ
-    have w_x_path : (p 1).1 = 1 := by simp [w]
+    have w_x_path : (p 1).1 = 1 := by rw [Path.target p, w]
     have x_eq_zero : (p 1).1 = 0 := by rwa [ht₀'] at h_pt₀_x
     linarith
   let a := (p t₁).1

@@ -413,8 +413,8 @@ lemma tendsto_eLpNorm_one_restrict_densityProcess_limitProcess [IsFiniteKernel �
       - (countableFiltration γ).limitProcess (fun n x ↦ densityProcess κ ν n a x s) (ν a))
       1 ((ν a).restrict A)) atTop (𝓝 0) :=
   tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
-    (tendsto_eLpNorm_one_densityProcess_limitProcess hκν a hs) (fun _ ↦ zero_le _)
-    (fun _ ↦ eLpNorm_restrict_le _ _ _ _)
+    (tendsto_eLpNorm_one_densityProcess_limitProcess hκν a hs) (fun _ ↦ zero_le)
+    (fun _ ↦ eLpNorm_restrict_le ..)
 
 end DensityProcess
 

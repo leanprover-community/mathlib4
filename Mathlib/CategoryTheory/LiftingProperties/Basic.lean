@@ -40,10 +40,15 @@ variable {C : Type*} [Category* C] {A B B' X Y Y' : C} (i : A ⟶ B) (i' : B ⟶
 /-- `HasLiftingProperty i p` means that `i` has the left lifting
 property with respect to `p`, or equivalently that `p` has
 the right lifting property with respect to `i`. -/
+@[to_dual self (reorder := A Y, B X, i p)]
 class HasLiftingProperty : Prop where
   /-- Unique field expressing that any commutative square built from `f` and `g` has a lift -/
   sq_hasLift : ∀ {f : A ⟶ X} {g : B ⟶ Y} (sq : CommSq f i p g), sq.HasLift
 
+attribute [to_dual self] HasLiftingProperty.sq_hasLift
+attribute [to_dual self (reorder := A Y, B X, i p, sq_hasLift (f g))] HasLiftingProperty.mk
+
+@[to_dual self]
 instance (priority := 100) sq_hasLift_of_hasLiftingProperty {f : A ⟶ X} {g : B ⟶ Y}
     (sq : CommSq f i p g) [hip : HasLiftingProperty i p] : sq.HasLift := hip.sq_hasLift _
 
@@ -51,11 +56,13 @@ namespace HasLiftingProperty
 
 variable {i p}
 
+@[to_dual self]
 theorem op (h : HasLiftingProperty i p) : HasLiftingProperty p.op i.op :=
   ⟨fun {f} {g} sq => by
     simp only [CommSq.HasLift.iff_unop, Quiver.Hom.unop_op]
     infer_instance⟩
 
+@[to_dual self]
 theorem unop {A B X Y : Cᵒᵖ} {i : A ⟶ B} {p : X ⟶ Y} (h : HasLiftingProperty i p) :
     HasLiftingProperty p.unop i.unop :=
   ⟨fun {f} {g} sq => by
@@ -63,15 +70,18 @@ theorem unop {A B X Y : Cᵒᵖ} {i : A ⟶ B} {p : X ⟶ Y} (h : HasLiftingProp
     simp only [Quiver.Hom.op_unop]
     infer_instance⟩
 
+@[to_dual self]
 theorem iff_op : HasLiftingProperty i p ↔ HasLiftingProperty p.op i.op :=
   ⟨op, unop⟩
 
+@[to_dual self]
 theorem iff_unop {A B X Y : Cᵒᵖ} (i : A ⟶ B) (p : X ⟶ Y) :
     HasLiftingProperty i p ↔ HasLiftingProperty p.unop i.unop :=
   ⟨unop, op⟩
 
 variable (i p)
 
+@[to_dual of_right_iso]
 instance (priority := 100) of_left_iso [IsIso i] : HasLiftingProperty i p :=
   ⟨fun {f} {g} sq =>
     CommSq.HasLift.mk'
@@ -79,13 +89,7 @@ instance (priority := 100) of_left_iso [IsIso i] : HasLiftingProperty i p :=
         fac_left := by simp only [IsIso.hom_inv_id_assoc]
         fac_right := by simp only [sq.w, assoc, IsIso.inv_hom_id_assoc] }⟩
 
-instance (priority := 100) of_right_iso [IsIso p] : HasLiftingProperty i p :=
-  ⟨fun {f} {g} sq =>
-    CommSq.HasLift.mk'
-      { l := g ≫ inv p
-        fac_left := by simp only [← sq.w_assoc, IsIso.hom_inv_id, comp_id]
-        fac_right := by simp only [assoc, IsIso.inv_hom_id, comp_id] }⟩
-
+@[to_dual of_comp_right]
 instance of_comp_left [HasLiftingProperty i p] [HasLiftingProperty i' p] :
     HasLiftingProperty (i ≫ i') p :=
   ⟨fun {f} {g} sq => by
@@ -96,18 +100,6 @@ instance of_comp_left [HasLiftingProperty i p] [HasLiftingProperty i' p] :
         { l := (CommSq.mk (CommSq.mk fac).fac_right).lift
           fac_left := by simp only [assoc, CommSq.fac_left]
           fac_right := by simp only [CommSq.fac_right] }⟩
-
-instance of_comp_right [HasLiftingProperty i p] [HasLiftingProperty i p'] :
-    HasLiftingProperty i (p ≫ p') :=
-  ⟨fun {f} {g} sq => by
-    have fac := sq.w
-    rw [← assoc] at fac
-    let _ := (CommSq.mk (CommSq.mk fac).fac_left.symm).lift
-    exact
-      CommSq.HasLift.mk'
-        { l := (CommSq.mk (CommSq.mk fac).fac_left.symm).lift
-          fac_left := by simp only [CommSq.fac_left]
-          fac_right := by simp only [CommSq.fac_right_assoc, CommSq.fac_right] }⟩
 
 set_option backward.isDefEq.respectTransparency false in
 theorem of_arrow_iso_left {A B A' B' X Y : C} {i : A ⟶ B} {i' : A' ⟶ B'}
@@ -180,13 +172,11 @@ end Arrow
 /-- Given morphisms `i : A ⟶ B`, `p : X ⟶ Y`, `t : A ⟶ X`,
 this is the property that a lifting exists for all squares
 with `i` on left, `p` on the right and `t` on the top. -/
-def HasLiftingPropertyFixedTop (t : A ⟶ X) : Prop :=
-  ∀ (b : B ⟶ Y) (sq : CommSq t i p b), sq.HasLift
-
+@[to_dual (rename := i ↔ p, t → b, A ↔ Y, B ↔ X) (reorder := i p)
 /-- Given morphisms `i : A ⟶ B`, `p : X ⟶ Y`, `b : B ⟶ Y`,
 this is the property that a lifting exists for all squares
-with `i` on left, `p` on the right and `b` on the bottom. -/
-def HasLiftingPropertyFixedBot (b : B ⟶ Y) : Prop :=
-  ∀ (t : A ⟶ X) (sq : CommSq t i p b), sq.HasLift
+with `i` on left, `p` on the right and `b` on the bottom. -/]
+def HasLiftingPropertyFixedTop (t : A ⟶ X) : Prop :=
+  ∀ (b : B ⟶ Y) (sq : CommSq t i p b), sq.HasLift
 
 end CategoryTheory

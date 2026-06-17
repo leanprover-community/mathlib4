@@ -33,7 +33,7 @@ Prove that a sigma type is a `NoMaxOrder`, `NoMinOrder`, `DenselyOrdered` when i
 are.
 -/
 
-@[expose] public section
+public section
 
 
 variable {ι : Type*} {α : ι → Type*}
