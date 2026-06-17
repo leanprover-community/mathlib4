@@ -377,11 +377,6 @@ theorem ContinuousAt.comp₂_of_eq {f : Y × Z → W} {g : X → Y} {h : X → Z
   rw [← e] at hf
   exact hf.comp₂ hg hh
 
-theorem continuous_prodMap_iff [Nonempty Z] [Nonempty W] {f : Z → X} {g : W → Y} :
-    Continuous (Prod.map f g) ↔ Continuous f ∧ Continuous g := by
- simp [continuous_iff_continuousAt, ContinuousAt, nhds_prod_eq, tendsto_iff_comap,
-  comap_prodMap_prod, forall_and]
-
 /-- Continuous functions on products are continuous in their first argument -/
 theorem Continuous.curry_left {f : X × Y → Z} (hf : Continuous f) {y : Y} :
     Continuous fun x ↦ f (x, y) :=

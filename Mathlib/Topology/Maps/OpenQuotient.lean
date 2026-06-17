@@ -80,52 +80,6 @@ theorem dense_preimage_iff (h : IsOpenQuotientMap f) {s : Set Y} : Dense (f ⁻�
 
 end IsOpenQuotientMap
 
-section Prod
-
-theorem isOpenQuotientMap_fst [Nonempty Y] : IsOpenQuotientMap (Prod.fst : X × Y → X) :=
-  ⟨Prod.fst_surjective, continuous_fst, isOpenMap_fst⟩
-
-theorem isOpenQuotientMap_snd [Nonempty X] : IsOpenQuotientMap (Prod.snd : X × Y → Y) :=
-  ⟨Prod.snd_surjective, continuous_snd, isOpenMap_snd⟩
-
-theorem isQuotientMap_fst [Nonempty Y] : IsQuotientMap (Prod.fst : X × Y → X) :=
-  isOpenQuotientMap_fst.isQuotientMap
-
-theorem isQuotientMap_snd [Nonempty X] : IsQuotientMap (Prod.snd : X × Y → Y) :=
-  isOpenQuotientMap_snd.isQuotientMap
-
-theorem IsOpenQuotientMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenQuotientMap f)
-    (hg : IsOpenQuotientMap g) : IsOpenQuotientMap (Prod.map f g) :=
-  ⟨.prodMap hf.1 hg.1, .prodMap hf.2 hg.2, .prodMap hf.3 hg.3⟩
-
-theorem isOpenMap_prodMap_iff [Nonempty X] [Nonempty Z] {f : X → Y} {g : Z → W} :
-    IsOpenMap (Prod.map f g) ↔ IsOpenMap f ∧ IsOpenMap g := by
-  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨hf, hg⟩ ↦ hf.prodMap hg⟩
-  · rw [(isOpenQuotientMap_fst (Y := Z)).isOpenMap_iff]
-    exact isOpenMap_fst.comp h
-  · rw [(isOpenQuotientMap_snd (X := X)).isOpenMap_iff]
-    exact isOpenMap_snd.comp h
-
-theorem isOpenQuotientMap_prodMap_iff [Nonempty X] [Nonempty Z] {f : X → Y} {g : Z → W} :
-    IsOpenQuotientMap (Prod.map f g) ↔ IsOpenQuotientMap f ∧ IsOpenQuotientMap g := by
-  have : Nonempty Y := .map f inferInstance
-  have : Nonempty W := .map g inferInstance
-  grind [isOpenQuotientMap_iff, continuous_prodMap_iff, isOpenMap_prodMap_iff, Prod.map_surjective]
-
-end Prod
-
-/-- Open quotient maps are preserved by precomposing with a homeomorphism. -/
-lemma Homeomorph.isOpenQuotient_comp_iff (e : X ≃ₜ Y) {f : Y → Z} :
-    IsOpenQuotientMap (f ∘ e) ↔ IsOpenQuotientMap f :=
-  ⟨fun h ↦ by simpa [comp_assoc] using h.comp e.symm.isOpenQuotientMap,
-    fun hf ↦ hf.comp e.isOpenQuotientMap⟩
-
-/-- Open quotient maps are preserved by postcomposing with a homeomorphism. -/
-lemma Homeomorph.comp_isOpenQuotientMap_iff (e : Y ≃ₜ Z) {f : X → Y} :
-    IsOpenQuotientMap (e ∘ f) ↔ IsOpenQuotientMap f :=
-  ⟨fun h ↦ by simpa [← comp_assoc] using e.symm.isOpenQuotientMap.comp h,
-    fun hf ↦ e.isOpenQuotientMap.comp hf⟩
-
 theorem Topology.IsInducing.isOpenQuotientMap_of_surjective (ind : IsInducing f)
     (surj : Function.Surjective f) : IsOpenQuotientMap f where
   surjective := surj
