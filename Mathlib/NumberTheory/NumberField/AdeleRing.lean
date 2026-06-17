@@ -65,6 +65,7 @@ theorem algebraMap_snd_apply (x : K) (v : HeightOneSpectrum R) :
 theorem algebraMap_injective [NumberField K] : Function.Injective (algebraMap K (AdeleRing R K)) :=
   fun _ _ hxy => (algebraMap K _).injective (Prod.ext_iff.1 hxy).1
 
+/-- The embedding of a completion `Kᵥ` into the adele ring. -/
 @[simps!]
 def ofCompletion (v : HeightOneSpectrum R) : v.adicCompletion K →* AdeleRing R K :=
   .prod 1 (FiniteAdeleRing.ofCompletion K v)
@@ -84,6 +85,7 @@ namespace IdeleGroup
 def unitEmbedding : Kˣ →* IdeleGroup R K :=
   Units.map (algebraMap K (AdeleRing R K)).toMonoidHom
 
+/-- The map from a completion `Kᵥ` to the idele group. -/
 @[simps!]
 def ofCompletion (v : HeightOneSpectrum R) : (v.adicCompletion K)ˣ →* IdeleGroup R K :=
   Units.map (AdeleRing.ofCompletion R K v)
@@ -99,6 +101,7 @@ abbrev IdeleClassGroup := IdeleGroup R K ⧸ IdeleGroup.principalSubgroup R K
 
 namespace IdeleClassGroup
 
+/-- The map from a completion `Kᵥ` to the idele class group. -/
 @[simps!]
 def ofCompletion (v : HeightOneSpectrum R) : (v.adicCompletion K)ˣ →* IdeleClassGroup R K :=
   (QuotientGroup.mk' (IdeleGroup.principalSubgroup R K)).comp (IdeleGroup.ofCompletion R K v)
