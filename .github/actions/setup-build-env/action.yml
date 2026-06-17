@@ -1,23 +1,18 @@
-# Shared setup prefix for the self-hosted `build` and `test_lint` jobs in
-# build_template.yml. Both run on the same Hoskinson pool and need identical
-# runner preparation before they diverge (build → build + stage, test_lint →
-# fetch + test + lint). Extracted here so the two stay in lockstep: the toolchain
-# pins, the landrun arguments, the mathlib-ci / cache-trust / get-tools wiring,
-# and the dependency download now live in ONE place instead of two copies.
+# Shared runner setup for the self-hosted `build` and `test_lint` jobs in
+# build_template.yml. Both run on the same Hoskinson pool and need the same
+# preparation before they diverge (build → build + stage, test_lint →
+# fetch + test + lint): toolchain hygiene, jq, the mathlib-ci / cache-trust /
+# get-tools wiring, the PR-branch checkout, the elan toolchain and LEAN_SRC_PATH
+# environment, and the dependency download.
 #
-# IMPORTANT: the caller must run its `cleanup` and `Checkout local actions`
-# (sparse `.github/actions` → `workflow-actions/`) steps BEFORE invoking this
-# action:
-#   - `cleanup` wipes the workspace; if it ran after this action it would delete
-#     the very checkout this action and its siblings are loaded from.
-#   - `Checkout local actions` is what puts THIS action — and the sibling actions
-#     it calls below (`get-mathlib-ci`, `cache-trust-dispatch`, `get-tools`) — on
-#     disk under `workflow-actions/`. The `uses: ./workflow-actions/...` paths
-#     below are resolved relative to the workspace root, exactly as in the
-#     calling workflow.
+# The caller runs `Checkout local actions` (sparse `.github/actions` →
+# `workflow-actions/`) before invoking this action: that checkout puts both this
+# action and the sibling actions it calls (`get-mathlib-ci`, `cache-trust-dispatch`,
+# `get-tools`) on disk under `workflow-actions/`, so the `uses: ./workflow-actions/...`
+# paths below resolve relative to the workspace root, as in the calling workflow.
 #
-# Every `run:` step sets its own `shell:` because composite steps do NOT inherit
-# the job's landrun `defaults.run.shell`.
+# Each `run:` step sets its own `shell:`, since composite steps do not inherit the
+# job's landrun `defaults.run.shell`.
 name: Set up build environment
 description: Shared self-hosted runner setup for the build and test_lint jobs.
 
@@ -54,12 +49,10 @@ inputs:
 runs:
   using: composite
   steps:
-    # Prune old toolchains from `~/.elan`. On the ephemeral-container fleet this
-    # dir is mounted from the host and SHARED across jobs, so toolchains
-    # accumulate over time and nothing else trims them (host-side housekeeping
-    # only trims the mathlib `.ltar` cache). Keep the 5 most recent plus
-    # `nightly`/`stable`. There is no workspace wipe here: each job gets a fresh
-    # container/workspace, so there is nothing stale left over to delete.
+    # Prune old toolchains from `~/.elan`. That directory is mounted from the host
+    # and shared across the ephemeral job containers, so toolchains accumulate and
+    # nothing else trims them (host-side housekeeping only trims the mathlib `.ltar`
+    # cache). Keep the 5 most recent plus `nightly`/`stable`.
     - name: prune old toolchains
       shell: bash # just deletes old files; safe to run outside landrun
       run: |
@@ -75,12 +68,12 @@ runs:
     - name: 'Setup jq'
       uses: dcarbone/install-jq-action@b7ef57d46ece78760b4019dbc4080a1ba2a40b45 # v3.2.0
 
-    # We 'duplicate' this step because GitHub Actions does not let a `uses:` step
-    # conditionally omit a single `with:` key, and passing `ref: ''` would
-    # override the composite's default with the empty string instead of falling
-    # back to it. Only one of the two runs in any given run.
-    # `mathlib_ci_nightly_only` restricts the checkout to the nightly-testing
-    # repo, where mathlib-ci's only consumer (the lean-pr-testing comment) lives.
+    # This step is written twice because GitHub Actions does not let a `uses:` step
+    # conditionally omit a single `with:` key, and passing `ref: ''` would override
+    # the composite's default with the empty string instead of falling back to it.
+    # Only one of the two runs in any given run. `mathlib_ci_nightly_only` restricts
+    # the checkout to the nightly-testing repo, where mathlib-ci's only consumer
+    # (the lean-pr-testing comment) lives.
     - name: Get mathlib-ci
       if: ${{ inputs.mathlib_ci_ref == '' && (inputs.mathlib_ci_nightly_only != 'true' || github.repository == 'leanprover-community/mathlib4-nightly-testing') }}
       uses: ./workflow-actions/.github/actions/get-mathlib-ci
