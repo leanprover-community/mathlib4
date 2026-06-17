@@ -6164,6 +6164,7 @@ public import Mathlib.Order.SetDissipate
 public import Mathlib.Order.SetIsMax
 public import Mathlib.Order.SetNotation
 public import Mathlib.Order.Shrink
+public import Mathlib.Order.Std
 public import Mathlib.Order.Sublattice
 public import Mathlib.Order.Sublocale
 public import Mathlib.Order.SuccPred.Archimedean
