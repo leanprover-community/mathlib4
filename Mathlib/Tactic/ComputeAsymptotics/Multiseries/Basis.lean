@@ -8,7 +8,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Defs
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.Complex.Exponential
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Majorized
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Defs
 
 /-!
 # Well-formed bases

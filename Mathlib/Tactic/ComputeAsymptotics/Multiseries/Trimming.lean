@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
+Copyright (c) 2026 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
@@ -9,6 +9,22 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basic
 
 /-!
 # Trimming of multiseries
+
+A multiseries is *trimmed* when its leading coefficient (the head of its expansion) is itself
+trimmed and non-zero. For a trimmed multiseries, the leading monomial captures the main
+asymptotic behavior of the approximated function.
+
+## Main definitions
+
+* `IsZero`: a multiseries represents the zero function — it is either the real number `0`
+  (for the empty basis) or has an empty underlying sequence (`.nil`).
+* `Trimmed` and `Multiseries.Trimmed`: a multiseries is trimmed in the sense above. The former
+  is defined inductively for `MultiseriesExpansion`, and the latter for `Multiseries` is
+  derived from it.
+
+We also prove structural lemmas relating these predicates to `seq` and to the `cons`/`nil`
+constructors.
+
 -/
 
 @[expose] public section
@@ -19,44 +35,42 @@ namespace MultiseriesExpansion
 
 open Filter Topology Stream'
 
-/-- A multiseries is zero if it is constant zero or `[]`. -/
+/-- A multiseries is zero if it is the real constant `0` or has an empty sequence. -/
 inductive IsZero : {basis : Basis} → MultiseriesExpansion basis → Prop
 | const {c : MultiseriesExpansion []} (hc : c.toReal = 0) : IsZero c
 | nil {basis_hd} {basis_tl} (f) : @IsZero (basis_hd :: basis_tl) (mk .nil f)
 
+namespace IsZero
+
 @[simp]
-theorem const_isZero_iff {c : MultiseriesExpansion []} : IsZero c ↔ c.toReal = 0 := by
+theorem const_iff {c : MultiseriesExpansion []} : IsZero c ↔ c.toReal = 0 := by
   constructor <;> grind [IsZero]
 
 @[simp]
-theorem IsZero_iff_seq_nil {basis_hd basis_tl} {ms : MultiseriesExpansion (basis_hd :: basis_tl)} :
+theorem iff_seq_eq_nil {basis_hd basis_tl} {ms : MultiseriesExpansion (basis_hd :: basis_tl)} :
     IsZero ms ↔ ms.seq = .nil where
-  mp h := by
-    cases h
-    rfl
+  mp h := by cases h; rw [mk_seq]
   mpr h := by
     convert IsZero.nil ms.toFun
     simp [h]
 
--- TODO: move
-theorem IsZero_approximates_zero {basis : Basis} {ms : MultiseriesExpansion basis}
+theorem approximates_zero {basis : Basis} {ms : MultiseriesExpansion basis}
     (h_zero : IsZero ms) (h_approx : ms.Approximates) :
     ms.toFun =ᶠ[atTop] 0 := by
   cases h_zero with
-  | const hc =>
-    simp [hc]
-    rfl
-  | nil =>
-    simpa using h_approx
+  | const hc => simp [hc, Pi.zero_def]
+  | nil => simpa using h_approx
 
-theorem cons_not_isZero {basis_hd} {basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+theorem not_cons {basis_hd} {basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
     {tl : Multiseries basis_hd basis_tl} {f : ℝ → ℝ} :
     ¬ @IsZero (basis_hd :: basis_tl) (mk (.cons exp coef tl) f) := by
   simp
 
-/-- We call multiseries `Trimmed` if it is either constant, `[]` or `cons (exp, coef) tl` where
-coef is trimmed and is not zero. Intuitively, when multiseries is trimmed, it guarantees that
-leading monomial of multiseries is main asymptotics of the function, approximated by multiseries. -/
+end IsZero
+
+/-- We call a multiseries `Trimmed` if it is either a constant, `.nil`, or `cons (exp, coef) tl`
+where `coef` is trimmed and is not zero. Intuitively, when a multiseries is trimmed, its leading
+monomial gives the main asymptotic behavior of the approximated function. -/
 inductive Trimmed : {basis : Basis} → MultiseriesExpansion basis → Prop
 | const {c : ℝ} : @Trimmed [] c
 | nil {basis_hd} {basis_tl} {f} : @Trimmed (basis_hd :: basis_tl) (mk .nil f)
@@ -65,14 +79,13 @@ inductive Trimmed : {basis : Basis} → MultiseriesExpansion basis → Prop
   (h_ne_zero : ¬ IsZero coef) :
   @Trimmed (basis_hd :: basis_tl) (mk (.cons exp coef tl) f)
 
-/-- We call multiseries `Trimmed` if it is either constant, `[]` or `cons (exp, coef) tl` where
-coef is trimmed and is not zero. Intuitively, when multiseries is trimmed, it guarantees that
-leading monomial of multiseries is main asymptotics of the function, approximated by multiseries. -/
+/-- We call a `Multiseries` `Trimmed` if it is either `.nil` or `cons (exp, coef) tl` where `coef`
+is trimmed and is not zero. -/
 def Multiseries.Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (ms : Multiseries basis_hd basis_tl) : Prop :=
   (mk ms 0).Trimmed
 
-theorem Trimmed_iff_seq_trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem trimmed_iff_seq_trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (ms : MultiseriesExpansion (basis_hd :: basis_tl)) :
     ms.Trimmed ↔ ms.seq.Trimmed where
   mp h := by
@@ -83,26 +96,25 @@ theorem Trimmed_iff_seq_trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     | nil =>
       convert Trimmed.nil (f := ms.toFun)
       simp [hs]
-    | cons h_trimmed h_ne_zero =>
-      convert Trimmed.cons h_trimmed h_ne_zero (f := ms.toFun)
-      · simp only [ms_eq_mk_iff, hs, Multiseries.cons_eq_cons, true_and, and_true]
-        exact ⟨rfl, rfl⟩
+    | @cons _ _ exp coef tl _ h_trimmed h_ne_zero =>
+      convert Trimmed.cons h_trimmed h_ne_zero (exp := exp) (tl := tl) (f := ms.toFun)
+      simp only [ms_eq_mk_iff, hs, and_true]
+
+namespace Multiseries.Trimmed
 
 @[simp]
-theorem Multiseries.Trimmed.nil {basis_hd} {basis_tl} :
+theorem nil {basis_hd} {basis_tl} :
     @Multiseries.Trimmed basis_hd basis_tl .nil := by
   constructor
 
-theorem Multiseries.Trimmed.cons {basis_hd} {basis_tl} {exp : ℝ}
+theorem cons {basis_hd} {basis_tl} {exp : ℝ}
     {coef : MultiseriesExpansion basis_tl} {tl : Multiseries basis_hd basis_tl}
     (h_coef : coef.Trimmed) (h_ne_zero : ¬ IsZero coef) :
-    Multiseries.Trimmed (cons exp coef tl) := by
-  constructor
-  · exact h_coef
-  · exact h_ne_zero
+    Multiseries.Trimmed (cons exp coef tl) :=
+  MultiseriesExpansion.Trimmed.cons h_coef h_ne_zero
 
-/-- `cons (exp, coef) tl` means that `coef` is trimmed and is not zero. -/
-theorem Multiseries.Trimmed_cons {basis_hd} {basis_tl} {exp : ℝ}
+/-- If `cons (exp, coef) tl` is trimmed, then `coef` is trimmed and is not zero. -/
+theorem elim_cons {basis_hd} {basis_tl} {exp : ℝ}
     {coef : MultiseriesExpansion basis_tl} {tl : Multiseries basis_hd basis_tl}
     (h : Multiseries.Trimmed (.cons exp coef tl)) :
     coef.Trimmed ∧ ¬ IsZero coef := by
@@ -113,13 +125,15 @@ theorem Multiseries.Trimmed_cons {basis_hd} {basis_tl} {exp : ℝ}
     simp at h_ms
     grind
 
-/-- `cons (exp, coef) tl` means that `coef` is trimmed and is not zero. -/
-theorem Trimmed_cons {basis_hd} {basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
-    {tl : Multiseries basis_hd basis_tl} {f : ℝ → ℝ}
-    (h : Trimmed (mk (.cons exp coef tl) f)) :
-    coef.Trimmed ∧ ¬ IsZero coef := by
-  simp only [Trimmed_iff_seq_trimmed, mk_seq] at h
-  exact Multiseries.Trimmed_cons h
+end Multiseries.Trimmed
+
+-- /-- If `cons (exp, coef) tl` is trimmed, then `coef` is trimmed and is not zero. -/
+-- theorem Trimmed.elim_cons {basis_hd} {basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+--     {tl : Multiseries basis_hd basis_tl} {f : ℝ → ℝ}
+--     (h : Trimmed (mk (.cons exp coef tl) f)) :
+--     coef.Trimmed ∧ ¬ IsZero coef := by
+--   simp only [trimmed_iff_seq_trimmed, mk_seq] at h
+--   exact h.elim_cons
 
 mutual
 
@@ -133,7 +147,7 @@ theorem Multiseries.const_trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c
 theorem const_trimmed {basis : Basis} {c : ℝ} (hc : c ≠ 0) : (const basis c).Trimmed := by
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
   · constructor
-  simp only [const, Trimmed_iff_seq_trimmed, mk_seq]
+  simp only [const, trimmed_iff_seq_trimmed, mk_seq]
   apply Multiseries.const_trimmed hc
 
 end
@@ -163,8 +177,7 @@ theorem monomialRpow_trimmed {basis : Basis} {n : ℕ} (h : n < basis.length) {r
     (monomialRpow basis n r).Trimmed := by
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
   · constructor
-  simp only [monomialRpow, List.getElem!_eq_getElem?_getD, Pi.default_def, Trimmed_iff_seq_trimmed,
-    mk_seq]
+  simp only [trimmed_iff_seq_trimmed, monomialRpow_seq]
   exact Multiseries.monomialRpow_trimmed h
 
 end
@@ -200,16 +213,16 @@ theorem Multiseries.extendBasisEnd_trimmed {basis_hd : ℝ → ℝ} {basis_tl : 
     | nil =>
       simp only [List.nil_append, extendBasisEnd]
       apply const_trimmed
-      simpa using (Trimmed_cons h_trimmed).right
-    | cons basis_tl_hd basis_tl_tl => exact extendBasisEnd_trimmed (Trimmed_cons h_trimmed).left
+      simpa using h_trimmed.elim_cons.right
+    | cons basis_tl_hd basis_tl_tl => exact extendBasisEnd_trimmed h_trimmed.elim_cons.left
   · obtain _ | ⟨basis_tl_hd, basis_tl_tl⟩ := basis_tl
     · simp [extendBasisEnd, const, Multiseries.const]
-    · exact extendBasisEnd_ne_zero (Trimmed_cons h_trimmed).right
+    · exact extendBasisEnd_ne_zero h_trimmed.elim_cons.right
 
 theorem extendBasisEnd_trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {b : ℝ → ℝ}
     {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
     (h_trimmed : ms.Trimmed) : (ms.extendBasisEnd b).Trimmed := by
-  simp only [Trimmed_iff_seq_trimmed, List.cons_append, List.append_eq, extendBasisEnd_seq] at *
+  simp only [trimmed_iff_seq_trimmed, List.cons_append, List.append_eq, extendBasisEnd_seq] at *
   apply Multiseries.extendBasisEnd_trimmed h_trimmed
 
 end
@@ -230,7 +243,8 @@ theorem extendBasisMiddle_trimmed {left right_tl : Basis} {right_hd b : ℝ → 
     | cons exp coef tl =>
     simp only [List.cons_append, extendBasisMiddle, List.append_eq, mk_seq,
       Multiseries.map_cons, id_eq, mk_toFun]
-    apply Trimmed_cons at h_trimmed
+    simp only [List.cons_append, List.append_eq, trimmed_iff_seq_trimmed, mk_seq] at h_trimmed
+    apply Multiseries.Trimmed.elim_cons at h_trimmed
     constructor
     · exact extendBasisMiddle_trimmed h_trimmed.left h_trimmed.right
     · obtain _ | ⟨left_tl_hd, left_tl_tl⟩ := left_tl

@@ -260,7 +260,7 @@ instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) 
     [ConcreteCategory V FV] (M N : Action V G) :
     FunLike (HomSubtype V G M N) (CV M.V) (CV N.V) where
   coe f := f.1
-  coe_injective' _ _ h := Subtype.ext (DFunLike.coe_injective h)
+  coe_injective _ _ h := Subtype.ext (DFunLike.coe_injective h)
 
 instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
     [ConcreteCategory V FV] : ConcreteCategory (Action V G) (HomSubtype V G) where

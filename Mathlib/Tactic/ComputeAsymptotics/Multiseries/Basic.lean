@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
+Copyright (c) 2026 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
@@ -9,7 +9,22 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Defs
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
 
 /-!
-# TODO
+# Basic constructions for multiseries
+
+## Main definitions
+
+Let `[b₁, ..., bₙ]` be our basis.
+
+* `const c` represents a constant multiseries `c • b₁⁰ ... bₙ⁰`.
+  Then we define `zero` and `one` in terms of it.
+* `monomial k` represents a monomial `bₖ`.
+* `monomialRpow k r` represents a monomial `bₖʳ`.
+
+For each construction, we provide two definitions: one for `Multiseries` and one for
+`MultiseriesExpansion`. We then prove structural `simp`-lemmas describing their relationships with
+`MultiseriesExpansion.seq` and `MultiseriesExpansion.toFun`. Finally, we prove that all
+constructions are `Sorted` and `Approximates` their attached functions.
+
 -/
 
 @[expose] public section
@@ -27,7 +42,7 @@ def Multiseries.const (basis_hd : ℝ → ℝ) (basis_tl : Basis) (c : ℝ) :
     Multiseries basis_hd basis_tl :=
   .cons 0 (const basis_tl c) .nil
 
-/-- Multiseries representing constant. -/
+/-- Multiseries representing a constant. -/
 def const (basis : Basis) (c : ℝ) : MultiseriesExpansion basis :=
   match basis with
   | [] => ofReal c
@@ -35,19 +50,19 @@ def const (basis : Basis) (c : ℝ) : MultiseriesExpansion basis :=
 
 end
 
-/-- Neutral element for addition. It is `0 : ℝ` for empty basis and `[]` otherwise. -/
+/-- Neutral element for addition. It is `0 : ℝ` for the empty basis and `[]` otherwise. -/
 def zero {basis : Basis} : MultiseriesExpansion basis :=
   match basis with
   | [] => ofReal 0
   | List.cons _ _ => mk .nil (fun _ ↦ 0)
 
-/-- This instance is needed to create instance for `AddCommMonoid (MultiseriesExpansion basis)`,
-which is necessary for using `abel` tactic in our proofs. -/
+/-- This instance is needed to create an instance for `AddCommMonoid (MultiseriesExpansion basis)`,
+which is necessary for using the `abel` tactic in our proofs. -/
 instance {basis : Basis} : Zero (MultiseriesExpansion basis) where
   zero := zero
 
-/-- This instance is needed to create instance for `AddCommMonoid (MultiseriesExpansion basis)`,
-which is necessary for using `abel` tactic in our proofs. -/
+/-- This instance is needed to create an instance for `AddCommMonoid (MultiseriesExpansion basis)`,
+which is necessary for using the `abel` tactic in our proofs. -/
 instance {basis_hd : ℝ → ℝ} {basis_tl : Basis} : Zero (Multiseries basis_hd basis_tl) where
   zero := .nil
 
@@ -135,8 +150,7 @@ mutual
 theorem Multiseries.const_sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} :
     (Multiseries.const basis_hd basis_tl c).Sorted := by
   simp only [Multiseries.const]
-  apply Sorted.cons_nil
-  exact const_sorted
+  exact const_sorted.cons_nil
 
 /-- Constants are well-ordered. -/
 theorem const_sorted {basis : Basis} {c : ℝ} :
@@ -144,8 +158,7 @@ theorem const_sorted {basis : Basis} {c : ℝ} :
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
-    simp only [const, sorted_iff_seq_sorted, mk_seq]
-    apply Multiseries.const_sorted
+    simpa only [const, sorted_iff_seq_sorted, mk_seq] using Multiseries.const_sorted
 
 end
 
@@ -163,31 +176,24 @@ theorem Multiseries.one_sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
 theorem one_sorted {basis : Basis} : one.Sorted (basis := basis) :=
   const_sorted
 
--- TODO : move it
-/-- Constant multiseries approximates constant function. -/
+/-- The constant multiseries approximates the constant function. -/
 theorem const_approximates {c : ℝ} {basis : Basis} (h_basis : WellFormedBasis basis) :
     (const basis c).Approximates := by
   cases basis with
   | nil => simp
   | cons basis_hd basis_tl =>
     simp only [const, Multiseries.const]
-    have ih : (const basis_tl c).Approximates := by
-      apply const_approximates h_basis.tail
-    apply Approximates.cons ih
-    · apply Majorized.const
-      apply h_basis.tendsto_atTop
-      simp
-    · simp
+    apply (const_approximates h_basis.tail).cons _ (by simp)
+    exact Majorized.const <| h_basis.tendsto_atTop (by simp)
 
--- TODO : move it
-/-- `zero` approximates zero functions. -/
+/-- `zero` approximates the zero function. -/
 theorem zero_approximates {basis : Basis} :
     (@zero basis).Approximates := by
   cases basis with
   | nil => simp [zero]
   | cons => exact Approximates.nil (by rfl)
 
-/-- `one` approximates unit function. -/
+/-- `one` approximates the unit function. -/
 theorem one_approximates {basis : Basis} (h_basis : WellFormedBasis basis) :
     (@one basis).Approximates :=
   const_approximates h_basis
@@ -211,12 +217,10 @@ theorem Multiseries.monomialRpow_sorted {basis_hd : ℝ → ℝ} {basis_tl : Bas
   cases n with
   | zero =>
     simp only [Multiseries.monomialRpow]
-    apply Sorted.cons_nil
-    exact const_sorted
+    exact Sorted.cons_nil const_sorted
   | succ m =>
     simp only [Multiseries.monomialRpow]
-    apply Sorted.cons_nil
-    exact monomialRpow_sorted
+    exact Sorted.cons_nil monomialRpow_sorted
 
 /-- `monomial` is well-ordered. -/
 theorem monomialRpow_sorted {basis : Basis} {n : ℕ} {r : ℝ} :
@@ -224,12 +228,11 @@ theorem monomialRpow_sorted {basis : Basis} {n : ℕ} {r : ℝ} :
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
-    simp only [sorted_iff_seq_sorted, monomialRpow_seq]
-    apply Multiseries.monomialRpow_sorted
+    simpa only [sorted_iff_seq_sorted, monomialRpow_seq] using Multiseries.monomialRpow_sorted
 
 end
 
-/-- `monomialRpow` approximates monomial function. -/
+/-- `monomialRpow` approximates the monomial function. -/
 theorem monomialRpow_approximates {basis : Basis} {n : Fin (List.length basis)} {r : ℝ}
     (h_basis : WellFormedBasis basis) :
     (monomialRpow basis n r).Approximates := by
@@ -241,19 +244,12 @@ theorem monomialRpow_approximates {basis : Basis} {n : Fin (List.length basis)} 
     | zero =>
       simp only [Fin.coe_ofNat_eq_mod, Nat.zero_mod, Multiseries.monomialRpow,
         List.getElem_cons_zero]
-      apply Approximates.cons
-      · exact one_approximates h_basis.tail
-      · apply Majorized.self
-        apply h_basis.tendsto_atTop
-        simp
-      · simp
+      apply (one_approximates h_basis.tail).cons _ (by simp)
+      exact Majorized.self <| h_basis.tendsto_atTop (by simp)
     | succ m =>
       simp only [Fin.val_succ, Multiseries.monomialRpow, List.getElem_cons_succ]
-      apply Approximates.cons
-      · exact monomialRpow_approximates h_basis.tail
-      · apply h_basis.tail_pow_majorized_head
-        simp
-      · simp
+      apply (monomialRpow_approximates h_basis.tail).cons _ (by simp)
+      apply h_basis.tail_pow_majorized_head (by simp)
 
 @[simp]
 theorem monomial_toFun {basis : Basis} {n : ℕ} (h : n < basis.length) :
@@ -261,7 +257,6 @@ theorem monomial_toFun {basis : Basis} {n : ℕ} (h : n < basis.length) :
   let n' : Fin basis.length := ⟨n, h⟩
   conv_lhs => rw [show n = n'.val by simp [n']]
   convert! monomialRpow_toFun
-  ext t
   simp
   grind
 
@@ -282,7 +277,7 @@ theorem Multiseries.monomial_sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} 
 theorem monomial_sorted {basis : Basis} {n : ℕ} : (monomial basis n).Sorted :=
   monomialRpow_sorted
 
-/-- `monomial` approximates monomial function. -/
+/-- `monomial` approximates the monomial function. -/
 theorem monomial_approximates {basis : Basis} {n : Fin (List.length basis)}
     (h_basis : WellFormedBasis basis) : (monomial basis n).Approximates :=
   monomialRpow_approximates h_basis

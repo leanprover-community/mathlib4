@@ -115,11 +115,13 @@ section Monoid
 variable [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
   [LinearOrderedCommMonoidWithZero Γ''₀]
 
+lemma toMonoidWithZeroHom_injective :
+    (toMonoidWithZeroHom : Valuation R Γ₀ → R →*₀ Γ₀).Injective := by
+  rintro ⟨f, _⟩ g hfg; congr!
+
 instance : FunLike (Valuation R Γ₀) R Γ₀ where
-  coe f := f.toFun
-  coe_injective' f g h := by
-    obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
-    congr
+  coe f := f.toMonoidWithZeroHom
+  coe_injective := DFunLike.coe_injective.comp toMonoidWithZeroHom_injective
 
 instance : ValuationClass (Valuation R Γ₀) R Γ₀ where
   map_mul f := f.map_mul'
@@ -314,7 +316,7 @@ theorem map_sum_eq_of_lt {ι : Type*} [DecidableEq ι] {s : Finset ι} {f : ι �
     v (∑ i ∈ s, f i) = v (f j) := by
   rcases eq_or_ne (v (f j)) 0 with h0 | h0
   · aesop
-  rw [Finset.sum_eq_add_sum_diff_singleton_of_mem hj]
+  rw [Finset.sum_eq_add_sum_sdiff_singleton_of_mem hj]
   exact map_add_eq_of_lt_left _ (map_sum_lt _ h0 hf)
 
 theorem map_sub_eq_of_lt_left (h : v y < v x) : v (x - y) = v x := by
@@ -1063,18 +1065,11 @@ variable {Γ₀ : Type*} {Γ'₀ : Type*}
 section Basic
 
 section Monoid
-
-/-- A valuation is coerced to the underlying function `R → Γ₀`. -/
-instance (R) (Γ₀) [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] :
-    FunLike (AddValuation R Γ₀) R Γ₀ where
-  coe v := v.toMonoidWithZeroHom.toFun
-  coe_injective' f _ h := by
-    cases f
-    congr
-    exact DFunLike.coe_injective h
-
 variable [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
   (v : AddValuation R Γ₀)
+
+instance : FunLike (AddValuation R Γ₀) R Γ₀ :=
+  inferInstanceAs <| FunLike (Valuation R <| Multiplicative Γ₀ᵒᵈ) R <| Multiplicative Γ₀ᵒᵈ
 
 section
 
