@@ -895,16 +895,8 @@ lemma geometricAlternatingSeries_eq_formalMultilinearSeries_geometric_comp_neg :
     geometricAlternatingSeries 𝕜 A =
     (formalMultilinearSeries_geometric 𝕜 A).compContinuousLinearMap
       (-ContinuousLinearMap.id 𝕜 A) := by
-  ext n v
-  have : ((-ContinuousLinearMap.id 𝕜 A : A →L[𝕜] A) : A → A) = Neg.neg := by ext; simp
-  simp only [geometricAlternatingSeries, FormalMultilinearSeries.ofScalars,
-    ContinuousMultilinearMap.smul_apply, ContinuousMultilinearMap.mkPiAlgebraFin_apply,
-    formalMultilinearSeries_geometric_eq_ofScalars,
-    FormalMultilinearSeries.compContinuousLinearMap_apply, one_smul, this, ← List.map_ofFn,
-    List.prod_map_neg, List.length_ofFn]
-  rcases n.even_or_odd with (h | h)
-  · simp [h.neg_one_pow]
-  · simp [h.neg_one_pow]
+  simp [formalMultilinearSeries_geometric_eq_ofScalars, geometricAlternatingSeries,
+    FormalMultilinearSeries.ofScalars_comp_neg_id]
 
 lemma geometricAlternatingSeries_apply_norm_le (n : ℕ) :
     ‖geometricAlternatingSeries 𝕜 A n‖ ≤ max 1 ‖(1 : A)‖ := by
