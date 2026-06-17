@@ -95,7 +95,7 @@ lemma toFun_injective {π₁ : ContRepresentation R G V} {π₂ : ContRepresenta
 instance {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W} :
     FunLike (π₁ →ⁱL π₂) V W where
   coe f := f.toFun
-  coe_injective' := toFun_injective
+  coe_injective := toFun_injective
 
 lemma isIntertwining {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W}
     (f : π₁ →ⁱL π₂) (g : G) (v : V) : f (π₁ g v) = π₂ g (f v) :=
