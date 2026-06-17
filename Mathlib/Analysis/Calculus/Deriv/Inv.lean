@@ -33,6 +33,8 @@ open Filter Asymptotics Set
 open ContinuousLinearMap (toSpanSingleton)
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜}
+variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable {c : 𝕜 → 𝕜'} {c' : 𝕜'}
 
 section Inverse
 
@@ -98,8 +100,6 @@ theorem fderivWithin_inv (x_ne_zero : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s 
   rw [DifferentiableAt.fderivWithin (differentiableAt_inv x_ne_zero) hxs]
   exact fderiv_inv
 
-variable {c : 𝕜 → 𝕜} {c' : 𝕜}
-
 @[to_fun]
 theorem HasDerivWithinAt.inv (hc : HasDerivWithinAt c c' s x) (hx : c x ≠ 0) :
     HasDerivWithinAt (c⁻¹) (-c' / c x ^ 2) s x := by
@@ -138,7 +138,7 @@ section Division
 
 /-! ### Derivative of `x ↦ c x / d x` -/
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {c d : 𝕜 → 𝕜'} {c' d' : 𝕜'}
+variable {d : 𝕜 → 𝕜'} {d' : 𝕜'}
 
 theorem HasDerivWithinAt.fun_div (hc : HasDerivWithinAt c c' s x) (hd : HasDerivWithinAt d d' s x)
     (hx : d x ≠ 0) :
