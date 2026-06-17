@@ -178,16 +178,16 @@ replacing a goal `_ < _` by `_ ≤ _`. If this is not possible, then `a < b` is 
 
 `grewrite` is like `grw` but does not try to apply `rfl` afterwards.
 To rewrite only in the `n`-th position, use `nth_grw n`.
-`apply_rw [e₁, ..., eₙ]` is a shorthand for `grw +implicationHyp [e₁, ..., eₙ]`: it
-interprets `· → ·` as a relation instead of adding the hypothesis as a side condition.
+`apply_rw [e₁, ..., eₙ]` is a shorthand for `grw +implicationHyp [e₁, ..., eₙ]`: it interprets
+`· → ·` as a relation instead of adding the hypothesis as a side condition.
 
-* `grw [← e]` applies the rewrite rule `e : R a b` in the reverse direction, replacing
-  occurrences of `b` with `a`.
-* `grw (config := cfg) [e₁, ..., eₙ]` uses `cfg` as configuration. See `grw.Config` for
+* `grw [← e]` applies the rewrite rule `e : R a b` in the reverse direction, replacing occurrences
+  of `b` with `a`.
+* `grw (config := cfg) [e₁, ..., eₙ]` uses `cfg` as configuration. See `GRewrite.Config` for
   details.
   * To let `grw` unfold more aggressively, as in `erw`, use
     `grw (transparency := default) [e₁, ..., eₙ]`.
-  * `grw +implicationHyp [e₁, ..., eₙ]` interprets `· → ·` as a relation (see `apply_rewrite`).
+  * `grw +implicationHyp [e₁, ..., eₙ]` interprets `· → ·` as a relation (see `apply_rw`).
 * `grw [e₁, ..., eₙ] at l` rewrites at the location(s) `l`.
 
 Examples:
