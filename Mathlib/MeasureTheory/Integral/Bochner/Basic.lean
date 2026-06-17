@@ -214,6 +214,10 @@ theorem integral_non_aestronglyMeasurable {f : α → G} (h : ¬AEStronglyMeasur
     ∫ a, f a ∂μ = 0 :=
   integral_undef <| not_and_of_not_left _ h
 
+theorem integral_of_not_completeSpace {f : α → G} (hG : ¬CompleteSpace G) :
+    ∫ a, f a ∂μ = 0 := by
+  simp [integral, hG]
+
 variable (α G)
 
 @[simp]
@@ -561,6 +565,20 @@ theorem integral_eq_integral_pos_part_sub_integral_neg_part {f : α → ℝ} (hf
   rw [← integral_sub hf.real_toNNReal]
   · simp
   · exact hf.neg.real_toNNReal
+
+theorem integral_abs_eq_two_mul_integral_posPart_sub_integral {f : α → ℝ} (hf : Integrable f μ) :
+    ∫ x, |f x| ∂μ = 2 * ∫ x, (f x)⁺ ∂μ - ∫ x, f x ∂μ := by
+  simp only [PosPart.posPart]
+  have h_eq : ∀ x, |f x| = 2 * max (f x) 0 - f x := by grind
+  rw [integral_congr_ae (Eventually.of_forall h_eq), integral_sub (by fun_prop) hf,
+    integral_const_mul]
+
+theorem integral_abs_eq_two_mul_integral_negPart_add_integral {f : α → ℝ} (hf : Integrable f μ) :
+    ∫ x, |f x| ∂μ = 2 * ∫ x, (f x)⁻ ∂μ + ∫ x, f x ∂μ := by
+  simp only [NegPart.negPart]
+  have h_eq : ∀ x, |f x| = 2 * max (-f x) 0 + f x := by grind
+  rw [integral_congr_ae (Eventually.of_forall h_eq), integral_add (by fun_prop) hf,
+    integral_const_mul]
 
 end Basic
 

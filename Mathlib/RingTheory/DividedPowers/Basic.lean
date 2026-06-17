@@ -196,7 +196,7 @@ theorem exp_add (hI : DividedPowers I) (ha : a ∈ I) (hb : b ∈ I) :
 
 variable (hI : DividedPowers I)
 
-/- ## Rewriting lemmas -/
+/-! ## Rewriting lemmas -/
 
 theorem dpow_smul {n : ℕ} (ha : a ∈ I) :
     hI.dpow n (b • a) = b ^ n • hI.dpow n a := by
@@ -372,7 +372,7 @@ theorem dpow_prod {ι : Type*} {r : ι → A} {s : Finset ι} (hs : s.Nonempty)
         rw [mul_comm, pow_succ, mul_assoc, hI.factorial_mul_dpow_eq_pow]
         exact hs' a (mem_insert_self a s)
       · obtain ⟨j, hj⟩ := h
-        rw [Finset.prod_eq_prod_diff_singleton_mul hj]
+        rw [Finset.prod_eq_prod_sdiff_singleton_mul hj]
         exact I.mul_mem_left _ (hs' j (mem_insert_of_mem hj))
     · simp [not_nonempty_iff_eq_empty.mp h]
 

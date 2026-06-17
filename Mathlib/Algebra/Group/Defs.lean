@@ -791,7 +791,9 @@ class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 @[to_additive]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
 
-/- This is assigned default rather than low priority because it gives the most common examples
+/-- Shortcut instance for `IsCommutativeHMul M → IsDedekindFiniteMonoid M`.
+
+This is assigned default rather than low priority because it gives the most common examples
 of Dedekind-finite monoids and is used the most often. Benchmark results indicate default
 priority performs better than low or high priority. -/
 @[to_additive] instance (M) [CommMonoid M] : IsDedekindFiniteMonoid M := inferInstance
@@ -1274,7 +1276,7 @@ class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 
 /-- A commutative group is a group with commutative `(*)`. -/
 -- There is intentionally no `IsMulCommutative` for `CommGroup` instance for performance reasons.
-@[to_additive]
+@[to_additive (attr := wikidata Q181296)]
 class CommGroup (G : Type u) extends Group G, CommMonoid G
 
 section CommGroup
