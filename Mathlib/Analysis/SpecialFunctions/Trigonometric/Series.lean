@@ -40,9 +40,7 @@ theorem Complex.hasSum_cos' (z : ℂ) :
     (expSeries_div_hasSum_exp (-z * Complex.I))).div_const 2
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
   refine this.prod_fiberwise fun k => ?_
-  dsimp only
   convert! hasSum_fintype (_ : Fin 2 → ℂ) using 1
-  rw [Fin.sum_univ_two]
   simp_rw [Fin.sum_univ_two, Function.comp_def, Nat.divModEquiv_symm_apply, Fin.val_zero,
     Fin.val_one, Nat.mkDivMod_def, add_zero, pow_succ, pow_mul, mul_pow,
     neg_sq, ← two_mul, neg_mul, mul_neg, neg_div, add_neg_cancel, zero_div, add_zero,
@@ -57,9 +55,7 @@ theorem Complex.hasSum_sin' (z : ℂ) :
     (expSeries_div_hasSum_exp (z * Complex.I))).mul_right Complex.I).div_const 2
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
   refine this.prod_fiberwise fun k => ?_
-  dsimp only
   convert! hasSum_fintype (_ : Fin 2 → ℂ) using 1
-  rw [Fin.sum_univ_two]
   simp_rw [Fin.sum_univ_two, Function.comp_def, Nat.divModEquiv_symm_apply, Fin.val_zero,
     Fin.val_one, Nat.mkDivMod_def, add_zero, pow_succ, pow_mul, mul_pow, neg_sq, sub_self,
     zero_mul, zero_div, zero_add, neg_mul, mul_neg, neg_div, ← neg_add', ← two_mul,

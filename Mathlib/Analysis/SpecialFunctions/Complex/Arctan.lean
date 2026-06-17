@@ -126,7 +126,6 @@ theorem hasSum_arctan {z : ℂ} (hz : ‖z‖ < 1) :
   simp_rw [← add_div, ← add_one_mul, hasSum_arctan_aux hz] at this
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
   refine this.prod_fiberwise fun k => ?_
-  dsimp only
   convert! hasSum_fintype (_ : Fin 2 → ℂ) using 1
   simp_rw [Fin.sum_univ_two, Function.comp_def, Nat.divModEquiv_symm_apply, Fin.val_zero,
     Fin.val_one, Nat.mkDivMod_def, Odd.neg_one_pow (n := 2 * k + 0 + 1) (by simp),
