@@ -228,8 +228,7 @@ lemma isCardinalPresentable_of_hasCardinalLT_of_le (J : CardinalFilteredPoset κ
           { toFun := φ
             inj' x y h := Hom.injective f (by simpa [hφ])
             map_rel_iff' {x y} := ?_ }), ?_⟩
-      · simp only [Function.Embedding.coeFn_mk,
-          ← Hom.le_iff_le f, hφ, Hom.le_iff_le (c.ι.app m)]
+      · simp [← Hom.le_iff_le f, hφ]
       · dsimp
         ext x
         exact (hg x).symm.trans
