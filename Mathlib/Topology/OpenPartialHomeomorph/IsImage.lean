@@ -254,7 +254,7 @@ theorem restr_toPartialEquiv' (s : Set X) (hs : IsOpen s) :
 
 theorem restr_eq_of_source_subset {e : OpenPartialHomeomorph X Y} {s : Set X} (h : e.source ⊆ s) :
     e.restr s = e :=
-  toPartialEquiv_comp_toPartialHomeomorph_injective <| PartialEquiv.restr_eq_of_source_subset <|
+  toPartialEquiv_injective <| PartialEquiv.restr_eq_of_source_subset <|
     interior_maximal h e.open_source
 
 @[simp, mfld_simps]
@@ -360,7 +360,7 @@ theorem Set.EqOn.restr_eqOn_source {e e' : OpenPartialHomeomorph X Y}
 
 theorem eq_of_eqOnSource_univ {e e' : OpenPartialHomeomorph X Y} (h : e ≈ e') (s : e.source = univ)
     (t : e.target = univ) : e = e' :=
-  toPartialEquiv_comp_toPartialHomeomorph_injective <| PartialEquiv.eq_of_eqOnSource_univ _ _ h s t
+  toPartialEquiv_injective <| PartialEquiv.eq_of_eqOnSource_univ _ _ h s t
 
 variable {s : Set X}
 

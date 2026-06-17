@@ -110,9 +110,8 @@ theorem toPartialHomeomorph_injective :
     Injective (toPartialHomeomorph : OpenPartialHomeomorph X Y → PartialHomeomorph X Y)
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
-theorem toPartialEquiv_comp_toPartialHomeomorph_injective :
-    Injective (PartialHomeomorph.toPartialEquiv ∘ toPartialHomeomorph :
-      OpenPartialHomeomorph X Y → PartialEquiv X Y) :=
+theorem toPartialEquiv_injective :
+    Injective (fun f ↦ f.toPartialEquiv : OpenPartialHomeomorph X Y → PartialEquiv X Y) :=
   PartialHomeomorph.toPartialEquiv_injective.comp toPartialHomeomorph_injective
 
 /- Register a few simp lemmas to make sure that `simp` puts the application of a local
