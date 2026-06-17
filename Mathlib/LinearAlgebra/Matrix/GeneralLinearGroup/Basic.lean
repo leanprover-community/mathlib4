@@ -74,6 +74,13 @@ lemma center_eq_range_scalar :
 @[deprecated (since := "2026-02-08")]
 alias center_eq_range_units := center_eq_range_scalar
 
+lemma map_center_le {S : Type*} [CommRing S] (f : R →+* S) :
+    Subgroup.center (GL n R) ≤ (Subgroup.center (GL n S)).comap (map f) := fun u hu ↦ by
+  simp only [GeneralLinearGroup.center_eq_range_scalar, MonoidHom.mem_range,
+    Subgroup.mem_comap] at hu ⊢
+  obtain ⟨r, rfl⟩ := hu
+  exact ⟨(Units.map f) r, GeneralLinearGroup.map_scalar _ _ |>.symm⟩
+
 end Center
 
 end GeneralLinearGroup

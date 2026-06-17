@@ -213,12 +213,20 @@ theorem mk_smul {α : Type*} [MulAction (GL n R) α] (h) (g : GL n R) (a : α) :
 
 /-- The monoid hom between `PGL(n, R)` and `PGL(n, S)` induced by a
   ring homomorphism `f : R →+* S`. -/
-abbrev map {S : Type*} [CommRing S] (f : R →+* S) : PGL(n, R) →* PGL(n, S) :=
-  QuotientGroup.map _ _ (GeneralLinearGroup.map (n := n) f) <| fun u hu ↦ by
-    simp only [GeneralLinearGroup.center_eq_range_scalar, MonoidHom.mem_range,
-      Subgroup.mem_comap] at hu ⊢
-    obtain ⟨r, rfl⟩ := hu
-    exact ⟨(Units.map f) r, GeneralLinearGroup.map_scalar _ _ |>.symm⟩
+def map {S : Type*} [CommRing S] (f : R →+* S) : PGL(n, R) →* PGL(n, S) :=
+  QuotientGroup.map _ _ (GeneralLinearGroup.map (n := n) f) <| GeneralLinearGroup.map_center_le f
+
+@[simp]
+lemma map_id : map (RingHom.id R) = MonoidHom.id (PGL(n, R)) := QuotientGroup.map_id _
+
+@[simp]
+lemma map_mk {S : Type*} [CommRing S] (f : R →+* S) (g : GL n R) :
+    map f (mk g) = mk (GeneralLinearGroup.map f g) := rfl
+
+lemma map_comp {S T : Type*} [CommRing S] [CommRing T] (f : R →+* S) (g : S →+* T) :
+    map (n := n) (g.comp f) = (map g).comp (map f) := by
+  ext g
+  induction g using Matrix.ProjGenLinGroup.induction_on with | mk g => simp
 
 variable [Fact (Even (Fintype.card n))] [LinearOrder R] [IsStrictOrderedRing R]
 
