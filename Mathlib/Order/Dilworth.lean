@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine du Fresne von Hohenesche
 -/
 
+module
+
 import Mathlib.Order.Antichain
 import Mathlib.Order.Preorder.Chain
 import Mathlib.Order.Preorder.Finite
