@@ -19,7 +19,7 @@ example (h1 : 1 + 1 = 5) (h2 : 1 + 3 = 5) (h3 : 1 + 2 = 5) : True := by
   setm ?A + _ = ?B at h1 h2 h3
   guard_hyp A :=ₛ 1
   guard_hyp B :=ₛ 5
-  guard_hyp h1 :ₛ A + A = B
+  guard_hyp h1 :ₛ A + 1 = B
   guard_hyp h2 :ₛ A + 3 = B
   guard_hyp h3 :ₛ A + 2 = B
   trivial
@@ -40,6 +40,17 @@ example (h : b + a = c) : a + b = c := by
   guard_hyp B :=ₛ a
   exact h
 
+/- Strange problem -/
+
+example (n : Bool) : 1 + 2 = 3 := by
+  cases n
+  · setm ?A + ?B = _
+    guard_hyp A :=ₛ 1
+    guard_hyp B :=ₛ 2
+    trivial
+  setm ?A + ?B = _
+  trivial
+
 /- Test reducible + instances transparency -/
 
 def NotQuiteNat : Type := Nat
@@ -54,9 +65,9 @@ example {a b c : NotQuiteNat} (h : a + b = c) : True := by
   trivial
 
 /--
-error: setm: pattern
-  @Eq Nat (?A✝ + ?B✝) ?m.12
-is not defeq to goal
+error: setm pattern
+  @Eq Nat (A + B) ?m.12
+is not definitionally equal to the target
   @Eq NotQuiteNat (a + b) c
 -/
 #guard_msgs in
