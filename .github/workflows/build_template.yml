@@ -57,7 +57,6 @@ jobs:
       archive-outcome: ${{ steps.archive.outcome }}
       counterexamples-outcome: ${{ steps.counterexamples.outcome }}
       cache-staging-has-files: ${{ steps.cache_staging_check.outputs.has_files }}
-      full-cache-outcome: ${{ steps.upload_full_cache.outcome }}
       mk_all-outcome: ${{ steps.mk_all.outcome }}
       noisy-outcome: ${{ steps.noisy.outcome }}
       # shake-outcome: ${{ steps.shake.outcome }}
@@ -95,10 +94,6 @@ jobs:
               : # Do nothing on failure, but suppress errors
           fi
 
-      # The Hoskinson runners may not have jq installed, so do that now.
-      - name: 'Setup jq'
-        uses: dcarbone/install-jq-action@b7ef57d46ece78760b4019dbc4080a1ba2a40b45 # v3.2.0
-
       - name: Checkout local actions
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
@@ -107,43 +102,20 @@ jobs:
           sparse-checkout: .github/actions
           path: workflow-actions
 
-      # We need to 'duplicate' this step below because GitHub Actions does not let a `uses:` step
-      # conditionally omit a single `with:` key, and passing `ref: ''` would override
-      # the composite action's default to the empty string instead of falling back to it
-      # Note only one of the two below will actually run in any given run
-      - name: Get mathlib-ci
-        if: ${{ inputs.mathlib_ci_ref == '' }}
-        uses: ./workflow-actions/.github/actions/get-mathlib-ci
-
-      - name: Get mathlib-ci
-        if: ${{ inputs.mathlib_ci_ref != '' }}
-        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+      # Shared self-hosted setup (jq, mathlib-ci, cache-trust dispatch, PR-branch
+      # checkout, elan + toolchain/LEAN_SRC_PATH env, CI tools, dependency
+      # download). Extracted to a composite so `build` and `test_lint` stay in
+      # lockstep; see the action for per-step rationale. `cleanup` and the
+      # `Checkout local actions` step above must run first (the action is loaded
+      # from that checkout).
+      - name: Set up build environment
+        uses: ./workflow-actions/.github/actions/setup-build-env
         with:
-          ref: ${{ inputs.mathlib_ci_ref }}
-
-      # Compute the trust-classified container target and read fallback
-      # for this job. Sets MATHLIB_CACHE_FROM / MATHLIB_CACHE_PRIMARY in
-      # env so every subsequent `cache get` in this job inherits them
-      # without per-call flag plumbing. Loaded from master via the sparse
-      # `workflow-actions/` checkout above, not from the PR branch — this
-      # keeps the trust policy out of fork-controllable file paths.
-      - name: Compute cache trust dispatch
-        uses: ./workflow-actions/.github/actions/cache-trust-dispatch
-        with:
-          repo: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
-          branch: ${{ github.head_ref || github.ref_name }}
-          head-sha: ${{ github.event.pull_request.head.sha || github.sha }}
-
-      # Checkout the PR branch into a subdirectory
-      - name: Checkout PR branch
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-        with:
-          ref: ${{ inputs.pr_branch_ref }}
-          fetch-depth: 2 # we may fetch cache from the commit before this one (or earlier)
-          path: pr-branch
-          # This is an untrusted (potentially fork) checkout whose code we build.
-          # Don't leave the GITHUB_TOKEN in pr-branch/.git/config, where that code could read it.
-          persist-credentials: false
+          pr_branch_ref: ${{ inputs.pr_branch_ref }}
+          fetch_depth: '2' # build may warm the cache from the parent commit; it needs that history
+          mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}
+          tools_branch_ref: ${{ inputs.tools_branch_ref }}
+          github_token: ${{ github.token }}
 
       # TEMPORARY (cache storage-layout migration, PR #40035): remove once
       # active branches have merged the new cache tool.
@@ -194,103 +166,6 @@ jobs:
           cd DownstreamTest
           cp ../lean-toolchain .
           echo "lean-toolchain copied successfully to DownstreamTest."
-
-      # Create empty directories so landrun doesn't complain
-      - name: Create empty directories
-        shell: bash # We need to run this outside landrun, as it is a prerequisite for landrun!
-        run: |
-          mkdir -p pr-branch/.lake/
-          mkdir -p .cache/mathlib/
-          mkdir -p _work
-
-      # NOTE: if you copy this, consider using `leanprover/lean-action` instead.
-      # We install manually, to avoid running lean outside landrun.
-      - name: install elan
-        shell: bash
-        run: |
-          set -o pipefail
-          curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
-          chmod +x elan-init.sh
-          ./elan-init.sh -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
-
-      - name: set toolchain directory
-        shell: bash
-        run: |
-          cd pr-branch
-          # Get the lake binary path from elan and extract toolchain directory
-          LAKE_PATH=$(elan which lake)
-          echo "Lake path: $LAKE_PATH"
-
-          # Extract the toolchain directory by removing /bin/lake from the end
-          TOOLCHAIN_DIR=$(dirname "$LAKE_PATH")
-          TOOLCHAIN_DIR=$(dirname "$TOOLCHAIN_DIR")
-          echo "Toolchain directory: $TOOLCHAIN_DIR"
-
-          # Set it as an environment variable for subsequent steps
-          echo "TOOLCHAIN_DIR=$TOOLCHAIN_DIR" >> "$GITHUB_ENV"
-
-      - name: set LEAN_SRC_PATH
-        shell: bash
-        run: |
-          cd pr-branch
-
-          # Start with the base paths
-          LEAN_SRC_PATH=".:$TOOLCHAIN_DIR/src/lean/lake"
-
-          # Extract package names from lake-manifest.json and validate them
-          # Only allow A-Z, a-z, 0-9, _, and - characters
-          # Build the LEAN_SRC_PATH by appending each validated package
-          PACKAGE_NAMES=$(jq -r '.packages[].name' lake-manifest.json)
-          for pkg in $PACKAGE_NAMES; do
-            if [[ "$pkg" =~ ^[A-Za-z0-9_-]+$ ]]; then
-              LEAN_SRC_PATH="$LEAN_SRC_PATH:.lake/packages/$pkg"
-            else
-              echo "Warning: Skipping invalid package name: $pkg"
-            fi
-          done
-
-          echo "LEAN_SRC_PATH=$LEAN_SRC_PATH"
-
-          # Set it as an environment variable for subsequent steps
-          echo "LEAN_SRC_PATH=$LEAN_SRC_PATH" >> "$GITHUB_ENV"
-
-      # Populate `tools-branch/` with the trusted CI tooling (the `cache` binary and
-      # the `lake-build-*` helper scripts invoked by path below).
-      #
-      #   - Fast path: download the prebuilt `tools-bin` artifact published from
-      #     `master` by `publish_tools.yml` — only on canonical mathlib4, and only
-      #     when the branch under test doesn't change the cache tool. `get-tools`
-      #     makes that comparison itself against `source_dir` (the already-checked-
-      #     out `pr-branch`), so the tool-source path list lives in the action, not
-      #     duplicated here.
-      #   - Source build: from `tools_source_ref`, pointed at the branch *under
-      #     test* (`pr_branch_ref`) — bors `staging`/`trying`, in-repo dev branches,
-      #     and the nightly-testing repo (which has no `master` branch) — so the
-      #     built tool matches the tree. Fork PRs keep `master` and skip the
-      #     comparison (empty `source_dir`): they run master's `build_template` via
-      #     `pull_request_target`, never this one, and their untrusted tool must
-      #     never be built/run with cache credentials (bors exercises tool changes
-      #     in-repo instead).
-      - name: Get CI tools
-        uses: ./workflow-actions/.github/actions/get-tools
-        with:
-          use_artifact: ${{ inputs.tools_branch_ref == '' && github.repository == 'leanprover-community/mathlib4' }}
-          tools_source_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.event.pull_request.head.repo.fork && 'master' || inputs.pr_branch_ref) }}
-          source_dir: ${{ github.event.pull_request.head.repo.fork != true && 'pr-branch' || '' }}
-          github_token: ${{ github.token }}
-
-      - name: download dependencies
-        # We need network access to download dependencies
-        # We run this inside landrun, but restrict disk access.
-        # Landrun argument notes:
-        # - we give --rox access to `~/.elan` and `~/actions-runner/_work` (GitHub CI needs this)
-        # - we give --unrestricted-network as we need this to download dependencies
-        # - git needs read only access to `/etc`.
-        shell: landrun --unrestricted-network --rox /etc --rox /usr --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
-        run: |
-          cd pr-branch
-          lake env
 
       - name: validate lake-manifest.json inputRevs
         # Only enforce this on the main mathlib4 repository, not on nightly-testing
@@ -467,27 +342,10 @@ jobs:
           name: cache-staging
           path: cache-staging/
 
-      # At this point `~/.cache/mathlib` holds the complete `.ltar` set for this commit:
-      # everything `cache get` downloaded into the (initially empty) directory, plus
-      # everything the stage steps packed. Ship the whole set to `test_lint` as an
-      # artifact so its `cache get` resolves entirely from local files.
-      # Skipped on cancellation (unlike the stage steps): `test_lint` doesn't
-      # run on a cancelled build, so the multi-GB upload would be wasted.
-      # NOTE: this runs BEFORE the `cache-snapshot` prune below, so the `full-cache`
-      # handoff to `test_lint` captures the complete set; the prune only narrows the
-      # separately-published `cache-snapshot`.
-      - name: upload full cache artifact
-        id: upload_full_cache
-        if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure') }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: full-cache
-          path: /home/lean/.cache/mathlib/*.ltar
-          # The `.ltar` files are already zstd-compressed; recompressing wastes CPU.
-          compression-level: 0
-          # Only `test_lint` (in this same run) consumes this artifact, so the
-          # default retention would just hold gigabytes per run for no reader.
-          retention-days: 1
+      # `test_lint` no longer gets a bespoke full-cache artifact here. It instead
+      # downloads the `cache-staging` artifact above (this commit's freshly-built
+      # delta) and warms the rest from the master `cache-snapshot` via the
+      # `get-cache` action — see that job for the rationale.
 
       # Prune to this commit's `.ltar` set so the published snapshot is exactly master's
       # current cache (the local dir also holds the previous snapshot it warmed from).
@@ -545,10 +403,14 @@ jobs:
     # runner) and no increase in per-run PEAK pool concurrency (build and
     # test_lint run sequentially on the pool).
     #
-    # This job does NOT depend on `upload_cache`: it sources this run's oleans
-    # from the `full-cache` artifact uploaded by `build` (see that step for the
-    # cost rationale), not from the Azure cache, so it neither waits for the
-    # Azure upload nor re-downloads from paid storage.
+    # This job does NOT depend on `upload_cache`: it reconstitutes this run's
+    # oleans WITHOUT the paid Azure round-trip. It downloads the `cache-staging`
+    # artifact `build` already uploads (this commit's freshly-built delta) and
+    # warms the rest from the master `cache-snapshot` via the `get-cache` action,
+    # so it neither waits for the Azure upload nor re-downloads the bulk from paid
+    # storage. The `verify the Mathlib cache is complete` step below fails loudly
+    # if that reconstitution is somehow incomplete (rather than silently rebuilding
+    # under landrun, which has no network).
     #
     # Gating: run when the build job SUCCEEDED or FAILED (not cancelled/skipped).
     # We deliberately run on build FAILURE too, to preserve the old monolith's
@@ -556,12 +418,6 @@ jobs:
     # on whatever oleans were built). The individual `test`/`lint` steps below
     # reproduce the monolith's per-step conditions: `test` only on a clean build,
     # `lint` on success-or-failure.
-    #
-    # We do NOT gate on `full-cache-outcome == 'success'`: if the upload failed we
-    # want this job to RUN and fail loudly at `download full-cache`, not silently
-    # SKIP. A skipped job doesn't fail the run, so gating on it would let a green
-    # `build` with a broken cache handoff report overall SUCCESS though test+lint
-    # never ran.
     if: ${{ always() && (needs.build.result == 'success' || needs.build.result == 'failure') }}
     runs-on: ${{ inputs.runs_on }}
     outputs:
@@ -588,10 +444,6 @@ jobs:
               : # Do nothing on failure, but suppress errors
           fi
 
-      # The Hoskinson runners may not have jq installed, so do that now.
-      - name: 'Setup jq'
-        uses: dcarbone/install-jq-action@b7ef57d46ece78760b4019dbc4080a1ba2a40b45 # v3.2.0
-
       - name: Checkout local actions
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
@@ -600,153 +452,45 @@ jobs:
           sparse-checkout: .github/actions
           path: workflow-actions
 
-      # See the build job for why this `uses:` step is duplicated.
-      # In this job, mathlib-ci (CI_SCRIPTS_DIR) is only consumed by the
-      # lean-pr-testing comments step at the end, which runs only on the
-      # nightly-testing repository — so skip the checkout everywhere else.
-      - name: Get mathlib-ci
-        if: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' && inputs.mathlib_ci_ref == '' }}
-        uses: ./workflow-actions/.github/actions/get-mathlib-ci
-
-      - name: Get mathlib-ci
-        if: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' && inputs.mathlib_ci_ref != '' }}
-        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+      # Shared self-hosted setup, identical to the `build` job (see the action).
+      # `mathlib_ci_nightly_only` because here mathlib-ci is only consumed by the
+      # lean-pr-testing comment, which runs only on the nightly-testing repo.
+      # `fetch_depth: 1` because, unlike `build`, this job does no parent-commit
+      # cache warmup — it only needs the PR head commit to run test+lint.
+      - name: Set up build environment
+        uses: ./workflow-actions/.github/actions/setup-build-env
         with:
-          ref: ${{ inputs.mathlib_ci_ref }}
-
-      # Same trust dispatch as in the `build` and `post_steps` jobs, loaded from
-      # the trust-rooted `workflow-actions/` checkout. In the happy path the
-      # `cache get` below resolves everything from the unpacked `full-cache`
-      # artifact and never touches the network; this dispatch exists so that any
-      # FALLBACK download (a file unexpectedly missing from the artifact) uses
-      # the same trust-classified read chain and per-commit scope as every other
-      # cache read in this workflow.
-      - name: Compute cache trust dispatch
-        uses: ./workflow-actions/.github/actions/cache-trust-dispatch
-        with:
-          repo: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
-          branch: ${{ github.head_ref || github.ref_name }}
-          head-sha: ${{ github.event.pull_request.head.sha || github.sha }}
-
-      # Checkout the PR branch into a subdirectory.
-      - name: Checkout PR branch
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-        with:
-          ref: ${{ inputs.pr_branch_ref }}
-          # Shallow (depth 1) is correct here: unlike `build`, this job does NOT
-          # do the parent-commit cache warmup, so it only needs the PR head commit
-          # to run test+lint. (build uses fetch-depth: 2 precisely for that warmup.)
-          fetch-depth: 1
-          path: pr-branch
-          # This is an untrusted (potentially fork) checkout whose code we build.
-          # Don't leave the GITHUB_TOKEN in pr-branch/.git/config, where that code could read it.
-          persist-credentials: false
-
-      # Create empty directories so landrun doesn't complain
-      - name: Create empty directories
-        shell: bash # We need to run this outside landrun, as it is a prerequisite for landrun!
-        run: |
-          mkdir -p pr-branch/.lake/
-          mkdir -p .cache/mathlib/
-          mkdir -p _work
-
-      # NOTE: if you copy this, consider using `leanprover/lean-action` instead.
-      # We install manually, to avoid running lean outside landrun.
-      - name: install elan
-        shell: bash
-        run: |
-          set -o pipefail
-          curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
-          chmod +x elan-init.sh
-          ./elan-init.sh -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
-
-      - name: set toolchain directory
-        shell: bash
-        run: |
-          cd pr-branch
-          # Get the lake binary path from elan and extract toolchain directory
-          LAKE_PATH=$(elan which lake)
-          echo "Lake path: $LAKE_PATH"
-
-          # Extract the toolchain directory by removing /bin/lake from the end
-          TOOLCHAIN_DIR=$(dirname "$LAKE_PATH")
-          TOOLCHAIN_DIR=$(dirname "$TOOLCHAIN_DIR")
-          echo "Toolchain directory: $TOOLCHAIN_DIR"
-
-          # Set it as an environment variable for subsequent steps
-          echo "TOOLCHAIN_DIR=$TOOLCHAIN_DIR" >> "$GITHUB_ENV"
-
-      - name: set LEAN_SRC_PATH
-        shell: bash
-        run: |
-          cd pr-branch
-
-          # Start with the base paths
-          LEAN_SRC_PATH=".:$TOOLCHAIN_DIR/src/lean/lake"
-
-          # Extract package names from lake-manifest.json and validate them
-          # Only allow A-Z, a-z, 0-9, _, and - characters
-          # Build the LEAN_SRC_PATH by appending each validated package
-          PACKAGE_NAMES=$(jq -r '.packages[].name' lake-manifest.json)
-          for pkg in $PACKAGE_NAMES; do
-            if [[ "$pkg" =~ ^[A-Za-z0-9_-]+$ ]]; then
-              LEAN_SRC_PATH="$LEAN_SRC_PATH:.lake/packages/$pkg"
-            else
-              echo "Warning: Skipping invalid package name: $pkg"
-            fi
-          done
-
-          echo "LEAN_SRC_PATH=$LEAN_SRC_PATH"
-
-          # Set it as an environment variable for subsequent steps
-          echo "LEAN_SRC_PATH=$LEAN_SRC_PATH" >> "$GITHUB_ENV"
-
-      # Populate `tools-branch/` exactly as in the `build` job (see the comment
-      # there): prebuilt `tools-bin` artifact on the common path, source build
-      # otherwise. This job uses the `cache` binary and `lake-build-wrapper.py`
-      # from it; the `test`/`lint` drivers come from the PR branch's own lake config.
-      - name: Get CI tools
-        uses: ./workflow-actions/.github/actions/get-tools
-        with:
-          use_artifact: ${{ inputs.tools_branch_ref == '' && github.repository == 'leanprover-community/mathlib4' }}
-          tools_source_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.event.pull_request.head.repo.fork && 'master' || inputs.pr_branch_ref) }}
-          source_dir: ${{ github.event.pull_request.head.repo.fork != true && 'pr-branch' || '' }}
+          pr_branch_ref: ${{ inputs.pr_branch_ref }}
+          fetch_depth: '1'
+          mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}
+          mathlib_ci_nightly_only: 'true'
+          tools_branch_ref: ${{ inputs.tools_branch_ref }}
           github_token: ${{ github.token }}
 
-      - name: download dependencies
-        # We need network access to download dependencies
-        # We run this inside landrun, but restrict disk access.
-        shell: landrun --unrestricted-network --rox /etc --rox /usr --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
-        run: |
-          cd pr-branch
-          lake env
-
-      # Populate the (empty, ephemeral) local cache directory with the complete
-      # `.ltar` set the build job assembled for this commit, so the `cache get`
-      # below resolves from local files instead of re-downloading ~the whole
-      # cache from paid Azure storage.
-      - name: download full cache artifact
+      # Pre-populate the (empty, ephemeral) local cache with this commit's
+      # freshly-built delta: the `cache-staging` artifact `build` already uploads
+      # (its newly-built `.ltar` — the only oleans NOT already in the master
+      # snapshot). `get-cache` below then warms the unchanged bulk from the master
+      # `cache-snapshot` and unpacks everything, so we avoid re-downloading ~the
+      # whole cache from paid Azure storage.
+      # Gated on `cache-staging-has-files`: a full cache hit stages nothing (no
+      # artifact is uploaded), and `get-cache` alone then covers the commit.
+      - name: download cache staging artifact
+        if: ${{ needs.build.outputs.cache-staging-has-files == 'true' }}
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: full-cache
+          name: cache-staging
           path: /home/lean/.cache/mathlib
 
-      - name: get cache (unpack this run's oleans)
-        shell: bash # only runs `cache get` from the trusted tools-branch, so doesn't need to be inside landrun
-        env:
-          CACHE_REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
-        run: |
-          cd pr-branch
-          echo "Removing old Mathlib build directories prior to cache unpack..."
-          rm -rf .lake/build/lib/lean/Mathlib
-          # The full-cache artifact has pre-populated `~/.cache/mathlib`, so this
-          # decompresses local files and only downloads (via the trust-dispatch
-          # read chain in env) anything unexpectedly missing -- no parent-commit
-          # warmup needed (that is the build job's concern).
-          ../tools-branch/.lake/build/bin/cache get
-          # Run again with --repo, as a fallback to ensure we actually get the oleans.
-          ../tools-branch/.lake/build/bin/cache --repo="$CACHE_REPO" get
+      # Warm the unchanged bulk from the master `cache-snapshot` and fetch/unpack
+      # this commit's oleans, exactly as the `build` job does. The staged `.ltar`
+      # placed above are already local, so `get-cache`'s `cache get` decompresses
+      # them rather than re-downloading; only anything still missing hits Azure.
+      - name: Get cache
+        uses: ./workflow-actions/.github/actions/get-cache
+        with:
+          working_directory: pr-branch
+          cache_bin: ../tools-branch/.lake/build/bin/cache
 
       - name: verify the Mathlib cache is complete
         # Only enforced when the build SUCCEEDED (then the cache must be complete):
