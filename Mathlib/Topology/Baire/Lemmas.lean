@@ -121,6 +121,10 @@ theorem IsOpenQuotientMap.baireSpace {Y : Type*} [TopologicalSpace Y] {f : X →
     (fun n => (IsOpenQuotientMap.dense_preimage_iff hf).mpr (hdu n))
   simp_all [← preimage_iInter, IsOpenQuotientMap.dense_preimage_iff]
 
+protected theorem Homeomorph.baireSpace {Y : Type*} [TopologicalSpace Y] (f : X ≃ₜ Y) :
+    BaireSpace Y :=
+  f.isOpenQuotientMap.baireSpace
+
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with ⋂₀. -/
 theorem dense_sInter_of_isOpen {S : Set (Set X)} (ho : ∀ s ∈ S, IsOpen s) (hS : S.Countable)
     (hd : ∀ s ∈ S, Dense s) : Dense (⋂₀ S) := by
