@@ -210,16 +210,6 @@ instance ObjectProperty.FullSubcategory.concreteCategory {C : Type u} [Category.
 @[deprecated (since := "2026-04-18")] alias FullSubcategory.concreteCategory :=
   ObjectProperty.FullSubcategory.concreteCategory
 
-/-- Unification hint for `ConcreteCategory.hom` on full subcategories. -/
-unif_hint ObjectProperty.FullSubcategory.concreteCategory_hom
-    {C : Type u} [Category.{v} C]
-    {FC : C → C → Type*} {CC : C → Type w}
-    [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory.{w} C FC]
-    (P : ObjectProperty C) (X Y : P.FullSubcategory) (f : X ⟶ Y) where
-  ⊢
-    ConcreteCategory.hom (C := P.FullSubcategory) f ≟
-      ConcreteCategory.hom (C := C) f.hom
-
 end ConcreteCategory
 
 variable {C : Type u} [Category.{v} C]
