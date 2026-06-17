@@ -1,15 +1,15 @@
 # Shared runner setup for the self-hosted `build` and `test_lint` jobs in
 # build_template.yml. Both run on the same Hoskinson pool and need the same
 # preparation before they diverge (build → build + stage, test_lint →
-# fetch + test + lint): toolchain hygiene, jq, the mathlib-ci / cache-trust /
-# get-tools wiring, the PR-branch checkout, the elan toolchain and LEAN_SRC_PATH
+# fetch + test + lint): toolchain hygiene, jq, the cache-trust and get-tools
+# wiring, the PR-branch checkout, the elan toolchain and LEAN_SRC_PATH
 # environment, and the dependency download.
 #
 # The caller runs `Checkout local actions` (sparse `.github/actions` →
 # `workflow-actions/`) before invoking this action: that checkout puts both this
-# action and the sibling actions it calls (`get-mathlib-ci`, `cache-trust-dispatch`,
-# `get-tools`) on disk under `workflow-actions/`, so the `uses: ./workflow-actions/...`
-# paths below resolve relative to the workspace root, as in the calling workflow.
+# action and the sibling actions it calls (`cache-trust-dispatch`, `get-tools`)
+# on disk under `workflow-actions/`, so the `uses: ./workflow-actions/...` paths
+# below resolve relative to the workspace root, as in the calling workflow.
 #
 # Each `run:` step sets its own `shell:`, since composite steps do not inherit the
 # job's landrun `defaults.run.shell`.
@@ -20,17 +20,6 @@ inputs:
   pr_branch_ref:
     description: Git ref of the PR branch to check out and build.
     required: true
-  mathlib_ci_ref:
-    description: Git ref for mathlib-ci (empty → the get-mathlib-ci action's pinned default).
-    required: false
-    default: ''
-  mathlib_ci_nightly_only:
-    description: >
-      When 'true', only check out mathlib-ci on the nightly-testing repo, where
-      its sole consumer (the lean-pr-testing comment) lives. `build` leaves this
-      'false' and always checks it out; `test_lint` sets it 'true'.
-    required: false
-    default: 'false'
   tools_branch_ref:
     description: Git ref to build the CI tools from when not using the prebuilt artifact.
     required: false
@@ -57,22 +46,6 @@ runs:
     # The Hoskinson runners may not have jq installed, so do that now.
     - name: 'Setup jq'
       uses: dcarbone/install-jq-action@b7ef57d46ece78760b4019dbc4080a1ba2a40b45 # v3.2.0
-
-    # This step is written twice because GitHub Actions does not let a `uses:` step
-    # conditionally omit a single `with:` key, and passing `ref: ''` would override
-    # the composite's default with the empty string instead of falling back to it.
-    # Only one of the two runs in any given run. `mathlib_ci_nightly_only` restricts
-    # the checkout to the nightly-testing repo, where mathlib-ci's only consumer
-    # (the lean-pr-testing comment) lives.
-    - name: Get mathlib-ci
-      if: ${{ inputs.mathlib_ci_ref == '' && (inputs.mathlib_ci_nightly_only != 'true' || github.repository == 'leanprover-community/mathlib4-nightly-testing') }}
-      uses: ./workflow-actions/.github/actions/get-mathlib-ci
-
-    - name: Get mathlib-ci
-      if: ${{ inputs.mathlib_ci_ref != '' && (inputs.mathlib_ci_nightly_only != 'true' || github.repository == 'leanprover-community/mathlib4-nightly-testing') }}
-      uses: ./workflow-actions/.github/actions/get-mathlib-ci
-      with:
-        ref: ${{ inputs.mathlib_ci_ref }}
 
     # Compute the trust-classified container target and read fallback for this
     # job. Sets MATHLIB_CACHE_FROM / MATHLIB_CACHE_PRIMARY in env so every

@@ -86,15 +86,14 @@ jobs:
           sparse-checkout: .github/actions
           path: workflow-actions
 
-      # Shared self-hosted setup (toolchain prune, jq, mathlib-ci, cache-trust
-      # dispatch, PR-branch checkout, elan + toolchain/LEAN_SRC_PATH env, CI tools,
-      # dependency download); see the action for per-step rationale. It is loaded
-      # from the `Checkout local actions` checkout above, which therefore runs first.
+      # Shared self-hosted setup (toolchain prune, jq, cache-trust dispatch,
+      # PR-branch checkout, elan + toolchain/LEAN_SRC_PATH env, CI tools, dependency
+      # download); see the action for per-step rationale. It is loaded from the
+      # `Checkout local actions` checkout above, which therefore runs first.
       - name: Set up build environment
         uses: ./workflow-actions/.github/actions/setup-build-env
         with:
           pr_branch_ref: ${{ inputs.pr_branch_ref }}
-          mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}
           tools_branch_ref: ${{ inputs.tools_branch_ref }}
 
       # TEMPORARY (cache storage-layout migration, PR #40035): remove once
@@ -405,16 +404,26 @@ jobs:
           sparse-checkout: .github/actions
           path: workflow-actions
 
-      # Shared self-hosted setup (see the action). `mathlib_ci_nightly_only` because
-      # here mathlib-ci is only consumed by the lean-pr-testing comment, which runs
-      # only on the nightly-testing repo.
+      # Shared self-hosted setup (see the action).
       - name: Set up build environment
         uses: ./workflow-actions/.github/actions/setup-build-env
         with:
           pr_branch_ref: ${{ inputs.pr_branch_ref }}
-          mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}
-          mathlib_ci_nightly_only: 'true'
           tools_branch_ref: ${{ inputs.tools_branch_ref }}
+
+      # mathlib-ci provides the scripts for the lean-pr-testing comment at the end of
+      # this job, which runs only on the nightly-testing repo — so check it out only
+      # there. Written twice because a `uses:` step cannot conditionally omit the
+      # single `ref` key (`ref: ''` would override the action's pinned default).
+      - name: Get mathlib-ci
+        if: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' && inputs.mathlib_ci_ref == '' }}
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+
+      - name: Get mathlib-ci
+        if: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' && inputs.mathlib_ci_ref != '' }}
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+        with:
+          ref: ${{ inputs.mathlib_ci_ref }}
 
       # Pre-populate the local cache with this commit's freshly-built delta: the
       # `cache-staging` artifact `build` produces holds its newly-built `.ltar` —
