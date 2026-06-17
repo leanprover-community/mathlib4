@@ -16,6 +16,7 @@ concurrency:
 permissions:
   contents: read
   id-token: write
+  actions: read  # download master artifacts (tools-bin, cache-snapshot)
   pull-requests: write  # Only allow PR comments/labels
   # All other permissions are implicitly 'none'
 

@@ -4315,6 +4315,7 @@ public import Mathlib.Data.Seq.Basic
 public import Mathlib.Data.Seq.Computation
 public import Mathlib.Data.Seq.Defs
 public import Mathlib.Data.Seq.Parallel
+public import Mathlib.Data.Set.Accumulate
 public import Mathlib.Data.Set.Basic
 public import Mathlib.Data.Set.BoolIndicator
 public import Mathlib.Data.Set.BooleanAlgebra
@@ -4325,6 +4326,7 @@ public import Mathlib.Data.Set.Constructions
 public import Mathlib.Data.Set.Countable
 public import Mathlib.Data.Set.Defs
 public import Mathlib.Data.Set.Disjoint
+public import Mathlib.Data.Set.Dissipate
 public import Mathlib.Data.Set.Enumerate
 public import Mathlib.Data.Set.Equitable
 public import Mathlib.Data.Set.Finite.Basic
@@ -4663,6 +4665,7 @@ public import Mathlib.Geometry.Manifold.Submersion
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
+public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Metric
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
 public import Mathlib.Geometry.Manifold.VectorBundle.FiberwiseLinear
 public import Mathlib.Geometry.Manifold.VectorBundle.Hom
