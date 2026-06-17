@@ -41,7 +41,7 @@ lemma AnalyticAt.meromorphicAt {f : 𝕜 → E} {x : 𝕜} (hf : AnalyticAt 𝕜
     MeromorphicAt f x :=
   ⟨0, by simpa only [pow_zero, one_smul]⟩
 
-/- Analogue of the principle of isolated zeros for an analytic function: if a function is
+/-- Analogue of the principle of isolated zeros for an analytic function: if a function is
 meromorphic at `z₀`, then either it is identically zero in a punctured neighborhood of `z₀`, or it
 does not vanish there at all. -/
 theorem MeromorphicAt.eventually_eq_zero_or_eventually_ne_zero {f : 𝕜 → E} {z₀ : 𝕜}
@@ -90,7 +90,7 @@ lemma smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : M
   rcases hf with ⟨m, hf⟩
   rcases hg with ⟨n, hg⟩
   refine ⟨m + n, ?_⟩
-  convert hf.smul hg using 2 with z
+  convert! hf.smul hg using 2 with z
   simp
   module
 
@@ -100,7 +100,7 @@ lemma mul {f g : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) (hg : MeromorphicAt g 
   rcases hf with ⟨m, hf⟩
   rcases hg with ⟨n, hg⟩
   refine ⟨m + n, ?_⟩
-  convert hf.mul hg using 2 with z
+  convert! hf.mul hg using 2 with z
   simp
   module
 
@@ -122,7 +122,7 @@ theorem prod (hf : ∀ σ ∈ s, MeromorphicAt (F σ) x) :
 @[fun_prop]
 theorem fun_prod (h : ∀ σ ∈ s, MeromorphicAt (F σ) x) :
     MeromorphicAt (fun z ↦ ∏ n ∈ s, F n z) x := by
-  convert prod h (s := s)
+  convert! prod h (s := s)
   simp
 
 /-- Finprods of meromorphic functions are meromorphic. -/
@@ -151,7 +151,7 @@ theorem sum (h : ∀ σ ∈ s, MeromorphicAt (G σ) x) :
 @[fun_prop]
 theorem fun_sum (h : ∀ σ ∈ s, MeromorphicAt (G σ) x) :
     MeromorphicAt (fun z ↦ ∑ n ∈ s, G n z) x := by
-  convert sum h (s := s)
+  convert! sum h (s := s)
   simp
 
 /-- Finsums of meromorphic functions are meromorphic. -/
@@ -164,7 +164,7 @@ theorem finsum (hF : ∀ i, MeromorphicAt (F i) x) :
 
 @[to_fun (attr := fun_prop)]
 lemma neg {f : 𝕜 → E} (hf : MeromorphicAt f x) : MeromorphicAt (-f) x := by
-  convert (MeromorphicAt.const (-1 : 𝕜) x).smul hf using 1
+  convert! (MeromorphicAt.const (-1 : 𝕜) x).smul hf using 1
   ext1 z
   simp only [Pi.neg_apply, Pi.smul_apply', neg_smul, one_smul]
 
@@ -176,7 +176,7 @@ lemma neg_iff {f : 𝕜 → E} :
 @[to_fun (attr := fun_prop)]
 lemma sub {f g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f - g) x := by
-  convert hf.add hg.neg using 1
+  convert! hf.add hg.neg using 1
   ext1 z
   simp_rw [Pi.sub_apply, Pi.add_apply, Pi.neg_apply, sub_eq_add_neg]
 
@@ -251,7 +251,7 @@ lemma congr {f g : 𝕜 → E} (hf : MeromorphicAt f x) (hfg : f =ᶠ[𝓝[≠] 
     MeromorphicAt g x := by
   rcases hf with ⟨m, hf⟩
   refine ⟨m + 1, ?_⟩
-  have : AnalyticAt 𝕜 (fun z ↦ z - x) x := analyticAt_id.sub analyticAt_const
+  have : AnalyticAt 𝕜 (fun z ↦ z - x) x := by fun_prop
   refine (this.fun_smul hf).congr ?_
   rw [eventuallyEq_nhdsWithin_iff] at hfg
   filter_upwards [hfg] with z hz
@@ -314,8 +314,8 @@ lemma div {f g : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) (hg : MeromorphicAt g 
 @[to_fun (attr := fun_prop)]
 lemma pow {f : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) (n : ℕ) : MeromorphicAt (f ^ n) x := by
   induction n with
-  | zero => simpa only [pow_zero] using MeromorphicAt.const 1 x
-  | succ m hm => simpa only [pow_succ] using hm.mul hf
+  | zero => simpa only [pow_zero] using! MeromorphicAt.const 1 x
+  | succ m hm => simpa only [pow_succ] using! hm.mul hf
 
 @[to_fun (attr := fun_prop)]
 lemma zpow {f : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) (n : ℤ) : MeromorphicAt (f ^ n) x := by
@@ -449,7 +449,7 @@ lemma MeromorphicAt.comp_analyticAt {f : 𝕜' → F} {g : 𝕜 → 𝕜'}
     obtain ⟨h, han, hne, heq⟩ := (hg.fun_sub analyticAt_const).analyticOrderAt_eq_natCast.mp hn.symm
     set j := fun z ↦ (z - g x) ^ r • f z
     have : AnalyticAt 𝕜 (fun i ↦ (h i)⁻¹ ^ r • j (g i)) x :=
-      ((han.fun_inv hne).fun_pow r).fun_smul (hr.restrictScalars.comp' hg)
+      ((han.inv hne).pow r).smul (hr.restrictScalars.comp hg)
     refine ⟨n * r, this.congr ?_⟩
     filter_upwards [heq, han.continuousAt.tendsto.eventually_ne hne] with z hz hzne
     simp only [j, inv_pow, Function.comp_apply, inv_smul_eq_iff₀ (pow_ne_zero r hzne)]
@@ -512,7 +512,7 @@ theorem congr_codiscreteWithin (hf : MeromorphicOn f U) (h₁ : f =ᶠ[codiscret
     apply mem_nhdsWithin.mpr
     use U, h₂, hx, Set.inter_subset_left
   filter_upwards [this, h₁ x hx] with a h₁a h₂a
-  simp only [Set.mem_compl_iff, Set.mem_diff, Set.mem_setOf_eq, not_and] at h₂a
+  simp only [Set.mem_compl_iff, Set.mem_sdiff, Set.mem_setOf_eq, not_and] at h₂a
   tauto
 
 /--
@@ -646,7 +646,7 @@ theorem countable_compl_analyticAt_inter [SecondCountableTopology 𝕜] [Complet
     ({z | AnalyticAt 𝕜 f z}ᶜ ∩ U).Countable := by
   apply (HereditarilyLindelofSpace.isLindelof _).countable_of_isDiscrete
     (isDiscrete_of_codiscreteWithin _)
-  simpa using eventually_codiscreteWithin_analyticAt f h
+  simpa using! eventually_codiscreteWithin_analyticAt f h
 
 end MeromorphicOn
 
@@ -759,7 +759,7 @@ theorem countable_compl_analyticAt [SecondCountableTopology 𝕜] [CompleteSpace
 /--
 Meromorphic functions are measurable.
 -/
-theorem measurable [MeasurableSpace 𝕜] [SecondCountableTopology 𝕜] [BorelSpace 𝕜]
+@[fun_prop] theorem measurable [MeasurableSpace 𝕜] [SecondCountableTopology 𝕜] [BorelSpace 𝕜]
     [MeasurableSpace E] [CompleteSpace E] [BorelSpace E] (h : Meromorphic f) :
     Measurable f := by
   set s := {z : 𝕜 | AnalyticAt 𝕜 f z}

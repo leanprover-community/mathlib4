@@ -92,7 +92,7 @@ theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented
 instance [Finite α] : IsFinitelyPresented (FreeGroup α) := by
   have ⟨n, _, f, hf_surj, hf_inj⟩ := Finite.exists_equiv_fin α
   refine ⟨n, FreeGroup.map f, FreeGroup.map_surjective hf_surj.surjective, ?_⟩
-  · rw [(FreeGroup.map f).ker_eq_bot_iff.mpr (FreeGroup.map_injective hf_inj.injective)]
+  · rw [(FreeGroup.map f).ker_eq_bot (FreeGroup.map_injective hf_inj.injective)]
     exact .bot
 
 /-- `Multiplicative ℤ` is finitely presented. -/

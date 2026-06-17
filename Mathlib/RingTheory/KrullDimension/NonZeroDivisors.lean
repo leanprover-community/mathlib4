@@ -81,7 +81,7 @@ lemma ringKrullDim_add_natCard_le_ringKrullDim_mvPolynomial (σ : Type*) [Finite
     ringKrullDim R + Nat.card σ ≤ ringKrullDim (MvPolynomial σ R) := by
   induction σ using Finite.induction_empty_option with
   | of_equiv e H =>
-    convert ← H using 1
+    convert! ← H using 1
     · rw [Nat.card_congr e]
     · exact ringKrullDim_eq_of_ringEquiv (renameEquiv _ e).toRingEquiv
   | h_empty => simp
