@@ -120,7 +120,7 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
     obtain ⟨k, -, (hk : ‖∑ i : ι, (B.repr x i • ∑ i_1 : ι,
       B.repr y i_1 • B.repr (B i * B i_1)) ixy‖ ≤
       ‖(B.repr x k • ∑ j : ι, B.repr y j • B.repr (B k * B j)) ixy‖)⟩ :=
-      IsNonarchimedean.finset_image_add hna'
+      IsNonarchimedean.finset_image_add (map_zero _) (apply_nonneg _) hna'
         (fun i ↦ (B.repr x i • ∑ i_1 : ι, B.repr y i_1 • B.repr (B i * B i_1)) ixy)
         (univ : Finset ι)
     simp only [Finsupp.coe_smul, Finsupp.coe_finsetSum, Pi.smul_apply, Finset.sum_apply,
@@ -130,7 +130,7 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
     obtain ⟨k', hk'⟩ : ∃ (k' : ι),
         ‖∑ j : ι, B.repr y j • B.repr (B k * B j) ixy‖ ≤
           ‖B.repr y k' • B.repr (B k * B k') ixy‖ := by
-      obtain ⟨k, hk0, hk⟩ := IsNonarchimedean.finset_image_add hna'
+      obtain ⟨k, hk0, hk⟩ := IsNonarchimedean.finset_image_add (map_zero _) (apply_nonneg _) hna'
         (fun i ↦ B.repr y i • B.repr (B k * B i) ixy) (univ : Finset ι)
       exact ⟨k, hk⟩
     apply le_trans (mul_le_mul_of_nonneg_left hk' (norm_nonneg _))

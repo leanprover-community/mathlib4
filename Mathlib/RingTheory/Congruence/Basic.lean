@@ -52,7 +52,7 @@ variable [SMul α R] [IsScalarTower α R R]
 variable [SMul β R] [IsScalarTower β R R]
 variable (c : RingCon R)
 
-instance : SMul α c.Quotient := inferInstanceAs (SMul α c.toCon.Quotient)
+instance : SMul α c.Quotient := ⟨c.smulAux (Con.smul c.toCon)⟩
 
 @[simp, norm_cast]
 theorem coe_smul (a : α) (x : R) : (↑(a • x) : c.Quotient) = a • (x : c.Quotient) :=
