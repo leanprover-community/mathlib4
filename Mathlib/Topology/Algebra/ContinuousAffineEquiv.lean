@@ -312,7 +312,7 @@ section
 variable (k)
 variable [TopologicalSpace V₁] [IsTopologicalAddTorsor P₁]
 
-/-- The affine homeomorphism given by reflection about the point `x`. 
+/-- The affine homeomorphism given by reflection about the point `x`.
 This is `Equiv.pointReflection` as a `ContinuousAffineEquiv`. -/
 @[simps toAffineEquiv]
 def pointReflection (x : P₁) : P₁ ≃ᴬ[k] P₁ where
