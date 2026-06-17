@@ -119,9 +119,8 @@ lemma pointSmallEtaleFiberObjToPreimage_surjective (X : S.Etale) :
   obtain ⟨l, hl, rfl⟩ := exists_fac_of_etale_of_isSepClosed
     (X.hom.fiberToSpecResidueField _) (Spec.map a) y (by subsingleton)
   refine ⟨Over.homMk (l ≫ X.hom.fiberι t) ?_, rfl⟩
-  dsimp
-  rw [Category.assoc, X.hom.fiber_fac, reassoc_of% hl]
-  cat_disch
+  simp [X.hom.fiber_fac, reassoc_of% hl]
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isConservative_pointSmallEtale
