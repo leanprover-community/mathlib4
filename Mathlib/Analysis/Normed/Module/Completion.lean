@@ -103,6 +103,8 @@ variable {𝕜 E F : Type*} [RCLike 𝕜] [UniformSpace E] [AddCommGroup E] [Mod
     [UniformContinuousConstSMul 𝕜 E] [IsUniformAddGroup E] [UniformSpace F] [AddCommGroup F]
     [Module 𝕜 F] [T2Space F] [ContinuousAdd F] [CompleteSpace F] [ContinuousConstSMul 𝕜 F]
 
+/-- The continuous linear version of `.extension`. It extends a linear function to a linear function
+over the completion. -/
 def extensionL {f : E →ₗ[𝕜] F} (hf : UniformContinuous f) : Completion E →L[𝕜] F :=
   have h_cont : Continuous (Completion.extension f) := continuous_extension
   {
