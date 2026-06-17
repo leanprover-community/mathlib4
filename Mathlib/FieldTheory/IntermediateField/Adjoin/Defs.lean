@@ -6,7 +6,7 @@ Authors: Thomas Browning, Patrick Lutz
 module
 
 public import Mathlib.FieldTheory.IntermediateField.Basic
-
+public import Mathlib.Tactic.Linter.InstanceDiamonds
 /-!
 # Adjoining Elements to Fields
 
@@ -76,9 +76,12 @@ instance : CompleteLattice (IntermediateField F E) where
       inv_mem' := by rintro x ⟨r, rfl⟩; exact ⟨r⁻¹, map_inv₀ _ _⟩ }
   bot_le x := (bot_le : ⊥ ≤ x.toSubalgebra)
 
+-- These instances time out in the linter
+@[nolint instanceDiamonds]
 instance (K₁ K₂ : IntermediateField F E) : Algebra ↥(K₁ ⊓ K₂) K₁ :=
   inferInstanceAs <| Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₁.toSubalgebra
 
+@[nolint instanceDiamonds]
 instance (K₁ K₂ : IntermediateField F E) : Algebra ↥(K₁ ⊓ K₂) K₂ :=
   inferInstanceAs <| Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₂.toSubalgebra
 
