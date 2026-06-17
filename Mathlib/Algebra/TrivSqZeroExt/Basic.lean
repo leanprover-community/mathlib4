@@ -197,11 +197,16 @@ instance addSemigroup [AddSemigroup R] [AddSemigroup M] : AddSemigroup (tsze R M
 instance addZeroClass [AddZeroClass R] [AddZeroClass M] : AddZeroClass (tsze R M) :=
   inferInstanceAs <| AddZeroClass (R × M)
 
-instance addMonoid [AddMonoid R] [AddMonoid M] : AddMonoid (tsze R M) :=
-  inferInstanceAs <| AddMonoid (R × M)
+instance smul [SMul S R] [SMul S M] : SMul S (tsze R M) :=
+  inferInstanceAs <| SMul S (R × M)
 
-instance addGroup [AddGroup R] [AddGroup M] : AddGroup (tsze R M) :=
-  inferInstanceAs <| AddGroup (R × M)
+instance addMonoid [AddMonoid R] [AddMonoid M] : AddMonoid (tsze R M) where
+  nsmul := letI := smul (S := ℕ) (R := R) (M := M); (· • ·)
+  __ : AddMonoid (tsze R M) := inferInstanceAs <| AddMonoid (R × M)
+
+instance addGroup [AddGroup R] [AddGroup M] : AddGroup (tsze R M) where
+  zsmul := letI := smul (S := ℤ) (R := R) (M := M); (· • ·)
+  __ : AddGroup (tsze R M) := inferInstanceAs <| AddGroup (R × M)
 
 instance addCommSemigroup [AddCommSemigroup R] [AddCommSemigroup M] : AddCommSemigroup (tsze R M) :=
   inferInstanceAs <| AddCommSemigroup (R × M)
@@ -211,9 +216,6 @@ instance addCommMonoid [AddCommMonoid R] [AddCommMonoid M] : AddCommMonoid (tsze
 
 instance addCommGroup [AddCommGroup R] [AddCommGroup M] : AddCommGroup (tsze R M) :=
   inferInstanceAs <| AddCommGroup (R × M)
-
-instance smul [SMul S R] [SMul S M] : SMul S (tsze R M) :=
-  inferInstanceAs <| SMul S (R × M)
 
 instance isScalarTower [SMul T R] [SMul T M] [SMul S R] [SMul S M] [SMul T S]
     [IsScalarTower T S R] [IsScalarTower T S M] : IsScalarTower T S (tsze R M) :=
