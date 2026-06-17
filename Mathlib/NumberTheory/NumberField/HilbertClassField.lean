@@ -28,14 +28,6 @@ open Classical in
 def_wanted IsAbelianGalois.conductor' [NumberField K] : ℕ :=
     Nat.find <| ❰IsAbelianGalois.le_cyclotomicField❱ K
 
-
--- proof_wanted IsAbelianGalois.le_cyclotomic_conductor [NumberField K] :
---     Nonempty (K →ₐ[ℚ] CyclotomicField (❰IsAbelianGalois.conductor'❱ K) ℚ) :=
---   Nat.find_spec <| ❰IsAbelianGalois.le_cyclotomicField❱ K
-
-proof_wanted IsAbelianGalois.conductorDvd [NumberField K] {p : ℤ} (hp : Prime p) :
-    p ∣ discr K → p ∣ ❰IsAbelianGalois.conductor'❱ K
-
 end KroneckerWeber
 
 section HilberClassField
