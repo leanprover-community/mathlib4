@@ -106,7 +106,7 @@ variable {ρ σ} in
     simp [hf.isIntertwining]
 
 /-- The invariants of the representation `linHom ρ σ` correspond to intertwining maps
- from `ρ` to `σ`. -/
+from `ρ` to `σ`. -/
 def invariantsEquivIntertwiningMap : (linHom ρ σ).invariants ≃ₗ[k] IntertwiningMap ρ σ where
   toFun f := f.val.intertwiningMap_of_isIntertwiningMap ρ σ
     ((mem_linHom_invariants_iff_isIntertwining f.val).mp f.property).isIntertwining

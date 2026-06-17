@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.Order.Lattice.Nat
 public import Mathlib.RingTheory.Multiplicity
-public import Mathlib.Data.Nat.Lattice
 
 /-!
 # Division of univariate polynomials
@@ -260,6 +260,14 @@ theorem modByMonic_eq_sub_mul_div :
 theorem modByMonic_add_div (p q : R[X]) : p %ₘ q + q * (p /ₘ q) = p :=
   eq_sub_iff_add_eq.1 (modByMonic_eq_sub_mul_div p q)
 
+theorem dvd_modByMonic_sub (p q : R[X]) : q ∣ (p %ₘ q - p) := by
+  by_cases h : q.Monic
+  · simp [modByMonic_eq_sub_mul_div]
+  · simp [modByMonic_eq_of_not_monic, h]
+
+@[simp] theorem dvd_modByMonic_iff_dvd : q ∣ p %ₘ q ↔ q ∣ p := by
+  simpa using dvd_iff_dvd_of_dvd_sub <| dvd_modByMonic_sub p q
+
 theorem divByMonic_eq_zero_iff [Nontrivial R] (hq : Monic q) : p /ₘ q = 0 ↔ degree p < degree q :=
   ⟨fun h => by
     have := modByMonic_add_div p q
@@ -317,7 +325,7 @@ theorem degree_divByMonic_lt (p q : R[X]) (hp0 : p ≠ 0)
       exact
         Nat.cast_lt.2
           (Nat.lt_add_of_pos_left (Nat.cast_lt.1 <|
-            by simpa [degree_eq_natDegree hq.ne_zero] using h0q))
+            by simpa [degree_eq_natDegree hq.ne_zero] using! h0q))
   else by
     rwa [divByMonic_eq_of_not_monic _ hq, degree_zero, bot_lt_iff_ne_bot, degree_ne_bot]
 
@@ -404,6 +412,8 @@ theorem modByMonic_eq_zero_iff_dvd (hq : Monic q) : p %ₘ q = 0 ↔ q ∣ p :=
       degree_eq_natDegree (mt leadingCoeff_eq_zero.2 hrpq0)] at this
     exact not_lt_of_ge (Nat.le_add_right _ _) (WithBot.coe_lt_coe.1 this)⟩
 
+@[simp]
+theorem modByMonic_self (hp : p.Monic) : p %ₘ p = 0 := by rw [modByMonic_eq_zero_iff_dvd hp]
 
 /-- See `Polynomial.mul_self_modByMonic` for the other multiplication order. That version, unlike
 this one, requires commutativity. -/
@@ -422,7 +432,7 @@ theorem map_dvd_map [Ring S] (f : R →+* S) (hf : Function.Injective f) {x y : 
 
 @[simp]
 theorem modByMonic_one (p : R[X]) : p %ₘ 1 = 0 :=
-  (modByMonic_eq_zero_iff_dvd (by convert monic_one (R := R))).2 (one_dvd _)
+  (modByMonic_eq_zero_iff_dvd (by convert! monic_one (R := R))).2 (one_dvd _)
 
 @[simp]
 theorem divByMonic_one (p : R[X]) : p /ₘ 1 = p := by
@@ -789,7 +799,7 @@ lemma _root_.Irreducible.isRoot_eq_bot_of_natDegree_ne_one
     (hi : Irreducible p) (hdeg : p.natDegree ≠ 1) : p.IsRoot = ⊥ :=
   le_bot_iff.mp fun _ ↦ hi.not_isRoot_of_natDegree_ne_one hdeg
 
-lemma _root_.Irreducible.subsingleton_isRoot [IsLeftCancelMulZero R]
+lemma _root_.Irreducible.subsingleton_isRoot
     (hi : Irreducible p) : { x | p.IsRoot x }.Subsingleton :=
   fun _ hx ↦ (subsingleton_isRoot_of_natDegree_eq_one <| natDegree_eq_of_degree_eq_some <|
     degree_eq_one_of_irreducible_of_root hi hx) hx

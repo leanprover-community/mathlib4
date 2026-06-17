@@ -321,8 +321,10 @@ instance [Module.Finite R M] : Module.Finite R Mᵐᵒᵖ := equiv (MulOpposite.
 instance ulift [Module.Finite R M] : Module.Finite R (ULift M) := equiv ULift.moduleEquiv.symm
 
 universe u in
-instance Module.finite_shrink [Module.Finite R M] [Small.{u} M] : Module.Finite R (Shrink.{u} M) :=
+instance shrink [Module.Finite R M] [Small.{u} M] : Module.Finite R (Shrink.{u} M) :=
   Module.Finite.equiv (Shrink.linearEquiv R M).symm
+
+@[deprecated (since := "2026-04-18")] alias Module.finite_shrink := shrink
 
 /-- A submodule is finite as a module iff it is finitely generated. -/
 theorem iff_fg {N : Submodule R M} : Module.Finite R N ↔ N.FG := finite_def.trans N.fg_top
@@ -464,6 +466,9 @@ theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.Finite :=
 
 lemma _root_.RingEquiv.finite (e : A ≃+* B) : e.toRingHom.Finite :=
   .of_surjective _ e.surjective
+
+instance (h : A ≃+* B) : letI := h.toRingHom.toAlgebra; Module.Finite A B :=
+  h.finite
 
 theorem comp {g : B →+* C} {f : A →+* B} (hg : g.Finite) (hf : f.Finite) : (g.comp f).Finite := by
   algebraize [f, g, g.comp f]
