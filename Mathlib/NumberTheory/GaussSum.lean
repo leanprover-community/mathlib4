@@ -96,6 +96,40 @@ lemma star_gaussSum_eq (χ : MulChar R ℂ) (ψ : AddChar R ℂ) :
 end GaussSumDef
 
 /-!
+### Gauss sums of trivial characters
+-/
+
+section GaussSumTrivial
+
+variable {R : Type u} [CommRing R] [Fintype R] {R' : Type v} [CommRing R']
+
+/-- The Gauss sum of the two trivial characters is the cardinality of the unit group of `R`. -/
+theorem gaussSum_one_one : gaussSum (1 : MulChar R R') (1 : AddChar R R') = Nat.card Rˣ := by
+  classical
+  simp [gaussSum, MulChar.sum_one_eq_card_units]
+
+/-- The Gauss sum of a nontrivial multiplicative character and the trivial additive character
+vanishes. -/
+theorem gaussSum_one_right [IsDomain R'] {χ : MulChar R R'} (hχ : χ ≠ 1) :
+    gaussSum χ (1 : AddChar R R') = 0 := by
+  simpa [gaussSum] using MulChar.sum_eq_zero_of_ne_one hχ
+
+/-- The Gauss sum of the trivial multiplicative character and a nontrivial additive character,
+over a finite field, is `-1`. -/
+theorem gaussSum_one_left {R : Type u} [Field R] [Fintype R] {R' : Type v} [CommRing R']
+    [IsDomain R'] {ψ : AddChar R R'} (hψ : ψ ≠ 1) : gaussSum (1 : MulChar R R') ψ = -1 := by
+  classical
+  rw [gaussSum, ← Finset.univ.add_sum_erase _ (Finset.mem_univ 0), MulChar.map_zero, zero_mul,
+    zero_add]
+  have : ∀ x ∈ Finset.univ.erase (0 : R), (1 : MulChar R R') x = 1 :=
+    fun x hx ↦ MulChar.one_apply <| isUnit_iff_ne_zero.mpr <| Finset.ne_of_mem_erase hx
+  simp_rw +contextual [this, one_mul]
+  rw [Finset.sum_erase_eq_sub (Finset.mem_univ 0), AddChar.map_zero_eq_one, AddChar.sum_eq_ite,
+    ite_sub, zero_sub, if_neg (by rwa [← AddChar.one_eq_zero])]
+
+end GaussSumTrivial
+
+/-!
 ### The product of two Gauss sums
 -/
 
