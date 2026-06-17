@@ -358,7 +358,7 @@ theorem ContinuousAt.prodMap' {f : X → Z} {g : Y → W} {x : X} {y : Y} (hf : 
     (hg : ContinuousAt g y) : ContinuousAt (Prod.map f g) (x, y) :=
   hf.prodMap hg
 
-theorem continuousAt_prodMap_iff [Nonempty X] [Nonempty Y] {f : X → Z} {g : Y → W} {x : X} {y : Y} :
+theorem continuousAt_prodMap_iff {f : X → Z} {g : Y → W} {x : X} {y : Y} :
     ContinuousAt (Prod.map f g) (x, y) ↔ ContinuousAt f x ∧ ContinuousAt g y := by
  simp [ContinuousAt, nhds_prod_eq, tendsto_iff_comap, comap_prodMap_prod]
 
