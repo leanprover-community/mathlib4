@@ -207,6 +207,7 @@ instance : ObjectProperty.EssentiallySmall.{u} (hasCardinalLTWithTerminal κ) wh
       ⟨⟨IsCardinalFiltered.of_equivalence κ e'.symm.equivalence⟩⟩⟩⟩,
         ⟨CardinalFilteredPoset.ι.preimageIso (PartOrdEmb.Iso.mk (by exact e'.symm))⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isCardinalPresentable_of_hasCardinalLT_of_le (J : CardinalFilteredPoset κ)
     {κ' : Cardinal.{u}} [Fact κ'.IsRegular] (hJ : HasCardinalLT J.obj κ') (h : κ ≤ κ') :
@@ -249,7 +250,7 @@ lemma isCardinalPresentable_of_hasCardinalLT_of_le (J : CardinalFilteredPoset κ
       ext x
       simpa only [← hl x, Functor.map_comp, ObjectProperty.FullSubcategory.comp_hom,
         PartOrdEmb.hom_comp, RelEmbedding.coe_trans, Function.comp_apply]
-          using congr_arg _ (hk x)⟩⟩⟩
+          using! congr_arg _ (hk x)⟩⟩⟩
 
 section
 
