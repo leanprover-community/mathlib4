@@ -20,13 +20,6 @@ inputs:
   pr_branch_ref:
     description: Git ref of the PR branch to check out and build.
     required: true
-  fetch_depth:
-    description: >
-      Checkout depth for the PR branch. `build` passes 2 (it may warm the cache
-      from the parent commit, so it needs that history); `test_lint` passes 1
-      (HEAD only).
-    required: false
-    default: '1'
   mathlib_ci_ref:
     description: Git ref for mathlib-ci (empty → the get-mathlib-ci action's pinned default).
     required: false
@@ -42,9 +35,6 @@ inputs:
     description: Git ref to build the CI tools from when not using the prebuilt artifact.
     required: false
     default: ''
-  github_token:
-    description: "Token with `actions: read` for the get-tools artifact fast path."
-    required: true
 
 runs:
   using: composite
@@ -95,14 +85,16 @@ runs:
         branch: ${{ github.head_ref || github.ref_name }}
         head-sha: ${{ github.event.pull_request.head.sha || github.sha }}
 
-    # Checkout the PR branch into a subdirectory. This is untrusted (potentially
-    # fork) code we build, so don't leave the GITHUB_TOKEN in pr-branch/.git/config
-    # where that code could read it.
+    # Checkout the PR branch into a subdirectory. HEAD only (fetch-depth: 1) is
+    # enough: the cache is fetched HEAD-scoped and warmed from the master snapshot,
+    # so no parent-commit history is needed. This is untrusted (potentially fork)
+    # code we build, so don't leave the GITHUB_TOKEN in pr-branch/.git/config where
+    # that code could read it.
     - name: Checkout PR branch
       uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:
         ref: ${{ inputs.pr_branch_ref }}
-        fetch-depth: ${{ inputs.fetch_depth }}
+        fetch-depth: 1
         path: pr-branch
         persist-credentials: false
 
@@ -178,7 +170,7 @@ runs:
         use_artifact: ${{ inputs.tools_branch_ref == '' && github.repository == 'leanprover-community/mathlib4' }}
         tools_source_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.event.pull_request.head.repo.fork && 'master' || inputs.pr_branch_ref) }}
         source_dir: ${{ github.event.pull_request.head.repo.fork != true && 'pr-branch' || '' }}
-        github_token: ${{ inputs.github_token }}
+        github_token: ${{ github.token }}
 
     - name: download dependencies
       # We need network access to download dependencies. We run this inside

@@ -94,10 +94,8 @@ jobs:
         uses: ./workflow-actions/.github/actions/setup-build-env
         with:
           pr_branch_ref: ${{ inputs.pr_branch_ref }}
-          fetch_depth: '2' # build may warm the cache from the parent commit; it needs that history
           mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}
           tools_branch_ref: ${{ inputs.tools_branch_ref }}
-          github_token: ${{ github.token }}
 
       # TEMPORARY (cache storage-layout migration, PR #40035): remove once
       # active branches have merged the new cache tool.
@@ -409,17 +407,14 @@ jobs:
 
       # Shared self-hosted setup (see the action). `mathlib_ci_nightly_only` because
       # here mathlib-ci is only consumed by the lean-pr-testing comment, which runs
-      # only on the nightly-testing repo. `fetch_depth: 1` because this job does no
-      # parent-commit cache warmup — it only needs the PR head commit for test+lint.
+      # only on the nightly-testing repo.
       - name: Set up build environment
         uses: ./workflow-actions/.github/actions/setup-build-env
         with:
           pr_branch_ref: ${{ inputs.pr_branch_ref }}
-          fetch_depth: '1'
           mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}
           mathlib_ci_nightly_only: 'true'
           tools_branch_ref: ${{ inputs.tools_branch_ref }}
-          github_token: ${{ github.token }}
 
       # Pre-populate the local cache with this commit's freshly-built delta: the
       # `cache-staging` artifact `build` produces holds its newly-built `.ltar` —
