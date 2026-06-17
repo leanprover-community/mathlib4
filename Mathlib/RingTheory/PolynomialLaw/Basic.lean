@@ -93,7 +93,7 @@ theorem PolynomialLaw.isCompat_apply'
     {S : Type u} [CommSemiring S] [Algebra R S] {S' : Type u} [CommSemiring S'] [Algebra R S']
     (φ : S →ₐ[R] S') (x : S ⊗[R] M) :
     (φ.toLinearMap.rTensor N) ((f.toFun' S) x) = (f.toFun' S') (φ.toLinearMap.rTensor M x) := by
-  simpa only using congr_fun (f.isCompat' φ) x
+  simpa only using! congr_fun (f.isCompat' φ) x
 
 attribute [local simp] PolynomialLaw.isCompat_apply'
 
@@ -239,7 +239,7 @@ instance : CoeFun (M →ₚₗ[R] N) (fun _ ↦ M → N) where
 theorem one_tmul_ground_apply' {S : Type u} [CommSemiring S] [Algebra R S] (x : M) :
     1 ⊗ₜ (f.ground x) = (f.toFun' S) (1 ⊗ₜ x) := by
   rw [ground_apply]
-  convert f.isCompat_apply' (Algebra.algHom R R S) (1 ⊗ₜ[R] x)
+  convert! f.isCompat_apply' (Algebra.algHom R R S) (1 ⊗ₜ[R] x)
   · simp only [includeRight_lid]
   · rw [rTensor_tmul, toLinearMap_apply, map_one]
 
@@ -588,7 +588,7 @@ variable {R : Type u} [CommSemiring R]
 theorem one_tmul_ground (x : M) :
     1 ⊗ₜ f.ground x = f.toFun S (1 ⊗ₜ x) := by
   simp only [ground, toFun'_eq_toFun]
-  convert f.isCompat_apply (Algebra.ofId R S) (1 ⊗ₜ[R] x)
+  convert! f.isCompat_apply (Algebra.ofId R S) (1 ⊗ₜ[R] x)
   · simp only [Function.comp_apply, TensorProduct.lid_symm_apply, TensorProduct.includeRight_lid]
     congr
   · rw [rTensor_tmul, toLinearMap_apply, _root_.map_one]

@@ -134,12 +134,12 @@ theorem IsometryEquiv.measurePreserving_euclideanHausdorffMeasure (e : X ≃ᵢ 
 
 theorem Isometry.euclideanHausdorffMeasure_image {f : X → Y} {d : ℕ} (hf : Isometry f) (s : Set X) :
     μHE[d] (f '' s) = μHE[d] s := by
-  simp_rw [euclideanHausdorffMeasure_def, smul_apply]
+  simp_rw [euclideanHausdorffMeasure_def, Measure.smul_apply]
   rw [Isometry.hausdorffMeasure_image hf (by simp)]
 
 theorem Isometry.euclideanHausdorffMeasure_preimage {f : X → Y} {d : ℕ} (hf : Isometry f)
     (s : Set Y) : μHE[d] (f ⁻¹' s) = μHE[d] (s ∩ Set.range f) := by
-  simp_rw [euclideanHausdorffMeasure_def, smul_apply]
+  simp_rw [euclideanHausdorffMeasure_def, Measure.smul_apply]
   rw [Isometry.hausdorffMeasure_preimage hf (by simp)]
 
 theorem Isometry.map_euclideanHausdorffMeasure {f : X → Y} {d : ℕ} (hf : Isometry f) :
@@ -151,7 +151,7 @@ theorem Isometry.map_euclideanHausdorffMeasure {f : X → Y} {d : ℕ} (hf : Iso
 ### Applying scalers to `μHE[d]`
 -/
 
-open Pointwise in
+open scoped Pointwise in
 theorem MeasureTheory.Measure.euclideanHausdorffMeasure_smul₀ {𝕜 : Type*} {E : Type*}
     [NormedAddCommGroup E] [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
     [MeasurableSpace E] [BorelSpace E] (d : ℕ) {r : 𝕜} (hr : r ≠ 0) (s : Set E) :
@@ -167,13 +167,13 @@ variable {𝕜 V P : Type*} [NormedField 𝕜] [NormedAddCommGroup V] [NormedSpa
 theorem MeasureTheory.euclideanHausdorffMeasure_homothety_image (d : ℕ) (x : P) {c : 𝕜}
     (hc : c ≠ 0) (s : Set P) :
     μHE[d] (AffineMap.homothety x c '' s) = ‖c‖₊ ^ d • μHE[d] s := by
-  simp_rw [euclideanHausdorffMeasure_def, smul_apply]
+  simp_rw [euclideanHausdorffMeasure_def, Measure.smul_apply]
   rw [hausdorffMeasure_homothety_image (by simp) x hc, smul_comm, NNReal.rpow_natCast]
 
 theorem MeasureTheory.euclideanHausdorffMeasure_homothety_preimage (d : ℕ) (x : P) {c : 𝕜}
     (hc : c ≠ 0) (s : Set P) :
     μHE[d] (AffineMap.homothety x c ⁻¹' s) = ‖c‖₊⁻¹ ^ d • μHE[d] s := by
-  simp_rw [euclideanHausdorffMeasure_def, smul_apply]
+  simp_rw [euclideanHausdorffMeasure_def, Measure.smul_apply]
   rw [hausdorffMeasure_homothety_preimage (by simp) x hc, smul_comm, NNReal.rpow_natCast]
 
 end Homothety
@@ -202,7 +202,7 @@ theorem InnerProductSpace.euclideanHausdorffMeasure_eq_volume :
 /-!
 ### `μHE[d]` on an affine space matches the volume measure on the associated inner product space.
 -/
-/- We may want to endow an affine space with a `MeasureSpace` that transfers `volume` from its
+/-- We may want to endow an affine space with a `MeasureSpace` that transfers `volume` from its
 associated inner product space. If it is implemented, we can unify this lemma with the previous one.
 -/
 theorem EuclideanGeometry.euclideanHausdorffMeasure_eq (p : P) :
@@ -266,7 +266,7 @@ noncomputable def Submodule.measurableEquivProd (s : Submodule ℝ V) (p : P) : 
 @[simp]
 theorem Submodule.measurableEquivProd_apply (s : Submodule ℝ V) (p q : P) :
     s.measurableEquivProd p q =
-    (s.orthogonalProjection (q -ᵥ p), sᗮ.orthogonalProjection (q -ᵥ p)) := by
+    (s.orthogonalProjectionOnto (q -ᵥ p), sᗮ.orthogonalProjectionOnto (q -ᵥ p)) := by
   simp [measurableEquivProd]
 
 @[simp]

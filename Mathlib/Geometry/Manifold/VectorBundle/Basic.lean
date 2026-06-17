@@ -188,7 +188,7 @@ theorem contMDiffWithinAt_totalSpace {f : M → TotalSpace F E} {s : Set M} {x�
     ((FiberBundle.continuous_proj F E).continuousWithinAt.comp hf (mapsTo_image f s))
       ((Trivialization.open_baseSet _).mem_nhds (mem_baseSet_trivializationAt F E _))
   refine EventuallyEq.contMDiffWithinAt_iff (eventually_of_mem h1 fun x hx => ?_) ?_
-  · simp_rw [Function.comp, OpenPartialHomeomorph.coe_coe, Trivialization.coe_coe]
+  · simp_rw [Function.comp, OpenPartialHomeomorph.coe_toPartialEquiv, Trivialization.coe_coe]
     rw [Trivialization.coe_fst']
     exact hx
   · simp only [mfld_simps]
@@ -405,10 +405,9 @@ theorem ContMDiffWithinAt.change_section_trivialization {f : M → TotalSpace F 
     (he : f x ∈ e.source) (he' : f x ∈ e'.source) :
     ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun y ↦ (e' (f y)).2) s x := by
   rw [Trivialization.mem_source] at he he'
-  refine (hp.coordChange hf he he').congr_of_eventuallyEq ?_ ?_
-  · filter_upwards [hp.continuousWithinAt (e.open_baseSet.mem_nhds he)] with y hy
-    rw [Function.comp_apply, e.coordChange_apply_snd _ hy]
-  · rw [Function.comp_apply, e.coordChange_apply_snd _ he]
+  refine (hp.coordChange hf he he').congr_of_eventuallyEq ?_ (by simp [he])
+  filter_upwards [hp.continuousWithinAt (e.open_baseSet.mem_nhds he)] with y hy
+  simp_all
 
 theorem Bundle.Trivialization.contMDiffWithinAt_snd_comp_iff₂ {f : M → TotalSpace F E}
     (hp : ContMDiffWithinAt IM IB n (π F E ∘ f) s x)
@@ -499,7 +498,7 @@ theorem contMDiffOn (e : Trivialization F (π F E)) [MemTrivializationAtlas e] :
 
 theorem contMDiffOn_symm (e : Trivialization F (π F E)) [MemTrivializationAtlas e] :
     ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n e.toOpenPartialHomeomorph.symm e.target := by
-  rw [e.contMDiffOn_iff e.toOpenPartialHomeomorph.symm_mapsTo]
+  rw [e.contMDiffOn_iff e.toOpenPartialHomeomorph.mapsTo_symm]
   refine ⟨contMDiffOn_fst.congr fun x hx ↦ e.proj_symm_apply hx,
     contMDiffOn_snd.congr fun x hx ↦ ?_⟩
   rw [e.apply_symm_apply hx]

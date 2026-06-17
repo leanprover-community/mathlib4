@@ -54,7 +54,7 @@ theorem mersenne_le_mersenne {p q : ℕ} : mersenne p ≤ mersenne q ↔ p ≤ q
 @[simp] lemma mersenne_odd : ∀ {p : ℕ}, Odd (mersenne p) ↔ p ≠ 0
   | 0 => by simp
   | p + 1 => by
-    simpa using Nat.Even.sub_odd (one_le_pow₀ one_le_two)
+    simpa using! Nat.Even.sub_odd (one_le_pow₀ one_le_two)
       (even_two.pow_of_ne_zero p.succ_ne_zero) odd_one
 
 @[simp] theorem mersenne_pos {p : ℕ} : 0 < mersenne p ↔ 0 < p := mersenne_lt_mersenne (p := 0)
@@ -391,7 +391,7 @@ lemma α_pow (i : ℕ) : (α : X q) ^ (2 * i + 1) = 3 ^ i * α := by
 
 instance : CharP (X q) q where
   cast_eq_zero_iff x := by
-    convert ZMod.natCast_eq_zero_iff _ _
+    convert! ZMod.natCast_eq_zero_iff _ _
     exact ⟨congr_arg Prod.fst, fun hx ↦ ext hx (by simp)⟩
 
 instance : Coe (ZMod ↑q) (X q) where
@@ -471,7 +471,7 @@ theorem card_eq : Fintype.card (X q) = q ^ 2 := by
 /-- There are strictly fewer than `q^2` units, since `0` is not a unit. -/
 nonrec theorem card_units_lt (w : 1 < q) : Fintype.card (X q)ˣ < q ^ 2 := by
   have : Fact (1 < (q : ℕ)) := ⟨w⟩
-  convert card_units_lt (X q)
+  convert! card_units_lt (X q)
   rw [card_eq]
 
 end X
@@ -499,11 +499,8 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
   obtain ⟨k, h⟩ := h
   use k
   replace h := congr_arg (fun n : ℤ => (n : X (q (p' + 2)))) h
-  -- coercion from ℤ to X q
-  dsimp at h
   rw [closed_form] at h
   replace h := congr_arg (fun x => ω ^ 2 ^ p' * x) h
-  dsimp at h
   have t : 2 ^ p' + 2 ^ p' = 2 ^ (p' + 1) := by ring
   rw [mul_add, ← pow_add ω, t, ← mul_pow ω ωb (2 ^ p'), ω_mul_ωb, one_pow] at h
   rw [mul_comm, coe_mul] at h
@@ -577,6 +574,8 @@ export LucasLehmer (LucasLehmerTest lucasLehmerResidue)
 
 open LucasLehmer
 
+/-- **Lucas–Lehmer primality test**: sufficiency direction. -/
+@[wikidata Q1138992]
 theorem lucas_lehmer_sufficiency (p : ℕ) (w : 1 < p) : LucasLehmerTest p → (mersenne p).Prime := by
   set p' := p - 2 with hp'
   clear_value p'
@@ -651,28 +650,31 @@ termination_by structural x => x
 Generalization of `sModNat` with arbitrary base case,
 useful for proving `sModNatTR` and `sModNat` agree.
 -/
-def sModNat_aux (b q : ℕ) : ℕ → ℕ
+def sModNatAux (b q : ℕ) : ℕ → ℕ
   | 0 => b
-  | i + 1 => (sModNat_aux b q i ^ 2 + (q - 2)) % q
+  | i + 1 => (sModNatAux b q i ^ 2 + (q - 2)) % q
 
-theorem sModNat_aux_eq (q k : ℕ) : sModNat_aux (4 % q) q k = sModNat q k := by
+theorem sModNatAux_eq (q k : ℕ) : sModNatAux (4 % q) q k = sModNat q k := by
   induction k with
   | zero => rfl
-  | succ k ih => rw [sModNat_aux, ih, sModNat, ← ih]
+  | succ k ih => rw [sModNatAux, ih, sModNat, ← ih]
+
+@[deprecated (since := "2026-06-06")] alias sModNat_aux := sModNatAux
+@[deprecated (since := "2026-06-06")] alias sModNat_aux_eq := sModNatAux_eq
 
 theorem sModNatTR_eq_sModNat (q i : ℕ) : sModNatTR q i = sModNat q i := by
-  rw [sModNatTR, helper, sModNat_aux_eq]
+  rw [sModNatTR, helper, sModNatAux_eq]
 where
-  helper b q k : sModNatTR.go q k b = sModNat_aux b q k := by
+  helper b q k : sModNatTR.go q k b = sModNatAux b q k := by
     induction k generalizing b with
     | zero => rfl
     | succ k ih =>
-      rw [sModNatTR.go, ih, sModNat_aux]
+      rw [sModNatTR.go, ih, sModNatAux]
       clear ih
       induction k with
       | zero => rfl
       | succ k ih =>
-        rw [sModNat_aux, ih, sModNat_aux]
+        rw [sModNatAux, ih, sModNatAux]
 
 lemma testTrueHelper (p : ℕ) (hp : Nat.blt 1 p = true) (h : sModNatTR (2 ^ p - 1) (p - 2) = 0) :
     LucasLehmerTest p := by

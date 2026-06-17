@@ -23,7 +23,7 @@ a minimum number of equalities.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

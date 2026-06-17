@@ -18,13 +18,13 @@ public import Mathlib.RingTheory.PrincipalIdealDomain
 
 ## Main results
 
-* `Ideal.isPrime_nat_iff`: the prime ideals in ℕ are ⟨0⟩, ⟨p⟩ (for prime `p`), and ⟨2, 3⟩ = {1}ᶜ.
+* `Ideal.isPrime_nat_iff`: the prime ideals in ℕ are ⟨0⟩, ⟨p⟩ (for prime `p`), and `⟨2, 3⟩ = {1}ᶜ`.
   The proof follows https://math.stackexchange.com/a/4224486.
 
 * `Ideal.isPrime_int_iff` : the prime ideals in ℤ are ⟨0⟩ and ⟨p⟩ (for prime `p`).
 -/
 
-@[expose] public section
+public section
 
 /-- The natural numbers form a local semiring. -/
 instance : IsLocalRing ℕ where

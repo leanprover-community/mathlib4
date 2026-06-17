@@ -25,7 +25,7 @@ It also includes a bit of more general topological theory of the reals,
 needed to define the structures and prove continuity.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists StarRing UniformContinuousConstSMul UniformOnFun
 

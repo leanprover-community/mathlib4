@@ -18,7 +18,6 @@ This proves the lattice `Seminorm ℝ (ℝ × ℝ)` is not distributive.
 * https://en.wikipedia.org/wiki/Seminorm#Examples
 -/
 
-
 open Seminorm
 
 open scoped NNReal

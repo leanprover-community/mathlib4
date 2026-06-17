@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Enriched.Limits.HasConicalLimits
 # Existence of conical products
 -/
 
-@[expose] public section
+public section
 
 universe w v' v u u'
 

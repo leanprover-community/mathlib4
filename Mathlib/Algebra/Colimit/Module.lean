@@ -130,7 +130,7 @@ to a unique map out of the direct limit. -/
 def lift (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f →ₗ[R] P where
   __ := AddCon.lift _ (DirectSum.toModule R ι P g) <|
-    AddCon.addConGen_le fun _ _ ⟨_, _⟩ ↦ by simpa using (Hg _ _ _ _).symm
+    AddCon.addConGen_le.2 fun _ _ ⟨_, _⟩ ↦ by simpa using (Hg _ _ _ _).symm
   map_smul' r := by rintro ⟨x⟩; exact map_smul (DirectSum.toModule R ι P g) r x
 
 variable (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
@@ -248,9 +248,11 @@ def linearEquiv : DirectLimit G f ≃ₗ[R] _root_.DirectLimit G f :=
     (by ext; simp)
     (by ext; simp)
 
+@[simp]
 theorem linearEquiv_of {i g} : linearEquiv _ _ (of _ _ G f i g) = ⟦⟨i, g⟩⟧ := by
-  simp [linearEquiv]; rfl
+  simp [linearEquiv]
 
+@[simp]
 theorem linearEquiv_symm_mk {g} : (linearEquiv _ _).symm ⟦g⟧ = of _ _ G f g.1 g.2 := rfl
 
 end equiv
@@ -269,7 +271,7 @@ theorem exists_eq_of_of_eq {i x y} (h : of R ι G f i x = of R ι G f i y) :
 bigger module in the directed system. -/
 theorem of.zero_exact {i x} (H : of R ι G f i x = 0) :
     ∃ j hij, f i j hij x = (0 : G j) := by
-  convert exists_eq_of_of_eq (H.trans (map_zero <| _).symm)
+  convert! exists_eq_of_of_eq (H.trans (map_zero <| _).symm)
   rw [map_zero]
 
 end DirectLimit
