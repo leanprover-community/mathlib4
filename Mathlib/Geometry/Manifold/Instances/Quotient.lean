@@ -160,9 +160,8 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
       · ext z
         refine ⟨?_, ?_⟩
         · intro ⟨_, hzt⟩
-          rw [IsOpen.interior_eq (IsOpen.inter is_open_t f.open_source)] at hzt
           rw [OpenPartialHomeomorph.restr_source, IsOpen.interior_eq is_open_t, Set.inter_comm]
-          exact hzt
+          simpa [IsOpen.interior_eq (IsOpen.inter is_open_t f.open_source)] using hzt
         · intro ⟨hzf, hzt⟩
           rw [IsOpen.interior_eq is_open_t] at hzt
           obtain ⟨u, hu, hz⟩ := hzt
@@ -175,7 +174,7 @@ instance : IsManifold I n (orbitRel.Quotient G M) where
               smul_inv_smul]
             exact hu'.1.2
           · rw [interior_inter, IsOpen.interior_eq is_open_t, IsOpen.interior_eq f.open_source]
-            exact ⟨⟨u, by trivial⟩, hzf⟩
+            exact ⟨⟨u, ⟨hu, hz⟩⟩, hzf⟩
       · intro z ⟨_, hz⟩
         refine Eq.symm (f_eq_φρφ_t z ?_)
         simpa [interior_inter,IsOpen.interior_eq f.open_source, And.comm] using hz
