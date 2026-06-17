@@ -3,7 +3,6 @@ Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Jon Eugster
 -/
-import Std.Data.TreeSet
 import Cache.Lean
 import Lake.Load.Toml
 import Batteries.Tactic.OpenPrivate
@@ -29,6 +28,7 @@ TODO: write a better predicate. -/
 def isPartOfMathlibCache (mod : Name) : Bool := #[
   `Mathlib,
   `Batteries,
+  `BatteriesRecycling,
   `Aesop,
   `Cli,
   `ImportGraph,
@@ -502,8 +502,6 @@ def lookup (hashMap : ModuleHashMap) (modules : List Name) : IO Unit := do
     for line in (← runCmd (← getLeanTar) #["-k", ltar.toString]).splitOn "\n" |>.dropLast do
       println! "  comment: {line}"
   if err then IO.Process.exit 1
-
-open private Lake.Glob.ofString? from Lake.Load.Toml in
 
 /--
 Parse a string as either a path or a Lean module name.

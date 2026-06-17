@@ -74,6 +74,9 @@ def op (α : TwoSquare T L R B) : TwoSquare L.op T.op B.op R.op := NatTrans.op �
 lemma natTrans_op (α : TwoSquare T L R B) :
     α.op.natTrans = NatTrans.op α.natTrans := rfl
 
+instance (α : TwoSquare T L R B) [IsIso α.natTrans] : IsIso α.op.natTrans :=
+  inferInstanceAs (IsIso (NatTrans.op α.natTrans))
+
 @[ext]
 lemma ext (w w' : TwoSquare T L R B) (h : ∀ (X : C₁), w.natTrans.app X = w'.natTrans.app X) :
     w = w' :=
@@ -146,6 +149,7 @@ section Interchange
 
 variable {C₉ : Type u₉} [Category.{v₉} C₉] {R₃ : C₆ ⥤ C₉} {B₃ : C₈ ⥤ C₉}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- When composing 2-squares which form a diagram of grid, composing horizontally first yields the
 same result as composing vertically first. -/
