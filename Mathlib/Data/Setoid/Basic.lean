@@ -465,7 +465,7 @@ theorem comap_injective (f : α → β) (hf : Function.Surjective f) :
 theorem le_comap_map {r : Setoid α} {f : α → β} : r ≤ comap f (r.map f) :=
   fun _ _ h => Relation.EqvGen.rel _ _ ⟨_, _, h, rfl, rfl⟩
 
-theorem comap_map_eq (f : α → β) (r : Setoid α) (hf : ker f ≤ r) :
+theorem comap_map_of_ker_le (f : α → β) (r : Setoid α) (hf : ker f ≤ r) :
     comap f (r.map f) = r := by
   apply le_antisymm _ le_comap_map
   rw [le_iff_rel_le, comap_rel_eq, coe_map_of_ker_le _ _ hf]
@@ -475,9 +475,12 @@ theorem comap_map_eq (f : α → β) (r : Setoid α) (hf : ker f ≤ r) :
     exact trans (symm ha) (trans h hb)
   · exact hf h
 
+theorem comap_map_eq (f : α → β) (r : Setoid α) (hf : f.Injective) : comap f (r.map f) = r :=
+  comap_map_of_ker_le f r <| ker_eq_bot_iff.2 hf ▸ bot_le
+
 theorem comap_surjective (f : α → β) (hf : Function.Injective f) :
     Function.Surjective (Setoid.comap f) :=
-  fun r => ⟨_, comap_map_eq f r <| ker_eq_bot_iff.2 hf ▸ bot_le⟩
+  fun r => ⟨_, comap_map_eq f r hf⟩
 
 /-- The second isomorphism theorem for sets. -/
 noncomputable def comapQuotientEquiv (f : α → β) (r : Setoid β) :
