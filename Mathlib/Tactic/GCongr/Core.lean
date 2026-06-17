@@ -381,97 +381,108 @@ For example, `mul_le_mul_of_nonneg_right` and `mul_le_mul_of_nonneg_left` are bo
 -/
 syntax (name := gcongrAttr) "gcongr" (&" strict")? (&" only")? (prio)? : attr
 
+/-- Mark `declName` with the `gcongr` attribute. -/
+def addGCongrLemma (declName : Name) (stx : Syntax) (kind : AttributeKind) : MetaM Unit :=
+  withReducible do
+  let strict := !stx[1].isNone
+  let forGrw := stx[2].isNone
+  let prio ← getAttrParamOptPrio stx[3]
+  let cinfo ← getConstInfo declName
+  let type := cinfo.type
+  forallTelescope type fun xs type => do
+  -- Special case the unfolding of `Monotone`-like conclusions.
+  if type.getAppFn.constName? matches
+      `Monotone | `Antitone | `StrictMono | `StrictAnti |
+      `MonotoneOn | `AntitoneOn | `StrictMonoOn | `StrictAntiOn then
+    forallTelescope (← withDefault <| unfoldDefinition type) fun xs' type => do
+      gcongrExt.add (← makeGCongrLemma (xs ++ xs') type declName prio strict forGrw) kind
+    return
+  -- If the conclusion is a free variable, it is a lemma like `imp_imp_imp` or `forall_imp`,
+  -- so we revert the last two variables.
+  if type.getAppFn.isFVar then
+    let type ← mkForallFVars xs[(xs.size-2)...xs.size] type
+    gcongrExt.add (← makeGCongrLemma xs.pop.pop type declName prio strict forGrw) kind
+    return
+  try
+    -- Add a `gcongr` lemma in the "normal" way.
+    gcongrExt.add (← makeGCongrLemma xs type declName prio strict forGrw) kind
+  catch e => try
+    match_expr type with
+    | Iff lhs rhs => addIffGCongrLemma prio strict forGrw cinfo xs lhs rhs
+    | _ => addImpGCongrLemma prio strict forGrw cinfo xs type
+  catch _ =>
+    -- If none of the methods work, we throw the error thrown by the "normal" attempt.
+    throw e
+where
+  /-- Assuming the lemma has conslusion `lhs ↔ rhs`, mark one of the implications
+  `lhs → rhs` or `rhs → lhs` as a `gcongr` lemma. -/
+  addIffGCongrLemma (prio : Nat) (strict forGrw : Bool) (cinfo : ConstantInfo)
+      (xs : Array Expr) (lhs rhs : Expr) : MetaM Unit := do
+    try
+      -- Try using the `←` implication.
+      withLocalDeclD `_a rhs fun x => do
+        let gcongrLemma ← makeGCongrLemma (xs.push x) lhs declName prio strict forGrw
+        let auxType ← mkForallFVars (xs.push x) lhs
+        let auxValue ← mkLambdaFVars xs <| mkApp3 (.const ``Iff.mpr []) lhs rhs <|
+          mkAppN (.const declName (cinfo.levelParams.map .param)) xs
+        let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
+          (forceExpose := true)
+        gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
+    catch _ =>
+      -- Try using the `→` implication.
+      withLocalDeclD `_a lhs fun x => do
+        let gcongrLemma ← makeGCongrLemma (xs.push x) rhs declName prio strict forGrw
+        let auxType ← mkForallFVars (xs.push x) rhs
+        let auxValue ← mkLambdaFVars xs <| mkApp3 (.const ``Iff.mp []) lhs rhs <|
+          mkAppN (.const declName (cinfo.levelParams.map .param)) xs
+        let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
+          (forceExpose := true)
+        gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
+  /--
+  Mark the lemma as a `gcongr` lemma, using implication as the relation.
+  For example, `Or.imp : (a → c) → (b → d) → a ∨ b → c ∨ d`. In the non-strict case,
+  we want to support such lemmas even if the hypotheses are given in a different order.
+  So, we find the last hypothesis whose head matches that of the conclusion,
+  and move it to the end.
+  -/
+  addImpGCongrLemma (prio : Nat) (strict forGrw : Bool) (cinfo : ConstantInfo)
+      (xs : Array Expr) (type : Expr) : MetaM Unit := do
+    if strict then
+      let some x := xs.back? | failure
+      let type ← mkForallFVars #[x] type
+      let gcongrLemma ← makeGCongrLemma xs.pop type declName prio strict forGrw
+      gcongrExt.add gcongrLemma kind
+    else
+      let .const c _ := type.getAppFn | failure
+      let rec findIdx (i : Nat) (h : i ≤ xs.size) : MetaM (Fin xs.size) :=
+        match i with
+        | 0 => failure
+        | i + 1 => do
+          if (← inferType xs[i]).getAppFn.isConstOf c then
+            return ⟨i, by lia⟩
+          else
+            findIdx i (by lia)
+      let i ← findIdx xs.size xs.size.le_refl
+      let type ← mkForallFVars #[xs[i]] type
+      let xs' :=  xs.eraseIdx i i.isLt
+      let gcongrLemma ← makeGCongrLemma xs' type declName prio strict forGrw
+      if i == xs.size - 1 then
+        -- The argument order is already correct.
+        gcongrExt.add gcongrLemma kind
+      else
+        -- We need to make an auxiliary theorem with the correct argument order.
+        let auxType ← mkForallFVars xs' type
+        let auxValue ← mkLambdaFVars (xs'.push xs[i]) <|
+          mkAppN (.const declName (cinfo.levelParams.map .param)) xs
+        let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
+          (forceExpose := true)
+        gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
+
 @[inherit_doc gcongrAttr]
 initialize registerBuiltinAttribute {
   name := `gcongrAttr
   descr := "generalized congruence"
-  add := fun declName stx kind ↦ MetaM.run' do withReducible do
-    let strict := !stx[1].isNone
-    let forGrw := stx[2].isNone
-    let prio ← getAttrParamOptPrio stx[3]
-    let cinfo ← getConstInfo declName
-    let type := cinfo.type
-    forallTelescope type fun xs type => do
-    -- Special case the unfolding of `Monotone`-like conclusions.
-    if type.getAppFn.constName? matches
-        `Monotone | `Antitone | `StrictMono | `StrictAnti |
-        `MonotoneOn | `AntitoneOn | `StrictMonoOn | `StrictAntiOn then
-      forallTelescope (← withDefault <| unfoldDefinition type) fun xs' type => do
-        gcongrExt.add (← makeGCongrLemma (xs ++ xs') type declName prio strict forGrw) kind
-      return
-    -- If the conclusion is a free variable, it is a lemma like `imp_imp_imp` or `forall_imp`,
-    -- so we revert the last two variables.
-    if type.getAppFn.isFVar then
-      let type ← mkForallFVars xs[(xs.size-2)...xs.size] type
-      gcongrExt.add (← makeGCongrLemma xs.pop.pop type declName prio strict forGrw) kind
-      return
-    try
-      -- Add a `gcongr` lemma in the "normal" way.
-      gcongrExt.add (← makeGCongrLemma xs type declName prio strict forGrw) kind
-    catch e => try
-      match_expr type with
-      | Iff lhs rhs =>
-        -- When the goal is an `↔`, try to use either of the implications.
-        try
-          -- Try using the `←` implication.
-          withLocalDeclD `_a rhs fun x => do
-            let gcongrLemma ← makeGCongrLemma (xs.push x) lhs declName prio strict forGrw
-            let auxType ← mkForallFVars (xs.push x) lhs
-            let auxValue ← mkLambdaFVars xs <| mkApp3 (.const ``Iff.mpr []) lhs rhs <|
-              mkAppN (.const declName (cinfo.levelParams.map .param)) xs
-            let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
-              (forceExpose := true)
-            gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
-        catch _ =>
-          -- Try using the `→` implication.
-          withLocalDeclD `_a lhs fun x => do
-            let gcongrLemma ← makeGCongrLemma (xs.push x) rhs declName prio strict forGrw
-            let auxType ← mkForallFVars (xs.push x) rhs
-            let auxValue ← mkLambdaFVars xs <| mkApp3 (.const ``Iff.mp []) lhs rhs <|
-              mkAppN (.const declName (cinfo.levelParams.map .param)) xs
-            let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
-              (forceExpose := true)
-            gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
-      | _ =>
-        -- Try to interpret the lemma as an implicational `gcongr` lemma,
-        -- such as `Or.imp : (a → c) → (b → d) → a ∨ b → c ∨ d`.
-        if strict then
-          let some x := xs.back? | failure
-          let type ← mkForallFVars #[x] type
-          let gcongrLemma ← makeGCongrLemma xs.pop type declName prio strict forGrw
-          gcongrExt.add gcongrLemma kind
-        else
-        -- In the non-strict case, we want to support such lemmas
-        -- even if the hypotheses are given in a different order.
-        -- So, we find the last hypothesis whose head matches that of the conclusion,
-        -- and move it to the end.
-        let .const c _ := type.getAppFn | failure
-        let rec findIdx (i : Nat) (h : i ≤ xs.size) : MetaM (Fin xs.size) :=
-          match i with
-          | 0 => failure
-          | i + 1 => do
-            if (← inferType xs[i]).getAppFn.isConstOf c then
-              return ⟨i, by lia⟩
-            else
-              findIdx i (by lia)
-        let i ← findIdx xs.size xs.size.le_refl
-        let type ← mkForallFVars #[xs[i]] type
-        let xs' :=  xs.eraseIdx i i.isLt
-        let gcongrLemma ← makeGCongrLemma xs' type declName prio strict forGrw
-        if i == xs.size - 1 then
-          -- The argument order is already correct.
-          gcongrExt.add gcongrLemma kind
-        else
-          -- We need to make an auxiliary theorem with the correct argument order.
-          let auxType ← mkForallFVars xs' type
-          let auxValue ← mkLambdaFVars (xs'.push xs[i]) <|
-            mkAppN (.const declName (cinfo.levelParams.map .param)) xs
-          let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
-            (forceExpose := true)
-          gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
-    catch _ =>
-      -- If none of the methods work, we throw the error thrown by the "normal" attempt.
-      throw e
+  add := (addGCongrLemma · · · |>.run')
 }
 
 initialize registerTraceClass `Meta.gcongr
