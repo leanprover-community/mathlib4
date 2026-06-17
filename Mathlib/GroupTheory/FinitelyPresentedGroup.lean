@@ -57,6 +57,23 @@ theorem of_FG (N : Subgroup G) [N.Normal] [h : Group.FG N] : N.IsNormalClosureFG
   obtain ⟨S, rfl, hS⟩ := N.fg_iff.mp ((Group.fg_iff_subgroup_fg N).mp h)
   exact ⟨S, hS, le_antisymm (normalClosure_le_normal subset_closure) closure_le_normalClosure⟩
 
+open Function Set Subgroup in
+/-- The preimage of a finitely generated normal subgroup by a surjective homomorphism with
+a finitely generated kernel is finitely generated. -/
+@[to_additive /-- The preimage of a finitely generated normal subgroup by a surjective additive
+homomorphism with a finitely generated kernel is finitely generated. -/]
+protected theorem comap {N : Subgroup H} (hN : N.IsNormalClosureFG)
+    {f : G →* H} (hf : Surjective f) (hf' : f.ker.IsNormalClosureFG) :
+    (N.comap f).IsNormalClosureFG := by
+  obtain ⟨S, hS_fin, hS⟩ := hN
+  obtain ⟨T, hT_fin, hT⟩ := hf'
+  have : ∃ S', S'.Finite ∧ f '' S' = S :=
+    ⟨surjInv hf '' S, hS_fin.image _, by rw [← image_comp, comp_surjInv, image_id]⟩
+  clear hS_fin
+  obtain ⟨S, hS_fin, rfl⟩ := this
+  refine ⟨S ∪ T, hS_fin.union hT_fin, ?_⟩
+  rw [← hS, ← map_normalClosure S f hf, comap_map_eq, ← hT, normalClosure_union]
+
 /-- The trivial group is the normal closure of a finite set of relations. -/
 @[to_additive /-- The trivial additive group is the normal closure of a finite set of relations. -/]
 protected theorem bot : (⊥ : Subgroup G).IsNormalClosureFG := of_FG _
