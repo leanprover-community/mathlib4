@@ -212,6 +212,7 @@ theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalg
   exact LieSubmodule.isNilpotentOfIsNilpotentSpanSupEqTop hI₂ (h _) (hI₃ _ fun x => h x)
 
 attribute [local instance] LieSubalgebra.subsingleton_bot
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- *Engel's theorem*.
 

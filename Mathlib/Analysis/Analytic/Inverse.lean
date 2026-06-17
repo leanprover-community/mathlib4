@@ -85,7 +85,7 @@ series. -/
 theorem leftInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E) :
     p.removeZero.leftInv i x = p.leftInv i x := by
   ext1 n
-  induction n using Nat.strongRec' with | _ n IH
+  induction n using Nat.strong_induction_on with | _ n IH
   match n with
   | 0 => simp -- if one replaces `simp` with `refl`, the proof times out in the kernel.
   | 1 => simp -- TODO: why?
@@ -189,7 +189,7 @@ series. -/
 theorem rightInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E) :
     p.removeZero.rightInv i x = p.rightInv i x := by
   ext1 n
-  induction n using Nat.strongRec' with | _ n IH
+  induction n using Nat.strong_induction_on with | _ n IH
   match n with
   | 0 => simp only [rightInv_coeff_zero]
   | 1 => simp only [rightInv_coeff_one]
@@ -629,7 +629,7 @@ lemma HasFPowerSeriesAt.eventually_hasSum_of_comp {f : E → F} {g : F → G}
   have L : Tendsto (fun n ↦ q.partialSum n (f (x + y) - f x)) atTop (𝓝 (g (f (x + y)))) := by
     apply (closed_nhds_basis (g (f (x + y)))).tendsto_right_iff.2
     rintro u ⟨hu, u_closed⟩
-    simp only [id_eq, eventually_atTop, ge_iff_le]
+    simp only [id_eq, eventually_atTop]
     rcases mem_nhds_iff.1 hu with ⟨v, vu, v_open, hv⟩
     obtain ⟨a₀, b₀, hab⟩ : ∃ a₀ b₀, ∀ (a b : ℕ), a₀ ≤ a → b₀ ≤ b →
         q.partialSum a (p.partialSum b y - (p 0) fun _ ↦ 0) ∈ v := by

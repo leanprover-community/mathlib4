@@ -151,7 +151,9 @@ theorem cof_omega0 : cof ω = ℵ₀ :=
 
 @[deprecated (since := "2026-02-18")] alias cof_eq_one_iff_is_succ := cof_eq_one_iff
 
-theorem exists_ord_cof_eq (α : Type*) [LinearOrder α] [WellFoundedLT α] :
+variable (α) in
+/-- Every well-order has a cofinal subset of order type `(cof α).ord`. -/
+theorem exists_ord_cof_eq [LinearOrder α] [WellFoundedLT α] :
     ∃ s : Set α, IsCofinal s ∧ typeLT s = (Order.cof α).ord := by
   obtain ⟨s, hs, hs'⟩ := exists_cof_eq α
   obtain ⟨r, hr, hr'⟩ := exists_ord_eq s
@@ -168,16 +170,21 @@ theorem exists_ord_cof_eq (α : Type*) [LinearOrder α] [WellFoundedLT α] :
 
 @[deprecated (since := "2026-05-25")] alias ord_cof_eq := exists_ord_cof_eq
 
+/-- Every cofinal set has a cofinal subset of order type `(cof α).ord`. -/
+theorem exists_ord_cof_eq_of_isCofinal [LinearOrder α] [WellFoundedLT α]
+    {s : Set α} (hs : IsCofinal s) : ∃ t ⊆ s, IsCofinal t ∧ typeLT t = (Order.cof α).ord := by
+  obtain ⟨t, ht, ht'⟩ := exists_ord_cof_eq s
+  rw [cof_eq_of_isCofinal hs] at ht'
+  refine ⟨t, ?_, hs.trans ht, ?_⟩
+  · simp
+  · rw [← ht']
+    exact ((Subtype.strictMono_coe _).strictMonoOn _).orderIso.ordinalType_congr.symm
+
 @[simp]
 theorem _root_.Order.cof_ord_cof (α : Type*) [LinearOrder α] [WellFoundedLT α] :
     (Order.cof α).ord.cof = Order.cof α := by
   obtain ⟨s, hs, hs'⟩ := exists_ord_cof_eq α
-  rw [← hs', cof_type]
-  apply le_antisymm
-  · rw [← card_ord (Order.cof α), ← hs', card_type]
-    exact cof_le_cardinalMk s
-  · rw [le_cof_iff]
-    exact fun t ht ↦ (cof_le (hs.trans ht)).trans_eq (mk_image_eq Subtype.val_injective)
+  rw [← hs', cof_type, cof_eq_of_isCofinal hs]
 
 @[simp]
 theorem cof_ord_cof (o : Ordinal) : o.cof.ord.cof = o.cof := by
@@ -537,10 +544,7 @@ theorem cof_eq' (r : α → α → Prop) [H : IsWellOrder α r] (h : IsSuccLimit
 
 @[simp]
 theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} := by
-  apply (cof_le_card _).antisymm
-  simp_rw [univ, ← lift_cof, ← lift_card, Cardinal.lift_le, cof_type, card_type, le_cof_iff,
-    ← not_bddAbove_iff_isCofinal]
-  exact fun s hs ↦ mk_le_of_injective (enumOrdOrderIso s hs).injective
+  rw [univ, ← lift_cof, cof_type, cof_ordinal, Cardinal.lift_univ, Cardinal.univ_umax.{u, v}]
 
 end Ordinal
 

@@ -242,7 +242,7 @@ private theorem mul_gaussNorm_le_gaussNorm_mul (p q : R[X]) :
   intro x hx hneq
   apply lt_of_mul_lt_mul_right _ <| pow_nonneg hc0 (i + j)
   have : x + (i + j - x) = i + j := by simp_all
-  convert_to v (p.coeff x) * c ^ x * (v (q.coeff (i + j - x)) * c ^ (i + j - x)) <
+  convert_to! v (p.coeff x) * c ^ x * (v (q.coeff (i + j - x)) * c ^ (i + j - x)) <
     v (p.coeff i) * c ^ i * (v (q.coeff j) * c ^ j)
   · grind
   · grind

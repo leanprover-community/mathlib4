@@ -6,6 +6,7 @@ Authors: Julian Berman
 module
 
 public import Mathlib.GroupTheory.PGroup
+public import Mathlib.GroupTheory.Rank
 public import Mathlib.LinearAlgebra.Quotient.Defs
 
 /-!
@@ -328,6 +329,15 @@ lemma isMulTorsionFree_iff_torsion_eq_bot : IsMulTorsionFree G ↔ CommGroup.tor
   simp [not_imp_not, CommGroup.mem_torsion]
 
 @[to_additive]
+lemma le_comap_torsion (f : G →* H) : torsion G ≤ (torsion H).comap f := by
+  intro x
+  exact f.isOfFinOrder
+
+@[to_additive]
+lemma map_torsion_le (f : G →* H) : (torsion G).map f ≤ torsion H :=
+  Subgroup.map_le_iff_le_comap.mpr (le_comap_torsion f)
+
+@[to_additive]
 lemma comap_torsion_of_injective {f : G →* H} (hf : Function.Injective f) :
     (torsion H).comap f = torsion G := by
   ext x
@@ -386,6 +396,42 @@ theorem mem_primaryComponent_iff_orderOf [Fact p.Prime] {g : G} :
 /-- The `p`-primary component is a `p`-group. -/
 theorem primaryComponent.isPGroup : IsPGroup p (primaryComponent G p) := fun g ↦
   g.property.imp fun _ hk ↦ Subtype.ext <| by simpa using hk
+
+variable (G H)
+
+/-- The free rank of a finitely generated abelian group is the rank of its free part. -/
+@[to_additive
+/-- The free rank of a finitely generated abelian group is the rank of its free part. -/]
+noncomputable def freeRank [Group.FG G] : ℕ := Group.rank (G ⧸ torsion G)
+
+@[to_additive]
+theorem freeRank_def [Group.FG G] : freeRank G = Group.rank (G ⧸ torsion G) := rfl
+
+variable {G H}
+
+@[to_additive]
+theorem freeRank_eq_zero_iff [Group.FG G] : freeRank G = 0 ↔ IsTorsion G := by
+  rw [freeRank, Group.rank_eq_zero_iff, QuotientGroup.subsingleton_iff, torsion_eq_top_iff]
+
+@[to_additive]
+theorem freeRank_eq_zero (hG : IsTorsion G) [Group.FG G] : freeRank G = 0 :=
+  freeRank_eq_zero_iff.mpr hG
+
+@[to_additive]
+theorem freeRank_eq_zero_of_finite [Finite G] : freeRank G = 0 :=
+  freeRank_eq_zero isTorsion_of_finite
+
+@[to_additive]
+theorem freeRank_congr [Group.FG G] [Group.FG H] (e : G ≃* H) : freeRank G = freeRank H :=
+  Group.rank_congr (QuotientGroup.congr (torsion G) (torsion H) e e.map_torsion)
+
+-- TODO: Prove monotonicity of `freeRank` along injective homomorphisms. This would require proving
+-- monotonicity of `rank` along injective homomorphism of abelian groups.
+@[to_additive]
+theorem freeRank_ge_of_surjective [Group.FG G] [Group.FG H] (e : G →* H)
+    (he : Function.Surjective e) : freeRank H ≤ freeRank G :=
+  Group.rank_le_of_surjective _ <| QuotientGroup.map_surjective_of_surjective
+    (torsion G) (torsion H) e (QuotientGroup.mk_surjective.comp he) (le_comap_torsion e)
 
 end CommGroup
 

@@ -96,7 +96,7 @@ namespace RCLike
 /-- Coercion from `ℝ` to an `RCLike` field. -/
 @[coe] abbrev ofReal : ℝ → K := Algebra.cast
 
-/- The priority must be set at 900 to ensure that coercions are tried in the right order.
+/-- The priority must be set at 900 to ensure that coercions are tried in the right order.
 See Note [coercion into rings], or `Mathlib/Data/Nat/Cast/Basic.lean` for more details. -/
 noncomputable instance (priority := 900) algebraMapCoe : CoeTC ℝ K :=
   ⟨ofReal⟩
