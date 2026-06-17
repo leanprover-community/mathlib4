@@ -97,22 +97,44 @@ instance [NormedField A] [CompletableTopField A] :
 
 end Algebra
 
-theorem isLinearMap_extension {𝕜 E F : Type*} [RCLike 𝕜] [UniformSpace E] [AddCommGroup E]
-    [Module 𝕜 E] [ContinuousAdd E] [UniformContinuousConstSMul 𝕜 E] [IsUniformAddGroup E]
-    [UniformSpace F] [AddCommGroup F] [Module 𝕜 F] [T2Space F] [ContinuousAdd F] [CompleteSpace F]
-    [ContinuousConstSMul 𝕜 F] [IsUniformAddGroup F] {f : E →ₗ[𝕜] F} (hf : UniformContinuous f) :
-    IsLinearMap 𝕜 (Completion.extension f) := by
-  have h_cont : Continuous (UniformSpace.Completion.extension f) := Completion.continuous_extension
-  refine {
-    map_add a b := UniformSpace.Completion.induction_on₂ a b (isClosed_eq
-      (h_cont.comp (continuous_fst.add continuous_snd))
-      ((h_cont.comp continuous_fst).add (h_cont.comp continuous_snd)))
-      (fun _ _ => by simp_rw [← Completion.coe_add, UniformSpace.Completion.extension_coe hf,
-        f.map_add])
-    map_smul c a := UniformSpace.Completion.induction_on a (isClosed_eq
-      (h_cont.comp (continuous_const_smul c)) ((h_cont.comp continuous_id).const_smul c))
-      (fun _ => by simp_rw [← Completion.coe_smul, UniformSpace.Completion.extension_coe hf,
-        f.map_smul])}
+section Extension
+
+variable {𝕜 E F : Type*} [RCLike 𝕜] [UniformSpace E] [AddCommGroup E] [Module 𝕜 E]
+    [UniformContinuousConstSMul 𝕜 E] [IsUniformAddGroup E] [UniformSpace F] [AddCommGroup F]
+    [Module 𝕜 F] [T2Space F] [ContinuousAdd F] [CompleteSpace F] [ContinuousConstSMul 𝕜 F]
+
+def extensionL {f : E →ₗ[𝕜] F} (hf : UniformContinuous f) : Completion E →L[𝕜] F :=
+  have h_cont : Continuous (Completion.extension f) := continuous_extension
+  {
+    toLinearMap := {
+      toFun := UniformSpace.Completion.extension f
+      map_add' a b := UniformSpace.Completion.induction_on₂ a b (isClosed_eq
+        (h_cont.comp (continuous_fst.add continuous_snd))
+        ((h_cont.comp continuous_fst).add (h_cont.comp continuous_snd)))
+        (fun _ _ => by
+          simp_rw [← Completion.coe_add, UniformSpace.Completion.extension_coe hf, f.map_add])
+      map_smul' c a := UniformSpace.Completion.induction_on a (isClosed_eq
+        (h_cont.comp (continuous_const_smul c)) ((h_cont.comp continuous_id).const_smul c))
+        (fun _ => by
+          simp [← Completion.coe_smul, UniformSpace.Completion.extension_coe hf, f.map_smul]
+        )
+    }
+    cont := continuous_extension
+  }
+
+@[simp]
+lemma extensionL_apply {f : E →ₗ[𝕜] F} (hf : UniformContinuous f) (e : Completion E) :
+    extensionL hf e = Completion.extension f e := rfl
+
+lemma uniformContinuous_extensionL {f : E →ₗ[𝕜] F} (hf : UniformContinuous f) :
+    UniformContinuous (extensionL hf) :=
+  uniformContinuous_def.mpr (UniformSpace.Completion.uniformContinuous_extension)
+
+lemma extensionL_unique {f : E →ₗ[𝕜] F} (hf : UniformContinuous f) {g : Completion E →L[𝕜] F}
+    (hg : UniformContinuous g) (h : ∀ (e : E), f e = g e) : extensionL hf = g := by
+  ext; simp [UniformSpace.Completion.extension_unique hf hg h]
+
+end Extension
 
 end Completion
 
