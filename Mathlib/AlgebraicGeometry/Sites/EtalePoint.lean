@@ -34,7 +34,6 @@ namespace AlgebraicGeometry.Scheme
 variable {S : Scheme.{u}} {Ω : Type u} [Field Ω] [IsSepClosed Ω]
   (s : Spec (.of Ω) ⟶ S)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_fac_of_etale_of_isSepClosed {X S : Scheme.{u}} (f : X ⟶ S) [Etale f]
     {Ω : Type u} [Field Ω] [IsSepClosed Ω] (s : Spec (.of Ω) ⟶ S)
     (x : X) (hx : f x = s default) :
@@ -50,6 +49,7 @@ lemma exists_fac_of_etale_of_isSepClosed {X S : Scheme.{u}} (f : X ⟶ S) [Etale
     ext1; exact b.comp_algebraMap
   refine ⟨Spec.map (CommRingCat.ofHom b.toRingHom) ≫ X.fromSpecResidueField x, ?_, ?_⟩
   · simp [SpecToEquivOfField, ← this]
+    rfl
   · dsimp
     apply fromSpecResidueField_apply
 
