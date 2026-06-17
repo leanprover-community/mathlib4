@@ -7829,6 +7829,7 @@ public import Mathlib.Topology.ExtendFrom
 public import Mathlib.Topology.ExtremallyDisconnected
 public import Mathlib.Topology.FiberBundle.Basic
 public import Mathlib.Topology.FiberBundle.Constructions
+public import Mathlib.Topology.FiberBundle.ContinuousSection
 public import Mathlib.Topology.FiberBundle.IsHomeomorphicTrivialBundle
 public import Mathlib.Topology.FiberBundle.Trivialization
 public import Mathlib.Topology.FiberPartition

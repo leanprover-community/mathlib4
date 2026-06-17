@@ -96,6 +96,10 @@ theorem TotalSpace.range_mk (b : B) : range ((↑) : E b → TotalSpace F E) = �
   · rintro ⟨_, x⟩ rfl
     exact ⟨x, rfl⟩
 
+@[simps]
+instance {M : Type*} [∀ b, SMul M (E b)] : SMul M (TotalSpace F E) where
+  smul g x := ⟨_, g • x.2⟩
+
 /-- Notation for the direct sum of two bundles over the same base. -/
 notation:100 E₁ " ×ᵇ " E₂ => fun x => E₁ x × E₂ x
 
