@@ -75,37 +75,29 @@ protected def congr {c d : Con M} (h : c = d) : c.Quotient ≃* d.Quotient :=
 theorem congr_mk {c d : Con M} (h : c = d) (a : M) :
     Con.congr h (a : c.Quotient) = (a : d.Quotient) := rfl
 
-
 @[to_additive]
 theorem comap_conGen_equiv {M N : Type*} [Mul M] [Mul N] (f : MulEquiv M N) (rel : N → N → Prop) :
     Con.comap f (map_mul f) (conGen rel) = conGen (fun x y ↦ rel (f x) (f y)) := by
   apply le_antisymm _ (le_comap_conGen rel f (map_mul f))
   intro a b h
   simp only [Con.comap_rel] at h
-  have H : ∀ n1 n2, (conGen rel) n1 n2 → ∀ a b, f a = n1 → f b = n2 →
-      (conGen fun x y ↦ rel (f x) (f y)) a b := by
-    intro n1 n2 h
-    induction h with
-    | of x y h =>
-      intro _ _ fa fb
-      apply ConGen.Rel.of
-      rwa [fa, fb]
-    | refl x =>
-      intro _ _ fc fd
-      rw [f.injective (fc.trans fd.symm)]
-      exact ConGen.Rel.refl _
-    | symm _ h => exact fun a b fs fb ↦ ConGen.Rel.symm (h b a fb fs)
-    | trans _ _ ih ih1 =>
-      exact fun a b fa fb ↦ Exists.casesOn (f.surjective _) fun c' hc' ↦
-      ConGen.Rel.trans (ih a c' fa hc') (ih1 c' b hc' fb)
-    | mul _ _ ih ih1 =>
-      rename_i w x y z _ _
-      intro a b fa fb
-      rw [← f.eq_symm_apply, map_mul] at fa fb
-      rw [fa, fb]
-      exact ConGen.Rel.mul (ih (f.symm w) (f.symm x) (by simp) (by simp))
-        (ih1 (f.symm y) (f.symm z) (by simp) (by simp))
-  exact H (f a) (f b) h a b (refl _) (refl _)
+  unfold Function.onFun
+  generalize fa : f a = n1 at h
+  generalize fb : f b = n2 at h
+  induction h generalizing a b with
+  | of x y h =>
+    apply ConGen.Rel.of
+    rwa [fa, fb]
+  | refl x =>
+    rw [f.injective (fa.trans fb.symm)]
+    exact ConGen.Rel.refl _
+  | symm _ h => exact ConGen.Rel.symm (h fb fa)
+  | trans _ _ ih ih1 =>
+    exact Exists.casesOn (f.surjective _) fun c' hc' ↦ ConGen.Rel.trans (ih fa hc') (ih1 hc' fb)
+  | @mul w x y z _ _ ih ih1 =>
+    rw [← f.eq_symm_apply, map_mul] at fa fb
+    rw [fa, fb]
+    exact ConGen.Rel.mul (ih (by simp) (by simp)) (ih1 (by simp) (by simp))
 
 @[to_additive]
 theorem comap_conGen_of_bijective {M N : Type*} [Mul M] [Mul N] (f : M → N)
