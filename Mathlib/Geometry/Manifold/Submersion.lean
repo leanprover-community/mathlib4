@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Normed.Module.Shrink
 public import Mathlib.Topology.Algebra.Module.TransferInstance
 public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+public import Mathlib.Geometry.Manifold.Notation
 
 /-! # Smooth submersions
 
@@ -88,9 +89,8 @@ This will be the topic of Samantha Naranjo's master's thesis, and it's nice to c
 
 public noncomputable section
 
-open scoped Topology ContDiff
-open OpenPartialHomeomorph
-open Function Set
+open scoped Topology ContDiff Manifold
+open OpenPartialHomeomorph Function Set
 
 namespace Manifold
 
@@ -237,6 +237,10 @@ lemma source_subset_preimage_source (h : IsSubmersionAtOfComplement F I J n f x)
     h.domChart.source ⊆ f ⁻¹' h.codChart.source :=
   LiftSourceTargetPropertyAt.source_subset_preimage_source h
 
+lemma mapsto_domChart_source_codChart_source (h : IsSubmersionAtOfComplement F I J n f x) :
+    MapsTo f h.domChart.source h.codChart.source :=
+  h.source_subset_preimage_source
+
 /-- A linear equivalence `E ≃L[𝕜] E'' × F` which belongs to the data of a submersion `f` at `x`:
 the particular equivalence is arbitrary, but this choice matches the witnesses given by
 `h.domChart` and `h.codChart`. -/
@@ -354,31 +358,29 @@ lemma isSubmersionAt (h : IsSubmersionAtOfComplement F I J n f x) :
   use h.smallComplement, by infer_instance, by infer_instance
   exact (IsSubmersionAtOfComplement.congr_F h.smallEquiv).mp h
 
-/-- Prefer using `IsSubmersionAtOfComplement.contMDiffAt` instead -/
+/-- Prefer using `IsSubmersionAtOfComplement.contMDiffAt` instead.
+
+NB: `E'' × F` admits both the product model with corners
+`(𝓘(𝕜, E'')).prod (𝓘(𝕜, F)` and the canonical model with corners
+`𝓘(𝕜, E'' × F)`.
+Although these models describe the same smooth structure, we use the latter here because it is the
+target model of `h.equiv`. -/
 theorem contMDiffOn (h : IsSubmersionAtOfComplement F I J n f x) :
     ContMDiffOn I J n f h.domChart.source := by
-  have mapsto : MapsTo f h.domChart.source h.codChart.source :=
-    fun x hx ↦ h.source_subset_preimage_source hx
-  -- Smoothness of f is equivalent to smoothnes of ψ ∘ f ∘ φ⁻¹:
   rw [← contMDiffOn_writtenInExtend_iff h.domChart_mem_maximalAtlas
-    h.codChart_mem_maximalAtlas le_rfl mapsto,
+    h.codChart_mem_maximalAtlas le_rfl h.mapsto_domChart_source_codChart_source,
     ← h.domChart.extend_target_eq_image_source]
-  -- We prove that E → E'' is a C^n map.
-  have : ContMDiff 𝓘(𝕜, E) 𝓘(𝕜, E'') n (Prod.fst ∘ h.equiv) := by
-    -- We know that equiv : E → E'' × F is C^n:
+  have : CMDiff n (Prod.fst ∘ h.equiv) := by
     have h₁ : ContMDiff (𝓘(𝕜, E)) 𝓘(𝕜, E'' × F) n h.equiv := by
       rw [contMDiff_iff_contDiff]
       exact h.equiv.contDiff
-    -- We know that Prod.fst : E'' × F → E'' is C^n:
-    have h₂: ContMDiff (𝓘(𝕜, E'' × F)) (𝓘(𝕜, E'')) n (Prod.fst : E'' × F → E'') := by
-    -- We had to specify the type; that is, Prod.fst : E'' × F → E''.
-      rw [contMDiff_iff_contDiff]
-      exact contDiff_fst
-    exact h₂.comp h₁
+    apply ContMDiff.comp ?_ h₁
+    rw [contMDiff_iff_contDiff]
+    exact contDiff_fst
   exact this.contMDiffOn.congr h.writtenInCharts
 
 /-- A `C^n` submersion at `x` is `C^n` at `x`. -/
-theorem contMDiffAt (h : IsSubmersionAtOfComplement F I J n f x) : ContMDiffAt I J n f x :=
+theorem contMDiffAt (h : IsSubmersionAtOfComplement F I J n f x) : CMDiffAt n f x :=
   h.contMDiffOn.contMDiffAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
 
 end IsSubmersionAtOfComplement
@@ -522,11 +524,11 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
 
 /-- Prefer using `IsSubmersionAt.contMDiffAt` instead -/
 theorem contMDiffOn (h : IsSubmersionAt I J n f x) :
-    ContMDiffOn I J n f h.domChart.source :=
+    CMDiff[h.domChart.source] n f :=
   h.isSubmersionAtOfComplement_complement.contMDiffOn
 
 /-- A `C^k` submersion at `x` is `C^k` at `x`. -/
-theorem contMDiffAt (h : IsSubmersionAt I J n f x) : ContMDiffAt I J n f x :=
+theorem contMDiffAt (h : IsSubmersionAt I J n f x) : CMDiffAt n f x :=
   h.isSubmersionAtOfComplement_complement.contMDiffAt
 
 end IsSubmersionAt
@@ -615,7 +617,7 @@ protected lemma id [IsManifold I n M] : IsSubmersionOfComplement PUnit I I n (@i
 
 /-- A `C^k` submersion is `C^k` -/
 theorem contMDiff [IsManifold I n M] [IsManifold J n N]
-    (h : IsSubmersionOfComplement F I J n f) : ContMDiff I J n f :=
+    (h : IsSubmersionOfComplement F I J n f) : CMDiff n f :=
   fun x ↦ (h x).contMDiffAt
 
 end IsSubmersionOfComplement
@@ -660,7 +662,7 @@ protected lemma id [IsManifold I n M] : IsSubmersion I I n (@id M) := by
 
 /-- A `C^k` submersion is `C^k` -/
 theorem contMDiff [IsManifold I n M] [IsManifold J n N]
-    (h : IsSubmersion I J n f) : ContMDiff I J n f :=
+    (h : IsSubmersion I J n f) : CMDiff n f :=
   h.isSubmersionOfComplement_complement.contMDiff
 
 end IsSubmersion
