@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 public import Mathlib.Geometry.Manifold.MFDeriv.Defs
+public import Lean.Elab.DocString
+-- Import the doc-strings for `mfderiv` etc., so we can mention them in the doc-strings of the
+-- elaborators we're writing.
+meta import all Mathlib.Geometry.Manifold.ContMDiff.Defs
+meta import all Mathlib.Geometry.Manifold.MFDeriv.Defs
 
 /-!
 # Elaborators for differential geometry
