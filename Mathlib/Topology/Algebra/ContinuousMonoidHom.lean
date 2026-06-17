@@ -163,7 +163,7 @@ def prod (f : A →ₜ* B) (g : A →ₜ* C) : A →ₜ* (B × C) :=
   ⟨f.toMonoidHom.prod g.toMonoidHom, f.continuous_toFun.prodMk g.continuous_toFun⟩
 
 /-- Product of two continuous homomorphisms on different spaces. -/
-@[to_additive (attr := simps!) prodMap
+@[to_additive (attr := simps!)
   /-- Product of two continuous homomorphisms on different spaces. -/]
 def prodMap (f : A →ₜ* C) (g : B →ₜ* D) :
     (A × B) →ₜ* (C × D) :=
