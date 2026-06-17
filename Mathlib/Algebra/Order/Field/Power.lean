@@ -123,8 +123,16 @@ open Lean Meta Qq
 /-- The `positivity` extension which identifies expressions of the form `a ^ (b : ℤ)`,
 such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity _ ^ (_ : ℤ), Pow.pow _ (_ : ℤ)]
-meta def evalZPow : PositivityExt where eval {u α} zα pα e := do
+meta def evalZPow : PositivityExt where eval {u α} zα pα? e := do
   let .app (.app _ (a : Q($α))) (b : Q(ℤ)) ← withReducible (whnf e) | throwError "not ^"
+  let some pα := pα? |
+    match ← core zα pα? a with
+    | .nonzero pa =>
+      let _a ← synthInstanceQ q(GroupWithZero $α)
+      assumeInstancesCommute
+      haveI' : $e =Q $a ^ $b := ⟨⟩
+      pure (.nonzero q(zpow_ne_zero $b $pa))
+    | _ => pure .none
   let result ← catchNone do
     let _a ← synthInstanceQ q(Field $α)
     let _a ← synthInstanceQ q(LinearOrder $α)
@@ -151,11 +159,11 @@ meta def evalZPow : PositivityExt where eval {u α} zα pα e := do
     let ra ← core zα pα a
     let ofNonneg (pa : Q(0 ≤ $a))
         (_oα : Q(Semifield $α)) (_oα : Q(LinearOrder $α)) (_oα : Q(IsStrictOrderedRing $α)) :
-        MetaM (Strictness zα pα e) := do
+        MetaM (Strictness zα e pα) := do
       haveI' : $e =Q $a ^ $b := ⟨⟩
       assumeInstancesCommute
       pure (.nonnegative q(zpow_nonneg $pa $b))
-    let ofNonzero (pa : Q($a ≠ 0)) (_oα : Q(GroupWithZero $α)) : MetaM (Strictness zα pα e) := do
+    let ofNonzero (pa : Q($a ≠ 0)) (_oα : Q(GroupWithZero $α)) : MetaM (Strictness zα e pα) := do
       haveI' : $e =Q $a ^ $b := ⟨⟩
       let _a ← synthInstanceQ q(GroupWithZero $α)
       assumeInstancesCommute
