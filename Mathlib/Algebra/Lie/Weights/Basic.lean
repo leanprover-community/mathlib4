@@ -214,7 +214,7 @@ namespace Weight
 
 instance instFunLike : FunLike (Weight R L M) L R where
   coe χ := χ.1
-  coe_injective' χ₁ χ₂ h := by cases χ₁; cases χ₂; simp_all
+  coe_injective χ₁ χ₂ h := by cases χ₁; cases χ₂; simp_all
 
 @[simp] lemma coe_weight_mk (χ : L → R) (h) :
     (↑(⟨χ, h⟩ : Weight R L M) : L → R) = χ :=
@@ -705,6 +705,8 @@ instance (L' : LieSubalgebra R L) [IsTriangularizable R L M] : IsTriangularizabl
 
 instance (I : LieIdeal R L) [IsTriangularizable R L M] : IsTriangularizable R I M where
   maxGenEigenspace_eq_top x := IsTriangularizable.maxGenEigenspace_eq_top (x : L)
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 instance [IsTriangularizable R L M] : IsTriangularizable R (LieModule.toEnd R L M).range M where
   maxGenEigenspace_eq_top := by

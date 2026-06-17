@@ -413,7 +413,7 @@ theorem isPrimitiveClassified_aux (hc : x.gcd y = 1) (hzpos : 0 < z) {m n : ℤ}
   apply And.intro _ (And.intro co pp)
   right
   refine ⟨?_, h2.left⟩
-  rw [← Rat.coe_int_inj _ _, ← div_left_inj' ((mt (Rat.coe_int_inj z 0).mp) hz), hv2, h2.right]
+  rw [← Rat.intCast_inj, ← div_left_inj' (mt Rat.intCast_inj.mp hz), hv2, h2.right]
   norm_cast
 
 theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (hyo : y % 2 = 1)
