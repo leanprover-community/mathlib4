@@ -36,7 +36,7 @@ These are used to prove a version of the integral test for antitone functions.
   below by the integral of `f x * g (x - 1)` if `f` is antitone and `g` is monotone.
 * `AntitoneOn.summable_of_integrable` and `AntitoneOn.tsum_le_integral`, the integral test
   for antitone functions.
-* `AntitoneOn.abs_tsum_sub_sum_range_le_integral`: an error estimate for the difference 
+* `AntitoneOn.abs_tsum_sub_sum_range_le_integral`: an error estimate for the difference
     between a sum and its partial sums in terms of an integral.
 ## Tags
 
