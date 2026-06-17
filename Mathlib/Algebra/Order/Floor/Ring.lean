@@ -20,7 +20,7 @@ fractional part operator.
 
 ## TODO
 
-`LinearOrderedRing` can be relaxed to `OrderedRing` in many lemmas.
+`LinearOrder` can be relaxed to `PartialOrder` in many lemmas.
 
 ## Tags
 

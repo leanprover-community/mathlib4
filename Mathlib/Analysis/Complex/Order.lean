@@ -13,9 +13,9 @@ public import Mathlib.Analysis.Complex.Norm
 This order is defined by `z ≤ w ↔ z.re ≤ w.re ∧ z.im = w.im`.
 
 This is a natural order on `ℂ` because, as is well-known, there does not exist an order on `ℂ`
-making it into a `LinearOrderedField`. However, the order described above is the canonical order
+making it into a linearly ordered field. However, the order described above is the canonical order
 stemming from the structure of `ℂ` as a ⋆-ring (i.e., it becomes a `StarOrderedRing`). Moreover,
-with this order `ℂ` is a `StrictOrderedCommRing` and the coercion `(↑) : ℝ → ℂ` is an order
+with this order `ℂ` satisfies `IsStrictOrderedRing` and the coercion `(↑) : ℝ → ℂ` is an order
 embedding.
 
 This file only provides `Complex.partialOrder` and lemmas about it. Further structural classes are
