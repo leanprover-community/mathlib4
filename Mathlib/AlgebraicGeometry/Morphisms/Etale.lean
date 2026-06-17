@@ -195,6 +195,8 @@ lemma Etale.forget_obj_left (Y : X.Etale) :
 lemma Etale.forget_obj_hom (Y : X.Etale) :
     ((Etale.forget X).obj Y).hom = Y.hom := rfl
 
+instance (Y : X.Etale) : Etale (Y.left ↘ X) := Y.prop
+
 /-- Induction principle for the objects of the small étale site of a scheme. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 def Etale.rec {motive : X.Etale → Sort*}
