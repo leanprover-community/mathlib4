@@ -694,17 +694,21 @@ theorem Algebra.isSeparable_tower_bot_of_isSeparable [h : Algebra.IsSeparable F 
 end IsScalarTower
 
 section
+variable {F K E : Type*} [Field F] [Field K] [Ring E] [Algebra F K] [Algebra F E] [Nontrivial E]
+  {x : K}
+
+lemma IsSeparable.of_algHom (f : K →ₐ[F] E) (h : IsSeparable F (f x)) : IsSeparable F x := by
+  have ⟨q, hq⟩ := minpoly.dvd F x (p := minpoly F (f x)) <| f.injective <| by
+    simp [← aeval_algHom_apply]
+  exact .of_mul_left <| by rwa [← hq]
+
+end
+
+section
 
 variable [Field E] [Field E'] [Algebra F E] [Algebra F E']
     (f : E →ₐ[F] E')
 include f
-
-variable {F} in
-theorem IsSeparable.of_algHom {x : E} (h : IsSeparable F (f x)) : IsSeparable F x := by
-  let _ : Algebra E E' := RingHom.toAlgebra f.toRingHom
-  haveI : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x => (f.commutes x).symm
-  exact h.tower_bot
-
 
 variable (E') in
 theorem Algebra.IsSeparable.of_algHom [Algebra.IsSeparable F E'] : Algebra.IsSeparable F E :=
