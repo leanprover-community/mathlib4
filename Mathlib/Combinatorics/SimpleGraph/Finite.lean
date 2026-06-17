@@ -556,6 +556,7 @@ theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
     G.neighborFinset v = univ.erase v ↔ G.IsUniversal v := by
   grind [insert_neighborFinset_eq_univ, notMem_neighborFinset_self]
 
+@[simp]
 lemma degree_eq_card_sub_one [DecidableRel G.Adj] (v : V) :
     G.degree v = Fintype.card V - 1 ↔ G.IsUniversal v := by
   classical

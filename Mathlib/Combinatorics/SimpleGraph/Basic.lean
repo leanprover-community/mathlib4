@@ -1019,7 +1019,7 @@ theorem Adj.not_isIsolated_right (h : G.Adj u v) : ¬G.IsIsolated v :=
   h.symm.not_isIsolated_left
 
 @[simp]
-theorem isIsolated_bot : IsIsolated ⊥ v :=
+protected theorem IsIsolated.bot : IsIsolated ⊥ v :=
   neighborSet_eq_empty _ |>.mp neighborSet_bot
 
 theorem eq_bot_iff_isIsolated : G = ⊥ ↔ ∀ v, G.IsIsolated v := by
@@ -1033,13 +1033,14 @@ def IsUniversal (G : SimpleGraph V) (v : V) : Prop := ∀ ⦃w⦄, v ≠ w → G
   simp only [Set.ext_iff, Set.mem_insert_iff, mem_neighborSet, IsUniversal]
   grind
 
-@[simp] lemma neighborSet_eq_compl : G.neighborSet v = {v}ᶜ ↔ G.IsUniversal v := by
+@[simp] lemma neighborSet_eq_compl_singleton : G.neighborSet v = {v}ᶜ ↔ G.IsUniversal v := by
   grind [insert_neighborSet_eq_univ, notMem_neighborSet_self]
 
 @[simp]
 theorem IsUniversal.of_subsingleton [Subsingleton V] (v : V) : G.IsUniversal v :=
   fun _ hne ↦ False.elim <| hne (Subsingleton.elim ..)
 
+variable {G} in
 theorem IsUniversal.not_isIsolated [Nontrivial V] {v : V} (h : G.IsUniversal v) (w : V) :
     ¬G.IsIsolated w := by
   by_cases h' : v = w
@@ -1047,16 +1048,27 @@ theorem IsUniversal.not_isIsolated [Nontrivial V] {v : V} (h : G.IsUniversal v) 
     exact h' ▸ Adj.not_isIsolated_left (h hu.symm)
   · exact Adj.not_isIsolated_right (h h')
 
-theorem IsUniversal.support_eq [Nontrivial V] {v : V} (h : G.IsUniversal v) :
-    G.support = .univ := by
-  refine Set.eq_univ_iff_forall.mpr fun x ↦ mem_support_iff_not_isIsolated _ |>.mpr ?_
-  exact not_isIsolated G h x
+variable {G} in
+theorem IsIsolated.not_isUniversal [Nontrivial V] {v : V} (h : G.IsIsolated v) (w : V) :
+    ¬G.IsUniversal w := by
+  contrapose! h
+  exact h.not_isIsolated v
+
+variable {G} in
+theorem IsUniversal.compl_isIsolated {v : V} (h : G.IsIsolated v) : Gᶜ.IsUniversal v := by
+  intro x hx
+  simp [hx, h x]
+
+variable {G} in
+theorem IsIsolated.compl_isUniversal {v : V} (h : G.IsUniversal v) : Gᶜ.IsIsolated v := by
+  intro x
+  grind [compl_adj, @h x]
 
 theorem eq_top_iff_forall_isUniversal : G = ⊤ ↔ ∀ v, G.IsUniversal v := by
   simp [eq_top_iff_forall_ne_adj, IsUniversal]
 
 @[simp]
-theorem isUniversal_top : IsUniversal ⊤ v :=
+protected theorem IsUniversal.top : IsUniversal ⊤ v :=
   (eq_top_iff_forall_isUniversal _).mp rfl _
 
 end SimpleGraph

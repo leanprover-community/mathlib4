@@ -43,6 +43,7 @@ instance [DecidableEq V] (r : V) : DecidableRel (starGraph r).Adj :=
 lemma starGraph_adj {r x y : V} : (starGraph r).Adj x y ↔ x ≠ y ∧ (x = r ∨ y = r) := by
   simp [starGraph, fromRel]
 
+@[simp]
 lemma starGraph_isUniversal {r : V} : (starGraph r).IsUniversal r := by
   intro _ _
   simpa
@@ -80,7 +81,7 @@ lemma degree_starGraph_of_ne_center [Fintype V] [DecidableEq V] {r v : V} (h : v
 
 /-- The center vertex of a starGraph has degree (card V) - 1. -/
 lemma degree_starGraph_center [Fintype V] [DecidableEq V] {r : V} :
-    (starGraph r).degree r = Fintype.card V - 1 :=
-  degree_eq_card_sub_one .. |>.mpr starGraph_isUniversal
+    (starGraph r).degree r = Fintype.card V - 1 := by
+  simp
 
 end SimpleGraph
