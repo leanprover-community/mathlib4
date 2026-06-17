@@ -534,7 +534,6 @@ lemma LinearIndependent.update {ι : Type*} [DecidableEq ι] {R G : Type*} [Comm
     (hσ : σ ∈ nonZeroDivisors R) (hg : σ • g = linearCombination R f l)
     (hl : l i ∈ nonZeroDivisors R) (hf : LinearIndependent R f) :
     LinearIndependent R (Function.update f i g) := by
-  classical
   rw [linearIndependent_iff] at hf ⊢
   intros l' hl'
   apply_fun (σ • ·) at hl'
