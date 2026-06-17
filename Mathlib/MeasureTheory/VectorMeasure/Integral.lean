@@ -506,7 +506,7 @@ lemma Integrable.restrict (hf : μ.Integrable f) {s : Set X} :
 
 @[simp]
 theorem integral_zero_vectorMeasure :
-    ∫ᵛ x, f x ∂[B; (0 : VectorMeasure X F)] = 0 := by simp [integral]
+    ∫ᵛ x, f x ∂[B; (0 : VectorMeasure X F)] = 0 := by simp [integral, FunLike.coe_zero]
 
 lemma integral_of_isEmpty [IsEmpty X] : ∫ᵛ x, f x ∂[B; μ] = 0 := by simp [eq_zero_of_isEmpty]
 
@@ -520,7 +520,7 @@ theorem integral_smul_vectorMeasure (f : X → E) (c : ℝ) :
     simp [variation_smul]
   simp only [this]
   have : DominatedFinMeasAdditive μ.variation ((c • μ).transpose B) (‖c‖ * ‖B‖) := by
-    simp only [transpose_smul, coe_smul]
+    simp only [transpose_smul, FunLike.coe_smul]
     exact (dominatedFinMeasAdditive_cbmApplyMeasure μ B).smul c
   rw! [← setToFun_congr_smul_measure' _ this, transpose_smul]
   rfl
@@ -549,7 +549,7 @@ theorem integral_finsetSum_vectorMeasure {μ : ι → VectorMeasure X F}
 @[integral_simps]
 theorem integral_neg_vectorMeasure :
     ∫ᵛ x, f x ∂[B; -μ] = -∫ᵛ x, f x ∂[B; μ] := by
-  simp [integral, ← setToFun_neg']
+  simp [integral, ← setToFun_neg', FunLike.coe_neg]
 
 theorem integral_sub_vectorMeasure (hμ : μ.Integrable f) (hν : ν.Integrable f) :
     ∫ᵛ x, f x ∂[B; μ - ν] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x, f x ∂[B; ν] := by
@@ -564,7 +564,7 @@ variable (f μ) in
 @[simp]
 theorem integral_zero_cbm :
     ∫ᵛ x, f x ∂[(0 : E →L[ℝ] F →L[ℝ] G); μ] = 0 := by
-  simp [integral]
+  simp [integral, FunLike.coe_zero]
 
 theorem integral_add_cbm (hB : μ.Integrable f) :
     ∫ᵛ x, f x ∂[B + C; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, f x ∂[C; μ] := by
@@ -587,7 +587,7 @@ theorem integral_finsetSum_cbm {B : ι → E →L[ℝ] F →L[ℝ] G}
 @[integral_simps]
 theorem integral_neg_cbm :
     ∫ᵛ x, f x ∂[-B; μ] = -∫ᵛ x, f x ∂[B; μ] := by
-  simp [integral, ← setToFun_neg']
+  simp [integral, ← setToFun_neg', FunLike.coe_neg]
 
 theorem integral_sub_cbm (hB : μ.Integrable f) :
     ∫ᵛ x, f x ∂[B - C; μ] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x, f x ∂[C; μ] := by
@@ -607,6 +607,7 @@ lemma integral_indicator₂ {β : Type*} (f : β → X → E) (s : Set β) (b : 
     ∫ᵛ y, s.indicator (f · y) b ∂[B; μ] = s.indicator (fun x ↦ ∫ᵛ y, f x y ∂[B; μ]) b := by
   by_cases hb : b ∈ s <;> simp [hb]
 
+@[fun_prop]
 theorem continuous_integral : Continuous fun f : X →₁[μ.variation] E => ∫ᵛ a, f a ∂[B; μ] := by
   simp only [integral_eq_setToFun]
   exact continuous_setToFun _
@@ -670,7 +671,7 @@ theorem exists_ne_zero_of_integral_ne_zero
   simp only [Measure.variation_toSignedMeasure]
   apply setToFun_congr_left' _ _ (fun s hs h's ↦ ?_)
   simp only [transpose, ContinuousLinearMap.flip_flip, mapRange_apply,
-    Measure.toSignedMeasure_apply, hs, ↓reduceIte, LinearMap.toAddMonoidHom_coe,
+    Measure.toSignedMeasure_apply_measurable hs, LinearMap.toAddMonoidHom_coe,
     ContinuousLinearMap.coe_coe, weightedSMul]
   rfl
 
