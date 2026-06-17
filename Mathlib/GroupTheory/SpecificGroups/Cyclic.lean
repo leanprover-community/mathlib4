@@ -84,7 +84,7 @@ open Nat
 @[to_additive]
 private theorem card_orderOf_eq_totient_aux₁ {d : ℕ} (hd : d ∣ Fintype.card α)
     (hpos : 0 < #{a : α | orderOf a = d}) : #{a : α | orderOf a = d} = φ d := by
-  induction d using Nat.strongRec' with | _ d IH
+  induction d using Nat.strong_induction_on with | _ d IH
   rcases Decidable.eq_or_ne d 0 with (rfl | hd0)
   · cases Fintype.card_ne_zero (eq_zero_of_zero_dvd hd)
   rcases Finset.card_pos.1 hpos with ⟨a, ha'⟩
@@ -306,7 +306,7 @@ lemma LinearOrderedAddCommGroup.isAddCyclic_iff_nonempty_equiv_int {A : Type*}
     obtain ⟨m, rfl⟩ := hs a
     aesop
   wlog hg' : 0 < g
-  · exact this (g := -g) (by simpa using neg_surjective.comp hs) (by grind) (by grind)
+  · exact this (g := -g) (by simpa using! neg_surjective.comp hs) (by grind) (by grind)
   have hi : (fun n : ℤ ↦ n • g).Injective := injective_zsmul_iff_not_isOfFinAddOrder.mpr
       <| not_isOfFinAddOrder_of_isAddTorsionFree h_ne
   exact ⟨.symm { Equiv.ofBijective _ ⟨hi, hs⟩ with

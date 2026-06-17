@@ -266,7 +266,7 @@ theorem measurableSet_insert {a : α} {s : Set α} :
   classical
   exact ⟨fun h =>
     if ha : a ∈ s then by rwa [← insert_eq_of_mem ha]
-    else insert_diff_self_of_notMem ha ▸ h.diff (.singleton _),
+    else insert_sdiff_self_of_notMem ha ▸ h.diff (.singleton _),
     fun h => h.insert a⟩
 
 theorem Set.Subsingleton.measurableSet {s : Set α} (hs : s.Subsingleton) : MeasurableSet s :=
@@ -293,9 +293,9 @@ definitional equalities. -/
 protected def copy (m : MeasurableSpace α) (p : Set α → Prop) (h : ∀ s, p s ↔ MeasurableSet[m] s) :
     MeasurableSpace α where
   MeasurableSet' := p
-  measurableSet_empty := by simpa only [h] using m.measurableSet_empty
-  measurableSet_compl := by simpa only [h] using m.measurableSet_compl
-  measurableSet_iUnion := by simpa only [h] using m.measurableSet_iUnion
+  measurableSet_empty := by simpa only [h] using! m.measurableSet_empty
+  measurableSet_compl := by simpa only [h] using! m.measurableSet_compl
+  measurableSet_iUnion := by simpa only [h] using! m.measurableSet_iUnion
 
 lemma measurableSet_copy {m : MeasurableSpace α} {p : Set α → Prop}
     (h : ∀ s, p s ↔ MeasurableSet[m] s) {s} : MeasurableSet[.copy m p h] s ↔ p s :=
@@ -468,9 +468,9 @@ theorem measurableSet_sSup {ms : Set (MeasurableSpace α)} {s : Set α} :
   change GenerateMeasurable (⋃₀ _) _ ↔ _
   simp [← setOf_exists]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem measurableSet_iSup {ι} {m : ι → MeasurableSpace α} {s : Set α} :
     MeasurableSet[iSup m] s ↔ GenerateMeasurable { s : Set α | ∃ i, MeasurableSet[m i] s } s := by
+  unfold iSup
   simp only [measurableSet_sSup, exists_range_iff]
 
 theorem measurableSpace_iSup_eq (m : ι → MeasurableSpace α) :
@@ -516,6 +516,8 @@ theorem measurable_id {_ : MeasurableSpace α} : Measurable (@id α) := fun _ =>
 @[fun_prop]
 theorem measurable_id' {_ : MeasurableSpace α} : Measurable fun a : α => a := measurable_id
 
+-- Allow `to_fun` to eta-expand `g ∘ f`. Ideally, `Function.comp_def` would be a global pull lemma
+-- instead, which is not supported yet: see https://github.com/leanprover-community/mathlib4/issues/40183.
 attribute [local push ←] Function.comp_def
 @[to_fun]
 protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace β}
