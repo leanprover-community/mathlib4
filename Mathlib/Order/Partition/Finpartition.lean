@@ -204,7 +204,7 @@ theorem sup_parts_apply [SemilatticeSup β] [OrderBot β] (hf : ∀ x y, f (x �
     (hbot : f ⊥ = ⊥) : P.parts.sup f = f a :=
   (apply_sup_eq_sup_comp f hf hbot).symm.trans (congrArg f P.sup_parts)
 
-/-- The image of a `Finpartition` under an inf-bot-preserving map is pairwise disjoint. -/
+/-- Parts of a `Finpartition` are pairwise disjoint under an inf-bot-preserving map. -/
 theorem pairwiseDisjoint_apply [SemilatticeInf β] [OrderBot β] (hf : ∀ x y, f (x ⊓ y) = f x ⊓ f y)
     (hbot : f ⊥ = ⊥) : (P.parts : Set α).PairwiseDisjoint f := by
   intro _ hx _ hy hxy
