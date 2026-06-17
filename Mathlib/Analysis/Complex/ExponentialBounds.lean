@@ -125,6 +125,6 @@ theorem log_five_lt_d9 : log 5 < 1.6094379126 :=
   lt_of_le_of_lt (sub_le_iff_le_add.1 (abs_sub_le_iff.1 log_five_near_10).1) (by norm_num)
 
 theorem log_ten_eq : log 10 = log 2 + log 5 := by
-  rw [← log_mul two_ne_zero (by norm_num)]; norm_num
+  norm_num [← log_mul]
 
 end Real
