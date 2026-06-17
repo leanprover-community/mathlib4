@@ -363,7 +363,7 @@ def Elements.precomp {D : Type*} [Category D] (F : C ⥤ D) (G : D ⥤ Type w) :
   map f := ⟨F.map f.1, f.2⟩
 
 instance Elements.essentiallySmall {C : Type u} [Category.{v} C]
-    (F : C ⥤ Type w) [EssentiallySmall.{w} C] [LocallySmall.{w} C] :
+    (F : C ⥤ Type w) [EssentiallySmall.{w} C] :
     EssentiallySmall.{w} F.Elements := by
   rw [essentiallySmall_iff_objectPropertyEssentiallySmall_top]
   obtain ⟨P, _, hP⟩ := ObjectProperty.EssentiallySmall.exists_small_le' (⊤ : ObjectProperty C)
