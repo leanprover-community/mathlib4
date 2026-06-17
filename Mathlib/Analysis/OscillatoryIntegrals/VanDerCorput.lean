@@ -94,14 +94,14 @@ private theorem exists_le_abs_of_le_derivWithin
     {L : ℝ} (hL : 0 < L) (hφ : ContDiffOn ℝ 1 φ [[a, b]])
     (h : ∀ x ∈ [[a, b]], L ≤ derivWithin φ [[a, b]] x) :
     ∃ c ∈ [[a, b]], ∀ x ∈ [[a, b]], L * |x - c| ≤ |φ x| := by
-  by_cases hab : a = b
-  · exact ⟨a, left_mem_uIcc, fun x hx ↦ by
-      subst hab; rw [uIcc_self] at hx; simp [mem_singleton_iff.mp hx]⟩
+  obtain (rfl | hab) := eq_or_ne a b
+  · simp
   wlog hL1 : L = 1 generalizing φ L
   · obtain ⟨c, hc, hc'⟩ := this (L := 1) (φ := L⁻¹ • φ) (by norm_num) (hφ.const_smul L⁻¹)
       (fun x hx ↦ by
         have : 1 ≤ L⁻¹ * derivWithin φ [[a, b]] x := by field_simp [hL.ne']; linarith [h x hx]
-        simpa [smul_eq_mul, derivWithin_const_smul_field] using this) rfl
+        simpa [smul_eq_mul, derivWithin_const_smul_field] using this)
+      rfl
     refine ⟨c, hc, fun x hx ↦ ?_⟩
     calc
       L * |x - c| ≤ L * |(L⁻¹ • φ) x| := mul_le_mul_of_nonneg_left (by simpa using hc' x hx) hL.le
@@ -191,11 +191,8 @@ theorem norm_integral_exp_mul_I_le_of_order_one'
       (.mul (.ofReal_comp <| hasDerivAt_φ' _ hx)
         (hasDerivWithinAt_const _ _ I)) (hnz1 hx) using 1
     · rfl
-    · funext; simp [u]
-    · have hφ0 : (φ' x : ℂ) ≠ 0 := by exact_mod_cast hφ'_nz hx
-      simp [u']
-      field_simp
-      simp [I_sq]
+    · rfl
+    · simp [mul_pow, u']
   have hasDerivAt_v : ∀ x ∈ [[a, b]], HasDerivWithinAt v (v' x) [[a, b]] x := by
     intro x hx
     convert HasDerivWithinAt.cexp (.mul (.ofReal_comp <| hasDerivAt_φ _ hx)
@@ -210,13 +207,7 @@ theorem norm_integral_exp_mul_I_le_of_order_one'
     grind only
   -- The boundary terms are each bounded by `L⁻¹`
   have h2 {x : ℝ} (hx : x ∈ [[a, b]]) : ‖u x * v x‖ ≤ L⁻¹ := by
-    simp only [u, v, norm_mul, norm_div, norm_one]
-    norm_cast
-    rw [norm_exp_ofReal_mul_I]
-    have := norm_ne_zero_iff.mpr <| hφ'_nz hx
-    field_simp [φ', h x hx]
-    have := hφ'_norm hx
-    rwa [norm_I, mul_one]
+    simpa [u, v, field, hL.trans_le (h x hx), φ'] using h x hx
   -- We want to estimate the integral on RHS of `h1` **uniformly** in `a, b`.
   -- The idea is to use FTC and monotonicity. We require some groundwork first.
   have hasDerivAt_φ'_int : ∀ x ∈ uIoo a b, HasDerivWithinAt (fun x ↦ -1 / φ' x)
@@ -241,7 +232,9 @@ theorem norm_integral_exp_mul_I_le_of_order_one'
     apply le_trans norm_integral_le_abs_integral_norm
     simp_rw [norm_mul, hv, mul_one]
     -- Discover integral of a derivative and use FTC.
-    rw [integral_congr hnorm_u'_eq, integral_eq_sub_of_hasDeriv_right ?_ hasDerivAt_φ'_int]
+    rw [integral_congr hnorm_u'_eq, integral_eq_sub_of_hasDeriv_right ?cont hasDerivAt_φ'_int ?int]
+    case int => exact ContinuousOn.intervalIntegrable <| by fun_prop (discharger := grind)
+    case cont => fun_prop (discharger := grind)
     · -- To get the right constant, want `≤ L⁻¹`, not `2 * L⁻¹` here,
       -- so we can't just use the triangle inequality.
       have : |-1 / φ' b - -1 / φ' a| = |1 / φ' b - 1 / φ' a| := by
