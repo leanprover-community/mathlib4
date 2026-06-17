@@ -1155,7 +1155,6 @@ section
 
 variable [Semiring 𝕜] [∀ i, NormedAddCommGroup (β i)] [∀ i, Module 𝕜 (β i)]
 
-set_option backward.defeqAttrib.useBackward true in
 variable {𝕜} in
 /-- The projection on the `i`-th coordinate of `PiLp p β`, as a continuous linear map. -/
 @[simps!]
