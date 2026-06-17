@@ -77,22 +77,6 @@ jobs:
         shell: bash # there is no script body, so this is safe to "run" outside landrun.
         run: |
           # We just populate the env vars for this step to make them viewable in the logs
-      - name: cleanup
-        shell: bash    # This *just* deletes old files, so is safe to run outside landrun.
-        run: |
-          if ! find . -mindepth 1 -exec rm -rf -- {} +; then
-            echo "ERROR: Initial cleanup failed, waiting 5 seconds and retrying..."
-            sleep 5
-            find . -mindepth 1 -exec rm -rf -- {} +
-          fi
-          # Delete all but the 5 most recent toolchains.
-          # Make sure to delete both the `~/.elan/toolchains/X` directory and the `~/.elan/update-hashes/X` file.
-          # Skip symbolic links (`-type d`), the current directory (`! -name .`), and `nightly` and `stable`.
-          if cd ~/.elan/toolchains && find . -maxdepth 1 -type d ! -name . -print0 | xargs -0 ls -1td | grep -v 'nightly$' | grep -v 'stable$' | tail -n +6 | xargs -I {} sh -c 'echo {} && rm -rf "{}" && rm "../update-hashes/{}"'; then
-              : # Do nothing on success
-          else
-              : # Do nothing on failure, but suppress errors
-          fi
 
       - name: Checkout local actions
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -427,23 +411,6 @@ jobs:
       run: # note that pr-branch/.lake must be created in a step below before we use this
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
     steps:
-      - name: cleanup
-        shell: bash    # This *just* deletes old files, so is safe to run outside landrun.
-        run: |
-          if ! find . -mindepth 1 -exec rm -rf -- {} +; then
-            echo "ERROR: Initial cleanup failed, waiting 5 seconds and retrying..."
-            sleep 5
-            find . -mindepth 1 -exec rm -rf -- {} +
-          fi
-          # Delete all but the 5 most recent toolchains.
-          # Make sure to delete both the `~/.elan/toolchains/X` directory and the `~/.elan/update-hashes/X` file.
-          # Skip symbolic links (`-type d`), the current directory (`! -name .`), and `nightly` and `stable`.
-          if cd ~/.elan/toolchains && find . -maxdepth 1 -type d ! -name . -print0 | xargs -0 ls -1td | grep -v 'nightly$' | grep -v 'stable$' | tail -n +6 | xargs -I {} sh -c 'echo {} && rm -rf "{}" && rm "../update-hashes/{}"'; then
-              : # Do nothing on success
-          else
-              : # Do nothing on failure, but suppress errors
-          fi
-
       - name: Checkout local actions
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:

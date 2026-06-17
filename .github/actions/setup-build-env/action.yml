@@ -54,6 +54,23 @@ inputs:
 runs:
   using: composite
   steps:
+    # Prune old toolchains from `~/.elan`. On the ephemeral-container fleet this
+    # dir is mounted from the host and SHARED across jobs, so toolchains
+    # accumulate over time and nothing else trims them (host-side housekeeping
+    # only trims the mathlib `.ltar` cache). Keep the 5 most recent plus
+    # `nightly`/`stable`. There is no workspace wipe here: each job gets a fresh
+    # container/workspace, so there is nothing stale left over to delete.
+    - name: prune old toolchains
+      shell: bash # just deletes old files; safe to run outside landrun
+      run: |
+        # Make sure to delete both the `~/.elan/toolchains/X` directory and the `~/.elan/update-hashes/X` file.
+        # Skip symbolic links (`-type d`), the current directory (`! -name .`), and `nightly` and `stable`.
+        if cd ~/.elan/toolchains && find . -maxdepth 1 -type d ! -name . -print0 | xargs -0 ls -1td | grep -v 'nightly$' | grep -v 'stable$' | tail -n +6 | xargs -I {} sh -c 'echo {} && rm -rf "{}" && rm "../update-hashes/{}"'; then
+            : # Do nothing on success
+        else
+            : # Do nothing on failure, but suppress errors
+        fi
+
     # The Hoskinson runners may not have jq installed, so do that now.
     - name: 'Setup jq'
       uses: dcarbone/install-jq-action@b7ef57d46ece78760b4019dbc4080a1ba2a40b45 # v3.2.0
