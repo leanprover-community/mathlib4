@@ -484,17 +484,6 @@ namespace IsHomeomorph
 variable (hf : IsHomeomorph f)
 include hf
 
-variable (f) in
-/-- Bundled homeomorphism constructed from a map that is a homeomorphism. -/
-@[simps! toEquiv apply symm_apply]
-noncomputable def homeomorph : X ≃ₜ Y where
-  continuous_toFun := hf.1
-  continuous_invFun := by
-    rw [← continuousOn_univ, ← hf.bijective.2.range_eq]
-    exact hf.isOpenMap.continuousOn_range_of_leftInverse
-      (Equiv.ofBijective f hf.bijective).left_inv
-  toEquiv := Equiv.ofBijective f hf.bijective
-
 protected lemma isClosedMap : IsClosedMap f := (hf.homeomorph f).isClosedMap
 lemma isInducing : IsInducing f := (hf.homeomorph f).isInducing
 lemma isQuotientMap : IsQuotientMap f := (hf.homeomorph f).isQuotientMap

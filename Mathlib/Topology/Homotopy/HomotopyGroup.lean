@@ -285,7 +285,7 @@ def fromLoop (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : Ω^ N X x :=
     (Cube.splitAt i),
     by
     rintro y ⟨j, Hj⟩
-    simp only [ContinuousMap.comp_apply, ContinuousMap.coe_coe,
+    simp only [ContinuousMap.comp_apply,
       funSplitAt_apply, ContinuousMap.uncurry_apply, ContinuousMap.coe_mk,
       Function.uncurry_apply_pair]
     obtain rfl | Hne := eq_or_ne j i

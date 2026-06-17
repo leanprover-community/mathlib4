@@ -171,7 +171,7 @@ section NonUnitalSemiring
 
 variable [NonUnitalSemiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
 
-lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelfAdjoint y := by
+lemma IsSelfAdjoint.of_ge {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelfAdjoint y := by
   rw [StarOrderedRing.le_iff] at h
   obtain ⟨d, hd, rfl⟩ := h
   rw [IsSelfAdjoint, star_add, hx.star_eq]
@@ -180,9 +180,11 @@ lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelf
   rintro - ⟨s, rfl⟩
   simp
 
+@[deprecated (since := "2026-06-12")] alias IsSelfAdjoint.mono := IsSelfAdjoint.of_ge
+
 @[aesop 10% apply, grind ←]
 lemma IsSelfAdjoint.of_nonneg {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x :=
-  .mono hx <| .zero R
+  .of_ge hx <| .zero R
 
 /-- An alias of `IsSelfAdjoint.of_nonneg` for use with dot notation. -/
 alias LE.le.isSelfAdjoint := IsSelfAdjoint.of_nonneg
@@ -204,6 +206,7 @@ protected theorem IsSelfAdjoint.mul_self_nonneg {a : R} (ha : IsSelfAdjoint a) :
   simpa [ha.star_eq] using star_mul_self_nonneg a
 
 /-- A star projection is non-negative in a star-ordered ring. -/
+@[grind →, aesop safe forward (rule_sets := [CStarAlgebra])]
 theorem IsStarProjection.nonneg {p : R} (hp : IsStarProjection p) : 0 ≤ p :=
   hp.isIdempotentElem ▸ hp.isSelfAdjoint.mul_self_nonneg
 
@@ -315,6 +318,19 @@ theorem mul_star_self_pos [Nontrivial R] {x : R} (hx : IsRegular x) : 0 < x * st
   simpa using star_mul_self_pos hx.star
 
 end NonUnitalSemiring
+
+section NonUnitalRing
+
+variable [NonUnitalRing R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
+
+lemma IsSelfAdjoint.iff_of_le {a b : R} (hab : a ≤ b) :
+    IsSelfAdjoint a ↔ IsSelfAdjoint b := by
+  replace hab := (sub_nonneg.mpr hab).isSelfAdjoint
+  aesop (add simp IsSelfAdjoint)
+
+alias ⟨_, IsSelfAdjoint.of_le⟩ := IsSelfAdjoint.iff_of_le
+
+end NonUnitalRing
 
 section Semiring
 variable [Semiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
