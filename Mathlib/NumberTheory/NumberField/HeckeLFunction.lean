@@ -91,22 +91,14 @@ variable (χ)
 open Classical Polynomial in
 /-- The value `χᵥ(ϖᵥ)` of a Hecke character `χ` at the uniformizer `ϖᵥ` of finite place `v`. -/
 noncomputable def localValue (v : HeightOneSpectrum R) : ℂ :=
-  χ.restrict v (v.valuation K).exists_isUniformizer_of_isCyclic_of_nontrivial.choose
-
-theorem foo {R K : Type*} [CommRing R] [IsDedekindDomain R] [Field K]
-    [Algebra R K] [IsFractionRing R K] {v : HeightOneSpectrum R}
-    {x : K} (hx : (HeightOneSpectrum.valuation K v).IsUniformizer x) :
-    Valued.v.IsUniformizer (x : v.adicCompletion K) := by
-  rw [Valuation.IsUniformizer.iff, Valued.valuedCompletion_apply]
-  refine hx.trans ?_
-  sorry
+  letI val : Valuation (v.adicCompletion K) (WithZero (Multiplicative ℤ)) := Valued.v
+  χ.restrict v val.exists_isUniformizer_of_isCyclic_of_nontrivial.choose
 
 variable {χ} in
 theorem IsUnramifiedAt.localValue_eq {v : HeightOneSpectrum R}
     (h : χ.IsUnramifiedAt v) (π : v.adicCompletion K) (hπ : Valued.v.IsUniformizer π) :
-    χ.localValue v = χ.restrict v π := by
-  refine h.apply_eq_of_isUniformizer ?_ hπ
-  exact foo (v.valuation K).exists_isUniformizer_of_isCyclic_of_nontrivial.choose_spec
+    χ.localValue v = χ.restrict v π :=
+  h.apply_eq_of_isUniformizer Valued.v.exists_isUniformizer_of_isCyclic_of_nontrivial.choose_spec hπ
 
 open Classical Polynomial in
 /-- The local polynomial associated a Hecke character `χ` at a finite place `v` is `1 - χᵥ(ϖᵥ)X` if
