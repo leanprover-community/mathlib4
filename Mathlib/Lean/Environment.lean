@@ -57,6 +57,7 @@ end Environment
 
 public section envT
 
+-- I kind of want a "one-way abbrev" here, where `EnvT` has all the instances `StateT Environment` has but not vice-versa...
 /-- An abbreviation for `StateT Environment` with a `MonadEnv` instance. -/
 abbrev EnvT := StateT Environment
 
