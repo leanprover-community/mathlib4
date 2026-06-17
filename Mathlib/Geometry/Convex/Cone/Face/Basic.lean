@@ -135,7 +135,7 @@ in the face. -/
 theorem mem_of_sum_smul_mem {ι : Type*} [Fintype ι] {f : ι → M} {c : ι → R}
     (hF : F.IsFaceOf C) (hsC : ∀ i : ι, f i ∈ C) (hc : ∀ i, 0 ≤ c i) (hs : ∑ i : ι, c i • f i ∈ F)
     (i : ι) (hci : 0 < c i) : f i ∈ F := by classical
-  rw [Finset.sum_eq_add_sum_diff_singleton i] at hs
+  rw [Finset.sum_eq_add_sum_sdiff_singleton i] at hs
   · refine hF.mem_of_smul_add_mem (hsC i) ?_ hci hs
     exact C.sum_mem fun i _ ↦ C.smul_mem (hc i) (hsC i)
   · simp
