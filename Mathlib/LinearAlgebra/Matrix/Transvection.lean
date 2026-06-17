@@ -113,20 +113,22 @@ theorem transvection_mul_transvection_same (h : i ≠ j) (c d : R) :
     single_add]
 
 @[simp]
-theorem transvection_mul_apply_same (b : n) (c : R) (M : Matrix n n R) :
+theorem transvection_mul_apply_same {m : Type*} (b : m) (c : R) (M : Matrix n m R) :
     (transvection i j c * M) i b = M i b + c * M j b := by simp [transvection, Matrix.add_mul]
 
 @[simp]
-theorem mul_transvection_apply_same (a : n) (c : R) (M : Matrix n n R) :
+theorem mul_transvection_apply_same {m : Type*} (a : m) (c : R) (M : Matrix m n R) :
     (M * transvection i j c) a j = M a j + c * M a i := by
   simp [transvection, Matrix.mul_add, mul_comm]
 
 @[simp]
-theorem transvection_mul_apply_of_ne (a b : n) (ha : a ≠ i) (c : R) (M : Matrix n n R) :
+theorem transvection_mul_apply_of_ne {m : Type*} (a : n) (b : m) (ha : a ≠ i) (c : R)
+    (M : Matrix n m R) :
     (transvection i j c * M) a b = M a b := by simp [transvection, Matrix.add_mul, ha]
 
 @[simp]
-theorem mul_transvection_apply_of_ne (a b : n) (hb : b ≠ j) (c : R) (M : Matrix n n R) :
+theorem mul_transvection_apply_of_ne {m : Type*} (a : m) (b : n) (hb : b ≠ j) (c : R)
+    (M : Matrix m n R) :
     (M * transvection i j c) a b = M a b := by simp [transvection, Matrix.mul_add, hb]
 
 @[simp]

@@ -42,7 +42,7 @@ in the basis `[b₂, ..., bₙ]` (`basis_tl`).
 
 namespace Tactic.ComputeAsymptotics
 
-open Filter Topology Stream'
+open Filter Stream' Topology
 
 /-- List of functions used to construct monomials in multiseries. -/
 abbrev Basis := List (ℝ → ℝ)
@@ -706,11 +706,22 @@ theorem replaceFun {ms : MultiseriesExpansion (basis_hd :: basis_tl)} {f : ℝ �
       h_tl, ?_⟩
     grw [mk_toFun, h_eq]
 
+/-- If `f` can be approximated by multiseries with negative leading exponent, then
+it tends to zero. -/
+theorem neg_leadingExp_tendsto_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
+    (h_neg : ms.leadingExp < 0) (h_approx : ms.Approximates) :
+    Tendsto ms.toFun atTop (𝓝 0) := by
+  cases ms
+  · exact Tendsto.congr' h_approx.elim_nil.symm tendsto_const_nhds
+  · obtain ⟨h_coef, h_maj, h_tl⟩ := h_approx.elim_cons
+    simp only [leadingExp_def, mk_seq, Multiseries.leadingExp_cons, WithBot.coe_lt_zero] at h_neg
+    exact Majorized.tendsto_zero_of_neg h_neg h_maj
+
 theorem nil_tendsto_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ}
     (h : MultiseriesExpansion.Approximates (basis := basis_hd :: basis_tl) (mk .nil f)) :
-    Tendsto f atTop (𝓝 0) := by
-  simp only [Approximates.nil_iff] at h
-  exact h.tendsto
+    Tendsto f atTop (𝓝 0) :=
+  neg_leadingExp_tendsto_zero (by simp) h
 
 end Approximates
 

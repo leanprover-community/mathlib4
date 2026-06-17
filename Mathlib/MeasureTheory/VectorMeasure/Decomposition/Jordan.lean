@@ -152,16 +152,16 @@ def toSignedMeasure : SignedMeasure α :=
 theorem toSignedMeasure_zero : (0 : JordanDecomposition α).toSignedMeasure = 0 := by
   ext1 i hi
   rw [toSignedMeasure, toSignedMeasure_sub_apply hi, zero_posPart, zero_negPart, sub_self,
-    VectorMeasure.coe_zero, Pi.zero_apply]
+    FunLike.coe_zero, Pi.zero_apply]
 
 theorem toSignedMeasure_neg : (-j).toSignedMeasure = -j.toSignedMeasure := by
   ext1 i hi
-  rw [VectorMeasure.neg_apply, toSignedMeasure, toSignedMeasure, toSignedMeasure_sub_apply hi,
+  rw [neg_apply, toSignedMeasure, toSignedMeasure, toSignedMeasure_sub_apply hi,
     toSignedMeasure_sub_apply hi, neg_sub, neg_posPart, neg_negPart]
 
 theorem toSignedMeasure_smul (r : ℝ≥0) : (r • j).toSignedMeasure = r • j.toSignedMeasure := by
   ext1 i hi
-  rw [VectorMeasure.smul_apply, toSignedMeasure, toSignedMeasure,
+  rw [_root_.smul_apply, toSignedMeasure, toSignedMeasure,
     toSignedMeasure_sub_apply hi, toSignedMeasure_sub_apply hi, smul_sub, smul_posPart,
     smul_negPart, measureReal_nnreal_smul_apply, measureReal_nnreal_smul_apply]
   rfl
@@ -177,7 +177,7 @@ theorem exists_compl_positive_negative :
   · refine restrict_le_restrict_of_subset_le _ _ fun A hA hA₁ => ?_
     rw [toSignedMeasure, toSignedMeasure_sub_apply hA, measureReal_def,
       show j.posPart A = 0 from nonpos_iff_eq_zero.1 (hS₂ ▸ measure_mono hA₁), ENNReal.toReal_zero,
-      zero_sub, neg_le, VectorMeasure.zero_apply, neg_zero]
+      zero_sub, neg_le, zero_apply, neg_zero]
     exact ENNReal.toReal_nonneg
   · refine restrict_le_restrict_of_subset_le _ _ fun A hA hA₁ => ?_
     rw [toSignedMeasure, toSignedMeasure_sub_apply hA, measureReal_def (μ := j.negPart),
@@ -261,7 +261,7 @@ theorem subset_negative_null_set (hu : MeasurableSet u) (hv : MeasurableSet v)
     s v = 0 := by
   rw [← s.neg_le_neg_iff _ hu, neg_zero] at hsu
   have := subset_positive_null_set hu hv hw hsu
-  simp only [Pi.neg_apply, neg_eq_zero, coe_neg] at this
+  simp only [neg_apply, neg_eq_zero] at this
   exact this hw₁ hw₂ hwt
 
 open scoped symmDiff
@@ -277,7 +277,7 @@ theorem of_sdiff_eq_zero_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv
     rw [Set.symmDiff_def,
       of_union (v := s) (Set.disjoint_of_subset_left sdiff_subset disjoint_sdiff_self_right)
         (hu.diff hv) (hv.diff hu)] at hs
-    rw [VectorMeasure.zero_apply] at a b
+    rw [zero_apply] at a b
     constructor
   · linarith
   · linarith
@@ -294,7 +294,7 @@ theorem of_sdiff_eq_zero_of_symmDiff_eq_zero_negative (hu : MeasurableSet u) (hv
   rw [← s.neg_le_neg_iff _ hu, neg_zero] at hsu
   rw [← s.neg_le_neg_iff _ hv, neg_zero] at hsv
   have := of_sdiff_eq_zero_of_symmDiff_eq_zero_positive hu hv hsu hsv
-  simp only [Pi.neg_apply, neg_eq_zero, coe_neg] at this
+  simp only [neg_apply, neg_eq_zero] at this
   exact this hs
 
 @[deprecated (since := "2026-06-03")]
@@ -322,7 +322,7 @@ theorem of_inter_eq_of_symmDiff_eq_zero_negative (hu : MeasurableSet u) (hv : Me
   rw [← s.neg_le_neg_iff _ hu, neg_zero] at hsu
   rw [← s.neg_le_neg_iff _ hv, neg_zero] at hsv
   have := of_inter_eq_of_symmDiff_eq_zero_positive hu hv hw hsu hsv
-  simp only [Pi.neg_apply, neg_inj, neg_eq_zero, coe_neg] at this
+  simp only [neg_apply, neg_inj, neg_eq_zero] at this
   exact this hs
 
 end
@@ -469,11 +469,10 @@ theorem totalVariation_neg (s : SignedMeasure α) : (-s).totalVariation = s.tota
 theorem null_of_totalVariation_zero (s : SignedMeasure α) {i : Set α}
     (hs : s.totalVariation i = 0) : s i = 0 := by
   rw [totalVariation, Measure.coe_add, Pi.add_apply, add_eq_zero] at hs
-  rw [← toSignedMeasure_toJordanDecomposition s, toSignedMeasure, VectorMeasure.coe_sub,
-    Pi.sub_apply, Measure.toSignedMeasure_apply, Measure.toSignedMeasure_apply]
   by_cases hi : MeasurableSet i
-  · simp [hs.1, hs.2, measureReal_def]
-  · simp [if_neg hi]
+  · rw [← toSignedMeasure_toJordanDecomposition s, toSignedMeasure]
+    simp [hi, measureReal_def, hs.1, hs.2]
+  · simp [hi]
 
 theorem absolutelyContinuous_ennreal_iff (s : SignedMeasure α) (μ : VectorMeasure α ℝ≥0∞) :
     s ≪ᵥ μ ↔ s.totalVariation ≪ μ.ennrealToMeasure := by
