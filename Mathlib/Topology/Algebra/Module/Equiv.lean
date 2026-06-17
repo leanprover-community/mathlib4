@@ -1449,7 +1449,7 @@ lemma coe_ofIsHomeomorph : (ofIsHomeomorph f hf : M → M₁) = f := by dsimp [o
 
 /-- A linear equivalence between topological modules is a homeomorphism if and only if it is
 continuous in both directions. -/
-theorem LinearEquiv.isHomeomorph_iff (e : M ≃ₛₗ[σ] M₁) :
+theorem _root_.LinearEquiv.isHomeomorph_iff (e : M ≃ₛₗ[σ] M₁) :
     IsHomeomorph e ↔ Continuous e ∧ Continuous e.symm := e.toEquiv.isHomeomorph_iff
 
 end IsHomeomorph
