@@ -106,15 +106,13 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The canonical linear map `M →ₗ[R] TensorAlgebra R M`.
 -/
 irreducible_def ι : M →ₗ[R] TensorAlgebra R M :=
-  { toFun := fun m => RingCon.mkₐ R _ (FreeAlgebra.ι R m)
+  { toFun := fun m => RingCon.toQuotient (FreeAlgebra.ι R m)
     map_add' := fun x y => by
-      rw [← map_add (RingCon.mkₐ R (ringCon R M))]
-      apply Quotient.sound  _
-      refine RingConGen.Rel.of _ _ Rel.add
+      rw [← RingCon.coe_add]
+      exact Quotient.sound <| RingConGen.Rel.of _ _ Rel.add
     map_smul' := fun r x => by
-      rw [← map_smul (RingCon.mkₐ R (ringCon R M)), Algebra.smul_def]
-      apply Quotient.sound  _
-      refine RingConGen.Rel.of _ _ <| Rel.smul}
+      rw [← RingCon.coe_smul]
+      exact Quotient.sound <| RingConGen.Rel.of _ _ <| Rel.smul}
 
 theorem ringQuot_mkAlgHom_freeAlgebra_ι_eq_ι (m : M) :
     RingCon.mkₐ R (ringCon R M) (FreeAlgebra.ι R m) = ι R m := by
