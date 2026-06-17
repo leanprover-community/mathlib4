@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.Finiteness.Cofinite
 public import Mathlib.Topology.Maps.Strict.Basic
 public import Mathlib.Topology.LocalAtTarget
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Algebra.Module.LinearMap.FiniteRange
 
 /-!
 # Strict linear maps with closed range are closed under finite-rank perturbation
@@ -69,7 +70,7 @@ We prove the theorem under the assumptions that
 - `map u A` is closed
 -/
 
-theorem new_step1 (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
+theorem step1 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
     (A_closed : IsClosed (A : Set E)) [codim_A : FiniteDimensional 𝕜 (E ⧸ A)]
     (h_ker : Disjoint u.ker A) (h_range : u.range = ⊤)
     (uA_closed : IsClosed (map u.toLinearMap A : Set F)) :
@@ -104,6 +105,10 @@ theorem new_step1 (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
   set Φ : (S × A) ≃L[𝕜] E := prodEquivOfIsTopCompl S A S_compl_A
   set Ψ : (map u.toLinearMap S × map u.toLinearMap A) ≃L[𝕜] F :=
     prodEquivOfIsTopCompl _ _ uS_compl_uA
+  -- TODO: after PR #39476 we will be able to use `Φ.symm.isHomeomorph`
+  have Φ_symm_homeo : IsHomeomorph Φ.symm := Φ.symm.toHomeomorph.isHomeomorph
+  -- TODO: after PR #39476 we will be able to use `Ψ.isHomeomorph`
+  have Ψ_homeo : IsHomeomorph Ψ := Ψ.toHomeomorph.isHomeomorph
   have uₛ_surj : Surjective uₛ := surjective_mapsTo_image_restrict _ _
   have uₐ_surj : Surjective uₐ := surjective_mapsTo_image_restrict _ _
   have u_eq : u = Ψ ∘ (uₛ.prodMap uₐ) ∘ Φ.symm := by
@@ -111,9 +116,12 @@ theorem new_step1 (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
     simp [Φ, Ψ, uₛ, uₐ, ← map_add, projection_add_projection_eq_self]
   have u_restr_eq : u.domRestrict A = (map u.toLinearMap A).subtypeL ∘ uₐ := rfl
   suffices IsStrictMap (uₛ.prodMap uₐ) ↔ IsStrictMap uₐ by
-    rw [u_restr_eq, u_eq, ← (isEmbedding_subtypeL _).isStrictMap_iff]
-    sorry -- easy, missing API
-  sorry -- easy, missing API
+    rwa [u_restr_eq, u_eq, ← (isEmbedding_subtypeL _).isStrictMap_iff,
+      ← Ψ_homeo.isEmbedding.isStrictMap_iff, ← Φ_symm_homeo.isQuotientMap.isStrictMap_iff]
+  -- TODO: we should think of a way to avoid this
+  change IsStrictMap (uₛ.toAddMonoidHom.prodMap uₐ.toAddMonoidHom) ↔ IsStrictMap uₐ
+  simp_rw [AddMonoidHom.isStrictMap_prodMap_iff, LinearMap.toAddMonoidHom_coe, coe_coe,
+    uₛ.isStrictMap_of_finiteDimensional, true_and]
 
 /-!
 ### Step 2
@@ -123,12 +131,12 @@ We prove the theorem under the assumptions that
 - `u.ker` is disjoint from `A` (i.e. `u` is injective on `A`)
 -/
 
-theorem new_step2 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
+theorem step2 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
     (A_closed : IsClosed (A : Set E)) [codim_A : FiniteDimensional 𝕜 (E ⧸ A)]
     (h_ker : Disjoint u.ker A) (h_range : u.range = ⊤) :
     IsStrictMap u ↔ IsStrictMap (u.domRestrict A) ∧ IsClosed (map u.toLinearMap A : Set F) := by
   -- To reduce to step 1, it suffices to show that `IsStrictMap u → IsClosed (map u A)`.
-  suffices IsStrictMap u → IsClosed (map u.toLinearMap A : Set F) by grind only [new_step1]
+  suffices IsStrictMap u → IsClosed (map u.toLinearMap A : Set F) by grind only [step1]
   -- So, we assume that `u` is strict. Because it is surjective, it is a quotient map.
   intro u_strict
   have u_quot : IsQuotientMap u := by
@@ -147,7 +155,7 @@ We prove the theorem under the assumptions that
 - `u.ker` is disjoint from `A` (i.e. `u` is injective on `A`)
 -/
 
-theorem new_step3 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
+theorem step3 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
     (A_closed : IsClosed (A : Set E)) [codim_A : FiniteDimensional 𝕜 (E ⧸ A)]
     (h_ker : Disjoint u.ker A) (h_range : IsClosed (u.range : Set F)) :
     IsStrictMap u ↔ IsStrictMap (u.domRestrict A) ∧ IsClosed (map u.toLinearMap A : Set F) := by
@@ -166,7 +174,7 @@ theorem new_step3 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
   simp_rw [eq2, eq1, coe_comp, ← i_clemb.isEmbedding.isStrictMap_iff, toLinearMap_comp, map_comp,
     map_coe i.toLinearMap, coe_coe, ← i_clemb.isClosed_iff_image_isClosed]
   -- We finish by applying step 2 (using that `u.ker = u'.ker`).
-  exact new_step2 u' A A_closed (u.ker_rangeRestrict ▸ h_ker) range_u'
+  exact step2 u' A A_closed (u.ker_rangeRestrict ▸ h_ker) range_u'
 
 /-!
 ### Step 4
@@ -175,13 +183,13 @@ We prove the theorem under the assumption that `u.ker` is disjoint from `A`
 (i.e. `u` is injective on `A`).
 -/
 
-theorem new_step4 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
+theorem step4 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
     [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_ker : Disjoint u.ker A) :
     (IsStrictMap u ∧ IsClosed (u.range : Set F)) ↔
       IsStrictMap (u.domRestrict A) ∧ IsClosed (map u.toLinearMap A : Set F) := by
   -- To reduce to step 3, it suffices to show that, if `map u A` is closed, then so is `u.range`.
   suffices IsClosed (map u.toLinearMap A : Set F) → IsClosed (u.range : Set F) by
-    grind only [new_step3]
+    grind only [step3]
   -- So, we assume that `map u A` is closed.
   intro uA_closed
   -- Fix `S` an algebraic complement of `A` containing `u.ker`. It has finite dimension.
@@ -209,7 +217,7 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict [T2Sp
     [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] :
     (IsStrictMap u ∧ IsClosed (u.range : Set F)) ↔
       (IsStrictMap (u.domRestrict A) ∧ IsClosed (map u.toLinearMap A : Set F)) := by
-  -- To reduce to step 2, we quotient by `N := A ⊓ u.ker`. Denoting by `π : E → E ⧸ N`
+  -- To reduce to step 4, we quotient by `N := A ⊓ u.ker`. Denoting by `π : E → E ⧸ N`
   -- the (automatically open) quotient map, `u` factors as `v ∘ π` with `v : E ⧸ N → F`.
   set N : Submodule 𝕜 E := A ⊓ u.ker
   set π : E →L[𝕜] E ⧸ N := N.mkQL
@@ -233,9 +241,9 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict [T2Sp
     rwa [← π_quot.isQuotientMap.isClosed_preimage, ← π.coe_coe, ← comap_coe, comap_B]
   -- Thus, we can apply step 4 to `v`: we get that `v` is strict with closed range if
   -- and only if `v.domRestrict B` is strict with closed range.
-  have step3_output : (IsStrictMap v ∧ IsClosed (v.range : Set F)) ↔
+  have step4_output : (IsStrictMap v ∧ IsClosed (v.range : Set F)) ↔
       (IsStrictMap (v.domRestrict B) ∧ IsClosed (map v.toLinearMap B : Set F)) := by
-    simp [new_step4 v B B_closed v_ker, coe_domRestrict, ← range_restrict]
+    simp [step4 v B B_closed v_ker, coe_domRestrict, ← range_restrict]
   -- Now, we wish to reduce our statement about `u` and `u.domRestrict A`
   -- to what we know about `v` and `v.domRestrict B`.
   -- First, it is clear that `range u = range v` and `map u A = map v B`.
@@ -260,20 +268,7 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict [T2Sp
     rw [← v_comp_π'_eq_u, coe_comp, ← π'_quot.isQuotientMap.isStrictMap_iff]
   -- Thus, we are done!
   rw [strict_iff, strict_iff_restrict, ← range_eq, ← image_eq]
-  exact step3_output
-
--- TODO: state in terms of "equality modulo finite rank" relation
-/-- If `u, v : E →L[𝕜] F` agree on a closed subspace `A` of `E` with finite codimension,
-then `u` is strict with closed range if and only if `v` is strict with closed range. -/
-public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_eqOn [T1Space F]
-    (u v : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
-    [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_eqOn : EqOn u v A) :
-    (IsStrictMap u ∧ IsClosed (u.range : Set F)) ↔
-      (IsStrictMap v ∧ IsClosed (v.range : Set F)) := by
-  simp_rw [u.isStrictMap_isClosed_range_iff_restrict A,
-    v.isStrictMap_isClosed_range_iff_restrict A, ← LinearMap.range_domRestrict,
-    LinearMap.coe_range, LinearMap.coe_domRestrict, ContinuousLinearMap.coe_domRestrict,
-    ContinuousLinearMap.coe_coe, restrict_eq_restrict_iff.mpr h_eqOn]
+  exact step4_output
 
 end FiniteCodimSubspace
 
@@ -283,25 +278,39 @@ end FiniteCodimSubspace
 
 section FiniteRank
 
--- TODO: state in terms of "equality modulo finite rank" relation
--- TODO: unify with statement above
-/-- If `u, v : E →L[𝕜] F` differ by a finite rank continuous linear map, then `u` is strict with
-closed range if and only if `v` is strict with closed range.
-
-This is [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1, Cor. 1][bourbaki2023]. -/
-public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_finiteDimensional [T1Space F]
-    (u v : E →L[𝕜] F) (h_finite_rank : FiniteDimensional 𝕜 (u - v).range) :
+/-- If `u, v : E →L[𝕜] F` agree on a closed subspace `A` of `E` with finite codimension,
+then `u` is strict with closed range if and only if `v` is strict with closed range. -/
+public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_eqOn [T2Space F]
+    (u v : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
+    [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_eqOn : EqOn u v A) :
     (IsStrictMap u ∧ IsClosed (u.range : Set F)) ↔
       (IsStrictMap v ∧ IsClosed (v.range : Set F)) := by
-  let A := (u - v).ker
-  have A_closed : IsClosed (A : Set E) := (u - v).isClosed_ker
-  have : FiniteDimensional 𝕜 (E ⧸ A) := (u - v).toLinearMap.quotKerEquivRange.symm.finiteDimensional
-  have eqOn_A : EqOn u v A := fun _ ↦ by simp [A, sub_eq_zero]
-  exact ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_eqOn u v A A_closed eqOn_A
+  simp_rw [u.isStrictMap_isClosed_range_iff_restrict A,
+    v.isStrictMap_isClosed_range_iff_restrict A, ← LinearMap.range_domRestrict,
+    LinearMap.coe_range, LinearMap.coe_domRestrict, ContinuousLinearMap.coe_domRestrict,
+    ContinuousLinearMap.coe_coe, restrict_eq_restrict_iff.mpr h_eqOn]
+
+open LinearMap.FiniteRangeSetoid
+
+/-- If `u, v : E →L[𝕜] F` differ by a finite rank continuous linear map (recall that this is
+denoted `u.toLinearMap ≈ v.toLinearMap` in scope `LinearMap.FiniteRangeSetoid`), then `u` is
+strict with closed range if and only if `v` is strict with closed range.
+
+This is [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1, Cor. 1][bourbaki2023]. -/
+public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_finiteRangeSetoid [T1Space F]
+    (u v : E →L[𝕜] F) (h_equiv : u.toLinearMap ≈ v.toLinearMap) :
+    (IsStrictMap u ∧ IsClosed (u.range : Set F)) ↔
+      (IsStrictMap v ∧ IsClosed (v.range : Set F)) := by
+  let A := u.toLinearMap.eqLocus v.toLinearMap
+  have A_closed : IsClosed (A : Set E) := u.isClosed_eqLocus v
+  have : FiniteDimensional 𝕜 (E ⧸ A) := equiv_iff_eqLocus_coFG.mp h_equiv
+  exact ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_eqOn u v A A_closed (fun _ ↦ id)
 
 end FiniteRank
 
 section FiniteDimQuotient
+
+open LinearMap.FiniteRangeSetoid
 
 /-- Consider `u : E →L[𝕜] F` and `B` a *complemented* finite dimensional subspace `F`. We have
 that `u` is strict with closed range if and only if `B.mkQL ∘L u` is strict with closed range.
@@ -318,13 +327,15 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient [T1Sp
   have i_clemb : IsClosedEmbedding i := S.isClosedEmbedding_subtypeL A_compl_S.symm.isClosed
   let p : F →L[𝕜] F := S.projectionL A A_compl_S.symm
   have eq : i ∘ Φ ∘ A.mkQ = p := rfl
-  have : FiniteDimensional 𝕜 (u - p ∘L u).range := by
-    suffices (u - p ∘L u).range ≤ A from finiteDimensional_of_le this
-    rintro - ⟨x, rfl⟩
-    exact sub_projection_mem _ (u x)
+  -- TODO: The following should be extracted to API about `≈`.
+  have : .id ≈ p.toLinearMap := by
+    simp [equiv_iff_hasFiniteRange, p, ← projection_eq_id_sub_projection, LinearMap.HasFiniteRange,
+      fg_iff_finiteDimensional, dim_A]
+  have : u.toLinearMap ≈ (p ∘L u).toLinearMap := by
+    grw [toLinearMap_comp, ← this, LinearMap.id_comp]
   calc  IsStrictMap u ∧ IsClosed (range u)
     _ ↔ (IsStrictMap (p ∘ u) ∧ IsClosed (range (p ∘ u))) :=
-          ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_finiteDimensional _ _ this
+          ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_finiteRangeSetoid _ _ this
     _ ↔ (IsStrictMap (i ∘ Φ ∘ A.mkQ ∘ u) ∧ IsClosed (range (i ∘ Φ ∘ A.mkQ ∘ u))) := by
           simp_rw [← eq, Function.comp_assoc]
     _ ↔ (IsStrictMap (Φ ∘ A.mkQ ∘ u) ∧ IsClosed (range (Φ ∘ A.mkQ ∘ u))) := by
