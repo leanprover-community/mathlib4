@@ -313,7 +313,7 @@ theorem exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
       exact ae_le_set_inter Filter.EventuallyLE.rfl (hD s hs)
   exact ⟨m', h, fun s ↦ (h' s).trans (Measure.restrict_apply_le (⋃₀ D) s)⟩
 
-/-- Consider an additive content `m ` on a semi-ring of measurable sets `C`, which is dominated
+/-- Consider an additive content `m` on a semi-ring of measurable sets `C`, which is dominated
 by a finite measure `μ`.
 Then `m` extends to a countably additive vector measure which is dominated by `μ`. -/
 theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
@@ -372,7 +372,7 @@ theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
       grw [enorm_integral_le_lintegral_enorm, ContinuousLinearMap.opENorm_lsmul_le, one_mul,
         lintegral_mono' m'_le le_rfl, hμ', lintegral_trim _ (by fun_prop)] }
   refine ⟨m'', fun s hs ↦ ?_, fun s ↦ ?_⟩
-  · simp only [h'C s hs, ↓reduceIte, m'']
+  · simp only [coe_mk, h'C s hs, ↓reduceIte, m'']
     have : ∫ᵛ (x : α), μ[s.indicator 1 | M] x ∂•m' = ∫ᵛ (x : α), s.indicator 1 x ∂•m' := by
       apply integral_congr_ae
       filter_upwards with x
@@ -387,7 +387,7 @@ theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
     simp [m'C s hs]
   · by_cases hs : MeasurableSet s; swap
     · simp [not_measurable _ hs]
-    simp only [hs, ↓reduceIte, m'']
+    simp only [coe_mk, hs, ↓reduceIte, m'']
     grw [enorm_integral_le_lintegral_enorm, ContinuousLinearMap.opENorm_lsmul_le, one_mul,
       lintegral_mono' m'_le le_rfl, hμ', lintegral_trim _ (by fun_prop),
       lintegral_enorm_condExp_indicator Mle hs]

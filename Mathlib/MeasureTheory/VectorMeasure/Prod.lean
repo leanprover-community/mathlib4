@@ -143,8 +143,8 @@ instance [CompleteSpace G] [IsFiniteMeasure μ.variation] : HasProd μ ν B wher
   exists_prod := by
     classical
     refine ⟨prodOfIsFiniteMeasureLeft μ ν B, fun s t hs ht ↦ ?_⟩
-    simp only [prodOfIsFiniteMeasureLeft, hs.prod ht, ↓reduceIte, mk_preimage_prod_right_eq_if,
-      of_if, integral_indicator hs, setIntegral_const, ContinuousLinearMap.flip_apply]
+    simp [prodOfIsFiniteMeasureLeft, hs.prod ht, ↓reduceIte, mk_preimage_prod_right_eq_if,
+      of_if, integral_indicator hs, ContinuousLinearMap.flip_apply, hs, restrict_apply]
 
 instance [CompleteSpace G] [h : IsFiniteMeasure ν.variation] : HasProd μ ν B := by
   rw [← B.flip_flip]
@@ -165,8 +165,8 @@ lemma prod_apply_eq_integral [CompleteSpace G] [IsFiniteMeasure μ.variation]
   have : μ.prod ν B = prodOfIsFiniteMeasureLeft μ ν B := by
     classical
     apply prod_eq_of_forall_apply_prod (fun s t hs ht ↦ ?_)
-    simp only [prodOfIsFiniteMeasureLeft, hs.prod ht, ↓reduceIte, mk_preimage_prod_right_eq_if,
-      of_if, integral_indicator hs, setIntegral_const, ContinuousLinearMap.flip_apply]
+    simp [prodOfIsFiniteMeasureLeft, hs.prod ht, ↓reduceIte, mk_preimage_prod_right_eq_if,
+      of_if, integral_indicator hs, ContinuousLinearMap.flip_apply, restrict_apply, hs]
   rw [this]
   simp [prodOfIsFiniteMeasureLeft, hs]
 
