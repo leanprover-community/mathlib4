@@ -293,7 +293,7 @@ theorem pow_zero_approximates {basis : Basis} {ms : MultiseriesExpansion basis}
       simp [one, Multiseries.one]
       rfl
     | cons exp coef tl f =>
-      apply Trimmed_cons at h_trimmed
+      apply Trimmed.elim_cons at h_trimmed
       obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := h_trimmed
       obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := h_sorted.elim_cons
       obtain ⟨h_coef, _, h_tl⟩ := h_approx.elim_cons
@@ -342,7 +342,7 @@ theorem pow_approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a : 
     | cons exp coef tl f =>
       have hF_pos : ∀ᶠ t in atTop, 0 < f t :=
         eventually_pos_of_coef_pos h_pos h_sorted h_approx h_trimmed h_basis
-      obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
+      obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := h_trimmed.elim_cons
       obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := h_sorted.elim_cons
       obtain ⟨h_coef, _, h_tl⟩ := h_approx.elim_cons
       simp only [pow, mk_seq, Multiseries.pow, Multiseries.destruct_cons, mk_toFun]
@@ -461,8 +461,8 @@ theorem zpow_approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a :
     cases basis with
     | nil => simp
     | cons basis_hd basis_tl =>
-      have h_fun := IsZero_approximates_zero this h_approx
-      simp only [IsZero_iff_seq_nil] at this
+      have h_fun := this.approximates_zero h_approx
+      simp only [IsZero.iff_seq_eq_nil] at this
       simp only [pow, this, Multiseries.pow, Multiseries.destruct_nil, Int.cast_eq_zero]
       split_ifs with ha
       · subst ha

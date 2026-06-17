@@ -207,7 +207,7 @@ theorem tl_mulMonomial_coef_inv_neg_exp_toFun_tendsto_zero
       coef.inv (-exp)).toFun atTop (𝓝 0) := by
   obtain ⟨h_coef, h_maj, h_tl⟩ := h_approx.elim_cons
   obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := h_sorted.elim_cons
-  obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
+  obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := h_trimmed.elim_cons
   have := IsEquivalent_coef h_approx h_sorted h_coef_trimmed h_coef_ne_zero h_basis
   obtain ⟨φ, hφ, hf⟩ := this.exists_eq_mul
   simp only [mulMonomial_toFun, mk_toFun, inv_toFun]
@@ -239,7 +239,7 @@ theorem inv_approximates {basis : Basis} {ms : MultiseriesExpansion basis}
       ext t
       simp
     | cons exp coef tl f =>
-      obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
+      obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := h_trimmed.elim_cons
       obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := h_sorted.elim_cons
       obtain ⟨h_coef, _, h_tl⟩ := h_approx.elim_cons
       have h_coef_ne_zero : ∀ᶠ t in atTop, coef.toFun t ≠ 0 :=

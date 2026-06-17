@@ -175,7 +175,7 @@ theorem IsZero_of_leadingMonomial_zero_coef {basis : Basis} {ms : MultiseriesExp
     | nil => simp
     | cons exp coef tl =>
     simp only [leadingMonomial, cons_realCoef, exps_eq_Seq_exps, mk_seq, Multiseries.cons_exps] at h
-    replace h_trimmed := Trimmed_cons h_trimmed
+    replace h_trimmed := h_trimmed.elim_cons
     have : IsZero coef := IsZero_of_leadingMonomial_zero_coef h_trimmed.left h
     simp [this] at h_trimmed
 
@@ -194,7 +194,7 @@ theorem leadingMonomial_eventually_ne_zero {basis : Basis} {ms : MultiseriesExpa
       absurd h_ne_zero
       constructor
     | cons exp coef tl f =>
-      obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
+      obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := h_trimmed.elim_cons
       have coef_ih := coef.leadingMonomial_eventually_ne_zero h_coef_trimmed h_coef_ne_zero
         (h_basis.tail)
       filter_upwards [coef_ih, h_basis.head_eventually_pos] with t coef_ih h_basis_hd_pos
@@ -292,7 +292,7 @@ mutual
         apply EventuallyEq.isEquivalent (by assumption)
       | cons exp coef tl f =>
         obtain ⟨h_coef, _, h_tl⟩ := h_approx.elim_cons
-        obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
+        obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := h_trimmed.elim_cons
         obtain ⟨h_coef_sorted, h_comp, _⟩ := h_sorted.elim_cons
         have coef_ih := coef.IsEquivalent_leadingMonomial h_coef_sorted h_coef h_coef_trimmed
           (h_basis.tail)

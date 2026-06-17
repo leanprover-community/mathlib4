@@ -48,7 +48,7 @@ def checkZero {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $basis)) :
     match ms with
     | ~q(MultiseriesExpansion.mk .nil $f) => return .eq q(MultiseriesExpansion.IsZero.nil $f)
     | ~q(MultiseriesExpansion.mk (.cons $exp $coef $tl) $f) =>
-      return .neq q(MultiseriesExpansion.cons_not_isZero)
+      return .neq q(MultiseriesExpansion.IsZero.not_cons)
     | _ => panic! "checkZero: unexpected ms"
   | _ => panic! "unexpected basis"
 
@@ -62,7 +62,7 @@ theorem approx_cons_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ �
     (MultiseriesExpansion.mk tl f).Approximates := by
   obtain ⟨h_coef, h_maj, h_tl⟩ := h_approx.elim_cons
   convert! h_tl.replaceFun _
-  replace h_zero := MultiseriesExpansion.IsZero_approximates_zero h_zero h_coef'_approx
+  replace h_zero := MultiseriesExpansion.IsZero.approximates_zero h_zero h_coef'_approx
   rw [h_coef_fun] at h_zero
   simp only [MultiseriesExpansion.mk_toFun]
   grw [h_zero]

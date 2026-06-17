@@ -198,7 +198,7 @@ theorem log_approximates {basis : Basis}
     grind
   | cons exp coef tl f =>
   obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := h_sorted.elim_cons
-  obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
+  obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := h_trimmed.elim_cons
   obtain ⟨h_coef, h_maj, h_tl⟩ := h_approx.elim_cons
   have h_f_pos : ∀ᶠ t in atTop, 0 < f t :=
     eventually_pos_of_coef_pos h_pos h_sorted h_approx h_trimmed h_basis

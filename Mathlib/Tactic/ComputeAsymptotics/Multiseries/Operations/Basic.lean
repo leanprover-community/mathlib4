@@ -246,9 +246,9 @@ theorem mulConst_trimmed {basis : Basis} {ms : MultiseriesExpansion basis} {c : 
     cases ms with
     | nil => constructor
     | cons exp coef tl =>
-    simp only [Trimmed_iff_seq_trimmed, mk_seq, mulConst_seq, Multiseries.mulConst_cons]
+    simp only [trimmed_iff_seq_trimmed, mk_seq, mulConst_seq, Multiseries.mulConst_cons]
       at h_trimmed ⊢
-    apply Multiseries.Trimmed_cons at h_trimmed
+    apply Multiseries.Trimmed.elim_cons at h_trimmed
     apply Multiseries.Trimmed.cons
     · exact mulConst_trimmed h_trimmed.left hc
     · exact mulConst_not_zero h_trimmed.right hc

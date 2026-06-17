@@ -181,7 +181,7 @@ def extractDeepCoef (ms : MS) (h_trimmed : Q(MultiseriesExpansion.Trimmed $ms.va
       h_logBasis := q(LogBasis.tail_WellFormed $ms.h_logBasis)
     }
     let new_h_trimmed : Q(MultiseriesExpansion.Trimmed $coef) :=
-      q((MultiseriesExpansion.Trimmed_cons $h_trimmed).left)
+      q((MultiseriesExpansion.Trimmed.elim_cons $h_trimmed).left)
     let ⟨deepCoef, h_coef_trimmed, h_exps, h_coef⟩ ← extractDeepCoef newMS new_h_trimmed newDepth
     have : $exp =Q 0 := ⟨⟩
     return ⟨deepCoef, q($h_coef_trimmed),

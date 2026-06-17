@@ -79,7 +79,7 @@ def proveNeZero (ms : MS) : MetaM Q(¬ MultiseriesExpansion.IsZero $ms.val) := d
   let ~q($basis_hd :: $basis_tl) := ms.basis | panic! "proveNeZero: unexpected basis"
   let ~q(MultiseriesExpansion.mk (.cons $exp $coef $tl) $f) := ms.val
     | panic! "proveNeZero: unexpected val"
-  return q(MultiseriesExpansion.cons_not_isZero)
+  return q(MultiseriesExpansion.IsZero.not_cons)
 
 /-- Compare two trimmed multiseries. It assumes that `x.basis = ... ++ y.basis` and that `x` and
 `y` both are not `nil`s. -/

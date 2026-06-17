@@ -148,7 +148,7 @@ theorem Approximates_log_basis_ne_zero {basis basis' : Basis}
     (hf : f ∈ basis) :
     ¬ ms.IsZero := by
   intro h
-  replace h := MultiseriesExpansion.IsZero_approximates_zero h h_approx
+  replace h := h.approximates_zero h_approx
   rw [h_fun] at h
   have h_top : Tendsto (Real.log ∘ f) atTop atTop := by
     apply Tendsto.comp Real.tendsto_log_atTop

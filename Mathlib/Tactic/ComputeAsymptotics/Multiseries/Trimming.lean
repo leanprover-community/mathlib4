@@ -127,13 +127,13 @@ theorem elim_cons {basis_hd} {basis_tl} {exp : ℝ}
 
 end Multiseries.Trimmed
 
--- /-- If `cons (exp, coef) tl` is trimmed, then `coef` is trimmed and is not zero. -/
--- theorem Trimmed.elim_cons {basis_hd} {basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
---     {tl : Multiseries basis_hd basis_tl} {f : ℝ → ℝ}
---     (h : Trimmed (mk (.cons exp coef tl) f)) :
---     coef.Trimmed ∧ ¬ IsZero coef := by
---   simp only [trimmed_iff_seq_trimmed, mk_seq] at h
---   exact h.elim_cons
+/-- If `mk (cons (exp, coef) tl) f` is trimmed, then `coef` is trimmed and is not zero. -/
+theorem Trimmed.elim_cons {basis_hd} {basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl} {f : ℝ → ℝ}
+    (h : Trimmed (mk (.cons exp coef tl) f)) :
+    coef.Trimmed ∧ ¬ IsZero coef := by
+  simp only [trimmed_iff_seq_trimmed, mk_seq] at h
+  exact h.elim_cons
 
 mutual
 
