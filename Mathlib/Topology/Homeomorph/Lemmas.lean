@@ -9,6 +9,7 @@ public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Topology.Connected.LocallyConnected
 public import Mathlib.Topology.DenseEmbedding
 public import Mathlib.Topology.Connected.TotallyDisconnected
+public import Mathlib.Topology.Baire.Lemmas
 
 /-!
 # Further properties of homeomorphisms
@@ -36,6 +37,9 @@ namespace Homeomorph
 protected theorem secondCountableTopology [SecondCountableTopology Y]
     (h : X ≃ₜ Y) : SecondCountableTopology X :=
   h.isInducing.secondCountableTopology
+
+protected theorem baireSpace [BaireSpace X] (f : X ≃ₜ Y) : BaireSpace Y :=
+  f.isOpenQuotientMap.baireSpace
 
 /-- If `h : X → Y` is a homeomorphism, `h(s)` is compact iff `s` is. -/
 @[simp]
