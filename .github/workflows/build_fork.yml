@@ -11,8 +11,7 @@ on:
     paths-ignore:
       # pull_request_target runs the workflow and its actions from the target branch, not
       # the PR, so PR changes under these dirs can't affect the run — triggering is wasteful.
-      - '.github/workflows/**'
-      - '.github/actions/**'
+      - '.github/**'
 
 concurrency:
   # label each workflow run; only the latest with each label will run
