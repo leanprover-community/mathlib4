@@ -71,12 +71,11 @@ lemma sum_Ico_le_integral_of_le (hab : a ≤ b)
 lemma integral_le_sum_Ico_of_le (hab : a ≤ b)
     (h : ∀ i ∈ Ico a b, ∀ x ∈ Ico (i : ℝ) ↑(i + 1), g x ≤ f i)
     (hg : IntegrableOn g (Ico a b)) : ∫ x in a..b, g x ≤ ∑ i ∈ .Ico a b, f i := by
-  convert!
-    neg_le_neg (sum_Ico_le_integral_of_le (f := -f) (g := -g) hab (fun i hi x hx ↦ neg_le_neg
-      (h i hi x hx)) hg.neg) <;> simp
+  convert! neg_le_neg (sum_Ico_le_integral_of_le (f := -f) (g := -g) hab
+    (fun i hi x hx ↦ neg_le_neg (h i hi x hx)) hg.neg) <;> simp
 
 theorem AntitoneOn.integral_le_sum (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :
-    (∫ x in x₀..x₀ + a, f x) ≤ ∑ i ∈ .range a, f (x₀ + i) := by
+    ∫ x in x₀..x₀ + a, f x ≤ ∑ i ∈ .range a, f (x₀ + i) := by
   have hint : ∀ k : ℕ, k < a → IntervalIntegrable f volume (x₀ + k) (x₀ + ↑(k + 1)) := by
     refine fun k hk ↦ (hf.mono ?_).intervalIntegrable
     rw [uIcc_of_le (by simp)]
@@ -94,21 +93,21 @@ theorem AntitoneOn.integral_le_sum (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :
     _ = ∑ i ∈ .range a, f (x₀ + i) := by simp
 
 theorem AntitoneOn.integral_le_sum_Ico (hab : a ≤ b) (hf : AntitoneOn f (Set.Icc a b)) :
-    (∫ x in a..b, f x) ≤ ∑ x ∈ Finset.Ico a b, f x := by
+    ∫ x in a..b, f x ≤ ∑ x ∈ .Ico a b, f x := by
   suffices ∫ x in a..a + ↑(b - a), f x ≤ ∑ x ∈ .Ico (0 + a) (b - a + a), f x by simp_all
   rw [← Finset.sum_Ico_add, Nat.Ico_zero_eq_range]
   suffices ∫ x in a..a + ↑(b - a), f x ≤ ∑ x ∈ .range (b - a), f (a + x) by simp_all
   exact AntitoneOn.integral_le_sum (by simp only [hf, hab, Nat.cast_sub, add_sub_cancel])
 
 theorem AntitoneOn.sum_le_integral (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :
-    (∑ i ∈ .range a, f (x₀ + ↑(i + 1))) ≤ ∫ x in x₀..x₀ + a, f x := by
+    ∑ i ∈ .range a, f (x₀ + ↑(i + 1)) ≤ ∫ x in x₀..x₀ + a, f x := by
   have hint : ∀ k : ℕ, k < a → IntervalIntegrable f volume (x₀ + k) (x₀ + (k + 1 : ℕ)) := by
     refine fun k hk ↦ (hf.mono ?_).intervalIntegrable
     rw [uIcc_of_le (by simp [-Nat.cast_add])]
     apply Icc_subset_Icc <;> simp [-Nat.cast_add, hk]
   calc
-    (∑ i ∈ .range a, f (x₀ + ↑(i + 1))) =
-        ∑ i ∈ .range a, ∫ _ in x₀ + i..x₀ + ↑(i + 1), f (x₀ + ↑(i + 1)) := by simp
+    (∑ i ∈ .range a, f (x₀ + ↑(i + 1)))
+      = ∑ i ∈ .range a, ∫ _ in x₀ + i..x₀ + ↑(i + 1), f (x₀ + ↑(i + 1)) := by simp
     _ ≤ ∑ i ∈ .range a, ∫ x in x₀ + i..x₀ + ↑(i + 1), f x := by
       gcongr with i hi
       simp only [Finset.mem_range] at hi
@@ -121,15 +120,14 @@ theorem AntitoneOn.sum_le_integral (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :
       simp [-Nat.cast_add]
 
 theorem AntitoneOn.sum_le_integral_Ico (hab : a ≤ b) (hf : AntitoneOn f (Icc a b)) :
-    (∑ i ∈ .Ico a b, f (i + 1 : ℕ)) ≤ ∫ x in a..b, f x := by
+    ∑ i ∈ .Ico a b, f ↑(i + 1) ≤ ∫ x in a..b, f x := by
   suffices ∑ i ∈ .Ico (0 + a) (b - a + a), f ↑(i + 1) ≤ ∫ x in a..a + ↑(b - a), f x by simp_all
-  rw [← Finset.sum_Ico_add, Nat.Ico_zero_eq_range]
-  suffices ∑ x ∈ .range (b - a), f (a + ↑(x + 1)) ≤ ∫ x in a..a + ↑(b - a), f x by
-    simp_all [add_assoc]
+  simp_rw [← Finset.sum_Ico_add, Nat.Ico_zero_eq_range, add_assoc]
+  suffices ∑ x ∈ .range (b - a), f (a + ↑(x + 1)) ≤ ∫ x in a..a + ↑(b - a), f x by simp_all
   exact AntitoneOn.sum_le_integral (by simp [hf, hab])
 
 theorem MonotoneOn.sum_le_integral (hf : MonotoneOn f (Icc x₀ (x₀ + a))) :
-    (∑ i ∈ .range a, f (x₀ + i)) ≤ ∫ x in x₀..x₀ + a, f x := by
+    ∑ i ∈ .range a, f (x₀ + i) ≤ ∫ x in x₀..x₀ + a, f x := by
   rw [← neg_le_neg_iff, ← Finset.sum_neg_distrib, ← intervalIntegral.integral_neg]
   exact hf.neg.integral_le_sum
 
@@ -139,12 +137,12 @@ theorem MonotoneOn.sum_le_integral_Ico (hab : a ≤ b) (hf : MonotoneOn f (Set.I
   exact hf.neg.integral_le_sum_Ico hab
 
 theorem MonotoneOn.integral_le_sum (hf : MonotoneOn f (Icc x₀ (x₀ + a))) :
-    (∫ x in x₀..x₀ + a, f x) ≤ ∑ i ∈ .range a, f (x₀ + ↑(i + 1)) := by
+    ∫ x in x₀..x₀ + a, f x ≤ ∑ i ∈ .range a, f (x₀ + ↑(i + 1)) := by
   rw [← neg_le_neg_iff, ← Finset.sum_neg_distrib, ← intervalIntegral.integral_neg]
   exact hf.neg.sum_le_integral
 
 theorem MonotoneOn.integral_le_sum_Ico (hab : a ≤ b) (hf : MonotoneOn f (Set.Icc a b)) :
-    (∫ x in a..b, f x) ≤ ∑ i ∈ .Ico a b, f ↑(i + 1) := by
+    ∫ x in a..b, f x ≤ ∑ i ∈ .Ico a b, f ↑(i + 1) := by
   rw [← neg_le_neg_iff, ← Finset.sum_neg_distrib, ← intervalIntegral.integral_neg]
   exact hf.neg.sum_le_integral_Ico hab
 
@@ -155,13 +153,12 @@ lemma sum_mul_Ico_le_integral_of_monotone_antitone
   apply sum_Ico_le_integral_of_le (f := fun x ↦ f x * g x) hab
   · intro i hi x hx
     simp only [Nat.cast_add, Nat.cast_one, mem_Ico] at hx hi
-    have I1 : ↑i ∈ Icc (a - 1 : ℝ) (b - 1) := by
-      simp only [mem_Icc, tsub_le_iff_right]; norm_cast; lia
-    have I2 : x ∈ Icc (a : ℝ) b := mem_Icc.mpr ⟨le_trans (mod_cast hi.1) hx.1, by grind⟩
+    have : ↑i ∈ Icc (a : ℝ) (b - 1) := by simp only [mem_Icc]; norm_cast; lia
+    rify at hi
     gcongr
     · grw [gpos]; apply hg <;> grind
     · grw [fpos]; apply hf <;> grind
-    · exact hf (by simpa using ⟨hi.1, hi.2.le⟩) I2 hx.1
+    · apply hf <;> grind
     · apply hg <;> grind
   · apply ((hf.integrableOn_isCompact isCompact_Icc).mul_of_top_left
       (AntitoneOn.memLp_isCompact isCompact_Icc _)).mono_measure
@@ -176,13 +173,12 @@ lemma integral_le_sum_mul_Ico_of_antitone_monotone
   apply integral_le_sum_Ico_of_le (f := fun x ↦ f x * g x) hab
   · intro i hi x hx
     simp only [Nat.cast_add, Nat.cast_one, mem_Ico] at hx hi
-    have I1 : ↑i ∈ Icc (a - 1 : ℝ) (b - 1) := by
-      simp only [mem_Icc, tsub_le_iff_right, le_sub_iff_add_le]; norm_cast; lia
-    have I2 : x ∈ Icc (a : ℝ) b := mem_Icc.mpr ⟨le_trans (mod_cast hi.1) hx.1, by grind⟩
+    have : ↑i ∈ Icc (a : ℝ) (b - 1) := by simp only [mem_Icc, le_sub_iff_add_le]; norm_cast
+    rify at hi
     gcongr
     · grw [gpos]; apply hg <;> grind
-    · grw [fpos]; apply hf <;> { simp; grind }
-    · exact hf (by simpa using ⟨hi.1, hi.2.le⟩) I2 hx.1
+    · grw [fpos]; apply hf <;> grind
+    · apply hf <;> grind
     · apply hg <;> grind
   · apply ((hf.integrableOn_isCompact isCompact_Icc).mul_of_top_left
        (MonotoneOn.memLp_isCompact isCompact_Icc _)).mono_measure
