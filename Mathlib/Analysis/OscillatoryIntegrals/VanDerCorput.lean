@@ -260,9 +260,6 @@ theorem norm_integral_exp_mul_I_le_of_order_one'
         have ha := hrange a left_mem_uIcc <;>
         have hb := hrange b right_mem_uIcc <;>
         rw [abs_le] <;> constructor <;> linarith only [ha, hb]
-    · apply ContinuousOn.intervalIntegrable
-      fun_prop (discharger := try { exact fun x hx ↦ by have := hφ'_nz hx; positivity })
-    · fun_prop (discharger := exact fun x hx ↦ by have := hφ'_nz hx; positivity)
   calc
     _ ≤ ‖∫ x in a..b, u' x * v x‖ + ‖u b * v b - u a * v a‖ := by
       rw [h1, sub_eq_neg_add]
