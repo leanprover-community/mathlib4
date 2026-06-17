@@ -176,17 +176,23 @@ lemma integral_le_sum_mul_Ico_of_antitone_monotone
 
 /-! ## Comparison of infinite sums and integrals -/
 
+/-- The partial sums of a nonnegative function are bounded by the integral over `(a, ∞)`. -/
+lemma AntitoneOn.sum_Ico_le_integral {a b : ℕ} (hab : a ≤ b) (anti : AntitoneOn f (Icc a (b : ℝ)))
+    (integrable : IntegrableOn f (Ioi (a : ℝ)) volume) (nonneg : ∀ t ∈ Ioi (a : ℝ), 0 ≤ f t) :
+    ∑ n ∈ Finset.Ico a b, f ((n + 1 : ℕ)) ≤ ∫ x in Ioi (a : ℝ), f x := by
+  trans ∫ x in a..b, f x
+  · exact AntitoneOn.sum_le_integral_Ico hab anti
+  · rw [intervalIntegral.integral_of_le (mod_cast hab)]
+    apply setIntegral_mono_set integrable _ (Ioc_subset_Ioi_self.eventuallyLE)
+    · filter_upwards [ae_restrict_mem (by measurability)] with t ht using nonneg t ht
+
 /-- The partial sums of a nonnegative function are bounded by the integral over `(0, ∞)`. -/
 lemma AntitoneOn.sum_range_le_integral {N : ℕ} (anti : AntitoneOn f (Icc 0 (N : ℝ)))
     (integrable : IntegrableOn f (Ioi 0) volume) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
     ∑ n ∈ Finset.range N, f ((n + 1 : ℕ)) ≤ ∫ x in Ioi 0, f x := by
-  trans ∫ x in 0..N, f x
-  · convert AntitoneOn.sum_le_integral (x₀ := 0) (a := N) (f := f) (by simpa) using 2
-    · simp
-    · ring
-  · rw [intervalIntegral.integral_of_le (by simp)]
-    apply setIntegral_mono_set integrable _ (Ioc_subset_Ioi_self.eventuallyLE)
-    · filter_upwards [ae_restrict_mem (by measurability)] with t ht using nonneg t ht
+  rw [Finset.range_eq_Ico]
+  exact_mod_cast AntitoneOn.sum_Ico_le_integral (Nat.zero_le _) (mod_cast anti)
+    (mod_cast integrable) (mod_cast nonneg)
 
 /-- **Integral test**: a nonnegative antitone function is summable if it is integrable. -/
 theorem AntitoneOn.summable_of_integrable (anti : AntitoneOn f (Ici 0))
@@ -197,13 +203,46 @@ theorem AntitoneOn.summable_of_integrable (anti : AntitoneOn f (Ici 0))
   · exact fun _ ↦ nonneg _ (by simp; grind)
   · exact fun _ ↦ (anti.mono Icc_subset_Ici_self).sum_range_le_integral integrable nonneg
 
+theorem AntitoneOn.tsum_comp_add_le_integral (N : ℕ) (anti : AntitoneOn f (Ici (N : ℝ)))
+    (integrable : IntegrableOn f (Ioi (N : ℝ))) (nonneg : ∀ t ∈ Ioi (N : ℝ), 0 ≤ f t) :
+    ∑' (n : ℕ),  f (n + N + 1 : ℕ) ≤ ∫ x in Ioi (N : ℝ), f x := by
+  apply Summable.tsum_le_of_sum_range_le
+  · apply_mod_cast AntitoneOn.summable_of_integrable (f := (fun t ↦ f (t + N + 1)))
+    · intro _ _ _  _ _
+      apply anti <;> grind
+    · conv => arg 1; ext; rw [add_assoc]
+      apply MeasurePreserving.integrableOn_image _ _|>.mp
+      · apply integrable.mono_set
+        grind
+      · exact measurePreserving_add_right ..
+      · exact measurableEmbedding_addRight ..
+    · intro t ht
+      apply nonneg
+      grind
+  · intro M
+    calc
+    _ = ∑ n ∈ Finset.Ico N (N + M), f (n + 1 : ℕ) := by
+      rw [← Finset.sum_image (g := (fun n ↦ n + N)) (f := (fun (n : ℕ) ↦ f (n + 1 : ℕ)))]
+      · congr
+        ext n
+        simp only [Finset.mem_image, Finset.mem_range, Finset.mem_Ico]
+        constructor
+        · rintro ⟨m, hm⟩
+          grind
+        · intro h
+          use n - N
+          grind
+      · simp
+    _ ≤ _ := by
+      exact AntitoneOn.sum_Ico_le_integral (by grind) (anti.mono Icc_subset_Ici_self) 
+        integrable nonneg
+
 /-- **Integral test**: bounds the sum from 1 by an integral. -/
 theorem AntitoneOn.tsum_add_one_le_integral (anti : AntitoneOn f (Ici 0))
     (integrable : IntegrableOn f (Ioi 0)) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
     ∑' (n : ℕ),  f (n + 1 : ℕ) ≤ ∫ x in Ioi 0, f x  := by
-  apply Summable.tsum_le_of_sum_range_le
-  · exact summable_nat_add_iff _|>.mpr (anti.summable_of_integrable integrable nonneg)
-  · exact fun _ ↦ (anti.mono Icc_subset_Ici_self).sum_range_le_integral integrable nonneg
+  exact_mod_cast AntitoneOn.tsum_comp_add_le_integral 0 (mod_cast anti) (mod_cast integrable) 
+    (mod_cast nonneg)
 
 /-- **Integral test**: bouns the sum of a nonnegative antitone function by an integral. -/
 theorem AntitoneOn.tsum_le_integral (anti : AntitoneOn f (Ici 0))
