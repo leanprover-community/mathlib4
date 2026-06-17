@@ -5893,7 +5893,6 @@ public import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 public import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
 public import Mathlib.NumberTheory.Zsqrtd.ToReal
 public import Mathlib.Order.Antichain
-public import Mathlib.Order.Dilworth
 public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.Atoms.Finite
