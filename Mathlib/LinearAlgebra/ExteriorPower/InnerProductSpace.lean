@@ -53,7 +53,7 @@ def innerProductForm {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E
     ⋀[ℝ]^n E →ₗ[ℝ] ⋀[ℝ]^n E →ₗ[ℝ] ℝ :=
   pairingDual ℝ E n ∘ₗ map n (innerₗ E)
 
-variable {n : ℕ} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] 
+variable {n : ℕ} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 lemma innerProductForm_ιMulti_ιMulti (x y : Fin n → E) :
     innerProductForm (ιMulti ℝ n x) (ιMulti ℝ n y) = det (of fun i j ↦ ⟪x j, y i⟫) := by
