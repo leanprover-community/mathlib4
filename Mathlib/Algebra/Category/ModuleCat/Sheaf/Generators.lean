@@ -194,6 +194,10 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
   [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}] [HasBinaryProducts C]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
 
+/-- The restriction of generating sections to `Over X` -/
+abbrev GeneratingSections.over {M : SheafOfModules.{u} R} (G : M.GeneratingSections) (X : C) :
+    (M.over X).GeneratingSections := G.map (pushforward (𝟙 (R.over X))) (Iso.refl _)
+
 /-- Given `G : M.GeneratingSections`, we naturally obtain `M.LocalGeneratorsData` using the
 trivial cover of `C`. -/
 @[simps]
