@@ -55,8 +55,8 @@ structure ContinuousMultilinearMap (R : Type u) {ι : Type v} (M₁ : ι → Typ
 
 attribute [inherit_doc ContinuousMultilinearMap] ContinuousMultilinearMap.cont
 
-@[inherit_doc]
-notation:25 M " [×" n "]→L[" R "] " M' => ContinuousMultilinearMap R (fun i : Fin n => M) M'
+@[inherit_doc ContinuousMultilinearMap]
+notation3:25 M " [×" n "]→L[" R "] " M' => ContinuousMultilinearMap R (fun _i : Fin n => M) M'
 
 namespace ContinuousMultilinearMap
 
@@ -77,7 +77,7 @@ theorem toMultilinearMap_injective :
 
 instance funLike : FunLike (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
   coe f := f.toFun
-  coe_injective' _ _ h := toMultilinearMap_injective <| MultilinearMap.coe_injective h
+  coe_injective _ _ h := toMultilinearMap_injective <| MultilinearMap.coe_injective h
 
 instance continuousMapClass :
     ContinuousMapClass (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
@@ -394,10 +394,7 @@ def linearDeriv : (∀ i, M₁ i) →L[R] M₂ := ∑ i : ι, (f.toContinuousLin
 
 @[simp]
 lemma linearDeriv_apply : f.linearDeriv x y = ∑ i, f (Function.update x i (y i)) := by
-  unfold linearDeriv toContinuousLinearMap
-  simp only [ContinuousLinearMap.coe_sum', ContinuousLinearMap.coe_comp',
-    ContinuousLinearMap.coe_mk', Finset.sum_apply]
-  rfl
+  simp [linearDeriv, toContinuousLinearMap]
 
 end linearDeriv
 

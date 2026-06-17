@@ -81,3 +81,23 @@ theorem AffineMap.restrict.surjective (φ : P₁ →ᵃ[k] P₂) {E : AffineSubs
 theorem AffineMap.restrict.bijective {E : AffineSubspace k P₁} [Nonempty E] {φ : P₁ →ᵃ[k] P₂}
     (hφ : Function.Injective φ) : Function.Bijective (φ.restrict (le_refl (E.map φ))) :=
   ⟨AffineMap.restrict.injective hφ _, AffineMap.restrict.surjective _ rfl⟩
+
+namespace AffineEquiv
+
+/-- An affine equivalence restricts to an affine equivalence between an affine subspace and its
+image. -/
+noncomputable def affineSubspaceMap (e : P₁ ≃ᵃ[k] P₂) (s : AffineSubspace k P₁)
+    [Nonempty s] : s ≃ᵃ[k] s.map e.toAffineMap :=
+  .ofBijective (AffineMap.restrict.bijective e.injective)
+
+@[simp]
+theorem affineSubspaceMap_apply (e : P₁ ≃ᵃ[k] P₂) (s : AffineSubspace k P₁)
+    [Nonempty s] (x : s) : e.affineSubspaceMap s x = e x :=
+  rfl
+
+@[simp]
+theorem affineSubspaceMap_apply_symm_apply (e : P₁ ≃ᵃ[k] P₂) (s : AffineSubspace k P₁)
+    [Nonempty s] (x : s.map e.toAffineMap) : e ((e.affineSubspaceMap s).symm x) = x :=
+  congrArg Subtype.val <| (e.affineSubspaceMap s).apply_symm_apply x
+
+end AffineEquiv

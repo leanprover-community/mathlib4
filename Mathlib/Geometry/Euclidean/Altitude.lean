@@ -160,8 +160,8 @@ theorem affineSpan_pair_eq_altitude_iff {n : ℕ} [NeZero n] (s : Simplex ℝ P 
   · rintro ⟨hne, h⟩
     rw [← Submodule.mem_inf, _root_.inf_comm, ← direction_altitude] at h
     rw [vectorSpan_eq_span_vsub_set_left_ne ℝ (Set.mem_insert _ _),
-      Set.insert_diff_of_mem _ (Set.mem_singleton _),
-      Set.diff_singleton_eq_self fun h => hne (Set.mem_singleton_iff.1 h), Set.image_singleton]
+      Set.insert_sdiff_of_mem _ (Set.mem_singleton _),
+      Set.sdiff_singleton_eq_self fun h => hne (Set.mem_singleton_iff.1 h), Set.image_singleton]
     refine Submodule.eq_of_le_of_finrank_eq ?_ ?_
     · rw [Submodule.span_le]
       simpa using h
@@ -260,9 +260,10 @@ lemma height_pos {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 
 open Qq Mathlib.Meta.Positivity in
 /-- Extension for the `positivity` tactic: the height of a simplex is always positive. -/
 @[positivity height _ _]
-meta def evalHeight : PositivityExt where eval {u α} _ _ e := do
+meta def evalHeight : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@height $V $P $i1 $i2 $i3 $i4 $n $hn $s $i) =>
+    let some _ := pα? | pure .none
     assertInstancesCommute
     return .positive q(height_pos $s $i)
   | _, _, _ => throwError "not Simplex.height"

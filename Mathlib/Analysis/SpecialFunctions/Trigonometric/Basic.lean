@@ -123,6 +123,7 @@ from which one can derive all its properties. For explicit bounds on π,
 see `Mathlib/Analysis/Real/Pi/Bounds.lean`.
 
 Denoted `π`, once the `Real` namespace is opened. -/
+@[wikidata Q167]
 protected noncomputable def pi : ℝ :=
   2 * Classical.choose exists_cos_eq_zero
 
@@ -176,9 +177,10 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `π` is always positive. -/
 @[positivity Real.pi]
-meta def evalRealPi : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalRealPi : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.pi) =>
+    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.positive q(Real.pi_pos))
   | _, _, _ => throwError "not Real.pi"
