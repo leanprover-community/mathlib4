@@ -127,6 +127,8 @@ noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 where
 example {p q : ℝ≥0} (h1p : 0 < p) (h2p : p ≤ q) : q⁻¹ ≤ p⁻¹ := by
   with_reducible_and_instances exact inv_anti₀ h1p h2p
 
+@[simp] lemma mk_coe (a : ℝ≥0) (ha : 0 ≤ (a : ℝ)) : NNReal.mk (a : ℝ) ha = a := rfl
+
 -- Simp lemma to put back `n.val` into the normal form given by the coercion.
 @[simp]
 theorem val_eq_coe (n : ℝ≥0) : n.val = n :=
