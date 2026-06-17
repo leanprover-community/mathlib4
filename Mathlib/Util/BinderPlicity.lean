@@ -5,12 +5,13 @@ Authors: Fernando Leal, Thomas Murrills
 -/
 module
 
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
 public import Mathlib.Tactic.Linter.Header -- shake: keep
 public meta import Lean.Server.CodeActions.Basic
 
-
 /-!
-# Binderplicity code action
+# Binder plicity code action
 
 A code action that allows one to switch between explicit and implicit binders.
 
@@ -23,7 +24,6 @@ We make use of `Syntax.reprint` to transform our new syntax into
 a `String`. Since `Syntax.reprint` adds whitespace when working
 over synthetic syntax nodes, we produce the new syntax by modifying
 the old one instead of creating it from scratch.
-
 -/
 
 namespace Mathlib.CodeAction
