@@ -130,7 +130,7 @@ structure Congr!.Config where
   This can be used to control which side's definitions are expanded when applying the
   congruence lemma (if `preferLHS = true` then the RHS can be expanded). -/
   preferLHS : Bool := true
-  /-- Allow both sides to be partial applications.
+  /-- Allow both sides to be partial applications, and allow overapplications.
   When false, given an equality `f a b = g x y z` this means we never consider
   proving `f a = g x y`.
 
