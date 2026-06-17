@@ -233,7 +233,7 @@ lemma isCardinalPresentable_of_hasCardinalLT_of_le (J : CardinalFilteredPoset κ
       · simp [← Hom.le_iff_le f, hφ]
       · dsimp
         ext x
-        trans (c.ι.app (j x)) (g x)
+        trans c.ι.app (j x) (g x)
         · exact (hg x).symm
         · exact (ConcreteCategory.congr_hom (c.w (IsCardinalFiltered.toMax j hJ x)).symm (g x))
     · choose k a hk using fun (x : J.obj) ↦
