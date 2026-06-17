@@ -70,6 +70,22 @@ lemma hcomp_id {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) : α ◫ 𝟙 F = wh
   ext
   simp
 
+example {F G : C ⥤ D} (H : D ⥤ E) (η : F ⟶ G) (X : C) :
+    (whiskerRight η H).app X = H.map (η.app X) := by
+  simp [whiskerRight_app]
+
+example {F : C ⥤ D} (G H : D ⥤ E) (η : G ⟶ H) (X : C) :
+    (whiskerLeft F η).app X = η.app (F.obj X) := by
+  simp [whiskerLeft_app]
+
+example {F G : C ⥤ D} (H : D ⥤ E) (η : F ⟶ G) {X Y : C} (f : X ⟶ Y) :
+    (whiskerRight η H).app X ≫ (G ⋙ H).map f = (F ⋙ H).map f ≫ (whiskerRight η H).app Y := by
+  rw [← NatTrans.naturality]
+
+example {F : C ⥤ D} (G H : D ⥤ E) (η : G ⟶ H) {X Y : C} (f : X ⟶ Y) :
+    (whiskerLeft F η).app X ≫ (F ⋙ H).map f = (F ⋙ G).map f ≫ (whiskerLeft F η).app Y := by
+  rw [← NatTrans.naturality]
+
 variable (C D E)
 
 set_option backward.defeqAttrib.useBackward true in

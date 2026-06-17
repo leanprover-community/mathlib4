@@ -150,6 +150,17 @@ lemma toPrefunctor_injective {F G : C ⥤ D} (h : F.toPrefunctor = G.toPrefuncto
   obtain rfl : @map = @map' := by simpa [Functor.toPrefunctor] using h
   rfl
 
+example (F : C ⥤ D) (X : C) : F.map (𝟙 X) = 𝟙 (F.obj X) := by
+  simp
+
+example (F : C ⥤ D) {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    F.map (f ≫ g) = F.map f ≫ F.map g := by
+  simp
+
+example (F : C ⥤ D) (G : D ⥤ E) (X : C) :
+    (F ⋙ G).map (𝟙 X) = 𝟙 ((F ⋙ G).obj X) := by
+  simp only [Functor.map_id]
+
 end
 
 end Functor

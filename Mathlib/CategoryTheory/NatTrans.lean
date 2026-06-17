@@ -74,6 +74,10 @@ attribute [reassoc (attr := simp)] NatTrans.naturality
 
 attribute [grind _=_] NatTrans.naturality
 
+example {F G : C ⥤ D} (η : NatTrans F G) {X Y : C} (f : X ⟶ Y) :
+    η.app X ≫ G.map f = F.map f ≫ η.app Y := by
+  rw [← NatTrans.naturality]
+
 @[to_dual self]
 theorem congr_app {F G : C ⥤ D} {α β : NatTrans F G} (h : α = β) (X : C) : α.app X = β.app X := by
   cat_disch
