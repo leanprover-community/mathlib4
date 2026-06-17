@@ -45,13 +45,7 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
 theorem integrable_prod_sub (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {f₁ : E → F₁} {f₂ : E → F₂}
     (hf₁ : Integrable f₁) (hf₂ : Integrable f₂) :
     Integrable (fun (p : E × E) ↦ ‖B‖ * (‖f₁ (p.1 - p.2)‖ * ‖f₂ p.2‖)) (volume.prod volume) := by
-  have hconv :
-      Integrable (fun p : E × E ↦ ‖f₂ p.2‖ * ‖f₁ (p.1 - p.2)‖)
-        (volume.prod volume) := by
-    simpa only [ContinuousLinearMap.mul_apply'] using
-      ((hf₂.norm : Integrable (fun x : E ↦ ‖f₂ x‖)).convolution_integrand
-        (ContinuousLinearMap.mul ℝ ℝ) (hf₁.norm : Integrable (fun x : E ↦ ‖f₁ x‖)))
-  simpa [mul_comm, mul_left_comm, mul_assoc] using hconv.const_mul ‖B‖
+  simpa [mul_comm] using (hf₂.norm.convolution_integrand (.mul ℝ ℝ) hf₁.norm).const_mul ‖B‖
 
 open FourierTransform
 
