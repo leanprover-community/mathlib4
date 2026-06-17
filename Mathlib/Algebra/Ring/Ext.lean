@@ -71,8 +71,8 @@ namespace NonUnitalNonAssocSemiring
 theorem toDistrib_injective : Function.Injective (@toDistrib R) := by
   intro _ _ h
   ext x y
-  · exact congrArg (·.toAdd.add x y) h
-  · exact congrArg (·.toMul.mul x y) h
+  · exact congrArg (·.add x y) h
+  · exact congrArg (·.mul x y) h
 
 end NonUnitalNonAssocSemiring
 
@@ -81,7 +81,10 @@ namespace NonUnitalSemiring
 
 theorem toNonUnitalNonAssocSemiring_injective :
     Function.Injective (@toNonUnitalNonAssocSemiring R) := by
-  rintro ⟨⟩ ⟨⟩ _; congr
+  rintro ⟨⟩ ⟨⟩ h
+  congr
+  · ext x y; exact congrArg (·.add x y) h
+  · ext x y; exact congrArg (·.mul x y) h
 
 @[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalSemiring R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
@@ -135,28 +138,30 @@ defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ := by
-  have h : inst₁.toNonUnitalNonAssocSemiring = inst₂.toNonUnitalNonAssocSemiring := by
+  have h : inst₁.toAddCommMonoid = inst₂.toAddCommMonoid := by
     ext : 1 <;> assumption
   have h_zero : (inst₁.toMulZeroClass).toZero.zero = (inst₂.toMulZeroClass).toZero.zero :=
-    congrArg (fun inst => (inst.toMulZeroClass).toZero.zero) h
-  have h_one' : (inst₁.toMulZeroOneClass).toMulOneClass.toOne
-                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne := by
-    congr 2; ext : 1; exact h_mul
+    congrArg (fun inst => inst.toZero.zero) h
+  have h_mul_one : (inst₁.toMulZeroOneClass).toMulOneClass
+                = (inst₂.toMulZeroOneClass).toMulOneClass := by
+    ext : 1; exact h_mul
   have h_one : (inst₁.toMulZeroOneClass).toMulOneClass.toOne.one
-               = (inst₂.toMulZeroOneClass).toMulOneClass.toOne.one :=
-    congrArg (@One.one R) h_one'
+               = (inst₂.toMulZeroOneClass).toMulOneClass.toOne.one := by
+    congr
   have : inst₁.toAddCommMonoidWithOne = inst₂.toAddCommMonoidWithOne := by
     ext : 1 <;> assumption
   have : inst₁.toNatCast = inst₂.toNatCast :=
     congrArg (·.toNatCast) this
-  -- Split into `NonUnitalNonAssocSemiring`, `One` and `natCast` instances.
+  -- Split into `AddCommMonoid`, `MulOne` and `NatCast` instances.
   cases inst₁; cases inst₂
   congr
 
 theorem toNonUnitalNonAssocSemiring_injective :
     Function.Injective (@toNonUnitalNonAssocSemiring R) := by
-  intro _ _ _
-  ext <;> congr
+  rintro _ _ h
+  ext x y
+  · exact congrArg (·.add x y) h
+  · exact congrArg (·.mul x y) h
 
 end NonAssocSemiring
 
@@ -176,8 +181,8 @@ theorem toNonUnitalNonAssocSemiring_injective :
   intro _ _ h
   -- Use above extensionality lemma to prove injectivity by showing that `h_add` and `h_mul` hold.
   ext x y
-  · exact congrArg (·.toAdd.add x y) h
-  · exact congrArg (·.toMul.mul x y) h
+  · exact congrArg (·.add x y) h
+  · exact congrArg (·.mul x y) h
 
 end NonUnitalNonAssocRing
 
@@ -198,13 +203,15 @@ theorem toNonUnitalSemiring_injective :
     Function.Injective (@toNonUnitalSemiring R) := by
   intro _ _ h
   ext x y
-  · exact congrArg (·.toAdd.add x y) h
-  · exact congrArg (·.toMul.mul x y) h
+  · exact congrArg (·.add x y) h
+  · exact congrArg (·.mul x y) h
 
 theorem toNonUnitalNonAssocring_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
-  intro _ _ _
-  ext <;> congr
+  rintro _ _ h
+  ext x y
+  · exact congrArg (·.add x y) h
+  · exact congrArg (·.mul x y) h
 
 end NonUnitalRing
 
@@ -262,13 +269,15 @@ theorem toNonAssocSemiring_injective :
     Function.Injective (@toNonAssocSemiring R) := by
   intro _ _ h
   ext x y
-  · exact congrArg (·.toAdd.add x y) h
-  · exact congrArg (·.toMul.mul x y) h
+  · exact congrArg (·.add x y) h
+  · exact congrArg (·.mul x y) h
 
 theorem toNonUnitalNonAssocring_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
-  intro _ _ _
-  ext <;> congr
+  rintro _ _ h
+  ext x y
+  · exact congrArg (·.add x y) h
+  · exact congrArg (·.mul x y) h
 
 end NonAssocRing
 
@@ -296,15 +305,15 @@ theorem toNonUnitalSemiring_injective :
     Function.Injective (@toNonUnitalSemiring R) := by
   intro _ _ h
   ext x y
-  · exact congrArg (·.toAdd.add x y) h
-  · exact congrArg (·.toMul.mul x y) h
+  · exact congrArg (·.add x y) h
+  · exact congrArg (·.mul x y) h
 
 theorem toNonAssocSemiring_injective :
     Function.Injective (@toNonAssocSemiring R) := by
   intro _ _ h
   ext x y
-  · exact congrArg (·.toAdd.add x y) h
-  · exact congrArg (·.toMul.mul x y) h
+  · exact congrArg (·.add x y) h
+  · exact congrArg (·.mul x y) h
 
 end Semiring
 
@@ -333,22 +342,22 @@ theorem toNonUnitalRing_injective :
     Function.Injective (@toNonUnitalRing R) := by
   intro _ _ h
   ext x y
-  · exact congrArg (·.toAdd.add x y) h
-  · exact congrArg (·.toMul.mul x y) h
+  · exact congrArg (·.add x y) h
+  · exact congrArg (·.mul x y) h
 
 theorem toNonAssocRing_injective :
     Function.Injective (@toNonAssocRing R) := by
   intro _ _ h
   ext x y
-  · exact congrArg (·.toAdd.add x y) h
-  · exact congrArg (·.toMul.mul x y) h
+  · exact congrArg (·.add x y) h
+  · exact congrArg (·.mul x y) h
 
 theorem toSemiring_injective :
     Function.Injective (@toSemiring R) := by
   intro _ _ h
   ext x y
-  · exact congrArg (·.toAdd.add x y) h
-  · exact congrArg (·.toMul.mul x y) h
+  · exact congrArg (·.add x y) h
+  · exact congrArg (·.mul x y) h
 
 end Ring
 
