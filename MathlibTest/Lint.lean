@@ -2,7 +2,7 @@ import Batteries.Tactic.Alias
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.ToAdditive
 /--
-warning: The namespace `add` is duplicated in the declaration `add.add`
+warning: The namespace `add` is duplicated in the declaration `add.add`.
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/
@@ -12,7 +12,7 @@ def add.add := True
 namespace Foo
 
 /--
-warning: The namespace `Foo` is duplicated in the declaration `Foo.Foo.foo`
+warning: The namespace `Foo` is duplicated in the declaration `Foo.Foo.foo`.
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/
@@ -21,7 +21,7 @@ def Foo.foo := True
 
 set_option linter.translateRedundant false in
 /--
-warning: The namespace `add` is duplicated in the declaration `Foo.add.add`
+warning: The namespace `add` is duplicated in the declaration `Foo.add.add`.
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/
@@ -37,7 +37,7 @@ run_cmd Lean.Elab.Command.liftTermElabM do
 namespace Nat
 
 /--
-warning: The namespace `Nat` is duplicated in the declaration `Foo.Nat.Nat.Nats`
+warning: The namespace `Nat` is duplicated in the declaration `Foo.Nat.Nat.Nats`.
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/
@@ -50,11 +50,11 @@ end Foo
 namespace add
 
 /--
-warning: The namespace `add` is duplicated in the declaration `add.add`
+warning: The namespace `add` is duplicated in the declaration `add.add`.
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 ---
-warning: The namespace `add` is duplicated in the declaration `add.add`
+warning: The namespace `add` is duplicated in the declaration `add.add`.
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/
@@ -74,7 +74,7 @@ set_option linter.style.nameCheck true in
 theorem double__underscore : True := trivial
 
 /--
-warning: The namespace `Foo` is duplicated in the declaration `Foo.Foo`
+warning: The namespace `Foo` is duplicated in the declaration `Foo.Foo`.
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/
@@ -82,7 +82,7 @@ Note: This linter can be disabled with `set_option linter.dupNamespace false`
 lemma Foo.Foo : True := trivial
 
 /--
-warning: The namespace `Foo` is duplicated in the declaration `Bar.Foo.Foo`
+warning: The namespace `Foo` is duplicated in the declaration `Bar.Foo.Foo`.
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/
@@ -90,7 +90,7 @@ Note: This linter can be disabled with `set_option linter.dupNamespace false`
 lemma Bar.Foo.Foo : True := trivial
 
 /--
-warning: The namespace `Foo` is duplicated in the declaration `Foo.Foo.Bar`
+warning: The namespace `Foo` is duplicated in the declaration `Foo.Foo.Bar`.
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/
@@ -98,7 +98,7 @@ Note: This linter can be disabled with `set_option linter.dupNamespace false`
 lemma Foo.Foo.Bar : True := trivial
 
 /--
-warning: The namespace `Foo` is duplicated in the declaration `Foo.Foo.Bar.Baz.hoge`
+warning: The namespace `Foo` is duplicated in the declaration `Foo.Foo.Bar.Baz.hoge`.
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/
@@ -109,7 +109,7 @@ lemma Foo.Foo.Bar.Baz.hoge : True := trivial
 lemma Foo.Foos.Bar.Baz : True := trivial
 
 /--
-warning: The namespace `Foo` is duplicated in the declaration `Foo.Bar.Foo.baz`
+warning: The namespace `Foo` is duplicated in the declaration `Foo.Bar.Foo.baz`.
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/
@@ -117,7 +117,7 @@ Note: This linter can be disabled with `set_option linter.dupNamespace false`
 lemma Foo.Bar.Foo.baz : True := trivial
 
 /--
-warning: The namespaces `Foo, Bar` are duplicated in the declaration `Foo.Bar.Foo.Bar.baz`
+warning: The namespaces `Foo` and `Bar` are duplicated in the declaration `Foo.Bar.Foo.Bar.baz`.
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/
@@ -125,7 +125,7 @@ Note: This linter can be disabled with `set_option linter.dupNamespace false`
 lemma Foo.Bar.Foo.Bar.baz : True := trivial
 
 /--
-warning: The namespaces `Foo, Baz` are duplicated in the declaration `Foo.Bar.Baz.Hoge.Foo.Baz.baz`
+warning: The namespaces `Foo` and `Baz` are duplicated in the declaration `Foo.Bar.Baz.Hoge.Foo.Baz.baz`.
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/
@@ -133,7 +133,7 @@ Note: This linter can be disabled with `set_option linter.dupNamespace false`
 lemma Foo.Bar.Baz.Hoge.Foo.Baz.baz : True := trivial
 
 /--
-warning: The namespaces `Foo, Bar` are duplicated in the declaration `Foo.Bar.Baz.Hoge.Foo.Bar.baz`
+warning: The namespaces `Foo` and `Bar` are duplicated in the declaration `Foo.Bar.Baz.Hoge.Foo.Bar.baz`.
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/
@@ -141,7 +141,7 @@ Note: This linter can be disabled with `set_option linter.dupNamespace false`
 lemma Foo.Bar.Baz.Hoge.Foo.Bar.baz : True := trivial
 
 /--
-warning: The namespaces `Foo, Bar, Baz` are duplicated in the declaration `Foo.Bar.Baz.Hoge.Foo.Bar.Baz.az`
+warning: The namespaces `Foo`, `Bar`, and `Baz` are duplicated in the declaration `Foo.Bar.Baz.Hoge.Foo.Bar.Baz.az`.
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/
@@ -151,7 +151,7 @@ lemma Foo.Bar.Baz.Hoge.Foo.Bar.Baz.az : True := trivial
 -- The linter detects the final name and not just what's written in the syntax.
 namespace Foo.Bar
 /--
-warning: The namespaces `Foo, Bar` are duplicated in the declaration `Foo.Bar.Foo.Bar.baz'`
+warning: The namespaces `Foo` and `Bar` are duplicated in the declaration `Foo.Bar.baz'`.
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/
@@ -161,7 +161,7 @@ end Foo.Bar
 
 -- We detect additional generated names.
 /--
-warning: The namespace `AddSubgroup` is duplicated in the declaration `AddSubgroup.AddSubgroup.foo`
+warning: The namespace `AddSubgroup` is duplicated in the declaration `AddSubgroup.AddSubgroup.foo`.
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/
@@ -173,7 +173,7 @@ def Subgroup.AddSubgroup.foo := 42
 -- The linter works on deprecated decls: this is important
 -- since people can forget to add a `_root_` when adding deprecations.
 /--
-warning: The namespace `Foo` is duplicated in the declaration `Foo.Bar.Foo.baz'`
+warning: The namespace `Foo` is duplicated in the declaration `Foo.Bar.Foo.baz'`.
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/
