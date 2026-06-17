@@ -751,7 +751,7 @@ theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCor
     e.prod e' ∈ contDiffGroupoid n (I.prod I') := by
   obtain ⟨he, he_symm⟩ := he
   obtain ⟨he', he'_symm⟩ := he'
-  constructor <;> simp only [PartialEquiv.prod_source, OpenPartialHomeomorph.prod_toPartialEquiv,
+  constructor <;> simp only [OpenPartialHomeomorph.prod_toPartialHomeomorph,
     contDiffPregroupoid]
   · have h3 := ContDiffOn.prodMap he he'
     rw [← I.image_eq, ← I'.image_eq, prod_image_image_eq] at h3
@@ -1037,7 +1037,7 @@ set_option linter.unusedVariables false in
 The definition of `TangentSpace` is not reducible so that type class inference
 does not pick wrong instances.
 -/
-@[nolint unusedArguments]
+@[nolint unusedArguments, wikidata Q909601]
 def TangentSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)

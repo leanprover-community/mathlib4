@@ -220,13 +220,14 @@ open scoped BigOperators
 attribute [local instance] monadLiftOptionMetaM in
 /-- Positivity extension for `Finset.expect`. -/
 @[positivity Finset.expect _ _]
-meta def evalFinsetExpect : PositivityExt where eval {u α} zα pα e := do
+meta def evalFinsetExpect : PositivityExt where eval {u α} zα pα? e := do
+  let some pα := pα? | pure .none
   match e with
   | ~q(@Finset.expect $ι _ $instα $instmod $s $f) =>
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
     have body : Q($α) := .betaRev f #[i]
     let rbody ← core zα pα body
-    let p_pos : Option Q(0 < $e) := ← (do
+    let p_pos : Option Q(0 < $e) ← (do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
       let some ps ← proveFinsetNonempty s | pure none
       let .some pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
