@@ -219,24 +219,41 @@ For an even function a single `O(1)` bound along `atTop` already suffices
 bound to an `atBot` bound (`Function.Even.isBigO_atBot_of_isBigO_atTop`).
 -/
 
-variable {E : Type*} [SeminormedAddCommGroup E]
+variable {E D : Type*} [SeminormedAddCommGroup E] [PseudoMetricSpace D]
 
-/-- A continuous function `f : ℝ → E` has bounded range if and only if it is `O(1)`
-at both `atTop` and `atBot`. -/
+/--
+A continuous function `f` has bounded range if and only if it is `O(1)` with respect to the
+cocompact filter.
+-/
+theorem Continuous.isBounded_range_iff_isBigO {f : D → E} (hf : Continuous f) :
+    IsBounded (range f) ↔ f =O[cocompact D] (1 : D → ℝ) := by
+  constructor <;> intro h
+  · rw [isBounded_iff_forall_norm_le] at h
+    obtain ⟨c, hc⟩ := h
+    simp only [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] at hc
+    rw [isBigO_iff]
+    use c
+    apply Eventually.of_forall
+    simpa using hc
+  · simp_rw [isBigO_iff, Filter.Eventually, Filter.mem_cocompact] at h
+    simp only [Pi.one_apply, norm_one, mul_one] at h
+    obtain ⟨c, t, hcompact, h⟩ := h
+    rw [← Set.image_union_image_compl_eq_range (s := t)]
+    apply IsBounded.union
+    · apply (IsCompact.image hcompact hf).isBounded
+    · rw [isBounded_iff_forall_norm_le]
+      refine ⟨c, fun x hx ↦ ?_⟩
+      rw [Set.mem_image] at hx
+      obtain ⟨y, hy, rfl⟩ := hx
+      simpa using mem_of_mem_of_subset hy h
+
+/--
+A continuous function `f : ℝ → E` has bounded range if and only if it is `O(1)` at both `atTop` and
+`atBot`.
+-/
 theorem Continuous.isBounded_range_iff_isBigO_atTop_atBot {f : ℝ → E} (hf : Continuous f) :
     IsBounded (range f) ↔ f =O[atTop] (1 : ℝ → ℝ) ∧ f =O[atBot] (1 : ℝ → ℝ) := by
-  constructor <;> intro H
-  · constructor
-    all_goals
-    · rw [isBigO_iff]
-      obtain ⟨C, hC⟩ := H.exists_pos_norm_le
-      exact ⟨C, by simp_all⟩
-  · obtain ⟨C₁, M₁, hC₁⟩ : ∃ C₁ M₁, ∀ x ≥ M₁, ‖f x‖ ≤ C₁ := by simp_all [isBigO_iff]
-    obtain ⟨C₂, M₂, hC₂⟩ : ∃ C₂ M₂, ∀ x ≤ M₂, ‖f x‖ ≤ C₂ := by simp_all [isBigO_iff]
-    obtain ⟨C₃, hC₃⟩ : ∃ C₃, ∀ x ∈ Icc M₂ M₁, ‖f x‖ ≤ C₃ :=
-      isCompact_Icc.exists_bound_of_continuousOn hf.continuousOn
-    rw [isBounded_iff_forall_norm_le]
-    exact ⟨max C₁ (max C₂ C₃), by grind⟩
+  rw [hf.isBounded_range_iff_isBigO, cocompact_eq_atBot_atTop, isBigO_sup, and_comm]
 
 /-- An even function that is `O(1)` at `atTop` is also `O(1)` at `atBot`. -/
 theorem Function.Even.isBigO_atBot_of_isBigO_atTop {f : ℝ → E} (heven : Function.Even f)
