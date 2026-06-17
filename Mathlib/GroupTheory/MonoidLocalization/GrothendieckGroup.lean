@@ -159,4 +159,20 @@ noncomputable def lift : (S →ₙ* G) ≃ (GrothendieckGroup S →* G) :=
 lemma lift_of (f : S →ₙ* G) (s : S) : lift f (of s) = f s := by
   simp [lift, liftWithOne, of]
 
+/-- The Grothendieck group of a group is isomorphic to the group itself. -/
+@[to_additive
+ /-- The Grothendieck group of an additive group is isomorphic to the group itself. -/]
+noncomputable def groupMulEquiv : GrothendieckGroup G ≃* G :=
+  (lift (MulHom.id G)).toMulHom.toMulEquiv of (by
+    ext x
+    simp only [MulHom.coe_comp, MulHom.coe_mk, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+      comp_apply, MulHom.id_apply]
+    induction x
+    · simp
+    · simp only [map_inv, lift_of, MulHom.id_apply]
+      simp only [← MonoidHom.ofMulHom_apply of (_ : G), map_inv]
+    · simp only [map_div, lift_of, MulHom.id_apply]
+      simp only [← MonoidHom.ofMulHom_apply of (_ : G), map_div]
+  ) (by ext; simp)
+
 end Algebra.GrothendieckGroup
