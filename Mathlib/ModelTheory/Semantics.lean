@@ -941,6 +941,13 @@ theorem realize_exClosure [DecidableEq α] (φ : L.Formula α) :
       ∃ v : φ.freeVarFinset → M, Formula.Realize (φ.restrictFreeVar id) v := by
   simp [Sentence.Realize, Formula.exClosure, Formula.realize_iExs]
 
+theorem realize_exClosure_of_realize_equivSentence [DecidableEq α] [L[[α]].Structure M]
+    [(L.lhomWithConstants α).IsExpansionOn M] {φ : L.Formula α}
+    (h : (Formula.equivSentence φ).Realize M) : φ.exClosure.Realize M := by
+  rw [Formula.realize_exClosure]
+  exists fun a => (L.con (a : α) : M)
+  simpa [Formula.Realize, BoundedFormula.realize_restrictFreeVar] using h
+
 theorem exists_realize_equivSentence_iff_realize_exClosure
     [DecidableEq α] [Nonempty M] {φ : L.Formula α} :
     (∃ v : α → M,
