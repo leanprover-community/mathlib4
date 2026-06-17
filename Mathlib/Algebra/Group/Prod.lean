@@ -260,15 +260,15 @@ variable {M' : Type*} {N' : Type*} [Mul M] [Mul N] [Mul M'] [Mul N'] [Mul P] (f 
   (g : N →ₙ* N')
 
 /-- `Prod.map` as a `MonoidHom`. -/
-@[to_additive prodMap /-- `Prod.map` as an `AddMonoidHom` -/]
+@[to_additive /-- `Prod.map` as an `AddMonoidHom` -/]
 def prodMap : M × N →ₙ* M' × N' :=
   (f.comp (fst M N)).prod (g.comp (snd M N))
 
-@[to_additive prodMap_def]
+@[to_additive]
 theorem prodMap_def : prodMap f g = (f.comp (fst M N)).prod (g.comp (snd M N)) :=
   rfl
 
-@[to_additive (attr := simp) coe_prodMap]
+@[to_additive (attr := simp)]
 theorem coe_prodMap : ⇑(prodMap f g) = Prod.map f g :=
   rfl
 
@@ -427,15 +427,15 @@ variable {M' : Type*} {N' : Type*} [MulOneClass M'] [MulOneClass N'] [MulOneClas
   (f : M →* M') (g : N →* N')
 
 /-- `Prod.map` as a `MonoidHom`. -/
-@[to_additive prodMap /-- `Prod.map` as an `AddMonoidHom`. -/]
+@[to_additive /-- `Prod.map` as an `AddMonoidHom`. -/]
 def prodMap : M × N →* M' × N' :=
   (f.comp (fst M N)).prod (g.comp (snd M N))
 
-@[to_additive prodMap_def]
+@[to_additive]
 theorem prodMap_def : prodMap f g = (f.comp (fst M N)).prod (g.comp (snd M N)) :=
   rfl
 
-@[to_additive (attr := simp) coe_prodMap]
+@[to_additive (attr := simp)]
 theorem coe_prodMap : ⇑(prodMap f g) = Prod.map f g :=
   rfl
 
