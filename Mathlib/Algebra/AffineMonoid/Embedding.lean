@@ -40,9 +40,9 @@ variable (M) in
 noncomputable def embedding : M →+ FreeAbelianGroup (Fin (dim M)) :=
   .comp (FreeAbelianGroup.equivFinsupp _).symm.toAddMonoidHom <|
     .comp (Module.finBasis ℤ _).repr.toAddMonoidHom
-      (AddMonoidHom.ofAddHom GrothendieckAddGroup.of)
+      (AddMonoidHomClass.toAddMonoidHom GrothendieckAddGroup.of)
 
 lemma embedding_injective : Injective (embedding M) := by
-  simpa [embedding] using AddMonoidHom.ofAddHom_map_injective GrothendieckAddGroup.of_injective
+  simpa [embedding] using GrothendieckAddGroup.of_injective
 
 end AffineAddMonoid
