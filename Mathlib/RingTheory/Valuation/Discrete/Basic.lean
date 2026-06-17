@@ -108,7 +108,7 @@ lemma generator_zpowers_eq_range (K : Type*) [Field K] (w : Valuation K Γ) [IsR
 
 lemma generator_mem_range (K : Type*) [Field K] (w : Valuation K Γ) [IsRankOneDiscrete w] :
     ↑(generator w) ∈ range w := by
-  apply diff_subset
+  apply sdiff_subset
   rw [← generator_zpowers_eq_range]
   exact ⟨generator w, by simp⟩
 
