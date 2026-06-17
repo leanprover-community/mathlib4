@@ -471,7 +471,7 @@ noncomputable def maximalIntegralCurveDomain [CompleteSpace E]
       ht₀'_eq htMin_lt_t₀ ht₀_lt_tMax hpl_instance))
 
 open Classical in
-private lemma maximalIntegralCurve_spec_of_exists [CompleteSpace E]
+private lemma maximalIntegralCurve_spec [CompleteSpace E]
     (tMin tMax : ℝ) (a r L K : ℝ≥0) (t₀' : Icc tMin tMax)
     (ht₀'_eq : (t₀' : ℝ) = t₀) (htMin_lt_t₀ : tMin < t₀) (ht₀_lt_tMax : t₀ < tMax)
     (hpl_instance : IsPicardLindelof v t₀' x₀ a r L K) :
@@ -489,23 +489,6 @@ private lemma maximalIntegralCurve_spec_of_exists [CompleteSpace E]
       (Classical.choose_spec
         (exists_maximal_integralCurveOn v t₀ x₀ tMin tMax a r L K t₀'
           ht₀'_eq htMin_lt_t₀ ht₀_lt_tMax hpl_instance)))
-
-open Classical in
-lemma maximalIntegralCurve_spec [CompleteSpace E]
-    (tMin tMax : ℝ) (a r L K : ℝ≥0) (t₀' : Icc tMin tMax)
-    (ht₀'_eq : (t₀' : ℝ) = t₀) (htMin_lt_t₀ : tMin < t₀) (ht₀_lt_tMax : t₀ < tMax)
-    (hpl_instance : IsPicardLindelof v t₀' x₀ a r L K) :
-    IsMaximalIntegralCurveOn v
-      (maximalIntegralCurve v t₀ x₀ tMin tMax a r L K t₀' ht₀'_eq htMin_lt_t₀ ht₀_lt_tMax
-        hpl_instance)
-      (maximalIntegralCurveDomain v t₀ x₀ tMin tMax a r L K t₀' ht₀'_eq htMin_lt_t₀ ht₀_lt_tMax
-        hpl_instance)
-      ∧ t₀ ∈ maximalIntegralCurveDomain v t₀ x₀ tMin tMax a r L K t₀' ht₀'_eq htMin_lt_t₀
-        ht₀_lt_tMax hpl_instance
-      ∧ maximalIntegralCurve v t₀ x₀ tMin tMax a r L K t₀' ht₀'_eq htMin_lt_t₀ ht₀_lt_tMax
-        hpl_instance t₀ = x₀ := by
-  simpa using maximalIntegralCurve_spec_of_exists v t₀ x₀ tMin tMax a r L K t₀'
-    ht₀'_eq htMin_lt_t₀ ht₀_lt_tMax hpl_instance
 
 lemma maximalIntegralCurve_isMaximal [CompleteSpace E]
     (tMin tMax : ℝ) (a r L K : ℝ≥0) (t₀' : Icc tMin tMax)
