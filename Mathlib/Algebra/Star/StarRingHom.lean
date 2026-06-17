@@ -92,7 +92,7 @@ variable [NonUnitalNonAssocSemiring D] [Star D]
 
 instance : FunLike (A →⋆ₙ+* B) A B where
   coe f := f.toFun
-  coe_injective' := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
+  coe_injective := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 
 instance : NonUnitalRingHomClass (A →⋆ₙ+* B) A B where
   map_mul f := f.map_mul'
@@ -310,7 +310,7 @@ instance : StarRingEquivClass (A ≃⋆+* B) A B where
 /-- Helper instance for cases where the inference via `EquivLike` is too hard. -/
 instance : FunLike (A ≃⋆+* B) A B where
   coe f := f.toFun
-  coe_injective' := DFunLike.coe_injective
+  coe_injective := DFunLike.coe_injective
 
 instance : CoeOut (A ≃⋆+* B) (A ≃+* B) where coe := toRingEquiv
 

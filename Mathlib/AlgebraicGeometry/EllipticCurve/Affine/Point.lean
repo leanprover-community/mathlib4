@@ -7,7 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
 public import Mathlib.LinearAlgebra.FreeModule.Norm
-public import Mathlib.RingTheory.ClassGroup
+public import Mathlib.RingTheory.ClassGroup.Basic
 public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!

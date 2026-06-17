@@ -62,11 +62,11 @@ namespace LieSubalgebra
 
 instance : SetLike (LieSubalgebra R L) L where
   coe L' := L'.carrier
-  coe_injective' L' L'' h := by
+  coe_injective L' L'' h := by
     rcases L' with ⟨⟨⟩⟩
     rcases L'' with ⟨⟨⟩⟩
     congr
-    exact SetLike.coe_injective' h
+    exact SetLike.coe_injective h
 
 instance : PartialOrder (LieSubalgebra R L) := .ofSetLike (LieSubalgebra R L) L
 

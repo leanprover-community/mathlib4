@@ -146,14 +146,6 @@ class IsFiniteType (M : SheafOfModules.{u} R) : Prop where
   exists_localGeneratorsData (M) :
     ∃ (σ : (LocalGeneratorsData.{u'} M)), σ.IsFiniteType
 
-/-- A choice of local generators when `M` is a sheaf of modules of finite type. -/
-@[deprecated "Use the lemma `IsFiniteType.exists_localGeneratorsData` instead."
-  (since := "2025-10-28")]
-noncomputable def localGeneratorsDataOfIsFiniteType (M : SheafOfModules.{u} R)
-    [M.IsFiniteType] :
-    M.LocalGeneratorsData :=
-  (IsFiniteType.exists_localGeneratorsData M).choose
-
 end
 
 noncomputable section
@@ -182,24 +174,25 @@ then we obtain generating sections of `F.obj M`. -/
 @[simps]
 def GeneratingSections.map : (F.obj M).GeneratingSections where
   I := G.I
-  s := (freeHomEquiv (F.obj M)) (G.mapFreeHom F η)
+  s := freeHomEquiv (F.obj M) (G.mapFreeHom F η)
   epi := by
     simp only [mapFreeHom, Equiv.symm_apply_apply, epi_comp_iff_of_epi]
-    have : Epi G.π := inferInstance
     infer_instance
 
-lemma GeneratingSections.map_π_eq (G : M.GeneratingSections)
-    (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S) [PreservesColimitsOfSize.{u, u} F]
-    (η : unit S ≅ F.obj (unit R)) : (G.map F η).π = (mapFreeIso F G.I η).hom ≫ F.map G.π :=
+instance [G.IsFiniteType] : (G.map F η).IsFiniteType where
+  finite := inferInstanceAs (Finite G.I)
+
+lemma GeneratingSections.map_π_eq : (G.map F η).π = (mapFreeIso F G.I η).hom ≫ F.map G.π :=
   (F.obj M).freeHomEquiv.symm_apply_eq.mpr rfl
+
+set_option backward.isDefEq.respectTransparency false in
+instance [IsIso G.π] : IsIso (G.map F η).π := by
+  rw [GeneratingSections.map_π_eq]
+  infer_instance
 
 variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
   [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}] [HasBinaryProducts C]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
-
-/-- The restriction of generating sections to `Over X` -/
-abbrev GeneratingSections.over {M : SheafOfModules.{u} R} (G : M.GeneratingSections) (X : C) :
-    (M.over X).GeneratingSections := G.map (pushforward (𝟙 (R.over X))) (Iso.refl _)
 
 /-- Given `G : M.GeneratingSections`, we naturally obtain `M.LocalGeneratorsData` using the
 trivial cover of `C`. -/
