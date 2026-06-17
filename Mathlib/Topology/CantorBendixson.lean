@@ -123,27 +123,23 @@ theorem mem_fixedPoints_of_iteratedDerivedSet_succ_eq (ha : sᵈ[a + 1] = sᵈ[a
   rw [Function.mem_fixedPoints_iff]
   simpa [iteratedDerivedSet_succ] using ha.symm
 
-variable (s)
-
-theorem iteratedDerivedSet_mem_fixedPoints :
+theorem iteratedDerivedSet_mem_fixedPoints (s : Set X) :
     ∃ a : Ordinal, sᵈ[a] ∈ fixedPoints relDerivedSet := by
   refine ⟨(Order.succ #(Set X)).ord,
     gfpApprox_ord_mem_fixedPoint relDerivedSet relDerivedSet_subset⟩
 
 /-- The perfect kernel of a set, defined as the intersection of all iterated derived sets. It is
 the largest perfect subset of the original set. -/
-def perfectKernel : Set X :=
+def perfectKernel (s : Set X) : Set X :=
   ⋂ a : Ordinal, sᵈ[a]
 
-theorem perfectKernel_subset_iteratedDerivedSet (a : Ordinal) :
+theorem perfectKernel_subset_iteratedDerivedSet (s : Set X) (a : Ordinal) :
     perfectKernel s ⊆ sᵈ[a] :=
   Set.iInter_subset _ a
 
-theorem perfectKernel_subset :
+theorem perfectKernel_subset (s : Set X) :
     perfectKernel s ⊆ s := by
   simpa [iteratedDerivedSet_zero] using perfectKernel_subset_iteratedDerivedSet s 0
-
-variable {s}
 
 theorem perfectKernel_mono (hst : s ⊆ t) :
     perfectKernel s ⊆ perfectKernel t := by
