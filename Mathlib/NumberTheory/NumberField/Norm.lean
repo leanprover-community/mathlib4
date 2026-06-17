@@ -16,6 +16,7 @@ rings of integers.
 
 ## Main definitions
 * `RingOfIntegers.norm K` : `Algebra.norm` as a morphism `(𝓞 L) →* (𝓞 K)`.
+
 ## Main results
 * `RingOfIntegers.dvd_norm` : if `L/K` is a finite Galois extension of fields, then, for all
   `(x : 𝓞 L)` we have that `x ∣ algebraMap (𝓞 K) (𝓞 L) (norm K x)`.

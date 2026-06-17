@@ -225,6 +225,7 @@ theorem appIso_inv_app (U) :
     (f.appIso U).inv ≫ f.app (f ''ᵁ U) = X.presheaf.map (eqToHom (preimage_image_eq f U)).op :=
   (PresheafedSpace.IsOpenImmersion.invApp_app _ _).trans (by rw [eqToHom_op])
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp), elementwise nosimp]
 lemma appLE_appIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] {U : Y.Opens}
     {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U) :
@@ -297,7 +298,7 @@ lemma _root_.AlgebraicGeometry.IsOpenImmersion.of_isLocalization {R S} [CommRing
     (Submonoid.powers f) S (Localization.Away f)).symm.toAlgHom.toRingHom) := by
     exact inferInstanceAs (IsIso <| (IsLocalization.algEquiv
       (Submonoid.powers f) S (Localization.Away f)).toRingEquiv.toCommRingCatIso.inv)
-  simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, AlgEquiv.toAlgHom_toRingHom] at H ⊢
+  simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toAlgHom_toRingHom] at H ⊢
   infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
@@ -404,7 +405,7 @@ lemma Scheme.ofRestrict_appLE (V W e) :
 lemma Scheme.ofRestrict_appIso (U) :
     (X.ofRestrict h).appIso U = Iso.refl _ := by
   ext1
-  simp only [restrict_presheaf_obj, Hom.appIso_hom', ofRestrict_appLE, homOfLE_refl, op_id,
+  simp only [Hom.appIso_hom', ofRestrict_appLE, homOfLE_refl, op_id,
     CategoryTheory.Functor.map_id, Iso.refl_hom]
 
 @[simp]
@@ -467,7 +468,7 @@ theorem _root_.AlgebraicGeometry.isIso_iff_isIso_stalkMap {X Y : Scheme.{u}} (f 
     IsOpenImmersion.iff_isIso_stalkMap, and_comm, ← and_assoc]
   refine and_congr ⟨?_, ?_⟩ Iff.rfl
   · rintro ⟨h₁, h₂⟩
-    convert_to
+    convert_to!
       IsIso
         (TopCat.isoOfHomeo
           (Equiv.toHomeomorphOfContinuousOpen
@@ -512,11 +513,13 @@ instance hasLimit_cospan_forget_of_right' :
     HasLimit (cospan ((cospan g f ⋙ forget).map Hom.inl) ((cospan g f ⋙ forget).map Hom.inr)) :=
   show HasLimit (cospan ((forget).map g) ((forget).map f)) from inferInstance
 
+set_option backward.defeqAttrib.useBackward true in
 instance forgetCreatesPullbackOfLeft : CreatesLimit (cospan f g) forget :=
   createsLimitOfFullyFaithfulOfIso
     (PresheafedSpace.IsOpenImmersion.toScheme Y (pullback.snd f.toLRSHom g.toLRSHom).toShHom.hom)
     (eqToIso (by simp) ≪≫ HasLimit.isoOfNatIso (diagramIsoCospan _).symm)
 
+set_option backward.defeqAttrib.useBackward true in
 instance forgetCreatesPullbackOfRight : CreatesLimit (cospan g f) forget :=
   createsLimitOfFullyFaithfulOfIso
     (PresheafedSpace.IsOpenImmersion.toScheme Y (pullback.fst g.toLRSHom f.toLRSHom).1)
@@ -551,6 +554,7 @@ instance [IsOpenImmersion g] :
   change IsOpenImmersion (_ ≫ f)
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance : PreservesLimit (cospan f g) Scheme.forgetToTop := by
   delta Scheme.forgetToTop
   refine @Limits.comp_preservesLimit _ _ _ _ _ _ (K := cospan f g) _ _ (F := forget)
@@ -654,7 +658,7 @@ theorem isPullback_lift_id
     {X U Y : Scheme.{u}} (f : X ⟶ Y) (g : U ⟶ Y) [IsOpenImmersion g]
     (H : Set.range f ⊆ Set.range g) :
     IsPullback (IsOpenImmersion.lift g f H) (𝟙 _) g f := by
-  convert IsPullback.of_id_snd.paste_horiz (IsKernelPair.id_of_mono g)
+  convert! IsPullback.of_id_snd.paste_horiz (IsKernelPair.id_of_mono g)
   · exact (Category.comp_id _).symm
   · simp
 
@@ -704,8 +708,10 @@ lemma isPullback {U V X Y : Scheme.{u}} (g : U ⟶ V) (iU : U ⟶ X) (iV : V ⟶
     (H' : f ⁻¹ᵁ iV.opensRange = iU.opensRange) : IsPullback g iU iV f := by
   let e := IsOpenImmersion.isoOfRangeEq (pullback.snd iV f) iU
     (by simpa [range_pullbackSnd] using congr(($H').1))
-  convert (IsPullback.of_horiz_isIso (show CommSq e.inv iU (pullback.snd iV f) (𝟙 X) from
-    ⟨by simp [e]⟩)).paste_horiz (IsPullback.of_hasPullback iV f)
+  convert!
+    (IsPullback.of_horiz_isIso
+          (show CommSq e.inv iU (pullback.snd iV f) (𝟙 X) from ⟨by simp [e]⟩)).paste_horiz
+      (IsPullback.of_hasPullback iV f)
   simp [← cancel_mono iV, e, pullback.condition, H]
 
 /-- If `f` is an open immersion `X ⟶ Y`, the global sections of `X`

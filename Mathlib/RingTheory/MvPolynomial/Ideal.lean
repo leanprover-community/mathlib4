@@ -95,7 +95,7 @@ theorem pow_idealOfVars (n : ℕ) :
 
 /-- The `n`th power of `idealOfVars` is spanned by all monic monomials of total degree `n`. -/
 theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
-    .span ((monomial · 1) '' (degree ⁻¹' {n})) := by
+    .span ((monomial · 1) '' degree ⁻¹' {n}) := by
   rw [idealOfVars, Ideal.span, Submodule.span_pow, ← Set.image_univ,
     image_pow_eq_finsuppProd_image]
   simp [monomial_eq, Set.preimage, degree]
@@ -167,8 +167,9 @@ lemma span_leadingTerm_eq_span_monomial {B : Set (MvPolynomial σ R)}
   · rw [Set.mem_preimage, SetLike.mem_coe, ← C_mul_leadingCoeff_monomial_degree]
     exact Ideal.mul_mem_left _ _ (Ideal.subset_span ⟨_, hp, rfl⟩)
   · rw [Set.mem_preimage, SetLike.mem_coe]
-    convert (span <| m.leadingTerm '' B).mul_mem_left
-      (MvPolynomial.C (hB p hp).unit⁻¹.val) <| subset_span ⟨p, hp, rfl⟩
+    convert!
+      (span <| m.leadingTerm '' B).mul_mem_left (MvPolynomial.C (hB p hp).unit⁻¹.val) <|
+        subset_span ⟨p, hp, rfl⟩
     rw [← C_mul_leadingCoeff_monomial_degree, ← mul_assoc, ← map_mul,
       IsUnit.val_inv_mul, MvPolynomial.C_1, one_mul]
 

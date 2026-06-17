@@ -5,7 +5,7 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 
 /-!
 # The five lemma in terms of modules

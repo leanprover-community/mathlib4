@@ -189,7 +189,7 @@ theorem lintegral_iSup_directed [Countable β] {f : β → α → ℝ≥0∞} (h
           apply_rules [hz₁, hz₂]
         · simp only [aeSeq, hx, if_false]
           exact le_rfl
-  convert lintegral_iSup_directed_of_measurable (aeSeq.measurable hf p) h_ae_seq_directed using 1
+  convert! lintegral_iSup_directed_of_measurable (aeSeq.measurable hf p) h_ae_seq_directed using 1
   · simp_rw [← iSup_apply]
     rw [lintegral_congr_ae (aeSeq.iSup hf hp).symm]
   · congr 1
@@ -272,7 +272,7 @@ theorem le_lintegral_add (f g : α → ℝ≥0∞) :
     ∫⁻ a, f a ∂μ + ∫⁻ a, g a ∂μ ≤ ∫⁻ a, f a + g a ∂μ := by
   simp only [lintegral]
   refine ENNReal.biSup_add_biSup_le' (p := fun h : α →ₛ ℝ≥0∞ => h ≤ f)
-    (q := fun h : α →ₛ ℝ≥0∞ => h ≤ g) ⟨0, zero_le f⟩ ⟨0, zero_le g⟩ fun f' hf' g' hg' => ?_
+    (q := fun h : α →ₛ ℝ≥0∞ => h ≤ g) ⟨0, zero_le⟩ ⟨0, zero_le⟩ fun f' hf' g' hg' => ?_
   exact le_iSup₂_of_le (f' + g') (add_le_add hf' hg') (add_lintegral _ _).ge
 
 -- Use stronger lemmas `lintegral_add_left`/`lintegral_add_right` instead
@@ -441,8 +441,8 @@ theorem lintegral_mul_const_le (r : ℝ≥0∞) (f : α → ℝ≥0∞) :
 theorem lintegral_mul_const' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r ≠ ∞) :
     ∫⁻ a, f a * r ∂μ = (∫⁻ a, f a ∂μ) * r := by simp_rw [mul_comm, lintegral_const_mul' r f hr]
 
-/- A double integral of a product where each factor contains only one variable
-  is a product of integrals -/
+/-- A double integral of a product where each factor contains only one variable
+is a product of integrals -/
 theorem lintegral_lintegral_mul {β} [MeasurableSpace β] {ν : Measure β} {f : α → ℝ≥0∞}
     {g : β → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g ν) :
     ∫⁻ x, ∫⁻ y, f x * g y ∂ν ∂μ = (∫⁻ x, f x ∂μ) * ∫⁻ y, g y ∂ν := by

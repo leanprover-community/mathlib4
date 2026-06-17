@@ -6,8 +6,8 @@ Authors: Yury Kudryashov, Bhavik Mehta
 module
 
 public import Mathlib.Algebra.Group.Action.Defs
-public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.ENat.Basic
+public import Mathlib.Order.Lattice.Nat
 
 /-!
 # Extended natural numbers form a complete linear order
@@ -69,7 +69,7 @@ lemma iInf_toNat : (⨅ i, (f i : ℕ∞)).toNat = ⨅ i, f i := by
   · norm_cast
 
 @[simp] lemma iInf_eq_zero {f : ι → ℕ∞} : ⨅ i, f i = 0 ↔ ∃ i, f i = 0 := by
-  simpa [lt_one_iff_eq_zero] using iInf_lt_iff (α := ℕ∞) (a := 1)
+  simpa [Order.lt_one_iff] using iInf_lt_iff (α := ℕ∞) (a := 1)
 
 variable {f : ι → ℕ∞} {s : Set ℕ∞}
 
@@ -77,8 +77,8 @@ lemma sSup_eq_zero : sSup s = 0 ↔ ∀ a ∈ s, a = 0 :=
   sSup_eq_bot
 
 lemma sInf_eq_zero : sInf s = 0 ↔ 0 ∈ s := by
-  rw [← lt_one_iff_eq_zero]
-  simp only [sInf_lt_iff, lt_one_iff_eq_zero, exists_eq_right]
+  rw [← Order.lt_one_iff, sInf_lt_iff]
+  simp
 
 lemma sSup_eq_zero' : sSup s = 0 ↔ s = ∅ ∨ s = {0} :=
   sSup_eq_bot'
@@ -228,7 +228,7 @@ lemma biSup_add_biSup_le {ι κ : Type*} {s : Set ι} {t : Set κ} (hs : s.Nonem
 
 lemma iSup_add_iSup (h : ∀ i j, ∃ k, f i + g j ≤ f k + g k) : iSup f + iSup g = ⨆ i, f i + g i := by
   cases isEmpty_or_nonempty ι
-  · simp only [iSup_of_empty, bot_eq_zero, zero_add]
+  · simp
   · refine le_antisymm ?_ (iSup_le fun a => add_le_add (le_iSup _ _) (le_iSup _ _))
     refine iSup_add_iSup_le fun i j => ?_
     rcases h i j with ⟨k, hk⟩

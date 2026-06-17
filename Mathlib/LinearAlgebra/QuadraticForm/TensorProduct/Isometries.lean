@@ -156,7 +156,7 @@ theorem comp_tensorRId_eq (Q₁ : QuadraticForm R M₁) :
     Q₁.comp (TensorProduct.rid R M₁) = Q₁.tmul (sq (R := R)) := by
   refine (QuadraticMap.associated_rightInverse R).injective ?_
   ext m₁ m₁'
-  simp [associated_tmul, QuadraticMap.associated_comp]
+  simp [associated_tmul, QuadraticMap.associated_comp, one_mul]
 
 @[simp]
 theorem tmul_tensorRId_apply

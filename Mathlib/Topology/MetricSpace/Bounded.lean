@@ -158,7 +158,7 @@ theorem hasAntitoneBasis_cobounded_compl_ball (c : α) :
 @[simp]
 theorem comap_dist_right_atTop (c : α) : comap (dist · c) atTop = cobounded α :=
   (atTop_basis.comap _).eq_of_same_basis <| by
-    simpa only [compl_def, mem_ball, not_lt] using hasBasis_cobounded_compl_ball c
+    simpa only [compl_def, mem_ball, not_lt] using! hasBasis_cobounded_compl_ball c
 
 @[simp]
 theorem comap_dist_left_atTop (c : α) : comap (dist c) atTop = cobounded α := by
@@ -332,6 +332,7 @@ theorem _root_.Bornology.IsBounded.isCompact_closure [ProperSpace α] (h : IsBou
 -- TODO: assume `[MetricSpace α]` instead of `[PseudoMetricSpace α] [T2Space α]`
 /-- The **Heine–Borel theorem**:
 In a proper Hausdorff space, a set is compact if and only if it is closed and bounded. -/
+@[wikidata Q253214]
 theorem isCompact_iff_isClosed_bounded [T2Space α] [ProperSpace α] :
     IsCompact s ↔ IsClosed s ∧ IsBounded s :=
   ⟨fun h => ⟨h.isClosed, h.isBounded⟩, fun h => isCompact_of_isClosed_isBounded h.1 h.2⟩
@@ -382,12 +383,12 @@ variable {α : Type*} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
   [CompactIccSpace α]
 
 lemma isBounded_of_abs_le (C : α) : Bornology.IsBounded {x : α | |x| ≤ C} := by
-  convert Metric.isBounded_Icc (-C) C
+  convert! Metric.isBounded_Icc (-C) C
   ext1 x
   simp [abs_le]
 
 lemma isBounded_of_abs_lt (C : α) : Bornology.IsBounded {x : α | |x| < C} := by
-  convert Metric.isBounded_Ioo (-C) C
+  convert! Metric.isBounded_Ioo (-C) C
   ext1 x
   simp [abs_lt]
 
@@ -555,7 +556,7 @@ theorem _root_.IsComplete.nonempty_iInter_of_nonempty_biInter {s : ℕ → Set �
     intro m n N hm hn
     exact dist_le_diam_of_mem (h's N) (I _ _ hm) (I _ _ hn)
   obtain ⟨x, -, xlim⟩ : ∃ x ∈ s 0, Tendsto (fun n : ℕ => u n) atTop (𝓝 x) :=
-    cauchySeq_tendsto_of_isComplete h0 (fun n => I 0 n (zero_le _)) this
+    cauchySeq_tendsto_of_isComplete h0 (fun n => I 0 n zero_le) this
   refine ⟨x, mem_iInter.2 fun n => ?_⟩
   apply (hs n).mem_of_tendsto xlim
   filter_upwards [Ici_mem_atTop n] with p hp
@@ -588,9 +589,10 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: the diameter of a set is always nonnegative. -/
 @[positivity Metric.diam _]
-meta def evalDiam : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalDiam : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Metric.diam _ $inst $s) =>
+    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.nonnegative q(Metric.diam_nonneg))
   | _, _, _ => throwError "not ‖ · ‖"

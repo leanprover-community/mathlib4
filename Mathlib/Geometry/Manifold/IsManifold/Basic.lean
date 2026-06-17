@@ -314,7 +314,7 @@ lemma _root_.Convex.convex_isRCLikeNormedField [NormedSpace ℝ E] [h : IsRCLike
   letI := NormedSpace.restrictScalars ℝ 𝕜 E
   simp only [Convex, StarConvex] at hs ⊢
   intro u hu v hv a b ha hb hab
-  convert hs hu hv ha hb hab using 2
+  convert! hs hu hv ha hb hab using 2
   · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜), ← @algebraMap_smul (R := ℝ) (A := 𝕜)]
   · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜), ← @algebraMap_smul (R := ℝ) (A := 𝕜)]
 
@@ -344,7 +344,7 @@ theorem convex_range [NormedSpace ℝ E] : Convex ℝ (range I) := by
     simp only [h, ↓reduceDIte, toPartialEquiv_coe] at W
     simp only [Convex, StarConvex] at W ⊢
     intro u hu v hv a b ha hb hab
-    convert W hu hv ha hb hab using 2
+    convert! W hu hv ha hb hab using 2
     · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜)]
       rfl
     · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜)]
@@ -389,7 +389,7 @@ protected theorem rightInvOn : RightInvOn I.symm I (range I) :=
 protected theorem right_inv {x : E} (hx : x ∈ range I) : I (I.symm x) = x :=
   I.rightInvOn hx
 
-theorem preimage_image (s : Set H) : I ⁻¹' (I '' s) = s :=
+theorem preimage_image (s : Set H) : I ⁻¹' I '' s = s :=
   I.injective.preimage_image s
 
 protected theorem image_eq (s : Set H) : I '' s = I.symm ⁻¹' s ∩ range I := by
@@ -751,7 +751,7 @@ theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCor
     e.prod e' ∈ contDiffGroupoid n (I.prod I') := by
   obtain ⟨he, he_symm⟩ := he
   obtain ⟨he', he'_symm⟩ := he'
-  constructor <;> simp only [PartialEquiv.prod_source, OpenPartialHomeomorph.prod_toPartialEquiv,
+  constructor <;> simp only [OpenPartialHomeomorph.prod_toPartialHomeomorph,
     contDiffPregroupoid]
   · have h3 := ContDiffOn.prodMap he he'
     rw [← I.image_eq, ← I'.image_eq, prod_image_image_eq] at h3
@@ -1037,7 +1037,7 @@ set_option linter.unusedVariables false in
 The definition of `TangentSpace` is not reducible so that type class inference
 does not pick wrong instances.
 -/
-@[nolint unusedArguments]
+@[nolint unusedArguments, wikidata Q909601]
 def TangentSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)

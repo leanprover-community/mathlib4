@@ -171,7 +171,7 @@ theorem edist_approxOn_mono {f : β → α} (hf : Measurable f) {s : Set α} {y�
 
 theorem edist_approxOn_le {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
     [SeparableSpace s] (x : β) (n : ℕ) : edist (approxOn f hf s y₀ h₀ n x) (f x) ≤ edist y₀ (f x) :=
-  edist_approxOn_mono hf h₀ x (zero_le n)
+  edist_approxOn_mono hf h₀ x zero_le
 
 theorem edist_approxOn_y0_le {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
     [SeparableSpace s] (x : β) (n : ℕ) :

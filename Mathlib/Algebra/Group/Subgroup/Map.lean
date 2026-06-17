@@ -82,7 +82,7 @@ theorem coe_comap (K : Subgroup N) (f : G →* N) : (K.comap f : Set G) = f ⁻�
 theorem mem_comap {K : Subgroup N} {f : G →* N} {x : G} : x ∈ K.comap f ↔ f x ∈ K :=
   Iff.rfl
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem comap_mono {f : G →* N} {K K' : Subgroup N} : K ≤ K' → comap f K ≤ comap f K' :=
   preimage_mono
 
@@ -158,11 +158,7 @@ theorem mem_map_equiv {f : G ≃* N} {K : Subgroup G} {x : N} :
     x ∈ K.map f.toMonoidHom ↔ f.symm x ∈ K :=
   Set.mem_image_equiv
 
--- The simpNF linter says that the LHS can be simplified via `Subgroup.mem_map`.
--- However this is a higher priority lemma.
--- It seems the side condition `hf` is not applied by `simpNF`.
--- https://github.com/leanprover/std4/issues/207
-@[to_additive (attr := simp 1100, nolint simpNF)]
+@[to_additive (attr := simp 1100)]
 theorem mem_map_iff_mem {f : G →* N} (hf : Function.Injective f) {K : Subgroup G} {x : G} :
     f x ∈ K.map f ↔ x ∈ K :=
   hf.mem_set_image
