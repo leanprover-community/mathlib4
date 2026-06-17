@@ -524,8 +524,8 @@ theorem LinearIndependent.of_pairwise_dual_eq_zero_one (v : ι → M) (f : ι �
 end Module
 
 open Finsupp in
-/-- If `f` is linearly independent over a commutative ring `R` and `g` is such that `σ • g` is a
-linear combination of `f` with `σ` a non-zero-divisor, then replacing the `i`-th vector of `f`
+/-- If `f` is linearly independent over a commutative ring `R` and `g` is such that `r • g` is a
+linear combination of `f` with `r` a non-zero-divisor, then replacing the `i`-th vector of `f`
 by `g` keeps the family linearly independent, provided the `i`-th coefficient `l i` is a
 non-zero-divisor. -/
 lemma LinearIndependent.update {ι : Type*} [DecidableEq ι] {R G : Type*} [CommRing R]
