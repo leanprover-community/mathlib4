@@ -534,7 +534,7 @@ lemma exists_cardinal_directed (J : Type w) [SmallCategory J] (κ : Cardinal.{w}
     exists_cardinal_directed.aux (J × κ.ord.ToType) κ (fun ⟨j, x⟩ ↦
       ⟨⟨j, Order.succ x⟩, (𝟙 _, homOfLE (Order.le_succ x)), ⟨fun ⟨_, f⟩ ↦ by
         have : NoMaxOrder κ.ord.ToType :=
-          Cardinal.noMaxOrder (Cardinal.IsRegular.aleph0_le Fact.out)
+          Cardinal.noMaxOrder_ord_toType (Cardinal.IsRegular.aleph0_le Fact.out)
         exact not_isMax _ (Order.max_of_succ_le (leOfHom f))⟩⟩)
   exact ⟨_, _, inferInstance, F ⋙ Prod.fst _ _, inferInstance⟩
 

@@ -368,7 +368,8 @@ variable [Fact κ.IsRegular]
 noncomputable def iterationObjSuccIso (j : κ.ord.ToType) :
   (iteration W Z κ).obj (Order.succ j) ≅ succ W ((iteration W Z κ).obj j) :=
     (succStruct W Z).iterationFunctorObjSuccIso j (by
-      have := Cardinal.noMaxOrder (Fact.elim inferInstance : κ.IsRegular).aleph0_le
+      have :=
+        Cardinal.noMaxOrder_ord_toType (Fact.elim inferInstance : κ.IsRegular).aleph0_le
       exact not_isMax j)
 
 @[reassoc]
