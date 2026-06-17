@@ -81,7 +81,7 @@ noncomputable def pointSmallEtale : (smallEtaleTopology S).Point where
         ⟨Functor.elementsMk _ (AffineEtale.mk (j ≫ f)) (Over.homMk y'), ⟨Iso.refl _⟩⟩,
         ⟨⟨MorphismProperty.Over.homMk j rfl (by simp), by cat_disch⟩⟩⟩)
   jointly_surjective {X} R hR φ := by
-    induction X with | _ X f
+    cases X with | _ X f
     obtain ⟨φ : Spec (.of Ω) ⟶ X, rfl : φ ≫ f = s, rfl⟩ := Over.homMk_surjective φ
     obtain ⟨𝒰, h, _, le⟩ := (mem_smallGrothendieckTopology _ _).1 hR
     obtain ⟨i, y, hy⟩ := 𝒰.exists_eq (φ default)
