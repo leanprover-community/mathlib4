@@ -701,7 +701,7 @@ theorem toNonUnitalRingHom_eq_coe (f : R ≃+* S) : f.toNonUnitalRingHom = ↑f 
 theorem coe_toNonUnitalRingHom (f : R ≃+* S) : ⇑(f : R →ₙ+* S) = f :=
   rfl
 
--- TODO: make this `simp`
+@[simp]
 theorem coe_toNonUnitalRingHom' (f : R ≃+* S) : ⇑f.toNonUnitalRingHom = f :=
   rfl
 
@@ -714,12 +714,12 @@ theorem toNonUnitalRingHom_refl :
     (RingEquiv.refl R).toNonUnitalRingHom = NonUnitalRingHom.id R :=
   rfl
 
-@[simp]
+@[deprecated apply_symm_apply (since := "2026-06-16")]
 theorem toNonUnitalRingHom_apply_symm_toNonUnitalRingHom_apply (e : R ≃+* S) :
     ∀ y : S, e.toNonUnitalRingHom (e.symm.toNonUnitalRingHom y) = y :=
   e.toEquiv.apply_symm_apply
 
-@[simp]
+@[deprecated symm_apply_apply (since := "2026-06-16")]
 theorem symm_toNonUnitalRingHom_apply_toNonUnitalRingHom_apply (e : R ≃+* S) :
     ∀ x : R, e.symm.toNonUnitalRingHom (e.toNonUnitalRingHom x) = x :=
   Equiv.symm_apply_apply e.toEquiv

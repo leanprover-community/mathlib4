@@ -4,6 +4,8 @@ public import Std
 public import Batteries
 public import Mathlib.Algebra.AddConstMap.Basic
 public import Mathlib.Algebra.AddConstMap.Equiv
+public import Mathlib.Algebra.AddTorsor.Basic
+public import Mathlib.Algebra.AddTorsor.Defs
 public import Mathlib.Algebra.AffineMonoid.Basic
 public import Mathlib.Algebra.AffineMonoid.Embedding
 public import Mathlib.Algebra.AffineMonoid.Irreducible
@@ -1912,6 +1914,7 @@ public import Mathlib.Analysis.Complex.ValueDistribution.FirstMainTheorem
 public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Asymptotic
 public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Basic
 public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.Basic
+public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.IntegralPresentation
 public import Mathlib.Analysis.ConstantSpeed
 public import Mathlib.Analysis.Convex.AmpleSet
 public import Mathlib.Analysis.Convex.Approximation
@@ -4546,6 +4549,7 @@ public import Mathlib.FieldTheory.Tower
 public import Mathlib.Geometry.Convex.Cone.Basic
 public import Mathlib.Geometry.Convex.Cone.Dual
 public import Mathlib.Geometry.Convex.Cone.DualFinite
+public import Mathlib.Geometry.Convex.Cone.Face.Basic
 public import Mathlib.Geometry.Convex.Cone.Pointed
 public import Mathlib.Geometry.Convex.Cone.Simplicial
 public import Mathlib.Geometry.Convex.Cone.TensorProduct
@@ -5649,6 +5653,7 @@ public import Mathlib.ModelTheory.Types
 public import Mathlib.ModelTheory.Ultraproducts
 public import Mathlib.NumberTheory.ADEInequality
 public import Mathlib.NumberTheory.AbelSummation
+public import Mathlib.NumberTheory.AlmostPrime
 public import Mathlib.NumberTheory.ArithmeticFunction.Carmichael
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.NumberTheory.ArithmeticFunction.LFunction
@@ -7497,6 +7502,7 @@ public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.Equicontinuity
 public import Mathlib.Topology.Algebra.Field
 public import Mathlib.Topology.Algebra.FilterBasis
+public import Mathlib.Topology.Algebra.Group.AddTorsor
 public import Mathlib.Topology.Algebra.Group.Basic
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 public import Mathlib.Topology.Algebra.Group.Compact
@@ -7611,6 +7617,7 @@ public import Mathlib.Topology.Algebra.Order.Support
 public import Mathlib.Topology.Algebra.Order.UpperLower
 public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.Algebra.PontryaginDual
+public import Mathlib.Topology.Algebra.ProperAction.AddTorsor
 public import Mathlib.Topology.Algebra.ProperAction.Basic
 public import Mathlib.Topology.Algebra.ProperAction.CompactlyGenerated
 public import Mathlib.Topology.Algebra.ProperAction.ProperlyDiscontinuous
