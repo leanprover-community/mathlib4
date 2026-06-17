@@ -72,8 +72,7 @@ lemma ofArrows_mem_smallEtaleTopology_iff
     exact ⟨j, b.left u, by simp [← fac]⟩
   · have (w : W.left) : ∃ (i : ι), w ∈ Set.range (f i).left := by
       have := Set.mem_univ w
-      simp [← hf] at this
-      tauto
+      simpa [← hf]
     choose i z hz using this
     let V : Cover (precoverage @Etale) W.left :=
       Cover.mkOfCovers W.left (fun w ↦ (Z (i w)).left)
