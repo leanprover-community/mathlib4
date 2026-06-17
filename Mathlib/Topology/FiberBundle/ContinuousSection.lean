@@ -44,6 +44,7 @@ the `Bundle` namespace. -/
 structure ContinuousSection (F : Type*) [TopologicalSpace F] {B : Type*} [TopologicalSpace B]
     (E : B → Type*) [∀ b, TopologicalSpace (E b)] [TopologicalSpace (TotalSpace F E)]
     [FiberBundle F E] where
+  /-- The underlying function of the section. -/
   toFun : ∀ b, E b
   continuous_toFun : Continuous fun b ↦ (⟨b, toFun b⟩ : TotalSpace F E)
 
