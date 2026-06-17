@@ -324,7 +324,7 @@ lemma coeff_smul_apply (a : A) (x : R[M]) (m : M) : coeff (a • x) m = a • co
 @[to_additive (attr := simp) (dont_translate := A) smul_single]
 lemma smul_single (a : A) (m : M) (r : R) : a • single m r = single m (a • r) := by ext; simp
 
-@[to_additive (attr := simp) (dont_translate := R) smul_single']
+@[to_additive (dont_translate := R) smul_single']
 lemma smul_single' (r' : R) (m : M) (r : R) : r' • single m r = single m (r' * r) := smul_single ..
 
 @[to_additive (dont_translate := N) distribSMul]

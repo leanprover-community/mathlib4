@@ -74,7 +74,8 @@ variable (R) in
 def coeffLinearEquiv : S[M] ≃ₗ[R] M →₀ S := coeffEquiv.linearEquiv _
 
 variable (R S) in
-@[to_additive]
+/-- `MonoidAlgebra.mapDomain` as a linear map. -/
+@[to_additive /-- `AddMonoidAlgebra.mapDomain` as a linear map. -/]
 def mapDomainLinearMap (f : M → N) : S[M] →ₗ[R] S[N] :=
   (coeffLinearEquiv _).symm.toLinearMap ∘ₗ Finsupp.lmapDomain _ _ f ∘ₗ
     (coeffLinearEquiv _).toLinearMap
@@ -93,7 +94,8 @@ lemma mapDomainLinearMap_comp (f : M → N) (g : N → O) :
   ext; simp [Finsupp.mapDomain_comp]
 
 variable (R S) in
-@[to_additive]
+/-- `MonoidAlgebra.mapDomain` as a linear equiv. -/
+@[to_additive /-- `AddMonoidAlgebra.mapDomain` as a linear equiv. -/]
 def mapDomainLinearEquiv (e : M ≃ N) : S[M] ≃ₗ[R] S[N] :=
   (coeffLinearEquiv _).trans <| (Finsupp.domLCongr e).trans <| (coeffLinearEquiv _).symm
 
