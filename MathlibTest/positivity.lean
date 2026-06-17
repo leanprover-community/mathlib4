@@ -545,7 +545,8 @@ example {r : ℝ} (hr : 0 < r) : (0 : EReal) < r := by positivity
 example {r : ℝ≥0∞} : (0 : EReal) ≤ r := by positivity
 example {r : ℝ≥0∞} (hr : 0 < r) : (0 : EReal) < r := by positivity
 
--- example {α : Type*} [OrderedRing α] {n : ℤ} : 0 ≤ ((n ^ 2 : ℤ) : α) := by positivity
+-- example {R : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R] {n : ℤ} :
+--     0 ≤ ((n ^ 2 : ℤ) : R) := by positivity
 example {r : ℝ≥0} : 0 ≤ ((r : ℝ) : EReal) := by positivity
 example {r : ℝ≥0} : 0 < ((r + 1 : ℝ) : EReal) := by positivity
 

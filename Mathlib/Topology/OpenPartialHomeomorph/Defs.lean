@@ -144,8 +144,10 @@ theorem map_source {x : X} (h : x ∈ e.source) : e x ∈ e.target :=
   e.map_source' h
 
 /-- Variant of `map_source`, stated for images of subsets of `source`. -/
-lemma map_source'' : e '' e.source ⊆ e.target :=
+lemma image_source_subset : e '' e.source ⊆ e.target :=
   fun _ ⟨_, hx, hex⟩ ↦ mem_of_eq_of_mem (id hex.symm) (e.map_source' hx)
+
+@[deprecated (since := "2026-06-17")] alias map_source'' := image_source_subset
 
 @[simp, mfld_simps]
 theorem map_target {x : Y} (h : x ∈ e.target) : e.symm x ∈ e.source :=
