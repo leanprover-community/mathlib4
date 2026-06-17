@@ -56,7 +56,6 @@ so that our construction needs only the semiring structure of the tensor algebra
 inductive Rel : TensorAlgebra R L → TensorAlgebra R L → Prop
   | lie_compat (x y : L) : Rel (ιₜ ⁅x, y⁆ + ιₜ y * ιₜ x) (ιₜ x * ιₜ y)
 
-
 /-- `Rel` as a ring congruence, used to build the quotient. -/
 @[no_expose] def ringCon : RingCon (TensorAlgebra R L) := ringConGen (Rel R L)
 
