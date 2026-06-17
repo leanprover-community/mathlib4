@@ -124,7 +124,7 @@ theorem op_injective : Injective (op : α → αᵐᵒᵖ) :=
 theorem op_surjective : Surjective (op : α → αᵐᵒᵖ) :=
   op_bijective.surjective
 
-@[to_additive]
+@[to_additive (attr := ext)]
 theorem unop_injective : Injective (unop : αᵐᵒᵖ → α) :=
   unop_bijective.injective
 
@@ -172,7 +172,16 @@ instance instNeg [Neg α] : Neg αᵐᵒᵖ where neg x := op <| -unop x
 instance instInvolutiveNeg [InvolutiveNeg α] : InvolutiveNeg αᵐᵒᵖ where
   neg_neg _ := unop_injective <| neg_neg _
 
-@[to_additive] instance instMul [Mul α] : Mul αᵐᵒᵖ where mul x y := op (unop y * unop x)
+/-- Like `Mul.toSMul`, but multiplies on the right.
+
+See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWithZero`. -/
+@[no_expose, to_additive /-- Like `Add.toVAdd`, but adds on the right.
+
+  See also `AddMonoid.toOppositeAddAction`. -/]
+instance (priority := 910) Mul.toSMulMulOpposite (α : Type*) [Mul α] : SMul αᵐᵒᵖ α where
+  smul a b := b * a.unop
+
+@[to_additive] instance instMul [Mul α] : Mul αᵐᵒᵖ where mul x y := op (x • unop y)
 @[to_additive] instance instInv [Inv α] : Inv αᵐᵒᵖ where inv x := op <| (unop x)⁻¹
 
 @[to_additive]
@@ -216,10 +225,16 @@ protected theorem isCancelAdd_iff [Add α] : IsCancelAdd αᵐᵒᵖ ↔ IsCance
 
 @[simp] lemma unop_neg [Neg α] (x : αᵐᵒᵖ) : unop (-x) = -unop x := rfl
 
-@[to_additive (attr := simp)] lemma op_mul [Mul α] (x y : α) : op (x * y) = op y * op x := rfl
+@[to_additive]
+lemma _root_.op_smul_eq_mul {α : Type*} [Mul α] (a b : α) : op a • b = b * a := (rfl)
 
 @[to_additive (attr := simp)]
-lemma unop_mul [Mul α] (x y : αᵐᵒᵖ) : unop (x * y) = unop y * unop x := rfl
+lemma smul_eq_mul_unop [Mul α] (a : αᵐᵒᵖ) (b : α) : a • b = b * unop a := (rfl)
+
+@[to_additive (attr := simp)] lemma op_mul [Mul α] (x y : α) : op (x * y) = op y * op x := (rfl)
+
+@[to_additive (attr := simp)]
+lemma unop_mul [Mul α] (x y : αᵐᵒᵖ) : unop (x * y) = unop y * unop x := (rfl)
 
 @[to_additive (attr := simp)] lemma op_inv [Inv α] (x : α) : op x⁻¹ = (op x)⁻¹ := rfl
 

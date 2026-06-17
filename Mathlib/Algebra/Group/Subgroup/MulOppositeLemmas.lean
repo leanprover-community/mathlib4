@@ -126,8 +126,9 @@ instance (H : Subgroup G) [Countable H] : Countable H.op :=
 
 @[to_additive]
 theorem smul_opposite_mul {H : Subgroup G} (x g : G) (h : H.op) :
-    h • (g * x) = g * h • x :=
-  mul_assoc _ _ _
+    h • (g * x) = g * h • x := by
+  rw [Submonoid.smul_def, Submonoid.smul_def]
+  simp [mul_assoc]
 
 @[to_additive (attr := simp)]
 theorem normal_op {H : Subgroup G} : H.op.Normal ↔ H.Normal := by

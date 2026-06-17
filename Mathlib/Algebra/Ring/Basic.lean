@@ -134,8 +134,8 @@ variable {α : Type*} [Mul α] [HasDistribNeg α]
 open MulOpposite
 
 instance MulOpposite.instHasDistribNeg : HasDistribNeg αᵐᵒᵖ where
-  neg_mul _ _ := unop_injective <| mul_neg _ _
-  mul_neg _ _ := unop_injective <| neg_mul _ _
+  neg_mul _ _ := by ext; simp
+  mul_neg _ _ := by ext; simp
 
 end Mul
 

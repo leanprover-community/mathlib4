@@ -71,17 +71,17 @@ We also generate additive structures on `αᵃᵒᵖ` using `to_additive`
 
 @[to_additive]
 instance instIsRightCancelMul [Mul α] [IsLeftCancelMul α] : IsRightCancelMul αᵐᵒᵖ where
-  mul_right_cancel _ _ _ h := unop_injective <| mul_left_cancel <| op_injective h
+  mul_right_cancel _ _ _ h := by simpa [← unop_inj] using h
 
 @[to_additive]
 instance instIsLeftCancelMul [Mul α] [IsRightCancelMul α] : IsLeftCancelMul αᵐᵒᵖ where
-  mul_left_cancel _ _ _ h := unop_injective <| mul_right_cancel <| op_injective h
+  mul_left_cancel _ _ _ h := by simpa [← unop_inj] using h
 
 @[to_additive] instance instIsCancelMul [Mul α] [IsCancelMul α] : IsCancelMul αᵐᵒᵖ where
 
 @[to_additive]
 instance instSemigroup [Semigroup α] : Semigroup αᵐᵒᵖ where
-  mul_assoc x y z := unop_injective <| Eq.symm <| mul_assoc (unop z) (unop y) (unop x)
+  mul_assoc x y z := by ext; simp [mul_assoc]
 
 @[to_additive]
 instance instLeftCancelSemigroup [RightCancelSemigroup α] : LeftCancelSemigroup αᵐᵒᵖ where
@@ -93,22 +93,22 @@ instance instRightCancelSemigroup [LeftCancelSemigroup α] : RightCancelSemigrou
 
 @[to_additive]
 instance instCommSemigroup [CommSemigroup α] : CommSemigroup αᵐᵒᵖ where
-  mul_comm x y := unop_injective <| mul_comm (unop y) (unop x)
+  mul_comm x y := by ext; simp [mul_comm]
 
 @[to_additive] instance instMulOne [MulOne α] : MulOne αᵐᵒᵖ where
 
 @[to_additive]
 instance instMulOneClass [MulOneClass α] : MulOneClass αᵐᵒᵖ where
-  one_mul _ := unop_injective <| mul_one _
-  mul_one _ := unop_injective <| one_mul _
+  one_mul _ := by ext; simp
+  mul_one _ := by ext; simp
 
 @[to_additive]
 instance instMonoid [Monoid α] : Monoid αᵐᵒᵖ where
   toSemigroup := instSemigroup
   __ := instMulOneClass
   npow n a := op <| a.unop ^ n
-  npow_zero _ := unop_injective <| pow_zero _
-  npow_succ _ _ := unop_injective <| pow_succ' _ _
+  npow_zero _ := by ext; simp
+  npow_succ _ _ := by ext; simp [pow_succ']
 
 @[to_additive]
 instance instLeftCancelMonoid [RightCancelMonoid α] : LeftCancelMonoid αᵐᵒᵖ where
@@ -149,8 +149,10 @@ instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid αᵐᵒᵖ where
 instance instDivisionMonoid [DivisionMonoid α] : DivisionMonoid αᵐᵒᵖ where
   toDivInvMonoid := instDivInvMonoid
   __ := instInvolutiveInv
-  mul_inv_rev _ _ := unop_injective <| mul_inv_rev _ _
-  inv_eq_of_mul _ _ h := unop_injective <| inv_eq_of_mul_eq_one_left <| congr_arg unop h
+  mul_inv_rev _ _ := by ext; simp
+  inv_eq_of_mul _ _ h := by
+    simp only [← unop_inj, unop_mul, unop_one, unop_inv] at *
+    exact inv_eq_of_mul_eq_one_left h
 
 @[to_additive AddOpposite.instSubtractionCommMonoid]
 instance instDivisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid αᵐᵒᵖ where
@@ -160,7 +162,7 @@ instance instDivisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid α�
 @[to_additive]
 instance instGroup [Group α] : Group αᵐᵒᵖ where
   toDivInvMonoid := instDivInvMonoid
-  inv_mul_cancel _ := unop_injective <| mul_inv_cancel _
+  inv_mul_cancel _ := by ext; simp
 
 @[to_additive]
 instance instCommGroup [CommGroup α] : CommGroup αᵐᵒᵖ where
@@ -186,8 +188,8 @@ variable [DivInvMonoid α]
 end DivInvMonoid
 
 @[to_additive (attr := simp)]
-theorem unop_div [DivInvMonoid α] (x y : αᵐᵒᵖ) : unop (x / y) = (unop y)⁻¹ * unop x :=
-  rfl
+theorem unop_div [DivInvMonoid α] (x y : αᵐᵒᵖ) : unop (x / y) = (unop y)⁻¹ * unop x := by
+  simp [div_eq_mul_inv]
 
 @[to_additive (attr := simp)]
 theorem op_div [DivInvMonoid α] (x y : α) : op (x / y) = (op y)⁻¹ * op x := by simp [div_eq_mul_inv]

@@ -133,10 +133,10 @@ variable [Monoid α] [MulAction αᵐᵒᵖ β]
 open scoped RightActions
 
 @[to_additive]
-lemma op_smul_op_smul (b : β) (a₁ a₂ : α) : b <• a₁ <• a₂ = b <• (a₁ * a₂) := smul_smul _ _ _
+lemma op_smul_op_smul (b : β) (a₁ a₂ : α) : b <• a₁ <• a₂ = b <• (a₁ * a₂) := by simp [smul_smul]
 
 @[to_additive]
-lemma op_smul_mul (b : β) (a₁ a₂ : α) : b <• (a₁ * a₂) = b <• a₁ <• a₂ := mul_smul _ _ _
+lemma op_smul_mul (b : β) (a₁ a₂ : α) : b <• (a₁ * a₂) = b <• a₁ <• a₂ := by simp [mul_smul]
 
 end
 
@@ -146,7 +146,7 @@ open MulOpposite
 
 @[to_additive]
 instance Semigroup.opposite_smulCommClass [Semigroup α] : SMulCommClass αᵐᵒᵖ α α where
-  smul_comm _ _ _ := mul_assoc _ _ _
+  smul_comm _ _ _ := by simpa using mul_assoc _ _ _
 
 @[to_additive]
 instance Semigroup.opposite_smulCommClass' [Semigroup α] : SMulCommClass α αᵐᵒᵖ α :=
@@ -154,18 +154,18 @@ instance Semigroup.opposite_smulCommClass' [Semigroup α] : SMulCommClass α α�
 
 @[to_additive]
 instance CommSemigroup.isCentralScalar [CommSemigroup α] : IsCentralScalar α α where
-  op_smul_eq_smul _ _ := mul_comm _ _
+  op_smul_eq_smul _ _ := by simpa using mul_comm _ _
 
 /-- Like `Monoid.toMulAction`, but multiplies on the right. -/
 @[to_additive /-- Like `AddMonoid.toAddAction`, but adds on the right. -/]
 instance Monoid.toOppositeMulAction [Monoid α] : MulAction αᵐᵒᵖ α where
-  one_smul := mul_one
-  mul_smul _ _ _ := (mul_assoc _ _ _).symm
+  one_smul := by simp
+  mul_smul _ _ _ := by simpa using (mul_assoc _ _ _).symm
 
 @[to_additive]
 instance IsScalarTower.opposite_mid {M N} [Mul N] [SMul M N] [SMulCommClass M N N] :
     IsScalarTower M Nᵐᵒᵖ N where
-  smul_assoc _ _ _ := mul_smul_comm _ _ _
+  smul_assoc _ _ _ := by simpa using mul_smul_comm _ _ _
 
 @[to_additive]
 instance SMulCommClass.opposite_mid {M N} [Mul N] [SMul M N] [IsScalarTower M N N] :
@@ -173,7 +173,6 @@ instance SMulCommClass.opposite_mid {M N} [Mul N] [SMul M N] [IsScalarTower M N 
   smul_comm x y z := by
     induction y using MulOpposite.rec'
     simp only [smul_mul_assoc, MulOpposite.smul_eq_mul_unop]
-
 -- The above instance does not create an unwanted diamond, the two paths to
 -- `MulAction αᵐᵒᵖ αᵐᵒᵖ` are defeq.
 example [Monoid α] : Monoid.toMulAction αᵐᵒᵖ = MulOpposite.instMulAction := by

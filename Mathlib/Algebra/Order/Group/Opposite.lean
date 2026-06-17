@@ -36,7 +36,7 @@ section OrderedCommMonoid
 variable [CommMonoid α] [PartialOrder α]
 
 @[to_additive] instance [IsOrderedMonoid α] : IsOrderedMonoid αᵐᵒᵖ where
-  mul_le_mul_left a b hab c := mul_le_mul_right (by simpa) c.unop
+  mul_le_mul_left a b hab c := by simpa [← unop_le_unop] using mul_le_mul_right (by simpa) c.unop
 
 @[to_additive (attr := simp)] lemma unop_le_one {a : αᵐᵒᵖ} : unop a ≤ 1 ↔ a ≤ 1 := .rfl
 @[to_additive (attr := simp)] lemma one_le_unop {a : αᵐᵒᵖ} : 1 ≤ unop a ↔ 1 ≤ a := .rfl

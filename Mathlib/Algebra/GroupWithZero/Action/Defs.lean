@@ -125,8 +125,8 @@ instance (priority := 1100) MulZeroClass.toSMulWithZero [MulZeroClass M₀] : SM
 
 /-- Like `MulZeroClass.toSMulWithZero`, but multiplies on the right. -/
 instance MulZeroClass.toOppositeSMulWithZero [MulZeroClass M₀] : SMulWithZero M₀ᵐᵒᵖ M₀ where
-  smul_zero _ := zero_mul _
-  zero_smul := mul_zero
+  smul_zero _ := by simp
+  zero_smul := by simp
 
 variable {A} [Zero M₀] [Zero A] [SMulWithZero M₀ A]
 

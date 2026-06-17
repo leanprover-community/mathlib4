@@ -29,7 +29,7 @@ namespace Subsemigroup
   along `AddOpposite.unop` -/]
 protected def op (x : Subsemigroup M) : Subsemigroup Mᵐᵒᵖ where
   carrier := MulOpposite.unop ⁻¹' x
-  mul_mem' ha hb := x.mul_mem hb ha
+  mul_mem' ha hb := by simpa using x.mul_mem hb ha
 
 @[to_additive (attr := simp)]
 theorem mem_op {x : Mᵐᵒᵖ} {S : Subsemigroup M} : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
@@ -39,7 +39,7 @@ theorem mem_op {x : Mᵐᵒᵖ} {S : Subsemigroup M} : x ∈ S.op ↔ x.unop ∈
   along `AddOpposite.op` -/]
 protected def unop (x : Subsemigroup Mᵐᵒᵖ) : Subsemigroup M where
   carrier := MulOpposite.op ⁻¹' x
-  mul_mem' ha hb := x.mul_mem hb ha
+  mul_mem' ha hb := by simpa using x.mul_mem hb ha
 
 @[to_additive (attr := simp)]
 theorem mem_unop {x : M} {S : Subsemigroup Mᵐᵒᵖ} : x ∈ S.unop ↔ MulOpposite.op x ∈ S := Iff.rfl

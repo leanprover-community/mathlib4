@@ -46,14 +46,12 @@ theorem IsLeftRegular.isSMulRegular [Mul R] {c : R} (h : IsLeftRegular c) : IsSM
 theorem isLeftRegular_iff [Mul R] {a : R} : IsLeftRegular a ↔ IsSMulRegular R a :=
   Iff.rfl
 
-theorem IsRightRegular.isSMulRegular [Mul R] {c : R} (h : IsRightRegular c) :
-    IsSMulRegular R (MulOpposite.op c) :=
-  h
-
 /-- Right-regular multiplication on `R` is equivalent to `Rᵐᵒᵖ`-regularity of `R` itself. -/
 theorem isRightRegular_iff [Mul R] {a : R} :
-    IsRightRegular a ↔ IsSMulRegular R (MulOpposite.op a) :=
-  Iff.rfl
+    IsRightRegular a ↔ IsSMulRegular R (MulOpposite.op a) := by
+  simp [IsRightRegular, IsSMulRegular]
+
+alias ⟨IsRightRegular.isSMulRegular, IsSMulRegular.isRightRegular⟩ := isRightRegular_iff
 
 variable {M}
 
@@ -96,10 +94,6 @@ theorem smul_iff (b : S) (ha : IsSMulRegular M a) : IsSMulRegular M (a • b) �
   ⟨of_smul _, ha.smul⟩
 
 theorem isLeftRegular [Mul R] {a : R} (h : IsSMulRegular R a) : IsLeftRegular a :=
-  h
-
-theorem isRightRegular [Mul R] {a : R} (h : IsSMulRegular R (MulOpposite.op a)) :
-    IsRightRegular a :=
   h
 
 theorem mul [Mul R] [IsScalarTower R R M] (ra : IsSMulRegular M a) (rb : IsSMulRegular M b) :

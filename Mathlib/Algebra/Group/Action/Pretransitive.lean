@@ -85,7 +85,7 @@ instance Regular.isPretransitive [Group G] : IsPretransitive G G :=
 /-- The right regular action of a group on itself is transitive. -/
 @[to_additive /-- The right regular action of an additive group on itself is transitive. -/]
 instance Regular.isPretransitive_mulOpposite [Group G] : IsPretransitive Gᵐᵒᵖ G :=
-  ⟨fun x y ↦ ⟨.op (x⁻¹ * y), mul_inv_cancel_left _ _⟩⟩
+  ⟨fun x y ↦ ⟨.op (x⁻¹ * y), by simp⟩⟩
 
 /-- If `G` is a group acting multiplicatively on a set, then the action is transitive if there is
 a single element whose orbit is everything. -/
