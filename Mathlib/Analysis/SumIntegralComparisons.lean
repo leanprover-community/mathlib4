@@ -36,7 +36,8 @@ These are used to prove a version of the integral test for antitone functions.
   below by the integral of `f x * g (x - 1)` if `f` is antitone and `g` is monotone.
 * `AntitoneOn.summable_of_integrable` and `AntitoneOn.tsum_le_integral`, the integral test
   for antitone functions.
-
+* `AntitoneOn.abs_tsum_sub_sum_range_le_integral`: an error estimate for the difference 
+    between a sum and its partial sums in terms of an integral.
 ## Tags
 
 analysis, comparison, asymptotics
@@ -178,17 +179,16 @@ lemma integral_le_sum_mul_Ico_of_antitone_monotone
 
 /-- The partial sums of a nonnegative function are bounded by the integral over `(a, ∞)`. -/
 lemma AntitoneOn.sum_Ico_le_integral {a b : ℕ} (hab : a ≤ b) (anti : AntitoneOn f (Icc a (b : ℝ)))
-    (integrable : IntegrableOn f (Ioi (a : ℝ)) volume) (nonneg : ∀ t ∈ Ioi (a : ℝ), 0 ≤ f t) :
+    (integrable : IntegrableOn f (Ioi (a : ℝ))) (nonneg : ∀ t ∈ Ioi (a : ℝ), 0 ≤ f t) :
     ∑ n ∈ Finset.Ico a b, f ((n + 1 : ℕ)) ≤ ∫ x in Ioi (a : ℝ), f x := by
-  trans ∫ x in a..b, f x
-  · exact AntitoneOn.sum_le_integral_Ico hab anti
-  · rw [intervalIntegral.integral_of_le (mod_cast hab)]
-    apply setIntegral_mono_set integrable _ (Ioc_subset_Ioi_self.eventuallyLE)
-    · filter_upwards [ae_restrict_mem (by measurability)] with t ht using nonneg t ht
+  apply AntitoneOn.sum_le_integral_Ico hab anti|>.trans
+  rw [intervalIntegral.integral_of_le (mod_cast hab)]
+  apply setIntegral_mono_set integrable _ (Ioc_subset_Ioi_self.eventuallyLE)
+  filter_upwards [ae_restrict_mem (by measurability)] with t ht using nonneg t ht
 
 /-- The partial sums of a nonnegative function are bounded by the integral over `(0, ∞)`. -/
 lemma AntitoneOn.sum_range_le_integral {N : ℕ} (anti : AntitoneOn f (Icc 0 (N : ℝ)))
-    (integrable : IntegrableOn f (Ioi 0) volume) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
+    (integrable : IntegrableOn f (Ioi 0)) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
     ∑ n ∈ Finset.range N, f ((n + 1 : ℕ)) ≤ ∫ x in Ioi 0, f x := by
   rw [Finset.range_eq_Ico]
   exact_mod_cast AntitoneOn.sum_Ico_le_integral (Nat.zero_le _) (mod_cast anti)
@@ -211,14 +211,9 @@ theorem AntitoneOn.tsum_comp_add_le_integral (N : ℕ) (anti : AntitoneOn f (Ici
     · intro _ _ _  _ _
       apply anti <;> grind
     · conv => arg 1; ext; rw [add_assoc]
-      apply MeasurePreserving.integrableOn_image _ _|>.mp
-      · apply integrable.mono_set
-        grind
-      · exact measurePreserving_add_right ..
-      · exact measurableEmbedding_addRight ..
-    · intro t ht
-      apply nonneg
-      grind
+      exact (measurePreserving_add_right ..).integrableOn_image (measurableEmbedding_addRight _)
+        |>.mp (integrable.mono_set (by grind))
+    · exact fun _ _ ↦ nonneg _ (by grind)
   · intro M
     calc
     _ = ∑ n ∈ Finset.Ico N (N + M), f (n + 1 : ℕ) := by
@@ -229,19 +224,17 @@ theorem AntitoneOn.tsum_comp_add_le_integral (N : ℕ) (anti : AntitoneOn f (Ici
         constructor
         · rintro ⟨m, hm⟩
           grind
-        · intro h
-          use n - N
-          grind
+        · exact fun _ ↦ ⟨n - N,(by grind)⟩
       · simp
     _ ≤ _ := by
-      exact AntitoneOn.sum_Ico_le_integral (by grind) (anti.mono Icc_subset_Ici_self) 
+      exact AntitoneOn.sum_Ico_le_integral (by grind) (anti.mono Icc_subset_Ici_self)
         integrable nonneg
 
 /-- **Integral test**: bounds the sum from 1 by an integral. -/
 theorem AntitoneOn.tsum_add_one_le_integral (anti : AntitoneOn f (Ici 0))
     (integrable : IntegrableOn f (Ioi 0)) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
     ∑' (n : ℕ),  f (n + 1 : ℕ) ≤ ∫ x in Ioi 0, f x  := by
-  exact_mod_cast AntitoneOn.tsum_comp_add_le_integral 0 (mod_cast anti) (mod_cast integrable) 
+  exact_mod_cast AntitoneOn.tsum_comp_add_le_integral 0 (mod_cast anti) (mod_cast integrable)
     (mod_cast nonneg)
 
 /-- **Integral test**: bouns the sum of a nonnegative antitone function by an integral. -/
@@ -253,7 +246,7 @@ theorem AntitoneOn.tsum_le_integral (anti : AntitoneOn f (Ici 0))
   · simp
   · exact anti.tsum_add_one_le_integral integrable nonneg
 
-/-- Bounds the difference between a sum and its partial sums by a tail integral. -/
+/-- Bounds the difference between a sum and its partial sums by an integral. -/
 theorem AntitoneOn.abs_tsum_sub_sum_range_le_integral {N : ℕ} (hN : 1 ≤ N)
     (anti : AntitoneOn f (Ici 0))
     (integrable : IntegrableOn f (Ioi 0)) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
