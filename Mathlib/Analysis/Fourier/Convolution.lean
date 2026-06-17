@@ -66,11 +66,10 @@ theorem fourier_bilin_convolution_eq_integral (B : F₁ →L[𝕜] F₂ →L[�
     refine integral_integral_swap ?_
     have hB := hf₂.convolution_integrand B.flip hf₁
     refine hB.mono ?_ ?_
-    · refine ((continuous_fourierChar.comp
-          (by fun_prop : Continuous fun p : E × E ↦ -inner ℝ p.1 ξ)).aestronglyMeasurable).smul ?_
-      simpa only [ContinuousLinearMap.flip_apply] using hB.aestronglyMeasurable
+    · exact continuous_fourierChar.comp (by fun_prop) |>.aestronglyMeasurable.smul
+        hB.aestronglyMeasurable
     · filter_upwards with ⟨x, y⟩
-      simp [Function.uncurry_apply_pair, ContinuousLinearMap.flip_apply]
+      simp
   _ = ∫ y, ∫ x, 𝐞 (-inner ℝ (y + x) ξ) • B (f₁ x) (f₂ y) := by
     congr
     ext y
