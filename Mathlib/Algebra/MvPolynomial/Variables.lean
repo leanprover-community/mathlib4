@@ -97,7 +97,7 @@ theorem mem_vars_iff_mem_support (i : σ) : i ∈ p.vars ↔ ∃ d ∈ p.support
 @[deprecated (since := "2026-04-24")] alias mem_vars := mem_vars_iff_mem_support
 
 theorem mem_vars_iff_degreeOf_ne_zero {i : σ} : i ∈ p.vars ↔ p.degreeOf i ≠ 0 := by
-  classical simp [degreeOf, vars_def]
+  classical simp [degreeOf_def, vars_def]
 
 theorem mem_support_notMem_vars_zero {f : MvPolynomial σ R} {x : σ →₀ ℕ} (H : x ∈ f.support)
     {v : σ} (h : v ∉ vars f) : x v = 0 := by
@@ -363,7 +363,6 @@ theorem card_mainDegree_eq_degreeOf (h : p.vars.max = c) : p.mainDegree.card = p
   · apply Multiset.mem_toFinset.mp
     exact Finset.mem_of_max h
   intro j hj
-  rw [← Multiset.mem_toFinset] at hj
   have := Finset.le_max hj
   simp only [h, WithBot.coe_le_coe] at this
   exact this
@@ -374,11 +373,11 @@ theorem card_mainDegree_eq_zero_iff : p.mainDegree.card = 0 ↔ p.vars.max = ⊥
     | ⊥ => rfl
     | Option.some c => by
       absurd Finset.mem_of_max hc
-      rw [card_mainDegree_eq_degreeOf hc, degreeOf] at h
+      rw [card_mainDegree_eq_degreeOf hc, degreeOf_def] at h
       simpa only [vars_def, Multiset.mem_toFinset, Multiset.count_eq_zero] using h
   mpr h := by
-    simp only [mainDegree, Multiset.card_eq_zero]
-    suffices p.degrees = 0 by rw [this, Multiset.filter_zero]
+    simp only [mainDegree_def, Multiset.card_eq_zero]
+    suffices p.degrees = 0 by simp [this, Multiset.filter_zero]
     rw [vars_def] at h
     apply Multiset.toFinset_eq_empty.mp
     exact Finset.max_eq_bot.mp h

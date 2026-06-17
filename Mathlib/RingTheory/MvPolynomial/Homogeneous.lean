@@ -62,7 +62,7 @@ theorem weightedTotalDegree_singleton [DecidableEq σ] (p : MvPolynomial σ R) :
   where all of the weights are `1`. -/
 theorem weightedTotalDegree_one (φ : MvPolynomial σ R) :
     weightedTotalDegree (1 : σ → ℕ) φ = φ.totalDegree := by
-  simp only [totalDegree, weightedTotalDegree, weight, LinearMap.toAddMonoidHom_coe,
+  simp only [totalDegree_def, weightedTotalDegree, weight, LinearMap.toAddMonoidHom_coe,
     linearCombination, Pi.one_apply, Finsupp.coe_lsum, LinearMap.coe_smulRight, LinearMap.id_coe,
     id, smul_eq_mul, mul_one]
 
@@ -71,8 +71,8 @@ theorem weightedTotalDegree_one (φ : MvPolynomial σ R) :
 @[simp]
 theorem weightedTotalDegree_piSingle [DecidableEq σ] (i : σ) (p : MvPolynomial σ R) :
     weightedTotalDegree (Pi.single i 1) p = degreeOf i p := by
-  simp only [weightedTotalDegree, weight, linearCombination, Pi.single_apply, degreeOf, degrees,
-    Multiset.count_finset_sup]
+  simp only [weightedTotalDegree, weight, linearCombination, Pi.single_apply, degreeOf_def,
+    degrees_def, Multiset.count_finset_sup]
   congr; ext d
   simp +contextual
 
@@ -314,6 +314,7 @@ end CommRing
 
 See also `MvPolynomial.IsHomogeneous.totalDegree` when `φ` is non-zero. -/
 lemma totalDegree_le (hφ : IsHomogeneous φ n) : φ.totalDegree ≤ n := by
+  rw [totalDegree_def]
   apply Finset.sup_le
   intro d hd
   rw [mem_support_iff] at hd
@@ -323,7 +324,7 @@ lemma totalDegree_le (hφ : IsHomogeneous φ n) : φ.totalDegree ≤ n := by
 theorem totalDegree (hφ : IsHomogeneous φ n) (h : φ ≠ 0) : totalDegree φ = n := by
   apply le_antisymm hφ.totalDegree_le
   obtain ⟨d, hd⟩ : ∃ d, coeff d φ ≠ 0 := exists_coeff_ne_zero h
-  simp only [← hφ hd, MvPolynomial.totalDegree, Finsupp.sum]
+  simp only [← hφ hd, MvPolynomial.totalDegree_def, Finsupp.sum]
   replace hd := Finsupp.mem_support_iff.mpr hd
   simp only [weight_apply, Pi.one_apply, smul_eq_mul, mul_one]
   -- Porting note: Original proof did not define `f`
@@ -562,7 +563,7 @@ theorem homogeneousComponent_eq_zero'
 
 theorem homogeneousComponent_eq_zero (h : φ.totalDegree < n) : homogeneousComponent n φ = 0 := by
   apply homogeneousComponent_eq_zero'
-  rw [totalDegree, Finset.sup_lt_iff (lt_of_le_of_lt (Nat.zero_le _) h)] at h
+  rw [totalDegree_def, Finset.sup_lt_iff (lt_of_le_of_lt (Nat.zero_le _) h)] at h
   intro d hd; exact ne_of_lt (h d hd)
 
 theorem sum_homogeneousComponent :

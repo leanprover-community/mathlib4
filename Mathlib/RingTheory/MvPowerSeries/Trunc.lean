@@ -155,7 +155,7 @@ theorem support_truncFinset_subset (p : MvPowerSeries σ R) : (truncFinset R s p
 
 lemma totalDegree_truncFinset (p : MvPowerSeries σ R) :
     (truncFinset R s p).totalDegree ≤ s.sup degree := by
-  simpa [MvPolynomial.totalDegree] using! sup_mono (support_truncFinset_subset p)
+  simpa [MvPolynomial.totalDegree_def] using! sup_mono (support_truncFinset_subset p)
 
 lemma truncFinset_coe_eq_self_iff (p : MvPolynomial σ R) :
     truncFinset R s p = p ↔ p.support ⊆ s := by
@@ -348,7 +348,7 @@ theorem totalDegree_truncTotal_lt (h : n ≠ 0) :
 theorem truncTotal_coe_eq_self_iff (p : MvPolynomial σ R) (h : n ≠ 0) :
     truncTotal n p = p ↔ p.totalDegree < n := by
   rw [truncTotal, truncFinset_coe_eq_self_iff, Set.Finite.subset_toFinset,
-    MvPolynomial.totalDegree, Finset.sup_lt_iff (bot_lt_iff_ne_bot.mpr h), Set.subset_def]
+    MvPolynomial.totalDegree_def, Finset.sup_lt_iff (bot_lt_iff_ne_bot.mpr h), Set.subset_def]
   simp [degree, sum]
 
 end TruncTotal

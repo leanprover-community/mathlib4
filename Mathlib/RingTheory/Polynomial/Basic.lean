@@ -941,7 +941,7 @@ lemma aeval_natDegree_le {R : Type*} [CommSemiring R] {m n : ℕ}
   have : ∑ i ∈ d.support, (d i) * n ≤ m * n := by
     rw [← Finset.sum_mul]
     apply mul_le_mul' (.trans _ hF) le_rfl
-    rw [MvPolynomial.totalDegree]
+    rw [MvPolynomial.totalDegree_def]
     exact Finset.le_sup_of_le hd le_rfl
   apply (Finset.sum_le_sum _).trans this
   rintro i -

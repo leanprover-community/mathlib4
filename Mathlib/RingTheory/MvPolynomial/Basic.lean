@@ -176,7 +176,7 @@ variable {R}
 
 theorem mem_restrictTotalDegree (p : MvPolynomial σ R) :
     p ∈ restrictTotalDegree σ R m ↔ p.totalDegree ≤ m := by
-  rw [totalDegree, Finset.sup_le_iff]
+  rw [totalDegree_def, Finset.sup_le_iff]
   rfl
 
 set_option backward.isDefEq.respectTransparency false in

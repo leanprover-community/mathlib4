@@ -709,7 +709,8 @@ lemma chevalley_mvPolynomialC
         simp
       rw [degree_finSuccEquiv hgj, WithBot.succ_natCast, add_comm]
       simp only [Nat.cast_id, add_le_add_iff_left, degreeOf_def]
-      exact Multiset.count_le_of_le _ (hS _ hxS _).2
+      apply Multiset.count_le_of_le
+      exact mem_degreesLE.mp (hS C hxS j).2
     · simp only [Finset.sum_const, Finset.card_univ, Fintype.card_fin, smul_eq_mul]
       gcongr
       exact hSn _ hxS

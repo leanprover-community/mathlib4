@@ -172,7 +172,7 @@ theorem exists_mem_support_not_dvd_of_forall_totalDegree_le (hF0 : F ≠ 0) (hFa
       rw [totalDegree_eq_zero_iff_eq_C.mp hF''0, hF'', map_zero]
     replace this := hpm.trans ((HF F'' hF''0 hF'').trans_eq (one_mul _).symm)
     exact hp.one_lt.not_ge ((mul_le_mul_iff_of_pos_right hF''0'.bot_lt).mp this)
-  rw [totalDegree, Finset.mul_sup₀, Finset.sup_le_iff]
+  rw [totalDegree_def, totalDegree_def, Finset.mul_sup₀, Finset.sup_le_iff]
   intro σ hσ
   obtain ⟨σ, hσ₂, rfl⟩ := Finset.mem_image.mp (Finsupp.mapDomain_support hσ)
   refine le_trans ?_ (Finset.le_sup σ.2)

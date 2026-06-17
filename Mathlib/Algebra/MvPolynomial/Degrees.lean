@@ -440,6 +440,10 @@ section TotalDegree
 def totalDegree (p : MvPolynomial σ R) : ℕ :=
   p.support.sup fun s => s.sum fun _ e => e
 
+theorem totalDegree_def (p : MvPolynomial σ R) :
+    p.totalDegree = p.support.sup fun s => s.sum fun _ e => e := by
+  rfl
+
 theorem totalDegree_eq (p : MvPolynomial σ R) :
     p.totalDegree = p.support.sup fun m => Multiset.card (toMultiset m) := by
   rw [totalDegree]
@@ -670,11 +674,7 @@ section mainDegree
 
 variable [LinearOrder σ] {i : σ} {p : MvPolynomial σ R}
 
-instance decidablePredIsMaxOnDegrees : DecidablePred (IsMaxOn id (p.degrees.toFinset : Set σ)) := by
-  intro i
-  rw [isMaxOn_iff]
-  infer_instance
-
+open Classical in
 /--
 When `σ` is a linear order, `mainDegree p` is the multiset consisting of the maximal variable
 among all variables appearing in `p`, appearing with its largest multiplicity among all monomials
@@ -685,6 +685,7 @@ For example, `mainDegree (x^2 * y + x * y^3)` is `{y, y, y}` when `x < y`.
 def mainDegree (p : MvPolynomial σ R) : Multiset σ :=
   p.degrees.filter (IsMaxOn id p.degrees.toFinset)
 
+open Classical in
 theorem mainDegree_def (p : MvPolynomial σ R) :
     p.mainDegree = p.degrees.filter (IsMaxOn id p.degrees.toFinset) := Eq.refl _
 
@@ -702,6 +703,7 @@ theorem forall_mainDegree_eq_of_forall_degrees_le (h1 : i ∈ p.degrees)
 
 theorem card_mainDegree_eq_degreeOf_of_forall_degrees_le (h1 : i ∈ p.degrees)
     (h2 : IsMaxOn id p.degrees.toFinset i) : p.mainDegree.card = p.degreeOf i := by
+  classical
   have := forall_mainDegree_eq_of_forall_degrees_le h1 h2
   rw [← Multiset.count_eq_card.mpr this]
   rw [degreeOf_def, mainDegree, Multiset.count_filter, if_pos h2]
@@ -710,7 +712,7 @@ theorem card_mainDegree_eq_degreeOf_of_forall_degrees_le (h1 : i ∈ p.degrees)
 theorem mainDegree_zero : (0 : MvPolynomial σ R).mainDegree = 0 := Eq.refl _
 
 theorem mainDegree_C (r : R) : (C r : MvPolynomial σ R).mainDegree = 0 := by
-  simp [mainDegree_def, degrees_C, Multiset.filter_zero]
+  rw [mainDegree_def, degrees_C, Multiset.filter_zero]
 
 @[simp]
 theorem mainDegree_X [Nontrivial R] (i : σ) : (X i : MvPolynomial σ R).mainDegree = {i} := by
