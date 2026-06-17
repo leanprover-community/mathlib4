@@ -161,7 +161,7 @@ end Cartan
 /--
 Presentation of the proximity function as iterated circle averages.
 -/
-theorem proximity_top_eq_circleAverage_circleAverage (h : Meromorphic f) :
+theorem circleAverage_circleAverage_eq_proximity_top (h : Meromorphic f) :
     (fun R ↦ circleAverage (fun a ↦ circleAverage (log ‖f · - a‖) 0 R) 0 1) = proximity f ⊤ := by
   ext R
   let F : ℝ → ℝ → ℝ := Cartan.cartanKernel f R
