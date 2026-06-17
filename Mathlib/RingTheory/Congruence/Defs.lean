@@ -252,8 +252,8 @@ theorem coe_one : (↑(1 : R) : c.Quotient) = 1 :=
 
 end One
 
-/-- A function used to define scalar actions on `RingQuot`. To make sure such actions coming from
-different sources are reducibly defeq, they should all go through this function. -/
+/-- A function used to define scalar actions on `RingCon.Quotient`. To make sure such actions coming
+from different sources are reducibly defeq, they should all go through this function. -/
 def smulAux [Add R] [Mul R] {α : Type*} [SMul α R]
     (c : RingCon R) (h : ∀ (a : α) (x y : R), c x y → c (a • x) (a • y))
     (a : α) (x : c.Quotient) : c.Quotient :=
