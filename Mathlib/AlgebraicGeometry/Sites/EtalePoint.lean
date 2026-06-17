@@ -100,10 +100,8 @@ noncomputable def pointSmallEtaleFiberObjToPreimage {X : S.Etale}
     (t : (pointSmallEtale s).fiber.obj X) :
     X.hom ⁻¹' {s₀} :=
   ⟨t.left (default : Spec (.of Ω)), by
-    have := Over.w t
-    dsimp at this
-    rw [← this] at hs₀
-    simpa⟩
+    have := (Over.w t).symm
+    cat_disch⟩
 
 set_option backward.isDefEq.respectTransparency false in
 instance {Y X : Scheme.{u}} (f : Y ⟶ X) [Etale f] (x : X) :
