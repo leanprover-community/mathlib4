@@ -607,6 +607,7 @@ lemma integral_indicator₂ {β : Type*} (f : β → X → E) (s : Set β) (b : 
     ∫ᵛ y, s.indicator (f · y) b ∂[B; μ] = s.indicator (fun x ↦ ∫ᵛ y, f x y ∂[B; μ]) b := by
   by_cases hb : b ∈ s <;> simp [hb]
 
+@[fun_prop]
 theorem continuous_integral : Continuous fun f : X →₁[μ.variation] E => ∫ᵛ a, f a ∂[B; μ] := by
   simp only [integral_eq_setToFun]
   exact continuous_setToFun _
