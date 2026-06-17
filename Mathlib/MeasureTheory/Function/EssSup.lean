@@ -321,7 +321,7 @@ section CompleteLinearOrder
 
 variable [CompleteLinearOrder β]
 
-lemma iSup_le_essSup {f : α → β} (h : ∀ ⦃x a⦄, a < f x → μ {y | a < f y} ≠ 0) :
+lemma iSup_eq_essSup {f : α → β} (h : ∀ ⦃x a⦄, a < f x → μ {y | a < f y} ≠ 0) :
     ⨆ x, f x = essSup f μ := by
   apply le_antisymm (iSup_le _) essSup_le_iSup
   intro i
