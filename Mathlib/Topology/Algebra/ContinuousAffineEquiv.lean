@@ -309,6 +309,28 @@ end ReflSymmTrans
 
 section
 
+variable (k)
+variable [TopologicalSpace V₁] [IsTopologicalAddTorsor P₁] [ContinuousNeg V₁]
+
+/-- Point reflection in `x` as a permutation:
+this is `Equiv.pointReflection` as a continuous affine equivalence. -/
+@[simps toAffineEquiv]
+def pointReflection (x : P₁) : P₁ ≃ᴬ[k] P₁ where
+  toAffineEquiv := AffineEquiv.pointReflection k x
+  continuous_toFun := by dsimp [Equiv.pointReflection]; fun_prop
+  continuous_invFun := by dsimp [Equiv.pointReflection]; fun_prop
+
+theorem pointReflection_apply (x y : P₁) : pointReflection k x y = (x -ᵥ y) +ᵥ x :=
+  rfl
+
+@[simp]
+theorem pointReflection_symm (x : P₁) : (pointReflection k x).symm = pointReflection k x :=
+  toAffineEquiv_injective <| AffineEquiv.pointReflection_symm k x
+
+end
+
+section
+
 variable {E F : Type*} [AddCommGroup E] [Module k E] [TopologicalSpace E]
   [AddCommGroup F] [Module k F] [TopologicalSpace F]
 
