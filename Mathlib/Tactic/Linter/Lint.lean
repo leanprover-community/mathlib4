@@ -104,12 +104,16 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
       match duplicated with
       | [] => continue
       | [ns] =>
+        -- Note: using `.ofConstName declName` would print only the visible name, whereas we prefer
+        -- the full path.
         Linter.logLint linter.dupNamespace id
-          m!"The namespace `{ns}` is duplicated in the declaration `{declName}`." -- .ofConstName
+          m!"The namespace `{ns}` is duplicated in the declaration `{declName}`."
       | dup =>
         let ns := MessageData.andList (duplicated.map (m!"`{·}`"))
+        -- Note: using `.ofConstName declName` would print only the visible name, whereas we prefer
+        -- the full path.
         Linter.logLint linter.dupNamespace id
-          m!"The namespaces {ns} are duplicated in the declaration `{.ofConstName declName}`."
+          m!"The namespaces {ns} are duplicated in the declaration `{declName}`."
 
 initialize addLinter dupNamespace
 
