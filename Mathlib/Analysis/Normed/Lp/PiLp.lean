@@ -1137,12 +1137,11 @@ section
 
 variable [Semiring 𝕜] [∀ i, AddCommGroup (β i)] [∀ i, Module 𝕜 (β i)] [∀ i, TopologicalSpace (β i)]
 
-set_option linter.flexible false in -- simp followed by fun_prop
 /-- `WithLp.linearEquiv` as a continuous linear equivalence. -/
 @[simps! apply symm_apply]
 def continuousLinearEquiv : PiLp p β ≃L[𝕜] ∀ i, β i where
   toLinearEquiv := WithLp.linearEquiv _ _ _
-  continuous_invFun := by eta_expand; simp; fun_prop
+  continuous_invFun := (by fun_prop : Continuous fun (a : Π i, β i) ↦ toLp p a)
 
 lemma coe_continuousLinearEquiv :
     ⇑(PiLp.continuousLinearEquiv p 𝕜 β) = ofLp := rfl
@@ -1154,7 +1153,7 @@ lemma coe_symm_continuousLinearEquiv :
 for any index type `ι` with a unique element. -/
 @[simps! apply symm_apply]
 def equivOfUnique [Unique ι] : PiLp p β ≃L[𝕜] β default :=
-  (continuousLinearEquiv p 𝕜 β).trans <| ContinuousLinearEquiv.piUnique 𝕜 β
+  (continuousLinearEquiv p 𝕜 β).trans <| .piUnique 𝕜 β
 
 end
 
