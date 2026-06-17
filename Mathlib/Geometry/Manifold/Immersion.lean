@@ -49,13 +49,15 @@ This shortens the overall argument, as the definition of submersions has the sam
   replacing the complement `F` by an isomorphic copy.
 * `IsOpen.isImmersionAtOfComplement` and `IsOpen.isImmersionAt`:
   the set of points where `IsImmersionAt(OfComplement)` holds is open.
+* `IsImmersionAt.exists_nbhd_restr_isEmbedding`: if `f` is an immersion at `x`, then `x` has a
+  neighbourhood on which `f` is an embedding
 * `IsImmersionAt.prodMap` and `IsImmersion.prodMap`: the product of two immersions (at a point)
   is an immersion (at the product point).
 * `IsImmersion.id`: the identity map is an immersion
 * `IsImmersion.of_opens`: the inclusion of an open subset `s → M` of a smooth manifold
   is a smooth immersion
-* `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
-* `IsImmersion.contMDiff`: if f is a `C^n` immersion, it is automatically `C^n`
+* `IsImmersionAt.contMDiffAt`: if `f` is an immersion at `x`, it is `C^n` at `x`.
+* `IsImmersion.contMDiff`: if `f` is a `C^n` immersion, it is automatically `C^n`
   in the sense of `ContMDiff`.
 
 ## Implementation notes
@@ -241,7 +243,7 @@ lemma codChart_mem_maximalAtlas (h : IsImmersionAtOfComplement F I J n f x) :
 
 lemma source_subset_preimage_source (h : IsImmersionAtOfComplement F I J n f x) :
     h.domChart.source ⊆ f ⁻¹' h.codChart.source :=
-  LiftSourceTargetPropertyAt.source_subset_preimage_source h
+  h.source_subset_preimage_source
 
 lemma mapsto_domChart_source_codChart_source (h : IsImmersionAtOfComplement F I J n f x) :
     MapsTo f h.domChart.source h.codChart.source :=
@@ -260,6 +262,54 @@ lemma writtenInCharts (h : IsImmersionAtOfComplement F I J n f x) :
 
 lemma property (h : IsImmersionAtOfComplement F I J n f x) :
     LiftSourceTargetPropertyAt I J n f x (ImmersionAtProp F I J M N) := h
+
+/-- This result is a "dual version" of `h.writtenInCharts`, which applies to `f` directly. -/
+theorem eqOn_domChart_source (h : IsImmersionAtOfComplement F I J n f x) :
+    letI rhs := (h.codChart.extend J).symm ∘ (h.equiv ∘ fun x ↦ (x, 0)) ∘ (h.domChart.extend I);
+    EqOn f rhs h.domChart.source := by
+  have : EqOn f (((h.codChart.extend J).symm ∘
+      ((h.codChart.extend J) ∘ f ∘ (h.domChart.extend I).symm) ∘ (h.domChart.extend I)))
+      h.domChart.source := by
+    intro x hx
+    symm
+    trans f ((h.domChart.extend I).symm ((h.domChart.extend I) x))
+    · simp only [OpenPartialHomeomorph.extend, PartialEquiv.coe_trans_symm,
+        OpenPartialHomeomorph.coe_coe_symm, ModelWithCorners.toPartialEquiv_coe_symm,
+        PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
+        OpenPartialHomeomorph.toFun_eq_coe, comp_apply, ModelWithCorners.left_inv]
+      refine h.codChart.left_inv ?_
+      apply h.mapsto_domChart_source_codChart_source
+      rwa [h.domChart.left_inv hx]
+    · simp [h.domChart.left_inv hx]
+  apply this.trans
+  apply EqOn.comp_left
+  apply EqOn.comp_right h.writtenInCharts
+  rw [h.domChart.extend_target_eq_image_source]
+  exact mapsTo_image _ h.domChart.source
+
+/-- This result is a "dual version" of `h.writtenInCharts`, which applies to `f` directly. -/
+theorem eqOn_domChart_source (h : IsImmersionAtOfComplement F I J n f x) :
+    letI rhs := (h.codChart.extend J).symm ∘ (h.equiv ∘ fun x ↦ (x, 0)) ∘ (h.domChart.extend I);
+    EqOn f rhs h.domChart.source := by
+  have : EqOn f (((h.codChart.extend J).symm ∘
+      ((h.codChart.extend J) ∘ f ∘ (h.domChart.extend I).symm) ∘ (h.domChart.extend I)))
+      h.domChart.source := by
+    intro x hx
+    symm
+    trans f ((h.domChart.extend I).symm ((h.domChart.extend I) x))
+    · simp only [OpenPartialHomeomorph.extend, PartialEquiv.coe_trans_symm,
+        OpenPartialHomeomorph.coe_coe_symm, ModelWithCorners.toPartialEquiv_coe_symm,
+        PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
+        OpenPartialHomeomorph.toFun_eq_coe, comp_apply, ModelWithCorners.left_inv]
+      refine h.codChart.left_inv ?_
+      apply h.mapsto_domChart_source_codChart_source
+      rwa [h.domChart.left_inv hx]
+    · simp [h.domChart.left_inv hx]
+  apply this.trans
+  apply EqOn.comp_left
+  apply EqOn.comp_right h.writtenInCharts
+  rw [h.domChart.extend_target_eq_image_source]
+  exact mapsTo_image _ h.domChart.source
 
 /--
 If `f` is an immersion at `x`, it maps its domain chart's target `(h.domChart.extend I).target`
@@ -353,6 +403,58 @@ lemma congr_F (e : F ≃L[𝕜] F') :
 lemma _root_.IsOpen.isImmersionAtOfComplement :
     IsOpen {x | IsImmersionAtOfComplement F I J n f x} :=
   IsOpen.liftSourceTargetPropertyAt
+
+open Topology
+
+/-- If `f` is an immersion at `x`, then restriction `f` to `h.domChart.source` is an embedding. -/
+lemma isEmbedding_restr_domChart_source (h : IsImmersionAtOfComplement F I J n f x) :
+    IsEmbedding (h.domChart.source.restrict f) := by
+  have hj : IsEmbedding (h.equiv ∘ fun x ↦ (x, 0)) :=
+    h.equiv.toHomeomorph.isEmbedding.comp (isEmbedding_prodMkLeft 0)
+  letI rhs := (h.codChart.extend J).symm ∘ (h.equiv ∘ fun x ↦ (x, 0)) ∘ (h.domChart.extend I)
+  have : h.domChart.source.restrict f = h.domChart.source.restrict rhs := by
+    ext ⟨x, hx⟩
+    simpa using h.eqOn_domChart_source hx
+  rw [this]
+  -- Local notation for readability.
+  set s := h.domChart.source
+  set φ := h.domChart.extend I
+  set ψ := h.codChart.extend J
+  /- We write s.restrict rhs as the composition of three embeddings:
+  - ψ restricted to its target
+  - (h.equiv ∘ fun x ↦ (x, 0)) (which is an embedding, see above)
+  - φ restricted to its source. -/
+  have aux (x : s): ((h.equiv ∘ fun x ↦ (x, (0 : F))) ∘ (s.restrict φ)) x ∈ ψ.target := by
+    obtain ⟨x, hx⟩ := x
+    -- TODO: replace by the right rewrite!
+    change (h.equiv ∘ fun x ↦ (x, 0)) ((s.restrict φ) ⟨x, hx⟩) ∈ ψ.target
+    have : (s.restrict φ) ⟨x, hx⟩ ∈ φ.target := by
+      simp only [restrict_apply]
+      apply (h.domChart.extend I).map_source
+      rwa [OpenPartialHomeomorph.extend_source]
+    rw [← h.writtenInCharts this, h.codChart.extend_target_eq_image_source]
+    apply mem_image_of_mem
+    apply h.mapsto_domChart_source_codChart_source
+    simp_rw [restrict_apply, ← h.domChart.extend_source (I := I)]
+    exact (h.domChart.extend I).map_target this
+  let bs : s → (h.codChart.extend J).target :=
+    Set.codRestrict ((h.equiv ∘ fun x ↦ (x, (0 : F))) ∘
+      (s.restrict φ)) (h.codChart.extend J).target aux
+  have : s.restrict rhs = (ψ.target.restrict ψ.symm) ∘ bs := by
+    ext ⟨x, hx⟩
+    simp [bs, rhs, comp_apply, φ, ψ]
+  rw [this]
+  refine h.codChart.isEmbedding_extend_symm_restrict.comp  ?_
+  -- TODO: make fun_prop do this!
+  exact (hj.comp h.domChart.isEmbedding_extend_restrict).codRestrict
+    (h.codChart.extend J).target aux
+
+/-- If `f` an immersion at `x`, then `x` has an open neighbourhood `s` such that the restriction
+of `f` to `s` is an embedding. -/
+lemma exists_nbhd_restr_isEmbedding (h : IsImmersionAtOfComplement F I J n f x) :
+    ∃ s : Set M, IsOpen s ∧ s ∈ 𝓝 x ∧ IsEmbedding (s.restrict f) :=
+  ⟨h.domChart.source, h.domChart.open_source,
+    h.domChart.open_source.mem_nhds h.mem_domChart_source, h.isEmbedding_restr_domChart_source⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
@@ -569,6 +671,15 @@ lemma _root_.IsOpen.isImmersionAt :
   exact fun x hx ↦ ⟨{x | IsImmersionAtOfComplement hx.complement I J n f x },
     fun y hy ↦ hy.isImmersionAt, .isImmersionAtOfComplement,
     by simp [hx.isImmersionAtOfComplement_complement]⟩
+
+open Topology in
+/-- If `f` an immersion at `x`, then `x` has an open neighbourhood `s` such that the restriction
+of `f` to `s` is an embedding. -/
+lemma exists_nbhd_restr_isEmbedding (h : IsImmersionAt I J n f x) :
+    ∃ s : Set M, IsOpen s ∧ s ∈ 𝓝 x ∧ IsEmbedding (s.restrict f) := by
+  rw [IsImmersionAt_def] at h
+  obtain ⟨F, _, _, h⟩ := h
+  exact h.exists_nbhd_restr_isEmbedding
 
 /-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
 then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
