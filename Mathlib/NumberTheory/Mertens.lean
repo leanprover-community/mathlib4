@@ -382,8 +382,7 @@ theorem sum_log_prime_div_sub_log_bound {x : ℝ} (hx : 1 ≤ x) :
     |∑ p ∈ primesLE ⌊x⌋₊, log p / p - log x| ≤ log 4 + 4 := by
   refine abs_le'.mpr ⟨E₁p_le hx, ?_⟩
   have : log 2 > 0 := by positivity
-  have : log 4 = 2 * log 2 := by rw [← log_rpow (by norm_num)]; norm_num
-  grind [le_E₁p hx, E₁_le, sum_log_prime_div_eq]
+  grind [le_E₁p hx, E₁_le, sum_log_prime_div_eq, log_four_eq]
 
 theorem E₁p.bounded : ∃ c > 0, ∀ x ≥ 1, |E₁p x| ≤ c :=
   ⟨log 4 + 4, by positivity, fun _ hx ↦ sum_log_prime_div_sub_log_bound hx⟩
