@@ -405,6 +405,7 @@ lemma trivial_apply (g : G) (v : V) : trivial R G V g v = v := rfl
 def restrict {H : Type*} [Monoid H] (π : ContRepresentation R G V) (φ : H →* G) :
     ContRepresentation R H V := .comp π φ
 
+/-- The submodule of `G`-invariant elements of a continuous representation. -/
 def invariants (π : ContRepresentation R G V) : Submodule R V where
   carrier := {v | ∀ g, π g v = v}
   zero_mem' := by simp
@@ -414,8 +415,6 @@ def invariants (π : ContRepresentation R G V) : Submodule R V where
 @[simp]
 lemma mem_invariants {π : ContRepresentation R G V} (v : V) :
     v ∈ π.invariants ↔ ∀ g, π g v = v := Iff.rfl
-
-
 
 -- TODO : define `IsTopologicalMonoid` and then replace `Homeomorph.mulLeft g⁻¹` with the
 -- `ContinuousMap.mulRight g` to make `coind₁` work for monoids.
@@ -474,7 +473,7 @@ def coind₁ (π : ContRepresentation R G V) :
 
 /-- The functoriality of `coind₁`. -/
 @[simps]
-def coind₁_map (π₁ : ContRepresentation R G V) (π₂ : ContRepresentation R G W) (f : π₁ →ⁱL π₂) :
+def coind₁Map (π₁ : ContRepresentation R G V) (π₂ : ContRepresentation R G W) (f : π₁ →ⁱL π₂) :
     coind₁ π₁ →ⁱL coind₁ π₂ where
   toFun := (f : ContinuousMap _ _).comp
   map_add' _ _ := by ext; simp
@@ -484,7 +483,7 @@ def coind₁_map (π₁ : ContRepresentation R G V) (π₂ : ContRepresentation 
 
 /-- The naturality of the transformation from `𝟭 ⟶ coind₁`. -/
 @[simps]
-def coind₁_ι (π : ContRepresentation R G V) : π →ⁱL coind₁ π where
+def coind₁ι (π : ContRepresentation R G V) : π →ⁱL coind₁ π where
   toFun := .const G
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
