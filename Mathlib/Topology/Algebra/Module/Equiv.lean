@@ -1438,7 +1438,6 @@ def ofIsHomeomorph (f : M ≃ₛₗ[σ] M₁) (hf : IsHomeomorph f) : M ≃SL[σ
 
 theorem isHomeomorph (f : M ≃SL[σ] M₁) : IsHomeomorph f := ⟨f.continuous, isOpenMap f, f.bijective⟩
 
-
 variable {f : M ≃ₛₗ[σ] M₁} (hf : IsHomeomorph f)
 
 @[simp]
