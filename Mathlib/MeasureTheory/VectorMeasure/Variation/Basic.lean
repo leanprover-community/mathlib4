@@ -341,7 +341,7 @@ lemma preVariationFun_apply_of_ENNReal (s : Set X) : preVariationFun μ s = μ s
   by_cases h : MeasurableSet s
   · rw [preVariationFun_apply]
     exact iSup_sum_finpartition_parts μ h
-  · rw [preVariationFun_of_not_measurableSet μ h, μ.not_measurable' h]
+  · rw [preVariationFun_of_not_measurableSet μ h, not_measurable μ h]
 
 theorem variation_eq_ennrealToMeasure : μ.variation = μ.ennrealToMeasure := by
   ext _ hs
