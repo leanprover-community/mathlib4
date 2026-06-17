@@ -53,4 +53,49 @@ def findTheoremConstVal? (env : Environment) (decl : Name)
 
 end constKind
 
-end Lean.Environment
+end Environment
+
+public section envT
+
+/-- An abbreviation for `StateT Environment` with a `MonadEnv` instance. -/
+abbrev EnvT := StateT Environment
+
+instance {m} [Monad m] : MonadEnv (EnvT m) where
+  getEnv := get
+  modifyEnv := modify
+
+/-- Runs an `EnvT := StateT Environment` action with the supplied `Environment`.
+
+A monad-generic action `x` of type `[MonadEnv m] → m α` may be run with `EnvT.run (env := env) x`,
+or alternatively with dot notation as `env.run x` via the alias `Environment.run`. See also
+`env.runPure` for use in pure contexts (`m := Id`). -/
+nonrec def EnvT.run.{v} {m : Type → Type v} {α : Type} (x : EnvT m α) (env : Environment) :
+    m (α × Environment) := x.run env
+
+/-- Runs an `EnvT := StateT Environment` action with the supplied `Environment`, discarding the
+resulting `Environment`.
+
+A monad-generic action `x` of type `[MonadEnv m] → m α` may be run with `EnvT.run' (env := env) x`,
+or alternatively with dot notation as `env.run' x` via the alias `Environment.run'`. See also
+`env.runPure'` for use in pure contexts (`m := Id`) without the `Id` annotation, for convenience. -/
+nonrec def EnvT.run'.{v} {m : Type → Type v} [Functor m] {α : Type} (x : EnvT m α)
+    (env : Environment) : m α := x.run' env
+
+namespace Environment
+
+export EnvT (run run')
+
+/-- Runs a monad-generic action `x : [MonadEnv m] → m α` with `env` as the state of the monad. -/
+@[inline] def runPure {α : Type} (x : EnvT Id α)
+    (env : Environment) : α × Environment := x.run env
+
+/-- Runs a monad-generic action `x : [MonadEnv m] → m α` with `env` as the state of the monad,
+discarding the resulting environment. -/
+@[inline] def runPure' {α : Type} (x : EnvT Id α)
+    (env : Environment) : α := x.run' env
+
+end Environment
+
+end envT
+
+end Lean
