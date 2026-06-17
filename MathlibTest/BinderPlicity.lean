@@ -6,11 +6,11 @@ import Mathlib.Util.BinderPlicity
 
 Test file for the binder plicity code action.
 
-  WARNING 
+  WARNING
   This file is not meant to be merged!
-  WARNING 
+  WARNING
 
-This file is just provided for the convenience of reviewers 
+This file is just provided for the convenience of reviewers
 to test the correct functionality of the code action.
 It should be removed before PR 40641 is merged.
 
