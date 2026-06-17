@@ -62,7 +62,7 @@ example : ConcreteCategory FintypeCat
     (fun X Y ↦ TypeCat.Fun X.obj Y.obj) :=
   inferInstance
 
-/- Help typeclass inference infer fullness of forgetful functor. -/
+/-- Help typeclass inference infer fullness of forgetful functor. -/
 instance : (forget FintypeCat).Full := inferInstanceAs <| FintypeCat.incl.Full
 
 @[simp]

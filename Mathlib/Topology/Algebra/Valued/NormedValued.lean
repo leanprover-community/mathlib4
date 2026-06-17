@@ -62,7 +62,6 @@ instance : RankLeOne (valuation (K := K)) where
   hom' := embedding
   strictMono' := embedding_strictMono
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The valued field structure on a nonarchimedean normed field `K`, determined by the norm. -/
 @[instance_reducible]
 def toValued : Valued K ℝ≥0 :=
@@ -131,7 +130,6 @@ theorem norm_add_le (x y : L) : v.norm (x + y) ≤ max (v.norm x) (v.norm y) := 
 theorem norm_eq_zero {x : L} (hx : v.norm x = 0) : x = 0 := by
   simpa [v.restrict_def, norm, NNReal.coe_eq_zero, RankOne.hom_eq_zero_iff, zero_iff] using hx
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_pos_iff_valuation_pos {x : L} : 0 < v.norm x ↔ (0 : Γ₀) < v x := by
   rw [norm_def, ← NNReal.coe_zero, NNReal.coe_lt_coe, ← map_zero (RankOne.hom v),
     StrictMono.lt_iff_lt (RankOne.strictMono v)]
@@ -146,7 +144,6 @@ variable (L : Type*) [Field L] (Γ₀ : Type*) [LinearOrderedCommGroupWithZero �
 
 open Valuation
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The normed field structure determined by a rank one valuation. -/
 @[instance_reducible]
 def toNormedField : NormedField L :=
@@ -229,13 +226,11 @@ variable {x x' : L}
 
 theorem norm_def : ‖x‖ = hv.hom _ (Valued.v.restrict x) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem norm_le_iff : ‖x‖ ≤ ‖x'‖ ↔ val.v x ≤ val.v x' := by
   rw [← v.restrict_le_iff, ← (Valuation.RankOne.strictMono val.v).le_iff_le]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem norm_lt_iff : ‖x‖ < ‖x'‖ ↔ val.v x < val.v x' := by
   rw [← v.restrict_lt_iff, ← (Valuation.RankOne.strictMono val.v).lt_iff_lt]

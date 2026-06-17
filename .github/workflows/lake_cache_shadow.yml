@@ -94,13 +94,13 @@ jobs:
         uses: dcarbone/install-jq-action@b7ef57d46ece78760b4019dbc4080a1ba2a40b45 # v3.2.0
 
       - name: Checkout tools branch
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: master
           path: tools-branch
 
       - name: Checkout mathlib (pr-branch)
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ inputs.mathlib_ref || 'master' }}
           fetch-depth: 2
@@ -271,12 +271,13 @@ jobs:
     timeout-minutes: 30
     outputs:
       carryover: ${{ steps.carryover.outputs.summary }}
+      new_content: ${{ steps.carryover.outputs.new_content }}
     env:
       LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
       LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT }}
     steps:
       - name: Checkout mathlib (for lean-toolchain pin)
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ needs.build_and_stage.outputs.sha }}
           path: pr-branch
@@ -292,7 +293,7 @@ jobs:
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
       - name: Download staging artifact
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v6.0.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: lake-cache-staging-${{ github.run_id }}
           path: lake-cache-staging
@@ -322,11 +323,15 @@ jobs:
       # Here:
       #   carryover = artifacts also present last run;
       #   new = this run's churn (≈ how much Mathlib changed since the last build).
+      # We also size the new artifacts (bytes of fresh content pushed to the
+      # bucket this run) by mapping each new content-hash back to its staged file.
       - name: Cache carryover analysis
         id: carryover
         continue-on-error: true
         env:
           AUTH: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
         run: |
           base="${AUTH%/artifacts}/analysis"
           sha="${{ needs.build_and_stage.outputs.sha }}"
@@ -336,20 +341,51 @@ jobs:
           if [ "$total" -eq 0 ]; then
             echo "::warning::no uploaded artifacts parsed from put.log — skipping carryover (manifest/pointer left unchanged)"
             echo "summary=n/a (no artifacts uploaded)" >> "$GITHUB_OUTPUT"
+            echo "new_content=n/a (no artifacts uploaded)" >> "$GITHUB_OUTPUT"
             exit 0
           fi
+          # Map staged artifact content-hash -> file size in bytes. Staging files
+          # are flat `<hash>.<ext>` (see Lake's `artifactPath`); the lone
+          # `outputs.jsonl` keys to "outputs" and never matches a hash.
+          declare -A SZ
+          while read -r fname fsize; do
+            SZ[${fname%%.*}]=$fsize
+          done < <(find lake-cache-staging -maxdepth 1 -type f -printf '%f %s\n')
+          sum_bytes() {  # sum staged sizes for the artifact hashes read from a file
+            local h tot=0
+            while read -r h; do tot=$((tot + ${SZ[$h]:-0})); done < "$1"
+            echo "$tot"
+          }
           summary="n/a (baseline — no prior manifest)"
+          # Baseline: with no prior manifest, every uploaded artifact is "new".
+          new_bytes=$(sum_bytes /tmp/today.txt)
+          new_content="$(numfmt --to=iec-i --suffix=B "$new_bytes") across ${total} new artifact(s) (baseline — all new)"
           prev="$(curl -fsS "${sig[@]}" "$base/_latest.txt" 2>/dev/null || true)"
           if [ -n "$prev" ] && curl -fsS "${sig[@]}" "$base/$prev.txt" 2>/dev/null | sort -u > /tmp/prev.txt && [ -s /tmp/prev.txt ]; then
             carry=$(comm -12 /tmp/today.txt /tmp/prev.txt | wc -l)
-            new=$(comm -23 /tmp/today.txt /tmp/prev.txt | wc -l)
+            comm -23 /tmp/today.txt /tmp/prev.txt > /tmp/new.txt
+            new=$(wc -l < /tmp/new.txt)
+            new_bytes=$(sum_bytes /tmp/new.txt)
+            # Commit distance prev..sha on master, via the GitHub compare API
+            # (`.ahead_by`) — avoids deepening the shallow checkout across what
+            # can be hundreds of commits between daily runs.
+            dist=$(curl -fsS \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${REPO}/compare/${prev}...${sha}" \
+              2>/dev/null | jq -r '.ahead_by // empty' || true)
+            distnote=""
+            [ -n "$dist" ] && distnote=" (distance: ${dist} commits)"
+            new_content="$(numfmt --to=iec-i --suffix=B "$new_bytes") across ${new} new artifact(s) vs rev ${prev:0:12}${distnote}"
             pct=$(awk "BEGIN{printf \"%.1f\", ($total>0)?100*$carry/$total:0}")
             note=""
             [ "$total" -gt 0 ] && [ "$new" -eq "$total" ] && note=" — full turnover, likely a toolchain/generation change, not source churn"
             summary="${carry}/${total} (${pct}%) carried over, ${new} new vs rev ${prev:0:12}${note}"
           fi
           echo "::notice::cache carryover: ${summary}"
+          echo "::notice::new content uploaded: ${new_content}"
           echo "summary=${summary}" >> "$GITHUB_OUTPUT"
+          echo "new_content=${new_content}" >> "$GITHUB_OUTPUT"
           # Persist this run's manifest + advance the pointer (best-effort).
           printf %s "$sha" > /tmp/latest.txt
           curl -fsS "${sig[@]}" -X PUT -T /tmp/today.txt  "$base/${sha}.txt"   >/dev/null || echo "::warning::failed to store analysis manifest"
@@ -374,7 +410,7 @@ jobs:
       LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT_PUBLIC }}
     steps:
       - name: Checkout mathlib
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ needs.build_and_stage.outputs.sha }}
           path: pr-branch
@@ -484,6 +520,7 @@ jobs:
           UPLOAD: ${{ needs.upload.result }}
           CONSUME: ${{ needs.consume.result }}
           CARRYOVER: ${{ needs.upload.outputs.carryover }}
+          NEW_CONTENT: ${{ needs.upload.outputs.new_content }}
           CACHE_HEALTH: ${{ needs.consume.outputs.cache_health }}
           SHA: ${{ needs.build_and_stage.outputs.sha }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
@@ -505,16 +542,17 @@ jobs:
             echo "- $(emoji "$CONSUME") consume: \`$CONSUME\`"
             echo "- ${CACHE_HEALTH:-❓ cache hits: n/a (consume skipped)}"
             echo "- 🔁 cache carryover: ${CARRYOVER:-n/a}"
+            echo "- 📦 new content uploaded: ${NEW_CONTENT:-n/a}"
             echo "MSG_EOF"
           } >> "$GITHUB_OUTPUT"
 
       - name: Send to Zulip
-        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+        uses: zulip/github-actions-zulip/send-message@bd8ec52de371d139ae8313661b7d8318c19266aa # v2.0.1
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
-          to: 'nightly-testing'
+          to: 'nightly-testing-mathlib'
           type: 'stream'
           topic: 'mathlib + lake cache shadow workflow'
           content: ${{ steps.compose.outputs.msg }}

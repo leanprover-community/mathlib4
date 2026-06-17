@@ -58,7 +58,6 @@ variable (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
   (hi'' : c'.prev j' = i') (hk'' : c'.next j' = k')
   [K.HasHomology j'] [(K.restriction e).HasHomology j]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `(K.restriction e).cycles j ≅ K.cycles j'` when `e.f j = j'`
 and the successors `k` and `k'` of `j` and `j'` satisfy `e.f k = k'`. -/
 noncomputable def restrictionCyclesIso :
@@ -80,14 +79,12 @@ lemma restrictionCyclesIso_hom_iCycles :
       (K.restriction e).iCycles j ≫ (K.restrictionXIso e hj').hom := by
   simp [restrictionCyclesIso]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma restrictionCyclesIso_inv_iCycles :
     (K.restrictionCyclesIso e j k hk hj' hk' hk'').inv ≫ (K.restriction e).iCycles j =
       K.iCycles j' ≫ (K.restrictionXIso e hj').inv := by
   simp [restrictionCyclesIso]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `(K.restriction e).opcycles j ≅ K.opcycles j'` when `e.f j = j'`
 and the predecessors `i` and `i'` of `j` and `j'` satisfy `e.f i = i'`. -/
 noncomputable def restrictionOpcyclesIso :
@@ -103,7 +100,6 @@ noncomputable def restrictionOpcyclesIso :
   hom_inv_id := by simp [← cancel_epi ((K.restriction e).pOpcycles j)]
   inv_hom_id := by simp [← cancel_epi (K.pOpcycles j')]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pOpcycles_restrictionOpcyclesIso_hom :
     (K.restriction e).pOpcycles j ≫ (K.restrictionOpcyclesIso e i j hi hi' hj' hi'').hom =
