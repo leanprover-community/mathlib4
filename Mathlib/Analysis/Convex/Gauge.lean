@@ -206,6 +206,8 @@ theorem Convex.setOf_gauge_le (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s) (absorb
   · convert! convex_empty (𝕜 := ℝ)
     exact eq_empty_iff_forall_notMem.2 fun x hx => ha <| (gauge_nonneg _).trans hx
 
+@[deprecated (since := "2026-06-17")] alias Convex.gauge_le := Convex.setOf_gauge_le
+
 theorem Balanced.starConvex (hs : Balanced ℝ s) : StarConvex ℝ 0 s :=
   starConvex_zero_iff.2 fun _ hx a ha₀ ha₁ =>
     hs _ (by rwa [Real.norm_of_nonneg ha₀]) (smul_mem_smul_set hx)
@@ -370,6 +372,9 @@ theorem setOf_gauge_lt_one_eq_self_of_isOpen (hs₁ : Convex ℝ s) (hs₀ : (0 
   convert! interior_subset_gauge_lt_one s
   exact hs₂.interior_eq.symm
 
+@[deprecated (since := "2026-06-17")]
+alias gauge_lt_one_eq_self_of_isOpen := setOf_gauge_lt_one_eq_self_of_isOpen
+
 theorem gauge_lt_one_of_mem_of_isOpen (hs₂ : IsOpen s) {x : E} (hx : x ∈ s) :
     gauge s x < 1 :=
   interior_subset_gauge_lt_one s <| by rwa [hs₂.interior_eq]
@@ -482,6 +487,9 @@ theorem setOf_gauge_lt_one_eq_interior (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0
   refine Subset.antisymm (fun x hx ↦ ?_) (interior_subset_gauge_lt_one s)
   rcases mem_openSegment_of_gauge_lt_one (absorbent_nhds_zero hs₀) hx with ⟨y, hys, hxy⟩
   exact hc.openSegment_interior_self_subset_interior (mem_interior_iff_mem_nhds.2 hs₀) hys hxy
+
+@[deprecated (since := "2026-06-17")]
+alias gauge_lt_one_eq_interior := setOf_gauge_lt_one_eq_interior
 
 theorem setOf_gauge_lt_isOpen (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) (a : ℝ) :
     IsOpen { x | gauge s x < a } :=
