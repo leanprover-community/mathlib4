@@ -586,7 +586,7 @@ lemma affineCombination_apply_eq_lineMap_sum [DecidableEq ι] (w : ι → k) (p 
     (hp₁ : ∀ i ∈ s \ s', p i = p₁) :
     s.affineCombination k p w = AffineMap.lineMap p₁ p₂ (∑ i ∈ s ∩ s', w i) := by
   rw [s.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one w p h p₁,
-    weightedVSubOfPoint_apply, ← s.sum_inter_add_sum_diff s', AffineMap.lineMap_apply,
+    weightedVSubOfPoint_apply, ← s.sum_inter_add_sum_sdiff s', AffineMap.lineMap_apply,
     vadd_right_cancel_iff, sum_smul]
   convert! add_zero _ with i hi
   · convert! Finset.sum_const_zero with i hi
@@ -608,17 +608,14 @@ variable (k)
 def affineCombinationSingleWeights [DecidableEq ι] (i : ι) : ι → k :=
   Pi.single i 1
 
-set_option linter.deprecated false in
 @[deprecated Pi.single_eq_same (since := "2026-04-16")]
 theorem affineCombinationSingleWeights_apply_self [DecidableEq ι] (i : ι) :
     affineCombinationSingleWeights k i i = 1 := Pi.single_eq_same _ _
 
-set_option linter.deprecated false in
 @[deprecated Pi.single_eq_of_ne (since := "2026-04-16")]
 theorem affineCombinationSingleWeights_apply_of_ne [DecidableEq ι] {i j : ι} (h : j ≠ i) :
     affineCombinationSingleWeights k i j = 0 := Pi.single_eq_of_ne h _
 
-set_option linter.deprecated false in
 @[deprecated Finset.sum_pi_single' (since := "2026-04-16")]
 theorem sum_affineCombinationSingleWeights [DecidableEq ι] {i : ι} (h : i ∈ s) :
     ∑ j ∈ s, affineCombinationSingleWeights k i j = 1 := by
@@ -692,7 +689,6 @@ theorem affineCombination_piSingle [DecidableEq ι] (p : ι → P) {i : ι}
   rintro j - hj
   simp [hj]
 
-set_option linter.deprecated false in
 /-- An affine combination with `affineCombinationSingleWeights` gives the specified point. -/
 @[deprecated affineCombination_piSingle (since := "2026-04-16")]
 theorem affineCombination_affineCombinationSingleWeights [DecidableEq ι] (p : ι → P) {i : ι}

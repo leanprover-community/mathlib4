@@ -557,7 +557,7 @@ lemma SeparatedNhds.of_isClosed_isCompact_closure_compl_isClosed [R1Space X] {s 
   -- Since `t` is a closed subset of the compact set `closure sᶜ`, it is compact.
   have ht : IsCompact t := .of_isClosed_subset H2 H3 <| H4.subset_compl_left.trans subset_closure
   -- we split `s` into its frontier and its interior.
-  rw [← diff_union_of_subset (interior_subset (s := s))]
+  rw [← sdiff_union_of_subset (interior_subset (s := s))]
   -- since `t ⊆ sᶜ`, which is open, and `interior s` is open, we have
   -- `SeparatedNhds (interior s) t`, which leaves us only with the frontier.
   refine .union_left ?_ ⟨interior s, sᶜ, isOpen_interior, H1.isOpen_compl, le_rfl,

@@ -264,8 +264,6 @@ variable (R E) in
 /-- The Fourier transform as a continuous linear equivalence. -/
 def fourierCLE : E ≃L[R] F where
   __ := fourierEquiv R E
-  continuous_toFun := continuous_fourier
-  continuous_invFun := continuous_fourierInv
 
 @[simp]
 lemma fourierCLE_apply (f : E) : fourierCLE R E f = 𝓕 f := rfl

@@ -54,7 +54,7 @@ variable [Semiring R] [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid M₃] 
 /-- `pi` construction for linear functions. From a family of linear functions it produces a linear
 function into a family of modules. -/
 def pi (f : (i : ι) → M₂ →ₗ[R] φ i) : M₂ →ₗ[R] (i : ι) → φ i :=
-  { Pi.addHom fun i => (f i).toAddHom with
+  { AddHom.pi fun i => (f i).toAddHom with
     toFun := fun c i => f i c
     map_smul' := fun _ _ => funext fun i => (f i).map_smul _ _ }
 

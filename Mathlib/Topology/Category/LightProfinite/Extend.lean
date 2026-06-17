@@ -96,6 +96,7 @@ section Limit
 
 variable {C : Type*} [Category* C] (G : LightProfinite ⥤ C)
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 Given a functor `G` from `LightProfinite` and `S : LightProfinite`, we obtain a cone on
 `(StructuredArrow.proj S toLightProfinite ⋙ toLightProfinite ⋙ G)` with cone point `G.obj S`.
@@ -126,6 +127,7 @@ section Colimit
 
 variable {C : Type*} [Category* C] (G : LightProfiniteᵒᵖ ⥤ C)
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 Given a functor `G` from `LightProfiniteᵒᵖ` and `S : LightProfinite`, we obtain a cocone on
 `(CostructuredArrow.proj toLightProfinite.op ⟨S⟩ ⋙ toLightProfinite.op ⋙ G)` with cocone point
