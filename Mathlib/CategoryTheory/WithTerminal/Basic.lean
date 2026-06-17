@@ -83,8 +83,6 @@ def id : ∀ X : WithTerminal C, Hom X X
   | of _ => 𝟙 _
   | star => PUnit.unit
 
-#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
-Assistance investigating this would be appreciated. -/
 /-- Composition of morphisms for `WithTerminal C`. -/
 @[simp]
 def comp : ∀ {X Y Z : WithTerminal C}, Hom X Y → Hom Y Z → Hom X Z
@@ -509,6 +507,7 @@ def comp : ∀ {X Y Z : WithInitial C}, Hom X Y → Hom Y Z → Hom X Z
   | _, of _X, star => fun _f g => PEmpty.elim g
   | of _Y, star, _ => fun f _g => PEmpty.elim f
   | star, star, star => fun _ _ => PUnit.unit
+attribute [nolint simpNF] comp.eq_3
 
 @[aesop safe destruct (rule_sets := [CategoryTheory])]
 lemma false_of_to_star' {X : C} (f : Hom (of X) star) : False := (f : PEmpty).elim
