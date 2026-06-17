@@ -338,10 +338,10 @@ lemma iSup_sum_finpartition_parts {s : Set X} (hs : MeasurableSet s) :
 
 /-- For `μ : VectorMeasure X ℝ≥0∞`, `preVariationFun μ s = μ s` for any `s`. -/
 lemma preVariationFun_apply_of_ENNReal (s : Set X) : preVariationFun μ s = μ s := by
-  unfold preVariationFun
-  split_ifs with hs
-  · exact iSup_sum_finpartition_parts μ hs
-  · exact (μ.not_measurable' hs).symm
+  by_cases h : MeasurableSet s
+  · rw [preVariationFun_apply]
+    exact iSup_sum_finpartition_parts μ h
+  · rw [preVariationFun_of_not_measurableSet μ h, μ.not_measurable' h]
 
 theorem variation_eq_ennrealToMeasure : μ.variation = μ.ennrealToMeasure := by
   ext _ hs
