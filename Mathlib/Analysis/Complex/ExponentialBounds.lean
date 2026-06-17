@@ -104,7 +104,7 @@ theorem log_three_gt_d9 : 1.0986122885 < log 3 :=
 theorem log_three_lt_d9 : log 3 < 1.0986122888 :=
   lt_of_le_of_lt (sub_le_iff_le_add.1 (abs_sub_le_iff.1 log_three_near_10).1) (by norm_num)
 
-theorem log_four_eq : log 4 = 2 * log 2 := by rw [← log_rpow two_pos]; norm_num
+theorem log_four_eq : log 4 = 2 * log 2 := by norm_num [← log_rpow]
 
 theorem log_five_near_10 : |log 5 - 160943791243 / 100000000000| ≤ 1 / 10 ^ 10 := by
   suffices |log 5 - 160943791243 / 100000000000| ≤
