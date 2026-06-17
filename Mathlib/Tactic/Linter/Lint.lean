@@ -95,9 +95,9 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
       aliases ← getAliasSyntax exp
     for id in (← getNamesFrom (stx.getPos?.getD default)) ++ aliases do
       let declName := id.getId
-      if declName.hasMacroScopes || isPrivateName declName
-        || Linter.isDeprecated (← getEnv) declName then
-        continue
+      -- We intentionally *do* lint deprecated declarations:
+      -- this is important since people can forget to add a `_root_` when adding deprecations.
+      if declName.hasMacroScopes || isPrivateName declName then continue
       let nm := declName.components
       -- Collect distinct components which appear more than once.
       let duplicated := List.pwFilter (· ≠ ·) <| nm.filter (fun comp ↦ nm.count comp > 1)
@@ -105,7 +105,7 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
       | [] => continue
       | [ns] =>
         Linter.logLint linter.dupNamespace id
-          m!"The namespace `{ns}` is duplicated in the declaration `{.ofConstName declName}`."
+          m!"The namespace `{ns}` is duplicated in the declaration `{declName}`." -- .ofConstName
       | dup =>
         let ns := MessageData.andList (duplicated.map (m!"`{·}`"))
         Linter.logLint linter.dupNamespace id
