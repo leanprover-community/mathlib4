@@ -182,9 +182,6 @@ lemma coe_mk' (carrier : Set R) (zero_mem add_mem neg_mem mul_mem_left mul_mem_r
 instance : SMulMemClass (TwoSidedIdeal R) R R where
   smul_mem _ _ h := TwoSidedIdeal.mul_mem_left _ _ _ h
 
-instance : SMulMemClass (TwoSidedIdeal R) Rᵐᵒᵖ R where
-  smul_mem _ _ h := TwoSidedIdeal.mul_mem_right _ _ _ h
-
 instance : Add I where add x y := ⟨x.1 + y.1, I.add_mem x.2 y.2⟩
 
 instance : Zero I where zero := ⟨0, I.zero_mem⟩
