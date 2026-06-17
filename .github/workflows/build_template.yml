@@ -322,6 +322,8 @@ jobs:
         with:
           name: cache-staging
           path: cache-staging/
+          # The `.ltar` files are already zstd-compressed; recompressing wastes CPU.
+          compression-level: 0
 
       # Prune to this commit's `.ltar` set so the published snapshot is exactly master's
       # current cache (the local dir also holds the previous snapshot it warmed from).
