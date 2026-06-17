@@ -149,9 +149,11 @@ theorem coe_toPartialHomeomorph : (e.toPartialHomeomorph : X → Y) = e :=
 theorem coe_toPartialHomeomorph_symm : (e.toPartialHomeomorph.symm : Y → X) = e.symm :=
   rfl
 
-/-- Variant of `map_source`, stated in terms of subsets. -/
-lemma map_source'' : e '' e.source ⊆ e.target :=
+/-- Variant of `map_source`, stated for images of subsets of `source`. -/
+lemma image_source_subset : e '' e.source ⊆ e.target :=
   fun _ ⟨_, hx, hex⟩ ↦ mem_of_eq_of_mem (id hex.symm) (e.map_source' hx)
+
+@[deprecated (since := "2026-06-17")] alias map_source'' := image_source_subset
 
 @[simp, mfld_simps]
 theorem map_target {x : Y} (h : x ∈ e.target) : e.symm x ∈ e.source :=
