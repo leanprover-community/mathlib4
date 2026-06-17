@@ -226,6 +226,28 @@ theorem lfp_mem_range_lfpApprox : f.lfp ∈ Set.range (lfpApprox f ⊥) := by
   use ord <| succ #α
   exact lfpApprox_ord_eq_lfp f
 
+/-- If `lfpApprox f x a` is a fixed point, then the supremum of the whole
+ordinal-indexed sequence equals the value at `a`. -/
+lemma iSup_lfpApprox_eq_of_mem_fixedPoints (hf : lfpApprox f x a ∈ fixedPoints f) :
+    ⨆ i : Ordinal, lfpApprox f x i = lfpApprox f x a := by
+  apply (le_iSup (lfpApprox f x) a).antisymm'
+  refine ciSup_le fun i => ?_
+  by_cases h : i ≤ a
+  · exact lfpApprox_mono_right f h
+  · exact (lfpApprox_eq_of_mem_fixedPoints f (le_of_not_ge h) hf).le
+
+/-- The ordinal-indexed supremum of `lfpApprox` equals `nextFixed`: the least fixed point
+greater than or equal to `x`. -/
+theorem nextFixed_eq_iSup_lfpApprox (hx : x ≤ f x) :
+    (f.nextFixed x hx).val = ⨆ a : Ordinal, lfpApprox f x a := by
+  let o := (succ #α).ord
+  have hfix : lfpApprox f x o ∈ fixedPoints f :=
+    lfpApprox_ord_mem_fixedPoint f hx
+  rw [iSup_lfpApprox_eq_of_mem_fixedPoints f hfix]
+  apply le_antisymm
+  · exact f.nextFixed_le hx (y := ⟨lfpApprox f x o, hfix⟩) (le_lfpApprox f)
+  · exact lfpApprox_le_of_mem_fixedPoints f (f.nextFixed x hx).2 (f.le_nextFixed hx) o
+
 variable (x) in
 /-- The ordinal-indexed sequence approximating the greatest fixed point greater than
 an initial value `x`. It is defined in such a way that we have `gfpApprox 0 x = x` and
@@ -311,5 +333,17 @@ theorem gfpApprox_ord_eq_gfp : gfpApprox f ⊤ (ord <| succ #α) = f.gfp :=
 /-- Some approximation of the least fixed point starting from `⊤` is the greatest fixed point. -/
 theorem gfp_mem_range_gfpApprox : f.gfp ∈ Set.range (gfpApprox f ⊤) :=
   lfp_mem_range_lfpApprox f.dual
+
+/-- If `gfpApprox f x a` is a fixed point, then the infimum of the whole
+ordinal-indexed sequence equals the value at `a`. -/
+lemma iInf_gfpApprox_eq_of_mem_fixedPoints (hf : gfpApprox f x a ∈ fixedPoints f) :
+    ⨅ i : Ordinal, gfpApprox f x i = gfpApprox f x a :=
+  iSup_lfpApprox_eq_of_mem_fixedPoints f.dual hf
+
+/-- The ordinal-indexed infimum of `gfpApprox` equals `prevFixed`: the greatest fixed point
+less than or equal to `x`. -/
+theorem prevFixed_eq_iInf_gfpApprox (hx : f x ≤ x) :
+    (f.prevFixed x hx).val = ⨅ a : Ordinal, gfpApprox f x a :=
+  nextFixed_eq_iSup_lfpApprox f.dual hx
 
 end OrdinalApprox
