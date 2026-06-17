@@ -28,7 +28,7 @@ sub-relation of the adjacency relation of the simple graph.
 * `Subgraph.IsSpanning` for whether a subgraph is a spanning subgraph and
   `Subgraph.IsInduced` for whether a subgraph is an induced subgraph.
 
-* Instances for `Lattice (Subgraph G)` and `BoundedOrder (Subgraph G)`.
+* Instances for `DistribLattice G.Subgraph` and `BoundedOrder (Subgraph G)`.
 
 * `SimpleGraph.toSubgraph`: If a `SimpleGraph` is a subgraph of another, then you can turn it
   into a member of the larger graph's `SimpleGraph.Subgraph` type.
