@@ -49,6 +49,9 @@ variable [TopologicalSpace B] [TopologicalSpace F]
 theorem isInducing_toProd : IsInducing (TotalSpace.toProd B F) :=
   ⟨by simp only [instTopologicalSpaceProd, induced_inf, induced_compose]; rfl⟩
 
+lemma _root_.Bundle.TotalSpace.continuous_trivialSnd : Continuous (TotalSpace.trivialSnd B F) :=
+  continuous_iff_le_induced.2 inf_le_right
+
 /-- Homeomorphism between the total space of the trivial bundle and the Cartesian product. -/
 @[simps!]
 def homeomorphProd : TotalSpace F (Trivial B F) ≃ₜ B × F :=
@@ -274,6 +277,12 @@ irreducible_def pullbackTopology : TopologicalSpace (TotalSpace F (f *ᵖ E)) :=
 the projections to the base and the map to the original bundle are continuous. -/
 instance Pullback.TotalSpace.topologicalSpace : TopologicalSpace (TotalSpace F (f *ᵖ E)) :=
   pullbackTopology F E f
+
+theorem Pullback.continuous_iff (f : B' → B) {X : Type*} [TopologicalSpace X]
+    (g : X → TotalSpace F (f *ᵖ E)) :
+    Continuous g ↔ Continuous (TotalSpace.proj ∘ g) ∧ Continuous (Pullback.lift f ∘ g) := by
+  simp [continuous_iff_le_induced, TotalSpace.topologicalSpace, pullbackTopology_def,
+    induced_compose]
 
 theorem Pullback.continuous_proj (f : B' → B) : Continuous (π F (f *ᵖ E)) := by
   rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]

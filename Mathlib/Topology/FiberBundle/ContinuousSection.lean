@@ -6,7 +6,7 @@ Authors: Ben Eltschig
 module
 
 public import Mathlib.Topology.ContinuousMap.Algebra
-public import Mathlib.Topology.FiberBundle.Basic
+public import Mathlib.Topology.FiberBundle.Constructions
 
 /-!
 # Continuous sections of fibre bundles
@@ -14,6 +14,15 @@ public import Mathlib.Topology.FiberBundle.Basic
 In this file we define continuous sections of topological fibre bundles and prove that if a bundle
 carries a continuous fibrewise action by a topological group `G`, its sections are acted on by both
 `G` and `G`-valued functions on the base space.
+
+## Main results / definitions
+* `ContinuousSection F E`: the type of continuous sections of `E`. Denoted `Cₛ⟮F, E⟯`.
+* `ContinuousSection.equivContinuousMap`: continuous sections of a trivial bundle `Trivial B F`
+  correspond to continuous maps `B → F`.
+* `ContinuousSection.prodEquiv`: continuous sections of a product bundle `E ×ᵇ E'` correspond to
+  pairs of continuous sections of `E` and `E'`.
+* `ContinuousSection.pullback f s`: the continuous section of the pullback bundle `f *ᵖ E` given
+  by precomposing a given continuous section `s` of `E` with `f`.
 
 ## TODO
 * Introduce typeclasses for continuity of other fibrewise algebraic structures and show that
@@ -66,12 +75,42 @@ theorem coe_injective : Injective ((↑) : Cₛ⟮F, E⟯ → ∀ b, E b) :=
 @[ext]
 theorem ext (h : ∀ x, s x = t x) : s = t := DFunLike.ext _ _ h
 
+/-- Continuous sections of trivial bundles are equivalently continuous maps. -/
+@[simps]
+def equivContinuousMap : Cₛ⟮F, Trivial B F⟯ ≃ C(B, F) where
+  toFun s := ⟨fun b ↦ s b, (TotalSpace.continuous_trivialSnd B F).comp s.continuous⟩
+  invFun f := ⟨fun b ↦ f b, (Trivial.homeomorphProd B F).symm.continuous.comp <|
+    continuous_id.prodMk f.continuous⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+/-- Continuous sections of product bundles correspond to pairs of continuous sections
+of the factors. -/
+noncomputable def prodEquiv {F' : Type*} [TopologicalSpace F'] {E' : B → Type*}
+    [∀ b, TopologicalSpace (E' b)] [TopologicalSpace (TotalSpace F' E')] [FiberBundle F' E']
+    [∀ x, Zero (E x)] [∀ x, Zero (E' x)] : Cₛ⟮F × F', E ×ᵇ E'⟯ ≃ Cₛ⟮F, E⟯ × Cₛ⟮F', E'⟯ where
+  toFun s := ⟨⟨fun b ↦ (s b).1, continuous_fst.comp <|
+    (Prod.isInducing_diag F E F' E').continuous.comp s.continuous⟩, ⟨fun b ↦ (s b).2,
+        continuous_snd.comp <| (Prod.isInducing_diag F E F' E').continuous.comp s.continuous⟩⟩
+  invFun s := ⟨fun b ↦ (s.1 b, s.2 b), (Prod.isInducing_diag F E F' E').continuous_iff.2 <|
+    continuous_prodMk.2 ⟨s.1.continuous, s.2.continuous⟩⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+/-- The pullback of a continuous section of `E` to the pullback bundle `f *ᵖ E` given by
+precomposition with `f`. -/
+@[simps]
+def pullback {B' : Type*} [TopologicalSpace B'] [∀ _b, Zero (E _b)] {K : Type*} [FunLike K B' B]
+    [ContinuousMapClass K B' B] (f : K) (s : Cₛ⟮F, E⟯) : Cₛ⟮F, f *ᵖ E⟯ where
+  toFun b := s (f b)
+  continuous_toFun :=
+    (Pullback.continuous_iff F E f _).2 ⟨continuous_id, s.continuous.comp (map_continuous f)⟩
+
 end ContinuousSection
 
 section Operations
 
 variable {F E}
-
 
 omit [TopologicalSpace F] [(b : B) → TopologicalSpace (E b)] [FiberBundle F E] in
 lemma ContinuousWithinAt.smul_section {G : Type*} [TopologicalSpace G] [∀ b, SMul G (E b)]
