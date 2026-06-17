@@ -83,11 +83,9 @@ def _root_.CategoryTheory.Functor.mapVertexGroup {D : Type v} [Groupoid D] (φ :
   map_one' := φ.map_id c
   map_mul' := φ.map_comp
 
-set_option linter.dupNamespace false in
 @[deprecated (since := "2026-05-24")]
 alias CategoryTheory.Functor.mapVertexGroup := CategoryTheory.Functor.mapVertexGroup
 
-set_option linter.dupNamespace false in
 @[deprecated (since := "2026-05-24")]
 alias CategoryTheory.Functor.mapVertexGroup_apply := CategoryTheory.Functor.mapVertexGroup_apply
 

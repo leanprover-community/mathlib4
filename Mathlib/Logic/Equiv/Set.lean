@@ -249,7 +249,6 @@ protected def singleton {α} (a : α) : ({a} : Set α) ≃ PUnit.{u} :=
 lemma _root_.Equiv.strictMono_setCongr {α : Type*} [Preorder α] {S T : Set α} (h : S = T) :
     StrictMono (setCongr h) := fun _ _ ↦ id
 
-set_option linter.dupNamespace false in
 @[deprecated (since := "2026-05-24")] alias Equiv.strictMono_setCongr := Equiv.strictMono_setCongr
 
 /-- If `a ∉ s`, then `insert a s` is equivalent to `s ⊕ PUnit`. -/

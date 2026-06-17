@@ -149,7 +149,6 @@ lemma iff_of_equiv {R R' M M'} [Semiring R] [AddCommMonoid M] [Module R M]
 instance shrink [Small.{w} M] : Module.Free R (Shrink.{w} M) :=
   Module.Free.of_equiv (Shrink.linearEquiv R M).symm
 
-set_option linter.dupNamespace false in
 @[deprecated (since := "2026-04-18")] alias Module.free_shrink := shrink
 
 variable (R M N)

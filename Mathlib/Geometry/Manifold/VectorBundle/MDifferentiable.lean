@@ -322,7 +322,6 @@ theorem mdifferentiable [ContMDiffVectorBundle 1 F Z I]
     e.MDifferentiable (I.prod 𝓘(𝕜, F)) (I.prod 𝓘(𝕜, F)) :=
   ⟨e.contMDiffOn.mdifferentiableOn one_ne_zero, e.contMDiffOn_symm.mdifferentiableOn one_ne_zero⟩
 
-set_option linter.dupNamespace false in
 @[deprecated (since := "2026-05-24")] alias Bundle.Trivialization.mdifferentiable := mdifferentiable
 
 end

@@ -56,7 +56,6 @@ theorem _root_.IsUnit.submonoid.coe_inv [Monoid M] (x : IsUnit.submonoid M) :
 
 @[deprecated (since := "2026-05-24")]
 alias _root_.AddSubmonoid.IsUnit.Submonoid.coe_neg := IsAddUnit.addSubmonoid.coe_neg
-set_option linter.dupNamespace false in
 @[to_additive existing, deprecated (since := "2026-05-24")]
 alias IsUnit.Submonoid.coe_inv := IsUnit.submonoid.coe_inv
 

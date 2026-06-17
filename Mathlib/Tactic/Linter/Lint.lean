@@ -95,9 +95,8 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
       aliases ← getAliasSyntax exp
     for id in (← getNamesFrom (stx.getPos?.getD default)) ++ aliases do
       let declName := id.getId
-      if
-        declName.hasMacroScopes || isPrivateName declName || Linter.isDeprecated (← getEnv) declName
-      then
+      if declName.hasMacroScopes || isPrivateName declName
+        || Linter.isDeprecated (← getEnv) declName then
         continue
       let nm := declName.components
       -- Collect distinct components which appear more than once.

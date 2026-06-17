@@ -175,71 +175,58 @@ theorem adicAbv_natCast_le_one (n : ℕ) : adicAbv K v n ≤ 1 :=
 theorem adicAbv_intCast_le_one (n : ℤ) : adicAbv K v n ≤ 1 :=
   (isNonarchimedean_adicAbv K v).apply_intCast_le_one
 
-set_option linter.dupNamespace false in
 @[deprecated (since := "2026-03-11")]
 alias NumberField.RingOfIntegers.HeightOneSpectrum.one_lt_absNorm := one_lt_absNorm
 @[deprecated (since := "2026-03-11")]
 alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.one_lt_absNorm := one_lt_absNorm
-set_option linter.dupNamespace false in
 @[deprecated (since := "2026-03-11")]
 alias NumberField.RingOfIntegers.HeightOneSpectrum.one_lt_absNorm_nnreal := one_lt_absNorm_nnreal
 @[deprecated (since := "2026-03-11")]
 alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.one_lt_absNorm_nnreal :=
   one_lt_absNorm_nnreal
-set_option linter.dupNamespace false in
 @[deprecated (since := "2026-03-11")]
 alias NumberField.RingOfIntegers.HeightOneSpectrum.absNorm_ne_zero := absNorm_ne_zero
 @[deprecated (since := "2026-03-11")]
 alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.absNorm_ne_zero := absNorm_ne_zero
-set_option linter.dupNamespace false in
 @[deprecated (since := "2026-03-11")]
 alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv := adicAbv
 @[deprecated (since := "2026-03-11")]
 alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv := adicAbv
-set_option linter.dupNamespace false in
 @[deprecated (since := "2026-03-11")]
 alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_def := adicAbv_def
 @[deprecated (since := "2026-03-11")]
 alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_def := adicAbv_def
-set_option linter.dupNamespace false in
 @[deprecated (since := "2026-03-11")]
 alias NumberField.RingOfIntegers.HeightOneSpectrum.isNonarchimedean_adicAbv :=
   isNonarchimedean_adicAbv
 @[deprecated (since := "2026-03-11")]
 alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.isNonarchimedean_adicAbv :=
   isNonarchimedean_adicAbv
-set_option linter.dupNamespace false in
 @[deprecated (since := "2026-03-11")]
 alias NumberField.instRankOneAdicCompletion := instRankOneAdicCompletion
 @[deprecated (since := "2026-03-11")]
 alias _root_.NumberField.instRankOneAdicCompletion := instRankOneAdicCompletion
-set_option linter.dupNamespace false in
 @[deprecated (since := "2026-03-11")]
 alias NumberField.instNormedFieldValuedAdicCompletion := instNormedFieldValuedAdicCompletion
 @[deprecated (since := "2026-03-11")]
 alias _root_.NumberField.instNormedFieldValuedAdicCompletion := instNormedFieldValuedAdicCompletion
-set_option linter.dupNamespace false in
 @[deprecated (since := "2026-03-11")]
 alias NumberField.rankOne_hom'_def := rankOne_hom'_def
 @[deprecated (since := "2026-03-11")]
 alias _root_.NumberField.rankOne_hom'_def := rankOne_hom'_def
-set_option linter.dupNamespace false in
 @[deprecated (since := "2026-03-11")]
 alias NumberField.toNNReal_valued_eq_adicAbv := toNNReal_valued_eq_adicAbv
 @[deprecated (since := "2026-03-11")]
 alias _root_.NumberField.toNNReal_valued_eq_adicAbv := toNNReal_valued_eq_adicAbv
-set_option linter.dupNamespace false in
 @[deprecated (since := "2026-03-11")]
 alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max := adicAbv_add_le_max
 @[deprecated (since := "2026-03-11")]
 alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max := adicAbv_add_le_max
-set_option linter.dupNamespace false in
 @[deprecated (since := "2026-03-11")]
 alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_natCast_le_one := adicAbv_natCast_le_one
 @[deprecated (since := "2026-03-11")]
 alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_natCast_le_one :=
   adicAbv_natCast_le_one
-set_option linter.dupNamespace false in
 @[deprecated (since := "2026-03-11")]
 alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_intCast_le_one := adicAbv_intCast_le_one
 @[deprecated (since := "2026-03-11")]
