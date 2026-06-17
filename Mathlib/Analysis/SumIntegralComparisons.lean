@@ -149,9 +149,9 @@ lemma sum_mul_Ico_le_integral_of_monotone_antitone
     · grw [fpos]; apply hf <;> grind
     · apply hf <;> grind
     · apply hg <;> grind
-  · apply ((hf.integrableOn_isCompact isCompact_Icc).mul_of_top_left
-      (AntitoneOn.memLp_isCompact isCompact_Icc _)).mono_measure
-      (volume.restrict_mono_set Ico_subset_Icc_self)
+  · apply Integrable.mono_measure _ (volume.restrict_mono_set Ico_subset_Icc_self)
+    apply (hf.integrableOn_isCompact isCompact_Icc).mul_of_top_left
+    apply AntitoneOn.memLp_isCompact isCompact_Icc
     intro _ _ _ _ _
     apply hg <;> grind
 
@@ -168,8 +168,8 @@ lemma integral_le_sum_mul_Ico_of_antitone_monotone
     · grw [fpos]; apply hf <;> grind
     · apply hf <;> grind
     · apply hg <;> grind
-  · apply ((hf.integrableOn_isCompact isCompact_Icc).mul_of_top_left
-       (MonotoneOn.memLp_isCompact isCompact_Icc _)).mono_measure
-      (volume.restrict_mono_set Ico_subset_Icc_self)
+  · apply Integrable.mono_measure _ (volume.restrict_mono_set Ico_subset_Icc_self)
+    apply (hf.integrableOn_isCompact isCompact_Icc).mul_of_top_left
+    apply MonotoneOn.memLp_isCompact isCompact_Icc
     intro _ _ _ _ _
     apply hg <;> grind
