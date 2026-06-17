@@ -167,12 +167,7 @@ noncomputable def groupMulEquiv : GrothendieckGroup G ≃* G :=
     ext x
     simp only [MulHom.coe_comp, MulHom.coe_mk, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
       comp_apply, MulHom.id_apply]
-    induction x
-    · simp
-    · simp only [map_inv, lift_of, MulHom.id_apply]
-      simp only [← MonoidHom.ofMulHom_apply of (_ : G), map_inv]
-    · simp only [map_div, lift_of, MulHom.id_apply]
-      simp only [← MonoidHom.ofMulHom_apply of (_ : G), map_div]
-  ) (by ext; simp)
+    induction x <;> simp)
+    (by ext; simp)
 
 end Algebra.GrothendieckGroup
