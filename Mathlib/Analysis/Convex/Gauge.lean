@@ -223,10 +223,6 @@ theorem Convex.setOf_gauge_le (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s) (absorb
 
 @[deprecated (since := "2026-06-17")] alias Convex.gauge_le := Convex.setOf_gauge_le
 
-theorem Balanced.starConvex (hs : Balanced ℝ s) : StarConvex ℝ 0 s :=
-  starConvex_zero_iff.2 fun _ hx a ha₀ ha₁ =>
-    hs _ (by rwa [Real.norm_of_nonneg ha₀]) (smul_mem_smul_set hx)
-
 theorem le_gauge_of_notMem (hs₀ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {x}) (hx : x ∉ a • s) :
     a ≤ gauge s x := by
   rw [starConvex_zero_iff] at hs₀
