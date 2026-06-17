@@ -64,6 +64,11 @@ noncomputable def chainsMap :
     simp [Fin.comp_contractNth, map_add, inhomogeneousChains.d, Rep.hom_comm_apply φ]
     rfl
 
+lemma chainsMap_congr {f g : G →* H} {φ : A ⟶ res f B} {ψ : A ⟶ res g B} (hfg : f = g)
+    (hφψ : φ.hom.toLinearMap = ψ.hom.toLinearMap) :
+    chainsMap f φ = chainsMap g ψ := by
+  subst hfg; congr; ext; simp [hφψ]
+
 @[reassoc (attr := simp)]
 lemma lsingle_comp_chainsMap_f (n : ℕ) (x : Fin n → G) :
     ModuleCat.ofHom (lsingle x) ≫ (chainsMap f φ).f n =
@@ -153,6 +158,11 @@ noncomputable abbrev map (n : ℕ) :
     groupHomology A n ⟶ groupHomology B n :=
   HomologicalComplex.homologyMap (chainsMap f φ) n
 
+lemma map_congr {f g : G →* H} {φ : A ⟶ res f B} {ψ : A ⟶ res g B} (hfg : f = g)
+    (hφψ : φ.hom.toLinearMap = ψ.hom.toLinearMap) (n : ℕ) :
+    map f φ n = map g ψ n := by
+  subst hfg; congr; ext; simp [hφψ]
+
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc, elementwise]
 theorem π_map (n : ℕ) :
@@ -176,6 +186,22 @@ theorem map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
     map (MonoidHom.id G) (φ ≫ ψ) n =
       map (MonoidHom.id G) φ n ≫ map (MonoidHom.id G) ψ n := by
   rw [map, chainsMap_id_comp, HomologicalComplex.homologyMap_comp]
+
+@[simps]
+noncomputable def mapIso (e : G ≃* H) (e' : A.V ≃ₗ[k] B.V)
+    (he : ∀ g, e' ∘ₗ A.ρ g = B.ρ (e g) ∘ₗ e') (n : ℕ) :
+    groupHomology A n ≅ groupHomology B n where
+  hom := groupHomology.map (A := A) e (ofHom ⟨e', by simp [he]⟩) n
+  inv := groupHomology.map (A := B) e.symm (ofHom ⟨e'.symm, fun h ↦
+      e'.eq_comp_toLinearMap_iff _ _|>.1 <| by
+    choose g hg using e.surjective h
+    simp [LinearMap.comp_assoc, ← hg, ← he g]⟩) n
+  hom_inv_id := by
+    rw [← groupHomology.map_comp, ← groupHomology.map_id]
+    exact groupHomology.map_congr e.coe_monoidHom_symm_comp_coe_monoidHom e'.symm_comp n
+  inv_hom_id := by
+    rw [← groupHomology.map_comp, ← groupHomology.map_id]
+    exact groupHomology.map_congr e.coe_monoidHom_comp_coe_monoidHom_symm e'.comp_symm n
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map sending `∑ aᵢ·gᵢ : G →₀ A` to `∑ φ(aᵢ)·f(gᵢ) : H →₀ B`. -/
