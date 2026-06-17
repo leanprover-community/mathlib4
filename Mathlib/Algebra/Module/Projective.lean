@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.LinearAlgebra.TensorProduct.Basis
 public import Mathlib.Logic.UnivLE
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 
@@ -121,7 +120,6 @@ theorem _root_.Function.Surjective.surjective_linearMapComp_left [Projective R P
 /-- A module which satisfies the universal property is projective: If all surjections of
 `R`-modules `(P →₀ R) →ₗ[R] P` have `R`-linear left inverse maps, then `P` is
 projective. -/
-@[wikidata Q942423]
 theorem Projective.of_lifting_property'' {R : Type u} [Semiring R] {P : Type v} [AddCommMonoid P]
     [Module R P] (huniv : ∀ (f : (P →₀ R) →ₗ[R] P), Function.Surjective f →
       ∃ h : P →ₗ[R] (P →₀ R), f.comp h = .id) :

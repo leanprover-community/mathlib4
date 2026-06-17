@@ -117,7 +117,6 @@ lemma completedRiemannZeta_residue_one :
 -/
 
 /-- The Riemann zeta function `ζ(s)`. -/
-@[wikidata Q187235]
 def riemannZeta := hurwitzZetaEven 0
 
 lemma HurwitzZeta.hurwitzZetaEven_zero : hurwitzZetaEven 0 = riemannZeta := rfl

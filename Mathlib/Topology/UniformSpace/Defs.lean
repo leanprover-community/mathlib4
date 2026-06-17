@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 module
 
 public import Mathlib.Data.Rel.Cover
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Order
 
 /-!
@@ -127,7 +126,6 @@ lemma SetRel.mem_filter_prod_comm (R : SetRel α α) {f g : Filter α} [R.IsSymm
 
 /-- This core description of a uniform space is outside of the type class hierarchy. It is useful
   for constructions of uniform spaces, when the topology is derived from the uniform space. -/
-@[wikidata Q652446]
 structure UniformSpace.Core (α : Type u) where
   /-- The uniformity filter. Once `UniformSpace` is defined, `𝓤 α` (`_root_.uniformity`) becomes the
   normal form. -/

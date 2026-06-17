@@ -9,7 +9,6 @@ public import Mathlib.Analysis.Calculus.SmoothSeries
 public import Mathlib.Analysis.Normed.Operator.Prod
 public import Mathlib.Analysis.SpecialFunctions.Gaussian.PoissonSummation
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # The two-variable Jacobi theta function
@@ -43,7 +42,6 @@ section term_defs
 -/
 
 /-- Summand in the series for the Jacobi theta function. -/
-@[wikidata Q1154787]
 def jacobiTheta₂_term (n : ℤ) (z τ : ℂ) : ℂ := cexp (2 * π * I * n * z + π * I * n ^ 2 * τ)
 
 /-- Summand in the series for the Fréchet derivative of the Jacobi theta function. -/
