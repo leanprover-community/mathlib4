@@ -36,6 +36,15 @@ inputs:
     description: Destination directory for the tools.
     required: false
     default: tools-branch
+  source_dir:
+    description: >
+      Optional path to a local checkout under test. When set and the artifact
+      fast path is in play, the action compares this checkout's tool sources
+      against the artifact's `master` baseline; if they differ it skips the
+      prebuilt artifact and builds from source, so a branch that changes the
+      tool is tested with its own tool. Empty disables the comparison.
+    required: false
+    default: ''
 runs:
   using: composite
   steps:
@@ -56,6 +65,23 @@ runs:
             --workflow "${{ inputs.artifact_workflow }}" \
             --branch master --status success --event push \
             --limit 1 --json databaseId --jq '.[0].databaseId // empty' 2>/dev/null || true)
+
+          # If a local checkout under test is provided and its tool sources differ
+          # from the artifact's master baseline, the prebuilt tool would mask the
+          # change — drop it and build from source. Local git only; no API call.
+          # These are the source paths that determine the bundled tools (the
+          # `cache` binary and the build-helper scripts in publish_tools.yml); they
+          # live here so callers don't have to duplicate the list.
+          if [[ -n "$run_id" && -n "${{ inputs.source_dir }}" ]]; then
+            git -C "${{ inputs.source_dir }}" fetch --no-tags --depth=1 \
+              "https://github.com/${{ inputs.artifact_repo }}.git" master || true
+            # Fail safe toward building: a failed fetch/diff leaves $? non-zero.
+            if ! git -C "${{ inputs.source_dir }}" diff --quiet FETCH_HEAD -- \
+                Cache scripts/lake-build-with-retry.sh scripts/lake-build-wrapper.py; then
+              echo "Tool sources in '${{ inputs.source_dir }}' differ from master; building from source."
+              run_id=""
+            fi
+          fi
         fi
         echo "Resolved publisher run_id: '${run_id}'"
         echo "run_id=${run_id}" >> "$GITHUB_OUTPUT"

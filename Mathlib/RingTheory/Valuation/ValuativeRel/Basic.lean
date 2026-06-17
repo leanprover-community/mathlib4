@@ -286,11 +286,9 @@ lemma vlt.trans (h1 : x <ᵥ y) (h2 : y <ᵥ z) : x <ᵥ z :=
 instance : @Trans R R R vlt vlt vlt where
   trans := vlt.trans
 
-@[gcongr]
 lemma vlt_of_veq_of_vlt (h1 : x =ᵥ y) (h2 : y <ᵥ z) : x <ᵥ z :=
   h1.vle.trans_vlt h2
 
-@[gcongr]
 lemma vlt_of_vlt_of_veq (h1 : x <ᵥ y) (h2 : y =ᵥ z) : x <ᵥ z :=
   h1.trans_vle h2.vle
 
@@ -299,6 +297,10 @@ instance : @Trans R R R veq vlt vlt where
 
 instance : @Trans R R R vlt veq vlt where
   trans := vlt_of_vlt_of_veq
+
+@[gcongr]
+theorem vlt_imp_vlt_of_vle_of_vle (h1 : x ≤ᵥ x') (h2 : y' ≤ᵥ y) : x' <ᵥ y' → x <ᵥ y :=
+  (h1.trans_vlt <| ·.trans_vle h2)
 
 @[gcongr]
 lemma mul_vle_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : x * x' ≤ᵥ y * y' :=
