@@ -133,7 +133,6 @@ lemma inner_ιMulti_ιMulti [FiniteDimensional ℝ E] (x y : Fin n → E) :
     ⟪ιMulti ℝ n x, ιMulti ℝ n y⟫ = det (of fun i j ↦ ⟪x j, y i⟫) :=
   innerProductForm_ιMulti_ιMulti x y
 
-@[simp]
 lemma inner_ιMulti_self [FiniteDimensional ℝ E] (x : Fin n → E) :
     ⟪ιMulti ℝ n x, ιMulti ℝ n x⟫ = det (gram ℝ x) :=
   innerProductForm_ιMulti_self x
