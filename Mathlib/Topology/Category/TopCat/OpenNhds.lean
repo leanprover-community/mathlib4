@@ -245,10 +245,10 @@ namespace Opens
 /-- For U an open subset included in a open subset V, there is
 a map sending compacts inside U to the ones inside V -/
 def baseChangeCompactInsd {U V : Opens α} (h : U ⟶ V) : U.compactInsd → V.compactInsd :=
-  fun ⟨K,hK⟩ => ⟨K, fun _ hx => Set.mem_of_subset_of_mem (leOfHom h) (hK hx)⟩
+  fun ⟨K,hK⟩ ↦ ⟨K, fun _ hx ↦ Set.mem_of_subset_of_mem (leOfHom h) (hK hx)⟩
 
 lemma monoBaseChangeCompactInsd {U V : Opens α} (h : U ⟶ V) : Monotone <| baseChangeCompactInsd h :=
-  fun _ _ hKL _ hx => SetLike.mem_coe.mpr (hKL hx)
+  fun _ _ hKL _ hx ↦ SetLike.mem_coe.mpr (hKL hx)
 
 end Opens
 
@@ -257,10 +257,10 @@ namespace Compacts
 /-- For K a compact subset included in a compact subset L, there
 is a map sending open neighbourhoods of L to the ones of K -/
 def baseChangeOpenNhds {K L : Compacts α} (h : K ⟶ L) : L.openNhds → K.openNhds :=
-  fun ⟨U,hU⟩ => ⟨U, fun _ hx => Set.mem_of_subset_of_mem hU (leOfHom h hx)⟩
+  fun ⟨U,hU⟩ ↦ ⟨U, fun _ hx ↦ Set.mem_of_subset_of_mem hU (leOfHom h hx)⟩
 
 lemma monoBaseChangeOpenNhds {K L : Compacts α} (h : K ⟶ L) : Monotone <| baseChangeOpenNhds h :=
-  fun _ _ hUV _ hx => SetLike.mem_coe.mpr (hUV hx)
+  fun _ _ hUV _ hx ↦ SetLike.mem_coe.mpr (hUV hx)
 
 @[simp]
 lemma baseChangeOpenNhds_comp {K L M : Compacts α} (h : K ⟶ L) (k : L ⟶ M) (U : M.openNhds) :

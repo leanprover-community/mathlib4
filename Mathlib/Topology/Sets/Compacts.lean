@@ -291,10 +291,10 @@ lemma exists_open_nhds_sub_compact_nhds {K : Compacts α} (L : K.compactNhds) :
 def compactNhds_of_existsOpenSubsetBetween {K : Compacts α} (L : Compacts α) (U : Opens α)
   (h1 : (K : Set α) ⊆ U) (h2 : (U : Set α) ⊆ L) :
   K.compactNhds :=
-  ⟨L, fun _ => Filter.mem_of_superset (IsOpen.mem_nhds U.is_open' (h1 (Subtype.coe_prop _))) h2⟩
+  ⟨L, fun _ ↦ Filter.mem_of_superset (IsOpen.mem_nhds U.is_open' (h1 (Subtype.coe_prop _))) h2⟩
 
 instance [T2Space α] (K : Compacts α) : SemilatticeInf (K.compactNhds) where
-  inf L M := ⟨L.1 ⊓ M.1, fun x => Filter.inter_mem_iff.2 ⟨L.2 x, M.2 x⟩⟩
+  inf L M := ⟨L.1 ⊓ M.1, fun x ↦ Filter.inter_mem_iff.2 ⟨L.2 x, M.2 x⟩⟩
   inf_le_right _ _ := Subtype.coe_le_coe.mp inf_le_right
   inf_le_left _ _:= Subtype.coe_le_coe.mp inf_le_left
   le_inf _ _ _ h k :=
@@ -310,7 +310,7 @@ instance (K : Compacts α) : IsCodirectedOrder K.openNhds where
 instance (K : Compacts α) : Top K.openNhds := ⟨⊤, Set.subset_univ _⟩
 -- in particular K.openNhds is not empty and thus the induced catgory is cofiltered
 
-instance : Bot (⊥ : Compacts α).openNhds := ⟨⊥, fun _ h => h⟩
+instance : Bot (⊥ : Compacts α).openNhds := ⟨⊥, fun _ h ↦ h⟩
 
 /-- The opens neighbourhood of a compact subset that are relatively compact -/
 def openRcNhds (K : Compacts α) : Set (Opens α) :=
@@ -318,7 +318,7 @@ def openRcNhds (K : Compacts α) : Set (Opens α) :=
 
 lemma subset_of_mem_openRcNhds {K : Compacts α} {U : Opens α} (h : U ∈ K.openRcNhds) :
     (K : Set α) ⊆ U :=
-  fun _ hx => h.right hx
+  fun _ hx ↦ h.right hx
 
 lemma compactclosure_of_mem_openRcNhds {K : Compacts α} {U : Opens α} (h : U ∈ K.openRcNhds) :
   IsCompact (closure (U : Set α)) := h.left
@@ -332,15 +332,15 @@ lemma is_compactNhds_of_isOpenRcNhds {K : Compacts α} {U : Opens α} (h : U ∈
 
 /-- The converting map from relatively compact opens
 neighbourhood of a compact subset to its opens neighbourhoods -/
-def oRcNhds_to_openNhds (K : Compacts α) : K.openRcNhds → K.openNhds := fun U => ⟨_, U.property.2⟩
+def oRcNhds_to_openNhds (K : Compacts α) : K.openRcNhds → K.openNhds := fun U ↦ ⟨_, U.property.2⟩
 
-lemma mono_oRcNhds_to_openNhds (K : Compacts α) : Monotone K.oRcNhds_to_openNhds := fun _ _ h => h
+lemma mono_oRcNhds_to_openNhds (K : Compacts α) : Monotone K.oRcNhds_to_openNhds := fun _ _ h ↦ h
 
 def oRcNhds_to_compactNhds (K : Compacts α) : K.openRcNhds → K.compactNhds :=
-  fun U => ⟨_,is_compactNhds_of_isOpenRcNhds (Subtype.coe_prop U)⟩
+  fun U ↦ ⟨_,is_compactNhds_of_isOpenRcNhds (Subtype.coe_prop U)⟩
 
 lemma mono_oRcNhds_to_compactNhds (K : Compacts α) : Monotone K.oRcNhds_to_compactNhds :=
-  fun _ _ h => closure_mono h
+  fun _ _ h ↦ closure_mono h
 
 instance [T2Space α] (K : Compacts α) : IsCodirectedOrder K.openRcNhds where
   directed U1 U2 := ⟨⟨U1 ⊓ U2, (compactclosure_of_mem_openRcNhds (Subtype.coe_prop U1) |>.inter
