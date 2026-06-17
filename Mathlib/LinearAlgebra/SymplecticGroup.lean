@@ -40,7 +40,8 @@ def J : Matrix (l ⊕ l) (l ⊕ l) R :=
   Matrix.fromBlocks 0 (-1) 1 0
 
 @[simp]
-theorem map_J {R S : Type*} [CommRing S] [CommRing R] (f : R →+* S) :
+theorem map_J {F R S : Type*} [CommRing S] [CommRing R] [FunLike F R S]
+    [AddMonoidHomClass F R S] [OneHomClass F R S] (f : F) :
     (J l R).map f = J l S := by
   simp [J, fromBlocks_map, Matrix.map_neg]
 
@@ -134,11 +135,9 @@ theorem symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A := by
   rw [mul_comm A.det, mul_assoc] at hA
   exact hA
 
-theorem map_mem {S : Type*} [CommRing S]
-    (f : R →+* S) (hA : A ∈ symplecticGroup l R) :
-    f.mapMatrix A ∈ symplecticGroup l S := by
-  rw [mem_iff, RingHom.mapMatrix_apply, ← map_J _ f, ← transpose_map,
-    ← Matrix.map_mul, ← Matrix.map_mul, hA]
+theorem map_mem {F S : Type*} [CommRing S] [FunLike F R S] [RingHomClass F R S]
+    (f : F) (hA : A ∈ symplecticGroup l R) : A.map f ∈ symplecticGroup l S := by
+  simp_rw [mem_iff, ← transpose_map, ← map_J _ f, ← Matrix.map_mul, mem_iff.mp hA]
 
 theorem transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGroup l R := by
   rw [mem_iff] at hA ⊢
