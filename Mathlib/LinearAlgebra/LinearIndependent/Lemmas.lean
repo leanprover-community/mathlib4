@@ -538,11 +538,10 @@ lemma LinearIndependent.update {ι : Type*} [DecidableEq ι] {R G : Type*} [Comm
   rw [linearIndependent_iff] at hf ⊢
   intros l' hl'
   apply_fun (σ • ·) at hl'
-  rw [Pi.update_eq_sub_add_single, ← bilinearCombination_apply _ (S := R), map_add, map_sub] at hl'
-  simp only [bilinearCombination_apply, LinearMap.add_apply, LinearMap.sub_apply,
-    linearCombination_single_index, smul_add, smul_sub, smul_zero] at hl'
-  rw [smul_comm σ (l' i) g, hg, ← LinearMap.map_smul, ← LinearMap.map_smul, smul_smul,
-    ← linearCombination_single, ← (linearCombination R f).map_sub, ← map_add] at hl'
+  simp_rw [Pi.update_eq_sub_add_single, ← bilinearCombination_apply _ (S := R), map_add, map_sub,
+    bilinearCombination_apply, LinearMap.add_apply, LinearMap.sub_apply,
+    linearCombination_single_index, smul_add, smul_sub, smul_zero, smul_comm σ (l' i) g,
+    hg, ← LinearMap.map_smul, smul_smul, ← linearCombination_single, ← map_sub, ← map_add] at hl'
   replace hl' : ∀ j, (σ * l' j - (single i (σ * l' i)) j) + l' i * l j = 0 :=
     fun j ↦ DFunLike.congr_fun (hf _ hl') j
   simp only [Finsupp.single_apply] at hl'
