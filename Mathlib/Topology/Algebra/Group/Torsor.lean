@@ -106,12 +106,14 @@ def Homeomorph.constSDiv [ContinuousInv V] (p : P) : P ≃ₜ V where
 
 /-- `Equiv.pointReflection` as a homeomorphism -/
 def Homeomorph.pointReflection {V P : Type*} [AddGroup V] [TopologicalSpace V] [AddTorsor V P]
-    [TopologicalSpace P] [IsTopologicalAddTorsor P] [ContinuousNeg V] (p : P) : P ≃ₜ P :=
+    [TopologicalSpace P] [IsTopologicalAddTorsor P] (p : P) : P ≃ₜ P :=
+  let : ContinuousNeg V :=
+    IsTopologicalAddTorsor.to_isTopologicalAddGroup (V := V) (P := P) |>.toContinuousNeg
   (Homeomorph.constVSub p).trans (Homeomorph.vaddConst p)
 
 @[simp]
 lemma Homeomorph.coe_pointReflection {V P : Type*} [AddGroup V] [TopologicalSpace V] [AddTorsor V P]
-    [TopologicalSpace P] [IsTopologicalAddTorsor P] [ContinuousNeg V] (p : P) :
+    [TopologicalSpace P] [IsTopologicalAddTorsor P] (p : P) :
     (Homeomorph.pointReflection p : P → P) = Equiv.pointReflection p := rfl
 
 end Torsor
