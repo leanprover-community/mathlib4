@@ -94,18 +94,9 @@ theorem iteratedDerivedSet_limit (ha : Order.IsSuccLimit a) :
 is equal to the original set. -/
 theorem iteratedDerivedSet_constant_iff_preperfect :
     Preperfect s ↔ ∀ a : Ordinal, sᵈ[a] = s := by
-  simp only [preperfect_iff_eq_relDerivedSet]
-  constructor <;> intro h
-  · intro a
-    induction a using Ordinal.limitRecOn with
-    | zero => simp
-    | add_one a ha => nth_rw 2 [h]; simp [ha]
-    | limit a ha ih =>
-      simp only [iteratedDerivedSet_limit ha]
-      haveI : Nonempty ↑(Iio a) := nonempty_subtype.mpr ⟨0, mem_Iio.mpr ha.bot_lt⟩
-      exact iInter_eq_const (by simpa using ih)
-  · specialize h 1; symm
-    rwa [← zero_add 1, iteratedDerivedSet_succ, iteratedDerivedSet_zero] at h
+  rw [preperfect_iff_eq_relDerivedSet, eq_comm,
+    ← (gfpApprox_eq_all_of_fixedPoint relDerivedSet (relDerivedSet_subset))]
+  simp [iteratedDerivedSet]
 
 theorem isClosed_iteratedDerivedSet (hs : IsClosed s) :
     ∀ a : Ordinal, IsClosed (sᵈ[a]) := by
