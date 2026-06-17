@@ -23,15 +23,20 @@ via the Gram determinant formula: on decomposable elements,
 
 - `exteriorPower.inner_ιMulti_ιMulti`: The inner product on decomposable elements equals the
   Gram determinant.
-- `exteriorPower.inner_ιMulti_self`: `⟪v₁ ∧ ⋯ ∧ vₙ, v₁ ∧ ⋯ ∧ vₙ⟫ = det (gram ℝ d)`.
+- `exteriorPower.inner_ιMulti_self`: `⟪v₁ ∧ ⋯ ∧ vₙ, v₁ ∧ ⋯ ∧ vₙ⟫ = det (gram ℝ v)`.
 - `OrthonormalBasis.exteriorPower`: An orthonormal basis of `E` induces an orthonormal basis
   of `⋀[ℝ]^n E`.
 
 ## Future work
 
-Generalize to `[RCLike 𝕜]`. To define `innerProductForm`, we would probably
-want a semilinear generalization of `exteriorPower.map`, which in turn requires
-generalizing `AlternatingMap` to the semilinear setting.
+- Generalize to `RCLike 𝕜`. To define `innerProductForm` in this case, we would probably
+  want a semilinear generalization of `exteriorPower.map`, which in turn requires
+  generalizing `AlternatingMap` to the semilinear setting.
+- Remove the `FiniteDimensional` hypothesis from the `InnerProductSpace` instance.
+  Currently the proofs of `re_inner_nonneg` and `definite` require finite dimension, because
+  we need to choose an orthonormal basis of `E`. But we can reduce the general case to
+  the finite-dimensional case by noticing that any `x : ⋀[𝕜]^n E` is contained in some
+  `⋀[𝕜]^n F` for a finite-dimensional subspace `F ≤ E`.
 
 -/
 
@@ -42,13 +47,13 @@ namespace exteriorPower
 open RealInnerProductSpace Matrix
 
 /-- The inner product on `⋀[ℝ]^n E` as a bilinear map. This is an implementation detail
-for constructing the `InnerProductSpace` instance. Do not use this directly; use `⟪·, ·⟫_ℝ`
-(or `⟪·, ·⟫` with `open RealInnerProductSpace`) instead. -/
+for constructing the `InnerProductSpace` instance and should not be used directly.
+Use `⟪·, ·⟫` instead. -/
 def innerProductForm {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] {n : ℕ} :
     ⋀[ℝ]^n E →ₗ[ℝ] ⋀[ℝ]^n E →ₗ[ℝ] ℝ :=
   pairingDual ℝ E n ∘ₗ map n (innerₗ E)
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] {n : ℕ}
+variable {n : ℕ} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] 
 
 lemma innerProductForm_ιMulti_ιMulti (x y : Fin n → E) :
     innerProductForm (ιMulti ℝ n x) (ιMulti ℝ n y) = det (of fun i j ↦ ⟪x j, y i⟫) := by
@@ -70,8 +75,8 @@ lemma flip_innerProductForm :
   ext
   exact real_inner_comm _ _
 
-lemma innerProductForm_symm (x y : ⋀[ℝ]^n E) : innerProductForm x y = innerProductForm y x :=
-  congr($flip_innerProductForm y x)
+lemma innerProductForm_symm (x y : ⋀[ℝ]^n E) : innerProductForm y x = innerProductForm x y :=
+  congr($flip_innerProductForm x y)
 
 @[simp]
 lemma innerProductForm_ιMulti_family_of_orthonormal {ι : Type*} [LinearOrder ι] {v : ι → E}
@@ -106,11 +111,11 @@ lemma innerProductForm_self (x : ⋀[ℝ]^n E) {ι : Type*} [Fintype ι] [Linear
 
 instance [FiniteDimensional ℝ E] : InnerProductSpace.Core ℝ (⋀[ℝ]^n E) where
   inner x y := innerProductForm x y
-  conj_inner_symm x y := innerProductForm_symm y x
+  conj_inner_symm := innerProductForm_symm
   add_left := by simp
   smul_left := by simp
   re_inner_nonneg x := by
-    rw [RCLike.re_to_real, innerProductForm_self x (stdOrthonormalBasis ℝ E)]
+    rw [innerProductForm_self x (stdOrthonormalBasis ℝ E)]
     exact Finset.sum_nonneg (fun _ _ ↦ sq_nonneg _)
   definite x h := by
     rw [innerProductForm_self x (stdOrthonormalBasis ℝ E),
@@ -124,12 +129,10 @@ instance [FiniteDimensional ℝ E] : NormedAddCommGroup (⋀[ℝ]^n E) :=
 instance [FiniteDimensional ℝ E] : InnerProductSpace ℝ (⋀[ℝ]^n E) :=
   InnerProductSpace.ofCore _
 
-/-- The inner product on `⋀[ℝ]^n E` equals the Gram determinant on decomposable elements. -/
 lemma inner_ιMulti_ιMulti [FiniteDimensional ℝ E] (x y : Fin n → E) :
     ⟪ιMulti ℝ n x, ιMulti ℝ n y⟫ = det (of fun i j ↦ ⟪x j, y i⟫) :=
   innerProductForm_ιMulti_ιMulti x y
 
-/-- The self-inner-product on `⋀[ℝ]^n E` equals `det (gram ℝ v)` on decomposable elements. -/
 @[simp]
 lemma inner_ιMulti_self [FiniteDimensional ℝ E] (x : Fin n → E) :
     ⟪ιMulti ℝ n x, ιMulti ℝ n x⟫ = det (gram ℝ x) :=
