@@ -114,8 +114,6 @@ open scoped TensorProduct in
     traceForm A (A ⊗[R] L) (A ⊗[R] M) = (traceForm R L M).baseChange A := by
   ext; simp [traceForm_apply_apply, ← LinearMap.baseChange_comp, Algebra.algebraMap_eq_smul_one]
 
--- TODO: diagnose the need for this; related to pre-existing defeq abuse!
-set_option backward.isDefEq.respectTransparency false in
 variable {R L M} in
 lemma trace_toEnd_mul_eq_zero_of_traceForm_eq_zero (h : traceForm R L M = 0)
     (y : End R M) (hy : ∀ z ∈ LieHom.range φ, ⁅y, z⁆ ∈ LieHom.range φ)
@@ -129,9 +127,9 @@ lemma trace_toEnd_mul_eq_zero_of_traceForm_eq_zero (h : traceForm R L M = 0)
     obtain ⟨c : L, hbc : φ c = ⁅y, φ b⁆⟩ := hy (φ b) (LieHom.mem_range_self φ b)
     replace hbc : ⁅φ b, y⁆ = -φ c := by rw [hbc, Module.End.instLieRingModule_eq, lie_skew]
     rw [LieHom.map_lie, LinearMap.trace_lie_mul_eq, Ring.lie_def,
-      ← LieRing.of_associative_ring_bracket, /-← Module.End.instLieRingModule_eq, -/ hbc, mul_neg,
-      map_neg, neg_eq_zero, Module.End.mul_eq_comp, ← traceForm_apply_apply, h,
-      LinearMap.zero_apply, LinearMap.zero_apply]
+      ← LieRing.of_associative_ring_bracket, hbc, mul_neg, map_neg, neg_eq_zero,
+      Module.End.mul_eq_comp, ← traceForm_apply_apply, h, LinearMap.zero_apply,
+      LinearMap.zero_apply]
   | zero => simp
   | add u v _ _ hu hv => simp [add_mul, hu, hv]
   | smul t u _ hu => simp [hu]
