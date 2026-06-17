@@ -85,7 +85,6 @@ instance inhabited : Inhabited (WithOne α) :=
 instance instNontrivial [Nonempty α] : Nontrivial (WithOne α) :=
   Option.nontrivial
 
--- TODO: Add similar for WithTop
 @[to_additive]
 instance instSubsingleton [IsEmpty α] : Subsingleton (WithOne α) := by
   constructor
