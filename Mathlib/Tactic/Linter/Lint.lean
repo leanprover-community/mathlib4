@@ -103,11 +103,11 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
       | [] => continue
       | [ns] =>
         Linter.logLint linter.dupNamespace id
-          m!"The namespace `{ns}` is duplicated in the declaration `{declName}`"
+          m!"The namespace `{ns}` is duplicated in the declaration `{.ofConstName declName}`."
       | dup =>
-        let ns := MessageData.joinSep (duplicated.map (m!"{·}")) ", "
+        let ns := MessageData.andList (duplicated.map (m!"`{·}`"))
         Linter.logLint linter.dupNamespace id
-          m!"The namespaces `{ns}` are duplicated in the declaration `{declName}`"
+          m!"The namespaces {ns} are duplicated in the declaration `{.ofConstName declName}`."
 
 initialize addLinter dupNamespace
 
