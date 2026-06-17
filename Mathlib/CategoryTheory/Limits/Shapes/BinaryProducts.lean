@@ -1617,7 +1617,8 @@ noncomputable example (X Y : C) [HasBinaryCoproduct X Y] :
   colimit.isColimit (pair X Y)
 
 /-- Any colimit cocone for `pair X Y` is isomorphic to the canonical one. -/
-noncomputable example (X Y : C) [HasBinaryCoproduct X Y] {c : Cocone (pair X Y)} (hc : IsColimit c) :
+noncomputable example (X Y : C) [HasBinaryCoproduct X Y] {c : Cocone (pair X Y)}
+    (hc : IsColimit c) :
     c ≅ colimit.cocone (pair X Y) :=
   hc.uniqueUpToIso (colimit.isColimit (pair X Y))
 
