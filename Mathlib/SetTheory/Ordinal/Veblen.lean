@@ -555,7 +555,7 @@ theorem epsilon_zero_eq_nfp : ε₀ = nfp (fun a ↦ ω ^ a) 0 := by
 alias epsilon0_eq_nfp := epsilon_zero_eq_nfp
 
 theorem epsilon_succ_eq_nfp (o : Ordinal) : ε_ (succ o) = nfp (fun a ↦ ω ^ a) (succ (ε_ o)) := by
-  rw [epsilon_eq_deriv, epsilon_eq_deriv, deriv_succ]
+  simp [epsilon_eq_deriv, succ_eq_add_one, deriv_add_one]
 
 theorem epsilon_zero_le_of_omega0_opow_le (h : ω ^ o ≤ o) : ε₀ ≤ o := by
   rw [epsilon_zero_eq_nfp]
@@ -651,7 +651,7 @@ theorem gamma_zero_eq_nfp : Γ₀ = nfp (veblen · 0) 0 :=
 alias gamma0_eq_nfp := gamma_zero_eq_nfp
 
 theorem gamma_succ_eq_nfp (o : Ordinal) : Γ_ (succ o) = nfp (veblen · 0) (succ (Γ_ o)) :=
-  deriv_succ _ _
+  by simp [gamma, succ_eq_add_one, deriv_add_one]
 
 theorem gamma_zero_le_of_veblen_le (h : veblen o 0 ≤ o) : Γ₀ ≤ o := by
   rw [gamma_zero_eq_nfp]

@@ -68,7 +68,7 @@ theorem lift_add (a b : Ordinal.{v}) : lift.{u} (a + b) = lift.{u} a + lift.{u} 
 theorem lift_add_one (a : Ordinal.{v}) : lift.{u} (a + 1) = lift.{u} a + 1 := by
   simp
 
--- TODO: deprecate
+@[deprecated lift_add_one (since := "2026-06-17")]
 theorem lift_succ (a : Ordinal.{v}) : lift.{u} (succ a) = succ (lift.{u} a) :=
   lift_add_one a
 
@@ -552,13 +552,13 @@ theorem add_mul_add_one {a b : Ordinal} (c) (ba : b + a = a) :
   | add_one c IH => rw [mul_add_one, IH, ← add_assoc, add_assoc _ b, ba, ← mul_add_one]
   | limit c l IH => rw [mul_add_one, add_mul_limit_aux ba l IH, mul_add_one, add_assoc]
 
--- TODO: deprecate
+@[deprecated add_mul_add_one (since := "2026-06-17")]
 theorem add_mul_succ {a b : Ordinal} (c) (ba : b + a = a) : (a + b) * succ c = a * succ c + b :=
   add_mul_add_one c ba
 
 theorem add_mul_of_isSuccLimit {a b c : Ordinal} (ba : b + a = a) (l : IsSuccLimit c) :
     (a + b) * c = a * c :=
-  add_mul_limit_aux ba l fun c' _ => add_mul_succ c' ba
+  add_mul_limit_aux ba l fun c' _ => add_mul_add_one c' ba
 
 protected theorem mul_two (o : Ordinal) : o * 2 = o + o := by
   rw [← one_add_one_eq_two, mul_add, mul_one]
@@ -1021,10 +1021,8 @@ theorem isSuccLimit_ord {c} (hc : ℵ₀ ≤ c) : IsSuccLimit (ord c) := by
     · exact hc.trans ha
     · simp
 
--- TODO: deprecate in favor of `isSuccPrelimit_type_lt_iff`
-theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.ToType := by
-  rw [← isSuccPrelimit_type_lt_iff, type_toType]
-  exact (isSuccLimit_ord h).isSuccPrelimit
+theorem noMaxOrder_ord_toType {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.ToType := by
+  exact Ordinal.isSuccPrelimit_iff_noMaxOrder_toType.1 (isSuccLimit_ord h).isSuccPrelimit
 
 instance : Nonempty (ℵ₀ : Cardinal.{u}).ord.ToType := by simp
 
