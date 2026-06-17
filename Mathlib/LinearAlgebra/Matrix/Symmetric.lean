@@ -81,12 +81,6 @@ theorem IsSymm.pow [CommSemiring α] [Fintype n] [DecidableEq n] {A : Matrix n n
 theorem IsSymm.map {A : Matrix n n α} (h : A.IsSymm) (f : α → β) : (A.map f).IsSymm := by
   rw [IsSymm, ← transpose_map, h.eq]
 
-theorem IsSymm.exists_map_eq_of_surjective {f : α → β} (hf : f.Surjective)
-    {A : Matrix m m β} (h : A.IsSymm) :
-    ∃ (B : Matrix m m α), B.IsSymm ∧ B.map f = A := by
-  choose s hs using hf
-  exact ⟨A.map s, h.map s, Matrix.ext fun i j ↦ hs (A i j)⟩
-
 @[simp]
 theorem isSymm_map_iff {A : Matrix n n α} {f : α → β} (hf : f.Injective) :
     (A.map f).IsSymm ↔ A.IsSymm := by

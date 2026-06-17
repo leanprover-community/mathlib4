@@ -43,7 +43,8 @@ def J : Matrix (l ⊕ l) (l ⊕ l) R :=
   Matrix.fromBlocks 0 (-1) 1 0
 
 @[simp]
-theorem map_J {R S : Type*} [CommRing S] [CommRing R] (f : R →+* S) :
+theorem map_J {F R S : Type*} [CommRing S] [CommRing R] [FunLike F R S]
+    [AddMonoidHomClass F R S] [OneHomClass F R S] (f : F) :
     (J l R).map f = J l S := by
   simp [J, fromBlocks_map, Matrix.map_neg]
 
@@ -137,6 +138,10 @@ theorem symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A := by
   rw [mul_comm A.det, mul_assoc] at hA
   exact hA
 
+theorem map_mem {F S : Type*} [CommRing S] [FunLike F R S] [RingHomClass F R S]
+    (f : F) (hA : A ∈ symplecticGroup l R) : A.map f ∈ symplecticGroup l S := by
+  simp_rw [mem_iff, ← transpose_map, ← map_J _ f, ← Matrix.map_mul, mem_iff.mp hA]
+
 theorem transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGroup l R := by
   rw [mem_iff] at hA ⊢
   rw [transpose_transpose]
@@ -154,13 +159,6 @@ theorem transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGrou
     _ = -(J l R)⁻¹ := by
       rw [mul_nonsing_inv_cancel_left _ _ huAT, nonsing_inv_mul_cancel_right _ _ huA]
     _ = J l R := by simp [J_inv]
-
-theorem map_mem {S : Type*} [CommRing S]
-    (f : R →+* S) (hA : A ∈ symplecticGroup l R) :
-    f.mapMatrix A ∈ symplecticGroup l S := by
-  rw [mem_iff] at hA ⊢
-  rw [RingHom.mapMatrix_apply, ← map_J _ f, ← transpose_map,
-    ← Matrix.map_mul, ← Matrix.map_mul, hA]
 
 @[simp]
 theorem transpose_mem_iff : Aᵀ ∈ symplecticGroup l R ↔ A ∈ symplecticGroup l R :=
@@ -255,11 +253,7 @@ private lemma eq_zero_and_symm_on_support_of_diagonal_symm {s : Finset l}
     (∀ (i j : l), i ∈ s → j ∈ s → A i j = A j i) := by
   have h_main1 (i j : l) : (if j ∈ s then A j i else 0) = (if i ∈ s then A i j else 0) := by
     convert ext_iff.2 hR1 i j <;> simp
-  constructor <;> intro i j hi hj
-  · have := (h_main1 i j).symm
-    rwa [if_pos hi, if_neg hj] at this
-  · have := (h_main1 i j).symm
-    rwa [if_pos hj, if_pos hi] at this
+  constructor <;> (intro i j hi hj; simpa [hi, hj] using (h_main1 i j).symm)
 
 private lemma exists_symmetric_X_invertible_add_mul_diagonal {R : Type*} [Field R] {s : Finset l}
     {A : Matrix l l R} (h1 : ∀ (i j : l), i ∈ s → j ∉ s → A i j = 0)
@@ -331,7 +325,9 @@ private lemma exists_symmetric_X_isUnit_det_add_mul_of_symplectic [IsLocalRing R
     exists_symmetric_X_invertible_add_mul_of_ker_inter_eq_bot h_rank <| by
       change f.mapMatrix Aᵀ * f.mapMatrix C = f.mapMatrix Cᵀ * f.mapMatrix A
       rw [← map_mul, (fromBlocks_mem_iff.1 hA).1, map_mul]
-  obtain ⟨X, hX_symm, hXY⟩ := hY_symm.exists_map_eq_of_surjective IsLocalRing.residue_surjective
+  obtain ⟨X, hX_symm, hXY⟩ : ∃ X : Matrix l l R, X.IsSymm ∧ X.map f = Y := by
+    choose s hs using @IsLocalRing.residue_surjective R _ _
+    exact ⟨Y.map s, hY_symm.map s, Matrix.ext fun i j ↦ hs (Y i j)⟩
   refine ⟨X, hX_symm, (IsLocalRing.residue_ne_zero_iff_isUnit _).1 ?_⟩
   rw [RingHom.map_det, map_add, map_mul, RingHom.mapMatrix_apply _ X, hXY]
   exact hY_det.ne_zero
@@ -359,7 +355,7 @@ private lemma det_eq_one_of_isLocalRing [IsLocalRing R] {M : Matrix (l ⊕ l) (l
 theorem det_eq_one {M : Matrix (l ⊕ l) (l ⊕ l) R} (hM : M ∈ symplecticGroup l R) :
     M.det = 1 := by
   refine sub_eq_zero.1 <| eq_zero_of_localization _ fun _ _ ↦ ?_
-  rw [map_sub, RingHom.map_det, det_eq_one_of_isLocalRing <| map_mem _ hM, map_one, sub_self]
+  simp [RingHom.map_det, RingHom.mapMatrix_apply, det_eq_one_of_isLocalRing <| map_mem _ hM]
 
 end Determinant
 
