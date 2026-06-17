@@ -313,8 +313,8 @@ theorem chainCover_glue [PartialOrder α] [DecidableEq α] {s A : Finset α}
     exact hKchain a ha
 
 /-- Dilworth's theorem, strong duality: in any finite subset `s` of a partial order, some antichain
-and some chain cover have the same size. With `antichain_le_chain_cover`, this says the largest
-antichain and the smallest chain cover have a common size. -/
+and some chain cover have the same size. With `antichain_le_chain_cover`, this implies (by weak
+duality) that the largest antichain and the smallest chain cover have a common size. -/
 theorem dilworth [PartialOrder α] [DecidableEq α] (s : Finset α) :
     ∃ (A : Finset α) (𝒞 : Finset (Finset α)),
       A ⊆ s ∧ IsAntichain (· ≤ ·) (A : Set α) ∧
@@ -443,8 +443,7 @@ theorem dilworth [PartialOrder α] [DecidableEq α] (s : Finset α) :
 
 /-! ### Mirsky's theorem
 
-Proved directly by peeling off the minimal elements one antichain at a time, rather than as a formal
-dual of `dilworth`: this induction is shorter than reusing the Galvin machinery. -/
+Proved directly by peeling off the minimal elements one antichain at a time. -/
 
 /-- A nonempty finite chain has a least element. -/
 theorem exists_min_mem_of_isChain [Preorder α] {C : Finset α}
@@ -458,8 +457,8 @@ theorem exists_min_mem_of_isChain [Preorder α] {C : Finset α}
     · exact hm.2 hy h
 
 /-- Mirsky's theorem, strong duality: in any finite subset `s` of a partial order, some chain and
-some antichain cover have the same size. With `chain_le_antichain_cover`, this says the longest
-chain and the smallest antichain cover have a common size. -/
+some antichain cover have the same size. With `chain_le_antichain_cover`, implies (by weak
+duality) that the largest chain and the smallest antichain cover have a common size. -/
 theorem mirsky [PartialOrder α] [DecidableEq α] (s : Finset α) :
     ∃ (C : Finset α) (𝒜 : Finset (Finset α)),
       C ⊆ s ∧ IsChain (· ≤ ·) (C : Set α) ∧
@@ -534,13 +533,12 @@ theorem mirsky [PartialOrder α] [DecidableEq α] (s : Finset α) :
 
 /-! ### Partition corollaries
 
-`dilworth` / `mirsky` produce a chain / antichain *cover*; here we refine it to a genuine
-*partition* (pairwise-disjoint pieces) of the same size, recovering the textbook decomposition
-statement. The refinement assigns each element to one of its covering sets and keeps the fibres;
-weak duality forces the number of pieces to stay equal to the size of the matching antichain /
-chain. -/
+`dilworth` / `mirsky` produce a chain / antichain cover; here we refine it to a genuine
+partition of the same size. The refinement assigns each element to one of its covering
+sets and keeps the fibres; weak duality forces the number of pieces to stay equal to
+the size of the matching antichain / chain. -/
 
-/-- Any cover of `s` by finsets refines to a *pairwise-disjoint* cover (a partition) of no greater
+/-- Any cover of `s` by finsets refines to a pairwise-disjoint cover (a partition) of no greater
 cardinality, with each piece contained in a member of the original cover. -/
 lemma exists_pairwiseDisjoint_cover [DecidableEq α] {s : Finset α} {𝒞 : Finset (Finset α)}
     (hcov : s = 𝒞.biUnion id) :
