@@ -1598,5 +1598,30 @@ def BinaryFan.rightUnitor {X : C} {s : Cone (Functor.empty.{0} C)} (P : IsLimit 
       rintro ⟨⟨⟩⟩
 
 end unitor
+
+section ReferenceExamples
+
+/-- The canonical cone for a binary product diagram is a limit. -/
+noncomputable example (X Y : C) [HasBinaryProduct X Y] :
+    IsLimit (limit.cone (pair X Y)) :=
+  limit.isLimit (pair X Y)
+
+/-- Any limit cone for `pair X Y` is isomorphic to the canonical one. -/
+noncomputable example (X Y : C) [HasBinaryProduct X Y] {c : Cone (pair X Y)} (hc : IsLimit c) :
+    c ≅ limit.cone (pair X Y) :=
+  hc.uniqueUpToIso (limit.isLimit (pair X Y))
+
+/-- The canonical cocone for a binary coproduct diagram is a colimit. -/
+noncomputable example (X Y : C) [HasBinaryCoproduct X Y] :
+    IsColimit (colimit.cocone (pair X Y)) :=
+  colimit.isColimit (pair X Y)
+
+/-- Any colimit cocone for `pair X Y` is isomorphic to the canonical one. -/
+noncomputable example (X Y : C) [HasBinaryCoproduct X Y] {c : Cocone (pair X Y)} (hc : IsColimit c) :
+    c ≅ colimit.cocone (pair X Y) :=
+  hc.uniqueUpToIso (colimit.isColimit (pair X Y))
+
+end ReferenceExamples
+
 end CategoryTheory.Limits
 set_option linter.style.longFile 1700
