@@ -397,5 +397,3 @@ noncomputable def gradedAlgebra (hM : DirectSum.IsInternal M) : GradedAlgebra M 
     right_inv := hM.coeAlgEquiv.left_inv }
 
 end DirectSum.IsInternal
-
-
