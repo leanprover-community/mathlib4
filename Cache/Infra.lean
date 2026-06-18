@@ -139,9 +139,8 @@ def defaultContainersForRepo (repo : String) : List Container :=
   if repo == MATHLIBREPO then
     [.master, .legacy]
   else if repo == NIGHTLY_TESTING_REPO then
-    -- `forks` is needed for PRs opened from this repo into mathlib4: those build
-    -- on `build_fork.yml`, which uploads only to `forks`. `pr-toolchain-tests`
-    -- stays excluded.
+    -- `forks` is needed for PRs opened from this repo into mathlib4: their CI
+    -- uploads land in `forks`. `pr-toolchain-tests` is excluded.
     [.nightlyTesting, .forks, .legacy]
   else
     -- Forks and everything else: `master` for shared upstream deps, the fork's
