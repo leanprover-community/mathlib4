@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Half braidings and the Drinfeld center of a monoidal category
@@ -28,6 +30,8 @@ More exciting, however, would be to make possible one of the following options:
 In this file, we take the second approach using the monoidal composition `⊗≫` and the
 `coherence` tactic.
 -/
+
+@[expose] public section
 
 
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
@@ -53,9 +57,9 @@ structure HalfBraiding (X : C) where
   monoidal : ∀ U U', (β (U ⊗ U')).hom =
       (α_ _ _ _).inv ≫
         ((β U).hom ▷ U') ≫ (α_ _ _ _).hom ≫ (U ◁ (β U').hom) ≫ (α_ _ _ _).inv := by
-    aesop_cat
+    cat_disch
   naturality : ∀ {U U'} (f : U ⟶ U'), (X ◁ f) ≫ (β U').hom = (β U).hom ≫ (f ▷ X) := by
-    aesop_cat
+    cat_disch
 
 attribute [reassoc, simp] HalfBraiding.monoidal -- the reassoc lemma is redundant as a simp lemma
 
@@ -78,7 +82,7 @@ variable {C}
 structure Hom (X Y : Center C) where
   /-- The underlying morphism between the first components of the objects involved -/
   f : X.1 ⟶ Y.1
-  comm : ∀ U, (f ▷ U) ≫ (Y.2.β U).hom = (X.2.β U).hom ≫ (U ◁ f) := by aesop_cat
+  comm : ∀ U, (f ▷ U) ≫ (Y.2.β U).hom = (X.2.β U).hom ≫ (U ◁ f) := by cat_disch
 
 attribute [reassoc (attr := simp)] Hom.comm
 
@@ -115,6 +119,7 @@ instance isIso_of_f_isIso {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : IsIso f :
   change IsIso (isoMk f).hom
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 @[simps]
 def tensorObj (X Y : Center C) : Center C :=
@@ -148,6 +153,7 @@ def tensorObj (X Y : Center C) : Center C :=
             rw [HalfBraiding.naturality]; monoidal
           _ = _ := by rw [HalfBraiding.naturality]; monoidal }⟩
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 theorem whiskerLeft_comm (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y₂) (U : C) :
     (X.1 ◁ f.f) ▷ U ≫ ((tensorObj X Y₂).2.β U).hom =
@@ -170,6 +176,8 @@ def whiskerLeft (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y₂) :
   f := X.1 ◁ f.f
   comm U := whiskerLeft_comm X f U
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in -- Needed below.
 @[reassoc]
 theorem whiskerRight_comm {X₁ X₂ : Center C} (f : X₁ ⟶ X₂) (Y : Center C) (U : C) :
     f.f ▷ Y.1 ▷ U ≫ ((tensorObj X₂ Y).2.β U).hom =
@@ -192,6 +200,7 @@ def whiskerRight {X₁ X₂ : Center C} (f : X₁ ⟶ X₂) (Y : Center C) :
   f := f.f ▷ Y.1
   comm U := whiskerRight_comm f Y U
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 @[simps]
 def tensorHom {X₁ Y₁ X₂ Y₂ : Center C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
@@ -208,14 +217,17 @@ section
 def tensorUnit : Center C :=
   ⟨𝟙_ C, { β := fun U => λ_ U ≪≫ (ρ_ U).symm }⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def associator (X Y Z : Center C) : tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z) :=
   isoMk ⟨(α_ X.1 Y.1 Z.1).hom, fun U => by simp⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def leftUnitor (X : Center C) : tensorObj tensorUnit X ≅ X :=
   isoMk ⟨(λ_ X.1).hom, fun U => by simp⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def rightUnitor (X : Center C) : tensorObj X tensorUnit ≅ X :=
   isoMk ⟨(ρ_ X.1).hom, fun U => by simp⟩
@@ -230,6 +242,7 @@ attribute [local simp] Center.associator Center.leftUnitor Center.rightUnitor
 
 attribute [local simp] Center.whiskerLeft Center.whiskerRight Center.tensorHom
 
+set_option backward.defeqAttrib.useBackward true in
 instance : MonoidalCategory (Center C) where
   tensorObj X Y := tensorObj X Y
   tensorHom f g := tensorHom f g
@@ -308,10 +321,11 @@ def forget : Center C ⥤ C where
   obj X := X.1
   map f := f.f
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (forget C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
-      μIso := fun _ _ ↦ Iso.refl _}
+      μIso := fun _ _ ↦ Iso.refl _ }
 
 @[simp] lemma forget_ε : ε (forget C) = 𝟙 _ := rfl
 @[simp] lemma forget_η : η (forget C) = 𝟙 _ := rfl
@@ -321,11 +335,13 @@ variable {C}
 @[simp] lemma forget_μ (X Y : Center C) : μ (forget C) X Y = 𝟙 _ := rfl
 @[simp] lemma forget_δ (X Y : Center C) : δ (forget C) X Y = 𝟙 _ := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (forget C).ReflectsIsomorphisms where
   reflects f i := by dsimp at i; change IsIso (isoMk f).hom; infer_instance
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for the `BraidedCategory` instance on `Center C`. -/
 @[simps!]
 def braiding (X Y : Center C) : X ⊗ Y ≅ Y ⊗ X :=
@@ -340,7 +356,7 @@ def braiding (X Y : Center C) : X ⊗ Y ≅ Y ⊗ X :=
 instance braidedCategoryCenter : BraidedCategory (Center C) where
   braiding := braiding
 
--- `aesop_cat` handles the hexagon axioms
+-- `cat_disch` handles the hexagon axioms
 section
 
 variable [BraidedCategory C]
@@ -363,6 +379,8 @@ def ofBraided : C ⥤ Center C where
     { f
       comm := fun U => braiding_naturality_left f U }
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 instance : (ofBraided C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso :=

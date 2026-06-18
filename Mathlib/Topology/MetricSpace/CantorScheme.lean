@@ -3,7 +3,9 @@ Copyright (c) 2023 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
-import Mathlib.Topology.MetricSpace.PiNat
+module
+
+public import Mathlib.Topology.MetricSpace.PiNat
 
 /-!
 # (Topological) Schemes and their induced maps
@@ -38,6 +40,8 @@ scheme, cantor scheme, lusin scheme, approximation.
 
 -/
 
+@[expose] public section
+
 namespace CantorScheme
 
 open List Function Filter Set PiNat Topology
@@ -49,7 +53,7 @@ which sends each infinite sequence `x` to an element of the intersection along t
 branch corresponding to `x`, if it exists.
 We call this the map induced by the scheme. -/
 noncomputable def inducedMap : Σ s : Set (ℕ → β), s → α :=
-  ⟨fun x => Set.Nonempty (⋂ n : ℕ, A (res x n)), fun x => x.property.some⟩
+  ⟨{x | Set.Nonempty (⋂ n : ℕ, A (res x n))}, fun x => x.property.some⟩
 
 section Topology
 
@@ -84,9 +88,9 @@ protected theorem Antitone.closureAntitone [TopologicalSpace α] (hanti : Cantor
 
 /-- A scheme where the children of each set are pairwise disjoint induces an injective map. -/
 theorem Disjoint.map_injective (hA : CantorScheme.Disjoint A) : Injective (inducedMap A).2 := by
-  rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
-  refine Subtype.coe_injective (res_injective ?_)
-  dsimp
+  rintro x y hxy
+  ext1
+  apply res_injective
   ext n : 1
   induction n with
   | zero => simp
@@ -97,7 +101,7 @@ theorem Disjoint.map_injective (hA : CantorScheme.Disjoint A) : Injective (induc
     simp only [CantorScheme.Disjoint, _root_.Pairwise, Ne, not_forall, exists_prop]
     refine ⟨res x n, _, _, hA, ?_⟩
     rw [not_disjoint_iff]
-    refine ⟨(inducedMap A).2 ⟨x, hx⟩, ?_, ?_⟩
+    refine ⟨(inducedMap A).2 x, ?_, ?_⟩
     · rw [← res_succ]
       apply map_mem
     rw [hxy, ih, ← res_succ]
@@ -111,7 +115,7 @@ variable [PseudoMetricSpace α]
 
 /-- A scheme on a metric space has vanishing diameter if diameter approaches 0 along each branch. -/
 def VanishingDiam : Prop :=
-  ∀ x : ℕ → β, Tendsto (fun n : ℕ => EMetric.diam (A (res x n))) atTop (𝓝 0)
+  ∀ x : ℕ → β, Tendsto (fun n : ℕ => Metric.ediam (A (res x n))) atTop (𝓝 0)
 
 variable {A}
 
@@ -124,7 +128,7 @@ theorem VanishingDiam.dist_lt (hA : VanishingDiam A) (ε : ℝ) (ε_pos : 0 < ε
   use n
   intro y hy z hz
   rw [← ENNReal.ofReal_lt_ofReal_iff ε_pos, ← edist_dist]
-  apply lt_of_le_of_lt (EMetric.edist_le_diam_of_mem hy hz)
+  apply lt_of_le_of_lt (Metric.edist_le_ediam_of_mem hy hz)
   apply lt_of_le_of_lt (hn _ (le_refl _))
   rw [ENNReal.ofReal_lt_ofReal_iff ε_pos]
   linarith
@@ -133,11 +137,11 @@ theorem VanishingDiam.dist_lt (hA : VanishingDiam A) (ε : ℝ) (ε_pos : 0 < ε
 theorem VanishingDiam.map_continuous [TopologicalSpace β] [DiscreteTopology β]
     (hA : VanishingDiam A) : Continuous (inducedMap A).2 := by
   rw [Metric.continuous_iff']
-  rintro ⟨x, hx⟩ ε ε_pos
+  rintro x ε ε_pos
   obtain ⟨n, hn⟩ := hA.dist_lt _ ε_pos x
   rw [_root_.eventually_nhds_iff]
-  refine ⟨(↑)⁻¹' cylinder x n, ?_, ?_, by simp⟩
-  · rintro ⟨y, hy⟩ hyx
+  refine ⟨(↑)⁻¹' cylinder x.1 n, ?_, ?_, by simp⟩
+  · rintro y hyx
     rw [mem_preimage, Subtype.coe_mk, cylinder_eq_res, mem_setOf] at hyx
     apply hn
     · rw [← hyx]

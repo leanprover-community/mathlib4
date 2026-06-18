@@ -3,10 +3,12 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Alex Kontorovich, Heather Macbeth
 -/
-import Mathlib.MeasureTheory.Group.Action
-import Mathlib.MeasureTheory.Group.Pointwise
-import Mathlib.MeasureTheory.Integral.Lebesgue.Map
-import Mathlib.MeasureTheory.Integral.Bochner.Set
+module
+
+public import Mathlib.MeasureTheory.Group.Action
+public import Mathlib.MeasureTheory.Group.Pointwise
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Map
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 /-!
 # Fundamental domain of a group action
@@ -21,7 +23,7 @@ with respect to a measure `μ` if
 * the sets `g • s`, are pairwise a.e. disjoint, i.e., `μ (g₁ • s ∩ g₂ • s) = 0` whenever `g₁ ≠ g₂`;
   we require this for `g₂ = 1` in the definition, then deduce it for any two `g₁ ≠ g₂`.
 
-In this file we prove that in case of a countable group `G` and a measure preserving action, any two
+In this file we prove that in case of a countable group `G` and a measure-preserving action, any two
 fundamental domains have the same measure, and for a `G`-invariant function, its integrals over any
 two fundamental domains are equal to each other.
 
@@ -45,6 +47,8 @@ We also generate additive versions of all theorems in this file using the `to_ad
   Elements of `s` that do not belong to any other translate of `s`.
 -/
 
+@[expose] public section
+
 
 open scoped ENNReal Pointwise Topology NNReal ENNReal MeasureTheory
 
@@ -53,7 +57,7 @@ open MeasureTheory MeasureTheory.Measure Set Function TopologicalSpace Filter
 namespace MeasureTheory
 
 /-- A measurable set `s` is a *fundamental domain* for an additive action of an additive group `G`
-on a measurable space `α` with respect to a measure `α` if the sets `g +ᵥ s`, `g : G`, are pairwise
+on a measurable space `α` with respect to a measure `μ` if the sets `g +ᵥ s`, `g : G`, are pairwise
 a.e. disjoint and cover the whole space. -/
 structure IsAddFundamentalDomain (G : Type*) {α : Type*} [Zero G] [VAdd G α] [MeasurableSpace α]
     (s : Set α) (μ : Measure α := by volume_tac) : Prop where
@@ -62,7 +66,7 @@ structure IsAddFundamentalDomain (G : Type*) {α : Type*} [Zero G] [VAdd G α] [
   protected aedisjoint : Pairwise <| (AEDisjoint μ on fun g : G => g +ᵥ s)
 
 /-- A measurable set `s` is a *fundamental domain* for an action of a group `G` on a measurable
-space `α` with respect to a measure `α` if the sets `g • s`, `g : G`, are pairwise a.e. disjoint and
+space `α` with respect to a measure `μ` if the sets `g • s`, `g : G`, are pairwise a.e. disjoint and
 cover the whole space. -/
 @[to_additive IsAddFundamentalDomain]
 structure IsFundamentalDomain (G : Type*) {α : Type*} [One G] [SMul G α] [MeasurableSpace α]
@@ -80,8 +84,8 @@ variable [Group G] [Group H] [MulAction G α] [MeasurableSpace α] [MulAction H 
 
 /-- If for each `x : α`, exactly one of `g • x`, `g : G`, belongs to a measurable set `s`, then `s`
 is a fundamental domain for the action of `G` on `α`. -/
-@[to_additive "If for each `x : α`, exactly one of `g +ᵥ x`, `g : G`, belongs to a measurable set
-`s`, then `s` is a fundamental domain for the additive action of `G` on `α`."]
+@[to_additive /-- If for each `x : α`, exactly one of `g +ᵥ x`, `g : G`, belongs to a measurable set
+`s`, then `s` is a fundamental domain for the additive action of `G` on `α`. -/]
 theorem mk' (h_meas : NullMeasurableSet s μ) (h_exists : ∀ x : α, ∃! g : G, g • x ∈ s) :
     IsFundamentalDomain G s μ where
   nullMeasurableSet := h_meas
@@ -92,8 +96,8 @@ theorem mk' (h_meas : NullMeasurableSet s μ) (h_exists : ∀ x : α, ∃! g : G
 
 /-- For `s` to be a fundamental domain, it's enough to check
 `MeasureTheory.AEDisjoint (g • s) s` for `g ≠ 1`. -/
-@[to_additive "For `s` to be a fundamental domain, it's enough to check
-  `MeasureTheory.AEDisjoint (g +ᵥ s) s` for `g ≠ 0`."]
+@[to_additive /-- For `s` to be a fundamental domain, it's enough to check
+  `MeasureTheory.AEDisjoint (g +ᵥ s) s` for `g ≠ 0`. -/]
 theorem mk'' (h_meas : NullMeasurableSet s μ) (h_ae_covers : ∀ᵐ x ∂μ, ∃ g : G, g • x ∈ s)
     (h_ae_disjoint : ∀ g, g ≠ (1 : G) → AEDisjoint μ (g • s) s)
     (h_qmp : ∀ g : G, QuasiMeasurePreserving ((g • ·) : α → α) μ μ) :
@@ -107,10 +111,10 @@ quasi-measure-preservingly, then to show that a set `s` is a fundamental domain,
 to check that its translates `g • s` are (almost) disjoint and that the sum `∑' g, μ (g • s)` is
 sufficiently large. -/
 @[to_additive
-  "If a measurable space has a finite measure `μ` and a countable additive group `G` acts
+  /-- If a measurable space has a finite measure `μ` and a countable additive group `G` acts
   quasi-measure-preservingly, then to show that a set `s` is a fundamental domain, it is sufficient
   to check that its translates `g +ᵥ s` are (almost) disjoint and that the sum `∑' g, μ (g +ᵥ s)` is
-  sufficiently large."]
+  sufficiently large. -/]
 theorem mk_of_measure_univ_le [IsFiniteMeasure μ] [Countable G] (h_meas : NullMeasurableSet s μ)
     (h_ae_disjoint : ∀ g ≠ (1 : G), AEDisjoint μ (g • s) s)
     (h_qmp : ∀ g : G, QuasiMeasurePreserving (g • · : α → α) μ μ)
@@ -166,7 +170,7 @@ theorem preimage_of_equiv {ν : Measure β} (h : IsFundamentalDomain G s μ) {f 
 theorem image_of_equiv {ν : Measure β} (h : IsFundamentalDomain G s μ) (f : α ≃ β)
     (hf : QuasiMeasurePreserving f.symm ν μ) (e : H ≃ G)
     (hef : ∀ g, Semiconj f (e g • ·) (g • ·)) : IsFundamentalDomain H (f '' s) ν := by
-  rw [f.image_eq_preimage]
+  rw [f.image_eq_preimage_symm]
   refine h.preimage_of_equiv hf e.symm.bijective fun g x => ?_
   rcases f.surjective x with ⟨x, rfl⟩
   rw [← hef _ _, f.symm_apply_apply, f.symm_apply_apply, e.apply_symm_apply]
@@ -177,13 +181,13 @@ theorem pairwise_aedisjoint_of_ac {ν} (h : IsFundamentalDomain G s μ) (hν : �
   h.aedisjoint.mono fun _ _ H => hν H
 
 @[to_additive]
-theorem smul_of_comm {G' : Type*} [Group G'] [MulAction G' α] [MeasurableSpace G']
-    [MeasurableSMul G' α] [SMulInvariantMeasure G' α μ] [SMulCommClass G' G α]
+theorem smul_of_comm {G' : Type*} [Group G'] [MulAction G' α]
+    [MeasurableConstSMul G' α] [SMulInvariantMeasure G' α μ] [SMulCommClass G' G α]
     (h : IsFundamentalDomain G s μ) (g : G') : IsFundamentalDomain G (g • s) μ :=
   h.image_of_equiv (MulAction.toPerm g) (measurePreserving_smul _ _).quasiMeasurePreserving
     (Equiv.refl _) <| smul_comm g
 
-variable [MeasurableSpace G] [MeasurableSMul G α] [SMulInvariantMeasure G α μ]
+variable [MeasurableConstSMul G α] [SMulInvariantMeasure G α μ]
 
 @[to_additive]
 theorem nullMeasurableSet_smul (h : IsFundamentalDomain G s μ) (g : G) :
@@ -281,9 +285,9 @@ theorem measure_zero_of_invariant (h : IsFundamentalDomain G s μ) (t : Set α)
 
 /-- Given a measure space with an action of a finite group `G`, the measure of any `G`-invariant set
 is determined by the measure of its intersection with a fundamental domain for the action of `G`. -/
-@[to_additive measure_eq_card_smul_of_vadd_ae_eq_self "Given a measure space with an action of a
+@[to_additive measure_eq_card_smul_of_vadd_ae_eq_self /-- Given a measure space with an action of a
   finite additive group `G`, the measure of any `G`-invariant set is determined by the measure of
-  its intersection with a fundamental domain for the action of `G`."]
+  its intersection with a fundamental domain for the action of `G`. -/]
 theorem measure_eq_card_smul_of_smul_ae_eq_self [Finite G] (h : IsFundamentalDomain G s μ)
     (t : Set α) (ht : ∀ g : G, (g • t : Set α) =ᵐ[μ] t) : μ t = Nat.card G • μ (t ∩ s) := by
   haveI : Fintype G := Fintype.ofFinite G
@@ -307,13 +311,13 @@ theorem measure_set_eq (hs : IsFundamentalDomain G s μ) (ht : IsFundamentalDoma
     (hA₀ : MeasurableSet A) (hA : ∀ g : G, (fun x => g • x) ⁻¹' A = A) : μ (A ∩ s) = μ (A ∩ t) := by
   have : ∫⁻ x in s, A.indicator 1 x ∂μ = ∫⁻ x in t, A.indicator 1 x ∂μ := by
     refine hs.setLIntegral_eq ht (Set.indicator A fun _ => 1) fun g x ↦ ?_
-    convert (Set.indicator_comp_right (g • · : α → α) (g := fun _ ↦ (1 : ℝ≥0∞))).symm
+    convert! (Set.indicator_comp_right (g • · : α → α) (g := fun _ ↦ (1 : ℝ≥0∞))).symm
     rw [hA g]
   simpa [Measure.restrict_apply hA₀, lintegral_indicator hA₀] using this
 
 /-- If `s` and `t` are two fundamental domains of the same action, then their measures are equal. -/
-@[to_additive "If `s` and `t` are two fundamental domains of the same action, then their measures
-  are equal."]
+@[to_additive /-- If `s` and `t` are two fundamental domains of the same action, then their measures
+  are equal. -/]
 protected theorem measure_eq (hs : IsFundamentalDomain G s μ) (ht : IsFundamentalDomain G t μ) :
     μ s = μ t := by
   simpa only [setLIntegral_one] using hs.setLIntegral_eq ht (fun _ => 1) fun _ _ => rfl
@@ -342,12 +346,6 @@ protected theorem aestronglyMeasurable_on_iff {β : Type*} [TopologicalSpace β]
     _ ↔ AEStronglyMeasurable f (μ.restrict t) := by
       simp only [← aestronglyMeasurable_sum_measure_iff, ← hs.restrict_restrict,
         hs.sum_restrict_of_ac restrict_le_self.absolutelyContinuous]
-
-@[deprecated (since := "2025-04-09")]
-alias aEStronglyMeasurable_on_iff := MeasureTheory.IsFundamentalDomain.aestronglyMeasurable_on_iff
-@[deprecated (since := "2025-04-09")]
-alias _root_.MeasureTheory.IsAddFundamentalDomain.aEStronglyMeasurable_on_iff :=
-  MeasureTheory.IsAddFundamentalDomain.aestronglyMeasurable_on_iff
 
 @[to_additive]
 protected theorem hasFiniteIntegral_on_iff (hs : IsFundamentalDomain G s μ)
@@ -424,9 +422,9 @@ protected theorem setIntegral_eq (hs : IsFundamentalDomain G s μ) (ht : IsFunda
 /-- If the action of a countable group `G` admits an invariant measure `μ` with a fundamental domain
 `s`, then every null-measurable set `t` such that the sets `g • t ∩ s` are pairwise a.e.-disjoint
 has measure at most `μ s`. -/
-@[to_additive "If the additive action of a countable group `G` admits an invariant measure `μ` with
-  a fundamental domain `s`, then every null-measurable set `t` such that the sets `g +ᵥ t ∩ s` are
-  pairwise a.e.-disjoint has measure at most `μ s`."]
+@[to_additive /-- If the additive action of a countable group `G` admits an invariant measure `μ`
+  with a fundamental domain `s`, then every null-measurable set `t` such that the sets `g +ᵥ t ∩ s`
+  are pairwise a.e.-disjoint has measure at most `μ s`. -/]
 theorem measure_le_of_pairwise_disjoint (hs : IsFundamentalDomain G s μ)
     (ht : NullMeasurableSet t μ) (hd : Pairwise (AEDisjoint μ on fun g : G => g • t ∩ s)) :
     μ t ≤ μ s :=
@@ -439,9 +437,9 @@ theorem measure_le_of_pairwise_disjoint (hs : IsFundamentalDomain G s μ)
 /-- If the action of a countable group `G` admits an invariant measure `μ` with a fundamental domain
 `s`, then every null-measurable set `t` of measure strictly greater than `μ s` contains two
 points `x y` such that `g • x = y` for some `g ≠ 1`. -/
-@[to_additive "If the additive action of a countable group `G` admits an invariant measure `μ` with
-  a fundamental domain `s`, then every null-measurable set `t` of measure strictly greater than
-  `μ s` contains two points `x y` such that `g +ᵥ x = y` for some `g ≠ 0`."]
+@[to_additive /-- If the additive action of a countable group `G` admits an invariant measure `μ`
+  with a fundamental domain `s`, then every null-measurable set `t` of measure strictly greater than
+  `μ s` contains two points `x y` such that `g +ᵥ x = y` for some `g ≠ 0`. -/]
 theorem exists_ne_one_smul_eq (hs : IsFundamentalDomain G s μ) (htm : NullMeasurableSet t μ)
     (ht : μ s < μ t) : ∃ x ∈ t, ∃ y ∈ t, ∃ g, g ≠ (1 : G) ∧ g • x = y := by
   contrapose! ht
@@ -456,9 +454,9 @@ theorem exists_ne_one_smul_eq (hs : IsFundamentalDomain G s μ) (htm : NullMeasu
 /-- If `f` is invariant under the action of a countable group `G`, and `μ` is a `G`-invariant
   measure with a fundamental domain `s`, then the `essSup` of `f` restricted to `s` is the same as
   that of `f` on all of its domain. -/
-@[to_additive "If `f` is invariant under the action of a countable additive group `G`, and `μ` is a
-  `G`-invariant measure with a fundamental domain `s`, then the `essSup` of `f` restricted to `s`
-  is the same as that of `f` on all of its domain."]
+@[to_additive /-- If `f` is invariant under the action of a countable additive group `G`, and `μ`
+  is a `G`-invariant measure with a fundamental domain `s`, then the `essSup` of `f` restricted to
+  `s` is the same as that of `f` on all of its domain. -/]
 theorem essSup_measure_restrict (hs : IsFundamentalDomain G s μ) {f : α → ℝ≥0∞}
     (hf : ∀ γ : G, ∀ x : α, f (γ • x) = f x) : essSup f (μ.restrict s) = essSup f μ := by
   refine le_antisymm (essSup_mono_measure' Measure.restrict_le_self) ?_
@@ -482,14 +480,14 @@ variable (G) [Group G] [MulAction G α] (s : Set α) {x : α}
 
 /-- The boundary of a fundamental domain, those points of the domain that also lie in a nontrivial
 translate. -/
-@[to_additive MeasureTheory.addFundamentalFrontier "The boundary of a fundamental domain, those
-  points of the domain that also lie in a nontrivial translate."]
+@[to_additive MeasureTheory.addFundamentalFrontier /-- The boundary of a fundamental domain, those
+  points of the domain that also lie in a nontrivial translate. -/]
 def fundamentalFrontier : Set α :=
   s ∩ ⋃ (g : G) (_ : g ≠ 1), g • s
 
 /-- The interior of a fundamental domain, those points of the domain not lying in any translate. -/
-@[to_additive MeasureTheory.addFundamentalInterior "The interior of a fundamental domain, those
-  points of the domain not lying in any translate."]
+@[to_additive MeasureTheory.addFundamentalInterior /-- The interior of a fundamental domain, those
+  points of the domain not lying in any translate. -/]
 def fundamentalInterior : Set α :=
   s \ ⋃ (g : G) (_ : g ≠ 1), g • s
 
@@ -511,7 +509,7 @@ theorem fundamentalFrontier_subset : fundamentalFrontier G s ⊆ s :=
 
 @[to_additive MeasureTheory.addFundamentalInterior_subset]
 theorem fundamentalInterior_subset : fundamentalInterior G s ⊆ s :=
-  diff_subset
+  sdiff_subset
 
 variable (G s)
 
@@ -523,12 +521,12 @@ theorem disjoint_fundamentalInterior_fundamentalFrontier :
 @[to_additive (attr := simp) MeasureTheory.addFundamentalInterior_union_addFundamentalFrontier]
 theorem fundamentalInterior_union_fundamentalFrontier :
     fundamentalInterior G s ∪ fundamentalFrontier G s = s :=
-  diff_union_inter _ _
+  sdiff_union_inter _ _
 
 @[to_additive (attr := simp) MeasureTheory.addFundamentalFrontier_union_addFundamentalInterior]
 theorem fundamentalFrontier_union_fundamentalInterior :
     fundamentalFrontier G s ∪ fundamentalInterior G s = s :=
-  inter_union_diff _ _
+  inter_union_sdiff _ _
 
 @[to_additive (attr := simp) MeasureTheory.sdiff_addFundamentalInterior]
 theorem sdiff_fundamentalInterior : s \ fundamentalInterior G s = fundamentalFrontier G s :=
@@ -536,7 +534,7 @@ theorem sdiff_fundamentalInterior : s \ fundamentalInterior G s = fundamentalFro
 
 @[to_additive (attr := simp) MeasureTheory.sdiff_addFundamentalFrontier]
 theorem sdiff_fundamentalFrontier : s \ fundamentalFrontier G s = fundamentalInterior G s :=
-  diff_self_inter
+  sdiff_self_inter
 
 @[to_additive (attr := simp) MeasureTheory.addFundamentalFrontier_vadd]
 theorem fundamentalFrontier_smul [Group H] [MulAction H α] [SMulCommClass H G α] (g : H) :
@@ -558,8 +556,8 @@ theorem pairwise_disjoint_fundamentalInterior :
   · rwa [Ne, inv_mul_eq_iff_eq_mul, mul_one, eq_comm]
   · simpa [mul_smul, ← hxy, mem_inv_smul_set_iff] using hy.1
 
-variable [Countable G] [MeasurableSpace G] [MeasurableSpace α] [MeasurableSMul G α] {μ : Measure α}
-  [SMulInvariantMeasure G α μ]
+variable [Countable G] [MeasurableSpace α] [MeasurableConstSMul G α]
+  {μ : Measure α} [SMulInvariantMeasure G α μ]
 
 @[to_additive MeasureTheory.NullMeasurableSet.addFundamentalFrontier]
 protected theorem NullMeasurableSet.fundamentalFrontier (hs : NullMeasurableSet s μ) :
@@ -585,15 +583,15 @@ section Group
 @[to_additive MeasureTheory.IsAddFundamentalDomain.measure_addFundamentalFrontier]
 theorem measure_fundamentalFrontier : μ (fundamentalFrontier G s) = 0 := by
   simpa only [fundamentalFrontier, iUnion₂_inter, one_smul, measure_iUnion_null_iff, inter_comm s,
-    Function.onFun] using fun g (hg : g ≠ 1) => hs.aedisjoint hg
+    Function.onFun] using! fun g (hg : g ≠ 1) => hs.aedisjoint hg
 
 @[to_additive MeasureTheory.IsAddFundamentalDomain.measure_addFundamentalInterior]
 theorem measure_fundamentalInterior : μ (fundamentalInterior G s) = μ s :=
-  measure_diff_null' hs.measure_fundamentalFrontier
+  measure_sdiff_null' hs.measure_fundamentalFrontier
 
 end Group
 
-variable [MeasurableSpace G] [MeasurableSMul G α] [SMulInvariantMeasure G α μ]
+variable [MeasurableConstSMul G α] [SMulInvariantMeasure G α μ]
 
 protected theorem fundamentalInterior : IsFundamentalDomain G (fundamentalInterior G s) μ where
   nullMeasurableSet := hs.nullMeasurableSet.fundamentalInterior _ _
@@ -603,10 +601,10 @@ protected theorem fundamentalInterior : IsFundamentalDomain G (fundamentalInteri
     have :
       ((⋃ g : G, g⁻¹ • s) \ ⋃ g : G, g⁻¹ • fundamentalFrontier G s) ⊆
         ⋃ g : G, g⁻¹ • fundamentalInterior G s := by
-      simp_rw [diff_subset_iff, ← iUnion_union_distrib, ← smul_set_union (α := G) (β := α),
+      simp_rw [sdiff_subset_iff, ← iUnion_union_distrib, ← smul_set_union (α := G) (β := α),
         fundamentalFrontier_union_fundamentalInterior]; rfl
     refine eq_bot_mono (μ.mono <| compl_subset_compl.2 this) ?_
-    simp only [iUnion_inv_smul, compl_sdiff, ENNReal.bot_eq_zero, himp_eq, sup_eq_union,
+    simp only [iUnion_inv_smul, compl_sdiff, ENNReal.bot_eq_zero,
       @iUnion_smul_eq_setOf_exists _ _ _ _ s]
     exact measure_union_null
       (measure_iUnion_null fun _ => measure_smul_null hs.measure_fundamentalFrontier _) hs.ae_covers
@@ -633,8 +631,8 @@ lemma measure_map_restrict_apply (s : Set α) {U : Set (Quotient α_mod_G)}
     Measure.restrict_apply (t := (Quotient.mk α_mod_G ⁻¹' U)) (measurableSet_quotient.mp meas_U)]
 
 @[to_additive]
-lemma IsFundamentalDomain.quotientMeasure_eq [Countable G] [MeasurableSpace G] {s t : Set α}
-    [SMulInvariantMeasure G α μ] [MeasurableSMul G α] (fund_dom_s : IsFundamentalDomain G s μ)
+lemma IsFundamentalDomain.quotientMeasure_eq [Countable G] {s t : Set α}
+    [SMulInvariantMeasure G α μ] [MeasurableConstSMul G α] (fund_dom_s : IsFundamentalDomain G s μ)
     (fund_dom_t : IsFundamentalDomain G t μ) :
     (μ.restrict s).map π = (μ.restrict t).map π := by
   ext U meas_U
@@ -680,8 +678,8 @@ attribute [to_additive existing] MeasureTheory.HasFundamentalDomain
 open Classical in
 /-- The `covolume` of an action of `G` on `α` the volume of some fundamental domain, or `0` if
 none exists. -/
-@[to_additive addCovolume "The `addCovolume` of an action of `G` on `α` is the volume of some
-fundamental domain, or `0` if none exists."]
+@[to_additive addCovolume /-- The `addCovolume` of an action of `G` on `α` is the volume of some
+fundamental domain, or `0` if none exists. -/]
 noncomputable def covolume (G α : Type*) [One G] [SMul G α] [MeasurableSpace α]
     (ν : Measure α := by volume_tac) : ℝ≥0∞ :=
   if funDom : HasFundamentalDomain G α ν then ν funDom.ExistsIsFundamentalDomain.choose else 0
@@ -697,7 +695,7 @@ lemma IsFundamentalDomain.hasFundamentalDomain (ν : Measure α) {s : Set α}
 /-- The `covolume` can be computed by taking the `volume` of any given fundamental domain `s`. -/
 @[to_additive]
 lemma IsFundamentalDomain.covolume_eq_volume (ν : Measure α) [Countable G]
-    [MeasurableSpace G] [MeasurableSMul G α] [SMulInvariantMeasure G α ν] {s : Set α}
+    [MeasurableConstSMul G α] [SMulInvariantMeasure G α ν] {s : Set α}
     (fund_dom_s : IsFundamentalDomain G s ν) : covolume G α ν = ν s := by
   dsimp [covolume]
   simp only [(fund_dom_s.hasFundamentalDomain ν), ↓reduceDIte]
@@ -791,7 +789,7 @@ theorem IsFundamentalDomain.measurePreserving_quotient_mk
     haveI : HasFundamentalDomain G α ν := ⟨𝓕, h𝓕⟩
     rw [h𝓕.projection_respects_measure (μ := μ)]
 
-variable [SMulInvariantMeasure G α ν] [Countable G] [MeasurableSpace G] [MeasurableSMul G α]
+variable [SMulInvariantMeasure G α ν] [Countable G] [MeasurableConstSMul G α]
 
 /-- Given a measure upstairs (i.e., on `α`), and a choice `s` of fundamental domain, there's always
 an artificial way to generate a measure downstairs such that the pair satisfies the
@@ -820,7 +818,7 @@ theorem IsFundamentalDomain.quotientMeasureEqMeasurePreimage_of_zero
   apply fund_dom_s.quotientMeasureEqMeasurePreimage
   ext U meas_U
   simp only [Measure.coe_zero, Pi.zero_apply]
-  convert (measure_inter_null_of_null_right (h := vol_s) (Quotient.mk α_mod_G ⁻¹' U)).symm
+  convert! (measure_inter_null_of_null_right (h := vol_s) (Quotient.mk α_mod_G ⁻¹' U)).symm
   rw [measure_map_restrict_apply (meas_U := meas_U)]
 
 /-- If a measure `μ` on a quotient satisfies `QuotientMeasureEqMeasurePreimage` with respect to a
@@ -835,7 +833,7 @@ lemma QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient
   simp only [mem_setOf_eq] at hA_meas
   refine ⟨⟨fun n ↦ π '' (A n), by simp, fun n ↦ ?_, ?_⟩⟩
   · obtain ⟨s, fund_dom_s⟩ := i'
-    have : π ⁻¹' (π '' (A n)) = _ := MulAction.quotient_preimage_image_eq_union_mul (A n) (G := G)
+    have : π ⁻¹' π '' (A n) = _ := MulAction.quotient_preimage_image_eq_union_mul (A n) (G := G)
     have measπAn : MeasurableSet (π '' A n) := by
       let _ : Setoid α := α_mod_G
       rw [measurableSet_quotient, Quotient.mk''_eq_mk, this]
@@ -846,7 +844,7 @@ lemma QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient
     rw [fund_dom_s.measure_eq_tsum (A n)]
     exact measure_iUnion_le _
   · rw [← image_iUnion, hA']
-    refine image_univ_of_surjective (by convert Quotient.mk'_surjective)
+    refine image_univ_of_surjective (by convert! Quotient.mk'_surjective)
 
 /-- A measure `μ` on `α ⧸ G` satisfying `QuotientMeasureEqMeasurePreimage` and having finite
 covolume is a finite measure. -/
@@ -859,7 +857,7 @@ theorem QuotientMeasureEqMeasurePreimage.isFiniteMeasure_quotient
   rw [h𝓕.projection_respects_measure (μ := μ)]
   have : Fact (ν 𝓕 < ∞) := by
     apply Fact.mk
-    convert Ne.lt_top h
+    convert! Ne.lt_top h
     exact (h𝓕.covolume_eq_volume ν).symm
   infer_instance
 
@@ -881,8 +879,8 @@ end QuotientMeasureEqMeasurePreimage
 section QuotientMeasureEqMeasurePreimage
 
 
-variable [Group G] [MulAction G α] [MeasureSpace α] [Countable G] [MeasurableSpace G]
-  [SMulInvariantMeasure G α volume] [MeasurableSMul G α]
+variable [Group G] [MulAction G α] [MeasureSpace α] [Countable G]
+  [SMulInvariantMeasure G α volume] [MeasurableConstSMul G α]
 
 local notation "α_mod_G" => MulAction.orbitRel G α
 

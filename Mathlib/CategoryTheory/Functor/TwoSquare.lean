@@ -3,9 +3,11 @@ Copyright (c) 2025 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Whiskering
-import Mathlib.CategoryTheory.Opposites
-import Mathlib.Tactic.CategoryTheory.Slice
+module
+
+public import Mathlib.CategoryTheory.Whiskering
+public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.Tactic.CategoryTheory.Slice
 
 /-!
 # 2-squares of functors
@@ -30,6 +32,8 @@ Generalize all of this to double categories.
 
 -/
 
+@[expose] public section
+
 universe v₁ v₂ v₃ v₄ v₅ v₆ v₇ v₈ v₉ u₁ u₂ u₃ u₄ u₅ u₆ u₇ u₈ u₉
 
 namespace CategoryTheory
@@ -51,7 +55,7 @@ namespace TwoSquare
 abbrev mk (α : T ⋙ R ⟶ L ⋙ B) : TwoSquare T L R B := α
 
 variable {T} {L} {R} {B} in
-/-- The natural transfomration associated to a 2-square. -/
+/-- The natural transformation associated to a 2-square. -/
 abbrev natTrans (w : TwoSquare T L R B) : T ⋙ R ⟶ L ⋙ B := w
 
 /-- The type of 2-squares on functors `T`, `L`, `R`, and `B` is trivially equivalent to
@@ -70,15 +74,18 @@ def op (α : TwoSquare T L R B) : TwoSquare L.op T.op B.op R.op := NatTrans.op �
 lemma natTrans_op (α : TwoSquare T L R B) :
     α.op.natTrans = NatTrans.op α.natTrans := rfl
 
+instance (α : TwoSquare T L R B) [IsIso α.natTrans] : IsIso α.op.natTrans :=
+  inferInstanceAs (IsIso (NatTrans.op α.natTrans))
+
 @[ext]
 lemma ext (w w' : TwoSquare T L R B) (h : ∀ (X : C₁), w.natTrans.app X = w'.natTrans.app X) :
     w = w' :=
   NatTrans.ext (funext h)
 
-/-- The hoizontal identity 2-square. -/
+/-- The horizontal identity 2-square. -/
 @[simps!]
 def hId (L : C₁ ⥤ C₃) : TwoSquare (𝟭 _) L L (𝟭 _) :=
-  𝟙 _
+  (Functor.leftUnitor L).hom ≫ (Functor.rightUnitor L).inv
 
 /-- Notation for the horizontal identity 2-square. -/
 scoped notation "𝟙ₕ" => hId  -- type as \b1\_h
@@ -86,7 +93,7 @@ scoped notation "𝟙ₕ" => hId  -- type as \b1\_h
 /-- The vertical identity 2-square. -/
 @[simps!]
 def vId (T : C₁ ⥤ C₂) : TwoSquare T (𝟭 _) (𝟭 _) T :=
-  𝟙 _
+  (Functor.rightUnitor T).hom ≫ (Functor.leftUnitor T).inv
 
 /-- Notation for the vertical identity 2-square. -/
 scoped notation "𝟙ᵥ" => vId  -- type as \b1\_v
@@ -142,7 +149,9 @@ section Interchange
 
 variable {C₉ : Type u₉} [Category.{v₉} C₉] {R₃ : C₆ ⥤ C₉} {B₃ : C₈ ⥤ C₉}
 
-/-- When composing 2-squares which form a diagram of grid, compositing horionzall first yields the
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/-- When composing 2-squares which form a diagram of grid, composing horizontally first yields the
 same result as composing vertically first. -/
 lemma hCompVCompHComp (w₁ : TwoSquare T L R B) (w₂ : TwoSquare T' R R' B')
     (w₃ : TwoSquare B L' R'' B'') (w₄ : TwoSquare B' R'' R₃ B₃) :

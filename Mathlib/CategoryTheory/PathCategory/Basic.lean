@@ -3,9 +3,9 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Robin Carlier
 -/
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Quotient
-import Mathlib.Combinatorics.Quiver.Path
+module
+
+public import Mathlib.CategoryTheory.Quotient
 
 /-!
 # The category paths on a quiver.
@@ -18,6 +18,7 @@ We check that the quotient of the path category of a category by the canonical r
 (paths are related if they compose to the same path) is equivalent to the original category.
 -/
 
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -30,8 +31,10 @@ section
 def Paths (V : Type u₁) : Type u₁ := V
 
 instance (V : Type u₁) [Inhabited V] : Inhabited (Paths V) := ⟨(default : V)⟩
+instance (V : Type u₁) [Unique V] : Unique (Paths V) where
+  uniq _ := Subsingleton.elim (α := V) _ _
 
-variable (V : Type u₁) [Quiver.{v₁ + 1} V]
+variable (V : Type u₁) [Quiver.{v₁} V]
 
 namespace Paths
 
@@ -61,6 +64,7 @@ lemma induction_fixed_source {a : Paths V} (P : ∀ {b : Paths V}, (a ⟶ b) →
   | nil => exact id
   | cons _ w h => exact comp _ w h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To prove a property on morphisms of a path category with given target `b`, it suffices to prove
 it for the identity and prove that the property is preserved under composition on the left
 with length 1 paths. -/
@@ -100,8 +104,9 @@ lemma induction' (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
 
 attribute [local ext (iff := false)] Functor.ext
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any prefunctor from `V` lifts to a functor from `paths V` -/
-def lift {C} [Category C] (φ : V ⥤q C) : Paths V ⥤ C where
+def lift {C} [Category* C] (φ : V ⥤q C) : Paths V ⥤ C where
   obj := φ.obj
   map {X} {Y} f :=
     @Quiver.Path.rec V _ X (fun Y _ => φ.obj X ⟶ φ.obj Y) (𝟙 <| φ.obj X)
@@ -119,29 +124,32 @@ def lift {C} [Category C] (φ : V ⥤q C) : Paths V ⥤ C where
       rw [ih, Category.assoc]
 
 @[simp]
-theorem lift_nil {C} [Category C] (φ : V ⥤q C) (X : V) :
+theorem lift_nil {C} [Category* C] (φ : V ⥤q C) (X : V) :
     (lift φ).map Quiver.Path.nil = 𝟙 (φ.obj X) := rfl
 
 @[simp]
-theorem lift_cons {C} [Category C] (φ : V ⥤q C) {X Y Z : V} (p : Quiver.Path X Y) (f : Y ⟶ Z) :
+theorem lift_cons {C} [Category* C] (φ : V ⥤q C) {X Y Z : V} (p : Quiver.Path X Y) (f : Y ⟶ Z) :
     (lift φ).map (p.cons f) = (lift φ).map p ≫ φ.map f := rfl
 
 @[simp]
-theorem lift_toPath {C} [Category C] (φ : V ⥤q C) {X Y : V} (f : X ⟶ Y) :
+theorem lift_toPath {C} [Category* C] (φ : V ⥤q C) {X Y : V} (f : X ⟶ Y) :
     (lift φ).map f.toPath = φ.map f := by
   dsimp [Quiver.Hom.toPath, lift]
   simp
 
-theorem lift_spec {C} [Category C] (φ : V ⥤q C) : of V ⋙q (lift φ).toPrefunctor = φ := by
+set_option backward.defeqAttrib.useBackward true in
+theorem lift_spec {C} [Category* C] (φ : V ⥤q C) : of V ⋙q (lift φ).toPrefunctor = φ := by
   fapply Prefunctor.ext
   · rintro X
     rfl
   · rintro X Y f
     rcases φ with ⟨φo, φm⟩
     dsimp [lift, Quiver.Hom.toPath]
-    simp only [Category.id_comp]
+    simp
 
-theorem lift_unique {C} [Category C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+theorem lift_unique {C} [Category* C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
     (hΦ : of V ⋙q Φ.toPrefunctor = φ) : Φ = lift φ := by
   subst_vars
   fapply Functor.ext
@@ -158,12 +166,12 @@ theorem lift_unique {C} [Category C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
       -- Porting note: Had to do substitute `p.cons f'` and `f'.toPath` by their fully qualified
       -- versions in this `have` clause (elsewhere too).
       have : Φ.map (Quiver.Path.cons p f') = Φ.map p ≫ Φ.map (Quiver.Hom.toPath f') := by
-        convert Functor.map_comp Φ p (Quiver.Hom.toPath f')
+        convert! Functor.map_comp Φ p (Quiver.Hom.toPath f')
       rw [this, ih]
 
 /-- Two functors out of a path category are equal when they agree on singleton paths. -/
 @[ext (iff := false)]
-theorem ext_functor {C} [Category C] {F G : Paths V ⥤ C} (h_obj : F.obj = G.obj)
+theorem ext_functor {C} [Category* C] {F G : Paths V ⥤ C} (h_obj : F.obj = G.obj)
     (h : ∀ (a b : V) (e : a ⟶ b), F.map e.toPath =
         eqToHom (congr_fun h_obj a) ≫ G.map e.toPath ≫ eqToHom (congr_fun h_obj.symm b)) :
     F = G := by
@@ -179,7 +187,7 @@ theorem ext_functor {C} [Category C] {F G : Paths V ⥤ C} (h_obj : F.obj = G.ob
 
 end Paths
 
-variable (W : Type u₂) [Quiver.{v₂ + 1} W]
+variable (W : Type u₂) [Quiver.{v₂} W]
 
 -- A restatement of `Prefunctor.mapPath_comp` using `f ≫ g` instead of `f.comp g`.
 @[simp]
@@ -195,18 +203,18 @@ variable {C : Type u₁} [Category.{v₁} C]
 
 open Quiver
 
--- Porting note:
--- This def was originally marked `@[simp]`, but the meaning is different in lean4: https://github.com/leanprover/lean4/issues/2042
--- So, the `@[simp]` was removed, and the two equational lemmas below added instead.
 /-- A path in a category can be composed to a single morphism. -/
+@[simp]
 def composePath {X : C} : ∀ {Y : C} (_ : Path X Y), X ⟶ Y
   | _, .nil => 𝟙 X
   | _, .cons p e => composePath p ≫ e
 
-@[simp] lemma composePath_nil {X : C} : composePath (Path.nil : Path X X) = 𝟙 X := rfl
+-- This lemma was marked as `@[simp]` but it is generated by `@[simp]` on `composePath`.
+lemma composePath_nil {X : C} : composePath (Path.nil : Path X X) = 𝟙 X := rfl
 
-@[simp] lemma composePath_cons {X Y Z : C} (p : Path X Y) (e : Y ⟶ Z) :
-  composePath (p.cons e) = composePath p ≫ e := rfl
+-- This lemma was marked as `@[simp]` but it is generated by `@[simp]` on `composePath`.
+lemma composePath_cons {X Y Z : C} (p : Path X Y) (e : Y ⟶ Z) :
+    composePath (p.cons e) = composePath p ≫ e := rfl
 
 @[simp]
 theorem composePath_toPath {X Y : C} (f : X ⟶ Y) : composePath f.toPath = f := Category.id_comp _
@@ -219,8 +227,8 @@ theorem composePath_comp {X Y Z : C} (f : Path X Y) (g : Path Y Z) :
   | cons g e ih => simp [ih]
 
 @[simp]
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO get rid of `(id X : C)` somehow?
-theorem composePath_id {X : Paths C} : composePath (𝟙 X) = 𝟙 (id X : C) := rfl
+-- TODO get rid of `(id X : C)` somehow?
+theorem composePath_id {X : Paths C} : composePath (𝟙 X) = 𝟙 (show C from X) := rfl
 
 @[simp]
 theorem composePath_comp' {X Y Z : Paths C} (f : X ⟶ Y) (g : Y ⟶ Z) :
@@ -245,13 +253,17 @@ two paths are related if they compose to the same morphism. -/
 def pathsHomRel : HomRel (Paths C) := fun _ _ p q =>
   (pathComposition C).map p = (pathComposition C).map q
 
+#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
+Assistance investigating this would be appreciated. -/
+attribute [nolint simpNF] pathsHomRel.eq_1
+
 /-- The functor from a category to the canonical quotient of its path category. -/
 @[simps]
 def toQuotientPaths : C ⥤ Quotient (pathsHomRel C) where
   obj X := Quotient.mk X
   map f := Quot.mk _ f.toPath
-  map_id X := Quot.sound (Quotient.CompClosure.of _ _ _ (by simp))
-  map_comp f g := Quot.sound (Quotient.CompClosure.of _ _ _ (by simp))
+  map_id X := Quot.sound (HomRel.CompClosure.of (by simp))
+  map_comp f g := Quot.sound (HomRel.CompClosure.of (by simp))
 
 /-- The functor from the canonical quotient of a path category of a category
 to the original category. -/
@@ -259,6 +271,7 @@ to the original category. -/
 def quotientPathsTo : Quotient (pathsHomRel C) ⥤ C :=
   Quotient.lift _ (pathComposition C) fun _ _ _ _ w => w
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical quotient of the path category of a category
 is equivalent to the original category. -/
 def quotientPathsEquiv : Quotient (pathsHomRel C) ≌ C where
@@ -267,10 +280,7 @@ def quotientPathsEquiv : Quotient (pathsHomRel C) ≌ C where
   unitIso :=
     NatIso.ofComponents
       (fun X => by cases X; rfl)
-      (Quot.ind fun f => by
-        apply Quot.sound
-        apply Quotient.CompClosure.of
-        simp [Category.comp_id, Category.id_comp, pathsHomRel])
+      (Quot.ind fun f => by exact Quot.sound (HomRel.CompClosure.of (by simp)))
   counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp)
   functor_unitIso_comp X := by
     cases X

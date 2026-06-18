@@ -3,9 +3,11 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Init
-import Lean.Util.Heartbeats
-import Lean.Meta.Tactic.TryThis
+module
+
+public import Mathlib.Init
+public meta import Lean.Util.Heartbeats
+public meta import Lean.Meta.Tactic.TryThis
 
 /-!
 Defines a command wrapper that prints the number of heartbeats used in the enclosed command.
@@ -18,6 +20,8 @@ theorem foo : 42 = 6 * 7 := rfl
 will produce an info message containing a number around 51.
 If this number is above the current `maxHeartbeats`, we also print a `Try this:` suggestion.
 -/
+
+public meta section
 
 
 open Lean Elab Command Meta Linter
@@ -36,7 +40,8 @@ def runTacForHeartbeats (tac : TSyntax `Lean.Parser.Tactic.tacticSeq) (revert : 
     TacticM Nat := do
   let start ← IO.getNumHeartbeats
   let s ← saveState
-  evalTactic tac
+  withOptions (fun opts => opts.set ``Elab.async false) do
+    evalTactic tac
   if revert then restoreState s
   return (← IO.getNumHeartbeats) - start
 
@@ -63,14 +68,31 @@ def logVariation {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions 
   -- convert `[min, max, stddev]` to user-facing heartbeats
   logInfo s!"Min: {min / 1000} Max: {max / 1000} StdDev: {stddev / 10}%"
 
-/-- Count the heartbeats used by a tactic, e.g.: `#count_heartbeats simp`. -/
+/-- `#count_heartbeats tac` counts the heartbeats used by the tactic sequence `tac`
+and prints an info line with the number of heartbeats.
+
+* `#count_heartbeats! n in tac`, where `n` is an optional natural number literal, runs `tac`
+  `n` times on the same goal while counting the heartbeats, and prints an info line with range and
+  standard deviation. `n` can be left out, and defaults to 10.
+
+Example:
+
+```
+example : 1 + 1 = 2 := by
+  -- The next line will print an info message of this format; the exact number may vary.
+  -- info: 4646
+  #count_heartbeats simp
+
+example : 1 + 1 = 2 := by
+  -- The next line will print an info message of this format; the exact numbers may vary.
+  -- info: Min: 4 Max: 4 StdDev: 2%
+  #count_heartbeats! 37 in simp
+```
+-/
 elab "#count_heartbeats " tac:tacticSeq : tactic => do
   logInfo s!"{← runTacForHeartbeats tac (revert := false)}"
 
-/--
-`#count_heartbeats! in tac` runs a tactic 10 times, counting the heartbeats used, and logs the range
-and standard deviation. The tactic `#count_heartbeats! n in tac` runs it `n` times instead.
--/
+@[tactic_alt «tactic#count_heartbeats_»]
 elab "#count_heartbeats! " n:(num)? "in" ppLine tac:tacticSeq : tactic => do
   let n := match n with
            | some j => j.getNat
@@ -93,17 +115,17 @@ set_option linter.style.maxHeartbeats false in
 Use `#count_heartbeats` to count the heartbeats in *all* the following declarations.
 
 This is most useful for setting sufficient but reasonable limits via `set_option maxHeartbeats`
-for long running declarations.
+for long-running declarations.
 
 If you do so, please resist the temptation to set the limit as low as possible.
 As the `simp` set and other features of the library evolve,
 other contributors will find that their (likely unrelated) changes
 have pushed the declaration over the limit.
-`count_heartbearts in` will automatically suggest a `set_option maxHeartbeats` via "Try this:"
+`count_heartbeats in` will automatically suggest a `set_option maxHeartbeats` via "Try this:"
 using the least number of the form `2^k * 200000` that suffices.
 
-Note that that internal heartbeat counter accessible via `IO.getNumHeartbeats`
-has granularity 1000 times finer that the limits set by `set_option maxHeartbeats`.
+Note that the internal heartbeat counter accessible via `IO.getNumHeartbeats`
+has granularity 1000 times finer than the limits set by `set_option maxHeartbeats`.
 As this is intended as a user command, we divide by 1000.
 
 The optional `approximately` keyword rounds down the heartbeats to the nearest thousand.
@@ -133,14 +155,6 @@ elab "#count_heartbeats " approx:(&"approximately ")? "in" ppLine cmd:command : 
         Lean.Meta.Tactic.TryThis.addSuggestion (← getRef)
           (← set_option hygiene false in `(command| set_option maxHeartbeats $m in $cmd))
 
-/-- `count_heartbeats` is deprecated in favour of `#count_heartbeats` since "2025-01-12" -/
-elab "count_heartbeats" : tactic =>
-  logWarning "`count_heartbeats` has been renamed to `#count_heartbeats`"
-
-/-- `count_heartbeats` is deprecated in favour of `#count_heartbeats` since "2025-01-12" -/
-elab "count_heartbeats" : command =>
-  logWarning "`count_heartbeats` has been renamed to `#count_heartbeats`"
-
 set_option linter.style.maxHeartbeats false in
 /--
 Guard the minimal number of heartbeats used in the enclosed command.
@@ -165,7 +179,7 @@ elab "guard_min_heartbeats " approx:(&"approximately ")? n:(num)? "in" ppLine cm
            | none => max
   let start ← IO.getNumHeartbeats
   try
-    elabCommand (← `(command| set_option maxHeartbeats 0 in $cmd))
+    elabCommand (← `(command| set_option Elab.async false in set_option maxHeartbeats 0 in $cmd))
   finally
     let finish ← IO.getNumHeartbeats
     let elapsed := (finish - start) / 1000
@@ -210,12 +224,10 @@ end CountHeartbeats
 end Mathlib
 
 /-!
-#  The "countHeartbeats" linter
+# The "countHeartbeats" linter
 
 The "countHeartbeats" linter counts the heartbeats of every declaration.
 -/
-
-open Lean Elab Command
 
 namespace Mathlib.Linter
 

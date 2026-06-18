@@ -3,12 +3,14 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Algebra.Group.Indicator
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Order.Disjointed
-import Mathlib.Topology.Separation.Profinite
-import Mathlib.Topology.Sets.Closeds
-import Mathlib.Topology.Sets.OpenCover
+module
+
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Order.Disjointed
+public import Mathlib.Topology.Separation.Profinite
+public import Mathlib.Topology.Sets.Closeds
+public import Mathlib.Topology.Sets.OpenCover
 
 /-!
 # Disjoint covers of profinite spaces
@@ -22,6 +24,8 @@ We prove various results about covering profinite spaces by disjoint clopens, in
   with `X` profinite, and `S` is a neighbourhood of the diagonal in `V × V`, then `f` can be
   `S`-approximated by a function factoring through `Fin n` for some `n`.
 -/
+
+public section
 
 open Set TopologicalSpace
 
@@ -140,13 +144,13 @@ lemma exists_finite_approximation_of_mem_nhds_diagonal (hS : S ∈ nhdsSet (diag
   have h_uniq (x) : ∃! i, x ∈ E i := by
     refine match mem_iUnion.mp (hEuniv <| mem_univ x) with
       | ⟨i, hi⟩ => ⟨i, hi, fun j hj ↦ hEdis.eq ?_⟩
-    simpa [← Clopens.coe_disjoint, not_disjoint_iff] using ⟨x, hj, hi⟩
+    simpa [← Clopens.coe_disjoint, not_disjoint_iff] using! ⟨x, hj, hi⟩
   choose g hg hg' using h_uniq -- for each `x`, `g x` is the unique `i` such that `x ∈ E i`
   have h_ex (i) : ∃ x, x ∈ E i := by
-    simpa [← SetLike.coe_set_eq, ← nonempty_iff_ne_empty] using hEne i
+    simpa [← SetLike.coe_set_eq, ← nonempty_iff_ne_empty] using! hEne i
   choose r hr using h_ex -- for each `i`, choose an `r i ∈ E i`
   refine ⟨n, g, f ∘ r, continuous_discrete_rng.mpr fun j ↦ ?_, fun x ↦ (hES _) _ (hg _) _ (hr _)⟩
-  convert (E j).isOpen
+  convert! (E j).isOpen
   exact Set.ext fun x ↦ ⟨fun hj ↦ hj ▸ hg x, fun hx ↦ (hg' _ _ hx).symm⟩
 
 /--
@@ -155,18 +159,18 @@ structure, then we can approximate `f` by finite products of indicator functions
 
 (Note no compatibility is assumed between the monoid structure on `V` and the topology.)
 -/
-@[to_additive "If `f` is a continuous map from a profinite space to a topological space with a
+@[to_additive /-- If `f` is a continuous map from a profinite space to a topological space with a
 commutative additive monoid structure, then we can approximate `f` by finite sums of indicator
 functions of clopen sets.
 
-(Note no compatibility is assumed between the monoid structure on `V` and the topology.)"]
+(Note no compatibility is assumed between the monoid structure on `V` and the topology.) -/]
 lemma exists_finite_sum_const_mulIndicator_approximation_of_mem_nhds_diagonal [CommMonoid V]
     (hS : S ∈ nhdsSet (diagonal V)) :
     ∃ (n : ℕ) (U : Fin n → Clopens X) (v : Fin n → V),
     ∀ x, (f x, ∏ n, mulIndicator (U n) (fun _ ↦ v n) x) ∈ S := by
   obtain ⟨n, g, h, hg, hgh⟩ := exists_finite_approximation_of_mem_nhds_diagonal f hS
   refine ⟨n, fun i ↦ ⟨_, (isClopen_discrete {i}).preimage hg⟩, h, fun x ↦ ?_⟩
-  convert hgh x
+  convert! hgh x
   exact (Fintype.prod_eq_single _ fun i hi ↦ mulIndicator_of_notMem hi.symm _).trans
     (mulIndicator_of_mem rfl _)
 

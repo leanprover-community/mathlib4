@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.CategoryTheory.Idempotents.Karoubi
+module
+
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
 /-!
 # Idempotent completeness and homological complexes
@@ -18,12 +20,14 @@ When the category `C` is idempotent complete, it is shown that
 
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
 open Category
 
-variable {C : Type*} [Category C] [Preadditive C] {ι : Type*} {c : ComplexShape ι}
+variable {C : Type*} [Category* C] [Preadditive C] {ι : Type*} {c : ComplexShape ι}
 
 namespace Idempotents
 
@@ -69,8 +73,9 @@ def obj (P : Karoubi (HomologicalComplex C c)) : HomologicalComplex (Karoubi C) 
     ⟨P.X.X n, P.p.f n, by
       simpa only [HomologicalComplex.comp_f] using HomologicalComplex.congr_hom P.idem n⟩
   d i j := { f := P.p.f i ≫ P.X.d i j }
-  shape i j hij := by simp only [hom_eq_zero_iff]; aesop_cat
+  shape i j hij := by simp only [hom_eq_zero_iff]; cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor `Karoubi (HomologicalComplex C c) ⥤ HomologicalComplex (Karoubi C) c`,
 on morphisms. -/
 @[simps]
@@ -100,13 +105,14 @@ def obj (K : HomologicalComplex (Karoubi C) c) : Karoubi (HomologicalComplex C c
         simpa only [comp_f] using hom_eq_zero_iff.mp (K.d_comp_d i j k) }
   p := { f := fun n => (K.X n).p }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor `HomologicalComplex (Karoubi C) c ⥤ Karoubi (HomologicalComplex C c)`,
 on morphisms -/
 @[simps]
 def map {K L : HomologicalComplex (Karoubi C) c} (f : K ⟶ L) : obj K ⟶ obj L where
   f :=
     { f := fun n => (f.f n).f
-      comm' := fun i j hij => by simpa only [comp_f] using hom_ext_iff.mp (f.comm' i j hij) }
+      comm' := fun i j hij => by simpa only [comp_f] using! hom_ext_iff.mp (f.comm' i j hij) }
 
 end Inverse
 
@@ -116,13 +122,15 @@ def inverse : HomologicalComplex (Karoubi C) c ⥤ Karoubi (HomologicalComplex C
   obj := Inverse.obj
   map f := Inverse.map f
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The counit isomorphism of the equivalence
 `Karoubi (HomologicalComplex C c) ≌ HomologicalComplex (Karoubi C) c`. -/
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (HomologicalComplex (Karoubi C) c) :=
-  eqToIso (Functor.ext (fun P => HomologicalComplex.ext (by aesop_cat) (by simp))
-    (by aesop_cat))
+  eqToIso (Functor.ext (fun P => HomologicalComplex.ext (by cat_disch) (by simp))
+    (by cat_disch))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The unit isomorphism of the equivalence
 `Karoubi (HomologicalComplex C c) ≌ HomologicalComplex (Karoubi C) c`. -/
 @[simps]
@@ -172,6 +180,7 @@ end KaroubiHomologicalComplexEquivalence
 
 variable (C) (c)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `Karoubi (HomologicalComplex C c) ≌ HomologicalComplex (Karoubi C) c`. -/
 @[simps]
 def karoubiHomologicalComplexEquivalence :

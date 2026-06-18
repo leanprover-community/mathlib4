@@ -1,3 +1,2 @@
 import Mathlib.LinearAlgebra.PiTensorProduct.Basic
-
-deprecated_module (since := "2025-07-11")
+deprecated_module (since := "2026-06-18")

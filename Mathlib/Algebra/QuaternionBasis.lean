@@ -3,9 +3,12 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Quaternion
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Quaternion
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Basis on a quaternion-like algebra
@@ -19,8 +22,10 @@ import Mathlib.Tactic.Ring
 * `QuaternionAlgebra.lift`: Define an `AlgHom` out of `ℍ[R,c₁,c₂,c₃]` by its action on the basis
   elements `i`, `j`, and `k`. In essence, this is a universal property. Analogous to `Complex.lift`,
   but takes a bundled `QuaternionAlgebra.Basis` instead of just a `Subtype` as the amount of
-  data / proves is non-negligible.
+  data / proofs is non-negligible.
 -/
+
+@[expose] public section
 
 
 open Quaternion
@@ -45,6 +50,9 @@ structure Basis {R : Type*} (A : Type*) [CommRing R] [Ring A] [Algebra R A] (c�
   i_mul_j : i * j = k
   j_mul_i : j * i = c₂ • j - k
 
+initialize_simps_projections Basis
+  (as_prefix i, as_prefix j, as_prefix k)
+
 variable {R : Type*} {A B : Type*} [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
 variable {c₁ c₂ c₃ : R}
 
@@ -54,11 +62,7 @@ namespace Basis
 @[ext]
 protected theorem ext ⦃q₁ q₂ : Basis A c₁ c₂ c₃⦄ (hi : q₁.i = q₂.i)
     (hj : q₁.j = q₂.j) : q₁ = q₂ := by
-  cases q₁; rename_i q₁_i_mul_j _
-  cases q₂; rename_i q₂_i_mul_j _
-  congr
-  rw [← q₁_i_mul_j, ← q₂_i_mul_j]
-  congr
+  cases q₁; cases q₂; grind
 
 variable (R) in
 /-- There is a natural quaternionic basis for the `QuaternionAlgebra`. -/
@@ -115,7 +119,7 @@ theorem lift_zero : q.lift (0 : ℍ[R,c₁,c₂,c₃]) = 0 := by simp [lift]
 theorem lift_one : q.lift (1 : ℍ[R,c₁,c₂,c₃]) = 1 := by simp [lift]
 
 theorem lift_add (x y : ℍ[R,c₁,c₂,c₃]) : q.lift (x + y) = q.lift x + q.lift y := by
-  simp only [lift, add_re, map_add, add_imI, add_smul, add_imJ, add_imK]
+  simp only [lift, re_add, map_add, imI_add, add_smul, imJ_add, imK_add]
   abel
 
 theorem lift_mul (x y : ℍ[R,c₁,c₂,c₃]) : q.lift (x * y) = q.lift x * q.lift y := by
@@ -127,7 +131,7 @@ theorem lift_mul (x y : ℍ[R,c₁,c₂,c₃]) : q.lift (x * y) = q.lift x * q.l
   simp only [mul_comm _ c₁]
   simp only [mul_right_comm _ _ c₃]
   simp only [← mul_assoc]
-  simp only [mul_re, sub_eq_add_neg, add_smul, neg_smul, mul_imI, ← add_assoc, mul_imJ, mul_imK]
+  simp only [re_mul, sub_eq_add_neg, add_smul, neg_smul, imI_mul, ← add_assoc, imJ_mul, imK_mul]
   linear_combination (norm := module)
 
 theorem lift_smul (r : R) (x : ℍ[R,c₁,c₂,c₃]) : q.lift (r • x) = r • q.lift x := by
@@ -170,6 +174,7 @@ def compHom (F : A →ₐ[R] B) : Basis B c₁ c₂ c₃ where
 
 end Basis
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A quaternionic basis on `A` is equivalent to a map from the quaternion algebra to `A`. -/
 @[simps]
 def lift : Basis A c₁ c₂ c₃ ≃ (ℍ[R,c₁,c₂,c₃] →ₐ[R] A) where

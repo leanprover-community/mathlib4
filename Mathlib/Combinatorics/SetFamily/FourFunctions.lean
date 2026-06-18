@@ -3,17 +3,19 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Finset.Sups
-import Mathlib.Order.Birkhoff
-import Mathlib.Order.Booleanisation
-import Mathlib.Order.Sublattice
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.GCongr
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Data.Finset.Sups
+public import Mathlib.Order.Birkhoff
+public import Mathlib.Order.Booleanisation
+public import Mathlib.Order.Sublattice
+public import Mathlib.Tactic.Positivity.Basic
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.GCongr
 
 /-!
 # The four functions theorem and corollaries
@@ -36,7 +38,7 @@ The two versions of the four functions theorem are
 We deduce a number of corollaries:
 * `Finset.le_card_infs_mul_card_sups`: Daykin inequality. `|s| |t| ≤ |s ⊼ t| |s ⊻ t|`
 * `holley`: Holley inequality.
-* `fkg`: Fortuin-Kastelyn-Ginibre inequality.
+* `fkg`: Fortuin-Kasteleyn-Ginibre inequality.
 * `Finset.card_le_card_diffs`: Marica-Schönheim inequality. `|s| ≤ |{a \ b | a, b ∈ s}|`
 
 ## TODO
@@ -53,6 +55,8 @@ earlier file and give it a proper API.
 
 [*Applications of the FKG Inequality and Its Relatives*, Graham][Graham1983]
 -/
+
+public section
 
 open Finset Fintype Function
 open scoped FinsetFamily
@@ -87,13 +91,12 @@ private lemma ineq [ExistsAddOfLE β] {a₀ a₁ b₀ b₁ c₀ c₁ d₀ d₁ :
     _ ≤ c₀ * d₀ * (c₁ * d₁) + c₀ * d₁ * (c₀ * d₁) := by gcongr
     _ = (c₀ * d₁ + c₁ * d₀) * (c₀ * d₁) := by ring
 
+set_option backward.privateInPublic true in
 private def collapse (𝒜 : Finset (Finset α)) (a : α) (f : Finset α → β) (s : Finset α) : β :=
   ∑ t ∈ 𝒜 with t.erase a = s, f t
 
 private lemma erase_eq_iff (hs : a ∉ s) : t.erase a = s ↔ t = s ∨ t = insert a s := by
-  by_cases ht : a ∈ t <;>
-  · simp [erase_eq_iff_eq_insert, *]
-    aesop
+  grind
 
 private lemma filter_collapse_eq (ha : a ∉ s) (𝒜 : Finset (Finset α)) :
     {t ∈ 𝒜 | t.erase a = s} =
@@ -103,6 +106,8 @@ private lemma filter_collapse_eq (ha : a ∉ s) (𝒜 : Finset (Finset α)) :
         (if insert a s ∈ 𝒜 then {insert a s} else ∅) := by
   ext t; split_ifs <;> simp [erase_eq_iff ha] <;> aesop
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 omit [LinearOrder β] [IsStrictOrderedRing β] in
 lemma collapse_eq (ha : a ∉ s) (𝒜 : Finset (Finset α)) (f : Finset α → β) :
     collapse 𝒜 a f s = (if s ∈ 𝒜 then f s else 0) +
@@ -110,11 +115,15 @@ lemma collapse_eq (ha : a ∉ s) (𝒜 : Finset (Finset α)) (f : Finset α → 
   rw [collapse, filter_collapse_eq ha]
   split_ifs <;> simp [(ne_of_mem_of_not_mem' (mem_insert_self a s) ha).symm, *]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 omit [LinearOrder β] [IsStrictOrderedRing β] in
 lemma collapse_of_mem (ha : a ∉ s) (ht : t ∈ 𝒜) (hu : u ∈ 𝒜) (hts : t = s)
     (hus : u = insert a s) : collapse 𝒜 a f s = f t + f u := by
   subst hts; subst hus; simp_rw [collapse_eq ha, if_pos ht, if_pos hu]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma le_collapse_of_mem (ha : a ∉ s) (hf : 0 ≤ f) (hts : t = s) (ht : t ∈ 𝒜) :
     f t ≤ collapse 𝒜 a f s := by
   subst hts
@@ -123,6 +132,8 @@ lemma le_collapse_of_mem (ha : a ∉ s) (hf : 0 ≤ f) (hts : t = s) (ht : t ∈
   · exact le_add_of_nonneg_right <| hf _
   · rw [add_zero]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma le_collapse_of_insert_mem (ha : a ∉ s) (hf : 0 ≤ f) (hts : t = insert a s) (ht : t ∈ 𝒜) :
     f t ≤ collapse 𝒜 a f s := by
   rw [collapse_eq ha, ← hts, if_pos ht]
@@ -130,8 +141,12 @@ lemma le_collapse_of_insert_mem (ha : a ∉ s) (hf : 0 ≤ f) (hts : t = insert 
   · exact le_add_of_nonneg_left <| hf _
   · rw [zero_add]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma collapse_nonneg (hf : 0 ≤ f) : 0 ≤ collapse 𝒜 a f := fun _s ↦ sum_nonneg fun _t _ ↦ hf _
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma collapse_modular [ExistsAddOfLE β]
     (hu : a ∉ u) (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
     (h : ∀ ⦃s⦄, s ⊆ insert a u → ∀ ⦃t⦄, t ⊆ insert a u → f₁ s * f₂ t ≤ f₃ (s ∩ t) * f₄ (s ∪ t))
@@ -180,8 +195,9 @@ lemma collapse_modular [ExistsAddOfLE β]
     · refine (add_le_add (h ‹_› ‹_›) <| h ‹_› ‹_›).trans ?_
       rw [collapse_of_mem ‹_› (union_mem_sups ‹_› ‹_›) (union_mem_sups ‹_› ‹_›) rfl
         (union_insert _ _ _), inter_insert_of_notMem ‹_›, ← mul_add]
-      exact mul_le_mul_of_nonneg_right (le_collapse_of_mem ‹_› h₃ rfl <| inter_mem_infs ‹_› ‹_›) <|
-        add_nonneg (h₄ _) <| h₄ _
+      gcongr
+      · exact add_nonneg (h₄ _) (h₄ _)
+      · exact le_collapse_of_mem ‹_› h₃ rfl <| inter_mem_infs ‹_› ‹_›
     · rw [mul_zero, add_zero]
       exact (h ‹_› ‹_›).trans <| mul_le_mul (le_collapse_of_mem ‹_› h₃ rfl <|
         inter_mem_infs ‹_› ‹_›) (le_collapse_of_mem ‹_› h₄ rfl <| union_mem_sups ‹_› ‹_›)
@@ -200,8 +216,10 @@ lemma collapse_modular [ExistsAddOfLE β]
         (insert_inter_of_notMem ‹_›) (insert_inter_distrib _ _ _).symm,
         insert_inter_of_notMem ‹_›, ← insert_inter_distrib, insert_union, insert_union_distrib,
         ← add_mul]
-      exact mul_le_mul_of_nonneg_left (le_collapse_of_insert_mem ‹_› h₄
-        (insert_union_distrib _ _ _).symm <| union_mem_sups ‹_› ‹_›) <| add_nonneg (h₃ _) <| h₃ _
+      gcongr
+      · exact add_nonneg (h₃ _) (h₃ _)
+      · exact le_collapse_of_insert_mem ‹_› h₄
+          (insert_union_distrib _ _ _).symm <| union_mem_sups ‹_› ‹_›
     · rw [mul_zero, add_zero]
       refine (h ‹_› ‹_›).trans <| mul_le_mul (le_collapse_of_mem ‹_› h₃
         (insert_inter_of_notMem ‹_›) <| inter_mem_infs ‹_› ‹_›) (le_collapse_of_insert_mem ‹_› h₄
@@ -216,6 +234,8 @@ lemma collapse_modular [ExistsAddOfLE β]
   · simp_rw [add_zero, zero_mul]
     exact mul_nonneg (collapse_nonneg h₃ _) <| collapse_nonneg h₄ _
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 omit [LinearOrder β] [IsStrictOrderedRing β] in
 lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
     ∑ s ∈ u.powerset, collapse 𝒜 a f s = ∑ s ∈ 𝒜, f s := by
@@ -241,6 +261,8 @@ lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
 
 variable [ExistsAddOfLE β]
 
+-- In the non-terminal simp below, simp runs on four goals, but only needs `exact` once.
+set_option linter.flexible false in
 /-- The **Four Functions Theorem** on a powerset algebra. See `four_functions_theorem` for the
 finite distributive lattice generalisation. -/
 protected lemma Finset.four_functions_theorem (u : Finset α)
@@ -260,11 +282,12 @@ protected lemma Finset.four_functions_theorem (u : Finset α)
     simpa only [powerset_sups_powerset_self, powerset_infs_powerset_self, sum_collapse,
       not_false_eq_true, *] using ih
 
-variable (f₁ f₂ f₃ f₄) [Fintype α]
+variable (f₁ f₂ f₃ f₄) [Finite α]
 
 private lemma four_functions_theorem_aux (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
     (h : ∀ s t, f₁ s * f₂ t ≤ f₃ (s ∩ t) * f₄ (s ∪ t)) (𝒜 ℬ : Finset (Finset α)) :
     (∑ s ∈ 𝒜, f₁ s) * ∑ s ∈ ℬ, f₂ s ≤ (∑ s ∈ 𝒜 ⊼ ℬ, f₃ s) * ∑ s ∈ 𝒜 ⊻ ℬ, f₄ s := by
+  have := Fintype.ofFinite α
   refine univ.four_functions_theorem h₁ h₂ h₃ h₄ ?_ ?_ ?_ <;> simp [h]
 
 end Finset
@@ -284,11 +307,11 @@ lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ 
   set s' : Finset L := s.preimage (↑) Subtype.coe_injective.injOn
   set t' : Finset L := t.preimage (↑) Subtype.coe_injective.injOn
   have hs' : s'.map ⟨L.subtype, Subtype.coe_injective⟩ = s := by
-    simp [s', map_eq_image, image_preimage, filter_eq_self]
-    exact fun a ha ↦ subset_latticeClosure <| Set.subset_union_left ha
+    simpa [s', map_eq_image, image_preimage, filter_eq_self] using!
+      fun a ha ↦ subset_latticeClosure <| Set.subset_union_left ha
   have ht' : t'.map ⟨L.subtype, Subtype.coe_injective⟩ = t := by
-    simp [t', map_eq_image, image_preimage, filter_eq_self]
-    exact fun a ha ↦ subset_latticeClosure <| Set.subset_union_right ha
+    simpa [t', map_eq_image, image_preimage, filter_eq_self] using!
+      fun a ha ↦ subset_latticeClosure <| Set.subset_union_right ha
   clear_value s' t'
   obtain ⟨β, _, _, g, hg⟩ := exists_birkhoff_representation L
   have := four_functions_theorem_aux (extend g (f₁ ∘ (↑)) 0) (extend g (f₂ ∘ (↑)) 0)
@@ -296,16 +319,16 @@ lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ 
     (extend_nonneg (fun _ ↦ h₂ _) le_rfl) (extend_nonneg (fun _ ↦ h₃ _) le_rfl)
     (extend_nonneg (fun _ ↦ h₄ _) le_rfl) ?_ (s'.map ⟨g, hg⟩) (t'.map ⟨g, hg⟩)
   · simpa only [← hs', ← ht', ← map_sups, ← map_infs, sum_map, Embedding.coeFn_mk, hg.extend_apply]
-      using this
+      using! this
   rintro s t
   classical
   obtain ⟨a, rfl⟩ | hs := em (∃ a, g a = s)
   · obtain ⟨b, rfl⟩ | ht := em (∃ b, g b = t)
     · simp_rw [← sup_eq_union, ← inf_eq_inter, ← map_sup, ← map_inf, hg.extend_apply]
       exact h _ _
-    · simpa [extend_apply' _ _ _ ht] using mul_nonneg
+    · simpa [extend_apply' _ _ _ ht] using! mul_nonneg
         (extend_nonneg (fun a : L ↦ h₃ a) le_rfl _) (extend_nonneg (fun a : L ↦ h₄ a) le_rfl _)
-  · simpa [extend_apply' _ _ _ hs] using mul_nonneg
+  · simpa [extend_apply' _ _ _ hs] using! mul_nonneg
       (extend_nonneg (fun a : L ↦ h₃ a) le_rfl _) (extend_nonneg (fun a : L ↦ h₄ a) le_rfl _)
 
 /-- An inequality of Daykin. Interestingly, any lattice in which this inequality holds is
@@ -341,7 +364,7 @@ lemma holley (hμ₀ : 0 ≤ μ) (hf : 0 ≤ f) (hg : 0 ≤ g) (hμ : Monotone �
     rw [sup_comm, inf_comm]
     exact mul_le_mul (hμ le_sup_left) (h _ _) (mul_nonneg (hf.le _) <| hg.le _) <| hμ₀ _
 
-/-- The **Fortuin-Kastelyn-Ginibre Inequality**. -/
+/-- The **Fortuin-Kasteleyn-Ginibre Inequality**. -/
 lemma fkg (hμ₀ : 0 ≤ μ) (hf₀ : 0 ≤ f) (hg₀ : 0 ≤ g) (hf : Monotone f) (hg : Monotone g)
     (hμ : ∀ a b, μ a * μ b ≤ μ (a ⊓ b) * μ (a ⊔ b)) :
     (∑ a, μ a * f a) * ∑ a, μ a * g a ≤ (∑ a, μ a) * ∑ a, μ a * (f a * g a) := by
@@ -372,5 +395,5 @@ lemma Finset.le_card_diffs_mul_card_diffs (s t : Finset α) :
 
 /-- The **Marica-Schönheim Inequality**. -/
 lemma Finset.card_le_card_diffs (s : Finset α) : #s ≤ #(s \\ s) :=
-  le_of_pow_le_pow_left₀ two_ne_zero (zero_le _) <| by
+  le_of_pow_le_pow_left₀ two_ne_zero zero_le <| by
     simpa [← sq] using s.le_card_diffs_mul_card_diffs s

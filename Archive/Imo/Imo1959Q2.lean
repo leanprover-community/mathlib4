@@ -3,7 +3,7 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Real.Sqrt
+import Mathlib.Analysis.Real.Sqrt
 
 /-!
 # IMO 1959 Q2
@@ -41,9 +41,9 @@ theorem isGood_iff : IsGood x A ↔
   | inl hx =>
     have hx' : 0 ≤ 2 * x - 1 := by linarith
     have h₁ : x + sqrt (2 * x - 1) = (sqrt (2 * x - 1) + 1) ^ 2 / 2 := by
-      rw [add_sq, sq_sqrt hx']; field_simp; ring
+      rw [add_sq, sq_sqrt hx']; field
     have h₂ : x - sqrt (2 * x - 1) = (sqrt (2 * x - 1) - 1) ^ 2 / 2 := by
-      rw [sub_sq, sq_sqrt hx']; field_simp; ring
+      rw [sub_sq, sq_sqrt hx']; field
     simp only [IsGood, *, div_nonneg (sq_nonneg _) (zero_le_two (α := ℝ)), sqrt_div (sq_nonneg _),
       and_true]
     rw [sqrt_sq, sqrt_sq_eq_abs] <;> [skip; positivity]
@@ -60,7 +60,7 @@ theorem sqrt_two_mul_sub_one_le_one : sqrt (2 * x - 1) ≤ 1 ↔ x ≤ 1 := by
 theorem isGood_iff_eq_sqrt_two (hx : x ∈ Icc (1 / 2) 1) : IsGood x A ↔ A = sqrt 2 := by
   have : sqrt (2 * x - 1) ≤ 1 := sqrt_two_mul_sub_one_le_one.2 hx.2
   simp only [isGood_iff, hx.1, abs_sub_comm _ (1 : ℝ), abs_of_nonneg (sub_nonneg.2 this), and_true]
-  suffices 2 = A * sqrt 2 ↔ A = sqrt 2 by convert this using 2; ring
+  suffices 2 = A * sqrt 2 ↔ A = sqrt 2 by convert this; ring
   rw [← div_eq_iff, div_sqrt, eq_comm]
   positivity
 
@@ -106,7 +106,7 @@ theorem isGood_sqrt2_iff : IsGood x (sqrt 2) ↔ x ∈ Icc (1 / 2) 1 := by
   exact ⟨h.one_half_le, not_lt.1 fun h₁ ↦ (h.sqrt_two_lt_of_one_lt h₁).false⟩
 
 theorem not_isGood_one : ¬IsGood x 1 := fun h ↦
-  h.sqrt_two_le.not_gt <| (lt_sqrt zero_le_one).2 (by norm_num)
+  h.sqrt_two_le.not_gt <| (lt_sqrt zero_le_one).2 (by simp)
 
 theorem isGood_two_iff : IsGood x 2 ↔ x = 3 / 2 :=
   (isGood_iff_of_sqrt_two_lt <| (sqrt_lt' two_pos).2 (by norm_num)).trans <| by norm_num

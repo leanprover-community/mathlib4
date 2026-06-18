@@ -3,25 +3,25 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Data.Nat.Cast.Order.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Data.Nat.Cast.Order.Basic
 
 /-!
 # Cast of natural numbers: lemmas about bundled ordered semirings
 
 -/
 
+public section
+
 variable {R α : Type*}
 
 namespace Nat
 
-section OrderedSemiring
-/- Note: even though the section indicates `OrderedSemiring`, which is the common use case,
-we use a generic collection of instances so that it applies in other settings (e.g., in a
-`StarOrderedRing`, or the `selfAdjoint` or `StarOrderedRing.positive` parts thereof). -/
-
+section AddMonoidWithOne
 variable [AddMonoidWithOne α] [PartialOrder α]
 variable [AddLeftMono α] [ZeroLEOneClass α]
 
@@ -55,7 +55,7 @@ variable [NeZero (1 : α)]
 theorem cast_pos {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α] {n : ℕ} :
     (0 : α) < n ↔ 0 < n := cast_pos'
 
-/-- See also `Nat.ofNat_pos`, specialised for an `OrderedSemiring`. -/
+/-- See also `Nat.ofNat_pos`, specialised to `IsOrderedRing`. -/
 @[simp low]
 theorem ofNat_pos' {n : ℕ} [n.AtLeastTwo] : 0 < (ofNat(n) : α) :=
   cast_pos'.mpr (NeZero.pos n)
@@ -69,7 +69,7 @@ theorem ofNat_pos {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontr
 
 end Nontrivial
 
-end OrderedSemiring
+end AddMonoidWithOne
 
 /-- A version of `Nat.cast_sub` that works for `ℝ≥0` and `ℚ≥0`. Note that this proof doesn't work
 for `ℕ∞` and `ℝ≥0∞`, so we use type-specific lemmas for these types. -/
@@ -82,8 +82,8 @@ theorem cast_tsub [CommSemiring α] [PartialOrder α] [IsOrderedRing α] [Canoni
   · rcases le_iff_exists_add'.mp h with ⟨m, rfl⟩
     rw [add_tsub_cancel_right, cast_add, add_tsub_cancel_right]
 
-section LinearOrderedRing
-variable [Ring R] [LinearOrder R] [IsStrictOrderedRing R] {m n : ℕ} {m n : ℕ}
+section Lattice
+variable [Ring R] [Lattice R] [IsOrderedRing R]
 
 @[simp, norm_cast]
 theorem abs_cast (n : ℕ) : |(n : R)| = n := abs_of_nonneg n.cast_nonneg
@@ -91,40 +91,18 @@ theorem abs_cast (n : ℕ) : |(n : R)| = n := abs_of_nonneg n.cast_nonneg
 @[simp]
 theorem abs_ofNat (n : ℕ) [n.AtLeastTwo] : |(ofNat(n) : R)| = ofNat(n) := abs_cast n
 
+end Lattice
+
+section PartialOrderedRing
+
+variable [Ring R] [PartialOrder R] [IsStrictOrderedRing R] {m n : ℕ}
+
 @[simp, norm_cast] lemma neg_cast_eq_cast : (-m : R) = n ↔ m = 0 ∧ n = 0 := by
   simp [neg_eq_iff_add_eq_zero, ← cast_add]
 
 @[simp, norm_cast] lemma cast_eq_neg_cast : (m : R) = -n ↔ m = 0 ∧ n = 0 := by
   simp [eq_neg_iff_add_eq_zero, ← cast_add]
 
-end LinearOrderedRing
-
-lemma mul_le_pow {a : ℕ} (ha : a ≠ 1) (b : ℕ) :
-    a * b ≤ a ^ b := by
-  induction b generalizing a with
-  | zero => simp
-  | succ b hb =>
-    rw [mul_add_one, pow_succ]
-    rcases a with (_|_|a)
-    · simp
-    · simp at ha
-    · rw [mul_add_one, mul_add_one, add_comm (_ * a), add_assoc _ (_ * a)]
-      rcases b with (_|b)
-      · simp [add_comm]
-      refine add_le_add (hb (by simp)) ?_
-      rw [pow_succ']
-      refine (le_add_left ?_ ?_).trans' ?_
-      exact le_mul_of_one_le_right' (one_le_pow _ _ (by simp))
-
-lemma two_mul_sq_add_one_le_two_pow_two_mul (k : ℕ) : 2 * k ^ 2 + 1 ≤ 2 ^ (2 * k) := by
-  induction k with
-  | zero => simp
-  | succ k hk =>
-    rw [add_pow_two, one_pow, mul_one, add_assoc, mul_add, add_right_comm]
-    refine (add_le_add_right hk _).trans ?_
-    rw [mul_add 2 k, pow_add, mul_one, pow_two, ← mul_assoc, mul_two, mul_two, add_assoc]
-    gcongr
-    rw [← two_mul, ← pow_succ']
-    exact le_add_of_le_right (mul_le_pow (by simp) _)
+end PartialOrderedRing
 
 end Nat

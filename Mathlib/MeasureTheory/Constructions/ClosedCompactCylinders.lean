@@ -3,8 +3,10 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.MeasureTheory.Constructions.Cylinders
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.MeasureTheory.Constructions.Cylinders
 
 /-! # Cylinders with closed compact bases
 
@@ -22,6 +24,8 @@ proof of Kolmogorov's extension theorem.
   cylinder.
 
 -/
+
+@[expose] public section
 
 open Set
 

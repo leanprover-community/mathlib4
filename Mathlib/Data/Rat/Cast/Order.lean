@@ -3,13 +3,17 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Field.Rat
-import Mathlib.Data.Rat.Cast.CharZero
-import Mathlib.Tactic.Positivity.Core
+module
+
+public import Mathlib.Algebra.Order.Field.Rat
+public import Mathlib.Data.Rat.Cast.CharZero
+public import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Casts of rational numbers into linear ordered fields.
 -/
+
+@[expose] public section
 
 variable {F ι α β : Type*}
 
@@ -28,11 +32,11 @@ theorem cast_pos_of_pos (hq : 0 < q) : (0 : K) < q := by
   rw [Rat.cast_def]
   exact div_pos (Int.cast_pos.2 <| num_pos.2 hq) (Nat.cast_pos.2 q.pos)
 
-@[mono]
+@[gcongr, mono]
 theorem cast_strictMono : StrictMono ((↑) : ℚ → K) := fun p q => by
   simpa only [sub_pos, cast_sub] using cast_pos_of_pos (K := K) (q := q - p)
 
-@[mono]
+@[gcongr, mono]
 theorem cast_mono : Monotone ((↑) : ℚ → K) :=
   cast_strictMono.monotone
 
@@ -44,9 +48,6 @@ def castOrderEmbedding : ℚ ↪o K :=
 @[simp, norm_cast] lemma cast_le : (p : K) ≤ q ↔ p ≤ q := castOrderEmbedding.le_iff_le
 
 @[simp, norm_cast] lemma cast_lt : (p : K) < q ↔ p < q := cast_strictMono.lt_iff_lt
-
-@[gcongr] alias ⟨_, _root_.GCongr.ratCast_le_ratCast⟩ := cast_le
-@[gcongr] alias ⟨_, _root_.GCongr.ratCast_lt_ratCast⟩ := cast_lt
 
 @[simp] lemma cast_nonneg : 0 ≤ (q : K) ↔ 0 ≤ q := by norm_cast
 
@@ -151,7 +152,7 @@ theorem cast_strictMono : StrictMono ((↑) : ℚ≥0 → K) := fun p q h => by
   · simp
   · simp
 
-@[mono]
+@[gcongr, mono]
 theorem cast_mono : Monotone ((↑) : ℚ≥0 → K) :=
   cast_strictMono.monotone
 
@@ -165,7 +166,7 @@ def castOrderEmbedding : ℚ≥0 ↪o K :=
 @[simp] lemma cast_nonpos : (q : K) ≤ 0 ↔ q ≤ 0 := by norm_cast
 @[simp] lemma cast_pos : (0 : K) < q ↔ 0 < q := by norm_cast
 @[norm_cast] lemma cast_lt_zero : (q : K) < 0 ↔ q < 0 := by norm_cast
-@[simp] lemma not_cast_lt_zero : ¬(q : K) < 0 := mod_cast not_lt_zero'
+@[simp] lemma not_cast_lt_zero : ¬(q : K) < 0 := mod_cast not_lt_zero
 @[simp] lemma cast_le_one : (p : K) ≤ 1 ↔ p ≤ 1 := by norm_cast
 @[simp] lemma one_le_cast : 1 ≤ (p : K) ↔ 1 ≤ p := by norm_cast
 @[simp] lemma cast_lt_one : (p : K) < 1 ↔ p < 1 := by norm_cast
@@ -259,16 +260,18 @@ open Lean Meta Qq Function
 
 /-- Extension for Rat.cast. -/
 @[positivity Rat.cast _]
-def evalRatCast : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalRatCast : PositivityExt where eval {u α} _zα pα? e := do
   let ~q(@Rat.cast _ (_) ($a : ℚ)) := e | throwError "not Rat.cast"
-  match ← core q(inferInstance) q(inferInstance) a with
+  match ← core q(inferInstance) (some q(inferInstance)) a with
   | .positive pa =>
+    let some _ := pα? | pure .none
     let _oα ← synthInstanceQ q(Field $α)
     let _oα ← synthInstanceQ q(LinearOrder $α)
     let _oα ← synthInstanceQ q(IsStrictOrderedRing $α)
     assumeInstancesCommute
     return .positive q((Rat.cast_pos (K := $α)).mpr $pa)
   | .nonnegative pa =>
+    let some _ := pα? | pure .none
     let _oα ← synthInstanceQ q(Field $α)
     let _oα ← synthInstanceQ q(LinearOrder $α)
     let _oα ← synthInstanceQ q(IsStrictOrderedRing $α)
@@ -283,16 +286,18 @@ def evalRatCast : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for NNRat.cast. -/
 @[positivity NNRat.cast _]
-def evalNNRatCast : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalNNRatCast : PositivityExt where eval {u α} _zα pα? e := do
   let ~q(@NNRat.cast _ (_) ($a : ℚ≥0)) := e | throwError "not NNRat.cast"
-  match ← core q(inferInstance) q(inferInstance) a with
+  match ← core q(inferInstance) (some q(inferInstance)) a with
   | .positive pa =>
+    let some _ := pα? | pure .none
     let _oα ← synthInstanceQ q(Semifield $α)
     let _oα ← synthInstanceQ q(LinearOrder $α)
     let _oα ← synthInstanceQ q(IsStrictOrderedRing $α)
     assumeInstancesCommute
     return .positive q((NNRat.cast_pos (K := $α)).mpr $pa)
   | _ =>
+    let some _ := pα? | pure .none
     let _oα ← synthInstanceQ q(Semifield $α)
     let _oα ← synthInstanceQ q(LinearOrder $α)
     let _oα ← synthInstanceQ q(IsStrictOrderedRing $α)

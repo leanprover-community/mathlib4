@@ -3,10 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Logic.Nontrivial.Basic
-import Mathlib.Logic.IsEmpty
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Logic.Equiv.Defs
+public import Batteries.Tactic.Lint.Simp
 
 /-!
 # Multiplicative opposite and algebraic operations on it
@@ -38,6 +39,8 @@ definitional eta reduction for structures (Lean 3 does not).
 multiplicative opposite, additive opposite
 -/
 
+@[expose] public section
+
 variable {α β : Type*}
 
 open Function
@@ -57,8 +60,8 @@ structure PreOpposite (α : Type*) : Type _ where
 /-- Multiplicative opposite of a type. This type inherits all additive structures on `α` and
 reverses left and right in multiplication. -/
 @[to_additive
-      "Additive opposite of a type. This type inherits all multiplicative structures on `α` and
-      reverses left and right in addition."]
+      /-- Additive opposite of a type. This type inherits all multiplicative structures on `α` and
+      reverses left and right in addition. -/]
 def MulOpposite (α : Type*) : Type _ := PreOpposite α
 
 /-- Multiplicative opposite of a type. -/
@@ -70,12 +73,12 @@ postfix:max "ᵃᵒᵖ" => AddOpposite
 namespace MulOpposite
 
 /-- The element of `MulOpposite α` that represents `x : α`. -/
-@[to_additive "The element of `αᵃᵒᵖ` that represents `x : α`."]
+@[to_additive /-- The element of `αᵃᵒᵖ` that represents `x : α`. -/]
 def op : α → αᵐᵒᵖ :=
   PreOpposite.op'
 
 /-- The element of `α` represented by `x : αᵐᵒᵖ`. -/
-@[to_additive (attr := pp_nodot) "The element of `α` represented by `x : αᵃᵒᵖ`."]
+@[to_additive (attr := pp_nodot) /-- The element of `α` represented by `x : αᵃᵒᵖ`. -/]
 def unop : αᵐᵒᵖ → α :=
   PreOpposite.unop'
 
@@ -96,12 +99,12 @@ theorem unop_comp_op : (unop : αᵐᵒᵖ → α) ∘ op = id :=
 
 /-- A recursor for `MulOpposite`. Use as `induction x`. -/
 @[to_additive (attr := simp, elab_as_elim, induction_eliminator, cases_eliminator)
-  "A recursor for `AddOpposite`. Use as `induction x`."]
+  /-- A recursor for `AddOpposite`. Use as `induction x`. -/]
 protected def rec' {F : αᵐᵒᵖ → Sort*} (h : ∀ X, F (op X)) : ∀ X, F X := fun X ↦ h (unop X)
 
 /-- The canonical bijection between `α` and `αᵐᵒᵖ`. -/
 @[to_additive (attr := simps -fullyApplied apply symm_apply)
-  "The canonical bijection between `α` and `αᵃᵒᵖ`."]
+  /-- The canonical bijection between `α` and `αᵃᵒᵖ`. -/]
 def opEquiv : α ≃ αᵐᵒᵖ :=
   ⟨op, unop, unop_op, op_unop⟩
 
@@ -175,6 +178,25 @@ instance instInvolutiveNeg [InvolutiveNeg α] : InvolutiveNeg αᵐᵒᵖ where
 @[to_additive]
 instance instInvolutiveInv [InvolutiveInv α] : InvolutiveInv αᵐᵒᵖ where
   inv_inv _ := unop_injective <| inv_inv _
+
+instance [Add α] [IsLeftCancelAdd α] : IsLeftCancelAdd αᵐᵒᵖ where
+  add_left_cancel _ _ _ eq := unop_injective <| add_left_cancel (congr_arg unop eq)
+
+instance [Add α] [IsRightCancelAdd α] : IsRightCancelAdd αᵐᵒᵖ where
+  add_right_cancel _ _ _ eq := unop_injective <| add_right_cancel (congr_arg unop eq)
+
+instance [Add α] [IsCancelAdd α] : IsCancelAdd αᵐᵒᵖ where
+
+theorem isLeftCancelAdd_iff [Add α] : IsLeftCancelAdd αᵐᵒᵖ ↔ IsLeftCancelAdd α where
+  mp _ := ⟨fun _ _ _ eq ↦ op_injective <| add_left_cancel (congr_arg op eq)⟩
+  mpr _ := inferInstance
+
+theorem isRightCancelAdd_iff [Add α] : IsRightCancelAdd αᵐᵒᵖ ↔ IsRightCancelAdd α where
+  mp _ := ⟨fun _ _ _ eq ↦ op_injective <| add_right_cancel (congr_arg op eq)⟩
+  mpr _ := inferInstance
+
+protected theorem isCancelAdd_iff [Add α] : IsCancelAdd αᵐᵒᵖ ↔ IsCancelAdd α := by
+  simp_rw [isCancelAdd_iff, isLeftCancelAdd_iff, isRightCancelAdd_iff]
 
 @[to_additive] instance instSMul [SMul α β] : SMul α βᵐᵒᵖ where smul c x := op (c • unop x)
 

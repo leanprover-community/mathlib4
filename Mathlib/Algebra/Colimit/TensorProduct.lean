@@ -3,19 +3,23 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Colimit.Finiteness
-import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
+module
+
+public import Mathlib.Algebra.Colimit.Finiteness
+public import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
 
 /-!
 # Tensor product with direct limit of finitely generated submodules
 
-we show that if `M` and `P` are arbitrary modules and `N` is a finitely generated submodule
+We show that if `M` and `P` are arbitrary modules and `N` is a finitely generated submodule
 of a module `P`, then two elements of `N ⊗ M` have the same image in `P ⊗ M` if and only if
 they already have the same image in `N' ⊗ M` for some finitely generated submodule `N' ≥ N`.
 This is the theorem `Submodule.FG.exists_rTensor_fg_inclusion_eq`. The key facts used are
 that every module is the direct limit of its finitely generated submodules and that tensor
 product preserves colimits.
 -/
+
+public section
 
 open TensorProduct
 

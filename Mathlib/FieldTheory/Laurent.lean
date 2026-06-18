@@ -3,8 +3,10 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Polynomial.Taylor
-import Mathlib.FieldTheory.RatFunc.AsPolynomial
+module
+
+public import Mathlib.Algebra.Polynomial.Taylor
+public import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
 /-!
 # Laurent expansions of rational functions
@@ -21,6 +23,8 @@ An auxiliary definition is provided first to make the construction of the `AlgHo
   which works on `CommRing` which are not necessarily domains.
 -/
 
+@[expose] public section
+
 
 universe u
 
@@ -32,10 +36,10 @@ open Polynomial
 
 open scoped nonZeroDivisors
 
-variable {R : Type u} [CommRing R] (r s : R) (p q : R[X]) (f : RatFunc R)
+variable {R : Type u} [CommRing R] (r s : R) (p q : R[X]) (f : R⟮X⟯)
 
 theorem taylor_mem_nonZeroDivisors (hp : p ∈ R[X]⁰) : taylor r p ∈ R[X]⁰ := by
-  rw [mem_nonZeroDivisors_iff]
+  rw [mem_nonZeroDivisors_iff_right]
   intro x hx
   have : x = taylor (r - r) x := by simp
   rwa [this, sub_eq_add_neg, ← taylor_taylor, ← taylor_mul,
@@ -44,7 +48,7 @@ theorem taylor_mem_nonZeroDivisors (hp : p ∈ R[X]⁰) : taylor r p ∈ R[X]⁰
 
 /-- The Laurent expansion of rational functions about a value.
 Auxiliary definition, usage when over integral domains should prefer `RatFunc.laurent`. -/
-def laurentAux : RatFunc R →+* RatFunc R :=
+def laurentAux : R⟮X⟯ →+* R⟮X⟯ :=
   RatFunc.mapRingHom
     ( { toFun := taylor r
         map_add' := map_add (taylor r)
@@ -71,7 +75,7 @@ theorem laurentAux_algebraMap : laurentAux r (algebraMap _ _ p) = algebraMap _ _
   rw [← mk_one, ← mk_one, mk_eq_div, laurentAux_div, mk_eq_div, taylor_one, map_one, map_one]
 
 /-- The Laurent expansion of rational functions about a value. -/
-def laurent : RatFunc R →ₐ[R] RatFunc R :=
+def laurent : R⟮X⟯ →ₐ[R] R⟮X⟯ :=
   RatFunc.mapAlgHom (.ofLinearMap (taylor r) (taylor_one _) (taylor_mul _))
     (taylor_mem_nonZeroDivisors _)
 

@@ -3,14 +3,16 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Group.MinMax
-import Mathlib.Algebra.Ring.Pi
-import Mathlib.Data.Setoid.Basic
-import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.Tactic.GCongr
+module
+
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Order.AbsoluteValue.Basic
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Algebra.Order.Group.MinMax
+public import Mathlib.Algebra.Ring.Pi
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.Tactic.GCongr
 
 /-!
 # Cauchy sequences
@@ -30,6 +32,8 @@ This is a concrete implementation that is useful for simplicity and computabilit
 
 sequence, cauchy, abs val, absolute value
 -/
+
+@[expose] public section
 
 assert_not_exists Finset Module Submonoid FloorRing
 
@@ -92,8 +96,6 @@ namespace IsCauSeq
 variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] [Ring β]
   {abv : β → α} [IsAbsoluteValue abv] {f g : ℕ → β}
 
--- see Note [nolint_ge]
---@[nolint ge_or_gt] -- Porting note: restore attribute
 theorem cauchy₂ (hf : IsCauSeq abv f) {ε : α} (ε0 : 0 < ε) :
     ∃ i, ∀ j ≥ i, ∀ k ≥ i, abv (f j - f k) < ε := by
   refine (hf _ (half_pos ε0)).imp fun i hi j ij k ik => ?_
@@ -168,7 +170,7 @@ instance : CoeFun (CauSeq β abv) fun _ => ℕ → β :=
   ⟨Subtype.val⟩
 
 @[ext]
-theorem ext {f g : CauSeq β abv} (h : ∀ i, f i = g i) : f = g := Subtype.eq (funext h)
+theorem ext {f g : CauSeq β abv} (h : ∀ i, f i = g i) : f = g := Subtype.ext (funext h)
 
 theorem isCauSeq (f : CauSeq β abv) : IsCauSeq abv f :=
   f.2
@@ -182,8 +184,6 @@ def ofEq (f : CauSeq β abv) (g : ℕ → β) (e : ∀ i, f i = g i) : CauSeq β
 
 variable [IsAbsoluteValue abv]
 
--- see Note [nolint_ge]
--- @[nolint ge_or_gt] -- Porting note: restore attribute
 theorem cauchy₂ (f : CauSeq β abv) {ε} :
     0 < ε → ∃ i, ∀ j ≥ i, ∀ k ≥ i, abv (f j - f k) < ε :=
   f.2.cauchy₂
@@ -414,10 +414,10 @@ instance equiv : Setoid (CauSeq β abv) :=
     fun fg gh => by simpa using add_limZero fg gh⟩⟩
 
 theorem add_equiv_add {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 ≈ g2) :
-    f1 + g1 ≈ f2 + g2 := by simpa only [← add_sub_add_comm] using add_limZero hf hg
+    f1 + g1 ≈ f2 + g2 := by simpa only [← add_sub_add_comm] using! add_limZero hf hg
 
 theorem neg_equiv_neg {f g : CauSeq β abv} (hf : f ≈ g) : -f ≈ -g := by
-  simpa only [neg_sub'] using neg_limZero hf
+  simpa only [neg_sub'] using! neg_limZero hf
 
 theorem sub_equiv_sub {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 ≈ g2) :
     f1 - g1 ≈ f2 - g2 := by simpa only [sub_eq_add_neg] using add_equiv_add hf (neg_equiv_neg hg)
@@ -434,11 +434,9 @@ theorem limZero_congr {f g : CauSeq β abv} (h : f ≈ g) : LimZero f ↔ LimZer
 
 theorem abv_pos_of_not_limZero {f : CauSeq β abv} (hf : ¬LimZero f) :
     ∃ K > 0, ∃ i, ∀ j ≥ i, K ≤ abv (f j) := by
-  haveI := Classical.propDecidable
   by_contra nk
   refine hf fun ε ε0 => ?_
-  simp? [not_forall] at nk says
-    simp only [gt_iff_lt, ge_iff_le, not_exists, not_and, not_forall, not_le] at nk
+  simp only [not_exists, not_and, not_forall, not_le] at nk
   obtain ⟨i, hi⟩ := f.cauchy₃ (half_pos ε0)
   rcases nk _ (half_pos ε0) i with ⟨j, ij, hj⟩
   refine ⟨j, fun k jk => ?_⟩
@@ -494,7 +492,7 @@ theorem const_equiv {x y : β} : const x ≈ const y ↔ x = y :=
 theorem mul_equiv_mul {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 ≈ g2) :
     f1 * g1 ≈ f2 * g2 := by
   simpa only [mul_sub, sub_mul, sub_add_sub_cancel]
-    using add_limZero (mul_limZero_left g1 hf) (mul_limZero_right f2 hg)
+    using! add_limZero (mul_limZero_left g1 hf) (mul_limZero_right f2 hg)
 
 theorem smul_equiv_smul {G : Type*} [SMul G β] [IsScalarTower G β β] {f1 f2 : CauSeq β abv} (c : G)
     (hf : f1 ≈ f2) : c • f1 ≈ c • f2 := by
@@ -606,7 +604,9 @@ protected theorem mul_pos {f g : CauSeq α abs} : Pos f → Pos g → Pos (f * g
       mul_le_mul h₁ h₂ (le_of_lt G0) (le_trans (le_of_lt F0) h₁)⟩
 
 theorem trichotomy (f : CauSeq α abs) : Pos f ∨ LimZero f ∨ Pos (-f) := by
-  rcases Classical.em (LimZero f) with h | h <;> simp [*]
+  rcases Classical.em (LimZero f) with h | h
+  · simp [*]
+  simp only [false_or, h]
   rcases abv_pos_of_not_limZero h with ⟨K, K0, hK⟩
   rcases exists_forall_ge_and hK (f.cauchy₃ K0) with ⟨i, hi⟩
   refine (le_total 0 (f i)).imp ?_ ?_ <;>
@@ -631,7 +631,7 @@ instance : LE (CauSeq α abs) :=
 
 theorem lt_of_lt_of_eq {f g h : CauSeq α abs} (fg : f < g) (gh : g ≈ h) : f < h :=
   show Pos (h - f) by
-    convert pos_add_limZero fg (neg_limZero gh) using 1
+    convert pos_add_limZero fg (neg_limZero gh)
     simp
 
 theorem lt_of_eq_of_lt {f g h : CauSeq α abs} (fg : f ≈ g) (gh : g < h) : f < h := by
@@ -640,7 +640,7 @@ theorem lt_of_eq_of_lt {f g h : CauSeq α abs} (fg : f ≈ g) (gh : g < h) : f <
 
 theorem lt_trans {f g h : CauSeq α abs} (fg : f < g) (gh : g < h) : f < h :=
   show Pos (h - f) by
-    convert add_pos fg gh using 1
+    convert add_pos fg gh
     simp
 
 theorem lt_irrefl {f : CauSeq α abs} : ¬f < f

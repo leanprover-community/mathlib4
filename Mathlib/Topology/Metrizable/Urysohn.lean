@@ -3,10 +3,12 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Topology.Metrizable.Basic
-import Mathlib.Topology.ContinuousMap.Bounded.Basic
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.Topology.Metrizable.Basic
+public import Mathlib.Topology.ContinuousMap.Bounded.Basic
 /-!
 # Urysohn's Metrization Theorem
 
@@ -20,6 +22,8 @@ space structure.
 
 We use `ℕ →ᵇ ℝ`, not `lpSpace` for `l^∞` to avoid heavy imports.
 -/
+
+public section
 
 open Filter Metric Set Topology
 open scoped BoundedContinuousFunction
@@ -38,7 +42,7 @@ theorem exists_isInducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, IsInducing f :
   rcases exists_countable_basis X with ⟨B, hBc, -, hB⟩
   let s : Set (Set X × Set X) := { UV ∈ B ×ˢ B | closure UV.1 ⊆ UV.2 }
   -- `s` is a countable set.
-  haveI : Encodable s := ((hBc.prod hBc).mono inter_subset_left).toEncodable
+  haveI : Encodable s := ((hBc.prod hBc).mono (sep_subset _ _)).toEncodable
   -- We don't have the space of bounded (possibly discontinuous) functions, so we equip `s`
   -- with the discrete topology and deal with `s →ᵇ ℝ` instead.
   letI : TopologicalSpace s := ⊥
@@ -80,7 +84,7 @@ theorem exists_isInducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, IsInducing f :
     `(U, V) ∈ T`. For `(U, V) ∉ T`, the same inequality is true because both `F y (U, V)` and
     `F x (U, V)` belong to the interval `[0, ε (U, V)]`. -/
     refine (nhds_basis_closedBall.comap _).ge_iff.2 fun δ δ0 => ?_
-    have h_fin : { UV : s | δ ≤ ε UV }.Finite := by simpa only [← not_lt] using hε (gt_mem_nhds δ0)
+    have h_fin : { UV : s | δ ≤ ε UV }.Finite := by simpa only [← not_lt] using! hε (gt_mem_nhds δ0)
     have : ∀ᶠ y in 𝓝 x, ∀ UV, δ ≤ ε UV → dist (F y UV) (F x UV) ≤ δ := by
       refine (eventually_all_finite h_fin).2 fun UV _ => ?_
       exact (f UV).continuous.tendsto x (closedBall_mem_nhds _ δ0)
@@ -102,8 +106,6 @@ theorem exists_isInducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, IsInducing f :
     contrapose! hy
     rw [hF, hF, hfε UV hy, hf0 UV hxU, Pi.zero_apply, dist_zero_right]
     exact le_abs_self _
-
-@[deprecated (since := "2024-10-28")] alias exists_inducing_l_infty := exists_isInducing_l_infty
 
 /-- *Urysohn's metrization theorem* (Tychonoff's version):
 a regular topological space with second countable topology `X` is metrizable,
@@ -127,9 +129,5 @@ same topology. -/
 instance (priority := 90) metrizableSpace_of_t3_secondCountable : MetrizableSpace X :=
   let ⟨_, hf⟩ := exists_embedding_l_infty X
   hf.metrizableSpace
-
--- The `alias` command creates a definition, triggering the defLemma linter.
-@[nolint defLemma, deprecated (since := "2024-11-13")] alias
-metrizableSpace_of_t3_second_countable := metrizableSpace_of_t3_secondCountable
 
 end TopologicalSpace

@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Relation
-import Mathlib.Logic.Unique
-import Mathlib.Util.Notation3
+module
+
+public import Mathlib.Logic.Relation
+public import Mathlib.Logic.Unique
+public import Mathlib.Util.Notation3
 
 /-!
 # Quotient types
@@ -16,6 +18,8 @@ This module extends the core library's treatment of quotient types (`Init.Core`)
 
 quotient
 -/
+
+@[expose] public section
 
 variable {α : Sort*} {β : Sort*}
 
@@ -272,7 +276,9 @@ theorem Quot.eq {α : Type*} {r : α → α → Prop} {x y : α} :
     Quot.mk r x = Quot.mk r y ↔ Relation.EqvGen r x y :=
   ⟨Quot.eqvGen_exact, Quot.eqvGen_sound⟩
 
-@[simp]
+-- This should not be a `@[simp]` lemma,
+-- as this prevents us from using `simp` reliably in the quotient,
+-- because this might bump us back out from equality to the underlying relation.
 theorem Quotient.eq {r : Setoid α} {x y : α} : Quotient.mk r x = ⟦y⟧ ↔ r x y :=
   ⟨Quotient.exact, Quotient.sound⟩
 
@@ -321,8 +327,10 @@ theorem Quotient.liftOn_mk {s : Setoid α} (f : α → β) (h : ∀ a b : α, a 
   rfl
 
 @[simp]
-theorem Quotient.liftOn₂_mk {α : Sort*} {β : Sort*} {_ : Setoid α} (f : α → α → β)
-    (h : ∀ a₁ a₂ b₁ b₂ : α, a₁ ≈ b₁ → a₂ ≈ b₂ → f a₁ a₂ = f b₁ b₂) (x y : α) :
+theorem Quotient.liftOn₂_mk {α : Sort*} {β : Sort*} {γ : Sort*} {_ : Setoid α} {_ : Setoid β}
+    (f : α → β → γ)
+    (h : ∀ (a₁ : α) (b₁ : β) (a₂ : α) (b₂ : β), a₁ ≈ a₂ → b₁ ≈ b₂ → f a₁ b₁ = f a₂ b₂)
+    (x : α) (y : β) :
     Quotient.liftOn₂ (Quotient.mk _ x) (Quotient.mk _ y) f h = f x y :=
   rfl
 
@@ -333,12 +341,20 @@ theorem Quot.mk_surjective {r : α → α → Prop} : Function.Surjective (Quot.
 /-- `Quotient.mk` is a surjective function. -/
 theorem Quotient.mk_surjective {s : Setoid α} :
     Function.Surjective (Quotient.mk s) :=
-  Quot.exists_rep
+  Quot.mk_surjective
 
 /-- `Quotient.mk'` is a surjective function. -/
 theorem Quotient.mk'_surjective [s : Setoid α] :
     Function.Surjective (Quotient.mk' : α → Quotient s) :=
-  Quot.exists_rep
+  Quot.mk_surjective
+
+theorem Quot.map_surjective {ra : α → α → Prop} {rb : β → β → Prop} {f : α → β}
+    (h : ∀ ⦃a b : α⦄, ra a b → rb (f a) (f b)) (hf : f.Surjective) : Quot.map f h |>.Surjective :=
+  surjective_lift _ |>.mpr <| .comp Quot.mk_surjective hf
+
+theorem Quotient.map_surjective {sa : Setoid α} {sb : Setoid β} {f : α → β}
+    (h : ∀ ⦃a b : α⦄, a ≈ b → f a ≈ f b) (hf : f.Surjective) : Quotient.map f h |>.Surjective :=
+  lift_surjective _ _ <| .comp Quot.mk_surjective hf
 
 /-- Choose an element of the equivalence class using the axiom of choice.
   Sound but noncomputable. -/
@@ -439,6 +455,7 @@ theorem true_equivalence : @Equivalence α fun _ _ ↦ True :=
 /-- Always-true relation as a `Setoid`.
 
 Note that in later files the preferred spelling is `⊤ : Setoid α`. -/
+@[implicit_reducible]
 def trueSetoid : Setoid α :=
   ⟨_, true_equivalence⟩
 
@@ -678,7 +695,8 @@ theorem hrecOn₂'_mk'' {φ : Quotient s₁ → Quotient s₂ → Sort*}
   rfl
 
 /-- Map a function `f : α → β` that sends equivalent elements to equivalent elements
-to a function `Quotient sa → Quotient sb`. Useful to define unary operations on quotients. -/
+to a function `Quotient sa → Quotient sb`. Useful to define unary operations on quotients.
+This is a version of `Quotient.map` using `Setoid.r` instead of `≈`. -/
 protected def map' (f : α → β) (h : ∀ a b, s₁.r a b → s₂.r (f a) (f b)) :
     Quotient s₁ → Quotient s₂ :=
   Quot.map f h
@@ -688,8 +706,19 @@ theorem map'_mk'' (f : α → β) (h) (x : α) :
     (Quotient.mk'' x : Quotient s₁).map' f h = (Quotient.mk'' (f x) : Quotient s₂) :=
   rfl
 
-/-- A version of `Quotient.map₂` using curly braces and unification. -/
-@[deprecated (since := "2024-12-01")] protected alias map₂' := Quotient.map₂
+/-- Map a function `f : α → β → γ` that sends equivalent elements to equivalent elements
+to a function `f : Quotient sa → Quotient sb → Quotient sc`. Useful to define binary operations
+on quotients. This is a version of `Quotient.map₂` using `Setoid.r` instead of `≈`. -/
+protected def map₂' (f : α → β → γ)
+    (h : ∀ ⦃a₁ a₂ : α⦄, s₁.r a₁ a₂ → ∀ ⦃b₁ b₂ : β⦄, s₂.r b₁ b₂ → s₃.r (f a₁ b₁) (f a₂ b₂)) :
+    Quotient s₁ → Quotient s₂ → Quotient s₃ :=
+  Quotient.map₂ f h
+
+@[simp]
+theorem map₂'_mk'' (f : α → β → γ) (h) (x : α) :
+    (Quotient.mk'' x : Quotient s₁).map₂' f h =
+      (Quotient.map' (f x) (h (Setoid.refl x)) : Quotient s₂ → Quotient s₃) :=
+  rfl
 
 theorem exact' {a b : α} :
     (Quotient.mk'' a : Quotient s₁) = Quotient.mk'' b → s₁ a b :=
@@ -749,13 +778,5 @@ end Quotient
 
 @[simp]
 lemma Equivalence.quot_mk_eq_iff {α : Type*} {r : α → α → Prop} (h : Equivalence r) (x y : α) :
-    Quot.mk r x = Quot.mk r y ↔ r x y := by
-  constructor
-  · rw [Quot.eq]
-    intro hxy
-    induction hxy with
-    | rel _ _ H => exact H
-    | refl _ => exact h.refl _
-    | symm _ _ _ H => exact h.symm H
-    | trans _ _ _ _ _ h₁₂ h₂₃ => exact h.trans h₁₂ h₂₃
-  · exact Quot.sound
+    Quot.mk r x = Quot.mk r y ↔ r x y :=
+  Quotient.eq (r := ⟨r, h⟩)

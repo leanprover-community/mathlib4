@@ -3,19 +3,23 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Group.Nat.Hom
-import Mathlib.CategoryTheory.Yoneda
+module
+
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Algebra.Group.Nat.Hom
+public import Mathlib.CategoryTheory.Yoneda
 
 /-!
-# The forget functor is corepresentable
+# The forgetful functor is corepresentable
 
 The forgetful functor `AddCommMonCat.{u} ⥤ Type u` is corepresentable
 by `ULift ℕ`. Similar results are obtained for the variants `CommMonCat`, `AddMonCat`
 and `MonCat`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -33,41 +37,13 @@ shouldn't be useful outside of category theory.
 /-- Monoid homomorphisms from `ULift ℕ` are defined by the image of `1`. -/
 @[simps!]
 def uliftMultiplesHom (M : Type u) [AddMonoid M] : M ≃ (ULift.{u} ℕ →+ M) :=
-  (multiplesHom _).trans <| AddMonoidHom.precompEquiv .ulift _
+  (multiplesHom _).trans AddEquiv.ulift.symm.addMonoidHomCongrLeftEquiv
 
 /-- Monoid homomorphisms from `ULift (Multiplicative ℕ)` are defined by the image
 of `Multiplicative.ofAdd 1`. -/
 @[simps!]
 def uliftPowersHom (M : Type u) [Monoid M] : M ≃ (ULift.{u} (Multiplicative ℕ) →* M) :=
-  (powersHom _).trans <| MonoidHom.precompEquiv .ulift _
-
-namespace MonoidHom
-
-/-- The equivalence `(Multiplicative ℕ →* α) ≃ α` for any monoid `α`. -/
-@[deprecated powersHom (since := "2025-05-11")]
-def fromMultiplicativeNatEquiv (α : Type u) [Monoid α] : (Multiplicative ℕ →* α) ≃ α :=
-  (powersHom _).symm
-
-/-- The equivalence `(ULift (Multiplicative ℕ) →* α) ≃ α` for any monoid `α`. -/
-@[deprecated uliftPowersHom (since := "2025-05-11")]
-def fromULiftMultiplicativeNatEquiv (α : Type u) [Monoid α] :
-    (ULift.{u} (Multiplicative ℕ) →* α) ≃ α :=
-  (uliftPowersHom _).symm
-
-end MonoidHom
-
-namespace AddMonoidHom
-
-/-- The equivalence `(ℤ →+ α) ≃ α` for any additive group `α`. -/
-@[deprecated multiplesHom (since := "2025-05-11")]
-def fromNatEquiv (α : Type u) [AddMonoid α] : (ℕ →+ α) ≃ α := (multiplesHom _).symm
-
-/-- The equivalence `(ULift ℕ →+ α) ≃ α` for any additive monoid `α`. -/
-@[deprecated uliftMultiplesHom (since := "2025-05-11")]
-def fromULiftNatEquiv (α : Type u) [AddMonoid α] : (ULift.{u} ℕ →+ α) ≃ α :=
-  (uliftMultiplesHom _).symm
-
-end AddMonoidHom
+  (powersHom _).trans MulEquiv.ulift.symm.monoidHomCongrLeftEquiv
 
 /-- The forgetful functor `MonCat.{u} ⥤ Type u` is corepresentable. -/
 def MonCat.coyonedaObjIsoForget :

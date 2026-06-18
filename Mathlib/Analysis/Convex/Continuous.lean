@@ -3,14 +3,18 @@ Copyright (c) 2023 Yaël Dillies, Zichen Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Zichen Wang
 -/
-import Mathlib.Analysis.Normed.Affine.Convex
+module
+
+public import Mathlib.Analysis.Normed.Affine.Convex
 
 /-!
 # Convex functions are continuous
 
-This file proves that a convex function from a finite dimensional real normed space to `ℝ` is
+This file proves that a convex function from a finite-dimensional real normed space to `ℝ` is
 continuous.
 -/
+
+public section
 
 open FiniteDimensional Metric Set List Bornology
 open scoped Topology
@@ -41,7 +45,7 @@ lemma ConvexOn.lipschitzOnWith_of_abs_le (hf : ConvexOn ℝ (ball x₀ r) f) (h�
         _ = r := by simp
     let a := ε / (ε + ‖x - y‖)
     let b := ‖x - y‖ / (ε + ‖x - y‖)
-    have hab : a + b = 1 := by field_simp [a, b]
+    have hab : a + b = 1 := by simp [field, a, b]
     have hxyz : x = a • y + b • z := by
       calc
         x = a • x + b • x := by rw [Convex.combo_self hab]
@@ -49,11 +53,10 @@ lemma ConvexOn.lipschitzOnWith_of_abs_le (hf : ConvexOn ℝ (ball x₀ r) f) (h�
     rw [hK, mul_comm, ← mul_div_assoc, le_div_iff₀' hε]
     calc
       ε * (f x - f y) ≤ ‖x - y‖ * (f z - f x) := by
-        rw [mul_sub, mul_sub, sub_le_sub_iff, ← add_mul]
         have h := hf.2 hy' hz (by positivity) (by positivity) hab
-        rw [← hxyz] at h
-        field_simp [a, b, ← mul_div_right_comm] at h
-        rwa [← le_div_iff₀' (by positivity), add_comm (_ * _)]
+        simp only [← hxyz, smul_eq_mul, a, b] at h
+        field_simp at h
+        linear_combination h
       _ ≤ _ := by
         rw [sub_eq_add_neg (f _), two_mul]
         gcongr
@@ -79,7 +82,7 @@ lemma ConvexOn.exists_lipschitzOnWith_of_isBounded (hf : ConvexOn ℝ (ball x₀
 
 lemma ConcaveOn.exists_lipschitzOnWith_of_isBounded (hf : ConcaveOn ℝ (ball x₀ r) f) (hr : r' < r)
     (hf' : IsBounded (f '' ball x₀ r)) : ∃ K, LipschitzOnWith K f (ball x₀ r') := by
-  replace hf' : IsBounded ((-f) '' ball x₀ r) := by convert hf'.neg; ext; simp [neg_eq_iff_eq_neg]
+  replace hf' : IsBounded ((-f) '' ball x₀ r) := by convert! hf'.neg; ext; simp [neg_eq_iff_eq_neg]
   simpa using hf.neg.exists_lipschitzOnWith_of_isBounded hr hf'
 
 lemma ConvexOn.isBoundedUnder_abs (hf : ConvexOn ℝ C f) {x₀ : E} (hC : C ∈ 𝓝 x₀) :
@@ -120,13 +123,13 @@ lemma ConvexOn.continuousOn_tfae (hC : IsOpen C) (hC' : C.Nonempty) (hf : Convex
     exact fun h ↦ ⟨x₀, hx₀, h.continuousAt <| hC.mem_nhds hx₀⟩
   tfae_have 3 → 4
   | ⟨x₀, hx₀, h⟩ =>
-    ⟨x₀, hx₀, f x₀ + 1, by simpa using h.eventually (eventually_le_nhds (by simp))⟩
+    ⟨x₀, hx₀, f x₀ + 1, by simpa using! h.eventually (eventually_le_nhds (by simp))⟩
   tfae_have 4 → 5
   | ⟨x₀, hx₀, r, hr⟩, x, hx => by
     have : ∀ᶠ δ in 𝓝 (0 : ℝ), (1 - δ)⁻¹ • x - (δ / (1 - δ)) • x₀ ∈ C := by
       have h : ContinuousAt (fun δ : ℝ ↦ (1 - δ)⁻¹ • x - (δ / (1 - δ)) • x₀) 0 := by
         fun_prop (disch := norm_num)
-      exact h (by simpa using hC.mem_nhds hx)
+      exact h (by simpa using! hC.mem_nhds hx)
     obtain ⟨δ, hδ₀, hy, hδ₁⟩ := (this.and <| eventually_lt_nhds zero_lt_one).exists_gt
     set y := (1 - δ)⁻¹ • x - (δ / (1 - δ)) • x₀
     refine ⟨max r (f y), ?_⟩
@@ -151,7 +154,7 @@ lemma ConvexOn.continuousOn_tfae (hC : IsOpen C) (hC' : C.Nonempty) (hf : Convex
     obtain ⟨ε, hε, hεD⟩ := Metric.mem_nhds_iff.1 <| Filter.inter_mem (hC.mem_nhds hx) hr
     simp only [preimage_setOf_eq, Pi.abs_apply, subset_inter_iff, hC.nhdsWithin_eq hx] at hεD ⊢
     obtain ⟨K, hK⟩ := exists_lipschitzOnWith_of_isBounded (hf.subset hεD.1 (convex_ball ..))
-      (half_lt_self hε) <| isBounded_iff_forall_norm_le.2 ⟨r, by simpa using hεD.2⟩
+      (half_lt_self hε) <| isBounded_iff_forall_norm_le.2 ⟨r, by simpa using! hεD.2⟩
     exact ⟨K, _, ball_mem_nhds _ (by simpa), hK⟩
   tfae_finish
 
@@ -165,7 +168,7 @@ lemma ConcaveOn.continuousOn_tfae (hC : IsOpen C) (hC' : C.Nonempty) (hf : Conca
   have := hf.neg.continuousOn_tfae hC hC'
   simp only [locallyLipschitzOn_neg_iff, continuousOn_neg_iff, continuousAt_neg_iff, abs_neg]
     at this
-  convert this using 8 <;> exact (Equiv.neg ℝ).exists_congr (by simp)
+  convert! this using 8 <;> exact (Equiv.neg ℝ).exists_congr (by simp)
 
 lemma ConvexOn.locallyLipschitzOn_iff_continuousOn (hC : IsOpen C) (hf : ConvexOn ℝ C f) :
     LocallyLipschitzOn C f ↔ ContinuousOn f C := by

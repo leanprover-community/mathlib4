@@ -3,7 +3,9 @@ Copyright (c) 2020 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Devon Tuma
 -/
-import Mathlib.Probability.ProbabilityMassFunction.Basic
+module
+
+public import Mathlib.Probability.ProbabilityMassFunction.Basic
 
 /-!
 # Monad Operations for Probability Mass Functions
@@ -17,6 +19,8 @@ and then sampling from `pb a : PMF β` to get a final result `b : β`.
 so that the second argument only needs to be defined on the support of the first argument.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -118,11 +122,8 @@ theorem mem_support_bind_iff (b : β) :
 
 @[simp]
 theorem pure_bind (a : α) (f : α → PMF β) : (pure a).bind f = f a := by
-  classical
-  have : ∀ b a', ite (a' = a) (f a' b) 0 = ite (a' = a) (f a b) 0 := fun b a' => by
-    split_ifs with h <;> simp [h]
-  ext b
-  simp [this]
+  ext
+  simp
 
 @[simp]
 theorem bind_pure : p.bind pure = p :=
@@ -204,16 +205,11 @@ theorem bindOnSupport_apply (b : β) :
 @[simp]
 theorem support_bindOnSupport :
     (p.bindOnSupport f).support = ⋃ (a : α) (h : a ∈ p.support), (f a h).support := by
-  refine Set.ext fun b => ?_
-  simp only [ENNReal.tsum_eq_zero, not_or, mem_support_iff, bindOnSupport_apply, Ne, not_forall,
-    mul_eq_zero, Set.mem_iUnion]
-  exact
-    ⟨fun hb =>
-      let ⟨a, ⟨ha, ha'⟩⟩ := hb
-      ⟨a, ha, by simpa [ha] using ha'⟩,
-      fun hb =>
-      let ⟨a, ha, ha'⟩ := hb
-      ⟨a, ⟨ha, by simpa [(mem_support_iff _ a).1 ha] using ha'⟩⟩⟩
+  ext
+  -- `simp` suffices; squeezed for performance
+  simp only [mem_support_iff, bindOnSupport_apply, ne_eq, ENNReal.tsum_eq_zero,
+    dite_eq_left_iff, mul_eq_zero, not_forall, not_or, and_exists_self,
+    Set.mem_iUnion]
 
 theorem mem_support_bindOnSupport_iff (b : β) :
     b ∈ (p.bindOnSupport f).support ↔ ∃ (a : α) (h : a ∈ p.support), b ∈ (f a h).support := by
@@ -241,7 +237,7 @@ theorem pure_bindOnSupport (a : α) (f : ∀ (a' : α) (_ : a' ∈ (pure a).supp
   refine PMF.ext fun b => ?_
   simp only [bindOnSupport_apply, pure_apply]
   classical
-  refine _root_.trans (tsum_congr fun a' => ?_) (tsum_ite_eq a _)
+  refine _root_.trans (tsum_congr fun a' => ?_) (tsum_ite_eq a (fun _ ↦ _))
   by_cases h : a' = a <;> simp [h]
 
 theorem bindOnSupport_pure (p : PMF α) : (p.bindOnSupport fun a _ => pure a) = p := by
@@ -260,11 +256,10 @@ theorem bindOnSupport_bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF �
   classical
   simp only [ENNReal.tsum_eq_zero]
   refine ENNReal.tsum_comm.trans (tsum_congr fun a' => tsum_congr fun b => ?_)
-  split_ifs with h _ h_1 _ h_2
+  split_ifs with h _ h_1 H h_2
   any_goals ring1
-  · have := h_1 a'
-    simp? [h] at this says simp only [h, ↓reduceDIte, mul_eq_zero, false_or] at this
-    contradiction
+  · absurd H
+    simpa [h] using h_1 a'
   · simp [h_2]
 
 theorem bindOnSupport_comm (p : PMF α) (q : PMF β) (f : ∀ a ∈ p.support, ∀ b ∈ q.support, PMF γ) :

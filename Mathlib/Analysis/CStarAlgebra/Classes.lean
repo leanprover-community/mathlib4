@@ -3,9 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+module
 
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Algebra.Star.NonUnitalSubalgebra
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Topology.Algebra.NonUnitalStarAlgebra
+public import Mathlib.Topology.Algebra.StarSubalgebra
 
 /-! # Classes of C⋆-algebras
 
@@ -19,6 +21,10 @@ These classes are not defined in `Mathlib/Analysis/CStarAlgebra/Basic.lean` beca
 heavier imports.
 
 -/
+
+public section
+
+noncomputable section
 
 /-- The class of non-unital (complex) C⋆-algebras. -/
 class NonUnitalCStarAlgebra (A : Type*) extends NonUnitalNormedRing A, StarRing A, CompleteSpace A,
@@ -35,12 +41,10 @@ class CStarAlgebra (A : Type*) extends NormedRing A, StarRing A, CompleteSpace A
 /-- The class of unital commutative (complex) C⋆-algebras. -/
 class CommCStarAlgebra (A : Type*) extends NormedCommRing A, CStarAlgebra A
 
-#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
-instance (priority := 100) CStarAlgebra.toNonUnitalCStarAlgebra (A : Type*) [CStarAlgebra A] :
-    NonUnitalCStarAlgebra A where
-  norm_mul_self_le := CStarRing.norm_mul_self_le
+noncomputable instance (priority := 100) CStarAlgebra.toNonUnitalCStarAlgebra (A : Type*)
+    [CStarAlgebra A] : NonUnitalCStarAlgebra A where
 
-instance (priority := 100) CommCStarAlgebra.toNonUnitalCommCStarAlgebra (A : Type*)
+noncomputable instance (priority := 100) CommCStarAlgebra.toNonUnitalCommCStarAlgebra (A : Type*)
     [CommCStarAlgebra A] : NonUnitalCommCStarAlgebra A where
 
 noncomputable instance StarSubalgebra.cstarAlgebra {S A : Type*} [CStarAlgebra A]
@@ -69,28 +73,42 @@ noncomputable instance NonUnitalStarSubalgebra.nonUnitalCommCStarAlgebra {S A : 
   norm_mul_self_le x := CStarRing.norm_star_mul_self (x := (x : A)) |>.symm.le
   mul_comm _ _ := Subtype.ext <| mul_comm _ _
 
-#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 noncomputable instance : CommCStarAlgebra ℂ where
-  mul_comm := mul_comm
-  norm_mul_self_le := CStarRing.norm_mul_self_le
+
+section Elemental
+
+variable {A : Type*}
+
+noncomputable instance [CStarAlgebra A] (x : A) :
+    CStarAlgebra (StarAlgebra.elemental ℂ x) :=
+  StarSubalgebra.cstarAlgebra _ (h_closed := StarAlgebra.elemental.isClosed ℂ x)
+
+noncomputable instance [NonUnitalCStarAlgebra A] (x : A) :
+    NonUnitalCStarAlgebra (NonUnitalStarAlgebra.elemental ℂ x) :=
+  NonUnitalStarSubalgebra.nonUnitalCStarAlgebra _
+    (h_closed := NonUnitalStarAlgebra.elemental.isClosed ℂ x)
+
+noncomputable instance [CStarAlgebra A] (x : A) [IsStarNormal x] :
+    CommCStarAlgebra (StarAlgebra.elemental ℂ x) where
+
+noncomputable instance [NonUnitalCStarAlgebra A] (x : A) [IsStarNormal x] :
+    NonUnitalCommCStarAlgebra (NonUnitalStarAlgebra.elemental ℂ x) where
+
+end Elemental
 
 section Pi
 
 variable {ι : Type*} {A : ι → Type*} [Fintype ι]
 
-#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
-instance [(i : ι) → NonUnitalCStarAlgebra (A i)] : NonUnitalCStarAlgebra (Π i, A i) where
-  norm_mul_self_le := CStarRing.norm_mul_self_le
+noncomputable instance [(i : ι) → NonUnitalCStarAlgebra (A i)] :
+    NonUnitalCStarAlgebra (Π i, A i) where
 
-instance [(i : ι) → NonUnitalCommCStarAlgebra (A i)] : NonUnitalCommCStarAlgebra (Π i, A i) where
-  mul_comm := mul_comm
+noncomputable instance [(i : ι) → NonUnitalCommCStarAlgebra (A i)] :
+    NonUnitalCommCStarAlgebra (Π i, A i) where
 
-#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 noncomputable instance [(i : ι) → CStarAlgebra (A i)] : CStarAlgebra (Π i, A i) where
-  norm_mul_self_le := CStarRing.norm_mul_self_le
 
 noncomputable instance [(i : ι) → CommCStarAlgebra (A i)] : CommCStarAlgebra (Π i, A i) where
-  mul_comm := mul_comm
 
 end Pi
 
@@ -98,20 +116,15 @@ section Prod
 
 variable {A B : Type*}
 
-#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
-instance [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B] : NonUnitalCStarAlgebra (A × B) where
-  norm_mul_self_le := CStarRing.norm_mul_self_le
+noncomputable instance [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B] :
+    NonUnitalCStarAlgebra (A × B) where
 
-instance [NonUnitalCommCStarAlgebra A] [NonUnitalCommCStarAlgebra B] :
+noncomputable instance [NonUnitalCommCStarAlgebra A] [NonUnitalCommCStarAlgebra B] :
     NonUnitalCommCStarAlgebra (A × B) where
-  mul_comm := mul_comm
 
-#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 noncomputable instance [CStarAlgebra A] [CStarAlgebra B] : CStarAlgebra (A × B) where
-  norm_mul_self_le := CStarRing.norm_mul_self_le
 
 noncomputable instance [CommCStarAlgebra A] [CommCStarAlgebra B] : CommCStarAlgebra (A × B) where
-  mul_comm := mul_comm
 
 end Prod
 
@@ -119,15 +132,11 @@ namespace MulOpposite
 
 variable {A : Type*}
 
-#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
-instance [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra Aᵐᵒᵖ where
-  norm_mul_self_le := CStarRing.norm_mul_self_le
+noncomputable instance [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra Aᵐᵒᵖ where
 
-instance [NonUnitalCommCStarAlgebra A] : NonUnitalCommCStarAlgebra Aᵐᵒᵖ where
+noncomputable instance [NonUnitalCommCStarAlgebra A] : NonUnitalCommCStarAlgebra Aᵐᵒᵖ where
 
-#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 noncomputable instance [CStarAlgebra A] : CStarAlgebra Aᵐᵒᵖ where
-  norm_mul_self_le := CStarRing.norm_mul_self_le
 
 noncomputable instance [CommCStarAlgebra A] : CommCStarAlgebra Aᵐᵒᵖ where
 

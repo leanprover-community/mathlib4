@@ -3,10 +3,12 @@ Copyright (c) 2022 Yaël Dillies, Ella Yu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Ella Yu
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Additive energy
@@ -34,6 +36,8 @@ It's possibly interesting to have
 (whose `card` is `mulEnergy s t`) as a standalone definition.
 -/
 
+@[expose] public section
+
 open scoped Pointwise
 
 variable {α : Type*} [DecidableEq α]
@@ -46,10 +50,11 @@ variable [Mul α] {s s₁ s₂ t t₁ t₂ : Finset α}
 quadruples `(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ * b₁ = a₂ * b₂`.
 
 The notation `Eₘ[s, t]` is available in scope `Combinatorics.Additive`. -/
-@[to_additive "The additive energy `E[s, t]` of two finsets `s` and `t` in a group is the number of
-quadruples `(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ + b₁ = a₂ + b₂`.
+@[to_additive
+/-- The additive energy `E[s, t]` of two finsets `s` and `t` in a group is the number of quadruples
+`(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ + b₁ = a₂ + b₂`.
 
-The notation `E[s, t]` is available in scope `Combinatorics.Additive`."]
+The notation `E[s, t]` is available in scope `Combinatorics.Additive`. -/]
 def mulEnergy (s t : Finset α) : ℕ :=
   #{x ∈ ((s ×ˢ s) ×ˢ t ×ˢ t) | x.1.1 * x.2.1 = x.1.2 * x.2.2}
 
@@ -102,9 +107,7 @@ variable (s t)
 variable {s t}
 
 @[to_additive (attr := simp)] lemma mulEnergy_pos_iff : 0 < Eₘ[s, t] ↔ s.Nonempty ∧ t.Nonempty where
-  mp h := of_not_not fun H => by
-    simp_rw [not_and_or, not_nonempty_iff_eq_empty] at H
-    obtain rfl | rfl := H <;> simp at h
+  mp h := by by_contra! +distrib rfl | rfl <;> simp at h
   mpr h := mulEnergy_pos h.1 h.2
 
 @[to_additive (attr := simp)] lemma mulEnergy_eq_zero_iff : Eₘ[s, t] = 0 ↔ s = ∅ ∨ t = ∅ := by
@@ -143,7 +146,7 @@ lemma card_sq_le_card_mul_mulEnergy (s t u : Finset α) :
     _ ≤ #u * ∑ c ∈ u, #{xy ∈ s ×ˢ t | xy.1 * xy.2 = c} ^ 2 := by
         simpa using sum_mul_sq_le_sq_mul_sq (R := ℕ) _ 1 _
     _ ≤ #u * ∑ c ∈ s * t, #{xy ∈ s ×ˢ t | xy.1 * xy.2 = c} ^ 2 := by
-        refine mul_le_mul_left' (sum_le_sum_of_ne_zero ?_) _
+        refine mul_le_mul_right (sum_le_sum_of_ne_zero ?_) _
         aesop (add simp [filter_eq_empty_iff]) (add unsafe mul_mem_mul)
     _ = #u * Eₘ[s, t] := by rw [mulEnergy_eq_sum_sq']
 
@@ -153,8 +156,6 @@ lemma card_sq_le_card_mul_mulEnergy (s t u : Finset α) :
     _ = #{xy ∈ s ×ˢ t | xy.1 * xy.2 ∈ s * t} ^ 2 := by
       rw [filter_eq_self.2, card_product, mul_pow]; aesop (add unsafe mul_mem_mul)
     _ ≤ #(s * t) * Eₘ[s, t] := card_sq_le_card_mul_mulEnergy _ _ _
-
-@[deprecated (since := "2025-07-07")] alias le_card_add_mul_mulEnergy := le_card_mul_mul_mulEnergy
 
 end Mul
 
@@ -166,7 +167,7 @@ variable [CommMonoid α]
 
 @[to_additive] lemma mulEnergy_comm (s t : Finset α) : Eₘ[s, t] = Eₘ[t, s] := by
   rw [mulEnergy, ← Finset.card_map (Equiv.prodComm _ _).toEmbedding, map_filter]
-  simp [-Finset.card_map, mulEnergy, mul_comm, map_eq_image, Function.comp_def]
+  simp [mulEnergy, mul_comm, map_eq_image]
 
 end CommMonoid
 

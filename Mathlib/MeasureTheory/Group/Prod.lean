@@ -3,8 +3,10 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Group.Measure
-import Mathlib.MeasureTheory.Measure.Prod
+module
+
+public import Mathlib.MeasureTheory.Group.Measure
+public import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Measure theory in the product of groups
@@ -37,6 +39,8 @@ continuous functions instead of measurable sets and working in the general local
 setting, see the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -53,19 +57,15 @@ variable [Group G] [MeasurableMul₂ G]
 variable (μ ν : Measure G) [SFinite ν] [SFinite μ] {s : Set G}
 
 /-- The map `(x, y) ↦ (x, xy)` as a `MeasurableEquiv`. -/
-@[to_additive "The map `(x, y) ↦ (x, x + y)` as a `MeasurableEquiv`."]
-protected def MeasurableEquiv.shearMulRight [MeasurableInv G] : G × G ≃ᵐ G × G :=
-  { Equiv.prodShear (Equiv.refl _) Equiv.mulLeft with
-    measurable_toFun := measurable_fst.prodMk measurable_mul
-    measurable_invFun := measurable_fst.prodMk <| measurable_fst.inv.mul measurable_snd }
+@[to_additive /-- The map `(x, y) ↦ (x, x + y)` as a `MeasurableEquiv`. -/]
+protected def MeasurableEquiv.shearMulRight [MeasurableInv G] : G × G ≃ᵐ G × G where
+  toEquiv := .prodShear (.refl _) .mulLeft
 
-/-- The map `(x, y) ↦ (x, y / x)` as a `MeasurableEquiv` with as inverse `(x, y) ↦ (x, yx)` -/
+/-- The map `(x, y) ↦ (x, y / x)` as a `MeasurableEquiv` with inverse `(x, y) ↦ (x, yx)` -/
 @[to_additive
-"The map `(x, y) ↦ (x, y - x)` as a `MeasurableEquiv` with as inverse `(x, y) ↦ (x, y + x)`."]
-protected def MeasurableEquiv.shearDivRight [MeasurableInv G] : G × G ≃ᵐ G × G :=
-  { Equiv.prodShear (Equiv.refl _) Equiv.divRight with
-    measurable_toFun := measurable_fst.prodMk <| measurable_snd.div measurable_fst
-    measurable_invFun := measurable_fst.prodMk <| measurable_snd.mul measurable_fst }
+/-- The map `(x, y) ↦ (x, y - x)` as a `MeasurableEquiv` with inverse `(x, y) ↦ (x, y + x)`. -/]
+protected def MeasurableEquiv.shearDivRight [MeasurableInv G] : G × G ≃ᵐ G × G where
+  toEquiv := .prodShear (.refl _) .divRight
 
 variable {G}
 
@@ -79,7 +79,7 @@ section LeftInvariant
 This condition is part of the definition of a measurable group in [Halmos, §59].
 There, the map in this lemma is called `S`. -/
 @[to_additive measurePreserving_prod_add
-" The shear mapping `(x, y) ↦ (x, x + y)` preserves the measure `μ × ν`. "]
+/-- The shear mapping `(x, y) ↦ (x, x + y)` preserves the measure `μ × ν`. -/]
 theorem measurePreserving_prod_mul [IsMulLeftInvariant ν] :
     MeasurePreserving (fun z : G × G => (z.1, z.1 * z.2)) (μ.prod ν) (μ.prod ν) :=
   (MeasurePreserving.id μ).skew_product measurable_mul <|
@@ -89,7 +89,7 @@ theorem measurePreserving_prod_mul [IsMulLeftInvariant ν] :
 This is the map `SR` in [Halmos, §59].
 `S` is the map `(x, y) ↦ (x, xy)` and `R` is `Prod.swap`. -/
 @[to_additive measurePreserving_prod_add_swap
-" The map `(x, y) ↦ (y, y + x)` sends the measure `μ × ν` to `ν × μ`. "]
+/-- The map `(x, y) ↦ (y, y + x)` sends the measure `μ × ν` to `ν × μ`. -/]
 theorem measurePreserving_prod_mul_swap [IsMulLeftInvariant μ] :
     MeasurePreserving (fun z : G × G => (z.2, z.2 * z.1)) (μ.prod ν) (ν.prod μ) :=
   (measurePreserving_prod_mul ν μ).comp measurePreserving_swap
@@ -100,7 +100,7 @@ theorem measurable_measure_mul_right (hs : MeasurableSet s) :
   suffices
     Measurable fun y =>
       μ ((fun x => (x, y)) ⁻¹' ((fun z : G × G => ((1 : G), z.1 * z.2)) ⁻¹' univ ×ˢ s))
-    by convert this using 1; ext1 x; congr 1 with y : 1; simp
+    by convert! this using 1; ext1 x; congr 1 with y : 1; simp
   apply measurable_measure_prodMk_right
   apply measurable_const.prodMk measurable_mul (MeasurableSet.univ.prod hs)
   infer_instance
@@ -111,7 +111,7 @@ variable [MeasurableInv G]
 This is the function `S⁻¹` in [Halmos, §59],
 where `S` is the map `(x, y) ↦ (x, xy)`. -/
 @[to_additive measurePreserving_prod_neg_add
-"The map `(x, y) ↦ (x, - x + y)` is measure-preserving."]
+/-- The map `(x, y) ↦ (x, - x + y)` is measure-preserving. -/]
 theorem measurePreserving_prod_inv_mul [IsMulLeftInvariant ν] :
     MeasurePreserving (fun z : G × G => (z.1, z.1⁻¹ * z.2)) (μ.prod ν) (μ.prod ν) :=
   (measurePreserving_prod_mul μ ν).symm <| MeasurableEquiv.shearMulRight G
@@ -122,7 +122,7 @@ variable [IsMulLeftInvariant μ]
 This is the function `S⁻¹R` in [Halmos, §59],
 where `S` is the map `(x, y) ↦ (x, xy)` and `R` is `Prod.swap`. -/
 @[to_additive measurePreserving_prod_neg_add_swap
-"The map `(x, y) ↦ (y, - y + x)` sends `μ × ν` to `ν × μ`."]
+/-- The map `(x, y) ↦ (y, - y + x)` sends `μ × ν` to `ν × μ`. -/]
 theorem measurePreserving_prod_inv_mul_swap :
     MeasurePreserving (fun z : G × G => (z.2, z.2⁻¹ * z.1)) (μ.prod ν) (ν.prod μ) :=
   (measurePreserving_prod_inv_mul ν μ).comp measurePreserving_swap
@@ -131,11 +131,11 @@ theorem measurePreserving_prod_inv_mul_swap :
 This is the function `S⁻¹RSR` in [Halmos, §59],
 where `S` is the map `(x, y) ↦ (x, xy)` and `R` is `Prod.swap`. -/
 @[to_additive measurePreserving_add_prod_neg
-"The map `(x, y) ↦ (y + x, - x)` is measure-preserving."]
+/-- The map `(x, y) ↦ (y + x, - x)` is measure-preserving. -/]
 theorem measurePreserving_mul_prod_inv [IsMulLeftInvariant ν] :
     MeasurePreserving (fun z : G × G => (z.2 * z.1, z.1⁻¹)) (μ.prod ν) (μ.prod ν) := by
-  convert (measurePreserving_prod_inv_mul_swap ν μ).comp (measurePreserving_prod_mul_swap μ ν)
-    using 1
+  convert!
+    (measurePreserving_prod_inv_mul_swap ν μ).comp (measurePreserving_prod_mul_swap μ ν) using 1
   ext1 ⟨x, y⟩
   simp_rw [Function.comp_apply, mul_inv_rev, inv_mul_cancel_right]
 
@@ -220,7 +220,7 @@ theorem absolutelyContinuous_map_div_left (g : G) : μ ≪ map (fun h => g / h) 
   exact (absolutelyContinuous_inv μ).map (measurable_const_mul g)
 
 /-- This is the computation performed in the proof of [Halmos, §60 Th. A]. -/
-@[to_additive "This is the computation performed in the proof of [Halmos, §60 Th. A]."]
+@[to_additive /-- This is the computation performed in the proof of [Halmos, §60 Th. A]. -/]
 theorem measure_mul_lintegral_eq [IsMulLeftInvariant ν] (sm : MeasurableSet s) (f : G → ℝ≥0∞)
     (hf : Measurable f) : (μ s * ∫⁻ y, f y ∂ν) = ∫⁻ x, ν ((fun z => z * x) ⁻¹' s) * f x⁻¹ ∂μ := by
   rw [← setLIntegral_one, ← lintegral_indicator sm,
@@ -234,13 +234,13 @@ theorem measure_mul_lintegral_eq [IsMulLeftInvariant ν] (sm : MeasurableSet s) 
     fun x => measurable_const.indicator (measurable_mul_const _ sm)
   have : ∀ x y, s.indicator (fun _ : G => (1 : ℝ≥0∞)) (y * x) =
       ((fun z => z * x) ⁻¹' s).indicator (fun b : G => 1) y := by
-    intro x y; symm; convert indicator_comp_right (M := ℝ≥0∞) fun y => y * x using 2; ext1; rfl
+    intro x y; symm; convert! indicator_comp_right (M := ℝ≥0∞) fun y => y * x using 2; ext1; rfl
   simp_rw [this, lintegral_mul_const _ (ms _), lintegral_indicator (measurable_mul_const _ sm),
     setLIntegral_one]
 
 /-- Any two nonzero left-invariant measures are absolutely continuous w.r.t. each other. -/
 @[to_additive
-"Any two nonzero left-invariant measures are absolutely continuous w.r.t. each other. "]
+/-- Any two nonzero left-invariant measures are absolutely continuous w.r.t. each other. -/]
 theorem absolutelyContinuous_of_isMulLeftInvariant [IsMulLeftInvariant ν] (hν : ν ≠ 0) : μ ≪ ν := by
   refine AbsolutelyContinuous.mk fun s sm hνs => ?_
   have h1 := measure_mul_lintegral_eq μ ν sm 1 measurable_one
@@ -290,14 +290,14 @@ theorem ae_measure_preimage_mul_right_lt_top_of_ne_zero (h2s : ν' s ≠ 0) (h3s
   not justified. We prove this inequality for almost all `x` in
   `MeasureTheory.ae_measure_preimage_mul_right_lt_top_of_ne_zero`. -/
 @[to_additive
-"A technical lemma relating two different measures. This is basically [Halmos, §60 Th. A]. Note that
-if `f` is the characteristic function of a measurable set `t` this states that `μ t = c * μ s` for a
-constant `c` that does not depend on `μ`.
+/-- A technical lemma relating two different measures. This is basically [Halmos, §60 Th. A]. Note
+that if `f` is the characteristic function of a measurable set `t` this states that `μ t = c * μ s`
+for a constant `c` that does not depend on `μ`.
 
 Note: There is a gap in the last step of the proof in [Halmos]. In the last line, the equality
 `g(-x) + ν(s - x) = f(x)` holds if we can prove that `0 < ν(s - x) < ∞`. The first inequality
 follows from §59, Th. D, but the second inequality is not justified. We prove this inequality for
-almost all `x` in `MeasureTheory.ae_measure_preimage_add_right_lt_top_of_ne_zero`."]
+almost all `x` in `MeasureTheory.ae_measure_preimage_add_right_lt_top_of_ne_zero`. -/]
 theorem measure_lintegral_div_measure (sm : MeasurableSet s) (h2s : ν' s ≠ 0) (h3s : ν' s ≠ ∞)
     (f : G → ℝ≥0∞) (hf : Measurable f) :
     (μ' s * ∫⁻ y, f y⁻¹ / ν' ((· * y⁻¹) ⁻¹' s) ∂ν') = ∫⁻ x, f x ∂μ' := by
@@ -327,11 +327,11 @@ theorem measure_mul_measure_eq (s t : Set G) (h2s : ν' s ≠ 0) (h3s : ν' s �
 
 /-- Left invariant Borel measures on a measurable group are unique (up to a scalar). -/
 @[to_additive
-" Left invariant Borel measures on an additive measurable group are unique (up to a scalar). "]
+/-- Left invariant Borel measures on an additive measurable group are unique (up to a scalar). -/]
 theorem measure_eq_div_smul (h2s : ν' s ≠ 0) (h3s : ν' s ≠ ∞) :
     μ' = (μ' s / ν' s) • ν' := by
   ext1 t -
-  rw [smul_apply, smul_eq_mul, mul_comm, ← mul_div_assoc, mul_comm,
+  rw [Measure.smul_apply, smul_eq_mul, mul_comm, ← mul_div_assoc, mul_comm,
     measure_mul_measure_eq μ' ν' s t h2s h3s, mul_div_assoc, ENNReal.mul_div_cancel h2s h3s]
 
 end SigmaFinite
@@ -348,14 +348,14 @@ theorem measurePreserving_prod_mul_right [IsMulRightInvariant ν] :
 
 /-- The map `(x, y) ↦ (y, xy)` sends the measure `μ × ν` to `ν × μ`. -/
 @[to_additive measurePreserving_prod_add_swap_right
-" The map `(x, y) ↦ (y, x + y)` sends the measure `μ × ν` to `ν × μ`. "]
+/-- The map `(x, y) ↦ (y, x + y)` sends the measure `μ × ν` to `ν × μ`. -/]
 theorem measurePreserving_prod_mul_swap_right [IsMulRightInvariant μ] :
     MeasurePreserving (fun z : G × G => (z.2, z.1 * z.2)) (μ.prod ν) (ν.prod μ) :=
   (measurePreserving_prod_mul_right ν μ).comp measurePreserving_swap
 
 /-- The map `(x, y) ↦ (xy, y)` preserves the measure `μ × ν`. -/
 @[to_additive measurePreserving_add_prod
-" The map `(x, y) ↦ (x + y, y)` preserves the measure `μ × ν`. "]
+/-- The map `(x, y) ↦ (x + y, y)` preserves the measure `μ × ν`. -/]
 theorem measurePreserving_mul_prod [IsMulRightInvariant μ] :
     MeasurePreserving (fun z : G × G => (z.1 * z.2, z.2)) (μ.prod ν) (μ.prod ν) :=
   measurePreserving_swap.comp (measurePreserving_prod_mul_swap_right μ ν)
@@ -363,32 +363,33 @@ theorem measurePreserving_mul_prod [IsMulRightInvariant μ] :
 variable [MeasurableInv G]
 
 /-- The map `(x, y) ↦ (x, y / x)` is measure-preserving. -/
-@[to_additive measurePreserving_prod_sub "The map `(x, y) ↦ (x, y - x)` is measure-preserving."]
+@[to_additive measurePreserving_prod_sub
+/-- The map `(x, y) ↦ (x, y - x)` is measure-preserving. -/]
 theorem measurePreserving_prod_div [IsMulRightInvariant ν] :
     MeasurePreserving (fun z : G × G => (z.1, z.2 / z.1)) (μ.prod ν) (μ.prod ν) :=
   (measurePreserving_prod_mul_right μ ν).symm (MeasurableEquiv.shearDivRight G).symm
 
 /-- The map `(x, y) ↦ (y, x / y)` sends `μ × ν` to `ν × μ`. -/
 @[to_additive measurePreserving_prod_sub_swap
-      "The map `(x, y) ↦ (y, x - y)` sends `μ × ν` to `ν × μ`."]
+/-- The map `(x, y) ↦ (y, x - y)` sends `μ × ν` to `ν × μ`. -/]
 theorem measurePreserving_prod_div_swap [IsMulRightInvariant μ] :
     MeasurePreserving (fun z : G × G => (z.2, z.1 / z.2)) (μ.prod ν) (ν.prod μ) :=
   (measurePreserving_prod_div ν μ).comp measurePreserving_swap
 
 /-- The map `(x, y) ↦ (x / y, y)` preserves the measure `μ × ν`. -/
 @[to_additive measurePreserving_sub_prod
-" The map `(x, y) ↦ (x - y, y)` preserves the measure `μ × ν`. "]
+/-- The map `(x, y) ↦ (x - y, y)` preserves the measure `μ × ν`. -/]
 theorem measurePreserving_div_prod [IsMulRightInvariant μ] :
     MeasurePreserving (fun z : G × G => (z.1 / z.2, z.2)) (μ.prod ν) (μ.prod ν) :=
   measurePreserving_swap.comp (measurePreserving_prod_div_swap μ ν)
 
 /-- The map `(x, y) ↦ (xy, x⁻¹)` is measure-preserving. -/
 @[to_additive measurePreserving_add_prod_neg_right
-"The map `(x, y) ↦ (x + y, - x)` is measure-preserving."]
+/-- The map `(x, y) ↦ (x + y, - x)` is measure-preserving. -/]
 theorem measurePreserving_mul_prod_inv_right [IsMulRightInvariant μ] [IsMulRightInvariant ν] :
     MeasurePreserving (fun z : G × G => (z.1 * z.2, z.1⁻¹)) (μ.prod ν) (μ.prod ν) := by
-  convert (measurePreserving_prod_div_swap ν μ).comp (measurePreserving_prod_mul_swap_right μ ν)
-    using 1
+  convert!
+    (measurePreserving_prod_div_swap ν μ).comp (measurePreserving_prod_mul_swap_right μ ν) using 1
   ext1 ⟨x, y⟩
   simp_rw [Function.comp_apply, div_mul_eq_div_div_swap, div_self', one_div]
 
@@ -397,13 +398,13 @@ end RightInvariant
 section QuasiMeasurePreserving
 
 /-- The map `(x, y) ↦ x * y` is quasi-measure-preserving. -/
-@[to_additive (attr := fun_prop) "The map `(x, y) ↦ x + y` is quasi-measure-preserving."]
+@[to_additive (attr := fun_prop) /-- The map `(x, y) ↦ x + y` is quasi-measure-preserving. -/]
 theorem quasiMeasurePreserving_mul [IsMulLeftInvariant ν] :
     QuasiMeasurePreserving (fun p ↦ p.1 * p.2) (μ.prod ν) ν :=
   quasiMeasurePreserving_snd.comp (measurePreserving_prod_mul _ _).quasiMeasurePreserving
 
 /-- The map `(x, y) ↦ y * x` is quasi-measure-preserving. -/
-@[to_additive (attr := fun_prop) "The map `(x, y) ↦ y + x` is quasi-measure-preserving."]
+@[to_additive (attr := fun_prop) /-- The map `(x, y) ↦ y + x` is quasi-measure-preserving. -/]
 theorem quasiMeasurePreserving_mul_swap [IsMulLeftInvariant μ] :
     QuasiMeasurePreserving (fun p ↦ p.2 * p.1) (μ.prod ν) μ :=
   quasiMeasurePreserving_snd.comp (measurePreserving_prod_mul_swap _ _).quasiMeasurePreserving
@@ -413,13 +414,13 @@ section MeasurableInv
 variable [MeasurableInv G]
 
 /-- The map `(x, y) ↦ x⁻¹ * y` is quasi-measure-preserving. -/
-@[to_additive (attr := fun_prop) "The map `(x, y) ↦ -x + y` is quasi-measure-preserving."]
+@[to_additive (attr := fun_prop) /-- The map `(x, y) ↦ -x + y` is quasi-measure-preserving. -/]
 theorem quasiMeasurePreserving_inv_mul [IsMulLeftInvariant ν] :
     QuasiMeasurePreserving (fun p ↦ p.1⁻¹ * p.2) (μ.prod ν) ν :=
   quasiMeasurePreserving_snd.comp (measurePreserving_prod_inv_mul _ _).quasiMeasurePreserving
 
 /-- The map `(x, y) ↦ y⁻¹ * x` is quasi-measure-preserving. -/
-@[to_additive (attr := fun_prop) "The map `(x, y) ↦ -y + x` is quasi-measure-preserving."]
+@[to_additive (attr := fun_prop) /-- The map `(x, y) ↦ -y + x` is quasi-measure-preserving. -/]
 theorem quasiMeasurePreserving_inv_mul_swap [IsMulLeftInvariant μ] :
     QuasiMeasurePreserving (fun p ↦ p.2⁻¹ * p.1) (μ.prod ν) μ :=
   quasiMeasurePreserving_snd.comp (measurePreserving_prod_inv_mul_swap _ _).quasiMeasurePreserving
@@ -462,8 +463,8 @@ theorem quasiMeasurePreserving_div [IsMulLeftInvariant μ] :
 /-- A *left*-invariant measure is quasi-preserved by *right*-multiplication.
 This should not be confused with `(measurePreserving_mul_right μ g).quasiMeasurePreserving`. -/
 @[to_additive (attr := fun_prop)
-"A *left*-invariant measure is quasi-preserved by *right*-addition.
-This should not be confused with `(measurePreserving_add_right μ g).quasiMeasurePreserving`. "]
+/-- A *left*-invariant measure is quasi-preserved by *right*-addition.
+This should not be confused with `(measurePreserving_add_right μ g).quasiMeasurePreserving`. -/]
 theorem quasiMeasurePreserving_mul_right [IsMulLeftInvariant μ] (g : G) :
     QuasiMeasurePreserving (fun h : G => h * g) μ μ := by
   refine ⟨measurable_mul_const g, AbsolutelyContinuous.mk fun s hs => ?_⟩
@@ -472,8 +473,8 @@ theorem quasiMeasurePreserving_mul_right [IsMulLeftInvariant μ] (g : G) :
 /-- A *right*-invariant measure is quasi-preserved by *left*-multiplication.
 This should not be confused with `(measurePreserving_mul_left μ g).quasiMeasurePreserving`. -/
 @[to_additive (attr := fun_prop)
-"A *right*-invariant measure is quasi-preserved by *left*-addition.
-This should not be confused with `(measurePreserving_add_left μ g).quasiMeasurePreserving`. "]
+/-- A *right*-invariant measure is quasi-preserved by *left*-addition.
+This should not be confused with `(measurePreserving_add_left μ g).quasiMeasurePreserving`. -/]
 theorem quasiMeasurePreserving_mul_left [IsMulRightInvariant μ] (g : G) :
     QuasiMeasurePreserving (fun h : G => g * h) μ μ := by
   have :=

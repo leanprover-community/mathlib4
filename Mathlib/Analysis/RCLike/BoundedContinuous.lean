@@ -3,12 +3,16 @@ Copyright (c) 2025 Jakob Stiefel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Stiefel
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NNNorm
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Topology.ContinuousMap.Bounded.Star
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.Analysis.Normed.Operator.NNNorm
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Topology.ContinuousMap.Bounded.Star
 
 /-! # Results on bounded continuous functions with `RCLike` values -/
+
+public section
 
 open Filter Real RCLike BoundedContinuousFunction
 
@@ -28,7 +32,7 @@ theorem restrict_toContinuousMap_eq_toContinuousMapStar_restrict
     (ofRealAm.compLeftContinuous ℝ continuous_ofReal) := by
   ext g
   simp only [Subalgebra.mem_map, Subalgebra.mem_comap, Subalgebra.mem_restrictScalars,
-    StarSubalgebra.mem_toSubalgebra, toContinuousMapₐ_apply, StarSubalgebra.mem_map]
+    StarSubalgebra.mem_toSubalgebra, StarSubalgebra.mem_map]
   constructor
   · intro ⟨x, hxA, hxg⟩
     use (@ofRealAm 𝕜 _).compLeftContinuousBounded ℝ lipschitzWith_ofReal x, hxA

@@ -3,7 +3,9 @@ Copyright (c) 2024 Sven Manthe. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sven Manthe
 -/
-import Mathlib.Order.CompleteLattice.SetLike
+module
+
+public import Mathlib.Order.CompleteLattice.SetLike
 
 /-!
 # Trees in the sense of descriptive set theory
@@ -15,6 +17,8 @@ sequences that are stable under taking prefixes.
 
 * `tree A`: a (possibly infinite) tree of depth at most `ω` with nodes in `A`
 -/
+
+@[expose] public section
 
 namespace Descriptive
 
@@ -28,6 +32,8 @@ def tree (A : Type*) : CompleteSublattice (Set (List A)) :=
     (by rintro S hS x a h T hT; exact hS hT <| h T hT)
 
 @[simps!] instance (A : Type*) : SetLike (tree A) (List A) := SetLike.instSubtypeSet
+
+example (A : Type*) : PartialOrder (tree A) := inferInstance
 
 namespace Tree
 variable {A : Type*} {S T : tree A}
@@ -56,17 +62,19 @@ lemma take_mem {n : ℕ} (x : T) : x.val.take n ∈ T :=
 /-- A variant of `List.take` internally to a tree -/
 @[simps] def take (n : ℕ) (x : T) : T := ⟨x.val.take n, take_mem x⟩
 
-@[simp] lemma take_take (m n : ℕ) (x : T) :
-  take m (take n x) = take (m ⊓ n) x := by simp [Subtype.ext_iff, List.take_take]
+@[simp] lemma take_take (m n : ℕ) (x : T) : take m (take n x) = take (m ⊓ n) x := by
+  simp [Subtype.ext_iff, List.take_take]
 
 @[simp] lemma take_eq_take {x : T} {m n : ℕ} :
-  take m x = take n x ↔ m ⊓ x.val.length = n ⊓ x.val.length := by simp [Subtype.ext_iff]
+    take m x = take n x ↔ m ⊓ x.val.length = n ⊓ x.val.length := by simp [Subtype.ext_iff]
 
 -- ### `subAt`
 
 variable (T) (x y : List A)
+
 /-- The residual tree obtained by regarding the node x as new root -/
-def subAt : tree A := ⟨(x ++ ·)⁻¹' T, fun _ _ _ ↦ mem_of_append (by rwa [List.append_assoc])⟩
+def subAt : tree A :=
+  ⟨(x ++ ·)⁻¹' T, fun _ a _ ↦ mem_of_append (y := [a]) (by rwa [List.append_assoc])⟩
 
 @[simp] lemma mem_subAt : y ∈ subAt T x ↔ x ++ y ∈ T := Iff.rfl
 
@@ -93,12 +101,10 @@ def pullSub : tree A where
 
 variable {T x y}
 
-lemma mem_pullSub_short (hl : y.length ≤ x.length) :
-  y ∈ pullSub T x ↔ y <+: x ∧ [] ∈ T := by
+lemma mem_pullSub_short (hl : y.length ≤ x.length) : y ∈ pullSub T x ↔ y <+: x ∧ [] ∈ T := by
   simp [pullSub, List.take_of_length_le hl, List.drop_eq_nil_iff.mpr hl]
 
-lemma mem_pullSub_long (hl : x.length ≤ y.length) :
-  y ∈ pullSub T x ↔ ∃ z ∈ T, y = x ++ z where
+lemma mem_pullSub_long (hl : x.length ≤ y.length) : y ∈ pullSub T x ↔ ∃ z ∈ T, y = x ++ z where
   mp := by
     intro ⟨h1, h2⟩; use y.drop x.length, h2
     nth_rw 1 [← List.take_append_drop x.length y]
@@ -138,7 +144,7 @@ lemma pullSub_adjunction (S T : tree A) (x : List A) : pullSub S x ≤ T ↔ S �
     · constructor <;> intro ⟨h, _⟩ <;>
         [skip; replace h := by simpa [List.take_take] using h.take x.length] <;>
         cases hp <| List.prefix_iff_eq_take.mpr (h.eq_of_length (by simpa)).symm
-  · rw [mem_pullSub_short hl, mem_pullSub_short (by simp), mem_pullSub_short (by simp; omega)]
+  · rw [mem_pullSub_short hl, mem_pullSub_short (by simp), mem_pullSub_short (by simp; lia)]
     simpa using fun _ ↦ (z.isPrefix_append_of_length hl).symm
 
 end Descriptive.Tree

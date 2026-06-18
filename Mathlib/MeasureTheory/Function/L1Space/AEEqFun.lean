@@ -3,7 +3,9 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
+module
+
+public import Mathlib.MeasureTheory.Function.L1Space.Integrable
 
 /-!
 # `L¹` space
@@ -25,13 +27,15 @@ function space, l1
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open EMetric ENNReal Filter MeasureTheory NNReal Set
 
 variable {α β ε ε' : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
 variable [NormedAddCommGroup β] [TopologicalSpace ε] [ContinuousENorm ε]
-  [TopologicalSpace ε'] [ENormedAddMonoid ε']
+  [TopologicalSpace ε'] [ESeminormedAddMonoid ε']
 
 namespace MeasureTheory
 
@@ -51,7 +55,7 @@ theorem integrable_mk {f : α → ε} (hf : AEStronglyMeasurable f μ) :
   exact coeFn_mk f hf
 
 theorem integrable_coeFn {f : α →ₘ[μ] ε} : MeasureTheory.Integrable f μ ↔ Integrable f := by
-  rw [← integrable_mk, mk_coeFn]
+  rw [← integrable_mk f.aestronglyMeasurable, mk_coeFn]
 
 theorem integrable_zero : Integrable (0 : α →ₘ[μ] ε') :=
   (MeasureTheory.integrable_zero α ε' μ).congr (coeFn_mk _ _).symm
@@ -86,7 +90,7 @@ variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β] [IsBoundedSMul 𝕜 �
 
 theorem Integrable.smul {c : 𝕜} {f : α →ₘ[μ] β} : Integrable f → Integrable (c • f) :=
   induction_on f fun _f hfm hfi => (integrable_mk _).2 <|
-    by simpa using ((integrable_mk hfm).1 hfi).smul c
+    by simpa using! ((integrable_mk hfm).1 hfi).smul c
 
 end IsBoundedSMul
 
@@ -96,7 +100,7 @@ end AEEqFun
 
 namespace L1
 
-
+@[fun_prop]
 theorem integrable_coeFn (f : α →₁[μ] β) : Integrable f μ := by
   rw [← memLp_one_iff_integrable]
   exact Lp.memLp f
@@ -150,7 +154,7 @@ theorem ofReal_norm_eq_lintegral (f : α →₁[μ] β) : ENNReal.ofReal ‖f‖
   (but only a.e.-equal). -/
 theorem ofReal_norm_sub_eq_lintegral (f g : α →₁[μ] β) :
     ENNReal.ofReal ‖f - g‖ = ∫⁻ x, ‖f x - g x‖ₑ ∂μ := by
-  simp_rw [ofReal_norm_eq_lintegral, ← edist_zero_eq_enorm]
+  simp_rw [ofReal_norm_eq_lintegral, ← edist_zero_right]
   apply lintegral_congr_ae
   filter_upwards [Lp.coeFn_sub f g] with _ ha
   simp only [ha, Pi.sub_apply]
@@ -205,11 +209,13 @@ theorem enorm_toL1 {f : α → β} (hf : Integrable f μ) : ‖hf.toL1 f‖ₑ =
   simp only [Lp.enorm_def, toL1_eq_mk, eLpNorm_aeeqFun]
   simp [eLpNorm, eLpNorm']
 
-@[deprecated (since := "2025-01-20")] alias nnnorm_toL1 := enorm_toL1
-
 theorem norm_toL1_eq_lintegral_norm (f : α → β) (hf : Integrable f μ) :
     ‖hf.toL1 f‖ = ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) := by
   rw [norm_toL1, lintegral_norm_eq_lintegral_edist]
+
+theorem norm_toL1_eq_lintegral_enorm (f : α → β) (hf : Integrable f μ) :
+    ‖hf.toL1 f‖ = (∫⁻ a, ‖f a‖ₑ ∂μ).toReal := by
+  simp_rw [norm_toL1, edist_zero_right]
 
 @[simp]
 theorem edist_toL1_toL1 (f g : α → β) (hf : Integrable f μ) (hg : Integrable g μ) :

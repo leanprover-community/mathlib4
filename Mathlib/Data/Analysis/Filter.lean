@@ -3,7 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Order.Filter.Cofinite
+module
+
+public import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Computational realization of filters (experimental)
@@ -16,6 +18,8 @@ This file provides infrastructure to compute with filters.
   lattices, while `Filter` is filters of sets (so corresponding to `CFilter (Set α) σ`).
 * `Filter.Realizer`: Realization of a `Filter`. `CFilter` that generates the given filter.
 -/
+
+@[expose] public section
 
 
 open Set Filter
@@ -183,8 +187,8 @@ protected def map (m : α → β) {f : Filter α} (F : f.Realizer) : (map m f).R
     { f := fun s ↦ image m (F.F s)
       pt := F.F.pt
       inf := F.F.inf
-      inf_le_left := fun _ _ ↦ image_subset _ (F.F.inf_le_left _ _)
-      inf_le_right := fun _ _ ↦ image_subset _ (F.F.inf_le_right _ _) },
+      inf_le_left := fun _ _ ↦ image_mono (F.F.inf_le_left _ _)
+      inf_le_right := fun _ _ ↦ image_mono (F.F.inf_le_right _ _) },
     filter_eq <| Set.ext fun _ ↦ by
       simp only [CFilter.toFilter, image_subset_iff, mem_setOf_eq, Filter.mem_sets, mem_map]
       rw [F.mem_sets]⟩
@@ -218,7 +222,7 @@ protected def sup {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ⊔ g
       inf := fun ⟨a, a'⟩ ⟨b, b'⟩ ↦ (F.F.inf a b, G.F.inf a' b')
       inf_le_left := fun _ _ ↦ union_subset_union (F.F.inf_le_left _ _) (G.F.inf_le_left _ _)
       inf_le_right := fun _ _ ↦ union_subset_union (F.F.inf_le_right _ _) (G.F.inf_le_right _ _) },
-    filter_eq <| Set.ext fun _ ↦ by cases F; cases G; substs f g; simp [CFilter.toFilter]⟩
+    filter_eq <| Set.ext fun _ ↦ by cases F; cases G; subst f g; simp [CFilter.toFilter]⟩
 
 /-- Construct a realizer for the inf of two filters -/
 protected def inf {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ⊓ g).Realizer :=
@@ -229,7 +233,7 @@ protected def inf {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ⊓ g
       inf_le_left := fun _ _ ↦ inter_subset_inter (F.F.inf_le_left _ _) (G.F.inf_le_left _ _)
       inf_le_right := fun _ _ ↦ inter_subset_inter (F.F.inf_le_right _ _) (G.F.inf_le_right _ _) },
     by
-      cases F; cases G; substs f g; simp only [CFilter.toFilter, Prod.exists]; ext
+      cases F; cases G; subst f g; simp only [CFilter.toFilter, Prod.exists]; ext
       constructor
       · rintro ⟨s, t, h⟩
         apply mem_inf_of_inter _ _ h

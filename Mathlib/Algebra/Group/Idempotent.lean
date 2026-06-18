@@ -3,12 +3,14 @@ Copyright (c) 2022 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Data.Subtype
-import Mathlib.Tactic.Conv
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Data.Subtype
+public import Mathlib.Tactic.Conv
 
 /-!
 # Idempotents
@@ -26,12 +28,16 @@ including:
 projection, idempotent
 -/
 
+@[expose] public section
+
 assert_not_exists GroupWithZero
 
 variable {M N S : Type*}
 
 /-- An element `a` is said to be idempotent if `a * a = a`. -/
 def IsIdempotentElem [Mul M] (a : M) : Prop := a * a = a
+
+lemma isIdempotentElem_iff [Mul M] {a : M} : IsIdempotentElem a ↔ a * a = a := Iff.rfl
 
 namespace IsIdempotentElem
 section Mul
@@ -105,5 +111,13 @@ end CancelMonoid
 lemma map {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N] {e : M}
     (he : IsIdempotentElem e) (f : F) : IsIdempotentElem (f e) := by
   rw [IsIdempotentElem, ← map_mul, he.eq]
+
+lemma mul_mul_self {M : Type*} [Semigroup M] {x : M}
+    (hx : IsIdempotentElem x) (y : M) : y * x * x = y * x :=
+  mul_assoc y x x ▸ congrArg (y * ·) hx.eq
+
+lemma mul_self_mul {M : Type*} [Semigroup M] {x : M}
+    (hx : IsIdempotentElem x) (y : M) : x * (x * y) = x * y :=
+  mul_assoc x x y ▸ congrArg (· * y) hx.eq
 
 end IsIdempotentElem

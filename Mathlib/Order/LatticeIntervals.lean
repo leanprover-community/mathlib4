@@ -3,7 +3,9 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Order.Bounds.Basic
+module
+
+public import Mathlib.Order.Bounds.Basic
 
 /-!
 # Intervals in Lattices
@@ -17,13 +19,15 @@ intervals, but more can be added easily along the same lines when needed.
 
 In the following, `*` can represent either `c`, `o`, or `i`.
   * `Set.Ic*.orderBot`
-  * `Set.Ii*.semillaticeInf`
+  * `Set.Ii*.semilatticeInf`
   * `Set.I*c.orderTop`
-  * `Set.I*c.semillaticeInf`
+  * `Set.I*c.semilatticeInf`
   * `Set.I**.lattice`
   * `Set.Iic.boundedOrder`, within an `OrderBot`
   * `Set.Ici.boundedOrder`, within an `OrderTop`
 -/
+
+public section
 
 
 variable {α : Type*}
@@ -152,7 +156,7 @@ protected lemma disjoint_iff [SemilatticeInf α] [OrderBot α] {x y : Iic a} :
 
 protected lemma codisjoint_iff [SemilatticeSup α] {x y : Iic a} :
     Codisjoint x y ↔ ↑x ⊔ ↑y = a := by
-  simpa only [_root_.codisjoint_iff] using Iic.eq_top_iff
+  simpa only [_root_.codisjoint_iff] using! Iic.eq_top_iff
 
 protected lemma isCompl_iff [Lattice α] [OrderBot α] {x y : Iic a} :
     IsCompl x y ↔ Disjoint (x : α) (y : α) ∧ ↑x ⊔ ↑y = a := by

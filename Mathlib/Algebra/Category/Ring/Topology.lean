@@ -3,10 +3,13 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Christian Merten
 -/
-import Mathlib.Algebra.Category.Ring.Colimits
-import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Topology.Algebra.Ring.Basic
+module
+
+public import Mathlib.Algebra.Category.Ring.Colimits
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Topology on `Hom(R, S)`
@@ -19,12 +22,14 @@ this is the subspace topology `Hom(A, R) ↪ Hom(ℤ[xᵢ], R) = Rᶥ`.
 ## Main results
 - `CommRingCat.HomTopology.isClosedEmbedding_precomp_of_surjective`:
   `Hom(A/I, R)` is a closed subspace of `Hom(A, R)` if `R` is Hausdorff.
-- `CommRingCat.HomTopology.mvPolynomialHomeo`:
+- `CommRingCat.HomTopology.mvPolynomialHomeomorph`:
   `Hom(A[Xᵢ], R)` is homeomorphic to `Hom(A, R) × Rᶥ`.
 - `CommRingCat.HomTopology.isEmbedding_pushout`:
   `Hom(B ⊗[A] C, R)` has the subspace topology from `Hom(B, R) × Hom(C, R)`.
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -38,7 +43,7 @@ variable {R A B C : CommRingCat.{u}} [TopologicalSpace R]
 The topology on `Hom(A, R)` for a topological ring `R`, given by the coarsest topology that
 makes `f ↦ f x` continuous for all `x : A` (see `continuous_apply`).
 Alternatively, given a presentation `A = ℤ[xᵢ]/I`,
-This is the subspace topology `Hom(A, R) ↪ Hom(ℤ[xᵢ], R) = Rᶥ` (see `mvPolynomialHomeo`).
+this is the subspace topology `Hom(A, R) ↪ Hom(ℤ[xᵢ], R) = Rᶥ` (see `mvPolynomialHomeomorph`).
 
 This is a scoped instance in `CommRingCat.HomTopology`.
 -/
@@ -60,7 +65,7 @@ lemma continuous_precomp (f : A ⟶ B) :
     Continuous ((f ≫ ·) : (B ⟶ R) → (A ⟶ R)) :=
   continuous_induced_rng.mpr ((Pi.continuous_precomp f.hom).comp continuous_induced_dom)
 
-/-- If `A ≅ B`, then `Hom(A, R)` is homeomorphc to `Hom(B, R)`. -/
+/-- If `A ≅ B`, then `Hom(A, R)` is homeomorphic to `Hom(B, R)`. -/
 @[simps]
 def precompHomeomorph (f : A ≅ B) :
     (B ⟶ R) ≃ₜ (A ⟶ R) where
@@ -72,7 +77,7 @@ def precompHomeomorph (f : A ≅ B) :
   right_inv _ := by simp
 
 lemma isHomeomorph_precomp (f : A ⟶ B) [IsIso f] :
-    IsHomeomorph ((f ≫ ·) : (B ⟶ R) → (A ⟶ R))  :=
+    IsHomeomorph ((f ≫ ·) : (B ⟶ R) → (A ⟶ R)) :=
   (precompHomeomorph (asIso f)).isHomeomorph
 
 /-- `Hom(A/I, R)` has the subspace topology of `Hom(A, R)`.
@@ -92,7 +97,7 @@ lemma isClosedEmbedding_precomp_of_surjective
   refine ⟨isEmbedding_precomp_of_surjective f hf, ?_⟩
   have : IsClosed (⋂ i : RingHom.ker f.hom, { f : A ⟶ R | f i = 0 }) :=
     isClosed_iInter fun x ↦ (isClosed_singleton (x := 0)).preimage (continuous_apply (R := R) x.1)
-  convert this
+  convert! this
   ext x
   simp only [Set.mem_range, Set.mem_iInter, Set.mem_setOf_eq, Subtype.forall, RingHom.mem_ker]
   constructor
@@ -125,11 +130,13 @@ lemma isClosedEmbedding_hom [IsTopologicalRing R] [T1Space R] :
   let f : CommRingCat.of (MvPolynomial A (⊥_ CommRingCat)) ⟶ A :=
     CommRingCat.ofHom (MvPolynomial.eval₂Hom (initial.to A).hom id)
   have : Function.Surjective f := Function.LeftInverse.surjective (g := .X) fun x ↦ by simp [f]
-  convert ((mvPolynomialHomeomorph A R (.of _)).trans
-    (.uniqueProd (⊥_ CommRingCat ⟶ R) _)).isClosedEmbedding.comp
-    (isClosedEmbedding_precomp_of_surjective f this) using 2 with g
+  convert!
+    ((mvPolynomialHomeomorph A R (.of _)).trans
+          (.uniqueProd (⊥_ CommRingCat ⟶ R) _)).isClosedEmbedding.comp
+      (isClosedEmbedding_precomp_of_surjective f this) using
+    2 with g
   ext x
-  simp [f]
+  simp +instances [f]
 
 instance [T2Space R] : T2Space (A ⟶ R) :=
   (isEmbedding_hom R A).t2Space
@@ -140,6 +147,7 @@ instance [IsTopologicalRing R] [T1Space R] [CompactSpace R] :
 
 open Limits
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Hom(B ⊗[A] C, R)` has the subspace topology from `Hom(B, R) × Hom(C, R)`. -/
 lemma isEmbedding_pushout [IsTopologicalRing R] (φ : A ⟶ B) (ψ : A ⟶ C) :
     IsEmbedding fun f : pushout φ ψ ⟶ R ↦ (pushout.inl φ ψ ≫ f, pushout.inr φ ψ ≫ f) := by
@@ -171,8 +179,9 @@ lemma isEmbedding_pushout [IsTopologicalRing R] (φ : A ⟶ B) (ψ : A ⟶ C) :
     ((isEmbedding_graph continuous_id).prodMap Homeomorph.sumArrowHomeomorphProdArrow.isEmbedding)
   have H := (mvPolynomialHomeomorph B R A).symm.isEmbedding.prodMap
     (mvPolynomialHomeomorph C R A).symm.isEmbedding
-  convert ((H.comp hF).comp (mvPolynomialHomeomorph _ R A).isEmbedding).comp
-    (isEmbedding_precomp_of_surjective (R := R) fBC hfBC)
+  convert!
+    ((H.comp hF).comp (mvPolynomialHomeomorph _ R A).isEmbedding).comp
+      (isEmbedding_precomp_of_surjective (R := R) fBC hfBC)
   have (s : _) : (pushout.inr φ ψ).hom (ψ.hom s) = (pushout.inl φ ψ).hom (φ.hom s) :=
     congr($(pushout.condition (f := φ)).hom s).symm
   ext f s <;> simp [fB, fC, fBC, PB, PC, PBC, F, this]

@@ -3,8 +3,10 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Dimension.Basic
-import Mathlib.SetTheory.Cardinal.ToNat
+module
+
+public import Mathlib.SetTheory.Cardinal.ToNat
+public import Mathlib.LinearAlgebra.Dimension.Basic
 
 /-!
 # Finite dimension of vector spaces
@@ -13,7 +15,7 @@ Definition of the rank of a module, or dimension of a vector space, as a natural
 
 ## Main definitions
 
-Defined is `Module.finrank`, the dimension of a finite dimensional space, returning a
+Defined is `Module.finrank`, the dimension of a finite-dimensional space, returning a
 `Nat`, as opposed to `Module.rank`, which returns a `Cardinal`. When the space has infinite
 dimension, its `finrank` is by convention set to `0`.
 
@@ -29,6 +31,8 @@ in `Dimension.lean`. Not all results have been ported yet.
 
 You should not assume that there has been any effort to state lemmas as generally as possible.
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -58,6 +62,9 @@ Note that if `R` is not a field then there can exist modules `M` with `¬(Module
 noncomputable def finrank (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] : ℕ :=
   Cardinal.toNat (Module.rank R M)
 
+@[simp] theorem finrank_subsingleton [Subsingleton R] : finrank R M = 1 := by
+  rw [finrank, rank_subsingleton, map_one]
+
 theorem finrank_eq_of_rank_eq {n : ℕ} (h : Module.rank R M = ↑n) : finrank R M = n := by
   simp [finrank, h]
 
@@ -71,17 +78,17 @@ lemma rank_eq_ofNat_iff_finrank_eq_ofNat (n : ℕ) [Nat.AtLeastTwo n] :
 
 theorem finrank_le_of_rank_le {n : ℕ} (h : Module.rank R M ≤ ↑n) : finrank R M ≤ n := by
   rwa [← Cardinal.toNat_le_iff_le_of_lt_aleph0, toNat_natCast] at h
-  · exact h.trans_lt (nat_lt_aleph0 n)
-  · exact nat_lt_aleph0 n
+  · exact h.trans_lt natCast_lt_aleph0
+  · exact natCast_lt_aleph0
 
 theorem finrank_lt_of_rank_lt {n : ℕ} (h : Module.rank R M < ↑n) : finrank R M < n := by
   rwa [← Cardinal.toNat_lt_iff_lt_of_lt_aleph0, toNat_natCast] at h
-  · exact h.trans (nat_lt_aleph0 n)
-  · exact nat_lt_aleph0 n
+  · exact h.trans natCast_lt_aleph0
+  · exact natCast_lt_aleph0
 
 theorem lt_rank_of_lt_finrank {n : ℕ} (h : n < finrank R M) : ↑n < Module.rank R M := by
   rwa [← Cardinal.toNat_lt_iff_lt_of_lt_aleph0, toNat_natCast]
-  · exact nat_lt_aleph0 n
+  · exact natCast_lt_aleph0
   · contrapose! h
     rw [finrank, Cardinal.toNat_apply_of_aleph0_le h]
     exact n.zero_le
@@ -92,17 +99,20 @@ theorem one_lt_rank_of_one_lt_finrank (h : 1 < finrank R M) : 1 < Module.rank R 
 theorem finrank_le_finrank_of_rank_le_rank
     (h : lift.{w} (Module.rank R M) ≤ Cardinal.lift.{v} (Module.rank R N))
     (h' : Module.rank R N < ℵ₀) : finrank R M ≤ finrank R N := by
-  simpa only [toNat_lift] using toNat_le_toNat h (lift_lt_aleph0.mpr h')
+  simpa only [toNat_lift] using! toNat_le_toNat h (lift_lt_aleph0.mpr h')
 
 end Semiring
 
 end Module
 
+theorem CommSemiring.finrank_self (R) [CommSemiring R] : Module.finrank R R = 1 :=
+  finrank_eq_of_rank_eq (rank_self R)
+
 open Module
 
 namespace LinearEquiv
 
-/-- The dimension of a finite dimensional space is preserved under linear equivalence. -/
+/-- The dimension of a finite-dimensional space is preserved under linear equivalence. -/
 theorem finrank_eq (f : M ≃ₗ[R] N) : finrank R M = finrank R N := by
   unfold finrank
   rw [← Cardinal.toNat_lift, f.lift_rank_eq, Cardinal.toNat_lift]
@@ -134,11 +144,11 @@ namespace Algebra
 
 /-- If `S₀ / R₀` and `S₁ / R₁` are algebras, `i : R₀ ≃+* R₁` and `j : S₀ ≃+* S₁` are
 ring isomorphisms, such that `R₀ → R₁ → S₁` and `R₀ → S₀ → S₁` commute,
-then the finrank of `S₀ / R₀` is equal to the finrank of `S₁ / R₁`. -/
+then the `finrank` of `S₀ / R₀` is equal to the finrank of `S₁ / R₁`. -/
 theorem finrank_eq_of_equiv_equiv {R₀ S₀ : Type*} [CommSemiring R₀] [Semiring S₀] [Algebra R₀ S₀]
     {R₁ S₁ : Type*} [CommSemiring R₁] [Semiring S₁] [Algebra R₁ S₁] (i : R₀ ≃+* R₁) (j : S₀ ≃+* S₁)
     (hc : (algebraMap R₁ S₁).comp i.toRingHom = j.toRingHom.comp (algebraMap R₀ S₀)) :
     Module.finrank R₀ S₀ = Module.finrank R₁ S₁ := by
-  simpa using (congr_arg Cardinal.toNat (lift_rank_eq_of_equiv_equiv i j hc))
+  simpa using! (congr_arg Cardinal.toNat (lift_rank_eq_of_equiv_equiv i j hc))
 
 end Algebra

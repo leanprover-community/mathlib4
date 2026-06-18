@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
-import Mathlib.CategoryTheory.Functor.Derived.RightDerived
+module
+
+public import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
+public import Mathlib.CategoryTheory.Functor.Derived.RightDerived
 
 /-!
 # Derived adjunction
@@ -25,13 +27,15 @@ that `F' ⋙ G'` is the right derived functor of `F ⋙ L₁ ⋙ G'`).
 ## References
 
 * [Georges Maltsiniotis, *Le théorème de Quillen, d'adjonction des
-foncteurs dérivés, revisité*][Maltsiniotis2007]
+  foncteurs dérivés, revisité*][Maltsiniotis2007]
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
-variable {C₁ C₂ D₁ D₂ : Type*} [Category C₁] [Category C₂] [Category D₁] [Category D₂]
+variable {C₁ C₂ D₁ D₂ : Type*} [Category* C₁] [Category* C₂] [Category* D₁] [Category* D₂]
   {G : C₁ ⥤ C₂} {F : C₂ ⥤ C₁} (adj : G ⊣ F)
   {L₁ : C₁ ⥤ D₁} {L₂ : C₂ ⥤ D₂} (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
   [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
@@ -42,18 +46,20 @@ namespace Adjunction
 
 open Functor
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `Adjunction.derived`. -/
 @[simps]
 def derived' [G'.IsLeftDerivedFunctor α W₁] [F'.IsRightDerivedFunctor β W₂]
     (η : 𝟭 D₁ ⟶ G' ⋙ F') (ε : F' ⋙ G' ⟶ 𝟭 D₂)
     (hη : ∀ (X₁ : C₁), η.app (L₁.obj X₁) ≫ F'.map (α.app X₁) =
-      L₁.map (adj.unit.app X₁) ≫ β.app (G.obj X₁) := by aesop_cat)
+      L₁.map (adj.unit.app X₁) ≫ β.app (G.obj X₁) := by cat_disch)
     (hε : ∀ (X₂ : C₂), G'.map (β.app X₂) ≫ ε.app (L₂.obj X₂) =
-      α.app (F.obj X₂) ≫ L₂.map (adj.counit.app X₂) := by aesop_cat) : G' ⊣ F' where
+      α.app (F.obj X₂) ≫ L₂.map (adj.counit.app X₂) := by cat_disch) : G' ⊣ F' where
   unit := η
   counit := ε
   left_triangle_components := by
-    suffices G'.leftUnitor.inv ≫ whiskerRight η G' ≫ (Functor.associator _ _ _ ).hom ≫
+    suffices G'.leftUnitor.inv ≫ whiskerRight η G' ≫ (Functor.associator _ _ _).hom ≫
         whiskerLeft G' ε ≫ G'.rightUnitor.hom = 𝟙 _ from
       fun Y₁ ↦ by simpa using congr_app this Y₁
     apply G'.leftDerived_ext α W₁
@@ -93,11 +99,12 @@ noncomputable def derivedη : 𝟭 D₁ ⟶ G' ⋙ F' :=
     (L₁.rightUnitor.hom ≫ L₁.leftUnitor.inv ≫ whiskerRight adj.unit L₁ ≫
       (Functor.associator _ _ _).hom ≫ whiskerLeft G β ≫ (Functor.associator _ _ _).inv)
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma derivedη_fac_app (X₁ : C₁) :
     (adj.derivedη W₁ α β).app (L₁.obj X₁) ≫ F'.map (α.app X₁) =
       L₁.map (adj.unit.app X₁) ≫ β.app (G.obj X₁) := by
-  simpa using ((G' ⋙ F').leftDerived_fac_app ((Functor.associator _ _ _).inv ≫
+  simpa using! ((G' ⋙ F').leftDerived_fac_app ((Functor.associator _ _ _).inv ≫
     whiskerRight α F') W₁ _ (L₁.rightUnitor.hom ≫ L₁.leftUnitor.inv ≫ whiskerRight adj.unit L₁ ≫
       (Functor.associator _ _ _).hom ≫ whiskerLeft G β ≫ (Functor.associator _ _ _).inv)) X₁
 
@@ -114,17 +121,19 @@ noncomputable def derivedε : F' ⋙ G' ⟶ 𝟭 D₂ :=
     ((Functor.associator _ _ _).hom ≫ whiskerLeft F α ≫ (Functor.associator _ _ _).inv ≫
         whiskerRight adj.counit _ ≫ L₂.leftUnitor.hom ≫ L₂.rightUnitor.inv)
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma derivedε_fac_app (X₂ : C₂) :
     G'.map (β.app X₂) ≫ (adj.derivedε W₂ α β).app (L₂.obj X₂) =
       α.app (F.obj X₂) ≫ L₂.map (adj.counit.app X₂) := by
-  simpa using ((F' ⋙ G').rightDerived_fac_app
+  simpa using! ((F' ⋙ G').rightDerived_fac_app
     (whiskerRight β G' ≫ (Functor.associator _ _ _).hom) W₂ _
     ((Functor.associator _ _ _).hom ≫ whiskerLeft F α ≫ (Functor.associator _ _ _).inv ≫
       whiskerRight adj.counit _ ≫ L₂.leftUnitor.hom ≫ L₂.rightUnitor.inv)) X₂
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An adjunction between functors induces an adjunction between the
 corresponding left/right derived functors, when these derived
 functors are *absolute*, i.e. they remain derived functors

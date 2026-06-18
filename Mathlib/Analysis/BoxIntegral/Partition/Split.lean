@@ -3,7 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Partition.Basic
+module
+
+public import Mathlib.Analysis.BoxIntegral.Partition.Basic
 
 /-!
 # Split a box along one or more hyperplanes
@@ -26,7 +28,7 @@ We introduce the following definitions.
 
 ## Main results
 
-The main result `BoxIntegral.Prepartition.exists_iUnion_eq_diff` says that any prepartition `π` of
+The main result `BoxIntegral.Prepartition.exists_iUnion_eq_sdiff` says that any prepartition `π` of
 `I` admits a prepartition `π'` of `I` that covers exactly `I \ π.iUnion`. One of these prepartitions
 is available as `BoxIntegral.Prepartition.compl`.
 
@@ -34,6 +36,8 @@ is available as `BoxIntegral.Prepartition.compl`.
 
 rectangular box, partition, hyperplane
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -155,7 +159,7 @@ def split (I : Box ι) (i : ι) (x : ℝ) : Prepartition I :=
       exacts [Box.splitLower_le, Box.splitUpper_le])
     (by
       simp only [Finset.coe_insert, Finset.coe_singleton, true_and, Set.mem_singleton_iff,
-        pairwise_insert_of_symmetric symmetric_disjoint, pairwise_singleton]
+        pairwise_insert_of_symm, pairwise_singleton]
       rintro J rfl -
       exact I.disjoint_splitLower_splitUpper i x)
 
@@ -189,8 +193,6 @@ theorem split_of_notMem_Ioo (h : x ∉ Ioo (I.lower i) (I.upper i)) : split I i 
   cases h <;> [right; left]
   · rwa [eq_comm, Box.splitUpper_eq_self]
   · rwa [eq_comm, Box.splitLower_eq_self]
-
-@[deprecated (since := "2025-05-23")] alias split_of_not_mem_Ioo := split_of_notMem_Ioo
 
 theorem coe_eq_of_mem_split_of_mem_le {y : ι → ℝ} (h₁ : J ∈ split I i x) (h₂ : y ∈ J)
     (h₃ : y i ≤ x) : (J : Set (ι → ℝ)) = ↑I ∩ { y | y i ≤ x } := by
@@ -247,9 +249,9 @@ theorem iUnion_splitMany (I : Box ι) (s : Finset (ι × ℝ)) : (splitMany I s)
 theorem inf_splitMany {I : Box ι} (π : Prepartition I) (s : Finset (ι × ℝ)) :
     π ⊓ splitMany I s = π.biUnion fun J => splitMany J s := by
   classical
-  induction' s using Finset.induction_on with p s _ ihp
-  · simp
-  · simp_rw [splitMany_insert, ← inf_assoc, ihp, inf_split, biUnion_assoc]
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert p s _ ihp => simp_rw [splitMany_insert, ← inf_assoc, ihp, inf_split, biUnion_assoc]
 
 open scoped Classical in
 /-- Let `s : Finset (ι × ℝ)` be a set of hyperplanes `{x : ι → ℝ | x i = r}` in `ι → ℝ` encoded as
@@ -322,20 +324,22 @@ theorem IsPartition.exists_splitMany_le {I : Box ι} {π : Prepartition I} (h : 
 
 /-- For every prepartition `π` of `I` there exists a prepartition that covers exactly
 `I \ π.iUnion`. -/
-theorem exists_iUnion_eq_diff (π : Prepartition I) :
+theorem exists_iUnion_eq_sdiff (π : Prepartition I) :
     ∃ π' : Prepartition I, π'.iUnion = ↑I \ π.iUnion := by
   rcases π.eventually_splitMany_inf_eq_filter.exists with ⟨s, hs⟩
   use (splitMany I s).filter fun J => ¬(J : Set (ι → ℝ)) ⊆ π.iUnion
   simp [← hs]
 
+@[deprecated (since := "2026-06-03")] alias exists_iUnion_eq_diff := exists_iUnion_eq_sdiff
+
 /-- If `π` is a prepartition of `I`, then `π.compl` is a prepartition of `I`
 such that `π.compl.iUnion = I \ π.iUnion`. -/
 def compl (π : Prepartition I) : Prepartition I :=
-  π.exists_iUnion_eq_diff.choose
+  π.exists_iUnion_eq_sdiff.choose
 
 @[simp]
 theorem iUnion_compl (π : Prepartition I) : π.compl.iUnion = ↑I \ π.iUnion :=
-  π.exists_iUnion_eq_diff.choose_spec
+  π.exists_iUnion_eq_sdiff.choose_spec
 
 /-- Since the definition of `BoxIntegral.Prepartition.compl` uses `Exists.choose`,
 the result depends only on `π.iUnion`. -/
@@ -345,7 +349,7 @@ theorem compl_congr {π₁ π₂ : Prepartition I} (h : π₁.iUnion = π₂.iUn
   rw [h]
 
 theorem IsPartition.compl_eq_bot {π : Prepartition I} (h : IsPartition π) : π.compl = ⊥ := by
-  rw [← iUnion_eq_empty, iUnion_compl, h.iUnion_eq, diff_self]
+  rw [← iUnion_eq_empty, iUnion_compl, h.iUnion_eq, sdiff_self]
 
 @[simp]
 theorem compl_top : (⊤ : Prepartition I).compl = ⊥ :=

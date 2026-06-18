@@ -3,8 +3,10 @@ Copyright (c) 2024 Daniel Carranza. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Carranza
 -/
-import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+module
+
+public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
 /-!
 
@@ -17,11 +19,14 @@ This file constructs the opposite `V`-category as an instance on the type `Cᵒ�
 equivalence between
 * `ForgetEnrichment V (Cᵒᵖ)`, the underlying category of the `V`-category `Cᵒᵖ`; and
 * `(ForgetEnrichment V C)ᵒᵖ`, the opposite category of the underlying category of `C`.
+
 We also show that if `C` is an enriched ordinary category (i.e. a category enriched in `V`
 equipped with an identification `(X ⟶ Y) ≃ (𝟙_ V ⟶ (X ⟶[V] Y))`) then `Cᵒᵖ` is again
 an enriched ordinary category.
 
 -/
+
+@[expose] public section
 
 universe v₁ u₁ v u
 
@@ -88,10 +93,11 @@ def forgetEnrichmentOppositeEquivalence.functor :
   map {x y} f := f.op
   map_comp {x y z} f g := by
     have : (f ≫ g) = homTo V (f ≫ g) := rfl
-    rw [this, forgetEnrichment_comp, Category.assoc, tensorHom_eComp_op_eq,
+    rw [this, ForgetEnrichment.homTo_comp, Category.assoc, tensorHom_eComp_op_eq,
       leftUnitor_inv_braiding_assoc, ← unitors_inv_equal, ← Category.assoc]
     congr 1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor going from the opposite of the underlying category of the enriched category `C`
 to the underlying category of the enriched category `Cᵒᵖ`. -/
 def forgetEnrichmentOppositeEquivalence.inverse :
@@ -101,7 +107,7 @@ def forgetEnrichmentOppositeEquivalence.inverse :
   map_comp {x y z} f g := by
     have : g.unop ≫ f.unop = homTo V (g.unop ≫ f.unop) := rfl
     dsimp
-    rw [this, forgetEnrichment_comp, Category.assoc, unitors_inv_equal,
+    rw [this, ForgetEnrichment.homTo_comp, Category.assoc, unitors_inv_equal,
       ← leftUnitor_inv_braiding_assoc]
     have : (β_ _ _).hom ≫ (homTo V g.unop ⊗ₘ homTo V f.unop) ≫
       eComp V («to» V z.unop) («to» V y.unop) («to» V x.unop) =
@@ -109,6 +115,7 @@ def forgetEnrichmentOppositeEquivalence.inverse :
     rw [this, ← Category.assoc]
     congr 1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between the underlying category of the enriched category `Cᵒᵖ` and
 the opposite of the underlying category of the enriched category `C`. -/
 @[simps]

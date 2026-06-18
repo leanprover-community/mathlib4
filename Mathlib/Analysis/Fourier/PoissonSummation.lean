@@ -3,12 +3,14 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Fourier.AddCircle
-import Mathlib.Analysis.Fourier.FourierTransform
-import Mathlib.Analysis.PSeries
-import Mathlib.Analysis.Distribution.FourierSchwartz
-import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
-import Mathlib.Topology.ContinuousMap.Periodic
+module
+
+public import Mathlib.Analysis.Fourier.AddCircle
+public import Mathlib.Analysis.Fourier.FourierTransform
+public import Mathlib.Analysis.PSeries
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
+public import Mathlib.Topology.ContinuousMap.Periodic
 
 /-!
 # Poisson's summation formula
@@ -17,15 +19,15 @@ We prove Poisson's summation formula `∑ (n : ℤ), f n = ∑ (n : ℤ), 𝓕 f
 Fourier transform of `f`, under the following hypotheses:
 * `f` is a continuous function `ℝ → ℂ`.
 * The sum `∑ (n : ℤ), 𝓕 f n` is convergent.
-* For all compacts `K ⊂ ℝ`, the sum `∑ (n : ℤ), sup { ‖f(x + n)‖ | x ∈ K }` is convergent.
-  See `Real.tsum_eq_tsum_fourierIntegral` for this formulation.
+* For all compacts `K ⊂ ℝ`, the sum `∑ (n : ℤ), ‖f(x + n)‖` is uniformly convergent on `K`.
+  See `Real.tsum_eq_tsum_fourier` for this formulation.
 
 These hypotheses are potentially a little awkward to apply, so we also provide the less general but
 easier-to-use result `Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay`, in which we assume `f` and
 `𝓕 f` both decay as `|x| ^ (-b)` for some `b > 1`, and the even more specific result
-`SchwartzMap.tsum_eq_tsum_fourierIntegral`, where we assume that both `f` and `𝓕 f` are Schwartz
-functions.
--/
+`SchwartzMap.tsum_eq_tsum_fourierIntegral`, where we assume that `f` is a Schwartz function. -/
+
+public section
 
 
 noncomputable section
@@ -34,7 +36,7 @@ open Function hiding comp_apply
 
 open Set hiding restrict_apply
 
-open Complex hiding abs_of_nonneg
+open Complex
 
 open Real
 
@@ -48,7 +50,8 @@ open ContinuousMap
 `∑' n : ℤ, f (x + n)` is the value at `m` of the Fourier transform of `f`. -/
 theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
     (hf : ∀ K : Compacts ℝ, Summable fun n : ℤ => ‖(f.comp (ContinuousMap.addRight n)).restrict K‖)
-    (m : ℤ) : fourierCoeff (Periodic.lift <| f.periodic_tsum_comp_add_zsmul 1) m = 𝓕 f m := by
+    (m : ℤ) : fourierCoeff (Periodic.lift <| f.periodic_tsum_comp_add_zsmul 1) m =
+      𝓕 (f : ℝ → ℂ) m := by
   -- NB: This proof can be shortened somewhat by telescoping together some of the steps in the calc
   -- block, but I think it's more legible this way. We start with preliminaries about the integrand.
   let e : C(ℝ, ℂ) := (fourier (-m)).comp ⟨((↑) : ℝ → UnitAddCircle), continuous_quotient_mk'⟩
@@ -59,7 +62,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
   have eadd : ∀ (n : ℤ), e.comp (ContinuousMap.addRight n) = e := by
     intro n; ext1 x
     have : Periodic e 1 := Periodic.comp (fun x => AddCircle.coe_add_period 1 x) (fourier (-m))
-    simpa only [mul_one] using this.int_mul n x
+    simpa only [mul_one] using! this.int_mul n x
   -- Now the main argument. First unwind some definitions.
   calc
     fourierCoeff (Periodic.lift <| f.periodic_tsum_comp_add_zsmul 1) m =
@@ -73,7 +76,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
     -- Swap sum and integral.
     _ = ∑' n : ℤ, ∫ x in (0 : ℝ)..1, (e * f.comp (ContinuousMap.addRight n)) x := by
       refine (intervalIntegral.tsum_intervalIntegral_eq_of_summable_norm ?_).symm
-      convert hf ⟨uIcc 0 1, isCompact_uIcc⟩ using 1
+      convert! hf ⟨uIcc 0 1, isCompact_uIcc⟩ using 1
       exact funext fun n => neK _ _
     _ = ∑' n : ℤ, ∫ x in (0 : ℝ)..1, (e * f).comp (ContinuousMap.addRight n) x := by
       simp only [mul_comp] at eadd ⊢
@@ -82,13 +85,13 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
     _ = ∫ x, e x * f x := by
       suffices Integrable (e * f) from this.hasSum_intervalIntegral_comp_add_int.tsum_eq
       apply integrable_of_summable_norm_Icc
-      convert hf ⟨Icc 0 1, isCompact_Icc⟩ using 1
+      convert! hf ⟨Icc 0 1, isCompact_Icc⟩ using 1
       simp_rw [mul_comp] at eadd ⊢
       simp_rw [eadd]
       exact funext fun n => neK ⟨Icc 0 1, isCompact_Icc⟩ _
     -- Minor tidying to finish
-    _ = 𝓕 f m := by
-      rw [fourierIntegral_real_eq_integral_exp_smul]
+    _ = 𝓕 (f : ℝ → ℂ) m := by
+      rw [fourier_real_eq_integral_exp_smul]
       congr 1 with x : 1
       rw [smul_eq_mul, comp_apply, coe_mk, coe_mk, ContinuousMap.toFun_eq_coe, fourier_coe_apply]
       congr 2
@@ -96,21 +99,24 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
       ring
 
 /-- **Poisson's summation formula**, most general form. -/
-theorem Real.tsum_eq_tsum_fourierIntegral {f : C(ℝ, ℂ)}
+theorem Real.tsum_eq_tsum_fourier {f : C(ℝ, ℂ)}
     (h_norm :
       ∀ K : Compacts ℝ, Summable fun n : ℤ => ‖(f.comp <| ContinuousMap.addRight n).restrict K‖)
-    (h_sum : Summable fun n : ℤ => 𝓕 f n) (x : ℝ) :
-    ∑' n : ℤ, f (x + n) = ∑' n : ℤ, 𝓕 f n * fourier n (x : UnitAddCircle) := by
+    (h_sum : Summable fun n : ℤ => 𝓕 (f : ℝ → ℂ) n) (x : ℝ) :
+    ∑' n : ℤ, f (x + n) = ∑' n : ℤ, 𝓕 (f : ℝ → ℂ) n * fourier n (x : UnitAddCircle) := by
   let F : C(UnitAddCircle, ℂ) :=
     ⟨(f.periodic_tsum_comp_add_zsmul 1).lift, continuous_coinduced_dom.mpr (map_continuous _)⟩
   have : Summable (fourierCoeff F) := by
-    convert h_sum
+    convert! h_sum
     exact Real.fourierCoeff_tsum_comp_add h_norm _
-  convert (has_pointwise_sum_fourier_series_of_summable this x).tsum_eq.symm using 1
+  convert! (has_pointwise_sum_fourier_series_of_summable this x).tsum_eq.symm using 1
   · simpa only [F, coe_mk, ← QuotientAddGroup.mk_zero, Periodic.lift_coe, zsmul_one, comp_apply,
       coe_addRight, zero_add]
        using (hasSum_apply (summable_of_locally_summable_norm h_norm).hasSum x).tsum_eq
   · simp_rw [← Real.fourierCoeff_tsum_comp_add h_norm, smul_eq_mul, F, coe_mk]
+
+@[deprecated (since := "2025-11-16")]
+alias Real.tsum_eq_tsum_fourierIntegral := Real.tsum_eq_tsum_fourier
 
 section RpowDecay
 
@@ -135,14 +141,14 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   simp only [IsBigO, IsBigOWith, eventually_atTop] at hc' ⊢
   obtain ⟨d, hd⟩ := hc'
   refine ⟨c * (1 / 2) ^ (-b), ⟨max (1 + max 0 (-2 * R)) (d - R), fun x hx => ?_⟩⟩
-  rw [ge_iff_le, max_le_iff] at hx
+  rw [max_le_iff] at hx
   have hx' : max 0 (-2 * R) < x := by linarith
   rw [max_lt_iff] at hx'
   rw [norm_norm, ContinuousMap.norm_le _ (by positivity)]
   refine fun y => (hd y.1 (by linarith [hx.1, y.2.1])).trans ?_
   have A : ∀ x : ℝ, 0 ≤ |x| ^ (-b) := fun x => by positivity
-  rw [mul_assoc, mul_le_mul_left hc, norm_of_nonneg (A _), norm_of_nonneg (A _)]
-  convert claim x (by linarith only [hx.1]) y.1 y.2.1
+  rw [mul_assoc, mul_le_mul_iff_right₀ hc, norm_of_nonneg (A _), norm_of_nonneg (A _)]
+  convert! claim x (by linarith only [hx.1]) y.1 y.2.1
   · apply abs_of_nonneg; linarith [y.2.1]
   · exact abs_of_pos hx'.1
 
@@ -150,7 +156,7 @@ theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
     (hf : f =O[atBot] fun x : ℝ => |x| ^ (-b)) (R S : ℝ) :
     (fun x : ℝ => ‖f.restrict (Icc (x + R) (x + S))‖) =O[atBot] fun x : ℝ => |x| ^ (-b) := by
   have h1 : (f.comp (ContinuousMap.mk _ continuous_neg)) =O[atTop] fun x : ℝ => |x| ^ (-b) := by
-    convert hf.comp_tendsto tendsto_neg_atTop_atBot using 1
+    convert! hf.comp_tendsto tendsto_neg_atTop_atBot using 1
     ext1 x; simp only [Function.comp_apply, abs_neg]
   have h2 := (isBigO_norm_Icc_restrict_atTop hb h1 (-S) (-R)).comp_tendsto tendsto_neg_atBot_atTop
   have : (fun x : ℝ => |x| ^ (-b)) ∘ Neg.neg = fun x : ℝ => |x| ^ (-b) := by
@@ -188,34 +194,47 @@ theorem isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
 
 /-- **Poisson's summation formula**, assuming that `f` decays as
 `|x| ^ (-b)` for some `1 < b` and its Fourier transform is summable. -/
-theorem Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay_of_summable {f : ℝ → ℂ} (hc : Continuous f)
+theorem Real.tsum_eq_tsum_fourier_of_rpow_decay_of_summable {f : ℝ → ℂ} (hc : Continuous f)
     {b : ℝ} (hb : 1 < b) (hf : IsBigO (cocompact ℝ) f fun x : ℝ => |x| ^ (-b))
     (hFf : Summable fun n : ℤ => 𝓕 f n) (x : ℝ) :
     ∑' n : ℤ, f (x + n) = ∑' n : ℤ, 𝓕 f n * fourier n (x : UnitAddCircle) :=
-  Real.tsum_eq_tsum_fourierIntegral (fun K => summable_of_isBigO (Real.summable_abs_int_rpow hb)
+  Real.tsum_eq_tsum_fourier (fun K => summable_of_isBigO (Real.summable_abs_int_rpow hb)
     ((isBigO_norm_restrict_cocompact ⟨_, hc⟩ (zero_lt_one.trans hb) hf K).comp_tendsto
     Int.tendsto_coe_cofinite)) hFf x
+
+@[deprecated (since := "2025-11-16")]
+alias Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay_of_summable :=
+  Real.tsum_eq_tsum_fourier_of_rpow_decay_of_summable
 
 /-- **Poisson's summation formula**, assuming that both `f` and its Fourier transform decay as
 `|x| ^ (-b)` for some `1 < b`. (This is the one-dimensional case of Corollary VII.2.6 of Stein and
 Weiss, *Introduction to Fourier analysis on Euclidean spaces*.) -/
-theorem Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay {f : ℝ → ℂ} (hc : Continuous f) {b : ℝ}
+theorem Real.tsum_eq_tsum_fourier_of_rpow_decay {f : ℝ → ℂ} (hc : Continuous f) {b : ℝ}
     (hb : 1 < b) (hf : f =O[cocompact ℝ] (|·| ^ (-b)))
     (hFf : (𝓕 f) =O[cocompact ℝ] (|·| ^ (-b))) (x : ℝ) :
     ∑' n : ℤ, f (x + n) = ∑' n : ℤ, 𝓕 f n * fourier n (x : UnitAddCircle) :=
-  Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay_of_summable hc hb hf (summable_of_isBigO
+  Real.tsum_eq_tsum_fourier_of_rpow_decay_of_summable hc hb hf (summable_of_isBigO
     (Real.summable_abs_int_rpow hb) (hFf.comp_tendsto Int.tendsto_coe_cofinite)) x
+
+@[deprecated (since := "2025-11-16")]
+alias Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay :=
+  Real.tsum_eq_tsum_fourier_of_rpow_decay
 
 end RpowDecay
 
 section Schwartz
 
+open scoped SchwartzMap
+
 /-- **Poisson's summation formula** for Schwartz functions. -/
-theorem SchwartzMap.tsum_eq_tsum_fourierIntegral (f : SchwartzMap ℝ ℂ) (x : ℝ) :
-    ∑' n : ℤ, f (x + n) = ∑' n : ℤ, fourierTransformCLM ℝ f n * fourier n (x : UnitAddCircle) := by
+theorem SchwartzMap.tsum_eq_tsum_fourier (f : 𝓢(ℝ, ℂ)) (x : ℝ) :
+    ∑' n : ℤ, f (x + n) = ∑' n : ℤ, 𝓕 f n * fourier n (x : UnitAddCircle) := by
   -- We know that Schwartz functions are `O(‖x ^ (-b)‖)` for *every* `b`; for this argument we take
   -- `b = 2` and work with that.
-  apply Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay f.continuous one_lt_two
-    (f.isBigO_cocompact_rpow (-2)) ((fourierTransformCLM ℝ f).isBigO_cocompact_rpow (-2))
+  apply Real.tsum_eq_tsum_fourier_of_rpow_decay f.continuous one_lt_two
+    (f.isBigO_cocompact_rpow (-2)) ((𝓕 f).isBigO_cocompact_rpow (-2))
+
+@[deprecated (since := "2025-11-16")]
+alias SchwartzMap.tsum_eq_tsum_fourierIntegral := SchwartzMap.tsum_eq_tsum_fourier
 
 end Schwartz

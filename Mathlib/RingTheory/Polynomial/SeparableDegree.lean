@@ -3,8 +3,10 @@ Copyright (c) 2021 Jakob Scholbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Scholbach
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.FieldTheory.Separable
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.FieldTheory.Separable
 
 /-!
 
@@ -32,6 +34,8 @@ This file contains basics about the separable degree of a polynomial.
 
 separable degree, degree, polynomial
 -/
+
+@[expose] public section
 
 noncomputable section
 
