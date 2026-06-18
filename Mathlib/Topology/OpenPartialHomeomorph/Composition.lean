@@ -99,7 +99,7 @@ theorem inv_image_trans_target : e'.symm '' (e.trans e').target = e'.source ∩ 
 
 theorem trans_assoc (e'' : OpenPartialHomeomorph Z Z') :
     (e.trans e').trans e'' = e.trans (e'.trans e'') :=
-  toPartialEquiv_comp_toPartialHomeomorph_injective <| e.1.trans_assoc _ _
+  toPartialEquiv_injective <| e.1.trans_assoc _ _
 
 @[simp, mfld_simps]
 theorem trans_refl : e.trans (OpenPartialHomeomorph.refl Y) = e :=
@@ -131,7 +131,7 @@ theorem ofSet_trans_ofSet {s : Set X} (hs : IsOpen s) {s' : Set X} (hs' : IsOpen
   ext <;> simp [hs'.interior_eq]
 
 theorem restr_trans (s : Set X) : (e.restr s).trans e' = (e.trans e').restr s :=
-  toPartialEquiv_comp_toPartialHomeomorph_injective <|
+  toPartialEquiv_injective <|
     PartialEquiv.restr_trans e.toPartialEquiv e'.toPartialEquiv (interior s)
 
 end trans
@@ -213,8 +213,7 @@ def transOpenPartialHomeomorph (e : X ≃ₜ Y) (f' : OpenPartialHomeomorph Y Z)
 
 theorem transOpenPartialHomeomorph_eq_trans (e : X ≃ₜ Y) (f' : OpenPartialHomeomorph Y Z) :
     e.transOpenPartialHomeomorph f' = e.toOpenPartialHomeomorph.trans f' :=
-  OpenPartialHomeomorph.toPartialEquiv_comp_toPartialHomeomorph_injective
-    <| Equiv.transPartialEquiv_eq_trans _ _
+  OpenPartialHomeomorph.toPartialEquiv_injective <| Equiv.transPartialEquiv_eq_trans _ _
 
 @[simp, mfld_simps]
 theorem transOpenPartialHomeomorph_trans (e : X ≃ₜ Y) (f : OpenPartialHomeomorph Y Z)

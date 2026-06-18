@@ -100,7 +100,7 @@ theorem refl_prod_refl : (OpenPartialHomeomorph.refl X).prod (OpenPartialHomeomo
 theorem prod_trans (e : OpenPartialHomeomorph X Y) (f : OpenPartialHomeomorph Y Z)
     (e' : OpenPartialHomeomorph X' Y') (f' : OpenPartialHomeomorph Y' Z') :
     (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') :=
-  toPartialEquiv_comp_toPartialHomeomorph_injective <| e.1.prod_trans ..
+  toPartialEquiv_injective <| e.1.prod_trans ..
 
 theorem prod_eq_prod_of_nonempty {eX eX' : OpenPartialHomeomorph X X'}
     {eY eY' : OpenPartialHomeomorph Y Y'} (h : (eX.prod eY).source.Nonempty) :
@@ -226,7 +226,7 @@ def transHomeomorph (e : OpenPartialHomeomorph X Y) (f' : Y ≃ₜ Z) : OpenPart
 
 theorem transHomeomorph_eq_trans (e : OpenPartialHomeomorph X Y) (f' : Y ≃ₜ Z) :
     e.transHomeomorph f' = e.trans f'.toOpenPartialHomeomorph :=
-  toPartialEquiv_comp_toPartialHomeomorph_injective <| PartialEquiv.transEquiv_eq_trans _ _
+  toPartialEquiv_injective <| PartialEquiv.transEquiv_eq_trans _ _
 
 @[simp, mfld_simps]
 theorem transHomeomorph_transHomeomorph (e : OpenPartialHomeomorph X Y) (f' : Y ≃ₜ Z)
