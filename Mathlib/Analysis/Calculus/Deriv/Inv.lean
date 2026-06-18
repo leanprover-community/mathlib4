@@ -33,8 +33,6 @@ open Filter Asymptotics Set
 open ContinuousLinearMap (toSpanSingleton)
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜}
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
-variable {c : 𝕜 → 𝕜'} {c' : 𝕜'}
 
 section Inverse
 
