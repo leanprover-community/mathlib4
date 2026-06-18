@@ -5,6 +5,8 @@ Authors: Seewoo Lee
 -/
 module
 
+public import Mathlib.Analysis.Complex.Liouville
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.IsBoundedAtImInfty
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.MDifferentiable
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
 
@@ -20,10 +22,11 @@ and Ramanujan-Serre derivative $\partial_k := D - \frac{k}{12} E_2$ of modular f
 - `ramanujanSerreDerivative`: $\partial_k F := D F - \frac{k}{12} E_2 F$
 - `ramanujanSerreDerivative_slash_equivariant`: Ramanujan-Serre derivative is equivariant
   under the slash action.
+- `ramanujanSerreDerivativeMF`: the Ramanujan-Serre derivative preserves modularity, i.e. it maps
+  a weight `k` level `1` modular form to a weight `k + 2` level `1` modular form.
 
 TODO:
-- Ramanujan-Serre derivative preserves modularity, i.e. $\partial_k (M_k) \subseteq M_{k+2}$.
-- Use above, prove Ramanujan's identities. See [here](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean/blob/main/SpherePacking/ModularForms/RamanujanIdentities.lean)
+- Use the above to prove Ramanujan's identities. See [here](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean/blob/main/SpherePacking/ModularForms/RamanujanIdentities.lean)
   for `sorry`-free proofs.
 -/
 
@@ -249,6 +252,106 @@ theorem ramanujanSerreDerivative_slash_invariant (k : ℤ) (F : ℍ → ℂ) (hF
       ramanujanSerreDerivative k F := by
   rw [ramanujanSerreDerivative_slash_equivariant, h]
   exact hF
+
+/-!
+## Boundedness at infinity
+
+We show that the Serre derivative of a function bounded at infinity is again bounded at infinity.
+This is needed to show that the Serre derivative preserves modularity.
+-/
+
+/-- The closed ball of radius `z.im / 2` centred at `z` is contained in the upper half-plane. -/
+private lemma closedBall_subset_upperHalfPlane (z : ℍ) :
+    Metric.closedBall (z : ℂ) (z.im / 2) ⊆ {w : ℂ | 0 < w.im} := fun w hw => by
+  have habs := abs_im_le_norm (w - (z : ℂ))
+  rw [Complex.sub_im, ← dist_eq_norm, UpperHalfPlane.coe_im] at habs
+  simp only [Set.mem_setOf_eq]
+  linarith [Metric.mem_closedBall.mp hw, (abs_le.mp habs).1, z.im_pos]
+
+/-- A holomorphic function on `ℍ`, composed with `ofComplex`, is differentiable on (and continuous
+on the closure of) any open ball contained in the upper half-plane. -/
+private lemma diffContOnCl_comp_ofComplex {F : ℍ → ℂ} (hF : MDiff F) {c : ℂ} {R : ℝ}
+    (hcl : Metric.closedBall c R ⊆ {z : ℂ | 0 < z.im}) :
+    DiffContOnCl ℂ (F ∘ ofComplex) (Metric.ball c R) :=
+  ⟨fun z hz => (mdifferentiableAt_iff.mp
+      (hF ⟨z, hcl (Metric.ball_subset_closedBall hz)⟩)).differentiableWithinAt,
+    fun z hz => (mdifferentiableAt_iff.mp
+      (hF ⟨z, hcl (Metric.closure_ball_subset_closedBall hz)⟩)).continuousAt.continuousWithinAt⟩
+
+/-- A Cauchy estimate for the normalized derivative `D F`: if `F ∘ ofComplex` is bounded by `M` on
+the sphere of radius `r` centred at `z`, then `‖D F z‖ ≤ M / (2 π r)`. -/
+private lemma norm_normalizedDerivOfComplex_le {F : ℍ → ℂ} {z : ℍ} {r M : ℝ} (hr : 0 < r)
+    (hd : DiffContOnCl ℂ (F ∘ ofComplex) (Metric.ball (z : ℂ) r))
+    (hb : ∀ w ∈ Metric.sphere (z : ℂ) r, ‖(F ∘ ofComplex) w‖ ≤ M) :
+    ‖D F z‖ ≤ M / (2 * π * r) := by
+  have hnorm : ‖(2 * ↑π * I)⁻¹‖ = (2 * π)⁻¹ := by
+    simp [norm_inv, Complex.norm_I, abs_of_pos Real.pi_pos]
+  calc ‖D F z‖ = (2 * π)⁻¹ * ‖deriv (F ∘ ofComplex) (z : ℂ)‖ := by
+        simp only [normalizedDerivOfComplex, norm_mul, hnorm]
+    _ ≤ (2 * π)⁻¹ * (M / r) := by
+        gcongr
+        exact norm_deriv_le_of_forall_mem_sphere_norm_le hr hd hb
+    _ = M / (2 * π * r) := by ring
+
+/-- The normalized derivative `D F` of a holomorphic function `F` that is bounded at infinity is
+again bounded at infinity. This is a Cauchy estimate: differentiating loses at most a factor
+of `1 / z.im`. -/
+theorem normalizedDerivOfComplex_isBoundedAtImInfty {F : ℍ → ℂ} (hF : MDiff F)
+    (hb : IsBoundedAtImInfty F) : IsBoundedAtImInfty (D F) := by
+  rw [isBoundedAtImInfty_iff] at hb ⊢
+  obtain ⟨M, A, hMA⟩ := hb
+  refine ⟨M / π, 2 * max A 0 + 1, fun z hz => ?_⟩
+  have hR_pos : 0 < z.im / 2 := by linarith [z.im_pos]
+  have hcl := closedBall_subset_upperHalfPlane z
+  have hsphere : ∀ w ∈ Metric.sphere (z : ℂ) (z.im / 2), ‖(F ∘ ofComplex) w‖ ≤ M := by
+    intro w hw
+    have hw_im : 0 < w.im := hcl (Metric.sphere_subset_closedBall hw)
+    have habs := abs_im_le_norm (w - (z : ℂ))
+    rw [Complex.sub_im, ← dist_eq_norm, Metric.mem_sphere.mp hw, UpperHalfPlane.coe_im] at habs
+    have hw_im_ge_A : A ≤ w.im := by
+      linarith [(abs_le.mp habs).1, le_max_left A 0, le_max_right A 0]
+    have hwM := hMA ⟨w, hw_im⟩ hw_im_ge_A
+    simpa only [Function.comp_apply, ofComplex_apply_of_im_pos hw_im] using hwM
+  have hz_im_ge_1 : (1 : ℝ) ≤ z.im := by linarith [le_max_right A 0]
+  have hzA : A ≤ z.im := by linarith [le_max_left A 0, le_max_right A 0]
+  have hM_nonneg : 0 ≤ M := le_trans (norm_nonneg _) (hMA z hzA)
+  calc ‖D F z‖ ≤ M / (2 * π * (z.im / 2)) :=
+        norm_normalizedDerivOfComplex_le hR_pos (diffContOnCl_comp_ofComplex hF hcl) hsphere
+    _ = M / (π * z.im) := by ring
+    _ ≤ M / (π * 1) := by gcongr
+    _ = M / π := by ring
+
+/-- The Serre derivative of a holomorphic function that is bounded at infinity is again bounded at
+infinity. -/
+theorem ramanujanSerreDerivative_isBoundedAtImInfty {F : ℍ → ℂ} (k : ℂ) (hF : MDiff F)
+    (hb : IsBoundedAtImInfty F) : IsBoundedAtImInfty (ramanujanSerreDerivative k F) := by
+  have hE2 : IsBoundedAtImInfty (fun z : ℍ ↦ k * 12⁻¹ * EisensteinSeries.E2 z * F z) :=
+    Filter.BoundedAtFilter.mul (Filter.BoundedAtFilter.mul
+      (Filter.const_boundedAtFilter atImInfty (k * 12⁻¹)) EisensteinSeries.E2_isBoundedAtImInfty) hb
+  change IsBoundedAtImInfty (D F - (fun z : ℍ ↦ k * 12⁻¹ * EisensteinSeries.E2 z * F z))
+  rw [sub_eq_add_neg]
+  exact Filter.BoundedAtFilter.add (normalizedDerivOfComplex_isBoundedAtImInfty hF hb)
+    (Filter.BoundedAtFilter.neg hE2)
+
+/--
+The Ramanujan-Serre derivative preserves modularity: if `f` is a modular form of weight `k` and
+level `1`, then `∂ₖ f` is a modular form of weight `k + 2` and level `1`.
+-/
+noncomputable def ramanujanSerreDerivativeMF (k : ℤ) (f : ModularForm 𝒮ℒ k) :
+    ModularForm 𝒮ℒ (k + 2) where
+  toSlashInvariantForm :=
+    { toFun := ramanujanSerreDerivative (k : ℂ) f
+      slash_action_eq' := fun g hg => by
+        obtain ⟨γ, rfl⟩ := hg
+        have hf : (f : ℍ → ℂ) ∣[k] γ = f := f.slash_action_eq' _ ⟨γ, rfl⟩
+        exact ramanujanSerreDerivative_slash_invariant k f f.holo' γ hf }
+  holo' := ramanujanSerreDerivative_mdifferentiable (k : ℂ) f.holo'
+  bdd_at_cusps' {c} hc := by
+    rw [OnePoint.isBoundedAt_iff_forall_SL2Z hc]
+    intro γ _
+    rw [ramanujanSerreDerivative_slash_invariant k f f.holo' γ (f.slash_action_eq' _ ⟨γ, rfl⟩)]
+    exact ramanujanSerreDerivative_isBoundedAtImInfty (k : ℂ) f.holo'
+      (ModularFormClass.bdd_at_infty f)
 
 end
 
