@@ -329,7 +329,7 @@ def toContinuousMapHom [StarRing R] [ContinuousStar R] : C(X, R)₀ →⋆ₙₐ
   map_mul' _ _ := rfl
   map_star' _ := rfl
 
-lemma coe_toContinuousMapHom [StarRing R] [ContinuousStar R] :
+@[simp] lemma coe_toContinuousMapHom [StarRing R] [ContinuousStar R] :
     ⇑(toContinuousMapHom (X := X) (R := R)) = (↑) :=
   rfl
 
