@@ -81,7 +81,7 @@ variable {k : ℕ}
 
 section GeneralLemma
 
-variable {α β: Type*}
+variable {α β : Type*}
 variable [TopologicalSpace α] [LinearOrder β] [TopologicalSpace β] [OrderClosedTopology β]
 
 variable [Group β] [MulLeftMono β]
@@ -89,8 +89,8 @@ variable [Group β] [MulLeftMono β]
 -- Find correct file. `Topology/Connected/Basic.lean` does not import absolute value
 @[to_additive]
 theorem _root_.IsPreconnected.forall_le_or_forall_le_of_forall_le_mabs {s : Set α}
-    (hs : IsPreconnected s) {L : β} (hL : 1 < L) {f: α → β}
-    (hfcont: ContinuousOn f s) (hf : ∀ x ∈ s, L ≤ |f x|ₘ) :
+    (hs : IsPreconnected s) {L : β} (hL : 1 < L) {f : α → β}
+    (hfcont : ContinuousOn f s) (hf : ∀ x ∈ s, L ≤ |f x|ₘ) :
     (∀ x ∈ s, L ≤ f x) ∨ (∀ x ∈ s, L ≤ (f x)⁻¹) := by
   obtain (h | h) := hs.mapsTo_Ioi_or_Iio (b := 1) hfcont (fun x hx h ↦
     not_le_of_gt hL <| by simpa [mabs_one, h] using hf x hx)
@@ -179,7 +179,7 @@ theorem norm_integral_exp_mul_I_le_of_order_one'
   have hnz2 {x : ℝ} (hx : x ∈ [[a, b]]) : ((φ' x) ^ 2 : ℂ) ≠ 0 := by simp [hφ'_nz hx]
   have hφ'_norm {x : ℝ} (hx : x ∈ [[a, b]]) : L ≤ ‖φ' x‖ := by simpa using h x hx
   have hasDerivAt_u : ∀ x ∈ [[a, b]], HasDerivWithinAt u (u' x) [[a, b]] x := fun x hx ↦ by
-    convert! HasDerivWithinAt.inv' (.mul (.ofReal_comp <| hasDerivAt_φ' _ hx)
+    convert! HasDerivWithinAt.inv (.mul (.ofReal_comp <| hasDerivAt_φ' _ hx)
         (hasDerivWithinAt_const _ _ I)) (hnz1 hx) using 1
     simp [mul_pow, u']
   have hasDerivAt_v : ∀ x ∈ [[a, b]], HasDerivWithinAt v (v' x) [[a, b]] x := fun x hx ↦ by
@@ -201,7 +201,7 @@ theorem norm_integral_exp_mul_I_le_of_order_one'
       (φ'' x / (φ' x) ^ 2) (Ioi x) x := fun x hx ↦ by
     have hx' := uIoo_subset_uIcc_self hx
     have := ((hasDerivAt_φ' x hx').mono uIoo_subset_uIcc_self).hasDerivAt <| isOpen_Ioo.mem_nhds hx
-    convert! HasDerivWithinAt.neg <| .inv' this.hasDerivWithinAt (hφ'_nz hx') using 1
+    convert! HasDerivWithinAt.neg <| .inv this.hasDerivWithinAt (hφ'_nz hx') using 1
     field_simp
   have hnorm_u'_eq : ∀ x ∈ [[a, b]], ‖u' x‖ = φ'' x / (φ' x) ^ 2 := fun x hx ↦ by
     simp_all [u', φ'', φ', hφ'_mono.derivWithin_nonneg (x := x)]
