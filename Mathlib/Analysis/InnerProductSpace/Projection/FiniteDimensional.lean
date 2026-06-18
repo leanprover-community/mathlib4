@@ -63,7 +63,7 @@ theorem det_reflection : LinearMap.det K.reflection.toLinearMap = (-1) ^ finrank
   swap
   · rw [finrank_of_infinite_dimensional hK, pow_zero, LinearMap.det_eq_one_of_finrank_eq_zero]
     exact finrank_of_infinite_dimensional fun h ↦ hK (h.finiteDimensional_submodule _)
-  let e := K.prodEquivOfIsCompl _ K.isCompl_orthogonal_of_hasOrthogonalProjection
+  let e := K.prodEquivOfIsCompl _ K.isCompl_orthogonal
   let b := (finBasis 𝕜 K).prod (finBasis 𝕜 Kᗮ)
   have : LinearMap.toMatrix b b (e.symm ∘ₗ K.reflection.toLinearMap ∘ₗ e.symm.symm) =
       Matrix.fromBlocks 1 0 0 (-1) := by
