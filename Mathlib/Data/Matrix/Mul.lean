@@ -714,6 +714,9 @@ def vecMul [Fintype m] (v : m → α) (M : Matrix m n α) : n → α
 @[inherit_doc]
 scoped infixl:73 " ᵥ* " => Matrix.vecMul
 
+lemma mulVec_apply [Fintype n] {M : Matrix m n α} {x : n → α} {i : m} :
+    (M *ᵥ x) i = ∑ j : n, M i j * x j := rfl
+
 /-- Left multiplication by a matrix, as an `AddMonoidHom` from vectors to vectors. -/
 @[simps]
 def mulVec.addMonoidHomLeft [Fintype n] (v : n → α) : Matrix m n α →+ m → α where
@@ -736,9 +739,6 @@ theorem vecMul_eq_sum [Fintype m] (v : m → α) (M : Matrix m n α) : v ᵥ* M 
 theorem mulVec_eq_sum [Fintype n] (v : n → α) (M : Matrix m n α) :
     M *ᵥ v = ∑ i, MulOpposite.op (v i) • Mᵀ i :=
   (Finset.sum_fn ..).symm
-
-lemma mulVec_apply [Fintype n] {M : Matrix m n α} {x : n → α} {i : m} :
-    (M *ᵥ x) i = ∑ j : n, M i j * x j := rfl
 
 theorem mulVec_diagonal [Fintype m] [DecidableEq m] (v w : m → α) (x : m) :
     (diagonal v *ᵥ w) x = v x * w x :=
