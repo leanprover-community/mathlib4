@@ -45,14 +45,14 @@ variable {M : Type*} [CommMonoidWithZero M] [IsCancelMulZero M]
 
 theorem Associates.isAtom_iff {p : Associates M} (h₁ : p ≠ 0) : IsAtom p ↔ Irreducible p :=
   ⟨fun hp =>
-    ⟨by simpa only [Associates.isUnit_iff_eq_one] using hp.1, fun a b h =>
+    ⟨by simpa only [Associates.isUnit_iff_eq_one] using! hp.1, fun a b h =>
       (hp.le_iff.mp ⟨_, h⟩).casesOn (fun ha => Or.inl (a.isUnit_iff_eq_one.mpr ha)) fun ha =>
         Or.inr
           (show IsUnit b by
             rw [ha] at h
             apply isUnit_of_associated_mul (show Associated (p * b) p by conv_rhs => rw [h]) h₁)⟩,
     fun hp =>
-    ⟨by simpa only [Associates.isUnit_iff_eq_one, Associates.bot_eq_one] using hp.1,
+    ⟨by simpa only [Associates.isUnit_iff_eq_one, Associates.bot_eq_one] using! hp.1,
       fun b ⟨⟨a, hab⟩, hb⟩ =>
       (hp.isUnit_or_isUnit hab).casesOn
         (fun hb => show b = ⊥ by rwa [Associates.isUnit_iff_eq_one, ← Associates.bot_eq_one] at hb)
@@ -244,6 +244,8 @@ variable [UniqueFactorizationMonoid N] [UniqueFactorizationMonoid M]
 
 open DivisorChain
 
+set_option linter.overlappingInstances false
+
 theorem pow_image_of_prime_by_factor_orderIso_dvd
     {m p : Associates M} {n : Associates N} (hn : n ≠ 0) (hp : p ∈ normalizedFactors m)
     (d : Set.Iic m ≃o Set.Iic n) {s : ℕ} (hs' : p ^ s ≤ m) :
@@ -375,6 +377,8 @@ def mkFactorOrderIsoOfFactorDvdEquiv [IsCancelMulZero N]
         associatesEquivOfUniqueUnits_apply, out_dvd_iff, mk_out]
 
 variable [UniqueFactorizationMonoid M] [UniqueFactorizationMonoid N]
+
+set_option linter.overlappingInstances false
 
 theorem mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors {m p : M} {n : N} (hm : m ≠ 0)
     (hn : n ≠ 0) (hp : p ∈ normalizedFactors m) {d : { l : M // l ∣ m } ≃ { l : N // l ∣ n }}

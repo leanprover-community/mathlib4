@@ -55,7 +55,7 @@ def Ultrafilter.mul {M} [Mul M] : Mul (Ultrafilter M) where mul U V := (· * ·)
 
 attribute [local instance] Ultrafilter.mul Ultrafilter.add
 
-/- We could have taken this as the definition of `U * V`, but then we would have to prove that it
+/-- We could have taken this as the definition of `U * V`, but then we would have to prove that it
 defines an ultrafilter. -/
 @[to_additive]
 theorem Ultrafilter.eventually_mul {M} [Mul M] (U V : Ultrafilter M) (p : M → Prop) :
@@ -203,7 +203,7 @@ theorem exists_FP_of_large {M} [Semigroup M] (U : Ultrafilter M) (U_idem : U * U
   | cons' b n h ih =>
     rintro p rfl
     have := Set.inter_subset_right (ih (succ p) ?_)
-    · simpa only using this
+    · simpa only using! this
     rw [Stream'.corec_eq, Stream'.tail_cons]
 
 /-- The strong form of **Hindman's theorem**: in any finite cover of an FP-set, one the parts

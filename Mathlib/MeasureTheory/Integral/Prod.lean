@@ -248,7 +248,7 @@ theorem hasFiniteIntegral_prod_iff ⦃f : α × β → E⦄ (h1f : StronglyMeasu
   have (x : _) : ∀ᵐ y ∂ν, 0 ≤ ‖f (x, y)‖ := by filter_upwards with y using norm_nonneg _
   simp_rw [integral_eq_lintegral_of_nonneg_ae (this _)
       (h1f.norm.comp_measurable measurable_prodMk_left).aestronglyMeasurable,
-    enorm_eq_ofReal toReal_nonneg, ofReal_norm_eq_enorm]
+    enorm_eq_ofReal toReal_nonneg, ofReal_norm]
   -- this fact is probably too specialized to be its own lemma
   have : ∀ {p q r : Prop} (_ : r → p), (r ↔ p ∧ q) ↔ p → (r ↔ q) := fun {p q r} h1 => by
     rw [← and_congr_right_iff, and_iff_right_of_imp h1]
@@ -478,9 +478,6 @@ theorem continuous_integral_integral :
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le) _
   · exact fun i => ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖ₑ ∂ν ∂μ
   swap; · exact fun i => lintegral_mono fun x => enorm_integral_le_lintegral_enorm _
-  change
-    Tendsto (fun i : α × β →₁[μ.prod ν] E => ∫⁻ x, ∫⁻ y : β, ‖i (x, y) - g (x, y)‖ₑ ∂ν ∂μ) (𝓝 g)
-      (𝓝 0)
   have this (i : α × β →₁[μ.prod ν] E) : Measurable fun z => ‖i z - g z‖ₑ :=
     ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).enorm
   simp_rw [← lintegral_prod _ (this _).aemeasurable, ← L1.ofReal_norm_sub_eq_lintegral,
@@ -546,6 +543,15 @@ lemma intervalIntegral_integral_swap {a b : ℝ} {f : ℝ → α → E}
   · simp_rw [intervalIntegral.integral_of_ge hab]
     simp only [hab, Set.uIoc_of_ge] at h_int
     rw [integral_integral_swap h_int, integral_neg]
+
+/-- Change the order of integration for interval integrals. -/
+lemma intervalIntegral_intervalIntegral_swap {F : ℝ → ℝ → E} {a b c d : ℝ}
+    (h : IntegrableOn F.uncurry (uIoc a b ×ˢ uIoc c d)) :
+    ∫ x in a..b, ∫ y in c..d, F x y = ∫ y in c..d, ∫ x in a..b, F x y := by
+  rw [intervalIntegral.intervalIntegral_eq_integral_uIoc, ← intervalIntegral_integral_swap,
+    ← intervalIntegral.integral_smul]
+  · simp_rw [intervalIntegral.intervalIntegral_eq_integral_uIoc]
+  · rwa [← integrable_swap_iff, Measure.prod_restrict, ← Measure.volume_eq_prod, ← IntegrableOn]
 
 /-- **Fubini's Theorem** for set integrals. -/
 theorem setIntegral_prod (f : α × β → E) {s : Set α} {t : Set β}

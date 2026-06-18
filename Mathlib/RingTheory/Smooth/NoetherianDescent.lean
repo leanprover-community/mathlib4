@@ -189,6 +189,7 @@ end DescentAux
 
 variable (R A B)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 Let `A` be an `R`-algebra. If `B` is a smooth `A`-algebra, there exists an

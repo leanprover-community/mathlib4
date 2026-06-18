@@ -40,7 +40,7 @@ variable {x y : ℝ}
 to `log |x|` for `x < 0`, and to `0` for `0`. We use this unconventional extension to
 `(-∞, 0]` as it gives the formula `log (x * y) = log x + log y` for all nonzero `x` and `y`, and
 the derivative of `log` is `1/x` away from `0`. -/
-@[pp_nodot]
+@[pp_nodot, wikidata Q11197]
 noncomputable def log (x : ℝ) : ℝ :=
   if hx : x = 0 then 0 else expOrderIso.symm ⟨|x|, abs_pos.2 hx⟩
 
@@ -336,12 +336,22 @@ theorem abs_log_mul_self_lt (x : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) : |log x * x| 
   rw [← abs_of_nonneg aux, neg_mul, abs_neg] at this
   exact this
 
+lemma le_log_one_add_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 2 * x / (x + 2) ≤ log (1 + x) := by
+  rw [le_log_iff_exp_le (by grind)]
+  convert exp_le_two_add_div_two_sub (x := 2 * x / (x + 2)) (by positivity) _ using 1
+  all_goals field_simp; grind
+
+lemma lt_log_one_add_of_pos {x : ℝ} (hx : 0 < x) : 2 * x / (x + 2) < log (1 + x) := by
+  rw [lt_log_iff_exp_lt (by grind)]
+  convert exp_lt_two_add_div_two_sub (x := 2 * x / (x + 2)) (by positivity) _ using 1
+  all_goals field_simp; grind
+
 /-- The real logarithm function tends to `+∞` at `+∞`. -/
 theorem tendsto_log_atTop : Tendsto log atTop atTop :=
-  tendsto_comp_exp_atTop.1 <| by simpa only [log_exp] using tendsto_id
+  tendsto_comp_exp_atTop.1 <| by simpa only [log_exp] using! tendsto_id
 
 lemma tendsto_log_nhdsGT_zero : Tendsto log (𝓝[>] 0) atBot := by
-  simpa [← tendsto_comp_exp_atBot] using tendsto_id
+  simpa [← tendsto_comp_exp_atBot] using! tendsto_id
 
 theorem tendsto_log_nhdsNE_zero : Tendsto log (𝓝[≠] 0) atBot := by
   simpa [comp_def] using tendsto_log_nhdsGT_zero.comp tendsto_abs_nhdsNE_zero
@@ -586,27 +596,30 @@ lemma log_nz_of_isRat_neg {n : ℤ} : (NormNum.IsRat e n d) → (decide (n / d <
 
 /-- Extension for the `positivity` tactic: `Real.log` of a natural number is always nonnegative. -/
 @[positivity Real.log (Nat.cast _)]
-meta def evalLogNatCast : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalLogNatCast : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.log (Nat.cast $a)) =>
+    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.nonnegative q(Real.log_natCast_nonneg $a))
   | _, _, _ => throwError "not Real.log"
 
 /-- Extension for the `positivity` tactic: `Real.log` of an integer is always nonnegative. -/
 @[positivity Real.log (Int.cast _)]
-meta def evalLogIntCast : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalLogIntCast : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.log (Int.cast $a)) =>
+    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.nonnegative q(Real.log_intCast_nonneg $a))
   | _, _, _ => throwError "not Real.log"
 
 /-- Extension for the `positivity` tactic: `Real.log` of a numeric literal. -/
 @[positivity Real.log _]
-meta def evalLogNatLit : PositivityExt where eval {u α} _ _ e := do
+meta def evalLogNatLit : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.log $a) =>
+    let some _ := pα? | pure .none
     match ← NormNum.derive a with
     | .isNat (_ : Q(AddMonoidWithOne ℝ)) lit p =>
       assumeInstancesCommute
