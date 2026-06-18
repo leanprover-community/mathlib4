@@ -371,7 +371,7 @@ theorem card_mainDegree_eq_zero_iff : p.mainDegree.card = 0 ↔ p.vars.max = ⊥
   mp h :=
     match hc : p.vars.max with
     | ⊥ => rfl
-    | Option.some c => by
+    | WithBot.some c => by
       absurd Finset.mem_of_max hc
       rw [card_mainDegree_eq_degreeOf hc, degreeOf_def] at h
       simpa only [vars_def, Multiset.mem_toFinset, Multiset.count_eq_zero] using h
