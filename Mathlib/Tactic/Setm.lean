@@ -6,6 +6,7 @@ Authors: Lua Viana Reis, Kyle Miller, Gareth Ma
 module
 
 public meta import Mathlib.Tactic.Core
+public meta import Lean.Elab.Tactic.Rewrite
 
 /-!
 # The `setm` tactic
@@ -80,6 +81,9 @@ elab_rules : tactic
           defeqError pat (← g.getType)
       if let some loc := loc then
         for (name, _) in mvars do
-        let expr := (← getLocalDeclFromUserName name).value
-        evalTactic (← `(tactic| try
-          rewrite [show $(← Term.exprToSyntax expr) = $(mkIdent name) from rfl] $loc))
+          let expr := (← getLocalDeclFromUserName name).value
+          let eq ← `(show $(← Term.exprToSyntax expr) = $(mkIdent name) from rfl)
+          withLocation (expandLocation loc)
+            (discard <| tryTactic <| rewriteLocalDecl eq false ·)
+            (discard <| tryTactic <| rewriteTarget eq false)
+            (fun _ ↦ throwError "setm rewrite failed")

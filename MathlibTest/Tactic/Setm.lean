@@ -15,13 +15,24 @@ example : 1 + 2 = 3 := by
   trivial
 
 /- Usage with `at` keywords -/
+set_option linter.unusedVariables false in
 example (h1 : 1 + 1 = 5) (h2 : 1 + 3 = 5) (h3 : 1 + 2 = 5) : True := by
-  setm ?A + _ = ?B using h1 at *
+  setm ?A + _ = ?B using h1 at h1 h2 h3
   guard_hyp A :=ₛ 1
   guard_hyp B :=ₛ 5
   guard_hyp h1 :ₛ A + A = B
   guard_hyp h2 :ₛ A + 3 = B
   guard_hyp h3 :ₛ A + 2 = B
+  trivial
+
+set_option linter.unusedVariables false in
+example (h1 : 1 + 1 = 5) (h2 : 1 + 3 = 5) (h3 : 1 + 2 = 5) : True := by
+  setm ?A + ?B = _ using h2 at h1 h2 h3
+  guard_hyp A :=ₛ 1
+  guard_hyp B :=ₛ 3
+  guard_hyp h1 :ₛ A + A = 5
+  guard_hyp h2 :ₛ A + B = 5
+  guard_hyp h3 :ₛ A + 2 = 5
   trivial
 
 /- Test reusing named holes -/
