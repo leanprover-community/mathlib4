@@ -204,7 +204,7 @@ theorem ramificationIdxIn_mul_ramificationIdxIn [Flat B C] :
   rw [ramificationIdxIn_eq_ramificationIdx p P G, ramificationIdxIn_eq_ramificationIdx p Q GAC,
     ramificationIdxIn_eq_ramificationIdx P Q GBC, ← ramificationIdx'_tower P Q]
 
-@[deprecated (since := "2026-05-07")] alias ramificationIdxIn_mul_ramificationIdxIn' :=
+@[deprecated (since := "2026-06-18")] alias ramificationIdxIn_mul_ramificationIdxIn' :=
   ramificationIdxIn_mul_ramificationIdxIn
 
 end tower
@@ -281,7 +281,7 @@ theorem card_stabilizer_eq_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
   let := Localization.AtPrime.algebraOfLiesOver p P
   let : Algebra (R ⧸ p) p.ResidueField := inferInstance
   let : Algebra (S ⧸ P) P.ResidueField := inferInstance
-  let heq : (algebraMap (S ⧸ P) P.ResidueField).comp (algebraMap (R ⧸ p) (S ⧸ P)) =
+  have heq : (algebraMap (S ⧸ P) P.ResidueField).comp (algebraMap (R ⧸ p) (S ⧸ P)) =
       (algebraMap p.ResidueField P.ResidueField).comp (algebraMap (R ⧸ p) p.ResidueField) := by
     ext
     simp [← IsScalarTower.algebraMap_apply]
@@ -313,9 +313,10 @@ lemma card_inertia_eq_ramificationIdxIn [IsDomain R] [IsDomain S] [Module.Finite
     Nat.card (P.inertia G) = Ideal.ramificationIdxIn p S := by
   have H := ncard_primesOver_mul_card_inertia_mul_finrank (G := G) p P
   rw [← inertiaDegIn_eq_inertiaDeg p P G] at H
-  have := H
+  have h1 : (p.primesOver S).ncard ≠ 0 := by grind [Nat.card_pos]
+  have h2 : p.inertiaDegIn S ≠ 0 := by grind [Nat.card_pos]
   rwa [← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p S G,
-    mul_assoc, mul_right_inj', mul_left_inj'] at H <;> grind [Nat.card_pos]
+    mul_assoc, mul_right_inj' h1, mul_left_inj' h2] at H
 
 /-- The cardinality of the decomposition group is equal to the ramification index times the
 inertia degree. -/
