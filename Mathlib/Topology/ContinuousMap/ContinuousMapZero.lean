@@ -86,6 +86,9 @@ def comp (g : C(Y, R)₀) (f : C(X, Y)₀) : C(X, R)₀ where
 @[simp]
 lemma comp_apply (g : C(Y, R)₀) (f : C(X, Y)₀) (x : X) : g.comp f x = g (f x) := rfl
 
+@[simp]
+theorem coe_comp (g : C(Y, R)₀) (f : C(X, Y)₀) : g.comp f = g ∘ f := rfl
+
 instance instPartialOrder [PartialOrder R] : PartialOrder C(X, R)₀ := fast_instance%
   .lift _ DFunLike.coe_injective
 
@@ -455,6 +458,14 @@ def nonUnitalStarAlgHom_postcomp (φ : R →⋆ₙₐ[M] S) (hφ : Continuous φ
   map_mul' _ _ := ext <| by simp
   map_star' _ := ext <| by simp [map_star]
   map_smul' r f := ext <| by simp
+
+@[simps!]
+def starAlgEquiv_precomp (f : X ≃ₜ Y) (hf : f 0 = 0) :
+    C(Y, R)₀ ≃⋆ₐ[R] C(X, R)₀ :=
+  .ofNonUnitalStarAlgHom
+    (nonUnitalStarAlgHom_precomp R ⟨f, hf⟩)
+    (nonUnitalStarAlgHom_precomp R ⟨f.symm, by simpa using congr(f.symm $hf.symm)⟩)
+    (by ext; simp) (by ext; simp)
 
 end CompHoms
 

@@ -15,6 +15,8 @@ allows to, for example, equip type synonyms of a C⋆-algebra with weaker topolo
 of the continuous functional calculus.
 -/
 
+@[expose] public section
+
 section UnitalTransfer
 
 variable {R A B : Type*} {p : A → Prop} {q : B → Prop}
@@ -40,7 +42,7 @@ lemma cfcHomTransfer_injective (e : A ≃⋆ₐ[R] B) (hpq : ∀ x, p x ↔ q (e
 
 omit [TopologicalSpace B] in
 lemma cfcHomTransfer_id (e : A ≃⋆ₐ[R] B) (hpq : ∀ x, p x ↔ q (e x)) (b : B) (hb : q b) :
-    cfcHomTransfer e hpq b hb (.restrict (spectrum R b) (.id R) ) = b := by
+    cfcHomTransfer e hpq b hb (.restrict (spectrum R b) (.id R)) = b := by
   convert e.apply_symm_apply b
   congrm(e $(cfcHom_id _))
 
@@ -67,6 +69,28 @@ theorem ContinuousFunctionCalculus.transfer (e : A ≃⋆ₐ[R] B)
       fun f ↦ by simp [cfcHom_map_spectrum ha],
       fun f ↦ by simp [← hpq, cfcHom_predicate ha]⟩
 
+lemma cfcHom_eq_cfcHomTransfer [ContinuousFunctionalCalculus R B q] [ContinuousMap.UniqueHom R B]
+    (e : A ≃⋆ₐ[R] B) (he : Continuous e) (hpq : ∀ x, p x ↔ q (e x)) (b : B) (hb : q b) :
+    cfcHom hb = cfcHomTransfer e hpq b hb :=
+  cfcHom_eq_of_continuous_of_map_id _ _ (continuous_cfcHomTransfer e hpq b hb he) <|
+    cfcHomTransfer_id e hpq b hb
+
+lemma cfc_eq_cfc_transfer [ContinuousFunctionalCalculus R B q] [ContinuousMap.UniqueHom R B]
+    (e : A ≃⋆ₐ[R] B) (he : Continuous e) (hpq : ∀ x, p x ↔ q (e x)) (f : R → R) (b : B) :
+    cfc f b = e (cfc f (e.symm b)) := by
+  obtain (⟨hb, hf⟩ | hb | hf) :
+      (q b ∧ ContinuousOn f (spectrum R b)) ∨ ¬ q b ∨ ¬ ContinuousOn f (spectrum R b) := by
+    tauto
+  · have ha : p (e.symm b) := by simpa [hpq]
+    have hf' : ContinuousOn f (spectrum R (e.symm b)) := by rwa [AlgEquiv.spectrum_eq]
+    rw [cfc_apply f b, cfcHom_eq_cfcHomTransfer e he hpq b hb, cfc_apply f (e.symm b)]
+    congr!
+  · rw [cfc_apply_of_not_predicate b hb, cfc_apply_of_not_predicate (e.symm b) (by simpa [hpq]),
+      map_zero e]
+  · rw [cfc_apply_of_not_continuousOn b hf,
+      cfc_apply_of_not_continuousOn (e.symm b) (by simpa [AlgEquiv.spectrum_eq] using hf),
+      map_zero e]
+
 end UnitalTransfer
 
 section NonUnitalTransfer
@@ -81,35 +105,6 @@ variable {R A B : Type*} {p : A → Prop} {q : B → Prop}
   [NonUnitalRing B] [StarRing B] [TopologicalSpace B]
   [Module R B] [IsScalarTower R B B] [SMulCommClass R B B]
   [instCFC : NonUnitalContinuousFunctionalCalculus R A p]
-
-@[simps!]
-def ContinuousMapZero.starAlgEquiv_precomp {X Y : Type*} (R : Type*) [Zero X] [Zero Y]
-    [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace R]
-    [CommSemiring R] [StarRing R] [IsTopologicalSemiring R] [ContinuousStar R]
-    (f : X ≃ₜ Y) (hf : f 0 = 0) :
-    ContinuousMapZero Y R ≃⋆ₐ[R] ContinuousMapZero X R :=
-  StarAlgEquiv.ofNonUnitalStarAlgHom
-    (nonUnitalStarAlgHom_precomp R ⟨f, hf⟩)
-    (nonUnitalStarAlgHom_precomp R ⟨f.symm, by simpa using congr(f.symm $hf.symm)⟩)
-    (by ext; simp) (by ext; simp)
-
-@[simp]
-theorem ContinuousMapZero.coe_comp {X Y R : Type*} [Zero X] [Zero Y] [Zero R]
-    [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace R]
-    (g : ContinuousMapZero Y R) (f : ContinuousMapZero X Y) :
-    g.comp f = g ∘ f :=
-  rfl
-
--- `AlgEquiv` is too strong. That's terrible. We shouldn't need `Star` here
-@[simp]
-lemma AlgEquiv.quasispectrum_eq {F R A B : Type*} [CommSemiring R] [NonUnitalRing A]
-    [NonUnitalRing B] [Module R A] [Module R B] [Star A] [Star B] [EquivLike F A B]
-    [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B]
-    (f : F) (a : A) : quasispectrum R (f a) = quasispectrum R a := by
-  let e := StarAlgEquivClass.toStarAlgEquiv f
-  apply subset_antisymm
-  · exact NonUnitalAlgHom.quasispectrum_apply_subset' R e a
-  · simpa using NonUnitalAlgHom.quasispectrum_apply_subset' R e.symm (e a)
 
 @[simps!]
 noncomputable def cfcₙHomTransfer (e : A ≃⋆ₐ[R] B) (hpq : ∀ x, p x ↔ q (e x))
@@ -153,5 +148,30 @@ theorem NonUnitalContinuousFunctionCalculus.transfer (e : A ≃⋆ₐ[R] B)
       fun f ↦ by simp [cfcₙHom_map_quasispectrum ha, ContinuousMapZero.starAlgEquiv_precomp],
       fun f ↦ by simp [← hpq, cfcₙHom_predicate ha]⟩
 
+lemma cfcₙHom_eq_cfcₙHomTransfer [NonUnitalContinuousFunctionalCalculus R B q]
+    [ContinuousMapZero.UniqueHom R B] (e : A ≃⋆ₐ[R] B) (he : Continuous e)
+    (hpq : ∀ x, p x ↔ q (e x)) (b : B) (hb : q b) :
+    cfcₙHom hb = cfcₙHomTransfer e hpq b hb :=
+  cfcₙHom_eq_of_continuous_of_map_id _ _ (continuous_cfcₙHomTransfer e hpq b hb he) <|
+    cfcₙHomTransfer_id e hpq b hb
+
+lemma cfcₙ_eq_cfcₙ_transfer [NonUnitalContinuousFunctionalCalculus R B q]
+    [ContinuousMapZero.UniqueHom R B] (e : A ≃⋆ₐ[R] B) (he : Continuous e)
+    (hpq : ∀ x, p x ↔ q (e x)) (f : R → R) (b : B) :
+    cfcₙ f b = e (cfcₙ f (e.symm b)) := by
+  obtain (⟨hb, hf, hf0⟩ | hb | hf | hf0) :
+      (q b ∧ ContinuousOn f (quasispectrum R b) ∧ f 0 = 0) ∨
+        ¬ q b ∨ ¬ ContinuousOn f (quasispectrum R b) ∨ ¬ f 0 = 0 := by
+    tauto
+  · have ha : p (e.symm b) := by simpa [hpq]
+    have hf' : ContinuousOn f (quasispectrum R (e.symm b)) := by rwa [AlgEquiv.quasispectrum_eq]
+    rw [cfcₙ_apply f b, cfcₙHom_eq_cfcₙHomTransfer e he hpq b hb, cfcₙ_apply f (e.symm b)]
+    congr!
+  · rw [cfcₙ_apply_of_not_predicate b hb, cfcₙ_apply_of_not_predicate (e.symm b) (by simpa [hpq]),
+      map_zero e]
+  · rw [cfcₙ_apply_of_not_continuousOn b hf,
+      cfcₙ_apply_of_not_continuousOn (e.symm b) (by simpa [AlgEquiv.quasispectrum_eq] using hf),
+      map_zero e]
+  · rw [cfcₙ_apply_of_not_map_zero _ hf0, cfcₙ_apply_of_not_map_zero _ hf0, map_zero e]
 
 end NonUnitalTransfer
