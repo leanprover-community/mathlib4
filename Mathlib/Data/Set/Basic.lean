@@ -508,7 +508,7 @@ theorem forall_mem_empty {p : α → Prop} : (∀ x ∈ (∅ : Set α), p x) ↔
 
 theorem Nonempty.forall_const (h : s.Nonempty) {p : Prop} : (∀ x ∈ s, p) ↔ p :=
   let ⟨x, hx⟩ := h
-  ⟨fun h => h x hx, fun h _ _ => h⟩
+  ⟨fun h ↦ h x hx, fun h _ _ ↦ h⟩
 
 theorem forall_mem_const {p : Prop} [Nonempty s] : (∀ x ∈ s, p) ↔ p :=
   (nonempty_coe_sort.mp ‹_›).forall_const
