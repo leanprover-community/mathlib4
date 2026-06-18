@@ -29,7 +29,7 @@ theorem.
 
 ## Main results
 
-- Mertens' first theorem: `|E₁Λ x|` and `|E₁p x|` are both bounded (by `log 4 + 4` and `3`
+- Mertens' first theorem: `|E₁Λ x|` and `|E₁p x|` are both bounded (by `log 4 + 1` and `3`
 respectively).  For natural numbers `N`, we obtain the improvement `|E₁p x| ≤ 2`.
 
 ## TODO
@@ -99,7 +99,7 @@ private lemma integral_log_le {a b : ℝ} (ha : 1 ≤ a) (hab : a ≤ b) :
 
 /-- A crude lower bound on the partial sum of the logarithm. -/
 theorem le_sum_log {x : ℝ} (hx : 1 ≤ x) :
-    x * log x - 2 * x ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, log n := by
+    x * log x - x - log x + 1 ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, log n := by
   have one_le_floor : 1 ≤ ⌊x⌋₊ := by simpa
   calc
   _ = ∑ n ∈ Icc 1 ⌊x⌋₊, log n := by rfl
@@ -116,7 +116,7 @@ theorem le_sum_log {x : ℝ} (hx : 1 ≤ x) :
     gcongr
     grw [integral_log_le (by simpa) (floor_le (by linarith))]
     exact mul_le_of_le_one_right (log_nonneg hx) (by linarith [lt_floor_add_one x])
-  _ ≥ _ := by simp; linarith [log_le_self (by linarith : 0 ≤ x)]
+  _ ≥ _ := by simp; linarith
 
 /-- A sharper bound on the partial sum of the logarithm in the natural number case. -/
 theorem le_sum_log_nat {N : ℕ} : N * log N - N ≤ ∑ n ∈ Ioc 0 N, log n := by
@@ -135,9 +135,12 @@ section FirstTheorem
 Mertens' first theorem can be formulated in terms of two error terms:
 
 * `E₁Λ x = ∑ d ∈ Ioc 0 ⌊x⌋₊, (Λ d) / d - log x` (von Mangoldt error).  We bound this
-error between `-2` and `log 4 + 4`.
+error between `-2` and `log 4 + 1`, or between `-1` and `log 4 + 1` in the natural number case.
 * `E₁p x = ∑ p ∈ primesLE ⌊x⌋₊, (log p) / p - log x` (prime error). We bound this error
-in magnitude by `log 4 + 4`.
+between `-3` and `log 4`, or between `-2` and `log 4` in the natural number case.
+
+The difference `E₁Λ x - E₁p x` ranges between `0` and a certain constant `E₁ = 0.755366...`.
+We bound this constant betweeen `0` and `1`.
 
 -/
 
@@ -161,22 +164,6 @@ theorem le_mul_log_add_E₁Λ {x : ℝ} (hx : 0 ≤ x) :
     · exact vonMangoldt_nonneg
     · exact floor_le <| div_nonneg (by linarith) (by linarith)
 
-/-- A general lower bound for `E₁Λ`. -/
-theorem le_E₁Λ {x : ℝ} (hx : 1 ≤ x) : -2 ≤ E₁Λ x := by
-  suffices x * (log x - 2) ≤ x * (log x + E₁Λ x) by
-    linarith [le_of_mul_le_mul_left this (by linarith)]
-  grw [← le_mul_log_add_E₁Λ (by linarith), ← le_sum_log hx]
-  ring_nf; rfl
-
-/-- A sharper lower bound for `E₁Λ` in the natural number case. -/
-theorem le_E₁Λ_nat (N : ℕ) : -1 ≤ E₁Λ N := by
-  by_cases! hN : N = 0
-  · simp [hN, E₁Λ]
-  suffices N * (log N - 1) ≤ N * (log N + E₁Λ N) by
-    linarith [le_of_mul_le_mul_left this (by norm_cast; lia)]
-  grw [← le_mul_log_add_E₁Λ (by linarith), floor_natCast, ←le_sum_log_nat]
-  ring_nf; rfl
-
 theorem mul_log_add_E₁Λ_le (x : ℝ) :
     x * (log x + E₁Λ x) ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, log n + ψ x := calc
   _ = ∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d * (x / d) := by
@@ -186,29 +173,6 @@ theorem mul_log_add_E₁Λ_le (x : ℝ) :
     · exact vonMangoldt_nonneg
     · exact lt_floor_add_one _|>.le
   _ = _ := by simp [psi, mul_add, sum_add_distrib, sum_log_eq_sum_mangoldt]
-
-/-- A general upper bound for `E₁Λ`.  Can be sharpened by using stronger upper bounds on
-`∑ n ∈ Ioc 0 ⌊x⌋₊, log n` and `ψ x`. -/
-theorem E₁Λ_le {x : ℝ} (hx : 1 ≤ x) : E₁Λ x ≤ log 4 + 4 := by
-  suffices x * (log x + E₁Λ x) ≤ x * (log x + log 4 + 4) by
-    linarith [le_of_mul_le_mul_left this (by linarith)]
-  grw [mul_log_add_E₁Λ_le x, psi_le_const_mul_self (by linarith), sum_log_le hx]
-  ring_nf; rfl
-
-theorem sum_mangoldt_div_sub_log_bound {x : ℝ} (hx : 1 ≤ x) :
-    |∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d / d - log x| ≤ log 4 + 4 := by
-  grind [E₁Λ_le hx, le_E₁Λ hx, log_nonneg, sum_mangoldt_div_eq]
-
-theorem E₁Λ_bounded' : ∃ c > 0, ∀ x ≥ 1, |E₁Λ x| ≤ c :=
-  ⟨log 4 + 4, by positivity, fun x hx ↦ sum_mangoldt_div_sub_log_bound hx⟩
-
-theorem E₁Λ_bounded : E₁Λ =O[atTop] (fun _ ↦ (1 : ℝ)) := by
-  simp only [isBigO_iff, norm_eq_abs, norm_one, mul_one, eventually_atTop]
-  exact ⟨log 4 + 4, 1, fun _ hx ↦ sum_mangoldt_div_sub_log_bound hx⟩
-
-theorem sum_mangoldt_div_sim_log :
-    (∑ d ∈ Ioc 0 ⌊·⌋₊, Λ d / d) ~[atTop] log :=
-  (E₁Λ_bounded.trans_isLittleO (isLittleO_const_log_atTop (c := 1))).isEquivalent
 
 /-- The error term in the von Mangoldt form of Mertens' first theorem. -/
 noncomputable def E₁p : ℝ := ∑ p ∈ primesLE ⌊x⌋₊, log p / p - log x
@@ -241,12 +205,6 @@ theorem mul_log_add_E₁p_le (x : ℝ) : x * (log x + E₁p x) ≤ ∑ n ∈ Ioc
     · simp [vonMangoldt_apply_prime hp]
     have : 0 ≤ Λ p := vonMangoldt_nonneg
     positivity
-
-theorem E₁p_le {x : ℝ} (hx : 1 ≤ x) : E₁p x ≤ log 4 := by
-  suffices x * (log x + E₁p x) ≤ x * (log x + log 4) by
-    linarith [le_of_mul_le_mul_left this (by linarith)]
-  grw [mul_log_add_E₁p_le x, theta_le_log4_mul_x (by linarith), sum_log_le hx]
-  ring_nf; rfl
 
 /-- The summand defining the constant `E₁` below. -/
 noncomputable def e₁ : ℕ → ℝ := fun p ↦ if p.Prime then log p / (p * (p - 1)) else 0
@@ -410,14 +368,59 @@ theorem E₁Λ_le_E₁p_add_E₁ {x : ℝ} (hx : 1 ≤ x) :
       rw [primesLE_eq_filter_Ioc_zero, sum_filter]
       exact e₁_summable.sum_le_tsum _ fun p hp ↦ e₁_nonneg p
 
+/-- A general upper bound for `E₁p`. -/
+theorem E₁p_le {x : ℝ} (hx : 1 ≤ x) : E₁p x ≤ log 4 := by
+  suffices x * (log x + E₁p x) ≤ x * (log x + log 4) by
+    linarith [le_of_mul_le_mul_left this (by linarith)]
+  grw [mul_log_add_E₁p_le x, theta_le_log4_mul_x (by linarith), sum_log_le hx]
+  ring_nf; rfl
+
+/-- A general upper bound for `E₁Λ`. -/
+theorem E₁Λ_le {x : ℝ} (hx : 1 ≤ x) : E₁Λ x ≤ log 4 + 1 := by
+  linarith [E₁p_le hx, E₁Λ_le_E₁p_add_E₁ hx, E₁_le]
+
+/-- A general lower bound for `E₁Λ`. -/
+theorem le_E₁Λ {x : ℝ} (hx : 1 ≤ x) : -2 ≤ E₁Λ x := by
+  suffices x * (log x - 2) ≤ x * (log x + E₁Λ x) by
+    linarith [le_of_mul_le_mul_left this (by linarith)]
+  grw [← le_mul_log_add_E₁Λ (by linarith), ← le_sum_log hx]
+  linarith [log_le_self (by linarith : 0 ≤ x)]
+
+/-- A sharper lower bound for `E₁Λ` in the natural number case. -/
+theorem le_E₁Λ_nat (N : ℕ) : -1 ≤ E₁Λ N := by
+  by_cases! hN : N = 0
+  · simp [hN, E₁Λ]
+  suffices N * (log N - 1) ≤ N * (log N + E₁Λ N) by
+    linarith [le_of_mul_le_mul_left this (by norm_cast; lia)]
+  grw [← le_mul_log_add_E₁Λ (by linarith), floor_natCast, ←le_sum_log_nat]
+  ring_nf; rfl
+
+/-- A general lower bound for `E₁p`. -/
 theorem le_E₁p {x : ℝ} (hx : 1 ≤ x) : -3 ≤ E₁p x := by
   linarith [E₁Λ_le_E₁p_add_E₁ hx, le_E₁Λ hx, E₁_le]
 
+/-- A sharper lower bound for `E₁p` in the natural number case. -/
 theorem le_E₁p_nat (N : ℕ) : -2 ≤ E₁p N := by
   by_cases! hN : N = 0
   · simp [hN, E₁p]
   have : 1 ≤ (N:ℝ) := mod_cast (by lia)
   linarith [E₁Λ_le_E₁p_add_E₁ this, le_E₁Λ_nat N, E₁_le]
+
+theorem sum_mangoldt_div_sub_log_bound {x : ℝ} (hx : 1 ≤ x) :
+    |∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d / d - log x| ≤ log 4 + 1 := by
+  rw [abs_le, sum_mangoldt_div_eq]
+  split_ands <;> linarith [E₁Λ_le hx, le_E₁Λ hx, log_four_eq, log_two_gt_d9]
+
+theorem E₁Λ_bounded' : ∃ c > 0, ∀ x ≥ 1, |E₁Λ x| ≤ c :=
+  ⟨log 4 + 1, by positivity, fun x hx ↦ sum_mangoldt_div_sub_log_bound hx⟩
+
+theorem E₁Λ_bounded : E₁Λ =O[atTop] (fun _ ↦ (1 : ℝ)) := by
+  simp only [isBigO_iff, norm_eq_abs, norm_one, mul_one, eventually_atTop]
+  exact ⟨log 4 + 1, 1, fun _ hx ↦ sum_mangoldt_div_sub_log_bound hx⟩
+
+theorem sum_mangoldt_div_sim_log :
+    (∑ d ∈ Ioc 0 ⌊·⌋₊, Λ d / d) ~[atTop] log :=
+  (E₁Λ_bounded.trans_isLittleO (isLittleO_const_log_atTop (c := 1))).isEquivalent
 
 theorem sum_log_prime_div_sub_log_bound {x : ℝ} (hx : 1 ≤ x) :
     |∑ p ∈ primesLE ⌊x⌋₊, log p / p - log x| ≤ 3 := by
