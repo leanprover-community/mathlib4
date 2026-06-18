@@ -5772,6 +5772,7 @@ public import Mathlib.NumberTheory.ModularForms.Discriminant
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Defs
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.IsBoundedAtImInfty
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.MDifferentiable
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Summable
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
