@@ -543,18 +543,24 @@ namespace IsQuotientCoveringMap
 
 variable {G : Type*} [Group G] [MulAction G E] (hp : IsQuotientCoveringMap p G) {g : G}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The monodromy action of a quotient covering map commutes with the group action. -/
-theorem monodromy_toPermFiber {x y : X} {γ : Path.Homotopic.Quotient x y} {e} :
+theorem monodromy_toPermFiber {x y : X} {γ : Path.Homotopic.Quotient x y} {e : p ⁻¹' {x}} :
     hp.isCoveringMap.monodromy γ (hp.toPermFiber x g e) =
     hp.toPermFiber y g (hp.isCoveringMap.monodromy γ e) :=
   have := hp.toContinuousConstSMul
   hp.isCoveringMap.monodromy_eq_of_map_eq
     ((hp.isCoveringMap.liftPathQuotient γ e).map ⟨_, continuous_const_smul g⟩) <| by
+      let Γ := hp.isCoveringMap.liftPathQuotient γ e
+      let f₁ : C(E, E) := ⟨_, continuous_const_smul g⟩
+      let f₂ : C(E, X) := ⟨p, hp.continuous⟩
+      have hf₁₂ : f₂.comp f₁ = f₂ := by ext; simp [f₁, f₂, hp.map_smul]
+      change (Γ.map f₁).map f₂ = _
       rw [← Path.Homotopic.Quotient.map_comp]
       convert hp.isCoveringMap.map_liftPathQuotient γ e using 2
-      on_goal 3 => ext
-      all_goals apply hp.map_smul
+      · simp [f₁, f₂, hp.map_smul]
+      · simp [f₁, f₂, hp.map_smul]
+      · grind
+      · grind
 
 theorem commute_monodromyPerm_toPermFiber {x : X} {γ : FundamentalGroup X x} :
     Commute (hp.isCoveringMap.monodromyPerm x γ) (hp.toPermFiber x g) := by
