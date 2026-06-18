@@ -70,6 +70,8 @@ def CliffordAlgebra :=
   RingQuot (CliffordAlgebra.Rel Q)
 deriving Inhabited, Ring, Algebra R
 
+attribute [nolint instanceDiamonds] instAlgebraCliffordAlgebra
+
 namespace CliffordAlgebra
 
 instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M] [CommRing A]

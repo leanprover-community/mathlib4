@@ -1056,7 +1056,7 @@ so when alternative constructions are available they are preferred. -/
 
 variable {y : α}
 
-@[to_dual]
+@[to_dual (attr := nolint instanceDiamonds)]
 instance (priority := low) [DecidableLE α] [LocallyFiniteOrder α] :
     LocallyFiniteOrderTop { x : α // x ≤ y } where
   finsetIoi a := Finset.Ioc a ⟨y, by rfl⟩

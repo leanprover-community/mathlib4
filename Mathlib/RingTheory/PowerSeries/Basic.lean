@@ -919,6 +919,7 @@ variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (f : R⟦
 instance algebraPolynomial : Algebra R[X] A⟦X⟧ :=
   RingHom.toAlgebra (Polynomial.coeToPowerSeries.algHom A).toRingHom
 
+@[nolint instanceDiamonds]
 instance algebraPowerSeries : Algebra R⟦X⟧ A⟦X⟧ :=
   (map (algebraMap R A)).toAlgebra
 

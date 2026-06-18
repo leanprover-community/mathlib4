@@ -6,7 +6,7 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Init
-
+public import Qq
 /-!
 # `ToExpr` instances for Mathlib
 -/
@@ -57,5 +57,8 @@ deriving instance ToExpr for LevelMVarId
 deriving instance ToExpr for Level
 deriving instance ToExpr for BinderInfo
 deriving instance ToExpr for Expr
+
+attribute [nolint instanceDiamonds]
+  instToExprMVarId_mathlib instToExprLevelMVarId_mathlib instToExprBinderInfo_mathlib
 
 end Mathlib

@@ -502,10 +502,12 @@ def CostructuredArrow (S : C ⥤ D) (T : D) :=
 protected def CostructuredArrow.Hom {S : C ⥤ D} {T : D}
     (f g : CostructuredArrow S T) := CommaMorphism f g
 
+@[nolint instanceDiamonds]
 instance {S : C ⥤ D} {T : D} : Category (CostructuredArrow S T) where
   Hom := CostructuredArrow.Hom
   __ := (inferInstance : Category (Comma _ _))
 
+@[nolint instanceDiamonds]
 instance (S : C ⥤ D) (T : D) : Category (CostructuredArrow S T) := commaCategory
 
 namespace CostructuredArrow

@@ -297,6 +297,7 @@ namespace CofiniteTopology
 /-- The identity equivalence between `X` and `CofiniteTopology X`. -/
 def of : X ≃ CofiniteTopology X := (WithTopology.equiv _ _).symm
 
+@[nolint instanceDiamonds]
 instance [Inhabited X] : Inhabited (CofiniteTopology X) where default := of default
 
 theorem isOpen_iff {s : Set (CofiniteTopology X)} : IsOpen s ↔ s.Nonempty → sᶜ.Finite := by

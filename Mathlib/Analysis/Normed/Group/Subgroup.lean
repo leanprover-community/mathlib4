@@ -36,8 +36,9 @@ variable [SeminormedGroup E] {s : Subgroup E}
 
 /-- A subgroup of a seminormed group is also a seminormed group,
 with the restriction of the norm. -/
-@[to_additive /-- A subgroup of a seminormed group is also a seminormed group, with the restriction
-of the norm. -/]
+@[to_additive (attr := nolint instanceDiamonds)
+/-- A subgroup of a seminormed group is also a seminormed group,
+with the restriction of the norm. -/]
 instance seminormedGroup : SeminormedGroup s :=
   fast_instance% SeminormedGroup.induced _ _ s.subtype
 
@@ -61,15 +62,15 @@ theorem norm_coe {s : Subgroup E} (x : s) : ‖(x : E)‖ = ‖x‖ :=
 
 end SeminormedGroup
 
-@[to_additive]
+@[to_additive (attr := nolint instanceDiamonds)]
 instance seminormedCommGroup [SeminormedCommGroup E] {s : Subgroup E} : SeminormedCommGroup s :=
   fast_instance% SeminormedCommGroup.induced _ _ s.subtype
 
-@[to_additive]
+@[to_additive (attr := nolint instanceDiamonds)]
 instance normedGroup [NormedGroup E] {s : Subgroup E} : NormedGroup s :=
   fast_instance% NormedGroup.induced _ _ s.subtype Subtype.coe_injective
 
-@[to_additive]
+@[to_additive (attr := nolint instanceDiamonds)]
 instance normedCommGroup [NormedCommGroup E] {s : Subgroup E} : NormedCommGroup s :=
   fast_instance% NormedCommGroup.induced _ _ s.subtype Subtype.coe_injective
 

@@ -445,6 +445,7 @@ theorem coe_circle_smul (z : Circle) (w : 𝕔𝔻) : ↑(z • w) = (z * w : �
 instance : SMulCommClass 𝕔𝔻 Circle 𝕔𝔻 :=
   SMulCommClass.symm _ _ _
 
+@[nolint instanceDiamonds]
 instance : Pow 𝕔𝔻 ℕ where
   pow z n := ⟨z ^ n, by simp [pow_le_one₀ (norm_nonneg _) z.norm_le_one]⟩
 

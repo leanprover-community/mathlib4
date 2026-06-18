@@ -821,6 +821,7 @@ instance isCommMonObj_asOver_pullback [MonObj (asOver M S)] [IsCommMonObj (asOve
     IsCommMonObj (asOver (pullback (M ↘ S) f) T) := by
   unfold asOver OverClass.asOver at *; exact Over.isCommMonObj_mk_pullbackSnd
 
+@[nolint instanceDiamonds]
 instance GrpObjAsOverPullback [GrpObj (asOver M S)] : GrpObj (asOver (pullback (M ↘ S) f) T) := by
   unfold asOver OverClass.asOver at *; exact Over.grpObjMkPullbackSnd
 

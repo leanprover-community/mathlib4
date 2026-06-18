@@ -41,6 +41,7 @@ deriving AddCommMonoid, Inhabited, DFunLike
 
 set_option backward.inferInstanceAs.wrap.data false in
 deriving instance CoeFun for DirectSum
+attribute [nolint instanceDiamonds] instCoeFunDirectSumForall
 
 /-- `⨁ i, f i` is notation for `DirectSum _ f` and equals the direct sum of `fun i ↦ f i`.
 Taking the direct sum over multiple arguments is possible, e.g. `⨁ (i) (j), f i j`. -/

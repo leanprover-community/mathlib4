@@ -299,6 +299,7 @@ section Pow
 
 variable [Add R] [Monoid R] (c : RingCon R)
 
+@[nolint instanceDiamonds]
 instance : Pow c.Quotient ℕ := inferInstanceAs (Pow c.toCon.Quotient ℕ)
 
 @[simp, norm_cast]

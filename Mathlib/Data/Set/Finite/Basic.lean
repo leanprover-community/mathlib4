@@ -284,6 +284,7 @@ instance fintypeDiffLeft (s t : Set α) [Fintype s] [DecidablePred (· ∈ t)] :
 instance fintypeEmpty : Fintype (∅ : Set α) :=
   Fintype.ofFinset ∅ <| by simp
 
+@[nolint instanceDiamonds]
 instance fintypeSingleton (a : α) : Fintype ({a} : Set α) :=
   Fintype.ofFinset {a} <| by simp
 

@@ -1025,7 +1025,7 @@ attribute [-simp] IsMonHom.one_hom IsMonHom.one_hom_assoc IsMonHom.mul_hom in
 attribute [local simp← ] tensorHom_comp_tensorHom tensorHom_comp_tensorHom_assoc in
 attribute [local simp] ε_tensorHom_comp_μ_assoc tensorμ_comp_μ_tensorHom_μ_comp_μ_assoc
   MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
-@[to_additive]
+@[to_additive (attr := nolint instanceDiamonds)]
 instance [F.Braided] : F.mapMon.Monoidal :=
   CoreMonoidal.toMonoidal {
     εIso := Mon.mkIso (Monoidal.εIso F)
@@ -1040,7 +1040,7 @@ variable [SymmetricCategory C] [SymmetricCategory D]
 instance [F.LaxBraided] : F.mapMon.LaxBraided where
   braided M N := by ext; exact Functor.LaxBraided.braided ..
 
-@[to_additive]
+@[to_additive (attr := nolint instanceDiamonds)]
 instance [F.Braided] : F.mapMon.Braided where
 
 set_option backward.defeqAttrib.useBackward true in

@@ -125,6 +125,7 @@ def mkMonoidHom [MulOneClass M] [ContinuousMul M] : M →* SeparationQuotient M 
   map_mul' := mk_mul
   map_one' := mk_one
 
+@[nolint instanceDiamonds]
 instance (priority := 900) instNSMul [AddMonoid M] [ContinuousAdd M] :
     SMul ℕ (SeparationQuotient M) :=
   inferInstance
@@ -182,6 +183,7 @@ theorem mk_div [Div G] [ContinuousDiv G] (x y : G) : mk (x / y) = mk x / mk y :=
 instance instContinuousDiv [Div G] [ContinuousDiv G] : ContinuousDiv (SeparationQuotient G) where
   continuous_div' := isQuotientMap_prodMap_mk.continuous_iff.2 <| continuous_mk.comp continuous_div'
 
+@[nolint instanceDiamonds]
 instance instZSMul [AddGroup G] [IsTopologicalAddGroup G] : SMul ℤ (SeparationQuotient G) :=
   inferInstance
 

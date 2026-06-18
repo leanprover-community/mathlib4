@@ -64,6 +64,7 @@ section WeakTopology
 def WeakBilin [CommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F] [Module 𝕜 F]
     (_ : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) := E
 deriving AddCommMonoid, Module 𝕜
+attribute [nolint instanceDiamonds] instModuleWeakBilin
 
 namespace WeakBilin
 
