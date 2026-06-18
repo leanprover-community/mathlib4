@@ -44,6 +44,14 @@ We build a basic API using dot notation around these notions, and we prove that
 We also define lower and upper semicontinuity as abbreviations of these generic definitions
 and transfer the generic results to these notions.
 
+We also define two useful notions for set-valued functions: `HasOpenLowerSections` (which says that
+for `f : α → β` and for all `y ∈ β`, the set `{x | y ∈ f x}` is open. Similarly, we define
+`HasOpenCGraph` which says that the set of all pairs `(x, y) : α × β` with `y ∈ f x` is open.
+We show that `HasOpenCGraph` implies `HasOpenLowerSections` (`HasOpenCGraph.hasOpenLowerSections`)
+which implies `LowerHemicontinuous` (`HasOpenLowerSections.lowerHemicontinuous`).
+
+We also define variants of these two notions for `On`/`At`/`WithinAt`.
+
 ## References
 
 * <https://en.wikipedia.org/wiki/Semi-continuity>
@@ -163,49 +171,45 @@ theorem semicontinuous_iff_isOpen : Semicontinuous r ↔ ∀ b, IsOpen {x | r x 
 theorem Semicontinuous.isOpen (h : Semicontinuous r) (b : β) : IsOpen {x | r x b} :=
   semicontinuous_iff_isOpen.mp h b
 
-theorem SemicontinuousWithinAt.and {r' : α → β → Prop}
+theorem SemicontinuousWithinAt.inf {r' : α → β → Prop}
     (h : SemicontinuousWithinAt r s x) (h' : SemicontinuousWithinAt r' s x) :
-    SemicontinuousWithinAt (fun a b ↦ r a b ∧ r' a b) s x := fun b ⟨hb, hb'⟩ ↦
+    SemicontinuousWithinAt (r ⊓ r') s x := fun b ⟨hb, hb'⟩ ↦
   (h b hb).and (h' b hb')
 
-theorem SemicontinuousWithinAt.or {r' : α → β → Prop}
+theorem SemicontinuousWithinAt.sup {r' : α → β → Prop}
     (h : SemicontinuousWithinAt r s x) (h' : SemicontinuousWithinAt r' s x) :
-    SemicontinuousWithinAt (fun a b ↦ r a b ∨ r' a b) s x := by
+    SemicontinuousWithinAt (r ⊔ r') s x := by
   intro b hab
   obtain hb | hb' := hab
   · exact (h b hb).mono fun _ hx ↦ Or.inl hx
   · exact (h' b hb').mono fun _ hx ↦ Or.inr hx
 
-theorem SemicontinuousAt.and {r' : α → β → Prop}
+theorem SemicontinuousAt.inf {r' : α → β → Prop}
     (h : SemicontinuousAt r x) (h' : SemicontinuousAt r' x) :
-    SemicontinuousAt (fun a b ↦ r a b ∧ r' a b) x := fun b ⟨hb, hb'⟩ ↦
+    SemicontinuousAt (r ⊓ r') x := fun b ⟨hb, hb'⟩ ↦
   (h b hb).and (h' b hb')
 
-theorem SemicontinuousAt.or {r' : α → β → Prop}
+theorem SemicontinuousAt.sup {r' : α → β → Prop}
     (h : SemicontinuousAt r x) (h' : SemicontinuousAt r' x) :
-    SemicontinuousAt (fun a b ↦ r a b ∨ r' a b) x := by
+    SemicontinuousAt (r ⊔ r') x := by
   intro b hab
   obtain hb | hb' := hab
   · exact (h b hb).mono fun _ hx ↦ Or.inl hx
   · exact (h' b hb').mono fun _ hx ↦ Or.inr hx
 
-theorem SemicontinuousOn.and {r' : α → β → Prop}
+theorem SemicontinuousOn.inf {r' : α → β → Prop}
     (h : SemicontinuousOn r s) (h' : SemicontinuousOn r' s) :
-    SemicontinuousOn (fun a b ↦ r a b ∧ r' a b) s := fun x hx ↦
-  (h x hx).and (h' x hx)
+    SemicontinuousOn (r ⊓ r') s := fun x hx ↦ (h x hx).inf (h' x hx)
 
-theorem SemicontinuousOn.or {r' : α → β → Prop}
+theorem SemicontinuousOn.sup {r' : α → β → Prop}
     (h : SemicontinuousOn r s) (h' : SemicontinuousOn r' s) :
-    SemicontinuousOn (fun a b ↦ r a b ∨ r' a b) s := fun x hx ↦
-  (h x hx).or (h' x hx)
+    SemicontinuousOn (r ⊔ r') s := fun x hx ↦ (h x hx).sup (h' x hx)
 
-theorem Semicontinuous.and {r' : α → β → Prop} (h : Semicontinuous r) (h' : Semicontinuous r') :
-    Semicontinuous (fun a b ↦ (r a b) ∧ (r' a b)) := fun a ↦
-  (h a).and (h' a)
+theorem Semicontinuous.inf {r' : α → β → Prop} (h : Semicontinuous r) (h' : Semicontinuous r') :
+    Semicontinuous (r ⊓ r') := fun a ↦ (h a).inf (h' a)
 
-theorem Semicontinuous.or {r' : α → β → Prop} (h : Semicontinuous r) (h' : Semicontinuous r') :
-    Semicontinuous (fun a b ↦ (r a b) ∨ (r' a b)) := fun a ↦
-  (h a).or (h' a)
+theorem Semicontinuous.sup {r' : α → β → Prop} (h : Semicontinuous r) (h' : Semicontinuous r') :
+    Semicontinuous (r ⊔ r') := fun a ↦ (h a).sup (h' a)
 
 /-! #### Constants -/
 
@@ -261,6 +265,7 @@ section Definitions
 it was suggested to redefine `LowerSemicontinuous` in a way that works better for partial orders.
 The following example shows that this redefinition can still take place even in light of the
 refactor in terms of `Semicontinuous`. -/
+
 example : Semicontinuous (¬ f · ≤ ·) ↔ ∀ x y, (∃ᶠ x' in 𝓝 x, f x' ≤ y) → f x ≤ y := by
   simp_rw [Semicontinuous, SemicontinuousAt, ← not_frequently, not_imp_not]
 
@@ -1004,16 +1009,16 @@ theorem HasOpenLowerSections.const : HasOpenLowerSections fun _x : α => z :=
 /-! ### Intersection and Union -/
 
 theorem HasOpenLowerSectionsOn.inter {f g : α → Set β} {s : Set α} (hf : HasOpenLowerSectionsOn f s)
-  (hg : HasOpenLowerSectionsOn g s) : HasOpenLowerSectionsOn (fun x ↦ f x ∩ g x) s := hf.and hg
+  (hg : HasOpenLowerSectionsOn g s) : HasOpenLowerSectionsOn (fun x ↦ f x ∩ g x) s := hf.inf hg
 
 theorem HasOpenLowerSectionsOn.union {f g : α → Set β} {s : Set α} (hf : HasOpenLowerSectionsOn f s)
-  (hg : HasOpenLowerSectionsOn g s) : HasOpenLowerSectionsOn (fun x ↦ f x ∪ g x) s := hf.or hg
+  (hg : HasOpenLowerSectionsOn g s) : HasOpenLowerSectionsOn (fun x ↦ f x ∪ g x) s := hf.sup hg
 
 theorem HasOpenLowerSections.inter {f g : α → Set β} (hf : HasOpenLowerSections f)
-  (hg : HasOpenLowerSections g) : HasOpenLowerSections (fun x ↦ f x ∩ g x) := hf.and hg
+  (hg : HasOpenLowerSections g) : HasOpenLowerSections (fun x ↦ f x ∩ g x) := hf.inf hg
 
 theorem HasOpenLowerSections.union {f g : α → Set β} (hf : HasOpenLowerSections f)
-  (hg : HasOpenLowerSections g) : HasOpenLowerSections (fun x ↦ f x ∪ g x) := hf.or hg
+  (hg : HasOpenLowerSections g) : HasOpenLowerSections (fun x ↦ f x ∪ g x) := hf.sup hg
 
 /-! ### Composition -/
 

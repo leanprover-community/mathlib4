@@ -43,7 +43,6 @@ lemma Presieve.map_functorPullback_overForget {X : C} {Y : Over X} (R : Presieve
 namespace Sieve
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence `Sieve Y ≃ Sieve Y.left` for all `Y : Over X`. -/
 def overEquiv {X : C} (Y : Over X) :
     Sieve Y ≃ Sieve Y.left where
@@ -100,7 +99,6 @@ lemma overEquiv_le_overEquiv_iff {X : C} {Y : Over X} (R₁ R₂ : Sieve Y) :
   simpa using h
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma overEquiv_pullback {X : C} {Y₁ Y₂ : Over X} (f : Y₁ ⟶ Y₂) (S : Sieve Y₂) :
     overEquiv _ (S.pullback f) = (overEquiv _ S).pullback f.left := by
   ext Z g
@@ -183,7 +181,6 @@ lemma functorPushforward_over_map {X Y : C} (f : X ⟶ Y) (Z : Over X) (S : Siev
       Over.homMk (𝟙 _) (by simpa using Over.w g), hg, by cat_disch⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma overEquiv_functorPullback_map {X Y : C} (f : X ⟶ Y) (U : Over X)
     (S : Sieve ((Over.map f).obj U)) :
     overEquiv U (S.functorPullback (Over.map f)) =
@@ -489,6 +486,28 @@ variable {J}
 /-- Given `F : Sheaf J A` and `X : C`, this is the pullback of `F` on `J.over X`. -/
 abbrev Sheaf.over {A : Type u'} [Category.{v'} A] (F : Sheaf J A) (X : C) :
     Sheaf (J.over X) A := (J.overPullback A X).obj F
+
+variable {A : Type u'} [Category.{v'} A]
+
+set_option backward.defeqAttrib.useBackward true in
+/-- For `f : X ⟶ Y`, `F.over Y` viewed as a sheaf on `Over X` is isomorphic to `F.Over X`. -/
+@[simps! +dsimpLhs]
+def Sheaf.pushforwardOverMapIso (F : Sheaf J A) {X Y : C} (f : X ⟶ Y) :
+    ((Over.map f).sheafPushforwardContinuous A (J.over X) (J.over Y)).obj (F.over Y) ≅
+      F.over X :=
+  ObjectProperty.isoMk _ (NatIso.ofComponents (fun _ ↦ Iso.refl _) (by simp))
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/-- For `f : X ⟶ Y`, this is the morphism from `F.over Y` to the pushforward of `F.over X`
+along `Over.pullback f` induced by `Limits.pullback.fst`. -/
+@[simps]
+noncomputable
+def Sheaf.toPushforwardOverPullback [Limits.HasPullbacks C] (F : Sheaf J A)
+    {X Y : C} (f : X ⟶ Y) :
+    F.over Y ⟶ ((Over.pullback f).sheafPushforwardContinuous A _ _).obj (F.over X) where
+  hom.app U := F.obj.map (.op <| Limits.pullback.fst _ _)
+  hom.naturality := by simp [← Functor.map_comp, ← op_comp]
 
 section
 

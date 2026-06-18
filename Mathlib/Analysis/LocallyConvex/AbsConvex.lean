@@ -229,39 +229,12 @@ theorem balancedHull_convexHull_subset_absConvexHull {s : Set E} :
 @[deprecated balancedHull_convexHull_subset_absConvexHull (since := "2026-05-23")]
 alias balancedHull_convexHull_subseteq_absConvexHull := balancedHull_convexHull_subset_absConvexHull
 
-variable [TopologicalSpace E] [ContinuousConstSMul 𝕜 E]
+variable [ZeroLEOneClass 𝕜] [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] [IsTopologicalAddGroup E]
 
-omit [PartialOrder 𝕜] in
-theorem IsOpen.isOpen_balancedHull_of_zero_mem {s : Set E} (hs : IsOpen s) (hzero : 0 ∈ s) :
-    IsOpen (balancedHull 𝕜 s) := by
-  have : (⋃ r : 𝕜, ⋃ (_ : ‖r‖ ≤ 1), r • s) = (⋃ r : 𝕜, ⋃ (_ : ‖r‖ ≤ 1 ∧ r ≠ 0), r • s) := by
-    ext x
-    simp only [mem_iUnion]
-    constructor
-    · intro ⟨r, hr, hx⟩
-      obtain rfl | hr_ne := eq_or_ne r 0
-      · obtain ⟨y, _, rfl⟩ := hx
-        obtain ⟨r', hr'_pos, hr'_lt⟩ := exists_norm_lt_one 𝕜
-        exact ⟨r', ⟨hr'_lt.le, norm_pos_iff.mp hr'_pos⟩, 0, hzero, by simp⟩
-      · exact ⟨r, ⟨hr, hr_ne⟩, hx⟩
-    · grind
-  rw [balancedHull, this]
-  exact isOpen_biUnion (fun r hr ↦ hs.smul₀ hr.2)
-
-variable [ZeroLEOneClass 𝕜] [IsTopologicalAddGroup E]
-
-theorem IsOpen.isOpen_convexHull {s : Set E} (hs : IsOpen s) :
-    IsOpen (convexHull 𝕜 s) := by
-  have hmono : s ⊆ interior (convexHull 𝕜 s) := interior_maximal (subset_convexHull 𝕜 s) hs
-  have hconv : Convex 𝕜 (interior (convexHull 𝕜 s)) := (convex_convexHull 𝕜 s).interior
-  have hsub : convexHull 𝕜 s ⊆ interior (convexHull 𝕜 s) := convexHull_min hmono hconv
-  rw [hsub.antisymm interior_subset]
-  exact isOpen_interior
-
-theorem IsOpen.isOpen_absConvexHull_of_zero_mem {s : Set E} (hs : IsOpen s) (hzero : 0 ∈ s) :
+theorem IsOpen.absConvexHull {s : Set E} (hs : IsOpen s) (hzero : 0 ∈ s) :
     IsOpen (absConvexHull 𝕜 s) := by
   rw [absConvexHull_eq_convexHull_balancedHull]
-  exact hs.isOpen_balancedHull_of_zero_mem 𝕜 hzero |>.isOpen_convexHull 𝕜
+  exact hs.balancedHull hzero |>.convexHull
 
 end
 
@@ -284,28 +257,42 @@ theorem nhds_hasBasis_absConvex :
 variable [IsTopologicalAddGroup E] [ZeroLEOneClass 𝕜]
 
 theorem nhds_hasBasis_absConvex_open :
-    (𝓝 (0 : E)).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s) id := by
+    (𝓝 (0 : E)).HasBasis (fun s ↦ (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s) id := by
   refine (nhds_hasBasis_absConvex 𝕜 E).to_hasBasis ?_ ?_
-  · rintro s ⟨hs_nhds, hs_balanced, hs_convex⟩
+  · intro s ⟨hs_nhds, hs_balanced, hs_convex⟩
     refine ⟨interior s, ?_, interior_subset⟩
     exact
       ⟨mem_interior_iff_mem_nhds.mpr hs_nhds, isOpen_interior,
         hs_balanced.interior (mem_interior_iff_mem_nhds.mpr hs_nhds), hs_convex.interior⟩
-  rintro s ⟨hs_zero, hs_open, hs_balanced, hs_convex⟩
+  intro s ⟨hs_zero, hs_open, hs_balanced, hs_convex⟩
   exact ⟨s, ⟨hs_open.mem_nhds hs_zero, hs_balanced, hs_convex⟩, rfl.subset⟩
+
+theorem nhds_hasBasis_absConvex_closed :
+    (𝓝 (0 : E)).HasBasis (fun s ↦ s ∈ 𝓝 (0 : E) ∧ IsClosed s ∧ AbsConvex 𝕜 s) id := by
+  refine (nhds_basis_opens 0).to_hasBasis ?_
+    fun s ⟨hs_nhds, _, _⟩ ↦ ⟨interior s,
+      by simp [interior_subset, mem_interior_iff_mem_nhds.mpr hs_nhds]⟩
+  intro s ⟨hs_zero, hs_open⟩
+  obtain ⟨W, hW_open, hW_zero, hW_add⟩ :=
+    exists_open_nhds_zero_add_subset (hs_open.mem_nhds hs_zero)
+  obtain ⟨V, ⟨hV_zero, hV_open, hV_abs⟩, hVW⟩ :=
+    (nhds_hasBasis_absConvex_open 𝕜 E).mem_iff.mp (hW_open.mem_nhds hW_zero)
+  exact ⟨closure V,
+    ⟨Filter.mem_of_superset (hV_open.mem_nhds hV_zero) subset_closure, isClosed_closure,
+     hV_abs.closure⟩,
+    (closure_subset_add_self_of_mem_nhds_zero (hV_open.mem_nhds hV_zero)).trans
+      ((add_subset_add hVW hVW).trans hW_add)⟩
 
 theorem exists_nhds_hasAntitoneBasis_absConvex_open_add_closure_subset [FirstCountableTopology E] :
     ∃ x : ℕ → Set E, (𝓝 (0 : E)).HasAntitoneBasis x ∧
       ∀ n, IsOpen (x n) ∧ AbsConvex 𝕜 (x n) ∧ x (n + 1) + x (n + 1) ⊆ x n ∧
         closure (x (n + 1)) ⊆ x n := by
   obtain ⟨u, hu_basis, -⟩ := IsTopologicalAddGroup.exists_antitone_basis_nhds_zero E
-  have hu_zero : ∀ n, 0 ∈ interior (u n) :=
-    fun n ↦ mem_interior_iff_mem_nhds.mpr (hu_basis.mem_of_mem trivial)
-  let v : ℕ → Set E := fun n ↦ absConvexHull 𝕜 (interior (u n))
-  have hv_open : ∀ n, IsOpen (v n) :=
-    fun n ↦ isOpen_interior.isOpen_absConvexHull_of_zero_mem 𝕜 (hu_zero n)
-  have hv_nhds : ∀ n, v n ∈ 𝓝 0 :=
-    fun n ↦ (hv_open n).mem_nhds (subset_absConvexHull (hu_zero n))
+  have hu_zero (n : ℕ) : 0 ∈ interior (u n) :=
+    mem_interior_iff_mem_nhds.mpr (hu_basis.mem_of_mem trivial)
+  let v (n : ℕ) := absConvexHull 𝕜 (interior (u n))
+  have hv_open (n : ℕ) : IsOpen (v n) := isOpen_interior.absConvexHull 𝕜 (hu_zero n)
+  have hv_nhds (n : ℕ) : v n ∈ 𝓝 0 := (hv_open n).mem_nhds (subset_absConvexHull (hu_zero n))
   have hv_basis : (𝓝 0).HasAntitoneBasis v := by
     refine ⟨hu_basis.to_hasBasis ?_ ?_,
       fun _ _ hij ↦ absConvexHull_mono (interior_mono (hu_basis.antitone hij))⟩

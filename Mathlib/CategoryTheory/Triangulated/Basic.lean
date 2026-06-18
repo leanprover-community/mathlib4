@@ -359,7 +359,6 @@ def productTriangle : Triangle C :=
     (Limits.Pi.map (fun j => (T j).mor₃) ≫ inv (piComparison _ _))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A projection from the product of a family of triangles. -/
 @[simps]
 def productTriangle.π (j : J) :
