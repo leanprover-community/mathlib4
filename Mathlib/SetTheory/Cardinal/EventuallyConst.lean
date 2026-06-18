@@ -50,25 +50,25 @@ theorem of_antitone_of_lt_cof (hf : Antitone f) (hα : lift.{u} #β < lift.{v} (
 end Filter.EventuallyConst
 
 namespace Cardinal
-variable {f : Cardinal.{v} → α} [Small.{v} α]
+variable {f : Cardinal.{v} → β} [Small.{v} β]
 
 theorem eventuallyConst_of_monotone (hf : Monotone f) : atTop.EventuallyConst f := by
   refine .of_monotone_of_lt_cof hf ?_
   simpa [← small_iff_lift_mk_lt_univ]
 
 theorem eventuallyConst_of_antitone (hf : Antitone f) : atTop.EventuallyConst f :=
-  eventuallyConst_of_monotone (α := αᵒᵈ) hf
+  eventuallyConst_of_monotone (β := βᵒᵈ) hf
 
 end Cardinal
 
 namespace Ordinal
-variable {f : Ordinal.{v} → α} [Small.{v} α]
+variable {f : Ordinal.{v} → β} [Small.{v} β]
 
 theorem eventuallyConst_of_monotone (hf : Monotone f) : atTop.EventuallyConst f := by
   refine .of_monotone_of_lt_cof hf ?_
   simpa [← small_iff_lift_mk_lt_univ]
 
 theorem eventuallyConst_of_antitone (hf : Antitone f) : atTop.EventuallyConst f :=
-  eventuallyConst_of_monotone (α := αᵒᵈ) hf
+  eventuallyConst_of_monotone (β := βᵒᵈ) hf
 
 end Ordinal
