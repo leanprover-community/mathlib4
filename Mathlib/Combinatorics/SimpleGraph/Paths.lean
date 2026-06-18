@@ -150,15 +150,18 @@ theorem reverse_isTrail_iff {u v : V} (p : G.Walk u v) : p.reverse.IsTrail ↔ p
       convert! h.reverse _
       try rw [reverse_reverse]
 
+@[simp]
+theorem isTrail_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
+    (p.append q).IsTrail ↔ p.IsTrail ∧ q.IsTrail ∧ p.edges.Disjoint q.edges := by
+  simp [Walk.isTrail_def, List.nodup_append']
+
 theorem IsTrail.of_append_left {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
     (h : (p.append q).IsTrail) : p.IsTrail := by
-  rw [isTrail_def, edges_append, List.nodup_append] at h
-  exact ⟨h.1⟩
+  simp_all
 
 theorem IsTrail.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
     (h : (p.append q).IsTrail) : q.IsTrail := by
-  rw [isTrail_def, edges_append, List.nodup_append] at h
-  exact ⟨h.2.1⟩
+  simp_all
 
 theorem IsTrail.count_edges_le_one [DecidableEq V] {u v : V} {p : G.Walk u v} (h : p.IsTrail)
     (e : Sym2 V) : p.edges.count e ≤ 1 :=
@@ -716,7 +719,97 @@ end Path
 
 namespace Walk
 
-variable {G} [DecidableEq V] {u u' v v' : V}
+variable {G} {u v : V}
+
+theorem IsPath.length_eq_one_of_mem_edges {p : G.Walk u v} (hp : p.IsPath) (h : s(u, v) ∈ p.edges) :
+    p.length = 1 := by
+  suffices p.length - 1 = 0 by grind [length_edges]
+  rw [← hp.getVert_eq_start_iff <| p.length.sub_le 1]
+  exact (hp.eq_penultimate_of_mem_edges <| Sym2.eq_swap ▸ h).symm
+
+theorem IsPath.eq_adj_toWalk_of_mem_edges {p : G.Walk u v} (hp : p.IsPath) (h : s(u, v) ∈ p.edges) :
+    p = (p.adj_of_mem_edges h).toWalk := by
+  apply p.ext_getVert_le_length <| by simp [hp.length_eq_one_of_mem_edges h]
+  intro _ hl
+  cases Nat.le_one_iff_eq_zero_or_eq_one.mp (hp.length_eq_one_of_mem_edges h ▸ hl) with
+  | inl hl => simp [hl]
+  | inr hl =>
+    rw [hl, getVert_cons_succ, getVert_zero, ← hp.length_eq_one_of_mem_edges h, getVert_length]
+
+theorem IsPath.disjoint_edges_of_disjoint_support {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath)
+    (hd : p.support.tail.Disjoint q.support.tail) (hl : p.length ≠ 1) :
+    p.edges.Disjoint q.edges := by
+  simp only [List.disjoint_left] at hd ⊢
+  contrapose! hd
+  obtain ⟨⟨a, b⟩, hep, heq⟩ := hd
+  have := p.mem_support_iff.mp <| p.fst_mem_support_of_mem_edges hep
+  have := p.mem_support_iff.mp <| p.snd_mem_support_of_mem_edges hep
+  have := q.mem_support_iff.mp <| q.fst_mem_support_of_mem_edges heq
+  have := q.mem_support_iff.mp <| q.snd_mem_support_of_mem_edges heq
+  grind [p.adj_of_mem_edges hep |>.ne, length_eq_one_of_mem_edges]
+
+lemma IsPath.isCycle_append {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath) (hq : q.IsPath)
+    (h : p.support.tail.Disjoint q.support.tail) (hn : 1 < p.length ∨ 1 < q.length) :
+    (p.append q).IsCycle := by
+  rw [isCycle_def, isTrail_append]
+  refine ⟨⟨hp.isTrail, hq.isTrail, ?_⟩, ?_, ?_⟩
+  · grind [IsPath.disjoint_edges_of_disjoint_support, List.Disjoint.symm]
+  · grind [nil_append_iff, length_eq_zero_iff]
+  · rw [tail_support_append, List.nodup_append']
+    exact ⟨hp.support_nodup.tail, hq.support_nodup.tail, h⟩
+
+/--
+Given two distinct paths with the same endpoints, we can extract a subwalk from each such that their
+concatenation, with one reversed, forms a cycle.
+-/
+theorem IsPath.exists_isCycle_of_ne {p q : G.Walk u v} (hp : p.IsPath) (hq : q.IsPath)
+    (h : p ≠ q) :
+    ∃ (u' v' : V) (p' q' : G.Walk u' v'),
+      p'.IsSubwalk p ∧ q'.IsSubwalk q ∧ (p'.append q'.reverse).IsCycle := by
+  induction hs : p.length using Nat.strongRec generalizing u v with | ind s ih =>
+  by_cases! hw : ∃ w, w ∈ p.support ∧ w ∈ q.support ∧ w ≠ u ∧ w ≠ v
+  · classical
+    have ⟨w, hwp, hwq, hwu, hwv⟩ := hw
+    by_cases! p.takeUntil w hwp ≠ q.takeUntil w hwq
+    · have := ih _ (hs ▸ length_takeUntil_lt_length hwp hwv) (hp.takeUntil hwp) (hq.takeUntil hwq)
+      grind [isSubwalk_takeUntil, IsSubwalk.trans]
+    · have := ih _ (hs ▸ length_dropUntil_lt_length hwp hwu) (hp.dropUntil hwp) (hq.dropUntil hwq)
+        <| by grind [take_spec]
+      grind [isSubwalk_dropUntil, IsSubwalk.trans]
+  · refine ⟨u, v, p, q, p.isSubwalk_rfl, q.isSubwalk_rfl, ?_⟩
+    refine hp.isCycle_append (isPath_reverse_iff q |>.mpr hq) (fun _ ↦ ?_) ?_
+    · grind [dropLast_support_concat, IsPath.support_nodup, support_reverse, cons_tail_support]
+    · grind [length_reverse, eq_of_length_le_one]
+
+open List in
+/--
+Given two distinct paths, `p` and `q`, with same endpoints, we can extract a cycle whose support
+is a sublist of `p.support ++ q.support.reverse.tail`.
+-/
+theorem IsPath.exists_isCycle_sublist_of_ne {p q : G.Walk u v} (hp : p.IsPath)
+    (hq : q.IsPath) (h : p ≠ q) :
+    ∃ w, w ∈ p.support ∧ w ∈ q.support ∧
+      ∃ c : G.Walk w w, c.IsCycle ∧ c.support <+ (p.support ++ q.support.reverse.tail) := by
+  have ⟨u', v', p', q', hp', hq', hcyc⟩ := hp.exists_isCycle_of_ne hq h
+  use u', hp'.support_subset p'.start_mem_support, hq'.support_subset q'.start_mem_support
+  refine ⟨_, hcyc, ?_⟩
+  rw [support_append, support_reverse]
+  refine .append ?_ <| .tail <| .reverse ?_
+  · exact isSubwalk_iff_support_isInfix.mp hp' |>.sublist
+  · exact isSubwalk_iff_support_isInfix.mp hq' |>.sublist
+
+/--
+Given two distinct paths with same endpoints, we can extract a cycle whose length is less than or
+equal to the sum of their lengths.
+-/
+theorem IsPath.exists_isCycle_length_le_add_of_ne {p q : G.Walk u v} (hp : p.IsPath)
+    (hq : q.IsPath) (h : p ≠ q) :
+    ∃ w, w ∈ p.support ∧ w ∈ q.support ∧
+      ∃ c : G.Walk w w, c.IsCycle ∧ c.length ≤ p.length + q.length := by
+  obtain ⟨w, hw₁, hw₂, c, hc₁, hc₂⟩ := hp.exists_isCycle_sublist_of_ne hq h
+  use w, hw₁, hw₂, c, hc₁, by grind [hc₂.length_le]
+
+variable [DecidableEq V] {u' v' : V}
 
 /-- Given a walk, produces a walk from it by bypassing subwalks between repeated vertices.
 The result is a path, as shown in `SimpleGraph.Walk.bypass_isPath`.
