@@ -268,18 +268,17 @@ lemma isPushout {X : SSet.{u}} {n : ℕ} (A : X.Subcomplex) (x : X _⦋n⦌)
         (yonedaEquiv.symm ⟨x, Or.inr (Subcomplex.mem_ofSimplex_obj x)⟩) := by
   have hnd : x ∈ X.nonDegenerate n := nonDegenerate_of_preimage_eq_boundary A x h
   set σ : (Δ[n] : SSet.{u}) ⟶ X := yonedaEquiv.symm x
-  refine IsPushout.of_forall_isPushout_app fun ⟨m⟩ ↦
+  refine IsPushout.of_forall_isPushout_app fun m ↦
     (Types.isPushout_of_isPullback_of_mono
       (k := (Subcomplex.ι _).app _) ?_ rfl rfl ?_ ?_)
-  · exact Types.isPullback_of_eq_setPreimage (σ.app ⟨m⟩) (A.obj ⟨m⟩) (by simp [← h])
+  · exact Types.isPullback_of_eq_setPreimage (σ.app m) (A.obj m) (by simp [← h])
   · apply le_antisymm le_top
     rintro ⟨y, hy⟩ _
     simp only [Subfunctor.max_obj, Set.mem_union] at hy
     obtain hy | ⟨z, hz⟩ := hy
     · exact Or.inl ⟨⟨y, hy⟩, rfl⟩
     · exact Or.inr ⟨stdSimplex.objEquiv.symm z.unop, Subtype.ext hz⟩
-  · induction m using SimplexCategory.rec with | _ m
-    intro x₃ y₃ hx₃ _ heq
+  · intro x₃ y₃ hx₃ _ heq
     obtain ⟨φ, rfl⟩ := stdSimplex.objEquiv.symm.surjective x₃
     obtain ⟨ψ, rfl⟩ := stdSimplex.objEquiv.symm.surjective y₃
     have hφ : Epi φ := (stdSimplex.notMem_boundary_iff_epi_objEquiv
