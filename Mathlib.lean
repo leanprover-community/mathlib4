@@ -1459,6 +1459,7 @@ public import Mathlib.AlgebraicGeometry.Sites.BigZariski
 public import Mathlib.AlgebraicGeometry.Sites.ConstantSheaf
 public import Mathlib.AlgebraicGeometry.Sites.ElladicCohomology
 public import Mathlib.AlgebraicGeometry.Sites.Etale
+public import Mathlib.AlgebraicGeometry.Sites.EtalePoint
 public import Mathlib.AlgebraicGeometry.Sites.Fpqc
 public import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 public import Mathlib.AlgebraicGeometry.Sites.Pretopology
@@ -4388,6 +4389,7 @@ public import Mathlib.Data.String.Basic
 public import Mathlib.Data.String.Defs
 public import Mathlib.Data.String.Lemmas
 public import Mathlib.Data.Subtype
+public import Mathlib.Data.SubtypeNeLift
 public import Mathlib.Data.Sum.Basic
 public import Mathlib.Data.Sum.Interval
 public import Mathlib.Data.Sum.Lattice
@@ -5147,12 +5149,14 @@ public import Mathlib.LinearAlgebra.PID
 public import Mathlib.LinearAlgebra.PerfectPairing.Basic
 public import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 public import Mathlib.LinearAlgebra.Pi
-public import Mathlib.LinearAlgebra.PiTensorProduct
+public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basis
 public import Mathlib.LinearAlgebra.PiTensorProduct.DFinsupp
 public import Mathlib.LinearAlgebra.PiTensorProduct.DirectSum
 public import Mathlib.LinearAlgebra.PiTensorProduct.Dual
+public import Mathlib.LinearAlgebra.PiTensorProduct.Finite
 public import Mathlib.LinearAlgebra.PiTensorProduct.Finsupp
+public import Mathlib.LinearAlgebra.PiTensorProduct.Generators
 public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.LinearAlgebra.Projectivization.Action

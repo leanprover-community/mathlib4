@@ -74,14 +74,14 @@ def assertEq (name expected actual : String) : IO Unit := do
     IO.eprintln s!"  FAIL: {name}\n    expected: {expected}\n    actual:   {actual}"
     failures.modify (· + 1)
 
-/-- Run `action` with both stdout and stderr redirected to /dev/null. Restores
-both on completion, including on exception. Apply this to every production code
-call in tests so diagnostic prints never mix with test output, regardless of
-whether the production code currently produces any. -/
+/-- Run `action` with both stdout and stderr redirected to the platform null
+device. Restores both on completion, including on exception. Apply this to every
+production code call in tests so diagnostic prints never mix with test output,
+regardless of whether the production code currently produces any. -/
 private def withSuppressedOutput (action : IO α) : IO α := do
   let savedOut ← IO.getStdout
   let savedErr ← IO.getStderr
-  let sink ← IO.FS.Handle.mk "/dev/null" IO.FS.Mode.append
+  let sink ← IO.FS.Handle.mk Cache.IO.nullDevice IO.FS.Mode.append
   let sinkStream := IO.FS.Stream.ofHandle sink
   -- `IO.setStdout`/`IO.setStderr` return the previous stream; we already saved it,
   -- so discard the return value here.
