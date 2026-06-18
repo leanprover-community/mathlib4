@@ -77,13 +77,13 @@ theorem _root_.AddMonoidHom.coe_toIntLinearMap_map {A A₂ : Type*} [AddCommGrou
     (AddSubgroup.toIntSubmodule s).map f.toIntLinearMap =
       AddSubgroup.toIntSubmodule (s.map f) := rfl
 
--- TODO: move to `Mathlib.Algebra.Group.Subgroup.Map`?
+-- TODO: move to `Mathlib.Algebra.Group.Subgroup.Map`
 @[simp]
 theorem _root_.MonoidHom.coe_toAdditive_map {G G₂ : Type*} [Group G] [Group G₂] (f : G →* G₂)
     (s : Subgroup G) :
     s.toAddSubgroup.map (MonoidHom.toAdditive f) = Subgroup.toAddSubgroup (s.map f) := rfl
 
--- TODO: move to `Mathlib.Algebra.Group.Subgroup.Map`?
+-- TODO: move to `Mathlib.Algebra.Group.Subgroup.Map`
 @[simp]
 theorem _root_.AddMonoidHom.coe_toMultiplicative_map {G G₂ : Type*} [AddGroup G] [AddGroup G₂]
     (f : G →+ G₂) (s : AddSubgroup G) :
@@ -452,7 +452,7 @@ protected lemma map_ne_top_iff : p.map (e : M →ₛₗ[σ] N) ≠ ⊤ ↔ p ≠
 
 end OrderIso
 
---TODO(Mario): is there a way to prove this from order properties?
+-- TODO: is there a way to prove this from order properties? (Mario)
 theorem map_inf_eq_map_inf_comap [RingHomSurjective σ] {f : M →ₛₗ[σ] N} {p : Submodule R M}
     {p' : Submodule S N} : map f p ⊓ p' = map f (p ⊓ comap f p') :=
   le_antisymm (by rintro _ ⟨⟨x, h₁, rfl⟩, h₂⟩; exact ⟨_, ⟨h₁, h₂⟩, rfl⟩)
