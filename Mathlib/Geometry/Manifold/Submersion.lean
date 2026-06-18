@@ -358,27 +358,24 @@ lemma isSubmersionAt (h : IsSubmersionAtOfComplement F I J n f x) :
   use h.smallComplement, by infer_instance, by infer_instance
   exact (IsSubmersionAtOfComplement.congr_F h.smallEquiv).mp h
 
-/-- Prefer using `IsSubmersionAtOfComplement.contMDiffAt` instead.
-
-NB: `E'' × F` admits both the product model with corners
-`(𝓘(𝕜, E'')).prod (𝓘(𝕜, F)` and the canonical model with corners
-`𝓘(𝕜, E'' × F)`.
-Although these models describe the same smooth structure, we use the latter here because it is the
-target model of `h.equiv`. -/
+/-- Prefer using `IsSubmersionAtOfComplement.contMDiffAt` instead. -/
 theorem contMDiffOn (h : IsSubmersionAtOfComplement F I J n f x) :
     ContMDiffOn I J n f h.domChart.source := by
   rw [← contMDiffOn_writtenInExtend_iff h.domChart_mem_maximalAtlas
     h.codChart_mem_maximalAtlas le_rfl h.mapsto_domChart_source_codChart_source,
     ← h.domChart.extend_target_eq_image_source]
   have : CMDiff n (Prod.fst ∘ h.equiv) := by
-    have h₁ : ContMDiff (𝓘(𝕜, E)) 𝓘(𝕜, E'' × F) n h.equiv := by
+  -- Note that we cannot use `h₁.comp contMDiff_fst` since `h₁` and `contMDiff_fst` require
+  -- different models with corners on `E'' × F`. The former uses `𝓘(𝕜, E'' × F)` while the latter
+  -- uses `(𝓘(𝕜, E'')).prod (𝓘(𝕜, F)`.
+    have h₁ : ContMDiff 𝓘(𝕜, E) 𝓘(𝕜, E'' × F) n h.equiv := by
       rw [contMDiff_iff_contDiff]
       exact h.equiv.contDiff
     apply ContMDiff.comp ?_ h₁
     rw [contMDiff_iff_contDiff]
     exact contDiff_fst
   exact this.contMDiffOn.congr h.writtenInCharts
-
+#check contMDiff_fst
 /-- A `C^n` submersion at `x` is `C^n` at `x`. -/
 theorem contMDiffAt (h : IsSubmersionAtOfComplement F I J n f x) : CMDiffAt n f x :=
   h.contMDiffOn.contMDiffAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
@@ -523,8 +520,7 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
     |>.isSubmersionAt
 
 /-- Prefer using `IsSubmersionAt.contMDiffAt` instead -/
-theorem contMDiffOn (h : IsSubmersionAt I J n f x) :
-    CMDiff[h.domChart.source] n f :=
+theorem contMDiffOn (h : IsSubmersionAt I J n f x) : CMDiff[h.domChart.source] n f :=
   h.isSubmersionAtOfComplement_complement.contMDiffOn
 
 /-- A `C^k` submersion at `x` is `C^k` at `x`. -/
@@ -616,8 +612,7 @@ protected lemma id [IsManifold I n M] : IsSubmersionOfComplement PUnit I I n (@i
   simpa
 
 /-- A `C^k` submersion is `C^k` -/
-theorem contMDiff [IsManifold I n M] [IsManifold J n N]
-    (h : IsSubmersionOfComplement F I J n f) : CMDiff n f :=
+theorem contMDiff (h : IsSubmersionOfComplement F I J n f) : CMDiff n f :=
   fun x ↦ (h x).contMDiffAt
 
 end IsSubmersionOfComplement
@@ -661,8 +656,7 @@ protected lemma id [IsManifold I n M] : IsSubmersion I I n (@id M) := by
   exact IsSubmersionOfComplement.id
 
 /-- A `C^k` submersion is `C^k` -/
-theorem contMDiff [IsManifold I n M] [IsManifold J n N]
-    (h : IsSubmersion I J n f) : CMDiff n f :=
+theorem contMDiff (h : IsSubmersion I J n f) : CMDiff n f :=
   h.isSubmersionOfComplement_complement.contMDiff
 
 end IsSubmersion
