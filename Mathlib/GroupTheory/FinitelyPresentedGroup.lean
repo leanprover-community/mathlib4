@@ -7,10 +7,10 @@ Authors: Riccardo Brasca, Fabrizio Barroero, Stefano Francaviglia,
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Basic
-public import Mathlib.Data.Finite.Card
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.GroupTheory.FreeGroup.Basic
+public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
 # Finitely Presented Groups
@@ -114,6 +114,15 @@ theorem of_surjective [hG : IsFinitelyPresented G] (f : G →* H)
   rw [← MonoidHom.comap_ker]
   exact hf_ker.comap hφ_surj hφ_ker
 
+/-- A free group with a finite number of generators is finitely presented. -/
+@[to_additive /-- A free additive group with a finite number of generators is finitely presented. -/
+]
+instance [Finite α] : IsFinitelyPresented (FreeGroup α) := by
+  have ⟨n, _, f, hf_surj, hf_inj⟩ := Finite.exists_equiv_fin α
+  refine ⟨n, FreeGroup.map f, FreeGroup.map_surjective hf_surj.surjective, ?_⟩
+  · rw [(FreeGroup.map f).ker_eq_bot (FreeGroup.map_injective hf_inj.injective)]
+    exact .bot
+
 /-- A group is finitely presented if there exists a `Set G` such that the canonical inclusion map
 is surjective and the kernel is finitely generated as a normal subgroup. -/
 @[to_additive /-- An additive group is finitely presented if there exists a `Set G` such that the
@@ -135,17 +144,8 @@ theorem iff_hom_surj_set_G :
     simpa [ψ_surj, ← MonoidHom.comap_ker, hcomp, Subgroup.map_comap_eq_self_of_surjective]
     using hker.map (hf := ψ_surj)
   · rintro ⟨S, hS, hsurj, hker⟩
-    have := hS.to_subtype
-    exact of_hom_surj_finite _ hsurj hker
-
-/-- A free group with a finite number of generators is finitely presented. -/
-@[to_additive /-- A free additive group with a finite number of generators is finitely presented. -/
-]
-instance [Finite α] : IsFinitelyPresented (FreeGroup α) := by
-  have ⟨n, _, f, hf_surj, hf_inj⟩ := Finite.exists_equiv_fin α
-  refine ⟨n, FreeGroup.map f, FreeGroup.map_surjective hf_surj.surjective, ?_⟩
-  · rw [(FreeGroup.map f).ker_eq_bot_iff.mpr (FreeGroup.map_injective hf_inj.injective)]
-    exact .bot
+    haveI : Finite S := hS
+    apply of_surjective _ hsurj hker
 
 /-- `Multiplicative ℤ` is finitely presented. -/
 instance : IsFinitelyPresented (Multiplicative ℤ) :=
