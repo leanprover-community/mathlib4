@@ -74,14 +74,14 @@ def assertEq (name expected actual : String) : IO Unit := do
     IO.eprintln s!"  FAIL: {name}\n    expected: {expected}\n    actual:   {actual}"
     failures.modify (· + 1)
 
-/-- Run `action` with both stdout and stderr redirected to /dev/null. Restores
-both on completion, including on exception. Apply this to every production code
-call in tests so diagnostic prints never mix with test output, regardless of
-whether the production code currently produces any. -/
+/-- Run `action` with both stdout and stderr redirected to the platform null
+device. Restores both on completion, including on exception. Apply this to every
+production code call in tests so diagnostic prints never mix with test output,
+regardless of whether the production code currently produces any. -/
 private def withSuppressedOutput (action : IO α) : IO α := do
   let savedOut ← IO.getStdout
   let savedErr ← IO.getStderr
-  let sink ← IO.FS.Handle.mk "/dev/null" IO.FS.Mode.append
+  let sink ← IO.FS.Handle.mk Cache.IO.nullDevice IO.FS.Mode.append
   let sinkStream := IO.FS.Stream.ofHandle sink
   -- `IO.setStdout`/`IO.setStderr` return the previous stream; we already saved it,
   -- so discard the return value here.
@@ -279,6 +279,11 @@ def test_mkFileURL : IO Unit := do
   assertEq "scope is ignored on a flat legacy path"
     "https://lakecache.blob.core.windows.net/mathlib4/f/abc.ltar"
     (mkFileURL (some .legacy) MATHLIBREPO Container.legacy.azureURL "abc.ltar" (some "abc123def"))
+  -- The repo segment is lowercased, so a mixed-case GitHub owner resolves to the
+  -- same path whether it reaches the cache from CI or a local remote URL.
+  assertEq "fork repo is lowercased in the path"
+    "https://lakecache.blob.core.windows.net/mathlib4-forks/f/alice/mathlib4/abc.ltar"
+    (mkFileURL (some .forks) "Alice/Mathlib4" Container.forks.azureURL "abc.ltar")
 
 end MkFileURL
 
@@ -476,6 +481,11 @@ def test_markerURL : IO Unit := do
   assertEq "marker URL respects the container base"
     "https://lakecache.blob.core.windows.net/mathlib4/m/someorg/mathlib4/sha9999"
     (markerURL .legacy "someorg/mathlib4" "sha9999")
+  -- The repo segment is lowercased, so an upload and a probe for the same fork
+  -- meet at one path regardless of how the owner name was capitalized.
+  assertEq "marker repo is lowercased in the path"
+    "https://lakecache.blob.core.windows.net/mathlib4-forks/m/alice/mathlib4/abc123"
+    (markerURL .forks "Alice/Mathlib4" "abc123")
 
 end Marker
 

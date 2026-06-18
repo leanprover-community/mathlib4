@@ -25,6 +25,17 @@ def MATHLIBREPO := "leanprover-community/mathlib4"
 def NIGHTLY_TESTING_REPO := "leanprover-community/mathlib4-nightly-testing"
 
 /--
+Canonical form of a GitHub `owner/repo` name for use as a cache blob path
+segment.
+
+GitHub treats owner and repository names case-insensitively, while Azure Blob
+Storage paths are case-sensitive. Lowercasing yields one shared key whatever
+capitalization a remote URL or the GitHub Actions context supplies, so a fork's
+uploads and downloads always meet at the same path.
+-/
+def normalizeRepo (repo : String) : String := repo.toLower
+
+/--
 Trust-classified Azure storage containers for the Mathlib cache.
 
 Each variant maps to one Azure Blob Storage container on the `lakecache` storage
