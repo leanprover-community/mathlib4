@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.ENNReal.Real
 public import Mathlib.Tactic.Bound.Attribute
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Bornology.Basic
 public import Mathlib.Topology.EMetricSpace.Defs
 public import Mathlib.Topology.UniformSpace.Basic
@@ -257,9 +258,10 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: distances are nonnegative. -/
 @[positivity Dist.dist _ _]
-meta def evalDist : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalDist : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Dist.dist $β $inst $a $b) =>
+    let some _ := pα? | pure .none
     let _inst ← synthInstanceQ q(PseudoMetricSpace $β)
     assertInstancesCommute
     pure (.nonnegative q(dist_nonneg))
@@ -364,6 +366,7 @@ namespace Metric
 variable {x y z : α} {δ ε ε₁ ε₂ : ℝ} {s : Set α}
 
 /-- `ball x ε` is the set of all points `y` with `dist y x < ε` -/
+@[wikidata Q838611]
 def ball (x : α) (ε : ℝ) : Set α :=
   { y | dist y x < ε }
 
@@ -421,6 +424,9 @@ def closedBall (x : α) (ε : ℝ) :=
 @[simp] theorem mem_closedBall : y ∈ closedBall x ε ↔ dist y x ≤ ε := Iff.rfl
 
 theorem mem_closedBall' : y ∈ closedBall x ε ↔ dist x y ≤ ε := by rw [dist_comm, mem_closedBall]
+
+theorem nonneg_of_mem_closedBall (hy : y ∈ closedBall x ε) : 0 ≤ ε :=
+  dist_nonneg.trans hy
 
 /-- `sphere x ε` is the set of all points `y` with `dist y x = ε` -/
 def sphere (x : α) (ε : ℝ) := { y | dist y x = ε }
@@ -506,12 +512,16 @@ theorem sphere_union_ball : sphere x ε ∪ ball x ε = closedBall x ε := by
   rw [union_comm, ball_union_sphere]
 
 @[simp]
-theorem closedBall_diff_sphere : closedBall x ε \ sphere x ε = ball x ε := by
-  rw [← ball_union_sphere, Set.union_diff_cancel_right sphere_disjoint_ball.symm.le_bot]
+theorem closedBall_sdiff_sphere : closedBall x ε \ sphere x ε = ball x ε := by
+  rw [← ball_union_sphere, Set.union_sdiff_cancel_right sphere_disjoint_ball.symm.le_bot]
+
+@[deprecated (since := "2026-06-03")] alias closedBall_diff_sphere := closedBall_sdiff_sphere
 
 @[simp]
-theorem closedBall_diff_ball : closedBall x ε \ ball x ε = sphere x ε := by
-  rw [← ball_union_sphere, Set.union_diff_cancel_left sphere_disjoint_ball.symm.le_bot]
+theorem closedBall_sdiff_ball : closedBall x ε \ ball x ε = sphere x ε := by
+  rw [← ball_union_sphere, Set.union_sdiff_cancel_left sphere_disjoint_ball.symm.le_bot]
+
+@[deprecated (since := "2026-06-03")] alias closedBall_diff_ball := closedBall_sdiff_ball
 
 theorem mem_ball_comm : x ∈ ball y ε ↔ y ∈ ball x ε := by rw [mem_ball', mem_ball]
 
@@ -1206,6 +1216,18 @@ theorem tendsto_iff_dist_tendsto_zero {f : β → α} {x : Filter β} {a : α} :
 namespace Metric
 
 variable {x y z : α} {ε ε₁ ε₂ : ℝ} {s : Set α}
+
+/-- If `f` is a positive radius tending to zero, then the sets of pairs with distance less than
+`f i` form a basis of the uniformity. -/
+lemma mk_uniformity_basis_of_tendsto {β : Type*} {p : β → Prop} {f : β → ℝ}
+    {l : Filter β} [l.NeBot] (hf₀ : ∀ i, p i → 0 < f i) (hf₁ : ∀ᶠ i in l, p i)
+    (hf : Tendsto f l (𝓝 0)) :
+    (𝓤 α).HasBasis p fun i ↦ {x | dist x.1 x.2 < f i} := by
+  apply Metric.mk_uniformity_basis hf₀
+  rw [nhds_basis_closedBall.tendsto_right_iff] at hf
+  refine fun ε hε ↦ hf₁.and (hf ε hε) |>.exists.imp fun i ↦ and_imp.mpr fun hp hi ↦ ?_
+  exact ⟨hp, by
+    simpa [Metric.mem_closedBall, Real.dist_eq, abs_of_nonneg (hf₀ i hp).le] using hi⟩
 
 theorem ball_subset_interior_closedBall : ball x ε ⊆ interior (closedBall x ε) :=
   interior_maximal ball_subset_closedBall isOpen_ball

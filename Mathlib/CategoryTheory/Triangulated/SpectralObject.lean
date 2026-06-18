@@ -96,7 +96,7 @@ lemma δ_naturality {i' j' k' : ι} (f' : i' ⟶ j') (g' : j' ⟶ k')
   have h := X.δ'.naturality φ
   dsimp at h
   simp only [φ, hαβ] at h
-  convert h <;> aesop_cat
+  convert! h <;> cat_disch
 
 /-- The distinguished triangle attached to a spectral object `E : SpectralObject C ι`
 and composable morphisms `f : i ⟶ j` and `g : j ⟶ k` in `ι`. -/

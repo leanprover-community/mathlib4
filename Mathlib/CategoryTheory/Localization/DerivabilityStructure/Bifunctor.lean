@@ -160,7 +160,7 @@ lemma isIso_app_app_of_isRightDerivedBifunctor
     [W₁'.ContainsIdentities] [W₂'.ContainsIdentities]
     [hF : PrecompLocalizerMorphismsInverts F Φ₁ Φ₂] (X₁' : C₁') (X₂' : C₂') :
     IsIso ((α.app (Φ₁.functor.obj X₁')).app (Φ₂.functor.obj X₂')) := by
-  convert (Φ₁.prod Φ₂).isIso_app_of_isRightDerivedFunctor F.uncurry hF.isInvertedBy
+  convert! (Φ₁.prod Φ₂).isIso_app_of_isRightDerivedFunctor F.uncurry hF.isInvertedBy
     (L₁.prod L₂) RF.uncurry (whiskeringLeft₂Equiv' _ _ _ _ α) ⟨X₁', X₂'⟩
   simp [LocalizerMorphism.prod]
 

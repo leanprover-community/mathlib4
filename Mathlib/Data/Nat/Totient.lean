@@ -152,7 +152,7 @@ theorem totient_div_of_dvd {n d : ℕ} (hnd : d ∣ n) :
     rw [gcd_mul_left, ha2, mul_one]
   · simp [hd0.ne']
   · simp only [mem_filter, mem_range, exists_prop, and_imp]
-    refine fun b hb1 hb2 => ?_
+    intro b hb1 hb2
     have : d ∣ b := by
       rw [← hb2]
       apply gcd_dvd_right
@@ -446,9 +446,10 @@ open Lean Meta Qq
 meta def evalNatTotient : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.totient $n) =>
-    assumeInstancesCommute
     match ← core z p n with
-    | .positive pa => return .positive q(Nat.totient_pos.mpr $pa)
+    | .positive pa =>
+      assumeInstancesCommute
+      return .positive q(Nat.totient_pos.mpr $pa)
     | _ => failure
   | _, _, _ => throwError "not Nat.totient"
 

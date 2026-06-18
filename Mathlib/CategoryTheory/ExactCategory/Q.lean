@@ -107,7 +107,7 @@ lemma Hom.comp_eq {X₁ X₂ X₃ : Q C} {Z₁₂ Z₂₃ Z₁₃ : C} (j₁ : Z
     let e : cospan (Subobject.arrow (mk' X₁ X₂ j₁ i₁).i) (mk' X₂ X₃ j₂ i₂).j ≅
         cospan i₁ j₂ := cospanExt (Subobject.underlyingIso i₁) (Subobject.underlyingIso i₂)
           (Iso.refl _) (by dsimp [mk']; simp) (by dsimp [mk']; simp)
-    convert (IsLimit.conePointUniqueUpToIso
+    convert! (IsLimit.conePointUniqueUpToIso
       ((IsLimit.postcomposeHomEquiv e.symm _).symm H.isLimit) (limit.isLimit _)).isIso_hom
     aesop_cat
   symm

@@ -5,10 +5,9 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.NatIso
 public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
-public import Mathlib.Data.Set.Operations
+public import Mathlib.Order.BooleanAlgebra.Defs
 
 /-!
 # Essential image of a functor
@@ -231,5 +230,14 @@ lemma ObjectProperty.essImage_ι (P : ObjectProperty C) [P.IsClosedUnderIsomorph
     P.ι.essImage = P := by
   ext X
   exact ⟨fun ⟨⟨Y, hY⟩, ⟨e⟩⟩ ↦ P.prop_of_iso e hY, fun hX ↦ ⟨⟨X, hX⟩, ⟨Iso.refl _⟩⟩⟩
+
+lemma ObjectProperty.map_top (F : C ⥤ D) :
+    (⊤ : ObjectProperty C).map F = F.essImage := by
+  ext Y
+  refine ⟨?_, ?_⟩
+  · rintro ⟨X, _, ⟨e⟩⟩
+    exact ⟨X, ⟨e⟩⟩
+  · rintro ⟨X, ⟨e⟩⟩
+    exact ⟨X, by simp, ⟨e⟩⟩
 
 end CategoryTheory
