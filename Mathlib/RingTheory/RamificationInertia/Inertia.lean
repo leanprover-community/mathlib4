@@ -105,6 +105,21 @@ theorem inertiaDeg'_tower [r.LiesOver q] :
     apply Module.finrank_mul_finrank
   · rw [inertiaDeg'_of_not_isPrime r R hr, inertiaDeg'_of_not_isPrime r S hr, mul_zero]
 
+variable (R) in
+open Pointwise in
+@[simp]
+theorem inertiaDeg'_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
+    (g : G) : (g • q).inertiaDeg' R = q.inertiaDeg' R := by
+  by_cases hq : q.IsPrime; swap
+  · rw [inertiaDeg'_of_not_isPrime, inertiaDeg'_of_not_isPrime] <;> simpa
+  · let p := q.under R
+    let f₀ := MulSemiringAction.toAlgAut G R S g
+    let := Localization.AtPrime.algebraOfLiesOver p q
+    let := Localization.AtPrime.algebraOfLiesOver p (g • q)
+    rw [inertiaDeg'_eq p q, inertiaDeg'_eq p (g • q)]
+    let e₂ := Ideal.residueFieldAlgEquiv' p (g • q) q f₀.symm (comap_symm f₀.toRingEquiv).symm
+    exact e₂.toLinearEquiv.finrank_eq
+
 end
 
 end Ideal
