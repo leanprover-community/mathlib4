@@ -396,4 +396,59 @@ noncomputable def gradedAlgebra (hM : DirectSum.IsInternal M) : GradedAlgebra M 
     left_inv := hM.coeAlgEquiv.symm.left_inv
     right_inv := hM.coeAlgEquiv.left_inv }
 
-end DirectSum.IsInternal
+end IsInternal
+
+-- The rest is in `Mathlib.Algebra.DirectSum.Decomposition`.
+-- Open a file for `Rel.IsPureHomogeneous`?
+section Semiring
+
+variable {M} {r : M → M → Prop} [SetLike σ M]
+variable [DecidableEq ι] [AddMonoid ι]
+
+variable [Semiring M] [AddSubmonoidClass σ M] (ℳ : ι → σ) [GradedRing ℳ]
+
+theorem Rel.IsPureHomogeneous.ringConGenIsHomogeneous (hr : Rel.IsPureHomogeneous ℳ r) :
+    Rel.IsHomogeneous ℳ (RingConGen.Rel r) := by
+  intro a b h i
+  induction h generalizing i with
+  | refl x => exact RingConGen.Rel.refl _
+  | of a b h =>
+    obtain ⟨j, ha, hb⟩ := hr h
+    obtain rfl | hji := eq_or_ne j i
+    · simp [decompose_of_mem_same, ha, hb, h, RingConGen.Rel.of]
+    · simp [decompose_of_mem_ne _ ha hji, decompose_of_mem_ne _ hb hji, RingConGen.Rel.refl]
+  | symm _ ih => exact RingConGen.Rel.symm (ih i)
+  | trans h h' ih ih' => exact RingConGen.Rel.trans (ih i) (ih' i)
+  | add h h' ih ih' => simp [RingConGen.Rel.add (ih i) (ih' i)]
+  | @mul w x y z h h' ih ih' =>
+    classical
+    simp only [decompose_mul, DirectSum.coe_mul_apply]
+    rw [Finset.sum_subset Finset.subset_union_right]
+    · nth_rewrite 2 [Finset.sum_subset Finset.subset_union_left]
+      · apply RingConGen.Rel.sum
+        intro u _
+        exact RingConGen.Rel.mul (ih u.1) (ih' u.2)
+      · intro u hu hu'
+        simp only [Finset.mem_union, Finset.mem_filter, Finset.mem_product,
+          DFinsupp.mem_support_toFun, ne_eq, not_and, and_imp] at hu hu'
+        rcases hu with (⟨⟨hux, huz⟩, hui⟩ | ⟨⟨huw, huy⟩, hui⟩)
+        · exact (hu' hux huz hui).elim
+        · simp only [hui, not_true_eq_false, imp_false, Decidable.not_not] at hu'
+          by_cases h : decompose ℳ x u.1 = 0
+          · simp [h]
+          · simp [hu' h]
+    · intro u hu hu'
+      simp only [Finset.mem_union, Finset.mem_filter, Finset.mem_product,
+        DFinsupp.mem_support_toFun, ne_eq, not_and, and_imp] at hu hu'
+      rcases hu with (⟨⟨hux, huz⟩, hui⟩ | ⟨⟨huw, huy⟩, hui⟩)
+      · simp only [hui, not_true_eq_false, imp_false, Decidable.not_not] at hu'
+        by_cases h : decompose ℳ w u.1 = 0
+        · simp [h]
+        · simp [hu' h]
+      · exact (hu' huw huy hui).elim
+
+end Semiring
+
+end DirectSum
+
+

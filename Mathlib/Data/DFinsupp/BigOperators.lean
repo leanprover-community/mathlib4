@@ -571,4 +571,40 @@ theorem map_dfinsuppSumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZer
 
 end AddEquiv
 
+section ConGen
+
+variable {M} {r : M → M → Prop}
+
+@[to_additive] theorem ConGen.Rel.prod [CommMonoid M]
+    {α : Type*} {s : Finset α} {f g : α → M} (hf : ∀ x ∈ s, ConGen.Rel r (f x) (g x)) :
+    ConGen.Rel r (∏ x ∈ s, f x) (∏ x ∈ s, g x) := by
+  classical
+  induction s using Finset.induction generalizing f g with
+  | empty => simp [ConGen.Rel.refl]
+  | insert a s has ih =>
+    simp only [Finset.prod_insert has]
+    exact ConGen.Rel.mul (hf a (by simp)) (ih (fun x hx ↦ hf x (by simp [hx])))
+
+theorem RingConGen.Rel.sum [Semiring M]
+    {α : Type*} {s : Finset α} {f g : α → M} (hf : ∀ x ∈ s, RingConGen.Rel r (f x) (g x)) :
+    RingConGen.Rel r (∑ x ∈ s, f x) (∑ x ∈ s, g x) := by
+  classical
+  induction s using Finset.induction generalizing f g with
+  | empty => simp [RingConGen.Rel.refl]
+  | insert a s has ih =>
+    simp only [Finset.sum_insert has]
+    exact RingConGen.Rel.add (hf a (by simp)) (ih (fun x hx ↦ hf x (by simp [hx])))
+
+theorem RingConGen.Rel.prod [CommSemiring M]
+    {α : Type*} {s : Finset α} {f g : α → M} (hf : ∀ x ∈ s, RingConGen.Rel r (f x) (g x)) :
+    RingConGen.Rel r (∏ x ∈ s, f x) (∏ x ∈ s, g x) := by
+  classical
+  induction s using Finset.induction generalizing f g with
+  | empty => simp [RingConGen.Rel.refl]
+  | insert a s has ih =>
+    simp only [Finset.prod_insert has]
+    exact RingConGen.Rel.mul (hf a (by simp)) (ih (fun x hx ↦ hf x (by simp [hx])))
+
+end ConGen
+
 end
