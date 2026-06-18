@@ -456,4 +456,3 @@ theorem ramificationIdx_eq (hp : p ≠ ⊥) :
 end IsInertiaField
 
 end splitting
-
