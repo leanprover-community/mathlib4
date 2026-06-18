@@ -287,12 +287,12 @@ theorem sSupIndep_empty : sSupIndep (∅ : Set α) := fun x hx =>
 
 include hs in
 theorem sSupIndep.mono {t : Set α} (hst : t ⊆ s) : sSupIndep t := fun _ ha =>
-  (hs (hst ha)).mono_right (sSup_le_sSup (diff_subset_diff_left hst))
+  (hs (hst ha)).mono_right (sSup_le_sSup (sdiff_subset_sdiff_left hst))
 
 include hs in
 /-- If the elements of a set are independent, then any pair within that set is disjoint. -/
 theorem sSupIndep.pairwiseDisjoint : s.PairwiseDisjoint id := fun _ hx y hy h =>
-  disjoint_sSup_right (hs hx) ((mem_diff y).mpr ⟨hy, h.symm⟩)
+  disjoint_sSup_right (hs hx) ((mem_sdiff y).mpr ⟨hy, h.symm⟩)
 
 theorem sSupIndep_singleton (a : α) : sSupIndep ({a} : Set α) := fun i hi ↦ by
   simp_all
@@ -314,7 +314,7 @@ subset of the rest. -/
 theorem sSupIndep.disjoint_sSup {x : α} {y : Set α} (hx : x ∈ s) (hy : y ⊆ s) (hxy : x ∉ y) :
     Disjoint x (sSup y) := by
   have := (hs.mono <| insert_subset_iff.mpr ⟨hx, hy⟩) (mem_insert x _)
-  rw [insert_diff_of_mem _ (mem_singleton _), diff_singleton_eq_self hxy] at this
+  rw [insert_sdiff_of_mem _ (mem_singleton _), sdiff_singleton_eq_self hxy] at this
   exact this
 
 /-- An independent indexed family of elements in a complete lattice is one in which every element
