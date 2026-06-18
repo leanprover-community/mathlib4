@@ -23,7 +23,7 @@ open scoped ArithmeticFunction.sigma
 namespace EisensteinSeries
 
 /-- The Eisenstein series `E2` is bounded at infinity. -/
-theorem E2_isBoundedAtImInfty : IsBoundedAtImInfty E2 := by
+theorem isBoundedAtImInfty_E2 : IsBoundedAtImInfty E2 := by
   rw [UpperHalfPlane.isBoundedAtImInfty_iff]
   refine ⟨1 + 24 * ∑' n : ℕ+, ((n : ℕ) : ℝ) ^ 2 * Real.exp (-π) ^ (n : ℕ), 1, fun z hz => ?_⟩
   rw [E2_eq_tsum_cexp, show cexp (2 * ↑π * I * ↑z) = Function.Periodic.qParam 1 ↑z by

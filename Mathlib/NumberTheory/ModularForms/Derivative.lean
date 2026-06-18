@@ -327,7 +327,7 @@ theorem ramanujanSerreDerivative_isBoundedAtImInfty {F : ℍ → ℂ} (k : ℂ) 
     (hb : IsBoundedAtImInfty F) : IsBoundedAtImInfty (ramanujanSerreDerivative k F) := by
   have hE2 : IsBoundedAtImInfty (fun z : ℍ ↦ k * 12⁻¹ * EisensteinSeries.E2 z * F z) :=
     Filter.BoundedAtFilter.mul (Filter.BoundedAtFilter.mul
-      (Filter.const_boundedAtFilter atImInfty (k * 12⁻¹)) EisensteinSeries.E2_isBoundedAtImInfty) hb
+      (Filter.const_boundedAtFilter atImInfty (k * 12⁻¹)) EisensteinSeries.isBoundedAtImInfty_E2) hb
   change IsBoundedAtImInfty (D F - (fun z : ℍ ↦ k * 12⁻¹ * EisensteinSeries.E2 z * F z))
   rw [sub_eq_add_neg]
   exact Filter.BoundedAtFilter.add (normalizedDerivOfComplex_isBoundedAtImInfty hF hb)
