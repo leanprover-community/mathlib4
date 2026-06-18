@@ -16,10 +16,10 @@ example : 1 + 2 = 3 := by
 
 /- Usage with `at` keywords -/
 example (h1 : 1 + 1 = 5) (h2 : 1 + 3 = 5) (h3 : 1 + 2 = 5) : True := by
-  setm ?A + _ = ?B at h1 h2 h3
+  setm ?A + _ = ?B using h1 at *
   guard_hyp A :=ₛ 1
   guard_hyp B :=ₛ 5
-  guard_hyp h1 :ₛ A + 1 = B
+  guard_hyp h1 :ₛ A + A = B
   guard_hyp h2 :ₛ A + 3 = B
   guard_hyp h3 :ₛ A + 2 = B
   trivial
@@ -35,16 +35,17 @@ example (h : b + a = c) : a + b = c := by
   clear A B
   /- setm 2 -/
   rewrite [Nat.add_comm]
-  setm ?A + ?B = _ at h ⊢
+  setm ?A + ?B = _ at h
   guard_hyp A :=ₛ b
   guard_hyp B :=ₛ a
+  guard_hyp h :ₛ A + B = c
   exact h
 
 /- Strange problem -/
 
 example (n : Bool) : 1 + 2 = 3 := by
   cases n
-  · setm ?A + ?B = _
+  · setm ?A + ?B = ?_
     guard_hyp A :=ₛ 1
     guard_hyp B :=ₛ 2
     trivial
@@ -59,7 +60,7 @@ instance : HAdd NotQuiteNat NotQuiteNat NotQuiteNat := inferInstanceAs (HAdd Nat
 
 example {a b c : NotQuiteNat} (h : a + b = c) : True := by
   /- setm 1-/
-  setm ?A + ?B = _ at h
+  setm ?A + ?B = _ using h
   guard_hyp A := a
   guard_hyp B := b
   trivial
@@ -73,7 +74,7 @@ is not definitionally equal to the target
 #guard_msgs in
 example {a b c : NotQuiteNat} (h : a + b = c) : True := by
   /- setm 1-/
-  setm (?A : Nat) + ?B = _ at h
+  setm (?A : Nat) + ?B = _ using h
 
 /- Test conflicts with goal metavariables (thanks to Niklas Halonen for this example!) -/
 
