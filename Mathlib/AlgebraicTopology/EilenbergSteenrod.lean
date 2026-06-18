@@ -207,7 +207,7 @@ lemma isIso_of_isCompl_closure ⦃X U V : TopPair⦄ (f : U ⟶ X) (g : V ⟶ X)
     (hcompl : TopPair.IsCompl f g)
     (hU : closure (Set.range (Hom.fst f)) ⊆ interior (Set.range X.map)) : IsIso U.map := by
   have surjective_U : Function.Surjective U.map := by
-    rw [← Set.range_eq_univ, ← Set.univ_subset_iff, ← Set.image_subset_image_iff hf.fst.injective, 
+    rw [← Set.range_eq_univ, ← Set.univ_subset_iff, ← Set.image_subset_image_iff hf.fst.injective,
       Set.image_univ]
     refine Disjoint.subset_left_of_subset_union (u := Hom.fst g '' (Set.range V.map)) ?_ ?_
     · calc
