@@ -98,6 +98,14 @@ theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented
   refine ⟨n, (iso : G →* H).comp φ, iso.surjective.comp hφsurj, ?_⟩
   rwa [φ.ker_mulEquiv_comp iso]
 
+theorem of_surjective [hG : IsFinitelyPresented G] (f : G →* H)
+    (hf_surj : Function.Surjective f) (hf_ker : f.ker.IsNormalClosureFG) :
+    IsFinitelyPresented H := by
+  obtain ⟨n, φ, hφ_surj, hφ_ker⟩ := hG.out
+  refine ⟨n, f.comp φ, hf_surj.comp hφ_surj, ?_⟩
+  rw [← MonoidHom.comap_ker]
+  exact hf_ker.comap hφ_surj hφ_ker
+
 /-- A free group with a finite number of generators is finitely presented. -/
 @[to_additive /-- A free additive group with a finite number of generators is finitely presented. -/
 ]
