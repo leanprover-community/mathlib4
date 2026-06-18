@@ -12,7 +12,7 @@ import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 # A homogeneous ideal that is homogeneously prime but not prime
 
 In `Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem`, we assumed that the underlying grading
-is indexed by a `LinearOrderedCancelAddCommMonoid` to prove that a homogeneous ideal is prime
+is indexed by a linearly ordered cancellative monoid to prove that a homogeneous ideal is prime
 if and only if it is homogeneously prime. This file shows that even if this assumption isn't
 strictly necessary, the assumption of "being cancellative" is. We construct a counterexample where
 the underlying indexing set is a `LinearOrderedAddCommMonoid` but is not cancellative and the
