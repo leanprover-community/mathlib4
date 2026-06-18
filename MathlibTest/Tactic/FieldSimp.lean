@@ -536,6 +536,14 @@ example {x y : ℚ} (hx : 0 < x) :
   guard_target = (x ^ 2 - y ^ 2) ^ 2 + x ^ 2 * y ^ 2 * 2 ^ 2 < (x ^ 2 + y ^ 2) ^ 2
   exact test_sorry
 
+example {x y : ℚ} :
+    ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 < 1 := by
+  field_simp!
+  · guard_target = (x ^ 2 - y ^ 2) ^ 2 + x ^ 2 * y ^ 2 * 2 ^ 2 < (x ^ 2 + y ^ 2) ^ 2
+    exact test_sorry
+  · guard_target = 0 < x^2 + y^2
+    exact test_sorry
+
 example {x y : ℚ} (hx : 0 < x) :
     ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 < 1 := by
   simp only [field]
@@ -550,6 +558,15 @@ example {K : Type*} [Field K] {x : K} (hx : x ^ 5 = 1) (hx0 : x ≠ 0) (hx1 : x 
   calc
     (x ^ 2 + 1) * (x ^ 2 + 1 + x) = (x ^ 5 - 1) / (x - 1) + x ^ 2 := by field
     _ = x ^ 2 := by simp [hx]
+
+example {K : Type*} [Field K] {x : K} (hx : x ^ 5 = 1) (hx0 : x ≠ 0) (hx1 : x - 1 ≠ 0) :
+    (x + 1 / x) ^ 2 + (x + 1 / x) = 1 := by
+  field_simp! (discharger := skip)
+  · guard_target = (x ^ 2 + 1) * (x ^ 2 + 1 + x) = x ^ 2
+    calc
+      (x ^ 2 + 1) * (x ^ 2 + 1 + x) = (x ^ 5 - 1) / (x - 1) + x ^ 2 := by field
+      _ = x ^ 2 := by simp [hx]
+  · exact hx0
 
 -- used in `field` simproc-set docstring
 example {K : Type*} [Field K] {x : K} (hx : x ^ 5 = 1) (hx0 : x ≠ 0) (hx1 : x - 1 ≠ 0) :
@@ -726,6 +743,19 @@ example {x y : ℚ} (hx : y ≠ 0) {f : ℚ → ℚ} (hf : ∀ t, f t ≠ 0) :
     f (x * y / y) / f (x / y * y) = 1 := by
   field_simp [hf]
 
+-- Ideally these goals would be deduplicated
+example {x y : ℚ} {f : ℚ → ℚ} (hf : ∀ t, f t ≠ 0) :
+    f (x / x * y / y) / f (y / y) = 1 := by
+  field_simp! [hf]
+  · guard_target = x ≠ 0
+    exact test_sorry
+  · guard_target = y ≠ 0
+    exact test_sorry
+  · guard_target = y ≠ 0
+    exact test_sorry
+
+
+
 -- test for consistent atom ordering across subterms
 example {x y : ℚ} (hx : y ≠ 0) {f : ℚ → ℚ} (hf : ∀ t, f t ≠ 0) :
     f (y * x * y / y) / f (x * y / y * y) = 1 := by
@@ -760,6 +790,24 @@ example {V : Type*} [AddCommGroup V] (F : V → ℚ)
   field_simp
   exact test_sorry
 
+example {V : Type*} [AddCommGroup V] (F : V → ℚ) {x y : V} :
+    (F x * F x - (F x * F x + F y * F y - F (x - y) * F (x - y)) / 2) / (F x * F (x - y))
+      * ((F y * F y - (F x * F x + F y * F y - F (x - y) * F (x - y)) / 2) / (F y * F (x - y)))
+      * F x * F y * F (x - y) * F (x - y)
+    - (F x * F x * (F y * F y)
+      - (F x * F x + F y * F y - F (x - y) * F (x - y)) / 2
+        * ((F x * F x + F y * F y - F (x - y) * F (x - y)) / 2))
+    = -((F x * F x + F y * F y - F (x - y) * F (x - y)) / 2 / (F x * F y))
+        * F x * F y * F (x - y) * F (x - y) := by
+  field_simp!
+  · exact test_sorry
+  · guard_target = F x ≠ 0
+    exact test_sorry
+  · guard_target = F y ≠ 0
+    exact test_sorry
+  · guard_target = F (x - y) ≠ 0
+    exact test_sorry
+
 /-! ## Discharger -/
 
 /--
@@ -775,6 +823,14 @@ example (x : ℚ) (h₀ : x ≠ 0) :
     (4 / x)⁻¹ * ((3 * x ^ 3) / x) ^ 2 * ((1 / (2 * x))⁻¹) ^ 3 = 18 * x ^ 8 := by
   field_simp (discharger := simp; assumption)
   ring
+
+/-- Test side conditions with a custom discharger -/
+example (x : ℚ) (h₀ : x ≠ 0) :
+    (4 / x)⁻¹ * ((3 * x ^ 3) / x) ^ 2 * ((1 / (2 * x))⁻¹) ^ 3 = 18 * x ^ 8 := by
+  field_simp! (discharger := norm_num)
+  · ring
+  · guard_target = x ≠ 0
+    exact h₀
 
 /-- warning: Custom `field_simp` dischargers do not make use of the `field_simp` arguments list -/
 #guard_msgs in
@@ -970,6 +1026,30 @@ example {K : Type*} [Field K] {n' x : K} (hn : n' ≠ 0) :
     1 / (1 + x / n') = n' / (n' + x) := by
   field_simp
 
+/-! ## Proof caching in subexpressions -/
+
+-- Magically the proof of in the then branch appears in the else branch (I think?).
+-- `DischargeM.disch` is only called once.
+example {x y : ℚ}: (if x ≠ 0 then x / x else x / x) = if x ≠ 0 then y else y := by
+  field_simp
+  -- field_simp
+  apply test_sorry
+
+
+/- This doesn't happen if I replace one x/x by x^2/x^2 -/
+
+example {x y : ℚ}: (if x ≠ 0 then x^2 / x^2 else x / x) = if x ≠ 0 then y else y := by
+  field_simp
+  -- field_simp
+  apply test_sorry
+
+
+-- Make sure the proof in the `then` branche isn't cached and used in the `else` branch.
+example {x y : ℚ}: (if x ≠ 0 then x^2 / x^2 else x / x) = if x ≠ 0 then y else y := by
+  field_simp
+  -- field_simp
+  apply test_sorry
+
 /-! ## Contextual rewrites in subexpressions -/
 
 -- Ensure that the discharger has access to changes in the local context, and that the simp cache
@@ -994,4 +1074,25 @@ example (x : ℚ) : (x ≠ 0 → x / x = 1) := by
 example (x : ℚ) : (x = 0 → x / x = 1) := by
   field_simp
   guard_target = (x = 0 → x / x = 1)
+  exact test_sorry
+
+
+variable {K : Type*} [Field K] {a b c : K}
+
+example (h : b - a * c ≠ 0) : 1 / (b - a * c) = 0 := by
+  field_simp
+  guard_target = 1 = (b - a * c) * 0
+  exact test_sorry
+
+example (h : b - a * c ≠ 0) : c / (b - a * c) = 0 := by
+  field_simp!
+  · guard_target = c = (b - c * a) * 0
+    exact test_sorry
+  · guard_target = b - c * a ≠ 0
+    ring_nf at h ⊢
+    exact h
+
+example (h : b - c * a ≠ 0) : c / (b - c * a) = 0 := by
+  field_simp -- c = (b - c * a) * 0
+  guard_target = c = (b - c * a) * 0
   exact test_sorry

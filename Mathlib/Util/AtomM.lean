@@ -40,6 +40,8 @@ structure AtomM.Context where
 structure AtomM.State where
   /-- The list of atoms-up-to-defeq encountered thus far, used for atom sorting. -/
   atoms : Array Expr := #[]
+  /-- A cache that can be used to store proofs about atoms. -/
+  cache : Std.HashMap String (Std.HashMap Nat Expr) := ∅
 
 /-- The monad that `ring` works in. This is only used for collecting atoms. -/
 abbrev AtomM := ReaderT AtomM.Context <| StateRefT AtomM.State MetaM
@@ -93,7 +95,6 @@ def AtomM.containsThenAddQ {u : Level} {α : Q(Type u)} (e : Q($α)) :
 atom (which will be defeq at the specified transparency, but not necessarily syntactically equal).
 If the atomic expression has *not* already been encountered, store it in the list of atoms, and
 return the new index (and the stored form of the atom, which will be itself).
-
 In a normalizing tactic, the expression returned by `addAtom` should be considered the normal form.
 -/
 def AtomM.addAtom (e : Expr) : AtomM (Nat × Expr) :=
@@ -114,4 +115,26 @@ def AtomM.addAtomQ {u : Level} {α : Q(Type u)} (e : Q($α)) :
   let (n, e') ← AtomM.addAtom e
   return (n, ⟨e', ⟨⟩⟩)
 
+abbrev CacheAtomM (σ : Type) := ReaderT Nat <| StateRefT (Nat × σ) AtomM
+
+def CacheAtomM.get {σ : Type} : CacheAtomM σ σ := do
+  let ⟨_, s⟩ ← (StateRefT'.get : StateRefT (Nat × σ) AtomM _)
+  return s
+
+def CacheAtomM.set {σ : Type} (s : σ) : CacheAtomM σ Unit := do
+  let _ ← (StateRefT'.modifyGet fun ⟨n, _⟩ => ⟨(), n, s⟩ : StateRefT (Nat × σ) AtomM _ )
+
+def CacheAtomM.modifyGet {σ : Type} {α : Type} (f : σ → α × σ) : CacheAtomM σ α :=
+  (StateRefT'.modifyGet fun ⟨n, s⟩ ↦
+    let ⟨a, s⟩ := f s
+    ⟨a, n, s⟩ : StateRefT (Nat × σ) AtomM _)
+
+def CacheAtomM.incContext (σ : Type) : CacheAtomM σ Unit := do
+  let _ ← (StateRefT'.modifyGet fun ⟨n, s⟩ => ⟨(), n+1, s⟩ : StateRefT (Nat × σ) AtomM _)
+
+def CacheAtomM.withContext (i : Nat) (σ : Type) {α : Type} (m : CacheAtomM σ α) : CacheAtomM σ α :=
+  ReaderT.run m i
+
+def CacheAtomM.getContext (σ : Type) : CacheAtomM σ Nat :=  do
+  ReaderT.read
 end Mathlib.Tactic

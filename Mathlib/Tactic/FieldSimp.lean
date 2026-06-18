@@ -29,6 +29,64 @@ initialize registerTraceClass `Tactic.field_simp
 
 variable {v : Level} {M : Q(Type v)}
 
+section DischargeM
+
+/-- The kinds of proof stored in the field_simp cache. -/
+inductive ProofKind : Type
+  | nonzero : ProofKind
+  | positive : ProofKind
+deriving BEq, Hashable
+
+structure Key : Type where
+  /-- The index of the relevant atom -/
+  i : ℕ
+  kind : ProofKind
+  context : ℕ
+deriving BEq, Hashable
+
+/-- The type used by field_simp to cache proofs. -/
+structure Cache where
+  map : Std.HashMap Key (Option Expr)
+  list : List (Option Expr)
+
+def Cache.getMVars (c : Cache) : MetaM <| List MVarId := do
+  return List.reverse <| c.list.filterMap fun
+    | none => none
+    | some e => if e.isMVar then e.mvarId! else none
+
+instance : EmptyCollection Cache where
+  emptyCollection := ⟨∅, []⟩
+
+structure Discharge.Context where
+  discharger : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)
+
+abbrev DischargeM :=
+  ReaderT Discharge.Context <| CacheAtomM Cache
+
+def DischargeM.disch {u : Level} (i : ℕ) (kind : ProofKind) (type : Q(Sort u)) :
+    DischargeM Q($type) := do
+  let ⟨discharger⟩ ← read
+  let context ← CacheAtomM.getContext Cache
+  trace[Tactic.field_simp] m!"Discharging {type} in local context {context}"
+  let ⟨c, l⟩ ← CacheAtomM.get (σ := Cache)
+  match c.get? ⟨i, kind, context⟩  with
+  | none =>
+    try
+      let pf ← discharger type
+      CacheAtomM.set (⟨(c.insert ⟨i, kind, context⟩ (some pf)), some pf :: l⟩ : Cache)
+      return pf
+    catch | _ => CacheAtomM.set (⟨(c.insert ⟨i, kind, context⟩ none), none :: l⟩ : Cache); failure
+  | some none => failure
+  | some (some pf) => return pf
+
+def DischargeM.run {α : Type} (context : ℕ) (m : DischargeM α)
+    (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) : AtomM α :=
+  (m ⟨disch⟩ context).run' ⟨0, ∅, []⟩
+
+end DischargeM
+
+open DischargeM
+
 /-! ### Lists of expressions representing exponents and atoms, and operations on such lists -/
 
 /-- Basic meta-code "normal form" object of the `field_simp` tactic: a type synonym
@@ -78,13 +136,13 @@ def evalPrettyMonomial (iM : Q(GroupWithZero $M)) (r : ℤ) (x : Q($M)) :
 can't be done. If `r = 0`, then `zpow' x r` is equal to `x / x`, so it can be simplified to 1 (hence
 dropped from the beginning of the product) if we can find a proof that `x ≠ 0`. -/
 def tryClearZero
-    (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (iM : Q(CommGroupWithZero $M))
+    (iM : Q(CommGroupWithZero $M))
     (r : ℤ) (x : Q($M)) (i : ℕ) (l : qNF M) :
-    MetaM <| Σ l' : qNF M, Q(NF.eval $(qNF.toNF (((r, x), i) :: l)) = NF.eval $(l'.toNF)) := do
+    DischargeM <| Σ l' : qNF M, Q(NF.eval $(qNF.toNF (((r, x), i) :: l)) = NF.eval $(l'.toNF)) := do
   if r != 0 then
     return ⟨((r, x), i) :: l, q(rfl)⟩
   try
-    let pf' : Q($x ≠ 0) ← disch q($x ≠ 0)
+    let pf' : Q($x ≠ 0) ← disch i .nonzero q($x ≠ 0)
     have pf_r : Q($r = 0) := ← mkDecideProofQ q($r = 0)
     return ⟨l, (q(NF.eval_cons_of_pow_eq_zero $pf_r $pf' $(l.toNF)):)⟩
   catch _=>
@@ -94,14 +152,14 @@ def tryClearZero
 corresponding atom can be proved nonzero, and construct a proof that their associated expressions
 are equal. -/
 def removeZeros
-    (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (iM : Q(CommGroupWithZero $M))
+    (iM : Q(CommGroupWithZero $M))
     (l : qNF M) :
-    MetaM <| Σ l' : qNF M, Q(NF.eval $(l.toNF) = NF.eval $(l'.toNF)) :=
+    DischargeM <| Σ l' : qNF M, Q(NF.eval $(l.toNF) = NF.eval $(l'.toNF)) :=
   match l with
   | [] => return ⟨[], q(rfl)⟩
   | ((r, x), i) :: t => do
-    let ⟨t', pf⟩ ← removeZeros disch iM t
-    let ⟨l', pf'⟩ ← tryClearZero disch iM r x i t'
+    let ⟨t', pf⟩ ← removeZeros iM t
+    let ⟨l', pf'⟩ ← tryClearZero iM r x i t'
     let pf' : Q(NF.eval (($r, $x) ::ᵣ $(qNF.toNF t')) = NF.eval $(qNF.toNF l')) := pf'
     let pf'' : Q(NF.eval (($r, $x) ::ᵣ $(qNF.toNF t)) = NF.eval $(qNF.toNF l')) :=
       q(NF.eval_cons_eq_eval_of_eq_of_eq $r $x $pf $pf')
@@ -278,18 +336,17 @@ construct a corresponding proof for `((r, e), i) :: L`.
 
 In this version we also expose the proof of nonzeroness of `e`. -/
 def mkDenomConditionProofSucc {iM : Q(CommGroupWithZero $M)}
-    (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
     {cond : DenomCondition (M := M) q(inferInstance)}
     {L : qNF M} (hL : cond.proof L) (e : Q($M)) (r : ℤ) (i : ℕ) :
-    MetaM (Q($e ≠ 0) × cond.proof (((r, e), i) :: L)) := do
+    DischargeM (Q($e ≠ 0) × cond.proof (((r, e), i) :: L)) := do
   match cond with
-  | .none => return (← disch q($e ≠ 0), Unit.unit)
+  | .none => return (← disch i .nonzero q($e ≠ 0), Unit.unit)
   | .nonzero =>
-    let pf ← disch q($e ≠ 0)
+    let pf ← disch i .nonzero q($e ≠ 0)
     let pf₀ : Q(NF.eval $(qNF.toNF L) ≠ 0) := hL
     return (pf, q(NF.cons_ne_zero $r $pf $pf₀))
   | .positive _ _ _ _ =>
-    let pf ← disch q(0 < $e)
+    let pf ← disch i .positive q(0 < $e)
     let pf₀ : Q(0 < NF.eval $(qNF.toNF L)) := hL
     let pf' := q(NF.cons_pos $r (x := $e) $pf $pf₀)
     return (q(LT.lt.ne' $pf), pf')
@@ -298,18 +355,17 @@ def mkDenomConditionProofSucc {iM : Q(CommGroupWithZero $M)}
 `DenomCondition`) of a field-simp-normal-form expression `L` (a product of powers of atoms),
 construct a corresponding proof for `((r, e), i) :: L`. -/
 def mkDenomConditionProofSucc' {iM : Q(CommGroupWithZero $M)}
-    (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
     {cond : DenomCondition (M := M) q(inferInstance)}
     {L : qNF M} (hL : cond.proof L) (e : Q($M)) (r : ℤ) (i : ℕ) :
-    MetaM (cond.proof (((r, e), i) :: L)) := do
+    DischargeM (cond.proof (((r, e), i) :: L)) := do
   match cond with
   | .none => return Unit.unit
   | .nonzero =>
-    let pf ← disch q($e ≠ 0)
+    let pf ← disch i .nonzero q($e ≠ 0)
     let pf₀ : Q(NF.eval $(qNF.toNF L) ≠ 0) := hL
     return q(NF.cons_ne_zero $r $pf $pf₀)
   | .positive _ _ _ _ =>
-    let pf ← disch q(0 < $e)
+    let pf ← disch i .positive q(0 < $e)
     let pf₀ : Q(0 < NF.eval $(qNF.toNF L)) := hL
     return q(NF.cons_pos $r (x := $e) $pf $pf₀)
 
@@ -322,30 +378,29 @@ The variable `cond` specifies whether we extract a *certified nonzero(/positive)
 potentially smaller) common factor. If so, the metaprogram returns a "proof" that this common factor
 is nonzero/positive, i.e. an expression `Q(NF.eval $(L.toNF) ≠ 0)` / `Q(0 < NF.eval $(L.toNF))`. -/
 partial def gcd (iM : Q(CommGroupWithZero $M)) (l₁ l₂ : qNF M)
-    (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
     (cond : DenomCondition (M := M) q(inferInstance)) :
-  MetaM <| Σ (L l₁' l₂' : qNF M),
+  DischargeM <| Σ (L l₁' l₂' : qNF M),
     Q((NF.eval $(L.toNF)) * NF.eval $(l₁'.toNF) = NF.eval $(l₁.toNF)) ×
     Q((NF.eval $(L.toNF)) * NF.eval $(l₂'.toNF) = NF.eval $(l₂.toNF)) ×
     cond.proof L :=
 
   /- Handle the case where atom `i` is present in the first list but not the second. -/
   let absent (l₁ l₂ : qNF M) (n : ℤ) (e : Q($M)) (i : ℕ) :
-      MetaM <| Σ (L l₁' l₂' : qNF M),
+      DischargeM <| Σ (L l₁' l₂' : qNF M),
         Q((NF.eval $(L.toNF)) * NF.eval $(l₁'.toNF) = NF.eval $(qNF.toNF (((n, e), i) :: l₁))) ×
         Q((NF.eval $(L.toNF)) * NF.eval $(l₂'.toNF) = NF.eval $(l₂.toNF)) ×
         cond.proof L := do
-    let ⟨L, l₁', l₂', pf₁, pf₂, pf₀⟩ ← gcd iM l₁ l₂ disch cond
+    let ⟨L, l₁', l₂', pf₁, pf₂, pf₀⟩ ← gcd iM l₁ l₂ cond
     if 0 < n then
       -- Don't pull anything out
       return ⟨L, ((n, e), i) :: l₁', l₂', (q(NF.eval_mul_eval_cons $n $e $pf₁):), q($pf₂), pf₀⟩
     else if n = 0 then
       -- Don't pull anything out, but eliminate the term if it is a cancellable zero
-      let ⟨l₁'', pf''⟩ ← tryClearZero disch iM 0 e i l₁'
+      let ⟨l₁'', pf''⟩ ← tryClearZero iM 0 e i l₁'
       let pf'' : Q(NF.eval ((0, $e) ::ᵣ $(l₁'.toNF)) = NF.eval $(l₁''.toNF)) := pf''
       return ⟨L, l₁'', l₂', (q(NF.eval_mul_eval_cons_zero $pf₁ $pf''):), q($pf₂), pf₀⟩
     try
-      let (pf, b) ← mkDenomConditionProofSucc disch pf₀ e n i
+      let (pf, b) ← mkDenomConditionProofSucc pf₀ e n i
       -- if nonzeroness proof succeeds
       return ⟨((n, e), i) :: L, l₁', ((-n, e), i) :: l₂', (q(NF.eval_cons_mul_eval $n $e $pf₁):),
         (q(NF.eval_cons_mul_eval_cons_neg $n $pf $pf₂):), b⟩
@@ -355,24 +410,24 @@ partial def gcd (iM : Q(CommGroupWithZero $M)) (l₁ l₂ : qNF M)
 
   /- Handle the case where atom `i` is present in both lists. -/
   let bothPresent (t₁ t₂ : qNF M) (n₁ n₂ : ℤ) (e : Q($M)) (i : ℕ) :
-      MetaM <| Σ (L l₁' l₂' : qNF M),
+      DischargeM <| Σ (L l₁' l₂' : qNF M),
         Q((NF.eval $(L.toNF)) * NF.eval $(l₁'.toNF) = NF.eval $(qNF.toNF (((n₁, e), i) :: t₁))) ×
         Q((NF.eval $(L.toNF)) * NF.eval $(l₂'.toNF) = NF.eval $(qNF.toNF (((n₂, e), i) :: t₂))) ×
         cond.proof L := do
-    let ⟨L, l₁', l₂', pf₁, pf₂, pf₀⟩ ← gcd iM t₁ t₂ disch cond
+    let ⟨L, l₁', l₂', pf₁, pf₂, pf₀⟩ ← gcd iM t₁ t₂ cond
     if n₁ < n₂ then
       let N : ℤ := n₂ - n₁
       return ⟨((n₁, e), i) :: L, l₁', ((n₂ - n₁, e), i) :: l₂',
         (q(NF.eval_cons_mul_eval $n₁ $e $pf₁):), (q(NF.mul_eq_eval₂ $n₁ $N $e $pf₂):),
-        ← mkDenomConditionProofSucc' disch pf₀ e n₁ i⟩
+        ← mkDenomConditionProofSucc' pf₀ e n₁ i⟩
     else if n₁ = n₂ then
       return ⟨((n₁, e), i) :: L, l₁', l₂', (q(NF.eval_cons_mul_eval $n₁ $e $pf₁):),
-        (q(NF.eval_cons_mul_eval $n₂ $e $pf₂):), ← mkDenomConditionProofSucc' disch pf₀ e n₁ i⟩
+        (q(NF.eval_cons_mul_eval $n₂ $e $pf₂):), ← mkDenomConditionProofSucc' pf₀ e n₁ i⟩
     else
       let N : ℤ := n₁ - n₂
       return ⟨((n₂, e), i) :: L, ((n₁ - n₂, e), i) :: l₁', l₂',
         (q(NF.mul_eq_eval₂ $n₂ $N $e $pf₁):), (q(NF.eval_cons_mul_eval $n₂ $e $pf₂):),
-        ← mkDenomConditionProofSucc' disch pf₀ e n₂ i⟩
+        ← mkDenomConditionProofSucc' pf₀ e n₂ i⟩
 
   match l₁, l₂ with
   | [], [] => pure ⟨[], [], [],
@@ -397,7 +452,7 @@ partial def gcd (iM : Q(CommGroupWithZero $M)) (l₁ l₂ : qNF M)
         -- * `.none` case: never
         -- * `.nonzero` case: if `e` can't be proved nonzero
         -- * `.positive _` case: if `e` can't be proved positive
-        let ⟨L, l₁', l₂', pf₁, pf₂, pf₀⟩ ← gcd iM t₁ t₂ disch cond
+        let ⟨L, l₁', l₂', pf₁, pf₂, pf₀⟩ ← gcd iM t₁ t₂ cond
         return ⟨L, ((n₁, e₁), i₁) :: l₁', ((n₂, e₂), i₂) :: l₂',
           (q(NF.eval_mul_eval_cons $n₁ $e₁ $pf₁):), (q(NF.eval_mul_eval_cons $n₂ $e₂ $pf₂):), pf₀⟩
     else
@@ -411,9 +466,9 @@ end qNF
 /-- The main algorithm behind the `field_simp` tactic: partially-normalizing an
 expression in a field `M` into the form x1 ^ c1 * x2 ^ c2 * ... x_k ^ c_k,
 where x1, x2, ... are distinct atoms in `M`, and c1, c2, ... are integers. -/
-partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
+partial def normalize
     (iM : Q(CommGroupWithZero $M)) (x : Q($M)) :
-    AtomM (Σ y : Q($M), (Σ g : Sign M, Q($x = $(g.expr y))) ×
+    DischargeM (Σ y : Q($M), (Σ g : Sign M, Q($x = $(g.expr y))) ×
       Σ l : qNF M, Q($y = NF.eval $(l.toNF))) := do
   let baseCase (y : Q($M)) (normalize? : Bool) :
       AtomM (Σ (l : qNF M), Q($y = NF.eval $(l.toNF))) := do
@@ -429,8 +484,8 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
   match x with
   /- normalize a multiplication: `x₁ * x₂` -/
   | ~q($x₁ * $x₂) =>
-    let ⟨y₁, ⟨g₁, pf₁_sgn⟩, l₁, pf₁⟩ ← normalize disch iM x₁
-    let ⟨y₂, ⟨g₂, pf₂_sgn⟩, l₂, pf₂⟩ ← normalize disch iM x₂
+    let ⟨y₁, ⟨g₁, pf₁_sgn⟩, l₁, pf₁⟩ ← normalize iM x₁
+    let ⟨y₂, ⟨g₂, pf₂_sgn⟩, l₂, pf₂⟩ ← normalize iM x₂
     -- build the new list and proof
     have pf := qNF.mkMulProof iM l₁ l₂
     let ⟨G, pf_y⟩ ← Sign.mul iM y₁ y₂ g₁ g₂
@@ -438,8 +493,8 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
       qNF.mul l₁ l₂, q(NF.mul_eq_eval $pf₁ $pf₂ $pf)⟩
   /- normalize a division: `x₁ / x₂` -/
   | ~q($x₁ / $x₂) =>
-    let ⟨y₁, ⟨g₁, pf₁_sgn⟩, l₁, pf₁⟩ ← normalize disch iM x₁
-    let ⟨y₂, ⟨g₂, pf₂_sgn⟩, l₂, pf₂⟩ ← normalize disch iM x₂
+    let ⟨y₁, ⟨g₁, pf₁_sgn⟩, l₁, pf₁⟩ ← normalize iM x₁
+    let ⟨y₂, ⟨g₂, pf₂_sgn⟩, l₂, pf₂⟩ ← normalize iM x₂
     -- build the new list and proof
     let pf := qNF.mkDivProof iM l₁ l₂
     let ⟨G, pf_y⟩ ← Sign.div iM y₁ y₂ g₁ g₂
@@ -447,7 +502,7 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
       qNF.div l₁ l₂, q(NF.div_eq_eval $pf₁ $pf₂ $pf)⟩
   /- normalize an inversion: `y⁻¹` -/
   | ~q($y⁻¹) =>
-    let ⟨y', ⟨g, pf_sgn⟩, l, pf⟩ ← normalize disch iM y
+    let ⟨y', ⟨g, pf_sgn⟩, l, pf⟩ ← normalize iM y
     let pf_y ← Sign.inv iM y' g
     -- build the new list and proof, casing according to the sign of `x`
     pure ⟨q($y'⁻¹), ⟨g, q(Eq.trans (congr_arg Inv.inv $pf_sgn) $pf_y)⟩,
@@ -458,7 +513,7 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
     if s = 0 then
       pure ⟨q(1), ⟨Sign.plus, (q(zpow_zero $y):)⟩, [], q(NF.one_eq_eval $M)⟩
     else
-      let ⟨y', ⟨g, pf_sgn⟩, l, pf⟩ ← normalize disch iM y
+      let ⟨y', ⟨g, pf_sgn⟩, l, pf⟩ ← normalize iM y
       let pf_s ← mkDecideProofQ q($s ≠ 0)
       let ⟨G, pf_y⟩ ← Sign.zpow iM y' g s
       let pf_y' := q(Eq.trans (congr_arg (· ^ $s) $pf_sgn) $pf_y)
@@ -469,7 +524,7 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
     if s = 0 then
       pure ⟨q(1), ⟨Sign.plus, (q(pow_zero $y):)⟩, [], q(NF.one_eq_eval $M)⟩
     else
-      let ⟨y', ⟨g, pf_sgn⟩, l, pf⟩ ← normalize disch iM y
+      let ⟨y', ⟨g, pf_sgn⟩, l, pf⟩ ← normalize iM y
       let pf_s ← mkDecideProofQ q($s ≠ 0)
       let ⟨G, pf_y⟩ ← Sign.pow iM y' g s
       let pf_y' := q(Eq.trans (congr_arg (· ^ $s) $pf_sgn) $pf_y)
@@ -481,9 +536,9 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
     try
       let _i ← synthInstanceQ q(Semifield $M)
       assumeInstancesCommute
-      let ⟨_, ⟨g₁, pf_sgn₁⟩, l₁, pf₁⟩ ← normalize disch iM a
-      let ⟨_, ⟨g₂, pf_sgn₂⟩, l₂, pf₂⟩ ← normalize disch iM b
-      let ⟨L, l₁', l₂', pf₁', pf₂', _⟩ ← l₁.gcd iM l₂ disch .none
+      let ⟨_, ⟨g₁, pf_sgn₁⟩, l₁, pf₁⟩ ← normalize iM a
+      let ⟨_, ⟨g₂, pf_sgn₂⟩, l₂, pf₂⟩ ← normalize iM b
+      let ⟨L, l₁', l₂', pf₁', pf₂', _⟩ ← l₁.gcd iM l₂ .none
       let ⟨e₁, pf₁''⟩ ← qNF.evalPretty iM l₁'
       let ⟨e₂, pf₂''⟩ ← qNF.evalPretty iM l₂'
       have pf_a := ← Sign.mkEqMul iM pf_sgn₁ q(Eq.trans $pf₁ (Eq.symm $pf₁')) pf₁''
@@ -500,9 +555,9 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
     try
       let _i ← synthInstanceQ q(Field $M)
       assumeInstancesCommute
-      let ⟨_, ⟨g₁, pf_sgn₁⟩, l₁, pf₁⟩ ← normalize disch iM a
-      let ⟨_, ⟨g₂, pf_sgn₂⟩, l₂, pf₂⟩ ← normalize disch iM b
-      let ⟨L, l₁', l₂', pf₁', pf₂', _⟩ ← l₁.gcd iM l₂ disch .none
+      let ⟨_, ⟨g₁, pf_sgn₁⟩, l₁, pf₁⟩ ← normalize iM a
+      let ⟨_, ⟨g₂, pf_sgn₂⟩, l₂, pf₂⟩ ← normalize iM b
+      let ⟨L, l₁', l₂', pf₁', pf₂', _⟩ ← l₁.gcd iM l₂ .none
       let ⟨e₁, pf₁''⟩ ← qNF.evalPretty iM l₁'
       let ⟨e₂, pf₂''⟩ ← qNF.evalPretty iM l₂'
       have pf_a := ← Sign.mkEqMul iM pf_sgn₁ q(Eq.trans $pf₁ (Eq.symm $pf₁')) pf₁''
@@ -519,7 +574,7 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
     try
       let iM' ← synthInstanceQ q(Field $M)
       assumeInstancesCommute
-      let ⟨y, ⟨g, pf_sgn⟩, l, pf⟩ ← normalize disch iM a
+      let ⟨y, ⟨g, pf_sgn⟩, l, pf⟩ ← normalize iM a
       let ⟨G, pf_y⟩ ← Sign.neg iM' y g
       pure ⟨y, ⟨G, q(Eq.trans (congr_arg Neg.neg $pf_sgn) $pf_y)⟩, l, pf⟩
     catch _ => pure ⟨x, ⟨.plus, q(rfl)⟩, ← baseCase x true⟩
@@ -529,22 +584,21 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
 
 /-- Given `x` in a commutative group-with-zero, construct a new expression in the standard form
 *** / *** (all denominators at the end) which is equal to `x`. -/
-def reduceExprQ (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
-    (iM : Q(CommGroupWithZero $M)) (x : Q($M)) : AtomM (Σ x' : Q($M), Q($x = $x')) := do
-  let ⟨y, ⟨g, pf_sgn⟩, l, pf⟩ ← normalize disch iM x
-  let ⟨l', pf'⟩ ← qNF.removeZeros disch iM l
+def reduceExprQ (iM : Q(CommGroupWithZero $M)) (x : Q($M)) :
+    DischargeM (Σ x' : Q($M), Q($x = $x')) := do
+  let ⟨y, ⟨g, pf_sgn⟩, l, pf⟩ ← normalize iM x
+  let ⟨l', pf'⟩ ← qNF.removeZeros iM l
   let ⟨x', pf''⟩ ← qNF.evalPretty iM l'
   let pf_yx : Q($y = $x') := q(Eq.trans (Eq.trans $pf $pf') $pf'')
   return ⟨g.expr x', q(Eq.trans $pf_sgn $(g.congr pf_yx))⟩
 
 /-- Given `e₁` and `e₂`, cancel nonzero factors to construct a new equality which is logically
 equivalent to `e₁ = e₂`. -/
-def reduceEqQ (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
-    (iM : Q(CommGroupWithZero $M)) (e₁ e₂ : Q($M)) :
-    AtomM (Σ f₁ f₂ : Q($M), Q(($e₁ = $e₂) = ($f₁ = $f₂))) := do
-  let ⟨_, ⟨g₁, pf_sgn₁⟩, l₁, pf_l₁⟩ ← normalize disch iM e₁
-  let ⟨_, ⟨g₂, pf_sgn₂⟩, l₂, pf_l₂⟩ ← normalize disch iM e₂
-  let ⟨L, l₁', l₂', pf_lhs, pf_rhs, pf₀⟩ ← l₁.gcd iM l₂ disch .nonzero
+def reduceEqQ (iM : Q(CommGroupWithZero $M)) (e₁ e₂ : Q($M)) :
+    DischargeM (Σ f₁ f₂ : Q($M), Q(($e₁ = $e₂) = ($f₁ = $f₂))) := do
+  let ⟨_, ⟨g₁, pf_sgn₁⟩, l₁, pf_l₁⟩ ← normalize iM e₁
+  let ⟨_, ⟨g₂, pf_sgn₂⟩, l₂, pf_l₂⟩ ← normalize iM e₂
+  let ⟨L, l₁', l₂', pf_lhs, pf_rhs, pf₀⟩ ← l₁.gcd iM l₂ .nonzero
   let pf₀ : Q(NF.eval $(qNF.toNF L) ≠ 0) := pf₀
   let ⟨f₁', pf_l₁'⟩ ← l₁'.evalPretty iM
   let ⟨f₂', pf_l₂'⟩ ← l₂'.evalPretty iM
@@ -554,15 +608,14 @@ def reduceEqQ (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
 
 /-- Given `e₁` and `e₂`, cancel positive factors to construct a new inequality which is logically
 equivalent to `e₁ ≤ e₂`. -/
-def reduceLeQ (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
-    (iM : Q(CommGroupWithZero $M)) (iM' : Q(PartialOrder $M))
+def reduceLeQ (iM : Q(CommGroupWithZero $M)) (iM' : Q(PartialOrder $M))
     (iM'' : Q(PosMulStrictMono $M)) (iM''' : Q(PosMulReflectLE $M)) (iM'''' : Q(ZeroLEOneClass $M))
     (e₁ e₂ : Q($M)) :
-    AtomM (Σ f₁ f₂ : Q($M), Q(($e₁ ≤ $e₂) = ($f₁ ≤ $f₂))) := do
-  let ⟨_, ⟨g₁, pf_sgn₁⟩, l₁, pf_l₁⟩ ← normalize disch iM e₁
-  let ⟨_, ⟨g₂, pf_sgn₂⟩, l₂, pf_l₂⟩ ← normalize disch iM e₂
+    DischargeM (Σ f₁ f₂ : Q($M), Q(($e₁ ≤ $e₂) = ($f₁ ≤ $f₂))) := do
+  let ⟨_, ⟨g₁, pf_sgn₁⟩, l₁, pf_l₁⟩ ← normalize iM e₁
+  let ⟨_, ⟨g₂, pf_sgn₂⟩, l₂, pf_l₂⟩ ← normalize iM e₂
   let ⟨L, l₁', l₂', pf_lhs, pf_rhs, pf₀⟩
-    ← l₁.gcd iM l₂ disch (.positive iM' iM'' q(inferInstance) iM'''')
+    ← l₁.gcd iM l₂ (.positive iM' iM'' q(inferInstance) iM'''')
   let pf₀ : Q(0 <  NF.eval $(qNF.toNF L)) := pf₀
   let ⟨f₁', pf_l₁'⟩ ← l₁'.evalPretty iM
   let ⟨f₂', pf_l₂'⟩ ← l₂'.evalPretty iM
@@ -572,15 +625,14 @@ def reduceLeQ (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
 
 /-- Given `e₁` and `e₂`, cancel positive factors to construct a new inequality which is logically
 equivalent to `e₁ < e₂`. -/
-def reduceLtQ (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
-    (iM : Q(CommGroupWithZero $M)) (iM' : Q(PartialOrder $M))
+def reduceLtQ (iM : Q(CommGroupWithZero $M)) (iM' : Q(PartialOrder $M))
     (iM'' : Q(PosMulStrictMono $M)) (iM''' : Q(PosMulReflectLT $M)) (iM'''' : Q(ZeroLEOneClass $M))
     (e₁ e₂ : Q($M)) :
-    AtomM (Σ f₁ f₂ : Q($M), Q(($e₁ < $e₂) = ($f₁ < $f₂))) := do
-  let ⟨_, ⟨g₁, pf_sgn₁⟩, l₁, pf_l₁⟩ ← normalize disch iM e₁
-  let ⟨_, ⟨g₂, pf_sgn₂⟩, l₂, pf_l₂⟩ ← normalize disch iM e₂
+    DischargeM (Σ f₁ f₂ : Q($M), Q(($e₁ < $e₂) = ($f₁ < $f₂))) := do
+  let ⟨_, ⟨g₁, pf_sgn₁⟩, l₁, pf_l₁⟩ ← normalize iM e₁
+  let ⟨_, ⟨g₂, pf_sgn₂⟩, l₂, pf_l₂⟩ ← normalize iM e₂
   let ⟨L, l₁', l₂', pf_lhs, pf_rhs, pf₀⟩
-    ← l₁.gcd iM l₂ disch (.positive iM' iM'' iM''' iM'''')
+    ← l₁.gcd iM l₂ (.positive iM' iM'' iM''' iM'''')
   let pf₀ : Q(0 <  NF.eval $(qNF.toNF L)) := pf₀
   let ⟨f₁', pf_l₁'⟩ ← l₁'.evalPretty iM
   let ⟨f₂', pf_l₂'⟩ ← l₂'.evalPretty iM
@@ -590,8 +642,8 @@ def reduceLtQ (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
 
 /-- Given `x` in a commutative group-with-zero, construct a new expression in the standard form
 *** / *** (all denominators at the end) which is equal to `x`. -/
-def reduceExpr (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (x : Expr) :
-    AtomM Simp.Result := do
+def reduceExpr (x : Expr) :
+    DischargeM Simp.Result := do
   -- for `field_simp` to work with the recursive infrastructure in `AtomM.recurse`, we need to fail
   -- on things `field_simp` would treat as atoms
   guard x.isApp
@@ -604,14 +656,14 @@ def reduceExpr (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (x :
   let iK : Q(CommGroupWithZero $K) ← synthInstanceQ q(CommGroupWithZero $K)
   -- run the core normalization function `normalizePretty` on `x`
   trace[Tactic.field_simp] "putting {x} in \"field_simp\"-normal-form"
-  let ⟨e, pf⟩ ← reduceExprQ disch iK x
+  let ⟨e, pf⟩ ← reduceExprQ iK x
   return { expr := e, proof? := some pf }
 
 /-- Given an (in)equality `a = b` (respectively, `a ≤ b`, `a < b`), cancel nonzero (resp. positive)
 factors to construct a new (in)equality which is logically equivalent to `a = b` (respectively,
 `a ≤ b`, `a < b`). -/
-def reduceProp (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (t : Expr) :
-    AtomM Simp.Result := do
+def reduceProp (t : Expr) :
+    DischargeM Simp.Result := do
   let ⟨i, _, a, b⟩ ← t.ineq?
   -- infer `u` and `K : Q(Type u)` such that `x : Q($K)`
   let ⟨u, K, a⟩ ← inferTypeQ' a
@@ -621,7 +673,7 @@ def reduceProp (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (t :
   -- run the core (in)equality-transforming mechanism on `a =/≤/< b`
   match i with
   | .eq =>
-    let ⟨a', b', pf⟩ ← reduceEqQ disch iK a b
+    let ⟨a', b', pf⟩ ← reduceEqQ iK a b
     let t' ← mkAppM `Eq #[a', b']
     return { expr := t', proof? := pf }
   | .le =>
@@ -629,7 +681,7 @@ def reduceProp (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (t :
     let iK'' : Q(PosMulStrictMono $K) ← synthInstanceQ q(PosMulStrictMono $K)
     let iK''' : Q(PosMulReflectLE $K) ← synthInstanceQ q(PosMulReflectLE $K)
     let iK'''' : Q(ZeroLEOneClass $K) ← synthInstanceQ q(ZeroLEOneClass $K)
-    let ⟨a', b', pf⟩ ← reduceLeQ disch iK iK' iK'' iK''' iK'''' a b
+    let ⟨a', b', pf⟩ ← reduceLeQ iK iK' iK'' iK''' iK'''' a b
     let t' ← mkAppM `LE.le #[a', b']
     return { expr := t', proof? := pf }
   | _ =>
@@ -637,7 +689,7 @@ def reduceProp (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (t :
     let iK'' : Q(PosMulStrictMono $K) ← synthInstanceQ q(PosMulStrictMono $K)
     let iK''' : Q(PosMulReflectLT $K) ← synthInstanceQ q(PosMulReflectLT $K)
     let iK'''' : Q(ZeroLEOneClass $K) ← synthInstanceQ q(ZeroLEOneClass $K)
-    let ⟨a', b', pf⟩ ← reduceLtQ disch iK iK' iK'' iK''' iK'''' a b
+    let ⟨a', b', pf⟩ ← reduceLtQ iK iK' iK'' iK''' iK'''' a b
     let t' ← mkAppM `LT.lt #[a', b']
     return { expr := t', proof? := pf }
 
@@ -703,15 +755,39 @@ example {K : Type*} [Field K] {x : K} (hx0 : x ≠ 0) :
   sorry
 ```
 -/
-elab (name := fieldSimp) "field_simp" d:(discharger)? args:(simpArgs)? loc:(location)? :
+elab (name := fieldSimp) "field_simp" tk:"!"?  d:(discharger)? args:(simpArgs)? loc:(location)? :
     tactic => withMainContext do
   let disch ← parseDischarger d args
+  let baseDepth := (← getMCtx).depth
+  let disch {u : Level} (type : Q(Sort u)) : MetaM Q($type) := do
+    trace[Tactic.field_simp] m!"Running discharger on {type}"
+    if tk.isSome ∧ baseDepth = (← getMCtx).depth then
+      try disch type
+      catch | _ => return ← mkFreshExprMVarQ type
+    else disch type
+  let cs ← IO.mkRef (0, {})
   let s ← IO.mkRef {}
   let cleanup r := do r.mkEqTrans (← simpOnlyNames [] r.expr) -- convert e.g. `x = x` to `True`
-  let m := AtomM.recurse s { contextual := true } (wellBehavedDischarge := false)
-    (fun e ↦ reduceProp disch e <|> reduceExpr disch e) cleanup
+  let m := CacheAtomM.recurse (wellBehavedDischarge := false) cs s {contextual := true}
+    ((fun e ↦ (reduceProp e <|> reduceExpr e) ⟨disch⟩)) cleanup
+  let numGoals := (← getGoals).length
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   transformAtLocation (m ·) "field_simp" (ifUnchanged := .error) (mayCloseGoalFromHyp := true) loc
+  if tk.isSome then
+    let mut sideGoals ← (← cs.get).2.getMVars
+    for g in sideGoals do g.withContext do
+      -- let lctx := (← g.getDecl).lctx
+      trace[Tactic.field_simp] m!"{g}"
+    let currGoals ← getGoals
+    if currGoals.length < numGoals then
+      setGoals (sideGoals ++ currGoals)
+    else
+      let g :: l := currGoals | unreachable!
+      setGoals (g :: sideGoals ++ l)
+
+@[inherit_doc fieldSimp] macro "field_simp!" d:(discharger)? args:(simpArgs)? loc:(location)? :
+    tactic =>
+  `(tactic| field_simp ! $[$d:discharger]? $[$args:simpArgs]? $[$loc:location]?)
 
 /--
 `field_simp` normalizes an expression in a (semi-)field by rewriting it to a common denominator,
@@ -748,7 +824,7 @@ elab "field_simp" d:(discharger)? args:(simpArgs)? : conv => do
   let x ← Conv.getLhs
   let disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type) ← parseDischarger d args
   -- bring into field_simp standard form
-  let r ← AtomM.run .reducible <| reduceExpr disch x
+  let r ← AtomM.run .reducible <| ((reduceExpr x).run 0 disch)
   -- convert `x` to the output of the normalization
   Conv.applySimpResult r
 
@@ -781,7 +857,8 @@ def proc : Simp.Simproc := fun (t : Expr) ↦ do
   let ctx ← Simp.getContext
   let disch e : MetaM Expr := Prod.fst <$> (FieldSimp.discharge e).run ctx >>= Option.getM
   try
-    let r ← AtomM.run .reducible <| FieldSimp.reduceProp disch t
+    -- TODO: This uses a single cache for all subexpressions, which is not sound.
+    let r ← AtomM.run .reducible <| (FieldSimp.reduceProp t).run 0 disch
     -- the `field_simp`-normal form is in opposition to the `simp`-lemmas `one_div` and `mul_inv`,
     -- so we need to undo any such lemma applications, otherwise we can get infinite loops
     return .visit <| ← r.mkEqTrans (← simpOnlyNames [``one_div, ``mul_inv] r.expr)
