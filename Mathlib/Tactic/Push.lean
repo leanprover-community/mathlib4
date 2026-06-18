@@ -127,8 +127,10 @@ def pushCore (head : Head) (cfg : Config) (disch? : Option Simp.Discharge) (tgt 
       (simpTheorems := #[])
       (congrTheorems := ← getSimpCongrTheorems)
   let methods := match disch? with
-    | none => { pre := pushStep head cfg }
-    | some disch => { pre := pushStep head cfg, discharge? := disch, wellBehavedDischarge := false }
+    | none => { pre := pushStep head cfg, post _ := return .continue }
+    | some disch => {
+      pre := pushStep head cfg, post _ := return .continue
+      discharge? := disch, wellBehavedDischarge := false }
   (·.1) <$> Simp.main tgt ctx (methods := methods)
 
 /-- Try to rewrite using a `pull` lemma. -/
