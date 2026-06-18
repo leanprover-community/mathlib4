@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Kyle Miller
 -/
 module  -- shake: keep-all, shake: keep-downstream
 
-public meta import Lean
+public meta import Lean.Elab.BuiltinCommand
 public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Tactic.ExtendDoc
 public import Mathlib.Tactic.Linter.OldObtain
