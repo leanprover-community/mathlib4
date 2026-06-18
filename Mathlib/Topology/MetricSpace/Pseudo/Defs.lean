@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.ENNReal.Real
 public import Mathlib.Tactic.Bound.Attribute
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Bornology.Basic
 public import Mathlib.Topology.EMetricSpace.Defs
 public import Mathlib.Topology.UniformSpace.Basic
@@ -365,6 +366,7 @@ namespace Metric
 variable {x y z : α} {δ ε ε₁ ε₂ : ℝ} {s : Set α}
 
 /-- `ball x ε` is the set of all points `y` with `dist y x < ε` -/
+@[wikidata Q838611]
 def ball (x : α) (ε : ℝ) : Set α :=
   { y | dist y x < ε }
 
