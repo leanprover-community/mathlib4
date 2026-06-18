@@ -430,7 +430,7 @@ theorem sum_Ioc_mul_zeta_eq_sum (f : ArithmeticFunction R) (N : ℕ) :
 theorem sum_Ioc_sigma0_eq_sum_div (N : ℕ) :
     ∑ n ∈ Ioc 0 N, sigma 0 n = ∑ n ∈ Ioc 0 N, (N / n) := by
   rw [← zeta_mul_pow_eq_sigma, pow_zero_eq_zeta]
-  convert sum_Ioc_mul_zeta_eq_sum zeta N using 1
+  convert! sum_Ioc_mul_zeta_eq_sum zeta N using 1
   simpa using sum_congr rfl (by grind)
 
 end Sum
@@ -456,11 +456,12 @@ open Lean Meta Qq
 
 /-- Extension for `ArithmeticFunction.sigma`. -/
 @[positivity ArithmeticFunction.sigma _ _]
-meta def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p e := do
+meta def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p? e := do
+  let some p := p? | throwError "no PartialOrder instance"
   match u, α, e with
   | 0, ~q(ℕ), ~q(ArithmeticFunction.sigma $k $n) =>
-    let rn ← core z p n
     assumeInstancesCommute
+    let rn ← core z p n
     match rn with
     | .positive pn => return .positive q(Iff.mpr ArithmeticFunction.sigma_pos_iff $pn)
     | _ => return .nonnegative q(Nat.zero_le _)

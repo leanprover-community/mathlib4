@@ -342,7 +342,7 @@ def DiophFn (f : (α → ℕ) → ℕ) : Prop :=
   Dioph {v : Option α → ℕ | f (v ∘ some) = v none}
 
 theorem reindex_diophFn {f : (α → ℕ) → ℕ} (g : α → β) (d : DiophFn f) :
-    DiophFn fun v => f (v ∘ g) := by convert reindex_dioph (Option β) (Option.map g) d
+    DiophFn fun v => f (v ∘ g) := by convert! reindex_dioph (Option β) (Option.map g) d
 
 theorem ex_dioph {S : Set (α ⊕ β → ℕ)} : Dioph S → Dioph {v | ∃ x, v ⊗ x ∈ S}
   | ⟨γ, p, pe⟩ =>

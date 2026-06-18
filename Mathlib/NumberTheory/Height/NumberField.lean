@@ -8,6 +8,8 @@ module
 public import Mathlib.NumberTheory.NumberField.ProductFormula
 public import Mathlib.NumberTheory.Height.Basic
 
+import Mathlib.Algebra.FiniteSupport.Basic
+import Mathlib.Algebra.Order.Hom.Lattice
 import Mathlib.NumberTheory.Height.MvPolynomial
 import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
 
@@ -65,7 +67,7 @@ noncomputable
 instance instAdmissibleAbsValues : AdmissibleAbsValues K where
   archAbsVal := multisetInfinitePlace K
   nonarchAbsVal := {v | IsFinitePlace v}
-  isNonarchimedean v hv := FinitePlace.add_le ⟨v, by simpa using hv⟩
+  isNonarchimedean v hv := FinitePlace.add_le ⟨v, by simpa using! hv⟩
   hasFiniteMulSupport := FinitePlace.hasFiniteMulSupport
   product_formula {x} hx := private prod_multisetInfinitePlace_eq (· x) ▸ prod_abs_eq_one hx
 
@@ -121,7 +123,7 @@ lemma mulHeight_eq {ι : Type*} {x : ι → K} (hx : x ≠ 0) :
 variable (K) in
 lemma totalWeight_eq_sum_mult : totalWeight K = ∑ v : InfinitePlace K, v.mult := by
   simp only [totalWeight]
-  convert sum_archAbsVal_eq (fun _ ↦ (1 : ℕ))
+  convert! sum_archAbsVal_eq (fun _ ↦ (1 : ℕ))
   · rw [← Multiset.sum_map_toList, ← Fin.sum_univ_fun_getElem, ← Multiset.length_toList,
       Fin.sum_const, Multiset.length_toList, smul_eq_mul, mul_one]
   · simp
@@ -138,6 +140,48 @@ lemma totalWeight_pos : 0 < totalWeight K := by
     using Fintype.sum_pos
       (Function.ne_iff.mpr ⟨default, (default : InfinitePlace K).mult_ne_zero⟩).pos
 
+variable {ι : Type*} [Finite ι] {x : ι → 𝓞 K}
+
+open IsDedekindDomain.HeightOneSpectrum Ideal FinitePlace Finite in
+-- This statement is a step in the proof of the next one, which is strictly stronger.
+private lemma absNorm_mul_finprod_finitePlace_eq_one_aux [Nonempty ι] (hx : ∀ i, x i ≠ 0) :
+    (span <| Set.range x).absNorm * ∏ᶠ v : FinitePlace K, ⨆ i, v (x i) = 1 := by
+  have H j : span {x j} ≠ ⊥ := mt span_singleton_eq_bot.mp (hx j)
+  have hx' : ⨆ i, span {x i} ≠ ⊥ :=
+    iSup_eq_bot.not.mpr <| not_forall.mpr ⟨Classical.ofNonempty, H _⟩
+  rw [span_range_eq_iSup, ← finprod_finitePlace_pow_multiplicity hx',
+    map_finprod _ <| hasFiniteMulSupport_fun_pow_multiplicity hx' (·), Nat.cast_finprod',
+    ← finprod_mul_distrib ?hf <| .iSup (FinitePlace.hasFiniteMulSupport <| mod_cast hx ·)]
+  case hf =>
+    simp only [map_pow, Nat.cast_pow]
+    exact hasFiniteMulSupport_fun_pow_multiplicity hx' fun v ↦ (v.absNorm : ℝ)
+  refine finprod_eq_one_of_forall_eq_one fun v ↦ ?_
+  have hn := absNorm_eq_zero_iff.not.mpr v.maximalIdeal.ne_bot
+  have h {m : ℕ} : (0 : ℝ) < ↑(absNorm v.maximalIdeal.asIdeal ^ m) := by positivity
+  rw [multiplicity_iSup _ H, map_pow, mul_eq_one_iff_inv_eq₀ h.ne',
+    map_iInf_of_monotone (fun _ ↦ multiplicity ..) (pow_right_monotone <| by lia),
+    map_iInf_of_monotone _ Nat.mono_cast,
+    map_iInf_of_antitoneOn antitoneOn_inv_pos fun _ ↦ Set.mem_setOf.mpr h]
+  refine iSup_congr fun i ↦ ?_
+  rw [← mul_eq_one_iff_inv_eq₀ h.ne', mul_comm, Nat.cast_pow]
+  exact apply_mul_absNorm_pow_eq_one v (hx i)
+
+-- TODO: Generalize the following to integral closures of `ℤ` in `K` in place of `𝓞 K`.
+open Ideal RingOfIntegers in
+/-- This statement is equivalent to the fact that the "finite part" of the multiplicative
+height of a (non-zero) tuple `x` is the inverse of the absolute norm of the ideal generated
+by the values of `x`. We state it in a way that avoids taking an inverse. -/
+lemma absNorm_mul_finprod_finitePlace_eq_one (hx : x ≠ 0) :
+    (span <| Set.range x).absNorm * ∏ᶠ v : FinitePlace K, ⨆ i, v (x i) = 1 := by
+  obtain ⟨i₀, hi₀⟩ := Function.ne_iff.mp hx
+  let i' : { j // (x j : K) ≠ 0 } := ⟨i₀, mod_cast hi₀⟩
+  have : Nonempty _ := .intro i'
+  have hI : span (Set.range x) = span (Set.range fun i : { j // (x j : K) ≠ 0 } ↦ x i.val) := by
+    convert span_range_eq_span_range_support x <;> norm_cast
+  have hx₀ : (fun i ↦ (x i : K)) ≠ 0 := Function.ne_iff.mpr ⟨_, i'.prop⟩
+  simp_rw [Finite.iSup_eq_iSup_subtype hx₀, hI]
+  exact absNorm_mul_finprod_finitePlace_eq_one_aux fun j ↦ mod_cast j.prop
+
 end NumberField
 
 /-!
@@ -150,12 +194,13 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `Height.totalWeight` is positive for number fields. -/
 @[positivity Height.totalWeight _]
-meta def evalHeightTotalWeight : PositivityExt where eval {u α} _ _ e := do
+meta def evalHeightTotalWeight : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(@Height.totalWeight $K $KF $KA) =>
+    let some _ := pα? | pure .none
     -- Check whether there is a `NumberField` instance for `$K` around.
     match ← trySynthInstanceQ q(NumberField $K) with
-    | .some _instFinite =>
+    | .some _inst =>
       assertInstancesCommute
       return .positive q(NumberField.totalWeight_pos $K)
     | _ => throwError "field in Height.totalWeight not known to be a number field"
@@ -233,7 +278,7 @@ lemma mulHeight₁_eq_max (q : ℚ) : mulHeight₁ q = max q.num.natAbs q.den :=
   have : (.univ : Finset (Fin 2)).gcd ![q.num, q.den] = 1 := by
     simpa [Finset.univ_fin2, Int.normalize_coe_nat, ← Int.coe_gcd q.num q.den] using
       Int.isCoprime_iff_gcd_eq_one.mp <| isCoprime_num_den q
-  convert mulHeight_eq_max_abs_of_gcd_eq_one this
+  convert! mulHeight_eq_max_abs_of_gcd_eq_one this
   · ext i; fin_cases i <;> simp
   · rw [← Int.cast_natCast, Int.cast_inj]
     push_cast

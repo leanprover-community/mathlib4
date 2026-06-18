@@ -102,6 +102,15 @@ local notation "↑ₐ" => algebraMap R A
 theorem mem_iff {r : R} {a : A} : r ∈ σ a ↔ ¬IsUnit (↑ₐ r - a) :=
   Iff.rfl
 
+@[simp]
+theorem resolvent_zero_of_mem_spectrum {r : R} {a : A} (hr : r ∈ σ a) :
+    resolvent a r = 0 := Ring.inverse_non_unit _ (mem_iff.mp hr)
+
+theorem mem_spectrum_iff_resolvent_zero [Nontrivial A] {r : R} {a : A} :
+    r ∈ σ a ↔ resolvent a r = 0 := by
+  refine ⟨resolvent_zero_of_mem_spectrum, fun hr ↦ ?_⟩
+  simpa [mem_iff, Ring.not_isUnit_iff_inverse_eq_zero]
+
 theorem notMem_iff {r : R} {a : A} : r ∉ σ a ↔ IsUnit (↑ₐ r - a) := by
   simp [mem_iff]
 
@@ -274,7 +283,7 @@ theorem star_mem_resolventSet_iff {r : R} {a : A} :
 
 protected theorem map_star (a : A) : σ (star a) = star (σ a) := by
   ext
-  simpa only [Set.mem_star, mem_iff, not_iff_not] using star_mem_resolventSet_iff.symm
+  simpa only [Set.mem_star, mem_iff, not_iff_not] using! star_mem_resolventSet_iff.symm
 
 end Star
 
@@ -405,7 +414,7 @@ local notation "↑ₐ" => algebraMap R A
 
 theorem mem_resolventSet_apply (φ : F) {a : A} {r : R} (h : r ∈ resolventSet R a) :
     r ∈ resolventSet R ((φ : A → B) a) := by
-  simpa only [map_sub, AlgHomClass.commutes] using h.map φ
+  simpa only [map_sub, AlgHomClass.commutes] using! h.map φ
 
 theorem spectrum_apply_subset (φ : F) (a : A) : σ ((φ : A → B) a) ⊆ σ a := fun _ =>
   mt (mem_resolventSet_apply φ)

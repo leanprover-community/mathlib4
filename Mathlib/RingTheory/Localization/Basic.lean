@@ -224,6 +224,7 @@ variable {A : Type*} [CommSemiring A]
 
 include H
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `S`, `Q` are localizations of `R` and `P` at submonoids `M`, `T` respectively,
 an isomorphism `h : R ≃ₐ[A] P` such that `h(M) = T` induces an isomorphism of localizations
 `S ≃ₐ[A] Q`. -/
@@ -327,7 +328,7 @@ theorem isLocalization_of_algEquiv [Algebra R P] [IsLocalization M S] (h : S ≃
     IsLocalization M P := by
   constructor; constructor
   · intro y
-    convert (IsLocalization.map_units S y).map h.toAlgHom.toRingHom.toMonoidHom
+    convert! (IsLocalization.map_units S y).map h.toAlgHom.toRingHom.toMonoidHom
     exact (h.commutes y).symm
   · intro y
     obtain ⟨⟨x, s⟩, e⟩ := IsLocalization.surj M (h.symm y)
@@ -683,5 +684,38 @@ theorem IsLocalization.algHom_ext {R A L B : Type*}
     (h : f.comp (Algebra.algHom R A _) = g.comp (Algebra.algHom R A _)) :
     f = g :=
   IsLocalization.algHom_ext W h
+
+section extend
+
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+  (S : Type*) [CommSemiring S] [Algebra R S] (M : Submonoid R) [IsLocalization M S]
+  [Algebra R A] [Algebra S A] [IsScalarTower R S A]
+  [Algebra R B] [Algebra S B] [IsScalarTower R S B]
+
+/-- For an algebra homomorphism `f : A →ₐ[R] B`, if `A` and `B` are algebras over a localization
+`S` of `R`, then `f` is automatically an `S`-algebra homomorphism. -/
+def AlgHom.extendScalarsOfIsLocalization (f : A →ₐ[R] B) : A →ₐ[S] B where
+  __ := f
+  commutes' := by
+    let f := f.comp (IsScalarTower.toAlgHom R S A)
+    let g := IsScalarTower.toAlgHom R S B
+    have : f.toRingHom.comp (algebraMap R S) = g.toRingHom.comp (algebraMap R S) := by simp
+    suffices f = g by rwa [DFunLike.ext_iff] at this
+    apply IsLocalization.algHom_ext M
+    rwa [DFunLike.ext_iff] at this ⊢
+
+@[simp]
+theorem AlgHom.extendScalarsOfIsLocalization_apply (f : A →ₐ[R] B) (a : A) :
+    f.extendScalarsOfIsLocalization S M a = f a :=
+  rfl
+
+/-- For an algebra isomorphism `f : A ≃ₐ[R] B`, if `A` and `B` are algebras over a localization
+`S` of `R`, then `f` is automatically an `S`-algebra isomorphism. -/
+@[simps]
+def AlgEquiv.extendScalarsOfIsLocalization (f : A ≃ₐ[R] B) : A ≃ₐ[S] B where
+  __ := f.toAlgHom.extendScalarsOfIsLocalization S M
+  __ := f
+
+end extend
 
 end Algebra

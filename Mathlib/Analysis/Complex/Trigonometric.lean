@@ -331,13 +331,13 @@ theorem sin_add_mul_I (x y : ℂ) : sin (x + y * I) = sin x * cosh y + cos x * s
   rw [sin_add, cos_mul_I, sin_mul_I, mul_assoc]
 
 theorem sin_eq (z : ℂ) : sin z = sin z.re * cosh z.im + cos z.re * sinh z.im * I := by
-  convert sin_add_mul_I z.re z.im; exact (re_add_im z).symm
+  convert! sin_add_mul_I z.re z.im; exact (re_add_im z).symm
 
 theorem cos_add_mul_I (x y : ℂ) : cos (x + y * I) = cos x * cosh y - sin x * sinh y * I := by
   rw [cos_add, cos_mul_I, sin_mul_I, mul_assoc]
 
 theorem cos_eq (z : ℂ) : cos z = cos z.re * cosh z.im - sin z.re * sinh z.im * I := by
-  convert cos_add_mul_I z.re z.im; exact (re_add_im z).symm
+  convert! cos_add_mul_I z.re z.im; exact (re_add_im z).symm
 
 theorem sin_sub_sin : sin x - sin y = 2 * sin ((x - y) / 2) * cos ((x + y) / 2) := by
   have s1 := sin_add ((x + y) / 2) ((x - y) / 2)
@@ -356,7 +356,7 @@ theorem cos_sub_cos : cos x - cos y = -2 * sin ((x + y) / 2) * sin ((x - y) / 2)
   ring
 
 theorem sin_add_sin : sin x + sin y = 2 * sin ((x + y) / 2) * cos ((x - y) / 2) := by
-  simpa using sin_sub_sin x (-y)
+  simpa using! sin_sub_sin x (-y)
 
 theorem cos_add_cos : cos x + cos y = 2 * cos ((x + y) / 2) * cos ((x - y) / 2) := by
   calc
@@ -940,9 +940,10 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `Real.cosh` is always positive. -/
 @[positivity Real.cosh _]
-meta def evalCosh : PositivityExt where eval {u α} _ _ e := do
+meta def evalCosh : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.cosh $a) =>
+    let some _ := pα? | pure .none
     assertInstancesCommute
     return .positive q(Real.cosh_pos $a)
   | _, _, _ => throwError "not Real.cosh"
