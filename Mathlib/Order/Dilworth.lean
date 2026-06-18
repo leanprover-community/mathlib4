@@ -318,8 +318,8 @@ theorem chainCover_glue [PartialOrder α] [DecidableEq α] {s A : Finset α}
     exact hKchain a ha
 
 /-- Dilworth's theorem, strong duality: in any finite subset `s` of a partial order, some antichain
-and some chain cover have the same size. With `antichain_le_chain_cover`, this implies (by weak
-duality) that the largest antichain and the smallest chain cover have a common size. -/
+and some chain cover have the same size. With `antichain_le_chain_cover` (weak duality), this
+implies  that the largest antichain and the smallest chain cover have a common size. -/
 theorem dilworth [PartialOrder α] [DecidableEq α] (s : Finset α) :
     ∃ (A : Finset α) (𝒞 : Finset (Finset α)),
       A ⊆ s ∧ IsAntichain (· ≤ ·) (A : Set α) ∧
@@ -462,8 +462,8 @@ theorem exists_min_mem_of_isChain [Preorder α] {C : Finset α}
     · exact hm.2 hy h
 
 /-- Mirsky's theorem, strong duality: in any finite subset `s` of a partial order, some chain and
-some antichain cover have the same size. With `chain_le_antichain_cover`, implies (by weak
-duality) that the largest chain and the smallest antichain cover have a common size. -/
+some antichain cover have the same size. With `chain_le_antichain_cover` (weak duality), this
+implies that the largest chain and the smallest antichain cover have a common size. -/
 theorem mirsky [PartialOrder α] [DecidableEq α] (s : Finset α) :
     ∃ (C : Finset α) (𝒜 : Finset (Finset α)),
       C ⊆ s ∧ IsChain (· ≤ ·) (C : Set α) ∧
@@ -572,7 +572,7 @@ lemma exists_pairwiseDisjoint_cover [DecidableEq α] {s : Finset α} {𝒞 : Fin
     exact ⟨D, hD, fun x hx => (Finset.mem_filter.mp hx).2 ▸ hgmem x (Finset.mem_filter.mp hx).1⟩
 
 /-- Dilworth's theorem, partition form: a finite subset `s` of a partial order splits into a
-pairwise-disjoint family of chains whose number equals the size of some antichain (the maximum
+pairwise-disjoint family of chains whose number equals the size of some antichain (the longest
 antichain, by `antichain_le_chain_cover`). -/
 theorem dilworth_partition [PartialOrder α] [DecidableEq α] (s : Finset α) :
     ∃ (A : Finset α) (𝒞 : Finset (Finset α)),
