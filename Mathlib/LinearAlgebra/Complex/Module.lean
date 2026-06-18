@@ -362,26 +362,26 @@ section AddCommGroup
 
 variable [AddCommGroup A] [Module ℂ A] [StarAddMonoid A] [StarModule ℂ A]
 
+lemma Complex.I_mem_skewAdjoint : I ∈ skewAdjoint ℂ := by simp [skewAdjoint.mem_iff]
+
+@[simp] lemma Complex.I_smul_mem_skewAdjoint_iff_isSelfAdjoint {a : A} :
+    I • a ∈ skewAdjoint A ↔ IsSelfAdjoint a := by
+  simp [skewAdjoint.mem_iff, IsSelfAdjoint, smul_right_inj]
+
+@[simp] lemma Complex.isSelfAdjoint_I_smul_iff_mem_skewAdjoint {a : A} :
+    IsSelfAdjoint (I • a) ↔ a ∈ skewAdjoint A := by
+  simp [← I_smul_mem_skewAdjoint_iff_isSelfAdjoint, smul_smul]
+
 /-- Create a `selfAdjoint` element from a `skewAdjoint` element by multiplying by the scalar
 `-Complex.I`. -/
 @[simps]
 def skewAdjoint.negISMul : skewAdjoint A →ₗ[ℝ] selfAdjoint A where
-  toFun a :=
-    ⟨-I • ↑a, by
-      simp only [neg_smul, neg_mem_iff, selfAdjoint.mem_iff, star_smul, star_def, conj_I,
-        star_val_eq, smul_neg, neg_neg]⟩
-  map_add' a b := by
-    ext
-    simp only [AddSubgroup.coe_add, smul_add, AddMemClass.mk_add_mk]
-  map_smul' a b := by
-    ext
-    simp only [neg_smul, skewAdjoint.val_smul, RingHom.id_apply,
-      selfAdjoint.val_smul, smul_neg, neg_inj]
-    rw [smul_comm]
+  toFun a := ⟨-I • ↑a, by simp [selfAdjoint.mem_iff]⟩
+  map_add' a b := by simp
+  map_smul' a b := by ext; simp [smul_comm I]
 
 theorem skewAdjoint.I_smul_neg_I (a : skewAdjoint A) : I • (skewAdjoint.negISMul a : A) = a := by
-  simp only [smul_smul, skewAdjoint.negISMul_apply_coe, neg_smul, smul_neg, I_mul_I, one_smul,
-    neg_neg]
+  simp [smul_smul]
 
 /-- The real part `ℜ a` of an element `a` of a star module over `ℂ`, as a linear map. This is just
 `selfAdjointPart ℝ`, but we provide it as a separate definition in order to link it with lemmas
@@ -405,20 +405,15 @@ scoped[ComplexStarModule] notation "ℑ" => imaginaryPart
 open ComplexStarModule
 
 theorem realPart_apply_coe (a : A) : (ℜ a : A) = (2 : ℝ)⁻¹ • (a + star a) := by
-  unfold realPart
-  simp only [selfAdjointPart_apply_coe, invOf_eq_inv]
+  simp [realPart]
 
 theorem imaginaryPart_apply_coe (a : A) : (ℑ a : A) = -I • (2 : ℝ)⁻¹ • (a - star a) := by
-  unfold imaginaryPart
-  simp only [LinearMap.coe_comp, Function.comp_apply, skewAdjoint.negISMul_apply_coe,
-    skewAdjointPart_apply_coe, invOf_eq_inv, neg_smul]
+  simp [imaginaryPart]
 
 /-- The standard decomposition of `ℜ a + Complex.I • ℑ a = a` of an element of a star module over
 `ℂ` into a linear combination of self adjoint elements. -/
 theorem realPart_add_I_smul_imaginaryPart (a : A) : (ℜ a : A) + I • (ℑ a : A) = a := by
-  simpa only [smul_smul, realPart_apply_coe, imaginaryPart_apply_coe, neg_smul, I_mul_I, one_smul,
-    neg_sub, add_add_sub_cancel, smul_sub, smul_add, neg_sub_neg, invOf_eq_inv] using
-    invOf_two_smul_add_invOf_two_smul ℝ a
+  simp [realPart, imaginaryPart, smul_smul, ← smul_add, inv_smul_eq_iff₀, two_smul]
 
 @[simp]
 theorem realPart_I_smul (a : A) : ℜ (I • a) = -ℑ a := by
@@ -460,8 +455,7 @@ lemma realPart_comp_subtype_selfAdjoint :
 
 lemma imaginaryPart_comp_subtype_selfAdjoint :
     imaginaryPart.comp (selfAdjoint.submodule ℝ A).subtype = 0 := by
-  rw [imaginaryPart, LinearMap.comp_assoc, skewAdjointPart_comp_subtype_selfAdjoint,
-    LinearMap.comp_zero]
+  ext; simp [imaginaryPart]
 
 @[simp]
 lemma selfAdjoint.realPart_coe {x : selfAdjoint A} : ℜ (x : A) = x :=
@@ -542,12 +536,9 @@ lemma realPart_ofReal (r : ℝ) : (ℜ (r : ℂ) : ℂ) = r := by
 lemma imaginaryPart_ofReal (r : ℝ) : ℑ (r : ℂ) = 0 := by
   ext1; simp [imaginaryPart_apply_coe, conj_ofReal]
 
-set_option linter.style.whitespace false in -- manual alignment is not recognised
-lemma Complex.coe_realPart (z : ℂ) : (ℜ z : ℂ) = z.re := calc
-  (ℜ z : ℂ) = (↑(ℜ (↑z.re + ↑z.im * I))) := by congrm (ℜ $((re_add_im z).symm))
-  _         = z.re                       := by
-    rw [map_add, AddSubmonoid.coe_add, mul_comm, ← smul_eq_mul, realPart_I_smul]
-    simp
+lemma Complex.coe_realPart (z : ℂ) : (ℜ z : ℂ) = z.re := by
+  conv_lhs => rw [← re_add_im z]
+  simp [-re_add_im, realPart_I_smul, mul_comm _ I, ← smul_eq_mul]
 
 section NonUnitalNonAssocRing
 
