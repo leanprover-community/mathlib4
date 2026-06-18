@@ -43,9 +43,11 @@ open RingTheory.Sequence Ideal CategoryTheory Abelian Limits
 
 variable {R : Type u} [CommRing R] [Small.{v} R]
 
-open Pointwise ModuleCat IsSMulRegular
+open Pointwise IsSMulRegular
 
-lemma ModuleCat.exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R] (I : Ideal R)
+namespace ModuleCat
+
+lemma exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R] (I : Ideal R)
     (n : ℕ) (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
     (N : ModuleCat.{v} R) [Nontrivial N] [Module.Finite R N]
     (h_supp : Module.support R N = PrimeSpectrum.zeroLocus I)
@@ -85,7 +87,7 @@ lemma ModuleCat.exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R]
     use x ^ k :: rs
     simpa [len, hk] using ⟨mem, hx.pow k, reg⟩
 
-lemma ModuleCat.subsingleton_ext_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R)
+lemma subsingleton_ext_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R)
     (N : ModuleCat.{v} R) [Nfin : Module.Finite R N]
     (Nsupp : Module.support R N ⊆ PrimeSpectrum.zeroLocus I)
     (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
@@ -147,7 +149,7 @@ For any `n : ℕ`, Noetherian ring `R`, `I : Ideal R`, and finitely generated an
   zero locus of `I`, `∀ i < n, Ext N M i = 0`
 · there exists a `M`-regular sequence of length `n` with every element in `I`
 -/
-lemma ModuleCat.exists_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
+lemma exists_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
     (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤) :
     [∀ N : ModuleCat.{v} R, Nontrivial N → Module.Finite R N →
       Module.support R N ⊆ PrimeSpectrum.zeroLocus I → ∀ i < n, Subsingleton (Ext N M i),
@@ -172,3 +174,5 @@ lemma ModuleCat.exists_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) (n : �
   tfae_have 4 → 1 := fun ⟨rs, len, mem, reg⟩ N Nntr Nfin Nsupp i hi ↦
     subsingleton_ext_of_exists_isRegular I N Nsupp M smul_lt rs mem reg i (hi.trans_eq len.symm)
   tfae_finish
+
+end ModuleCat
