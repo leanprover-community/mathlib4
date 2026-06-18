@@ -1,7 +1,7 @@
 import Mathlib.Tactic.Module
 
 -- Register module as a try? helper
-register_try?_tactic module
+-- register_try?_tactic module
 
 -- Try a Module goal with ring scalar multiplication
 #guard_msgs in

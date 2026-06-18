@@ -18,6 +18,13 @@ public meta section
 namespace Mathlib.Tactic.Conv
 open Lean Parser.Tactic Parser.Tactic.Conv Elab.Tactic Meta
 
+/-- A copy of `Lean.Elab.Tactic.Conv.applySimpResult`. We use this to avoid the big import. -/
+def applySimpResult (result : Simp.Result) : TacticM Unit := do
+  if result.proof?.isNone then
+    Conv.changeLhs result.expr
+  else
+    Conv.updateLhs result.expr (← result.getProof)
+
 /--
 `conv_lhs => cs` runs the `conv` tactic sequence `cs` on the left hand side of the target.
 
