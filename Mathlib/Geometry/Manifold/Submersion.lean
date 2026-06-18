@@ -375,7 +375,6 @@ theorem contMDiffOn (h : IsSubmersionAtOfComplement F I J n f x) :
     rw [contMDiff_iff_contDiff]
     exact contDiff_fst
   exact this.contMDiffOn.congr h.writtenInCharts
-#check contMDiff_fst
 /-- A `C^n` submersion at `x` is `C^n` at `x`. -/
 theorem contMDiffAt (h : IsSubmersionAtOfComplement F I J n f x) : CMDiffAt n f x :=
   h.contMDiffOn.contMDiffAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
