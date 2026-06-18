@@ -37,7 +37,7 @@ lemma ppow_succ (x : M) (n : ℕ+) : x ^ (n + 1) = x ^ n * x :=
 
 @[to_additive add_psmul]
 lemma ppow_add (x : M) (n m : ℕ+) : x ^ (n + m) = x ^ n * x ^ m :=
-  m.recOn (by simp [ppow_succ, add_comm]) fun k hk => by
+  m.recOn (by simp [ppow_succ]) fun k hk => by
     rw [← add_assoc, ppow_succ, ppow_succ, hk, mul_assoc]
 
 @[to_additive mul_comm_psmul]
@@ -81,7 +81,8 @@ lemma mul_ppow (x y : M) (n : ℕ+) : (x * y) ^ n = x ^ n * y ^ n :=
 variable (M)
 
 /-- `(· ^ (n : ℕ+))` as a `MulHom`. -/
-@[to_additive (attr := simps) "`((n : ℕ+) • ·)` as an `AddHom`."]
+@[to_additive (attr := simps)
+  /-- `((n : ℕ+) • ·)` as an `AddHom`. -/]
 def ppowMulHom (n : ℕ+) : M →ₙ* M where
   toFun x := x ^ n
   map_mul' := mul_ppow (n := n)
@@ -96,7 +97,7 @@ theorem pow_mul_comm'' [Monoid M] (a : M) (n : ℕ+) : a ^ n * a = a * a ^ n := 
 @[to_additive (attr := norm_cast)]
 lemma npow_val_eq_ppow [Monoid M] (x : M) (n : ℕ+) : x ^ (n : ℕ) = x ^ n :=
   n.recOn (by simp [pow_one]) fun k hk => by
-    simp [pow_succ, ppow_succ', hk]
+    simp only [PNat.add_coe, PNat.val_ofNat, pow_succ, hk, ppow_succ']
     rw [pow_mul_comm'']
 
 @[to_additive]
