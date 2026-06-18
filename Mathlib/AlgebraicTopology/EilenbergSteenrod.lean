@@ -169,7 +169,8 @@ abbrev isHomotopyInvariant : ObjectProperty (HomologyPretheory.{u} C c) :=
   IsHomotopyInvariant
 
 @[simp]
-lemma isHomotopyInvariant_iff_IsHomotopyInvariant : isHomotopyInvariant C c HP ↔ IsHomotopyInvariant HP := .rfl
+lemma isHomotopyInvariant_iff_IsHomotopyInvariant :
+    isHomotopyInvariant C c HP ↔ IsHomotopyInvariant HP := .rfl
 
 instance : IsClosedUnderIsomorphisms (isHomotopyInvariant.{u} C c) where
   of_iso e _ := ⟨fun F _ ↦ by
@@ -385,7 +386,8 @@ abbrev hasDimensionAxiom : ObjectProperty (HomologyPretheory.{u} C (ComplexShape
   HasDimensionAxiom
 
 @[simp]
-lemma hasDimensionAxiom_iff_HasDimensionAxiom : hasDimensionAxiom C HP ↔ HP.HasDimensionAxiom := .rfl
+lemma hasDimensionAxiom_iff_HasDimensionAxiom :
+    hasDimensionAxiom C HP ↔ HP.HasDimensionAxiom := .rfl
 
 instance : IsClosedUnderIsomorphisms (hasDimensionAxiom.{u} C) where
   of_iso {HP HP'} e h := ⟨fun n hn ↦ (Iso.isZero_iff (((HP.iso _) ≪≫ Functor.isoWhiskerLeft incl
@@ -407,7 +409,8 @@ abbrev isEilenbergSteenrod : ObjectProperty (HomologyPretheory.{u} C (ComplexSha
   IsEilenbergSteenrod
 
 @[simp]
-lemma isEilenbergSteenrod_iff_IsEilenbergSteenrod : isEilenbergSteenrod C HP ↔ HP.IsEilenbergSteenrod := .rfl
+lemma isEilenbergSteenrod_iff_IsEilenbergSteenrod :
+    isEilenbergSteenrod C HP ↔ HP.IsEilenbergSteenrod := .rfl
 
 instance : IsClosedUnderIsomorphisms (isEilenbergSteenrod.{u} C) where
   of_iso e h := {
