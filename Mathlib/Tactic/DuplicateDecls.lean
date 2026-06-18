@@ -32,7 +32,7 @@ which lets us detect duplication even when the arguments are in a different orde
 We also erase the binder kinds (e.g. implicit/explicit) in the type,
 and we erase all universe levels, both of which help to find more duplicates.
 
-To avoid flagging aliases as dupliate (which are most likely intentionally duplicated),
+To avoid flagging aliases as duplicate (which are most likely intentionally duplicated),
 we filter out declarations that are defined as another declaration (see `isAlias`).
 
 The results are sorted by module name.
