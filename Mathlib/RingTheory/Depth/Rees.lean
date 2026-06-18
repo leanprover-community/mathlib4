@@ -21,15 +21,19 @@ certain `Ext` groups and the length of a maximal regular sequence in a certain i
 
 ## Main results
 
-* `ModuleCat.exists_isRegular_tfae` (Rees theorem) : For any `n : ℕ`, noetherian ring `R`,
+* `ModuleCat.exists_isRegular_tfae` (Rees theorem) : For any `n : ℕ`, Noetherian ring `R`,
   `I : Ideal R`, and finitely generated and nontrivial `R`-module `M` satisfying `IM < M`,
   the following are equivalent:
   · for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
     zero locus of `I`, `∀ i < n, Ext N M i = 0`
-  · `∀ i < n, Ext (A⧸I) M i = 0`
+  · `∀ i < n, Ext (R ⧸ I) M i = 0`
   · there exists a `N : ModuleCat R` finitely generated and nontrivial with support equal to the
     zero locus of `I`, `∀ i < n, Ext N M i = 0`
   · there exists a `M`-regular sequence of length `n` with every element in `I`
+
+## References
+
+* [Commutative Algebra, Theorem 28][matsumuraCommAlg]
 
 -/
 
@@ -144,7 +148,7 @@ For any `n : ℕ`, Noetherian ring `R`, `I : Ideal R`, and finitely generated an
 `R`-module `M` satisfying `IM < M`, the following are equivalent:
 · for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
   zero locus of `I`, `∀ i < n, Ext N M i = 0`
-· `∀ i < n, Ext (A⧸I) M i = 0`
+· `∀ i < n, Ext (R ⧸ I) M i = 0`
 · there exists a `N : ModuleCat R` finitely generated and nontrivial with support equal to the
   zero locus of `I`, `∀ i < n, Ext N M i = 0`
 · there exists a `M`-regular sequence of length `n` with every element in `I`
