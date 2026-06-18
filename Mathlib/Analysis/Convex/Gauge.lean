@@ -67,26 +67,23 @@ theorem gauge_def' : gauge s x = sInf {r ∈ Set.Ioi (0 : ℝ) | r⁻¹ • x �
   congrm sInf {r | ?_}
   exact and_congr_right fun hr => mem_smul_set_iff_inv_smul_mem₀ hr.ne' _ _
 
-private theorem bddBelow_setOf_gauge : BddBelow { r : ℝ | 0 < r ∧ x ∈ r • s } :=
+private theorem bddBelow_gauge_set : BddBelow { r : ℝ | 0 < r ∧ x ∈ r • s } :=
   ⟨0, fun _ hr => hr.1.le⟩
 
 /-- If the given subset is `Absorbent` then the set we take an infimum over in `gauge` is nonempty,
 which is useful for proving many properties about the gauge. -/
-theorem Absorbent.setOf_gauge_nonempty (absorbs : Absorbent ℝ s) :
+theorem Absorbent.gauge_set_nonempty (absorbs : Absorbent ℝ s) :
     { r : ℝ | 0 < r ∧ x ∈ r • s }.Nonempty :=
   let ⟨r, hr₁, hr₂⟩ := (absorbs x).exists_pos
   ⟨r, hr₁, hr₂ r (Real.norm_of_nonneg hr₁.le).ge rfl⟩
 
-@[deprecated (since := "2026-06-17")]
-alias Absorbent.gauge_set_nonempty := Absorbent.setOf_gauge_nonempty
-
 theorem gauge_mono (hs : Absorbent ℝ s) (h : s ⊆ t) : gauge t ≤ gauge s := fun _ => by
   unfold gauge
-  gcongr; exacts [bddBelow_setOf_gauge, hs.setOf_gauge_nonempty]
+  gcongr; exacts [bddBelow_gauge_set, hs.gauge_set_nonempty]
 
 theorem exists_lt_of_gauge_lt (absorbs : Absorbent ℝ s) (h : gauge s x < a) :
     ∃ b, 0 < b ∧ b < a ∧ x ∈ b • s := by
-  obtain ⟨b, ⟨hb, hx⟩, hba⟩ := exists_lt_of_csInf_lt absorbs.setOf_gauge_nonempty h
+  obtain ⟨b, ⟨hb, hx⟩, hba⟩ := exists_lt_of_csInf_lt absorbs.gauge_set_nonempty h
   exact ⟨b, hb, hba, hx⟩
 
 /-- The gauge evaluated at `0` is always zero (mathematically this requires `0` to be in the set `s`
@@ -134,7 +131,7 @@ theorem gauge_neg_set_eq_gauge_neg (x : E) : gauge (-s) x = gauge s (-x) := by
 theorem gauge_le_of_mem (ha : 0 ≤ a) (hx : x ∈ a • s) : gauge s x ≤ a := by
   obtain rfl | ha' := ha.eq_or_lt
   · rw [mem_singleton_iff.1 (zero_smul_set_subset _ hx), gauge_zero]
-  · exact csInf_le bddBelow_setOf_gauge ⟨ha', hx⟩
+  · exact csInf_le bddBelow_gauge_set ⟨ha', hx⟩
 
 theorem setOf_gauge_le_eq (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ : Absorbent ℝ s)
     (ha : 0 ≤ a) : { x | gauge s x ≤ a } = ⋂ (r : ℝ) (_ : a < r), r • s := by
