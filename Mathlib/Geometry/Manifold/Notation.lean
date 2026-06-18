@@ -1149,14 +1149,14 @@ arguments that can use the `T%` elaborator. -/
     let fs ← withNaryArg 20 <| delab
     `(MDiffAt[$ss] $fs) >>= annotateGoToSyntaxDef
 
-/-- Delaborator for `UniqueMDiffOn` using the custom elaborator .-/
+/-- Delaborator for `UniqueMDiffOn` using the custom elaborator. -/
 @[app_delab UniqueMDiffOn] meta def delabUniqueMDiffOn : Delab := do
   whenPPOption getPPNotation do
   withOverApp 12 do
   let ss ← withAppArg delab
   `(UniqueMDiff[$ss]) >>= annotateGoToSyntaxDef
 
-/-- Delaborator for `UniqueMDiffWithinAt` using the custom elaborator .-/
+/-- Delaborator for `UniqueMDiffWithinAt` using the custom elaborator. -/
 @[app_delab UniqueMDiffWithinAt] meta def delabUniqueMDiffWithinAt : Delab := do
   whenPPOption getPPNotation do
   withOverApp 12 do
