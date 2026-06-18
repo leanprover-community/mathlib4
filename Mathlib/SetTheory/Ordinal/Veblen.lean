@@ -31,7 +31,6 @@ The following notation is scoped to the `Ordinal` namespace.
 ## TODO
 
 - Prove that `ε₀` and `Γ₀` are countable.
-- Prove that the exponential principal ordinals are the epsilon ordinals (and 0, 1, 2, ω).
 - Prove that the ordinals principal under `veblen` are the gamma ordinals (and 0).
 
 ## References
@@ -511,7 +510,7 @@ theorem invVeblen₂_lt (x : Ordinal) : invVeblen₂ x < ω ^ x := by
 theorem invVeblen₂_le (x : Ordinal) : invVeblen₂ x ≤ x := by
   obtain h | h := eq_zero_or_pos (invVeblen₁ x)
   · rw [invVeblen₂_le_iff, h, veblen_zero]
-  · convert (invVeblen₂_lt x).le
+  · convert! (invVeblen₂_lt x).le
     rw [← veblen_zero_apply, veblen_eq_of_lt_invVeblen₁ h]
 
 theorem invVeblen₂_of_lt_opow (h : a < ω ^ a) : invVeblen₂ a = a := by
@@ -537,7 +536,7 @@ theorem veblen_eq_opow_iff (h : a < veblen o a) :
     · rw [← veblen_veblen_of_lt ho, veblen_zero_apply, opow_right_inj one_lt_omega0]
       rintro rfl
       simp [invVeblen₁_veblen h, invVeblen₂_veblen ho.ne' h]
-  · convert ← veblen_invVeblen₁_invVeblen₂ x
+  · convert! ← veblen_invVeblen₁_invVeblen₂ x
 
 /-! ### Epsilon function -/
 

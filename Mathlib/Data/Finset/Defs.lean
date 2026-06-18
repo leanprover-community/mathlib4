@@ -30,7 +30,7 @@ Finsets give a basic foundation for defining finite sums and products over types
   2. `∏ i ∈ (s : Finset α), f i`.
 
 Lean refers to these operations as big operators.
-More information can be found in `Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean`.
+More information can be found in `Mathlib/Algebra/BigOperators/Group/Finset/Defs.lean`.
 
 Finsets are directly used to define fintypes in Lean.
 A `Fintype α` instance for a type `α` consists of a universal `Finset α` containing every term of
@@ -100,7 +100,7 @@ instance decidableEq [DecidableEq α] : DecidableEq (Finset α)
 /-- Convert a finset to a set in the natural way. -/
 instance : SetLike (Finset α) α where
   coe s := {a | a ∈ s.1}
-  coe_injective' s₁ s₂ h := (val_inj.symm.trans <| s₁.nodup.ext s₂.nodup).2 <| Set.ext_iff.mp h
+  coe_injective s₁ s₂ h := (val_inj.symm.trans <| s₁.nodup.ext s₂.nodup).2 <| Set.ext_iff.mp h
 
 theorem mem_def {a : α} {s : Finset α} : a ∈ s ↔ a ∈ s.1 :=
   Iff.rfl
@@ -121,10 +121,6 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 @[simp] lemma forall_mem_not_eq' {s : Finset α} {a : α} : (∀ b ∈ s, ¬ b = a) ↔ a ∉ s := by grind
 
 instance : PartialOrder (Finset α) := .ofSetLike (Finset α) α
-
-/-- Convert a finset to a set in the natural way. -/
-@[deprecated SetLike.coe (since := "2025-10-22")]
-abbrev toSet (s : Finset α) : Set α := s
 
 @[norm_cast, grind =]
 theorem mem_coe {a : α} {s : Finset α} : a ∈ (s : Set α) ↔ a ∈ (s : Finset α) :=

@@ -69,6 +69,34 @@ True
 #guard_msgs in
 #kerodon_tags!
 
+namespace W
+
+@[wikidata Q12345 "A Wikidata comment"]
+theorem wikiTagged : True := .intro
+
+end W
+
+/-- info: some ([Wikidata Q12345](https://www.wikidata.org/wiki/Q12345) (A Wikidata comment)) -/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `W.wikiTagged}"
+
+/--
+info:
+[Wikidata Q12345](https://www.wikidata.org/wiki/Q12345) corresponds to declaration 'W.wikiTagged'. (A Wikidata comment)
+-/
+#guard_msgs in
+#wikidata_tags
+
+/-- error: <input>:1:5: Wikidata ids must consist of the letter Q followed by digits. -/
+#guard_msgs in #parse Mathlib.CrossRef.wikidataIdFn => "Q12X3"
+
+/-- error: <input>:1:6: Wikidata ids must start with the letter Q followed by one or more digits. -/
+#guard_msgs in #parse Mathlib.CrossRef.wikidataIdFn => "P12345"
+
+/-- info: Q42 -/
+#guard_msgs in #parse Mathlib.CrossRef.wikidataIdFn => "Q42"
+
 section errors
 
 open Lean Parser Mathlib.CrossRef

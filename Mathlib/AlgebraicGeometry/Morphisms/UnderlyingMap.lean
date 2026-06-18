@@ -258,8 +258,16 @@ lemma IsDominant.of_comp_of_isOpenImmersion
     IsDominant f := by
   rw [isDominant_iff, DenseRange] at H ⊢
   simp only [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp] at H
-  convert H.preimage g.isOpenEmbedding.isOpenMap using 1
+  convert H.preimage g.isOpenEmbedding.isOpenMap
   rw [Set.preimage_image_eq _ g.isOpenEmbedding.injective]
+
+lemma Opens.isDominant_ι {U : X.Opens} (hU : Dense (X := X) U) : IsDominant U.ι :=
+  ⟨by simpa [DenseRange] using hU⟩
+
+lemma Opens.isDominant_homOfLE {U V : X.Opens} (hU : Dense (X := X) U) (hU' : U ≤ V) :
+    IsDominant (X.homOfLE hU') :=
+  have : IsDominant (X.homOfLE hU' ≫ V.ι) := by simpa using Opens.isDominant_ι hU
+  IsDominant.of_comp_of_isOpenImmersion (g := V.ι) _
 
 end IsDominant
 

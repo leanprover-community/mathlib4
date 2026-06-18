@@ -133,16 +133,16 @@ theorem bot_prod_bot : (⊥ : Subgroup G).prod (⊥ : Subgroup N) = ⊥ :=
 @[to_additive le_prod_iff]
 theorem le_prod_iff {H : Subgroup G} {K : Subgroup N} {J : Subgroup (G × N)} :
     J ≤ H.prod K ↔ map (MonoidHom.fst G N) J ≤ H ∧ map (MonoidHom.snd G N) J ≤ K := by
-  simpa only [← Subgroup.toSubmonoid_le] using Submonoid.le_prod_iff
+  simpa only [← Subgroup.toSubmonoid_le] using! Submonoid.le_prod_iff
 
 @[to_additive prod_le_iff]
 theorem prod_le_iff {H : Subgroup G} {K : Subgroup N} {J : Subgroup (G × N)} :
     H.prod K ≤ J ↔ map (MonoidHom.inl G N) H ≤ J ∧ map (MonoidHom.inr G N) K ≤ J := by
-  simpa only [← Subgroup.toSubmonoid_le] using Submonoid.prod_le_iff
+  simpa only [← Subgroup.toSubmonoid_le] using! Submonoid.prod_le_iff
 
 @[to_additive (attr := simp) prod_eq_bot_iff]
 theorem prod_eq_bot_iff {H : Subgroup G} {K : Subgroup N} : H.prod K = ⊥ ↔ H = ⊥ ∧ K = ⊥ := by
-  simpa only [← Subgroup.toSubmonoid_inj] using Submonoid.prod_eq_bot_iff
+  simpa only [← Subgroup.toSubmonoid_inj] using! Submonoid.prod_eq_bot_iff
 
 @[to_additive closure_prod]
 theorem closure_prod {s : Set G} {t : Set N} (hs : 1 ∈ s) (ht : 1 ∈ t) :
@@ -259,7 +259,7 @@ attribute [to_additive] Subgroup.Characteristic
 attribute [class] Characteristic
 
 instance (priority := 100) normal_of_characteristic [h : H.Characteristic] : H.Normal :=
-  ⟨fun a ha b => (SetLike.ext_iff.mp (h.fixed (AddAut.conj b)) a).mpr ha⟩
+  ⟨fun a ha b => (SetLike.ext_iff.mp (h.fixed (AddAut.addConj b)) a).mpr ha⟩
 
 end AddSubgroup
 
@@ -331,32 +331,27 @@ theorem _root_.CommGroup.normalizer_eq_top {G : Type*} [CommGroup G] (s : Set G)
   ext
   simp [mem_set_normalizer_iff]
 
+@[to_additive]
 theorem mem_normalizer_iff_conj_image_eq {s : Set G} {g : G} :
     g ∈ normalizer s ↔ MulAut.conj g '' s = s := by
   simp_rw [mem_set_normalizer_iff'', Set.ext_iff, Set.mem_image, MulAut.conj_apply]
   refine forall_congr' fun h ↦ ?_
   simp_rw [mul_inv_eq_iff_eq_mul, ← eq_inv_mul_iff_mul_eq, ← mul_assoc, exists_eq_right, iff_comm]
 
-theorem _root_.AddSubgroup.mem_normalizer_iff_conj_image_eq {G : Type*} [AddGroup G] {s : Set G}
-    {g : G} : g ∈ AddSubgroup.normalizer s ↔ AddAut.conj g '' s = s := by
-  simp_rw [AddSubgroup.mem_set_normalizer_iff'', Set.ext_iff, Set.mem_image, AddAut.conj_apply]
-  refine forall_congr' fun h ↦ ?_
-  simp_rw [add_neg_eq_iff_eq_add, ← eq_neg_add_iff_add_eq, ← add_assoc, exists_eq_right, iff_comm]
+@[to_additive]
+theorem mem_normalizer_iff_map_conj_eq {H : Subgroup G} {g : G} :
+    g ∈ normalizer H ↔ H.map (MulAut.conj g) = H :=
+  .trans mem_normalizer_iff_conj_image_eq (.symm SetLike.ext'_iff)
 
+@[deprecated (since := "2026-05-12")]
+alias _root_.AddSubgroup.mem_normalizer_iff_conj_image_eq :=
+  AddSubgroup.mem_normalizer_iff_addConj_image_eq
+
+@[to_additive]
 theorem normalizer_le_normalizer_closure (s : Set G) : normalizer s ≤ normalizer (closure s) := by
   intro g hg
-  have : MulAut.conj g '' (closure s) = closure (MulAut.conj g '' s) :=
-    congr(SetLike.coe $(MulAut.conj g |>.toMonoidHom.map_closure s))
-  rw [mem_normalizer_iff_conj_image_eq.mp hg] at this
-  rwa [mem_normalizer_iff_conj_image_eq]
-
-theorem _root_.AddSubgroup.normalizer_le_normalizer_closure {G : Type*} [AddGroup G] (s : Set G) :
-    AddSubgroup.normalizer s ≤ AddSubgroup.normalizer (AddSubgroup.closure s) := by
-  intro g hg
-  have : AddAut.conj g '' (AddSubgroup.closure s) = AddSubgroup.closure (AddAut.conj g '' s) :=
-    congr(SetLike.coe $(AddAut.conj g |>.toAddMonoidHom.map_closure s))
-  rw [AddSubgroup.mem_normalizer_iff_conj_image_eq.mp hg] at this
-  rwa [AddSubgroup.mem_normalizer_iff_conj_image_eq]
+  rw [mem_normalizer_iff_conj_image_eq] at hg
+  rw [mem_normalizer_iff_map_conj_eq, MonoidHom.map_closure, MonoidHom.coe_coe, hg]
 
 variable {H}
 
@@ -371,6 +366,35 @@ variable (H) in
 theorem normalizer_eq_top [h : H.Normal] : normalizer (H : Set G) = ⊤ :=
   normalizer_eq_top_iff.mpr h
 
+@[to_additive]
+theorem normal_iff_map_conj_eq : H.Normal ↔ ∀ g : G, H.map (MulAut.conj g) = H := by
+  simp_rw [← normalizer_eq_top_iff, Subgroup.eq_top_iff', mem_normalizer_iff_map_conj_eq]
+
+variable (H) in
+@[to_additive]
+theorem Normal.map_conj_eq [H.Normal] (g : G) : H.map (MulAut.conj g) = H :=
+  normal_iff_map_conj_eq.mp ‹_› g
+
+@[to_additive]
+theorem le_set_normalizer_iff {s : Set G} :
+    H ≤ normalizer s ↔ ∀ h ∈ H, ∀ g ∈ s, h * g * h⁻¹ ∈ s := by
+  refine ⟨fun hH h hh g hg ↦ hH hh g |>.mp hg, fun hH h hh k ↦ ⟨fun hk ↦ hH h hh k hk, fun hk ↦ ?_⟩⟩
+  simpa [mul_assoc] using hH h⁻¹ (inv_mem hh) _ hk
+
+@[to_additive]
+theorem le_normalizer_iff : H ≤ normalizer K ↔ ∀ h ∈ H, ∀ k ∈ K, h * k * h⁻¹ ∈ K := by
+  refine ⟨fun hH h hh g hg ↦ hH hh g |>.mp hg, fun hH h hh k ↦ ⟨fun hk ↦ hH h hh k hk, fun hk ↦ ?_⟩⟩
+  simpa [mul_assoc] using hH h⁻¹ (inv_mem hh) _ hk
+
+@[to_additive]
+theorem le_normalizer_closure_iff {s : Set G} :
+    H ≤ normalizer (closure s) ↔ ∀ h ∈ H, ∀ g ∈ s, h * g * h⁻¹ ∈ closure s := by
+  refine ⟨fun hH h hh g hg ↦ hH hh g |>.mp <| mem_closure_of_mem hg, fun hH h hh ↦ ?_⟩
+  rw [mem_normalizer_iff_map_conj_eq, MonoidHom.map_closure]
+  apply le_antisymm <| by simpa using! hH h hh
+  rw [closure_le, ← MonoidHom.map_closure]
+  exact fun g hg ↦ ⟨_, hH _ (inv_mem hh) g hg, by simp [mul_assoc]⟩
+
 variable {N : Type*} [Group N]
 
 /-- The preimage of the normalizer is contained in the normalizer of the preimage. -/
@@ -383,17 +407,12 @@ theorem le_normalizer_comap (f : N →* G) :
 
 /-- The image of the normalizer is contained in the normalizer of the image. -/
 @[to_additive /-- The image of the normalizer is contained in the normalizer of the image. -/]
-theorem le_normalizer_map (f : G →* N) : (normalizer H).map f ≤ normalizer (H.map f) := fun _ => by
-  simp only [and_imp, mem_map, exists_imp, mem_normalizer_iff]
-  rintro x hx rfl n
-  constructor
-  · rintro ⟨y, hy, rfl⟩
-    use x * y * x⁻¹, (hx y).1 hy
-    simp
-  · rintro ⟨y, hyH, hy⟩
-    use x⁻¹ * y * x
-    rw [hx]
-    simp [hy, hyH, mul_assoc]
+theorem le_normalizer_map (f : G →* N) : (normalizer H).map f ≤ normalizer (H.map f) := by
+  intro x hx
+  obtain ⟨y, hy, rfl⟩ := Subgroup.mem_map.mp hx
+  have : .comp (MulAut.conj (f y)) f = f.comp (MulAut.conj y) := by ext; simp -- todo: extract lemma
+  rw [mem_normalizer_iff_map_conj_eq] at hy ⊢
+  rw [map_map, this, ← map_map, hy]
 
 @[to_additive]
 theorem comap_normalizer_eq_of_le_range {f : N →* G} (h : H ≤ f.range) :
@@ -443,6 +462,11 @@ theorem le_normalizer_of_normal [H.Normal] : K ≤ normalizer H := subset_normal
 theorem inf_normalizer_le_normalizer_inf :
     normalizer H ⊓ normalizer K ≤ normalizer ((H ⊓ K :) : Set G) :=
   fun _ h g ↦ and_congr (h.1 g) (h.2 g)
+
+@[to_additive]
+theorem iInf_normalizer_le_normalizer_iInf {ι : Sort*} (H : ι → Subgroup G) :
+    ⨅ i, normalizer (H i) ≤ normalizer ((⨅ i, H i : Subgroup G) : Set G) := by
+  grind [le_normalizer_iff, mem_iInf, mem_normalizer_iff]
 
 variable (G) in
 /-- Every proper subgroup `H` of `G` is a proper normal subgroup of the normalizer of `H` in `G`. -/
@@ -503,6 +527,13 @@ theorem conj_mem_conjugatesOfSet {x c : G} :
     x ∈ conjugatesOfSet s → c * x * c⁻¹ ∈ conjugatesOfSet s := fun H => by
   rcases mem_conjugatesOfSet_iff.1 H with ⟨a, h₁, h₂⟩
   exact mem_conjugatesOfSet_iff.2 ⟨a, h₁, h₂.trans (isConj_iff.2 ⟨c, rfl⟩)⟩
+
+/-- The set of conjugates of the union of two sets is the union of the conjugates -/
+@[to_additive /-- The set of additive conjugates of the union of two sets is the union
+of the additive conjugates. -/]
+theorem conjugatesOfSet_union {G : Type*} [Group G] (s t : Set G) :
+    conjugatesOfSet (s ∪ t) = conjugatesOfSet s ∪ conjugatesOfSet t := by
+  simp_rw [conjugatesOfSet, Set.biUnion_union]
 
 end Group
 
@@ -596,6 +627,12 @@ theorem normalClosure_closure_eq_normalClosure {s : Set G} :
 lemma normalClosure_empty : normalClosure (∅ : Set G) = (⊥ : Subgroup G) := by
   rw [← normalClosure_closure_eq_normalClosure, closure_empty, normalClosure_eq_self]
 
+/-- The normal closure of the union of sets is the join of the normal closures of each set. -/
+@[to_additive]
+theorem normalClosure_union {G : Type*} [Group G] (s t : Set G) :
+    normalClosure (s ∪ t) = normalClosure s ⊔ normalClosure t := by
+  simp_rw [normalClosure, Group.conjugatesOfSet_union, closure_union]
+
 /-- The normal core of a subgroup `H` is the largest normal subgroup of `G` contained in `H`,
 as shown by `Subgroup.normalCore_eq_iSup`. -/
 @[to_additive /-- The normal core of an additive subgroup `H` is the largest normal additive
@@ -640,6 +677,26 @@ theorem normalCore_eq_self (H : Subgroup G) [H.Normal] : H.normalCore = H :=
 @[to_additive]
 theorem normalCore_idempotent (H : Subgroup G) : H.normalCore.normalCore = H.normalCore :=
   H.normalCore.normalCore_eq_self
+
+@[to_additive]
+theorem normalCore_eq_iInf_map_conj (H : Subgroup G) :
+    H.normalCore = ⨅ g : G, H.map (MulAut.conj g) := by
+  have : (⨅ g : G, H.map (MulAut.conj g) : Subgroup G).Normal := by
+    refine normal_iff_map_conj_eq.mpr fun g ↦ ?_
+    conv_rhs => rw [← Equiv.iInf_comp (Equiv.mulLeft g)]
+    rw [map_iInf _ (MulAut.conj g).injective]
+    simp [map_map, MulAut.mul_def]
+  refine le_antisymm (le_iInf fun g ↦ ?_) ?_
+  · grw [← Normal.map_conj_eq H.normalCore g, normalCore_le]
+  · rw [normal_le_normalCore]
+    apply iInf_le_of_le 1
+    simp [MulAut.one_def]
+
+@[to_additive]
+theorem normalCore_eq_iInf_comap_conj (H : Subgroup G) :
+    H.normalCore = ⨅ g : G, H.comap (MulAut.conj g) := by
+  rw [← (Equiv.inv G).iInf_comp, normalCore_eq_iInf_map_conj]
+  simp [MulAut.inv_def, map_equiv_eq_comap_symm]
 
 end Subgroup
 
@@ -851,12 +908,21 @@ instance (priority := 100) normal_subgroupOf {H N : Subgroup G} [N.Normal] :
   Subgroup.normal_comap _
 
 @[to_additive]
+theorem comap_normalClosure_image_ge (s : Set G) (f : G →* N) :
+    (normalClosure s) ≤ (normalClosure (f '' s)).comap f := by
+  simp [normalClosure_le_normal, ← Set.image_subset_iff, subset_normalClosure]
+
+@[to_additive]
+theorem map_normalClosure_le (s : Set G) (f : G →* N) :
+    (normalClosure s).map f ≤ normalClosure (f '' s) := by
+  simp [map_le_iff_le_comap, comap_normalClosure_image_ge]
+
+@[to_additive]
 theorem map_normalClosure (s : Set G) (f : G →* N) (hf : Surjective f) :
     (normalClosure s).map f = normalClosure (f '' s) := by
   have : Normal (map f (normalClosure s)) := Normal.map inferInstance f hf
   apply le_antisymm
-  · simp [map_le_iff_le_comap, normalClosure_le_normal, coe_comap,
-      ← Set.image_subset_iff, subset_normalClosure]
+  · exact map_normalClosure_le s f
   · exact normalClosure_le_normal (Set.image_mono subset_normalClosure)
 
 @[to_additive]

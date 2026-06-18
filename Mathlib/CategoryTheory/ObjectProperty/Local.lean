@@ -67,15 +67,16 @@ lemma isColocal_iff (X : C) :
 instance : W.isLocal.IsClosedUnderIsomorphisms where
   of_iso {Z Z'} e hZ X Y f hf := by
     rw [← Function.Bijective.of_comp_iff _ (Iso.homToEquiv e).bijective]
-    convert (Iso.homToEquiv e).bijective.comp (hZ f hf) using 1
+    convert! (Iso.homToEquiv e).bijective.comp (hZ f hf) using 1
     aesop
 
 instance : W.isColocal.IsClosedUnderIsomorphisms where
   of_iso {X X'} e hX Y Z g hg := by
     rw [← Function.Bijective.of_comp_iff _ (Iso.homFromEquiv e).bijective]
-    convert (Iso.homFromEquiv e).bijective.comp (hX g hg) using 1
+    convert! (Iso.homFromEquiv e).bijective.comp (hX g hg) using 1
     aesop
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance (J : Type u') [Category.{v'} J] :
     W.isLocal.IsClosedUnderLimitsOfShape J where
@@ -89,6 +90,7 @@ instance (J : Type u') [Category.{v'} J] :
           (by simp [reassoc_of% h, h, p.w a]) }),
       p.isLimit.hom_ext (fun j ↦ by simp [p.isLimit.fac, h])⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance (J : Type u') [Category.{v'} J] :
     W.isColocal.IsClosedUnderColimitsOfShape J where

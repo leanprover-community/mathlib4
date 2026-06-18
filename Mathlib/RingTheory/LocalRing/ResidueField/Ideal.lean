@@ -127,6 +127,13 @@ instance : IsFractionRing (R ⧸ I) I.ResidueField where
     use 1
     simp [e]
 
+instance [IsDomain R] : IsFractionRing R (⊥ : Ideal R).ResidueField :=
+  IsLocalization.of_ringEquiv_left (RingEquiv.quotientBot R).symm
+    (MulEquivClass.map_nonZeroDivisors (RingEquiv.quotientBot R).symm) (by simp)
+
+instance [Finite (R ⧸ I)] : Finite I.ResidueField :=
+  IsLocalization.finite (R ⧸ I) (nonZeroDivisors (R ⧸ I))
+
 lemma Ideal.bijective_algebraMap_quotient_residueField (I : Ideal R) [I.IsMaximal] :
     Function.Bijective (algebraMap (R ⧸ I) I.ResidueField) :=
   ⟨I.injective_algebraMap_quotient_residueField, IsFractionRing.surjective_iff_isField.mpr
@@ -140,17 +147,52 @@ lemma Ideal.algebraMap_residueField_surjective (I : Ideal R) [I.IsMaximal] :
 instance (I : Ideal R) [I.IsMaximal] : Module.Finite R I.ResidueField :=
   .of_surjective (Algebra.linearMap _ _) I.algebraMap_residueField_surjective
 
+/-- The equivalence between a field and the residue field of its prime ideal,
+induced by the algebra map. -/
+noncomputable def Ideal.algEquivResidueFieldOfField {k : Type*} [Field k]
+    (p : Ideal k) [p.IsPrime] : k ≃ₐ[k] p.ResidueField :=
+  AlgEquiv.ofBijective (Algebra.ofId k _) ⟨RingHom.injective _,
+    haveI : p.IsMaximal := by simpa [p.eq_bot_of_prime] using Ideal.bot_isMaximal
+    p.algebraMap_residueField_surjective⟩
+
+@[simp]
+lemma Ideal.algEquivResidueFieldOfField_apply {k : Type*} [Field k] (p : Ideal k) [p.IsPrime]
+    (x : k) : p.algEquivResidueFieldOfField x = algebraMap k p.ResidueField x :=
+  rfl
+
 lemma Ideal.surjectiveOnStalks_residueField (I : Ideal R) [I.IsPrime] :
     (algebraMap R I.ResidueField).SurjectiveOnStalks :=
   (RingHom.surjectiveOnStalks_of_surjective Ideal.Quotient.mk_surjective).comp
     (RingHom.surjectiveOnStalks_of_isLocalization I.primeCompl _)
 
-instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p]
-    [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
-    [Localization.AtPrime.IsLiesOverAlgebra p q] :
-    IsLocalHom (algebraMap (Localization.AtPrime p) (Localization.AtPrime q)) := by
-  rw [Localization.AtPrime.IsLiesOverAlgebra.algebraMap_eq]
-  exact Localization.isLocalHom_localRingHom _ _ _ (Ideal.over_def _ _)
+section
+
+open Localization AtPrime
+
+variable (J : Ideal A) (K : Ideal B) [J.IsPrime] [K.IsPrime]
+  [J.LiesOver I] [Algebra (Localization.AtPrime I) (Localization.AtPrime J)] [IsLiesOverAlgebra I J]
+  [K.LiesOver I] [Algebra (Localization.AtPrime I) (Localization.AtPrime K)] [IsLiesOverAlgebra I K]
+
+instance : IsLocalHom (algebraMap (Localization.AtPrime I) (Localization.AtPrime J)) := by
+  rw [IsLiesOverAlgebra.algebraMap_eq]
+  exact isLocalHom_localRingHom _ _ _ (J.over_def I)
+
+/-- An isomorphism of rings induces an isomorphism of residue fields. -/
+noncomputable def Ideal.residueFieldRingEquiv (f : A ≃+* B) (h : J = K.comap f) :
+    J.ResidueField ≃+* K.ResidueField :=
+  IsLocalRing.ResidueField.mapEquiv (localRingEquiv J K f h)
+
+/-- An isomorphism of rings induces an isomorphism of residue fields. -/
+noncomputable abbrev Ideal.residueFieldAlgEquiv (f : A ≃ₐ[R] B) (h : J = K.comap f) :
+    J.ResidueField ≃ₐ[R] K.ResidueField :=
+  IsLocalRing.ResidueField.mapAlgEquiv (localAlgEquiv J K f h)
+
+/-- An isomorphism of rings induces an isomorphism of residue fields. -/
+noncomputable abbrev Ideal.residueFieldAlgEquiv' (f : A ≃ₐ[R] B) (h : J = K.comap f) :
+    J.ResidueField ≃ₐ[I.ResidueField] K.ResidueField :=
+  IsLocalRing.ResidueField.mapAlgEquiv' (localAlgEquiv' I J K f h)
+
+end
 
 instance (p : Ideal R) [p.IsPrime] : Algebra.EssFiniteType R p.ResidueField :=
   .comp _ (Localization.AtPrime p) _
