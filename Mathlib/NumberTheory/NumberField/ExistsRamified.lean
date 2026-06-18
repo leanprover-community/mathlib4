@@ -105,10 +105,12 @@ end
 
 section
 
+-- PRed
 theorem Ideal.mem_inertia {G R : Type*} [Group G] [CommRing R] [MulSemiringAction G R]
     {g : G} {I : Ideal R} : g ∈ I.inertia G ↔ ∀ x, g • x - x ∈ I :=
   AddSubgroup.mem_inertia
 
+-- PRed
 open Pointwise
 theorem Ideal.inertia_smul {G R : Type*} [Group G] [CommRing R] [MulSemiringAction G R]
     (g : G) (I : Ideal R) : (g • I).inertia G = (I.inertia G).map (MulAut.conj g) := by
