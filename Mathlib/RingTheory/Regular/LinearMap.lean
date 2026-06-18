@@ -88,11 +88,10 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
       LinearMap.ker_eq_bot.mp (Submodule.ker_liftQ_eq_bot _ _ _ (le_of_eq hx.symm))
     let f := i.comp to_res
     have f_ne0 : f ≠ 0 := by
-      intro eq0
-      absurd hg
+      contrapose hg
       apply LinearMap.ext (fun np' ↦ ?_)
       induction np' using Submodule.Quotient.induction_on with | _ np
-      have : f np = i 0 := by simp [eq0]
+      have : f np = i 0 := by simp [hg]
       exact inj1 this
     absurd hom0
     have := Module.finitePresentation_of_finite R N
