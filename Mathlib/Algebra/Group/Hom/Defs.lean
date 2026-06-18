@@ -715,21 +715,24 @@ theorem map_exists_left_inv (f : F) {x : M} (hx : ∃ y, y * x = 1) : ∃ y, y *
 alias isDedekindFiniteMonoid_of_injective := IsDedekindFiniteMonoid.of_injective
 
 @[to_additive]
-instance {M N : Type*} [Monoid M] [LeftCancelMonoid N] : MonoidHomClass (M →ₙ* N) M N where
-  map_mul := MulHom.map_mul'
+instance (priority := low) {M N F : Type*} [Monoid M] [LeftCancelMonoid N] [FunLike F M N]
+    [MulHomClass F M N] : MonoidHomClass F M N where
+  map_mul := MulHomClass.map_mul
   map_one f := by
-    have h : f 1 * 1 = f 1 * f 1 := by simpa using f.map_mul' 1 1
+    have h : f 1 * 1 = f 1 * f 1 := by simpa using MulHomClass.map_mul f 1 1
     exact (mul_left_cancel h).symm
 
 @[to_additive]
-instance {M N : Type*} [Monoid M] [RightCancelMonoid N] : MonoidHomClass (M →ₙ* N) M N where
-  map_mul := MulHom.map_mul'
+instance (priority := low) {M N F : Type*} [Monoid M] [RightCancelMonoid N] [FunLike F M N]
+    [MulHomClass F M N] : MonoidHomClass F M N where
+  map_mul := MulHomClass.map_mul
   map_one f := by
-    have h : 1 * f 1 = f 1 * f 1 := by simpa using f.map_mul' 1 1
+    have h : 1 * f 1 = f 1 * f 1 := by simpa using MulHomClass.map_mul f 1 1
     exact (mul_right_cancel h).symm
 
 @[to_additive]
-instance {M N : Type*} [Monoid M] [CancelMonoid N] : MonoidHomClass (M →ₙ* N) M N where
+instance (priority := low) {M N F : Type*} [Monoid M] [CancelMonoid N] [FunLike F M N]
+    [MulHomClass F M N] : MonoidHomClass F M N where
 
 end MonoidHom
 
