@@ -238,8 +238,8 @@ section Complement
 /-- Two morphisms `f : A ⟶ X` and `g : B ⟶ X` in `TopPair` are complements if their first and second
 components are complements in `TopCat`. -/
 protected structure IsCompl {X A B : TopPair} (f : A ⟶ X) (g : B ⟶ X) where
-  fst : TopCat.IsCompl (Hom.fst f) (Hom.fst g)
-  snd : TopCat.IsCompl (Hom.snd f) (Hom.snd g)
+  fst : IsCompl (Set.range (Hom.fst f)) (Set.range (Hom.fst g))
+  snd : IsCompl (Set.range (Hom.snd f)) (Set.range (Hom.snd g))
 
 end Complement
 
