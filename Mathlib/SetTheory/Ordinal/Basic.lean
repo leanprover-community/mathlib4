@@ -1006,10 +1006,6 @@ theorem isSuccPrelimit_type_lt [LinearOrder α] [WellFoundedLT α] [h : NoMaxOrd
     IsSuccPrelimit (typeLT α) :=
   isSuccPrelimit_type_lt_iff.2 h
 
-theorem isSuccPrelimit_iff_noMaxOrder_toType {o : Ordinal} :
-    IsSuccPrelimit o ↔ NoMaxOrder o.ToType := by
-  rw [← isSuccPrelimit_type_lt_iff, type_toType]
-
 /-! ### Extra properties of typein and enum -/
 
 -- TODO: use `ToType.mk` for lemmas on `ToType` rather than `enum` and `typein`.
