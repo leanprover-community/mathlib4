@@ -9,6 +9,7 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.GroupTheory.FreeGroup.Basic
+public import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Finitely Presented Groups
@@ -105,6 +106,14 @@ theorem of_surjective [hG : IsFinitelyPresented G] (f : G →* H)
   refine ⟨n, f.comp φ, hf_surj.comp hφ_surj, ?_⟩
   rw [← MonoidHom.comap_ker]
   exact hf_ker.comap hφ_surj hφ_ker
+
+/-- The quotient of a finitely presented group by a subgroup `N`
+which is finitely generated in the normal closure is finitely presented. -/
+@[to_additive /-- The quotient of a finitely presented additive group by an additive subgroup `N`
+which is finitely generated in the normal closure is finitely presented. -/]
+theorem quotient (N : Subgroup G) [N.Normal] (hN : N.IsNormalClosureFG) :
+    IsFinitelyPresented (G ⧸ N) := by
+  sorry
 
 /-- A free group with a finite number of generators is finitely presented. -/
 @[to_additive /-- A free additive group with a finite number of generators is finitely presented. -/
