@@ -778,13 +778,10 @@ theorem neighborSet_iSup {s : ι → SimpleGraph V} (v : V) :
 @[simp]
 theorem neighborSet_iInf [Nonempty ι] {s : ι → SimpleGraph V} (v : V) :
     (⨅ i, s i).neighborSet v = ⋂ i, (s i).neighborSet v := by
-  inhabit ι
-  ext y
-  simp only [mem_neighborSet, iInf_adj, Set.mem_iInter, and_iff_left_iff_imp]
-  intro h
-  exact (h default).ne
+  ext
+  simp_rw [Set.mem_iInter, mem_neighborSet, iInf_adj_of_nonempty]
 
-theorem neighborSet_disjoint {G₁ G₂ : SimpleGraph V} {v : V} (h : Disjoint G₁ G₂) :
+theorem disjoint_neighborSet {G₁ G₂ : SimpleGraph V} {v : V} (h : Disjoint G₁ G₂) :
     Disjoint (G₁.neighborSet v) (G₂.neighborSet v) := by
   rw [Set.disjoint_iff_inter_eq_empty, ← neighborSet_inf, h.eq_bot, neighborSet_bot]
 
