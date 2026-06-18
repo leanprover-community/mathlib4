@@ -566,6 +566,20 @@ theorem integral_eq_integral_pos_part_sub_integral_neg_part {f : α → ℝ} (hf
   · simp
   · exact hf.neg.real_toNNReal
 
+theorem integral_abs_eq_two_mul_integral_posPart_sub_integral {f : α → ℝ} (hf : Integrable f μ) :
+    ∫ x, |f x| ∂μ = 2 * ∫ x, (f x)⁺ ∂μ - ∫ x, f x ∂μ := by
+  simp only [PosPart.posPart]
+  have h_eq : ∀ x, |f x| = 2 * max (f x) 0 - f x := by grind
+  rw [integral_congr_ae (Eventually.of_forall h_eq), integral_sub (by fun_prop) hf,
+    integral_const_mul]
+
+theorem integral_abs_eq_two_mul_integral_negPart_add_integral {f : α → ℝ} (hf : Integrable f μ) :
+    ∫ x, |f x| ∂μ = 2 * ∫ x, (f x)⁻ ∂μ + ∫ x, f x ∂μ := by
+  simp only [NegPart.negPart]
+  have h_eq : ∀ x, |f x| = 2 * max (-f x) 0 + f x := by grind
+  rw [integral_congr_ae (Eventually.of_forall h_eq), integral_add (by fun_prop) hf,
+    integral_const_mul]
+
 end Basic
 
 section Order
@@ -1353,7 +1367,8 @@ attribute [local instance] monadLiftOptionMetaM in
 This extension only proves non-negativity, strict positivity is more delicate for integration and
 requires more assumptions. -/
 @[positivity MeasureTheory.integral _ _]
-meta def evalIntegral : PositivityExt where eval {u α} zα pα e := do
+meta def evalIntegral : PositivityExt where eval {u α} zα pα? e := do
+  let some pα := pα? | pure .none
   match u, α, e with
   | 0, ~q(ℝ), ~q(@MeasureTheory.integral $i ℝ _ $inst2 _ _ $f) =>
     let i : Q($i) ← mkFreshExprMVarQ q($i) .syntheticOpaque
