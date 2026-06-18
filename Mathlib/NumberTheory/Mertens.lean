@@ -87,16 +87,6 @@ theorem sum_log_le {x : ℝ} (hx : 1 ≤ x) : ∑ n ∈ Ioc 0 ⌊x⌋₊, log n 
     · exact log_nonneg hx
     · exact floor_le (by linarith)
 
-private lemma integral_log_le {a b : ℝ} (ha : 1 ≤ a) (hab : a ≤ b) :
-    ∫ t in a..b, log t ≤ log b * (b - a) := by
-  apply le_of_abs_le
-  have : ∀ t ∈ Set.uIoc a b, ‖log t‖ ≤ log b := by
-    intro t ht
-    rw [Set.uIoc_of_le hab, Set.mem_Ioc] at ht
-    rw [norm_of_nonneg <| log_nonneg (by linarith)]
-    gcongr <;> linarith
-  grw [← norm_eq_abs, norm_integral_le_of_norm_le_const this, abs_of_nonneg (by linarith)]
-
 /-- A crude lower bound on the partial sum of the logarithm. -/
 theorem le_sum_log {x : ℝ} (hx : 1 ≤ x) :
     x * log x - x - log x + 1 ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, log n := by
@@ -104,19 +94,24 @@ theorem le_sum_log {x : ℝ} (hx : 1 ≤ x) :
   calc
   _ = ∑ n ∈ Icc 1 ⌊x⌋₊, log n := by rfl
   _ = ∑ n ∈ Ico (1 + 1) (⌊x⌋₊ + 1), log n := by simp [← add_sum_Ioc_eq_sum_Icc one_le_floor]; rfl
-  _ = ∑ n ∈ Ico 1 ⌊x⌋₊, log ((n + 1 : ℕ)) := by rw [← sum_Ico_add']
+  _ = ∑ n ∈ Ico 1 ⌊x⌋₊, log (n + 1 : ℕ) := by rw [← sum_Ico_add']
   _ ≥ ∫ t in 1..⌊x⌋₊, log t := by
     convert MonotoneOn.integral_le_sum_Ico one_le_floor ?_|>.ge
     · norm_cast
-    · exact (strictMonoOn_log.mono fun _ _ ↦ by grind).monotoneOn
+    · exact (strictMonoOn_log.mono (by grind)).monotoneOn
   _ = (∫ t in 1..x, log t) - ∫ t in ⌊x⌋₊..x, log t := by
     nth_rw 3 [integral_symm]
     rw [sub_neg_eq_add, integral_add_adjacent_intervals] <;> exact intervalIntegrable_log'
-  _ ≥ (∫ t in 1..x, log t) - log x := by
+  _ ≥ (∫ t in 1..x, log t) - ∫ t in ⌊x⌋₊..x, log x := by
     gcongr
-    grw [integral_log_le (by simpa) (floor_le (by linarith))]
-    exact mul_le_of_le_one_right (log_nonneg hx) (by linarith [lt_floor_add_one x])
-  _ ≥ _ := by simp; linarith
+    apply intervalIntegral.integral_mono_on (floor_le (by linarith)) intervalIntegrable_log'
+      intervalIntegral.intervalIntegrable_const
+    intro _ _; rify at one_le_floor; gcongr <;> grind
+  _ ≥ _ := by
+    have : 0 ≤ log x := log_nonneg hx
+    have : x - ⌊x⌋₊ ≤ 1 := by linarith [lt_floor_add_one x]
+    grw [integral_log, log_one, intervalIntegral.integral_const, smul_eq_mul, this]
+    linarith
 
 /-- A sharper bound on the partial sum of the logarithm in the natural number case. -/
 theorem le_sum_log_nat {N : ℕ} : N * log N - N ≤ ∑ n ∈ Ioc 0 N, log n := by
