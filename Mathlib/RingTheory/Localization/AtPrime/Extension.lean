@@ -76,15 +76,6 @@ theorem liesOver_map_of_liesOver [Algebra R Sₚ] [IsScalarTower R S Sₚ] [IsSc
     (over_def P p ▸ map_eq_maximalIdeal p Rₚ ▸ maximalIdeal.isMaximal Rₚ)
     (isPrime_map_of_liesOver S p Sₚ P).ne_top
 
-include p in
-omit [IsLocalization.AtPrime Rₚ p] [IsLocalRing Rₚ] in
-theorem liesOver_map_of_liesOver' [Algebra R Sₚ] [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ]
-    [P.IsPrime] :
-    (P.map (algebraMap S Sₚ)).LiesOver P := by
-  rw [liesOver_iff,
-    IsLocalization.under_map_of_isPrime_disjoint (algebraMapSubmonoid S p.primeCompl) Sₚ ‹_›
-      (Ideal.disjoint_map_primeCompl_iff_comap_le.mpr (P.over_def p).ge).symm]
-
 attribute [local instance] Ideal.Quotient.field
 
 include p in
@@ -184,23 +175,12 @@ theorem inertiaDeg_map_eq_inertiaDeg [p.IsMaximal] [P.IsMaximal]
   ext x
   exact algebraMap_equivQuotMaximalIdeal_symm_apply p Rₚ Sₚ P x
 
-theorem _root_.Ideal.coheight_comap_of_surjective {R S : Type*} [CommRing R] [CommRing S]
-    (I : Ideal S) {f : R →+* S} (hf : Function.Surjective f) :
-    Order.coheight (I.comap f) = Order.coheight I := by
-  let φ := Ideal.orderEmbeddingOfSurjective f hf
-  refine (Order.coheight_eq_of_strictMono φ φ.strictMono ?_ I).symm
-  intro J K h
-  refine ⟨K.map f, ?_, ?_⟩
-  · rw [← J.map_comap_of_surjective f hf]
-    apply lt_of_le_not_ge (map_mono h.le)
-    simpa [map_le_iff_le_comap, φ, orderEmbeddingOfSurjective] using h.not_ge
-  · exact (K.comap_map_of_surjective f hf).trans (sup_of_le_left ((comap_mono bot_le).trans h.le))
-
 include p in
 theorem ramificationIdx_map_eq_ramificationIdx [P.IsPrime] :
     (P.map (algebraMap S Sₚ)).ramificationIdx' Rₚ = P.ramificationIdx' R := by
   have := liesOver_map_of_liesOver p Rₚ Sₚ P
-  have := liesOver_map_of_liesOver' p Rₚ Sₚ P
+  have := IsLocalization.liesOver_map_of_isPrime_disjoint (algebraMapSubmonoid S p.primeCompl) Sₚ
+    (Set.disjoint_image_left.mpr (Set.disjoint_compl_left_iff_subset.mpr hPp.over.ge))
   have := isPrime_map_of_liesOver S p Sₚ P
   rw [ramificationIdx'_eq (maximalIdeal Rₚ) (P.map (algebraMap S Sₚ)), ramificationIdx'_eq p P]
   let R₁ := Localization.AtPrime (P.map (algebraMap S Sₚ))

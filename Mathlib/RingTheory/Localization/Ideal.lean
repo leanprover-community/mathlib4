@@ -166,6 +166,10 @@ theorem under_map_of_isPrime_disjoint {I : Ideal R} (hI : I.IsPrime) (hM : Disjo
     (Ideal.map (algebraMap R S) I).under R = I :=
   under_map_of_isPrimary_disjoint M S hI.isPrimary hM
 
+theorem liesOver_map_of_isPrime_disjoint {I : Ideal R} [I.IsPrime] (hM : Disjoint (M : Set R) I) :
+    (Ideal.map (algebraMap R S) I).LiesOver I :=
+  ⟨(under_map_of_isPrime_disjoint M S ‹_› hM).symm⟩
+
 @[deprecated (since := "2026-04-09")] alias comap_map_of_isPrime_disjoint :=
   under_map_of_isPrime_disjoint
 
