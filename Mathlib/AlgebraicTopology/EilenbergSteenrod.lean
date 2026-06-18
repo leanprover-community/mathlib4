@@ -179,10 +179,10 @@ set_option linter.unusedVariables false in
 /-- A `HomologyPretheory` has the excision-isomorphism, if cutting out a sufficiently nice subspace
 `U` from a space `X` yields an isomorphism `Hₚ i X ≅ Hₚ i (X \ U)`. -/
 class HasExcisionIso where
-  [isIso_of_closure_interior_of_isCompl ⦃X U V : TopPair⦄ (f : U ⟶ X) (g : V ⟶ X)
+  isIso_of_closure_interior_of_isCompl ⦃X U V : TopPair⦄ (f : U ⟶ X) (g : V ⟶ X)
       (hf : IsEmbedding f) (hg : IsEmbedding g) (hcompl : TopPair.IsCompl f g)
       (hU : closure (Set.range (Hom.fst f)) ⊆ interior (Set.range X.map)) (i : ι) :
-      IsIso ((HP.Hₚ i).map g)]
+      IsIso ((HP.Hₚ i).map g)
 
 export HasExcisionIso (isIso_of_closure_interior_of_isCompl)
 
