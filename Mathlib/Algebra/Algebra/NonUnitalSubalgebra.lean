@@ -1094,8 +1094,10 @@ theorem coe_center : (center R A : Set A) = Set.center A :=
   rfl
 
 /-- The center of a non-unital algebra is commutative and associative -/
-instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R A) :=
-  inferInstanceAs <| NonUnitalCommSemiring (NonUnitalSubsemiring.center A)
+instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R A) where
+  mul_assoc := Subsemigroup.center.commSemigroup.mul_assoc
+  mul_comm := Subsemigroup.center.commSemigroup.mul_comm
+  -- inferInstanceAs <| NonUnitalCommSemiring (NonUnitalSubsemiring.center A)
 
 instance center.instNonUnitalCommRing {A : Type*} [NonUnitalNonAssocRing A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : NonUnitalCommRing (center R A) :=
