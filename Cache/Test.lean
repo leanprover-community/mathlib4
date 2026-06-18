@@ -200,8 +200,8 @@ def test_defaultContainersForRepo : IO Unit := do
   IO.println "defaultContainersForRepo:"
   assert "canonical repo → [master, legacy]"
     (defaultContainersForRepo MATHLIBREPO == [.master, .legacy])
-  assert "nightly-testing repo → [nightly-testing, legacy], no pr-toolchain-tests"
-    (defaultContainersForRepo NIGHTLY_TESTING_REPO == [.nightlyTesting, .legacy])
+  assert "nightly-testing repo → [nightly-testing, forks, legacy], no pr-toolchain-tests"
+    (defaultContainersForRepo NIGHTLY_TESTING_REPO == [.nightlyTesting, .forks, .legacy])
   assert "fork repo → [master, forks, legacy]"
     (defaultContainersForRepo "alice/mathlib4" == [.master, .forks, .legacy])
   assert "unknown repo falls back to the fork chain"

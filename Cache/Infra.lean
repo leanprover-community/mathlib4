@@ -140,11 +140,17 @@ def defaultContainersForRepo (repo : String) : List Container :=
     [.master, .legacy]
   else if repo == NIGHTLY_TESTING_REPO then
     -- Trusted-nightly consumers (`nightly-testing`, `nightly-testing-green`,
-    -- `bump/*`) read only `nightly-testing` + `legacy`; `pr-toolchain-tests` is
-    -- excluded so low-trust toolchain-PR uploads can't reach them. Toolchain-PR
-    -- branches opt into reading their own uploads with `--cache-from=...` (or,
-    -- in CI, via the `MATHLIB_CACHE_FROM` env var).
-    [.nightlyTesting, .legacy]
+    -- `bump/*`) read `nightly-testing` for the bulk, then `forks`, then `legacy`.
+    -- `forks` covers a cross-repo PR opened from this repo: it is built by
+    -- `build_fork.yml`, which can only upload to `forks`, so the artifacts for
+    -- such a commit live there rather than in `nightly-testing`. Reading them is
+    -- no wider a trust grant than `nightly-testing` itself: `forks` reads are
+    -- HEAD-scoped and namespaced under `/f/{repo}/...`, so a consumer only ever
+    -- reads artifacts built for its exact checked-out commit by a writer with
+    -- push access to this repo. `pr-toolchain-tests` stays excluded — those
+    -- uploads are unscoped and come from arbitrary-toolchain `lean-pr-testing-*`
+    -- branches, which opt in with `--cache-from=...` (or `MATHLIB_CACHE_FROM`).
+    [.nightlyTesting, .forks, .legacy]
   else
     -- Forks and everything else: `master` for shared upstream deps, the fork's
     -- own container for PR-specific files, then `legacy`.
