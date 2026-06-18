@@ -111,9 +111,9 @@ theorem of_surjective [hG : IsFinitelyPresented G] (f : G →* H)
   rw [← MonoidHom.comap_ker]
   exact hf_ker.comap hφ_surj hφ_ker
 
-/-- The quotient of a finitely presented group by a subgroup `N`
+/-- The quotient of a finitely presented group by a subgroup
 which is finitely generated in the normal closure is finitely presented. -/
-@[to_additive /-- The quotient of a finitely presented additive group by an additive subgroup `N`
+@[to_additive /-- The quotient of a finitely presented additive group by an additive subgroup
 which is finitely generated in the normal closure is finitely presented. -/]
 theorem quotient [hG : IsFinitelyPresented G] (N : Subgroup G) [N.Normal]
     (hN : N.IsNormalClosureFG) : IsFinitelyPresented (G ⧸ N) :=
