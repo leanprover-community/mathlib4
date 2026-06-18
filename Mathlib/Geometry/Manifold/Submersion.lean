@@ -602,8 +602,8 @@ lemma isSubmersionAt (h : IsSubmersion I J n f) (x : M) : IsSubmersionAt I J n f
   use h.complement, by infer_instance, by infer_instance
   exact h.isSubmersionOfComplement_complement x
 
-/-- If `f: M → N` and `g: M' × N'` are submersions at `x` and `x'`, respectively,
-then `f × g: M × N → M' × N'` is a submersion at `(x, x')`. -/
+/-- If `f: M → N` and `g: M' → N'` are submersions at `x` and `x'`, respectively,
+then `f × g: M × M' → N × N'` is a submersion at `(x, x')`. -/
 theorem prodMap {f : M → N} {g : M' → N'}
     [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
     (hf : IsSubmersion I J n f) (hg : IsSubmersion I' J' n g) :
