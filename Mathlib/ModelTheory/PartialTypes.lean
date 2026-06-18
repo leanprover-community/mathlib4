@@ -224,10 +224,10 @@ theorem partialType_completeTheory_iff_finitelyRealizable
     have hψexM : ψ.exClosure.Realize M :=
       ((L.realize_iff_of_model_completeTheory M N ψ.exClosure).1 hψexN)
     obtain ⟨vM, hvM⟩ :=
-      Formula.exists_realize_equivSentence_of_realize_exClosure hψexM
+      (Formula.exists_realize_equivSentence_iff_realize_exClosure.mpr hψexM)
     have hψM : ψ.Realize vM := by
-      letI : (constantsOn α).Structure M := constantsOn.structure vM
-      simpa using (Formula.realize_equivSentence M ψ).1 hvM
+      simpa [Equiv.symm_apply_apply] using
+        (Formula.realize_equivSentence_symm M (Formula.equivSentence ψ) vM).mpr hvM
     exists vM
     aesop
   · intro h
