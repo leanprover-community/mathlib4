@@ -180,7 +180,7 @@ theorem span_singleton_inf_orthogonal_eq_bot {B : BilinForm K V} {x : V} (hx : B
 -- ↓ This lemma only applies in fields since we use the `mul_eq_zero`
 theorem orthogonal_span_singleton_eq_toLin_ker {B : BilinForm K V} (x : V) :
     B.orthogonal (K ∙ x) = LinearMap.ker (LinearMap.BilinForm.toLinHomAux₁ B x) :=
-  LinearMap.orthogonal_span_singleton_eq_to_lin_ker ..
+  Submodule.orthogonalBilin_span_singleton x
 
 theorem span_singleton_sup_orthogonal_eq_top {B : BilinForm K V} {x : V} (hx : B x x ≠ 0) :
     K ∙ x ⊔ B.orthogonal (K ∙ x) = ⊤ :=
