@@ -510,6 +510,7 @@ theorem Nonempty.forall_const (h : s.Nonempty) {p : Prop} : (∀ x ∈ s, p) ↔
   let ⟨x, hx⟩ := h
   ⟨fun h ↦ h x hx, fun h _ _ ↦ h⟩
 
+@[simp]
 theorem forall_mem_const {p : Prop} [Nonempty s] : (∀ x ∈ s, p) ↔ p :=
   (nonempty_coe_sort.mp ‹_›).forall_const
 
