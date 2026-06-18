@@ -896,6 +896,9 @@ lemma bypass_eq_self_of_length_le_length_bypass (p : G.Walk u v) (h : p.length â
     p.bypass = p :=
   ext_support <| p.support_bypass_sublist_support.eq_of_length_le <| by simpa using h
 
+lemma IsPath.bypass_eq_self_of_isPath {p : G.Walk u v} (hp : p.IsPath) : p.bypass = p := by
+  induction p <;> simp_all [SimpleGraph.Walk.cons_isPath_iff, SimpleGraph.Walk.bypass]
+
 @[deprecated (since := "2026-05-25")]
 alias bypass_eq_self_of_length_le := bypass_eq_self_of_length_le_length_bypass
 
