@@ -20,6 +20,7 @@ For instances, we typically also don't want to have multiple of the same type.
 
 To use it, simply run the following command in a file that does not use the module system:
 ```
+open Lean Mathlib.Tactic.DuplicateDecls
 run_meta do logInfo m!"{← lintDuplicateDeclarations .theorems}"
 run_meta do logInfo m!"{← lintDuplicateDeclarations .instances}"
 run_meta do logInfo m!"{← lintDuplicateDeclarations .defs}"
