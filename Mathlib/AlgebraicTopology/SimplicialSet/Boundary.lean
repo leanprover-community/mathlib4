@@ -72,8 +72,7 @@ lemma stdSimplex.notMem_boundary (n : ℕ) :
 /-- A simplex of `Δ[n]` is outside the boundary iff its representing map is epi. -/
 lemma stdSimplex.notMem_boundary_iff_epi_objEquiv {n m : ℕ} (x : Δ[n] _⦋m⦌) :
     x ∉ (boundary.{u} n).obj (op ⦋m⦌) ↔ Epi (stdSimplex.objEquiv x) := by
-  rw [SimplexCategory.epi_iff_surjective]
-  simp only [boundary, Set.mem_setOf_eq, Decidable.not_not]
+  simp [SimplexCategory.epi_iff_surjective, boundary]
   rfl
 
 lemma boundary_lt_top (n : ℕ) :
