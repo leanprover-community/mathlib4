@@ -346,7 +346,7 @@ end
 variable (k G) [Monoid G] (A B : Rep.{w} k G)
 
 /-- The functor sending a representation to its coinvariants. -/
-@[simps! obj_carrier map_hom]
+@[simps! obj_carrier map_hom, implicit_reducible]
 noncomputable def coinvariantsFunctor : Rep.{w} k G ⥤ ModuleCat k where
   obj A := ModuleCat.of k A.ρ.Coinvariants
   map f := ModuleCat.ofHom (Representation.Coinvariants.map _ _ f.hom)
@@ -457,23 +457,19 @@ section Finsupp
 
 open MonoidalCategory Finsupp
 
-variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G) (α : Type u) [DecidableEq α]
-set_option maxHeartbeats 800000 in
--- unification of the equivalence composition is slow after the `MonoidAlgebra` refactor
+variable {k G : Type u} [CommRing k] [Group G] (A : Rep.{u} k G) (α : Type u) [DecidableEq α]
+
 /-- Given a `k`-linear `G`-representation `(A, ρ)` and a type `α`, this is the map
 `(A ⊗ (α →₀ k[G]))_G →ₗ[k] (α →₀ A)` sending
 `⟦a ⊗ single x (single g r)⟧ ↦ single x (r • ρ(g⁻¹)(a)).` -/
 noncomputable def coinvariantsTensorFreeToFinsupp :
-    (A ⊗ free k G α).ρ.Coinvariants →ₗ[k] (α →₀ A) :=
-  (coinvariantsFinsuppLEquiv _ α ≪≫ₗ lcongr (Equiv.refl α)
-    (coinvariantsTprodLeftRegularLEquiv A.ρ)).toLinearMap ∘ₗ
-    ((coinvariantsFunctor k G).map (finsuppTensorRight k G A (leftRegular k G) α).hom).hom
+    (A ⊗ free.{u, u, u} k G α).ρ.Coinvariants.{u, u, u} →ₗ[k] (α →₀ A) :=
+  (coinvariantsFinsuppLEquiv _ α ≪≫ₗ lcongr (Equiv.refl α) (coinvariantsTprodLeftRegularLEquiv
+    A.ρ)).toLinearMap ∘ₗ Coinvariants.map _ _
+    (Representation.finsuppTensorRight _ _ _).toIntertwiningMap
 
 variable {α}
 
-set_option maxHeartbeats 400000 in
--- unification of the equivalence composition is slow after the `MonoidAlgebra` refactor
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma coinvariantsTensorFreeToFinsupp_mk_tmul_single (x : A) (i : α) (g : G) (r : k) :
     DFunLike.coe (F := (A.ρ.tprod (Representation.free k G α)).Coinvariants →ₗ[k] α →₀ A.V)
@@ -483,22 +479,16 @@ lemma coinvariantsTensorFreeToFinsupp_mk_tmul_single (x : A) (i : α) (g : G) (r
 
 variable (α)
 
-set_option maxHeartbeats 400000 in
--- unification of the equivalence composition is slow after the `MonoidAlgebra` refactor
 /-- Given a `k`-linear `G`-representation `(A, ρ)` and a type `α`, this is the map
 `(α →₀ A) →ₗ[k] (A ⊗ (α →₀ k[G]))_G` sending `single x a ↦ ⟦a ⊗ₜ single x 1⟧.` -/
 noncomputable def finsuppToCoinvariantsTensorFree :
     (α →₀ A) →ₗ[k] Coinvariants (A.ρ.tprod (free k G α).ρ) :=
-  ((coinvariantsFunctor k G).map ((finsuppTensorRight k G A (leftRegular k G) α)).inv).hom ∘ₗ
-    (coinvariantsFinsuppLEquiv _ α ≪≫ₗ
-    lcongr (Equiv.refl α) (coinvariantsTprodLeftRegularLEquiv A.ρ)).symm.toLinearMap
+  Coinvariants.map _ _ (Representation.finsuppTensorRight _ _ _).symm.toIntertwiningMap ∘ₗ
+  (coinvariantsFinsuppLEquiv _ α ≪≫ₗ lcongr (Equiv.refl α)
+    (coinvariantsTprodLeftRegularLEquiv A.ρ)).symm.toLinearMap
 
 variable {A α}
 
-set_option maxHeartbeats 800000 in
--- unification of the equivalence composition is slow after the `MonoidAlgebra` refactor
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma finsuppToCoinvariantsTensorFree_single (i : α) (x : A) :
     DFunLike.coe (F := (α →₀ A.V) →ₗ[k] (A.ρ.tprod (Representation.free k G α)).Coinvariants)
