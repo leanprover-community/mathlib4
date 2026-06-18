@@ -210,4 +210,145 @@ theorem TopEdgeLabeling.labelGraph_toTopEdgeLabeling [DecidableEq V]
   refine EdgeLabeling.ext_get ?_
   grind [toTopEdgeLabeling_get, TopEdgeLabeling.labelGraph_adj, Adj.ne]
 
+namespace EdgeLabeling
+
+/-- The predicate `C.MonochromaticBetween X Y k` says every edge between `X` and `Y` is labelled
+`k` by the labelling `C`. -/
+def MonochromaticBetween (C : EdgeLabeling G K) (X Y : Set V) (k : K) : Prop :=
+  ∀ ⦃x⦄, x ∈ X → ∀ ⦃y⦄, y ∈ Y → (h : G.Adj x y) → C.get x y h = k
+
+/-- `C.MonochromaticOf X k` says that every edge in `X` is labelled `k` by the labelling `C`. -/
+def MonochromaticOf (C : EdgeLabeling G K) (X : Set V) (k : K) : Prop :=
+  MonochromaticBetween C X X k
+
+variable {W X Y Z : Set V} {k : K} {C : EdgeLabeling G K}
+
+theorem monochromaticOf_iff_pairwise :
+    C.MonochromaticOf X k ↔ X.Pairwise fun x y ↦ ∀ h : G.Adj x y, C.get x y h = k := by
+  grind [MonochromaticOf, MonochromaticBetween, Set.Pairwise, Adj.ne]
+
+lemma _root_.SimpleGraph.TopEdgeLabeling.monochromaticOf_iff_ne_of_adj {C : TopEdgeLabeling V K} :
+    C.MonochromaticOf X k ↔ ∀ ⦃x⦄, x ∈ X → ∀ ⦃y⦄, y ∈ X → (h : x ≠ y) → C.get x y h = k := by
+  simp_rw [MonochromaticOf, MonochromaticBetween, top_adj]
+
+namespace MonochromaticBetween
+
+protected theorem symm (hXY : C.MonochromaticBetween X Y k) : C.MonochromaticBetween Y X k := by
+  intro y hy x hx h
+  rw [get_comm _ _ h]
+  exact hXY hx hy _
+
+protected theorem comm : C.MonochromaticBetween Y X k ↔ C.MonochromaticBetween X Y k :=
+  ⟨.symm, .symm⟩
+
+@[simp]
+theorem empty_left : C.MonochromaticBetween ∅ Y k := by
+  simp [MonochromaticBetween]
+
+@[simp]
+theorem empty_right : C.MonochromaticBetween X ∅ k := by
+  simp [MonochromaticBetween]
+
+theorem singleton_left {x : V} :
+    C.MonochromaticBetween {x} Y k ↔ ∀ ⦃y⦄, y ∈ Y → (h : G.Adj x y) → C.get x y h = k := by
+  simp [MonochromaticBetween]
+
+theorem singleton_right {y : V} :
+    C.MonochromaticBetween X {y} k ↔ ∀ ⦃x⦄, x ∈ X → (h : G.Adj x y) → C.get x y h = k := by
+  simp [MonochromaticBetween]
+
+theorem subsingleton_colours [Subsingleton K] : C.MonochromaticBetween X Y k :=
+  fun _ _ _ _ _ ↦ Subsingleton.elim _ _
+
+theorem union_left : C.MonochromaticBetween (X ∪ Y) Z k ↔
+    C.MonochromaticBetween X Z k ∧ C.MonochromaticBetween Y Z k := by
+  grind [MonochromaticBetween]
+
+theorem union_right : C.MonochromaticBetween X (Y ∪ Z) k ↔
+    C.MonochromaticBetween X Y k ∧ C.MonochromaticBetween X Z k := by
+  grind [MonochromaticBetween]
+
+protected theorem self : C.MonochromaticBetween X X k ↔ C.MonochromaticOf X k :=
+  .rfl
+
+protected theorem subset (hWX : C.MonochromaticBetween W X k) (hYW : Y ⊆ W) (hZX : Z ⊆ X) :
+    C.MonochromaticBetween Y Z k :=
+  fun _ hx _ hy ↦ hWX (hYW hx) (hZX hy)
+
+protected theorem subset_left (hYZ : C.MonochromaticBetween Y Z k) (hXY : X ⊆ Y) :
+    C.MonochromaticBetween X Z k :=
+  hYZ.subset hXY (Set.Subset.refl Z)
+
+protected theorem subset_right (hXZ : C.MonochromaticBetween X Z k) (hXY : Y ⊆ Z) :
+    C.MonochromaticBetween X Y k :=
+  hXZ.subset (Set.Subset.refl X) hXY
+
+protected theorem image {C : EdgeLabeling G' K} {f : G ↪g G'}
+    (hXY : (C.pullback f.toHom).MonochromaticBetween X Y k) :
+    C.MonochromaticBetween (f '' X) (f '' Y) k := by
+  simpa [MonochromaticBetween]
+
+theorem compRight (h : C.MonochromaticBetween X Y k) (e : K → K') :
+    (C.compRight e).MonochromaticBetween X Y (e k) := by
+  intro x hx y hy h'
+  rw [compRight_get, h hx hy h']
+
+protected theorem injective (e : K → K') (he : Function.Injective e) :
+    (C.compRight e).MonochromaticBetween X Y (e k) ↔ C.MonochromaticBetween X Y k := by
+  simp_rw [EdgeLabeling.compRight, MonochromaticBetween, get_eq, Function.comp_apply, he.eq_iff]
+
+end MonochromaticBetween
+
+namespace MonochromaticOf
+
+theorem subsingleton (hm : X.Subsingleton) : C.MonochromaticOf X k :=
+  fun _ hx _ hy h ↦ (h.ne (hm hx hy)).elim
+
+@[simp]
+protected theorem empty : C.MonochromaticOf ∅ k :=
+  .subsingleton Set.subsingleton_empty
+
+@[simp]
+protected theorem singleton {x : V} : C.MonochromaticOf {x} k :=
+  .subsingleton Set.subsingleton_singleton
+
+theorem subsingleton_colours [Subsingleton K] : C.MonochromaticOf X k :=
+  MonochromaticBetween.subsingleton_colours
+
+theorem compRight (h : C.MonochromaticOf X k) (e : K → K') :
+    (C.compRight e).MonochromaticOf X (e k) :=
+  MonochromaticBetween.compRight h e
+
+protected theorem injective (e : K → K') (he : Function.Injective e) :
+    (C.compRight e).MonochromaticOf X (e k) ↔ C.MonochromaticOf X k :=
+  MonochromaticBetween.injective e he
+
+theorem subset (hY : C.MonochromaticOf Y k) (hXY : X ⊆ Y) : C.MonochromaticOf X k :=
+  MonochromaticBetween.subset hY hXY hXY
+
+theorem image {C : EdgeLabeling G' K} {f : G ↪g G'} (h : (C.pullback f.toHom).MonochromaticOf X k) :
+    C.MonochromaticOf (f '' X) k :=
+  MonochromaticBetween.image h
+
+protected theorem union : C.MonochromaticOf (X ∪ Y) k ↔
+    C.MonochromaticOf X k ∧ C.MonochromaticOf Y k ∧ C.MonochromaticBetween X Y k := by
+  grind [MonochromaticOf, MonochromaticBetween.union_left, MonochromaticBetween.comm]
+
+protected theorem insert {x : V} :
+    C.MonochromaticOf (insert x X) k ↔ C.MonochromaticOf X k ∧ C.MonochromaticBetween X {x} k := by
+  simp [← Set.union_singleton, MonochromaticOf.union]
+
+theorem image_top {C : TopEdgeLabeling V' K} {f : V ↪ V'}
+    (h : (C.pullback f).MonochromaticOf X k) : C.MonochromaticOf (f '' X) k := by
+  simpa [TopEdgeLabeling.monochromaticOf_iff_ne_of_adj]
+
+theorem map_top {C : TopEdgeLabeling V' K} {f : V ↪ V'} {m : Finset V}
+    (h : (C.pullback f).MonochromaticOf m k) : C.MonochromaticOf (m.map f) k := by
+  rw [coe_map]
+  exact h.image_top
+
+end MonochromaticOf
+
+end EdgeLabeling
+
 end SimpleGraph
