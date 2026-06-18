@@ -3,13 +3,17 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Function
+module
+
+public import Mathlib.Data.Set.Function
 
 /-!
 # Piecewise functions
 
 This file contains basic results on piecewise defined functions.
 -/
+
+public section
 
 variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
 
@@ -51,8 +55,6 @@ theorem piecewise_eq_of_mem {i : α} (hi : i ∈ s) : s.piecewise f g i = f i :=
 @[simp]
 theorem piecewise_eq_of_notMem {i : α} (hi : i ∉ s) : s.piecewise f g i = g i :=
   if_neg hi
-
-@[deprecated (since := "2025-05-23")] alias piecewise_eq_of_not_mem := piecewise_eq_of_notMem
 
 theorem piecewise_singleton (x : α) [∀ y, Decidable (y ∈ ({x} : Set α))] [DecidableEq α]
     (f g : α → β) : piecewise {x} f g = Function.update g x (f x) := by
@@ -98,9 +100,7 @@ theorem piecewise_range_comp {ι : Sort*} (f : ι → α) [∀ j, Decidable (j �
 
 lemma piecewise_comp (f g : α → γ) (h : β → α) :
     letI : DecidablePred (· ∈ h ⁻¹' s) := @instDecidablePredComp _ (· ∈ s) _ h _;
-    (s.piecewise f g) ∘ h = (h ⁻¹' s).piecewise (f ∘ h) (g ∘ h) := by
-  ext x
-  by_cases hx : h x ∈ s <;> simp [hx]
+    (s.piecewise f g) ∘ h = (h ⁻¹' s).piecewise (f ∘ h) (g ∘ h) := rfl
 
 theorem MapsTo.piecewise_ite {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {f₁ f₂ : α → β}
     [∀ i, Decidable (i ∈ s)] (h₁ : MapsTo f₁ (s₁ ∩ s) (t₁ ∩ t))
@@ -159,7 +159,7 @@ theorem range_piecewise (f g : α → β) : range (s.piecewise f g) = f '' s ∪
 theorem injective_piecewise_iff {f g : α → β} :
     Injective (s.piecewise f g) ↔
       InjOn f s ∧ InjOn g sᶜ ∧ ∀ x ∈ s, ∀ y ∉ s, f x ≠ g y := by
-  rw [injective_iff_injOn_univ, ← union_compl_self s, injOn_union (@disjoint_compl_right _ _ s),
+  rw [← injOn_univ, ← union_compl_self s, injOn_union (@disjoint_compl_right _ _ s),
     (piecewise_eqOn s f g).injOn_iff, (piecewise_eqOn_compl s f g).injOn_iff]
   refine and_congr Iff.rfl (and_congr Iff.rfl <| forall₄_congr fun x hx y hy => ?_)
   rw [piecewise_eq_of_mem s f g hx, piecewise_eq_of_notMem s f g hy]
@@ -176,7 +176,7 @@ theorem pi_piecewise {ι : Type*} {α : ι → Type*} (s s' : Set ι) (t t' : �
 
 theorem univ_pi_piecewise {ι : Type*} {α : ι → Type*} (s : Set ι) (t t' : ∀ i, Set (α i))
     [∀ x, Decidable (x ∈ s)] : pi univ (s.piecewise t t') = pi s t ∩ pi sᶜ t' := by
-  simp [compl_eq_univ_diff]
+  simp [compl_eq_univ_sdiff]
 
 theorem univ_pi_piecewise_univ {ι : Type*} {α : ι → Type*} (s : Set ι) (t : ∀ i, Set (α i))
     [∀ x, Decidable (x ∈ s)] : pi univ (s.piecewise t fun _ => univ) = pi s t := by simp

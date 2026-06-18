@@ -3,23 +3,27 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Preadditive
-import Mathlib.CategoryTheory.Linear.LinearFunctor
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Preadditive
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 # Homology of linear categories
 
-In this file, it is shown that if `C` is a `R`-linear category, then
-`ShortComplex C` is a `R`-linear category. Various homological notions
+In this file, it is shown that if `C` is an `R`-linear category, then
+`ShortComplex C` is an `R`-linear category. Various homological notions
 are also shown to be linear.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
 open Category Limits
 
-variable {R C : Type*} [Semiring R] [Category C] [Preadditive C] [Linear R C]
+variable {R C : Type*} [Semiring R] [Category* C] [Preadditive C] [Linear R C]
 
 namespace ShortComplex
 
@@ -38,12 +42,12 @@ instance : SMul R (S₁ ⟶ S₂) where
 @[simp] lemma smul_τ₃ (a : R) (φ : S₁ ⟶ S₂) : (a • φ).τ₃ = a • φ.τ₃ := rfl
 
 instance : Module R (S₁ ⟶ S₂) where
-  zero_smul := by aesop_cat
-  one_smul := by aesop_cat
-  smul_zero := by aesop_cat
-  smul_add := by aesop_cat
-  add_smul := by aesop_cat
-  mul_smul := by aesop_cat
+  zero_smul := by cat_disch
+  one_smul := by cat_disch
+  smul_zero := by cat_disch
+  smul_add := by cat_disch
+  add_smul := by cat_disch
+  mul_smul := by cat_disch
 
 instance : Linear R (ShortComplex C) where
 

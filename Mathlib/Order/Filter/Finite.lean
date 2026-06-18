@@ -3,15 +3,19 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Order.Filter.Basic
+module
+
+public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.Order.CompleteLattice.Finset
+public import Mathlib.Order.Filter.Basic
 
 /-!
-# Results filters related to finiteness.
+# Results relating filters to finiteness
 
+This file proves that finitely many conditions eventually hold if each of them eventually holds.
 -/
 
-
+public section
 
 open Function Set Order
 open scoped symmDiff
@@ -120,7 +124,7 @@ theorem exists_iInter_of_mem_iInf {ι : Sort*} {α : Type*} {f : ι → Filter �
   rw [← iInf_range' (g := (·))] at hs
   let ⟨_, _, V, hVs, _, _, hVU'⟩ := mem_iInf'.1 hs
   use V ∘ rangeFactorization f, fun i ↦ hVs (rangeFactorization f i)
-  rw [hVU', ← surjective_onto_range.iInter_comp, comp_def]
+  rw [hVU', ← rangeFactorization_surjective.iInter_comp, comp_def]
 
 theorem mem_iInf_of_finite {ι : Sort*} [Finite ι] {α : Type*} {f : ι → Filter α} (s) :
     (s ∈ ⨅ i, f i) ↔ ∃ t : ι → Set α, (∀ i, t i ∈ f i) ∧ s = ⋂ i, t i := by
@@ -184,24 +188,6 @@ theorem mem_iInf_finite' {f : ι → Filter α} (s) :
     s ∈ iInf f ↔ ∃ t : Finset (PLift ι), s ∈ ⨅ i ∈ t, f (PLift.down i) :=
   (Set.ext_iff.1 (iInf_sets_eq_finite' f) s).trans mem_iUnion
 
-/-- The dual version does not hold! `Filter α` is not a `CompleteDistribLattice`. -/
--- See note [reducible non-instances]
-abbrev coframeMinimalAxioms : Coframe.MinimalAxioms (Filter α) :=
-  { Filter.instCompleteLatticeFilter with
-    iInf_sup_le_sup_sInf := fun f s t ⟨h₁, h₂⟩ => by
-      classical
-      rw [iInf_subtype']
-      rw [sInf_eq_iInf', ← Filter.mem_sets, iInf_sets_eq_finite, mem_iUnion] at h₂
-      obtain ⟨u, hu⟩ := h₂
-      rw [← Finset.inf_eq_iInf] at hu
-      suffices ⨅ i : s, f ⊔ ↑i ≤ f ⊔ u.inf fun i => ↑i from this ⟨h₁, hu⟩
-      refine Finset.induction_on u (le_sup_of_le_right le_top) ?_
-      rintro ⟨i⟩ u _ ih
-      rw [Finset.inf_insert, sup_inf_left]
-      exact le_inf (iInf_le _ _) ih }
-
-instance instCoframe : Coframe (Filter α) := .ofMinimalAxioms coframeMinimalAxioms
-
 theorem mem_iInf_finset {s : Finset α} {f : α → Filter β} {t : Set β} :
     (t ∈ ⨅ a ∈ s, f a) ↔ ∃ p : α → Set β, (∀ a ∈ s, p a ∈ f a) ∧ t = ⋂ a ∈ s, p a := by
   classical
@@ -215,21 +201,6 @@ theorem mem_iInf_finset {s : Finset α} {f : α → Filter β} {t : Set β} :
     simp [ha]
   · rintro ⟨p, hpf, rfl⟩
     exact iInter_mem.2 fun a => mem_iInf_of_mem a (hpf a a.2)
-
-
-@[elab_as_elim]
-theorem iInf_sets_induct {f : ι → Filter α} {s : Set α} (hs : s ∈ iInf f) {p : Set α → Prop}
-    (uni : p univ) (ins : ∀ {i s₁ s₂}, s₁ ∈ f i → p s₂ → p (s₁ ∩ s₂)) : p s := by
-  classical
-  rw [mem_iInf_finite'] at hs
-  simp only [← Finset.inf_eq_iInf] at hs
-  rcases hs with ⟨is, his⟩
-  induction is using Finset.induction_on generalizing s with
-  | empty => rwa [mem_top.1 his]
-  | insert _ _ _ ih =>
-    rw [Finset.inf_insert, mem_inf_iff] at his
-    rcases his with ⟨s₁, hs₁, s₂, hs₂, rfl⟩
-    exact ins hs₁ (ih hs₂)
 
 /-! #### `principal` equations -/
 
@@ -256,9 +227,21 @@ theorem iInf_principal_finite {ι : Type w} {s : Set ι} (hs : s.Finite) (f : ι
   lift s to Finset ι using hs
   exact mod_cast iInf_principal_finset s f
 
+/-- If a filter has finitely many sets, then it is principal. -/
+theorem eq_principal_of_finite_sets (hf : f.sets.Finite) : ∃ s, f = 𝓟 s := by
+  use ⋂₀ f.sets
+  exact Filter.ext fun B ↦ ⟨sInter_subset_of_mem, mem_of_superset ((sInter_mem hf).2 (by simp))⟩
+
+/-- Any filter on a finite type is principal. -/
+theorem eq_principal_of_finite [Finite α] (f : Filter α) : ∃ s, f = 𝓟 s :=
+  eq_principal_of_finite_sets (finite_univ.powerset.subset (by simp))
+
+theorem principal_surjective [Finite α] : Surjective (𝓟 : Set α → Filter α) :=
+  fun f ↦ (eq_principal_of_finite f).imp fun _ ↦ .symm
+
 end Lattice
 
-/-! ### Eventually -/
+/-! ### Eventually and Frequently -/
 
 @[simp]
 theorem eventually_all {ι : Sort*} [Finite ι] {l} {p : ι → α → Prop} :
@@ -270,17 +253,37 @@ theorem eventually_all_finite {ι} {I : Set ι} (hI : I.Finite) {l} {p : ι → 
     (∀ᶠ x in l, ∀ i ∈ I, p i x) ↔ ∀ i ∈ I, ∀ᶠ x in l, p i x := by
   simpa only [Filter.Eventually, setOf_forall] using biInter_mem hI
 
-alias _root_.Set.Finite.eventually_all := eventually_all_finite
-
--- attribute [protected] Set.Finite.eventually_all
+protected alias _root_.Set.Finite.eventually_all := eventually_all_finite
 
 @[simp] theorem eventually_all_finset {ι} (I : Finset ι) {l} {p : ι → α → Prop} :
     (∀ᶠ x in l, ∀ i ∈ I, p i x) ↔ ∀ i ∈ I, ∀ᶠ x in l, p i x :=
   I.finite_toSet.eventually_all
 
-alias _root_.Finset.eventually_all := eventually_all_finset
+protected alias _root_.Finset.eventually_all := eventually_all_finset
 
--- attribute [protected] Finset.eventually_all
+@[simp]
+theorem frequently_exists {ι : Sort*} [Finite ι] {l} {p : ι → α → Prop} :
+    (∃ᶠ x in l, ∃ i, p i x) ↔ ∃ i, ∃ᶠ x in l, p i x := by
+  rw [← not_iff_not]
+  simp
+
+@[simp]
+theorem frequently_exists_finite {ι} {I : Set ι} (hI : I.Finite) {l} {p : ι → α → Prop} :
+    (∃ᶠ x in l, ∃ i ∈ I, p i x) ↔ ∃ i ∈ I, ∃ᶠ x in l, p i x := by
+  rw [← not_iff_not]
+  simp [hI]
+
+protected alias _root_.Set.Finite.frequently_exists := frequently_exists_finite
+
+@[simp] theorem frequently_exists_finset {ι} (I : Finset ι) {l} {p : ι → α → Prop} :
+    (∃ᶠ x in l, ∃ i ∈ I, p i x) ↔ ∃ i ∈ I, ∃ᶠ x in l, p i x :=
+  I.finite_toSet.frequently_exists
+
+protected alias _root_.Finset.frequently_exists := frequently_exists_finset
+
+lemma eventually_subset_of_finite {ι : Type*} {f : Filter ι} {s : ι → Set α} {t : Set α}
+    (ht : t.Finite) (hs : ∀ a ∈ t, ∀ᶠ i in f, a ∈ s i) : ∀ᶠ i in f, t ⊆ s i := by
+  simpa [Set.subset_def, eventually_all_finite ht] using hs
 
 /-!
 ### Relation “eventually equal”
@@ -357,5 +360,3 @@ lemma _root_.Finset.eventuallyEq_iInter {ι : Type*} (s : Finset ι) {f g : ι �
 end EventuallyEq
 
 end Filter
-
-open Filter

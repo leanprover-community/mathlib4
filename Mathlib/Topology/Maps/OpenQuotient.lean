@@ -3,7 +3,9 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Maps.Basic
+module
+
+public import Mathlib.Topology.Maps.Basic
 
 /-!
 # Open quotient maps
@@ -22,6 +24,8 @@ Contrary to general quotient maps,
 the category of open quotient maps is closed under `Prod.map`.
 -/
 
+public section
+
 open Filter Function Set Topology
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] {f : X → Y}
@@ -34,21 +38,12 @@ protected theorem id : IsOpenQuotientMap (id : X → X) := ⟨surjective_id, con
 theorem isQuotientMap (h : IsOpenQuotientMap f) : IsQuotientMap f :=
   h.isOpenMap.isQuotientMap h.continuous h.surjective
 
-@[deprecated (since := "2024-10-22")]
-alias quotientMap := isQuotientMap
-
 theorem iff_isOpenMap_isQuotientMap : IsOpenQuotientMap f ↔ IsOpenMap f ∧ IsQuotientMap f :=
   ⟨fun h ↦ ⟨h.isOpenMap, h.isQuotientMap⟩, fun ⟨ho, hq⟩ ↦ ⟨hq.surjective, hq.continuous, ho⟩⟩
-
-@[deprecated (since := "2024-10-22")]
-alias iff_isOpenMap_quotientMap := iff_isOpenMap_isQuotientMap
 
 theorem of_isOpenMap_isQuotientMap (ho : IsOpenMap f) (hq : IsQuotientMap f) :
     IsOpenQuotientMap f :=
   iff_isOpenMap_isQuotientMap.2 ⟨ho, hq⟩
-
-@[deprecated (since := "2024-10-22")]
-alias of_isOpenMap_quotientMap := of_isOpenMap_isQuotientMap
 
 theorem comp {g : Y → Z} (hg : IsOpenQuotientMap g) (hf : IsOpenQuotientMap f) :
     IsOpenQuotientMap (g ∘ f) :=
@@ -110,7 +105,7 @@ lemma coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
     (h : g ∘ p = q ∘ f)
     (hf : IsInducing f) (hp : Function.Surjective p)
     (hq : IsOpenQuotientMap q) (hg : Function.Injective g)
-    (H : q ⁻¹' (q '' (Set.range f)) ⊆ Set.range f) :
+    (H : q ⁻¹' q '' Set.range f ⊆ Set.range f) :
     ‹TopologicalSpace A›.coinduced p = ‹TopologicalSpace D›.induced g := by
   ext U
   change IsOpen (p ⁻¹' U) ↔ ∃ V, _
@@ -137,7 +132,7 @@ lemma isEmbedding_of_isOpenQuotientMap_of_isInducing
     (h : g ∘ p = q ∘ f)
     (hf : IsInducing f) (hp : IsQuotientMap p)
     (hq : IsOpenQuotientMap q) (hg : Function.Injective g)
-    (H : q ⁻¹' (q '' (Set.range f)) ⊆ Set.range f) :
+    (H : q ⁻¹' q '' Set.range f ⊆ Set.range f) :
     IsEmbedding g :=
   ⟨⟨hp.eq_coinduced.trans (coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
     f g p q h hf hp.surjective hq hg H)⟩, hg⟩
@@ -146,9 +141,9 @@ lemma isQuotientMap_of_isOpenQuotientMap_of_isInducing
     (h : g ∘ p = q ∘ f)
     (hf : IsInducing f) (hp : Surjective p)
     (hq : IsOpenQuotientMap q) (hg : IsEmbedding g)
-    (H : q ⁻¹' (q '' (Set.range f)) ⊆ Set.range f) :
+    (H : q ⁻¹' q '' Set.range f ⊆ Set.range f) :
     IsQuotientMap p :=
-  ⟨hp, hg.eq_induced.trans ((coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
-    f g p q h hf hp hq hg.injective H)).symm⟩
+  ⟨⟨hg.eq_induced.trans ((coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
+    f g p q h hf hp hq hg.injective H)).symm⟩, hp⟩
 
 end Subquotient

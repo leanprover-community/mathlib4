@@ -3,19 +3,20 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Tactic.CategoryTheory.Elementwise
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # The concrete products in the category of modules are products in the categorical sense.
 -/
 
+@[expose] public section
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe u v w
 
@@ -72,6 +73,7 @@ variable [DecidableEq ι]
 def coproductCocone : Cofan Z :=
   Cofan.mk (ModuleCat.of R (⨁ i : ι, Z i)) fun i => ofHom (DirectSum.lof R ι (fun i ↦ Z i) i)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The concrete coproduct cone is colimiting. -/
 def coproductCoconeIsColimit : IsColimit (coproductCocone Z) where
   desc s := ofHom <| DirectSum.toModule R ι _ fun i ↦ (s.ι.app ⟨i⟩).hom
@@ -79,14 +81,14 @@ def coproductCoconeIsColimit : IsColimit (coproductCocone Z) where
     rintro s ⟨i⟩
     ext (x : Z i)
     simpa only [Discrete.functor_obj_eq_as, coproductCocone, Cofan.mk_pt, Functor.const_obj_obj,
-      Cofan.mk_ι_app, hom_comp, LinearMap.coe_comp, Function.comp_apply] using
+      Cofan.mk_ι_app, hom_comp, LinearMap.coe_comp, Function.comp_apply] using!
       DirectSum.toModule_lof (ι := ι) R (M := fun i ↦ Z i) i x
   uniq := by
     rintro s f h
     ext : 1
     refine DirectSum.linearMap_ext _ fun i ↦ ?_
     ext x
-    simpa only [LinearMap.coe_comp, Function.comp_apply, hom_ofHom, toModule_lof] using
+    simpa only [LinearMap.coe_comp, Function.comp_apply, hom_ofHom, toModule_lof] using!
       congr($(h ⟨i⟩) x)
 
 variable [HasCoproduct Z]

@@ -1,10 +1,12 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
-import Mathlib.Topology.EMetricSpace.Basic
+module
+
+public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+public import Mathlib.Topology.EMetricSpace.Basic
 
 /-!
 ## Cauchy sequences in (pseudo-)metric spaces
@@ -18,8 +20,10 @@ Various results on Cauchy sequences in (pseudo-)metric spaces, including
 
 ## Tags
 
-metric, pseudo_metric, Cauchy sequence
+metric, pseudometric space, Cauchy sequence
 -/
+
+public section
 
 open Filter
 open scoped Uniformity Topology
@@ -61,7 +65,6 @@ theorem Metric.cauchySeq_iff' {u : β → α} :
     CauchySeq u ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, dist (u n) (u N) < ε :=
   uniformity_basis_dist.cauchySeq_iff'
 
--- see Note [nolint_ge]
 /-- In a pseudometric space, uniform Cauchy sequences are characterized by the fact that,
 eventually, the distance between all its elements is uniformly, arbitrarily small. -/
 theorem Metric.uniformCauchySeqOn_iff {γ : Type*} {F : β → γ → α} {s : Set γ} :

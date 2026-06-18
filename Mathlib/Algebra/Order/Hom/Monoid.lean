@@ -3,11 +3,13 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.Hom.Basic
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Algebra.Order.Monoid.OrderDual
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Hom.Basic
+public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+public import Mathlib.Algebra.Order.Monoid.OrderDual
+public import Mathlib.Order.Hom.Basic
 /-!
 # Ordered monoid and group homomorphisms
 
@@ -55,6 +57,8 @@ making some definitions and lemmas irrelevant.
 ordered monoid, ordered group
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero
 
 open Function
@@ -63,7 +67,7 @@ variable {F α β γ δ : Type*}
 
 section AddMonoid
 
-/-- `α →+o β` is the type of monotone functions `α → β` that preserve the `OrderedAddCommMonoid`
+/-- `α →+o β` is the type of monotone functions `α → β` that preserve the ordered additive monoid
 structure.
 
 `OrderAddMonoidHom` is also used for ordered group homomorphisms.
@@ -79,7 +83,7 @@ structure OrderAddMonoidHom (α β : Type*) [Preorder α] [Preorder β] [AddZero
 /-- Infix notation for `OrderAddMonoidHom`. -/
 infixr:25 " →+o " => OrderAddMonoidHom
 
-/-- `α ≃+o β` is the type of monotone isomorphisms `α ≃ β` that preserve the `OrderedAddCommMonoid`
+/-- `α ≃+o β` is the type of isomorphisms `α ≃ β` that preserve the ordered additive monoid
 structure.
 
 `OrderAddMonoidIso` is also used for ordered group isomorphisms.
@@ -100,7 +104,7 @@ end AddMonoid
 
 section Monoid
 
-/-- `α →*o β` is the type of functions `α → β` that preserve the `OrderedCommMonoid` structure.
+/-- `α →*o β` is the type of functions `α → β` that preserve the ordered monoid structure.
 
 `OrderMonoidHom` is also used for ordered group homomorphisms.
 
@@ -121,21 +125,21 @@ variable [Preorder α] [Preorder β] [MulOneClass α] [MulOneClass β] [FunLike 
 /-- Turn an element of a type `F` satisfying `OrderHomClass F α β` and `MonoidHomClass F α β`
 into an actual `OrderMonoidHom`. This is declared as the default coercion from `F` to `α →*o β`. -/
 @[to_additive (attr := coe)
-  "Turn an element of a type `F` satisfying `OrderHomClass F α β` and `AddMonoidHomClass F α β`
+  /-- Turn an element of a type `F` satisfying `OrderHomClass F α β` and `AddMonoidHomClass F α β`
   into an actual `OrderAddMonoidHom`.
-  This is declared as the default coercion from `F` to `α →+o β`."]
+  This is declared as the default coercion from `F` to `α →+o β`. -/]
 def OrderMonoidHomClass.toOrderMonoidHom [OrderHomClass F α β] [MonoidHomClass F α β] (f : F) :
     α →*o β :=
   { (f : α →* β) with monotone' := OrderHomClass.monotone f }
 
 /-- Any type satisfying `OrderMonoidHomClass` can be cast into `OrderMonoidHom` via
   `OrderMonoidHomClass.toOrderMonoidHom`. -/
-@[to_additive "Any type satisfying `OrderAddMonoidHomClass` can be cast into `OrderAddMonoidHom` via
-  `OrderAddMonoidHomClass.toOrderAddMonoidHom`"]
+@[to_additive /-- Any type satisfying `OrderAddMonoidHomClass` can be cast into `OrderAddMonoidHom`
+  via `OrderAddMonoidHomClass.toOrderAddMonoidHom`. -/]
 instance [OrderHomClass F α β] [MonoidHomClass F α β] : CoeTC F (α →*o β) :=
   ⟨OrderMonoidHomClass.toOrderMonoidHom⟩
 
-/-- `α ≃*o β` is the type of isomorphisms `α ≃ β` that preserve the `OrderedCommMonoid` structure.
+/-- `α ≃*o β` is the type of isomorphisms `α ≃ β` that preserve the ordered monoid structure.
 
 `OrderMonoidIso` is also used for ordered group isomorphisms.
 
@@ -151,14 +155,12 @@ structure OrderMonoidIso (α β : Type*) [Preorder α] [Preorder β] [Mul α] [M
 /-- Infix notation for `OrderMonoidIso`. -/
 infixr:25 " ≃*o " => OrderMonoidIso
 
-variable [Preorder α] [Preorder β] [MulOneClass α] [MulOneClass β] [FunLike F α β]
-
 /-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` and `MulEquivClass F α β`
 into an actual `OrderMonoidIso`. This is declared as the default coercion from `F` to `α ≃*o β`. -/
 @[to_additive (attr := coe)
-  "Turn an element of a type `F` satisfying `OrderIsoClass F α β` and `AddEquivClass F α β`
+  /-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` and `AddEquivClass F α β`
   into an actual `OrderAddMonoidIso`.
-  This is declared as the default coercion from `F` to `α ≃+o β`."]
+  This is declared as the default coercion from `F` to `α ≃+o β`. -/]
 def OrderMonoidIsoClass.toOrderMonoidIso [EquivLike F α β] [OrderIsoClass F α β]
     [MulEquivClass F α β] (f : F) :
     α ≃*o β :=
@@ -166,12 +168,36 @@ def OrderMonoidIsoClass.toOrderMonoidIso [EquivLike F α β] [OrderIsoClass F α
 
 /-- Any type satisfying `OrderMonoidIsoClass` can be cast into `OrderMonoidIso` via
   `OrderMonoidIsoClass.toOrderMonoidIso`. -/
-@[to_additive "Any type satisfying `OrderAddMonoidIsoClass` can be cast into `OrderAddMonoidIso` via
-  `OrderAddMonoidIsoClass.toOrderAddMonoidIso`"]
+@[to_additive /-- Any type satisfying `OrderAddMonoidIsoClass` can be cast into `OrderAddMonoidIso`
+  via `OrderAddMonoidIsoClass.toOrderAddMonoidIso`. -/]
 instance [EquivLike F α β] [OrderIsoClass F α β] [MulEquivClass F α β] : CoeTC F (α ≃*o β) :=
   ⟨OrderMonoidIsoClass.toOrderMonoidIso⟩
 
 end Monoid
+
+section MonoidHomClass
+
+variable [Group α] [Monoid β]
+variable {F : Type*} [FunLike F α β] [MonoidHomClass F α β]
+
+@[to_additive]
+theorem map_inv_le_map_inv_iff_map_le_map [LE β] [MulRightMono β] [MulLeftMono β]
+    {f g : F} {x : α} : f x⁻¹ ≤ g x⁻¹ ↔ g x ≤ f x := by
+  suffices h : ∀ (f g : F) (x), f x⁻¹ ≤ g x⁻¹ → g x ≤ f x from
+    ⟨h f g x, by simpa using h g f x⁻¹⟩
+  exact fun f g x hfg ↦ calc
+    _ = f x * (f x⁻¹ * g x) := by simp [← mul_assoc, ← map_mul]
+    _ ≤ f x * (g x⁻¹ * g x) := by gcongr
+    _ = f x                 := by simp [← map_mul]
+
+@[to_additive]
+theorem MonoidHomClass.ext_iff_le [PartialOrder β] [MulRightMono β] [MulLeftMono β] {f g : F} :
+    f = g ↔ ∀ x, f x ≤ g x where
+  mp := by simp +contextual
+  mpr h := DFunLike.ext f g
+    fun x ↦ le_antisymm (h x) (map_inv_le_map_inv_iff_map_le_map.mp <| h x⁻¹)
+
+end MonoidHomClass
 
 section OrderedZero
 
@@ -244,7 +270,7 @@ variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [MulOneClass α
 @[to_additive]
 instance : FunLike (α →*o β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := g
     congr
@@ -280,7 +306,7 @@ theorem mk_coe (f : α →*o β) (h) : OrderMonoidHom.mk (f : α →* β) h = f 
   rfl
 
 /-- Reinterpret an ordered monoid homomorphism as an order homomorphism. -/
-@[to_additive "Reinterpret an ordered additive monoid homomorphism as an order homomorphism."]
+@[to_additive /-- Reinterpret an ordered additive monoid homomorphism as an order homomorphism. -/]
 def toOrderHom (f : α →*o β) : α →o β :=
   { f with }
 
@@ -294,16 +320,16 @@ theorem coe_orderHom (f : α →*o β) : ((f : α →o β) : α → β) = f :=
 
 @[to_additive]
 theorem toMonoidHom_injective : Injective (toMonoidHom : _ → α →* β) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h using 0
+  ext <| by convert! DFunLike.ext_iff.1 h using 0
 
 @[to_additive]
 theorem toOrderHom_injective : Injective (toOrderHom : _ → α →o β) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h using 0
+  ext <| by convert! DFunLike.ext_iff.1 h using 0
 
 /-- Copy of an `OrderMonoidHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
-@[to_additive "Copy of an `OrderAddMonoidHom` with a new `toFun` equal to the old one. Useful to fix
-definitional equalities."]
+@[to_additive /-- Copy of an `OrderAddMonoidHom` with a new `toFun` equal to the old one. Useful to
+fix definitional equalities. -/]
 protected def copy (f : α →*o β) (f' : α → β) (h : f' = f) : α →*o β :=
   { f.toMonoidHom.copy f' h with toFun := f', monotone' := h.symm.subst f.monotone' }
 
@@ -318,7 +344,7 @@ theorem copy_eq (f : α →*o β) (f' : α → β) (h : f' = f) : f.copy f' h = 
 variable (α)
 
 /-- The identity map as an ordered monoid homomorphism. -/
-@[to_additive "The identity map as an ordered additive monoid homomorphism."]
+@[to_additive /-- The identity map as an ordered additive monoid homomorphism. -/]
 protected def id : α →*o α :=
   { MonoidHom.id α, OrderHom.id with }
 
@@ -333,7 +359,7 @@ instance : Inhabited (α →*o α) :=
 variable {α}
 
 /-- Composition of `OrderMonoidHom`s as an `OrderMonoidHom`. -/
-@[to_additive "Composition of `OrderAddMonoidHom`s as an `OrderAddMonoidHom`"]
+@[to_additive /-- Composition of `OrderAddMonoidHom`s as an `OrderAddMonoidHom` -/]
 def comp (f : β →*o γ) (g : α →*o β) : α →*o γ :=
   { f.toMonoidHom.comp (g : α →* β), f.toOrderHom.comp (g : α →o β) with }
 
@@ -379,7 +405,7 @@ theorem cancel_left {g : β →*o γ} {f₁ f₂ : α →*o β} (hg : Function.I
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 /-- `1` is the homomorphism sending all elements to `1`. -/
-@[to_additive "`0` is the homomorphism sending all elements to `0`."]
+@[to_additive /-- `0` is the homomorphism sending all elements to `0`. -/]
 instance : One (α →*o β) :=
   ⟨{ (1 : α →* β) with monotone' := monotone_const }⟩
 
@@ -403,14 +429,14 @@ end Preorder
 
 section Mul
 
-variable [CommMonoid α] [PartialOrder α]
-  [CommMonoid β] [PartialOrder β]
-  [CommMonoid γ] [PartialOrder γ]
+variable [CommMonoid α] [Preorder α]
+  [CommMonoid β] [Preorder β]
+  [CommMonoid γ] [Preorder γ]
 
 /-- For two ordered monoid morphisms `f` and `g`, their product is the ordered monoid morphism
 sending `a` to `f a * g a`. -/
-@[to_additive "For two ordered additive monoid morphisms `f` and `g`, their product is the ordered
-additive monoid morphism sending `a` to `f a + g a`."]
+@[to_additive /-- For two ordered additive monoid morphisms `f` and `g`, their product is the
+ordered additive monoid morphism sending `a` to `f a + g a`. -/]
 instance [IsOrderedMonoid β] : Mul (α →*o β) :=
   ⟨fun f g => { (f * g : α →* β) with monotone' := f.monotone'.mul' g.monotone' }⟩
 
@@ -450,12 +476,12 @@ end OrderedCommMonoid
 
 section OrderedCommGroup
 
-variable {_ : CommGroup α} {_ : PartialOrder α} {_ : CommGroup β} {_ : PartialOrder β}
+variable {_ : CommGroup α} {_ : Preorder α} {_ : CommGroup β} {_ : PartialOrder β}
 
 /-- Makes an ordered group homomorphism from a proof that the map preserves multiplication. -/
 @[to_additive
-      "Makes an ordered additive group homomorphism from a proof that the map preserves
-      addition."]
+      /-- Makes an ordered additive group homomorphism from a proof that the map preserves
+      addition. -/]
 def mk' (f : α → β) (hf : Monotone f) (map_mul : ∀ a b : α, f (a * b) = f a * f b) : α →*o β :=
   { MonoidHom.mk' f map_mul with monotone' := hf }
 
@@ -506,7 +532,8 @@ theorem coe_mk (f : α ≃* β) (h) : (OrderMonoidIso.mk f h : α → β) = f :=
 theorem mk_coe (f : α ≃*o β) (h) : OrderMonoidIso.mk (f : α ≃* β) h = f := rfl
 
 /-- Reinterpret an ordered monoid isomorphism as an order isomorphism. -/
-@[to_additive "Reinterpret an ordered additive monoid isomomorphism as an order isomomorphism."]
+@[to_additive
+/-- Reinterpret an ordered additive monoid isomorphism as an order isomorphism. -/]
 def toOrderIso (f : α ≃*o β) : α ≃o β :=
   { f with
     map_rel_iff' := map_le_map_iff f }
@@ -521,16 +548,16 @@ theorem coe_orderIso (f : α ≃*o β) : ((f : α →o β) : α → β) = f :=
 
 @[to_additive]
 theorem toMulEquiv_injective : Injective (toMulEquiv : _ → α ≃* β) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h using 0
+  ext <| by convert! DFunLike.ext_iff.1 h using 0
 
 @[to_additive]
 theorem toOrderIso_injective : Injective (toOrderIso : _ → α ≃o β) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h using 0
+  ext <| by convert! DFunLike.ext_iff.1 h using 0
 
 variable (α)
 
 /-- The identity map as an ordered monoid isomorphism. -/
-@[to_additive "The identity map as an ordered additive monoid isomorphism."]
+@[to_additive /-- The identity map as an ordered additive monoid isomorphism. -/]
 protected def refl : α ≃*o α :=
   { MulEquiv.refl α with map_le_map_iff' := by simp }
 
@@ -545,7 +572,7 @@ instance : Inhabited (α ≃*o α) :=
 variable {α}
 
 /-- Transitivity of multiplication-preserving order isomorphisms -/
-@[to_additive (attr := trans) "Transitivity of addition-preserving order isomorphisms"]
+@[to_additive (attr := trans) /-- Transitivity of addition-preserving order isomorphisms -/]
 def trans (f : α ≃*o β) (g : β ≃*o γ) : α ≃*o γ :=
   { (f : α ≃* β).trans g with map_le_map_iff' := by simp }
 
@@ -599,17 +626,17 @@ theorem toOrderIso_eq_coe (f : α ≃*o β) : f.toOrderIso = f :=
   rfl
 
 /-- The inverse of an isomorphism is an isomorphism. -/
-@[to_additive (attr := symm) "The inverse of an order isomorphism is an order isomorphism."]
+@[to_additive (attr := symm) /-- The inverse of an order isomorphism is an order isomorphism. -/]
 def symm (f : α ≃*o β) : β ≃*o α :=
   ⟨f.toMulEquiv.symm, f.toOrderIso.symm.map_rel_iff⟩
 
 /-- See Note [custom simps projection]. -/
-@[to_additive "See Note [custom simps projection]."]
+@[to_additive /-- See Note [custom simps projection]. -/]
 def Simps.apply (h : α ≃*o β) : α → β :=
   h
 
 /-- See Note [custom simps projection] -/
-@[to_additive "See Note [custom simps projection]."]
+@[to_additive /-- See Note [custom simps projection]. -/]
 def Simps.symm_apply (h : α ≃*o β) : β → α :=
   h.symm
 
@@ -640,12 +667,14 @@ theorem symm_bijective : Function.Bijective (symm : (α ≃*o β) → β ≃*o �
 theorem refl_symm : (OrderMonoidIso.refl α).symm = .refl α := rfl
 
 /-- `e.symm` is a right inverse of `e`, written as `e (e.symm y) = y`. -/
-@[to_additive (attr := simp) "`e.symm` is a right inverse of `e`, written as `e (e.symm y) = y`."]
+@[to_additive (attr := simp)
+/-- `e.symm` is a right inverse of `e`, written as `e (e.symm y) = y`. -/]
 theorem apply_symm_apply (e : α ≃*o β) (y : β) : e (e.symm y) = y :=
   e.toEquiv.apply_symm_apply y
 
 /-- `e.symm` is a left inverse of `e`, written as `e.symm (e y) = y`. -/
-@[to_additive (attr := simp) "`e.symm` is a left inverse of `e`, written as `e.symm (e y) = y`."]
+@[to_additive (attr := simp)
+/-- `e.symm` is a left inverse of `e`, written as `e.symm (e y) = y`. -/]
 theorem symm_apply_apply (e : α ≃*o β) (x : α) : e.symm (e x) = x :=
   e.toEquiv.symm_apply_apply x
 
@@ -689,6 +718,14 @@ theorem symm_comp_eq (e : α ≃*o β) (f : α → α) (g : α → β) :
     e.symm ∘ g = f ↔ g = e ∘ f :=
   e.toEquiv.symm_comp_eq f g
 
+@[to_additive]
+lemma lt_symm_apply (e : α ≃*o β) {x : α} {y : β} : x < e.symm y ↔ e x < y :=
+  e.toOrderIso.lt_symm_apply
+
+@[to_additive]
+lemma symm_apply_lt (e : α ≃*o β) {x : α} {y : β} : e.symm y < x ↔ y < e x :=
+  e.toOrderIso.symm_apply_lt
+
 variable (f)
 
 @[to_additive]
@@ -699,19 +736,19 @@ protected lemma strictMono : StrictMono f :=
 protected lemma strictMono_symm : StrictMono f.symm :=
   strictMono_of_le_iff_le <| fun a b ↦ by
     rw [← map_le_map_iff f]
-    convert Iff.rfl <;>
+    convert! Iff.rfl <;>
     exact f.toEquiv.apply_symm_apply _
 
 end Preorder
 
 section OrderedCommGroup
 
-variable {_ : CommGroup α} {_ : PartialOrder α} {_ : CommGroup β} {_ : PartialOrder β}
+variable {_ : CommGroup α} {_ : Preorder α} {_ : CommGroup β} {_ : PartialOrder β}
 
 /-- Makes an ordered group isomorphism from a proof that the map preserves multiplication. -/
 @[to_additive
-      "Makes an ordered additive group isomorphism from a proof that the map preserves
-      addition."]
+      /-- Makes an ordered additive group isomorphism from a proof that the map preserves
+      addition. -/]
 def mk' (f : α ≃ β) (hf : ∀ {a b}, f a ≤ f b ↔ a ≤ b) (map_mul : ∀ a b : α, f (a * b) = f a * f b) :
     α ≃*o β :=
   { MulEquiv.mk' f map_mul with map_le_map_iff' := hf }

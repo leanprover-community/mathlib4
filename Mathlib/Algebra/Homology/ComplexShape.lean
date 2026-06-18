@@ -3,9 +3,12 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Logic.Relation
-import Mathlib.Logic.Function.Basic
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Logic.Relation
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Tactic.ToDual
 
 /-!
 # Shapes of homological complexes
@@ -40,6 +43,8 @@ so `d : X i ⟶ X j` is nonzero only when `i = j + 1`.
 `HomologicalComplex` with one of these shapes baked in.)
 -/
 
+@[expose] public section
+
 noncomputable section
 
 /-- A `c : ComplexShape ι` describes the shape of a chain complex,
@@ -57,12 +62,15 @@ Below we define `c.next` and `c.prev` which provide these related elements.
 @[ext]
 structure ComplexShape (ι : Type*) where
   /-- Nonzero differentials `X i ⟶ X j` shall be allowed
-    on homological complexes when `Rel i j` holds. -/
+  on homological complexes when `Rel i j` holds. -/
   Rel : ι → ι → Prop
   /-- There is at most one nonzero differential from `X i`. -/
   next_eq : ∀ {i j j'}, Rel i j → Rel i j' → j = j'
   /-- There is at most one nonzero differential to `X j`. -/
   prev_eq : ∀ {i i' j}, Rel i j → Rel i' j → i = i'
+
+attribute [to_dual self (reorder := 3 4)] ComplexShape.Rel
+attribute [to_dual existing] ComplexShape.next_eq
 
 namespace ComplexShape
 
@@ -85,6 +93,13 @@ def symm (c : ComplexShape ι) : ComplexShape ι where
   Rel i j := c.Rel j i
   next_eq w w' := c.prev_eq w w'
   prev_eq w w' := c.next_eq w w'
+
+/-- If `c : ComplexShape α` is such that `c.Rel` is decidable, it is also the
+case of `c.symm.Rel`. -/
+@[implicit_reducible]
+def decidableRelSymm {α : Type*} (c : ComplexShape α) [DecidableRel c.Rel] :
+    DecidableRel c.symm.Rel :=
+  fun a b ↦ decidable_of_iff (c.Rel b a) Iff.rfl
 
 @[simp]
 theorem symm_symm (c : ComplexShape ι) : c.symm.symm = c := rfl
@@ -111,63 +126,44 @@ def trans (c₁ c₂ : ComplexShape ι) : ComplexShape ι where
     rw [c₂.prev_eq w₂ w₂'] at w₁
     exact c₁.prev_eq w₁ w₁'
 
+@[to_dual]
 instance subsingleton_next (c : ComplexShape ι) (i : ι) : Subsingleton { j // c.Rel i j } := by
   constructor
   rintro ⟨j, rij⟩ ⟨k, rik⟩
   congr
   exact c.next_eq rij rik
 
-instance subsingleton_prev (c : ComplexShape ι) (j : ι) : Subsingleton { i // c.Rel i j } := by
-  constructor
-  rintro ⟨i, rik⟩ ⟨j, rjk⟩
-  congr
-  exact c.prev_eq rik rjk
-
 open Classical in
 /-- An arbitrary choice of index `j` such that `Rel i j`, if such exists.
 Returns `i` otherwise.
 -/
+@[to_dual
+/-- An arbitrary choice of index `i` such that `Rel i j`, if such exists.
+Returns `j` otherwise.
+-/]
 def next (c : ComplexShape ι) (i : ι) : ι :=
   if h : ∃ j, c.Rel i j then h.choose else i
 
-open Classical in
-/-- An arbitrary choice of index `i` such that `Rel i j`, if such exists.
-Returns `j` otherwise.
--/
-def prev (c : ComplexShape ι) (j : ι) : ι :=
-  if h : ∃ i, c.Rel i j then h.choose else j
-
+@[to_dual]
 theorem next_eq' (c : ComplexShape ι) {i j : ι} (h : c.Rel i j) : c.next i = j := by
   apply c.next_eq _ h
   rw [next]
   rw [dif_pos]
   exact Exists.choose_spec ⟨j, h⟩
 
-theorem prev_eq' (c : ComplexShape ι) {i j : ι} (h : c.Rel i j) : c.prev j = i := by
-  apply c.prev_eq _ h
-  rw [prev, dif_pos]
-  exact Exists.choose_spec (⟨i, h⟩ : ∃ k, c.Rel k j)
-
+@[to_dual]
 lemma next_eq_self' (c : ComplexShape ι) (j : ι) (hj : ∀ k, ¬c.Rel j k) :
     c.next j = j :=
   dif_neg (by simpa using hj)
 
-lemma prev_eq_self' (c : ComplexShape ι) (j : ι) (hj : ∀ i, ¬c.Rel i j) :
-    c.prev j = j :=
-  dif_neg (by simpa using hj)
-
+@[to_dual]
 lemma next_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬c.Rel j (c.next j)) :
     c.next j = j :=
   c.next_eq_self' j (fun k hk' => hj (by simpa only [c.next_eq' hk'] using hk'))
 
-lemma prev_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬c.Rel (c.prev j) j) :
-    c.prev j = j :=
-  c.prev_eq_self' j (fun k hk' => hj (by simpa only [c.prev_eq' hk'] using hk'))
-
 /-- The `ComplexShape` allowing differentials from `X i` to `X (i+a)`.
 (For example when `a = 1`, a cohomology theory indexed by `ℕ` or `ℤ`)
 -/
-@[simps]
 def up' {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) : ComplexShape α where
   Rel i j := i + a = j
   next_eq hi hj := hi.symm.trans hj
@@ -176,30 +172,28 @@ def up' {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) : ComplexShape α w
 /-- The `ComplexShape` allowing differentials from `X (j+a)` to `X j`.
 (For example when `a = 1`, a homology theory indexed by `ℕ` or `ℤ`)
 -/
-@[simps]
+@[to_dual existing (attr := simps) up']
 def down' {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) : ComplexShape α where
   Rel i j := j + a = i
   next_eq hi hj := add_right_cancel (hi.trans hj.symm)
   prev_eq hi hj := hi.symm.trans hj
 
-theorem down'_mk {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) (i j : α) (h : j + a = i) :
-    (down' a).Rel i j := h
+@[to_dual (reorder := i j) down'_mk]
+theorem up'_mk {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) (i j : α) (h : i + a = j) :
+    (up' a).Rel i j := h
 
 /-- The `ComplexShape` appropriate for cohomology, so `d : X i ⟶ X j` only when `j = i + 1`.
 -/
-@[simps!]
+@[to_dual (attr := simps!) down
+/-- The `ComplexShape` appropriate for homology, so `d : X i ⟶ X j` only when `i = j + 1`.
+-/]
 def up (α : Type*) [Add α] [IsRightCancelAdd α] [One α] : ComplexShape α :=
   up' 1
 
-/-- The `ComplexShape` appropriate for homology, so `d : X i ⟶ X j` only when `i = j + 1`.
--/
-@[simps!]
-def down (α : Type*) [Add α] [IsRightCancelAdd α] [One α] : ComplexShape α :=
-  down' 1
-
-theorem down_mk {α : Type*} [Add α] [IsRightCancelAdd α] [One α] (i j : α) (h : j + 1 = i) :
-    (down α).Rel i j :=
-  down'_mk (1 : α) i j h
+@[to_dual (reorder := i j) down_mk]
+theorem up_mk {α : Type*} [Add α] [IsRightCancelAdd α] [One α] (i j : α) (h : i + 1 = j) :
+    (up α).Rel i j :=
+  up'_mk (1 : α) i j h
 
 end ComplexShape
 
@@ -209,18 +203,13 @@ namespace ComplexShape
 
 variable (α : Type*) [AddRightCancelSemigroup α] [DecidableEq α]
 
-instance (a : α) : DecidableRel (ComplexShape.up' a).Rel :=
+set_option backward.defeqAttrib.useBackward true in
+@[to_dual instDecidableRelRelDown']
+instance instDecidableRelRelUp' (a : α) : DecidableRel (ComplexShape.up' a).Rel :=
   fun _ _ => by dsimp; infer_instance
 
-instance (a : α) : DecidableRel (ComplexShape.down' a).Rel :=
-  fun _ _ => by dsimp; infer_instance
-
-variable [One α]
-
-instance : DecidableRel (ComplexShape.up α).Rel := by
+@[to_dual instDecidableRelRelDown]
+instance instDecidableRelRelUp [One α] : DecidableRel (ComplexShape.up α).Rel := by
   dsimp [ComplexShape.up]; infer_instance
-
-instance : DecidableRel (ComplexShape.down α).Rel := by
-  dsimp [ComplexShape.down]; infer_instance
 
 end ComplexShape

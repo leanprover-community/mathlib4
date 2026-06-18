@@ -3,9 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Perm.Basic
-import Mathlib.Data.Multiset.Replicate
-import Mathlib.Data.Set.List
+module
+
+public import Mathlib.Data.List.Perm.Basic
+public import Mathlib.Data.Multiset.Replicate
+public import Mathlib.Data.Set.List
 
 /-!
 # Mapping and folding multisets
@@ -22,6 +24,8 @@ Many lemmas about `Multiset.map` are proven in `Mathlib/Data/Multiset/Filter.lea
 should we switch the import direction?
 
 -/
+
+@[expose] public section
 
 -- No algebra should be required
 assert_not_exists Monoid
@@ -106,6 +110,10 @@ theorem card_map (f : α → β) (s) : card (map f s) = card s :=
 theorem map_eq_zero {s : Multiset α} {f : α → β} : s.map f = 0 ↔ s = 0 := by
   rw [← Multiset.card_eq_zero, Multiset.card_map, Multiset.card_eq_zero]
 
+@[simp]
+theorem zero_eq_map {s : Multiset α} {f : α → β} : 0 = s.map f ↔ s = 0 := by
+  rw [eq_comm, map_eq_zero]
+
 theorem mem_map_of_mem (f : α → β) {a : α} {s : Multiset α} (h : a ∈ s) : f a ∈ map f s :=
   mem_map.2 ⟨_, h, rfl⟩
 
@@ -134,11 +142,7 @@ theorem map_eq_cons [DecidableEq α] (f : α → β) (s : Multiset α) (t : Mult
     refine ⟨a, mem_cons_self _ _, rfl, ?_⟩
     rw [Multiset.erase_cons_head, h]
 
--- The simpNF linter says that the LHS can be simplified via `Multiset.mem_map`.
--- However this is a higher priority lemma.
--- It seems the side condition `H` is not applied by `simpNF`.
--- https://github.com/leanprover/std4/issues/207
-@[simp 1100, nolint simpNF]
+@[simp 1100]
 theorem mem_map_of_injective {f : α → β} (H : Function.Injective f) {a : α} {s : Multiset α} :
     f a ∈ map f s ↔ a ∈ s :=
   Quot.inductionOn s fun _l => List.mem_map_of_injective H
@@ -175,8 +179,10 @@ theorem map_lt_map {f : α → β} {s t : Multiset α} (h : s < t) : s.map f < t
   rw [← s.card_map f, ← t.card_map f]
   exact card_le_card H
 
+@[gcongr]
 theorem map_mono (f : α → β) : Monotone (map f) := fun _ _ => map_le_map
 
+@[gcongr]
 theorem map_strictMono (f : α → β) : StrictMono (map f) := fun _ _ => map_lt_map
 
 @[simp, gcongr]
@@ -340,7 +346,7 @@ theorem attach_cons (a : α) (m : Multiset α) :
   Quotient.inductionOn m fun l =>
     congr_arg _ <|
       congr_arg (List.cons _) <| by
-        rw [List.map_pmap]; exact List.pmap_congr_left _ fun _ _ _ _ => Subtype.eq rfl
+        rw [List.map_pmap]; exact List.pmap_congr_left _ fun _ _ _ _ => Subtype.ext rfl
 
 section
 

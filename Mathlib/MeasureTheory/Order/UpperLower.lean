@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies, Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Kexing Ying
 -/
-import Mathlib.Analysis.Normed.Order.UpperLower
-import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
-import Mathlib.Topology.Order.DenselyOrdered
+module
+
+public import Mathlib.Analysis.Normed.Order.UpperLower
+public import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
+public import Mathlib.Topology.Order.DenselyOrdered
 
 /-!
 # Order-connected sets are null-measurable
@@ -45,6 +47,8 @@ any subset of the antidiagonal `{(x, y) | x + y = 0}`) is order-connected.
 Generalize so that it also applies to `ℝ × ℝ`, for example.
 -/
 
+public section
+
 open Filter MeasureTheory Metric Set
 open scoped Topology
 
@@ -53,8 +57,8 @@ variable {ι : Type*} [Fintype ι] {s : Set (ι → ℝ)} {x : ι → ℝ}
 /-- If we can fit a small ball inside a set `s` intersected with any neighborhood of `x`, then the
 density of `s` near `x` is not `0`.
 
-Along with `aux₁`, this proves that `x` is a Lebesgue point of `s`. This will be used to prove that
-the frontier of an order-connected set is null. -/
+Along with `aux₁`, this proves that `x` is not a Lebesgue point of `s`. This will be used to prove
+that the frontier of an order-connected set is null. -/
 private lemma aux₀
     (h : ∀ δ, 0 < δ →
       ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior s) :
@@ -82,8 +86,8 @@ private lemma aux₀
 /-- If we can fit a small ball inside a set `sᶜ` intersected with any neighborhood of `x`, then the
 density of `s` near `x` is not `1`.
 
-Along with `aux₀`, this proves that `x` is a Lebesgue point of `s`. This will be used to prove that
-the frontier of an order-connected set is null. -/
+Along with `aux₀`, this proves that `x` is not a Lebesgue point of `s`. This will be used to prove
+that the frontier of an order-connected set is null. -/
 private lemma aux₁
     (h : ∀ δ, 0 < δ →
       ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior sᶜ) :
@@ -103,14 +107,13 @@ private lemma aux₁
         ≤ volume (closedBall x (ε n) \ closedBall (f (ε n) <| hε' n) (ε n / 4)) /
           volume (closedBall x (ε n)) := by
         gcongr
-        rw [diff_eq_compl_inter]
+        rw [sdiff_eq_compl_inter]
         refine inter_subset_inter_left _ ?_
         rw [subset_compl_comm, ← interior_compl]
         exact hf₁ _ _
       _ = 1 - ENNReal.ofReal (4⁻¹ ^ Fintype.card ι) := ?_
-    dsimp only
     have := hε' n
-    rw [measure_diff (hf₀ _ _) _ ((Real.volume_pi_closedBall _ _).trans_ne ENNReal.ofReal_ne_top),
+    rw [measure_sdiff (hf₀ _ _) _ ((Real.volume_pi_closedBall _ _).trans_ne ENNReal.ofReal_ne_top),
       Real.volume_pi_closedBall, Real.volume_pi_closedBall, ENNReal.sub_div fun _ _ ↦ _,
       ENNReal.div_self _ ENNReal.ofReal_ne_top, ← ENNReal.ofReal_div_of_pos, ← div_pow,
       mul_div_mul_left _ _ (two_ne_zero' ℝ), div_right_comm, div_self, one_div]
@@ -151,5 +154,5 @@ protected theorem Set.OrdConnected.nullMeasurableSet (hs : s.OrdConnected) : Nul
 
 theorem IsAntichain.volume_eq_zero [Nonempty ι] (hs : IsAntichain (· ≤ ·) s) : volume s = 0 := by
   refine measure_mono_null ?_ hs.ordConnected.null_frontier
-  rw [← closure_diff_interior, hs.interior_eq_empty, diff_empty]
+  rw [← closure_sdiff_interior, hs.interior_eq_empty, sdiff_empty]
   exact subset_closure

@@ -3,8 +3,9 @@ Copyright (c) 2023 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Mario Carneiro
 -/
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.NormNum.Ineq
+module
+
+public import Mathlib.Tactic.NormNum.Ineq
 
 /-!
 # `norm_num` extension for integer div/mod and divides
@@ -12,6 +13,8 @@ import Mathlib.Tactic.NormNum.Ineq
 This file adds support for the `%`, `/`, and `∣` (divisibility) operators on `ℤ`
 to the `norm_num` tactic.
 -/
+
+public meta section
 
 namespace Mathlib
 open Lean
@@ -150,7 +153,7 @@ theorem isInt_dvd_true : {a b : ℤ} → {a' b' c : ℤ} →
 
 theorem isInt_dvd_false : {a b : ℤ} → {a' b' : ℤ} →
     IsInt a a' → IsInt b b' → Int.emod b' a' != 0 → ¬a ∣ b
-  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, e => mt Int.emod_eq_zero_of_dvd (by simpa using e)
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, e => mt Int.emod_eq_zero_of_dvd (by simpa using! e)
 
 attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `(a : ℤ) ∣ b`,

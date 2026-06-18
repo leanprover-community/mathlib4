@@ -3,10 +3,13 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
-import Mathlib.Analysis.Complex.Asymptotics
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Data.Complex.Trigonometric
-import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+module
+
+public import Mathlib.Analysis.Complex.Asymptotics
+public import Mathlib.Analysis.Complex.Trigonometric
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+import Mathlib.Topology.Order.AtTopBotIxx
 
 /-!
 # Complex and real exponential
@@ -18,6 +21,8 @@ limits of `Real.exp` at infinity.
 
 exp
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -54,8 +59,7 @@ theorem locally_lipschitz_exp {r : ℝ} (hr_nonneg : 0 ≤ r) (hr_le : r ≤ 1) 
   calc
     ‖exp y - exp x‖ = ‖exp (x + (y - x)) - exp x‖ := by nth_rw 1 [hy_eq]
     _ ≤ ‖y - x‖ * ‖exp x‖ + ‖exp x‖ * ‖y - x‖ ^ 2 := h_sq (y - x) (hyx.le.trans hr_le)
-    _ ≤ ‖y - x‖ * ‖exp x‖ + ‖exp x‖ * (r * ‖y - x‖) :=
-      (add_le_add_left (mul_le_mul le_rfl hyx_sq_le (sq_nonneg _) (norm_nonneg _)) _)
+    _ ≤ ‖y - x‖ * ‖exp x‖ + ‖exp x‖ * (r * ‖y - x‖) := by grw [hyx_sq_le]
     _ = (1 + r) * ‖exp x‖ * ‖y - x‖ := by ring
 
 -- Porting note: proof by term mode `locally_lipschitz_exp zero_le_one le_rfl x`
@@ -65,22 +69,20 @@ theorem continuous_exp : Continuous exp :=
   continuous_iff_continuousAt.mpr fun x =>
     continuousAt_of_locally_lipschitz zero_lt_one (2 * ‖exp x‖)
       (fun y ↦ by
-        convert locally_lipschitz_exp zero_le_one le_rfl x y using 2
-        congr
-        ring)
+        simpa [dist_eq_norm, one_add_one_eq_two] using locally_lipschitz_exp zero_le_one le_rfl x y)
 
 theorem continuousOn_exp {s : Set ℂ} : ContinuousOn exp s :=
   continuous_exp.continuousOn
 
 lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
     (fun x ↦ exp x - ∑ i ∈ Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
-  rcases (zero_le n).eq_or_lt with rfl | hn
+  rcases eq_zero_or_pos n with rfl | hn
   · simpa using continuous_exp.continuousAt.norm.isBoundedUnder_le
   · refine .of_bound (n.succ / (n ! * n)) ?_
-    rw [NormedAddCommGroup.nhds_zero_basis_norm_lt.eventually_iff]
+    rw [NormedAddGroup.nhds_zero_basis_norm_lt.eventually_iff]
     refine ⟨1, one_pos, fun x hx ↦ ?_⟩
-    convert exp_bound hx.out.le hn using 1
-    field_simp [mul_comm]
+    convert! exp_bound hx.out.le hn using 1
+    simp [field]
 
 lemma exp_sub_sum_range_succ_isLittleO_pow (n : ℕ) :
     (fun x ↦ exp x - ∑ i ∈ Finset.range (n + 1), x ^ i / i !) =o[𝓝 0] (· ^ n) :=
@@ -120,7 +122,7 @@ theorem Continuous.cexp (h : Continuous f) : Continuous fun y => exp (f y) :=
 
 /-- The complex exponential function is uniformly continuous on left half planes. -/
 lemma UniformContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | x.re ≤ a} := by
-  have : Continuous (cexp - 1) := Continuous.sub (Continuous.cexp continuous_id') continuous_one
+  have : Continuous (cexp - 1) := Continuous.sub (by fun_prop) continuous_one
   rw [Metric.uniformContinuousOn_iff, Metric.continuous_iff'] at *
   intro ε hε
   simp only [gt_iff_lt, Pi.sub_apply, Pi.one_apply, dist_sub_eq_dist_add_right,
@@ -130,36 +132,27 @@ lemma UniformContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | x.
   rw [Metric.eventually_nhds_iff] at H
   obtain ⟨δ, hδ⟩ := H
   refine ⟨δ, hδ.1, ?_⟩
-  intros x _ y hy hxy
-  have h3 := hδ.2 (y := x - y) (by simpa only [dist_zero_right] using hxy)
+  intro x _ y hy hxy
+  have h3 := hδ.2 (y := x - y) (by simpa only [dist_eq_norm, sub_zero] using hxy)
   rw [dist_eq_norm, exp_zero] at *
   have : cexp x - cexp y = cexp y * (cexp (x - y) - 1) := by
-      rw [mul_sub_one, ← exp_add]
-      ring_nf
+    rw [mul_sub_one, ← exp_add]
+    ring_nf
   rw [this, mul_comm]
-  have hya : ‖cexp y‖ ≤ Real.exp a := by
-    simp only [norm_exp, Real.exp_le_exp]
-    exact hy
+  have hya : ‖cexp y‖ ≤ Real.exp a := by simpa only [norm_exp, Real.exp_le_exp]
   simp only [gt_iff_lt, dist_zero_right, Set.mem_setOf_eq, norm_mul, Complex.norm_exp] at *
-  apply lt_of_le_of_lt (mul_le_mul h3.le hya (Real.exp_nonneg y.re) (le_of_lt ha))
-  have hrr : ε / (2 * a.exp) * a.exp = ε / 2 := by
-    nth_rw 2 [mul_comm]
-    field_simp [mul_assoc]
-  rw [hrr]
-  exact div_two_lt_of_pos hε
-
-@[deprecated (since := "2025-02-11")] alias UniformlyContinuousOn.cexp := UniformContinuousOn.cexp
+  apply lt_of_le_of_lt (mul_le_mul h3.le hya (Real.exp_nonneg y.re) ha.le)
+  simp [field]
 
 end ComplexContinuousExpComp
 
 namespace Real
 
-@[continuity]
-theorem continuous_exp : Continuous exp :=
-  Complex.continuous_re.comp Complex.continuous_ofReal.cexp
+@[continuity, fun_prop]
+theorem continuous_exp : Continuous exp := by
+  unfold Real.exp; fun_prop
 
-theorem continuousOn_exp {s : Set ℝ} : ContinuousOn exp s :=
-  continuous_exp.continuousOn
+theorem continuousOn_exp {s : Set ℝ} : ContinuousOn exp s := by fun_prop
 
 lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
     (fun x ↦ exp x - ∑ i ∈ Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
@@ -190,6 +183,7 @@ nonrec
 theorem ContinuousWithinAt.rexp (h : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun y ↦ exp (f y)) s x :=
   h.rexp
+
 @[fun_prop]
 nonrec
 theorem ContinuousAt.rexp (h : ContinuousAt f x) : ContinuousAt (fun y ↦ exp (f y)) x :=
@@ -217,6 +211,12 @@ theorem tendsto_exp_atTop : Tendsto exp atTop atTop := by
   have B : ∀ᶠ x in atTop, x + 1 ≤ exp x := eventually_atTop.2 ⟨0, fun x _ => add_one_le_exp x⟩
   exact tendsto_atTop_mono' atTop B A
 
+/-- The function `y ↦ y * exp (-y)` is bounded above by `exp (-1)`. -/
+theorem mul_exp_neg_le_exp_neg_one (y : ℝ) : y * exp (-y) ≤ exp (-1) := by
+  have h_le : y ≤ exp (y - 1) := by simpa using add_one_le_exp (y - 1)
+  have h_mul_le : y * rexp (-y) ≤ rexp (y - 1) * rexp (-y) := by gcongr
+  simpa [← exp_add, sub_add_eq_add_sub] using h_mul_le
+
 /-- The real exponential function tends to `0` at `-∞` or, equivalently, `exp(-x)` tends to `0`
 at `+∞` -/
 theorem tendsto_exp_neg_atTop_nhds_zero : Tendsto (fun x => exp (-x)) atTop (𝓝 0) :=
@@ -224,7 +224,7 @@ theorem tendsto_exp_neg_atTop_nhds_zero : Tendsto (fun x => exp (-x)) atTop (�
 
 /-- The real exponential function tends to `1` at `0`. -/
 theorem tendsto_exp_nhds_zero_nhds_one : Tendsto exp (𝓝 0) (𝓝 1) := by
-  convert continuous_exp.tendsto 0
+  convert! continuous_exp.tendsto 0
   simp
 
 theorem tendsto_exp_atBot : Tendsto exp atBot (𝓝 0) :=
@@ -233,9 +233,6 @@ theorem tendsto_exp_atBot : Tendsto exp atBot (𝓝 0) :=
 
 theorem tendsto_exp_atBot_nhdsGT : Tendsto exp atBot (𝓝[>] 0) :=
   tendsto_inf.2 ⟨tendsto_exp_atBot, tendsto_principal.2 <| Eventually.of_forall exp_pos⟩
-
-@[deprecated (since := "2024-12-22")]
-alias tendsto_exp_atBot_nhdsWithin := tendsto_exp_atBot_nhdsGT
 
 @[simp]
 theorem isBoundedUnder_ge_exp_comp (l : Filter α) (f : α → ℝ) :
@@ -291,23 +288,24 @@ theorem tendsto_div_pow_mul_exp_add_atTop (b c : ℝ) (n : ℕ) (hb : 0 ≠ b) :
     Tendsto (fun x => x ^ n / (b * exp x + c)) atTop (𝓝 0) := by
   have H : ∀ d e, 0 < d → Tendsto (fun x : ℝ => x ^ n / (d * exp x + e)) atTop (𝓝 0) := by
     intro b' c' h
-    convert (tendsto_mul_exp_add_div_pow_atTop b' c' n h).inv_tendsto_atTop using 1
+    convert! (tendsto_mul_exp_add_div_pow_atTop b' c' n h).inv_tendsto_atTop using 1
     ext x
     simp
   rcases lt_or_gt_of_ne hb with h | h
   · exact H b c h
-  · convert (H (-b) (-c) (neg_pos.mpr h)).neg using 1
+  · convert! (H (-b) (-c) (neg_pos.mpr h)).neg using 1
     · ext x
       field_simp
-      rw [← neg_add (b * exp x) c, neg_div_neg_eq]
+      rw [← neg_add (b * exp x) c, div_neg, neg_neg]
     · rw [neg_zero]
 
 /-- `Real.exp` as an order isomorphism between `ℝ` and `(0, +∞)`. -/
 def expOrderIso : ℝ ≃o Ioi (0 : ℝ) :=
-  StrictMono.orderIsoOfSurjective _ (exp_strictMono.codRestrict exp_pos) <|
+  StrictMono.orderIsoOfSurjective _
+    (exp_strictMono.codRestrict fun x ↦ Set.mem_Ioi.mpr (exp_pos x)) <|
     (continuous_exp.subtype_mk _).surjective
       (by rw [tendsto_Ioi_atTop]; simp only [tendsto_exp_atTop])
-      (by rw [tendsto_Ioi_atBot]; simp only [tendsto_exp_atBot_nhdsGT])
+      (by simp [tendsto_exp_atBot_nhdsGT])
 
 @[simp]
 theorem coe_expOrderIso_apply (x : ℝ) : (expOrderIso x : ℝ) = exp x :=
@@ -346,9 +344,6 @@ theorem map_exp_atBot : map exp atBot = 𝓝[>] 0 := by
 theorem comap_exp_nhdsGT_zero : comap exp (𝓝[>] 0) = atBot := by
   rw [← map_exp_atBot, comap_map exp_injective]
 
-@[deprecated (since := "2024-12-22")]
-alias comap_exp_nhdsWithin_Ioi_zero := comap_exp_nhdsGT_zero
-
 theorem tendsto_comp_exp_atBot {f : ℝ → α} :
     Tendsto (fun x => f (exp x)) atBot l ↔ Tendsto f (𝓝[>] 0) l := by
   rw [← map_exp_atBot, tendsto_map'_iff]
@@ -363,6 +358,7 @@ theorem tendsto_exp_comp_nhds_zero {f : α → ℝ} :
     Tendsto (fun x => exp (f x)) l (𝓝 0) ↔ Tendsto f l atBot := by
   simp_rw [← comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_nhds_zero]
 
+@[fun_prop]
 theorem isOpenEmbedding_exp : IsOpenEmbedding exp :=
   isOpen_Ioi.isOpenEmbedding_subtypeVal.comp expOrderIso.toHomeomorph.isOpenEmbedding
 
@@ -470,9 +466,6 @@ theorem comap_exp_nhdsNE : comap exp (𝓝[≠] 0) = comap re atBot := by
   have : (exp ⁻¹' {0})ᶜ = Set.univ := eq_univ_of_forall exp_ne_zero
   simp [nhdsWithin, comap_exp_nhds_zero, this]
 
-@[deprecated (since := "2024-12-22")]
-alias comap_exp_nhdsWithin_zero := comap_exp_nhdsNE
-
 theorem tendsto_exp_nhds_zero_iff {α : Type*} {l : Filter α} {f : α → ℂ} :
     Tendsto (fun x => exp (f x)) l (𝓝 0) ↔ Tendsto (fun x => re (f x)) l atBot := by
   simp_rw [← comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_nhds_zero, tendsto_comap_iff]
@@ -488,9 +481,6 @@ theorem tendsto_exp_comap_re_atBot : Tendsto exp (comap re atBot) (𝓝 0) :=
 
 theorem tendsto_exp_comap_re_atBot_nhdsNE : Tendsto exp (comap re atBot) (𝓝[≠] 0) :=
   comap_exp_nhdsNE ▸ tendsto_comap
-
-@[deprecated (since := "2024-12-22")]
-alias tendsto_exp_comap_re_atBot_nhdsWithin := tendsto_exp_comap_re_atBot_nhdsNE
 
 end Complex
 

@@ -10,6 +10,9 @@ import sys
 from typing import NoReturn
 
 
+# region Remote URLs
+
+
 def http_url(repo: str) -> str:
     return f"https://github.com/{repo}.git"
 
@@ -31,6 +34,12 @@ MATHLIB_REPO: str = "leanprover-community/mathlib4"
 MATHLIB_HTTP_URL: str = http_url(MATHLIB_REPO)
 MATHLIB_SSH_URL: str = ssh_url(MATHLIB_REPO)
 MATHLIB_URLS: set[str] = {MATHLIB_HTTP_URL, MATHLIB_SSH_URL}
+
+
+# endregion
+
+# region Colored output
+
 
 GRAY = "\033[37m"
 RED = "\033[91m"
@@ -72,6 +81,11 @@ def abort(msg: str, code: int = 1) -> NoReturn:
     sys.exit(code)
 
 
+# endregion
+
+# region Commands
+
+
 def run_cmd(*cmd: str) -> None:
     try:
         print(f"{GRAY}$ {shlex.join(cmd)}{END}")
@@ -111,9 +125,9 @@ def ask_yes_no(prompt: str) -> bool:
     return False  # Unreachable
 
 
-##################
-## Git commands ##
-##################
+# endregion
+
+# region Git commands
 
 
 def git_ensure_installed() -> None:
@@ -123,7 +137,7 @@ def git_ensure_installed() -> None:
     except FileNotFoundError:
         abort(f"The program {program!r} is not installed.")
     except subprocess.CalledProcessError:
-        abort(f"The program {program!r} is not installed correcty.")
+        abort(f"The program {program!r} is not installed correctly.")
 
 
 def git_ensure_in_repo() -> None:
@@ -214,9 +228,9 @@ def git_set_branch_push_remote(branch: str, remote: str) -> str | None:
     run_cmd("git", "config", "--", f"branch.{branch}.pushRemote", remote)
 
 
-#################
-## Gh commands ##
-#################
+# endregion
+
+# region Gh commands
 
 
 def gh_ensure_installed() -> None:
@@ -226,7 +240,7 @@ def gh_ensure_installed() -> None:
     except FileNotFoundError:
         abort(f"The program {program!r} is not installed.")
     except subprocess.CalledProcessError:
-        abort(f"The program {program!r} is not installed correcty.")
+        abort(f"The program {program!r} is not installed correctly.")
 
 
 def gh_ensure_logged_in() -> None:
@@ -317,13 +331,59 @@ def gh_find_mathlib_fork(username: str, origin_url: str | None) -> str | None:
             return fork
 
 
+def gh_get_mathlib_fork(username: str, origin_url: str | None) -> str:
+    fork = gh_find_mathlib_fork(username, origin_url)
+    if fork is None:
+        abort("No mathlib fork found.")
+    else:
+        return fork
+
+
 def gh_fork() -> None:
     run_cmd("gh", "repo", "fork", "--default-branch-only", "--remote")
 
 
-##################
-## Command: fix ##
-##################
+def gh_get_default_branch(repo: str) -> str:
+    [branch] = run_stdout(
+        *("gh", "repo", "view", repo),
+        *("--json", "defaultBranchRef"),
+        *("-q", ".defaultBranchRef.name"),
+    ).splitlines()
+    return branch
+
+
+def gh_get_all_branches(repo: str) -> list[str]:
+    return run_stdout(
+        *("gh", "api", f"repos/{repo}/branches"),
+        "--paginate",
+        *("-q", ".[].name"),
+    ).splitlines()
+
+
+def gh_get_all_branches_of_open_prs_from_fork(repo: str, fork: str) -> list[str]:
+    # I've tried different ways of getting this info, but even with GraphQL
+    # there doesn't seem to be a better way, so I'm using the simplest approach:
+    # Query all open PRs, then filter them by the repo they were opened from.
+    return run_stdout(
+        *("gh", "api", f"repos/{repo}/pulls"),
+        "--paginate",
+        *("-q", f".[] | select(.head.repo.full_name=={json.dumps(fork)}) | .head.ref"),
+    ).splitlines()
+
+
+def gh_delete_branch(repo: str, branch: str) -> None:
+    run_cmd(
+        *("gh", "api", f"repos/{repo}/git/refs/heads/{branch}"),
+        *("--method", "DELETE"),
+        # On macOS with zsh, this command apparently opens `less` every time it
+        # is run. Adding --silent suppresses that behavior.
+        "--silent",
+    )
+
+
+# endregion
+
+# region Command: fix
 
 
 def cmd_fix_update_remote(
@@ -419,7 +479,7 @@ def cmd_fix_update_master_remotes() -> None:
         git_set_branch_push_remote(branch, ORIGIN)
 
 
-def cmd_fix() -> None:
+def cmd_fix(args: argparse.Namespace) -> None:
     git_ensure_installed()
     git_ensure_in_repo()
     gh_ensure_installed()
@@ -449,9 +509,56 @@ def cmd_fix() -> None:
     cmd_fix_update_master_remotes()
 
 
-##########
-## Main ##
-##########
+# endregion
+
+# region Command: prune
+
+
+def cmd_prune(args: argparse.Namespace) -> None:
+    print_step(1, "Locate your mathlib fork.")
+    username = gh_get_username()
+    remotes = git_get_remotes()
+    fork = gh_get_mathlib_fork(username, remotes.get(ORIGIN))
+    default_branch = gh_get_default_branch(fork)
+    print_info(f"Fork located at {fork} with default branch {default_branch!r}.")
+
+    print_step(2, "Retrieve all branches of your fork.")
+    branches = gh_get_all_branches(fork)
+    print_info(
+        f"Retrieved {len(branches)} {'branch' if len(branches) == 1 else 'branches'}."
+    )
+
+    print_step(3, "Retrieve your open PRs (this may take a while).")
+    branches_of_open_prs = gh_get_all_branches_of_open_prs_from_fork(MATHLIB_REPO, fork)
+    print_info(
+        f"Retrieved {len(branches_of_open_prs)} open PR{'' if len(branches_of_open_prs) == 1 else 's'}."
+    )
+
+    print_step(4, "Prune branches.")
+    to_keep: set[str] = set(args.keep) | set(branches_of_open_prs) | {default_branch}
+    to_delete = list(sorted(set(branches) - to_keep))
+    if not to_delete:
+        print_info("No branches to delete.")
+        return
+
+    print_info("The following branches in your fork are not used in any open PR.")
+    print_info("They will only be deleted from your fork, not your local clone.")
+    if args.all:
+        print("Branches to delete:")
+        for branch in to_delete:
+            print(f"- {branch}")
+        if ask_yes_no("Delete all listed branches?"):
+            for branch in to_delete:
+                gh_delete_branch(fork, branch)
+    else:
+        for branch in to_delete:
+            if ask_yes_no(f"Delete branch {branch!r}?"):
+                gh_delete_branch(fork, branch)
+
+
+# endregion
+
+# region Main
 
 
 def main() -> None:
@@ -461,13 +568,34 @@ def main() -> None:
 
     subparsers = parser.add_subparsers(required=True)
 
-    p_fix = subparsers.add_parser("fix")
-    p_fix.set_defaults(subcommand="fix")
+    p_fix = subparsers.add_parser(
+        "fix",
+        help="fix your git repo setup",
+    )
+    p_fix.set_defaults(cmd=cmd_fix)
+
+    p_prune = subparsers.add_parser(
+        "prune",
+        help="prune unused branches in your fork",
+    )
+    p_prune.add_argument(
+        "-a",
+        "--all",
+        action="store_true",
+        help="prompt only once for all branches",
+    )
+    p_prune.add_argument(
+        "-k",
+        "--keep",
+        action="append",
+        default=[],
+        metavar="BRANCH",
+        help="never delete this branch (may be specified multiple times)",
+    )
+    p_prune.set_defaults(cmd=cmd_prune)
 
     args = parser.parse_args()
-    match args.subcommand:
-        case "fix":
-            cmd_fix()
+    args.cmd(args)
 
 
 if __name__ == "__main__":
@@ -476,3 +604,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print()
         abort("Aborted by user")
+
+# endregion

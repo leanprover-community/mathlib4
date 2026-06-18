@@ -3,14 +3,16 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Congr
-import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
-import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.Analysis.NormedSpace.Pointwise
-import Mathlib.MeasureTheory.Constructions.Polish.Basic
-import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
-import Mathlib.Topology.Algebra.Module.Determinant
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Congr
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
+public import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+public import Mathlib.MeasureTheory.Constructions.Polish.Basic
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
+public import Mathlib.Topology.Algebra.Module.Determinant
 
 /-!
 # Change of variables in higher-dimensional integrals
@@ -49,7 +51,7 @@ For the next statements, `s` is a measurable set and `f` is differentiable on `s
 * `integral_image_eq_integral_abs_det_fderiv_smul`: for `g : E → F`, one has
     `∫ x in f '' s, g x ∂μ = ∫ x in s, |(f' x).det| • g (f x) ∂μ`.
 * `integrableOn_image_iff_integrableOn_abs_det_fderiv_smul`: for `g : E → F`, the function `g` is
-  integrable on `f '' s` if and only if `|(f' x).det| • g (f x))` is integrable on `s`.
+  integrable on `f '' s` if and only if `|(f' x).det| • g (f x)` is integrable on `s`.
 
 ## Implementation
 
@@ -91,6 +93,8 @@ Change of variables in integrals
 ## References
 [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2]
 -/
+
+public section
 
 open MeasureTheory MeasureTheory.Measure Metric Filter Set Module Asymptotics
   TopologicalSpace
@@ -150,11 +154,11 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
       have : f' x ∈ ⋃ z ∈ T, ball (f' (z : E)) (r (f' z)) := by
         rw [hT]
         refine mem_iUnion.2 ⟨⟨x, xs⟩, ?_⟩
-        simpa only [mem_ball, Subtype.coe_mk, dist_self] using (rpos (f' x)).bot_lt
+        simpa only [mem_ball, Subtype.coe_mk, dist_self] using! (rpos (f' x)).bot_lt
       rwa [mem_iUnion₂, bex_def] at this
     obtain ⟨ε, εpos, hε⟩ : ∃ ε : ℝ, 0 < ε ∧ ‖f' x - f' z‖ + ε ≤ r (f' z) := by
       refine ⟨r (f' z) - ‖f' x - f' z‖, ?_, le_of_eq (by abel)⟩
-      simpa only [sub_pos] using mem_ball_iff_norm.mp hz
+      simpa only [sub_pos] using! mem_ball_iff_norm.mp hz
     obtain ⟨δ, δpos, hδ⟩ :
       ∃ (δ : ℝ), 0 < δ ∧ ball x δ ∩ s ⊆ {y | ‖f y - f x - (f' x) (y - x)‖ ≤ ε * ‖y - x‖} :=
       Metric.mem_nhdsWithin_iff.1 ((hf' x xs).isLittleO.def εpos)
@@ -164,7 +168,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
     calc
       ‖f y - f x - (f' z) (y - x)‖ = ‖f y - f x - (f' x) (y - x) + (f' x - f' z) (y - x)‖ := by
         congr 1
-        simp only [ContinuousLinearMap.coe_sub', map_sub, Pi.sub_apply]
+        simp only [FunLike.coe_sub, map_sub, Pi.sub_apply]
         abel
       _ ≤ ‖f y - f x - (f' x) (y - x)‖ + ‖(f' x - f' z) (y - x)‖ := norm_add_le _ _
       _ ≤ ε * ‖y - x‖ + ‖f' x - f' z‖ * ‖y - x‖ := by
@@ -225,7 +229,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
       rcases s_subset x xs with ⟨n, z, _⟩
       exact ⟨z⟩
     inhabit ↥T
-    exact ⟨_, Encodable.surjective_decode_iget (ℕ × T × ℕ)⟩
+    exact ⟨_, Encodable.surjective_decode_getD (ℕ × T × ℕ) default⟩
   -- these sets `t q = K n z p` will do
   refine
     ⟨fun q => K (F q).1 (F q).2.1 (F q).2.2, fun q => f' (F q).2.1, fun n => K_closed _ _ _,
@@ -308,17 +312,15 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
     have L2 :
       Tendsto (fun ε => μ (closedBall 0 ε + A '' closedBall 0 1)) (𝓝[>] 0)
         (𝓝 (d * μ (closedBall 0 1))) := by
-      convert L1
+      convert! L1
       exact (addHaar_image_continuousLinearMap _ _ _).symm
-    have I : d * μ (closedBall 0 1) < m * μ (closedBall 0 1) :=
-      (ENNReal.mul_lt_mul_right (measure_closedBall_pos μ _ zero_lt_one).ne'
-            measure_closedBall_lt_top.ne).2
-        hm
+    have I : d * μ (closedBall 0 1) < m * μ (closedBall 0 1) := by
+      gcongr; exacts [(measure_closedBall_pos μ _ zero_lt_one).ne', measure_closedBall_lt_top.ne]
     have H :
       ∀ᶠ b : ℝ in 𝓝[>] 0, μ (closedBall 0 b + A '' closedBall 0 1) < m * μ (closedBall 0 1) :=
       (tendsto_order.1 L2).2 _ I
     exact (H.and self_mem_nhdsWithin).exists
-  have : Iio (⟨ε, εpos.le⟩ : ℝ≥0) ∈ 𝓝 (0 : ℝ≥0) := by apply Iio_mem_nhds; exact εpos
+  have : Iio (.mk ε εpos.le) ∈ 𝓝 (0 : ℝ≥0) := by apply Iio_mem_nhds; exact εpos
   filter_upwards [this]
   -- fix a function `f` which is close enough to `A`.
   intro δ hδ s f hf
@@ -374,7 +376,7 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
         rw [biUnion_eq_iUnion] at st
         apply measure_mono
         rw [← image_iUnion, ← inter_iUnion]
-        exact image_subset _ (subset_inter (Subset.refl _) st)
+        exact Set.image_mono (subset_inter (Subset.refl _) st)
       _ ≤ ∑' x : t, μ (f '' (s ∩ closedBall x (r x))) := measure_iUnion_le _
       _ ≤ ∑' x : t, m * μ (closedBall x (r x)) :=
         (ENNReal.tsum_le_tsum fun x => I x (r x) (ts x.2) (rpos x x.2).le)
@@ -398,7 +400,7 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
   -- invertible. One can then pass to the inverses, and deduce the estimate from
   -- `addHaar_image_le_mul_of_det_lt` applied to `f⁻¹` and `A⁻¹`.
   -- exclude first the trivial case where `m = 0`.
-  rcases eq_or_lt_of_le (zero_le m) with (rfl | mpos)
+  rcases eq_zero_or_pos m with (rfl | mpos)
   · filter_upwards
     simp only [forall_const, zero_mul, imp_true_iff, zero_le, ENNReal.coe_zero]
   have hA : A.det ≠ 0 := by
@@ -445,7 +447,7 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
   -- let `δ` be small enough, and `f` approximated by `B` up to `δ`.
   filter_upwards [L1, L2]
   intro δ h1δ h2δ s f hf
-  have hf' : ApproximatesLinearOn f (B : E →L[ℝ] E) s δ := by convert hf
+  have hf' : ApproximatesLinearOn f (B : E →L[ℝ] E) s δ := by convert! hf
   let F := hf'.toPartialEquiv h1δ
   -- the condition to be checked can be reformulated in terms of the inverse maps
   suffices H : μ (F.symm '' F.target) ≤ (m⁻¹ : ℝ≥0) * μ F.target by
@@ -454,7 +456,7 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
       mul_comm, ← ENNReal.coe_inv mpos.ne']
     · apply Or.inl
       simpa only [ENNReal.coe_eq_zero, Ne] using mpos.ne'
-    · simp only [ENNReal.coe_ne_top, true_or, Ne, not_false_iff]
+    · simp
   -- as `f⁻¹` is well approximated by `B⁻¹`, the conclusion follows from `hδ₀`
   -- and our choice of `δ`.
   exact hδ₀ _ _ ((hf'.to_inv h1δ).mono_num h2δ.le)
@@ -514,17 +516,16 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
     calc
       ‖a‖ = ‖z + (a - z)‖ := by simp only [add_sub_cancel]
       _ ≤ ‖z‖ + ‖a - z‖ := norm_add_le _ _
-      _ ≤ ‖z‖ + ε := add_le_add_left (mem_closedBall_iff_norm.1 az) _
+      _ ≤ ‖z‖ + ε := by grw [mem_closedBall_iff_norm.1 az]
   -- use the approximation properties to control `(f' x - A) a`, and then `(f' x - A) z` as `z` is
   -- close to `a`.
   have I : r * ‖(f' x - A) a‖ ≤ r * (δ + ε) * (‖z‖ + ε) :=
     calc
       r * ‖(f' x - A) a‖ = ‖(f' x - A) (r • a)‖ := by
-        simp only [ContinuousLinearMap.map_smul, norm_smul, Real.norm_eq_abs, abs_of_nonneg rpos.le]
+        simp only [map_smul, norm_smul, Real.norm_eq_abs, abs_of_nonneg rpos.le]
       _ = ‖f y - f x - A (y - x) - (f y - f x - (f' x) (y - x))‖ := by
-        congr 1
-        simp only [ya, add_sub_cancel_left, sub_sub_sub_cancel_left, ContinuousLinearMap.coe_sub',
-          Pi.sub_apply, ContinuousLinearMap.map_smul, smul_sub]
+        simp only [ya, add_sub_cancel_left, sub_sub_sub_cancel_left, FunLike.coe_sub,
+          Pi.sub_apply, map_smul, smul_sub]
       _ ≤ ‖f y - f x - A (y - x)‖ + ‖f y - f x - (f' x) (y - x)‖ := norm_sub_le _ _
       _ ≤ δ * ‖y - x‖ + ε * ‖y - x‖ := (add_le_add (hf _ ys _ xs) (hρ ⟨rρ hy, ys⟩))
       _ = r * (δ + ε) * ‖a‖ := by
@@ -534,12 +535,12 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
   calc
     ‖(f' x - A) z‖ = ‖(f' x - A) a + (f' x - A) (z - a)‖ := by
       congr 1
-      simp only [ContinuousLinearMap.coe_sub', map_sub, Pi.sub_apply]
+      simp only [FunLike.coe_sub, map_sub, Pi.sub_apply]
       abel
     _ ≤ ‖(f' x - A) a‖ + ‖(f' x - A) (z - a)‖ := norm_add_le _ _
     _ ≤ (δ + ε) * (‖z‖ + ε) + ‖f' x - A‖ * ‖z - a‖ := by
       apply add_le_add
-      · rw [mul_assoc] at I; exact (mul_le_mul_left rpos).1 I
+      · rw [mul_assoc] at I; exact (mul_le_mul_iff_right₀ rpos).1 I
       · apply ContinuousLinearMap.le_opNorm
     _ ≤ (δ + ε) * (‖z‖ + ε) + ‖f' x - A‖ * ε := by
       rw [mem_closedBall_iff_norm'] at az
@@ -558,7 +559,7 @@ assumptions.
 /-- A differentiable function maps sets of measure zero to sets of measure zero. -/
 theorem addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero (hf : DifferentiableOn ℝ f s)
     (hs : μ s = 0) : μ (f '' s) = 0 := by
-  refine le_antisymm ?_ (zero_le _)
+  rw [← nonpos_iff_eq_zero]
   have :
       ∀ A : E →L[ℝ] E, ∃ δ : ℝ≥0, 0 < δ ∧
         ∀ (t : Set E), ApproximatesLinearOn f A t δ →
@@ -583,14 +584,14 @@ theorem addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero (hf : Diffe
     μ (f '' s) ≤ μ (⋃ n, f '' (s ∩ t n)) := by
       apply measure_mono
       rw [← image_iUnion, ← inter_iUnion]
-      exact image_subset f (subset_inter Subset.rfl t_cover)
+      exact Set.image_mono (subset_inter Subset.rfl t_cover)
     _ ≤ ∑' n, μ (f '' (s ∩ t n)) := measure_iUnion_le _
     _ ≤ ∑' n, (Real.toNNReal |(A n).det| + 1 : ℝ≥0) * μ (s ∩ t n) := by
       apply ENNReal.tsum_le_tsum fun n => ?_
       apply (hδ (A n)).2
       exact ht n
     _ ≤ ∑' n, ((Real.toNNReal |(A n).det| + 1 : ℝ≥0) : ℝ≥0∞) * 0 := by
-      refine ENNReal.tsum_le_tsum fun n => mul_le_mul_left' ?_ _
+      gcongr with n
       exact le_trans (measure_mono inter_subset_left) (le_of_eq hs)
     _ = 0 := by simp only [tsum_zero, mul_zero]
 
@@ -641,9 +642,7 @@ theorem addHaar_image_eq_zero_of_det_fderivWithin_eq_zero_aux
       · exact pairwise_disjoint_mono t_disj fun n => inter_subset_right
       · intro n
         exact measurableSet_closedBall.inter (t_meas n)
-    _ ≤ ε * μ (closedBall 0 R) := by
-      rw [← inter_iUnion]
-      exact mul_le_mul_left' (measure_mono inter_subset_left) _
+    _ ≤ ε * μ (closedBall 0 R) := by grw [← inter_iUnion, inter_subset_left]
 
 /-- A version of Sard lemma in fixed dimension: given a differentiable function from `E` to `E` and
 a set where the differential is not invertible, then the image of this set has zero measure. -/
@@ -651,8 +650,7 @@ theorem addHaar_image_eq_zero_of_det_fderivWithin_eq_zero
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (h'f' : ∀ x ∈ s, (f' x).det = 0) :
     μ (f '' s) = 0 := by
   suffices H : ∀ R, μ (f '' (s ∩ closedBall 0 R)) = 0 by
-    apply le_antisymm _ (zero_le _)
-    rw [← iUnion_inter_closedBall_nat s 0]
+    rw [← nonpos_iff_eq_zero, ← iUnion_inter_closedBall_nat s 0]
     calc
       μ (f '' ⋃ n : ℕ, s ∩ closedBall 0 n) ≤ ∑' n : ℕ, μ (f '' (s ∩ closedBall 0 n)) := by
         rw [image_iUnion]; exact measure_iUnion_le _
@@ -671,7 +669,7 @@ theorem addHaar_image_eq_zero_of_det_fderivWithin_eq_zero
         (Or.inr measure_closedBall_lt_top.ne)
     simp only [zero_mul, ENNReal.coe_zero] at this
     exact Tendsto.mono_left this nhdsWithin_le_nhds
-  apply le_antisymm _ (zero_le _)
+  rw [← nonpos_iff_eq_zero]
   apply ge_of_tendsto B
   filter_upwards [self_mem_nhdsWithin]
   exact A
@@ -779,7 +777,7 @@ theorem nullMeasurable_image_of_fderivWithin (hs : NullMeasurableSet s μ)
     refine union_ae_eq_left_of_ae_eq_empty (ae_eq_empty.mpr ?_)
     apply addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero _
       (fun x hx ↦ ?_) (ae_eq_set.1 t_eq_s).2
-    exact (hf' x hx.1).differentiableWithinAt.mono diff_subset
+    exact (hf' x hx.1).differentiableWithinAt.mono sdiff_subset
   apply NullMeasurableSet.congr _ A.symm
   apply MeasurableSet.nullMeasurableSet
   apply measurable_image_of_fderivWithin ht _ (hf.mono ts) (f' := f')
@@ -849,7 +847,7 @@ theorem addHaar_image_le_lintegral_abs_det_fderiv_aux1 (hs : MeasurableSet s)
     μ (f '' s) ≤ μ (⋃ n, f '' (s ∩ t n)) := by
       apply measure_mono
       rw [← image_iUnion, ← inter_iUnion]
-      exact image_subset f (subset_inter Subset.rfl t_cover)
+      exact Set.image_mono (subset_inter Subset.rfl t_cover)
     _ ≤ ∑' n, μ (f '' (s ∩ t n)) := measure_iUnion_le _
     _ ≤ ∑' n, (ENNReal.ofReal |(A n).det| + ε) * μ (s ∩ t n) := by
       apply ENNReal.tsum_le_tsum fun n => ?_
@@ -1004,7 +1002,7 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image_aux1 (hs : MeasurableSet s)
       have I : |(f' x).det| ≤ |(A n).det| + ε :=
         calc
           |(f' x).det| = |(A n).det + ((f' x).det - (A n).det)| := by congr 1; abel
-          _ ≤ |(A n).det| + |(f' x).det - (A n).det| := abs_add _ _
+          _ ≤ |(A n).det| + |(f' x).det - (A n).det| := abs_add_le _ _
           _ ≤ |(A n).det| + ε := add_le_add le_rfl ((hδ (A n)).2.1 _ hx)
       calc
         ENNReal.ofReal |(f' x).det| ≤ ENNReal.ofReal (|(A n).det| + ε) :=
@@ -1119,7 +1117,7 @@ theorem lintegral_abs_det_fderiv_eq_addHaar_image₀ (hs : NullMeasurableSet s �
     refine union_ae_eq_left_of_ae_eq_empty (ae_eq_empty.mpr ?_)
     apply addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero _
       (fun x hx ↦ ?_) (ae_eq_set.1 t_eq_s).2
-    exact (hf' x hx.1).differentiableWithinAt.mono diff_subset
+    exact (hf' x hx.1).differentiableWithinAt.mono sdiff_subset
   have B : (∫⁻ x in s, ENNReal.ofReal |(f' x).det| ∂μ)
       = (∫⁻ x in t, ENNReal.ofReal |(f' x).det| ∂μ) :=
     setLIntegral_congr t_eq_s.symm
@@ -1182,7 +1180,7 @@ theorem restrict_map_withDensity_abs_det_fderiv_eq_addHaar (hs : MeasurableSet s
 /-! ### Change of variable formulas in integrals -/
 
 
-/- Change of variable formula for differentiable functions: if a function `f` is
+/-- Change of variable formula for differentiable functions: if a function `f` is
 injective and differentiable on a measurable set `s`, then the Lebesgue integral of a function
 `g : E → ℝ≥0∞` on `f '' s` coincides with the integral of `|(f' x).det| * g ∘ f` on `s`.
 Note that the measurability of `f '' s` is given by `measurable_image_of_fderivWithin`. -/
@@ -1228,7 +1226,7 @@ theorem integral_image_eq_integral_abs_det_fderiv_smul (hs : MeasurableSet s)
   congr with x
   rw [NNReal.smul_def, Real.coe_toNNReal _ (abs_nonneg (f' x).det)]
 
-theorem integral_target_eq_integral_abs_det_fderiv_smul {f : PartialHomeomorph E E}
+theorem integral_target_eq_integral_abs_det_fderiv_smul {f : OpenPartialHomeomorph E E}
     (hf' : ∀ x ∈ f.source, HasFDerivAt f (f' x) x) (g : E → F) :
     ∫ x in f.target, g x ∂μ = ∫ x in f.source, |(f' x).det| • g (f x) ∂μ := by
   have : f '' f.source = f.target := PartialEquiv.image_source_eq_target f.toPartialEquiv

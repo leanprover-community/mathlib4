@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Idempotents.Karoubi
+module
+
+public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
 /-!
 # Idempotent completeness and functor categories
@@ -12,10 +14,12 @@ In this file we define an instance `functor_category_isIdempotentComplete` expre
 that a functor category `J ⥤ C` is idempotent complete when the target category `C` is.
 
 We also provide a fully faithful functor
-`karoubiFunctorCategoryEmbedding : Karoubi (J ⥤ C)) : J ⥤ Karoubi C` for all categories
+`karoubiFunctorCategoryEmbedding : Karoubi (J ⥤ C) ⥤ (J ⥤ Karoubi C)` for all categories
 `J` and `C`.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -30,7 +34,7 @@ namespace CategoryTheory
 
 namespace Idempotents
 
-variable {J C : Type*} [Category J] [Category C] (P Q : Karoubi (J ⥤ C)) (f : P ⟶ Q) (X : J)
+variable {J C : Type*} [Category* J] [Category* C] (P Q : Karoubi (J ⥤ C)) (f : P ⟶ Q) (X : J)
 
 @[reassoc (attr := simp)]
 theorem app_idem : P.p.app X ≫ P.p.app X = P.p.app X :=
@@ -52,6 +56,7 @@ theorem app_p_comm : P.p.app X ≫ f.f.app X = f.f.app X ≫ Q.p.app X :=
 
 variable (J C)
 
+set_option backward.isDefEq.respectTransparency false in
 instance functor_category_isIdempotentComplete [IsIdempotentComplete C] :
     IsIdempotentComplete (J ⥤ C) := by
   refine ⟨fun F p hp => ?_⟩
@@ -69,7 +74,7 @@ instance functor_category_isIdempotentComplete [IsIdempotentComplete C] :
       naturality := fun _ _ _ => by rw [equalizer.lift_ι] }
   let e : F ⟶ Y :=
     { app := fun j =>
-        equalizer.lift (p.app j) (by simpa only [comp_id] using (congr_app hp j).symm)
+        equalizer.lift (p.app j) (by simpa only [comp_id] using! (congr_app hp j).symm)
       naturality := fun j j' φ => equalizer.hom_ext (by simp [Y]) }
   use Y, i, e
   constructor
@@ -96,6 +101,7 @@ def obj (P : Karoubi (J ⥤ C)) : J ⥤ Karoubi C where
         rw [NatTrans.comp_app] at h
         rw [reassoc_of% h, reassoc_of% h] }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Tautological action on maps of the functor `Karoubi (J ⥤ C) ⥤ (J ⥤ Karoubi C)`. -/
 @[simps]
 def map {P Q : Karoubi (J ⥤ C)} (f : P ⟶ Q) : obj P ⟶ obj Q where
@@ -109,16 +115,20 @@ def karoubiFunctorCategoryEmbedding : Karoubi (J ⥤ C) ⥤ J ⥤ Karoubi C wher
   obj := KaroubiFunctorCategoryEmbedding.obj
   map := KaroubiFunctorCategoryEmbedding.map
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 instance : (karoubiFunctorCategoryEmbedding J C).Full where
   map_surjective {P Q} f :=
-   ⟨{ f :=
+    ⟨{f :=
         { app := fun j => (f.app j).f
           naturality := fun j j' φ => by
             rw [← Karoubi.comp_p_assoc]
             have h := hom_ext_iff.mp (f.naturality φ)
-            simp only [comp_f] at h
             dsimp [karoubiFunctorCategoryEmbedding] at h
-            erw [← h, assoc, ← P.p.naturality_assoc φ, p_comp (f.app j')] }
+            simp only [assoc, h.symm, karoubiFunctorCategoryEmbedding_obj,
+              KaroubiFunctorCategoryEmbedding.obj_obj_p]
+            rw [← P.p.naturality_assoc]
+            exact congrArg _ (p_comp (f.app _)).symm }
       comm := by
         ext j
         exact (f.app j).comm }, rfl⟩
@@ -128,6 +138,7 @@ instance : (karoubiFunctorCategoryEmbedding J C).Faithful where
     ext j
     exact hom_ext_iff.mp (congr_app h j)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The composition of `(J ⥤ C) ⥤ Karoubi (J ⥤ C)` and `Karoubi (J ⥤ C) ⥤ (J ⥤ Karoubi C)`
 equals the functor `(J ⥤ C) ⥤ (J ⥤ Karoubi C)` given by the composition with
 `toKaroubi C : C ⥤ Karoubi C`. -/

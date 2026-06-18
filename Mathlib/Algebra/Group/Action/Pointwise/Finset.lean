@@ -3,14 +3,18 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Pointwise actions of finsets
 -/
+
+@[expose] public section
 
 -- TODO
 -- assert_not_exists MonoidWithZero
@@ -75,9 +79,9 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
 
 /-- A multiplicative action of a monoid `α` on a type `β` gives a multiplicative action of
 `Finset α` on `Finset β`. -/
-@[to_additive
-      "An additive action of an additive monoid `α` on a type `β` gives an additive action
-      of `Finset α` on `Finset β`"]
+@[to_additive (attr := implicit_reducible)
+      /-- An additive action of an additive monoid `α` on a type `β` gives an additive action
+      of `Finset α` on `Finset β` -/]
 protected def mulAction [DecidableEq α] [Monoid α] [MulAction α β] :
     MulAction (Finset α) (Finset β) where
   mul_smul _ _ _ := image₂_assoc mul_smul
@@ -85,9 +89,9 @@ protected def mulAction [DecidableEq α] [Monoid α] [MulAction α β] :
 
 /-- A multiplicative action of a monoid on a type `β` gives a multiplicative action on `Finset β`.
 -/
-@[to_additive
-      "An additive action of an additive monoid on a type `β` gives an additive action
-      on `Finset β`."]
+@[to_additive (attr := implicit_reducible)
+      /-- An additive action of an additive monoid on a type `β` gives an additive action
+      on `Finset β`. -/]
 protected def mulActionFinset [Monoid α] [MulAction α β] : MulAction α (Finset β) :=
   coe_injective.mulAction _ coe_smul_finset
 
@@ -136,15 +140,15 @@ theorem op_smul_finset_mul_eq_mul_smul_finset (a : α) (s : Finset α) (t : Fins
 
 end Semigroup
 
-section IsLeftCancelMul
-variable [Mul α] [IsLeftCancelMul α] [DecidableEq α] {s t : Finset α} {a : α}
+section IsLeftCancelSMul
+variable [SMul α β] [IsLeftCancelSMul α β] [DecidableEq β]
 
 @[to_additive]
-theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset α} :
-    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t : Set (α × α)).InjOn fun p => p.1 * p.2 := by
+theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset β} :
+    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t : Set (α × β)).InjOn fun p => p.1 • p.2 := by
   simp_rw [← pairwiseDisjoint_coe, coe_smul_finset, Set.pairwiseDisjoint_smul_iff]
 
-end IsLeftCancelMul
+end IsLeftCancelSMul
 
 @[to_additive]
 theorem image_smul_distrib [DecidableEq α] [DecidableEq β] [Mul α] [Mul β] [FunLike F α β]
@@ -158,6 +162,10 @@ variable [DecidableEq β] [Group α] [MulAction α β] {s t : Finset β} {a : α
 @[to_additive (attr := simp)]
 theorem smul_mem_smul_finset_iff (a : α) : a • b ∈ a • s ↔ b ∈ s :=
   (MulAction.injective _).mem_finset_image
+
+@[to_additive (attr := simp)]
+lemma mul_mem_smul_finset_iff [DecidableEq α] (a : α) {b : α} {s : Finset α} :
+    a * b ∈ a • s ↔ b ∈ s := smul_mem_smul_finset_iff _
 
 @[to_additive]
 theorem inv_smul_mem_iff : a⁻¹ • b ∈ s ↔ b ∈ a • s := by
@@ -201,6 +209,10 @@ theorem smul_finset_univ [Fintype β] : a • (univ : Finset β) = univ :=
   image_univ_of_surjective <| MulAction.surjective a
 
 @[to_additive (attr := simp)]
+theorem smul_finset_eq_univ [Fintype β] : a • s = univ ↔ s = univ := by
+  rw [smul_eq_iff_eq_inv_smul, smul_finset_univ]
+
+@[to_additive (attr := simp)]
 theorem smul_univ [Fintype β] {s : Finset α} (hs : s.Nonempty) : s • (univ : Finset β) = univ :=
   coe_injective <| by
     push_cast
@@ -212,8 +224,8 @@ theorem card_smul_finset (a : α) (s : Finset β) : (a • s).card = s.card :=
 
 /-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
 the size of `t` divides the size of `s • t`. -/
-@[to_additive "If the left cosets of `t` by elements of `s` are disjoint (but not necessarily
-distinct!), then the size of `t` divides the size of `s +ᵥ t`."]
+@[to_additive /-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily
+distinct!), then the size of `t` divides the size of `s +ᵥ t`. -/]
 theorem card_dvd_card_smul_right {s : Finset α} :
     ((· • t) '' (s : Set α)).PairwiseDisjoint id → t.card ∣ (s • t).card :=
   card_dvd_card_image₂_right fun _ _ => MulAction.injective _
@@ -222,8 +234,8 @@ variable [DecidableEq α]
 
 /-- If the right cosets of `s` by elements of `t` are disjoint (but not necessarily distinct!), then
 the size of `s` divides the size of `s * t`. -/
-@[to_additive "If the right cosets of `s` by elements of `t` are disjoint (but not necessarily
-distinct!), then the size of `s` divides the size of `s + t`."]
+@[to_additive /-- If the right cosets of `s` by elements of `t` are disjoint (but not necessarily
+distinct!), then the size of `s` divides the size of `s + t`. -/]
 theorem card_dvd_card_mul_left {s t : Finset α} :
     ((fun b => s.image fun a => a * b) '' (t : Set α)).PairwiseDisjoint id →
       s.card ∣ (s * t).card :=
@@ -231,8 +243,8 @@ theorem card_dvd_card_mul_left {s t : Finset α} :
 
 /-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
 the size of `t` divides the size of `s * t`. -/
-@[to_additive "If the left cosets of `t` by elements of `s` are disjoint (but not necessarily
-distinct!), then the size of `t` divides the size of `s + t`."]
+@[to_additive /-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily
+distinct!), then the size of `t` divides the size of `s + t`. -/]
 theorem card_dvd_card_mul_right {s t : Finset α} :
     ((· • t) '' (s : Set α)).PairwiseDisjoint id → t.card ∣ (s * t).card :=
   card_dvd_card_image₂_right fun _ _ => mul_right_injective _

@@ -3,14 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
-import Mathlib.CategoryTheory.Limits.Comma
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.SuccPred.Limit
-import Mathlib.Order.Interval.Set.InitialSeg
+module
+
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
+public import Mathlib.CategoryTheory.Limits.Comma
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.SuccPred.Limit
+public import Mathlib.Order.Interval.Set.InitialSeg
 
 /-! # Transfinite iterations of a successor structure
 
@@ -41,14 +44,14 @@ we introduce a structure `Φ.Iteration j` for any `j : J`. This
 structure contains all the expected data and properties for
 all the indices that are `≤ j`. In this file, we show that
 `Φ.Iteration j` is a subsingleton. The existence shall be
-obtained in the file `SmallObject.Iteration.Nonempty`, and
+obtained in the file `Mathlib/CategoryTheory/SmallObject/Iteration/Nonempty.lean`, and
 the construction of the functor `Φ.iterationFunctor J : J ⥤ C`
-and of its colimit `Φ.iteration J : C` will done in the
-file `SmallObject.TransfiniteIteration`.
+and of its colimit `Φ.iteration J : C` will be done in the
+file `Mathlib/CategoryTheory/SmallObject/TransfiniteIteration.lean`.
 
 The map `Φ.toSucc X : X ⟶ Φ.succ X` does not have to be natural
 (and it is not in certain applications). Then, two isomorphic
-objects `X` and `Y` may have non isomorphic successors. This is
+objects `X` and `Y` may have non-isomorphic successors. This is
 the reason why we make an extensive use of equalities in
 `C` and in `Arrow C` in the definitions.
 
@@ -62,6 +65,8 @@ Reid Barton in 2018 towards the model category structure on
 topological spaces.
 
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 
@@ -114,7 +119,7 @@ end
 
 variable (C) in
 /-- A successor structure on a category consists of the
-data of an object `succ X` for any `X : C`, a map `toSucc X : X ⟶ toSucc X`
+data of an object `succ X` for any `X : C`, a map `toSucc X : X ⟶ succ X`
 (which does not need to be natural), and a zeroth object `X₀`.
 -/
 structure SuccStruct where
@@ -168,6 +173,7 @@ lemma prop.fac {X Y : C} {f : X ⟶ Y} (hf : Φ.prop f) :
   cases hf
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `Φ : SuccStruct C` and `f` is a morphism in `C` which
 satisfies `Φ.prop f`, then this is the isomorphism of arrows
 between `f` and `Φ.toSuccArrow X`. -/
@@ -272,13 +278,15 @@ lemma obj_limit (i : J) (hi : Order.IsSuccLimit i) (hij : i ≤ j) :
     iter.F.obj ⟨i, hij⟩ = colimit (restrictionLT iter.F hij) :=
   congr_arg Comma.right (iter.arrowMap_limit i hi hij ⊥ (Order.IsSuccLimit.bot_lt hi))
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The iteration on a limit element identifies to the colimit of the
 value on smaller elements. -/
 noncomputable def isColimit (i : J) (hi : Order.IsSuccLimit i) (hij : i ≤ j) :
     IsColimit (coconeOfLE iter.F hij) := by
   letI := hasColimitsOfShape_of_isSuccLimit C i hi
   refine IsColimit.ofIsoColimit (colimit.isColimit (restrictionLT iter.F hij))
-    (Cocones.ext (eqToIso (iter.obj_limit i hi hij).symm) ?_)
+    (Cocone.ext (eqToIso (iter.obj_limit i hi hij).symm) ?_)
   rintro ⟨k, hk⟩
   apply Arrow.mk_injective
   dsimp
@@ -353,6 +361,7 @@ lemma ext (h : ∀ (k₁ k₂ : K) (h₁₂ : k₁ ≤ k₂) (h₂ : k₂ ≤ x)
 
 end subsingleton
 
+set_option backward.defeqAttrib.useBackward true in
 open subsingleton in
 instance subsingleton : Subsingleton (Φ.Iteration j) where
   allEq iter₁ iter₂ := by
@@ -403,6 +412,7 @@ instance subsingleton : Subsingleton (Φ.Iteration j) where
           apply mapEq_refl
           simp only [obj_limit _ _ h₁, this]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma congr_obj {j₁ j₂ : J} (iter₁ : Φ.Iteration j₁) (iter₂ : Φ.Iteration j₂)
     (k : J) (h₁ : k ≤ j₁) (h₂ : k ≤ j₂) :
     iter₁.F.obj ⟨k, h₁⟩ = iter₂.F.obj ⟨k, h₂⟩ := by

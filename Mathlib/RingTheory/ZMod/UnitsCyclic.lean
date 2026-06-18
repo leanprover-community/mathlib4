@@ -3,11 +3,13 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Junyan Xu
 -/
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Analysis.Normed.Ring.Lemmas
-import Mathlib.Data.Nat.Choose.Dvd
-import Mathlib.Data.ZMod.Units
-import Mathlib.FieldTheory.Finite.Basic
+module
+
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Analysis.Normed.Ring.Lemmas
+public import Mathlib.Data.Nat.Choose.Dvd
+public import Mathlib.Data.ZMod.Units
+public import Mathlib.FieldTheory.Finite.Basic
 
 /-! # Cyclicity of the units of `ZMod n`
 
@@ -16,7 +18,7 @@ one of the following mutually exclusive cases happens:
   - `n = 0` (then `ZMod 0 ≃+* ℤ` and the group of units is cyclic of order 2);
   - `n = 1`, `2` or `4`
   - `n` is a power `p ^ e` of an odd prime number, or twice such a power
-  (with `1 ≤ e`).
+    (with `1 ≤ e`).
 
 The individual cases are proved by `inferInstance` and are
 also directly provided by :
@@ -33,7 +35,7 @@ The case of prime numbers is also an instance:
 * `ZMod.not_isCyclic_units_eight`: `(ZMod 8)ˣ` is not cyclic
 
 * `ZMod.orderOf_one_add_mul_prime`: the order of `1 + a * p`
-modulo `p ^ (n + 1)` is `p ^ n` when `p` does not divide `a`.
+  modulo `p ^ (n + 1)` is `p ^ n` when `p` does not divide `a`.
 
 * `ZMod.orderOf_five` : the order of `5` modulo `2 ^ (n + 3)` is `2 ^ (n + 1)`.
 
@@ -46,6 +48,8 @@ The proofs mostly follow [Ireland and Rosen,
   [IrelandRosen1990].
 
 -/
+
+public section
 
 open scoped Nat
 
@@ -68,7 +72,7 @@ theorem isCyclic_units_four :
   simp only [Nat.card_eq_fintype_card, card_units_eq_totient]
   decide
 
-/- The multiplicative group of `ZMod p` is cyclic. -/
+/-- The multiplicative group of `ZMod p` is cyclic. -/
 theorem isCyclic_units_prime {p : ℕ} (hp : p.Prime) :
     IsCyclic (ZMod p)ˣ :=
   have : Fact (p.Prime) := ⟨hp⟩
@@ -109,13 +113,13 @@ lemma exists_one_add_mul_pow_prime_eq
   congr 1
   · congr! 1 with i hi
     simp only [Finset.mem_erase, ne_eq, Finset.mem_range] at hi
-    have hi' : 2 ≤ i := by omega
+    have hi' : 2 ≤ i := by lia
     calc
       (u * x) ^ i * p.choose i =
         (u * x) ^ (2 + (i - 2)) * p.choose i := by rw [Nat.add_sub_of_le hi']
       _ = u ^ 2 * x ^ 2 * (u * x) ^ (i - 2) * p.choose i := by ring_nf
       _ = u ^ 2 * x ^ 2 * (u * x) ^ (i - 2) * (p * (p.choose i / p) : ℕ) := by
-        rw [Nat.mul_div_cancel' (hp.dvd_choose_self hi.2.2.1 <| by omega)]
+        rw [Nat.mul_div_cancel' (hp.dvd_choose_self hi.2.2.1 <| by lia)]
       _ = u ^ 2 * x ^ 2 * (u * x) ^ (i - 2) * p * (p.choose i / p : ℕ) := by
         simp only [Nat.cast_mul]; ring_nf
       _ = p * u * (v * (a * x ^ 2 * ((u * x) ^ (i - 2) * (p.choose i / p : ℕ)))) := by
@@ -177,13 +181,13 @@ theorem orderOf_one_add_mul_prime_pow {p : ℕ} (hp : p.Prime) (m : ℕ) (hm0 : 
 theorem orderOf_one_add_mul_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (a : ℤ)
     (ha : ¬ (p : ℤ) ∣ a) (n : ℕ) :
     orderOf (1 + p * a : ZMod (p ^ (n + 1))) = p ^ n := by
-  convert orderOf_one_add_mul_prime_pow hp 1 one_ne_zero _ a ha n using 1
+  convert! orderOf_one_add_mul_prime_pow hp 1 one_ne_zero _ a ha n using 1
   · rw [pow_one]
-  · have := hp.two_le; omega
+  · have := hp.two_le; lia
 
 theorem orderOf_one_add_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (n : ℕ) :
     orderOf (1 + p : ZMod (p ^ (n + 1))) = p ^ n := by
-  convert orderOf_one_add_mul_prime hp hp2 1 _ n
+  convert! orderOf_one_add_mul_prime hp hp2 1 _ n
   · simp
   · intro H
     apply hp.ne_one
@@ -233,18 +237,18 @@ theorem isCyclic_units_two_pow_iff (n : ℕ) :
     simp only [Nat.reduceLeDiff, iff_false]
     intro H
     apply not_isCyclic_units_eight
-    have h : 2 ^ 3 ∣ 2 ^ (n + 3) := pow_dvd_pow _ (by omega)
+    have h : 2 ^ 3 ∣ 2 ^ (n + 3) := pow_dvd_pow _ (by lia)
     exact isCyclic_of_surjective _ (unitsMap_surjective h)
 
 lemma orderOf_one_add_four_mul (a : ℤ) (ha : Odd a) (n : ℕ) :
     orderOf (1 + 4 * a : ZMod (2 ^ (n + 2))) = 2 ^ n := by
-  convert orderOf_one_add_mul_prime_pow Nat.prime_two 2 two_ne_zero le_rfl a ?_ n using 1
+  convert! orderOf_one_add_mul_prime_pow Nat.prime_two 2 two_ne_zero le_rfl a ?_ n using 1
   · norm_num
   · rwa [← Int.not_even_iff_odd, even_iff_two_dvd] at ha
 
 theorem orderOf_five (n : ℕ) :
     orderOf (5 : ZMod (2 ^ (n + 2))) = 2 ^ n := by
-  convert orderOf_one_add_four_mul 1 (by norm_num) n
+  convert! orderOf_one_add_four_mul 1 (by simp) n
   norm_num
 
 end PrimePow
@@ -270,7 +274,7 @@ theorem isCyclic_units_four_mul_iff (n : ℕ) :
   have : NeZero n := ⟨hn0⟩
   have : Odd (φ n) := by simpa [show φ 4 = 2 from rfl] using h
   rw [Nat.odd_totient_iff] at this
-  omega
+  lia
 
 theorem isCyclic_units_two_mul_iff_of_odd (n : ℕ) (hn : Odd n) :
     IsCyclic (ZMod (2 * n))ˣ ↔ IsCyclic (ZMod n)ˣ := by
@@ -308,8 +312,8 @@ theorem isCyclic_units_iff_of_odd {n : ℕ} (hn : Odd n) :
     rw [← Nat.mul_div_cancel' this]
     refine not_isCyclic_units_of_mul_coprime _ _ (hn.of_dvd_nat this) ?_
       (hn.of_dvd_nat (Nat.div_dvd_of_dvd this)) ?_ ((Nat.coprime_ordCompl hp hn0).pow_left ..)
-    · simpa only [Ne, pow_eq_one_iff (hp.factorization_pos_of_dvd hn0 dvd).ne'] using hp.ne_one
-    · contrapose! hnp
+    · simpa [(hp.factorization_pos_of_dvd hn0 dvd).ne'] using hp.ne_one
+    · contrapose hnp
       conv_lhs => rw [← Nat.div_mul_cancel this, hnp, one_mul]
   rintro ⟨q, m, hq, -, rfl⟩
   cases (Nat.prime_dvd_prime_iff_eq hp hq).mp (hp.dvd_of_dvd_pow dvd)
@@ -357,10 +361,7 @@ theorem isCyclic_units_iff (n : ℕ) :
   obtain ⟨n, rfl⟩ := hn.two_dvd
   apply iff_of_false
   · rw [← mul_assoc, show 2 * 2 = 4 from rfl, isCyclic_units_four_mul_iff]
-    omega
-  rintro (⟨p, m, -, odd, -, eq⟩ | ⟨p, m, -, odd, -, eq⟩)
-  on_goal 1 => have := eq ▸ odd.pow
-  on_goal 2 => have := (Nat.mul_left_cancel_iff zero_lt_two).mp eq ▸ odd.pow
-  all_goals simp [← Nat.not_even_iff_odd] at this
+    lia
+  grind
 
 end ZMod

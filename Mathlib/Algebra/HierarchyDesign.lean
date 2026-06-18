@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Eric Wieser
 -/
-import Mathlib.Init
-import Batteries.Util.LibraryNote
+module
+
+public import Mathlib.Init
+public import Batteries.Util.LibraryNote
 
 /-!
 # Documentation of the algebraic hierarchy
@@ -13,25 +15,29 @@ A library note giving advice on modifying the algebraic hierarchy.
 (It is not intended as a "tour".) This is ported directly from the Lean3 version, so may
 refer to files/types that currently only exist in mathlib3.
 
-TODO: Add sections about interactions with topological typeclasses, and order typeclasses.
+## TODO
+
+Add sections about algebra-order and algebra-topology mixins and interactions with
+normed typeclasses.
 
 -/
 
+@[expose] public section
 
-library_note "the algebraic hierarchy"/-- # The algebraic hierarchy
+library_note «the algebraic hierarchy» /-- # The algebraic hierarchy
 
 In any theorem proving environment,
 there are difficult decisions surrounding the design of the "algebraic hierarchy".
 
 There is a danger of exponential explosion in the number of gadgets,
-especially once interactions between algebraic and order/topological/etc structures are considered.
+especially once interactions between algebraic and order/topological/etc. structures are considered.
 
 In mathlib, we try to avoid this by only introducing new algebraic typeclasses either
 1. when there is "real mathematics" to be done with them, or
 2. when there is a meaningful gain in simplicity by factoring out a common substructure.
 
-(As examples, at this point we don't have `Loop`, or `UnitalMagma`,
-but we do have `LieSubmodule` and `TopologicalField`!
+(As examples, at this point we don't have `Loop`, or `Quasigroup`,
+but we do have `LieSubmodule`, `NormedField` and `IsTopologicalDivisionRing`!
 We also have `GroupWithZero`, as an exemplar of point 2.)
 
 Generally in mathlib we use the extension mechanism (so `CommRing` extends `Ring`)
@@ -39,7 +45,7 @@ rather than mixins (e.g. with separate `Ring` and `CommMul` classes),
 in part because of the potential blow-up in term sizes described at
 https://www.ralfj.de/blog/2019/05/15/typeclasses-exponential-blowup.html
 However there is tension here, as it results in considerable duplication in the API,
-particularly in the interaction with order structures.
+particularly in the interaction with normed structures.
 
 This library note is not intended as a design document
 justifying and explaining the history of mathlib's algebraic hierarchy!
@@ -65,7 +71,7 @@ when applicable:
   instance Prod.Z [Z M] [Z N] : Z (M × N) := ...
   ```
 * Instances transferred elementwise to pi types, like `Pi.Monoid`.
-  See `Mathlib/Algebra/Group/Pi.lean` for more examples.
+  See `Mathlib/Algebra/Group/Pi/Basic.lean` for more examples.
   ```
   instance Pi.Z [∀ i, Z <| f i] : Z (Π i : I, f i) := ...
   ```
@@ -97,12 +103,13 @@ when applicable:
   instance Finsupp.Z [Z β] : Z (α →₀ β) := ...
   ```
 * Instances transferred elementwise to `Set`s, like `Set.monoid`.
-  See `Mathlib/Algebra/Pointwise.lean` for more examples.
+  See `Mathlib/Algebra/Group/Pointwise/Set/Basic.lean` for more examples.
   ```
   instance Set.Z [Z α] : Z (Set α) := ...
   ```
 * Definitions for transferring the entire structure across an equivalence, like `Equiv.monoid`.
-  See `Mathlib/Data/Equiv/TransferInstance.lean` for more examples. See also the `transport` tactic.
+  See `Mathlib/Algebra/Group/TransferInstance.lean` for more examples. See also the `transport`
+  tactic.
   ```
   def Equiv.Z (e : α ≃ β) [Z β] : Z α := ...
   /-- When there is a new notion of `Z`-equiv: -/
@@ -138,7 +145,7 @@ For many algebraic structures, particularly ones used in representation theory, 
 etc., we also define "bundled" versions, which carry `category` instances.
 
 These bundled versions are usually named by appending `Cat`,
-so for example we have `AddCommGrp` as a bundled `AddCommGroup`, and `TopCommRingCat`
+so for example we have `AddCommGrpCat` as a bundled `AddCommGroup`, and `TopCommRingCat`
 (which bundles together `CommRing`, `TopologicalSpace`, and `IsTopologicalRing`).
 
 These bundled versions have many appealing features:
@@ -146,9 +153,9 @@ These bundled versions have many appealing features:
 * a uniform notation (and definition) for isomorphisms `X ≅ Y`
 * a uniform API for subobjects, via the partial order `Subobject X`
 * interoperability with unbundled structures, via coercions to `Type`
-  (so if `G : AddCommGrp`, you can treat `G` as a type,
+  (so if `G : AddCommGrpCat`, you can treat `G` as a type,
   and it automatically has an `AddCommGroup` instance)
-  and lifting maps `AddCommGrp.of G`, when `G` is a type with an `AddCommGroup` instance.
+  and lifting maps `AddCommGrpCat.of G`, when `G` is a type with an `AddCommGroup` instance.
 
 If, for example you do the work of proving that a typeclass `Z` has a good notion of tensor product,
 you are strongly encouraged to provide the corresponding `MonoidalCategory` instance
@@ -184,8 +191,7 @@ Hopefully this document makes it easy to assemble this list.
 Another alternative to a TODO list in the doc-strings is adding Github issues.
 -/
 
-
-library_note "reducible non-instances"/--
+library_note «reducible non-instances» /--
 Some definitions that define objects of a class cannot be instances, because they have an
 explicit argument that does not occur in the conclusion. An example is `Preorder.lift` that has a
 function `f : α → β` as an explicit argument to lift a preorder on `β` to a preorder on `α`.
@@ -202,24 +208,33 @@ sometimes comes from `Units.Preorder` and sometimes from `Units.PartialOrder`.
 Therefore, `Preorder.lift` and `PartialOrder.lift` are marked `@[reducible]`.
 -/
 
-library_note "implicit instance arguments"/--
+library_note «implicit instance arguments» /--
 There are places where typeclass arguments are specified with implicit `{}` brackets instead of
 the usual `[]` brackets. This is done when the instances can be inferred because they are implicit
-arguments to the type of one of the other arguments. When they can be inferred from these other
-arguments, it is faster to use this method than to use type class inference.
+arguments to the type of one of the other arguments. There are several reasons for doing so.
 
+When they can be inferred from these other arguments,
+it is faster to use this method than to use type class inference.
 For example, when writing lemmas about `(f : α →+* β)`, it is faster to specify the fact that `α`
 and `β` are `Semiring`s as `{rα : Semiring α} {rβ : Semiring β}` rather than the usual
 `[Semiring α] [Semiring β]`.
+
+When handling non-canonical instances, it is necessary that the relevant declarations take these
+instance arguments implicitly, otherwise Lean will refuse to apply them.
+For example, in measure theory a space `X` will often come equipped with a canonical base
+sigma-algebra `MeasurableSpace X` along with many sub-sigma algebras, also of type
+`MeasurableSpace X`. In homological algebra, `ModuleCat ℤ` appears regularly as the category of
+abelian groups, but terms `A : ModuleCat ℤ` come with two (propeq) `Module ℤ A` instances:
+one from being `ℤ`-modules, and one from being abelian groups.
 -/
 
-library_note "lower instance priority"/--
+library_note «lower instance priority» /--
 Certain instances always apply during type-class resolution. For example, the instance
 `AddCommGroup.toAddGroup {α} [AddCommGroup α] : AddGroup α` applies to all type-class
 resolution problems of the form `AddGroup _`, and type-class inference will then do an
 exhaustive search to find a commutative group. These instances take a long time to fail.
 Other instances will only apply if the goal has a certain shape. For example
-`Int.instAddGroupInt : AddGroup ℤ` or
+`Int.instAddGroup : AddGroup ℤ` or
 `Prod.instAddGroup {α β} [AddGroup α] [AddGroup β] : AddGroup (α × β)`. Usually these instances
 will fail quickly, and when they apply, they are almost always the desired instance.
 For this reason, we want the instances of the second type (that only apply in specific cases) to
@@ -230,7 +245,20 @@ Therefore, if we create an instance that always applies, we set the priority of 
 100 (or something similar, which is below the default value of 1000).
 -/
 
-library_note "instance argument order"/--
+library_note «higher instance priority» /--
+Certain instances only apply if the goal has a certain shape. For example
+`Semiring.toModule [Semiring R] : Module R R` or `Int.instAddGroup : AddGroup ℤ`.
+Usually these instances will fail quickly, and when they apply, they are almost always
+the desired instance. For performance reasons it is sometimes useful to increase the
+priority of these instances, especially if they are defined very early on in mathlib
+(which would mean that they would be tried very late if they had the default priority).
+
+Therefore, if we create an instance that only applies in specific circumstances, and that
+is essentially always the right answer when it does apply, we may want to set the
+priority of these instances to 1100 (or something similar, which is above the default
+value of 1000).
+-/
+library_note «instance argument order» /--
 When type class inference applies an instance, it attempts to solve the sub-goals from left to
 right (it used to be from right to left in lean 3). For example in
 ```
@@ -250,3 +278,47 @@ where the `Group G` instance appears in `IsKleinFour G`. Future work may be done
 type class synthesis order in this situation.
 -/
 
+library_note «commutative subobjects» /--
+The algebraic hierarchy is designed so that commutativity (e.g., of multiplication) is bundled
+into the type class, so that we have, for example `Group` and `CommGroup`, `Ring` and `CommRing`,
+etc.
+
+It is often the case that one may desire to work with a commutative subobject inside an
+ambient noncommutative type. In cases like `Subgroup.center` or `Subring.center`, the subobject is
+*always* commutative, and in these cases one should simply imbue those subobjects (coerced to
+`Type`) with the appropriate `Comm*` instance. However, in other cases, the commutativity of the
+subobject may be conditional on commutativity of some other object. For example,
+`Subgroup.closure s` is not always commutative, but it is when `s` is a commutative subset.
+Likewise, if `S : Subgroup G` is a commutative subgroup, then `S.topologicalClosure` is also
+commutative.
+
+For such scenarios, users should prefer to use the unbundled `IsMulCommutative` typeclass, and to
+provide theorems such as:
+```
+theorem isMulCommutative_closure {G : Type*} [Group G] {k : Set G}
+    (hcomm : ∀ x ∈ k, ∀ y ∈ k, x * y = y * x) :
+    IsMulCommutative (closure k)
+```
+or even *instances* such as
+```
+instance Subgroup.instIsMulCommutative_closure {S G : Type*} [Group G] [SetLike S G]
+    [MulMemClass S G] (s : S) [IsMulCommutative s] :
+    IsMulCommutative (closure (s : Set G))
+```
+and
+```
+instance Subgroup.isMulCommutative_topologicalClosure [T2Space G] (s : Subgroup G)
+    [IsMulCommutative s] : IsMulCommutative s.topologicalClosure
+```
+Note that we prefer to name these instances manually because they are occasionally useful as
+theorems. For example, the proof of the topological closure instance for subgroups above is proved
+immediately from the one for monoids via: `s.toSubmonoid.isMulCommutative_topologicalClosure`.
+
+In practice, we wish to be able to use the library of theorems about (bundled) commutativity for
+subobjects as well, and so we also provide instances which take as input the unbundled
+`Group G` and `IsMulCommutative G` and produce the bundled `CommGroup G`. However, to avoid
+deleterious effects to type class synthesis for bundled commutativity (by forcing Lean to search
+the entirery of both the bundled and unbundled hierarchies), these instances are only
+available inside the `IsMulCommutative` scope and are simultaneously given the very low priority
+`50`.
+-/

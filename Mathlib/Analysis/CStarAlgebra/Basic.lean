@@ -3,14 +3,17 @@ Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Analysis.Normed.Operator.LinearIsometry
-import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.Algebra.Star.Subalgebra
-import Mathlib.Algebra.Star.Unitary
-import Mathlib.Data.Real.Star
-import Mathlib.Topology.Algebra.Module.Star
+module
+
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
+public import Mathlib.Algebra.Star.Pi
+public import Mathlib.Algebra.Star.SelfAdjoint
+public import Mathlib.Algebra.Star.Subalgebra
+public import Mathlib.Algebra.Star.Unitary
+public import Mathlib.Data.Real.Star
+public import Mathlib.Topology.Algebra.Module.Star
 
 /-!
 # Normed star rings and algebras
@@ -27,9 +30,13 @@ Note that the type classes corresponding to C⋆-algebras are defined in
 ## TODO
 
 - Show that `‖x⋆ * x‖ = ‖x‖^2` is equivalent to `‖x⋆ * x‖ = ‖x⋆‖ * ‖x‖`, which is used as the
-  definition of C*-algebras in some sources (e.g. Wikipedia).
+  definition of C⋆-algebras in some sources (e.g. Wikipedia).
 
 -/
+
+@[expose] public section
+
+assert_not_exists ContinuousLinearMap.hasOpNorm
 
 open Topology
 
@@ -65,13 +72,18 @@ theorem star_isometry : Isometry (star : E → E) :=
 instance (priority := 100) NormedStarGroup.to_continuousStar : ContinuousStar E :=
   ⟨star_isometry.continuous⟩
 
+noncomputable
+instance [NormedField 𝕜] [NormedSpace 𝕜 E] [Star 𝕜] [TrivialStar 𝕜] [StarModule 𝕜 E] :
+    NormedSpace 𝕜 (selfAdjoint E) where
+  norm_smul_le _ _ := norm_smul_le _ (_ : E)
+
 end NormedStarGroup
 
 instance RingHomIsometric.starRingEnd [NormedCommRing E] [StarRing E] [NormedStarGroup E] :
     RingHomIsometric (starRingEnd E) :=
   ⟨@norm_star _ _ _ _⟩
 
-/-- A C*-ring is a normed star ring that satisfies the stronger condition `‖x‖ ^ 2 ≤ ‖x⋆ * x‖`
+/-- A C⋆-ring is a normed star ring that satisfies the stronger condition `‖x‖ ^ 2 ≤ ‖x⋆ * x‖`
 for every `x`. Note that this condition actually implies equality, as is shown in
 `norm_star_mul_self` below. -/
 class CStarRing (E : Type*) [NonUnitalNormedRing E] [StarRing E] : Prop where
@@ -99,7 +111,7 @@ lemma of_le_norm_mul_star_self
 variable [NonUnitalNormedRing E] [StarRing E] [CStarRing E]
 
 -- see Note [lower instance priority]
-/-- In a C*-ring, star preserves the norm. -/
+/-- In a C⋆-ring, star preserves the norm. -/
 instance (priority := 100) to_normedStarGroup : NormedStarGroup E where
   norm_star_le x := by
     obtain (hx | hx) := eq_zero_or_norm_pos x⋆
@@ -121,6 +133,14 @@ theorem nnnorm_self_mul_star {x : E} : ‖x * x⋆‖₊ = ‖x‖₊ * ‖x‖�
 
 theorem nnnorm_star_mul_self {x : E} : ‖x⋆ * x‖₊ = ‖x‖₊ * ‖x‖₊ :=
   Subtype.ext norm_star_mul_self
+
+lemma _root_.IsSelfAdjoint.norm_mul_self {x : E} (hx : IsSelfAdjoint x) :
+    ‖x * x‖ = ‖x‖ ^ 2 := by
+  simpa [sq, hx.star_eq] using CStarRing.norm_star_mul_self (x := x)
+
+lemma _root_.IsSelfAdjoint.nnnorm_mul_self {x : E} (hx : IsSelfAdjoint x) :
+    ‖x * x‖₊ = ‖x‖₊ ^ 2 :=
+  Subtype.ext hx.norm_mul_self
 
 @[simp]
 theorem star_mul_self_eq_zero_iff (x : E) : x⋆ * x = 0 ↔ x = 0 := by
@@ -166,7 +186,7 @@ instance _root_.Pi.cstarRing : CStarRing (∀ i, R i) where
     simp only [norm, Pi.mul_apply, Pi.star_apply, nnnorm_star_mul_self, ← sq]
     norm_cast
     exact
-      (Finset.comp_sup_eq_sup_comp_of_is_total (fun x : NNReal => x ^ 2)
+      (Finset.apply_sup_eq_sup_comp_of_linearOrder (fun x : NNReal => x ^ 2)
           (fun x y h => by simpa only [sq] using mul_le_mul' h h) (by simp)).symm
 
 instance _root_.Pi.cstarRing' : CStarRing (ι → R₁) :=
@@ -194,27 +214,18 @@ theorem norm_one [Nontrivial E] : ‖(1 : E)‖ = 1 := by
 instance (priority := 100) [Nontrivial E] : NormOneClass E :=
   ⟨norm_one⟩
 
+@[simp]
 theorem norm_coe_unitary [Nontrivial E] (U : unitary E) : ‖(U : E)‖ = 1 := by
   rw [← sq_eq_sq₀ (norm_nonneg _) zero_le_one, one_pow 2, sq, ← CStarRing.norm_star_mul_self,
-    unitary.coe_star_mul_self, CStarRing.norm_one]
+    Unitary.coe_star_mul_self, CStarRing.norm_one]
 
-@[simp]
 theorem norm_of_mem_unitary [Nontrivial E] {U : E} (hU : U ∈ unitary E) : ‖U‖ = 1 :=
   norm_coe_unitary ⟨U, hU⟩
 
 @[simp]
 theorem norm_coe_unitary_mul (U : unitary E) (A : E) : ‖(U : E) * A‖ = ‖A‖ := by
-  nontriviality E
-  refine le_antisymm ?_ ?_
-  · calc
-      _ ≤ ‖(U : E)‖ * ‖A‖ := norm_mul_le _ _
-      _ = ‖A‖ := by rw [norm_coe_unitary, one_mul]
-  · calc
-      _ = ‖(U : E)⋆ * U * A‖ := by rw [unitary.coe_star_mul_self U, one_mul]
-      _ ≤ ‖(U : E)⋆‖ * ‖(U : E) * A‖ := by
-        rw [mul_assoc]
-        exact norm_mul_le _ _
-      _ = ‖(U : E) * A‖ := by rw [norm_star, norm_coe_unitary, one_mul]
+  rw [← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)]
+  simp [sq, ← CStarRing.norm_star_mul_self, mul_assoc, ← mul_assoc (U : E)⋆]
 
 @[simp]
 theorem norm_unitary_smul (U : unitary E) (A : E) : ‖U • A‖ = ‖A‖ :=
@@ -224,12 +235,8 @@ theorem norm_mem_unitary_mul {U : E} (A : E) (hU : U ∈ unitary E) : ‖U * A�
   norm_coe_unitary_mul ⟨U, hU⟩ A
 
 @[simp]
-theorem norm_mul_coe_unitary (A : E) (U : unitary E) : ‖A * U‖ = ‖A‖ :=
-  calc
-    _ = ‖((U : E)⋆ * A⋆)⋆‖ := by simp only [star_star, star_mul]
-    _ = ‖(U : E)⋆ * A⋆‖ := by rw [norm_star]
-    _ = ‖A⋆‖ := norm_mem_unitary_mul (star A) (unitary.star_mem U.prop)
-    _ = ‖A‖ := norm_star _
+theorem norm_mul_coe_unitary (A : E) (U : unitary E) : ‖A * U‖ = ‖A‖ := by
+  simpa [← norm_star (A * U)] using norm_coe_unitary_mul (star U) (star A)
 
 theorem norm_mul_mem_unitary (A : E) {U : E} (hU : U ∈ unitary E) : ‖A * U‖ = ‖A‖ :=
   norm_mul_coe_unitary A ⟨U, hU⟩
@@ -238,17 +245,27 @@ end Unital
 
 end CStarRing
 
-theorem IsSelfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CStarRing E] {x : E}
-    (hx : IsSelfAdjoint x) (n : ℕ) : ‖x ^ 2 ^ n‖₊ = ‖x‖₊ ^ 2 ^ n := by
-  induction' n with k hk
-  · simp only [pow_zero, pow_one]
-  · rw [pow_succ', pow_mul', sq]
-    nth_rw 1 [← selfAdjoint.mem_iff.mp hx]
-    rw [← star_pow, CStarRing.nnnorm_star_mul_self, ← sq, hk, pow_mul']
+section SelfAdjoint
 
-theorem selfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CStarRing E] (x : selfAdjoint E)
-    (n : ℕ) : ‖x ^ 2 ^ n‖₊ = ‖x‖₊ ^ 2 ^ n :=
-  x.prop.nnnorm_pow_two_pow _
+variable [NormedRing E] [StarRing E] [CStarRing E]
+
+theorem IsSelfAdjoint.nnnorm_pow_two_pow {x : E} (hx : IsSelfAdjoint x) (n : ℕ) :
+    ‖x ^ 2 ^ n‖₊ = ‖x‖₊ ^ 2 ^ n := by
+  induction n with
+  | zero => simp only [pow_zero, pow_one]
+  | succ k hk =>
+    rw [pow_succ', pow_mul', sq, (hx.pow (2 ^ k)).nnnorm_mul_self, hk, pow_mul']
+
+theorem IsSelfAdjoint.norm_pow_two_pow {x : E} (hx : IsSelfAdjoint x) (n : ℕ) :
+    ‖x ^ 2 ^ n‖ = ‖x‖ ^ 2 ^ n :=
+  congr($(hx.nnnorm_pow_two_pow n))
+
+end SelfAdjoint
+
+theorem IsStarProjection.norm_le [NonUnitalNormedRing E] [StarRing E] [CStarRing E]
+    (e : E) (he : IsStarProjection e) : ‖e‖ ≤ 1 := by
+  suffices ‖e‖ * (‖e‖ - 1) = 0 by grind [sub_eq_zero]
+  simp [mul_sub, ← CStarRing.norm_star_mul_self, he.isSelfAdjoint.star_eq, he.isIdempotentElem.eq]
 
 section starₗᵢ
 
@@ -271,17 +288,25 @@ theorem starₗᵢ_apply {x : E} : starₗᵢ 𝕜 x = star x :=
   rfl
 
 @[simp]
+theorem symm_starₗᵢ : (starₗᵢ 𝕜 : E ≃ₗᵢ⋆[𝕜] E).symm = starₗᵢ 𝕜 :=
+  rfl
+
+@[simp]
 theorem starₗᵢ_toContinuousLinearEquiv :
     (starₗᵢ 𝕜 : E ≃ₗᵢ⋆[𝕜] E).toContinuousLinearEquiv = (starL 𝕜 : E ≃L⋆[𝕜] E) :=
   ContinuousLinearEquiv.ext rfl
+
+@[simp]
+theorem toLinearEquiv_starₗᵢ : (starₗᵢ 𝕜 : E ≃ₗᵢ⋆[𝕜] E).toLinearEquiv = starLinearEquiv 𝕜 :=
+  rfl
 
 end starₗᵢ
 
 namespace StarSubalgebra
 
-instance toNormedAlgebra {𝕜 A : Type*} [NormedField 𝕜] [StarRing 𝕜] [SeminormedRing A] [StarRing A]
-    [NormedAlgebra 𝕜 A] [StarModule 𝕜 A] (S : StarSubalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
-  NormedAlgebra.induced 𝕜 S A S.subtype
+example {𝕜 A : Type*} [NormedField 𝕜] [StarRing 𝕜] [SeminormedRing A] [StarRing A]
+    [NormedAlgebra 𝕜 A] [StarModule 𝕜 A] (S : StarSubalgebra 𝕜 A) :
+    NormedAlgebra 𝕜 S := by infer_instance
 
 instance to_cstarRing {R A} [CommRing R] [StarRing R] [NormedRing A] [StarRing A] [CStarRing A]
     [Algebra R A] [StarModule R A] (S : StarSubalgebra R A) : CStarRing S where

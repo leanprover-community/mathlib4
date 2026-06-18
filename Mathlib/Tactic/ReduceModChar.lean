@@ -3,11 +3,14 @@ Copyright (c) 2023 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.Tactic.NormNum.DivMod
-import Mathlib.Tactic.NormNum.PowMod
-import Mathlib.Tactic.ReduceModChar.Ext
+module
+
+public meta import Mathlib.Util.AtLocation
+public import Mathlib.Data.ZMod.Basic  -- shake: keep (Qq dependency)
+public import Mathlib.RingTheory.Polynomial.Basic  -- shake: keep (Qq dependency)
+import all Mathlib.Tactic.NormNum.DivMod  -- for accessing `evalIntMod.go`
+public import Mathlib.Tactic.NormNum.PowMod
+public import Mathlib.Tactic.ReduceModChar.Ext
 
 /-!
 # `reduce_mod_char` tactic
@@ -31,6 +34,8 @@ In addition to the main functionality, we call `normNeg` and `normNegCoeffMul` t
 with multiplication by `p - 1`, and simp lemmas tagged `@[reduce_mod_char]` to clean up the
 resulting expression: e.g. `1 * X + 0` becomes `X`.
 -/
+
+public meta section
 
 open Lean Meta Simp
 open Lean.Elab
@@ -69,12 +74,12 @@ def normBareNumeral {α : Q(Type u)} (n n' : Q(ℕ)) (pn : Q(IsNat «$n» «$n'�
 mutual
 
   /-- Given an expression of the form `a ^ b` in a ring of characteristic `n`, reduces `a`
-      modulo `n` recursively and then calculates `a ^ b` using fast modular exponentiation. -/
+  modulo `n` recursively and then calculates `a ^ b` using fast modular exponentiation. -/
   partial def normPow {α : Q(Type u)} (n n' : Q(ℕ)) (pn : Q(IsNat «$n» «$n'»)) (e : Q($α))
       (_ : Q(Ring $α)) (instCharP : Q(CharP $α $n)) : MetaM (Result e) := do
     let .app (.app (f : Q($α → ℕ → $α)) (a : Q($α))) (b : Q(ℕ)) ← whnfR e | failure
     let .isNat sα na pa ← normIntNumeral' n n' pn a _ instCharP | failure
-    let ⟨nb, pb⟩ ← Mathlib.Meta.NormNum.deriveNat b q(instAddMonoidWithOneNat)
+    let ⟨nb, pb⟩ ← Mathlib.Meta.NormNum.deriveNat b q(Nat.instAddMonoidWithOne)
     guard <|← withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))
     haveI' : $e =Q $a ^ $b := ⟨⟩
     haveI' : $f =Q HPow.hPow := ⟨⟩
@@ -83,7 +88,7 @@ mutual
     return .isNat sα c q(CharP.isNat_pow (f := $f) $instCharP (.refl $f) $pa $pb $pn $r)
 
   /-- If `e` is of the form `a ^ b`, reduce it using fast modular exponentiation, otherwise
-      reduce it using `norm_num`. -/
+  reduce it using `norm_num`. -/
   partial def normIntNumeral' {α : Q(Type u)} (n n' : Q(ℕ)) (pn : Q(IsNat «$n» «$n'»))
       (e : Q($α)) (_ : Q(Ring $α)) (instCharP : Q(CharP $α $n)) : MetaM (Result e) :=
     normPow n n' pn e _ instCharP <|> normBareNumeral n n' pn e _ instCharP
@@ -98,7 +103,7 @@ lemma CharP.intCast_eq_mod (R : Type _) [Ring R] (p : ℕ) [CharP R p] (k : ℤ)
 reduce `e` modulo `n`. -/
 partial def normIntNumeral {α : Q(Type u)} (n : Q(ℕ)) (e : Q($α)) (_ : Q(Ring $α))
     (instCharP : Q(CharP $α $n)) : MetaM (Result e) := do
-  let ⟨n', pn⟩ ← deriveNat n q(instAddMonoidWithOneNat)
+  let ⟨n', pn⟩ ← deriveNat n q(Nat.instAddMonoidWithOne)
   normIntNumeral' n n' pn e _ instCharP
 
 lemma CharP.neg_eq_sub_one_mul {α : Type _} [Ring α] (n : ℕ) (inst : CharP α n) (b : α)
@@ -190,7 +195,7 @@ match Expr.getAppFnArgs t with
     let .some instRing ← trySynthInstanceQ q(Ring $t) | return .failure
 
     let n ← mkFreshExprMVarQ q(ℕ)
-    let .some instCharP ← findLocalDeclWithTypeQ? q(CharP $t $n) | return .failure
+    let some instCharP ← findLocalDeclWithTypeQ? q(CharP $t $n) | return .failure
 
     return .intLike (← instantiateMVarsQ n) instRing instCharP
 
@@ -251,7 +256,7 @@ partial def derive (expensive := false) (e : Expr) : MetaM Simp.Result := do
   | none => throwError "internal error: reduce_mod_char not registered as simp extension"
   let ctx ← Simp.mkContext config (congrTheorems := congrTheorems)
     (simpTheorems := #[← ext.getTheorems])
-  let discharge := Mathlib.Meta.NormNum.discharge ctx
+  let discharge := Mathlib.Meta.NormNum.discharge
   let r : Simp.Result := {expr := e}
   let pre := Simp.preDefault #[] >> fun e =>
       try return (Simp.Step.done (← matchAndNorm (expensive := expensive) e))
@@ -260,26 +265,6 @@ partial def derive (expensive := false) (e : Expr) : MetaM Simp.Result := do
   let r ← r.mkEqTrans (← Simp.main r.expr ctx (methods := { pre, post, discharge? := discharge })).1
 
   return r
-
-/-- Reduce all numeric subexpressions of the goal modulo their characteristic. -/
-partial def reduceModCharTarget (expensive := false) : TacticM Unit := do
-  liftMetaTactic1 fun goal ↦ do
-    let tgt ← instantiateMVars (← goal.getType)
-    let prf ← derive (expensive := expensive) tgt
-    if prf.expr.consumeMData.isConstOf ``True then
-      match prf.proof? with
-      | some proof => goal.assign (← mkOfEqTrue proof)
-      | none => goal.assign (mkConst ``True.intro)
-      return none
-    else
-      applySimpResultToTarget goal tgt prf
-
-/-- Reduce all numeric subexpressions of the given hypothesis modulo their characteristic. -/
-partial def reduceModCharHyp (expensive := false) (fvarId : FVarId) : TacticM Unit :=
-  liftMetaTactic1 fun goal ↦ do
-    let hyp ← instantiateMVars (← fvarId.getDecl).type
-    let prf ← derive (expensive := expensive) hyp
-    return (← applySimpResultToLocalDecl goal fvarId prf false).map (·.snd)
 
 open Parser.Tactic
 
@@ -303,26 +288,19 @@ The variant `reduce_mod_char!` also tries to use `CharP R n` hypotheses in the c
 `n` is not yet known; use `have : CharP R n := inferInstance; reduce_mod_char!` as a workaround.)
 -/
 syntax (name := reduce_mod_char) "reduce_mod_char" (location)? : tactic
-@[inherit_doc reduce_mod_char]
+@[tactic_alt reduce_mod_char]
 syntax (name := reduce_mod_char!) "reduce_mod_char!" (location)? : tactic
 
+open Mathlib.Tactic in
 elab_rules : tactic
 | `(tactic| reduce_mod_char $[$loc]?) => unsafe do
-  match expandOptLocation (Lean.mkOptionalNode loc) with
-  | Location.targets hyps target => do
-    (← getFVarIds hyps).forM reduceModCharHyp
-    if target then reduceModCharTarget
-  | Location.wildcard => do
-    (← (← getMainGoal).getNondepPropHyps).forM reduceModCharHyp
-    reduceModCharTarget
+  let loc := expandOptLocation (Lean.mkOptionalNode loc)
+  transformAtNondepPropLocation (derive (expensive := false) ·) "reduce_mod_char" loc
+    (ifUnchanged := .silent)
 | `(tactic| reduce_mod_char! $[$loc]?) => unsafe do
-  match expandOptLocation (Lean.mkOptionalNode loc) with
-  | Location.targets hyps target => do
-    (← getFVarIds hyps).forM (reduceModCharHyp (expensive := true))
-    if target then reduceModCharTarget (expensive := true)
-  | Location.wildcard => do
-    (← (← getMainGoal).getNondepPropHyps).forM (reduceModCharHyp (expensive := true))
-    reduceModCharTarget (expensive := true)
+  let loc := expandOptLocation (Lean.mkOptionalNode loc)
+  transformAtNondepPropLocation (derive (expensive := true) ·) "reduce_mod_char"
+    loc (ifUnchanged := .silent)
 
 end ReduceModChar
 

@@ -1,9 +1,12 @@
 /-
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
+Authors: Yaël Dillies, Antoine Chambert-Loir, Anatole Dedecker
 -/
-import Mathlib.Analysis.Convex.Function
+module
+
+public import Mathlib.Analysis.Convex.Function
+public import Mathlib.Analysis.Convex.PathConnected
 
 /-!
 # Quasiconvex and quasiconcave functions
@@ -26,6 +29,8 @@ quasiconcavity, and monotonicity implies quasilinearity.
 * https://en.wikipedia.org/wiki/Quasiconvex_function
 -/
 
+@[expose] public section
+
 
 open Function OrderDual Set
 
@@ -33,11 +38,7 @@ variable {𝕜 E β : Type*}
 
 section OrderedSemiring
 
-variable [Semiring 𝕜] [PartialOrder 𝕜]
-
-section AddCommMonoid_E
-
-variable [AddCommMonoid E]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E]
 
 section LE_β
 
@@ -77,15 +78,107 @@ theorem Convex.quasiconcaveOn_of_convex_ge (hs : Convex 𝕜 s) (h : ∀ r, Conv
     QuasiconcaveOn 𝕜 s f :=
   Convex.quasiconvexOn_of_convex_le (β := βᵒᵈ) hs h
 
-theorem QuasiconvexOn.convex [IsDirected β (· ≤ ·)] (hf : QuasiconvexOn 𝕜 s f) : Convex 𝕜 s :=
+theorem QuasiconvexOn.convex [IsDirectedOrder β] (hf : QuasiconvexOn 𝕜 s f) : Convex 𝕜 s :=
   fun x hx y hy _ _ ha hb hab =>
   let ⟨_, hxz, hyz⟩ := exists_ge_ge (f x) (f y)
   (hf _ ⟨hx, hxz⟩ ⟨hy, hyz⟩ ha hb hab).1
 
-theorem QuasiconcaveOn.convex [IsDirected β (· ≥ ·)] (hf : QuasiconcaveOn 𝕜 s f) : Convex 𝕜 s :=
+theorem QuasiconcaveOn.convex [IsCodirectedOrder β] (hf : QuasiconcaveOn 𝕜 s f) : Convex 𝕜 s :=
   hf.dual.convex
 
 end LE_β
+
+section Composition
+
+variable {𝕜 E : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [SMul 𝕜 E]
+variable {β γ : Type*} [LinearOrder β] [Preorder γ]
+variable {s : Set E} {f : E → β} {g : β → γ}
+
+theorem QuasiconvexOn.monotone_comp
+    (hg : Monotone g) (hf : QuasiconvexOn 𝕜 s f) :
+    QuasiconvexOn 𝕜 s (g ∘ f) := fun c x hx y hy ↦ by
+  simp only [Function.comp_apply, mem_setOf_eq] at hx hy
+  intro a b ha hb hab
+  simp only [Function.comp_apply, mem_setOf_eq]
+  wlog h : f x ≤ f y
+  · grind
+  specialize hf (f y) ⟨hx.1, h⟩ ⟨hy.1, le_rfl⟩ ha hb hab
+  simp only [mem_setOf_eq] at hf
+  exact ⟨hf.1, le_trans (hg hf.2) hy.2⟩
+
+theorem QuasiconvexOn.antitone_comp (hg : Antitone g) (hf : QuasiconvexOn 𝕜 s f) :
+    QuasiconcaveOn 𝕜 s (g ∘ f) :=
+  hf.monotone_comp (γ := γᵒᵈ) hg
+
+theorem QuasiconcaveOn.monotone_comp (hg : Monotone g) (hf : QuasiconcaveOn 𝕜 s f) :
+    QuasiconcaveOn 𝕜 s (g ∘ f) :=
+  QuasiconvexOn.monotone_comp hg.dual hf
+
+theorem QuasiconcaveOn.antitone_comp (hg : Antitone g) (hf : QuasiconcaveOn 𝕜 s f) :
+    QuasiconvexOn 𝕜 s (g ∘ f) :=
+  QuasiconvexOn.monotone_comp (β := βᵒᵈ) hg.dual hf
+
+theorem QuasilinearOn.monotone_comp (hg : Monotone g) (hf : QuasilinearOn 𝕜 s f) :
+    QuasilinearOn 𝕜 s (g ∘ f) :=
+  ⟨hf.1.monotone_comp hg, hf.2.monotone_comp hg⟩
+
+theorem QuasilinearOn.antitone_comp (hg : Antitone g) (hf : QuasilinearOn 𝕜 s f) :
+    QuasilinearOn 𝕜 s (g ∘ f) :=
+  ⟨hf.2.antitone_comp hg, hf.1.antitone_comp hg⟩
+
+end Composition
+
+section Restriction
+
+variable {𝕜 E : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
+  [AddCommMonoid E] [SMul 𝕜 E]
+variable {β : Type*} [Preorder β]
+variable {s : Set E} {f : E → β}
+
+theorem Convex.quasiconvexOn_restrict {t : Set E} (hf : QuasiconvexOn 𝕜 s f) (hst : t ⊆ s)
+    (ht : Convex 𝕜 t) : QuasiconvexOn 𝕜 t f := by
+  intro b
+  rw [Set.sep_eq_inter_sep hst]
+  exact Convex.inter ht (hf b)
+
+theorem Convex.quasiconcaveOn_restrict {t : Set E} (hf : QuasiconcaveOn 𝕜 s f) (hst : t ⊆ s)
+    (ht : Convex 𝕜 t) : QuasiconcaveOn 𝕜 t f := by
+  intro b
+  rw [Set.sep_eq_inter_sep hst]
+  exact Convex.inter ht (hf b)
+
+end Restriction
+
+section Preconnected
+
+variable {E : Type*} [AddCommGroup E] [Module ℝ E]
+  [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul ℝ E]
+
+variable {β : Type*} [Preorder β] {f : E → β}
+
+open scoped Set.Notation
+
+/-- If `f` is quasiconcave, then its over-levels are connected. -/
+theorem QuasiconcaveOn.isPreconnected_preimage_subtype {s : Set E} {t : β}
+    (hfc : QuasiconcaveOn ℝ s f) :
+    IsPreconnected (s ↓∩ (f ⁻¹' Ici t)) := by
+  rw [← Topology.IsInducing.subtypeVal.isPreconnected_image,
+    image_preimage_eq_inter_range,
+    Subtype.range_coe, inter_comm]
+  exact (hfc t).isPreconnected
+
+/-- If `f` is quasiconcave, then its under-levels are connected. -/
+theorem QuasiconvexOn.isPreconnected_preimage_subtype {s : Set E} {t : β}
+    (hfc : QuasiconvexOn ℝ s f) :
+    IsPreconnected (s ↓∩ (f ⁻¹' Iic t)) :=
+  QuasiconcaveOn.isPreconnected_preimage_subtype (β := βᵒᵈ) hfc
+
+theorem QuasilinearOn.isPreconnected_preimage_subtype {s : Set E} {t : β}
+    (hfc : QuasilinearOn ℝ s f) :
+    IsPreconnected (s ↓∩ f ⁻¹' Iic t) :=
+  hfc.left.isPreconnected_preimage_subtype
+
+end Preconnected
 
 section Semilattice_β
 
@@ -128,7 +221,7 @@ theorem quasilinearOn_iff_mem_uIcc : QuasilinearOn 𝕜 s f ↔ Convex 𝕜 s �
 
 theorem QuasiconvexOn.convex_lt (hf : QuasiconvexOn 𝕜 s f) (r : β) :
     Convex 𝕜 ({ x ∈ s | f x < r }) := by
-  refine fun x hx y hy a b ha hb hab => ?_
+  intro x hx y hy a b ha hb hab
   have h := hf _ ⟨hx.1, le_max_left _ _⟩ ⟨hy.1, le_max_right _ _⟩ ha hb hab
   exact ⟨h.1, h.2.trans_lt <| max_lt hx.2 hy.2⟩
 
@@ -138,10 +231,10 @@ theorem QuasiconcaveOn.convex_gt (hf : QuasiconcaveOn 𝕜 s f) (r : β) :
 
 end LinearOrder_β
 
-section OrderedSMul_β
+section PosSMulMono
 
 variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
-  [Module 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β]
+  [Module 𝕜 E] [Module 𝕜 β] [PosSMulMono 𝕜 β]
   {s : Set E} {f : E → β}
 
 theorem ConvexOn.quasiconvexOn (hf : ConvexOn 𝕜 s f) : QuasiconvexOn 𝕜 s f :=
@@ -150,14 +243,11 @@ theorem ConvexOn.quasiconvexOn (hf : ConvexOn 𝕜 s f) : QuasiconvexOn 𝕜 s f
 theorem ConcaveOn.quasiconcaveOn (hf : ConcaveOn 𝕜 s f) : QuasiconcaveOn 𝕜 s f :=
   hf.convex_ge
 
-end OrderedSMul_β
+end PosSMulMono
 
-end AddCommMonoid_E
+section LinearOrder
 
-section LinearOrderedAddCommMonoid_E
-
-variable [AddCommMonoid E] [LinearOrder E] [IsOrderedAddMonoid E]
-  [PartialOrder β] [Module 𝕜 E] [OrderedSMul 𝕜 E]
+variable [LinearOrder E] [IsOrderedAddMonoid E] [PartialOrder β] [Module 𝕜 E] [PosSMulMono 𝕜 E]
   {s : Set E} {f : E → β}
 
 theorem MonotoneOn.quasiconvexOn (hf : MonotoneOn f s) (hs : Convex 𝕜 s) : QuasiconvexOn 𝕜 s f :=
@@ -196,8 +286,7 @@ theorem Antitone.quasiconcaveOn (hf : Antitone f) : QuasiconcaveOn 𝕜 univ f :
 theorem Antitone.quasilinearOn (hf : Antitone f) : QuasilinearOn 𝕜 univ f :=
   ⟨hf.quasiconvexOn, hf.quasiconcaveOn⟩
 
-end LinearOrderedAddCommMonoid_E
-
+end LinearOrder
 end OrderedSemiring
 
 section LinearOrderedField

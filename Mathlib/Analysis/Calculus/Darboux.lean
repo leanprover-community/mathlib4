@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Add
-import Mathlib.Analysis.Calculus.Deriv.Mul
-import Mathlib.Analysis.Calculus.LocalExtr.Basic
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Add
+public import Mathlib.Analysis.Calculus.Deriv.Mul
+public import Mathlib.Analysis.Calculus.LocalExtr.Basic
 
 /-!
 # Darboux's theorem
@@ -14,6 +16,8 @@ In this file we prove that the derivative of a differentiable function on an int
 intermediate values. The proof is based on the
 [Wikipedia](https://en.wikipedia.org/wiki/Darboux%27s_theorem_(analysis)) page about this theorem.
 -/
+
+public section
 
 open Filter Set
 
@@ -31,7 +35,7 @@ theorem exists_hasDerivWithinAt_eq_of_gt_of_lt (hab : a ≤ b)
   set g : ℝ → ℝ := fun x => f x - m * x
   have hg : ∀ x ∈ Icc a b, HasDerivWithinAt g (f' x - m) (Icc a b) x := by
     intro x hx
-    simpa using (hf x hx).sub ((hasDerivWithinAt_id x _).const_mul m)
+    simpa using! (hf x hx).sub ((hasDerivWithinAt_id x _).const_mul m)
   obtain ⟨c, cmem, hc⟩ : ∃ c ∈ Icc a b, IsMinOn g (Icc a b) c :=
     isCompact_Icc.exists_isMinOn (nonempty_Icc.2 <| hab) fun x hx => (hg x hx).continuousWithinAt
   have cmem' : c ∈ Ioo a b := by
@@ -41,16 +45,16 @@ theorem exists_hasDerivWithinAt_eq_of_gt_of_lt (hab : a ≤ b)
         (not_le_of_gt hma)
       have : b - a ∈ posTangentConeAt (Icc a b) a :=
         sub_mem_posTangentConeAt_of_segment_subset (segment_eq_Icc hab ▸ Subset.rfl)
-      simpa only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply]
-        using hc.localize.hasFDerivWithinAt_nonneg (hg a (left_mem_Icc.2 hab)) this
+      simpa only [ContinuousLinearMap.smulRight_apply, one_apply_eq_self]
+        using! hc.localize.hasFDerivWithinAt_nonneg (hg a (left_mem_Icc.2 hab)) this
     rcases cmem.2.eq_or_lt' with (rfl | hcb)
     -- Show that `c` can't be equal to `b`
     · refine absurd (sub_nonpos.1 <| nonpos_of_mul_nonneg_right ?_ (sub_lt_zero.2 hab'))
         (not_le_of_gt hmb)
       have : a - b ∈ posTangentConeAt (Icc a b) b :=
         sub_mem_posTangentConeAt_of_segment_subset (by rw [segment_symm, segment_eq_Icc hab])
-      simpa only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply]
-        using hc.localize.hasFDerivWithinAt_nonneg (hg b (right_mem_Icc.2 hab)) this
+      simpa only [ContinuousLinearMap.smulRight_apply, one_apply_eq_self]
+        using! hc.localize.hasFDerivWithinAt_nonneg (hg b (right_mem_Icc.2 hab)) this
     exact ⟨hac, hcb⟩
   use c, cmem'
   rw [← sub_eq_zero]

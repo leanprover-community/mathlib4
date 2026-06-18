@@ -3,11 +3,13 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Algebra.Order.Group.End
-import Mathlib.Logic.Function.Conjugate
-import Mathlib.Order.Bounds.OrderIso
-import Mathlib.Order.OrdContinuous
+module
+
+public import Mathlib.Algebra.Group.Units.Equiv
+public import Mathlib.Algebra.Order.Group.End
+public import Mathlib.Logic.Function.Conjugate
+public import Mathlib.Order.Bounds.OrderIso
+public import Mathlib.Order.OrdContinuous
 
 /-!
 # Semiconjugate by `sSup`
@@ -29,6 +31,8 @@ bornée][ghys87:groupes], Proposition 2.1 and 5.4 respectively. In the paper the
 homeomorphisms of the circle, so in order to apply results from this file one has to lift these
 homeomorphisms to the real line first.
 -/
+
+@[expose] public section
 
 -- Guard against import creep
 assert_not_exists Finset

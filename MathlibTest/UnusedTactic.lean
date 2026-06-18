@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Linter.UnusedTactic
 import Mathlib.Tactic.AdaptationNote
 
@@ -57,7 +58,7 @@ section allowing_more_unused_tactics
 #show_kind skip
 
 /--
-error: unknown constant 'skip'
+error: Unknown constant `skip`
 The command `#show_kind skip` may help to find the correct `SyntaxNodeKind`.
 -/
 #guard_msgs in

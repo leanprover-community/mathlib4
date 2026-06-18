@@ -23,14 +23,14 @@ terms of a quantity that is a root of a particular cubic equation.
 ## Main statements
 
 - `cubic_eq_zero_iff`: gives the roots of the cubic equation
-where the discriminant `p = 3 * a * c - b^2` is nonzero.
+  where the discriminant `p = 3 * a * c - b^2` is nonzero.
 - `cubic_eq_zero_iff_of_p_eq_zero`: gives the roots of the cubic equation
-where the discriminant equals zero.
+  where the discriminant equals zero.
 - `quartic_eq_zero_iff`: gives the roots of the quartic equation
-where the quantity `b^3 - 4 * a * b * c + 8 * a^2 * d` is nonzero, in terms of a root `u`
-to a cubic resolvent.
+  where the quantity `b^3 - 4 * a * b * c + 8 * a^2 * d` is nonzero, in terms of a root `u`
+  to a cubic resolvent.
 - `quartic_eq_zero_iff_of_q_eq_zero`: gives the roots of the quartic equation
-where the quantity `b^3 - 4 * a * b * c + 8 * a^2 * d` equals zero.
+  where the quantity `b^3 - 4 * a * b * c + 8 * a^2 * d` equals zero.
 
 ## Proof outline
 
@@ -91,7 +91,7 @@ theorem cubic_depressed_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp_nonzero : p
   rw [h₁]
   apply Eq.congr_left
   have hs_nonzero : s ≠ 0 := by
-    contrapose! hp_nonzero with hs_nonzero
+    contrapose hp_nonzero with hs_nonzero
     linear_combination -1 * ht + t * hs_nonzero
   rw [← mul_left_inj' (pow_ne_zero 3 hs_nonzero)]
   have H := cube_root_of_unity_sum hω
@@ -115,8 +115,7 @@ theorem cubic_eq_zero_iff (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
   have h9 : (9 : K) = 3 ^ 2 := by norm_num
   have h54 : (54 : K) = 2 * 3 ^ 3 := by norm_num
   have h₁ : a * x ^ 3 + b * x ^ 2 + c * x + d = a * (y ^ 3 + 3 * p * y - 2 * q) := by
-    rw [hp, hq]
-    simp [field_simps, y, ha, h9, h54]; ring
+    simp only [hp, h9, hq, h54, y]; field
   have h₂ : ∀ x, a * x = 0 ↔ x = 0 := by intro x; simp [ha]
   rw [h₁, h₂, cubic_depressed_eq_zero_iff hω hp_nonzero hr hs3 ht]
   simp_rw [y, eq_sub_iff_add_eq]
@@ -130,8 +129,6 @@ theorem cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 
       x = s - b / (3 * a) ∨ x = s * ω - b / (3 * a) ∨ x = s * ω ^ 2 - b / (3 * a) := by
   have h₁ : ∀ x a₁ a₂ a₃ : K, x = a₁ ∨ x = a₂ ∨ x = a₃ ↔ (x - a₁) * (x - a₂) * (x - a₃) = 0 := by
     intros; simp only [mul_eq_zero, sub_eq_zero, or_assoc]
-  have hi2 : (2 : K) ≠ 0 := Invertible.ne_zero _
-  have hi3 : (3 : K) ≠ 0 := Invertible.ne_zero _
   have h54 : (54 : K) = 2 * 3 ^ 3 := by norm_num
   have hb2 : b ^ 2 = 3 * a * c := by rw [sub_eq_zero] at hpz; rw [hpz]
   have hb3 : b ^ 3 = 3 * a * b * c := by rw [pow_succ, hb2]; ring
@@ -139,10 +136,10 @@ theorem cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 
     calc
       a * x ^ 3 + b * x ^ 2 + c * x + d =
       a * (x + b / (3 * a)) ^ 3 + (c - b ^ 2 / (3 * a)) * x + (d - b ^ 3 * a / (3 * a) ^ 3) := by
-        field_simp; ring
+        field
       _ = a * (x + b / (3 * a)) ^ 3 + (d - (9 * a * b * c - 2 * b ^ 3) * a / (3 * a) ^ 3) := by
-        simp only [hb2, hb3]; field_simp [ha]; ring
-      _ = a * ((x + b / (3 * a)) ^ 3 - s ^ 3) := by rw [hs3, hq]; field_simp [h54]; ring
+        simp only [hb2, hb3]; field
+      _ = a * ((x + b / (3 * a)) ^ 3 - s ^ 3) := by simp only [hs3, hq, h54]; field
   have h₃ : ∀ x, a * x = 0 ↔ x = 0 := by intro x; simp [ha]
   have h₄ : ∀ x : K, x ^ 3 - s ^ 3 = (x - s) * (x - s * ω) * (x - s * ω ^ 2) := by
     intro x
@@ -175,7 +172,7 @@ theorem quartic_depressed_eq_zero_iff
   have hi2 : (2 : K) ≠ 0 := Invertible.ne_zero _
   have h4 : (4 : K) = 2 ^ 2 := by norm_num
   have hs_nonzero : s ≠ 0 := by
-    contrapose! hq_nonzero with hs0
+    contrapose hq_nonzero with hs0
     linear_combination (exp := 2) -hu + (4 * r - u ^ 2) * hs + (u ^ 2 * s - 4 * r * s) * hs0
   calc
     _ ↔ 4 * (x ^ 4 + p * x ^ 2 + q * x + r) = 0 := by simp [h4, hi2]
@@ -214,8 +211,7 @@ theorem quartic_eq_zero_iff (ha : a ≠ 0)
   have h256 : (256 : K) = 2 ^ 8 := by norm_num
   have h₁ : a * x ^ 4 + b * x ^ 3 + c * x ^ 2 + d * x + e =
       a * (y ^ 4 + p * y ^ 2 + q * y + r) := by
-    rw [hp, hq, hr]
-    simp [field_simps, y, ha, h4, h8, h16, h256]; ring
+    simp only [h4, hp, h8, hq, hr, h16, h256, y]; field
   have h₂ : ∀ x, a * x = 0 ↔ x = 0 := by intro x; simp [ha]
   rw [h₁, h₂, quartic_depressed_eq_zero_iff hq_nonzero hu hs hv hw]
   simp_rw [y, eq_sub_iff_add_eq]
@@ -237,9 +233,8 @@ theorem quartic_eq_zero_iff_of_q_eq_zero (ha : a ≠ 0)
   have h16 : (16 : K) = 2 ^ 4 := by norm_num
   have h256 : (256 : K) = 2 ^ 8 := by norm_num
   have h₁ : a * x ^ 4 + b * x ^ 3 + c * x ^ 2 + d * x + e = a * (y ^ 4 + p * y ^ 2 + r) := by
-    rw [hp, hr]
-    simp [field_simps, y, ha, h4, h8, h16, h256]
-    linear_combination (1048576 * a ^ 10 * x + 262144 * a ^ 9 * b) * hqz
+    simp only [hp, hr, y, h4, h8, h16, h256]
+    linear_combination (norm := field) (4 * a * x + b) * hqz / a ^ 3 / 2 ^ 5
   rw [h₁, ha.isUnit.mul_right_eq_zero]
   calc
     _ ↔ 1 * (y ^ 2 * y ^ 2) + p * y ^ 2 + r = 0 := by

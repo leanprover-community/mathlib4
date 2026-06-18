@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Category.LightProfinite.AsLimit
-import Mathlib.Topology.Category.Profinite.Extend
+module
+
+public import Mathlib.Topology.Category.LightProfinite.AsLimit
+public import Mathlib.Topology.Category.Profinite.Extend
 
 /-!
 
@@ -23,6 +25,8 @@ We apply this to define `LightProfinite.diagram'`, `LightProfinite.asLimitCone'`
 `Mathlib/Topology/Category/LightProfinite/AsLimit.lean`, in which the
 indexing category is `StructuredArrow S toLightProfinite` instead of `ℕᵒᵖ`.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -65,6 +69,7 @@ example : functorOp c ⋙ CostructuredArrow.proj toLightProfinite.op ⟨c.pt⟩ 
 example : functor c ⋙ (StructuredArrow.post _ _ lightToProfinite) =
     Profinite.Extend.functor (lightToProfinite.mapCone c) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If the projection maps in the cone are epimorphic and the cone is limiting, then
 `LightProfinite.Extend.functor` is initial.
@@ -81,16 +86,17 @@ If the projection maps in the cone are epimorphic and the cone is limiting, then
 -/
 theorem functorOp_final (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Final (functorOp c) := by
   have := functor_initial c hc
-  have : ((StructuredArrow.toCostructuredArrow toLightProfinite c.pt)).IsEquivalence  :=
-    (inferInstance : (structuredArrowOpEquivalence _ _).functor.IsEquivalence )
+  have : ((StructuredArrow.toCostructuredArrow toLightProfinite c.pt)).IsEquivalence :=
+    (inferInstance : (structuredArrowOpEquivalence _ _).functor.IsEquivalence)
   have : (functor c).rightOp.Final :=
     inferInstanceAs ((opOpEquivalence ℕ).inverse ⋙ (functor c).op).Final
   exact Functor.final_comp (functor c).rightOp _
 
 section Limit
 
-variable {C : Type*} [Category C] (G : LightProfinite ⥤ C)
+variable {C : Type*} [Category* C] (G : LightProfinite ⥤ C)
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 Given a functor `G` from `LightProfinite` and `S : LightProfinite`, we obtain a cone on
 `(StructuredArrow.proj S toLightProfinite ⋙ toLightProfinite ⋙ G)` with cone point `G.obj S`.
@@ -101,14 +107,9 @@ example below.
 def cone (S : LightProfinite) :
     Cone (StructuredArrow.proj S toLightProfinite ⋙ toLightProfinite ⋙ G) where
   pt := G.obj S
-  π := {
-    app := fun i ↦ G.map i.hom
-    naturality := fun _ _ f ↦ (by
-      have := f.w
-      simp only [const_obj_obj, StructuredArrow.left_eq_id, const_obj_map, Category.id_comp,
-        StructuredArrow.w] at this
-      simp only [const_obj_obj, comp_obj, StructuredArrow.proj_obj, const_obj_map, Category.id_comp,
-        Functor.comp_map, StructuredArrow.proj_map, ← map_comp, StructuredArrow.w]) }
+  π :=
+    { app i := G.map i.hom
+      naturality _ _ f := by simp [← Functor.map_comp] }
 
 example : G.mapCone c = (cone G c.pt).whisker (functor c) := rfl
 
@@ -124,8 +125,9 @@ end Limit
 
 section Colimit
 
-variable {C : Type*} [Category C] (G : LightProfiniteᵒᵖ ⥤ C)
+variable {C : Type*} [Category* C] (G : LightProfiniteᵒᵖ ⥤ C)
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 Given a functor `G` from `LightProfiniteᵒᵖ` and `S : LightProfinite`, we obtain a cocone on
 `(CostructuredArrow.proj toLightProfinite.op ⟨S⟩ ⋙ toLightProfinite.op ⋙ G)` with cocone point

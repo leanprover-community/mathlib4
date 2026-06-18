@@ -70,6 +70,7 @@ namespace Friendship
 
 variable (R)
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 include hG in
 /-- One characterization of a friendship graph is that there is exactly one walk of length 2
@@ -109,7 +110,7 @@ include hG in
 theorem degree_eq_of_not_adj {v w : V} (hvw : ¬G.Adj v w) : degree G v = degree G w := by
   rw [← Nat.cast_id (G.degree v), ← Nat.cast_id (G.degree w),
     ← adjMatrix_pow_three_of_not_adj ℕ hG hvw,
-    ← adjMatrix_pow_three_of_not_adj ℕ hG fun h => hvw (G.symm h)]
+    ← adjMatrix_pow_three_of_not_adj ℕ hG fun h ↦ hvw h.symm]
   conv_lhs => rw [← transpose_adjMatrix]
   simp only [pow_succ _ 2, sq, ← transpose_mul, transpose_apply]
   simp only [mul_assoc]
@@ -149,7 +150,7 @@ theorem isRegularOf_not_existsPolitician (hG' : ¬ExistsPolitician G) :
   intro x
   by_cases hvx : G.Adj v x; swap; · exact (degree_eq_of_not_adj hG hvx).symm
   dsimp only [Theorems100.ExistsPolitician] at hG'
-  push_neg at hG'
+  push Not at hG'
   rcases hG' v with ⟨w, hvw', hvw⟩
   rcases hG' x with ⟨y, hxy', hxy⟩
   by_cases hxw : G.Adj x w
@@ -167,8 +168,8 @@ theorem isRegularOf_not_existsPolitician (hG' : ¬ExistsPolitician G) :
     rw [h, mem_singleton] at h'
     injection h'
   apply hxy'
-  rw [key ((mem_commonNeighbors G).mpr ⟨hvx, G.symm hxw⟩),
-    key ((mem_commonNeighbors G).mpr ⟨hvy, G.symm hcontra⟩)]
+  rw [key ((mem_commonNeighbors G).mpr ⟨hvx, hxw.symm⟩),
+    key ((mem_commonNeighbors G).mpr ⟨hvy, hcontra.symm⟩)]
 
 open scoped Classical in
 include hG in
@@ -188,7 +189,7 @@ theorem card_of_regular (hd : G.IsRegularOfDegree d) : d + (Fintype.card V - 1) 
   · rw [sq, ← mulVec_mulVec]
     simp only [adjMatrix_mulVec_const_apply_of_regular hd, neighborFinset,
       card_neighborSet_eq_degree, hd v, Function.const_def, adjMatrix_mulVec_apply _ _ (mulVec _ _),
-      mul_one, sum_const, Set.toFinset_card, Algebra.id.smul_eq_mul, Nat.cast_id]
+      mul_one, sum_const, Set.toFinset_card, smul_eq_mul, Nat.cast_id]
 
 open scoped Classical in
 include hG in
@@ -246,9 +247,9 @@ theorem false_of_three_le_degree (hd : G.IsRegularOfDegree d) (h : 3 ≤ d) : Fa
   -- get a prime factor of d - 1
   let p : ℕ := (d - 1).minFac
   have p_dvd_d_pred := (ZMod.natCast_eq_zero_iff _ _).mpr (d - 1).minFac_dvd
-  have dpos : 1 ≤ d := by omega
+  have dpos : 1 ≤ d := by lia
   have d_cast : ↑(d - 1) = (d : ℤ) - 1 := by norm_cast
-  haveI : Fact p.Prime := ⟨Nat.minFac_prime (by omega)⟩
+  haveI : Fact p.Prime := ⟨Nat.minFac_prime (by lia)⟩
   have hp2 : 2 ≤ p := (Fact.out (p := p.Prime)).two_le
   have dmod : (d : ZMod p) = 1 := by
     rw [← Nat.succ_pred_eq_of_pos dpos, Nat.succ_eq_add_one, Nat.pred_eq_sub_one]
@@ -267,7 +268,7 @@ theorem false_of_three_le_degree (hd : G.IsRegularOfDegree d) (h : 3 ≤ d) : Fa
     of_apply, Ne]
   rw [Vmod, ← Nat.cast_one (R := ZMod (Nat.minFac (d - 1))), ZMod.natCast_eq_zero_iff,
     Nat.dvd_one, Nat.minFac_eq_one_iff]
-  omega
+  lia
 
 open scoped Classical in
 include hG in
@@ -275,17 +276,9 @@ include hG in
   trivially a politician. -/
 theorem existsPolitician_of_degree_le_one (hd : G.IsRegularOfDegree d) (hd1 : d ≤ 1) :
     ExistsPolitician G := by
-  have sq : d * d = d := by interval_cases d <;> norm_num
   have h := card_of_regular hG hd
-  rw [sq] at h
-  have : Fintype.card V ≤ 1 := by
-    cases hn : Fintype.card V with
-    | zero => exact zero_le _
-    | succ n => omega
-  use Classical.arbitrary V
-  intro w h; exfalso
-  apply h
-  apply Fintype.card_le_one_iff.mp this
+  have : Fintype.card V ≤ 1 := by interval_cases d <;> lia
+  exact ⟨Classical.arbitrary V, fun w h ↦ (h <| Fintype.card_le_one_iff.mp this ..).elim⟩
 
 open scoped Classical in
 include hG in
@@ -301,7 +294,7 @@ theorem neighborFinset_eq_of_degree_eq_two (hd : G.IsRegularOfDegree 2) (v : V) 
   convert_to 2 ≤ _
   · convert_to _ = Fintype.card V - 1
     · have hfr := card_of_regular hG hd
-      omega
+      lia
     · exact Finset.card_erase_of_mem (Finset.mem_univ _)
   · dsimp only [IsRegularOfDegree, degree] at hd
     rw [hd]

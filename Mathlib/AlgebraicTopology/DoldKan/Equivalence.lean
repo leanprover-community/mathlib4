@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.EquivalencePseudoabelian
-import Mathlib.AlgebraicTopology.DoldKan.Normalized
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.EquivalencePseudoabelian
+public import Mathlib.AlgebraicTopology.DoldKan.Normalized
 
 /-!
 
@@ -89,7 +91,7 @@ obtained by composing the previous equivalence with the equivalences
 `Karoubi (ChainComplex C ℕ) ≌ ChainComplex C ℕ`. Instead, we polish this construction
 in `Compatibility.lean` by ensuring good definitional properties of the equivalence (e.g.
 the inverse functor is definitionally equal to
-`Γ₀' : ChainComplex C ℕ ⥤ SimplicialObject C`) and
+`Γ₀ : ChainComplex C ℕ ⥤ SimplicialObject C`, which is induced by `Γ₀'`) and
 showing compatibilities for the unit and counit isomorphisms.
 
 In this file `Equivalence.lean`, assuming the category `A` is abelian, we obtain
@@ -119,12 +121,14 @@ what is the best way to do this. The exact design may be decided when it is need
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
 open CategoryTheory Category Idempotents
 
-variable {A : Type*} [Category A] [Abelian A]
+variable {A : Type*} [Category* A] [Abelian A]
 
 namespace CategoryTheory
 

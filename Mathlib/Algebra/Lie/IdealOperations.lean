@@ -3,7 +3,9 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Ideal
+module
+
+public import Mathlib.Algebra.Lie.Ideal
 
 /-!
 # Ideal operations for Lie algebras
@@ -30,6 +32,8 @@ the action defined in this file.
 
 lie algebra, ideal operation
 -/
+
+public section
 
 
 universe u v w w₁ w₂
@@ -89,7 +93,7 @@ theorem lieIdeal_oper_eq_linear_span [LieModule R L M] :
         refine Submodule.add_mem _ ?_ ?_ <;> apply Submodule.subset_span
         · use ⟨⁅y, ↑x⁆, I.lie_mem x.property⟩, n
         · use x, ⟨⁅y, ↑n⁆, N.lie_mem n.property⟩
-      · simp only [lie_zero, Submodule.zero_mem]
+      · simp
       · intro m₁ m₂ _ _ hm₁ hm₂; rw [lie_add]; exact Submodule.add_mem _ hm₁ hm₂
       · intro t m'' _ hm''; rw [lie_smul]; exact Submodule.smul_mem _ t hm''
     change _ ≤ ({ Submodule.span R s with lie_mem := fun hm' => aux _ _ hm' } : LieSubmodule R L M)
@@ -153,6 +157,7 @@ theorem lie_eq_bot_iff : ⁅I, N⁆ = ⊥ ↔ ∀ x ∈ I, ∀ m ∈ N, ⁅(x : 
   exact h x hx n hn
 
 variable {I J N N'} in
+@[gcongr]
 theorem mono_lie (h₁ : I ≤ J) (h₂ : N ≤ N') : ⁅I, N⁆ ≤ ⁅J, N'⁆ := by
   intro m h
   rw [lieIdeal_oper_eq_span, mem_lieSpan] at h; rw [lieIdeal_oper_eq_span, mem_lieSpan]
@@ -274,7 +279,7 @@ theorem comap_bracket_eq {J₁ J₂ : LieIdeal R L'} (h : f.IsIdealMorphism) :
   congr
   ext
   simp_all only [Subtype.exists, LieSubmodule.mem_inf, LieHom.mem_idealRange_iff, exists_prop,
-    Set.mem_setOf_eq, LieHom.coe_toLinearMap, mem_comap, Set.mem_image,
+    Set.mem_setOf_eq, LieHom.coe_toLinearMap, mem_comap,
     exists_exists_and_exists_and_eq_and, LieHom.map_lie]
   grind
 
@@ -290,7 +295,7 @@ theorem comap_bracket_incl {I₁ I₂ : LieIdeal R L} :
     next => skip
     rw [← I.incl_idealRange]
   rw [comap_bracket_eq]
-  · simp only [ker_incl, sup_bot_eq]
+  · simp
   · exact I.incl_isIdealMorphism
 
 /-- This is a very useful result; it allows us to use the fact that inclusion distributes over the

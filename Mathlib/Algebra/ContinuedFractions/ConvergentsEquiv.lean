@@ -3,10 +3,12 @@ Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
-import Mathlib.Algebra.ContinuedFractions.TerminatedStable
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
+public import Mathlib.Algebra.ContinuedFractions.TerminatedStable
+public import Mathlib.Tactic.NormNum.Inv
+public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # Equivalence of Recursive and Direct Computations of Convergents of Generalized Continued Fractions
@@ -62,6 +64,8 @@ The corresponding lemma in this file is `succ_nth_conv_eq_squashGCF_nth_conv`.
 
 fractions, recurrence, equivalence
 -/
+
+@[expose] public section
 
 
 variable {K : Type*} {n : ℕ}
@@ -119,8 +123,6 @@ theorem squashSeq_nth_of_lt {m : ℕ} (m_lt_n : m < n) : (squashSeq s n).get? m 
   | some =>
     obtain ⟨gp_n, s_nth_eq⟩ : ∃ gp_n, s.get? n = some gp_n :=
       s.ge_stable n.le_succ s_succ_nth_eq
-    obtain ⟨gp_m, s_mth_eq⟩ : ∃ gp_m, s.get? m = some gp_m :=
-      s.ge_stable (le_of_lt m_lt_n) s_nth_eq
     simp [*, squashSeq, m_lt_n.ne]
 
 /-- Squashing at position `n + 1` and taking the tail is the same as squashing the tail of the
@@ -258,10 +260,7 @@ theorem succ_nth_conv_eq_squashGCF_nth_conv [Field K]
       suffices (b * g.h + a) / b = g.h + a / b by
         simpa [squashGCF, s_nth_eq, conv_eq_conts_a_div_conts_b,
           conts_recurrenceAux s_nth_eq zeroth_contAux_eq_one_zero first_contAux_eq_h_one]
-      calc
-        (b * g.h + a) / b = b * g.h / b + a / b := by ring
-        -- requires `Field`, not `DivisionRing`
-        _ = g.h + a / b := by rw [mul_div_cancel_left₀ _ b_ne_zero]
+      grind
     | succ n' =>
       obtain ⟨⟨pa, pb⟩, s_n'th_eq⟩ : ∃ gp_n', g.s.get? n' = some gp_n' :=
         g.s.ge_stable n'.le_succ s_nth_eq
@@ -307,8 +306,7 @@ theorem succ_nth_conv_eq_squashGCF_nth_conv [Field K]
             (contsAux_eq_contsAux_squashGCF_of_le n'.le_succ).symm]
         symm
         simpa only [eq1, eq2, eq3, eq4, mul_div_cancel_right₀ _ b_ne_zero]
-      field_simp
-      congr 1 <;> ring
+      grind
 
 end Squash
 
@@ -336,7 +334,7 @@ theorem convs_eq_convs' [Field K] [LinearOrder K] [IsStrictOrderedRing K]
     · have g'_eq_g : g' = g := squashGCF_eq_self_of_terminated terminatedAt_n
       rw [convs_stable_of_terminated n.le_succ terminatedAt_n, g'_eq_g, IH _]
       intro _ _ m_lt_n s_mth_eq
-      exact s_pos (Nat.lt.step m_lt_n) s_mth_eq
+      exact s_pos (Nat.lt_succ_of_lt m_lt_n) s_mth_eq
     · suffices g.convs (n + 1) = g'.convs n by
         -- invoke the IH for the squashed gcf
         rwa [← IH]
@@ -353,24 +351,20 @@ theorem convs_eq_convs' [Field K] [LinearOrder K] [IsStrictOrderedRing K]
           suffices 0 < gp_m.a ∧ 0 < gp_m.b + gp_succ_m.a / gp_succ_m.b by
             have ot : g'.s.get? m = some ⟨gp_m.a, gp_m.b + gp_succ_m.a / gp_succ_m.b⟩ :=
               squashSeq_nth_of_not_terminated mth_s_eq s_succ_mth_eq
-            have : gp' = ⟨gp_m.a, gp_m.b + gp_succ_m.a / gp_succ_m.b⟩ := by
-              simp_all only [Option.some.injEq]
-            rwa [this]
+            grind
           have m_lt_n : m < m.succ := Nat.lt_succ_self m
-          refine ⟨(s_pos (Nat.lt.step m_lt_n) mth_s_eq).left, ?_⟩
-          refine add_pos (s_pos (Nat.lt.step m_lt_n) mth_s_eq).right ?_
+          refine ⟨(s_pos (Nat.lt_succ_of_lt m_lt_n) mth_s_eq).left, ?_⟩
+          refine add_pos (s_pos (Nat.lt_succ_of_lt m_lt_n) mth_s_eq).right ?_
           have : 0 < gp_succ_m.a ∧ 0 < gp_succ_m.b := s_pos (lt_add_one <| m + 1) s_succ_mth_eq
           exact div_pos this.left this.right
         · -- the easy case: before the squashed position, nothing changes
-          refine s_pos (Nat.lt.step <| Nat.lt.step succ_m_lt_n) ?_
+          refine s_pos (Nat.lt_succ_of_lt <| Nat.lt_succ_of_lt succ_m_lt_n) ?_
           exact Eq.trans (squashGCF_nth_of_lt succ_m_lt_n).symm s_mth_eq'
       -- now the result follows from the fact that the convergents coincide at the squashed position
       -- as established in `succ_nth_conv_eq_squashGCF_nth_conv`.
       have : ∀ ⦃b⦄, g.partDens.get? n = some b → b ≠ 0 := by
-        intro b nth_partDen_eq
-        obtain ⟨gp, s_nth_eq, ⟨refl⟩⟩ : ∃ gp, g.s.get? n = some gp ∧ gp.b = b :=
-          exists_s_b_of_partDen nth_partDen_eq
-        exact (ne_of_lt (s_pos (lt_add_one n) s_nth_eq).right).symm
+        intro _ nth_partDen_eq
+        grind [exists_s_b_of_partDen nth_partDen_eq]
       exact succ_nth_conv_eq_squashGCF_nth_conv @this
 
 end GenContFract
@@ -381,11 +375,11 @@ namespace ContFract
 
 /-- Shows that the recurrence relation (`convs`) and direct evaluation (`convs'`) of a
 (regular) continued fraction coincide. -/
-nonrec theorem convs_eq_convs' [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+theorem convs_eq_convs' [Field K] [LinearOrder K] [IsStrictOrderedRing K]
     {c : ContFract K} :
     (↑c : GenContFract K).convs = (↑c : GenContFract K).convs' := by
   ext n
-  apply convs_eq_convs'
+  apply GenContFract.convs_eq_convs'
   intro gp m _ s_nth_eq
   exact ⟨zero_lt_one.trans_le ((c : SimpContFract K).property m gp.a
     (partNum_eq_s_a s_nth_eq)).symm.le, c.property m gp.b <| partDen_eq_s_b s_nth_eq⟩

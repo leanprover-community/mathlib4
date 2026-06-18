@@ -3,13 +3,15 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Notation
-import Mathlib.Control.Functor
-import Mathlib.Data.SProd
-import Mathlib.Util.CompileInductive
-import Batteries.Tactic.Lint.Basic
-import Batteries.Data.List.Lemmas
-import Batteries.Logic
+module
+
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Control.Functor
+public import Mathlib.Data.SProd
+public import Mathlib.Util.CompileInductive
+public import Batteries.Tactic.Lint.Basic
+public import Batteries.Data.List.Basic
+public import Batteries.Logic
 
 /-!
 ## Definitions on lists
@@ -17,6 +19,8 @@ import Batteries.Logic
 This file contains various definitions on lists. It does not contain
 proofs about these definitions, those are contained in other files in `Data.List`
 -/
+
+@[expose] public section
 
 namespace List
 
@@ -114,6 +118,7 @@ end foldIdxM
 
 section mapIdxM
 
+-- This could be relaxed to `Applicative` but is `Monad` to match `List.mapIdxM`.
 variable {m : Type v → Type w} [Monad m]
 
 /-- Auxiliary definition for `mapIdxM'`. -/
@@ -142,11 +147,14 @@ section Permutations
 `(ys ++ ts, (insert_left ys t ts).map f ++ r)`, where `insert_left ys t ts` (not explicitly
 defined) is the list of lists of the form `insert_nth n t (ys ++ ts)` for `0 ≤ n < length ys`.
 
+```
     permutations_aux2 10 [4, 5, 6] [] [1, 2, 3] id =
       ([1, 2, 3, 4, 5, 6],
        [[10, 1, 2, 3, 4, 5, 6],
         [1, 10, 2, 3, 4, 5, 6],
-        [1, 2, 10, 3, 4, 5, 6]]) -/
+        [1, 2, 10, 3, 4, 5, 6]])
+```
+-/
 def permutationsAux2 (t : α) (ts : List α) (r : List β) : List α → (List α → β) → List α × List β
   | [], _ => (ts, r)
   | y :: ys, f =>
@@ -162,7 +170,7 @@ def permutationsAux.rec {C : List α → List α → Sort v} (H0 : ∀ is, C [] 
   | t :: ts, is =>
       H1 t ts is (permutationsAux.rec H0 H1 ts (t :: is)) (permutationsAux.rec H0 H1 is [])
   termination_by ts is => (length ts + length is, length ts)
-  decreasing_by all_goals (simp_wf; omega)
+  decreasing_by all_goals (simp_wf; grind)
 
 /-- An auxiliary function for defining `permutations`. `permutationsAux ts is` is the set of all
 permutations of `is ++ ts` that do not fix `ts`. -/
@@ -172,9 +180,12 @@ def permutationsAux : List α → List α → List (List α) :=
 
 /-- List of all permutations of `l`.
 
+```
      permutations [1, 2, 3] =
        [[1, 2, 3], [2, 1, 3], [3, 2, 1],
-        [2, 3, 1], [3, 1, 2], [1, 3, 2]] -/
+        [2, 3, 1], [3, 1, 2], [1, 3, 2]]
+```
+-/
 def permutations (l : List α) : List (List α) :=
   l :: permutationsAux l []
 
@@ -185,10 +196,13 @@ which plays roughly the same role in `permutations`.
 Note that `(permutationsAux2 t [] [] ts id).2` is similar to this function, but skips the last
 position:
 
+```
     permutations'Aux 10 [1, 2, 3] =
       [[10, 1, 2, 3], [1, 10, 2, 3], [1, 2, 10, 3], [1, 2, 3, 10]]
     (permutationsAux2 10 [] [] [1, 2, 3] id).2 =
-      [[10, 1, 2, 3], [1, 10, 2, 3], [1, 2, 10, 3]] -/
+      [[10, 1, 2, 3], [1, 10, 2, 3], [1, 2, 10, 3]]
+```
+-/
 @[simp]
 def permutations'Aux (t : α) : List α → List (List α)
   | [] => [[t]]
@@ -198,9 +212,12 @@ def permutations'Aux (t : α) : List α → List (List α)
 simpler definitional equations. The permutations are in a different order,
 but are equal up to permutation, as shown by `List.permutations_perm_permutations'`.
 
+```
      permutations [1, 2, 3] =
        [[1, 2, 3], [2, 1, 3], [2, 3, 1],
-        [1, 3, 2], [3, 1, 2], [3, 2, 1]] -/
+        [1, 3, 2], [3, 1, 2], [3, 2, 1]]
+```
+-/
 @[simp]
 def permutations' : List α → List (List α)
   | [] => [[]]
@@ -222,27 +239,14 @@ def extractp (p : α → Prop) [DecidablePred p] : List α → Option α × List
 instance instSProd : SProd (List α) (List β) (List (α × β)) where
   sprod := List.product
 
-section Chain
-
-instance decidableChain {R : α → α → Prop} [DecidableRel R] (a : α) (l : List α) :
-    Decidable (Chain R a l) := by
-  induction l generalizing a with
-  | nil => exact decidable_of_decidable_of_iff (p := True) (by simp)
-  | cons b as ih =>
-    haveI := ih; exact decidable_of_decidable_of_iff (p := (R a b ∧ Chain R b as)) (by simp)
-
-instance decidableChain' {R : α → α → Prop} [DecidableRel R] (l : List α) :
-    Decidable (Chain' R l) := by
-  cases l
-  · exact inferInstanceAs (Decidable True)
-  · exact inferInstanceAs (Decidable (Chain _ _ _))
-
-end Chain
-
 /-- `dedup l` removes duplicates from `l` (taking only the last occurrence).
-  Defined as `pwFilter (≠)`.
+Defined as `pwFilter (≠)`.
 
-     dedup [1, 0, 2, 2, 1] = [0, 2, 1] -/
+See also `eraseDups` which keeps the first occurrence instead:
+```
+dedup [2, 0, 1, 0, 2, 0] = [1, 2, 0]
+eraseDups [2, 0, 1, 0, 2, 0] = [2, 0, 1]
+``` -/
 def dedup [DecidableEq α] : List α → List α :=
   pwFilter (· ≠ ·)
 
@@ -254,6 +258,7 @@ def destutter' (R : α → α → Prop) [DecidableRel R] : α → List α → Li
   | a, h :: l => if R a h then a :: destutter' R h l else destutter' R a l
 
 -- TODO: should below be "lazily"?
+-- TODO: Remove destutter' as we have removed chain'
 /-- Greedily create a sublist of `l` such that, for every two adjacent elements `a, b ∈ l`,
 `R a b` holds. Mostly used with ≠; for example, `destutter (≠) [1, 2, 2, 1, 1] = [1, 2, 1]`,
 `destutter (≠) [1, 2, 3, 3] = [1, 2, 3]`, `destutter (<) [1, 2, 5, 2, 3, 4, 9] = [1, 2, 5, 9]`. -/
@@ -402,9 +407,9 @@ def zipWith5 (f : α → β → γ → δ → ε → ζ) : List α → List β �
   | x :: xs, y :: ys, z :: zs, u :: us, v :: vs => f x y z u v :: zipWith5 f xs ys zs us vs
   | _, _, _, _, _ => []
 
-/-- Given a starting list `old`, a list of booleans and a replacement list `new`,
+/-- Given a starting list `old`, a list of Booleans and a replacement list `new`,
 read the items in `old` in succession and either replace them with the next element of `new` or
-not, according as to whether the corresponding boolean is `true` or `false`. -/
+not, according as to whether the corresponding Boolean is `true` or `false`. -/
 def replaceIf : List α → List Bool → List α → List α
   | l, _, [] => l
   | [], _, _ => []
@@ -478,5 +483,12 @@ theorem length_mapAccumr₂ :
   | _, [], [], _ => rfl
 
 end MapAccumr
+
+section consecutivePairs
+
+/-- `consecutivePairs [a, b, c, d]` is `[(a, b), (b, c), (c, d)]`. -/
+abbrev consecutivePairs (l : List α) : List (α × α) := l.zip l.tail
+
+end consecutivePairs
 
 end List

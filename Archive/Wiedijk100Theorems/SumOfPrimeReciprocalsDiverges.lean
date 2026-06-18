@@ -25,8 +25,8 @@ The formalization follows Erdős's proof by upper and lower estimates.
     * `U x k`, the subset of those `e` for which there is a prime `p > k` that divides `e + 1`.
 4. Then `|U x k|` is bounded by the sum over the primes `p > k` of the number of multiples of `p`
    in `(k, x]`, which is at most `x / p`. It follows that `|U x k|` is at most `x` times the sum of
-  the reciprocals of the primes between `k` and `x + 1`, which is less than 1/2 as noted in (2), so
-  `|U x k| < x / 2` (`card_le_mul_sum`).
+   the reciprocals of the primes between `k` and `x + 1`, which is less than 1/2 as noted in (2), so
+   `|U x k| < x / 2` (`card_le_mul_sum`).
 5. By factoring `e + 1 = (m + 1)² * (r + 1)`, `r + 1` squarefree and `m + 1 ≤ √x`, and noting that
    squarefree numbers correspond to subsets of `[1, k]`, we find that `|M x k| ≤ 2 ^ k * √x`
    (`card_le_two_pow_mul_sqrt`).
@@ -77,7 +77,7 @@ theorem sum_lt_half_of_not_tendsto
     · simp only [one_div, inv_nonneg, Nat.cast_nonneg]
     · exact le_rfl
   rw [h0, ← summable_iff_not_tendsto_nat_atTop_of_nonneg hf, summable_iff_vanishing] at h
-  obtain ⟨s, h⟩ := h (Set.Ioo (-1) (1 / 2)) (isOpen_Ioo.mem_nhds (by norm_num))
+  obtain ⟨s, h⟩ := h (Set.Ioo (-1) (1 / 2)) (isOpen_Ioo.mem_nhds (by simp))
   obtain ⟨k, hk⟩ := exists_nat_subset_range s
   use k
   intro x
@@ -96,8 +96,8 @@ of `p`.
 -/
 theorem range_sdiff_eq_biUnion {x k : ℕ} : range x \ M x k = U x k := by
   ext e
-  simp only [mem_biUnion, not_and, mem_sdiff, mem_filter, mem_range, U, M, P]
-  push_neg
+  simp only [mem_biUnion, not_and, Finset.mem_sdiff, mem_filter, mem_range, U, M, P]
+  push Not
   constructor
   · rintro ⟨hex, hexh⟩
     obtain ⟨p, ⟨hpp, hpe1⟩, hpk⟩ := hexh hex
@@ -117,9 +117,10 @@ theorem card_le_mul_sum {x k : ℕ} : #(U x k) ≤ x * ∑ p ∈ P x k, 1 / (p :
   have h : #(P.biUnion N) ≤ ∑ p ∈ P, #(N p) := card_biUnion_le
   calc
     (#(P.biUnion N) : ℝ) ≤ ∑ p ∈ P, (#(N p) : ℝ) := by assumption_mod_cast
-    _ ≤ ∑ p ∈ P, x * (1 / (p : ℝ)) := sum_le_sum fun p _ => ?_
+    _ ≤ ∑ p ∈ P, x * (1 / (p : ℝ)) := by
+      gcongr with p _
+      simp only [N, mul_one_div, Nat.card_multiples, Nat.cast_div_le]
     _ = x * ∑ p ∈ P, 1 / (p : ℝ) := by rw [mul_sum]
-  simp only [N, mul_one_div, Nat.card_multiples, Nat.cast_div_le]
 
 /--
 The number of `e < x` for which `e + 1` is a squarefree product of primes smaller than or equal to
@@ -218,13 +219,13 @@ theorem Real.tendsto_sum_one_div_prime_atTop :
   have h3 :=
     calc
       (#U' : ℝ) ≤ x * ∑ p ∈ P, 1 / (p : ℝ) := card_le_mul_sum
-      _ < x * (1 / 2) := mul_lt_mul_of_pos_left (h1 x) (by norm_num [x])
+      _ < x * (1 / 2) := mul_lt_mul_of_pos_left (h1 x) (by simp [x])
       _ = x / 2 := mul_one_div (x : ℝ) 2
   have h4 :=
     calc
       (#M' : ℝ) ≤ 2 ^ k * x.sqrt := by exact mod_cast card_le_two_pow_mul_sqrt
       _ = 2 ^ k * (2 ^ (k + 1) : ℕ) := by rw [Nat.sqrt_eq]
-      _ = x / 2 := by field_simp [x, mul_right_comm, ← pow_succ]
+      _ = x / 2 := by simp [field, x, ← pow_succ]
   refine lt_irrefl (x : ℝ) ?_
   calc
     (x : ℝ) = (#U' : ℝ) + (#M' : ℝ) := by assumption_mod_cast

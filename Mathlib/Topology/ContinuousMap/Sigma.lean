@@ -3,7 +3,9 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.CompactOpen
+module
+
+public import Mathlib.Topology.CompactOpen
 
 /-!
 # Equivalence between `C(X, Σ i, Y i)` and `Σ i, C(X, Y i)`
@@ -32,6 +34,8 @@ if `X` is empty, then any index `i` will work, so there is no 1-to-1 corresponde
 continuous map, sigma type, disjoint union
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Filter Topology
@@ -51,9 +55,6 @@ theorem isEmbedding_sigmaMk_comp [Nonempty X] :
     obtain ⟨rfl, hg⟩ : i = i' ∧ ⇑g ≍ ⇑g' :=
       Function.eq_of_sigmaMk_comp <| congr_arg DFunLike.coe h
     simpa using hg
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_sigmaMk_comp := isEmbedding_sigmaMk_comp
 
 section ConnectedSpace
 

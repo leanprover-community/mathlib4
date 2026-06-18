@@ -3,12 +3,17 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Equiv.Opposite
-import Mathlib.Algebra.GroupWithZero.Equiv
-import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Logic.Equiv.Set
-import Mathlib.Algebra.Notation.Prod
+module
+
+public import Mathlib.Algebra.Group.Equiv.Opposite
+public import Mathlib.Algebra.GroupWithZero.Equiv
+public import Mathlib.Algebra.GroupWithZero.InjSurj
+public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Util.Delaborators
+
+import Mathlib.Tactic.DSimpPercent
 
 /-!
 # (Semi)ring equivs
@@ -16,7 +21,7 @@ import Mathlib.Algebra.Notation.Prod
 In this file we define an extension of `Equiv` called `RingEquiv`, which is a datatype representing
 an isomorphism of `Semiring`s, `Ring`s, `DivisionRing`s, or `Field`s.
 
-## Notations
+## Notation
 
 * ``infixl ` ≃+* `:25 := RingEquiv``
 
@@ -36,6 +41,8 @@ multiplication in `Equiv.Perm`, and multiplication in `CategoryTheory.End`, not 
 
 Equiv, MulEquiv, AddEquiv, RingEquiv, MulAut, AddAut, RingAut
 -/
+
+@[expose] public section
 
 -- guard against import creep
 assert_not_exists Field Fintype
@@ -112,12 +119,6 @@ def toRingEquiv [Mul α] [Add α] [Mul β] [Add β] [EquivLike F α β] [RingEqu
 
 end RingEquivClass
 
-/-- Any type satisfying `RingEquivClass` can be cast into `RingEquiv` via
-`RingEquivClass.toRingEquiv`. -/
-instance [Mul α] [Add α] [Mul β] [Add β] [EquivLike F α β] [RingEquivClass F α β] :
-    CoeTC F (α ≃+* β) :=
-  ⟨RingEquivClass.toRingEquiv⟩
-
 namespace RingEquiv
 
 section Basic
@@ -141,8 +142,7 @@ instance : RingEquivClass (R ≃+* S) R S where
   map_add f := f.map_add'
   map_mul f := f.map_mul'
 
-/-- Two ring isomorphisms agree if they are defined by the
-    same underlying function. -/
+/-- Two ring isomorphisms agree if they are defined by the same underlying function. -/
 @[ext]
 theorem ext {f g : R ≃+* S} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
@@ -232,9 +232,6 @@ theorem refl_apply (x : R) : RingEquiv.refl R x = x :=
 theorem coe_refl (R : Type*) [Mul R] [Add R] : ⇑(RingEquiv.refl R) = id :=
   rfl
 
-@[deprecated coe_refl (since := "2025-02-10")]
-alias coe_refl_id := coe_refl
-
 @[simp]
 theorem coe_addEquiv_refl : (RingEquiv.refl R : R ≃+ R) = AddEquiv.refl R :=
   rfl
@@ -269,15 +266,11 @@ theorem mk_coe' (e : R ≃+* S) (f h₁ h₂ h₃ h₄) :
     (⟨⟨f, ⇑e, h₁, h₂⟩, h₃, h₄⟩ : S ≃+* R) = e.symm :=
   symm_bijective.injective <| ext fun _ => rfl
 
-/-- Auxiliary definition to avoid looping in `dsimp` with `RingEquiv.symm_mk`. -/
-protected def symm_mk.aux (f : R → S) (g h₁ h₂ h₃ h₄) := (mk ⟨f, g, h₁, h₂⟩ h₃ h₄).symm
-
 @[simp]
-theorem symm_mk (f : R → S) (g h₁ h₂ h₃ h₄) :
-    (mk ⟨f, g, h₁, h₂⟩ h₃ h₄).symm =
-      { symm_mk.aux f g h₁ h₂ h₃ h₄ with
-        toFun := g
-        invFun := f } :=
+theorem symm_mk (e : R ≃ S) (h₁ h₂) : dsimp%
+    (mk e h₁ h₂).symm =
+      { (mk e h₁ h₂).symm with
+        toEquiv := e.symm } :=
   rfl
 
 @[simp]
@@ -304,8 +297,26 @@ theorem apply_symm_apply (e : R ≃+* S) : ∀ x, e (e.symm x) = x :=
 theorem symm_apply_apply (e : R ≃+* S) : ∀ x, e.symm (e x) = x :=
   e.toEquiv.symm_apply_apply
 
-theorem image_eq_preimage (e : R ≃+* S) (s : Set R) : e '' s = e.symm ⁻¹' s :=
-  e.toEquiv.image_eq_preimage s
+lemma image_symm_eq_preimage (e : R ≃+* S) (s : Set S) : e.symm '' s = e ⁻¹' s :=
+  e.toEquiv.image_symm_eq_preimage _
+
+lemma image_eq_preimage_symm (e : R ≃+* S) (s : Set R) : e '' s = e.symm ⁻¹' s :=
+  e.toEquiv.image_eq_preimage_symm _
+
+@[simp]
+lemma coe_coe_toEquiv_symm (e : R ≃+* S) : ⇑(e : R ≃ S).symm = ⇑e.symm := rfl
+
+@[simp]
+lemma coe_coe_toMulEquiv_symm (e : R ≃+* S) : ⇑(e : R ≃* S).symm = ⇑e.symm := rfl
+
+@[simp]
+lemma coe_coe_toAddEquiv_symm (e : R ≃+* S) : ⇑(e : R ≃+ S).symm = ⇑e.symm := rfl
+
+theorem symm_apply_eq (e : R ≃+* S) {x : S} {y : R} :
+    e.symm x = y ↔ x = e y := Equiv.symm_apply_eq _
+
+theorem eq_symm_apply (e : R ≃+* S) {x : S} {y : R} :
+    y = e.symm x ↔ e y = x := Equiv.eq_symm_apply _
 
 end symm
 
@@ -358,8 +369,6 @@ section unique
 /-- The `RingEquiv` between two semirings with a unique element. -/
 def ofUnique {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] : M ≃+* N :=
   { AddEquiv.ofUnique, MulEquiv.ofUnique with }
-
-@[deprecated (since := "2024-12-26")] alias ringEquivOfUnique := ofUnique
 
 instance {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] :
     Unique (M ≃+* N) where
@@ -448,6 +457,18 @@ theorem ofBijective_apply [NonUnitalRingHomClass F R S] (f : F) (hf : Function.B
     (x : R) : ofBijective f hf x = f x :=
   rfl
 
+@[simp]
+lemma ofBijective_symm_comp (f : R →ₙ+* S) (hf : Function.Bijective f) :
+    ((RingEquiv.ofBijective f hf).symm : _ →ₙ+* _).comp f = NonUnitalRingHom.id R := by
+  ext
+  exact (RingEquiv.ofBijective f hf).injective <| RingEquiv.apply_symm_apply ..
+
+@[simp]
+lemma comp_ofBijective_symm (f : R →ₙ+* S) (hf : Function.Bijective f) :
+    f.comp ((RingEquiv.ofBijective f hf).symm : _ →ₙ+* _) = NonUnitalRingHom.id S := by
+  ext
+  exact (RingEquiv.ofBijective f hf).symm.injective <| RingEquiv.apply_symm_apply ..
+
 /-- Product of a singleton family of (non-unital non-associative semi)rings is isomorphic
 to the only member of this family. -/
 @[simps! -fullyApplied]
@@ -456,6 +477,17 @@ def piUnique {ι : Type*} (R : ι → Type*) [Unique ι] [∀ i, NonUnitalNonAss
   __ := Equiv.piUnique R
   map_add' _ _ := rfl
   map_mul' _ _ := rfl
+
+/-- `Equiv.cast (congrArg _ h)` as a ring equiv.
+
+Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
+to avoid having to deal with an equality of the algebraic structure itself. -/
+@[simps!]
+protected def cast
+    {ι : Type*} {R : ι → Type*} [∀ i, Mul (R i)] [∀ i, Add (R i)] {i j : ι} (h : i = j) :
+    R i ≃+* R j where
+  __ := AddEquiv.cast h
+  __ := MulEquiv.cast h
 
 /-- A family of ring isomorphisms `∀ j, (R j ≃+* S j)` generates a
 ring isomorphisms between `∀ j, R j` and `∀ j, S j`.
@@ -521,6 +553,17 @@ def piEquivPiSubtypeProd {ι : Type*} (p : ι → Prop) [DecidablePred p] (Y : �
     [∀ i, NonUnitalNonAssocSemiring (Y i)] :
     ((i : ι) → Y i) ≃+* ((i : { x : ι // p x }) → Y i) × ((i : { x : ι // ¬p x }) → Y i) where
   toEquiv := Equiv.piEquivPiSubtypeProd p Y
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
+
+/-- The opposite of a direct product is isomorphic to the direct product of the opposites
+as rings. -/
+def piMulOpposite {ι : Type*} (S : ι → Type*) [∀ i, NonUnitalNonAssocSemiring (S i)] :
+    (Π i, S i)ᵐᵒᵖ ≃+* Π i, (S i)ᵐᵒᵖ where
+  toFun f i := .op (f.unop i)
+  invFun f := .op fun i ↦ (f i).unop
+  left_inv _ := rfl
+  right_inv _ := rfl
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
 
@@ -658,6 +701,10 @@ theorem toNonUnitalRingHom_eq_coe (f : R ≃+* S) : f.toNonUnitalRingHom = ↑f 
 theorem coe_toNonUnitalRingHom (f : R ≃+* S) : ⇑(f : R →ₙ+* S) = f :=
   rfl
 
+@[simp]
+theorem coe_toNonUnitalRingHom' (f : R ≃+* S) : ⇑f.toNonUnitalRingHom = f :=
+  rfl
+
 theorem coe_nonUnitalRingHom_inj_iff {R S : Type*} [NonUnitalNonAssocSemiring R]
     [NonUnitalNonAssocSemiring S] (f g : R ≃+* S) : f = g ↔ (f : R →ₙ+* S) = g :=
   ⟨fun h => by rw [h], fun h => ext <| NonUnitalRingHom.ext_iff.mp h⟩
@@ -667,12 +714,12 @@ theorem toNonUnitalRingHom_refl :
     (RingEquiv.refl R).toNonUnitalRingHom = NonUnitalRingHom.id R :=
   rfl
 
-@[simp]
+@[deprecated apply_symm_apply (since := "2026-06-16")]
 theorem toNonUnitalRingHom_apply_symm_toNonUnitalRingHom_apply (e : R ≃+* S) :
     ∀ y : S, e.toNonUnitalRingHom (e.symm.toNonUnitalRingHom y) = y :=
   e.toEquiv.apply_symm_apply
 
-@[simp]
+@[deprecated symm_apply_apply (since := "2026-06-16")]
 theorem symm_toNonUnitalRingHom_apply_toNonUnitalRingHom_apply (e : R ≃+* S) :
     ∀ x : R, e.symm.toNonUnitalRingHom (e.toNonUnitalRingHom x) = x :=
   Equiv.symm_apply_apply e.toEquiv
@@ -773,46 +820,11 @@ theorem toRingHom_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
 
 theorem toRingHom_comp_symm_toRingHom (e : R ≃+* S) :
     e.toRingHom.comp e.symm.toRingHom = RingHom.id _ := by
-  ext
   simp
 
 theorem symm_toRingHom_comp_toRingHom (e : R ≃+* S) :
     e.symm.toRingHom.comp e.toRingHom = RingHom.id _ := by
-  ext
   simp
-
-/-- Construct an equivalence of rings from homomorphisms in both directions, which are inverses.
--/
-@[simps]
-def ofHomInv' {R S F G : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
-    [FunLike F R S] [FunLike G S R]
-    [NonUnitalRingHomClass F R S] [NonUnitalRingHomClass G S R] (hom : F) (inv : G)
-    (hom_inv_id : (inv : S →ₙ+* R).comp (hom : R →ₙ+* S) = NonUnitalRingHom.id R)
-    (inv_hom_id : (hom : R →ₙ+* S).comp (inv : S →ₙ+* R) = NonUnitalRingHom.id S) :
-    R ≃+* S where
-  toFun := hom
-  invFun := inv
-  left_inv := DFunLike.congr_fun hom_inv_id
-  right_inv := DFunLike.congr_fun inv_hom_id
-  map_mul' := map_mul hom
-  map_add' := map_add hom
-
-/--
-Construct an equivalence of rings from unital homomorphisms in both directions, which are inverses.
--/
-@[simps]
-def ofHomInv {R S F G : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
-    [FunLike F R S] [FunLike G S R] [RingHomClass F R S]
-    [RingHomClass G S R] (hom : F) (inv : G)
-    (hom_inv_id : (inv : S →+* R).comp (hom : R →+* S) = RingHom.id R)
-    (inv_hom_id : (hom : R →+* S).comp (inv : S →+* R) = RingHom.id S) :
-    R ≃+* S where
-  toFun := hom
-  invFun := inv
-  left_inv := DFunLike.congr_fun hom_inv_id
-  right_inv := DFunLike.congr_fun inv_hom_id
-  map_mul' := map_mul hom
-  map_add' := map_add hom
 
 end SemiringHom
 
@@ -863,10 +875,41 @@ end RingEquiv
 
 namespace RingEquiv
 
+section NonUnital
+
+variable [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
+
+/-- If a non-unital ring homomorphism has an inverse, it is a ring isomorphism. -/
+@[simps -isSimp]
+def ofNonUnitalRingHom (hom : R →ₙ+* S) (inv : S →ₙ+* R)
+    (hom_inv_id : inv.comp hom = .id R) (inv_hom_id : hom.comp inv = .id S) :
+    R ≃+* S where
+  toFun := hom
+  invFun := inv
+  left_inv := DFunLike.congr_fun hom_inv_id
+  right_inv := DFunLike.congr_fun inv_hom_id
+  map_mul' := map_mul hom
+  map_add' := map_add hom
+
+attribute [simp] ofNonUnitalRingHom_apply
+
+@[deprecated (since := "2025-12-04")] alias ofHomInv' := ofNonUnitalRingHom
+@[deprecated (since := "2025-12-04")] alias ofHomInv'_apply := ofNonUnitalRingHom_apply
+@[deprecated (since := "2025-12-04")] alias ofHomInv'_symm_apply := ofNonUnitalRingHom_symm_apply
+
+@[simp]
+theorem symm_ofNonUnitalRingHom (f : R →ₙ+* S) (g : S →ₙ+* R) (h₁ h₂) :
+    (ofNonUnitalRingHom f g h₁ h₂).symm = ofNonUnitalRingHom g f h₂ h₁ :=
+  rfl
+
+end NonUnital
+
+section Unital
+
 variable [NonAssocSemiring R] [NonAssocSemiring S]
 
 /-- If a ring homomorphism has an inverse, it is a ring isomorphism. -/
-@[simps]
+@[simps -isSimp]
 def ofRingHom (f : R →+* S) (g : S →+* R) (h₁ : f.comp g = RingHom.id S)
     (h₂ : g.comp f = RingHom.id R) : R ≃+* S :=
   { f with
@@ -875,6 +918,12 @@ def ofRingHom (f : R →+* S) (g : S →+* R) (h₁ : f.comp g = RingHom.id S)
     left_inv := RingHom.ext_iff.1 h₂
     right_inv := RingHom.ext_iff.1 h₁ }
 
+attribute [simp] ofRingHom_apply
+
+@[deprecated (since := "2025-12-04")] alias ofHomInv := ofRingHom
+@[deprecated (since := "2025-12-04")] alias ofHomInv_apply := ofRingHom_apply
+@[deprecated (since := "2025-12-04")] alias ofHomInv_symm_apply := ofRingHom_symm_apply
+
 theorem coe_ringHom_ofRingHom (f : R →+* S) (g : S →+* R) (h₁ h₂) : ofRingHom f g h₁ h₂ = f :=
   rfl
 
@@ -882,6 +931,7 @@ theorem coe_ringHom_ofRingHom (f : R →+* S) (g : S →+* R) (h₁ h₂) : ofRi
 theorem ofRingHom_coe_ringHom (f : R ≃+* S) (g : S →+* R) (h₁ h₂) : ofRingHom (↑f) g h₁ h₂ = f :=
   ext fun _ ↦ rfl
 
+@[simp]
 theorem ofRingHom_symm (f : R →+* S) (g : S →+* R) (h₁ h₂) :
     (ofRingHom f g h₁ h₂).symm = ofRingHom g f h₂ h₁ :=
   rfl
@@ -902,6 +952,8 @@ lemma sumArrowEquivProdArrow_apply (x) :
 @[simp low]
 lemma sumArrowEquivProdArrow_symm_apply (x : (α → R) × (β → R)) :
     (sumArrowEquivProdArrow α β R).symm x = (Equiv.sumArrowEquivProdArrow α β R).symm x := rfl
+
+end Unital
 
 end RingEquiv
 
