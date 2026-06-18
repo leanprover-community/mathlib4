@@ -60,7 +60,7 @@ theorem exists_pair_mem_lattice_not_disjoint_vadd {L : Type*} {F s : Set E} [Mea
       fun _ => (hS.vadd _).inter fund.nullMeasurableSet).symm).trans_le
       (measure_mono <| iUnion_subset fun _ => inter_subset_right)
 
-public section successiveMin
+section successiveMin
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] {L : Submodule ℤ E} {s : Set E} {i j : ℕ}
 
