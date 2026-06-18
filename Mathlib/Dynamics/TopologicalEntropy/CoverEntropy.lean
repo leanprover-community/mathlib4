@@ -312,7 +312,7 @@ lemma nonempty_inter_of_coverMincard [U.IsSymm] {s : Finset X} (h : IsDynCoverOf
     intro y y_F
     specialize h y_F
     simp only [s.mem_coe] at h
-    simp only [s.coe_erase, mem_diff, s.mem_coe, mem_singleton_iff]
+    simp only [s.coe_erase, mem_sdiff, s.mem_coe, mem_singleton_iff]
     obtain ⟨z, z_s, hz⟩ := h
     refine ⟨z, ⟨z_s, fun z_x ↦ notMem_empty y ?_⟩, hz⟩
     rw [← ball_empt]
