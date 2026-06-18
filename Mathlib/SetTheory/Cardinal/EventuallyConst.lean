@@ -24,15 +24,18 @@ variable {α : Type u} {β : Type v} [LinearOrder α] [PartialOrder β]
 
 open Cardinal Filter Order Set
 
-theorem Filter.EventuallyConst.of_not_isCofinal_rangeSplitting [Nonempty α] {f : α → β}
-    (hf : Monotone f) (hf' : ¬ IsCofinal (range (rangeSplitting f))) : atTop.EventuallyConst f := by
+namespace Filter.EventuallyConst
+variable {f : α → β}
+
+theorem of_not_isCofinal_rangeSplitting [Nonempty α] (hf : Monotone f)
+    (hf' : ¬ IsCofinal (range (rangeSplitting f))) : atTop.EventuallyConst f := by
   rw [eventuallyConst_atTop]
   obtain ⟨i, hi⟩ := not_isCofinal_iff.1 hf'
   refine ⟨i, fun j hij ↦ (hf hij).antisymm' <| (hf (hi _ ⟨⟨f j, j, rfl⟩, rfl⟩).le).trans' ?_⟩
   rw [apply_rangeSplitting f]
 
-theorem Monotone.eventuallyConst_of_lt_cof {f : α → β} (hf : Monotone f)
-    (hα : lift.{u} #β < lift.{v} (cof α)) : atTop.EventuallyConst f := by
+theorem of_monotone_of_lt_cof (hf : Monotone f) (hα : lift.{u} #β < lift.{v} (cof α)) :
+    atTop.EventuallyConst f := by
   have : Nonempty α := by by_contra!; simp at hα
   refine .of_not_isCofinal_rangeSplitting hf ?_
   contrapose! hα
@@ -40,15 +43,17 @@ theorem Monotone.eventuallyConst_of_lt_cof {f : α → β} (hf : Monotone f)
   rw [← lift_cof_congr_of_strictMono (rangeSplitting_strictMono hf) hα, lift_le]
   exact (cof_le_cardinalMk _).trans (mk_set_le _)
 
-theorem Antitone.eventuallyConst_of_lt_cof {f : α → β} (hf : Antitone f)
-    (hα : lift.{u} #β < lift.{v} (cof α)) : atTop.EventuallyConst f :=
-  hf.dual_right.eventuallyConst_of_lt_cof hα
+theorem of_antitone_of_lt_cof (hf : Antitone f) (hα : lift.{u} #β < lift.{v} (cof α)) :
+    atTop.EventuallyConst f :=
+  .of_monotone_of_lt_cof (β := βᵒᵈ) hf.dual_right hα
+
+end Filter.EventuallyConst
 
 namespace Cardinal
 variable {f : Cardinal.{v} → α} [Small.{v} α]
 
 theorem eventuallyConst_of_monotone (hf : Monotone f) : atTop.EventuallyConst f := by
-  apply hf.eventuallyConst_of_lt_cof
+  refine .of_monotone_of_lt_cof hf ?_
   simpa [← small_iff_lift_mk_lt_univ]
 
 theorem eventuallyConst_of_antitone (hf : Antitone f) : atTop.EventuallyConst f :=
@@ -60,7 +65,7 @@ namespace Ordinal
 variable {f : Ordinal.{v} → α} [Small.{v} α]
 
 theorem eventuallyConst_of_monotone (hf : Monotone f) : atTop.EventuallyConst f := by
-  apply hf.eventuallyConst_of_lt_cof
+  refine .of_monotone_of_lt_cof hf ?_
   simpa [← small_iff_lift_mk_lt_univ]
 
 theorem eventuallyConst_of_antitone (hf : Antitone f) : atTop.EventuallyConst f :=
