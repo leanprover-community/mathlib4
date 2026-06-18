@@ -98,6 +98,9 @@ theorem fderivWithin_inv (x_ne_zero : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s 
   rw [DifferentiableAt.fderivWithin (differentiableAt_inv x_ne_zero) hxs]
   exact fderiv_inv
 
+variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable {c : 𝕜 → 𝕜'} {c' : 𝕜'}
+
 @[to_fun]
 theorem HasDerivWithinAt.inv (hc : HasDerivWithinAt c c' s x) (hx : c x ≠ 0) :
     HasDerivWithinAt (c⁻¹) (-c' / c x ^ 2) s x := by
