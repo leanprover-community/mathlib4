@@ -5,7 +5,7 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.NumberTheory.RamificationInertia.Basic
+public import Mathlib.RingTheory.RamificationInertia.Basic
 
 /-!
 # Primes in an extension of localization at prime
@@ -175,11 +175,17 @@ theorem inertiaDeg_map_eq_inertiaDeg [p.IsMaximal] [P.IsMaximal]
   ext x
   exact algebraMap_equivQuotMaximalIdeal_symm_apply p Rₚ Sₚ P x
 
+-- massive generalization:
 theorem ramificationIdx_map_eq_ramificationIdx [IsDomain R] [IsTorsionFree R S] [IsTorsionFree R Rₚ]
     [IsTorsionFree S Sₚ] [IsTorsionFree Rₚ Sₚ] [IsDedekindDomain S] [IsDedekindDomain Rₚ]
     [IsDedekindDomain Sₚ] (hp : p ≠ ⊥) [P.IsPrime] :
-    (maximalIdeal Rₚ).ramificationIdx (P.map (algebraMap S Sₚ)) =
-      p.ramificationIdx P := by
+    (P.map (algebraMap S Sₚ)).ramificationIdx' Rₚ = P.ramificationIdx' R := by
+  have : (P.map (algebraMap S Sₚ)).LiesOver (maximalIdeal Rₚ) :=
+    liesOver_map_of_liesOver p Rₚ Sₚ P
+  have := isPrime_map_of_liesOver S p Sₚ P
+  rw [ramificationIdx'_eq (maximalIdeal Rₚ) (P.map (algebraMap S Sₚ)), ramificationIdx'_eq p P]
+  sorry
+
   have h₁ : maximalIdeal Rₚ ≠ ⊥ := by
     rw [← map_eq_maximalIdeal p]
     exact map_ne_bot_of_ne_bot hp
@@ -188,9 +194,7 @@ theorem ramificationIdx_map_eq_ramificationIdx [IsDomain R] [IsTorsionFree R S] 
   · simp_rw [hP, Ideal.map_bot, ramificationIdx_bot' hp
       (FaithfulSMul.algebraMap_injective _ _),
       ramificationIdx_bot' h₁ (FaithfulSMul.algebraMap_injective Rₚ Sₚ)]
-  have : P.IsMaximal := IsPrime.isMaximal inferInstance hP
-  have : (Ideal.map (algebraMap S Sₚ) P).LiesOver (maximalIdeal Rₚ) :=
-    liesOver_map_of_liesOver p Rₚ Sₚ P
+
   have : (Ideal.map (algebraMap S Sₚ) P).LiesOver P := by
     rw [liesOver_iff, under_def, comap_map_eq_self_of_isMaximal _ (IsPrime.ne_top')]
   have h_main :=
