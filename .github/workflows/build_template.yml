@@ -263,6 +263,7 @@ jobs:
             ##  we exploit `lake`s replay feature: since the cache is present, running
             ##  `lake build` will reproduce all the outputs without having to recompute
             lake build -q --iofail Mathlib Archive Counterexamples
+          )"
           if [ -n "${buildMsgs}" ]
           then
             printf $'%s\n' "${buildMsgs}"
