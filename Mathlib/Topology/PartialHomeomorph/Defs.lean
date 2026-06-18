@@ -97,14 +97,10 @@ theorem continuousOn_symm : ContinuousOn e.symm e.target :=
 @[simp]
 theorem coe_mk (e : PartialEquiv X Y) (h₁ h₂) : (PartialHomeomorph.mk e h₁ h₂ : X → Y) = e := rfl
 
-@[deprecated (since := "2026-05-20")] alias mk_coe := coe_mk
-
 @[simp]
 theorem coe_mk_symm (e : PartialEquiv X Y) (h₁ h₂) :
     ((PartialHomeomorph.mk e h₁ h₂).symm : Y → X) = e.symm :=
   rfl
-
-@[deprecated (since := "2026-05-20")] alias mk_coe_symm := coe_mk_symm
 
 theorem toPartialEquiv_injective :
     Injective (toPartialEquiv : PartialHomeomorph X Y → PartialEquiv X Y)
@@ -133,7 +129,7 @@ theorem map_source {x : X} (h : x ∈ e.source) : e x ∈ e.target :=
   e.map_source' h
 
 /-- Variant of `map_source`, stated in terms of subsets. -/
-lemma map_source'' : e '' e.source ⊆ e.target :=
+lemma image_source_subset : e '' e.source ⊆ e.target :=
   fun _ ⟨_, hx, hex⟩ ↦ mem_of_eq_of_mem (id hex.symm) (e.map_source' hx)
 
 @[simp]

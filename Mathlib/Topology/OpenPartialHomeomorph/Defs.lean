@@ -112,9 +112,8 @@ theorem toPartialHomeomorph_injective :
     Injective (toPartialHomeomorph : OpenPartialHomeomorph X Y → PartialHomeomorph X Y)
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
-theorem toPartialEquiv_comp_toPartialHomeomorph_injective :
-    Injective (PartialHomeomorph.toPartialEquiv ∘ toPartialHomeomorph :
-      OpenPartialHomeomorph X Y → PartialEquiv X Y) :=
+theorem toPartialEquiv_injective :
+    Injective (fun f ↦ f.toPartialEquiv : OpenPartialHomeomorph X Y → PartialEquiv X Y) :=
   PartialHomeomorph.toPartialEquiv_injective.comp toPartialHomeomorph_injective
 
 /- Register a few simp lemmas to make sure that `simp` puts the application of a local
@@ -152,9 +151,11 @@ theorem coe_toPartialHomeomorph : (e.toPartialHomeomorph : X → Y) = e :=
 theorem coe_toPartialHomeomorph_symm : (e.toPartialHomeomorph.symm : Y → X) = e.symm :=
   rfl
 
-/-- Variant of `map_source`, stated in terms of subsets. -/
-lemma map_source'' : e '' e.source ⊆ e.target :=
+/-- Variant of `map_source`, stated for images of subsets of `source`. -/
+lemma image_source_subset : e '' e.source ⊆ e.target :=
   fun _ ⟨_, hx, hex⟩ ↦ mem_of_eq_of_mem (id hex.symm) (e.map_source' hx)
+
+@[deprecated (since := "2026-06-17")] alias map_source'' := image_source_subset
 
 @[simp, mfld_simps]
 theorem map_target {x : Y} (h : x ∈ e.target) : e.symm x ∈ e.source :=
