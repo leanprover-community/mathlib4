@@ -36,8 +36,8 @@ We introduce a type class for each axiom:
   dimension axiom, if homology is zero for positive indices.
 
  In addition, there are bundled type classes
-`IsExtraordinaryEilenbergSteenrod` with the homotopy-invariance, excision, additivity, and pair sequence axioms and
-`IsEilenbergSteenrod` which extends the former by the dimension axiom.
+`IsExtraordinaryEilenbergSteenrod` with the homotopy-invariance, excision, additivity, and pair
+sequence axioms and `IsEilenbergSteenrod` which extends the former by the dimension axiom.
 
 Excision is formulated in terms of complements of topological pairs: Suppose `U` and `V` are
 complements of a topological pair `X` with embeddings `f : U ⟶ X` and `g : V ⟶ X`. Suppose further
