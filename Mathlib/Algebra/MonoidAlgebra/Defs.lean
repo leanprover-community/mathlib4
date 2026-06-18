@@ -139,10 +139,10 @@ def coeffEquiv : R[M] ≃ (M →₀ R) where
   left_inv _ := rfl
   right_inv _ := rfl
 
-@[to_additive] lemma «forall» {P : R[M] → Prop} : (∀ p, P p) ↔ ∀ q, P ⟨q⟩ :=
+@[to_additive] lemma «forall» {P : R[M] → Prop} : (∀ p, P p) ↔ ∀ q, P (ofCoeff q) :=
   coeffEquiv.forall_congr_left
 
-@[to_additive] lemma «exists» {P : R[M] → Prop} : (∃ p, P p) ↔ ∃ q, P ⟨q⟩ :=
+@[to_additive] lemma «exists» {P : R[M] → Prop} : (∃ p, P p) ↔ ∃ q, P (ofCoeff q) :=
   coeffEquiv.exists_congr_left
 
 @[to_additive]
