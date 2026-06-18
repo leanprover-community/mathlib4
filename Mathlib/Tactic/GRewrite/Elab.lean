@@ -130,8 +130,9 @@ after unification will create side goals.
 
 To be able to use `grewrite`, the relevant lemmas need to be tagged with `@[gcongr]`.
 To rewrite inside a transitive relation, you can also give it an `IsTrans` instance.
-Rewriting with a strict inequality `a < b` may change the strictness of the goal,
-replacing a goal `_ < _` by `_ ≤ _`. If this is not possible, then `a < b` is treated as `a ≤ b`.
+
+Rewriting with a strict inequality `a < b` may change a constant in the goal,
+such as changing `<` to `≤`. If this is not possible, then `a < b` is treated the same as `a ≤ b`.
 
 `grw` is like `grewrite` but tries to close the goal afterwards by "cheap" (reducible) `rfl`.
 To rewrite only in the `n`-th position, use `nth_grewrite n`.
@@ -173,8 +174,9 @@ after unification will create side goals.
 
 To be able to use `grw`, the relevant lemmas need to be tagged with `@[gcongr]`.
 To rewrite inside a transitive relation, you can also give it an `IsTrans` instance.
-Rewriting with a strict inequality `a < b` may change the strictness of the goal,
-replacing a goal `_ < _` by `_ ≤ _`. If this is not possible, then `a < b` is treated as `a ≤ b`.
+
+Rewriting with a strict inequality `a < b` may change the goal, such as changing `<` to `≤`.
+If this is not possible, then `a < b` is treated the same as `a ≤ b`.
 
 `grewrite` is like `grw` but does not try to apply `rfl` afterwards.
 To rewrite only in the `n`-th position, use `nth_grw n`.

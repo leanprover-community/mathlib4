@@ -375,9 +375,13 @@ For example, `mul_le_mul_of_nonneg_right` and `mul_le_mul_of_nonneg_left` are bo
 * `gcongr only` relaxes some checks that ensure that the lemma is suitable for use in `grw`.
   So, a lemma tagged `gcongr only` is not used by `grw`, but it may still be used by `gcongr`.
 * `gcongr strict` lets you tag lemmas where the conclusion relates two different constants,
-  instead of a constant with itself. This can be used to give `grw` special support for rewriting
-  with strict inequality (`<`). For example, `gcongr strict` is used on `lt_of_lt_of_le`,
-  which has the conclusion `b ≤ c → a < c` that relates `LE.le` with `LT.lt`.
+  instead of a constant with itself.
+  This allows `grw` to replace one constant with another while doing a rewrite.
+  In particular, we use this to have special support for rewriting with strict inequalities (`<`).
+  This is done by applying `gcongr strict` to `lt_of_lt_of_le`, which has the conclusion
+  `b ≤ c → a < c` that relates `LE.le` with `LT.lt` (and similarly for `lt_of_lt_of_le'`).
+  As a result, a rewrite with a strict inequality can turn `<` into `≤`, or `≤` into `<`,
+  depending on whether this appears in positive or negative position.
 -/
 syntax (name := gcongrAttr) "gcongr" (&" strict")? (&" only")? (prio)? : attr
 
