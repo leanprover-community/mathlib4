@@ -749,7 +749,7 @@ lemma exists_appTop_map_eq_zero_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom
     have (j : Over i) : IsAffine ((opensDiagram D i U).obj j) := hU.preimage (D.map _)
     obtain ⟨j, f, hj⟩ := exists_appTop_map_eq_zero_of_isAffine_of_isLimit _ _
       (isLimitOpensCone D c hc i U) (.mk (𝟙 i)) (((opensDiagramι D i U).app _).appTop s) (by
-        convert! congr((c.pt.presheaf.map (homOfLE le_top).op).hom $hs) using 1
+        convert congr((c.pt.presheaf.map (homOfLE le_top).op).hom $hs)
         · simp [Scheme.Hom.app_eq_appLE, Scheme.Hom.resLE_appLE, ← ConcreteCategory.comp_apply]; rfl
         · simp)
     refine ⟨U, hU, hxU, j.left, j.hom, ?_⟩
