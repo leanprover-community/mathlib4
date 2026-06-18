@@ -23,10 +23,21 @@ respectively, (indexed by a `ComplexShape`) and a proof that they agree on `TopC
 require boundary morphisms `δ i j :  Hₚ i ⟶ proj₂ ⋙ H j` for the long exact sequence of
 topological pairs. These are nonzero only if `c.Rel i j`.
 
-We introduce a type class for each axiom. In addition, there are bundled type classes
-`IsExtraordinaryEilenbergSteenrod` with the homotopy, excision, additivity, and exactness axioms and
-`IsEilenbergSteenrod` on a `HomologyPretheory` on `ComplexShape.down ℕ : ComplexShape ℕ` which
-extends the former by the dimension axiom.
+We introduce a type class for each axiom:
+
+* `IsHomotopyInvariant`: Homotopic maps induce the same map in homology.
+* `HasExcisionIso`: For a sufficiently nice subset `U ⊆ A`, the inclusion `(X \ U, A \ U) → (X, A)`
+  induces an isomorphism in homology.
+* `IsAdditive`: Homology preserves coproducts.
+* `HasPairSequence`: For a topological pair `(X, A)`, the sequence
+  `⋯ ⟶ Hₙ(X) ⟶ Hₙ(X, A) ⟶ Hₙ₋₁(A) ⟶ Hₙ₋₁(X) ⟶ Hₙ₋₁(X, A) ⟶ ⋯`
+  is exact.
+* `HasDimensionAxiom`: A `HomologyPretheory` on `ComplexShape.down ℕ : ComplexShape ℕ` has the
+  dimension axiom, if homology is zero for positive indices.
+
+ In addition, there are bundled type classes
+`IsExtraordinaryEilenbergSteenrod` with the homotopy-invariance, excision, additivity, and pair sequence axioms and
+`IsEilenbergSteenrod` which extends the former by the dimension axiom.
 
 Excision is formulated in terms of complements of topological pairs: Suppose `U` and `V` are
 complements of a topological pair `X` with embeddings `f : U ⟶ X` and `g : V ⟶ X`. Suppose further
