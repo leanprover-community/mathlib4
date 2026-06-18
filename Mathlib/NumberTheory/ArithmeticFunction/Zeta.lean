@@ -222,11 +222,12 @@ open Lean Meta Qq
 
 /-- Extension for `ArithmeticFunction.zeta`. -/
 @[positivity ArithmeticFunction.zeta _]
-meta def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p e := do
+meta def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p? e := do
+  let some p := p? | throwError "no PartialOrder instance"
   match u, α, e with
   | 0, ~q(ℕ), ~q(ArithmeticFunction.zeta $n) =>
-    let rn ← core z p n
     assumeInstancesCommute
+    let rn ← core z p n
     match rn with
     | .positive pn => return .positive q(Iff.mpr ArithmeticFunction.zeta_pos $pn)
     | _ => return .nonnegative q(Nat.zero_le _)

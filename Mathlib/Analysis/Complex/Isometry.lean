@@ -101,12 +101,9 @@ theorem LinearIsometry.im_apply_eq_im_or_neg_of_re_apply_eq_re {f : ℂ →ₗ�
 
 theorem LinearIsometry.im_apply_eq_im {f : ℂ →ₗᵢ[ℝ] ℂ} (h : f 1 = 1) (z : ℂ) :
     z + conj z = f z + conj (f z) := by
-  have hdist : ‖f z - 1‖ = ‖z - 1‖ := by simpa [f.map_sub, h] using f.norm_map (z - 1)
-  have hsq : ‖f z - 1‖ ^ 2 = ‖z - 1‖ ^ 2 := congrArg (fun x : ℝ => x ^ 2) hdist
-  rw [← normSq_eq_norm_sq, ← normSq_eq_norm_sq, Complex.normSq_sub, Complex.normSq_sub,
-    normSq_eq_norm_sq, normSq_eq_norm_sq, LinearIsometry.norm_map] at hsq
-  have hre : (f z).re = z.re := by simpa [normSq_eq_norm_sq] using hsq
-  simp [Complex.add_conj, hre]
+  have hsq : ‖f z - 1‖ ^ 2 = ‖z - 1‖ ^ 2 := by simpa [h] using f.norm_map (z - 1)
+  simp_rw [← normSq_eq_norm_sq, Complex.normSq_sub] at hsq
+  simpa [normSq_eq_norm_sq, Complex.add_conj, LinearIsometry.norm_map] using hsq.symm
 
 theorem LinearIsometry.re_apply_eq_re {f : ℂ →ₗᵢ[ℝ] ℂ} (h : f 1 = 1) (z : ℂ) : (f z).re = z.re := by
   apply LinearIsometry.re_apply_eq_re_of_add_conj_eq
