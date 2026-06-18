@@ -11,6 +11,8 @@ public import Mathlib.Algebra.Order.CauSeq.BigOperators
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Data.Complex.BigOperators
 public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.Tactic.NormNum.BigOperators
+public import Mathlib.Tactic.NormNum.NatFactorial
 
 /-!
 # Exponential Function
@@ -74,7 +76,7 @@ open Complex
 noncomputable section
 
 /-- The real exponential function, defined as the real part of the complex exponential -/
-@[pp_nodot]
+@[pp_nodot, wikidata Q168698]
 nonrec def exp (x : ℝ) : ℝ :=
   (exp x).re
 
@@ -93,7 +95,7 @@ variable (x y : ℂ)
 theorem exp_zero : exp 0 = 1 := by
   rw [exp]
   refine lim_eq_of_equiv_const fun ε ε0 => ⟨1, fun j hj => ?_⟩
-  convert! (config := .unfoldSameFun) ε0 -- ε0 : ε > 0 but goal is _ < ε
+  convert ε0.lt
   rcases j with - | j
   · exact absurd hj (not_le_of_gt zero_lt_one)
   · dsimp [exp']
@@ -648,11 +650,34 @@ theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t 
       · exact one_sub_le_exp_neg _
     _ = rexp (-t) := by rw [← Real.exp_nat_mul, mul_neg, mul_comm, div_mul_cancel₀]; positivity
 
+lemma one_add_inv_pow_le_exp {n : ℕ} : (1 + (n : ℝ)⁻¹) ^ n ≤ exp 1 := by
+  convert one_sub_div_pow_le_exp_neg (n := n) (t := -1) (by grind) using 1
+  · field
+  · simp
+
 lemma le_inv_mul_exp (x : ℝ) {c : ℝ} (hc : 0 < c) : x ≤ c⁻¹ * exp (c * x) := by
   rw [le_inv_mul_iff₀ hc]
   calc c * x
   _ ≤ c * x + 1 := le_add_of_nonneg_right zero_le_one
   _ ≤ _ := Real.add_one_le_exp (c * x)
+
+lemma exp_lt_two_add_div_two_sub {x : ℝ} (hx : 0 < x) (hx' : x < 2) :
+    exp x < (2 + x) / (2 - x) := by calc
+  _ = exp (x / 2) ^ 2 := by grind [Real.exp_nat_mul (x / 2) 2]
+  _ ≤ _ := by
+    grw [Real.exp_bound' (x := x / 2) (by grind) (by grind) (n := 3) (by simp)]
+    apply Real.exp_nonneg
+  _ < (2 + x) / (2 - x) := by
+    rw [lt_div_iff₀ (by linarith), ← sub_pos]
+    simp only [Finset.sum_range_succ]
+    ring_nf
+    positivity
+
+lemma exp_le_two_add_div_two_sub {x : ℝ} (hx : 0 ≤ x) (hx' : x < 2) :
+    exp x ≤ (2 + x) / (2 - x) := by
+  obtain rfl | hx₀ := hx.eq_or_lt
+  · simp
+  · exact (exp_lt_two_add_div_two_sub hx₀ hx').le
 
 theorem prod_one_add_le_exp_sum {ι : Type*} (s : Finset ι) {f : ι → ℝ}
     (hf : ∀ i, 0 ≤ f i) : ∏ i ∈ s, (1 + f i) ≤ exp (∑ i ∈ s, f i) :=
@@ -667,9 +692,10 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `Real.exp` is always positive. -/
 @[positivity Real.exp _]
-meta def evalExp : PositivityExt where eval {u α} _ _ e := do
+meta def evalExp : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.exp $a) =>
+    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.positive q(Real.exp_pos $a))
   | _, _, _ => throwError "not Real.exp"
