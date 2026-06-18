@@ -1,4 +1,7 @@
+module
+
 import Mathlib
+import Lean.Elab.Tactic.Grind.LintExceptions
 
 -- These each instantiate 24 further lemmas (pretty much the same ones), but they seem reasonable.
 -- We'll make an exception for this one,
