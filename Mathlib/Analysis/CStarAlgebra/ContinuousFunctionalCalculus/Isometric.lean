@@ -387,7 +387,7 @@ protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S))
     · simpa [halg.dist_eq] using! ContinuousMap.dist_apply_le_dist _
     · let x' : σₙ S a := Subtype.map (algebraMap R S) (fun _ ↦ quasispectrum.algebraMap_mem S) x
       apply le_of_eq_of_le ?_ <| ContinuousMap.dist_apply_le_dist x'
-      simp only [ContinuousMap.coe_coe, ContinuousMapZero.comp_apply, ContinuousMapZero.coe_mk,
+      simp only [ContinuousMapZero.comp_apply, ContinuousMapZero.coe_mk,
         ContinuousMap.coe_mk, StarAlgHom.ofId_apply, halg.dist_eq, x']
       congr! 2
       all_goals ext; exact haf.left_inv _ |>.symm

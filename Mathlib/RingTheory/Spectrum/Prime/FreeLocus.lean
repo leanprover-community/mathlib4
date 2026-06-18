@@ -365,9 +365,7 @@ lemma rankAtStalk_eq (p : PrimeSpectrum R) :
   let e : k ⊗[Localization.AtPrime p.asIdeal] (Localization.AtPrime p.asIdeal ⊗[R] M) ≃ₗ[k]
       k ⊗[R] M :=
     AlgebraTensorModule.cancelBaseChange _ _ _ _ _
-  rw [← e.finrank_eq]
-  erw [finrank_baseChange]
-  rw [rankAtStalk_eq_finrank_tensorProduct]
+  rw [← e.finrank_eq, finrank_baseChange, rankAtStalk_eq_finrank_tensorProduct]
 
 /-- Variant of `Module.rankAtStalk_eq` for better rewriting. -/
 lemma _root_.Ideal.finrank_fiber_eq_rankAtStalk (p : Ideal R) [hp : p.IsPrime] :

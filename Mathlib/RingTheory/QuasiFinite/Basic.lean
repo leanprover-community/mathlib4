@@ -125,7 +125,7 @@ private lemma finite_of_isArtinianRing_of_isLocalRing
     (Algebra.TensorProduct.congr (.symm <| .ofBijective _
       (Ideal.bijective_algebraMap_quotient_residueField (maximalIdeal R))) .refl).trans <|
     (Algebra.TensorProduct.comm _ _ _).trans
-    ((Algebra.TensorProduct.quotIdealMapEquivTensorQuot _ _).symm.restrictScalars _)
+    ((Algebra.TensorProduct.quotIdealMapEquivTensorQuot S (maximalIdeal R)).symm.restrictScalars _)
   have : Module.Finite R (S ⧸ (maximalIdeal R).map (algebraMap R S)) :=
     have : Module.Finite R ((maximalIdeal R).Fiber S) :=
       .trans (maximalIdeal R).ResidueField _
