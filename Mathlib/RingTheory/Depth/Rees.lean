@@ -37,7 +37,7 @@ certain `Ext` groups and the length of a maximal regular sequence in a certain i
 
 -/
 
-@[expose] public section
+public section
 
 open IsLocalRing LinearMap Module
 
@@ -146,12 +146,12 @@ lemma subsingleton_ext_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R)
 **The Rees theorem**
 For any `n : ℕ`, Noetherian ring `R`, `I : Ideal R`, and finitely generated and nontrivial
 `R`-module `M` satisfying `IM < M`, the following are equivalent:
-· for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
+* for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
   zero locus of `I`, `∀ i < n, Ext N M i = 0`
-· `∀ i < n, Ext (R ⧸ I) M i = 0`
-· there exists a `N : ModuleCat R` finitely generated and nontrivial with support equal to the
+* `∀ i < n, Ext (R ⧸ I) M i = 0`
+* there exists a `N : ModuleCat R` finitely generated and nontrivial with support equal to the
   zero locus of `I`, `∀ i < n, Ext N M i = 0`
-· there exists a `M`-regular sequence of length `n` with every element in `I`
+* there exists a `M`-regular sequence of length `n` with every element in `I`
 -/
 lemma exists_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
     (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤) :
