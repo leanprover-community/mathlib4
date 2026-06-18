@@ -83,4 +83,4 @@
    "configFile": "lakefile.toml"}],
  "name": "mathlib",
  "lakeDir": ".lake",
- "fixedToolchain": false}
+ "fixedToolchain": true}
