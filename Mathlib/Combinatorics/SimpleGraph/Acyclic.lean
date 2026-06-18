@@ -549,14 +549,8 @@ theorem exists_isCycle_of_card_le [Finite V] [Nonempty V]
 /-- A graph on `n` vertices is a tree iff it is acyclic and has exactly `n - 1` edges -/
 theorem isTree_iff_isAcyclic_and_ncard_edgeSet_add_one_eq_card [Finite V] :
     G.IsTree ↔ G.IsAcyclic ∧ G.edgeSet.ncard + 1 = Nat.card V := by
-  have := Fintype.ofFinite V
-  have := Fintype.ofFinite G.edgeSet
-  refine ⟨fun h ↦ ⟨h.isAcyclic, h.ncard_edgeSet_add_one⟩, ?_⟩
-  refine fun ⟨h, _⟩ ↦ ⟨{ preconnected a b := ?_, nonempty := by grind [Nat.card_pos_iff] }, h⟩
-  suffices G.Reachable = ⊤ by simp [this]
-  rw [← G.reachable_is_equivalence.eqvGen_eq]
-  refine Quot.subsingleton_iff _ |>.mp <| Nat.card_eq_one_iff_unique.mp ?_ |>.left
-  grind [h.ncard_edgeSet_add_card_connectedComponent, ConnectedComponent]
+  refine ⟨fun h ↦ ⟨h.isAcyclic, h.ncard_edgeSet_add_one⟩, fun ⟨h, _⟩ ↦ ⟨?_, h⟩⟩
+  grind [connected_iff_card_connectedComponent_eq_one, h.ncard_edgeSet_add_card_connectedComponent]
 
 /-- The minimum degree of all vertices in a nontrivial tree is one. -/
 lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [Nontrivial V]
