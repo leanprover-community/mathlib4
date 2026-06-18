@@ -93,11 +93,10 @@ theorem fourier_bilin_convolution_eq (B : F₁ →L[ℂ] F₂ →L[ℂ] F₃) {f
     simp_rw [inner_add_left, neg_add, AddChar.map_add_eq_mul, smul_smul]
   _ = ∫ y, (∫ x, B (𝐞 (-inner ℝ x ξ) • f₁ x)) (𝐞 (-inner ℝ y ξ) • f₂ y) := by
     congr with y
-    simp_rw [Circle.smul_def, map_smul, MeasureTheory.integral_smul]
-    rw [integral_apply
-      (by simpa [Circle.smul_def] using
-        (Real.fourierIntegral_convergent_iff ξ).2 (B.integrable_comp hf₁)) (f₂ y)]
-    simp
+    have : Integrable (fun x ↦ (𝐞 (-inner ℝ x ξ) : ℂ) • B (f₁ x)) volume := by
+      simpa [Circle.smul_def] using
+        (Real.fourierIntegral_convergent_iff ξ).2 (B.integrable_comp hf₁)
+    simp [Circle.smul_def, MeasureTheory.integral_smul, integral_apply this (f₂ y)]
   _ = B (∫ x, 𝐞 (-inner ℝ x ξ) • f₁ x) (∫ y, 𝐞 (-inner ℝ y ξ) • f₂ y) := by
     rw [← integral_comp_comm _ (by simpa using hf₂), ← integral_comp_comm _ (by simpa using hf₁)]
 
