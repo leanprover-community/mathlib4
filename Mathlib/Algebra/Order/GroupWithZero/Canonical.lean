@@ -520,7 +520,7 @@ instance instLinearOrderedCommMonoidWithZero [CommMonoid α] [LinearOrder α]
 instance instLinearOrderedCommGroupWithZero [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] :
     LinearOrderedCommGroupWithZero (WithZero α) where
 
--- Add a shortcut instance for the common case, to speed up unification.s
+-- Add a shortcut instance for the common case, to speed up unification.
 instance : LinearOrderedCommGroupWithZero ℤᵐ⁰ := inferInstance
 
 /-! ### Exponential and logarithm -/
