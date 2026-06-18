@@ -341,10 +341,10 @@ def liftHomotopyRel [PreconnectedSpace A]
     map_zero_left := cov.liftHomotopy_zero F f₀' F_0
     map_one_left := by
       obtain ⟨a, ha, he⟩ := he
-      simp_rw [toFun_eq_coe, ← curry_apply]
+      simp_rw [toFun_eq_coe, ← ContinuousMap.curry_apply]
       refine congr_fun (cov.eq_of_comp_eq
         (ContinuousMap.continuous _) f₁'.continuous ?_ a <| (rel 1 a ha).trans he)
-      ext a; rw [h₁, Function.comp_apply, curry_apply]
+      ext a; rw [h₁, Function.comp_apply, ContinuousMap.curry_apply]
       exact (congr_fun (cov.liftHomotopy_lifts F f₀' _) (1, a)).trans (F.apply_one a)
     prop' := rel }
 
