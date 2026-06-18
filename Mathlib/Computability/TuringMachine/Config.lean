@@ -355,22 +355,13 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
         obtain h | rfl := Nat.lt_succ_iff_lt_or_eq.1 h'
         exacts [hm _ h, h]
     · rintro ⟨n, ⟨hn, hm⟩, rfl⟩
-      refine ⟨n.succ::v.1, ?_, rfl⟩
-      have : (n.succ::v.1 : List ℕ) ∈
-        PFun.fix (fun v =>
-          (cf.eval v).bind fun y =>
-            Part.some <|
-              if y.headI = 0 then Sum.inl (v.headI.succ :: v.tail)
-                else Sum.inr (v.headI.succ :: v.tail))
-            (n::v.val) :=
-        PFun.mem_fix_iff.2 (Or.inl (by simp [hf, hn]))
-      generalize (n.succ :: v.1 : List ℕ) = w at this ⊢
+      refine ⟨n.succ::v.1,
+        PFun.mem_fix_of_reflTransGen (a' := n :: v.val) ?_ (by simp [hf, hn]), rfl⟩
       clear hn
       induction n with
-      | zero => exact this
+      | zero => exact .refl
       | succ n IH =>
-        refine IH (fun {m} h' => hm (Nat.lt_succ_of_lt h'))
-          (PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, this⟩))
+        refine (IH fun {m} h' => hm (Nat.lt_succ_of_lt h')).tail ?_
         simp only [hf, hm n.lt_succ_self, Part.bind_some, List.headI, if_false,
           Part.mem_some_iff, List.tail_cons]
 

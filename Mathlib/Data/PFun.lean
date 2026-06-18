@@ -335,6 +335,29 @@ theorem fixInduction'_fwd {C : α → Sort*} {f : α →. β ⊕ α} {b : β} {a
     (Part.get_eq_of_mem fa (dom_of_mem_fix h)).symm
   simp
 
+/-- Membership in `f.fix a` is equivalent to following zero or more forward `Sum.inr` steps
+from `a`, then stopping with a `Sum.inl` value. -/
+theorem mem_fix_iff_exists_reflTransGen {f : α →. β ⊕ α} {a : α} {b : β} :
+    b ∈ f.fix a ↔
+      ∃ a', Relation.ReflTransGen (fun x y => Sum.inr y ∈ f x) a a' ∧
+        Sum.inl b ∈ f a' := by
+  constructor
+  · exact fun h =>
+      fixInduction' h (fun a' hb => ⟨a', .refl, hb⟩)
+        fun a₀ a₁ _ ha₁ ⟨a', hreach, hb⟩ => ⟨a', .head ha₁ hreach, hb⟩
+  · rintro ⟨a', hreach, hb⟩
+    induction hreach using Relation.ReflTransGen.head_induction_on with
+    | refl => exact fix_stop hb
+    | head hstep _ ih => exact mem_fix_iff.2 (Or.inr ⟨_, hstep, ih⟩)
+
+/-- If following zero or more forward `Sum.inr` steps from `a` reaches a state where `f` stops
+with `b`, then `b ∈ f.fix a`. -/
+theorem mem_fix_of_reflTransGen {f : α →. β ⊕ α} {a a' : α} {b : β}
+    (hreach : Relation.ReflTransGen (fun x y => Sum.inr y ∈ f x) a a')
+    (hb : Sum.inl b ∈ f a') :
+    b ∈ f.fix a :=
+  mem_fix_iff_exists_reflTransGen.2 ⟨a', hreach, hb⟩
+
 variable (f : α →. β)
 
 /-- Image of a set under a partial function. -/
