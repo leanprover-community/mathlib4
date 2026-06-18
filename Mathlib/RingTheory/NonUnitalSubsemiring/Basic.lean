@@ -237,9 +237,10 @@ theorem center_toSubsemigroup :
   rfl
 
 /-- The center is commutative and associative. -/
-instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R) := fast_instance%
-  { Subsemigroup.center.commSemigroup,
-    NonUnitalSubsemiringClass.toNonUnitalNonAssocSemiring (center R) with }
+instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R) where
+  __ := NonUnitalSubsemiringClass.toNonUnitalNonAssocSemiring (center R)
+  __ := Subsemigroup.center.commSemigroup.toCommMagma
+  mul_assoc := Subsemigroup.center.commSemigroup.mul_assoc
 
 /-- A point-free means of proving membership in the center, for a non-associative ring.
 
@@ -269,11 +270,12 @@ end NonUnitalNonAssocSemiring
 
 section NonUnitalSemiring
 
-set_option backward.isDefEq.respectTransparency false in
+variable {R : Type*} [NonUnitalSemiring R]
+
 -- no instance diamond, unlike the unital version
 example {R} [NonUnitalSemiring R] :
-    (center.instNonUnitalCommSemiring _).toNonUnitalSemiring =
-      NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) := by
+    ((center.instNonUnitalCommSemiring _).toNonUnitalSemiring) =
+      (NonUnitalSubsemiringClass.toNonUnitalSemiring (center R)) := by
   with_reducible_and_instances rfl
 
 theorem mem_center_iff {R} [NonUnitalSemiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := by
