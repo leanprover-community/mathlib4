@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.CharP.Basic
 public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.Algebra.Group.Submonoid.Units
 public import Mathlib.Algebra.GroupWithZero.Units.Fintype
 public import Mathlib.GroupTheory.OrderOfElement
 
@@ -380,6 +381,19 @@ The restriction of a `MulChar` to a submonoid.
 noncomputable def restrict {S : Type*} [SetLike S R] [SubmonoidClass S R] (T : S)
     (χ : MulChar R R') : MulChar T R' :=
   ofUnitHom <| χ.toUnitHom.comp <| Units.map (SubmonoidClass.subtype T)
+
+/--
+The restriction of a `MulChar` to a submonoid as an homomorphism.
+-/
+@[simps]
+noncomputable def restrictHom {S : Type*} [SetLike S R] [SubmonoidClass S R] (T : S)
+    (R'' : Type*) [CommMonoidWithZero R''] :
+    (MulChar R R'') →* MulChar T R'' where
+  toFun := restrict T
+  map_one' := by
+    ext x
+    rw [restrict_apply, if_pos x.isUnit, MulChar.one_apply x.isUnit.coe, one_apply_coe]
+  map_mul' x y := by ext; simp
 
 end Group
 
