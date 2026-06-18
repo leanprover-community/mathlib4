@@ -259,6 +259,19 @@ lemma zmodRepr_units_ne_zero (x : ℤ_[p]ˣ) : x.val.zmodRepr ≠ 0 := by
   rw [ne_eq, zmodRepr_eq_zero_iff_dvd]
   exact irreducible_p.not_dvd_isUnit x.isUnit
 
+lemma zmodRepr_coe_ne_zero_of_isUnit {x : ℤ_[p]} (hx : IsUnit x) :
+    ((x.zmodRepr : ℤ) : ZMod p) ≠ 0 := by
+  rw_mod_cast [ZMod.natCast_eq_zero_iff]
+  exact Nat.not_dvd_of_pos_of_lt
+    (Nat.ne_zero_iff_zero_lt.mp (PadicInt.zmodRepr_units_ne_zero hx.unit)) (zmodRepr_lt_p x)
+
+lemma zmodRepr_coe_ne_zero_iff_isUnit {x : ℤ_[p]} :
+    IsUnit x ↔ ((x.zmodRepr : ℤ) : ZMod p) ≠ 0 := by
+  refine ⟨zmodRepr_coe_ne_zero_of_isUnit, fun h ↦ ?_⟩
+  rw [PadicInt.isUnit_iff, ← PadicInt.norm_natCast_zmodRepr_eq_one_iff,
+    PadicInt.norm_natCast_zmodRepr_eq_one_iff_ne]
+  aesop
+
 /-- `toZModHom` is an auxiliary constructor for creating ring homs from `ℤ_[p]` to `ZMod v`.
 -/
 def toZModHom (v : ℕ) (f : ℤ_[p] → ℕ) (f_spec : ∀ x, x - f x ∈ (Ideal.span {↑v} : Ideal ℤ_[p]))
@@ -342,6 +355,10 @@ lemma val_toZMod_eq_zmodRepr (x : ℤ_[p]) :
 
 lemma zmodRepr_mul (x y : ℤ_[p]) : (x * y).zmodRepr = x.zmodRepr * y.zmodRepr % p := by
   simp [← val_toZMod_eq_zmodRepr, ZMod.val_mul]
+
+@[simp]
+lemma zmodRepr_one : zmodRepr (1 : ℤ_[p]) = 1 := by
+  rw [← val_toZMod_eq_zmodRepr, map_one, ZMod.val_one p]
 
 /-- The equivalence between the residue field of the `p`-adic integers and `ℤ/pℤ` -/
 def residueField : IsLocalRing.ResidueField ℤ_[p] ≃+* ZMod p :=
