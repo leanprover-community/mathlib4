@@ -28,9 +28,9 @@ This file defines partial isomorphisms between first-order structures.
 - `FirstOrder.Language.embedding_from_cg` shows that if structures `M` and `N` form an equivalence
   pair with `M` countably-generated, then any finite-generated partial equivalence between them
   can be extended to an embedding `M ↪[L] N`.
-- `FirstOrder.Language.equiv_from_cg` shows that if countably-generated structures `M` and `N` form
-  an equivalence pair in both directions, then any finite-generated partial equivalence between them
-  can be extended to an isomorphism `M ↪[L] N`.
+- `FirstOrder.Language.equiv_between_cg` shows that if countably-generated structures `M` and `N`
+  form an equivalence pair in both directions, then any finite-generated partial equivalence between
+  them can be extended to an isomorphism `M ≃[L] N`.
 - The proofs of these results are adapted in part from David Wärn's approach to countable dense
   linear orders, a special case of this phenomenon in the case where `L = Language.order`.
 
@@ -527,6 +527,8 @@ theorem equiv_between_cg (M_cg : Structure.CG L M) (N_cg : Structure.CG L N)
   convert! le_partialEquivLimit S 0
   rw [toEquivOfEqTop_toEmbedding]
   apply Embedding.toPartialEquiv_toEmbedding
+
+@[deprecated (since := "2026-06-13")] alias equiv_from_cg := equiv_between_cg
 
 end FGEquiv
 
