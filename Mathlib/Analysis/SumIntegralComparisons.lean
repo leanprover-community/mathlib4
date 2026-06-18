@@ -259,12 +259,13 @@ theorem AntitoneOn.tsum_le_integral (anti : AntitoneOn f (Ici 0))
 
 /-- Bounds the difference between a sum and its partial sums by an integral. -/
 theorem AntitoneOn.abs_tsum_sub_sum_range_le_integral {N : ℕ} (hN : 1 ≤ N)
-    (anti : AntitoneOn f (Ici 0))
-    (integrable : IntegrableOn f (Ioi 0)) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
+    (anti : AntitoneOn f (Ici (N - 1 : ℝ)))
+    (integrable : IntegrableOn f (Ioi (N - 1 : ℝ))) (nonneg : ∀ t ∈ Ioi (N - 1 : ℝ), 0 ≤ f t) :
     |(∑' (n : ℕ), f n) - ∑ n ∈ Finset.range N, f n| ≤ ∫ x in Ioi (N - 1 : ℝ), f x := by
-  rw [← (anti.summable_of_integrable integrable nonneg).sum_add_tsum_nat_add N, add_sub_cancel_left]
-  rw [abs_of_nonneg (tsum_nonneg fun n ↦ nonneg _ (by simp; norm_cast; grind))]
-  convert AntitoneOn.tsum_comp_add_le_integral (N - 1) (anti.mono (by grind)) (integrable.mono_set
-    (by grind)) (fun _ _ ↦ nonneg _ (by grind)) using 1
+  rw [← (AntitoneOn.summable_of_integrable_eventually (mod_cast anti) (mod_cast integrable)
+    (mod_cast nonneg)).sum_add_tsum_nat_add N, add_sub_cancel_left,
+    abs_of_nonneg (tsum_nonneg fun n ↦ nonneg _ (by simp; norm_cast; grind))]
+  convert AntitoneOn.tsum_comp_add_le_integral (N - 1) (mod_cast anti) (mod_cast integrable)
+      (mod_cast nonneg) using 1
   · congr; ext; congr 2; grind
   · norm_cast
