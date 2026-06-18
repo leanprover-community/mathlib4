@@ -526,6 +526,27 @@ theorem edgeSet_inf : (G₁ ⊓ G₂).edgeSet = G₁.edgeSet ∩ G₂.edgeSet :=
   ext ⟨x, y⟩
   rfl
 
+theorem edgeSet_sSup {s : Set (SimpleGraph V)} : (sSup s).edgeSet = ⋃₀ (edgeSet '' s) := by
+  ext ⟨x, y⟩
+  simp
+
+theorem edgeSet_sInf {s : Set (SimpleGraph V)} (h : s.Nonempty) :
+    (sInf s).edgeSet = ⋂₀ (edgeSet '' s) := by
+  ext ⟨x, y⟩
+  have ⟨G, hG⟩ := h
+  simpa using (· G hG |>.ne)
+
+theorem edgeSet_iSup {ι : Sort*} {f : ι → SimpleGraph V} :
+    (⨆ i, f i).edgeSet = ⋃ i, (f i).edgeSet := by
+  ext ⟨x, y⟩
+  simp
+
+theorem edgeSet_iInf {ι : Sort*} [Nonempty ι] {f : ι → SimpleGraph V} :
+    (⨅ i, f i).edgeSet = ⋂ i, (f i).edgeSet := by
+  ext ⟨x, y⟩
+  have ⟨i⟩ := ‹Nonempty ι›
+  simpa using (· i |>.ne)
+
 @[simp]
 theorem edgeSet_sdiff : (G₁ \ G₂).edgeSet = G₁.edgeSet \ G₂.edgeSet := by
   ext ⟨x, y⟩
@@ -669,6 +690,27 @@ theorem fromEdgeSet_union (s t : Set (Sym2 V)) :
     fromEdgeSet (s ∪ t) = fromEdgeSet s ⊔ fromEdgeSet t := by
   ext v w
   simp [Set.mem_union, or_and_right]
+
+theorem fromEdgeSet_sUnion {s : Set (Set (Sym2 V))} :
+    fromEdgeSet (⋃₀ s) = sSup (fromEdgeSet '' s) := by
+  ext u v
+  simp
+  grind
+
+theorem fromEdgeSet_iUnion {ι : Sort*} {f : ι → Set (Sym2 V)} :
+    fromEdgeSet (⋃ i, f i) = ⨆ i, fromEdgeSet (f i) := by
+  ext u v
+  simp
+
+theorem fromEdgeSet_sInter {s : Set (Set (Sym2 V))} :
+    fromEdgeSet (⋂₀ s) = sInf (fromEdgeSet '' s) := by
+  ext u v
+  simp_all
+
+theorem fromEdgeSet_iInter {ι : Sort*} {f : ι → Set (Sym2 V)} :
+    fromEdgeSet (⋂ i, f i) = ⨅ i, fromEdgeSet (f i) := by
+  ext u v
+  simp_all
 
 @[simp]
 theorem fromEdgeSet_sdiff (s t : Set (Sym2 V)) :
