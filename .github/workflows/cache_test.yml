@@ -43,9 +43,11 @@ jobs:
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
-      # Install elan and the toolchain cross-platform. Build/test/lint and the
-      # Mathlib cache are all disabled, so this is a toolchain-only setup; the
-      # `lake` steps below then build and run just the `cache-test` target.
+      # Install elan and the toolchain cross-platform. Build/test/lint, the
+      # Mathlib cache, and the GitHub cache are all disabled, so this is a
+      # toolchain-only setup; the `lake` steps below then build and run just the
+      # `cache-test` target. (The GitHub cache cannot be written from fork PRs
+      # and buys little for this small build, so it stays off.)
       - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
         with:
           auto-config: "false"
@@ -53,6 +55,7 @@ jobs:
           test: "false"
           lint: "false"
           use-mathlib-cache: "false"
+          use-github-cache: "false"
 
       - name: build cache-test
         run: lake build cache-test
