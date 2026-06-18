@@ -204,7 +204,7 @@ Bilinear and Quadratic Forms Over a Vector Space:
     quadratic form: 'QuadraticForm'
     polar form of a quadratic: 'QuadraticMap.polar'
   Orthogonality:
-    orthogonal elements: 'LinearMap.BilinForm.IsOrtho'
+    orthogonal elements: 'LinearMap.BilinForm.iIsOrtho'
     adjoint endomorphism: 'LinearMap.BilinForm.leftAdjointOfNondegenerate'
     Sylvester's law of inertia (existence): 'QuadraticForm.equivalent_one_zero_neg_one_weighted_sum_squared'
     Sylvester's law of inertia (uniqueness): 'QuadraticForm.sigPos_of_equiv_weightedSumSquares'
@@ -436,7 +436,7 @@ Topology:
     Arzela-Ascoli theorem: 'BoundedContinuousFunction.arzela_ascoli'
   Hilbert spaces:
     Hilbert projection theorem: 'exists_norm_eq_iInf_of_complete_convex'
-    orthogonal projection onto closed vector subspaces: 'Submodule.orthogonalProjection'
+    orthogonal projection onto closed vector subspaces: 'Submodule.orthogonalProjectionOnto'
     dual space: 'StrongDual'
     Riesz representation theorem: 'InnerProductSpace.toDual'
     inner product space $l^2$: 'lp.instInnerProductSpace'
