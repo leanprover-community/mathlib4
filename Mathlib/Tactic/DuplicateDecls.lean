@@ -71,7 +71,7 @@ def sortBinders (e : Expr) : MetaM Expr := do
   let mut sortedTypes := #[]
   for _ in *...n do
     let mut minType? : Option (Fin n × Expr) := none
-    for h : i in [:n] do
+    for h : i in 0...n do
       if let some type := remainingTypes[i] then
         if !type.hasFVar then
           if let some (minIdx, minType) := minType? then
