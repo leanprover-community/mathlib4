@@ -519,7 +519,7 @@ lemma isTree_iff_connected_and_card [Finite V] :
   exact Finset.card_lt_card <| by simpa [deleteEdges, edgeFinset]
 
 /-- An acyclic graph on `n` vertices with `c` connected components has exactly `n - c` edges -/
-theorem IsAcyclic.card_edgeSet_add_card_connectedComponent [Finite V] (h : G.IsAcyclic) :
+theorem IsAcyclic.ncard_edgeSet_add_card_connectedComponent [Finite V] (h : G.IsAcyclic) :
     G.edgeSet.ncard + Nat.card G.ConnectedComponent = Nat.card V := by
   have := Fintype.ofFinite G.ConnectedComponent
   rw [Nat.card_congr G.verticesEquivSigmaConnectedComponent, Nat.card_sigma, ← Nat.card_coe_set_eq,
@@ -530,26 +530,26 @@ theorem IsAcyclic.card_edgeSet_add_card_connectedComponent [Finite V] (h : G.IsA
   exact (isTree_iff_connected_and_card.mp <| h.isTree_connectedComponent _).right
 
 /-- An acyclic graph on `n` vertices has at most `n - 1` edges -/
-theorem IsAcyclic.card_edgeSet_add_one_le_card_vert [Finite V] [Nonempty V] (h : G.IsAcyclic) :
+theorem IsAcyclic.ncard_edgeSet_add_one_le_card_vert [Finite V] [Nonempty V] (h : G.IsAcyclic) :
     G.edgeSet.ncard + 1 ≤ Nat.card V := by
-  grind [h.card_edgeSet_add_card_connectedComponent, Nat.card_pos]
+  grind [h.ncard_edgeSet_add_card_connectedComponent, Nat.card_pos]
 
 theorem IsTree.ncard_edgeSet [Finite V] (hG : G.IsTree) : G.edgeSet.ncard + 1 = Nat.card V := by
-  rw [← hG.isAcyclic.card_edgeSet_add_card_connectedComponent,
+  rw [← hG.isAcyclic.ncard_edgeSet_add_card_connectedComponent,
     connected_iff_natCard_connectedComponent_eq_one.mp hG.connected]
 
 /-- A graph on `n` vertices with at least `n` edges is not acyclic -/
-theorem card_vert_le_card_edgeSet_isAcyclic [Finite V] [Nonempty V]
+theorem card_vert_le_ncard_edgeSet_isAcyclic [Finite V] [Nonempty V]
     (h : Nat.card V ≤ G.edgeSet.ncard) : ¬G.IsAcyclic :=
-  (Nat.not_le_of_lt ·.card_edgeSet_add_one_le_card_vert h)
+  (Nat.not_le_of_lt ·.ncard_edgeSet_add_one_le_card_vert h)
 
 /-- A graph on `n` vertices with at least `n` edges has a cycle -/
-theorem card_vert_le_card_edgeSet_exists_isCycle [Finite V] [Nonempty V]
+theorem card_vert_le_ncard_edgeSet_exists_isCycle [Finite V] [Nonempty V]
     (h : Nat.card V ≤ G.edgeSet.ncard) : ∃ (v : V) (c : G.Walk v v), c.IsCycle := by
-  grind [IsAcyclic, card_vert_le_card_edgeSet_isAcyclic h]
+  grind [IsAcyclic, card_vert_le_ncard_edgeSet_isAcyclic h]
 
 /-- A graph on `n` vertices is a tree iff it is acyclic and has exactly `n - 1` edges -/
-theorem isTree_iff_isAcyclic_and_card_edgeSet_add_one_eq_card [Finite V] :
+theorem isTree_iff_isAcyclic_and_ncard_edgeSet_add_one_eq_card [Finite V] :
     G.IsTree ↔ G.IsAcyclic ∧ G.edgeSet.ncard + 1 = Nat.card V := by
   have := Fintype.ofFinite V
   have := Fintype.ofFinite G.edgeSet
@@ -558,7 +558,7 @@ theorem isTree_iff_isAcyclic_and_card_edgeSet_add_one_eq_card [Finite V] :
   suffices G.Reachable = ⊤ by simp [this]
   rw [← G.reachable_is_equivalence.eqvGen_eq]
   refine Quot.subsingleton_iff _ |>.mp <| Nat.card_eq_one_iff_unique.mp ?_ |>.left
-  grind [h.card_edgeSet_add_card_connectedComponent, ConnectedComponent]
+  grind [h.ncard_edgeSet_add_card_connectedComponent, ConnectedComponent]
 
 /-- The minimum degree of all vertices in a nontrivial tree is one. -/
 lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [Nontrivial V]
