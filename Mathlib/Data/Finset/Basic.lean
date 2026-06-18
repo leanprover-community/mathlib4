@@ -139,10 +139,12 @@ theorem erase_insert_of_ne {a b : α} {s : Finset α} (h : a ≠ b) :
 theorem erase_cons_of_ne {a b : α} {s : Finset α} (ha : a ∉ s) (hb : a ≠ b) :
     (s.cons a ha).erase b = (s.erase b).cons a fun h => ha <| erase_subset _ _ h := by grind
 
-@[simp] theorem insert_erase (h : a ∈ s) : insert a (s.erase a) = s := by grind
+@[simp] theorem insert_erase_eq_insert : insert a (s.erase a) = insert a s := by grind
+
+theorem insert_erase (h : a ∈ s) : insert a (s.erase a) = s := by grind
 
 lemma erase_eq_iff_eq_insert (hs : a ∈ s) (ht : a ∉ t) : s.erase a = t ↔ s = insert a t := by
-  aesop
+  grind
 
 lemma insert_erase_invOn :
     Set.InvOn (insert a) (fun s ↦ s.erase a) {s : Finset α | a ∈ s} {s : Finset α | a ∉ s} :=
