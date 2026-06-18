@@ -227,7 +227,8 @@ theorem monochromaticOf_iff_pairwise :
     C.MonochromaticOf X k ↔ X.Pairwise fun x y ↦ ∀ h : G.Adj x y, C.get x y h = k := by
   grind [MonochromaticOf, MonochromaticBetween, Set.Pairwise, Adj.ne]
 
-lemma _root_.SimpleGraph.TopEdgeLabeling.monochromaticOf_iff_ne_of_adj {C : TopEdgeLabeling V K} :
+lemma _root_.SimpleGraph.TopEdgeLabeling.monochromaticOf_iff_ne_imp_get_eq
+    {C : TopEdgeLabeling V K} :
     C.MonochromaticOf X k ↔ ∀ ⦃x⦄, x ∈ X → ∀ ⦃y⦄, y ∈ X → (h : x ≠ y) → C.get x y h = k := by
   simp_rw [MonochromaticOf, MonochromaticBetween, top_adj]
 
@@ -238,7 +239,8 @@ protected theorem symm (hXY : C.MonochromaticBetween X Y k) : C.MonochromaticBet
   rw [get_comm _ _ h]
   exact hXY hx hy _
 
-protected theorem comm : C.MonochromaticBetween Y X k ↔ C.MonochromaticBetween X Y k :=
+theorem _root_.SimpleGraph.EdgeLabeling.monochromaticBetween_comm :
+    C.MonochromaticBetween Y X k ↔ C.MonochromaticBetween X Y k :=
   ⟨.symm, .symm⟩
 
 @[simp]
@@ -332,7 +334,7 @@ protected theorem image {C : EdgeLabeling G' K} {f : G ↪g G'}
 
 protected theorem union : C.MonochromaticOf (X ∪ Y) k ↔
     C.MonochromaticOf X k ∧ C.MonochromaticOf Y k ∧ C.MonochromaticBetween X Y k := by
-  grind [MonochromaticOf, MonochromaticBetween.union_left, MonochromaticBetween.comm]
+  grind [MonochromaticOf, MonochromaticBetween.union_left, monochromaticBetween_comm]
 
 protected theorem insert {x : V} :
     C.MonochromaticOf (insert x X) k ↔ C.MonochromaticOf X k ∧ C.MonochromaticBetween X {x} k := by
@@ -340,7 +342,7 @@ protected theorem insert {x : V} :
 
 theorem image_top {C : TopEdgeLabeling V' K} {f : V ↪ V'}
     (h : (C.pullback f).MonochromaticOf X k) : C.MonochromaticOf (f '' X) k := by
-  simpa [TopEdgeLabeling.monochromaticOf_iff_ne_of_adj]
+  simpa [TopEdgeLabeling.monochromaticOf_iff_ne_imp_get_eq]
 
 theorem map_top {C : TopEdgeLabeling V' K} {f : V ↪ V'} {m : Finset V}
     (h : (C.pullback f).MonochromaticOf m k) : C.MonochromaticOf (m.map f) k := by
