@@ -49,20 +49,6 @@ open CategoryTheory Abelian
 
 namespace ModuleCat
 
-attribute [local instance] Ext.subsingleton_of_projective in
-/-- For a short exact complex whose middle object is projective, the vanishing of
-`Ext S.X₃ M 1` is equivalent to surjectivity of precomposition along `S.f` on `Ext⁰`. -/
-lemma ext_one_subsingleton_iff_of_projective [Small.{v} R] (M : ModuleCat.{v} R)
-    (S : ShortComplex.{v} (ModuleCat R)) (S_exact : S.ShortExact) (proj : Projective S.X₂) :
-    Subsingleton (Ext S.X₃ M 1) ↔
-      Function.Surjective ((Ext.mk₀ S.f).precomp M (add_zero 0)) := by
-  refine ⟨fun h x₁ ↦ Ext.contravariant_sequence_exact₁ S_exact _ x₁ (add_zero _)
-    (by subsingleton), fun h ↦ subsingleton_of_forall_eq 0 (fun x₃ ↦ ?_)⟩
-  obtain ⟨x₁, rfl⟩ := Ext.contravariant_sequence_exact₃ S_exact _ x₃
-    (by subsingleton) (add_zero 1)
-  obtain ⟨x₂, rfl⟩ := h x₁
-  simp
-
 /-- The vanishing of `Ext (R ⧸ I) M 1` is equivalent to Baer's extension property
 for maps `I →ₗ[R] M`. -/
 lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I : Ideal R) :
@@ -77,7 +63,7 @@ lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I :
   -- The complex `I → R → R ⧸ I` is short exact, after shrinking universes.
   have S_exact : S.ShortExact :=
     ModuleCat.shortComplexOfConj_shortExact _ _ _ _ _ exact I.subtype_injective I.mkQ_surjective
-  rw [ext_one_subsingleton_iff_of_projective M S S_exact (by dsimp [S]; infer_instance)]
+  rw [Ext.one_subsingleton_iff_of_projective M S S_exact (by dsimp [S]; infer_instance)]
   -- Reduce the vanishing of `Ext (R ⧸ I) M 1` to surjectivity of
   -- `Ext R M 0 → Ext I M 0`, keeping track of the universe-shrinking equivalences.
   refine ⟨fun h ↦ fun g ↦ ?_, fun h ↦ fun e ↦ ?_⟩
@@ -139,7 +125,7 @@ private noncomputable def extQuotientBotZeroEquiv [Small.{v} R] (M : ModuleCat.{
 
 /-- If `Ext⁰(R ⧸ ⊥, M)` is a subsingleton, then `M` is a subsingleton. -/
 private lemma subsingleton_of_ext_quotient_bot_zero [Small.{v} R] (M : ModuleCat.{v} R)
-    (h : Subsingleton (Ext (of R (Shrink.{v, u} (R ⧸ (⊥ : Ideal R)))) M 0)) :
+    (h : Subsingleton (Ext (of R (Shrink.{v} (R ⧸ (⊥ : Ideal R)))) M 0)) :
     Subsingleton M := by
   rw [← (extQuotientBotZeroEquiv (R := R) M).subsingleton_congr]
   exact h
