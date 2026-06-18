@@ -295,10 +295,11 @@ initialize registerBuiltinAttribute {
     applicationTime := .afterCompilation
   }
 
-/-- `to_dual_name_hint src tgt` lets `to_dual` translate between the name segments `src` and `tgt`
-for the rest of the file current. `src` and `tgt` should both be capitalized. -/
-elab "to_dual_name_hint" src:ident tgt:ident : command => do
-  guessNameExt.addTranslation src tgt
-  guessNameExt.addTranslation tgt src
+/-- `to_dual_name_hint src₁ tgt₁, ..., srcₙ tgtₙ` lets `to_dual` translate between the name segments
+`srcᵢ` and `tgtᵢ` for the rest of the file current. The name segments should be capitalized. -/
+elab "to_dual_name_hint" hints:(ident ident),* : command => do
+  for ⟨hint⟩ in hints.getElems do
+    guessNameExt.addTranslation ⟨hint[0]⟩ ⟨hint[1]⟩
+    guessNameExt.addTranslation ⟨hint[1]⟩ ⟨hint[0]⟩
 
 end Mathlib.Tactic.ToDual

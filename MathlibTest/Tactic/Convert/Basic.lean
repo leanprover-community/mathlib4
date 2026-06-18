@@ -61,7 +61,7 @@ end convert_to
 
 example (prime : Nat → Prop) (n : Nat) (h : prime (2 * n + 1)) :
     prime (n + n + 1) := by
-  convert h
+  convert! h
   · guard_target = (HAdd.hAdd : Nat → Nat → Nat) = HMul.hMul
     exact test_sorry
   · guard_target = n = 2
@@ -69,7 +69,7 @@ example (prime : Nat → Prop) (n : Nat) (h : prime (2 * n + 1)) :
 
 example (prime : Nat → Prop) (n : Nat) (h : prime (2 * n + 1)) :
     prime (n + n + 1) := by
-  convert (config := .unfoldSameFun) h
+  convert h
   guard_target = n + n = 2 * n
   exact test_sorry
 
@@ -127,5 +127,30 @@ example (x y z : Nat) (h : x + y = z) : y + x = z := by
   convert_to y + x = _ at h
   · rw [Nat.add_comm]
   exact h
+
+/-! Check that we don't unfold at semireducible transparency: although `congr!` (which
+`convert` relies on) applies lemmas at reducible transparency, it used to call
+`assumption`/`rfl` at default transparency and solve too much.
+`convert!` uses default transparency throughout, and solves the goals all at once.
+-/
+
+/-- An identity function at default transparency, to test that we don't unfold too much. -/
+def semireducibleId {α : Type*} (a : α) := a
+
+example (P : ℕ → Prop) {a : ℕ} (h : P a) : P (semireducibleId a) := by
+  convert h
+  guard_target =ₛ semireducibleId a = a
+  rfl
+
+example (P : ℕ → Prop) {a : ℕ} (h : P a) : P (semireducibleId a) := by
+  convert! h
+
+example (P : ℕ → Prop) {a b : ℕ} (hab : b = a) (h : P a) : P (semireducibleId b) := by
+  convert h
+  guard_target =ₛ semireducibleId b = a
+  exact hab
+
+example (P : ℕ → Prop) {a b : ℕ} (hab : b = a) (h : P (semireducibleId a)) : P b := by
+  convert! h
 
 end Tests

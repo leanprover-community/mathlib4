@@ -27,8 +27,6 @@ In this file, for any `Ring R`, we reinterpret `I : RingCon R` as a two-sided-id
 
 @[expose] public section
 
-assert_not_exists LinearMap
-
 open MulOpposite
 
 section definitions
@@ -55,7 +53,7 @@ instance [Nontrivial R] : Nontrivial (TwoSidedIdeal R) := by
 
 instance setLike : SetLike (TwoSidedIdeal R) R where
   coe t := {r | t.ringCon r 0}
-  coe_injective' := by
+  coe_injective := by
     rintro ⟨t₁⟩ ⟨t₂⟩ (h : {x | _} = {x | _})
     congr 1
     refine RingCon.ext fun a b ↦ ⟨fun H ↦ ?_, fun H ↦ ?_⟩
