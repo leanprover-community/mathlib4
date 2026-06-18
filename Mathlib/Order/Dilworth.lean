@@ -6,15 +6,15 @@ Authors: Antoine du Fresne von Hohenesche
 
 module
 
-import Mathlib.Order.Antichain
-import Mathlib.Order.Preorder.Chain
-import Mathlib.Order.Preorder.Finite
-import Mathlib.Order.UpperLower.Closure
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Finset.Powerset
-import Mathlib.Data.Finset.SDiff
-import Mathlib.Data.Finset.Union
+public import Mathlib.Order.Antichain
+public import Mathlib.Order.Preorder.Chain
+public import Mathlib.Order.Preorder.Finite
+public import Mathlib.Order.UpperLower.Closure
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Finset.Powerset
+public import Mathlib.Data.Finset.SDiff
+public import Mathlib.Data.Finset.Union
 
 /-!
 # Dilworth's and Mirsky's theorems
@@ -63,6 +63,8 @@ through `A` (`chainCover_glue`); otherwise delete a two-element chain `{x, y}` w
 
 poset, dilworth, mirsky, chain, antichain, upper closure, lower closure
 -/
+
+@[expose] public section
 
 open Finset
 
