@@ -68,8 +68,7 @@ theorem fourier_bilin_convolution_eq_integral (B : F₁ →L[𝕜] F₂ →L[�
     refine hB.mono ?_ ?_
     · exact continuous_fourierChar.comp (by fun_prop) |>.aestronglyMeasurable.smul
         hB.aestronglyMeasurable
-    · filter_upwards with ⟨x, y⟩
-      simp
+    · filter_upwards with ⟨x, y⟩ using by simp
   _ = ∫ y, ∫ x, 𝐞 (-inner ℝ (y + x) ξ) • B (f₁ x) (f₂ y) := by
     congr
     ext y
