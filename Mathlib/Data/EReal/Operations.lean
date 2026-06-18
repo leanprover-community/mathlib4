@@ -98,9 +98,6 @@ theorem add_top_of_ne_bot {x : EReal} (h : x ≠ ⊥) : x + ⊤ = ⊤ := by
 if and only if `x` is not `⊥`. -/
 theorem add_top_iff_ne_bot {x : EReal} : x + ⊤ = ⊤ ↔ x ≠ ⊥ := by rw [add_comm, top_add_iff_ne_bot]
 
-@[deprecated (since := "2025-08-14")] alias add_pos_of_nonneg_of_pos :=
-  Right.add_pos_of_nonneg_of_pos
-
 protected theorem add_pos_of_pos_of_nonneg {a b : EReal} (ha : 0 < a) (hb : 0 ≤ b) : 0 < a + b :=
   add_comm a b ▸ Right.add_pos_of_nonneg_of_pos hb ha
 
@@ -188,8 +185,6 @@ lemma add_ne_top_iff_ne_top_left {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤
 
 lemma add_ne_top_iff_ne_top_right {x y : EReal} (hx : x ≠ ⊥) (hx' : x ≠ ⊤) :
     x + y ≠ ⊤ ↔ y ≠ ⊤ := add_comm x y ▸ add_ne_top_iff_ne_top_left hx hx'
-
-@[deprecated (since := "2025-08-14")] alias add_ne_top_iff_of_ne_bot := add_ne_top_iff_ne_top₂
 
 lemma add_ne_top_iff_of_ne_bot_of_ne_top {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤) :
     x + y ≠ ⊤ ↔ x ≠ ⊤ := by
@@ -733,7 +728,7 @@ lemma mul_eq_top (a b : EReal) :
   | pos_bot _ hx => simp [hx.le, EReal.coe_mul_bot_of_pos hx]
   | coe_coe x y =>
     simpa only [EReal.coe_ne_bot, EReal.coe_neg', false_and, and_false, EReal.coe_ne_top,
-      EReal.coe_pos, or_self, iff_false, EReal.coe_mul] using EReal.coe_ne_top _
+      EReal.coe_pos, or_self, iff_false, EReal.coe_mul] using! EReal.coe_ne_top _
   | zero_bot => simp
   | neg_bot _ hx => simp [hx, EReal.coe_mul_bot_of_neg hx]
   | bot_bot => simp
@@ -743,7 +738,7 @@ lemma mul_ne_top (a b : EReal) :
   rw [ne_eq, mul_eq_top]
   -- push the negation while keeping the disjunctions, that is converting `¬(p ∧ q)` into `¬p ∨ ¬q`
   -- rather than `p → ¬q`, since we already have disjunctions in the rhs
-  push_neg +distrib
+  push +distrib Not
   rfl
 
 lemma mul_eq_bot (a b : EReal) :
@@ -755,7 +750,7 @@ lemma mul_eq_bot (a b : EReal) :
 lemma mul_ne_bot (a b : EReal) :
     a * b ≠ ⊥ ↔ (a ≠ ⊥ ∨ b ≤ 0) ∧ (a ≤ 0 ∨ b ≠ ⊥) ∧ (a ≠ ⊤ ∨ 0 ≤ b) ∧ (0 ≤ a ∨ b ≠ ⊤) := by
   rw [ne_eq, mul_eq_bot]
-  push_neg +distrib
+  push +distrib Not
   rfl
 
 /-- `EReal.toENNReal` is multiplicative. For the version with the nonnegativity
@@ -795,9 +790,6 @@ lemma left_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
   nth_rewrite 1 [EReal.mul_comm]; nth_rewrite 2 [EReal.mul_comm]; nth_rewrite 3 [EReal.mul_comm]
   exact right_distrib_of_nonneg ha hb
 
--- TODO: is there a nice way to fix the non-terminal simp? It's called on nine goals,
--- with quite different simp sets.
-set_option linter.flexible false in
 lemma left_distrib_of_nonneg_of_ne_top {x : EReal} (hx_nonneg : 0 ≤ x)
     (hx_ne_top : x ≠ ⊤) (y z : EReal) :
     x * (y + z) = x * y + x * z := by
@@ -806,8 +798,7 @@ lemma left_distrib_of_nonneg_of_ne_top {x : EReal} (hx_nonneg : 0 ≤ x)
   | inr hx0 =>
   lift x to ℝ using ⟨hx_ne_top, hx0.ne_bot⟩
   cases y <;> cases z <;>
-    simp [mul_bot_of_pos hx0, mul_top_of_pos hx0, ← coe_mul];
-    rw_mod_cast [mul_add]
+    simp [mul_bot_of_pos hx0, mul_top_of_pos hx0, ← coe_mul, ← coe_add, mul_add]
 
 lemma right_distrib_of_nonneg_of_ne_top {x : EReal} (hx_nonneg : 0 ≤ x)
     (hx_ne_top : x ≠ ⊤) (y z : EReal) :
@@ -820,7 +811,7 @@ lemma nsmul_eq_mul (n : ℕ) (x : EReal) : n • x = n * x := by
   | zero => rw [zero_smul, Nat.cast_zero, zero_mul]
   | succ n ih =>
     rw [succ_nsmul, ih, Nat.cast_succ]
-    convert (EReal.right_distrib_of_nonneg _ _).symm <;> simp
+    convert! (EReal.right_distrib_of_nonneg _ _).symm <;> simp
 
 end EReal
 
@@ -830,7 +821,8 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: sum of two `EReal`s. -/
 @[positivity (_ + _ : EReal)]
-meta def evalERealAdd : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealAdd : PositivityExt where eval {u α} zα pα? e := do
+  let some pα := pα? | pure .none
   match u, α, e with
   | 0, ~q(EReal), ~q($a + $b) =>
     assertInstancesCommute
@@ -849,7 +841,8 @@ meta def evalERealAdd : PositivityExt where eval {u α} zα pα e := do
 
 /-- Extension for the `positivity` tactic: product of two `EReal`s. -/
 @[positivity (_ * _ : EReal)]
-meta def evalERealMul : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealMul : PositivityExt where eval {u α} zα pα? e := do
+  let some pα := pα? | pure .none
   match u, α, e with
   | 0, ~q(EReal), ~q($a * $b) =>
     assertInstancesCommute

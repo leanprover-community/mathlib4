@@ -92,7 +92,7 @@ theorem binomialSeries_radius_ge_one {𝕂 : Type*} [RCLike 𝕂] {𝔸 : Type*}
     1 ≤ (binomialSeries 𝔸 a).radius := by
   by_cases ha : ∀ (k : ℕ), a ≠ k
   · rw [binomialSeries_radius_eq_one ha]
-  · push_neg at ha
+  · push Not at ha
     rcases ha with ⟨k, rfl⟩
     simp [binomialSeries_radius_eq_top_of_nat]
 
@@ -102,7 +102,7 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
     HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ a) (binomialSeries ℂ a) 0 1 := by
   suffices (binomialSeries ℂ a = FormalMultilinearSeries.ofScalars ℂ
       fun n ↦ iteratedDeriv n (fun (x : ℂ) ↦ (1 + x) ^ a) 0 / n !) by
-    convert AnalyticOn.hasFPowerSeriesOnSubball _ _ _
+    convert! AnalyticOn.hasFPowerSeriesOnSubball _ _ _
     · norm_num
     · -- TODO: use `fun_prop` for this subgoal
       apply AnalyticOn.cpow (analyticOn_const.add analyticOn_id) analyticOn_const
@@ -139,7 +139,7 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
     intro z hz
     simp only [Nat.cast_add, Nat.cast_one, B, derivWithin_of_isOpen Metric.isOpen_ball hz,
       deriv_const_mul_field']
-    rw [_root_.deriv_cpow_const (by fun_prop), deriv_const_add', deriv_id'', mul_one,
+    rw [_root_.deriv_cpow_const (by fun_prop), deriv_const_add_id, mul_one,
       show a - (n + 1) = a - n - 1 by ring, ← mul_assoc]
     · congr
       simp [descPochhammer_succ_right, Polynomial.smeval_mul, Polynomial.smeval_natCast]
@@ -162,7 +162,7 @@ theorem one_div_one_sub_cpow_hasFPowerSeriesOnBall_zero (a : ℂ) :
   have H : ((binomialSeries ℂ (-a)).compContinuousLinearMap (-1)) =
       .ofScalars ℂ fun n ↦ Ring.choose (a + n - 1) n := by
     ext n; simp [FormalMultilinearSeries.compContinuousLinearMap, binomialSeries, Ring.choose_neg,
-      Units.smul_def, Int.coe_negOnePow_natCast, ← pow_add, ← mul_assoc]
+      Units.smul_def, ← pow_add, ← mul_assoc]
   have : HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ (-a)) (binomialSeries ℂ (-a : ℂ)) (-0) 1 := by
     simpa using one_add_cpow_hasFPowerSeriesOnBall_zero
   simpa [cpow_neg, Function.comp_def, ← sub_eq_add_neg, H] using
@@ -171,7 +171,7 @@ theorem one_div_one_sub_cpow_hasFPowerSeriesOnBall_zero (a : ℂ) :
 theorem one_div_one_sub_pow_hasFPowerSeriesOnBall_zero (a : ℕ) :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x) ^ (a + 1))
       (.ofScalars ℂ (𝕜 := ℂ) fun n ↦ ↑(Nat.choose (a + n) a)) 0 1 := by
-  convert one_div_one_sub_cpow_hasFPowerSeriesOnBall_zero (a + 1) using 3 with z n
+  convert one_div_one_sub_cpow_hasFPowerSeriesOnBall_zero (a + 1) with z n
   · norm_cast
   · rw [eq_comm, add_right_comm, add_sub_cancel_right, ← Nat.cast_add,
       Ring.choose_natCast, Nat.choose_symm_add]
@@ -183,8 +183,8 @@ theorem one_div_sub_pow_hasFPowerSeriesOnBall_zero (a : ℕ) {z : ℂ} (hz : z �
   rw [← map_zero (z⁻¹ • 1 : ℂ →L[ℂ] ℂ)] at this
   have := this.compContinuousLinearMap
   have H : 1 / ‖(z⁻¹ • 1 : ℂ →L[ℂ] ℂ)‖ₑ = ‖z‖ₑ := by simp [enorm_smul, enorm_inv, hz]
-  simp only [one_div, ContinuousLinearMap.coe_smul', H, Function.comp_def] at this
-  convert (this.const_smul (c := (z ^ (a + 1))⁻¹)).congr ?_ using 2
+  simp only [one_div, FunLike.coe_smul, H, Function.comp_def] at this
+  convert (this.const_smul (c := (z ^ (a + 1))⁻¹)).congr ?_
   · ext n
     simp only [FormalMultilinearSeries.smul_apply, ContinuousMultilinearMap.smul_apply,
       FormalMultilinearSeries.compContinuousLinearMap_apply]
@@ -203,7 +203,7 @@ theorem one_div_sub_sq_hasFPowerSeriesOnBall_zero {z : ℂ} (hz : z ≠ 0) :
 
 theorem one_div_one_sub_hasFPowerSeriesOnBall_zero :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x : ℂ)) (.ofScalars (𝕜 := ℂ) ℂ 1) 0 1 := by
-  simpa using one_div_sub_hasFPowerSeriesOnBall_zero (z := 1)
+  simpa using! one_div_sub_hasFPowerSeriesOnBall_zero (z := 1)
 
 theorem one_div_one_sub_sq_hasFPowerSeriesOnBall_zero :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x : ℂ) ^ 2) (.ofScalars ℂ fun n ↦ (n + 1 : ℂ)) 0 1 := by
@@ -213,8 +213,9 @@ theorem one_div_one_sub_sq_hasFPowerSeriesOnBall_zero :
 theorem hasFPowerSeriesOnBall_ofScalars_mul_add_zero (a b : ℂ) :
     HasFPowerSeriesOnBall (fun x ↦ (b - a) / (1 - x) + a / (1 - x) ^ 2)
       (.ofScalars ℂ fun n ↦ a * n + b) 0 1 := by
-  convert (one_div_one_sub_hasFPowerSeriesOnBall_zero.const_smul (c := b - a)).add
-    (one_div_one_sub_sq_hasFPowerSeriesOnBall_zero.const_smul (c := a)) using 2
+  convert
+    (one_div_one_sub_hasFPowerSeriesOnBall_zero.const_smul (c := b - a)).add
+      (one_div_one_sub_sq_hasFPowerSeriesOnBall_zero.const_smul (c := a))
   · simp [div_eq_mul_inv]
   · ext; simp; ring
 
@@ -226,7 +227,7 @@ lemma one_div_sub_sq_sub_one_div_sq_hasFPowerSeriesOnBall_zero (w x : ℂ) (hw :
   · simpa only [sub_sub_sub_cancel_right, zero_add, sub_sq_comm w, zpow_neg, zpow_natCast, mul_comm]
       using (one_div_sub_sq_hasFPowerSeriesOnBall_zero
         (z := w - x) (by simp [sub_eq_zero, hw])).comp_sub x
-  · convert hasFPowerSeriesOnBall_const.mono _ le_top
+  · convert! hasFPowerSeriesOnBall_const.mono _ le_top
     · ext (_ | _) <;> simp [zpow_ofNat]
     · simpa [sub_eq_zero]
 
@@ -241,7 +242,7 @@ theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
   have H : binomialSeries ℂ a = (binomialSeries ℂ (a : ℂ)).restrictScalars (𝕜 := ℝ) := by aesop
   have : HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ (a : ℂ)) (binomialSeries ℂ a) (.ofRealCLM 0) 1 :=
     Complex.ofRealCLM.map_zero ▸ H ▸ Complex.one_add_cpow_hasFPowerSeriesOnBall_zero.restrictScalars
-  convert (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap).congr ?_
+  convert! (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap).congr ?_
   · ext; simp [Function.comp_def]
   · simp
   · intro x hx; simp_all; norm_cast
@@ -261,7 +262,7 @@ theorem one_div_one_sub_rpow_hasFPowerSeriesOnBall_zero (a : ℝ) :
       (.ofScalars ℝ fun n ↦ Ring.choose (a + n - 1) n) 0 1 := by
   have := (Complex.one_div_one_sub_cpow_hasFPowerSeriesOnBall_zero a).restrictScalars (𝕜 := ℝ)
   rw [← Complex.ofRealCLM.map_zero] at this
-  convert (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap).congr ?_ using 1
+  convert (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap).congr ?_
   · ext n
     simp only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
       ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply,
@@ -270,7 +271,7 @@ theorem one_div_one_sub_rpow_hasFPowerSeriesOnBall_zero (a : ℝ) :
     norm_cast
   · simp
   · intro x hx
-    have : |x| < 1 := by simpa [enorm_eq_nnnorm] using hx
+    have : |x| < 1 := by simpa [enorm_eq_nnnorm] using! hx
     have : 0 ≤ 1 - x := by grind
     simp [-Complex.inv_re, ← Complex.ofReal_one, ← Complex.ofReal_sub, ← Complex.ofReal_cpow this]
 
@@ -280,7 +281,7 @@ theorem one_div_sub_pow_hasFPowerSeriesOnBall_zero (a : ℕ) {r : ℝ} (hr : r �
   have := (Complex.one_div_sub_pow_hasFPowerSeriesOnBall_zero a (z := r)
     (by simpa)).restrictScalars (𝕜 := ℝ)
   rw [← Complex.ofRealCLM.map_zero] at this
-  convert (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap) using 2
+  convert (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap)
   · simp [-Complex.inv_re, ← Complex.ofReal_pow, ← Complex.ofReal_inv, ← Complex.ofReal_sub]
   · ext n
     simp only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
@@ -300,7 +301,7 @@ theorem one_div_sub_sq_hasFPowerSeriesOnBall_zero {r : ℝ} (hr : r ≠ 0) :
 
 theorem one_div_one_sub_hasFPowerSeriesOnBall_zero :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x)) (.ofScalars (𝕜 := ℝ) ℝ 1) 0 1 := by
-  simpa using one_div_sub_hasFPowerSeriesOnBall_zero (r := 1)
+  simpa using! one_div_sub_hasFPowerSeriesOnBall_zero (r := 1)
 
 theorem one_div_one_sub_sq_hasFPowerSeriesOnBall_zero :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x) ^ 2) (.ofScalars ℝ fun n ↦ (n + 1 : ℝ)) 0 1 := by
@@ -310,8 +311,9 @@ theorem one_div_one_sub_sq_hasFPowerSeriesOnBall_zero :
 theorem hasFPowerSeriesOnBall_ofScalars_mul_add_zero (a b : ℝ) :
     HasFPowerSeriesOnBall (fun x ↦ (b - a) / (1 - x) + a / (1 - x) ^ 2)
       (.ofScalars ℝ (a * · + b)) 0 1 := by
-  convert (one_div_one_sub_hasFPowerSeriesOnBall_zero.const_smul (c := b - a)).add
-    (one_div_one_sub_sq_hasFPowerSeriesOnBall_zero.const_smul (c := a)) using 2
+  convert!
+    (one_div_one_sub_hasFPowerSeriesOnBall_zero.const_smul (c := b - a)).add
+      (one_div_one_sub_sq_hasFPowerSeriesOnBall_zero.const_smul (c := a)) using 2
   · simp [div_eq_mul_inv]
   · ext; simp; ring
 

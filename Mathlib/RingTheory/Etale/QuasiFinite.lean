@@ -6,10 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Polynomial.UniversalFactorizationRing
-public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
-public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 public import Mathlib.RingTheory.ZariskisMainTheorem
-public import Mathlib.RingTheory.Localization.InvSubmonoid
 
 /-!
 # Etale local structure of finite maps
@@ -18,10 +15,10 @@ We construct etale neighborhoods that split fibers of finite algebras.
 
 ## Main results
 - `Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq`:
-Let `S` be a module-finite `R`-algebra, and `q` a prime lying over `p`.
-We may construct an etale `R`-algebra `R'` and a prime `P` lying over `p` with `κ(P) = κ(p)`,
-such that `R' ⊗[R] S = A × B` and there exists a unique prime in `A` lying over `P`.
-This prime will also lie over `q`.
+  Let `S` be a module-finite `R`-algebra, and `q` a prime lying over `p`.
+  We may construct an etale `R`-algebra `R'` and a prime `P` lying over `p` with `κ(P) = κ(p)`,
+  such that `R' ⊗[R] S = A × B` and there exists a unique prime in `A` lying over `P`.
+  This prime will also lie over `q`.
 
 -/
 
@@ -40,6 +37,7 @@ noncomputable
 def Ideal.fiberIsoOfBijectiveResidueField
     (H : Function.Bijective (Ideal.ResidueField.mapₐ p q (Algebra.ofId _ _) (q.over_def p))) :
     q.primesOver (R' ⊗[R] S) ≃o p.primesOver S :=
+  let := Localization.AtPrime.algebraOfLiesOver p q
   let e : q.Fiber (R' ⊗[R] S) ≃ₐ[p.ResidueField] p.Fiber S :=
     ((Algebra.TensorProduct.cancelBaseChange _ _ q.ResidueField _ _).restrictScalars _).trans
       (Algebra.TensorProduct.congr (.symm <| .ofBijective (Algebra.ofId _ _) H) .refl)
@@ -62,7 +60,7 @@ lemma Ideal.comap_fiberIsoOfBijectiveResidueField_apply
     (Q : q.primesOver (R' ⊗[R] S)) :
     (Ideal.fiberIsoOfBijectiveResidueField H Q).1 =
       Q.1.comap Algebra.TensorProduct.includeRight := by
-  simpa using (Ideal.comap_fiberIsoOfBijectiveResidueField_symm H
+  simpa using! (Ideal.comap_fiberIsoOfBijectiveResidueField_symm H
     (Ideal.fiberIsoOfBijectiveResidueField H Q)).symm
 
 lemma Ideal.eq_of_comap_eq_comap_of_bijective_residueFieldMap
@@ -84,6 +82,7 @@ universe u v
 variable {R : Type u} {S : Type v} {T : Type*}
   [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Suppose `f : S →ₐ[R] T` is an `R`-algebra homomorphism with `S` integral and `T` of finite type,
 such that the induced map `S[1/g] → T[1/g]` is surjective for some `g : S`.
 Then for any prime `p` of `R` such that `1 ⊗ₜ g` is invertible in `κ(p) ⊗ S`,
@@ -130,7 +129,7 @@ lemma Localization.exists_finite_awayMapₐ_of_surjective_awayMapₐ
       simp_rw [← hs, map_pow, AlgHom.commutes, ← pow_mul] at this
       refine ⟨s ^ m * b, (n + m' * m), 0, this ▸ ?_⟩
       simp [pow_add, mul_assoc]
-    convert h₁.trans _ _ (RingHom.IsIntegral.of_finite (.of_surjective _ h₂)) using 1
+    convert! h₁.trans _ _ (RingHom.IsIntegral.of_finite (.of_surjective _ h₂)) using 1
     refine IsLocalization.ringHom_ext (.powers r) (RingHom.ext fun x ↦ ?_)
     simp [Localization.awayMap, IsLocalization.Away.map, ← IsScalarTower.algebraMap_apply R T]
   · algebraize [(Localization.awayMapₐ (Algebra.ofId R T) r).toRingHom]
@@ -139,6 +138,7 @@ lemma Localization.exists_finite_awayMapₐ_of_surjective_awayMapₐ
     refine RingHom.finiteType_algebraMap.mpr ?_
     exact .of_restrictScalars_finiteType R _ _
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance high] Algebra.TensorProduct.leftAlgebra IsScalarTower.right
   DivisionRing.instIsArtinianRing in
 /-- A variant of `Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver` that also gives you
@@ -158,7 +158,7 @@ lemma Algebra.exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
   obtain ⟨m, hm⟩ : ∃ m, ↑s₂ ^ m * ↑s₃ = ↑s₂ ^ m * (s₁ * ↑s₂ ^ n) := by
     simpa [IsLocalization.Away.map, IsLocalization.map_mk', IsLocalization.mk'_eq_iff_eq_mul,
       ← map_mul, ← map_pow, IsLocalization.eq_iff_exists (.powers s₂.1),
-      Submonoid.mem_powers_iff] using hs₃
+      Submonoid.mem_powers_iff] using! hs₃
   wlog hm0 : 0 < m generalizing m
   · refine this (m + 1) (by grind) (by simp)
   have hs₃q : s₃.1 ∉ q := fun h ↦ (show ↑s₂ ^ m * (s₁ * ↑s₂ ^ n) ∉ q from q.primeCompl.mul_mem
@@ -172,10 +172,10 @@ lemma Algebra.exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
   let q's : Ideal (Localization.Away s₂) := q'.map (algebraMap _ _)
   by_contra H
   have hq's : Disjoint (Submonoid.powers s₂ : Set (integralClosure R S)) ↑q' := by
-    rw [Ideal.disjoint_powers_iff_notMem _ (Ideal.IsPrime.isRadical ‹_›)]
+    rw [Ideal.disjoint_powers_iff_notMem_of_isPrime]
     contrapose H; exact Ideal.mul_mem_right s₃ _ (Ideal.pow_mem_of_mem _ H m hm0)
   have : q's.IsPrime := IsLocalization.isPrime_of_isPrime_disjoint (.powers s₂) _ _ ‹_› hq's
-  have : q's.LiesOver q' := ⟨(IsLocalization.comap_map_of_isPrime_disjoint _ _ ‹_› hq's).symm⟩
+  have : q's.LiesOver q' := ⟨(IsLocalization.under_map_of_isPrime_disjoint _ _ ‹_› hq's).symm⟩
   have : q's.LiesOver p := .trans _ q' _
   have := hs₁ (q's.comap (e.symm.toAlgHom.comp (IsScalarTower.toAlgHom _ _ _)).toRingHom)
     inferInstance (by
@@ -186,14 +186,14 @@ lemma Algebra.exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
       (IsScalarTower.toAlgHom _ _ _)).restrictScalars R)).LiesOver _))
   have : e.symm (algebraMap S (Localization.Away
       ((integralClosure R S).val.toRingHom s₂)) s₁) ∈ q's := by
-    simpa using this
+    simpa using! this
   rw [← hs₃, ← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ (s₂ ^ n))] at this
   · dsimp [Localization.awayMap, IsLocalization.Away.map] at this
     rw [IsLocalization.map_mk', ← e.symm.commutes, ← map_mul,
       IsScalarTower.algebraMap_eq _ S _] at this
     replace this : e.symm ((algebraMap _ (Localization.Away s₂.1)) s₃) ∈ q's := by
-      simpa [-map_mul, -map_pow, - AlgEquiv.commutes] using this
-    replace this : s₃ ∈ q' := by simpa [← Ideal.mem_comap, ← q's.over_def q'] using this
+      simpa [-map_mul, -map_pow, -AlgEquiv.commutes] using! this
+    replace this : s₃ ∈ q' := by simpa [← Ideal.mem_comap, ← q's.over_def q'] using! this
     exact H (Ideal.mul_mem_left _ (s₂ ^ m) this)
   · rw [map_pow]; exact Ideal.notMem_of_isUnit _ (.pow _ (IsLocalization.Away.algebraMap_isUnit _))
 
@@ -220,12 +220,12 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux
     obtain ⟨q, hq, hq'⟩ := exists_eq_pow_rootMultiplicity_mul_and_not_dvd
       ((minpoly R s).map (algebraMap R p.ResidueField)) ((minpoly.monic hRs).map _).ne_zero 0
     have hqm : q.Monic := by
-      simpa [((minpoly.monic hRs).map _).leadingCoeff] using congr(leadingCoeff $hq).symm
+      simpa [((minpoly.monic hRs).map _).leadingCoeff] using! congr(leadingCoeff $hq).symm
     set m' := rootMultiplicity 0 ((minpoly R s).map (algebraMap R p.ResidueField))
     refine ⟨m', f, q, monic_X.mul (minpoly.monic hRs), hqm, ?_,
       by simp [f, hq, pow_succ', mul_assoc], by simp [f]⟩
     simpa [IsCoprime.pow_left_iff,
-      (prime_X (R := p.ResidueField)).irreducible.coprime_iff_not_dvd] using hq'
+      (prime_X (R := p.ResidueField)).irreducible.coprime_iff_not_dvd] using! hq'
   obtain ⟨R', _, _, _, P, _, _, a', b', hP, ha'm, hb'm, hfab', ⟨c, d, hcd⟩, ha', hb'⟩ :=
     Algebra.exists_etale_bijective_residueFieldMap_and_map_eq_mul_and_isCoprime p f
       (X ^ (m + 1)) b hfm (monic_X.pow _) hbm hfab hab
@@ -250,11 +250,12 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux
     simp only [e₀, ← aeval_algHom_apply]; rfl
   have he : IsIdempotentElem e := he₀e ▸ he₀.map _
   let P' := (Ideal.fiberIsoOfBijectiveResidueField hP).symm ⟨q, ‹_›, ‹_›⟩
+  let := Localization.AtPrime.algebraOfLiesOver P P'.1
   have hP'q : P'.1.comap Algebra.TensorProduct.includeRight.toRingHom = q :=
     Ideal.comap_fiberIsoOfBijectiveResidueField_symm ..
   have hs'P' : s' ∉ P'.1 := mt (fun h ↦ hP'q.le h) hsq
   have ha'P' : aeval s' a' ∉ P'.1 := by
-    simpa using show IsScalarTower.toAlgHom R' _ P'.1.ResidueField (aeval s' a') ≠ 0 by
+    simpa using! show IsScalarTower.toAlgHom R' _ P'.1.ResidueField (aeval s' a') ≠ 0 by
       rw [← aeval_algHom_apply, ← aeval_map_algebraMap P.ResidueField, ← ha']; simpa
   have hb'P' : aeval s' b' ∈ P'.1 := by
     rw [← Ideal.IsPrime.mul_mem_left_iff ha'P', ← map_mul, ← hfab']
@@ -292,6 +293,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux
       (P''.over_def P)).comp_algebraMap, ← Polynomial.map_map, ← ha']
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
     {R S R' R'' : Type*} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
     [CommRing R'] [Algebra R R'] [CommRing R''] [Algebra R R''] [Algebra R'' S]
@@ -336,7 +338,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
         (Ideal.notMem_of_isUnit (m.comap Algebra.TensorProduct.includeRight)
         (IsLocalization.Away.algebraMap_isUnit _))
     rw [← hP'q]
-    exact this.le ((Ideal.span_singleton_le_iff_mem _).mp hm:))
+    exact this.le ((Ideal.span_singleton_le_iff_mem _).mp hm :))
   rw [he₀e] at hf
   refine ⟨f, hfP, ?_⟩
   let φ : R' ⊗[R] S →ₐ[R'] Localization.Away f ⊗[R] S :=
@@ -357,12 +359,11 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
       (Localization.Away (φ e))
       (Localization.Away (Algebra.ofId R' (Localization.Away e) f))
   refine RingHom.finite_algebraMap.mp ?_
-  convert equiv.symm.toRingEquiv.finite.comp hf
+  convert! equiv.symm.toRingEquiv.finite.comp hf
   apply IsLocalization.ringHom_ext (.powers f)
-  dsimp [- AlgEquiv.symm_toRingEquiv,
+  dsimp [-AlgEquiv.symm_toRingEquiv,
     ← AlgEquiv.toAlgHom_toRingHom, -AlgHomClass.toRingHom_toAlgHom]
-  simp only [← IsScalarTower.algebraMap_eq, RingHom.comp_assoc, AlgHom.comp_algebraMap_of_tower,
-    Algebra.ofId_apply]
+  simp only [← IsScalarTower.algebraMap_eq, RingHom.comp_assoc, AlgHom.comp_algebraMap_of_tower]
 
 /--
 Let `S` be a finite type `R`-algebra, and `q` a prime lying over `p` such that `S` is quasi-finite
@@ -391,8 +392,8 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq
     he₀e P' hP'q H' g hgq hg.2
   let Pf := P.map (algebraMap _ (Localization.Away f))
   have : Pf.IsPrime := IsLocalization.isPrime_of_isPrime_disjoint (.powers f) _ _ ‹_› (by
-    rwa [Ideal.disjoint_powers_iff_notMem _ (Ideal.IsPrime.isRadical ‹_›)])
-  have : Pf.LiesOver P := ⟨(IsLocalization.comap_map_of_isPrime_disjoint (.powers f) _ ‹_› (by
+    rwa [Ideal.disjoint_powers_iff_notMem_of_isPrime])
+  have : Pf.LiesOver P := ⟨(IsLocalization.under_map_of_isPrime_disjoint (.powers f) _ ‹_› (by
     rwa [Ideal.disjoint_powers_iff_notMem _ (Ideal.IsPrime.isRadical ‹_›)])).symm⟩
   let φ : R' ⊗[R] S →ₐ[R'] Localization.Away f ⊗[R] S :=
     Algebra.TensorProduct.map (Algebra.ofId _ _) (.id _ _)
@@ -405,11 +406,11 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq
     ext; simp [RingHom.algebraMap_toAlgebra, φ]
   let P'f := P'.map (algebraMap _ (Localization.Away f ⊗[R] S))
   have hP'f : Disjoint (Submonoid.powers (f ⊗ₜ 1 : R' ⊗[R] S) : Set (R' ⊗[R] S)) ↑P' := by
-    rw [Ideal.disjoint_powers_iff_notMem _ (Ideal.IsPrime.isRadical inferInstance)]
+    rw [Ideal.disjoint_powers_iff_notMem_of_isPrime]
     change f ∉ P'.under _
     rwa [← P'.over_def P]
   have : P'f.IsPrime := IsLocalization.isPrime_of_isPrime_disjoint _ _ _ ‹_› hP'f
-  have : P'f.LiesOver P' := ⟨(IsLocalization.comap_map_of_isPrime_disjoint _ _ ‹_› hP'f).symm⟩
+  have : P'f.LiesOver P' := ⟨(IsLocalization.under_map_of_isPrime_disjoint _ _ ‹_› hP'f).symm⟩
   have : P'f.LiesOver P := .trans _ P' _
   have : P'f.LiesOver Pf := ⟨congr($(PrimeSpectrum.localization_comap_injective
       (Localization.Away f) (.powers f) (a₁ := ⟨Pf, ‹_›⟩)
@@ -425,7 +426,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq
     rwa [← P'f.over_def P']
   · suffices Function.Bijective ⇑(Ideal.ResidueField.mapₐ P Pf
         (IsScalarTower.toAlgHom R R' (Localization.Away f)) (Pf.over_def P)) by
-      convert this.comp hpP; rw [← AlgHom.coe_comp]; congr; ext
+      convert! this.comp hpP; rw [← AlgHom.coe_comp]; congr; ext
     exact (RingHom.surjectiveOnStalks_of_isLocalization (.powers f)
       _).residueFieldMap_bijective _ _ _
   · intro P'' _ _ hP''

@@ -10,7 +10,7 @@ public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Analysis.Normed.Ring.Units
-public import Mathlib.Topology.Algebra.Module.CharacterSpace
+public import Mathlib.Topology.Algebra.Module.Spaces.CharacterSpace
 
 /-!
 # Ideals of continuous functions
@@ -102,10 +102,10 @@ variable {R}
 
 theorem mem_idealOfSet {s : Set X} {f : C(X, R)} :
     f ∈ idealOfSet R s ↔ ∀ ⦃x : X⦄, x ∈ sᶜ → f x = 0 := by
-  convert Iff.rfl
+  convert! Iff.rfl
 
 theorem notMem_idealOfSet {s : Set X} {f : C(X, R)} : f ∉ idealOfSet R s ↔ ∃ x ∈ sᶜ, f x ≠ 0 := by
-  simp_rw [mem_idealOfSet]; push_neg; rfl
+  simp_rw [mem_idealOfSet]; push Not; rfl
 
 /-- Given an ideal `I` of `C(X, R)`, construct the set of points for which every function in the
 ideal vanishes on the complement. -/
@@ -118,7 +118,7 @@ theorem notMem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
 
 theorem mem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
     x ∈ setOfIdeal I ↔ ∃ f ∈ I, (f : C(X, R)) x ≠ 0 := by
-  simp_rw [setOfIdeal, Set.mem_compl_iff, Set.mem_setOf]; push_neg; rfl
+  simp_rw [setOfIdeal, Set.mem_compl_iff, Set.mem_setOf]; push Not; rfl
 
 theorem setOfIdeal_open [T2Space R] (I : Ideal C(X, R)) : IsOpen (setOfIdeal I) := by
   simp only [setOfIdeal, Set.setOf_forall, isOpen_compl_iff]
@@ -200,7 +200,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   have ht : IsClosed t := isClosed_le continuous_const (map_continuous f).nnnorm
   have htI : Disjoint t (setOfIdeal I)ᶜ := by
     refine Set.subset_compl_iff_disjoint_left.mp fun x hx => ?_
-    simpa only [t, Set.mem_setOf, Set.mem_compl_iff, not_le] using
+    simpa only [t, Set.mem_setOf, Set.mem_compl_iff, not_le] using!
       (nnnorm_eq_zero.mpr (mem_idealOfSet.mp hf hx)).trans_lt (half_pos hε)
   /- It suffices to produce `g : C(X, ℝ≥0)` which takes values in `[0,1]` and is constantly `1` on
     `t` such that when composed with the natural embedding of `ℝ≥0` into `𝕜` lies in the ideal `I`.
@@ -215,7 +215,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     simp only [coe_sub, coe_mul, Pi.sub_apply, Pi.mul_apply]
     by_cases hx : x ∈ t
     · simpa only [hgt hx, comp_apply, Pi.one_apply, ContinuousMap.coe_coe, algebraMapCLM_apply,
-        map_one, mul_one, sub_self, nnnorm_zero] using hε
+        map_one, mul_one, sub_self, nnnorm_zero] using! hε
     · refine lt_of_le_of_lt ?_ (half_lt_self hε)
       have :=
         calc
@@ -234,7 +234,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
         _ ≤ ε / 2 * ‖(1 - (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) x‖₊ :=
           ((nnnorm_mul_le _ _).trans
             (mul_le_mul_left (not_le.mp <| show ¬ε / 2 ≤ ‖f x‖₊ from hx).le _))
-        _ ≤ ε / 2 := by simpa only [mul_one] using mul_le_mul_right this _
+        _ ≤ ε / 2 := by simpa only [mul_one] using! mul_le_mul_right this _
   /- There is some `g' : C(X, ℝ≥0)` which is strictly positive on `t` such that the composition
     `↑g` with the natural embedding of `ℝ≥0` into `𝕜` lies in `I`. This follows from compactness of
     `t` and that we can do it in any neighborhood of a point `x ∈ t`. Indeed, since `x ∈ t`, then
@@ -244,19 +244,18 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   have : ∃ g' : C(X, ℝ≥0), (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g' ∈ I ∧ ∀ x ∈ t, 0 < g' x := by
     refine ht.isCompact.induction_on ?_ ?_ ?_ ?_
     · refine ⟨0, ?_, fun x hx => False.elim hx⟩
-      convert I.zero_mem
+      convert! I.zero_mem
       ext
       simp only [comp_apply, zero_apply, ContinuousMap.coe_coe, map_zero]
     · rintro s₁ s₂ hs ⟨g, hI, hgt⟩; exact ⟨g, hI, fun x hx => hgt x (hs hx)⟩
     · rintro s₁ s₂ ⟨g₁, hI₁, hgt₁⟩ ⟨g₂, hI₂, hgt₂⟩
       refine ⟨g₁ + g₂, ?_, fun x hx => ?_⟩
-      · convert I.add_mem hI₁ hI₂
+      · convert! I.add_mem hI₁ hI₂
         ext y
-        simp only [coe_add, Pi.add_apply, map_add, coe_comp, Function.comp_apply,
-          ContinuousMap.coe_coe]
+        simp
       · rcases hx with (hx | hx)
-        · simpa only [zero_add] using add_lt_add_of_lt_of_le (hgt₁ x hx) zero_le'
-        · simpa only [zero_add] using add_lt_add_of_le_of_lt zero_le' (hgt₂ x hx)
+        · simpa using add_lt_add_of_lt_of_le (hgt₁ x hx) zero_le
+        · simpa using add_lt_add_of_le_of_lt zero_le (hgt₂ x hx)
     · intro x hx
       replace hx := htI.subset_compl_right hx
       rw [compl_compl, mem_setOfIdeal] at hx
@@ -267,9 +266,9 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
           mem_nhdsWithin_iff_exists_mem_nhds_inter.mpr ⟨_, this, Set.Subset.rfl⟩,
           ⟨⟨fun x => ‖g x‖₊ ^ 2, (map_continuous g).nnnorm.pow 2⟩, ?_, fun x hx =>
             pow_pos (norm_pos_iff.mpr hx.1) 2⟩⟩
-      convert I.mul_mem_left (star g) hI
+      convert! I.mul_mem_left (star g) hI
       ext
-      simp only [comp_apply, ContinuousMap.coe_coe, coe_mk, algebraMapCLM_apply, map_pow,
+      simp only [comp_apply, coe_mk, algebraMapCLM_apply, map_pow,
         mul_apply, star_apply, star_def]
       simp only [RCLike.conj_mul]
       rfl
@@ -277,14 +276,14 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     compactness of `t`, there is some `0 < c` such that `c ≤ g' x` for all `x ∈ t`. Then by
     `exists_mul_le_one_eqOn_ge` there is some `g` for which `g * g'` is the desired function. -/
   obtain ⟨g', hI', hgt'⟩ := this
-  obtain ⟨c, hc, hgc'⟩ : ∃ c > 0, ∀ y : X, y ∈ t → c ≤ g' y :=
+  obtain ⟨c, hc, hgc'⟩ : ∃ c > 0, t ⊆ {y | c ≤ g' y} :=
     t.eq_empty_or_nonempty.elim
       (fun ht' => ⟨1, zero_lt_one, fun y hy => False.elim (by rwa [ht'] at hy)⟩) fun ht' =>
       let ⟨x, hx, hx'⟩ := ht.isCompact.exists_isMinOn ht' (map_continuous g').continuousOn
       ⟨g' x, hgt' x hx, hx'⟩
   obtain ⟨g, hg, hgc⟩ := exists_mul_le_one_eqOn_ge g' hc
   refine ⟨g * g', ?_, hg, hgc.mono hgc'⟩
-  convert I.mul_mem_left ((algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) hI'
+  convert! I.mul_mem_left ((algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) hI'
   ext
   simp only [coe_algebraMapCLM, comp_apply, mul_apply, ContinuousMap.coe_coe, map_mul]
 
@@ -312,8 +311,8 @@ theorem setOfIdeal_ofSet_eq_interior (s : Set X) : setOfIdeal (idealOfSet 𝕜 s
       (Set.disjoint_singleton_right.mpr hx)
   exact
     ⟨⟨fun x => g x, continuous_ofReal.comp (map_continuous g)⟩, by
-      simpa only [coe_mk, ofReal_eq_zero] using fun x hx => hgs (subset_closure hx), by
-      simpa only [coe_mk, hgx (Set.mem_singleton x), Pi.one_apply, RCLike.ofReal_one] using
+      simpa only [coe_mk, ofReal_eq_zero] using! fun x hx => hgs (subset_closure hx), by
+      simpa only [coe_mk, hgx (Set.mem_singleton x), Pi.one_apply, RCLike.ofReal_one] using!
         one_ne_zero⟩
 
 theorem setOfIdeal_ofSet_of_isOpen {s : Set X} (hs : IsOpen s) : setOfIdeal (idealOfSet 𝕜 s) = s :=
@@ -390,8 +389,7 @@ def continuousMapEval : C(X, characterSpace 𝕜 C(X, 𝕜)) where
   toFun x :=
     ⟨{  toFun := fun f => f x
         map_add' := fun _ _ => rfl
-        map_smul' := fun _ _ => rfl
-        cont := continuous_eval_const x }, by
+        map_smul' := fun _ _ => rfl }, by
         rw [CharacterSpace.eq_set_map_one_map_mul]; exact ⟨rfl, fun f g => rfl⟩⟩
   continuous_toFun := by
     exact Continuous.subtype_mk (continuous_of_continuous_eval map_continuous) _

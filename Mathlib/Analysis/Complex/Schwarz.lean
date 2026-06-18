@@ -95,10 +95,10 @@ theorem schwarz_aux {f : ℂ → ℂ} {c z : ℂ} {R₁ R₂ : ℝ} {n : ℕ}
   set g : ℂ → ℂ := fun w ↦ ((w - c) ^ (n + 1))⁻¹ * (f w - f c)
   set g' := update g c (limUnder (𝓝[≠] c) g)
   have hdg' : DifferentiableOn ℂ g' (closedBall c R₁) := by
-    refine .mono ?_ (subset_insert_diff_singleton c _)
+    refine .mono ?_ (subset_insert_sdiff_singleton c _)
     apply differentiableOn_update_limUnder_insert_of_isLittleO
-    · exact diff_mem_nhdsWithin_compl (closedBall_mem_nhds _ hR₁) _
-    · refine .mul ?_ (hd.mono diff_subset |>.sub_const _)
+    · exact sdiff_mem_nhdsWithin_compl (closedBall_mem_nhds _ hR₁) _
+    · refine .mul ?_ (hd.mono sdiff_subset |>.sub_const _)
       fun_prop (disch := simp +contextual [sub_eq_zero])
     · refine Asymptotics.isBigO_refl (fun w ↦ ((w - c) ^ (n + 1))⁻¹) _ |>.mul_isLittleO hn
         |>.mono (nhdsWithin_le_nhds (s := {c}ᶜ)) |>.congr' ?_ ?_
@@ -118,7 +118,8 @@ theorem schwarz_aux {f : ℂ → ℂ} {c z : ℂ} {R₁ R₂ : ℝ} {n : ℕ}
   · grw [frontier_ball_subset_sphere]
     intro w hw
     have hwc := ne_of_mem_sphere hw hR₁.ne'
-    have hfw : ‖f w - f c‖ ≤ R₂ := by simpa using h_maps (sphere_subset_closedBall hw)
+    have hfw : ‖f w - f c‖ ≤ R₂ := by
+      simpa [dist_eq_norm] using h_maps (sphere_subset_closedBall hw)
     rw [mem_sphere_iff_norm] at hw
     simpa [g', hwc, g, hw, field]
   · exact subset_closure hz

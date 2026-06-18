@@ -6,8 +6,8 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 
 /-!
 # Extra lemmas about canonically ordered monoids

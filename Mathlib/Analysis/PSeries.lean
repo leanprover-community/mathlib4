@@ -5,9 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.Analysis.SumOverResidueClass
+
+import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 /-!
 # Convergence of `p`-series
@@ -62,13 +64,14 @@ theorem le_sum_schlomilch' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f 
       exacts [hu n.zero_le, hu n.le_succ]
     have : ∀ k ∈ Ico (u n) (u (n + 1)), f k ≤ f (u n) := fun k hk =>
       hf (Nat.succ_le_of_lt (h_pos n)) (mem_Ico.mp hk).1
-    convert sum_le_sum this
+    convert! sum_le_sum this
     simp
 
 theorem le_sum_condensed' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k ∈ Ico 1 (2 ^ n), f k) ≤ ∑ k ∈ range n, 2 ^ k • f (2 ^ k) := by
-  convert le_sum_schlomilch' hf (fun n => pow_pos zero_lt_two n)
-    (fun m n hm => pow_right_mono₀ one_le_two hm) n using 2
+  convert!
+    le_sum_schlomilch' hf (fun n => pow_pos zero_lt_two n)
+      (fun m n hm => pow_right_mono₀ one_le_two hm) n using 2
   simp [pow_succ, mul_two]
 
 theorem le_sum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
@@ -96,13 +99,14 @@ theorem sum_schlomilch_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f 
     have : ∀ k ∈ Ico (u n + 1) (u (n + 1) + 1), f (u (n + 1)) ≤ f k := fun k hk =>
       hf (Nat.lt_of_le_of_lt (Nat.succ_le_of_lt (h_pos n)) <| (Nat.lt_succ_of_le le_rfl).trans_le
         (mem_Ico.mp hk).1) (Nat.le_of_lt_succ <| (mem_Ico.mp hk).2)
-    convert sum_le_sum this
+    convert! sum_le_sum this
     simp
 
 theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k ∈ range n, 2 ^ k • f (2 ^ (k + 1))) ≤ ∑ k ∈ Ico 2 (2 ^ n + 1), f k := by
-  convert sum_schlomilch_le' hf (fun n => pow_pos zero_lt_two n)
-    (fun m n hm => pow_right_mono₀ one_le_two hm) n using 2
+  convert!
+    sum_schlomilch_le' hf (fun n => pow_pos zero_lt_two n)
+      (fun m n hm => pow_right_mono₀ one_le_two hm) n using 2
   simp [pow_succ, mul_two]
 
 theorem sum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
@@ -122,7 +126,7 @@ theorem sum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f
     gcongr
     · exact h_nonneg (u (k + 1))
     exact mod_cast h_succ_diff k
-  convert sum_le_sum this
+  convert! sum_le_sum this
   simp [smul_sum]
 
 theorem sum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
@@ -204,8 +208,9 @@ theorem summable_condensed_iff {f : ℕ → ℝ≥0} (hf : ∀ ⦃m n⦄, 0 < m 
   have h_succ_diff : SuccDiffBounded 2 (2 ^ ·) := by
     intro n
     simp [pow_succ, mul_two, two_mul]
-  convert summable_schlomilch_iff hf (pow_pos zero_lt_two) (pow_right_strictMono₀ _root_.one_lt_two)
-    two_ne_zero h_succ_diff
+  convert!
+    summable_schlomilch_iff hf (pow_pos zero_lt_two) (pow_right_strictMono₀ _root_.one_lt_two)
+      two_ne_zero h_succ_diff
   simp [pow_succ, mul_two]
 
 end NNReal
@@ -231,8 +236,9 @@ theorem summable_condensed_iff_of_nonneg {f : ℕ → ℝ} (h_nonneg : ∀ n, 0 
   have h_succ_diff : SuccDiffBounded 2 (2 ^ ·) := by
     intro n
     simp [pow_succ, mul_two, two_mul]
-  convert summable_schlomilch_iff_of_nonneg h_nonneg h_mono (pow_pos zero_lt_two)
-    (pow_right_strictMono₀ one_lt_two) two_ne_zero h_succ_diff
+  convert!
+    summable_schlomilch_iff_of_nonneg h_nonneg h_mono (pow_pos zero_lt_two)
+      (pow_right_strictMono₀ one_lt_two) two_ne_zero h_succ_diff
   simp [pow_succ, mul_two]
 
 /-- Cauchy condensation test for eventually antitone and nonnegative series of real numbers. -/
@@ -243,16 +249,15 @@ theorem summable_condensed_iff_of_eventually_nonneg {f : ℕ → ℝ} (h_nonneg 
   rw [Filter.eventually_atTop] at h_mono
   rcases h_nonneg with ⟨n, hn⟩
   rcases h_mono with ⟨m, hm⟩
-  convert summable_condensed_iff_of_nonneg (f := fun k ↦ f (max k (n + m))) _ _ using 1
+  convert! summable_condensed_iff_of_nonneg (f := fun k ↦ f (max k (n + m))) _ _ using 1
   · rw [summable_congr_atTop]
     have h_pow := tendsto_pow_atTop_atTop_of_one_lt (r := 2) (by simp)
     filter_upwards [h_pow.eventually_ge_atTop (n + m)] with _ hk using by simp [max_eq_left hk]
   · rw [summable_congr_atTop]
     filter_upwards [Filter.eventually_ge_atTop (n + m)] with _ hk using by simp [max_eq_left hk]
-  · simpa [hn] using by bound
+  · simp_all
   · intro _ _ _ _
-    apply antitoneOn_nat_Ici_of_succ_le (k := n + m) _ (by aesop) (by aesop) (by bound)
-    simpa [hn] using by bound
+    exact antitoneOn_nat_Ici_of_succ_le (k := n + m) (by grind) (by simp) (by simp) (by grind)
 
 section p_series
 
@@ -445,32 +450,17 @@ section shifted
 
 open Filter Asymptotics Topology
 
--- see https://github.com/leanprover-community/mathlib4/issues/29041
-set_option linter.unusedSimpArgs false in
 lemma Real.summable_one_div_nat_add_rpow (a : ℝ) (s : ℝ) :
     Summable (fun n : ℕ ↦ 1 / |n + a| ^ s) ↔ 1 < s := by
-  suffices ∀ (b c : ℝ), Summable (fun n : ℕ ↦ 1 / |n + b| ^ s) →
-      Summable (fun n : ℕ ↦ 1 / |n + c| ^ s) by
-    simp_rw [← summable_one_div_nat_rpow, Iff.intro (this a 0) (this 0 a), add_zero, Nat.abs_cast]
-  refine fun b c h ↦ summable_of_isBigO_nat h (isBigO_of_div_tendsto_nhds ?_ 1 ?_)
-  · filter_upwards [eventually_gt_atTop (Nat.ceil |b|)] with n hn hx
-    have hna : 0 < n + b := by linarith [lt_of_abs_lt ((abs_neg b).symm ▸ Nat.lt_of_ceil_lt hn)]
-    exfalso
-    revert hx
-    positivity
-  · simp_rw [Pi.div_def, div_div, mul_one_div, one_div_div]
-    refine (?_ : Tendsto (fun x : ℝ ↦ |x + b| ^ s / |x + c| ^ s) atTop (𝓝 1)).comp
-      tendsto_natCast_atTop_atTop
-    have : Tendsto (fun x : ℝ ↦ 1 + (b - c) / x) atTop (𝓝 1) := by
-      simpa using tendsto_const_nhds.add ((tendsto_const_nhds (X := ℝ)).div_atTop tendsto_id)
-    have : Tendsto (fun x ↦ (x + b) / (x + c)) atTop (𝓝 1) := by
-      refine (this.comp (tendsto_id.atTop_add (tendsto_const_nhds (x := c)))).congr' ?_
-      filter_upwards [eventually_gt_atTop (-c)] with x hx
-      simp [field, (by linarith : 0 < x + c).ne']
-    apply (one_rpow s ▸ (continuousAt_rpow_const _ s (by simp)).tendsto.comp this).congr'
-    filter_upwards [eventually_gt_atTop (-b), eventually_gt_atTop (-c)] with x hb hc
-    rw [neg_lt_iff_pos_add] at hb hc
-    rw [Function.comp_apply, div_rpow hb.le hc.le, abs_of_pos hb, abs_of_pos hc]
+  have hnorm : Tendsto (fun n : ℕ ↦ ‖(n : ℝ)‖) atTop atTop :=
+    tendsto_natCast_atTop_atTop.congr' (by simp)
+  have h_abs : (fun n : ℕ ↦ |n + a|) ~[atTop] (·) := by
+    apply (IsEquivalent.refl.add_const_of_norm_tendsto_atTop hnorm).congr_left
+    · filter_upwards [eventually_gt_atTop (Nat.ceil |a|)] with _ hn
+      rw [abs_of_pos]
+      linarith [lt_of_abs_lt ((abs_neg a).symm ▸ Nat.lt_of_ceil_lt hn)]
+  rw [← summable_one_div_nat_rpow, Asymptotics.IsEquivalent.summable_iff_nat]
+  simpa [one_div] using! (IsEquivalent.rpow (fun n ↦ by positivity) h_abs).inv
 
 lemma Real.summable_one_div_int_add_rpow (a : ℝ) (s : ℝ) :
     Summable (fun n : ℤ ↦ 1 / |n + a| ^ s) ↔ 1 < s := by

@@ -88,17 +88,18 @@ nonrec def tan (x : ℝ) : ℝ :=
 nonrec def cot (x : ℝ) : ℝ :=
   (cot x).re
 
-/-- The real hypebolic sine function, defined as the real part of the complex hyperbolic sine -/
+/-- The real hyperbolic sine function, defined as the real part of the complex hyperbolic sine -/
 @[pp_nodot]
 nonrec def sinh (x : ℝ) : ℝ :=
   (sinh x).re
 
-/-- The real hypebolic cosine function, defined as the real part of the complex hyperbolic cosine -/
+/-- The real hyperbolic cosine function, defined as the real part of the complex hyperbolic cosine
+-/
 @[pp_nodot]
 nonrec def cosh (x : ℝ) : ℝ :=
   (cosh x).re
 
-/-- The real hypebolic tangent function, defined as the real part of
+/-- The real hyperbolic tangent function, defined as the real part of
 the complex hyperbolic tangent -/
 @[pp_nodot]
 nonrec def tanh (x : ℝ) : ℝ :=
@@ -330,13 +331,13 @@ theorem sin_add_mul_I (x y : ℂ) : sin (x + y * I) = sin x * cosh y + cos x * s
   rw [sin_add, cos_mul_I, sin_mul_I, mul_assoc]
 
 theorem sin_eq (z : ℂ) : sin z = sin z.re * cosh z.im + cos z.re * sinh z.im * I := by
-  convert sin_add_mul_I z.re z.im; exact (re_add_im z).symm
+  convert! sin_add_mul_I z.re z.im; exact (re_add_im z).symm
 
 theorem cos_add_mul_I (x y : ℂ) : cos (x + y * I) = cos x * cosh y - sin x * sinh y * I := by
   rw [cos_add, cos_mul_I, sin_mul_I, mul_assoc]
 
 theorem cos_eq (z : ℂ) : cos z = cos z.re * cosh z.im - sin z.re * sinh z.im * I := by
-  convert cos_add_mul_I z.re z.im; exact (re_add_im z).symm
+  convert! cos_add_mul_I z.re z.im; exact (re_add_im z).symm
 
 theorem sin_sub_sin : sin x - sin y = 2 * sin ((x - y) / 2) * cos ((x + y) / 2) := by
   have s1 := sin_add ((x + y) / 2) ((x - y) / 2)
@@ -355,7 +356,7 @@ theorem cos_sub_cos : cos x - cos y = -2 * sin ((x + y) / 2) * sin ((x - y) / 2)
   ring
 
 theorem sin_add_sin : sin x + sin y = 2 * sin ((x + y) / 2) * cos ((x - y) / 2) := by
-  simpa using sin_sub_sin x (-y)
+  simpa using! sin_sub_sin x (-y)
 
 theorem cos_add_cos : cos x + cos y = 2 * cos ((x + y) / 2) * cos ((x - y) / 2) := by
   calc
@@ -473,6 +474,9 @@ theorem cos_two_mul : cos (2 * x) = 2 * cos x ^ 2 - 1 := by
   rw [cos_two_mul', eq_sub_iff_add_eq.2 (sin_sq_add_cos_sq x), ← sub_add, sub_add_eq_add_sub,
     two_mul]
 
+theorem cos_two_mul_eq_one_sub : cos (2 * x) = 1 - 2 * sin x ^ 2 := by
+  grind [cos_two_mul, sin_sq_add_cos_sq]
+
 theorem sin_two_mul : sin (2 * x) = 2 * sin x * cos x := by
   rw [two_mul, sin_add, two_mul, add_mul, mul_comm]
 
@@ -497,19 +501,11 @@ theorem tan_sq_div_one_add_tan_sq {x : ℂ} (hx : cos x ≠ 0) :
   simp only [← tan_mul_cos hx, mul_pow, ← inv_one_add_tan_sq hx, div_eq_mul_inv]
 
 theorem cos_three_mul : cos (3 * x) = 4 * cos x ^ 3 - 3 * cos x := by
-  have h1 : x + 2 * x = 3 * x := by ring
-  rw [← h1, cos_add x (2 * x)]
-  simp only [cos_two_mul, sin_two_mul, mul_sub, mul_one, sq]
-  have h2 : 4 * cos x ^ 3 = 2 * cos x * cos x * cos x + 2 * cos x * cos x ^ 2 := by ring
-  rw [h2, cos_sq']
-  ring
+  rw [← cosh_mul_I, mul_assoc, cosh_three_mul, cosh_mul_I]
 
 theorem sin_three_mul : sin (3 * x) = 3 * sin x - 4 * sin x ^ 3 := by
-  have h1 : x + 2 * x = 3 * x := by ring
-  rw [← h1, sin_add x (2 * x)]
-  simp only [cos_two_mul, sin_two_mul, cos_sq']
-  have h2 : cos x * (2 * sin x * cos x) = 2 * sin x * cos x ^ 2 := by ring
-  rw [h2, cos_sq']
+  rw [← two_add_one_eq_three, add_one_mul, sin_add (2 * x) x]
+  simp only [cos_two_mul, sin_two_mul, cos_sq', mul_assoc, ← sq]
   ring
 
 theorem exp_mul_I : exp (x * I) = cos x + sin x * I :=
@@ -535,6 +531,9 @@ theorem exp_ofReal_mul_I_re (x : ℝ) : (exp (x * I)).re = Real.cos x := by
 @[simp]
 theorem exp_ofReal_mul_I_im (x : ℝ) : (exp (x * I)).im = Real.sin x := by
   simp [exp_mul_I, sin_ofReal_re]
+
+theorem exp_ofReal_mul_I (x : ℝ) : exp (x * I) = Real.cos x + (Real.sin x) * I := by
+  simp [exp_mul_I]
 
 /-- **De Moivre's formula** -/
 theorem cos_add_sin_mul_I_pow (n : ℕ) (z : ℂ) :
@@ -695,6 +694,9 @@ nonrec theorem cos_two_mul : cos (2 * x) = 2 * cos x ^ 2 - 1 :=
 
 nonrec theorem cos_two_mul' : cos (2 * x) = cos x ^ 2 - sin x ^ 2 :=
   ofReal_injective <| by simp [cos_two_mul']
+
+nonrec theorem cos_two_mul_eq_one_sub : cos (2 * x) = 1 - 2 * sin x ^ 2 :=
+  ofReal_injective <| by simp [cos_two_mul_eq_one_sub]
 
 nonrec theorem sin_two_mul : sin (2 * x) = 2 * sin x * cos x :=
   ofReal_injective <| by simp [sin_two_mul]
@@ -938,9 +940,10 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `Real.cosh` is always positive. -/
 @[positivity Real.cosh _]
-meta def evalCosh : PositivityExt where eval {u α} _ _ e := do
+meta def evalCosh : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.cosh $a) =>
+    let some _ := pα? | pure .none
     assertInstancesCommute
     return .positive q(Real.cosh_pos $a)
   | _, _, _ => throwError "not Real.cosh"

@@ -138,17 +138,9 @@ theorem normalizedTrace_eq_of_finiteDimensional_apply [FiniteDimensional F K] (a
     normalizedTrace F K a = (Module.finrank F K : F)⁻¹ • trace F K a :=
   normalizedTraceAux_eq_of_finiteDimensional F a
 
-@[deprecated (since := "2025-10-22")]
-alias normalizedTrace_eq_of_fininteDimensional_apply :=
-  normalizedTrace_eq_of_finiteDimensional_apply
-
 theorem normalizedTrace_eq_of_finiteDimensional [FiniteDimensional F K] :
     normalizedTrace F K = (Module.finrank F K : F)⁻¹ • trace F K :=
   LinearMap.ext <| normalizedTrace_eq_of_finiteDimensional_apply F
-
-@[deprecated (since := "2025-10-22")]
-alias normalizedTrace_eq_of_fininteDimensional :=
-  normalizedTrace_eq_of_finiteDimensional
 
 /-- The normalized trace transfers via (injective) maps. -/
 @[simp]
@@ -188,6 +180,7 @@ theorem normalizedTrace_algebraMap_of_lifts [CharZero E] [Algebra.IsIntegral E K
   simp [normalizedTrace_minpoly F a, normalizedTrace_minpoly E a, ← minpoly.map_algebraMap ha h,
     (minpoly F a).nextCoeff_map_eq, map_mul, map_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 /- An auxiliary result to prove `normalizedTrace_trans_apply`. It differs from
 `normalizedTrace_trans_apply` only by the extra assumption about finiteness of `E` over `F`. -/
 private theorem normalizedTrace_trans_apply_aux [FiniteDimensional F E] [Algebra.IsIntegral E K]

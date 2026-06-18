@@ -41,25 +41,25 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
   [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
   [NormedSpace 𝕜 F₁] [NormedSpace 𝕜 F₂] [NormedSpace 𝕜 F₃]
 
-/- The norm of the integrant of the convolution is integrable if the functions are integrable
+/-- The norm of the integrant of the convolution is integrable if the functions are integrable
 and continuous. -/
 theorem integrable_prod_sub (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {f₁ : E → F₁} {f₂ : E → F₂}
     (hf₁ : Integrable f₁) (hf₂ : Integrable f₂) (hf₁' : Continuous f₁) (hf₂' : Continuous f₂) :
     Integrable (fun (p : E × E) ↦ ‖B‖ * (‖f₁ (p.1 - p.2)‖ * ‖f₂ p.2‖)) (volume.prod volume) := by
   apply Integrable.const_mul
-  rw [integrable_prod_iff' (by measurability)]
+  rw [integrable_prod_iff' (by fun_prop)]
   constructor
   · filter_upwards with x
     exact (hf₁.comp_sub_right x).norm.mul_const _
   have : Integrable (fun x ↦ ((∫ y, ‖f₁ y‖) * ‖f₂ x‖)) := by
-    apply hf₂.norm.bdd_mul (by measurability) (c := ‖(∫ y, ‖f₁ y‖)‖)
+    apply hf₂.norm.bdd_mul (by fun_prop) (c := ‖(∫ y, ‖f₁ y‖)‖)
     filter_upwards with; rfl
-  convert this using 1
+  convert! this using 1
   ext x
   simp_rw [norm_mul, norm_norm]
   rw [integral_mul_const]
   congr 1
-  convert integral_sub_right_eq_self _ x (μ := volume)
+  convert! integral_sub_right_eq_self _ x (μ := volume)
   rfl
 
 open FourierTransform
@@ -89,7 +89,7 @@ theorem fourier_bilin_convolution_eq_integral (B : F₁ →L[𝕜] F₂ →L[�
     congr
     ext y
     -- Linear change of variables
-    convert integral_sub_right_eq_self _ y (μ := volume)
+    convert! integral_sub_right_eq_self _ y (μ := volume)
     congr
     simp
 
@@ -123,7 +123,7 @@ theorem fourier_bilin_convolution_eq (B : F₁ →L[ℂ] F₂ →L[ℂ] F₃) {f
     · simp
     have : MeasureTheory.Integrable (fun x ↦ ‖B‖ * ‖f₁ x‖) MeasureTheory.volume :=
       hf₁.norm.const_mul _
-    apply this.mono (by measurability)
+    apply this.mono (by fun_prop)
     filter_upwards with x
     simpa [← Circle.smul_def] using le_opNorm B (f₁ x)
   _ = B (∫ x, 𝐞 (-inner ℝ x ξ) • f₁ x) (∫ y, 𝐞 (-inner ℝ y ξ) • f₂ y) := by
@@ -215,7 +215,7 @@ theorem convolution_apply (B : F₁ →L[ℂ] F₂ →L[ℂ] F₃) (f : 𝓢(E, 
       exact ⟨SchwartzMap.seminorm ℝ 0 0 g, fun x ⟨y, hy⟩ ↦ hy ▸ norm_le_seminorm ℝ g y⟩
     · exact f.integrable.integrable_convolution B g.integrable
     · have : Integrable (fun ξ ↦ B (𝓕 f ξ) (𝓕 g ξ)) volume := (pairing B (𝓕 f) (𝓕 g)).integrable
-      convert this
+      convert! this
       rw [← fourier_convolution_apply B f g, fourier_convolution, pairing_apply_apply]
 
 

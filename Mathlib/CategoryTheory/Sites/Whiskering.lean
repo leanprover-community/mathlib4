@@ -6,6 +6,7 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 
 /-!
 
@@ -46,12 +47,11 @@ class GrothendieckTopology.HasSheafCompose : Prop where
 variable [J.HasSheafCompose F] [J.HasSheafCompose G] [J.HasSheafCompose H]
 
 /-- Composing a functor which `HasSheafCompose`, yields a functor between sheaf categories. -/
-@[simps]
-def sheafCompose : Sheaf J A ⥤ Sheaf J B where
-  obj G := ⟨G.val ⋙ F, GrothendieckTopology.HasSheafCompose.isSheaf G.val G.2⟩
-  map η := ⟨whiskerRight η.val _⟩
-  map_id _ := Sheaf.Hom.ext <| whiskerRight_id _
-  map_comp _ _ := Sheaf.Hom.ext <| whiskerRight_comp _ _ _
+@[simps! obj_obj map_hom]
+def sheafCompose : Sheaf J A ⥤ Sheaf J B :=
+  ObjectProperty.lift _
+    (sheafToPresheaf _ _ ⋙ (Functor.whiskeringRight _ _ _).obj F)
+      (fun P ↦ GrothendieckTopology.HasSheafCompose.isSheaf _ P.property)
 
 instance [F.Faithful] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Faithful :=
   show (sheafToPresheaf _ _ ⋙ (whiskeringRight Cᵒᵖ A B).obj F).Faithful from inferInstance
@@ -87,6 +87,7 @@ instance [F.ReflectsIsomorphisms] : (sheafCompose J F).ReflectsIsomorphisms wher
 
 variable {F G}
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 If `η : F ⟶ G` is a natural transformation then we obtain a morphism of functors
 `sheafCompose J F ⟶ sheafCompose J G` by whiskering with `η` on the level of presheaves.
@@ -106,6 +107,7 @@ namespace GrothendieckTopology.Cover
 variable (F G) {J}
 variable (P : Cᵒᵖ ⥤ A) {X : C} (S : J.Cover X)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The multicospan associated to a cover `S : J.Cover X` and a presheaf of the form `P ⋙ F`
 is isomorphic to the composition of the multicospan associated to `S` and `P`,
 composed with `F`. -/
@@ -120,13 +122,14 @@ def multicospanComp : (S.index (P ⋙ F)).multicospan ≅ (S.index P).multicospa
       rintro (a | b) (a | b) (f | f | f)
       all_goals cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Mapping the multifork associated to a cover `S : J.Cover X` and a presheaf `P` with
 respect to a functor `F` is isomorphic (upto a natural isomorphism of the underlying functors)
 to the multifork associated to `S` and `P ⋙ F`. -/
 def mapMultifork :
     F.mapCone (S.multifork P) ≅
-      (Limits.Cones.postcompose (S.multicospanComp F P).hom).obj (S.multifork (P ⋙ F)) :=
-  Cones.ext (Iso.refl _)
+      (Limits.Cone.postcompose (S.multicospanComp F P).hom).obj (S.multifork (P ⋙ F)) :=
+  Cone.ext (Iso.refl _)
 
 end GrothendieckTopology.Cover
 
@@ -160,7 +163,7 @@ variable {J}
 
 lemma Sheaf.isSeparated {FA : A → A → Type*} {CA : A → Type*}
     [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA] [J.HasSheafCompose (forget A)]
-    (F : Sheaf J A) : Presheaf.IsSeparated J F.val := by
+    (F : Sheaf J A) : Presheaf.IsSeparated J F.obj := by
   rintro X S hS x y h
   exact (((isSheaf_iff_isSheaf_of_type _ _).1
     ((sheafCompose J (forget A)).obj F).2).isSeparated S hS).ext (fun _ _ hf => h _ _ hf)

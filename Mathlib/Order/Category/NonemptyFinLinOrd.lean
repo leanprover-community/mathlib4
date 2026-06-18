@@ -42,13 +42,13 @@ instance : CoeSort NonemptyFinLinOrd (Type _) where
   coe X := X.carrier
 
 instance : LargeCategory NonemptyFinLinOrd :=
-  inferInstanceAs (Category (InducedCategory _ NonemptyFinLinOrd.toLinOrd))
+  inferInstanceAs <| Category (InducedCategory _ toLinOrd)
 
 instance : ConcreteCategory NonemptyFinLinOrd (· →o ·) :=
-  InducedCategory.concreteCategory NonemptyFinLinOrd.toLinOrd
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toLinOrd) _
 
 instance (X : NonemptyFinLinOrd) : BoundedOrder X :=
-    Fintype.toBoundedOrder X
+  Fintype.toBoundedOrder X
 
 /-- Construct a bundled `NonemptyFinLinOrd` from the underlying type and typeclass. -/
 abbrev of (α : Type*) [Nonempty α] [Fintype α] [LinearOrder α] : NonemptyFinLinOrd where
@@ -101,7 +101,7 @@ instance : Inhabited NonemptyFinLinOrd :=
   ⟨of PUnit⟩
 
 instance hasForgetToLinOrd : HasForget₂ NonemptyFinLinOrd LinOrd :=
-  InducedCategory.hasForget₂ _
+  inferInstanceAs <| HasForget₂ (InducedCategory _ toLinOrd) _
 
 instance hasForgetToFinPartOrd : HasForget₂ NonemptyFinLinOrd FinPartOrd where
   forget₂.obj X := .of X
@@ -169,7 +169,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
       congr
       rw [← cancel_epi f]
       ext a : 3
-      simp only [p₁, p₂, hom_hom_comp, OrderHom.comp_coe, Function.comp_apply, hom_hom_ofHom]
+      simp only [p₁, p₂, hom_hom_comp, OrderHom.comp_coe, Function.comp_apply]
       change ite _ _ _ = ite _ _ _
       split_ifs with h₁ h₂ h₂
       any_goals rfl

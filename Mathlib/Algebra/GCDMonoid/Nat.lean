@@ -29,7 +29,7 @@ natural numbers, integers, normalization monoid, gcd monoid, greatest common div
 
 assert_not_exists IsOrderedMonoid
 
-/-- `ℕ` is a gcd_monoid. -/
+/-- `ℕ` is a `GCDMonoid`. -/
 instance : GCDMonoid ℕ where
   gcd := Nat.gcd
   lcm := Nat.lcm
@@ -130,6 +130,9 @@ theorem natAbs_gcd (i j : ℤ) : natAbs (GCDMonoid.gcd i j) = Int.gcd i j :=
 
 theorem natAbs_lcm (i j : ℤ) : natAbs (GCDMonoid.lcm i j) = Int.lcm i j :=
   rfl
+
+lemma gcd_nonneg (i j : ℤ) : 0 ≤ GCDMonoid.gcd i j := by simp [← coe_gcd]
+lemma lcm_nonneg (i j : ℤ) : 0 ≤ GCDMonoid.lcm i j := by simp [← coe_lcm]
 
 end GCDMonoid
 

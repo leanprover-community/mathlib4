@@ -50,6 +50,7 @@ def noncommFoldr (s : Multiset α)
       comm.of_refl hx hy⟩
   s.attach.foldr (f ∘ Subtype.val) b
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem noncommFoldr_coe (l : List α) (comm) (b : β) :
     noncommFoldr f (l : Multiset α) comm b = l.foldr f b := by
@@ -338,14 +339,14 @@ theorem mul_noncommProd_erase [DecidableEq α] (s : Finset α) {a : α} (h : a �
     (comm' := fun _ hx _ hy hxy ↦ comm (s.mem_of_mem_erase hx) (s.mem_of_mem_erase hy) hxy) :
     f a * (s.erase a).noncommProd f comm' = s.noncommProd f comm := by
   classical
-  simpa only [← Multiset.map_erase_of_mem _ _ h] using
+  simpa only [← Multiset.map_erase_of_mem _ _ h] using!
     Multiset.mul_noncommProd_erase (s.1.map f) (Multiset.mem_map_of_mem f h) _
 
 theorem noncommProd_erase_mul [DecidableEq α] (s : Finset α) {a : α} (h : a ∈ s) (f : α → β) (comm)
     (comm' := fun _ hx _ hy hxy ↦ comm (s.mem_of_mem_erase hx) (s.mem_of_mem_erase hy) hxy) :
     (s.erase a).noncommProd f comm' * f a = s.noncommProd f comm := by
   classical
-  simpa only [← Multiset.map_erase_of_mem _ _ h] using
+  simpa only [← Multiset.map_erase_of_mem _ _ h] using!
     Multiset.noncommProd_erase_mul (s.1.map f) (Multiset.mem_map_of_mem f h) _
 
 @[to_additive]
@@ -358,20 +359,14 @@ theorem noncommProd_eq_prod {β : Type*} [CommMonoid β] (s : Finset α) (f : α
 /-- The non-commutative version of `Finset.prod_union` -/
 @[to_additive /-- The non-commutative version of `Finset.sum_union` -/]
 theorem noncommProd_union_of_disjoint [DecidableEq α] {s t : Finset α} (h : Disjoint s t)
-    (f : α → β) (comm : { x | x ∈ s ∪ t }.Pairwise (Commute on f)) :
+    (f : α → β) (comm : Set.Pairwise ↑(s ∪ t) (Commute on f)) :
     noncommProd (s ∪ t) f comm =
       noncommProd s f (comm.mono <| coe_subset.2 subset_union_left) *
         noncommProd t f (comm.mono <| coe_subset.2 subset_union_right) := by
-  obtain ⟨sl, sl', rfl⟩ := exists_list_nodup_eq s
-  obtain ⟨tl, tl', rfl⟩ := exists_list_nodup_eq t
-  rw [List.disjoint_toFinset_iff_disjoint] at h
-  calc noncommProd (List.toFinset sl ∪ List.toFinset tl) f comm
-    _ = noncommProd ⟨↑(sl ++ tl), Multiset.coe_nodup.2 (sl'.append tl' h)⟩ f
-          (by convert comm; simp [Set.ext_iff]) :=
-      noncommProd_congr (by ext; simp) (by simp) _
-    _ = noncommProd (List.toFinset sl) f (comm.mono <| coe_subset.2 subset_union_left) *
-         noncommProd (List.toFinset tl) f (comm.mono <| coe_subset.2 subset_union_right) := by
-      simp [noncommProd, List.dedup_eq_self.2 sl', List.dedup_eq_self.2 tl']
+  rcases s with ⟨⟨sl⟩, hsl⟩
+  rcases t with ⟨⟨tl⟩, htl⟩
+  simp only [← Finset.disjoint_val, Multiset.quot_mk_to_coe'] at h
+  simp [noncommProd, ← Multiset.add_eq_union_iff_disjoint.mpr h]
 
 @[to_additive]
 theorem noncommProd_mul_distrib_aux {s : Finset α} {f : α → β} {g : α → β}
@@ -414,19 +409,14 @@ theorem noncommProd_mulSingle [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
   case a =>
     intro i _ j _ _
     exact Pi.mulSingle_apply_commute x i j
-  convert (noncommProd_congr (insert_erase (mem_univ i)).symm _ _).trans _
+  convert! (noncommProd_congr (insert_erase (mem_univ i)).symm _ _).trans _
   · intro j
     exact Pi.mulSingle j (x j) i
   · intro j _; dsimp
   · rw [noncommProd_insert_of_notMem _ _ _ _ (notMem_erase _ _),
       noncommProd_eq_pow_card (univ.erase i), one_pow, mul_one]
     · simp only [Pi.mulSingle_eq_same]
-    · intro j hj
-      simp? at hj says simp only [mem_erase, ne_eq, mem_univ, and_true] at hj
-      simp only [Pi.mulSingle, Function.update, Pi.one_apply,
-        dite_eq_right_iff]
-      intro h
-      simp [*] at *
+    · simpa using fun _ a ↦ Pi.mulSingle_eq_of_ne (a ·.symm) _
 
 @[deprecated noncommProd_mulSingle (since := "2025-11-25")]
 alias noncommProd_mul_single := noncommProd_mulSingle

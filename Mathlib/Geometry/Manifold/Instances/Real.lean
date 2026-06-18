@@ -57,6 +57,7 @@ open scoped Manifold ContDiff ENNReal
 -/
 def EuclideanHalfSpace (n : ℕ) [NeZero n] : Type :=
   { x : EuclideanSpace ℝ (Fin n) // 0 ≤ x 0 }
+deriving TopologicalSpace
 
 /--
 The quadrant in `ℝ^n`, used to model manifolds with corners, made of all vectors with nonnegative
@@ -64,6 +65,7 @@ coordinates.
 -/
 def EuclideanQuadrant (n : ℕ) : Type :=
   { x : EuclideanSpace ℝ (Fin n) // ∀ i : Fin n, 0 ≤ x i }
+deriving TopologicalSpace
 
 section
 
@@ -71,12 +73,6 @@ section
 without the following reducibility attribute (which is only set in this section). -/
 
 variable {n : ℕ}
-
-instance [NeZero n] : TopologicalSpace (EuclideanHalfSpace n) :=
-  instTopologicalSpaceSubtype
-
-instance : TopologicalSpace (EuclideanQuadrant n) :=
-  instTopologicalSpaceSubtype
 
 instance {n : ℕ} [NeZero n] : Zero (EuclideanHalfSpace n) := ⟨⟨0, by simp⟩⟩
 
@@ -151,7 +147,7 @@ theorem frontier_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a = y i } := by
   rw [frontier, closure_halfSpace, interior_halfSpace]
   ext y
-  simpa only [mem_diff, mem_setOf_eq, not_lt] using antisymm_iff
+  simpa only [mem_sdiff, mem_setOf_eq, not_lt] using antisymm_iff
 theorem range_euclideanQuadrant (n : ℕ) :
     range (Subtype.val : EuclideanQuadrant n → _) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val
@@ -171,6 +167,7 @@ theorem interior_euclideanQuadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Definition of the model with corners `(EuclideanSpace ℝ (Fin n), EuclideanHalfSpace n)`, used as
 a model for manifolds with boundary. In the scope `Manifold`, use the shortcut `𝓡∂ n`.
@@ -203,6 +200,7 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     exact ((PiLp.continuous_toLp 2 _).comp <| (PiLp.continuous_ofLp 2 _).update 0 <|
       (PiLp.continuous_apply 2 _ 0).max continuous_const).subtype_mk _
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Definition of the model with corners `(EuclideanSpace ℝ (Fin n), EuclideanQuadrant n)`, used as a
 model for manifolds with corners -/
@@ -263,6 +261,7 @@ lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
       apply range_euclideanHalfSpace
     _ = { y | 0 = y 0 } := frontier_halfSpace 2 _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The left chart for the topological space `[x, y]`, defined on `[x,y)` and sending `x` to `0` in
 `EuclideanHalfSpace 1`.
 -/
@@ -327,6 +326,7 @@ lemma IccLeftChart_extend_bot_mem_frontier :
   rw [IccLeftChart_extend_bot, frontier_range_modelWithCornersEuclideanHalfSpace,
     mem_setOf, PiLp.zero_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The right chart for the topological space `[x, y]`, defined on `(x,y]` and sending `y` to `0` in
 `EuclideanHalfSpace 1`.
 -/
@@ -430,7 +430,7 @@ lemma boundary_Icc : (𝓡∂ 1).boundary (Icc x y) = {⊥, ⊤} := by
     rw [this]
     apply iff_of_true Icc_isBoundaryPoint_top (mem_insert_of_mem ⊥ rfl)
   · apply iff_of_false
-    · simpa [← mem_compl_iff, ModelWithCorners.compl_boundary] using
+    · simpa [← mem_compl_iff, ModelWithCorners.compl_boundary] using!
         Icc_isInteriorPoint_interior hp
     · rintro (rfl | rfl) <;> simp at hp
 
@@ -444,7 +444,7 @@ lemma boundary_product [I.Boundaryless] :
   rw [I.boundary_of_boundaryless_left, boundary_Icc]
 
 /-- The manifold structure on `[x, y]` is smooth. -/
-instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
+instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : ℕ∞ω} :
     IsManifold (𝓡∂ 1) n (Icc x y) := by
   have M : ContDiff ℝ n (show EuclideanSpace ℝ (Fin 1) → EuclideanSpace ℝ (Fin 1)
       from fun z ↦ toLp 2 fun i ↦ -z i + (y - x)) :=
@@ -489,6 +489,6 @@ section
 
 instance : ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by infer_instance
 
-instance {n : WithTop ℕ∞} : IsManifold (𝓡∂ 1) n (Icc (0 : ℝ) 1) := by infer_instance
+instance {n : ℕ∞ω} : IsManifold (𝓡∂ 1) n (Icc (0 : ℝ) 1) := by infer_instance
 
 end

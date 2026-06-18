@@ -10,7 +10,6 @@ public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 
-import Mathlib.Algebra.Central.Basic
 
 /-!
 # Adjoint of operators on Hilbert spaces
@@ -38,13 +37,15 @@ finite-dimensional spaces.
 * The continuous conjugate-linear version `adjointAux` is only an intermediate
   definition and is not meant to be used outside this file.
 
+## References
+
+* [Sheldon Axler, *Linear Algebra Done Right*][axler2024]
+
 ## Tags
 
 adjoint
 
 -/
-
-@[expose] public section
 
 noncomputable section
 
@@ -72,7 +73,7 @@ variable [CompleteSpace E] [CompleteSpace G]
 /-- The adjoint, as a continuous conjugate-linear map. This is only meant as an auxiliary
 definition for the main definition `adjoint`, where this is bundled as a conjugate-linear isometric
 equivalence. -/
-noncomputable def adjointAux : (E →L[𝕜] F) →L⋆[𝕜] F →L[𝕜] E :=
+def adjointAux : (E →L[𝕜] F) →L⋆[𝕜] F →L[𝕜] E :=
   (ContinuousLinearMap.compSL _ _ _ _ _ ((toDual 𝕜 E).symm : StrongDual 𝕜 E →L⋆[𝕜] E)).comp
     (toSesqForm : (E →L[𝕜] F) →L[𝕜] F →L⋆[𝕜] StrongDual 𝕜 E)
 
@@ -82,8 +83,7 @@ theorem adjointAux_apply (A : E →L[𝕜] F) (x : F) :
   rfl
 
 theorem adjointAux_inner_left (A : E →L[𝕜] F) (x : E) (y : F) : ⟪adjointAux A y, x⟫ = ⟪y, A x⟫ := by
-  rw [adjointAux_apply, toDual_symm_apply, toSesqForm_apply_coe, coe_comp', coe_innerSL_apply,
-    Function.comp_apply]
+  simp
 
 theorem adjointAux_inner_right (A : E →L[𝕜] F) (x : E) (y : F) :
     ⟪x, adjointAux A y⟫ = ⟪A x, y⟫ := by
@@ -106,6 +106,8 @@ theorem adjointAux_norm (A : E →L[𝕜] F) : ‖adjointAux A‖ = ‖A‖ := b
     refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun x => ?_
     rw [adjointAux_apply, LinearIsometryEquiv.norm_map]
     exact toSesqForm_apply_norm_le
+
+public section
 
 /-- The adjoint of a bounded operator `A` from a Hilbert space `E` to another Hilbert space `F`,
   denoted as `A†`. -/
@@ -136,7 +138,7 @@ in reverse order. -/
 theorem adjoint_comp (A : F →L[𝕜] G) (B : E →L[𝕜] F) : (A ∘L B)† = B† ∘L A† := by
   ext v
   refine ext_inner_left 𝕜 fun w => ?_
-  simp only [adjoint_inner_right, ContinuousLinearMap.coe_comp', Function.comp_apply]
+  simp [adjoint_inner_right]
 
 theorem apply_norm_sq_eq_inner_adjoint_left (A : E →L[𝕜] F) (x : E) :
     ‖A x‖ ^ 2 = re ⟪(A† ∘L A) x, x⟫ := by
@@ -168,17 +170,20 @@ theorem _root_.LinearMap.IsSymmetric.clm_adjoint_eq {A : E →L[𝕜] E} (hA : A
     A† = A := by
   rwa [eq_comm, eq_adjoint_iff A A]
 
-theorem adjoint_id : (ContinuousLinearMap.id 𝕜 E)† = ContinuousLinearMap.id 𝕜 E := by
-  simp
+lemma adjoint_id : (.id 𝕜 E)† = .id 𝕜 E := by simp
+lemma adjoint_one : (1 : E →L[𝕜] E)† = 1 := by simp
 
 theorem _root_.Submodule.adjoint_subtypeL (U : Submodule 𝕜 E) [CompleteSpace U] :
-    U.subtypeL† = U.orthogonalProjection := by
+    U.subtypeL† = U.orthogonalProjectionOnto := by
   symm
   simp [eq_adjoint_iff]
 
-theorem _root_.Submodule.adjoint_orthogonalProjection (U : Submodule 𝕜 E) [CompleteSpace U] :
-    (U.orthogonalProjection : E →L[𝕜] U)† = U.subtypeL := by
+theorem _root_.Submodule.adjoint_orthogonalProjectionOnto (U : Submodule 𝕜 E) [CompleteSpace U] :
+    (U.orthogonalProjectionOnto : E →L[𝕜] U)† = U.subtypeL := by
   rw [← U.adjoint_subtypeL, adjoint_adjoint]
+
+@[deprecated (since := "2026-05-05")] alias _root_.Submodule.adjoint_orthogonalProjection :=
+  Submodule.adjoint_orthogonalProjectionOnto
 
 theorem orthogonal_ker (T : E →L[𝕜] F) :
     T.kerᗮ = T†.range.topologicalClosure := by
@@ -201,6 +206,34 @@ theorem ker_le_ker_iff_range_le_range [FiniteDimensional 𝕜 E] {T U : E →L[�
   refine ⟨fun h ↦ ?_, LinearMap.ker_le_ker_of_range hT hU⟩
   have := FiniteDimensional.complete 𝕜 E
   simpa [orthogonal_ker, hT, hU] using Submodule.orthogonal_le h
+
+/-- Infinite-dimensional version of 7.64(b) in [axler2024]. -/
+theorem ker_adjoint_comp_self (T : E →L[𝕜] F) : (T† ∘L T).ker = T.ker := by
+  refine le_antisymm (fun _ _ ↦ ?_) fun _ _ ↦ by simp_all
+  rw [LinearMap.mem_ker, ← inner_self_eq_zero (𝕜 := 𝕜), coe_coe, ← adjoint_inner_left]
+  simp_all
+
+theorem ker_self_comp_adjoint (T : E →L[𝕜] F) : (T ∘L T†).ker = T†.ker := by
+  simpa using T†.ker_adjoint_comp_self
+
+/--
+This lemma uses the simp-normal form `⇑(T†) ∘ ⇑T` instead of `⇑(T† ∘L T)`
+(note the difference between `∘` and `∘L`).
+You may need to rewrite with `ContinuousLinearMap.coe_comp'` before applying this lemma.
+-/
+lemma adjoint_comp_self_injective_iff (T : E →L[𝕜] F) :
+    Function.Injective (T† ∘ T) ↔ Function.Injective T := by
+  rw [← coe_comp, ← coe_coe, ← LinearMap.ker_eq_bot, ← coe_coe, ← LinearMap.ker_eq_bot,
+    ker_adjoint_comp_self]
+
+/--
+This lemma uses the simp-normal form `⇑T ∘ ⇑(T†)` instead of `⇑(T ∘L T†)`
+(note the difference between `∘` and `∘L`).
+You may need to rewrite with `ContinuousLinearMap.coe_comp'` before applying this lemma.
+-/
+lemma self_comp_adjoint_injective_iff (T : E →L[𝕜] F) :
+    Function.Injective (T ∘ T†) ↔ Function.Injective (T†) := by
+  simpa using T†.adjoint_comp_self_injective_iff
 
 /-- `E →L[𝕜] E` is a star algebra with the adjoint as the star operation. -/
 instance : Star (E →L[𝕜] E) :=
@@ -225,6 +258,8 @@ theorem star_eq_adjoint (A : E →L[𝕜] E) : star A = A† :=
 theorem isSelfAdjoint_iff' {A : E →L[𝕜] E} : IsSelfAdjoint A ↔ A† = A :=
   Iff.rfl
 
+@[simp] lemma id_mem_unitary : .id 𝕜 E ∈ unitary (E →L[𝕜] E) := one_mem _
+
 theorem norm_adjoint_comp_self (A : E →L[𝕜] F) :
     ‖A† ∘L A‖ = ‖A‖ * ‖A‖ := by
   refine le_antisymm ?_ ?_
@@ -236,13 +271,16 @@ theorem norm_adjoint_comp_self (A : E →L[𝕜] F) :
     have :=
       calc
         re ⟪(A† ∘L A) x, x⟫ ≤ ‖(A† ∘L A) x‖ * ‖x‖ := re_inner_le_norm _ _
-        _ ≤ ‖A† ∘L A‖ * ‖x‖ * ‖x‖ := mul_le_mul_of_nonneg_right (le_opNorm _ _) (norm_nonneg _)
+        _ ≤ ‖A† ∘L A‖ * ‖x‖ * ‖x‖ := by gcongr; exact le_opNorm _ _
     calc
       ‖A x‖ = √(re ⟪(A† ∘L A) x, x⟫) := by rw [apply_norm_eq_sqrt_inner_adjoint_left]
       _ ≤ √(‖A† ∘L A‖ * ‖x‖ * ‖x‖) := Real.sqrt_le_sqrt this
       _ = √‖A† ∘L A‖ * ‖x‖ := by
         simp_rw [mul_assoc, Real.sqrt_mul (norm_nonneg _) (‖x‖ * ‖x‖),
           Real.sqrt_mul_self (norm_nonneg x)]
+
+@[simp] theorem adjoint_comp_self_eq_zero_iff {A : E →L[𝕜] F} :
+    adjoint A ∘L A = 0 ↔ A = 0 := by rw [← norm_eq_zero]; simp [norm_adjoint_comp_self]
 
 /-- The C⋆-algebra instance when `𝕜 := ℂ` can be found in
 `Mathlib/Analysis/CStarAlgebra/ContinuousLinearMap.lean`. -/
@@ -282,7 +320,11 @@ lemma _root_.InnerProductSpace.rankOne_comp {E G : Type*} [SeminormedAddCommGrou
     rankOne 𝕜 x y ∘L f = rankOne 𝕜 x (adjoint f y) := by
   simp_rw [rankOne_def', comp_assoc, innerSL_apply_comp]
 
+end
+
 end ContinuousLinearMap
+
+@[expose] public section
 
 /-! ### Self-adjoint operators -/
 
@@ -347,11 +389,12 @@ variable {T : E →L[𝕜] E} [CompleteSpace E]
 theorem isStarNormal_iff_norm_eq_adjoint :
     IsStarNormal T ↔ ∀ v : E, ‖T v‖ = ‖adjoint T v‖ := by
   rw [isStarNormal_iff, Commute, SemiconjBy, ← sub_eq_zero]
-  simp_rw [ContinuousLinearMap.ext_iff, ← coe_coe, coe_sub, ← LinearMap.ext_iff, coe_zero]
-  have := star_eq_adjoint T ▸ coe_sub (star _ * T) _ ▸
+  simp_rw [ContinuousLinearMap.ext_iff, ← coe_coe, toLinearMap_sub, ← LinearMap.ext_iff,
+    toLinearMap_zero]
+  have := star_eq_adjoint T ▸ toLinearMap_sub (star _ * T) _ ▸
     ((IsSelfAdjoint.star_mul_self T).sub (IsSelfAdjoint.mul_star_self T)).isSymmetric
   simp_rw [star_eq_adjoint, ← LinearMap.IsSymmetric.inner_map_self_eq_zero this,
-    LinearMap.sub_apply, inner_sub_left, coe_coe, mul_apply, adjoint_inner_left,
+    LinearMap.sub_apply, inner_sub_left, coe_coe, mul_apply_eq_comp, adjoint_inner_left,
     inner_self_eq_norm_sq_to_K, ← adjoint_inner_right T, inner_self_eq_norm_sq_to_K,
     sub_eq_zero, ← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)]
   norm_cast
@@ -402,7 +445,7 @@ theorem isStarProjection_iff_isIdempotentElem_and_isStarNormal :
 theorem isStarProjection_iff_isSymmetricProjection :
     IsStarProjection T ↔ T.IsSymmetricProjection := by
   simp [isStarProjection_iff, LinearMap.isSymmetricProjection_iff,
-    isSelfAdjoint_iff_isSymmetric, IsIdempotentElem, End.mul_eq_comp, ← coe_comp, mul_def]
+    isSelfAdjoint_iff_isSymmetric, IsIdempotentElem, End.mul_eq_comp, ← toLinearMap_comp, mul_def]
 
 alias ⟨IsStarProjection.isSymmetricProjection, LinearMap.IsSymmetricProjection.isStarProjection⟩ :=
   isStarProjection_iff_isSymmetricProjection
@@ -417,6 +460,20 @@ alias ⟨_, IsStarProjection.ext⟩ := IsStarProjection.ext_iff
 
 theorem _root_.InnerProductSpace.isStarProjection_rankOne_self {x : E} (hx : ‖x‖ = 1) :
     IsStarProjection (rankOne 𝕜 x x) := (isSymmetricProjection_rankOne_self hx).isStarProjection
+
+open Module End Submodule in
+theorem orthogonal_mem_invtSubmodule {T : E →L[𝕜] E} {U : Submodule 𝕜 E}
+    (h : U ∈ invtSubmodule T.adjoint.toLinearMap) :
+    Uᗮ ∈ invtSubmodule T.toLinearMap := by
+  simp only [mem_invtSubmodule_iff_forall_mem_of_mem, coe_coe, mem_orthogonal] at h ⊢
+  grind [T.adjoint_inner_left]
+
+open Module End in
+theorem mem_invtSubmodule_adjoint_iff {T : E →L[𝕜] E} {U : Submodule 𝕜 E}
+    [U.HasOrthogonalProjection] :
+    U ∈ invtSubmodule T.adjoint.toLinearMap ↔ Uᗮ ∈ invtSubmodule T.toLinearMap where
+  mp := orthogonal_mem_invtSubmodule
+  mpr := by simpa using orthogonal_mem_invtSubmodule (T := T.adjoint) (U := Uᗮ)
 
 end ContinuousLinearMap
 
@@ -493,6 +550,12 @@ theorem adjoint_eq_toCLM_adjoint (A : E →ₗ[𝕜] F) :
     A.adjoint = A.toContinuousLinearMap.adjoint :=
   rfl
 
+theorem _root_.ContinuousLinearMap.adjoint_toLinearMap (A : E →L[𝕜] F) :
+    haveI := FiniteDimensional.complete 𝕜 E
+    haveI := FiniteDimensional.complete 𝕜 F
+    A.toLinearMap.adjoint = A.adjoint.toLinearMap :=
+  rfl
+
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_inner_left (A : E →ₗ[𝕜] F) (x : E) (y : F) : ⟪adjoint A y, x⟫ = ⟪y, A x⟫ := by
   have := FiniteDimensional.complete 𝕜 E
@@ -536,8 +599,66 @@ theorem IsSymmetric.adjoint_eq {A : E →ₗ[𝕜] E} (hA : A.IsSymmetric) :
     A.adjoint = A := by
   rwa [eq_comm, eq_adjoint_iff A A]
 
-theorem adjoint_id : (LinearMap.id (R := 𝕜) (M := E)).adjoint = LinearMap.id := by
-  simp
+lemma adjoint_id : (.id : E →ₗ[𝕜] E).adjoint = .id := by simp
+lemma adjoint_one : (1 : E →ₗ[𝕜] E).adjoint = 1 := by simp
+
+/-- 7.6(b) from [axler2024].
+See `ContinuousLinearMap.orthogonal_ker` for the infinite-dimensional version. -/
+lemma orthogonal_ker (A : E →ₗ[𝕜] F) : A.kerᗮ = A.adjoint.range := by
+  haveI := FiniteDimensional.complete 𝕜 E
+  haveI := FiniteDimensional.complete 𝕜 F
+  simpa using! A.toContinuousLinearMap.orthogonal_ker
+
+/-- 7.6(a) from [axler2024].
+See `ContinuousLinearMap.orthogonal_range` for the infinite-dimensional version. -/
+lemma orthogonal_range (A : E →ₗ[𝕜] F) : A.rangeᗮ = A.adjoint.ker := by
+  haveI := FiniteDimensional.complete 𝕜 E
+  haveI := FiniteDimensional.complete 𝕜 F
+  simpa using! A.toContinuousLinearMap.orthogonal_range
+
+/-- 7.64(b) in [axler2024] -/
+lemma ker_adjoint_comp_self (A : E →ₗ[𝕜] F) : (A.adjoint ∘ₗ A).ker = A.ker := by
+  haveI := FiniteDimensional.complete 𝕜 E
+  haveI := FiniteDimensional.complete 𝕜 F
+  simpa using! A.toContinuousLinearMap.ker_adjoint_comp_self
+
+lemma ker_self_comp_adjoint (A : E →ₗ[𝕜] F) : (A ∘ₗ A.adjoint).ker = A.adjoint.ker := by
+  simpa using A.adjoint.ker_adjoint_comp_self
+
+/--
+This lemma uses the simp-normal form `⇑(A.adjoint) ∘ ⇑A` instead of `⇑(A.adjoint ∘ₗ A)`
+(note the difference between `∘` and `∘ₗ`).
+You may need to rewrite with `LinearMap.coe_comp` before applying this lemma.
+-/
+lemma adjoint_comp_self_injective_iff (A : E →ₗ[𝕜] F) :
+    Function.Injective (A.adjoint ∘ A) ↔ Function.Injective A := by
+  rw [← coe_comp, ← ker_eq_bot, ← ker_eq_bot, ker_adjoint_comp_self]
+
+/--
+This lemma uses the simp-normal form `⇑A ∘ ⇑(A.adjoint)` instead of `⇑(A ∘ₗ A.adjoint)`
+(note the difference between `∘` and `∘ₗ`).
+You may need to rewrite with `LinearMap.coe_comp` before applying this lemma.
+-/
+lemma self_comp_adjoint_injective_iff (A : E →ₗ[𝕜] F) :
+    Function.Injective (A ∘ A.adjoint) ↔ Function.Injective A.adjoint := by
+  simpa using A.adjoint.adjoint_comp_self_injective_iff
+
+/-- 7.64(c) in [axler2024]. -/
+lemma range_adjoint_comp_self (A : E →ₗ[𝕜] F) : (A.adjoint ∘ₗ A).range = A.adjoint.range :=
+  calc
+    (A.adjoint ∘ₗ A).range = (A.adjoint ∘ₗ A).kerᗮ := by simp [orthogonal_ker]
+    _ = A.adjoint.range := by rw [ker_adjoint_comp_self, orthogonal_ker]
+
+lemma range_self_comp_adjoint (A : E →ₗ[𝕜] F) : (A ∘ₗ A.adjoint).range = A.range := by
+  simpa using A.adjoint.range_adjoint_comp_self
+
+/-- Part of 7.64(d) in [axler2024]. -/
+theorem finrank_range_adjoint (A : E →ₗ[𝕜] F) :
+    Module.finrank 𝕜 A.adjoint.range = Module.finrank 𝕜 A.range := calc
+  _ = Module.finrank 𝕜 F - Module.finrank 𝕜 A.adjoint.ker := by
+    simp [← A.adjoint.finrank_range_add_finrank_ker]
+  _ = _ := by rw [← A.adjoint.ker.finrank_add_finrank_orthogonal,
+    orthogonal_ker, adjoint_adjoint]; simp
 
 /-- The adjoint is unique: a map `A` is the adjoint of `B` iff it satisfies `⟪A x, y⟫ = ⟪x, B y⟫`
 for all basis vectors `x` and `y`. -/
@@ -586,13 +707,36 @@ theorem isSymmetric_iff_isSelfAdjoint (A : E →ₗ[𝕜] E) : IsSymmetric A ↔
   rw [isSelfAdjoint_iff', IsSymmetric, ← LinearMap.eq_adjoint_iff]
   exact eq_comm
 
+@[simp] lemma id_mem_unitary : .id ∈ unitary (E →ₗ[𝕜] E) := one_mem _
+
 theorem isAdjointPair_inner (A : E →ₗ[𝕜] F) :
     IsAdjointPair (innerₛₗ 𝕜 (E := E)).flip
       (innerₛₗ 𝕜 (E := F)).flip A A.adjoint := by
   intro x y
   simp [adjoint_inner_left]
 
-/-- The Gram operator T†T is symmetric. -/
+/-! This next batch of lemmas is based on theorems like `LinearMap.IsPositive.conj_adjoint`, which
+are in a downstream file but historically existed before these lemmas. We can't put them in the file
+where `LinearMap.IsSymmetric` is defined because they depend on the adjoint. -/
+
+@[aesop safe apply]
+theorem IsSymmetric.conj_adjoint {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (S : E →ₗ[𝕜] F) :
+    (S ∘ₗ T ∘ₗ S.adjoint).IsSymmetric := fun _ _ ↦ by simp [← adjoint_inner_right, hT]
+
+theorem isSymmetric_self_comp_adjoint (T : E →ₗ[𝕜] F) : (T ∘ₗ adjoint T).IsSymmetric := by
+  simpa using LinearMap.IsSymmetric.id.conj_adjoint T
+
+@[aesop safe apply]
+theorem IsSymmetric.adjoint_conj {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (S : F →ₗ[𝕜] E) :
+    (S.adjoint ∘ₗ T ∘ₗ S).IsSymmetric := by
+  simpa using hT.conj_adjoint S.adjoint
+
+/-- Like `LinearMap.isSymmetric_adjoint_mul_self` but domain and range can be different -/
+theorem isSymmetric_adjoint_comp_self (T : E →ₗ[𝕜] F) : (adjoint T ∘ₗ T).IsSymmetric := by
+  simpa using LinearMap.IsSymmetric.id.adjoint_conj T
+
+/-- The Gram operator T†T is symmetric. See `LinearMap.isSymmetric_adjoint_comp_self` for a version
+where the domain and codomain are distinct. -/
 theorem isSymmetric_adjoint_mul_self (T : E →ₗ[𝕜] E) : IsSymmetric (T.adjoint * T) := by
   intro x y
   simp [adjoint_inner_left, adjoint_inner_right]
@@ -656,6 +800,14 @@ theorem adjoint_toSpanSingleton (x : E) :
     adjoint (toSpanSingleton 𝕜 E x) = innerₛₗ 𝕜 x := by
   simp [← adjoint_innerₛₗ_apply]
 
+open Module End in
+/-- The linear map version of `ContinuousLinearMap.mem_invtSubmodule_adjoint_iff`
+in a finite-dimensional space. -/
+theorem _root_.Module.End.mem_invtSubmodule_adjoint_iff {T : E →ₗ[𝕜] E} {U : Submodule 𝕜 E} :
+    U ∈ invtSubmodule T.adjoint ↔ Uᗮ ∈ invtSubmodule T :=
+  have := FiniteDimensional.complete 𝕜 E
+  ContinuousLinearMap.mem_invtSubmodule_adjoint_iff
+
 end LinearMap
 
 section Unitary
@@ -677,6 +829,10 @@ theorem inner_map_map_iff_adjoint_comp_self (u : H →L[𝕜] K) :
 theorem norm_map_iff_adjoint_comp_self (u : H →L[𝕜] K) :
     (∀ x : H, ‖u x‖ = ‖x‖) ↔ adjoint u ∘L u = 1 := by
   rw [LinearMap.norm_map_iff_inner_map_map u, u.inner_map_map_iff_adjoint_comp_self]
+
+theorem isometry_iff_adjoint_comp_self (u : H →L[𝕜] K) :
+    Isometry u ↔ adjoint u ∘L u = 1 := by
+  rw [AddMonoidHomClass.isometry_iff_norm, norm_map_iff_adjoint_comp_self]
 
 @[simp]
 lemma _root_.LinearIsometryEquiv.adjoint_eq_symm (e : H ≃ₗᵢ[𝕜] K) :
@@ -738,7 +894,7 @@ lemma conjStarAlgEquiv_apply (e : H ≃ₗᵢ[𝕜] K) (x : H →L[𝕜] H) :
 @[simp] lemma symm_conjStarAlgEquiv (e : H ≃ₗᵢ[𝕜] K) :
     e.conjStarAlgEquiv.symm = e.symm.conjStarAlgEquiv := rfl
 
-@[simp] theorem conjStarAlgEquiv_refl : conjStarAlgEquiv (.refl 𝕜 H) = .refl := rfl
+@[simp] theorem conjStarAlgEquiv_refl : conjStarAlgEquiv (.refl 𝕜 H) = .refl _ _ := rfl
 
 theorem conjStarAlgEquiv_trans {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
     [CompleteSpace G] (e : H ≃ₗᵢ[𝕜] K) (f : K ≃ₗᵢ[𝕜] G) :
@@ -824,22 +980,10 @@ theorem conjStarAlgEquiv_unitaryLinearIsometryEquiv (u : unitary (H →L[𝕜] H
     (linearIsometryEquiv u).conjStarAlgEquiv = conjStarAlgAut 𝕜 _ u := rfl
 
 theorem conjStarAlgAut_symm_unitaryLinearIsometryEquiv (u : H ≃ₗᵢ[𝕜] H) :
-    conjStarAlgAut 𝕜 _ (linearIsometryEquiv.symm u) = u.conjStarAlgEquiv := by
+    conjStarAlgAut 𝕜 (H →L[𝕜] H) (linearIsometryEquiv.symm u) = u.conjStarAlgEquiv := by
   simp [← conjStarAlgEquiv_unitaryLinearIsometryEquiv]
 
 end Unitary
-
-namespace unitary
-
-@[deprecated (since := "2025-10-29")] alias norm_map := Unitary.norm_map
-@[deprecated (since := "2025-10-29")] alias inner_map_map := Unitary.inner_map_map
-@[deprecated (since := "2025-10-29")] alias linearIsometryEquiv := Unitary.linearIsometryEquiv
-@[deprecated (since := "2025-10-29")] alias linearIsometryEquiv_coe_apply :=
-  Unitary.linearIsometryEquiv_coe_apply
-@[deprecated (since := "2025-10-29")] alias linearIsometryEquiv_coe_symm_apply :=
-  Unitary.linearIsometryEquiv_coe_symm_apply
-
-end unitary
 
 end Unitary
 
@@ -897,3 +1041,21 @@ theorem Matrix.toEuclideanLin_conjTranspose_eq_adjoint (A : Matrix m n 𝕜) :
   A.toLin_conjTranspose (EuclideanSpace.basisFun n 𝕜) (EuclideanSpace.basisFun m 𝕜)
 
 end Matrix
+
+@[simp]
+theorem LinearIsometry.adjoint_comp_self {E E' : Type*}
+    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]
+    [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] [CompleteSpace E'] (f : E →ₗᵢ[𝕜] E') :
+    f.toContinuousLinearMap.adjoint ∘L f.toContinuousLinearMap = 1 :=
+  f.toContinuousLinearMap.isometry_iff_adjoint_comp_self.mp f.isometry
+
+/-- A version of `LinearIsometry.adjoint_comp_self` in terms of `LinearMap.adjoint`. -/
+@[simp]
+theorem LinearIsometry.adjoint_comp_self' {E E' : Type*}
+    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
+    [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] [FiniteDimensional 𝕜 E'] (f : E →ₗᵢ[𝕜] E') :
+    f.adjoint ∘ₗ f.toLinearMap = LinearMap.id := by
+  haveI := FiniteDimensional.complete 𝕜 E
+  haveI := FiniteDimensional.complete 𝕜 E'
+  ext x
+  exact congr($(f.adjoint_comp_self) x)

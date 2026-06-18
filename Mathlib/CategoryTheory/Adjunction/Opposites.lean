@@ -41,6 +41,7 @@ def unop {F : Cᵒᵖ ⥤ Dᵒᵖ} {G : Dᵒᵖ ⥤ Cᵒᵖ} (h : G ⊣ F) : F.u
   left_triangle_components _ := Quiver.Hom.op_inj (h.right_triangle_components _)
   right_triangle_components _ := Quiver.Hom.op_inj (h.left_triangle_components _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `G` is adjoint to `F` then `F.op` is adjoint to `G.op`. -/
 @[simps]
 def op {F : C ⥤ D} {G : D ⥤ C} (h : G ⊣ F) : F.op ⊣ G.op where
@@ -65,18 +66,22 @@ def rightOp {F : Cᵒᵖ ⥤ D} {G : Dᵒᵖ ⥤ C} (a : F.rightOp ⊣ G) : G.ri
   left_triangle_components X := congr($(a.right_triangle_components (.op X)).op)
   right_triangle_components X := congr($(a.left_triangle_components X.unop).unop)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma leftOp_eq {F : C ⥤ Dᵒᵖ} {G : D ⥤ Cᵒᵖ} (a : F ⊣ G.leftOp) :
     a.leftOp = (opOpEquivalence D).symm.toAdjunction.comp a.op := by
   ext X; simp [Equivalence.unit]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma rightOp_eq {F : Cᵒᵖ ⥤ D} {G : Dᵒᵖ ⥤ C} (a : F.rightOp ⊣ G) :
     a.rightOp = (opOpEquivalence D).symm.toAdjunction.comp a.op := by
   ext X; simp [Equivalence.unit]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `F` and `F'` are both adjoint to `G`, there is a natural isomorphism
 `F.op ⋙ coyoneda ≅ F'.op ⋙ coyoneda`.
 We use this in combination with `fullyFaithfulCancelRight` to show left adjoints are unique.
 -/
+@[deprecated "No replacement" (since := "2026-04-11")]
 def leftAdjointsCoyonedaEquiv {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G) :
     F.op ⋙ coyoneda ≅ F'.op ⋙ coyoneda :=
   NatIso.ofComponents fun X =>
@@ -91,7 +96,6 @@ def natIsoOfRightAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
   NatIso.removeOp ((Coyoneda.fullyFaithful.whiskeringRight _).isoEquiv.symm
     (leftAdjointsCoyonedaEquiv adj2 (adj1.ofNatIsoRight r)))
 
-set_option linter.deprecated false in
 /-- Deprecated: prefer `Adjunction.conjugateIsoEquiv adj1 adj2`. -/
 @[deprecated "Use `Adjunction.conjugateIsoEquiv adj1 adj2` \
   (requires `import Mathlib.CategoryTheory.Adjunction.Mates`)." (since := "2026-01-31")]

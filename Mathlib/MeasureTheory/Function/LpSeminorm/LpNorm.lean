@@ -65,12 +65,12 @@ lemma lpNorm_one_eq_integral_norm (hf : AEStronglyMeasurable f μ) :
 
 lemma ae_le_lpNorm_exponent_top (hf : MemLp f ∞ μ) : ∀ᵐ x ∂μ, ‖f x‖ ≤ lpNorm f ∞ μ := by
   simpa only [← toReal_eLpNorm hf.aestronglyMeasurable, ← ENNReal.ofReal_le_iff_le_toReal hf.2.ne,
-    ofReal_norm] using ae_le_eLpNormEssSup
+    ofReal_norm] using! ae_le_eLpNormEssSup
 
 lemma lpNorm_exponent_top_eq_essSup (hf : MemLp f ∞ μ) : lpNorm f ∞ μ = essSup (‖f ·‖) μ := by
   simp only [← toReal_eLpNorm hf.aestronglyMeasurable, eLpNorm_exponent_top, eLpNormEssSup]
   refine ENNReal.toReal_essSup (by simp) ⟨lpNorm f ∞ μ, ?_⟩
-  simpa [-toReal_enorm, lpNorm] using ae_le_lpNorm_exponent_top hf
+  simpa [-toReal_enorm, lpNorm] using! ae_le_lpNorm_exponent_top hf
 
 @[simp]
 lemma lpNorm_zero (p : ℝ≥0∞) (μ : Measure α) : lpNorm (0 : α → E) p μ = 0 := by simp [lpNorm]
@@ -217,7 +217,7 @@ lemma lpNorm_sum_le {ι : Type*} {s : Finset ι} {f : ι → α → E} (hf : ∀
 -- TODO: Golf using `eLpNorm_expect_le` once it exists
 lemma lpNorm_expect_le [Module ℚ≥0 E] [NormedSpace ℝ E] {ι : Type*} {s : Finset ι}
     {f : ι → α → E} (hf : ∀ i ∈ s, MemLp (f i) p μ) (hp : 1 ≤ p) :
-    lpNorm (𝔼 i ∈ s, f i) p μ ≤ 𝔼 i ∈ s, lpNorm (f i) p μ  :=  by
+    lpNorm (𝔼 i ∈ s, f i) p μ ≤ 𝔼 i ∈ s, lpNorm (f i) p μ := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp
   refine (le_inv_smul_iff_of_pos <| by positivity).2 ?_

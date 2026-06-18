@@ -28,7 +28,7 @@ Let `L` be a `ℤ`-lattice `L` defined as a discrete `ℤ`-submodule of `E` that
   value of the determinant of any `ℤ`-basis of `L`.
 
 * `ZLattice.covolume_div_covolume_eq_relIndex`: Let `L₁` be a sub-`ℤ`-lattice of `L₂`. Then the
-index of `L₁` inside `L₂` is equal to `covolume L₁ / covolume L₂`.
+  index of `L₁` inside `L₂` is equal to `covolume L₁ / covolume L₂`.
 
 * `ZLattice.covolume.tendsto_card_div_pow`: Let `s` be a bounded measurable set of `ι → ℝ`, then
   the number of points in `s ∩ n⁻¹ • L` divided by `n ^ card ι` tends to `volume s / covolume L`
@@ -162,9 +162,6 @@ theorem covolume_div_covolume_eq_relIndex {ι : Type*} [Fintype ι] (L₁ L₂ :
     rw [Matrix.map_apply, Basis.toMatrix_apply, Basis.toMatrix_apply, Basis.ofZLatticeBasis_apply]
     exact (b₂.ofZLatticeBasis_repr_apply ℝ L₂ ⟨b₁ j, h (coe_mem _)⟩ i)
 
-@[deprecated (since := "2025-08-12")]
-alias covolume_div_covolume_eq_relindex := covolume_div_covolume_eq_relIndex
-
 /--
 A more general version of `covolume_div_covolume_eq_relIndex`;
 see the `Naming conventions` section in the introduction.
@@ -183,9 +180,6 @@ theorem covolume_div_covolume_eq_relIndex' {E : Type*} [NormedAddCommGroup E]
     ZLattice.comap_toAddSubgroup, Nat.cast_inj, LinearEquiv.toAddMonoidHom_commutes,
     AddSubgroup.comap_equiv_eq_map_symm', AddSubgroup.comap_equiv_eq_map_symm',
     AddSubgroup.relIndex_map_map_of_injective _ _ f.symm.injective]
-
-@[deprecated (since := "2025-08-12")]
-alias covolume_div_covolume_eq_relindex' := covolume_div_covolume_eq_relIndex'
 
 theorem volume_image_eq_volume_div_covolume {ι : Type*} [Fintype ι] (L : Submodule ℤ (ι → ℝ))
     [DiscreteTopology L] [IsZLattice ℝ L] (b : Basis ι ℤ L) {s : Set (ι → ℝ)} :
@@ -319,7 +313,7 @@ theorem tendsto_card_div_pow (b : Basis ι ℤ L) {s : Set (ι → ℝ)} (hs₁ 
     Tendsto (fun n : ℕ ↦ (Nat.card (s ∩ (n : ℝ)⁻¹ • L : Set (ι → ℝ)) : ℝ) / n ^ card ι)
       atTop (𝓝 (volume.real s / covolume L)) := by
   classical
-  convert tendsto_card_div_pow'' b hs₁ hs₂ ?_
+  convert! tendsto_card_div_pow'' b hs₁ hs₂ ?_
   · simp only [measureReal_def]
     rw [volume_image_eq_volume_div_covolume L b, ENNReal.toReal_div,
       ENNReal.toReal_ofReal (covolume_pos L volume).le]
@@ -337,7 +331,7 @@ theorem tendsto_card_le_div {X : Set (ι → ℝ)} (hX : ∀ ⦃x⦄ ⦃r : ℝ�
     refine Fintype.equivOfCardEq ?_
     rw [← finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ, finrank_fintype_fun_eq_card]
   let b := (Module.Free.chooseBasis ℤ L).reindex e
-  convert tendsto_card_le_div'' b hX h₁ h₂ h₃ ?_
+  convert! tendsto_card_le_div'' b hX h₁ h₂ h₃ ?_
   · simp only [measureReal_def]
     rw [volume_image_eq_volume_div_covolume L b, ENNReal.toReal_div,
       ENNReal.toReal_ofReal (covolume_pos L volume).le]
@@ -360,7 +354,7 @@ theorem tendsto_card_div_pow' {s : Set E} (hs₁ : IsBounded s) (hs₂ : Measura
     Tendsto (fun n : ℕ ↦ (Nat.card (s ∩ (n : ℝ)⁻¹ • L : Set E) : ℝ) / n ^ finrank ℝ E)
       atTop (𝓝 (volume.real s / covolume L)) := by
   let b := Module.Free.chooseBasis ℤ L
-  convert tendsto_card_div_pow'' b hs₁ hs₂ ?_
+  convert! tendsto_card_div_pow'' b hs₁ hs₂ ?_
   · rw [← finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ L]
   · simp only [measureReal_def]
     rw [volume_image_eq_volume_div_covolume' L b hs₂.nullMeasurableSet, ENNReal.toReal_div,
@@ -379,7 +373,7 @@ theorem tendsto_card_le_div' [Nontrivial E] {X : Set E} {F : E → ℝ}
       Nat.card ({x ∈ X | F x ≤ c} ∩ L : Set E) / (c : ℝ))
         atTop (𝓝 (volume.real {x ∈ X | F x ≤ 1} / covolume L)) := by
   let b := Module.Free.chooseBasis ℤ L
-  convert tendsto_card_le_div'' b hX ?_ h₂ h₃ ?_
+  convert! tendsto_card_le_div'' b hX ?_ h₂ h₃ ?_
   · simp only [measureReal_def]
     rw [volume_image_eq_volume_div_covolume' L b h₃.nullMeasurableSet, ENNReal.toReal_div,
       ENNReal.toReal_ofReal (covolume_pos L volume).le]

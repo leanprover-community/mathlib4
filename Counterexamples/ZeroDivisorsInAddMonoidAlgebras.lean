@@ -67,6 +67,7 @@ theorem single_zero_one {R A} [Semiring R] [Zero A] :
     single (0 : A) (1 : R) = (1 : R[A]) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This is a simple example showing that if `R` is a non-trivial ring and `A` is an additive
 monoid with a non-zero element `a` of finite order `oa`, then `R[A]` contains
 non-zero zero-divisors.  The elements are easy to write down:
@@ -82,7 +83,7 @@ theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a 
       ?_⟩
   · apply_fun fun x : R[A] => x 0
     refine ne_of_eq_of_ne (?_ : (_ : R) = 1) one_ne_zero
-    dsimp only; rw [Finset.sum_apply']
+    rw [Finset.sum_apply']
     refine (Finset.sum_eq_single 0 ?_ ?_).trans ?_
     · intro b hb b0
       rw [single_pow, one_pow, single_eq_of_ne']
@@ -96,7 +97,7 @@ theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a 
           (nsmul_ne_zero_of_lt_addOrderOf one_ne_zero (Nat.succ_le_iff.mp o2))
       simp only [a0, single_eq_of_ne', Ne, not_false_iff]
     · simpa only [single_eq_same] using zero_ne_one
-  · convert Commute.geom_sum₂_mul (R := AddMonoidAlgebra R A) _ (addOrderOf a) using 3
+  · convert Commute.geom_sum₂_mul (R := AddMonoidAlgebra R A) _ (addOrderOf a)
     · rw [single_zero_one, one_pow, mul_one]
     · rw [single_pow, one_pow, addOrderOf_nsmul_eq_zero, single_zero_one, one_pow, sub_self]
     · simp only [single_zero_one, Commute.one_right]

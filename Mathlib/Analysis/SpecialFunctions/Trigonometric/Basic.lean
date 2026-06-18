@@ -123,6 +123,7 @@ from which one can derive all its properties. For explicit bounds on π,
 see `Mathlib/Analysis/Real/Pi/Bounds.lean`.
 
 Denoted `π`, once the `Real` namespace is opened. -/
+@[wikidata Q167]
 protected noncomputable def pi : ℝ :=
   2 * Classical.choose exists_cos_eq_zero
 
@@ -176,9 +177,10 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `π` is always positive. -/
 @[positivity Real.pi]
-meta def evalRealPi : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalRealPi : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.pi) =>
+    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.positive q(Real.pi_pos))
   | _, _, _ => throwError "not Real.pi"
@@ -425,9 +427,6 @@ theorem sin_neg_of_neg_of_neg_pi_lt {x : ℝ} (hx0 : x < 0) (hpx : -π < x) : si
 theorem sin_nonpos_of_nonpos_of_neg_pi_le {x : ℝ} (hx0 : x ≤ 0) (hpx : -π ≤ x) : sin x ≤ 0 :=
   neg_nonneg.1 <| sin_neg x ▸ sin_nonneg_of_nonneg_of_le_pi (neg_nonneg.2 hx0) (neg_le.1 hpx)
 
-@[deprecated (since := "2025-07-27")]
-alias sin_nonpos_of_nonnpos_of_neg_pi_le := sin_nonpos_of_nonpos_of_neg_pi_le
-
 lemma abs_sin_eq_sin_abs_of_abs_le_pi {x : ℝ} (hx : |x| ≤ π) : |sin x| = sin |x| := by
   rcases lt_or_ge x 0 with h | h
   · rw [abs_of_neg h, sin_neg,
@@ -593,11 +592,11 @@ theorem injOn_cos : InjOn cos (Icc 0 π) :=
   strictAntiOn_cos.injOn
 
 theorem surjOn_sin : SurjOn sin (Icc (-(π / 2)) (π / 2)) (Icc (-1) 1) := by
-  simpa only [sin_neg, sin_pi_div_two] using
+  simpa only [sin_neg, sin_pi_div_two] using!
     intermediate_value_Icc (neg_le_self pi_div_two_pos.le) continuous_sin.continuousOn
 
 theorem surjOn_cos : SurjOn cos (Icc 0 π) (Icc (-1) 1) := by
-  simpa only [cos_zero, cos_pi] using intermediate_value_Icc' pi_pos.le continuous_cos.continuousOn
+  simpa only [cos_zero, cos_pi] using! intermediate_value_Icc' pi_pos.le continuous_cos.continuousOn
 
 theorem sin_mem_Icc (x : ℝ) : sin x ∈ Icc (-1 : ℝ) 1 :=
   ⟨neg_one_le_sin x, sin_le_one x⟩
@@ -825,7 +824,7 @@ theorem quadratic_root_cos_pi_div_five :
   suffices 2 * c = 4 * c ^ 2 - 1 by simp [this]
   have hs : s ≠ 0 := by
     rw [ne_eq, sin_eq_zero_iff, hθ]
-    push_neg
+    push Not
     intro n hn
     replace hn : n * 5 = 1 := by field_simp at hn; norm_cast at hn
     lia
@@ -930,7 +929,7 @@ theorem tan_inj_of_lt_of_lt_pi_div_two {x y : ℝ} (hx₁ : -(π / 2) < x) (hx�
   injOn_tan ⟨hx₁, hx₂⟩ ⟨hy₁, hy₂⟩ hxy
 
 theorem tan_periodic : Function.Periodic tan π := by
-  simpa only [Function.Periodic, tan_eq_sin_div_cos] using sin_antiperiodic.div cos_antiperiodic
+  simpa only [Function.Periodic, tan_eq_sin_div_cos] using! sin_antiperiodic.div cos_antiperiodic
 
 @[simp]
 theorem tan_pi : tan π = 0 := by rw [tan_periodic.eq, tan_zero]
@@ -972,34 +971,36 @@ theorem tan_int_mul_pi_sub (x : ℝ) (n : ℤ) : tan (n * π - x) = -tan x :=
   tan_neg x ▸ tan_periodic.int_mul_sub_eq n
 
 theorem tendsto_sin_pi_div_two : Tendsto sin (𝓝[<] (π / 2)) (𝓝 1) := by
-  convert continuous_sin.continuousWithinAt.tendsto
+  convert! continuous_sin.continuousWithinAt.tendsto
   simp
 
 theorem tendsto_cos_pi_div_two : Tendsto cos (𝓝[<] (π / 2)) (𝓝[>] 0) := by
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
-  · convert continuous_cos.continuousWithinAt.tendsto
+  · convert! continuous_cos.continuousWithinAt.tendsto
     simp
   · filter_upwards [Ioo_mem_nhdsLT (neg_lt_self pi_div_two_pos)] with x hx
     exact cos_pos_of_mem_Ioo hx
 
 theorem tendsto_tan_pi_div_two : Tendsto tan (𝓝[<] (π / 2)) atTop := by
-  convert tendsto_cos_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul_pos zero_lt_one
-    tendsto_sin_pi_div_two using 1
+  convert!
+    tendsto_cos_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul_pos zero_lt_one
+      tendsto_sin_pi_div_two using 1
   simp only [Pi.inv_apply, ← div_eq_inv_mul, ← tan_eq_sin_div_cos]
 
 theorem tendsto_sin_neg_pi_div_two : Tendsto sin (𝓝[>] (-(π / 2))) (𝓝 (-1)) := by
-  convert continuous_sin.continuousWithinAt.tendsto using 2
+  convert! continuous_sin.continuousWithinAt.tendsto using 2
   simp
 
 theorem tendsto_cos_neg_pi_div_two : Tendsto cos (𝓝[>] (-(π / 2))) (𝓝[>] 0) := by
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
-  · convert continuous_cos.continuousWithinAt.tendsto
+  · convert! continuous_cos.continuousWithinAt.tendsto
     simp
   · filter_upwards [Ioo_mem_nhdsGT (neg_lt_self pi_div_two_pos)] with x hx
     exact cos_pos_of_mem_Ioo hx
 
 theorem tendsto_tan_neg_pi_div_two : Tendsto tan (𝓝[>] (-(π / 2))) atBot := by
-  convert tendsto_cos_neg_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul_neg (by simp)
+  convert!
+    tendsto_cos_neg_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul_neg (by simp)
       tendsto_sin_neg_pi_div_two using 1
   simp only [Pi.inv_apply, ← div_eq_inv_mul, ← tan_eq_sin_div_cos]
 
@@ -1159,7 +1160,7 @@ theorem cos_pi_div_two_sub (x : ℂ) : cos (π / 2 - x) = sin x := by
   rw [← cos_neg, neg_sub, cos_sub_pi_div_two]
 
 theorem tan_periodic : Function.Periodic tan π := by
-  simpa only [tan_eq_sin_div_cos] using sin_antiperiodic.div cos_antiperiodic
+  simpa only [tan_eq_sin_div_cos] using! sin_antiperiodic.div cos_antiperiodic
 
 theorem tan_add_pi (x : ℂ) : tan (x + π) = tan x :=
   tan_periodic x
@@ -1213,6 +1214,10 @@ theorem exp_pi_mul_I : exp (π * I) = -1 :=
   exp_zero ▸ exp_antiperiodic.eq
 
 @[simp]
+theorem exp_neg_pi_mul_I : exp (-(π * I)) = -1 := by
+  simp [Complex.exp_neg]
+
+@[simp]
 theorem exp_two_pi_mul_I : exp (2 * π * I) = 1 :=
   exp_periodic.eq.trans exp_zero
 
@@ -1258,5 +1263,46 @@ theorem norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le {a b : ℝ} (ha : a ≤ 0) 
         (hb.trans <| half_le_self <| Real.pi_pos.le) hz
   · refine Real.cos_nonneg_of_mem_Icc ⟨?_, hb⟩
     exact (neg_nonpos.2 <| Real.pi_div_two_pos.le).trans ((_root_.abs_nonneg _).trans hz)
+
+theorem sinh_antiperiodic : Function.Antiperiodic sinh (π * I) := by
+  simp [Complex.sinh_add, sinh_mul_I, cosh_mul_I]
+
+@[simp]
+theorem sinh_add_pi_mul_I (z : ℂ) : sinh (z + π * I) = -sinh z :=
+  sinh_antiperiodic z
+
+theorem sinh_periodic : Function.Periodic sinh (2 * π * I) := by
+  convert! sinh_antiperiodic.periodic_two_mul using 1
+  ring
+
+@[simp]
+theorem sinh_sub_pi_mul_I (z : ℂ) : sinh (z - π * I) = -sinh z :=
+  sinh_antiperiodic.sub_eq z
+
+theorem cosh_antiperiodic : Function.Antiperiodic cosh (π * I) := by
+  simp [Complex.cosh_add, cosh_mul_I, sinh_mul_I]
+
+@[simp]
+theorem cosh_add_pi_mul_I (z : ℂ) : cosh (z + π * I) = -cosh z :=
+  cosh_antiperiodic z
+
+theorem cosh_periodic : Function.Periodic cosh (2 * π * I) := by
+  convert! cosh_antiperiodic.periodic_two_mul using 1
+  ring
+
+@[simp]
+theorem cosh_sub_pi_mul_I (z : ℂ) : cosh (z - π * I) = -cosh z :=
+  cosh_antiperiodic.sub_eq z
+
+theorem tanh_periodic : Function.Periodic tanh (π * I) := by
+  simp [tanh_eq_sinh_div_cosh]
+
+@[simp]
+theorem tanh_add_pi_mul_I (z : ℂ) : tanh (z + π * I) = tanh z :=
+  tanh_periodic z
+
+@[simp]
+theorem tanh_sub_pi_mul_I (z : ℂ) : tanh (z - π * I) = tanh z :=
+  tanh_periodic.sub_eq z
 
 end Complex

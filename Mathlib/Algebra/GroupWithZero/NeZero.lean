@@ -15,7 +15,7 @@ This file exists to minimize the dependencies of `Mathlib/Algebra/GroupWithZero/
 which is a part of the algebraic hierarchy used by basic tactics.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists DenselyOrdered Ring
 

@@ -27,7 +27,7 @@ we show that they interact with the composition of morphisms similarly as pseudo
 
 universe w v' u' v v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄ u
 
-open CategoryTheory Functor
+open CategoryTheory Functor Limits
 
 namespace SheafOfModules
 
@@ -35,7 +35,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {D' : Type u₃} [Category.{v₃} D'] {D'' : Type u₄} [Category.{v₄} D'']
   {J : GrothendieckTopology C} {K : GrothendieckTopology D} {F : C ⥤ D}
   {S : Sheaf J RingCat.{u}} {R : Sheaf K RingCat.{u}}
-  [Functor.IsContinuous.{u} F J K] [Functor.IsContinuous.{v} F J K]
+  [Functor.IsContinuous F J K]
   (φ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R)
 
 /-- The pushforward of sheaves of modules that is induced by a continuous functor `F`
@@ -43,15 +43,57 @@ and a morphism of sheaves of rings `φ : S ⟶ (F.sheafPushforwardContinuous Rin
 @[simps map_val, simps -isSimp obj_val]
 noncomputable def pushforward : SheafOfModules.{v} R ⥤ SheafOfModules.{v} S where
   obj M :=
-    { val := (PresheafOfModules.pushforward φ.val).obj M.val
-      isSheaf := ((F.sheafPushforwardContinuous _ J K).obj ⟨_, M.isSheaf⟩).cond }
+    { val := (PresheafOfModules.pushforward φ.hom).obj M.val
+      isSheaf := ((F.sheafPushforwardContinuous _ J K).obj ⟨_, M.isSheaf⟩).property }
   map f :=
-    { val := (PresheafOfModules.pushforward φ.val).map f.val }
+    { val := (PresheafOfModules.pushforward φ.hom).map f.val }
+
+variable (R) in
+/-- The restriction functor from sheaves of `R`-modules to sheaves of `R.over X`-modules
+for some `X : D`. -/
+noncomputable def overFunctor (X : D) :
+    SheafOfModules.{v} R ⥤ SheafOfModules.{v} (R.over X) :=
+  pushforward (𝟙 _)
 
 /-- Given `M : SheafOfModules R` and `X : D`, this is the restriction of `M`
 over the sheaf of rings `R.over X` on the category `Over X`. -/
 noncomputable abbrev over (M : SheafOfModules.{v} R) (X : D) : SheafOfModules.{v} (R.over X) :=
-  (pushforward.{v} (𝟙 _)).obj M
+  (overFunctor R X).obj M
+
+/-- Given a map `f : M ⟶ N` between sheaves of modules over `R`, this is the restriction
+to the map `M.over X ⟶ N.over X` between sheaves of modules over `R.over X`. -/
+noncomputable abbrev Hom.over {M N : SheafOfModules.{v} R} (f : M ⟶ N) (X : D) :
+    M.over X ⟶ N.over X :=
+  (overFunctor R X).map f
+
+variable (R) in
+/-- If `f : X ⟶ Y`, this is the pushforward of sheaves of modules along `Over.map f`. -/
+noncomputable def overMap {X Y : D} (f : X ⟶ Y) :
+    SheafOfModules.{v} (R.over Y) ⥤ SheafOfModules.{v} (R.over X) :=
+  pushforward (F := Over.map f) (Sheaf.pushforwardOverMapIso R f).inv
+
+variable (R) in
+/-- First restricting to `Over Y` and then extending to `Over X` is the same as restricting to
+`Over X`. -/
+noncomputable def overFunctorMap {X Y : D} (f : X ⟶ Y) :
+    overFunctor.{v} R Y ⋙ overMap.{v} R f ≅ overFunctor.{v} R X :=
+  NatIso.ofComponents
+    fun M ↦ (SheafOfModules.fullyFaithfulForget _).preimageIso <|
+      PresheafOfModules.isoMk (fun U ↦ Iso.refl _)
+
+/-- The pushforward of `R.over Y` along `Over.map f` is isomorphic to `R.over X`. -/
+@[simps! +dsimpLhs]
+noncomputable def overMapUnitIso {X Y : D}
+    [(K.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+    [(K.over Y).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})] (f : X ⟶ Y) :
+    (overMap.{u} R f).obj (.unit (R.over Y)) ≅ .unit (R.over X) :=
+  Iso.refl _
+
+variable (R) in
+/-- If `f : X ⟶ Y`, this is the pushforward of sheaves of modules along `Over.pullback f`. -/
+noncomputable def overPullback [Limits.HasPullbacks D] {X Y : D} (f : X ⟶ Y) :
+    SheafOfModules.{v} (R.over X) ⥤ SheafOfModules.{v} (R.over Y) :=
+  pushforward (F := Over.pullback f) (Sheaf.toPushforwardOverPullback R f)
 
 section
 
@@ -86,8 +128,7 @@ section
 
 variable {K' : GrothendieckTopology D'} {K'' : GrothendieckTopology D''}
   {G : D ⥤ D'} {R' : Sheaf K' RingCat.{u}}
-  [Functor.IsContinuous.{u} G K K'] [Functor.IsContinuous.{v} G K K']
-  [Functor.IsContinuous.{u} (F ⋙ G) J K'] [Functor.IsContinuous.{v} (F ⋙ G) J K']
+  [Functor.IsContinuous G K K'] [Functor.IsContinuous (F ⋙ G) J K']
   (ψ : R ⟶ (G.sheafPushforwardContinuous RingCat.{u} K K').obj R')
 
 /-- The composition of two pushforward functors on categories of sheaves of modules
@@ -106,13 +147,10 @@ lemma pushforwardComp_inv_app_val_app (M U x) :
   ((pushforwardComp φ ψ).inv.app M).val.app U x = x := rfl
 
 variable {G' : D' ⥤ D''} {R'' : Sheaf K'' RingCat.{u}}
-  [Functor.IsContinuous.{u} G' K' K''] [Functor.IsContinuous.{v} G' K' K'']
-  [Functor.IsContinuous.{u} (G ⋙ G') K K'']
-  [Functor.IsContinuous.{v} (G ⋙ G') K K'']
-  [Functor.IsContinuous.{u} ((F ⋙ G) ⋙ G') J K'']
-  [Functor.IsContinuous.{v} ((F ⋙ G) ⋙ G') J K'']
-  [Functor.IsContinuous.{u} (F ⋙ G ⋙ G') J K'']
-  [Functor.IsContinuous.{v} (F ⋙ G ⋙ G') J K'']
+  [Functor.IsContinuous G' K' K'']
+  [Functor.IsContinuous (G ⋙ G') K K'']
+  [Functor.IsContinuous ((F ⋙ G) ⋙ G') J K'']
+  [Functor.IsContinuous (F ⋙ G ⋙ G') J K'']
   (ψ' : R' ⟶ (G'.sheafPushforwardContinuous RingCat.{u} K' K'').obj R'')
 
 lemma pushforward_assoc :
@@ -141,9 +179,9 @@ section NatTrans
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {J : GrothendieckTopology C} {K : GrothendieckTopology D}
   {F G H : C ⥤ D} {T : Sheaf J RingCat.{u}} {S : Sheaf K RingCat.{u}}
-  [Functor.IsContinuous.{u} F J K] [Functor.IsContinuous.{v} F J K]
-  [Functor.IsContinuous.{u} G J K] [Functor.IsContinuous.{v} G J K]
-  [Functor.IsContinuous.{u} H J K] [Functor.IsContinuous.{v} H J K]
+  [Functor.IsContinuous F J K]
+  [Functor.IsContinuous G J K]
+  [Functor.IsContinuous H J K]
   (φ : T ⟶ (G.sheafPushforwardContinuous RingCat.{u} J K).obj S)
 
 /-- A natural transformation gives a natural transformation between the pushforward functors. -/
@@ -152,7 +190,7 @@ def pushforwardNatTrans (α : F ⟶ G) :
     pushforward.{v} φ ⟶
       pushforward.{v} (φ ≫ (Functor.sheafPushforwardContinuousNatTrans α _ _ _).app S) where
   app X :=
-  { val.app U := (ModuleCat.restrictScalars (φ.val.app U).hom).map (X.val.map (α.app U.unop).op)
+  { val.app U := (ModuleCat.restrictScalars (φ.hom.app U).hom).map (X.val.map (α.app U.unop).op)
     val.naturality {U V} i := by
       ext x
       dsimp
@@ -180,6 +218,7 @@ lemma pushforwardNatTrans_comp (α : F ⟶ G) (β : G ⟶ H)
 lemma pushforwardNatTrans_app_val_app_apply (α : F ⟶ G) (X U x) :
     ((pushforwardNatTrans φ α).app X).val.app U x = X.val.map (α.app U.unop).op x := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A natural isomorphism gives a natural isomorphism between the pushforward functors. -/
 @[simps]
 noncomputable def pushforwardNatIso (α : F ≅ G) :
@@ -208,32 +247,32 @@ section Adjunction
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {J : GrothendieckTopology C} {K : GrothendieckTopology D} {F : C ⥤ D} {G : D ⥤ C}
   {S : Sheaf J RingCat.{u}} {R : Sheaf K RingCat.{u}}
-  [Functor.IsContinuous.{u} F J K] [Functor.IsContinuous.{v} F J K]
-  [Functor.IsContinuous.{u} G K J] [Functor.IsContinuous.{v} G K J]
+  [Functor.IsContinuous F J K]
+  [Functor.IsContinuous G K J]
   (adj : F ⊣ G)
   (φ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R)
   (ψ : R ⟶ (G.sheafPushforwardContinuous RingCat.{u} K J).obj S)
-  (H₁ : Functor.whiskerRight (NatTrans.op adj.counit) R.val = ψ.val ≫ G.op.whiskerLeft φ.val)
-  (H₂ : φ.val ≫ F.op.whiskerLeft ψ.val ≫
-    Functor.whiskerRight (NatTrans.op adj.unit) S.val = 𝟙 S.val)
+  (H₁ : Functor.whiskerRight (NatTrans.op adj.counit) R.obj = ψ.hom ≫ G.op.whiskerLeft φ.hom)
+  (H₂ : φ.hom ≫ F.op.whiskerLeft ψ.hom ≫
+    Functor.whiskerRight (NatTrans.op adj.unit) S.obj = 𝟙 S.obj)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F ⊣ G`, then the pushforwards along `F` and `G` are also adjoint. -/
 noncomputable
 def pushforwardPushforwardAdj : pushforward.{v} φ ⊣ pushforward.{v} ψ where
   unit :=
-    letI := CategoryTheory.Functor.isContinuous_comp.{v} G F K J K
-    letI := CategoryTheory.Functor.isContinuous_comp.{u} G F K J K
+    letI := CategoryTheory.Functor.isContinuous_comp G F K J K
     (pushforwardId _).inv ≫ pushforwardNatTrans (𝟙 _) adj.counit ≫
       (pushforwardCongr (by ext1; simpa)).hom ≫ (pushforwardComp _ _).inv
   counit :=
-    letI := CategoryTheory.Functor.isContinuous_comp.{v} F G J K J
-    letI := CategoryTheory.Functor.isContinuous_comp.{u} F G J K J
+    letI := CategoryTheory.Functor.isContinuous_comp F G J K J
     (pushforwardComp _ _).hom ≫ pushforwardNatTrans _ adj.unit ≫
       (pushforwardCongr (by ext1; simpa)).hom ≫ (pushforwardId _).hom
   left_triangle_components X := by
     ext U x
     change (X.val.presheaf.map (adj.counit.app (F.obj U.unop)).op ≫
       X.val.presheaf.map (F.map (adj.unit.app U.unop)).op) _ = _
+    dsimp only [id_obj]
     rw [← Functor.map_comp, ← op_comp, adj.left_triangle_components]
     simp
   right_triangle_components X := by
@@ -260,12 +299,15 @@ open CategoryTheory Limits
 variable {C : Type u'} [Category.{v'} C] [HasBinaryProducts C] {J : GrothendieckTopology C}
   {R : Sheaf J RingCat.{u}}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical morphism from `R` to the pushforward of its restriction to `Over x`. -/
 def pushforwardOver (x : C) :
     R ⟶ ((Over.star x).sheafPushforwardContinuous RingCat J (J.over x)).obj (R.over x) :=
-  ⟨{app U := R.val.map Limits.prod.snd.op
+  ⟨{app U := R.obj.map Limits.prod.snd.op
     naturality U V f := by simp [← Functor.map_comp, ← op_comp]; rfl }⟩
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between restriction to `Over x` and pushforward along `Over.star x`. -/
 def overPushforwardOverAdj (x : C) :
     pushforward.{w} (𝟙 (R.over x)) ⊣ pushforward.{w} (pushforwardOver x) := by
@@ -278,8 +320,84 @@ def overPushforwardOverAdj (x : C) :
 instance (x : C) : IsLeftAdjoint (pushforward.{w} (𝟙 (R.over x))) where
   exists_rightAdjoint := ⟨_, Nonempty.intro (overPushforwardOverAdj x)⟩
 
+variable (R) in
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/-- The adjunction between pushforward along `Over.map` and pushforward along `Over.pullback`. -/
+def overMapPushforwardAdj [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
+    overMap R f ⊣ overPullback R f := by
+  refine pushforwardPushforwardAdj (Over.mapPullbackAdj f) _ _ ?_ ?_
+  · ext
+    simp [Sheaf.pushforwardOverMapIso]
+  · ext
+    simp [← Functor.map_comp, ← op_comp, Sheaf.pushforwardOverMapIso]
+
+instance [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : (overMap R f).IsLeftAdjoint :=
+  (overMapPushforwardAdj R f).isLeftAdjoint
+
 end
 
 end Adjunction
+
+section Equivalence
+
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+  {J : GrothendieckTopology C} {K : GrothendieckTopology D} (eqv : C ≌ D)
+  {S : Sheaf J RingCat.{u}} {R : Sheaf K RingCat.{u}}
+  [Functor.IsContinuous eqv.functor J K]
+  [Functor.IsContinuous eqv.inverse K J]
+  (φ : S ⟶ (eqv.functor.sheafPushforwardContinuous RingCat.{u} J K).obj R)
+  (ψ : R ⟶ (eqv.inverse.sheafPushforwardContinuous RingCat.{u} K J).obj S)
+  (H₁ : Functor.whiskerRight (NatTrans.op eqv.counit) R.obj =
+    ψ.hom ≫ eqv.inverse.op.whiskerLeft φ.hom)
+  (H₂ : φ.hom ≫ eqv.functor.op.whiskerLeft ψ.hom ≫
+    Functor.whiskerRight (NatTrans.op eqv.unit) S.obj = 𝟙 S.obj)
+
+/-- If `e : C ≌ D`, then the pushforwards along `e.functor` and `e.inverse` forms an equivalence. -/
+noncomputable
+def pushforwardPushforwardEquivalence : SheafOfModules R ≌ SheafOfModules S where
+  functor := pushforward.{v} φ
+  inverse := pushforward.{v} ψ
+  unitIso :=
+    letI := CategoryTheory.Functor.isContinuous_comp eqv.inverse eqv.functor K J K
+    (pushforwardId _).symm ≪≫ pushforwardNatIso _ eqv.counitIso ≪≫
+      pushforwardCongr (by ext1; simpa) ≪≫ (pushforwardComp _ _).symm
+  counitIso :=
+    letI := CategoryTheory.Functor.isContinuous_comp eqv.functor eqv.inverse J K J
+    pushforwardComp _ _ ≪≫ pushforwardNatIso _ eqv.unitIso ≪≫
+      pushforwardCongr (by ext1; simpa) ≪≫ pushforwardId _
+  functor_unitIso_comp :=
+    (pushforwardPushforwardAdj eqv.toAdjunction φ ψ H₁ H₂).left_triangle_components
+
+-- Not a simp because the type of the LHS is dsimp-able
+lemma pushforwardPushforwardEquivalence_unit_app_val_app (M U x) :
+    ((pushforwardPushforwardEquivalence eqv φ ψ H₁ H₂).unit.app M).val.app U x =
+      M.val.map (eqv.counit.app U.unop).op x := rfl
+
+-- Not a simp because the type of the LHS is dsimp-able
+lemma pushforwardPushforwardEquivalence_counit_app_val_app (M U x) :
+    ((pushforwardPushforwardEquivalence eqv φ ψ H₁ H₂).counit.app M).val.app U x =
+      M.val.map (eqv.unit.app U.unop).op x := rfl
+
+end Equivalence
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/-- Pushforward commutes with `SheafOfModules.forgetToSheafModuleCat` -/
+noncomputable def pushforwardCompForgetToSheafModuleCat
+    (X : Cᵒᵖ) (hX : Limits.IsInitial X) (hX' : Limits.IsInitial (F.op.obj X)) :
+    SheafOfModules.pushforward φ ⋙ SheafOfModules.forgetToSheafModuleCat _ X hX ≅
+    SheafOfModules.forgetToSheafModuleCat _ _ hX' ⋙
+      sheafCompose K (ModuleCat.restrictScalars <| (φ.hom.app _).hom) ⋙
+        F.sheafPushforwardContinuous _ J K := by
+  refine NatIso.ofComponents (fun M ↦ ObjectProperty.isoMk _ ?_) ?_
+  · refine NatIso.ofComponents (fun U ↦ ?_) ?_
+    · refine (ModuleCat.restrictScalarsComp'App _ _ _ ?_ _).symm ≪≫
+        (ModuleCat.restrictScalarsComp _ _).app _
+      rw [← RingCat.hom_comp, ← RingCat.hom_comp, φ.hom.naturality]
+      dsimp
+      rw [hX'.hom_ext (hX'.to (Opposite.op (F.obj (Opposite.unop U)))) _]
+    · cat_disch
+  · cat_disch
 
 end SheafOfModules

@@ -68,6 +68,7 @@ instance (F : I ⥤ C) : IsLeftAdjoint (tensorLeft (incl I ⋙ F)) :=
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Auxiliary definition for `functorCategoryMonoidalClosed` -/
+@[implicit_reducible]
 def functorCategoryClosed (F : I ⥤ C) : Closed F :=
   have := (ihom.adjunction (incl I ⋙ F)).isLeftAdjoint
   have := isLeftAdjoint_square_lift_comonadic (tensorLeft F) ((whiskeringLeft _ _ C).obj (incl I))
@@ -82,6 +83,7 @@ monoidal closed category.
 Note: this is defined completely abstractly, and does not have any good definitional properties.
 See the TODO in the module docstring.
 -/
+@[implicit_reducible]
 def functorCategoryMonoidalClosed : MonoidalClosed (I ⥤ C) where
   closed F := functorCategoryClosed I C F
 

@@ -6,7 +6,6 @@ Authors: Kevin Buzzard, Bryan Wang
 module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Pi
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
 /-!

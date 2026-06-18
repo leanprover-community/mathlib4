@@ -54,6 +54,22 @@ noncomputable def ιTruncLE (n : ℤ) : K.truncLE n ⟶ K :=
 noncomputable def πTruncGE (n : ℤ) : K ⟶ K.truncGE n :=
   HomologicalComplex.πTruncGE K (embeddingUpIntGE n)
 
+lemma quasiIsoAt_ιTruncLE (n q : ℤ) (hq : q ≤ n) :
+    QuasiIsoAt (K.ιTruncLE n) q := by
+  obtain ⟨k, rfl⟩ := Int.le.dest hq
+  exact HomologicalComplex.quasiIsoAt_ιTruncLE (j := k) _ _ (by simp)
+
+lemma quasiIsoAt_πTruncGE (n q : ℤ) (hq : n ≤ q) :
+    QuasiIsoAt (K.πTruncGE n) q := by
+  obtain ⟨k, rfl⟩ := Int.le.dest hq
+  exact HomologicalComplex.quasiIsoAt_πTruncGE (j := k) _ _ (by simp)
+
+instance (n : ℤ) : QuasiIsoAt (K.πTruncGE n) n :=
+  quasiIsoAt_πTruncGE _ _ _ (by lia)
+
+instance (n : ℤ) : QuasiIsoAt (K.ιTruncLE n) n :=
+  quasiIsoAt_ιTruncLE _ _ _ (by lia)
+
 section
 
 variable {K L}
@@ -273,6 +289,7 @@ instance [K.IsLE n] : QuasiIso (K.ιTruncLE n) := by
 
 variable {K L}
 
+set_option backward.defeqAttrib.useBackward true in
 lemma quasiIso_truncGEMap_iff :
     QuasiIso (truncGEMap φ n) ↔ ∀ (i : ℤ) (_ : n ≤ i), QuasiIsoAt φ i := by
   rw [HomologicalComplex.quasiIso_truncGEMap_iff]
@@ -283,6 +300,7 @@ lemma quasiIso_truncGEMap_iff :
   · rintro h i i' rfl
     exact h _ (by dsimp; lia)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma quasiIso_truncLEMap_iff :
     QuasiIso (truncLEMap φ n) ↔ ∀ (i : ℤ) (_ : i ≤ n), QuasiIsoAt φ i := by
   rw [HomologicalComplex.quasiIso_truncLEMap_iff]

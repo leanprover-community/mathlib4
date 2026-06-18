@@ -5,7 +5,6 @@ Authors: Oliver Butterley, Yoh Tanimoto
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.MeasureTheory.VectorMeasure.Basic
 public import Mathlib.Order.Partition.Finpartition
 
@@ -18,9 +17,9 @@ measure.
 
 ## Main definitions
 
-* `IsSigmaSubadditiveSetFun f` — `f` is σ-subadditive on measurable sets
-* `ennrealPreVariation f` — the `VectorMeasure X ℝ≥0∞` built from a σ-subadditive function
-* `preVariation f` — the `Measure X` built from a σ-subadditive function
+* `IsSigmaSubadditiveSetFun f`: `f` is σ-subadditive on measurable sets
+* `ennrealPreVariation f`: the `VectorMeasure X ℝ≥0∞` built from a σ-subadditive function
+* `preVariation f`: the `Measure X` built from a σ-subadditive function
 
 ## References
 
@@ -32,7 +31,7 @@ measure.
 
 variable {X : Type*} [MeasurableSpace X]
 
-open MeasureTheory BigOperators NNReal ENNReal Function
+open NNReal ENNReal Function
 
 namespace MeasureTheory
 
@@ -65,30 +64,36 @@ variable (f : Set X → ℝ≥0∞)
 /-- `preVariationFun` of the empty set is equal to zero. -/
 lemma empty : preVariationFun f ∅ = 0 := by simp [preVariationFun]
 
+@[simp]
+lemma zero : preVariationFun (0 : Set X → ℝ≥0∞) = 0 := by ext; simp [preVariationFun]
+
 lemma sum_le {s : Set X} (hs : MeasurableSet s)
     (P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)) :
     ∑ p ∈ P.parts, f p ≤ preVariationFun f s := by
   simpa [preVariationFun, hs, le_iSup_iff] using fun _ a ↦ a P
 
-open Classical in
+/-- A `Finpartition` constructor in the subtype of `MeasurableSet` from a `P : Finpartition s` with
+explicit measurability assumptions. -/
+noncomputable abbrev _root_.Finpartition.toMeasurableSet {s : Set X} (P : Finpartition s)
+    (hs : MeasurableSet s) (hP : ∀ p ∈ P.parts, MeasurableSet p) :
+    Finpartition (⟨s, hs⟩ : Subtype MeasurableSet) :=
+  P.toSubtype (by measurability) (by measurability) (by measurability) hs hP
+
+lemma sum_le' {s : Set X} (hs : MeasurableSet s)
+    (P : Finpartition s) (hP : ∀ p ∈ P.parts, MeasurableSet p) :
+    ∑ p ∈ P.parts, f p ≤ preVariationFun f s := by
+  simp only [P.sum_eq_sum_finpartition_subtype (by measurability) (by measurability)
+    (by measurability) hs hP f, sum_le f hs (P.toMeasurableSet hs hP)]
+
 /-- If `P` is a partition of `s₁` and `s₁ ⊆ s₂` then
 `∑ p ∈ P.parts, f p ≤ preVariationFun f s₂`. -/
 lemma sum_le_preVariationFun_of_subset {s₁ s₂ : Set X} (hs₁ : MeasurableSet s₁)
     (hs₂ : MeasurableSet s₂) (h : s₁ ⊆ s₂) (P : Finpartition (⟨s₁, hs₁⟩ : Subtype MeasurableSet)) :
     ∑ p ∈ P.parts, f p ≤ preVariationFun f s₂ := by
-  by_cases heq : s₁ = s₂
-  · rw [← heq]; exact sum_le f hs₁ P
-  · let b : Subtype MeasurableSet := ⟨s₂ \ s₁, hs₂.diff hs₁⟩
-    have hb : b ≠ ⊥ := fun hc => heq (h.antisymm (Set.diff_eq_empty.mp (congrArg (·.1) hc)))
-    have hab : Disjoint (⟨s₁, hs₁⟩ : Subtype MeasurableSet) b := by
-      simp only [b, disjoint_iff, Subtype.ext_iff]
-      exact Set.inter_diff_self s₁ s₂
-    have hc : (⟨s₁, hs₁⟩ : Subtype MeasurableSet) ⊔ b = ⟨s₂, hs₂⟩ :=
-      Subtype.ext (Set.union_diff_cancel h)
-    calc ∑ p ∈ P.parts, f p
-      _ ≤ ∑ p ∈ (P.extend hb hab hc).parts, f p :=
-          Finset.sum_le_sum_of_subset fun _ hx => Finset.mem_insert_of_mem hx
-      _ ≤ preVariationFun f s₂ := sum_le f hs₂ _
+  calc
+    ∑ p ∈ P.parts, f p ≤ ∑ p ∈ (P.extendOfLE h).parts, f p :=
+      Finset.sum_le_sum_of_subset (P.parts_subset_extendOfLE h)
+    _ ≤ preVariationFun f s₂ := sum_le f hs₂ _
 
 /-- `preVariationFun` is monotone in terms of the (measurable) set. -/
 lemma mono {s₁ s₂ : Set X} (hs₂ : MeasurableSet s₂) (h : s₁ ⊆ s₂) :
@@ -104,7 +109,7 @@ lemma exists_Finpartition_sum_gt {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0
   simp_all [preVariationFun, lt_iSup_iff]
 
 lemma exists_Finpartition_sum_ge {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥0} (hε : 0 < ε)
-    (h : preVariationFun f s ≠ ⊤) :
+    (h : preVariationFun f s ≠ ∞) :
     ∃ P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet),
     preVariationFun f s ≤ ∑ p ∈ P.parts, f p + ε := by
   let ε' := min ε (preVariationFun f s).toNNReal
@@ -125,16 +130,15 @@ lemma exists_Finpartition_sum_ge {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥
       _ ≤ ∑ p ∈ P.parts, f p + ε := by gcongr
   · simp [*]
 
-open Classical in
-/-- The sup of measurable set subtypes over a finset equals the biUnion of the underlying sets. -/
-lemma Finset.sup_measurableSetSubtype_eq_biUnion {ι : Type*}
-    (s : ι → Subtype (@MeasurableSet X _)) (I : Finset ι) :
-    ((I.sup s : Subtype MeasurableSet) : Set X) = ⋃ i ∈ I, (s i).val := by
-  refine I.induction_on (by simp) ?_
-  intro _ _ _ h
-  simp [← h]
+lemma exists_Finpartition_sum_ge' {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥0∞} (hε : 0 < ε)
+    (h : preVariationFun f s ≠ ∞) :
+    ∃ P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet),
+    preVariationFun f s ≤ ∑ p ∈ P.parts, f p + ε := by
+  rcases eq_top_or_lt_top ε with rfl | h'ε
+  · simp
+  lift ε to NNReal using h'ε.ne
+  exact exists_Finpartition_sum_ge _ hs (by simpa using hε) h
 
-open Classical in
 lemma sum_le_preVariationFun_iUnion' {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
     (hs' : Pairwise (Disjoint on s))
     (P : ∀ (i : ℕ), Finpartition (⟨s i, hs i⟩ : Subtype MeasurableSet)) (n : ℕ) :
@@ -143,13 +147,13 @@ lemma sum_le_preVariationFun_iUnion' {s : ℕ → Set X} (hs : ∀ i, Measurable
   have hs_disj : Set.PairwiseDisjoint (Finset.range n : Set ℕ) s' := fun i _ j _ hij => by
     simp only [Function.onFun, disjoint_iff, Subtype.ext_iff]
     exact Set.disjoint_iff_inter_eq_empty.mp (hs' hij)
-  let Q := Finpartition.combine P hs_disj
+  let Q := Finpartition.combine P hs_disj.supIndep
   have hQ_le : (Finset.range n).sup s' ≤ ⟨⋃ i, s i, MeasurableSet.iUnion hs⟩ := by
-    rw [← Subtype.coe_le_coe, Finset.sup_measurableSetSubtype_eq_biUnion s']
+    rw [← Subtype.coe_le_coe, Finset.sup_coe (Psup := by measurability), Finset.sup_set_eq_biUnion]
     exact Set.iUnion₂_subset fun i _ => Set.subset_iUnion s i
   let R := Q.extendOfLE hQ_le
   calc ∑ i ∈ Finset.range n, ∑ p ∈ (P i).parts, f p
-    _ = ∑ p ∈ Q.parts, f p := (Finpartition.sum_combine P hs_disj (fun p => f p)).symm
+    _ = ∑ p ∈ Q.parts, f p := (Finpartition.sum_combine P hs_disj.supIndep (fun p => f p)).symm
     _ ≤ ∑ p ∈ R.parts, f p := Finset.sum_le_sum_of_subset (Q.parts_subset_extendOfLE hQ_le)
     _ ≤ preVariationFun f (⋃ i, s i) := sum_le f (MeasurableSet.iUnion hs) R
 
@@ -171,7 +175,7 @@ lemma sum_le_preVariationFun_iUnion {s : ℕ → Set X} (hs : ∀ i, MeasurableS
     _ ≤ ∑ i ∈ Finset.range n, (∑ p ∈ (P i).parts, f p + ε) := Finset.sum_le_sum fun i _ => hP i
     _ = ∑ i ∈ Finset.range n, ∑ p ∈ (P i).parts, f p + ε' := by
       rw [Finset.sum_add_distrib]; norm_cast
-      simp [show n * ε = ε' by rw [mul_div_cancel₀ _ (by positivity)]]
+      simp [show n * ε = ε' by field]
     _ ≤ preVariationFun f (⋃ i, s i) + ε' := by
       gcongr; exact sum_le_preVariationFun_iUnion' f hs hs' P n
 
@@ -183,11 +187,12 @@ def IsSigmaSubadditiveSetFun (f : Set X → ℝ≥0∞) : Prop :=
   ∀ (s : ℕ → {t : Set X // MeasurableSet t}), Pairwise (Disjoint on (Subtype.val ∘ s)) →
     f (⋃ i, (s i).val) ≤ ∑' i, f (s i)
 
+lemma isSigmaSubadditiveSetFun_zero : IsSigmaSubadditiveSetFun (0 : Set X → ℝ≥0∞) := by intro; simp
+
 namespace preVariation
 
 variable {f : Set X → ℝ≥0∞}
 
-open Classical in
 /-- Additivity of `preVariationFun` for disjoint measurable sets. -/
 lemma iUnion (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) (s : ℕ → Set X)
     (hs : ∀ i, MeasurableSet (s i)) (hs' : Pairwise (Disjoint on s)) :
@@ -237,8 +242,24 @@ noncomputable def ennrealPreVariation (hf : IsSigmaSubadditiveSetFun f) (hf' : f
   not_measurable' _ h := by simp [preVariationFun, h]
   m_iUnion' := preVariation.iUnion hf hf'
 
+lemma ennrealPreVariation_apply (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) (s : Set X) :
+  ennrealPreVariation f hf hf' s = preVariationFun f s := rfl
+
+@[simp]
+lemma ennrealPreVariation_zero :
+    ennrealPreVariation (0 : Set X → ℝ≥0∞) isSigmaSubadditiveSetFun_zero (by simp) = 0 := by
+  ext; simp [ennrealPreVariation_apply]
+
 /-- The `Measure X` built from a σ-subadditive function. -/
 noncomputable def preVariation (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) : Measure X :=
   (ennrealPreVariation f hf hf').ennrealToMeasure
+
+lemma preVariation_apply (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) (s : Set X) :
+    preVariation f hf hf' s = (ennrealPreVariation f hf hf').ennrealToMeasure s := rfl
+
+@[simp]
+lemma preVariation_zero :
+    preVariation (0 : Set X → ℝ≥0∞) isSigmaSubadditiveSetFun_zero (by simp) = 0 := by
+  ext; simp [preVariation_apply]
 
 end MeasureTheory

@@ -127,7 +127,7 @@ theorem isCyclotomicExtension_zero_iff :
     IsCyclotomicExtension {0} A B ↔ Function.Surjective (algebraMap A B) := by
   rw [surjective_algebraMap_iff, eq_comm]
   refine ⟨?_, fun h ↦ singleton_zero_of_bot_eq_top h⟩
-  rw [eq_self_sdiff_zero, sdiff_self, Set.bot_eq_empty, subsingleton_iff_bot_eq_top]
+  rw [eq_self_sdiff_zero, sdiff_self, subsingleton_iff_bot_eq_top]
   exact fun _ ↦ instSubsingleton A B
 
 variable (A B)
@@ -163,7 +163,7 @@ theorem subsingleton_iff [Subsingleton B] :
   · refine subset_pair_iff.mpr fun s hs ↦ or_iff_not_imp_left.mpr fun hs' ↦ ?_
     obtain ⟨ζ, hζ⟩ := hprim hs hs'
     exact mod_cast hζ.unique (IsPrimitiveRoot.of_subsingleton ζ)
-  · refine ⟨fun {s} hs hs' ↦ ?_, fun x ↦ by convert (mem_top (R := A) : x ∈ ⊤)⟩
+  · refine ⟨fun {s} hs hs' ↦ ?_, fun x ↦ by convert! (mem_top (R := A) : x ∈ ⊤)⟩
     · have : s = 1 := (subset_pair_iff.mp hS s hs).resolve_left hs'
       exact ⟨0, this ▸ IsPrimitiveRoot.of_subsingleton 0⟩
 
@@ -195,7 +195,7 @@ theorem union_left [h : IsCyclotomicExtension T A B] (hS : S ⊆ T) :
   · obtain ⟨b, hb⟩ := ((isCyclotomicExtension_iff _ _ _).1 h).1 (hS hn) hn'
     refine ⟨⟨b, subset_adjoin ⟨n, hn, hn', hb.pow_eq_one⟩⟩, ?_⟩
     rwa [← IsPrimitiveRoot.coe_submonoidClass_iff, Subtype.coe_mk]
-  · convert mem_top (R := A) (x := b)
+  · convert! mem_top (R := A) (x := b)
     rw [← adjoin_adjoin_coe_preimage, preimage_setOf_eq]
     norm_cast
 
@@ -207,9 +207,9 @@ theorem union_of_isPrimitiveRoot [hB : IsCyclotomicExtension S A B] {r : B}
     (hr : IsPrimitiveRoot r n) :
     IsCyclotomicExtension (S ∪ {n}) A B := by
   by_cases hn : n = 0
-  · rwa [hn, eq_self_sdiff_zero, Set.union_diff_right, ← eq_self_sdiff_zero]
+  · rwa [hn, eq_self_sdiff_zero, Set.union_sdiff_right, ← eq_self_sdiff_zero]
   rw [iff_adjoin_eq_top]
-  refine ⟨fun m hm₁ hm₂ ↦ ?_, le_antisymm (by aesop) ?_⟩
+  refine ⟨fun m hm₁ hm₂ ↦ ?_, le_antisymm (by simp) ?_⟩
   · obtain hm₁ | rfl := hm₁
     · exact exists_isPrimitiveRoot A B hm₁ hm₂
     · use r
@@ -262,7 +262,7 @@ theorem iff_union_singleton_one :
     IsCyclotomicExtension S A B ↔ IsCyclotomicExtension (S ∪ {1}) A B := by
   by_cases hS : ∃ s ∈ S, s ≠ 0
   · exact iff_union_of_dvd _ _ (by simpa)
-  · rw [eq_self_sdiff_zero S, eq_self_sdiff_zero (S ∪ {1}), union_diff_distrib,
+  · rw [eq_self_sdiff_zero S, eq_self_sdiff_zero (S ∪ {1}), union_sdiff_distrib,
       show S \ {0} = ∅ by aesop, empty_union, show {1} \ {0} = {1} by simp]
     refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
     · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs _ ↦ ⟨1, by simp [mem_singleton_iff.1 hs]⟩, ?_⟩
@@ -275,8 +275,8 @@ variable {A B}
 /-- If `(⊥ : SubAlgebra A B) = ⊤`, then `IsCyclotomicExtension {1} A B`. -/
 theorem singleton_one_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
     IsCyclotomicExtension {1} A B := by
-  convert eq_self_sdiff_zero _ A B ▸
-    (iff_union_singleton_one _ A _).1 (singleton_zero_of_bot_eq_top h)
+  convert!
+    eq_self_sdiff_zero _ A B ▸ (iff_union_singleton_one _ A _).1 (singleton_zero_of_bot_eq_top h)
   simp
 
 /-- If `Function.Surjective (algebraMap A B)`, then `IsCyclotomicExtension {1} A B`. -/
@@ -549,42 +549,19 @@ theorem nonempty_algEquiv_adjoin_of_isSepClosed [IsCyclotomicExtension S K L]
   have := isSeparable S K L
   let i : L →ₐ[K] M := IsSepClosed.lift
   refine ⟨(show L ≃ₐ[K] i.fieldRange from AlgEquiv.ofInjectiveField i).trans
-    (IntermediateField.equivOfEq (le_antisymm ?_ ?_))⟩
-  · rintro x (hx : x ∈ i.range)
-    let e := Subalgebra.equivOfEq _ _ ((IsCyclotomicExtension.iff_adjoin_eq_top S K L).1 ‹_›).2
-      |>.trans Subalgebra.topEquiv
-    have hrange : i.range = (i.comp (AlgHomClass.toAlgHom e)).range := by
-      ext x
-      simp only [AlgHom.mem_range, AlgHom.coe_comp, AlgHom.coe_coe, Function.comp_apply]
-      constructor
-      · rintro ⟨y, rfl⟩; exact ⟨e.symm y, by simp⟩
-      · rintro ⟨y, rfl⟩; exact ⟨e y, rfl⟩
-    rw [hrange, AlgHom.mem_range] at hx
-    obtain ⟨⟨y, hy⟩, rfl⟩ := hx
-    induction hy using Algebra.adjoin_induction with
-    | mem x hx =>
-      obtain ⟨n, hn, h1, h2⟩ := hx
-      apply IntermediateField.subset_adjoin
-      use n, hn, h1
-      rw [← map_pow, ← map_one (i.comp (AlgHomClass.toAlgHom e))]
-      congr 1
-      apply_fun _ using Subtype.val_injective
-      simpa
-    | algebraMap x =>
-      convert IntermediateField.algebraMap_mem _ x
-      exact AlgHom.commutes _ x
-    | add x y hx hy ihx ihy =>
-      convert add_mem ihx ihy
-      exact map_add (i.comp (AlgHomClass.toAlgHom e)) ⟨x, hx⟩ ⟨y, hy⟩
-    | mul x y hx hy ihx ihy =>
-      convert mul_mem ihx ihy
-      exact map_mul (i.comp (AlgHomClass.toAlgHom e)) ⟨x, hx⟩ ⟨y, hy⟩
-  · rw [IntermediateField.adjoin_le_iff]
-    rintro x ⟨n, hn, h1, h2⟩
-    have := NeZero.mk h1
+    (IntermediateField.equivOfEq ?_)⟩
+  have htop : IntermediateField.adjoin K {x : L | ∃ n ∈ S, n ≠ 0 ∧ x ^ n = 1} = ⊤ :=
+    IntermediateField.adjoin_eq_top_of_algebra K _ ((iff_adjoin_eq_top S K L).1 ‹_›).2
+  rw [AlgHom.fieldRange_eq_map, ← htop, IntermediateField.adjoin_map]
+  apply le_antisymm <;> rw [IntermediateField.adjoin_le_iff]
+  · rintro _ ⟨y, ⟨n, hn, h1, h2⟩, rfl⟩
+    exact IntermediateField.subset_adjoin K _ ⟨n, hn, h1, by simpa using congrArg i h2⟩
+  · rintro x ⟨n, hn, h1, h2⟩
+    have : NeZero n := ⟨h1⟩
     obtain ⟨y, hy⟩ := exists_isPrimitiveRoot K L hn h1
-    obtain ⟨m, -, rfl⟩ := (hy.map_of_injective (f := i) i.injective).eq_pow_of_pow_eq_one h2
-    exact ⟨y ^ m, by simp⟩
+    obtain ⟨m, -, rfl⟩ := (hy.map_of_injective i.injective).eq_pow_of_pow_eq_one h2
+    exact pow_mem (IntermediateField.subset_adjoin K (i '' {x : L | ∃ n ∈ S, n ≠ 0 ∧ x ^ n = 1})
+      ⟨y, ⟨n, hn, h1, hy.pow_eq_one⟩, rfl⟩) m
 
 theorem isGalois [IsCyclotomicExtension S K L] : IsGalois K L := by
   rw [isGalois_iff]
@@ -603,7 +580,7 @@ theorem isGalois [IsCyclotomicExtension S K L] : IsGalois K L := by
     use n, hn, h1
     rw [← map_pow, ← map_one f, h2]
   | algebraMap x =>
-    convert IntermediateField.algebraMap_mem _ x
+    convert! IntermediateField.algebraMap_mem _ x
     exact AlgHom.commutes _ x
   | add x y hx hy ihx ihy =>
     rw [map_add]
@@ -677,21 +654,23 @@ splitting field of `cyclotomic n K`. If `n` is nonzero in `K`, it has
 the instance `IsCyclotomicExtension {n} K (CyclotomicField n K)`. -/
 def CyclotomicField : Type w :=
   (cyclotomic n K).SplittingField
+deriving Field, Inhabited
 
 namespace CyclotomicField
 
-instance : Field (CyclotomicField n K) := by
-  delta CyclotomicField; infer_instance
+variable [Algebra A K] in
+deriving instance Algebra A, IsScalarTower A K for CyclotomicField n K
 
-instance algebra : Algebra K (CyclotomicField n K) := by
-  delta CyclotomicField; infer_instance
+instance algebra : Algebra K (CyclotomicField n K) := inferInstance
 
-instance : Inhabited (CyclotomicField n K) := by
-  delta CyclotomicField; infer_instance
+/-- Ensure there are no diamonds when `A = ℤ` but there are `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906 -/
+example : Ring.toIntAlgebra (CyclotomicField n ℚ) = CyclotomicField.instAlgebra _ _ _ := rfl
+
 
 instance [CharZero K] : CharZero (CyclotomicField n K) :=
   charZero_of_injective_algebraMap (algebraMap K _).injective
 
+set_option backward.isDefEq.respectTransparency false in
 instance isCyclotomicExtension [NeZero (n : K)] :
     IsCyclotomicExtension {n} K (CyclotomicField n K) := by
   have : NeZero (n : CyclotomicField n K) :=
@@ -738,17 +717,6 @@ variable [Algebra A K]
 
 section CyclotomicRing
 
-/-- If `K` is an `A`-algebra, the `A`-algebra structure on `CyclotomicField n K`.
--/
-instance CyclotomicField.algebraBase : Algebra A (CyclotomicField n K) :=
-  SplittingField.instAlgebra (cyclotomic n K)
-
-/-- Ensure there are no diamonds when `A = ℤ` but there are `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906 -/
-example : Ring.toIntAlgebra (CyclotomicField n ℚ) = CyclotomicField.algebraBase _ _ _ := rfl
-
-instance {R : Type*} [CommRing R] [Algebra R K] : IsScalarTower R K (CyclotomicField n K) :=
-  SplittingField.instIsScalarTower _
-
 instance [IsDomain A] [IsFractionRing A K] : Module.IsTorsionFree A (CyclotomicField n K) := by
   rw [isTorsionFree_iff_faithfulSMul, faithfulSMul_iff_algebraMap_injective,
     IsScalarTower.algebraMap_eq A K (CyclotomicField n K)]
@@ -762,21 +730,13 @@ is nonzero in `A`, it has the instance `IsCyclotomicExtension {n} A (CyclotomicR
 @[nolint unusedArguments]
 def CyclotomicRing : Type w :=
   adjoin A {b : CyclotomicField n K | b ^ n = 1}
+deriving CommRing, IsDomain, Inhabited
 
 namespace CyclotomicRing
 
-instance : CommRing (CyclotomicRing n A K) := by
-  delta CyclotomicRing; infer_instance
-
-instance : IsDomain (CyclotomicRing n A K) := by
-  delta CyclotomicRing; infer_instance
-
-instance : Inhabited (CyclotomicRing n A K) := by
-  delta CyclotomicRing; infer_instance
-
 /-- The `A`-algebra structure on `CyclotomicRing n A K`. -/
 instance algebraBase : Algebra A (CyclotomicRing n A K) :=
-  (adjoin A _).algebra
+  inferInstanceAs <| Algebra A (adjoin A _)
 
 -- Ensure that there is no diamonds with ℤ.
 -- but there is at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
@@ -791,7 +751,7 @@ theorem algebraBase_injective [IsDomain A] [IsFractionRing A K] :
   FaithfulSMul.algebraMap_injective _ _
 
 instance : Algebra (CyclotomicRing n A K) (CyclotomicField n K) :=
-  (adjoin A _).toAlgebra
+  inferInstanceAs <| Algebra (adjoin A _) (CyclotomicField n K)
 
 omit [NeZero n] in
 theorem adjoin_algebra_injective :
@@ -802,8 +762,9 @@ instance : IsTorsionFree (CyclotomicRing n A K) (CyclotomicField n K) :=
   isTorsionFree_iff_algebraMap_injective.mpr (adjoin_algebra_injective n A K)
 
 instance : IsScalarTower A (CyclotomicRing n A K) (CyclotomicField n K) :=
-  IsScalarTower.subalgebra' _ _ _ _
+  inferInstanceAs <| IsScalarTower A (adjoin A _) (CyclotomicField n K)
 
+set_option backward.isDefEq.respectTransparency false in
 instance isCyclotomicExtension [IsDomain A] [IsFractionRing A K] [NeZero ((n : ℕ) : A)] :
     IsCyclotomicExtension {n} A (CyclotomicRing n A K) where
   exists_isPrimitiveRoot {a} han _ := by

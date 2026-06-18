@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Topology.Maps.Basic
-public import Mathlib.Topology.Baire.Lemmas
 
 /-!
 # Open quotient maps
@@ -65,15 +64,6 @@ theorem dense_preimage_iff (h : IsOpenQuotientMap f) {s : Set Y} : Dense (f ⁻�
   ⟨fun hs ↦ h.surjective.denseRange.dense_of_mapsTo h.continuous hs (mapsTo_preimage _ _),
     fun hs ↦ hs.preimage h.isOpenMap⟩
 
-/-- If `f` is an open quotient map and `X` is Baire, then `Y` is Baire. -/
-theorem baireSpace {f : X → Y} [BaireSpace X] (hf : IsOpenQuotientMap f) :
-    BaireSpace Y := by
-  constructor
-  intro u hou hdu
-  have := dense_iInter_of_isOpen_nat (fun n => hf.continuous.isOpen_preimage (u n) (hou n))
-    (fun n => (IsOpenQuotientMap.dense_preimage_iff hf).mpr (hdu n))
-  simp_all [← preimage_iInter, IsOpenQuotientMap.dense_preimage_iff]
-
 end IsOpenQuotientMap
 
 theorem Topology.IsInducing.isOpenQuotientMap_of_surjective (ind : IsInducing f)
@@ -115,7 +105,7 @@ lemma coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
     (h : g ∘ p = q ∘ f)
     (hf : IsInducing f) (hp : Function.Surjective p)
     (hq : IsOpenQuotientMap q) (hg : Function.Injective g)
-    (H : q ⁻¹' (q '' (Set.range f)) ⊆ Set.range f) :
+    (H : q ⁻¹' q '' Set.range f ⊆ Set.range f) :
     ‹TopologicalSpace A›.coinduced p = ‹TopologicalSpace D›.induced g := by
   ext U
   change IsOpen (p ⁻¹' U) ↔ ∃ V, _
@@ -142,7 +132,7 @@ lemma isEmbedding_of_isOpenQuotientMap_of_isInducing
     (h : g ∘ p = q ∘ f)
     (hf : IsInducing f) (hp : IsQuotientMap p)
     (hq : IsOpenQuotientMap q) (hg : Function.Injective g)
-    (H : q ⁻¹' (q '' (Set.range f)) ⊆ Set.range f) :
+    (H : q ⁻¹' q '' Set.range f ⊆ Set.range f) :
     IsEmbedding g :=
   ⟨⟨hp.eq_coinduced.trans (coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
     f g p q h hf hp.surjective hq hg H)⟩, hg⟩
@@ -151,9 +141,9 @@ lemma isQuotientMap_of_isOpenQuotientMap_of_isInducing
     (h : g ∘ p = q ∘ f)
     (hf : IsInducing f) (hp : Surjective p)
     (hq : IsOpenQuotientMap q) (hg : IsEmbedding g)
-    (H : q ⁻¹' (q '' (Set.range f)) ⊆ Set.range f) :
+    (H : q ⁻¹' q '' Set.range f ⊆ Set.range f) :
     IsQuotientMap p :=
-  ⟨hp, hg.eq_induced.trans ((coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
-    f g p q h hf hp hq hg.injective H)).symm⟩
+  ⟨⟨hg.eq_induced.trans ((coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
+    f g p q h hf hp hq hg.injective H)).symm⟩, hp⟩
 
 end Subquotient

@@ -124,14 +124,14 @@ theorem mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFinset) : p.1
   obtain ⟨n, han, hn⟩ : ∃ n ≥ card (s.1.filter fun x ↦ a = x.1) - 1, (a, n) ∈ s := by
     by_contra! h
     replace h : {x ∈ s | x.1 = a} ⊆ {a} ×ˢ .range (card (s.1.filter fun x ↦ a = x.1) - 1) := by
-      simpa +contextual [forall_swap (β := _ = a), Finset.subset_iff,
+      simpa +contextual [forall_comm (β := _ = a), Finset.subset_iff,
         imp_not_comm, not_le, Nat.lt_sub_iff_add_lt] using h
     have : card (s.1.filter fun x ↦ a = x.1) ≤ card (s.1.filter fun x ↦ a = x.1) - 1 := by
       simpa [Finset.card, eq_comm] using Finset.card_mono h
     lia
   exact Nat.le_of_pred_lt (han.trans_lt <| by simpa using hsm hn)
 
-@[mono]
+@[gcongr, mono]
 theorem toEnumFinset_mono {m₁ m₂ : Multiset α} (h : m₁ ≤ m₂) :
     m₁.toEnumFinset ⊆ m₂.toEnumFinset := by
   intro p
@@ -170,9 +170,10 @@ def coeEquiv (m : Multiset α) : m ≃ m.toEnumFinset where
 theorem toEmbedding_coeEquiv_trans (m : Multiset α) :
     m.coeEquiv.toEmbedding.trans (Function.Embedding.subtype _) = m.coeEmbedding := by ext <;> rfl
 
-@[irreducible]
 instance fintypeCoe : Fintype m :=
   Fintype.ofEquiv m.toEnumFinset m.coeEquiv.symm
+
+attribute [irreducible] fintypeCoe
 
 theorem map_univ_coeEmbedding (m : Multiset α) :
     (Finset.univ : Finset m).map m.coeEmbedding = m.toEnumFinset := by
@@ -249,9 +250,9 @@ def consEquiv {v : α} : v ::ₘ m ≃ Option m where
     by_cases hv : x.1 = v
     · simp only [hv, true_and] at h ⊢
       apply lt_of_le_of_ne (Nat.le_of_lt_add_one _) h
-      convert x.2.2 using 1
+      convert! x.2.2 using 1
       simp [hv]
-    · convert x.2.2 using 1
+    · convert! x.2.2 using 1
       exact (count_cons_of_ne hv _).symm
     ⟩⟩
   invFun x := x.elim ⟨v, ⟨m.count v, by simp⟩⟩ (fun x ↦ ⟨x.1, x.2.castLE (count_le_count_cons ..)⟩)
@@ -294,10 +295,11 @@ lemma coe_consEquiv_of_eq_of_eq {v : α} (x : v ::ₘ m) (hx : ↑x = v) (hx2 : 
 lemma coe_consEquiv_of_eq_of_lt {v : α} (x : v ::ₘ m) (hx : ↑x = v) (hx2 : x.2 < m.count v) :
     consEquiv x = some ⟨x.1, ⟨x.2, by simpa [hx]⟩⟩ := by simp [consEquiv, hx, hx2.ne]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 There is some equivalence between `m` and `m.map f` which respects `f`.
 -/
-def mapEquiv_aux (m : Multiset α) (f : α → β) :
+def mapEquivAux (m : Multiset α) (f : α → β) :
     Squash { v : m ≃ m.map f // ∀ a : m, v a = f a} :=
   Quotient.recOnSubsingleton m fun l ↦ .mk <|
     List.recOn l
@@ -308,14 +310,16 @@ def mapEquiv_aux (m : Multiset α) (f : α → β) :
             Equiv.coe_fn_symm_mk]
         split <;> simp_all⟩
 
+@[deprecated (since := "2026-06-06")] alias mapEquiv_aux := mapEquivAux
+
 /--
-One of the possible equivalences from `Multiset.mapEquiv_aux`, selected using choice.
+One of the possible equivalences from `Multiset.mapEquivAux`, selected using choice.
 -/
 noncomputable def mapEquiv (s : Multiset α) (f : α → β) : s ≃ s.map f :=
-  (Multiset.mapEquiv_aux s f).out.1
+  (Multiset.mapEquivAux s f).out.1
 
 @[simp]
 theorem mapEquiv_apply (s : Multiset α) (f : α → β) (v : s) : s.mapEquiv f v = f v :=
-  (Multiset.mapEquiv_aux s f).out.2 v
+  (Multiset.mapEquivAux s f).out.2 v
 
 end Multiset
