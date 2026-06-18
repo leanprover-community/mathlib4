@@ -357,9 +357,8 @@ theorem center_toNonUnitalSubsemiring :
 
 /-- The center is commutative and associative. -/
 instance center.instNonUnitalCommRing : NonUnitalCommRing (center R) where
-  __ : NonUnitalCommSemiring (center R) :=
-    inferInstanceAs <| NonUnitalCommSemiring (NonUnitalSubsemiring.center R)
-  __ := (inferInstance : NonUnitalNonAssocRing (center R))
+  mul_assoc := Subsemigroup.center.commSemigroup.mul_assoc
+  mul_comm := Subsemigroup.center.commSemigroup.mul_comm
 
 variable {R}
 
@@ -378,8 +377,8 @@ section NonUnitalRing
 variable [NonUnitalRing R]
 
 -- no instance diamond, unlike the unital version
-example : (center.instNonUnitalCommRing _).toNonUnitalRing =
-      NonUnitalSubringClass.toNonUnitalRing (center R) := by
+example : ((center.instNonUnitalCommRing _).toNonUnitalRing) =
+      (NonUnitalSubringClass.toNonUnitalRing (center R)) := by
   with_reducible_and_instances rfl
 
 theorem mem_center_iff {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := Subsemigroup.mem_center_iff
