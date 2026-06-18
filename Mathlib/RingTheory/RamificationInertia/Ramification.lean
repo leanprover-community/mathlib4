@@ -31,7 +31,7 @@ an `Sq`-module.
 
 -/
 
-@[expose] public section
+public section
 
 namespace Ideal
 

@@ -25,7 +25,7 @@ to be the degree of the residue field of `q` over the residue field of its preim
 * `inertiaDeg'_tower`: Inertia degree is multiplicative in towers.
 -/
 
-@[expose] public section
+public section
 
 namespace Ideal
 
