@@ -393,8 +393,8 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq
   let Pf := P.map (algebraMap _ (Localization.Away f))
   have : Pf.IsPrime := IsLocalization.isPrime_of_isPrime_disjoint (.powers f) _ _ ‹_› (by
     rwa [Ideal.disjoint_powers_iff_notMem_of_isPrime])
-  have : Pf.LiesOver P := ⟨(IsLocalization.under_map_of_isPrime_disjoint (.powers f) _ ‹_› (by
-    rwa [Ideal.disjoint_powers_iff_notMem _ (Ideal.IsPrime.isRadical ‹_›)])).symm⟩
+  have : Pf.LiesOver P := IsLocalization.liesOver_map_of_isPrime_disjoint (.powers f) _ (by
+    rwa [Ideal.disjoint_powers_iff_notMem _ (Ideal.IsPrime.isRadical ‹_›)])
   let φ : R' ⊗[R] S →ₐ[R'] Localization.Away f ⊗[R] S :=
     Algebra.TensorProduct.map (Algebra.ofId _ _) (.id _ _)
   let := φ.toAlgebra
@@ -410,7 +410,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq
     change f ∉ P'.under _
     rwa [← P'.over_def P]
   have : P'f.IsPrime := IsLocalization.isPrime_of_isPrime_disjoint _ _ _ ‹_› hP'f
-  have : P'f.LiesOver P' := ⟨(IsLocalization.under_map_of_isPrime_disjoint _ _ ‹_› hP'f).symm⟩
+  have : P'f.LiesOver P' := IsLocalization.liesOver_map_of_isPrime_disjoint _ _ hP'f
   have : P'f.LiesOver P := .trans _ P' _
   have : P'f.LiesOver Pf := ⟨congr($(PrimeSpectrum.localization_comap_injective
       (Localization.Away f) (.powers f) (a₁ := ⟨Pf, ‹_›⟩)
