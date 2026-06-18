@@ -6,8 +6,8 @@ Authors: Kim Morrison, Simon Hudon
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
 /-!
 # The natural monoidal structure on any category with finite (co)products.
@@ -39,125 +39,6 @@ namespace CategoryTheory
 variable (C : Type u) [Category.{v} C] {X Y : C}
 
 open CategoryTheory.Limits
-
-section
-
-/-- A category with a terminal object and binary products has a natural monoidal structure. -/
-@[instance_reducible,
-  deprecated CartesianMonoidalCategory.ofHasFiniteProducts (since := "2025-10-19")]
-def monoidalOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : MonoidalCategory C :=
-  have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
-  let +nondep : CartesianMonoidalCategory C := .ofHasFiniteProducts
-  inferInstance
-
-end
-
-namespace monoidalOfHasFiniteProducts
-
-variable [HasTerminal C] [HasBinaryProducts C]
-
-attribute [local instance] monoidalOfHasFiniteProducts
-
-open scoped MonoidalCategory
-
-@[deprecated CartesianMonoidalCategory.toUnit_unique (since := "2025-10-19")]
-theorem unit_ext {X : C} (f g : X ⟶ 𝟙_ C) : f = g := terminal.hom_ext f g
-
-@[deprecated CartesianMonoidalCategory.hom_ext (since := "2025-10-19")]
-theorem tensor_ext {X Y Z : C} (f g : X ⟶ Y ⊗ Z)
-    (w₁ : f ≫ prod.fst = g ≫ prod.fst) (w₂ : f ≫ prod.snd = g ≫ prod.snd) : f = g :=
-  Limits.prod.hom_ext w₁ w₂
-
-set_option linter.deprecatedSimpLemma false in
-@[deprecated "This is an implementation detail." (since := "2025-10-19"), simp]
-theorem tensorUnit : 𝟙_ C = ⊤_ C := rfl
-
-set_option linter.deprecatedSimpLemma false in
-@[deprecated "This is an implementation detail." (since := "2025-10-19"), simp]
-theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨯ Y) :=
-  rfl
-
-@[deprecated CartesianMonoidalCategory.leftUnitor_hom (since := "2025-10-19")]
-theorem leftUnitor_hom (X : C) : (λ_ X).hom = Limits.prod.snd :=
-  rfl
-
-@[deprecated CartesianMonoidalCategory.rightUnitor_hom (since := "2025-10-19")]
-theorem rightUnitor_hom (X : C) : (ρ_ X).hom = Limits.prod.fst :=
-  rfl
-
-set_option linter.deprecatedSimpLemma false in
-@[deprecated "Use the `CartesianMonoidalCategory.associator_hom_...` lemmas"
-  (since := "2025-10-19"), simp]
-theorem associator_hom (X Y Z : C) :
-    (α_ X Y Z).hom =
-      prod.lift (Limits.prod.fst ≫ Limits.prod.fst)
-        (prod.lift (Limits.prod.fst ≫ Limits.prod.snd) Limits.prod.snd) :=
-  rfl
-
-@[deprecated "Use the `CartesianMonoidalCategory.associator_inv_...` lemmas"
-  (since := "2025-10-19")]
-theorem associator_inv (X Y Z : C) :
-    (α_ X Y Z).inv =
-      prod.lift (prod.lift prod.fst (prod.snd ≫ prod.fst)) (prod.snd ≫ prod.snd) :=
-  rfl
-
-set_option backward.isDefEq.respectTransparency false in
-set_option linter.deprecated false in
-@[deprecated CartesianMonoidalCategory.associator_hom_fst (since := "2025-10-19")]
-theorem associator_hom_fst (X Y Z : C) :
-    (α_ X Y Z).hom ≫ prod.fst = prod.fst ≫ prod.fst := by
-  simp [associator_hom]
-
-set_option backward.isDefEq.respectTransparency false in
-set_option linter.deprecated false in
-@[deprecated CartesianMonoidalCategory.associator_hom_snd_fst (since := "2025-10-19")]
-theorem associator_hom_snd_fst (X Y Z : C) :
-    (α_ X Y Z).hom ≫ prod.snd ≫ prod.fst = prod.fst ≫ prod.snd := by simp [associator_hom]
-
-set_option backward.isDefEq.respectTransparency false in
-set_option linter.deprecated false in
-@[deprecated CartesianMonoidalCategory.associator_hom_snd_snd (since := "2025-10-19")]
-theorem associator_hom_snd_snd (X Y Z : C) :
-    (α_ X Y Z).hom ≫ prod.snd ≫ prod.snd = prod.snd := by simp [associator_hom]
-
-set_option backward.isDefEq.respectTransparency false in
-set_option linter.deprecated false in
-@[deprecated CartesianMonoidalCategory.associator_inv_fst_fst (since := "2025-10-19")]
-theorem associator_inv_fst_fst (X Y Z : C) :
-    (α_ X Y Z).inv ≫ prod.fst ≫ prod.fst = prod.fst := by simp [associator_inv]
-
-set_option backward.isDefEq.respectTransparency false in
-set_option linter.deprecated false in
-@[deprecated CartesianMonoidalCategory.associator_inv_fst_snd (since := "2025-10-19")]
-theorem associator_inv_fst_snd (X Y Z : C) :
-    (α_ X Y Z).inv ≫ prod.fst ≫ prod.snd = prod.snd ≫ prod.fst := by simp [associator_inv]
-
-set_option backward.isDefEq.respectTransparency false in
-set_option linter.deprecated false in
-@[deprecated CartesianMonoidalCategory.associator_inv_snd (since := "2025-10-19")]
-theorem associator_inv_snd (X Y Z : C) :
-    (α_ X Y Z).inv ≫ prod.snd = prod.snd ≫ prod.snd := by simp [associator_inv]
-
-end monoidalOfHasFiniteProducts
-
-section
-
-attribute [local instance] monoidalOfHasFiniteProducts
-
-open MonoidalCategory
-
-set_option linter.deprecated false in
-/-- The monoidal structure coming from finite products is symmetric.
--/
-@[deprecated CartesianMonoidalCategory.toSymmetricCategory (since := "2025-10-19"), simps!,
-  implicit_reducible]
-def symmetricOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : SymmetricCategory C :=
-  have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
-  let : CartesianMonoidalCategory C := .ofHasFiniteProducts
-  let +nondep : BraidedCategory C := .ofCartesianMonoidalCategory
-  inferInstance
-
-end
 
 section
 
@@ -270,8 +151,6 @@ variable {D : Type*} [Category* D] (F : C ⥤ D)
   [HasTerminal C] [HasBinaryProducts C]
   [HasTerminal D] [HasBinaryProducts D]
 
-set_option linter.deprecated false in
-attribute [local simp] associator_hom_fst
 @[deprecated Functor.OplaxMonoidal.ofChosenFiniteProducts (since := "2025-10-19")]
 instance :
     have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
@@ -301,23 +180,23 @@ lemma δ_eq (X Y : C) :
 variable [PreservesLimit (Functor.empty.{0} C) F]
   [PreservesLimitsOfShape (Discrete WalkingPair) F]
 
-set_option linter.deprecated false in
+set_option backward.defeqAttrib.useBackward true in
 @[deprecated inferInstance (since := "2025-10-19")]
 instance :
     have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
     have : HasFiniteProducts D := hasFiniteProducts_of_has_binary_and_terminal
     let : CartesianMonoidalCategory C := .ofHasFiniteProducts
     let : CartesianMonoidalCategory D := .ofHasFiniteProducts
-    IsIso (η F) := by dsimp [η_eq]; infer_instance
+    IsIso (η F) := by dsimp [η_eq]; apply instIsIsoTerminalComparison
 
-set_option linter.deprecated false in
+set_option backward.defeqAttrib.useBackward true in
 @[deprecated inferInstance (since := "2025-10-19")]
 instance (X Y : C) :
     have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
     have : HasFiniteProducts D := hasFiniteProducts_of_has_binary_and_terminal
     let : CartesianMonoidalCategory C := .ofHasFiniteProducts
     let : CartesianMonoidalCategory D := .ofHasFiniteProducts
-    IsIso (δ F X Y) := by dsimp [δ_eq]; infer_instance
+    IsIso (δ F X Y) := by dsimp [δ_eq]; apply instIsIsoProdComparison
 
 /-- Promote a functor that preserves finite products to a monoidal functor between
 categories equipped with the monoidal category structure given by finite products. -/

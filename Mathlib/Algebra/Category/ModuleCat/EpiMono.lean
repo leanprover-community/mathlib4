@@ -38,14 +38,14 @@ theorem range_eq_top_of_epi [Epi f] : LinearMap.range f.hom = ⊤ :=
 
 theorem mono_iff_ker_eq_bot : Mono f ↔ LinearMap.ker f.hom = ⊥ :=
   ⟨fun _ => ker_eq_bot_of_mono _, fun hf =>
-    ConcreteCategory.mono_of_injective _ <| by convert LinearMap.ker_eq_bot.1 hf⟩
+    ConcreteCategory.mono_of_injective _ <| by convert! LinearMap.ker_eq_bot.1 hf⟩
 
 theorem mono_iff_injective : Mono f ↔ Function.Injective f := by
   rw [mono_iff_ker_eq_bot, LinearMap.ker_eq_bot]
 
 theorem epi_iff_range_eq_top : Epi f ↔ LinearMap.range f.hom = ⊤ :=
   ⟨fun _ => range_eq_top_of_epi _, fun hf =>
-    ConcreteCategory.epi_of_surjective _ <| by convert LinearMap.range_eq_top.1 hf⟩
+    ConcreteCategory.epi_of_surjective _ <| by convert! LinearMap.range_eq_top.1 hf⟩
 
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
   rw [epi_iff_range_eq_top, LinearMap.range_eq_top]

@@ -98,7 +98,7 @@ variable {𝓕 𝓖 : Filter ι}
 
 instance : DFunLike (Πʳ i, [R i, A i]_[𝓕]) ι R where
   coe x i := x.1 i
-  coe_injective' _ _ := Subtype.ext
+  coe_injective _ _ := Subtype.ext
 
 variable {R A} in
 /-- Constructor for `RestrictedProduct`. -/

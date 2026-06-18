@@ -28,6 +28,8 @@ shift functors.)
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory
@@ -157,10 +159,6 @@ class CommShift (F : C ⥤ D) (A : Type*) [AddMonoid A] [HasShift C A] [HasShift
 variable {A}
 
 export CommShift (commShiftIso commShiftIso_zero commShiftIso_add)
-
-@[deprecated (since := "2025-11-11")] alias CommShift.iso := commShiftIso
-@[deprecated (since := "2025-11-11")] alias CommShift.zero := commShiftIso_zero
-@[deprecated (since := "2025-11-11")] alias CommShift.add := commShiftIso_add
 
 section
 
