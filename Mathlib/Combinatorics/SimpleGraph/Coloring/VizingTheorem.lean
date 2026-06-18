@@ -73,8 +73,8 @@ lemma maxDegree_le_chromaticIndex : vizing.chromaticIndex G ≥ G.maxDegree := b
       · rintro ⟨he, hv⟩; exact ⟨⟨e, he⟩, hv, rfl⟩
     have h_ncard : incident_edges.ncard = (G.incidenceSet v).ncard := by
       rw [← h_image, Set.ncard_image_of_injective _ Subtype.val_injective]
-    rw [h_ncard, Set.ncard_eq_toFinset_card']
-    convert G.card_incidenceFinset_eq_degree v using 1
+    rw [h_ncard, hv_max, ← G.card_incidenceFinset_eq_degree v,
+      ← Set.ncard_coe_finset, G.coe_incidenceFinset v]
   have h_cliqueNum : G.lineGraph.cliqueNum ≥ G.maxDegree := by
     have h_nclique : G.lineGraph.IsNClique G.maxDegree incident_edges.toFinset :=
       ⟨by rw [Set.coe_toFinset]; exact h_incident_clique,
@@ -187,7 +187,7 @@ private lemma vizingUpperBound_aux : ∀ (k : ℕ) {m : ℕ} (H : SimpleGraph (F
         have h_eq : (H.deleteEdges {e.val}).edgeFinset = H.edgeFinset.erase e_sym := by
           ext f
           simp only [SimpleGraph.mem_edgeFinset, SimpleGraph.edgeSet_deleteEdges,
-                     Finset.mem_erase, Set.mem_diff, Set.mem_singleton_iff]
+                     Finset.mem_erase, Set.mem_sdiff, Set.mem_singleton_iff]
           tauto
         rw [h_eq, Finset.card_erase_of_mem he_mem]; omega
       have h_Δ : (H.deleteEdges {e.val}).maxDegree ≤ H.maxDegree := by
@@ -276,7 +276,7 @@ private lemma vizingUpperBound_aux : ∀ (k : ℕ) {m : ℕ} (H : SimpleGraph (F
             ext f
             simp only [SimpleGraph.mem_incidenceFinset, SimpleGraph.incidenceSet,
                        SimpleGraph.edgeSet_deleteEdges, Set.mem_setOf_eq,
-                       Set.mem_diff, Set.mem_singleton_iff, Finset.mem_erase]
+                       Set.mem_sdiff, Set.mem_singleton_iff, Finset.mem_erase]
             tauto
           have h_card_eq :
               (H.deleteEdges {e.val}).degree u + 1 = H.degree u := by

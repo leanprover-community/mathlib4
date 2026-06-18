@@ -6,7 +6,7 @@ Authors: Yiyang He, Daniel Raggi
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.LineGraph
-public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 public import Mathlib.Data.Fin.Basic
 
 /-!

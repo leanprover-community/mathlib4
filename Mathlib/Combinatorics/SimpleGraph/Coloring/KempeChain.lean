@@ -120,7 +120,7 @@ lemma missingColors_nonempty_of_degree_lt
     uses each color at most once per vertex. -/
 def kempeSubgraph (c : G.lineGraph.Coloring α) (a b : α) : SimpleGraph V where
   Adj v w := ∃ e : G.edgeSet, e.val = s(v, w) ∧ (c.toFun e = a ∨ c.toFun e = b)
-  symm := by
+  symm.symm := by
     rintro v w ⟨e, he_val, h_col⟩
     refine ⟨e, ?_, h_col⟩
     rw [he_val, Sym2.eq_swap]
