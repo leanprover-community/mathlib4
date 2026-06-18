@@ -30,7 +30,7 @@ a fundamental concept in the Characteristic Set Method.
 
 -/
 
-@[expose] public section
+public section
 
 namespace MvPolynomial
 
@@ -87,10 +87,12 @@ variable {α : Type*} [Membership (MvPolynomial σ R) α] {p q : MvPolynomial σ
 if it is reduced with respect to all elements of `a`. -/
 def reducedToSet (q : MvPolynomial σ R) (a : α) : Prop := ∀ p ∈ a, q.reducedTo p
 
-noncomputable instance : @DecidableRel _ (List (MvPolynomial σ R)) reducedToSet :=
-  fun _ ↦ List.decidableBAll _
-
 theorem reducedToSet_def : q.reducedToSet a ↔ ∀ p ∈ a, q.reducedTo p := Iff.rfl
+
+noncomputable instance : @DecidableRel _ (List (MvPolynomial σ R)) reducedToSet := by
+  intro _ _
+  rw [reducedToSet_def]
+  apply List.decidableBAll
 
 theorem zero_reducedToSet : (0 : MvPolynomial σ R).reducedToSet a := fun _ _ ↦ zero_reducedTo _
 
