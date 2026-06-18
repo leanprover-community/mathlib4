@@ -126,15 +126,6 @@ instance (R : Type*) [CommRing R] [IsDomain R] [Ring.HasFiniteQuotients R]
     let : Field (R ⧸ P) := Ideal.Quotient.field P
     exact .of_equiv (R ⧸ P) (IsFractionRing.algEquiv (R ⧸ P) (R ⧸ P) P.ResidueField).toEquiv
 
--- in the big refactor PR
-lemma card_inertia_eq_ramificationIdxIn {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    [IsDomain R] [IsDomain S] [Module.Finite R S] [Module.Flat R S]
-    (p : Ideal R) (P : Ideal S) [P.LiesOver p] [p.IsPrime] [P.IsPrime]
-    [PerfectField p.ResidueField]
-    (G : Type*) [Group G] [MulSemiringAction G S] [IsGaloisGroup G R S] :
-    Nat.card (P.inertia G) = Ideal.ramificationIdxIn p S := by
-  sorry
-
 -- PRed
 instance (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] [Algebra A B] [Algebra B C]
     [Algebra A C] [IsScalarTower A B C] (q : Ideal B) (r : Ideal C) [r.LiesOver q] :
@@ -146,15 +137,6 @@ instance (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] [Algebra A B] [A
     [Algebra A C] [IsScalarTower A B C] (q : Ideal B) (r : Ideal C) [r.LiesOver q] :
     q.LiesOver (r.under A) :=
   Ideal.LiesOver.tower_bot r q (r.under A)
-
-end
-
-section
-
-theorem foo₃ {G G' : Type*} [Group G] [Group G'] (H : Subgroup G) (f : G →* G') :
-    Nat.card (f.ker ⊓ H : Subgroup G) * Nat.card (H.map f) = Nat.card H := by
-  rw [← Subgroup.subgroupOf_map_subtype, Subgroup.card_map_of_injective H.subtype_injective,
-    ← f.ker_restrict, ← f.restrict_range, ← Subgroup.index_ker, Subgroup.card_mul_index]
 
 end
 
@@ -221,10 +203,9 @@ lemma NumberField.exists_not_isUnramifiedAt_int_of_isGalois [IsGalois ℚ K]
     (map_dvd (algebraMap _ _) p.associated_natAbs.symm.dvd) (by simpa using hQ)
   have : .span {p} = Ideal.under ℤ Q :=
     ((Ideal.liesOver_span_iff Ideal.IsPrime.ne_top' this).mpr hQ).1
-  rwa [Algebra.isUnramifiedAt_iff_of_isDedekindDomain (by aesop),
-    ← Ideal.ramificationIdxIn_eq_ramificationIdx _ _ Gal(K/ℚ), ← this, ← hp,
-    Ideal.ramificationIdxIn_eq_ramificationIdx _ P Gal(K/ℚ),
-    ← Algebra.isUnramifiedAt_iff_of_isDedekindDomain (Ideal.IsMaximal.ne_bot_of_isIntegral_int _)]
+  rwa [← Ideal.ramificationIdx'_eq_one_iff,
+    ← Ideal.ramificationIdxIn_eq_ramificationIdx (Q.under ℤ) _ Gal(K/ℚ), ← this, ← hp,
+    Ideal.ramificationIdxIn_eq_ramificationIdx _ P Gal(K/ℚ), Ideal.ramificationIdx'_eq_one_iff]
 
 open IsGaloisGroup NumberField -- probably should become a namespace
 
@@ -271,9 +252,8 @@ theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finit
     let := mulSemiringActionOfNormal G R S H
     exact IsGaloisGroup.quotient G ℤ R S H
   have : mR.ramificationIdx' ℤ = Nat.card (Ideal.inertia (G ⧸ H) mR) := by
-    rw [card_inertia_eq_ramificationIdxIn (mR.under ℤ) mR (G ⧸ H)]
-    -- will be solved after the `ramificationIdxIn` refactor
-    sorry
+    rw [Ideal.card_inertia_eq_ramificationIdxIn (mR.under ℤ) mR (G := G ⧸ H),
+      Ideal.ramificationIdxIn_eq_ramificationIdx (mR.under ℤ) mR (G ⧸ H)]
   rw [this, Subgroup.card_eq_one]
   have : Algebra.IsIntegral R S := IsGaloisGroup.isInvariant.isIntegral R S H
   obtain ⟨mS, hmS, hmRS⟩ := Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain (R := R) (S := S) mR (by simp)
@@ -282,36 +262,3 @@ theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finit
   rw [Ideal.inertia_quotient R S G H mR mS, Subgroup.map_eq_bot_iff, QuotientGroup.ker_mk']
   apply le_iSup_of_le ⟨mS, hmS⟩
   rfl
-
-theorem NumberField.supr_inertia_eq_top' (K : Type*) [Field K] [NumberField K]
-    (G : Type*) [Group G] [MulSemiringAction G K] [IsGaloisGroup G ℚ K] :
-    ⨆ m : MaximalSpectrum (𝓞 K), m.asIdeal.toAddSubgroup.inertia G = ⊤ := by
-  have : Finite G := IsGaloisGroup.finite G ℚ K
-  set H : Subgroup G := ⨆ m : MaximalSpectrum (𝓞 K), m.asIdeal.toAddSubgroup.inertia G
-  set F : IntermediateField ℚ K := FixedPoints.intermediateField H
-  have : IsGaloisGroup H (𝓞 F) (𝓞 K) := instIsGaloisGroupRingOfIntegersOfNumberField F K H
-  suffices h : ∀ (m : Ideal (𝓞 F)) (hm : m.IsMaximal), Algebra.IsUnramifiedAt ℤ m by
-    rw [eq_top_iff, ← fixingSubgroup_fixedPoints G ℚ K H, ← le_fixedPoints_iff_le_fixingSubgroup,
-      fixedPoints_top, le_bot_iff, ← IntermediateField.finrank_eq_one_iff]
-    contrapose! h
-    exact NumberField.exists_not_isUnramifiedAt_int h
-  intro mF hmF
-  have hmF0 : mF ≠ ⊥ := hmF.ne_bot_of_isIntegral_int
-  obtain ⟨mK, hmK, ⟨rfl⟩⟩ := mF.exists_maximal_ideal_liesOver_of_isIntegral (S := 𝓞 K)
-  rw [Algebra.isUnramifiedAt_iff_of_isDedekindDomain hmF0, Ideal.under_under]
-  have hm1 := Ideal.IsMaximal.ne_bot_of_isIntegral_int (mK.under ℤ)
-  have h : mK.toAddSubgroup.inertia G ≤ H :=
-    le_iSup (fun m : MaximalSpectrum (𝓞 K) ↦ m.asIdeal.toAddSubgroup.inertia G) ⟨mK, hmK⟩
-  replace h : Nat.card (mK.toAddSubgroup.inertia H) = Nat.card (mK.toAddSubgroup.inertia G) := by
-    rw [← Subgroup.map_subgroupOf_eq_of_le h, Subgroup.card_subtype,
-      AddSubgroup.subgroupOf_inertia]
-  let := Ideal.Quotient.field mK
-  let := Ideal.Quotient.field (mK.under (𝓞 F))
-  let := Ideal.Quotient.field (mK.under ℤ)
-  rw [Ideal.card_inertia_eq_ramificationIdxIn (G := H) (mK.under (𝓞 F)) hmF0 mK,
-    Ideal.card_inertia_eq_ramificationIdxIn (G := G) (mK.under ℤ) hm1 mK,
-    Ideal.ramificationIdxIn_eq_ramificationIdx (mK.under (𝓞 F)) mK H,
-    Ideal.ramificationIdxIn_eq_ramificationIdx (mK.under ℤ) mK G] at h
-  have key := Ideal.ramificationIdx_algebra_tower (Ideal.map_ne_bot_of_ne_bot hmF0)
-    (Ideal.map_ne_bot_of_ne_bot hm1) Ideal.map_comap_le
-  rwa [h, right_eq_mul₀ (Ideal.IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver mK hm1)] at key

@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Flat.TorsionFree
 public import Mathlib.RingTheory.RamificationInertia.Inertia
 public import Mathlib.RingTheory.RamificationInertia.Ramification
 public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
-public import Mathlib.NumberTheory.RamificationInertia.Galois
 
 /-!
 # Ramification index and inertia degree
@@ -84,26 +83,5 @@ theorem sum_ramification_inertia_eq_card
     {G : Type*} [Group G] [MulSemiringAction G S] [IsGaloisGroup G R S] :
     ∑ q : p.primesOver S, q.1.ramificationIdx' R * q.1.inertiaDeg' R = Nat.card G := by
   rw [sum_ramification_inertia_eq_finrank, IsGaloisGroup.card_eq_finrank' G R S]
-
-/-- Let `S/R` be a finite flat extension of integral domains, and let `p` be prime ideal of `R`.
-Assume that `R` is the invariant subring of a finite group `G` acting on `S`. Then the sum over
-all prime ideals `q` of `S` lying over `p` of the ramification index of `q` times the inertia
-degree of `q` equals the cardinality of `G`. -/
-theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn'
-    [IsDomain R] [IsDomain S] [Module.Finite R S] [Module.Flat R S]
-    {G : Type*} [Group G] [MulSemiringAction G S] [IsGaloisGroup G R S] :
-    (p.primesOver S).ncard * (p.ramificationIdxIn S * p.inertiaDegIn S) = Nat.card G := by
-  sorry
-
-/-- Let `S/R` be a finite flat extension of integral domains, and let `p` be prime ideal of `R`.
-Assume that `R` is the invariant subring of a finite group `G` acting on `S`. Then the sum over
-all prime ideals `q` of `S` lying over `p` of the ramification index of `q` times the inertia
-degree of `q` equals the cardinality of `G`. -/
-theorem card_inertia_eq_ramificationIdxIn' {R S : Type*} [CommRing R] [CommRing S]
-    [IsDomain R] [IsDomain S] [Algebra R S] [Module.Finite R S] [Module.Flat R S]
-    {G : Type*} [Group G] [MulSemiringAction G S] [IsGaloisGroup G R S]
-    (p : Ideal R) (q : Ideal S) [q.IsPrime] [q.LiesOver p] :
-    Nat.card (q.inertia G) = p.ramificationIdxIn S := by
-  sorry
 
 end Ideal

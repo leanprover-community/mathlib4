@@ -545,6 +545,12 @@ lemma integrableAtFilter_congr (h : f =ᵐ[μ] g) :
     IntegrableAtFilter f l μ ↔ IntegrableAtFilter g l μ :=
   ⟨(·.congr h), (·.congr h.symm)⟩
 
+lemma IntegrableAtFilter.congr'_enorm {ε'' : Type*} [TopologicalSpace ε''] [ContinuousENorm ε'']
+    {g : α → ε''} (hf : IntegrableAtFilter f l μ) (hg : AEStronglyMeasurable g μ)
+    (h : ∀ᵐ a ∂μ, ‖f a‖ₑ = ‖g a‖ₑ) :
+    IntegrableAtFilter g l μ :=
+  let ⟨s, hs, hf⟩ := hf; ⟨s, hs, hf.congr'_enorm hg.restrict (ae_restrict_le h)⟩
+
 @[simp]
 lemma integrableAtFilter_zero : IntegrableAtFilter (0 : α → E) l μ :=
   ⟨univ, by simp, integrableOn_univ.mpr (integrable_zero ..)⟩
