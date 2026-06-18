@@ -46,7 +46,7 @@ IsCompact.inter_right : IsCompact s → IsClosed t → IsCompact (s ∩ t)
 ```
 
 We will tag transition theorems, e.g. `Set.Finite.isCompact : Finite s → IsCompact s` should be
-tagged `@[compactness .]`, even if `compactness` will contain lemmas about finite sets.
+tagged `@[compactness .]`, even if `compactness` won't contain lemmas about finite sets.
 The advantages of this are that we can use local finiteness hypotheses, and this will ensure that
 the different grind sets will interact well with each other. For the same reason we tag lemmas
 that involve other properties, e.g. `IsCompact.inter_left`
