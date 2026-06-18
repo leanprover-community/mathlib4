@@ -488,7 +488,7 @@ lemma Connected.exists_isTree_le (h : G.Connected) : ∃ T ≤ G, IsTree T := by
   obtain ⟨F, hF⟩ := G.exists_isAcyclic_reachable_eq_le_of_le_of_isAcyclic bot_le isAcyclic_bot
   grind [IsTree, Connected, preconnected_iff_reachable_eq_top]
 
-theorem connected_iff_natCard_connectedComponent_eq_one :
+theorem connected_iff_card_connectedComponent_eq_one :
     G.Connected ↔ Nat.card G.ConnectedComponent = 1 := by
   have : G.ConnectedComponent = Quotient G.reachableSetoid := rfl
   simp_rw [connected_iff, preconnected_iff_reachable_eq_top, Nat.card_eq_one_iff_unique, this,
@@ -530,19 +530,20 @@ theorem IsAcyclic.ncard_edgeSet_add_card_connectedComponent [Finite V] (h : G.Is
   exact (isTree_iff_connected_and_card.mp <| h.isTree_connectedComponent _).right
 
 /-- An acyclic graph on `n` vertices has at most `n - 1` edges -/
-theorem IsAcyclic.ncard_edgeSet_add_one_le_card_vert [Finite V] [Nonempty V] (h : G.IsAcyclic) :
+theorem IsAcyclic.ncard_edgeSet_add_one_le_card [Finite V] [Nonempty V] (h : G.IsAcyclic) :
     G.edgeSet.ncard + 1 ≤ Nat.card V := by
   grind [h.ncard_edgeSet_add_card_connectedComponent, Nat.card_pos]
 
-theorem IsTree.ncard_edgeSet [Finite V] (hG : G.IsTree) : G.edgeSet.ncard + 1 = Nat.card V := by
+theorem IsTree.ncard_edgeSet_add_one [Finite V] (hG : G.IsTree) :
+    G.edgeSet.ncard + 1 = Nat.card V := by
   rw [← hG.isAcyclic.ncard_edgeSet_add_card_connectedComponent,
-    connected_iff_natCard_connectedComponent_eq_one.mp hG.connected]
+    connected_iff_card_connectedComponent_eq_one.mp hG.connected]
 
 /-- A graph on `n` vertices with at least `n` edges has a cycle -/
 theorem exists_isCycle_of_card_le [Finite V] [Nonempty V]
     (h : Nat.card V ≤ G.edgeSet.ncard) : ∃ (v : V) (c : G.Walk v v), c.IsCycle := by
   suffices ¬G.IsAcyclic by grind [IsAcyclic]
-  apply mt IsAcyclic.ncard_edgeSet_add_one_le_card_vert
+  apply mt IsAcyclic.ncard_edgeSet_add_one_le_card
   lia
 
 /-- A graph on `n` vertices is a tree iff it is acyclic and has exactly `n - 1` edges -/
