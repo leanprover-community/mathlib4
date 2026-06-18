@@ -148,13 +148,13 @@ lemma quotDecomposition_isInternal (hrel : Rel.IsHomogeneous 𝒜 rel) :
 
 /-- The decomposition of `RingQuot rel` as a direct sum of its graded pieces. -/
 @[implicit_reducible]
-noncomputable def quotDecomposition [GradedAlgebra 𝒜] (hrel : Rel.IsHomogeneous 𝒜 rel) :
+noncomputable def quotDecomposition (hrel : Rel.IsHomogeneous 𝒜 rel) :
     Decomposition (quotSubmodule 𝒜 rel) :=
   IsInternal.chooseDecomposition _ (quotDecomposition_isInternal _ _ hrel)
 
 /-- The graded algebra structure on `RingQuot rel`. -/
 @[implicit_reducible]
-noncomputable def quotGradedAlgebra [GradedAlgebra 𝒜] (hrel : Rel.IsHomogeneous 𝒜 rel) :
+noncomputable def quotGradedAlgebra (hrel : Rel.IsHomogeneous 𝒜 rel) :
     GradedAlgebra (quotSubmodule 𝒜 rel) where
   toDecomposition := quotDecomposition 𝒜 rel hrel
 
