@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Tactic.ClickSuggestions.SectionState
 public meta import Lean.Meta.ExprLens
-public import Mathlib.Order.Defs.PartialOrder
 
 /-!
 # Support for `grw` suggestions in `#click_suggestions`
@@ -63,10 +62,13 @@ private def gcongrBackward (relName : Name) (relation : Expr) (symm : Bool) :
   result := result.push { relName, relation, symm? }
   -- For `≤`, we add the relation `<`.
   if relName == ``LE.le then
-    let (mvars, _, le) ← forallMetaTelescope (← inferType (← mkConstWithFreshMVarLevels ``le_of_lt))
-      if ← isDefEq le.appFn!.appFn! relation then
-        let lt ← instantiateMVars (← inferType mvars.back!).appFn!.appFn!
-        result := result.push { relName := ``LT.lt, relation := lt, symm? := symm }
+    try
+      let (mvars, _, le) ←
+        forallMetaTelescope (← inferType (← mkConstWithFreshMVarLevels `le_of_lt))
+        if ← isDefEq le.appFn!.appFn! relation then
+          let lt ← instantiateMVars (← inferType mvars.back!).appFn!.appFn!
+          result := result.push { relName := ``LT.lt, relation := lt, symm? := symm }
+    catch _ => pure ()
   return result
 
 /-- This function is passed to `MVarId.gcongr` as the main discharger.
