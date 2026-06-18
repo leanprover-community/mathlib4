@@ -539,7 +539,7 @@ theorem IsTree.ncard_edgeSet [Finite V] (hG : G.IsTree) : G.edgeSet.ncard + 1 = 
     connected_iff_natCard_connectedComponent_eq_one.mp hG.connected]
 
 /-- A graph on `n` vertices with at least `n` edges has a cycle -/
-theorem card_vert_le_ncard_edgeSet_exists_isCycle [Finite V] [Nonempty V]
+theorem exists_isCycle_of_card_le [Finite V] [Nonempty V]
     (h : Nat.card V ≤ G.edgeSet.ncard) : ∃ (v : V) (c : G.Walk v v), c.IsCycle := by
   suffices ¬G.IsAcyclic by grind [IsAcyclic]
   apply mt IsAcyclic.ncard_edgeSet_add_one_le_card_vert
