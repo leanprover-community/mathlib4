@@ -12,8 +12,8 @@ public meta import Lean.Linter.Basic
 /-!
 # Linter against deprecated simp lemmas
 
-We prefer to avoid using `deprecated` lemmas, so these should not be tagged with the `simp`
-attribute. This linter is designed to flag such occurences.
+Deprecated lemmas should eventually be removed, and in particular not used.
+In particular, they should not be tagged with the `simp` attribute; this is what this linter enforces.
 -/
 
 meta section
@@ -22,7 +22,7 @@ open Lean Elab Meta Std Linter Parser Term Command
 
 namespace Mathlib.Linter
 
-register_option linter.deprecatedSimpLemma : Bool := {
+public register_option linter.deprecatedSimpLemma : Bool := {
   defValue := true
   descr := "enable the deprecatedSimpLemma linter"
 }
@@ -35,7 +35,7 @@ private def extractAttributes (stx : Syntax) : Array (TSyntax `Lean.Parser.Term.
 
 private def getAttributesFromDecl {m : Type → Type} [Monad m] [MonadEnv m] [MonadResolveName m]
     [MonadError m] [MonadMacroAdapter m] [MonadRecDepth m] [MonadTrace m] [MonadOptions m]
-    [AddMessageContext m] [MonadLiftT IO m] [MonadFinally m][MonadLog m] (stx : Syntax) :
+    [AddMessageContext m] [MonadLiftT IO m] [MonadFinally m] [MonadLog m] (stx : Syntax) :
     m (Array Attribute) := do
   let some modifiersStx := stx.find? (·.isOfKind ``Parser.Command.declModifiers)
     | throwError s!"{stx} does not have any declaration modifiers."
@@ -50,7 +50,7 @@ def deprecatedSimpLemmaLinter : Linter where run stx := do
   let attributeNames := (← getAttributesFromDecl stx).map (·.name)
   unless attributeNames.contains `simp && attributeNames.contains `deprecated do return
   Linter.logLintIf linter.deprecatedSimpLemma
-    stx "Deprecated declarations should not have the simp attribute"
+    stx "Deprecated declarations should not have the `simp` attribute"
 
 initialize addLinter deprecatedSimpLemmaLinter
 
