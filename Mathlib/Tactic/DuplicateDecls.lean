@@ -6,6 +6,7 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Init
+public import ImportGraph.Lean.Environment
 
 /-!
 # A tool for finding duplicate declarations
@@ -162,9 +163,9 @@ instance : LE ModuleKey := leOfOrd
 
 /-- Return the object by which to sort the module that `name` is from.
 That is, the `libraryNumber` followed by the module as a string. -/
-def mkModuleKey (name : Name) (env : Environment) : ModuleKey :=
-  let { module, .. } := env.header.modules[env.const2ModIdx[name]!]!
-  (libraryNumber module, module.toString)
+def mkModuleKey! (name : Name) (env : Environment) : ModuleKey :=
+  let mod := (env.getModuleFor? name).get!
+  (libraryNumber mod, mod.toString)
 
 /-- Return the list of pairs of duplicate declarations, grouped by the name of the module
 of one of the two lemmas. -/
@@ -174,7 +175,7 @@ def sortedDuplicateDeclarations (cfg : Target) :
   let dups ← duplicateDeclarations cfg
   let mut result : Std.TreeMap (Array ModuleKey) (Array (Array Name)) := {}
   for names in dups do
-    let names := names.map fun x ↦ (x, mkModuleKey x env)
+    let names := names.map fun x ↦ (x, mkModuleKey! x env)
     let names := names.qsort (·.2 > ·.2)
     result := result.alter (names.map (·.2)) (·.getD #[] |>.push (names.map (·.1)))
   return result.toArray.map fun (a, dups) ↦ (a[0]!.2, dups)
