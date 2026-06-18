@@ -699,7 +699,7 @@ variable (G) in
 /-- The vertices of a graph are partitioned among its connected components -/
 @[simps!]
 def verticesEquivSigmaConnectedComponent : V ≃ Σ (c : G.ConnectedComponent), c :=
-  .symm <| .sigmaFiberEquiv <| Quot.mk G.Reachable
+  .symm <| .sigmaFiberEquiv G.connectedComponentMk
 
 variable (G) in
 /-- The edges of a graph are partitioned among its connected components -/
