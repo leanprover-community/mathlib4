@@ -6,9 +6,12 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+public import Mathlib.Algebra.BigOperators.Pi
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.FunLike.Group
+public import Mathlib.Data.FunLike.Module
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Equiv.Fintype
 public import Mathlib.Tactic.Abel
@@ -183,19 +186,21 @@ instance : Add (MultilinearMap R M₁ M₂) :=
     ⟨fun x => f x + f' x, fun m i x y => by simp [add_left_comm, add_assoc], fun m i c x => by
       simp [smul_add]⟩⟩
 
-@[simp]
-theorem add_apply (m : ∀ i, M₁ i) : (f + f') m = f m + f' m :=
-  rfl
+instance : IsAddApply (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+  add_apply _ _ _ := rfl
+
+@[deprecated (since := "2026-06-10")] protected alias add_apply := add_apply
 
 instance : Zero (MultilinearMap R M₁ M₂) :=
   ⟨⟨fun _ => 0, fun _ _ _ _ => by simp, fun _ _ c _ => by simp⟩⟩
 
+instance : IsZeroApply (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+  zero_apply _ := rfl
+
 instance : Inhabited (MultilinearMap R M₁ M₂) :=
   ⟨0⟩
 
-@[simp]
-theorem zero_apply (m : ∀ i, M₁ i) : (0 : MultilinearMap R M₁ M₂) m = 0 :=
-  rfl
+@[deprecated (since := "2026-06-10")] protected alias zero_apply := zero_apply
 
 section SMul
 
@@ -206,32 +211,28 @@ instance : SMul S (MultilinearMap R M₁ M₂) :=
     ⟨fun m => c • f m, fun m i x y => by simp [smul_add], fun l i x d => by
       simp [← smul_comm x c (_ : M₂)]⟩⟩
 
-@[simp]
-theorem smul_apply (f : MultilinearMap R M₁ M₂) (c : S) (m : ∀ i, M₁ i) : (c • f) m = c • f m :=
-  rfl
+instance : IsSMulApply S (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+  smul_apply _ _ _ := rfl
 
-theorem coe_smul (c : S) (f : MultilinearMap R M₁ M₂) : ⇑(c • f) = c • (⇑f) := rfl
+@[deprecated (since := "2026-06-10")] protected alias smul_apply := smul_apply
+
+@[deprecated (since := "2026-06-10")] alias coe_smul := FunLike.coe_smul
 
 end SMul
 
 -- The `AddMonoid` instance exists to help speedup unification
-instance : AddMonoid (MultilinearMap R M₁ M₂) := fast_instance%
-  coe_injective.addMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+instance : AddMonoid (MultilinearMap R M₁ M₂) := fast_instance% FunLike.addMonoid
 
 instance addCommMonoid : AddCommMonoid (MultilinearMap R M₁ M₂) := fast_instance%
-  coe_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+  FunLike.addCommMonoid
 
-/-- Coercion of a multilinear map to a function as an additive monoid homomorphism. -/
-@[simps] def coeAddMonoidHom : MultilinearMap R M₁ M₂ →+ (((i : ι) → M₁ i) → M₂) where
-  toFun := DFunLike.coe; map_zero' := rfl; map_add' _ _ := rfl
+@[deprecated (since := "2026-06-10")] alias coeAddMonoidHom := FunLike.coeAddMonoidHom
 
-@[simp]
-theorem coe_sum {α : Type*} (f : α → MultilinearMap R M₁ M₂) (s : Finset α) :
-    ⇑(∑ a ∈ s, f a) = ∑ a ∈ s, ⇑(f a) :=
-  map_sum coeAddMonoidHom f s
+@[deprecated (since := "2026-06-10")] alias coeAddMonoidHom_apply := FunLike.coeAddMonoidHom_apply
 
-theorem sum_apply {α : Type*} (f : α → MultilinearMap R M₁ M₂) (m : ∀ i, M₁ i) {s : Finset α} :
-    (∑ a ∈ s, f a) m = ∑ a ∈ s, f a m := by simp
+@[deprecated (since := "2026-06-10")] alias coe_sum := FunLike.coe_sum
+
+@[deprecated (since := "2026-06-10")] protected alias sum_apply := _root_.sum_apply
 
 /-- If `f` is a multilinear map, then `f.toLinearMap m i` is the linear map obtained by fixing all
 coordinates but `i` equal to those of `m`, and varying the `i`-th coordinate. -/
@@ -525,7 +526,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     intro i
     by_cases hi : i = i₀
     · rw [hi]
-      simp only [B, sdiff_subset, update_self]
+      simp only [B, Finset.sdiff_subset, update_self]
     · simp only [B, hi, update_of_ne, Ne, not_false_iff, Finset.Subset.refl]
   have C_subset_A : ∀ i, C i ⊆ A i := by
     intro i
@@ -550,7 +551,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
       have : j = j₂ := by
         simpa [C] using hj
       rw [this]
-      simp only [B, mem_sdiff, not_true, not_false_iff, Finset.mem_singleton,
+      simp only [B, Finset.mem_sdiff, not_true, not_false_iff, Finset.mem_singleton,
         update_self, and_false]
     · simp [hi]
   have Beq :
@@ -885,8 +886,7 @@ variable [Semiring R] [(i : ι) → AddCommMonoid (M₁ i)] [(i : ι) → Module
   [AddCommMonoid M₂] [Module R M₂]
 
 instance [Monoid S] [DistribMulAction S M₂] [SMulCommClass R S M₂] :
-    DistribMulAction S (MultilinearMap R M₁ M₂) := fast_instance%
-  coe_injective.distribMulAction coeAddMonoidHom fun _ _ ↦ rfl
+    DistribMulAction S (MultilinearMap R M₁ M₂) := fast_instance% FunLike.distribMulAction
 
 section Module
 
@@ -895,10 +895,10 @@ variable [Semiring S] [Module S M₂] [SMulCommClass R S M₂]
 /-- The space of multilinear maps over an algebra over `R` is a module over `R`, for the pointwise
 addition and scalar multiplication. -/
 instance : Module S (MultilinearMap R M₁ M₂) := fast_instance%
-  coe_injective.module _ coeAddMonoidHom fun _ _ ↦ rfl
+  FunLike.module
 
 instance [Module.IsTorsionFree S M₂] : Module.IsTorsionFree S (MultilinearMap R M₁ M₂) :=
-  coe_injective.moduleIsTorsionFree _ coe_smul
+  coe_injective.moduleIsTorsionFree _ FunLike.coe_smul
 
 variable [AddCommMonoid M₃] [Module S M₃] [Module R M₃] [SMulCommClass R S M₃]
 
@@ -1273,7 +1273,7 @@ theorem mkPiRing_eq_iff [Fintype ι] {z₁ z₂ : M₂} :
   · simp [h]
 
 theorem mkPiRing_zero [Fintype ι] : MultilinearMap.mkPiRing R ι (0 : M₂) = 0 := by
-  ext; rw [mkPiRing_apply, smul_zero, MultilinearMap.zero_apply]
+  ext; rw [mkPiRing_apply, smul_zero, zero_apply]
 
 theorem mkPiRing_eq_zero_iff [Fintype ι] (z : M₂) : MultilinearMap.mkPiRing R ι z = 0 ↔ z = 0 := by
   rw [← mkPiRing_zero, mkPiRing_eq_iff]
@@ -1288,9 +1288,10 @@ variable [Semiring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommGroup M₂] [∀ i
 instance : Neg (MultilinearMap R M₁ M₂) :=
   ⟨fun f => ⟨fun m => -f m, fun m i x y => by simp [add_comm], fun m i c x => by simp⟩⟩
 
-@[simp]
-theorem neg_apply (m : ∀ i, M₁ i) : (-f) m = -f m :=
-  rfl
+instance : IsNegApply (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+  neg_apply _ _ := rfl
+
+@[deprecated (since := "2026-06-10")] protected alias neg_apply := neg_apply
 
 instance : Sub (MultilinearMap R M₁ M₂) :=
   ⟨fun f g =>
@@ -1299,13 +1300,12 @@ instance : Sub (MultilinearMap R M₁ M₂) :=
       abel,
       fun m i c x => by simp only [MultilinearMap.map_update_smul, smul_sub]⟩⟩
 
-@[simp]
-theorem sub_apply (m : ∀ i, M₁ i) : (f - g) m = f m - g m :=
-  rfl
+instance : IsSubApply (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+  sub_apply _ _ _ := rfl
 
-instance : AddCommGroup (MultilinearMap R M₁ M₂) := fast_instance%
-  coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl)
+@[deprecated (since := "2026-06-10")] protected alias sub_apply := sub_apply
+
+instance : AddCommGroup (MultilinearMap R M₁ M₂) := fast_instance% FunLike.addCommGroup
 
 end RangeAddCommGroup
 
