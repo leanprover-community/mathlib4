@@ -167,8 +167,8 @@ theorem QuadraticMap.toMultilinearMap_continuous {V : Type*}
   have hB_cont : Continuous B := by
     exact B.continuous_of_finiteDimensional;
   convert hB_cont.comp ( show Continuous fun v : Fin 2 → V => v 0 from continuous_apply 0 ) |>
-    Continuous.clm_apply <| show Continuous fun v : Fin 2 → V => v 1 from continuous_apply 1 using 1
-    ; aesop;
+    Continuous.clm_apply <|
+      show Continuous fun v : Fin 2 → V => v 1 from continuous_apply 1 using 1; aesop
 
 theorem QuadraticMap.toMultilinearMap_continuous_half {V : Type*}
     [NormedAddCommGroup V] [NormedSpace ℝ V]
@@ -226,8 +226,8 @@ theorem QuadraticMap.toMultilinearMap_continuousHALF {V : Type*}
   have hB_cont : Continuous B := by
     exact B.continuous_of_finiteDimensional;
   convert hB_cont.comp ( show Continuous fun v : Fin 2 → V => v 0 from continuous_apply 0 ) |>
-    Continuous.clm_apply <| show Continuous fun v : Fin 2 → V => v 1 from continuous_apply 1 using 1
-    ; aesop
+    Continuous.clm_apply <|
+      show Continuous fun v : Fin 2 → V => v 1 from continuous_apply 1 using 1; aesop
 
 /-
 Construct a continuous multilinear map from a quadratic map on a finite dimensional space.
