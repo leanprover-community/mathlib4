@@ -364,7 +364,7 @@ alias NormedAddCommGroup.nhds_zero_basis_norm_lt := NormedAddGroup.nhds_zero_bas
 @[to_additive]
 theorem NormedGroup.uniformity_basis_dist :
     (𝓤 E).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { p : E × E | ‖p.fst⁻¹ * p.snd‖ < ε } := by
-  convert! Metric.uniformity_basis_dist (α := E) using 1
+  convert Metric.uniformity_basis_dist (α := E)
   simp [dist_eq_norm_inv_mul]
 
 open Finset
@@ -1069,9 +1069,10 @@ open Lean Meta Qq Function
 /-- Extension for the `positivity` tactic: multiplicative norms are always nonnegative, and positive
 on non-one inputs. -/
 @[positivity ‖_‖]
-meta def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
+meta def evalMulNorm : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
+    let some _ := pα? | pure .none
     let _seminormedGroup_E ← synthInstanceQ q(SeminormedGroup $E)
     assertInstancesCommute
     -- Check whether we are in a normed group and whether the context contains a `a ≠ 1` assumption
@@ -1091,9 +1092,10 @@ meta def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
 /-- Extension for the `positivity` tactic: additive norms are always nonnegative, and positive
 on non-zero inputs. -/
 @[positivity ‖_‖]
-meta def evalAddNorm : PositivityExt where eval {u α} _ _ e := do
+meta def evalAddNorm : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
+    let some _ := pα? | pure .none
     let _seminormedAddGroup_E ← synthInstanceQ q(SeminormedAddGroup $E)
     assertInstancesCommute
     -- Check whether we are in a normed group and whether the context contains a `a ≠ 0` assumption
