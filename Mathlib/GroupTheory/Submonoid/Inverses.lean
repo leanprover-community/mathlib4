@@ -50,9 +50,14 @@ noncomputable instance [CommMonoid M] : CommGroup (IsUnit.submonoid M) :=
     mul_comm := fun a b ↦ by convert! mul_comm a b }
 
 @[to_additive]
-theorem IsUnit.Submonoid.coe_inv [Monoid M] (x : IsUnit.submonoid M) :
+theorem _root_.IsUnit.submonoid.coe_inv [Monoid M] (x : IsUnit.submonoid M) :
     ↑x⁻¹ = (↑x.prop.unit⁻¹ : M) :=
   rfl
+
+@[deprecated (since := "2026-05-24")]
+alias _root_.AddSubmonoid.IsUnit.Submonoid.coe_neg := IsAddUnit.addSubmonoid.coe_neg
+@[to_additive existing, deprecated (since := "2026-05-24")]
+alias IsUnit.Submonoid.coe_inv := IsUnit.submonoid.coe_inv
 
 section Monoid
 

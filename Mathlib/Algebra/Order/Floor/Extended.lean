@@ -60,13 +60,19 @@ variable {r s : ℝ≥0∞} {n : ℕ∞}
 @[inherit_doc] notation "⌈" r "⌉ₑ" => ENat.ceil r
 
 @[simp] lemma floor_top : ⌊∞⌋ₑ = ⊤ := rfl
+
 @[simp] lemma ceil_top : ⌈∞⌉ₑ = ⊤ := rfl
+
 @[simp, norm_cast] lemma floor_coe (r : ℝ≥0) : ⌊r⌋ₑ = ⌊r⌋₊ := rfl
+
 @[simp, norm_cast] lemma ceil_coe (r : ℝ≥0) : ⌈r⌉ₑ = ⌈r⌉₊ := rfl
 
 @[simp] lemma floor_eq_top : ⌊r⌋ₑ = ⊤ ↔ r = ∞ := by cases r <;> simp
+
 @[simp] lemma ceil_eq_top : ⌈r⌉ₑ = ⊤ ↔ r = ∞ := by cases r <;> simp
+
 lemma floor_lt_top : ⌊r⌋ₑ < ⊤ ↔ r < ∞ := by cases r <;> simp
+
 @[simp] lemma ceil_lt_top : ⌈r⌉ₑ < ⊤ ↔ r < ∞ := by cases r <;> simp
 
 @[simp] lemma le_floor : n ≤ ⌊r⌋ₑ ↔ n ≤ r := by cases r <;> cases n <;> simp [Nat.le_floor_iff]
@@ -74,6 +80,7 @@ lemma floor_lt_top : ⌊r⌋ₑ < ⊤ ↔ r < ∞ := by cases r <;> simp
 @[simp] lemma ceil_le : ⌈r⌉ₑ ≤ n ↔ r ≤ n := by cases r <;> cases n <;> simp
 
 @[simp] lemma floor_lt : ⌊r⌋ₑ < n ↔ r < n := lt_iff_lt_of_le_iff_le le_floor
+
 @[simp] lemma lt_ceil : n < ⌈r⌉ₑ ↔ n < r := lt_iff_lt_of_le_iff_le ceil_le
 
 lemma gc_toENNReal_floor : GaloisConnection (↑) floor := fun _ _ ↦ le_floor.symm
@@ -249,11 +256,11 @@ alias ⟨_, natCeil_pos⟩ := ENat.ceil_pos
 
 /-- Extension for the `positivity` tactic: `ENat.ceil` is positive if its input is. -/
 @[positivity ⌈_⌉ₑ]
-meta def evalENatCeil : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalENatCeil : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℕ∞), ~q(ENat.ceil $r) =>
-    assertInstancesCommute
-    match ← core q(inferInstance) q(inferInstance) r with
+    let some _ := pα? | pure .none
+    match ← core q(inferInstance) (some q(inferInstance)) r with
     | .positive pr =>
       assertInstancesCommute
       pure (.positive q(natCeil_pos $pr))

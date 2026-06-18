@@ -229,6 +229,8 @@ decreasing_by
   apply Submodule.finrank_lt_finrank_of_lt
   exact hA.lt_top
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 set_option backward.isDefEq.respectTransparency false in
 /-- **Lie's theorem**: Lie modules of solvable Lie algebras over fields of characteristic 0
 have a common eigenvector for the action of all elements of the Lie algebra.
