@@ -412,7 +412,7 @@ the weak duals. -/
 noncomputable def extendRCLikeL : WeakDual ℝ F ≃L[ℝ] WeakDual 𝕜 F where
   toLinearEquiv := toStrongDual ≪≫ₗ extendRCLikeₗ ≪≫ₗ toWeakDual.restrictScalars ℝ
   continuous_toFun := continuous_of_continuous_eval_re fun x ↦ by
-    simpa [extendRCLikeₗ_apply, toWeakDual_apply _ x] using eval_continuous x
+    simpa [extendRCLikeₗ_apply] using eval_continuous x
   continuous_invFun :=
     continuous_of_continuous_eval fun x ↦ RCLike.continuous_re.comp (eval_continuous x)
 
@@ -438,7 +438,7 @@ lemma re_extendRCLikeL_apply_apply (f : WeakDual ℝ F) (x : F) :
 @[simp]
 lemma im_extendRCLikeL_apply_apply (f : WeakDual ℝ F) (x : F) :
     im (extendRCLikeL (𝕜 := 𝕜) f x) = - f ((I : 𝕜) • x) := by
-  obtain (h | h) := RCLike.I_eq_zero_or_im_I_eq_one (K := 𝕜) <;> simp [extendRCLikeL_apply_apply, h]
+  simp [extendRCLikeL_apply, extendRCLikeₗ_apply]
 
 @[simp high]
 lemma toStrongDual_extendRCLikeL_apply (f : WeakDual ℝ F) :
