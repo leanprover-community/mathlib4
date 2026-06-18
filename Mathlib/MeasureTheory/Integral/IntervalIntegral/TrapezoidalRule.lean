@@ -29,6 +29,7 @@ open MeasureTheory intervalIntegral Interval Finset HasDerivWithinAt Set
 /-- Integration of `f` from `a` to `b` using the trapezoidal rule with `N+1` total evaluations of
 `f`.  (Note the off-by-one problem here: `N` counts the number of trapezoids, not the number of
 evaluations.) -/
+@[wikidata Q753445]
 noncomputable def trapezoidal_integral (f : ℝ → ℝ) (N : ℕ) (a b : ℝ) : ℝ :=
   ((b - a) / N) * ((f a + f b) / 2 + ∑ k ∈ range (N - 1), f (a + (k + 1) * (b - a) / N))
 

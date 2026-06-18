@@ -53,6 +53,7 @@ section rootsOfUnity
 variable {k l : ℕ}
 
 /-- `rootsOfUnity k M` is the subgroup of elements `m : Mˣ` that satisfy `m ^ k = 1`. -/
+@[wikidata Q756747]
 def rootsOfUnity (k : ℕ) (M : Type*) [CommMonoid M] : Subgroup Mˣ where
   carrier := {ζ | ζ ^ k = 1}
   one_mem' := one_pow _

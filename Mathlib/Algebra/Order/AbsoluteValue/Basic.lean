@@ -266,7 +266,7 @@ variable {R S : Type*} [Semiring R] [Ring S] [LinearOrder S] [IsStrictOrderedRin
   (abv : AbsoluteValue R S)
 
 /-- `AbsoluteValue.abs` is `abs` as a bundled `AbsoluteValue`. -/
-@[simps]
+@[simps, wikidata Q120812]
 protected def abs : AbsoluteValue S S where
   toFun := abs
   nonneg' := abs_nonneg

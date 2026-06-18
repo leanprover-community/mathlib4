@@ -57,6 +57,7 @@ def mkClasses (c : Set (Set α)) (H : ∀ a, ∃! b ∈ c, a ∈ b) : Setoid α 
   iseqv.trans := fun {_x _ _} h1 h2 s hs hx => h2 s hs (h1 s hs hx)
 
 /-- Makes the equivalence classes of an equivalence relation. -/
+@[wikidata Q1211071]
 def classes (r : Setoid α) : Set (Set α) :=
   { s | ∃ y, s = { x | r x y } }
 

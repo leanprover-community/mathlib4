@@ -43,6 +43,7 @@ theorem iSup₂_iInf₂_le_iInf₂_iSup₂ [CompleteLinearOrder β] :
 if `f a y ≤ f x b` for all `x ∈ X` and all `y` in `Y`.
 
 Note: we do not require that `a ∈ X` and `b ∈ Y`. -/
+@[wikidata Q690935]
 def IsSaddlePointOn [Preorder β] (a : E) (b : F) : Prop :=
   ∀ x ∈ X, ∀ y ∈ Y, f a y ≤ f x b
 

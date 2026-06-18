@@ -100,6 +100,7 @@ alias ⟨IsBigOWith.bound, IsBigOWith.of_bound⟩ := isBigOWith_iff
 a filter on `α`, means that eventually for `l`, `‖f‖` is bounded by a constant multiple of `‖g‖`.
 In other words, `‖f‖ / ‖g‖` is eventually bounded, modulo division by zero issues that are avoided
 by this definition. -/
+@[wikidata Q752718]
 irreducible_def IsBigO (l : Filter α) (f : α → E) (g : α → F) : Prop :=
   ∃ c : ℝ, IsBigOWith c l f g
 

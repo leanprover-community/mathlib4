@@ -41,6 +41,7 @@ variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (P : R[X]) {x : S
 
 /-- Given a single-variable polynomial `P` with derivative `P'`, this is the map:
 `x ↦ x - P(x) / P'(x)`. When `P'(x)` is not a unit we use a junk-value pattern and send `x ↦ x`. -/
+@[wikidata Q374195]
 def newtonMap (x : S) : S :=
   x - (Ring.inverse <| aeval x (derivative P)) * aeval x P
 
