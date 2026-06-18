@@ -207,23 +207,20 @@ lemma isIso_of_isCompl_closure ⦃X U V : TopPair⦄ (f : U ⟶ X) (g : V ⟶ X)
     (hcompl : TopPair.IsCompl f g)
     (hU : closure (Set.range (Hom.fst f)) ⊆ interior (Set.range X.map)) : IsIso U.map := by
   have surjective_U : Function.Surjective U.map := by
-    rw [← Set.range_eq_univ, Set.Subset.antisymm_iff]
-    use (by simp)
-    rw [← Set.image_subset_image_iff hf.fst.injective]
-    have h₀ : Set.range (Hom.fst f) ⊆ Hom.fst f '' Set.range U.map ∪ Hom.fst g '' Set.range V.map :=
-      by
-      simp only [← Set.range_comp, ← CategoryTheory.hom_comp]
-      simp only [← Arrow.w, CategoryTheory.hom_comp, Set.range_comp, ← Set.image_union,
-        ← Set.sup_eq_union, codisjoint_iff.mp hcompl.snd.codisjoint, Set.top_eq_univ,
-        Set.image_univ]
-      calc
-        Set.range (Hom.fst f) ⊆ closure (Set.range (Hom.fst f)) := subset_closure
+    rw [← Set.range_eq_univ, ← Set.univ_subset_iff, ← Set.image_subset_image_iff hf.fst.injective, 
+      Set.image_univ]
+    refine Disjoint.subset_left_of_subset_union (u := Hom.fst g '' (Set.range V.map)) ?_ ?_
+    · calc
+        _ ⊆ closure (Set.range (Hom.fst f)) := subset_closure
         _ ⊆ interior (Set.range X.map) := hU
         _ ⊆ Set.range X.map := interior_subset
-    have h₁ : Disjoint (Set.range (Hom.fst f)) (Hom.fst g '' Set.range V.map) := by
-      rw [Set.disjoint_iff, ← Set.disjoint_iff_inter_eq_empty.mp hcompl.fst.disjoint]
+        _ ⊆ _ := by
+          simp only [← Set.range_comp, ← CategoryTheory.hom_comp, ← Arrow.w]
+          dsimp
+          have := hcompl.snd.codisjoint
+          simp_all [codisjoint_iff, Set.range_comp, ← Set.image_union, ← Set.sup_eq_union]
+    · rw [Set.disjoint_iff, ← Set.disjoint_iff_inter_eq_empty.mp hcompl.fst.disjoint]
       grind
-    simp [Disjoint.subset_left_of_subset_union h₀ h₁]
   apply TopCat.isIso_of_bijective_of_isOpenMap _
     ⟨U.prop.injective, surjective_U⟩
   apply Topology.IsInducing.isOpenMap U.prop.isInducing
