@@ -70,7 +70,6 @@ lemma f₃ : f 3 = 1 := by
 
 lemma superadditive {m n : ℕ+} : f m + f n ≤ f (m + n) := by have h := hf.rel m n; grind
 
-set_option backward.isDefEq.respectTransparency false in
 lemma superhomogeneous {m n : ℕ+} : ↑n * f m ≤ f (n * m) := by
   induction n with
   | one => simp
@@ -84,7 +83,6 @@ lemma superhomogeneous {m n : ℕ+} : ↑n * f m ≤ f (n * m) := by
 lemma superlinear {a b c d : ℕ+} : a * f b + c * f d ≤ f (a * b + c * d) :=
   (add_le_add hf.superhomogeneous hf.superhomogeneous).trans hf.superadditive
 
-set_option backward.isDefEq.respectTransparency false in
 lemma le_mul_three_apply (n : ℕ+) : n ≤ f (3 * n) := by
   rw [← mul_one (n : ℕ), ← hf.f₃, mul_comm 3]
   exact hf.superhomogeneous
@@ -95,7 +93,7 @@ lemma part_1 : 660 ≤ f (1980) := by
 lemma part_2 : f 1980 ≤ 660 := by
   have h : 5 * f 1980 + 33 * f 3 ≤ 5 * 660 + 33 := by
     calc (5 : ℕ+) * f 1980 + (33 : ℕ+) * f 3 ≤ f (5 * 1980 + 33 * 3) := by apply hf.superlinear
-    _ = f 9999 := by rfl
+    _ = f 9999 := rfl
     _ = 5 * 660 + 33 := by rw [hf.f_9999]
   rw [hf.f₃, mul_one] at h
   -- from 5 * f 1980 + 33 ≤ 5 * 660 + 33 we show f 1980 ≤ 660

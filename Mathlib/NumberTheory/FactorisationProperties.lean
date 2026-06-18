@@ -87,7 +87,7 @@ theorem deficient_one : Deficient 1 := by
 theorem deficient_two : Deficient 2 := by
   decide
 
-theorem deficient_three : Deficient 3 :=  by
+theorem deficient_three : Deficient 3 := by
   decide
 
 theorem not_abundant_zero : ¬ Abundant 0 := by
@@ -126,42 +126,23 @@ theorem Prime.not_weird (h : Prime n) : ¬ Weird n := by
   grind [Weird, h.not_abundant]
 
 theorem Prime.not_pseudoperfect (h : Prime p) : ¬ Pseudoperfect p := by
-  simp_rw [not_pseudoperfect_iff_forall, ← mem_powerset,
-    show p.properDivisors.powerset = {∅, {1}} by rw [Prime.properDivisors h]; rfl]
-  refine Or.inr (fun s hs ↦ ?_)
-  fin_cases hs <;>
-  simp only [sum_empty, sum_singleton] <;>
-  grind [Prime.one_lt h]
+  rw [not_pseudoperfect_iff_forall]
+  refine Or.inr fun s hs ↦ ne_of_lt (lt_of_le_of_lt ?_ h.one_lt)
+  rw [Prime.properDivisors h] at hs
+  simpa using Finset.sum_le_sum_of_subset hs
 
-theorem Prime.not_perfect (h : Prime p) : ¬ Perfect p := by
-  have h1 := Prime.not_pseudoperfect h
-  revert h1
-  exact not_imp_not.mpr (Perfect.pseudoperfect)
+theorem Prime.not_perfect (h : Prime p) : ¬ Perfect p :=
+  fun hp ↦ h.not_pseudoperfect hp.pseudoperfect
 
 /-- Any natural number power of a prime is deficient -/
 theorem Prime.deficient_pow (h : Prime n) : Deficient (n ^ m) := by
   rcases Nat.eq_zero_or_pos m with (rfl | _)
   · simpa using deficient_one
-  · have h1 : (n ^ m).properDivisors = image (n ^ ·) (range m) := by
-      apply subset_antisymm <;> intro a
-      · simp only [mem_properDivisors, mem_image, mem_range, dvd_prime_pow h]
-        rintro ⟨⟨t, ht, rfl⟩, ha'⟩
-        exact ⟨t, lt_of_le_of_ne ht (fun ht' ↦ lt_irrefl _ (ht' ▸ ha')), rfl⟩
-      · simp only [mem_image, mem_range, mem_properDivisors, forall_exists_index, and_imp]
-        intro x hx hy
-        constructor
-        · rw [← hy, dvd_prime_pow h]
-          exact ⟨x, Nat.le_of_succ_le hx, rfl⟩
-        · rw [← hy]
-          exact (Nat.pow_lt_pow_iff_right (Prime.two_le h)).mpr hx
-    have h2 : ∑ i ∈ image (fun x => n ^ x) (range m), i = ∑ i ∈ range m, n ^ i := by
-      rw [sum_image]
-      rintro x _ y _
-      apply pow_injective_of_not_isUnit h.not_isUnit <| Prime.ne_zero h
-    rw [Deficient, h1, h2]
+  · rw [Deficient, properDivisors_prime_pow h]
     calc
-      ∑ i ∈ range m, n ^ i
-        = (n ^ m - 1) / (n - 1) := (Nat.geomSum_eq (Prime.two_le h) _)
+      ∑ x ∈ Finset.map ⟨(n ^ ·), Nat.pow_right_injective h.two_le⟩ (range m), x
+        = ∑ i ∈ range m, n ^ i := by simp
+      _ = (n ^ m - 1) / (n - 1) := (Nat.geomSum_eq (Prime.two_le h) _)
       _ ≤ (n ^ m - 1) := Nat.div_le_self (n ^ m - 1) (n - 1)
       _ < n ^ m := sub_lt (pow_pos (Prime.pos h) m) (Nat.one_pos)
 

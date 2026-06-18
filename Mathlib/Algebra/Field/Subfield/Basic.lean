@@ -256,7 +256,7 @@ theorem coe_sInf (S : Set (Subfield K)) : ((sInf S : Subfield K) : Set K) = ⋂ 
 
 @[simp]
 theorem mem_sInf {S : Set (Subfield K)} {x : K} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
-  simpa only [Set.mem_iInter] using Set.ext_iff.1 (coe_sInf S) x
+  simpa only [Set.mem_iInter] using! Set.ext_iff.1 (coe_sInf S) x
 
 @[simp, norm_cast]
 theorem coe_iInf {ι : Sort*} {S : ι → Subfield K} : (↑(⨅ i, S i) : Set K) = ⋂ i, S i := by
@@ -275,7 +275,7 @@ theorem sInf_toSubring (s : Set (Subfield K)) :
 theorem isGLB_sInf (S : Set (Subfield K)) : IsGLB S (sInf S) := by
   have : ∀ {s t : Subfield K}, (s : Set K) ≤ t ↔ s ≤ t := by simp [SetLike.coe_subset_coe]
   refine IsGLB.of_image this ?_
-  convert isGLB_biInf (s := S) (f := SetLike.coe)
+  convert! isGLB_biInf (s := S) (f := SetLike.coe)
   exact coe_sInf _
 
 /-- Subfields of a ring form a complete lattice. -/
@@ -433,6 +433,12 @@ theorem coe_sSup_of_directedOn {S : Set (Subfield K)} (Sne : S.Nonempty)
 
 end Subfield
 
+variable (L) in
+/-- A field is finitely generated if it is the closure of a finite subset. -/
+@[mk_iff fg_iff]
+protected class Field.FG : Prop where
+  finitely_generated : ∃ S : Finset L, Subfield.closure (S : Set L) = ⊤
+
 namespace RingHom
 
 variable {s : Subfield K}
@@ -550,7 +556,7 @@ protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → K} (h : ∀ 
   prod_mem h
 
 instance toAlgebra : Algebra s K :=
-  RingHom.toAlgebra s.subtype
+  inferInstance
 
 theorem algebraMap_ofSubfield : algebraMap s K = s.subtype :=
   rfl

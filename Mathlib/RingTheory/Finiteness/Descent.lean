@@ -22,7 +22,7 @@ In this file we show that
 descend along faithfully flat base change.
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 
@@ -93,7 +93,6 @@ lemma FiniteType.of_finiteType_tensorProduct_of_faithfullyFlat
     simp [f, ← h, i]
   exact (Module.FaithfullyFlat.lTensor_surjective_iff_surjective _ T _).mp hf
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- If `T ⊗[R] S` is of finite presentation over `T` and `T` is `R`-faithfully flat,
 then `S` is of finite presentation over `R` -/

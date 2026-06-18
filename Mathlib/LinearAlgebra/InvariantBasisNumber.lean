@@ -213,11 +213,11 @@ instance (priority := 100) invariantBasisNumber_of_rankCondition [RankCondition 
 /-- A semiring `R` satisfies the strong rank condition, iff we cannot embed `R^(ℕ)` in some `Rⁿ`. -/
 theorem strongRankCondition_iff_forall_not_injective :
     StrongRankCondition R ↔ ∀ n (f : (ℕ →₀ R) →ₗ[R] Fin n → R), ¬ Injective f := by
-  rw [strongRankCondition_iff_succ, ← not_iff_not]; push_neg
+  rw [strongRankCondition_iff_succ, ← not_iff_not]; push Not
   constructor <;> refine fun ⟨n, f, inj⟩ ↦ ⟨n, ?_⟩
   · exact f.exists_finsupp_nat_of_fin_fun_injective inj
   · exact ⟨f ∘ₗ Finsupp.lmapDomain R R (↑) ∘ₗ (Finsupp.linearEquivFunOnFinite ..).symm.toLinearMap,
-      inj.comp <| by simpa using Finsupp.mapDomain_injective Fin.val_injective⟩
+      inj.comp <| by simpa using! Finsupp.mapDomain_injective Fin.val_injective⟩
 
 end
 

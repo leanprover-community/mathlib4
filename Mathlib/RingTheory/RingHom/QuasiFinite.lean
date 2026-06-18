@@ -68,7 +68,6 @@ lemma QuasiFinite.holdsForLocalizationAway : HoldsForLocalizationAway QuasiFinit
   introv R _
   exact quasiFinite_algebraMap.mpr (.of_isLocalization (.powers r))
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance high] Algebra.TensorProduct.leftAlgebra Algebra.toModule
     IsScalarTower.right DivisionRing.instIsArtinianRing in
 lemma QuasiFinite.ofLocalizationSpanTarget : OfLocalizationSpanTarget QuasiFinite := by
@@ -96,7 +95,7 @@ lemma QuasiFinite.ofLocalizationSpanTarget : OfLocalizationSpanTarget QuasiFinit
   let ψ : P.Fiber (Localization.Away r) →ₐ[P.ResidueField] Localization.AtPrime J :=
     Algebra.TensorProduct.lift (Algebra.ofId _ _) ⟨IsLocalization.map (M := .powers r)
       (T := J.primeCompl) _ Algebra.TensorProduct.includeRight.toRingHom (by
-      simpa [Submonoid.powers_le] using hrI), by
+      simpa [Submonoid.powers_le] using! hrI), by
       simp [IsScalarTower.algebraMap_apply R S (Localization.Away r),
         -Algebra.TensorProduct.algebraMap_apply,
         ← IsScalarTower.algebraMap_apply R _ (Localization.AtPrime J)]⟩ (fun _ _ ↦ .all _ _)

@@ -64,6 +64,7 @@ def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
   target_eq := univ_prod_univ.symm
   proj_toFun _ _ := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp] lemma trivialization_symm_apply [Zero F] (b : B) (f : F) :
     (trivialization B F).symm b f = f := by
   simp [trivialization, homeomorphProd, TotalSpace.toProd, Trivialization.symm,
@@ -201,7 +202,8 @@ noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ 
   left_inv' _ := Prod.left_inv
   right_inv' _ := Prod.right_inv
   open_source := by
-    convert (e₁.open_source.prod e₂.open_source).preimage
+    convert!
+      (e₁.open_source.prod e₂.open_source).preimage
         (FiberBundle.Prod.isInducing_diag F₁ E₁ F₂ E₂).continuous
     ext x
     simp only [Trivialization.source_eq, mfld_simps]
@@ -306,7 +308,7 @@ variable [∀ _b, Zero (E _b)] {K : Type U} [FunLike K B' B] [ContinuousMapClass
 noncomputable def Bundle.Trivialization.pullback (e : Trivialization F (π F E)) (f : K) :
     Trivialization F (π F ((f : B' → B) *ᵖ E)) where
   toFun z := (z.proj, (e (Pullback.lift f z)).2)
-  invFun y := @TotalSpace.mk _ F (f *ᵖ E) y.1 (e.symm (f y.1) y.2)
+  invFun y := TotalSpace.mk' F y.1 (e.symm (f y.1) y.2)
   source := Pullback.lift f ⁻¹' e.source
   baseSet := f ⁻¹' e.baseSet
   target := (f ⁻¹' e.baseSet) ×ˢ univ

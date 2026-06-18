@@ -88,7 +88,6 @@ theorem length_le_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
     s.length h ≤ n ↔ s.TerminatedAt n := by
   rw [← length_le_iff']; simp [h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem length'_le_iff {s : Seq α} {n : ℕ} :
     s.length' ≤ n ↔ s.TerminatedAt n := by
   by_cases h : s.Terminates
@@ -113,7 +112,6 @@ theorem lt_length_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
     n < s.length h ↔ ∃ a, a ∈ s.get? n := by
   rw [← lt_length_iff']; simp [h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lt_length'_iff {s : Seq α} {n : ℕ} :
     n < s.length' ↔ ∃ a, a ∈ s.get? n := by
   by_cases h : s.Terminates
@@ -184,8 +182,7 @@ theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
     rw [← hl, take, head_eq_some h_get]
     simp
   | succ k ih =>
-    obtain ⟨l, hl⟩ := Nat.exists_eq_add_of_lt h_mn
-    subst hl
+    obtain ⟨l, rfl⟩ := Nat.exists_eq_add_of_lt h_mn
     have : ∃ y, s.get? 0 = some y := by
       apply ge_stable _ _ h_get
       simp
@@ -498,7 +495,7 @@ theorem drop_get? {n m : ℕ} {s : Seq α} : (s.drop n).get? m = s.get? (n + m) 
   | zero => simp [drop]
   | succ k ih =>
     simp only [drop, get?_tail]
-    convert ih using 2
+    convert! ih using 2
     lia
 
 theorem dropn_add (s : Seq α) (m) : ∀ n, drop s (m + n) = drop (drop s m) n
@@ -528,7 +525,6 @@ theorem drop_nil {n : ℕ} : (@nil α).drop n = nil := by
   | zero => simp [drop]
   | succ m ih => simp [← dropn_tail, ih]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem drop_length' {n : ℕ} {s : Seq α} :
     (s.drop n).length' = s.length' - n := by
@@ -539,7 +535,7 @@ theorem drop_length' {n : ℕ} {s : Seq α} :
     | nil => simp
     | cons x s =>
       simp only [drop_succ_cons, length'_cons, Nat.cast_add, Nat.cast_one]
-      convert drop_length' using 1
+      convert! drop_length' using 1
       generalize s.length' = m
       enat_to_nat
       lia
@@ -626,12 +622,12 @@ theorem zipWith_map (s₁ : Seq α) (s₂ : Seq β) (f₁ : α → α') (f₂ : 
 
 theorem zipWith_map_left (s₁ : Seq α) (s₂ : Seq β) (f : α → α') (g : α' → β → γ) :
     zipWith g (s₁.map f) s₂ = zipWith (fun a b ↦ g (f a) b) s₁ s₂ := by
-  convert zipWith_map _ _ _ (@id β) _
+  convert! zipWith_map _ _ _ (@id β) _
   simp
 
 theorem zipWith_map_right (s₁ : Seq α) (s₂ : Seq β) (f : β → β') (g : α → β' → γ) :
     zipWith g s₁ (s₂.map f) = zipWith (fun a b ↦ g a (f b)) s₁ s₂ := by
-  convert zipWith_map _ _ (@id α) _ _
+  convert! zipWith_map _ _ (@id α) _ _
   simp
 
 theorem zip_map (s₁ : Seq α) (s₂ : Seq β) (f₁ : α → α') (f₂ : β → β') :
@@ -642,12 +638,12 @@ theorem zip_map (s₁ : Seq α) (s₂ : Seq β) (f₁ : α → α') (f₂ : β �
 
 theorem zip_map_left (s₁ : Seq α) (s₂ : Seq β) (f : α → α') :
     (s₁.map f).zip s₂ = (s₁.zip s₂).map (Prod.map f id) := by
-  convert zip_map _ _ _ _
+  convert! zip_map _ _ _ _
   simp
 
 theorem zip_map_right (s₁ : Seq α) (s₂ : Seq β) (f : β → β') :
     s₁.zip (s₂.map f) = (s₁.zip s₂).map (Prod.map id f) := by
-  convert zip_map _ _ _ _
+  convert! zip_map _ _ _ _
   simp
 
 end ZipWith
@@ -715,11 +711,11 @@ theorem set_cons_succ (n : ℕ) : (cons hd tl).set (n + 1) x = cons hd (tl.set n
 
 theorem get?_set_of_not_terminatedAt {s : Seq α} {n : ℕ} (h_not_terminated : ¬ s.TerminatedAt n) :
     (s.set n x).get? n = x := by
-  simpa [set, update, ← Option.ne_none_iff_exists'] using h_not_terminated
+  simpa [set, update, ← Option.ne_none_iff_exists'] using! h_not_terminated
 
 theorem get?_set_of_terminatedAt {s : Seq α} {n : ℕ} (h_terminated : s.TerminatedAt n) :
     (s.set n x).get? n = .none := by
-  simpa [set, get?_update] using h_terminated
+  simpa [set, get?_update] using! h_terminated
 
 theorem get?_set_of_ne (s : Seq α) {m n : ℕ} (h : n ≠ m) : (s.set m x).get? n = s.get? n := by
   simp [set, get?_update, h]
@@ -907,7 +903,6 @@ theorem Pairwise_drop {R : α → α → Prop} {s : Seq α} (h : s.Pairwise R) {
 
 end Pairwise
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Coinductive principle for proving `b.length' ≤ a.length'` for two sequences `a` and `b`. -/
 theorem at_least_as_long_as_coind {a : Seq α} {b : Seq β}
     (motive : Seq α → Seq β → Prop) (base : motive a b)

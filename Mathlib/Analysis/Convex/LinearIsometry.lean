@@ -15,7 +15,7 @@ public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 In this file we prove some basic lemmas about (strict) convexity and linear isometries.
 -/
 
-@[expose] public section
+public section
 
 open Function Set Metric
 open scoped Convex

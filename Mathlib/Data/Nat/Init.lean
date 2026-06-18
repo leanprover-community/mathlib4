@@ -5,12 +5,10 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Batteries.Tactic.Alias
+public import Batteries.Data.Nat.Lemmas
 public import Batteries.Util.LibraryNote
-public import Mathlib.Init
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
-public import Mathlib.Tactic.Lemma
 
 /-!
 # Basic operations on the natural numbers
@@ -68,8 +66,6 @@ lemma succ_pos' : 0 < succ n := succ_pos n
 alias _root_.LT.lt.nat_succ_le := succ_le_of_lt
 
 alias ⟨of_le_succ, _⟩ := le_succ_iff
-
-@[deprecated (since := "2025-08-21")] alias forall_lt_succ := forall_lt_succ_right
 
 lemma two_lt_of_ne : ∀ {n}, n ≠ 0 → n ≠ 1 → n ≠ 2 → 2 < n
   | 0, h, _, _ => (h rfl).elim
@@ -225,44 +221,10 @@ lemma leRecOn_succ_left {C : ℕ → Sort*} {n m}
     (leRecOn h2 next (next x) : C m) = (leRecOn h1 next x : C m) :=
   leRec_succ_left (motive := fun n _ => C n) _ (fun _ _ => @next _) _ _
 
-set_option backward.privateInPublic true in
-private abbrev strongRecAux {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) :
-    ∀ n : ℕ, ∀ m < n, p m
-  | 0, _, h => by simp at h
-  | n + 1, m, hmn => H _ fun l hlm ↦
-      strongRecAux H n l (Nat.lt_of_lt_of_le hlm <| le_of_lt_succ hmn)
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-/-- Recursion principle based on `<`. -/
-@[elab_as_elim]
-protected def strongRec' {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) (n : ℕ) : p n :=
-  H n <| strongRecAux H n
-
-set_option backward.privateInPublic true in
-private lemma strongRecAux_spec {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) (n : ℕ) :
-    ∀ m (lt : m < n), strongRecAux H n m lt = H m (strongRecAux H m) :=
-  n.strongRec' fun n ih m hmn ↦ by
-    obtain _ | n := n
-    · cases hmn
-    refine congrArg (H _) ?_
-    ext l hlm
-    exact (ih _ n.lt_succ_self _ _).trans (ih _ hmn _ _).symm
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-lemma strongRec'_spec {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) :
-    n.strongRec' H = H n fun m _ ↦ m.strongRec' H :=
-  congrArg (H n) <| by ext m lt; apply strongRecAux_spec
-
-/-- Recursion principle based on `<` applied to some natural number. -/
-@[elab_as_elim]
-def strongRecOn' {P : ℕ → Sort*} (n : ℕ) (h : ∀ n, (∀ m < n, P m) → P n) : P n :=
-  Nat.strongRec' h n
-
-lemma strongRecOn'_beta {P : ℕ → Sort*} {h} :
-    (strongRecOn' n h : P n) = h n fun m _ ↦ (strongRecOn' m h : P m) :=
-  strongRec'_spec _
+@[deprecated (since := "2026-03-05")] alias strongRec' := Nat.strongRec
+@[deprecated (since := "2026-03-05")] alias strongRec'_spec := Nat.strongRec_eq
+@[deprecated (since := "2026-03-05")] alias strongRecOn' := Nat.strongRec
+@[deprecated (since := "2026-03-05")] alias strongRecOn'_beta := Nat.strongRec_eq
 
 /-- Induction principle starting at a non-zero number.
 To use in an induction proof, the syntax is `induction n, hn using Nat.le_induction` (or the same
@@ -275,11 +237,24 @@ lemma le_induction {m : ℕ} {P : ∀ n, m ≤ n → Prop} (base : P m m.le_refl
   @Nat.leRec (motive := P) _ base succ
 
 /-- Induction principle deriving the next case from the two previous ones. -/
-def twoStepInduction {P : ℕ → Sort*} (zero : P 0) (one : P 1)
-    (more : ∀ n, P n → P (n + 1) → P (n + 2)) : ∀ a, P a
+@[elab_as_elim]
+def twoStepInduction {motive : ℕ → Sort*} (zero : motive 0) (one : motive 1)
+    (more : ∀ n, motive n → motive (n + 1) → motive (n + 2)) : ∀ a, motive a
   | 0 => zero
   | 1 => one
   | _ + 2 => more _ (twoStepInduction zero one more _) (twoStepInduction zero one more _)
+
+/-- Induction principle deriving the next case from the `k` previous ones. Use as
+```
+induction n using stepInduction 3 with
+| base n hn => ...
+| step n ih => ...
+``` -/
+@[elab_as_elim]
+def stepInduction {motive : ℕ → Sort*} (k : ℕ) (base : ∀ i < k, motive i)
+    (step : ∀ n, (∀ i < k, motive (n + i)) → motive (n + k)) (a : ℕ) : motive a :=
+  if h : a < k then base _ h else
+  (show a - k + k = a by lia) ▸ step (a - k) fun _ _ ↦ stepInduction k base step _
 
 @[elab_as_elim]
 protected theorem strong_induction_on {p : ℕ → Prop} (n : ℕ)

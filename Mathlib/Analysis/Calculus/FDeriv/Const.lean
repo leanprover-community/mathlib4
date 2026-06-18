@@ -335,7 +335,7 @@ it is differentiable within `s` at `x`. -/
 lemma differentiableWithinAt_of_fderivWithin_injective (hf : Injective (fderivWithin 𝕜 f s x)) :
     DifferentiableWithinAt 𝕜 f s x := by
   nontriviality E
-  contrapose! hf
+  contrapose hf
   rw [fderivWithin_zero_of_not_differentiableWithinAt hf]
   exact not_injective_const
 

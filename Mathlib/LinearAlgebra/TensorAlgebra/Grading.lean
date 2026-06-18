@@ -39,11 +39,10 @@ theorem GradedAlgebra.ι_apply (m : M) :
 
 variable {R M}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The tensor algebra is graded by the powers of the submodule `(TensorAlgebra.ι R).range`. -/
 instance gradedAlgebra :
     GradedAlgebra ((LinearMap.range (ι R : M →ₗ[R] TensorAlgebra R M) ^ ·) : ℕ → Submodule R _) :=
-  GradedAlgebra.ofAlgHom _ (lift R <| GradedAlgebra.ι R M)
+  fast_instance% GradedAlgebra.ofAlgHom _ (lift R <| GradedAlgebra.ι R M)
     (by
       ext m
       dsimp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply, AlgHom.comp_apply,

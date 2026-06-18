@@ -59,8 +59,8 @@ namespace Algebra
 variable {R S : Type*}
 
 lemma mem_ideal_map_adjoin [CommSemiring R] [Semiring S] [Algebra R S] (x : S) (I : Ideal R)
-    {y : adjoin R {x}} :
-    y ∈ I.map (algebraMap R (adjoin R {x})) ↔
+    {y : R[x]} :
+    y ∈ I.map (algebraMap R (R[x])) ↔
       ∃ p : R[X], (∀ i, p.coeff i ∈ I) ∧ Polynomial.aeval x p = y := by
   constructor
   · intro H
@@ -83,7 +83,7 @@ lemma mem_ideal_map_adjoin [CommSemiring R] [Semiring S] [Algebra R S] (x : S) (
     have : y = ∑ i ∈ p.support, p.coeff i • ⟨_, (X ^ i).aeval_mem_adjoin_singleton _ x⟩ := by
       trans ∑ i ∈ p.support, ⟨_, (C (p.coeff i) * X ^ i).aeval_mem_adjoin_singleton _ x⟩
       · ext1
-        simp only [AddSubmonoidClass.coe_finset_sum, ← map_sum, ← hp', ← as_sum_support_C_mul_X_pow]
+        simp only [AddSubmonoidClass.coe_finsetSum, ← map_sum, ← hp', ← as_sum_support_C_mul_X_pow]
       · congr with i
         simp [Algebra.smul_def]
     simp_rw [this, Algebra.smul_def]
@@ -91,7 +91,7 @@ lemma mem_ideal_map_adjoin [CommSemiring R] [Semiring S] [Algebra R S] (x : S) (
 
 lemma exists_aeval_invOf_eq_zero_of_idealMap_adjoin_sup_span_eq_top [CommRing R] [CommRing S]
     [Algebra R S] (x : S) (I : Ideal R) (hI : I ≠ ⊤) [Invertible x]
-    (h : I.map (algebraMap R (adjoin R {x})) ⊔ .span {⟨x, subset_adjoin rfl⟩} = ⊤) :
+    (h : I.map (algebraMap R (R[x])) ⊔ .span {⟨x, subset_adjoin rfl⟩} = ⊤) :
     ∃ p : R[X], p.leadingCoeff - 1 ∈ I ∧ p.aeval ⅟x = 0 := by
   rw [← Ideal.one_eq_top, ← Ideal.add_eq_sup, Ideal.add_eq_one_iff] at h
   have ⟨y, hy, z, hz, eq⟩ := h

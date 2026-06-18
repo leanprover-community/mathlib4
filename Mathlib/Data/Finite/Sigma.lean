@@ -12,7 +12,7 @@ public import Mathlib.Data.Fintype.Sigma
 # Finiteness of sigma types
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

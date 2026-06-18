@@ -67,6 +67,7 @@ to `+∞` on nonempty sets. Let `s = {x₀}` and `f` the indicator of `sᶜ`. Th
 * `μ.withDensity f s = +∞`. Indeed, this is the infimum of `μ.withDensity f t` over measurable sets
   `t` containing `s`. As `s` is not measurable, such a set `t` contains a point `x ≠ x₀`. Then
   `μ.withDensity f t ≥ μ.withDensity f {x} = ∫⁻ a in {x}, f a ∂μ = μ {x} = +∞`.
+
 One checks that `μ.withDensity f = μ`, while `μ.restrict s` gives zero mass to sets not
 containing `x₀`, and infinite mass to those that contain it. -/
 
@@ -251,7 +252,7 @@ theorem withDensity_apply_eq_zero' {f : α → ℝ≥0∞} {s : Set α} (hf : AE
     swap
     · simp only [measurableSet_toMeasurable, MeasurableSet.nullMeasurableSet]
     simp only [Pi.zero_apply] at A
-    convert A using 2
+    convert! A using 2
     ext x
     simp only [and_comm, exists_prop, mem_inter_iff, mem_setOf_eq,
       not_forall]
@@ -370,6 +371,15 @@ theorem count_withDensity' {f : α → ℝ≥0∞} (hf : Measurable f) :
 theorem count_withDensity [MeasurableSingletonClass α] (f : α → ℝ≥0∞) :
     count.withDensity f = sum (fun a ↦ f a • dirac a) := by
   simp [count, withDensity_sum, dirac_withDensity]
+
+@[fun_prop]
+theorem measurable_withDensity {β : Type*} [MeasurableSpace β] {f : β → α → ℝ≥0∞}
+    [SFinite μ] (hf : Measurable f.uncurry) :
+    Measurable fun b ↦ μ.withDensity (f b) := by
+  rw [Measure.measurable_measure]
+  intro s hs
+  simp only [withDensity_apply _ hs]
+  fun_prop
 
 open MeasureTheory.SimpleFunc
 

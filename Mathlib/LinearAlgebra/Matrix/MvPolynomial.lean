@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 /-!
 # Matrices of multivariate polynomials
 
-In this file, we prove results about matrices over an `MVPolynomial` ring.
+In this file, we prove results about matrices over an `MvPolynomial` ring.
 In particular, we provide `Matrix.mvPolynomialX` which associates every entry of a matrix with a
 unique variable.
 
@@ -74,5 +74,14 @@ theorem det_mvPolynomialX_ne_zero [DecidableEq m] [Fintype m] [CommRing R] [Nont
   have := congr_arg Matrix.det (mvPolynomialX_mapMatrix_eval (1 : Matrix m m R))
   rw [det_one, ← RingHom.map_det, h_det, map_zero] at this
   exact zero_ne_one this
+
+/-- Evaluating the generic determinant polynomial `det (mvPolynomialX m m R)` at a point `s`
+gives the determinant of the matrix obtained by substituting `s`. -/
+theorem eval_det_mvPolynomialX [DecidableEq m] [Fintype m] [CommRing R] (s : m × m → R) :
+    MvPolynomial.eval s (det (mvPolynomialX m m R)) = det (Matrix.of fun i j : m => s (i, j)) := by
+  rw [(MvPolynomial.eval s).map_det]
+  congr 1
+  ext i j
+  simp [mvPolynomialX]
 
 end Matrix

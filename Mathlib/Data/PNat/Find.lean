@@ -37,7 +37,7 @@ protected def findX : { n // p n ∧ ∀ m : ℕ+, m < n → ¬p m } := by
     rw [hn']
     exact n'.prop
   · obtain ⟨n', hn', pn'⟩ := n.prop.1
-    simpa [hn', Subtype.coe_eta] using pn'
+    simpa [hn', Subtype.coe_eta] using! pn'
   · exact n.prop.2 m hm ⟨m, rfl, pm⟩
 
 /-- If `p` is a (decidable) predicate on `ℕ+` and `hp : ∃ (n : ℕ+), p n` is a proof that
@@ -85,7 +85,6 @@ theorem find_le_iff (n : ℕ+) : PNat.find h ≤ n ↔ ∃ m ≤ n, p m := by
 theorem le_find_iff (n : ℕ+) : n ≤ PNat.find h ↔ ∀ m < n, ¬p m := by
   simp only [← not_lt, find_lt_iff, not_exists, not_and]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lt_find_iff (n : ℕ+) : n < PNat.find h ↔ ∀ m ≤ n, ¬p m := by
   simp only [← add_one_le_iff, le_find_iff, add_le_add_iff_right]
@@ -102,7 +101,6 @@ theorem find_mono (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} :
 theorem find_le {h : ∃ n, p n} (hn : p n) : PNat.find h ≤ n :=
   (PNat.find_le_iff _ _).2 ⟨n, le_rfl, hn⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem find_comp_succ (h : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h1 : ¬p 1) :
     PNat.find h = PNat.find h₂ + 1 := by
   refine (find_eq_iff _).2 ⟨PNat.find_spec h₂, fun n ↦ ?_⟩

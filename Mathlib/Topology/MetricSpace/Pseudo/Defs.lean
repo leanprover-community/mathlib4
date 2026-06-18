@@ -25,17 +25,31 @@ continuity and uniform continuity.
 * `Dist α`: Endows a space `α` with a function `dist a b`.
 * `PseudoMetricSpace α`: A space endowed with a distance function, which can
   be zero even if the two elements are non-equal.
+* `PseudoMetricSpace.ofDistTopology`: Construct a pseudometric space from a compatible topology
+  and distance.
 * `Metric.ball x ε`: The set of all points `y` with `dist y x < ε`.
-* `Metric.Bounded s`: Whether a subset of a `PseudoMetricSpace` is bounded.
-* `MetricSpace α`: A `PseudoMetricSpace` with the guarantee `dist x y = 0 → x = y`.
-
-Additional useful definitions:
-
-* `nndist a b`: `dist` as a function to the non-negative reals.
 * `Metric.closedBall x ε`: The set of all points `y` with `dist y x ≤ ε`.
 * `Metric.sphere x ε`: The set of all points `y` with `dist y x = ε`.
+* `nndist a b`: `dist` as a function to the non-negative reals.
+* `Metric.Bounded s`: Whether a subset of a `PseudoMetricSpace` is bounded.
+* `PseudoMetricSpace.replaceUniformity`, `PseudoMetricSpace.replaceTopology`,
+  `PseudoMetricSpace.replaceBornology`: Tools to construct a pseudometric space on a type with a
+  pre-existing uniformity, topology, or bornology in such a way that the definitional equalities
+  for these structures are preserved; these are essential to avoid type class synthesis issues.
+* `Real.pseudoMetricSpace`: The pseudometric space structure on `ℝ` with
+  `dist x y = |x - y|`.
+* `MetricSpace α`: A `PseudoMetricSpace` with the guarantee `dist x y = 0 → x = y`.
 
-TODO (anyone): Add "Main results" section.
+## Main results
+
+* `PseudoMetricSpace.ext`: extensionality for pseudometric space structures.
+* `dist_triangle`, `dist_nonneg`, `nndist_triangle`: core distance inequalities.
+* `Metric.mk_uniformity_basis`, `Metric.mk_uniformity_basis_le`: tools for constructing bases for
+  the uniformity, with `Metric.nhds_basis_ball` and `Metric.nhds_basis_closedBall` as basic
+  neighborhood-basis corollaries.
+* `Metric.tendsto_nhds_nhds`, `Metric.continuous_iff`: epsilon-delta characterizations of
+  convergence and continuity.
+* `Metric.mem_closure_iff`, `Metric.dense_iff`: characterizations of closure and dense sets.
 
 ## Tags
 
@@ -128,7 +142,7 @@ class PseudoMetricSpace (α : Type u) : Type u extends Dist α where
   dist_comm : ∀ x y : α, dist x y = dist y x
   dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z
   /-- Extended distance between two points -/
-  edist : α → α → ℝ≥0∞ := fun x y => ENNReal.ofNNReal ⟨dist x y, dist_nonneg' _ ‹_› ‹_› ‹_›⟩
+  edist : α → α → ℝ≥0∞ := fun x y => ENNReal.ofNNReal (.mk (dist x y) (dist_nonneg' _ ‹_› ‹_› ‹_›))
   edist_dist : ∀ x y : α, edist x y = ENNReal.ofReal (dist x y) := by
     intro x y; exact ENNReal.coe_nnreal_eq _
   toUniformSpace : UniformSpace α := .ofDist dist dist_self dist_comm dist_triangle
@@ -243,9 +257,10 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: distances are nonnegative. -/
 @[positivity Dist.dist _ _]
-meta def evalDist : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalDist : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Dist.dist $β $inst $a $b) =>
+    let some _ := pα? | pure .none
     let _inst ← synthInstanceQ q(PseudoMetricSpace $β)
     assertInstancesCommute
     pure (.nonnegative q(dist_nonneg))
@@ -300,7 +315,7 @@ theorem edist_lt_top {α : Type*} [PseudoMetricSpace α] (x y : α) : edist x y 
   (edist_dist x y).symm ▸ ENNReal.ofReal_lt_top
 
 /-- In a pseudometric space, the extended distance is always finite -/
-@[aesop (rule_sets := [finiteness]) safe apply]
+@[aesop (rule_sets := [finiteness]) safe apply, simp]
 theorem edist_ne_top (x y : α) : edist x y ≠ ⊤ :=
   (edist_lt_top x y).ne
 
@@ -408,6 +423,9 @@ def closedBall (x : α) (ε : ℝ) :=
 
 theorem mem_closedBall' : y ∈ closedBall x ε ↔ dist x y ≤ ε := by rw [dist_comm, mem_closedBall]
 
+theorem nonneg_of_mem_closedBall (hy : y ∈ closedBall x ε) : 0 ≤ ε :=
+  dist_nonneg.trans hy
+
 /-- `sphere x ε` is the set of all points `y` with `dist y x = ε` -/
 def sphere (x : α) (ε : ℝ) := { y | dist y x = ε }
 
@@ -492,12 +510,16 @@ theorem sphere_union_ball : sphere x ε ∪ ball x ε = closedBall x ε := by
   rw [union_comm, ball_union_sphere]
 
 @[simp]
-theorem closedBall_diff_sphere : closedBall x ε \ sphere x ε = ball x ε := by
-  rw [← ball_union_sphere, Set.union_diff_cancel_right sphere_disjoint_ball.symm.le_bot]
+theorem closedBall_sdiff_sphere : closedBall x ε \ sphere x ε = ball x ε := by
+  rw [← ball_union_sphere, Set.union_sdiff_cancel_right sphere_disjoint_ball.symm.le_bot]
+
+@[deprecated (since := "2026-06-03")] alias closedBall_diff_sphere := closedBall_sdiff_sphere
 
 @[simp]
-theorem closedBall_diff_ball : closedBall x ε \ ball x ε = sphere x ε := by
-  rw [← ball_union_sphere, Set.union_diff_cancel_left sphere_disjoint_ball.symm.le_bot]
+theorem closedBall_sdiff_ball : closedBall x ε \ ball x ε = sphere x ε := by
+  rw [← ball_union_sphere, Set.union_sdiff_cancel_left sphere_disjoint_ball.symm.le_bot]
+
+@[deprecated (since := "2026-06-03")] alias closedBall_diff_ball := closedBall_sdiff_ball
 
 theorem mem_ball_comm : x ∈ ball y ε ↔ y ∈ ball x ε := by rw [mem_ball', mem_ball]
 
@@ -927,7 +949,7 @@ lemma DiscreteTopology.of_forall_le_dist {α} [PseudoMetricSpace α] {r : ℝ} (
     (hr : Pairwise (r ≤ dist · · : α → α → Prop)) : DiscreteTopology α :=
   ⟨by rw [Metric.uniformSpace_eq_bot.2 ⟨r, hpos, hr⟩, UniformSpace.toTopologicalSpace_bot]⟩
 
-/- Instantiate a pseudometric space as a pseudoemetric space. Before we can state the instance,
+/-! Instantiate a pseudometric space as a pseudoemetric space. Before we can state the instance,
 we need to show that the uniform structure coming from the edistance and the
 distance coincide. -/
 
@@ -1192,6 +1214,18 @@ theorem tendsto_iff_dist_tendsto_zero {f : β → α} {x : Filter β} {a : α} :
 namespace Metric
 
 variable {x y z : α} {ε ε₁ ε₂ : ℝ} {s : Set α}
+
+/-- If `f` is a positive radius tending to zero, then the sets of pairs with distance less than
+`f i` form a basis of the uniformity. -/
+lemma mk_uniformity_basis_of_tendsto {β : Type*} {p : β → Prop} {f : β → ℝ}
+    {l : Filter β} [l.NeBot] (hf₀ : ∀ i, p i → 0 < f i) (hf₁ : ∀ᶠ i in l, p i)
+    (hf : Tendsto f l (𝓝 0)) :
+    (𝓤 α).HasBasis p fun i ↦ {x | dist x.1 x.2 < f i} := by
+  apply Metric.mk_uniformity_basis hf₀
+  rw [nhds_basis_closedBall.tendsto_right_iff] at hf
+  refine fun ε hε ↦ hf₁.and (hf ε hε) |>.exists.imp fun i ↦ and_imp.mpr fun hp hi ↦ ?_
+  exact ⟨hp, by
+    simpa [Metric.mem_closedBall, Real.dist_eq, abs_of_nonneg (hf₀ i hp).le] using hi⟩
 
 theorem ball_subset_interior_closedBall : ball x ε ⊆ interior (closedBall x ε) :=
   interior_maximal ball_subset_closedBall isOpen_ball

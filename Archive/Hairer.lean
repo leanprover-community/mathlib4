@@ -49,7 +49,7 @@ variable {n : ℕ∞} {s : Set E}
 
 instance : FunLike (ContDiffSupportedOn 𝕜 E F n s) E F where
   coe := Subtype.val
-  coe_injective' := Subtype.coe_injective
+  coe_injective := Subtype.coe_injective
 
 @[simp]
 lemma coe_mk (f : E → F) (h) : (⟨f, h⟩ : ContDiffSupportedOn 𝕜 E F n s) = f := rfl
@@ -112,7 +112,6 @@ lemma inj_L : Injective (L ι) :=
     rw [isOpen_ball.interior_eq]
     apply subset_closure
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hairer (N : ℕ) (ι : Type*) [Fintype ι] :
     ∃ (ρ : EuclideanSpace ℝ ι → ℝ), tsupport ρ ⊆ closedBall 0 1 ∧ ContDiff ℝ ∞ ρ ∧
     ∀ (p : MvPolynomial ι ℝ), p.totalDegree ≤ N →

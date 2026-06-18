@@ -66,6 +66,9 @@ lemma pow_abs (a : α) (n : ℕ) : |a| ^ n = |a ^ n| := (abs_pow a n).symm
 lemma Even.pow_abs (hn : Even n) (a : α) : |a| ^ n = a ^ n := by
   rw [← abs_pow, abs_eq_self]; exact hn.pow_nonneg _
 
+lemma pow_abs_two_mul (a : α) : |a| ^ (2 * n) = a ^ (2 * n) :=
+  Even.pow_abs ⟨n, two_mul n⟩ a
+
 lemma abs_neg_one_pow (n : ℕ) : |(-1 : α) ^ n| = 1 := by rw [← pow_abs, abs_neg, abs_one, one_pow]
 
 omit [IsOrderedRing α] in
@@ -89,7 +92,7 @@ section LinearStrictOrderedRing
 variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α] {n : ℕ} {a b : α}
 
 lemma abs_pow_eq_one (a : α) (h : n ≠ 0) : |a ^ n| = 1 ↔ |a| = 1 := by
-  convert pow_left_inj₀ (abs_nonneg a) zero_le_one h
+  convert! pow_left_inj₀ (abs_nonneg a) zero_le_one h
   exacts [(pow_abs _ _).symm, (one_pow _).symm]
 
 lemma abs_eq_iff_mul_self_eq : |a| = |b| ↔ a * a = b * b := by
@@ -173,8 +176,8 @@ private theorem abs_geomSum_le [IsOrderedRing α] : |geomSum a b n| ≤ (n + 1) 
   rw [abs_mul, abs_pow, Nat.cast_succ, add_one_mul]
   refine add_le_add ?_ (pow_le_pow_left₀ (abs_nonneg _) le_sup_right _)
   rw [pow_succ, ← mul_assoc, mul_comm |a|]
-  exact mul_le_mul ih le_sup_left (abs_nonneg _) (mul_nonneg
-    (@Nat.cast_succ α .. ▸ Nat.cast_nonneg _) <| pow_nonneg ((abs_nonneg _).trans le_sup_left) _)
+  gcongr
+  exacts [abs_nonneg _, (abs_nonneg _).trans ih, le_sup_left]
 
 omit [LinearOrder α] in
 private theorem pow_sub_pow_eq_sub_mul_geomSum :

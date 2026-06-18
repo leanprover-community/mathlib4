@@ -94,7 +94,7 @@ def adjointDomain : Submodule 𝕜 F where
     exact continuous_zero
   add_mem' hx hy := by rw [Set.mem_setOf_eq, LinearMap.map_add] at *; exact hx.add hy
   smul_mem' a x hx := by
-    rw [Set.mem_setOf_eq, map_smulₛₗ] at *
+    rw [Set.mem_setOf_eq, LinearMap.map_smulₛₗ] at *
     exact hx.const_smul (conj a)
 
 /-- The operator `fun x ↦ ⟪y, T x⟫` considered as a continuous linear operator
@@ -106,14 +106,12 @@ theorem adjointDomainMkCLM_apply (y : T.adjointDomain) (x : T.domain) :
     adjointDomainMkCLM T y x = ⟪(y : F), T x⟫ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The unique continuous extension of the operator `adjointDomainMkCLM` to `E`. -/
 def adjointDomainMkCLMExtend (y : T.adjointDomain) : StrongDual 𝕜 E :=
   (T.adjointDomainMkCLM y).extend (Submodule.subtypeL T.domain)
 
 variable {T}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem adjointDomainMkCLMExtend_apply (hT : Dense (T.domain : Set E)) (y : T.adjointDomain)
     (x : T.domain) : adjointDomainMkCLMExtend T y (x : E) = ⟪(y : F), T x⟫ :=
@@ -168,7 +166,7 @@ theorem mem_adjoint_domain_of_exists (y : F) (h : ∃ w : E, ∀ x : T.domain, �
   obtain ⟨w, hw⟩ := h
   rw [T.mem_adjoint_domain_iff]
   have : Continuous ((innerSL 𝕜 w).comp T.domain.subtypeL) := by fun_prop
-  convert this using 1
+  convert! this using 1
   exact funext fun x => (hw x).symm
 
 theorem adjoint_apply_of_not_dense (hT : ¬Dense (T.domain : Set E)) (y : T†.domain) : T† y = 0 := by

@@ -23,7 +23,7 @@ for any `n : ℤ`, which we phrase here by saying that
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists TwoSidedIdeal
 

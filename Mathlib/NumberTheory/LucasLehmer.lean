@@ -54,7 +54,7 @@ theorem mersenne_le_mersenne {p q : ℕ} : mersenne p ≤ mersenne q ↔ p ≤ q
 @[simp] lemma mersenne_odd : ∀ {p : ℕ}, Odd (mersenne p) ↔ p ≠ 0
   | 0 => by simp
   | p + 1 => by
-    simpa using Nat.Even.sub_odd (one_le_pow₀ one_le_two)
+    simpa using! Nat.Even.sub_odd (one_le_pow₀ one_le_two)
       (even_two.pow_of_ne_zero p.succ_ne_zero) odd_one
 
 @[simp] theorem mersenne_pos {p : ℕ} : 0 < mersenne p ↔ 0 < p := mersenne_lt_mersenne (p := 0)
@@ -78,11 +78,12 @@ alias ⟨_, mersenne_pos_of_pos⟩ := mersenne_pos
 
 /-- Extension for the `positivity` tactic: `mersenne`. -/
 @[positivity mersenne _]
-meta def evalMersenne : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalMersenne : PositivityExt where eval {u α} _zα pα? e := do
+  let some _ := pα? | pure .none
   match u, α, e with
   | 0, ~q(ℕ), ~q(mersenne $a) =>
-    let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
+    let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa => pure (.positive q(mersenne_pos_of_pos $pa))
     | _ => pure (.nonnegative q(Nat.zero_le (mersenne $a)))
@@ -391,7 +392,7 @@ lemma α_pow (i : ℕ) : (α : X q) ^ (2 * i + 1) = 3 ^ i * α := by
 
 instance : CharP (X q) q where
   cast_eq_zero_iff x := by
-    convert ZMod.natCast_eq_zero_iff _ _
+    convert! ZMod.natCast_eq_zero_iff _ _
     exact ⟨congr_arg Prod.fst, fun hx ↦ ext hx (by simp)⟩
 
 instance : Coe (ZMod ↑q) (X q) where
@@ -461,18 +462,17 @@ lemma ω_pow_trace [Fact q.Prime] (odd : Odd q)
 
 variable [NeZero q]
 
-set_option backward.inferInstanceAs.wrap false in
-instance : Fintype (X q) := inferInstanceAs (Fintype (ZMod q × ZMod q))
+instance : Fintype (X q) := inferInstanceAs <| Fintype (ZMod q × ZMod q)
 
 /-- The cardinality of `X` is `q^2`. -/
 theorem card_eq : Fintype.card (X q) = q ^ 2 := by
-  dsimp [X]
+  change Fintype.card (ZMod q × ZMod q) = q ^ 2
   rw [Fintype.card_prod, ZMod.card q, sq]
 
 /-- There are strictly fewer than `q^2` units, since `0` is not a unit. -/
 nonrec theorem card_units_lt (w : 1 < q) : Fintype.card (X q)ˣ < q ^ 2 := by
   have : Fact (1 < (q : ℕ)) := ⟨w⟩
-  convert card_units_lt (X q)
+  convert! card_units_lt (X q)
   rw [card_eq]
 
 end X
@@ -500,11 +500,8 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
   obtain ⟨k, h⟩ := h
   use k
   replace h := congr_arg (fun n : ℤ => (n : X (q (p' + 2)))) h
-  -- coercion from ℤ to X q
-  dsimp at h
   rw [closed_form] at h
   replace h := congr_arg (fun x => ω ^ 2 ^ p' * x) h
-  dsimp at h
   have t : 2 ^ p' + 2 ^ p' = 2 ^ (p' + 1) := by ring
   rw [mul_add, ← pow_add ω, t, ← mul_pow ω ωb (2 ^ p'), ω_mul_ωb, one_pow] at h
   rw [mul_comm, coe_mul] at h
@@ -578,6 +575,8 @@ export LucasLehmer (LucasLehmerTest lucasLehmerResidue)
 
 open LucasLehmer
 
+/-- **Lucas–Lehmer primality test**: sufficiency direction. -/
+@[wikidata Q1138992]
 theorem lucas_lehmer_sufficiency (p : ℕ) (w : 1 < p) : LucasLehmerTest p → (mersenne p).Prime := by
   set p' := p - 2 with hp'
   clear_value p'
@@ -632,24 +631,11 @@ def sModNat (q : ℕ) : ℕ → ℕ
   | i + 1 => (sModNat q i ^ 2 + (q - 2)) % q
 
 theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : ℤ) = sMod p k := by
-  have h1 := calc
-    4 = 2 ^ 2 := by simp
-    _ ≤ 2 ^ p := Nat.pow_le_pow_right (by simp) hp
-  have h2 : 1 ≤ 2 ^ p := by lia
   induction k with
-  | zero =>
-    rw [sModNat, sMod, Int.natCast_emod]
-    simp [h2]
-  | succ k ih =>
-    rw [sModNat, sMod, ← ih]
-    have h3 : 2 ≤ 2 ^ p - 1 := by
-      zify [h2]
-      calc (2 : ℤ)
-        _ ≤ 4 - 1 := by simp
-        _ ≤ 2 ^ p - 1 := by zify at h1; exact Int.sub_le_sub_right h1 _
-    zify [h2, h3]
-    rw [← add_sub_assoc, sub_eq_add_neg, add_assoc, add_comm _ (-2), ← add_assoc,
-      Int.add_emod_right, ← sub_eq_add_neg]
+  | zero => grind [sModNat, sMod]
+  | succ =>
+    have : 2 ^ 2 ≤ 2 ^ p := Nat.pow_le_pow_right (by lia) hp
+    grind [sModNat, sMod, Int.emod_eq_add_self_emod]
 
 /-- Tail-recursive version of `sModNat`. -/
 meta def sModNatTR (q k : ℕ) : ℕ :=
@@ -665,28 +651,31 @@ termination_by structural x => x
 Generalization of `sModNat` with arbitrary base case,
 useful for proving `sModNatTR` and `sModNat` agree.
 -/
-def sModNat_aux (b q : ℕ) : ℕ → ℕ
+def sModNatAux (b q : ℕ) : ℕ → ℕ
   | 0 => b
-  | i + 1 => (sModNat_aux b q i ^ 2 + (q - 2)) % q
+  | i + 1 => (sModNatAux b q i ^ 2 + (q - 2)) % q
 
-theorem sModNat_aux_eq (q k : ℕ) : sModNat_aux (4 % q) q k = sModNat q k := by
+theorem sModNatAux_eq (q k : ℕ) : sModNatAux (4 % q) q k = sModNat q k := by
   induction k with
   | zero => rfl
-  | succ k ih => rw [sModNat_aux, ih, sModNat, ← ih]
+  | succ k ih => rw [sModNatAux, ih, sModNat, ← ih]
+
+@[deprecated (since := "2026-06-06")] alias sModNat_aux := sModNatAux
+@[deprecated (since := "2026-06-06")] alias sModNat_aux_eq := sModNatAux_eq
 
 theorem sModNatTR_eq_sModNat (q i : ℕ) : sModNatTR q i = sModNat q i := by
-  rw [sModNatTR, helper, sModNat_aux_eq]
+  rw [sModNatTR, helper, sModNatAux_eq]
 where
-  helper b q k : sModNatTR.go q k b = sModNat_aux b q k := by
+  helper b q k : sModNatTR.go q k b = sModNatAux b q k := by
     induction k generalizing b with
     | zero => rfl
     | succ k ih =>
-      rw [sModNatTR.go, ih, sModNat_aux]
+      rw [sModNatTR.go, ih, sModNatAux]
       clear ih
       induction k with
       | zero => rfl
       | succ k ih =>
-        rw [sModNat_aux, ih, sModNat_aux]
+        rw [sModNatAux, ih, sModNatAux]
 
 lemma testTrueHelper (p : ℕ) (hp : Nat.blt 1 p = true) (h : sModNatTR (2 ^ p - 1) (p - 2) = 0) :
     LucasLehmerTest p := by

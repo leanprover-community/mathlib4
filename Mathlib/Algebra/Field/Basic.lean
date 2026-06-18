@@ -11,6 +11,8 @@ public import Mathlib.Algebra.Ring.Commute
 public import Mathlib.Algebra.Ring.Invertible
 public import Mathlib.Order.OrderDual
 public import Mathlib.Order.Lex
+public import Mathlib.Algebra.Order.Ring.Synonym
+public import Mathlib.Algebra.Order.GroupWithZero.Synonym
 
 import Mathlib.Tactic.Tauto
 
@@ -32,10 +34,6 @@ section DivisionSemiring
 variable [DivisionSemiring K] {a b c d : K}
 
 theorem add_div (a b c : K) : (a + b) / c = a / c + b / c := by simp_rw [div_eq_mul_inv, add_mul]
-
-@[deprecated add_div (since := "2025-08-25")]
-theorem div_add_div_same (a b c : K) : a / c + b / c = (a + b) / c :=
-  (add_div _ _ _).symm
 
 theorem same_add_div (h : b ≠ 0) : (b + a) / b = 1 + a / b := by rw [← div_self h, add_div]
 
@@ -296,11 +294,12 @@ end Function.Injective
 
 namespace OrderDual
 
-instance instRatCast [RatCast K] : RatCast Kᵒᵈ := ‹_›
-instance instDivisionSemiring [DivisionSemiring K] : DivisionSemiring Kᵒᵈ := ‹_›
-instance instDivisionRing [DivisionRing K] : DivisionRing Kᵒᵈ := ‹_›
-instance instSemifield [Semifield K] : Semifield Kᵒᵈ := ‹_›
-instance instField [Field K] : Field Kᵒᵈ := ‹_›
+instance [RatCast K] : RatCast Kᵒᵈ := inferInstanceAs <| RatCast K
+instance [NNRatCast K] : NNRatCast Kᵒᵈ := inferInstanceAs <| NNRatCast K
+instance [DivisionSemiring K] : DivisionSemiring Kᵒᵈ := inferInstanceAs <| DivisionSemiring K
+instance [DivisionRing K] : DivisionRing Kᵒᵈ := inferInstanceAs <| DivisionRing K
+instance [Semifield K] : Semifield Kᵒᵈ := inferInstanceAs <| Semifield K
+instance [Field K] : Field Kᵒᵈ := inferInstanceAs <| Field K
 
 end OrderDual
 
@@ -312,11 +311,11 @@ end OrderDual
 
 namespace Lex
 
-instance instRatCast [RatCast K] : RatCast (Lex K) := ‹_›
-instance instDivisionSemiring [DivisionSemiring K] : DivisionSemiring (Lex K) := ‹_›
-instance instDivisionRing [DivisionRing K] : DivisionRing (Lex K) := ‹_›
-instance instSemifield [Semifield K] : Semifield (Lex K) := ‹_›
-instance instField [Field K] : Field (Lex K) := ‹_›
+instance [RatCast K] : RatCast (Lex K) := inferInstanceAs <| RatCast K
+instance [DivisionSemiring K] : DivisionSemiring (Lex K) := inferInstanceAs <| DivisionSemiring K
+instance [DivisionRing K] : DivisionRing (Lex K) := inferInstanceAs <| DivisionRing K
+instance [Semifield K] : Semifield (Lex K) := inferInstanceAs <| Semifield K
+instance [Field K] : Field (Lex K) := inferInstanceAs <| Field K
 
 end Lex
 

@@ -93,6 +93,7 @@ end NonUnitalNonAssocAlgebra
 section Algebra
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Monoid M] [Monoid N]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The instance `Algebra R A[M]` whenever we have `Algebra R A`.
 
 In particular this provides the instance `Algebra R R[M]`. -/
@@ -143,6 +144,18 @@ variable (R M) in
 def uniqueAlgEquiv [Unique M] : A[M] ≃ₐ[R] A where
   toRingEquiv := uniqueRingEquiv _
   commutes' r := by simp [Unique.eq_default]
+
+variable (R M) in
+@[to_additive (attr := simp)]
+lemma toRingEquiv_uniqueAlgEquiv [Unique M] :
+    RingEquivClass.toRingEquiv (uniqueAlgEquiv R (A := A) M) =
+      uniqueRingEquiv (R := A) M := rfl
+
+variable (R M) in
+@[to_additive (attr := simp)]
+lemma toRingEquiv_symm_uniqueAlgEquiv [Unique M] :
+    RingEquivClass.toRingEquiv (uniqueAlgEquiv R (A := A) M).symm =
+      (uniqueRingEquiv (R := A) M).symm := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 variable (R) in
@@ -308,7 +321,6 @@ lemma domCongr_support (e : M ≃* N) (f : A[M]) : (domCongr R A e f).support = 
 theorem domCongr_single (e : M ≃* N) (m : M) (a : A) :
     domCongr R A e (single m a) = single (e m) a := by simp [domCongr]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma domCongr_comp_lsingle (e : M ≃* N) (m : M) :
     (domCongr R A e).toLinearMap ∘ₗ lsingle m = lsingle (e m) := by ext; simp
@@ -319,9 +331,22 @@ theorem domCongr_refl : domCongr R A (.refl M) = .refl := by ext; simp
 @[to_additive (attr := simp)]
 theorem domCongr_symm (e : M ≃* N) : (domCongr R A e).symm = domCongr R A e.symm := rfl
 
+@[to_additive (attr := simp)]
+theorem trans_domCongr_domCongr (e : M ≃* N) (f : N ≃* O) :
+    (domCongr R A e).trans (domCongr R A f) = domCongr R A (e.trans f) := by
+  ext
+  simp
+
+/-- `MonoidAlgebra.domCongr` as a `MonoidHom` from `MulAut`. -/
+@[simps]
+def domCongrAut : MulAut M →* A[M] ≃ₐ[R] A[M] where
+  toFun := MonoidAlgebra.domCongr R A
+  map_one' := by rw [MulAut.one_def, AlgEquiv.aut_one, domCongr_refl]
+  map_mul' _ _ := by rw [MulAut.mul_def, AlgEquiv.aut_mul, trans_domCongr_domCongr]
+
 variable (R) in
 /-- Nested monoid algebras can be taken in an arbitrary order. -/
-@[to_additive (dont_translate := R)
+@[to_additive
 /-- Nested monoid algebras can be taken in an arbitrary order. -/]
 def commAlgEquiv : A[M][N] ≃ₐ[R] A[N][M] :=
   (curryAlgEquiv _).symm.trans <| .trans (domCongr _ _ <| .prodComm ..) (curryAlgEquiv _)
@@ -333,6 +358,16 @@ lemma symm_commAlgEquiv : (commAlgEquiv R : A[M][N] ≃ₐ[R] A[N][M]).symm = co
 lemma commAlgEquiv_single_single (m : M) (n : N) (a : A) :
     commAlgEquiv R (single m <| single n a) = single n (single m a) :=
   commRingEquiv_single_single ..
+
+@[to_additive (dont_translate := A) (attr := simp)]
+lemma commAlgEquiv_single_one (m : M) :
+    commAlgEquiv R (single m (1 : A[N])) = single 1 (single m 1) := commRingEquiv_single_one ..
+
+-- We want this lemma to be tried before `commAlgEquiv_single_single`.
+@[to_additive (dont_translate := A) (attr := simp high)]
+lemma commAlgEquiv_single_one_single (m : M) :
+    commAlgEquiv R (single 1 <| single m 1) = (single m (1 : A[N])) :=
+  commRingEquiv_single_one_single ..
 
 end lift
 
@@ -380,6 +415,17 @@ lemma mapAlgHom_single (f : A →ₐ[R] B) (m : M) (a : A) :
     mapAlgHom M f (single m a) = single m (f a) := by
   classical ext; simp [single_apply, apply_ite f]
 
+@[to_additive (attr := simp)]
+lemma mapAlgHom_id {k R G} [CommSemiring k] [Semiring R] [Algebra k R] [Monoid G] :
+    mapAlgHom G (AlgHom.id k R) = AlgHom.id k (MonoidAlgebra R G) := by
+  ext; simp
+
+@[to_additive (attr := simp)]
+lemma mapRangeAlgHom_comp {k R S T G} [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
+    [Algebra k S] [Semiring T] [Algebra k T] [Monoid G] (f : R →ₐ[k] S) (g : S →ₐ[k] T) :
+    mapAlgHom G (g.comp f) = (mapAlgHom G g).comp (mapAlgHom G f) := by
+  ext; simp
+
 @[deprecated (since := "2026-03-20")] alias mapRangeAlgHom_single := mapAlgHom_single
 
 variable (R M) in
@@ -396,15 +442,23 @@ noncomputable def mapAlgEquiv (e : A ≃ₐ[R] B) : A[M] ≃ₐ[R] B[M] where
 @[deprecated (since := "2026-03-20")] alias mapRangeAlgEquiv := mapAlgEquiv
 
 @[to_additive (attr := simp)]
-lemma symm_mapAlgEquiv (e : A ≃ₐ[R] B) :
-    (mapAlgEquiv R M e).symm = mapAlgEquiv R M e.symm := rfl
+lemma symm_mapAlgEquiv (e : A ≃ₐ[R] B) : (mapAlgEquiv R M e).symm = mapAlgEquiv R M e.symm := rfl
 
 @[deprecated (since := "2026-03-20")] alias symm_mapRangeAlgEquiv := symm_mapAlgEquiv
 
 @[to_additive (attr := simp)]
-lemma mapRangeAlgEquiv_trans (e₁ : A ≃ₐ[R] B) (e₂ : B ≃ₐ[R] C) :
-    mapAlgEquiv R M (e₁.trans e₂) =
-      (mapAlgEquiv R M e₁).trans (mapAlgEquiv R M e₂) := by ext; simp
+lemma mapAlgEquiv_trans (e₁ : A ≃ₐ[R] B) (e₂ : B ≃ₐ[R] C) :
+    mapAlgEquiv R M (e₁.trans e₂) = (mapAlgEquiv R M e₁).trans (mapAlgEquiv R M e₂) := by ext; simp
+
+@[deprecated (since := "2026-03-27")] alias mapRangeAlgEquiv_trans := mapAlgEquiv_trans
+
+variable (R M) in
+/-- `MonoidAlgebra.mapRangeAlgEquiv` as a `MonoidHom` from `A ≃ₐ[R] A`. -/
+@[simps]
+def mapRangeAlgAut : (A ≃ₐ[R] A) →* A[M] ≃ₐ[R] A[M] where
+  toFun f := mapAlgEquiv _ _ f
+  map_one' := by ext; simp
+  map_mul' x y := by ext; simp
 
 end mapRange
 
@@ -600,7 +654,25 @@ alias lift_mapRangeRingHom_algebraMap := lift_mapRingHom_algebraMap
 lemma algHom_ext_iff {φ₁ φ₂ : R[M] →ₐ[R] A} : (∀ x, φ₁ (single x 1) = φ₂ (single x 1)) ↔ φ₁ = φ₂ :=
   ⟨fun h => algHom_ext h, by rintro rfl _; rfl⟩
 
+variable (R A) in
+/-- `AddMonoidAlgebra.domCongr` as an `AddMonoidHom` from `AddAut`. -/
+@[simps]
+def domCongrAut : AddAut M →+ Additive (A[M] ≃ₐ[R] A[M]) where
+  toFun f := .ofMul (AddMonoidAlgebra.domCongr R A f)
+  map_zero' := by ext; simp [AddAut.zero_def]
+  map_add' _ _ := by ext; simp [AddAut.add_def]
+
 end lift
+
+variable [CommSemiring R] [AddMonoid M] [Semiring A] [Algebra R A]
+
+variable (R M) in
+/-- `AddMonoidAlgebra.mapAlgEquiv` as an `AddMonoidHom` from `R ≃ₐ[k] R`. -/
+@[simps]
+def mapAlgAut : (A ≃ₐ[R] A) →* A[M] ≃ₐ[R] A[M] where
+  toFun f := mapAlgEquiv _ _ f
+  map_one' := by ext; simp
+  map_mul' x y := by ext; simp
 
 end AddMonoidAlgebra
 
