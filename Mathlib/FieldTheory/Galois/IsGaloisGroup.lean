@@ -504,31 +504,6 @@ theorem fixedPoints_le_of_le (h : H ≤ H') :
 
 end SMulCommClass
 
-attribute [local instance] FractionRing.liftAlgebra in
-/-- If `K` is the fraction field of `A` and `L` is the fraction field of `B` with `A ⊆ B`,
-then for `G` acting on `B` and `L`, the fixing subgroup of `A` in `B` equals the fixing subgroup
-of `K` in `L`. -/
-theorem fixingSubgroup_range_algebraMap_isFractionRing (A B : Type*) [CommRing A] [CommRing B]
-    [Algebra A B] [Algebra A K] [Algebra A L] [Algebra B L] [IsScalarTower A K L]
-    [IsScalarTower A B L] [MulSemiringAction G B] [SMulDistribClass G B L] [IsFractionRing A K]
-    [IsFractionRing B L] :
-    fixingSubgroup G (Set.range (algebraMap A B)) =
-      fixingSubgroup G (Set.range (algebraMap K L)) := by
-  ext g
-  simp only [mem_fixingSubgroup_iff, Set.mem_range]
-  refine ⟨?_, ?_⟩
-  · rintro h _ ⟨x, rfl⟩
-    have {x} : g • (algebraMap A L) x = (algebraMap A L) x := by
-      rw [IsScalarTower.algebraMap_apply A B L, ← algebraMap.smul', h _ ⟨x, rfl⟩]
-    obtain ⟨a, b, _, rfl⟩ := IsFractionRing.div_surjective A x
-    simp only [map_div₀, ← IsScalarTower.algebraMap_apply, smul_div₀', this]
-  · rintro h _ ⟨x, rfl⟩
-    apply FaithfulSMul.algebraMap_injective B L
-    rw [algebraMap.smul']
-    apply h
-    use algebraMap A K x
-    rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
-
 /-- If `H` is a Galois group on `L/E`, then `H` is also a Galois group on
 `L/(IsScalarTower.toAlgHom K E L).fieldRange`. -/
 theorem of_toAlgHom_fieldRange (E : Type*) [Field E] [Algebra K E] [Algebra E L]
@@ -664,7 +639,7 @@ theorem isGaloisGroup_fixingSubgroup_range_algebraMap [Finite G] (A B C : Type*)
   let L := FractionRing C
   let F := FractionRing B
   have : IsGaloisGroup G K L := IsGaloisGroup.toFractionRing G A C
-  rw [fixingSubgroup_range_algebraMap_isFractionRing G F L]
+  rw [IsFractionRing.fixingSubgroup_range_algebraMap G F L]
   exact of_isScalarTower G K L F
 
 open Pointwise in
