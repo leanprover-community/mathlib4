@@ -348,6 +348,18 @@ instance [MulHomClass F M N] : CoeTC F (M →ₙ* N) :=
 @[to_additive (attr := simp)]
 theorem MulHom.coe_coe [MulHomClass F M N] (f : F) : ((f : MulHom M N) : M → N) = f := rfl
 
+-- TODO: update when we have `pnpow`
+@[to_additive pnsmul_map]
+lemma MulHom.map_pnpow {M N : Type*} [Semigroup M] [Monoid N] (f : M →ₙ* N)
+    (a : M) {n : ℕ} (hn : n ≠ 0) : (f a) ^ n = f ((a * ·)^[n - 1] a) := by
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn
+  clear hn
+  simp only [Nat.succ_eq_add_one, Nat.add_one_sub_one, pow_succ']
+  induction n with
+  | zero => simp
+  | succ n IH =>
+    simp only [pow_succ', IH, Function.iterate_succ', Function.comp_apply, map_mul]
+
 end Mul
 
 section mul_one
@@ -713,6 +725,23 @@ theorem map_exists_left_inv (f : F) {x : M} (hx : ∃ y, y * x = 1) : ∃ y, y *
 
 @[deprecated (since := "2025-12-14")]
 alias isDedekindFiniteMonoid_of_injective := IsDedekindFiniteMonoid.of_injective
+
+@[to_additive]
+instance {M N : Type*} [Monoid M] [LeftCancelMonoid N] : MonoidHomClass (M →ₙ* N) M N where
+  map_mul := MulHom.map_mul'
+  map_one f := by
+    have h : f 1 * 1 = f 1 * f 1 := by simpa using f.map_mul' 1 1
+    exact (mul_left_cancel h).symm
+
+@[to_additive]
+instance {M N : Type*} [Monoid M] [RightCancelMonoid N] : MonoidHomClass (M →ₙ* N) M N where
+  map_mul := MulHom.map_mul'
+  map_one f := by
+    have h : 1 * f 1 = f 1 * f 1 := by simpa using f.map_mul' 1 1
+    exact (mul_right_cancel h).symm
+
+@[to_additive]
+instance {M N : Type*} [Monoid M] [CancelMonoid N] : MonoidHomClass (M →ₙ* N) M N where
 
 end MonoidHom
 

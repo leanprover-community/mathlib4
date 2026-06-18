@@ -22,6 +22,44 @@ open Localization
 
 variable {M : Type*} [CommMonoid M] {S : Submonoid M}
 
+namespace WithOne
+
+@[to_additive]
+instance instFG [Monoid.FG M] : Monoid.FG <| WithOne M where
+  fg_top := by
+    have hM : (⊤ : Submonoid M).FG := Monoid.FG.fg_top
+    rw [Submonoid.fg_iff] at hM ⊢
+    obtain ⟨S, hS, hS'⟩ := hM
+    refine ⟨insert ((1 : M) : WithOne M) (WithOne.coe '' S), ?_, (hS'.image WithOne.coe).insert _⟩
+    rw [Submonoid.eq_top_iff']
+    intro x
+    induction x with
+    | one => exact Submonoid.one_mem _
+    | coe x =>
+      induction x using Submonoid.dense_induction S hS
+      · exact Submonoid.subset_closure (by grind)
+      · exact Submonoid.subset_closure (by grind)
+      · simp_all [Submonoid.mul_mem]
+
+-- TODO: generalize to CommSemigroup, when IsMulTorsionFree uses `Nat.iterate`
+@[to_additive]
+instance instIsMulTorsionFree {M : Type*} [CommMonoid M] [IsMulTorsionFree M] :
+    IsMulTorsionFree (WithOne M) where
+  pow_left_injective n hn x y h := by
+    induction x <;> induction y <;> dsimp only at h
+    · rfl
+    · rw [WithOne.coe_pnpow _ hn, one_pow] at h
+      exact absurd h WithOne.one_ne_coe
+    · rw [WithOne.coe_pnpow _ hn, one_pow] at h
+      exact absurd h WithOne.one_ne_coe.symm
+    · rw [WithOne.coe_pnpow _ hn, WithOne.coe_pnpow _ hn,
+        iterate_mul_left_eq_pow, iterate_mul_left_eq_pow, Nat.sub_one_add_one hn, WithOne.coe_inj]
+        at h
+      rw [WithOne.coe_inj]
+      exact pow_left_injective hn h
+
+end WithOne
+
 namespace Localization
 
 /-- The localization of a finitely generated monoid at a finitely generated submonoid is
