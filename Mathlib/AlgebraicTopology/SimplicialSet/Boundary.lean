@@ -216,7 +216,7 @@ lemma hom_ext₀ {X : SSet.{u}} {f g : (∂Δ[0] : SSet) ⟶ X} : f = g := by
 /-- The top simplex is not in the boundary. -/
 lemma yonedaEquiv_id_notMem (n : ℕ) :
     yonedaEquiv.{u} (𝟙 Δ[n]) ∉ ∂Δ[n].obj _ := by
-  simpa only [stdSimplex.objEquiv_yonedaEquiv_id] using! stdSimplex.notMem_boundary.{u} n
+  simpa using! stdSimplex.notMem_boundary.{u} n
 
 /-- A codimension-one face lies in the boundary. -/
 lemma yonedaEquiv_δ_mem {n : ℕ} (i : Fin (n + 2)) :
