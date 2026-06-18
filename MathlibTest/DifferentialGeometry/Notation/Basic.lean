@@ -237,6 +237,26 @@ variable {φ : OpenPartialHomeomorph M E} {ψ : PartialEquiv M E}
 #guard_msgs in
 #check MDiffAt[s] ψ
 
+/-- info: UniqueMDiffOn I s : Prop -/
+#guard_msgs in
+#check UniqueMDiff[s]
+
+/-- info: UniqueMDiffOn (modelWithCornersSelf Real Real) (Set.Icc 0 1) : Prop -/
+#guard_msgs in
+#check UniqueMDiff[(Set.Icc 0 1 : Set ℝ)]
+
+/-- error: `Real` has type `Type` which is not of the form `Set α` for some `α`. -/
+#guard_msgs in
+#check UniqueMDiff[ℝ]
+
+/-- info: UniqueMDiffWithinAt I s : M → Prop -/
+#guard_msgs in
+#check UniqueMDiffAt[s]
+
+/-- info: UniqueMDiffWithinAt I s m : Prop -/
+#guard_msgs in
+#check UniqueMDiffAt[s] m
+
 -- Testing an error message.
 section
 

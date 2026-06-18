@@ -967,6 +967,29 @@ scoped elab:max "tangentMap%" ppSpace f:term:arg : term => do
   let (srcI, tgtI) ← findModels ef none
   mkAppM ``tangentMap #[srcI, tgtI, ef]
 
+/-- `UniqueMDiff[s]` elaborates to `UniqueMDiffOn I s`,
+trying to determine `I` from the local context. -/
+scoped elab:max "UniqueMDiff[" s:term "]" : term => do
+  let es ← Term.elabTerm s none
+  let estype : Expr ← inferType es
+  match_expr estype with
+  | Set α =>
+    let I ← findModel α
+    mkAppM ``UniqueMDiffOn #[I, es]
+  | _ => throwError "`{es}` has type `{estype}` which is not of the form `Set α` for some `α`."
+
+/-- `UniqueMDiffAt[s] x` elaborates to `UniqueMDiffWithinAt I s x`
+trying to determine `I` from the local context.
+The argument `x` can be omitted. -/
+scoped elab:max "UniqueMDiffAt[" s:term "]" : term => do
+  let es ← Term.elabTerm s none
+  let estype : Expr ← inferType es
+  match_expr estype with
+  | Set α =>
+    let I ← findModel α
+    mkAppM ``UniqueMDiffWithinAt #[I, es]
+  | _ => throwError "`{es}` has type `{estype}` which is not of the form `Set α` for some `α`."
+
 end Manifold
 
 section trace
@@ -1125,6 +1148,18 @@ arguments that can use the `T%` elaborator. -/
   catch _ =>
     let fs ← withNaryArg 20 <| delab
     `(MDiffAt[$ss] $fs) >>= annotateGoToSyntaxDef
+
+@[app_delab UniqueMDiffOn] meta def delabUniqueMDiffOn : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 12 do
+  let ss ← withAppArg delab
+  `(UniqueMDiff[$ss]) >>= annotateGoToSyntaxDef
+
+@[app_delab UniqueMDiffWithinAt] meta def delabUniqueMDiffWithinAt : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 12 do
+  let ss ← withAppArg delab
+  `(UniqueMDiffAt[$ss]) >>= annotateGoToSyntaxDef
 
 -- TODO: add more delaborators (and tests) for
 -- ContMDiff, ContMDiffOn, ContMDiffAt, ContMDiffWithinAt, HasMFDerivAt, HasMFDerivWithinAt
