@@ -207,8 +207,7 @@ theorem IsInertiaField.rank_left (hp : p ≠ ⊥) :
     Module.finrank E L = p.ramificationIdxIn B := by
   have : p.IsMaximal := over_def P p ▸ Ideal.IsMaximal.under A P
   have : Finite (A ⧸ p) := Ring.HasFiniteQuotients.finiteQuotient hp
-  rw [← IsGaloisGroup.card_eq_finrank (inertia Gal(L/K) P) E L,
-    card_inertia_eq_ramificationIdxIn p]
+  rw [← IsGaloisGroup.card_eq_finrank (inertia Gal(L/K) P) E L, card_inertia_eq_ramificationIdxIn p]
 
 /--
 The degree `[E : K]` of the inertia field `E` over `K` equals the product of the number of
