@@ -572,7 +572,7 @@ lemma mulSingle_zpow [∀ i, Group (G i)] [∀ i, SubgroupClass (S i) (G i)]
 to be 1. -/
 @[to_additive (attr := simps) /-- The map from a single factor to the restricted product given by
 setting the rest of the entries to be 0. -/]
-def mulSingleHom [∀ i, Monoid (G i)] [∀ i, SubmonoidClass (S i) (G i)] (i : ι) :
+def mulSingleMonoidHom [∀ i, Monoid (G i)] [∀ i, SubmonoidClass (S i) (G i)] (i : ι) :
     (G i) →* Πʳ (i : ι), [G i, A i] where
   toFun := mulSingle A i
   map_one' := mulSingle_one A i

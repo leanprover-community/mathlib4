@@ -65,10 +65,10 @@ theorem algebraMap_snd_apply (x : K) (v : HeightOneSpectrum R) :
 theorem algebraMap_injective [NumberField K] : Function.Injective (algebraMap K (AdeleRing R K)) :=
   fun _ _ hxy => (algebraMap K _).injective (Prod.ext_iff.1 hxy).1
 
-/-- The embedding of a completion `Kᵥ` into the adele ring. -/
+/-- The embedding of the completion `Kᵥ` at a finite place `v` into the adele ring. -/
 @[simps!]
-def ofCompletion (v : HeightOneSpectrum R) : v.adicCompletion K →* AdeleRing R K :=
-  .prod 1 (FiniteAdeleRing.ofCompletion K v)
+def ofAdicCompletion (v : HeightOneSpectrum R) : v.adicCompletion K →* AdeleRing R K :=
+  .prod 1 (FiniteAdeleRing.ofAdicCompletion K v)
 
 /-- The subgroup of principal adeles `(x)ᵥ` where `x ∈ K`. -/
 abbrev principalSubgroup : AddSubgroup (AdeleRing R K) := (algebraMap K _).range.toAddSubgroup
@@ -85,10 +85,10 @@ namespace IdeleGroup
 def unitEmbedding : Kˣ →* IdeleGroup R K :=
   Units.map (algebraMap K (AdeleRing R K)).toMonoidHom
 
-/-- The map from a completion `Kᵥ` to the idele group. -/
+/-- The map from the completion `Kᵥ` at a finite place `v` into the idele group. -/
 @[simps!]
-def ofCompletion (v : HeightOneSpectrum R) : (v.adicCompletion K)ˣ →* IdeleGroup R K :=
-  Units.map (AdeleRing.ofCompletion R K v)
+def ofAdicCompletion (v : HeightOneSpectrum R) : (v.adicCompletion K)ˣ →* IdeleGroup R K :=
+  Units.map (AdeleRing.ofAdicCompletion R K v)
 
 /-- The subgroup of principal ideles `(x)ᵥ` where `x ∈ Kˣ`. -/
 abbrev principalSubgroup : Subgroup (IdeleGroup R K) :=
@@ -101,10 +101,10 @@ abbrev IdeleClassGroup := IdeleGroup R K ⧸ IdeleGroup.principalSubgroup R K
 
 namespace IdeleClassGroup
 
-/-- The map from a completion `Kᵥ` to the idele class group. -/
+/-- The map from the completion `Kᵥ` at a finite place `v` into the idele class group. -/
 @[simps!]
-def ofCompletion (v : HeightOneSpectrum R) : (v.adicCompletion K)ˣ →* IdeleClassGroup R K :=
-  (QuotientGroup.mk' (IdeleGroup.principalSubgroup R K)).comp (IdeleGroup.ofCompletion R K v)
+def ofAdicCompletion (v : HeightOneSpectrum R) : (v.adicCompletion K)ˣ →* IdeleClassGroup R K :=
+  (QuotientGroup.mk' (IdeleGroup.principalSubgroup R K)).comp (IdeleGroup.ofAdicCompletion R K v)
 
 end IdeleClassGroup
 
