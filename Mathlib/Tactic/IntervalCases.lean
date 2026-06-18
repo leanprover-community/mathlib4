@@ -5,6 +5,7 @@ Authors: Kim Morrison, Mario Carneiro
 -/
 module
 
+public meta import Lean.Meta.Tactic.Generalize
 public import Mathlib.Data.Finset.Attr
 public import Mathlib.Tactic.NormNum
 

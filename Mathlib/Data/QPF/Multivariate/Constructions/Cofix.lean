@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Simon Hudon
 -/
 module
 
+public meta import Lean.Meta.Tactic.Generalize
 public import Mathlib.Control.Functor.Multivariate
 public import Mathlib.Data.PFunctor.Multivariate.Basic
 public import Mathlib.Data.PFunctor.Multivariate.M

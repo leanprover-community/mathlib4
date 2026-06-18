@@ -5,6 +5,7 @@ Authors: Yuma Mizuno
 -/
 module
 
+public meta import Lean.Meta.Tactic.Repeat
 public meta import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 public import Mathlib.CategoryTheory.Category.Basic
 public import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
