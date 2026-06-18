@@ -16,8 +16,8 @@ cycle, they give `0` or `∞` respectively if the graph is acyclic.
 
 ## TODO
 
-- Prove that `G.egirth ≤ 2 * G.ediam + 1` and `G.girth ≤ 2 * G.diam + 1` when the diameter is
-  non-zero.
+- Prove that `G.egirth ≤ 2 * G.ediam + 1` when `G` is not acyclic
+- Prove that `G.girth ≤ 2 * G.diam + 1` when the diameter is non-zero
 
 -/
 
