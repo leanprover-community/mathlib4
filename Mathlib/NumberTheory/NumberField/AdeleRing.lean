@@ -85,7 +85,7 @@ namespace IdeleGroup
 def unitEmbedding : Kˣ →* IdeleGroup R K :=
   Units.map (algebraMap K (AdeleRing R K)).toMonoidHom
 
-/-- The map from the completion `Kᵥ` at a finite place `v` into the idele group. -/
+/-- The map from the completion `Kᵥ` at a finite place `v` to the idele group. -/
 @[simps!]
 def ofAdicCompletion (v : HeightOneSpectrum R) : (v.adicCompletion K)ˣ →* IdeleGroup R K :=
   Units.map (AdeleRing.ofAdicCompletion R K v)
@@ -101,7 +101,7 @@ abbrev IdeleClassGroup := IdeleGroup R K ⧸ IdeleGroup.principalSubgroup R K
 
 namespace IdeleClassGroup
 
-/-- The map from the completion `Kᵥ` at a finite place `v` into the idele class group. -/
+/-- The map from the completion `Kᵥ` at a finite place `v` to the idele class group. -/
 @[simps!]
 def ofAdicCompletion (v : HeightOneSpectrum R) : (v.adicCompletion K)ˣ →* IdeleClassGroup R K :=
   (QuotientGroup.mk' (IdeleGroup.principalSubgroup R K)).comp (IdeleGroup.ofAdicCompletion R K v)
