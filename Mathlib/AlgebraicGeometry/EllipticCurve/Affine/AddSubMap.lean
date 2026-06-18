@@ -136,54 +136,50 @@ Weierstrass curve to a triple projectively equal to `(x(P)*x(Q), x(P)+x(Q), 1)`,
 some API.
 -/
 
-namespace WeierstrassCurve.Affine
+namespace WeierstrassCurve.Affine.Point
 
 variable {R : Type*} [CommRing R] {W' : Affine R}
 
-/-- This map sends a pair `P`, `Q` of affine points on `W`
+/-- This map sends a pair `P`, `Q` of nonsingular points in affine coordinates on `W`
 to a triple projectively equivalent to `![x(P) * x(Q), x(P) + x(Q), 1]`.
 
 In more geometric terms, this is the map `Sym² W → Sym² ℙ¹ ≃ ℙ²` induced by `x : W → ℙ¹`. -/
-noncomputable def Point.sym2x (P Q : W'.Point) : Fin 3 → R :=
+noncomputable def sym2x (P Q : W'.Point) : Fin 3 → R :=
   letI Px := P.xRep
   letI Qx := Q.xRep
   ![Px 0 * Qx 0, Px 0 * Qx 1 + Px 1 * Qx 0, Px 1 * Qx 1]
 
 @[simp]
-lemma Point.sym2x_zero_zero : (0 : W'.Point).sym2x 0 = ![1, 0, 0] := by
+lemma sym2x_zero_zero : (0 : W'.Point).sym2x 0 = ![1, 0, 0] := by
   simp [sym2x]
 
 @[simp]
-lemma Point.sym2x_zero_some {x y : R} (h : W'.Nonsingular x y) :
+lemma sym2x_zero_some {x y : R} (h : W'.Nonsingular x y) :
     (0 : W'.Point).sym2x (some x y h) = ![x, 1, 0] := by
   simp [sym2x]
 
 @[simp]
-lemma Point.sym2x_some_zero {x y : R} (h : W'.Nonsingular x y) :
-    (some x y h : W'.Point).sym2x 0 = ![x, 1, 0] := by
+lemma sym2x_some_zero {x y : R} (h : W'.Nonsingular x y) :
+    (some x y h).sym2x 0 = ![x, 1, 0] := by
   simp [sym2x]
 
 @[simp]
-lemma Point.sym2x_some_some {x y x' y' : R} (h : W'.Nonsingular x y) (h' : W'.Nonsingular x' y') :
-    (some x y h : W'.Point).sym2x (some x' y' h') = ![x * x', x + x', 1] := by
+lemma sym2x_some_some {x y x' y' : R} (h : W'.Nonsingular x y) (h' : W'.Nonsingular x' y') :
+    (some x y h).sym2x (some x' y' h') = ![x * x', x + x', 1] := by
   simp [sym2x]
 
-lemma Point.sym2x_ne_zero [Nontrivial R] (P Q : W'.Point) : P.sym2x Q ≠ 0 := by
+lemma sym2x_ne_zero [Nontrivial R] (P Q : W'.Point) : P.sym2x Q ≠ 0 := by
   cases P <;> cases Q <;> simp [sym2x, xRep]
 
-lemma Point.sym2x_comm (P Q : W'.Point) : P.sym2x Q = Q.sym2x P := by
-  match P, Q with
-  | 0, 0 => simp
-  | 0, some .. => simp
-  | some .., 0 => simp
-  | some .., some .. => simp [mul_comm, add_comm]
+lemma sym2x_comm (P Q : W'.Point) : P.sym2x Q = Q.sym2x P := by
+  cases P <;> cases Q <;> simp [← zero_def, mul_comm, add_comm]
 
-lemma Point.sym2x_neg_left (P Q : W'.Point) : (-P).sym2x Q = P.sym2x Q := by
-  simp only [sym2x, Fin.isValue, P.xRep_neg]
+lemma sym2x_neg_left (P Q : W'.Point) : (-P).sym2x Q = P.sym2x Q := by
+  simp [sym2x]
 
-lemma Point.sym2x_neg_right (P Q : W'.Point) : P.sym2x (-Q) = P.sym2x Q := by
-  simp only [sym2x, Fin.isValue, Q.xRep_neg]
+lemma sym2x_neg_right (P Q : W'.Point) : P.sym2x (-Q) = P.sym2x Q := by
+  simp [sym2x]
 
-end WeierstrassCurve.Affine
+end WeierstrassCurve.Affine.Point
 
 end
