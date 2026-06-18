@@ -5,10 +5,7 @@ Authors: Lua Viana Reis, Kyle Miller, Gareth Ma
 -/
 module
 
-public meta import Mathlib.Tactic.Set
 public meta import Mathlib.Tactic.Core
-public meta import Lean.Elab.BuiltinTerm
-public meta import Batteries.Tactic.Exact
 
 /-!
 # The `setm` tactic
@@ -41,7 +38,10 @@ partial def replaceWithMVars (stx : Term) : SetMReplaceM Term := do
   return ⟨stx⟩
 
 /--
-The `setm` tactic ("`set` with matching") matches a pattern containing named holes the type of a
+The `setm` tactic ("`set` with matching") matches a pattern containing named holes to the type of
+a target the goalor a local declaration, via the `using` syntax below.
+
+
 local declaration (using the `at h` syntax) or the main goal, and introduces `let` bound variables
 representing subexpressions whose location corresponds to the given named hole. These variables are
 also substituted into the type of declaration (or main goal).
