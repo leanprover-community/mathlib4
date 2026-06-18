@@ -16,7 +16,7 @@ This file defines the orthogonal submodule of a submodule with respect to a sesq
 
 ## Main declarations
 
-* `orthogonalBilin` provides the orthogonal complement with respect to a sesquilinear map
+* `orthogonalBilin` provides the orthogonal complement with respect to a sesqui-bilinear map
 -/
 
 @[expose] public section
