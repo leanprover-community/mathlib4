@@ -6,8 +6,8 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Tactic.ClickSuggestions.SectionState
-public import Mathlib.Order.Antisymmetrization
 public meta import Lean.Meta.ExprLens
+public import Mathlib.Order.Defs.PartialOrder
 
 /-!
 # Support for `grw` suggestions in `#click_suggestions`
@@ -43,10 +43,12 @@ private def gcongrBackward (relName : Name) (relation : Expr) (symm : Bool) :
   withLocalDeclD `a α fun a ↦ do
   withLocalDeclD `b α fun b ↦ do
   withNewMCtxDepth do
+  let mut result : Array GrwPos := #[]
   -- Any relation `r` can be proved from `AntisymmRel r`, so we add this as a possible relation
-  let antiSymm := mkApp2 (.const ``AntisymmRel [u]) α relation
-  let mut result : Array GrwPos :=
-    #[{ relName := ``AntisymmRel, relation := antiSymm, symm? := none }]
+  -- TODO: make this step more robust/extensible, without increasing imports
+  if (← getEnv).contains `AntisymmRel then
+    let antiSymm := mkApp2 (.const `AntisymmRel [u]) α relation
+    result := result.push { relName := `AntisymmRel, relation := antiSymm, symm? := none }
   -- If `relName` is symmetric, then include the reverse as a possible relation (`symm? := none`)
   let symm? ← try
     let dummyVar ← mkFreshExprMVar (mkApp2 relation a b)
