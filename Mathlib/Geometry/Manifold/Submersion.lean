@@ -49,7 +49,8 @@ if there exist charts near `x` and `f x` in which `f` looks like the standard pr
 * `IsSubmersionAt.prodMap` and `IsSubmersion.prodMap`: the product of two submersions (at a point)
   is a submersion (at the product point).
 * `IsSubmersionAt.contMDiffAt`: if f is a submersion at `x`, it is `C^n` at `x`.
-* `IsSubmersion.contMDiff`: if f is a submersion, it is `C^n`.
+* `IsSubmersion.contMDiff`: if f is a submersion, it is automatically `C^n`
+  in the sense of `ContMDiff`.
 
 ## Implementation notes
 
@@ -522,7 +523,7 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
 theorem contMDiffOn (h : IsSubmersionAt I J n f x) : CMDiff[h.domChart.source] n f :=
   h.isSubmersionAtOfComplement_complement.contMDiffOn
 
-/-- A `C^k` submersion at `x` is `C^k` at `x`. -/
+/-- A `C^n` submersion at `x` is `C^n` at `x`. -/
 theorem contMDiffAt (h : IsSubmersionAt I J n f x) : CMDiffAt n f x :=
   h.isSubmersionAtOfComplement_complement.contMDiffAt
 
@@ -610,7 +611,7 @@ protected lemma id [IsManifold I n M] : IsSubmersionOfComplement PUnit I I n (@i
     rw [(chartAt H x).right_inv (by simp_all), I.right_inv (by simp_all)]
   simpa
 
-/-- A `C^k` submersion is `C^k` -/
+/-- A `C^n` submersion is `C^n` -/
 theorem contMDiff (h : IsSubmersionOfComplement F I J n f) : CMDiff n f :=
   fun x ↦ (h x).contMDiffAt
 
@@ -654,7 +655,7 @@ protected lemma id [IsManifold I n M] : IsSubmersion I I n (@id M) := by
   use PUnit, by infer_instance, by infer_instance
   exact IsSubmersionOfComplement.id
 
-/-- A `C^k` submersion is `C^k` -/
+/-- A `C^n` submersion is `C^n` -/
 theorem contMDiff (h : IsSubmersion I J n f) : CMDiff n f :=
   h.isSubmersionOfComplement_complement.contMDiff
 
