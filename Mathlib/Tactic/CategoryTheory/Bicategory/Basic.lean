@@ -3,9 +3,11 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.Tactic.CategoryTheory.Coherence.Basic
-import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
-import Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence
+module
+
+public import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
+public import Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence
+public import Mathlib.Tactic.CategoryTheory.Coherence.Basic
 
 /-!
 # `bicategory` tactic
@@ -17,10 +19,12 @@ source and target. In other words, `bicategory` solves equalities where both sid
 string diagrams.
 
 The core function for the `bicategory` tactic is provided in
-`Mathlib.Tactic.CategoryTheory.Coherence.Basic`. See this file for more details about the
+`Mathlib/Tactic/CategoryTheory/Coherence/Basic.lean`. See this file for more details about the
 implementation.
 
 -/
+
+public meta section
 
 open Lean Meta Elab Tactic
 open CategoryTheory Mathlib.Tactic.BicategoryLike

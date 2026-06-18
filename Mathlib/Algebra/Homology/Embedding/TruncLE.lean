@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.TruncGE
+module
+
+public import Mathlib.Algebra.Homology.Embedding.TruncGE
 
 /-!
 # The canonical truncation
@@ -19,10 +21,12 @@ In order to achieve this, we dualize the constructions from the file
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Limits ZeroObject Category
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
-  {C : Type*} [Category C] [HasZeroMorphisms C]
+  {C : Type*} [Category* C] [HasZeroMorphisms C]
 
 namespace HomologicalComplex
 
@@ -51,7 +55,7 @@ lemma truncLE'_d_eq {i j : ι} (hij : c.Rel i j) {i' j' : ι'}
     (hi' : e.f i = i') (hj' : e.f j = j') (hj : ¬ e.BoundaryLE j) :
     (K.truncLE' e).d i j = (K.truncLE'XIso e hi' (e.not_boundaryLE_prev hij)).hom ≫ K.d i' j' ≫
         (K.truncLE'XIso e hj' hj).inv :=
-  Quiver.Hom.op_inj (by simpa using K.op.truncGE'_d_eq e.op hij hj' hi' (by simpa))
+  Quiver.Hom.op_inj (by simpa using! K.op.truncGE'_d_eq e.op hij hj' hi' (by simpa))
 
 lemma truncLE'_d_eq_toCycles {i j : ι} (hij : c.Rel i j) {i' j' : ι'}
     (hi' : e.f i = i') (hj' : e.f j = j') (hj : e.BoundaryLE j) :
@@ -59,7 +63,7 @@ lemma truncLE'_d_eq_toCycles {i j : ι} (hij : c.Rel i j) {i' j' : ι'}
       K.toCycles i' j' ≫ (K.truncLE'XIsoCycles e hj' hj).inv :=
   Quiver.Hom.op_inj (by
     simpa [truncLE', truncLE'XIso, truncLE'XIsoCycles]
-      using K.op.truncGE'_d_eq_fromOpcycles e.op hij hj' hi' (by simpa))
+      using! K.op.truncGE'_d_eq_fromOpcycles e.op hij hj' hi' (by simpa))
 
 section
 
@@ -96,6 +100,8 @@ variable {K L M}
 noncomputable def truncLE'Map : K.truncLE' e ⟶ L.truncLE' e :=
   (unopFunctor C c.symm).map (truncGE'Map ((opFunctor C c').map φ.op) e.op).op
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma truncLE'Map_f_eq_cyclesMap {i : ι} (hi : e.BoundaryLE i) {i' : ι'} (h : e.f i = i') :
     (truncLE'Map φ e).f i =
       (K.truncLE'XIsoCycles e h hi).hom ≫ cyclesMap φ i' ≫
@@ -109,7 +115,7 @@ lemma truncLE'Map_f_eq {i : ι} (hi : ¬ e.BoundaryLE i) {i' : ι'} (h : e.f i =
     (truncLE'Map φ e).f i =
       (K.truncLE'XIso e h hi).hom ≫ φ.f i' ≫ (L.truncLE'XIso e h hi).inv :=
   Quiver.Hom.op_inj
-    (by simpa using truncGE'Map_f_eq ((opFunctor C c').map φ.op) e.op (by simpa) h)
+    (by simpa using! truncGE'Map_f_eq ((opFunctor C c').map φ.op) e.op (by simpa) h)
 
 variable (K) in
 @[simp]
@@ -198,6 +204,10 @@ instance {ι'' : Type*} {c'' : ComplexShape ι''} (e' : c''.Embedding c')
 instance [K.IsStrictlySupported e] : IsIso (K.ιTruncLE e) :=
   inferInstanceAs (IsIso ((unopFunctor C c'.symm).map (K.op.πTruncGE e.op).op))
 
+lemma isIso_ιTruncLE_iff : IsIso (K.ιTruncLE e) ↔ K.IsStrictlySupported e :=
+  ⟨fun _ ↦ isStrictlySupported_of_iso (asIso (K.ιTruncLE e)) e,
+    fun _ ↦ inferInstance⟩
+
 end
 
 end HomologicalComplex
@@ -205,7 +215,7 @@ end HomologicalComplex
 namespace ComplexShape.Embedding
 
 variable (e : Embedding c c') [e.IsTruncLE]
-    (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C] [CategoryWithHomology C]
+    (C : Type*) [Category* C] [HasZeroMorphisms C] [HasZeroObject C] [CategoryWithHomology C]
 
 /-- Given an embedding `e : Embedding c c'` of complex shapes which satisfy `e.IsTruncLE`,
 this is the (canonical) truncation functor
@@ -216,6 +226,7 @@ noncomputable def truncLE'Functor :
   obj K := K.truncLE' e
   map φ := HomologicalComplex.truncLE'Map φ e
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `K.truncGE' e ⟶ K.restriction e` for all `K`. -/
 @[simps]
 noncomputable def truncLE'ToRestrictionNatTrans :
@@ -231,6 +242,7 @@ noncomputable def truncLEFunctor :
   obj K := K.truncLE e
   map φ := HomologicalComplex.truncLEMap φ e
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `K.ιTruncLE e : K.truncLE e ⟶ K` for all `K`. -/
 @[simps]
 noncomputable def ιTruncLENatTrans : e.truncLEFunctor C ⟶ 𝟭 _ where

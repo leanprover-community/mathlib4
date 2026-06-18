@@ -3,8 +3,10 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Sites.Plus
-import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
+module
+
+public import Mathlib.CategoryTheory.Sites.Plus
+public import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 
 /-!
 
@@ -18,20 +20,22 @@ We generally follow the approach of https://stacks.math.columbia.edu/tag/00W1
 
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
 open CategoryTheory.Limits Opposite
 
-universe w v u
+universe t w' w v u
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-variable {D : Type w} [Category.{max v u} D]
+variable {D : Type w} [Category.{w'} D]
 
 section
 
-variable {FD : D → D → Type*} {CD : D → Type (max v u)} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
-variable [ConcreteCategory.{max v u} D FD]
+variable {FD : D → D → Type*} {CD : D → Type t} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+variable [ConcreteCategory.{t} D FD]
 
 /-- A concrete version of the multiequalizer, to be used below. -/
 def Meq {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) :=
@@ -42,8 +46,8 @@ end
 
 namespace Meq
 
-variable {FD : D → D → Type*} {CD : D → Type (max v u)} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
-variable [ConcreteCategory.{max v u} D FD]
+variable {FD : D → D → Type*} {CD : D → Type t} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+variable [ConcreteCategory.{t} D FD]
 
 instance {X} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) :
     CoeFun (Meq P S) fun _ => ∀ I : S.Arrow, ToType (P.obj (op I.Y)) :=
@@ -99,12 +103,13 @@ theorem mk_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : ToType (P.obj 
     mk S x I = P.map I.f.op x :=
   rfl
 
-variable [PreservesLimits (forget D)]
+variable [∀ {X : C} (S : J.Cover X),
+  PreservesLimitsOfShape (WalkingMulticospan S.shape) (forget D)]
 
 /-- The equivalence between the type associated to `multiequalizer (S.index P)` and `Meq P S`. -/
 noncomputable def equiv {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) [HasMultiequalizer (S.index P)] :
     ToType (multiequalizer (S.index P)) ≃ Meq P S :=
-  Limits.Concrete.multiequalizerEquiv (C := D) _
+  Limits.Concrete.multiequalizerEquiv.{t} (C := D) _
 
 @[simp]
 theorem equiv_apply {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} [HasMultiequalizer (S.index P)]
@@ -117,7 +122,7 @@ theorem equiv_symm_eq_apply {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} [HasMult
     -- We can hint `ConcreteCategory.hom (Y := P.obj (op I.Y))` below to put it into `simp`-normal
     -- form, but that doesn't seem to fix the `erw`s below...
     (Multiequalizer.ι (S.index P) I) ((Meq.equiv P S).symm x) = x I := by
-  simp [← GrothendieckTopology.Cover.index_left, ← equiv_apply]
+  simp [- GrothendieckTopology.Cover.index_left, ← equiv_apply]
 
 end Meq
 
@@ -125,10 +130,11 @@ namespace GrothendieckTopology
 
 namespace Plus
 
-variable {FD : D → D → Type*} {CD : D → Type (max v u)} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
-variable [instCC : ConcreteCategory.{max v u} D FD]
+variable {FD : D → D → Type*} {CD : D → Type t} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+variable [instCC : ConcreteCategory.{t} D FD]
 
-variable [PreservesLimits (forget D)]
+variable [∀ {X : C} (S : J.Cover X),
+  PreservesLimitsOfShape (WalkingMulticospan S.shape) (forget D)]
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
 
@@ -138,22 +144,24 @@ noncomputable section
 def mk {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) : ToType ((J.plusObj P).obj (op X)) :=
   colimit.ι (J.diagram P X) (op S) ((Meq.equiv P S).symm x)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 theorem res_mk_eq_mk_pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (f : Y ⟶ X) :
     (J.plusObj P).map f.op (mk x) = mk (x.pullback f) := by
   dsimp [mk, plusObj]
-  rw [← comp_apply (x := (Meq.equiv P S).symm x), ι_colimMap_assoc, colimit.ι_pre,
-    comp_apply (x := (Meq.equiv P S).symm x)]
+  rw [← CategoryTheory.comp_apply (x := (Meq.equiv P S).symm x), ι_colimMap_assoc, colimit.ι_pre,
+    CategoryTheory.comp_apply (x := (Meq.equiv P S).symm x)]
   apply congr_arg
   apply (Meq.equiv P _).injective
-  dsimp only [Functor.op_obj, pullback_obj]
-  rw [Equiv.apply_symm_apply]
+  dsimp
+  simp only [Equiv.apply_symm_apply]
   ext i
-  simp only [Functor.op_obj, unop_op, pullback_obj, diagram_obj, Functor.comp_obj,
-    diagramPullback_app, Meq.equiv_apply, Meq.pullback_apply]
-  rw [← ConcreteCategory.comp_apply, Multiequalizer.lift_ι]
-  erw [Meq.equiv_symm_eq_apply]
+  simp only [Meq.equiv_apply, Cover.index_left, ← ConcreteCategory.comp_apply, limit.lift_π,
+    Multifork.ofι_pt, Multifork.ofι_π_app, Meq.pullback_apply, pullback_obj]
+  rw [dsimp% Meq.equiv_symm_eq_apply x i.base]
   cases i; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toPlus_mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : ToType (P.obj (op X))) :
     (J.toPlus P).app _ x = mk (Meq.mk S x) := by
   dsimp [mk, toPlus]
@@ -165,10 +173,12 @@ theorem toPlus_mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : ToType (P.obj
   dsimp [diagram]
   apply Concrete.multiequalizer_ext (C := D)
   intro i
-  simp only [← ConcreteCategory.comp_apply, Category.assoc, Multiequalizer.lift_ι, Category.comp_id,
+  simp only [← ConcreteCategory.comp_apply, Category.assoc, Multiequalizer.lift_ι,
     Meq.equiv_symm_eq_apply]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : Meq P S) (I : S.Arrow) :
     (J.toPlus P).app _ (x I) = (J.plusObj P).map I.f.op (mk x) := by
   dsimp only [toPlus, plusObj]
@@ -185,19 +195,11 @@ theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : Meq P S) (
   dsimp
   rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply,
     Multiequalizer.lift_ι, Multiequalizer.lift_ι, Multiequalizer.lift_ι]
-  erw [Meq.equiv_symm_eq_apply]
-  simpa using (x.condition (Cover.Relation.mk' (I.precompRelation i.f))).symm
+  rw [dsimp% Meq.equiv_symm_eq_apply x i.base]
+  simpa using! (x.condition (Cover.Relation.mk' (I.precompRelation i.f))).symm
 
 theorem toPlus_eq_mk {X : C} {P : Cᵒᵖ ⥤ D} (x : ToType (P.obj (op X))) :
-    (J.toPlus P).app _ x = mk (Meq.mk ⊤ x) := by
-  dsimp [mk, toPlus]
-  delta Cover.toMultiequalizer
-  simp only [ConcreteCategory.comp_apply]
-  apply congr_arg
-  apply (Meq.equiv P ⊤).injective
-  ext i
-  rw [Meq.equiv_apply, Equiv.apply_symm_apply, ← ConcreteCategory.comp_apply, Multiequalizer.lift_ι]
-  rfl
+    (J.toPlus P).app _ x = mk (Meq.mk ⊤ x) := toPlus_mk ⊤ x
 
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
 
@@ -209,15 +211,16 @@ theorem exists_rep {X : C} {P : Cᵒᵖ ⥤ D} (x : ToType ((J.plusObj P).obj (o
   dsimp [mk]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_mk_iff_exists {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq P S) (y : Meq P T) :
     mk x = mk y ↔ ∃ (W : J.Cover X) (h1 : W ⟶ S) (h2 : W ⟶ T), x.refine h1 = y.refine h2 := by
   constructor
   · intro h
-    obtain ⟨W, h1, h2, hh⟩ := Concrete.colimit_exists_of_rep_eq.{u} (C := D) _ _ _ h
+    obtain ⟨W, h1, h2, hh⟩ := Concrete.colimit_exists_of_rep_eq (C := D) _ _ _ h
     use W.unop, h1.unop, h2.unop
     ext I
     apply_fun Multiequalizer.ι (W.unop.index P) I at hh
-    convert hh
+    convert! hh
     all_goals
       dsimp [diagram]
       rw [← ConcreteCategory.comp_apply, Multiequalizer.lift_ι]
@@ -229,7 +232,7 @@ theorem eq_mk_iff_exists {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq 
     apply Concrete.multiequalizer_ext
     intro i
     apply_fun fun ee => ee i at e
-    convert e using 1
+    convert! e using 1
     all_goals
       dsimp [diagram]
       rw [← ConcreteCategory.comp_apply, Multiequalizer.lift_ι]
@@ -278,7 +281,7 @@ theorem sep {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) (x y : ToType ((J.plusOb
   specialize hh IS
   let IW : (W IS).Arrow := I.toMiddle
   apply_fun fun e => e IW at hh
-  convert hh using 1
+  convert! hh using 1
   · exact x.congr_apply I.middle_spec.symm _
   · exact y.congr_apply I.middle_spec.symm _
 
@@ -296,6 +299,7 @@ theorem inj_of_sep (P : Cᵒᵖ ⥤ D)
   apply_fun fun e => e I at hh
   exact hh
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary definition to be used in the proof of `exists_of_sep` below.
   Given a compatible family of local sections for `P⁺`, and representatives of said sections,
   construct a compatible family of local sections of `P` over the combination of the covers
@@ -319,11 +323,12 @@ def meqOfSep (P : Cᵒᵖ ⥤ D)
     erw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply];
     rw [← (J.plusObj P).map_comp, ← (J.plusObj P).map_comp, ← op_comp, ← op_comp]
     exact s.condition
-      (Cover.Relation.mk { hf := II.fst.from_middle_condition }
-        { hf := II.snd.from_middle_condition }
-        { g₁ := II.r.g₁ ≫ II.fst.toMiddleHom
-          g₂ := II.r.g₂ ≫ II.snd.toMiddleHom
-          w := by simpa only [Category.assoc, Cover.Arrow.middle_spec] using II.r.w })
+      { fst.hf := II.fst.from_middle_condition
+        snd.hf := II.snd.from_middle_condition
+        r.g₁ := II.r.g₁ ≫ II.fst.toMiddleHom
+        r.g₂ := II.r.g₂ ≫ II.snd.toMiddleHom
+        r.w := by simpa only [Category.assoc, Cover.Arrow.middle_spec] using II.r.w
+        .. }
 
 theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
     (hsep :
@@ -375,11 +380,12 @@ theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
   erw [toPlus_apply (T IB) (t IB) IC]
   rw [← ht, ← ht]
   -- Conclude by constructing the relation showing equality...
-  let IR : S.Relation := Cover.Relation.mk { hf := IB.hf } { hf := I.hf } { w := IA.middle_spec }
+  let IR : S.Relation := { fst.hf := IB.hf, snd.hf := I.hf, r.w := IA.middle_spec, .. }
   exact s.condition IR
 
 variable [(forget D).ReflectsIsomorphisms]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `P` is separated, then `P⁺` is a sheaf. -/
 theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
     (hsep :
@@ -394,12 +400,10 @@ theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
   · intro x y h
     apply sep P S _ _
     intro I
-    apply_fun Meq.equiv _ _ at h
+    apply_fun Meq.equiv (J.plusObj P) S at h
     apply_fun fun e => e I at h
-    dsimp only [ConcreteCategory.forget_map_eq_coe] at h
-    convert h <;> erw [Meq.equiv_apply] <;>
-      rw [← ConcreteCategory.comp_apply, Multiequalizer.lift_ι] <;>
-      rfl
+    dsimp only [ConcreteCategory.forget_map_eq_ofHom] at h
+    simpa [Meq.equiv_apply, ← comp_apply] using! h
   · rintro (x : ToType (multiequalizer (S.index _)))
     obtain ⟨t, ht⟩ := exists_of_sep P hsep X S (Meq.equiv _ _ x)
     use t
@@ -477,7 +481,7 @@ theorem sheafification_map {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
 /-- The canonical map from `P` to its sheafification, as a natural transformation.
 *Note:* We only show this is a sheaf under additional hypotheses on `D`. -/
 noncomputable def toSheafification : 𝟭 _ ⟶ sheafification J D :=
-  J.toPlusNatTrans D ≫ whiskerRight (J.toPlusNatTrans D) (J.plusFunctor D)
+  J.toPlusNatTrans D ≫ Functor.whiskerRight (J.toPlusNatTrans D) (J.plusFunctor D)
 
 @[simp]
 theorem toSheafification_app (P : Cᵒᵖ ⥤ D) :
@@ -486,6 +490,7 @@ theorem toSheafification_app (P : Cᵒᵖ ⥤ D) :
 
 variable {D}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isIso_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : IsIso (J.toSheafify P) := by
   dsimp [toSheafify]
   haveI := isIso_toPlus_of_isSheaf J P hP
@@ -507,6 +512,7 @@ noncomputable def sheafifyLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Preshe
     J.sheafify P ⟶ Q :=
   J.plusLift (J.plusLift η hQ) hQ
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem toSheafify_sheafifyLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q) :
     J.toSheafify P ≫ sheafifyLift J η hQ = η := by
@@ -544,8 +550,9 @@ theorem sheafifyMap_sheafifyLift {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q 
 end GrothendieckTopology
 
 variable (J)
-variable {FD : D → D → Type*} {CD : D → Type (max v u)} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
-variable [instCC : ConcreteCategory.{max v u} D FD] [PreservesLimits (forget D)]
+variable {FD : D → D → Type*} {CD : D → Type t} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+variable [instCC : ConcreteCategory.{t} D FD]
+  [∀ {X : C} (S : J.Cover X), PreservesLimitsOfShape (WalkingMulticospan S.shape) (forget D)]
   [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
   [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)] [(forget D).ReflectsIsomorphisms]
@@ -561,9 +568,8 @@ variable (D)
 noncomputable def plusPlusSheaf : (Cᵒᵖ ⥤ D) ⥤ Sheaf J D where
   obj P := ⟨J.sheafify P, J.sheafify_isSheaf P⟩
   map η := ⟨J.sheafifyMap η⟩
-  map_id _ := Sheaf.Hom.ext <| J.sheafifyMap_id _
-  map_comp _ _ := Sheaf.Hom.ext <| J.sheafifyMap_comp _ _
 
+set_option backward.isDefEq.respectTransparency false in
 instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
     (plusPlusSheaf J D).PreservesZeroMorphisms where
   map_zero F G := by
@@ -572,14 +578,15 @@ instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
     erw [colimit.ι_map, comp_zero]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The sheafification functor is left adjoint to the forgetful functor. -/
-@[simps! unit_app counit_app_val]
+--@[simps! unit_app counit_app_val]
 noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun P Q =>
-        { toFun := fun e => J.toSheafify P ≫ e.val
+        { toFun := fun e => J.toSheafify P ≫ e.hom
           invFun := fun e => ⟨J.sheafifyLift e Q.2⟩
-          left_inv := fun _ => Sheaf.Hom.ext <| (J.sheafifyLift_unique _ _ _ rfl).symm
+          left_inv := fun _ => Sheaf.hom_ext <| (J.sheafifyLift_unique _ _ _ rfl).symm
           right_inv := fun _ => J.toSheafify_sheafifyLift _ _ }
       homEquiv_naturality_left_symm := by
         intro P Q R η γ; ext1; dsimp; symm
@@ -588,7 +595,7 @@ noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D
         dsimp
         rw [Category.assoc] }
 
-instance sheafToPresheaf_isRightAdjoint : (sheafToPresheaf J D).IsRightAdjoint  :=
+instance sheafToPresheaf_isRightAdjoint : (sheafToPresheaf J D).IsRightAdjoint :=
   (plusPlusAdjunction J D).isRightAdjoint
 
 instance presheaf_mono_of_mono {F G : Sheaf J D} (f : F ⟶ G) [Mono f] : Mono f.1 :=

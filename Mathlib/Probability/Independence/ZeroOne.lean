@@ -3,8 +3,10 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Independence.Basic
-import Mathlib.Probability.Independence.Conditional
+module
+
+public import Mathlib.Probability.Independence.Basic
+public import Mathlib.Probability.Independence.Conditional
 
 /-!
 # Kolmogorov's 0-1 law
@@ -18,6 +20,8 @@ is measurable with respect to the tail σ-algebra `limsup s atTop` has probabili
   measurable with respect to the tail σ-algebra `limsup s atTop` of an independent sequence of
   σ-algebras `s` has probability 0 or 1.
 -/
+
+public section
 
 open MeasureTheory MeasurableSpace
 
@@ -44,7 +48,7 @@ theorem Kernel.measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
 theorem measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
     (h_indep : IndepSet t t μ) : μ t = 0 ∨ μ t = 1 ∨ μ t = ∞ := by
   simpa only [ae_dirac_eq, Filter.eventually_pure]
-    using Kernel.measure_eq_zero_or_one_or_top_of_indepSet_self h_indep
+    using! Kernel.measure_eq_zero_or_one_or_top_of_indepSet_self h_indep
 
 theorem Kernel.measure_eq_zero_or_one_of_indepSet_self' (h : ∀ᵐ a ∂μα, IsFiniteMeasure (κ a))
     {t : Set Ω} (h_indep : IndepSet t t κ μα) :
@@ -57,10 +61,21 @@ theorem Kernel.measure_eq_zero_or_one_of_indepSet_self [h : ∀ a, IsFiniteMeasu
     ∀ᵐ a ∂μα, κ a t = 0 ∨ κ a t = 1 :=
   Kernel.measure_eq_zero_or_one_of_indepSet_self' (ae_of_all μα h) h_indep
 
+lemma Kernel.measure_eq_zero_or_one_of_indep_self [h : ∀ a, IsFiniteMeasure (κ a)]
+    (hm : Indep m m κ μα) {t : Set Ω} (ht : MeasurableSet[m] t) :
+    ∀ᵐ a ∂μα, κ a t = 0 ∨ κ a t = 1 :=
+  measure_eq_zero_or_one_of_indepSet_self
+    (indep_of_indep_of_le hm (generateFrom_singleton_le ht) (generateFrom_singleton_le ht))
+
 theorem measure_eq_zero_or_one_of_indepSet_self [IsFiniteMeasure μ] {t : Set Ω}
     (h_indep : IndepSet t t μ) : μ t = 0 ∨ μ t = 1 := by
   simpa only [ae_dirac_eq, Filter.eventually_pure]
-    using Kernel.measure_eq_zero_or_one_of_indepSet_self h_indep
+    using! Kernel.measure_eq_zero_or_one_of_indepSet_self h_indep
+
+lemma measure_eq_zero_or_one_of_indep_self [IsFiniteMeasure μ] (hm : Indep m m μ)
+    {t : Set Ω} (ht : MeasurableSet[m] t) :
+    μ t = 0 ∨ μ t = 1 := by
+  simpa using Kernel.measure_eq_zero_or_one_of_indep_self hm ht
 
 theorem condExp_eq_zero_or_one_of_condIndepSet_self
     [StandardBorelSpace Ω]
@@ -68,16 +83,10 @@ theorem condExp_eq_zero_or_one_of_condIndepSet_self
     (h_indep : CondIndepSet m hm t t μ) :
     ∀ᵐ ω ∂μ, (μ⟦t | m⟧) ω = 0 ∨ (μ⟦t | m⟧) ω = 1 := by
   -- TODO: Why is not inferred?
-  have (a) : IsFiniteMeasure (condExpKernel μ m a) := inferInstance
+  have (a : _) : IsFiniteMeasure (condExpKernel μ m a) := inferInstance
   have h := ae_of_ae_trim hm (Kernel.measure_eq_zero_or_one_of_indepSet_self h_indep)
   filter_upwards [condExpKernel_ae_eq_condExp hm ht, h] with ω hω_eq hω
-  rw [← hω_eq, ENNReal.toReal_eq_zero_iff, ENNReal.toReal_eq_one_iff]
-  cases hω with
-  | inl h => exact Or.inl (Or.inl h)
-  | inr h => exact Or.inr h
-
-@[deprecated (since := "2025-01-21")]
-alias condexp_eq_zero_or_one_of_condIndepSet_self := condExp_eq_zero_or_one_of_condIndepSet_self
+  rwa [← hω_eq, measureReal_eq_zero_iff, measureReal_def, ENNReal.toReal_eq_one_iff]
 
 open Filter
 
@@ -223,7 +232,7 @@ theorem measure_zero_or_one_of_measurableSet_limsup
     (hns_univ : ∀ n, ∃ a, n ∈ ns a) {t : Set Ω} (ht_tail : MeasurableSet[limsup s f] t) :
     μ t = 0 ∨ μ t = 1 := by
   simpa only [ae_dirac_eq, Filter.eventually_pure]
-    using Kernel.measure_zero_or_one_of_measurableSet_limsup h_le h_indep hf hns hnsp hns_univ
+    using! Kernel.measure_zero_or_one_of_measurableSet_limsup h_le h_indep hf hns hnsp hns_univ
       ht_tail
 
 theorem condExp_zero_or_one_of_measurableSet_limsup [StandardBorelSpace Ω]
@@ -236,13 +245,7 @@ theorem condExp_zero_or_one_of_measurableSet_limsup [StandardBorelSpace Ω]
     (Kernel.measure_zero_or_one_of_measurableSet_limsup h_le h_indep hf hns hnsp hns_univ ht_tail)
   have ht : MeasurableSet t := limsup_le_iSup.trans (iSup_le h_le) t ht_tail
   filter_upwards [condExpKernel_ae_eq_condExp hm ht, h] with ω hω_eq hω
-  rw [← hω_eq, ENNReal.toReal_eq_zero_iff, ENNReal.toReal_eq_one_iff]
-  cases hω with
-  | inl h => exact Or.inl (Or.inl h)
-  | inr h => exact Or.inr h
-
-@[deprecated (since := "2025-01-21")]
-alias condexp_zero_or_one_of_measurableSet_limsup := condExp_zero_or_one_of_measurableSet_limsup
+  rwa [← hω_eq, measureReal_eq_zero_iff, measureReal_def, ENNReal.toReal_eq_one_iff]
 
 end Abstract
 
@@ -289,7 +292,7 @@ theorem measure_zero_or_one_of_measurableSet_limsup_atTop
     (h_indep : iIndep s μ) {t : Set Ω} (ht_tail : MeasurableSet[limsup s atTop] t) :
     μ t = 0 ∨ μ t = 1 := by
   simpa only [ae_dirac_eq, Filter.eventually_pure]
-    using Kernel.measure_zero_or_one_of_measurableSet_limsup_atTop h_le h_indep ht_tail
+    using! Kernel.measure_zero_or_one_of_measurableSet_limsup_atTop h_le h_indep ht_tail
 
 theorem condExp_zero_or_one_of_measurableSet_limsup_atTop [StandardBorelSpace Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ] (h_le : ∀ n, s n ≤ m0)
@@ -297,10 +300,6 @@ theorem condExp_zero_or_one_of_measurableSet_limsup_atTop [StandardBorelSpace Ω
     ∀ᵐ ω ∂μ, (μ⟦t | m⟧) ω = 0 ∨ (μ⟦t | m⟧) ω = 1 :=
   condExp_eq_zero_or_one_of_condIndepSet_self hm (limsup_le_iSup.trans (iSup_le h_le) t ht_tail)
     ((condIndep_limsup_atTop_self hm h_le h_indep).condIndepSet_of_measurableSet ht_tail ht_tail)
-
-@[deprecated (since := "2025-01-21")]
-alias condexp_zero_or_one_of_measurableSet_limsup_atTop :=
-  condExp_zero_or_one_of_measurableSet_limsup_atTop
 
 end AtTop
 
@@ -349,7 +348,7 @@ theorem measure_zero_or_one_of_measurableSet_limsup_atBot
     (ht_tail : MeasurableSet[limsup s atBot] t) :
     μ t = 0 ∨ μ t = 1 := by
   simpa only [ae_dirac_eq, Filter.eventually_pure]
-    using Kernel.measure_zero_or_one_of_measurableSet_limsup_atBot h_le h_indep ht_tail
+    using! Kernel.measure_zero_or_one_of_measurableSet_limsup_atBot h_le h_indep ht_tail
 
 /-- **Kolmogorov's 0-1 law**, conditional version: any event in the tail σ-algebra of a
 conditionally independent sequence of sub-σ-algebras has conditional probability 0 or 1. -/
@@ -359,10 +358,6 @@ theorem condExp_zero_or_one_of_measurableSet_limsup_atBot [StandardBorelSpace Ω
     ∀ᵐ ω ∂μ, (μ⟦t | m⟧) ω = 0 ∨ (μ⟦t | m⟧) ω = 1 :=
   condExp_eq_zero_or_one_of_condIndepSet_self hm (limsup_le_iSup.trans (iSup_le h_le) t ht_tail)
     ((condIndep_limsup_atBot_self hm h_le h_indep).condIndepSet_of_measurableSet ht_tail ht_tail)
-
-@[deprecated (since := "2025-01-21")]
-alias condexp_zero_or_one_of_measurableSet_limsup_atBot :=
-  condExp_zero_or_one_of_measurableSet_limsup_atBot
 
 end AtBot
 

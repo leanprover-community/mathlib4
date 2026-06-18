@@ -69,7 +69,7 @@ class HundredTheorem:
 # These field names match the names in the data files of the 1000+ theorems project upstream.
 # See https://github.com/1000-plus/1000-plus.github.io/blob/main/README.md#file-format
 # for the specification. Compared to the README,
-# - this |wikidata| field concatenates the upstream fielcs |wikidata| and |id_suffix|
+# - this |wikidata| field concatenates the upstream fields |wikidata| and |id_suffix|
 # - we omit some fields (for now), e.g. the msc classification, and only care about Lean formalisations
 @dataclass
 class ThousandPlusTheorem:
@@ -170,13 +170,15 @@ for index, entry in thousand.items():
             print(f"For key {index} ({title}): did you mean `decl` instead of `decls`?")
             errors += 1
         thousand_decls = thousand_decls + [(f"{index} {title}", d) for d in entry["decls"]]
+    elif "statement" in entry:
+        thousand_decls.append((f"{index} {title}", entry["statement"]))
 
 overview_decls = tiered_extract(overview)
-assert all(len(n) == 3 for n, _ in overview_decls)
+assert all(len(n) >= 3 for n, _ in overview_decls), "Expected more nesting"
 overview_decls = flatten_names(overview_decls)
 
 undergrad_decls = tiered_extract(undergrad)
-assert all(len(n) >= 3 for n, _ in undergrad_decls)
+assert all(len(n) >= 3 for n, _ in undergrad_decls), "Expected more nesting"
 undergrad_decls = flatten_names(undergrad_decls)
 
 with open("100.json", "w", encoding="utf8") as f:

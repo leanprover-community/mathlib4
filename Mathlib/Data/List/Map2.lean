@@ -3,8 +3,10 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.List.Defs
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.List.Defs
+public import Mathlib.Tactic.Common
 
 /-!
 # Map₂ Lemmas
@@ -19,6 +21,8 @@ Lists together. In particular, we include lemmas about:
 * `zipRight'`
 
 -/
+
+public section
 
 assert_not_exists GroupWithZero
 assert_not_exists Lattice
@@ -229,7 +233,6 @@ theorem zipLeft_cons_nil :
 theorem zipLeft_cons_cons : zipLeft (a :: as) (b :: bs) = (a, some b) :: zipLeft as bs :=
   rfl
 
--- Porting note: arguments explicit for recursion
 theorem zipLeft_eq_zipLeft' (as : List α) (bs : List β) : zipLeft as bs = (zipLeft' as bs).fst := by
   rw [zipLeft, zipLeft']
   cases as with
@@ -239,7 +242,7 @@ theorem zipLeft_eq_zipLeft' (as : List α) (bs : List β) : zipLeft as bs = (zip
     | nil => rfl
     | cons _ btl =>
       rw [zipWithLeft, zipWithLeft', cons_inj_right]
-      exact @zipLeft_eq_zipLeft' atl btl
+      exact zipLeft_eq_zipLeft' atl btl
 
 end ZipLeft
 

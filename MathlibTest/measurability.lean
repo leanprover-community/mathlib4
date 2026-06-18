@@ -94,21 +94,29 @@ example [TopologicalSpace α] [BorelSpace α] [NormedAddCommGroup β] [BorelSpac
     (hF : ∀ i, Measurable (F i)) : AEMeasurable (∑ i ∈ s, (fun x => F (i+1) x - F i x)) μ := by
   measurability
 
-example : Measurable (fun x : ℝ => Real.exp (2 * inner x 3)) := by measurability
+open scoped RealInnerProductSpace
 
-example : StronglyMeasurable (fun x : ℝ => Real.exp (2 * inner x 3)) := by measurability
+/- We use a general inner product space to prevent the inner product from being simplified to
+multiplication. An earlier version of the tactic failed on the following examples without this
+simplification. -/
+variable {E : Type*} (v : E) [NormedAddCommGroup E] [InnerProductSpace ℝ E] [MeasurableSpace E]
+  [OpensMeasurableSpace E] [SecondCountableTopology E]
 
-example {γ : MeasureTheory.Measure ℝ} :
-  AEMeasurable (fun x : ℝ => Real.exp (2 * inner x 3)) γ := by measurability
+example : Measurable (fun x : E => Real.exp (2 * ⟪v, x⟫)) := by measurability
 
-example {γ : MeasureTheory.Measure ℝ} :
-  AEStronglyMeasurable (fun x : ℝ => Real.exp (2 * inner x 3)) γ := by measurability
+example : StronglyMeasurable (fun x : E => Real.exp (2 * ⟪v, x⟫)) := by measurability
 
-example {γ : MeasureTheory.Measure ℝ} [SigmaFinite γ] :
-  FinStronglyMeasurable (fun x : ℝ => Real.exp (2 * inner x 3)) γ := by measurability
+example {γ : MeasureTheory.Measure E} :
+  AEMeasurable (fun x : E => Real.exp (2 * ⟪v, x⟫)) γ := by measurability
 
-example {γ : MeasureTheory.Measure ℝ} [SigmaFinite γ] :
-  AEFinStronglyMeasurable (fun x : ℝ => Real.exp (2 * inner x 3)) γ := by measurability
+example {γ : MeasureTheory.Measure E} :
+  AEStronglyMeasurable (fun x : E => Real.exp (2 * ⟪v, x⟫)) γ := by measurability
+
+example {γ : MeasureTheory.Measure E} [SigmaFinite γ] :
+  FinStronglyMeasurable (fun x : E => Real.exp (2 * ⟪v, x⟫)) γ := by measurability
+
+example {γ : MeasureTheory.Measure E} [SigmaFinite γ] :
+  AEFinStronglyMeasurable (fun x : E => Real.exp (2 * ⟪v, x⟫)) γ := by measurability
 
 /-- An older version of the tactic failed in the presence of a negated hypothesis due to an
 internal call to `apply_assumption`. -/
@@ -117,3 +125,18 @@ example {ι : Type _} (i k : ι) (hik : i ≠ k) : Measurable (id : α → α) :
 --This search problem loops (StronglyMeasurable -> Measurable -> StronglyMeasurable) but fails
 --quickly nevertheless.
 --example (f : ℝ → ℝ) : StronglyMeasurable f := by measurability
+
+-- Test that goals involving nested `Measurable` and `MeasurableSet` conditions are solved
+example {s t : Set ℝ} {f : ℝ → ℝ} (hs : MeasurableSet s) (hf : Measurable f) :
+    Measurable (fun x : ℝ => (s ∩ (fun y => s.indicator f y) ⁻¹' s).indicator f (f x)) := by
+  measurability
+
+-- Test that `measurability` does not solve out-of-scope `fun_prop` goals
+example : Continuous (fun x : ℝ => x) := by
+  fail_if_success measurability
+  exact continuous_id
+
+-- `measurability` used to fail on this example, see
+-- https://github.com/leanprover-community/mathlib4/issues/26620
+example (τ : ℝ) : MeasurableSet {x : ℝ | x > τ} := by
+  measurability

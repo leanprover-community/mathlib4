@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preserving terminal object
@@ -15,6 +17,8 @@ to concrete objects.
 In particular, we show that `terminalComparison G` is an isomorphism iff `G` preserves terminal
 objects.
 -/
+
+@[expose] public section
 
 
 universe w v v₁ v₂ u u₁ u₂
@@ -56,8 +60,8 @@ def IsTerminal.isTerminalIffObj [PreservesLimit (Functor.empty.{0} C) G]
     IsTerminal X ≃ IsTerminal (G.obj X) where
   toFun := IsTerminal.isTerminalObj G X
   invFun := IsTerminal.isTerminalOfObj G X
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 /-- Preserving the terminal object implies preserving all limits of the empty diagram. -/
 lemma preservesLimitsOfShape_pempty_of_preservesTerminal [PreservesLimit (Functor.empty.{0} C) G] :
@@ -83,7 +87,7 @@ has limits of shape `J` and `G` preserves them, then `D` does not necessarily ha
 theorem hasTerminal_of_hasTerminal_of_preservesLimit [PreservesLimit (Functor.empty.{0} C) G] :
     HasTerminal D := ⟨fun F => by
   haveI := HasLimit.mk ⟨_, isLimitOfHasTerminalOfPreservesLimit G⟩
-  apply hasLimitOfIso F.uniqueFromEmpty.symm⟩
+  apply hasLimit_of_iso F.uniqueFromEmpty.symm⟩
 
 variable [HasTerminal D]
 
@@ -146,8 +150,8 @@ def IsInitial.isInitialIffObj [PreservesColimit (Functor.empty.{0} C) G]
     IsInitial X ≃ IsInitial (G.obj X) where
   toFun := IsInitial.isInitialObj G X
   invFun := IsInitial.isInitialOfObj G X
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 /-- Preserving the initial object implies preserving all colimits of the empty diagram. -/
 lemma preservesColimitsOfShape_pempty_of_preservesInitial
@@ -175,7 +179,7 @@ theorem hasInitial_of_hasInitial_of_preservesColimit [PreservesColimit (Functor.
     HasInitial D :=
   ⟨fun F => by
     haveI := HasColimit.mk ⟨_, isColimitOfHasInitialOfPreservesColimit G⟩
-    apply hasColimitOfIso F.uniqueFromEmpty⟩
+    apply hasColimit_of_iso F.uniqueFromEmpty⟩
 
 variable [HasInitial D]
 

@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Partition.Split
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
+module
+
+public import Mathlib.Analysis.BoxIntegral.Partition.Split
+public import Mathlib.Analysis.Normed.Operator.Mul
 
 /-!
 # Box additive functions
@@ -25,6 +27,8 @@ In this file we define box-additive functions and prove that a function such tha
 
 rectangular box, additive function
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -61,7 +65,7 @@ variable {N : Type*} [AddCommMonoid M] [AddCommMonoid N] {I₀ : WithTop (Box ι
 
 instance : FunLike (ι →ᵇᵃ[I₀] M) (Box ι) M where
   coe := toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 initialize_simps_projections BoxIntegral.BoxAdditiveMap (toFun → apply)
 
@@ -77,7 +81,7 @@ theorem sum_partition_boxes (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) {π 
     (h : π.IsPartition) : ∑ J ∈ π.boxes, f J = f I :=
   f.sum_partition_boxes' I hI π h
 
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 instance : Zero (ι →ᵇᵃ[I₀] M) :=
   ⟨⟨0, fun _ _ _ _ => sum_const_zero⟩⟩
 
@@ -116,16 +120,16 @@ def ofMapSplitAdd [Finite ι] (f : Box ι → M) (I₀ : WithTop (Box ι))
     ι →ᵇᵃ[I₀] M := by
   classical
   refine ⟨f, ?_⟩
-  replace hf : ∀ I : Box ι, ↑I ≤ I₀ → ∀ s, (∑ J ∈ (splitMany I s).boxes, f J) = f I := by
-    intro I hI s
-    induction' s using Finset.induction_on with a s _ ihs
-    · simp
-    rw [splitMany_insert, inf_split, ← ihs, biUnion_boxes, sum_biUnion_boxes]
-    refine Finset.sum_congr rfl fun J' hJ' => ?_
-    by_cases h : a.2 ∈ Ioo (J'.lower a.1) (J'.upper a.1)
-    · rw [sum_split_boxes]
-      exact hf _ ((WithTop.coe_le_coe.2 <| le_of_mem _ hJ').trans hI) h
-    · rw [split_of_not_mem_Ioo h, top_boxes, Finset.sum_singleton]
+  replace hf (I : Box ι) (hI : ↑I ≤ I₀) (s) : ∑ J ∈ (splitMany I s).boxes, f J = f I := by
+    induction s using Finset.induction_on with
+    | empty => simp
+    | insert a s _ ihs =>
+      rw [splitMany_insert, inf_split, ← ihs, biUnion_boxes, sum_biUnion_boxes]
+      refine Finset.sum_congr rfl fun J' hJ' => ?_
+      by_cases h : a.2 ∈ Ioo (J'.lower a.1) (J'.upper a.1)
+      · rw [sum_split_boxes]
+        exact hf _ ((WithTop.coe_le_coe.2 <| le_of_mem _ hJ').trans hI) h
+      · rw [split_of_notMem_Ioo h, top_boxes, Finset.sum_singleton]
   intro I hI π hπ
   have Hle : ∀ J ∈ π, ↑J ≤ I₀ := fun J hJ => (WithTop.coe_le_coe.2 <| π.le_of_mem hJ).trans hI
   rcases hπ.exists_splitMany_le with ⟨s, hs⟩
@@ -134,7 +138,7 @@ def ofMapSplitAdd [Finite ι] (f : Box ι → M) (I₀ : WithTop (Box ι))
 
 /-- If `g : M → N` is an additive map and `f` is a box additive map, then `g ∘ f` is a box additive
 map. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def map (f : ι →ᵇᵃ[I₀] M) (g : M →+ N) : ι →ᵇᵃ[I₀] N where
   toFun := g ∘ f
   sum_partition_boxes' I hI π hπ := by simp_rw [comp, ← map_sum, f.sum_partition_boxes hI hπ]
@@ -194,7 +198,6 @@ def upperSubLower.{u} {G : Type u} [AddCommGroup G] (I₀ : Box (Fin (n + 1))) (
       · have : (J.face i : WithTop (Box (Fin n))) ≤ I₀.face i :=
           WithTop.coe_le_coe.2 (face_mono hJ i)
         rw [le_iff_Icc, @Box.Icc_eq_pi _ I₀] at hJ
-        simp only
         rw [hf _ (hJ J.upper_mem_Icc _ trivial), hf _ (hJ J.lower_mem_Icc _ trivial),
           ← (fb _).map_split_add this j x, ← (fb _).map_split_add this j x]
         have hx' : x ∈ Ioo ((J.face i).lower j) ((J.face i).upper j) := hx

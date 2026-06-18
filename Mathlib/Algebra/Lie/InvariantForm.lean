@@ -3,8 +3,10 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Lie.Semisimple.Defs
-import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
+module
+
+public import Mathlib.Algebra.Lie.Semisimple.Defs
+public import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 
 /-!
 # Lie algebras with non-degenerate invariant bilinear forms are semisimple
@@ -12,7 +14,7 @@ import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 In this file we prove that a finite-dimensional Lie algebra over a field is semisimple
 if it does not have non-trivial abelian ideals and it admits a
 non-degenerate reflexive invariant bilinear form.
-Here a form is *invariant* if it invariant under the Lie bracket
+Here a form is *invariant* if it is invariant under the Lie bracket
 in the sense that `⁅x, Φ⁆ = 0` for all `x` or equivalently, `Φ ⁅x, y⁆ z = Φ x ⁅y, z⁆`.
 
 ## Main results
@@ -29,6 +31,8 @@ in the sense that `⁅x, Φ⁆ = 0` for all `x` or equivalently, `Φ ⁅x, y⁆ 
 
 We follow the short and excellent paper [dieudonne1953].
 -/
+
+@[expose] public section
 
 namespace LieAlgebra
 
@@ -70,7 +74,7 @@ def orthogonal (hΦ_inv : Φ.lieInvariant L) (N : LieSubmodule R L M) : LieSubmo
   __ := Φ.orthogonal N
   lie_mem {x y} := by
     suffices (∀ n ∈ N, Φ n y = 0) → ∀ n ∈ N, Φ n ⁅x, y⁆ = 0 by
-      simpa only [LinearMap.BilinForm.isOrtho_def, -- and some default simp lemmas
+      simpa only [
         AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, Submodule.mem_toAddSubmonoid,
         LinearMap.BilinForm.mem_orthogonal_iff, LieSubmodule.mem_toSubmodule]
     intro H a ha
@@ -85,7 +89,7 @@ lemma orthogonal_toSubmodule (N : LieSubmodule R L M) :
 
 lemma mem_orthogonal (N : LieSubmodule R L M) (y : M) :
     y ∈ orthogonal Φ hΦ_inv N ↔ ∀ x ∈ N, Φ x y = 0 := by
-  simp [orthogonal, LinearMap.BilinForm.isOrtho_def, LinearMap.BilinForm.mem_orthogonal_iff]
+  simp [orthogonal, LinearMap.BilinForm.mem_orthogonal_iff]
 
 variable [LieAlgebra R L]
 
@@ -103,7 +107,7 @@ lemma orthogonal_disjoint
       LieSubmodule.lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le]
   rintro _ ⟨x, y, rfl⟩
   simp only [LieSubmodule.bot_coe, Set.mem_singleton_iff]
-  apply hΦ_nondeg
+  apply hΦ_nondeg.1
   intro z
   rw [hΦ_inv, neg_eq_zero]
   have hyz : ⁅(x : L), z⁆ ∈ I := lie_mem_left _ _ _ _ _ x.2
@@ -128,16 +132,13 @@ open Module Submodule in
 lemma orthogonal_isCompl_toSubmodule (I : LieIdeal K L) (hI : IsAtom I) :
     IsCompl I.toSubmodule (orthogonal Φ hΦ_inv I).toSubmodule := by
   rw [orthogonal_toSubmodule, LinearMap.BilinForm.isCompl_orthogonal_iff_disjoint hΦ_refl,
-      ← orthogonal_toSubmodule _ hΦ_inv, ← LieSubmodule.disjoint_iff_toSubmodule]
+      ← orthogonal_toSubmodule _ hΦ_inv, LieSubmodule.disjoint_toSubmodule]
   exact orthogonal_disjoint Φ hΦ_nondeg hΦ_inv hL I hI
-
-@[deprecated (since := "2024-12-30")]
-alias orthogonal_isCompl_coe_submodule := orthogonal_isCompl_toSubmodule
 
 open Module Submodule in
 lemma orthogonal_isCompl (I : LieIdeal K L) (hI : IsAtom I) :
     IsCompl I (orthogonal Φ hΦ_inv I) := by
-  rw [LieSubmodule.isCompl_iff_toSubmodule]
+  rw [← LieSubmodule.isCompl_toSubmodule]
   exact orthogonal_isCompl_toSubmodule Φ hΦ_nondeg hΦ_inv hΦ_refl hL I hI
 
 include hΦ_inv
@@ -197,11 +198,11 @@ theorem isSemisimple_of_nondegenerate : IsSemisimple K L := by
   intro I hI
   apply (orthogonal_disjoint Φ hΦ_nondeg hΦ_inv hL I hI).mono_right
   apply sSup_le
-  simp only [Set.mem_diff, Set.mem_setOf_eq, Set.mem_singleton_iff, and_imp]
+  simp only [Set.mem_sdiff, Set.mem_setOf_eq, Set.mem_singleton_iff, and_imp]
   intro J hJ hJI
   rw [← lie_eq_self_of_isAtom_of_nonabelian J hJ (hL J hJ), lieIdeal_oper_eq_span, lieSpan_le]
   rintro _ ⟨x, y, rfl⟩
-  simp only [orthogonal_carrier, Φ.isOrtho_def, Set.mem_setOf_eq]
+  simp only [orthogonal_carrier, Set.mem_setOf_eq]
   intro z hz
   rw [← neg_eq_zero, ← hΦ_inv]
   suffices ⁅(x : L), z⁆ = 0 by simp only [this, map_zero, LinearMap.zero_apply]

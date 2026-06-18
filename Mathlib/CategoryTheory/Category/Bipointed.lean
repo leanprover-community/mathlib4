@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.CategoryTheory.Category.Pointed
+module
+
+public import Mathlib.CategoryTheory.Category.Pointed
 
 /-!
 # The category of bipointed types
@@ -14,6 +16,8 @@ This defines `Bipointed`, the category of bipointed types.
 
 Monoidal structure
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -81,7 +85,7 @@ abbrev HomSubtype (X Y : Bipointed) :=
 
 instance (X Y : Bipointed) : FunLike (HomSubtype X Y) X Y where
   coe f := f
-  coe_injective' _ _ := Subtype.ext
+  coe_injective _ _ := Subtype.ext
 
 instance hasForget : ConcreteCategory Bipointed HomSubtype where
   hom f := ⟨f.1, ⟨f.2, f.3⟩⟩
@@ -195,8 +199,7 @@ def pointedToBipointedFstBipointedToPointedFstAdjunction :
             funext x
             cases x
             · exact f.map_snd.symm
-            · rfl
-          right_inv := fun _ => Pointed.Hom.ext rfl }
+            · rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Bipointed.Hom.ext
         funext x
@@ -215,8 +218,7 @@ def pointedToBipointedSndBipointedToPointedSndAdjunction :
             funext x
             cases x
             · exact f.map_fst.symm
-            · rfl
-          right_inv := fun _ => Pointed.Hom.ext rfl }
+            · rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Bipointed.Hom.ext
         funext x

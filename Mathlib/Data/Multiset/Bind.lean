@@ -1,9 +1,11 @@
 /-
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
+Authors: Mario Carneiro, Rudy Peterson
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 
 /-!
 # Bind operation for multisets
@@ -18,6 +20,8 @@ This file defines a few basic operations on `Multiset`, notably the monadic bind
 * `Multiset.sigma`: Disjoint sum of multisets in a sigma type.
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero MulAction
 
 universe v
@@ -30,7 +34,7 @@ namespace Multiset
 
 /-- `join S`, where `S` is a multiset of multisets, is the lift of the list join
   operation, that is, the union of all the sets.
-     join {{1, 2}, {1, 2}, {0, 1}} = {0, 1, 1, 1, 2, 2} -/
+  For example, `join {{1, 2}, {1, 2}, {0, 1}} = {0, 1, 1, 1, 2, 2}`. -/
 def join : Multiset (Multiset α) → Multiset α :=
   sum
 
@@ -83,6 +87,18 @@ theorem rel_join {r : α → β → Prop} {s t} (h : Rel (Rel r) s t) : Rel r s.
   induction h with
   | zero => simp
   | cons hab hst ih => simpa using hab.add ih
+
+theorem filter_join (S : Multiset (Multiset α)) (p : α → Prop) [DecidablePred p] :
+    filter p (join S) = join (map (filter p) S) := by
+  induction S using Multiset.induction with
+  | empty => simp
+  | cons _ _ ih => simp [ih]
+
+theorem filterMap_join (S : Multiset (Multiset α)) (f : α → Option β) :
+    filterMap f (join S) = join (map (filterMap f) S) := by
+  induction S using Multiset.induction with
+  | empty => simp
+  | cons _ _ ih => simp [ih]
 
 /-! ### Bind -/
 
@@ -141,7 +157,7 @@ theorem bind_congr {f g : α → Multiset β} {m : Multiset α} :
     (∀ a ∈ m, f a = g a) → bind m f = bind m g := by simp +contextual [bind]
 
 theorem bind_hcongr {β' : Type v} {m : Multiset α} {f : α → Multiset β} {f' : α → Multiset β'}
-    (h : β = β') (hf : ∀ a ∈ m, HEq (f a) (f' a)) : HEq (bind m f) (bind m f') := by
+    (h : β = β') (hf : ∀ a ∈ m, f a ≍ f' a) : bind m f ≍ bind m f' := by
   subst h
   simp only [heq_eq_eq] at hf
   simp [bind_congr hf]
@@ -164,6 +180,40 @@ theorem bind_bind (m : Multiset α) (n : Multiset β) {f : α → β → Multise
 theorem bind_map_comm (m : Multiset α) (n : Multiset β) {f : α → β → γ} :
     ((bind m) fun a => n.map fun b => f a b) = (bind n) fun b => m.map fun a => f a b :=
   Multiset.induction_on m (by simp) (by simp +contextual)
+
+theorem filter_eq_bind (m : Multiset α) (p : α → Prop) [DecidablePred p] :
+    filter p m = bind m (fun a => if p a then {a} else 0) := by
+  induction m using Multiset.induction with
+  | empty => simp
+  | cons a m ih => simp [filter_cons, ih]
+
+theorem bind_filter (m : Multiset α) (p : α → Prop) (f : α → Multiset β) [DecidablePred p] :
+    bind (filter p m) f = bind m (fun a => if p a then f a else 0) := by
+  simp only [filter_eq_bind, bind_assoc]
+  apply Multiset.bind_congr; intro a ham
+  split_ifs <;> simp
+
+theorem filter_bind (m : Multiset α) (f : α → Multiset β) (p : β → Prop) [DecidablePred p] :
+    filter p (bind m f) = bind m (fun a => filter p (f a)) := by
+  simp [bind, filter_join]
+
+theorem filterMap_eq_bind (m : Multiset α) (f : α → Option β) :
+    filterMap f m = bind m (fun a => ((f a).map singleton).getD 0) := by
+  induction m using Multiset.induction with
+  | empty => simp
+  | cons a m ih => simp [filterMap_cons, ih]
+
+theorem bind_filterMap (m : Multiset α) (f : α → Option β) (g : β → Multiset γ) :
+    bind (filterMap f m) g = bind m (fun a => ((f a).map g).getD 0) := by
+  simp only [filterMap_eq_bind, Multiset.bind_assoc]
+  apply Multiset.bind_congr; intro a ham
+  cases f a with
+  | none => simp
+  | some b => simp
+
+theorem filterMap_bind (m : Multiset α) (f : α → Multiset β) (g : β → Option γ) :
+    filterMap g (bind m f) = bind m (fun a => filterMap g (f a)) := by
+  simp [bind, filterMap_join]
 
 @[to_additive (attr := simp)]
 theorem prod_bind [CommMonoid β] (s : Multiset α) (t : α → Multiset β) :
@@ -193,7 +243,7 @@ theorem le_bind {α β : Type*} {f : α → Multiset β} (S : Multiset α) {x : 
   rw [count_bind, hm', sum_cons]
   exact Nat.le_add_right _ _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed because not in normal form
+@[simp]
 theorem attach_bind_coe (s : Multiset α) (f : α → Multiset β) :
     (s.attach.bind fun i => f i) = s.bind f :=
   congr_arg join <| attach_map_val' _ _
@@ -206,10 +256,10 @@ open scoped Function in -- required for scoped `on` notation
   have : ∀ a, ∃ l : List β, f a = l := fun a => Quot.induction_on (f a) fun l => ⟨l, rfl⟩
   choose f' h' using this
   have : f = fun a ↦ ofList (f' a) := funext h'
-  have hd : Symmetric fun a b ↦ List.Disjoint (f' a) (f' b) := fun a b h ↦ h.symm
+  have _ : Std.Symm fun a b : List β ↦ List.Disjoint a b := { symm a b h := h.symm }
   exact Quot.induction_on s <| by
     unfold Function.onFun
-    simp [this, List.nodup_flatMap, pairwise_coe_iff_pairwise hd]
+    simp [this, List.nodup_flatMap, pairwise_coe_iff_pairwise]
 
 @[simp]
 lemma dedup_bind_dedup [DecidableEq α] [DecidableEq β] (s : Multiset α) (f : α → Multiset β) :
@@ -217,7 +267,7 @@ lemma dedup_bind_dedup [DecidableEq α] [DecidableEq β] (s : Multiset α) (f : 
   ext x
   -- Porting note: was `simp_rw [count_dedup, mem_bind, mem_dedup]`
   simp_rw [count_dedup]
-  refine if_congr ?_ rfl rfl
+  congr 1
   simp
 
 variable (op : α → α → α) [hc : Std.Commutative op] [ha : Std.Associative op]
@@ -225,9 +275,9 @@ variable (op : α → α → α) [hc : Std.Commutative op] [ha : Std.Associative
 theorem fold_bind {ι : Type*} (s : Multiset ι) (t : ι → Multiset α) (b : ι → α) (b₀ : α) :
     (s.bind t).fold op ((s.map b).fold op b₀) =
     (s.map fun i => (t i).fold op (b i)).fold op b₀ := by
-  induction' s using Multiset.induction_on with a ha ih
-  · rw [zero_bind, map_zero, map_zero, fold_zero]
-  · rw [cons_bind, map_cons, map_cons, fold_cons_left, fold_cons_left, fold_add, ih]
+  induction s using Multiset.induction_on with
+  | empty => rw [zero_bind, map_zero, map_zero, fold_zero]
+  | cons a ha ih => rw [cons_bind, map_cons, map_cons, fold_cons_left, fold_cons_left, fold_add, ih]
 
 end Bind
 
@@ -279,18 +329,27 @@ theorem add_product (s t : Multiset α) (u : Multiset β) : (s + t) ×ˢ u = s �
 theorem product_add (s : Multiset α) : ∀ t u : Multiset β, s ×ˢ (t + u) = s ×ˢ t + s ×ˢ u :=
   Multiset.induction_on s (fun _ _ => rfl) fun a s IH t u => by
     rw [cons_product, IH]
-    simp [add_comm, add_left_comm, add_assoc]
+    simp [add_left_comm, add_assoc]
 
 @[simp]
 theorem card_product : card (s ×ˢ t) = card s * card t := by simp [SProd.sprod, product]
 
 variable {s t}
 
-@[simp] lemma mem_product : ∀ {p : α × β}, p ∈ @product α β s t ↔ p.1 ∈ s ∧ p.2 ∈ t
-  | (a, b) => by simp [product, and_left_comm]
+@[simp] lemma mem_product : ∀ {p : α × β}, p ∈ s ×ˢ t ↔ p.1 ∈ s ∧ p.2 ∈ t
+  | (a, b) => by simp [SProd.sprod, product, and_left_comm]
 
 protected theorem Nodup.product : Nodup s → Nodup t → Nodup (s ×ˢ t) :=
   Quotient.inductionOn₂ s t fun l₁ l₂ d₁ d₂ => by simp [List.Nodup.product d₁ d₂]
+
+@[simp] lemma map_swap_product (s : Multiset α) (t : Multiset β) :
+    (s ×ˢ t).map Prod.swap = t ×ˢ s := by
+  induction s using Multiset.induction <;> simp_all
+
+lemma prod_map_product_eq_prod_prod {M : Type*} [CommMonoid M]
+    (s : Multiset α) (t : Multiset β) (f : α × β → M) :
+    ((s ×ˢ t).map f).prod = (s.map fun i ↦ (t.map fun j ↦ f (i, j)).prod).prod := by
+  induction s using Multiset.induction <;> simp_all
 
 end Product
 
@@ -303,7 +362,7 @@ variable {σ : α → Type*} (a : α) (s : Multiset α) (t : ∀ a, Multiset (σ
 
 /-- `Multiset.sigma s t` is the dependent version of `Multiset.product`. It is the sum of
   `(a, b)` as `a` ranges over `s` and `b` ranges over `t a`. -/
-protected def sigma (s : Multiset α) (t : ∀ a, Multiset (σ a)) : Multiset (Σa, σ a) :=
+protected def sigma (s : Multiset α) (t : ∀ a, Multiset (σ a)) : Multiset (Σ a, σ a) :=
   s.bind fun a => (t a).map <| Sigma.mk a
 
 @[simp]
@@ -342,8 +401,8 @@ theorem card_sigma : card (s.sigma t) = sum (map (fun a => card (t a)) s) := by
 
 variable {s t}
 
-@[simp] lemma mem_sigma : ∀ {p : Σa, σ a}, p ∈ @Multiset.sigma α σ s t ↔ p.1 ∈ s ∧ p.2 ∈ t p.1
-  | ⟨a, b⟩ => by simp [Multiset.sigma, and_assoc, and_left_comm]
+@[simp] lemma mem_sigma : ∀ {p : Σ a, σ a}, p ∈ @Multiset.sigma α σ s t ↔ p.1 ∈ s ∧ p.2 ∈ t p.1
+  | ⟨a, b⟩ => by simp [Multiset.sigma, and_left_comm]
 
 protected theorem Nodup.sigma {σ : α → Type*} {t : ∀ a, Multiset (σ a)} :
     Nodup s → (∀ a, Nodup (t a)) → Nodup (s.sigma t) :=

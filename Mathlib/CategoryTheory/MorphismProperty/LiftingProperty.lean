@@ -3,10 +3,12 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen, Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.MorphismProperty.Retract
-import Mathlib.CategoryTheory.LiftingProperties.Limits
-import Mathlib.Order.GaloisConnection.Defs
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.MorphismProperty.Retract
+public import Mathlib.CategoryTheory.LiftingProperties.Limits
+public import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Left and right lifting properties
@@ -17,6 +19,8 @@ We show that the left lifting property is stable under retracts, cobase change, 
 and composition, with dual statements for the right lifting property.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -79,14 +83,16 @@ instance rlp_isMultiplicative : T.rlp.IsMultiplicative where
     have := hj _ hp
     infer_instance
 
-lemma llp_isStableUnderCoproductsOfShape (J : Type*) :
+instance llp_isStableUnderCoproductsOfShape (J : Type*) :
     T.llp.IsStableUnderCoproductsOfShape J := by
   apply IsStableUnderCoproductsOfShape.mk
   intro A B _ _ f hf X Y p hp
   have := fun j ↦ hf j _ hp
   infer_instance
 
-lemma rlp_isStableUnderProductsOfShape (J : Type*) :
+instance : IsStableUnderCoproducts.{w} T.llp where
+
+instance rlp_isStableUnderProductsOfShape (J : Type*) :
     T.rlp.IsStableUnderProductsOfShape J := by
   apply IsStableUnderProductsOfShape.mk
   intro A B _ _ f hf X Y p hp
@@ -135,9 +141,7 @@ lemma rlp_pushouts : T.pushouts.rlp = T.rlp := by
 lemma colimitsOfShape_discrete_le_llp_rlp (J : Type w) :
     T.colimitsOfShape (Discrete J) ≤ T.rlp.llp := by
   intro A B i hi
-  exact (T.rlp.llp.isStableUnderColimitsOfShape_iff_colimitsOfShape_le (Discrete J)).1
-    (llp_isStableUnderCoproductsOfShape _ _) _
-      (colimitsOfShape_monotone T.le_llp_rlp _ _ hi)
+  exact MorphismProperty.colimitsOfShape_le _ (colimitsOfShape_monotone T.le_llp_rlp _ _ hi)
 
 lemma coproducts_le_llp_rlp : (coproducts.{w} T) ≤ T.rlp.llp := by
   intro A B i hi
@@ -162,6 +166,39 @@ lemma rlp_retracts : T.retracts.rlp = T.rlp := by
   · rw [← le_llp_iff_le_rlp]
     exact T.retracts_le_llp_rlp
 
+lemma rlp_ofHoms_iff_hasLiftingProperty (ι : Type*) [Nonempty ι] {A B X Y : C}
+    (i : A ⟶ B) (p : X ⟶ Y) :
+    (MorphismProperty.ofHoms (fun (_ : ι) ↦ i)).rlp p ↔ HasLiftingProperty i p :=
+  ⟨fun hp ↦ hp _ ⟨Classical.arbitrary ι⟩,
+    by rintro _ _ _ _ ⟨⟩; assumption⟩
+
+lemma llp_ofHoms_iff_hasLiftingProperty (ι : Type*) [Nonempty ι] {A B X Y : C}
+    (i : A ⟶ B) (p : X ⟶ Y) :
+    (MorphismProperty.ofHoms (fun (_ : ι) ↦ p)).llp i ↔ HasLiftingProperty i p :=
+  ⟨fun hp ↦ hp _ ⟨Classical.arbitrary ι⟩,
+    by rintro _ _ _ _ ⟨⟩; assumption⟩
+
 end MorphismProperty
+
+lemma Functor.hasLiftingProperty_iff_of_isEquivalence
+    {D : Type*} [Category* D] (G : C ⥤ D) [G.IsEquivalence]
+    {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y) :
+    HasLiftingProperty (G.map i) (G.map p) ↔
+      HasLiftingProperty i p := by
+  #adaptation_note /-- Prior to nightly-2026-05-07, the next three lines were just
+  ```
+  simp only [dsimp% G.asEquivalence.toAdjunction.hasLiftingProperty_iff,
+    ← MorphismProperty.rlp_ofHoms_iff_hasLiftingProperty Unit]
+  ```
+  This is a temporary repair, and authors/maintainers are encouraged to either find a better repair,
+  or identify a minimal example of an underlying problem in Lean.
+  -/
+  change HasLiftingProperty (G.asEquivalence.functor.map i) (G.asEquivalence.functor.map p) ↔ _
+  rw [G.asEquivalence.toAdjunction.hasLiftingProperty_iff]
+  simp only [← MorphismProperty.rlp_ofHoms_iff_hasLiftingProperty Unit]
+  exact MorphismProperty.arrow_mk_iso_iff _
+    (Arrow.isoMk (G.asEquivalence.unitIso.symm.app _)
+      (G.asEquivalence.unitIso.symm.app _)
+      (G.asEquivalence.unitIso.inv.naturality p).symm)
 
 end CategoryTheory

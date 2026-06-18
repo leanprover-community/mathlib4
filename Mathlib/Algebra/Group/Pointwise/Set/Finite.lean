@@ -1,17 +1,21 @@
 /-
-Copyright (c) 2019 Johan Commelin. All rights reserved.
+Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Floris van Doorn
+Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Data.Finite.Prod
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-! # Finiteness lemmas for pointwise operations on sets -/
 
-assert_not_exists MonoidWithZero
+public section
 
-open Pointwise
+assert_not_exists MulAction MonoidWithZero
+
+open scoped Pointwise
 
 variable {F α β γ : Type*}
 
@@ -36,7 +40,7 @@ theorem Finite.mul : s.Finite → t.Finite → (s * t).Finite :=
   Finite.image2 _
 
 /-- Multiplication preserves finiteness. -/
-@[to_additive "Addition preserves finiteness."]
+@[to_additive /-- Addition preserves finiteness. -/]
 instance fintypeMul [DecidableEq α] (s t : Set α) [Fintype s] [Fintype t] : Fintype (s * t) :=
   Set.fintypeImage2 _ _ _
 
@@ -53,10 +57,11 @@ instance decidableMemMul [Fintype α] [DecidableEq α] [DecidablePred (· ∈ s)
 @[to_additive]
 instance decidableMemPow [Fintype α] [DecidableEq α] [DecidablePred (· ∈ s)] (n : ℕ) :
     DecidablePred (· ∈ s ^ n) := by
-  induction' n with n ih
-  · simp only [pow_zero, mem_one]
+  induction n with
+  | zero =>
+    simp only [pow_zero, mem_one]
     infer_instance
-  · letI := ih
+  | succ n ih =>
     rw [pow_succ]
     infer_instance
 
@@ -127,7 +132,7 @@ variable [Div α] {s t : Set α}
 @[to_additive] lemma Finite.div : s.Finite → t.Finite → (s / t).Finite := .image2 _
 
 /-- Division preserves finiteness. -/
-@[to_additive "Subtraction preserves finiteness."]
+@[to_additive /-- Subtraction preserves finiteness. -/]
 instance fintypeDiv [DecidableEq α] (s t : Set α) [Fintype s] [Fintype t] : Fintype (s / t) :=
   Set.fintypeImage2 _ _ _
 
@@ -144,19 +149,6 @@ lemma finite_div : (s / t).Finite ↔ s.Finite ∧ t.Finite ∨ s = ∅ ∨ t = 
 @[to_additive]
 lemma infinite_div : (s / t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty :=
   infinite_image2 (fun _ _ ↦ div_left_injective.injOn) fun _ _ ↦ div_right_injective.injOn
-
-variable [MulAction α β] {a : α} {s : Set β}
-
-@[to_additive (attr := simp)]
-theorem finite_smul_set : (a • s).Finite ↔ s.Finite :=
-  finite_image_iff (MulAction.injective _).injOn
-
-@[to_additive (attr := simp)]
-theorem infinite_smul_set : (a • s).Infinite ↔ s.Infinite :=
-  infinite_image_iff (MulAction.injective _).injOn
-
-@[to_additive] alias ⟨Finite.of_smul_set, _⟩ := finite_smul_set
-@[to_additive] alias ⟨_, Infinite.smul_set⟩ := infinite_smul_set
 
 end Group
 
@@ -190,7 +182,7 @@ theorem card_pow_eq_card_pow_card_univ [∀ k : ℕ, DecidablePred (· ∈ S ^ k
       apply fintypeMul
     refine Set.eq_of_subset_of_card_le ?_ (le_trans (ge_of_eq h) ?_)
     · exact mul_subset_mul Set.Subset.rfl (Set.singleton_subset_iff.mpr ha)
-    · convert key a (S ^ n) (S ^ n * {a}) fun b hb ↦ Set.mul_mem_mul hb (Set.mem_singleton a)
+    · convert! key a (S ^ n) (S ^ n * { a }) fun b hb ↦ Set.mul_mem_mul hb (Set.mem_singleton a)
   rw [pow_succ', ← h₂, ← mul_assoc, ← pow_succ', h₂, mul_singleton, forall_mem_image]
   intro x hx
   rwa [mul_inv_cancel_right]

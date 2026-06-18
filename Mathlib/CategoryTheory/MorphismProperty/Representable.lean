@@ -3,8 +3,9 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Joël Riou, Ravi Vakil
 -/
+module
 
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 
@@ -34,14 +35,14 @@ Throughout this file, `F : C ⥤ D` is a functor between categories `C` and `D`.
 * `Functor.relativelyRepresentable`: A morphism `f : X ⟶ Y` in `D` is said to be relatively
   representable with respect to `F`, if for any `g : F.obj a ⟶ Y`, there exists a pullback square
   of the following form
-```
+  ```
   F.obj b --F.map snd--> F.obj a
       |                     |
      fst                    g
       |                     |
       v                     v
       X ------- f --------> Y
-```
+  ```
 
 * `MorphismProperty.relative`: Given a morphism property `P` in `C`, a morphism `f : X ⟶ Y` in `D`
   satisfies `P.relative F` if it is relatively representable and for any `g : F.obj a ⟶ Y`, the
@@ -54,13 +55,19 @@ Given `hf : relativelyRepresentable f`, with `f : X ⟶ Y` and `g : F.obj a ⟶ 
   pullback of `f` and `g`.
 * `hf.snd g` is the morphism `hf.pullback g ⟶ F.obj a`
 * `hf.fst g` is the morphism `F.obj (hf.pullback g) ⟶ X`
-*  If `F` is full, and `f` is of type `F.obj c ⟶ G`, we also have `hf.fst' g : hf.pullback g ⟶ X`
-which is the preimage under `F` of `hf.fst g`.
+* If `F` is full, and `f` is of type `F.obj c ⟶ G`, we also have `hf.fst' g : hf.pullback g ⟶ X`
+  which is the preimage under `F` of `hf.fst g`.
 * `hom_ext`, `hom_ext'`, `lift`, `lift'` are variants of the universal property of
   `F.obj (hf.pullback g)`, where as much as possible has been formulated internally to `C`.
   For these theorems we also need that `F` is full and/or faithful.
 * `symmetry` and `symmetryIso` are variants of the fact that pullbacks are symmetric for
   representable morphisms, formulated internally to `C`. We assume that `F` is fully faithful here.
+
+We also provide some basic API for dealing with triple pullbacks, i.e. given
+`hf₁ : relativelyRepresentable f₁`, `f₂ : F.obj A₂ ⟶ X` and `f₃ : F.obj A₃ ⟶ X`, we define
+`hf₁.pullback₃ f₂ f₃` to be the pullback of `(A₁ ×_X A₂) ×_{A₁} (A₁ ×_X A₃)`. We then develop
+some API for working with this object, mirroring the usual API for pullbacks, but where as much
+as possible is phrased internally to `C`.
 
 ## Main results
 
@@ -71,6 +78,8 @@ which is the preimage under `F` of `hf.fst g`.
 * `relativelyRepresentable.of_isIso`: Isomorphisms are relatively representable.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -183,7 +192,7 @@ lemma hom_ext [Faithful F] {c : C} {a b : c ⟶ hf.pullback g}
     (h₁ : F.map a ≫ hf.fst g = F.map b ≫ hf.fst g)
     (h₂ : a ≫ hf.snd g = b ≫ hf.snd g) : a = b :=
   F.map_injective <|
-    PullbackCone.IsLimit.hom_ext (hf.isPullback g).isLimit h₁ (by simpa using F.congr_map h₂)
+    PullbackCone.IsLimit.hom_ext (hf.isPullback g).isLimit h₁ (by simpa using! F.congr_map h₂)
 
 /-- In the case of a representable morphism `f' : F.obj Y ⟶ G`, whose codomain lies
 in the image of `F`, we get that two morphism `a b : Z ⟶ hf.pullback g` are equal if
@@ -206,11 +215,11 @@ noncomputable def lift [Full F] : c ⟶ hf.pullback g :=
 
 @[reassoc (attr := simp)]
 lemma lift_fst [Full F] : F.map (hf.lift i h hi) ≫ hf.fst g = i := by
-  simpa [lift] using PullbackCone.IsLimit.lift_fst _ _ _ _
+  simpa [lift] using! PullbackCone.IsLimit.lift_fst _ _ _ _
 
 @[reassoc (attr := simp)]
 lemma lift_snd [Full F] [Faithful F] : hf.lift i h hi ≫ hf.snd g = h :=
-  F.map_injective <| by simpa [lift] using PullbackCone.IsLimit.lift_snd _ _ _ _
+  F.map_injective <| by simpa [lift] using! PullbackCone.IsLimit.lift_snd _ _ _ _
 
 end
 
@@ -224,7 +233,7 @@ noncomputable def lift' [Full F] : c ⟶ hf'.pullback g := hf'.lift _ _ hi
 
 @[reassoc (attr := simp)]
 lemma lift'_fst [Full F] [Faithful F] : hf'.lift' i h hi ≫ hf'.fst' g = i :=
-  F.map_injective (by simp [map_fst', lift'])
+  F.map_injective (by simp [lift'])
 
 @[reassoc (attr := simp)]
 lemma lift'_snd [Full F] [Faithful F] : hf'.lift' i h hi ≫ hf'.snd g = h := by
@@ -313,6 +322,7 @@ category `Cᵒᵖ ⥤ Type v` satisfies the morphism property `P.presheaf` iff:
 * The morphism is representable.
 * For any morphism `g : F.obj a ⟶ G`, the property `P` holds for any represented pullback of
   `f` by `g`.
+
 This is implemented as a special case of the more general notion of `P.relative`, to the case when
 the functor `F` is `yoneda`. -/
 abbrev presheaf : MorphismProperty (Cᵒᵖ ⥤ Type v₁) := P.relative yoneda
@@ -332,11 +342,12 @@ lemma relative.property_snd {f : X ⟶ Y} (hf : P.relative F f) {a : C} (g : F.o
     P (hf.rep.snd g) :=
   hf.property g _ _ (hf.rep.isPullback g)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a morphism property `P` which respects isomorphisms, then to show that a morphism
 `f : X ⟶ Y` satisfies `P.relative` it suffices to show that:
 * The morphism is representable.
 * For any morphism `g : F.obj a ⟶ G`, the property `P` holds for *some* represented pullback
-of `f` by `g`. -/
+  of `f` by `g`. -/
 lemma relative.of_exists [F.Faithful] [F.Full] [P.RespectsIso] {f : X ⟶ Y}
     (h₀ : ∀ ⦃a : C⦄ (g : F.obj a ⟶ Y), ∃ (b : C) (fst : F.obj b ⟶ X) (snd : b ⟶ a)
       (_ : IsPullback fst (F.map snd) f g), P snd) : P.relative F f := by
@@ -408,6 +419,9 @@ instance relative_isMultiplicative [F.Faithful] [F.Full] [P.IsMultiplicative] [P
 
 end
 
+section
+
+-- TODO(Calle): This could be generalized to functors whose image forms a separating family.
 /-- Morphisms satisfying `(monomorphism C).presheaf` are in particular monomorphisms. -/
 lemma presheaf_monomorphisms_le_monomorphisms :
     (monomorphisms C).presheaf ≤ monomorphisms _ := fun F G f hf ↦ by
@@ -423,6 +437,239 @@ lemma presheaf_monomorphisms_le_monomorphisms :
   have : Mono (hf.rep.snd (a ≫ f)) := hf.property_snd (a ≫ f)
   simp only [← cancel_mono (hf.rep.snd (a ≫ f)), lift_snd]
 
+variable {G : Cᵒᵖ ⥤ Type v₁}
+
+lemma presheaf_mono_of_le (hP : P ≤ MorphismProperty.monomorphisms C)
+    {X : C} {f : yoneda.obj X ⟶ G} (hf : P.presheaf f) : Mono f :=
+  MorphismProperty.presheaf_monomorphisms_le_monomorphisms _
+    (MorphismProperty.relative_monotone hP _ hf)
+
+lemma fst'_self_eq_snd (hP : P ≤ MorphismProperty.monomorphisms C)
+    {X : C} {f : yoneda.obj X ⟶ G} (hf : P.presheaf f) : hf.rep.fst' f = hf.rep.snd f := by
+  have := P.presheaf_mono_of_le hP hf
+  apply yoneda.map_injective
+  rw [← cancel_mono f, (hf.rep.isPullback' f).w]
+
+lemma isIso_fst'_self (hP : P ≤ MorphismProperty.monomorphisms C)
+    {X : C} {f : yoneda.obj X ⟶ G} (hf : P.presheaf f) : IsIso (hf.rep.fst' f) :=
+  have := P.presheaf_mono_of_le hP hf
+  have := (hf.rep.isPullback' f).isIso_fst_of_mono
+  Yoneda.fullyFaithful.isIso_of_isIso_map _
+
+end
+
 end MorphismProperty
+
+namespace Functor.relativelyRepresentable
+
+section Pullbacks₃
+/-
+In this section we develop some basic API that help deal with certain triple pullbacks obtained
+from morphism `f₁ : F.obj A₁ ⟶ X` which is relatively representable with respect to some functor
+`F : C ⥤ D`.
+
+More precisely, given two objects `A₂` and `A₃` in `C`, and two morphisms `f₂ : A₂ ⟶ X` and
+`f₃ : A₃ ⟶ X`, we can consider the pullbacks (in `D`) `(A₁ ×_X A₂)` and `(A₁ ×_X A₃)`
+(which makes sense as objects in `C` due to `F` being relatively representable).
+
+We can then consider the pullback, in `C`, of these two pullbacks. This is the object
+`(A₁ ×_X A₂) ×_{A₁} (A₁ ×_X A₃)`. In this section we develop some basic API for dealing with this
+pullback. This is used in `Mathlib/AlgebraicGeometry/Sites/Representability.lean` to show that
+representability is Zariski-local.
+-/
+variable {F : C ⥤ D} [Full F] {A₁ A₂ A₃ : C} {X : D}
+  {f₁ : F.obj A₁ ⟶ X} (hf₁ : F.relativelyRepresentable f₁)
+  (f₂ : F.obj A₂ ⟶ X) (f₃ : F.obj A₃ ⟶ X)
+  [HasPullback (hf₁.fst' f₂) (hf₁.fst' f₃)]
+
+/-- The pullback `(A₁ ×_X A₂) ×_{A₁} (A₁ ×_X A₃)`. -/
+noncomputable def pullback₃ := Limits.pullback (hf₁.fst' f₂) (hf₁.fst' f₃)
+/-- The morphism `(A₁ ×_X A₂) ×_{A₁} (A₁ ×_X A₃) ⟶ A₁`. -/
+noncomputable def pullback₃.p₁ : hf₁.pullback₃ f₂ f₃ ⟶ A₁ := pullback.fst _ _ ≫ hf₁.fst' f₂
+/-- The morphism `(A₁ ×_X A₂) ×_{A₁} (A₁ ×_X A₃) ⟶ A₂`. -/
+noncomputable def pullback₃.p₂ : hf₁.pullback₃ f₂ f₃ ⟶ A₂ := pullback.fst _ _ ≫ hf₁.snd f₂
+/-- The morphism `(A₁ ×_X A₂) ×_{A₁} (A₁ ×_X A₃) ⟶ A₃`. -/
+noncomputable def pullback₃.p₃ : hf₁.pullback₃ f₂ f₃ ⟶ A₃ := pullback.snd _ _ ≫ hf₁.snd f₃
+
+/-- The morphism `F.obj (A₁ ×_X A₂) ×_{A₁} (A₁ ×_X A₃) ⟶ X`. -/
+noncomputable def pullback₃.π : F.obj (pullback₃ hf₁ f₂ f₃) ⟶ X :=
+  F.map (p₁ hf₁ f₂ f₃) ≫ f₁
+
+@[reassoc (attr := simp)]
+lemma pullback₃.map_p₁_comp : F.map (p₁ hf₁ f₂ f₃) ≫ f₁ = π _ _ _ :=
+  rfl
+
+@[reassoc (attr := simp)]
+lemma pullback₃.map_p₂_comp : F.map (p₂ hf₁ f₂ f₃) ≫ f₂ = π _ _ _ := by
+  simp [π, p₁, p₂, ← hf₁.w f₂]
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma pullback₃.map_p₃_comp : F.map (p₃ hf₁ f₂ f₃) ≫ f₃ = π _ _ _ := by
+  simp [π, p₁, p₃, ← hf₁.w f₃, pullback.condition]
+
+section
+
+variable [Faithful F] {Z : C} (x₁ : Z ⟶ A₁) (x₂ : Z ⟶ A₂) (x₃ : Z ⟶ A₃)
+  (h₁₂ : F.map x₁ ≫ f₁ = F.map x₂ ≫ f₂)
+  (h₁₃ : F.map x₁ ≫ f₁ = F.map x₃ ≫ f₃)
+
+/-- The lift obtained from the universal property of `(A₁ ×_X A₂) ×_{A₁} (A₁ ×_X A₃)`. -/
+noncomputable def lift₃ : Z ⟶ pullback₃ hf₁ f₂ f₃ :=
+  pullback.lift (hf₁.lift' x₁ x₂ h₁₂)
+    (hf₁.lift' x₁ x₃ h₁₃) (by simp)
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma lift₃_p₁ : hf₁.lift₃ f₂ f₃ x₁ x₂ x₃ h₁₂ h₁₃ ≫ pullback₃.p₁ hf₁ f₂ f₃ = x₁ := by
+  simp [lift₃, pullback₃.p₁]
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma lift₃_p₂ : hf₁.lift₃ f₂ f₃ x₁ x₂ x₃ h₁₂ h₁₃ ≫ pullback₃.p₂ hf₁ f₂ f₃ = x₂ := by
+  simp [lift₃, pullback₃.p₂]
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma lift₃_p₃ : hf₁.lift₃ f₂ f₃ x₁ x₂ x₃ h₁₂ h₁₃ ≫ pullback₃.p₃ hf₁ f₂ f₃ = x₃ := by
+  simp [lift₃, pullback₃.p₃]
+
+end
+
+@[reassoc (attr := simp)]
+lemma pullback₃.fst_fst'_eq_p₁ : pullback.fst _ _ ≫ hf₁.fst' f₂ = pullback₃.p₁ hf₁ f₂ f₃ := rfl
+
+@[reassoc (attr := simp)]
+lemma pullback₃.fst_snd_eq_p₂ : pullback.fst _ _ ≫ hf₁.snd f₂ = pullback₃.p₂ hf₁ f₂ f₃ := rfl
+
+@[reassoc (attr := simp)]
+lemma pullback₃.snd_snd_eq_p₃ : pullback.snd _ _ ≫ hf₁.snd f₃ = pullback₃.p₃ hf₁ f₂ f₃ := rfl
+
+@[reassoc (attr := simp)]
+lemma pullback₃.snd_fst'_eq_p₁ :
+    pullback.snd (hf₁.fst' f₂) (hf₁.fst' f₃) ≫ hf₁.fst' f₃ = pullback₃.p₁ hf₁ f₂ f₃ :=
+  pullback.condition.symm
+
+variable {hf₁ f₂ f₃} in
+@[ext]
+lemma pullback₃.hom_ext [Faithful F] {Z : C} {φ φ' : Z ⟶ pullback₃ hf₁ f₂ f₃}
+    (h₁ : φ ≫ pullback₃.p₁ hf₁ f₂ f₃ = φ' ≫ pullback₃.p₁ hf₁ f₂ f₃)
+    (h₂ : φ ≫ pullback₃.p₂ hf₁ f₂ f₃ = φ' ≫ pullback₃.p₂ hf₁ f₂ f₃)
+    (h₃ : φ ≫ pullback₃.p₃ hf₁ f₂ f₃ = φ' ≫ pullback₃.p₃ hf₁ f₂ f₃) : φ = φ' := by
+  apply pullback.hom_ext <;> ext <;> simpa
+
+end Pullbacks₃
+
+section Diagonal
+/-
+In this section, we prove a criterion for the diagonal morphisms to be relatively representable.
+-/
+
+variable {F : C ⥤ D}
+variable [HasBinaryProducts C]
+variable [HasPullbacks D] [HasBinaryProducts D] [HasTerminal D]
+variable [Full F]
+variable [PreservesLimitsOfShape (Discrete WalkingPair) F]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Assume that
+1. `C` has binary products,
+2. `D` has pullbacks, binary products and a terminal object, and
+3. `F : C ⥤ D` is full and preserves binary products.
+
+For an object `X` in a category `D`, if the diagonal morphism `X ⟶ X × X` is relatively
+representable, then every morphism of the form `F.obj a ⟶ X` is relatively representable with
+respect to `F`.
+-/
+lemma of_diag {X : D} (h : F.relativelyRepresentable (Limits.diag X))
+    ⦃a : C⦄ (g : F.obj a ⟶ X) : F.relativelyRepresentable g := by
+  rw [(by cat_disch : Limits.diag X = pullback.lift (𝟙 X) (𝟙 X) ≫ (prodIsoPullback X X).inv)] at h
+  intro a' g'
+  obtain ⟨_, ⟨left⟩⟩ := pullback_map_diagonal_isPullback g g' (terminal.from X)
+  let prodMap : F.obj (a ⨯ a') ⟶ X ⨯ X :=
+    (preservesLimitIso _ (pair _ _) ≪≫ HasLimit.isoOfNatIso (pairComp _ _ _)).hom ≫ prod.map g g'
+  let pbRepr :=
+    (h prodMap).choose_spec.choose_spec.choose_spec.isLimit'.some.conePointUniqueUpToIso <|
+    pasteHorizIsPullback rfl (IsPullback.of_vert_isIso_mono (snd := pullback.congrHom
+      (terminal.comp_from g) (terminal.comp_from g') ≪≫ (prodIsoPullback _ _).symm ≪≫
+      (HasLimit.isoOfNatIso (pairComp _ _ _)).symm ≪≫ (preservesLimitIso _ (pair _ _)).symm |>.hom)
+    ⟨by cat_disch⟩).isLimit'.some left
+  exact ⟨_, ⟨_, ⟨_, IsPullback.of_iso_pullback (fst := pbRepr.hom ≫ pullback.fst g g')
+    (snd := F.map (Functor.preimage F (pbRepr.hom ≫ pullback.snd g g')))
+    ⟨by simp [pullback.condition]⟩ pbRepr (by cat_disch) (by cat_disch)⟩⟩⟩
+
+/-- Assume that
+1. `C` has binary products and pullbacks,
+2. `D` has pullbacks, binary products and a terminal object, and
+3. `F : C ⥤ D` is full and preserves binary products and pullbacks.
+
+For a morphism `g : F.obj a ⟶ pullback (terminal.from X) (terminal.from X)`,
+the canonical morphism from `F.obj a` to
+`pullback ((g ≫ pullback.fst _ _) ≫ terminal.from X) ((g ≫ pullback.snd _ _) ≫ terminal.from X)`
+is relatively representable with respect to `F`.
+-/
+lemma toPullbackTerminal {X : D} {a : C}
+    [HasPullbacks C] [PreservesLimitsOfShape WalkingCospan F]
+    (g : F.obj a ⟶ Limits.pullback (terminal.from X) (terminal.from X)) :
+    F.relativelyRepresentable (pullback.lift (f := (g ≫ pullback.fst _ _) ≫ terminal.from X)
+        (g := (g ≫ pullback.snd _ _) ≫ terminal.from X) (𝟙 _) (𝟙 _) (by cat_disch)) := by
+  let pbIso := pullback.congrHom
+    (terminal.comp_from _ : (g ≫ pullback.fst _ _) ≫ terminal.from X = terminal.from _)
+    (terminal.comp_from _ : (g ≫ pullback.snd _ _) ≫ terminal.from X = terminal.from _) ≪≫
+    (prodIsoPullback _ _).symm ≪≫ (HasLimit.isoOfNatIso (pairComp _ _ _)).symm ≪≫
+    (preservesLimitIso _ (pair _ _)).symm
+  rw [← comp_id (pullback.lift _ _), ← pbIso.hom_inv_id, ← Category.assoc]
+  apply (respectsIso F).toRespectsRight.postcomp _ (inferInstance : IsIso _) _
+  exact map_preimage F (_ ≫ pbIso.hom) ▸ map F (F.preimage _)
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/-- Assume that
+1. `C` has binary products and pullbacks,
+2. `D` has pullbacks, binary products and a terminal object, and
+3. `F : C ⥤ D` is full and preserves binary products and pullbacks.
+
+For an object `X` in a category `D`, if every morphism of the form `F.obj a ⟶ X` is relatively
+representable with respect to `F`, so is the diagonal morphism `X ⟶ X × X`.
+-/
+lemma diag_of_map_from_obj [HasPullbacks C] [PreservesLimitsOfShape WalkingCospan F]
+    {X : D} (h : ∀ ⦃a : C⦄ (g : F.obj a ⟶ X), F.relativelyRepresentable g) :
+    F.relativelyRepresentable (Limits.diag X) := by
+  rw [(by cat_disch : Limits.diag X = pullback.lift (𝟙 X) (𝟙 X) ≫ (prodIsoPullback X X).inv)]
+  suffices F.relativelyRepresentable (pullback.lift (𝟙 _) (𝟙 _)) from
+    (respectsIso F).toRespectsRight.postcomp _ (inferInstance : IsIso _) _ this
+  intro a g
+  obtain ⟨_, ⟨_, ⟨_, pbRepr⟩⟩⟩ := h (g ≫ pullback.fst _ _) (g ≫ pullback.snd _ _)
+  obtain ⟨_, ⟨bot⟩⟩ := IsPullback.of_iso_pullback ⟨by rw [assoc]; simp [pullback.condition]⟩
+    (pbRepr.isoPullback ≪≫ (pullbackDiagonalMapIdIso (g ≫ pullback.fst _ _) (g ≫ pullback.snd _ _)
+      (terminal.from X)).symm) rfl rfl
+  obtain ⟨_, ⟨_, ⟨topMap, top⟩⟩⟩ := (toPullbackTerminal g) <|
+    (pbRepr.isoPullback ≪≫ (pullbackDiagonalMapIdIso (g ≫ pullback.fst _ _) (g ≫ pullback.snd _ _)
+      (terminal.from X)).symm).hom ≫ pullback.snd
+        (pullback.diagonal (terminal.from X))
+        (pullback.map _ _ _ _ _ _ (𝟙 _) (by cat_disch) (by cat_disch))
+  have hg : g = pullback.lift (𝟙 _) (𝟙 _) (by cat_disch) ≫ pullback.map
+    ((g ≫ pullback.fst _ _) ≫ terminal.from X) ((g ≫ pullback.snd _ _) ≫ terminal.from X) _ _
+      (g ≫ pullback.fst _ _) (g ≫ pullback.snd _ _) (𝟙 _) (by cat_disch) (by cat_disch) := by
+    apply Limits.pullback.hom_ext <;> simp
+  exact hg ▸ ⟨_, ⟨_, ⟨_, IsPullback.of_isLimit <| pasteVertIsPullback rfl bot
+    (map_preimage F topMap ▸ top).flip.isLimit'.some⟩⟩⟩
+
+/-- Assume that
+1. `C` has binary products and pullbacks,
+2. `D` has pullbacks, binary products and a terminal object, and
+3. `F : C ⥤ D` is full and preserves binary products and pullbacks.
+
+For an object `X` in a category `D`, the diagonal morphism `X ⟶ X × X` is relatively representable
+with respect to `F` if and only if so is every morphism of the form `F.obj a ⟶ X`.
+-/
+lemma diag_iff {X : D} [HasPullbacks C] [PreservesLimitsOfShape WalkingCospan F] :
+    F.relativelyRepresentable (Limits.diag X) ↔
+      ∀ ⦃a : C⦄ (g : F.obj a ⟶ X), F.relativelyRepresentable g :=
+  ⟨fun h _ g => of_diag h g, fun h => diag_of_map_from_obj h⟩
+
+end Diagonal
+
+end Functor.relativelyRepresentable
 
 end CategoryTheory

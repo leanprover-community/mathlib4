@@ -72,10 +72,10 @@ instance c : C :=
   letI : B := {}
   {}
 
-set_option pp.explicit true in
-/-- info: @C.mk (@B.toA (@B.mk A.mk)) : C -/
+set_option pp.all true in
+/-- info: @C.mk A.mk : C -/
 #guard_msgs in #check delta% c
 
-set_option pp.explicit true in
+set_option pp.all true in
 /-- info: @C.mk A.mk : C -/
 #guard_msgs in #check reduceProj% delta% c

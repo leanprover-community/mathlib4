@@ -3,24 +3,28 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Yury Kudryashov, Joseph Myers, Heather Macbeth, Kim Morrison, Yaël Dillies
 -/
-import Mathlib.Algebra.SMulWithZero
+module
+
+public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.Tactic.Contrapose
 
 /-!
 # `NoZeroSMulDivisors`
 
 This file defines the `NoZeroSMulDivisors` class, and includes some tests
 for the vanishing of elements (especially in modules over division rings).
+
+## Usage notes
+
+Note that `NoZeroSMulDivisors` is deprecated in favor of `Module.IsTorsionFree`, which is the
+mathematically correct generalisation to semimodules.
 -/
 
-assert_not_exists RelIso Multiset Set.indicator Pi.single_smul₀ Ring Module
+public section
 
-section NoZeroSMulDivisors
+assert_not_exists RelIso Multiset Set.indicator Pi.single_smul₀
 
-/-! ### `NoZeroSMulDivisors`
-
--/
-
-variable {R M : Type*}
+variable {R M G : Type*}
 
 /-- `NoZeroSMulDivisors R M` states that a scalar multiple is `0` only if either argument is `0`.
 This is a version of saying that `M` is torsion free, without assuming `R` is zero-divisor free.
@@ -49,26 +53,24 @@ instance (priority := 100) NoZeroDivisors.toNoZeroSMulDivisors [Zero R] [Mul R]
     [NoZeroDivisors R] : NoZeroSMulDivisors R R :=
   ⟨fun {_ _} => eq_zero_or_eq_zero_of_mul_eq_zero⟩
 
-theorem smul_ne_zero [Zero R] [Zero M] [SMul R M] [NoZeroSMulDivisors R M] {c : R} {x : M}
-    (hc : c ≠ 0) (hx : x ≠ 0) : c • x ≠ 0 := fun h =>
-  (eq_zero_or_eq_zero_of_smul_eq_zero h).elim hc hx
+instance [Semiring R] [IsDomain R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M] :
+    Module.IsTorsionFree R M where
+  isSMulRegular r hr m₁ m₂ hm := by
+    dsimp at hm
+    rw [← sub_eq_zero, ← smul_sub] at hm
+    simpa [hr.ne_zero, sub_eq_zero] using eq_zero_or_eq_zero_of_smul_eq_zero hm
 
-section SMulWithZero
+theorem noZeroSMulDivisors_iff_right_eq_zero_of_smul [Zero R] [Zero M] [SMul R M] :
+    NoZeroSMulDivisors R M ↔ ∀ r : R, r ≠ 0 → ∀ m : M, r • m = 0 → m = 0 := by
+  simp_rw [noZeroSMulDivisors_iff, or_iff_not_imp_left]
+  exact ⟨fun h r hr m eq ↦ h eq hr, fun h r m eq hr ↦ h r hr m eq⟩
 
-variable [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M] {c : R} {x : M}
+instance IsAddTorsionFree.to_noZeroSMulDivisors_nat [AddMonoid M] [IsAddTorsionFree M] :
+    NoZeroSMulDivisors ℕ M where
+  eq_zero_or_eq_zero_of_smul_eq_zero {n x} hx := by
+    contrapose! hx; simpa using (nsmul_right_injective hx.1).ne hx.2
 
-@[simp]
-theorem smul_eq_zero : c • x = 0 ↔ c = 0 ∨ x = 0 :=
-  ⟨eq_zero_or_eq_zero_of_smul_eq_zero, fun h =>
-    h.elim (fun h => h.symm ▸ zero_smul R x) fun h => h.symm ▸ smul_zero c⟩
-
-theorem smul_ne_zero_iff : c • x ≠ 0 ↔ c ≠ 0 ∧ x ≠ 0 := by rw [Ne, smul_eq_zero, not_or]
-
-lemma smul_eq_zero_iff_left (hx : x ≠ 0) : c • x = 0 ↔ c = 0 := by simp [hx]
-lemma smul_eq_zero_iff_right (hc : c ≠ 0) : c • x = 0 ↔ x = 0 := by simp [hc]
-lemma smul_ne_zero_iff_left (hx : x ≠ 0) : c • x ≠ 0 ↔ c ≠ 0 := by simp [hx]
-lemma smul_ne_zero_iff_right (hc : c ≠ 0) : c • x ≠ 0 ↔ x ≠ 0 := by simp [hc]
-
-end SMulWithZero
-
-end NoZeroSMulDivisors
+instance IsAddTorsionFree.to_noZeroSMulDivisors_int [AddGroup G] [IsAddTorsionFree G] :
+    NoZeroSMulDivisors ℤ G where
+  eq_zero_or_eq_zero_of_smul_eq_zero {n x} hx := by
+    contrapose! hx; simpa using (zsmul_right_injective hx.1).ne hx.2

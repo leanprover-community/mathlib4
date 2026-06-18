@@ -3,10 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Logic.Pairwise
-import Mathlib.Logic.Relation
-import Mathlib.Tactic.Cases
+module
+
+public import Mathlib.Data.Set.Function
+public import Mathlib.Logic.Pairwise
+public import Mathlib.Logic.Relation
 
 /-!
 # Relations holding pairwise
@@ -28,6 +29,8 @@ The spelling `s.PairwiseDisjoint id` is preferred over `s.Pairwise Disjoint` to 
 on `Set.PairwiseDisjoint`, even though the latter unfolds to something nicer.
 -/
 
+@[expose] public section
+
 
 open Function Order Set
 
@@ -37,20 +40,23 @@ section Pairwise
 
 variable {f g : ι → α} {s t : Set α} {a b : α}
 
-theorem pairwise_on_bool (hr : Symmetric r) {a b : α} :
-    Pairwise (r on fun c => cond c a b) ↔ r a b := by simpa [Pairwise, Function.onFun] using @hr a b
+theorem pairwise_on_bool [Std.Symm r] {a b : α} : Pairwise (r on fun c ↦ cond c a b) ↔ r a b := by
+  simpa [Pairwise, Function.onFun] using symm
 
 theorem pairwise_disjoint_on_bool [PartialOrder α] [OrderBot α] {a b : α} :
     Pairwise (Disjoint on fun c => cond c a b) ↔ Disjoint a b :=
-  pairwise_on_bool Disjoint.symm
+  pairwise_on_bool
 
-theorem Symmetric.pairwise_on [LinearOrder ι] (hr : Symmetric r) (f : ι → α) :
-    Pairwise (r on f) ↔ ∀ ⦃m n⦄, m < n → r (f m) (f n) :=
-  ⟨fun h _m _n hmn => h hmn.ne, fun h _m _n hmn => hmn.lt_or_lt.elim (@h _ _) fun h' => hr (h h')⟩
+theorem Std.Symm.pairwise_on [LinearOrder ι] [Std.Symm r] (f : ι → α) :
+    Pairwise (r on f) ↔ ∀ ⦃m n⦄, m < n → r (f m) (f n) where
+  mp h _m _n hmn := h hmn.ne
+  mpr h _m _n hmn := hmn.lt_or_gt.elim (@h _ _) fun h' ↦ symm_of r <| h h'
+
+@[deprecated (since := "2026-06-10")] alias Symmetric.pairwise_on := Std.Symm.pairwise_on
 
 theorem pairwise_disjoint_on [PartialOrder α] [OrderBot α] [LinearOrder ι] (f : ι → α) :
     Pairwise (Disjoint on f) ↔ ∀ ⦃m n⦄, m < n → Disjoint (f m) (f n) :=
-  Symmetric.pairwise_on Disjoint.symm f
+  Std.Symm.pairwise_on f
 
 theorem pairwise_disjoint_mono [PartialOrder α] [OrderBot α] (hs : Pairwise (Disjoint on f))
     (h : g ≤ f) : Pairwise (Disjoint on g) :=
@@ -62,9 +68,9 @@ theorem Pairwise.disjoint_extend_bot [PartialOrder γ] [OrderBot γ]
   intro b₁ b₂ hne
   rcases em (∃ a₁, e a₁ = b₁) with ⟨a₁, rfl⟩ | hb₁
   · rcases em (∃ a₂, e a₂ = b₂) with ⟨a₂, rfl⟩ | hb₂
-    · simpa only [onFun, he.extend_apply] using hf (ne_of_apply_ne e hne)
-    · simpa only [onFun, extend_apply' _ _ _ hb₂] using disjoint_bot_right
-  · simpa only [onFun, extend_apply' _ _ _ hb₁] using disjoint_bot_left
+    · simpa only [onFun, he.extend_apply] using! hf (ne_of_apply_ne e hne)
+    · simpa only [onFun, extend_apply' _ _ _ hb₂] using! disjoint_bot_right
+  · simpa only [onFun, extend_apply' _ _ _ hb₁] using! disjoint_bot_left
 
 namespace Set
 
@@ -73,6 +79,12 @@ theorem Pairwise.mono (h : t ⊆ s) (hs : s.Pairwise r) : t.Pairwise r :=
 
 theorem Pairwise.mono' (H : r ≤ p) (hr : s.Pairwise r) : s.Pairwise p :=
   hr.imp H
+
+theorem Pairwise.inter_left (hs : s.Pairwise r) (t : Set α) : (s ∩ t).Pairwise r :=
+  hs.mono Set.inter_subset_left
+
+theorem Pairwise.inter_right (hs : s.Pairwise r) (t : Set α) : (t ∩ s).Pairwise r :=
+  hs.mono Set.inter_subset_right
 
 theorem pairwise_top (s : Set α) : s.Pairwise ⊤ :=
   pairwise_of_forall s _ fun _ _ => trivial
@@ -88,7 +100,7 @@ theorem pairwise_empty (r : α → α → Prop) : (∅ : Set α).Pairwise r :=
 theorem pairwise_singleton (a : α) (r : α → α → Prop) : Set.Pairwise {a} r :=
   subsingleton_singleton.pairwise r
 
-theorem pairwise_iff_of_refl [IsRefl α r] : s.Pairwise r ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b :=
+theorem pairwise_iff_of_refl [Std.Refl r] : s.Pairwise r ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b :=
   forall₄_congr fun _ _ _ _ => or_iff_not_imp_left.symm.trans <| or_iff_right_of_imp of_eq
 
 alias ⟨Pairwise.of_refl, _⟩ := pairwise_iff_of_refl
@@ -99,10 +111,10 @@ theorem Nonempty.pairwise_iff_exists_forall [IsEquiv α r] {s : Set ι} (hs : s.
   · rcases hs with ⟨y, hy⟩
     refine fun H => ⟨f y, fun x hx => ?_⟩
     rcases eq_or_ne x y with (rfl | hne)
-    · apply IsRefl.refl
+    · apply Std.Refl.refl
     · exact H hx hy hne
   · rintro ⟨z, hz⟩ x hx y hy _
-    exact @IsTrans.trans α r _ (f x) z (f y) (hz _ hx) (IsSymm.symm _ _ <| hz _ hy)
+    exact @IsTrans.trans α r _ (f x) z (f y) (hz _ hx) (symm <| hz _ hy)
 
 /-- For a nonempty set `s`, a function `f` takes pairwise equal values on `s` if and only if
 for some `z` in the codomain, `f` takes value `z` on all `x ∈ s`. See also
@@ -129,18 +141,19 @@ theorem pairwise_eq_iff_exists_eq [Nonempty ι] (s : Set α) (f : α → ι) :
 theorem pairwise_union :
     (s ∪ t).Pairwise r ↔
     s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∧ r b a := by
-  simp only [Set.Pairwise, mem_union, or_imp, forall_and]
-  aesop
+  grind [Set.Pairwise]
 
-theorem pairwise_union_of_symmetric (hr : Symmetric r) :
+theorem pairwise_union_of_symm [Std.Symm r] :
     (s ∪ t).Pairwise r ↔ s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b :=
-  pairwise_union.trans <| by simp only [hr.iff, and_self_iff]
+  pairwise_union.trans <| by simp only [Std.Symm.iff, and_self_iff]
+
+@[deprecated (since := "2026-06-10")] alias pairwise_union_of_symmetric := pairwise_union_of_symm
 
 theorem pairwise_insert :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, a ≠ b → r a b ∧ r b a := by
   simp only [insert_eq, pairwise_union, pairwise_singleton, true_and, mem_singleton_iff, forall_eq]
 
-theorem pairwise_insert_of_not_mem (ha : a ∉ s) :
+theorem pairwise_insert_of_notMem (ha : a ∉ s) :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, r a b ∧ r b a :=
   pairwise_insert.trans <|
     and_congr_right' <| forall₂_congr fun b hb => by simp [(ne_of_mem_of_not_mem hb ha).symm]
@@ -149,30 +162,35 @@ protected theorem Pairwise.insert (hs : s.Pairwise r) (h : ∀ b ∈ s, a ≠ b 
     (insert a s).Pairwise r :=
   pairwise_insert.2 ⟨hs, h⟩
 
-theorem Pairwise.insert_of_not_mem (ha : a ∉ s) (hs : s.Pairwise r) (h : ∀ b ∈ s, r a b ∧ r b a) :
+theorem Pairwise.insert_of_notMem (ha : a ∉ s) (hs : s.Pairwise r) (h : ∀ b ∈ s, r a b ∧ r b a) :
     (insert a s).Pairwise r :=
-  (pairwise_insert_of_not_mem ha).2 ⟨hs, h⟩
+  (pairwise_insert_of_notMem ha).2 ⟨hs, h⟩
 
-theorem pairwise_insert_of_symmetric (hr : Symmetric r) :
+theorem pairwise_insert_of_symm [Std.Symm r] :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, a ≠ b → r a b := by
-  simp only [pairwise_insert, hr.iff a, and_self_iff]
+  simp only [pairwise_insert, Std.Symm.iff a, and_self_iff]
 
-theorem pairwise_insert_of_symmetric_of_not_mem (hr : Symmetric r) (ha : a ∉ s) :
+@[deprecated (since := "2026-06-10")] alias pairwise_insert_of_symmetric := pairwise_insert_of_symm
+
+theorem pairwise_insert_of_symm_of_notMem [Std.Symm r] (ha : a ∉ s) :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, r a b := by
-  simp only [pairwise_insert_of_not_mem ha, hr.iff a, and_self_iff]
+  simp only [pairwise_insert_of_notMem ha, Std.Symm.iff a, and_self_iff]
 
-theorem Pairwise.insert_of_symmetric (hs : s.Pairwise r) (hr : Symmetric r)
+@[deprecated (since := "2026-06-10")]
+alias pairwise_insert_of_symmetric_of_notMem := pairwise_insert_of_symm_of_notMem
+
+theorem Pairwise.insert_of_symm [Std.Symm r] (hs : s.Pairwise r)
     (h : ∀ b ∈ s, a ≠ b → r a b) : (insert a s).Pairwise r :=
-  (pairwise_insert_of_symmetric hr).2 ⟨hs, h⟩
+  pairwise_insert_of_symm.mpr ⟨hs, h⟩
 
-theorem Pairwise.insert_of_symmetric_of_not_mem (hs : s.Pairwise r) (hr : Symmetric r) (ha : a ∉ s)
-    (h : ∀ b ∈ s, r a b) : (insert a s).Pairwise r :=
-  (pairwise_insert_of_symmetric_of_not_mem hr ha).2 ⟨hs, h⟩
+@[deprecated (since := "2026-06-10")] alias Pairwise.insert_of_symmetric := Pairwise.insert_of_symm
 
 theorem pairwise_pair : Set.Pairwise {a, b} r ↔ a ≠ b → r a b ∧ r b a := by simp [pairwise_insert]
 
-theorem pairwise_pair_of_symmetric (hr : Symmetric r) : Set.Pairwise {a, b} r ↔ a ≠ b → r a b := by
-  simp [pairwise_insert_of_symmetric hr]
+theorem pairwise_pair_of_symm [Std.Symm r] : Set.Pairwise {a, b} r ↔ a ≠ b → r a b := by
+  simp [pairwise_insert_of_symm]
+
+@[deprecated (since := "2026-06-10")] alias pairwise_pair_of_symmetric := pairwise_pair_of_symm
 
 theorem pairwise_univ : (univ : Set α).Pairwise r ↔ Pairwise r := by
   simp only [Set.Pairwise, Pairwise, mem_univ, forall_const]
@@ -206,7 +224,7 @@ end Pairwise
 
 theorem pairwise_subtype_iff_pairwise_set (s : Set α) (r : α → α → Prop) :
     (Pairwise fun (x : s) (y : s) => r x y) ↔ s.Pairwise r := by
-  simp only [Pairwise, Set.Pairwise, SetCoe.forall, Ne, Subtype.ext_iff, Subtype.coe_mk]
+  simp only [Pairwise, Set.Pairwise, SetCoe.forall, Ne, Subtype.ext_iff]
 
 alias ⟨Pairwise.set_of_subtype, Set.Pairwise.subtype⟩ := pairwise_subtype_iff_pairwise_set
 
@@ -242,22 +260,26 @@ theorem pairwiseDisjoint_empty : (∅ : Set ι).PairwiseDisjoint f :=
 theorem pairwiseDisjoint_singleton (i : ι) (f : ι → α) : PairwiseDisjoint {i} f :=
   pairwise_singleton i _
 
+@[simp]
+lemma pairwiseDisjoint_singleton' (s : Set ι) :
+    s.PairwiseDisjoint (singleton : ι → Set ι) := by intro; grind
+
 theorem pairwiseDisjoint_insert {i : ι} :
     (insert i s).PairwiseDisjoint f ↔
       s.PairwiseDisjoint f ∧ ∀ j ∈ s, i ≠ j → Disjoint (f i) (f j) :=
-  pairwise_insert_of_symmetric <| symmetric_disjoint.comap f
+  pairwise_insert_of_symm
 
-theorem pairwiseDisjoint_insert_of_not_mem {i : ι} (hi : i ∉ s) :
+theorem pairwiseDisjoint_insert_of_notMem {i : ι} (hi : i ∉ s) :
     (insert i s).PairwiseDisjoint f ↔ s.PairwiseDisjoint f ∧ ∀ j ∈ s, Disjoint (f i) (f j) :=
-  pairwise_insert_of_symmetric_of_not_mem (symmetric_disjoint.comap f) hi
+  pairwise_insert_of_symm_of_notMem hi
 
 protected theorem PairwiseDisjoint.insert (hs : s.PairwiseDisjoint f) {i : ι}
     (h : ∀ j ∈ s, i ≠ j → Disjoint (f i) (f j)) : (insert i s).PairwiseDisjoint f :=
   pairwiseDisjoint_insert.2 ⟨hs, h⟩
 
-theorem PairwiseDisjoint.insert_of_not_mem (hs : s.PairwiseDisjoint f) {i : ι} (hi : i ∉ s)
+theorem PairwiseDisjoint.insert_of_notMem (hs : s.PairwiseDisjoint f) {i : ι} (hi : i ∉ s)
     (h : ∀ j ∈ s, Disjoint (f i) (f j)) : (insert i s).PairwiseDisjoint f :=
-  (pairwiseDisjoint_insert_of_not_mem hi).2 ⟨hs, h⟩
+  (pairwiseDisjoint_insert_of_notMem hi).2 ⟨hs, h⟩
 
 theorem PairwiseDisjoint.image_of_le (hs : s.PairwiseDisjoint f) {g : ι → ι} (hg : f ∘ g ≤ f) :
     (g '' s).PairwiseDisjoint f := by
@@ -277,7 +299,7 @@ theorem pairwiseDisjoint_union :
     (s ∪ t).PairwiseDisjoint f ↔
       s.PairwiseDisjoint f ∧
         t.PairwiseDisjoint f ∧ ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ t → i ≠ j → Disjoint (f i) (f j) :=
-  pairwise_union_of_symmetric <| symmetric_disjoint.comap f
+  pairwise_union_of_symm
 
 theorem PairwiseDisjoint.union (hs : s.PairwiseDisjoint f) (ht : t.PairwiseDisjoint f)
     (h : ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ t → i ≠ j → Disjoint (f i) (f j)) : (s ∪ t).PairwiseDisjoint f :=
@@ -398,6 +420,10 @@ lemma exists_lt_mem_inter_of_not_pairwiseDisjoint [LinearOrder ι]
   · exact ⟨i, hi, j, hj, h_lt, x, hx₁, hx₂⟩
   · exact ⟨j, hj, i, hi, h_lt, x, hx₂, hx₁⟩
 
+@[simp] lemma pairwiseDisjoint_singleton_iff_injOn {f : ι → α} :
+    s.PairwiseDisjoint (fun i ↦ ({f i} : Set α)) ↔ s.InjOn f := by
+  simp [PairwiseDisjoint, InjOn, Set.Pairwise, not_imp_not]
+
 end Set
 
 lemma exists_ne_mem_inter_of_not_pairwise_disjoint
@@ -421,3 +447,11 @@ lemma subsingleton_setOf_mem_iff_pairwise_disjoint {f : ι → Set α} :
     (∀ a, {i | a ∈ f i}.Subsingleton) ↔ Pairwise (Disjoint on f) :=
   ⟨fun h _ _ hij ↦ disjoint_left.2 fun a hi hj ↦ hij (h a hi hj),
    fun h _ _ hx _ hy ↦ by_contra fun hne ↦ disjoint_left.1 (h hne) hx hy⟩
+
+/-- Simp normal form of `pairwise_ne_iff_injective`. -/
+@[simp] lemma pairwise_not_eq_iff_injective {f : ι → α} :
+    Pairwise (fun i j ↦ ¬ f i = f j) ↔ f.Injective := by
+  simp [Pairwise, Function.Injective, not_imp_not]
+
+lemma pairwise_ne_iff_injective {f : ι → α} : Pairwise (fun i j ↦ f i ≠ f j) ↔ f.Injective := by
+  simp

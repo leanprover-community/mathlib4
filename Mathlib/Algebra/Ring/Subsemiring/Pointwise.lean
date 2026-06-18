@@ -3,9 +3,10 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Submonoid.Pointwise
-import Mathlib.Algebra.Ring.Action.Basic
-import Mathlib.Algebra.Ring.Subsemiring.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise
+public import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 /-! # Pointwise instances on `Subsemiring`s
 
@@ -16,9 +17,11 @@ This actions is available in the `Pointwise` locale.
 
 ## Implementation notes
 
-This file is almost identical to the file `Mathlib.Algebra.Group.Submonoid.Pointwise`. Where
-possible, try to keep them in sync.
+This file is almost identical to the files `Mathlib/Algebra/GroupWithZero/Submonoid/Pointwise.lean`
+and `Mathlib/Algebra/Ring/Submonoid/Pointwise.lean`. Where possible, try to keep them in sync.
 -/
+
+@[expose] public section
 
 
 open Set
@@ -34,6 +37,7 @@ variable [Monoid M] [Semiring R] [MulSemiringAction M R]
 /-- The action on a subsemiring corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
+@[instance_reducible]
 protected def pointwiseMulAction : MulAction M (Subsemiring R) where
   smul a S := S.map (MulSemiringAction.toRingHom _ _ a)
   one_smul S := (congr_arg (fun f => S.map f) (RingHom.ext <| one_smul M)).trans S.map_id
@@ -42,13 +46,13 @@ protected def pointwiseMulAction : MulAction M (Subsemiring R) where
 
 scoped[Pointwise] attribute [instance] Subsemiring.pointwiseMulAction
 
-open Pointwise
+open scoped Pointwise
 
 theorem pointwise_smul_def {a : M} (S : Subsemiring R) :
     a • S = S.map (MulSemiringAction.toRingHom _ _ a) :=
   rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_pointwise_smul (m : M) (S : Subsemiring R) : ↑(m • S) = m • (S : Set R) :=
   rfl
 
@@ -61,7 +65,7 @@ theorem smul_mem_pointwise_smul (m : M) (r : R) (S : Subsemiring R) : r ∈ S �
   (Set.smul_mem_smul_set : _ → _ ∈ m • (S : Set R))
 
 instance : CovariantClass M (Subsemiring R) HSMul.hSMul LE.le :=
-  ⟨fun _ _ => image_subset _⟩
+  ⟨fun _ _ => image_mono⟩
 
 theorem mem_smul_pointwise_iff_exists (m : M) (r : R) (S : Subsemiring R) :
     r ∈ m • S ↔ ∃ s : R, s ∈ S ∧ m • s = r :=
@@ -87,7 +91,7 @@ section Group
 
 variable [Group M] [Semiring R] [MulSemiringAction M R]
 
-open Pointwise
+open scoped Pointwise
 
 @[simp]
 theorem smul_mem_pointwise_smul_iff {a : M} {S : Subsemiring R} {x : R} : a • x ∈ a • S ↔ x ∈ S :=
@@ -120,7 +124,7 @@ section GroupWithZero
 
 variable [GroupWithZero M] [Semiring R] [MulSemiringAction M R]
 
-open Pointwise
+open scoped Pointwise
 
 @[simp]
 theorem smul_mem_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) (S : Subsemiring R) (x : R) :

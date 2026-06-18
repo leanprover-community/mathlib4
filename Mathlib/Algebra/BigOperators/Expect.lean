@@ -3,14 +3,18 @@ Copyright (c) 2024 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Data.Finset.Density
-import Mathlib.Data.Fintype.BigOperators
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Data.Finset.Density
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
 
 /-!
 # Average over a finset
@@ -29,10 +33,10 @@ This file defines `Finset.expect`, the average (aka expectation) of a function o
 
 ## Implementation notes
 
-This definition is a special case of the general convex comnination operator in a convex space.
+This definition is a special case of the general convex combination operator in a convex space.
 However:
 1. We don't yet have general convex spaces.
-2. The uniform weights case is a overwhelmingly useful special case which should have its own API.
+2. The uniform weights case is an overwhelmingly useful special case which should have its own API.
 
 When convex spaces are finally defined, we should redefine `Finset.expect` in terms of that convex
 combination operator.
@@ -43,11 +47,13 @@ combination operator.
 * Give a formulation of Jensen's inequality in this language.
 -/
 
+@[expose] public section
+
 open Finset Function
 open Fintype (card)
 open scoped Pointwise
 
-variable {ι κ M N : Type*}
+variable {ι κ K M N : Type*}
 
 local notation a " /ℚ " q => (q : ℚ≥0)⁻¹ • a
 
@@ -83,13 +89,13 @@ scoped macro_rules (kind := bigexpect)
 open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr
 open Batteries.ExtendedBinder
 
-/-- Delaborator for `Finset.expect`. The `pp.piBinderTypes` option controls whether
+/-- Delaborator for `Finset.expect`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the expect is over `Finset.univ`. -/
-@[scoped app_delab Finset.expect] def delabFinsetExpect : Delab :=
+@[scoped app_delab Finset.expect] meta def delabFinsetExpect : Delab :=
   whenPPOption getPPNotation <| withOverApp 6 <| do
   let #[_, _, _, _, s, f] := (← getExpr).getAppArgs | failure
   guard <| f.isLambda
-  let ppDomain ← getPPOption getPPPiBinderTypes
+  let ppDomain ← getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return (i, ← delab)
   if s.isAppOfArity ``Finset.univ 2 then
@@ -117,7 +123,9 @@ lemma expect_univ [Fintype ι] : 𝔼 i, f i = (∑ i, f i) /ℚ Fintype.card ι
   rw [expect, card_univ]
 
 @[simp] lemma expect_empty (f : ι → M) : 𝔼 i ∈ ∅, f i = 0 := by simp [expect]
+
 @[simp] lemma expect_singleton (f : ι → M) (i : ι) : 𝔼 j ∈ {i}, f j = f i := by simp [expect]
+
 @[simp] lemma expect_const_zero (s : Finset ι) : 𝔼 _i ∈ s, (0 : M) = 0 := by simp [expect]
 
 @[congr]
@@ -276,7 +284,7 @@ end bij
 
 lemma _root_.map_expect {F : Type*} [FunLike F M N] [LinearMapClass F ℚ≥0 M N]
     (g : F) (f : ι → M) (s : Finset ι) :
-    g (𝔼 i ∈ s, f i) = 𝔼 i ∈ s, g (f i) := by simp only [expect, map_smul, map_natCast, map_sum]
+    g (𝔼 i ∈ s, f i) = 𝔼 i ∈ s, g (f i) := by simp only [expect, map_smul, map_sum]
 
 @[simp]
 lemma card_smul_expect (s : Finset ι) (f : ι → M) : #s • 𝔼 i ∈ s, f i = ∑ i ∈ s, f i := by
@@ -344,26 +352,30 @@ lemma expect_pow (s : Finset ι) (f : ι → M) (n : ℕ) :
 end CommSemiring
 
 section Semifield
-variable [Semifield M] [CharZero M]
+variable [Semifield K] [CharZero K]
 
-lemma expect_boole_mul [Fintype ι] [Nonempty ι] [DecidableEq ι] (f : ι → M) (i : ι) :
-    𝔼 j, ite (i = j) (Fintype.card ι : M) 0 * f j = f i := by
+@[simp] lemma expect_indicator_one [Fintype ι] (s : Finset ι) :
+    𝔼 i : ι, (Set.indicator s 1 i : K) = s.dens := by
+  classical simp [expect, sum_indicator_eq_sum_inter, dens, div_eq_inv_mul, NNRat.smul_def]
+
+lemma expect_boole_mul [Fintype ι] [Nonempty ι] [DecidableEq ι] (f : ι → K) (i : ι) :
+    𝔼 j, ite (i = j) (Fintype.card ι : K) 0 * f j = f i := by
   simp_rw [expect_univ, ite_mul, zero_mul, sum_ite_eq, if_pos (mem_univ _)]
-  rw [← @NNRat.cast_natCast M, ← NNRat.smul_def, inv_smul_smul₀]
+  rw [← @NNRat.cast_natCast K, ← NNRat.smul_def, inv_smul_smul₀]
   simp [Fintype.card_ne_zero]
 
-lemma expect_boole_mul' [Fintype ι] [Nonempty ι] [DecidableEq ι] (f : ι → M) (i : ι) :
-    𝔼 j, ite (j = i) (Fintype.card ι : M) 0 * f j = f i := by
+lemma expect_boole_mul' [Fintype ι] [Nonempty ι] [DecidableEq ι] (f : ι → K) (i : ι) :
+    𝔼 j, ite (j = i) (Fintype.card ι : K) 0 * f j = f i := by
   simp_rw [@eq_comm _ _ i, expect_boole_mul]
 
-lemma expect_eq_sum_div_card (s : Finset ι) (f : ι → M) :
+lemma expect_eq_sum_div_card (s : Finset ι) (f : ι → K) :
     𝔼 i ∈ s, f i = (∑ i ∈ s, f i) / #s := by
   rw [expect, NNRat.smul_def, div_eq_inv_mul, NNRat.cast_inv, NNRat.cast_natCast]
 
-lemma _root_.Fintype.expect_eq_sum_div_card [Fintype ι] (f : ι → M) :
+lemma _root_.Fintype.expect_eq_sum_div_card [Fintype ι] (f : ι → K) :
     𝔼 i, f i = (∑ i, f i) / Fintype.card ι := Finset.expect_eq_sum_div_card _ _
 
-lemma expect_div (s : Finset ι) (f : ι → M) (a : M) : (𝔼 i ∈ s, f i) / a = 𝔼 i ∈ s, f i / a := by
+lemma expect_div (s : Finset ι) (f : ι → K) (a : K) : (𝔼 i ∈ s, f i) / a = 𝔼 i ∈ s, f i / a := by
   simp_rw [div_eq_mul_inv, expect_mul]
 
 end Semifield
@@ -396,7 +408,7 @@ See `Function.Bijective.expect_comp` for a version without `h`. -/
 lemma expect_bijective (e : ι → κ) (he : Bijective e) (f : ι → M) (g : κ → M)
     (h : ∀ i, f i = g (e i)) : 𝔼 i, f i = 𝔼 i, g i :=
   expect_nbij e (fun _ _ ↦ mem_univ _) (fun i _ ↦ h i) he.injective.injOn <| by
-    simpa using he.surjective.surjOn _
+    simpa using he.surjective
 
 /-- `Fintype.expect_equiv` is a specialization of `Finset.expect_bij` that automatically fills in
 most arguments.

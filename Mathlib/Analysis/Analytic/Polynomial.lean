@@ -3,10 +3,12 @@ Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.MvPolynomial.Eval
-import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Topology.Algebra.Module.FiniteDimension
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.MvPolynomial.Eval
+public import Mathlib.Analysis.Analytic.Constructions
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
 # Polynomials are analytic
@@ -14,6 +16,8 @@ import Mathlib.Topology.Algebra.Module.FiniteDimension
 This file combines the analysis and algebra libraries and shows that evaluation of a polynomial
 is an analytic function.
 -/
+
+public section
 
 variable {𝕜 E A B : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [CommSemiring A] {z : E} {s : Set E}
@@ -28,7 +32,7 @@ theorem AnalyticWithinAt.aeval_polynomial (hf : AnalyticWithinAt 𝕜 f s z) (p 
   refine p.induction_on (fun k ↦ ?_) (fun p q hp hq ↦ ?_) fun p i hp ↦ ?_
   · simp_rw [aeval_C]; apply analyticWithinAt_const
   · simp_rw [aeval_add]; exact hp.add hq
-  · convert hp.mul hf
+  · convert! hp.mul hf
     simp_rw [pow_succ, aeval_mul, ← mul_assoc, aeval_X]
 
 theorem AnalyticAt.aeval_polynomial (hf : AnalyticAt 𝕜 f z) (p : A[X]) :
@@ -66,22 +70,13 @@ theorem AnalyticOnNhd.aeval_mvPolynomial
     (hf : ∀ i, AnalyticOnNhd 𝕜 (f · i) s) (p : MvPolynomial σ A) :
     AnalyticOnNhd 𝕜 (fun x ↦ aeval (f x) p) s := fun x hx ↦ .aeval_mvPolynomial (hf · x hx) p
 
-@[deprecated (since := "2024-09-26")]
-alias AnalyticOn.aeval_mvPolynomial := AnalyticOnNhd.aeval_mvPolynomial
-
 theorem AnalyticOnNhd.eval_continuousLinearMap (f : E →L[𝕜] σ → B) (p : MvPolynomial σ B) :
     AnalyticOnNhd 𝕜 (fun x ↦ eval (f x) p) Set.univ :=
   fun x _ ↦ .aeval_mvPolynomial (fun i ↦ ((ContinuousLinearMap.proj i).comp f).analyticAt x) p
 
-@[deprecated (since := "2024-09-26")]
-alias AnalyticOn.eval_continuousLinearMap := AnalyticOnNhd.eval_continuousLinearMap
-
 theorem AnalyticOnNhd.eval_continuousLinearMap' (f : σ → E →L[𝕜] B) (p : MvPolynomial σ B) :
     AnalyticOnNhd 𝕜 (fun x ↦ eval (f · x) p) Set.univ :=
   fun x _ ↦ .aeval_mvPolynomial (fun i ↦ (f i).analyticAt x) p
-
-@[deprecated (since := "2024-09-26")]
-alias AnalyticOn.eval_continuousLinearMap' := AnalyticOnNhd.eval_continuousLinearMap'
 
 variable [CompleteSpace 𝕜] [T2Space E] [FiniteDimensional 𝕜 E]
 
@@ -89,20 +84,11 @@ theorem AnalyticOnNhd.eval_linearMap (f : E →ₗ[𝕜] σ → B) (p : MvPolyno
     AnalyticOnNhd 𝕜 (fun x ↦ eval (f x) p) Set.univ :=
   AnalyticOnNhd.eval_continuousLinearMap { f with cont := f.continuous_of_finiteDimensional } p
 
-@[deprecated (since := "2024-09-26")]
-alias AnalyticOn.eval_linearMap := AnalyticOnNhd.eval_linearMap
-
 theorem AnalyticOnNhd.eval_linearMap' (f : σ → E →ₗ[𝕜] B) (p : MvPolynomial σ B) :
     AnalyticOnNhd 𝕜 (fun x ↦ eval (f · x) p) Set.univ := AnalyticOnNhd.eval_linearMap (.pi f) p
-
-@[deprecated (since := "2024-09-26")]
-alias AnalyticOn.eval_linearMap' := AnalyticOnNhd.eval_linearMap'
 
 theorem AnalyticOnNhd.eval_mvPolynomial [Fintype σ] (p : MvPolynomial σ 𝕜) :
     AnalyticOnNhd 𝕜 (eval · p) Set.univ :=
   AnalyticOnNhd.eval_linearMap (.id (R := 𝕜) (M := σ → 𝕜)) p
-
-@[deprecated (since := "2024-09-26")]
-alias AnalyticOn.eval_mvPolynomial := AnalyticOnNhd.eval_mvPolynomial
 
 end MvPolynomial

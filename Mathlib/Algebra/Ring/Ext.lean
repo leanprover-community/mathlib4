@@ -3,9 +3,11 @@ Copyright (c) 2024 Raghuram Sundararajan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Raghuram Sundararajan
 -/
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Group.Ext
-import Mathlib.Tactic.CongrM
+module
+
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Group.Ext
+public import Mathlib.Tactic.CongrM
 
 /-!
 # Extensionality lemmas for rings and similar structures
@@ -27,6 +29,8 @@ sometimes we don't need them to prove extensionality.
 ## Tags
 semiring, ring, extensionality
 -/
+
+public section
 
 local macro:max "local_hAdd[" type:term ", " inst:term "]" : term =>
   `(term| (letI := $inst; HAdd.hAdd : $type → $type → $type))
@@ -100,7 +104,6 @@ This section also includes results for `AddMonoidWithOne`, `AddCommMonoidWithOne
 as these are considered implementation detail of the ring classes.
 TODO consider relocating these lemmas.
 -/
-/- TODO consider relocating these lemmas. -/
 @[ext] theorem AddMonoidWithOne.ext ⦃inst₁ inst₂ : AddMonoidWithOne R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_one : (letI := inst₁; One.one : R) = (letI := inst₂; One.one : R)) :
@@ -111,8 +114,8 @@ TODO consider relocating these lemmas.
     congrArg One.mk h_one
   have h_natCast : inst₁.toNatCast.natCast = inst₂.toNatCast.natCast := by
     funext n; induction n with
-    | zero     => rewrite [inst₁.natCast_zero, inst₂.natCast_zero]
-                  exact congrArg (@Zero.zero R) h_zero'
+    | zero => rewrite [inst₁.natCast_zero, inst₂.natCast_zero]
+              exact congrArg (@Zero.zero R) h_zero'
     | succ n h => rw [inst₁.natCast_succ, inst₂.natCast_succ, h_add]
                   exact congrArg₂ _ h h_one
   rcases inst₁ with @⟨⟨⟩⟩; rcases inst₂ with @⟨⟨⟩⟩
@@ -131,7 +134,7 @@ theorem AddCommMonoidWithOne.toAddMonoidWithOne_injective :
 
 namespace NonAssocSemiring
 
-/- The best place to prove that the `NatCast` is determined by the other operations is probably in
+/-! The best place to prove that the `NatCast` is determined by the other operations is probably in
 an extensionality lemma for `AddMonoidWithOne`, in which case we may as well do the typeclasses
 defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
 @[ext] theorem ext ⦃inst₁ inst₂ : NonAssocSemiring R⦄
@@ -143,8 +146,8 @@ defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
   have h_zero : (inst₁.toMulZeroClass).toZero.zero = (inst₂.toMulZeroClass).toZero.zero :=
     congrArg (fun inst => (inst.toMulZeroClass).toZero.zero) h
   have h_one' : (inst₁.toMulZeroOneClass).toMulOneClass.toOne
-                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne :=
-    congrArg (@MulOneClass.toOne R) <| by ext : 1; exact h_mul
+                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne := by
+    congr 2; ext : 1; exact h_mul
   have h_one : (inst₁.toMulZeroOneClass).toMulOneClass.toOne.one
                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne.one :=
     congrArg (@One.one R) h_one'
@@ -231,7 +234,7 @@ TODO consider relocating these lemmas. -/
   injection h_group with h_group; injection h_group
   have : inst₁.toIntCast.intCast = inst₂.toIntCast.intCast := by
     funext n; cases n with
-    | ofNat n   => rewrite [Int.ofNat_eq_coe, inst₁.intCast_ofNat, inst₂.intCast_ofNat]; congr
+    | ofNat n => rewrite [Int.ofNat_eq_natCast, inst₁.intCast_ofNat, inst₂.intCast_ofNat]; congr
     | negSucc n => rewrite [inst₁.intCast_negSucc, inst₂.intCast_negSucc]; congr
   rcases inst₁ with @⟨⟨⟩⟩; rcases inst₂ with @⟨⟨⟩⟩
   congr
@@ -262,7 +265,7 @@ namespace NonAssocRing
   have h₃ : inst₁.toAddCommGroupWithOne = inst₂.toAddCommGroupWithOne :=
     AddCommGroupWithOne.ext h_add (congrArg (·.toOne.one) h₂)
   cases inst₁; cases inst₂
-  congr <;> solve| injection h₁ | injection h₂ | injection h₃
+  congr <;> solve | injection h₁ | injection h₂ | injection h₃
 
 theorem toNonAssocSemiring_injective :
     Function.Injective (@toNonAssocSemiring R) := by
@@ -286,6 +289,8 @@ namespace Semiring
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ := by
   -- Show that enough substructures are equal.
+  have h₀ : inst₁.toAddCommMonoid = inst₂.toAddCommMonoid := by
+    ext : 1 <;> assumption
   have h₁ : inst₁.toNonUnitalSemiring = inst₂.toNonUnitalSemiring := by
     ext : 1 <;> assumption
   have h₂ : inst₁.toNonAssocSemiring = inst₂.toNonAssocSemiring := by
@@ -294,7 +299,7 @@ namespace Semiring
     ext : 1; exact h_mul
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂
-  congr <;> solve| injection h₁ | injection h₂ | injection h₃
+  congr <;> solve | injection h₁ | injection h₂
 
 theorem toNonUnitalSemiring_injective :
     Function.Injective (@toNonUnitalSemiring R) := by
@@ -342,8 +347,10 @@ theorem toNonUnitalRing_injective :
 
 theorem toNonAssocRing_injective :
     Function.Injective (@toNonAssocRing R) := by
-  intro _ _ _
-  ext <;> congr
+  intro _ _ h
+  ext x y
+  · exact congrArg (·.toAdd.add x y) h
+  · exact congrArg (·.toMul.mul x y) h
 
 theorem toSemiring_injective :
     Function.Injective (@toSemiring R) := by

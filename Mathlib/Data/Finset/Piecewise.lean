@@ -3,8 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Finset.BooleanAlgebra
-import Mathlib.Order.Interval.Set.Basic
+module
+
+public import Mathlib.Data.Finset.BooleanAlgebra
+public import Mathlib.Data.Set.Piecewise
+public import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Functions defined piecewise on a finset
@@ -16,6 +19,8 @@ which is equal to `f` on `s` and `g` on the complement.
 
 Should we deduplicate this from `Set.piecewise`?
 -/
+
+@[expose] public section
 
 open Function
 
@@ -38,8 +43,7 @@ variable [∀ j, Decidable (j ∈ s)]
 
 -- TODO: fix this in norm_cast
 @[norm_cast move]
-lemma piecewise_coe [∀ j, Decidable (j ∈ (s : Set ι))] :
-    (s : Set ι).piecewise f g = s.piecewise f g := by
+lemma piecewise_coe : (s : Set ι).piecewise f g = s.piecewise f g := by
   ext
   congr
 
@@ -48,7 +52,7 @@ lemma piecewise_eq_of_mem {i : ι} (hi : i ∈ s) : s.piecewise f g i = f i := b
   simp [piecewise, hi]
 
 @[simp]
-lemma piecewise_eq_of_not_mem {i : ι} (hi : i ∉ s) : s.piecewise f g i = g i := by
+lemma piecewise_eq_of_notMem {i : ι} (hi : i ∉ s) : s.piecewise f g i = g i := by
   simp [piecewise, hi]
 
 lemma piecewise_congr {f f' g g' : ∀ i, π i} (hf : ∀ i ∈ s, f i = f' i)
@@ -61,7 +65,7 @@ lemma piecewise_insert_of_ne [DecidableEq ι] {i j : ι} [∀ i, Decidable (i �
 
 lemma piecewise_insert [DecidableEq ι] (j : ι) [∀ i, Decidable (i ∈ insert j s)] :
     (insert j s).piecewise f g = update (s.piecewise f g) j (f j) := by
-  classical simp only [← piecewise_coe, coe_insert, ← Set.piecewise_insert]
+  classical simp only [← piecewise_coe, ← Set.piecewise_insert]
   ext
   congr
   simp
@@ -71,7 +75,7 @@ lemma piecewise_cases {i} (p : π i → Prop) (hf : p (f i)) (hg : p (g i)) :
   by_cases hi : i ∈ s <;> simpa [hi]
 
 lemma piecewise_singleton [DecidableEq ι] (i : ι) : piecewise {i} f g = update g i (f i) := by
-  rw [← insert_emptyc_eq, piecewise_insert, piecewise_empty]
+  rw [← insert_empty_eq, piecewise_insert, piecewise_empty]
 
 lemma piecewise_piecewise_of_subset_left {s t : Finset ι} [∀ i, Decidable (i ∈ s)]
     [∀ i, Decidable (i ∈ t)] (h : s ⊆ t) (f₁ f₂ g : ∀ a, π a) :
@@ -86,7 +90,7 @@ lemma piecewise_idem_left (f₁ f₂ g : ∀ a, π a) :
 lemma piecewise_piecewise_of_subset_right {s t : Finset ι} [∀ i, Decidable (i ∈ s)]
     [∀ i, Decidable (i ∈ t)] (h : t ⊆ s) (f g₁ g₂ : ∀ a, π a) :
     s.piecewise f (t.piecewise g₁ g₂) = s.piecewise f g₂ :=
-  s.piecewise_congr (fun _ _ => rfl) fun _i hi => t.piecewise_eq_of_not_mem _ _ (mt (@h _) hi)
+  s.piecewise_congr (fun _ _ => rfl) fun _i hi => t.piecewise_eq_of_notMem _ _ (mt (@h _) hi)
 
 @[simp]
 lemma piecewise_idem_right (f g₁ g₂ : ∀ a, π a) :
@@ -108,7 +112,7 @@ lemma update_piecewise_of_mem [DecidableEq ι] {i : ι} (hi : i ∈ s) (v : π i
   refine s.piecewise_congr (fun _ _ => rfl) fun j hj => update_of_ne ?_ ..
   exact fun h => hj (h.symm ▸ hi)
 
-lemma update_piecewise_of_not_mem [DecidableEq ι] {i : ι} (hi : i ∉ s) (v : π i) :
+lemma update_piecewise_of_notMem [DecidableEq ι] {i : ι} (hi : i ∉ s) (v : π i) :
     update (s.piecewise f g) i v = s.piecewise f (update g i v) := by
   rw [update_piecewise]
   refine s.piecewise_congr (fun j hj => update_of_ne ?_ ..) fun _ _ => rfl
@@ -155,7 +159,7 @@ lemma le_piecewise_of_le_of_le (hf : h ≤ f) (hg : h ≤ g) : h ≤ s.piecewise
   piecewise_cases s f g (fun y => h x ≤ y) (hf x) (hg x)
 
 lemma piecewise_le_piecewise' (hf : ∀ x ∈ s, f x ≤ f' x) (hg : ∀ x ∉ s, g x ≤ g' x) :
-    s.piecewise f g ≤ s.piecewise f' g' := fun x => by by_cases hx : x ∈ s <;> simp [hx, *]
+    s.piecewise f g ≤ s.piecewise f' g' := fun x => by by_cases hx : x ∈ s <;> simp [*]
 
 lemma piecewise_le_piecewise (hf : f ≤ f') (hg : g ≤ g') : s.piecewise f g ≤ s.piecewise f' g' :=
   s.piecewise_le_piecewise' (fun x _ => hf x) fun x _ => hg x

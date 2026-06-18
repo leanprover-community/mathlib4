@@ -3,7 +3,9 @@ Copyright (c) 2022 Paul Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Reichert
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 
 /-!
 # Affine map restrictions
@@ -23,18 +25,16 @@ This file defines restrictions of affine maps.
 * The restriction in surjective if the codomain is the image of the domain.
 -/
 
+@[expose] public section
+
 
 variable {k V₁ P₁ V₂ P₂ : Type*} [Ring k] [AddCommGroup V₁] [AddCommGroup V₂] [Module k V₁]
   [Module k V₂] [AddTorsor V₁ P₁] [AddTorsor V₂ P₂]
 
--- not an instance because it loops with `Nonempty`
-theorem AffineSubspace.nonempty_map {E : AffineSubspace k P₁} [Ene : Nonempty E] {φ : P₁ →ᵃ[k] P₂} :
-    Nonempty (E.map φ) := by
+instance AffineSubspace.nonempty_map {E : AffineSubspace k P₁} [Ene : Nonempty E]
+    {φ : P₁ →ᵃ[k] P₂} : Nonempty (E.map φ) := by
   obtain ⟨x, hx⟩ := id Ene
   exact ⟨⟨φ x, AffineSubspace.mem_map.mpr ⟨x, hx, rfl⟩⟩⟩
-
--- Porting note: removed "local nolint fails_quickly" attribute
-attribute [local instance] AffineSubspace.nonempty_map AffineSubspace.toAddTorsor
 
 /-- Restrict domain and codomain of an affine map to the given subspaces. -/
 def AffineMap.restrict (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁} {F : AffineSubspace k P₂}
@@ -45,7 +45,7 @@ def AffineMap.restrict (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁} {F
     rw [← Submodule.map_le_iff_le_comap, ← AffineSubspace.map_direction]
     exact AffineSubspace.direction_le hEF
   · intro p v
-    simp only [Subtype.ext_iff, Subtype.coe_mk, AffineSubspace.coe_vadd]
+    simp only [Subtype.ext_iff, AffineSubspace.coe_vadd]
     apply AffineMap.map_vadd
 
 theorem AffineMap.restrict.coe_apply (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁}
@@ -67,7 +67,7 @@ theorem AffineMap.restrict.injective {φ : P₁ →ᵃ[k] P₂} (hφ : Function.
     {E : AffineSubspace k P₁} {F : AffineSubspace k P₂} [Nonempty E] [Nonempty F]
     (hEF : E.map φ ≤ F) : Function.Injective (AffineMap.restrict φ hEF) := by
   intro x y h
-  simp only [Subtype.ext_iff, Subtype.coe_mk, AffineMap.restrict.coe_apply] at h ⊢
+  simp only [Subtype.ext_iff, AffineMap.restrict.coe_apply] at h ⊢
   exact hφ h
 
 theorem AffineMap.restrict.surjective (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁}
@@ -81,3 +81,23 @@ theorem AffineMap.restrict.surjective (φ : P₁ →ᵃ[k] P₂) {E : AffineSubs
 theorem AffineMap.restrict.bijective {E : AffineSubspace k P₁} [Nonempty E] {φ : P₁ →ᵃ[k] P₂}
     (hφ : Function.Injective φ) : Function.Bijective (φ.restrict (le_refl (E.map φ))) :=
   ⟨AffineMap.restrict.injective hφ _, AffineMap.restrict.surjective _ rfl⟩
+
+namespace AffineEquiv
+
+/-- An affine equivalence restricts to an affine equivalence between an affine subspace and its
+image. -/
+noncomputable def affineSubspaceMap (e : P₁ ≃ᵃ[k] P₂) (s : AffineSubspace k P₁)
+    [Nonempty s] : s ≃ᵃ[k] s.map e.toAffineMap :=
+  .ofBijective (AffineMap.restrict.bijective e.injective)
+
+@[simp]
+theorem affineSubspaceMap_apply (e : P₁ ≃ᵃ[k] P₂) (s : AffineSubspace k P₁)
+    [Nonempty s] (x : s) : e.affineSubspaceMap s x = e x :=
+  rfl
+
+@[simp]
+theorem affineSubspaceMap_apply_symm_apply (e : P₁ ≃ᵃ[k] P₂) (s : AffineSubspace k P₁)
+    [Nonempty s] (x : s.map e.toAffineMap) : e ((e.affineSubspaceMap s).symm x) = x :=
+  congrArg Subtype.val <| (e.affineSubspaceMap s).apply_symm_apply x
+
+end AffineEquiv

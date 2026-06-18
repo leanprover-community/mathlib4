@@ -3,9 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Embedding
-import Mathlib.Algebra.Order.Interval.Set.Monoid
-import Mathlib.Order.Interval.Finset.Defs
+module
+
+public import Mathlib.Algebra.Group.Embedding
+public import Mathlib.Algebra.Order.Interval.Set.Monoid
+public import Mathlib.Order.Interval.Finset.Defs
 
 /-!
 # Algebraic properties of finset intervals
@@ -13,12 +15,15 @@ import Mathlib.Order.Interval.Finset.Defs
 This file provides results about the interaction of algebra with `Finset.Ixx`.
 -/
 
+public section
+
 open Function OrderDual
 
 variable {ι α : Type*}
 
 namespace Finset
-variable [OrderedCancelAddCommMonoid α] [ExistsAddOfLE α] [LocallyFiniteOrder α]
+variable [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
+  [ExistsAddOfLE α] [LocallyFiniteOrder α]
 
 @[simp] lemma map_add_left_Icc (a b c : α) :
     (Icc a b).map (addLeftEmbedding c) = Icc (c + a) (c + b) := by
