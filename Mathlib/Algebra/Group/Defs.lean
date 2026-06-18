@@ -954,14 +954,14 @@ field of individual `DivInvMonoid`s constructed using that default value will no
 `.instance` transparency. -/
 def DivInvMonoid.div' {G : Type u} [Monoid G] [Inv G] (a b : G) : G := a * b⁻¹
 
-/-- `NSMul` is an implementation detail of `SubNegMonoid`. It is necessary because it is not
+/-- `ZSMul` is an implementation detail of `SubNegMonoid`. It is necessary because it is not
 possible to extend `SMUl ℕ M` and `SMul ℤ M` at the same time. -/
 class ZSMul (G : Type u) where
   /-- Multiplication by an integer.
   Set this to `zsmulRec` unless `Module` diamonds are possible. -/
   protected zsmul : ℤ → G → G
 
-/-- `NPow` is an implementation detail of `SubNegMonoid`. It is necessary because it is not
+/-- `ZPow` is an implementation detail of `DivInvMonoid`. It is necessary because it is not
 possible to extend `Pow M ℕ` and `Pow M ℤ` at the same time. -/
 @[to_additive]
 class ZPow (G : Type u) where
