@@ -350,19 +350,19 @@ theorem map_mulEquivAlgEquiv_fixingSubgroup
 
 /-- If `G` and `G'` are finite Galois groups for `L/K`, then `G` is isomorphic to `G'`.
 See `mulEquivCongr` for a more general version. -/
-noncomputable def mulEquivCongr' [IsGaloisGroup G K L] [Finite G]
+private noncomputable def mulEquivCongr' [IsGaloisGroup G K L] [Finite G]
     [IsGaloisGroup G' K L] [Finite G'] : G ≃* G' :=
   (mulEquivAlgEquiv G K L).trans (mulEquivAlgEquiv G' K L).symm
 
 @[simp]
-theorem mulEquivCongr'_apply_smul [IsGaloisGroup G K L] [Finite G] [IsGaloisGroup G' K L]
+private theorem mulEquivCongr'_apply_smul [IsGaloisGroup G K L] [Finite G] [IsGaloisGroup G' K L]
     [Finite G'] (g : G) (x : L) : mulEquivCongr' G G' K L g • x = g • x :=
   AlgEquiv.ext_iff.mp ((mulEquivAlgEquiv G' K L).apply_symm_apply (mulEquivAlgEquiv G K L g)) x
 
 attribute [local instance] FractionRing.liftAlgebra in
 /-- If `G` and `G'` are finite Galois groups for `B/A` with `B` a domain, then `G` is
 isomorphic to `G'`. -/
-noncomputable def mulEquivCongr [Finite G] [Finite G'] (A B : Type*) [CommRing A]
+@[no_expose] noncomputable def mulEquivCongr [Finite G] [Finite G'] (A B : Type*) [CommRing A]
     [CommRing B] [IsDomain B] [Algebra A B] [FaithfulSMul A B] [MulSemiringAction G B]
     [MulSemiringAction G' B] [IsGaloisGroup G A B] [IsGaloisGroup G' A B] :
     G ≃* G' :=
