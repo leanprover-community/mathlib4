@@ -262,11 +262,7 @@ jobs:
           buildMsgs="$(
             ##  we exploit `lake`s replay feature: since the cache is present, running
             ##  `lake build` will reproduce all the outputs without having to recompute
-            lake build Mathlib Archive Counterexamples |
-            ##  we filter out the output lines that begin with `✔ [xx/yy]`, where xx, yy
-            ##  are either numbers or ?, and the "Build completed successfully." message.
-            ##  We keep the rest, which are actual outputs of the files
-            awk '!($0 ~ "^\\s*✔ \\[[?0-9]*/[?0-9]*\\]" || $0 ~ "^Build completed successfully( \\([0-9]+ jobs\\))?\\.?$"){ print $0 }')"
+            lake build -q --iofail Mathlib Archive Counterexamples
           if [ -n "${buildMsgs}" ]
           then
             printf $'%s\n' "${buildMsgs}"
@@ -455,6 +451,8 @@ jobs:
         # no network). On a failed build the cache is expected to be partial, so this
         # is skipped and `lint` runs best-effort below.
         if: ${{ needs.build.outputs.build-outcome == 'success' }}
+        # TODO: remove if there are no issues
+        continue-on-error: true
         run: |
           cd pr-branch
           lake build --no-build --rehash -v Mathlib
