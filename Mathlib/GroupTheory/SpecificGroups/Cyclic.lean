@@ -430,8 +430,8 @@ theorem Subgroup.zpowers_eq_zpowers_iff' [Group G] (g : G) (i j : ℤ) :
 
 /-- In a group with a generator `g` satisfying `zpowers g = ⊤`, every subgroup `H`
 is of the form `zpowers (g ^ i)` for some `i : ℤ`. -/
-@[to_additive "In an additive group with a generator `g` satisfying `zmultiples g = ⊤`,
-every subgroup `H` is of the form `zmultiples (i • g)` for some `i : ℤ`."]
+@[to_additive /-- In an additive group with a generator `g` satisfying `zmultiples g = ⊤`,
+every subgroup `H` is of the form `zmultiples (i • g)` for some `i : ℤ`. -/]
 theorem Subgroup.exists_zpowers_eq_of_zpowers_eq_top [Group G] {g : G}
     (hg : zpowers g = ⊤) (H : Subgroup G) : ∃ i : ℤ, zpowers (g ^ i) = H := by
   haveI : IsCyclic G := isCyclic_iff_exists_zpowers_eq_top.mpr ⟨g, hg⟩
@@ -881,7 +881,7 @@ end WithZero
 section SubgroupCard
 
 /-- In a finite cyclic group, `H ≤ K` iff `Nat.card H ∣ Nat.card K`. -/
-@[to_additive "In a finite additive cyclic group, `H ≤ K` iff `Nat.card H ∣ Nat.card K`."]
+@[to_additive /-- In a finite additive cyclic group, `H ≤ K` iff `Nat.card H ∣ Nat.card K`. -/]
 theorem IsCyclic.subgroup_le_subgroup_iff [Group G] [Finite G] [IsCyclic G]
     {H K : Subgroup G} : H ≤ K ↔ Nat.card H ∣ Nat.card K := by
   obtain ⟨g, hg⟩ := isCyclic_iff_exists_zpowers_eq_top.mp ‹_›
@@ -895,7 +895,7 @@ theorem IsCyclic.subgroup_le_subgroup_iff [Group G] [Finite G] [IsCyclic G]
     Int.natAbs_natCast, Nat.gcd_comm, Nat.gcd_comm _ (orderOf g)]
 
 /-- In a finite cyclic group, `H = K` iff `Nat.card H = Nat.card K`. -/
-@[to_additive "In a finite additive cyclic group, `H = K` iff `Nat.card H = Nat.card K`."]
+@[to_additive /-- In a finite additive cyclic group, `H = K` iff `Nat.card H = Nat.card K`. -/]
 theorem IsCyclic.subgroup_eq_subgroup_iff [Group G] [Finite G] [IsCyclic G]
     {H K : Subgroup G} : H = K ↔ Nat.card H = Nat.card K := by
   rw [le_antisymm_iff, IsCyclic.subgroup_le_subgroup_iff, IsCyclic.subgroup_le_subgroup_iff,

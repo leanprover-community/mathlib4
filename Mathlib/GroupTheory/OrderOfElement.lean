@@ -405,10 +405,6 @@ theorem orderOf_pow' (h : n ≠ 0) : orderOf (x ^ n) = orderOf x / Nat.gcd (orde
   rw [← minimalPeriod_iterate_eq_div_gcd h, mul_left_iterate]
 
 @[to_additive]
-theorem orderOf_pow_natAbs (n : ℤ) : orderOf (x ^ n.natAbs) = orderOf (x ^ n) := by
-  obtain ⟨a, (rfl | rfl)⟩ := Int.eq_nat_or_neg n <;> simp
-
-@[to_additive]
 lemma orderOf_pow_of_dvd {x : G} {n : ℕ} (hn : n ≠ 0) (dvd : n ∣ orderOf x) :
     orderOf (x ^ n) = orderOf x / n := by rw [orderOf_pow' _ hn, Nat.gcd_eq_right dvd]
 
@@ -990,16 +986,6 @@ theorem orderOf_pow (x : G) : orderOf (x ^ n) = orderOf x / Nat.gcd (orderOf x) 
   (isOfFinOrder_of_finite _).orderOf_pow ..
 
 @[to_additive]
-theorem orderOf_zpow [Finite G] (x : G) (n : ℤ) :
-    orderOf (x ^ n) = orderOf x / (orderOf x).gcd n.natAbs := by
-  rw [← orderOf_pow, orderOf_pow_natAbs]
-
-@[to_additive]
-theorem orderOf_zpow' (x : G) {n : ℤ} (h : n ≠ 0) :
-    orderOf (x ^ n) = orderOf x / (orderOf x).gcd n.natAbs := by
-  rw [← orderOf_pow' _ (Int.natAbs_ne_zero.mpr h), orderOf_pow_natAbs]
-
-@[to_additive]
 theorem mem_powers_iff_mem_range_orderOf [DecidableEq G] :
     y ∈ powers x ↔ y ∈ (Finset.range (orderOf x)).image (x ^ ·) :=
   Finset.mem_range_iff_mem_finset_range_of_mod_eq' (orderOf_pos x) <| pow_mod_orderOf _
@@ -1050,6 +1036,15 @@ section FiniteGroup
 variable [Group G] {x y : G}
 
 @[to_additive]
+theorem orderOf_pow_natAbs (x : G) (n : ℤ) : orderOf (x ^ n.natAbs) = orderOf (x ^ n) := by
+  obtain ⟨a, (rfl | rfl)⟩ := Int.eq_nat_or_neg n <;> simp
+
+@[to_additive]
+theorem orderOf_zpow' (x : G) {n : ℤ} (h : n ≠ 0) :
+    orderOf (x ^ n) = orderOf x / (orderOf x).gcd n.natAbs := by
+  rw [← orderOf_pow' _ (Int.natAbs_ne_zero.mpr h), orderOf_pow_natAbs]
+
+@[to_additive]
 theorem zpow_eq_one_iff_modEq {n : ℤ} : x ^ n = 1 ↔ n ≡ 0 [ZMOD orderOf x] := by
   rw [Int.modEq_zero_iff_dvd, orderOf_dvd_iff_zpow_eq_one]
 
@@ -1093,6 +1088,11 @@ theorem mem_zpowers_pow_iff {g : G} {k : ℕ} :
 
 section Finite
 variable [Finite G]
+
+@[to_additive]
+theorem orderOf_zpow (x : G) (n : ℤ) :
+    orderOf (x ^ n) = orderOf x / (orderOf x).gcd n.natAbs := by
+  rw [← orderOf_pow, orderOf_pow_natAbs]
 
 @[to_additive]
 theorem exists_zpow_eq_one (x : G) : ∃ (i : ℤ) (_ : i ≠ 0), x ^ (i : ℤ) = 1 := by
