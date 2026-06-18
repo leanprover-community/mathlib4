@@ -538,15 +538,12 @@ theorem IsTree.ncard_edgeSet [Finite V] (hG : G.IsTree) : G.edgeSet.ncard + 1 = 
   rw [← hG.isAcyclic.ncard_edgeSet_add_card_connectedComponent,
     connected_iff_natCard_connectedComponent_eq_one.mp hG.connected]
 
-/-- A graph on `n` vertices with at least `n` edges is not acyclic -/
-theorem card_vert_le_ncard_edgeSet_isAcyclic [Finite V] [Nonempty V]
-    (h : Nat.card V ≤ G.edgeSet.ncard) : ¬G.IsAcyclic :=
-  (Nat.not_le_of_lt ·.ncard_edgeSet_add_one_le_card_vert h)
-
 /-- A graph on `n` vertices with at least `n` edges has a cycle -/
 theorem card_vert_le_ncard_edgeSet_exists_isCycle [Finite V] [Nonempty V]
     (h : Nat.card V ≤ G.edgeSet.ncard) : ∃ (v : V) (c : G.Walk v v), c.IsCycle := by
-  grind [IsAcyclic, card_vert_le_ncard_edgeSet_isAcyclic h]
+  suffices ¬G.IsAcyclic by grind [IsAcyclic]
+  apply mt IsAcyclic.ncard_edgeSet_add_one_le_card_vert
+  lia
 
 /-- A graph on `n` vertices is a tree iff it is acyclic and has exactly `n - 1` edges -/
 theorem isTree_iff_isAcyclic_and_ncard_edgeSet_add_one_eq_card [Finite V] :
