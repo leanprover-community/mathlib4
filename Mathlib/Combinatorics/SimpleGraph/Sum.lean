@@ -141,7 +141,7 @@ def edgeSetSumEquiv : (G ⊕g H).edgeSet ≃ G.edgeSet ⊕ H.edgeSet where
       | Sum.inr u, Sum.inr v, h => .inr ⟨s(u, v), h⟩
       | Sum.inl u, Sum.inr v, h => by contradiction
       | Sum.inr u, Sum.inl v, h => by contradiction
-    ) fun a b h ↦ by cases a <;> cases b <;> simp
+    ) (by grind)
   invFun
     | Sum.inl ⟨e, he⟩ =>
       e.fromRelNdrec (sym := G.symm) he (fun u v h ↦ ⟨s(.inl u, .inl v), h⟩) <| by simp
