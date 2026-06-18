@@ -13,10 +13,6 @@ public import Mathlib.RingTheory.IsTensorProduct
 # Monoid algebras commute with base change
 
 In this file we show that monoid algebras are stable under pushout.
-
-## TODO
-
-Additivise
 -/
 
 @[expose] public noncomputable section
@@ -143,13 +139,16 @@ noncomputable def tensorEquiv : R[M] ⊗[R] R[N] ≃ₗ[R] R[M × N] :=
   TensorProduct.congr (coeffLinearEquiv _) (coeffLinearEquiv _) ≪≫ₗ
     finsuppTensorFinsupp' .. ≪≫ₗ (coeffLinearEquiv _).symm
 
-@[simp] lemma tensorEquiv_single_tmul_single (m : M) (r₁ : R) (n : N) (r₂ : R) :
+@[to_additive (dont_translate := R) (attr := simp)]
+lemma tensorEquiv_single_tmul_single (m : M) (r₁ : R) (n : N) (r₂ : R) :
     tensorEquiv R (single m r₁ ⊗ₜ single n r₂) = single (m, n) (r₁ * r₂) := by ext; simp
 
+@[to_additive (dont_translate := R)]
 lemma tensorEquiv_symm_single_eq_single_one_tmul (mn : M × N) (r : R) :
     (tensorEquiv R).symm (single mn r) = single mn.1 1 ⊗ₜ single mn.2 r := by
   simp [tensorEquiv, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
 
+@[to_additive (dont_translate := R)]
 lemma tensorEquiv_symm_single_eq_tmul_single_one (mn : M × N) (r : R) :
     (tensorEquiv R).symm (single mn r) = single mn.1 r ⊗ₜ single mn.2 1 := by
   simp [tensorEquiv, finsuppTensorFinsupp'_symm_single_eq_tmul_single_one]

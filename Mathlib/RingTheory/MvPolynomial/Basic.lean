@@ -81,6 +81,8 @@ section Homomorphism
 theorem map_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] (p : MvPolynomial σ R)
     (f : R →+* S) : AddMonoidAlgebra.map f p = map f p := rfl
 
+@[deprecated (since := "2026-06-18")] alias mapRange_eq_map := map_eq_map
+
 end Homomorphism
 
 section Degree

@@ -263,7 +263,7 @@ theorem lift_mapRingHom_algebraMap [CommSemiring S] [Algebra S A]
   | zero => simp
   | single_add a b f _ _ ih => simp [ih]
 
-@[deprecated (since := "2026-03-20")]
+@[deprecated (since := "2026-06-18")]
 alias lift_mapRangeRingHom_algebraMap := lift_mapRingHom_algebraMap
 
 variable (R A) in
@@ -298,6 +298,8 @@ def domCongr (e : M ≃* N) : A[M] ≃ₐ[R] A[N] where
 @[to_additive (attr := simp)]
 lemma coeff_domCongr (e : M ≃* N) (f : A[M]) (n : N) :
     (domCongr R A e f).coeff n = f.coeff (e.symm n) := by simp [domCongr]
+
+@[deprecated (since := "2026-06-18")] alias domCongr_apply := coeff_domCongr
 
 @[to_additive]
 theorem domCongr_toAlgHom (e : M ≃* N) : (domCongr R A e).toAlgHom = mapDomainAlgHom R A e := rfl
@@ -372,7 +374,7 @@ lemma mapDomainRingHom_comp_algebraMap (f : M →* N) :
 lemma mapRingHom_comp_algebraMap (f : R →+* S) :
     (mapRingHom (M := M) f).comp (algebraMap _ _) = (algebraMap _ _).comp f := by ext; simp
 
-@[deprecated (since := "2026-03-20")]
+@[deprecated (since := "2026-06-18")]
 alias mapRangeRingHom_comp_algebraMap := mapRingHom_comp_algebraMap
 
 variable (M) in
@@ -384,20 +386,21 @@ noncomputable def mapAlgHom (f : A →ₐ[R] B) : A[M] →ₐ[R] B[M] where
   __ := mapRingHom M f
   commutes' := by simp
 
-@[deprecated (since := "2026-03-20")] alias mapRangeAlgHom := mapAlgHom
+@[deprecated (since := "2026-06-18")] alias mapRangeAlgHom := mapAlgHom
 
 variable (M) in
 @[to_additive (attr := simp)]
 lemma toRingHom_mapAlgHom (f : A →ₐ[R] B) :
     mapAlgHom M f = mapRingHom M f.toRingHom := rfl
 
-@[deprecated (since := "2026-03-20")] alias toRingHom_mapRangeAlgHom := toRingHom_mapAlgHom
+@[deprecated (since := "2026-06-18")] alias toRingHom_mapRangeAlgHom := toRingHom_mapAlgHom
 
 @[to_additive (attr := simp)]
 lemma coeff_mapAlgHom (f : A →ₐ[R] B) (x : A[M]) (m : M) :
     (mapAlgHom M f x).coeff m = f (x.coeff m) := by simp [mapAlgHom]
 
-@[deprecated (since := "2026-03-20")] alias mapRangeAlgHom_apply := coeff_mapAlgHom
+@[deprecated (since := "2026-06-18")] alias mapAlgHom_apply := coeff_mapAlgHom
+@[deprecated (since := "2026-06-18")] alias mapRangeAlgHom_apply := coeff_mapAlgHom
 
 @[to_additive (attr := simp)]
 lemma mapAlgHom_single (f : A →ₐ[R] B) (m : M) (a : A) :
@@ -415,7 +418,7 @@ lemma mapRangeAlgHom_comp {k R S T G} [CommSemiring k] [Semiring R] [Algebra k R
     mapAlgHom G (g.comp f) = (mapAlgHom G g).comp (mapAlgHom G f) := by
   ext; simp
 
-@[deprecated (since := "2026-03-20")] alias mapRangeAlgHom_single := mapAlgHom_single
+@[deprecated (since := "2026-06-18")] alias mapRangeAlgHom_single := mapAlgHom_single
 
 variable (R M) in
 /-- The algebra isomorphism of monoid algebras induced by an isomorphism of the base algebras. -/
@@ -428,12 +431,12 @@ noncomputable def mapAlgEquiv (e : A ≃ₐ[R] B) : A[M] ≃ₐ[R] B[M] where
   left_inv _ := by aesop
   right_inv _ := by aesop
 
-@[deprecated (since := "2026-03-20")] alias mapRangeAlgEquiv := mapAlgEquiv
+@[deprecated (since := "2026-06-18")] alias mapRangeAlgEquiv := mapAlgEquiv
 
 @[to_additive (attr := simp)]
 lemma symm_mapAlgEquiv (e : A ≃ₐ[R] B) : (mapAlgEquiv R M e).symm = mapAlgEquiv R M e.symm := rfl
 
-@[deprecated (since := "2026-03-20")] alias symm_mapRangeAlgEquiv := symm_mapAlgEquiv
+@[deprecated (since := "2026-06-18")] alias symm_mapRangeAlgEquiv := symm_mapAlgEquiv
 
 @[to_additive (attr := simp)]
 lemma mapAlgEquiv_trans (e₁ : A ≃ₐ[R] B) (e₂ : B ≃ₐ[R] C) :
@@ -640,7 +643,7 @@ lemma lift_mapRingHom_algebraMap [CommSemiring S] [Algebra S A] [Algebra R S] [I
   | zero => simp
   | single_add a b f _ _ ih => simp [ih]
 
-@[deprecated (since := "2026-03-20")]
+@[deprecated (since := "2026-06-18")]
 alias lift_mapRangeRingHom_algebraMap := lift_mapRingHom_algebraMap
 
 lemma algHom_ext_iff {φ₁ φ₂ : R[M] →ₐ[R] A} : (∀ x, φ₁ (single x 1) = φ₂ (single x 1)) ↔ φ₁ = φ₂ :=

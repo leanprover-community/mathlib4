@@ -91,9 +91,13 @@ theorem sup_support_coeff_add_le :
   classical
   exact (Finset.sup_mono Finsupp.support_add).trans_eq Finset.sup_union
 
+@[deprecated (since := "2026-06-18")] alias sup_support_add_le := sup_support_coeff_add_le
+
 theorem le_inf_support_coeff_add :
     f.coeff.support.inf degt ⊓ g.coeff.support.inf degt ≤ (f + g).coeff.support.inf degt :=
   sup_support_coeff_add_le (fun a : A => OrderDual.toDual (degt a)) f g
+
+@[deprecated (since := "2026-06-18")] alias le_inf_support_add := le_inf_support_coeff_add
 
 end ExplicitDegrees
 
@@ -110,10 +114,14 @@ theorem sup_support_coeff_mul_le {degb : A → B} (degbm : ∀ a b, degb (a + b)
   rintro _fd fds _gd gds
   grw [degbm, ← Finset.le_sup fds, ← Finset.le_sup gds]
 
+@[deprecated (since := "2026-06-18")] alias sup_support_mul_le := sup_support_coeff_mul_le
+
 theorem le_inf_support_coeff_mul {degt : A → T} (degtm : ∀ a b, degt a + degt b ≤ degt (a + b))
     (f g : R[A]) :
     f.coeff.support.inf degt + g.coeff.support.inf degt ≤ (f * g).coeff.support.inf degt :=
   sup_support_coeff_mul_le (B := Tᵒᵈ) degtm f g
+
+@[deprecated (since := "2026-06-18")] alias le_inf_support_mul := le_inf_support_coeff_mul
 
 end AddOnly
 
@@ -174,6 +182,9 @@ theorem sup_support_coeff_multisetProd_le (degb0 : degb 0 ≤ 0)
   rw [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.sum_coe, Multiset.prod_coe]
   exact sup_support_list_prod_le degb0 degbm _
 
+@[deprecated (since := "2026-06-18")]
+alias sup_support_multiset_prod_le := sup_support_coeff_multisetProd_le
+
 theorem le_inf_support_coeff_multisetProd (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (m : Multiset R[A]) :
     (m.map fun f : R[A] => f.coeff.support.inf degt).sum ≤ m.prod.coeff.support.inf degt := by
@@ -183,10 +194,16 @@ theorem le_inf_support_coeff_multisetProd (degt0 : 0 ≤ degt 0)
   · exact degt0
   · exact degtm _ _
 
+@[deprecated (since := "2026-06-18")]
+alias le_inf_support_multiset_prod := le_inf_support_coeff_multisetProd
+
 theorem sup_support_coeff_finsetProd_le (degb0 : degb 0 ≤ 0)
     (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b) (s : Finset ι) (f : ι → R[A]) :
     (∏ i ∈ s, f i).coeff.support.sup degb ≤ ∑ i ∈ s, (f i).coeff.support.sup degb :=
   (sup_support_coeff_multisetProd_le degb0 degbm _).trans_eq <| congr_arg _ <| Multiset.map_map ..
+
+@[deprecated (since := "2026-06-18")]
+alias sup_support_finsetProd_le := sup_support_coeff_finsetProd_le
 
 @[deprecated (since := "2026-04-08")]
 alias sup_support_finset_prod_le := sup_support_coeff_finsetProd_le
@@ -195,6 +212,9 @@ theorem le_inf_support_coeff_finsetProd (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (s : Finset ι) (f : ι → R[A]) :
     (∑ i ∈ s, (f i).coeff.support.inf degt) ≤ (∏ i ∈ s, f i).coeff.support.inf degt :=
   le_of_eq_of_le (by rw [Multiset.map_map]; rfl) (le_inf_support_coeff_multisetProd degt0 degtm _)
+
+@[deprecated (since := "2026-06-18")]
+alias le_inf_support_finsetProd := le_inf_support_coeff_finsetProd
 
 @[deprecated (since := "2026-04-08")]
 alias le_inf_support_finset_prod := le_inf_support_coeff_finsetProd
@@ -267,6 +287,9 @@ theorem coeff_eq_zero_of_not_le_supDegree {p : R[A]} {a : A} (hlt : ¬ D a ≤ p
   contrapose! hlt
   exact Finset.le_sup (Finsupp.mem_support_iff.2 hlt)
 
+@[deprecated (since := "2026-06-18")]
+alias apply_eq_zero_of_not_le_supDegree := coeff_eq_zero_of_not_le_supDegree
+
 theorem supDegree_withBot_some_comp {s : AddMonoidAlgebra R A} (hs : s.coeff.support.Nonempty) :
     supDegree (WithBot.some ∘ D) s = supDegree D s := by
   unfold AddMonoidAlgebra.supDegree
@@ -332,6 +355,8 @@ theorem coeff_add_of_supDegree_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
       <| (Finset.le_sup ha').trans hq).ne he
   · refine fun h => Finset.sum_eq_zero (fun a _ => ite_eq_right_iff.mpr <| fun _ => ?_)
     rw [Finsupp.notMem_support_iff.mp h, zero_mul]
+
+@[deprecated (since := "2026-06-18")] alias apply_add_of_supDegree_le := coeff_add_of_supDegree_le
 
 end SupDegree
 
@@ -425,7 +450,6 @@ lemma leadingCoeff_eq_zero (hD : D.Injective) : p.leadingCoeff D = 0 ↔ p = 0 :
 lemma leadingCoeff_ne_zero (hD : D.Injective) : p.leadingCoeff D ≠ 0 ↔ p ≠ 0 :=
   (leadingCoeff_eq_zero hD).ne
 
-set_option backward.isDefEq.respectTransparency false in
 lemma supDegree_sub_lt_of_leadingCoeff_eq (hD : D.Injective) {R} [Ring R] {p q : R[A]}
     (hd : p.supDegree D = q.supDegree D) (hc : p.leadingCoeff D = q.leadingCoeff D) :
     (p - q).supDegree D < p.supDegree D ∨ p = q := by
@@ -485,6 +509,9 @@ lemma coeff_supDegree_add_supDegree (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 
   obtain ⟨aq, -, hq⟩ := exists_supDegree_mem_support D hq
   simp_rw [leadingCoeff, hp, hq, ← hadd, Function.leftInverse_invFun hD _]
   exact coeff_add_of_supDegree_le hadd hD hp.le hq.le
+
+@[deprecated (since := "2026-06-18")]
+alias apply_supDegree_add_supDegree := coeff_supDegree_add_supDegree
 
 lemma supDegree_mul
     (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)

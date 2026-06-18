@@ -319,7 +319,7 @@ lemma ofCoeff_smul (a : A) (x : M →₀ R) : ofCoeff (a • x) = a • ofCoeff 
 @[to_additive (dont_translate := A) coeff_smul_apply]
 lemma coeff_smul_apply (a : A) (x : R[M]) (m : M) : coeff (a • x) m = a • coeff x m := rfl
 
-@[deprecated (since := "2026-03-27")] alias smul_apply := coeff_smul_apply
+@[deprecated (since := "2026-06-18")] alias smul_apply := coeff_smul_apply
 
 @[to_additive (attr := simp) (dont_translate := A) smul_single]
 lemma smul_single (a : A) (m : M) (r : R) : a • single m r = single m (a • r) := by ext; simp
@@ -352,7 +352,7 @@ lemma single_zero (m : M) : (single m 0 : R[M]) = 0 := by simp [single]
 lemma single_add (m : M) (r₁ r₂ : R) : single m (r₁ + r₂) = single m r₁ + single m r₂ := by
   ext; simp
 
-@[to_additive (attr := deprecated coeff_add (since := "2026-03-27"))]
+@[to_additive (attr := deprecated coeff_add (since := "2026-06-18"))]
 lemma coe_add (f g : R[M]) : ⇑(f + g).coeff = f.coeff + g.coeff := rfl
 
 @[to_additive (attr := simp)]
@@ -406,7 +406,7 @@ lemma addHom_ext' {N : Type*} [AddZeroClass N] ⦃f g : R[M] →+ N⦄
     (hfg : ∀ m, f.comp (singleAddHom m) = g.comp (singleAddHom m)) : f = g :=
   addMonoidHom_ext <| by simpa [DFunLike.ext_iff] using hfg
 
-@[to_additive (attr := deprecated Finsupp.sum_single_index (since := "2026-03-27"))]
+@[to_additive (attr := deprecated Finsupp.sum_single_index (since := "2026-06-18"))]
 lemma sum_single_index [AddCommMonoid N] {m : M} {r : R} {h : M → R → N} (h_zero : h m 0 = 0) :
     (single m r).coeff.sum h = h m r := by
   simp [h_zero]
@@ -414,13 +414,15 @@ lemma sum_single_index [AddCommMonoid N] {m : M} {r : R} {h : M → R → N} (h_
 @[to_additive (attr := simp)]
 lemma sum_coeff_single (f : R[M]) : f.coeff.sum single = f := by ext; simp
 
-@[to_additive (attr := deprecated sum_coeff_single (since := "2026-03-27"))]
+@[to_additive (attr := deprecated sum_coeff_single (since := "2026-06-18"))]
 alias sum_single := sum_coeff_single
 
-@[to_additive (attr := deprecated Finsupp.single_apply (since := "2026-03-27"))]
-protected theorem coeff_single_apply {a a' : M} {b : R} [Decidable (a = a')] :
+@[to_additive (attr := deprecated Finsupp.single_apply (since := "2026-06-18"))]
+theorem coeff_single_apply {a a' : M} {b : R} [Decidable (a = a')] :
     (single a b).coeff a' = if a = a' then b else 0 :=
   Finsupp.single_apply
+
+@[deprecated (since := "2026-06-18")] protected alias single_apply := coeff_single_apply
 
 @[to_additive (attr := simp)]
 lemma single_eq_zero : single m r = 0 ↔ r = 0 := by simp [← coeff_inj]
@@ -475,7 +477,6 @@ We make it irreducible so that Lean doesn't unfold it when trying to unify two d
 @[no_expose]
 def _root_.AddMonoidAlgebra.mul' [Add M] (x y : AddMonoidAlgebra R M) : AddMonoidAlgebra R M :=
   x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ .single (m₁ + m₂) (r₁ * r₂)
-
 /-- The multiplication in a monoid algebra.
 
 We make it irreducible so that Lean doesn't unfold it when trying to unify two different things. -/
@@ -508,7 +509,7 @@ lemma coeff_mul [DecidableEq M] (x y : R[M]) (m : M) :
       x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ if m₁ * m₂ = m then r₁ * r₂ else 0 := by
   simp [mul_def, Finsupp.single_apply]
 
-@[to_additive (attr := deprecated coeff_mul (since := "2026-03-27")) (dont_translate := R)
+@[to_additive (attr := deprecated coeff_mul (since := "2026-06-18")) (dont_translate := R)
   mul_apply]
 alias mul_apply := coeff_mul
 
@@ -531,7 +532,7 @@ lemma coeff_mul_antidiag (x y : R[M]) (m : M) (s : Finset (M × M))
         · rw [h1, zero_mul]
         · rw [hp hps h1, mul_zero]
 
-@[to_additive (attr := deprecated coeff_mul_antidiag (since := "2026-03-27")) (dont_translate := R)
+@[to_additive (attr := deprecated coeff_mul_antidiag (since := "2026-06-18")) (dont_translate := R)
   mul_apply_antidiagonal]
 alias mul_apply_antidiagonal := coeff_mul_antidiag
 
@@ -560,6 +561,8 @@ lemma coeff_mul_single_eq_coeff_mul (m₂ : M) (H : ∀ m' ∈ x.coeff.support, 
     _ = x.coeff.sum fun m' r' ↦ if m' = m₂ then r' * r else 0 := by gcongr; simp [*]
     _ = x.coeff m₂ * r := by simp +contextual [Finsupp.sum_eq_single m₂]
 
+@[deprecated (since := "2026-06-18")] alias mul_single_apply_aux := coeff_mul_single_eq_coeff_mul
+
 @[to_additive (dont_translate := R) coeff_single_mul_eq_mul_coeff]
 lemma coeff_single_mul_eq_mul_coeff (m₂ : M) (H : ∀ m' ∈ x.coeff.support, m * m' = m₁ ↔ m' = m₂) :
     (single m r * x).coeff m₁ = r * x.coeff m₂ := by
@@ -570,6 +573,8 @@ lemma coeff_single_mul_eq_mul_coeff (m₂ : M) (H : ∀ m' ∈ x.coeff.support, 
     _ = x.coeff.sum fun m' r' ↦ if m' = m₂ then r * r' else 0 := by gcongr; simp [*]
     _ = r * x.coeff m₂ := by simp +contextual [Finsupp.sum_eq_single m₂]
 
+@[deprecated (since := "2026-06-18")] alias single_mul_apply_aux := coeff_single_mul_eq_mul_coeff
+
 @[to_additive (attr := simp) (dont_translate := R) coeff_mul_single_of_forall_add_ne]
 lemma coeff_mul_single_of_forall_mul_ne (r : R) (x : R[M]) (h : ∀ d, d * m ≠ m') :
     (x * single m r).coeff m' = 0 := by classical simp [coeff_mul, h]
@@ -578,13 +583,13 @@ lemma coeff_mul_single_of_forall_mul_ne (r : R) (x : R[M]) (h : ∀ d, d * m ≠
 lemma coeff_single_mul_of_forall_mul_ne (r : R) (x : R[M]) (h : ∀ d, m * d ≠ m') :
     (single m r * x).coeff m' = 0 := by classical simp [coeff_mul, h]
 
-@[to_additive (attr := deprecated coeff_mul_single_of_forall_mul_ne (since := "2026-01-02"))
+@[to_additive (attr := deprecated coeff_mul_single_of_forall_mul_ne (since := "2026-06-18"))
   (dont_translate := R)]
 lemma mul_single_apply_of_not_exists_mul (r : R) {g g' : M} (x : R[M])
     (h : ¬∃ d, g' = d * g) : (x * single g r).coeff g' = 0 :=
   coeff_mul_single_of_forall_mul_ne _ _ <| by simpa [eq_comm] using h
 
-@[to_additive (attr := deprecated coeff_single_mul_of_forall_mul_ne (since := "2026-01-02"))
+@[to_additive (attr := deprecated coeff_single_mul_of_forall_mul_ne (since := "2026-06-18"))
   (dont_translate := R)]
 lemma single_mul_apply_of_not_exists_mul (r : R) {g g' : M} (x : R[M])
     (h : ¬∃ d, g' = g * d) : (single g r * x).coeff g' = 0 :=
@@ -602,7 +607,6 @@ end Mul
 section Semigroup
 variable [Semigroup M]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R)]
 instance nonUnitalSemiring : NonUnitalSemiring R[M] where
   mul_assoc := by simp [mul_def, sum_sum_index, mul_add, add_mul, mul_assoc]
@@ -637,13 +641,14 @@ lemma coeff_mul_single_one (x : R[M]) (r : R) (m : M) :
     (x * single 1 r).coeff m = x.coeff m * r :=
   coeff_mul_single_eq_coeff_mul _ (by simp)
 
+@[deprecated (since := "2026-06-18")] alias mul_single_one_apply := coeff_mul_single_one
+
 @[to_additive (dont_translate := R) coeff_single_zero_mul]
 lemma coeff_single_one_mul (x : R[M]) (r : R) (m : M) :
     (single 1 r * x).coeff m = r * x.coeff m :=
   x.coeff_single_mul_eq_mul_coeff _ (by simp)
 
-@[deprecated (since := "2026-01-02")] alias mul_single_one_apply := coeff_mul_single_one
-@[deprecated (since := "2026-01-02")] alias single_one_mul_apply := coeff_single_one_mul
+@[deprecated (since := "2026-06-18")] alias single_one_mul_apply := coeff_single_one_mul
 
 variable (R M : Type*) [Semiring R] [MulOneClass M] in
 /-- The embedding of a unital magma into its magma algebra. -/
@@ -749,6 +754,9 @@ lemma uniqueRingEquiv_symm_apply [Subsingleton M] (r : R) :
 lemma coeff_uniqueRingEquiv_symm [Subsingleton M] (r : R) (m : M) :
     ((uniqueRingEquiv M).symm r).coeff m = r := by simp [Subsingleton.elim m 1]
 
+@[deprecated (since := "2026-06-18")]
+alias uniqueRingEquiv_symm_apply_apply := coeff_uniqueRingEquiv_symm
+
 /-- A product monoid algebra is a nested monoid algebra. -/
 @[to_additive (dont_translate := R)
 /-- An additive product monoid algebra is a nested additive monoid algebra. -/]
@@ -803,25 +811,28 @@ lemma coeff_mul_single_apply (x : R[G]) (r : R) (g h : G) :
     (x * single g r).coeff h = x.coeff (h * g⁻¹) * r :=
   coeff_mul_single_eq_coeff_mul _ <| by simp [eq_mul_inv_iff_mul_eq]
 
+@[deprecated (since := "2026-06-18")] alias mul_single_apply := coeff_mul_single_apply
+
 @[to_additive (attr := simp) (dont_translate := R) coeff_single_mul_apply]
 lemma coeff_single_mul_apply (x : R[G]) (r : R) (g h : G) :
     (single g r * x).coeff h = r * x.coeff (g⁻¹ * h) :=
   coeff_single_mul_eq_mul_coeff _ <| by simp [eq_inv_mul_iff_mul_eq]
+
+@[deprecated (since := "2026-06-18")] alias single_mul_apply := coeff_single_mul_apply
 
 @[to_additive (dont_translate := R) coeff_mul_apply_left]
 lemma coeff_mul_apply_left (x y : R[G]) (g : G) :
     (x * y).coeff g = x.coeff.sum fun h r ↦ r * y.coeff (h⁻¹ * g) := by
   classical rw [coeff_mul]; gcongr; simp +contextual [← eq_inv_mul_iff_mul_eq]
 
+@[deprecated (since := "2026-06-18")] alias mul_apply_left := coeff_mul_apply_left
+
 @[to_additive (dont_translate := R) coeff_mul_apply_right]
 lemma coeff_mul_apply_right (x y : R[G]) (g : G) :
     (x * y).coeff g = y.coeff.sum fun h r ↦ x.coeff (g * h⁻¹) * r := by
   classical rw [coeff_mul, Finsupp.sum_comm]; gcongr; simp +contextual [← eq_mul_inv_iff_mul_eq]
 
-@[deprecated (since := "2026-01-02")] alias mul_single_apply := coeff_mul_single_apply
-@[deprecated (since := "2026-01-02")] alias single_mul_apply := coeff_single_mul_apply
-@[deprecated (since := "2026-01-02")] alias mul_apply_left := coeff_mul_apply_left
-@[deprecated (since := "2026-01-02")] alias mul_apply_right := coeff_mul_apply_right
+@[deprecated (since := "2026-06-18")] alias mul_apply_right := coeff_mul_apply_right
 
 end Group
 end Semiring
@@ -889,7 +900,6 @@ instance nonUnitalNonAssocRing [Mul M] : NonUnitalNonAssocRing R[M] where
 @[to_additive (dont_translate := R)]
 instance nonUnitalRing [Semigroup M] : NonUnitalRing R[M] where
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R)]
 instance nonAssocRing [MulOneClass M] : NonAssocRing R[M] where
   intCast z := single 1 z
@@ -902,7 +912,7 @@ lemma intCast_def [MulOneClass M] (z : ℤ) : (z : R[M]) = single 1 (z : R) := r
 @[to_additive (dont_translate := R)]
 instance ring [Monoid M] : Ring R[M] where
 
-@[deprecated coeff_neg (since := "2026-03-27")]
+@[deprecated coeff_neg (since := "2026-06-18")]
 lemma neg_apply (m : M) (x : R[M]) : (-x).coeff m = -x.coeff m := rfl
 
 end Ring

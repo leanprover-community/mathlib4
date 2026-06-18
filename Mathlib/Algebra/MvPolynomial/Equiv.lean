@@ -349,22 +349,19 @@ with coefficients in multivariable polynomials in the other type.
 
 See `sumRingEquiv` for the ring isomorphism.
 -/
-@[deprecated sumRingEquiv (since := "2026-03-07")]
+@[deprecated sumRingEquiv (since := "2026-06-18")]
 def sumToIter : MvPolynomial (S₁ ⊕ S₂) R →+* MvPolynomial S₁ (MvPolynomial S₂ R) :=
   eval₂Hom (C.comp C) fun bc => Sum.recOn bc X (C ∘ X)
 
-set_option linter.deprecated false in
-@[deprecated sumRingEquiv_C (since := "2026-03-07")]
+@[deprecated sumRingEquiv_C (since := "2026-06-18")]
 theorem sumToIter_C (a : R) : sumToIter R S₁ S₂ (C a) = C (C a) :=
   eval₂_C _ _ a
 
-set_option linter.deprecated false in
-@[deprecated sumRingEquiv_X_inl (since := "2026-03-07")]
+@[deprecated sumRingEquiv_X_inl (since := "2026-06-18")]
 theorem sumToIter_Xl (b : S₁) : sumToIter R S₁ S₂ (X (Sum.inl b)) = X b :=
   eval₂_X _ _ (Sum.inl b)
 
-set_option linter.deprecated false in
-@[deprecated sumRingEquiv_X_inr (since := "2026-03-07")]
+@[deprecated sumRingEquiv_X_inr (since := "2026-06-18")]
 theorem sumToIter_Xr (c : S₂) : sumToIter R S₁ S₂ (X (Sum.inr c)) = C (X c) :=
   eval₂_X _ _ (Sum.inr c)
 
@@ -374,24 +371,24 @@ to multivariable polynomials in the sum of the two types.
 
 See `sumRingEquiv` for the ring isomorphism.
 -/
-@[deprecated sumRingEquiv (since := "2026-03-07")]
+@[deprecated sumRingEquiv (since := "2026-06-18")]
 def iterToSum : MvPolynomial S₁ (MvPolynomial S₂ R) →+* MvPolynomial (S₁ ⊕ S₂) R :=
   eval₂Hom (eval₂Hom C (X ∘ Sum.inr)) (X ∘ Sum.inl)
 
-set_option linter.deprecated false in
-@[deprecated sumRingEquiv_symm_C_C (since := "2026-03-07")]
+@[deprecated sumRingEquiv_symm_C_C (since := "2026-06-18")]
 theorem iterToSum_C_C (a : R) : iterToSum R S₁ S₂ (C (C a)) = C a :=
   Eq.trans (eval₂_C _ _ (C a)) (eval₂_C _ _ _)
 
-set_option linter.deprecated false in
-@[deprecated sumRingEquiv_symm_X (since := "2026-03-07")]
+@[deprecated sumRingEquiv_symm_X (since := "2026-06-18")]
 theorem iterToSum_X (b : S₁) : iterToSum R S₁ S₂ (X b) = X (Sum.inl b) :=
   eval₂_X _ _ _
 
-set_option linter.deprecated false in
-@[deprecated sumRingEquiv_symm_C_X (since := "2026-03-07")]
+@[deprecated sumRingEquiv_symm_C_X (since := "2026-06-18")]
 theorem iterToSum_C_X (c : S₂) : iterToSum R S₁ S₂ (C (X c)) = X (Sum.inr c) :=
   Eq.trans (eval₂_C _ _ (X c)) (eval₂_X _ _ _)
+
+@[deprecated (since := "2026-06-18")] alias iterToSum_sumToIter := RingEquiv.symm_apply_apply
+@[deprecated (since := "2026-06-18")] alias sumToIter_iterToSum := RingEquiv.apply_symm_apply
 
 /-- The algebra isomorphism between multivariable polynomials in a sum of two types,
 and multivariable polynomials in one of the types,

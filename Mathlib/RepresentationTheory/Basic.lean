@@ -476,6 +476,8 @@ theorem coeff_ofMulAction {H : Type*} [MulAction G H] (g : G) (f : k[H]) (h : H)
     simp
   simp [ofMulAction_def, Finsupp.mapDomain_apply, hg]
 
+@[deprecated (since := "2026-06-18")] alias ofMulAction_apply := coeff_ofMulAction
+
 -- Noncomputable since `MonoidAlgebra.instMul` is now noncomputable
 noncomputable instance : HMul k[G] (ofMulAction k G G).asModule k[G] where
   hMul x y := x * (ofMulAction k G G).asModuleEquiv y
@@ -492,6 +494,9 @@ lemma asAlgebraHom_ofMulAction_smul_eq_mul (x y : k[G]) :
   | hM g => ext; simp [MonoidAlgebra.coeff_single_mul_apply]
   | hadd x y hx hy => simp [hx, hy, add_mul]
   | hsmul r x hx => simp [← hx]
+
+@[deprecated (since := "2026-06-18")]
+alias ofMulAction_self_smul_eq_mul := asAlgebraHom_ofMulAction_smul_eq_mul
 
 /-- If we equip `k[G]` with the `k`-linear `G`-representation induced by the left regular action of
 `G` on itself, the resulting object is isomorphic as a `k[G]`-module to `k[G]` with its natural
@@ -555,6 +560,9 @@ lemma coeff_of_leftRegular_of_generator (g : G) (hg : ∀ x, x ∈ Subgroup.zpow
     simpa [← h, zpow_natCast, zpow_add_one, pow_mul_comm', pow_succ'] using (hx (g ^ (n + 1))).symm
   | pred n h =>
     simpa [zpow_sub, ← h, ← mul_inv_rev, ← pow_mul_comm'] using hx (g ^ (-n : ℤ))
+
+@[deprecated (since := "2026-06-18")]
+alias apply_eq_of_leftRegular_eq_of_generator := coeff_of_leftRegular_of_generator
 
 end Cyclic
 end Group

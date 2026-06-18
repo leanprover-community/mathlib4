@@ -380,6 +380,9 @@ theorem support_coeff_C_mul_T_of_ne_zero {a : R} (a0 : a ≠ 0) (n : ℤ) :
   rw [← single_eq_C_mul_T]
   exact support_single _ a0
 
+@[deprecated (since := "2026-06-18")]
+alias support_C_mul_T_of_ne_zero := support_coeff_C_mul_T_of_ne_zero
+
 @[simp] lemma coeff_toLaurent (f : R[X]) :
     f.toLaurent.coeff = f.toFinsupp.coeff.mapDomain Nat.castEmbedding := rfl
 
@@ -388,6 +391,8 @@ shows that the support of `f.toLaurent` is the same finset, but viewed in `ℤ` 
 inclusion `ℕ ↪ ℤ`. -/
 theorem support_coeff_toLaurent (f : R[X]) :
     f.toLaurent.coeff.support = f.support.map Nat.castEmbedding := by simp [Polynomial.support]
+
+@[deprecated (since := "2026-06-18")] alias toLaurent_support := support_coeff_toLaurent
 
 end Support
 

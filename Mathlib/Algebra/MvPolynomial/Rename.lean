@@ -96,6 +96,8 @@ theorem rename_monomial (f : σ → τ) (d : σ →₀ ℕ) (r : R) :
 
 lemma rename_eq_aeval (f : σ → τ) : rename (R := R) f = aeval (X ∘ f) := by ext; simp
 
+@[deprecated (since := "2026-06-18")] alias rename_eq := rename_eq_aeval
+
 theorem rename_injective (f : σ → τ) (hf : Function.Injective f) :
     Function.Injective (rename f : MvPolynomial σ R → MvPolynomial τ R) :=
   AddMonoidAlgebra.mapDomain_injective (Finsupp.mapDomain_injective hf)

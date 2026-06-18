@@ -158,6 +158,8 @@ lemma pderiv_sumRingEquiv {σ ι} (p i) :
   | add p q _ _ => simp_all
   | mul_X p n _ => cases n <;> simp_all [pderiv_X, Pi.single_apply, apply_ite]
 
+@[deprecated (since := "2026-06-18")] alias pderiv_sumToIter := pderiv_sumRingEquiv
+
 @[simp]
 lemma pderiv_sumAlgEquiv {R S₁ S₂ : Type*} [CommSemiring R]
     (b : S₁) (p : MvPolynomial (S₁ ⊕ S₂) R) :

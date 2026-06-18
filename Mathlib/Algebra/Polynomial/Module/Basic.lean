@@ -136,6 +136,8 @@ def single (n : ℕ) (m : M) : PolynomialModule R M := .ofCoeff R <| .single n m
 @[simp] lemma coeff_single (n : ℕ) (m : M) : (single R n m).coeff = .single n m := rfl
 @[simp] lemma ofCoeff_single (n : ℕ) (m : M) : ofCoeff R (.single n m) = single R n m := rfl
 
+@[deprecated (since := "2026-06-18")] alias single_apply := coeff_single
+
 @[simp] lemma single_zero (n : ℕ) : single R n (0 : M) = 0 := by simp [single]
 
 @[simp]

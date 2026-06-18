@@ -206,6 +206,8 @@ def mapDomainAddEquiv (e : M ≃ N) : R[M] ≃+ R[N] where
 lemma coeff_mapDomainAddEquiv (e : M ≃ N) (x : R[M]) :
     (mapDomainAddEquiv R e x).coeff = equivMapDomain e x.coeff := by ext; simp [mapDomainAddEquiv]
 
+@[deprecated (since := "2026-06-18")] alias mapDomainAddEquiv_apply := coeff_mapDomainAddEquiv
+
 @[to_additive (attr := simp)]
 lemma mapDomainAddEquiv_single (e : M ≃ N) (r : R) (m : M) :
     mapDomainAddEquiv R e (single m r) = single (e m) r := by simp [mapDomainAddEquiv]
@@ -240,6 +242,8 @@ def mapAddEquiv (e : R ≃+ S) : R[M] ≃+ S[M] where
 lemma coeff_mapAddEquiv (e : R ≃+ S) (x : R[M]) (m : M) :
     (mapAddEquiv M e x).coeff m = e (x.coeff m) := by simp [mapAddEquiv]
 
+@[deprecated (since := "2026-06-18")] alias mapAddEquiv_apply := coeff_mapAddEquiv
+
 @[deprecated (since := "2026-03-20")] alias mapRangeAddEquiv_apply := coeff_mapAddEquiv
 
 @[to_additive (attr := simp)]
@@ -261,7 +265,6 @@ lemma mapAddEquiv_trans (e₁ : R ≃+ S) (e₂ : S ≃+ T) :
 
 @[deprecated (since := "2026-03-20")] alias mapRangeAddEquiv_trans := mapAddEquiv_trans
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp) (dont_translate := R S) map_mul]
 protected lemma map_mul (f : R →+* S) (x y : R[M]) :
     map (f : R →+ S) (x * y) = map f x * map f y := by
@@ -322,6 +325,8 @@ lemma coe_mapRingHom (f : R →+* S) : ⇑(mapRingHom M f) = map f := rfl
 lemma coeff_mapRingHom (f : R →+* S) (x : R[M]) (m : M) :
     (mapRingHom M f x).coeff m = f (x.coeff m) := by simp [mapRingHom]
 
+@[deprecated (since := "2026-06-18")] alias mapRingHom_apply := coeff_mapRingHom
+
 @[deprecated (since := "2026-03-20")] alias mapRangeRingHom_apply := coeff_mapRingHom
 
 @[to_additive (attr := simp)]
@@ -362,6 +367,8 @@ def mapDomainRingEquiv (e : M ≃* N) : R[M] ≃+* R[N] :=
 lemma coeff_mapDomainRingEquiv (e : M ≃* N) (x : R[M]) :
     (mapDomainRingEquiv R e x).coeff = equivMapDomain e x.coeff := coeff_mapDomainAddEquiv ..
 
+@[deprecated (since := "2026-06-18")] alias mapDomainRingEquiv_apply := coeff_mapDomainRingEquiv
+
 @[to_additive (attr := simp)]
 lemma mapDomainRingEquiv_single (e : M ≃* N) (r : R) (m : M) :
     mapDomainRingEquiv R e (single m r) = single (e m) r := by simp [mapDomainRingEquiv]
@@ -392,6 +399,8 @@ def mapRingEquiv (e : R ≃+* S) : R[M] ≃+* S[M] :=
 @[to_additive (attr := simp)]
 lemma coeff_mapRingEquiv (e : R ≃+* S) (x : R[M]) (m : M) :
     (mapRingEquiv M e x).coeff m = e (x.coeff m) := by simp [mapRingEquiv]
+
+@[deprecated (since := "2026-06-18")] alias mapRingEquiv_apply := coeff_mapRingEquiv
 
 @[deprecated (since := "2026-03-20")] alias mapRangeRingEquiv_apply := coeff_mapRingEquiv
 
@@ -460,11 +469,6 @@ end MonoidAlgebra
 
 /-!
 #### Conversions between `AddMonoidAlgebra` and `MonoidAlgebra`
-
-We have not defined `AddMonoidAlgebra k G = MonoidAlgebra k (Multiplicative G)`
-because historically this caused problems;
-since the changes that have made `nsmul` definitional, this would be possible,
-but for now we just construct the ring isomorphisms using `RingEquiv.refl _`.
 -/
 
 set_option backward.isDefEq.respectTransparency false in

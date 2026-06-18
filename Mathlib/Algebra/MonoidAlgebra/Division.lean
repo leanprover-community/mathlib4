@@ -63,14 +63,14 @@ variable [IsCancelAdd G]
 
 @[simp] lemma coeff_divOf (g : G) (x : k[G]) (g' : G) : (x /ᵒᶠ g).coeff g' = x.coeff (g + g') := rfl
 
-@[deprecated (since := "2025-12-08")] alias divOf_apply := coeff_divOf
+@[deprecated (since := "2026-06-18")] alias divOf_apply := coeff_divOf
 
 @[simp]
 theorem support_coeff_divOf (g : G) (x : k[G]) :
     (x /ᵒᶠ g).coeff.support = x.coeff.support.preimage (g + ·) (add_right_injective g).injOn :=
   rfl
 
-@[deprecated (since := "2025-12-08")] alias support_divOf := support_coeff_divOf
+@[deprecated (since := "2026-06-18")] alias support_divOf := support_coeff_divOf
 
 @[simp]
 theorem zero_divOf (g : G) : (0 : k[G]) /ᵒᶠ g = 0 := by ext; simp
@@ -118,19 +118,27 @@ theorem coeff_modOf_of_not_exists_add (x : k[G]) (g : G) (g' : G) (h : ¬∃ d, 
     (x %ᵒᶠ g).coeff g' = x.coeff g' := by
   classical exact Finsupp.filter_apply_pos _ _ h
 
+@[deprecated (since := "2026-06-18")]
+alias modOf_apply_of_not_exists_add := coeff_modOf_of_not_exists_add
+
 @[simp]
 theorem coeff_modOf_of_exists_add (x : k[G]) (g : G) (g' : G) (h : ∃ d, g' = g + d) :
     (x %ᵒᶠ g).coeff g' = 0 := by
   classical exact Finsupp.filter_apply_neg _ _ <| by rwa [Classical.not_not]
 
+@[deprecated (since := "2026-06-18")] alias modOf_apply_of_exists_add := coeff_modOf_of_exists_add
+
 @[simp]
 theorem coeff_modOf_add_self (x : k[G]) (g : G) (d : G) : (x %ᵒᶠ g).coeff (d + g) = 0 :=
   coeff_modOf_of_exists_add _ _ _ ⟨_, add_comm _ _⟩
 
+@[deprecated (since := "2026-06-18")] alias modOf_apply_add_self := coeff_modOf_add_self
+
 theorem coeff_modOf_self_add (x : k[G]) (g : G) (d : G) : (x %ᵒᶠ g).coeff (g + d) = 0 :=
   coeff_modOf_of_exists_add _ _ _ ⟨_, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
+@[deprecated (since := "2026-06-18")] alias modOf_apply_self_add := coeff_modOf_self_add
+
 theorem of'_mul_modOf (g : G) (x : k[G]) : of' k G g * x %ᵒᶠ g = 0 := by
   ext g'
   simp only [of'_apply, coeff_zero, Finsupp.coe_zero, Pi.zero_apply]
@@ -139,7 +147,6 @@ theorem of'_mul_modOf (g : G) (x : k[G]) : of' k G g * x %ᵒᶠ g = 0 := by
   · rw [coeff_modOf_of_not_exists_add _ _ _ h, coeff_single_mul_of_forall_add_ne]
     simpa [eq_comm] using h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mul_of'_modOf (x : k[G]) (g : G) : x * of' k G g %ᵒᶠ g = 0 := by
   ext g'
   simp only [of'_apply, coeff_zero, Finsupp.zero_apply]
@@ -151,7 +158,6 @@ theorem mul_of'_modOf (x : k[G]) (g : G) : x * of' k G g %ᵒᶠ g = 0 := by
 theorem of'_modOf (g : G) : of' k G g %ᵒᶠ g = 0 := by
   simpa only [one_mul] using mul_of'_modOf (1 : k[G]) g
 
-set_option backward.isDefEq.respectTransparency false in
 theorem divOf_add_modOf [IsCancelAdd G] (x : k[G]) (g : G) :
     of' k G g * (x /ᵒᶠ g) + x %ᵒᶠ g = x := by
   ext g'

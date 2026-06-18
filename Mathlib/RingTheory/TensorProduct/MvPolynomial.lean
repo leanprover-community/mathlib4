@@ -67,6 +67,8 @@ variable [CommSemiring N] [Algebra R N]
 noncomputable def rTensorAlgEquiv : S ⊗[R] MvPolynomial σ N ≃ₐ[S] MvPolynomial σ (S ⊗[R] N) :=
   AddMonoidAlgebra.rTensorEquivAlgEquiv R ..
 
+@[deprecated (since := "2026-06-18")] alias rTensorAlgHom := rTensorAlgEquiv
+
 @[simp]
 lemma coeff_rTensorAlgEquiv_tmul (s : S) (p : MvPolynomial σ N) (d : σ →₀ ℕ) :
     coeff d (rTensorAlgEquiv (s ⊗ₜ[R] p)) = s ⊗ₜ[R] coeff d p := by
@@ -76,6 +78,9 @@ lemma coeff_rTensorAlgEquiv_monomial_tmul [DecidableEq σ] (e : σ →₀ ℕ) (
     (d : σ →₀ ℕ) :
     coeff d (rTensorAlgEquiv (s ⊗ₜ[R] monomial e n)) = if e = d then s ⊗ₜ[R] n else 0 := by
   simp [tmul_ite]
+
+@[deprecated (since := "2026-06-18")]
+alias rTensorAlgEquiv_apply := rTensorAlgEquiv
 
 /-- The tensor product of the polynomial algebra by an algebra
   is algebraically equivalent to a polynomial algebra with
