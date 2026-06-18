@@ -443,7 +443,6 @@ private lemma vizingAdjacencyLemma_aux
       · -- Sub-case B2: `u` and `vₖ` in the same αβ-component.
         have h_eb_inSZ : inSwapZone c a b u e_b := by
           refine ⟨Or.inr he_b_col, u, ?_, SimpleGraph.Reachable.refl u⟩
-          change u ∈ e_b.val
           rw [he_b_val]; exact Sym2.mem_mk_left u v_j
         have h_b_missing_u : b ∈ missingColors (swapKempe c a b u) u := by
           intro h_inc
@@ -775,7 +774,6 @@ private lemma vizingAdjacencyLemma_aux
       · -- Sub-case B1: `u` and `vₖ` in different αβ-components.
         have h_eb_inSZ : inSwapZone c a b u e_b := by
           refine ⟨Or.inr he_b_col, u, ?_, SimpleGraph.Reachable.refl u⟩
-          change u ∈ e_b.val
           rw [he_b_val]; exact Sym2.mem_mk_left u v_j
         have h_b_missing_u : b ∈ missingColors (swapKempe c a b u) u := by
           intro h_inc
