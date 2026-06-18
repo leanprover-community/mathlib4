@@ -93,7 +93,7 @@ variable [NonAssocRing R] [NoZeroDivisors R] [CharZero R]
 @[scoped simp] theorem CharZero.neg_eq_self_iff {a : R} : -a = a ↔ a = 0 :=
   neg_eq_iff_add_eq_zero.trans add_self_eq_zero
 
-@[simp] theorem CharZero.eq_neg_self_iff {a : R} : a = -a ↔ a = 0 :=
+@[scoped simp] theorem CharZero.eq_neg_self_iff {a : R} : a = -a ↔ a = 0 :=
   eq_neg_iff_add_eq_zero.trans add_self_eq_zero
 
 theorem nat_mul_inj {n : ℕ} {a b : R} (h : (n : R) * a = (n : R) * b) : n = 0 ∨ a = b := by
