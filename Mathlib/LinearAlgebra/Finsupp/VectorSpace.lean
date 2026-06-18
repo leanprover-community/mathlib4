@@ -79,8 +79,9 @@ theorem linearIndependent_single {φ : ι → Type*} (f : ∀ i, φ i → M)
     (hf : ∀ i, LinearIndependent R (f i)) :
     LinearIndependent R fun ix : Σ i, φ i ↦ single ix.1 (f ix.1 ix.2) := by
   classical
-  convert (DFinsupp.linearIndependent_single _ hf).map_injOn
-    _ (finsuppLequivDFinsupp R).symm.injective.injOn
+  convert!
+    (DFinsupp.linearIndependent_single _ hf).map_injOn _
+      (finsuppLequivDFinsupp R).symm.injective.injOn
   simp
 
 lemma linearIndependent_single_iff {φ : ι → Type*} {f : ∀ i, φ i → M} :

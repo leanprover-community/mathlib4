@@ -5,10 +5,8 @@ Authors: Mario Carneiro, Aurélien Saue, Anne Baanen
 -/
 module
 
-public import Mathlib.Tactic.NormNum.Inv
-public import Mathlib.Tactic.NormNum.Pow
 public import Mathlib.Tactic.Ring.Common
-meta import Mathlib.Tactic.Ring.Common
+public meta import Mathlib.Algebra.Order.Ring.Unbundled.Rat -- for the `Ord Rat` instance
 
 /-!
 # `ring` tactic
@@ -357,8 +355,7 @@ theorem Nat.smul_eq_mul {n n' : ℕ} {r : R} (hr : n = r) (hn : n' = n) (a : R) 
   subst_vars
   simp only [nsmul_eq_mul]
 
-omit [CommSemiring R] in
-theorem Int.smul_eq_mul {n n' : ℤ} {r : R} [CommRing R] (hr : n = r) (hn : n' = n) (a : R) :
+theorem Int.smul_eq_mul {R} {n n' : ℤ} {r : R} [CommRing R] (hr : n = r) (hn : n' = n) (a : R) :
     n' • a = r * a := by
   subst_vars
   simp only [zsmul_eq_mul]

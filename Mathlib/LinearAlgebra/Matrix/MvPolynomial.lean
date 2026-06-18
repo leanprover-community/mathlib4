@@ -75,4 +75,13 @@ theorem det_mvPolynomialX_ne_zero [DecidableEq m] [Fintype m] [CommRing R] [Nont
   rw [det_one, ← RingHom.map_det, h_det, map_zero] at this
   exact zero_ne_one this
 
+/-- Evaluating the generic determinant polynomial `det (mvPolynomialX m m R)` at a point `s`
+gives the determinant of the matrix obtained by substituting `s`. -/
+theorem eval_det_mvPolynomialX [DecidableEq m] [Fintype m] [CommRing R] (s : m × m → R) :
+    MvPolynomial.eval s (det (mvPolynomialX m m R)) = det (Matrix.of fun i j : m => s (i, j)) := by
+  rw [(MvPolynomial.eval s).map_det]
+  congr 1
+  ext i j
+  simp [mvPolynomialX]
+
 end Matrix
