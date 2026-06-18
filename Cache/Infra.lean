@@ -150,12 +150,9 @@ def defaultContainersForRepo (repo : String) : List Container :=
   if repo == MATHLIBREPO then
     [.master, .legacy]
   else if repo == NIGHTLY_TESTING_REPO then
-    -- Trusted-nightly consumers (`nightly-testing`, `nightly-testing-green`,
-    -- `bump/*`) read only `nightly-testing` + `legacy`; `pr-toolchain-tests` is
-    -- excluded so low-trust toolchain-PR uploads can't reach them. Toolchain-PR
-    -- branches opt into reading their own uploads with `--cache-from=...` (or,
-    -- in CI, via the `MATHLIB_CACHE_FROM` env var).
-    [.nightlyTesting, .legacy]
+    -- `forks` is needed for PRs opened from this repo into mathlib4: their CI
+    -- uploads land in `forks`. `pr-toolchain-tests` is excluded.
+    [.nightlyTesting, .forks, .legacy]
   else
     -- Forks and everything else: `master` for shared upstream deps, the fork's
     -- own container for PR-specific files, then `legacy`.
