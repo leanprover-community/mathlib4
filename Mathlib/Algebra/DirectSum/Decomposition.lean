@@ -16,8 +16,6 @@ public import Mathlib.Algebra.Module.Submodule.Basic
 * `DirectSum.Decomposition ℳ`: A typeclass to provide a constructive decomposition from
   an additive monoid `M` into a family of additive submonoids `ℳ`
 * `DirectSum.decompose ℳ`: The canonical equivalence provided by the above typeclass
-* `DirectSum.Rel.IsPureHomogeneous`: a relation `r` is `PureHomogeneous` iff `r a b` implies that
-  `a` and `b` are homogeneous of the same degree.
 * `DirecSum.Rel.IsHomogeneous`: a relation is `Homogeneous` iff `r a b` implies that the components
   of `a` and `b` are related by `r`.
 
@@ -336,56 +334,5 @@ theorem decompose_lhom_ext {N} [AddCommMonoid N] [Module R N] ⦃f g : M →ₗ[
       simp_rw [LinearMap.comp_assoc, decomposeLinearEquiv_symm_comp_lof ℳ i, h]
 
 end Module
-
-section Pure
-
-section AddCommMonoid
-
-variable [DecidableEq ι] [AddCommMonoid M]
-variable [SetLike σ M] [AddSubmonoidClass σ M] (ℳ : ι → σ)
-variable [Decomposition ℳ]
-
-/-- A relation `r` is `PureHomogeneous` with respect to a family `ℳ : ι → σ` (where `SetLike σ M`)
-iff `r a b` implies that `a` and `b` are homogeneous of the same degree. -/
-def Rel.IsPureHomogeneous (r : M → M → Prop) : Prop :=
-  ∀ {a b : M} (_ : r a b), ∃ i, a ∈ ℳ i ∧ b ∈ ℳ i
-
-variable {r : M → M → Prop}
-
-omit [DecidableEq ι] [AddCommMonoid M] [AddSubmonoidClass σ M] [Decomposition ℳ] in
-theorem Rel.isPureHomogeneous_iff :
-    Rel.IsPureHomogeneous ℳ r ↔ ∀ {a b : M} (_ : r a b), ∃ i, a ∈ ℳ i ∧ b ∈ ℳ i := Iff.rfl
-
-lemma Rel.IsPureHomogeneous.isHomogeneous (hr0 : r 0 0) (hr : Rel.IsPureHomogeneous ℳ r) :
-    Rel.IsHomogeneous ℳ r := by
-  intro a b h i
-  obtain ⟨j, ha, hb⟩ := hr h
-  obtain rfl | hji := eq_or_ne j i
-  · simp [decompose_of_mem_same, ha, hb, h]
-  · simp [decompose_of_mem_ne _ ha hji, decompose_of_mem_ne _ hb hji, hr0]
-
-theorem Rel.IsPureHomogeneous.addConGenIsHomogeneous (hr : Rel.IsPureHomogeneous ℳ r) :
-    Rel.IsHomogeneous ℳ (AddConGen.Rel r) := by
-  intro a b h i
-  induction h with
-  | refl x => exact AddConGen.Rel.refl _
-  | of a b h =>
-    obtain ⟨j, ha, hb⟩ := hr h
-    obtain rfl | hji := eq_or_ne j i
-    · simp [decompose_of_mem_same, ha, hb, h, AddConGen.Rel.of]
-    · simp [decompose_of_mem_ne _ ha hji, decompose_of_mem_ne _ hb hji, AddConGen.Rel.refl]
-  | symm _ ih => exact AddConGen.Rel.symm ih
-  | trans h h' ih ih' => exact AddConGen.Rel.trans ih ih'
-  | add h h' ih ih' =>
-    simp only [decompose_add, add_apply, AddMemClass.coe_add]
-    exact AddConGen.Rel.add ih ih'
-
--- Because of loops in file inclusions,
--- one cannot include here the analogous `RingConGen.Rel.IsPureHomogeneous.isHomogeneous`.
--- Should one make one single file for this `PureHomogeneous` predicate?
-
-end AddCommMonoid
-
-end Pure
 
 end DirectSum
