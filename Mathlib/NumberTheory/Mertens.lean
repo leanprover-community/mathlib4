@@ -200,7 +200,7 @@ theorem mul_log_add_E₁p_le (x : ℝ) : x * (log x + E₁p x) ≤ ∑ n ∈ Ioc
     simp [mul_add, sum_add_distrib, theta, primesLE_eq_filter_Ioc_zero]
   _ ≤ _ := by
     rw [sum_log_eq_sum_mangoldt, primesLE_eq_filter_Ioc_zero, sum_filter]
-    gcongr with p hp
+    gcongr with p _
     split_ifs with hp
     · simp [vonMangoldt_apply_prime hp]
     have : 0 ≤ Λ p := vonMangoldt_nonneg
@@ -229,9 +229,9 @@ theorem e₁_summable : Summable e₁ := by
     have denom : (p : ℝ) * ((p : ℝ) - 1) ≥ p ^ 2 / 2 := by
       rw [sq, mul_div_assoc]; gcongr; linarith
     grw [log_le_rpow_div (cast_nonneg _) (by norm_num : 0 < (1 : ℝ) / 2), denom]
-    · rw [← Real.rpow_natCast]
+    · rw [← rpow_natCast]
       field_simp
-      rw [mul_assoc, ← Real.rpow_add (by positivity)]
+      rw [mul_assoc, ← rpow_add (by positivity)]
       ring_nf; rfl
     grind
   · positivity
@@ -240,10 +240,10 @@ theorem e₁_summable : Summable e₁ := by
 theorem E₁_le : E₁ ≤ 1 := by
   refine e₁_summable.tsum_le_of_sum_range_le (fun N ↦ ?_)
   have : ∑ n ∈ range N, e₁ n ≤ ∑ n ∈ range (2 * N + 5), e₁ n :=
-    Finset.sum_le_sum_of_subset_of_nonneg (by grind) (fun n _ _ ↦ e₁_nonneg n)
+    sum_le_sum_of_subset_of_nonneg (by grind) (fun n _ _ ↦ e₁_nonneg n)
   have : ∑ n ∈ range (2 * N + 5), e₁ n = log 2 / 2 + log 3 / 6 + ∑ n ∈ .Ico 5 (2 * N + 5), e₁ n
       := by
-    convert Finset.sum_union (s₁ := {0,1,2,3,4}) (s₂ := .Ico 5 (2 * N + 5)) ?_
+    convert sum_union (s₁ := {0,1,2,3,4}) (s₂ := .Ico 5 (2 * N + 5)) ?_
     · ext n; simp; lia
     · have : ¬ Nat.Prime 4 := by decide
       simp [e₁, Nat.prime_two, Nat.prime_three, this]
@@ -251,7 +251,7 @@ theorem E₁_le : E₁ ≤ 1 := by
     rw [Finset.disjoint_left]
     grind
   have : ∑ n ∈ .Ico 5 (2 * N + 5), e₁ n = ∑ n ∈ .range N, e₁ (2 * n + 5) := by
-    apply (Finset.sum_of_injOn (fun n ↦ 2 * n + 5) _ _ _ (by simp)).symm
+    apply (sum_of_injOn (fun n ↦ 2 * n + 5) _ _ _ (by simp)).symm
     · intro; grind
     · intro; grind
     simp only [mem_Ico, coe_range, Set.mem_image, Set.mem_Iio, not_exists, not_and, e₁,
@@ -276,11 +276,11 @@ theorem E₁_le : E₁ ≤ 1 := by
     · simp
     apply antitoneOn_of_deriv_nonpos (convex_Icc _ _)
     · refine fun t ht ↦ ContinuousAt.continuousWithinAt ?_
-      simp only [zero_add, Set.mem_Icc, g] at ht ⊢
-      have : (2 * t + 3) ≠ 0 := by simp; linarith
+      simp only [Set.mem_Icc, g] at ht ⊢
+      have : (2 * t + 3) ≠ 0 := by grind
       fun_prop (disch := grind)
     · refine fun t ht ↦ DifferentiableAt.differentiableWithinAt ?_
-      simp only [zero_add, interior_Icc, Set.mem_Ioo] at ht
+      simp only [interior_Icc, Set.mem_Ioo] at ht
       have : (2 * t + 3) ^ 2 ≠ 0 := by simp; grind
       fun_prop (disch := grind)
     · intro t ht
@@ -291,7 +291,7 @@ theorem E₁_le : E₁ ≤ 1 := by
       simp
       field_simp
       have : 3 ≤ 2 * t + 3 := by linarith
-      have : log (2 * t + 3) ≥ 1/2 := by
+      have : 2 * log (2 * t + 3) ≥ 1 := by
         grw [← ht.1]; simp; linarith [log_three_gt_d9]
       grw [this]; simp
   have : ∫ x in 0..N, g x ≤ (log 3 + 1) / 6 := by
@@ -302,11 +302,9 @@ theorem E₁_le : E₁ ≤ 1 := by
       convert! HasDerivAt.comp x ?_ this (h₂ := fun t ↦ (-log t - 1) / (2 * t))
           (h₂' := log (2 * x + 3) / (2 * (2 * x + 3)^2)) using 1
       · grind
-      convert! HasDerivAt.fun_div (c' := -1 / (2 * x + 3)) (d' := 2)
-        _ (hasDerivAt_const_mul (2:ℝ)) _ using 1
+      convert! HasDerivAt.fun_div (c' := -1 / (2 * x + 3)) _ (hasDerivAt_const_mul (2:ℝ)) _ using 1
       · field
-      · apply HasDerivAt.sub_const
-        convert! (hasDerivAt_log (by linarith : 2 * x + 3 ≠ 0)).neg using 1
+      · convert! ((hasDerivAt_log (by linarith : 2 * x + 3 ≠ 0)).neg).sub_const _ using 1
         grind
       grind
     have hN : 0 ≤ (N : ℝ) := by grind
@@ -317,7 +315,7 @@ theorem E₁_le : E₁ ≤ 1 := by
     apply ((ContinuousOn.log (f := (2 * · + 3)) (by fun_prop) _).div₀
         (by fun_prop) _).intervalIntegrable
     · rw [Set.uIcc_of_le hN]; grind
-    rw [Set.uIcc_of_le hN]; intro x hx; simp; grind
+    rw [Set.uIcc_of_le hN]; simp +contextual; grind
   linarith [log_two_lt_d9, log_three_lt_d9]
 
 theorem E₁_nonneg : 0 ≤ E₁ := tsum_nonneg e₁_nonneg
@@ -438,7 +436,7 @@ theorem sum_log_prime_div_sub_log_bound_nat (N : ℕ) :
     linarith [le_E₁p_nat N, E₁_le, E₁p_le hx, sum_log_prime_div_eq, log_four_eq, log_two_lt_d9]
 
 theorem E₁p.bounded : ∃ c > 0, ∀ x ≥ 1, |E₁p x| ≤ c :=
-  ⟨3, by positivity, fun _ hx ↦ sum_log_prime_div_sub_log_bound hx⟩
+  ⟨3, by norm_num, fun _ hx ↦ sum_log_prime_div_sub_log_bound hx⟩
 
 theorem sum_log_prime_div_eq_log_add_bounded : E₁p =O[atTop] (fun _ ↦ (1 : ℝ)) := by
   simp only [isBigO_iff, norm_eq_abs, norm_one, mul_one, eventually_atTop, E₁p]
