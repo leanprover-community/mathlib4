@@ -155,6 +155,16 @@ theorem isRegular_mul_iff : IsRegular (a * b) ↔ IsRegular a ∧ IsRegular b :=
   refine Iff.trans ?_ isRegular_mul_and_mul_iff
   exact ⟨fun ab => ⟨ab, by rwa [mul_comm]⟩, fun rab => rab.1⟩
 
+/-- If a product is regular, so is its left factor. -/
+@[to_additive /-- If a sum is add-regular, so is its left summand. -/]
+theorem IsRegular.of_mul_left (h : IsRegular (a * b)) : IsRegular a :=
+  (isRegular_mul_iff.mp h).1
+
+/-- If a product is regular, so is its right factor. -/
+@[to_additive /-- If a sum is add-regular, so is its right summand. -/]
+theorem IsRegular.of_mul_right (h : IsRegular (a * b)) : IsRegular b :=
+  (isRegular_mul_iff.mp h).2
+
 end CommSemigroup
 
 section Monoid
