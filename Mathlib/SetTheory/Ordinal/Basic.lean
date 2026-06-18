@@ -977,7 +977,7 @@ theorem one_toType_eq (x : ToType 1) : x = enum (· < ·) ⟨0, by simp⟩ :=
   Unique.eq_default x
 
 set_option backward.isDefEq.respectTransparency false in
-theorem type_lt_mem_range_succ_iff [LinearOrder α] [IsWellOrder α (· < ·)] :
+theorem type_lt_mem_range_succ_iff [LinearOrder α] [WellFoundedLT α] :
     typeLT α ∈ range succ ↔ ∃ x : α, IsMax x := by
   simp_rw [← isTop_iff_isMax]
   constructor <;> intro ⟨a, ha⟩
@@ -992,17 +992,17 @@ theorem type_lt_mem_range_succ_iff [LinearOrder α] [IsWellOrder α (· < ·)] :
     rw [← typein_enum _ h, typein_le_typein, not_lt]
     apply ha
 
-theorem type_lt_mem_range_succ [LinearOrder α] [IsWellOrder α (· < ·)] [OrderTop α] :
+theorem type_lt_mem_range_succ [LinearOrder α] [WellFoundedLT α] [OrderTop α] :
     typeLT α ∈ range succ :=
   type_lt_mem_range_succ_iff.2 ⟨⊤, isMax_top⟩
 
-theorem isSuccPrelimit_type_lt_iff [LinearOrder α] [IsWellOrder α (· < ·)] :
+theorem isSuccPrelimit_type_lt_iff [LinearOrder α] [WellFoundedLT α] :
     IsSuccPrelimit (typeLT α) ↔ NoMaxOrder α := by
   rw [← not_iff_not, noMaxOrder_iff, not_isSuccPrelimit_iff_mem_range_succ,
     type_lt_mem_range_succ_iff]
   simp [IsMax]
 
-theorem isSuccPrelimit_type_lt [LinearOrder α] [IsWellOrder α (· < ·)] [h : NoMaxOrder α] :
+theorem isSuccPrelimit_type_lt [LinearOrder α] [WellFoundedLT α] [h : NoMaxOrder α] :
     IsSuccPrelimit (typeLT α) :=
   isSuccPrelimit_type_lt_iff.2 h
 
