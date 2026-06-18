@@ -509,7 +509,7 @@ theorem interior_prod_eq (s : Set X) (t : Set Y) : interior (s ×ˢ t) = interio
 
 theorem frontier_prod_eq (s : Set X) (t : Set Y) :
     frontier (s ×ˢ t) = closure s ×ˢ frontier t ∪ frontier s ×ˢ closure t := by
-  simp only [frontier, closure_prod_eq, interior_prod_eq, prod_diff_prod]
+  simp only [frontier, closure_prod_eq, interior_prod_eq, prod_sdiff_prod]
 
 @[simp]
 theorem frontier_prod_univ_eq (s : Set X) :
