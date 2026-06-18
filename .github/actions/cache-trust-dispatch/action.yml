@@ -76,16 +76,10 @@ runs:
         # holds; when it differs from `$REPO`, the build is a fork and targets
         # `forks` regardless of the head repo's own trust class.
         if [ "$REPO" != "$GITHUB_REPOSITORY" ]; then
+          # Reads use the cache tool's per-repo default chain, which includes
+          # `forks` for every repo this case covers, so the upload is reachable
+          # without a `MATHLIB_CACHE_FROM` override here.
           PRIMARY="forks"
-          # The cache tool's default read chain for the head repo must include
-          # `forks` so this upload (and the post-build verification) are
-          # reachable. A foreign fork already defaults to [master, forks,
-          # legacy]; the mathlib4-nightly-testing fork defaults to
-          # [nightly-testing, legacy], which omits `forks`, so widen it —
-          # preferring the head repo's own nightly cache for unchanged deps.
-          if [ "$REPO" = "leanprover-community/mathlib4-nightly-testing" ]; then
-            READ_CHAIN="nightly-testing,forks,legacy"
-          fi
         else
         case "$REPO" in
           "leanprover-community/mathlib4")
