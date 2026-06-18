@@ -1085,9 +1085,8 @@ lemma AddSubgroup.inertia_map_subtype (H : Subgroup G) :
     (I.inertia H).map H.subtype = I.inertia G ⊓ H := by
   rw [← AddSubgroup.subgroupOf_inertia, Subgroup.subgroupOf_map_subtype]
 
-variable (G)
+-- variable (G)
 
-@[simp]
-theorem AddSubgroup.inertia_inertia :
-    I.inertia (I.inertia G) = ⊤ :=
-  (Subgroup.eq_top_iff' _).mpr fun x ↦ x.prop
+-- theorem AddSubgroup.inertia_inertia :
+--     I.inertia (I.inertia G) = ⊤ :=
+--   (Subgroup.eq_top_iff' _).mpr fun x ↦ x.prop
