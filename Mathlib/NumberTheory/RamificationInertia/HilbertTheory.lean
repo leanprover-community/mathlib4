@@ -374,13 +374,15 @@ theorem primesOver_eq_singleton [IsIntegrallyClosed 𝓞E] [Algebra.IsIntegral �
   obtain ⟨σ, rfl⟩ := exists_smul_eq_of_isGaloisGroup 𝓟E P Q (inertia Gal(L/K) P)
   exact inertia_le_stabilizer _ σ.prop
 
+variable [Ring.HasFiniteQuotients B] [P.IsMaximal] [𝓟E.IsMaximal]
+
 include K L P E in
 /--
 Let `E` be the inertia field of `P` in `L/K`. Let `𝓟E` be a prime ideal of `E` below `P`,
 then the inertia degree of `𝓟E` in `L` is equal to `1`.
 -/
-theorem inertiaDegIn_eq [Ring.HasFiniteQuotients B] [IsIntegrallyClosed 𝓞E]
-    [Algebra.IsIntegral 𝓞E B] [P.IsMaximal] [𝓟E.IsMaximal] [Finite (inertia Gal(L/K) P)]
+theorem inertiaDegIn_eq [IsIntegrallyClosed 𝓞E]
+    [Algebra.IsIntegral 𝓞E B] [Finite (inertia Gal(L/K) P)]
     (hP : P ≠ ⊥) :
     inertiaDegIn 𝓟E B = 1 := by
   have : Finite (B ⧸ P) := Ring.HasFiniteQuotients.finiteQuotient hP
@@ -393,15 +395,15 @@ theorem inertiaDegIn_eq [Ring.HasFiniteQuotients B] [IsIntegrallyClosed 𝓞E]
   exact fun ⟨⟨σ, hσ⟩, hσ'⟩ ↦ hσ
 
 variable [FiniteDimensional K L] [IsGalois K L] [Algebra.IsIntegral A B] [Algebra.IsIntegral 𝓞E B]
+  [p.IsMaximal]
 
 include K L E P in
 /--
 Let `E` be the inertia field of `P` in `L/K`. Let `𝓟E` be a prime ideal of `E` below `P`,
 then the inertia degree of `𝓟E` over `K` is equal to the inertia degree of `p` in `L`.
 -/
-theorem inertiaDeg_eq [IsIntegrallyClosed A] [Ring.HasFiniteQuotients B] [IsIntegrallyClosed 𝓞E]
-    [Algebra A 𝓞E] [IsScalarTower A 𝓞E B] [𝓟E.LiesOver p] [P.IsMaximal] [𝓟E.IsMaximal]
-    [p.IsMaximal] (hP : P ≠ ⊥) :
+theorem inertiaDeg_eq [IsIntegrallyClosed A] [IsIntegrallyClosed 𝓞E]
+    [Algebra A 𝓞E] [IsScalarTower A 𝓞E B] [𝓟E.LiesOver p] (hP : P ≠ ⊥) :
     inertiaDeg p 𝓟E = p.inertiaDegIn B := by
   have : IsGaloisGroup Gal(L/K) A B := .of_isFractionRing _ _ _ K L
   have : IsGaloisGroup (inertia Gal(L/K) P) 𝓞E B := .of_isFractionRing _ _ _ E L
@@ -411,15 +413,14 @@ theorem inertiaDeg_eq [IsIntegrallyClosed A] [Ring.HasFiniteQuotients B] [IsInte
     mul_one, eq_comm] at this
 
 variable [IsDedekindDomain A] [IsDedekindDomain B] [Module.IsTorsionFree A B] [Module.Finite A B]
-  [IsDedekindDomain 𝓞E] [Module.Finite 𝓞E B] [Module.IsTorsionFree 𝓞E B]
+  [IsDedekindDomain 𝓞E] [Module.Finite 𝓞E B] [Module.IsTorsionFree 𝓞E B] [Ring.HasFiniteQuotients A]
 
 include L K P E in
 /--
 Let `E` be the inertia field of `P` in `L/K`. Let `𝓟E` be a prime ideal of `E` below `P`,
 then the ramification index of `𝓟E` in `L` is equal to the ramification index of `p` in `L`.
 -/
-theorem ramificationIdxIn_eq [Ring.HasFiniteQuotients A] [Ring.HasFiniteQuotients B] [p.IsMaximal]
-    [P.IsMaximal] [𝓟E.IsMaximal] (hp : p ≠ ⊥) :
+theorem ramificationIdxIn_eq (hp : p ≠ ⊥) :
     ramificationIdxIn 𝓟E B = p.ramificationIdxIn B := by
   have hP : P ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp P
   have : Finite (A ⧸ p) := Ring.HasFiniteQuotients.finiteQuotient hp
@@ -439,8 +440,7 @@ include K L E P in
 Let `E` be the inertia field of `P` in `L/K`. Let `𝓟E` be a prime ideal of `E` below `P`,
 then `𝓟E` is unramified over `K`.
 -/
-theorem ramificationIdx_eq [Ring.HasFiniteQuotients A] [Ring.HasFiniteQuotients B] [𝓟E.IsMaximal]
-    [P.IsMaximal] [p.IsMaximal] (hp : p ≠ ⊥) :
+theorem ramificationIdx_eq (hp : p ≠ ⊥) :
     ramificationIdx p 𝓟E = 1 := by
   have : IsGaloisGroup Gal(L/K) A B := .of_isFractionRing _ _ _ K L
   have : IsGaloisGroup (inertia Gal(L/K) P) 𝓞E B := .of_isFractionRing _ _ _ E L
@@ -456,3 +456,4 @@ theorem ramificationIdx_eq [Ring.HasFiniteQuotients A] [Ring.HasFiniteQuotients 
 end IsInertiaField
 
 end splitting
+
