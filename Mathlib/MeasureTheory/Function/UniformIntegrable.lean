@@ -874,6 +874,22 @@ theorem UniformIntegrable.spec (hp : p ≠ 0) (hp' : p ≠ ∞) (hfu : UniformIn
   · rw [Set.indicator_of_notMem hfx, Set.indicator_of_notMem]
     rwa [Set.mem_setOf, hx] at hfx
 
+/-- For a uniformly integrable family `f`, the `eLpNorm` of the tail
+`{x | M ≤ ‖f i x‖₊}.indicator (f i)` tends to `0` uniformly in `i` as the level `M` tends to
+infinity. -/
+theorem UniformIntegrable.tendsto_iSup_eLpNorm_indicator_atTop
+    (hp : p ≠ 0) (hp' : p ≠ ∞) (hfu : UniformIntegrable f p μ) :
+    Tendsto (fun M : ℝ≥0 ↦ ⨆ i, eLpNorm ({x | M ≤ ‖f i x‖₊}.indicator (f i)) p μ) atTop (𝓝 0) := by
+  refine ENNReal.tendsto_atTop_zero.2 fun ε hε ↦ ?_
+  obtain ⟨δ, hδ, hδε⟩ : ∃ δ : ℝ, 0 < δ ∧ ENNReal.ofReal δ ≤ ε := by
+    rcases eq_or_ne ε ∞ with rfl | hε'
+    · exact ⟨1, one_pos, le_top⟩
+    · exact ⟨ε.toReal, ENNReal.toReal_pos hε.ne' hε', (ENNReal.ofReal_toReal hε').le⟩
+  obtain ⟨C, hC⟩ := hfu.spec hp hp' hδ
+  refine ⟨C, fun M hM ↦ iSup_le fun i ↦ ?_⟩
+  refine le_trans (eLpNorm_mono fun x ↦ ?_) ((hC i).trans hδε)
+  exact norm_indicator_le_of_subset (fun y hy ↦ hM.trans hy) (f i) x
+
 /-- The definition of uniform integrable in mathlib is equivalent to the definition commonly
 found in literature. -/
 theorem uniformIntegrable_iff [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞) :
