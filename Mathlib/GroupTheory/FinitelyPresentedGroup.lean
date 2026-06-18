@@ -132,13 +132,8 @@ instance : AddGroup.IsFinitelyPresented ℤ :=
 variable (G)
 
 theorem mk' (S : Type*) [Finite S] (φ : FreeGroup S →* G)
-    (h1 : Function.Surjective φ) (h2 : φ.ker.IsNormalClosureFG) : IsFinitelyPresented G := by
-  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin S
-  let e' := FreeGroup.freeGroupCongr e
-  let φ' := φ.comp e'.symm.toMonoidHom
-  have h : φ'.ker = φ.ker.map e' := φ.ker_comp_mulEquiv e'.symm
-  refine ⟨n, φ', h1.comp e'.symm.surjective, ?_⟩
-  simpa [h] using h2.map e'.surjective
+    (h1 : Function.Surjective φ) (h2 : φ.ker.IsNormalClosureFG) : IsFinitelyPresented G :=
+  of_surjective φ h1 h2
 
 /-- Any finite group is finitely presented. -/
 instance [Finite G] : IsFinitelyPresented G :=
