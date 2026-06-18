@@ -182,7 +182,7 @@ theorem IsDecompositionField.rank_left (hp : p ≠ ⊥) :
     Module.finrank D L = p.ramificationIdxIn B * p.inertiaDegIn B := by
   have : p.IsMaximal := over_def P p ▸ Ideal.IsMaximal.under A P
   have : Finite (A ⧸ p) := Ring.HasFiniteQuotients.finiteQuotient hp
-  rw [← IsGaloisGroup.card_eq_finrank (stabilizer Gal(L/K) P) D L, card_stabilizer_eq p hp]
+  rw [← IsGaloisGroup.card_eq_finrank (stabilizer Gal(L/K) P) D L, card_stabilizer_eq p]
 
 /--
 The degree `[D : K]` of the decomposition field `D` over `K` equals the number of prime ideals
@@ -196,7 +196,7 @@ theorem IsDecompositionField.rank_right [IsGalois K L] [Algebra K D] [IsScalarTo
   refine mul_left_injective₀ (b := Module.finrank D L) Module.finrank_pos.ne' ?_
   dsimp only
   rw [Module.finrank_mul_finrank, rank_left A K L P D hp,
-    ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp B Gal(L/K),
+    ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B Gal(L/K),
     IsGaloisGroup.card_eq_finrank Gal(L/K) K L]
 
 variable (E : Type*) [Field E] [Algebra E L] [IsInertiaField K L P E]
@@ -208,8 +208,7 @@ theorem IsInertiaField.rank_left (hp : p ≠ ⊥) :
     Module.finrank E L = p.ramificationIdxIn B := by
   have : p.IsMaximal := over_def P p ▸ Ideal.IsMaximal.under A P
   have : Finite (A ⧸ p) := Ring.HasFiniteQuotients.finiteQuotient hp
-  rw [← IsGaloisGroup.card_eq_finrank (inertia Gal(L/K) P) E L,
-    card_inertia_eq_ramificationIdxIn p hp]
+  rw [← IsGaloisGroup.card_eq_finrank (inertia Gal(L/K) P) E L, card_inertia_eq_ramificationIdxIn p]
 
 /--
 The degree `[E : K]` of the inertia field `E` over `K` equals the product of the number of
@@ -222,7 +221,7 @@ theorem IsInertiaField.rank_right [IsGalois K L] [Algebra K E] [IsScalarTower K 
   refine mul_left_injective₀ (b := Module.finrank E L) Module.finrank_pos.ne' ?_
   dsimp only
   rw [Module.finrank_mul_finrank, rank_left A K L P E hp, mul_assoc, mul_comm (p.inertiaDegIn B),
-    ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp B Gal(L/K),
+    ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B Gal(L/K),
     IsGaloisGroup.card_eq_finrank Gal(L/K) K L]
 
 /--
@@ -292,15 +291,18 @@ private lemma ramificationIdxIn_eq_and_inertiaDegIn_eq (hp : p ≠ ⊥) :
     ramificationIdxIn 𝓟D B = p.ramificationIdxIn B ∧ inertiaDegIn 𝓟D B = p.inertiaDegIn B := by
   obtain ⟨_, _, _, _, _, h𝓟⟩ := instances A K L P D 𝓞D 𝓟D hp
   refine eq_and_eq_of_pos_of_le_of_mul_le_mul ?_ ?_ ?_ ?_ ?_
-  · exact Nat.pos_of_ne_zero <| ramificationIdxIn_ne_zero (stabilizer Gal(L/K) P) h𝓟
+  · exact Nat.pos_of_ne_zero <| ramificationIdxIn_ne_zero (stabilizer Gal(L/K) P)
   · exact Nat.pos_of_ne_zero <| inertiaDegIn_ne_zero (stabilizer Gal(L/K) P)
   · rw [ramificationIdxIn_eq_ramificationIdx p P Gal(L/K),
       ramificationIdxIn_eq_ramificationIdx _ P (stabilizer Gal(L/K) P)]
+    rw [← ramificationIdx_eq_ramificationIdx' p _ hp,
+      ← ramificationIdx_eq_ramificationIdx' 𝓟D _ h𝓟]
     exact IsDedekindDomain.ramificationIdx_le_ramificationIdx _ _ _ hp
   · rw [inertiaDegIn_eq_inertiaDeg p P Gal(L/K),
       inertiaDegIn_eq_inertiaDeg _ P (stabilizer Gal(L/K) P)]
+    rw [← inertiaDeg_eq_inertiaDeg' p, ← inertiaDeg_eq_inertiaDeg' 𝓟D]
     exact inertiaDeg_le_inertiaDeg p 𝓟D P
-  · have := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn h𝓟 B (stabilizer Gal(L/K) P)
+  · have := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn 𝓟D B (stabilizer Gal(L/K) P)
     rw [primesOver_eq_singleton K L P D 𝓞D, Set.ncard_singleton, one_mul] at this
     rw [this, IsGaloisGroup.card_eq_finrank (stabilizer Gal(L/K) P) D L,
       IsDecompositionField.rank_left A K L P D hp]
@@ -329,13 +331,12 @@ Let `D` be the decomposition field of `P` in `L/K`. Let `𝓟D` be a prime ideal
 then `𝓟D` is unramified over `K`.
 -/
 theorem ramificationIdx_eq (hp : p ≠ ⊥) :
-    ramificationIdx p 𝓟D = 1 := by
+    𝓟D.ramificationIdx' A = 1 := by
   obtain ⟨_, _, _, _, _, h𝓟⟩ := instances A K L P D 𝓞D 𝓟D hp
-  have := ramificationIdx_algebra_tower (map_ne_bot_of_ne_bot h𝓟) (map_ne_bot_of_ne_bot hp)
-    (map_le_iff_le_comap.mpr ((liesOver_iff P 𝓟D).mp inferInstance).le)
+  have := ramificationIdx'_tower (R := A) 𝓟D P
   rwa [← ramificationIdxIn_eq_ramificationIdx 𝓟D P (stabilizer Gal(L/K) P),
     ramificationIdxIn_eq A K L P D 𝓞D 𝓟D hp, ramificationIdxIn_eq_ramificationIdx p P Gal(L/K),
-    right_eq_mul₀ <| IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver P hp] at this
+    right_eq_mul₀ <| (ramificationIdx'_pos P A).ne'] at this
 
 include K L D P in
 /--
@@ -343,9 +344,9 @@ Let `D` be the decomposition field of `P` in `L/K`. Let `𝓟D` be a prime ideal
 then the inertia degree of `𝓟D` over `K` is equal to `1`.
 -/
 theorem inertiaDeg_eq (hp : p ≠ ⊥) :
-    inertiaDeg p 𝓟D = 1 := by
+    𝓟D.inertiaDeg' A = 1 := by
   obtain ⟨_, _, _, _, _, _⟩ := instances A K L P D 𝓞D 𝓟D hp
-  have := inertiaDeg_algebra_tower p 𝓟D P
+  have := inertiaDeg'_tower (R := A) 𝓟D P
   rwa [← inertiaDegIn_eq_inertiaDeg p P Gal(L/K), ← inertiaDegIn_eq A K L P D 𝓞D 𝓟D hp,
     ← inertiaDegIn_eq_inertiaDeg 𝓟D P (stabilizer Gal(L/K) P),
     right_eq_mul₀ <| inertiaDegIn_ne_zero (stabilizer Gal(L/K) P)] at this
