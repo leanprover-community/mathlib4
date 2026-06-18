@@ -79,8 +79,9 @@ lemma coeff_rTensorAlgEquiv_monomial_tmul [DecidableEq σ] (e : σ →₀ ℕ) (
     coeff d (rTensorAlgEquiv (s ⊗ₜ[R] monomial e n)) = if e = d then s ⊗ₜ[R] n else 0 := by
   simp [tmul_ite]
 
-@[deprecated (since := "2026-06-18")]
-alias rTensorAlgEquiv_apply := rTensorAlgEquiv
+@[deprecated "Now a syntactic tautology" (since := "2026-06-18")]
+lemma rTensorAlgEquiv_apply (x : N ⊗[R] MvPolynomial σ S) :
+    rTensorAlgEquiv x = rTensorAlgHom x := rfl
 
 /-- The tensor product of the polynomial algebra by an algebra
   is algebraically equivalent to a polynomial algebra with
