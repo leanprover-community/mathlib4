@@ -5,11 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 public import Mathlib.NumberTheory.NumberField.Discriminant.Different
-public import Mathlib.NumberTheory.RamificationInertia.Galois
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
-public import Mathlib.RingTheory.RamificationInertia.Basic
 public import Mathlib.RingTheory.Unramified.Dedekind
 
 /-!
@@ -140,20 +137,22 @@ instance (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] [Algebra A B] [A
 
 end
 
-open scoped NumberField nonZeroDivisors
+open scoped nonZeroDivisors
 
 variable {K 𝒪 : Type*} [Field K] [NumberField K] [CommRing 𝒪] [Algebra 𝒪 K]
 variable [IsIntegralClosure 𝒪 ℤ K]
 
+namespace NumberField
+
 /-- If `K` is a number field with positive rank, then there exists some maximal ideal of `𝓞 K`
 that is ramified over `ℤ`. -/
-lemma NumberField.exists_not_isUnramifiedAt_int (H : Module.finrank ℚ K ≠ 1) :
+lemma exists_not_isUnramifiedAt_int (H : Module.finrank ℚ K ≠ 1) :
     ∃ (P : Ideal 𝒪) (_ : P.IsMaximal), ¬ Algebra.IsUnramifiedAt ℤ P := by
   have := (IsIntegralClosure.algebraMap_injective 𝒪 ℤ K).isDomain
   have := IsIntegralClosure.isDedekindDomain ℤ ℚ K 𝒪
   have := CharZero.of_module (R := 𝒪) K
   have := Module.finrank_pos (R := ℚ) (M := K)
-  have := NumberField.abs_discr_gt_two (K := K) (by lia)
+  have := abs_discr_gt_two (K := K) (by lia)
   obtain ⟨q, hq, hqK⟩ := Int.exists_prime_and_dvd (n := discr K) (by zify; linarith)
   have := (not_dvd_discr_iff_forall_mem K 𝒪 hq).not_right.mp hqK
   push Not at this
@@ -161,14 +160,14 @@ lemma NumberField.exists_not_isUnramifiedAt_int (H : Module.finrank ℚ K ≠ 1)
   exact ⟨P, hP.isMaximal (by aesop), H⟩
 
 /-- Any number field that is unramified over `ℚ` has rank `1`. -/
-lemma NumberField.finrank_eq_one_of_unramified [Algebra.Unramified ℤ 𝒪] :
+lemma finrank_eq_one_of_unramified [Algebra.Unramified ℤ 𝒪] :
     Module.finrank ℚ K = 1 := by
   by_contra H
-  obtain ⟨P, _, H⟩ := NumberField.exists_not_isUnramifiedAt_int (𝒪 := 𝒪) H
+  obtain ⟨P, _, H⟩ := exists_not_isUnramifiedAt_int (𝒪 := 𝒪) H
   exact H inferInstance
 
 /-- If `𝒪` is a domain that is a finite and unramified extension of `ℤ`, then `𝒪 = ℤ`. -/
-lemma bijective_algebraMap_int_of_finite_of_unramified
+lemma _root_.bijective_algebraMap_int_of_finite_of_unramified
     [Module.Finite ℤ 𝒪] [Algebra.Unramified ℤ 𝒪] [IsDomain 𝒪] [FaithfulSMul ℤ 𝒪] :
     Function.Bijective (algebraMap ℤ 𝒪) := by
   have := isDedekindDomain.of_formallyUnramified ℤ 𝒪
@@ -176,15 +175,14 @@ lemma bijective_algebraMap_int_of_finite_of_unramified
   let : Algebra ℤ K := Ring.toIntAlgebra K
   have : CharZero 𝒪 := Algebra.charZero_of_charZero ℤ _
   have : NumberField K := { to_finiteDimensional := Module.Finite.of_isLocalization ℤ 𝒪 ℤ⁰ }
-  have := NumberField.finrank_eq_one_of_unramified (K := K) (𝒪 := 𝒪)
+  have := finrank_eq_one_of_unramified (K := K) (𝒪 := 𝒪)
   have : IsIntegralClosure ℤ ℤ K := .of_algEquiv _ (.ofBijective (IsScalarTower.toAlgHom _ _ _)
     (Algebra.finrank_eq_one_iff_bijective_algebraMap.mp this)) (by simp)
   exact bijective_algebraMap_of_linearEquiv (IsIntegralClosure.equiv ℤ ℤ K 𝒪).toLinearEquiv
 
 /-- If `K` is a number field with positive rank such that `K/ℚ` is galois, then there exists
 some rational prime `p : ℕ` such that every prime of `K` over `p` is ramified. -/
-lemma NumberField.exists_not_isUnramifiedAt_int_of_isGalois [IsGalois ℚ K]
-    (H : 1 < Module.finrank ℚ K) :
+lemma exists_not_isUnramifiedAt_int_of_isGalois [IsGalois ℚ K] (H : 1 < Module.finrank ℚ K) :
     ∃ p : ℕ, p.Prime ∧ ∀ (P : Ideal 𝒪) (_ : P.IsPrime), ↑p ∈ P → ¬ Algebra.IsUnramifiedAt ℤ P := by
   have := (IsIntegralClosure.algebraMap_injective 𝒪 ℤ K).isDomain
   have := IsIntegralClosure.isDedekindDomain ℤ ℚ K 𝒪
@@ -193,7 +191,7 @@ lemma NumberField.exists_not_isUnramifiedAt_int_of_isGalois [IsGalois ℚ K]
   have := CharZero.of_module (R := 𝒪) K
   let : MulSemiringAction Gal(K/ℚ) 𝒪 := IsIntegralClosure.MulSemiringAction ℤ ℚ K 𝒪
   have := IsGaloisGroup.of_isFractionRing Gal(K/ℚ) ℤ 𝒪 ℚ K
-  obtain ⟨P, _, hP'⟩ := NumberField.exists_not_isUnramifiedAt_int (𝒪 := 𝒪) H.ne'
+  obtain ⟨P, _, hP'⟩ := exists_not_isUnramifiedAt_int (𝒪 := 𝒪) H.ne'
   obtain ⟨p, hp : _ = Ideal.span _⟩ := IsPrincipalIdealRing.principal (P.under ℤ)
   have hp0 : p ≠ 0 := fun hp0 ↦ Ideal.IsMaximal.ne_bot_of_isIntegral_int _
     (Ideal.eq_bot_of_comap_eq_bot (hp.trans (by aesop)))
@@ -207,28 +205,20 @@ lemma NumberField.exists_not_isUnramifiedAt_int_of_isGalois [IsGalois ℚ K]
     ← Ideal.ramificationIdxIn_eq_ramificationIdx (Q.under ℤ) _ Gal(K/ℚ), ← this, ← hp,
     Ideal.ramificationIdxIn_eq_ramificationIdx _ P Gal(K/ℚ), Ideal.ramificationIdx'_eq_one_iff]
 
-open IsGaloisGroup NumberField -- probably should become a namespace
-
-section
-
-variable (G A B C : Type*) [Group G]
-    [CommRing A] [CommRing B] [CommRing C] [IsDomain C] [Algebra A B]
-    [Algebra A C] [Algebra B C] [FaithfulSMul A C] [FaithfulSMul B C] [IsScalarTower A B C]
-
-open Pointwise in
-theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finite ℤ S]
+open IsGaloisGroup Pointwise in
+/-- A Galois group is generated by its inertia subgroups. -/
+theorem supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finite ℤ S]
     [IsDomain S] [FaithfulSMul ℤ S] [Group G] [MulSemiringAction G S] [IsGaloisGroup G ℤ S] :
     ⨆ m : PrimeSpectrum S, m.asIdeal.toAddSubgroup.inertia G = ⊤ := by
   have := IsGaloisGroup.finite G ℤ S
   let H : Subgroup G := ⨆ m : PrimeSpectrum S, m.asIdeal.toAddSubgroup.inertia G
   let R : Subalgebra ℤ S := FixedPoints.subalgebra ℤ S H
+  let : Algebra ℤ R := Ring.toIntAlgebra R
   have : Module.Finite ℤ R := Module.IsNoetherian.finite ℤ R.toSubmodule
-  suffices h5 : Algebra.Unramified ℤ R by
-    have h4 : Function.Bijective (algebraMap ℤ R) :=
-      @bijective_algebraMap_int_of_finite_of_unramified R _ _ h5 _ _
-    rw [← IsGaloisGroup.fixingSubgroup_range_algebraMap G ℤ ℤ S ⊤,
-      IsScalarTower.algebraMap_eq ℤ R S, RingHom.coe_comp, h4.surjective.range_comp,
-      IsGaloisGroup.fixingSubgroup_range_algebraMap G ℤ R S H]
+  suffices Algebra.Unramified ℤ R by
+    rw [← fixingSubgroup_range_algebraMap G ℤ ℤ S ⊤, IsScalarTower.algebraMap_eq ℤ R S,
+      RingHom.coe_comp, bijective_algebraMap_int_of_finite_of_unramified.surjective.range_comp,
+      fixingSubgroup_range_algebraMap G ℤ R S H]
   rw [Algebra.unramified_iff_forall]
   rintro ⟨mR, hmR⟩
   rw [← Ideal.ramificationIdx'_eq_one_iff]
@@ -258,7 +248,9 @@ theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finit
   have : Algebra.IsIntegral R S := IsGaloisGroup.isInvariant.isIntegral R S H
   obtain ⟨mS, hmS, hmRS⟩ := Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain (R := R) (S := S) mR (by simp)
   replace hmRS : mS.LiesOver mR := ⟨hmRS.symm⟩
-  let := IsGaloisGroup.mulSemiringActionOfNormal G R S H
+  let := mulSemiringActionOfNormal G R S H
   rw [Ideal.inertia_quotient R S G H mR mS, Subgroup.map_eq_bot_iff, QuotientGroup.ker_mk']
   apply le_iSup_of_le ⟨mS, hmS⟩
   rfl
+
+end NumberField
