@@ -34,8 +34,7 @@ of the highest power of `xᵢ` appearing in `p`.
 * `initialOf_mul_X_pow_add_eraseInitOf`:
   The fundamental decomposition about the initial of a polynomial with respect to a variable `i`.
   `p = initᵢ(p) * Xᵢ ^ degᵢ(p) + eraseInitᵢ`.
-* `initial_reducedTo`: The initial is always reduced w.r.t. the original polynomial
-* `initialOf_mul`: `initᵢ(p * q) = initᵢ(p) * initᵢ(q)` (for integral domains)
+* `initialOf_mul_eq`: `initᵢ(p * q) = initᵢ(p) * initᵢ(q)` (for integral domains)
 
 ## References
 * [Wen-Tsun Wu, *Basic principles of mechanical theorem proving in elementary geometries*]
