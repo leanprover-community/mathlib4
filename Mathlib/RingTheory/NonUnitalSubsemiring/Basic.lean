@@ -237,7 +237,7 @@ theorem center_toSubsemigroup :
   rfl
 
 /-- The center is commutative and associative. -/
-instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R) :=
+instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R) := fast_instance%
   { Subsemigroup.center.commSemigroup,
     NonUnitalSubsemiringClass.toNonUnitalNonAssocSemiring (center R) with }
 
