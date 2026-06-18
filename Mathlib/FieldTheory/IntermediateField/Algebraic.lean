@@ -77,7 +77,7 @@ theorem eq_of_le_of_finrank_eq [FiniteDimensional K E] (h_le : F ≤ E)
 
 /-- If `F ≤ E` are two intermediate fields of `L / K` such that `[E : K]` is finite,
 then `F = E` iff `[F : K] = [E : K]`. -/
-theorem eq_of_le_iff_finrank_eq [FiniteDimensional K E] (h_le : F ≤ E) :
+theorem eq_iff_finrank_eq_of_le [FiniteDimensional K E] (h_le : F ≤ E) :
     F = E ↔ finrank K F = finrank K E :=
   ⟨fun h ↦ by rw [h], eq_of_le_of_finrank_eq h_le⟩
 
@@ -109,7 +109,7 @@ theorem eq_of_le_of_finrank_eq' [FiniteDimensional F L] (h_le : F ≤ E)
 
 /-- If `F ≤ E` are two intermediate fields of `L / K` such that `[L : F]` is finite,
 then `F = E` iff `[L : F] = [L : E]`. -/
-theorem eq_of_le_iff_finrank_eq' [FiniteDimensional F L] (h_le : F ≤ E) :
+theorem eq_iff_finrank_eq_of_le' [FiniteDimensional F L] (h_le : F ≤ E) :
     F = E ↔ finrank F L = finrank E L :=
   ⟨fun h ↦ by rw [h], eq_of_le_of_finrank_eq' h_le⟩
 
