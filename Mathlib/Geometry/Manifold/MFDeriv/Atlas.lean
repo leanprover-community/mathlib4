@@ -269,7 +269,7 @@ lemma mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm {x : M}
     {y : E} (hy : y ∈ (extChartAt I x).target) :
     (mfderiv% (extChartAt I x) ((extChartAt I x).symm y)) ∘L
       (mfderiv[range I] (extChartAt I x).symm y) = ContinuousLinearMap.id _ _ := by
-  have U : UniqueMDiffAt[range ↑I] y := by
+  have U : UniqueMDiffAt[range I] y := by
     apply I.uniqueMDiffOn
     exact extChartAt_target_subset_range x hy
   have h'y : (extChartAt I x).symm y ∈ (extChartAt I x).source := (extChartAt I x).map_target hy

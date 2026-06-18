@@ -257,6 +257,19 @@ variable {φ : OpenPartialHomeomorph M E} {ψ : PartialEquiv M E}
 #guard_msgs in
 #check UniqueMDiffAt[s] m
 
+/-- info: UniqueMDiffWithinAt I Set.univ m : Prop -/
+#guard_msgs in
+#check UniqueMDiffAt[(Set.univ : Set M)] m
+
+-- In the future, the elaborators should take the type of `m` into account.
+/--
+error: Could not find a model with corners for `?m.52`.
+
+Hint: the expected type contains metavariables, maybe you need to provide an implicit argument
+-/
+#guard_msgs in
+#check UniqueMDiffAt[Set.univ] m
+
 -- Testing an error message.
 section
 
