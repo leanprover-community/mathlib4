@@ -42,7 +42,7 @@ it Weyl's eigenvalue perturbation inequality
 * [R. Bhatia, *Matrix Analysis*][bhatia_1997] — Corollary III.2.6 (Weyl).
 -/
 
-@[expose] public section
+public section
 
 open scoped InnerProductSpace
 open Module (finrank)
