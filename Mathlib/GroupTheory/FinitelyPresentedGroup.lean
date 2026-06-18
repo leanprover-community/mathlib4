@@ -99,6 +99,10 @@ theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented
   refine ⟨n, (iso : G →* H).comp φ, iso.surjective.comp hφsurj, ?_⟩
   rwa [φ.ker_mulEquiv_comp iso]
 
+/-- The image of a finitely presented group under a surjective homomorphism with a finitely
+generated normal closure of the kernel is finitely presented. -/
+@[to_additive /-- The image of a finitely presented additive group under a surjective additive
+homomorphism with a finitely generated normal closure of the kernel is finitely presented. -/]
 theorem of_surjective [hG : IsFinitelyPresented G] (f : G →* H)
     (hf_surj : Function.Surjective f) (hf_ker : f.ker.IsNormalClosureFG) :
     IsFinitelyPresented H := by
@@ -111,9 +115,10 @@ theorem of_surjective [hG : IsFinitelyPresented G] (f : G →* H)
 which is finitely generated in the normal closure is finitely presented. -/
 @[to_additive /-- The quotient of a finitely presented additive group by an additive subgroup `N`
 which is finitely generated in the normal closure is finitely presented. -/]
-theorem quotient (N : Subgroup G) [N.Normal] (hN : N.IsNormalClosureFG) :
-    IsFinitelyPresented (G ⧸ N) := by
-  sorry
+theorem quotient [hG : IsFinitelyPresented G] (N : Subgroup G) [N.Normal]
+    (hN : N.IsNormalClosureFG) : IsFinitelyPresented (G ⧸ N) :=
+  of_surjective (QuotientGroup.mk' N) (QuotientGroup.mk'_surjective N)
+    ((QuotientGroup.ker_mk' N).symm ▸ hN)
 
 /-- A free group with a finite number of generators is finitely presented. -/
 @[to_additive /-- A free additive group with a finite number of generators is finitely presented. -/
