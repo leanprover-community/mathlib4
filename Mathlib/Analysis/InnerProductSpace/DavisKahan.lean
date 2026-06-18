@@ -47,7 +47,7 @@ summed over the block — but the result is self-contained and correct.
   for statisticians*][yu_wang_samworth_2015].
 -/
 
-@[expose] public section
+public section
 
 open scoped InnerProductSpace
 open Module (finrank)
@@ -75,18 +75,12 @@ theorem sum_norm_inner_eigenvectorBasis_map_sub_sq_le
   set v := hS.eigenvectorBasis hn
   -- Swap the order of summation so Parseval (over `i`) is the inner sum.
   rw [Finset.sum_comm]
-  have hinner : ∀ j : Fin n,
-      ∑ i : Fin n, ‖⟪u i, (S - T) (v j)⟫_𝕜‖ ^ 2 = ‖(S - T) (v j)‖ ^ 2 :=
-    fun j => u.sum_sq_norm_inner_right ((S - T) (v j))
-  have hunit : ∀ j : Fin n, ‖v j‖ = 1 := fun j => v.orthonormal.1 j
   calc ∑ j : Fin n, ∑ i : Fin n, ‖⟪u i, (S - T) (v j)⟫_𝕜‖ ^ 2
       = ∑ j : Fin n, ‖(S - T) (v j)‖ ^ 2 :=
-        Finset.sum_congr rfl fun j _ => hinner j
-    _ ≤ ∑ _j : Fin n, ε ^ 2 := by
-        refine Finset.sum_le_sum fun j _ => ?_
-        have h1 : ‖(S - T) (v j)‖ ≤ ε := by
-          have := hε (v j); rwa [hunit j, mul_one] at this
-        exact pow_le_pow_left₀ (norm_nonneg _) h1 2
+        Finset.sum_congr rfl fun j _ => u.sum_sq_norm_inner_right _
+    _ ≤ ∑ _j : Fin n, ε ^ 2 := Finset.sum_le_sum fun j _ => by
+        have := hε (v j); rw [v.orthonormal.1 j, mul_one] at this
+        exact pow_le_pow_left₀ (norm_nonneg _) this 2
     _ = (n : ℝ) * ε ^ 2 := by
         rw [Finset.sum_const, Finset.card_univ, Fintype.card_fin, nsmul_eq_mul]
 
@@ -115,21 +109,15 @@ theorem sum_cross_norm_inner_eigenvectorBasis_sq_le
     intro i j hi hj
     -- The cross-term identity turns the perturbation entry into the eigenvalue
     -- difference times the overlap.
-    have hnorm : ‖⟪u i, (S - T) (v j)⟫_𝕜‖
-        = |hS.eigenvalues hn j - hT.eigenvalues hn i| * ‖⟪u i, v j⟫_𝕜‖ := by
-      rw [hu, hv, inner_eigenvectorBasis_map_sub_eigenvectorBasis hT hS hn i j,
-        norm_mul, RCLike.norm_ofReal]
     have hsq : ‖⟪u i, (S - T) (v j)⟫_𝕜‖ ^ 2
         = (hS.eigenvalues hn j - hT.eigenvalues hn i) ^ 2 * ‖⟪u i, v j⟫_𝕜‖ ^ 2 := by
-      rw [hnorm, mul_pow, sq_abs]
-    rw [hsq]
-    have hg : gap ≤ |hT.eigenvalues hn i - hS.eigenvalues hn j| := hgap i j hi hj
+      rw [hu, hv, inner_eigenvectorBasis_map_sub_eigenvectorBasis hT hS hn i j,
+        norm_mul, RCLike.norm_ofReal, mul_pow, sq_abs]
     have hsqgap : gap ^ 2 ≤ (hS.eigenvalues hn j - hT.eigenvalues hn i) ^ 2 := by
-      have := mul_self_le_mul_self hgap_pos.le hg
-      rw [← sq, ← sq, sq_abs] at this
-      have hflip : (hT.eigenvalues hn i - hS.eigenvalues hn j) ^ 2
-          = (hS.eigenvalues hn j - hT.eigenvalues hn i) ^ 2 := by ring
-      rwa [hflip] at this
+      rw [show (hS.eigenvalues hn j - hT.eigenvalues hn i) ^ 2
+          = |hT.eigenvalues hn i - hS.eigenvalues hn j| ^ 2 by rw [sq_abs]; ring]
+      exact pow_le_pow_left₀ hgap_pos.le (hgap i j hi hj) 2
+    rw [hsq]
     exact mul_le_mul_of_nonneg_right hsqgap (sq_nonneg _)
   -- Sum the per-pair bound over the cross block.
   have hcross : gap ^ 2 * (∑ i ∈ Finset.univ.filter (fun i : Fin n => (i : ℕ) < d),
@@ -147,18 +135,11 @@ theorem sum_cross_norm_inner_eigenvectorBasis_sq_le
   have hsub : ∑ i ∈ Finset.univ.filter (fun i : Fin n => (i : ℕ) < d),
         ∑ j ∈ Finset.univ.filter (fun j : Fin n => d ≤ (j : ℕ)),
           ‖⟪u i, (S - T) (v j)⟫_𝕜‖ ^ 2
-      ≤ ∑ i : Fin n, ∑ j : Fin n, ‖⟪u i, (S - T) (v j)⟫_𝕜‖ ^ 2 := by
-    calc ∑ i ∈ Finset.univ.filter (fun i : Fin n => (i : ℕ) < d),
-            ∑ j ∈ Finset.univ.filter (fun j : Fin n => d ≤ (j : ℕ)),
-              ‖⟪u i, (S - T) (v j)⟫_𝕜‖ ^ 2
-        ≤ ∑ i ∈ Finset.univ.filter (fun i : Fin n => (i : ℕ) < d),
-            ∑ j : Fin n, ‖⟪u i, (S - T) (v j)⟫_𝕜‖ ^ 2 := by
-          refine Finset.sum_le_sum fun i _ => ?_
-          exact Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _)
-            fun j _ _ => sq_nonneg _
-      _ ≤ ∑ i : Fin n, ∑ j : Fin n, ‖⟪u i, (S - T) (v j)⟫_𝕜‖ ^ 2 :=
-          Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _)
-            fun i _ _ => Finset.sum_nonneg fun j _ => sq_nonneg _
+      ≤ ∑ i : Fin n, ∑ j : Fin n, ‖⟪u i, (S - T) (v j)⟫_𝕜‖ ^ 2 :=
+    (Finset.sum_le_sum fun i _ => Finset.sum_le_sum_of_subset_of_nonneg
+        (Finset.filter_subset _ _) fun j _ _ => sq_nonneg _).trans
+      (Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _)
+        fun i _ _ => Finset.sum_nonneg fun j _ => sq_nonneg _)
   -- Chain: gap² · CROSS ≤ full cross-energy ≤ n ε².
   have htotal : gap ^ 2 * (∑ i ∈ Finset.univ.filter (fun i : Fin n => (i : ℕ) < d),
         ∑ j ∈ Finset.univ.filter (fun j : Fin n => d ≤ (j : ℕ)),
@@ -193,16 +174,10 @@ theorem gap_of_rank_floor
       α / 2 ≤ |hT.eigenvalues hn i - hS.eigenvalues hn j| := by
   intro i j hi hj
   have hweyl := abs_eigenvalues_sub_le hT hS hn hε j
-  have hTj : hT.eigenvalues hn j = 0 := htail j hj
-  have hSj_abs : |hS.eigenvalues hn j| ≤ ε := by
-    have : |hT.eigenvalues hn j - hS.eigenvalues hn j| ≤ ε := hweyl
-    rw [hTj] at this
-    simpa [abs_sub_comm] using this
-  have hSj_le : hS.eigenvalues hn j ≤ α / 2 :=
-    le_trans (le_trans (le_abs_self _) hSj_abs) hsmall
-  have hdiff : α / 2 ≤ hT.eigenvalues hn i - hS.eigenvalues hn j := by
-    have := hα i hi; linarith
-  exact le_trans hdiff (le_abs_self _)
+  rw [htail j hj, zero_sub, abs_neg] at hweyl
+  have hSj : hS.eigenvalues hn j ≤ α / 2 := (le_abs_self _).trans (hweyl.trans hsmall)
+  have := hα i hi
+  exact (by linarith : α / 2 ≤ hT.eigenvalues hn i - hS.eigenvalues hn j).trans (le_abs_self _)
 
 /-- **Davis–Kahan cross-block bound under rank-`d` population structure.**
 Composition of `gap_of_rank_floor` with
@@ -221,11 +196,8 @@ theorem sum_cross_norm_inner_eigenvectorBasis_sq_le_of_rank_floor
       ∑ j ∈ Finset.univ.filter (fun j : Fin n => d ≤ (j : ℕ)),
         ‖⟪hT.eigenvectorBasis hn i, hS.eigenvectorBasis hn j⟫_𝕜‖ ^ 2
       ≤ 4 * (n : ℝ) * ε ^ 2 / α ^ 2 := by
-  have hε' : ∀ x : E, ‖(T - S) x‖ ≤ ε * ‖x‖ := by
-    intro x
-    have hflip : (T - S) x = -((S - T) x) := by
-      rw [LinearMap.sub_apply, LinearMap.sub_apply]; abel
-    rw [hflip, norm_neg]; exact hε x
+  have hε' : ∀ x : E, ‖(T - S) x‖ ≤ ε * ‖x‖ := fun x => by
+    rw [LinearMap.sub_apply, ← norm_neg, neg_sub, ← LinearMap.sub_apply]; exact hε x
   have hgap := gap_of_rank_floor hT hS hn d hα htail hε' hsmall
   calc
     ∑ i ∈ Finset.univ.filter (fun i : Fin n => (i : ℕ) < d),
@@ -319,28 +291,18 @@ private theorem sum_inner_sq_compl_block_eq (u v : OrthonormalBasis (Fin m) 𝕜
     (s : Finset (Fin m)) :
     ∑ k ∈ sᶜ, ∑ j ∈ s, ‖⟪v j, u k⟫_𝕜‖ ^ 2 = ∑ i ∈ s, ∑ j ∈ sᶜ, ‖⟪u i, v j⟫_𝕜‖ ^ 2 := by
   rw [Finset.sum_comm]
-  have hrow_v : ∀ j, ∑ k ∈ sᶜ, ‖⟪v j, u k⟫_𝕜‖ ^ 2
-      = 1 - ∑ k ∈ s, ‖⟪v j, u k⟫_𝕜‖ ^ 2 := by
-    intro j
-    have hpar : ∑ k, ‖⟪u k, v j⟫_𝕜‖ ^ 2 = 1 := by
-      rw [u.sum_sq_norm_inner_right (v j), v.orthonormal.1 j, one_pow]
-    have hsplit := Finset.sum_add_sum_compl s fun k => ‖⟪v j, u k⟫_𝕜‖ ^ 2
-    have hpar' : ∑ k, ‖⟪v j, u k⟫_𝕜‖ ^ 2 = 1 := by
-      rw [← hpar]
-      exact Finset.sum_congr rfl fun k _ => by rw [norm_inner_symm]
-    linarith [hsplit, hpar']
-  have hrow_u : ∀ i ∈ s, ∑ j ∈ sᶜ, ‖⟪u i, v j⟫_𝕜‖ ^ 2
-      = 1 - ∑ j ∈ s, ‖⟪u i, v j⟫_𝕜‖ ^ 2 := by
-    intro i _
-    have hpar : ∑ j, ‖⟪v j, u i⟫_𝕜‖ ^ 2 = 1 := by
-      rw [v.sum_sq_norm_inner_right (u i), u.orthonormal.1 i, one_pow]
-    have hsplit := Finset.sum_add_sum_compl s fun j => ‖⟪u i, v j⟫_𝕜‖ ^ 2
-    have hpar' : ∑ j, ‖⟪u i, v j⟫_𝕜‖ ^ 2 = 1 := by
-      rw [← hpar]
-      exact Finset.sum_congr rfl fun j _ => by rw [norm_inner_symm]
-    linarith [hsplit, hpar']
-  rw [Finset.sum_congr rfl fun j (_ : j ∈ s) => hrow_v j,
-    Finset.sum_congr rfl hrow_u, Finset.sum_sub_distrib, Finset.sum_sub_distrib]
+  -- For a unit vector `w` and orthonormal basis `b`, the overlaps split as
+  -- `∑_{sᶜ} = 1 − ∑_s` by Parseval.
+  have key : ∀ (b : OrthonormalBasis (Fin m) 𝕜 F) (w : F), ‖w‖ = 1 →
+      ∑ k ∈ sᶜ, ‖⟪w, b k⟫_𝕜‖ ^ 2 = 1 - ∑ k ∈ s, ‖⟪w, b k⟫_𝕜‖ ^ 2 := by
+    intro b w hw
+    have hpar : ∑ k, ‖⟪w, b k⟫_𝕜‖ ^ 2 = 1 := by
+      rw [Finset.sum_congr rfl fun k _ => by rw [norm_inner_symm],
+        b.sum_sq_norm_inner_right w, hw, one_pow]
+    linarith [Finset.sum_add_sum_compl s fun k => ‖⟪w, b k⟫_𝕜‖ ^ 2]
+  rw [Finset.sum_congr rfl fun j (_ : j ∈ s) => key u (v j) (v.orthonormal.1 j),
+    Finset.sum_congr rfl fun i (_ : i ∈ s) => key v (u i) (u.orthonormal.1 i),
+    Finset.sum_sub_distrib, Finset.sum_sub_distrib]
   congr 1
   exact Finset.sum_comm.trans (Finset.sum_congr rfl fun i _ =>
     Finset.sum_congr rfl fun j _ => by rw [norm_inner_symm])
