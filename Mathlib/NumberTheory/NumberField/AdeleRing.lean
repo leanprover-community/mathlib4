@@ -65,6 +65,11 @@ theorem algebraMap_snd_apply (x : K) (v : HeightOneSpectrum R) :
 theorem algebraMap_injective [NumberField K] : Function.Injective (algebraMap K (AdeleRing R K)) :=
   fun _ _ hxy => (algebraMap K _).injective (Prod.ext_iff.1 hxy).1
 
+/-- The embedding of the completion `Kᵥ` at an infinite place `v` into the adele ring. -/
+@[simps!]
+def ofCompletion (v : InfinitePlace K) : v.Completion →* AdeleRing R K :=
+  .prod (InfiniteAdeleRing.ofCompletion v) 1
+
 /-- The embedding of the completion `Kᵥ` at a finite place `v` into the adele ring. -/
 @[simps!]
 def ofAdicCompletion (v : HeightOneSpectrum R) : v.adicCompletion K →* AdeleRing R K :=
@@ -85,6 +90,11 @@ namespace IdeleGroup
 def unitEmbedding : Kˣ →* IdeleGroup R K :=
   Units.map (algebraMap K (AdeleRing R K)).toMonoidHom
 
+/-- The map from the completion `Kᵥ` at an infinite place `v` to the idele group. -/
+@[simps!]
+def ofCompletion (v : InfinitePlace K) : v.Completionˣ →* IdeleGroup R K :=
+  Units.map (AdeleRing.ofCompletion R K v)
+
 /-- The map from the completion `Kᵥ` at a finite place `v` to the idele group. -/
 @[simps!]
 def ofAdicCompletion (v : HeightOneSpectrum R) : (v.adicCompletion K)ˣ →* IdeleGroup R K :=
@@ -100,6 +110,11 @@ end IdeleGroup
 abbrev IdeleClassGroup := IdeleGroup R K ⧸ IdeleGroup.principalSubgroup R K
 
 namespace IdeleClassGroup
+
+/-- The map from the completion `Kᵥ` at an infinite place `v` to the idele class group. -/
+@[simps!]
+def ofCompletion (v : InfinitePlace K) : v.Completionˣ →* IdeleClassGroup R K :=
+  (QuotientGroup.mk' (IdeleGroup.principalSubgroup R K)).comp (IdeleGroup.ofCompletion R K v)
 
 /-- The map from the completion `Kᵥ` at a finite place `v` to the idele class group. -/
 @[simps!]

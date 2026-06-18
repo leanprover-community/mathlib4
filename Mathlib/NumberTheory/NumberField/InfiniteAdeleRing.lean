@@ -130,6 +130,12 @@ theorem coe_norm_eq_abs_norm [NumberField K] (x : K) :
     ‖algebraMap K (InfiniteAdeleRing K) x‖ = |Algebra.norm ℚ x| := by
   simpa [-Rat.cast_abs, norm_def] using! InfinitePlace.prod_eq_abs_norm x
 
+/-- The embedding of the completion `Kᵥ` at an infinite place `v` into the infinite adele ring. -/
+@[simps!]
+def ofCompletion (v : InfinitePlace K) : v.Completion →* InfiniteAdeleRing K :=
+  letI := Classical.decEq (InfinitePlace K)
+  MonoidHom.mulSingle Completion v
+
 end InfiniteAdeleRing
 
 end NumberField
