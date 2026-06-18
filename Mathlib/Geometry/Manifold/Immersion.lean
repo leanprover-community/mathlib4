@@ -724,8 +724,6 @@ lemma sumInl {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] [IsManifold 
 `Sum.inr : N → M ⊕ N` is a `C^n` immersion with complement `Unit` -/
 lemma sumInr {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] [IsManifold I n M]
     [IsManifold I n M'] : IsImmersionOfComplement Unit I I n (@Sum.inr M M') := by
-  -- TODO: once we know `IsImmersion.comp` and diffeomorphisms being immersions,
-  -- reduce this to the `.inl` case by using @Sum.inr M M' = (@Sum.swap M' M) ∘ (@Sum.inl M' M)
   intro x
   apply IsImmersionAtOfComplement.mk_of_continuousAt (equiv := (.prodUnique 𝕜 E _))
     (by fun_prop) _ _ (mem_chart_source H x) (mem_chart_source H (Sum.inr x))
