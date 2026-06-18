@@ -6,15 +6,13 @@ delete_merged_branches = true
 update_base_for_deletes = true
 cut_body_after = "\n---"
 max_batch_size = 16
+
 [labels]
-# Bors manages these PR lifecycle labels directly from its own state (queue
-# membership and delegations); see bors-ng's LIFECYCLE_LABELS.md. Keys are named
-# by meaning; values are mathlib4's label names. This replaces the label
-# add/remove logic that used to live in `.github/workflows/maintainer_bors*.yml`.
 on_queue  = "ready-to-merge"   # PR is on the merge queue (a batch waiting or running)
 building  = "bors-staging"     # PR is currently building on staging (overlay on on_queue)
 failed    = "awaiting-requeue" # PR's merge build failed terminally and was dropped; needs a re-queue
 delegated = "delegated"        # PR has at least one active (non-expired) delegation
+
 [delegation]
 default_expiry_sec = 1209600 # 2 weeks
 # Entries below are Erlang `:glob` patterns (NOT gitignore): `*` matches across `/`,
