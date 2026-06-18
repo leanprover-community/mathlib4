@@ -221,7 +221,7 @@ theorem norm_integral_exp_mul_I_le_of_order_one'
         rcases h' with hpos | hneg
         · refine Or.inl <| fun x hx ↦ ?_
           have : 0 < φ' x := by linarith only [hL, hpos x hx]
-          constructor <;> field_simp; exact hpos x hx; simp
+          exact ⟨by field_simp; exact hpos x hx, by field_simp; simp⟩
         · refine Or.inr <| fun x hx ↦ ⟨?_, ?_⟩
           · exact inv_nonpos.mpr (by linarith only [hneg x hx, hL])
           · simpa using (neg_le_neg <| one_div_le_one_div_of_le hL <| hneg x hx)
