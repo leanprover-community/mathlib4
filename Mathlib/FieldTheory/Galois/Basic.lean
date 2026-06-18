@@ -503,7 +503,8 @@ theorem of_card_aut_eq_finrank [FiniteDimensional F E]
 variable {F} {E}
 variable {p : F[X]}
 
-@[deprecated Algebra.isSeparable_of_separable_splitting_field (since := "2026-06-12")]
+@[deprecated "No replacement; this was an auxiliary lemma used to prove \
+`Algebra.isSeparable_of_separable_splitting_field`." (since := "2026-06-12")]
 theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E]
     [sp : p.IsSplittingField F E] (hp : p.Separable) (K : Type*) [Field K] [Algebra F K]
     [Algebra K E] [IsScalarTower F K E] {x : E} (hx : x ∈ p.aroots E) :
