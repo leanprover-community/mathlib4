@@ -2021,6 +2021,8 @@ public import Mathlib.Analysis.InnerProductSpace.Completion
 public import Mathlib.Analysis.InnerProductSpace.ConformalLinearMap
 public import Mathlib.Analysis.InnerProductSpace.Continuous
 public import Mathlib.Analysis.InnerProductSpace.Convex
+public import Mathlib.Analysis.InnerProductSpace.CourantFischer
+public import Mathlib.Analysis.InnerProductSpace.DavisKahan
 public import Mathlib.Analysis.InnerProductSpace.Defs
 public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
