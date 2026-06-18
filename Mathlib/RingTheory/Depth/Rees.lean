@@ -45,13 +45,23 @@ universe v u
 
 open RingTheory.Sequence Ideal CategoryTheory Abelian Limits
 
-variable {R : Type u} [CommRing R] [Small.{v} R]
+variable {R : Type u} [CommRing R]
 
 open Pointwise IsSMulRegular
 
+private lemma smul_top_quotSMulTop_ne_top_of_smul_top_ne_top {M : Type*} [AddCommGroup M]
+    [Module R M] {I : Ideal R} {r : R} (hr : r ∈ I)
+    (hI : I • (⊤ : Submodule R M) ≠ ⊤) :
+    I • (⊤ : Submodule R (QuotSMulTop r M)) ≠ ⊤ := by
+  by_contra eq
+  absurd congrArg (Submodule.comap (Submodule.mkQ _)) eq
+  simpa [Submodule.comap_smul_top_of_surjective I _ (Submodule.mkQ_surjective _),
+    Submodule.smul_mono_left ((span_singleton_le_iff_mem I).mpr hr),
+    ← Submodule.ideal_span_singleton_smul] using hI
+
 namespace ModuleCat
 
-lemma exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R] (I : Ideal R)
+lemma exists_isRegular_of_exists_subsingleton_ext [Small.{v} R] [IsNoetherianRing R] (I : Ideal R)
     (n : ℕ) (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
     (N : ModuleCat.{v} R) [Nontrivial N] [Module.Finite R N]
     (h_supp : Module.support R N = PrimeSpectrum.zeroLocus I)
@@ -67,16 +77,9 @@ lemma exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R] (I : Idea
     -- use `Ext N M 0` vanish to obtain an `M`-regular element `x` in `Ann(N)`
     have : Subsingleton (N ⟶ M) := Ext.addEquiv₀.subsingleton_congr.mp (h_ext 0 n.zero_lt_succ)
     have : Subsingleton (N →ₗ[R] M) := ModuleCat.homAddEquiv.symm.subsingleton
-    rcases subsingleton_linearMap_iff.mp this with ⟨x, mem_ann, hx⟩
+    obtain ⟨x, mem_ann, hx⟩ := subsingleton_linearMap_iff.mp this
     -- take a power of it to make `xᵏ` fall into `I`
-    rcases le_of_le_of_eq Ideal.le_radical h_supp mem_ann with ⟨k, hk⟩
-    -- prepare to apply induction hypothesis to `M ⧸ xᵏM`
-    have ne : I • (⊤ : Submodule R (QuotSMulTop (x ^ k) M)) ≠ ⊤ := by
-      by_contra eq
-      absurd congrArg (Submodule.comap (Submodule.mkQ _)) eq
-      simpa [Submodule.comap_smul_top_of_surjective I _ (Submodule.mkQ_surjective _),
-        Submodule.smul_mono_left ((span_singleton_le_iff_mem I).mpr hk),
-        ← Submodule.ideal_span_singleton_smul] using smul_lt.ne
+    obtain ⟨k, hk⟩ := le_of_le_of_eq Ideal.le_radical h_supp mem_ann
     -- verify that `N` indeed make `M ⧸ xᵏM` satisfy the induction hypothesis
     have h_ext' : ∀ i < n, Subsingleton (Ext N (ModuleCat.of R (QuotSMulTop (x ^ k) M)) i) := by
       intro i hi
@@ -87,11 +90,12 @@ lemma exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R] (I : Idea
       exact AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
         ((Ext.covariant_sequence_exact₃' N (hx.pow k).smulShortComplex_shortExact) i (i + 1) rfl)
         (zero1.eq_zero_of_src _) (zero2.eq_zero_of_tgt _)
-    rcases ih (ModuleCat.of R (QuotSMulTop (x ^ k) M)) ne.lt_top h_ext' with ⟨rs, len, mem, reg⟩
+    obtain ⟨rs, len, mem, reg⟩ := ih (ModuleCat.of R (QuotSMulTop (x ^ k) M))
+      (smul_top_quotSMulTop_ne_top_of_smul_top_ne_top hk smul_lt.ne).lt_top h_ext'
     use x ^ k :: rs
     simpa [len, hk] using ⟨mem, hx.pow k, reg⟩
 
-lemma subsingleton_ext_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R)
+lemma subsingleton_ext_of_exists_isRegular [Small.{v} R] [IsNoetherianRing R] (I : Ideal R)
     (N : ModuleCat.{v} R) [Nfin : Module.Finite R N]
     (Nsupp : Module.support R N ⊆ PrimeSpectrum.zeroLocus I)
     (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
@@ -108,17 +112,11 @@ lemma subsingleton_ext_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R)
     | [] => simp at len
     | a :: rs' =>
       -- find a positive power of `a` lying in `Ann(N)`
-      rcases le_rad (mem a List.mem_cons_self) with ⟨k, hk⟩
+      obtain ⟨k, hk⟩ := le_rad (mem a List.mem_cons_self)
       simp only [isRegular_cons_iff] at reg
       simp only [List.mem_cons, forall_eq_or_imp] at mem
       simp only [List.length_cons, Nat.add_left_inj] at len
       -- prepare to apply induction hypothesis to `M/aM`
-      have ne : I • (⊤ : Submodule R (QuotSMulTop a M)) ≠ ⊤ := by
-        by_contra eq
-        absurd congrArg (Submodule.comap (Submodule.mkQ _)) eq
-        simpa [Submodule.comap_smul_top_of_surjective I _ (Submodule.mkQ_surjective _),
-          Submodule.smul_mono_left ((span_singleton_le_iff_mem I).mpr mem.1),
-          ← Submodule.ideal_span_singleton_smul] using smul_lt.ne
       match i with
       | 0 => -- vanishing of `Ext N M 0` follows from `aᵏ ∈ Ann(N)`
         have : Subsingleton (N →ₗ[R] M) := subsingleton_linearMap_iff.mpr ⟨a ^ k, hk, reg.1.pow k⟩
@@ -131,7 +129,8 @@ lemma subsingleton_ext_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R)
         have mono_g : Mono g := by
           apply (Ext.covariant_sequence_exact₁' N reg.1.smulShortComplex_shortExact i (i + 1)
             rfl).mono_g ((@AddCommGrpCat.isZero_of_subsingleton _ ?_).eq_zero_of_src _)
-          exact ih (ModuleCat.of R (QuotSMulTop a M)) ne.lt_top rs' mem.2 reg.2 len i (by omega)
+          apply ih (ModuleCat.of R (QuotSMulTop a M)) _ rs' mem.2 reg.2 len i (by omega)
+          exact (smul_top_quotSMulTop_ne_top_of_smul_top_ne_top mem.1 smul_lt.ne).lt_top
         let gk := AddCommGrpCat.ofHom ((Ext.mk₀ (M.smulShortComplex (a ^ k)).f).postcomp N
           (add_zero (i + 1)))
         have mono_gk : Mono gk := by
@@ -153,7 +152,7 @@ For any `n : ℕ`, Noetherian ring `R`, `I : Ideal R`, and finitely generated an
   zero locus of `I`, `∀ i < n, Ext N M i = 0`
 * there exists a `M`-regular sequence of length `n` with every element in `I`
 -/
-lemma exists_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
+lemma exists_isRegular_tfae [Small.{v} R] [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
     (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤) :
     [∀ N : ModuleCat.{v} R, Nontrivial N → Module.Finite R N →
       Module.support R N ⊆ PrimeSpectrum.zeroLocus I → ∀ i < n, Subsingleton (Ext N M i),
