@@ -20,7 +20,9 @@ of the highest power of `xᵢ` appearing in `p`.
 
 * `MvPolynomial.initialOf i p`:
   The initial of `p` with respect to a specific variable `i`.
-  This is the coefficient of `X i ^ degᵢ(p)`.
+  This is the coefficient polynomial of `X i ^ degᵢ(p)`.
+* `MvPolynomial.eraseInitOf i p`:
+  the sum of all terms in `p` whose degree in `i` is *not* equal to `p.degreeOf i`.
 * `MvPolynomial.initial`:
   The initial of `p` with respect to its main variable.
   For constants, this is defined as `1`.
@@ -29,8 +31,9 @@ of the highest power of `xᵢ` appearing in `p`.
 
 * `initialOf_eq_leadingCoeff`:
   `initᵢ(p)` is the leading coefficient when viewing `p` as a univariate polynomial in `X i`.
-* `initialOf_decomposition`:
-  `p = initᵢ(p) * Xᵢ^degᵢ(p) + remainder` where `degᵢ(remainder) < degᵢ(p)`
+* `initialOf_mul_X_pow_add_eraseInitOf`:
+  The fundamental decomposition about the initial of a polynomial with respect to a variable `i`.
+  `p = initᵢ(p) * Xᵢ ^ degᵢ(p) + eraseInitᵢ`.
 * `initial_reducedTo`: The initial is always reduced w.r.t. the original polynomial
 * `initialOf_mul`: `initᵢ(p * q) = initᵢ(p) * initᵢ(q)` (for integral domains)
 
@@ -40,7 +43,7 @@ of the highest power of `xᵢ` appearing in `p`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace MvPolynomial
 
@@ -58,9 +61,10 @@ noncomputable def initialOf : MvPolynomial σ R :=
   ∑ s ∈ p.support with s i = p.degreeOf i, monomial (s.erase i) (p.coeff s)
 
 theorem initialOf_def {p : MvPolynomial σ R} {i : σ} :
-    p.initialOf i = ∑ s ∈ p.support with s i = p.degreeOf i, monomial (s.erase i) (p.coeff s) := rfl
+    p.initialOf i = ∑ s ∈ p.support with s i = p.degreeOf i, monomial (s.erase i) (p.coeff s) :=
+  Eq.refl _
 
-@[simp] theorem initialOf_zero : (0 : MvPolynomial σ R).initialOf i = 0 := rfl
+@[simp] theorem initialOf_zero : (0 : MvPolynomial σ R).initialOf i = 0 := Eq.refl _
 
 @[simp] theorem initialOf_monomial (s : σ →₀ ℕ) (r : R) :
     (monomial s r).initialOf i = monomial (s.erase i) r := by
@@ -270,6 +274,10 @@ whose degree in `i` is *not* equal to `p.degreeOf i`. -/
 noncomputable def eraseInitOf : MvPolynomial σ R :=
   ∑ s ∈ p.support with s i ≠ p.degreeOf i, (monomial s) (p.coeff s)
 
+theorem eraseInitOf_def :
+    p.eraseInitOf i = ∑ s ∈ p.support with s i ≠ p.degreeOf i, (monomial s) (p.coeff s) :=
+  Eq.refl _
+
 theorem degreeOf_eraseInitOf_lt : (p.eraseInitOf i).degreeOf i ≤ p.degreeOf i - 1 := by
   set q := p.eraseInitOf i
   have hq : q = ∑ s ∈ p.support with s i ≠ p.degreeOf i, (monomial s) (p.coeff s) := rfl
@@ -285,8 +293,8 @@ theorem degreeOf_eraseInitOf_lt : (p.eraseInitOf i).degreeOf i ≤ p.degreeOf i 
   have : s i ≤ p.degreeOf i := le_degreeOf_of_mem_support i <| mem_support_iff.mpr hs.1
   grind
 
-/-- The fundamental decomposition of a polynomial with respect to a variable `i`.
-`p = initᵢ(p) * Xᵢ ^ degᵢ(p) + eraseInit`, where `degᵢ(eraseInit) < degᵢ(p)`. -/
+/-- The fundamental decomposition about the initial of a polynomial with respect to a variable `i`.
+`p = initᵢ(p) * Xᵢ ^ degᵢ(p) + eraseInitᵢ`. -/
 theorem initialOf_mul_X_pow_add_eraseInitOf :
     p = p.initialOf i * X i ^ p.degreeOf i + p.eraseInitOf i := by
   rw [initialOf_def, Finset.sum_mul, eraseInitOf, Finset.sum_filter, Finset.sum_filter,
@@ -424,12 +432,12 @@ theorem degreeOf_initial_le : p.initial.degreeOf i ≤ p.degreeOf i := by
   rw [initial_of_max_vars_isSome' hc.symm]
   exact p.degreeOf_initialOf_le c i
 
-/-- The product of initials of a set of polynomials. -/
-noncomputable def initialProd (PS : Finset (MvPolynomial σ R)) : MvPolynomial σ R :=
-  ∏ p ∈ PS, p.initial
+variable (PS : Finset (MvPolynomial σ R))
 
-theorem initialProd_def (PS : Finset (MvPolynomial σ R)) : initialProd PS = ∏ p ∈ PS, p.initial :=
-  rfl
+/-- The product of initials of a set of polynomials. -/
+noncomputable def initialProd : MvPolynomial σ R := ∏ p ∈ PS, p.initial
+
+theorem initialProd_def : initialProd PS = ∏ p ∈ PS, p.initial := Eq.refl _
 
 end Initial
 
