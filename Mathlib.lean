@@ -5148,6 +5148,7 @@ public import Mathlib.LinearAlgebra.PID
 public import Mathlib.LinearAlgebra.PerfectPairing.Basic
 public import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.LinearAlgebra.PiTensorProduct
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basis
 public import Mathlib.LinearAlgebra.PiTensorProduct.DFinsupp
