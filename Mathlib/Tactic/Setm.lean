@@ -66,8 +66,7 @@ elab_rules : tactic
       let (fvar, g') ← g.intro1P
       mvar.assign (.fvar fvar)
       g := g'
-    replaceMainGoal [g]
-    withMainContext <| withReducibleAndInstances do
+    g.withContext <| withReducibleAndInstances do
       if let some place := usingArg.map getId then
         let loc := (← getLocalDeclFromUserName place).fvarId
         if ← isDefEq pat (← loc.getType) then
