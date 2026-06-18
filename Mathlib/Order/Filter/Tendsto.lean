@@ -52,6 +52,16 @@ theorem not_tendsto_iff_exists_frequently_notMem {f : α → β} {l₁ : Filter 
     ¬Tendsto f l₁ l₂ ↔ ∃ s ∈ l₂, ∃ᶠ x in l₁, f x ∉ s := by
   simp only [tendsto_iff_forall_eventually_mem, not_forall, exists_prop, not_eventually]
 
+theorem tendsto_of_forall_filter_le_exists_tendsto {f : α → β} {l₁ : Filter α}
+    {l₂ : Filter β} (h : ∀ m, m ≤ l₁ → ∃ n, n ≤ m ∧ n.NeBot ∧ Tendsto f n l₂) :
+    Tendsto f l₁ l₂ := by
+  by_contra hlim
+  obtain ⟨s, hs, hfreq⟩ := not_tendsto_iff_exists_frequently_notMem.1 hlim
+  let m := l₁ ⊓ principal {x | f x ∉ s}
+  obtain ⟨n, hnle, hnne, hnt⟩ := h m inf_le_left
+  exact hnne.ne (eventually_false_iff_eq_bot.1 ((hnt.eventually_mem hs).mp
+    (hnle (mem_inf_of_right (by simp)))))
+
 theorem Tendsto.frequently {f : α → β} {l₁ : Filter α} {l₂ : Filter β} {p : β → Prop}
     (hf : Tendsto f l₁ l₂) (h : ∃ᶠ x in l₁, p (f x)) : ∃ᶠ y in l₂, p y :=
   mt hf.eventually h
