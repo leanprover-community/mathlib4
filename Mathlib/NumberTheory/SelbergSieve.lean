@@ -429,11 +429,9 @@ theorem selbergBoundSum_pos :
   · intro l hl
     rw [mem_filter, mem_divisors] at hl
     · apply selbergTerms_pos (hl.1.1)
-  · simp_rw [Finset.Nonempty, mem_filter]; use 1
-    constructor
-    · apply one_mem_divisors.mpr s.prodPrimes_ne_zero
-    rw [cast_one, one_pow]
-    exact s.one_le_level
+  · simp_rw [Finset.nonempty_def, mem_filter]; use 1
+    simpa [mem_divisors, isUnit_iff_eq_one, IsUnit.dvd, ne_eq, true_and, cast_one, one_pow] using
+      ⟨s.prodPrimes_ne_zero, s.one_le_level⟩
 
 /-- The weights associated with Selberg's Lambda squared sieve. These weights are optimal amoung
   all sets of weights supported on `d ≤ √level`. -/
@@ -447,19 +445,19 @@ theorem selbergWeights_eq_zero_of_not_dvd {d : ℕ} (hd : ¬ d ∣ s.prodPrimes)
     s.selbergWeights d = 0 := by
   rw [selbergWeights, if_neg hd]
 
-theorem selbergWeights_eq_zero (d : ℕ) (hd : ¬d ^ 2 ≤ s.level) :
+theorem selbergWeights_eq_zero (d : ℕ) (hd : s.level < d ^ 2) :
     s.selbergWeights d = 0 := by
   dsimp only [selbergWeights]
   split_ifs with h
   · rw [mul_eq_zero_of_right _]
     apply Finset.sum_eq_zero
     refine fun m hm => if_neg ?_
-    intro hyp
+    rintro ⟨hyp, -⟩
     have : (d^2:ℝ) ≤ (d*m)^2 := by
-      norm_cast;
-      refine Nat.pow_le_pow_left ?h 2
+      norm_cast
+      gcongr
       exact Nat.le_mul_of_pos_right _ (Nat.pos_of_mem_divisors hm)
-    linarith [hyp.1]
+    linarith [hyp]
   · rfl
 
 theorem selbergWeights_mul_mu_nonneg (d : ℕ) (hdP : d ∣ s.prodPrimes) :
@@ -470,12 +468,8 @@ theorem selbergWeights_mul_mu_nonneg (d : ℕ) (hdP : d ∣ s.prodPrimes) :
     ∑ m ∈ divisors s.prodPrimes,
           if (d * m) ^ 2 ≤ s.level ∧ Coprime m d then s.selbergTerms m else 0)
   · apply mul_nonneg;
-    · have := s.selbergBoundSum_pos.le
-      have := s.nu_pos_of_dvd_prodPrimes hdP
-      have := s.selbergTerms_pos hdP
-      positivity
-    apply sum_nonneg;
-    intro m hm
+    · positivity [s.selbergTerms_pos hdP, s.nu_pos_of_dvd_prodPrimes hdP, s.selbergBoundSum_pos.le]
+    refine sum_nonneg fun m hm ↦ ?_
     split_ifs with h
     · exact le_of_lt <| s.selbergTerms_pos (dvd_of_mem_divisors hm)
     · rfl
@@ -528,9 +522,7 @@ theorem sum_selbergTerms_dvd_eq_mul_sum_coprime (d : ℕ) (hd : d ∣ s.prodPrim
     · intro h
       refine Coprime.mul_dvd_of_dvd_of_dvd h.symm hd hmP
 
-/-- Important facts about the selberg weights. Note the `s.nu d * w d` in the diagonalisation of the
-  main sum. -/
-theorem selbergWeights_eq_dvds_sum (d : ℕ) :
+theorem nu_mul_selbergWeights_eq (d : ℕ) :
     s.nu d * s.selbergWeights d = s.selbergBoundSum⁻¹ * μ d *
       ∑ l ∈ divisors s.prodPrimes, if d ∣ l ∧ l ^ 2 ≤ s.level then s.selbergTerms l else 0 := by
   by_cases h_dvd : d ∣ s.prodPrimes
