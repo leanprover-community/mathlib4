@@ -365,6 +365,12 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
       refine (hG.existsUnique_path _ _).unique ((hf _).takeUntil _) ?_
       simp [h.ne]
 
+theorem IsTree.ncard_edgeSet_add_one [Finite V] (hG : G.IsTree) :
+    G.edgeSet.ncard + 1 = Nat.card V := by
+  have := Fintype.ofFinite V
+  have := Fintype.ofFinite G.edgeSet
+  simpa [edgeFinset] using hG.card_edgeFinset
+
 /-- A minimally connected graph is a tree. -/
 lemma isTree_of_minimal_connected (h : Minimal Connected G) : IsTree G := by
   rw [isTree_iff, and_iff_right h.prop, isAcyclic_iff_forall_adj_isBridge]
@@ -509,8 +515,7 @@ lemma isTree_iff_connected_and_card [Finite V] :
     G.IsTree ↔ G.Connected ∧ Nat.card G.edgeSet + 1 = Nat.card V := by
   have := Fintype.ofFinite V
   classical
-  refine ⟨fun h ↦ ⟨h.connected, by simpa [edgeFinset] using h.card_edgeFinset⟩,
-    fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
+  refine ⟨fun h ↦ ⟨h.connected, h.ncard_edgeSet_add_one⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
   simp_rw [isAcyclic_iff_forall_adj_isBridge]
   refine fun x y h ↦ by_contra fun hbr ↦
     (h₁.connected_delete_edge_of_not_isBridge hbr).card_vert_le_card_edgeSet_add_one.not_gt ?_
@@ -534,11 +539,6 @@ theorem IsAcyclic.ncard_edgeSet_add_one_le_card [Finite V] [Nonempty V] (h : G.I
     G.edgeSet.ncard + 1 ≤ Nat.card V := by
   grind [h.ncard_edgeSet_add_card_connectedComponent, Nat.card_pos]
 
-theorem IsTree.ncard_edgeSet_add_one [Finite V] (hG : G.IsTree) :
-    G.edgeSet.ncard + 1 = Nat.card V := by
-  rw [← hG.isAcyclic.ncard_edgeSet_add_card_connectedComponent,
-    connected_iff_card_connectedComponent_eq_one.mp hG.connected]
-
 /-- A graph on `n` vertices with at least `n` edges has a cycle -/
 theorem exists_isCycle_of_card_le [Finite V] [Nonempty V]
     (h : Nat.card V ≤ G.edgeSet.ncard) : ∃ (v : V) (c : G.Walk v v), c.IsCycle := by
@@ -551,7 +551,7 @@ theorem isTree_iff_isAcyclic_and_ncard_edgeSet_add_one_eq_card [Finite V] :
     G.IsTree ↔ G.IsAcyclic ∧ G.edgeSet.ncard + 1 = Nat.card V := by
   have := Fintype.ofFinite V
   have := Fintype.ofFinite G.edgeSet
-  refine ⟨fun h ↦ ⟨h.isAcyclic, by simpa [edgeFinset] using h.card_edgeFinset⟩, ?_⟩
+  refine ⟨fun h ↦ ⟨h.isAcyclic, h.ncard_edgeSet_add_one⟩, ?_⟩
   refine fun ⟨h, _⟩ ↦ ⟨{ preconnected a b := ?_, nonempty := by grind [Nat.card_pos_iff] }, h⟩
   suffices G.Reachable = ⊤ by simp [this]
   rw [← G.reachable_is_equivalence.eqvGen_eq]
