@@ -236,6 +236,7 @@ def Partrec₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ] (f 
 
 /-- Computable functions `α → σ` between `Primcodable` types:
   a function is computable if and only if it is partially recursive (as a partial function) -/
+@[wikidata Q1148456]
 def Computable {α σ} [Primcodable α] [Primcodable σ] (f : α → σ) :=
   Partrec (f : α →. σ)
 
@@ -436,7 +437,7 @@ variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
 theorem unpaired {f : ℕ → ℕ →. α} : Partrec (Nat.unpaired f) ↔ Partrec₂ f :=
-  ⟨fun h => by simpa using Partrec.comp (g := fun p : ℕ × ℕ => (p.1, p.2)) h Primrec₂.pair.to_comp,
+  ⟨fun h => by simpa using! Partrec.comp (g := fun p : ℕ × ℕ => (p.1, p.2)) h Primrec₂.pair.to_comp,
     fun h => h.comp Primrec.unpair.to_comp⟩
 
 theorem unpaired' {f : ℕ → ℕ →. ℕ} : Nat.Partrec (Nat.unpaired f) ↔ Partrec₂ f :=

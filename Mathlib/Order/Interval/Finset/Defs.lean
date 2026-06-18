@@ -1082,11 +1082,11 @@ instance (priority := low) [DecidableLT α] [LocallyFiniteOrder α] :
 
 @[to_dual]
 instance [LocallyFiniteOrderBot α] : Finite { x : α // x ≤ y } := by
-  simpa only [coe_Iic] using (Finset.Iic y).finite_toSet
+  simpa only [coe_Iic] using! (Finset.Iic y).finite_toSet
 
 @[to_dual]
 instance [LocallyFiniteOrderBot α] : Finite { x : α // x < y } := by
-  simpa only [coe_Iio] using (Finset.Iio y).finite_toSet
+  simpa only [coe_Iio] using! (Finset.Iio y).finite_toSet
 
 namespace Set
 variable {α : Type*} [Preorder α]

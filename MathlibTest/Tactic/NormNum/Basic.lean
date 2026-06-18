@@ -84,7 +84,7 @@ end ConstructorsEtc
 
 section ScientificNotation
 
-variable [DivisionRing α] [CharZero α]
+variable [DivisionSemiring α] [CharZero α]
 
 example : (0.1 : ℚ) = 1/10 := by norm_num1
 example : (3.14 : ℚ) = 157/50 := by norm_num1
@@ -333,7 +333,7 @@ end LinearOrderedRing
 
 section Rat
 
-variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α]
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 
 -- Normalize to True
 example : (1 : ℚ) ≤ 1 := by norm_num1
