@@ -5,7 +5,6 @@ Authors: Michael Stoll
 -/
 module
 
-public meta import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
 public import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
 
 /-!
@@ -47,7 +46,7 @@ where we encode the residue classes mod 2, mod 4, or mod 8 by using hypotheses l
 are the ones occurring in the use of QR above.
 -/
 
-public meta section
+public section
 
 
 section Lemmas
@@ -193,6 +192,8 @@ end Mathlib.Meta.NormNum
 
 end Lemmas
 
+meta section
+
 section Evaluation
 
 /-!
@@ -208,7 +209,7 @@ namespace Mathlib.Meta.NormNum
 open Lean Elab Tactic Qq
 
 -- TODO: redefined here for reduction; should this be special-handled in quote4?
-private meta def mkRawIntLit' (n : ℤ) : Q(ℤ) :=
+private def mkRawIntLit' (n : ℤ) : Q(ℤ) :=
   let lit : Q(ℕ) := .lit <| .natVal n.natAbs
   if 0 ≤ n then q(.ofNat $lit) else q(.negOfNat $lit)
 
