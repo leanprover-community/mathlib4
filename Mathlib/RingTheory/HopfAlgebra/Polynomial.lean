@@ -68,32 +68,14 @@ theorem comul_def :
 theorem counit_def :
     (Coalgebra.counit : R[X] →ₗ[R] R) = (Polynomial.aeval (0 : R)).toLinearMap := rfl
 
+@[simp]
 theorem comul_apply (p : R[X]) :
     Coalgebra.comul (R := R) p =
     Polynomial.aeval ((X : R[X]) ⊗ₜ 1 + 1 ⊗ₜ (X : R[X])) p := rfl
 
+@[simp]
 theorem counit_apply (p : R[X]) :
     Coalgebra.counit (R := R) p = Polynomial.aeval (0 : R) p := rfl
-
-@[simp]
-theorem comul_X :
-    Coalgebra.comul (R := R) (X : R[X]) = (X : R[X]) ⊗ₜ 1 + 1 ⊗ₜ (X : R[X]) := by
-  simp [comul_apply]
-
-@[simp]
-theorem comul_C (r : R) :
-    Coalgebra.comul (R := R) (C r : R[X]) = (C r) ⊗ₜ 1 := by
-  simp [comul_apply]
-
-@[simp]
-theorem counit_X :
-    Coalgebra.counit (R := R) (X : R[X]) = 0 := by
-  simp [counit_apply]
-
-@[simp]
-theorem counit_C (r : R) :
-    Coalgebra.counit (R := R) (C r : R[X]) = r := by
-  simp [counit_apply]
 
 -- Glue lemmas connecting rTensor/lTensor of AlgHom.toLinearMap to Algebra.TensorProduct.map
 private theorem rTensor_toLinearMap_eq {A : Type*} [CommSemiring A] [Algebra R A]
@@ -111,37 +93,26 @@ private theorem lTensor_toLinearMap_eq {A : Type*} [CommSemiring A] [Algebra R A
 /-- The `𝔾ₐ` coalgebra instance on `R[X]`. -/
 instance instCoalgebra : Coalgebra R R[X] where
   rTensor_counit_comp_comul := by
-    dsimp only [Coalgebra.counit, Coalgebra.comul, CoalgebraStruct.counit, CoalgebraStruct.comul]
-    rw [rTensor_toLinearMap_eq, ← AlgHom.comp_toLinearMap,
+    rw [counit_def, comul_def, rTensor_toLinearMap_eq, ← AlgHom.comp_toLinearMap,
         ← AlgebraTensorModule.mk_eq, ← Algebra.TensorProduct.toLinearMap_includeRight]
     congr 1; apply Polynomial.algHom_ext
-    simp [Algebra.TensorProduct.map_tmul, Algebra.TensorProduct.includeRight_apply]
+    simp
   lTensor_counit_comp_comul := by
-    dsimp only [Coalgebra.counit, Coalgebra.comul, CoalgebraStruct.counit, CoalgebraStruct.comul]
-    rw [lTensor_toLinearMap_eq, ← AlgHom.comp_toLinearMap,
+    rw [counit_def, comul_def, lTensor_toLinearMap_eq, ← AlgHom.comp_toLinearMap,
         ← AlgebraTensorModule.mk_eq, ← Algebra.TensorProduct.toLinearMap_includeLeft]
     congr 1; apply Polynomial.algHom_ext
-    simp [Algebra.TensorProduct.map_tmul, Algebra.TensorProduct.includeLeft_apply]
+    simp
   coassoc := by
-    dsimp only [Coalgebra.comul, CoalgebraStruct.comul]
-    rw [rTensor_toLinearMap_eq, lTensor_toLinearMap_eq]
+    rw [comul_def, rTensor_toLinearMap_eq, lTensor_toLinearMap_eq]
     apply LinearMap.ext; intro p
     simp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply, LinearEquiv.coe_coe]
     induction p using Polynomial.induction_on' with
     | add p q hp hq => simp only [map_add] at hp hq ⊢; rw [hp, hq]
     | monomial n r =>
-      simp only [← C_mul_X_pow_eq_monomial, map_mul, map_pow, aeval_X, aeval_C]
       have hassoc : ∀ x, (TensorProduct.assoc R R[X] R[X] R[X]) x =
           (Algebra.TensorProduct.assoc R R R[X] R[X] R[X] R[X]) x := fun _ => rfl
-      simp only [hassoc, map_mul, map_pow]
-      congr 1
-      · simp [Algebra.TensorProduct.one_def,
-              Algebra.algebraMap_eq_smul_one, TensorProduct.smul_tmul']
-      · congr 1
-        simp only [aeval_X, map_add, Algebra.TensorProduct.map_tmul, AlgHom.id_apply,
-              map_one, Algebra.TensorProduct.assoc_tmul,
-              Algebra.TensorProduct.one_def, TensorProduct.add_tmul, TensorProduct.tmul_add]
-        abel
+      simp [← C_mul_X_pow_eq_monomial, hassoc, Algebra.TensorProduct.one_def,
+        TensorProduct.add_tmul, TensorProduct.tmul_add, add_assoc]
 
 /-! ### Bialgebra instance -/
 
