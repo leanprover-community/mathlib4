@@ -39,15 +39,11 @@ certain `Ext` groups and the length of a maximal regular sequence in a certain i
 
 public section
 
-open IsLocalRing LinearMap Module
-
 universe v u
 
-open RingTheory.Sequence Ideal CategoryTheory Abelian Limits
+open LinearMap RingTheory.Sequence Ideal CategoryTheory Abelian Limits Pointwise IsSMulRegular
 
 variable {R : Type u} [CommRing R]
-
-open Pointwise IsSMulRegular
 
 private lemma smul_top_quotSMulTop_ne_top_of_smul_top_ne_top {M : Type*} [AddCommGroup M]
     [Module R M] {I : Ideal R} {r : R} (hr : r ∈ I)
