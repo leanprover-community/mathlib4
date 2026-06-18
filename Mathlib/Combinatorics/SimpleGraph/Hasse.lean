@@ -34,8 +34,8 @@ variable (α β : Type*)
 
 section Preorder
 
-instance instDecidableCovByOfFintype [Fintype α] [LT α] [DecidableLT α] :
-    DecidableRel (CovBy : α → α → Prop) := by unfold CovBy; infer_instance
+instance [Fintype α] [LT α] [DecidableLT α] : DecidableRel (CovBy : α → α → Prop) :=
+  inferInstanceAs <| DecidableRel fun a b ↦ a < b ∧ ∀ ⦃c : α⦄, a < c → ¬c < b
 
 variable [Preorder α]
 
@@ -126,7 +126,7 @@ theorem hasse_preconnected_of_pred [PredOrder α] [IsPredArchimedean α] : (hass
     reflTransGen_of_pred _ (fun c hc => Or.inl <| pred_covBy_of_not_isMin hc.1.not_isMin)
       fun c hc => Or.inr <| pred_covBy_of_not_isMin hc.1.not_isMin
 
-theorem hasse_isAcyclic_of_linear : (hasse α).IsAcyclic := by
+theorem isAcyclic_hasse_of_linearOrder : (hasse α).IsAcyclic := by
   rw [isAcyclic_iff_forall_adj_isBridge]
   intro u v huv
   wlog hle : u < v with h
@@ -154,16 +154,16 @@ theorem pathGraph_preconnected (n : ℕ) : (pathGraph n).Preconnected :=
 theorem pathGraph_connected (n : ℕ) : (pathGraph (n + 1)).Connected :=
   ⟨pathGraph_preconnected _⟩
 
-theorem pathGraph_isAcyclic (n : ℕ) : (pathGraph n).IsAcyclic := hasse_isAcyclic_of_linear _
+theorem isAcyclic_pathGraph (n : ℕ) : (pathGraph n).IsAcyclic := isAcyclic_hasse_of_linearOrder _
 
 theorem pathGraph_isTree (n : ℕ) : (pathGraph (n + 1)).IsTree :=
-  ⟨pathGraph_connected n, pathGraph_isAcyclic (n + 1)⟩
+  ⟨pathGraph_connected n, isAcyclic_pathGraph (n + 1)⟩
 
 theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
   ext u v
   fin_cases u <;> fin_cases v <;> simp [pathGraph]
 
-instance instLocallyFinitePathGraph {n : ℕ} : LocallyFinite (pathGraph n) := by
+instance {n : ℕ} : LocallyFinite (pathGraph n) := by
   unfold pathGraph hasse
   infer_instance
 
