@@ -104,7 +104,8 @@ section Algebraic
 variable [rank_inf : Fact (ℵ₀ ≤ Module.rank F E)]
 
 lemma noMaxOrder_rank_toType : NoMaxOrder ι :=
-  Cardinal.noMaxOrder_ord_toType Fact.out
+  Ordinal.isSuccPrelimit_iff_noMaxOrder_toType.1
+    (Cardinal.isSuccLimit_ord Fact.out).isSuccPrelimit
 attribute [local instance] noMaxOrder_rank_toType
 
 open _root_.Algebra (IsAlgebraic)
