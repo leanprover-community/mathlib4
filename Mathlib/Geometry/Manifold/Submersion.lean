@@ -330,8 +330,8 @@ lemma _root_.isOpen_isSubmersionAtOfComplement :
   exact IsOpen.liftSourceTargetPropertyAt
 
 set_option backward.isDefEq.respectTransparency false in
-/-- If `f: M → N` and `g: M' × N'` are submersions at `x` and `x'`, respectively,
-then `f × g: M × N → M' × N'` is a submersion at `(x, x')`. -/
+/-- If `f: M → N` and `g: M' → N'` are submersions at `x` and `x'`, respectively,
+then `f × g: M × M' → N × N'` is a submersion at `(x, x')`. -/
 theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
     [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
     (hf : IsSubmersionAtOfComplement F I J n f x)
@@ -483,8 +483,8 @@ lemma _root_.isOpen_isSubmersionAt :
     fun y hy ↦ hy.isSubmersionAt,
     isOpen_isSubmersionAtOfComplement, by simp [hx.isSubmersionAtOfComplement_complement]⟩
 
-/-- If `f: M → N` and `g: M' × N'` are submersions at `x` and `x'`, respectively,
-then `f × g: M × N → M' × N'` is a submersion at `(x, x')`. -/
+/-- If `f: M → N` and `g: M' → N'` are submersions at `x` and `x'`, respectively,
+then `f × g: M × M' → N × N'` is a submersion at `(x, x')`. -/
 theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
     [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
     (hf : IsSubmersionAt I J n f x) (hg : IsSubmersionAt I' J' n g x') :
@@ -539,8 +539,8 @@ lemma congr_F (e : F ≃L[𝕜] F') :
     IsSubmersionOfComplement F I J n f ↔ IsSubmersionOfComplement F' I J n f :=
   ⟨fun h ↦ trans_F (e := e) h, fun h ↦ trans_F (e := e.symm) h⟩
 
-/-- If `f: M → N` and `g: M' × N'` are submersions at `x` and `x'` (w.r.t. `F` and `F'`),
-respectively, then `f × g: M × N → M' × N'` is a submersion at `(x, x')` w.r.t. `F × F'`. -/
+/-- If `f: M → N` and `g: M' → N'` are submersions at `x` and `x'` (w.r.t. `F` and `F'`),
+respectively, then `f × g: M × M' → N × N'` is a submersion at `(x, x')` w.r.t. `F × F'`. -/
 theorem prodMap {f : M → N} {g : M' → N'}
     [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
     (h : IsSubmersionOfComplement F I J n f) (h' : IsSubmersionOfComplement F' I' J' n g) :
