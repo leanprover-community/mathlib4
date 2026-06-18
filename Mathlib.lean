@@ -427,6 +427,7 @@ public import Mathlib.Algebra.Group.Nat.Units
 public import Mathlib.Algebra.Group.NatPowAssoc
 public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.Group.PNatPowAssoc
+public import Mathlib.Algebra.Group.PPow
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Group.Pi.Lemmas
