@@ -90,7 +90,7 @@ lemma smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : M
   rcases hf with ⟨m, hf⟩
   rcases hg with ⟨n, hg⟩
   refine ⟨m + n, ?_⟩
-  convert! hf.smul hg using 2 with z
+  convert hf.smul hg with z
   simp
   module
 
@@ -100,7 +100,7 @@ lemma mul {f g : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) (hg : MeromorphicAt g 
   rcases hf with ⟨m, hf⟩
   rcases hg with ⟨n, hg⟩
   refine ⟨m + n, ?_⟩
-  convert! hf.mul hg using 2 with z
+  convert hf.mul hg with z
   simp
   module
 
@@ -164,7 +164,7 @@ theorem finsum (hF : ∀ i, MeromorphicAt (F i) x) :
 
 @[to_fun (attr := fun_prop)]
 lemma neg {f : 𝕜 → E} (hf : MeromorphicAt f x) : MeromorphicAt (-f) x := by
-  convert! (MeromorphicAt.const (-1 : 𝕜) x).smul hf using 1
+  convert (MeromorphicAt.const (-1 : 𝕜) x).smul hf
   ext1 z
   simp only [Pi.neg_apply, Pi.smul_apply', neg_smul, one_smul]
 
@@ -176,7 +176,7 @@ lemma neg_iff {f : 𝕜 → E} :
 @[to_fun (attr := fun_prop)]
 lemma sub {f g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f - g) x := by
-  convert! hf.add hg.neg using 1
+  convert hf.add hg.neg
   ext1 z
   simp_rw [Pi.sub_apply, Pi.add_apply, Pi.neg_apply, sub_eq_add_neg]
 
@@ -512,7 +512,7 @@ theorem congr_codiscreteWithin (hf : MeromorphicOn f U) (h₁ : f =ᶠ[codiscret
     apply mem_nhdsWithin.mpr
     use U, h₂, hx, Set.inter_subset_left
   filter_upwards [this, h₁ x hx] with a h₁a h₂a
-  simp only [Set.mem_compl_iff, Set.mem_diff, Set.mem_setOf_eq, not_and] at h₂a
+  simp only [Set.mem_compl_iff, Set.mem_sdiff, Set.mem_setOf_eq, not_and] at h₂a
   tauto
 
 /--
@@ -759,7 +759,7 @@ theorem countable_compl_analyticAt [SecondCountableTopology 𝕜] [CompleteSpace
 /--
 Meromorphic functions are measurable.
 -/
-theorem measurable [MeasurableSpace 𝕜] [SecondCountableTopology 𝕜] [BorelSpace 𝕜]
+@[fun_prop] theorem measurable [MeasurableSpace 𝕜] [SecondCountableTopology 𝕜] [BorelSpace 𝕜]
     [MeasurableSpace E] [CompleteSpace E] [BorelSpace E] (h : Meromorphic f) :
     Measurable f := by
   set s := {z : 𝕜 | AnalyticAt 𝕜 f z}

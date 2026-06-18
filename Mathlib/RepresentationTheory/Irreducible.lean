@@ -30,7 +30,6 @@ subrepresentations. -/
 abbrev IsIrreducible :=
   IsSimpleOrder (Subrepresentation ρ)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem irreducible_iff_isSimpleModule_asModule :
     IsIrreducible ρ ↔ IsSimpleModule k[G] ρ.asModule := by
   rw [isSimpleModule_iff]
@@ -49,18 +48,15 @@ namespace IsIrreducible
 
 variable {ρ σ} (f : IntertwiningMap ρ σ) [IsIrreducible ρ]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsSimpleModule k[G] ρ.asModule :=
   (irreducible_iff_isSimpleModule_asModule ρ).mp inferInstance
 
 open Function IntertwiningMap
 
-set_option backward.isDefEq.respectTransparency false in
 theorem injective_or_eq_zero : Injective f ∨ f = 0 := by
   rw [← LinearEquiv.map_eq_zero_iff (equivLinearMapAsModule ρ σ)]
   exact LinearMap.injective_or_eq_zero (equivLinearMapAsModule ρ σ f)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem bijective_or_eq_zero [IsIrreducible σ] : Bijective f ∨ f = 0 := by
   rw [← LinearEquiv.map_eq_zero_iff (equivLinearMapAsModule ρ σ)]
   exact LinearMap.bijective_or_eq_zero (equivLinearMapAsModule ρ σ f)
@@ -70,7 +66,6 @@ instance [IsIrreducible σ] [IsEmpty (Equiv ρ σ)] : Subsingleton (Intertwining
     fun h ↦ isEmpty_iff.mp inferInstance <| (f - g).ofBijective h⟩
 variable [FiniteDimensional k V] [IsAlgClosed k]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (f : IntertwiningMap ρ ρ) in
 theorem algebraMap_intertwiningMap_bijective_of_isAlgClosed :
     Bijective (algebraMap k (IntertwiningMap ρ ρ)) := by
@@ -85,7 +80,6 @@ variable (ρ) in
   exact CommSemiring.finrank_self k
 
 open scoped IsMulCommutative in
-set_option backward.isDefEq.respectTransparency false in
 include ρ in
 variable (ρ) in
 theorem finrank_eq_one_of_isMulCommutative [IsMulCommutative G] : Module.finrank k V = 1 :=

@@ -12,6 +12,8 @@ public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 public import Mathlib.Topology.Algebra.Module.Basic
+public import Mathlib.Data.FunLike.Module
+public import Mathlib.Data.FunLike.Ring
 
 /-!
 # Continuous linear maps
@@ -289,25 +291,25 @@ variable [DistribSMul T₂ M₂] [SMulCommClass R₂ T₂ M₂] [ContinuousConst
 instance instSMul : SMul S₂ (M₁ →SL[σ₁₂] M₂) where
   smul c f := ⟨c • (f : M₁ →ₛₗ[σ₁₂] M₂), (f.2.const_smul _ : Continuous fun x => c • f x)⟩
 
-theorem smul_apply (c : S₂) (f : M₁ →SL[σ₁₂] M₂) (x : M₁) : (c • f) x = c • f x :=
-  rfl
+instance : IsSMulApply S₂ (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
+  smul_apply _ _ _ := rfl
 
 @[simp, norm_cast]
-theorem coe_smul (c : S₂) (f : M₁ →SL[σ₁₂] M₂) :
+theorem toLinearMap_smul (c : S₂) (f : M₁ →SL[σ₁₂] M₂) :
     ↑(c • f) = c • (f : M₁ →ₛₗ[σ₁₂] M₂) :=
   rfl
 
-@[simp, norm_cast]
-theorem coe_smul' (c : S₂) (f : M₁ →SL[σ₁₂] M₂) :
-    ↑(c • f) = c • (f : M₁ → M₂) :=
-  rfl
+@[deprecated (since := "2026-05-20")] protected alias smul_apply := _root_.smul_apply
+
+@[deprecated (since := "2026-05-20")] protected alias coe_smul := toLinearMap_smul
+
+@[deprecated (since := "2026-05-20")] alias coe_smul' := FunLike.coe_smul
 
 instance isScalarTower [SMul S₂ T₂] [IsScalarTower S₂ T₂ M₂] :
-    IsScalarTower S₂ T₂ (M₁ →SL[σ₁₂] M₂) :=
-  ⟨fun a b f => ext fun x => smul_assoc a b (f x)⟩
+    IsScalarTower S₂ T₂ (M₁ →SL[σ₁₂] M₂) := FunLike.isScalarTower
 
 instance smulCommClass [SMulCommClass S₂ T₂ M₂] : SMulCommClass S₂ T₂ (M₁ →SL[σ₁₂] M₂) :=
-  ⟨fun a b f => ext fun x => smul_comm a b (f x)⟩
+  FunLike.smulCommClass
 
 end SMul
 
@@ -316,15 +318,16 @@ section SMulMonoid
 variable {S₂ : Type*} [Monoid S₂]
 variable [DistribMulAction S₂ M₂] [SMulCommClass R₂ S₂ M₂] [ContinuousConstSMul S₂ M₂]
 
-instance mulAction : MulAction S₂ (M₁ →SL[σ₁₂] M₂) where
-  one_smul _f := ext fun _x => one_smul _ _
-  mul_smul _a _b _f := ext fun _x => mul_smul _ _ _
+instance mulAction : MulAction S₂ (M₁ →SL[σ₁₂] M₂) := fast_instance% FunLike.mulAction
 
 end SMulMonoid
 
 /-- The continuous map that is constantly zero. -/
 instance zero : Zero (M₁ →SL[σ₁₂] M₂) :=
   ⟨⟨0, continuous_zero⟩⟩
+
+instance : IsZeroApply (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
+  zero_apply _ := rfl
 
 instance inhabited : Inhabited (M₁ →SL[σ₁₂] M₂) :=
   ⟨0⟩
@@ -333,20 +336,15 @@ instance inhabited : Inhabited (M₁ →SL[σ₁₂] M₂) :=
 theorem default_def : (default : M₁ →SL[σ₁₂] M₂) = 0 :=
   rfl
 
-@[simp]
-theorem zero_apply (x : M₁) : (0 : M₁ →SL[σ₁₂] M₂) x = 0 :=
-  rfl
-
 @[simp, norm_cast]
-theorem coe_zero : ((0 : M₁ →SL[σ₁₂] M₂) : M₁ →ₛₗ[σ₁₂] M₂) = 0 :=
+theorem toLinearMap_zero : ((0 : M₁ →SL[σ₁₂] M₂) : M₁ →ₛₗ[σ₁₂] M₂) = 0 :=
   rfl
 
-/- no simp attribute on the next line as simp does not always simplify `0 x` to `0`
-when `0` is the zero function, while it does for the zero continuous linear map,
-and this is the most important property we care about. -/
-@[norm_cast]
-theorem coe_zero' : ⇑(0 : M₁ →SL[σ₁₂] M₂) = 0 :=
-  rfl
+@[deprecated (since := "2026-05-20")] protected alias zero_apply := _root_.zero_apply
+
+@[deprecated (since := "2026-05-20")] protected alias coe_zero := toLinearMap_zero
+
+@[deprecated (since := "2026-05-20")] alias coe_zero' := FunLike.coe_zero
 
 @[simp, norm_cast]
 theorem toContinuousAddMonoidHom_zero :
@@ -377,6 +375,10 @@ instance one : One (M₁ →L[R₁] M₁) :=
 
 theorem one_def : (1 : M₁ →L[R₁] M₁) = .id R₁ M₁ := rfl
 
+instance instIsOneApply : IsOneApplyEqSelf (M₁ →L[R₁] M₁) M₁ where
+  one_apply_eq_self _ := rfl
+
+@[simp]
 theorem id_apply (x : M₁) : ContinuousLinearMap.id R₁ M₁ x = x := rfl
 
 @[simp, norm_cast]
@@ -388,8 +390,10 @@ theorem coe_id' : ⇑(ContinuousLinearMap.id R₁ M₁) = id :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_one : ((1 : M₁ →L[R₁] M₁) : M₁ →ₗ[R₁] M₁) = 1 :=
+theorem toLinearMap_one : ((1 : M₁ →L[R₁] M₁) : M₁ →ₗ[R₁] M₁) = 1 :=
   rfl
+
+@[deprecated (since := "2026-05-20")] protected alias coe_one := toLinearMap_one
 
 @[simp] lemma mk_id : mk (.id : M₁ →ₗ[R₁] M₁) continuous_id = .id _ _ := rfl
 @[simp] lemma mk_one : mk (1 : M₁ →ₗ[R₁] M₁) continuous_id = 1 := rfl
@@ -402,7 +406,7 @@ theorem toContinuousAddMonoidHom_id :
 theorem coe_eq_id {f : M₁ →L[R₁] M₁} : (f : M₁ →ₗ[R₁] M₁) = LinearMap.id ↔ f = .id _ _ := by
   rw [← coe_id, coe_inj]
 
-@[simp] theorem one_apply (x : M₁) : (1 : M₁ →L[R₁] M₁) x = x := rfl
+@[deprecated (since := "2026-05-20")] protected alias one_apply := one_apply_eq_self
 
 instance [Nontrivial M₁] : Nontrivial (M₁ →L[R₁] M₁) :=
   ⟨0, 1, fun e ↦
@@ -415,17 +419,18 @@ variable [ContinuousAdd M₂]
 instance add : Add (M₁ →SL[σ₁₂] M₂) :=
   ⟨fun f g => ⟨f + g, f.2.add g.2⟩⟩
 
-@[simp]
-theorem add_apply (f g : M₁ →SL[σ₁₂] M₂) (x : M₁) : (f + g) x = f x + g x :=
-  rfl
+instance instIsAddApply : IsAddApply (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
+  add_apply _ _ _ := rfl
 
 @[simp, norm_cast]
-theorem coe_add (f g : M₁ →SL[σ₁₂] M₂) : (↑(f + g) : M₁ →ₛₗ[σ₁₂] M₂) = f + g :=
+theorem toLinearMap_add (f g : M₁ →SL[σ₁₂] M₂) : (↑(f + g) : M₁ →ₛₗ[σ₁₂] M₂) = f + g :=
   rfl
 
-@[norm_cast]
-theorem coe_add' (f g : M₁ →SL[σ₁₂] M₂) : ⇑(f + g) = f + g :=
-  rfl
+@[deprecated (since := "2026-05-20")] protected alias add_apply := _root_.add_apply
+
+@[deprecated (since := "2026-05-20")] protected alias coe_add := toLinearMap_add
+
+@[deprecated (since := "2026-05-20")] alias coe_add' := FunLike.coe_add
 
 @[simp, norm_cast]
 theorem toContinuousAddMonoidHom_add (f g : M₁ →SL[σ₁₂] M₂) :
@@ -453,23 +458,18 @@ instance : AddMonoid (M₁ →SL[σ₁₂] M₂) where
     ext
     simp [add_smul]
 
-instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
-  add_comm := by
-    intros
-    ext
-    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
+instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) := fast_instance% FunLike.addCommMonoid
 
 @[simp, norm_cast]
-theorem coe_sum {ι : Type*} (t : Finset ι) (f : ι → M₁ →SL[σ₁₂] M₂) :
+theorem toLinearMap_sum {ι : Type*} (t : Finset ι) (f : ι → M₁ →SL[σ₁₂] M₂) :
     ↑(∑ d ∈ t, f d) = (∑ d ∈ t, f d : M₁ →ₛₗ[σ₁₂] M₂) :=
   map_sum (AddMonoidHom.mk ⟨((↑) : (M₁ →SL[σ₁₂] M₂) → M₁ →ₛₗ[σ₁₂] M₂), rfl⟩ fun _ _ => rfl) _ _
 
-@[simp, norm_cast]
-theorem coe_sum' {ι : Type*} (t : Finset ι) (f : ι → M₁ →SL[σ₁₂] M₂) :
-    ⇑(∑ d ∈ t, f d) = ∑ d ∈ t, ⇑(f d) := by simp only [← coe_coe, coe_sum, LinearMap.coe_sum]
+@[deprecated (since := "2026-05-20")] protected alias sum_apply := _root_.sum_apply
 
-theorem sum_apply {ι : Type*} (t : Finset ι) (f : ι → M₁ →SL[σ₁₂] M₂) (b : M₁) :
-    (∑ d ∈ t, f d) b = ∑ d ∈ t, f d b := by simp only [coe_sum', Finset.sum_apply]
+@[deprecated (since := "2026-05-20")] protected alias coe_sum := toLinearMap_sum
+
+@[deprecated (since := "2026-05-20")] alias coe_sum' := FunLike.coe_sum
 
 end Add
 
@@ -489,18 +489,21 @@ infixr:90 " ∘SL " =>
   ContinuousLinearMap.comp
 
 @[simp, norm_cast]
-theorem coe_comp (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) :
+theorem toLinearMap_comp (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) :
     (h ∘SL f : M₁ →ₛₗ[σ₁₃] M₃) = (h : M₂ →ₛₗ[σ₂₃] M₃) ∘ₛₗ (f : M₁ →ₛₗ[σ₁₂] M₂) :=
   rfl
 
-@[simp, norm_cast]
-theorem coe_comp' (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) : ⇑(h ∘SL f) = h ∘ f :=
+@[norm_cast]
+theorem coe_comp (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) : ⇑(h ∘SL f) = h ∘ f :=
   rfl
+
+@[deprecated (since := "2026-05-20")] alias coe_comp' := coe_comp
 
 @[simp, norm_cast]
 theorem toContinuousAddMonoidHom_comp (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) :
     (↑(h ∘SL f) : ContinuousAddMonoidHom M₁ M₃) = (h : ContinuousAddMonoidHom M₂ M₃).comp f := rfl
 
+@[simp, grind =]
 theorem comp_apply (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) (x : M₁) : (g ∘SL f) x = g (f x) :=
   rfl
 
@@ -521,7 +524,7 @@ variable {R E F : Type*} [Semiring R]
 /-- `g ∘ f = id` as `ContinuousLinearMap`s implies `g ∘ f = id` as functions. -/
 lemma leftInverse_of_comp {f : E →L[R] F} {g : F →L[R] E}
     (hinv : g ∘L f = .id R E) : Function.LeftInverse g f := by
-  simpa [← Function.rightInverse_iff_comp] using! congr(⇑$hinv)
+  simpa [coe_comp, ← Function.leftInverse_iff_comp] using congr(⇑$hinv)
 
 /-- `f ∘ g = id` as `ContinuousLinearMap`s implies `f ∘ g = id` as functions. -/
 lemma rightInverse_of_comp {f : E →L[R] F} {g : F →L[R] E}
@@ -564,7 +567,7 @@ theorem finsetSum_comp {ι : Type*} {s : Finset ι}
     [ContinuousAdd M₃] (g : ι → M₂ →SL[σ₂₃] M₃)
     (f : M₁ →SL[σ₁₂] M₂) : (∑ i ∈ s, g i) ∘SL f = ∑ i ∈ s, (g i) ∘SL f := by
   ext
-  simp only [coe_comp', coe_sum', Function.comp_apply, Finset.sum_apply]
+  simp only [comp_apply, sum_apply]
 
 @[deprecated (since := "2026-04-08")] alias finset_sum_comp := finsetSum_comp
 
@@ -586,26 +589,24 @@ lemma cancel_left' {g : M₂ →SL[σ₂₃] M₃} {f₁ f₂ : M₁ →SL[σ₁
 instance instMul : Mul (M₁ →L[R₁] M₁) :=
   ⟨comp⟩
 
+instance : IsMulApplyEqComp (M₁ →L[R₁] M₁) M₁ where
+  mul_apply_eq_comp _ _ _ := rfl
+
 theorem mul_def (f g : M₁ →L[R₁] M₁) : f * g = f ∘L g :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_mul (f g : M₁ →L[R₁] M₁) : (↑(f * g) : M₁ →ₗ[R₁] M₁) = f * g :=
+theorem toLinearMap_mul (f g : M₁ →L[R₁] M₁) : (↑(f * g) : M₁ →ₗ[R₁] M₁) = f * g :=
   rfl
 
-@[simp, norm_cast]
-theorem coe_mul' (f g : M₁ →L[R₁] M₁) : ⇑(f * g) = f ∘ g :=
-  rfl
+@[deprecated (since := "2026-05-20")] alias coe_mul := toLinearMap_mul
 
-theorem mul_apply (f g : M₁ →L[R₁] M₁) (x : M₁) : (f * g) x = f (g x) :=
-  rfl
+@[deprecated (since := "2026-05-20")] protected alias coe_mul' := FunLike.coe_mul
 
-instance monoidWithZero : MonoidWithZero (M₁ →L[R₁] M₁) where
-  mul_zero f := ext fun _ => map_zero f
-  zero_mul _ := ext fun _ => rfl
-  mul_one _ := ext fun _ => rfl
-  one_mul _ := ext fun _ => rfl
-  mul_assoc _ _ _ := ext fun _ => rfl
+@[deprecated (since := "2026-05-20")] protected alias mul_apply := mul_apply_eq_comp
+
+instance monoidWithZero : MonoidWithZero (M₁ →L[R₁] M₁) :=
+  fast_instance% FunLike.monoidWithZero
 
 @[simp, norm_cast]
 theorem coe_pow' (f : M₁ →L[R₁] M₁) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
@@ -618,14 +619,11 @@ theorem coe_pow (f : M₁ →L[R₁] M₁) (n : ℕ) : (↑(f ^ n) : M₁ →ₗ
 instance instNatCast [ContinuousAdd M₁] : NatCast (M₁ →L[R₁] M₁) where
   natCast n := n • (1 : M₁ →L[R₁] M₁)
 
-instance semiring [ContinuousAdd M₁] : Semiring (M₁ →L[R₁] M₁) where
-  __ := ContinuousLinearMap.monoidWithZero
-  __ := ContinuousLinearMap.addCommMonoid
-  left_distrib f g h := ext fun x => map_add f (g x) (h x)
-  right_distrib _ _ _ := ext fun _ => LinearMap.add_apply _ _ _
-  toNatCast := instNatCast
-  natCast_zero := zero_smul ℕ (1 : M₁ →L[R₁] M₁)
-  natCast_succ n := AddMonoid.nsmul_succ n (1 : M₁ →L[R₁] M₁)
+instance instIsNatCastApply [ContinuousAdd M₁] : IsNatCastApply (M₁ →L[R₁] M₁) M₁ where
+  natCast_apply _ _ := rfl
+
+instance semiring [ContinuousAdd M₁] : Semiring (M₁ →L[R₁] M₁) :=
+  fast_instance% FunLike.semiring
 
 /-- `ContinuousLinearMap.toLinearMap` as a `RingHom`. -/
 @[simps]
@@ -650,8 +648,8 @@ theorem ofNat_apply [ContinuousAdd M₁] (n : ℕ) [n.AtLeastTwo] (m : M₁) :
 def homeomorphOfUnit (T : (M₁ →L[R₁] M₁)ˣ) : M₁ ≃ₜ M₁ where
   toFun := T.1
   invFun := T⁻¹.1
-  left_inv x := by rw [← mul_apply, Units.inv_mul, one_apply]
-  right_inv x := by rw [← mul_apply, Units.mul_inv, one_apply]
+  left_inv x := by rw [← mul_apply_eq_comp, Units.inv_mul, one_apply_eq_self]
+  right_inv x := by rw [← mul_apply_eq_comp, Units.mul_inv, one_apply_eq_self]
 
 theorem isHomeomorph_of_isUnit {T : M₁ →L[R₁] M₁} (hT : IsUnit T) : IsHomeomorph T := by
   obtain ⟨T, rfl⟩ := hT
@@ -688,12 +686,21 @@ end ApplyAction
 
 theorem isClosed_ker [T1Space M₂] (f : M₁ →SL[σ₁₂] M₂) :
     IsClosed (f.ker : Set M₁) :=
-  continuous_iff_isClosed.1 (map_continuous f) _ isClosed_singleton
+  isClosed_singleton.preimage f.continuous
+
+theorem isClosed_eqLocus [T2Space M₂] (f g : M₁ →SL[σ₁₂] M₂) :
+    IsClosed (f.eqLocus g : Set M₁) :=
+  isClosed_eq f.continuous g.continuous
 
 theorem isComplete_ker {M' : Type*} [UniformSpace M'] [CompleteSpace M'] [AddCommMonoid M']
     [Module R₁ M'] [T1Space M₂] (f : M' →SL[σ₁₂] M₂) :
     IsComplete (f.ker : Set M') :=
   (isClosed_ker f).isComplete
+
+theorem isComplete_eqLocus {M' : Type*} [UniformSpace M'] [CompleteSpace M'] [AddCommMonoid M']
+    [Module R₁ M'] [T2Space M₂] (f g : M' →SL[σ₁₂] M₂) :
+    IsComplete (f.eqLocus g : Set M') :=
+  (isClosed_eqLocus f g).isComplete
 
 instance completeSpace_ker {M' : Type*} [UniformSpace M'] [CompleteSpace M']
     [AddCommMonoid M'] [Module R₁ M'] [T1Space M₂]
@@ -703,7 +710,7 @@ instance completeSpace_ker {M' : Type*} [UniformSpace M'] [CompleteSpace M']
 instance completeSpace_eqLocus {M' : Type*} [UniformSpace M'] [CompleteSpace M']
     [AddCommMonoid M'] [Module R₁ M'] [T2Space M₂]
     (f g : M' →SL[σ₁₂] M₂) : CompleteSpace (f.toLinearMap.eqLocus g.toLinearMap) :=
-  IsClosed.completeSpace_coe (hs := isClosed_eq (map_continuous f) (map_continuous g))
+  (isComplete_eqLocus f g).completeSpace_coe
 
 section
 
@@ -743,7 +750,7 @@ theorem smulRight_comp_smulRight {M₃ : Type*} [AddCommMonoid M₃] [Module R�
 theorem range_smulRight_apply {R : Type*} [DivisionSemiring R] [Module R M₁] [Module R M₂]
     [TopologicalSpace R] [ContinuousSMul R M₂] {f : M₁ →L[R] R} (hf : f ≠ 0) (x : M₂) :
     range (f.smulRight x : M₁ →ₗ[R] M₂) = Submodule.span R {x} :=
-  LinearMap.range_smulRight_apply (by simpa [coe_inj, ← coe_zero] using hf) x
+  LinearMap.range_smulRight_apply (by simpa [coe_inj, ← toLinearMap_zero] using hf) x
 
 section ToSpanSingleton
 
@@ -848,17 +855,18 @@ variable [IsTopologicalAddGroup M₂]
 instance neg : Neg (M →SL[σ₁₂] M₂) :=
   ⟨fun f => ⟨-f, f.2.neg⟩⟩
 
-@[simp]
-theorem neg_apply (f : M →SL[σ₁₂] M₂) (x : M) : (-f) x = -f x :=
-  rfl
+instance : IsNegApply (M →SL[σ₁₂] M₂) M M₂ where
+  neg_apply _ _ := rfl
 
 @[simp, norm_cast]
-theorem coe_neg (f : M →SL[σ₁₂] M₂) : (↑(-f) : M →ₛₗ[σ₁₂] M₂) = -f :=
+theorem toLinearMap_neg (f : M →SL[σ₁₂] M₂) : (↑(-f) : M →ₛₗ[σ₁₂] M₂) = -f :=
   rfl
 
-@[norm_cast]
-theorem coe_neg' (f : M →SL[σ₁₂] M₂) : ⇑(-f) = -f :=
-  rfl
+@[deprecated (since := "2026-05-20")] protected alias neg_apply := _root_.neg_apply
+
+@[deprecated (since := "2026-05-20")] protected alias coe_neg := toLinearMap_neg
+
+@[deprecated (since := "2026-05-20")] alias coe_neg' := FunLike.coe_neg
 
 @[simp, norm_cast]
 theorem toContinuousAddMonoidHom_neg (f : M →SL[σ₁₂] M₂) :
@@ -867,6 +875,10 @@ theorem toContinuousAddMonoidHom_neg (f : M →SL[σ₁₂] M₂) :
 instance sub : Sub (M →SL[σ₁₂] M₂) :=
   ⟨fun f g => ⟨f - g, f.2.sub g.2⟩⟩
 
+instance : IsSubApply (M →SL[σ₁₂] M₂) M M₂ where
+  sub_apply _ _ _ := rfl
+
+-- Todo: figure out how to use `FunLike.addCommGroup` here
 instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) where
   sub_eq_add_neg _ _ := by ext; apply sub_eq_add_neg
   zsmul := (· • ·)
@@ -875,16 +887,15 @@ instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) where
   zsmul_neg' n f := by ext; simp [add_smul]
   neg_add_cancel _ := by ext; apply neg_add_cancel
 
-theorem sub_apply (f g : M →SL[σ₁₂] M₂) (x : M) : (f - g) x = f x - g x :=
+@[simp, norm_cast]
+theorem toLinearMap_sub (f g : M →SL[σ₁₂] M₂) : (↑(f - g) : M →ₛₗ[σ₁₂] M₂) = f - g :=
   rfl
 
-@[simp, norm_cast]
-theorem coe_sub (f g : M →SL[σ₁₂] M₂) : (↑(f - g) : M →ₛₗ[σ₁₂] M₂) = f - g :=
-  rfl
+@[deprecated (since := "2026-05-20")] protected alias sub_apply := _root_.sub_apply
 
-@[simp, norm_cast]
-theorem coe_sub' (f g : M →SL[σ₁₂] M₂) : ⇑(f - g) = f - g :=
-  rfl
+@[deprecated (since := "2026-05-20")] protected alias coe_sub := toLinearMap_sub
+
+@[deprecated (since := "2026-05-20")] alias coe_sub' := FunLike.coe_sub
 
 @[simp, norm_cast]
 theorem toContinuousAddMonoidHom_sub (f g : M →SL[σ₁₂] M₂) :
@@ -918,16 +929,15 @@ theorem sub_comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [IsTopologicalAd
   ext
   simp
 
-instance ring [IsTopologicalAddGroup M] : Ring (M →L[R] M) where
-  __ := ContinuousLinearMap.semiring
-  __ := ContinuousLinearMap.addCommGroup
+instance [IsTopologicalAddGroup M] : IntCast (M →L[R] M) where
   intCast z := z • (1 : M →L[R] M)
-  intCast_ofNat := natCast_zsmul _
-  intCast_negSucc := negSucc_zsmul _
 
-@[simp]
-theorem intCast_apply [IsTopologicalAddGroup M] (z : ℤ) (m : M) : (↑z : M →L[R] M) m = z • m :=
-  rfl
+instance instIsIntCastApply [IsTopologicalAddGroup M] : IsIntCastApply (M →L[R] M) M where
+  intCast_apply _ _ := rfl
+
+@[deprecated (since := "2026-05-20")] alias intCast_apply := _root_.intCast_apply
+
+instance ring [IsTopologicalAddGroup M] : Ring (M →L[R] M) := fast_instance% FunLike.ring
 
 theorem toSpanSingleton_pow [TopologicalSpace R] [IsTopologicalRing R] (c : R) (n : ℕ) :
     toSpanSingleton R c ^ n = toSpanSingleton R (c ^ n) := by
@@ -986,11 +996,10 @@ theorem comp_smulₛₗ [SMulCommClass R₂ R₂ M₂] [SMulCommClass R₃ R₃ 
     [ContinuousConstSMul R₃ M₃] (h : M₂ →SL[σ₂₃] M₃) (c : R₂) (f : M →SL[σ₁₂] M₂) :
     h ∘SL (c • f) = σ₂₃ c • h ∘SL f := by
   ext x
-  simp only [coe_smul', coe_comp', Function.comp_apply, Pi.smul_apply, map_smulₛₗ]
+  simp
 
-instance distribMulAction [ContinuousAdd M₂] : DistribMulAction S₃ (M →SL[σ₁₂] M₂) where
-  smul_add a f g := ext fun x => smul_add a (f x) (g x)
-  smul_zero a := ext fun _ => smul_zero a
+instance distribMulAction [ContinuousAdd M₂] : DistribMulAction S₃ (M →SL[σ₁₂] M₂) :=
+  fast_instance% FunLike.distribMulAction
 
 end SMulMonoid
 
@@ -1009,13 +1018,10 @@ variable {R R₂ R₃ S S₃ : Type*} [Semiring R] [Semiring R₂] [Semiring R�
 
 variable [ContinuousAdd M₂] [ContinuousAdd M₃] [ContinuousAdd N₂]
 
-instance module : Module S₃ (M →SL[σ₁₃] M₃) where
-  zero_smul _ := ext fun _ => zero_smul S₃ _
-  add_smul _ _ _ := ext fun _ => add_smul _ _ _
+instance module : Module S₃ (M →SL[σ₁₃] M₃) := fast_instance% FunLike.module
 
 instance isCentralScalar [Module S₃ᵐᵒᵖ M₃] [IsCentralScalar S₃ M₃] :
-    IsCentralScalar S₃ (M →SL[σ₁₃] M₃) where
-  op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
+    IsCentralScalar S₃ (M →SL[σ₁₃] M₃) := FunLike.isCentralScalar
 
 variable (S) [ContinuousAdd N₃]
 
@@ -1023,8 +1029,8 @@ variable (S) [ContinuousAdd N₃]
 @[simps]
 def coeLM : (M →L[R] N₃) →ₗ[S] M →ₗ[R] N₃ where
   toFun := (↑)
-  map_add' f g := coe_add f g
-  map_smul' c f := coe_smul c f
+  map_add' f g := toLinearMap_add f g
+  map_smul' c f := toLinearMap_smul c f
 
 variable {S} (σ₁₃)
 
@@ -1032,8 +1038,8 @@ variable {S} (σ₁₃)
 @[simps]
 def coeLMₛₗ : (M →SL[σ₁₃] M₃) →ₗ[S₃] M →ₛₗ[σ₁₃] M₃ where
   toFun := (↑)
-  map_add' f g := coe_add f g
-  map_smul' c f := coe_smul c f
+  map_add' f g := toLinearMap_add f g
+  map_smul' c f := toLinearMap_smul c f
 
 end SMul
 

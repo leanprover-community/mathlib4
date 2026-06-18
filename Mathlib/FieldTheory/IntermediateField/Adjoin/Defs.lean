@@ -601,7 +601,7 @@ instance : Algebra A⟮b⟯ A⟮(algebraMap B C) b⟯ :=
   RingHom.toAlgebra (RingHom.adjoinAlgebraMap _)
 
 instance : IsScalarTower A⟮b⟯ A⟮(algebraMap B C) b⟯ C :=
-  IsScalarTower.of_algebraMap_eq' (by rfl)
+  IsScalarTower.of_algebraMap_eq' rfl
 
 end AdjoinSimple
 

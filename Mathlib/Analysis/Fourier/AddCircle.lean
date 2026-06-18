@@ -192,7 +192,7 @@ theorem fourier_add_half_inv_index {n : ℤ} (hn : n ≠ 0) (hT : 0 < T) (x : Ad
     Metric.unitSphere.coe_mul]
   have : (@toCircle T (n • (T / 2 / n) : ℝ) : ℂ) = -1 := by
     rw [zsmul_eq_mul, toCircle, Function.Periodic.lift_coe, Circle.coe_exp]
-    convert! Complex.exp_pi_mul_I using 3
+    convert Complex.exp_pi_mul_I
     field_simp
   rw [this]; simp
 
@@ -460,7 +460,7 @@ theorem hasSum_sq_fourierCoeffOn
   haveI := Fact.mk (by linarith : 0 < b - a)
   rw [← add_sub_cancel a b] at hL2
   have h := hL2.memLp_liftIoc.haarAddCircle
-  convert! hasSum_sq_fourierCoeff h.toLp using 1
+  convert hasSum_sq_fourierCoeff h.toLp
   · simp [fourierCoeff_congr_ae h.coeFn_toLp, fourierCoeff_liftIoc_eq]
   · nth_rw 2 [← add_sub_cancel a b]
     rw [← AddCircle.integral_liftIoc_eq_intervalIntegral, ← Function.comp_def (f := (‖·‖ ^ 2))]

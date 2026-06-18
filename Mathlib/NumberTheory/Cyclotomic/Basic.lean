@@ -127,7 +127,7 @@ theorem isCyclotomicExtension_zero_iff :
     IsCyclotomicExtension {0} A B ↔ Function.Surjective (algebraMap A B) := by
   rw [surjective_algebraMap_iff, eq_comm]
   refine ⟨?_, fun h ↦ singleton_zero_of_bot_eq_top h⟩
-  rw [eq_self_sdiff_zero, sdiff_self, Set.bot_eq_empty, subsingleton_iff_bot_eq_top]
+  rw [eq_self_sdiff_zero, sdiff_self, subsingleton_iff_bot_eq_top]
   exact fun _ ↦ instSubsingleton A B
 
 variable (A B)
@@ -207,7 +207,7 @@ theorem union_of_isPrimitiveRoot [hB : IsCyclotomicExtension S A B] {r : B}
     (hr : IsPrimitiveRoot r n) :
     IsCyclotomicExtension (S ∪ {n}) A B := by
   by_cases hn : n = 0
-  · rwa [hn, eq_self_sdiff_zero, Set.union_diff_right, ← eq_self_sdiff_zero]
+  · rwa [hn, eq_self_sdiff_zero, Set.union_sdiff_right, ← eq_self_sdiff_zero]
   rw [iff_adjoin_eq_top]
   refine ⟨fun m hm₁ hm₂ ↦ ?_, le_antisymm (by simp) ?_⟩
   · obtain hm₁ | rfl := hm₁
@@ -262,7 +262,7 @@ theorem iff_union_singleton_one :
     IsCyclotomicExtension S A B ↔ IsCyclotomicExtension (S ∪ {1}) A B := by
   by_cases hS : ∃ s ∈ S, s ≠ 0
   · exact iff_union_of_dvd _ _ (by simpa)
-  · rw [eq_self_sdiff_zero S, eq_self_sdiff_zero (S ∪ {1}), union_diff_distrib,
+  · rw [eq_self_sdiff_zero S, eq_self_sdiff_zero (S ∪ {1}), union_sdiff_distrib,
       show S \ {0} = ∅ by aesop, empty_union, show {1} \ {0} = {1} by simp]
     refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
     · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs _ ↦ ⟨1, by simp [mem_singleton_iff.1 hs]⟩, ?_⟩
