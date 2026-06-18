@@ -22,16 +22,17 @@ The output path is taken from the `CROSSREFS_OUT` environment variable (default 
 and the recorded source commit from `CROSSREFS_COMMIT` (default `unknown`).
 -/
 
-open Lean Mathlib.CrossRef Elab Command
+open Lean Mathlib.CrossRef
 
 namespace ExportCrossRefs
 
 /-- The source file and 1-based line number of `decl`, if known. -/
 def declLocation (env : Environment) (decl : Name) : Option (String × Nat) := do
+  -- Inline `findDeclarationRangesCore?` since it's monadic.
   let ranges ← declRangeExt.find? (level := .exported) env decl <|>
                 declRangeExt.find? (level := .server) env decl
   let mod ← env.getModuleFor? decl
-  return (mod.toString, ranges.range.pos.line)
+  return (mod.toString, ranges.selectionRange.pos.line)
 
 /-- One JSON entry per declaration, sorted by declaration name. A declaration carrying several
 cross-references (e.g. both a Stacks and a Wikidata tag) gets a single entry with multiple `refs`. -/
