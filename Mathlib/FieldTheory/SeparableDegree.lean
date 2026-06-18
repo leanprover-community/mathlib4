@@ -196,6 +196,12 @@ theorem finSepDegree_top : finSepDegree F (⊤ : IntermediateField E K) = finSep
 
 end Tower
 
+theorem isSeparable_bot : Algebra.IsSeparable F (⊥ : IntermediateField F E) :=
+  AlgEquiv.Algebra.isSeparable (IntermediateField.botEquiv F E).symm
+
+theorem isSeparable_top : Algebra.IsSeparable F (⊤ : IntermediateField F E) ↔ Algebra.IsSeparable F E :=
+  Algebra.IsSeparable.iff_of_equiv_equiv (RingEquiv.refl F) topEquiv.toRingEquiv (by ext; simp)
+
 end IntermediateField
 
 namespace Field

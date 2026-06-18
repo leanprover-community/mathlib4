@@ -755,6 +755,12 @@ lemma Algebra.IsSeparable.of_equiv_equiv [Algebra.IsSeparable A₁ B₁] : Algeb
   ⟨fun x ↦ (e₂.apply_symm_apply x) ▸ _root_.IsSeparable.of_equiv_equiv e₁ e₂ he
     (Algebra.IsSeparable.isSeparable _ _)⟩
 
+lemma Algebra.IsSeparable.iff_of_equiv_equiv : Algebra.IsSeparable A₁ B₁ ↔ Algebra.IsSeparable A₂ B₂ :=
+  ⟨fun _ ↦ Algebra.IsSeparable.of_equiv_equiv e₁ e₂ he,
+    fun _ ↦ Algebra.IsSeparable.of_equiv_equiv e₁.symm e₂.symm (by
+      ext x
+      simpa [RingEquiv.eq_symm_apply] using (RingHom.ext_iff.mp he (e₁.symm x)).symm)⟩
+
 end AlgEquiv
 
 section CardAlgHom

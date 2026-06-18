@@ -187,6 +187,14 @@ theorem IntermediateField.isSeparable_adjoin_iff_isSeparable {S : Set E} :
     Algebra.IsSeparable F (adjoin F S) ↔ ∀ x ∈ S, IsSeparable F x :=
   (le_separableClosure_iff F E _).symm.trans adjoin_le_iff
 
+/-- If `p` is a separable polynomial with splitting field `E` over `F`, then `E / F` is a
+separable extension. -/
+theorem Algebra.isSeparable_of_separable_splitting_field {p : F[X]}
+    [sp : p.IsSplittingField F E] (hp : p.Separable) : Algebra.IsSeparable F E := by
+  rw [← isSeparable_top, ← (isSplittingField_iff_intermediateField.mp sp).2,
+    isSeparable_adjoin_iff_isSeparable]
+  exact fun x hx ↦ hp.of_dvd (minpoly.dvd F x (aeval_eq_zero_of_mem_rootSet hx))
+
 /-- The separable closure of `F` in `E` is equal to `E` if and only if `E / F` is
 separable. -/
 theorem separableClosure.eq_top_iff : separableClosure F E = ⊤ ↔ Algebra.IsSeparable F E :=
