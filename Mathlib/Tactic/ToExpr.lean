@@ -6,7 +6,7 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Init
-public import Qq
+
 /-!
 # `ToExpr` instances for Mathlib
 -/
