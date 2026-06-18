@@ -126,7 +126,6 @@ jobs:
       - name: install elan
         shell: bash
         run: |
-          set -o pipefail
           curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
           chmod +x elan-init.sh
           ./elan-init.sh -y --default-toolchain none
@@ -275,6 +274,11 @@ jobs:
     env:
       LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
       LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT }}
+    defaults:
+      run:
+        # `shell: bash` adds `-o pipefail`; the implicit `bash -e` default lacks
+        # it, masking failures before `| tee` (e.g. `lake cache put-staged | tee`).
+        shell: bash
     steps:
       - name: Checkout mathlib (for lean-toolchain pin)
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -286,7 +290,6 @@ jobs:
       - name: install elan + matching lake
         shell: bash
         run: |
-          set -o pipefail
           curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
           chmod +x elan-init.sh
           ./elan-init.sh -y --default-toolchain none
@@ -336,7 +339,8 @@ jobs:
           base="${AUTH%/artifacts}/analysis"
           sha="${{ needs.build_and_stage.outputs.sha }}"
           sig=(--aws-sigv4 aws:amz:auto:s3 --user "$LAKE_CACHE_KEY")
-          grep -oE 'uploaded artifact [0-9a-f]+' /tmp/put.log | awk '{print $3}' | sort -u > /tmp/today.txt
+          # grep exits 1 on no match (handled by the total==0 branch); tolerate it under pipefail.
+          grep -oE 'uploaded artifact [0-9a-f]+' /tmp/put.log | awk '{print $3}' | sort -u > /tmp/today.txt || true
           total=$(wc -l < /tmp/today.txt)
           if [ "$total" -eq 0 ]; then
             echo "::warning::no uploaded artifacts parsed from put.log — skipping carryover (manifest/pointer left unchanged)"
@@ -408,6 +412,11 @@ jobs:
       # authenticated S3 API endpoint used by the `upload` job's PUTs.
       LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC }}
       LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT_PUBLIC }}
+    defaults:
+      run:
+        # `shell: bash` adds `-o pipefail`; without it a `lake build | tee` failure
+        # is hidden and the provenance grep reads 0 rebuilds and reports success.
+        shell: bash
     steps:
       - name: Checkout mathlib
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -418,7 +427,6 @@ jobs:
 
       - name: install elan
         run: |
-          set -o pipefail
           curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
           chmod +x elan-init.sh
           ./elan-init.sh -y --default-toolchain none
@@ -458,7 +466,8 @@ jobs:
           # Artifacts fetched here = the root-package outputs served from cache
           # (a non-verbose build replays them silently). Hand the count to the
           # provenance step.
-          FETCHED=$(find ~/.elan/toolchains -name '*.ltar' 2>/dev/null | wc -l)
+          # `|| true`: an informational count must not trip pipefail if find fails.
+          FETCHED=$(find ~/.elan/toolchains -name '*.ltar' 2>/dev/null | wc -l || true)
           echo "ltar count after get: $FETCHED"
           echo "FETCHED_ARTIFACTS=$FETCHED" >> "$GITHUB_ENV"
 
