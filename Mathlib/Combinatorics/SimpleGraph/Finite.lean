@@ -207,7 +207,7 @@ theorem neighborFinset_inf [DecidableEq V] {G₁ G₂ : SimpleGraph V}
     (G₁ ⊓ G₂).neighborFinset v = G₁.neighborFinset v ∩ G₂.neighborFinset v := by
   simp [← Finset.coe_inj, neighborSet_inf]
 
-theorem neighborFinset_disjoint {G₁ G₂ : SimpleGraph V} [Fintype (G₁.neighborSet v)]
+theorem disjoint_neighborFinset {G₁ G₂ : SimpleGraph V} [Fintype (G₁.neighborSet v)]
     [Fintype (G₂.neighborSet v)] (h : Disjoint G₁ G₂) :
     Disjoint (G₁.neighborFinset v) (G₂.neighborFinset v) := by
   simp [← Finset.disjoint_coe, neighborSet_disjoint h]
