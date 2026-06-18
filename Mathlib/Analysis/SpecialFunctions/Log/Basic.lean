@@ -40,7 +40,7 @@ variable {x y : ℝ}
 to `log |x|` for `x < 0`, and to `0` for `0`. We use this unconventional extension to
 `(-∞, 0]` as it gives the formula `log (x * y) = log x + log y` for all nonzero `x` and `y`, and
 the derivative of `log` is `1/x` away from `0`. -/
-@[pp_nodot]
+@[pp_nodot, wikidata Q11197]
 noncomputable def log (x : ℝ) : ℝ :=
   if hx : x = 0 then 0 else expOrderIso.symm ⟨|x|, abs_pos.2 hx⟩
 
@@ -596,27 +596,30 @@ lemma log_nz_of_isRat_neg {n : ℤ} : (NormNum.IsRat e n d) → (decide (n / d <
 
 /-- Extension for the `positivity` tactic: `Real.log` of a natural number is always nonnegative. -/
 @[positivity Real.log (Nat.cast _)]
-meta def evalLogNatCast : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalLogNatCast : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.log (Nat.cast $a)) =>
+    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.nonnegative q(Real.log_natCast_nonneg $a))
   | _, _, _ => throwError "not Real.log"
 
 /-- Extension for the `positivity` tactic: `Real.log` of an integer is always nonnegative. -/
 @[positivity Real.log (Int.cast _)]
-meta def evalLogIntCast : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalLogIntCast : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.log (Int.cast $a)) =>
+    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.nonnegative q(Real.log_intCast_nonneg $a))
   | _, _, _ => throwError "not Real.log"
 
 /-- Extension for the `positivity` tactic: `Real.log` of a numeric literal. -/
 @[positivity Real.log _]
-meta def evalLogNatLit : PositivityExt where eval {u α} _ _ e := do
+meta def evalLogNatLit : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.log $a) =>
+    let some _ := pα? | pure .none
     match ← NormNum.derive a with
     | .isNat (_ : Q(AddMonoidWithOne ℝ)) lit p =>
       assumeInstancesCommute
