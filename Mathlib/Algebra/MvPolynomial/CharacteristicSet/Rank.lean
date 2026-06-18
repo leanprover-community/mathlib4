@@ -8,10 +8,10 @@ module
 public import Mathlib.Algebra.MvPolynomial.Variables
 
 /-!
-# Rank and Orderings on polynomials and triangular sets
+# Rank and Orderings on polynomials
 
-This file defines rank structures on multivariate polynomials and triangular sets,
-which are essential for the Characteristic Set Method (Wu's Method).
+This file defines rank structures on multivariate polynomials,
+which are essential for the Characteristic Set Method (Wu-Ritt Method).
 
 ## Main definitions
 
@@ -25,41 +25,41 @@ which are essential for the Characteristic Set Method (Wu's Method).
 
 -/
 
-@[expose] public section
+public section
 
 variable {R σ : Type*} [CommSemiring R] [LinearOrder σ] {p q : MvPolynomial σ R}
 
 namespace MvPolynomial
 
-section Rank
-
-/-- The rank of a polynomial `p` is the pair `(max_vars p, degree p)`,
+/-- The rank of a polynomial `p` is the pair `(p.vars.max, p.mainDegree.card)`,
 which is ordered lexicographically. -/
-noncomputable def rank (p : MvPolynomial σ R) : WithBot σ ×ₗ ℕ := (p.vars.max, p.mainDegree)
+noncomputable def rank (p : MvPolynomial σ R) : WithBot σ ×ₗ ℕ := (p.vars.max, p.mainDegree.card)
+
+namespace Rank
 
 theorem rank_eq_iff : p.rank = q.rank ↔
-    p.vars.max = q.vars.max ∧ p.mainDegree = q.mainDegree := Prod.mk_inj
+    p.vars.max = q.vars.max ∧ p.mainDegree.card = q.mainDegree.card := Prod.mk_inj
 
-instance instPreorder : Preorder (MvPolynomial σ R) where
+scoped instance : Preorder (MvPolynomial σ R) where
   le := InvImage (· ≤ ·) rank
   le_refl := fun _ ↦ by rw [InvImage]
   le_trans := fun _ _ _ ↦ le_trans
 
 theorem le_def' : p ≤ q ↔ p.rank ≤ q.rank := Iff.rfl
 
-noncomputable instance instDecidableLE : DecidableLE (MvPolynomial σ R) := fun _ _ ↦
+noncomputable scoped instance : DecidableLE (MvPolynomial σ R) := fun _ _ ↦
   decidable_of_iff _ le_def'.symm
 
-noncomputable instance instDecidableLT : DecidableLT (MvPolynomial σ R) := decidableLTOfDecidableLE
+noncomputable scoped instance : DecidableLT (MvPolynomial σ R) := decidableLTOfDecidableLE
 
-instance instIsTotalLe : Std.Total (@LE.le (MvPolynomial σ R) _) where
+scoped instance instIsTotalLe : Std.Total (@LE.le (MvPolynomial σ R) _) where
   total p q := le_total p.rank q.rank
 
 theorem le_def : p ≤ q ↔ p.vars.max < q.vars.max ∨
-    p.vars.max = q.vars.max ∧ p.mainDegree ≤ q.mainDegree := Prod.lex_def
+    p.vars.max = q.vars.max ∧ p.mainDegree.card ≤ q.mainDegree.card := Prod.lex_def
 
 theorem le_iff_not_imp : p ≤ q ↔ ¬p.vars.max < q.vars.max →
-    p.vars.max = q.vars.max ∧ p.mainDegree ≤ q.mainDegree :=
+    p.vars.max = q.vars.max ∧ p.mainDegree.card ≤ q.mainDegree.card :=
   Iff.trans le_def <| Decidable.or_iff_not_imp_left
 
 theorem max_vars_le_of_le : p ≤ q → p.vars.max ≤ q.vars.max :=
@@ -70,11 +70,11 @@ theorem lt_def' : p < q ↔ p.rank < q.rank := Iff.trans lt_iff_le_not_ge (by
   exact le_of_lt)
 
 theorem lt_def : p < q ↔ p.vars.max < q.vars.max ∨
-    p.vars.max = q.vars.max ∧ p.mainDegree < q.mainDegree :=
+    p.vars.max = q.vars.max ∧ p.mainDegree.card < q.mainDegree.card :=
   Iff.trans lt_def' Prod.lex_def
 
 theorem lt_iff_not_imp : p < q ↔ ¬p.vars.max < q.vars.max
-    → p.vars.max = q.vars.max ∧ p.mainDegree < q.mainDegree :=
+    → p.vars.max = q.vars.max ∧ p.mainDegree.card < q.mainDegree.card :=
   Iff.trans lt_def <| Decidable.or_iff_not_imp_left
 
 theorem lt_of_max_vars_lt : p.vars.max < q.vars.max → p < q :=
@@ -87,9 +87,9 @@ theorem lt_of_max_vars_lt : p.vars.max < q.vars.max → p < q :=
 theorem X_lt_of_lt [Nontrivial R] {i j : σ} : i < j → (X i : MvPolynomial σ R) < X j := fun h ↦ by
   apply lt_of_max_vars_lt; simpa only [vars_X, Finset.max_singleton, WithBot.coe_lt_coe] using h
 
-instance instSetoid : Setoid (MvPolynomial σ R) := AntisymmRel.setoid (MvPolynomial σ R) (· ≤ ·)
+scoped instance : Setoid (MvPolynomial σ R) := AntisymmRel.setoid (MvPolynomial σ R) (· ≤ ·)
 
-noncomputable instance instDecidableRelEquiv : @DecidableRel (MvPolynomial σ R) _ (· ≈ ·) :=
+noncomputable scoped instance : @DecidableRel (MvPolynomial σ R) _ (· ≈ ·) :=
   fun _ _ ↦ instDecidableAnd
 
 theorem equiv_def'' : p ≈ q ↔ p ≤ q ∧ q ≤ p := Iff.rfl
@@ -100,7 +100,7 @@ theorem equiv_def' : p ≈ q ↔ p.rank = q.rank := Iff.trans equiv_def''
 theorem equiv_def : p ≈ q ↔ ¬p < q ∧ ¬q < p := Iff.trans equiv_def''
   (by rw [not_lt_iff_ge, not_lt_iff_ge, and_comm])
 
-theorem equiv_iff : p ≈ q ↔ p.vars.max = q.vars.max ∧ p.mainDegree = q.mainDegree :=
+theorem equiv_iff : p ≈ q ↔ p.vars.max = q.vars.max ∧ p.mainDegree.card = q.mainDegree.card :=
   Iff.trans equiv_def' rank_eq_iff
 
 theorem le_iff_lt_or_equiv : p ≤ q ↔ p < q ∨ p ≈ q := le_iff_lt_or_antisymmRel
@@ -114,8 +114,6 @@ theorem equiv_of_le_of_ge : p ≤ q → q ≤ p → p ≈ q := And.intro
 protected theorem zero_le : 0 ≤ p :=
   le_def'.mpr <| StrictMono.minimal_preimage_bot (fun ⦃_ _⦄ a ↦ a) rfl p.rank
 
-end Rank
-
 section WellFounded
 
 theorem wellFoundedLT_variables_of_wellFoundedLT [Nontrivial R] :
@@ -125,7 +123,7 @@ theorem wellFoundedLT_variables_of_wellFoundedLT [Nontrivial R] :
   rcases nonempty_subtype.mp h with ⟨f, hf⟩
   exact ⟨X ∘ f, fun n ↦ X_lt_of_lt <| hf n⟩
 
-instance instWellFoundedLT [WellFoundedLT σ] : WellFoundedLT (MvPolynomial σ R) :=
+scoped instance [WellFoundedLT σ] : WellFoundedLT (MvPolynomial σ R) :=
   Subrelation.isWellFounded (InvImage _ _) lt_def'.mp
 
 theorem wellFoundedLT_iff [Nontrivial R] : WellFoundedLT (MvPolynomial σ R) ↔ WellFoundedLT σ :=
@@ -143,5 +141,7 @@ noncomputable def Set.min (h : PS.Nonempty) : MvPolynomial σ R := Exists.choose
 theorem Set.min_mem (h : PS.Nonempty) : (min PS h) ∈ PS := (Exists.choose_spec (has_min PS h)).1
 
 end WellFounded
+
+end Rank
 
 end MvPolynomial
