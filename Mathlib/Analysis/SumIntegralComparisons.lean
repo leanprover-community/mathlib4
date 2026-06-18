@@ -217,15 +217,10 @@ theorem AntitoneOn.tsum_comp_add_le_integral (N : ℕ) (anti : AntitoneOn f (Ici
   · intro M
     calc
     _ = ∑ n ∈ Finset.Ico N (N + M), f (n + 1 : ℕ) := by
-      rw [← Finset.sum_image (g := (fun n ↦ n + N)) (f := (fun (n : ℕ) ↦ f (n + 1 : ℕ)))]
-      · congr
-        ext n
-        simp only [Finset.mem_image, Finset.mem_range, Finset.mem_Ico]
-        constructor
-        · rintro ⟨m, hm⟩
-          grind
-        · exact fun _ ↦ ⟨n - N,(by grind)⟩
-      · simp
+      rw [Finset.sum_Ico_eq_sum_range]
+      refine Finset.sum_congr (by congr; grind) fun n hn ↦ ?_
+      congr 2
+      ring
     _ ≤ _ := by
       exact AntitoneOn.sum_Ico_le_integral (by grind) (anti.mono Icc_subset_Ici_self)
         integrable nonneg
