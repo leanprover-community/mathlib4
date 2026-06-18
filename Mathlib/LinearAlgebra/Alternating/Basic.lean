@@ -93,7 +93,7 @@ section Coercions
 
 instance instFunLike : FunLike (M [⋀^ι]→ₗ[R] N) (ι → M) N where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     rcases f with ⟨⟨_, _, _⟩, _⟩
     rcases g with ⟨⟨_, _, _⟩, _⟩
     congr
