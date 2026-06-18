@@ -15,26 +15,16 @@ public import Mathlib.RingTheory.Support
 
 /-!
 
-# The Rees theorem
+# Hom(N,M) is subsingleton iff there exists a smul regular element of M in ann(N)
 
-In this file we prove the Rees theorem for depth, which relates the vanishing of
-certain `Ext` groups and the length of a maximal regular sequence in a certain ideal.
+Let `M` and `N` be `R`-modules. In this section we prove that `Hom(N,M)` is subsingleton iff
+there exist `r : R`, such that `IsSMulRegular M r` and `r ∈ ann(N)`.
+This is the case if `Depth[I](M) = 0`.
 
-## Main results
+## Main statements
 
-* `IsSMulRegular.subsingleton_linearMap_iff` : for finitely generated `R`-module `M, N`,
-  `Hom(N, M) = 0` iff there is an `M`-regular element in `Module.annihilator R N`.
-  This is the case for `n = 0` in the Rees theorem.
-
-* `exists_isRegular_tfae` (Rees theorem) : For any `n : ℕ`, noetherian ring `R`, `I : Ideal R`, and
-  finitely generated and nontrivial `R`-module `M` satisfying `IM < M`,
-  the following are equivalent:
-  · for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
-    zero locus of `I`, `∀ i < n, Ext N M i = 0`
-  · `∀ i < n, Ext (A⧸I) M i = 0`
-  · there exists a `N : ModuleCat R` finitely generated and nontrivial with support equal to the
-    zero locus of `I`, `∀ i < n, Ext N M i = 0`
-  · there exists a `M`-regular sequence of length `n` with every element in `I`
+* `IsSMulRegular.subsingleton_linearMap_iff` : for `R` module `N M`, `Hom(N, M) = 0`
+  iff there is a `M`-regular in `Module.annihilator R N`.
 
 -/
 
