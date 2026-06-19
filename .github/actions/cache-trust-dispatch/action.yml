@@ -66,6 +66,18 @@ runs:
         # be 403'd by Azure regardless. The dispatch exists so the workflow
         # does the right thing in the honest case; defence in depth is RBAC.
 
+        # Privileged containers (master, nightly-testing, pr-toolchain-tests) are
+        # writable only by a repo's own native CI, whose OIDC token is RBAC-scoped
+        # to match. A cross-repo pull request is built by build_fork.yml with
+        # fork-trust credentials whatever repo the PR head lives on (e.g. a `bump/*`
+        # branch on the mathlib4-nightly-testing fork), so it can only write
+        # `forks`. `GITHUB_REPOSITORY` is the repo the workflow runs as (the base
+        # repo for `pull_request_target`), i.e. the one whose credentials this job
+        # holds; when it differs from `$REPO`, the build is a fork and targets
+        # `forks` regardless of the head repo's own trust class.
+        if [ "$REPO" != "$GITHUB_REPOSITORY" ]; then
+          PRIMARY="forks"
+        else
         case "$REPO" in
           "leanprover-community/mathlib4")
             case "$BRANCH" in
@@ -121,6 +133,7 @@ runs:
             PRIMARY="forks"
             ;;
         esac
+        fi
 
         # Per-commit cache namespace, only for fork-trust uploads. Closes the
         # within-fork temporal replay attack: each commit's CI run gets its
