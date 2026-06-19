@@ -629,7 +629,7 @@ theorem ae_restrict_of_ae_restrict_inter_Ioo {μ : Measure ℝ} [NullSingletonCl
     two endpoints, which don't matter since `μ` does not have any atom). -/
   let T : s × s → Set ℝ := fun p => Ioo p.1 p.2
   let u := ⋃ i : ↥s × ↥s, T i
-  have hfinite : (s \ u).Finite := s.finite_diff_iUnion_Ioo'
+  have hfinite : (s \ u).Finite := s.finite_sdiff_iUnion_Ioo'
   obtain ⟨A, A_count, hA⟩ :
     ∃ A : Set (↥s × ↥s), A.Countable ∧ ⋃ i ∈ A, T i = ⋃ i : ↥s × ↥s, T i :=
     isOpen_iUnion_countable _ fun p => isOpen_Ioo
@@ -663,7 +663,7 @@ theorem ae_of_mem_of_ae_of_mem_inter_Ioo {μ : Measure ℝ} [NullSingletonClass 
     two endpoints, which don't matter since `μ` does not have any atom). -/
   let T : s × s → Set ℝ := fun p => Ioo p.1 p.2
   let u := ⋃ i : ↥s × ↥s, T i
-  have hfinite : (s \ u).Finite := s.finite_diff_iUnion_Ioo'
+  have hfinite : (s \ u).Finite := s.finite_sdiff_iUnion_Ioo'
   obtain ⟨A, A_count, hA⟩ :
     ∃ A : Set (↥s × ↥s), A.Countable ∧ ⋃ i ∈ A, T i = ⋃ i : ↥s × ↥s, T i :=
     isOpen_iUnion_countable _ fun p => isOpen_Ioo
