@@ -38,15 +38,10 @@ structure LieRinehartSubalgebra extends Submodule A L where
   lie_mem' {a b} : a ∈ carrier → b ∈ carrier → ⁅a, b⁆ ∈ carrier
 
 instance : Zero (LieRinehartSubalgebra A L) :=
-  ⟨⟨0, @fun x y hx _hy ↦ by
-    rw [(Submodule.mem_bot A).1 hx, zero_lie]
-    exact Submodule.zero_mem 0⟩⟩
+  ⟨⟨0, fun {x y hx _hy} ↦ by simp [(Submodule.mem_bot A).mp hx]⟩⟩
 
 instance : Inhabited (LieRinehartSubalgebra A L) :=
   ⟨0⟩
-
-instance : Coe (LieRinehartSubalgebra A L) (Submodule A L) :=
-  ⟨LieRinehartSubalgebra.toSubmodule⟩
 
 namespace LieRinehartSubalgebra
 
@@ -63,7 +58,7 @@ instance : PartialOrder (LieRinehartSubalgebra A L) := .ofSetLike (LieRinehartSu
 instance : AddSubgroupClass (LieRinehartSubalgebra A L) L where
   add_mem := Submodule.add_mem _
   zero_mem L' := L'.zero_mem'
-  neg_mem {L'} x hx := show -x ∈ (L' : Submodule A L) from neg_mem hx
+  neg_mem {L'} x hx := show -x ∈ L'.toSubmodule from neg_mem hx
 
 instance : SMulMemClass (LieRinehartSubalgebra A L) A L where
   smul_mem {s} := SMulMemClass.smul_mem (s := s.toSubmodule)
@@ -102,7 +97,7 @@ theorem mem_mk_iff (S : Set L) (h₁ h₂ h₃ h₄) {x : L} :
   Iff.rfl
 
 @[simp]
-theorem mem_toSubmodule {x : L} : x ∈ (L' : Submodule A L) ↔ x ∈ L' :=
+theorem mem_toSubmodule {x : L} : x ∈ L'.toSubmodule ↔ x ∈ L' :=
   Iff.rfl
 
 @[simp]
@@ -134,7 +129,7 @@ theorem mk_coe (S : Set L) (h₁ h₂ h₃ h₄) :
   rfl
 
 theorem toSubmodule_mk (p : Submodule A L) (h) :
-    (({ p with lie_mem' := h } : LieRinehartSubalgebra A L) : Submodule A L) = p := rfl
+    ({ p with lie_mem' := h } : LieRinehartSubalgebra A L).toSubmodule = p := rfl
 
 theorem coe_injective : Function.Injective ((↑) : LieRinehartSubalgebra A L → Set L) :=
   SetLike.coe_injective
@@ -143,17 +138,13 @@ theorem coe_injective : Function.Injective ((↑) : LieRinehartSubalgebra A L �
 theorem coe_set_eq (L₁' L₂' : LieRinehartSubalgebra A L) : (L₁' : Set L) = L₂' ↔ L₁' = L₂' :=
   SetLike.coe_set_eq
 
-theorem toSubmodule_injective : Function.Injective ((↑) : LieRinehartSubalgebra A L → Submodule A L)
-    := fun L₁' L₂' h ↦ by
+theorem toSubmodule_injective : Function.Injective (toSubmodule (A := A) (L := L)) := by
+  intro L₁' L₂' h
   rw [SetLike.ext'_iff] at h
   rw [← coe_set_eq]
   exact h
 
-@[simp]
-theorem toSubmodule_inj (L₁' L₂' : LieRinehartSubalgebra A L) :
-    (L₁' : Submodule A L) = (L₂' : Submodule A L) ↔ L₁' = L₂' := toSubmodule_injective.eq_iff
-
-theorem coe_toSubmodule : ((L' : Submodule A L) : Set L) = L' :=
+theorem coe_toSubmodule : (L'.toSubmodule : Set L) = L' :=
   rfl
 
 section LieModule
@@ -191,10 +182,7 @@ variable (R : Type*) [CommRing R] [Algebra R A] [LieAlgebra R L] [LieRinehartAlg
 
 /-- A Lie-Rinehart subalgebra of a Lie-Rinehart algebra forms a Lie algebra. -/
 instance lieAlgebra : LieAlgebra R L' where
-  lie_smul := by
-    { intros
-      apply SetCoe.ext
-      apply lie_smul }
+  lie_smul := by aesop
 
 /-- Converts a Lie-Rinehart subalgebra to the corresponding Lie subalgebra. -/
 @[expose] def toLieSubalgebra : LieSubalgebra R L where
