@@ -273,5 +273,8 @@ theorem toMatrix_map (b : Basis ι R M) (f : M ≃ₗ[R] N) (v : ι → N) :
   ext
   simp only [toMatrix_apply, Basis.map, LinearEquiv.trans_apply, (· ∘ ·)]
 
+lemma _root_.LinearMap.toMatrix_eq_basisToMatrix [Fintype ι] [DecidableEq ι] [Finite κ] :
+    f.toMatrix b c = c.toMatrix (f ∘ b) := by ext; simp [LinearMap.toMatrix_apply, toMatrix_apply]
+
 end Module.Basis
 end MulLinearMapToMatrix
