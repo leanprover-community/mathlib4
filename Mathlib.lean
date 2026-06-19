@@ -4,6 +4,8 @@ public import Std
 public import Batteries
 public import Mathlib.Algebra.AddConstMap.Basic
 public import Mathlib.Algebra.AddConstMap.Equiv
+public import Mathlib.Algebra.AddTorsor.Basic
+public import Mathlib.Algebra.AddTorsor.Defs
 public import Mathlib.Algebra.AffineMonoid.Basic
 public import Mathlib.Algebra.AffineMonoid.Embedding
 public import Mathlib.Algebra.AffineMonoid.Irreducible
@@ -1456,6 +1458,7 @@ public import Mathlib.AlgebraicGeometry.Sites.BigZariski
 public import Mathlib.AlgebraicGeometry.Sites.ConstantSheaf
 public import Mathlib.AlgebraicGeometry.Sites.ElladicCohomology
 public import Mathlib.AlgebraicGeometry.Sites.Etale
+public import Mathlib.AlgebraicGeometry.Sites.EtalePoint
 public import Mathlib.AlgebraicGeometry.Sites.Fpqc
 public import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 public import Mathlib.AlgebraicGeometry.Sites.Pretopology
@@ -1840,6 +1843,7 @@ public import Mathlib.Analysis.Calculus.TangentCone.ProperSpace
 public import Mathlib.Analysis.Calculus.TangentCone.Real
 public import Mathlib.Analysis.Calculus.TangentCone.Seq
 public import Mathlib.Analysis.Calculus.Taylor
+public import Mathlib.Analysis.Calculus.TaylorIntegral
 public import Mathlib.Analysis.Calculus.UniformLimitsDeriv
 public import Mathlib.Analysis.Calculus.VectorField
 public import Mathlib.Analysis.Complex.AbelLimit
@@ -1912,6 +1916,7 @@ public import Mathlib.Analysis.Complex.ValueDistribution.FirstMainTheorem
 public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Asymptotic
 public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Basic
 public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.Basic
+public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.IntegralPresentation
 public import Mathlib.Analysis.ConstantSpeed
 public import Mathlib.Analysis.Convex.AmpleSet
 public import Mathlib.Analysis.Convex.Approximation
@@ -4384,6 +4389,7 @@ public import Mathlib.Data.String.Basic
 public import Mathlib.Data.String.Defs
 public import Mathlib.Data.String.Lemmas
 public import Mathlib.Data.Subtype
+public import Mathlib.Data.SubtypeNeLift
 public import Mathlib.Data.Sum.Basic
 public import Mathlib.Data.Sum.Interval
 public import Mathlib.Data.Sum.Lattice
@@ -4548,6 +4554,7 @@ public import Mathlib.FieldTheory.Tower
 public import Mathlib.Geometry.Convex.Cone.Basic
 public import Mathlib.Geometry.Convex.Cone.Dual
 public import Mathlib.Geometry.Convex.Cone.DualFinite
+public import Mathlib.Geometry.Convex.Cone.Face.Basic
 public import Mathlib.Geometry.Convex.Cone.Pointed
 public import Mathlib.Geometry.Convex.Cone.Simplicial
 public import Mathlib.Geometry.Convex.Cone.TensorProduct
@@ -4661,6 +4668,7 @@ public import Mathlib.Geometry.Manifold.Submersion
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
+public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Metric
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
 public import Mathlib.Geometry.Manifold.VectorBundle.FiberwiseLinear
 public import Mathlib.Geometry.Manifold.VectorBundle.Hom
@@ -5087,6 +5095,7 @@ public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.MvPolynomial
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Projective
 public import Mathlib.LinearAlgebra.Matrix.Gershgorin
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
+public import Mathlib.LinearAlgebra.Matrix.HadamardMatrix
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
 public import Mathlib.LinearAlgebra.Matrix.Ideal
 public import Mathlib.LinearAlgebra.Matrix.Integer
@@ -5140,12 +5149,14 @@ public import Mathlib.LinearAlgebra.PID
 public import Mathlib.LinearAlgebra.PerfectPairing.Basic
 public import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 public import Mathlib.LinearAlgebra.Pi
-public import Mathlib.LinearAlgebra.PiTensorProduct
+public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basis
 public import Mathlib.LinearAlgebra.PiTensorProduct.DFinsupp
 public import Mathlib.LinearAlgebra.PiTensorProduct.DirectSum
 public import Mathlib.LinearAlgebra.PiTensorProduct.Dual
+public import Mathlib.LinearAlgebra.PiTensorProduct.Finite
 public import Mathlib.LinearAlgebra.PiTensorProduct.Finsupp
+public import Mathlib.LinearAlgebra.PiTensorProduct.Generators
 public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.LinearAlgebra.Projectivization.Action
@@ -5650,6 +5661,7 @@ public import Mathlib.ModelTheory.Types
 public import Mathlib.ModelTheory.Ultraproducts
 public import Mathlib.NumberTheory.ADEInequality
 public import Mathlib.NumberTheory.AbelSummation
+public import Mathlib.NumberTheory.AlmostPrime
 public import Mathlib.NumberTheory.ArithmeticFunction.Carmichael
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.NumberTheory.ArithmeticFunction.LFunction
@@ -6152,9 +6164,12 @@ public import Mathlib.Order.ScottContinuity.Complete
 public import Mathlib.Order.ScottContinuity.Prod
 public import Mathlib.Order.SemiconjSup
 public import Mathlib.Order.Set
+public import Mathlib.Order.SetAccumulate
+public import Mathlib.Order.SetDissipate
 public import Mathlib.Order.SetIsMax
 public import Mathlib.Order.SetNotation
 public import Mathlib.Order.Shrink
+public import Mathlib.Order.Std
 public import Mathlib.Order.Sublattice
 public import Mathlib.Order.Sublocale
 public import Mathlib.Order.SuccPred.Archimedean
@@ -7194,12 +7209,14 @@ public import Mathlib.Tactic.ClickSuggestions.Util
 public import Mathlib.Tactic.Coe
 public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.ComputeAsymptotics.Lemmas
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basic
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Corecursion
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Defs
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Majorized
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Monomial.Basic
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Monomial.Predicates
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
 public import Mathlib.Tactic.ComputeDegree
 public import Mathlib.Tactic.CongrExclamation
 public import Mathlib.Tactic.CongrM
@@ -7496,6 +7513,7 @@ public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.Equicontinuity
 public import Mathlib.Topology.Algebra.Field
 public import Mathlib.Topology.Algebra.FilterBasis
+public import Mathlib.Topology.Algebra.Group.AddTorsor
 public import Mathlib.Topology.Algebra.Group.Basic
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 public import Mathlib.Topology.Algebra.Group.Compact
@@ -7610,6 +7628,7 @@ public import Mathlib.Topology.Algebra.Order.Support
 public import Mathlib.Topology.Algebra.Order.UpperLower
 public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.Algebra.PontryaginDual
+public import Mathlib.Topology.Algebra.ProperAction.AddTorsor
 public import Mathlib.Topology.Algebra.ProperAction.Basic
 public import Mathlib.Topology.Algebra.ProperAction.CompactlyGenerated
 public import Mathlib.Topology.Algebra.ProperAction.ProperlyDiscontinuous
@@ -8025,6 +8044,7 @@ public import Mathlib.Topology.Order.T5
 public import Mathlib.Topology.Order.UpperLowerSetTopology
 public import Mathlib.Topology.Order.WithTop
 public import Mathlib.Topology.Partial
+public import Mathlib.Topology.PartialHomeomorph.Defs
 public import Mathlib.Topology.PartitionOfUnity
 public import Mathlib.Topology.Path
 public import Mathlib.Topology.Perfect
