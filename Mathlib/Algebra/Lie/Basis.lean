@@ -267,7 +267,7 @@ def baseSupp (i : ι) : Dual R b.cartan :=
 @[simp] lemma baseSupp_apply_h' (i j : ι) :
     b.baseSupp i (b.h' j) = b.A i j := by
   classical
-  simp only [baseSupp, _root_.sum_apply]
+  simp only [baseSupp, sum_apply]
   let e := LinearEquiv.ofEq _ _ b.coe_cartan_eq_span
   let f (k : ι) : R := b.A i k • (Basis.span b.linInd).repr (e <| b.h' j) k
   change ∑ k, f k = _
