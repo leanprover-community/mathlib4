@@ -39,7 +39,7 @@ theorem of_monotone_of_lt_cof (hf : Monotone f) (hα : lift.{u} #β < lift.{v} (
   have : Nonempty α := by by_contra!; simp at hα
   refine .of_not_isCofinal_rangeSplitting hf ?_
   contrapose! hα
-  classical let := hf.linearOrderRange
+  classical let := hf.isChain_range.linearOrder
   rw [← lift_cof_congr_of_strictMono (rangeSplitting_strictMono hf) hα, lift_le]
   exact (cof_le_cardinalMk _).trans (mk_set_le _)
 

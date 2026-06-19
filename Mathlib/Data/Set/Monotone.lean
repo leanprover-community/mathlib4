@@ -103,24 +103,6 @@ end Mono
 
 end Set
 
-/-- The range of a monotone function from a linear order is a linear order. -/
-@[expose, implicit_reducible]
-def Monotone.linearOrderRange [LinearOrder α] [PartialOrder β] [DecidableLE β]
-    {f : α → β} (hf : Monotone f) : LinearOrder (Set.range f) where
-  le_total := by
-    rintro ⟨_, a, rfl⟩ ⟨_, b, rfl⟩
-    exact (le_total a b).imp (fun h ↦ hf h) (fun h ↦ hf h)
-  toDecidableLE x y := inferInstanceAs (Decidable (x.1 ≤ y.1))
-
-/-- The range of an antitone function from a linear order is a linear order. -/
-@[expose, implicit_reducible]
-def Antitone.linearOrderRange [LinearOrder α] [PartialOrder β] [DecidableLE β]
-    {f : α → β} (hf : Antitone f) : LinearOrder (Set.range f) where
-  le_total := by
-    rintro ⟨_, a, rfl⟩ ⟨_, b, rfl⟩
-    exact (le_total b a).imp (fun h ↦ hf h) (fun h ↦ hf h)
-  toDecidableLE x y := inferInstanceAs (Decidable (x.1 ≤ y.1))
-
 open Function
 
 /-! ### Monotone -/
