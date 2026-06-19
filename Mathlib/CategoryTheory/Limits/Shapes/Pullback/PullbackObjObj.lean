@@ -118,6 +118,8 @@ def flip : F.flip.PushoutObjObj f₂ f₁ where
   isPushout := sq.isPushout.flip
   ι := sq.ι
 
+@[deprecated (since := "2026-06-19")] alias ι_flip := flip_ι
+
 section
 
 variable {F' : C₁ ⥤ C₂ ⥤ C₃} (e : F ≅ F')
