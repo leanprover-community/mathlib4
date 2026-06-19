@@ -40,6 +40,9 @@ including inference of the model with corners.
 | `TangentSpace% x`        | `TangentSpace I x`                  |
 | `tangentMap[s] f`        | `tangentMapWithin I J f s`          |
 | `tangentMap% f`          | `tangentMap I J f`                  |
+| `UniqueMDiff[s]`         | `UniqueMDiffOn I s`                 |
+| `UniqueMDiffAt[s] x`     | `UniqueMDiffWithinAt I s x`         |
+
 
 In each of these cases, the models with corners are inferred from the domain and codomain of `f`.
 The search for models with corners uses the local context and is (almost) only based on expression

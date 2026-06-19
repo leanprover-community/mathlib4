@@ -237,39 +237,6 @@ variable {φ : OpenPartialHomeomorph M E} {ψ : PartialEquiv M E}
 #guard_msgs in
 #check MDiffAt[s] ψ
 
-/-- info: UniqueMDiffOn I s : Prop -/
-#guard_msgs in
-#check UniqueMDiff[s]
-
-/-- info: UniqueMDiffOn (modelWithCornersSelf Real Real) (Set.Icc 0 1) : Prop -/
-#guard_msgs in
-#check UniqueMDiff[(Set.Icc 0 1 : Set ℝ)]
-
-/-- error: `Real` has type `Type` which is not of the form `Set α` for some `α`. -/
-#guard_msgs in
-#check UniqueMDiff[ℝ]
-
-/-- info: UniqueMDiffWithinAt I s : M → Prop -/
-#guard_msgs in
-#check UniqueMDiffAt[s]
-
-/-- info: UniqueMDiffWithinAt I s m : Prop -/
-#guard_msgs in
-#check UniqueMDiffAt[s] m
-
-/-- info: UniqueMDiffWithinAt I Set.univ m : Prop -/
-#guard_msgs in
-#check UniqueMDiffAt[(Set.univ : Set M)] m
-
--- In the future, the elaborators should take the type of `m` into account.
-/--
-error: Could not find a model with corners for `?m.52`.
-
-Hint: the expected type contains metavariables, maybe you need to provide an implicit argument
--/
-#guard_msgs in
-#check UniqueMDiffAt[Set.univ] m
-
 -- Testing an error message.
 section
 
@@ -561,6 +528,73 @@ Hint: you can use the `T%` elaborator to convert a dependent function to a non-d
 end
 
 end differentiability
+
+/-! Tests for the elaborators for `UniqueMDiff{WithinAt,On}`. -/
+section unique
+
+variable {EM' : Type*} [NormedAddCommGroup EM']
+  [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] {f : M → M'} {s : Set M} {m : M}
+
+/-- info: UniqueMDiffOn I s : Prop -/
+#guard_msgs in
+#check UniqueMDiff[s]
+
+/-- info: UniqueMDiffOn (modelWithCornersSelf Real Real) (Set.Icc 0 1) : Prop -/
+#guard_msgs in
+#check UniqueMDiff[(Set.Icc 0 1 : Set ℝ)]
+
+/-- error: `Real` has type `Type` which is not of the form `Set α` for some `α`. -/
+#guard_msgs in
+#check UniqueMDiff[ℝ]
+
+/-- info: UniqueMDiffWithinAt I s : M → Prop -/
+#guard_msgs in
+#check UniqueMDiffAt[s]
+
+/-- info: UniqueMDiffWithinAt I s m : Prop -/
+#guard_msgs in
+#check UniqueMDiffAt[s] m
+
+/-- info: UniqueMDiffWithinAt I Set.univ m : Prop -/
+#guard_msgs in
+#check UniqueMDiffAt[(Set.univ : Set M)] m
+
+-- In the future, the elaborators should take the type of `m` into account.
+/--
+error: Could not find a model with corners for `?_`.
+
+Hint: the expected type contains metavariables, maybe you need to provide an implicit argument
+-/
+#guard_msgs in
+set_option pp.mvars.anonymous false in
+#check UniqueMDiffAt[Set.univ] m
+
+variable {s : TopologicalSpace.Opens M}
+
+/-- info: UniqueMDiffOn I s.carrier : Prop -/
+#guard_msgs in
+#check UniqueMDiff[s.carrier]
+
+/-- error: `s` has type `TopologicalSpace.Opens M` which is not of the form `Set α` for some `α`. -/
+#guard_msgs in
+#check UniqueMDiff[s]
+
+/--
+error: Application type mismatch: The argument
+  s
+has type
+  TopologicalSpace.Opens M
+but is expected to have type
+  Set ?_
+in the application
+  UniqueMDiffOn I s
+-/
+#guard_msgs in
+set_option pp.mvars.anonymous false in
+#check UniqueMDiffOn I s
+
+end unique
 
 /-! Tests for the custom elaborators for `ContMDiff{WithinAt,At,On}` -/
 section smoothness
