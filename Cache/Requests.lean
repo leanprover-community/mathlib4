@@ -774,7 +774,7 @@ def downloadFiles
     -- already on disk.
     finalState := s
     downloadFailed := s.failed
-    remaining := remaining.withoutHashes served
+    remaining := remaining.filter fun _ hash => !served.contains hash
     if unsafeMode then
       if let some sha := roundScope? then
         scopeServed := scopeServed.push (sha, before - remaining.size)
