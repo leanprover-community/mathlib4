@@ -41,7 +41,7 @@ subfield `F` is (isomorphic to) the maximal real subfield `K⁺` of `K`.
 
 * `NumberField.IsCMField.of_isMulCommutative`: A totally complex abelian extension of `ℚ` is CM.
 
-* `IsCyclotomicExtension.Rat.isCMField`: A nontrivial abelian extension of `ℚ` is CM.
+* `IsCyclotomicExtension.Rat.isCMField`: A nontrivial cyclotomic extension of `ℚ` is CM.
 
 ## Implementation note
 
@@ -86,7 +86,6 @@ instance isQuadraticExtension : IsQuadraticExtension K⁺ K :=
 instance isTotallyComplex : IsTotallyComplex K :=
   IsCMField.to_isTotallyComplex
 
-set_option backward.isDefEq.respectTransparency false in
 theorem card_infinitePlace_eq_card_infinitePlace [NumberField K] :
     Fintype.card (InfinitePlace K⁺) = Fintype.card (InfinitePlace K) := by
   rw [card_eq_nrRealPlaces_add_nrComplexPlaces, card_eq_nrRealPlaces_add_nrComplexPlaces,
@@ -199,13 +198,12 @@ An element of `K` is fixed by the complex conjugation iff it lies in `K⁺`.
 @[simp]
 theorem complexConj_eq_self_iff (x : K) :
     complexConj K x = x ↔ x ∈ K⁺ := by
-  convert (IntermediateField.mem_fixedField_iff (⊤ : Subgroup (K ≃ₐ[K⁺] K)) x).symm using 1
+  convert! (IntermediateField.mem_fixedField_iff (⊤ : Subgroup (K ≃ₐ[K⁺] K)) x).symm using 1
   · rw [← zpowers_complexConj_eq_top, Subgroup.forall_mem_zpowers]
     exact (MulAction.mem_fixedBy_zpowers_iff_mem_fixedBy (g := (complexConj K))).symm
   · rw [IsGalois.fixedField_top, IntermediateField.mem_bot]
     aesop
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem RingOfIntegers.complexConj_eq_self_iff (x : 𝓞 K) :
     complexConj K x = x ↔ ∃ y : 𝓞 K⁺, algebraMap (𝓞 K⁺) K y = x := by
   rw [complexConj_eq_self_iff]
@@ -279,7 +277,7 @@ theorem mem_realUnits_iff (u : (𝓞 K)ˣ) :
 theorem unitsComplexConj_eq_self_iff [Algebra.IsIntegral ℚ K] (u : (𝓞 K)ˣ) :
     unitsComplexConj K u = u ↔ u ∈ realUnits K := by
   simp_rw [Units.ext_iff, mem_realUnits_iff, RingOfIntegers.ext_iff, Units.coe_mapEquiv,
-    AlgEquiv.toRingEquiv_eq_coe, RingEquiv.coe_toMulEquiv, RingOfIntegers.mapRingEquiv_apply,
+    RingEquiv.coe_toMulEquiv, RingOfIntegers.mapRingEquiv_apply,
     AlgEquiv.coe_ringEquiv, Units.complexConj_eq_self_iff,
     IsScalarTower.algebraMap_apply (𝓞 K⁺) (𝓞 K) K]
 
@@ -363,7 +361,7 @@ noncomputable abbrev indexRealUnits : ℕ := (realUnits K ⊔ torsion K).index
 theorem indexRealUnits_mul_eq :
     indexRealUnits K * (unitsMulComplexConjInv K).range.index = 2 := by
   rw [indexRealUnits, sup_comm]
-  convert (Subgroup.index_map (torsion K) (unitsMulComplexConjInv K)).symm
+  convert! (Subgroup.index_map (torsion K) (unitsMulComplexConjInv K)).symm
   · rw [unitsMulComplexConjInv_ker]
   · rw [map_unitsMulComplexConjInv_torsion, IsCyclic.index_powMonoidHom_range, Nat.gcd_eq_right]
     rw [Nat.card_eq_fintype_card]
@@ -457,7 +455,6 @@ namespace CMExtension
 variable (F K : Type*) [Field F] [IsTotallyReal F] [Field K] [CharZero K] [Algebra.IsIntegral ℚ K]
   [IsTotallyComplex K] [Algebra F K] [IsQuadraticExtension F K]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_maximalRealSubfield (E : Subfield K) [IsTotallyReal E] [IsQuadraticExtension E K] :
     E = maximalRealSubfield K := by
   refine le_antisymm (IsTotallyReal.le_maximalRealSubfield E) ?_
@@ -468,7 +465,7 @@ theorem eq_maximalRealSubfield (E : Subfield K) [IsTotallyReal E] [IsQuadraticEx
     have := ((IntermediateField.isSimpleOrder_of_finrank_prime E K
       (IsQuadraticExtension.finrank_eq_two E K ▸ Nat.prime_two)).eq_bot_or_eq_top L).resolve_left ?_
     · simpa [L] using congr_arg IntermediateField.toSubfield this
-    · contrapose! h
+    · contrapose h
       rw [← SetLike.coe_set_eq, Subfield.coe_toIntermediateField] at h
       rw [← sup_eq_left, ← SetLike.coe_set_eq, h, IntermediateField.coe_bot]
       aesop
@@ -499,7 +496,7 @@ theorem equivMaximalRealSubfield_apply (x : F) :
 theorem algebraMap_equivMaximalRealSubfield_symm_apply (x : maximalRealSubfield K) :
     algebraMap F K ((CMExtension.equivMaximalRealSubfield F K).symm x) =
       algebraMap (maximalRealSubfield K) K x := by
-  simpa using (equivMaximalRealSubfield_apply F K ((equivMaximalRealSubfield F K).symm x)).symm
+  simpa using! (equivMaximalRealSubfield_apply F K ((equivMaximalRealSubfield F K).symm x)).symm
 
 end CMExtension
 
@@ -557,9 +554,6 @@ instance of_isAbelianGalois [IsAbelianGalois ℚ K] :
     exact hσ₁.comp _
   exact IsCMField.of_forall_isConj K hσ₂
 
-@[deprecated (since := "2025-11-19")] alias NumberField.CMExtension.of_isMulCommutative :=
-  NumberField.IsCMField.of_isAbelianGalois
-
 end NumberField.IsCMField
 namespace IsCyclotomicExtension.Rat
 
@@ -567,7 +561,7 @@ variable (K : Type*) [Field K] [CharZero K]
 
 open IntermediateField in
 /--
-A nontrivial abelian extension of `ℚ` is CM.
+A nontrivial cyclotomic extension of `ℚ` is CM.
 -/
 theorem isCMField {S : Set ℕ} (hS : ∃ n ∈ S, 2 < n) [IsCyclotomicExtension S ℚ K] :
     IsCMField K := by

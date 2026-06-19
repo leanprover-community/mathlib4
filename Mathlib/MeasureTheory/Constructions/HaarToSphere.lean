@@ -87,7 +87,7 @@ variable [FiniteDimensional ℝ E] [μ.IsAddHaarMeasure]
 @[simp]
 theorem toSphere_apply_univ : μ.toSphere univ = dim E * μ (ball 0 1) := by
   nontriviality E
-  rw [toSphere_apply_univ', measure_diff_null (measure_singleton _)]
+  rw [toSphere_apply_univ', measure_sdiff_null (measure_singleton _)]
 
 @[simp]
 theorem toSphere_real_apply_univ : μ.toSphere.real univ = dim E * μ.real (ball 0 1) := by
@@ -108,7 +108,7 @@ instance : IsFiniteMeasure μ.toSphere where
   measure_univ_lt_top := by
     rw [toSphere_apply_univ']
     exact ENNReal.mul_lt_top (ENNReal.natCast_lt_top _) <|
-      measure_ball_lt_top.trans_le' <| measure_mono diff_subset
+      measure_ball_lt_top.trans_le' <| measure_mono sdiff_subset
 
 /-- The measure on `(0, +∞)` that has density `(· ^ n)` with respect to the Lebesgue measure. -/
 def volumeIoiPow (n : ℕ) : Measure (Ioi (0 : ℝ)) :=
@@ -203,7 +203,6 @@ divided by the measure of the ball. -/
 noncomputable def toSphereBallBound (n : ℕ) (ε : ℝ) : ℝ≥0 :=
   if n ≠ 0 ∧ 0 < ε then n * ((min (Real.toNNReal ε) 2) / 4) ^ n else 1
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toSphereBallBound_pos (n : ℕ) (ε : ℝ) : 0 < toSphereBallBound n ε := by
   unfold toSphereBallBound
   split_ifs with h
@@ -271,6 +270,29 @@ lemma integrable_fun_norm_addHaar {f : ℝ → F} :
   · simp
   · measurability
   · simp
+
+lemma integrableOn_fun_norm_addHaar {f : ℝ → F} {r : ℝ} :
+    IntegrableOn (fun x : E => f ‖x‖) (ball (0 : E) r) μ ↔
+    IntegrableOn (fun y ↦ y ^ (Module.finrank ℝ E - 1) • f y) (Ioo 0 r) := by
+  calc
+    _ ↔ Integrable (fun x ↦ (Iio r).indicator f ‖x‖) μ := by
+      rw [← integrable_indicator_iff measurableSet_ball]
+      apply integrable_congr
+      filter_upwards with x
+      simp [indicator]
+    _ ↔ IntegrableOn ((Ioo 0 r).indicator fun y ↦ y ^ (Module.finrank ℝ E - 1) • f y) (Ioi 0) := by
+      rw [integrable_fun_norm_addHaar μ (f := indicator (Iio r) f),
+        integrableOn_congr_fun _ measurableSet_Ioi]
+      intro x (hx : 0 < x)
+      by_cases hxr : x < r <;> simp [hxr, hx]
+    _ ↔ Integrable ((Ioo 0 r).indicator fun y ↦ y ^ (Module.finrank ℝ E - 1) • f y) := by
+      rw [MeasureTheory.integrableOn_iff_integrable_of_support_subset]
+      intro x hx
+      simp only [support_indicator, mem_inter_iff, mem_Ioo, Function.mem_support, ne_eq,
+        smul_eq_zero, pow_eq_zero_iff', not_or, not_and, Decidable.not_not] at hx
+      refine mem_Ioi.mpr hx.1.1
+    _ ↔ IntegrableOn (fun y ↦ y ^ (Module.finrank ℝ E - 1) • f y) (Ioo 0 r) volume := by
+      rw [← integrable_indicator_iff measurableSet_Ioo, ← integrableOn_univ]
 
 lemma integral_fun_norm_addHaar (f : ℝ → F) :
     ∫ x, f (‖x‖) ∂μ = dim E • μ.real (ball 0 1) • ∫ y in Ioi (0 : ℝ), y ^ (dim E - 1) • f y :=

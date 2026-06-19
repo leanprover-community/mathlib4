@@ -178,7 +178,7 @@ theorem IsSymmSndFDerivWithinAt.iteratedFDerivWithin_cons {x v w : E}
     iteratedFDerivWithin 𝕜 2 f s x ![v, w] = iteratedFDerivWithin 𝕜 2 f s x ![w, v] := by
   simp_rw [isSymmSndFDerivWithinAt_iff_iteratedFDerivWithin hs hx, ContinuousMultilinearMap.ext_iff,
     ContinuousMultilinearMap.domDomCongr_apply] at hf
-  convert hf ![w, v] using 2
+  convert! hf ![w, v] using 2
   ext i
   fin_cases i <;> simp
 
@@ -249,7 +249,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
     rw [← smul_smul]
     apply s_conv.interior.add_smul_mem this _ ht
     rw [add_assoc] at hw
-    convert s_conv.add_smul_mem_interior xs hw ⟨hpos, h_lt_1.le⟩ using 1
+    convert! s_conv.add_smul_mem_interior xs hw ⟨hpos, h_lt_1.le⟩ using 1
     module
   -- define a function `g` on `[0,1]` (identified with `[v, v + w]`) such that `g 1 - g 0` is the
   -- quantity to be estimated. We will check that its derivative is given by an explicit
@@ -273,7 +273,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
     · apply_rules [HasDerivAt.hasDerivWithinAt, HasDerivAt.smul_const, hasDerivAt_mul_const]
     · suffices H : HasDerivWithinAt (fun u => ((u * h) ^ 2 / 2) • f'' w w)
           ((((2 : ℕ) : ℝ) * (t * h) ^ (2 - 1) * (1 * h) / 2) • f'' w w) (Icc 0 1) t by
-        convert H using 2
+        convert! H using 2
         ring
       apply_rules [HasDerivAt.hasDerivWithinAt, HasDerivAt.smul_const, hasDerivAt_id',
         HasDerivAt.pow, HasDerivAt.mul_const]
@@ -292,8 +292,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
       ‖g' t‖ = ‖(f' (x + h • v + (t * h) • w) - f' x - f'' (h • v + (t * h) • w)) (h • w)‖ := by
         rw [hg']
         congrm ‖?_‖
-        simp only [ContinuousLinearMap.sub_apply, ContinuousLinearMap.add_apply,
-          ContinuousLinearMap.smul_apply, map_add, map_smul]
+        simp only [sub_apply, add_apply, smul_apply, map_add, map_smul]
         module
       _ ≤ ‖f' (x + h • v + (t * h) • w) - f' x - f'' (h • v + (t * h) • w)‖ * ‖h • w‖ :=
         (ContinuousLinearMap.le_opNorm _ _)
@@ -316,7 +315,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
   have I : ‖g 1 - g 0‖ ≤ ε * ((‖v‖ + ‖w‖) * ‖w‖) * h ^ 2 := by
     simpa only [mul_one, sub_zero] using
       norm_image_sub_le_of_norm_deriv_le_segment' g_deriv g'_bound 1 (right_mem_Icc.2 zero_le_one)
-  convert I using 1
+  convert! I using 1
   · congr 1
     simp only [g, add_zero, one_mul, zero_div, zero_mul, sub_zero,
       zero_smul, Ne, not_false_iff, zero_pow, reduceCtorEq]
@@ -336,32 +335,32 @@ theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) •
   have A : (1 : ℝ) / 2 ∈ Ioc (0 : ℝ) 1 := ⟨by simp, by norm_num⟩
   have B : (1 : ℝ) / 2 ∈ Icc (0 : ℝ) 1 := ⟨by simp, by norm_num⟩
   have h2v2w : x + (2 : ℝ) • v + (2 : ℝ) • w ∈ interior s := by
-    convert s_conv.interior.add_smul_sub_mem h4v h4w B using 1
+    convert! s_conv.interior.add_smul_sub_mem h4v h4w B using 1
     module
   have h2vww : x + (2 • v + w) + w ∈ interior s := by
-    convert h2v2w using 1
+    convert! h2v2w using 1
     module
   have h2v : x + (2 : ℝ) • v ∈ interior s := by
-    convert s_conv.add_smul_sub_mem_interior xs h4v A using 1
+    convert! s_conv.add_smul_sub_mem_interior xs h4v A using 1
     module
   have h2w : x + (2 : ℝ) • w ∈ interior s := by
-    convert s_conv.add_smul_sub_mem_interior xs h4w A using 1
+    convert! s_conv.add_smul_sub_mem_interior xs h4w A using 1
     module
   have hvw : x + (v + w) ∈ interior s := by
-    convert s_conv.add_smul_sub_mem_interior xs h2v2w A using 1
+    convert! s_conv.add_smul_sub_mem_interior xs h2v2w A using 1
     module
   have h2vw : x + (2 • v + w) ∈ interior s := by
-    convert s_conv.interior.add_smul_sub_mem h2v h2v2w B using 1
+    convert! s_conv.interior.add_smul_sub_mem h2v h2v2w B using 1
     module
   have hvww : x + (v + w) + w ∈ interior s := by
-    convert s_conv.interior.add_smul_sub_mem h2w h2v2w B using 1
+    convert! s_conv.interior.add_smul_sub_mem h2w h2v2w B using 1
     module
   have TA1 := s_conv.taylor_approx_two_segment hf xs hx h2vw h2vww
   have TA2 := s_conv.taylor_approx_two_segment hf xs hx hvw hvww
-  convert TA1.sub TA2 using 1
+  convert! TA1.sub TA2 using 1
   ext h
   simp only [two_smul, smul_add, ← add_assoc, map_add,
-    ContinuousLinearMap.add_apply]
+    add_apply]
   abel
 
 /-- Assume that `f` is differentiable inside a convex set `s`, and that its derivative `f'` is
@@ -372,8 +371,9 @@ theorem Convex.second_derivative_within_at_symmetric_of_mem_interior {v w : E}
     (h4v : x + (4 : ℝ) • v ∈ interior s) (h4w : x + (4 : ℝ) • w ∈ interior s) :
     f'' w v = f'' v w := by
   have A : (fun h : ℝ => h ^ 2 • (f'' w v - f'' v w)) =o[𝓝[>] 0] fun h => h ^ 2 := by
-    convert (s_conv.isLittleO_alternate_sum_square hf xs hx h4v h4w).sub
-      (s_conv.isLittleO_alternate_sum_square hf xs hx h4w h4v) using 1
+    convert!
+      (s_conv.isLittleO_alternate_sum_square hf xs hx h4v h4w).sub
+        (s_conv.isLittleO_alternate_sum_square hf xs hx h4w h4v) using 1
     ext h
     simp only [add_comm, smul_add, smul_sub]
     abel
@@ -423,16 +423,14 @@ theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Conve
     intro m
     have : f'' (z + t m • m) (z + t 0 • (0 : E)) = f'' (z + t 0 • (0 : E)) (z + t m • m) :=
       s_conv.second_derivative_within_at_symmetric_of_mem_interior hf xs hx (ts 0) (ts m)
-    simp only [map_add, map_smul, add_right_inj, ContinuousLinearMap.add_apply, Pi.smul_apply,
-      ContinuousLinearMap.coe_smul', add_zero, smul_zero] at this
+    simp only [map_add, map_smul, add_right_inj, add_apply, smul_apply, add_zero, smul_zero] at this
     exact smul_right_injective F (tpos m).ne' this
   -- applying `second_derivative_within_at_symmetric_of_mem_interior` to the vectors `z + (t v) v`
   -- and `z + (t w) w`, we deduce that `f'' v w = f'' w v`. Cross terms involving `z` can be
   -- eliminated thanks to the fact proved above that `f'' m z = f'' z m`.
   have : f'' (z + t v • v) (z + t w • w) = f'' (z + t w • w) (z + t v • v) :=
     s_conv.second_derivative_within_at_symmetric_of_mem_interior hf xs hx (ts w) (ts v)
-  simp only [map_add, map_smul, ContinuousLinearMap.add_apply, Pi.smul_apply,
-    ContinuousLinearMap.coe_smul', C] at this
+  simp only [map_add, map_smul, add_apply, smul_apply, C] at this
   have : (t v * t w) • (f'' v) w = (t v * t w) • (f'' w) v := by
     linear_combination (norm := module) this
   apply smul_right_injective F _ this
@@ -469,19 +467,9 @@ theorem second_derivative_symmetric_of_eventually [IsRCLikeNormedField 𝕜]
   let _ : LinearMap.CompatibleSMul E F ℝ 𝕜 := LinearMap.IsScalarTower.compatibleSMul
   let _ : LinearMap.CompatibleSMul E (E →L[𝕜] F) ℝ 𝕜 := LinearMap.IsScalarTower.compatibleSMul
   let f'R : E → E →L[ℝ] F := fun x ↦ (f' x).restrictScalars ℝ
+  let f''R : E →L[ℝ] E →L[ℝ] F := f''.bilinearRestrictScalars ℝ
   have hfR : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f'R y) y := by
     filter_upwards [hf] with y hy using HasFDerivAt.restrictScalars ℝ hy
-  let f''Rl : E →ₗ[ℝ] E →ₗ[ℝ] F :=
-  { toFun := fun x ↦
-      { toFun := fun y ↦ f'' x y
-        map_add' := by simp
-        map_smul' := by simp }
-    map_add' := by intros; ext; simp
-    map_smul' := by intros; ext; simp }
-  let f''R : E →L[ℝ] E →L[ℝ] F := by
-    refine LinearMap.mkContinuous₂ f''Rl (‖f''‖) (fun x y ↦ ?_)
-    simp only [LinearMap.coe_mk, AddHom.coe_mk, f''Rl]
-    exact ContinuousLinearMap.le_opNorm₂ f'' x y
   have : HasFDerivAt f'R f''R x := by
     simp only [hasFDerivAt_iff_tendsto] at hx ⊢
     exact hx
@@ -500,18 +488,18 @@ variable (𝕜) in
 /-- `minSmoothness 𝕜 n` is the minimal smoothness exponent larger than or equal to `n` for which
 one can do serious calculus in `𝕜`. If `𝕜` is `ℝ` or `ℂ`, this is just `n`. Otherwise,
 this is `ω` as only analytic functions are well behaved on `ℚₚ`, say. -/
-noncomputable irreducible_def minSmoothness (n : WithTop ℕ∞) :=
+noncomputable irreducible_def minSmoothness (n : ℕ∞ω) :=
   if IsRCLikeNormedField 𝕜 then n else ω
 
-@[simp] lemma minSmoothness_of_isRCLikeNormedField [h : IsRCLikeNormedField 𝕜] {n : WithTop ℕ∞} :
+@[simp] lemma minSmoothness_of_isRCLikeNormedField [h : IsRCLikeNormedField 𝕜] {n : ℕ∞ω} :
     minSmoothness 𝕜 n = n := by
   simp [minSmoothness, h]
 
-lemma le_minSmoothness {n : WithTop ℕ∞} : n ≤ minSmoothness 𝕜 n := by
+lemma le_minSmoothness {n : ℕ∞ω} : n ≤ minSmoothness 𝕜 n := by
   simp only [minSmoothness]
   split_ifs <;> simp
 
-lemma minSmoothness_add {n m : WithTop ℕ∞} : minSmoothness 𝕜 (n + m) = minSmoothness 𝕜 n + m := by
+lemma minSmoothness_add {n m : ℕ∞ω} : minSmoothness 𝕜 (n + m) = minSmoothness 𝕜 n + m := by
   simp only [minSmoothness]
   split_ifs <;> simp
 
@@ -520,7 +508,7 @@ lemma minSmoothness_monotone : Monotone (minSmoothness 𝕜) := by
   simp only [minSmoothness]
   split_ifs <;> simp [hmn]
 
-@[simp] lemma minSmoothness_eq_infty {n : WithTop ℕ∞} :
+@[simp] lemma minSmoothness_eq_infty {n : ℕ∞ω} :
     minSmoothness 𝕜 n = ∞ ↔ (n = ∞ ∧ IsRCLikeNormedField 𝕜) := by
   simp only [minSmoothness]
   split_ifs with h <;> simp [h]
@@ -530,7 +518,7 @@ find `n' ∈ [minSmoothness 𝕜 m, n]` which is not `∞`: over `ℝ` or `ℂ`,
 just take `ω`. The interest of this technical lemma is that, if a function is `C^{n'}` at a point
 for `n' ≠ ∞`, then it is `C^{n'}` on a neighborhood of the point (this property fails only
 in `C^∞` smoothness, see `ContDiffWithinAt.contDiffOn`). -/
-lemma exist_minSmoothness_le_ne_infty {n : WithTop ℕ∞} {m : ℕ} (hm : minSmoothness 𝕜 m ≤ n) :
+lemma exist_minSmoothness_le_ne_infty {n : ℕ∞ω} {m : ℕ} (hm : minSmoothness 𝕜 m ≤ n) :
     ∃ n', minSmoothness 𝕜 m ≤ n' ∧ n' ≤ n ∧ n' ≠ ∞ := by
   simp only [minSmoothness] at hm ⊢
   split_ifs with h
@@ -541,7 +529,7 @@ lemma exist_minSmoothness_le_ne_infty {n : WithTop ℕ∞} {m : ℕ} (hm : minSm
 
 /-- If a function is `C^2` at a point, then its second derivative there is symmetric. Over a field
 different from `ℝ` or `ℂ`, we should require that the function is analytic. -/
-theorem ContDiffAt.isSymmSndFDerivAt {n : WithTop ℕ∞}
+theorem ContDiffAt.isSymmSndFDerivAt {n : ℕ∞ω}
     (hf : ContDiffAt 𝕜 n f x) (hn : minSmoothness 𝕜 2 ≤ n) : IsSymmSndFDerivAt 𝕜 f x := by
   by_cases h : IsRCLikeNormedField 𝕜
   -- First deal with the `ℝ` or `ℂ` case, where `C^2` is enough.
@@ -567,7 +555,7 @@ theorem ContDiffAt.isSymmSndFDerivAt {n : WithTop ℕ∞}
 /-- If a function is `C^2` within a set at a point, and accumulated by points in the interior
 of the set, then its second derivative there is symmetric. Over a field
 different from `ℝ` or `ℂ`, we should require that the function is analytic. -/
-theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : WithTop ℕ∞}
+theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : ℕ∞ω}
     (hf : ContDiffWithinAt 𝕜 n f s x) (hn : minSmoothness 𝕜 2 ≤ n)
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ closure (interior s)) (h'x : x ∈ s) :
     IsSymmSndFDerivWithinAt 𝕜 f s x := by

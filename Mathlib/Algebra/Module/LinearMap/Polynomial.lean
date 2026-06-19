@@ -97,8 +97,7 @@ lemma toMvPolynomial_isHomogeneous (M : Matrix m n R) (i : m) :
   apply MvPolynomial.IsHomogeneous.sum
   rintro j -
   apply MvPolynomial.isHomogeneous_monomial _ _
-  simp [Finsupp.degree, Finsupp.support_single_ne_zero _ one_ne_zero, Finset.sum_singleton,
-    Finsupp.single_eq_same]
+  simp
 
 lemma toMvPolynomial_totalDegree_le (M : Matrix m n R) (i : m) :
     (M.toMvPolynomial i).totalDegree ≤ 1 := by
@@ -240,6 +239,7 @@ noncomputable
 def polyCharpolyAux : Polynomial (MvPolynomial ι R) :=
   (charpoly.univ R ιM).map <| MvPolynomial.bind₁ (φ.toMvPolynomial b bₘ.end)
 
+set_option backward.defeqAttrib.useBackward true in
 open Algebra.TensorProduct MvPolynomial in
 lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
     polyCharpolyAux (tensorProduct _ _ _ _ ∘ₗ φ.baseChange A) (basis A b) (basis A bₘ) =

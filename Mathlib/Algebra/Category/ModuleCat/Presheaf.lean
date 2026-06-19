@@ -59,7 +59,7 @@ namespace PresheafOfModules
 attribute [simp] map_id map_comp
 attribute [reassoc] map_comp
 
-#adaptation_note /-- lean-pr-testing-12564
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/12564
 This is required for `Algebra.Category.ModuleCat.Differentials.Presheaf` -/
 instance {R : Cᵒᵖ ⥤ CommRingCat.{u}} (X : Cᵒᵖ) (M : PresheafOfModules.{v} (R ⋙ forget₂ _ _)) :
     Module (R.obj X) (M.obj X) := (M.obj X).isModule
@@ -164,7 +164,7 @@ lemma toPresheaf_map_app_apply (f : M₁ ⟶ M₂) (X : Cᵒᵖ) (x : M₁.obj X
 instance : (toPresheaf R).Faithful where
   map_injective {_ _ f g} h := by
     ext X x
-    exact congr_fun (((evaluation _ _).obj X ⋙ forget Ab).congr_map h) x
+    exact ConcreteCategory.congr_hom (((evaluation _ _).obj X ⋙ forget Ab).congr_map h) x
 
 section
 
@@ -270,6 +270,7 @@ def evaluation (X : Cᵒᵖ) : PresheafOfModules.{v} R ⥤ ModuleCat (R.obj X) w
 
 instance (X : Cᵒᵖ) : (evaluation.{v} R X).Additive where
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The restriction natural transformation on presheaves of modules, considered as linear maps
 to restriction of scalars. -/
 @[simps]
@@ -331,6 +332,7 @@ lemma sectionsMap_comp {M N P : PresheafOfModules.{v} R} (f : M ⟶ N) (g : N �
 lemma sectionsMap_id {M : PresheafOfModules.{v} R} (s : M.sections) :
     sectionsMap (𝟙 M) s = s := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `(unit R ⟶ M) ≃ M.sections` for `M : PresheafOfModules R`. -/
 @[simps! apply_coe]

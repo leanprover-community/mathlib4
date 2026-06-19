@@ -17,7 +17,7 @@ public import Mathlib.Algebra.Order.Ring.Pow
 In this file we prove that `Nat.nthRoot n a` is indeed the floor of `ⁿ√a`.
 -/
 
-@[expose] public section
+public section
 
 namespace Nat
 
@@ -76,7 +76,7 @@ private theorem nthRoot.lt_pow_go_succ_aux0 (hb : b ≠ 0) :
     (ha := by positivity) (Hsq := by positivity) (Hsq' := by positivity) (H := by omega)
     (n := n + 1)
   rw [← sub_nonneg] at h ⊢
-  convert h using 1
+  convert! h using 1
   rw [pow_succ]; push_cast; ring1
 
 private theorem nthRoot.always_exists (n a : ℕ) :

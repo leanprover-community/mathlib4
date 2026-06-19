@@ -100,7 +100,7 @@ noncomputable def toDualContinuousMultilinearMap : (⨂[𝕜] i, E i) →ₗ[�
   toFun x := LinearMap.mkContinuous
     (lift.toLinearMap.flip x ∘ₗ ContinuousMultilinearMap.toMultilinearMapLinear)
     (projectiveSeminorm x)
-    (fun _ ↦ by simpa [mul_comm] using norm_eval_le_projectiveSeminorm ..)
+    (fun _ ↦ by simpa [mul_comm] using! norm_eval_le_projectiveSeminorm ..)
   map_add' x y := by
     ext; simp
   map_smul' a x := by
@@ -178,7 +178,7 @@ theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (
   suffices h : ‖lift f'.toMultilinearMap x‖ ≤ ‖f'‖ * injectiveSeminorm x by
     change ‖(e (lift f'.toMultilinearMap x)).1‖ ≤ _ at h
     rw [heq] at h
-    exact le_trans h (mul_le_mul_of_nonneg_right hnorm (apply_nonneg _ _))
+    exact h.trans (by gcongr)
   have hle : Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
       (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E)) ≤ injectiveSeminorm := by
     simp only [injectiveSeminorm]
@@ -213,10 +213,10 @@ theorem injectiveSeminorm_tprod_le (m : Π (i : ι), E i) :
   le_trans (injectiveSeminorm_le_projectiveSeminorm _) (projectiveSeminorm_tprod_le m)
 
 -- Use `projectiveSeminorm` to turn the `PiTensorProduct` into a seminormed space.
--- The definition `injectiveSeminorm` is subject to deprecication in a follow-up PR. See:
+-- The definition `injectiveSeminorm` is subject to deprecation in a follow-up PR. See:
 -- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/injectiveSeminorm/with/568798633
 noncomputable instance : SeminormedAddCommGroup (⨂[𝕜] i, E i) :=
-  AddGroupSeminorm.toSeminormedAddCommGroup projectiveSeminorm.toAddGroupSeminorm
+  fast_instance% AddGroupSeminorm.toSeminormedAddCommGroup projectiveSeminorm.toAddGroupSeminorm
 
 noncomputable instance : NormedSpace 𝕜 (⨂[𝕜] i, E i) := ⟨projectiveSeminorm_smul_le⟩
 
@@ -259,7 +259,7 @@ theorem liftIsometry_apply_apply (f : ContinuousMultilinearMap 𝕜 E F) (x : �
 
 variable (𝕜) in
 /-- The canonical continuous multilinear map from `E = Πᵢ Eᵢ` to `⨂[𝕜] i, Eᵢ`. -/
-@[simps!]
+@[simps! toFun]
 noncomputable def tprodL : ContinuousMultilinearMap 𝕜 E (⨂[𝕜] i, E i) :=
   (liftIsometry 𝕜 E _).symm (ContinuousLinearMap.id 𝕜 _)
 
@@ -369,13 +369,14 @@ theorem mapL_opNorm : ‖mapL f‖ ≤ ∏ i, ‖f i‖ := by
   refine (ContinuousMultilinearMap.opNorm_le_iff (by positivity)).mpr fun m ↦ ?_
   apply le_trans (projectiveSeminorm_tprod_le fun i ↦ f i (m i))
   rw [← Finset.prod_mul_distrib]
-  exact Finset.prod_le_prod (fun _ _ ↦ norm_nonneg _) (fun _ _ ↦ ContinuousLinearMap.le_opNorm _ _)
+  gcongr
+  exact ContinuousLinearMap.le_opNorm _ _
 
 variable (𝕜 E E')
 
 /-- The tensor of a family of linear maps from `Eᵢ` to `E'ᵢ`, as a continuous multilinear map of
 the family. -/
-@[simps!]
+@[simps! toFun_apply]
 noncomputable def mapLMultilinear : ContinuousMultilinearMap 𝕜 (fun (i : ι) ↦ E i →L[𝕜] E' i)
     ((⨂[𝕜] i, E i) →L[𝕜] ⨂[𝕜] i, E' i) :=
   MultilinearMap.mkContinuous

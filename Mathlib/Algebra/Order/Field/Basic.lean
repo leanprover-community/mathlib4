@@ -7,11 +7,11 @@ module
 
 public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Algebra.Order.GroupWithZero.OrderIso
 public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Data.Set.Monotone
 public import Mathlib.Order.Bounds.OrderIso
 public import Mathlib.Tactic.Positivity.Core
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 
 /-!
 # Lemmas about (linear) ordered (semi)fields
@@ -157,7 +157,8 @@ theorem add_thirds (a : α) : a / 3 + a / 3 + a / 3 = a := by
 theorem div_mul_le_div_mul_of_div_le_div (h : a / b ≤ c / d) (he : 0 ≤ e) :
     a / (b * e) ≤ c / (d * e) := by
   rw [div_mul_eq_div_mul_one_div, div_mul_eq_div_mul_one_div]
-  exact mul_le_mul_of_nonneg_right h (one_div_nonneg.2 he)
+  gcongr
+  exact one_div_nonneg.2 he
 
 omit [IsStrictOrderedRing α] in
 theorem mul_le_mul_of_mul_div_le (h : a * (b / c) ≤ d) (hc : 0 < c) : b * a ≤ d * c := by
@@ -216,10 +217,10 @@ theorem inv_strictAntiOn : StrictAntiOn (fun x : α => x⁻¹) (Set.Ioi 0) := fu
   (inv_lt_inv₀ hy hx).2 xy
 
 theorem inv_pow_le_inv_pow_of_le (a1 : 1 ≤ a) {m n : ℕ} (mn : m ≤ n) : (a ^ n)⁻¹ ≤ (a ^ m)⁻¹ := by
-  convert one_div_pow_le_one_div_pow_of_le a1 mn using 1 <;> simp
+  convert! one_div_pow_le_one_div_pow_of_le a1 mn using 1 <;> simp
 
 theorem inv_pow_lt_inv_pow_of_lt (a1 : 1 < a) {m n : ℕ} (mn : m < n) : (a ^ n)⁻¹ < (a ^ m)⁻¹ := by
-  convert one_div_pow_lt_one_div_pow_of_lt a1 mn using 1 <;> simp
+  convert! one_div_pow_lt_one_div_pow_of_lt a1 mn using 1 <;> simp
 
 theorem inv_pow_anti (a1 : 1 ≤ a) : Antitone fun n : ℕ => (a ^ n)⁻¹ := fun _ _ =>
   inv_pow_le_inv_pow_of_le a1
@@ -235,7 +236,7 @@ theorem le_iff_forall_one_lt_le_mul₀ {α : Type*}
   · simp_rw [zero_mul] at h
     exact h 2 one_lt_two
   refine le_of_forall_gt_imp_ge_of_dense fun x hbx => ?_
-  convert h (x / b) ((one_lt_div hb).mpr hbx)
+  convert! h (x / b) ((one_lt_div hb).mpr hbx)
   rw [mul_div_cancel₀ _ hb.ne']
 
 theorem div_nat_le_self_of_nonnneg (ha : 0 ≤ a) (n : ℕ) : a / n ≤ a :=
@@ -424,22 +425,22 @@ theorem sub_inv_antitoneOn_Icc_left (ha : b < c) :
 
 theorem inv_antitoneOn_Ioi :
     AntitoneOn (fun x : α ↦ x⁻¹) (Set.Ioi 0) := by
-  convert sub_inv_antitoneOn_Ioi (α := α)
+  convert! sub_inv_antitoneOn_Ioi (α := α)
   exact (sub_zero _).symm
 
 theorem inv_antitoneOn_Iio :
     AntitoneOn (fun x : α ↦ x⁻¹) (Set.Iio 0) := by
-  convert sub_inv_antitoneOn_Iio (α := α)
+  convert! sub_inv_antitoneOn_Iio (α := α)
   exact (sub_zero _).symm
 
 theorem inv_antitoneOn_Icc_right (ha : 0 < a) :
     AntitoneOn (fun x : α ↦ x⁻¹) (Set.Icc a b) := by
-  convert sub_inv_antitoneOn_Icc_right ha
+  convert! sub_inv_antitoneOn_Icc_right ha
   exact (sub_zero _).symm
 
 theorem inv_antitoneOn_Icc_left (hb : b < 0) :
     AntitoneOn (fun x : α ↦ x⁻¹) (Set.Icc a b) := by
-  convert sub_inv_antitoneOn_Icc_left hb
+  convert! sub_inv_antitoneOn_Icc_left hb
   exact (sub_zero _).symm
 
 /-! ### Relating two divisions -/
@@ -537,7 +538,9 @@ theorem sub_one_div_inv_le_two (a2 : 2 ≤ a) : (1 - 1 / a)⁻¹ ≤ 2 := by
   -- move `1 / a` to the left and `2⁻¹` to the right.
   rw [le_sub_iff_add_le, add_comm, ← le_sub_iff_add_le]
   -- take inverses on both sides and use the assumption `2 ≤ a`.
-  convert (one_div a).le.trans (inv_anti₀ zero_lt_two a2) using 1
+  convert! (one_div a).le.trans (inv_anti₀ zero_lt_two a2) using 1
+    -- show `1 - 1 / 2 = 1 / 2`.
+
   -- show `1 - 1 / 2 = 1 / 2`.
   rw [sub_eq_iff_eq_add, ← two_mul, mul_inv_cancel₀ two_ne_zero]
 
@@ -683,8 +686,9 @@ theorem uniform_continuous_npow_on_bounded (B : α) {ε : α} (hε : 0 < ε) (n 
   obtain h | h := (abs_nonneg (q - r)).eq_or_lt
   · simpa only [← h, zero_mul] using hε
   refine (lt_of_le_of_lt ?_ <| lt_add_of_pos_left _ h).trans_le hqr.2
-  refine mul_le_mul_of_nonneg_left (pow_le_pow_left₀ ((abs_nonneg _).trans le_sup_left) ?_ _)
-    (mul_nonneg (abs_nonneg _) n.cast_nonneg)
+  gcongr
+  · exact mul_nonneg (abs_nonneg _) n.cast_nonneg
+  · exact (abs_nonneg _).trans le_sup_left
   refine max_le ?_ (hr.trans <| le_add_of_nonneg_right zero_le_one)
   exact add_sub_cancel r q ▸ (abs_add_le ..).trans (add_le_add hr hqr.1)
 
@@ -729,47 +733,72 @@ lemma zpow_zero_pos {α : Type*} [Semifield α] [PartialOrder α] [IsStrictOrder
 
 /-- The `positivity` extension which identifies expressions of the form `a / b`,
 such that `positivity` successfully recognises both `a` and `b`. -/
-@[positivity _ / _] meta def evalDiv : PositivityExt where eval {u α} zα pα e := do
+@[positivity _ / _] meta def evalDiv : PositivityExt where eval {u α} zα pα? e := do
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
     | throwError "not /"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
-  let _a ← synthInstanceQ q(GroupWithZero $α)
-  let _a ← synthInstanceQ q(PartialOrder $α)
-  let _a ← synthInstanceQ q(PosMulReflectLT $α)
-  assumeInstancesCommute
+  trace[Tactic.positivity.zeroness] "evalDiv: {a} divided by {b}"
+  let _a ← synthInstanceQ q(Semifield $α)
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(HDiv.hDiv)
-  let ra ← core zα pα a; let rb ← core zα pα b
-  match ra, rb with
-  | .positive pa, .positive pb => pure (.positive q(div_pos $pa $pb))
-  | .positive pa, .nonnegative pb => pure (.nonnegative q(div_nonneg_of_pos_of_nonneg $pa $pb))
-  | .nonnegative pa, .positive pb => pure (.nonnegative q(div_nonneg_of_nonneg_of_pos $pa $pb))
-  | .nonnegative pa, .nonnegative pb => pure (.nonnegative q(div_nonneg $pa $pb))
-  | .positive pa, .nonzero pb => pure (.nonzero q(div_ne_zero_of_pos_of_ne_zero $pa $pb))
-  | .nonzero pa, .positive pb => pure (.nonzero q(div_ne_zero_of_ne_zero_of_pos $pa $pb))
-  | .nonzero pa, .nonzero pb => pure (.nonzero q(div_ne_zero $pa $pb))
-  | _, _ => pure .none
+  match (dependent := true) pα? with
+  | none =>
+    match ← core zα pα? a, ← core zα pα? b with
+    | .nonzero pa, .nonzero pb =>
+      let _a ← synthInstanceQ q(GroupWithZero $α)
+      assumeInstancesCommute
+      pure (.nonzero q(div_ne_zero $pa $pb))
+    | _, _ => pure .none
+  | some pα =>
+    let _a ← synthInstanceQ q(GroupWithZero $α)
+    let _a ← synthInstanceQ q(PosMulReflectLT $α)
+    assumeInstancesCommute
+    let ra ← core zα pα a; let rb ← core zα pα b
+    match ra, rb with
+    | .positive pa, .positive pb => pure (.positive q(div_pos $pa $pb))
+    | .positive pa, .nonnegative pb => pure (.nonnegative q(div_nonneg_of_pos_of_nonneg $pa $pb))
+    | .nonnegative pa, .positive pb => pure (.nonnegative q(div_nonneg_of_nonneg_of_pos $pa $pb))
+    | .nonnegative pa, .nonnegative pb => pure (.nonnegative q(div_nonneg $pa $pb))
+    | .positive pa, .nonzero pb => pure (.nonzero q(div_ne_zero_of_pos_of_ne_zero $pa $pb))
+    | .nonzero pa, .positive pb => pure (.nonzero q(div_ne_zero_of_ne_zero_of_pos $pa $pb))
+    | .nonzero pa, .nonzero pb => pure (.nonzero q(div_ne_zero $pa $pb))
+    | _, _ => pure .none
 
 /-- The `positivity` extension which identifies expressions of the form `a⁻¹`,
 such that `positivity` successfully recognises `a`. -/
 @[positivity _⁻¹]
-meta def evalInv : PositivityExt where eval {u α} zα pα e := do
+meta def evalInv : PositivityExt where eval {u α} zα pα? e := do
   let .app (f : Q($α → $α)) (a : Q($α)) ← withReducible (whnf e) | throwError "not ⁻¹"
   let _e_eq : $e =Q $f $a := ⟨⟩
-  let _a ← synthInstanceQ q(GroupWithZero $α)
-  let _a ← synthInstanceQ q(PartialOrder $α)
-  let _a ← synthInstanceQ q(PosMulReflectLT $α)
-  assumeInstancesCommute
+  let _a ← synthInstanceQ q(Semifield $α)
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(Inv.inv)
-  let ra ← core zα pα a
-  match ra with
-  | .positive pa => pure (.positive q(inv_pos_of_pos $pa))
-  | .nonnegative pa => pure (.nonnegative q(inv_nonneg_of_nonneg $pa))
-  | .nonzero pa => pure (.nonzero q(inv_ne_zero $pa))
-  | .none => pure .none
+  match (dependent := true) pα? with
+  | none =>
+    match ← core zα pα? a with
+    | .nonzero pa =>
+      let _a ← synthInstanceQ q(GroupWithZero $α)
+      assumeInstancesCommute
+      pure (.nonzero q(inv_ne_zero $pa))
+    | _ => pure .none
+  | some pα =>
+    let _a ← synthInstanceQ q(GroupWithZero $α)
+    let _a ← synthInstanceQ q(PartialOrder $α)
+    let _a ← synthInstanceQ q(PosMulReflectLT $α)
+    assumeInstancesCommute
+    let ra ← core zα (some pα) a
+    match ra with
+    | .positive pa =>
+      assumeInstancesCommute
+      pure (.positive q(inv_pos_of_pos $pa))
+    | .nonnegative pa =>
+      assumeInstancesCommute
+      pure (.nonnegative q(inv_nonneg_of_nonneg $pa))
+    | .nonzero pa => pure (.nonzero q(inv_ne_zero $pa))
+    | .none => pure .none
 
 /-- The `positivity` extension which identifies expressions of the form `a ^ (0:ℤ)`. -/
 @[positivity _ ^ (0 : ℤ), Pow.pow _ (0 : ℤ)]
-meta def evalPowZeroInt : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalPowZeroInt : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
   let _a ← synthInstanceQ q(Semifield $α)
   let _a ← synthInstanceQ q(LinearOrder $α)

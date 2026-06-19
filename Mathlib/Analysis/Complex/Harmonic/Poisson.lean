@@ -32,9 +32,8 @@ private lemma continuousOn_herglotz_riesz (_ : w ∈ ball c R) :
       {z | ‖z - c‖ ∈ Set.Ioc ‖w - c‖ R} := by
   have : ∀ x ∈ {z | ‖z - c‖ ∈ Set.Ioc ‖w - c‖ R}, x - c - (w - c) ≠ 0 := by
     grind [mem_ball, mem_sphere]
-  fun_prop (disch := assumption)
+  fun_prop
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 **Poisson integral formula** for harmonic functions on arbitrary disks in the complex plane,
 formulated with the real part of the Herglotz–Riesz kernel of integration.

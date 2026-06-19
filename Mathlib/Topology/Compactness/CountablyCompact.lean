@@ -82,6 +82,11 @@ theorem IsCountablyCompact.of_isClosed_subset (hA : IsCountablyCompact A) (hB : 
   let ⟨a, _, hac⟩ := hA (hle.trans (principal_mono.mpr hBA))
   ⟨a, isClosed_iff_clusterPt.mp hB a (hac.mono hle), hac⟩
 
+/-- A closed subset of a countably compact space is countably compact. -/
+theorem IsClosed.isCountablyCompact [CountablyCompactSpace E] (hA : IsClosed A) :
+    IsCountablyCompact A :=
+  CountablyCompactSpace.isCountablyCompact_univ.of_isClosed_subset hA (subset_univ _)
+
 /-- A set is countably compact if and only if every sequence eventually in it has a cluster point
 in it. -/
 theorem isCountablyCompact_iff_seq_clusterPt :
@@ -103,12 +108,12 @@ theorem IsCountablyCompact.elim_directed_cover [Countable ι] [Nonempty ι]
     (hAU : A ⊆ ⋃ i, U i) (hdU : Directed (· ⊆ ·) U) : ∃ i, A ⊆ U i := by
   by_contra! h
   have hdir : Directed (· ≥ ·) fun i => 𝓟 (A \ U i) :=
-    fun i j => (hdU i j).imp fun _ ⟨hi, hj⟩ => ⟨principal_mono.mpr <| diff_subset_diff_right hi,
-      principal_mono.mpr <| diff_subset_diff_right hj⟩
+    fun i j => (hdU i j).imp fun _ ⟨hi, hj⟩ => ⟨principal_mono.mpr <| sdiff_subset_sdiff_right hi,
+      principal_mono.mpr <| sdiff_subset_sdiff_right hj⟩
   have : NeBot (⨅ i, 𝓟 (A \ U i)) :=
-    iInf_neBot_of_directed' hdir fun i => (diff_nonempty.mpr (h i)).principal_neBot
+    iInf_neBot_of_directed' hdir fun i => (sdiff_nonempty.mpr (h i)).principal_neBot
   have hle : (⨅ i, 𝓟 (A \ U i)) ≤ 𝓟 A :=
-    iInf_le_of_le ‹Nonempty ι›.some <| principal_mono.mpr diff_subset
+    iInf_le_of_le ‹Nonempty ι›.some <| principal_mono.mpr sdiff_subset
   rcases hA hle with ⟨a, ha, hac⟩
   rcases mem_iUnion.mp (hAU ha) with ⟨k, hk⟩
   exact closure_minimal (fun _ hx => hx.2) (hUo k).isClosed_compl
@@ -178,6 +183,112 @@ theorem IsSeqCompact.isCountablyCompact (hA : IsSeqCompact A) :
   obtain ⟨a, ha, φ, hφ, hφa⟩ := hA.subseq_of_frequently_in hx.frequently
   exact ⟨a, ha, hφa.mapClusterPt.of_comp hφ.tendsto_atTop⟩
 
+/-- The continuous image of a countably compact set is countably compact. -/
+theorem IsCountablyCompact.image (hA : IsCountablyCompact A)
+    {f : E → F} (hf : Continuous f) : IsCountablyCompact (f '' A) := by
+  intro l hl_nebot hl_count hle
+  have : NeBot (l.comap f ⊓ 𝓟 A) :=
+    comap_inf_principal_neBot_of_image_mem hl_nebot (le_principal_iff.mp hle)
+  obtain ⟨x, hxA, hx⟩ := hA (f := l.comap f ⊓ 𝓟 A) inf_le_right
+  have := (hx.mono inf_le_left).neBot
+  exact ⟨f x, mem_image_of_mem f hxA, (hf.continuousAt.inf tendsto_comap).neBot⟩
+
+/-- If `f : X → Y` is an inducing map, the image `f '' s` of a set `s` is countably compact if and
+only if `s` is countably compact. -/
+theorem Topology.IsInducing.isCountablyCompact_iff {f : E → F} (hf : IsInducing f) :
+    IsCountablyCompact A ↔ IsCountablyCompact (f '' A) := by
+  refine ⟨fun hs => hs.image hf.continuous, fun hs F F_ne_bot Fc F_le => ?_⟩
+  obtain ⟨_, ⟨x, x_in : x ∈ A, rfl⟩, hx : ClusterPt (f x) (map f F)⟩ :=
+    hs ((map_mono F_le).trans_eq map_principal)
+  exact ⟨x, x_in, hf.mapClusterPt_iff.1 hx⟩
+
+/-- If `f : X → Y` is an embedding, the image `f '' s` of a set `s` is countably compact if and
+only if `s` is countably compact. -/
+theorem Topology.IsEmbedding.isCountablyCompact_iff {f : E → F} (hf : IsEmbedding f) :
+    IsCountablyCompact A ↔ IsCountablyCompact (f '' A) :=
+  hf.isInducing.isCountablyCompact_iff
+
+theorem Subtype.isCountablyCompact_iff {p : E → Prop} {A : Set { x // p x }} :
+    IsCountablyCompact A ↔ IsCountablyCompact ((↑) '' A : Set E) :=
+  IsEmbedding.subtypeVal.isCountablyCompact_iff
+
+theorem isCountablyCompact_iff_isCountablyCompact_univ :
+    IsCountablyCompact A ↔ IsCountablyCompact (univ : Set A) := by
+  rw [Subtype.isCountablyCompact_iff, image_univ, Subtype.range_coe]
+
+theorem isCountablyCompact_univ_iff : IsCountablyCompact (univ : Set E) ↔ CountablyCompactSpace E :=
+  ⟨fun h => ⟨h⟩, fun h => h.1⟩
+
+theorem isCountablyCompact_iff_countablyCompactSpace :
+    IsCountablyCompact A ↔ CountablyCompactSpace A :=
+  isCountablyCompact_iff_isCountablyCompact_univ.trans isCountablyCompact_univ_iff
+
+/-- If a sequential space is countably compact, then it is sequentially compact. We follow the proof
+in [kremsater1972sequential]. -/
+instance (priority := 50) [SequentialSpace E] [CountablyCompactSpace E] :
+    SeqCompactSpace E := by
+  -- We prove by contradiction. If `E` is not sequentially compact, then there exists a sequence
+  -- `x : ℕ → E` with no convergent subsequence.
+  by_contra
+  simp only [seqCompactSpace_iff, IsSeqCompact, mem_univ, not_forall,
+    true_and, not_exists, not_and, exists_const] at this
+  obtain ⟨x, hx⟩ := this
+  -- Consider the set `A = ⋃ i, closure {x i}`. It is closed by `isClosed_of_not_tendsto` and thus
+  -- countably compact.
+  let A := ⋃ i, closure {x i}
+  have : IsCountablyCompact A :=
+    (isClosed_iUnion_closure_singleton_of_not_tendsto hx).isCountablyCompact
+  -- We use the countably compactness of `A` to find a cluster point `a`. Eventually `a` does not
+  -- belong to the closure of `{x n}` as `x` has no convergent subsequence, and this contradicts `a`
+  -- being a cluster point.
+  obtain ⟨a, ha⟩ : ∃ a ∈ A, MapClusterPt a atTop x := by
+    refine isCountablyCompact_iff_seq_clusterPt.1 this _ (.of_forall fun n => ?_)
+    exact mem_iUnion_of_mem n <| subset_closure <| mem_singleton (x n)
+  obtain ⟨k, hk⟩ : ∃ k, ∀ n > k, a ∉ closure {x n} := by
+    by_contra!
+    obtain ⟨φ, hφ1, hφ2⟩ := Nat.exists_strictMono_subsequence this
+    refine hx a φ hφ1 (tendsto_atTop_nhds.2 fun U ha hUo => ⟨0, fun n _ => ?_⟩)
+    simpa using mem_closure_iff.1 (hφ2 n) U hUo ha
+  have : a ∉ ⋃ i, closure {x (i + (k + 1))} := by
+    simpa [← iUnion_ge_eq_iUnion_nat_add (fun n => closure {x n}) (k + 1)] using!
+      fun i hi => hk i (Nat.lt_of_lt_of_eq hi rfl)
+  apply this
+  suffices h : closure (x '' Ici (k + 1)) ⊆ ⋃ i, closure {x (i + (k + 1))} from
+    h <| mapClusterPt_atTop_iff_forall_mem_closure.1 ha.2 (k + 1)
+  refine (IsClosed.closure_subset_iff
+    (isClosed_iUnion_closure_singleton_of_not_tendsto fun l φ hφ => ?_)).2 ?_
+  · exact hx l _ ((strictMono_id.add_const _).comp hφ)
+  · simp only [image_eq_iUnion, mem_Ici, iUnion_ge_eq_iUnion_nat_add _ (k + 1)]
+    exact iUnion_mono fun i => subset_closure
+
+/-- If `f : X → Y` is an inducing map, the image `f '' s` of a set `s` is sequentially compact
+  if and only if `s` is sequentially compact. -/
+theorem Topology.IsInducing.isSeqCompact_iff {f : E → F} (hf : IsInducing f) :
+    IsSeqCompact A ↔ IsSeqCompact (f '' A) where
+  mp hA x hx := by
+    choose y hy using hx
+    obtain ⟨a, ha, ⟨φ, hφ⟩⟩ := hA (fun n => (hy n).1)
+    refine ⟨f a, mem_image_of_mem f ha, φ, hφ.1, ?_⟩
+    suffices f ∘ y ∘ φ = x ∘ φ from this ▸ (hf.continuous.tendsto a).comp hφ.2
+    grind
+  mpr hA x hx := by
+    obtain ⟨fa, hfa, ⟨φ, hφ⟩⟩ := hA (fun n => mem_image_of_mem f (hx n))
+    choose a ha using hfa
+    exact ⟨a, ha.1, φ, hφ.1, hf.tendsto_nhds_iff.2 (ha.2 ▸ hφ.2)⟩
+
+theorem Subtype.isSeqCompact_iff {p : E → Prop} {A : Set { x // p x }} :
+    IsSeqCompact A ↔ IsSeqCompact ((↑) '' A : Set E) :=
+  IsEmbedding.subtypeVal.isSeqCompact_iff
+
+theorem isSeqCompact_iff_isSeqCompact_univ : IsSeqCompact A ↔ IsSeqCompact (univ : Set A) := by
+  rw [Subtype.isSeqCompact_iff, image_univ, Subtype.range_coe]
+
+theorem isSeqCompact_univ_iff : IsSeqCompact (univ : Set E) ↔ SeqCompactSpace E :=
+  ⟨fun h => ⟨h⟩, fun h => h.1⟩
+
+theorem isSeqCompact_iff_seqCompactSpace : IsSeqCompact A ↔ SeqCompactSpace A :=
+  isSeqCompact_iff_isSeqCompact_univ.trans isSeqCompact_univ_iff
+
 /-- A sequentially compact space is countably compact. -/
 instance instSeqCompactSpaceCountablyCompactSpace
     {X : Type*} [TopologicalSpace X] [SeqCompactSpace X] : CountablyCompactSpace X where
@@ -185,9 +296,9 @@ instance instSeqCompactSpaceCountablyCompactSpace
 
 /-- In a first-countable space, a countably compact set is sequentially compact. -/
 theorem IsCountablyCompact.isSeqCompact [FirstCountableTopology E]
-    (hA : IsCountablyCompact A) : IsSeqCompact A := fun x hx =>
-    let ⟨a, haA, hac⟩ := IsCountablyCompact.seq_clusterPt hA x (Eventually.of_forall hx)
-    ⟨a, haA, hac.tendsto_subseq⟩
+    (hA : IsCountablyCompact A) : IsSeqCompact A :=
+  have : CountablyCompactSpace A := isCountablyCompact_iff_countablyCompactSpace.1 hA
+  isSeqCompact_iff_seqCompactSpace.2 inferInstance
 
 /-- A first-countable countably compact space is sequentially compact. -/
 instance instCountablyCompactSpaceSeqCompactSpace {X : Type*} [TopologicalSpace X]
@@ -229,7 +340,7 @@ theorem isCountablyCompact_iff_infinite_subset_has_accPt [T1Space E] {A : Set E}
     · -- Case 2: Infinite range
       obtain ⟨a, haA, hacc⟩ := h (Set.range x ∩ A) inter_subset_right <| by
         rw [eventually_iff, mem_cofinite, compl_setOf] at hx
-        exact hfin.inter_of_finite_diff (hx.image x |>.subset (by grind))
+        exact hfin.inter_of_finite_sdiff (hx.image x |>.subset (by grind))
       refine ⟨a, haA, ?_⟩
       simp_rw [mapClusterPt_iff_frequently, frequently_cofinite_iff_infinite]
       exact fun s hs ↦ Infinite.of_accPt (hacc.nhds_inter hs) |>.mono (by grind) |>.of_image x
@@ -247,24 +358,17 @@ theorem IsLindelof.isCompact (hA : IsCountablyCompact A) (hl : IsLindelof A) :
   · exact ⟨∅, by simp_all⟩
 
 /-- A countably compact Lindelöf space is compact. -/
-theorem LindelofSpace.CompactSpace {X : Type*} [TopologicalSpace X]
+theorem LindelofSpace.compactSpace {X : Type*} [TopologicalSpace X]
     [LindelofSpace X] [h : CountablyCompactSpace X] : CompactSpace X where
   isCompact_univ := isLindelof_univ.isCompact h.isCountablyCompact_univ
+
+@[deprecated (since := "2026-05-19")]
+alias LindelofSpace.CompactSpace := LindelofSpace.compactSpace
 
 /-- In a Hereditarily Lindelöf space, a countably compact set is compact. -/
 theorem IsCountablyCompact.isCompact [HereditarilyLindelofSpace E]
     (hA : IsCountablyCompact A) : IsCompact A :=
   (HereditarilyLindelofSpace.isLindelof A).isCompact hA
-
-/-- The continuous image of a countably compact set is countably compact. -/
-theorem IsCountablyCompact.image (hA : IsCountablyCompact A)
-    {f : E → F} (hf : Continuous f) : IsCountablyCompact (f '' A) := by
-  intro l hl_nebot hl_count hle
-  have : NeBot (l.comap f ⊓ 𝓟 A) :=
-    comap_inf_principal_neBot_of_image_mem hl_nebot (le_principal_iff.mp hle)
-  obtain ⟨x, hxA, hx⟩ := hA (f := l.comap f ⊓ 𝓟 A) inf_le_right
-  have := (hx.mono inf_le_left).neBot
-  exact ⟨f x, mem_image_of_mem f hxA, (hf.continuousAt.inf (@tendsto_comap _ _ f l)).neBot⟩
 
 /-- The union of two countably compact sets is countably compact. -/
 theorem IsCountablyCompact.union (hA : IsCountablyCompact A) (hB : IsCountablyCompact B) :
@@ -273,7 +377,7 @@ theorem IsCountablyCompact.union (hA : IsCountablyCompact A) (hB : IsCountablyCo
   intro U hUo hAU
   obtain ⟨t₁, ht₁, hA_sub⟩ : ∃ (t₁ : Set ℕ), t₁.Finite ∧ A ⊆ ⋃ k ∈ t₁, U k :=
     hA U hUo (subset_union_left.trans hAU)
-  obtain  ⟨t₂, ht₂, hB_sub⟩ : ∃ (t₂ : Set ℕ), t₂.Finite ∧ B ⊆ ⋃ k ∈ t₂, U k :=
+  obtain ⟨t₂, ht₂, hB_sub⟩ : ∃ (t₂ : Set ℕ), t₂.Finite ∧ B ⊆ ⋃ k ∈ t₂, U k :=
     hB U hUo (subset_union_right.trans hAU)
   have h : (⋃ k ∈ t₁, U k) ∪ (⋃ k ∈ t₂, U k) = ⋃ k ∈ (t₁ ∪ t₂), U k := by ext; aesop
   exact ⟨t₁ ∪ t₂, ht₁.union ht₂, h ▸ union_subset_union hA_sub hB_sub⟩
