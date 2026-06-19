@@ -239,21 +239,17 @@ theorem IsGaloisGroup.iff_isFractionRing [Finite G] [IsIntegrallyClosed A] :
 @[deprecated (since := "2026-04-20")] alias FractionRing.mulSemiringAction_of_isGaloisGroup :=
   IsFractionRing.mulSemiringAction
 
-attribute [local instance] FractionRing.liftAlgebra in
 /--
 If `G` is finite and `IsGaloisGroup G A B` with `A` and `B` domains, then `G` is also
 a Galois group for `FractionRing B / FractionRing A` for the action defined by
 `IsFractionRing.mulSemiringAction`.
 -/
-theorem IsGaloisGroup.toFractionRing [IsDomain A] [IsDomain B] [IsTorsionFree A B] [Finite G]
-    [IsGaloisGroup G A B] :
+instance IsGaloisGroup.toFractionRing [IsDomain A] [IsDomain B] [IsTorsionFree A B] [Finite G]
+    [IsGaloisGroup G A B] [Algebra (FractionRing A) (FractionRing B)]
+    [IsScalarTower A (FractionRing A) (FractionRing B)] :
     letI := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
     IsGaloisGroup G (FractionRing A) (FractionRing B) := by
   let := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
-  have : SMulDistribClass G B (FractionRing B) := ⟨fun g b x ↦ by
-    rw [Algebra.smul_def', Algebra.smul_def', smul_mul']
-    congr
-    exact IsFractionRing.fieldEquivOfAlgEquiv_algebraMap (FractionRing A) _ _ _ b⟩
   apply IsGaloisGroup.to_isFractionRing G A B _ _
 
 open NumberField
@@ -323,12 +319,16 @@ protected theorem finite (R B : Type*) [CommRing R] [CommRing B] [Algebra R B] [
   rw [card_eq_finrank G (FractionRing A) (FractionRing B)]
   exact Module.finrank_pos.ne'
 
+section IsDomain
+
+variable (A B : Type*) [CommRing A] [CommRing B] [IsDomain B] [Algebra A B] [FaithfulSMul A B]
+  [Finite G] [Finite G'] [MulSemiringAction G B] [MulSemiringAction G' B]
+  [IsGaloisGroup G A B] [IsGaloisGroup G' A B]
+
 /-- The cardinality of a Galois group of `B/A` equals the rank of `B` as an `A`-module.
 
 See `IsGaloisGroup.card_eq_finrank` a field-theoretic version that does not assume finiteness. -/
-theorem card_eq_finrank' (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Finite G]
-    [IsDomain B] [FaithfulSMul A B] [MulSemiringAction G B] [IsGaloisGroup G A B] :
-    Nat.card G = Module.finrank A B := by
+theorem card_eq_finrank' : Nat.card G = Module.finrank A B := by
   have := IsDomain.of_faithfulSMul A B
   let := FractionRing.liftAlgebra A (FractionRing B)
   let := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
@@ -336,73 +336,47 @@ theorem card_eq_finrank' (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [
   rw [(IsGaloisGroup.toFractionRing G A B).card_eq_finrank,
     Algebra.IsAlgebraic.finrank_of_isFractionRing A (FractionRing A) B (FractionRing B)]
 
-/-- If `G` is a finite Galois group for `L/K`, then `G` is isomorphic to `Gal(L/K)`. -/
-@[simps!] noncomputable def mulEquivAlgEquiv [IsGaloisGroup G K L] [Finite G] : G ≃* Gal(L/K) :=
-  MulEquiv.ofBijective (MulSemiringAction.toAlgAut G K L) (by
+theorem _root_.Function.Bijective.of_comp {X Y Z : Type*} {f : X → Y} {g : Y → Z}
+    (hgf : Function.Bijective (g ∘ f)) (hg : Function.Injective g) : Function.Bijective f :=
+  ⟨hgf.1.of_comp, hgf.2.of_comp_left hg⟩
+
+attribute [local instance] FractionRing.liftAlgebra in
+/-- If `G` is a finite Galois group for `B/A`, then `G` is isomorphic to `Gal(B/A)`. -/
+@[simps!] noncomputable def mulEquivAlgEquiv : G ≃* Gal(B/A) :=
+  MulEquiv.ofBijective (MulSemiringAction.toAlgAut G A B) (by
+    have := IsDomain.of_faithfulSMul A B
+    letI K := FractionRing A
+    letI L := FractionRing B
+    letI := IsFractionRing.mulSemiringAction G A B K L
     have := isGalois G K L
     have := finiteDimensional G K L
+    suffices Function.Bijective (MulSemiringAction.toAlgAut G K L) from
+      .of_comp (by exact this) (IsFractionRing.fieldEquivOfAlgEquivHom_injective A B K L)
     rw [Nat.bijective_iff_injective_and_card, card_eq_finrank G K L,
       IsGalois.card_aut_eq_finrank K L]
     exact ⟨fun _ _ ↦ (faithful K).eq_of_smul_eq_smul ∘ DFunLike.ext_iff.mp, rfl⟩)
 
 @[simp]
-theorem map_mulEquivAlgEquiv_fixingSubgroup
-    [IsGaloisGroup G K L] [Finite G] (F : IntermediateField K L) :
+theorem map_mulEquivAlgEquiv_fixingSubgroup [IsGaloisGroup G K L] (F : IntermediateField K L) :
     (fixingSubgroup G (F : Set L)).map (mulEquivAlgEquiv G K L) = F.fixingSubgroup := by
   ext g
   obtain ⟨g, rfl⟩ := (mulEquivAlgEquiv G K L).surjective g
   simp [mem_fixingSubgroup_iff]
 
-/-- If `G` and `G'` are finite Galois groups for `L/K`, then `G` is isomorphic to `G'`.
-See `mulEquivCongr` for a more general version. -/
-noncomputable def mulEquivCongr' [IsGaloisGroup G K L] [Finite G]
-    [IsGaloisGroup G' K L] [Finite G'] : G ≃* G' :=
-  (mulEquivAlgEquiv G K L).trans (mulEquivAlgEquiv G' K L).symm
+/-- If `G` and `G'` are finite Galois groups for `B/A`, then `G` is isomorphic to `G'`. -/
+noncomputable def mulEquivCongr : G ≃* G' :=
+  (mulEquivAlgEquiv G A B).trans (mulEquivAlgEquiv G' A B).symm
 
 @[simp]
-theorem mulEquivCongr'_apply_smul [IsGaloisGroup G K L] [Finite G] [IsGaloisGroup G' K L]
-    [Finite G'] (g : G) (x : L) : mulEquivCongr' G G' K L g • x = g • x :=
-  AlgEquiv.ext_iff.mp ((mulEquivAlgEquiv G' K L).apply_symm_apply (mulEquivAlgEquiv G K L g)) x
-
-attribute [local instance] FractionRing.liftAlgebra in
-/-- If `G` and `G'` are finite Galois groups for `B/A` with `B` a domain, then `G` is
-isomorphic to `G'`. -/
-noncomputable def mulEquivCongr [Finite G] [Finite G'] (A B : Type*) [CommRing A]
-    [CommRing B] [IsDomain B] [Algebra A B] [FaithfulSMul A B] [MulSemiringAction G B]
-    [MulSemiringAction G' B] [IsGaloisGroup G A B] [IsGaloisGroup G' A B] :
-    G ≃* G' :=
-  haveI : IsDomain A := (FaithfulSMul.algebraMap_injective A B).isDomain
-  letI K := FractionRing A
-  letI L := FractionRing B
-  letI : MulSemiringAction G L := IsFractionRing.mulSemiringAction G A B K L
-  letI : MulSemiringAction G' L := IsFractionRing.mulSemiringAction G' A B K L
-  haveI : IsGaloisGroup G K L := IsGaloisGroup.toFractionRing G A B
-  haveI : IsGaloisGroup G' K L := IsGaloisGroup.toFractionRing G' A B
-  mulEquivCongr' G G' K L
-
-attribute [local instance] FractionRing.liftAlgebra in
-@[simp]
-theorem mulEquivCongr_apply_smul [Finite G] [Finite G'] (A B : Type*) [CommRing A]
-    [CommRing B] [IsDomain B] [Algebra A B] [FaithfulSMul A B] [MulSemiringAction G B]
-    [MulSemiringAction G' B] [IsGaloisGroup G A B] [IsGaloisGroup G' A B] (g : G) (x : B) :
-    mulEquivCongr G G' A B g • x = g • x := by
-  haveI : IsDomain A := (FaithfulSMul.algebraMap_injective A B).isDomain
-  letI K := FractionRing A
-  letI L := FractionRing B
-  letI : MulSemiringAction G L := IsFractionRing.mulSemiringAction G A B K L
-  letI : MulSemiringAction G' L := IsFractionRing.mulSemiringAction G' A B K L
-  haveI : IsGaloisGroup G K L := IsGaloisGroup.toFractionRing G A B
-  haveI : IsGaloisGroup G' K L := IsGaloisGroup.toFractionRing G' A B
-  apply FaithfulSMul.algebraMap_injective B L
-  rw [algebraMap.smul', algebraMap.smul']
-  exact mulEquivCongr'_apply_smul G G' K L g _
+theorem mulEquivCongr_apply_smul (g : G) (x : B) : mulEquivCongr G G' A B g • x = g • x :=
+  AlgEquiv.ext_iff.mp ((mulEquivAlgEquiv G' A B).apply_symm_apply (mulEquivAlgEquiv G A B g)) x
 
 @[simp]
-theorem mulEquivCongr_symm_apply_smul [Finite G] [Finite G'] (A B : Type*) [CommRing A]
-    [CommRing B] [IsDomain B] [Algebra A B] [FaithfulSMul A B] [MulSemiringAction G B]
-    [MulSemiringAction G' B] [IsGaloisGroup G A B] [IsGaloisGroup G' A B] (g : G') (x : B) :
+theorem mulEquivCongr_symm_apply_smul (g : G') (x : B) :
     (mulEquivCongr G G' A B).symm g • x = g • x := by
   rw [← mulEquivCongr_apply_smul G G' A B, MulEquiv.apply_symm_apply]
+
+end IsDomain
 
 variable (H H' : Subgroup G) (F F' : IntermediateField K L)
 
