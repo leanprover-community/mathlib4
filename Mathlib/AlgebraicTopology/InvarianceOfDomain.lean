@@ -11,6 +11,10 @@ import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.LinearAlgebra.Matrix.Gershgorin
 import Mathlib.MeasureTheory.Function.Jacobian
 import Mathlib.Topology.ContinuousMap.StoneWeierstrass
+import Mathlib.Order.Filter.Cofinite
+import Mathlib.Order.Filter.TendstoCofinite
+import Mathlib.Algebra.Order.CompleteField
+import Mathlib.Order.Interval.Set.OrdConnected
 /-!
 # Invariance of Domain and partial proof of Brouwer's Fixed Point Theorem
 
@@ -94,7 +98,7 @@ Brouwer fixed point, invariance of domain, dimension, retraction, smooth map, de
 -/
 
 set_option linter.directoryDependency false
-open MeasureTheory Metric Set ContinuousLinearMap LinearMap Topology
+open MeasureTheory Metric Set ContinuousLinearMap LinearMap Topology Polynomial
 
 variable {E} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
 variable (E) in
@@ -105,6 +109,71 @@ variable (E) in
 class BrouwerFixedPoint : Prop where
   brouwer_fixed_point (f : (closedBall (0 : E) 1) → (closedBall 0 1))
     (hf : Continuous f) : ∃ x, f x = x
+
+
+/-- A nonconstant polynomial over a domain is finite‑to‑one: every fibre is finite. -/
+lemma TendstoCofinite_of_nonconst_polynomial {R : Type} [CommRing R] [IsDomain R] (p : R[X])
+    (hp : p.natDegree ≠ 0) : Filter.TendstoCofinite (fun x : R ↦ p.eval x) := by
+  rw [Filter.tendstoCofinite_iff_finite_preimage_singleton]
+  intro b
+  by_contra! hb
+  have := Polynomial.eq_of_infinite_eval_eq p (C b) (by simpa)
+  grind [natDegree_C]
+
+
+/-- A polynomial that is constant on an infinite set (such as an interval) is always constant. -/
+lemma polynomial_const_on_infinite {R : Type} [LinearOrder R] [Field R] {s : Set R}
+    (hs : s.Infinite) (f : R → R) (P : R[X]) (c : R) (hf : ∀ x ∈ s, f x = P.eval x)
+    (h_const : ∀ x ∈ s, f x = c) :
+    P.natDegree = 0 := by
+  obtain hP_const | hP_nonconst := eq_or_ne P.natDegree 0
+  · exact hP_const
+  · have h_finite :=
+        (TendstoCofinite_of_nonconst_polynomial P hP_nonconst).finite_preimage_singleton _ c
+    cases hs.not_finite (h_finite.subset (by grind))
+
+
+/-- A function is not injective on a set `s` iff there are `a, b ∈ s` with `f a = f b`. -/
+theorem not_injOn_iff {α β : Type*} {f : α → β} {s : Set α} :
+    ¬ InjOn f s ↔ ∃ a ∈ s, ∃ b ∈ s, f a = f b ∧ a ≠ b := by
+  simp only [InjOn, not_forall, exists_prop]
+
+/-- A function that is polynomial and monotone on an order connected set
+is either injective or constant on that set. -/
+lemma inj_on_or_const_of_monotone {R : Type} [CommRing R] [IsDomain R] [PartialOrder R] [Field R]
+    [LinearOrder R] {s : Set R} [OrdConnected s] (f : R → R) (P : R[X])
+    (hf : ∀ x ∈ s, f x = P.eval x) (hp : MonotoneOn f s) :
+    InjOn f s ∨ ∀ a ∈ s, ∀ b ∈ s, f a = f b  := by
+  rw [or_iff_not_imp_left]
+  intro hinj x hx y hy
+  rw [not_injOn_iff] at hinj
+  rcases hinj with ⟨a, ha, b , hb, hab , hne⟩
+  have := MonotoneOn.mapsTo_Icc (hp.mono (Set.Icc_subset s ha hb))
+  rw [hab] at this
+  have hs : (Icc a b).Infinite := by sorry
+  have h_const_interval : ∀ x ∈ Icc a b, f x = f b := by
+    intro x hx
+    rw [MapsTo] at this
+    specialize this hx
+    rw [Set.Icc_self] at this
+    exact mem_singleton_iff.mp this
+  have := polynomial_const_on_infinite hs f P (f b) hf h_const_interval
+
+  -- exact polynomial_const_on_infinite hs f P (f b) hf h_const_interval
+
+  -- rw [MapsTo] at this
+
+
+  -- have := this hx
+
+
+
+
+
+
+
+
+
 
 omit [FiniteDimensional ℝ E] in
 /-- If `g` is Lipschitz on the closed unit ball with constant `C`, and `0 ≤ t < 1/C`,
@@ -741,24 +810,13 @@ lemma poly_const_of_const_on_Ico {t0 : ℝ} (ht0_pos : 0 < t0)
     (hI_const_interval : ∀ t ∈ Set.Ico (0 : ℝ) t0, I t = c) :
     ∀ t : ℝ, I t = c := by
   obtain ⟨P, hP⟩ := hI_poly
-  let q : Polynomial ℝ := Polynomial.C c
-  have hpq : P = q := by
-    apply Polynomial.funext
-    intro t
-    by_contra hne
-    have hne' : P - q ≠ 0 := fun h => hne (by
-      have := congr_arg (· + q) h
-      simp only [sub_add_cancel, zero_add] at this
-      exact congr_arg (Polynomial.eval t) this)
-    have hdiff_zero : ∀ t ∈ Set.Ico (0 : ℝ) t0, (P - q).eval t = 0 := by
-      intro t ht
-      simp only [Polynomial.eval_sub, Polynomial.eval_C, q]
-      rw [← hP t, hI_const_interval t ht]
-      simp
-    exact (Set.Ico_infinite ht0_pos).mono (fun t ht => hdiff_zero t ht)
-      (Polynomial.finite_setOf_isRoot hne')
-  intro t
-  simp [hP t, hpq, q]
+  obtain hP_const | hP_nonconst := eq_or_ne P.natDegree 0
+  · rw [natDegree_eq_zero] at hP_const
+    obtain ⟨x, hx⟩ := nonempty_Ico.mpr ht0_pos
+    grind [eval_C]
+  · have h_finite :=
+        (TendstoCofinite_of_nonconst_polynomial P hP_nonconst).finite_preimage_singleton _ c
+    cases ((Set.Ico_infinite ht0_pos).not_finite (h_finite.subset (by grind)))
 
 /-- No smooth retraction from the unit closed ball to the unit sphere exists. -/
 theorem cont_diff_ball_to_sphere_no_fixed [Nontrivial E]
@@ -907,6 +965,50 @@ theorem cont_diff_ball_to_sphere_no_fixed [Nontrivial E]
     ENNReal.toReal_pos (measure_closedBall_pos volume (0 : E) one_pos).ne'
     measure_closedBall_lt_top.ne
   linarith [hI1_zero, hI_const_all 1]
+
+
+
+
+
+theorem cont_diff_retract_of_cont_retract (f : E → E) (hf_cont : ContinuousOn f (closedBall 0 1))
+    (hf_retract : Set.MapsTo f (closedBall 0 1) (sphere 0 1))
+    (hf_fixes : ∀ x ∈ sphere 0 1, f x = x) :
+    ∃ (g : E → E), ContDiffOn ℝ 1 g (closedBall 0 1) ∧ ∀ x ∈ sphere 0 1, g x = x := by
+  let e := fun x => f x - x
+  -- `e` is continuous, vanishes on the sphere and is bounded by `2`
+  have he_cont : ContinuousOn e (closedBall 0 1) := by fun_prop
+  have he_vanishes : ∀ x ∈ sphere 0 1, e x = 0 := by grind
+  have he_bound : ∀ x ∈ (closedBall 0 1), ‖e x‖ ≤ 2 := by
+    intro x hx
+    simp only [e]
+    transitivity ‖f x‖ + ‖x‖
+    · exact norm_sub_le (f x) x
+    · linarith [mem_sphere_zero_iff_norm.mp (hf_retract (hx)), mem_closedBall_zero_iff.mp hx]
+  -- `e` is uniformly continuous on the closed ball
+  have he_uc : UniformContinuousOn e (closedBall (0 : E) 1) :=
+    (isCompact_closedBall 0 1).uniformContinuousOn_of_continuous he_cont
+  rw [Metric.uniformContinuousOn_iff] at he_uc
+  obtain ⟨δ, hδ_pos, hδ⟩ := he_uc (1/4) (by norm_num)
+  have hθ_exists : ∃ θ : ℝ, 3/4 < θ ∧ θ < 1 ∧
+      ∀ x ∈ closedBall (0 : E) 1, θ ≤ ‖x‖ → ‖e x‖ < 1/4 := by
+    refine ⟨1 - min (δ/2) (1/8),
+      by linarith [min_le_right (δ/2) (1/8 : ℝ)],
+      by linarith [lt_min (half_pos hδ_pos) (by norm_num : (0:ℝ) < 1/8)],
+      ?_⟩
+    intro x hx hθx
+    have hxle1 : ‖x‖ ≤ 1 := mem_closedBall_zero_iff.mp hx
+    have hxpos : 0 < ‖x‖ := by linarith [min_le_right (δ/2) (1/8 : ℝ), hθx]
+    -- Radially project x onto the sphere
+    set y := ‖x‖⁻¹ • x with hy_def
+    have hy_sphere : y ∈ sphere (0 : E) 1 := by
+      simp [hy_def, norm_smul, inv_mul_cancel₀ hxpos.ne']
+    have hy_ball : y ∈ closedBall (0 : E) 1 := sphere_subset_closedBall hy_sphere
+    -- dist(x, y) = 1 - ‖x‖ ≤ δ/2 < δ
+    have hdist : dist x y < δ := by sorry
+    sorry
+  sorry
+
+
 
 /-- On a compact set, any continuous map can be uniformly approximated by a differentiable map. -/
 theorem differentiable_approx_of_continuous {δ : ℝ} (hδ : 0 < δ) {U : Set E}
@@ -1469,5 +1571,3 @@ theorem invariance_of_dimension
   let g : F → E := φ.symm
   exact Nat.le_antisymm (dim_le_of_injective_continuous f (φ.continuous) (φ.injective))
     (dim_le_of_injective_continuous g (φ.symm.continuous) (φ.symm.injective))
-
-#eval Lean.versionString
