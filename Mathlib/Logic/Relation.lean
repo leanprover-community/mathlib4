@@ -817,24 +817,19 @@ lemma eqvGen_le {r r' : α → α → Prop} (hr : Equivalence r') (h : Subrelati
   | _, _, .trans _ _ _ hxy hyz => hr.trans (eqvGen_le hr h hxy) (eqvGen_le hr h hyz)
   | _, _, .rel _ _ hab => h hab
 
-lemma eqvGen_mono {r r' : α → α → Prop} (h : Subrelation r r') :
-    Subrelation (EqvGen r) (EqvGen r')
+lemma eqvGen_mono {r r' : α → α → Prop} (h : Subrelation r r') : Subrelation (EqvGen r) (EqvGen r')
   | _, _, .refl _ => .refl _
   | _, _, .symm _ _ hxy => .symm _ _ (eqvGen_mono h hxy)
   | _, _, .trans _ _ _ hxy hyz => .trans _ _ _ (eqvGen_mono h hxy) (eqvGen_mono h hyz)
   | _, _, .rel _ _ hab => .rel _ _ (h hab)
 
-lemma reflGen_le_eqvGen : Subrelation (ReflGen r) (EqvGen r) := by
-  intro _ _ h
-  cases h with
-  | refl => exact .refl _
-  | single h => exact .rel _ _ h
+lemma reflGen_le_eqvGen : Subrelation (ReflGen r) (EqvGen r)
+  |  _, _, .refl => .refl _
+  |  _, _, .single h => .rel _ _ h
 
-lemma symmGen_le_eqvGen : Subrelation (SymmGen r) (EqvGen r) := by
-  intro _ _ h
-  induction h with
-  | inl h => exact .rel _ _ h
-  | inr h => exact Std.Symm.symm _ _ (.rel _ _ h)
+lemma symmGen_le_eqvGen : Subrelation (SymmGen r) (EqvGen r)
+  | _, _, .inl h => .rel _ _ h
+  | _, _, .inr h => Std.Symm.symm _ _ (.rel _ _ h)
 
 lemma transGen_le_eqvGen : Subrelation (TransGen r) (EqvGen r) := by
   intro _ _ h
