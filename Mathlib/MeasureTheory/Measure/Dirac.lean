@@ -278,7 +278,8 @@ theorem restrict_dirac [MeasurableSingletonClass α] [Decidable (a ∈ s)] :
     rwa [ae_dirac_eq]
   · rw [restrict_eq_zero, dirac_apply, indicator_of_notMem has]
 
-lemma mutuallySingular_dirac [MeasurableSingletonClass α] (x : α) (μ : Measure α) [NullSingletonClass μ] :
+lemma mutuallySingular_dirac [MeasurableSingletonClass α] (x : α) (μ : Measure α)
+    [NullSingletonClass μ] :
     Measure.dirac x ⟂ₘ μ :=
   ⟨{x}ᶜ, (MeasurableSet.singleton x).compl, by simp, by simp⟩
 

@@ -39,14 +39,16 @@ attribute [simp] measure_singleton
 
 variable [NullSingletonClass μ]
 
-theorem _root_.Set.Subsingleton.measure_zero (hs : s.Subsingleton) (μ : Measure α) [NullSingletonClass μ] :
+theorem _root_.Set.Subsingleton.measure_zero (hs : s.Subsingleton) (μ : Measure α)
+    [NullSingletonClass μ] :
     μ s = 0 :=
   hs.induction_on (p := fun s => μ s = 0) measure_empty measure_singleton
 
 theorem Measure.restrict_singleton' {a : α} : μ.restrict {a} = 0 := by
   simp only [measure_singleton, Measure.restrict_eq_zero]
 
-instance Measure.restrict.instNullSingletonClass (s : Set α) : NullSingletonClass (μ.restrict s) := by
+instance Measure.restrict.instNullSingletonClass (s : Set α) :
+    NullSingletonClass (μ.restrict s) := by
   refine ⟨fun x => ?_⟩
   obtain ⟨t, hxt, ht1, ht2⟩ := exists_measurable_superset_of_null (measure_singleton x : μ {x} = 0)
   apply measure_mono_null hxt
@@ -65,7 +67,8 @@ theorem _root_.Set.Countable.ae_notMem (h : s.Countable) (μ : Measure α) [Null
 lemma Measure.ae_ne (μ : Measure α) [NullSingletonClass μ] (a : α) : ∀ᵐ x ∂μ, x ≠ a :=
   (countable_singleton a).ae_notMem μ
 
-lemma _root_.Set.Countable.measure_restrict_compl (h : s.Countable) (μ : Measure α) [NullSingletonClass μ] :
+lemma _root_.Set.Countable.measure_restrict_compl (h : s.Countable) (μ : Measure α)
+    [NullSingletonClass μ] :
     μ.restrict sᶜ = μ :=
   restrict_eq_self_of_ae_mem <| h.ae_notMem μ
 
@@ -73,10 +76,12 @@ lemma _root_.Set.Countable.measure_restrict_compl (h : s.Countable) (μ : Measur
 lemma restrict_compl_singleton (a : α) : μ.restrict ({a}ᶜ) = μ :=
   (countable_singleton _).measure_restrict_compl μ
 
-theorem _root_.Set.Finite.measure_zero (h : s.Finite) (μ : Measure α) [NullSingletonClass μ] : μ s = 0 :=
+theorem _root_.Set.Finite.measure_zero (h : s.Finite) (μ : Measure α) [NullSingletonClass μ] :
+    μ s = 0 :=
   h.countable.measure_zero μ
 
-theorem _root_.Finset.measure_zero (s : Finset α) (μ : Measure α) [NullSingletonClass μ] : μ s = 0 :=
+theorem _root_.Finset.measure_zero (s : Finset α) (μ : Measure α) [NullSingletonClass μ] :
+    μ s = 0 :=
   s.finite_toSet.measure_zero μ
 
 theorem insert_ae_eq_self (a : α) (s : Set α) : (insert a s : Set α) =ᵐ[μ] s :=

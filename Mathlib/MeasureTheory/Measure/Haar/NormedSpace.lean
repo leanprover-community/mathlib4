@@ -29,7 +29,8 @@ namespace Measure
 to show that an additive Haar measure on a nontrivial finite-dimensional real vector space has no
 atom. -/
 example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E] [FiniteDimensional ℝ E]
-    [MeasurableSpace E] [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] : NullSingletonClass μ := by
+    [MeasurableSpace E] [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] :
+    NullSingletonClass μ := by
   infer_instance
 
 section LinearEquiv

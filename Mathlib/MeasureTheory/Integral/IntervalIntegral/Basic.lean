@@ -105,8 +105,8 @@ theorem IntervalIntegrable.congr_ae {g : ℝ → ε} (hf : IntervalIntegrable f 
     IntervalIntegrable g μ a b := by
   rwa [← intervalIntegrable_congr_ae h]
 
-theorem IntervalIntegrable.congr_uIoo [NullSingletonClass μ] {g : ℝ → ε} (hf : IntervalIntegrable f μ a b)
-    (h : EqOn f g (uIoo a b)) : IntervalIntegrable g μ a b :=
+theorem IntervalIntegrable.congr_uIoo [NullSingletonClass μ] {g : ℝ → ε}
+    (hf : IntervalIntegrable f μ a b) (h : EqOn f g (uIoo a b)) : IntervalIntegrable g μ a b :=
   intervalIntegrable_congr_uIoo h |>.mp hf
 
 theorem intervalIntegrable_congr {g : ℝ → ε} (h : EqOn f g (Ι a b)) :
