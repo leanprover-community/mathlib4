@@ -140,6 +140,8 @@ def hₚFunctor (i : ι) : HomologyPretheory.{u} C c ⥤ TopPair.{u} ⥤ C where
 instance (f : HP ⟶ HP') [IsIso f] (i : ι) : IsIso (f.homₚ i) :=
   inferInstanceAs (IsIso ((HomologyPretheory.hₚFunctor i).map f))
 
+abbrev hₚIsoOfIso (e : HP ≅ HP') (i : ι) : HP.Hₚ i ≅ HP'.Hₚ i := ((hₚFunctor i).mapIso e)
+
 /-- The forgetful functor that sends a `HomologyPretheory` to it's homology functor `H`. -/
 @[simps]
 def hFunctor (i : ι) : HomologyPretheory.{u} C c ⥤ TopCat.{u} ⥤ C where
@@ -148,6 +150,9 @@ def hFunctor (i : ι) : HomologyPretheory.{u} C c ⥤ TopCat.{u} ⥤ C where
 
 instance (f : HP ⟶ HP') [IsIso f] (i : ι) : IsIso (f.hom i) :=
   inferInstanceAs (IsIso ((HomologyPretheory.hFunctor i).map f))
+
+abbrev hIsoOfIso (e : HP ≅ HP') (i : ι) : HP.H i ≅ HP'.H i :=
+  (HP.iso i) ≪≫ incl.isoWhiskerLeft ((hₚFunctor i).mapIso e) ≪≫ (HP'.iso i).symm
 
 variable (HP HP' : HomologyPretheory.{u} C c)
 
