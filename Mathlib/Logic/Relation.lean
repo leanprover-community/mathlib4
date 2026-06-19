@@ -575,9 +575,11 @@ instance stdSymm [Std.Symm r] : Std.Symm (TransGen r) where
 
 @[deprecated (since := "2026-06-10")] alias symmetric := stdSymm
 
+instance : IsTrans α (TransGen r) where
+  trans _ _ _ := TransGen.trans
+
 instance [Std.Refl r] : IsPreorder α (TransGen r) where
   refl x := .single (refl x)
-  trans _ _ _ := TransGen.trans
 
 end TransGen
 
@@ -615,9 +617,6 @@ theorem symmGen_of_total [Std.Total r] (a b : α) : SymmGen r a b :=
 end SymmGen
 
 section TransGen
-
-instance : IsTrans α (TransGen r) :=
-  ⟨@TransGen.trans α r⟩
 
 instance : Trans (TransGen r) r (TransGen r) :=
   ⟨TransGen.tail⟩
@@ -729,9 +728,6 @@ instance : IsPreorder α (ReflTransGen r) where
 
 @[deprecated inferInstance (since := "2026-03-27")]
 theorem reflexive_reflTransGen : Std.Refl (ReflTransGen r) := inferInstance
-
-instance : IsTrans α (ReflTransGen r) :=
-  ⟨@ReflTransGen.trans α r⟩
 
 @[deprecated inferInstance (since := "2026-02-21")]
 theorem transitive_reflTransGen : IsTrans α (ReflTransGen r) := inferInstance
