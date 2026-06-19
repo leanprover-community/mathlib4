@@ -85,7 +85,6 @@ To turn a linear independent family of vectors spanning `M` into a basis, use `B
 They are internally represented as linear equivs `M ≃ₗ[R] (ι →₀ R)`,
 available as `Basis.repr`.
 -/
-@[wikidata Q11210]
 structure Basis where
   /-- `Basis.ofRepr` constructs a basis given an assignment of coordinates to each vector. -/
   ofRepr ::

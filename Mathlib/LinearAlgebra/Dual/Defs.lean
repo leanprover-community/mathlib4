@@ -57,7 +57,6 @@ variable (R A M : Type*)
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- The left dual space of an R-module M is the R-module of linear maps `M → R`. -/
-@[wikidata Q1755512]
 abbrev Dual (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] :=
   M →ₗ[R] R
 

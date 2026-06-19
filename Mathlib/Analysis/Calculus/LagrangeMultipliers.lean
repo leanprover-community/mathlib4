@@ -107,7 +107,6 @@ there exist `Λ : ι → ℝ` and `Λ₀ : ℝ`, `(Λ, Λ₀) ≠ 0`, such that 
 
 See also `IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt` for a version that
 states `¬LinearIndependent ℝ _` instead of existence of `Λ` and `Λ₀`. -/
-@[wikidata Q598870]
 theorem IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt {ι : Type*} [Fintype ι]
     {f : ι → E → ℝ} {f' : ι → StrongDual ℝ E} (hextr : IsLocalExtrOn φ {x | ∀ i, f i x = f i x₀} x₀)
     (hf' : ∀ i, HasStrictFDerivAt (f i) (f' i) x₀) (hφ' : HasStrictFDerivAt φ φ' x₀) :

@@ -479,7 +479,6 @@ theorem prodMap_apply (f : P1 →ᵃ[k] P2) (g : P3 →ᵃ[k] P4) (x) : f.prodMa
 /-! ### Definition of `AffineMap.lineMap` and lemmas about it -/
 
 /-- The affine map from `k` to `P1` sending `0` to `p₀` and `1` to `p₁`. -/
-@[wikidata Q37105]
 def lineMap (p₀ p₁ : P1) : k →ᵃ[k] P1 :=
   ((LinearMap.id : k →ₗ[k] k).smulRight (p₁ -ᵥ p₀)).toAffineMap +ᵥ const k k p₀
 
