@@ -5,9 +5,9 @@ Authors: Yağız Kaan Aydoğdu, Yusuf Demir, Salih Erdem Koçak
 -/
 module
 
-public import Mathlib.Data.Finite.Sum
 public import Mathlib.ModelTheory.Complexity
 public import Mathlib.ModelTheory.Satisfiability
+public import Mathlib.ModelTheory.ElementaryExtensionPair
 
 /-!
 # Quantifier Elimination
@@ -36,10 +36,18 @@ criteria for establishing it.
 - `FirstOrder.Language.Theory.hasQuantifierElimination_of_exists_realize_of_embeddings` is a
   witness-transfer criterion for quantifier elimination. This corresponds to
   [Theorem 3.1.6][marker2002].
+- `FirstOrder.Language.Theory.hasQuantifierElimination_of_isElementaryExtensionPair` and
+  `FirstOrder.Language.Theory.hasQuantifierElimination_of_isElementaryExtensionPairFG` prove
+  quantifier elimination from the extension property appearing in
+  [Theorem 7.11][vandendries_henson_2016] and from a finitely generated variant. The theorem
+  `hasQuantifierElimination_of_isElementaryExtensionPairCardinalLTGenerated`
+  gives the corresponding `< κ`-generated version.
 
 ## References
 
 - [D. Marker, *Model Theory: An Introduction*][marker2002]
+- [L. van den Dries and C. W. Henson, *Lecture Notes for Mathematics 571 Fall 2016 Model
+  Theory*][vandendries_henson_2016]
 -/
 
 @[expose] public section
@@ -488,6 +496,132 @@ theorem hasQuantifierElimination_of_exists_realize_of_embeddings {T : L.Theory} 
   · obtain ⟨b, hb⟩ := h φ hφQF g f a
       ⟨c, (BoundedFormula.realize_toFormula_snoc θ (g ∘ a) c).mpr hc⟩
     exact ⟨b, (BoundedFormula.realize_toFormula_snoc θ (f ∘ a) b).mp hb⟩
+
+/-- A quantifier-free formula is realized at a tuple in the domain of a partial equivalence iff
+it is realized at the image tuple in the codomain. -/
+private theorem isQF_realize_partialEquiv
+    {α : Type*} {M N : Type*} [L.Structure M] [L.Structure N]
+    {φ : L.Formula α} (hφ : φ.IsQF) (p : M ≃ₚ[L] N)
+    {v : α → M} (hv : ∀ i, v i ∈ p.dom) :
+    φ.Realize (fun i => (p.toEquiv ⟨v i, hv i⟩ : N)) ↔ φ.Realize v := by
+  let vdom : α → p.dom := fun i => ⟨v i, hv i⟩
+  -- View the tuple inside the domain substructure: both the inclusion `p.dom ↪ M` and the partial
+  -- equivalence `p.dom ↪ N` are embeddings, so each preserves quantifier-free realization.
+  have hdom : φ.Realize v ↔ φ.Realize vdom := by
+    simpa [Formula.Realize, vdom, Function.comp_def,
+      Unique.eq_default (fun x : Fin 0 => (((default : Fin 0 → p.dom) x : p.dom) : M))] using
+      hφ.realize_embedding (f := (p.dom.subtype : p.dom ↪[L] M)) (v := vdom) (xs := default)
+  have hcod : φ.Realize (fun i => (p.toEquiv ⟨v i, hv i⟩ : N)) ↔ φ.Realize vdom := by
+    simpa [Formula.Realize, vdom, Function.comp_def, PartialEquiv.toEmbedding,
+      Unique.eq_default (fun x : Fin 0 => (p.toEquiv ((default : Fin 0 → p.dom) x) : N))] using
+      hφ.realize_embedding (f := p.toEmbedding) (v := vdom) (xs := default)
+  exact hcod.trans hdom.symm
+
+/-- Given a partial equivalence `p₀ : M ≃ₚ[L] N` together with an elementary embedding
+`e : N ↪ₑ[L] N'` and a partial equivalence `q : M ≃ₚ[L] N'` extending the codomain-mapped
+`PartialEquiv.codMap p₀ e`, transport a realization of a quantifier-free formula along `q`. -/
+private theorem exists_realize_codMap_of_extends
+    {α : Type} [Finite α] {φ : L.Formula (α ⊕ Fin 1)} (hφ : φ.IsQF)
+    {M N N' A : Type max u v} [L.Structure M] [L.Structure N] [L.Structure N'] [L.Structure A]
+    (p₀ : M ≃ₚ[L] N) (e : N ↪ₑ[L] N')
+    (q : M ≃ₚ[L] N') (hpq : PartialEquiv.codMap p₀ e.toEmbedding ≤ q)
+    (f : A ↪[L] M) (g : A ↪[L] N) (a : α → A) (b : M)
+    (hp_dom : ∀ i, f (a i) ∈ p₀.dom)
+    (hp_apply : ∀ i, (p₀.toEquiv ⟨f (a i), hp_dom i⟩ : N) = g (a i))
+    (hbq : b ∈ q.dom) (hb : φ.Realize (Sum.elim (f ∘ a) (Fin.snoc default b))) :
+    ∃ b' : N', φ.Realize (Sum.elim ((e.toEmbedding ∘ g) ∘ a) (Fin.snoc default b')) := by
+  -- As `q` extends `codMap p₀ e`, the generators `f (a i)` lie in `q.dom` and `q` sends them to
+  -- `e (g (a i))`. Transporting the witness `b` along `q` then preserves the realization.
+  have hqa_dom (i : α) : f (a i) ∈ q.dom := PartialEquiv.dom_le_dom hpq (hp_dom i)
+  have hqa_apply (i : α) : (q.toEquiv ⟨f (a i), hqa_dom i⟩ : N') = e (g (a i)) := by
+    have hx' := congr_arg (fun y : q.cod => (y : N'))
+      (PartialEquiv.toEquiv_inclusion_apply hpq
+        (⟨f (a i), hp_dom i⟩ : (PartialEquiv.codMap p₀ e.toEmbedding).dom))
+    change (q.toEquiv ⟨f (a i), hqa_dom i⟩ : N') =
+      e ((p₀.toEquiv ⟨f (a i), hp_dom i⟩ : N)) at hx'
+    rw [hx', hp_apply]
+  let vM : α ⊕ Fin 1 → M := Sum.elim (f ∘ a) (Fin.snoc default b)
+  have hvM (i : α ⊕ Fin 1) : vM i ∈ q.dom := by
+    cases i with
+    | inl x => simpa [vM, Function.comp_def] using hqa_dom x
+    | inr _ => simpa [vM, Fin.snoc] using hbq
+  refine ⟨q.toEquiv ⟨b, hbq⟩, ?_⟩
+  have hqreal : φ.Realize (fun i : α ⊕ Fin 1 => (q.toEquiv ⟨vM i, hvM i⟩ : N')) :=
+    (isQF_realize_partialEquiv hφ q hvM).mpr (by simpa [vM] using hb)
+  convert hqreal using 1
+  funext i
+  cases i with
+  | inl x => simpa [vM, Function.comp_def] using (hqa_apply x).symm
+  | inr j => simp [vM, Fin.snoc, Subsingleton.elim j 0]
+
+/-- Pull a realization of a quantifier-free formula back through an elementary embedding to obtain
+a witness in the source structure. -/
+private theorem exists_realize_descent_through_elementary
+    {α : Type} [Finite α] {φ : L.Formula (α ⊕ Fin 1)}
+    {N N' : Type max u v} [L.Structure N] [L.Structure N']
+    (e : N ↪ₑ[L] N') (ga : α → N) (b' : N')
+    (htarget : φ.Realize (Sum.elim (e.toEmbedding ∘ ga) (Fin.snoc default b'))) :
+    ∃ c : N, φ.Realize (Sum.elim ga (Fin.snoc default c)) := by
+  -- The witness over `α ⊕ Fin 1` is the existential closure `θ.ex`, which the elementary embedding
+  -- `e` reflects from `N'` back to `N`.
+  let θ : L.BoundedFormula α 1 := BoundedFormula.relabel (id : α ⊕ Fin 1 → α ⊕ Fin 1) φ
+  have hθN' : θ.ex.Realize (e.toEmbedding ∘ ga) default :=
+    BoundedFormula.realize_ex.mpr
+      ⟨b', (BoundedFormula.realize_relabel_id_snoc φ (e.toEmbedding ∘ ga) b').mpr htarget⟩
+  have hθN : θ.ex.Realize ga default :=
+    (e.map_boundedFormula θ.ex ga default).mp
+      (by simpa [Function.comp_def, Unique.eq_default] using hθN')
+  obtain ⟨c, hc⟩ := BoundedFormula.realize_ex.mp hθN
+  exact ⟨c, (BoundedFormula.realize_relabel_id_snoc φ ga c).mp hc⟩
+
+/-- If, for every pair of nonempty models of `T`, the `< κ`-generated elementary extension-pair
+property holds for an infinite `κ`, then `T` has quantifier elimination.
+
+The hypothesis is a `< κ`-generated variant of the extension property appearing as condition (2)
+in [Theorem 7.11][vandendries_henson_2016]. -/
+theorem hasQuantifierElimination_of_isElementaryExtensionPairCardinalLTGenerated
+    {T : L.Theory} {κ : Cardinal} (hκ : Cardinal.aleph0 ≤ κ)
+    (h : ∀ ⦃M N : Type (max u v)⦄ [L.Structure M] [L.Structure N]
+      [T.Model M] [T.Model N] [Nonempty M] [Nonempty N],
+      L.IsElementaryExtensionPairCardinalLTGenerated κ M N) :
+    T.HasQuantifierElimination := by
+  refine hasQuantifierElimination_of_exists_realize_of_embeddings (T := T) ?_
+  intro α _ φ hφ M N A _ _ _ _ _ _ _ f g a hM
+  obtain ⟨b, hb⟩ := hM
+  obtain ⟨p₀, hp_dom, hp_apply⟩ := exists_cardinalLTEquiv_of_embeddings hκ f g a
+  obtain ⟨N', hN', e, q₀, hbq, hpq⟩ := h p₀ b
+  letI : L.Structure N' := hN'
+  obtain ⟨b', hb'⟩ := exists_realize_codMap_of_extends hφ (p₀ : M ≃ₚ[L] N) e
+    (q₀ : M ≃ₚ[L] N') hpq f g a b hp_dom hp_apply hbq hb
+  exact exists_realize_descent_through_elementary e (g ∘ a) b' hb'
+
+/-- If every pair of nonempty models of `T` has the finitely generated elementary extension-pair
+property, then `T` has quantifier elimination.
+
+The hypothesis is a finitely generated variant of the extension property appearing as condition
+(2) in [Theorem 7.11][vandendries_henson_2016]. -/
+theorem hasQuantifierElimination_of_isElementaryExtensionPairFG
+    {T : L.Theory}
+    (h : ∀ ⦃M N : Type (max u v)⦄ [L.Structure M] [L.Structure N]
+      [T.Model M] [T.Model N] [Nonempty M] [Nonempty N],
+      L.IsElementaryExtensionPairFG M N) :
+    T.HasQuantifierElimination :=
+  hasQuantifierElimination_of_isElementaryExtensionPairCardinalLTGenerated le_rfl
+    fun ⦃M N⦄ _ _ _ _ _ _ => (@h M N _ _ _ _ _ _).toCardinalLTGenerated_aleph0
+
+/-- If every pair of nonempty models of `T` has the elementary extension-pair property, then `T`
+has quantifier elimination.
+
+The hypothesis is condition (2) in [Theorem 7.11][vandendries_henson_2016]; this theorem proves
+the implication from that extension property to condition (1). -/
+theorem hasQuantifierElimination_of_isElementaryExtensionPair
+    {T : L.Theory}
+    (h : ∀ ⦃M N : Type (max u v)⦄ [L.Structure M] [L.Structure N]
+      [T.Model M] [T.Model N] [Nonempty M] [Nonempty N],
+      L.IsElementaryExtensionPair M N) :
+    T.HasQuantifierElimination :=
+  hasQuantifierElimination_of_isElementaryExtensionPairFG
+    fun ⦃M N⦄ _ _ _ _ _ _ => (@h M N _ _ _ _ _ _).FG
 
 end Theory
 

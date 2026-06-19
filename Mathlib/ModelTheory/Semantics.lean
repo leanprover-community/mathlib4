@@ -898,6 +898,17 @@ theorem realize_toFormula_snoc (φ : L.BoundedFormula α 1) (v : α → M) (b : 
   · exact Sum.elim_comp_inl v (Fin.snoc default b)
   · exact Sum.elim_comp_inr v (Fin.snoc default b)
 
+/-- View a formula over `α ⊕ Fin 1` as a bounded formula over `α` with one bound variable. -/
+theorem realize_relabel_id_snoc (φ : L.Formula (α ⊕ Fin 1)) (v : α → M) (b : M) :
+    (BoundedFormula.relabel (id : α ⊕ Fin 1 → α ⊕ Fin 1) φ).Realize v
+        (Fin.snoc default b) ↔
+      φ.Realize (Sum.elim v (Fin.snoc default b)) := by
+  rw [realize_relabel]
+  simp only [Function.comp_id, Fin.castAdd_zero, Fin.cast_refl]
+  rw [Subsingleton.elim (Fin.snoc (default : Fin 0 → M) b ∘ Fin.natAdd 1 : Fin 0 → M)
+    default]
+  rfl
+
 @[simp]
 theorem realize_iSup [Finite β] {f : β → L.BoundedFormula α n}
     {v : α → M} {v' : Fin n → M} :
