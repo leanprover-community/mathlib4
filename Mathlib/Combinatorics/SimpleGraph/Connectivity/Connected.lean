@@ -380,7 +380,8 @@ theorem connected_or_preconnected_compl : G.Connected ∨ Gᶜ.Preconnected := b
 theorem connected_or_connected_compl [Nonempty V] : G.Connected ∨ Gᶜ.Connected :=
   G.connected_or_preconnected_compl.elim .inl (.inr ⟨·⟩)
 
-lemma Connected.of_isUniversal (v : V) (h : G.IsUniversal v) : G.Connected := by
+variable {G v} in
+lemma Connected.of_isUniversal (h : G.IsUniversal v) : G.Connected := by
   refine connected_iff _ |>.mpr ⟨fun u w ↦ ?_, ⟨v⟩⟩
   exact (Reachable.of_isUniversal u h).symm.trans (Reachable.of_isUniversal w h)
 

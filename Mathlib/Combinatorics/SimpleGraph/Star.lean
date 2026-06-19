@@ -44,7 +44,7 @@ lemma starGraph_adj {r x y : V} : (starGraph r).Adj x y ↔ x ≠ y ∧ (x = r �
   simp [starGraph, fromRel]
 
 @[simp]
-lemma starGraph_isUniversal {r : V} : (starGraph r).IsUniversal r := by
+lemma isUniversal_starGraph_self {r : V} : (starGraph r).IsUniversal r := by
   intro _ _
   simpa
 
@@ -58,7 +58,7 @@ lemma starGraph_center_adj' {r v : V} (h : r ≠ v) : (starGraph r).Adj v r :=
   (starGraph_center_adj h).symm
 
 lemma connected_starGraph (r : V) : (starGraph r).Connected :=
-  Connected.of_isUniversal _ _ starGraph_isUniversal
+  .of_isUniversal isUniversal_starGraph_self
 
 lemma isAcyclic_starGraph (r : V) : (starGraph r).IsAcyclic := by
   refine isAcyclic_iff_forall_adj_isBridge.mpr fun v w hadj ↦ ?_
