@@ -5165,6 +5165,7 @@ public import Mathlib.LinearAlgebra.Projectivization.Cardinality
 public import Mathlib.LinearAlgebra.Projectivization.Collinear
 public import Mathlib.LinearAlgebra.Projectivization.Constructions
 public import Mathlib.LinearAlgebra.Projectivization.Independence
+public import Mathlib.LinearAlgebra.Projectivization.PSL.Stabilizer
 public import Mathlib.LinearAlgebra.Projectivization.Subspace
 public import Mathlib.LinearAlgebra.QuadraticForm.AlgClosed
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
