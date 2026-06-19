@@ -41,6 +41,4 @@ def orderedSubtype (s : Subring R) : s →+*o R where
   __ := s.subtype
   monotone' := fun _ _ h ↦ h
 
-lemma orderedSubtype_coe (s : Subring R) : Subring.orderedSubtype s = Subring.subtype s := rfl
-
 end Subring

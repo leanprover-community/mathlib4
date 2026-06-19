@@ -88,7 +88,7 @@ This is declared as the default coercion from `F` to `α →+*o β`. -/
 @[coe]
 def OrderRingHomClass.toOrderRingHom [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β]
     [Preorder β] [OrderHomClass F α β] [RingHomClass F α β] (f : F) : α →+*o β :=
-  { (f : α →+* β) with monotone' := OrderHomClass.monotone f }
+  { (RingHomClass.toRingHom f) with monotone' := OrderHomClass.monotone f }
 
 /-- Any type satisfying `OrderRingHomClass` can be cast into `OrderRingHom` via
   `OrderRingHomClass.toOrderRingHom`. -/
@@ -160,10 +160,6 @@ theorem ext {f g : α →+*o β} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext f g h
 
 @[simp]
-theorem toRingHom_eq_coe (f : α →+*o β) : f.toRingHom = f :=
-  RingHom.ext fun _ => rfl
-
-@[simp]
 theorem toOrderAddMonoidHom_eq_coe (f : α →+*o β) : f.toOrderAddMonoidHom = f :=
   rfl
 
@@ -172,7 +168,7 @@ theorem toOrderMonoidWithZeroHom_eq_coe (f : α →+*o β) : f.toOrderMonoidWith
   rfl
 
 @[simp]
-theorem coe_coe_ringHom (f : α →+*o β) : ⇑(f : α →+* β) = f :=
+theorem coe_coe_ringHom (f : α →+*o β) : ⇑(RingHomClass.toRingHom f) = f :=
   rfl
 
 @[simp]
@@ -184,7 +180,7 @@ theorem coe_coe_orderMonoidWithZeroHom (f : α →+*o β) : ⇑(f : α →*₀o 
   rfl
 
 @[norm_cast]
-theorem coe_ringHom_apply (f : α →+*o β) (a : α) : (f : α →+* β) a = f a :=
+theorem coe_ringHom_apply (f : α →+*o β) (a : α) : (RingHomClass.toRingHom f) a = f a :=
   rfl
 
 @[norm_cast]
@@ -227,7 +223,7 @@ theorem id_apply (a : α) : OrderRingHom.id α a = a :=
   rfl
 
 @[simp]
-theorem coe_ringHom_id : (OrderRingHom.id α : α →+* α) = RingHom.id α :=
+theorem coe_ringHom_id : RingHomClass.toRingHom (OrderRingHom.id α) = RingHom.id α :=
   rfl
 
 @[simp]

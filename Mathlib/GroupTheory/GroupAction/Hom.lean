@@ -900,7 +900,7 @@ variable {F : Type*} [FunLike F R S]
 def _root_.MulSemiringActionHomClass.toMulSemiringActionHom
     [MulSemiringActionSemiHomClass F φ R S]
     (f : F) : R →ₑ+*[φ] S :=
-  { (f : R →+* S), (f : R →ₑ+[φ] S) with }
+  { RingHomClass.toRingHom f, (f : R →ₑ+[φ] S) with }
 
 /-- Any type satisfying `MulSemiringActionHomClass` can be cast into `MulSemiringActionHom` via
   `MulSemiringActionHomClass.toMulSemiringActionHom`. -/
@@ -909,7 +909,7 @@ instance [MulSemiringActionSemiHomClass F φ R S] :
   ⟨MulSemiringActionHomClass.toMulSemiringActionHom⟩
 
 @[norm_cast]
-theorem coe_fn_coe (f : R →ₑ+*[φ] S) : ⇑(f : R →+* S) = f :=
+theorem coe_fn_coe (f : R →ₑ+*[φ] S) : ⇑(RingHomClass.toRingHom f) = f :=
   rfl
 
 @[norm_cast]
@@ -974,7 +974,7 @@ variable {φ φ' ψ χ}
 @[implicit_reducible]
 def comp (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) [κ : MonoidHom.CompTriple φ ψ χ] : R →ₑ+*[χ] T :=
   { DistribMulActionHom.comp (g : S →ₑ+[ψ] T) (f : R →ₑ+[φ] S),
-    RingHom.comp (g : S →+* T) (f : R →+* S) with }
+    RingHom.comp (RingHomClass.toRingHom g) (RingHomClass.toRingHom f) with }
 
 @[simp]
 theorem comp_apply (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) [MonoidHom.CompTriple φ ψ χ] (x : R) :

@@ -61,6 +61,6 @@ theorem IsInvariantSubring.coe_subtypeHom :
 
 @[simp]
 theorem IsInvariantSubring.coe_subtypeHom' :
-    ((IsInvariantSubring.subtypeHom M U) : U →+* R') = U.subtype := rfl
+    RingHomClass.toRingHom (IsInvariantSubring.subtypeHom M U) = U.subtype := rfl
 
 end
