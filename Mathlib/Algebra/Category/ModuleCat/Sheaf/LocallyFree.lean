@@ -65,6 +65,17 @@ class IsLocallyFree (M : SheafOfModules.{u} R) : Prop where
 theorem LocalGeneratorsData.isLocallyFree {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData)
     [q.IsLocallyFreeData] : M.IsLocallyFree := ⟨q.shrink, inferInstance⟩
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+instance : ObjectProperty.IsClosedUnderIsomorphisms (IsLocallyFree (R := R)) where
+  of_iso e := by
+    intro ⟨q, hq⟩
+    have : (q.ofEpi e.hom).IsLocallyFreeData := {
+      isIso i := by
+        have : IsIso (Hom.over e.hom (q.X i)) := inferInstance
+        simpa
+    }
+    exact LocalGeneratorsData.isLocallyFree (q.ofEpi e.hom)
 end
 
 section
@@ -91,6 +102,30 @@ instance (I : Type u) : IsIso (free.generatingSections (R := R) I).π := by
   rw [free.generatingSections_π]
   infer_instance
 
+class IsFree (M : SheafOfModules.{u} R) : Prop where
+  isIso : ∃ G : M.GeneratingSections, IsIso (G.π)
+
+set_option backward.isDefEq.respectTransparency false in
+instance IsFree.isClosedUnderIsomorphisms :
+    ObjectProperty.IsClosedUnderIsomorphisms (IsFree (R := R)) where
+  of_iso e := by
+    intro ⟨G, _⟩
+    use G.ofEpi e.hom
+    have : IsIso e.hom := inferInstance
+    simpa
+
+instance free.isFree (I : Type u) : (free (R := R) I).IsFree :=
+  ⟨free.generatingSections I, inferInstance⟩
+
+theorem IsFree.iso_free (M : SheafOfModules.{u} R) : M.IsFree ↔
+    ∃ I : Type u, Nonempty (M ≅ free I) := by
+  constructor
+  · rintro ⟨G, _⟩
+    use G.I
+    exact ⟨(asIso G.π).symm⟩
+  rintro ⟨I, ⟨φ⟩⟩
+  exact ObjectProperty.prop_of_iso IsFree φ.symm (free.isFree I)
+
 variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
   [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}] [HasBinaryProducts C]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}] [HasSheafify J AddCommGrpCat]
@@ -105,6 +140,11 @@ instance (I : Type u) :
 
 instance (I : Type u) : (free (R := R) I).IsLocallyFree where
   exists_isLocallyFreeData := ⟨(free.generatingSections I).localGeneratorsData, inferInstance⟩
+
+instance (priority := 100) IsFree.isLocallyFree (M : SheafOfModules.{u} R) [M.IsFree] :
+    M.IsLocallyFree := by
+  obtain ⟨I, ⟨φ⟩⟩ := (IsFree.iso_free M).mp inferInstance
+  exact ObjectProperty.prop_of_isIso SheafOfModules.IsLocallyFree φ.inv inferInstance
 
 end
 
