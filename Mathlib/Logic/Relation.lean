@@ -806,9 +806,10 @@ theorem mono {r p : α → α → Prop} (hrp : ∀ a b, r a b → p a b) (h : Eq
   | symm a b _ ih => exact EqvGen.symm _ _ ih
   | trans a b c _ _ hab hbc => exact EqvGen.trans _ _ _ hab hbc
 
-instance : Std.Refl (EqvGen r) where refl := .refl
-instance : IsTrans α (EqvGen r) where trans := .trans
-instance : Std.Symm (EqvGen r) where symm := .symm
+instance : IsEquiv α (EqvGen r) where
+  refl := .refl
+  trans := .trans
+  symm := .symm
 
 lemma eqvGen_le {r r' : α → α → Prop} (hr : Equivalence r') (h : Subrelation r r') :
     Subrelation (EqvGen r) r'
