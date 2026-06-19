@@ -556,6 +556,25 @@ lemma eVariationOn_inter_Ioi_eq_inter_Ici_of_continuousWithinAt
   rw [← comp_ofDual f, ← comp_ofDual f]
   exact eVariationOn_inter_Iio_eq_inter_Iic_of_continuousWithinAt h h'
 
+lemma eVariation_Ioc_eq_Icc_of_continuousWithinAt
+    [TopologicalSpace α] [OrderTopology α] {f : α → E} {a b : α}
+    [h : (𝓝[Ioi a] a).NeBot] (h' : ContinuousWithinAt f (Ici a) a) :
+    eVariationOn f (Ioc a b) = eVariationOn f (Icc a b) := by
+  rcases le_or_gt b a with hab | hab
+  · simp [hab]
+  have : (𝓝[Iic b ∩ Ioi a] a).NeBot := by
+    convert h using 1
+    exact nhdsWithin_inter_of_mem (mem_nhdsWithin_of_mem_nhds (Iic_mem_nhds hab))
+  convert eVariationOn_inter_Ioi_eq_inter_Ici_of_continuousWithinAt this
+    (h'.mono inter_subset_right) <;> grind
+
+lemma eVariation_Ico_eq_Icc_of_continuousWithinAt
+    [TopologicalSpace α] [OrderTopology α] {f : α → E} {a b : α}
+    [h : (𝓝[Iio a] a).NeBot] (h' : ContinuousWithinAt f (Iic a) a) :
+    eVariationOn f (Ico b a) = eVariationOn f (Icc b a) := by
+  rw [← comp_ofDual f, ← comp_ofDual f, ← Ioc_toDual, ← Icc_toDual]
+  exact eVariation_Ioc_eq_Icc_of_continuousWithinAt h'
+
 lemma exists_lt_eVariationOn_inter_Icc {f : α → E} {ε : ℝ≥0∞} {s : Set α}
     (h : ε < eVariationOn f s) : ∃ a ∈ s, ∃ b ∈ s, a < b ∧ ε < eVariationOn f (s ∩ Icc a b) := by
   obtain ⟨n, u, ⟨u_mono, u_mem⟩, hu⟩ : ∃ n u, (Monotone u ∧ ∀ (i : ℕ), u i ∈ s) ∧

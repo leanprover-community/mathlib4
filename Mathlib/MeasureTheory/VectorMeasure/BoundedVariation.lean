@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Group.Defs
 public import Mathlib.MeasureTheory.Measure.Stieltjes
 public import Mathlib.MeasureTheory.VectorMeasure.Basic
+public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 public import Mathlib.Topology.EMetricSpace.BoundedVariation
 
 import Mathlib.MeasureTheory.VectorMeasure.AddContent
@@ -269,5 +270,47 @@ theorem vectorMeasure_univ (hf : BoundedVariationOn f univ) :
   rw [← Iio_union_Ici (a := hα.some), VectorMeasure.of_union (by simp) measurableSet_Iio
     measurableSet_Ici, hf.vectorMeasure_Iio, hf.vectorMeasure_Ici]
   abel
+
+open scoped Classical in
+/-- Auxiliary measure used to construct the vector measure associated to a bounded variation
+function. This is *not* the total variation of this measure in general, as we need to adjust things
+when there is a bot element by adding a Dirac mass there. -/
+private noncomputable def variationAux (hf : BoundedVariationOn f univ) : Measure α :=
+  hf.measureAux +
+  (if h : ∃ x, IsBot x then ‖f.rightLim h.choose - f h.choose‖₊ • Measure.dirac h.choose else 0)
+
+open VectorMeasure
+
+private lemma foo (hf : BoundedVariationOn f univ) :
+    hf.vectorMeasure.variation ≤ hf.variationAux := by
+  apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
+  simp only [vectorMeasure, add_apply, variationAux, Measure.coe_add, Pi.add_apply]
+  grw [enorm_add_le]
+  gcongr
+  · apply hf.exists_vectorMeasure_le_measureAux.choose_spec.2.2
+  · split_ifs with h
+    · by_cases hx : h.choose ∈ s <;> simp [hx, hs]
+    · simp
+
+private lemma bar (hf : BoundedVariationOn f univ) {a b : α} (h : a ≤ b) :
+    hf.variationAux (Ioc a b) ≤ eVariationOn f.rightLim (Ioc a b) := by
+  classical
+  have :  (if h : ∃ x, IsBot x then ‖Function.rightLim f h.choose - f h.choose‖₊ •
+      Measure.dirac h.choose else 0) (Ioc a b) = 0 := by
+    split_ifs with h
+    · simp [not_lt.mpr (h.choose_spec a)]
+    · simp
+  have hα : Nonempty α := ⟨a⟩
+  simp only [variationAux, measureAux, hα, ↓reduceDIte, stieltjesFunctionRightLim, Measure.coe_add,
+    Pi.add_apply, StieltjesFunction.measure_Ioc, this, add_zero, ge_iff_le]
+  rw [← variationOnFromTo.add (a := hα.some) (b := a) (c := b)
+    hf.rightLim.locallyBoundedVariationOn (mem_univ _) (mem_univ _) (mem_univ _),
+    add_sub_cancel_left, variationOnFromTo.eq_of_le _ _ h, univ_inter,
+    ENNReal.ofReal_toReal (hf.rightLim.mono (subset_univ _))]
+
+
+
+
+
 
 end BoundedVariationOn
