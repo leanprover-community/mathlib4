@@ -55,6 +55,10 @@ open Function
 
 variable {α β γ δ ε ζ : Sort*}
 
+theorem Subrelation.antisymm {r r' : α → α → Prop} (h1 : Subrelation r r') (h2 : Subrelation r' r) :
+    r = r' :=
+  funext₂ fun _ _ => propext ⟨h1, h2⟩
+
 section NeImp
 
 variable {r : α → α → Prop}
@@ -801,6 +805,78 @@ theorem mono {r p : α → α → Prop} (hrp : ∀ a b, r a b → p a b) (h : Eq
   | refl => exact EqvGen.refl _
   | symm a b _ ih => exact EqvGen.symm _ _ ih
   | trans a b c _ _ hab hbc => exact EqvGen.trans _ _ _ hab hbc
+
+instance : Std.Refl (EqvGen r) where refl := .refl
+instance : IsTrans α (EqvGen r) where trans := .trans
+instance : Std.Symm (EqvGen r) where symm := .symm
+
+lemma eqvGen_le {r r' : α → α → Prop} (hr : Equivalence r') (h : Subrelation r r') :
+    Subrelation (EqvGen r) r'
+  | _, _, .refl _ => hr.refl _
+  | _, _, .symm _ _ hxy => hr.symm (eqvGen_le hr h hxy)
+  | _, _, .trans _ _ _ hxy hyz => hr.trans (eqvGen_le hr h hxy) (eqvGen_le hr h hyz)
+  | _, _, .rel _ _ hab => h hab
+
+lemma eqvGen_mono {r r' : α → α → Prop} (h : Subrelation r r') :
+    Subrelation (EqvGen r) (EqvGen r')
+  | _, _, .refl _ => .refl _
+  | _, _, .symm _ _ hxy => .symm _ _ (eqvGen_mono h hxy)
+  | _, _, .trans _ _ _ hxy hyz => .trans _ _ _ (eqvGen_mono h hxy) (eqvGen_mono h hyz)
+  | _, _, .rel _ _ hab => .rel _ _ (h hab)
+
+lemma reflGen_le_eqvGen : Subrelation (ReflGen r) (EqvGen r) := by
+  intro _ _ h
+  cases h with
+  | refl => exact .refl _
+  | single h => exact .rel _ _ h
+
+lemma symmGen_le_eqvGen : Subrelation (SymmGen r) (EqvGen r) := by
+  intro _ _ h
+  induction h with
+  | inl h => exact .rel _ _ h
+  | inr h => exact Std.Symm.symm _ _ (.rel _ _ h)
+
+lemma transGen_le_eqvGen : Subrelation (TransGen r) (EqvGen r) := by
+  intro _ _ h
+  induction h using TransGen.trans_induction_on with
+  | trans _ _ h1 h2 => exact IsTrans.trans _ _ _ h1 h2
+  | single h => exact .rel _ _ h
+
+lemma reflTransGen_le_eqvGen : Subrelation (ReflTransGen r) (EqvGen r) := by
+  intro _ _ h
+  induction h using ReflTransGen.trans_induction_on with
+  | refl => exact .refl _
+  | trans _ _ h1 h2 => exact IsTrans.trans _ _ _ h1 h2
+  | single h => exact .rel _ _ h
+
+@[simp, grind =]
+lemma eqvGen_reflGen : EqvGen (ReflGen r) = EqvGen r :=
+  Subrelation.antisymm
+    (eqvGen_le (is_equivalence _) (reflGen_le_eqvGen _)) (eqvGen_mono (.single))
+
+@[simp, grind =]
+lemma eqvGen_transGen : EqvGen (TransGen r) = EqvGen r :=
+  Subrelation.antisymm
+    (eqvGen_le (is_equivalence _) (transGen_le_eqvGen _)) (eqvGen_mono .single)
+
+@[simp, grind =]
+lemma eqvGen_symmGen : EqvGen (SymmGen r) = EqvGen r :=
+  Subrelation.antisymm
+    (eqvGen_le (is_equivalence _) (symmGen_le_eqvGen _)) (eqvGen_mono .inl)
+
+@[simp, grind =]
+lemma eqvGen_reflTransGen : EqvGen (ReflTransGen r) = EqvGen r :=
+  Subrelation.antisymm
+    (eqvGen_le (is_equivalence _) (reflTransGen_le_eqvGen _)) (eqvGen_mono .single)
+
+@[grind =]
+lemma eqvGen_eq_reflTransGen [Std.Symm r] : EqvGen r = ReflTransGen r :=
+  Subrelation.antisymm
+    (eqvGen_le ⟨Std.Refl.refl, Std.Symm.symm _ _, IsTrans.trans _ _ _⟩ .single)
+    (reflTransGen_le_eqvGen _)
+
+lemma reflTransGen_symmGen : ReflTransGen (SymmGen r) = EqvGen r := by
+  rw [← eqvGen_eq_reflTransGen, eqvGen_symmGen]
 
 end EqvGen
 
