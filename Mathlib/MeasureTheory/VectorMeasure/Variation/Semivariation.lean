@@ -165,6 +165,7 @@ private lemma semivariation_univ_lt_top : μ.semivariation univ < ∞ := by
   obtain ⟨n, hn⟩ : ∃ n, ‖μ (u n)‖ₑ < 1 := ((tendsto_order.1 this).2 _ zero_lt_one).exists
   order [hu n]
 
+variable (μ) in
 /-- A constant bounding the norm of `μ s` for any set `s`. -/
 protected noncomputable def bound : ℝ≥0 := (μ.semivariation univ).toNNReal
 
