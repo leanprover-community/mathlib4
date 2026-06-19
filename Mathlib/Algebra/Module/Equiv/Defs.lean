@@ -576,10 +576,10 @@ protected def cast {ι : Type*} {M : ι → Type*}
 @[simps]
 def _root_.RingEquiv.toSemilinearEquiv (f : R ≃+* S) :
     haveI := RingHomInvPair.of_ringEquiv f
-    haveI := RingHomInvPair.symm (↑f : R →+* S) (f.symm : S →+* R)
-    R ≃ₛₗ[(↑f : R →+* S)] S :=
+    haveI := RingHomInvPair.symm (RingHomClass.toRingHom f) f.symm
+    R ≃ₛₗ[(RingHomClass.toRingHom f : R →+* S)] S :=
   haveI := RingHomInvPair.of_ringEquiv f
-  haveI := RingHomInvPair.symm (↑f : R →+* S) (f.symm : S →+* R)
+  haveI := RingHomInvPair.symm (RingHomClass.toRingHom f) (f.symm : S →+* R)
   { f with
     toFun := f
     map_smul' := f.map_mul }

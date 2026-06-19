@@ -114,7 +114,7 @@ open Polynomial
 
 /-- An equivariant map induces an equivariant map on polynomials. -/
 protected noncomputable def polynomial (g : P →+*[M] Q) : P[X] →+*[M] Q[X] where
-  toFun := map g
+  toFun := map (RingHomClass.toRingHom g)
   map_smul' m p :=
     Polynomial.induction_on p
       (fun b ↦ by rw [MonoidHom.id_apply, smul_C, map_C, coe_fn_coe, g.map_smul, map_C,
@@ -125,12 +125,13 @@ protected noncomputable def polynomial (g : P →+*[M] Q) : P[X] →+*[M] Q[X] w
         Polynomial.map_mul, map_C, Polynomial.map_pow,
         map_X, coe_fn_coe, g.map_smul, Polynomial.map_mul, map_C, Polynomial.map_pow, map_X,
         smul_mul', smul_C, smul_pow', smul_X, coe_fn_coe]
-  map_zero' := Polynomial.map_zero (g : P →+* Q)
-  map_add' _ _ := Polynomial.map_add (g : P →+* Q)
-  map_one' := Polynomial.map_one (g : P →+* Q)
-  map_mul' _ _ := Polynomial.map_mul (g : P →+* Q)
+  map_zero' := Polynomial.map_zero (RingHomClass.toRingHom g)
+  map_add' _ _ := Polynomial.map_add (RingHomClass.toRingHom g)
+  map_one' := Polynomial.map_one (RingHomClass.toRingHom g)
+  map_mul' _ _ := Polynomial.map_mul (RingHomClass.toRingHom g)
 
 @[simp]
-theorem coe_polynomial (g : P →+*[M] Q) : (g.polynomial : P[X] → Q[X]) = map g := rfl
+theorem coe_polynomial (g : P →+*[M] Q) : (g.polynomial : P[X] → Q[X]) =
+  map (RingHomClass.toRingHom g) := rfl
 
 end MulSemiringActionHom

@@ -70,7 +70,7 @@ noncomputable def counit : MvPolynomial R ℤ →+* R :=
 See `MvPolynomial.ACounit` for a “relative” variant for algebras over a base ring
 and `MvPolynomial.counit` for the “absolute” variant with `A = ℤ`. -/
 noncomputable def counitNat : MvPolynomial A ℕ →+* A :=
-  ACounit ℕ A
+  RingHomClass.toRingHom (ACounit ℕ A)
 
 theorem counit_surjective : Surjective (counit R) :=
   ACounit_surjective ℤ R

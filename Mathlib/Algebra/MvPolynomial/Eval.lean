@@ -550,7 +550,7 @@ def mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ �
 
 @[simp]
 lemma mapAlgHom_apply [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂)
-    (x : MvPolynomial σ S₁) : mapAlgHom f x = map f x := rfl
+    (x : MvPolynomial σ S₁) : mapAlgHom f x = map (RingHomClass.toRingHom f) x := rfl
 
 @[simp]
 theorem mapAlgHom_id [Algebra R S₁] :
@@ -559,8 +559,8 @@ theorem mapAlgHom_id [Algebra R S₁] :
 
 @[simp]
 theorem mapAlgHom_coe_ringHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
-    ↑(mapAlgHom f : _ →ₐ[R] MvPolynomial σ S₂) =
-      (map ↑f : MvPolynomial σ S₁ →+* MvPolynomial σ S₂) :=
+    RingHomClass.toRingHom (mapAlgHom f : _ →ₐ[R] MvPolynomial σ S₂) =
+      (map (RingHomClass.toRingHom f) : MvPolynomial σ S₁ →+* MvPolynomial σ S₂) :=
   RingHom.mk_coe _ _ _ _ _
 
 lemma range_mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
@@ -740,7 +740,7 @@ variable [Algebra S R] [Algebra S A] [Algebra S B]
 /-- Version of `aeval` for defining algebra homs out of `MvPolynomial σ R` over a smaller base ring
   than `R`. -/
 def aevalTower (f : R →ₐ[S] A) (X : σ → A) : MvPolynomial σ R →ₐ[S] A :=
-  { eval₂Hom (↑f) X with
+  { eval₂Hom (RingHomClass.toRingHom f) X with
     commutes' := fun r => by
       simp [IsScalarTower.algebraMap_eq S R (MvPolynomial σ R), algebraMap_eq] }
 
@@ -760,14 +760,16 @@ theorem aevalTower_ofNat (n : Nat) [n.AtLeastTwo] :
   _root_.map_ofNat _ _
 
 @[simp]
-theorem aevalTower_comp_C : (aevalTower g y : MvPolynomial σ R →+* A).comp C = g :=
+theorem aevalTower_comp_C : (RingHomClass.toRingHom (aevalTower g y)).comp C =
+    RingHomClass.toRingHom g :=
   RingHom.ext <| aevalTower_C _ _
 
 theorem aevalTower_algebraMap (x : R) : aevalTower g y (algebraMap R (MvPolynomial σ R) x) = g x :=
   eval₂_C _ _ _
 
 theorem aevalTower_comp_algebraMap :
-    (aevalTower g y : MvPolynomial σ R →+* A).comp (algebraMap R (MvPolynomial σ R)) = g :=
+    (RingHomClass.toRingHom (aevalTower g y)).comp (algebraMap R (MvPolynomial σ R)) =
+    RingHomClass.toRingHom g :=
   aevalTower_comp_C _ _
 
 theorem aevalTower_toAlgHom (x : R) :
