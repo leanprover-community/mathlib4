@@ -194,7 +194,7 @@ open LineDeriv
 theorem lineDerivOp (hf : IsVanishingOn f s) (m : E) :
     IsVanishingOn (∂_{m} f : 𝓢'(E, F)) s := by
   intro u hu
-  simp only [lineDerivOp_apply_apply, map_neg, neg_eq_zero]
+  simp only [TemperedDistribution.lineDerivOp_apply_apply, map_neg, neg_eq_zero]
   exact hf (∂_{m} u) <| (tsupport_fderiv_apply_subset ℝ m).trans hu
 
 @[fun_prop]
@@ -257,6 +257,8 @@ open TopologicalSpace Distributions
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
   {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
+  [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
+  {n : ℕ∞}
 
 variable {f : 𝓓'(Ω, F)} {s : Set E}
 
@@ -270,7 +272,7 @@ open LineDeriv
 theorem lineDerivOp (hf : IsVanishingOn f s) (m : E) :
     IsVanishingOn (∂_{m} f : 𝓓'(Ω, F)) s := by
   intro u hu
-  simp only [lineDerivOp_apply_apply, map_neg, neg_eq_zero]
+  simp only [Distribution.lineDerivOp_apply_apply, map_neg, neg_eq_zero]
   exact hf (∂_{m} u) <| (tsupport_fderiv_apply_subset ℝ m).trans hu
 
 @[fun_prop]
@@ -284,7 +286,7 @@ theorem iteratedLineDerivOp {n : ℕ} (hf : IsVanishingOn f s) (m : Fin n → E)
 
 @[fun_prop]
 theorem _root_.Distribution.isVanishingOn_delta (x : E) :
-    IsVanishingOn (Distribution.delta x) {x}ᶜ := by
+    IsVanishingOn (Distribution.delta x : 𝓓'^{n}(Ω, ℝ)) {x}ᶜ := by
   intro u hu
   rw [Set.subset_compl_singleton_iff] at hu
   apply image_eq_zero_of_notMem_tsupport hu
@@ -302,24 +304,22 @@ theorem dsupport_iteratedLineDerivOp_subset {n : ℕ} (m : Fin n → E) :
     dsupport (∂^{m} f : 𝓓'(Ω, F)) ⊆ dsupport f := by
   gcongr; fun_prop
 
-theorem dsupport_delta [FiniteDimensional ℝ E] (x : E) :
-    dsupport (TemperedDistribution.delta x) = {x} := by
+theorem dsupport_delta [FiniteDimensional ℝ E] (x : E) (hx : x ∈ Ω) :
+    dsupport (Distribution.delta x : 𝓓'^{n}(Ω, ℝ)) = {x} := by
   apply subset_antisymm
   · intro x' hx'
     rw [mem_dsupport_iff] at hx'
     exact hx' {x} (isVanishingOn_delta x) (T1Space.t1 x)
   rintro x rfl
   rw [mem_dsupport_iff_forall_exists_ne]
-  intro s hx hs
+  intro s hxs hs
+  set t := s ∩ Ω
+  have ht : IsOpen t := hs.inter Ω.isOpen
+  have htx : x ∈ t := Set.mem_inter hxs hx
   obtain ⟨u, h₁, h₂, h₃, -, h₄⟩ :=
-    exists_contDiff_tsupport_subset (n := ⊤) ((IsOpen.mem_nhds_iff hs).mpr hx)
-  have h₁' : tsupport (Complex.ofRealCLM ∘ u) ⊆ s := (tsupport_comp_subset rfl _).trans h₁
-  have h₂' : HasCompactSupport (Complex.ofRealCLM ∘ u) := h₂.comp_left rfl
-  use h₂'.toSchwartzMap (Complex.ofRealCLM.contDiff.comp h₃)
-  exact ⟨h₁', by simp [h₄]⟩
+    exists_contDiff_tsupport_subset (n := n) ((IsOpen.mem_nhds_iff ht).mpr htx)
+  refine ⟨⟨u, h₃, h₂, by aesop⟩, ⟨by aesop, by simp [h₄]⟩⟩
 
 end Support
-
-
 
 end Distribution
