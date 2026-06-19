@@ -203,7 +203,7 @@ theorem BinaryFan.π_app_right {X Y : C} (s : BinaryFan X Y) : s.π.app ⟨Walki
 the projections. -/
 def BinaryFan.ext {A B : C} {c c' : BinaryFan A B} (e : c.pt ≅ c'.pt)
     (h₁ : c.fst = e.hom ≫ c'.fst) (h₂ : c.snd = e.hom ≫ c'.snd) : c ≅ c' :=
-  Cones.ext e (fun j => by rcases j with ⟨⟨⟩⟩ <;> assumption)
+  Cone.ext e (fun j => by rcases j with ⟨⟨⟩⟩ <;> assumption)
 
 @[simp]
 lemma BinaryFan.ext_hom_hom {A B : C} {c c' : BinaryFan A B} (e : c.pt ≅ c'.pt)
@@ -243,7 +243,7 @@ abbrev BinaryCofan.inr {X Y : C} (s : BinaryCofan X Y) := s.ι.app ⟨WalkingPai
 the injections. -/
 def BinaryCofan.ext {A B : C} {c c' : BinaryCofan A B} (e : c.pt ≅ c'.pt)
     (h₁ : c.inl ≫ e.hom = c'.inl) (h₂ : c.inr ≫ e.hom = c'.inr) : c ≅ c' :=
-  Cocones.ext e (fun j => by rcases j with ⟨⟨⟩⟩ <;> assumption)
+  Cocone.ext e (fun j => by rcases j with ⟨⟨⟩⟩ <;> assumption)
 
 @[simp]
 lemma BinaryCofan.ext_hom_hom {A B : C} {c c' : BinaryCofan A B} (e : c.pt ≅ c'.pt)
@@ -287,12 +287,14 @@ attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
 -- TODO: would it be okay to use this more generally?
 attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Eq
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A binary fan with vertex `P` consists of the two projections `π₁ : P ⟶ X` and `π₂ : P ⟶ Y`. -/
 @[simps pt]
 def BinaryFan.mk {P : C} (π₁ : P ⟶ X) (π₂ : P ⟶ Y) : BinaryFan X Y where
   pt := P
   π := { app := fun | { as := j } => match j with | left => π₁ | right => π₂ }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A binary cofan with vertex `P` consists of the two inclusions `ι₁ : X ⟶ P` and `ι₂ : Y ⟶ P`. -/
 @[simps pt]
 def BinaryCofan.mk {P : C} (ι₁ : X ⟶ P) (ι₂ : Y ⟶ P) : BinaryCofan X Y where
@@ -317,13 +319,15 @@ theorem BinaryCofan.mk_inl {P : C} (ι₁ : X ⟶ P) (ι₂ : Y ⟶ P) : (Binary
 theorem BinaryCofan.mk_inr {P : C} (ι₁ : X ⟶ P) (ι₂ : Y ⟶ P) : (BinaryCofan.mk ι₁ ι₂).inr = ι₂ :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Every `BinaryFan` is isomorphic to an application of `BinaryFan.mk`. -/
 def isoBinaryFanMk {X Y : C} (c : BinaryFan X Y) : c ≅ BinaryFan.mk c.fst c.snd :=
-    Cones.ext (Iso.refl _) fun ⟨l⟩ => by cases l; repeat simp
+    Cone.ext (Iso.refl _) fun ⟨l⟩ => by cases l; repeat simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Every `BinaryFan` is isomorphic to an application of `BinaryFan.mk`. -/
 def isoBinaryCofanMk {X Y : C} (c : BinaryCofan X Y) : c ≅ BinaryCofan.mk c.inl c.inr :=
-    Cocones.ext (Iso.refl _) fun ⟨l⟩ => by cases l; repeat simp
+    Cocone.ext (Iso.refl _) fun ⟨l⟩ => by cases l; repeat simp
 
 /-- This is a more convenient formulation to show that a `BinaryFan` constructed using
 `BinaryFan.mk` is a limit cone.
@@ -361,12 +365,51 @@ def BinaryCofan.isColimitMk {W : C} {inl : X ⟶ W} {inr : Y ⟶ W}
 /-- If `s` is a limit binary fan over `X` and `Y`, then every pair of morphisms `f : W ⟶ X` and
 `g : W ⟶ Y` induces a morphism `l : W ⟶ s.pt` satisfying `l ≫ s.fst = f` and `l ≫ s.snd = g`.
 -/
+def BinaryFan.IsLimit.lift {W : C} {s : BinaryFan X Y} (h : IsLimit s) (f : W ⟶ X) (g : W ⟶ Y) :
+    W ⟶ s.pt :=
+  h.lift (BinaryFan.mk f g)
+
+@[reassoc (attr := simp)]
+lemma BinaryFan.IsLimit.lift_fst {W : C} {s : BinaryFan X Y} (h : IsLimit s)
+    (f : W ⟶ X) (g : W ⟶ Y) :
+    lift h f g ≫ s.fst = f :=
+  h.fac (BinaryFan.mk f g) _
+
+@[reassoc (attr := simp)]
+lemma BinaryFan.IsLimit.lift_snd {W : C} {s : BinaryFan X Y} (h : IsLimit s)
+    (f : W ⟶ X) (g : W ⟶ Y) :
+    lift h f g ≫ s.snd = g :=
+  h.fac (BinaryFan.mk f g) _
+
+/-- If `s` is a limit binary fan over `X` and `Y`, then every pair of morphisms `f : W ⟶ X` and
+`g : W ⟶ Y` induces a morphism `l : W ⟶ s.pt` satisfying `l ≫ s.fst = f` and `l ≫ s.snd = g`.
+-/
 @[simps]
 def BinaryFan.IsLimit.lift' {W X Y : C} {s : BinaryFan X Y} (h : IsLimit s) (f : W ⟶ X)
     (g : W ⟶ Y) : { l : W ⟶ s.pt // l ≫ s.fst = f ∧ l ≫ s.snd = g } :=
   ⟨h.lift <| BinaryFan.mk f g, h.fac _ _, h.fac _ _⟩
 
-/-- If `s` is a colimit binary cofan over `X` and `Y`,, then every pair of morphisms `f : X ⟶ W` and
+/-- If `s` is a colimit binary cofan over `X` and `Y`, then every pair of morphisms `f : X ⟶ W` and
+`g : Y ⟶ W` induces a morphism `l : s.pt ⟶ W` satisfying `s.inl ≫ l = f` and `s.inr ≫ l = g`.
+-/
+def BinaryCofan.IsColimit.desc {W : C} {s : BinaryCofan X Y} (h : IsColimit s)
+    (f : X ⟶ W) (g : Y ⟶ W) :
+    s.pt ⟶ W :=
+  h.desc (BinaryCofan.mk f g)
+
+@[reassoc (attr := simp)]
+lemma BinaryCofan.IsColimit.inl_desc {W : C} {s : BinaryCofan X Y} (h : IsColimit s)
+    (f : X ⟶ W) (g : Y ⟶ W) :
+    s.inl ≫ desc h f g = f :=
+  h.fac (BinaryCofan.mk f g) _
+
+@[reassoc (attr := simp)]
+lemma BinaryCofan.IsColimit.inr_desc {W : C} {s : BinaryCofan X Y} (h : IsColimit s)
+    (f : X ⟶ W) (g : Y ⟶ W) :
+    s.inr ≫ desc h f g = g :=
+  h.fac (BinaryCofan.mk f g) _
+
+/-- If `s` is a colimit binary cofan over `X` and `Y`, then every pair of morphisms `f : X ⟶ W` and
 `g : Y ⟶ W` induces a morphism `l : s.pt ⟶ W` satisfying `s.inl ≫ l = f` and `s.inr ≫ l = g`.
 -/
 @[simps]
@@ -377,12 +420,13 @@ def BinaryCofan.IsColimit.desc' {W X Y : C} {s : BinaryCofan X Y} (h : IsColimit
 /-- Binary products are symmetric. -/
 def BinaryFan.isLimitFlip {X Y : C} {c : BinaryFan X Y} (hc : IsLimit c) :
     IsLimit (BinaryFan.mk c.snd c.fst) :=
-  BinaryFan.isLimitMk (fun s => hc.lift (BinaryFan.mk s.snd s.fst)) (fun _ => hc.fac _ _)
+  BinaryFan.isLimitMk (fun s => IsLimit.lift hc s.snd s.fst) (fun _ => hc.fac _ _)
     (fun _ => hc.fac _ _) fun s _ e₁ e₂ =>
     BinaryFan.IsLimit.hom_ext hc
       (e₂.trans (hc.fac (BinaryFan.mk s.snd s.fst) ⟨WalkingPair.left⟩).symm)
       (e₁.trans (hc.fac (BinaryFan.mk s.snd s.fst) ⟨WalkingPair.right⟩).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem BinaryFan.isLimit_iff_isIso_fst {X Y : C} (h : IsTerminal Y) (c : BinaryFan X Y) :
     Nonempty (IsLimit c) ↔ IsIso c.fst := by
   constructor
@@ -405,11 +449,12 @@ theorem BinaryFan.isLimit_iff_isIso_snd {X Y : C} (h : IsTerminal X) (c : Binary
     ⟨fun h => ⟨BinaryFan.isLimitFlip h.some⟩, fun h =>
       ⟨(BinaryFan.isLimitFlip h.some).ofIsoLimit (isoBinaryFanMk c).symm⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `X' ≅ X`, then `X × Y` also is the product of `X'` and `Y`. -/
 noncomputable def BinaryFan.isLimitCompLeftIso {X Y X' : C} (c : BinaryFan X Y) (f : X ⟶ X')
     [IsIso f] (h : IsLimit c) : IsLimit (BinaryFan.mk (c.fst ≫ f) c.snd) := by
   fapply BinaryFan.isLimitMk
-  · exact fun s => h.lift (BinaryFan.mk (s.fst ≫ inv f) s.snd)
+  · exact fun s => IsLimit.lift h (s.fst ≫ inv f) s.snd
   · simp
   · simp
   · intro s m e₁ e₂
@@ -425,12 +470,13 @@ noncomputable def BinaryFan.isLimitCompRightIso {X Y Y' : C} (c : BinaryFan X Y)
 /-- Binary coproducts are symmetric. -/
 def BinaryCofan.isColimitFlip {X Y : C} {c : BinaryCofan X Y} (hc : IsColimit c) :
     IsColimit (BinaryCofan.mk c.inr c.inl) :=
-  BinaryCofan.isColimitMk (fun s => hc.desc (BinaryCofan.mk s.inr s.inl)) (fun _ => hc.fac _ _)
+  BinaryCofan.isColimitMk (fun s => IsColimit.desc hc s.inr s.inl) (fun _ => hc.fac _ _)
     (fun _ => hc.fac _ _) fun s _ e₁ e₂ =>
     BinaryCofan.IsColimit.hom_ext hc
       (e₂.trans (hc.fac (BinaryCofan.mk s.inr s.inl) ⟨WalkingPair.left⟩).symm)
       (e₁.trans (hc.fac (BinaryCofan.mk s.inr s.inl) ⟨WalkingPair.right⟩).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem BinaryCofan.isColimit_iff_isIso_inl {X Y : C} (h : IsInitial Y) (c : BinaryCofan X Y) :
     Nonempty (IsColimit c) ↔ IsIso c.inl := by
   constructor
@@ -453,11 +499,12 @@ theorem BinaryCofan.isColimit_iff_isIso_inr {X Y : C} (h : IsInitial X) (c : Bin
     ⟨fun h => ⟨BinaryCofan.isColimitFlip h.some⟩, fun h =>
       ⟨(BinaryCofan.isColimitFlip h.some).ofIsoColimit (isoBinaryCofanMk c).symm⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `X' ≅ X`, then `X ⨿ Y` also is the coproduct of `X'` and `Y`. -/
 noncomputable def BinaryCofan.isColimitCompLeftIso {X Y X' : C} (c : BinaryCofan X Y) (f : X' ⟶ X)
     [IsIso f] (h : IsColimit c) : IsColimit (BinaryCofan.mk (f ≫ c.inl) c.inr) := by
   fapply BinaryCofan.isColimitMk
-  · exact fun s => h.desc (BinaryCofan.mk (inv f ≫ s.inl) s.inr)
+  · exact fun s => BinaryCofan.IsColimit.desc h (inv f ≫ s.inl) s.inr
   · simp
   · simp
   · intro s m e₁ e₂
@@ -509,19 +556,21 @@ noncomputable abbrev coprod.inl {X Y : C} [HasBinaryCoproduct X Y] : X ⟶ X ⨿
 noncomputable abbrev coprod.inr {X Y : C} [HasBinaryCoproduct X Y] : Y ⟶ X ⨿ Y :=
   colimit.ι (pair X Y) ⟨WalkingPair.right⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The binary fan constructed from the projection maps is a limit. -/
 noncomputable def prodIsProd (X Y : C) [HasBinaryProduct X Y] :
     IsLimit (BinaryFan.mk (prod.fst : X ⨯ Y ⟶ X) prod.snd) :=
-  (limit.isLimit _).ofIsoLimit (Cones.ext (Iso.refl _) (fun ⟨u⟩ => by
+  (limit.isLimit _).ofIsoLimit (Cone.ext (Iso.refl _) (fun ⟨u⟩ => by
     cases u
     · simp [Category.id_comp]
     · simp [Category.id_comp]
   ))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The binary cofan constructed from the coprojection maps is a colimit. -/
 noncomputable def coprodIsCoprod (X Y : C) [HasBinaryCoproduct X Y] :
     IsColimit (BinaryCofan.mk (coprod.inl : X ⟶ X ⨿ Y) coprod.inr) :=
-  (colimit.isColimit _).ofIsoColimit (Cocones.ext (Iso.refl _) (fun ⟨u⟩ => by
+  (colimit.isColimit _).ofIsoColimit (Cocone.ext (Iso.refl _) (fun ⟨u⟩ => by
     cases u
     · dsimp; simp only [Category.comp_id]
     · dsimp; simp only [Category.comp_id]
@@ -620,6 +669,7 @@ noncomputable def coprod.map {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCo
 
 noncomputable section ProdLemmas
 
+set_option backward.isDefEq.respectTransparency false in
 -- Making the reassoc version of this a simp lemma seems to be more harmful than helpful.
 @[reassoc, simp]
 theorem prod.comp_lift {V W X Y : C} [HasBinaryProduct X Y] (f : V ⟶ W) (g : W ⟶ X) (h : W ⟶ Y) :
@@ -642,10 +692,12 @@ theorem prod.map_snd {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z]
 theorem prod.map_id_id {X Y : C} [HasBinaryProduct X Y] : prod.map (𝟙 X) (𝟙 Y) = 𝟙 _ := by
   ext <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem prod.lift_fst_snd {X Y : C} [HasBinaryProduct X Y] :
     prod.lift prod.fst prod.snd = 𝟙 (X ⨯ Y) := by ext <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem prod.lift_map {V W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] (f : V ⟶ W)
     (g : V ⟶ X) (h : W ⟶ Y) (k : X ⟶ Z) :
@@ -715,6 +767,7 @@ theorem prod.diag_map_fst_snd_comp [HasLimitsOfShape (Discrete WalkingPair) C] {
     (g : X ⟶ Y) (g' : X' ⟶ Y') :
     diag (X ⨯ X') ≫ prod.map (prod.fst ≫ g) (prod.snd ≫ g') = prod.map g g' := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 instance {X : C} [HasBinaryProduct X X] : IsSplitMono (diag X) :=
   IsSplitMono.mk' { retraction := prod.fst }
 
@@ -722,6 +775,7 @@ end ProdLemmas
 
 noncomputable section CoprodLemmas
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc, simp]
 theorem coprod.desc_comp {V W X Y : C} [HasBinaryCoproduct X Y] (f : V ⟶ W) (g : X ⟶ V)
     (h : Y ⟶ V) : coprod.desc g h ≫ f = coprod.desc (g ≫ f) (h ≫ f) := by
@@ -744,10 +798,12 @@ theorem coprod.inr_map {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduc
 theorem coprod.map_id_id {X Y : C} [HasBinaryCoproduct X Y] : coprod.map (𝟙 X) (𝟙 Y) = 𝟙 _ := by
   ext <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coprod.desc_inl_inr {X Y : C} [HasBinaryCoproduct X Y] :
     coprod.desc coprod.inl coprod.inr = 𝟙 (X ⨿ Y) := by ext <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 -- The simp linter says simp can prove the reassoc version of this lemma.
 @[reassoc, simp]
 theorem coprod.map_desc {S T U V W : C} [HasBinaryCoproduct U W] [HasBinaryCoproduct T V]
@@ -851,6 +907,7 @@ noncomputable section
 
 variable {C}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The braiding isomorphism which swaps a binary product. -/
 @[simps]
 def prod.braiding (P Q : C) [HasBinaryProduct P Q] [HasBinaryProduct Q P] : P ⨯ Q ≅ Q ⨯ P where
@@ -873,12 +930,14 @@ theorem prod.symmetry (P Q : C) [HasBinaryProduct P Q] [HasBinaryProduct Q P] :
     (prod.braiding P Q).hom ≫ (prod.braiding Q P).hom = 𝟙 _ :=
   (prod.braiding _ _).hom_inv_id
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The associator isomorphism for binary products. -/
 @[simps]
 def prod.associator [HasBinaryProducts C] (P Q R : C) : (P ⨯ Q) ⨯ R ≅ P ⨯ Q ⨯ R where
   hom := prod.lift (prod.fst ≫ prod.fst) (prod.lift (prod.fst ≫ prod.snd) prod.snd)
   inv := prod.lift (prod.lift prod.fst (prod.snd ≫ prod.fst)) (prod.snd ≫ prod.snd)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem prod.pentagon [HasBinaryProducts C] (W X Y Z : C) :
     prod.map (prod.associator W X Y).hom (𝟙 Z) ≫
@@ -895,6 +954,7 @@ theorem prod.associator_naturality [HasBinaryProducts C] {X₁ X₂ X₃ Y₁ Y�
 
 variable [HasTerminal C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The left unitor isomorphism for binary products with the terminal object. -/
 @[simps]
 def prod.leftUnitor (P : C) [HasBinaryProduct (⊤_ C) P] : (⊤_ C) ⨯ P ≅ P where
@@ -903,6 +963,7 @@ def prod.leftUnitor (P : C) [HasBinaryProduct (⊤_ C) P] : (⊤_ C) ⨯ P ≅ P
   hom_inv_id := by apply prod.hom_ext <;> simp [eq_iff_true_of_subsingleton]
   inv_hom_id := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The right unitor isomorphism for binary products with the terminal object. -/
 @[simps]
 def prod.rightUnitor (P : C) [HasBinaryProduct P (⊤_ C)] : P ⨯ ⊤_ C ≅ P where
@@ -931,6 +992,7 @@ theorem prod_rightUnitor_inv_naturality [HasBinaryProducts C] (f : X ⟶ Y) :
     (prod.rightUnitor X).inv ≫ prod.map f (𝟙 _) = f ≫ (prod.rightUnitor Y).inv := by
   rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, prod.rightUnitor_hom_naturality]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem prod.triangle [HasBinaryProducts C] (X Y : C) :
     (prod.associator X (⊤_ C) Y).hom ≫ prod.map (𝟙 X) (prod.leftUnitor Y).hom =
       prod.map (prod.rightUnitor X).hom (𝟙 Y) := by
@@ -943,6 +1005,7 @@ noncomputable section
 variable {C}
 variable [HasBinaryCoproducts C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The braiding isomorphism which swaps a binary coproduct. -/
 @[simps]
 def coprod.braiding (P Q : C) : P ⨿ Q ≅ Q ⨿ P where
@@ -958,12 +1021,14 @@ theorem coprod.symmetry' (P Q : C) :
 theorem coprod.symmetry (P Q : C) : (coprod.braiding P Q).hom ≫ (coprod.braiding Q P).hom = 𝟙 _ :=
   coprod.symmetry' _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The associator isomorphism for binary coproducts. -/
 @[simps]
 def coprod.associator (P Q R : C) : (P ⨿ Q) ⨿ R ≅ P ⨿ Q ⨿ R where
   hom := coprod.desc (coprod.desc coprod.inl (coprod.inl ≫ coprod.inr)) (coprod.inr ≫ coprod.inr)
   inv := coprod.desc (coprod.inl ≫ coprod.inl) (coprod.desc (coprod.inr ≫ coprod.inl) coprod.inr)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coprod.pentagon (W X Y Z : C) :
     coprod.map (coprod.associator W X Y).hom (𝟙 Z) ≫
         (coprod.associator W (X ⨿ Y) Z).hom ≫ coprod.map (𝟙 W) (coprod.associator X Y Z).hom =
@@ -978,6 +1043,7 @@ theorem coprod.associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C} (f₁ :
 
 variable [HasInitial C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The left unitor isomorphism for binary coproducts with the initial object. -/
 @[simps]
 def coprod.leftUnitor (P : C) : (⊥_ C) ⨿ P ≅ P where
@@ -986,6 +1052,11 @@ def coprod.leftUnitor (P : C) : (⊥_ C) ⨿ P ≅ P where
   hom_inv_id := by apply coprod.hom_ext <;> simp [eq_iff_true_of_subsingleton]
   inv_hom_id := by simp
 
+theorem coprod.leftUnitor_naturality (f : X ⟶ Y) :
+    coprod.map (𝟙 _) f ≫ (coprod.leftUnitor Y).hom = (coprod.leftUnitor X).hom ≫ f := by
+  simp
+
+set_option backward.isDefEq.respectTransparency false in
 /-- The right unitor isomorphism for binary coproducts with the initial object. -/
 @[simps]
 def coprod.rightUnitor (P : C) : P ⨿ ⊥_ C ≅ P where
@@ -994,6 +1065,11 @@ def coprod.rightUnitor (P : C) : P ⨿ ⊥_ C ≅ P where
   hom_inv_id := by apply coprod.hom_ext <;> simp [eq_iff_true_of_subsingleton]
   inv_hom_id := by simp
 
+theorem coprod.rightUnitor_naturality (f : X ⟶ Y) :
+    coprod.map f (𝟙 _) ≫ (coprod.rightUnitor Y).hom = (coprod.rightUnitor X).hom ≫ f := by
+  simp
+
+set_option backward.isDefEq.respectTransparency false in
 theorem coprod.triangle (X Y : C) :
     (coprod.associator X (⊥_ C) Y).hom ≫ coprod.map (𝟙 X) (coprod.leftUnitor Y).hom =
       coprod.map (coprod.rightUnitor X).hom (𝟙 Y) := by
@@ -1003,7 +1079,7 @@ end
 
 noncomputable section ProdFunctor
 
-variable {C} [Category.{v} C] [HasBinaryProducts C]
+variable {C} [HasBinaryProducts C]
 
 /-- The binary product functor. -/
 @[simps]
@@ -1014,6 +1090,7 @@ def prod.functor : C ⥤ C ⥤ C where
   map f :=
     { app := fun T => prod.map f (𝟙 T) }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The product functor can be decomposed. -/
 def prod.functorLeftComp (X Y : C) :
     prod.functor.obj (X ⨯ Y) ≅ prod.functor.obj Y ⋙ prod.functor.obj X :=
@@ -1033,12 +1110,55 @@ def coprod.functor : C ⥤ C ⥤ C where
       map := fun {_ _} => coprod.map (𝟙 X) }
   map f := { app := fun T => coprod.map f (𝟙 T) }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The coproduct functor can be decomposed. -/
 def coprod.functorLeftComp (X Y : C) :
     coprod.functor.obj (X ⨿ Y) ≅ coprod.functor.obj Y ⋙ coprod.functor.obj X :=
   NatIso.ofComponents (coprod.associator _ _)
 
 end CoprodFunctor
+
+section
+
+variable {C} {D : Type*} [Category* D] {F : C ⥤ D}
+
+variable (F) in
+/-- The image of a binary fan by a functor. -/
+abbrev BinaryFan.map {X Y : C} (s : BinaryFan X Y) : BinaryFan (F.obj X) (F.obj Y) :=
+  mk (F.map s.fst) (F.map s.snd)
+
+@[simp]
+lemma BinaryFan.map_fst {X Y : C} (s : BinaryFan X Y) : (s.map F).fst = F.map s.fst := rfl
+
+@[simp]
+lemma BinaryFan.map_snd {X Y : C} (s : BinaryFan X Y) : (s.map F).snd = F.map s.snd := rfl
+
+variable (F) in
+/-- The image of a binary cofan by a functor. -/
+abbrev BinaryCofan.map {X Y : C} (s : BinaryCofan X Y) : BinaryCofan (F.obj X) (F.obj Y) :=
+  mk (F.map s.inl) (F.map s.inr)
+
+@[simp]
+lemma BinaryCofan.map_inl {X Y : C} (s : BinaryCofan X Y) : (s.map F).inl = F.map s.inl := rfl
+
+@[simp]
+lemma BinaryCofan.map_inr {X Y : C} (s : BinaryCofan X Y) : (s.map F).inr = F.map s.inr := rfl
+
+set_option backward.defeqAttrib.useBackward true in
+/-- `F.mapCone s` being limiting is the same as the induced binary fan being limiting. -/
+def BinaryFan.isLimitMapConeEquiv {X Y : C} {s : BinaryFan X Y} :
+    IsLimit (F.mapCone s) ≃ IsLimit (s.map F) :=
+  IsLimit.equivOfNatIsoOfIso (diagramIsoPair _) _ _ <| ext (Iso.refl _)
+    (by simp [fst]) (by simp [snd])
+
+set_option backward.defeqAttrib.useBackward true in
+/-- `F.mapCocone s` being colimiting is the same as the induced binary cofan being colimiting. -/
+def BinaryCofan.isColimitMapConeEquiv {X Y : C} {s : BinaryCofan X Y} :
+    IsColimit (F.mapCocone s) ≃ IsColimit (s.map F) :=
+  IsColimit.equivOfNatIsoOfIso (diagramIsoPair _) _ _ <| ext (Iso.refl _)
+    (by simp [inl]) (by simp [inr])
+
+end
 
 noncomputable section ProdComparison
 
@@ -1092,6 +1212,7 @@ theorem prodComparison_natural_of_natTrans {H : C ⥤ D} [HasBinaryProduct (H.ob
 
 variable (F)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The product comparison morphism from `F(A ⨯ -)` to `FA ⨯ F-`, whose components are given by
 `prodComparison`.
 -/
@@ -1117,6 +1238,7 @@ theorem prodComparison_inv_natural (f : A ⟶ A') (g : B ⟶ B') [IsIso (prodCom
       prod.map (F.map f) (F.map g) ≫ inv (prodComparison F A' B') := by
   rw [IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq, prodComparison_natural]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism `F(A ⨯ -) ≅ FA ⨯ F-`, provided each `prodComparison F A B` is an
 isomorphism (as `B` changes).
 -/
@@ -1127,6 +1249,8 @@ def prodComparisonNatIso [HasBinaryProducts C] [HasBinaryProducts D] (A : C)
   refine { @asIso _ _ _ _ _ (?_) with hom := prodComparisonNatTrans F A }
   apply NatIso.isIso_of_isIso_app
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 theorem prodComparison_comp :
     prodComparison (F ⋙ G) A B =
       G.map (prodComparison F A B) ≫ prodComparison G (F.obj A) (F.obj B) := by
@@ -1161,7 +1285,7 @@ theorem coprodComparison_inl : coprod.inl ≫ coprodComparison F A B = F.map cop
 theorem coprodComparison_inr : coprod.inr ≫ coprodComparison F A B = F.map coprod.inr :=
   coprod.inr_desc _ _
 
-/-- Naturality of the coprod_comparison morphism in both arguments. -/
+/-- Naturality of the `coprodComparison` morphism in both arguments. -/
 @[reassoc]
 theorem coprodComparison_natural (f : A ⟶ A') (g : B ⟶ B') :
     coprodComparison F A B ≫ F.map (coprod.map f g) =
@@ -1169,6 +1293,7 @@ theorem coprodComparison_natural (f : A ⟶ A') (g : B ⟶ B') :
   rw [coprodComparison, coprodComparison, coprod.map_desc, ← F.map_comp, ← F.map_comp,
     coprod.desc_comp, ← F.map_comp, coprod.inl_map, ← F.map_comp, coprod.inr_map]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The coproduct comparison morphism from `FA ⨿ F-` to `F(A ⨿ -)`, whose components are given by
 `coprodComparison`.
 -/
@@ -1194,6 +1319,7 @@ theorem coprodComparison_inv_natural (f : A ⟶ A') (g : B ⟶ B') [IsIso (copro
       F.map (coprod.map f g) ≫ inv (coprodComparison F A' B') := by
   rw [IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq, coprodComparison_natural]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism `FA ⨿ F- ≅ F(A ⨿ -)`, provided each `coprodComparison F A B` is an
 isomorphism (as `B` changes).
 -/
@@ -1213,6 +1339,7 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `Over.coprod`. -/
 @[simps]
 noncomputable def Over.coprodObj [HasBinaryCoproducts C] {A : C} :
@@ -1221,6 +1348,7 @@ noncomputable def Over.coprodObj [HasBinaryCoproducts C] {A : C} :
   { obj := fun g => Over.mk (coprod.desc f.hom g.hom)
     map := fun k => Over.homMk (coprod.map (𝟙 _) k.left) }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A category with binary coproducts has a functorial `sup` operation on over categories. -/
 @[simps]
 noncomputable def Over.coprod [HasBinaryCoproducts C] {A : C} : Over A ⥤ Over A ⥤ Over A where
@@ -1275,6 +1403,7 @@ protected abbrev BinaryCofan.unop (c : BinaryCofan (op X) (op Y)) : BinaryFan X 
 @[simp] lemma BinaryCofan.unop_mk (ι₁ : op X ⟶ op P) (ι₂ : op Y ⟶ op P) :
     BinaryCofan.unop (mk ι₁ ι₂) = .mk ι₁.unop ι₂.unop := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a `BinaryFan` is a limit, then its opposite is a colimit. -/
 protected def BinaryFan.IsLimit.op {c : BinaryFan X Y} (hc : IsLimit c) : IsColimit c.op :=
   BinaryCofan.isColimitMk (fun s ↦ (hc.lift s.unop).op)
@@ -1282,6 +1411,7 @@ protected def BinaryFan.IsLimit.op {c : BinaryFan X Y} (hc : IsLimit c) : IsColi
     (fun s m h₁ h₂ ↦ Quiver.Hom.unop_inj
       (BinaryFan.IsLimit.hom_ext hc (by simp [← h₁]) (by simp [← h₂])))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a `BinaryCofan` is a colimit, then its opposite is a limit. -/
 protected def BinaryCofan.IsColimit.op {c : BinaryCofan X Y} (hc : IsColimit c) : IsLimit c.op :=
   BinaryFan.isLimitMk (fun s ↦ (hc.desc s.unop).op)
@@ -1289,6 +1419,7 @@ protected def BinaryCofan.IsColimit.op {c : BinaryCofan X Y} (hc : IsColimit c) 
     (fun s m h₁ h₂ ↦ Quiver.Hom.unop_inj
       (BinaryCofan.IsColimit.hom_ext hc (by simp [← h₁]) (by simp [← h₂])))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a `BinaryFan` in the opposite category is a limit, then its `unop` is a colimit. -/
 protected def BinaryFan.IsLimit.unop {c : BinaryFan (op X) (op Y)} (hc : IsLimit c) :
     IsColimit c.unop :=
@@ -1297,6 +1428,7 @@ protected def BinaryFan.IsLimit.unop {c : BinaryFan (op X) (op Y)} (hc : IsLimit
     (fun s m h₁ h₂ ↦ Quiver.Hom.op_inj
       (BinaryFan.IsLimit.hom_ext hc (by simp [← h₁]) (by simp [← h₂])))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a `BinaryCofan` in the opposite category is a colimit, then its `unop` is a limit. -/
 protected def BinaryCofan.IsColimit.unop {c : BinaryCofan (op X) (op Y)} (hc : IsColimit c) :
     IsLimit c.unop :=
@@ -1316,6 +1448,7 @@ def BinaryFan.swap (s : BinaryFan X Y) : BinaryFan Y X := .mk s.snd s.fst
 @[simp] lemma BinaryFan.swap_fst (s : BinaryFan X Y) : s.swap.fst = s.snd := rfl
 @[simp] lemma BinaryFan.swap_snd (s : BinaryFan X Y) : s.swap.snd = s.fst := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a binary fan `s` over `X Y` is a limit cone, then `s.swap` is a limit cone over `Y X`. -/
 @[simps]
 def IsLimit.binaryFanSwap (I : IsLimit s) : IsLimit s.swap where
@@ -1385,36 +1518,39 @@ if `sYZ` is a limit cone we can construct a binary fan over `sXY.X Z`.
 
 This is an ingredient of building the associator for a Cartesian category. -/
 def BinaryFan.assocInv (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) : BinaryFan sXY.pt Z :=
-  BinaryFan.mk (P.lift (BinaryFan.mk s.fst (s.snd ≫ sYZ.fst))) (s.snd ≫ sYZ.snd)
+  BinaryFan.mk (IsLimit.lift P s.fst (s.snd ≫ sYZ.fst)) (s.snd ≫ sYZ.snd)
 
 @[simp]
 lemma BinaryFan.assocInv_fst (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) :
-    (assocInv P s).fst = P.lift (mk s.fst (s.snd ≫ sYZ.fst)) := rfl
+    (assocInv P s).fst = IsLimit.lift P s.fst (s.snd ≫ sYZ.fst) := rfl
 
 @[simp]
 lemma BinaryFan.assocInv_snd (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) :
     (assocInv P s).snd = s.snd ≫ sYZ.snd := rfl
 
--- TODO: find a good way to fix the linter; simp applies to two goals with different simp sets
-set_option linter.flexible false in
+set_option backward.isDefEq.respectTransparency false in
 /-- If all the binary fans involved a limit cones, `BinaryFan.assoc` produces another limit cone. -/
 @[simps]
 protected def IsLimit.assoc (P : IsLimit sXY) (Q : IsLimit sYZ) {s : BinaryFan sXY.pt Z}
     (R : IsLimit s) : IsLimit (BinaryFan.assoc Q s) where
   lift t := R.lift (BinaryFan.assocInv P t)
-  fac t := by rintro ⟨⟨⟩⟩ <;> simp; apply Q.hom_ext; rintro ⟨⟨⟩⟩ <;> simp
+  fac t := by
+    rintro ⟨⟨⟩⟩
+    · simp
+    apply Q.hom_ext
+    rintro ⟨⟨⟩⟩ <;> simp
   uniq t m w := by
     have h := R.uniq (BinaryFan.assocInv P t) m
     rw [h]
-    rintro ⟨⟨⟩⟩ <;> simp
+    rintro ⟨⟨⟩⟩
     · apply P.hom_ext
-      rintro ⟨⟨⟩⟩ <;> simp
-      · exact w ⟨.left⟩
-      · replace w : m ≫ Q.lift (BinaryFan.mk (s.fst ≫ sXY.snd) s.snd) = t.π.app ⟨.right⟩ := by
-          simpa using w ⟨.right⟩
+      rintro ⟨⟨⟩⟩
+      · simpa using w ⟨.left⟩
+      · replace w : m ≫ BinaryFan.IsLimit.lift Q (s.fst ≫ sXY.snd) s.snd = t.π.app ⟨.right⟩ := by
+          simpa using! w ⟨.right⟩
         simp [← w]
-    · replace w : m ≫ Q.lift (BinaryFan.mk (s.fst ≫ sXY.snd) s.snd) = t.π.app ⟨.right⟩ := by
-        simpa using w ⟨.right⟩
+    · replace w : m ≫ BinaryFan.IsLimit.lift Q (s.fst ≫ sXY.snd) s.snd = t.π.app ⟨.right⟩ := by
+        simpa using! w ⟨.right⟩
       simp [← w]
 
 /-- Given two pairs of limit cones corresponding to the parenthesisations of `X × Y × Z`,
@@ -1433,6 +1569,7 @@ end assoc
 
 section unitor
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct a left unitor from specified limit cones. -/
 @[simps]
 def BinaryFan.leftUnitor {X : C} {s : Cone (Functor.empty.{0} C)} (P : IsLimit s)
@@ -1446,6 +1583,7 @@ def BinaryFan.leftUnitor {X : C} {s : Cone (Functor.empty.{0} C)} (P : IsLimit s
       rintro ⟨⟨⟩⟩
     · simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct a right unitor from specified limit cones. -/
 @[simps]
 def BinaryFan.rightUnitor {X : C} {s : Cone (Functor.empty.{0} C)} (P : IsLimit s)
@@ -1461,3 +1599,4 @@ def BinaryFan.rightUnitor {X : C} {s : Cone (Functor.empty.{0} C)} (P : IsLimit 
 
 end unitor
 end CategoryTheory.Limits
+set_option linter.style.longFile 1700

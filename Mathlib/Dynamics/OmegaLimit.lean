@@ -6,7 +6,6 @@ Authors: Jean Lo
 module
 
 public import Mathlib.Dynamics.Flow
-public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # ω-limits
@@ -134,10 +133,13 @@ theorem mem_omegaLimit_iff_frequently₂ (y : β) :
 
 /-- An element `y` is in the ω-limit of `x` w.r.t. `f` if the forward
 images of `x` frequently (w.r.t. `f`) falls within an arbitrary neighbourhood of `y`. -/
-theorem mem_omegaLimit_singleton_iff_map_cluster_point (x : α) (y : β) :
+theorem mem_omegaLimit_singleton_iff_mapClusterPt (x : α) (y : β) :
     y ∈ ω f ϕ {x} ↔ MapClusterPt y f fun t ↦ ϕ t x := by
   simp_rw [mem_omegaLimit_iff_frequently, mapClusterPt_iff_frequently, singleton_inter_nonempty,
     mem_preimage]
+
+@[deprecated (since := "2026-03-31")]
+alias mem_omegaLimit_singleton_iff_map_cluster_point := mem_omegaLimit_singleton_iff_mapClusterPt
 
 /-!
 ### Set operations and omega limits
@@ -187,12 +189,15 @@ theorem omegaLimit_eq_iInter_inter {v : Set τ} (hv : v ∈ f) :
   rw [omegaLimit_eq_biInter_inter _ _ _ hv]
   apply biInter_eq_iInter
 
-theorem omegaLimit_subset_closure_fw_image {u : Set τ} (hu : u ∈ f) :
+theorem omegaLimit_subset_closure_image2 {u : Set τ} (hu : u ∈ f) :
     ω f ϕ s ⊆ closure (image2 ϕ u s) := by
   rw [omegaLimit_eq_iInter]
   intro _ hx
   rw [mem_iInter] at hx
   exact hx ⟨u, hu⟩
+
+@[deprecated (since := "2026-03-31")]
+alias omegaLimit_subset_closure_fw_image := omegaLimit_subset_closure_image2
 
 -- An instance with better keys
 instance : Inhabited f.sets := Filter.inhabitedMem
@@ -216,9 +221,9 @@ theorem eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit
   have hj₁ : ∀ u ∈ f, IsOpen (j u) := fun _ _ ↦ isOpen_compl_iff.mpr isClosed_closure
   have hj₂ : k \ n ⊆ ⋃ u ∈ f, j u := by
     have : ⋃ u ∈ f, j u = ⋃ u : (↥f.sets), j u := biUnion_eq_iUnion _ _
-    rw [this, diff_subset_comm, diff_iUnion]
+    rw [this, sdiff_subset_comm, sdiff_iUnion]
     rw [omegaLimit_eq_iInter_inter _ _ _ hv₁] at hn₂
-    simp_rw [j, diff_compl]
+    simp_rw [j, sdiff_compl]
     rw [← inter_iInter]
     exact Subset.trans inter_subset_right hn₂
   rcases hk.elim_finite_subcover_image hj₁ hj₂ with ⟨g, hg₁ : ∀ u ∈ g, u ∈ f, hg₂, hg₃⟩
@@ -235,7 +240,7 @@ theorem eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit
   have hw₄ : kᶜ ⊆ (closure (image2 ϕ w s))ᶜ := by
     simp only [compl_subset_compl]
     exact closure_mono (image2_subset inter_subset_right Subset.rfl)
-  have hnc : nᶜ ⊆ k \ n ∪ kᶜ := by rw [union_comm, ← inter_subset, diff_eq, inter_comm]
+  have hnc : nᶜ ⊆ k \ n ∪ kᶜ := by rw [union_comm, ← inter_subset, sdiff_eq, inter_comm]
   have hw : closure (image2 ϕ w s) ⊆ n :=
     compl_subset_compl.mp (Subset.trans hnc (union_subset hw₃ hw₄))
   exact ⟨_, hw₂, hw⟩
@@ -334,13 +339,12 @@ open omegaLimit
 theorem omegaLimit_image_eq (hf : ∀ t, Tendsto (· + t) f f) (t : τ) : ω f ϕ (ϕ t '' s) = ω f ϕ s :=
   Subset.antisymm (omegaLimit_image_subset _ _ _ _ (hf t)) <|
     calc
-      ω f ϕ s = ω f ϕ (ϕ (-t) '' (ϕ t '' s)) := by simp [image_image, ← map_add]
+      ω f ϕ s = ω f ϕ (ϕ (-t) '' ϕ t '' s) := by simp [image_image, ← map_add]
       _ ⊆ ω f ϕ (ϕ t '' s) := omegaLimit_image_subset _ _ _ _ (hf _)
 
 theorem omegaLimit_omegaLimit (hf : ∀ t, Tendsto (t + ·) f f) : ω f ϕ (ω f ϕ s) ⊆ ω f ϕ s := by
   simp only [subset_def, mem_omegaLimit_iff_frequently₂, frequently_iff]
-  intro _ h
-  rintro n hn u hu
+  intro _ h n hn u hu
   rcases mem_nhds_iff.mp hn with ⟨o, ho₁, ho₂, ho₃⟩
   rcases h o (IsOpen.mem_nhds ho₂ ho₃) hu with ⟨t, _ht₁, ht₂⟩
   have l₁ : (ω f ϕ s ∩ o).Nonempty :=
@@ -348,7 +352,7 @@ theorem omegaLimit_omegaLimit (hf : ∀ t, Tendsto (t + ·) f f) : ω f ϕ (ω f
       (inter_subset_inter_left _
         ((isInvariant_iff_image _ _).mp (isInvariant_omegaLimit _ _ _ hf) _))
   have l₂ : (closure (image2 ϕ u s) ∩ o).Nonempty :=
-    l₁.mono fun b hb ↦ ⟨omegaLimit_subset_closure_fw_image _ _ _ hu hb.1, hb.2⟩
+    l₁.mono fun b hb ↦ ⟨omegaLimit_subset_closure_image2 _ _ _ hu hb.1, hb.2⟩
   have l₃ : (o ∩ image2 ϕ u s).Nonempty := by
     rcases l₂ with ⟨b, hb₁, hb₂⟩
     exact mem_closure_iff_nhds.mp hb₁ o (IsOpen.mem_nhds ho₂ hb₂)

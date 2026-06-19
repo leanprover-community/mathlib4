@@ -65,6 +65,7 @@ instance [WeakEquivalence f] : WeakEquivalence h.i :=
 instance : WeakEquivalence h.s :=
   weakEquivalence_of_postcomp_of_fac h.s_p
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The term in `CofibrantBrownFactorization f` that is deduced from
 a factorization of `coprod.desc f (𝟙 Y) : X ⨿ Y ⟶ Y`
 as a cofibration followed by a trivial fibration. -/
@@ -113,6 +114,7 @@ instance [WeakEquivalence f] : WeakEquivalence h.p :=
 instance : WeakEquivalence h.r :=
   weakEquivalence_of_precomp_of_fac h.i_r
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The term in `CofibrantBrownFactorization f` that is deduced from
 a factorization of `prod.lift f (𝟙 X) : X ⟶ Y ⨯ X`
 as a cofibration followed by a trivial fibration. -/

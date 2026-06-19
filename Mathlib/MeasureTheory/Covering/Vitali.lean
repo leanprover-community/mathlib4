@@ -187,6 +187,43 @@ theorem exists_disjoint_subfamily_covering_enlargement_closedBall
     rcases A b ⟨rb.1, rb.2⟩ with ⟨c, cu, _⟩
     exact ⟨c, cu, by simp only [closedBall_eq_empty.2 h'a, empty_subset]⟩
 
+/- Note: it seems easier to do the analogous proof again than to apply the previous one, because the
+interior of a closed ball may not equal the open ball. -/
+
+/-- Vitali covering theorem, open balls version: given a family `t` of balls, one can
+extract a disjoint subfamily `u ⊆ t` so that all balls in `t` are covered by the τ-times
+dilations of balls in `u`, for some `τ > 3`. -/
+theorem exists_disjoint_subfamily_covering_enlargement_ball
+    [PseudoMetricSpace α] (t : Set ι)
+    (x : ι → α) (r : ι → ℝ) (R : ℝ) (hr : ∀ a ∈ t, r a ≤ R) (τ : ℝ) (hτ : 3 < τ) :
+    ∃ u ⊆ t,
+      (u.PairwiseDisjoint fun a => ball (x a) (r a)) ∧
+        ∀ a ∈ t, ∃ b ∈ u, ball (x a) (r a) ⊆ ball (x b) (τ * r b) := by
+  rcases eq_empty_or_nonempty t with (rfl | _)
+  · exact ⟨∅, Subset.refl _, pairwiseDisjoint_empty, by simp⟩
+  by_cases! ht : ∀ a ∈ t, r a ≤ 0
+  · exact ⟨t, Subset.rfl, fun a ha b _ _ => by
+      simp only [ball_eq_empty.2 (ht a ha), empty_disjoint, Function.onFun],
+      fun a ha => ⟨a, ha, by simp only [ball_eq_empty.2 (ht a ha), empty_subset]⟩⟩
+  let t' := { a ∈ t | 0 < r a }
+  rcases exists_disjoint_subfamily_covering_enlargement (fun a => ball (x a) (r a)) t' r
+      ((τ - 1) / 2) (by linarith) (fun a ha => ha.2.le) R (fun a ha => hr a ha.1) fun a ha =>
+      ⟨x a, mem_ball_self ha.2⟩ with
+    ⟨u, ut', u_disj, hu⟩
+  have A : ∀ a ∈ t', ∃ b ∈ u, ball (x a) (r a) ⊆ ball (x b) (τ * r b) := by
+    intro a ha
+    rcases hu a ha with ⟨b, bu, hb, rb⟩
+    refine ⟨b, bu, ?_⟩
+    have : dist (x a) (x b) < r a + r b := dist_lt_add_of_nonempty_ball_inter_ball hb
+    apply ball_subset_ball'
+    linarith
+  refine ⟨u, ut'.trans fun a ha => ha.1, u_disj, fun a ha => ?_⟩
+  rcases lt_or_ge 0 (r a) with (h'a | h'a)
+  · exact A a ⟨ha, h'a⟩
+  · rcases ht with ⟨b, rb⟩
+    rcases A b ⟨rb.1, rb.2⟩ with ⟨c, cu, _⟩
+    exact ⟨c, cu, by simp only [ball_eq_empty.2 h'a, empty_subset]⟩
+
 /-- The measurable **Vitali covering theorem**.
 
 Assume one is given a family `t` of closed sets with nonempty interior, such that each `a ∈ t` is
@@ -263,8 +300,8 @@ theorem exists_disjoint_covering_ae
       intro a hav
       apply dist_le_add_of_nonempty_closedBall_inter_closedBall
       refine hav.2.mono ?_
-      apply inter_subset_inter _ ball_subset_closedBall
-      exact hB a (ut (vu hav))
+      gcongr
+      exacts [hB a (ut (vu hav)), ball_subset_closedBall]
     set R0 := sSup (r '' v) with R0_def
     have R0_bdd : BddAbove (r '' v) := by
       refine ⟨1, fun r' hr' => ?_⟩
@@ -329,21 +366,22 @@ theorem exists_disjoint_covering_ae
       intro b hbv _ h'z
       have : z ∈ (s \ ⋃ a ∈ u, B a) ∩ ⋃ a ∈ u, B a :=
         mem_inter (mem_of_mem_inter_left hz) (mem_biUnion (vu hbv) h'z)
-      simpa only [diff_inter_self]
+      simpa only [sdiff_inter_self]
     -- since the elements of `w` are closed and finitely many, one can find a small ball around `z`
     -- not intersecting them
     have : ball x (R x) \ k ∈ 𝓝 z := by
       apply IsOpen.mem_nhds (isOpen_ball.sdiff k_closed) _
-      exact (mem_diff _).2 ⟨mem_of_mem_inter_right hz, z_notmem_k⟩
+      exact (mem_sdiff _).2 ⟨mem_of_mem_inter_right hz, z_notmem_k⟩
     obtain ⟨d, dpos, hd⟩ : ∃ d, 0 < d ∧ closedBall z d ⊆ ball x (R x) \ k :=
       nhds_basis_closedBall.mem_iff.1 this
     -- choose an element `a` of the family `t` contained in this small ball
     obtain ⟨a, hat, ad, rfl⟩ : ∃ a ∈ t, r a ≤ min d (R z) ∧ c a = z :=
-      hf z ((mem_diff _).1 (mem_of_mem_inter_left hz)).1 (min d (R z)) (lt_min dpos (hR0 z))
+      hf z ((mem_sdiff _).1 (mem_of_mem_inter_left hz)).1 (min d (R z)) (lt_min dpos (hR0 z))
     have ax : B a ⊆ ball x (R x) := by
       refine (hB a hat).trans ?_
-      refine Subset.trans ?_ (hd.trans Set.diff_subset)
-      exact closedBall_subset_closedBall (ad.trans (min_le_left _ _))
+      refine Subset.trans ?_ (hd.trans Set.sdiff_subset)
+      gcongr
+      exact ad.trans (min_le_left _ _)
     -- it intersects an element `b` of `u` with comparable diameter, by definition of `u`
     obtain ⟨b, bu, ab, bdiam⟩ : ∃ b ∈ u, (B a ∩ B b).Nonempty ∧ r a ≤ 2 * r b :=
       hu a ⟨hat, ad.trans (min_le_right _ _)⟩
@@ -360,8 +398,9 @@ theorem exists_disjoint_covering_ae
       have : (ball x (R x) \ k ∩ k).Nonempty := by
         apply ab.mono (inter_subset_inter _ b'k)
         refine ((hB _ hat).trans ?_).trans hd
-        exact closedBall_subset_closedBall (ad.trans (min_le_left _ _))
-      simpa only [diff_inter_self, Set.not_nonempty_empty]
+        gcongr
+        exact ad.trans (min_le_left _ _)
+      simpa only [sdiff_inter_self, Set.not_nonempty_empty]
     let b'' : { a // a ∉ w } := ⟨b', b'_notmem_w⟩
     -- since `a` and `b` have comparable diameters, it follows that `z` belongs to the
     -- enlargement of `b`
@@ -386,6 +425,33 @@ theorem exists_disjoint_covering_ae
     _ ≤ C * (ε / C) := by gcongr
     _ ≤ ε := ENNReal.mul_div_le
 
+/-- The measurable **Vitali covering theorem**, filter version.
+
+Assume one is given a family `t` of closed sets with nonempty interior, such that each `a ∈ t` is
+included in a ball `B (x, r)` and covers a definite proportion of the ball `B (x, 3 r)` for a given
+measure `μ` (think of the situation where `μ` is a doubling measure and `t` is a family of balls).
+Consider a (possibly non-measurable) set `s` at which the family is fine, i.e., every point of `s`
+belongs to arbitrarily small elements of `t`. Then one can extract from `t` a disjoint subfamily
+that covers almost all `s`.
+
+For more flexibility, we give a statement with a parameterized family of sets.
+-/
+theorem exists_disjoint_covering_ae'
+    [PseudoMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
+    [SecondCountableTopology α] (μ : Measure α) [IsLocallyFiniteMeasure μ] (s : Set α) (t : Set ι)
+    (C : ℝ≥0) (r : ι → ℝ) (c : ι → α) (B : ι → Set α) (hB : ∀ a ∈ t, B a ⊆ closedBall (c a) (r a))
+    (μB : ∀ a ∈ t, μ (closedBall (c a) (3 * r a)) ≤ C * μ (B a))
+    (ht : ∀ a ∈ t, (interior (B a)).Nonempty) (h't : ∀ a ∈ t, IsClosed (B a))
+    (hf : ∀ x ∈ s, ∃ᶠ ε in 𝓝[>] 0, ∃ a ∈ t, r a = ε ∧ c a = x) :
+    ∃ u ⊆ t, u.Countable ∧ u.PairwiseDisjoint B ∧ μ (s \ ⋃ a ∈ u, B a) = 0 := by
+  suffices ∀ x ∈ s, ∀ ε > (0 : ℝ), ∃ a ∈ t, r a ≤ ε ∧ c a = x from
+    exists_disjoint_covering_ae μ s t C r c B hB μB ht h't this
+  intro x hx ε hε
+  specialize hf x hx
+  rw [frequently_nhdsWithin_iff, frequently_nhds_iff] at hf
+  obtain ⟨_, _, ⟨a, ha₁, ha₂, ha₃⟩, _⟩ := hf (Ioo (-ε) ε) (by grind) isOpen_Ioo
+  exact ⟨a, ha₁, by grind, ha₃⟩
+
 /-- Assume that around every point there are arbitrarily small scales at which the measure is
 doubling. Then the set of closed sets `a` with nonempty interior contained in `closedBall x r` and
 covering a fixed proportion `1/C` of the ball `closedBall x (3 * r)` forms a Vitali family.
@@ -402,8 +468,7 @@ protected def vitaliFamily [PseudoMetricSpace α] [MeasurableSpace α] [OpensMea
     obtain ⟨r, μr, rpos, rε⟩ :
         ∃ r, μ (closedBall x (3 * r)) ≤ C * μ (closedBall x r) ∧ r ∈ Ioc (0 : ℝ) ε :=
       ((h x).and_eventually (Ioc_mem_nhdsGT εpos)).exists
-    refine ⟨closedBall x r, ⟨isClosed_closedBall, ?_, ⟨r, Subset.rfl, μr⟩⟩,
-      closedBall_subset_closedBall rε⟩
+    refine ⟨closedBall x r, ⟨isClosed_closedBall, ?_, ⟨r, Subset.rfl, μr⟩⟩, by gcongr⟩
     exact (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall
   covering := by
     intro s f fsubset ffine
@@ -429,7 +494,7 @@ protected def vitaliFamily [PseudoMetricSpace α] [MeasurableSpace α] [OpensMea
       exact t'_disj hq hq' (ne_of_apply_ne _ hqq')
     · rintro - ⟨q, hq, rfl⟩
       exact (t't hq).2.2.2.2.1
-    · convert μt' using 3
+    · convert! μt' using 3
       rw [biUnion_image]
 
 end Vitali

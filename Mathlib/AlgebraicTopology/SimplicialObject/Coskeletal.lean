@@ -82,6 +82,7 @@ instance [X.IsCoskeletal n] : IsIso ((coskAdj n).unit.app X) := by
   rw [← isCoskeletal_iff_isIso]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism `X ≅ (cosk n).obj X` defined when `X` is coskeletal and the
 `n`-coskeleton functor exists. -/
 @[simps! hom]

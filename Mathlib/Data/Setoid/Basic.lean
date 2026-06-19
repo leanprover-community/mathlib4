@@ -38,7 +38,7 @@ attribute [refl, simp] Setoid.refl
 attribute [symm] Setoid.symm
 attribute [trans] Setoid.trans
 
-variable {α : Type*} {β : Type*}
+variable {α β γ : Type*}
 
 namespace Setoid
 
@@ -55,6 +55,8 @@ instance : LE (Setoid α) :=
 theorem le_def {r s : Setoid α} : r ≤ s ↔ ∀ {x y}, r x y → s x y :=
   Iff.rfl
 
+theorem le_iff_rel_le {r₁ r₂ : Setoid α} : r₁ ≤ r₂ ↔ ⇑r₁ ≤ ⇑r₂ := Iff.rfl
+
 @[refl]
 theorem refl' (r : Setoid α) (x) : r x x := r.iseqv.refl x
 
@@ -70,6 +72,7 @@ theorem comm' (s : Setoid α) {x y} : s x y ↔ s y x :=
 open scoped Function -- required for scoped `on` notation
 
 /-- The kernel of a function is an equivalence relation. -/
+@[implicit_reducible]
 def ker (f : α → β) : Setoid α :=
   ⟨(· = ·) on f, eq_equivalence.comap f⟩
 
@@ -88,6 +91,7 @@ theorem ker_def {f : α → β} {x y : α} : ker f x y ↔ f x = f y :=
 /-- Given types `α`, `β`, the product of two equivalence relations `r` on `α` and `s` on `β`:
 `(x₁, x₂), (y₁, y₂) ∈ α × β` are related by `r.prod s` iff `x₁` is related to `y₁`
 by `r` and `x₂` is related to `y₂` by `s`. -/
+@[implicit_reducible]
 protected def prod (r : Setoid α) (s : Setoid β) :
     Setoid (α × β) where
   r x y := r x.1 y.1 ∧ s x.2 y.2
@@ -113,10 +117,9 @@ def prodQuotientEquiv (r : Setoid α) (s : Setoid β) :
     fun x y hxy ↦ Prod.ext (by simpa [Quotient.eq] using hxy.1) (by simpa [Quotient.eq] using hxy.2)
   left_inv q := by
     rcases q with ⟨qa, qb⟩
-    exact Quotient.inductionOn₂' qa qb fun _ _ ↦ rfl
-  right_inv q := by
-    simp only
-    refine Quotient.inductionOn' q fun _ ↦ rfl
+    induction qa, qb using Quotient.inductionOn₂'
+    rfl
+  right_inv q := by induction q using Quotient.inductionOn'; rfl
 
 /-- A bijection between an indexed product of quotients and the quotient by the product of the
 equivalence relations. -/
@@ -131,7 +134,7 @@ noncomputable def piQuotientEquiv {ι : Sort*} {α : ι → Sort*} (r : ∀ i, S
     ext i
     simp
   right_inv q := by
-    refine Quotient.inductionOn' q fun _ ↦ ?_
+    induction q using Quotient.inductionOn'
     simp only [Quotient.liftOn'_mk'', Quotient.eq'']
     intro i
     change Setoid.r _ _
@@ -188,11 +191,11 @@ instance completeLattice : CompleteLattice (Setoid α) :=
     bot := ⟨(· = ·), ⟨fun _ => rfl, fun h => h.symm, fun h1 h2 => h1.trans h2⟩⟩
     bot_le := fun r x _ h => h ▸ r.2.1 x }
 
-@[simp]
+@[simp, grind =]
 theorem top_def : ⇑(⊤ : Setoid α) = ⊤ :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem bot_def : ⇑(⊥ : Setoid α) = (· = ·) :=
   rfl
 
@@ -205,6 +208,9 @@ theorem bot_def : ⇑(⊥ : Setoid α) = (· = ·) :=
 theorem eq_top_iff {s : Setoid α} : s = (⊤ : Setoid α) ↔ ∀ x y : α, s x y := by
   rw [_root_.eq_top_iff, Setoid.le_def, Setoid.top_def]
   simp only [Pi.top_apply, Prop.top_eq_true, forall_true_left]
+
+@[simp]
+theorem ker_eq_bot_iff {f : α → β} : ker f = ⊥ ↔ f.Injective := le_bot_iff.symm
 
 lemma sInf_equiv {S : Set (Setoid α)} {x y : α} :
     letI := sInf S
@@ -226,6 +232,14 @@ by an element of this set. -/
 def map_sInf {S : Set (Setoid α)} {s : Setoid α} (h : s ∈ S) :
     Quotient (sInf S) → Quotient s :=
   Setoid.map_of_le fun _ _ a ↦ a s h
+
+/-- The quotient by the trivial relation is equivalent to the original space. -/
+def quotientBotEquiv :
+    Quotient (⊥ : Setoid α) ≃ α where
+  toFun := Quotient.lift id (fun _ _ ↦ id)
+  invFun := Quotient.mk''
+  left_inv := Quotient.ind fun _ ↦ rfl
+  right_inv := fun _ ↦ rfl
 
 section EqvGen
 
@@ -337,8 +351,6 @@ injective. -/
 theorem kerLift_injective (f : α → β) : Injective <| kerLift f :=
   fun x y => Quotient.inductionOn₂' x y fun _ _ h => Quotient.sound' h
 
-@[deprecated (since := "2025-10-11")] alias ker_lift_injective := kerLift_injective
-
 /-- Given a map f from α to β, the kernel of f is the unique equivalence relation on α whose
 induced map from the quotient of α to β is injective. -/
 theorem ker_eq_lift_of_injective {r : Setoid α} (f : α → β) (H : r ≤ ker f)
@@ -390,12 +402,29 @@ variable {r f}
 /-- Given a function `f : α → β` and equivalence relation `r` on `α`, the equivalence
 closure of the relation on `f`'s image defined by '`x ≈ y` iff the elements of `f⁻¹(x)` are
 related to the elements of `f⁻¹(y)` by `r`.' -/
+@[implicit_reducible]
 def map (r : Setoid α) (f : α → β) : Setoid β :=
   Relation.EqvGen.setoid (Relation.Map r f f)
+
+theorem coe_map_of_ker_le (r : Setoid α) (f : α → β) (hf : ker f ≤ r) :
+    ⇑(map r f) = Relation.Map r f f ⊔ (· = ·) := by
+  refine le_antisymm ?_ (sup_le Relation.EqvGen.rel (by rintro _ _ rfl; exact .refl _))
+  rintro _ _ hxy
+  induction hxy with
+  | rel _ _ hab => exact .inl hab
+  | refl _ => exact .inr rfl
+  | symm _ _ _ ih => exact ih.imp (Std.Symm.symm _ _) (Std.Symm.symm _ _)
+  | trans _ _ _ _ _ ih1 ih2 =>
+    rcases ih1 with ih1 | rfl
+    · rcases ih2 with ih2 | rfl
+      · exact .inl <| r.iseqv.isTrans.map hf |>.trans _ _ _ ih1 ih2
+      · exact .inl ih1
+    · exact ih2
 
 /-- Given a surjective function f whose kernel is contained in an equivalence relation r, the
 equivalence relation on f's codomain defined by x ≈ y ↔ the elements of f⁻¹(x) are related to
 the elements of f⁻¹(y) by r. -/
+@[implicit_reducible]
 def mapOfSurjective (r : Setoid α) (f : α → β) (h : ker f ≤ r) (hf : Surjective f) : Setoid β :=
   ⟨Relation.Map r f f, Relation.map_equivalence r.iseqv f hf h⟩
 
@@ -411,6 +440,9 @@ See note [reducible non-instances]. -/
 abbrev comap (f : α → β) (r : Setoid β) : Setoid α :=
   ⟨r on f, r.iseqv.comap _⟩
 
+theorem comap_rel_eq (f : α → β) (r : Setoid β) : ⇑(comap f r) = (⇑r on f) :=
+  rfl
+
 theorem comap_rel (f : α → β) (r : Setoid β) (x y : α) : comap f r x y ↔ r (f x) (f y) :=
   Iff.rfl
 
@@ -418,6 +450,37 @@ theorem comap_rel (f : α → β) (r : Setoid β) (x y : α) : comap f r x y ↔
 induced on `α` by `f` equals the kernel of `r`'s quotient map composed with `f`. -/
 theorem comap_eq {f : α → β} {r : Setoid β} : comap f r = ker (@Quotient.mk'' _ r ∘ f) :=
   ext fun x y => show _ ↔ ⟦_⟧ = ⟦_⟧ by rw [Quotient.eq]; rfl
+
+@[simp]
+theorem comap_id (c : Setoid α) : c.comap id = c := rfl
+
+@[simp]
+theorem comap_comp (c : Setoid γ) (g : β → γ) (f : α → β) : c.comap (g ∘ f) = (c.comap g).comap f :=
+  rfl
+
+theorem comap_injective (f : α → β) (hf : Function.Surjective f) :
+    Function.Injective (comap f) :=
+  fun _ _ h => ext <| hf.forall₂.2 <| Setoid.ext_iff.1 h
+
+theorem le_comap_map {r : Setoid α} {f : α → β} : r ≤ comap f (r.map f) :=
+  fun _ _ h => Relation.EqvGen.rel _ _ ⟨_, _, h, rfl, rfl⟩
+
+theorem comap_map_of_ker_le (f : α → β) (r : Setoid α) (hf : ker f ≤ r) :
+    comap f (r.map f) = r := by
+  apply le_antisymm _ le_comap_map
+  rw [le_iff_rel_le, comap_rel_eq, coe_map_of_ker_le _ _ hf]
+  rintro x y (⟨a, b, h, ha, hb⟩ | h)
+  · replace ha := hf ha
+    replace hb := hf hb
+    exact trans (symm ha) (trans h hb)
+  · exact hf h
+
+theorem comap_map_eq (f : α → β) (r : Setoid α) (hf : f.Injective) : comap f (r.map f) = r :=
+  comap_map_of_ker_le f r <| ker_eq_bot_iff.2 hf ▸ bot_le
+
+theorem comap_surjective (f : α → β) (hf : Function.Injective f) :
+    Function.Surjective (Setoid.comap f) :=
+  fun r => ⟨_, comap_map_eq f r hf⟩
 
 /-- The second isomorphism theorem for sets. -/
 noncomputable def comapQuotientEquiv (f : α → β) (r : Setoid β) :
@@ -482,4 +545,4 @@ theorem Quot.subsingleton_iff (r : α → α → Prop) :
   refine Quot.mk_surjective.forall.trans (forall_congr' fun a => ?_)
   refine Quot.mk_surjective.forall.trans (forall_congr' fun b => ?_)
   rw [Quot.eq]
-  simp only [forall_const, le_Prop_eq, Prop.top_eq_true]
+  simp

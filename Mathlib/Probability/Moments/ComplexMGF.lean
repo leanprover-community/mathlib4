@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.ParametricIntegral
 public import Mathlib.Analysis.Complex.CauchyIntegral
-public import Mathlib.MeasureTheory.Measure.CharacteristicFunction
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.Probability.Moments.Basic
 public import Mathlib.Probability.Moments.IntegrableExpMul
 
@@ -69,7 +69,7 @@ variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure
 
 /-- Complex extension of the moment-generating function. -/
 noncomputable
-def complexMGF (X : Ω → ℝ) (μ : Measure Ω) (z : ℂ) : ℂ := μ[fun ω ↦ cexp (z * X ω)]
+def complexMGF (X : Ω → ℝ) (μ : Measure Ω) (z : ℂ) : ℂ := ∫ ω, cexp (z * X ω) ∂μ
 
 lemma complexMGF_undef (hX : AEMeasurable X μ) (h : ¬ Integrable (fun ω ↦ rexp (z.re * X ω)) μ) :
     complexMGF X μ z = 0 := by
@@ -96,7 +96,7 @@ lemma norm_complexMGF_le_mgf : ‖complexMGF X μ z‖ ≤ mgf X μ z.re := by
   _ = ∫ ω, rexp (z.re * X ω) ∂μ := by simp [Complex.norm_exp]
 
 lemma complexMGF_ofReal (x : ℝ) : complexMGF X μ x = mgf X μ x := by
-  rw [complexMGF, mgf, ← integral_complex_ofReal]
+  rw [complexMGF, mgf]
   norm_cast
 
 lemma re_complexMGF_ofReal (x : ℝ) : (complexMGF X μ x).re = mgf X μ x := by
@@ -158,18 +158,17 @@ lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet 
     · positivity
     · exact lt_of_lt_of_le (by simp [ht]) (le_abs_self _)
   · refine ae_of_all _ fun ω ε hε ↦ ?_
-    simp only
     simp_rw [pow_succ, mul_assoc]
     refine HasDerivAt.const_mul _ ?_
     simp_rw [← smul_eq_mul, Complex.exp_eq_exp_ℂ]
-    convert hasDerivAt_exp_smul_const (X ω : ℂ) ε using 1
+    convert! hasDerivAt_exp_smul_const (X ω : ℂ) ε using 1
     rw [smul_eq_mul, mul_comm]
 
 /-- For all `z : ℂ` with `z.re ∈ interior (integrableExpSet X μ)`,
 `complexMGF X μ` is differentiable at `z` with derivative `μ[X * exp (z * X)]`. -/
 theorem hasDerivAt_complexMGF (hz : z.re ∈ interior (integrableExpSet X μ)) :
     HasDerivAt (complexMGF X μ) μ[fun ω ↦ X ω * cexp (z * X ω)] z := by
-  convert hasDerivAt_integral_pow_mul_exp hz 0
+  convert! hasDerivAt_integral_pow_mul_exp hz 0
   · simp [complexMGF]
   · simp
 

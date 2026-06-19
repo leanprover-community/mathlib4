@@ -66,7 +66,9 @@ lemma coe_id {X : GrpWithZero} : (𝟙 X : X → X) = id := rfl
 
 lemma coe_comp {X Y Z : GrpWithZero} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[simp] lemma forget_map {X Y : GrpWithZero} (f : X ⟶ Y) : (forget GrpWithZero).map f = f := rfl
+@[simp] lemma forget_map {X Y : GrpWithZero} (f : X ⟶ Y) :
+    (forget GrpWithZero).map f = (f : _ → _) :=
+  rfl
 
 instance hasForgetToBipointed : HasForget₂ GrpWithZero Bipointed where
   forget₂ :=
@@ -81,8 +83,8 @@ instance hasForgetToMon : HasForget₂ GrpWithZero MonCat where
 /-- Constructs an isomorphism of groups with zero from a group isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : GrpWithZero.{u}} (e : α ≃* β) : α ≅ β where
-  hom := ofHom e
-  inv := ofHom e.symm
+  hom := ofHom (.ofClass e)
+  inv := ofHom (.ofClass e.symm)
   hom_inv_id := by
     ext
     exact e.symm_apply_apply _

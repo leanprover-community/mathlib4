@@ -55,7 +55,7 @@ variable {f : F → 𝕜} {f' x y : F}
 /-- A function `f` has the gradient `f'` as derivative along the filter `L` if
   `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` when `x'` converges along the filter `L`. -/
 def HasGradientAtFilter (f : F → 𝕜) (f' x : F) (L : Filter F) :=
-  HasFDerivAtFilter f (toDual 𝕜 F f') x L
+  HasFDerivAtFilter f (toDual 𝕜 F f') (L ×ˢ pure x)
 
 /-- `f` has the gradient `f'` at the point `x` within the subset `s` if
   `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` where `x'` converges to `x` inside `s`. -/
@@ -147,6 +147,10 @@ theorem hasGradientWithinAt_univ : HasGradientWithinAt f f' univ x ↔ HasGradie
   rw [hasGradientWithinAt_iff_hasFDerivWithinAt, hasGradientAt_iff_hasFDerivAt]
   exact hasFDerivWithinAt_univ
 
+@[simp]
+lemma gradientWithin_univ : gradientWithin f univ = gradient f := by
+  ext; simp [gradientWithin, gradient]
+
 theorem DifferentiableOn.hasGradientAt (h : DifferentiableOn 𝕜 f s) (hs : s ∈ 𝓝 x) :
     HasGradientAt f (∇ f x) x :=
   (h.hasFDerivAt hs).hasGradientAt
@@ -162,10 +166,10 @@ section OneDimension
 variable {g : 𝕜 → 𝕜} {g' u : 𝕜} {L' : Filter 𝕜}
 
 theorem HasGradientAtFilter.hasDerivAtFilter (h : HasGradientAtFilter g g' u L') :
-    HasDerivAtFilter g (conj g') u L' := by
-  tauto
+    HasDerivAtFilter g (conj g') (L' ×ˢ pure u) :=
+  h
 
-theorem HasDerivAtFilter.hasGradientAtFilter (h : HasDerivAtFilter g g' u L') :
+theorem HasDerivAtFilter.hasGradientAtFilter (h : HasDerivAtFilter g g' (L' ×ˢ pure u)) :
     HasGradientAtFilter g (conj g') u L' := by
   have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) g' = (toDual 𝕜 𝕜) (conj g') := by
     ext; simp
@@ -191,9 +195,9 @@ section OneDimensionReal
 variable {g : ℝ → ℝ} {g' u : ℝ} {L' : Filter ℝ}
 
 theorem HasGradientAtFilter.hasDerivAtFilter' (h : HasGradientAtFilter g g' u L') :
-    HasDerivAtFilter g g' u L' := h.hasDerivAtFilter
+    HasDerivAtFilter g g' (L' ×ˢ pure u) := h.hasDerivAtFilter
 
-theorem HasDerivAtFilter.hasGradientAtFilter' (h : HasDerivAtFilter g g' u L') :
+theorem HasDerivAtFilter.hasGradientAtFilter' (h : HasDerivAtFilter g g' (L' ×ˢ pure u)) :
     HasGradientAtFilter g g' u L' := h.hasGradientAtFilter
 
 theorem HasGradientAt.hasDerivAt' (h : HasGradientAt g g' u) :
@@ -213,7 +217,7 @@ section GradientProperties
 theorem hasGradientAtFilter_iff_isLittleO :
     HasGradientAtFilter f f' x L ↔
     (fun x' : F => f x' - f x - ⟪f', x' - x⟫) =o[L] fun x' => x' - x :=
-  hasFDerivAtFilter_iff_isLittleO ..
+  hasFDerivAtFilter_iff_isLittleO.trans <| by simp [Function.comp_def]
 
 theorem hasGradientWithinAt_iff_isLittleO :
     HasGradientWithinAt f f' s x ↔
@@ -223,7 +227,7 @@ theorem hasGradientWithinAt_iff_isLittleO :
 theorem hasGradientWithinAt_iff_tendsto :
     HasGradientWithinAt f f' s x ↔
     Tendsto (fun x' => ‖x' - x‖⁻¹ * ‖f x' - f x - ⟪f', x' - x⟫‖) (𝓝[s] x) (𝓝 0) :=
-  hasFDerivAtFilter_iff_tendsto
+  hasFDerivWithinAt_iff_tendsto
 
 theorem hasGradientAt_iff_isLittleO : HasGradientAt f f' x ↔
     (fun x' : F => f x' - f x - ⟪f', x' - x⟫) =o[𝓝 x] fun x' => x' - x :=
@@ -232,11 +236,11 @@ theorem hasGradientAt_iff_isLittleO : HasGradientAt f f' x ↔
 theorem hasGradientAt_iff_tendsto :
     HasGradientAt f f' x ↔
     Tendsto (fun x' => ‖x' - x‖⁻¹ * ‖f x' - f x - ⟪f', x' - x⟫‖) (𝓝 x) (𝓝 0) :=
-  hasFDerivAtFilter_iff_tendsto
+  hasFDerivAt_iff_tendsto
 
 theorem HasGradientAtFilter.isBigO_sub (h : HasGradientAtFilter f f' x L) :
     (fun x' => f x' - f x) =O[L] fun x' => x' - x :=
-  HasFDerivAtFilter.isBigO_sub h
+  HasFDerivAtFilter.isBigO_sub h |>.comp_tendsto prod_pure.ge
 
 theorem hasGradientWithinAt_congr_set' {s t : Set F} (y : F) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     HasGradientWithinAt f f' s x ↔ HasGradientWithinAt f f' t x :=
@@ -262,21 +266,24 @@ lemma HasGradientWithinAt.fderivWithin_apply
 lemma HasGradientAt.fderiv_apply (h : HasGradientAt f f' x) : fderiv 𝕜 f x y = ⟪f', y⟫ := by
   rw [h.hasFDerivAt.fderiv, toDual_apply_apply]
 
-lemma inner_gradientWithin_left
-    (h : DifferentiableWithinAt 𝕜 f s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
+@[simp]
+lemma inner_gradientWithin_left :
     ⟪gradientWithin f s x, y⟫ = fderivWithin 𝕜 f s x y := by
-  rw [h.hasGradientWithinAt.fderivWithin_apply hs]
+  rw [gradientWithin, ← toDual_apply_apply (𝕜 := 𝕜) (E := F),
+      LinearIsometryEquiv.apply_symm_apply]
 
-lemma inner_gradient_left (h : DifferentiableAt 𝕜 f x) : ⟪∇ f x, y⟫ = fderiv 𝕜 f x y := by
-  rw [h.hasGradientAt.fderiv_apply]
+@[simp]
+lemma inner_gradient_left : ⟪∇ f x, y⟫ = fderiv 𝕜 f x y := by
+  simp [← gradientWithin_univ]
 
-lemma inner_gradientWithin_right
-    (h : DifferentiableWithinAt 𝕜 f s y) (hs : UniqueDiffWithinAt 𝕜 s y) :
+@[simp]
+lemma inner_gradientWithin_right :
     ⟪x, gradientWithin f s y⟫ = conj (fderivWithin 𝕜 f s y x) := by
-  rw [← inner_conj_symm, inner_gradientWithin_left h hs]
+  rw [← inner_conj_symm, inner_gradientWithin_left]
 
-lemma inner_gradient_right (h : DifferentiableAt 𝕜 f y) : ⟪x, ∇ f y⟫ = conj (fderiv 𝕜 f y x) := by
-  rw [← inner_conj_symm, h.hasGradientAt.fderiv_apply]
+@[simp]
+lemma inner_gradient_right : ⟪x, ∇ f y⟫ = conj (fderiv 𝕜 f y x) := by
+  rw [← inner_conj_symm, inner_gradient_left]
 
 end Inner
 
@@ -288,7 +295,7 @@ variable {f₀ f₁ : F → 𝕜} {f₀' f₁' : F} {t : Set F}
 
 theorem Filter.EventuallyEq.hasGradientAtFilter_iff (h₀ : f₀ =ᶠ[L] f₁) (hx : f₀ x = f₁ x)
     (h₁ : f₀' = f₁') : HasGradientAtFilter f₀ f₀' x L ↔ HasGradientAtFilter f₁ f₁' x L :=
-  h₀.hasFDerivAtFilter_iff hx (by simp [h₁])
+  (h₀.prodMap <| by assumption).hasFDerivAtFilter_iff <| by simp [h₁]
 
 theorem HasGradientAtFilter.congr_of_eventuallyEq (h : HasGradientAtFilter f f' x L)
     (hL : f₁ =ᶠ[L] f) (hx : f₁ x = f x) : HasGradientAtFilter f₁ f' x L := by
@@ -334,7 +341,7 @@ section Const
 variable (c : 𝕜) (s x L)
 
 theorem hasGradientAtFilter_const : HasGradientAtFilter (fun _ => c) 0 x L := by
-  rw [HasGradientAtFilter, map_zero]; apply hasFDerivAtFilter_const c x L
+  rw [HasGradientAtFilter, map_zero]; exact hasFDerivAtFilter_const c _
 
 theorem hasGradientWithinAt_const : HasGradientWithinAt (fun _ => c) 0 s x :=
   hasGradientAtFilter_const _ _ _

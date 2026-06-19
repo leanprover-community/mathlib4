@@ -1,4 +1,4 @@
-module
+module -- shake: keep-all
 
 public import Mathlib.Tactic.Common
 public import Mathlib.Util.CompileInductive

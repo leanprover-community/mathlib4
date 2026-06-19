@@ -52,6 +52,7 @@ namespace FirstOrder
 
 
 -- intended to be used with explicit universe parameters
+set_option linter.checkUnivs false in
 /-- A first-order language consists of a type of functions of every natural-number arity and a
   type of relations of every natural-number arity. -/
 @[nolint checkUnivs]
@@ -169,6 +170,7 @@ variable (N : Type w') [L.Structure M] [L.Structure N]
 open Structure
 
 /-- Used for defining `FirstOrder.Language.Theory.ModelType.instInhabited`. -/
+@[instance_reducible]
 def Inhabited.trivialStructure {α : Type*} [Inhabited α] : L.Structure α :=
   ⟨default, default⟩
 
@@ -254,8 +256,8 @@ class StrongHomClass (L : outParam Language) (F : Type*) (M N : outParam Type*)
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
   map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r (φ ∘ x) ↔ RelMap r x
 
-instance (priority := 100) StrongHomClass.homClass {F : Type*} [L.Structure M]
-    [L.Structure N] [FunLike F M N] [StrongHomClass L F M N] : HomClass L F M N where
+instance (priority := 100) StrongHomClass.homClass {F : Type*}
+    [FunLike F M N] [StrongHomClass L F M N] : HomClass L F M N where
   map_fun := StrongHomClass.map_fun
   map_rel φ _ R x := (StrongHomClass.map_rel φ R x).2
 
@@ -281,7 +283,7 @@ namespace Hom
 
 instance instFunLike : FunLike (M →[L] N) M N where
   coe := Hom.toFun
-  coe_injective' f g h := by cases f; cases g; cases h; rfl
+  coe_injective f g h := by cases f; cases g; cases h; rfl
 
 instance homClass : HomClass L (M →[L] N) M N where
   map_fun := map_fun'
@@ -356,7 +358,7 @@ theorem id_comp (f : M →[L] N) : (id L N).comp f = f :=
 
 end Hom
 
-/-- Any element of a `HomClass` can be realized as a first_order homomorphism. -/
+/-- Any element of a `HomClass` can be realized as a first order homomorphism. -/
 @[simps] def HomClass.toHom {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
     [HomClass L F M N] : F → M →[L] N := fun φ =>
   ⟨φ, HomClass.map_fun φ, HomClass.map_rel φ⟩
@@ -365,7 +367,7 @@ namespace Embedding
 
 instance funLike : FunLike (M ↪[L] N) M N where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
@@ -402,12 +404,7 @@ theorem coe_toHom {f : M ↪[L] N} : (f.toHom : M → N) = f :=
   rfl
 
 theorem coe_injective : @Function.Injective (M ↪[L] N) (M → N) (↑)
-  | f, g, h => by
-    cases f
-    cases g
-    congr
-    ext x
-    exact funext_iff.1 h x
+  | _, _, h => DFunLike.ext'_iff.mpr h
 
 @[ext]
 theorem ext ⦃f g : M ↪[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
@@ -511,7 +508,7 @@ theorem refl_toHom : (refl L M).toHom = Hom.id L M :=
 
 end Embedding
 
-/-- Any element of an injective `StrongHomClass` can be realized as a first_order embedding. -/
+/-- Any element of an injective `StrongHomClass` can be realized as a first order embedding. -/
 @[simps] def StrongHomClass.toEmbedding {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
     [EmbeddingLike F M N] [StrongHomClass L F M N] : F → M ↪[L] N := fun φ =>
   ⟨⟨φ, EmbeddingLike.injective φ⟩, StrongHomClass.map_fun φ, StrongHomClass.map_rel φ⟩
@@ -716,7 +713,7 @@ theorem comp_symm (f : M ≃[L] N) (g : N ≃[L] P) : (g.comp f).symm = f.symm.c
 theorem comp_right_injective (h : M ≃[L] N) :
     Function.Injective (fun f ↦ f.comp h : (N ≃[L] P) → (M ≃[L] P)) := by
   intro f g hfg
-  convert (congr_arg (fun r : (M ≃[L] P) ↦ r.comp h.symm) hfg) <;>
+  convert! (congr_arg (fun r : (M ≃[L] P) ↦ r.comp h.symm) hfg) <;>
     rw [comp_assoc, self_comp_symm, comp_refl]
 
 @[simp]
@@ -725,7 +722,7 @@ theorem comp_right_inj (h : M ≃[L] N) (f g : N ≃[L] P) : f.comp h = g.comp h
 
 end Equiv
 
-/-- Any element of a bijective `StrongHomClass` can be realized as a first_order isomorphism. -/
+/-- Any element of a bijective `StrongHomClass` can be realized as a first order isomorphism. -/
 @[simps] def StrongHomClass.toEquiv {F M N} [L.Structure M] [L.Structure N] [EquivLike F M N]
     [StrongHomClass L F M N] : F → M ≃[L] N := fun φ =>
   ⟨⟨φ, EquivLike.inv φ, EquivLike.left_inv φ, EquivLike.right_inv φ⟩, StrongHomClass.map_fun φ,
@@ -767,6 +764,7 @@ end SumStructure
 section Empty
 
 /-- Any type can be made uniquely into a structure over the empty language. -/
+@[implicit_reducible]
 def emptyStructure : Language.empty.Structure M where
 
 instance : Unique (Language.empty.Structure M) :=
@@ -810,7 +808,7 @@ open FirstOrder FirstOrder.Language FirstOrder.Language.Structure
 variable {L : Language} {M : Type*} {N : Type*} [L.Structure M]
 
 /-- A structure induced by a bijection. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def inducedStructure (e : M ≃ N) : L.Structure N :=
   ⟨fun f x => e (funMap f (e.symm ∘ x)), fun r x => RelMap r (e.symm ∘ x)⟩
 

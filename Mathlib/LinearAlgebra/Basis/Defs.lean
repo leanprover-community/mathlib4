@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
 module
 
-public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
@@ -108,7 +107,7 @@ theorem repr_injective : Injective (repr : Basis ι R M → M ≃ₗ[R] ι →�
 /-- `b i` is the `i`th basis vector. -/
 instance instFunLike : FunLike (Basis ι R M) ι M where
   coe b i := b.repr.symm (Finsupp.single i 1)
-  coe_injective' f g h := repr_injective <| LinearEquiv.symm_bijective.injective <|
+  coe_injective f g h := repr_injective <| LinearEquiv.symm_bijective.injective <|
     LinearEquiv.toLinearMap_injective <| by ext; exact congr_fun h _
 
 @[simp]
@@ -230,16 +229,10 @@ def Basis.equivFun [Finite ι] (b : Basis ι R M) : M ≃ₗ[R] ι → R :=
       (ι →₀ R) ≃ₗ[R] ι → R)
 
 /-- A module over a finite ring that admits a finite basis is finite. -/
+@[implicit_reducible]
 def fintypeOfFintype [Fintype ι] (b : Basis ι R M) [Fintype R] : Fintype M :=
   haveI := Classical.decEq ι
   Fintype.ofEquiv _ b.equivFun.toEquiv.symm
-
-theorem card_fintype [Fintype ι] (b : Basis ι R M) [Fintype R] [Fintype M] :
-    card M = card R ^ card ι := by
-  classical
-    calc
-      card M = card (ι → R) := card_congr b.equivFun.toEquiv
-      _ = card R ^ card ι := card_fun
 
 /-- Given a basis `v` indexed by `ι`, the canonical linear equivalence between `ι → R` and `M` maps
 a function `x : ι → R` to the linear combination `∑_i x i • v i`. -/
@@ -382,6 +375,7 @@ variable {R' : Type*} [Semiring R'] [Module R' M] (f : R ≃+* R')
 
 attribute [local instance] SMul.comp.isScalarTower
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `R` and `R'` are isomorphic rings that act identically on a module `M`,
 then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module.
 
@@ -447,7 +441,7 @@ theorem reindexRange_repr' (x : M) {bi : M} {i : ι} (h : b i = bi) :
     simp only [Pi.add_apply, map_add, Finsupp.coe_add]
   · intro c x
     ext i
-    simp only [Pi.smul_apply, map_smul, Finsupp.coe_smul]
+    simp
   · intro i
     ext j
     simp only [reindexRange_repr_self]
@@ -706,7 +700,7 @@ theorem coe_sumCoords_eq_finsum : (b.sumCoords : M → R) = fun m => ∑ᶠ i, b
   ext m
   simp only [Basis.sumCoords, Basis.coord, Finsupp.lapply_apply, LinearMap.id_coe,
     LinearEquiv.coe_coe, Function.comp_apply, Finsupp.coe_lsum, LinearMap.coe_comp,
-    finsum_eq_sum _ (b.repr m).finite_support, Finsupp.sum, Finset.finite_toSet_toFinset, id,
+    finsum_eq_sum _ (b.repr m).hasFiniteSupport, Finsupp.sum, Finset.finite_toSet_toFinset, id,
     Finsupp.fun_support_eq]
 
 variable (e : ι ≃ ι')

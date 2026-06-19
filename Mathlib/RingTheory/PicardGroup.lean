@@ -9,9 +9,9 @@ public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 public import Mathlib.CategoryTheory.Monoidal.Skeleton
 public import Mathlib.LinearAlgebra.Contraction
 public import Mathlib.LinearAlgebra.LinearDisjoint
-public import Mathlib.RingTheory.ClassGroup
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 public import Mathlib.RingTheory.LocalRing.Module
+public import Mathlib.RingTheory.UniqueFactorizationDomain.ClassGroup
 
 /-!
 # The Picard group of a commutative ring
@@ -50,7 +50,6 @@ invertible `R`-modules (in the sense that `M` is invertible if there exists anot
 ## TODO
 
 Show:
-- All unique factorization domains have trivial Picard group.
 - Invertible modules over a commutative ring have the same cardinality as the ring.
 
 - Establish other characterizations of invertible modules, e.g. they are modules that
@@ -140,7 +139,7 @@ theorem bijective_curry : Function.Bijective (curry e.toLinearMap) := by
       rTensorHom N ∘ₗ (ringLmapEquivSelf R R M).symm.toLinearMap := by
     rw [← LinearEquiv.toLinearMap_symm_comp_eq]; ext
     simp [LinearEquiv.congrLeft, LinearEquiv.congrRight, LinearEquiv.arrowCongrAddEquiv]
-  simpa [this] using (rTensorEquiv R M <| TensorProduct.comm R N M ≪≫ₗ e).bijective
+  simpa [this] using! (rTensorEquiv R M <| TensorProduct.comm R N M ≪≫ₗ e).bijective
 
 /-- Given `M ⊗[R] N ≃ₗ[R] R`, this is the induced isomorphism `M ≃ₗ[R] Nᵛ`. -/
 noncomputable def linearEquivDual : M ≃ₗ[R] Dual R N := .ofBijective _ (bijective_curry e)
@@ -244,18 +243,12 @@ theorem free_iff_linearEquiv : Free R M ↔ Nonempty (M ≃ₗ[R] R) := by
       e.symm ≪≫ₗ linearEquiv R M ≪≫ₗ (.symm <| .funUnique Unit R R)
   have : Unique (Free.ChooseBasisIndex R M) :=
     (Fintype.card_eq_one_iff_nonempty_unique.mp (by simpa using this)).some
-  exact ⟨e ≪≫ₗ LinearEquiv.finsuppUnique R R _⟩
+  exact ⟨e ≪≫ₗ uniqueLinearEquiv R R default⟩
 
-/- TODO: The ≤ direction holds for arbitrary invertible modules over any commutative **ring** by
-considering the localization at a prime (which is free of rank 1) using the strong rank condition.
-The ≥ direction fails in general but holds for domains and Noetherian rings,
-see https://math.stackexchange.com/q/5089900 and https://mathoverflow.net/a/499611. -/
-protected theorem finrank_eq_one [StrongRankCondition R] [Free R M] : finrank R M = 1 := by
-  cases subsingleton_or_nontrivial R
-  · rw [← rank_eq_one_iff_finrank_eq_one, rank_subsingleton]
-  · rw [(free_iff_linearEquiv.mp ‹_›).some.finrank_eq, finrank_self]
+protected theorem finrank_eq_one [Free R M] : finrank R M = 1 := by
+  rw [(free_iff_linearEquiv.mp ‹_›).some.finrank_eq, CommSemiring.finrank_self]
 
-theorem rank_eq_one [StrongRankCondition R] [Free R M] : Module.rank R M = 1 :=
+theorem rank_eq_one [Free R M] : Module.rank R M = 1 :=
   rank_eq_one_iff_finrank_eq_one.mpr (Invertible.finrank_eq_one R M)
 
 open TensorProduct (comm lid) in
@@ -409,7 +402,7 @@ def CommRing.Pic (R : Type u) [CommSemiring R] : Type u :=
 
 open CommRing (Pic)
 
-noncomputable instance : CommGroup (Pic R) := (equivShrink _).symm.commGroup
+noncomputable instance : CommGroup (Pic R) := fast_instance% (equivShrink _).symm.commGroup
 
 variable (M N : Type*) [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
   [Module.Invertible R M] [Module.Invertible R N]
@@ -601,6 +594,7 @@ namespace Module.Invertible
 
 variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] [Module.Invertible R M]
 
+set_option backward.defeqAttrib.useBackward true in
 -- TODO: generalize to CommSemiring by generalizing `CommRing.Pic.instSubsingletonOfIsLocalRing`
 theorem tensorProductComm_eq_refl : TensorProduct.comm R M M = .refl .. := by
   let f (P : Ideal R) [P.IsMaximal] := LocalizedModule.mkLinearMap P.primeCompl M
@@ -654,7 +648,7 @@ private theorem projective_units_and_mul'_comp_lTensor_bijective (I : (Submodule
     exact LinearEquiv.ofInjective_symm_apply ..
   let g : (S → R) →ₗ[R] I := .lsum _ _ ℕ fun i ↦ .toSpanSingleton _ _ ⟨b i, hT' <| hb i⟩
   have hgf : g ∘ₗ f = .id := LinearMap.ext fun x ↦ Subtype.ext <| by
-    simp only [g, lsum_apply, comp_apply, sum_apply, toSpanSingleton_apply, proj_apply]
+    simp only [g, lsum_apply, comp_apply, LinearMap.sum_apply, toSpanSingleton_apply, proj_apply]
     simp_rw [coe_sum, coe_smul, Algebra.smul_def, hf, mul_assoc, ← Finset.mul_sum,
       Algebra.smul_mul_assoc, eq, (Finset.sum_coe_sort ..).trans hr.2, mul_one, id_apply]
   set m := mul' R A ∘ₗ I.1.subtype.lTensor A
@@ -683,8 +677,9 @@ set_option backward.privateInPublic.warn false in
 `I ⊗[R] J` to `I * J` induced by multiplication is an isomorphism. -/
 noncomputable def tensorEquivMul : I ⊗[R] J ≃ₗ[R] I * J := by
   refine .ofBijective _ ⟨.of_comp (f := Submodule.subtype _) ?_, mulMap'_surjective _ _⟩
-  convert (projective_units_and_mul'_comp_lTensor_bijective J).2.1.comp
-    (Flat.rTensor_preserves_injective_linearMap _ I.1.subtype_injective)
+  convert!
+    (projective_units_and_mul'_comp_lTensor_bijective J).2.1.comp
+      (Flat.rTensor_preserves_injective_linearMap _ I.1.subtype_injective)
   simp_rw [← LinearMap.coe_comp]
   congr 1; ext; rfl
 
@@ -770,22 +765,24 @@ instance : Flat R (submoduleAlgebra e) := .of_linearEquiv (submoduleAlgebraEquiv
 instance [Module.Invertible R M] : Module.Invertible R (submoduleAlgebra e) :=
   .congr (submoduleAlgebraEquiv e).symm
 
+set_option backward.defeqAttrib.useBackward true in
 /-- When a flat `R`-module `M` is embedded as a submodule of a faithful `R`-algebra `A`,
 the multiplication map induces an isomorphism `A ⊗[R] M ≃ₗ[A] A`. -/
 noncomputable def tensorSubmoduleAlgebraEquiv : A ⊗[R] submoduleAlgebra e ≃ₗ[A] A :=
   .ofBijective (.mul'' R A ∘ₗ AlgebraTensorModule.lTensor A A (Submodule.subtype _)) <| by
-    convert (AlgebraTensorModule.congr (.refl ..) (submoduleAlgebraEquiv e) ≪≫ₗ e).bijective
+    convert! (AlgebraTensorModule.congr (.refl ..) (submoduleAlgebraEquiv e) ≪≫ₗ e).bijective
     ext x
     refine x.induction_on (by simp) ?_ (by simp +contextual)
     intro a x
     obtain ⟨m, rfl⟩ := (submoduleAlgebraEquiv e).symm.surjective x
-    suffices a * toAlgebra e m = e (a ⊗ₜ[R] m) by simpa using this
+    suffices a * toAlgebra e m = e (a ⊗ₜ[R] m) by simpa using! this
     dsimp [toAlgebra]
     rw [map_one, ← smul_eq_mul, ← map_smul, smul_tmul', smul_eq_mul, mul_one]
 
 theorem top_mul_submoduleAlgebra : ⊤ * submoduleAlgebra e = ⊤ := by
   rw [← Submodule.mulMap_range]
-  convert (Submodule.topEquiv.rTensor _ ≪≫ₗ (tensorSubmoduleAlgebraEquiv e).restrictScalars R).range
+  convert!
+    (Submodule.topEquiv.rTensor _ ≪≫ₗ (tensorSubmoduleAlgebraEquiv e).restrictScalars R).range
   ext; rfl
 
 /-- When a flat `R`-module `M` is embedded as a submodule of a faithful `R`-algebra `A`,
@@ -793,8 +790,9 @@ we have `I ⊗[R] M ≃ₗ[R] I * M` for any `R`-submodule `I` of `A`. -/
 noncomputable def tensorSubmoduleAlgebraEquivMul (I : Submodule R A) :
     I ⊗[R] submoduleAlgebra e ≃ₗ[R] I * submoduleAlgebra e := by
   refine .ofBijective _ ⟨.of_comp (f := Submodule.subtype _) ?_, Submodule.mulMap'_surjective _ _⟩
-  convert ((tensorSubmoduleAlgebraEquiv e).restrictScalars R).injective.comp
-    (Flat.rTensor_preserves_injective_linearMap _ I.subtype_injective)
+  convert!
+    ((tensorSubmoduleAlgebraEquiv e).restrictScalars R).injective.comp
+      (Flat.rTensor_preserves_injective_linearMap _ I.subtype_injective)
   simp_rw [← LinearEquiv.coe_toLinearMap, ← LinearMap.coe_comp]
   congr 1; ext; rfl
 
@@ -853,6 +851,12 @@ the group of the invertible `R`-submodules in `A` modulo the principal submodule
   (mulEquivUnitsSubmoduleQuotRange R).trans <| .trans (Submodule.unitsQuotEquivRelPic R _) <|
     .trans (.subgroupCongr <| relPic_eq_top R _) Subgroup.topEquiv
 
+/-- The Picard group of a domain with normalizable gcd is trivial.
+This includes unique factorization domains. -/
+@[stacks 0BCH]
+instance (R) [CommRing R] [IsDomain R] [Nonempty (NormalizedGCDMonoid R)] : Subsingleton (Pic R) :=
+  Equiv.subsingleton (ClassGroup.equivPic R).toEquiv.symm
+
 end PicardGroup
 
 open CommRing Pic
@@ -873,11 +877,11 @@ theorem Module.Invertible.exists_linearEquiv_ideal [Subsingleton (Pic (FractionR
   ⟨_, ⟨e ≪≫ₗ FractionalIdeal.equivNumOfIsLocalization
     ⟨_, I.submodule_isFractional (S := nonZeroDivisors R)⟩⟩⟩
 
-/- Every invertible module over a domain is isomorphic to an ideal. -/
+/-- Every invertible module over a domain is isomorphic to an ideal. -/
 example [IsDomain R] : ∃ I : Ideal R, Nonempty (M ≃ₗ[R] I) :=
   Module.Invertible.exists_linearEquiv_ideal R M
 
-/- Every invertible module over a Noetherian ring is isomorphic to an ideal.
+/-- Every invertible module over a Noetherian ring is isomorphic to an ideal.
 See https://mathoverflow.net/a/499611. -/
 example [IsNoetherianRing R] : ∃ I : Ideal R, Nonempty (M ≃ₗ[R] I) :=
   Module.Invertible.exists_linearEquiv_ideal R M
@@ -894,7 +898,7 @@ theorem Ideal.eq_top_of_mk_tensor_eq_one [IsFractionRing R R] (I J : Ideal R)
   have : IsUnit (e 1 : R) := IsFractionRing.self_iff_nonZeroDivisors_le_isUnit.mp ‹_› <|
       IsRegular.mem_nonZeroDivisors <| isRightRegular_iff_isRegular.mp <| by
     rw [IsRightRegular]
-    convert Subtype.val_injective.comp e.injective using 2
+    convert! Subtype.val_injective.comp e.injective using 2
     rw [← smul_eq_mul, ← Submodule.coe_smul, ← map_smul, smul_eq_mul, mul_one, Function.comp_apply]
   constructor <;> refine eq_top_of_isUnit_mem _ ?_ this
   exacts [mul_le_right (e 1).2, mul_le_left (e 1).2]

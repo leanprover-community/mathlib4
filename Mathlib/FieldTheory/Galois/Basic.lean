@@ -8,6 +8,7 @@ module
 public import Mathlib.FieldTheory.Fixed
 public import Mathlib.FieldTheory.Normal.Closure
 public import Mathlib.FieldTheory.PrimitiveElement
+public import Mathlib.FieldTheory.SeparableClosure
 public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 
 /-!
@@ -119,7 +120,7 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
   have h_sep : IsSeparable F α := IsGalois.separable F α
   have h_splits : ((minpoly F α).map (algebraMap F E)).Splits := IsGalois.splits F α
   replace h_splits : ((minpoly F α).map (algebraMap F F⟮α⟯)).Splits := by
-    simpa [Polynomial.map_map] using h_splits.map iso.symm.toRingHom
+    simpa [Polynomial.map_map] using! h_splits.map iso.symm.toRingHom
   rw [← LinearEquiv.finrank_eq iso.toLinearEquiv]
   rw [← IntermediateField.AdjoinSimple.card_aut_eq_finrank F E H h_sep h_splits]
   apply Nat.card_congr
@@ -371,6 +372,11 @@ lemma ofDual_intermediateFieldEquivSubgroup_apply (K : IntermediateField F E) :
 lemma intermediateFieldEquivSubgroup_symm_apply_toDual (H : Subgroup Gal(E/F)) :
     intermediateFieldEquivSubgroup.symm (.toDual H) = fixedField H := rfl
 
+theorem fixedField_eq_iff_fixingSubgroup_eq {K : IntermediateField F E} {H : Subgroup Gal(E/F)} :
+    fixedField H = K ↔ K.fixingSubgroup = H := by
+  simp [← OrderIso.apply_eq_iff_eq intermediateFieldEquivSubgroup, fixingSubgroup_fixedField,
+    eq_comm]
+
 end
 
 /-- The Galois correspondence as a `GaloisInsertion`. -/
@@ -428,10 +434,8 @@ instance of_fixedField_normal_subgroup [IsGalois K L]
 noncomputable def normalAutEquivQuotient [FiniteDimensional K L] [IsGalois K L]
     (H : Subgroup Gal(L/K)) [Subgroup.Normal H] :
     Gal(L/K) ⧸ H ≃* Gal(fixedField H/K) :=
-  (QuotientGroup.quotientMulEquivOfEq ((fixingSubgroup_fixedField H).symm.trans
-  (fixedField H).restrictNormalHom_ker.symm)).trans <|
-  QuotientGroup.quotientKerEquivOfSurjective (restrictNormalHom (fixedField H)) <|
-  restrictNormalHom_surjective L
+  QuotientGroup.liftEquiv _ (restrictNormalHom_surjective L) <|
+    (fixingSubgroup_fixedField H).symm.trans (fixedField H).restrictNormalHom_ker.symm
 
 lemma normalAutEquivQuotient_apply [FiniteDimensional K L] [IsGalois K L]
     (H : Subgroup Gal(L/K)) [Subgroup.Normal H] (σ : Gal(L/K)) :
@@ -443,7 +447,7 @@ open scoped Pointwise
 theorem map_fixingSubgroup (σ : Gal(L/K)) :
     (E.map σ).fixingSubgroup = (MulAut.conj σ) • E.fixingSubgroup := by
   ext τ
-  simp only [coe_map, AlgHom.coe_coe, Set.mem_image, SetLike.mem_coe, AlgEquiv.smul_def,
+  simp only [coe_map, AlgEquiv.coe_algHom, Set.mem_image, SetLike.mem_coe, AlgEquiv.smul_def,
     forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
     Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← symm_apply_eq,
     IntermediateField.fixingSubgroup, mem_fixingSubgroup_iff]
@@ -499,6 +503,8 @@ theorem of_card_aut_eq_finrank [FiniteDimensional F E]
 variable {F} {E}
 variable {p : F[X]}
 
+@[deprecated "No replacement; this was an auxiliary lemma used to prove \
+`Algebra.isSeparable_of_separable_splitting_field`." (since := "2026-06-12")]
 theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.IsSplittingField F E]
     (hp : p.Separable) (K : Type*) [Field K] [Algebra F K] [Algebra K E] [IsScalarTower F K E]
     {x : E} (hx : x ∈ p.aroots E) :
@@ -529,37 +535,10 @@ theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.I
   · apply sp.splits.of_dvd (Polynomial.map_ne_zero h1)
     rwa [← f.comp_algebraMap, ← p.map_map, RingHom.algebraMap_toAlgebra, Polynomial.map_dvd_map']
 
-theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separable) :
-    IsGalois F E := by
-  haveI hFE : FiniteDimensional F E := Polynomial.IsSplittingField.finiteDimensional E p
-  letI := Classical.decEq E
-  let s := p.rootSet E
-  have adjoin_root : IntermediateField.adjoin F s = ⊤ := by
-    apply IntermediateField.toSubalgebra_injective
-    rw [IntermediateField.top_toSubalgebra, ← top_le_iff, ← sp.adjoin_rootSet]
-    apply IntermediateField.algebra_adjoin_le_adjoin
-  let P : IntermediateField F E → Prop := fun K => Nat.card (K →ₐ[F] E) = finrank F K
-  suffices P (IntermediateField.adjoin F s) by
-    rw [adjoin_root] at this
-    apply of_card_aut_eq_finrank
-    rw [← Eq.trans this (LinearEquiv.finrank_eq IntermediateField.topEquiv.toLinearEquiv)]
-    exact Nat.card_congr ((algEquivEquivAlgHom F E).toEquiv.trans
-      (IntermediateField.topEquiv.symm.arrowCongr AlgEquiv.refl))
-  apply IntermediateField.induction_on_adjoin_finset _ P
-  · have key := IntermediateField.card_algHom_adjoin_integral F (K := E)
-      (show IsIntegral F (0 : E) from isIntegral_zero)
-    rw [IsSeparable, minpoly.zero, Polynomial.natDegree_X] at key
-    specialize key Polynomial.separable_X (Polynomial.Splits.X.map (algebraMap F E))
-    rw [← @Subalgebra.finrank_bot F E _ _ _, ← IntermediateField.bot_toSubalgebra] at key
-    refine Eq.trans ?_ key
-    apply Nat.card_congr
-    rw [IntermediateField.adjoin_zero]
-  intro K x hx hK
-  simp only [P] at *
-  rw [of_separable_splitting_field_aux hp K (Multiset.mem_toFinset.mp hx), hK, finrank_mul_finrank]
-  symm
-  refine LinearEquiv.finrank_eq ?_
-  rfl
+theorem of_separable_splitting_field [p.IsSplittingField F E] (hp : p.Separable) :
+    IsGalois F E :=
+  { to_isSeparable := Algebra.isSeparable_of_separable_splitting_field F E hp,
+    to_normal := Normal.of_isSplittingField p }
 
 /-- Equivalent characterizations of a Galois extension of finite degree. -/
 theorem tfae [FiniteDimensional F E] : List.TFAE [
@@ -690,10 +669,8 @@ instance IsQuadraticExtension.isCyclic : IsCyclic Gal(K/F) := by
   · exact @isCyclic_of_subsingleton _ _ (Finite.card_le_one_iff_subsingleton.mp h.le)
   · exact isCyclic_of_prime_card h
 
-/--
-A quadratic extension has abelian Galois group.
--/
-instance IsQuadraticExtension.isMulCommutative_galoisGroup :
-    IsMulCommutative Gal(K/F) := ⟨IsCyclic.commutative⟩
+@[deprecated inferInstance (since := "2026-04-09")]
+theorem IsQuadraticExtension.isMulCommutative_galoisGroup : IsMulCommutative Gal(K/F) :=
+  inferInstance
 
 end Algebra

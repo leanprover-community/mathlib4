@@ -52,9 +52,9 @@ theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p :
   rcases n with - | n
   · exact norm_eq_zero.mp (by
       simpa only [fin0_apply_norm, norm_eq_zero, norm_zero, zero_add, pow_one,
-        mul_zero, norm_le_zero_iff] using ht 0 (δε (Metric.mem_ball_self δ_pos)))
+        mul_zero, norm_le_zero_iff] using! ht 0 (δε (Metric.mem_ball_self δ_pos)))
   · refine Or.elim (Classical.em (y = 0))
-      (fun hy => by simpa only [hy] using p.map_zero) fun hy => ?_
+      (fun hy => by simpa only [hy] using! p.map_zero) fun hy => ?_
     replace hy := norm_pos_iff.mpr hy
     refine norm_eq_zero.mp (le_antisymm (le_of_forall_pos_le_add fun ε ε_pos => ?_) (norm_nonneg _))
     have h₀ := _root_.mul_pos c_pos (pow_pos hy (n.succ + 1))
@@ -67,7 +67,7 @@ theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p :
     have h₂ :=
       calc
         ‖p fun _ => k • y‖ ≤ c * ‖k • y‖ ^ (n.succ + 1) := by
-          simpa only [norm_pow, _root_.norm_norm] using ht (k • y) (δε (mem_ball_zero_iff.mpr h₁))
+          simpa only [norm_pow, _root_.norm_norm] using! ht (k • y) (δε (mem_ball_zero_iff.mpr h₁))
         _ = ‖k‖ ^ n.succ * (‖k‖ * (c * ‖y‖ ^ (n.succ + 1))) := by
           simp only [norm_smul, mul_pow]
           ring
@@ -77,7 +77,7 @@ theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p :
     calc
       ‖p fun _ => y‖ = ‖k⁻¹ ^ n.succ‖ * ‖p fun _ => k • y‖ := by
         simpa only [inv_smul_smul₀ (norm_pos_iff.mp k_pos), norm_smul, Finset.prod_const,
-          Finset.card_fin] using
+          Finset.card_fin] using!
           congr_arg norm (p.map_smul_univ (fun _ : Fin n.succ => k⁻¹) fun _ : Fin n.succ => k • y)
       _ ≤ ‖k⁻¹ ^ n.succ‖ * (‖k‖ ^ n.succ * (‖k‖ * (c * ‖y‖ ^ (n.succ + 1)))) := by gcongr
       _ = ‖(k⁻¹ * k) ^ n.succ‖ * (‖k‖ * (c * ‖y‖ ^ (n.succ + 1))) := by
@@ -85,7 +85,7 @@ theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p :
         simp [norm_mul, mul_pow]
       _ ≤ 0 + ε := by
         rw [inv_mul_cancel₀ (norm_pos_iff.mp k_pos)]
-        simpa using h₃.le
+        simpa using! h₃.le
 
 /-- If a formal multilinear series `p` represents the zero function at `x : E`, then the
 terms `p n (fun i ↦ y)` appearing in the sum are zero for any `n : ℕ`, `y : E`. -/
@@ -147,7 +147,7 @@ theorem HasFPowerSeriesOnBall.r_eq_top_of_exists {f : 𝕜 → E} {r : ℝ≥0�
     hasSum := fun {y} _ =>
       let ⟨r', hr'⟩ := exists_gt ‖y‖₊
       let ⟨_, hp'⟩ := h' r' hr'.ne_bot.bot_lt
-      (h.exchange_radius hp').hasSum <| mem_emetric_ball_zero_iff.mpr (ENNReal.coe_lt_coe.2 hr') }
+      (h.exchange_radius hp').hasSum <| mem_eball_zero_iff.mpr (ENNReal.coe_lt_coe.2 hr') }
 
 end Uniqueness
 
@@ -187,12 +187,12 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
     apply ENNReal.le_sub_of_add_le_left ENNReal.coe_ne_top
     apply (add_le_add A.le (le_refl (r / 2))).trans (le_of_eq _)
     exact ENNReal.add_halves _
-  have M : EMetric.ball y (r / 2) ∈ 𝓝 x := EMetric.isOpen_ball.mem_nhds hxy
+  have M : Metric.eball y (r / 2) ∈ 𝓝 x := Metric.isOpen_eball.mem_nhds hxy
   filter_upwards [M] with z hz
   have A : HasSum (fun n : ℕ => q n fun _ : Fin n => z - y) (f z) := has_series.hasSum_sub hz
   have B : HasSum (fun n : ℕ => q n fun _ : Fin n => z - y) 0 := by
     have : HasFPowerSeriesAt 0 q y := has_series.hasFPowerSeriesAt.congr yu
-    convert hasSum_zero (α := F) using 1
+    convert! hasSum_zero (α := F) using 1
     ext n
     exact this.apply_eq_zero n _
   exact HasSum.unique A B
@@ -213,7 +213,7 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : E → F} {U : Set E}
     filter_upwards [hfz₀] with x hx
     simp only [hx, Function.comp_apply, Pi.zero_apply, map_zero]
   intro z hz
-  have : e (f z) = e 0 := by simpa only using A hz
+  have : e (f z) = e 0 := by simpa only using! A hz
   exact UniformSpace.Completion.coe_injective F this
 
 /-- The *identity principle* for analytic functions: If two analytic functions coincide in a whole
@@ -224,7 +224,7 @@ theorem eqOn_of_preconnected_of_eventuallyEq {f g : E → F} {U : Set E} (hf : A
     (hg : AnalyticOnNhd 𝕜 g U) (hU : IsPreconnected U) {z₀ : E} (h₀ : z₀ ∈ U) (hfg : f =ᶠ[𝓝 z₀] g) :
     EqOn f g U := by
   have hfg' : f - g =ᶠ[𝓝 z₀] 0 := hfg.mono fun z h => by simp [h]
-  simpa [sub_eq_zero] using fun z hz =>
+  simpa [sub_eq_zero] using! fun z hz =>
     (hf.sub hg).eqOn_zero_of_preconnected_of_eventuallyEq_zero hU h₀ hfg' hz
 
 /-- The *identity principle* for analytic functions: If two analytic functions on a normed space

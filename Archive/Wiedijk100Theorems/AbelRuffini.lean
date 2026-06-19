@@ -7,7 +7,7 @@ import Mathlib.FieldTheory.AbelRuffini
 import Mathlib.RingTheory.Polynomial.Selmer
 
 /-!
-# Construction of an algebraic number that is not solvable by radicals.
+# Construction of an algebraic number that is not solvable by radicals
 
 The main ingredients are:
 * `solvableByRad.isSolvable'` in `Mathlib/FieldTheory/AbelRuffini.lean` :
@@ -15,7 +15,7 @@ The main ingredients are:
 * `Polynomial.X_pow_sub_X_sub_one_irreducible_rat` and `Polynomial.X_pow_sub_X_sub_one_gal` in
   `RingTheory/Polynomial/Selmer.lean`: `X ^ 5 - X - 1` is irreducible and has full Galois group
 * `Equiv.Perm.not_solvable` in `Mathlib/GroupTheory/Solvable.lean` : the symmetric group is not
-  solvable
+  solvable.
 
 -/
 
@@ -42,6 +42,7 @@ theorem not_solvable_by_rad (x : ℂ) (hx : aeval x quintic = 0) : ¬IsSolvableB
     fun h ↦ Equiv.Perm.not_solvable (rootSet quintic ℂ) ?_ (solvable_of_surjective gal_quintic.2)
   rw [Cardinal.mk_fintype, card_rootSet_eq_natDegree irreducible_quintic.separable (splits _),
     natDegree_eq_of_degree_eq_some degree_quintic, Nat.ofNat_le_cast]
+
 /-- **Abel-Ruffini Theorem** -/
 theorem exists_not_solvable_by_rad : ∃ x : ℂ, IsAlgebraic ℚ x ∧ ¬IsSolvableByRad ℚ x := by
   have h : quintic.degree > 0 := by rw [degree_quintic]; norm_num

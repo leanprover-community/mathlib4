@@ -27,7 +27,7 @@ equivalent.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -53,6 +53,7 @@ instance : Preregular CompHaus :=
 
 example : Precoherent CompHaus.{u} := inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: prove this for `Type*`
 open List in
 theorem effectiveEpiFamily_tfae
@@ -93,7 +94,7 @@ theorem effectiveEpiFamily_tfae
     rw [Iso.inv_comp_eq]
     apply colimit.hom_ext
     rintro ⟨a⟩
-    simp only [i, Discrete.functor_obj, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app,
+    simp only [i, Discrete.functor_obj, colimit.ι_desc, Cofan.mk_ι_app,
       colimit.comp_coconePointUniqueUpToIso_hom_assoc]
     ext; rfl
   tfae_finish

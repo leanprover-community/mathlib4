@@ -214,6 +214,7 @@ theorem aux_algebraMap (r) :
     aux f (algebraMap R (even Q) r) = algebraMap R A r :=
   (congr_arg Prod.fst (foldr_algebraMap _ _ _ _ _)).trans (Algebra.algebraMap_eq_smul_one r).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem aux_mul (x y : even Q) : aux f (x * y) = aux f x * aux f y := by
   obtain ⟨x, x_property⟩ := x
@@ -223,7 +224,7 @@ theorem aux_mul (x y : even Q) : aux f (x * y) = aux f x * aux f y := by
   induction x, x_property using even_induction Q with
   | algebraMap r =>
     generalize_proofs at ⊢
-    simpa using Algebra.smul_def r _
+    simpa using! Algebra.smul_def r _
   | add x y hx hy ihx ihy =>
     rw [map_add, Prod.fst_add]
     simp [ihx, ihy, ← add_mul, ← map_add]

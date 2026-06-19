@@ -32,7 +32,7 @@ assert_not_exists MonoidWithZero DistribMulAction
 
 universe u v
 
-open Pointwise
+open scoped Pointwise
 
 open Function
 
@@ -75,11 +75,9 @@ theorem mem_orbit_self (a : α) : a ∈ orbit M a :=
 theorem nonempty_orbit (a : α) : Set.Nonempty (orbit M a) :=
   Set.range_nonempty _
 
-@[deprecated (since := "2025-09-25")] alias orbit_nonempty := nonempty_orbit
-
 @[to_additive]
 theorem mapsTo_smul_orbit (m : M) (a : α) : Set.MapsTo (m • ·) (orbit M a) (orbit M a) :=
-  Set.range_subset_iff.2 fun m' => ⟨m * m', mul_smul _ _ _⟩
+  Set.mapsTo_iff_subset_preimage.mpr <| Set.range_subset_iff.mpr fun m' => ⟨m * m', mul_smul _ _ _⟩
 
 @[to_additive]
 theorem smul_orbit_subset (m : M) (a : α) : m • orbit M a ⊆ orbit M a :=
@@ -135,7 +133,7 @@ variable {M α}
 theorem mem_fixedPoints {a : α} : a ∈ fixedPoints M α ↔ ∀ m : M, m • a = a :=
   Iff.rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 theorem mem_fixedBy {m : M} {a : α} : a ∈ fixedBy α m ↔ m • a = a :=
   Iff.rfl
 
@@ -192,6 +190,9 @@ def FixedPoints.submonoid : Submonoid α where
 lemma FixedPoints.mem_submonoid (a : α) : a ∈ submonoid M α ↔ ∀ m : M, m • a = a :=
   Iff.rfl
 
+instance : SMulCommClass M (FixedPoints.submonoid M α) α where
+  smul_comm g x y := by simp_rw [Submonoid.smul_def, smul_eq_mul, smul_mul', x.2 g]
+
 end Monoid
 
 section Group
@@ -203,15 +204,15 @@ def subgroup : Subgroup α where
   __ := submonoid M α
   inv_mem' ha _ := by rw [smul_inv', ha]
 
-/-- The notation for `FixedPoints.subgroup`, chosen to resemble `αᴹ`. -/
-scoped notation α "^*" M:51 => FixedPoints.subgroup M α
-
 @[simp]
-lemma mem_subgroup (a : α) : a ∈ α^*M ↔ ∀ m : M, m • a = a :=
+lemma mem_subgroup (a : α) : a ∈ FixedPoints.subgroup M α ↔ ∀ m : M, m • a = a :=
   Iff.rfl
 
+instance : SMulCommClass M (FixedPoints.subgroup M α) α :=
+  inferInstanceAs (SMulCommClass M (FixedPoints.submonoid M α) α)
+
 @[simp]
-lemma subgroup_toSubmonoid : (α^*M).toSubmonoid = submonoid M α :=
+lemma subgroup_toSubmonoid : (FixedPoints.subgroup M α).toSubmonoid = submonoid M α :=
   rfl
 
 end FixedPoints
@@ -295,7 +296,7 @@ of the orbit of `U` under `G`. -/
 of the orbit of `U` under `G`. -/]
 theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     letI := orbitRel G α
-    Quotient.mk' ⁻¹' (Quotient.mk' '' U) = ⋃ g : G, (g • ·) '' U := by
+    Quotient.mk' ⁻¹' Quotient.mk' '' U = ⋃ g : G, (g • ·) '' U := by
   letI := orbitRel G α
   set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
   ext a
@@ -308,9 +309,9 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     rw [Set.mem_iUnion] at hx
     obtain ⟨g, u, hu₁, hu₂⟩ := hx
     rw [Set.mem_preimage, Set.mem_image]
-    refine ⟨g⁻¹ • a, ?_, by simp [f, orbitRel, Quotient.eq']⟩
+    refine ⟨g⁻¹ • a, ?_, by simp +instances [f, orbitRel, Quotient.eq']⟩
     rw [← hu₂]
-    convert hu₁
+    convert! hu₁
     simp only [inv_smul_smul]
 
 @[to_additive]
@@ -400,9 +401,6 @@ nonrec lemma orbitRel.Quotient.nonempty_orbit (x : orbitRel.Quotient G α) :
   rw [orbitRel.Quotient.orbit_eq_orbit_out x Quotient.out_eq']
   exact nonempty_orbit _
 
-@[deprecated (since := "2025-09-25")]
-alias orbitRel.Quotient.orbit_nonempty := orbitRel.Quotient.nonempty_orbit
-
 @[to_additive]
 nonrec lemma orbitRel.Quotient.mapsTo_smul_orbit (g : G) (x : orbitRel.Quotient G α) :
     Set.MapsTo (g • ·) x.orbit x.orbit := by
@@ -444,13 +442,13 @@ lemma orbitRel.Quotient.mem_subgroup_orbit_iff' {H : Subgroup G} {x : orbitRel.Q
     {a b : x.orbit} {c : α} (h : (⟦a⟧ : orbitRel.Quotient H x.orbit) = ⟦b⟧) :
     (a : α) ∈ MulAction.orbit H c ↔ (b : α) ∈ MulAction.orbit H c := by
   simp_rw [mem_orbit_symm (a₂ := c)]
-  convert Iff.rfl using 2
+  convert! Iff.rfl using 2
   rw [orbit_eq_iff]
   suffices hb : ↑b ∈ orbitRel.Quotient.orbit (⟦a⟧ : orbitRel.Quotient H x.orbit) by
     rw [orbitRel.Quotient.orbit_eq_orbit_out (⟦a⟧ : orbitRel.Quotient H x.orbit) Quotient.out_eq']
        at hb
     rw [orbitRel.Quotient.mem_subgroup_orbit_iff]
-    convert hb using 1
+    convert! hb using 1
     rw [orbit_eq_iff, ← orbitRel_apply, ← Quotient.eq'', Quotient.out_eq', @Quotient.mk''_eq_mk]
   rw [orbitRel.Quotient.mem_orbit, h, @Quotient.mk''_eq_mk]
 

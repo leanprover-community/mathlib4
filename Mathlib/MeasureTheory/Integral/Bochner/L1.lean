@@ -139,7 +139,7 @@ theorem dominatedFinMeasAdditive_weightedSMul {_ : MeasurableSpace α} (μ : Mea
 
 theorem weightedSMul_nonneg [PartialOrder F] [IsOrderedModule ℝ F]
     (s : Set α) (x : F) (hx : 0 ≤ x) : 0 ≤ weightedSMul μ s x := by
-  simp only [weightedSMul, coe_smul', _root_.id, coe_id', Pi.smul_apply]
+  simp only [weightedSMul, _root_.id, coe_id', smul_apply]
   exact smul_nonneg toReal_nonneg hx
 
 end WeightedSMul
@@ -226,6 +226,7 @@ theorem integral_const {m : MeasurableSpace α} (μ : Measure α) (y : F) :
       integral_eq_sum_of_subset <| (filter_subset _ _).trans (range_const_subset _ _)
     _ = μ.real univ • y := by simp [Set.preimage]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem integral_piecewise_zero {m : MeasurableSpace α} (f : α →ₛ F) (μ : Measure α) {s : Set α}
     (hs : MeasurableSet s) : (piecewise s hs f 0).integral μ = f.integral (μ.restrict s) := by
@@ -353,8 +354,7 @@ lemma integral_mono_measure {ν} {f : α →ₛ F} (hf : 0 ≤ᵐ[ν] f) (hμν 
     · simp [← hx]
     simp only [measureReal_def]
     gcongr
-    · exact integrable_iff.mp hfν (f x) hx.ne' |>.ne
-    · exact hμν _
+    exact integrable_iff.mp hfν (f x) hx.ne' |>.ne
   · suffices ν (f ⁻¹' {f x}) = 0 by
       have A : μ (f ⁻¹' {f x}) = 0 := by simpa using (hμν _ |>.trans_eq this)
       simp [measureReal_def, A, this]
@@ -469,7 +469,7 @@ theorem posPart_toSimpleFunc (f : α →₁ₛ[μ] ℝ) :
   have ae_eq : ∀ᵐ a ∂μ, toSimpleFunc (posPart f) a = max ((toSimpleFunc f) a) 0 := by
     filter_upwards [toSimpleFunc_eq_toFun (posPart f), Lp.coeFn_posPart (f : α →₁[μ] ℝ),
       toSimpleFunc_eq_toFun f] with _ _ h₂ h₃
-    convert h₂ using 1
+    convert! h₂ using 1
     rw [h₃]
   refine ae_eq.mono fun a h => ?_
   rw [h, eq]

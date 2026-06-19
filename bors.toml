@@ -1,8 +1,43 @@
-status = ["Build", "Lint style", "Post-Build Step"]
+status = ["ci (staging) / Build", "ci (staging) / Lint style", "ci (staging) / Post-Build Step", "ci (staging) / Post-CI job"]
 use_squash_merge = true
 timeout_sec = 7200
 block_labels = ["WIP", "blocked-by-other-PR", "merge-conflict", "awaiting-CI"]
 delete_merged_branches = true
 update_base_for_deletes = true
-cut_body_after = "---"
+cut_body_after = "\n---"
 max_batch_size = 16
+[delegation]
+default_expiry_sec = 1209600 # 2 weeks
+# Entries below are Erlang `:glob` patterns (NOT gitignore): `*` matches across `/`,
+# `?` is one char, and patterns are anchored -- so a directory and its
+# top-level aggregator file are listed separately (e.g. `Mathlib/**` does not
+# cover `Mathlib.lean`).
+#
+# Allow-list: a delegation covers only new author work within these paths.
+restrict_to_paths = [
+  "Archive/**",
+  "Counterexamples/**",
+  "docs/**",
+  "DownstreamTest/**",
+  "Mathlib/**",
+  "MathlibTest/**",
+  "widget/**",
+  "Archive.lean",
+  "Counterexamples.lean",
+  "docs.lean",
+  "Mathlib.lean",
+]
+# Deny-list: always revoke delegation when these are touched, even if a path
+# also matches the allow-list.
+# Redundant with the allow-list today (these are already excluded by omission),
+# but kept as a reference so the protection survives any future widening of
+# `restrict_to_paths`.
+# invalidate_on_paths = [
+#   ".github/**",
+#   "scripts/**",
+#   "Cache/**",
+#   "lakefile.lean",
+#   "lake-manifest.json",
+#   "lean-toolchain",
+#   "bors.toml",
+# ]

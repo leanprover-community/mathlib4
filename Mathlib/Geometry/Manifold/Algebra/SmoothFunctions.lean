@@ -5,6 +5,7 @@ Authors: Nicolò Cavalleri
 -/
 module
 
+public import Mathlib.Geometry.Manifold.Algebra.SMul
 public import Mathlib.Geometry.Manifold.Algebra.Structures
 
 /-!
@@ -28,7 +29,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   {I' : ModelWithCorners 𝕜 E' H'} {N : Type*} [TopologicalSpace N] [ChartedSpace H N]
   {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
   {I'' : ModelWithCorners 𝕜 E'' H''} {N' : Type*} [TopologicalSpace N'] [ChartedSpace H'' N']
-  {n : WithTop ℕ∞}
+  {n : ℕ∞ω}
 
 namespace ContMDiffMap
 
@@ -57,11 +58,7 @@ theorem coe_one {G : Type*} [One G] [TopologicalSpace G] [ChartedSpace H' G] :
     ⇑(1 : C^n⟮I, N; I', G⟯) = 1 :=
   rfl
 
-instance instNSMul {G : Type*} [AddMonoid G] [TopologicalSpace G] [ChartedSpace H' G]
-    [ContMDiffAdd I' n G] : SMul ℕ C^n⟮I, N; I', G⟯ where
-  smul n f := ⟨n • (f : N → G), (contMDiff_nsmul n).comp f.contMDiff⟩
-
-@[to_additive existing]
+@[to_additive]
 instance instPow {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
     [ContMDiffMul I' n G] :
     Pow C^n⟮I, N; I', G⟯ ℕ where
@@ -110,7 +107,7 @@ variable (I N)
 `C^n⟮I, N; I'', G''⟯`. -/]
 def compLeftMonoidHom {G' : Type*} [Monoid G'] [TopologicalSpace G'] [ChartedSpace H' G']
     [ContMDiffMul I' n G'] {G'' : Type*} [Monoid G''] [TopologicalSpace G''] [ChartedSpace H'' G'']
-    [ContMDiffMul I'' n G''] (φ : G' →* G'') (hφ : ContMDiff I' I'' n φ) :
+    [ContMDiffMul I'' n G''] (φ : G' →* G'') (hφ : CMDiff n φ) :
     C^n⟮I, N; I', G'⟯ →* C^n⟮I, N; I'', G''⟯ where
   toFun f := ⟨φ ∘ f, hφ.comp f.contMDiff⟩
   map_one' := by ext; change φ 1 = 1; simp
@@ -195,7 +192,7 @@ variable (I N)
 'left-composition-by-`φ`' ring homomorphism from `C^n⟮I, N; I', R'⟯` to `C^n⟮I, N; I'', R''⟯`. -/
 def compLeftRingHom {R' : Type*} [Ring R'] [TopologicalSpace R'] [ChartedSpace H' R']
     [ContMDiffRing I' n R'] {R'' : Type*} [Ring R''] [TopologicalSpace R''] [ChartedSpace H'' R'']
-    [ContMDiffRing I'' n R''] (φ : R' →+* R'') (hφ : ContMDiff I' I'' n φ) :
+    [ContMDiffRing I'' n R''] (φ : R' →+* R'') (hφ : CMDiff n φ) :
     C^n⟮I, N; I', R'⟯ →+* C^n⟮I, N; I'', R''⟯ :=
   { ContMDiffMap.compLeftMonoidHom I N φ.toMonoidHom hφ,
     ContMDiffMap.compLeftAddMonoidHom I N φ.toAddMonoidHom hφ with
@@ -239,7 +236,7 @@ field `𝕜` inherit a vector space structure.
 
 instance instSMul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     SMul 𝕜 C^n⟮I, N; 𝓘(𝕜, V), V⟯ :=
-  ⟨fun r f => ⟨r • ⇑f, contMDiff_const.smul f.contMDiff⟩⟩
+  ⟨fun r f ↦ ⟨r • ⇑f, contMDiff_const.smul (I := 𝓘(𝕜)) f.contMDiff⟩⟩
 
 @[simp]
 theorem coe_smul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (r : 𝕜)
@@ -286,7 +283,7 @@ def C : 𝕜 →+* C^n⟮I, N; 𝓘(𝕜, A), A⟯ where
   map_add' c₁ c₂ := by ext; exact (algebraMap 𝕜 A).map_add _ _
 
 instance algebra : Algebra 𝕜 C^n⟮I, N; 𝓘(𝕜, A), A⟯ where
-  smul := fun r f => ⟨r • f, contMDiff_const.smul f.contMDiff⟩
+  smul := fun r f ↦ ⟨r • f, contMDiff_const.smul (I := 𝓘(𝕜)) f.contMDiff⟩
   algebraMap := ContMDiffMap.C
   commutes' := fun c f => by ext x; exact Algebra.commutes' _ _
   smul_def' := fun c f => by ext x; exact Algebra.smul_def' _ _

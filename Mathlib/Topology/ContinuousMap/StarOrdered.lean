@@ -34,7 +34,7 @@ be a problem since the only purpose is to obtain the instance `StarOrderedRing C
 `Prop`, but we note it for future reference.
 -/
 
-@[expose] public section
+public section
 
 /-- A type class encoding the property that there is a continuous square root function on
 nonnegative elements. This holds for `ℝ≥0`, `ℝ` and `ℂ` (as well as any C⋆-algebra), and this
@@ -52,6 +52,7 @@ namespace ContinuousMap
 
 variable {α : Type*} [TopologicalSpace α]
 
+set_option backward.isDefEq.respectTransparency false in
 instance {R : Type*} [PartialOrder R] [NonUnitalSemiring R] [StarRing R]
     [StarOrderedRing R] [TopologicalSpace R] [ContinuousStar R] [IsTopologicalSemiring R]
     [ContinuousSqrt R] : StarOrderedRing C(α, R) := by

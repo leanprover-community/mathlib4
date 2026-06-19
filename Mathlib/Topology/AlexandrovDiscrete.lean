@@ -28,7 +28,7 @@ minimal neighborhood, which we call the *neighborhoods kernel* of the set.
 Alexandroff, discrete, finitely generated, fg space
 -/
 
-@[expose] public section
+public section
 
 open Filter Set TopologicalSpace Topology
 
@@ -49,6 +49,9 @@ lemma alexandrovDiscrete_iff_isClosed :
   conv_lhs => tactic =>
     simp_rw +singlePass [alexandrovDiscrete_iff, compl_surjective.image_surjective.forall,
       forall_mem_image, ← compl_sUnion, isOpen_compl_iff]
+
+instance IndiscreteTopology.toAlexandrovDiscrete [IndiscreteTopology α] : AlexandrovDiscrete α where
+  isOpen_sInter := by grind [isOpen_iff]
 
 instance DiscreteTopology.toAlexandrovDiscrete [DiscreteTopology α] : AlexandrovDiscrete α where
   isOpen_sInter _ _ := isOpen_discrete _
@@ -181,7 +184,7 @@ lemma nhds_basis_nhdsKer_singleton (a : α) :
 
 lemma isOpen_iff_forall_specializes : IsOpen s ↔ ∀ x y, x ⤳ y → y ∈ s → x ∈ s := by
   simp only [← nhdsKer_subset_iff_isOpen, Set.subset_def, mem_nhdsKer_iff_specializes, exists_imp,
-    and_imp, @forall_swap (_ ⤳ _)]
+    and_imp, @forall_comm (_ ⤳ _)]
 
 omit [AlexandrovDiscrete α] in
 lemma alexandrovDiscrete_iff_nhds : AlexandrovDiscrete α ↔ (∀ a : α, 𝓝 a = 𝓟 (nhdsKer {a})) where

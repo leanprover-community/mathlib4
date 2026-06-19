@@ -48,6 +48,7 @@ universe w v u
 open Category Iso
 
 -- intended to be used with explicit universe parameters
+set_option linter.checkUnivs false in
 /-- In a bicategory, we can compose the 1-morphisms `f : a ⟶ b` and `g : b ⟶ c` to obtain
 a 1-morphism `f ≫ g : a ⟶ c`. This composition does not need to be strictly associative,
 but there is a specified associator, `α_ f g h : (f ≫ g) ≫ h ≅ f ≫ (g ≫ h)`.
@@ -156,7 +157,7 @@ parentheses. More precisely,
 Note that `f₁ ◁ f₂ ◁ f₃ ◁ η ▷ f₄ ▷ f₅` is actually `f₁ ◁ (f₂ ◁ (f₃ ◁ ((η ▷ f₄) ▷ f₅)))`.
 -/
 
-attribute [instance] homCategory
+attribute [instance_reducible, instance] homCategory
 
 attribute [reassoc]
   whiskerLeft_comp id_whiskerLeft comp_whiskerLeft comp_whiskerRight whiskerRight_id
@@ -251,6 +252,12 @@ theorem inv_whiskerRight {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) [IsIso η]
     inv (η ▷ h) = inv η ▷ h := by
   apply IsIso.inv_eq_of_hom_inv_id
   simp only [← comp_whiskerRight, id_whiskerRight, IsIso.hom_inv_id]
+
+@[inherit_doc whiskerLeftIso]
+scoped infixr:82 " ◁ᵢ " => whiskerLeftIso
+
+@[inherit_doc whiskerRightIso]
+scoped infixl:82 " ▷ᵢ " => whiskerRightIso
 
 @[reassoc (attr := simp)]
 theorem pentagon_inv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
@@ -459,6 +466,7 @@ def precomp (c : B) (f : a ⟶ b) : (b ⟶ c) ⥤ (a ⟶ c) where
   obj := (f ≫ ·)
   map := (f ◁ ·)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Precomposition of a 1-morphism as a functor from the category of 1-morphisms `a ⟶ b` into the
 category of functors `(b ⟶ c) ⥤ (a ⟶ c)`. -/
 @[simps]
@@ -472,6 +480,7 @@ def postcomp (a : B) (f : b ⟶ c) : (a ⟶ b) ⥤ (a ⟶ c) where
   obj := (· ≫ f)
   map := (· ▷ f)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Postcomposition of a 1-morphism as a functor from the category of 1-morphisms `b ⟶ c` into the
 category of functors `(a ⟶ b) ⥤ (a ⟶ c)`. -/
 @[simps]
@@ -479,12 +488,14 @@ def postcomposing (a b c : B) : (b ⟶ c) ⥤ (a ⟶ b) ⥤ (a ⟶ c) where
   obj f := postcomp a f
   map η := { app := (· ◁ η) }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Left component of the associator as a natural isomorphism. -/
 @[simps!]
 def associatorNatIsoLeft (a : B) (g : b ⟶ c) (h : c ⟶ d) :
     (postcomposing a ..).obj g ⋙ (postcomposing ..).obj h ≅ (postcomposing ..).obj (g ≫ h) :=
   NatIso.ofComponents (α_ · g h)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Middle component of the associator as a natural isomorphism. -/
 @[simps!]
 def associatorNatIsoMiddle (f : a ⟶ b) (h : c ⟶ d) :
@@ -492,17 +503,20 @@ def associatorNatIsoMiddle (f : a ⟶ b) (h : c ⟶ d) :
       (postcomposing ..).obj h ⋙ (precomposing ..).obj f :=
   NatIso.ofComponents (α_ f · h)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Right component of the associator as a natural isomorphism. -/
 @[simps!]
 def associatorNatIsoRight (f : a ⟶ b) (g : b ⟶ c) (d : B) :
     (precomposing _ _ d).obj (f ≫ g) ≅ (precomposing ..).obj g ⋙ (precomposing ..).obj f :=
   NatIso.ofComponents (α_ f g ·)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Left unitor as a natural isomorphism. -/
 @[simps!]
 def leftUnitorNatIso (a b : B) : (precomposing _ _ b).obj (𝟙 a) ≅ 𝟭 (a ⟶ b) :=
   NatIso.ofComponents (λ_ ·)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Right unitor as a natural isomorphism. -/
 @[simps!]
 def rightUnitorNatIso (a b : B) : (postcomposing a _ _).obj (𝟙 b) ≅ 𝟭 (a ⟶ b) :=

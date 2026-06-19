@@ -59,7 +59,8 @@ namespace OreLocalization
 variable {R : Type*} [Monoid R] (S : Submonoid R) [OreSet S] (X) [MulAction R X]
 
 /-- The setoid on `R × S` used for the Ore localization. -/
-@[to_additive AddOreLocalization.oreEqv /-- The setoid on `R × S` used for the Ore localization. -/]
+@[to_additive (attr := implicit_reducible) AddOreLocalization.oreEqv
+  /-- The setoid on `R × S` used for the Ore localization. -/]
 def oreEqv : Setoid (X × S) where
   r rs rs' := ∃ (u : S) (v : R), u • rs'.1 = v • rs.1 ∧ u * rs'.2 = v * rs.2
   iseqv := by
@@ -200,7 +201,6 @@ def lift₂Expand {C : Sort*} (P : X → S → X → S → C)
       simp [this])
     fun r₁ t₁ s₁ ht₁ => by
     ext x; cases x with | _ r₂ s₂
-    dsimp only
     rw [liftExpand_of, liftExpand_of, hP r₁ t₁ s₁ ht₁ r₂ 1 s₂ (by simp)]; simp
 
 @[to_additive (attr := simp)]
@@ -410,6 +410,16 @@ instance : Monoid R[S⁻¹] where
   npow := OreLocalization.npow
 
 @[to_additive]
+theorem oreDiv_pow (r : R) (s : S) (n : ℕ) (h : Commute r (s : R)) :
+    (r /ₒ s) ^ n = (r ^ n) /ₒ (s ^ n) := by
+  induction n with
+  | zero =>
+    rw [pow_zero, pow_zero, pow_zero, OreLocalization.one_def]
+  | succ n ih =>
+    rw [pow_succ', pow_succ', pow_succ, ih, oreDiv_mul_char (r' := r) (s' := s ^ n)]
+    exact h.pow_right _ |>.symm
+
+@[to_additive]
 instance instMulActionOreLocalization : MulAction R[S⁻¹] X[S⁻¹] where
   one_smul := OreLocalization.one_smul
   mul_smul := OreLocalization.mul_smul
@@ -543,16 +553,16 @@ variable [SMul R R'] [IsScalarTower R R' M]
 protected def hsmul (c : R) :
     X[S⁻¹] → X[S⁻¹] :=
   liftExpand (fun m s ↦ oreNum (c • 1) s • m /ₒ oreDenom (c • 1) s) (fun r t s ht ↦ by
-    dsimp only
     rw [← mul_one (oreDenom (c • 1) s), ← oreDiv_smul_oreDiv, ← mul_one (oreDenom (c • 1) _),
       ← oreDiv_smul_oreDiv, ← OreLocalization.expand])
 
-/- Warning: This gives a diamond on `SMul R[S⁻¹] M[S⁻¹][S⁻¹]`, but we will almost never localize
+set_option linter.overlappingInstances false in
+/-- Warning: This gives a diamond on `SMul R[S⁻¹] M[S⁻¹][S⁻¹]`, but we will almost never localize
 at the same monoid twice. -/
 /- Although the definition does not require `IsScalarTower R M X`,
 it does not make sense without it. -/
 @[to_additive (attr := nolint unusedArguments)]
-instance [SMul R X] [SMul R M] [IsScalarTower R M X] [IsScalarTower R M M] : SMul R (X[S⁻¹]) where
+instance [IsScalarTower R M X] [IsScalarTower R M M] : SMul R (X[S⁻¹]) where
   smul := OreLocalization.hsmul
 
 @[to_additive]

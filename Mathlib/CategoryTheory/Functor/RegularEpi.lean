@@ -19,7 +19,7 @@ regular epi category. This is an instance that applies directly when `D` is `Typ
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Functor
 
@@ -27,6 +27,7 @@ open Limits
 
 variable {C D : Type*} [Category C] [Category D]
 
+set_option backward.defeqAttrib.useBackward true in
 instance [∀ {F G : D} (f : F ⟶ G) [Epi f], HasPullback f f] [HasPushouts D]
     [IsRegularEpiCategory D] :
     IsRegularEpiCategory (C ⥤ D) where
@@ -43,6 +44,6 @@ instance [∀ {F G : D} (f : F ⟶ G) [Epi f], HasPullback f f] [HasPushouts D]
       · refine NatIso.ofComponents (by rintro (_ | _); exacts [Iso.refl _, Iso.refl _]) ?_
         rintro _ _ (_ | _)
         all_goals cat_disch
-      · exact Cocones.ext (Iso.refl _) <| by rintro (_ | _ | _); all_goals cat_disch }⟩⟩
+      · exact Cocone.ext (Iso.refl _) <| by rintro (_ | _ | _); all_goals cat_disch }⟩⟩
 
 end CategoryTheory.Functor

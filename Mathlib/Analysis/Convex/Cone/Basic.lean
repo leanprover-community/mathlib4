@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Convex.Cone.Closure
 public import Mathlib.Geometry.Convex.Cone.Pointed
 public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalars
 public import Mathlib.Topology.Algebra.Order.Module
 public import Mathlib.Topology.Order.DenselyOrdered
 
@@ -76,7 +77,9 @@ lemma toPointedCone_injective : Injective ((↑) : ProperCone R E → PointedCon
 -- TODO: add `ConvexConeClass` that extends `SetLike` and replace the below instance
 instance : SetLike (ProperCone R E) E where
   coe C := C.carrier
-  coe_injective' _ _ h := ProperCone.toPointedCone_injective <| SetLike.coe_injective h
+  coe_injective _ _ h := ProperCone.toPointedCone_injective <| SetLike.coe_injective h
+
+instance : PartialOrder (ProperCone R E) := .ofSetLike (ProperCone R E) E
 
 @[ext] lemma ext (h : ∀ x, x ∈ C₁ ↔ x ∈ C₂) : C₁ = C₂ := SetLike.ext h
 

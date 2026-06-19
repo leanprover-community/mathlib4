@@ -22,6 +22,7 @@ The maps are
 - `Algebra.H1Cotangent.δ`
 - `KaehlerDifferential.mapBaseChange`
 - `KaehlerDifferential.map`
+
 and the exactness lemmas are
 - `Algebra.H1Cotangent.exact_map_δ`
 - `Algebra.H1Cotangent.exact_δ_mapBaseChange`
@@ -53,6 +54,7 @@ attribute [local instance] SMulCommClass.of_commMonoid
 
 namespace Generators
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Cotangent.surjective_map_ofComp :
     Function.Surjective (Extension.Cotangent.map (Q.ofComp P).toExtensionHom) := by
   intro x
@@ -63,12 +65,14 @@ lemma Cotangent.surjective_map_ofComp :
   obtain ⟨x, hx', rfl⟩ := this
   exact ⟨.mk ⟨x, hx'⟩, Extension.Cotangent.map_mk _ _⟩
 
-/-!
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+open Extension.Cotangent in
+/--
 Given representations `0 → I → R[X] → S → 0` and `0 → K → S[Y] → T → 0`,
 we may consider the induced representation `0 → J → R[X, Y] → T → 0`, and the sequence
 `T ⊗[S] (I/I²) → J/J² → K/K²` is exact.
 -/
-open Extension.Cotangent in
 lemma Cotangent.exact :
     Function.Exact
       ((Extension.Cotangent.map (Q.toComp P).toExtensionHom).liftBaseChange T)
@@ -79,7 +83,7 @@ lemma Cotangent.exact :
     ext x
     obtain ⟨⟨x, hx⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
     simp only [map_mk, val_mk, LinearMap.zero_apply, val_zero]
-    convert Q.ker.toCotangent.map_zero
+    convert! Q.ker.toCotangent.map_zero
     trans ((IsScalarTower.toAlgHom R _ _).comp (IsScalarTower.toAlgHom R P.Ring S)) x
     · congr
       refine MvPolynomial.algHom_ext fun i ↦ ?_
@@ -89,7 +93,7 @@ lemma Cotangent.exact :
   · intro x hx
     obtain ⟨⟨x : (Q.comp P).Ring, hx'⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
     replace hx : (Q.ofComp P).toAlgHom x ∈ Q.ker ^ 2 := by
-      simpa only [map_mk, val_mk, val_zero, Ideal.toCotangent_eq_zero] using congr(($hx).val)
+      simpa only [map_mk, val_mk, val_zero, Ideal.toCotangent_eq_zero] using! congr(($hx).val)
     rw [pow_two, ← map_ofComp_ker (P := P), ← Ideal.map_mul, Ideal.mem_map_iff_of_surjective
       _ (toAlgHom_ofComp_surjective Q P)] at hx
     obtain ⟨y, hy, e⟩ := hx
@@ -110,7 +114,7 @@ lemma Cotangent.exact :
     simp only [AlgHom.toRingHom_eq_coe, Ideal.mem_comap, RingHom.coe_coe,
       Submodule.mem_map, Submodule.mem_comap, Submodule.restrictScalars_mem, Submodule.coe_subtype,
       Subtype.exists, exists_and_right, exists_eq_right,
-      toExtension_Ring, toExtension_commRing]
+      toExtension_Ring]
     refine ⟨?_, Submodule.subset_span ⟨Extension.Cotangent.mk ⟨w, hw⟩, ?_⟩⟩
     · simp only [ker_eq_ker_aeval_val, RingHom.mem_ker, Hom.algebraMap_toAlgHom]
       rw [aeval_val_eq_zero hw, map_zero]
@@ -130,7 +134,7 @@ section instanceProblem
 
 -- Note: these instances are needed to prevent instance search timeouts.
 attribute [local instance 999999] Zero.toOfNat0 SemilinearMapClass.distribMulActionSemiHomClass
-  SemilinearEquivClass.instSemilinearMapClass TensorProduct.addZeroClass AddZero.toZero
+  SemilinearEquivClass.instSemilinearMapClass instAddZeroClassTensorProduct AddZero.toZero
 
 lemma CotangentSpace.compEquiv_symm_inr :
     (compEquiv Q P).symm.toLinearMap ∘ₗ
@@ -243,6 +247,7 @@ lemma δAux_C (r) :
     δAux R Q (C r) = 1 ⊗ₜ D R S r := by
   rw [← monomial_zero', δAux_monomial, Finsupp.prod_zero_index]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {Q} {Q'} in
 lemma δAux_toAlgHom (f : Hom Q Q') (x) :
     δAux R Q' (f.toAlgHom x) = δAux R Q x + Finsupp.linearCombination _ (δAux R Q' ∘ f.val)
@@ -264,6 +269,7 @@ lemma δAux_toAlgHom (f : Hom Q Q') (x) :
     rw [add_left_comm]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma δAux_ofComp (x : (Q.comp P).Ring) :
     δAux R Q ((Q.ofComp P).toAlgHom x) =
       P.toExtension.toKaehler.baseChange T (CotangentSpace.compEquiv Q P
@@ -344,6 +350,8 @@ def δ :
     (Cotangent.surjective_map_ofComp Q P)
     (CotangentSpace.map_toComp_injective Q P)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma exact_δ_map :
     Function.Exact (δ Q P) (mapBaseChange R S T) := by
   simp only [δ]
@@ -392,6 +400,11 @@ lemma δ_eq_δAux (x : Q.ker) (hx) :
       ((Q.comp P).toExtension.cotangentComplex y)
     rw [CotangentSpace.fst_compEquiv, Extension.CotangentSpace.map_cotangentComplex, hy, hx]
 
+lemma δ_C {r : S} (hr : C r ∈ Q.ker) :
+    δ Q P ⟨Extension.Cotangent.mk ⟨C r, hr⟩, Extension.Cotangent.mk_C_mem_ker_cotangentComplex ..⟩
+      = 1 ⊗ₜ[S] D R S r := by
+  rw [δ_eq_δAux, δAux_C]
+
 lemma δ_eq_δ : δ Q P = δ Q P' := by
   ext ⟨x, hx⟩
   obtain ⟨x, rfl⟩ := Extension.Cotangent.mk_surjective x
@@ -406,6 +419,7 @@ lemma exact_map_δ :
   · ext x; rfl
   · exact Subtype.val_injective
 
+set_option backward.isDefEq.respectTransparency false in
 lemma δ_map (f : Hom Q' Q) (x) :
     δ Q P (Extension.H1Cotangent.map f.toExtensionHom x) = δ Q' P' x := by
   letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
@@ -413,7 +427,7 @@ lemma δ_map (f : Hom Q' Q) (x) :
   obtain ⟨⟨y, hy⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
   change δ _ _ ⟨_, _⟩ = δ _ _ _
   replace hx : (1 : T) ⊗ₜ[Q'.Ring] (D S Q'.Ring) y = 0 := by
-    simpa only [LinearMap.mem_ker, Extension.cotangentComplex_mk, ker, RingHom.mem_ker] using hx
+    simpa only [LinearMap.mem_ker, Extension.cotangentComplex_mk, ker, RingHom.mem_ker] using! hx
   simp only [LinearMap.domRestrict_apply, Extension.Cotangent.map_mk, δ_eq_δAux]
   refine (δAux_toAlgHom f _).trans ?_
   rw [hx, map_zero, map_zero, add_zero]
