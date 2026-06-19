@@ -257,13 +257,6 @@ abbrev hasPairSequence : ObjectProperty (HomologyPretheory.{u} C c) :=
 @[simp]
 lemma hasPairSequence_iff : hasPairSequence C c HP ↔ HP.HasPairSequence := .rfl
 
-variable {HP HP'} in
-abbrev hₚIsoOfIso (e : HP ≅ HP') (i : ι) : HP.Hₚ i ≅ HP'.Hₚ i := ((hₚFunctor i).mapIso e)
-
-variable {HP HP'} in
-abbrev hIsoOfIso (e : HP ≅ HP') (i : ι) : HP.H i ≅ HP'.H i :=
-  (HP.iso i) ≪≫ incl.isoWhiskerLeft ((hₚFunctor i).mapIso e) ≪≫ (HP'.iso i).symm
-
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : IsClosedUnderIsomorphisms (hasPairSequence.{u} C c) where
