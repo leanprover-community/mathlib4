@@ -70,7 +70,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
   -- declare functions, sets, points and smoothness indices
   {e : OpenPartialHomeomorph M H}
-  {e' : OpenPartialHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : ℕ∞ω}
+  {e' : OpenPartialHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x x' : M} {y : M'} {m n : ℕ∞ω}
 
 variable (I I') in
 /-- Property in the model space of a model with corners of being `C^n` within a set at a point,
@@ -322,8 +322,6 @@ theorem contMDiffAt_iff_source :
   simp
 
 section IsManifold
-
-variable {x' : M} {y : M'}
 
 theorem contMDiffWithinAt_iff_source_of_mem_maximalAtlas
     (he : e ∈ maximalAtlas I n M) (hx : x ∈ e.source) :
