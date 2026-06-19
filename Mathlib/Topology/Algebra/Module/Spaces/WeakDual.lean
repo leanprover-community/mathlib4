@@ -138,6 +138,25 @@ def toStrongDual : WeakDual 𝕜 E ≃ₗ[𝕜] StrongDual 𝕜 E :=
   StrongDual.toWeakDual.symm
 
 @[simp]
+theorem symm_toStrongDual :
+    (toStrongDual (𝕜 := 𝕜) (E := E)).symm = StrongDual.toWeakDual :=
+  rfl
+
+@[simp]
+theorem _root_.StrongDual.symm_toWeakDual :
+    (StrongDual.toWeakDual (𝕜 := 𝕜) (E := E)).symm = toStrongDual :=
+  rfl
+
+@[simp]
+theorem _root_.StrongDual.toStrongDual_toWeakDual (x : StrongDual 𝕜 E) :
+    x.toWeakDual.toStrongDual = x :=
+  rfl
+
+@[simp]
+theorem toWeakDual_toStrongDual (x : WeakDual 𝕜 E) : x.toStrongDual.toWeakDual = x :=
+  rfl
+
+@[simp]
 theorem toStrongDual_apply (x : WeakDual 𝕜 E) (y : E) : (toStrongDual x) y = x y := rfl
 
 theorem coe_toStrongDual (x' : WeakDual 𝕜 E) : (toStrongDual x' : E → 𝕜) = x' := rfl

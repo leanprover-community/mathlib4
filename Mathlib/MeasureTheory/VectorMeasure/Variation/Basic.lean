@@ -306,7 +306,8 @@ instance {x : X} {v : V} : IsFiniteMeasure (VectorMeasure.dirac x v).variation :
   simp only [variation_dirac, enorm_eq_nnnorm, Measure.coe_nnreal_smul]
   infer_instance
 
-@[simp] lemma variation_toSignedMeasure {μ : Measure X} [IsFiniteMeasure μ] :
+@[simp] lemma _root_.MeasureTheory.Measure.variation_toSignedMeasure
+    {μ : Measure X} [IsFiniteMeasure μ] :
     μ.toSignedMeasure.variation = μ := by
   apply le_antisymm
   · apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
