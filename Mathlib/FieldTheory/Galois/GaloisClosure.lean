@@ -5,7 +5,6 @@ Authors: Nailin Guan, Yuyang Zhao
 -/
 module
 
-public import Mathlib.FieldTheory.SeparableClosure
 public import Mathlib.FieldTheory.Galois.Basic
 
 /-!
