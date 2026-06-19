@@ -190,16 +190,8 @@ to `k[X_0,...,X_n]/T(I)`, induced by `φ`. -/
 private noncomputable abbrev eqv1 :
     ((MvPolynomial (Fin n) k)[X] ⧸ (I.map (T f)).map (finSuccEquiv k n)) ≃ₐ[k]
     MvPolynomial (Fin (n + 1)) k ⧸ I.map (T f) := quotientEquivAlg
-  ((I.map (T f)).map (finSuccEquiv k n)) (I.map (T f)) (finSuccEquiv k n).symm <| by
-  set g := (finSuccEquiv k n)
-  have : g.symm.toRingEquiv.toRingHom.comp g = RingHom.id _ :=
-    g.toRingEquiv.symm_toRingHom_comp_toRingHom
-  calc
-    _ = Ideal.map ((RingHom.id _).comp <| T f) I := by sorry
-    _ = (I.map (T f)).map (RingHom.id _) := by sorry
-    _ = (I.map (T f)).map (g.symm.toAlgHom.toRingHom.comp g) :=
-      congrFun (congrArg Ideal.map this.symm) (I.map (T f))
-    _ = _ := by sorry
+  ((I.map (T f)).map (finSuccEquiv k n)) (I.map (T f)) (finSuccEquiv k n).symm <|
+    (Ideal.map_of_equiv (finSuccEquiv k n).toRingEquiv).symm
 
 /-- `eqv2` is the isomorphism from `k[X_0,...,X_n]/T(I)` into `k[X_0,...,X_n]/I`,
 induced by `T`. -/

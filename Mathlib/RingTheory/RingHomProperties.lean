@@ -255,7 +255,7 @@ lemma CodescendsAlong.mk (h₁ : RespectsIso P)
     simp [e]
   apply h₂ hQ
   rw [← this]
-  sorry
+  exact h₁.1 (algebraMap R' S') e.symm.toRingEquiv H
 
 lemma CodescendsAlong.algebraMap_tensorProduct (hPQ : CodescendsAlong P Q)
     (h : Q (algebraMap R S)) (H : P (algebraMap S (S ⊗[R] T))) :
