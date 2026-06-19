@@ -530,11 +530,9 @@ end
 end differentiability
 
 /-! Tests for the elaborators for `UniqueMDiff{WithinAt,On}`. -/
-section unique
+section UniqueMDiff
 
-variable {EM' : Type*} [NormedAddCommGroup EM']
-  [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
-  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] {f : M → M'} {s : Set M} {m : M}
+variable {s : Set M} {m : M}
 
 /-- info: UniqueMDiffOn I s : Prop -/
 #guard_msgs in
@@ -594,7 +592,7 @@ in the application
 set_option pp.mvars.anonymous false in
 #check UniqueMDiffOn I s
 
-end unique
+end UniqueMDiff
 
 /-! Tests for the custom elaborators for `ContMDiff{WithinAt,At,On}` -/
 section smoothness
