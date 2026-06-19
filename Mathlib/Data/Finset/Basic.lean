@@ -515,6 +515,9 @@ theorem toFinset_filter (s : List α) (p : α → Bool) :
     (s.filter p).toFinset = s.toFinset.filter (p ·) := by
   ext; simp [List.mem_filter]
 
+theorem filter_toFinset (s : List α) (p : α → Prop) [DecidablePred p] :
+    s.toFinset.filter p = (s.filter p).toFinset := by simp
+
 end List
 
 namespace Finset

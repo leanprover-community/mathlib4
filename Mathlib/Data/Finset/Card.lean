@@ -214,8 +214,8 @@ theorem List.toFinset_card_of_nodup {l : List α} (h : l.Nodup) : #l.toFinset = 
 
 lemma List.Nodup.card_eq_countP {l : List α} {P : α → Prop} [DecidablePred P] (h : l.Nodup) :
     (l.toFinset.filter P).card = countP P l := by
-  rw [countP_eq_length_filter, ← toFinset_card_of_nodup (h.filter ..)]
-  simp
+  rw [l.countP_eq_length_filter, l.filter_toFinset P]
+  exact toFinset_card_of_nodup (h.filter P)
 
 end ToMultiset
 
