@@ -72,4 +72,34 @@ lemma HasSmallInductiveDimensionLT_one_iff :
     rwa [isEmpty_coe_sort, (hs.isOpen hU).frontier_eq, sdiff_eq_empty] at ‹_›
   · exact fun h ↦ .succ 0 _ h fun _ hU ↦ hU.frontier_eq ▸ .zero
 
+/-- The dimension bound is monotone: if `X` has small inductive dimension `< n`, then
+it also has small inductive dimension `< n + 1`. -/
+theorem HasSmallInductiveDimensionLT.step {X : Type*} [TopologicalSpace X] {n : ℕ}
+    (h : HasSmallInductiveDimensionLT X n) : HasSmallInductiveDimensionLT X (n + 1) := by
+  induction h with
+  | zero =>
+    exact .succ 0 ∅ (isTopologicalBasis_of_isOpen_of_nhds
+      (fun _ h ↦ h.elim) (fun a ↦ IsEmpty.elim ‹IsEmpty _› a))
+      (fun _ h ↦ h.elim)
+  | succ n s hs _ ih => exact .succ (n + 1) s hs ih
+
+/-- The dimension bound is monotone: if `n ≤ m` and `X` has small inductive dimension `< n`,
+then `X` also has small inductive dimension `< m`. -/
+theorem HasSmallInductiveDimensionLT.mono {X : Type*} [TopologicalSpace X] {n m : ℕ}
+    (hnm : n ≤ m) (h : HasSmallInductiveDimensionLT X n) : HasSmallInductiveDimensionLT X m := by
+  have : ∀ k, HasSmallInductiveDimensionLT X (n + k) := by
+    intro k
+    induction k with
+    | zero => simpa using h
+    | succ k ih => exact ih.step
+  convert this (m - n) using 1; omega
+
+/-- A discrete topological space has small inductive dimension `< 1` (i.e., dimension `≤ 0`). -/
+theorem hasSmallInductiveDimensionLT_one_of_discreteTopology {X : Type*} [TopologicalSpace X]
+    [DiscreteTopology X] : HasSmallInductiveDimensionLT X 1 :=
+  .succ 0 {s : Set X | IsClopen s}
+    (isTopologicalBasis_of_isOpen_of_nhds (fun _ h ↦ h.isOpen)
+      (fun a _ ha _ ↦ ⟨{a}, isClopen_discrete _, rfl, singleton_subset_iff.mpr ha⟩))
+    (fun _ hU ↦ hU.frontier_eq ▸ .zero)
+
 end
