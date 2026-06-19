@@ -2,6 +2,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.AlgebraicCycle.CohmologyModule
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Limits
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
 public import Mathlib.CategoryTheory.Sites.SheafCohomology.ExactSequences
 public import Mathlib.Algebra.Homology.EulerPoincare
 
@@ -45,6 +48,54 @@ noncomputable instance : (Modules.toSheafAb X).Additive :=
 
 noncomputable instance : (Modules.toSheafAb X).PreservesZeroMorphisms :=
   Functor.preservesZeroMorphisms_of_additive _
+
+/-- The forgetful functor `SheafOfModules R ⥤ Sheaf J AddCommGrpCat` preserves finite colimits: a
+finite diagram `D` of sheaves of modules is (via the reflective counit) the sheafification of the
+diagram of underlying presheaves, and `sheafification ⋙ toSheaf` preserves finite colimits (it is
+`toPresheaf ⋙ presheafToSheaf`). Together with `PreservesFiniteLimits`, this makes `toSheaf` exact,
+so it sends short exact sequences of sheaves of modules to short exact sequences of abelian sheaves. -/
+noncomputable instance toSheaf_preservesFiniteColimits {C : Type*} [Category C]
+    {J : GrothendieckTopology C} (R : Sheaf J RingCat.{u}) [HasWeakSheafify J AddCommGrpCat.{u}]
+    [HasSheafify J AddCommGrpCat.{u}] [J.WEqualsLocallyBijective AddCommGrpCat.{u}] :
+    Limits.PreservesFiniteColimits (SheafOfModules.toSheaf.{u} R) := by
+  have adj := PresheafOfModules.sheafificationAdjunction (𝟙 R.obj)
+  haveI hcounit : IsIso adj.counit := inferInstance
+  have ε := asIso adj.counit
+  haveI : Limits.PreservesFiniteColimits
+      (PresheafOfModules.sheafification (𝟙 R.obj) ⋙ SheafOfModules.toSheaf R) :=
+    Limits.preservesFiniteColimits_of_natIso
+      (PresheafOfModules.sheafificationCompToSheaf (𝟙 R.obj)).symm
+  constructor
+  intro K _ _
+  constructor
+  intro D
+  have hiso : (D ⋙ SheafOfModules.forget R) ⋙ PresheafOfModules.sheafification (𝟙 R.obj) ≅ D :=
+    Functor.associator D (SheafOfModules.forget R) (PresheafOfModules.sheafification (𝟙 R.obj)) ≪≫
+      Functor.isoWhiskerLeft D ε ≪≫ D.rightUnitor
+  haveI : Limits.PreservesColimit
+      ((D ⋙ SheafOfModules.forget R) ⋙ PresheafOfModules.sheafification (𝟙 R.obj))
+      (SheafOfModules.toSheaf R) := by
+    apply Limits.preservesColimit_of_preserves_colimit_cocone
+      (Limits.isColimitOfPreserves (PresheafOfModules.sheafification (𝟙 R.obj))
+        (Limits.colimit.isColimit (D ⋙ SheafOfModules.forget R)))
+    exact Limits.isColimitOfPreserves
+      (PresheafOfModules.sheafification (𝟙 R.obj) ⋙ SheafOfModules.toSheaf R)
+      (Limits.colimit.isColimit (D ⋙ SheafOfModules.forget R))
+  exact Limits.preservesColimit_of_iso_diagram (SheafOfModules.toSheaf R) hiso
+
+/-- `toSheaf` preserves finite limits (a thin restatement so the instance is resolved in a context
+without an ambient `ShortExact` hypothesis, which otherwise derails synthesis). -/
+lemma toSheaf_preservesFiniteLimits {Y : Scheme.{u}} :
+    Limits.PreservesFiniteLimits (SheafOfModules.toSheaf.{u} Y.ringCatSheaf) := inferInstance
+
+/-- Since `toSheaf` is exact (it preserves finite limits and, by `toSheaf_preservesFiniteColimits`,
+finite colimits), a short exact sequence of sheaves of modules maps to a short exact sequence of
+abelian sheaves. -/
+lemma shortExact_map_toSheaf {Y : Scheme.{u}} {S : ShortComplex Y.Modules}
+    (hSE : S.ShortExact) : (S.map (SheafOfModules.toSheaf.{u} Y.ringCatSheaf)).ShortExact :=
+  @ShortComplex.ShortExact.map_of_exact Y.Modules _ _ _ _ _ S hSE
+    (SheafOfModules.toSheaf.{u} Y.ringCatSheaf) inferInstance toSheaf_preservesFiniteLimits
+    (toSheaf_preservesFiniteColimits Y.ringCatSheaf)
 
 section LinearGlue
 
@@ -239,8 +290,7 @@ does not reduce definitionally for symbolic `i` (since `Nat.decEq i i` is stuck)
 needed as a propositional rewrite. -/
 lemma lesComplex_d (i : ℕ) :
     (lesComplex R S hS).d i (i + 1) = dAux R S hS 0 i := by
-  show lesD R S hS i (i + 1) = dAux R S hS 0 i
-  simp only [lesD, ↓reduceDIte]
+  simp [lesComplex, lesD]
 
 /-- The spliced long exact sequence is exact everywhere. The interior windows are the exactness
 of the long exact sequence; exactness at degree `0` is the injectivity of `H⁰(f)` (which holds
@@ -453,7 +503,7 @@ lemma lesXAux_isZero
 lemma eulerChar_finsum_eq (d : ℕ → ℕ) (hd : ∀ n, N < n → d n = 0) :
     (∑ᶠ n : ℕ, (-1 : ℤ) ^ n * (d n : ℤ)) =
       ∑ n ∈ range (N + 1), (-1 : ℤ) ^ n * (d n : ℤ) := by
-  rw [finsum_eq_finset_sum_of_support_subset]
+  rw [finsum_eq_finsetSum_of_support_subset]
   intro n hn
   simp only [Function.mem_support, ne_eq, mul_eq_zero, not_or] at hn
   simp only [Finset.coe_range, Set.mem_Iio]
@@ -485,20 +535,24 @@ lemma finrankSupport_subset
       (lesXAux_isZero k S hb₁ hb₂ hb₃ i 0 (by omega))
   exact Module.finrank_zero_of_subsingleton
 
+omit hS in
 /-- **The Euler characteristic is additive in short exact sequences.** Given a short exact sequence
 `0 → X₁ → X₂ → X₃ → 0` of sheaves of modules over a field `k`, with finite-dimensional cohomology
 vanishing above some degree `N`, the Euler characteristics satisfy `χ(X₂) = χ(X₁) + χ(X₃)`.
 
 The proof splices the long exact cohomology sequence into one bounded exact `ℕ`-indexed cochain
 complex of `k`-vector spaces and applies the Euler–Poincaré formula. -/
-theorem eulerChar_additive
-    [hf₁ : ∀ n, Module.Finite k (lesH (CommRingCat.of k) S.X₁ n)]
-    [hf₂ : ∀ n, Module.Finite k (lesH (CommRingCat.of k) S.X₂ n)]
-    [hf₃ : ∀ n, Module.Finite k (lesH (CommRingCat.of k) S.X₃ n)]
+theorem eulerChar_additive (hSE : S.ShortExact)
+    (hf₁ : ∀ n, Module.Finite k (lesH (CommRingCat.of k) S.X₁ n))
+    (hf₂ : ∀ n, Module.Finite k (lesH (CommRingCat.of k) S.X₂ n))
+    (hf₃ : ∀ n, Module.Finite k (lesH (CommRingCat.of k) S.X₃ n))
     (hb₁ : ∀ n, N < n → IsZero (lesH (CommRingCat.of k) S.X₁ n))
     (hb₂ : ∀ n, N < n → IsZero (lesH (CommRingCat.of k) S.X₂ n))
     (hb₃ : ∀ n, N < n → IsZero (lesH (CommRingCat.of k) S.X₃ n)) :
     S.X₂.eulerChar k = S.X₁.eulerChar k + S.X₃.eulerChar k := by
+  -- `toSheaf` is exact, so the short exact sequence of sheaves of modules maps to one of abelian
+  -- sheaves, which is what the long exact cohomology sequence is built from.
+  have hS : (S.map (Modules.toSheafAb X)).ShortExact := shortExact_map_toSheaf hSE
   haveI : ∀ i, Module.Finite k ((lesComplex (CommRingCat.of k) S hS).X i) :=
     lesComplex_X_finite k S hS hf₁ hf₂ hf₃
   -- The dimensions vanish above `N`.

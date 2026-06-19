@@ -1,6 +1,7 @@
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.Sheaf
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.SkyscraperEulerChar
 import Mathlib.AlgebraicGeometry.AlgebraicCycle.ExactSequence
+import Mathlib.AlgebraicGeometry.AlgebraicCycle.SkyscraperEulerChar
 
 namespace Function.locallyFinsupp
 
@@ -9,8 +10,12 @@ open Function Function.locallyFinsuppWithin Set
 variable {X : Type*} [TopologicalSpace X] {s : Set X}
 
 open Classical in
-/-- Adding an integer multiple of a point mass `single p 1` (with `p ∈ s`) to a function supported
-in `s` keeps the support inside `s`. -/
+/-- Adding an integer multiple of a point `single p 1` (with `p ∈ s`) to a function supported
+in `s` keeps the support inside `s`.
+
+Note : I don't think n • single p 1 is a sensible way to spell single p n, we should certainly
+write this in the other form and add in a simp lemma
+-/
 lemma support_add_zsmul_single_subset {D : locallyFinsupp X ℤ} (h : D.support ⊆ s) {p : X}
     (hp : p ∈ s) (n : ℤ) : (D + n • single p 1).support ⊆ s := by
   intro x hx
@@ -20,14 +25,14 @@ lemma support_add_zsmul_single_subset {D : locallyFinsupp X ℤ} (h : D.support 
     have hx' : (D + n • single p 1).toFun x ≠ 0 := hx
     simpa [Function.mem_support, single_apply, hxp] using hx'
 open Classical in
-/-- Adding a point mass `single p 1` (with `p ∈ s`) to a function supported in `s` keeps the support
+/-- Adding a point `single p 1` (with `p ∈ s`) to a cycle supported in `s` keeps the support
 inside `s`. -/
 lemma support_add_single_subset {D : locallyFinsupp X ℤ} (h : D.support ⊆ s) {p : X}
     (hp : p ∈ s) : (D + single p 1).support ⊆ s := by
   simpa using support_add_zsmul_single_subset h hp 1
 
 open Classical in
-/-- Subtracting a point mass `single p 1` (with `p ∈ s`) from a function supported in `s` keeps the
+/-- Subtracting a point `single p 1` (with `p ∈ s`) from a cycle supported in `s` keeps the
 support inside `s`. -/
 lemma support_sub_single_subset {D : locallyFinsupp X ℤ} (h : D.support ⊆ s) {p : X}
     (hp : p ∈ s) : (D - single p 1).support ⊆ s := by
@@ -35,17 +40,13 @@ lemma support_sub_single_subset {D : locallyFinsupp X ℤ} (h : D.support ⊆ s)
 
 open Classical in
 /--
-**Induction principle for `ℤ`-valued functions with locally finite support contained in `s`.**
+Induction principal for `ℤ` valued algebraic cycles on compact spaces whose supports lie in some set
+`s`. One of the main applications of this is to allow for induction arguments on Weil divisors,
+where the set `s` is the set of codimension one points.
 
-On a compact space, to prove a statement `motive D hD` about every such function `D` (together with
-a proof `hD : D.support ⊆ s`), it suffices to prove it for the zero function and to show it is
-preserved under adding and subtracting the point masses `single p 1` for `p ∈ s`. As in
-`Nat.le_induction`, the motive carries the side condition `hD`, so each branch knows the function it
-is handling is still supported in `s` (in particular the leftover `hD` goal does not survive); drive
-a goal `motive D hD` with `induction D, hD using Function.locallyFinsupp.inductionOn`.
-
-Note that this is genuinely a statement about `ℤ`-valued functions: the single steps only change a
-coefficient by `±1`, so they generate exactly the integer combinations of point masses. -/
+Note: I can't currently think of a good generalization beyond the case of the integers, but I
+imagine one might exist.
+ -/
 @[elab_as_elim]
 theorem inductionOn [CompactSpace X]
     {motive : (D : locallyFinsupp X ℤ) → D.support ⊆ s → Prop}
@@ -189,11 +190,19 @@ variable [IsIntegral X] [IsNoetherian X] [IsRegularInCodimensionOne X]
 These assumptions are a very funny way of spelling that our scheme is proper over k. We can (and
 probably should) weaken these assumptions to just be that O_X has these cohomological vanishing
 properties.
+
+Note: We do not place any assumptions on the algebraic cycle D. The reason is that Oₓ(D) only
+depends on the codimension one part (more or less).
+
+I.e. if D is not effective outside of codimension one, then the sheaf has no sections anywhere.
+Otherwise, it is isomorphic to Oₓ(D') for D' the codimension one part of D.
+
+Note: these should probably be typeclasses
 -/
 variable {N : ℕ}
-    (hf₁ : ∀ (D : AlgebraicCycle X ℤ) (_ : D.support ⊆ {x | coheight x = 1}),
+    (hf₁ : ∀ (D : AlgebraicCycle X ℤ),
         ∀ n, Module.Finite k (lesH (CommRingCat.of k) D.sheaf n))
-    (hb₁ : ∀ (D : AlgebraicCycle X ℤ) (_ : D.support ⊆ {x | coheight x = 1}),
+    (hb₁ : ∀ (D : AlgebraicCycle X ℤ),
         ∀ n, N < n → IsZero (lesH (CommRingCat.of k) D.sheaf n))
 
 /-
@@ -202,29 +211,74 @@ points are closed)
 -/
 variable (hX : ∀ x : X, coheight x = 1 → ∀ p, x ≤ p → x = p)
 
+
+--set_option maxHeartbeats 0 in
 open AlgebraicCycle.Sheaf Function.locallyFinsuppWithin in
-theorem riemann_roch (hD : D.support ⊆ {x | coheight x = 1}) : D.sheaf.eulerChar k =
+theorem riemann_roch {N : ℕ}
+    (hf₁ : ∀ (D : AlgebraicCycle X ℤ), ∀ n, Module.Finite k (lesH (CommRingCat.of k) D.sheaf n))
+    (hb₁ : ∀ (D : AlgebraicCycle X ℤ), ∀ n, N < n → IsZero (lesH (CommRingCat.of k) D.sheaf n))
+    (hD : D.support ⊆ {x | coheight x = 1}) : D.sheaf.eulerChar k =
     D.degree k + (0 : AlgebraicCycle X ℤ).sheaf.eulerChar k := by
   classical
+  have sfin : ∀ p : X, ∀ n, Module.Finite k (lesH (CommRingCat.of k)
+      (skyscraperSheafOfModules p (X.ringCatSheaf) (X.residueField p)) n) := sorry
+  have svan : ∀ p : X, ∀ n, 0 < n → IsZero (lesH (CommRingCat.of k)
+      (skyscraperSheafOfModules p (X.ringCatSheaf) (X.residueField p)) n) := sorry
   induction D, hD using Function.locallyFinsupp.inductionOn with
   | zero => simp [degree]
   | add E hE ih p hp =>
     have : Scheme.Modules.eulerChar k (sheaf (E + Function.locallyFinsuppWithin.single p 1))
-      = Scheme.Modules.eulerChar k (sheaf E) +
-        (Module.finrank k (X.residueField p)) := by
-      have : IsDiscreteValuationRing (X.presheaf.stalk p) := sorry
+      = Scheme.Modules.eulerChar k (sheaf E) + (Module.finrank k (X.residueField p)) := by
+      have : IsDiscreteValuationRing (X.presheaf.stalk p) :=
+        IsRegularInCodimensionOne.stalk_dvr p hp
       obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible (X.presheaf.stalk p)
       have : (E + single p 1) - E = single p 1 := by simp
       let o := twistedClosedSubschemeComplex₂ p hE ϖ hϖ hp this
-      let m := o.X₁
-        --twistedClosedSubschemeComplex' p hE ϖ hϖ hp this
-      sorry
+      have o_exact : o.ShortExact := by
+        /-
+        This is known, but because I'm using a form of the exact sequence which I think will be
+        easier for this proof, I'm not filling it in for now
+        -/
+        sorry
+      have : o.X₂.eulerChar k = o.X₁.eulerChar k + o.X₃.eulerChar k := by
+        apply eulerChar_additive k o o_exact
+        · exact hf₁ E
+        · exact hf₁ (E + single p 1)
+        · exact sfin p
+        · exact hb₁ E
+        · exact hb₁ (E + single p 1)
+        · -- exact svan p
+          sorry
+      convert this
+      rw [← eulerChar_skyscraper k p]
+      rfl
     simp [this, ih]
     ring
   | minus E hE ih p hp =>
     have : Scheme.Modules.eulerChar k (sheaf (E - Function.locallyFinsuppWithin.single p 1))
       = Scheme.Modules.eulerChar k (sheaf E) -
-        (Module.finrank k (X.residueField p)) := sorry
+        (Module.finrank k (X.residueField p)) := by
+      have : IsDiscreteValuationRing (X.presheaf.stalk p) :=
+        IsRegularInCodimensionOne.stalk_dvr p hp
+      obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible (X.presheaf.stalk p)
+      let o := twistedClosedSubschemeComplex₁ p hE ϖ hϖ hp
+        (by simp : E - (E - single p 1) = single p 1)
+      have o_exact : o.ShortExact := by sorry
+      have : o.X₂.eulerChar k = o.X₁.eulerChar k + o.X₃.eulerChar k := by
+        apply eulerChar_additive k o o_exact
+        · exact hf₁ (E - single p 1)
+        · exact hf₁ E
+        · /-
+          Here we should give some argument using skyscraper_h
+          -/
+          sorry
+        · exact hb₁ (E - single p 1)
+        · exact hb₁ E
+        · sorry
+      have : o.X₁.eulerChar k = o.X₂.eulerChar k - o.X₃.eulerChar k := by lia
+      convert this
+      rw [← eulerChar_skyscraper k p]
+      rfl
     simp [this, ih]
     ring
 
