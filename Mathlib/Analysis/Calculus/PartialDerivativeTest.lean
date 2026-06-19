@@ -120,7 +120,7 @@ def QuadraticMap.toMultilinearMap {V : Type*} [AddCommGroup V] [Module ℝ V]
 
 
 /-- . -/
-noncomputable def QuadraticMap.toMultilinearMap_halfPolarBilin
+noncomputable def QuadraticMap.toMultilinearMapHalfPolarBilin
     {V : Type*} [AddCommGroup V] [Module ℝ V]
     (Q : QuadraticMap ℝ V ℝ) :
     MultilinearMap ℝ (fun _ : Fin 2 => V) ℝ :=
@@ -170,12 +170,12 @@ theorem QuadraticMap.toMultilinearMap_continuous {V : Type*}
 
 
 /-- . -/
-theorem QuadraticMap.toMultilinearMap_halfPolarBilin_continuous {V : Type*}
+theorem QuadraticMap.toMultilinearMapHalfPolarBilin_continuous {V : Type*}
     [NormedAddCommGroup V] [NormedSpace ℝ V]
     [FiniteDimensional ℝ V] (Q : QuadraticMap ℝ V ℝ) :
-    Continuous Q.toMultilinearMap_halfPolarBilin := by
+    Continuous Q.toMultilinearMapHalfPolarBilin := by
   have h_bilinear :
-    ∃ B : V →ₗ[ℝ] V →L[ℝ] ℝ, ∀ x y, B x y = Q.toMultilinearMap_halfPolarBilin ![x, y] := by
+    ∃ B : V →ₗ[ℝ] V →L[ℝ] ℝ, ∀ x y, B x y = Q.toMultilinearMapHalfPolarBilin ![x, y] := by
     have h_bilinear : ∃ B : V →ₗ[ℝ] V →L[ℝ] ℝ, ∀ x y, B x y = (1/2) * Q.polarBilin x y := by
       have h_bilinear : ∀ x : V, ∃ Bx : V →L[ℝ] ℝ, ∀ y : V, Bx y = (1/2) * Q.polarBilin x y := by
         intro x
@@ -213,7 +213,7 @@ theorem QuadraticMap.toMultilinearMap_halfPolarBilin_continuous {V : Type*}
       linarith
     simp_all only [one_div, polarBilin_apply_apply]
     obtain ⟨w, h⟩ := h_bilinear
-    unfold QuadraticMap.toMultilinearMap_halfPolarBilin
+    unfold QuadraticMap.toMultilinearMapHalfPolarBilin
     simp only [one_div, Fin.isValue, polarBilin_apply_apply, MultilinearMap.coe_mk,
       Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one]
     use w
@@ -235,11 +235,11 @@ def QuadraticMap.toContinuousMultilinearMap {V : Type*} [NormedAddCommGroup V] [
     cont := Q.toMultilinearMap_continuous }
 
 /-- . -/
-noncomputable def QuadraticMap.toContinuousMultilinearMap_halfPolarBilin {V : Type*}
+noncomputable def QuadraticMap.toContinuousMultilinearMapHalfPolarBilin {V : Type*}
   [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V] (Q : QuadraticMap ℝ V ℝ) :
   ContinuousMultilinearMap ℝ (fun _ : Fin 2 ↦ V) ℝ :=
-  { Q.toMultilinearMap_halfPolarBilin with
-    cont := Q.toMultilinearMap_halfPolarBilin_continuous }
+  { Q.toMultilinearMapHalfPolarBilin with
+    cont := Q.toMultilinearMapHalfPolarBilin_continuous }
 
 /--
 The constructed continuous multilinear map agrees with the polar bilinear form.
@@ -252,7 +252,7 @@ theorem QuadraticMap.toContinuousMultilinearMap_apply {V : Type*} [NormedAddComm
 /-- . -/
 theorem QuadraticMap.toContinuousMultilinearMap_applyHalf {V : Type*} [NormedAddCommGroup V]
   [NormedSpace ℝ V] [FiniteDimensional ℝ V] (Q : QuadraticMap ℝ V ℝ) (x y : V) :
-  Q.toContinuousMultilinearMap_halfPolarBilin ![x, y] = (1/2) * Q.polarBilin x y := by
+  Q.toContinuousMultilinearMapHalfPolarBilin ![x, y] = (1/2) * Q.polarBilin x y := by
     rfl
 
 
@@ -261,14 +261,14 @@ lemma coercive_of_posdefHalf {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ
     [FiniteDimensional ℝ V] {F : QuadraticMap ℝ V ℝ}
     (hf' : F.PosDef) :
     IsCoercive (continuousBilinearMapOfContinuousMultilinearMap
-        F.toContinuousMultilinearMap_halfPolarBilin) := by
+        F.toContinuousMultilinearMapHalfPolarBilin) := by
   nontriviality V
   have h₀ : ∃ x : ↑(Metric.sphere 0 1), ∀ (y : ↑(Metric.sphere 0 1)),
-    (fun y ↦ F.toContinuousMultilinearMap_halfPolarBilin ![y, y]) x.1 ≤
-      (fun y ↦ F.toContinuousMultilinearMap_halfPolarBilin ![y, y])
+    (fun y ↦ F.toContinuousMultilinearMapHalfPolarBilin ![y, y]) x.1 ≤
+      (fun y ↦ F.toContinuousMultilinearMapHalfPolarBilin ![y, y])
       y.1 := by
     obtain ⟨x,hx⟩ := IsCompact.exists_isMinOn
-      (f := (fun y => F.toContinuousMultilinearMap_halfPolarBilin ![y, y]))
+      (f := (fun y => F.toContinuousMultilinearMapHalfPolarBilin ![y, y]))
       (isCompact_sphere (0:V) 1) (NormedSpace.sphere_nonempty.mpr (by simp))
       (Continuous.continuousOn <| by fun_prop)
     use ⟨x,hx.1⟩
@@ -279,11 +279,11 @@ lemma coercive_of_posdefHalf {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ
     simp
   simp only [Subtype.forall, mem_sphere_iff_norm, sub_zero, Subtype.exists, exists_prop] at h₀
   obtain ⟨m,hm⟩ := h₀
-  use F.toContinuousMultilinearMap_halfPolarBilin ![m, m]
+  use F.toContinuousMultilinearMapHalfPolarBilin ![m, m]
   rw [continuousBilinearMapOfContinuousMultilinearMap]
   constructor
-  ·   unfold QuadraticMap.toContinuousMultilinearMap_halfPolarBilin
-        QuadraticMap.toMultilinearMap_halfPolarBilin
+  ·   unfold QuadraticMap.toContinuousMultilinearMapHalfPolarBilin
+        QuadraticMap.toMultilinearMapHalfPolarBilin
       change 0 < (fun v ↦ (1/2) * (F (v 0 + v 1) - F (v 0) - F (v 1))) ![m,m]
       have (x y : V) : F (x + y) = F x + F y + F.polarBilin x y := QuadraticMap.map_add (⇑F) x y
       simp only [succ_eq_add_one, reduceAdd, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
@@ -300,8 +300,8 @@ lemma coercive_of_posdefHalf {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ
   · intro u
     by_cases hu : u = 0
     · subst hu
-      unfold QuadraticMap.toContinuousMultilinearMap_halfPolarBilin
-        QuadraticMap.toMultilinearMap_halfPolarBilin
+      unfold QuadraticMap.toContinuousMultilinearMapHalfPolarBilin
+        QuadraticMap.toMultilinearMapHalfPolarBilin
       simp [QuadraticMap.polar]
     · have h₁ : ‖u‖ * ‖u‖⁻¹ = 1 := CommGroupWithZero.mul_inv_cancel _ <| norm_ne_zero_iff.mpr hu
       repeat (
@@ -310,10 +310,10 @@ lemma coercive_of_posdefHalf {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ
         simp only [mul_one, MultilinearMap.toFun_eq_coe, coe_coe,
           ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk])
       have h₂ := update₁ ▸ update₁ ▸
-        F.toContinuousMultilinearMap_halfPolarBilin.map_update_smul' ![‖u‖⁻¹ • u,u] 1 ‖u‖⁻¹ u
+        F.toContinuousMultilinearMapHalfPolarBilin.map_update_smul' ![‖u‖⁻¹ • u,u] 1 ‖u‖⁻¹ u
       simp only [MultilinearMap.toFun_eq_coe, coe_coe, smul_eq_mul] at h₂
-      have : F.toContinuousMultilinearMap_halfPolarBilin ![u, u] * ‖u‖⁻¹
-           = F.toContinuousMultilinearMap_halfPolarBilin ![‖u‖⁻¹ • u, u] := by
+      have : F.toContinuousMultilinearMapHalfPolarBilin ![u, u] * ‖u‖⁻¹
+           = F.toContinuousMultilinearMapHalfPolarBilin ![‖u‖⁻¹ • u, u] := by
         simp_rw [Matrix.vecCons, ← curryLeft_apply, mul_comm]
         simp
       rw [this, mul_comm, ← h₂]
@@ -366,14 +366,14 @@ lemma coercive_of_posdef_of_contdiff {V : Type*}
     IsCoercive (continuousBilinearMapOfContinuousMultilinearMap
         (iteratedFDeriv ℝ 2 f x₀)) := by
   have key : ∀ x y : V,
-      (iteratedFDerivQuadraticMap f x₀).toContinuousMultilinearMap_halfPolarBilin ![x, y]
+      (iteratedFDerivQuadraticMap f x₀).toContinuousMultilinearMapHalfPolarBilin ![x, y]
         = iteratedFDeriv ℝ 2 f x₀ ![x, y] := by
     intro x y
     rw [QuadraticMap.toContinuousMultilinearMap_applyHalf,
       polarBilin_iteratedFDerivQuadraticMap, iteratedFDeriv_two_swap hf]
     ring
   have heq : continuousBilinearMapOfContinuousMultilinearMap
-        (iteratedFDerivQuadraticMap f x₀).toContinuousMultilinearMap_halfPolarBilin
+        (iteratedFDerivQuadraticMap f x₀).toContinuousMultilinearMapHalfPolarBilin
       = continuousBilinearMapOfContinuousMultilinearMap (iteratedFDeriv ℝ 2 f x₀) := by
     ext x y
     simpa [continuousBilinearMapOfContinuousMultilinearMap] using key x y
