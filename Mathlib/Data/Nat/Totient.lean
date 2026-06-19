@@ -443,7 +443,8 @@ open Lean Meta Qq
 
 /-- Extension for `Nat.totient`. -/
 @[positivity Nat.totient _]
-meta def evalNatTotient : PositivityExt where eval {u α} z p e := do
+meta def evalNatTotient : PositivityExt where eval {u α} z p e :=
+  match p with | none => pure .none | some p => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.totient $n) =>
     match ← core z p n with

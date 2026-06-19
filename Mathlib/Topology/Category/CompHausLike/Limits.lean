@@ -120,6 +120,7 @@ lemma finiteCoproduct.ι_desc_apply {B : CompHausLike P} {π : (a : α) → X a 
 instance : HasCoproduct X where
   exists_colimit := ⟨finiteCoproduct.cofan X, finiteCoproduct.isColimit X⟩
 
+set_option linter.checkUnivs false in
 variable (P) in
 /--
 A typeclass describing the property that forming all finite disjoint unions is stable under the
