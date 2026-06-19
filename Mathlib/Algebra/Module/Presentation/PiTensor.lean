@@ -159,7 +159,9 @@ noncomputable def isPresentationCore_induction_step :
       { var := fun ⟨g, g₀⟩ ↦ s.var (Function.subtypeNeLift i₀ g g₀)
         linearCombination_var_relation := by
           have := h
-          sorry }
+          rintro (⟨⟨⟨i₁, h₁⟩, r₁, g₁⟩, g₀⟩ | ⟨g, r₀⟩)
+          · sorry
+          · simpa [presInd] using! s.linearCombination_var_relation ⟨i₀, r₀, g⟩ }
   postcomp_desc s := by
     ext g
     dsimp
