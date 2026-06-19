@@ -502,7 +502,9 @@ theorem liftₐ_range (H : c ≤ ker f.toRingHom) :
 
 /-- Homomorphisms on the quotient of a ring by a ring congruence relation are
 equal if they are equal on elements that are coercions from the ring. -/
-@[ext 1100] -- This should have higher priority than `RingHom.ext`
+-- This should have higher priority than `AlgHom.ext`, but lower than any types implemented with
+-- `Quotient`, as `ext` is lax with reducibility.
+@[ext 1100]
 theorem Quotient.hom_extₐ {f g : c.Quotient →ₐ[R] P}
     (h : f.comp (c.mkₐ R) = g.comp (c.mkₐ R)) : f = g :=
   DFunLike.ext _ _ <| c.mk'_surjective.forall.mpr fun x ↦ by exact congr($h x)
