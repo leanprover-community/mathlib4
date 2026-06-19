@@ -889,6 +889,15 @@ theorem realize_toFormula (φ : L.BoundedFormula α n) (v : α ⊕ (Fin n) → M
           simp
     · exact Fin.elim0 x
 
+/-- Realizing `φ.toFormula` after putting the unique bound variable in the right summand. -/
+theorem realize_toFormula_snoc (φ : L.BoundedFormula α 1) (v : α → M) (b : M) :
+    φ.toFormula.Realize (Sum.elim v (Fin.snoc default b)) ↔
+      φ.Realize v (Fin.snoc default b) := by
+  rw [realize_toFormula]
+  refine iff_of_eq <| congrArg₂ _ ?_ ?_
+  · exact Sum.elim_comp_inl v (Fin.snoc default b)
+  · exact Sum.elim_comp_inr v (Fin.snoc default b)
+
 @[simp]
 theorem realize_iSup [Finite β] {f : β → L.BoundedFormula α n}
     {v : α → M} {v' : Fin n → M} :
