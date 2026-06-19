@@ -21,6 +21,8 @@ jobs:
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
+            // Claude Code's default pull request attribution,
+            // see https://code.claude.com/docs/en/settings#attribution-settings
             const footer = '🤖 Generated with [Claude Code](https://claude.com/claude-code)';
             const body = (context.payload.pull_request.body || '')
               .replace(/\r\n/g, '\n')
