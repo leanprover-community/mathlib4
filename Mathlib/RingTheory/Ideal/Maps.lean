@@ -592,7 +592,7 @@ theorem comap_map_of_surjective (hf : Function.Surjective f) (I : Ideal R) :
 
 theorem coheight_comap_of_surjective (hf : Function.Surjective f) (I : Ideal S) :
     Order.coheight (I.comap f) = Order.coheight I := by
-  let φ := Ideal.orderEmbeddingOfSurjective f hf
+  let φ := orderEmbeddingOfSurjective f hf
   refine (Order.coheight_eq_of_strictMono φ φ.strictMono (fun J K h ↦ ⟨K.map f, ?_, ?_⟩) I).symm
   · rw [← J.map_comap_of_surjective f hf]
     apply lt_of_le_not_ge (map_mono h.le)
