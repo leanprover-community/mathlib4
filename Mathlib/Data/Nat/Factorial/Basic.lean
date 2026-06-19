@@ -267,6 +267,12 @@ theorem ascFactorial_of_sub {n k : ℕ} :
     (n - k) * (n - k + 1).ascFactorial k = (n - k).ascFactorial (k + 1) := by
   rw [succ_ascFactorial, ascFactorial_succ]
 
+theorem ascFactorial_le (k : ℕ) {n m : ℕ} (h : n ≤ m) :
+    n.ascFactorial k ≤ m.ascFactorial k := by
+  induction k with
+  | zero => rfl
+  | succ k ih => exact Nat.mul_le_mul (by lia) ih
+
 theorem pow_succ_le_ascFactorial (n : ℕ) : ∀ k : ℕ, n ^ k ≤ n.ascFactorial k
   | 0 => by rw [ascFactorial_zero, Nat.pow_zero]
   | k + 1 => by
