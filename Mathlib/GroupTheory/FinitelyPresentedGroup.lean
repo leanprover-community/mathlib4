@@ -111,11 +111,10 @@ theorem of_surjective [hG : IsFinitelyPresented G] (f : G →* H)
   exact hf_ker.comap hφ_surj hφ_ker
 
 open QuotientGroup in
-theorem exists_presented [hg : IsFinitelyPresented G] :
+theorem exists_mulEquiv_presentedGroup [hg : IsFinitelyPresented G] :
     ∃ n : ℕ, ∃ s : Set (FreeGroup (Fin n)), Set.Finite s ∧ Nonempty (G ≃* PresentedGroup s) := by
-  obtain ⟨n, φ, hφsurj, s, hsfin, sker⟩ := hg
-  exact ⟨n, s, hsfin,
-    ⟨(quotientKerEquivOfSurjective φ hφsurj).symm.trans (quotientMulEquivOfEq sker.symm)⟩⟩
+  obtain ⟨n, φ, hφ, s, hs, hsφ⟩ := hg
+  exact ⟨n, s, hs, ⟨(quotientKerEquivOfSurjective φ hφ).symm.trans (quotientMulEquivOfEq hsφ.symm)⟩⟩
 
 theorem presentedGroup [fin : Finite α] (s : Set (FreeGroup α)) [fins : Finite s] :
     IsFinitelyPresented (PresentedGroup s) := by
@@ -152,8 +151,8 @@ instance : AddGroup.IsFinitelyPresented ℤ :=
 /-- The free product of finitely presented groups is finitely presented -/
 instance [hg : IsFinitelyPresented G] [hh : IsFinitelyPresented H] :
     IsFinitelyPresented (Monoid.Coprod G H) := by
-  obtain ⟨ng, sg, ⟨finsg, ⟨isog⟩⟩⟩ := exists_presented (G := G)
-  obtain ⟨nh, sh, ⟨finsh, ⟨isoh⟩⟩⟩ := exists_presented (G := H)
+  obtain ⟨ng, sg, ⟨finsg, ⟨isog⟩⟩⟩ := exists_mulEquiv_presentedGroup (G := G)
+  obtain ⟨nh, sh, ⟨finsh, ⟨isoh⟩⟩⟩ := exists_mulEquiv_presentedGroup (G := H)
   refine equiv (MulEquiv.coprodCongr isog isoh).symm <|
     equiv (PresentedGroup.coprodPresentations sg sh) ?_
   let s := (FreeGroup.map Sum.inl '' sg ∪ FreeGroup.map Sum.inr '' sh)
