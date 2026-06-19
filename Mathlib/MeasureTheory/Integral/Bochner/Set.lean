@@ -886,7 +886,7 @@ lemma integral_le_measure {f : X → ℝ} {s : Set X}
     simpa [g] using h's x hx
 
 lemma setIntegral_mono_of_nonneg {g : X → ℝ} (hf : ∀ x ∈ s, 0 ≤ f x)
-    (h : ∀ x ∈ s, f x ≤ g x) (hg : IntegrableOn g s μ) : 
+    (h : ∀ x ∈ s, f x ≤ g x) (hg : IntegrableOn g s μ) :
     ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ := by
   by_cases h'f : AEStronglyMeasurable f (μ.restrict s); swap
   · rw [integral_non_aestronglyMeasurable h'f]
