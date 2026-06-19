@@ -471,7 +471,8 @@ theorem toSubalgebra_map (f : L →ₐ[K] L') : (S.map f).toSubalgebra = S.toSub
   rfl
 
 @[simp]
-theorem toSubfield_map (f : L →ₐ[K] L') : (S.map f).toSubfield = S.toSubfield.map f :=
+theorem toSubfield_map (f : L →ₐ[K] L') : (S.map f).toSubfield
+    = S.toSubfield.map (RingHomClass.toRingHom f) :=
   rfl
 
 /-- Mapping intermediate fields along the identity does not change them. -/
@@ -531,14 +532,14 @@ variable (f : L →ₐ[K] L')
 /-- The range of an algebra homomorphism, as an intermediate field. -/
 @[simps toSubalgebra]
 def fieldRange : IntermediateField K L' :=
-  { f.range, (f : L →+* L').fieldRange with }
+  { f.range, (RingHomClass.toRingHom f).fieldRange with }
 
 @[simp]
 theorem coe_fieldRange : ↑f.fieldRange = Set.range f :=
   rfl
 
 @[simp]
-theorem fieldRange_toSubfield : f.fieldRange.toSubfield = (f : L →+* L').fieldRange :=
+theorem fieldRange_toSubfield : f.fieldRange.toSubfield = (RingHomClass.toRingHom f).fieldRange :=
   rfl
 
 variable {f}

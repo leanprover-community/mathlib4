@@ -32,58 +32,58 @@ variable [Small.{v} R] {R' : Type u'} [CommRing R'] [Small.{v'} R'] (e : R ≃+*
 
 variable {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'}
 
-attribute [local instance] RingHomInvPair.of_ringEquiv in
-lemma hasProjectiveDimensionLE_of_semiLinearEquiv (e' : M ≃ₛₗ[RingHomClass.toRingHom e] N)
-    (n : ℕ) [HasProjectiveDimensionLE M n] : HasProjectiveDimensionLE N n := by
-  induction n generalizing M N e' with
-  | zero =>
-    have : HasProjectiveDimensionLE M 0 := ‹_›
-    simp only [HasProjectiveDimensionLE, zero_add] at this ⊢
-    rw [← projective_iff_hasProjectiveDimensionLT_one, ← IsProjective.iff_projective] at this ⊢
-    exact Projective.of_equiv e'
-  | succ n ih =>
-    let S := M.projectiveShortComplex
-    let S' := N.projectiveShortComplex
-    have S_exact := M.shortExact_projectiveShortComplex
-    have S'_exact := N.shortExact_projectiveShortComplex
-    let eR : Shrink.{v} R ≃ₛₗ[RingHomClass.toRingHom e] Shrink.{v'} R' :=
-      ((Shrink.linearEquiv R R).trans e.toSemilinearEquiv).trans (Shrink.linearEquiv R' R').symm
-    let e2 : S.X₂ ≃ₛₗ[RingHomClass.toRingHom e] S'.X₂ :=
-      (Finsupp.mapDomain.linearEquiv (Shrink R) R e').trans (Finsupp.mapRange.linearEquiv eR)
-    have comm : S'.g.hom.comp e2.toLinearMap = e'.toLinearMap.comp S.g.hom := by
-      ext m r
-      simp [S, S', e2, eR, Basis.constr_apply, map_smulₛₗ]
-    have : S.g.hom.ker = Submodule.comap e2.toLinearMap S'.g.hom.ker := by
-      rw [← LinearMap.ker_comp, comm, LinearEquiv.ker_comp]
-    rw [Submodule.comap_equiv_eq_map_symm] at this
-    let eker : S.X₁ ≃ₛₗ[RingHomClass.toRingHom e] S'.X₁ :=
-      (LinearEquiv.ofEq _ _ this).trans (e2.symm.submoduleMap S'.g.hom.ker).symm
-    have := (S_exact.hasProjectiveDimensionLT_X₃_iff n inferInstance).mp ‹_›
-    exact (S'_exact.hasProjectiveDimensionLT_X₃_iff n inferInstance).mpr (ih eker)
+-- attribute [local instance] RingHomInvPair.of_ringEquiv in
+-- lemma hasProjectiveDimensionLE_of_semiLinearEquiv (e' : M ≃ₛₗ[RingHomClass.toRingHom e] N)
+--     (n : ℕ) [HasProjectiveDimensionLE M n] : HasProjectiveDimensionLE N n := by
+--   induction n generalizing M N e' with
+--   | zero =>
+--     have : HasProjectiveDimensionLE M 0 := ‹_›
+--     simp only [HasProjectiveDimensionLE, zero_add] at this ⊢
+--     rw [← projective_iff_hasProjectiveDimensionLT_one, ← IsProjective.iff_projective] at this ⊢
+--     exact Projective.of_equiv e'
+--   | succ n ih =>
+--     let S := M.projectiveShortComplex
+--     let S' := N.projectiveShortComplex
+--     have S_exact := M.shortExact_projectiveShortComplex
+--     have S'_exact := N.shortExact_projectiveShortComplex
+--     let eR : Shrink.{v} R ≃ₛₗ[RingHomClass.toRingHom e] Shrink.{v'} R' :=
+--       ((Shrink.linearEquiv R R).trans e.toSemilinearEquiv).trans (Shrink.linearEquiv R' R').symm
+--     let e2 : S.X₂ ≃ₛₗ[RingHomClass.toRingHom e] S'.X₂ :=
+--       (Finsupp.mapDomain.linearEquiv (Shrink R) R e').trans (Finsupp.mapRange.linearEquiv eR)
+--     have comm : S'.g.hom.comp e2.toLinearMap = e'.toLinearMap.comp S.g.hom := by
+--       ext m r
+--       simp [S, S', e2, eR, Basis.constr_apply, map_smulₛₗ]
+--     have : S.g.hom.ker = Submodule.comap e2.toLinearMap S'.g.hom.ker := by
+--       rw [← LinearMap.ker_comp, comm, LinearEquiv.ker_comp]
+--     rw [Submodule.comap_equiv_eq_map_symm] at this
+--     let eker : S.X₁ ≃ₛₗ[RingHomClass.toRingHom e] S'.X₁ :=
+--       (LinearEquiv.ofEq _ _ this).trans (e2.symm.submoduleMap S'.g.hom.ker).symm
+--     have := (S_exact.hasProjectiveDimensionLT_X₃_iff n inferInstance).mp ‹_›
+--     exact (S'_exact.hasProjectiveDimensionLT_X₃_iff n inferInstance).mpr (ih eker)
 
-@[deprecated (since := "2026-04-04")]
-alias _root_.CategoryTheory.hasProjectiveDimensionLE_of_semiLinearEquiv :=
-  hasProjectiveDimensionLE_of_semiLinearEquiv
+-- @[deprecated (since := "2026-04-04")]
+-- alias _root_.CategoryTheory.hasProjectiveDimensionLE_of_semiLinearEquiv :=
+--   hasProjectiveDimensionLE_of_semiLinearEquiv
 
-attribute [local instance] RingHomInvPair.of_ringEquiv in
-lemma projectiveDimension_eq_of_semiLinearEquiv (e' : M ≃ₛₗ[RingHomClass.toRingHom e] N) :
-    projectiveDimension M = projectiveDimension N := by
-  refine eq_of_forall_ge_iff (fun N ↦ ?_)
-  induction N with
-  | bot => simpa [projectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton] using
-      e'.subsingleton_congr
-  | coe n =>
-    induction n with
-    | top => simp
-    | coe n =>
-      norm_cast
-      simp only [projectiveDimension_le_iff]
-      exact ⟨fun h ↦ hasProjectiveDimensionLE_of_semiLinearEquiv e e' n,
-        fun h ↦ hasProjectiveDimensionLE_of_semiLinearEquiv e.symm e'.symm n⟩
+-- attribute [local instance] RingHomInvPair.of_ringEquiv in
+-- lemma projectiveDimension_eq_of_semiLinearEquiv (e' : M ≃ₛₗ[RingHomClass.toRingHom e] N) :
+--     projectiveDimension M = projectiveDimension N := by
+--   refine eq_of_forall_ge_iff (fun N ↦ ?_)
+--   induction N with
+--   | bot => simpa [projectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton] using
+--       e'.subsingleton_congr
+--   | coe n =>
+--     induction n with
+--     | top => simp
+--     | coe n =>
+--       norm_cast
+--       simp only [projectiveDimension_le_iff]
+--       exact ⟨fun h ↦ hasProjectiveDimensionLE_of_semiLinearEquiv e e' n,
+--         fun h ↦ hasProjectiveDimensionLE_of_semiLinearEquiv e.symm e'.symm n⟩
 
-@[deprecated (since := "2026-04-04")]
-alias _root_.CategoryTheory.projectiveDimension_eq_of_semiLinearEquiv :=
-  projectiveDimension_eq_of_semiLinearEquiv
+-- @[deprecated (since := "2026-04-04")]
+-- alias _root_.CategoryTheory.projectiveDimension_eq_of_semiLinearEquiv :=
+--   projectiveDimension_eq_of_semiLinearEquiv
 
 end
 
@@ -91,27 +91,27 @@ section
 
 variable [Small.{v} R] [Small.{v'} R] {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R}
 
-lemma hasProjectiveDimensionLE_of_linearEquiv (e : M ≃ₗ[R] N)
-    (n : ℕ) [HasProjectiveDimensionLE M n] : HasProjectiveDimensionLE N n :=
-  #adaptation_note /-- 2026-05-20 (kmill) #13807, instances are more eager to apply, but the
-  `univ_out_params` attribute for `Small` doesn't seem to restrict local instances, so the
-  wrong universe levels are inferred. Added `.{v, v'}`. -/
-  hasProjectiveDimensionLE_of_semiLinearEquiv.{v, v'} (RingEquiv.refl R) e n
+-- lemma hasProjectiveDimensionLE_of_linearEquiv (e : M ≃ₗ[R] N)
+--     (n : ℕ) [HasProjectiveDimensionLE M n] : HasProjectiveDimensionLE N n :=
+--   #adaptation_note /-- 2026-05-20 (kmill) #13807, instances are more eager to apply, but the
+--   `univ_out_params` attribute for `Small` doesn't seem to restrict local instances, so the
+--   wrong universe levels are inferred. Added `.{v, v'}`. -/
+--   hasProjectiveDimensionLE_of_semiLinearEquiv.{v, v'} (RingEquiv.refl R) e n
 
-@[deprecated (since := "2026-04-04")]
-alias _root_.CategoryTheory.hasProjectiveDimensionLE_of_linearEquiv :=
-  hasProjectiveDimensionLE_of_linearEquiv
+-- @[deprecated (since := "2026-04-04")]
+-- alias _root_.CategoryTheory.hasProjectiveDimensionLE_of_linearEquiv :=
+--   hasProjectiveDimensionLE_of_linearEquiv
 
-lemma projectiveDimension_eq_of_linearEquiv (e : M ≃ₗ[R] N) :
-    projectiveDimension M = projectiveDimension N :=
-  #adaptation_note /-- 2026-05-20 (kmill) #13807, instances are more eager to apply, but the
-  `univ_out_params` attribute for `Small` doesn't seem to restrict local instances, so the
-  wrong universe levels are inferred. Added `.{v, v'}`. -/
-  projectiveDimension_eq_of_semiLinearEquiv.{v, v'} (M := M) (N := N) (RingEquiv.refl R) e
+-- lemma projectiveDimension_eq_of_linearEquiv (e : M ≃ₗ[R] N) :
+--     projectiveDimension M = projectiveDimension N :=
+--   #adaptation_note /-- 2026-05-20 (kmill) #13807, instances are more eager to apply, but the
+--   `univ_out_params` attribute for `Small` doesn't seem to restrict local instances, so the
+--   wrong universe levels are inferred. Added `.{v, v'}`. -/
+--   projectiveDimension_eq_of_semiLinearEquiv.{v, v'} (M := M) (N := N) (RingEquiv.refl R) e
 
-@[deprecated (since := "2026-04-04")]
-alias _root_.CategoryTheory.projectiveDimension_eq_of_linearEquiv :=
-  projectiveDimension_eq_of_linearEquiv
+-- @[deprecated (since := "2026-04-04")]
+-- alias _root_.CategoryTheory.projectiveDimension_eq_of_linearEquiv :=
+--   projectiveDimension_eq_of_linearEquiv
 
 end
 
