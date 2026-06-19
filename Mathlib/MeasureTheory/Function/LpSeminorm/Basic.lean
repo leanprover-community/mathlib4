@@ -661,6 +661,12 @@ theorem eLpNorm_smul_measure_of_ne_zero {c : ℝ≥0∞} (hc : c ≠ 0) (f : α 
   · simp [*]
   exact eLpNorm_smul_measure_of_ne_zero_of_ne_top hp0 hp_top c
 
+theorem eLpNorm_smul_measure_le (c : ℝ≥0∞) (f : α → ε) (p : ℝ≥0∞)
+    (μ : Measure α) : eLpNorm f p (c • μ) ≤ c ^ (1 / p).toReal • eLpNorm f p μ := by
+  rcases eq_or_ne c 0 with rfl | hc
+  · simp
+  · exact (eLpNorm_smul_measure_of_ne_zero hc f p μ ).le
+
 /-- See `eLpNorm_smul_measure_of_ne_zero` for a version with scalar multiplication by `ℝ≥0∞`. -/
 lemma eLpNorm_smul_measure_of_ne_zero' {c : ℝ≥0} (hc : c ≠ 0) (f : α → ε) (p : ℝ≥0∞)
     (μ : Measure α) : eLpNorm f p (c • μ) = c ^ p.toReal⁻¹ • eLpNorm f p μ :=
@@ -684,15 +690,16 @@ theorem eLpNorm_one_smul_measure {f : α → ε} (c : ℝ≥0∞) :
     eLpNorm f 1 (c • μ) = c * eLpNorm f 1 μ := by
   rw [eLpNorm_smul_measure_of_ne_top] <;> simp
 
+theorem eLpNorm_le_of_measure_le_smul {c : ℝ≥0∞}
+    {μ μ' : Measure α} (h : μ' ≤ c • μ) {f : α → ε} {p : ℝ≥0∞} :
+    eLpNorm f p μ' ≤ c ^ (1 / p).toReal • eLpNorm f p μ := by
+  grw [eLpNorm_mono_measure f h, eLpNorm_smul_measure_le]
+
 theorem MemLp.of_measure_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞)
     (hμ'_le : μ' ≤ c • μ) {f : α → ε} (hf : MemLp f p μ) : MemLp f p μ' := by
   refine ⟨hf.1.mono_ac (Measure.absolutelyContinuous_of_le_smul hμ'_le), ?_⟩
-  refine (eLpNorm_mono_measure f hμ'_le).trans_lt ?_
-  by_cases hc0 : c = 0
-  · simp [hc0]
-  rw [eLpNorm_smul_measure_of_ne_zero hc0, smul_eq_mul]
-  refine ENNReal.mul_lt_top (Ne.lt_top ?_) hf.2
-  simp [hc, hc0]
+  grw [eLpNorm_le_of_measure_le_smul hμ'_le]
+  exact ENNReal.mul_lt_top (Ne.lt_top (by simp [hc])) hf.2
 
 theorem MemLp.smul_measure {f : α → ε} {c : ℝ≥0∞} (hf : MemLp f p μ) (hc : c ≠ ∞) :
     MemLp f p (c • μ) :=

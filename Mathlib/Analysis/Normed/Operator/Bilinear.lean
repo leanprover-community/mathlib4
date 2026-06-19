@@ -166,6 +166,14 @@ theorem opNorm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f.flip‖ =
   le_antisymm (by simpa only [flip_flip] using le_norm_flip f.flip) (le_norm_flip f)
 
 @[simp]
+theorem opNNNorm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f.flip‖₊ = ‖f‖₊ := by
+  simp [← NNReal.coe_inj]
+
+@[simp]
+theorem opENorm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f.flip‖ₑ = ‖f‖ₑ := by
+  simp [enorm_eq_nnnorm]
+
+@[simp]
 lemma flip_zero : flip (0 : E →SL[σ₁₃] F →SL[σ₂₃] G) = 0 := rfl
 
 @[simp]
