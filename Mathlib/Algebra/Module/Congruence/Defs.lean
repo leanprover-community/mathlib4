@@ -132,6 +132,15 @@ instance [Monoid S] [AddMonoid M] [DistribMulAction S M] (c : ModuleCon S M) :
 instance [Semiring S] [AddCommMonoid M] [Module S M] (c : ModuleCon S M) : Module S c.Quotient :=
   fast_instance% Quotient.mk''_surjective.module _ c.mk' fun _ _ ↦ rfl
 
+variable {M} in
+/-- The natural homomorphism from a monoid to its quotient by a congruence relation. -/
+def mk' [Semiring S] [AddCommMonoid M] [Module S M] (c : ModuleCon S M) :
+    M →ₗ[S] c.Quotient where
+  __ := AddCon.mk' c.toAddCon
+  map_smul' a m := by
+    simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, RingHom.id_apply]
+    rfl
+
 end ModuleCon
 
 section ker

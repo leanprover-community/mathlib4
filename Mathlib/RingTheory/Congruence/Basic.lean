@@ -119,6 +119,10 @@ theorem mkₐ_surjective (c : RingCon R) :
     Function.Surjective (c.mkₐ (α := α)) :=
   mk'_surjective c
 
+/- example (c : RingCon R) : CanLift c.Quotient R := by
+  sorry
+-/
+
 end
 
 end Algebraic
