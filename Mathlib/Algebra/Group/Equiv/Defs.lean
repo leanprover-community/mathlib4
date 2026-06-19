@@ -329,11 +329,6 @@ theorem symm_apply_apply (e : M ≃* N) (x : M) : e.symm (e x) = x :=
   e.toEquiv.symm_apply_apply x
 
 @[to_additive (attr := simp)]
-theorem apply_coe_symm_apply {F : Type*} [EquivLike F M N] [MulEquivClass F M N] (f : F) (a : N) :
-    f ((↑f : M ≃* N).symm a) = a :=
-  (f : M ≃* N).apply_symm_apply a
-
-@[to_additive (attr := simp)]
 theorem symm_comp_self (e : M ≃* N) : e.symm ∘ e = id :=
   funext e.symm_apply_apply
 
@@ -341,7 +336,7 @@ theorem symm_comp_self (e : M ≃* N) : e.symm ∘ e = id :=
 theorem self_comp_symm (e : M ≃* N) : e ∘ e.symm = id :=
   funext e.apply_symm_apply
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem apply_eq_iff_symm_apply (e : M ≃* N) {x : M} {y : N} : e x = y ↔ x = e.symm y :=
   e.toEquiv.apply_eq_iff_eq_symm_apply
 

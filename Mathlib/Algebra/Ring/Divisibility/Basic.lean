@@ -39,9 +39,9 @@ theorem MulEquiv.decompositionMonoid (f : F) [DecompositionMonoid β] : Decompos
   primal a b c h := by
     rw [← map_dvd_iff f, map_mul] at h
     obtain ⟨a₁, a₂, h⟩ := DecompositionMonoid.primal _ h
-    refine ⟨symm f a₁, symm f a₂, ?_⟩
-    simp_rw [← map_dvd_iff f, ← map_mul, eq_symm_apply]
-    rwa [apply_coe_symm_apply, apply_coe_symm_apply]
+    refine ⟨EquivLike.inv f a₁, EquivLike.inv f a₂, ?_⟩
+    simp_rw [← map_dvd_iff f, EquivLike.apply_inv_apply, h, true_and, ← EquivLike.apply_eq_iff_eq f,
+      h.2.2, map_mul, EquivLike.apply_inv_apply]
 
 /--
 If `G` is a `LeftCancelSemiGroup`, left multiplication by `g` yields an equivalence between `G`
