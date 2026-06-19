@@ -524,22 +524,6 @@ variable {Γ₀ Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀]
   [LinearOrderedCommGroupWithZero Γ₀'] (v : Valuation K Γ₀) [v.Compatible]
   (v' : Valuation K Γ₀') [v'.Compatible]
 
-@[simp]
-theorem Valuation.extensionValuation.isEquiv_iff :
-    v.extensionValuation.IsEquiv v'.extensionValuation := by
-  have := isEquiv v v'
-  intro x y
-  apply UniformSpace.Completion.induction_on₂ (p := fun x y ↦ v.extensionValuation x ≤
-    v.extensionValuation y ↔ v'.extensionValuation x ≤ v'.extensionValuation y)
-  · sorry -- union of closed
-  · simpa
-
-instance Valuation.extensionValuation.compatible : v.extensionValuation.Compatible := by
-  apply Valuation.IsEquiv.compatible (v₁ := (ValuativeRel.valuation K).extensionValuation)
-  simp [ValuativeRel.isEquiv]
-
-#where
-
 theorem IsValuativeTopology.mk_valuation [Ring R] [ValuativeRel R] [TopologicalSpace R] (v : Valuation R Γ₀)
     [v.Compatible]
     (h : ∀ {s : Set R} {x : R}, s ∈ nhds x ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
@@ -561,11 +545,45 @@ theorem IsValuativeTopology.mk₀_valuation [Ring R] [ValuativeRel R] [Topologic
     IsValuativeTopology R :=
   sorry
 
+theorem foo (x : Completion K) (γ : (ValueGroup₀ (.ofClass v))ˣ) : v.extensionValuation.restrict x <
+    ((Units.map v.valueGroup₀_equiv_extensionValuation.toMonoidHom) γ).1 ↔
+    embedding (v.extension x) < embedding γ.1 := by
+  simp only [MulEquiv.toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_coe]
+  rw [embedding_strictMono.lt_iff_lt, Valuation.restrict_def, restrict₀_apply]
+  by_cases hx0 : x = 0
+  · simp only [hx0]
+    rw [dif_pos (map_zero _)]
+    · simp only [valueGroup₀_equiv_extensionValuation, valueGroup₀_hom_extensionValuation,
+      MulEquiv.ofBijective_apply, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
+      rw [Valuation.restrict_def, restrict₀_apply, dif_neg]
+      · have hext : v.extension 0 = 0 := by rw [extension_eq_zero_iff]
+        simp [hext]
+      · simp [← v.restrict.zero_iff, v.restrict_def,
+          (restrict₀_surjective (.ofClass v) _).choose_spec]
+  · rw [dif_neg (by simp [hx0])]
+    · set y := (restrict₀_surjective (.ofClass v) γ).choose with hy_def
+      have hy := (restrict₀_surjective (.ofClass v) γ).choose_spec
+      apply_fun embedding at hy
+      simp only [← hy_def, embedding_restrict₀, MonoidWithZeroHom.coe_ofClass] at hy
+      simp only [MonoidWithZeroHom.coe_ofClass, extensionValuation_toFun,
+        valueGroup₀_equiv_extensionValuation, valueGroup₀_hom_extensionValuation,
+        MulEquiv.ofBijective_apply, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
+      rw [Valuation.restrict_def, restrict₀_apply, ← hy_def, dif_neg]
+      · simp only [MonoidWithZeroHom.coe_ofClass, extensionValuation_toFun, extension_extends,
+        Valuation.embedding_restrict, WithZero.coe_lt_coe, Subtype.mk_lt_mk,
+        ← Units.val_lt_val, Units.val_mk0]
+        convert embedding_strictMono (f := (.ofClass v)).lt_iff_lt
+      · simp only [MonoidWithZeroHom.coe_ofClass, extensionValuation_apply_coe, map_eq_zero, ← ne_eq]
+        apply_fun v
+        simp [hy]
+
+
+
 -- need a intro method of IsValuativeTopology only talk about nbhd of zero (with uniform add group)
 -- refactor file Mathlib.Topology.Algebra.Valued.ValuativeRel
 -- theorem IsValuativeTopology.mk₀ : IsValuativeTopology := sorry
 -- given any valuation compatible, can be checked using this valuation
-
+#check Real
 instance : IsValuativeTopology (Completion K) := by
   apply IsValuativeTopology.of_zero
   intro s
@@ -624,6 +642,21 @@ instance : IsValuativeTopology (Completion K) := by
   simp_rw [← closure_coe_completion_v_lt, Units.coe_map]
   convert! v.hasBasis_nhds_zero.hasBasis_of_isDenseInducing Completion.isDenseInducing_coe
   simp [Valuation.restrict_lt_iff_lt_embedding]
+
+@[simp]
+theorem Valuation.extensionValuation.isEquiv_iff :
+    v.extensionValuation.IsEquiv v'.extensionValuation := by
+
+  have := isEquiv v v'
+  intro x y
+  apply UniformSpace.Completion.induction_on₂ (p := fun x y ↦ v.extensionValuation x ≤
+    v.extensionValuation y ↔ v'.extensionValuation x ≤ v'.extensionValuation y)
+  · sorry -- union of closed
+  · simpa
+
+instance Valuation.extensionValuation.compatible : v.extensionValuation.Compatible := by
+  apply Valuation.IsEquiv.compatible (v₁ := (ValuativeRel.valuation K).extensionValuation)
+  simp [ValuativeRel.isEquiv]
 
 end Completion
 
