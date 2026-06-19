@@ -88,10 +88,15 @@ lemma ext {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W}
     {f g : π₁ →ⁱL π₂} (h : f.toContinuousLinearMap = g.toContinuousLinearMap) : f = g := by
   cases f; cases g; congr
 
-lemma toIntertwiningMap_injective {π₁ : ContRepresentation R G V}
+lemma toContinuousLinearMap_injective {π₁ : ContRepresentation R G V}
     {π₂ : ContRepresentation R G W} :
     Function.Injective fun f : π₁ →ⁱL π₂ ↦ f.toContinuousLinearMap :=
   fun _ _ ↦ ext
+
+lemma toIntertwiningMap_injective {π₁ : ContRepresentation R G V}
+    {π₂ : ContRepresentation R G W} :
+    Function.Injective fun f : π₁ →ⁱL π₂ ↦ f.toIntertwiningMap :=
+  fun _ _ _ ↦ by ext; simp_all
 
 lemma toFun_injective {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W} :
     Function.Injective fun f : π₁ →ⁱL π₂ ↦ f.toFun := fun f g h ↦ by
@@ -160,13 +165,13 @@ lemma toContinuousLinearMap_zero : (0 : π₁ →ⁱL π₂).toContinuousLinearM
 
 lemma zero_apply (v : V) : (0 : π₁ →ⁱL π₂) v = 0 := rfl
 
-instance : AddZeroClass (π₁ →ⁱL π₂) where
-  zero_add f := by ext; simp
-  add_zero f := by ext; simp
+instance : AddZeroClass (π₁ →ⁱL π₂) :=
+  fast_instance% toContinuousLinearMap_injective.addZeroClass _
+    toContinuousLinearMap_zero toContinuousLinearMap_add
 
-instance : AddCommSemigroup (π₁ →ⁱL π₂) where
-  add_assoc f g h := by ext1; simp [add_assoc]
-  add_comm f g := by ext1; simp [add_comm]
+instance : AddCommSemigroup (π₁ →ⁱL π₂) :=
+  fast_instance% toContinuousLinearMap_injective.addCommSemigroup _
+    toContinuousLinearMap_add
 
 instance : Neg (π₁ →ⁱL π₂) where
   neg f := ⟨-f.toContinuousLinearMap, by simp [f.2]⟩
@@ -215,16 +220,10 @@ lemma comp_smul {S : Type*} [Monoid S] [DistribMulAction S U] [SMulCommClass R S
     (s : S) (f : π₂ →ⁱL π₃) (g : π₁ →ⁱL π₂) : f.comp (s • g) = s • (f.comp g) := by
   ext; simp
 
-instance : AddCommGroup (π₁ →ⁱL π₂) where
-  neg_add_cancel _ := by ext; simp
-  sub_eq_add_neg _ _ := by ext; simp [sub_eq_add_neg]
-  zsmul := (· • ·)
-  zsmul_zero' _ := by ext; simp
-  zsmul_succ' _ _ := by ext; simp [add_smul]
-  zsmul_neg' _ _ := by ext; simp [-Nat.cast_add, -Int.natCast_add]
-  nsmul := (· • ·)
-  nsmul_zero _ := by ext; simp
-  nsmul_succ _ _ := by ext; simp [add_smul]
+instance : AddCommGroup (π₁ →ⁱL π₂) :=
+  fast_instance% toContinuousLinearMap_injective.addCommGroup _ toContinuousLinearMap_zero
+    toContinuousLinearMap_add toContinuousLinearMap_neg toContinuousLinearMap_sub
+    (fun _ _ ↦ toContinuousLinearMap_smul _ _) (fun _ _ ↦ toContinuousLinearMap_smul _ _)
 
 instance : DistribMulAction S (π₁ →ⁱL π₂) where
   one_smul _ := by ext; simp
