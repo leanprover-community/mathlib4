@@ -335,43 +335,56 @@ theorem isPreconnected_nonempty_finite_subsets {s : Set α} (hs : IsPreconnected
   rcases eq_empty_or_nonempty s with rfl | ⟨x, hx⟩
   · convert isPreconnected_empty
     grind [Set.not_nonempty_empty]
-  conv => arg 1; equals ⋃ n : ℕ+, range (ι := Fin n) '' Set.pi univ fun _ => s =>
-    refine subset_antisymm (fun t ht => ?_)
-      (iUnion_subset fun _ => image_subset_iff.mpr fun f hf =>
-        ⟨range_nonempty _, finite_range _, by grind⟩)
-    obtain ⟨ht₁, ht₂, hts⟩ := ht
-    obtain ⟨n, f, -, rfl⟩ := ht₂.fin_param
-    rw [range_subset_iff] at hts
-    rw [range_nonempty_iff_nonempty] at ht₁
-    lift n to ℕ+ using Fin.pos'
-    exact mem_iUnion_of_mem n <| mem_image_of_mem _ <| mem_univ_pi.mpr hts
-  exact isPreconnected_iUnion
-    ⟨{x}, mem_iInter_of_mem fun n => ⟨fun _ => x, by grind⟩⟩
-    (fun n => .image (isPreconnected_univ_pi fun _ => hs) _ (by fun_prop))
+  suffices {t | t.Nonempty ∧ t.Finite ∧ t ⊆ s} =
+      ⋃ n : ℕ+, range (ι := Fin n) '' Set.pi univ fun _ => s by
+    rw [this]
+    /- The family of nonempty subsets of `s` with at most `n` elements is connected, since it is the
+    image of `sⁿ` under the continuous map `(x₁, …, xₙ) ↦ {x₁, …, xₙ}`. It follows that their union
+    over `n ≥ 1` is also connected. -/
+    exact isPreconnected_iUnion
+      ⟨{x}, mem_iInter_of_mem fun n => ⟨fun _ => x, by simpa⟩⟩
+      (fun n => .image (isPreconnected_univ_pi fun _ => hs) _ (by fun_prop))
+  refine subset_antisymm (fun t ht => ?_)
+    (iUnion_subset fun _ => image_subset_iff.mpr fun f hf =>
+      ⟨range_nonempty _, finite_range _, by grind⟩)
+  obtain ⟨ht₁, ht₂, hts⟩ := ht
+  obtain ⟨n, f, -, rfl⟩ := ht₂.fin_param
+  rw [range_subset_iff] at hts
+  rw [range_nonempty_iff_nonempty] at ht₁
+  lift n to ℕ+ using Fin.pos'
+  exact mem_iUnion_of_mem n <| mem_image_of_mem _ <| mem_univ_pi.mpr hts
 
 theorem isPreconnected_sUnion {s : Set (Set α)} (hs : IsPreconnected s)
     (h : ∃ t ∈ s, IsPreconnected t) : IsPreconnected (⋃₀ s) := by
   obtain ⟨t, hts, ht⟩ := h
   have hts' := subset_sUnion_of_mem hts
+  /- Take open sets `U` and `V` covering `⋃₀ s`, and assume that they both intersect `⋃₀ s`. We have
+  to show that `U` and `V` intersect within `⋃₀ s` -/
   intro U V hU hV hUV
   by_cases! ht' : t ⊆ U ∨ t ⊆ V
-  · wlog htU : t ⊆ U generalizing U V
+  · -- Consider the case when one of them covers `t`, say `U`.
+    wlog htU : t ⊆ U generalizing U V
     · grind
+    -- There is also some `u ∈ s` that intersects `V`.
     rintro - ⟨y, hys, hyV⟩
     obtain ⟨u, hus, hyu⟩ := mem_sUnion.mpr hys
+    -- Every set in `s` either is in `U` or intersects `V`.
     have : s ⊆ {v | (v ∩ V).Nonempty} ∪ U.powerset := by
-      simp_rw [← diff_subset_iff, ← not_disjoint_iff_nonempty_inter]
-      grind
+      grind [=_ sdiff_subset_iff, =_ not_disjoint_iff_nonempty_inter]
+    -- Since `s` connects `t` and `u`, there is some `v ∈ s` that is in `U` and intersects `V`.
     obtain ⟨v, hvs, hvU, hvV⟩ :=
       hs _ _ (isOpen_inter_nonempty_of_isOpen hV) hU.powerset_vietoris this
-        ⟨u, hus, y, hyu, hyV⟩ ⟨t, by grind⟩
+        ⟨u, hus, y, hyu, hyV⟩ ⟨t, hts, htU⟩
+    -- `U` intersects `V` within `v`, and therefore also within `⋃₀ s`.
     apply hvU.mono
     grind
-  · rintro - -
-    grw [← hts'] at hUV ⊢
+  · -- If neither `U` nor `V` covers `t`, then they both intersect `t`, since `t ⊆ U ∪ V`.
+    rintro - -
     have htU : ¬ Disjoint t U := by grind
     have htV : ¬ Disjoint t V := by grind
     rw [not_disjoint_iff_nonempty_inter] at htU htV
+    -- By the connectedness of `t`, `U` and `V` intersect within `t`, and therefore within `⋃₀ s`.
+    grw [← hts'] at hUV ⊢
     exact ht U V hU hV hUV htU htV
 
 end vietoris
