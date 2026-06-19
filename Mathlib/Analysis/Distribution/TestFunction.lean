@@ -744,4 +744,34 @@ lemma integralAgainstBilinCLM_ofSupportedIn {B : F₁ →L[𝕜] F₂ →L[𝕜]
 
 end Integral
 
+section Multiplication
+
+section bilin
+
+variable {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃ G: Type*}
+  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
+  [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] [NormedSpace ℝ F₂]
+  [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃]
+
+variable [NormedAlgebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F₁] [NormedSpace ℝ F₃] [IsScalarTower ℝ 𝕜 F₃]
+
+theorem tsupport_bilinLeft (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (f : E → F₁) :
+    tsupport (fun x ↦ B (f x) (g x)) ⊆ tsupport f := by
+  apply closure_mono
+  aesop
+
+def bilinLeft_toTestFunction (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g)
+    (φ : 𝓓^{n}(Ω, F₁)) :  𝓓^{n}(Ω, F₃) where
+  toFun := fun x ↦ B (φ x) (g x)
+  contDiff' :=
+    (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp ((φ.contDiff).prodMk hg)
+  hasCompactSupport' := by
+    apply φ.hasCompactSupport.of_isClosed_subset (isClosed_tsupport (fun x ↦ B (φ x) (g x)))
+    apply tsupport_bilinLeft
+  tsupport_subset' := le_trans (tsupport_bilinLeft B φ) φ.tsupport_subset
+
+end bilin
+
+
+
 end TestFunction
