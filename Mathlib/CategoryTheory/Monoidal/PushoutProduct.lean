@@ -119,8 +119,8 @@ def whiskerLeftIso
       (associator_inv_naturality_middle W _ _).symm (associator_inv_naturality_right W _ _).symm))
     (α_ W _ _).symm
     (((tensorLeft W).map_isPushout
-      (IsPushout.of_hasPushout (X₁.hom ▷ X₂.left) (X₁.left ◁ X₂.hom))).hom_ext (by
-      simp) (by simp))
+      (IsPushout.of_hasPushout (X₁.hom ▷ X₂.left) (X₁.left ◁ X₂.hom))).hom_ext
+        (by simp [← whiskerLeft_comp_assoc]) (by simp [← whiskerLeft_comp_assoc]))
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -138,7 +138,8 @@ def whiskerRightIso
       (associator_naturality_left _ _ W).symm (associator_naturality_middle _ _ W).symm))
     (α_ _ _ W)
     (((tensorRight W).map_isPushout
-      (IsPushout.of_hasPushout (X₁.hom ▷ X₂.left) (X₁.left ◁ X₂.hom))).hom_ext (by simp) (by simp))
+      (IsPushout.of_hasPushout (X₁.hom ▷ X₂.left) (X₁.left ◁ X₂.hom))).hom_ext
+      (by simp [← comp_whiskerRight_assoc]) (by simp [← comp_whiskerRight_assoc]))
 
 -- helper instance for `PushoutProduct.associator`
 local instance {F : C ⥤ C}
@@ -165,16 +166,19 @@ def associator
           pushout.desc (_ ◁ pushout.inr _ _ ≫ pushout.inl _ _) (pushout.inr _ _)
           (by simp [Limits.pushout.associator_naturality_left_condition]))
         (((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
-          (by simp [Limits.pushout.whiskerLeft_condition_assoc, ← whisker_exchange_assoc])
-          (by simp [← whisker_exchange_assoc, Limits.pushout.associator_naturality_left_condition]))
+          (by simp [Limits.pushout.whiskerLeft_condition_assoc, ← whisker_exchange_assoc,
+            ← comp_whiskerRight_assoc])
+          (by simp [← whisker_exchange_assoc, Limits.pushout.associator_naturality_left_condition,
+            ← comp_whiskerRight_assoc]))
     · exact pushout.desc ((whiskerLeftIso _ _).hom.left ≫
           pushout.desc (pushout.inl _ _) ((pushout.inl _ _ ▷ _) ≫ pushout.inr _ _)
           (by simp [Limits.pushout.associator_inv_naturality_right_condition]))
         ((α_ _ _ _).inv ≫ (pushout.inr _ _) ▷ _ ≫ pushout.inr _ _)
         (((tensorLeft _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
           (by simp [whisker_exchange_assoc,
-            Limits.pushout.associator_inv_naturality_right_condition])
-          (by simp [whisker_exchange_assoc, Limits.pushout.condition_whiskerRight_assoc]))
+            Limits.pushout.associator_inv_naturality_right_condition, ← whiskerLeft_comp_assoc])
+          (by simp [whisker_exchange_assoc, Limits.pushout.condition_whiskerRight_assoc,
+            ← whiskerLeft_comp_assoc]))
     · apply pushout.hom_ext (by simp)
       apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext <;> simp
     · refine pushout.hom_ext ?_ (by simp)
@@ -214,7 +218,8 @@ def isInitialIso (X : Arrow C) {I : C} (i : IsInitial I) {W : C} :
   haveI : IsPushout (X.hom ▷ I) (_ ◁ i.to W) ((i.ofIso (zeroMul i).symm).to _) (𝟙 _) :=
     .of_horiz_isIso (sq := ⟨(i.ofIso (zeroMul i).symm).hom_ext ..⟩)
   Arrow.isoMk' _ _ this.isoPushout.symm (Iso.refl _)
-    (pushout.hom_ext ((i.ofIso (zeroMul i).symm).hom_ext _ _) (by simp))
+    (pushout.hom_ext ((i.ofIso (zeroMul i).symm).hom_ext _ _) (by
+      simp [pushout.inr_desc]))
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The arrow isomorphism `(∅ ⟶ W) □ X ≅ W ◁ X` in a braided CCC with pushouts and
@@ -227,7 +232,7 @@ def isInitialIso' [BraidedCategory C] (X : Arrow C) {I : C} (i : IsInitial I) {W
   haveI : IsPushout (i.to W ▷ _) (I ◁ X.hom) (𝟙 _) ((i.ofIso (mulZero i).symm).to _) :=
     .of_vert_isIso (sq := ⟨(i.ofIso (mulZero i).symm).hom_ext ..⟩)
   Arrow.isoMk' _ _ this.isoPushout.symm (Iso.refl _)
-    (pushout.hom_ext (by simp) ((i.ofIso (mulZero i).symm).hom_ext _ _))
+    (pushout.hom_ext (by simp [pushout.inl_desc]) ((i.ofIso (mulZero i).symm).hom_ext _ _))
 
 /-- The arrow isomorphism `X □ (∅ ⟶ ⋆) ≅ X` in a CCC with pushouts, an initial object, and a
 terminal object. -/

@@ -36,8 +36,10 @@ set_option backward.defeqAttrib.useBackward true in
 noncomputable
 def ιIso : Arrow.mk (S.unionProd T).ι ≅ S.ι □ T.ι :=
   Arrow.isoMk' _ _ (isPushout S T).isoPushout (Iso.refl _)
-    (by apply (unionProd.isPushout S T).hom_ext <;>
-      simp [Functor.PushoutObjObj.ofHasPushout, Functor.PushoutObjObj.ι])
+    (by
+      apply (unionProd.isPushout S T).hom_ext
+      · simp [Limits.pushout.inl_desc]
+      · simp [Limits.pushout.inr_desc])
 
 /-- Given subcomplexes `S` and `T` of simplicial sets, this if a `Functor.PushoutObjObj`
 structure for the chosen binary products on `SSet`, with point `S.unionProd T`. -/
@@ -47,15 +49,7 @@ noncomputable def pushoutObjObj : (curriedTensor _).PushoutObjObj S.ι T.ι wher
   inl := unionProd.ι₁ S T
   inr := unionProd.ι₂ S T
   isPushout := unionProd.isPushout S T
-
-set_option backward.defeqAttrib.useBackward true in
-@[simp]
-lemma pushoutObjObj_ι : (pushoutObjObj S T).ι = (S.unionProd T).ι := by
-  apply (pushoutObjObj S T).hom_ext
-  · rw [(pushoutObjObj S T).inl_ι]
-    simp
-  · rw [(pushoutObjObj S T).inr_ι]
-    simp
+  ι := (S.unionProd T).ι
 
 end unionProd
 
