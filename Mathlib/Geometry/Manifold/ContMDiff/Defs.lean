@@ -324,7 +324,7 @@ theorem contMDiffAt_iff_source :
 section IsManifold
 
 theorem contMDiffWithinAt_iff_source_of_mem_maximalAtlas
-    [IsManifold I n M] (he : e ∈ maximalAtlas I n M) (hx : x ∈ e.source) :
+    (he : e ∈ maximalAtlas I n M) (hx : x ∈ e.source) :
     ContMDiffWithinAt I I' n f s x ↔
       ContMDiffWithinAt 𝓘(𝕜, E) I' n (f ∘ (e.extend I).symm) ((e.extend I).symm ⁻¹' s ∩ range I)
         (e.extend I x) := by
@@ -505,8 +505,7 @@ theorem contMDiffOn_iff [IsManifold I n M] [IsManifold I' n M'] :
     mfld_set_tac
 
 /-- zero-smoothness on a set is equivalent to continuity on this set. -/
-theorem contMDiffOn_zero_iff :
-    ContMDiffOn I I' 0 f s ↔ ContinuousOn f s := by
+theorem contMDiffOn_zero_iff : ContMDiffOn I I' 0 f s ↔ ContinuousOn f s := by
   rw [contMDiffOn_iff]
   refine ⟨fun h ↦ h.1, fun h ↦ ⟨h, ?_⟩⟩
   intro x y
@@ -713,7 +712,7 @@ protected theorem ContMDiffOn.contMDiffAt (h : ContMDiffOn I I' n f s) (hx : s �
     ContMDiffAt I I' n f x :=
   (h x (mem_of_mem_nhds hx)).contMDiffAt hx
 
-theorem contMDiffOn_iff_source_of_mem_maximalAtlas [IsManifold I n M]
+theorem contMDiffOn_iff_source_of_mem_maximalAtlas
     (he : e ∈ maximalAtlas I n M) (hs : s ⊆ e.source) :
     ContMDiffOn I I' n f s ↔
       ContMDiffOn 𝓘(𝕜, E) I' n (f ∘ (e.extend I).symm) (e.extend I '' s) := by
