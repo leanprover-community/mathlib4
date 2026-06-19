@@ -349,7 +349,7 @@ lemma projectiveDimension_X₂_le_sup :
   refine le_of_forall_ge (fun N ↦ ?_)
   induction N with
   | bot =>
-    simpa [projectiveDimension_eq_bot_iff] using fun h1 h3 ↦ hS.1.isZero_of_both_isZero h1 h3
+    simpa [projectiveDimension_eq_bot_iff] using fun h1 h3 ↦ hS.exact.isZero_of_both_isZero h1 h3
   | coe N =>
     induction N with
     | top => simp
@@ -364,8 +364,8 @@ lemma projectiveDimension_X₃_le_sup :
   refine le_of_forall_ge (fun N ↦ ?_)
   induction N with
   | bot =>
-    have := hS.3
-    simpa [projectiveDimension_eq_bot_iff] using fun h2 h1 ↦ h2.of_epi S.g
+    have := hS.epi_g
+    simpa [projectiveDimension_eq_bot_iff] using fun h _ ↦ h.of_epi S.g
   | coe N =>
     induction N with
     | top => simp
@@ -381,8 +381,8 @@ lemma projectiveDimension_X₁_succ_le_sup :
   refine le_of_forall_ge (fun N ↦ ?_)
   induction N with
   | bot =>
-    have := hS.2
-    simpa [projectiveDimension_eq_bot_iff] using fun h2 h3 ↦ h2.of_mono S.f
+    have := hS.mono_f
+    simpa [projectiveDimension_eq_bot_iff] using fun h _ ↦ h.of_mono S.f
   | coe N =>
     induction N with
     | top => simp
