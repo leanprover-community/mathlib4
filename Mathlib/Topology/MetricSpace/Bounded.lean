@@ -158,7 +158,7 @@ theorem hasAntitoneBasis_cobounded_compl_ball (c : α) :
 @[simp]
 theorem comap_dist_right_atTop (c : α) : comap (dist · c) atTop = cobounded α :=
   (atTop_basis.comap _).eq_of_same_basis <| by
-    simpa only [compl_def, mem_ball, not_lt] using hasBasis_cobounded_compl_ball c
+    simpa only [compl_def, mem_ball, not_lt] using! hasBasis_cobounded_compl_ball c
 
 @[simp]
 theorem comap_dist_left_atTop (c : α) : comap (dist c) atTop = cobounded α := by
@@ -332,6 +332,7 @@ theorem _root_.Bornology.IsBounded.isCompact_closure [ProperSpace α] (h : IsBou
 -- TODO: assume `[MetricSpace α]` instead of `[PseudoMetricSpace α] [T2Space α]`
 /-- The **Heine–Borel theorem**:
 In a proper Hausdorff space, a set is compact if and only if it is closed and bounded. -/
+@[wikidata Q253214]
 theorem isCompact_iff_isClosed_bounded [T2Space α] [ProperSpace α] :
     IsCompact s ↔ IsClosed s ∧ IsBounded s :=
   ⟨fun h => ⟨h.isClosed, h.isBounded⟩, fun h => isCompact_of_isClosed_isBounded h.1 h.2⟩
@@ -588,7 +589,8 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: the diameter of a set is always nonnegative. -/
 @[positivity Metric.diam _]
-meta def evalDiam : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalDiam : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Metric.diam _ $inst $s) =>
     assertInstancesCommute

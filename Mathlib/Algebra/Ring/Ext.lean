@@ -98,7 +98,6 @@ This section also includes results for `AddMonoidWithOne`, `AddCommMonoidWithOne
 as these are considered implementation detail of the ring classes.
 TODO consider relocating these lemmas.
 -/
-/- TODO consider relocating these lemmas. -/
 @[ext] theorem AddMonoidWithOne.ext ⦃inst₁ inst₂ : AddMonoidWithOne R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_one : (letI := inst₁; One.one : R) = (letI := inst₂; One.one : R)) :
@@ -129,7 +128,7 @@ theorem AddCommMonoidWithOne.toAddMonoidWithOne_injective :
 
 namespace NonAssocSemiring
 
-/- The best place to prove that the `NatCast` is determined by the other operations is probably in
+/-! The best place to prove that the `NatCast` is determined by the other operations is probably in
 an extensionality lemma for `AddMonoidWithOne`, in which case we may as well do the typeclasses
 defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
 @[ext] theorem ext ⦃inst₁ inst₂ : NonAssocSemiring R⦄

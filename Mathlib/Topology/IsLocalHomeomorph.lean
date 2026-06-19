@@ -164,6 +164,7 @@ end IsLocalHomeomorphOn
 def IsLocalHomeomorph :=
   ∀ x : X, ∃ e : OpenPartialHomeomorph X Y, x ∈ e.source ∧ f = e
 
+/-- A homeomorphism is a local homeomorphism. -/
 theorem Homeomorph.isLocalHomeomorph (f : X ≃ₜ Y) : IsLocalHomeomorph f :=
   fun _ ↦ ⟨f.toOpenPartialHomeomorph, trivial, rfl⟩
 
@@ -213,9 +214,8 @@ theorem mk (h : ∀ x : X, ∃ e : OpenPartialHomeomorph X Y, x ∈ e.source ∧
   isLocalHomeomorph_iff_isLocalHomeomorphOn_univ.mpr
     (IsLocalHomeomorphOn.mk f Set.univ fun x _hx ↦ h x)
 
-/-- A homeomorphism is a local homeomorphism. -/
-lemma Homeomorph.isLocalHomeomorph (h : X ≃ₜ Y) : IsLocalHomeomorph h :=
-  fun _ ↦ ⟨h.toOpenPartialHomeomorph, trivial, rfl⟩
+@[deprecated (since := "2026-06-06")]
+alias Homeomorph.isLocalHomeomorph := _root_.Homeomorph.isLocalHomeomorph
 
 variable {g f}
 

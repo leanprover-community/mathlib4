@@ -283,7 +283,7 @@ variable {R S T : Type*} [Monoid R] [StarMul R] [Monoid S] [StarMul S] [Monoid T
 lemma map_mem {F : Type*} [FunLike F R S] [StarHomClass F R S] [MonoidHomClass F R S]
     (f : F) {r : R} (hr : r ∈ unitary R) : f r ∈ unitary S := by
   rw [mem_iff] at hr
-  simpa [map_star, map_mul] using And.intro congr(f $(hr.1)) congr(f $(hr.2))
+  simpa [map_star, map_mul] using! And.intro congr(f $(hr.1)) congr(f $(hr.2))
 
 /-- The star monoid homomorphism between unitary subgroups induced by a star monoid homomorphism of
 the underlying star monoids. -/
@@ -423,6 +423,12 @@ lemma spectrum_star_left_conjugate {a : A} {U : unitary A} :
   simpa using spectrum_star_right_conjugate (U := star U)
 
 end UnitaryConjugate
+
+/-- In a ring without zero divisors and with trivial star, the only unitary elements are `1`
+and `-1`. -/
+theorem mem_iff_eq_one_or_eq_neg_one [Ring R] [StarRing R] [TrivialStar R] [NoZeroDivisors R]
+    {a : R} : a ∈ unitary R ↔ a = 1 ∨ a = -1 := by
+  simp [mem_iff, mul_self_eq_one_iff]
 
 end Unitary
 

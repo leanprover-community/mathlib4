@@ -62,7 +62,7 @@ theorem toSubgroup_injective : Function.Injective
 @[to_additive]
 instance : SetLike (ClosedSubgroup G) G where
   coe U := U.1
-  coe_injective' _ _ h := toSubgroup_injective <| SetLike.ext' h
+  coe_injective _ _ h := toSubgroup_injective <| SetLike.ext' h
 
 @[to_additive] instance : PartialOrder (ClosedSubgroup G) := .ofSetLike (ClosedSubgroup G) G
 
@@ -96,14 +96,14 @@ namespace Subgroup
 
 variable {G : Type u} [Group G] [TopologicalSpace G] [SeparatelyContinuousMul G]
 
+@[to_additive]
 lemma normalCore_isClosed (H : Subgroup G) (h : IsClosed (H : Set G)) :
     IsClosed (H.normalCore : Set G) := by
-  rw [normalCore_eq_iInf_conjAct]
+  rw [normalCore_eq_iInf_comap_conj]
   push_cast
   apply isClosed_iInter
   intro g
-  convert! IsClosed.preimage (IsTopologicalGroup.continuous_conj (ConjAct.ofConjAct g⁻¹)) h using 1
-  exact Set.ext (fun t ↦ Set.mem_smul_set_iff_inv_smul_mem)
+  exact h.preimage (IsTopologicalGroup.continuous_conj g)
 
 @[to_additive]
 lemma isOpen_of_isClosed_of_finiteIndex (H : Subgroup G) [H.FiniteIndex]

@@ -219,11 +219,13 @@ def gluing : Scheme.GlueData.{u} where
 lemma gluing_ι (j : 𝒰.I₀) :
     (gluing 𝒰 f g).ι j = Multicoequalizer.π (gluing 𝒰 f g).diagram j := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The first projection from the glued scheme into `X`. -/
 def p1 : (gluing 𝒰 f g).glued ⟶ X := by
   apply Multicoequalizer.desc (gluing 𝒰 f g).diagram _ fun i ↦ pullback.fst _ _ ≫ 𝒰.f i
   simp [t_fst_fst_assoc, ← pullback.condition]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The second projection from the glued scheme into `Y`. -/
 def p2 : (gluing 𝒰 f g).glued ⟶ Y := by
   apply Multicoequalizer.desc _ _ fun i ↦ pullback.snd _ _
@@ -248,9 +250,10 @@ def gluedLiftPullbackMap (i j : 𝒰.I₀) :
   refine pullback.map _ _ _ _ ?_ (𝟙 _) (𝟙 _) ?_ ?_
   · exact (pullbackSymmetry _ _).hom ≫
       pullback.map _ _ _ _ (𝟙 _) s.snd f (Category.id_comp _).symm s.condition
-  · simpa using pullback.condition
+  · simpa using! pullback.condition
   · simp only [Category.comp_id, Category.id_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem gluedLiftPullbackMap_fst (i j : 𝒰.I₀) :
@@ -260,6 +263,7 @@ theorem gluedLiftPullbackMap_fst (i j : 𝒰.I₀) :
           pullback.map _ _ _ _ (𝟙 _) s.snd f (Category.id_comp _).symm s.condition := by
   simp [gluedLiftPullbackMap]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem gluedLiftPullbackMap_snd (i j : 𝒰.I₀) :
@@ -294,6 +298,7 @@ def gluedLift : s.pt ⟶ (gluing 𝒰 f g).glued := by
     simp_rw [pullbackSymmetry_hom_comp_snd_assoc]
     exact pullback.condition_assoc _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem gluedLift_p1 : gluedLift 𝒰 f g s ≫ p1 𝒰 f g = s.fst := by
   rw [← cancel_epi (Cover.fromGlued <| 𝒰.pullback₁ s.fst)]
@@ -303,6 +308,7 @@ theorem gluedLift_p1 : gluedLift 𝒰 f g s ≫ p1 𝒰 f g = s.fst := by
   simp_rw [Cover.ι_glueMorphisms (𝒰.pullback₁ s.fst)]
   simp [p1, pullback.condition]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem gluedLift_p2 : gluedLift 𝒰 f g s ≫ p2 𝒰 f g = s.snd := by
   rw [← cancel_epi (Cover.fromGlued <| 𝒰.pullback₁ s.fst)]
@@ -335,6 +341,7 @@ theorem pullbackFstιToV_snd (i j : 𝒰.I₀) :
     pullbackFstιToV 𝒰 f g i j ≫ pullback.snd _ _ = pullback.fst _ _ ≫ pullback.snd _ _ := by
   simp [pullbackFstιToV, p1]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- We show that the map `W ×[X] Uᵢ ⟶ Uᵢ ×[Z] Y ⟶ W` is the first projection, where the
 first map is given by the lift of `W ×[X] Uᵢ ⟶ Uᵢ` and `W ×[X] Uᵢ ⟶ W ⟶ Y`.
@@ -407,6 +414,7 @@ theorem pullbackP1Iso_hom_ι (i : 𝒰.I₀) :
     pullback.fst _ _ := by
   rw [← gluing_ι, ← pullbackP1Iso_inv_fst, Iso.hom_inv_id_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The glued scheme (`(gluing 𝒰 f g).glued`) is indeed the pullback of `f` and `g`. -/
 def gluedIsLimit : IsLimit (PullbackCone.mk _ _ (p_comm 𝒰 f g)) := by
@@ -458,6 +466,7 @@ instance base_affine_hasPullback {C : CommRingCat} {X Y : Scheme} (f : X ⟶ Spe
     (@hasPullback_of_cover _ _ _ Y.affineCover g f fun _ =>
       @hasPullback_symmetry _ _ _ _ _ _ _ <| affine_affine_hasPullback _ _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance left_affine_comp_pullback_hasPullback {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z)
     (i : Z.affineCover.I₀) : HasPullback ((Z.affineCover.pullback₁ f).f i ≫ f) g := by
@@ -486,6 +495,7 @@ theorem _root_.AlgebraicGeometry.Scheme.isEmpty_pullback
     (H : Disjoint (Set.range f) (Set.range g)) : IsEmpty ↑(Limits.pullback f g) :=
   isEmpty_of_commSq (IsPullback.of_hasPullback f g).toCommSq H
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given an open cover `{ Xᵢ }` of `X`, then `X ×[Z] Y` is covered by `Xᵢ ×[Z] Y`. -/
 @[simps! I₀ X f]
@@ -514,6 +524,7 @@ def openCoverOfLeft (𝒰 : OpenCover.{v} X) (f : X ⟶ Z) (g : Y ⟶ Z) :
       rw [this]
       infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given an open cover `{ Yᵢ }` of `Y`, then `X ×[Z] Y` is covered by `X ×[Z] Yᵢ`. -/
 @[simps! I₀ X f]
@@ -528,6 +539,7 @@ def openCoverOfRight (𝒰 : OpenCover.{v} Y) (f : X ⟶ Z) (g : Y ⟶ Z) :
   dsimp
   apply pullback.hom_ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given an open cover `{ Xᵢ }` of `X` and an open cover `{ Yⱼ }` of `Y`, then
 `X ×[Z] Y` is covered by `Xᵢ ×[Z] Yⱼ`. -/
@@ -544,6 +556,7 @@ def openCoverOfLeftRight (𝒰X : OpenCover.{v} X) (𝒰Y : OpenCover.{w} Y) (f 
   rintro ⟨i, j⟩
   apply pullback.hom_ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). Use `openCoverOfBase` instead. -/
 @[simps! f]
@@ -579,13 +592,14 @@ def openCoverOfBase (𝒰 : OpenCover.{v} Z) (f : X ⟶ Z) (g : Y ⟶ Z) :
   intro i
   rw [Iso.refl_hom, Category.id_comp, openCoverOfBase'_f]
   ext : 1 <;>
-  · simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Equiv.trans_apply,
-      Equiv.prodPUnit_symm_apply, Category.assoc, limit.lift_π_assoc, cospan_left, Category.comp_id,
+  · simp only [limit.lift_π, PullbackCone.mk_π_app, Equiv.trans_apply, Category.assoc,
+    limit.lift_π_assoc, cospan_left, Category.comp_id,
       limit.isoLimitCone_inv_π_assoc, PullbackCone.π_app_left, IsPullback.cone_fst,
       pullbackSymmetry_hom_comp_snd_assoc, limit.isoLimitCone_inv_π,
       PullbackCone.π_app_right, IsPullback.cone_snd, pullbackSymmetry_hom_comp_fst_assoc]
     rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 -- TODO: generalize to covers in subcanonical topologies
 open pullback in
@@ -626,6 +640,7 @@ noncomputable
 def diagonalCoverDiagonalRange : (pullback.diagonalObj f).Opens :=
   ⨆ i : Σ i, (𝒱 i).I₀, ((diagonalCover f 𝒰 𝒱).f ⟨i.1, i.2, i.2⟩).opensRange
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma diagonalCover_map (I) : (diagonalCover f 𝒰 𝒱).f I =
     pullback.map _ _ _ _
@@ -635,6 +650,7 @@ lemma diagonalCover_map (I) : (diagonalCover f 𝒰 𝒱).f I =
   cases I
   ext1 <;> simp [diagonalCover, Cover.pullbackHom]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The restriction of the diagonal `X ⟶ X ×ₛ X` to `𝒱 i j ×[𝒰 i] 𝒱 i j` is the diagonal
 `𝒱 i j ⟶ 𝒱 i j ×[𝒰 i] 𝒱 i j`. -/
