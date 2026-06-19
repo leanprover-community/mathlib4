@@ -6249,6 +6249,7 @@ public import Mathlib.Probability.Distributions.Poisson.PoissonLimitThm
 public import Mathlib.Probability.Distributions.SetBernoulli
 public import Mathlib.Probability.Distributions.TwoValued
 public import Mathlib.Probability.Distributions.Uniform
+public import Mathlib.Probability.HasCondDistrib
 public import Mathlib.Probability.HasLaw
 public import Mathlib.Probability.HasLawExists
 public import Mathlib.Probability.IdentDistrib
