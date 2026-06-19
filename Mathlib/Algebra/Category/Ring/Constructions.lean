@@ -417,24 +417,24 @@ instance equalizer_ι_isLocalHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :
     IsLocalHom (limit.π F WalkingParallelPair.zero).hom := by
   refine Limits.π_isLocalHom _ (limit.isLimit _) zero fun x hx i ↦ ?_
   rcases i with _ | _
-  · exact ⟨zero, 𝟙 _, 𝟙 _, by simpa using isLocalHom_id _⟩
-  · refine ⟨one, 𝟙 _, left, by simpa using isLocalHom_id _, ?_⟩
+  · exact ⟨zero, 𝟙 _, 𝟙 _, inferInstance, by simp⟩
+  · refine ⟨one, 𝟙 _, left, inferInstance, ?_⟩
     simp only [CategoryTheory.Functor.map_id, hom_id, limit.cone_x, limit.cone_π, RingHom.id_apply]
     exact (limit.w_apply F left x).symm
 
 theorem equalizer_limit_isLocalRing (F : WalkingParallelPair ⥤ CommRingCat.{u})
     [IsLocalRing (F.obj zero)] : IsLocalRing ↑(limit F) :=
-  RingHom.domain_isLocalRing ((limit.π F WalkingParallelPair.zero).hom)
+  RingHom.domain_isLocalRing (limit.π F WalkingParallelPair.zero).hom
 
 instance equalizer_ι_isLocalHom' (F : WalkingParallelPairᵒᵖ ⥤ CommRingCat.{u}) :
     IsLocalHom (limit.π F (op one)).hom := by
   refine Limits.π_isLocalHom _ (limit.isLimit _) (op one) fun x hx i ↦ ?_
   rcases i with _ | _
-  · refine ⟨op zero, 𝟙 _, op left, by simpa using isLocalHom_id _, ?_⟩
+  · refine ⟨op zero, 𝟙 _, op left, inferInstance, ?_⟩
     simp only [CategoryTheory.Functor.map_id, hom_id, limit.cone_x, limit.cone_π,
       RingHom.id_apply]
     exact (limit.w_apply F (op left) x).symm
-  · exact ⟨op one, 𝟙 _, 𝟙 _, inferInstance, rfl⟩
+  · exact ⟨op one, 𝟙 _, 𝟙 _, inferInstance, by simp⟩
 
 end Equalizer
 
@@ -485,14 +485,12 @@ instance pullbackFst_isLocalHom (f : A ⟶ C) (g : B ⟶ C) [IsLocalHom g.hom] :
     IsLocalHom (pullback.fst f g).hom := by
   refine Limits.π_isLocalHom _ (limit.isLimit _) left fun x hx i ↦ ?_
   rcases i with _ | _ | _
-  · use one, 𝟙 _, Hom.inl
-    simpa using ⟨isLocalHom_id _, rfl⟩
-  · use left, 𝟙 _, 𝟙 _
-    simpa using ⟨(isLocalHom_id A).map_nonunit⟩
+  · exact ⟨one, 𝟙 _, Hom.inl, inferInstance, by simp; rfl⟩
+  · exact ⟨left, 𝟙 _, 𝟙 _, inferInstance, by simp⟩
   · refine ⟨one, Hom.inr, Hom.inl, ‹_›, ?_⟩
     exact DFunLike.congr_fun (congr(Hom.hom $(pullback.condition (f := f) (g := g)))) x |>.symm
 
-theorem isLocalRing_pullback (f : A ⟶ C) (g : B ⟶ C) [IsLocalHom g.hom] [IsLocalRing A] :
+theorem pullback_isLocalRing (f : A ⟶ C) (g : B ⟶ C) [IsLocalHom g.hom] [IsLocalRing A] :
     IsLocalRing ↑(pullback f g) :=
   RingHom.domain_isLocalRing (pullback.fst f g).hom
 
