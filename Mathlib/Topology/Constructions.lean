@@ -288,7 +288,9 @@ protected def TopologicalSpace.cofinite {X : Type*} : TopologicalSpace X where
     exact Finite.sInter (mem_image_of_mem _ hts) (h t hts ⟨x, hzt⟩)
 
 /-- A type synonym equipped with the topology whose open sets are the empty set and the sets with
-finite complements. -/
+finite complements.
+
+For a `Prop` valued version, see `CofiniteTopology`. -/
 abbrev WithCofiniteTopology (X : Type*) :=
   WithTopology X .cofinite
 
@@ -299,7 +301,9 @@ instance WithCofiniteTopology.instInhabited [Inhabited X] : Inhabited (WithCofin
   default := of default
 
 /-- A space has cofinite topology if a set is open if and
-only if it is empty or has finite complement. -/
+only if it is empty or has finite complement.
+
+For a type equipped with the cofinite topology see `WithCofiniteTopology`. -/
 class CofiniteTopology (X : Type*) [TopologicalSpace X] : Prop where
   isOpen_iff (s : Set X) : IsOpen s ↔ s.Nonempty → sᶜ.Finite
 
