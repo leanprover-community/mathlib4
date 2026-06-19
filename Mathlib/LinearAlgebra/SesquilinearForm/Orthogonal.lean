@@ -51,7 +51,7 @@ def orthogonalBilin : Submodule R₂ M₂ where
   add_mem' {u v} hu hv x hx := by simp [hu _ hx, hv _ hx]
   smul_mem' c y hy x hx := by simp [hy _ hx]
 
-@[simp] theorem mem_orthogonalBilin {m : M₂} :
+@[simp] theorem mem_orthogonalBilin_iff {m : M₂} :
   m ∈ S.orthogonalBilin B ↔ ∀ n ∈ S, B n m = 0 := .rfl
 
 @[gcongr] theorem orthogonalBilin_le (h : S ≤ T) :
@@ -61,7 +61,7 @@ section IsRefl
 
 variable {I₂ : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
 
-theorem IsRefl.le_orthogonalBilin_orthogonalBilin (b : B.IsRefl) :
+theorem le_orthogonalBilin_orthogonalBilin (b : B.IsRefl) :
     S ≤ (S.orthogonalBilin B).orthogonalBilin B := fun n hn _m hm ↦ b _ _ (hm n hn)
 
 end IsRefl
@@ -95,7 +95,7 @@ theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →�
 theorem orthogonal_span_singleton_eq_to_lin_ker {B : V →ₗ[K] V →ₛₗ[J] V₂} (x : V) :
     (K ∙ x).orthogonalBilin B = LinearMap.ker (B x) := by
   ext y
-  simp_rw [Submodule.mem_orthogonalBilin, LinearMap.mem_ker, Submodule.mem_span_singleton]
+  simp_rw [Submodule.mem_orthogonalBilin_iff, LinearMap.mem_ker, Submodule.mem_span_singleton]
   constructor
   · exact fun h ↦ h x ⟨1, one_smul _ _⟩
   · rintro h _ ⟨z, rfl⟩
