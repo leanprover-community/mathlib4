@@ -279,8 +279,7 @@ container must still try. The decision is purely on `served`, never on local
 `.ltar` presence, so a forced re-download keeps falling through to later
 containers for files that happen to be cached already. -/
 def withoutHashes (hashMap : ModuleHashMap) (served : Std.HashSet UInt64) : ModuleHashMap :=
-  hashMap.fold (init := ∅) fun acc mod hash =>
-    if served.contains hash then acc else acc.insert mod hash
+  hashMap.filter fun _ hash => !served.contains hash
 
 end ModuleHashMap
 
