@@ -112,21 +112,21 @@ theorem discrete_intermediate_value_theorem_darts {u v : α} (w : (hasse α).Wal
   convert he
   ext <;> grind [d.adj, e.adj, hasse, CovBy, covBy_iff_lt_iff_le_left]
 
-@[deprecated hasse_preconnected_of_succ (since := "2026-06-19")]
 theorem preconnected_hasse_of_succOrder [SuccOrder α] [IsSuccArchimedean α] : (hasse α).Preconnected :=
   fun a b => by
   rw [reachable_iff_reflTransGen]
   exact
     reflTransGen_of_succ _ (fun c hc => Or.inl <| covBy_succ_of_not_isMax hc.2.not_isMax)
       fun c hc => Or.inr <| covBy_succ_of_not_isMax hc.2.not_isMax
+@[deprecated (since := "2026-06-19")] alias hasse_preconnected_of_succ := preconnected_hasse_of_succOrder
 
-@[deprecated hasse_preconnected_of_pred (since := "2026-06-19")]
 theorem preconnected_hasse_of_predOrder [PredOrder α] [IsPredArchimedean α] : (hasse α).Preconnected :=
   fun a b => by
   rw [reachable_iff_reflTransGen, ← reflTransGen_swap]
   exact
     reflTransGen_of_pred _ (fun c hc => Or.inl <| pred_covBy_of_not_isMin hc.1.not_isMin)
       fun c hc => Or.inr <| pred_covBy_of_not_isMin hc.1.not_isMin
+@[deprecated (since := "2026-06-19")] alias hasse_preconnected_of_pred := preconnected_hasse_of_predOrder
 
 theorem isAcyclic_hasse_of_linearOrder : (hasse α).IsAcyclic := by
   rw [isAcyclic_iff_forall_adj_isBridge]
@@ -150,13 +150,13 @@ def pathGraph (n : ℕ) : SimpleGraph (Fin n) :=
 theorem pathGraph_adj {n : ℕ} {u v : Fin n} :
     (pathGraph n).Adj u v ↔ u.val + 1 = v.val ∨ v.val + 1 = u.val := by simp [pathGraph, hasse]
 
-@[deprecated pathGraph_preconnected (since := "2026-06-19")] alias
 theorem preconnected_pathGraph (n : ℕ) : (pathGraph n).Preconnected :=
   preconnected_hasse_of_succOrder _
+@[deprecated (since := "2026-06-19")] alias pathGraph_preconnected := preconnected_pathGraph
 
-@[deprecated pathGraph_connected (since := "2026-06-19")]
 theorem connected_pathGraph_add_one (n : ℕ) : (pathGraph (n + 1)).Connected :=
   ⟨pathGraph_preconnected _⟩
+@[deprecated (since := "2026-06-19")] alias pathGraph_connected := connected_pathGraph_add_one
 
 theorem isAcyclic_pathGraph (n : ℕ) : (pathGraph n).IsAcyclic := isAcyclic_hasse_of_linearOrder _
 
