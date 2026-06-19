@@ -288,7 +288,8 @@ theorem RingHom.ext_rat {R : Type*} [Semiring R] [FunLike F ℚ R] [RingHomClass
     f = g :=
   MonoidWithZeroHomClass.ext_rat' <|
     RingHom.congr_fun <|
-      ((f : ℚ →+* R).comp (Int.castRingHom ℚ)).ext_int ((g : ℚ →+* R).comp (Int.castRingHom ℚ))
+      ((RingHomClass.toRingHom f).comp (Int.castRingHom ℚ)).ext_int
+      ((RingHomClass.toRingHom g).comp (Int.castRingHom ℚ))
 
 instance NNRat.subsingleton_ringHom {R : Type*} [Semiring R] : Subsingleton (ℚ≥0 →+* R) where
   allEq f g := MonoidWithZeroHomClass.ext_nnrat' <| by simp

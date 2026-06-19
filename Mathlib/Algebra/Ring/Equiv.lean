@@ -626,7 +626,7 @@ in higher generality -/
 
 
 @[simp]
-theorem coe_ringHom_refl : (RingEquiv.refl R : R →+* R) = RingHom.id R :=
+theorem coe_ringHom_refl : RingHomClass.toRingHom (RingEquiv.refl R) = RingHom.id R :=
   rfl
 
 @[simp]
@@ -644,15 +644,18 @@ in higher generality -/
 
 @[simp]
 theorem coe_ringHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
-    (e₁.trans e₂ : R →+* S') = (e₂ : S →+* S').comp ↑e₁ :=
+    RingHomClass.toRingHom (e₁.trans e₂) = (RingHomClass.toRingHom e₂).comp
+    (RingHomClass.toRingHom e₁) :=
   rfl
 
 @[simp]
-theorem comp_symm (e : R ≃+* S) : (e : R →+* S).comp (e.symm : S →+* R) = RingHom.id S :=
+theorem comp_symm (e : R ≃+* S) : (RingHomClass.toRingHom e).comp
+    (RingHomClass.toRingHom e.symm) = RingHom.id S :=
   RingHom.ext e.apply_symm_apply
 
 @[simp]
-theorem symm_comp (e : R ≃+* S) : (e.symm : S →+* R).comp (e : R →+* S) = RingHom.id R :=
+theorem symm_comp (e : R ≃+* S) : (RingHomClass.toRingHom e.symm : S →+* R).comp
+    (RingHomClass.toRingHom e) = RingHom.id R :=
   RingHom.ext e.symm_apply_apply
 
 end Semiring
@@ -750,21 +753,23 @@ def toRingHom (e : R ≃+* S) : R →+* S :=
 theorem toRingHom_injective : Function.Injective (toRingHom : R ≃+* S → R →+* S) := fun _ _ h =>
   RingEquiv.ext (RingHom.ext_iff.1 h)
 
-@[simp] theorem toRingHom_eq_coe (f : R ≃+* S) : f.toRingHom = ↑f :=
+instance : CoeOut (R ≃+* S) (R →+* S) where coe := toRingHom
+
+@[simp] theorem toRingHom_eq_coe (f : R ≃+* S) : f.toRingHom = RingHomClass.toRingHom f :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_toRingHom (f : R ≃+* S) : ⇑(f : R →+* S) = f :=
+theorem coe_toRingHom (f : R ≃+* S) : ⇑(RingHomClass.toRingHom f) = f :=
   rfl
 
 theorem coe_ringHom_inj_iff {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
-    (f g : R ≃+* S) : f = g ↔ (f : R →+* S) = g :=
+    (f g : R ≃+* S) : f = g ↔ RingHomClass.toRingHom f = RingHomClass.toRingHom g :=
   ⟨fun h => by rw [h], fun h => ext <| RingHom.ext_iff.mp h⟩
 
 /-- The two paths coercion can take to a `NonUnitalRingEquiv` are equivalent -/
 @[simp, norm_cast]
 theorem toNonUnitalRingHom_commutes (f : R ≃+* S) :
-    ((f : R →+* S) : R →ₙ+* S) = (f : R →ₙ+* S) :=
+    RingHomClass.toRingHom f = (f : R →ₙ+* S) :=
   rfl
 
 /-- Reinterpret a ring equivalence as a monoid homomorphism. -/
@@ -777,12 +782,12 @@ abbrev toAddMonoidHom (e : R ≃+* S) : R →+ S :=
 
 /-- The two paths coercion can take to an `AddMonoidHom` are equivalent -/
 theorem toAddMonoidMom_commutes (f : R ≃+* S) :
-    (f : R →+* S).toAddMonoidHom = (f : R ≃+ S).toAddMonoidHom :=
+    (RingHomClass.toRingHom f).toAddMonoidHom = (f : R ≃+ S).toAddMonoidHom :=
   rfl
 
 /-- The two paths coercion can take to a `MonoidHom` are equivalent -/
 theorem toMonoidHom_commutes (f : R ≃+* S) :
-    (f : R →+* S).toMonoidHom = (f : R ≃* S).toMonoidHom :=
+    (RingHomClass.toRingHom f).toMonoidHom = (f : R ≃* S).toMonoidHom :=
   rfl
 
 /-- The two paths coercion can take to an `Equiv` are equivalent -/
