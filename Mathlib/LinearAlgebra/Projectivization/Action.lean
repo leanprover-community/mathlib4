@@ -11,7 +11,7 @@ public import Mathlib.LinearAlgebra.Projectivization.Basic
 public import Mathlib.LinearAlgebra.SpecialLinearGroup
 public import Mathlib.LinearAlgebra.Transvection.Basic
 public import Mathlib.LinearAlgebra.Matrix.IsDiag
-public import Mathlib.LinearAlgebra.Matrix.ProjectiveSpecialLinearGroup
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Projective
 public import Mathlib.LinearAlgebra.Center
 
 /-!
@@ -237,6 +237,17 @@ instance : IsPreprimitive (Matrix.ProjectiveSpecialLinearGroup ι K) (ℙ K (ι 
   @MulAction.IsPreprimitive.of_surjective _ _ _ _ _ _ _ _ (QuotientGroup.mk' _)
     {toFun := id, map_smul' := by intros; simp; rfl} (prePrimitive_SL (ι := ι) (K := K))
     Function.surjective_id
+
+open MatrixGroups Matrix.ProjGenLinGroup
+
+instance : MulAction PGL(ι, K) (ℙ K (ι → K)) :=
+  mulActionOfGL fun u ↦ ind fun v hv ↦ by
+    simp only [smul_mk, mk_eq_mk_iff]
+    exact ⟨u, by simp [Units.smul_def]⟩
+
+@[simp]
+lemma PGL.mk_smul_mk (g : GL ι K) {v : ι → K} (hv : v ≠ 0) :
+    (.mk g : PGL(ι, K)) • mk K v hv = mk K (g • v) (smul_ne_zero_iff_ne g|>.2 hv) := rfl
 
 end Field
 

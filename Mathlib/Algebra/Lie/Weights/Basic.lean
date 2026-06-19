@@ -705,6 +705,8 @@ instance (L' : LieSubalgebra R L) [IsTriangularizable R L M] : IsTriangularizabl
 instance (I : LieIdeal R L) [IsTriangularizable R L M] : IsTriangularizable R I M where
   maxGenEigenspace_eq_top x := IsTriangularizable.maxGenEigenspace_eq_top (x : L)
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 instance [IsTriangularizable R L M] : IsTriangularizable R (LieModule.toEnd R L M).range M where
   maxGenEigenspace_eq_top := by
     rintro ⟨-, x, rfl⟩

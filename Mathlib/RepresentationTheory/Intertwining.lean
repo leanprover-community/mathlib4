@@ -498,7 +498,7 @@ noncomputable def equivAlgEnd :
     IntertwiningMap ρ ρ ≃ₐ[A] Module.End A[G] ρ.asModule :=
   AlgEquiv.ofLinearEquiv
     (equivLinearMapAsModule ρ ρ)
-    (by rfl)
+    rfl
     (by intro f g; rfl)
 
 theorem isIntertwiningMap_of_mem_center (g : G) (hg : g ∈ Submonoid.center G) :

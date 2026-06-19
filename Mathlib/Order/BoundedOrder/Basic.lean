@@ -94,10 +94,9 @@ Prefer `IsTop.eq_top` if `α` already has a top element. -/
 @[to_dual (attr := elab_as_elim) /-- A bottom element can be replaced with `⊥`.
 
 Prefer `IsBot.eq_bot` if `α` already has a bottom element. -/]
-protected def IsTop.rec [LE α] {P : (x : α) → IsTop x → Sort*}
-    (h : ∀ [OrderTop α], P ⊤ isTop_top) (x : α) (hx : IsTop x) : P x hx := by
-  letI : OrderTop α := { top := x, le_top := hx }
-  apply h
+protected def IsTop.rec [LE α] {motive : (x : α) → IsTop x → Sort*}
+    (top : ∀ [OrderTop α], motive ⊤ isTop_top) (x : α) (hx : IsTop x) : motive x hx :=
+  @top { top := x, le_top a := hx a }
 
 section Preorder
 

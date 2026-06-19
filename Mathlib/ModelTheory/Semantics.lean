@@ -932,6 +932,45 @@ theorem realize_iExsUnique [Finite γ] {φ : L.Formula (α ⊕ γ)} {v : α → 
 
 end BoundedFormula
 
+namespace Formula
+
+@[simp]
+theorem realize_exClosure [DecidableEq α] (φ : L.Formula α) :
+    φ.exClosure.Realize M ↔
+      ∃ v : φ.freeVarFinset → M, Formula.Realize (φ.restrictFreeVar id) v := by
+  simp [Sentence.Realize, Formula.exClosure, Formula.realize_iExs]
+
+theorem realize_exClosure_of_realize_equivSentence [DecidableEq α] [L[[α]].Structure M]
+    [(L.lhomWithConstants α).IsExpansionOn M] {φ : L.Formula α}
+    (h : (Formula.equivSentence φ).Realize M) : φ.exClosure.Realize M := by
+  rw [Formula.realize_exClosure]
+  exists fun a => (L.con (a : α) : M)
+  simpa [Formula.Realize, BoundedFormula.realize_restrictFreeVar] using h
+
+theorem exists_realize_equivSentence_iff_realize_exClosure
+    [DecidableEq α] [Nonempty M] {φ : L.Formula α} :
+    (∃ v : α → M,
+      letI := (constantsOn.structure v);
+      (Formula.equivSentence φ).Realize M) ↔ (φ.exClosure.Realize M) := by
+  constructor
+  · rintro ⟨v, hv⟩
+    exact (Formula.realize_exClosure φ).mpr ⟨fun a => v a,
+      (BoundedFormula.realize_restrictFreeVar (φ := φ) (f := id) (v := fun a => v a) (v' := v)
+        (fun _ => rfl)).2
+        (by simpa [Formula.Realize]
+          using (realize_equivSentence_symm M (Formula.equivSentence φ) v).2 hv)⟩
+  · intro h
+    classical
+    obtain ⟨v, hv⟩ := (Formula.realize_exClosure φ).1 h
+    let v' := fun a => if hmem : a ∈ φ.freeVarFinset
+      then v ⟨a, hmem⟩ else Classical.choice inferInstance
+    exists v'
+    refine (Formula.realize_equivSentence_symm M (Formula.equivSentence φ) v').mp ?_
+    simpa [Equiv.symm_apply_apply, Formula.Realize] using
+      (BoundedFormula.realize_restrictFreeVar v' (by grind)).1 hv
+
+end Formula
+
 namespace StrongHomClass
 
 variable {F : Type*} [EquivLike F M N] [StrongHomClass L F M N] (g : F)
@@ -997,8 +1036,9 @@ theorem realize_irreflexive : M ⊨ r.irreflexive ↔ Std.Irrefl fun x y : M => 
   exact forall_congr' fun _ ↦ not_congr realize_rel₂
 
 @[simp]
-theorem realize_symmetric : M ⊨ r.symmetric ↔ Symmetric fun x y : M => RelMap r ![x, y] :=
-  forall₂_congr fun _ _ ↦ imp_congr realize_rel₂ realize_rel₂
+theorem realize_symmetric : M ⊨ r.symmetric ↔ Std.Symm fun x y : M => RelMap r ![x, y] := by
+  rw [symm_def]
+  exact forall₂_congr fun _ _ ↦ imp_congr realize_rel₂ realize_rel₂
 
 @[simp]
 theorem realize_antisymmetric :

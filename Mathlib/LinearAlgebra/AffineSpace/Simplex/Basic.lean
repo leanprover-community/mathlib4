@@ -703,11 +703,14 @@ theorem closedInterior_eq_interior_union [IsOrderedAddMonoid k] [ZeroLEOneClass 
   · refine Set.union_subset s.interior_subset_closedInterior (Set.iUnion_subset fun i ↦ ?_)
     exact s.closedInterior_faceOpposite_subset_closedInterior i
 
-theorem closedInterior_diff_interior [Nontrivial k] [IsOrderedAddMonoid k] [ZeroLEOneClass k]
+theorem closedInterior_sdiff_interior [Nontrivial k] [IsOrderedAddMonoid k] [ZeroLEOneClass k]
     {n : ℕ} [NeZero n] (s : Simplex k P n) :
     s.closedInterior \ s.interior = ⋃ i : Fin (n + 1), (s.faceOpposite i).closedInterior := by
   simpa [closedInterior_eq_interior_union] using
     fun i ↦ (s.disjoint_interior_closedInterior_faceOpposite i).symm
+
+@[deprecated (since := "2026-06-03")]
+alias closedInterior_diff_interior := closedInterior_sdiff_interior
 
 end LinearOrder
 
