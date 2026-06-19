@@ -108,10 +108,17 @@ variable {R M}
 lemma mkAlgHom_surjective : Function.Surjective (RingCon.mkₐ R (ringCon R M)) :=
   Quotient.mk_surjective
 
+@[simp]
+lemma coe_C (a : R) :
+    ↑(C (σ := ℕ × M) a) = algebraMap R (DividedPowerAlgebra R M) a := by
+  rw [← MvPolynomial.algebraMap_eq, RingCon.coe_algebraMap]
+
+@[deprecated coe_C (since := "2026-06-19")]
 lemma mkAlgHom_C (a : R) :
     RingCon.mkₐ R (ringCon R M) (C a) = algebraMap R (DividedPowerAlgebra R M) a := by
   rw [← MvPolynomial.algebraMap_eq, AlgHom.commutes]
 
+@[deprecated coe_C (since := "2026-06-19")]
 lemma mkRingHom_C (a : R) :
     RingCon.mk' (ringCon R M) (C a) = algebraMap R (DividedPowerAlgebra R M) a :=
   mkAlgHom_C _
@@ -322,7 +329,7 @@ theorem lift'_apply {f : ℕ × M → A} (hf_zero : ∀ m, f (0, m) = 1)
     (hf_mul : ∀ n p m, f ⟨n, m⟩ * f ⟨p, m⟩ = (n + p).choose n • f ⟨n + p, m⟩)
     (hf_add : ∀ n u v, f ⟨n, u + v⟩ = (antidiagonal n).sum fun (k, l) ↦ f ⟨k, u⟩ * f ⟨l, v⟩)
     (p : MvPolynomial (ℕ × M) R) :
-    lift' hf_zero hf_smul hf_mul hf_add (p) = aeval f p := by
+    lift' hf_zero hf_smul hf_mul hf_add ↑p = aeval f p := by
   simp [lift', aeval_eq_eval₂Hom]
 
 @[simp]
@@ -351,7 +358,7 @@ variable {g}
 
 @[simp]
 theorem lift_apply (p : MvPolynomial (ℕ × M) R) :
-    lift hI g hg (p) = aeval (fun nm : ℕ × M ↦ hI.dpow nm.1 (g nm.2)) p := by
+    lift hI g hg ↑p = aeval (fun nm : ℕ × M ↦ hI.dpow nm.1 (g nm.2)) p := by
   rw [lift, lift'_apply]
 
 @[simp]
@@ -418,7 +425,7 @@ def map : DividedPowerAlgebra R M →ₐ[R] DividedPowerAlgebra S N :=
 
 @[simp]
 theorem map_apply {p : MvPolynomial (ℕ × M) R} :
-    map S f (p) = aeval (fun nm ↦ dp S nm.fst (f nm.snd)) p := by
+    map S f ↑p = aeval (fun nm ↦ dp S nm.fst (f nm.snd)) p := by
   rw [map, lift'_apply]
 
 @[simp]
@@ -444,10 +451,9 @@ theorem lift_surjective {f : M →ₗ[R] N} (hf : Function.Surjective f) :
   rintro ⟨n, m, rfl⟩
   obtain ⟨l, rfl⟩ := hf m
   simp only [Algebra.map_top, Subalgebra.coe_comap, AlgHom.coe_range, Set.mem_preimage,
-    Set.mem_range]
+    Set.mem_range, RingCon.mkₐ_apply]
   use dp R n l
   rw [map_apply_dp, dp]
-  rfl
 
 end IsScalarTower
 
