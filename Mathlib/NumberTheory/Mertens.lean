@@ -90,23 +90,22 @@ theorem sum_log_le {x : ℝ} (hx : 1 ≤ x) : ∑ n ∈ Ioc 0 ⌊x⌋₊, log n 
 /-- A crude lower bound on the partial sum of the logarithm. -/
 theorem le_sum_log {x : ℝ} (hx : 1 ≤ x) :
     x * log x - x - log x + 1 ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, log n := by
-  have one_le_floor : 1 ≤ ⌊x⌋₊ := by simpa
+  have : 1 ≤ ⌊x⌋₊ := by simpa
   calc
   _ = ∑ n ∈ Icc 1 ⌊x⌋₊, log n := by rfl
-  _ = ∑ n ∈ Ico (1 + 1) (⌊x⌋₊ + 1), log n := by simp [← add_sum_Ioc_eq_sum_Icc one_le_floor]; rfl
+  _ = ∑ n ∈ Ico (1 + 1) (⌊x⌋₊ + 1), log n := by simp [← add_sum_Ioc_eq_sum_Icc this]; rfl
   _ = ∑ n ∈ Ico 1 ⌊x⌋₊, log (n + 1 : ℕ) := by rw [← sum_Ico_add']
   _ ≥ ∫ t in 1..⌊x⌋₊, log t := by
-    convert MonotoneOn.integral_le_sum_Ico one_le_floor ?_|>.ge
-    · norm_cast
-    · exact (strictMonoOn_log.mono (by grind)).monotoneOn
+    convert ((strictMonoOn_log.mono (by grind)).monotoneOn.integral_le_sum_Ico this).ge
+    norm_cast
   _ = (∫ t in 1..x, log t) - ∫ t in ⌊x⌋₊..x, log t := by
     nth_rw 3 [integral_symm]
     rw [sub_neg_eq_add, integral_add_adjacent_intervals] <;> exact intervalIntegrable_log'
   _ ≥ (∫ t in 1..x, log t) - ∫ t in ⌊x⌋₊..x, log x := by
     gcongr
-    apply intervalIntegral.integral_mono_on (floor_le (by linarith)) intervalIntegrable_log'
+    apply integral_mono_on (floor_le (by linarith)) intervalIntegrable_log'
       intervalIntegral.intervalIntegrable_const
-    intro _ _; rify at one_le_floor; gcongr <;> grind
+    intro _ _; rify at this; gcongr <;> grind
   _ ≥ _ := by
     have : 0 ≤ log x := log_nonneg hx
     have : x - ⌊x⌋₊ ≤ 1 := by linarith [lt_floor_add_one x]
@@ -144,33 +143,13 @@ variable (x : ℝ) (N : ℕ)
 /-- The error term in the von Mangoldt form of Mertens' first theorem. -/
 noncomputable def E₁Λ : ℝ := ∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d / d - log x
 
+/-- The error term in the prime form of Mertens' first theorem. -/
+noncomputable def E₁p : ℝ := ∑ p ∈ primesLE ⌊x⌋₊, log p / p - log x
+
 theorem sum_mangoldt_div_eq : ∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d / d = log x + E₁Λ x := by simp [E₁Λ]
 
 theorem sum_mangoldt_div_eq_nat : ∑ d ∈ Ioc 0 N, Λ d / d = log N + E₁Λ N := by
   simpa using sum_mangoldt_div_eq (x := N)
-
-theorem le_mul_log_add_E₁Λ {x : ℝ} (hx : 0 ≤ x) :
-    ∑ n ∈ Ioc 0 ⌊x⌋₊, log n ≤ x * (log x + E₁Λ x) := calc
-  _ = ∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d * (x / d) := by
-    rw [←sum_mangoldt_div_eq, mul_sum]; ring_nf
-  _ ≥ _ := by
-    rw [sum_log_eq_sum_mangoldt]
-    gcongr
-    · exact vonMangoldt_nonneg
-    · exact floor_le <| div_nonneg (by linarith) (by linarith)
-
-theorem mul_log_add_E₁Λ_le (x : ℝ) :
-    x * (log x + E₁Λ x) ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, log n + ψ x := calc
-  _ = ∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d * (x / d) := by
-    rw [←sum_mangoldt_div_eq, mul_sum]; ring_nf
-  _ ≤ ∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d * (⌊x / d⌋₊ + 1) := by
-    gcongr
-    · exact vonMangoldt_nonneg
-    · exact lt_floor_add_one _|>.le
-  _ = _ := by simp [psi, mul_add, sum_add_distrib, sum_log_eq_sum_mangoldt]
-
-/-- The error term in the von Mangoldt form of Mertens' first theorem. -/
-noncomputable def E₁p : ℝ := ∑ p ∈ primesLE ⌊x⌋₊, log p / p - log x
 
 theorem sum_log_prime_div_eq : ∑ p ∈ primesLE ⌊x⌋₊, log p / p = log x + E₁p x := by simp [E₁p]
 
@@ -185,6 +164,29 @@ theorem E₁p_le_E₁Λ : E₁p x ≤ E₁Λ x := by
   have : 0 ≤ Λ p := vonMangoldt_nonneg
   positivity
 
+/-- One can lower bound `E₁Λ x` using a partial sum of logarithms. -/
+theorem le_mul_log_add_E₁Λ {x : ℝ} (hx : 0 ≤ x) :
+    ∑ n ∈ Ioc 0 ⌊x⌋₊, log n ≤ x * (log x + E₁Λ x) := calc
+  _ = ∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d * (x / d) := by
+    rw [←sum_mangoldt_div_eq, mul_sum]; ring_nf
+  _ ≥ _ := by
+    rw [sum_log_eq_sum_mangoldt]
+    gcongr
+    · exact vonMangoldt_nonneg
+    · exact floor_le <| div_nonneg (by linarith) (by linarith)
+
+/-- One can upper bound `E₁Λ x` using a partial sum of logarithms. -/
+theorem mul_log_add_E₁Λ_le (x : ℝ) :
+    x * (log x + E₁Λ x) ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, log n + ψ x := calc
+  _ = ∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d * (x / d) := by
+    rw [←sum_mangoldt_div_eq, mul_sum]; ring_nf
+  _ ≤ ∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d * (⌊x / d⌋₊ + 1) := by
+    gcongr
+    · exact vonMangoldt_nonneg
+    · exact lt_floor_add_one _|>.le
+  _ = _ := by simp [psi, mul_add, sum_add_distrib, sum_log_eq_sum_mangoldt]
+
+/-- One can lower bound `E₁p x` using a partial sum of logarithms. -/
 theorem mul_log_add_E₁p_le (x : ℝ) : x * (log x + E₁p x) ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, log n + θ x := calc
   _ = ∑ p ∈ primesLE ⌊x⌋₊, log p * (x / p) := by
     rw [←sum_log_prime_div_eq, mul_sum]; ring_nf
@@ -238,17 +240,12 @@ theorem E₁_le : E₁ ≤ 1 := by
     sum_le_sum_of_subset_of_nonneg (by grind) (fun n _ _ ↦ e₁_nonneg n)
   have : ∑ n ∈ range (2 * N + 5), e₁ n = log 2 / 2 + log 3 / 6 + ∑ n ∈ .Ico 5 (2 * N + 5), e₁ n
       := by
-    convert sum_union (s₁ := {0,1,2,3,4}) (s₂ := .Ico 5 (2 * N + 5)) ?_
+    convert sum_union (s₁ := {0,1,2,3,4}) (s₂ := .Ico 5 (2 * N + 5)) (by grind [disjoint_left])
     · ext n; simp; lia
-    · have : ¬ Nat.Prime 4 := by decide
-      simp [e₁, Nat.prime_two, Nat.prime_three, this]
-      ring_nf
-    rw [Finset.disjoint_left]
-    grind
+    simp [e₁, Nat.prime_two, Nat.prime_three, (by decide : ¬ Nat.Prime 4)]
+    ring_nf
   have : ∑ n ∈ .Ico 5 (2 * N + 5), e₁ n = ∑ n ∈ .range N, e₁ (2 * n + 5) := by
-    apply (sum_of_injOn (fun n ↦ 2 * n + 5) _ _ _ (by simp)).symm
-    · intro; grind
-    · intro; grind
+    apply (sum_of_injOn (2 * · + 5) (by intro; grind) (by intro; grind) _ (by simp)).symm
     simp only [mem_Ico, coe_range, Set.mem_image, Set.mem_Iio, not_exists, not_and, e₁,
       ite_eq_right_iff, div_eq_zero_iff, log_eq_zero, cast_eq_zero, cast_eq_one,
       _root_.mul_eq_zero, and_imp]
@@ -266,17 +263,17 @@ theorem E₁_le : E₁ ≤ 1 := by
     · field_simp; ring_nf; gcongr <;> norm_num
     positivity
   have : ∑ n ∈ .range N, g (n + 1) ≤ ∫ x in 0..N, g x := by
-    convert AntitoneOn.sum_le_integral ?_ (x₀ := 0) (a := N) (f := g) using 1
+    convert (antitoneOn_of_deriv_nonpos (convex_Icc 0 _) ..).sum_le_integral (a := N) (f := g)
+        using 1
     · simp
     · simp
-    apply antitoneOn_of_deriv_nonpos (convex_Icc _ _)
     · refine fun t ht ↦ ContinuousAt.continuousWithinAt ?_
       simp only [Set.mem_Icc, g] at ht ⊢
-      have : (2 * t + 3) ≠ 0 := by grind
+      have : (2 * t + 3) ≠ 0 := by linarith
       fun_prop (disch := grind)
     · refine fun t ht ↦ DifferentiableAt.differentiableWithinAt ?_
       simp only [interior_Icc, Set.mem_Ioo] at ht
-      have : (2 * t + 3) ^ 2 ≠ 0 := by simp; grind
+      have : (2 * t + 3) ^ 2 ≠ 0 := by simp; linarith
       fun_prop (disch := grind)
     · intro t ht
       simp at ht
@@ -286,31 +283,28 @@ theorem E₁_le : E₁ ≤ 1 := by
       simp
       field_simp
       have : 3 ≤ 2 * t + 3 := by linarith
-      have : 2 * log (2 * t + 3) ≥ 1 := by
-        grw [← ht.1]; simp; linarith [log_three_gt_d9]
+      have : 2 * log (2 * t + 3) ≥ 1 := by grw [← ht.1]; simp; linarith [log_three_gt_d9]
       grw [this]; simp
   have : ∫ x in 0..N, g x ≤ (log 3 + 1) / 6 := by
     let f : ℝ → ℝ := fun t ↦ (-log (2 * t + 3) - 1) / (2 * (2 * t + 3))
-    have {x : ℝ} (hx : 0 ≤ x) :
-        HasDerivAt f (g x) x := by
+    have {x : ℝ} (hx : 0 ≤ x) : HasDerivAt f (g x) x := by
       have : HasDerivAt (2 * · + 3) 2 x := HasDerivAt.add_const _ (hasDerivAt_const_mul 2)
       convert! HasDerivAt.comp x ?_ this (h₂ := fun t ↦ (-log t - 1) / (2 * t))
           (h₂' := log (2 * x + 3) / (2 * (2 * x + 3)^2)) using 1
       · grind
-      convert! HasDerivAt.fun_div (c' := -1 / (2 * x + 3)) _ (hasDerivAt_const_mul (2:ℝ)) _ using 1
+      convert! HasDerivAt.fun_div (c' := -1 / (2 * x + 3)) _ (hasDerivAt_const_mul (2 :ℝ)) _ using 1
       · field
       · convert! ((hasDerivAt_log (by linarith : 2 * x + 3 ≠ 0)).neg).sub_const _ using 1
         grind
-      grind
-    have hN : 0 ≤ (N : ℝ) := by grind
+      linarith
+    have hN : 0 ≤ (N : ℝ) := cast_nonneg' N
     rw [intervalIntegral.integral_eq_sub_of_hasDerivAt (f := f)]
     · have : 0 ≤ log (3 + N * 2) := log_nonneg (by norm_cast; linarith)
       simp [f]; field_simp; grind
-    · rw [Set.uIcc_of_le hN]; grind
-    apply ((ContinuousOn.log (f := (2 * · + 3)) (by fun_prop) _).div₀
+    · grind [Set.uIcc_of_le]
+    apply ((ContinuousOn.log (f := (2 * · + 3)) (by fun_prop) (by grind [Set.uIcc_of_le])).div₀
         (by fun_prop) _).intervalIntegrable
-    · rw [Set.uIcc_of_le hN]; grind
-    rw [Set.uIcc_of_le hN]; simp +contextual; grind
+    rw [Set.uIcc_of_le hN]; simp; grind
   linarith [log_two_lt_d9, log_three_lt_d9]
 
 theorem E₁_nonneg : 0 ≤ E₁ := tsum_nonneg e₁_nonneg
@@ -404,9 +398,6 @@ theorem sum_mangoldt_div_sub_log_bound {x : ℝ} (hx : 1 ≤ x) :
   rw [abs_le, sum_mangoldt_div_eq]
   split_ands <;> linarith [E₁Λ_le hx, le_E₁Λ hx, log_four_eq, log_two_gt_d9]
 
-theorem E₁Λ_bounded' : ∃ c > 0, ∀ x ≥ 1, |E₁Λ x| ≤ c :=
-  ⟨log 4 + 1, by positivity, fun x hx ↦ sum_mangoldt_div_sub_log_bound hx⟩
-
 theorem E₁Λ_bounded : E₁Λ =O[atTop] (fun _ ↦ (1 : ℝ)) := by
   simp only [isBigO_iff, norm_eq_abs, norm_one, mul_one, eventually_atTop]
   exact ⟨log 4 + 1, 1, fun _ hx ↦ sum_mangoldt_div_sub_log_bound hx⟩
@@ -430,17 +421,14 @@ theorem sum_log_prime_div_sub_log_bound_nat (N : ℕ) :
   rw [abs_le']; and_intros <;>
     linarith [le_E₁p_nat N, E₁_le, E₁p_le hx, sum_log_prime_div_eq, log_four_eq, log_two_lt_d9]
 
-theorem E₁p.bounded : ∃ c > 0, ∀ x ≥ 1, |E₁p x| ≤ c :=
-  ⟨3, by norm_num, fun _ hx ↦ sum_log_prime_div_sub_log_bound hx⟩
-
-theorem sum_log_prime_div_eq_log_add_bounded : E₁p =O[atTop] (fun _ ↦ (1 : ℝ)) := by
-  simp only [isBigO_iff, norm_eq_abs, norm_one, mul_one, eventually_atTop, E₁p]
-  exact ⟨3, 1, fun _ ↦ sum_log_prime_div_sub_log_bound⟩
+theorem E₁p_bounded : E₁p =O[atTop] (fun _ ↦ (1 : ℝ)) := by
+  simp only [isBigO_iff, norm_eq_abs, norm_one, mul_one, eventually_atTop]
+  exact ⟨3, 1, fun _ hx ↦ sum_log_prime_div_sub_log_bound hx⟩
 
 theorem sum_log_prime_div_sim_log : (fun x ↦ ∑ p ∈ primesLE ⌊x⌋₊, log p / p)
     ~[atTop] log := by
-  apply IsLittleO.isEquivalent (IsBigO.trans_isLittleO _ (isLittleO_const_log_atTop (c := 1)))
-  convert! sum_log_prime_div_eq_log_add_bounded using 1
+  apply (IsBigO.trans_isLittleO _ (isLittleO_const_log_atTop (c := 1))).isEquivalent
+  convert! E₁p_bounded using 1
 
 end FirstTheorem
 
