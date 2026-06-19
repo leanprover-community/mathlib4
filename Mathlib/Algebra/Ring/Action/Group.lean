@@ -31,6 +31,12 @@ def MulSemiringAction.toRingEquiv [MulSemiringAction G R] : G →* (R ≃+* R) w
   map_one' := by ext; simp
   map_mul' x y := by ext; simp [mul_smul]
 
+@[deprecated (since := "2026-06-19")] alias MulSemiringAction.toRingEquiv_apply :=
+MulSemiringAction.toRingEquiv_apply_apply
+
+@[deprecated (since := "2026-06-19")] alias MulSemiringAction.toRingEquiv_symm_apply :=
+MulSemiringAction.toRingEquiv_apply_symm_apply
+
 instance : MulSemiringAction (R ≃+* R) R where
   smul := (· ·)
   mul_smul _ _ _ := rfl
