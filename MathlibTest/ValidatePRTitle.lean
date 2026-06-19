@@ -202,3 +202,7 @@ info: Message: 'error: the PR title contains multiple consecutive spaces; please
 
 #guard_msgs in
 #check_title "feat(ModuleForm): W3C"
+
+/-- info: Message: 'error: the PR subject should be lowercased' -/
+#guard_msgs in
+#check_title "feat(ModuleForm): A new lemma"
