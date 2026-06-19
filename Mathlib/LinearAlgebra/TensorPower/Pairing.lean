@@ -43,15 +43,6 @@ noncomputable def multilinearMapToDual :
       (MultilinearMap.compLinearMap (MultilinearMap.mkPiRing R (Fin n) 1) f)
     map_update_add' := fun f i φ₁ φ₂ ↦ by
       ext v
-      /-dsimp
-      simp only [lift.tprod, MultilinearMap.compLinearMap_apply, this,
-        _root_.add_apply, MultilinearMap.map_update_add]
-    map_update_smul' := fun f i a φ ↦ by
-      ext v
-      dsimp
-      simp only [lift.tprod, MultilinearMap.compLinearMap_apply, this,
-         _root_.smul_apply, MultilinearMap.map_update_smul]
-      dsimp }-/
       simp [this]
     map_update_smul' := fun f i a φ ↦ by
       ext v

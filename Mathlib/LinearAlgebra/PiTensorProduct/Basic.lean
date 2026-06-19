@@ -641,12 +641,12 @@ def piTensorHomMapFun₂ : (⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) →
 theorem piTensorHomMapFun₂_add (φ ψ : ⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) :
     piTensorHomMapFun₂ (φ + ψ) = piTensorHomMapFun₂ φ + piTensorHomMapFun₂ ψ := by
   dsimp [piTensorHomMapFun₂]; ext; simp only [map_add, LinearMap.compMultilinearMap_apply,
-    lift.tprod, MultilinearMap.add_apply, _root_.add_apply]
+    lift.tprod, add_apply]
 
 theorem piTensorHomMapFun₂_smul (r : R) (φ : ⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) :
     piTensorHomMapFun₂ (r • φ) = r • piTensorHomMapFun₂ φ := by
   dsimp [piTensorHomMapFun₂]; ext; simp only [map_smul, LinearMap.compMultilinearMap_apply,
-    lift.tprod, MultilinearMap.smul_apply, _root_.smul_apply]
+    lift.tprod, smul_apply]
 
 /--
 Let `sᵢ`, `tᵢ` and `t'ᵢ` be families of `R`-modules.
