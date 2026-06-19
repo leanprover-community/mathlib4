@@ -656,7 +656,9 @@ lemma ker_ofAlgEquiv (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R
   rw [ker_eq_ker_aeval_val, ofAlgEquiv_val, Function.comp_def, ← AlgHom.coe_coe,
     ← MvPolynomial.comp_aeval, ← AlgHom.comap_ker, ← RingHom.ker_coe_toRingHom,
     AlgHomClass.toRingHom_toAlgHom]
-  sorry
+  ext x
+  rw [ker_eq_ker_aeval_val, Ideal.mem_comap, RingHom.mem_ker]
+  exact map_eq_zero_iff _ e.injective
 
 lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
     P.ker.map (Q.toComp P).toAlgHom = RingHom.ker (Q.ofComp P).toAlgHom := by

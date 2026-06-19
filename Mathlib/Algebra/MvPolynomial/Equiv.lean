@@ -609,20 +609,17 @@ polynomials over multivariable polynomials in `Fin n`.
 def finSuccEquiv : MvPolynomial (Fin (n + 1)) R ≃ₐ[R] Polynomial (MvPolynomial (Fin n) R) :=
   (renameEquiv R (_root_.finSuccEquiv n)).trans (optionEquivLeft R (Fin n))
 
-theorem finSuccEquiv_eq :
-    (finSuccEquiv R n : MvPolynomial (Fin (n + 1)) R →+* Polynomial (MvPolynomial (Fin n) R)) =
-      eval₂Hom (Polynomial.C.comp (C : R →+* MvPolynomial (Fin n) R)) fun i : Fin (n + 1) =>
-        Fin.cases Polynomial.X (fun k => Polynomial.C (X k)) i := by
+theorem finSuccEquiv_eq : finSuccEquiv R n =
+    eval₂Hom (Polynomial.C.comp (C : R →+* MvPolynomial (Fin n) R)) fun i : Fin (n + 1) ↦
+      Fin.cases Polynomial.X (fun k ↦ Polynomial.C (X k)) i := by
   ext i : 2
-  · sorry
+  · simp [finSuccEquiv]
   · refine Fin.cases ?_ ?_ i <;> simp [optionEquivLeft_apply, finSuccEquiv]
 
-theorem finSuccEquiv_apply (p : MvPolynomial (Fin (n + 1)) R) :
-    finSuccEquiv R n p =
-      eval₂Hom (Polynomial.C.comp (C : R →+* MvPolynomial (Fin n) R))
-        (fun i : Fin (n + 1) => Fin.cases Polynomial.X (fun k => Polynomial.C (X k)) i) p := by
-  rw [← finSuccEquiv_eq, RingHom.coe_coe]
-  sorry
+theorem finSuccEquiv_apply (p : MvPolynomial (Fin (n + 1)) R) : finSuccEquiv R n p =
+    eval₂Hom (Polynomial.C.comp (C : R →+* MvPolynomial (Fin n) R))
+      (fun i : Fin (n + 1) ↦ Fin.cases Polynomial.X (fun k ↦ Polynomial.C (X k)) i) p := by
+  simp [← finSuccEquiv_eq]
 
 theorem finSuccEquiv_comp_C_eq_C {R : Type u} [CommSemiring R] (n : ℕ) :
     (↑(MvPolynomial.finSuccEquiv R n).symm : Polynomial (MvPolynomial (Fin n) R) →+* _).comp
