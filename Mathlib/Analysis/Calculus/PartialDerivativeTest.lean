@@ -103,7 +103,7 @@ noncomputable def iteratedFDerivQuadraticMap {V : Type*} [NormedAddCommGroup V]
 
 
 /-- A continuous multilinear map is bilinear. -/
-noncomputable def continuousBilinearMap_of_continuousMultilinearMap
+noncomputable def continuousBilinearMapOfContinuousMultilinearMap
     {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
     {V : Type*}
     [NormedAddCommGroup V] [NormedSpace 𝕜 V] [FiniteDimensional 𝕜 V]
@@ -119,36 +119,35 @@ noncomputable def continuousBilinearMap_of_continuousMultilinearMap
   cont := continuous_clm_apply.mpr fun x => g.cont.comp'
     <| continuous_id'.matrixVecCons continuous_const}
 
-
-
--- Aristotle start
-
+/-- . -/
 def QuadraticMap.toMultilinearMap {V : Type*} [AddCommGroup V] [Module ℝ V]
   (Q : QuadraticMap ℝ V ℝ) : MultilinearMap ℝ (fun _ : Fin 2 => V) ℝ := {
     toFun := fun v => Q.polarBilin (v 0) (v 1)
     map_update_add' := by simp
     map_update_smul' := by simp}
 
-noncomputable def QuadraticMap.toMultilinearMap_half {V : Type*} [AddCommGroup V] [Module ℝ V]
+/-- . -/
+noncomputable def QuadraticMap.toMultilinearMapHalf {V : Type*} [AddCommGroup V] [Module ℝ V]
   (Q : QuadraticMap ℝ V ℝ) :=
   ((1:ℝ)/2) • QuadraticMap.toMultilinearMap Q
 
-
-theorem QuadraticMap.toMultilinearMap_continuous_half_strange {V : Type*}
+/-- . -/
+theorem QuadraticMap.toMultilinearMap_continuousHalf_strange {V : Type*}
     [NormedAddCommGroup V] [NormedSpace ℝ V]
     [TopologicalSpace (V →ₗ[ℝ] ℝ)] [IsModuleTopology ℝ V]
     [ContinuousSMul ℝ (V →ₗ[ℝ] ℝ)]
     [ContinuousAdd (V →ₗ[ℝ] ℝ)]
-    [FiniteDimensional ℝ V] (Q : QuadraticMap ℝ V ℝ) : Continuous Q.toMultilinearMap_half := by
+    [FiniteDimensional ℝ V] (Q : QuadraticMap ℝ V ℝ) : Continuous Q.toMultilinearMapHalf := by
   -- The function Q.toMultilinearMap is a multilinear map on a finite-dimensional vector space V.
   have h_multilinear : Continuous (fun (v : Fin 2 → V) => Q.polarBilin (v 0) (v 1)) := by
     fun_prop
   convert h_multilinear.const_smul ( 1 / 2 : ℝ ) using 1
-  simp only [toMultilinearMap_half, one_div, toMultilinearMap, Fin.isValue, polarBilin_apply_apply,
+  simp only [toMultilinearMapHalf, one_div, toMultilinearMap, Fin.isValue, polarBilin_apply_apply,
     smul_eq_mul]
   ext i
   simp
 
+/-- . -/
 noncomputable def QuadraticMap.toMultilinearMapHALF {V : Type*} [AddCommGroup V] [Module ℝ V]
   (Q : QuadraticMap ℝ V ℝ) :
   MultilinearMap ℝ (fun _ : Fin 2 => V) ℝ :=
@@ -199,12 +198,12 @@ theorem QuadraticMap.toMultilinearMap_continuous {V : Type*}
     Continuous.clm_apply <|
       show Continuous fun v : Fin 2 → V => v 1 from continuous_apply 1 using 1; aesop
 
-theorem QuadraticMap.toMultilinearMap_continuous_half {V : Type*}
+theorem QuadraticMap.toMultilinearMap_continuousHalf {V : Type*}
     [NormedAddCommGroup V] [NormedSpace ℝ V]
-    [FiniteDimensional ℝ V] (Q : QuadraticMap ℝ V ℝ) : Continuous Q.toMultilinearMap_half :=
+    [FiniteDimensional ℝ V] (Q : QuadraticMap ℝ V ℝ) : Continuous Q.toMultilinearMapHalf :=
   continuous_const.smul <| toMultilinearMap_continuous Q
 
-
+/-- . -/
 theorem QuadraticMap.toMultilinearMap_continuousHALF {V : Type*}
   [NormedAddCommGroup V] [NormedSpace ℝ V]
   [FiniteDimensional ℝ V] (Q : QuadraticMap ℝ V ℝ) : Continuous Q.toMultilinearMapHALF := by
@@ -267,17 +266,19 @@ def QuadraticMap.toContinuousMultilinearMap {V : Type*} [NormedAddCommGroup V] [
   { Q.toMultilinearMap with
     cont := Q.toMultilinearMap_continuous }
 
+/-- . -/
 noncomputable def QuadraticMap.toContinuousMultilinearMapHALF {V : Type*}
   [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V] (Q : QuadraticMap ℝ V ℝ) :
   ContinuousMultilinearMap ℝ (fun _ : Fin 2 ↦ V) ℝ :=
   { Q.toMultilinearMapHALF with
     cont := Q.toMultilinearMap_continuousHALF }
 
-noncomputable def QuadraticMap.toContinuousMultilinearMap_half {V : Type*}
+/-- . -/
+noncomputable def QuadraticMap.toContinuousMultilinearMapHalf {V : Type*}
   [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V] (Q : QuadraticMap ℝ V ℝ) :
   ContinuousMultilinearMap ℝ (fun _ : Fin 2 ↦ V) ℝ :=
-  { Q.toMultilinearMap_half with
-    cont := Q.toMultilinearMap_continuous_half }
+  { Q.toMultilinearMapHalf with
+    cont := Q.toMultilinearMap_continuousHalf }
 
 /-
 The constructed continuous multilinear map agrees with the polar bilinear form.
@@ -287,30 +288,25 @@ theorem QuadraticMap.toContinuousMultilinearMap_apply {V : Type*} [NormedAddComm
   Q.toContinuousMultilinearMap ![x, y] = Q.polarBilin x y := by
     rfl
 
-theorem QuadraticMap.toContinuousMultilinearMap_applyHALF {V : Type*} [NormedAddCommGroup V]
+/-- . -/
+theorem QuadraticMap.toContinuousMultilinearMap_applyHalf {V : Type*} [NormedAddCommGroup V]
   [NormedSpace ℝ V] [FiniteDimensional ℝ V] (Q : QuadraticMap ℝ V ℝ) (x y : V) :
   Q.toContinuousMultilinearMapHALF ![x, y] = (1/2) * Q.polarBilin x y := by
     rfl
 
-theorem QuadraticMap.toContinuousMultilinearMap_apply_half {V : Type*} [NormedAddCommGroup V]
-  [NormedSpace ℝ V] [FiniteDimensional ℝ V] (Q : QuadraticMap ℝ V ℝ) (x y : V) :
-  Q.toContinuousMultilinearMap_half ![x, y] = (1/2) * Q.polarBilin x y := by
-    rfl
-
--- Aristotle end
-
-lemma coercive_of_posdef'_half {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+/-- . -/
+lemma coercive_of_posdef'Half {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     [FiniteDimensional ℝ V] {F : QuadraticMap ℝ V ℝ}
     (hf' : F.PosDef) :
-    IsCoercive (continuousBilinearMap_of_continuousMultilinearMap
-        F.toContinuousMultilinearMap_half) := by
+    IsCoercive (continuousBilinearMapOfContinuousMultilinearMap
+        F.toContinuousMultilinearMapHalf) := by
   nontriviality V
   have h₀ : ∃ x : ↑(Metric.sphere 0 1), ∀ (y : ↑(Metric.sphere 0 1)),
-    (fun y ↦ F.toContinuousMultilinearMap_half ![y, y]) x.1 ≤
-      (fun y ↦ F.toContinuousMultilinearMap_half ![y, y])
+    (fun y ↦ F.toContinuousMultilinearMapHalf ![y, y]) x.1 ≤
+      (fun y ↦ F.toContinuousMultilinearMapHalf ![y, y])
       y.1 := by
     obtain ⟨x,hx⟩ := IsCompact.exists_isMinOn
-      (f := (fun y => F.toContinuousMultilinearMap_half ![y, y]))
+      (f := (fun y => F.toContinuousMultilinearMapHalf ![y, y]))
       (isCompact_sphere (0:V) 1) (NormedSpace.sphere_nonempty.mpr (by simp))
       (Continuous.continuousOn <| by fun_prop)
     use ⟨x,hx.1⟩
@@ -321,11 +317,11 @@ lemma coercive_of_posdef'_half {V : Type*} [NormedAddCommGroup V] [NormedSpace �
     simp
   simp only [Subtype.forall, mem_sphere_iff_norm, sub_zero, Subtype.exists, exists_prop] at h₀
   obtain ⟨m,hm⟩ := h₀
-  use F.toContinuousMultilinearMap_half ![m, m]
-  rw [continuousBilinearMap_of_continuousMultilinearMap]
+  use F.toContinuousMultilinearMapHalf ![m, m]
+  rw [continuousBilinearMapOfContinuousMultilinearMap]
   constructor
-  ·   unfold QuadraticMap.toContinuousMultilinearMap_half
-        QuadraticMap.toMultilinearMap_half
+  ·   unfold QuadraticMap.toContinuousMultilinearMapHalf
+        QuadraticMap.toMultilinearMapHalf
       change 0 < (fun v ↦ (1/2) * (F (v 0 + v 1) - F (v 0) - F (v 1))) ![m,m]
       have (x y : V) : F (x + y) = F x + F y + F.polarBilin x y := QuadraticMap.map_add (⇑F) x y
       simp only [succ_eq_add_one, reduceAdd, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
@@ -342,8 +338,8 @@ lemma coercive_of_posdef'_half {V : Type*} [NormedAddCommGroup V] [NormedSpace �
   · intro u
     by_cases hu : u = 0
     · subst hu
-      unfold QuadraticMap.toContinuousMultilinearMap_half
-        QuadraticMap.toMultilinearMap_half
+      unfold QuadraticMap.toContinuousMultilinearMapHalf
+        QuadraticMap.toMultilinearMapHalf
       simp only [one_div, norm_zero, mul_zero, MultilinearMap.toFun_eq_coe,
         _root_.smul_apply, smul_eq_mul, ContinuousLinearMap.coe_mk', LinearMap.coe_mk,
         AddHom.coe_mk, inv_pos, ofNat_pos, mul_nonneg_iff_of_pos_left]
@@ -355,10 +351,10 @@ lemma coercive_of_posdef'_half {V : Type*} [NormedAddCommGroup V] [NormedSpace �
         simp only [mul_one, MultilinearMap.toFun_eq_coe, coe_coe,
           ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk])
       have h₂ := update₁ ▸ update₁ ▸
-        F.toContinuousMultilinearMap_half.map_update_smul' ![‖u‖⁻¹ • u,u] 1 ‖u‖⁻¹ u
+        F.toContinuousMultilinearMapHalf.map_update_smul' ![‖u‖⁻¹ • u,u] 1 ‖u‖⁻¹ u
       simp only [MultilinearMap.toFun_eq_coe, coe_coe, smul_eq_mul] at h₂
-      have : F.toContinuousMultilinearMap_half ![u, u] * ‖u‖⁻¹
-           = F.toContinuousMultilinearMap_half ![‖u‖⁻¹ • u, u] := by
+      have : F.toContinuousMultilinearMapHalf ![u, u] * ‖u‖⁻¹
+           = F.toContinuousMultilinearMapHalf ![‖u‖⁻¹ • u, u] := by
         simp_rw [Matrix.vecCons, ← curryLeft_apply, mul_comm]
         simp
       rw [this, mul_comm, ← h₂]
@@ -368,10 +364,11 @@ lemma coercive_of_posdef'_half {V : Type*} [NormedAddCommGroup V] [NormedSpace �
         refine Real.norm_of_nonneg ?_
         simp)
 
-lemma coercive_of_posdef'HALF {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+/-- . -/
+lemma coercive_of_posdefHalf {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     [FiniteDimensional ℝ V] {F : QuadraticMap ℝ V ℝ}
     (hf' : F.PosDef) :
-    IsCoercive (continuousBilinearMap_of_continuousMultilinearMap
+    IsCoercive (continuousBilinearMapOfContinuousMultilinearMap
         F.toContinuousMultilinearMapHALF) := by
   nontriviality V
   have h₀ : ∃ x : ↑(Metric.sphere 0 1), ∀ (y : ↑(Metric.sphere 0 1)),
@@ -391,7 +388,7 @@ lemma coercive_of_posdef'HALF {V : Type*} [NormedAddCommGroup V] [NormedSpace �
   simp only [Subtype.forall, mem_sphere_iff_norm, sub_zero, Subtype.exists, exists_prop] at h₀
   obtain ⟨m,hm⟩ := h₀
   use F.toContinuousMultilinearMapHALF ![m, m]
-  rw [continuousBilinearMap_of_continuousMultilinearMap]
+  rw [continuousBilinearMapOfContinuousMultilinearMap]
   constructor
   ·   unfold QuadraticMap.toContinuousMultilinearMapHALF
         QuadraticMap.toMultilinearMapHALF
@@ -465,7 +462,7 @@ lemma iteratedFDeriv_two_swap {V : Type*} [NormedAddCommGroup V] [NormedSpace �
 
 
 /-- Positive definiteness implies coercivity.
-  The proof uses the general fact `coercive_of_posdef'HALF`
+  The proof uses the general fact `coercive_of_posdefHalf`
   but requires a differentiability assumption on `f`.
 -/
 lemma coercive_of_posdef_of_contdiff {V : Type*}
@@ -473,28 +470,28 @@ lemma coercive_of_posdef_of_contdiff {V : Type*}
     [FiniteDimensional ℝ V] {f : V → ℝ} {x₀ : V}
     (hf : ContDiffAt ℝ ⊤ f x₀)
     (hf' : (iteratedFDerivQuadraticMap f x₀).PosDef) :
-    IsCoercive (continuousBilinearMap_of_continuousMultilinearMap
+    IsCoercive (continuousBilinearMapOfContinuousMultilinearMap
         (iteratedFDeriv ℝ 2 f x₀)) := by
   have key : ∀ x y : V,
       (iteratedFDerivQuadraticMap f x₀).toContinuousMultilinearMapHALF ![x, y]
         = iteratedFDeriv ℝ 2 f x₀ ![x, y] := by
     intro x y
-    rw [QuadraticMap.toContinuousMultilinearMap_applyHALF,
+    rw [QuadraticMap.toContinuousMultilinearMap_applyHalf,
       polarBilin_iteratedFDerivQuadraticMap, iteratedFDeriv_two_swap hf]
     ring
-  have heq : continuousBilinearMap_of_continuousMultilinearMap
+  have heq : continuousBilinearMapOfContinuousMultilinearMap
         (iteratedFDerivQuadraticMap f x₀).toContinuousMultilinearMapHALF
-      = continuousBilinearMap_of_continuousMultilinearMap (iteratedFDeriv ℝ 2 f x₀) := by
+      = continuousBilinearMapOfContinuousMultilinearMap (iteratedFDeriv ℝ 2 f x₀) := by
     ext x y
-    simpa [continuousBilinearMap_of_continuousMultilinearMap] using key x y
+    simpa [continuousBilinearMapOfContinuousMultilinearMap] using key x y
   rw [← heq]
-  exact coercive_of_posdef'HALF hf'
+  exact coercive_of_posdefHalf hf'
 
 /-- Positive definiteness implies coercivity. -/
 lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     [FiniteDimensional ℝ V] {f : V → ℝ} {x₀ : V}
     (hf' : (iteratedFDerivQuadraticMap f x₀).PosDef) :
-    IsCoercive (continuousBilinearMap_of_continuousMultilinearMap
+    IsCoercive (continuousBilinearMapOfContinuousMultilinearMap
         (iteratedFDeriv ℝ 2 f x₀)) := by
   nontriviality V
   have h₀ : ∃ x : ↑(Metric.sphere 0 1), ∀ (y : ↑(Metric.sphere 0 1)),
@@ -512,7 +509,7 @@ lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
   simp only [Subtype.forall, mem_sphere_iff_norm, sub_zero, Subtype.exists, exists_prop] at h₀
   obtain ⟨m,hm⟩ := h₀
   use iteratedFDeriv ℝ 2 f x₀ ![m, m]
-  rw [continuousBilinearMap_of_continuousMultilinearMap]
+  rw [continuousBilinearMapOfContinuousMultilinearMap]
   constructor
   · exact hf' m (by intro hc;simp [hc] at hm)
   · intro u
@@ -538,7 +535,7 @@ lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
         refine Real.norm_of_nonneg ?_
         simp)
 
-
+/-- . -/
 theorem le_of_littleO {V : Type*}
     [NormedAddCommGroup V] [InnerProductSpace ℝ V]
     {f : V → ℝ} {x₀ x : V} {C : ℝ}
@@ -570,7 +567,7 @@ theorem isLocalMin_of_posDef_of_littleo {V : Type*} [NormedAddCommGroup V]
   apply (h (half_pos hC.1)).mono
   intro x
   have hx := hC.2 (x - x₀)
-  simp only [continuousBilinearMap_of_continuousMultilinearMap, MultilinearMap.toFun_eq_coe,
+  simp only [continuousBilinearMapOfContinuousMultilinearMap, MultilinearMap.toFun_eq_coe,
     coe_coe, ContinuousLinearMap.coe_mk', LinearMap.coe_mk,
     AddHom.coe_mk] at hx
   rw [mul_assoc,show ![x - x₀, x - x₀] = fun _ => x - x₀ by
@@ -581,6 +578,7 @@ theorem isLocalMin_of_posDef_of_littleo {V : Type*} [NormedAddCommGroup V]
   rw [← pow_two] at hx
   exact le_of_littleO hx <| sub_eq_zero.mp hx₀.symm
 
+/-- . -/
 theorem littleO_of_powerseries.inequality {z : ℝ} {r : ℝ} (hr : 0 < r)
     {a : ℝ} (ha : 0 < a) {C : ℝ} (hC : 0 < C) {D : ℝ}
     (hx : z ≤ D / (C * (a * r) ^ 3)) :
@@ -591,6 +589,7 @@ theorem littleO_of_powerseries.inequality {z : ℝ} {r : ℝ} (hr : 0 < r)
   suffices z ^ 2 * (z * C * a ^ 3 * r ^ 3) ≤ z ^ 2 * D by linarith
   gcongr
 
+/-- . -/
 theorem littleO_of_powerseries.aux
     {V : Type*} [NormedAddCommGroup V]
     {x₀ : V}
@@ -604,6 +603,7 @@ theorem littleO_of_powerseries.aux
       exact hx)) using 2
   ring_nf
 
+/-- . -/
 theorem littleO_of_powerseries.calculation {V : Type*} [NormedAddCommGroup V]
     {f : V → ℝ} {x₀ : V}
     {r : NNReal} (hr : 0 < r) {a : ℝ} (ha : 0 < a) {C : ℝ} (hC : 0 < C)
