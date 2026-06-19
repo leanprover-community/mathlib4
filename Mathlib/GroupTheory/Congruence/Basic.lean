@@ -80,7 +80,7 @@ theorem congr_mk {c : Con M} {d : Con N} (e : M ≃* N) (h : c = d.comap e (map_
 @[to_additive (attr := simp)]
 theorem congr_symm {c : Con M} {d : Con N} (e : M ≃* N) (h : c = d.comap e (map_mul e)) :
     (Con.congr e h).symm =
-      Con.congr e.symm (ext <| e.surjective.forall₂.2 fun x y => by simp [h]) :=
+      Con.congr e.symm (ext <| e.surjective.forall₂.2 <| by simp [h]) :=
   rfl
 
 @[to_additive]

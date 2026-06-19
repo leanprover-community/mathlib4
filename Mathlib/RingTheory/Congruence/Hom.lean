@@ -80,8 +80,8 @@ theorem comap_eq {g : N →+* M} :
     c.comap g = ker (c.mk'.comp g) := by
   rw [ker_comp, ker_mk'_eq]
 
-/-- Makes an isomorphism of quotients by two ring congruence relations
-whose underlying rings are isomorphic, given that the relations are compatible. -/
+/-- An isomorphism of rings `e : M ≃+* N` generates an isomorphism between quotient spaces,
+if it is compatible with the relations. -/
 protected def congr {c : RingCon M} {d : RingCon N} (e : M ≃+* N) (h : c = d.comap e) :
     c.Quotient ≃+* d.Quotient where
   __ := Quotient.congr e <| by apply RingCon.ext_iff.mp h
@@ -93,7 +93,7 @@ protected def congr {c : RingCon M} {d : RingCon N} (e : M ≃+* N) (h : c = d.c
 
 @[simp] theorem congr_symm {c : RingCon M} {d : RingCon N} (e : M ≃+* N) (h : c = d.comap e) :
     (RingCon.congr e h).symm =
-      RingCon.congr e.symm (ext <| e.surjective.forall₂.2 fun x y => by simp [h]) :=
+      RingCon.congr e.symm (ext <| e.surjective.forall₂.2 <| by simp [h]) :=
   rfl
 
 /-- Given a function `f`, the smallest ring congruence relation containing the binary
@@ -454,8 +454,8 @@ variable {R : Type*} [CommSemiring R]
 variable {c d : RingCon M} {f : M →ₐ[R] P}
 
 variable (R) in
-/-- Makes an algebra isomorphism of quotients by two ring congruence
-relations, given that the relations are equal. -/
+/-- An isomorphism of algebras `e : M ≃ₐ[R] N` generates an isomorphism between quotient spaces,
+if it is compatible with the relations. -/
 protected def congrₐ {c : RingCon M} {d : RingCon N} (e : M ≃ₐ[R] N) (h : c = d.comap e) :
     c.Quotient ≃ₐ[R] d.Quotient where
   __ := RingCon.congr e h
@@ -468,7 +468,7 @@ theorem congrₐ_mk {c : RingCon M} {d : RingCon N} (e : M ≃ₐ[R] N) (h : c =
 
 @[simp] theorem congrₐ_symm {c : RingCon M} {d : RingCon N} (e : M ≃ₐ[R] N) (h : c = d.comap e) :
     (RingCon.congrₐ R e h).symm =
-      RingCon.congrₐ R e.symm (ext <| e.surjective.forall₂.2 fun x y => by simp [h]) :=
+      RingCon.congrₐ R e.symm (ext <| e.surjective.forall₂.2 <| by simp [h]) :=
   rfl
 
 theorem range_mkₐ : AlgHom.range (mkₐ R c) = ⊤ :=
