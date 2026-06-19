@@ -786,6 +786,11 @@ lemma isEquiv [v₂.Compatible] : v₁.IsEquiv v₂ := by
   intro x y
   simp_rw [← Valuation.Compatible.vle_iff_le]
 
+variable {v₁ v₂} in
+lemma _root_.Valuation.IsEquiv.compatible (h : v₁.IsEquiv v₂) : v₂.Compatible where
+  vle_iff_le x y := by
+    rw [Valuation.Compatible.vle_iff_le (v := v₁), h]
+
 end Valuation
 
 end ValuativeRel

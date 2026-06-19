@@ -8,6 +8,7 @@ module
 public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 public import Mathlib.Topology.Algebra.WithZeroTopology
 public import Mathlib.Topology.Algebra.UniformField
+public import Mathlib.Topology.Algebra.Valued.ValuativeRel
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
@@ -131,7 +132,7 @@ open WithZeroTopology
 --   [TopologicalSpace R] [IsValuativeTopology R]
 variable [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀) [v.Compatible]
 
-theorem continuous_valuation : Continuous (v.restrict : K → (ValueGroup₀ (.ofClass v))) := by
+theorem continuous_restrict : Continuous (v.restrict : K → (ValueGroup₀ (.ofClass v))) := by
   rw [continuous_iff_continuousAt]
   intro x
   rcases eq_or_ne x 0 with (rfl | h)
@@ -182,7 +183,7 @@ end DivisionRing
 
 section Field
 
-variable {K : Type*} [Field K] [ValuativeRel K] [UniformSpace K] [IsValuativeTopology K]
+variable [Field K] [ValuativeRel K] [UniformSpace K] [IsValuativeTopology K]
 
 namespace IsValuativeTopology
 
@@ -227,7 +228,7 @@ noncomputable def extension : Completion K → ValueGroup₀ (.ofClass v) :=
 theorem extension_extends (x : K) : v.extension (x : Completion K) = v.restrict x := by
   refine Completion.isDenseInducing_coe.extend_eq_of_tendsto ?_
   rw [← Completion.isDenseInducing_coe.nhds_eq_comap]
-  exact (continuous_valuation v).continuousAt
+  exact (continuous_restrict v).continuousAt
 
 variable [IsUniformAddGroup K]
 
@@ -237,7 +238,7 @@ theorem continuous_extension : Continuous v.extension := by
   rcases eq_or_ne x₀ 0 with (rfl | h)
   · refine ⟨0, ?_⟩
     rw [← Completion.coe_zero, ← Completion.isDenseInducing_coe.isInducing.nhds_eq_comap]
-    exact (continuous_valuation v).tendsto' 0 0 (map_zero v.restrict)
+    exact (continuous_restrict v).tendsto' 0 0 (map_zero v.restrict)
   · have preimage_one : v ⁻¹' {(1 : Γ₀)} ∈ 𝓝 (1 : K) := by
       have : (v (1 : K) : Γ₀) ≠ 0 := by
         rw [Valuation.map_one]
@@ -507,147 +508,178 @@ noncomputable def valueGroup₀_equiv_extensionValuation :
     simpa [← embedding_inj, valueGroup₀_hom_extensionValuation, Valuation.restrict_def, ← hk',
       ← extensionValuation_toFun] using this
 
-noncomputable instance valuedCompletion : Valued (Completion K) Γ₀ where
-  v := v.extensionValuation
-  is_topological_valuation s := by
-    suffices HasBasis (𝓝 (0 : Completion K)) (fun _ ↦ True)
-        fun γ : (ValueGroup₀ (.ofClass v))ˣ ↦ { x | v.extensionValuation x <
-          (Units.map (ValueGroup₀.embedding (f := (.ofClass v))) γ).1 } by
-      rw [this.mem_iff]
-      simp only [extensionValuation_toFun, Units.coe_map, MonoidHom.coe_coe, true_and]
-      have (x : Completion K) (γ : (ValueGroup₀ (.ofClass v))ˣ) : v.extensionValuation.restrict x <
-          ((Units.map v.valueGroup₀_equiv_extensionValuation.toMonoidHom) γ).1 ↔
-          embedding (v.extension x) < embedding γ.1 := by
-        simp only [MulEquiv.toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_coe]
-        rw [embedding_strictMono.lt_iff_lt, Valuation.restrict_def, restrict₀_apply]
-        by_cases hx0 : x = 0
-        · simp only [hx0]
-          rw [dif_pos (map_zero _)]
-          · simp only [valueGroup₀_equiv_extensionValuation, valueGroup₀_hom_extensionValuation,
-            MulEquiv.ofBijective_apply, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
-            rw [Valuation.restrict_def, restrict₀_apply, dif_neg]
-            · have hext : v.extension 0 = 0 := by rw [extension_eq_zero_iff]
-              simp [hext]
-            · simp [← v.restrict.zero_iff, v.restrict_def,
-                (restrict₀_surjective (.ofClass v) _).choose_spec]
-        · rw [dif_neg (by simp [hx0])]
-          · set y := (restrict₀_surjective (.ofClass v) γ).choose with hy_def
-            have hy := (restrict₀_surjective (.ofClass v) γ).choose_spec
-            apply_fun embedding at hy
-            simp only [← hy_def, embedding_restrict₀, coe_ofClass] at hy
-            simp only [MonoidWithZeroHom.coe_ofClass, extensionValuation_toFun,
-              valueGroup₀_equiv_extensionValuation, valueGroup₀_hom_extensionValuation,
-              MulEquiv.ofBijective_apply, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
-            rw [Valuation.restrict_def, restrict₀_apply, ← hy_def, dif_neg]
-            · simp only [coe_ofClass, extensionValuation_toFun, extension_extends,
-              Valuation.embedding_restrict, WithZero.coe_lt_coe, Subtype.mk_lt_mk,
-              ← Units.val_lt_val, Units.val_mk0]
-              convert embedding_strictMono (f := (.ofClass v)).lt_iff_lt
-            · simp only [coe_ofClass, extensionValuation_apply_coe, map_eq_zero, ← ne_eq]
-              apply_fun v
-              simp [hy]
-      refine ⟨fun ⟨γ, h⟩ ↦ ?_, fun ⟨γ, h⟩ ↦ ?_⟩
-      · use Units.map v.valueGroup₀_equiv_extensionValuation.toMonoidHom γ
-        convert! h
-        apply this
-      · use Units.map v.valueGroup₀_equiv_extensionValuation.symm.toMonoidHom γ
-        convert! h
-        rw [← this]
-        simp [Valuation.restrict_def, restrict₀_apply]
-    simp_rw [← closure_coe_completion_v_lt, Units.coe_map]
-    convert! v.hasBasis_nhds_zero.hasBasis_of_isDenseInducing Completion.isDenseInducing_coe
-    rw [Valuation.restrict_lt_iff_lt_embedding]; rfl
+end Valuation
+
+section Completion
+
+variable [IsUniformAddGroup K]
+
+noncomputable instance UniformSpace.Completion.valuativeRel : ValuativeRel (Completion K) :=
+  .ofValuation (ValuativeRel.valuation K).extensionValuation
+
+instance Valuation.extensionValuation.compatible' :
+    (ValuativeRel.valuation K).extensionValuation.Compatible := Valuation.Compatible.ofValuation _
+
+variable {Γ₀ Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+  [LinearOrderedCommGroupWithZero Γ₀'] (v : Valuation K Γ₀) [v.Compatible]
+  (v' : Valuation K Γ₀') [v'.Compatible]
 
 @[simp]
-theorem valuedCompletion_apply (x : K) : Valued.v (x : Completion K) = v x := by
-  simp [Valued.v]
+theorem Valuation.extensionValuation.isEquiv_iff :
+    v.extensionValuation.IsEquiv v'.extensionValuation := by
+  have := isEquiv v v'
+  intro x y
+  apply UniformSpace.Completion.induction_on₂ (p := fun x y ↦ v.extensionValuation x ≤
+    v.extensionValuation y ↔ v'.extensionValuation x ≤ v'.extensionValuation y)
+  · sorry -- union of closed
+  · simpa
 
-lemma valuedCompletion_surjective_iff :
-    Function.Surjective (v : Completion K → Γ₀) ↔ Function.Surjective (v : K → Γ₀) := by
-  constructor <;> intro h γ <;> obtain ⟨a, ha⟩ := h γ
-  · induction a using Completion.induction_on
-    · by_cases H : ∃ x : K, (v : K → Γ₀) x = γ
-      · simp [H]
-      · simp only [H, imp_false]
-        rcases eq_or_ne γ 0 with rfl | hγ
-        · simp at H
-        · obtain ⟨r, hr⟩ := h γ
-          have hr' : restrict₀ (.ofClass (valuedCompletion (K := K)).v) r ≠ 0 := by
-            rw [ne_eq, ← embedding_inj, embedding_restrict₀ r]
-            simpa [hr]
-          convert! isClosed_univ.sdiff (isOpen_sphere (Completion K) hr') using 1
-          ext x
-          simp [← hr, ← v.restrict_def, v.restrict_inj]
-    · exact ⟨_, by simpa using ha⟩
-  · exact ⟨a, by simp [ha]⟩
+instance Valuation.extensionValuation.compatible : v.extensionValuation.Compatible := by
+  apply Valuation.IsEquiv.compatible (v₁ := (ValuativeRel.valuation K).extensionValuation)
+  simp [ValuativeRel.isEquiv]
 
-instance {R : Type*} [CommSemiring R] [Algebra R K] [UniformContinuousConstSMul R K]
-    [FaithfulSMul R K] : FaithfulSMul R (Completion K) := by
-  rw [faithfulSMul_iff_algebraMap_injective R (Completion K)]
-  exact (FaithfulSMul.algebraMap_injective K (Completion K)).comp (FaithfulSMul.algebraMap_injective R K)
+#where
 
-end Valued
+theorem IsValuativeTopology.mk_valuation [Ring R] [ValuativeRel R] [TopologicalSpace R] (v : Valuation R Γ₀)
+    [v.Compatible]
+    (h : ∀ {s : Set R} {x : R}, s ∈ nhds x ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
+    (fun (x₁ : R) => x + x₁) '' {z : R | v.restrict z < γ} ⊆ s) :
+    IsValuativeTopology R :=
+  sorry
 
-section Notation
+theorem IsValuativeTopology.mk₀ [Ring R] [ValuativeRel R] [TopologicalSpace R] (v : Valuation R Γ₀)
+    [v.Compatible]
+    (h : ∀ {s : Set R} {x : R}, s ∈ nhds x ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
+    (fun (x₁ : R) => x + x₁) '' {z : R | v.restrict z < γ} ⊆ s) :
+    IsValuativeTopology R :=
+  sorry
 
-namespace Valued
+theorem IsValuativeTopology.mk₀_valuation [Ring R] [ValuativeRel R] [TopologicalSpace R] (v : Valuation R Γ₀)
+    [v.Compatible]
+    (h : ∀ {s : Set R} {x : R}, s ∈ nhds x ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
+    (fun (x₁ : R) => x + x₁) '' {z : R | v.restrict z < γ} ⊆ s) :
+    IsValuativeTopology R :=
+  sorry
 
-variable (K : Type*) [Field K] {Γ₀ : outParam Type*}
-    [LinearOrderedCommGroupWithZero Γ₀] [vK : Valued K Γ₀]
+-- need a intro method of IsValuativeTopology only talk about nbhd of zero (with uniform add group)
+-- refactor file Mathlib.Topology.Algebra.Valued.ValuativeRel
+-- theorem IsValuativeTopology.mk₀ : IsValuativeTopology := sorry
+-- given any valuation compatible, can be checked using this valuation
 
-/-- A `Valued` version of `Valuation.integer`, enabling the notation `𝒪[K]` for the
-valuation integers of a valued field `K`. -/
-@[reducible]
-def integer : Subring K := (vK.v).integer
+instance : IsValuativeTopology (Completion K) := by
+  apply IsValuativeTopology.of_zero
+  intro s
+  let v := valuation K
+  suffices HasBasis (𝓝 (0 : Completion K)) (fun _ ↦ True)
+      fun γ : (ValueGroup₀ (.ofClass v))ˣ ↦ { x | v.extensionValuation x <
+        (Units.map (ValueGroup₀.embedding (f := (.ofClass v))) γ).1 } by
+    rw [this.mem_iff]
+    simp only [extensionValuation_toFun, Units.coe_map, MonoidHom.coe_coe, true_and]
+    have (x : Completion K) (γ : (ValueGroup₀ (.ofClass v))ˣ) : v.extensionValuation.restrict x <
+        ((Units.map v.valueGroup₀_equiv_extensionValuation.toMonoidHom) γ).1 ↔
+        embedding (v.extension x) < embedding γ.1 := by
+      simp only [MulEquiv.toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_coe]
+      rw [embedding_strictMono.lt_iff_lt, Valuation.restrict_def, restrict₀_apply]
+      by_cases hx0 : x = 0
+      · simp only [hx0]
+        rw [dif_pos (map_zero _)]
+        · simp only [valueGroup₀_equiv_extensionValuation, valueGroup₀_hom_extensionValuation,
+          MulEquiv.ofBijective_apply, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
+          rw [Valuation.restrict_def, restrict₀_apply, dif_neg]
+          · have hext : v.extension 0 = 0 := by rw [extension_eq_zero_iff]
+            simp [hext]
+          · simp [← v.restrict.zero_iff, v.restrict_def,
+              (restrict₀_surjective (.ofClass v) _).choose_spec]
+      · rw [dif_neg (by simp [hx0])]
+        · set y := (restrict₀_surjective (.ofClass v) γ).choose with hy_def
+          have hy := (restrict₀_surjective (.ofClass v) γ).choose_spec
+          apply_fun embedding at hy
+          simp only [← hy_def, embedding_restrict₀, MonoidWithZeroHom.coe_ofClass] at hy
+          simp only [MonoidWithZeroHom.coe_ofClass, extensionValuation_toFun,
+            valueGroup₀_equiv_extensionValuation, valueGroup₀_hom_extensionValuation,
+            MulEquiv.ofBijective_apply, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
+          rw [Valuation.restrict_def, restrict₀_apply, ← hy_def, dif_neg]
+          · simp only [MonoidWithZeroHom.coe_ofClass, extensionValuation_toFun, extension_extends,
+            Valuation.embedding_restrict, WithZero.coe_lt_coe, Subtype.mk_lt_mk,
+            ← Units.val_lt_val, Units.val_mk0]
+            convert embedding_strictMono (f := (.ofClass v)).lt_iff_lt
+          · simp only [MonoidWithZeroHom.coe_ofClass, extensionValuation_apply_coe, map_eq_zero, ← ne_eq]
+            apply_fun v
+            simp [hy]
+    refine ⟨fun ⟨γ, h⟩ ↦ ?_, fun ⟨γ, h⟩ ↦ ?_⟩
+    · use Units.map ((ValueGroupWithZero.orderMonoidIso v.extensionValuation).symm.toMonoidHom.comp
+        v.valueGroup₀_equiv_extensionValuation.toMonoidHom) γ
+      simp only [OrderMonoidIso.toMulEquiv_eq_coe, MulEquiv.toMonoidHom_eq_coe, Units.map_comp,
+        MonoidHom.coe_comp, Function.comp_apply, Units.coe_map, MonoidHom.coe_coe,
+        OrderMonoidIso.coe_mulEquiv, valuation_lt_symm_orderMonoidIso]
+      convert! h
+      apply this
+    · use Units.map (v.valueGroup₀_equiv_extensionValuation.symm.toMonoidHom.comp
+        (ValueGroupWithZero.orderMonoidIso v.extensionValuation)) γ
+      simp only [← this]
+      simp only [MulEquiv.toMonoidHom_eq_coe, Units.map_comp, MonoidHom.coe_comp,
+        Function.comp_apply, Units.coe_map, MonoidHom.coe_coe, MulEquiv.apply_symm_apply,
+        restrict_lt_orderMonoidIso]
+      convert! h
+  simp_rw [← closure_coe_completion_v_lt, Units.coe_map]
+  convert! v.hasBasis_nhds_zero.hasBasis_of_isDenseInducing Completion.isDenseInducing_coe
+  simp [Valuation.restrict_lt_iff_lt_embedding]
 
-@[inherit_doc]
-scoped notation "𝒪[" K "]" => Valued.integer K
+end Completion
 
-/-- An abbreviation for `IsLocalRing.maximalIdeal 𝒪[K]` of a valued field `K`, enabling the notation
-`𝓂[K]` for the maximal ideal in `𝒪[K]` of a valued field `K`. -/
-@[reducible]
-def maximalIdeal : Ideal 𝒪[K] := IsLocalRing.maximalIdeal 𝒪[K]
 
-@[inherit_doc]
-scoped notation "𝓂[" K "]" => maximalIdeal K
 
-/-- An abbreviation for `IsLocalRing.ResidueField 𝒪[K]` of a `Valued` instance, enabling the
-notation `𝓀[K]` for the residue field of a valued field `K`. -/
-@[reducible]
-def ResidueField := IsLocalRing.ResidueField (𝒪[K])
+-- @[simp]
+-- theorem valuedCompletion_apply (x : K) : Valued.v (x : Completion K) = v x := by
+--   simp [Valued.v]
 
-@[inherit_doc]
-scoped notation "𝓀[" K "]" => ResidueField K
+-- lemma valuedCompletion_surjective_iff :
+--     Function.Surjective (v : Completion K → Γ₀) ↔ Function.Surjective (v : K → Γ₀) := by
+--   constructor <;> intro h γ <;> obtain ⟨a, ha⟩ := h γ
+--   · induction a using Completion.induction_on
+--     · by_cases H : ∃ x : K, (v : K → Γ₀) x = γ
+--       · simp [H]
+--       · simp only [H, imp_false]
+--         rcases eq_or_ne γ 0 with rfl | hγ
+--         · simp at H
+--         · obtain ⟨r, hr⟩ := h γ
+--           have hr' : restrict₀ (.ofClass (valuedCompletion (K := K)).v) r ≠ 0 := by
+--             rw [ne_eq, ← embedding_inj, embedding_restrict₀ r]
+--             simpa [hr]
+--           convert! isClosed_univ.sdiff (isOpen_sphere (Completion K) hr') using 1
+--           ext x
+--           simp [← hr, ← v.restrict_def, v.restrict_inj]
+--     · exact ⟨_, by simpa using ha⟩
+--   · exact ⟨a, by simp [ha]⟩
 
-end Valued
-
-end Notation
-
-end Valuation
+-- instance {R : Type*} [CommSemiring R] [Algebra R K] [UniformContinuousConstSMul R K]
+--     [FaithfulSMul R K] : FaithfulSMul R (Completion K) := by
+--   rw [faithfulSMul_iff_algebraMap_injective R (Completion K)]
+--   exact (FaithfulSMul.algebraMap_injective K (Completion K)).comp (FaithfulSMul.algebraMap_injective R K)
 
 end Field
 
 
 
 
-section ValuativeRel
+-- section ValuativeRel
 
-variable [Ring R] [UniformSpace R] [IsTopologicalRing R] [IsUniformAddGroup R] [ValuativeRel R]
-  [IsValuativeTopology R]
+-- variable [Ring R] [UniformSpace R] [IsTopologicalRing R] [IsUniformAddGroup R] [ValuativeRel R]
+--   [IsValuativeTopology R]
 
-instance UniformSpace.Completion.valuativeRel : ValuativeRel R := sorry
--- UniformSpace.Completion.extension₂ for relations
+-- instance UniformSpace.Completion.valuativeRel : ValuativeRel R := sorry
+-- -- UniformSpace.Completion.extension₂ for relations
 
-instance UniformSpace.Completion.isValuativeTopology : IsValuativeTopology R := sorry
+-- instance UniformSpace.Completion.isValuativeTopology : IsValuativeTopology R := sorry
 
-end ValuativeRel
+-- end ValuativeRel
 
-section Compatible
+-- section Compatible
 
-variable [Ring R] [UniformSpace R] [IsTopologicalRing R] [IsUniformAddGroup R] [ValuativeRel R]
-  [IsValuativeTopology R] [LinearOrderedCommGroupWithZero Γ₀]
+-- variable [Ring R] [UniformSpace R] [IsTopologicalRing R] [IsUniformAddGroup R] [ValuativeRel R]
+--   [IsValuativeTopology R] [LinearOrderedCommGroupWithZero Γ₀]
 
-instance Valuation.compatible_completion (v : Valuation R Γ₀) [v.Compatible] :
-    v.completion.Compatible := sorry
+-- instance Valuation.compatible_completion (v : Valuation R Γ₀) [v.Compatible] :
+--     v.completion.Compatible := sorry
 
-end Compatible
+-- end Compatible
