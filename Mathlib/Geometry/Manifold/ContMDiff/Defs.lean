@@ -69,8 +69,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
   {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
   -- declare functions, sets, points and smoothness indices
-  {e : OpenPartialHomeomorph M H}
-  {e' : OpenPartialHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x x' : M} {y : M'} {m n : ℕ∞ω}
+  {e : OpenPartialHomeomorph M H} {e' : OpenPartialHomeomorph M' H'}
+  {f f₁ : M → M'} {s s₁ t : Set M} {x x' : M} {y : M'} {m n : ℕ∞ω}
 
 variable (I I') in
 /-- Property in the model space of a model with corners of being `C^n` within a set at a point,
