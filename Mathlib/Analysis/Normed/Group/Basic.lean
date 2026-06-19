@@ -1069,17 +1069,17 @@ open Lean Meta Qq Function
 /-- Extension for the `positivity` tactic: multiplicative norms are always nonnegative, and positive
 on non-one inputs. -/
 @[positivity ‖_‖]
-meta def evalMulNorm : PositivityExt where eval {u α} _ pα? e := do
+meta def evalMulNorm : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
-    let some _ := pα? | pure .none
     let _seminormedGroup_E ← synthInstanceQ q(SeminormedGroup $E)
     assertInstancesCommute
     -- Check whether we are in a normed group and whether the context contains a `a ≠ 1` assumption
-    let o : Option (Q(NormedGroup $E) × Q($a ≠ 1)) := ← do
-      let .some normedGroup_E ← trySynthInstanceQ q(NormedGroup $E) | return none
-      let some pa ← findLocalDeclWithTypeQ? q($a ≠ 1) | return none
-      return some (normedGroup_E, pa)
+    let o : Option (Q(NormedGroup $E) × Q($a ≠ 1)) ← do
+      let .some normedGroup_E ← trySynthInstanceQ q(NormedGroup $E) | pure none
+      let some pa ← findLocalDeclWithTypeQ? q($a ≠ 1) | pure none
+      pure <| some (normedGroup_E, pa)
     match o with
     -- If so, return a proof of `0 < ‖a‖`
     | some (_normedGroup_E, pa) =>
@@ -1092,17 +1092,17 @@ meta def evalMulNorm : PositivityExt where eval {u α} _ pα? e := do
 /-- Extension for the `positivity` tactic: additive norms are always nonnegative, and positive
 on non-zero inputs. -/
 @[positivity ‖_‖]
-meta def evalAddNorm : PositivityExt where eval {u α} _ pα? e := do
+meta def evalAddNorm : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
-    let some _ := pα? | pure .none
     let _seminormedAddGroup_E ← synthInstanceQ q(SeminormedAddGroup $E)
     assertInstancesCommute
     -- Check whether we are in a normed group and whether the context contains a `a ≠ 0` assumption
-    let o : Option (Q(NormedAddGroup $E) × Q($a ≠ 0)) := ← do
-      let .some normedAddGroup_E ← trySynthInstanceQ q(NormedAddGroup $E) | return none
-      let some pa ← findLocalDeclWithTypeQ? q($a ≠ 0) | return none
-      return some (normedAddGroup_E, pa)
+    let o : Option (Q(NormedAddGroup $E) × Q($a ≠ 0)) ← do
+      let .some normedAddGroup_E ← trySynthInstanceQ q(NormedAddGroup $E) | pure none
+      let some pa ← findLocalDeclWithTypeQ? q($a ≠ 0) | pure none
+      pure <| some (normedAddGroup_E, pa)
     match o with
     -- If so, return a proof of `0 < ‖a‖`
     | some (_normedAddGroup_E, pa) =>
