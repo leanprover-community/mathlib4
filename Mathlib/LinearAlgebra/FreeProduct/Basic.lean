@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.DirectSum.Basic
 public import Mathlib.LinearAlgebra.TensorAlgebra.ToTensorPower
 public import Mathlib.RingTheory.Congruence.Hom
+public import Mathlib.Algebra.RingQuot
 
 /-!
 # The free product of $R$-algebras
@@ -77,12 +78,17 @@ then their quotients are also `R`-equivalent.
 (Special case of the third isomorphism theorem.) -/
 def algEquivQuotAlgEquiv
     {R : Type u} [CommSemiring R] {A B : Type v} [Semiring A] [Semiring B]
-    [Algebra R A] [Algebra R B] (f : A ≃ₐ[R] B)
-    (rel : RingCon A) (rel' : RingCon B) (h : rel = rel'.comap f) :
-    rel.Quotient ≃ₐ[R] (rel').Quotient :=
+    [Algebra R A] [Algebra R B] (f : A ≃ₐ[R] B) (rel : A → A → Prop) :
+    RingQuot rel ≃ₐ[R] RingQuot (rel on f.symm) :=
   AlgEquiv.ofAlgHom
-    (RingCon.liftₐ _ ((RingCon.mkₐ _ _).comp f) fun x y h_rel ↦ by subst rel; simpa)
-    (RingCon.liftₐ _ ((RingCon.mkₐ _ _).comp f.symm) fun x y h_rel ↦ by subst rel; simpa)
+    (RingQuot.liftAlgHom R (s := rel)
+      ⟨AlgHom.comp (RingQuot.mkAlgHom R (rel on f.symm)) f,
+      fun x y h_rel ↦ by
+        apply RingQuot.mkAlgHom_rel
+        simpa [Function.onFun]⟩)
+    ((RingQuot.liftAlgHom R (s := rel on f.symm)
+      ⟨AlgHom.comp (RingQuot.mkAlgHom R rel) f.symm,
+      fun x y h ↦ by apply RingQuot.mkAlgHom_rel; simpa⟩))
     (by ext b; simp) (by ext a; simp)
 
 /-- If two (semi)rings are equivalent and their quotients by a relation `rel` are defined,
@@ -90,12 +96,11 @@ then their quotients are also equivalent.
 
 (Special case of `algEquiv_quot_algEquiv` when `R = ℕ`, which in turn is a special
 case of the third isomorphism theorem.) -/
-def equivQuotEquiv {A B : Type v} [Semiring A] [Semiring B] (f : A ≃+* B)
-    (rel : RingCon A) (rel' : RingCon B) (h : rel = rel'.comap f) :
-    rel.Quotient ≃+* rel'.Quotient :=
+def equivQuotEquiv {A B : Type v} [Semiring A] [Semiring B] (f : A ≃+* B) (rel : A → A → Prop) :
+    RingQuot rel ≃+* RingQuot (rel on f.symm) :=
   let f_alg : A ≃ₐ[ℕ] B :=
     AlgEquiv.ofRingEquiv (f := f) (fun n ↦ by simp)
-  algEquivQuotAlgEquiv f_alg rel rel' h |>.toRingEquiv
+  algEquivQuotAlgEquiv f_alg rel |>.toRingEquiv
 
 end RingQuot
 
@@ -159,10 +164,10 @@ as a quotient of `PowerAlgebra R A` -/
 
 /-- The `R`-algebra equivalence relating `FreeProduct` and `FreeProduct.asPowers`. -/
 noncomputable def asPowersEquiv : asPowers R A ≃ₐ[R] FreeProduct R A :=
-  RingQuot.algEquivQuotAlgEquiv
-    (powerAlgebraEquivFreeTensorAlgebra R A |>.symm) _ _ (by
+  RingCon.congrₐ _
+    (powerAlgebraEquivFreeTensorAlgebra R A |>.symm) (by
       rw [ringCon', ringCon, rel']
-      erw [RingCon.comap_ringConGen_equiv]
+      erw [RingCon.comap_ringConGen_ringEquiv]
       congr
       ext i x
       simp [Function.onFun])
