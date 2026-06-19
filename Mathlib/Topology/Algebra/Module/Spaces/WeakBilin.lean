@@ -122,7 +122,7 @@ instance instContinuousAdd [ContinuousAdd 𝕜] : ContinuousAdd (WeakBilin B) :=
     cast (congr_arg _ ?_)
       (((coeFn_continuous B).comp continuous_fst).add ((coeFn_continuous B).comp continuous_snd))
   ext
-  simp only [Function.comp_apply, Pi.add_apply, map_add, _root_.add_apply]
+  simp only [Function.comp_apply, Pi.add_apply, map_add, add_apply]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Scalar multiplication by `𝕜` on `WeakBilin B` is continuous. -/
@@ -130,7 +130,7 @@ instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (We
   refine ⟨continuous_induced_rng.2 ?_⟩
   refine cast (congr_arg _ ?_) (continuous_fst.smul ((coeFn_continuous B).comp continuous_snd))
   ext
-  simp only [Function.comp_apply, Pi.smul_apply, map_smulₛₗ, RingHom.id_apply, _root_.smul_apply]
+  simp only [Function.comp_apply, Pi.smul_apply, map_smulₛₗ, RingHom.id_apply, smul_apply]
 
 set_option backward.isDefEq.respectTransparency false in
 /--
