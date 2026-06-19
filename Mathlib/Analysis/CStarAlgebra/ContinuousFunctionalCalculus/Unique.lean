@@ -262,14 +262,14 @@ lemma toNNReal_mul_add_neg_mul_add_mul_neg_eq (f g : C(X, ℝ)₀) :
     ((f * g).toNNReal + (-f).toNNReal * g.toNNReal + f.toNNReal * (-g).toNNReal) =
     ((-(f * g)).toNNReal + f.toNNReal * g.toNNReal + (-f).toNNReal * (-g).toNNReal) := by
   apply toContinuousMap_injective
-  simpa only [← toContinuousMapHom_apply, map_add, map_mul, map_neg, toContinuousMapHom_toNNReal]
+  simpa only [map_add, map_mul, map_neg, toContinuousMapHom_toNNReal]
     using! (f : C(X, ℝ)).toNNReal_mul_add_neg_mul_add_mul_neg_eq g
 
 lemma toNNReal_add_add_neg_add_neg_eq (f g : C(X, ℝ)₀) :
     ((f + g).toNNReal + (-f).toNNReal + (-g).toNNReal) =
       ((-(f + g)).toNNReal + f.toNNReal + g.toNNReal) := by
   apply toContinuousMap_injective
-  simpa only [← toContinuousMapHom_apply, map_add, map_mul, map_neg, toContinuousMapHom_toNNReal]
+  simpa only [map_add, map_mul, map_neg, toContinuousMapHom_toNNReal]
     using! (f : C(X, ℝ)).toNNReal_add_add_neg_add_neg_eq g
 
 end ContinuousMapZero
