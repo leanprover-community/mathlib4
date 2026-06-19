@@ -32,7 +32,7 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 
 @[expose] public section
 
-variable {α β R R': Type*}
+variable {α β R R' : Type*}
 
 namespace RingCon
 
