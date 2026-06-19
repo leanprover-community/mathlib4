@@ -105,7 +105,7 @@ lemma chainsMap_zero : chainsMap f (0 : A ⟶ res f B) = 0 := by
 
 lemma chainsMap_f_map_mono (hf : Function.Injective f) [Mono φ] (i : ℕ) :
     Mono ((chainsMap f φ).f i) := by
-  simpa [ModuleCat.mono_iff_injective] using
+  simpa [ModuleCat.mono_iff_injective] using!
     (mapRange_injective φ.hom (map_zero _) <| (Rep.mono_iff_injective φ).1
     inferInstance).comp (mapDomain_injective hf.comp_left)
 
@@ -115,7 +115,7 @@ instance chainsMap_id_f_map_mono {A B : Rep k G} (φ : A ⟶ B) [Mono φ] (i : �
 
 lemma chainsMap_f_map_epi (hf : Function.Surjective f) [Epi φ] (i : ℕ) :
     Epi ((chainsMap f φ).f i) := by
-  simpa [ModuleCat.epi_iff_surjective] using
+  simpa [ModuleCat.epi_iff_surjective] using!
     (mapRange_surjective φ.hom (map_zero _) ((Rep.epi_iff_surjective φ).1 inferInstance)).comp
     (mapDomain_surjective hf.comp_left)
 
@@ -241,6 +241,7 @@ theorem H0π_comp_map :
     H0π A ≫ map f φ 0 = φ.toModuleCatHom ≫ H0π B := by
   simp [H0π]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem map_id_comp_H0Iso_hom {A B : Rep k G} (f : A ⟶ B) :
@@ -434,6 +435,7 @@ instance H1CoresCoinfOfTrivial_g_epi :
     Epi (H1CoresCoinfOfTrivial A S).g :=
   inferInstanceAs <| Epi (map _ _ 1)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially, the short
 complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A)` is exact. -/
@@ -546,6 +548,7 @@ theorem comap_coinvariantsKer_pOpcycles_range_subtype_pOpcycles_eq_top :
     chains₁ToCoinvariantsKer, d₁₀, single_sum, mul_assoc, sub_add_eq_add_sub,
     sum_sum_index, add_smul, sub_sub_sub_eq, lsingle, singleAddHom] using add_comm _ _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, the map
 `H₁(G, A) ⟶ H₁(G ⧸ S, A_S)` induced by the quotient maps `G →* G ⧸ S` and `A →ₗ A_S` is an
@@ -572,7 +575,7 @@ and `Y - ∑ aᵢ·sᵢ` is a cycle. -/
     (res S.subtype A) ⟨d₁₀ A Y, this⟩ with ⟨(Z : S →₀ A), hZ⟩
   have H : d₁₀ A (Y - mapDomain S.subtype Z) = 0 := by
     simpa [map_sub, sub_eq_zero, chains₁ToCoinvariantsKer, - LinearMap.sub_apply, d₁₀,
-      sum_mapDomain_index_inj] using Subtype.ext_iff.1 hZ.symm
+      sum_mapDomain_index_inj] using! Subtype.ext_iff.1 hZ.symm
   use H1π A ⟨Y - mapDomain S.subtype Z, H⟩
   simp only [H1CoresCoinf_X₃, H1CoresCoinf_X₂, H1CoresCoinf_g,
     Subgroup.coe_subtype, H1π_comp_map_apply]
@@ -581,8 +584,9 @@ and `Y - ∑ aᵢ·sᵢ` is a cycle. -/
   refine (H1π_eq_iff _ _).2 ?_
   simpa [← hy, mapCycles₁_hom, map_sub, Rep.hom_id (res _ _), ← mapDomain_comp,
     ← mapDomain_mapRange, hY, Function.comp_def, (QuotientGroup.eq_one_iff <| Subtype.val _).2
-    (Subtype.prop _)] using Submodule.finsuppSum_mem _ _ _ _ fun _ _ ↦ single_one_mem_boundaries₁ _
+    (Subtype.prop _)] using! Submodule.finsuppSum_mem _ _ _ _ fun _ _ ↦ single_one_mem_boundaries₁ _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, the degree 1
 corestriction-coinflation sequence `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A_S)` is exact. `simp`s
@@ -606,7 +610,7 @@ equals `Z₁(π, π)(x) : Z₁(G ⧸ S, A_S)`. -/
     (H1π _ <| mapCycles₁ (MonoidHom.id G) (Rep.toCoinvariantsMkQ A S) x) (by
     simpa only [H1CoresCoinfOfTrivial_X₂, H1CoresCoinfOfTrivial_X₃, H1CoresCoinfOfTrivial_g,
       Iso.refl_inv, LinearMap.mem_ker, H1π_comp_map_apply (QuotientGroup.mk' S),
-      ← mapCycles₁_comp_apply (x := x)] using hx) with ⟨z, hz⟩
+      ← mapCycles₁_comp_apply (x := x)] using! hx) with ⟨z, hz⟩
   induction z using H1_induction_on with | @h z =>
   simp only [H1CoresCoinfOfTrivial_X₂, H1CoresCoinfOfTrivial_X₁, H1CoresCoinfOfTrivial_f] at hz
   rw [H1π_comp_map_apply] at hz
@@ -819,7 +823,7 @@ noncomputable def coresNatTrans (n : ℕ) :
     resFunctor f ⋙ functor k G n ⟶ functor k H n where
   app X := map f (𝟙 _) n
   naturality {X Y} φ := by
-    simp only [← cancel_epi (groupHomology.π _ n), functor_obj, Functor.comp_obj, Functor.comp_map,
+    simp only [← cancel_epi (groupHomology.π _ n), Functor.comp_map,
       functor_map, HomologicalComplex.homologyπ_naturality_assoc,
       HomologicalComplex.homologyπ_naturality, ← HomologicalComplex.cyclesMap_comp_assoc,
       ← chainsMap_comp, res_obj_ρ, Rep.hom_id, Category.id_comp]

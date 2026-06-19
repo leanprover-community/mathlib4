@@ -118,7 +118,7 @@ theorem centralizer_closure (s : Set G) : centralizer (closure s) = centralizer 
 @[to_additive]
 theorem centralizer_eq_iInf (s : Set G) : centralizer s = ⨅ g ∈ s, centralizer {g} :=
   le_antisymm (le_iInf₂ fun g hg ↦ centralizer_le (Set.singleton_subset_iff.mpr hg)) fun x hx ↦ by
-    simpa only [mem_iInf, mem_centralizer_singleton_iff, eq_comm (a := x * _)] using hx
+    simpa only [mem_iInf, mem_centralizer_singleton_iff, eq_comm (a := x * _)] using! hx
 
 @[to_additive]
 theorem center_eq_iInf {s : Set G} (hs : closure s = ⊤) :

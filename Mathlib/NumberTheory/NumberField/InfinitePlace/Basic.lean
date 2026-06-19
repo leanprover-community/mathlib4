@@ -79,7 +79,7 @@ namespace InfinitePlace
 
 instance : FunLike (InfinitePlace K) K ℝ where
   coe w x := w.1 x
-  coe_injective' _ _ h := Subtype.ext (AbsoluteValue.ext fun x => congr_fun h x)
+  coe_injective _ _ h := Subtype.ext (AbsoluteValue.ext fun x => congr_fun h x)
 
 lemma coe_apply (v : InfinitePlace K) (x : K) : v x = v.1 x := rfl
 
@@ -306,8 +306,11 @@ theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) : #{φ | mk φ =
     rwa [Ne, eq_comm, ← ComplexEmbedding.isReal_iff, ← isReal_iff]
 
 open scoped Classical in
-noncomputable instance NumberField.InfinitePlace.fintype [NumberField K] :
+protected noncomputable instance fintype [NumberField K] :
     Fintype (InfinitePlace K) := Set.fintypeRange _
+
+@[deprecated (since := "2026-05-24")]
+alias NumberField.InfinitePlace.fintype := InfinitePlace.fintype
 
 open scoped Classical in
 @[to_additive]
