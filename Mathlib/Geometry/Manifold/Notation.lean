@@ -43,7 +43,6 @@ including inference of the model with corners.
 | `UniqueMDiff[s]`         | `UniqueMDiffOn I s`                 |
 | `UniqueMDiffAt[s] x`     | `UniqueMDiffWithinAt I s x`         |
 
-
 In each of these cases, the models with corners are inferred from the domain and codomain of `f`.
 The search for models with corners uses the local context and is (almost) only based on expression
 structure, hence hopefully fast enough to always run.
