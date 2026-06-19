@@ -492,6 +492,7 @@ end ContinuousMap
 
 end RingStructure
 
+set_option linter.deprecated false in
 attribute [local ext] Subtype.eq
 
 section ModuleStructure
