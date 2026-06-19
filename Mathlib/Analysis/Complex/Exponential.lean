@@ -477,7 +477,7 @@ lemma norm_exp_sub_sum_le_exp_norm_sub_sum (x : ℂ) (n : ℕ) :
     exact Real.sum_le_exp_of_nonneg (norm_nonneg _) _
 
 lemma norm_exp_le_exp_norm (x : ℂ) : ‖exp x‖ ≤ Real.exp ‖x‖ := by
-  convert! norm_exp_sub_sum_le_exp_norm_sub_sum x 0 using 1 <;> simp
+  convert norm_exp_sub_sum_le_exp_norm_sub_sum x 0 <;> simp
 
 lemma norm_exp_sub_sum_le_norm_mul_exp (x : ℂ) (n : ℕ) :
     ‖exp x - ∑ m ∈ range n, x ^ m / m.factorial‖ ≤ ‖x‖ ^ n * Real.exp ‖x‖ := by
@@ -515,7 +515,7 @@ open Complex Finset
 nonrec theorem exp_bound {x : ℝ} (hx : |x| ≤ 1) {n : ℕ} (hn : 0 < n) :
     |exp x - ∑ m ∈ range n, x ^ m / m.factorial| ≤ |x| ^ n * (n.succ / (n.factorial * n)) := by
   have hxc : ‖(x : ℂ)‖ ≤ 1 := mod_cast hx
-  convert! exp_bound hxc hn using 2 <;>
+  convert exp_bound hxc hn <;>
   norm_cast
 
 theorem exp_bound' {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) {n : ℕ} (hn : 0 < n) :

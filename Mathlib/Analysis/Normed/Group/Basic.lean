@@ -364,7 +364,7 @@ alias NormedAddCommGroup.nhds_zero_basis_norm_lt := NormedAddGroup.nhds_zero_bas
 @[to_additive]
 theorem NormedGroup.uniformity_basis_dist :
     (𝓤 E).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { p : E × E | ‖p.fst⁻¹ * p.snd‖ < ε } := by
-  convert! Metric.uniformity_basis_dist (α := E) using 1
+  convert Metric.uniformity_basis_dist (α := E)
   simp [dist_eq_norm_inv_mul]
 
 open Finset
