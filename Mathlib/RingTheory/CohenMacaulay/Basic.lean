@@ -58,10 +58,10 @@ lemma ModuleCat.isCohenMacaulay_iff [IsLocalRing R] [Small.{v} R] (M : ModuleCat
   ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 lemma ModuleCat.depth_eq_supportDim_of_cohenMacaulay [IsLocalRing R] [Small.{v} R]
-    (M : ModuleCat.{v} R) [cm : M.IsCohenMacaulay] [ntr : Nontrivial M] :
+    (M : ModuleCat.{v} R) [M.IsCohenMacaulay] [Nontrivial M] :
     Module.supportDim R M = IsLocalRing.depth M := by
-  have : ¬ Subsingleton M := not_subsingleton_iff_nontrivial.mpr ntr
-  have := M.isCohenMacaulay_iff.mp cm
+  have : ¬ Subsingleton M := not_subsingleton_iff_nontrivial.mpr ‹_›
+  have := M.isCohenMacaulay_iff.mp ‹_›
   tauto
 
 lemma ModuleCat.depth_eq_supportDim_unbot_of_cohenMacaulay [IsLocalRing R] [Small.{v} R]
@@ -89,9 +89,8 @@ lemma depth_eq_dim_quotient_associated_prime_of_isCohenMacaulay (M : ModuleCat.{
     IsLocalRing.depth M = (ringKrullDim (R ⧸ p)).unbot
     (quotient_prime_ringKrullDim_ne_bot mem.1) := by
   apply le_antisymm (depth_le_ringKrullDim_associatedPrime M p mem)
-  rw [← M.depth_eq_supportDim_unbot_of_cohenMacaulay]
-  rw [← WithBot.coe_le_coe, WithBot.coe_unbot, WithBot.coe_unbot,
-    Module.supportDim_eq_ringKrullDim_quotient_annihilator]
+  rw [← M.depth_eq_supportDim_unbot_of_cohenMacaulay, ← WithBot.coe_le_coe, WithBot.coe_unbot,
+    WithBot.coe_unbot, Module.supportDim_eq_ringKrullDim_quotient_annihilator]
   exact ringKrullDim_le_of_surjective _ (Ideal.Quotient.factor_surjective (le_of_eq_of_le
     Submodule.annihilator_top.symm (AssociatedPrimes.mem_iff.mp mem).annihilator_le))
 
@@ -214,9 +213,8 @@ lemma isLocalizedModule_quotSMulTopIsLocalizedModuleMap (x : R)
     use (Submodule.Quotient.mk z.1, z.2)
     simp [← hz]
   exists_of_eq {y1 y2} h := by
-    induction y1 using Submodule.Quotient.induction_on
-    induction y2 using Submodule.Quotient.induction_on
-    rename_i y1 y2
+    rcases Submodule.Quotient.mk_surjective _ y1 with ⟨y1, rfl⟩
+    rcases Submodule.Quotient.mk_surjective _ y2 with ⟨y2, rfl⟩
     simp only [LinearMap.coe_mk, LinearMap.coe_toAddHom, Submodule.mapQ_apply] at h
     have h := (Submodule.Quotient.mk_eq_zero _).mp (sub_eq_zero_of_eq h)
     rcases (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp h with ⟨m, _, hm⟩
@@ -276,8 +274,9 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
   have : p.depth M ≠ ⊤ :=
     ne_top_of_le_ne_top (depth_ne_top M) (ideal_depth_le_depth p Ideal.IsPrime.ne_top' M)
   rcases ENat.ne_top_iff_exists.mp this with ⟨n, hn⟩
-  induction n generalizing M Mₚ
-  · simp only [← hn, CharP.cast_eq_zero, WithBot.coe_zero]
+  induction n generalizing M Mₚ with
+  | zero =>
+    simp only [← hn, CharP.cast_eq_zero, WithBot.coe_zero]
     have min : p ∈ (Module.annihilator R M).minimalPrimes := by
       simp only [CharP.cast_eq_zero, Ideal.depth] at hn
       rw [Eq.comm, moduleDepth_eq_zero_of_hom_nontrivial,
@@ -330,7 +329,7 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
       · simpa using IsLocalRing.closedPoint_mem_support Rₚ Mₚ
     have : Unique (Module.support Rₚ Mₚ) := by simpa [this] using Set.uniqueSingleton _
     exact Order.krullDim_eq_zero_of_unique
-  · rename_i n ih _ _ _ _ _ _ _
+  | succ n ih =>
     have : Subsingleton ((ModuleCat.of R (Shrink.{v} (R ⧸ p))) →ₗ[R] M) := by
       by_contra ntr
       rw [not_subsingleton_iff_nontrivial, ← moduleDepth_eq_zero_of_hom_nontrivial] at ntr
