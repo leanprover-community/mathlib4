@@ -153,7 +153,6 @@ lemma injective_iff_hasInjectiveDimensionLT_one :
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ injective_iff_subsingleton_ext_one.2
     (HasInjectiveDimensionLT.subsingleton X 1 1 (by rfl))⟩
 
-variable {X} in
 lemma injective_iff_hasInjectiveDimensionLE_zero : Injective X ↔ HasInjectiveDimensionLE X 0 :=
   injective_iff_hasInjectiveDimensionLT_one
 
