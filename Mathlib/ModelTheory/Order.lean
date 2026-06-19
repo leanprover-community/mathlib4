@@ -10,6 +10,7 @@ public import Mathlib.Data.Rat.Encodable
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.ModelTheory.Complexity
 public import Mathlib.ModelTheory.Fraisse
+public import Mathlib.ModelTheory.QuantifierElimination
 public import Mathlib.Order.CountableDenseLinearOrder
 
 /-!
@@ -49,7 +50,8 @@ This file defines ordered first-order languages and structures, as well as their
   theory of linear orders is Fraïssé.
 - `FirstOrder.Language.aleph0_categorical_dlo` shows that the theory of dense linear orders is
   `ℵ₀`-categorical, and thus complete.
-
+- `FirstOrder.Language.Theory.dlo_hasQuantifierElimination` shows that the theory of dense
+  linear orders without endpoints has quantifier elimination.
 -/
 
 @[expose] public section
@@ -548,6 +550,20 @@ theorem dlo_isComplete : Language.order.dlo.IsComplete :=
       letI : Language.order.Structure ℚ := orderStructure ℚ
       exact Theory.ModelType.of _ ℚ⟩
     fun _ => inferInstance
+
+namespace Theory
+
+/-- The theory of dense linear orders without endpoints has quantifier elimination. -/
+theorem dlo_hasQuantifierElimination :
+    Language.order.dlo.HasQuantifierElimination := by
+  apply hasQuantifierElimination_of_isElementaryExtensionPairFG
+  intro M N _ iN _ _ _ _ f a
+  obtain ⟨g, ha, hfg⟩ := Language.dlo_isExtensionPair M N f a
+  refine ⟨N, iN, ElementaryEmbedding.refl Language.order N, g, ha, ?_⟩
+  -- Mapping the codomain along the identity embedding is definitionally trivial.
+  exact hfg.imp fun _ h => h
+
+end Theory
 
 end Fraisse
 
