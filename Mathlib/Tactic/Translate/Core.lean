@@ -224,9 +224,9 @@ structure TranslateData : Type where
   changeNumeral : Bool
   /-- When `isDual := true`, every translation `A → B` will also give a translation `B → A`. -/
   isDual : Bool
-  guessNameData : GuessName.GuessNameData
+  guessNameExt : GuessName.GuessNameExt
 
-attribute [inherit_doc GuessName.GuessNameData] TranslateData.guessNameData
+attribute [inherit_doc GuessName.GuessNameExt] TranslateData.guessNameExt
 
 /-- Get the translation for the given name. -/
 def findTranslation? (env : Environment) (t : TranslateData) : Name → Option TranslationInfo :=
@@ -302,7 +302,7 @@ where
           Unless the original translation was wrong, please remove this `{t.attrName}` attribute."
     modifyEnv (t.translations.addEntry · (src, info))
     trace[translate] "Added translation {src} ↦ {tgt}\
-      {if info.reorder.reorder.isEmpty then "" else s!" (reorder := {info.reorder.reorder})}"} \
+      {if info.reorder.reorder.isEmpty then "" else s!" (reorder := {info.reorder.reorder})"} \
       (relevant_arg := {info.relevantArg})"
 
 /-- `Config` is the type of the arguments that can be provided to `to_additive`. -/
@@ -310,8 +310,9 @@ structure Config : Type where
   /-- View the trace of the translation procedure.
   Equivalent to `set_option trace.translate true`. -/
   trace : Bool := false
-  /-- The given name of the target. -/
-  tgt : Name := Name.anonymous
+  /-- The given name of the target: an anonymous name means no explicit name was provided,
+  and the translate tactic auto-generates a name instead -/
+  target : Name := Name.anonymous
   /-- An optional doc string. -/
   doc : Option String := .none
   /-- If `allowAutoName` is `false` (default) then
@@ -557,15 +558,16 @@ where
       return tmpLCtx.mkLambda (usedLetOnly := false) fvars e
 
 /-- Rename binder names in pi type. -/
-def renameBinderNames (t : TranslateData) (rename : NameMap Name) (src : Expr) : Expr :=
+def renameBinderNames (data : GuessName.GuessNameData) (rename : NameMap Name)
+    (src : Expr) : Expr :=
   src.mapForallBinderNames fun n => (rename.get? n).getD <|
     match n with
     | .str p s => .str p <|
-      let s' := GuessName.guessName t.guessNameData s
+      let s' := GuessName.guessName data s
       if s' != s then s' else
       -- If the name starts with `h`, translate the rest of the name, e.g. `hmax` ↦ `hmin`.
       if let some suffix := s.dropPrefix? 'h' then
-        "h" ++ GuessName.guessName t.guessNameData suffix.toString
+        "h" ++ GuessName.guessName data suffix.toString
       else
         s
     | n => n
@@ -633,7 +635,8 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   let mut type := decl.type
   if let some b := unfoldBoundaries? then
     type ← b.insertBoundaries decl.type t.attrName
-  let (type', relevantArg₂) ← applyReplacementForall t dont <| renameBinderNames t rename type
+  let (type', relevantArg₂) ← applyReplacementForall t dont <|
+    renameBinderNames (t.guessNameExt.getState (← getEnv)) rename type
   type ← reorderForall reorder.reorder type'
   if let some b := unfoldBoundaries? then
     type ← b.unfoldInsertions type
@@ -837,6 +840,16 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
     /- It can be that `src` holds reflexively but `tgt` doesn't, so we need to use `inferDefEqAttr`.
     For example in `Ici_inter_Iic : Ici a ∩ Iic b = Icc a b := rfl`. -/
     MetaM.run' <| inferDefEqAttr tgt
+    /- Under the strict `@[defeq]` inference of lean4#13492, `inferDefEqAttr` tags the
+    additive translation only `@[backward_defeq]` even when the multiplicative source is
+    `@[defeq]` and the additive proof is rfl-shaped, because `withReducibleAndInstances`
+    `isDefEq` checks fail systematically for `to_additive`-generated additive lemmas
+    (the additive instance projections don't reduce at instance transparency).
+    To keep the simp/dsimp behaviour symmetric between additive and multiplicative
+    versions, promote `tgt` to `@[defeq]` whenever the source is `@[defeq]` and the
+    translated proof is at least rfl-shaped (i.e. `@[backward_defeq]` was inferred). -/
+    if backwardDefeqAttr.hasTag (← getEnv) tgt && !defeqAttr.hasTag (← getEnv) tgt then
+      defeqAttr.setTag tgt
   if let some matcherInfo ← getMatcherInfo? src then
     Match.addMatcherInfo tgt matcherInfo
   -- necessary so that e.g. match equations can be generated for `tgt`
@@ -881,9 +894,9 @@ def warnParametricAttr {β : Type} [Inhabited β] (stx : Syntax) (attr : Paramet
 /-- `translateLemmas names argInfo desc t` runs `t` on all elements of `names`
 and adds translations between the generated lemmas (the output of `t`).
 `names` must be non-empty. -/
-def translateLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT CoreM m]
+def translateLemmas
     (t : TranslateData) (names : Array Name) (reorder : Reorder) (relevantArg : RelevantArg)
-    (desc : String) (ref : Syntax) (runAttr : Name → m (Array Name)) : m Unit := do
+    (desc : String) (ref : Syntax) (runAttr : Name → CoreM (Array Name)) : CoreM Unit := do
   let auxLemmas ← names.mapM runAttr
   let nLemmas := auxLemmas[0]!.size
   for nm in names, lemmas in auxLemmas do
@@ -891,44 +904,52 @@ def translateLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Cor
       throwError "{names[0]!} and {nm} do not generate the same number of {desc}."
   for srcLemmas in auxLemmas, tgtLemmas in auxLemmas.eraseIdx! 0 do
     for srcLemma in srcLemmas, tgtLemma in tgtLemmas do
-      insertTranslation t srcLemma tgtLemma reorder relevantArg ref
+      -- Only add a translation if one doesn't already exist.
+      -- This happens if `srcLemma` is the `_assoc` lemma from `to_dual (attr := reassoc)`.
+      if (findTranslation? (← getEnv) t srcLemma).isNone then
+        insertTranslation t srcLemma tgtLemma reorder relevantArg ref
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
 def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := do
   if cfg.self then
-    if cfg.tgt != .anonymous then
-      logWarning m!"`{t.attrName} self` ignores the provided name {cfg.tgt}"
+    if cfg.target != .anonymous then
+      logWarning m!"`{t.attrName} self` ignores the provided name {cfg.target}"
     return src
   if cfg.none then
-    if cfg.tgt != .anonymous then
-      logWarning m!"`{t.attrName} private` ignores the provided name {cfg.tgt}"
+    if cfg.target != .anonymous then
+      logWarning m!"`{t.attrName} private` ignores the provided name {cfg.target}"
     return ← withDeclNameForAuxNaming src do
       mkAuxDeclName <| .mkSimple ("_" ++ t.attrName.toString)
   -- When re-tagging an existing translation, simply return that existing translation.
   if cfg.existing then
-    if cfg.tgt == .anonymous then
+    if cfg.target == .anonymous then
       if let some tgt := findTranslationName? (← getEnv) t src then
         return tgt
   let .str pre s := src | throwError "{t.attrName}: can't transport {src}"
   trace[translate_detail] "The name {s} splits as {open GuessName in s.splitCase}"
-  let tgt_auto := GuessName.guessName t.guessNameData s
-  let depth := cfg.tgt.getNumParts
-  let pre := translateNamespace (← getEnv) pre
-  let (pre1, pre2) := pre.splitAt (depth - 1)
-  let res := if cfg.tgt == .anonymous then pre.str tgt_auto else pre1 ++ cfg.tgt
-  if res == src then
+  -- Auto-generated name of the resulting declaration, without prior namespace components.
+  let translatedName := GuessName.guessName (t.guessNameExt.getState (← getEnv)) s
+  let translatedNamespace := translateNamespace (← getEnv) pre
+  let autoGeneratedName := translatedNamespace.str translatedName
+  -- Heuristic: if a new name is manually provided which has fewer components than `src`,
+  -- prepend the first components from `src` to create a translated name of the same depth.
+  let resultingName := if cfg.target == .anonymous then autoGeneratedName else
+    -- A provided name starting with `_root_` disables the namespace length heuristic.
+    if rootNamespace.isPrefixOf cfg.target then removeRoot cfg.target
+    else (translatedNamespace.splitAt (cfg.target.getNumParts - 1)).1 ++ cfg.target
+  if resultingName == src then
     throwError "{t.attrName}: the generated translated name equals the original name '{src}'.\n\
     If this is intentional, use the `@[{t.attrName} self]` syntax.\n\
     Otherwise, check that your declaration name is correct \
     (if your declaration is an instance, try naming it)\n\
     or provide a translated name using the `@[{t.attrName} my_add_name]` syntax."
-  if cfg.tgt == pre2.str tgt_auto && !cfg.allowAutoName then
+  if cfg.target != .anonymous && autoGeneratedName == resultingName && !cfg.allowAutoName then
     Linter.logLintIf linter.translateGenerateName cfg.ref m!"\
       `{t.attrName}` correctly autogenerated target name for {src}.\n\
-      You may remove the explicit argument {cfg.tgt}."
-  if cfg.tgt != .anonymous then
-    trace[translate_detail] "The automatically generated name would be {pre.str tgt_auto}"
-  return res
+      You may remove the explicit argument {cfg.target}."
+  if cfg.target != .anonymous then
+    trace[translate_detail] "The automatically generated name would be {autoGeneratedName}"
+  return resultingName
 where
   translateNamespace (env : Environment) (n : Name) : Name :=
     let n' := Name.mapPrefix (findTranslationName? env t) n
@@ -1063,7 +1084,7 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
       | `(bracketedOption| (reorder := $reorder)) =>
         if reorder?.isSome then
           throwErrorAt opt "cannot specify `reorder` multiple times"
-        reorder? ← elabReorder reorder argNames xs (.ofConstName declName)
+        reorder? ← some <$> elabReorder reorder argNames xs (.ofConstName declName)
       | `(bracketedOption| (relevant_arg := $n)) =>
         if relevantArg?.isSome then
           throwErrorAt opt "cannot specify `relevant_arg` multiple times"
@@ -1117,7 +1138,7 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
       | _ => throwUnsupportedSyntax
     return {
       trace := !stx[1].isNone
-      tgt := match tgt with | some tgt => tgt.getId | _ => Name.anonymous
+      target := match tgt with | some tgt => tgt.getId | _ => Name.anonymous
       doc, attrs, reorder?, relevantArg?, dontTranslate, existing, self, none, rename,
       ref := match tgt with | some tgt => tgt.raw | _ => stx[0] }
   | _ => throwUnsupportedSyntax

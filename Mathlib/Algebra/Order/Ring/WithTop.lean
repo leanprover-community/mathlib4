@@ -280,7 +280,7 @@ variable [NoZeroDivisors α] [Nontrivial α] {a b : WithTop α}
 
 protected lemma pow_right_strictMono : ∀ {n : ℕ}, n ≠ 0 → StrictMono fun a : WithTop α ↦ a ^ n
   | 0, h => absurd rfl h
-  | 1, _ => by simpa only [pow_one] using strictMono_id
+  | 1, _ => by simpa only [pow_one] using! strictMono_id
   | n + 2, _ => fun x y h ↦ by
     simp_rw [pow_succ _ (n + 1)]
     exact WithTop.mul_lt_mul (WithTop.pow_right_strictMono n.succ_ne_zero h) h

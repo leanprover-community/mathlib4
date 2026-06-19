@@ -90,20 +90,31 @@ section Semiring
 
 variable (A : Type*) [CommSemiring A] {B C : Type*} [Semiring B] [Semiring C] [Algebra A B]
   [Algebra A C] (P : Ideal B) {Q : Ideal C} (p : Ideal A)
-  {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B] (g : G)
+  {G : Type*} [Group G] [MulSemiringAction G B] (g : G)
 
 /-- The ideal obtained by pulling back the ideal `P` from `B` to `A`. -/
 abbrev under : Ideal A := Ideal.comap (algebraMap A B) P
 
 theorem under_def : P.under A = Ideal.comap (algebraMap A B) P := rfl
 
+theorem mem_under {x : A} : x ∈ P.under A ↔ algebraMap A B x ∈ P := mem_comap
+
 instance IsPrime.under [hP : P.IsPrime] : (P.under A).IsPrime :=
   hP.comap (algebraMap A B)
 
 @[simp]
-lemma under_smul : (g • P : Ideal B).under A = P.under A := by
+lemma under_smul [SMulCommClass G A B] : (g • P : Ideal B).under A = P.under A := by
   ext a
   rw [mem_comap, mem_comap, mem_pointwise_smul_iff_inv_smul_mem, smul_algebraMap]
+
+@[simp]
+theorem smul_under [MulSemiringAction G A] [SMulDistribClass G A B] :
+    g • P.under A = (g • P).under A := by
+  conv_lhs => rw [pointwise_smul_eq_comap, ← comap_coe, under_def, comap_comap]
+  conv_rhs => rw [pointwise_smul_eq_comap, ← comap_coe, under_def, comap_comap]
+  congr
+  ext
+  simp [algebraMap.smul']
 
 variable (B) in
 theorem under_top : under A (⊤ : Ideal B) = ⊤ := comap_top
@@ -152,7 +163,7 @@ theorem LiesOver.of_eq_map_equiv [P.LiesOver p] {E : Type*} [EquivLike E B C]
   exact of_eq_comap p (AlgEquivClass.toAlgEquiv σ : B ≃ₐ[A] C).symm h
 
 variable {p} in
-instance LiesOver.smul [h : P.LiesOver p] : (g • P).LiesOver p :=
+instance LiesOver.smul [SMulCommClass G A B] [h : P.LiesOver p] : (g • P).LiesOver p :=
   ⟨h.over.trans (under_smul A P g).symm⟩
 
 variable (P) (Q)
@@ -182,6 +193,12 @@ theorem LiesOver.trans [𝔓.LiesOver P] [P.LiesOver p] : 𝔓.LiesOver p where
 
 theorem LiesOver.tower_bot [hp : 𝔓.LiesOver p] [hP : 𝔓.LiesOver P] : P.LiesOver p where
   over := by rw [𝔓.over_def p, 𝔓.over_def P, under_under]
+
+instance [𝔓.LiesOver P] : 𝔓.LiesOver (P.under A) :=
+  .trans 𝔓 P (P.under A)
+
+instance [𝔓.LiesOver P] : P.LiesOver (𝔓.under A) :=
+  .tower_bot 𝔓 P (𝔓.under A)
 
 /--
 Consider the following commutative diagram of ring maps
@@ -223,12 +240,12 @@ theorem disjoint_primeCompl_of_liesOver [p.IsPrime] [hPp : 𝔓.LiesOver p] :
   Disjoint ((Algebra.algebraMapSubmonoid C p.primeCompl) : Set C) (𝔓 : Set C) := by
   rw [liesOver_iff, under_def, SetLike.ext'_iff, coe_comap] at hPp
   simpa only [Algebra.algebraMapSubmonoid, primeCompl, hPp, ← le_compl_iff_disjoint_left]
-    using Set.subset_compl_comm.mp (by simp)
+    using! Set.subset_compl_comm.mp (by simp)
 
 theorem algebraMapSubmonoid_primeCompl_of_liesOver_surjective
     [p.IsPrime] [P.IsPrime] [P.LiesOver p] (hf : Function.Surjective (algebraMap A B)) :
     Algebra.algebraMapSubmonoid B p.primeCompl = P.primeCompl := by
-  simpa [over_def P p] using P.map_primeCompl_comap_of_surjective (algebraMap A B) hf
+  simpa [over_def P p] using! P.map_primeCompl_comap_of_surjective (algebraMap A B) hf
 
 variable (B)
 
@@ -334,8 +351,7 @@ def stabilizerHom : MulAction.stabilizer G P →* ((B ⧸ P) ≃ₐ[A ⧸ p] (B 
     stabilizerHom P p G g b = ↑(g • b) :=
   rfl
 
-lemma ker_stabilizerHom :
-    (stabilizerHom P p G).ker = (P.inertia G).subgroupOf _ := by
+lemma ker_stabilizerHom : (stabilizerHom P p G).ker = P.inertia (MulAction.stabilizer G P) := by
   ext σ
   simp [DFunLike.ext_iff, mk_surjective.forall, Quotient.eq]
 
