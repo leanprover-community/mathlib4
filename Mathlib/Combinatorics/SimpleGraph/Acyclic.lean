@@ -186,31 +186,8 @@ alias isAcyclic_iff_forall_edge_isBridge := isAcyclic_iff_forall_isBridge
 
 theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p q : G.Path v w) :
     p = q := by
-  obtain ⟨p, hp⟩ := p
-  obtain ⟨q, hq⟩ := q
-  rw [Subtype.mk.injEq]
-  induction p with
-  | nil =>
-    exact isPath_iff_nil.mp hq |>.eq_nil.symm
-  | @cons u v _ ph p ih =>
-    rw [isAcyclic_iff_forall_isBridge] at h
-    specialize h (e := s(u, v)) (by simpa)
-    rw [isBridge_iff_forall_walk_mem_edges] at h
-    replace h := h (q.append p.reverse)
-    simp only [Walk.edges_append, Walk.edges_reverse, List.mem_append, List.mem_reverse] at h
-    rcases h with h | h
-    · cases q with
-      | nil => simp at hp
-      | cons _ q =>
-        rw [Walk.cons_isPath_iff] at hp hq
-        simp only [Walk.edges_cons, List.mem_cons, Sym2.eq_iff, true_and] at h
-        rcases h with (⟨h, rfl⟩ | ⟨rfl, rfl⟩) | h
-        · cases ih hp.1 q hq.1
-          rfl
-        · simp at hq
-        · exact absurd (Walk.fst_mem_support_of_mem_edges _ h) hq.2
-    · rw [Walk.cons_isPath_iff] at hp
-      exact absurd (Walk.fst_mem_support_of_mem_edges _ h) hp.2
+  have := p.isPath.exists_isCycle_of_ne q.isPath
+  grind [IsAcyclic, Subtype.coe_inj]
 
 theorem isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) : G.IsAcyclic := by
   intro v c hc
