@@ -698,8 +698,7 @@ lemma chevalley_mvPolynomialC
   have hS' : S'.degBound ≤ k * (1 + d.count 0) := by
     apply Finset.sup_le fun x hxS ↦ ?_
     simp only [ConstructibleSetData.map, RingEquiv.toRingHom_eq_coe,
-      AlgEquiv.toRingEquiv_toRingHom, Finset.mem_image, BasicConstructibleSetData.map,
-      RingHom.coe_coe, S'] at hxS
+      Finset.mem_image, BasicConstructibleSetData.map, RingHom.coe_coe, S'] at hxS
     obtain ⟨C, hxS, rfl⟩ := hxS
     trans ∑ i : Fin C.n, (1 + d.count 0)
     · gcongr with j hj
@@ -707,7 +706,11 @@ lemma chevalley_mvPolynomialC
       by_cases hgj : C.g j = 0
       · rw [hgj, map_zero]
         simp
-      sorry
+      -- `simp? [degree_finSuccEquiv hgj, WithBot.succ_natCast, add_comm, degreeOf_def]` says
+      simp only [RingEquiv.coe_mk, AlgEquiv.toEquiv_eq_coe, EquivLike.coe_coe,
+        degree_finSuccEquiv hgj, degreeOf_def, WithBot.succ_natCast, Nat.cast_id, add_comm,
+        add_le_add_iff_left]
+      exact Multiset.count_le_of_le _ (hS _ hxS _).2
     · simp only [Finset.sum_const, Finset.card_univ, Fintype.card_fin, smul_eq_mul]
       gcongr
       exact hSn _ hxS
@@ -718,7 +721,23 @@ lemma chevalley_mvPolynomialC
       (coeffsIn _ M ⊓ (degreesLE _ _ B).restrictScalars ℤ)
       (by simpa [MvPolynomial.coeff_one, apply_ite] using hM)
       S' (fun x hxS j k ↦ by
-        sorry)
+        simp only [ConstructibleSetData.map, RingEquiv.toRingHom_eq_coe, Finset.mem_image,
+          BasicConstructibleSetData.map, RingHom.coe_coe, RingEquiv.coe_mk, AlgEquiv.toEquiv_eq_coe,
+          EquivLike.coe_coe, S', e] at hxS
+        obtain ⟨C, hxS, rfl⟩ := hxS
+        simp only [comp_apply, Submodule.mem_inf, mem_coeffsIn, Submodule.restrictScalars_mem,
+          mem_degreesLE]
+        constructor
+        · intro d
+          simp only [finSuccEquiv_coeff_coeff]
+          exact (hS _ hxS _).1 _
+        · simp only [B]
+          replace hS := (hS _ hxS j).2
+          simp only [Submodule.coe_restrictScalars, SetLike.mem_coe, mem_degreesLE,
+            Multiset.le_iff_count, Finsupp.count_toMultiset, Finsupp.comapDomain_apply,
+            Multiset.toFinsupp_apply, ← degreeOf_def] at hS ⊢
+          intro a
+          exact (degreeOf_coeff_finSuccEquiv (C.g j) a k).trans (hS _))
   let N := (k * (1 + d.count 0)) ^ (k * (1 + d.count 0))
   have (C) (hCT : C ∈ T) (a) : C.g a ∈ coeffsIn (Fin n) (M ^ N) ⊓
         (degreesLE R (Fin n) (N • B)).restrictScalars ℤ := by
