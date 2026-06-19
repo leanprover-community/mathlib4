@@ -379,6 +379,23 @@ theorem contMDiffWithinAt_iff_of_mem_maximalAtlas {x : M} (he : e ∈ maximalAtl
           ((e.extend I).symm ⁻¹' s ∩ range I) (e.extend I x) :=
   (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_indep_chart he hx he' hy
 
+/-- An alternative version of `contMDiffWithinAt_iff_of_mem_maximalAtlas` which takes a
+chart `e'` in the target in the maximal atlas, but uses the preferred chart on the domain. -/
+theorem contMDiffWithinAt_iff_of_mem_maximalAtlas'
+    (he' : e' ∈ maximalAtlas I' n M') (hy : f x ∈ e'.source) :
+    ContMDiffWithinAt I I' n f s x ↔
+      ContinuousWithinAt f s x ∧
+        ContDiffWithinAt 𝕜 n (e'.extend I' ∘ f ∘ (extChartAt I x).symm)
+          ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x) := by
+  rw [contMDiffWithinAt_iff_source,
+    contMDiffWithinAt_iff_target_of_mem_maximalAtlas he' (by simpa)]
+  apply and_congr (continuousWithinAt_iff_source (I' := I').symm)
+  -- TODO: this is `contMDiffWithinAt_iff_contDiffWithinAt` copied,
+  -- which is not put here for import reasons
+  simp +contextual only [ContMDiffWithinAt, liftPropWithinAt_iff',
+    ContDiffWithinAtProp, iff_def, mfld_simps]
+  exact ContDiffWithinAt.continuousWithinAt
+
 /-- An alternative formulation of `contMDiffWithinAt_iff_of_mem_maximalAtlas`
 if the set if `s` lies in `e.source`. -/
 theorem contMDiffWithinAt_iff_image {x : M} (he : e ∈ maximalAtlas I n M)
