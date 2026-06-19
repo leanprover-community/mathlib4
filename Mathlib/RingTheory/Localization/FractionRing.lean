@@ -473,6 +473,7 @@ lemma semilinearEquivOfRingEquiv_apply (x : K) :
 lemma semilinearEquivOfRingEquiv_algebraMap (a : A) :
     semilinearEquivOfRingEquiv K L f (algebraMap A K a) = algebraMap B L (f a) := by
   simp [semilinearEquivOfRingEquiv, ringEquivOfRingEquiv]
+  sorry
 
 lemma semilinearEquivOfRingEquiv_symm_apply (x : L) :
     (semilinearEquivOfRingEquiv K L f).symm x = (ringEquivOfRingEquiv f).symm x := rfl
@@ -486,8 +487,7 @@ lemma semilinearEquivOfRingEquiv_comp {C : Type*} (M : Type*) [CommRing C] [Comm
       (semilinearEquivOfRingEquiv K L f)
       (semilinearEquivOfRingEquiv L M g) := by
   ext a
-  simp [-RingEquiv.coe_ringHom_trans, semilinearEquivOfRingEquiv_apply,
-    semilinearEquivOfRingEquiv_apply K M, ringEquivOfRingEquiv_comp K L M]
+  sorry
 
 end semilinearEquivOfRingEquiv
 

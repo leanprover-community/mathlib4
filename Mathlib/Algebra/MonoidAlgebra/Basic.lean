@@ -207,7 +207,7 @@ variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 /-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
 def liftNCAlgHom (f : A →ₐ[R] B) (g : M →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
     A[M] →ₐ[R] B :=
-  { liftNCRingHom (f : A →+* B) g h_comm with
+  { liftNCRingHom (RingHomClass.toRingHom f) g h_comm with
     commutes' := by simp [liftNCRingHom] }
 
 @[simp] lemma coe_liftNCAlgHom (f : A →ₐ[R] B) (g : M →* B) (h_comm) :
@@ -392,7 +392,7 @@ variable (M) in
 /-- The algebra homomorphism of additive monoid algebras induced by a homomorphism of the base
 algebras. -/]
 noncomputable def mapAlgHom (f : A →ₐ[R] B) : A[M] →ₐ[R] B[M] where
-  __ := mapRingHom M f
+  __ := mapRingHom M (RingHomClass.toRingHom f)
   commutes' := by simp
 
 @[deprecated (since := "2026-03-20")] alias mapRangeAlgHom := mapAlgHom
@@ -400,7 +400,7 @@ noncomputable def mapAlgHom (f : A →ₐ[R] B) : A[M] →ₐ[R] B[M] where
 variable (M) in
 @[to_additive (attr := simp)]
 lemma toRingHom_mapAlgHom (f : A →ₐ[R] B) :
-    mapAlgHom M f = mapRingHom M f.toRingHom := rfl
+    RingHomClass.toRingHom (mapAlgHom M f) = mapRingHom M f.toRingHom := rfl
 
 @[deprecated (since := "2026-03-20")] alias toRingHom_mapRangeAlgHom := toRingHom_mapAlgHom
 
@@ -576,7 +576,7 @@ variable [CommSemiring R] [AddMonoid M] [Semiring A] [Algebra R A] [Semiring B] 
 /-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
 def liftNCAlgHom (f : A →ₐ[R] B) (g : Multiplicative M →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
     A[M] →ₐ[R] B :=
-  { liftNCRingHom (f : A →+* B) g h_comm with
+  { liftNCRingHom (RingHomClass.toRingHom f) g h_comm with
     commutes' := by simp [liftNCRingHom] }
 
 @[simp] lemma coe_liftNCAlgHom (f : A →ₐ[R] B) (g : Multiplicative M →* B) (h_comm) :

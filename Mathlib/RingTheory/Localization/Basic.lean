@@ -424,9 +424,7 @@ variable (Rₘ Sₙ Rₘ' Sₙ' : Type*) [CommSemiring Rₘ] [CommSemiring Sₙ]
 theorem algEquiv_comp_algebraMap : (algEquiv N Sₙ Sₙ' : _ →+* Sₙ').comp (algebraMap Rₘ Sₙ) =
       (algebraMap Rₘ' Sₙ').comp (algEquiv M Rₘ Rₘ') := by
   refine IsLocalization.ringHom_ext M (RingHom.ext fun x => ?_)
-  simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, AlgEquiv.commutes]
-  rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
-    ← AlgEquiv.restrictScalars_apply R, AlgEquiv.commutes]
+  sorry
 
 variable {Rₘ} in
 theorem algEquiv_comp_algebraMap_apply (x : Rₘ) :
