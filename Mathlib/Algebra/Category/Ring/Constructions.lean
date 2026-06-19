@@ -377,7 +377,7 @@ theorem π_isLocalHom (hc : IsLimit c) (j : J) (hj : ∀ (x : c.pt), IsUnit (c.�
   obtain ⟨k, f, g, lh, eq⟩ := hj x hx i
   exact lh.map_nonunit _ (eq ▸ hx.map _)
 
-theorem isLocalRing_of_isLimit (hc : IsLimit c) (j : J) [IsLocalRing (F.obj j)]
+theorem isLocalRing (hc : IsLimit c) (j : J) [IsLocalRing (F.obj j)]
     (hj : ∀ (x : c.pt), IsUnit (c.π.app j x) → ∀ (i : J), ∃ (k : J) (f : i ⟶ k) (g : j ⟶ k),
       IsLocalHom (F.map f).hom ∧ F.map f (c.π.app i x) = F.map g (c.π.app j x)) :
     IsLocalRing c.pt := by
