@@ -313,6 +313,8 @@ instance : CofiniteTopology (WithCofiniteTopology X) where
 
 variable {X : Type*} [TopologicalSpace X] [CofiniteTopology X]
 
+/-- A set in a cofinite topology is open if and
+only if it is empty or its complement is finite. -/
 theorem isOpen_iff' {s : Set X} : IsOpen s ↔ s = ∅ ∨ sᶜ.Finite := by
   simp only [isOpen_iff, nonempty_iff_ne_empty, or_iff_not_imp_left]
 
