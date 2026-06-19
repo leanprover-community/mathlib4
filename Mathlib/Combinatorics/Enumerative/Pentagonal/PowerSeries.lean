@@ -6,10 +6,10 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Algebra.Ring.NegOnePow
-public import Mathlib.Combinatorics.Enumerative.Pentagonal
+public import Mathlib.Combinatorics.Enumerative.Pentagonal.Basic
 public import Mathlib.RingTheory.PowerSeries.PiTopology
 
-import Mathlib.Topology.Algebra.InfiniteSum.Pentagonal
+import Mathlib.Combinatorics.Enumerative.Pentagonal.Ring
 
 /-!
 # Pentagonal number theorem for power series
