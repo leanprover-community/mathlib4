@@ -303,7 +303,7 @@ instance WithCofiniteTopology.instInhabited [Inhabited X] : Inhabited (WithCofin
 /-- A space has cofinite topology if a set is open if and
 only if it is empty or has finite complement.
 
-For a type equipped with the cofinite topology see `WithCofiniteTopology`. -/
+For a type synonym equipped with the cofinite topology see `WithCofiniteTopology`. -/
 class CofiniteTopology (X : Type*) [TopologicalSpace X] : Prop where
   isOpen_iff (s : Set X) : IsOpen s ↔ s.Nonempty → sᶜ.Finite
 
