@@ -110,41 +110,35 @@ lemma innerAnodyneExtensions_pushoutObjObjι'
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
 lemma innerAnodyneExtensions_unionProd_ι
     {X Y : SSet.{u}} (A : X.Subcomplex) (B : Y.Subcomplex)
     (hB : innerAnodyneExtensions B.ι) :
     innerAnodyneExtensions (A.unionProd B).ι :=
   innerAnodyneExtensions_pushoutObjObjι (Subcomplex.unionProd.pushoutObjObj A B) hB
 
-set_option backward.defeqAttrib.useBackward true in
 lemma innerAnodyneExtensions_unionProd_ι'
     {X Y : SSet.{u}} (A : X.Subcomplex) (B : Y.Subcomplex)
     (hA : innerAnodyneExtensions A.ι) :
     innerAnodyneExtensions (A.unionProd B).ι :=
   innerAnodyneExtensions_pushoutObjObjι' (Subcomplex.unionProd.pushoutObjObj A B) hA
 
-set_option backward.defeqAttrib.useBackward true in
 lemma innerAnodyneExtensions.whiskerRight
     {X Y : SSet.{u}} {f : X ⟶ Y} (hf : innerAnodyneExtensions f) (Z : SSet.{u}) :
     innerAnodyneExtensions (f ▷ Z) :=
   innerAnodyneExtensions_pushoutObjObjι'
     (.ofIsInitialRight (curriedTensor _) f (initial.to Z) initialIsInitial) hf
 
-set_option backward.defeqAttrib.useBackward true in
 lemma innerAnodyneExtensions.whiskerLeft
     {X Y : SSet.{u}} {f : X ⟶ Y} (hf : innerAnodyneExtensions f) (Z : SSet.{u}) :
     innerAnodyneExtensions (Z ◁ f) :=
   innerAnodyneExtensions_pushoutObjObjι
     (.ofIsInitialLeft (curriedTensor _) (initial.to Z) f initialIsInitial) hf
 
-set_option backward.defeqAttrib.useBackward true in
 instance {E B X : SSet.{u}} (p : E ⟶ B) [InnerFibration p] :
     InnerFibration ((ihom X).map p) :=
   innerFibration_pullbackObjObjπ (Functor.PullbackObjObj.ofIsInitial
     MonoidalClosed.internalHom (initial.to X) p initialIsInitial)
 
-set_option backward.isDefEq.respectTransparency false in
 instance {A B : SSet.{u}} (i : A ⟶ B) [Mono i] (X : SSet.{u}) [Quasicategory X] :
     InnerFibration ((MonoidalClosed.pre i).app X) :=
   innerFibration_pullbackObjObjπ (Functor.PullbackObjObj.ofIsTerminal
