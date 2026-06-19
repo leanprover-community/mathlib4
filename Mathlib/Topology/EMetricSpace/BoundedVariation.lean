@@ -556,7 +556,7 @@ lemma eVariationOn_inter_Ioi_eq_inter_Ici_of_continuousWithinAt
   rw [← comp_ofDual f, ← comp_ofDual f]
   exact eVariationOn_inter_Iio_eq_inter_Iic_of_continuousWithinAt h h'
 
-lemma eVariation_Ioc_eq_Icc_of_continuousWithinAt
+lemma eVariation_Ioc_eq_Icc_of_continuousWithinAt'
     [TopologicalSpace α] [OrderTopology α] {f : α → E} {a b : α}
     [h : (𝓝[Ioi a] a).NeBot] (h' : ContinuousWithinAt f (Ici a) a) :
     eVariationOn f (Ioc a b) = eVariationOn f (Icc a b) := by
@@ -568,9 +568,25 @@ lemma eVariation_Ioc_eq_Icc_of_continuousWithinAt
   convert eVariationOn_inter_Ioi_eq_inter_Ici_of_continuousWithinAt this
     (h'.mono inter_subset_right) <;> grind
 
-lemma eVariation_Ico_eq_Icc_of_continuousWithinAt
+lemma eVariation_Ioc_eq_Icc_of_continuousWithinAt
+    [TopologicalSpace α] [OrderTopology α] [DenselyOrdered α] {f : α → E} {a b : α}
+    (h' : ContinuousWithinAt f (Ici a) a) :
+    eVariationOn f (Ioc a b) = eVariationOn f (Icc a b) := by
+  rcases le_or_gt b a with hab | hab
+  · simp [hab]
+  have : (𝓝[Ioi a] a).NeBot := nhdsGT_neBot_of_exists_gt ⟨b, hab⟩
+  exact eVariation_Ioc_eq_Icc_of_continuousWithinAt' h'
+
+lemma eVariation_Ico_eq_Icc_of_continuousWithinAt'
     [TopologicalSpace α] [OrderTopology α] {f : α → E} {a b : α}
     [h : (𝓝[Iio a] a).NeBot] (h' : ContinuousWithinAt f (Iic a) a) :
+    eVariationOn f (Ico b a) = eVariationOn f (Icc b a) := by
+  rw [← comp_ofDual f, ← comp_ofDual f, ← Ioc_toDual, ← Icc_toDual]
+  exact eVariation_Ioc_eq_Icc_of_continuousWithinAt' h'
+
+lemma eVariation_Ico_eq_Icc_of_continuousWithinAt
+    [TopologicalSpace α] [OrderTopology α] [DenselyOrdered α] {f : α → E} {a b : α}
+    (h' : ContinuousWithinAt f (Iic a) a) :
     eVariationOn f (Ico b a) = eVariationOn f (Icc b a) := by
   rw [← comp_ofDual f, ← comp_ofDual f, ← Ioc_toDual, ← Icc_toDual]
   exact eVariation_Ioc_eq_Icc_of_continuousWithinAt h'
