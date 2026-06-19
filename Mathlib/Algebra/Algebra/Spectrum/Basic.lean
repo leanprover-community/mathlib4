@@ -173,13 +173,9 @@ theorem resolvent_eq {a : A} {r : R} (h : r ∈ resolventSet R a) : resolvent a 
 theorem resolvent_sub_resolvent {a b : A} {r : R}
     (ha : r ∈ resolventSet R a) (hb : r ∈ resolventSet R b) :
     resolvent a r - resolvent b r = resolvent a r * (a - b) * resolvent b r := by
-  rw [resolvent_eq ha, resolvent_eq hb]
-  have h_units : (↑ha.unit⁻¹ : A) - (↑hb.unit⁻¹ : A)
-      = (↑ha.unit⁻¹ : A) * ((hb.unit : A) - (ha.unit : A)) * (↑hb.unit⁻¹ : A) := by
-    rw [mul_sub, sub_mul, mul_assoc, Units.mul_inv, mul_one, Units.inv_mul, one_mul]
-  have h_diff : (hb.unit : A) - (ha.unit : A) = a - b := by
-    rw [ha.unit_spec, hb.unit_spec]; abel
-  rw [h_units, h_diff]
+  rw [resolvent_eq ha, resolvent_eq hb, Units.eq_mul_inv_iff_mul_eq, Units.eq_inv_mul_iff_mul_eq]
+  simp [sub_mul, mul_sub, -IsUnit.unit_spec]
+  simp
 
 theorem units_smul_resolvent {r : Rˣ} {s : R} {a : A} :
     r • resolvent a (s : R) = resolvent (r⁻¹ • a) (r⁻¹ • s : R) := by
