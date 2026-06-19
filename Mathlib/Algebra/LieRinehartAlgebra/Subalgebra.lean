@@ -14,14 +14,6 @@ public import Mathlib.Algebra.LieRinehartAlgebra.Defs
 This file defines Lie-Rinehart subalgebras of a Lie-Rinehart algebra and provides basic related
 definitions and results.
 
-## Remarks
-A lot of the code is copied / adapted from `Mathlib/Algebra/Lie/Subalgebra.lean`. Most of the
-constructions are possible with an 'incomplete' set of LieRinehart algebra axioms, the axioms are
-added as variables throughout the file progressively, as needed.
-
-Note that for a Lie-Rinehart algebra `R A L`, we only consider subalgebras of `L` leaving
-`R A` fixed.
-
 ## Main definitions/ statements:
 
 * `LieRinehartSubalgebra` as an `A`-submodule of `L` stable under the Lie bracket. (This is also
@@ -33,7 +25,7 @@ applicable to Lie-Rinehart rings and more generally any `A`-module with a Lie ri
 
 -/
 
-@[expose] public section
+public section
 
 open scoped LieRinehartAlgebra
 
@@ -60,11 +52,11 @@ namespace LieRinehartSubalgebra
 
 instance : SetLike (LieRinehartSubalgebra A L) L where
   coe L' := L'.carrier
-  coe_injective' L' L'' h := by
-    rcases L' with ⟨⟨⟩⟩
-    rcases L'' with ⟨⟨⟩⟩
+  coe_injective L' L'' h := by
+    rcases L'
+    rcases L''
     congr
-    exact SetLike.coe_injective' h
+    exact SetLike.coe_injective h
 
 instance : PartialOrder (LieRinehartSubalgebra A L) := .ofSetLike (LieRinehartSubalgebra A L) L
 
@@ -79,22 +71,10 @@ instance : SMulMemClass (LieRinehartSubalgebra A L) A L where
 /-- A Lie-Rinehart subalgebra forms a Lie ring. -/
 instance lieRing (L' : LieRinehartSubalgebra A L) : LieRing L' where
   bracket x y := ⟨⁅x.val, y.val⁆, L'.lie_mem' x.property y.property⟩
-  lie_add := by
-    intros
-    apply SetCoe.ext
-    apply lie_add
-  add_lie := by
-    intros
-    apply SetCoe.ext
-    apply add_lie
-  lie_self := by
-    intros
-    apply SetCoe.ext
-    apply lie_self
-  leibniz_lie := by
-    intros
-    apply SetCoe.ext
-    apply leibniz_lie
+  lie_add x y z := by aesop
+  add_lie x y z := by aesop
+  lie_self x := by aesop
+  leibniz_lie x y z := by aesop
 
 variable {A L}
 variable (L' : LieRinehartSubalgebra A L)
@@ -217,7 +197,7 @@ instance lieAlgebra : LieAlgebra R L' where
       apply lie_smul }
 
 /-- Converts a Lie-Rinehart subalgebra to the corresponding Lie subalgebra. -/
-def toLieSubalgebra : LieSubalgebra R L where
+@[expose] def toLieSubalgebra : LieSubalgebra R L where
   toSubmodule := L'.toSubmodule.restrictScalars R
   lie_mem' := L'.lie_mem'
 
@@ -252,7 +232,7 @@ instance : LieRinehartAlgebra R A L' where
 
 /-- The embedding of a Lie-Rinehart subalgebra into the ambient space as a morphism of
 Lie-Rinehart algebras. -/
-def incl : L' →ₗ⁅(AlgHom.id R A)⁆ L where
+@[expose] def incl : L' →ₗ⁅(AlgHom.id R A)⁆ L where
   __ := L'.toSubmodule.subtype.restrictScalars R
   map_lie' {x y} := coe_bracket L' x y
   map_smul_apply' a x := L'.toSubmodule.subtype.map_smul a x
