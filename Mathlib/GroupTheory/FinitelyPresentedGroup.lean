@@ -110,6 +110,27 @@ theorem of_surjective [hG : IsFinitelyPresented G] (f : G →* H)
   rw [← MonoidHom.comap_ker]
   exact hf_ker.comap hφ_surj hφ_ker
 
+open QuotientGroup in
+theorem exists_presented [hg : IsFinitelyPresented G] :
+    ∃ n : ℕ, ∃ s : Set (FreeGroup (Fin n)), Set.Finite s ∧ Nonempty (G ≃* PresentedGroup s) := by
+  obtain ⟨n, φ, hφsurj, s, hsfin, sker⟩ := hg
+  exact ⟨n, s, hsfin,
+    ⟨(quotientKerEquivOfSurjective φ hφsurj).symm.trans (quotientMulEquivOfEq sker.symm)⟩⟩
+
+theorem presentedGroup [fin : Finite α] (s : Set (FreeGroup α)) [fins : Finite s] :
+    IsFinitelyPresented (PresentedGroup s) := by
+  obtain ⟨n, ⟨equi⟩⟩ := (finite_iff_exists_equiv_fin (α := α)).mp fin
+  use n
+  suffices ∃ ψ : FreeGroup α →* PresentedGroup s,
+    Function.Surjective ψ ∧ ψ.ker.IsNormalClosureFG by
+    rcases this with ⟨ψ, hsurj, hfg⟩
+    let mapped := FreeGroup.freeGroupCongr equi.symm
+    refine ⟨ψ.comp mapped, hsurj.comp mapped.surjective, ?_⟩
+    simp only [MonoidHom.ker_comp_mulEquiv]
+    exact Subgroup.IsNormalClosureFG.map (hfg) (mapped.symm.surjective)
+  exact ⟨PresentedGroup.mk s, PresentedGroup.mk_surjective s, s, fins,
+    (QuotientGroup.ker_mk' (Subgroup.normalClosure s)).symm⟩
+
 /-- A free group with a finite number of generators is finitely presented. -/
 @[to_additive /-- A free additive group with a finite number of generators is finitely presented. -/
 ]
@@ -128,27 +149,15 @@ instance : AddGroup.IsFinitelyPresented ℤ :=
   AddGroup.IsFinitelyPresented.equiv
     (FreeAddGroup.addEquivIntOfUnique : FreeAddGroup Unit ≃+ ℤ) inferInstance
 
-open QuotientGroup in
 /-- The free product of finitely presented groups is finitely presented -/
 instance [hg : IsFinitelyPresented G] [hh : IsFinitelyPresented H] :
     IsFinitelyPresented (Monoid.Coprod G H) := by
-  obtain ⟨ng, φg, hφgsurj, setg, hsetgfin, setgker⟩ := hg
-  obtain ⟨nh, φh, hφhsurj, seth, hsethfin, sethker⟩ := hh
-  refine equiv (MulEquiv.coprodCongr
-    ((quotientKerEquivOfSurjective φg hφgsurj).symm.trans (quotientMulEquivOfEq setgker.symm))
-    ((quotientKerEquivOfSurjective φh hφhsurj).symm.trans (quotientMulEquivOfEq sethker.symm))).symm
-    <| equiv (PresentedGroup.coprodPresentations setg seth) ?_
-  use ng + nh
-  let s := (FreeGroup.map Sum.inl '' setg ∪ FreeGroup.map Sum.inr '' seth)
-  suffices ∃ ψ : FreeGroup (Fin ng ⊕ Fin nh) →* PresentedGroup s,
-    Function.Surjective ψ ∧ ψ.ker.IsNormalClosureFG by
-    rcases this with ⟨ψ, hsurj, hfg⟩
-    let toDisjoint : FreeGroup (Fin (ng + nh)) ≃* FreeGroup (Fin ng ⊕ Fin nh) :=
-      FreeGroup.freeGroupCongr (finSumFinEquiv).symm
-    refine ⟨ψ.comp toDisjoint, hsurj.comp toDisjoint.surjective, ?_⟩
-    simp only [MonoidHom.ker_comp_mulEquiv]
-    exact Subgroup.IsNormalClosureFG.map (hfg) (toDisjoint.symm.surjective)
-  exact ⟨PresentedGroup.mk s, PresentedGroup.mk_surjective s, s,
-    (hsetgfin.image (FreeGroup.map Sum.inl)).union (hsethfin.image (FreeGroup.map Sum.inr)),
-    (QuotientGroup.ker_mk' (Subgroup.normalClosure s)).symm⟩
+  obtain ⟨ng, sg, ⟨finsg, ⟨isog⟩⟩⟩ := exists_presented (G := G)
+  obtain ⟨nh, sh, ⟨finsh, ⟨isoh⟩⟩⟩ := exists_presented (G := H)
+  refine equiv (MulEquiv.coprodCongr isog isoh).symm <|
+    equiv (PresentedGroup.coprodPresentations sg sh) ?_
+  let s := (FreeGroup.map Sum.inl '' sg ∪ FreeGroup.map Sum.inr '' sh)
+  exact presentedGroup (fin := Finite.of_equiv (Fin (ng + nh)) (finSumFinEquiv.symm))
+    (fins := (finsg.image (FreeGroup.map Sum.inl)).union (finsh.image (FreeGroup.map Sum.inr))) s
+
 end Group.IsFinitelyPresented
