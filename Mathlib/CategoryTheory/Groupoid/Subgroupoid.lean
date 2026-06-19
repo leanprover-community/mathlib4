@@ -387,6 +387,7 @@ def comap (S : Subgroupoid D) : Subgroupoid C where
     simp only [mem_setOf, Functor.map_comp]
     apply S.mul <;> assumption
 
+@[gcongr]
 theorem comap_mono (S T : Subgroupoid D) : S ≤ T → comap φ S ≤ comap φ T := fun ST _ =>
   @ST ⟨_, _, _⟩
 
