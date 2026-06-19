@@ -459,6 +459,7 @@ def nonUnitalStarAlgHom_postcomp (φ : R →⋆ₙₐ[M] S) (hφ : Continuous φ
   map_star' _ := ext <| by simp [map_star]
   map_smul' r f := ext <| by simp
 
+variable (R) in
 @[simps!]
 def starAlgEquiv_precomp (f : X ≃ₜ Y) (hf : f 0 = 0) :
     C(Y, R)₀ ≃⋆ₐ[R] C(X, R)₀ :=
