@@ -14,6 +14,12 @@ example : 1 + 2 = 3 := by
   guard_hyp B :=ₛ 2
   trivial
 
+/- Assignment of constants under binders -/
+example : (fun x ↦ x + 2) = (fun y ↦ y + 1 + 1) := by
+  setm (fun x ↦ x + ?b) = _
+  guard_hyp b :=ₛ 2
+  trivial
+
 /- Usage with `at` keywords -/
 set_option linter.unusedVariables false in
 example (h1 : 1 + 1 = 5) (h2 : 1 + 3 = 5) (h3 : 1 + 2 = 5) : True := by
