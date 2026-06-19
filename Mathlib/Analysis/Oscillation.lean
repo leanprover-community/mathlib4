@@ -19,7 +19,8 @@ defined to be the infimum of `diam f '' N` for all neighborhoods `N` of `x`. We 
 
 We also prove some simple facts about oscillation, most notably that the oscillation of `f`
 at `x` is 0 if and only if `f` is continuous at `x`, with versions for both `oscillation` and
-`oscillationWithin`.
+`oscillationWithin`. We prove monotonicity of `oscillationWithin` in the set argument and
+provide `simp` lemmas for constant functions.
 
 ## Tags
 
@@ -98,6 +99,32 @@ theorem eq_zero_iff_continuousAt [TopologicalSpace E] (f : E → F) (x : E) :
   exact OscillationWithin.eq_zero_iff_continuousWithinAt f (mem_univ x)
 
 end Oscillation
+
+section Mono
+
+variable [TopologicalSpace E]
+
+/-- The oscillation within a smaller set is smaller. -/
+theorem oscillationWithin_mono (f : E → F) {D D' : Set E} (h : D ⊆ D') (x : E) :
+    oscillationWithin f D x ≤ oscillationWithin f D' x :=
+  biInf_mono fun _ hS ↦ Filter.map_mono (nhdsWithin_mono x h) hS
+
+/-- The oscillation within any set is at most the oscillation at the point. -/
+theorem oscillationWithin_le_oscillation (f : E → F) (D : Set E) (x : E) :
+    oscillationWithin f D x ≤ oscillation f x := by
+  rw [← oscillationWithin_univ_eq_oscillation]
+  exact oscillationWithin_mono f (subset_univ D) x
+
+@[simp]
+theorem oscillationWithin_const (c : F) (D : Set E) (x : E) :
+    oscillationWithin (fun _ ↦ c) D x = 0 :=
+  (continuousWithinAt_const).oscillationWithin_eq_zero
+
+@[simp]
+theorem oscillation_const (c : F) (x : E) : oscillation (fun _ ↦ c) x = 0 :=
+  continuousAt_const.oscillation_eq_zero
+
+end Mono
 
 namespace IsCompact
 
