@@ -8,6 +8,7 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Finite.Sum
 public import Mathlib.GroupTheory.FreeGroup.Basic
 public import Mathlib.GroupTheory.Coprod.Basic
 public import Mathlib.GroupTheory.PresentedGroup
@@ -97,7 +98,7 @@ namespace Group.IsFinitelyPresented
 /-- Finitely presented groups are closed under isomorphism. -/
 @[to_additive /-- Finitely presented additive groups are closed under additive isomorphism. -/
 ]
-theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented H := by
+theorem equiv (iso : G ≃* H) [h : IsFinitelyPresented G] : IsFinitelyPresented H := by
   obtain ⟨n, φ, hφsurj, hNC⟩ := h
   refine ⟨n, (iso : G →* H).comp φ, iso.surjective.comp hφsurj, ?_⟩
   rwa [φ.ker_mulEquiv_comp iso]
@@ -116,20 +117,6 @@ theorem exists_mulEquiv_presentedGroup [hg : IsFinitelyPresented G] :
   obtain ⟨n, φ, hφ, s, hs, hsφ⟩ := hg
   exact ⟨n, s, hs, ⟨(quotientKerEquivOfSurjective φ hφ).symm.trans (quotientMulEquivOfEq hsφ.symm)⟩⟩
 
-theorem presentedGroup [fin : Finite α] (s : Set (FreeGroup α)) [fins : Finite s] :
-    IsFinitelyPresented (PresentedGroup s) := by
-  obtain ⟨n, ⟨equi⟩⟩ := (finite_iff_exists_equiv_fin (α := α)).mp fin
-  use n
-  suffices ∃ ψ : FreeGroup α →* PresentedGroup s,
-    Function.Surjective ψ ∧ ψ.ker.IsNormalClosureFG by
-    rcases this with ⟨ψ, hsurj, hfg⟩
-    let mapped := FreeGroup.freeGroupCongr equi.symm
-    refine ⟨ψ.comp mapped, hsurj.comp mapped.surjective, ?_⟩
-    simp only [MonoidHom.ker_comp_mulEquiv]
-    exact Subgroup.IsNormalClosureFG.map (hfg) (mapped.symm.surjective)
-  exact ⟨PresentedGroup.mk s, PresentedGroup.mk_surjective s, s, fins,
-    (QuotientGroup.ker_mk' (Subgroup.normalClosure s)).symm⟩
-
 /-- A free group with a finite number of generators is finitely presented. -/
 @[to_additive /-- A free additive group with a finite number of generators is finitely presented. -/
 ]
@@ -139,24 +126,24 @@ instance [Finite α] : IsFinitelyPresented (FreeGroup α) := by
   · rw [(FreeGroup.map f).ker_eq_bot (FreeGroup.map_injective hf_inj.injective)]
     exact .bot
 
+instance [Finite α] (s : Set (FreeGroup α)) [Finite s] :
+    IsFinitelyPresented (PresentedGroup s) :=
+  of_surjective (PresentedGroup.mk s) (PresentedGroup.mk_surjective s)
+    ⟨s, ‹_›, (QuotientGroup.ker_mk' (Subgroup.normalClosure s)).symm⟩
+
 /-- `Multiplicative ℤ` is finitely presented. -/
 instance : IsFinitelyPresented (Multiplicative ℤ) :=
-  equiv (FreeGroup.mulEquivIntOfUnique : FreeGroup Unit ≃* Multiplicative ℤ) inferInstance
+  equiv (FreeGroup.mulEquivIntOfUnique : FreeGroup Unit ≃* Multiplicative ℤ)
 
 /-- ℤ is finitely presented -/
 instance : AddGroup.IsFinitelyPresented ℤ :=
-  AddGroup.IsFinitelyPresented.equiv
-    (FreeAddGroup.addEquivIntOfUnique : FreeAddGroup Unit ≃+ ℤ) inferInstance
+  AddGroup.IsFinitelyPresented.equiv (FreeAddGroup.addEquivIntOfUnique : FreeAddGroup Unit ≃+ ℤ)
 
 /-- The free product of finitely presented groups is finitely presented -/
-instance [hg : IsFinitelyPresented G] [hh : IsFinitelyPresented H] :
+instance [IsFinitelyPresented G] [IsFinitelyPresented H] :
     IsFinitelyPresented (Monoid.Coprod G H) := by
-  obtain ⟨ng, sg, ⟨finsg, ⟨isog⟩⟩⟩ := exists_mulEquiv_presentedGroup (G := G)
-  obtain ⟨nh, sh, ⟨finsh, ⟨isoh⟩⟩⟩ := exists_mulEquiv_presentedGroup (G := H)
-  refine equiv (MulEquiv.coprodCongr isog isoh).symm <|
-    equiv (PresentedGroup.coprodPresentations sg sh) ?_
-  let s := (FreeGroup.map Sum.inl '' sg ∪ FreeGroup.map Sum.inr '' sh)
-  exact presentedGroup (fin := Finite.of_equiv (Fin (ng + nh)) (finSumFinEquiv.symm))
-    (fins := (finsg.image (FreeGroup.map Sum.inl)).union (finsh.image (FreeGroup.map Sum.inr))) s
+  obtain ⟨_, sG, ⟨_ : Finite sG, ⟨φG⟩⟩⟩ := exists_mulEquiv_presentedGroup (G := G)
+  obtain ⟨_, sH, ⟨_ : Finite sH, ⟨φH⟩⟩⟩ := exists_mulEquiv_presentedGroup (G := H)
+  exact equiv ((PresentedGroup.coprodPresentations sG sH).trans (MulEquiv.coprodCongr φG φH).symm)
 
 end Group.IsFinitelyPresented
