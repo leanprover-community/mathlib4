@@ -29,7 +29,7 @@ attribute [local instance] splits_ℚ_ℂ
 noncomputable def quintic : ℚ[X] := X ^ 5 - X - 1
 
 theorem degree_quintic : quintic.degree = 5 := by
-  rw [quintic]; compute_degree <;> norm_num; rfl
+  rw [quintic]; compute_degree <;> norm_num
 
 theorem irreducible_quintic : Irreducible quintic :=
   X_pow_sub_X_sub_one_irreducible_rat (by norm_num)
@@ -37,14 +37,14 @@ theorem irreducible_quintic : Irreducible quintic :=
 theorem gal_quintic : Function.Bijective (galActionHom quintic ℂ) :=
   X_pow_sub_X_sub_one_gal
 
-theorem not_solvable_by_rad (x : ℂ) (hx : aeval x quintic = 0) : ¬IsSolvableByRad ℚ x := by
-  refine mt (solvableByRad.isSolvable' irreducible_quintic hx)
+theorem not_solvable_by_rad (x : ℂ) (hx : aeval x quintic = 0) : x ∉ solvableByRad ℚ ℂ := by
+  refine mt (fun h ↦ isSolvable_gal_of_irreducible h irreducible_quintic hx)
     fun h ↦ Equiv.Perm.not_solvable (rootSet quintic ℂ) ?_ (solvable_of_surjective gal_quintic.2)
   rw [Cardinal.mk_fintype, card_rootSet_eq_natDegree irreducible_quintic.separable (splits _),
     natDegree_eq_of_degree_eq_some degree_quintic, Nat.ofNat_le_cast]
 
 /-- **Abel-Ruffini Theorem** -/
-theorem exists_not_solvable_by_rad : ∃ x : ℂ, IsAlgebraic ℚ x ∧ ¬IsSolvableByRad ℚ x := by
+theorem exists_not_solvable_by_rad : ∃ x : ℂ, IsAlgebraic ℚ x ∧ x ∉ solvableByRad ℚ ℂ := by
   have h : quintic.degree > 0 := by rw [degree_quintic]; norm_num
   obtain ⟨x, hx⟩ := Splits.exists_eval_eq_zero (splits (quintic.map (algebraMap ℚ ℂ)))
     (by rw [degree_map]; exact h.ne')

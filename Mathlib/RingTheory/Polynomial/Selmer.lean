@@ -106,8 +106,8 @@ theorem X_pow_sub_X_sub_one_gal :
     apply Unique.bijective
   have hp : (X ^ n - X - 1 : ℤ[X]) = trinomial 0 1 n (-1) (-1) 1 := by
     simp only [trinomial, C_neg, C_1]; ring
-  have h := tada'' (X ^ n - X - 1) (hp ▸ trinomial_monic zero_lt_one hn)
-    (X_pow_sub_X_sub_one_irreducible hn.ne') ?_
+  have h := tada'' (X ^ n - X - 1)
+    (X_pow_sub_X_sub_one_irreducible hn.ne') (hp ▸ trinomial_monic zero_lt_one hn) ?_
   · rwa [Polynomial.map_sub, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_one,
       Polynomial.map_X] at h
   · classical
