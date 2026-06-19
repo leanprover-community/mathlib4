@@ -910,6 +910,7 @@ Q830513:
 Q834025:
   title: Cauchy integral theorem
   comment: We have `DiffContOnCl.circleIntegral_eq_zero` for circle contours
+  url: https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Complex/CauchyIntegral.html#DiffContOnCl.circleIntegral_eq_zero
 
 Q834211:
   title: Wallace–Bolyai–Gerwien theorem
