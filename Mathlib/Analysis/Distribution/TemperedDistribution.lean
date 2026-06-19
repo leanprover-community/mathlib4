@@ -175,7 +175,7 @@ theorem toTemperedDistribution_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f :
   filter_upwards [g.coeFn_toLp (1 - p⁻¹)⁻¹ μ] with x hg
   rw [hg]
 
-/-- This coercion has to be a `CoeHead`, because `𝓢'(E, F)` can't infer the value of `p` or `μ`.-/
+/-- This coercion has to be a `CoeHead`, because `𝓢'(E, F)` can't infer the value of `p` or `μ`. -/
 instance instCoeToTemperedDistribution {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] :
     CoeHead (Lp F p μ) 𝓢'(E, F) where
   coe := toTemperedDistribution
