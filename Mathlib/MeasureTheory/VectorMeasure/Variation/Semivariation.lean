@@ -15,7 +15,7 @@ import Mathlib.Analysis.Normed.Operator.NormedSpace
 
 The semivariation of a vector measure is the supremum of the variations of its push-forwards
 to `ℝ` through all linear forms of norm at most `1`. The interest of this notion is that, in the
-reals, any set has nonnegative or nonnegative measure, so that the variation is realized by
+reals, any set has nonnegative or nonpositive measure, so that the variation is realized by
 a subset (up to a factor of at most `2`). This property is inherited by the semivariation in
 general: one has the inequalities
 ```
@@ -165,6 +165,7 @@ private lemma semivariation_univ_lt_top : μ.semivariation univ < ∞ := by
   obtain ⟨n, hn⟩ : ∃ n, ‖μ (u n)‖ₑ < 1 := ((tendsto_order.1 this).2 _ zero_lt_one).exists
   order [hu n]
 
+variable (μ) in
 /-- A constant bounding the norm of `μ s` for any set `s`. -/
 protected noncomputable def bound : ℝ≥0 := (μ.semivariation univ).toNNReal
 
