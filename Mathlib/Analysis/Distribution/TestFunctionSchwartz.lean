@@ -77,7 +77,11 @@ private theorem schwartzSeminorm_le_localSeminorm (k n : ℕ) (f : 𝓓_{K}(E, F
       _ ≤ powNormBound K k * N[𝕜]_{K, n} f := by
         gcongr; exact norm_iteratedFDeriv_apply_le_seminorm_top 𝕜
   · have hzero : iteratedFDeriv ℝ n (toSchwartzMap f) x = 0 := by
-      simpa [toSchwartzMap] using f.iteratedFDeriv_zero_on_compl hx
+      have hfun : (toSchwartzMap f : E → F) = f := by
+        ext y
+        exact toSchwartzMap_apply f y
+      rw [hfun]
+      exact f.iteratedFDeriv_zero_on_compl hx
     simp only [hzero, norm_zero, mul_zero, ge_iff_le]
     positivity
 
