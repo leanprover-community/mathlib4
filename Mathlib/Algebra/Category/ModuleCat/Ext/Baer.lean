@@ -119,11 +119,6 @@ lemma hasInjectiveDimensionLE_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (
       (by subsingleton)
     simp [Subsingleton.elim x₂ 0]
 
-lemma hasInjectiveDimensionLE_iff_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ) :
-    HasInjectiveDimensionLE M n ↔
-      ∀ I : Ideal R, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M (n + 1)) :=
-  ⟨fun h _ ↦ h.subsingleton M (n + 1) _ (le_refl _) _, hasInjectiveDimensionLE_of_quotients M n⟩
-
 /-- The zeroth Ext group from `R ⧸ ⊥` is canonically equivalent to the underlying module. -/
 private noncomputable def extQuotientBotZeroEquiv [Small.{v} R] (M : ModuleCat.{v} R) :
     (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ (⊥ : Ideal R)))) M 0) ≃ M :=
@@ -149,5 +144,10 @@ lemma hasInjectiveDimensionLT_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (
     rw [ModuleCat.isZero_iff_subsingleton]
     exact subsingleton_of_ext_quotient_bot_zero M (h ⊥)
   | n + 1 => exact hasInjectiveDimensionLE_of_quotients M n h
+
+lemma hasInjectiveDimensionLT_iff_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ) :
+    HasInjectiveDimensionLT M n ↔
+      ∀ I : Ideal R, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M n) :=
+  ⟨fun h _ ↦ h.subsingleton M n _ (le_refl _) _, hasInjectiveDimensionLT_of_quotients M n⟩
 
 end ModuleCat
