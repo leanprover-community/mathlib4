@@ -153,7 +153,6 @@ variable (HP HP' : HomologyPretheory.{u} C c)
 
 /-- A `HomologyPretheory` is homotopy-invariant if its homology functor `Hₚ` takes homotopic maps to
 the same map in homology -/
-@[mk_iff]
 class IsHomotopyInvariant (HP : HomologyPretheory.{u} C c) where
   map_eq_of_homotopy (HP) {X Y : TopPair.{u}} {f g : X ⟶ Y} (F : Homotopy f g) (i : ι) :
     (HP.Hₚ i).map f = (HP.Hₚ i).map g := by cat_disch
@@ -166,7 +165,7 @@ abbrev isHomotopyInvariant : ObjectProperty (HomologyPretheory.{u} C c) :=
   IsHomotopyInvariant
 
 @[simp]
-lemma isHomotopyInvariant_iff_IsHomotopyInvariant :
+lemma isHomotopyInvariant_iff :
     isHomotopyInvariant C c HP ↔ IsHomotopyInvariant HP := .rfl
 
 instance : IsClosedUnderIsomorphisms (isHomotopyInvariant.{u} C c) where
@@ -192,7 +191,7 @@ abbrev hasExcisionIso : ObjectProperty (HomologyPretheory.{u} C c) :=
   HasExcisionIso
 
 @[simp]
-lemma hasExcisionIso_iff_HasExcisionIso : hasExcisionIso C c HP ↔ HP.HasExcisionIso := .rfl
+lemma hasExcisionIso_iff' : hasExcisionIso C c HP ↔ HP.HasExcisionIso := .rfl
 
 instance : IsClosedUnderIsomorphisms (hasExcisionIso.{u} C c) where
   of_iso e hHP := { isIso_of_closure_interior_of_isCompl _ _ _ _ _ hf hg hcompl hU _ :=
@@ -225,7 +224,6 @@ lemma isIso_of_isCompl_closure ⦃X U V : TopPair⦄ (f : U ⟶ X) (g : V ⟶ X)
   simp [Function.Surjective.range_eq surjective_U]
 
 /-- A `HomologyPretheory` is additive if its homology functor preserves coproducts. -/
-@[mk_iff]
 class IsAdditive where
   /-- An extraordinary Eilenberg-Steenrod homology functor preserves colimits. -/
   [preserves_coproducts_u (J : Type u) (i : ι) :
@@ -241,7 +239,7 @@ abbrev isAdditive : ObjectProperty (HomologyPretheory.{u} C c) :=
   IsAdditive
 
 @[simp]
-lemma isAdditive_iff_IsAdditive : isAdditive C c HP ↔ HP.IsAdditive := .rfl
+lemma isAdditive_iff : isAdditive C c HP ↔ HP.IsAdditive := .rfl
 
 instance IsAdditive.preserves_coproducts_of_small
     [HP.IsAdditive] (J : Type*) [Small.{u} J] (i : ι) :
@@ -255,7 +253,6 @@ instance : IsClosedUnderIsomorphisms (isAdditive.{u} C c) where
 
 /-- This imposes that a `HomologyPretheory` has the long exact sequence of topological pairs
 `⋯ ⟶ H (c.next i) X.fst ⟶ Hₚ (c.next i) X) ⟶ H i X.snd ⟶ H i X.fst ⟶ ⋯`. -/
-@[mk_iff]
 class HasPairSequence where
   /-- Exactness of the sequence `H i X.fst ⟶ Hₚ i X ⟶ H j X.snd.` -/
   exact_pair (X : TopPair) (i j : ι) (hij : c.Rel i j) :
@@ -276,7 +273,7 @@ abbrev hasPairSequence : ObjectProperty (HomologyPretheory.{u} C c) :=
   HasPairSequence
 
 @[simp]
-lemma hasPairSequence_iff_HasPairSequence : hasPairSequence C c HP ↔ HP.HasPairSequence := .rfl
+lemma hasPairSequence_iff : hasPairSequence C c HP ↔ HP.HasPairSequence := .rfl
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -330,7 +327,6 @@ instance : IsClosedUnderIsomorphisms (hasPairSequence.{u} C c) where
 
 /-- An extraordinary Eilenberg-Steenrod homology theory requires the homotopy, excision, additivity,
 and exactness axioms. -/
-@[mk_iff]
 class IsExtraordinaryEilenbergSteenrod where
   /-- Invariance of an extraordinary Eilenberg-Steenrod homology theory on homotopic maps. -/
   [isHomotopyInvariant : HP.IsHomotopyInvariant]
@@ -353,7 +349,7 @@ abbrev isExtraordinaryEilenbergSteenrod : ObjectProperty (HomologyPretheory.{u} 
   IsExtraordinaryEilenbergSteenrod
 
 @[simp]
-lemma isExtraordinaryEilenbergSteenrod_iff_IsExtraordinaryEilenbergSteenrod :
+lemma isExtraordinaryEilenbergSteenrod_iff :
     isExtraordinaryEilenbergSteenrod C c HP ↔ HP.IsExtraordinaryEilenbergSteenrod := .rfl
 
 instance : IsClosedUnderIsomorphisms (isExtraordinaryEilenbergSteenrod C c)
@@ -370,7 +366,6 @@ variable (HP HP' : HomologyPretheory.{u} C (ComplexShape.down ℕ))
 
 /-- A `HomologyPretheory` on `ComplexShape.down ℕ` has the dimension axiom if it is trivial on the
 terminal space for `n > 0`. -/
-@[mk_iff]
 class HasDimensionAxiom where
   isZero_PUnit_of_gt_zero : ∀ (n : ℕ) (_ : n ≠ 0), Limits.IsZero ((HP.H n).obj (TopCat.of PUnit)) :=
     by cat_disch
@@ -383,7 +378,7 @@ abbrev hasDimensionAxiom : ObjectProperty (HomologyPretheory.{u} C (ComplexShape
   HasDimensionAxiom
 
 @[simp]
-lemma hasDimensionAxiom_iff_HasDimensionAxiom :
+lemma hasDimensionAxiom_iff :
     hasDimensionAxiom C HP ↔ HP.HasDimensionAxiom := .rfl
 
 instance : IsClosedUnderIsomorphisms (hasDimensionAxiom.{u} C) where
@@ -393,7 +388,6 @@ instance : IsClosedUnderIsomorphisms (hasDimensionAxiom.{u} C) where
 
 /-- An Eilenberg-Steenrod homology theory is an extraordinary Eilenberg-Steenrod homology theory
 which additionally satisfies the dimension axiom. -/
-@[mk_iff]
 class IsEilenbergSteenrod extends HP.IsExtraordinaryEilenbergSteenrod.{u} where
   /-- An Eilenberg-Steenrod homology theory is trivial on the terminal space for `n > 0`. -/
   [hasDimensionAxiom : HP.HasDimensionAxiom]
@@ -406,7 +400,7 @@ abbrev isEilenbergSteenrod : ObjectProperty (HomologyPretheory.{u} C (ComplexSha
   IsEilenbergSteenrod
 
 @[simp]
-lemma isEilenbergSteenrod_iff_IsEilenbergSteenrod :
+lemma isEilenbergSteenrod_iff :
     isEilenbergSteenrod C HP ↔ HP.IsEilenbergSteenrod := .rfl
 
 instance : IsClosedUnderIsomorphisms (isEilenbergSteenrod.{u} C) where
