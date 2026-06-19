@@ -203,21 +203,24 @@ variable [FunLike FRS R S] [RingHomClass FRS R S] [FunLike FAB A B] [RingHomClas
 
 theorem IsAlgebraic.ringHom_of_comp_eq (halg : IsAlgebraic R a)
     (hf : Function.Injective f)
-    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    (h : RingHom.comp (algebraMap S B) (RingHomClass.toRingHom f) =
+    RingHom.comp (RingHomClass.toRingHom g) (algebraMap R A)) :
     IsAlgebraic S (g a) := by
   obtain ⟨p, h1, h2⟩ := halg
-  refine ⟨p.map f, (Polynomial.map_ne_zero_iff hf).2 h1, ?_⟩
-  change aeval ((g : A →+* B) a) _ = 0
+  refine ⟨p.map (RingHomClass.toRingHom f), (Polynomial.map_ne_zero_iff hf).2 h1, ?_⟩
+  change aeval ((RingHomClass.toRingHom g) a) _ = 0
   rw [← map_aeval_eq_aeval_map h, h2, map_zero]
 
 theorem Transcendental.of_ringHom_of_comp_eq (H : Transcendental S (g a))
     (hf : Function.Injective f)
-    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    (h : RingHom.comp (algebraMap S B) (RingHomClass.toRingHom f) =
+    RingHom.comp (RingHomClass.toRingHom g) (algebraMap R A)) :
     Transcendental R a := fun halg ↦ H (halg.ringHom_of_comp_eq f g hf h)
 
 theorem Algebra.IsAlgebraic.ringHom_of_comp_eq [Algebra.IsAlgebraic R A]
     (hf : Function.Injective f) (hg : Function.Surjective g)
-    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    (h : RingHom.comp (algebraMap S B) (RingHomClass.toRingHom f) =
+    RingHom.comp (RingHomClass.toRingHom g) (algebraMap R A)) :
     Algebra.IsAlgebraic S B := by
   refine ⟨fun b ↦ ?_⟩
   obtain ⟨a, rfl⟩ := hg b
@@ -225,36 +228,41 @@ theorem Algebra.IsAlgebraic.ringHom_of_comp_eq [Algebra.IsAlgebraic R A]
 
 theorem Algebra.Transcendental.of_ringHom_of_comp_eq [H : Algebra.Transcendental S B]
     (hf : Function.Injective f) (hg : Function.Surjective g)
-    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    (h : RingHom.comp (algebraMap S B) (RingHomClass.toRingHom f) =
+    RingHom.comp (RingHomClass.toRingHom g) (algebraMap R A)) :
     Algebra.Transcendental R A := by
   rw [Algebra.transcendental_iff_not_isAlgebraic] at H ⊢
   exact fun halg ↦ H (halg.ringHom_of_comp_eq f g hf hg h)
 
 theorem IsAlgebraic.of_ringHom_of_comp_eq (halg : IsAlgebraic S (g a))
     (hf : Function.Surjective f) (hg : Function.Injective g)
-    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    (h : RingHom.comp (algebraMap S B) (RingHomClass.toRingHom f) =
+    RingHom.comp (RingHomClass.toRingHom g) (algebraMap R A)) :
     IsAlgebraic R a := by
   obtain ⟨p, h1, h2⟩ := halg
-  obtain ⟨q, rfl⟩ := map_surjective (f : R →+* S) hf p
+  obtain ⟨q, rfl⟩ := map_surjective (RingHomClass.toRingHom f) hf p
   refine ⟨q, fun h' ↦ by simp [h'] at h1, hg ?_⟩
-  change aeval ((g : A →+* B) a) _ = 0 at h2
-  change (g : A →+* B) _ = _
+  change aeval ((RingHomClass.toRingHom g) a) _ = 0 at h2
+  change (RingHomClass.toRingHom g) _ = _
   rw [map_zero, map_aeval_eq_aeval_map h, h2]
 
 theorem Transcendental.ringHom_of_comp_eq (H : Transcendental R a)
     (hf : Function.Surjective f) (hg : Function.Injective g)
-    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    (h : RingHom.comp (algebraMap S B) (RingHomClass.toRingHom f) =
+    RingHom.comp (RingHomClass.toRingHom g) (algebraMap R A)) :
     Transcendental S (g a) := fun halg ↦ H (halg.of_ringHom_of_comp_eq f g hf hg h)
 
 theorem Algebra.IsAlgebraic.of_ringHom_of_comp_eq [Algebra.IsAlgebraic S B]
     (hf : Function.Surjective f) (hg : Function.Injective g)
-    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    (h : RingHom.comp (algebraMap S B) (RingHomClass.toRingHom f) =
+    RingHom.comp (RingHomClass.toRingHom g) (algebraMap R A)) :
     Algebra.IsAlgebraic R A :=
   ⟨fun a ↦ (Algebra.IsAlgebraic.isAlgebraic (g a)).of_ringHom_of_comp_eq f g hf hg h⟩
 
 theorem Algebra.Transcendental.ringHom_of_comp_eq [H : Algebra.Transcendental R A]
     (hf : Function.Surjective f) (hg : Function.Injective g)
-    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    (h : RingHom.comp (algebraMap S B) (RingHomClass.toRingHom f) =
+    RingHom.comp (RingHomClass.toRingHom g) (algebraMap R A)) :
     Algebra.Transcendental S B := by
   rw [Algebra.transcendental_iff_not_isAlgebraic] at H ⊢
   exact fun halg ↦ H (halg.of_ringHom_of_comp_eq f g hf hg h)
@@ -268,14 +276,16 @@ variable [EquivLike FRS R S] [RingEquivClass FRS R S] [FunLike FAB A B] [RingHom
 
 theorem isAlgebraic_ringHom_iff_of_comp_eq
     (hg : Function.Injective g)
-    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) {a : A} :
+    (h : RingHom.comp (algebraMap S B) (RingHomClass.toRingHom f) =
+    RingHom.comp (RingHomClass.toRingHom g) (algebraMap R A)) {a : A} :
     IsAlgebraic S (g a) ↔ IsAlgebraic R a :=
   ⟨fun H ↦ H.of_ringHom_of_comp_eq f g (EquivLike.surjective f) hg h,
     fun H ↦ H.ringHom_of_comp_eq f g (EquivLike.injective f) h⟩
 
 theorem transcendental_ringHom_iff_of_comp_eq
     (hg : Function.Injective g)
-    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) {a : A} :
+    (h : RingHom.comp (algebraMap S B) (RingHomClass.toRingHom f) =
+    RingHom.comp (RingHomClass.toRingHom g) (algebraMap R A)) {a : A} :
     Transcendental S (g a) ↔ Transcendental R a :=
   not_congr (isAlgebraic_ringHom_iff_of_comp_eq f g hg h)
 
@@ -287,13 +297,15 @@ variable [EquivLike FRS R S] [RingEquivClass FRS R S] [EquivLike FAB A B] [RingE
   (f : FRS) (g : FAB)
 
 theorem Algebra.isAlgebraic_ringHom_iff_of_comp_eq
-    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    (h : RingHom.comp (algebraMap S B) (RingHomClass.toRingHom f) =
+    RingHom.comp (RingHomClass.toRingHom g) (algebraMap R A)) :
     Algebra.IsAlgebraic S B ↔ Algebra.IsAlgebraic R A :=
   ⟨fun H ↦ H.of_ringHom_of_comp_eq f g (EquivLike.surjective f) (EquivLike.injective g) h,
     fun H ↦ H.ringHom_of_comp_eq f g (EquivLike.injective f) (EquivLike.surjective g) h⟩
 
 theorem Algebra.transcendental_ringHom_iff_of_comp_eq
-    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    (h : RingHom.comp (algebraMap S B) (RingHomClass.toRingHom f) =
+    RingHom.comp (RingHomClass.toRingHom g) (algebraMap R A)) :
     Algebra.Transcendental S B ↔ Algebra.Transcendental R A := by
   simp_rw [Algebra.transcendental_iff_not_isAlgebraic,
     Algebra.isAlgebraic_ringHom_iff_of_comp_eq f g h]

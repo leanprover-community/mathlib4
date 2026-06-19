@@ -88,7 +88,7 @@ This is declared as the default coercion from `F` to `α →+*o β`. -/
 @[coe]
 def OrderRingHomClass.toOrderRingHom [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β]
     [Preorder β] [OrderHomClass F α β] [RingHomClass F α β] (f : F) : α →+*o β :=
-  { (f : α →+* β) with monotone' := OrderHomClass.monotone f }
+  { RingHomClass.toRingHom f with monotone' := OrderHomClass.monotone f }
 
 /-- Any type satisfying `OrderRingHomClass` can be cast into `OrderRingHom` via
   `OrderRingHomClass.toOrderRingHom`. -/
@@ -151,6 +151,8 @@ instance : RingHomClass (α →+*o β) α β where
   map_one f := f.map_one'
   map_add f := f.map_add'
   map_zero f := f.map_zero'
+
+instance : CoeOut (α →+*o β) (α →+* β) where coe := RingHomClass.toRingHom
 
 theorem toFun_eq_coe (f : α →+*o β) : f.toFun = f :=
   rfl

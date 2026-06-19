@@ -624,6 +624,7 @@ theorem coe_addMonoidHom_refl : (RingEquiv.refl R : R →+ R) = AddMonoidHom.id 
 /-! `RingEquiv.coe_mulEquiv_refl` and `RingEquiv.coe_addEquiv_refl` are proved above
 in higher generality -/
 
+instance : CoeOut (R ≃+* S) (R →+* S) where coe := RingHomClass.toRingHom
 
 @[simp]
 theorem coe_ringHom_refl : (RingEquiv.refl R : R →+* R) = RingHom.id R :=

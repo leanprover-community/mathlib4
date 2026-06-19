@@ -338,7 +338,7 @@ theorem eq_intCast [FunLike F ℤ α] [RingHomClass F ℤ α] (f : F) (n : ℤ) 
 
 @[simp]
 theorem map_intCast [FunLike F α β] [RingHomClass F α β] (f : F) (n : ℤ) : f n = n :=
-  eq_intCast ((f : α →+* β).comp (Int.castRingHom α)) n
+  eq_intCast ((RingHomClass.toRingHom f).comp (Int.castRingHom α)) n
 
 namespace RingHom
 

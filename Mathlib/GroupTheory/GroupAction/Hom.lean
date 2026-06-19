@@ -900,13 +900,15 @@ variable {F : Type*} [FunLike F R S]
 def _root_.MulSemiringActionHomClass.toMulSemiringActionHom
     [MulSemiringActionSemiHomClass F φ R S]
     (f : F) : R →ₑ+*[φ] S :=
-  { (f : R →+* S), (f : R →ₑ+[φ] S) with }
+  { RingHomClass.toRingHom f, (f : R →ₑ+[φ] S) with }
 
 /-- Any type satisfying `MulSemiringActionHomClass` can be cast into `MulSemiringActionHom` via
   `MulSemiringActionHomClass.toMulSemiringActionHom`. -/
 instance [MulSemiringActionSemiHomClass F φ R S] :
     CoeTC F (R →ₑ+*[φ] S) :=
   ⟨MulSemiringActionHomClass.toMulSemiringActionHom⟩
+
+instance : CoeOut (R →ₑ+*[φ] S) (R →+* S) where coe := RingHomClass.toRingHom
 
 @[norm_cast]
 theorem coe_fn_coe (f : R →ₑ+*[φ] S) : ⇑(f : R →+* S) = f :=

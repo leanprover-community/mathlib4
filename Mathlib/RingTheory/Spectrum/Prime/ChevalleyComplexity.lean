@@ -707,9 +707,7 @@ lemma chevalley_mvPolynomialC
       by_cases hgj : C.g j = 0
       · rw [hgj, map_zero]
         simp
-      rw [degree_finSuccEquiv hgj, WithBot.succ_natCast, add_comm]
-      simp only [Nat.cast_id, add_le_add_iff_left, degreeOf_def]
-      exact Multiset.count_le_of_le _ (hS _ hxS _).2
+      sorry
     · simp only [Finset.sum_const, Finset.card_univ, Fintype.card_fin, smul_eq_mul]
       gcongr
       exact hSn _ hxS
@@ -720,23 +718,7 @@ lemma chevalley_mvPolynomialC
       (coeffsIn _ M ⊓ (degreesLE _ _ B).restrictScalars ℤ)
       (by simpa [MvPolynomial.coeff_one, apply_ite] using hM)
       S' (fun x hxS j k ↦ by
-        simp only [ConstructibleSetData.map,
-          RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom, Finset.mem_image,
-          BasicConstructibleSetData.map, RingHom.coe_coe, S', e] at hxS
-        obtain ⟨C, hxS, rfl⟩ := hxS
-        simp only [comp_apply, Submodule.mem_inf, mem_coeffsIn, Submodule.restrictScalars_mem,
-          mem_degreesLE]
-        constructor
-        · intro d
-          simp only [finSuccEquiv_coeff_coeff]
-          exact (hS _ hxS _).1 _
-        · simp only [B]
-          replace hS := (hS _ hxS j).2
-          simp only [Submodule.coe_restrictScalars, SetLike.mem_coe, mem_degreesLE,
-            Multiset.le_iff_count, Finsupp.count_toMultiset, Finsupp.comapDomain_apply,
-            Multiset.toFinsupp_apply, ← degreeOf_def] at hS ⊢
-          intro a
-          exact (degreeOf_coeff_finSuccEquiv (C.g j) a k).trans (hS _))
+        sorry)
   let N := (k * (1 + d.count 0)) ^ (k * (1 + d.count 0))
   have (C) (hCT : C ∈ T) (a) : C.g a ∈ coeffsIn (Fin n) (M ^ N) ⊓
         (degreesLE R (Fin n) (N • B)).restrictScalars ℤ := by

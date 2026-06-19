@@ -163,6 +163,8 @@ attribute [coe] ContinuousAlgHom.toAlgHom
 
 instance : Coe (A →A[R] B) (A →ₐ[R] B) where coe := toAlgHom
 
+instance : CoeOut (A →A[R] B) (A →+* B) where coe f := RingHomClass.toRingHom f.toAlgHom
+
 @[deprecated "Now a syntactic equality" (since := "2026-04-29"), nolint synTaut]
 theorem toAlgHom_eq_coe (f : A →A[R] B) : f.toAlgHom = f := rfl
 

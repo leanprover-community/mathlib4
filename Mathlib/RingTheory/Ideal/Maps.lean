@@ -56,9 +56,10 @@ def comap [RingHomClass F R S] (I : Ideal S) : Ideal R where
 @[simp]
 theorem coe_comap [RingHomClass F R S] (I : Ideal S) : (comap f I : Set R) = f ⁻¹' I := rfl
 
-lemma comap_coe [RingHomClass F R S] (I : Ideal S) : I.comap (f : R →+* S) = I.comap f := rfl
+lemma comap_coe [RingHomClass F R S] (I : Ideal S) :
+  I.comap (RingHomClass.toRingHom f) = I.comap f := rfl
 
-lemma map_coe [RingHomClass F R S] (I : Ideal R) : I.map (f : R →+* S) = I.map f := rfl
+lemma map_coe [RingHomClass F R S] (I : Ideal R) : I.map (RingHomClass.toRingHom f) = I.map f := rfl
 
 variable {f}
 
@@ -768,7 +769,7 @@ theorem ker_rangeSRestrict (f : R →+* S) : ker f.rangeSRestrict = ker f :=
 theorem ker_coe_equiv (f : R ≃+* S) : ker (f : R →+* S) = ⊥ := by
   ext; simp
 
-theorem ker_coe_toRingHom : ker (f : R →+* S) = ker f := rfl
+theorem ker_coe_toRingHom : ker (RingHomClass.toRingHom f) = ker f := rfl
 
 @[simp]
 theorem ker_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F' R S] (f : F') :

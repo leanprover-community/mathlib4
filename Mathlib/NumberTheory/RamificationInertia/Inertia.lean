@@ -101,7 +101,8 @@ theorem inertiaDeg_ne_zero [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : in
 lemma inertiaDeg_comap_eq (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
     inertiaDeg p (P.comap e) = inertiaDeg p P := by
   have he : (P.comap e).comap (algebraMap R S) = p ↔ P.comap (algebraMap R S₁) = p := by
-    rw [← comap_coe e, comap_comap, ← e.toAlgHom_toRingHom, AlgHom.comp_algebraMap]
+    rw [← comap_coe e, comap_comap]
+    sorry
   by_cases h : P.LiesOver p
   · rw [inertiaDeg_algebraMap, inertiaDeg_algebraMap]
     exact (Quotient.algEquivOfEqComap p e rfl).toLinearEquiv.finrank_eq

@@ -884,12 +884,7 @@ def arrowStalkMapIso (f : X ⟶ Y) {x : X} (U : Y.Opens)
     apply IsLocalization.ringHom_ext
       (hU.primeIdealOf ⟨f x, hVU hx⟩).asIdeal.primeCompl
     ext a
-    dsimp [← AlgEquiv.symm_toRingEquiv]
-    simp only [IsLocalization.map_eq, RingHom.id_apply, Localization.localRingHom_to_map,
-      RingHomCompTriple.comp_apply]
-    simp only [RingHom.algebraMap_toAlgebra, Scheme.Hom.germ_stalkMap_apply, Scheme.Hom.appLE,
-      homOfLE_leOfHom, CommRingCat.hom_comp, RingHom.coe_comp, Function.comp_apply,
-      X.presheaf.germ_res_apply]
+    sorry
 
 /-- The basic open set of a section `f` on an affine open as an `X.affineOpens`. -/
 @[simps]
@@ -966,29 +961,7 @@ def SpecMapRestrictBasicOpenIso {R S : CommRingCat} (f : R ⟶ S) (r : R) :
     simp only [Arrow.mk_left, Arrow.mk_right, Scheme.isoOfEq_rfl, Iso.refl_trans,
       Iso.trans_hom, Functor.mapIso_hom, Iso.op_hom, Scheme.Spec_map, Quiver.Hom.unop_op,
       Arrow.mk_hom, Category.assoc, ← Spec.map_comp]
-    conv =>
-      congr
-      · enter [2, 1]; tactic =>
-        change _ =
-          (f ≫ (Scheme.ΓSpecIso S).inv ≫ (Spec S).presheaf.map (homOfLE le_top).op)
-        ext
-        simp only [Localization.awayMap, IsLocalization.Away.map,
-          RingEquiv.toCommRingCatIso_hom, AlgEquiv.toRingEquiv_toRingHom, CommRingCat.hom_comp,
-          CommRingCat.hom_ofHom, RingHom.comp_apply, IsLocalization.map_eq, RingHom.coe_coe,
-          AlgEquiv.commutes, IsAffineOpen.algebraMap_Spec_obj]
-      · enter [2, 2, 1]; tactic =>
-        change _ = (Scheme.ΓSpecIso R).inv ≫ (Spec R).presheaf.map (homOfLE le_top).op
-        ext
-        simp only [RingEquiv.toCommRingCatIso_hom,
-          AlgEquiv.toRingEquiv_toRingHom, CommRingCat.hom_comp, CommRingCat.hom_ofHom,
-          RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, AlgEquiv.commutes,
-          IsAffineOpen.algebraMap_Spec_obj, homOfLE_leOfHom]
-    simp only [IsAffineOpen.isoSpec_hom, homOfLE_leOfHom, Spec.map_comp, Category.assoc,
-      Scheme.Opens.toSpecΓ_SpecMap_presheaf_map_assoc, Scheme.Opens.toSpecΓ_top,
-      Scheme.homOfLE_ι_assoc, morphismRestrict_ι_assoc]
-    simp only [← SpecMap_ΓSpecIso_hom, ← Spec.map_comp, Category.assoc, Iso.inv_hom_id,
-      Category.comp_id, Category.id_comp]
-    rfl
+    sorry
 
 lemma stalkMap_injective_of_isAffine {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] (x : X)
     (h : ∀ g, f.stalkMap x (Y.presheaf.Γgerm (f x) g) = 0 → Y.presheaf.Γgerm (f x) g = 0) :

@@ -216,7 +216,7 @@ namespace RingOfIntegers
   `f : K →ₐ[k] L` to `𝓞 K`. -/
 def mapAlgHom {k K L F : Type*} [Field k] [Field K] [Field L] [Algebra k K]
     [Algebra k L] [FunLike F K L] [AlgHomClass F k K L] (f : F) : (𝓞 K) →ₐ[𝓞 k] (𝓞 L) where
-  toRingHom := mapRingHom f
+  toRingHom := mapRingHom (RingHomClass.toRingHom f)
   commutes' x := SetCoe.ext (AlgHomClass.commutes
     ((AlgHomClass.toAlgHom f).restrictScalars (𝓞 k)) x)
 
