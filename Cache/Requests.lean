@@ -348,9 +348,13 @@ container (see `Container.flatPath`), not the repo: the same hash under
 `container` is `none` for the user-supplied `MATHLIB_CACHE_GET_URL` /
 `MATHLIB_CACHE_PUT_URL` URLs, where no container policy applies; the path then
 follows the repo directly — flat for `MATHLIBREPO`, prefixed otherwise.
+
+`repo` is lowercased via `normalizeRepo` so the repo-namespaced path is
+case-insensitive in the GitHub owner/repo name.
 -/
 def mkFileURL (container : Option Container) (repo containerURL fileName : String)
     (repoScope : Option String := none) : String :=
+  let repo := normalizeRepo repo
   let flat := match container with
     | some c => c.flatPath repo
     | none => repo == MATHLIBREPO
