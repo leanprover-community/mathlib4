@@ -48,8 +48,8 @@ if there exist charts near `x` and `f x` in which `f` looks like the standard pr
   the set of points where `IsSubmersionAt(OfComplement)` holds is open.
 * `IsSubmersionAt.prodMap` and `IsSubmersion.prodMap`: the product of two submersions (at a point)
   is a submersion (at the product point).
-* `IsSubmersionAt.contMDiffAt`: if f is a submersion at `x`, it is `C^n` at `x`.
-* `IsSubmersion.contMDiff`: if f is a submersion, it is automatically `C^n`
+* `IsSubmersionAt.contMDiffAt`: if `f` is a submersion at `x`, it is `C^n` at `x`.
+* `IsSubmersion.contMDiff`: if `f` is a submersion, it is automatically `C^n`
   in the sense of `ContMDiff`.
 
 ## Implementation notes
@@ -359,7 +359,9 @@ lemma isSubmersionAt (h : IsSubmersionAtOfComplement F I J n f x) :
   use h.smallComplement, by infer_instance, by infer_instance
   exact (IsSubmersionAtOfComplement.congr_F h.smallEquiv).mp h
 
-/-- Prefer using `IsSubmersionAtOfComplement.contMDiffAt` instead. -/
+/-- If `f` is a `C^n` submersion at `x`, then `f` is `C^n` near `x`.
+
+Prefer using `IsSubmersionAtOfComplement.contMDiffOn` instead. -/
 theorem contMDiffOn (h : IsSubmersionAtOfComplement F I J n f x) :
     ContMDiffOn I J n f h.domChart.source := by
   rw [← contMDiffOn_writtenInExtend_iff h.domChart_mem_maximalAtlas
@@ -519,7 +521,9 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
   hf.isSubmersionAtOfComplement_complement.prodMap hg.isSubmersionAtOfComplement_complement
     |>.isSubmersionAt
 
-/-- Prefer using `IsSubmersionAt.contMDiffAt` instead -/
+/-- If `f` is a submersion at `x`, then `f` is `C^n` near `x`.`
+
+Prefer using `IsSubmersionAt.contMDiffOn` instead -/
 theorem contMDiffOn (h : IsSubmersionAt I J n f x) : CMDiff[h.domChart.source] n f :=
   h.isSubmersionAtOfComplement_complement.contMDiffOn
 
