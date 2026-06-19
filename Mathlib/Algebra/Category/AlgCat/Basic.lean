@@ -174,7 +174,7 @@ lemma forget₂_ringCat_obj (X : AlgCat.{v} R) :
 
 @[simp]
 lemma forget₂_ringCat_map {X Y : AlgCat.{v} R} (f : X ⟶ Y) :
-    (forget₂ (AlgCat.{v} R) RingCat.{v}).map f = RingCat.ofHom f.hom :=
+    (forget₂ (AlgCat.{v} R) RingCat.{v}).map f = RingCat.ofHom (RingHomClass.toRingHom f.hom) :=
   rfl
 
 instance (A : AlgCat.{v} R) : Algebra R ((forget₂ (AlgCat.{v} R) RingCat).obj A) :=

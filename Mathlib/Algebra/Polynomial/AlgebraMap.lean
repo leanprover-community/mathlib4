@@ -157,7 +157,7 @@ theorem eval₂_intCastRingHom_X {R : Type*} [Ring R] (p : ℤ[X]) (f : ℤ[X] �
 This is `Polynomial.eval₂RingHom'` for `AlgHom`s. -/
 @[simps!]
 def eval₂AlgHom (f : A →ₐ[R] B) (b : B) (hf : ∀ a, Commute (f a) b) : A[X] →ₐ[R] B where
-  toRingHom := eval₂RingHom' f b hf
+  toRingHom := eval₂RingHom' (RingHomClass.toRingHom f) b hf
   commutes' _ := (eval₂_C _ _).trans (f.commutes _)
 
 section Map
@@ -170,7 +170,7 @@ def mapAlgHom (f : A →ₐ[R] B) : Polynomial A →ₐ[R] Polynomial B where
   commutes' := by simp
 
 @[simp]
-theorem coe_mapAlgHom (f : A →ₐ[R] B) : ⇑(mapAlgHom f) = map f :=
+theorem coe_mapAlgHom (f : A →ₐ[R] B) : ⇑(mapAlgHom f) = map (RingHomClass.toRingHom f) :=
   rfl
 
 @[simp]
@@ -179,7 +179,7 @@ theorem mapAlgHom_id : mapAlgHom (AlgHom.id R A) = AlgHom.id R (Polynomial A) :=
 
 @[simp]
 theorem mapAlgHom_coe_ringHom (f : A →ₐ[R] B) :
-    ↑(mapAlgHom f : _ →ₐ[R] Polynomial B) = (mapRingHom ↑f : Polynomial A →+* Polynomial B) :=
+    RingHomClass.toRingHom (mapAlgHom f) = mapRingHom (RingHomClass.toRingHom f) :=
   rfl
 
 @[simp]
@@ -477,7 +477,7 @@ theorem coe_aeval_eq_eval (r : R) : (aeval r : R[X] → R) = eval r :=
 
 @[simp]
 theorem coe_aeval_eq_evalRingHom (x : R) :
-    ((aeval x : R[X] →ₐ[R] R) : R[X] →+* R) = evalRingHom x :=
+    RingHomClass.toRingHom (aeval x : R[X] →ₐ[R] R) = evalRingHom x :=
   rfl
 
 @[simp]
@@ -559,13 +559,15 @@ theorem aevalTower_C (x : R) : aevalTower g y (C x) = g x :=
   eval₂_C _ _
 
 @[simp]
-theorem aevalTower_comp_C : (aevalTower g y : R[X] →+* A').comp C = g :=
+theorem aevalTower_comp_C : (RingHomClass.toRingHom (aevalTower g y)).comp C =
+    RingHomClass.toRingHom g :=
   RingHom.ext <| aevalTower_C _ _
 
 theorem aevalTower_algebraMap (x : R) : aevalTower g y (algebraMap R R[X] x) = g x :=
   eval₂_C _ _
 
-theorem aevalTower_comp_algebraMap : (aevalTower g y : R[X] →+* A').comp (algebraMap R R[X]) = g :=
+theorem aevalTower_comp_algebraMap : (RingHomClass.toRingHom (aevalTower g y)).comp
+    (algebraMap R R[X]) = RingHomClass.toRingHom g :=
   aevalTower_comp_C _ _
 
 theorem aevalTower_toAlgHom (x : R) : aevalTower g y (IsScalarTower.toAlgHom S R R[X] x) = g x :=
