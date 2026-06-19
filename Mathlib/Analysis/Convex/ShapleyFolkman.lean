@@ -4,11 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrey Marennikov
 -/
 
-import Mathlib.Analysis.Convex.Caratheodory
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Data.Real.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+module
+
+public import Mathlib.Analysis.Convex.Caratheodory
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Data.Real.Basic
+public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 
 /-!
 # Shapley-Folkman lemma
@@ -20,6 +22,8 @@ The main result is `shapley_folkman`, which states that if a point belongs to a 
 sum of convex hulls, then it can be represented as a sum where all but at most
 `finrank ℝ E` terms belong to the original sets.
 -/
+
+@[expose] public section
 
 open scoped Pointwise BigOperators
 open Set Finset
@@ -33,63 +37,6 @@ example (A B : Set E) (x y : E) (hx : x ∈ A) (hy : y ∈ B) :
 example (A B : Set E) (z : E) (hz : z ∈ A + B) :
     ∃ x ∈ A, ∃ y ∈ B, x + y = z := by
   simpa [Set.mem_add] using hz
-lemma mem_finset_sum_sets_of_forall
-    (s : Finset ι) (A : ι → Set E) (x : ι → E)
-    (hx : ∀ i ∈ s, x i ∈ A i) :
-    (∑ i ∈ s, x i) ∈ (∑ i ∈ s, A i) := by
-  classical
-  induction s using Finset.induction_on with
-  | empty =>
-      simp
-  | insert a s has ih =>
-      rw [Finset.sum_insert has]
-      rw [Finset.sum_insert has]
-      exact ⟨x a, hx a (by simp), ∑ i ∈ s, x i,
-        ih (fun i hi => hx i (by simp [hi])), rfl⟩
-lemma mem_finset_sum_sets_exists
-    (s : Finset ι) (A : ι → Set E) (z : E)
-    (hz : z ∈ (∑ i ∈ s, A i)) :
-    ∃ x : ι → E,
-      (∀ i ∈ s, x i ∈ A i) ∧
-      ∑ i ∈ s, x i = z := by
-  classical
-  induction s using Finset.induction_on generalizing z with
-  | empty =>
-      refine ⟨fun _ => 0, ?_, ?_⟩
-      · intro i hi
-        simp at hi
-      · simpa using hz.symm
-  | insert a s has ih =>
-      rw [Finset.sum_insert has] at hz
-      rcases hz with ⟨xa, hxa, ys, hys, hsum⟩
-      rcases ih ys hys with ⟨x, hx, hxsum⟩
-      refine ⟨Function.update x a xa, ?_, ?_⟩
-      · intro i hi
-        by_cases hia : i = a
-        · subst hia
-          simp [Function.update, hxa]
-        · have his : i ∈ s := by
-            simpa [hia] using hi
-          simp [Function.update, hia, hx i his]
-      · rw [Finset.sum_insert has]
-        have hsum_update :
-            ∑ i ∈ s, Function.update x a xa i = ∑ i ∈ s, x i := by
-          apply Finset.sum_congr rfl
-          intro i hi
-          have hia : i ≠ a := by
-            intro h
-            exact has (h ▸ hi)
-          simp [Function.update, hia]
-        calc
-          Function.update x a xa a + ∑ i ∈ s, Function.update x a xa i
-              = xa + ∑ i ∈ s, x i := by
-                  rw [hsum_update]
-                  simp [Function.update]
-          _ = xa + ys := by
-                  rw [hxsum]
-          _ = z := by
-                  simpa using hsum
-end SetSums
 lemma shapley_folkman_mem_of_choice
     {ι E : Type*}
     [Fintype ι] [DecidableEq ι]
@@ -113,12 +60,18 @@ lemma shapley_folkman_mem_of_choice
     ?_,
     ?_
   ⟩
-  · apply mem_finset_sum_sets_of_forall
-    intro i hi
-    exact hy_conv i hi
-  · apply mem_finset_sum_sets_of_forall
-    intro i hi
-    exact hy_good i hi
+  · simpa using
+      Set.finsetSum_mem_finsetSum
+        bad
+        (fun i => convexHull ℝ (S i))
+        y
+        hy_conv
+  · simpa using
+      Set.finsetSum_mem_finsetSum
+        (Finset.univ \ bad)
+        S
+        y
+        hy_good
   · have hbad_subset : bad ⊆ (Finset.univ : Finset ι) := by
       intro i hi
       simp
@@ -172,25 +125,42 @@ lemma mem_of_convex_combo_univ_card_eq_one
         simp
   rw [hy_eq]
   exact hz_mem_S a
+/-- A finite convex-combination representation used in the proof of the
+Shapley-Folkman lemma.
+
+For each index `i`, the point `y i` is represented as a positive convex
+combination of points `z i a ∈ S i`, and the sum of all `y i` is `x`. -/
 structure ShapleyFolkmanRep
     (ι E : Type*) [Fintype ι]
     [AddCommMonoid E] [Module ℝ E]
     (S : ι → Set E) (x : E) where
+  /-- The finite index type for the convex combination at index `i`. -/
   α : ι → Type*
+  /-- Finiteness of the index type `α i`. -/
   hα : ∀ i : ι, Fintype (α i)
+  /-- The chosen summand at index `i`. -/
   y : ι → E
+  /-- The points of `S i` used in the convex combination for `y i`. -/
   z : ∀ i : ι, α i → E
+  /-- The positive weights of the convex combination for `y i`. -/
   w : ∀ i : ι, α i → ℝ
+  /-- Each point `z i a` belongs to `S i`. -/
   hz_mem : ∀ i : ι, ∀ a : α i, z i a ∈ S i
+  /-- All weights are positive. -/
   hw_pos : ∀ i : ι, ∀ a : α i, 0 < w i a
+  /-- The weights at each index sum to one. -/
   hw_sum :
     ∀ i : ι,
       (@Finset.univ (α i) (hα i)).sum (fun a => w i a) = 1
+  /-- The weighted sum at index `i` is `y i`. -/
   hw_eq :
     ∀ i : ι,
       (@Finset.univ (α i) (hα i)).sum (fun a => w i a • z i a) = y i
+  /-- The sum of all chosen summands is the target point `x`. -/
   hsum :
     (∑ i ∈ (Finset.univ : Finset ι), y i) = x
+/-- The total number of points used in all convex combinations of a
+`ShapleyFolkmanRep`. -/
 noncomputable def ShapleyFolkmanRep.complexity
     {ι E : Type*} [Fintype ι]
     [AddCommMonoid E] [Module ℝ E]
@@ -198,8 +168,10 @@ noncomputable def ShapleyFolkmanRep.complexity
     (R : ShapleyFolkmanRep ι E S x) : ℕ :=
   ∑ i ∈ (Finset.univ : Finset ι),
     (@Finset.univ (R.α i) (R.hα i)).card
+/-- The set of indices where the convex combination in a
+`ShapleyFolkmanRep` uses a number of points different from one. -/
 noncomputable def ShapleyFolkmanRep.nonsingleton
-    {ι E : Type*} [Fintype ι] [DecidableEq ι]
+    {ι E : Type*} [Fintype ι]
     [AddCommMonoid E] [Module ℝ E]
     {S : ι → Set E} {x : E}
     (R : ShapleyFolkmanRep ι E S x) : Finset ι := by
@@ -238,7 +210,7 @@ lemma exists_minimal_shapley_folkman_rep
   exact hn_le
 lemma ShapleyFolkmanRep.nonsingleton_card_le_finrank_of_minimal
     {ι : Type uι} {E : Type uE}
-    [Fintype ι] [DecidableEq ι]
+    [Fintype ι]
     [AddCommGroup E] [Module ℝ E] [FiniteDimensional ℝ E]
     {S : ι → Set E} {x : E}
     (Rmin : ShapleyFolkmanRep.{uι, uE, uα} ι E S x)
@@ -973,11 +945,10 @@ lemma ShapleyFolkmanRep.nonsingleton_card_le_finrank_of_minimal
       constructor
       · intro hq
         simp only [Finset.mem_map, Finset.mem_univ, true_and] at hq
-        rcases hq with ⟨a, ha⟩
-        rw [← ha]
+        rcases hq with ⟨a, rfl⟩
         simp only [Finset.mem_filter, Finset.mem_univ, true_and]
-        have ha_pos := a.2
-        simpa [αε, i.2] using ha_pos
+        change 0 < wε ε i a.1
+        simpa [αε, i.2] using a.2
       · intro hq
         simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hq
         simp only [Finset.mem_map, Finset.mem_univ, true_and]
@@ -1021,7 +992,6 @@ lemma ShapleyFolkmanRep.nonsingleton_card_le_finrank_of_minimal
           exact hfilter_eq
   have hsum_yε :
       (∑ i ∈ (Finset.univ : Finset ι), yε i) = x := by
-    change (∑ i : ι, yε i) = x
     rw [← Finset.sum_filter_add_sum_filter_not
       (s := (Finset.univ : Finset ι))
       (p := fun i => i ∈ bad)
@@ -1169,15 +1139,15 @@ lemma shapley_folkman_exists_choice_core
       (∀ i ∈ (Finset.univ \ bad), y i ∈ S i) ∧
       ∑ i ∈ (Finset.univ : Finset ι), y i = x := by
   classical
-    rcases mem_finset_sum_sets_exists
-      (Finset.univ : Finset ι)
-      (fun i => convexHull ℝ (S i))
-      x
-      hx with
+  rcases
+      (Set.mem_finsetSum
+        (Finset.univ : Finset ι)
+        (fun i => convexHull ℝ (S i))
+        x).mp hx with
     ⟨y₀, hy₀, hy₀sum⟩
   have hy₀_all : ∀ i : ι, y₀ i ∈ convexHull ℝ (S i) := by
     intro i
-    exact hy₀ i (Finset.mem_univ i)
+    exact hy₀ (Finset.mem_univ i)
   have hcar : ∀ i : ι,
       ∃ T : Finset E,
         ↑T ⊆ S i ∧
