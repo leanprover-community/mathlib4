@@ -923,7 +923,7 @@ lemma coeFn_LpToLpOfMeasureLeSMul [Fact (1 ≤ p)] (hc : c ≠ ∞) (h : μ ≤ 
     LpToLpOfMeasureLeSMul hc h f =ᵐ[μ] f :=
   coeFn_LpToLpOfMeasureLeSMulₗ hc h f
 
-lemma norm_LpToLpOfMeasureLeSMul [Fact (1 ≤ p)] (hc : c ≠ ∞) (h : μ ≤ c • ν) :
+lemma norm_LpToLpOfMeasureLeSMul_le [Fact (1 ≤ p)] (hc : c ≠ ∞) (h : μ ≤ c • ν) :
     ‖(LpToLpOfMeasureLeSMul hc h : Lp E p ν →L[ℝ] Lp E p μ)‖ ≤ c.toReal ^ (1 / p).toReal :=
   LinearMap.mkContinuous_norm_le _ (Real.rpow_nonneg (by simp) _) _
 
