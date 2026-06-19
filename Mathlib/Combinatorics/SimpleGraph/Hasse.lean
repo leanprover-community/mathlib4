@@ -112,7 +112,7 @@ theorem discrete_intermediate_value_theorem_darts {u v : α} (w : (hasse α).Wal
   convert he
   ext <;> grind [d.adj, e.adj, hasse, CovBy, covBy_iff_lt_iff_le_left]
 
-@[deprecated (since := "2026-06-19)] alias hasse_preconnected_of_succ := preconnected_hasse_of_succOrder
+@[deprecated (since := "2026-06-19")] alias hasse_preconnected_of_succ := preconnected_hasse_of_succOrder
 theorem preconnected_hasse_of_succOrder [SuccOrder α] [IsSuccArchimedean α] : (hasse α).Preconnected :=
   fun a b => by
   rw [reachable_iff_reflTransGen]
@@ -120,7 +120,7 @@ theorem preconnected_hasse_of_succOrder [SuccOrder α] [IsSuccArchimedean α] : 
     reflTransGen_of_succ _ (fun c hc => Or.inl <| covBy_succ_of_not_isMax hc.2.not_isMax)
       fun c hc => Or.inr <| covBy_succ_of_not_isMax hc.2.not_isMax
 
-@[deprecated (since := "2026-06-19)] alias hasse_preconnected_of_pred := preconnected_hasse_of_predOrder
+@[deprecated (since := "2026-06-19")] alias hasse_preconnected_of_pred := preconnected_hasse_of_predOrder
 theorem preconnected_hasse_of_predOrder [PredOrder α] [IsPredArchimedean α] : (hasse α).Preconnected :=
   fun a b => by
   rw [reachable_iff_reflTransGen, ← reflTransGen_swap]
@@ -150,11 +150,11 @@ def pathGraph (n : ℕ) : SimpleGraph (Fin n) :=
 theorem pathGraph_adj {n : ℕ} {u v : Fin n} :
     (pathGraph n).Adj u v ↔ u.val + 1 = v.val ∨ v.val + 1 = u.val := by simp [pathGraph, hasse]
 
-@[deprecated (since := 2026-06-19)] alias pathGraph_preconnected := preconnected_pathGraph
+@[deprecated (since := "2026-06-19")] alias pathGraph_preconnected := preconnected_pathGraph
 theorem preconnected_pathGraph (n : ℕ) : (pathGraph n).Preconnected :=
   preconnected_hasse_of_succOrder _
 
-@[deprecated (since := 2026-06-19)] alias pathGraph_connected := connected_pathGraph_add_one
+@[deprecated (since := "2026-06-19")] alias pathGraph_connected := connected_pathGraph_add_one
 theorem connected_pathGraph_add_one (n : ℕ) : (pathGraph (n + 1)).Connected :=
   ⟨pathGraph_preconnected _⟩
 
