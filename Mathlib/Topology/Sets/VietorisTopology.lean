@@ -366,17 +366,18 @@ theorem isPreconnected_sUnion {s : Set (Set α)} (hs : IsPreconnected s)
     wlog htU : t ⊆ U generalizing U V
     · grind
     -- There is also some `u ∈ s` that intersects `V`.
-    rintro - ⟨y, hys, hyV⟩
-    obtain ⟨u, hus, hyu⟩ := mem_sUnion.mpr hys
+    rintro - hV'
+    rw [sUnion_eq_biUnion, iUnion₂_inter, nonempty_biUnion] at hV'
+    obtain ⟨u, hus, huV⟩ := hV'
     -- Every set in `s` either is in `U` or intersects `V`.
-    have : s ⊆ {v | (v ∩ V).Nonempty} ∪ U.powerset := by
+    have : s ⊆ U.powerset ∪ {v | (v ∩ V).Nonempty} := by
       grind [=_ sdiff_subset_iff, =_ not_disjoint_iff_nonempty_inter]
     -- Since `s` connects `t` and `u`, there is some `v ∈ s` that is in `U` and intersects `V`.
     obtain ⟨v, hvs, hvU, hvV⟩ :=
-      hs _ _ (isOpen_inter_nonempty_of_isOpen hV) hU.powerset_vietoris this
-        ⟨u, hus, y, hyu, hyV⟩ ⟨t, hts, htU⟩
+      hs _ _ hU.powerset_vietoris (isOpen_inter_nonempty_of_isOpen hV) this
+        ⟨t, hts, htU⟩ ⟨u, hus, huV⟩
     -- `U` intersects `V` within `v`, and therefore also within `⋃₀ s`.
-    apply hvU.mono
+    apply hvV.mono
     grind
   · -- If neither `U` nor `V` covers `t`, then they both intersect `t`, since `t ⊆ U ∪ V`.
     rintro - -
