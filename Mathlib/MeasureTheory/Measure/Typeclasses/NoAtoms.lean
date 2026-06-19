@@ -1,3 +1,5 @@
+module
+
 /-! # NoAtoms
 This file is deprecated. Please use `Mathlib.MeasureTheory.Measure.Typeclasses.NullSingletonClass`
 instead.
