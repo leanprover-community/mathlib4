@@ -65,7 +65,7 @@ def evalAlgHom (i : ι) : (Π i, A i) →ₐ[R] A i :=
     toFun := fun f ↦ f i
     commutes' := fun _ ↦ rfl }
 
-lemma coe_evalAlgHom (i : ι) : evalAlgHom R A i = evalRingHom A i := rfl
+lemma coe_evalAlgHom (i : ι) : RingHomClass.toRingHom (evalAlgHom R A i) = evalRingHom A i := rfl
 
 @[simp]
 theorem algHom_evalAlgHom : algHom R A (evalAlgHom R A) = AlgHom.id R (Π i, A i) := rfl

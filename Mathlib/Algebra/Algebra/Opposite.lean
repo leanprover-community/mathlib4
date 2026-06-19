@@ -86,7 +86,7 @@ theorem toLinearMap_fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x
 
 @[simp]
 theorem toRingHom_fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
-    (f.fromOpposite hf : Aᵐᵒᵖ →+* B) = (f : A →+* B).fromOpposite hf :=
+    RingHomClass.toRingHom (f.fromOpposite hf) = (RingHomClass.toRingHom f).fromOpposite hf :=
   rfl
 
 /--
@@ -105,7 +105,7 @@ theorem toLinearMap_toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) 
 
 @[simp]
 theorem toRingHom_toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
-    (f.toOpposite hf : A →+* Bᵐᵒᵖ) = (f : A →+* B).toOpposite hf :=
+    RingHomClass.toRingHom (f.toOpposite hf) = (RingHomClass.toRingHom f).toOpposite hf :=
   rfl
 
 /-- An algebra hom `A →ₐ[R] B` can equivalently be viewed as an algebra hom `Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ`.

@@ -201,7 +201,7 @@ lemma toAlgHom_toRingHom : RingHomClass.toRingHom e = e :=
   rfl
 
 /-- The two paths coercion can take to a `RingHom` are equivalent -/
-theorem coe_ringHom_commutes : RingHomClass.toRingHom e = ((e : A₁ ≃+* A₂) : A₁ →+* A₂) :=
+theorem coe_ringHom_commutes : RingHomClass.toRingHom e = (e : A₁ ≃+* A₂) :=
   rfl
 
 @[simp]
