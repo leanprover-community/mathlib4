@@ -91,6 +91,11 @@ protected def congr {c : RingCon M} {d : RingCon N} (e : M ≃+* N) (h : c = d.c
 @[simp] theorem congr_mk {c : RingCon M} {d : RingCon N} (e : M ≃+* N) (h : c = d.comap e) (a : M) :
     RingCon.congr e h (a : c.Quotient) = (e a : d.Quotient) := rfl
 
+@[simp] theorem congr_symm {c : RingCon M} {d : RingCon N} (e : M ≃+* N) (h : c = d.comap e) :
+    (RingCon.congr e h).symm =
+      RingCon.congr e.symm (ext <| e.surjective.forall₂.2 fun x y => by simp [h]) :=
+  rfl
+
 /-- Given a function `f`, the smallest ring congruence relation containing the binary
 relation on `f`'s image defined by '`x ≈ y` iff the elements of `f⁻¹(x)` are related to
 the elements of `f⁻¹(y)` by a ring congruence relation `c`.' -/

@@ -77,6 +77,12 @@ protected def congr {c : Con M} {d : Con N} (e : M ≃* N) (h : c = d.comap e (m
 theorem congr_mk {c : Con M} {d : Con N} (e : M ≃* N) (h : c = d.comap e (map_mul e)) (a : M) :
     Con.congr e h (a : c.Quotient) = (e a : d.Quotient) := rfl
 
+@[to_additive (attr := simp)]
+theorem congr_symm {c : Con M} {d : Con N} (e : M ≃* N) (h : c = d.comap e (map_mul e)) :
+    (Con.congr e h).symm =
+      Con.congr e.symm (ext <| e.surjective.forall₂.2 fun x y => by simp [h]) :=
+  rfl
+
 @[to_additive]
 theorem le_comap_conGen {M N : Type*} [Mul M] [Mul N] (f : M → N)
     (H : ∀ (x y : M), f (x * y) = f x * f y) (rel : N → N → Prop) :
