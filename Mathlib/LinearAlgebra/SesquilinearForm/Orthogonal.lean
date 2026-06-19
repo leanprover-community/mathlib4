@@ -73,7 +73,6 @@ namespace LinearMap
 section Orthogonal
 
 variable {K K₁ V V₁ V₂ : Type*}
-
 variable [Field K] [AddCommGroup V] [Module K V] [Field K₁] [AddCommGroup V₁] [Module K₁ V₁]
   [AddCommGroup V₂] [Module K V₂] {J : K →+* K} {J₁ : K₁ →+* K} {J₁' : K₁ →+* K}
 
