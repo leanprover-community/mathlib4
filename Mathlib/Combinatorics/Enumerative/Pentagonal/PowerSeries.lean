@@ -86,7 +86,7 @@ variable [TopologicalSpace R]
 
 /-- `PowerSeries.pentagonalSeries` as an infinite sum over integers -/
 theorem hasSum_pentagonalSeries :
-    HasSum (fun k ↦ (Int.negOnePow k : R⟦X⟧) * X ^ pentagonal k) (pentagonalSeries R) := by
+    HasSum (fun (k : ℤ) ↦ (Int.negOnePow k : R⟦X⟧) * X ^ pentagonal k) (pentagonalSeries R) := by
   suffices HasSum ((fun n ↦ C (pentagonalCoeff R n) * X ^ n) ∘ pentagonal) (pentagonalSeries R) by
     convert this
     simp
