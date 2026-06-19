@@ -67,7 +67,7 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
 def toAlgHom {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) : A →ₐ[R] B where
-  __ := (f : A →+* B)
+  __ := RingHomClass.toRingHom f
   toFun := f
   commutes' := AlgHomClass.commutes f
 
@@ -117,14 +117,14 @@ theorem toFun_eq_coe (f : A →ₐ[R] B) : f.toFun = f :=
 
 /-- Turn an algebra homomorphism into the corresponding multiplicative monoid homomorphism. -/
 @[coe]
-def toMonoidHom' (f : A →ₐ[R] B) : A →* B := (f : A →+* B)
+def toMonoidHom' (f : A →ₐ[R] B) : A →* B := toRingHom f
 
 instance coeOutMonoidHom : CoeOut (A →ₐ[R] B) (A →* B) :=
   ⟨AlgHom.toMonoidHom'⟩
 
 /-- Turn an algebra homomorphism into the corresponding additive monoid homomorphism. -/
 @[coe]
-def toAddMonoidHom' (f : A →ₐ[R] B) : A →+ B := (f : A →+* B)
+def toAddMonoidHom' (f : A →ₐ[R] B) : A →+ B := toRingHom f
 
 instance coeOutAddMonoidHom : CoeOut (A →ₐ[R] B) (A →+ B) :=
   ⟨AlgHom.toAddMonoidHom'⟩
@@ -138,16 +138,16 @@ theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅) : ⇑(⟨⟨⟨⟨f, h�
   rfl
 
 @[simp, norm_cast]
-theorem coe_ringHom_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A →+* B) = f :=
+theorem coe_ringHom_mk {f : A →+* B} (h) : RingHomClass.toRingHom (⟨f, h⟩ : A →ₐ[R] B) = f :=
   rfl
 
--- make the coercion the simp-normal form
-@[simp]
-theorem toRingHom_eq_coe (f : A →ₐ[R] B) : f.toRingHom = f :=
-  rfl
+-- -- make the coercion the simp-normal form
+-- @[simp]
+-- theorem toRingHom_eq_coe (f : A →ₐ[R] B) : f.toRingHom = f :=
+--   rfl
 
 @[simp, norm_cast]
-theorem coe_toRingHom (f : A →ₐ[R] B) : ⇑(f : A →+* B) = f :=
+theorem coe_toRingHom (f : A →ₐ[R] B) : ⇑(RingHomClass.toRingHom f) = f :=
   rfl
 
 @[simp, norm_cast]
@@ -159,11 +159,11 @@ theorem coe_toAddMonoidHom (f : A →ₐ[R] B) : ⇑(f : A →+ B) = f :=
   rfl
 
 @[simp]
-theorem toRingHom_toMonoidHom (f : A →ₐ[R] B) : ((f : A →+* B) : A →* B) = f :=
+theorem toRingHom_toMonoidHom (f : A →ₐ[R] B) : (RingHomClass.toRingHom f : A →* B) = f :=
   rfl
 
 @[simp]
-theorem toRingHom_toAddMonoidHom (f : A →ₐ[R] B) : ((f : A →+* B) : A →+ B) = f :=
+theorem toRingHom_toAddMonoidHom (f : A →ₐ[R] B) : (RingHomClass.toRingHom f : A →+ B) = f :=
   rfl
 
 variable (φ : A →ₐ[R] B)
@@ -174,8 +174,10 @@ theorem coe_fn_injective : @Function.Injective (A →ₐ[R] B) (A → B) (↑) :
 theorem coe_fn_inj {φ₁ φ₂ : A →ₐ[R] B} : (φ₁ : A → B) = φ₂ ↔ φ₁ = φ₂ :=
   DFunLike.coe_fn_eq
 
-theorem coe_ringHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →+* B) := fun φ₁ φ₂ H =>
-  coe_fn_injective <| show ((φ₁ : A →+* B) : A → B) = ((φ₂ : A →+* B) : A → B) from congr_arg _ H
+theorem coe_ringHom_injective :
+    Function.Injective (RingHomClass.toRingHom : (A →ₐ[R] B) → A →+* B) := fun φ₁ φ₂ H =>
+  coe_fn_injective <| show (RingHomClass.toRingHom φ₁ : A → B) = (RingHomClass.toRingHom φ₂ : A → B)
+    from congr_arg _ H
 
 theorem coe_monoidHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →* B) :=
   RingHom.coe_monoidHom_injective.comp coe_ringHom_injective
@@ -203,7 +205,7 @@ theorem mk_coe {f : A →ₐ[R] B} (h₁ h₂ h₃ h₄ h₅) : (⟨⟨⟨⟨f, 
 theorem commutes (r : R) : φ (algebraMap R A r) = algebraMap R B r :=
   φ.commutes' r
 
-theorem comp_algebraMap : (φ : A →+* B).comp (algebraMap R A) = algebraMap R B :=
+theorem comp_algebraMap : (RingHomClass.toRingHom φ).comp (algebraMap R A) = algebraMap R B :=
   RingHom.ext <| φ.commutes
 
 /-- If a `RingHom` is `R`-linear, then it is an `AlgHom`. -/
@@ -229,7 +231,7 @@ theorem coe_id : ⇑(AlgHom.id R A) = id :=
   rfl
 
 @[simp]
-theorem id_toRingHom : (AlgHom.id R A : A →+* A) = RingHom.id _ :=
+theorem id_toRingHom : RingHomClass.toRingHom (AlgHom.id R A) = RingHom.id _ :=
   rfl
 
 end
@@ -242,7 +244,7 @@ domain of `φ₁` equal to the codomain of `φ₂`, then
 `φ₁.comp φ₂` is the algebra homomorphism `x ↦ φ₁ (φ₂ x)`.
 -/
 def comp (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) : A →ₐ[R] C :=
-  { φ₁.toRingHom.comp ↑φ₂ with
+  { φ₁.toRingHom.comp (toRingHom φ₂) with
     commutes' := fun r : R => by rw [← φ₁.commutes, ← φ₂.commutes]; rfl }
 
 @[simp]
@@ -253,7 +255,8 @@ theorem comp_apply (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) (p : A) : φ�
   rfl
 
 theorem comp_toRingHom (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) :
-    (φ₁.comp φ₂ : A →+* C) = (φ₁ : B →+* C).comp ↑φ₂ :=
+    RingHomClass.toRingHom (φ₁.comp φ₂) = (RingHomClass.toRingHom φ₁).comp
+      (RingHomClass.toRingHom φ₂) :=
   rfl
 
 @[simp]
@@ -383,7 +386,7 @@ def toAlgHom : S →ₐ[R] A where
 theorem toAlgHom_apply (y : S) : toAlgHom R S A y = algebraMap S A y := rfl
 
 @[simp]
-theorem coe_toAlgHom : ↑(toAlgHom R S A) = algebraMap S A :=
+theorem coe_toAlgHom : RingHomClass.toRingHom (toAlgHom R S A) = algebraMap S A :=
   RingHom.ext fun _ => rfl
 
 @[simp]
@@ -452,7 +455,7 @@ variable {R}
 
 @[simp] lemma ofId_self : ofId R R = .id R R := rfl
 
-@[simp] lemma toRingHom_ofId : ofId R A = algebraMap R A := rfl
+-- @[simp] lemma toRingHom_ofId : ofId R A = algebraMap R A : R →ₐ[R] A := rfl
 
 @[simp]
 theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
