@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Algebra.Homology.ComplexShape
 public import Mathlib.Algebra.Homology.ExactSequence
-public import Mathlib.Combinatorics.Quiver.ReflQuiver
-public import Mathlib.Order.BourbakiWitt
-public import Mathlib.Order.CompletePartialOrder
 public import Mathlib.Topology.Category.TopPair
 
 /-!
