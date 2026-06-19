@@ -80,7 +80,8 @@ measures.
   equal to infinity on some ray `(-∞, D)` and is equal to zero on `(D, +∞)`, where `D` is a possibly
   infinite number called the *Hausdorff dimension* of `s`; `μH[D] s` can be zero, infinity, or
   anything in between.
-* `MeasureTheory.Measure.nullSingletonClass_hausdorff`: Hausdorff measure has no atoms.
+* `MeasureTheory.Measure.nullSingletonClass_hausdorff`: Hausdorff measure has value zero on
+  singletons.
 
 ### Hausdorff measure in `ℝⁿ`
 
@@ -973,7 +974,7 @@ instance isAddHaarMeasure_hausdorffMeasure {E : Type*}
     IsAddHaarMeasure (G := E) μH[finrank ℝ E] where
   lt_top_of_isCompact K hK := by
     set e : E ≃L[ℝ] Fin (finrank ℝ E) → ℝ := ContinuousLinearEquiv.ofFinrankEq (by simp)
-    suffices μH[finrank ℝ E] (nullSingletonClasse '' K) < ⊤ by
+    suffices μH[finrank ℝ E] (e '' K) < ⊤ by
       rw [← e.symm_image_image K]
       apply lt_of_le_of_lt <| e.symm.lipschitz.hausdorffMeasure_image_le (by simp) (e '' K)
       rw [ENNReal.rpow_natCast]

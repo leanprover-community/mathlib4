@@ -414,7 +414,8 @@ theorem pi_hyperplane (i : ι) [NullSingletonClass (μ i)] (x : α i) :
     Measure.pi μ { f : ∀ i, α i | f i = x } = 0 :=
   show Measure.pi μ (eval i ⁻¹' {x}) = 0 from pi_eval_preimage_null _ (measure_singleton x)
 
-theorem ae_eval_ne (i : ι) [NullSingletonClass (μ i)] (x : α i) : ∀ᵐ y : ∀ i, α i ∂Measure.pi μ, y i ≠ x :=
+theorem ae_eval_ne (i : ι) [NullSingletonClass (μ i)] (x : α i) :
+    ∀ᵐ y : ∀ i, α i ∂Measure.pi μ, y i ≠ x :=
   compl_mem_ae_iff.2 (pi_hyperplane μ i x)
 
 theorem restrict_pi_pi (s : (i : ι) → Set (α i)) :
@@ -515,8 +516,9 @@ theorem univ_pi_Ico_ae_eq_Icc {f g : ∀ i, α i} :
 
 end Intervals
 
-/-- If one of the measures `μ i` has no atoms, them `Measure.pi µ`
-has no atoms. The instance below assumes that all `μ i` have no atoms. -/
+/-- If one of the measures `μ i` has value zero on singeltons, them `Measure.pi µ`
+has value zero on singletons. The instance below assumes that all `μ i` have value zero on
+singletons. -/
 theorem pi_nullSingletonClass (i : ι) [NullSingletonClass (μ i)] :
     NullSingletonClass (Measure.pi μ) :=
   ⟨fun x => flip measure_mono_null (pi_hyperplane μ i (x i)) (singleton_subset_iff.2 rfl)⟩

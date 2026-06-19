@@ -220,7 +220,7 @@ lemma eq_dirac_of_variance_eq_zero (h : ∀ L : StrongDual ℝ E, Var[L; μ] = 0
   rw [charFunDual_dirac, charFunDual_eq L, h L, integral_complex_ofReal, integral_dual L]
   simp
 
-/-- If a Gaussian measure is not a Dirac, then it has no atoms. -/
+/-- If a Gaussian measure is not a Dirac, then it has value zero on singletons. -/
 lemma nullSingletonClass (h : ∀ x, μ ≠ Measure.dirac x) : NullSingletonClass μ where
   measure_singleton x := by
     obtain ⟨L, hL⟩ : ∃ L : StrongDual ℝ E, Var[L; μ] ≠ 0 := by

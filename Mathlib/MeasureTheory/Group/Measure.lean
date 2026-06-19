@@ -912,14 +912,14 @@ instance prod.instIsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] {_ : 
     (ν : Measure H) [IsHaarMeasure μ] [IsHaarMeasure ν] [SFinite μ] [SFinite ν]
     [MeasurableMul G] [MeasurableMul H] : IsHaarMeasure (μ.prod ν) where
 
-/-- If the neutral element of a group is not isolated, then a Haar measure on this group has
-no atoms.
+/-- If the neutral element of a group is not isolated, then a Haar measure on this group has value
+zero on singletons.
 
 The additive version of this instance applies in particular to show that an additive Haar
 measure on a nontrivial finite-dimensional real vector space has no atom. -/
 @[to_additive
 /-- If the zero element of an additive group is not isolated, then an additive Haar measure on this
-group has no atoms.
+group has value zero on singletons.
 
 This applies in particular to show that an additive Haar measure on a nontrivial
 finite-dimensional real vector space has no atom. -/]
