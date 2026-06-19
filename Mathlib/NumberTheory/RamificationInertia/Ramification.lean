@@ -139,7 +139,11 @@ lemma ramificationIdx_comap_eq (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
   dsimp only [ramificationIdx]
   congr 1
   ext n
-  simp only [Set.mem_setOf_eq, Ideal.map_le_iff_le_comap]
+  simp only [Set.mem_setOf_eq, Ideal.map_le_iff_le_comap, ]
+  rw [← comap_coe e, comap_coe]
+  have : comap f (comap e P ^ n) = comap (algebraMap R S₁) (P ^ n) := by
+    sorry
+
   sorry
 
 variable (p) in
