@@ -40,19 +40,19 @@ mk_iff_of_inductive_prop List.Pairwise List.pairwise_iff
 
 /-! ### Pairwise -/
 
-theorem Pairwise.forall_of_forall (H : Symmetric R) (H₁ : ∀ x ∈ l, R x x) (H₂ : l.Pairwise R) :
+theorem Pairwise.forall_of_forall [Std.Symm R] (H₁ : ∀ x ∈ l, R x x) (H₂ : l.Pairwise R) :
     ∀ ⦃x⦄, x ∈ l → ∀ ⦃y⦄, y ∈ l → R x y :=
-  H₂.forall_of_forall_of_flip H₁ <| by rwa [H.flip_eq]
+  H₂.forall_of_forall_of_flip H₁ <| by rwa [Std.Symm.flip_eq]
 
-theorem Pairwise.forall (hR : Symmetric R) (hl : l.Pairwise R) :
+theorem Pairwise.forall [Std.Symm R] (hl : l.Pairwise R) :
     ∀ ⦃a⦄, a ∈ l → ∀ ⦃b⦄, b ∈ l → a ≠ b → R a b := by
+  have : Std.Symm fun x y ↦ x ≠ y → R x y := { symm a b h hne := symm <| h hne.symm }
   apply Pairwise.forall_of_forall
-  · exact fun a b h hne => hR (h hne.symm)
-  · exact fun _ _ hx => (hx rfl).elim
-  · exact hl.imp (@fun a b h _ => by exact h)
+  · exact fun _ _ ↦ absurd rfl
+  · exact hl.imp @fun a b h _ ↦ by exact h
 
-theorem Pairwise.set_pairwise (hl : Pairwise R l) (hr : Symmetric R) : { x | x ∈ l }.Pairwise R :=
-  hl.forall hr
+theorem Pairwise.set_pairwise (hl : Pairwise R l) [Std.Symm R] : { x | x ∈ l }.Pairwise R :=
+  hl.forall
 
 theorem pairwise_of_reflexive_of_forall_ne [Std.Refl R] (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → R a b) :
     l.Pairwise R := by

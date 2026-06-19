@@ -894,7 +894,7 @@ lemma conjStarAlgEquiv_apply (e : H ≃ₗᵢ[𝕜] K) (x : H →L[𝕜] H) :
 @[simp] lemma symm_conjStarAlgEquiv (e : H ≃ₗᵢ[𝕜] K) :
     e.conjStarAlgEquiv.symm = e.symm.conjStarAlgEquiv := rfl
 
-@[simp] theorem conjStarAlgEquiv_refl : conjStarAlgEquiv (.refl 𝕜 H) = .refl := rfl
+@[simp] theorem conjStarAlgEquiv_refl : conjStarAlgEquiv (.refl 𝕜 H) = .refl _ _ := rfl
 
 theorem conjStarAlgEquiv_trans {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
     [CompleteSpace G] (e : H ≃ₗᵢ[𝕜] K) (f : K ≃ₗᵢ[𝕜] G) :
@@ -1059,13 +1059,3 @@ theorem LinearIsometry.adjoint_comp_self' {E E' : Type*}
   haveI := FiniteDimensional.complete 𝕜 E'
   ext x
   exact congr($(f.adjoint_comp_self) x)
-
-theorem LinearIsometryEquiv.toMatrix_mem_unitaryGroup {ι E E' : Type*} [Fintype ι] [DecidableEq ι]
-    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
-    (f : E ≃ₗᵢ[𝕜] E') (b : OrthonormalBasis ι 𝕜 E) (b' : OrthonormalBasis ι 𝕜 E') :
-    f.toMatrix b.toBasis b'.toBasis ∈ Matrix.unitaryGroup ι 𝕜 := by
-  have : FiniteDimensional 𝕜 E := Module.Basis.finiteDimensional_of_finite b.toBasis
-  have : FiniteDimensional 𝕜 E' := Module.Basis.finiteDimensional_of_finite b'.toBasis
-  simp [Matrix.mem_unitaryGroup_iff, Matrix.star_eq_conjTranspose, ← LinearMap.toMatrix_adjoint,
-    ← LinearMap.toMatrix_comp, LinearIsometryEquiv.adjoint_toLinearMap_eq_symm,
-    -OrthonormalBasis.coe_toBasis]
