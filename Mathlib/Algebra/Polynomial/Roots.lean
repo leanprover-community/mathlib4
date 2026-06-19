@@ -164,7 +164,7 @@ lemma TendstoCofinite_of_nonconst_polynomial {R : Type} [CommRing R] [IsDomain R
   intro b
   by_contra! hb
   have := p.eq_of_infinite_eval_eq (C b) (by simpa)
-  grind [natDegree_C]
+  grind
 
 theorem roots_mul {p q : R[X]} (hpq : p * q ≠ 0) : (p * q).roots = p.roots + q.roots := by
   classical

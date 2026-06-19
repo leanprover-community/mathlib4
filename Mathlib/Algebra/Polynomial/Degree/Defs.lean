@@ -164,7 +164,7 @@ theorem degree_C_lt : degree (C a) < 1 :=
 
 theorem degree_one_le : degree (1 : R[X]) ≤ (0 : WithBot ℕ) := by rw [← C_1]; exact degree_C_le
 
-@[simp]
+@[simp, grind]
 theorem natDegree_C (a : R) : natDegree (C a) = 0 := by
   by_cases ha : a = 0
   · have : C a = 0 := by rw [ha, C_0]
