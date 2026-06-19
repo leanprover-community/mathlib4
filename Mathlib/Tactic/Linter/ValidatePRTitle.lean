@@ -73,7 +73,7 @@ def prTitle : Parser (String × Option String × String) := do
 Check if `word` looks like an abbreviation, like `JSON` or `E2` or `W3C`.
 -/
 def isAbbreviation (word : String.Slice) : Bool :=
-  word.all (fun c => c.isUpper || c.isDigit) && 1 < word.chars.length
+  word.all (fun c => c.isUpper || c.isDigit) && word.chars.length != 1
 
 open Mathlib.Linter.TextBased in
 /--
