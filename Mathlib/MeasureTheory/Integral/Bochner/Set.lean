@@ -809,13 +809,22 @@ lemma integral_le_measure {f : X → ℝ} {s : Set X}
   · intro x hx
     simpa [g] using h's x hx
 
-lemma setIntegral_mono_of_nonneg (hs : MeasurableSet s) {g : X → ℝ} (hf : ∀ x ∈ s, 0 ≤ f x)
-    (h : ∀ x ∈ s, f x ≤ g x) (hg : IntegrableOn g s μ) : ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ := by
-  refine integral_mono_of_nonneg ?_ hg ?_ <;>
-  change ∀ᵐ x ∂μ.restrict s, _ <;>
-  rw [ae_restrict_iff' hs]
-  · exact Eventually.of_forall hf
-  · exact Eventually.of_forall h
+lemma setIntegral_mono_of_nonneg {g : X → ℝ} (hf : ∀ x ∈ s, 0 ≤ f x)
+    (h : ∀ x ∈ s, f x ≤ g x) (hg : IntegrableOn g s μ) : 
+    ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ := by
+  by_cases h'f : AEStronglyMeasurable f (μ.restrict s); swap
+  · rw [integral_non_aestronglyMeasurable h'f]
+    apply integral_nonneg_of_ae
+    apply (ae_restrict_iff₀ ?_).2
+    · filter_upwards with x hx using (hf x hx).trans (h x hx)
+    · exact nullMeasurableSet_le aemeasurable_const hg.aemeasurable
+  refine integral_mono_of_nonneg ?_ hg ?_
+  · apply (ae_restrict_iff₀ ?_).2
+    · filter_upwards with x hx using hf x hx
+    · exact nullMeasurableSet_le aemeasurable_const h'f.aemeasurable
+  · apply (ae_restrict_iff₀ ?_).2
+    · filter_upwards with x hx using h x hx
+    · exact nullMeasurableSet_le h'f.aemeasurable hg.aemeasurable
 
 end Nonneg
 
