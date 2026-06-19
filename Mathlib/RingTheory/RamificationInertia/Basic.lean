@@ -82,6 +82,7 @@ theorem sum_ramification_inertia_eq_card
     [IsDomain R] [IsDomain S] [Module.Finite R S] [Module.Flat R S] [Fintype (p.primesOver S)]
     {G : Type*} [Group G] [MulSemiringAction G S] [IsGaloisGroup G R S] :
     ∑ q : p.primesOver S, q.1.ramificationIdx' R * q.1.inertiaDeg' R = Nat.card G := by
+  let := IsGaloisGroup.finite G R S
   rw [sum_ramification_inertia_eq_finrank, IsGaloisGroup.card_eq_finrank' G R S]
 
 end Ideal

@@ -37,29 +37,6 @@ theorem Ideal.coe_mem_inertia (G : Type*) [Group G] (H : Subgroup G) (h : H)
 
 -- PRed
 open Pointwise in
-theorem Ideal.smul_under {G R S : Type*} [Group G] [CommRing R] [CommRing S] [Algebra R S]
-    [MulSemiringAction G R] [MulSemiringAction G S] [SMulDistribClass G R S]
-    (g : G) (I : Ideal S) : g • I.under R = (g • I).under R := by
-  simp_rw [Ideal.pointwise_smul_eq_comap, Ideal.under_def]
-  nth_rw 1 [← Ideal.comap_coe]
-  nth_rw 4 [← Ideal.comap_coe]
-  simp_rw [Ideal.comap_comap]
-  congr
-  ext
-  simp [algebraMap.smul']
-
--- PRed
-open Pointwise in
-instance {α β γ : Type*} [Monoid α] [Monoid β] [Semiring γ] [SMul α β] [MulSemiringAction α γ]
-    [MulSemiringAction β γ] [IsScalarTower α β γ] : IsScalarTower α β (Ideal γ) where
-  smul_assoc x y z := by
-    simp_rw [Ideal.pointwise_smul_def, Ideal.map_map]
-    congr
-    ext
-    simp
-
--- PRed
-open Pointwise in
 theorem Ideal.inertia_quotient (B C G : Type*) [Group G] (H : Subgroup G) [CommRing B] [CommRing C]
     [Algebra B C] [MulSemiringAction G C] [Algebra.IsInvariant B C H] [SMulCommClass H B C]
     [H.Normal] [MulSemiringAction (G ⧸ H) B]

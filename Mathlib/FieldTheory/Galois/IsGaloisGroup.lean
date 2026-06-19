@@ -310,13 +310,8 @@ theorem card_eq_finrank [IsGaloisGroup G K L] : Nat.card G = Module.finrank K L 
 theorem finiteDimensional [Finite G] [IsGaloisGroup G K L] : FiniteDimensional K L :=
   FiniteDimensional.of_finrank_pos (card_eq_finrank G K L ▸ Nat.card_pos)
 
-section
-
-variable (R B : Type*) [CommRing R] [CommRing B] [Algebra R B] [Module.Finite R B]
-  [IsDomain B] [MulSemiringAction G B] [IsGaloisGroup G R B]
-
-include R B in
-protected theorem finite : Finite G := by
+protected theorem finite (R B : Type*) [CommRing R] [CommRing B] [Algebra R B] [Module.Finite R B]
+  [IsDomain B] [MulSemiringAction G B] [IsGaloisGroup G R B] : Finite G := by
   let A : Subring B := (algebraMap R B).range
   let := FractionRing.liftAlgebra A (FractionRing B)
   let := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
@@ -331,15 +326,15 @@ protected theorem finite : Finite G := by
 /-- The cardinality of a Galois group of `B/A` equals the rank of `B` as an `A`-module.
 
 See `IsGaloisGroup.card_eq_finrank` a field-theoretic version that does not assume finiteness. -/
-theorem card_eq_finrank' [FaithfulSMul R B] : Nat.card G = Module.finrank R B := by
-  have := IsDomain.of_faithfulSMul R B
-  have : Finite G := IsGaloisGroup.finite G R B
-  let := FractionRing.liftAlgebra R (FractionRing B)
-  let := IsFractionRing.mulSemiringAction G R B (FractionRing R) (FractionRing B)
-  rw [(IsGaloisGroup.toFractionRing G R B).card_eq_finrank,
-    Algebra.IsAlgebraic.finrank_of_isFractionRing R (FractionRing R) B (FractionRing B)]
-
-end
+theorem card_eq_finrank' (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Finite G]
+    [IsDomain B] [FaithfulSMul A B] [MulSemiringAction G B] [IsGaloisGroup G A B] :
+    Nat.card G = Module.finrank A B := by
+  have := IsDomain.of_faithfulSMul A B
+  let := FractionRing.liftAlgebra A (FractionRing B)
+  let := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
+  have : Algebra.IsIntegral A B := IsGaloisGroup.isInvariant.isIntegral A B G
+  rw [(IsGaloisGroup.toFractionRing G A B).card_eq_finrank,
+    Algebra.IsAlgebraic.finrank_of_isFractionRing A (FractionRing A) B (FractionRing B)]
 
 /-- If `G` is a finite Galois group for `L/K`, then `G` is isomorphic to `Gal(L/K)`. -/
 @[simps!] noncomputable def mulEquivAlgEquiv [IsGaloisGroup G K L] [Finite G] : G ≃* Gal(L/K) :=
