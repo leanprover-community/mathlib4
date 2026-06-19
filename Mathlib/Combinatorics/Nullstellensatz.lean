@@ -279,4 +279,55 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
   apply lt_of_le_of_lt _ (htS i)
   simp [← hpq, hq]
 
+/--
+Michał Lasoń, A generalization of Combinatorial Nullstellensatz, 2013, Theorem 2
+-/
+theorem generalized_combinatorial_nullstellensatz
+    [IsDomain R] (f : MvPolynomial σ R) (t : σ →₀ ℕ) (ht : f.coeff t ≠ 0)
+    (ht' : ∀ t' : σ →₀ ℕ, t < t' → f.coeff t' = 0) 
+    (S : σ → Finset R) (htS : ∀ ⦃i⦄, t i < #(S i)) :
+    ∃ s : σ → R, (∀ i, s i ∈ S i) ∧ eval s f ≠ 0 := by
+  haveI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
+  induction hn : ∑ᶠ i, t i using Nat.strong_induction_on
+  case h n ih =>
+    match n with
+    | 0 =>
+      clear ih
+      have ht₀ : t = 0 := by
+        ext i
+        by_contra h'
+        simp_rw [coe_zero, Pi.zero_apply, ← pos_iff_ne_zero] at h'
+        have : 0 < (∑ᶠ i, t i) := finsum_pos (by simp) ⟨i, h'⟩ (hasFiniteSupport t)
+        simp_rw [hn, lt_self_iff_false] at this
+      subst ht₀
+      clear hn
+      have hf₁ : f = C f.constantCoeff := by
+        simp only [coe_zero, Pi.zero_apply, Finset.card_pos] at htS
+        ext t'
+        by_cases ht'₀ : t' = 0
+        · subst ht'₀
+          simp [constantCoeff_eq]
+        · have : 0 < t' := by constructor <;> simp [ht'₀]
+          simp only [ht' t' this, coeff_C, right_eq_ite_iff]
+          rintro rfl
+          simp_rw [lt_self_iff_false] at this
+      have hf₂ : f.constantCoeff ≠ 0 := by tauto
+      rw [hf₁]
+      simp only [coe_zero, Pi.zero_apply, Finset.card_pos] at htS
+      use fun i ↦ (@htS i).exists_mem.choose
+      simp only [Exists.choose_spec, implies_true, eval_C, ne_eq, hf₂, not_false_eq_true, and_self]
+    | n + 1 =>
+      haveI instσ : Nonempty σ := by
+        by_contra! hσ
+        simp [finsum_of_isEmpty t] at hn
+      obtain ⟨i, hi⟩ : ∃ i, 0 < t i := by
+        by_contra! h₀
+        simp_all
+      have hS : ∀ i, (S i).Nonempty := (Finset.card_pos.mp <| Nat.zero_lt_of_lt <| @htS ·)
+      let r : R := (hS i).exists_mem.choose
+      let x : MvPolynomial σ R := .X i - .C r
+      have : ∃! g, ∃! h, f = g * x + h ∧ h.degreeOf i = 0 := by
+        sorry
+      sorry
+
 end MvPolynomial
