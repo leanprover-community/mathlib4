@@ -305,7 +305,7 @@ lemma sum_excenterWeightsUnnorm_singleton_pos [Nat.AtLeastTwo n] (i : Fin (n + 1
 lemma sign_excenterWeights_singleton_neg [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
     SignType.sign (s.excenterWeights {i} i) = -1 := by
   simp_rw [excenterWeights, Pi.smul_apply, smul_eq_mul, sign_mul]
-  convert! one_mul _
+  convert! (preTransparency := reducible) one_mul _
   · rw [sign_eq_one_iff, inv_pos]
     exact s.sum_excenterWeightsUnnorm_singleton_pos i
   · simp [excenterWeightsUnnorm]
@@ -313,7 +313,7 @@ lemma sign_excenterWeights_singleton_neg [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
 lemma sign_excenterWeights_singleton_pos [Nat.AtLeastTwo n] {i j : Fin (n + 1)} (h : i ≠ j) :
     SignType.sign (s.excenterWeights {i} j) = 1 := by
   simp_rw [excenterWeights, Pi.smul_apply, smul_eq_mul, sign_mul]
-  convert! one_mul _
+  convert! (preTransparency := reducible) one_mul _
   · rw [sign_eq_one_iff, inv_pos]
     exact s.sum_excenterWeightsUnnorm_singleton_pos i
   · simp [excenterWeightsUnnorm, h.symm]
