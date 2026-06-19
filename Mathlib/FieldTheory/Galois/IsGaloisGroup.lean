@@ -667,6 +667,7 @@ theorem isScalarTower_mulSemiringActionQuotient [MulSemiringAction G B] [SMulDis
   ⟨fun g q b ↦ Quotient.inductionOn' q fun h ↦ by
     simp [mul_smul, mulSemiringActionQuotient_smul_def]⟩
 
+set_option linter.defProp false in
 /-- If `G` acts on `C` commuting with `A`, then the action of `G ⧸ N` on `B` commutes with `A`. -/
 @[implicit_reducible]
 def smulCommClassQuotient [N.Normal] [Algebra A B] [IsScalarTower A B C] [SMulCommClass G A C]

@@ -1084,7 +1084,7 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
       | `(bracketedOption| (reorder := $reorder)) =>
         if reorder?.isSome then
           throwErrorAt opt "cannot specify `reorder` multiple times"
-        reorder? ← elabReorder reorder argNames xs (.ofConstName declName)
+        reorder? ← some <$> elabReorder reorder argNames xs (.ofConstName declName)
       | `(bracketedOption| (relevant_arg := $n)) =>
         if relevantArg?.isSome then
           throwErrorAt opt "cannot specify `relevant_arg` multiple times"
