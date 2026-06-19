@@ -165,6 +165,34 @@ theorem lintegral_mul_le_Lp_mul_Lq (μ : Measure α) {p q : ℝ} (hpq : p.Holder
   -- non-⊤ non-zero case
   exact ENNReal.lintegral_mul_le_Lp_mul_Lq_of_ne_zero_of_ne_top hpq hf hf_top hg_top hf_zero hg_zero
 
+/-- **Power-mean inequality against the constant function `1`.** For `1 ≤ p`, the
+`p`-th power of `∫⁻ t in s, g t` is at most `μ s ^ (p - 1)` times
+`∫⁻ t in s, g t ^ p`. The case `p = 2` is Cauchy–Schwarz. It follows from
+Hölder's inequality with conjugate exponents `p` and `p / (p - 1)`. -/
+theorem rpow_lintegral_le_measure_rpow_mul_lintegral_rpow {s : Set α} {g : α → ℝ≥0∞}
+    {p : ℝ} (hp : 1 ≤ p) (hg : AEMeasurable g (μ.restrict s)) :
+    (∫⁻ t in s, g t ∂μ) ^ p ≤ μ s ^ (p - 1) * ∫⁻ t in s, g t ^ p ∂μ := by
+  rcases hp.lt_or_eq with hp1 | hp1
+  · -- `1 < p`: Hölder against `1` with conjugate exponent `q = p / (p - 1)`.
+    set q := p.conjExponent with hq
+    have hpq : p.HolderConjugate q := .conjExponent hp1
+    have hp0 : 0 < p := hpq.pos
+    have hH := ENNReal.lintegral_mul_le_Lp_mul_Lq (μ.restrict s) hpq hg
+      (g := fun _ => (1 : ℝ≥0∞)) aemeasurable_const
+    simp only [Pi.mul_apply, mul_one, ENNReal.one_rpow, setLIntegral_const, one_mul] at hH
+    calc (∫⁻ t in s, g t ∂μ) ^ p
+        ≤ ((∫⁻ t in s, g t ^ p ∂μ) ^ (1 / p) * μ s ^ (1 / q)) ^ p :=
+          ENNReal.rpow_le_rpow hH hp0.le
+      _ = (∫⁻ t in s, g t ^ p ∂μ) ^ (1 / p * p) * μ s ^ (1 / q * p) := by
+          rw [ENNReal.mul_rpow_of_nonneg _ _ hp0.le, ← ENNReal.rpow_mul, ← ENNReal.rpow_mul]
+      _ = μ s ^ (p - 1) * ∫⁻ t in s, g t ^ p ∂μ := by
+          rw [one_div_mul_cancel hp0.ne', ENNReal.rpow_one,
+            show 1 / q * p = p - 1 by rw [one_div, inv_mul_eq_div, hpq.div_conj_eq_sub_one],
+            mul_comm]
+  · -- `p = 1`: both sides equal `∫⁻ t in s, g t`.
+    subst hp1
+    simp
+
 /-- A different formulation of Hölder's inequality for two functions, with two exponents that sum to
 1, instead of reciprocals of -/
 theorem lintegral_mul_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α}

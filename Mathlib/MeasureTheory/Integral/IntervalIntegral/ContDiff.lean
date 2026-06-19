@@ -84,27 +84,64 @@ end intervalIntegral
 
 open intervalIntegral
 
+/-- Auxiliary form of `enorm_sub_le_lintegral_deriv_of_contDiffOn_Ioo` for a complete codomain,
+where the second fundamental theorem of calculus is available. -/
+private theorem enorm_sub_le_lintegral_deriv_aux [CompleteSpace E]
+    (hcont : ContinuousOn f (Icc a b)) (hdiff : ContDiffOn ℝ 1 f (Ioo a b)) (hab : a ≤ b) :
+    ‖f b - f a‖ₑ ≤ ∫⁻ t in Ioc a b, ‖deriv f t‖ₑ := by
+  have hderiv_cont : ContinuousOn (deriv f) (Ioo a b) :=
+    (hdiff.continuousOn_derivWithin isOpen_Ioo.uniqueDiffOn le_rfl).congr
+      fun t ht => (derivWithin_of_isOpen isOpen_Ioo ht).symm
+  by_cases hint : IntegrableOn (deriv f) (Ioc a b) volume
+  · -- The fundamental theorem of calculus writes `f b - f a` as an integral.
+    have hftc : f b - f a = ∫ t in a..b, deriv f t :=
+      (intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le hab hcont
+        (fun t ht => ((hdiff.differentiableOn one_ne_zero).differentiableAt
+          (isOpen_Ioo.mem_nhds ht)).hasDerivAt)
+        ((intervalIntegrable_iff_integrableOn_Ioc_of_le hab).mpr hint)).symm
+    rw [hftc, intervalIntegral.integral_of_le hab]
+    exact enorm_integral_le_lintegral_enorm _
+  · -- Otherwise `deriv f` has infinite enorm integral, so the right-hand side is `⊤`.
+    rw [show ∫⁻ t in Ioc a b, ‖deriv f t‖ₑ = ⊤ by
+      by_contra h
+      refine hint ⟨?_, hasFiniteIntegral_iff_enorm.mpr (lt_top_iff_ne_top.2 h)⟩
+      rw [← Measure.restrict_congr_set (Ioo_ae_eq_Ioc (μ := volume))]
+      exact hderiv_cont.aestronglyMeasurable measurableSet_Ioo]
+    exact le_top
+
+open UniformSpace in
+/-- **The second fundamental theorem of calculus, as an extended-norm bound.** If `f : ℝ → E` is
+continuous on `[a, b]` and continuously differentiable on the open interval `(a, b)`, then the
+extended norm of `f b - f a` is bounded by the lower Lebesgue integral of the extended norm of its
+derivative. No integrability hypothesis is required: when the derivative is not integrable the
+right-hand side is `⊤`. Unlike `enorm_sub_le_lintegral_deriv_of_contDiffOn_Icc`, differentiability
+at the endpoints is not assumed. -/
+theorem enorm_sub_le_lintegral_deriv_of_contDiffOn_Ioo
+    (hcont : ContinuousOn f (Icc a b)) (hdiff : ContDiffOn ℝ 1 f (Ioo a b)) (hab : a ≤ b) :
+    ‖f b - f a‖ₑ ≤ ∫⁻ t in Ioc a b, ‖deriv f t‖ₑ := by
+  -- Compose with the isometric inclusion `ι : E →ₗᵢ Completion E`, apply the complete-space lemma,
+  -- then transfer back: `ι` preserves norms and derivatives.
+  set ι : E →ₗᵢ[ℝ] Completion E := Completion.toComplₗᵢ
+  have key := enorm_sub_le_lintegral_deriv_aux (ι.continuous.comp_continuousOn hcont)
+    (hdiff.continuousLinearMap_comp ι.toContinuousLinearMap) hab
+  simp only [Function.comp_def, ← map_sub, ι.enorm_map] at key
+  refine key.trans (le_of_eq (lintegral_congr_ae ?_))
+  have hae : ∀ᵐ t ∂volume.restrict (Ioc a b), t ∈ Ioo a b := by
+    rw [← Measure.restrict_congr_set (Ioo_ae_eq_Ioc (μ := volume))]
+    exact ae_restrict_mem measurableSet_Ioo
+  filter_upwards [hae] with t ht
+  have hfx : DifferentiableAt ℝ f t :=
+    (hdiff.differentiableOn one_ne_zero).differentiableAt (isOpen_Ioo.mem_nhds ht)
+  have hg : HasDerivAt (fun y => ι (f y)) (ι (deriv f t)) t :=
+    ι.toContinuousLinearMap.hasFDerivAt.comp_hasDerivAt t hfx.hasDerivAt
+  rw [hg.deriv, ι.enorm_map]
+
 theorem enorm_sub_le_lintegral_deriv_of_contDiffOn_Icc (h : ContDiffOn ℝ 1 f (Icc a b))
     (hab : a ≤ b) :
     ‖f b - f a‖ₑ ≤ ∫⁻ x in Icc a b, ‖deriv f x‖ₑ := by
-  /- We want to write `f b - f a = ∫ x in Icc a b, deriv f x` and use the inequality between
-  norm of integral and integral of norm. There is a small difficulty that this formula is not
-  true when `E` is not complete, so we need to go first to the completion, and argue there. -/
-  let g := UniformSpace.Completion.toComplₗᵢ (𝕜 := ℝ) (E := E)
-  have : ‖(g ∘ f) b - (g ∘ f) a‖ₑ = ‖f b - f a‖ₑ := by
-    rw [← edist_eq_enorm_sub, Function.comp_def, g.isometry.edist_eq, edist_eq_enorm_sub]
-  rw [← this, ← integral_deriv_of_contDiffOn_Icc (g.contDiff.comp_contDiffOn h) hab,
-    integral_of_le hab, restrict_Ioc_eq_restrict_Icc]
-  apply (enorm_integral_le_lintegral_enorm _).trans
-  apply lintegral_mono_ae
-  rw [← restrict_Ioo_eq_restrict_Icc]
-  filter_upwards [self_mem_ae_restrict measurableSet_Ioo] with x hx
-  rw [fderiv_comp_deriv]; rotate_left
-  · exact (g.contDiff.differentiable one_ne_zero).differentiableAt
-  · exact (h x ⟨hx.1.le, hx.2.le⟩).contDiffAt (Icc_mem_nhds hx.1 hx.2)
-      |>.differentiableAt one_ne_zero
-  have : fderiv ℝ g (f x) = g.toContinuousLinearMap := g.toContinuousLinearMap.fderiv
-  simp [this]
+  rw [← restrict_Ioc_eq_restrict_Icc]
+  exact enorm_sub_le_lintegral_deriv_of_contDiffOn_Ioo h.continuousOn
+    (h.mono Ioo_subset_Icc_self) hab
 
 theorem enorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc (h : ContDiffOn ℝ 1 f (Icc a b))
     (hab : a ≤ b) :
