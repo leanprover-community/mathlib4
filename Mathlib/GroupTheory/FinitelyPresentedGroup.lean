@@ -55,6 +55,23 @@ protected theorem map {N : Subgroup G} (hN : N.IsNormalClosureFG)
   refine ⟨f '' S, hSfinite.image _, ?_⟩
   rw [← hSclosure, Subgroup.map_normalClosure _ _ hf]
 
+open Function Set Subgroup in
+/-- The preimage of a finitely generated normal subgroup by a surjective homomorphism with
+a finitely generated kernel is finitely generated. -/
+@[to_additive /-- The preimage of a finitely generated normal subgroup by a surjective additive
+homomorphism with a finitely generated kernel is finitely generated. -/]
+protected theorem comap {N : Subgroup H} (hN : N.IsNormalClosureFG)
+    {f : G →* H} (hf : Surjective f) (hf' : f.ker.IsNormalClosureFG) :
+    (N.comap f).IsNormalClosureFG := by
+  obtain ⟨S, hS_fin, hS⟩ := hN
+  obtain ⟨T, hT_fin, hT⟩ := hf'
+  have : ∃ S', S'.Finite ∧ f '' S' = S :=
+    ⟨surjInv hf '' S, hS_fin.image _, by rw [← image_comp, comp_surjInv, image_id]⟩
+  clear hS_fin
+  obtain ⟨S, hS_fin, rfl⟩ := this
+  refine ⟨S ∪ T, hS_fin.union hT_fin, ?_⟩
+  rw [← hS, ← map_normalClosure S f hf, comap_map_eq, ← hT, normalClosure_union]
+
 /-- The trivial group is the normal closure of a finite set of relations. -/
 @[to_additive /-- The trivial additive group is the normal closure of a finite set of relations. -/]
 protected theorem bot : (⊥ : Subgroup G).IsNormalClosureFG :=
@@ -84,6 +101,14 @@ theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented
   obtain ⟨n, φ, hφsurj, hNC⟩ := h
   refine ⟨n, (iso : G →* H).comp φ, iso.surjective.comp hφsurj, ?_⟩
   rwa [φ.ker_mulEquiv_comp iso]
+
+theorem of_surjective [hG : IsFinitelyPresented G] (f : G →* H)
+    (hf_surj : Function.Surjective f) (hf_ker : f.ker.IsNormalClosureFG) :
+    IsFinitelyPresented H := by
+  obtain ⟨n, φ, hφ_surj, hφ_ker⟩ := hG.out
+  refine ⟨n, f.comp φ, hf_surj.comp hφ_surj, ?_⟩
+  rw [← MonoidHom.comap_ker]
+  exact hf_ker.comap hφ_surj hφ_ker
 
 /-- A free group with a finite number of generators is finitely presented. -/
 @[to_additive /-- A free additive group with a finite number of generators is finitely presented. -/
