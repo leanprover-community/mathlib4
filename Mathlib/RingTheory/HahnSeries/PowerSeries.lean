@@ -85,7 +85,7 @@ theorem coeff_toPowerSeries_symm {f : PowerSeries R} {n : ℕ} :
 
 variable (Γ R) [Semiring Γ] [PartialOrder Γ] [IsStrictOrderedRing Γ]
 
-/-- Casts a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`. -/
+/-- Casts a power series as a Hahn series with coefficients from a strictly ordered semiring. -/
 def ofPowerSeries : PowerSeries R →+* R⟦Γ⟧ :=
   (HahnSeries.embDomainRingHom (Nat.castAddMonoidHom Γ) Nat.strictMono_cast.injective fun _ _ =>
         Nat.cast_le).comp
@@ -98,17 +98,16 @@ theorem ofPowerSeries_injective : Function.Injective (ofPowerSeries Γ R) :=
 
 -- Not `@[simp]` since the RHS is more complicated and it makes linter failures elsewhere
 theorem ofPowerSeries_apply (x : PowerSeries R) :
-    ofPowerSeries Γ R x =
-      HahnSeries.embDomain
-        ⟨⟨((↑) : ℕ → Γ), Nat.strictMono_cast.injective⟩, by
-          simp only [Function.Embedding.coeFn_mk]
-          exact Nat.cast_le⟩
-        (toPowerSeries.symm x) :=
+    ofPowerSeries Γ R x = embDomain Nat.castOrderEmbedding (toPowerSeries.symm x) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ofPowerSeries_apply_coeff (x : PowerSeries R) (n : ℕ) :
-    (ofPowerSeries Γ R x).coeff n = PowerSeries.coeff n x := by simp [ofPowerSeries_apply]
+    (ofPowerSeries Γ R x).coeff n = PowerSeries.coeff n x := by
+  trans (embDomain (Nat.castOrderEmbedding (α := Γ)) (toPowerSeries.symm x)).coeff
+    (Nat.castOrderEmbedding n)
+  · simp [ofPowerSeries_apply]
+  rw [embDomain_coeff]
+  simp
 
 @[simp]
 theorem ofPowerSeries_C (r : R) : ofPowerSeries Γ R (PowerSeries.C r) = HahnSeries.C r := by
@@ -117,7 +116,7 @@ theorem ofPowerSeries_C (r : R) : ofPowerSeries Γ R (PowerSeries.C r) = HahnSer
     coeff_single]
   split_ifs with hn
   · subst hn
-    convert embDomain_coeff (a := 0) <;> simp
+    convert! embDomain_coeff (a := 0) <;> simp
   · rw [embDomain_notin_image_support]
     simp only [not_exists, Set.mem_image, toPowerSeries_symm_apply_coeff, mem_support,
       PowerSeries.coeff_C]
@@ -130,7 +129,7 @@ theorem ofPowerSeries_X : ofPowerSeries Γ R PowerSeries.X = single 1 1 := by
   simp only [coeff_single, ofPowerSeries_apply]
   split_ifs with hn
   · rw [hn]
-    convert embDomain_coeff (a := 1) <;> simp
+    convert! embDomain_coeff (a := 1) <;> simp
   · rw [embDomain_notin_image_support]
     simp only [not_exists, Set.mem_image, toPowerSeries_symm_apply_coeff, mem_support,
       PowerSeries.coeff_X]
@@ -207,8 +206,7 @@ def toPowerSeriesAlg : A⟦ℕ⟧ ≃ₐ[R] PowerSeries A :=
 
 variable (Γ) [Semiring Γ] [PartialOrder Γ] [IsStrictOrderedRing Γ]
 
-/-- Casting a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`
-  is an algebra homomorphism. -/
+/-- Casting a power series as a Hahn series with coefficients from a strictly ordered semiring. -/
 @[simps!]
 def ofPowerSeriesAlg : PowerSeries A →ₐ[R] A⟦Γ⟧ :=
   (HahnSeries.embDomainAlgHom (Nat.castAddMonoidHom Γ) Nat.strictMono_cast.injective fun _ _ =>

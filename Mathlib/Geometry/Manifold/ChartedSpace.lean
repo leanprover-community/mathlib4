@@ -257,7 +257,7 @@ theorem ChartedSpace.locallyConnectedSpace [LocallyConnectedSpace H] : LocallyCo
   refine locallyConnectedSpace_of_connected_bases (fun x s ↦ (e x).symm '' s)
       (fun x s ↦ (IsOpen s ∧ e x x ∈ s ∧ IsConnected s) ∧ s ⊆ (e x).target) ?_ ?_
   · intro x
-    simpa only [e, OpenPartialHomeomorph.symm_map_nhds_eq, mem_chart_source] using
+    simpa only [e, OpenPartialHomeomorph.symm_map_nhds_eq, mem_chart_source] using!
       ((LocallyConnectedSpace.open_connected_basis (e x x)).restrict_subset
         ((e x).open_target.mem_nhds (mem_chart_target H x))).map (e x).symm
   · rintro x s ⟨⟨-, -, hsconn⟩, hssubset⟩
@@ -275,7 +275,7 @@ theorem ChartedSpace.locPathConnectedSpace [LocPathConnectedSpace H] : LocPathCo
     apply e.symm.image_mem_nhds (by simp [e])
     exact pathComponentIn_mem_nhds <| e.image_mem_nhds (mem_chart_source _ _) ht
   · refine (isPathConnected_pathComponentIn <| mem_image_of_mem e (mem_of_mem_nhds ht)).image' ?_
-    refine e.continuousOn_symm.mono <| subset_trans ?_ e.map_source''
+    refine e.continuousOn_symm.mono <| subset_trans ?_ e.image_source_subset
     exact (pathComponentIn_mono <| image_mono inter_subset_right).trans pathComponentIn_subset
   · exact (image_mono pathComponentIn_subset).trans
       (PartialEquiv.symm_image_image_of_subset_source _ inter_subset_right).subset
@@ -313,7 +313,7 @@ theorem ChartedSpace.discreteTopology [DiscreteTopology H] : DiscreteTopology M 
   apply discreteTopology_iff_isOpen_singleton.2 (fun x ↦ ?_)
   have : IsOpen ((chartAt H x).source ∩ (chartAt H x) ⁻¹' {chartAt H x x}) :=
     isOpen_inter_preimage _ (isOpen_discrete _)
-  convert this
+  convert! this
   refine Subset.antisymm (by simp) ?_
   simp only [subset_singleton_iff, mem_inter_iff, mem_preimage, mem_singleton_iff, and_imp]
   intro y hy h'y
@@ -644,8 +644,8 @@ protected def openPartialHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) 
     @OpenPartialHomeomorph M H c.toTopologicalSpace _ :=
   { __ := c.toTopologicalSpace
     __ := e
-    open_source := by convert c.open_source' he
-    open_target := by convert c.open_target he
+    open_source := by convert! c.open_source' he
+    open_target := by convert! c.open_target he
     continuousOn_toFun := by
       letI : TopologicalSpace M := c.toTopologicalSpace
       rw [continuousOn_open_iff (c.open_source' he)]

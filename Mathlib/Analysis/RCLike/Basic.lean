@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Analysis.CStarAlgebra.Basic
 public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 public import Mathlib.Analysis.Normed.Ring.Finite
-public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Tactic.LinearCombination
 
 /-!
@@ -96,7 +96,7 @@ namespace RCLike
 /-- Coercion from `ℝ` to an `RCLike` field. -/
 @[coe] abbrev ofReal : ℝ → K := Algebra.cast
 
-/- The priority must be set at 900 to ensure that coercions are tried in the right order.
+/-- The priority must be set at 900 to ensure that coercions are tried in the right order.
 See Note [coercion into rings], or `Mathlib/Data/Nat/Cast/Basic.lean` for more details. -/
 noncomputable instance (priority := 900) algebraMapCoe : CoeTC ℝ K :=
   ⟨ofReal⟩
@@ -577,9 +577,6 @@ instance : StarModule ℝ K where
 theorem ofReal_natCast (n : ℕ) : ((n : ℝ) : K) = n :=
   map_natCast (algebraMap ℝ K) n
 
-@[rclike_simps, norm_cast]
-lemma ofReal_nnratCast (q : ℚ≥0) : ((q : ℝ) : K) = q := map_nnratCast (algebraMap ℝ K) _
-
 @[simp, rclike_simps]
 theorem natCast_re (n : ℕ) : re (n : K) = n := by rw [← ofReal_natCast, ofReal_re]
 
@@ -615,6 +612,16 @@ theorem intCast_re (n : ℤ) : re (n : K) = n := by rw [← ofReal_intCast, ofRe
 theorem intCast_im (n : ℤ) : im (n : K) = 0 := by rw [← ofReal_intCast, ofReal_im]
 
 @[rclike_simps, norm_cast]
+theorem ofReal_nnratCast (n : ℚ≥0) : ((n : ℝ) : K) = n :=
+  map_nnratCast _ n
+
+@[simp, rclike_simps]
+theorem nnratCast_re (q : ℚ≥0) : re (q : K) = q := by rw [← ofReal_nnratCast, ofReal_re]
+
+@[simp, rclike_simps, norm_cast]
+theorem nnratCast_im (q : ℚ≥0) : im (q : K) = 0 := by rw [← ofReal_nnratCast, ofReal_im]
+
+@[rclike_simps, norm_cast]
 theorem ofReal_ratCast (n : ℚ) : ((n : ℝ) : K) = n :=
   map_ratCast _ n
 
@@ -623,6 +630,20 @@ theorem ratCast_re (q : ℚ) : re (q : K) = q := by rw [← ofReal_ratCast, ofRe
 
 @[simp, rclike_simps, norm_cast]
 theorem ratCast_im (q : ℚ) : im (q : K) = 0 := by rw [← ofReal_ratCast, ofReal_im]
+
+open OfScientific (ofScientific)
+
+@[rclike_simps, norm_cast]
+theorem ofReal_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
+    ((ofScientific m s e : ℝ) : K) = ofScientific m s e := ofReal_nnratCast _
+
+@[simp, rclike_simps]
+theorem ofScientific_re (m : ℕ) (s : Bool) (e : ℕ) :
+    re (ofScientific m s e : K) = ofScientific m s e := by rw [← ofReal_ofScientific, ofReal_re]
+
+@[simp, rclike_simps, norm_cast]
+theorem ofScientific_im (m : ℕ) (s : Bool) (e : ℕ) :
+    im (ofScientific m s e : K) = 0 := by rw [← ofReal_ofScientific, ofReal_im]
 
 /-! ### Norm -/
 
@@ -742,7 +763,22 @@ theorem isCauSeq_norm {f : ℕ → K} (hf : IsCauSeq norm f) : IsCauSeq abs (nor
   let ⟨i, hi⟩ := hf ε ε0
   ⟨i, fun j hj => lt_of_le_of_lt (abs_norm_sub_norm_le _ _) (hi j hj)⟩
 
+lemma I_mem_skewAdjoint : I ∈ skewAdjoint K := by simp [skewAdjoint.mem_iff]
+
 end RCLike
+
+section
+variable {A : Type*} [AddCommGroup A] [StarAddMonoid A] [Module K A] [StarModule K A] {a : A}
+
+open RCLike
+
+lemma IsSelfAdjoint.I_smul_mem_skewAdjoint (h : IsSelfAdjoint a) :
+    (I : K) • a ∈ skewAdjoint A := h.smul_mem_skewAdjoint I_mem_skewAdjoint
+
+lemma IsSelfAdjoint.I_smul_of_mem_skewAdjoint (h : a ∈ skewAdjoint A) :
+    IsSelfAdjoint ((I : K) • a) := isSelfAdjoint_smul_of_mem_skewAdjoint I_mem_skewAdjoint h
+
+end
 
 section Instances
 
@@ -776,11 +812,11 @@ include K
 
 variable (K) in
 lemma norm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖ = q • ‖x‖ := by
-  simpa [NNRat.cast_smul_eq_nnqsmul] using norm_smul (q : K) x
+  simpa [NNRat.cast_smul_eq_nnqsmul] using! norm_smul (q : K) x
 
 variable (K) in
 lemma nnnorm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖₊ = q • ‖x‖₊ := by
-  simpa [NNRat.cast_smul_eq_nnqsmul] using nnnorm_smul (q : K) x
+  simpa [NNRat.cast_smul_eq_nnqsmul] using! nnnorm_smul (q : K) x
 
 @[bound]
 lemma norm_expect_le {ι : Type*} {s : Finset ι} {f : ι → E} : ‖𝔼 i ∈ s, f i‖ ≤ 𝔼 i ∈ s, ‖f i‖ :=
@@ -1174,7 +1210,6 @@ lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
   toFun x := re x + im x * (I : 𝕜')
   map_add' _ _ := by simp only [map_add, add_mul]; ring
   map_smul' _ _ := by simp [real_smul_eq_coe_mul, mul_assoc]
-  cont := by fun_prop
 
 @[simp] theorem map_same_eq_id : map K K = .id ℝ K := by ext; simp
 
@@ -1231,7 +1266,7 @@ lemma norm_le_im_iff_eq_I_mul_norm {z : K} :
   · simp [h, im_eq_zero]
   · have : (I : K) ≠ 0 := fun _ ↦ by simp_all
     rw [← mul_right_inj' (neg_ne_zero.mpr this)]
-    convert norm_le_re_iff_eq_norm (z := -I * z) using 2
+    convert! norm_le_re_iff_eq_norm (z := -I * z) using 2
     all_goals simp [neg_mul, ← mul_assoc, I_mul_I_of_nonzero this, norm_I_of_ne_zero this]
 
 lemma im_le_neg_norm_iff_eq_neg_I_mul_norm {z : K} :
