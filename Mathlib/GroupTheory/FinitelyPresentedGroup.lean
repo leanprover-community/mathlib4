@@ -131,12 +131,8 @@ instance : AddGroup.IsFinitelyPresented ℤ :=
 
 variable (G)
 
-theorem mk' (S : Type*) [Finite S] (φ : FreeGroup S →* G)
-    (h1 : Function.Surjective φ) (h2 : φ.ker.IsNormalClosureFG) : IsFinitelyPresented G :=
-  of_surjective φ h1 h2
-
 /-- Any finite group is finitely presented. -/
 instance [Finite G] : IsFinitelyPresented G :=
-  mk' G G FreeGroup.prod FreeGroup.prod_surjective (.of_FG FreeGroup.prod.ker)
+  of_surjective FreeGroup.prod FreeGroup.prod_surjective (.of_FG FreeGroup.prod.ker)
 
 end Group.IsFinitelyPresented
