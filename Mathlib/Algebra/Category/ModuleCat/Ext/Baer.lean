@@ -32,8 +32,12 @@ universe than `ModuleCat.{v} R`.
   linear map `I →ₗ[R] M` extends to `R →ₗ[R] M`.
 * `ModuleCat.injective_of_subsingleton_ext_quotient_one`: if `Ext (R ⧸ I) M 1` vanishes
   for all ideals `I`, then `M` is injective.
+* `ModuleCat.injective_iff_subsingleton_ext_quotient_one`: if and only if version of
+  `ModuleCat.injective_of_subsingleton_ext_quotient_one`.
 * `ModuleCat.hasInjectiveDimensionLT_of_quotients`: if `Ext (R ⧸ I) M n` vanishes for all
   ideals `I`, then `M` has injective dimension `< n`.
+* `ModuleCat.hasInjectiveDimensionLT_iff_quotients`: if and only if version of
+  `ModuleCat.hasInjectiveDimensionLT_of_quotients`
 
 -/
 
