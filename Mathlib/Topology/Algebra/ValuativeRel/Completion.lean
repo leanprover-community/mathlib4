@@ -524,19 +524,80 @@ variable {Γ₀ Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀]
   [LinearOrderedCommGroupWithZero Γ₀'] (v : Valuation K Γ₀) [v.Compatible]
   (v' : Valuation K Γ₀') [v'.Compatible]
 
-theorem IsValuativeTopology.mk_valuation [Ring R] [ValuativeRel R] [TopologicalSpace R] (v : Valuation R Γ₀)
-    [v.Compatible]
-    (h : ∀ {s : Set R} {x : R}, s ∈ nhds x ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
-    (fun (x₁ : R) => x + x₁) '' {z : R | v.restrict z < γ} ⊆ s) :
-    IsValuativeTopology R :=
-  sorry
+open ValueGroupWithZero in
+theorem IsValuativeTopology.mk_valuation [Ring R] [temp : ValuativeRel R] [top : TopologicalSpace R]
+    (v : Valuation R Γ₀) [v.Compatible]
+    (H : ∀ {s : Set R} {x : R}, s ∈ 𝓝 x ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
+    (fun (x₁ : R) ↦ x + x₁) '' {z : R | v.restrict z < γ} ⊆ s) :
+    IsValuativeTopology R := by
+  constructor
+  intro s x
+  refine ⟨fun h_mem ↦ ?_, fun h_mem ↦ ?_⟩
+  · obtain ⟨γ, hγ⟩ := H.mp h_mem
+    set φ := ValueGroupWithZero.orderMonoidIso v with hφ
+    set γ₀ := γ.val with hγ₀
+    set η₀ := φ.symm γ₀ with hη₀
+    have hη_unit : IsUnit η₀ := by
+      simp
+      intro h
+      rw [h] at hη₀
+      rw [Eq.comm] at hη₀
+      change φ.symm.toMonoidHom γ₀ = 0 at hη₀
+      simp only [OrderMonoidIso.toMulEquiv_eq_coe, MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_coe,
+        OrderMonoidIso.coe_mulEquiv, EmbeddingLike.map_eq_zero_iff] at hη₀
+      simp [hγ₀] at hη₀
+    set γ₁ := IsUnit.unit hη_unit with hγ₁
+    use γ₁
+    rw [hγ₁]
+    simp at ⊢ hγ
+    grw [← hγ]
+    intro a ha
+    simp at ⊢ ha
+    rw [hη₀] at ha
+    change (valuation R) (-x + a) < φ.toOrderIso.symm γ₀ at ha
+    rw [OrderIso.lt_symm_apply] at ha
+    apply lt_of_eq_of_lt _ ha
+    change _ = φ ((valuation R) (-x + a))
+    simp only [hφ, orderMonoidIso_valuation_eq_restrict₀]
+    rfl
+  · apply H.mpr
+    obtain ⟨γ, hγ⟩ := h_mem
+    set φ := ValueGroupWithZero.orderMonoidIso v with hφ
+    set γ₀ := γ.val with hγ₀
+    set η₀ := φ γ₀ with hη₀
+    have hη_unit : IsUnit η₀ := by
+      simp
+      intro h
+      rw [h] at hη₀
+      rw [Eq.comm] at hη₀
+      change φ.toMonoidHom γ₀ = 0 at hη₀
+      simp only [OrderMonoidIso.toMulEquiv_eq_coe, MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_coe,
+        OrderMonoidIso.coe_mulEquiv, EmbeddingLike.map_eq_zero_iff] at hη₀
+      simp [hγ₀] at hη₀
+    set γ₁ := IsUnit.unit hη_unit with hγ₁
+    use γ₁
+    rw [hγ₁]
+    simp only [image_add_left, preimage_setOf_eq, IsUnit.unit_spec] at ⊢ hγ
+    grw [← hγ]
+    apply subset_of_eq
+    ext a
+    simp
+    rw [hη₀]
+    change v.restrict (-x + a) < φ.toOrderIso γ₀ ↔ _
+    rw [hφ]
+    have := orderMonoidIso_valuation_eq_restrict₀ (v := v) (x := -x + a)
+    erw [← this]
+    change (orderMonoidIso v).toOrderIso ((valuation R) (-x + a)) <
+      (orderMonoidIso v).toOrderIso γ₀ ↔ _
+    simp
 
-theorem IsValuativeTopology.mk₀ [Ring R] [ValuativeRel R] [TopologicalSpace R] (v : Valuation R Γ₀)
-    [v.Compatible]
-    (h : ∀ {s : Set R} {x : R}, s ∈ nhds x ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
-    (fun (x₁ : R) => x + x₁) '' {z : R | v.restrict z < γ} ⊆ s) :
-    IsValuativeTopology R :=
-  sorry
+--
+-- theorem IsValuativeTopology.mk₀ [Ring R] [ValuativeRel R] [TopologicalSpace R] (v : Valuation R Γ₀)
+--     [v.Compatible]
+--     (h : ∀ {s : Set R} {x : R}, s ∈ nhds x ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
+--     (fun (x₁ : R) => x + x₁) '' {z : R | v.restrict z < γ} ⊆ s) :
+--     IsValuativeTopology R :=
+--   sorry
 
 theorem IsValuativeTopology.mk₀_valuation [Ring R] [ValuativeRel R] [TopologicalSpace R] (v : Valuation R Γ₀)
     [v.Compatible]
