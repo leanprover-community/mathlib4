@@ -150,7 +150,6 @@ lemma tensorCotangentHom_tmul (x : D.presLeft.toExtension.ker) :
 def tensorCotangentInv : P.toExtension.Cotangent →ₗ[S] S ⊗[D.T] D.presLeft.toExtension.Cotangent :=
   b.constr S fun i : σ ↦ 1 ⊗ₜ Extension.Cotangent.mk (D.kerGen i)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma tensorCotangentInv_apply (i : σ) :
     D.tensorCotangentInv (b i) = 1 ⊗ₜ Extension.Cotangent.mk (D.kerGen i) :=

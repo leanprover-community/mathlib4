@@ -133,7 +133,7 @@ meta def EuclideanSpace.delabVecNotation : Delab :=
     let p : Term ← withNaryArg 0 <| delab
     -- to be conservative, only allow subscripts which are numerals
     guard <| p matches `($_:num)
-    let `(![$elems,*]) := ← withNaryArg 2 delab | failure
+    let `(![$elems,*]) ← withNaryArg 2 delab | failure
     `(!$p[$elems,*])
 
 end Notation
@@ -588,6 +588,9 @@ protected theorem map_apply {G : Type*} [NormedAddCommGroup G] [InnerProductSpac
     (b : OrthonormalBasis ι 𝕜 E) (L : E ≃ₗᵢ[𝕜] G) (i : ι) : b.map L i = L (b i) :=
   rfl
 
+lemma coe_map {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+    (b : OrthonormalBasis ι 𝕜 E) (L : E ≃ₗᵢ[𝕜] G) : ⇑(b.map L) = L ∘ b := rfl
+
 @[simp]
 protected theorem toBasis_map {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
     (b : OrthonormalBasis ι 𝕜 E) (L : E ≃ₗᵢ[𝕜] G) :
@@ -969,6 +972,12 @@ theorem OrthonormalBasis.det_to_matrix_orthonormalBasis : ‖a.toBasis.det b‖ 
   rw [star_def, RCLike.mul_conj] at this
   norm_cast at this
   rwa [pow_eq_one_iff_of_nonneg (norm_nonneg _) two_ne_zero] at this
+
+open OrthonormalBasis in
+theorem LinearIsometryEquiv.toMatrix_mem_unitaryGroup {G : Type*} [NormedAddCommGroup G]
+    [InnerProductSpace 𝕜 G] (f : E ≃ₗᵢ[𝕜] G) (b : OrthonormalBasis ι 𝕜 E)
+    (b' : OrthonormalBasis ι 𝕜 G) : f.toMatrix b.toBasis b'.toBasis ∈ Matrix.unitaryGroup ι 𝕜 := by
+  simp [LinearMap.toMatrix_eq_basisToMatrix, ← coe_map, toMatrix_orthonormalBasis_mem_unitary]
 
 end
 
