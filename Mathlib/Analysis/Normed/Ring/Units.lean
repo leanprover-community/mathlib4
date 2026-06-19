@@ -66,19 +66,6 @@ than `‖x⁻¹‖⁻¹` from `x` is a unit. Here we construct its `Units` struc
 def ofNearby (x : Rˣ) (y : R) (h : ‖y - x‖ < ‖(↑x⁻¹ : R)‖⁻¹) : Rˣ :=
   (x.add (y - x : R) h).copy y (by simp) _ rfl
 
-/-- The group of units of a normed ring with summable geometric series is an open subset
-of the ring. -/
-protected theorem isOpen : IsOpen { x : R | IsUnit x } := by
-  nontriviality R
-  rw [Metric.isOpen_iff]
-  rintro _ ⟨x, rfl⟩
-  refine ⟨‖(↑x⁻¹ : R)‖⁻¹, _root_.inv_pos.mpr (Units.norm_pos x⁻¹), fun y hy ↦ ?_⟩
-  rw [mem_ball_iff_norm] at hy
-  exact (x.ofNearby y hy).isUnit
-
-protected theorem nhds (x : Rˣ) : { x : R | IsUnit x } ∈ 𝓝 (x : R) :=
-  IsOpen.mem_nhds Units.isOpen x.isUnit
-
 end Units
 
 namespace nonunits
@@ -87,10 +74,6 @@ namespace nonunits
 complement of the ball of radius `1` centered at `1 : R`. -/
 theorem subset_compl_ball : nonunits R ⊆ (Metric.ball (1 : R) 1)ᶜ := fun x hx h₁ ↦ hx <|
   sub_sub_self 1 x ▸ (Units.oneSub (1 - x) (by rwa [mem_ball_iff_norm'] at h₁)).isUnit
-
--- The `nonunits` in a normed ring with summable geometric series are a closed set
-protected theorem isClosed : IsClosed (nonunits R) :=
-  Units.isOpen.isClosed_compl
 
 end nonunits
 
@@ -183,15 +166,7 @@ theorem inverse_add_norm_diff_second_order (x : Rˣ) :
   simp only [sum_range_succ, sum_range_zero, zero_add, pow_zero, pow_one, add_mul, one_mul,
     ← sub_sub, neg_mul, sub_neg_eq_add]
 
-/-- The function `Ring.inverse` is continuous at each unit of `R`. -/
-theorem inverse_continuousAt (x : Rˣ) : ContinuousAt inverse (x : R) := by
-  have h_is_o : (fun t : R => (↑x + t)⁻¹ʳ - ↑x⁻¹) =o[𝓝 0] (fun _ => 1 : R → ℝ) :=
-    (inverse_add_norm_diff_first_order x).trans_isLittleO (isLittleO_id_const one_ne_zero).norm_left
-  have h_lim : Tendsto (fun y : R => y - x) (𝓝 x) (𝓝 0) := by
-    refine tendsto_zero_iff_norm_tendsto_zero.mpr ?_
-    exact tendsto_iff_norm_sub_tendsto_zero.mp tendsto_id
-  rw [ContinuousAt, tendsto_iff_norm_sub_tendsto_zero, inverse_unit]
-  simpa [Function.comp_def] using h_is_o.norm_left.tendsto_div_nhds_zero.comp h_lim
+@[deprecated (since := "2026-06-19")] alias inverse_continuousAt := Ring.inverse_continuousAt
 
 /-- In a normed ring with summable geometric series, the coercion from `Rˣ` (equipped with the
 induced topology from the embedding in `R × R`) to `R` is an open embedding.
@@ -200,9 +175,24 @@ You can use this fact using the lemma `Units.isOpenEmbedding_val` that is part o
 `IsOpenUnits` API. -/
 instance instIsOpenUnits : IsOpenUnits R where
   isOpenEmbedding_unitsVal := {
-    toIsEmbedding := Units.isEmbedding_val_mk'
-      (fun _ ⟨u, hu⟩ ↦ hu ▸ (inverse_continuousAt u).continuousWithinAt) Ring.inverse_unit
-    isOpen_range := Units.isOpen }
+    toIsEmbedding := by
+      refine Units.isEmbedding_val_mk' (fun _ ⟨x, hx⟩ ↦ hx ▸ ContinuousAt.continuousWithinAt ?_)
+        Ring.inverse_unit
+      have h_is_o : (fun t : R => (↑x + t)⁻¹ʳ - ↑x⁻¹) =o[𝓝 0] (fun _ => 1 : R → ℝ) :=
+        (inverse_add_norm_diff_first_order x).trans_isLittleO
+          (isLittleO_id_const one_ne_zero).norm_left
+      have h_lim : Tendsto (fun y : R => y - x) (𝓝 x) (𝓝 0) := by
+        refine tendsto_zero_iff_norm_tendsto_zero.mpr ?_
+        exact tendsto_iff_norm_sub_tendsto_zero.mp tendsto_id
+      rw [ContinuousAt, tendsto_iff_norm_sub_tendsto_zero, inverse_unit]
+      simpa [Function.comp_def] using h_is_o.norm_left.tendsto_div_nhds_zero.comp h_lim
+    isOpen_range := by
+      nontriviality R
+      rw [Metric.isOpen_iff]
+      rintro _ ⟨x, rfl⟩
+      refine ⟨‖(↑x⁻¹ : R)‖⁻¹, _root_.inv_pos.mpr (Units.norm_pos x⁻¹), fun y hy ↦ ?_⟩
+      rw [mem_ball_iff_norm] at hy
+      exact (x.ofNearby y hy).isUnit }
 
 end NormedRing
 
@@ -213,20 +203,5 @@ theorem eq_top_of_norm_lt_one (I : Ideal R) {x : R} (hxI : x ∈ I) (hx : ‖1 -
   let u := Units.oneSub (1 - x) hx
   I.eq_top_iff_one.mpr <| by
     simpa only [show u.inv * x = 1 by simp [u]] using I.mul_mem_left u.inv hxI
-
-/-- The `Ideal.closure` of a proper ideal in a normed ring with summable
-geometric series is proper. -/
-theorem closure_ne_top (I : Ideal R) (hI : I ≠ ⊤) : I.closure ≠ ⊤ := by
-  have h := closure_minimal (coe_subset_nonunits hI) nonunits.isClosed
-  simpa only [I.closure.eq_top_iff_one, Ne] using! mt (@h 1) one_notMem_nonunits
-
-/-- The `Ideal.closure` of a maximal ideal in a normed ring with summable
-geometric series is the ideal itself. -/
-theorem IsMaximal.closure_eq {I : Ideal R} (hI : I.IsMaximal) : I.closure = I :=
-  (hI.eq_of_le (I.closure_ne_top hI.ne_top) subset_closure).symm
-
-/-- Maximal ideals in normed rings with summable geometric series are closed. -/
-instance IsMaximal.isClosed {I : Ideal R} [hI : I.IsMaximal] : IsClosed (I : Set R) :=
-  isClosed_of_closure_subset <| Eq.subset <| congr_arg ((↑) : Ideal R → Set R) hI.closure_eq
 
 end Ideal

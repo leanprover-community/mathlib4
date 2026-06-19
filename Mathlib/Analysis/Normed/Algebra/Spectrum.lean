@@ -501,7 +501,7 @@ lemma _root_.Subalgebra.isUnit_of_isUnit_val_of_eventually {l : Filter S} {a : S
     IsUnit a := by
   have hla₂ : Tendsto Ring.inverse (map (val S) l) (𝓝 (↑ha.unit⁻¹ : A)) := by
     rw [← Ring.inverse_unit]
-    exact (NormedRing.inverse_continuousAt _).tendsto.comp <|
+    exact (Ring.inverse_continuousAt _).tendsto.comp <|
       continuousAt_subtype_val.tendsto.comp <| map_mono hla
   suffices mem : (↑ha.unit⁻¹ : A) ∈ S by
     refine ⟨⟨a, ⟨(↑ha.unit⁻¹ : A), mem⟩, ?_, ?_⟩, rfl⟩

@@ -5,9 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.Algebra.ContinuousMonoidHom
-public import Mathlib.Topology.Algebra.Group.Basic
+public import Mathlib.RingTheory.Ideal.Nonunits
 public import Mathlib.Topology.Algebra.GroupWithZero
+public import Mathlib.Topology.Algebra.Ring.Ideal
 
 /-!
 
@@ -55,7 +55,46 @@ lemma isEmbedding_val : IsEmbedding (Units.val : Mˣ → M) := isOpenEmbedding_v
 
 lemma isInducing_val : IsInducing (Units.val : Mˣ → M) := isOpenEmbedding_val.isInducing
 
+protected theorem isOpen : IsOpen { a : M | IsUnit a } :=
+  isOpenEmbedding_val.isOpen_range
+
+protected theorem nhds (a : Mˣ) : { a : M | IsUnit a } ∈ 𝓝 (a : M) :=
+  IsOpen.mem_nhds Units.isOpen a.isUnit
+
+protected theorem _root_.nonunits.isClosed : IsClosed (nonunits M) :=
+  Units.isOpen.isClosed_compl
+
 end Units
+
+/-- In rings `R` with open units, `Ring.inverse : R → R` is continuous on the set of units. -/
+lemma Ring.inverse_continuousOn {M₀ : Type*} [MonoidWithZero M₀] [TopologicalSpace M₀]
+    [IsOpenUnits M₀] : ContinuousOn Ring.inverse { a : M₀ | IsUnit a} := by
+  refine (Set.image_univ ▸ Units.isInducing_val.continuousOn_image_iff).2 <| continuousOn_univ.2 ?_
+  simpa [Function.comp_def] using Units.continuous_coe_inv
+
+/-- In rings `R` with open units, `Ring.inverse : R → R` is continuous at every unit `a : Rˣ`. -/
+lemma Ring.inverse_continuousAt {M₀ : Type*} [MonoidWithZero M₀] [TopologicalSpace M₀]
+    [IsOpenUnits M₀] (a : M₀ˣ) : ContinuousAt Ring.inverse (a : M₀) :=
+  Ring.inverse_continuousOn.continuousAt (Units.nhds a)
+
+namespace Ideal
+
+variable {R : Type*} [Ring R] [TopologicalSpace R] [IsTopologicalRing R] [IsOpenUnits R]
+
+/-- The `Ideal.closure` of a proper ideal in ring with open units is proper. -/
+theorem closure_ne_top (I : Ideal R) (hI : I ≠ ⊤) : I.closure ≠ ⊤ := by
+  have h := closure_minimal (coe_subset_nonunits hI) nonunits.isClosed
+  simpa only [I.closure.eq_top_iff_one, Ne] using! mt (@h 1) one_notMem_nonunits
+
+/-- The `Ideal.closure` of a maximal ideal in a ring with open units is the ideal itself. -/
+theorem IsMaximal.closure_eq {I : Ideal R} (hI : I.IsMaximal) : I.closure = I :=
+  (hI.eq_of_le (I.closure_ne_top hI.ne_top) subset_closure).symm
+
+/-- Maximal ideals in rings with open units are closed. -/
+instance IsMaximal.isClosed {I : Ideal R} [hI : I.IsMaximal] : IsClosed (I : Set R) :=
+  isClosed_of_closure_subset <| Eq.subset <| congr_arg ((↑) : Ideal R → Set R) hI.closure_eq
+
+end Ideal
 
 /-- Transport an `IsOpenUnits`-instance along an isomorphism. -/
 lemma ContinuousMulEquiv.isOpenUnits {M N : Type*} [TopologicalSpace M] [TopologicalSpace N]
