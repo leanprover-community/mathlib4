@@ -857,8 +857,8 @@ theorem prod_inf_prod (s₁ s₂ : AffineSubspace k P₁) (t₁ t₂ : AffineSub
 
 theorem _root_.vectorSpan_prod {s : Set P₁} {t : Set P₂} (hs : s.Nonempty) (ht : t.Nonempty) :
     vectorSpan k (s ×ˢ t) = (vectorSpan k s).prod (vectorSpan k t) := by
-  simpa only [vectorSpan_def, Set.prod_vsub_prod]
-    using Submodule.span_prod_eq k V₁ V₂ hs.zero_mem_vsub ht.zero_mem_vsub
+  rw [vectorSpan_def, Set.prod_vsub_prod]
+  exact Submodule.span_prod_eq k V₁ V₂ hs.zero_mem_vsub ht.zero_mem_vsub
 
 theorem direction_prod {s : AffineSubspace k P₁} {t : AffineSubspace k P₂}
     (hs : s ≠ ⊥) (ht : t ≠ ⊥) :

@@ -202,6 +202,14 @@ protected theorem Convex.closure {s : Set E} (hs : Convex 𝕜 s) : Convex 𝕜 
     (continuous_fst.const_smul _).add (continuous_snd.const_smul _)
   show f x y ∈ closure s from map_mem_closure₂ hf hx hy fun _ hx' _ hy' => hs hx' hy' ha hb hab
 
+lemma convexHull_interior_subset [ZeroLEOneClass 𝕜] (s : Set E) :
+    convexHull 𝕜 (interior s) ⊆ interior (convexHull 𝕜 s) :=
+  convexHull_min (interior_mono <| subset_convexHull 𝕜 s) (convex_convexHull 𝕜 s).interior
+
+protected theorem IsOpen.convexHull [ZeroLEOneClass 𝕜] {s : Set E} (hs : IsOpen s) :
+    IsOpen (convexHull 𝕜 s) := by
+  simpa [← subset_interior_iff_isOpen, hs.interior_eq] using convexHull_interior_subset s
+
 end ContinuousConstSMul
 
 section ContinuousConstSMul
