@@ -24,21 +24,13 @@ e : Prime (2 * n + 1)
 ⊢ Prime (n + n + 1)
 ```
 
-the tactic `convert e using 2` will change the goal to
+the tactic `convert e` will change the goal to
 
 ```lean
 ⊢ n + n = 2 * n
 ```
 
 In this example, the new goal can be solved using `ring`.
-
-The `using 2` indicates it should iterate the congruence algorithm up to two times,
-where `convert e` would use an unrestricted number of iterations and lead to two
-impossible goals: `⊢ HAdd.hAdd = HMul.hMul` and `⊢ n = 2`.
-
-A variant configuration is `convert (config := .unfoldSameFun) e`, which only equates function
-applications for the same function (while doing so at the higher `default` transparency).
-This gives the same goal of `⊢ n + n = 2 * n` without needing `using 2`.
 
 The `convert` tactic applies congruence lemmas eagerly before reducing,
 therefore it can fail in cases where `exact` succeeds:
@@ -47,7 +39,7 @@ def p (n : ℕ) := True
 example (h : p 0) : p 1 := by exact h -- succeeds
 example (h : p 0) : p 1 := by convert h -- fails, with leftover goal `1 = 0`
 ```
-Limiting the depth of recursion can help with this. For example, `convert h using 1` will work
+Limiting the depth of recursion can help with this. For example, `convert h using 0` will work
 in this case.
 
 The syntax `convert ← e` will reverse the direction of the new goals
@@ -89,20 +81,11 @@ structure Convert.CheapConfig extends Congr!.Config where
   -/
   preTransparency := .instances
   postTransparency := .reducible
+  partialApp := false
+  sameFun := true
 
 /-- Internal elaborator for `Convert.CheapConfig`: use `Convert.elabConfig` instead. -/
 declare_config_elab Convert.elabCheapConfig Convert.CheapConfig
-
-/-- A configuration option that makes `convert` do the sorts of aggressive unfoldings that `congr`
-does while also similarly preventing `convert` from considering partial applications or congruences
-between different functions being applied.
-
-Note that `convert (config := .unfoldSameFun)` and `convert! (config := .unfoldSameFun)`
-currently do the same thing since `.unfoldSameFun` runs at default transparency always.
-This may change in the future, if `convert!` affects other options too.
--/
-abbrev Convert.CheapConfig.unfoldSameFun : Convert.CheapConfig :=
-  { Congr!.Config.unfoldSameFun with }
 
 /-- Configuration for the `convert!` family of tactics.
 This is `Convert.CheapConfig` (used by `convert` without exclamation mark) with different,
@@ -117,25 +100,13 @@ example the following call runs at `.instances` transparency.
 convert! (postTransparency := .instances)
 ```
 -/
-structure Convert.ExpensiveConfig extends Convert.CheapConfig where
+structure Convert.ExpensiveConfig extends Congr!.Config where
   -- TODO: also enable this in the future?
   -- preTransparency := .default
   -- transparency := .default
-  postTransparency := .default
 
 /-- Internal elaborator for `Convert.ExpensiveConfig`: use `Convert.elabConfig` instead. -/
 declare_config_elab Convert.elabExpensiveConfig Convert.ExpensiveConfig
-
-/-- A configuration option that makes `convert!` do the sorts of aggressive unfoldings that `congr`
-does while also similarly preventing `convert!` from considering partial applications or congruences
-between different functions being applied.
-
-Note that `convert (config := .unfoldSameFun)` and `convert! (config := .unfoldSameFun)`
-currently do the same thing since `.unfoldSameFun` runs at default transparency always.
-This may change in the future, if `convert!` affects other options too.
--/
-abbrev Convert.ExpensiveConfig.unfoldSameFun : Convert.ExpensiveConfig :=
-  { Congr!.Config.unfoldSameFun with }
 
 /-- Configuration elaborator for the `convert`/`convert!` family of tactics.
 
@@ -205,9 +176,10 @@ pattern-matched, like `rintro` would, using the `with` keyword.
 See also `convert_to t`, where `t` specifies the expected type, instead of a proof term of type `t`.
 In other words, `convert_to t` works like `convert (?_ : t)`. Both tactics use the same options.
 
-* `convert! e` uses default transparency, rather than reducible, when solving side goals.
+* `convert! e` uses default transparency, rather than reducible, when solving side goals, and
+  it tries to apply congruence even if the two expressions do not have the same head constant.
 * `convert ← e` creates equality goals in the opposite direction (with the goal type on the right).
-* `convert e using n`, where `n` is a positive numeral, controls the depth with which congruence is
+* `convert e using n`, where `n` is a numeral, controls the depth with which congruence is
   applied. For example, if the main goal is `⊢ Prime (n + n + 1)` and `e : Prime (2 * n + 1)`, then
   `convert e using 2` results in one goal, `⊢ n + n = 2 * n`, and `convert e using 3` (or more)
   results in two (impossible) goals `⊢ HAdd.hAdd = HMul.hMul` and `⊢ n = 2`.
@@ -220,10 +192,9 @@ In other words, `convert_to t` works like `convert (?_ : t)`. Both tactics use t
 Examples:
 
 ```lean
--- `convert using` controls the depth of congruence.
 example {n : ℕ} (e : Prime (2 * n + 1)) :
     Prime (n + n + 1) := by
-  convert e using 2
+  convert e
   -- One goal: ⊢ n + n = 2 * n
   ring
 
@@ -238,7 +209,7 @@ example (h : p 0) : p 1 := by
 -- `convert with` names introduced variables.
 example (p q : Nat → Prop) (h : ∀ ε > 0, p ε) :
     ∀ ε > 0, q ε := by
-  convert h using 2 with ε hε
+  convert h with ε hε
   -- Goal now looks like:
   -- hε : ε > 0
   -- ⊢ q ε ↔ p ε
