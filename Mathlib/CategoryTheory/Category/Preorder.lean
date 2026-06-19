@@ -81,7 +81,7 @@ theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
   h.down.down
 
 set_option linter.defProp false in
-@[nolint defLemma, inherit_doc leOfHom]
+@[inherit_doc leOfHom]
 abbrev _root_.Quiver.Hom.le := @leOfHom
 
 @[simp]
