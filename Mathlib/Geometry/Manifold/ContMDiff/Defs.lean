@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 public import Mathlib.Geometry.Manifold.LocalInvariantProperties
-import Mathlib.Analysis.Calculus.ContDiff.Defs
 
 /-!
 # `C^n` functions between manifolds
