@@ -273,6 +273,15 @@ def filterExists (hashMap : ModuleHashMap) (keep : Bool) : IO ModuleHashMap :=
 def hashes (hashMap : ModuleHashMap) : Std.TreeSet UInt64 compare :=
   hashMap.fold (init := ∅) fun acc _ hash => acc.insert hash
 
+/-- Keep only the entries whose hash is not in `served`. Between download rounds,
+`served` is the set a container just supplied, so the result is what the next
+container must still try. The decision is purely on `served`, never on local
+`.ltar` presence, so a forced re-download keeps falling through to later
+containers for files that happen to be cached already. -/
+def withoutHashes (hashMap : ModuleHashMap) (served : Std.HashSet UInt64) : ModuleHashMap :=
+  hashMap.fold (init := ∅) fun acc mod hash =>
+    if served.contains hash then acc else acc.insert mod hash
+
 end ModuleHashMap
 
 /--

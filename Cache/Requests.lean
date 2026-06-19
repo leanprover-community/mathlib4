@@ -527,8 +527,11 @@ def monitorCurl (args : Array String) (size : Nat)
     (caption : String) (speedVar : String) (removeOnError := false)
     (decompConfig : Option DecompConfig := none)
     (treatForbiddenAsMiss : Bool := false)
-    (treatExistsAsSkip : Bool := false) : IO TransferState := do
+    (treatExistsAsSkip : Bool := false) : IO (TransferState × Std.HashSet UInt64) := do
   let useAnsi := (← IO.getEnv "TERM").isSome
+  -- Hashes of the files this pass fetched, used to decide what the next
+  -- container in the chain still needs to retry.
+  let servedRef ← IO.mkRef (∅ : Std.HashSet UInt64)
   let mkStatus (s : TransferState) : String := Id.run do
     let speedStr :=
       if s.speed != 0 then
@@ -561,9 +564,11 @@ def monitorCurl (args : Array String) (size : Nat)
             if (← System.FilePath.pathExists fn) && fn.endsWith ".part" then
               let finalPath := (fn.dropEnd 5).copy
               IO.FS.rename fn finalPath
+              let hash? := hashFromFileName finalPath
+              if let some hash := hash? then servedRef.modify (·.insert hash)
               -- Add to decompression queue if enabled
               if let some config := decompConfig then
-                let some hash := hashFromFileName finalPath | do
+                let some hash := hash? | do
                   IO.eprintln s!"Warning: Failed to extract hash from filename: {finalPath}"
                   decompFailed := decompFailed + 1
                 let some mod := config.hashToMod[hash]? | do
@@ -633,18 +638,19 @@ def monitorCurl (args : Array String) (size : Nat)
   if s.done > 0 then
     -- to avoid confusingly moving on without finishing the count
     IO.eprintln (mkStatus s)
-  return s
+  return (s, ← servedRef.get)
 
-/-- Run one container's download pass for the given hash map. Returns the
-`TransferState` produced by `monitorCurl` (or a synthesized empty state in
-serial mode). Side effect: any files successfully fetched are written to
-`CACHEDIR` with their final names. -/
+/-- Run one container's download pass for the given hash map. Returns the set of
+hashes it fetched — so the caller can carry the rest to the next container — and
+the `TransferState` from `monitorCurl` (a synthesized empty state in serial
+mode). Side effect: any files successfully fetched are written to `CACHEDIR` with
+their final names. -/
 private def downloadFilesFromContainer
     (container : Option Container) (repo containerURL : String)
     (hashMap : IO.ModuleHashMap)
     (parallel : Bool) (decompConfig : Option DecompConfig)
     (scope? : Option String) :
-    IO (Nat × TransferState) := do
+    IO (Std.HashSet UInt64 × TransferState) := do
   let size := hashMap.size
   if parallel then
     IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent container repo containerURL hashMap scope?)
@@ -657,16 +663,17 @@ private def downloadFilesFromContainer
     -- of retirement; treat that as a miss so the chain stays quiet for clients
     -- whose chain still lists it.
     let treatForbiddenAsMiss := container == some Container.legacy
-    let s ← monitorCurl args size "Downloaded" "speed_download" (removeOnError := true)
+    let (s, served) ← monitorCurl args size "Downloaded" "speed_download" (removeOnError := true)
       decompConfig (treatForbiddenAsMiss := treatForbiddenAsMiss)
     IO.FS.removeFile IO.CURLCFG
-    return (s.failed, s)
+    return (served, s)
   else
     let r ← hashMap.foldM (init := []) fun acc _ hash => do
-      pure <| (← IO.asTask do downloadFile container repo containerURL hash scope?) :: acc
-    let failed := r.foldl (init := 0) fun f t => if let .ok true := t.get then f else f + 1
+      pure <| (hash, ← IO.asTask do downloadFile container repo containerURL hash scope?) :: acc
+    let served := r.foldl (init := (∅ : Std.HashSet UInt64)) fun acc (hash, t) =>
+      if let .ok true := t.get then acc.insert hash else acc
     let emptyState : TransferState := ⟨0, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
-    return (failed, emptyState)
+    return (served, emptyState)
 
 /-- Expand the trust-ordered container list into the concrete download rounds to
 run, each carrying the SHA scope to read at. A round is
@@ -749,6 +756,8 @@ def downloadFiles
   let unsafeMode := !unsafeScopes.isEmpty
   let mut remaining := hashMap
   let mut finalState : TransferState := ⟨0, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
+  -- Hard transfer failures (not 404 misses) drive the exit code; misses are
+  -- normal and instead surface as the "not found" hint keyed on `remaining`.
   let mut downloadFailed := 0
   -- For the `--unsafe` summary: how many files each scoped (forks) round supplied,
   -- attributed by the drop in `remaining` across that round.
@@ -758,13 +767,14 @@ def downloadFiles
     let scopeNote := match roundScope? with | some s => s!" (scope {s})" | none => ""
     IO.println s!"Attempting to download {remaining.size} file(s) from {repo} cache at {url}{scopeNote}"
     let before := remaining.size
-    let (failed, s) ← downloadFilesFromContainer container? repo url remaining parallel decompConfig roundScope?
-    -- Carry forward the decompression-related state across container rounds.
-    -- Counter fields (success/failed/done) reflect only the last round; we
-    -- aggregate `downloadFailed` separately below.
+    let (served, s) ← downloadFilesFromContainer container? repo url remaining parallel decompConfig roundScope?
+    -- Keep the latest round's pipeline state and transfer-failure count for the
+    -- finalization and exit-code logic below. Drop the files this round served so
+    -- the next container only retries genuine misses, regardless of what is
+    -- already on disk.
     finalState := s
-    downloadFailed := failed
-    remaining ← remaining.filterExists false
+    downloadFailed := s.failed
+    remaining := remaining.withoutHashes served
     if unsafeMode then
       if let some sha := roundScope? then
         scopeServed := scopeServed.push (sha, before - remaining.size)
@@ -782,7 +792,7 @@ def downloadFiles
       if remaining.size > 0 then
         IO.eprintln s!"  {remaining.size} file(s) still missing after all scopes."
 
-  if warnOnMissing && downloadFailed > 0 && parallel then
+  if warnOnMissing && !remaining.isEmpty && parallel then
     IO.eprintln "Warning: some files were not found in the cache."
     IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
     IO.eprintln ""
@@ -1049,7 +1059,7 @@ def putFilesAbsolute
       "-X", "PUT", "--parallel",
       "--retry", "5", -- there seem to be some intermittent failures
       "--write-out", "%{json}\n", "--config", tempConfigFilePath.toString]
-    let s ← monitorCurl args size "Uploaded" "speed_upload" (removeOnError := false)
+    let (s, _) ← monitorCurl args size "Uploaded" "speed_upload" (removeOnError := false)
       (decompConfig := none) (treatExistsAsSkip := !overwrite)
     IO.FS.removeFile tempConfigFilePath
     -- Surface genuine upload failures. Already-present blobs (409/412 on a

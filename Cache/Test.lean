@@ -974,6 +974,28 @@ def test_expandDownloadRounds : IO Unit := do
 
 end UnsafeRounds
 
+section DownloadRounds
+
+/-- `withoutHashes` drives the cross-container fallthrough: it keeps the files a
+round did not serve, deciding only on the served set and never on local `.ltar`
+presence, so a forced re-download still falls through to later containers for
+files already cached. -/
+def test_withoutHashes : IO Unit := do
+  IO.println "withoutHashes:"
+  let hm : IO.ModuleHashMap :=
+    (∅ : IO.ModuleHashMap) |>.insert `Mod.A 1 |>.insert `Mod.B 2 |>.insert `Mod.C 3
+  let served := (∅ : Std.HashSet UInt64).insert 2
+  let r := hm.withoutHashes served
+  assert "drops a served file" (!r.contains `Mod.B)
+  assert "keeps the unserved files" (r.contains `Mod.A && r.contains `Mod.C)
+  assert "keeps exactly the unserved entries" (r.size == 2)
+  assert "nothing served keeps everything"
+    ((hm.withoutHashes (∅ : Std.HashSet UInt64)).size == 3)
+  let allServed := (∅ : Std.HashSet UInt64).insert 1 |>.insert 2 |>.insert 3
+  assert "all served leaves nothing to retry" ((hm.withoutHashes allServed).isEmpty)
+
+end DownloadRounds
+
 def runAll : IO Unit := do
   test_Container_name
   test_Container_parse
@@ -1002,6 +1024,7 @@ def runAll : IO Unit := do
   test_isCacheMissStatus
   test_isAlreadyPresentStatus
   test_expandDownloadRounds
+  test_withoutHashes
 
 end Cache.Test
 
