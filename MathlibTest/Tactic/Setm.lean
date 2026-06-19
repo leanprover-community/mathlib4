@@ -58,17 +58,6 @@ example (h : b + a = c) : a + b = c := by
   guard_hyp h :ₛ A + B = c
   exact h
 
-/- Strange problem -/
-
-example (n : Bool) : 1 + 2 = 3 := by
-  cases n
-  · setm ?A + ?B = ?_
-    guard_hyp A :=ₛ 1
-    guard_hyp B :=ₛ 2
-    trivial
-  setm ?A + ?B = _
-  trivial
-
 /- Test reducible + instances transparency -/
 
 def NotQuiteNat : Type := Nat

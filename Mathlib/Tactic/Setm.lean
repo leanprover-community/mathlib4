@@ -12,6 +12,12 @@ public meta import Lean.Elab.Tactic.Rewrite
 # The `setm` tactic
 
 This module defines the `setm` tactic.
+
+The `setm` tactic ("`set` with matching") matches a pattern containing named holes to the type of
+a target, and creates local declarations for the matched named holes. By default, the target is the
+goal, and it can be selected to be a local declaration via the `using` syntax. Optionally, with the
+syntax `at loc`, it also rewrites at locations `loc` to replace the occurrances of the matched
+expressions with the newly-introduced local declarations.
 -/
 
 meta section
@@ -39,13 +45,13 @@ partial def replaceWithMVars (stx : Term) : SetMReplaceM Term := do
   return ⟨stx⟩
 
 /--
-The `setm` tactic ("`set` with matching") matches a pattern containing named holes to the type of
-a target the goalor a local declaration, via the `using` syntax below.
-
-
-local declaration (using the `at h` syntax) or the main goal, and introduces `let` bound variables
-representing subexpressions whose location corresponds to the given named hole. These variables are
-also substituted into the type of declaration (or main goal).
+* `setm expr`, where `expr` is a term containing named holes (like `?a`) will match `expr` to the
+  current goal and create local declarations assigning the hole names to their inferred value.
+  Moreover, it will replace the matches with their new names.
+* `setm expr using h` is like `setm expr`, except that `expr` is matched with the local hypothesis
+  `h` instead.
+* `setm expr [using h] at loc` is like the above, except that it also rewrites the newly-introduced
+  local declarations at the locations `loc`.
 -/
 syntax (name := setM) "setm " term ("using" ident)? (Parser.Tactic.location)? : tactic
 
