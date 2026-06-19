@@ -9,13 +9,13 @@ public import Mathlib.MeasureTheory.Measure.Restrict
 public import Mathlib.Topology.DiscreteSubset
 
 /-!
-# Measures having no atoms
-
-A measure `μ` has no atoms if the measure of each singleton is zero.
+# Measures having value zero on singletons
 
 ## TODO
 
-Should `NullSingletonClass` be redefined as `∀ s, 0 < μ s → ∃ t ⊆ s, 0 < μ t ∧ μ t < μ s`?
+Add a `NoAtoms` class defined as
+`∀ s, MeasurableSet s → 0 < μ s → ∃ t ⊆ s, MeasurableSet t ∧ 0 < μ t ∧ μ t < μ s`.
+This implies `NullSingletonClass` but the converse is not true.
 -/
 
 public section
@@ -26,11 +26,7 @@ open Set Measure Filter TopologicalSpace
 
 variable {α : Type*} {m0 : MeasurableSpace α} {μ : Measure α} {s : Set α}
 
-/-- Measure `μ` *has no atoms* if the measure of each singleton is zero.
-
-NB: Wikipedia assumes that for any measurable set `s` with positive `μ`-measure,
-there exists a measurable `t ⊆ s` such that `0 < μ t < μ s`. While this implies `μ {x} = 0`,
-the converse is not true. -/
+/-- Measure `μ` has value zero on singletons. -/
 class NullSingletonClass {m0 : MeasurableSpace α} (μ : Measure α) : Prop where
   measure_singleton : ∀ x, μ {x} = 0
 
