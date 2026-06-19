@@ -37,6 +37,11 @@ including inference of the model with corners.
 | `mfderiv% f x`           | `mfderiv I J f x`                   |
 | `HasMFDerivAt[s] f x f'` | `HasMFDerivWithinAt I J f s x f'`   |
 | `HasMFDerivAt% f x f'`   | `HasMFDerivAt I J f x f'`           |
+| `TangentSpace% x`        | `TangentSpace I x`                  |
+| `tangentMap[s] f`        | `tangentMapWithin I J f s`          |
+| `tangentMap% f`          | `tangentMap I J f`                  |
+| `UniqueMDiff[s]`         | `UniqueMDiffOn I s`                 |
+| `UniqueMDiffAt[s] x`     | `UniqueMDiffWithinAt I s x`         |
 
 In each of these cases, the models with corners are inferred from the domain and codomain of `f`.
 The search for models with corners uses the local context and is (almost) only based on expression
@@ -941,6 +946,52 @@ scoped elab:max "HasMFDerivAt%" ppSpace
   let (srcI, tgtI) ← findModels ef none
   mkAppM ``HasMFDerivAt #[srcI, tgtI, ef, ex, ef']
 
+/-- `TangentSpace% x` elaborates to `TangentSpace I x`,
+trying to determine `I` from the local context. -/
+scoped elab:max "TangentSpace%" ppSpace x:term:arg : term => do
+  let ex ← Term.elabTerm x none
+  let extype ← instantiateMVars <| ← inferType ex
+  let src ← findModel extype
+  mkAppM ``TangentSpace #[src, ex]
+
+/-- `tangentMap[s] f` elaborates to `tangentMapWithin I J f s`,
+trying to determine `I` and `J` from the local context. -/
+scoped elab:max "tangentMap[" s:term "]" ppSpace f:term:arg : term => do
+  let es ← Term.elabTerm s none
+  let ef ← ensureIsFunction <|← Term.elabTerm f none
+  let (srcI, tgtI) ← findModels ef none
+  mkAppM ``tangentMapWithin #[srcI, tgtI, ef, es]
+
+/-- `tangentMap% f` elaborates to `tangentMap I J f`,
+trying to determine `I` and `J` from the local context. -/
+scoped elab:max "tangentMap%" ppSpace f:term:arg : term => do
+  let ef ← ensureIsFunction <|← Term.elabTerm f none
+  let (srcI, tgtI) ← findModels ef none
+  mkAppM ``tangentMap #[srcI, tgtI, ef]
+
+/-- `UniqueMDiff[s]` elaborates to `UniqueMDiffOn I s`,
+trying to determine `I` from the local context. -/
+scoped elab:max "UniqueMDiff[" s:term "]" : term => do
+  let es ← Term.elabTerm s none
+  let estype : Expr ← inferType es
+  match_expr estype with
+  | Set α =>
+    let I ← findModel α
+    mkAppM ``UniqueMDiffOn #[I, es]
+  | _ => throwError "`{es}` has type `{estype}` which is not of the form `Set α` for some `α`."
+
+/-- `UniqueMDiffAt[s] x` elaborates to `UniqueMDiffWithinAt I s x`
+trying to determine `I` from the local context.
+The argument `x` can be omitted. -/
+scoped elab:max "UniqueMDiffAt[" s:term "]" : term => do
+  let es ← Term.elabTerm s none
+  let estype : Expr ← inferType es
+  match_expr estype with
+  | Set α =>
+    let I ← findModel α
+    mkAppM ``UniqueMDiffWithinAt #[I, es]
+  | _ => throwError "`{es}` has type `{estype}` which is not of the form `Set α` for some `α`."
+
 end Manifold
 
 section trace
@@ -1099,6 +1150,20 @@ arguments that can use the `T%` elaborator. -/
   catch _ =>
     let fs ← withNaryArg 20 <| delab
     `(MDiffAt[$ss] $fs) >>= annotateGoToSyntaxDef
+
+/-- Delaborator for `UniqueMDiffOn` using the custom elaborator. -/
+@[app_delab UniqueMDiffOn] meta def delabUniqueMDiffOn : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 12 do
+  let ss ← withAppArg delab
+  `(UniqueMDiff[$ss]) >>= annotateGoToSyntaxDef
+
+/-- Delaborator for `UniqueMDiffWithinAt` using the custom elaborator. -/
+@[app_delab UniqueMDiffWithinAt] meta def delabUniqueMDiffWithinAt : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 12 do
+  let ss ← withAppArg delab
+  `(UniqueMDiffAt[$ss]) >>= annotateGoToSyntaxDef
 
 -- TODO: add more delaborators (and tests) for
 -- ContMDiff, ContMDiffOn, ContMDiffAt, ContMDiffWithinAt, HasMFDerivAt, HasMFDerivWithinAt

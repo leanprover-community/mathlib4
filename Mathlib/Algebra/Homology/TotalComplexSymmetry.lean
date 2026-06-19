@@ -129,7 +129,6 @@ lemma totalFlipIso_hom_f_D₂ (j j' : J) :
       K.flip.D₁ c j j' ≫ (K.totalFlipIso c).hom.f j' := by
   apply totalFlipIsoX_hom_D₂
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ιTotal_totalFlipIso_f_hom
     (i₁ : I₁) (i₂ : I₂) (j : J) (h : ComplexShape.π c₂ c₁ c (i₂, i₁) = j) :

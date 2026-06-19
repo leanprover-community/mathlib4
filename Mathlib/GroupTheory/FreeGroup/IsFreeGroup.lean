@@ -72,7 +72,7 @@ variable {ι ι' G H : Type*} [Group G] [Group H]
 the generators. -/
 instance instFunLike : FunLike (FreeGroupBasis ι G) ι G where
   coe b := fun i ↦ b.repr.symm (FreeGroup.of i)
-  coe_injective' := by
+  coe_injective := by
     rintro ⟨b⟩ ⟨b'⟩ hbb'
     have H : (b.symm : FreeGroup ι →* G) = (b'.symm : FreeGroup ι →* G) := by
       ext i; exact congr_fun hbb' i
