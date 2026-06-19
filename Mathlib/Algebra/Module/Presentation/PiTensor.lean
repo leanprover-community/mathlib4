@@ -140,7 +140,7 @@ lemma presInd_var (g₀ : (relations i₀).G)
     simp
   · simp only [Function.subtypeNeLift_of_neq _ _ _ _ hi]
 
-lemma eq_presInd_var (g : ∀ i, (relations i).G):
+lemma eq_presInd_var (g : ∀ i, (relations i).G) :
     (⨂ₜ[R] (i : ι), (solution i).var (g i)) =
       (presInd h i₀ h₀).var ⟨fun i ↦ g i, g i₀⟩ := by
   rw [presInd_var]

@@ -4325,7 +4325,6 @@ public import Mathlib.Data.Set.BooleanAlgebra
 public import Mathlib.Data.Set.Card
 public import Mathlib.Data.Set.Card.Arithmetic
 public import Mathlib.Data.Set.CoeSort
-public import Mathlib.Data.Set.ComplSingletonLift
 public import Mathlib.Data.Set.Constructions
 public import Mathlib.Data.Set.Countable
 public import Mathlib.Data.Set.Defs
