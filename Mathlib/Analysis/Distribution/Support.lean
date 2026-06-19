@@ -6,6 +6,7 @@ Authors: Moritz Doll, Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Distribution.TemperedDistribution
+public import Mathlib.Analysis.Distribution.Distribution
 
 /-! # Support of distributions
 
@@ -169,6 +170,8 @@ end normed
 
 open SchwartzMap Distribution TemperedDistribution
 
+namespace TemperedDistribution
+
 variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℂ F]
 
 variable {f : 𝓢'(E, F)} {s : Set E}
@@ -201,7 +204,7 @@ theorem iteratedLineDerivOp {n : ℕ} (hf : IsVanishingOn f s) (m : Fin n → E)
   | zero =>
     exact hf
   | succ n IH =>
-    exact (IH <| Fin.tail m).lineDerivOp (m 0)
+    exact lineDerivOp (IH <| Fin.tail m) (m 0)
 
 @[fun_prop]
 theorem _root_.TemperedDistribution.isVanishingOn_delta (x : E) :
@@ -244,5 +247,79 @@ theorem dsupport_delta [FiniteDimensional ℝ E] (x : E) :
   exact ⟨h₁', by simp [h₄]⟩
 
 end Support
+
+end TemperedDistribution
+
+/-! ## Distributions -/
+
+open TopologicalSpace Distributions
+
+variable
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
+  {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
+
+variable {f : 𝓓'(Ω, F)} {s : Set E}
+
+namespace IsVanishingOn
+
+open scoped Topology
+
+open LineDeriv
+
+@[fun_prop]
+theorem lineDerivOp (hf : IsVanishingOn f s) (m : E) :
+    IsVanishingOn (∂_{m} f : 𝓓'(Ω, F)) s := by
+  intro u hu
+  simp only [lineDerivOp_apply_apply, map_neg, neg_eq_zero]
+  exact hf (∂_{m} u) <| (tsupport_fderiv_apply_subset ℝ m).trans hu
+
+@[fun_prop]
+theorem iteratedLineDerivOp {n : ℕ} (hf : IsVanishingOn f s) (m : Fin n → E) :
+    IsVanishingOn (∂^{m} f : 𝓓'(Ω, F)) s := by
+  induction n with
+  | zero =>
+    exact hf
+  | succ n IH =>
+    exact lineDerivOp (IH <| Fin.tail m) (m 0)
+
+@[fun_prop]
+theorem _root_.Distribution.isVanishingOn_delta (x : E) :
+    IsVanishingOn (Distribution.delta x) {x}ᶜ := by
+  intro u hu
+  rw [Set.subset_compl_singleton_iff] at hu
+  apply image_eq_zero_of_notMem_tsupport hu
+
+end IsVanishingOn
+
+section Support
+
+open LineDeriv
+
+theorem dsupport_lineDerivOp_subset (m : E) : dsupport (∂_{m} f : 𝓓'(Ω, F)) ⊆ dsupport f := by
+  gcongr; fun_prop
+
+theorem dsupport_iteratedLineDerivOp_subset {n : ℕ} (m : Fin n → E) :
+    dsupport (∂^{m} f : 𝓓'(Ω, F)) ⊆ dsupport f := by
+  gcongr; fun_prop
+
+theorem dsupport_delta [FiniteDimensional ℝ E] (x : E) :
+    dsupport (TemperedDistribution.delta x) = {x} := by
+  apply subset_antisymm
+  · intro x' hx'
+    rw [mem_dsupport_iff] at hx'
+    exact hx' {x} (isVanishingOn_delta x) (T1Space.t1 x)
+  rintro x rfl
+  rw [mem_dsupport_iff_forall_exists_ne]
+  intro s hx hs
+  obtain ⟨u, h₁, h₂, h₃, -, h₄⟩ :=
+    exists_contDiff_tsupport_subset (n := ⊤) ((IsOpen.mem_nhds_iff hs).mpr hx)
+  have h₁' : tsupport (Complex.ofRealCLM ∘ u) ⊆ s := (tsupport_comp_subset rfl _).trans h₁
+  have h₂' : HasCompactSupport (Complex.ofRealCLM ∘ u) := h₂.comp_left rfl
+  use h₂'.toSchwartzMap (Complex.ofRealCLM.contDiff.comp h₃)
+  exact ⟨h₁', by simp [h₄]⟩
+
+end Support
+
+
 
 end Distribution
