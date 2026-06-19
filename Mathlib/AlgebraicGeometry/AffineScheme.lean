@@ -884,7 +884,12 @@ def arrowStalkMapIso (f : X ⟶ Y) {x : X} (U : Y.Opens)
     apply IsLocalization.ringHom_ext
       (hU.primeIdealOf ⟨f x, hVU hx⟩).asIdeal.primeCompl
     ext a
-    sorry
+    dsimp [← AlgEquiv.symm_toRingEquiv]
+    simp only [IsLocalization.map_eq, RingHom.id_apply, Localization.localRingHom_to_map,
+      RingHomCompTriple.comp_apply]
+    simp only [RingHom.algebraMap_toAlgebra, Scheme.Hom.germ_stalkMap_apply, Scheme.Hom.appLE,
+      homOfLE_leOfHom, CommRingCat.hom_comp, RingHom.coe_comp, Function.comp_apply,
+      X.presheaf.germ_res_apply]
 
 /-- The basic open set of a section `f` on an affine open as an `X.affineOpens`. -/
 @[simps]

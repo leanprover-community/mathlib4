@@ -91,4 +91,6 @@ lemma DifferentialAlgebra.equiv {A : Type*} [CommRing A] [Differential A]
     letI := Differential.equiv h.toRingEquiv
     DifferentialAlgebra A R :=
   letI := Differential.equiv h.toRingEquiv
-  ⟨fun a ↦ by sorry⟩
+  ⟨fun a ↦ by
+    change (LinearMap.comp ..) _ = _
+    simp [deriv_algebraMap]⟩
