@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Ali Ramsey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ali Ramsey
+Authors: Ali Ramsey, Carles Marín
 -/
 module
 
@@ -27,11 +27,11 @@ In this file we define `HopfAlgebra`, and provide instances for:
 
 * `HopfAlgebra.antipode_one` : the antipode of the unit is the unit.
 * `HopfAlgebra.antipode_mul` : the antipode is an antihomomorphism: `S(ab) = S(b)S(a)`.
+* `HopfAlgebra.eq_antipode_of_convMul_id`, `HopfAlgebra.eq_antipode_of_id_convMul` : the antipode is
+  the unique one-sided convolution inverse of the identity, so the Hopf algebra structure on a
+  bialgebra is unique (if the algebra and coalgebra structures agree, the antipodes agree).
 
 ## TODO
-
-* Uniqueness of Hopf algebra structure on a bialgebra (i.e. if the algebra and coalgebra structures
-  agree then the antipodes must also agree).
 
 * If `A` is commutative then `antipode` is an algebra homomorphism.
 
@@ -183,5 +183,23 @@ noncomputable abbrev ofAlgHom [CommSemiring R] [CommSemiring A] [Bialgebra R A]
     (WithConv.ext <| by
       simpa [← Algebra.TensorProduct.lmul'_comp_map]
         using! congr(($mul_antipode_lTensor_comul).toLinearMap))
+
+section Uniqueness
+
+variable [CommSemiring R] [Semiring A] [HopfAlgebra R A]
+
+/-- The antipode is the unique left convolution inverse of the identity: any `R`-linear map `S`
+with `S ⋆ id = 1` in the convolution monoid equals the antipode. -/
+theorem eq_antipode_of_convMul_id {S : A →ₗ[R] A} (h : toConv S * toConv LinearMap.id = 1) :
+    S = antipode R :=
+  toConv_injective (left_inv_eq_right_inv h (congrArg toConv mul_antipode_lTensor_comul))
+
+/-- The antipode is the unique right convolution inverse of the identity: any `R`-linear map `S`
+with `id ⋆ S = 1` in the convolution monoid equals the antipode. -/
+theorem eq_antipode_of_id_convMul {S : A →ₗ[R] A} (h : toConv LinearMap.id * toConv S = 1) :
+    S = antipode R :=
+  (toConv_injective (left_inv_eq_right_inv (congrArg toConv mul_antipode_rTensor_comul) h)).symm
+
+end Uniqueness
 
 end HopfAlgebra
