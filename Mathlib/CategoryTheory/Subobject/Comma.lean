@@ -3,11 +3,13 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Subobject.WellPowered
-import Mathlib.CategoryTheory.Comma.LocallySmall
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.Limits.Comma
+module
+
+public import Mathlib.CategoryTheory.Subobject.WellPowered
+public import Mathlib.CategoryTheory.Comma.LocallySmall
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+public import Mathlib.CategoryTheory.Limits.Comma
 
 /-!
 # Subobjects in the category of structured arrows
@@ -29,6 +31,8 @@ We also provide the dual results. As usual, we use `Subobject (op A)` for the qu
 `A`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -59,12 +63,14 @@ theorem projectSubobject_mk [HasFiniteLimits C] [PreservesFiniteLimits T]
     (f : P ⟶ A) [Mono f] : projectSubobject (Subobject.mk f) = Subobject.mk f.right :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem projectSubobject_factors [HasFiniteLimits C] [PreservesFiniteLimits T]
     {A : StructuredArrow S T} :
     ∀ P : Subobject A, ∃ q, q ≫ T.map (projectSubobject P).arrow = A.hom :=
   Subobject.ind _ fun P f hf =>
     ⟨P.hom ≫ T.map (Subobject.underlyingIso _).inv, by simp [← T.map_comp]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A subobject of the underlying object of a structured arrow can be lifted to a subobject of
     the structured arrow, provided that there is a morphism making the subobject into a structured
     arrow. -/
@@ -73,6 +79,7 @@ def liftSubobject {A : StructuredArrow S T} (P : Subobject A.right) {q}
     (hq : q ≫ T.map P.arrow = A.hom) : Subobject A :=
   Subobject.mk (homMk P.arrow hq : mk q ⟶ A)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Projecting and then lifting a subobject recovers the original subobject, because there is at
     most one morphism making the projected subobject into a structured arrow. -/
 theorem lift_projectSubobject [HasFiniteLimits C] [PreservesFiniteLimits T]
@@ -88,6 +95,7 @@ theorem lift_projectSubobject [HasFiniteLimits C] [PreservesFiniteLimits T]
         · exact (cancel_mono (T.map f.right)).1 (by dsimp; simpa [← T.map_comp] using hq)
       · exact ext _ _ (by simp))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `A : S → T.obj B` is a structured arrow for `S : D` and `T : C ⥤ D`, then we can explicitly
     describe the subobjects of `A` as the subobjects `P` of `B` in `C` for which `A.hom` factors
     through the image of `P` under `T`. -/
@@ -97,7 +105,7 @@ def subobjectEquiv [HasFiniteLimits C] [PreservesFiniteLimits T] (A : Structured
   invFun P := liftSubobject P.val P.prop.choose_spec
   left_inv _ := lift_projectSubobject _ _
   right_inv P := Subtype.ext (by simp only [liftSubobject, homMk_right, projectSubobject_mk,
-      Subobject.mk_arrow, Subtype.coe_eta])
+      Subobject.mk_arrow])
   map_rel_iff' := by
     apply Subobject.ind₂
     intro P Q f g hf hg
@@ -129,7 +137,7 @@ def projectQuotient [HasFiniteColimits C] [PreservesFiniteColimits S] {A : Costr
   intro P Q f g hf hg i hi
   refine Subobject.mk_eq_mk_of_comm _ _ ((proj S T).mapIso i.unop).op (Quiver.Hom.unop_inj ?_)
   have := congr_arg Quiver.Hom.unop hi
-  simpa using congr_arg CommaMorphism.left this
+  simpa using! congr_arg CommaMorphism.left this
 
 @[simp]
 theorem projectQuotient_mk [HasFiniteColimits C] [PreservesFiniteColimits S]
@@ -138,6 +146,7 @@ theorem projectQuotient_mk [HasFiniteColimits C] [PreservesFiniteColimits S]
     projectQuotient (Subobject.mk f) = Subobject.mk f.unop.left.op :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 theorem projectQuotient_factors [HasFiniteColimits C] [PreservesFiniteColimits S]
     {A : CostructuredArrow S T} :
     ∀ P : Subobject (op A), ∃ q, S.map (projectQuotient P).arrow.unop ≫ q = A.hom :=
@@ -147,6 +156,7 @@ theorem projectQuotient_factors [HasFiniteColimits C] [PreservesFiniteColimits S
       rw [← Category.assoc, ← S.map_comp, ← unop_comp]
       simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A quotient of the underlying object of a costructured arrow can be lifted to a quotient of
     the costructured arrow, provided that there is a morphism making the quotient into a
     costructured arrow. -/
@@ -166,6 +176,8 @@ theorem unop_left_comp_underlyingIso_hom_unop {A : CostructuredArrow S T}
     rw [← Quiver.Hom.unop_op f.unop.left]
   rw [← unop_comp, Subobject.underlyingIso_hom_comp_eq_mk]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Projecting and then lifting a quotient recovers the original quotient, because there is at most
     one morphism making the projected quotient into a costructured arrow. -/
 theorem lift_projectQuotient [HasFiniteColimits C] [PreservesFiniteColimits S]
@@ -193,6 +205,7 @@ theorem unop_left_comp_ofMkLEMk_unop {A : CostructuredArrow S T} {P Q : (Costruc
   rw [← unop_comp]
   simp only [Subobject.ofMkLEMk_comp, Quiver.Hom.unop_op]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `A : S.obj B ⟶ T` is a costructured arrow for `S : C ⥤ D` and `T : D`, then we can
     explicitly describe the quotients of `A` as the quotients `P` of `B` in `C` for which `A.hom`
     factors through the image of `P` under `S`. -/
@@ -210,15 +223,15 @@ def quotientEquiv [HasFiniteColimits C] [PreservesFiniteColimits S] (A : Costruc
     · refine (homMk (Subobject.ofMkLEMk _ _ h).unop ((cancel_epi (S.map g.unop.left)).1 ?_)).op
       dsimp
       simp only [← S.map_comp_assoc, unop_left_comp_ofMkLEMk_unop, unop_op, CommaMorphism.w,
-        Functor.const_obj_obj, right_eq_id, Functor.const_obj_map, Category.comp_id]
+        right_eq_id, Functor.const_obj_map]
     · apply Quiver.Hom.unop_inj
       ext
       exact unop_left_comp_ofMkLEMk_unop _
     · refine Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).unop.left.op ?_
       refine Quiver.Hom.unop_inj ?_
       have := congr_arg Quiver.Hom.unop (Subobject.ofMkLEMk_comp h)
-      simpa only [unop_op, Functor.id_obj, Functor.const_obj_obj, MonoOver.mk'_obj, Over.mk_left,
-        MonoOver.mk'_arrow, unop_comp, Quiver.Hom.unop_op, comp_left]
+      simpa only [unop_op, Functor.id_obj, Functor.const_obj_obj, MonoOver.mk_obj, Over.mk_left,
+        MonoOver.mk_arrow, unop_comp, Quiver.Hom.unop_op, comp_left]
           using congr_arg CommaMorphism.left this
 
 /-- If `C` is well-copowered and cocomplete and `S` preserves colimits, then

@@ -3,7 +3,9 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Tactic.PPWithUniv
+module
+
+public import Mathlib.Tactic.PPWithUniv
 
 /-! # `ToLevel` class
 
@@ -14,6 +16,8 @@ instances. This ensures that you are using the universe polymorphic `ToExpr` ins
 override the ones from Lean 4 core.
 
 -/
+
+public meta section
 
 namespace Lean
 

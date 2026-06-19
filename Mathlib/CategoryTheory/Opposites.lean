@@ -3,7 +3,9 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Equivalence
+module
+
+public import Mathlib.CategoryTheory.Equivalence
 
 /-!
 # Opposite categories
@@ -21,9 +23,11 @@ Unfortunately, because we do not have a definitional equality `op (op X) = X`,
 there are quite a few variations that are needed in practice.
 -/
 
+@[expose] public section
+
 universe v₁ v₂ u₁ u₂
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 open Opposite
 
 variable {C : Type u₁}
@@ -32,41 +36,54 @@ section Quiver
 
 variable [Quiver.{v₁} C]
 
+@[to_dual self]
 theorem Quiver.Hom.op_inj {X Y : C} :
     Function.Injective (Quiver.Hom.op : (X ⟶ Y) → (Opposite.op Y ⟶ Opposite.op X)) := fun _ _ H =>
   congr_arg Quiver.Hom.unop H
 
+@[to_dual self]
 theorem Quiver.Hom.unop_inj {X Y : Cᵒᵖ} :
     Function.Injective (Quiver.Hom.unop : (X ⟶ Y) → (Opposite.unop Y ⟶ Opposite.unop X)) :=
   fun _ _ H => congr_arg Quiver.Hom.op H
 
-@[simp]
+@[simp, to_dual self]
 theorem Quiver.Hom.unop_op {X Y : C} (f : X ⟶ Y) : f.op.unop = f :=
   rfl
 
-@[simp]
+@[simp, to_dual self]
 theorem Quiver.Hom.unop_op' {X Y : Cᵒᵖ} {x} :
     @Quiver.Hom.unop C _ X Y no_index (Opposite.op (unop := x)) = x := rfl
 
-@[simp]
+@[simp, to_dual self]
 theorem Quiver.Hom.op_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) : f.unop.op = f :=
   rfl
 
-@[simp] theorem Quiver.Hom.unop_mk {X Y : Cᵒᵖ} (f : X ⟶ Y) : Quiver.Hom.unop {unop := f} = f := rfl
+@[simp, to_dual self]
+theorem Quiver.Hom.unop_mk {X Y : Cᵒᵖ} (f : X ⟶ Y) : Quiver.Hom.unop { unop := f } = f :=
+  rfl
 
 end Quiver
 
 namespace CategoryTheory
 
-variable [Category.{v₁} C]
+section
 
-/-- The opposite category. -/
-@[stacks 001M]
-instance Category.opposite : Category.{v₁} Cᵒᵖ where
+variable [CategoryStruct.{v₁} C]
+
+/-- The opposite `CategoryStruct`. -/
+instance CategoryStruct.opposite : CategoryStruct.{v₁} Cᵒᵖ where
   comp f g := (g.unop ≫ f.unop).op
   id X := (𝟙 (unop X)).op
 
-@[simp, reassoc]
+@[simp]
+theorem unop_id {X : Cᵒᵖ} : (𝟙 X).unop = 𝟙 (unop X) :=
+  rfl
+
+@[simp]
+theorem op_id_unop {X : Cᵒᵖ} : (𝟙 (unop X)).op = 𝟙 X :=
+  rfl
+
+@[simp, grind _=_, to_dual self]
 theorem op_comp {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g).op = g.op ≫ f.op :=
   rfl
 
@@ -74,21 +91,44 @@ theorem op_comp {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g).op = g.op �
 theorem op_id {X : C} : (𝟙 X).op = 𝟙 (op X) :=
   rfl
 
-@[simp, reassoc]
+@[simp, to_dual self]
 theorem unop_comp {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g).unop = g.unop ≫ f.unop :=
-  rfl
-
-@[simp]
-theorem unop_id {X : Cᵒᵖ} : (𝟙 X).unop = 𝟙 (unop X) :=
   rfl
 
 @[simp]
 theorem unop_id_op {X : C} : (𝟙 (op X)).unop = 𝟙 X :=
   rfl
 
-@[simp]
-theorem op_id_unop {X : Cᵒᵖ} : (𝟙 (unop X)).op = 𝟙 X :=
+-- This lemma is needed to prove `Category.opposite` below.
+@[to_dual self]
+theorem op_comp_unop {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) : (g.unop ≫ f.unop).op = f ≫ g :=
   rfl
+
+end
+
+open Functor
+
+variable [Category.{v₁} C]
+
+/-- The opposite category. -/
+@[stacks 001M]
+instance Category.opposite : Category.{v₁} Cᵒᵖ where
+  __ := CategoryStruct.opposite
+  comp_id f := by rw [← op_comp_unop, unop_id, id_comp, Quiver.Hom.op_unop]
+  id_comp f := by rw [← op_comp_unop, unop_id, comp_id, Quiver.Hom.op_unop]
+  assoc f g h := by simp only [← op_comp_unop, Quiver.Hom.unop_op, assoc]
+
+-- Note: these need to be proven manually as the original lemmas are only stated in terms
+-- of `CategoryStruct`s!
+@[to_dual none]
+theorem op_comp_assoc {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {Z' : Cᵒᵖ} {h : op X ⟶ Z'} :
+    (f ≫ g).op ≫ h = g.op ≫ f.op ≫ h := by
+  simp only [op_comp, Category.assoc]
+
+@[to_dual none]
+theorem unop_comp_assoc {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : Y ⟶ Z} {Z' : C} {h : unop X ⟶ Z'} :
+    (f ≫ g).unop ≫ h = g.unop ≫ f.unop ≫ h := by
+  simp only [unop_comp, Category.assoc]
 
 section
 
@@ -106,6 +146,7 @@ def opOp : C ⥤ Cᵒᵖᵒᵖ where
   obj X := op (op X)
   map f := f.op.op
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The double opposite category is equivalent to the original. -/
 @[simps]
 def opOpEquivalence : Cᵒᵖᵒᵖ ≌ C where
@@ -123,30 +164,35 @@ instance : (unopUnop C).IsEquivalence :=
 end
 
 /-- If `f` is an isomorphism, so is `f.op` -/
+@[to_dual self]
 instance isIso_op {X Y : C} (f : X ⟶ Y) [IsIso f] : IsIso f.op :=
   ⟨⟨(inv f).op, ⟨Quiver.Hom.unop_inj (by simp), Quiver.Hom.unop_inj (by simp)⟩⟩⟩
 
 /-- If `f.op` is an isomorphism `f` must be too.
 (This cannot be an instance as it would immediately loop!)
 -/
+@[to_dual self]
 theorem isIso_of_op {X Y : C} (f : X ⟶ Y) [IsIso f.op] : IsIso f :=
   ⟨⟨(inv f.op).unop, ⟨Quiver.Hom.op_inj (by simp), Quiver.Hom.op_inj (by simp)⟩⟩⟩
 
+@[to_dual self]
 theorem isIso_op_iff {X Y : C} (f : X ⟶ Y) : IsIso f.op ↔ IsIso f :=
   ⟨fun _ => isIso_of_op _, fun _ => inferInstance⟩
 
+@[to_dual self]
 theorem isIso_unop_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) : IsIso f.unop ↔ IsIso f := by
   rw [← isIso_op_iff f.unop, Quiver.Hom.op_unop]
 
+@[to_dual self]
 instance isIso_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : IsIso f.unop :=
   (isIso_unop_iff _).2 inferInstance
 
-@[simp]
+@[simp, push ←, to_dual self]
 theorem op_inv {X Y : C} (f : X ⟶ Y) [IsIso f] : (inv f).op = inv f.op := by
   apply IsIso.eq_inv_of_hom_inv_id
   rw [← op_comp, IsIso.inv_hom_id, op_id]
 
-@[simp]
+@[simp, push ←, to_dual self]
 theorem unop_inv {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : (inv f).unop = inv f.unop := by
   apply IsIso.eq_inv_of_hom_inv_id
   rw [← unop_comp, IsIso.inv_hom_id, unop_id]
@@ -172,11 +218,13 @@ protected def unop (F : Cᵒᵖ ⥤ Dᵒᵖ) : C ⥤ D where
   obj X := unop (F.obj (op X))
   map f := (F.map f.op).unop
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between `F.op.unop` and `F`. -/
 @[simps!]
 def opUnopIso (F : C ⥤ D) : F.op.unop ≅ F :=
   NatIso.ofComponents fun _ => Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between `F.unop.op` and `F`. -/
 @[simps!]
 def unopOpIso (F : Cᵒᵖ ⥤ Dᵒᵖ) : F.unop.op ≅ F :=
@@ -207,7 +255,7 @@ variable {C D}
 
 section Compositions
 
-variable {E : Type*} [Category E]
+variable {E : Type*} [Category* E]
 
 /-- Compatibility of `Functor.op` with respect to functor composition. -/
 @[simps!]
@@ -250,35 +298,47 @@ protected def rightOp (F : Cᵒᵖ ⥤ D) : C ⥤ Dᵒᵖ where
 lemma rightOp_map_unop {F : Cᵒᵖ ⥤ D} {X Y} (f : X ⟶ Y) :
     (F.rightOp.map f).unop = F.map f.op := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 instance {F : C ⥤ D} [Full F] : Full F.op where
   map_surjective f := ⟨(F.preimage f.unop).op, by simp⟩
 
 instance {F : C ⥤ D} [Faithful F] : Faithful F.op where
   map_injective h := Quiver.Hom.unop_inj <| by simpa using map_injective F (Quiver.Hom.op_inj h)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The opposite of a fully faithful functor is fully faithful. -/
 protected def FullyFaithful.op {F : C ⥤ D} (hF : F.FullyFaithful) : F.op.FullyFaithful where
   preimage {X Y} f := .op <| hF.preimage f.unop
 
-/-- If F is faithful then the right_op of F is also faithful. -/
+set_option backward.defeqAttrib.useBackward true in
+/-- A functor is fully faithful when its opposite is fully faithful. -/
+protected def FullyFaithful.unop {F : Cᵒᵖ ⥤ Dᵒᵖ} (hF : F.FullyFaithful) :
+    F.unop.FullyFaithful where
+  preimage {X Y} f := (hF.preimage f.op).unop
+
+/-- If F is faithful then the `rightOp` of F is also faithful. -/
 instance rightOp_faithful {F : Cᵒᵖ ⥤ D} [Faithful F] : Faithful F.rightOp where
   map_injective h := Quiver.Hom.op_inj (map_injective F (Quiver.Hom.op_inj h))
 
-/-- If F is faithful then the left_op of F is also faithful. -/
+/-- If F is faithful then the `leftOp` of F is also faithful. -/
 instance leftOp_faithful {F : C ⥤ Dᵒᵖ} [Faithful F] : Faithful F.leftOp where
   map_injective h := Quiver.Hom.unop_inj (map_injective F (Quiver.Hom.unop_inj h))
 
+set_option backward.defeqAttrib.useBackward true in
 instance rightOp_full {F : Cᵒᵖ ⥤ D} [Full F] : Full F.rightOp where
   map_surjective f := ⟨(F.preimage f.unop).unop, by simp⟩
 
+set_option backward.defeqAttrib.useBackward true in
 instance leftOp_full {F : C ⥤ Dᵒᵖ} [Full F] : Full F.leftOp where
   map_surjective f := ⟨(F.preimage f.op).op, by simp⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The opposite of a fully faithful functor is fully faithful. -/
 protected def FullyFaithful.leftOp {F : C ⥤ Dᵒᵖ} (hF : F.FullyFaithful) :
     F.leftOp.FullyFaithful where
   preimage {X Y} f := .op <| hF.preimage f.op
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The opposite of a fully faithful functor is fully faithful. -/
 protected def FullyFaithful.rightOp {F : Cᵒᵖ ⥤ D} (hF : F.FullyFaithful) :
     F.rightOp.FullyFaithful where
@@ -286,13 +346,13 @@ protected def FullyFaithful.rightOp {F : Cᵒᵖ ⥤ D} (hF : F.FullyFaithful) :
 
 /-- Compatibility of `Functor.rightOp` with respect to functor composition. -/
 @[simps!]
-def rightOpComp {E : Type*} [Category E] (F : Cᵒᵖ ⥤ D) (G : D ⥤ E) :
+def rightOpComp {E : Type*} [Category* E] (F : Cᵒᵖ ⥤ D) (G : D ⥤ E) :
     (F ⋙ G).rightOp ≅ F.rightOp ⋙ G.op :=
   Iso.refl _
 
 /-- Compatibility of `Functor.leftOp` with respect to functor composition. -/
 @[simps!]
-def leftOpComp {E : Type*} [Category E] (F : C ⥤ D) (G : D ⥤ Eᵒᵖ) :
+def leftOpComp {E : Type*} [Category* E] (F : C ⥤ D) (G : D ⥤ Eᵒᵖ) :
     (F ⋙ G).leftOp ≅ F.op ⋙ G.leftOp :=
   Iso.refl _
 
@@ -309,11 +369,13 @@ def leftOpId : (𝟭 Cᵒᵖ).leftOp ≅ unopUnop C := Iso.refl _
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between `F.leftOp.rightOp` and `F`. -/
 @[simps!]
 def leftOpRightOpIso (F : C ⥤ Dᵒᵖ) : F.leftOp.rightOp ≅ F :=
   NatIso.ofComponents fun _ => Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between `F.rightOp.leftOp` and `F`. -/
 @[simps!]
 def rightOpLeftOpIso (F : Cᵒᵖ ⥤ D) : F.rightOp.leftOp ≅ F :=
@@ -337,8 +399,9 @@ section
 
 variable {F G : C ⥤ D}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The opposite of a natural transformation. -/
-@[simps]
+@[to_dual self, simps (attr := to_dual self)]
 protected def op (α : F ⟶ G) : G.op ⟶ F.op where
   app X := (α.app (unop X)).op
   naturality X Y f := Quiver.Hom.unop_inj (by simp)
@@ -347,25 +410,28 @@ protected def op (α : F ⟶ G) : G.op ⟶ F.op where
 theorem op_id (F : C ⥤ D) : NatTrans.op (𝟙 F) = 𝟙 F.op :=
   rfl
 
-@[simp, reassoc]
+@[simp, to_dual self, reassoc]
 theorem op_comp {H : C ⥤ D} (α : F ⟶ G) (β : G ⟶ H) :
     NatTrans.op (α ≫ β) = NatTrans.op β ≫ NatTrans.op α :=
   rfl
 
-@[reassoc]
-lemma op_whiskerRight {E : Type*} [Category E] {H : D ⥤ E} (α : F ⟶ G) :
+set_option backward.defeqAttrib.useBackward true in
+@[to_dual none, reassoc]
+lemma op_whiskerRight {E : Type*} [Category* E] {H : D ⥤ E} (α : F ⟶ G) :
     NatTrans.op (whiskerRight α H) =
     (Functor.opComp _ _).hom ≫ whiskerRight (NatTrans.op α) H.op ≫ (Functor.opComp _ _).inv := by
-  aesop_cat
+  cat_disch
 
-@[reassoc]
-lemma op_whiskerLeft {E : Type*} [Category E] {H : E ⥤ C} (α : F ⟶ G) :
+set_option backward.defeqAttrib.useBackward true in
+@[to_dual none, reassoc]
+lemma op_whiskerLeft {E : Type*} [Category* E] {H : E ⥤ C} (α : F ⟶ G) :
     NatTrans.op (whiskerLeft H α) =
     (Functor.opComp _ _).hom ≫ whiskerLeft H.op (NatTrans.op α) ≫ (Functor.opComp _ _).inv := by
-  aesop_cat
+  cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The "unopposite" of a natural transformation. -/
-@[simps]
+@[to_dual self, simps (attr := to_dual self)]
 protected def unop {F G : Cᵒᵖ ⥤ Dᵒᵖ} (α : F ⟶ G) : G.unop ⟶ F.unop where
   app X := (α.app (op X)).unop
   naturality X Y f := Quiver.Hom.op_inj (by simp)
@@ -374,33 +440,35 @@ protected def unop {F G : Cᵒᵖ ⥤ Dᵒᵖ} (α : F ⟶ G) : G.unop ⟶ F.uno
 theorem unop_id (F : Cᵒᵖ ⥤ Dᵒᵖ) : NatTrans.unop (𝟙 F) = 𝟙 F.unop :=
   rfl
 
-@[simp, reassoc]
+@[simp, to_dual self, reassoc]
 theorem unop_comp {F G H : Cᵒᵖ ⥤ Dᵒᵖ} (α : F ⟶ G) (β : G ⟶ H) :
     NatTrans.unop (α ≫ β) = NatTrans.unop β ≫ NatTrans.unop α :=
   rfl
 
-@[reassoc]
-lemma unop_whiskerRight {F G : Cᵒᵖ ⥤ Dᵒᵖ} {E : Type*} [Category E] {H : Dᵒᵖ ⥤ Eᵒᵖ} (α : F ⟶ G) :
+set_option backward.defeqAttrib.useBackward true in
+@[to_dual none, reassoc]
+lemma unop_whiskerRight {F G : Cᵒᵖ ⥤ Dᵒᵖ} {E : Type*} [Category* E] {H : Dᵒᵖ ⥤ Eᵒᵖ} (α : F ⟶ G) :
     NatTrans.unop (whiskerRight α H) =
     (Functor.unopComp _ _).hom ≫ whiskerRight (NatTrans.unop α) H.unop ≫
       (Functor.unopComp _ _).inv := by
-  aesop_cat
+  cat_disch
 
-@[reassoc]
-lemma unop_whiskerLeft {F G : Cᵒᵖ ⥤ Dᵒᵖ} {E : Type*} [Category E] {H : Eᵒᵖ ⥤ Cᵒᵖ} (α : F ⟶ G) :
+set_option backward.defeqAttrib.useBackward true in
+@[to_dual none, reassoc]
+lemma unop_whiskerLeft {F G : Cᵒᵖ ⥤ Dᵒᵖ} {E : Type*} [Category* E] {H : Eᵒᵖ ⥤ Cᵒᵖ} (α : F ⟶ G) :
     NatTrans.unop (whiskerLeft H α) =
     (Functor.unopComp _ _).hom ≫ whiskerLeft H.unop (NatTrans.unop α) ≫
       (Functor.unopComp _ _).inv := by
-  aesop_cat
+  cat_disch
 
 /-- Given a natural transformation `α : F.op ⟶ G.op`,
 we can take the "unopposite" of each component obtaining a natural transformation `G ⟶ F`.
 -/
-@[simps]
+@[to_dual self, simps (attr := to_dual self)]
 protected def removeOp (α : F.op ⟶ G.op) : G ⟶ F where
   app X := (α.app (op X)).unop
   naturality X Y f :=
-    Quiver.Hom.op_inj <| by simpa only [Functor.op_map] using (α.naturality f.op).symm
+    Quiver.Hom.op_inj <| by simpa only [Functor.op_map] using! (α.naturality f.op).symm
 
 @[simp]
 theorem removeOp_id (F : C ⥤ D) : NatTrans.removeOp (𝟙 F.op) = 𝟙 F :=
@@ -408,11 +476,11 @@ theorem removeOp_id (F : C ⥤ D) : NatTrans.removeOp (𝟙 F.op) = 𝟙 F :=
 
 /-- Given a natural transformation `α : F.unop ⟶ G.unop`, we can take the opposite of each
 component obtaining a natural transformation `G ⟶ F`. -/
-@[simps]
+@[simps, to_dual self]
 protected def removeUnop {F G : Cᵒᵖ ⥤ Dᵒᵖ} (α : F.unop ⟶ G.unop) : G ⟶ F where
   app X := (α.app (unop X)).op
   naturality X Y f :=
-    Quiver.Hom.unop_inj <| by simpa only [Functor.unop_map] using (α.naturality f.unop).symm
+    Quiver.Hom.unop_inj <| by simpa only [Functor.unop_map] using! (α.naturality f.unop).symm
 
 @[simp]
 theorem removeUnop_id (F : Cᵒᵖ ⥤ Dᵒᵖ) : NatTrans.removeUnop (𝟙 F.unop) = 𝟙 F :=
@@ -424,10 +492,11 @@ section
 
 variable {F G H : C ⥤ Dᵒᵖ}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a natural transformation `α : F ⟶ G`, for `F G : C ⥤ Dᵒᵖ`,
 taking `unop` of each component gives a natural transformation `G.leftOp ⟶ F.leftOp`.
 -/
-@[simps]
+@[to_dual self, simps (attr := to_dual self)]
 protected def leftOp (α : F ⟶ G) : G.leftOp ⟶ F.leftOp where
   app X := (α.app (unop X)).unop
   naturality X Y f := Quiver.Hom.op_inj (by simp)
@@ -436,25 +505,26 @@ protected def leftOp (α : F ⟶ G) : G.leftOp ⟶ F.leftOp where
 theorem leftOp_id : NatTrans.leftOp (𝟙 F : F ⟶ F) = 𝟙 F.leftOp :=
   rfl
 
-@[simp]
+@[simp, to_dual self]
 theorem leftOp_comp (α : F ⟶ G) (β : G ⟶ H) : NatTrans.leftOp (α ≫ β) =
     NatTrans.leftOp β ≫ NatTrans.leftOp α :=
   rfl
 
-@[reassoc]
-lemma leftOpWhiskerRight {E : Type*} [Category E] {H : E ⥤ C} (α : F ⟶ G) :
+set_option backward.defeqAttrib.useBackward true in
+@[to_dual none, reassoc]
+lemma leftOpWhiskerRight {E : Type*} [Category* E] {H : E ⥤ C} (α : F ⟶ G) :
     (whiskerLeft H α).leftOp = (Functor.leftOpComp H G).hom ≫ whiskerLeft _ α.leftOp ≫
       (Functor.leftOpComp H F).inv := by
-  aesop_cat
+  cat_disch
 
 /-- Given a natural transformation `α : F.leftOp ⟶ G.leftOp`, for `F G : C ⥤ Dᵒᵖ`,
 taking `op` of each component gives a natural transformation `G ⟶ F`.
 -/
-@[simps]
+@[to_dual self, simps (attr := to_dual self)]
 protected def removeLeftOp (α : F.leftOp ⟶ G.leftOp) : G ⟶ F where
   app X := (α.app (op X)).op
   naturality X Y f :=
-    Quiver.Hom.unop_inj <| by simpa only [Functor.leftOp_map] using (α.naturality f.op).symm
+    Quiver.Hom.unop_inj <| by simpa only [Functor.leftOp_map] using! (α.naturality f.op).symm
 
 @[simp]
 theorem removeLeftOp_id : NatTrans.removeLeftOp (𝟙 F.leftOp) = 𝟙 F :=
@@ -466,10 +536,11 @@ section
 
 variable {F G H : Cᵒᵖ ⥤ D}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a natural transformation `α : F ⟶ G`, for `F G : Cᵒᵖ ⥤ D`,
 taking `op` of each component gives a natural transformation `G.rightOp ⟶ F.rightOp`.
 -/
-@[simps]
+@[to_dual self, simps (attr := to_dual self)]
 protected def rightOp (α : F ⟶ G) : G.rightOp ⟶ F.rightOp where
   app _ := (α.app _).op
   naturality X Y f := Quiver.Hom.unop_inj (by simp)
@@ -478,25 +549,26 @@ protected def rightOp (α : F ⟶ G) : G.rightOp ⟶ F.rightOp where
 theorem rightOp_id : NatTrans.rightOp (𝟙 F : F ⟶ F) = 𝟙 F.rightOp :=
   rfl
 
-@[simp]
+@[simp, to_dual self]
 theorem rightOp_comp (α : F ⟶ G) (β : G ⟶ H) : NatTrans.rightOp (α ≫ β) =
     NatTrans.rightOp β ≫ NatTrans.rightOp α :=
   rfl
 
-@[reassoc]
-lemma rightOpWhiskerRight {E : Type*} [Category E] {H : D ⥤ E} (α : F ⟶ G) :
+set_option backward.defeqAttrib.useBackward true in
+@[to_dual none, reassoc]
+lemma rightOpWhiskerRight {E : Type*} [Category* E] {H : D ⥤ E} (α : F ⟶ G) :
     (whiskerRight α H).rightOp = (Functor.rightOpComp G H).hom ≫ whiskerRight α.rightOp H.op ≫
       (Functor.rightOpComp F H).inv := by
-  aesop_cat
+  cat_disch
 
 /-- Given a natural transformation `α : F.rightOp ⟶ G.rightOp`, for `F G : Cᵒᵖ ⥤ D`,
 taking `unop` of each component gives a natural transformation `G ⟶ F`.
 -/
-@[simps]
+@[to_dual self, simps (attr := to_dual self)]
 protected def removeRightOp (α : F.rightOp ⟶ G.rightOp) : G ⟶ F where
   app X := (α.app X.unop).unop
   naturality X Y f :=
-    Quiver.Hom.op_inj <| by simpa only [Functor.rightOp_map] using (α.naturality f.unop).symm
+    Quiver.Hom.op_inj <| by simpa only [Functor.rightOp_map] using! (α.naturality f.unop).symm
 
 @[simp]
 theorem removeRightOp_id : NatTrans.removeRightOp (𝟙 F.rightOp) = 𝟙 F :=
@@ -558,13 +630,13 @@ theorem unop_symm {X Y : Cᵒᵖ} (α : X ≅ Y) : Iso.unop α.symm = (Iso.unop 
 
 section
 
-variable {D : Type*} [Category D] {F G : C ⥤ Dᵒᵖ} (e : F ≅ G) (X : C)
+variable {D : Type*} [Category* D] {F G : C ⥤ Dᵒᵖ} (e : F ≅ G) (X : C)
 
-@[reassoc (attr := simp)]
+@[reassoc +to_dual (attr := simp)]
 lemma unop_hom_inv_id_app : (e.hom.app X).unop ≫ (e.inv.app X).unop = 𝟙 _ := by
   rw [← unop_comp, inv_hom_id_app, unop_id]
 
-@[reassoc (attr := simp)]
+@[reassoc +to_dual (attr := simp)]
 lemma unop_inv_hom_id_app : (e.inv.app X).unop ≫ (e.hom.app X).unop = 𝟙 _ := by
   rw [← unop_comp, hom_inv_id_app, unop_id]
 
@@ -577,6 +649,7 @@ namespace NatIso
 variable {D : Type u₂} [Category.{v₂} D]
 variable {F G : C ⥤ D}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism between opposite functors `G.op ≅ F.op` induced by a natural
 isomorphism between the original functors `F ≅ G`. -/
 @[simps]
@@ -597,6 +670,7 @@ theorem op_trans {H : C ⥤ D} (α : F ≅ G) (β : G ≅ H) :
 @[simp]
 theorem op_symm (α : F ≅ G) : NatIso.op α.symm = (NatIso.op α).symm := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism between functors `G ≅ F` induced by a natural isomorphism
 between the opposite functors `F.op ≅ G.op`. -/
 @[simps]
@@ -604,6 +678,7 @@ protected def removeOp (α : F.op ≅ G.op) : G ≅ F where
   hom := NatTrans.removeOp α.hom
   inv := NatTrans.removeOp α.inv
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism between functors `G.unop ≅ F.unop` induced by a natural isomorphism
 between the original functors `F ≅ G`. -/
 @[simps]
@@ -622,77 +697,104 @@ theorem unop_trans {F G H : Cᵒᵖ ⥤ Dᵒᵖ} (α : F ≅ G) (β : G ≅ H) :
 @[simp]
 theorem unop_symm {F G : Cᵒᵖ ⥤ Dᵒᵖ} (α : F ≅ G) : NatIso.unop α.symm = (NatIso.unop α).symm := rfl
 
-lemma op_isoWhiskerRight {E : Type*} [Category E] {H : D ⥤ E} (α : F ≅ G) :
+set_option backward.defeqAttrib.useBackward true in
+lemma op_isoWhiskerRight {E : Type*} [Category* E] {H : D ⥤ E} (α : F ≅ G) :
     NatIso.op (isoWhiskerRight α H) =
     (Functor.opComp _ _) ≪≫ isoWhiskerRight (NatIso.op α) H.op ≪≫ (Functor.opComp _ _).symm := by
-  aesop_cat
+  cat_disch
 
-lemma op_isoWhiskerLeft {E : Type*} [Category E] {H : E ⥤ C} (α : F ≅ G) :
+set_option backward.defeqAttrib.useBackward true in
+lemma op_isoWhiskerLeft {E : Type*} [Category* E] {H : E ⥤ C} (α : F ≅ G) :
     NatIso.op (isoWhiskerLeft H α) =
     (Functor.opComp _ _) ≪≫ isoWhiskerLeft H.op (NatIso.op α) ≪≫ (Functor.opComp _ _).symm := by
-  aesop_cat
+  cat_disch
 
-lemma unop_whiskerRight {F G : Cᵒᵖ ⥤ Dᵒᵖ} {E : Type*} [Category E] {H : Dᵒᵖ ⥤ Eᵒᵖ} (α : F ≅ G) :
+set_option backward.defeqAttrib.useBackward true in
+lemma unop_whiskerRight {F G : Cᵒᵖ ⥤ Dᵒᵖ} {E : Type*} [Category* E] {H : Dᵒᵖ ⥤ Eᵒᵖ} (α : F ≅ G) :
     NatIso.unop (isoWhiskerRight α H) =
     (Functor.unopComp _ _) ≪≫ isoWhiskerRight (NatIso.unop α) H.unop ≪≫
       (Functor.unopComp _ _).symm := by
-  aesop_cat
+  cat_disch
 
-lemma unop_whiskerLeft {F G : Cᵒᵖ ⥤ Dᵒᵖ} {E : Type*} [Category E] {H : Eᵒᵖ ⥤ Cᵒᵖ} (α : F ≅ G) :
+set_option backward.defeqAttrib.useBackward true in
+lemma unop_whiskerLeft {F G : Cᵒᵖ ⥤ Dᵒᵖ} {E : Type*} [Category* E] {H : Eᵒᵖ ⥤ Cᵒᵖ} (α : F ≅ G) :
     NatIso.unop (isoWhiskerLeft H α) =
     (Functor.unopComp _ _) ≪≫ isoWhiskerLeft H.unop (NatIso.unop α) ≪≫
       (Functor.unopComp _ _).symm := by
-  aesop_cat
+  cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 lemma op_leftUnitor :
     NatIso.op F.leftUnitor =
     F.op.leftUnitor.symm ≪≫
       isoWhiskerRight (Functor.opId C).symm F.op ≪≫
       (Functor.opComp _ _).symm := by
-  aesop_cat
+  cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 lemma op_rightUnitor :
     NatIso.op F.rightUnitor =
     F.op.rightUnitor.symm ≪≫
       isoWhiskerLeft F.op (Functor.opId D).symm ≪≫
       (Functor.opComp _ _).symm := by
-  aesop_cat
+  cat_disch
 
-lemma op_associator {E E': Type*} [Category E] [Category E'] {F : C ⥤ D} {G : D ⥤ E} {H : E ⥤ E'} :
+set_option backward.defeqAttrib.useBackward true in
+lemma op_associator {E E' : Type*} [Category* E] [Category* E']
+    {F : C ⥤ D} {G : D ⥤ E} {H : E ⥤ E'} :
     NatIso.op (Functor.associator F G H) =
       Functor.opComp _ _ ≪≫ isoWhiskerLeft F.op (Functor.opComp _ _) ≪≫
         (Functor.associator F.op G.op H.op).symm ≪≫
         isoWhiskerRight (Functor.opComp _ _).symm H.op ≪≫ (Functor.opComp _ _).symm := by
-  aesop_cat
+  cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 lemma unop_leftUnitor {F : Cᵒᵖ ⥤ Dᵒᵖ} :
     NatIso.unop F.leftUnitor =
     F.unop.leftUnitor.symm ≪≫
       isoWhiskerRight (Functor.unopId C).symm F.unop ≪≫
       (Functor.unopComp _ _).symm := by
-  aesop_cat
+  cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 lemma unop_rightUnitor {F : Cᵒᵖ ⥤ Dᵒᵖ} :
     NatIso.unop F.rightUnitor =
     F.unop.rightUnitor.symm ≪≫
       isoWhiskerLeft F.unop (Functor.unopId D).symm ≪≫
       (Functor.unopComp _ _).symm := by
-  aesop_cat
+  cat_disch
 
-lemma unop_associator {E E': Type*} [Category E] [Category E']
+set_option backward.defeqAttrib.useBackward true in
+lemma unop_associator {E E' : Type*} [Category* E] [Category* E']
     {F : Cᵒᵖ ⥤ Dᵒᵖ} {G : Dᵒᵖ ⥤ Eᵒᵖ} {H : Eᵒᵖ ⥤ E'ᵒᵖ} :
     NatIso.unop (Functor.associator F G H) =
       Functor.unopComp _ _ ≪≫ isoWhiskerLeft F.unop (Functor.unopComp _ _) ≪≫
         (Functor.associator F.unop G.unop H.unop).symm ≪≫
         isoWhiskerRight (Functor.unopComp _ _).symm H.unop ≪≫ (Functor.unopComp _ _).symm := by
-  aesop_cat
+  cat_disch
 
 end NatIso
+
+section
+
+variable {D : Type*} [Category* D] {F G : C ⥤ D}
+
+instance (α : F ⟶ G) [IsIso α] :
+    IsIso (NatTrans.op α) :=
+  (NatIso.op (asIso α)).isIso_hom
+
+@[push]
+lemma inv_op (α : F ⟶ G) [IsIso α] :
+    inv (NatTrans.op α) = NatTrans.op (inv α) :=
+  IsIso.inv_eq_of_hom_inv_id (by simp [← NatTrans.op_comp])
+
+end
 
 namespace Equivalence
 
 variable {D : Type u₂} [Category.{v₂} D]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence between categories gives an equivalence between the opposite categories.
 -/
 @[simps]
@@ -705,6 +807,7 @@ def op (e : C ≌ D) : Cᵒᵖ ≌ Dᵒᵖ where
     apply Quiver.Hom.unop_inj
     simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence between opposite categories gives an equivalence between the original categories.
 -/
 @[simps]
@@ -739,14 +842,16 @@ def opEquiv''' (A B : C) : (Opposite.op A ⟶ Opposite.op B) ≃ (B ⟶ A) :=
   opEquiv _ _
 ```
 -/
-@[simps]
+@[to_dual self, simps (attr := to_dual self)]
 def opEquiv (A B : Cᵒᵖ) : (A ⟶ B) ≃ (B.unop ⟶ A.unop) where
   toFun f := f.unop
   invFun g := g.op
 
+@[to_dual self]
 instance subsingleton_of_unop (A B : Cᵒᵖ) [Subsingleton (unop B ⟶ unop A)] : Subsingleton (A ⟶ B) :=
   (opEquiv A B).subsingleton
 
+@[to_dual self]
 instance decidableEqOfUnop (A B : Cᵒᵖ) [DecidableEq (unop B ⟶ unop A)] : DecidableEq (A ⟶ B) :=
   (opEquiv A B).decidableEq
 
@@ -767,6 +872,7 @@ namespace Functor
 variable (C)
 variable (D : Type u₂) [Category.{v₂} D]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of functor categories induced by `op` and `unop`.
 -/
 @[simps]
@@ -780,9 +886,10 @@ def opUnopEquiv : (C ⥤ D)ᵒᵖ ≌ Cᵒᵖ ⥤ Dᵒᵖ where
         dsimp [opUnopIso]
         rw [show f = f.unop.op by simp, ← op_comp, ← op_comp]
         congr 1
-        aesop_cat)
+        cat_disch)
   counitIso := NatIso.ofComponents fun F => F.unopOpIso
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of functor categories induced by `leftOp` and `rightOp`.
 -/
 @[simps!]
@@ -800,7 +907,7 @@ def leftOpRightOpEquiv : (Cᵒᵖ ⥤ D)ᵒᵖ ≌ C ⥤ Dᵒᵖ where
         dsimp
         rw [show η = η.unop.op by simp, ← op_comp, ← op_comp]
         congr 1
-        aesop_cat)
+        cat_disch)
   counitIso := NatIso.ofComponents fun F => F.leftOpRightOpIso
 
 instance {F : C ⥤ D} [EssSurj F] : EssSurj F.op where

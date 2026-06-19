@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Topology.Closure
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Topology.Closure
 
 /-!
 # Neighborhoods in topological spaces
@@ -15,6 +17,8 @@ Each point `x` of `X` gets a neighborhood filter `𝓝 x`.
 
 neighborhood
 -/
+
+public section
 
 open Set Filter Topology
 
@@ -63,7 +67,7 @@ theorem mem_nhds_iff : s ∈ 𝓝 x ↔ ∃ t ⊆ s, IsOpen t ∧ x ∈ t :=
 containing `x`. -/
 theorem eventually_nhds_iff {p : X → Prop} :
     (∀ᶠ y in 𝓝 x, p y) ↔ ∃ t : Set X, (∀ y ∈ t, p y) ∧ IsOpen t ∧ x ∈ t :=
-  mem_nhds_iff.trans <| by simp only [subset_def, exists_prop, mem_setOf_eq]
+  mem_nhds_iff.trans <| by simp only [subset_def, mem_setOf_eq]
 
 theorem frequently_nhds_iff {p : X → Prop} :
     (∃ᶠ y in 𝓝 x, p y) ↔ ∀ U : Set X, x ∈ U → IsOpen U → ∃ y ∈ U, p y :=
@@ -100,7 +104,7 @@ theorem IsOpen.eventually_mem (hs : IsOpen s) (hx : x ∈ s) :
 for a variant using open sets around `x` instead. -/
 theorem nhds_basis_opens' (x : X) :
     (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ IsOpen s) fun x => x := by
-  convert nhds_basis_opens x using 2
+  convert! nhds_basis_opens x using 2
   exact and_congr_left_iff.2 IsOpen.mem_nhds_iff
 
 /-- If `U` is a neighborhood of each point of a set `s` then it is a neighborhood of `s`:
@@ -181,7 +185,7 @@ theorem tendsto_nhds {f : α → X} {l : Filter α} :
 theorem tendsto_atTop_nhds [Nonempty α] [SemilatticeSup α] {f : α → X} :
     Tendsto f atTop (𝓝 x) ↔ ∀ U : Set X, x ∈ U → IsOpen U → ∃ N, ∀ n, N ≤ n → f n ∈ U :=
   (atTop_basis.tendsto_iff (nhds_basis_opens x)).trans <| by
-    simp only [and_imp, exists_prop, true_and, mem_Ici]
+    simp only [and_imp, true_and, mem_Ici]
 
 theorem tendsto_const_nhds {f : Filter α} : Tendsto (fun _ : α => x) f (𝓝 x) :=
   tendsto_nhds.mpr fun _ _ ha => univ_mem' fun _ => ha
@@ -256,7 +260,7 @@ theorem isOpen_iff_eventually : IsOpen s ↔ ∀ x, x ∈ s → ∀ᶠ y in 𝓝
   isOpen_iff_mem_nhds
 
 theorem isOpen_singleton_iff_nhds_eq_pure (x : X) : IsOpen ({x} : Set X) ↔ 𝓝 x = pure x := by
-  simp [← (pure_le_nhds _).le_iff_eq, isOpen_iff_mem_nhds]
+  simp [← (pure_le_nhds _).ge_iff_eq', isOpen_iff_mem_nhds]
 
 theorem isOpen_singleton_iff_punctured_nhds (x : X) : IsOpen ({x} : Set X) ↔ 𝓝[≠] x = ⊥ := by
   rw [isOpen_singleton_iff_nhds_eq_pure, nhdsWithin, ← mem_iff_inf_principal_compl,
@@ -324,12 +328,14 @@ theorem Dense.inter_nhds_nonempty (hs : Dense s) (ht : t ∈ 𝓝 x) :
   let ⟨U, hsub, ho, hx⟩ := mem_nhds_iff.1 ht
   (hs.inter_open_nonempty U ho ⟨x, hx⟩).mono fun _y hy => ⟨hy.2, hsub hy.1⟩
 
-theorem closure_diff : closure s \ closure t ⊆ closure (s \ t) :=
+theorem closure_sdiff : closure s \ closure t ⊆ closure (s \ t) :=
   calc
-    closure s \ closure t = (closure t)ᶜ ∩ closure s := by simp only [diff_eq, inter_comm]
+    closure s \ closure t = (closure t)ᶜ ∩ closure s := by simp only [sdiff_eq, inter_comm]
     _ ⊆ closure ((closure t)ᶜ ∩ s) := (isOpen_compl_iff.mpr <| isClosed_closure).inter_closure
-    _ = closure (s \ closure t) := by simp only [diff_eq, inter_comm]
-    _ ⊆ closure (s \ t) := closure_mono <| diff_subset_diff (Subset.refl s) subset_closure
+    _ = closure (s \ closure t) := by simp only [sdiff_eq, inter_comm]
+    _ ⊆ closure (s \ t) := closure_mono <| sdiff_subset_sdiff (Subset.refl s) subset_closure
+
+@[deprecated (since := "2026-06-03")] alias closure_diff := closure_sdiff
 
 theorem Filter.Frequently.mem_of_closed (h : ∃ᶠ x in 𝓝 x, x ∈ s)
     (hs : IsClosed s) : x ∈ s :=

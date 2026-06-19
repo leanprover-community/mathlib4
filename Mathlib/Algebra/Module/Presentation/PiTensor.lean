@@ -57,6 +57,8 @@ namespace Solution
 
 variable {relations} (solution : ∀ (i : ι), (relations i).Solution (M i))
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 noncomputable def piTensor : (Relations.piTensor relations).Solution (⨂[R] i, M i) where
   var g := ⨂ₜ[R] i, (solution i).var (g i)
@@ -66,18 +68,20 @@ noncomputable def piTensor : (Relations.piTensor relations).Solution (⨂[R] i, 
     let S := ⨂[R] (i : ((Set.singleton i₀)ᶜ : Set ι)), M i
     rw [Finsupp.linearCombination_embDomain]
     let φ : M i₀ →ₗ[R] ⨂[R] i, M i :=
-      (equivTensorPiTensorComplSingleton R M i₀).symm.toLinearMap.comp
-        ((TensorProduct.mk (R := R) (M := M i₀) (N := S)).flip (⨂ₜ[R] i, (solution i).var (g i)))
-    convert (((solution i₀).postcomp φ).linearCombination_var_relation r)
-    ext g
+      (equivPiTensorComplSingletonTensor R M i₀).symm.toLinearMap.comp
+        ((TensorProduct.mk (R := R) (M := S) (N := M i₀)) (⨂ₜ[R] i, (solution i).var (g i)))
+    convert ((solution i₀).postcomp φ).linearCombination_var_relation r
+    ext γ
     dsimp [φ]
-    erw [equivTensorPiTensorComplSingleton_symm_tmul]
-    congr
-    ext i
-    by_cases hi : i = i₀
-    · subst hi
-      simp
-    · rw [embedding_apply_of_neq, Function.complSingletonLift_of_neq _ _ _ _ hi]
+    trans ⨂ₜ[R] (i : ι), Function.subtypeNeLift i₀
+      (fun i ↦ (solution i).var (g i)) ((solution i₀).var γ) i
+    · congr
+      ext i
+      by_cases hi : i = i₀
+      · subst hi
+        simp
+      · rw [embedding_apply_of_neq, Function.subtypeNeLift_of_neq _ _ _ _ hi]
+    · exact (equivPiTensorComplSingletonTensor_symm_tmul ..).symm
 
 namespace IsPresentation
 
@@ -85,6 +89,7 @@ variable {solution} (h : ∀ i, (solution i).IsPresentation)
 
 namespace piTensor
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isPresentation_of_isEmpty [hι : IsEmpty ι] :
     (Solution.piTensor solution).IsPresentation :=
   IsPresentationCore.isPresentation
@@ -117,34 +122,58 @@ variable {N : Type w'} [AddCommGroup N] [Module R N]
 @[simps! G R]
 noncomputable def presInd : Presentation R (⨂[R] (i : ι), M i) :=
   Presentation.ofLinearEquiv
-    (Presentation.tensor (.ofIsPresentation (h i₀)) (.ofIsPresentation h₀))
-    (equivTensorPiTensorComplSingleton R M i₀).symm
+    (Presentation.tensor (.ofIsPresentation h₀) (.ofIsPresentation (h i₀)) )
+    (equivPiTensorComplSingletonTensor R M i₀).symm
 
+set_option backward.defeqAttrib.useBackward true in
 lemma presInd_var (g₀ : (relations i₀).G)
     (g : ∀ (i : ((Set.singleton i₀)ᶜ : Set ι)), (relations i).G) :
-      (presInd h i₀ h₀).var ⟨g₀, g⟩ =
+      (presInd h i₀ h₀).var ⟨g, g₀⟩ =
       ⨂ₜ[R] (i : ι), (solution i).var
-        (Function.complSingletonLift (M := fun i ↦ (relations i).G) i₀ g g₀ i) := by
+        (Function.subtypeNeLift (M := fun i ↦ (relations i).G) i₀ g g₀ i) := by
   dsimp [presInd]
-  erw [equivTensorPiTensorComplSingleton_symm_tmul]
+  erw [equivPiTensorComplSingletonTensor_symm_tmul]
   congr
   ext i
   by_cases hi : i = i₀
   · subst hi
     simp
-  · simp only [Function.complSingletonLift_of_neq _ _ _ _ hi]
+  · simp only [Function.subtypeNeLift_of_neq _ _ _ _ hi]
 
 lemma eq_presInd_var (g : ∀ i, (relations i).G):
     (⨂ₜ[R] (i : ι), (solution i).var (g i)) =
-      (presInd h i₀ h₀).var ⟨g i₀, fun i ↦ g i⟩ := by
-  rw [presInd_var, Function.complSingletonLift_restriction]
+      (presInd h i₀ h₀).var ⟨fun i ↦ g i, g i₀⟩ := by
+  rw [presInd_var]
+  erw [Function.subtypeNeLift_restriction g i₀]
 
 end isPresentationCore_induction_step
 
 open isPresentationCore_induction_step in
 include h h₀ in
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def isPresentationCore_induction_step :
     Solution.IsPresentationCore.{w'} (Solution.piTensor solution) where
+  desc {N _ _} s :=
+    (presInd h i₀ h₀).desc
+      { var := fun ⟨g, g₀⟩ ↦ s.var (Function.subtypeNeLift i₀ g g₀)
+        linearCombination_var_relation := by
+          have := h
+          sorry }
+  postcomp_desc s := by
+    ext g
+    dsimp
+    rw [eq_presInd_var h i₀ h₀, desc_var]
+    dsimp
+    congr
+    apply Function.subtypeNeLift_restriction
+  postcomp_injective h' :=
+    (presInd h i₀ h₀).postcomp_injective (by
+      ext ⟨g, g₀⟩
+      dsimp
+      rw [presInd_var]
+      exact Solution.congr_var h' (Function.subtypeNeLift i₀ g g₀))
+  /-where
   desc {N _ _ } s := (presInd h i₀ h₀).desc
     { var := fun ⟨g₀, g⟩ ↦ s.var (Function.complSingletonLift i₀ g g₀)
       linearCombination_var_relation := by
@@ -186,17 +215,7 @@ noncomputable def isPresentationCore_induction_step :
                 embedding_apply_of_neq _ _ _ _ _ hi₁,
                 Function.complSingletonLift_of_neq _ _ _ _ (by simpa using hi₀)]
             }
-  postcomp_desc s:= by
-    ext g
-    dsimp
-    rw [eq_presInd_var h i₀ h₀, desc_var]
-    dsimp
-    rw [Function.complSingletonLift_restriction]
-  postcomp_injective h' := (presInd h i₀ h₀).postcomp_injective (by
-    ext ⟨g₀, g⟩
-    dsimp
-    rw [presInd_var]
-    exact Solution.congr_var h' (Function.complSingletonLift i₀ g g₀))
+    -/
 
 include h h₀ in
 lemma isPresentation_induction_step :

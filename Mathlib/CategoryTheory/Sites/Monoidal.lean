@@ -3,11 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Closed.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Localization.Monoidal
-import Mathlib.CategoryTheory.Sites.Localization
-import Mathlib.CategoryTheory.Sites.SheafHom
+public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Localization.Monoidal.Braided
+public import Mathlib.CategoryTheory.Sites.Equivalence
+public import Mathlib.CategoryTheory.Sites.SheafHom
 
 /-!
 # Monoidal category structure on categories of sheaves
@@ -29,12 +30,14 @@ chosen finite products.
 
 -/
 
-universe v v' u u'
+@[expose] public section
+
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C}
-  {A : Type u} [Category.{v} A] [MonoidalCategory A]
+variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C}
+  {A : Type u₃} [Category.{v₃} A] [MonoidalCategory A]
 
 open Opposite Limits MonoidalCategory MonoidalClosed Enriched.FunctorCategory
 
@@ -42,6 +45,8 @@ namespace Presheaf
 
 variable [MonoidalClosed A]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Relation between `functorEnrichedHom` and `presheafHom`. -/
 noncomputable def functorEnrichedHomCoyonedaObjEquiv (M : A) (F G : Cᵒᵖ ⥤ A)
     [HasFunctorEnrichedHom A F G] (X : C) :
@@ -67,7 +72,7 @@ noncomputable def functorEnrichedHomCoyonedaObjEquiv (M : A) (F G : Cᵒᵖ ⥤ 
       congr 1
       let α : Over.mk j'.hom.unop ⟶ Over.mk j.hom.unop := Over.homMk φ.right.unop
         (Quiver.Hom.op_inj (by simp))
-      simpa using (g.naturality α.op).symm )
+      simpa using! (g.naturality α.op).symm)
   left_inv f := by
     dsimp
     ext j
@@ -81,6 +86,8 @@ noncomputable def functorEnrichedHomCoyonedaObjEquiv (M : A) (F G : Cᵒᵖ ⥤ 
     simp only [uncurry_curry, end_.lift_π]
     rfl
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma functorEnrichedHomCoyonedaObjEquiv_naturality
     {M : A} {F G : Cᵒᵖ ⥤ A} {X Y : C} (f : X ⟶ Y)
     [HasFunctorEnrichedHom A F G]
@@ -107,14 +114,23 @@ end Presheaf
 
 namespace GrothendieckTopology
 
+namespace W
+
+variable (J A) in
+lemma transport_isMonoidal {D : Type u₂} [Category.{v₂} D] (K : GrothendieckTopology D)
+    (G : D ⥤ C) [G.IsCoverDense J] [G.Full] [G.IsContinuous K J]
+    [(G.sheafPushforwardContinuous A K J).EssSurj] [(K.W (A := A)).IsMonoidal] :
+    (J.W (A := A)).IsMonoidal := by
+  rw [← J.W_inverseImage_whiskeringLeft K G]
+  infer_instance
+
 variable [MonoidalClosed A]
   [∀ (F₁ F₂ : Cᵒᵖ ⥤ A), HasFunctorEnrichedHom A F₁ F₂]
   [∀ (F₁ F₂ : Cᵒᵖ ⥤ A), HasEnrichedHom A F₁ F₂]
 
-namespace W
-
 open MonoidalClosed.FunctorCategory
 
+set_option backward.isDefEq.respectTransparency false in
 lemma whiskerLeft {G₁ G₂ : Cᵒᵖ ⥤ A} {g : G₁ ⟶ G₂} (hg : J.W g) (F : Cᵒᵖ ⥤ A) :
     J.W (F ◁ g) := fun H h ↦ by
   have := hg _ (Presheaf.isSheaf_functorEnrichedHom F H h)
@@ -122,11 +138,12 @@ lemma whiskerLeft {G₁ G₂ : Cᵒᵖ ⥤ A} {g : G₁ ⟶ G₂} (hg : J.W g) (
     ((ihom.adjunction _).homEquiv _ _).bijective]
   rw [← Function.Bijective.of_comp_iff (g := MonoidalClosed.curry) _
     ((ihom.adjunction _).homEquiv _ _).bijective] at this
-  convert this using 1
+  convert! this using 1
   ext α : 1
   dsimp
   rw [curry_natural_left]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma whiskerRight [BraidedCategory A]
     {F₁ F₂ : Cᵒᵖ ⥤ A} {f : F₁ ⟶ F₂} (hf : J.W f) (G : Cᵒᵖ ⥤ A) :
     J.W (f ▷ G) :=
@@ -147,16 +164,41 @@ variable (J A)
 /-- The monoidal category structure on `Sheaf J A` that is obtained
 by localization of the monoidal category structure on the category
 of presheaves. -/
+@[instance_reducible]
 noncomputable def monoidalCategory [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A] :
     MonoidalCategory (Sheaf J A) :=
   inferInstanceAs (MonoidalCategory
     (LocalizedMonoidal (L := presheafToSheaf J A) (W := J.W) (Iso.refl _)))
 
+attribute [local instance] monoidalCategory
+
+/-- The monoidal category structure on `Sheaf J A` obtained in `Sheaf.monoidalCategory` is
+braided when `A` is braided. -/
+@[implicit_reducible]
+noncomputable def braidedCategory [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A]
+    [BraidedCategory A] : BraidedCategory (Sheaf J A) :=
+  inferInstanceAs (BraidedCategory
+    (LocalizedMonoidal (L := presheafToSheaf J A) (W := J.W) (Iso.refl _)))
+
+/-- The monoidal category structure on `Sheaf J A` obtained in `Sheaf.monoidalCategory` is
+symmetric when `A` is symmetric. -/
+@[implicit_reducible]
+noncomputable def symmetricCategory [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A]
+    [SymmetricCategory A] :
+    SymmetricCategory (Sheaf J A) :=
+  inferInstanceAs (SymmetricCategory
+    (LocalizedMonoidal (L := presheafToSheaf J A) (W := J.W) (Iso.refl _)))
+
 noncomputable instance [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A] :
-    letI := monoidalCategory J A
     (presheafToSheaf J A).Monoidal :=
   inferInstanceAs (Localization.Monoidal.toMonoidalCategory
     (L := presheafToSheaf J A) (W := J.W) (Iso.refl _)).Monoidal
+
+noncomputable instance [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A] [BraidedCategory A] :
+    letI := braidedCategory J A
+    (presheafToSheaf J A).Braided :=
+  inferInstanceAs (Localization.Monoidal.toMonoidalCategory
+    (L := presheafToSheaf J A) (W := J.W) (Iso.refl _)).Braided
 
 noncomputable example
     [HasWeakSheafify J A] [MonoidalClosed A] [BraidedCategory A]
@@ -164,6 +206,20 @@ noncomputable example
     [∀ (F₁ F₂ : Cᵒᵖ ⥤ A), HasEnrichedHom A F₁ F₂] :
     MonoidalCategory (Sheaf J A) :=
   monoidalCategory J A
+
+noncomputable example
+    [HasWeakSheafify J A] [MonoidalClosed A] [BraidedCategory A]
+    [∀ (F₁ F₂ : Cᵒᵖ ⥤ A), HasFunctorEnrichedHom A F₁ F₂]
+    [∀ (F₁ F₂ : Cᵒᵖ ⥤ A), HasEnrichedHom A F₁ F₂] :
+    BraidedCategory (Sheaf J A) :=
+  braidedCategory J A
+
+noncomputable example
+    [HasWeakSheafify J A] [MonoidalClosed A] [SymmetricCategory A]
+    [∀ (F₁ F₂ : Cᵒᵖ ⥤ A), HasFunctorEnrichedHom A F₁ F₂]
+    [∀ (F₁ F₂ : Cᵒᵖ ⥤ A), HasEnrichedHom A F₁ F₂] :
+    SymmetricCategory (Sheaf J A) :=
+  symmetricCategory J A
 
 end Sheaf
 

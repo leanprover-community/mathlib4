@@ -3,11 +3,13 @@ Copyright (c) 2022 Alex J. Best, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 
 /-!
 # Incidence algebras
@@ -63,9 +65,11 @@ Here are some additions to this file that could be made in the future:
 * [Jacobson, *Basic Algebra I, 8.6*][jacobson1974]
 * [Doubilet, Rota, Stanley, *On the foundations of Combinatorial Theory
   VI*][doubilet_rota_stanley_vi]
-* [Spiegel, O'Donnell, *Incidence Algebras*][spiegel_odonnel1997]
+* [Spiegel, O'Donnell, *Incidence Algebras*][spiegel_odonnell1997]
 * [Kung, Rota, Yan, *Combinatorics: The Rota Way, Chapter 3*][kung_rota_yan2009]
 -/
+
+@[expose] public section
 
 open Finset OrderDual
 
@@ -86,7 +90,7 @@ variable [Zero 𝕜] [LE α] {a b : α}
 
 instance instFunLike : FunLike (IncidenceAlgebra 𝕜 α) α (α → 𝕜) where
   coe := toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 lemma apply_eq_zero_of_not_le (h : ¬a ≤ b) (f : IncidenceAlgebra 𝕜 α) : f a b = 0 :=
   eq_zero_of_not_le' _ h
@@ -107,7 +111,7 @@ lemma coe_inj {f g : IncidenceAlgebra 𝕜 α} : (f : α → α → 𝕜) = g �
 
 @[ext]
 lemma ext ⦃f g : IncidenceAlgebra 𝕜 α⦄ (h : ∀ a b, a ≤ b → f a b = g a b) : f = g := by
-  refine DFunLike.coe_injective' (funext₂ fun a b ↦ ?_)
+  refine DFunLike.coe_injective (funext₂ fun a b ↦ ?_)
   by_cases hab : a ≤ b
   · exact h _ _ hab
   · rw [apply_eq_zero_of_not_le hab, apply_eq_zero_of_not_le hab]
@@ -201,7 +205,7 @@ all divisions into two subintervals the product of the values of the original pa
 -/
 instance instMul : Mul (IncidenceAlgebra 𝕜 α) where
   mul f g :=
-    ⟨fun a b ↦ ∑ x ∈ Icc a b, f a x * g x b, fun a b h ↦ by dsimp; rw [Icc_eq_empty h, sum_empty]⟩
+    ⟨fun a b ↦ ∑ x ∈ Icc a b, f a x * g x b, fun a b h ↦ by rw [Icc_eq_empty h, sum_empty]⟩
 
 @[simp] lemma mul_apply (f g : IncidenceAlgebra 𝕜 α) (a b : α) :
     (f * g) a b = ∑ x ∈ Icc a b, f a x * g x b := rfl
@@ -211,10 +215,8 @@ end Mul
 instance instNonUnitalNonAssocSemiring [Preorder α] [LocallyFiniteOrder α]
     [NonUnitalNonAssocSemiring 𝕜] : NonUnitalNonAssocSemiring (IncidenceAlgebra 𝕜 α) where
   __ := instAddCommMonoid
-  mul := (· * ·)
-  zero := 0
-  zero_mul := fun f ↦ by ext; exact sum_eq_zero fun x _ ↦ MulZeroClass.zero_mul _
-  mul_zero := fun f ↦ by ext; exact sum_eq_zero fun x _ ↦ MulZeroClass.mul_zero _
+  zero_mul := fun f ↦ by ext; exact sum_eq_zero fun x _ ↦ zero_mul _
+  mul_zero := fun f ↦ by ext; exact sum_eq_zero fun x _ ↦ mul_zero _
   left_distrib := fun f g h ↦ by
     ext; exact Eq.trans (sum_congr rfl fun x _ ↦ left_distrib _ _ _) sum_add_distrib
   right_distrib := fun f g h ↦ by
@@ -223,23 +225,17 @@ instance instNonUnitalNonAssocSemiring [Preorder α] [LocallyFiniteOrder α]
 instance instNonAssocSemiring [Preorder α] [LocallyFiniteOrder α] [DecidableEq α]
     [NonAssocSemiring 𝕜] : NonAssocSemiring (IncidenceAlgebra 𝕜 α) where
   __ := instNonUnitalNonAssocSemiring
-  mul := (· * ·)
-  zero := 0
-  one := 1
   one_mul := fun f ↦ by ext; simp [*]
   mul_one := fun f ↦ by ext; simp [*]
 
 instance instSemiring [Preorder α] [LocallyFiniteOrder α] [DecidableEq α] [Semiring 𝕜] :
     Semiring (IncidenceAlgebra 𝕜 α) where
   __ := instNonAssocSemiring
-  mul := (· * ·)
   mul_assoc f g h := by
     ext a b
     simp only [mul_apply, sum_mul, mul_sum, sum_sigma']
     apply sum_nbij' (fun ⟨a, b⟩ ↦ ⟨b, a⟩) (fun ⟨a, b⟩ ↦ ⟨b, a⟩) <;>
       aesop (add simp mul_assoc) (add unsafe le_trans)
-  one := 1
-  zero := 0
 
 instance instRing [Preorder α] [LocallyFiniteOrder α] [DecidableEq α] [Ring 𝕜] :
     Ring (IncidenceAlgebra 𝕜 α) where
@@ -253,7 +249,7 @@ variable [Preorder α] [LocallyFiniteOrder α] [AddCommMonoid 𝕜] [AddCommMono
 
 instance instSMul : SMul (IncidenceAlgebra 𝕜 α) (IncidenceAlgebra 𝕝 α) :=
   ⟨fun f g ↦
-    ⟨fun a b ↦ ∑ x ∈ Icc a b, f a x • g x b, fun a b h ↦ by dsimp; rw [Icc_eq_empty h, sum_empty]⟩⟩
+    ⟨fun a b ↦ ∑ x ∈ Icc a b, f a x • g x b, fun a b h ↦ by rw [Icc_eq_empty h, sum_empty]⟩⟩
 
 @[simp]
 lemma smul_apply (f : IncidenceAlgebra 𝕜 α) (g : IncidenceAlgebra 𝕝 α) (a b : α) :
@@ -273,7 +269,6 @@ instance instIsScalarTower [Preorder α] [LocallyFiniteOrder α] [AddCommMonoid 
 
 instance [Preorder α] [LocallyFiniteOrder α] [DecidableEq α] [Semiring 𝕜] [Semiring 𝕝]
     [Module 𝕜 𝕝] : Module (IncidenceAlgebra 𝕜 α) (IncidenceAlgebra 𝕝 α) where
-  smul := (· • ·)
   one_smul f := by ext a b hab; simp [ite_smul, hab]
   mul_smul := smul_assoc
   smul_add f g h := by ext; exact Eq.trans (sum_congr rfl fun x _ ↦ smul_add _ _ _) sum_add_distrib
@@ -296,18 +291,15 @@ instance algebraRight [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α]
   algebraMap :=
   { toFun c := algebraMap 𝕜 𝕝 c • (1 : IncidenceAlgebra 𝕝 α)
     map_one' := by
-      ext; simp only [mul_boole, one_apply, Algebra.id.smul_eq_mul, constSMul_apply, map_one]
+      ext; simp only [mul_boole, one_apply, smul_eq_mul, constSMul_apply, map_one]
     map_mul' c d := by
         ext a b
         obtain rfl | h := eq_or_ne a b
-        · simp only [one_apply, Algebra.id.smul_eq_mul, mul_apply, Algebra.mul_smul_comm,
-            boole_smul, constSMul_apply, ← ite_and, map_mul, Algebra.smul_mul_assoc,
-            if_pos rfl, eq_comm, and_self_iff, Icc_self]
+        · simp only [one_apply, smul_eq_mul, mul_apply, constSMul_apply, map_mul,
+            eq_comm, Icc_self]
           simp
-        · simp only [true_and, ite_self, le_rfl, one_apply, mul_one, Algebra.id.smul_eq_mul,
-            mul_apply, Algebra.mul_smul_comm, MulZeroClass.zero_mul, constSMul_apply,
-            ← ite_and, ite_mul, mul_ite, map_mul, mem_Icc, sum_ite_eq,
-            MulZeroClass.mul_zero, smul_zero, Algebra.smul_mul_assoc, if_pos rfl, if_neg h]
+        · simp only [one_apply, mul_one, smul_eq_mul, mul_apply, zero_mul,
+            constSMul_apply, ← ite_and, ite_mul, mul_ite, map_mul, mul_zero, if_neg h]
           refine (sum_eq_zero fun x _ ↦ ?_).symm
           exact if_neg fun hx ↦ h <| hx.2.trans hx.1
     map_zero' := by rw [map_zero, zero_smul]
@@ -352,16 +344,10 @@ lemma zeta_mul_zeta [NonAssocSemiring 𝕜] [Preorder α] [LocallyFiniteOrder α
   rw [mem_Icc] at hx
   rw [zeta_of_le hx.1, zeta_of_le hx.2, one_mul]
 
-lemma zeta_mul_kappa [NonAssocSemiring 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableLE α]
-    (a b : α) : (zeta 𝕜 * zeta 𝕜 : IncidenceAlgebra 𝕜 α) a b = (Icc a b).card := by
-  rw [mul_apply, card_eq_sum_ones, Nat.cast_sum, Nat.cast_one]
-  refine sum_congr rfl fun x hx ↦ ?_
-  rw [mem_Icc] at hx
-  rw [zeta_of_le hx.1, zeta_of_le hx.2, one_mul]
-
 section Mu
 variable (𝕜) [AddCommGroup 𝕜] [One 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableEq α]
 
+set_option backward.privateInPublic true in
 /-- The Möbius function of the incidence algebra as a bare function defined recursively. -/
 private def muFun (a : α) : α → 𝕜
   | b =>
@@ -377,6 +363,8 @@ termination_by b => (Icc a b).card
 private lemma muFun_apply (a b : α) :
     muFun 𝕜 a b = if a = b then 1 else -∑ x ∈ (Ico a b).attach, muFun 𝕜 a x := by rw [muFun]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The Möbius function which inverts `zeta` as an element of the incidence algebra. -/
 def mu : IncidenceAlgebra 𝕜 α :=
   ⟨muFun 𝕜, fun a b ↦ not_imp_comm.1 fun h ↦ by
@@ -389,6 +377,8 @@ def mu : IncidenceAlgebra 𝕜 α :=
 
 variable {𝕜} {a b : α}
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma mu_apply (a b : α) : mu 𝕜 a b = if a = b then 1 else -∑ x ∈ Ico a b, mu 𝕜 a x := by
   rw [mu, coe_mk, muFun_apply, sum_attach]
 
@@ -440,7 +430,6 @@ showing that `zeta * mu = 1` and `mu' * zeta = 1`. -/
 private def mu' : IncidenceAlgebra 𝕜 α :=
   ⟨fun a b ↦ muFun' 𝕜 b a, fun a b ↦
     not_imp_comm.1 fun h ↦ by
-      dsimp only at h
       rw [muFun'_apply] at h
       split_ifs at h with hab
       · exact hab.le
@@ -526,7 +515,7 @@ lemma mu_toDual (a b : α) : mu 𝕜 (toDual a) (toDual b) = mu 𝕜 b a := by
     simpa [mul_assoc, zeta_mul_mu] using this
   clear a b
   ext a b
-  simp only [mul_boole, one_apply, mul_apply, coe_mk, zeta_apply]
+  simp only [mul_boole, one_apply, mul_apply, zeta_apply]
   calc
     ∑ x ∈ Icc a b, (if x ≤ b then mud a x else 0) = ∑ x ∈ Icc a b, mud a x := by
       congr! with x hx; exact if_pos (mem_Icc.1 hx).2
@@ -561,7 +550,7 @@ lemma moebius_inversion_top (f g : α → 𝕜) (h : ∀ x, g x = ∑ y ∈ Ici 
     _ = ∑ z ∈ Ici x, ∑ y ∈ Icc x z, mu 𝕜 x y * zeta 𝕜 y z * f z := by
       rw [sum_sigma' (Ici x) fun y ↦ Ici y]
       rw [sum_sigma' (Ici x) fun z ↦ Icc x z]
-      simp only [mul_boole, MulZeroClass.zero_mul, ite_mul, zeta_apply]
+      simp only [mul_boole, zero_mul, ite_mul, zeta_apply]
       apply sum_nbij' (fun ⟨a, b⟩ ↦ ⟨b, a⟩) (fun ⟨a, b⟩ ↦ ⟨b, a⟩) <;>
         aesop (add simp mul_assoc) (add unsafe le_trans)
     _ = ∑ z ∈ Ici x, (mu 𝕜 * zeta 𝕜 : IncidenceAlgebra 𝕜 α) x z * f z := by
@@ -580,11 +569,12 @@ end InversionTop
 section InversionBot
 variable [Ring 𝕜] [PartialOrder α] [OrderBot α] [LocallyFiniteOrder α] [DecidableEq α]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A general form of Möbius inversion. Based on lemma 2.1.3 of Incidence Algebras by Spiegel and
 O'Donnell. -/
 lemma moebius_inversion_bot (f g : α → 𝕜) (h : ∀ x, g x = ∑ y ∈ Iic x, f y) (x : α) :
     f x = ∑ y ∈ Iic x, mu 𝕜 y x * g y := by
-  convert moebius_inversion_top (α := αᵒᵈ) f g h x using 3
+  convert! moebius_inversion_top (α := αᵒᵈ) f g h x using 3
   rw [← mu_toDual]; rfl
 
 end InversionBot
@@ -609,7 +599,7 @@ end DecidableLe
 
 variable {𝕜} (f f₁ f₂ : IncidenceAlgebra 𝕜 α) (g g₁ g₂ : IncidenceAlgebra 𝕜 β)
 
-/-- The cartesian product of two incidence algebras. -/
+/-- The Cartesian product of two incidence algebras. -/
 protected def prod : IncidenceAlgebra 𝕜 (α × β) where
   toFun x y := f x.1 y.1 * g x.2 y.2
   eq_zero_of_not_le' x y hxy := by

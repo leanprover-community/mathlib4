@@ -3,8 +3,10 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Colimit.Module
-import Mathlib.RingTheory.Finiteness.Basic
+module
+
+public import Mathlib.Algebra.Colimit.Module
+public import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
 # Modules as direct limits of finitely generated submodules
@@ -19,6 +21,8 @@ We show that every module is the direct limit of its finitely generated submodul
   finitely generated submodules.
 -/
 
+@[expose] public section
+
 namespace Module
 
 variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
@@ -31,7 +35,7 @@ open DirectLimit
 
 namespace fgSystem
 
-instance : IsDirected {N : Submodule R M // N.FG} (· ≤ ·) where
+instance : IsDirectedOrder {N : Submodule R M // N.FG} where
   directed N₁ N₂ :=
     ⟨⟨_, N₁.2.sup N₂.2⟩, Subtype.coe_le_coe.mp le_sup_left, Subtype.coe_le_coe.mp le_sup_right⟩
 

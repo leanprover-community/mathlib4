@@ -3,14 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Data.Set.BoolIndicator
-import Mathlib.Topology.ContinuousOn
+module
+
+public import Mathlib.Data.Set.BoolIndicator
+public import Mathlib.Topology.ContinuousOn
 
 /-!
 # Clopen sets
 
 A clopen set is a set that is both closed and open.
 -/
+
+public section
 
 open Set Filter Topology TopologicalSpace
 
@@ -26,7 +30,7 @@ protected theorem IsClopen.isOpen (hs : IsClopen s) : IsOpen s := hs.2
 protected theorem IsClopen.isClosed (hs : IsClopen s) : IsClosed s := hs.1
 
 theorem isClopen_iff_frontier_eq_empty : IsClopen s ↔ frontier s = ∅ := by
-  rw [IsClopen, ← closure_eq_iff_isClosed, ← interior_eq_iff_isOpen, frontier, diff_eq_empty]
+  rw [IsClopen, ← closure_eq_iff_isClosed, ← interior_eq_iff_isOpen, frontier, sdiff_eq_empty]
   refine ⟨fun h => (h.1.trans h.2.symm).subset, fun h => ?_⟩
   exact ⟨(h.trans interior_subset).antisymm subset_closure,
     interior_subset.antisymm (subset_closure.trans h)⟩
@@ -97,10 +101,19 @@ theorem isClopen_inter_of_disjoint_cover_clopen {s a b : Set X} (h : IsClopen s)
     (ha : IsOpen a) (hb : IsOpen b) (hab : Disjoint a b) : IsClopen (s ∩ a) := by
   refine ⟨?_, IsOpen.inter h.2 ha⟩
   have : IsClosed (s ∩ bᶜ) := IsClosed.inter h.1 (isClosed_compl_iff.2 hb)
-  convert this using 1
+  convert! this using 1
   refine (inter_subset_inter_right s hab.subset_compl_right).antisymm ?_
   rintro x ⟨hx₁, hx₂⟩
   exact ⟨hx₁, by simpa [notMem_of_mem_compl hx₂] using cover hx₁⟩
+
+/-- Variant of `isClopen_inter_of_disjoint_cover_clopen` with weaker disjointness condition. -/
+lemma isClopen_inter_of_disjoint_cover_clopen' {s a b : Set X} (h : IsClopen s) (cover : s ⊆ a ∪ b)
+    (ha : IsOpen a) (hb : IsOpen b) (hab : s ∩ a ∩ b = ∅) : IsClopen (s ∩ a) := by
+  rw [show s ∩ a = s ∩ (s ∩ a) by simp]
+  refine isClopen_inter_of_disjoint_cover_clopen h ?_ (h.2.inter ha) (h.2.inter hb) ?_
+  · rw [← inter_union_distrib_left]
+    exact subset_inter .rfl cover
+  · rw [disjoint_iff_inter_eq_empty, inter_comm s b, ← inter_assoc, hab, empty_inter]
 
 theorem isClopen_of_disjoint_cover_open {a b : Set X} (cover : univ ⊆ a ∪ b)
     (ha : IsOpen a) (hb : IsOpen b) (hab : Disjoint a b) : IsClopen a :=
@@ -123,9 +136,6 @@ theorem isClopen_range_sigmaMk {X : ι → Type*} [∀ i, TopologicalSpace (X i)
 protected theorem Topology.IsQuotientMap.isClopen_preimage {f : X → Y} (hf : IsQuotientMap f)
     {s : Set Y} : IsClopen (f ⁻¹' s) ↔ IsClopen s :=
   and_congr hf.isClosed_preimage hf.isOpen_preimage
-
-@[deprecated (since := "2024-10-22")]
-alias QuotientMap.isClopen_preimage := IsQuotientMap.isClopen_preimage
 
 theorem continuous_boolIndicator_iff_isClopen (U : Set X) :
     Continuous U.boolIndicator ↔ IsClopen U := by

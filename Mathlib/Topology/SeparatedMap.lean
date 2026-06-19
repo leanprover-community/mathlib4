@@ -3,9 +3,11 @@ Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Topology.Connected.Basic
-import Mathlib.Topology.Separation.Hausdorff
-import Mathlib.Topology.Connected.Clopen
+module
+
+public import Mathlib.Topology.Connected.Basic
+public import Mathlib.Topology.Separation.Hausdorff
+public import Mathlib.Topology.Connected.Clopen
 /-!
 # Separated maps and locally injective maps out of a topological space.
 
@@ -35,6 +37,8 @@ separated morphisms and unramified morphisms, respectively.
 https://stacks.math.columbia.edu/tag/0CY0
 -/
 
+@[expose] public section
+
 open Topology
 
 variable {X Y A} [TopologicalSpace X] [TopologicalSpace A]
@@ -43,9 +47,6 @@ protected lemma Topology.IsEmbedding.toPullbackDiag (f : X → Y) : IsEmbedding 
   .mk' _ (injective_toPullbackDiag f) fun x ↦ by
     simp [nhds_induced, Filter.comap_comap, nhds_prod_eq, Filter.comap_prod, Function.comp_def,
       Filter.comap_id']
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_toPullbackDiag := IsEmbedding.toPullbackDiag
 
 lemma Continuous.mapPullback {X₁ X₂ Y₁ Y₂ Z₁ Z₂}
     [TopologicalSpace X₁] [TopologicalSpace X₂] [TopologicalSpace Z₁] [TopologicalSpace Z₂]
@@ -73,7 +74,7 @@ lemma Function.Injective.isSeparatedMap {f : X → Y} (inj : f.Injective) : IsSe
 lemma isSeparatedMap_iff_disjoint_nhds {f : X → Y} : IsSeparatedMap f ↔
     ∀ x₁ x₂, f x₁ = f x₂ → x₁ ≠ x₂ → Disjoint (𝓝 x₁) (𝓝 x₂) :=
   forall₃_congr fun x x' _ ↦ by simp only [(nhds_basis_opens x).disjoint_iff (nhds_basis_opens x'),
-    exists_prop, ← exists_and_left, and_assoc, and_comm, and_left_comm]
+    ← exists_and_left, and_assoc, and_comm, and_left_comm]
 
 lemma isSeparatedMap_iff_nhds {f : X → Y} : IsSeparatedMap f ↔
     ∀ x₁ x₂, f x₁ = f x₂ → x₁ ≠ x₂ → ∃ s₁ ∈ 𝓝 x₁, ∃ s₂ ∈ 𝓝 x₂, Disjoint s₁ s₂ := by
@@ -160,7 +161,7 @@ theorem discreteTopology_iff_locallyInjective (y : Y) :
     DiscreteTopology X ↔ IsLocallyInjective fun _ : X ↦ y := by
   rw [discreteTopology_iff_singleton_mem_nhds, isLocallyInjective_iff_nhds]
   refine forall_congr' fun x ↦ ⟨fun h ↦ ⟨{x}, h, Set.injOn_singleton _ _⟩, fun ⟨U, hU, inj⟩ ↦ ?_⟩
-  convert hU; ext x'; refine ⟨?_, fun h ↦ inj h (mem_of_mem_nhds hU) rfl⟩
+  convert! hU; ext x'; refine ⟨?_, fun h ↦ inj h (mem_of_mem_nhds hU) rfl⟩
   rintro rfl; exact mem_of_mem_nhds hU
 
 theorem IsLocallyInjective.comp_left {A} {f : X → Y} (hf : IsLocallyInjective f) {g : Y → A}

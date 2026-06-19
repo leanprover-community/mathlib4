@@ -3,8 +3,10 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Hom.Basic
-import Mathlib.Algebra.GroupWithZero.Basic
+module
+
+public import Mathlib.Algebra.Group.Hom.Basic
+public import Mathlib.Algebra.GroupWithZero.Basic
 
 /-!
 # Monoid with zero and group with zero homomorphisms
@@ -15,7 +17,7 @@ We also define coercion to a function, and usual operations: composition, identi
 pointwise multiplication and pointwise inversion.
 
 
-## Notations
+## Notation
 
 * `→*₀`: `MonoidWithZeroHom`, the type of bundled `MonoidWithZero` homs. Also use for
   `GroupWithZero` homs.
@@ -30,6 +32,8 @@ can be inferred from the type it is faster to use this method than to use type c
 
 monoid homomorphism
 -/
+
+@[expose] public section
 
 assert_not_exists DenselyOrdered Ring
 
@@ -73,15 +77,9 @@ structure MonoidWithZeroHom (α β : Type*) [MulZeroOneClass α] [MulZeroOneClas
 infixr:25 " →*₀ " => MonoidWithZeroHom
 
 /-- Turn an element of a type `F` satisfying `MonoidWithZeroHomClass F α β` into an actual
-`MonoidWithZeroHom`. This is declared as the default coercion from `F` to `α →*₀ β`. -/
-@[coe]
-def MonoidWithZeroHomClass.toMonoidWithZeroHom [FunLike F α β] [MonoidWithZeroHomClass F α β]
+`MonoidWithZeroHom`. -/
+def MonoidWithZeroHom.ofClass [FunLike F α β] [MonoidWithZeroHomClass F α β]
     (f : F) : α →*₀ β := { (f : α →* β), (f : ZeroHom α β) with }
-
-/-- Any type satisfying `MonoidWithZeroHomClass` can be cast into `MonoidWithZeroHom` via
-`MonoidWithZeroHomClass.toMonoidWithZeroHom`. -/
-instance [FunLike F α β] [MonoidWithZeroHomClass F α β] : CoeTC F (α →*₀ β) :=
-  ⟨MonoidWithZeroHomClass.toMonoidWithZeroHom⟩
 
 namespace MonoidWithZeroHom
 
@@ -90,7 +88,7 @@ attribute [nolint docBlame] toZeroHom
 
 instance funLike : FunLike (α →*₀ β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
+  coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
 
 instance monoidWithZeroHomClass : MonoidWithZeroHomClass (α →*₀ β) α β where
   map_mul := MonoidWithZeroHom.map_mul'
@@ -101,7 +99,8 @@ instance [Subsingleton α] : Subsingleton (α →*₀ β) := .of_oneHomClass
 
 variable [FunLike F α β]
 
-@[simp] lemma coe_coe [MonoidWithZeroHomClass F α β] (f : F) : ((f : α →*₀ β) : α → β) = f := rfl
+@[simp] lemma coe_ofClass [MonoidWithZeroHomClass F α β] (f : F) :
+    (MonoidWithZeroHom.ofClass f : α → β) = f := rfl
 
 -- Completely uninteresting lemmas about coercion to function, that all homs need
 section Coes
@@ -117,8 +116,7 @@ instance coeToMonoidHom : Coe (α →*₀ β) (α →* β) :=
 attribute [coe] toZeroHom
 
 /-- `MonoidWithZeroHom` down-cast to a `ZeroHom`, forgetting the monoidal property. -/
-instance coeToZeroHom :
-  Coe (α →*₀ β) (ZeroHom α β) := ⟨toZeroHom⟩
+instance coeToZeroHom : Coe (α →*₀ β) (ZeroHom α β) := ⟨toZeroHom⟩
 
 -- This must come after the coe_toFun definitions
 initialize_simps_projections MonoidWithZeroHom (toFun → apply)
@@ -155,13 +153,13 @@ protected lemma map_mul (f : α →*₀ β) (a b : α) : f (a * b) = f a * f b :
 theorem map_ite_zero_one {F : Type*} [FunLike F α β] [MonoidWithZeroHomClass F α β] (f : F)
     (p : Prop) [Decidable p] :
     f (ite p 0 1) = ite p 0 1 := by
-  split_ifs with h <;> simp [h]
+  split_ifs with h <;> simp
 
 @[simp]
 theorem map_ite_one_zero {F : Type*} [FunLike F α β] [MonoidWithZeroHomClass F α β] (f : F)
     (p : Prop) [Decidable p] :
     f (ite p 1 0) = ite p 1 0 := by
-  split_ifs with h <;> simp [h]
+  split_ifs with h <;> simp
 
 /-- The identity map from a `MonoidWithZero` to itself. -/
 @[simps]
@@ -214,7 +212,8 @@ instance {β} [CommMonoidWithZero β] : Mul (α →*₀ β) where
     { (f * g : α →* β) with
       map_zero' := by dsimp; rw [map_zero, zero_mul] }
 
-/-- The trivial homomorphism between monoids with zero, sending everything to 1 other than 0. -/
+/-- The trivial homomorphism between monoids with zero, sending 0 to 0 and all other elements to 1.
+-/
 protected instance one (M₀ N₀ : Type*) [MulZeroOneClass M₀] [MulZeroOneClass N₀]
     [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] :
     One (M₀ →*₀ N₀) where
@@ -222,6 +221,11 @@ protected instance one (M₀ N₀ : Type*) [MulZeroOneClass M₀] [MulZeroOneCla
   one.map_zero' := by simp
   one.map_one' := by simp
   one.map_mul' x y := by split_ifs <;> simp_all
+
+lemma one_apply_def {M₀ N₀ : Type*} [MulZeroOneClass M₀] [MulZeroOneClass N₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] (x : M₀) :
+    (1 : M₀ →*₀ N₀) x = if x = 0 then 0 else 1 :=
+  rfl
 
 @[simp]
 lemma one_apply_zero {M₀ N₀ : Type*} [MulZeroOneClass M₀] [MulZeroOneClass N₀]
@@ -233,6 +237,20 @@ lemma one_apply_of_ne_zero {M₀ N₀ : Type*} [MulZeroOneClass M₀] [MulZeroOn
     [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] {x : M₀} (hx : x ≠ 0) :
     (1 : M₀ →*₀ N₀) x = 1 :=
   if_neg hx
+
+@[simp]
+lemma one_apply_eq_zero_iff {M₀ N₀ : Type*} [MulZeroOneClass M₀] [MulZeroOneClass N₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] [Nontrivial N₀]
+    {x : M₀} :
+    (1 : M₀ →*₀ N₀) x = 0 ↔ x = 0 := by
+  rcases eq_or_ne x 0 with rfl | hx <;> simp_all [one_apply_of_ne_zero]
+
+@[simp]
+lemma one_apply_eq_one_iff {M₀ N₀ : Type*} [MulZeroOneClass M₀] [MulZeroOneClass N₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] [Nontrivial N₀]
+    {x : M₀} :
+    (1 : M₀ →*₀ N₀) x = 1 ↔ x ≠ 0 := by
+  rcases eq_or_ne x 0 with rfl | hx <;> simp_all [one_apply_of_ne_zero]
 
 end MonoidWithZeroHom
 

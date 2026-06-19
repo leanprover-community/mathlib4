@@ -3,22 +3,26 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.RingTheory.Coalgebra.Hom
+module
+
+public import Mathlib.RingTheory.Coalgebra.Hom
 
 /-!
 # Isomorphisms of `R`-coalgebras
 
-This file defines bundled isomorphisms of `R`-coalgebras. We simply mimic the early parts of
-`Mathlib/Algebra/Module/Equiv.lean`.
+This file defines bundled isomorphisms of `R`-coalgebras. We largely mirror the basic API of
+`Mathlib/Algebra/Module/Equiv/Defs.lean`.
 
 ## Main definitions
 
 * `CoalgEquiv R A B`: the type of `R`-coalgebra isomorphisms between `A` and `B`.
 
-## Notations
+## Notation
 
 * `A ≃ₗc[R] B` : `R`-coalgebra equivalence from `A` to `B`.
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -52,7 +56,7 @@ variable {F R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
 /-- Reinterpret an element of a type of coalgebra equivalences as a coalgebra equivalence. -/
 @[coe]
 def toCoalgEquiv [EquivLike F A B] [CoalgEquivClass F R A B] (f : F) : A ≃ₗc[R] B :=
-  { (f : A →ₗc[R] B), (f : A ≃ₗ[R] B) with }
+  { (f : A →ₗc[R] B), (SemilinearEquivClass.semilinearEquiv f : A ≃ₗ[R] B) with }
 
 /-- Reinterpret an element of a type of coalgebra equivalences as a coalgebra equivalence. -/
 instance instCoeToCoalgEquiv
@@ -94,13 +98,15 @@ instance : EquivLike (A ≃ₗc[R] B) A B where
 
 instance : FunLike (A ≃ₗc[R] B) A B where
   coe := DFunLike.coe
-  coe_injective' := DFunLike.coe_injective
+  coe_injective := DFunLike.coe_injective
 
 instance : CoalgEquivClass (A ≃ₗc[R] B) R A B where
   map_add := (·.map_add')
   map_smulₛₗ := (·.map_smul')
   counit_comp := (·.counit_comp)
   map_comp_comul := (·.map_comp_comul)
+
+instance : CoeOut (A ≃ₗc[R] B) (A ≃ₗ[R] B) where coe := toLinearEquiv
 
 @[simp, norm_cast]
 theorem toCoalgHom_inj {e₁ e₂ : A ≃ₗc[R] B} : (↑e₁ : A →ₗc[R] B) = e₂ ↔ e₁ = e₂ :=
@@ -123,7 +129,7 @@ variable (e e' : A ≃ₗc[R] B)
 theorem coe_coe : ⇑(e : A →ₗc[R] B) = e :=
   rfl
 
-@[simp]
+@[nolint synTaut, deprecated "Now a syntactic tautology" (since := "2026-04-12")]
 theorem toLinearEquiv_eq_coe (f : A ≃ₗc[R] B) : f.toLinearEquiv = f :=
   rfl
 
@@ -164,12 +170,12 @@ def symm (e : A ≃ₗc[R] B) : B ≃ₗc[R] A :=
   { (e : A ≃ₗ[R] B).symm with
     counit_comp := (LinearEquiv.comp_toLinearMap_symm_eq _ _).2 e.counit_comp.symm
     map_comp_comul := by
-      show (TensorProduct.congr (e : A ≃ₗ[R] B) (e : A ≃ₗ[R] B)).symm.toLinearMap ∘ₗ comul
+      change (TensorProduct.congr (e : A ≃ₗ[R] B) (e : A ≃ₗ[R] B)).symm.toLinearMap ∘ₗ comul
         = comul ∘ₗ (e : A ≃ₗ[R] B).symm
       rw [LinearEquiv.toLinearMap_symm_comp_eq]
-      simp only [TensorProduct.congr, toLinearEquiv_toLinearMap,
-        LinearEquiv.ofLinear_toLinearMap, ← LinearMap.comp_assoc, CoalgHomClass.map_comp_comul,
-        LinearEquiv.eq_comp_toLinearMap_symm] }
+      simp only [TensorProduct.congr, toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe,
+        LinearEquiv.ofLinear_toLinearMap, ← LinearMap.comp_assoc, CoalgHomClass.map_comp_comul]
+      rw [← toLinearEquiv_toLinearMap, LinearEquiv.comp_symm_cancel_right] }
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type*} [CommSemiring R] {α β : Type*}
@@ -256,7 +262,7 @@ theorem trans_toCoalgHom :
 theorem coe_toEquiv_trans : (e₁₂ : A ≃ B).trans e₂₃ = (e₁₂.trans e₂₃ : A ≃ C) :=
   rfl
 
-/-- If an coalgebra morphism has an inverse, it is an coalgebra isomorphism. -/
+/-- If a coalgebra morphism has an inverse, it is a coalgebra isomorphism. -/
 def ofCoalgHom (f : A →ₗc[R] B) (g : B →ₗc[R] A) (h₁ : f.comp g = CoalgHom.id R B)
     (h₂ : g.comp f = CoalgHom.id R A) : A ≃ₗc[R] B where
   __ := f
@@ -288,7 +294,8 @@ theorem coe_ofBijective : (CoalgEquiv.ofBijective hf : A → B) = f :=
   rfl
 
 end
-variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
+variable
+  [AddCommMonoid A] [Module R A] [Coalgebra R A]
   [AddCommMonoid B] [Module R B] [CoalgebraStruct R B]
 
 /-- Let `A` be an `R`-coalgebra and let `B` be an `R`-module with a `CoalgebraStruct`.
@@ -311,12 +318,12 @@ structure on `B`. -/
       ← (f.toLinearEquiv.comp_toLinearMap_symm_eq _ _).2 f.map_comp_comul, ← LinearMap.comp_assoc,
       f.toLinearEquiv.comp_toLinearMap_symm_eq]
     ext x
-    simp [← (ℛ R _).eq, coe_symm_toLinearEquiv]
+    simp [← (ℛ R _).eq]
   lTensor_counit_comp_comul := by
     simp_rw [(f.toLinearEquiv.eq_comp_toLinearMap_symm _ _).2 f.counit_comp,
       ← (f.toLinearEquiv.comp_toLinearMap_symm_eq _ _).2 f.map_comp_comul, ← LinearMap.comp_assoc,
       f.toLinearEquiv.comp_toLinearMap_symm_eq]
     ext x
-    simp [← (ℛ R _).eq, coe_symm_toLinearEquiv]
+    simp [← (ℛ R _).eq]
 
 end CoalgEquiv

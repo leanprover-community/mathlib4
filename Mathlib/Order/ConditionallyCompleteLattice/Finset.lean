@@ -3,14 +3,18 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+module
+
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Conditionally complete lattices and finite sets.
 
 -/
+
+public section
 
 
 open Set
@@ -72,7 +76,7 @@ theorem Finset.ciInf_eq_min'_image {s : Finset ι} (h : ∃ x ∈ s, f x ≤ sIn
     ⨅ i ∈ s, f i = (s.image f).min' h' := by
   classical
   rw [← OrderDual.toDual_inj, toDual_min', toDual_iInf]
-  simp only [Function.comp_apply, toDual_iInf]
+  simp only [toDual_iInf]
   rw [ciSup_eq_max'_image _ h]
   simp only [image_image]
   congr
@@ -110,19 +114,12 @@ theorem Set.Finite.ciSup_lt_iff {s : Set ι} {f : ι → α} (hs : s.Finite)
       intro
       simp only [ciSup_eq_ite, dite_eq_ite, mem_range, union_singleton, mem_insert_iff, mem_image,
         forall_exists_index]
-      intro x hx
-      split_ifs at hx
-      · exact Or.inr ⟨_, by assumption, hx⟩
-      · simp_all
+      grind
     · simp only [mem_range]
       refine ⟨x, ?_⟩
       simp [hx]
-  · intro H
-    have := hs.ciSup_mem_image _ h
-    simp only [mem_image] at this
-    obtain ⟨_, hmem, hx⟩ := this
-    rw [← hx]
-    exact H _ hmem
+  · have := hs.ciSup_mem_image _ h
+    grind
 
 theorem Set.Finite.lt_ciInf_iff {s : Set ι} {f : ι → α} (hs : s.Finite)
     (h : ∃ x ∈ s, f x ≤ sInf ∅) :
@@ -135,10 +132,7 @@ theorem Set.Finite.lt_ciInf_iff {s : Set ι} {f : ι → α} (hs : s.Finite)
       intro
       simp only [ciInf_eq_ite, dite_eq_ite, mem_range, union_singleton, mem_insert_iff, mem_image,
         forall_exists_index]
-      intro x hx
-      split_ifs at hx
-      · exact Or.inr ⟨_, by assumption, hx⟩
-      · simp_all
+      grind
     · simp only [mem_range]
       refine ⟨x, ?_⟩
       simp [hx]
@@ -185,6 +179,42 @@ end ListMultiset
 
 end ConditionallyCompleteLinearOrder
 
+section CompleteLinearOrder
+
+variable {α : Type*} [CompleteLinearOrder α] {ι : Sort*}
+
+theorem sSup_ne_of_notMem {s : Set α} (hfin : s.Finite) {a : α} (hne : a ≠ ⊥) (hmem : a ∉ s) :
+    sSup s ≠ a := by
+  rcases s.eq_empty_or_nonempty with rfl | hnonempty
+  · simp [eq_comm, hne]
+  exact (hmem <| · ▸ hnonempty.csSup_mem hfin)
+
+theorem sInf_ne_of_notMem {s : Set α} (hfin : s.Finite) {a : α} (hne : a ≠ ⊤) (hmem : a ∉ s) :
+    sInf s ≠ a :=
+  sSup_ne_of_notMem (α := αᵒᵈ) hfin hne hmem
+
+theorem sSup_ne_top [Nontrivial α] {s : Set α} (hfin : s.Finite) (htop : ⊤ ∉ s) : sSup s ≠ ⊤ :=
+  sSup_ne_of_notMem hfin top_ne_bot htop
+
+theorem sInf_ne_bot [Nontrivial α] {s : Set α} (hfin : s.Finite) (hbot : ⊥ ∉ s) : sInf s ≠ ⊥ :=
+  sSup_ne_top (α := αᵒᵈ) hfin hbot
+
+theorem iSup_ne_of_notMem [Finite ι] {f : ι → α} {a : α} (hne : a ≠ ⊥) (h : ∀ x, f x ≠ a) :
+    iSup f ≠ a :=
+  sSup_ne_of_notMem (Set.finite_range f) hne <| by grind
+
+theorem iInf_ne_of_notMem [Finite ι] {f : ι → α} {a : α} (hne : a ≠ ⊤) (h : ∀ x, f x ≠ a) :
+    iInf f ≠ a :=
+  iSup_ne_of_notMem (α := αᵒᵈ) hne h
+
+theorem iSup_ne_top [Finite ι] [Nontrivial α] {f : ι → α} (h : ∀ x, f x ≠ ⊤) : iSup f ≠ ⊤ :=
+  iSup_ne_of_notMem top_ne_bot h
+
+theorem iInf_ne_bot [Finite ι] [Nontrivial α] {f : ι → α} (h : ∀ x, f x ≠ ⊥) : iInf f ≠ ⊥ :=
+  iSup_ne_top (α := αᵒᵈ) h
+
+end CompleteLinearOrder
+
 /-!
 ### Relation between `sSup` / `sInf` and `Finset.sup'` / `Finset.inf'`
 
@@ -217,6 +247,7 @@ variable [Fintype ι] [Nonempty ι]
 lemma sup'_univ_eq_ciSup (f : ι → α) : univ.sup' univ_nonempty f = ⨆ i, f i := by
   simp [sup'_eq_csSup_image, iSup]
 
+@[to_dual existing]
 lemma inf'_univ_eq_ciInf (f : ι → α) : univ.inf' univ_nonempty f = ⨅ i, f i := by
   simp [inf'_eq_csInf_image, iInf]
 
@@ -229,6 +260,14 @@ lemma sup_univ_eq_ciSup [Fintype ι] (f : ι → α) : univ.sup f = ⨆ i, f i :
   le_antisymm
     (Finset.sup_le fun _ _ => le_ciSup (finite_range _).bddAbove _)
     (ciSup_le' fun _ => Finset.le_sup (mem_univ _))
+
+theorem ciSup_union [DecidableEq ι] {f : ι → α} {s t : Finset ι} :
+    (⨆ x ∈ s ∪ t, f x) = (⨆ x ∈ s, f x) ⊔ (⨆ x ∈ t, f x) := by
+  suffices ∀ st : Finset ι, BddAbove <| .range fun x ↦ ⨆ (_ : x ∈ st), f x by
+    simp [ciSup_or', ciSup_sup_eq, this]
+  refine fun st ↦ ⟨st.sup f, fun a ⟨i, ha⟩ ↦ ha ▸ ?_⟩
+  by_cases h : i ∈ st <;>
+    simp [h, le_sup]
 
 end ConditionallyCompleteLinearOrderBot
 

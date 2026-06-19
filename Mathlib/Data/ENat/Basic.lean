@@ -3,12 +3,16 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.AddGroupWithTop
-import Mathlib.Algebra.Order.Ring.WithTop
-import Mathlib.Algebra.Order.Sub.WithTop
-import Mathlib.Data.ENat.Defs
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Data.Nat.SuccPred
+module
+
+public import Mathlib.Algebra.Group.Nat.Units
+public import Mathlib.Algebra.Order.AddGroupWithTop
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Algebra.Order.Ring.WithTop
+public import Mathlib.Algebra.Order.Sub.WithTop
+public import Mathlib.Data.ENat.Defs
+public import Mathlib.Data.Nat.Cast.Order.Basic
+public import Mathlib.Data.Nat.SuccPred
 
 /-!
 # Definition and basic properties of extended natural numbers
@@ -32,33 +36,23 @@ for all `b`), or that it's order-cancellable (`a + b ≤ a + c → b ≤ c` for 
 similarly for multiplication.
 -/
 
+@[expose] public section
+
 open Function
 
 assert_not_exists Field
 
-deriving instance Zero, CommSemiring, Nontrivial,
-  LinearOrder, Bot, Sub,
-  LinearOrderedAddCommMonoidWithTop, WellFoundedRelation
+deriving instance Nontrivial,
+  Add, Sub, LE, LT, Bot,
+  Preorder, LinearOrder, OrderTop, OrderBot, WellFoundedLT, SuccOrder,
+  AddMonoidWithOne, CommSemiring, LinearOrderedAddCommMonoidWithTop,
+  ZeroLEOneClass, OrderedSub, CanonicallyOrderedAdd, IsOrderedRing,
+  CharZero, NoZeroDivisors
   for ENat
--- The `CanonicallyOrderedAdd, OrderBot, OrderTop, OrderedSub, SuccOrder, WellFoundedLT, CharZero`
--- instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
--- In `Mathlib.Data.Nat.PartENat` proofs timed out when we included `deriving AddCommMonoidWithOne`,
--- and it seems to work without.
 
 namespace ENat
 
-instance : IsOrderedRing ℕ∞ := WithTop.instIsOrderedRing
-instance : CanonicallyOrderedAdd ℕ∞ := WithTop.canonicallyOrderedAdd
-instance : OrderBot ℕ∞ := WithTop.orderBot
-instance : OrderTop ℕ∞ := WithTop.orderTop
-instance : OrderedSub ℕ∞ := inferInstanceAs (OrderedSub (WithTop ℕ))
-instance : SuccOrder ℕ∞ := inferInstanceAs (SuccOrder (WithTop ℕ))
-instance : WellFoundedLT ℕ∞ := inferInstanceAs (WellFoundedLT (WithTop ℕ))
-instance : CharZero ℕ∞ := inferInstanceAs (CharZero (WithTop ℕ))
-
-variable {a b c m n : ℕ∞}
+variable {a b c d m n : ℕ∞}
 
 /-- Lemmas about `WithTop` expect (and can output) `WithTop.some` but the normal form for coercion
 `ℕ → ℕ∞` is `Nat.cast`. -/
@@ -66,8 +60,12 @@ variable {a b c m n : ℕ∞}
 
 theorem coe_inj {a b : ℕ} : (a : ℕ∞) = b ↔ a = b := WithTop.coe_inj
 
+@[simp] theorem succ_coe (n : ℕ) : SuccOrder.succ (n : ℕ∞) = (n + 1 : ℕ) := WithTop.succ_coe
+
+@[simp] theorem succ_top : SuccOrder.succ (⊤ : ℕ∞) = ⊤ := rfl
+
 instance : SuccAddOrder ℕ∞ where
-  succ_eq_add_one x := by cases x <;> simp [SuccOrder.succ]
+  succ_eq_add_one x := by cases x <;> simp
 
 theorem coe_zero : ((0 : ℕ) : ℕ∞) = 0 :=
   rfl
@@ -128,9 +126,8 @@ def lift (x : ℕ∞) (h : x < ⊤) : ℕ := WithTop.untop x (WithTop.lt_top_iff
 
 instance canLift : CanLift ℕ∞ ℕ (↑) (· ≠ ⊤) := WithTop.canLift
 
-instance : WellFoundedRelation ℕ∞ where
-  rel := (· < ·)
-  wf := IsWellFounded.wf
+instance : WellFoundedRelation ℕ∞ :=
+  WellFoundedLT.toWellFoundedRelation
 
 /-- Conversion of `ℕ∞` to `ℕ` sending `∞` to `0`. -/
 def toNat : ℕ∞ → ℕ := WithTop.untopD 0
@@ -167,6 +164,10 @@ theorem toNat_top : toNat ⊤ = 0 :=
   rfl
 
 @[simp] theorem toNat_eq_zero : toNat n = 0 ↔ n = 0 ∨ n = ⊤ := WithTop.untopD_eq_self_iff
+
+theorem toNat_pos (hn0 : n ≠ 0) (hxt : n ≠ ⊤) : 0 < n.toNat := by
+  rw [pos_iff_ne_zero, ne_eq, ENat.toNat_eq_zero, not_or]
+  exact ⟨hn0, hxt⟩
 
 theorem lift_eq_toNat_of_lt_top {x : ℕ∞} (hx : x < ⊤) : x.lift hx = x.toNat := by
   rcases x with ⟨⟩ | x
@@ -210,22 +211,19 @@ theorem ofNat_ne_top (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℕ∞) ≠ ⊤ :=
 
 @[simp]
 theorem top_sub_coe (a : ℕ) : (⊤ : ℕ∞) - a = ⊤ :=
-  WithTop.top_sub_coe
+  rfl
 
 @[simp]
 theorem top_sub_one : (⊤ : ℕ∞) - 1 = ⊤ :=
-  top_sub_coe 1
+  rfl
 
 @[simp]
 theorem top_sub_ofNat (a : ℕ) [a.AtLeastTwo] : (⊤ : ℕ∞) - ofNat(a) = ⊤ :=
-  top_sub_coe a
+  rfl
 
 @[simp]
 theorem top_pos : (0 : ℕ∞) < ⊤ :=
   WithTop.top_pos
-
-@[deprecated ENat.top_pos (since := "2024-10-22")]
-alias zero_lt_top := top_pos
 
 @[simp]
 theorem one_lt_top : (1 : ℕ∞) < ⊤ :=
@@ -260,10 +258,11 @@ theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = t
   · rw [← coe_sub, toNat_coe, toNat_coe, toNat_coe]
 
 @[simp] theorem toNat_mul (a b : ℕ∞) : (a * b).toNat = a.toNat * b.toNat := by
-  cases a <;> cases b <;> simp
+  cases a <;> cases b
+  · simp
   · rename_i b; cases b <;> simp
   · rename_i a; cases a <;> simp
-  · rw [← coe_mul, toNat_coe]
+  · simp only [toNat_coe]; rw [← coe_mul, toNat_coe]
 
 theorem toNat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : toNat m = n ↔ m = n := by
   induction m <;> simp [hn.symm]
@@ -276,21 +275,48 @@ lemma toNat_le_of_le_coe {m : ℕ∞} {n : ℕ} (h : m ≤ n) : toNat m ≤ n :=
 lemma toNat_le_toNat {m n : ℕ∞} (h : m ≤ n) (hn : n ≠ ⊤) : toNat m ≤ toNat n :=
   toNat_le_of_le_coe <| h.trans_eq (coe_toNat hn).symm
 
-@[simp]
+@[deprecated Order.succ_eq_add_one (since := "2026-05-25")]
 theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 :=
   Order.succ_eq_add_one m
 
 theorem add_one_le_iff (hm : m ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
   Order.add_one_le_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
 
-theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
-  Order.one_le_iff_pos.trans pos_iff_ne_zero
+theorem add_one_le_iff' (hn : n ≠ ⊤) : m + 1 ≤ n ↔ m < n := by
+  rcases eq_or_ne m ⊤ with rfl | hm
+  · simpa
+  · exact add_one_le_iff hm
 
+@[deprecated Order.one_le_iff_ne_zero (since := "2026-05-25")]
+protected theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
+  Order.one_le_iff_ne_zero
+
+@[deprecated Order.lt_one_iff (since := "2026-05-25")]
 lemma lt_one_iff_eq_zero : n < 1 ↔ n = 0 :=
-  not_le.symm.trans one_le_iff_ne_zero.not_left
+  Order.lt_one_iff
+
+@[deprecated Order.le_one_iff (since := "2026-05-25")]
+lemma le_one_iff_eq_zero_or_eq_one : n ≤ 1 ↔ n = 0 ∨ n = 1 :=
+  Order.le_one_iff
 
 theorem lt_add_one_iff (hm : n ≠ ⊤) : m < n + 1 ↔ m ≤ n :=
   Order.lt_add_one_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
+
+@[simp]
+theorem lt_two_iff : n < 2 ↔ n ≤ 1 := by
+  rw [← one_add_one_eq_two, lt_add_one_iff one_ne_top]
+
+theorem add_le_add_iff_left {m n k : ENat} (h : k ≠ ⊤) :
+    k + n ≤ k + m ↔ n ≤ m :=
+  WithTop.add_le_add_iff_left h
+
+theorem add_le_add_iff_right {m n k : ENat} (h : k ≠ ⊤) :
+    n + k ≤ m + k ↔ n ≤ m :=
+  WithTop.add_le_add_iff_right h
+
+theorem lt_add_one_iff' {m n : ENat} (hm : m ≠ ⊤) :
+    m < n + 1 ↔ m ≤ n := by
+  rw [← add_one_le_iff hm, add_le_add_iff_right one_ne_top]
 
 theorem lt_coe_add_one_iff {m : ℕ∞} {n : ℕ} : m < n + 1 ↔ m ≤ n :=
   lt_add_one_iff (coe_ne_top n)
@@ -298,9 +324,8 @@ theorem lt_coe_add_one_iff {m : ℕ∞} {n : ℕ} : m < n + 1 ↔ m ≤ n :=
 theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff
 
-@[simp]
-lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := by
-  cases n <;> simp
+@[deprecated not_lt_zero (since := "2025-12-03")]
+protected lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := not_lt_zero
 
 @[simp]
 lemma coe_lt_top (n : ℕ) : (n : ℕ∞) < ⊤ :=
@@ -311,15 +336,22 @@ lemma coe_lt_coe {n m : ℕ} : (n : ℕ∞) < (m : ℕ∞) ↔ n < m := by simp
 lemma coe_le_coe {n m : ℕ} : (n : ℕ∞) ≤ (m : ℕ∞) ↔ n ≤ m := by simp
 
 @[elab_as_elim]
-theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ n : ℕ, P n → P n.succ)
-    (htop : (∀ n : ℕ, P n) → P ⊤) : P a := by
-  have A : ∀ n : ℕ, P n := fun n => Nat.recOn n h0 hsuc
+theorem nat_induction {motive : ℕ∞ → Prop} (a : ℕ∞) (zero : motive 0)
+    (succ : ∀ n : ℕ, motive n → motive n.succ)
+    (top : (∀ n : ℕ, motive n) → motive ⊤) : motive a := by
+  have A : ∀ n : ℕ, motive n := fun n => Nat.recOn n zero succ
   cases a
-  · exact htop A
+  · exact top A
   · exact A _
 
+@[deprecated add_pos_of_right (since := "2026-05-25")]
 lemma add_one_pos : 0 < n + 1 :=
-  succ_def n ▸ Order.bot_lt_succ n
+  add_pos_of_right zero_lt_one n
+
+lemma natCast_lt_succ {n : ℕ} :
+    (n : ℕ∞) < (n : ℕ∞) + 1 := by
+  rw [← Nat.cast_one, ← Nat.cast_add, coe_lt_coe]
+  exact lt_add_one n
 
 lemma add_lt_add_iff_right {k : ℕ∞} (h : k ≠ ⊤) : n + k < m + k ↔ n < m :=
   WithTop.add_lt_add_iff_right h
@@ -327,9 +359,20 @@ lemma add_lt_add_iff_right {k : ℕ∞} (h : k ≠ ⊤) : n + k < m + k ↔ n < 
 lemma add_lt_add_iff_left {k : ℕ∞} (h : k ≠ ⊤) : k + n < k + m ↔ n < m :=
   WithTop.add_lt_add_iff_left h
 
+protected lemma add_lt_add (hac : a < c) (hbd : b < d) : a + b < c + d :=
+  WithTop.add_lt_add hac hbd
+
+protected theorem add_lt_add_of_le_of_lt : a ≠ ⊤ → a ≤ b → c < d → a + c < b + d :=
+  WithTop.add_lt_add_of_le_of_lt
+
+protected theorem add_lt_add_of_lt_of_le : c ≠ ⊤ → a < b → c ≤ d → a + c < b + d :=
+  WithTop.add_lt_add_of_lt_of_le
+
 lemma ne_top_iff_exists : n ≠ ⊤ ↔ ∃ m : ℕ, ↑m = n := WithTop.ne_top_iff_exists
 
 lemma eq_top_iff_forall_ne : n = ⊤ ↔ ∀ m : ℕ, ↑m ≠ n := WithTop.eq_top_iff_forall_ne
+lemma forall_ne_top {p : ℕ∞ → Prop} : (∀ x, x ≠ ⊤ → p x) ↔ ∀ x : ℕ, p x := WithTop.forall_ne_top
+lemma exists_ne_top {p : ℕ∞ → Prop} : (∃ x ≠ ⊤, p x) ↔ ∃ x : ℕ, p x := WithTop.exists_ne_top
 lemma eq_top_iff_forall_gt : n = ⊤ ↔ ∀ m : ℕ, m < n := WithTop.eq_top_iff_forall_gt
 lemma eq_top_iff_forall_ge : n = ⊤ ↔ ∀ m : ℕ, m ≤ n := WithTop.eq_top_iff_forall_ge
 
@@ -354,6 +397,18 @@ lemma addLECancellable_coe (a : ℕ) : AddLECancellable (a : ℕ∞) := WithTop.
 protected lemma le_sub_of_add_le_left (ha : a ≠ ⊤) : a + b ≤ c → b ≤ c - a :=
   (addLECancellable_of_ne_top ha).le_tsub_of_add_le_left
 
+protected lemma le_sub_of_add_le_right (hb : b ≠ ⊤) : a + b ≤ c → a ≤ c - b :=
+  (addLECancellable_of_ne_top hb).le_tsub_of_add_le_right
+
+protected lemma le_sub_one_of_lt (h : a < b) : a ≤ b - 1 := by
+  cases b
+  · simp
+  · exact ENat.le_sub_of_add_le_right one_ne_top <| lt_coe_add_one_iff.mp <| lt_tsub_iff_right.mp h
+
+lemma lt_add_left {n k : ℕ∞} (h : n ≠ ⊤) (h' : 0 < k) : n < k + n := calc
+    _ = 0 + n := (zero_add n).symm
+    _ < k + n := (add_lt_add_iff_right h).mpr h'
+
 protected lemma sub_sub_cancel (h : a ≠ ⊤) (h2 : b ≤ a) : a - (a - b) = b :=
   (addLECancellable_of_ne_top <| ne_top_of_le_ne_top h tsub_le_self).tsub_tsub_cancel_of_le h2
 
@@ -367,32 +422,19 @@ lemma add_right_injective_of_ne_top {n : ℕ∞} (hn : n ≠ ⊤) : Function.Inj
   simp_rw [add_comm n _]
   exact add_left_injective_of_ne_top hn
 
-lemma mul_left_strictMono (ha : a ≠ 0) (h_top : a ≠ ⊤) : StrictMono (a * ·) := by
-  lift a to ℕ using h_top
-  intro x y hxy
-  induction x with
-  | top => simp at hxy
-  | coe x =>
-  induction y with
-  | top =>
-    simp only [mul_top ha, ← ENat.coe_mul]
-    exact coe_lt_top (a * x)
-  | coe y =>
-  simp only
-  rw [← ENat.coe_mul, ← ENat.coe_mul, ENat.coe_lt_coe]
-  rw [ENat.coe_lt_coe] at hxy
-  exact Nat.mul_lt_mul_of_pos_left hxy (Nat.pos_of_ne_zero (by simpa using ha))
+lemma mul_right_strictMono (ha : a ≠ 0) (h_top : a ≠ ⊤) : StrictMono (a * ·) :=
+  WithTop.mul_right_strictMono (pos_iff_ne_zero.2 ha) h_top
 
-lemma mul_right_strictMono (ha : a ≠ 0) (h_top : a ≠ ⊤) : StrictMono (· * a) := by
-  simpa [show (· * a) = (a * ·) by simp [mul_comm]] using mul_left_strictMono ha h_top
+lemma mul_left_strictMono (ha : a ≠ 0) (h_top : a ≠ ⊤) : StrictMono (· * a) :=
+  WithTop.mul_left_strictMono (pos_iff_ne_zero.2 ha) h_top
 
 @[simp]
 lemma mul_le_mul_left_iff {x y : ℕ∞} (ha : a ≠ 0) (h_top : a ≠ ⊤) : a * x ≤ a * y ↔ x ≤ y :=
-  (ENat.mul_left_strictMono ha h_top).le_iff_le
+  (ENat.mul_right_strictMono ha h_top).le_iff_le
 
 @[simp]
 lemma mul_le_mul_right_iff {x y : ℕ∞} (ha : a ≠ 0) (h_top : a ≠ ⊤) : x * a ≤ y * a ↔ x ≤ y :=
-  (ENat.mul_right_strictMono ha h_top).le_iff_le
+  (ENat.mul_left_strictMono ha h_top).le_iff_le
 
 @[gcongr]
 lemma mul_le_mul_of_le_right {x y : ℕ∞} (hxy : x ≤ y) (ha : a ≠ 0) (h_top : a ≠ ⊤) :
@@ -404,12 +446,27 @@ lemma self_le_mul_right (a : ℕ∞) (hc : c ≠ 0) : a ≤ a * c := by
   · simp [top_mul hc]
   obtain rfl | h0 := eq_or_ne a 0
   · simp
-  nth_rewrite 1 [← mul_one a, ENat.mul_le_mul_left_iff h0 hne, ENat.one_le_iff_ne_zero]
+  nth_rewrite 1 [← mul_one a, ENat.mul_le_mul_left_iff h0 hne, Order.one_le_iff_ne_zero]
   assumption
 
 lemma self_le_mul_left (a : ℕ∞) (hc : c ≠ 0) : a ≤ c * a := by
   rw [mul_comm]
   exact ENat.self_le_mul_right a hc
+
+instance : Unique ℕ∞ˣ where
+  uniq x := by
+    have := x.val_inv
+    have x_top : x.val ≠ ⊤ := by
+      intro h
+      simp [h] at this
+    have x_inv_top : x.inv ≠ ⊤ := by
+      intro h
+      simp only [h, ne_eq, x.ne_zero, not_false_eq_true, mul_top, top_ne_one] at this
+    obtain ⟨y, x_y⟩ := ne_top_iff_exists.1 x_top
+    obtain ⟨z, x_z⟩ := ne_top_iff_exists.1 x_inv_top
+    replace x_y := x_y.symm
+    rw [x_y, ← x_z, ← coe_mul, ← coe_one, coe_inj, _root_.mul_eq_one] at this
+    rwa [this.1, Nat.cast_one, Units.val_eq_one] at x_y
 
 section withTop_enat
 
@@ -417,7 +474,7 @@ lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n
   match n with
   | ⊤ => exact le_top
   | (⊤ : ℕ∞) => exact WithTop.coe_le_coe.2 (OrderTop.le_top _)
-  | (n : ℕ) => simpa only [Nat.cast_le, ge_iff_le, Nat.cast_lt] using h
+  | (n : ℕ) => simpa only [Nat.cast_le, ge_iff_le, Nat.cast_lt] using! h
 
 @[simp] lemma coe_top_add_one : ((⊤ : ℕ∞) : WithTop ℕ∞) + 1 = (⊤ : ℕ∞) := rfl
 
@@ -427,12 +484,9 @@ lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n
   | (⊤ : ℕ∞) => simp
   | (n : ℕ) =>
     norm_cast
-    simp only [coe_ne_top, iff_false, ne_eq]
+    simp only [coe_ne_top]
 
 @[simp] lemma natCast_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ (⊤ : ℕ∞) := nofun
-
-@[deprecated (since := "2024-10-22")]
-alias nat_ne_coe_top := natCast_ne_coe_top
 
 lemma one_le_iff_ne_zero_withTop {n : WithTop ℕ∞} : 1 ≤ n ↔ n ≠ 0 :=
   ⟨fun h ↦ (zero_lt_one.trans_le h).ne',
@@ -540,39 +594,98 @@ protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [
     toFun := ENat.map f
     map_mul' := fun x y => by
       have : ∀ z, map f z = 0 ↔ z = 0 := fun z =>
-        (Option.map_injective hf).eq_iff' f.toZeroHom.ENatMap.map_zero
+        (WithTop.map_injective hf).eq_iff' f.toZeroHom.ENatMap.map_zero
       rcases Decidable.eq_or_ne x 0 with (rfl | hx)
       · simp
       rcases Decidable.eq_or_ne y 0 with (rfl | hy)
       · simp
-      induction' x with x
-      · simp [hy, this]
-      induction' y with y
-      · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
-        simp [mul_top hx, WithTop.mul_top this]
-      · simp [← Nat.cast_mul, ← coe_mul] }
+      induction x with
+      | top => simp [hy, this]
+      | coe x =>
+        induction y with
+        | top =>
+          have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
+          simp [mul_top hx, WithTop.mul_top this]
+        | coe y => simp [← Nat.cast_mul, -coe_mul] }
 
 /-- A version of `ENat.map` for `RingHom`s. -/
 @[simps -fullyApplied]
 protected def _root_.RingHom.ENatMap {S : Type*} [CommSemiring S] [PartialOrder S]
     [CanonicallyOrderedAdd S]
     [DecidableEq S] [Nontrivial S] (f : ℕ →+* S) (hf : Function.Injective f) : ℕ∞ →+* WithTop S :=
-  {MonoidWithZeroHom.ENatMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.ENatMap with}
+  { MonoidWithZeroHom.ENatMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.ENatMap with }
 
-instance : NoZeroDivisors ℕ∞ := inferInstanceAs (NoZeroDivisors (WithTop ℕ))
+@[simp]
+lemma map_natCast_mul {R : Type*} [NonAssocSemiring R] [DecidableEq R] [CharZero R] (a b : ℕ∞) :
+    (map Nat.cast (a * b) : WithTop R) = map Nat.cast a * map Nat.cast b :=
+  map_mul ((.ofClass (Nat.castRingHom R) : ℕ →*₀ R).ENatMap Nat.cast_injective) a b
 
 end ENat
 
-lemma WithBot.lt_add_one_iff {n : WithBot ℕ∞} {m : ℕ} : n < m + 1 ↔ n ≤ m := by
+namespace ENat.WithBot
+
+@[simp]
+lemma coe_eq_natCast (n : ℕ) : (n : ℕ∞) = (n : WithBot ℕ∞) := rfl
+
+lemma lt_add_one_iff {n : WithBot ℕ∞} {m : ℕ} : n < m + 1 ↔ n ≤ m := by
   rw [← WithBot.coe_one, ← ENat.coe_one, WithBot.coe_natCast, ← Nat.cast_add, ← WithBot.coe_natCast]
   cases n
-  · simp only [bot_le, iff_true, WithBot.bot_lt_coe]
+  · simp only [bot_le, WithBot.bot_lt_coe]
   · rw [WithBot.coe_lt_coe, Nat.cast_add, ENat.coe_one, ENat.lt_add_one_iff (ENat.coe_ne_top _),
       ← WithBot.coe_le_coe, WithBot.coe_natCast]
 
-lemma WithBot.add_one_le_iff {n : ℕ} {m : WithBot ℕ∞} : n + 1 ≤ m ↔ n < m := by
+lemma add_one_le_iff {n : ℕ} {m : WithBot ℕ∞} : n + 1 ≤ m ↔ n < m := by
   rw [← WithBot.coe_one, ← ENat.coe_one, WithBot.coe_natCast, ← Nat.cast_add, ← WithBot.coe_natCast]
   cases m
   · simp
   · rw [WithBot.coe_le_coe, ENat.coe_add, ENat.coe_one, ENat.add_one_le_iff (ENat.coe_ne_top n),
       ← WithBot.coe_lt_coe, WithBot.coe_natCast]
+
+lemma add_one_le_natCast_iff {n : WithBot ℕ∞} {m : ℕ} : n + 1 ≤ m ↔ n < m := by
+  induction n with
+  | bot => simp
+  | coe n =>
+    norm_cast
+    simp [add_one_le_iff']
+
+@[simp]
+lemma add_one_le_zero_iff (n : WithBot ℕ∞) : n + 1 ≤ 0 ↔ n = ⊥ :=
+  add_one_le_natCast_iff.trans (WithBot.lt_zero_iff_eq_bot n)
+
+@[simp]
+lemma add_natCast_cancel {a b : WithBot ℕ∞} {c : ℕ} : a + c = b + c ↔ a = b :=
+  (IsAddRightRegular.all c).withTop.withBot.eq_iff
+
+@[simp]
+lemma add_one_cancel {a b : WithBot ℕ∞} : a + 1 = b + 1 ↔ a = b :=
+  (IsAddRightRegular.all 1).withTop.withBot.eq_iff
+
+lemma add_ofNat_cancel {a b : WithBot ℕ∞} {c : ℕ} [c.AtLeastTwo] :
+    a + ofNat(c) = b + ofNat(c) ↔ a = b :=
+  WithBot.add_natCast_cancel
+
+@[simp]
+lemma natCast_add_cancel {a b : WithBot ℕ∞} {c : ℕ} : c + a = c + b ↔ a = b :=
+  (IsAddLeftRegular.all c).withTop.withBot.eq_iff
+
+@[simp]
+lemma one_add_cancel {a b : WithBot ℕ∞} : 1 + a = 1 + b ↔ a = b :=
+  (IsAddLeftRegular.all 1).withTop.withBot.eq_iff
+
+lemma ofNat_add_cancel {a b : WithBot ℕ∞} {c : ℕ} [c.AtLeastTwo] :
+    ofNat(c) + a = ofNat(c) + b ↔ a = b :=
+  WithBot.natCast_add_cancel
+
+lemma add_le_add_natCast_right_iff {a b : WithBot ℕ∞} {c : ℕ} : a + c ≤ b + c ↔ a ≤ b :=
+  (Contravariant.AddLECancellable (a := c)).withTop.withBot.add_le_add_iff_right
+
+lemma add_le_add_one_right_iff {a b : WithBot ℕ∞} : a + 1 ≤ b + 1 ↔ a ≤ b :=
+  WithBot.add_le_add_natCast_right_iff
+
+lemma add_le_add_natCast_left_iff {a b : WithBot ℕ∞} {c : ℕ} : c + a ≤ c + b ↔ a ≤ b := by
+  rw [add_comm _ a, add_comm _ b, WithBot.add_le_add_natCast_right_iff]
+
+lemma add_le_add_one_left_iff {a b : WithBot ℕ∞} : 1 + a ≤ 1 + b ↔ a ≤ b :=
+  WithBot.add_le_add_natCast_left_iff
+
+end ENat.WithBot

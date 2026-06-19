@@ -3,7 +3,9 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Finsupp
+module
+
+public import Mathlib.Algebra.Group.Finsupp
 
 /-!
 # Locus of unequal values of finitely supported functions
@@ -18,6 +20,8 @@ functions.
 In the case in which `N` is an additive group, `Finsupp.neLocus f g` coincides with
 `Finsupp.support (f - g)`.
 -/
+
+@[expose] public section
 
 
 variable {α M N P : Type*}
@@ -43,8 +47,6 @@ theorem mem_neLocus {f g : α →₀ N} {a : α} : a ∈ f.neLocus g ↔ f a ≠
 theorem notMem_neLocus {f g : α →₀ N} {a : α} : a ∉ f.neLocus g ↔ f a = g a :=
   mem_neLocus.not.trans not_ne_iff
 
-@[deprecated (since := "2025-05-23")] alias not_mem_neLocus := notMem_neLocus
-
 @[simp]
 theorem coe_neLocus : ↑(f.neLocus g) = { x | f x ≠ g x } := by
   ext
@@ -54,7 +56,7 @@ theorem coe_neLocus : ↑(f.neLocus g) = { x | f x ≠ g x } := by
 theorem neLocus_eq_empty {f g : α →₀ N} : f.neLocus g = ∅ ↔ f = g :=
   ⟨fun h =>
     ext fun a => not_not.mp (mem_neLocus.not.mp (Finset.eq_empty_iff_forall_notMem.mp h a)),
-    fun h => h ▸ by simp only [neLocus, Ne, eq_self_iff_true, not_true, Finset.filter_False]⟩
+    fun h => h ▸ by simp only [neLocus, Ne, not_true, Finset.filter_false]⟩
 
 @[simp]
 theorem nonempty_neLocus_iff {f g : α →₀ N} : (f.neLocus g).Nonempty ↔ f ≠ g :=
@@ -85,20 +87,20 @@ theorem zipWith_neLocus_eq_left [DecidableEq N] [Zero M] [DecidableEq P] [Zero P
     (hF : ∀ f, Function.Injective fun g => F f g) :
     (zipWith F F0 f g₁).neLocus (zipWith F F0 f g₂) = g₁.neLocus g₂ := by
   ext
-  simpa only [mem_neLocus] using (hF _).ne_iff
+  simpa only [mem_neLocus] using! (hF _).ne_iff
 
 theorem zipWith_neLocus_eq_right [DecidableEq M] [Zero M] [DecidableEq P] [Zero P] [Zero N]
     {F : M → N → P} (F0 : F 0 0 = 0) (f₁ f₂ : α →₀ M) (g : α →₀ N)
     (hF : ∀ g, Function.Injective fun f => F f g) :
     (zipWith F F0 f₁ g).neLocus (zipWith F F0 f₂ g) = f₁.neLocus f₂ := by
   ext
-  simpa only [mem_neLocus] using (hF _).ne_iff
+  simpa only [mem_neLocus] using! (hF _).ne_iff
 
 theorem mapRange_neLocus_eq [DecidableEq N] [DecidableEq M] [Zero M] [Zero N] (f g : α →₀ N)
     {F : N → M} (F0 : F 0 = 0) (hF : Function.Injective F) :
     (f.mapRange F F0).neLocus (g.mapRange F F0) = f.neLocus g := by
   ext
-  simpa only [mem_neLocus] using hF.ne_iff
+  simpa only [mem_neLocus] using! hF.ne_iff
 
 end NeLocusAndMaps
 

@@ -3,8 +3,10 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Comma.Final
-import Mathlib.CategoryTheory.Limits.Indization.IndObject
+module
+
+public import Mathlib.CategoryTheory.Comma.Final
+public import Mathlib.CategoryTheory.Limits.Indization.IndObject
 
 /-!
 # Parallel pairs of natural transformations between ind-objects
@@ -19,11 +21,13 @@ commonly presented by diagrams and natural transformations in `I ⥤ C`.
   our proof is more direct).
 -/
 
+@[expose] public section
+
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Limits
+open Limits Functor
 
 variable {C : Type u₁} [Category.{v₁} C]
 
@@ -99,34 +103,32 @@ def ϕ : F₁ f g P₁ P₂ ⟶ F₂ f g P₁ P₂ where
   app h := h.hom.1.left
   naturality _ _ h := by
     have := h.w
-    simp only [Functor.prod'_obj, Functor.comp_obj, prod_Hom, Functor.prod'_map, Functor.comp_map,
-      prod_comp, Prod.mk.injEq, CostructuredArrow.hom_eq_iff, CostructuredArrow.map_obj_left,
-      IndObjectPresentation.toCostructuredArrow_obj_left, CostructuredArrow.comp_left,
-      CostructuredArrow.map_map_left, IndObjectPresentation.toCostructuredArrow_map_left] at this
+    simp only [prod'_map, Functor.comp_map, Prod.hom_ext_iff,
+      CostructuredArrow.hom_eq_iff] at this
     exact this.1
 
+set_option backward.defeqAttrib.useBackward true in
 theorem hf : f = IsColimit.map (isColimit₁ f g P₁ P₂)
     (Cocone.mk B (ι₂ f g P₁ P₂)) (whiskerRight (ϕ f g P₁ P₂) yoneda) := by
   refine (isColimit₁ f g P₁ P₂).hom_ext (fun i => ?_)
   rw [IsColimit.ι_map]
-  simpa using i.hom.1.w.symm
+  simpa using! i.hom.1.w.symm
 
 /-- Implementation; see `nonempty_indParallelPairPresentation`. -/
 def ψ : F₁ f g P₁ P₂ ⟶ F₂ f g P₁ P₂ where
   app h := h.hom.2.left
   naturality _ _ h := by
     have := h.w
-    simp only [Functor.prod'_obj, Functor.comp_obj, prod_Hom, Functor.prod'_map, Functor.comp_map,
-      prod_comp, Prod.mk.injEq, CostructuredArrow.hom_eq_iff, CostructuredArrow.map_obj_left,
-      IndObjectPresentation.toCostructuredArrow_obj_left, CostructuredArrow.comp_left,
-      CostructuredArrow.map_map_left, IndObjectPresentation.toCostructuredArrow_map_left] at this
+    simp only [prod'_map, Functor.comp_map, Prod.hom_ext_iff,
+      CostructuredArrow.hom_eq_iff] at this
     exact this.2
 
+set_option backward.defeqAttrib.useBackward true in
 theorem hg : g = IsColimit.map (isColimit₁ f g P₁ P₂)
     (Cocone.mk B (ι₂ f g P₁ P₂)) (whiskerRight (ψ f g P₁ P₂) yoneda) := by
   refine (isColimit₁ f g P₁ P₂).hom_ext (fun i => ?_)
   rw [IsColimit.ι_map]
-  simpa using i.hom.2.w.symm
+  simpa using! i.hom.2.w.symm
 
 attribute [local instance] Comma.isFiltered_of_final in
 /-- Implementation; see `nonempty_indParallelPairPresentation`. -/
@@ -151,6 +153,7 @@ theorem nonempty_indParallelPairPresentation {A B : Cᵒᵖ ⥤ Type v₁} (hA :
 
 namespace IndParallelPairPresentation
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an `IndParallelPairPresentation f g`, we can understand the parallel pair `(f, g)`
 as the colimit of `(P.φ, P.ψ)` in `Cᵒᵖ ⥤ Type v`. -/
 noncomputable def parallelPairIsoParallelPairCompYoneda {A B : Cᵒᵖ ⥤ Type v₁} {f g : A ⟶ B}

@@ -3,11 +3,15 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.ContinuousOn
+module
+
+public import Mathlib.Topology.ContinuousOn
 
 /-!
 ### Continuity of piecewise defined functions
 -/
+
+public section
 
 open Set Filter Function Topology Filter
 
@@ -20,7 +24,7 @@ theorem continuousWithinAt_update_same [DecidableEq α] {y : β} :
     ContinuousWithinAt (update f x y) s x ↔ Tendsto f (𝓝[s \ {x}] x) (𝓝 y) :=
   calc
     ContinuousWithinAt (update f x y) s x ↔ Tendsto (update f x y) (𝓝[s \ {x}] x) (𝓝 y) := by
-    { rw [← continuousWithinAt_diff_self, ContinuousWithinAt, update_self] }
+    { rw [← continuousWithinAt_sdiff_self, ContinuousWithinAt, update_self] }
     _ ↔ Tendsto f (𝓝[s \ {x}] x) (𝓝 y) :=
       tendsto_congr' <| eventually_nhdsWithin_iff.2 <| Eventually.of_forall
         fun _ hz => update_of_ne hz.2 ..
@@ -28,7 +32,7 @@ theorem continuousWithinAt_update_same [DecidableEq α] {y : β} :
 @[simp]
 theorem continuousAt_update_same [DecidableEq α] {y : β} :
     ContinuousAt (Function.update f x y) x ↔ Tendsto f (𝓝[≠] x) (𝓝 y) := by
-  rw [← continuousWithinAt_univ, continuousWithinAt_update_same, compl_eq_univ_diff]
+  rw [← continuousWithinAt_univ, continuousWithinAt_update_same, compl_eq_univ_sdiff]
 
 theorem ContinuousOn.if' {s : Set α} {p : α → Prop} {f g : α → β} [∀ a, Decidable (p a)]
     (hpf : ∀ a ∈ s ∩ frontier { a | p a },
@@ -92,14 +96,14 @@ theorem continuous_if' {p : α → Prop} [∀ a, Decidable (p a)]
     (hpg : ∀ a ∈ frontier { x | p x }, Tendsto g (𝓝[{ x | ¬p x }] a) (𝓝 <| ite (p a) (f a) (g a)))
     (hf : ContinuousOn f { x | p x }) (hg : ContinuousOn g { x | ¬p x }) :
     Continuous fun a => ite (p a) (f a) (g a) := by
-  rw [continuous_iff_continuousOn_univ]
-  apply ContinuousOn.if' <;> simp [*] <;> assumption
+  rw [← continuousOn_univ]
+  apply ContinuousOn.if' <;> simpa
 
 theorem continuous_if {p : α → Prop} [∀ a, Decidable (p a)]
     (hp : ∀ a ∈ frontier { x | p x }, f a = g a) (hf : ContinuousOn f (closure { x | p x }))
     (hg : ContinuousOn g (closure { x | ¬p x })) :
     Continuous fun a => if p a then f a else g a := by
-  rw [continuous_iff_continuousOn_univ]
+  rw [← continuousOn_univ]
   apply ContinuousOn.if <;> simpa
 
 theorem Continuous.if {p : α → Prop} [∀ a, Decidable (p a)]
@@ -130,7 +134,7 @@ theorem IsOpen.ite' (hs : IsOpen s) (hs' : IsOpen s')
     (ht : ∀ x ∈ frontier t, x ∈ s ↔ x ∈ s') : IsOpen (t.ite s s') := by
   classical
     simp only [isOpen_iff_continuous_mem, Set.ite] at *
-    convert
+    convert!
       continuous_piecewise (fun x hx => propext (ht x hx)) hs.continuousOn hs'.continuousOn using 2
     rename_i x
     by_cases hx : x ∈ t <;> simp [hx]

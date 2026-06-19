@@ -3,7 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Lattice.Fold
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Irreducible and prime elements in an order
@@ -27,6 +29,8 @@ Both hold for all (non-minimal) elements in a linear order.
 * `exists_supIrred_decomposition`/`exists_infIrred_decomposition`: Decomposition into irreducibles
   in a well-founded semilattice.
 -/
+
+@[expose] public section
 
 
 open Finset OrderDual
@@ -63,13 +67,13 @@ theorem IsMin.not_supPrime (ha : IsMin a) : ¬SupPrime a := fun h => h.1 ha
 @[simp]
 theorem not_supIrred : ¬SupIrred a ↔ IsMin a ∨ ∃ b c, b ⊔ c = a ∧ b < a ∧ c < a := by
   rw [SupIrred, not_and_or]
-  push_neg
+  push Not
   rw [exists₂_congr]
   simp +contextual [@eq_comm _ _ a]
 
 @[simp]
 theorem not_supPrime : ¬SupPrime a ↔ IsMin a ∨ ∃ b c, a ≤ b ⊔ c ∧ ¬a ≤ b ∧ ¬a ≤ c := by
-  rw [SupPrime, not_and_or]; push_neg; rfl
+  rw [SupPrime, not_and_or]; push Not; rfl
 
 protected theorem SupPrime.supIrred : SupPrime a → SupIrred a :=
   And.imp_right fun h b c ha => by simpa [← ha] using h ha.ge
@@ -96,7 +100,7 @@ theorem SupIrred.finset_sup_eq (ha : SupIrred a) (h : s.sup f = a) : ∃ i ∈ s
   induction s using Finset.induction with
   | empty => simpa [ha.ne_bot] using h.symm
   | insert i s _ ih =>
-    simp only [exists_prop, exists_mem_insert] at ih ⊢
+    simp only [exists_mem_insert] at ih ⊢
     rw [sup_insert] at h
     exact (ha.2 h).imp_right ih
 
@@ -104,7 +108,7 @@ theorem SupPrime.le_finset_sup (ha : SupPrime a) : a ≤ s.sup f ↔ ∃ i ∈ s
   classical
   induction s using Finset.induction with
   | empty => simp [ha.ne_bot]
-  | insert i s _ ih => simp only [exists_prop, exists_mem_insert, sup_insert, ha.le_sup, ih]
+  | insert i s _ ih => simp only [exists_mem_insert, sup_insert, ha.le_sup, ih]
 
 variable [WellFoundedLT α]
 

@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.SmallObject.IsCardinalForSmallObjectArgument
+module
+
+public import Mathlib.CategoryTheory.SmallObject.IsCardinalForSmallObjectArgument
 
 /-!
 # The small object argument
@@ -28,7 +30,7 @@ obtained in this file are:
 * the class `I.rlp.llp` of morphisms that have the left lifting property with
   respect to the maps that have the right lifting property with respect
   to `I` are exactly the retracts of transfinite compositions (indexed
-  by a suitable well ordered type `J`) of pushouts of coproducts of
+  by a suitable well-ordered type `J`) of pushouts of coproducts of
   morphisms in `I`;
 * morphisms in `C` have a functorial factorization as a morphism in
   `I.rlp.llp` followed by a morphism in `I.rlp`.
@@ -67,6 +69,8 @@ the file `Mathlib/CategoryTheory/SmallObject/TransfiniteCompositionLifting.lean`
 
 -/
 
+@[expose] public section
+
 universe w v u
 
 namespace CategoryTheory
@@ -82,7 +86,7 @@ variable {C : Type u} [Category.{v} C] (I : MorphismProperty C)
 i.e. there exists a regular cardinal `κ : Cardinal.{w}` such that
 `IsCardinalForSmallObjectArgument I κ` holds. -/
 class HasSmallObjectArgument : Prop where
-  exists_cardinal : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular) (_ : OrderBot κ.ord.toType),
+  exists_cardinal : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular) (_ : OrderBot κ.ord.ToType),
     IsCardinalForSmallObjectArgument I κ
 
 variable [HasSmallObjectArgument.{w} I]
@@ -95,7 +99,7 @@ noncomputable def smallObjectκ : Cardinal.{w} :=
 local instance smallObjectκ_isRegular : Fact I.smallObjectκ.IsRegular :=
   HasSmallObjectArgument.exists_cardinal.choose_spec.choose
 
-noncomputable instance : OrderBot I.smallObjectκ.ord.toType :=
+noncomputable instance : OrderBot I.smallObjectκ.ord.ToType :=
   HasSmallObjectArgument.exists_cardinal.choose_spec.choose_spec.choose
 
 instance isCardinalForSmallObjectArgument_smallObjectκ :
@@ -106,17 +110,17 @@ instance : HasFunctorialFactorization I.rlp.llp I.rlp :=
   hasFunctorialFactorization I I.smallObjectκ
 
 /-- If `I : MorphismProperty C` permits the small object argument,
-then the class of morphism that have the left lifting property with respect to
+then the class of morphisms that have the left lifting property with respect to
 the maps that have the right lifting property with respect to `I` are
-exactly the retracts of transfinite compositions (indexed by `I.smallObjectκ.ord.toType`)
+exactly the retracts of transfinite compositions (indexed by `I.smallObjectκ.ord.ToType`)
 of pushouts of coproducts of morphisms in `C`. -/
 lemma llp_rlp_of_hasSmallObjectArgument' :
     I.rlp.llp = (transfiniteCompositionsOfShape (coproducts.{w} I).pushouts
-        I.smallObjectκ.ord.toType).retracts :=
+        I.smallObjectκ.ord.ToType).retracts :=
   llp_rlp_of_isCardinalForSmallObjectArgument' I I.smallObjectκ
 
 /-- If `I : MorphismProperty C` permits the small object argument,
-then the class of morphism that have the left lifting property with respect to
+then the class of morphisms that have the left lifting property with respect to
 the maps that have the right lifting property with respect to `I` are
 exactly the retracts of transfinite compositions
 of pushouts of coproducts of morphisms in `C`. -/

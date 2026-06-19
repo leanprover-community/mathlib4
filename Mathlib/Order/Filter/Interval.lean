@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Interval.Set.OrdConnected
-import Mathlib.Order.Filter.SmallSets
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Order.Filter.Bases.Finite
+module
+
+public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Filter.SmallSets
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Order.Filter.Bases.Finite
 
 /-!
 # Convergence of intervals
@@ -73,6 +75,8 @@ that need topology are defined in `Mathlib/Topology/Algebra/Ordered`.
 
 -/
 
+public section
+
 
 variable {α β : Type*}
 
@@ -103,7 +107,7 @@ theorem tendstoIxxClass_principal {s t : Set α} {Ixx : α → α → Set α} :
     TendstoIxxClass Ixx (𝓟 s) (𝓟 t) ↔ ∀ᵉ (x ∈ s) (y ∈ s), Ixx x y ⊆ t :=
   Iff.trans ⟨fun h => h.1, fun h => ⟨h⟩⟩ <| by
     simp only [smallSets_principal, prod_principal_principal, tendsto_principal_principal,
-      forall_prod_set, mem_powerset_iff, mem_principal]
+      forall_prod_set, mem_powerset_iff]
 
 theorem tendstoIxxClass_inf {l₁ l₁' l₂ l₂' : Filter α} {Ixx} [h : TendstoIxxClass Ixx l₁ l₂]
     [h' : TendstoIxxClass Ixx l₁' l₂'] : TendstoIxxClass Ixx (l₁ ⊓ l₁') (l₂ ⊓ l₂') :=

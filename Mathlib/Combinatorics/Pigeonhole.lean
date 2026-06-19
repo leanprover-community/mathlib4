@@ -3,10 +3,13 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Nat.ModEq
-import Mathlib.Order.Preorder.Finite
+module
+
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Data.Nat.ModEq
+public import Mathlib.Order.Preorder.Finite
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # Pigeonhole principles
@@ -60,6 +63,8 @@ docstrings instead of the names.
 pigeonhole principle
 -/
 
+public section
+
 
 universe u v w
 
@@ -82,7 +87,7 @@ variations of this theorem.
 The principle is formalized in the following way, see
 `Finset.exists_lt_sum_fiber_of_maps_to_of_nsmul_lt_sum`: if `f : α → β` is a function which maps all
 elements of `s : Finset α` to `t : Finset β` and `#t • b < ∑ x ∈ s, w x`, where `w : α → M` is
-a weight function taking values in a `LinearOrderedCancelAddCommMonoid`, then for
+a weight function taking values in a linearly ordered cancellative monoid, then for
 some `y ∈ t`, the sum of the weights of all `x ∈ s` such that `f x = y` is greater than `b`.
 
 There are a few bits we can change in this theorem:

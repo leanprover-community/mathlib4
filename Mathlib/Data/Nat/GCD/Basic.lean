@@ -3,10 +3,11 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Batteries.Data.Nat.Gcd
-import Mathlib.Algebra.Group.Nat.Units
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.GroupWithZero.Nat
+module
+
+public import Mathlib.Algebra.Group.Nat.Units
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.GroupWithZero.Nat
 
 /-!
 # Properties of `Nat.gcd`, `Nat.lcm`, and `Nat.Coprime`
@@ -22,7 +23,9 @@ Note that the global `IsCoprime` is not a straightforward generalization of `Nat
 Most of this file could be moved to batteries as well.
 -/
 
-assert_not_exists OrderedCommMonoid
+public section
+
+assert_not_exists IsOrderedMonoid
 
 namespace Nat
 variable {a a₁ a₂ b b₁ b₂ c : ℕ}
@@ -32,6 +35,9 @@ variable {a a₁ a₂ b b₁ b₂ c : ℕ}
 theorem gcd_greatest {a b d : ℕ} (hda : d ∣ a) (hdb : d ∣ b) (hd : ∀ e : ℕ, e ∣ a → e ∣ b → e ∣ d) :
     d = a.gcd b :=
   (dvd_antisymm (hd _ (gcd_dvd_left a b) (gcd_dvd_right a b)) (dvd_gcd hda hdb)).symm
+
+theorem gcd_right_comm (a b c : ℕ) : gcd (gcd a b) c = gcd (gcd a c) b := by
+  rw [gcd_assoc, gcd_assoc, gcd_comm b c]
 
 /-! Lemmas where one argument consists of addition of a multiple of the other -/
 
@@ -60,6 +66,24 @@ theorem pow_sub_one_gcd_pow_sub_one (a b c : ℕ) :
   replace hb : c % b < b := mod_lt c hb
   rw [gcd_rec, pow_sub_one_mod_pow_sub_one, pow_sub_one_gcd_pow_sub_one, ← gcd_rec]
 
+/-! ### `lcm` and divisibility -/
+
+theorem dvd_lcm_of_dvd_left (h : a ∣ b) (c : ℕ) : a ∣ lcm b c :=
+  h.trans (dvd_lcm_left b c)
+
+alias Dvd.dvd.nat_lcm_right := dvd_lcm_of_dvd_left
+
+theorem dvd_of_lcm_right_dvd {a b c : ℕ} (h : lcm a b ∣ c) : a ∣ c :=
+  (dvd_lcm_left a b).trans h
+
+theorem dvd_lcm_of_dvd_right {a b : ℕ} (h : a ∣ b) (c : ℕ) : a ∣ lcm c b :=
+  h.trans (dvd_lcm_right c b)
+
+alias Dvd.dvd.nat_lcm_left := dvd_lcm_of_dvd_right
+
+theorem dvd_of_lcm_left_dvd {a b c : ℕ} (h : lcm a b ∣ c) : b ∣ c :=
+  (dvd_lcm_right a b).trans h
+
 /-!
 ### `Coprime`
 
@@ -69,7 +93,10 @@ See also `Nat.coprime_of_dvd` and `Nat.coprime_of_dvd'` to prove `Nat.Coprime m 
 theorem Coprime.lcm_eq_mul {m n : ℕ} (h : Coprime m n) : lcm m n = m * n := by
   rw [← one_mul (lcm m n), ← h.gcd_eq_one, gcd_mul_lcm]
 
-theorem Coprime.symmetric : Symmetric Coprime := fun _ _ => Coprime.symm
+instance Coprime.stdSymm : Std.Symm Coprime where
+  symm _ _ := Coprime.symm
+
+@[deprecated (since := "2026-06-10")] alias Coprime.symmetric := Coprime.stdSymm
 
 theorem Coprime.dvd_mul_right {m n k : ℕ} (H : Coprime k n) : k ∣ m * n ↔ k ∣ m :=
   ⟨H.dvd_of_dvd_mul_right, fun h => dvd_mul_of_dvd_left h n⟩
@@ -185,7 +212,7 @@ theorem gcd_mul_of_coprime_of_dvd {a b c : ℕ} (hac : Coprime a c) (b_dvd_c : b
     gcd (a * b) c = b := by
   rcases exists_eq_mul_left_of_dvd b_dvd_c with ⟨d, rfl⟩
   rw [gcd_mul_right]
-  convert one_mul b
+  convert! one_mul b
   exact Coprime.coprime_mul_right_right hac
 
 theorem Coprime.eq_of_mul_eq_zero {m n : ℕ} (h : m.Coprime n) (hmn : m * n = 0) :
@@ -193,8 +220,6 @@ theorem Coprime.eq_of_mul_eq_zero {m n : ℕ} (h : m.Coprime n) (hmn : m * n = 0
   (Nat.mul_eq_zero.mp hmn).imp (fun hm => ⟨hm, n.coprime_zero_left.mp <| hm ▸ h⟩) fun hn =>
     let eq := hn ▸ h.symm
     ⟨m.coprime_zero_left.mp <| eq, hn⟩
-
-@[deprecated (since := "2025-04-01")] alias prodDvdAndDvdOfDvdProd := dvdProdDvdOfDvdProd
 
 theorem coprime_iff_isRelPrime {m n : ℕ} : m.Coprime n ↔ IsRelPrime m n := by
   simp_rw [coprime_iff_gcd_eq_one, IsRelPrime, ← and_imp, ← dvd_gcd_iff, isUnit_iff_dvd_one]
@@ -220,12 +245,34 @@ theorem Coprime.mul_add_mul_ne_mul {m n a b : ℕ} (cop : Coprime m n) (ha : a �
   refine mul_ne_zero hb.2 ha.2 (eq_zero_of_mul_eq_self_left (ne_of_gt (add_le_add ha.1 hb.1)) ?_)
   rw [← mul_assoc, ← h, Nat.add_mul, Nat.add_mul, mul_comm _ n, ← mul_assoc, mul_comm y]
 
-variable {x n m : ℕ}
+variable {x n m k : ℕ}
 
 theorem gcd_mul_gcd_eq_iff_dvd_mul_of_coprime (hcop : Coprime n m) :
     gcd x n * gcd x m = x ↔ x ∣ n * m := by
   refine ⟨fun h ↦ ?_, (dvd_antisymm ?_ <| dvd_gcd_mul_gcd_iff_dvd_mul.mpr ·)⟩
   refine h ▸ Nat.mul_dvd_mul ?_ ?_ <;> exact x.gcd_dvd_right _
   refine (hcop.gcd_both x x).mul_dvd_of_dvd_of_dvd ?_ ?_ <;> exact x.gcd_dvd_left _
+
+lemma div_mul_div (hkm : m ∣ k) (hkn : n ∣ m) : (k / m) * (m / n) = k / n := by
+  rcases n.eq_zero_or_pos with hn | hn
+  · simp [hn]
+  refine (Nat.div_eq_of_eq_mul_left hn ?_).symm
+  rw [mul_assoc, Nat.div_mul_cancel hkn, Nat.div_mul_cancel hkm]
+
+lemma div_dvd_div_left (hkm : m ∣ k) (hkn : n ∣ m) : k / m ∣ k / n :=
+  ⟨_, (div_mul_div hkm hkn).symm⟩
+
+lemma div_lcm_eq_div_gcd (hkm : m ∣ k) (hkn : n ∣ k) : (k / m).lcm (k / n) = k / (m.gcd n) := by
+  rw [Nat.lcm_eq_iff]
+  refine ⟨div_dvd_div_left hkm (Nat.gcd_dvd_left m n),
+        div_dvd_div_left hkn (Nat.gcd_dvd_right m n), fun c hmc hnc ↦ ?_⟩
+  rcases m.eq_zero_or_pos with hm | hm
+  · simp_all
+  rcases n.eq_zero_or_pos with hn | hn
+  · simp_all
+  rw [Nat.div_dvd_iff_dvd_mul hkm hm] at hmc
+  rw [Nat.div_dvd_iff_dvd_mul hkn hn] at hnc
+  simpa [Nat.div_dvd_iff_dvd_mul (Nat.dvd_trans (Nat.gcd_dvd_left m n) hkm)
+    (gcd_pos_of_pos_left n hm), Nat.gcd_mul_right m c n] using (Nat.dvd_gcd hmc hnc)
 
 end Nat

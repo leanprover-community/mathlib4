@@ -3,10 +3,11 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.RingTheory.SimpleRing.Defs
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.RingTheory.TwoSidedIdeal.Kernel
+public import Mathlib.RingTheory.SimpleRing.Defs
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.RingTheory.TwoSidedIdeal.Kernel
 
 /-! # Basic Properties of Simple rings
 
@@ -22,7 +23,7 @@ A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `
 
 -/
 
-assert_not_exists Finset
+public section
 
 variable (R : Type*) [NonUnitalNonAssocRing R]
 

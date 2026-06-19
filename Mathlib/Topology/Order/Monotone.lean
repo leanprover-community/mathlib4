@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Tactic.Order
-import Mathlib.Topology.Order.IsLUB
+module
+
+public import Mathlib.Tactic.Order
+public import Mathlib.Topology.Order.IsLUB
 
 /-!
 # Monotone functions on an order topology
@@ -14,6 +16,8 @@ linearly-ordered sets (with the order topology). For example, we prove that a mo
 has left and right limits at any point (`Monotone.tendsto_nhdsLT`, `Monotone.tendsto_nhdsGT`).
 
 -/
+
+public section
 
 open Set Filter TopologicalSpace Topology Function
 
@@ -33,13 +37,13 @@ lemma MonotoneOn.insert_of_continuousWithinAt [TopologicalSpace β] [OrderClosed
   apply monotoneOn_insert_iff.2 ⟨fun b hb hbx ↦ ?_, fun b hb hxb ↦ ?_, hf⟩
   · rcases hbx.eq_or_lt with rfl | hbx
     · exact le_rfl
-    simp [ContinuousWithinAt] at h'x
+    simp only [ContinuousWithinAt] at h'x
     apply ge_of_tendsto h'x
     have : s ∩ Ioi b ∈ 𝓝[s] x := inter_mem_nhdsWithin _ (Ioi_mem_nhds hbx)
     filter_upwards [this] with y hy using hf hb hy.1 (le_of_lt hy.2)
   · rcases hxb.eq_or_lt with rfl | hxb
     · exact le_rfl
-    simp [ContinuousWithinAt] at h'x
+    simp only [ContinuousWithinAt] at h'x
     apply le_of_tendsto h'x
     have : s ∩ Iio b ∈ 𝓝[s] x := inter_mem_nhdsWithin _ (Iio_mem_nhds hxb)
     filter_upwards [this] with y hy
@@ -436,14 +440,11 @@ lemma MonotoneOn.tendsto_nhdsLT {α β : Type*} [LinearOrder α] [TopologicalSpa
   rcases eq_empty_or_nonempty (Iio x) with (h | h); · simp [h]
   refine tendsto_order.2 ⟨fun l hl => ?_, fun m hm => ?_⟩
   · obtain ⟨z, zx, lz⟩ : ∃ a : α, a < x ∧ l < f a := by
-      simpa only [mem_image, exists_prop, exists_exists_and_eq_and] using
+      simpa only [mem_image, exists_prop, exists_exists_and_eq_and] using!
         exists_lt_of_lt_csSup (h.image _) hl
     filter_upwards [Ioo_mem_nhdsLT zx] with y hy using lz.trans_le (Mf zx hy.2 hy.1.le)
   · refine mem_of_superset self_mem_nhdsWithin fun y hy => lt_of_le_of_lt ?_ hm
     exact le_csSup h_bdd (mem_image_of_mem _ hy)
-
-@[deprecated (since := "2024-12-22")]
-alias MonotoneOn.tendsto_nhdsWithin_Iio := MonotoneOn.tendsto_nhdsLT
 
 lemma MonotoneOn.tendsto_nhdsGT {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
     [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β] {f : α → β} {x : α}
@@ -451,26 +452,17 @@ lemma MonotoneOn.tendsto_nhdsGT {α β : Type*} [LinearOrder α] [TopologicalSpa
     Tendsto f (𝓝[>] x) (𝓝 (sInf (f '' Ioi x))) :=
   MonotoneOn.tendsto_nhdsLT (α := αᵒᵈ) (β := βᵒᵈ) Mf.dual h_bdd
 
-@[deprecated (since := "2024-12-22")]
-alias MonotoneOn.tendsto_nhdsWithin_Ioi := MonotoneOn.tendsto_nhdsGT
-
 /-- A monotone map has a limit to the left of any point `x`, equal to `sSup (f '' (Iio x))`. -/
 theorem Monotone.tendsto_nhdsLT {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
     [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β] {f : α → β}
     (Mf : Monotone f) (x : α) : Tendsto f (𝓝[<] x) (𝓝 (sSup (f '' Iio x))) :=
   MonotoneOn.tendsto_nhdsLT (Mf.monotoneOn _) (Mf.map_bddAbove bddAbove_Iio)
 
-@[deprecated (since := "2024-12-22")]
-alias Monotone.tendsto_nhdsWithin_Iio := Monotone.tendsto_nhdsLT
-
 /-- A monotone map has a limit to the right of any point `x`, equal to `sInf (f '' (Ioi x))`. -/
 theorem Monotone.tendsto_nhdsGT {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
     [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β] {f : α → β}
     (Mf : Monotone f) (x : α) : Tendsto f (𝓝[>] x) (𝓝 (sInf (f '' Ioi x))) :=
   Monotone.tendsto_nhdsLT (α := αᵒᵈ) (β := βᵒᵈ) Mf.dual x
-
-@[deprecated (since := "2024-12-22")]
-alias Monotone.tendsto_nhdsWithin_Ioi := Monotone.tendsto_nhdsGT
 
 lemma AntitoneOn.tendsto_nhdsWithin_Ioo_left {α β : Type*} [LinearOrder α] [TopologicalSpace α]
     [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
@@ -492,17 +484,11 @@ lemma AntitoneOn.tendsto_nhdsLT {α β : Type*} [LinearOrder α] [TopologicalSpa
     Tendsto f (𝓝[<] x) (𝓝 (sInf (f '' Iio x))) :=
   MonotoneOn.tendsto_nhdsLT Af.dual_right h_bdd
 
-@[deprecated (since := "2024-12-22")]
-alias AntitoneOn.tendsto_nhdsWithin_Iio := AntitoneOn.tendsto_nhdsLT
-
 lemma AntitoneOn.tendsto_nhdsGT {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
     [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β] {f : α → β} {x : α}
     (Af : AntitoneOn f (Ioi x)) (h_bdd : BddAbove (f '' Ioi x)) :
     Tendsto f (𝓝[>] x) (𝓝 (sSup (f '' Ioi x))) :=
   MonotoneOn.tendsto_nhdsGT Af.dual_right h_bdd
-
-@[deprecated (since := "2024-12-22")]
-alias AntitoneOn.tendsto_nhdsWithin_Ioi := AntitoneOn.tendsto_nhdsGT
 
 /-- An antitone map has a limit to the left of any point `x`, equal to `sInf (f '' (Iio x))`. -/
 theorem Antitone.tendsto_nhdsLT {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
@@ -510,16 +496,10 @@ theorem Antitone.tendsto_nhdsLT {α β : Type*} [LinearOrder α] [TopologicalSpa
     (Af : Antitone f) (x : α) : Tendsto f (𝓝[<] x) (𝓝 (sInf (f '' Iio x))) :=
   Monotone.tendsto_nhdsLT Af.dual_right x
 
-@[deprecated (since := "2024-12-22")]
-alias Antitone.tendsto_nhdsWithin_Iio := Antitone.tendsto_nhdsLT
-
 /-- An antitone map has a limit to the right of any point `x`, equal to `sSup (f '' (Ioi x))`. -/
 theorem Antitone.tendsto_nhdsGT {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
     [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β] {f : α → β}
     (Af : Antitone f) (x : α) : Tendsto f (𝓝[>] x) (𝓝 (sSup (f '' Ioi x))) :=
   Monotone.tendsto_nhdsGT Af.dual_right x
-
-@[deprecated (since := "2024-12-22")]
-alias Antitone.tendsto_nhdsWithin_Ioi := Antitone.tendsto_nhdsGT
 
 end ConditionallyCompleteLinearOrder
