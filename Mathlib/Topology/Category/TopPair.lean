@@ -241,6 +241,31 @@ protected structure IsCompl {X A B : TopPair} (f : A ⟶ X) (g : B ⟶ X) where
   fst : IsCompl (Set.range (Hom.fst f)) (Set.range (Hom.fst g))
   snd : IsCompl (Set.range (Hom.snd f)) (Set.range (Hom.snd g))
 
+set_option backward.isDefEq.respectTransparency false in
+/-- Under the assumptions of excision, the map of the pair `U` is an isomorphism. -/
+lemma isIso_of_isCompl_closure ⦃X U V : TopPair⦄ (f : U ⟶ X) (g : V ⟶ X) (hf : IsEmbedding f)
+    (hcompl : TopPair.IsCompl f g)
+    (hU : closure (Set.range (Hom.fst f)) ⊆ interior (Set.range X.map)) : IsIso U.map := by
+  have surjective_U : Function.Surjective U.map := by
+    rw [← Set.range_eq_univ, ← Set.univ_subset_iff, ← Set.image_subset_image_iff hf.fst.injective,
+      Set.image_univ]
+    refine Disjoint.subset_left_of_subset_union (u := Hom.fst g '' (Set.range V.map)) ?_ ?_
+    · calc
+        _ ⊆ closure (Set.range (Hom.fst f)) := subset_closure
+        _ ⊆ interior (Set.range X.map) := hU
+        _ ⊆ Set.range X.map := interior_subset
+        _ ⊆ _ := by
+          simp only [← Set.range_comp, ← CategoryTheory.hom_comp, ← Arrow.w]
+          dsimp
+          have := hcompl.snd.codisjoint
+          simp_all [codisjoint_iff, Set.range_comp, ← Set.image_union, ← Set.sup_eq_union]
+    · rw [Set.disjoint_iff, ← Set.disjoint_iff_inter_eq_empty.mp hcompl.fst.disjoint]
+      grind
+  apply TopCat.isIso_of_bijective_of_isOpenMap _
+    ⟨U.prop.injective, surjective_U⟩
+  apply Topology.IsInducing.isOpenMap U.prop.isInducing
+  simp [Function.Surjective.range_eq surjective_U]
+
 end Complement
 
 end TopPair
