@@ -141,10 +141,10 @@ theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅) : ⇑(⟨⟨⟨⟨f, h�
 theorem coe_ringHom_mk {f : A →+* B} (h) : RingHomClass.toRingHom (⟨f, h⟩ : A →ₐ[R] B) = f :=
   rfl
 
--- -- make the coercion the simp-normal form
--- @[simp]
--- theorem toRingHom_eq_coe (f : A →ₐ[R] B) : f.toRingHom = f :=
---   rfl
+-- make the coercion the simp-normal form
+@[simp]
+theorem toRingHom_eq_coe (f : A →ₐ[R] B) : f.toRingHom = RingHomClass.toRingHom f :=
+  rfl
 
 @[simp, norm_cast]
 theorem coe_toRingHom (f : A →ₐ[R] B) : ⇑(RingHomClass.toRingHom f) = f :=
@@ -455,7 +455,7 @@ variable {R}
 
 @[simp] lemma ofId_self : ofId R R = .id R R := rfl
 
--- @[simp] lemma toRingHom_ofId : ofId R A = algebraMap R A : R →ₐ[R] A := rfl
+@[simp] lemma toRingHom_ofId : RingHomClass.toRingHom (ofId R A) = algebraMap R A := rfl
 
 @[simp]
 theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=

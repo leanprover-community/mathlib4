@@ -197,11 +197,11 @@ theorem coe_algHom_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂)
   fun _ _ h => ext <| AlgHom.congr_fun h
 
 @[simp, norm_cast]
-lemma toAlgHom_toRingHom : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = e :=
+lemma toAlgHom_toRingHom : RingHomClass.toRingHom e = e :=
   rfl
 
 /-- The two paths coercion can take to a `RingHom` are equivalent -/
-theorem coe_ringHom_commutes : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = ((e : A₁ ≃+* A₂) : A₁ →+* A₂) :=
+theorem coe_ringHom_commutes : RingHomClass.toRingHom e = ((e : A₁ ≃+* A₂) : A₁ →+* A₂) :=
   rfl
 
 @[simp]
@@ -234,7 +234,7 @@ instance : Inhabited (A₁ ≃ₐ[R] A₁) :=
   ⟨refl⟩
 
 @[simp, norm_cast] lemma refl_toAlgHom : (refl : A₁ ≃ₐ[R] A₁) = AlgHom.id R A₁ := rfl
-@[simp, norm_cast] lemma refl_toRingHom : (refl : A₁ ≃ₐ[R] A₁) = RingHom.id A₁ := rfl
+@[simp] lemma refl_toRingHom : (refl : A₁ ≃ₐ[R] A₁) = RingHom.id A₁ := rfl
 
 @[simp]
 theorem coe_refl : ⇑(refl : A₁ ≃ₐ[R] A₁) = id :=
@@ -389,7 +389,7 @@ theorem symm_trans_apply (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A�
 
 @[simp, norm_cast]
 lemma toRingHom_trans (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) :
-    (e₁.trans e₂ : A₁ →+* A₃) = .comp e₂ (e₁ : A₁ →+* A₂) := rfl
+    RingHomClass.toRingHom (e₁.trans e₂) = .comp e₂ (e₁ : A₁ →+* A₂) := rfl
 
 end trans
 
@@ -554,7 +554,7 @@ theorem trans_toLinearMap (f : A₁ ≃ₐ[R] A₂) (g : A₂ ≃ₐ[R] A₃) :
 
 /-- Promotes a bijective algebra homomorphism to an algebra equivalence. -/
 noncomputable def ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) : A₁ ≃ₐ[R] A₂ :=
-  { RingEquiv.ofBijective (f : A₁ →+* A₂) hf, f with }
+  { RingEquiv.ofBijective (RingHomClass.toRingHom f) hf, f with }
 
 @[simp]
 lemma coe_ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) :
