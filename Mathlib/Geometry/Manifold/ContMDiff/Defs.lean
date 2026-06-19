@@ -356,7 +356,7 @@ theorem contMDiffWithinAt_iff_target_of_mem_maximalAtlas
   simp_rw [ContMDiffWithinAt,
     (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_indep_chart_target he' hx]
   apply and_congr_right (fun h ↦ ?_)
-  have A : ContinuousWithinAt (↑(e'.extend I') ∘ f) s x :=
+  have A : ContinuousWithinAt ((e'.extend I') ∘ f) s x :=
     (e'.continuousAt_extend hx).comp_continuousWithinAt h
   have A' : ContinuousWithinAt (e' ∘ f) s x := (e'.continuousAt hx).comp_continuousWithinAt h
   simp_rw [StructureGroupoid.liftPropWithinAt_self_target, A, A']
