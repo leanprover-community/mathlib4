@@ -250,6 +250,13 @@ abbrev hasPairSequence : ObjectProperty (HomologyPretheory.{u} C c) :=
 @[simp]
 lemma hasPairSequence_iff : hasPairSequence C c HP ↔ HP.HasPairSequence := .rfl
 
+variable {HP HP'} in
+abbrev hₚIsoOfIso (e : HP ≅ HP') (i : ι) : HP.Hₚ i ≅ HP'.Hₚ i := ((hₚFunctor i).mapIso e)
+
+variable {HP HP'} in
+abbrev hIsoOfIso (e : HP ≅ HP') (i : ι) : HP.H i ≅ HP'.H i :=
+  (HP.iso i) ≪≫ incl.isoWhiskerLeft ((hₚFunctor i).mapIso e) ≪≫ (HP'.iso i).symm
+
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : IsClosedUnderIsomorphisms (hasPairSequence.{u} C c) where
@@ -259,11 +266,9 @@ instance : IsClosedUnderIsomorphisms (hasPairSequence.{u} C c) where
       let pairSeq' := ComposableArrows.mk₂ ((HP'.Hₚ i).map X.j) ((HP'.δ i j).app X)
       have pairSeqIso : pairSeq ≅ pairSeq' :=
         ComposableArrows.isoMk₂
-          (((hₚFunctor _).mapIso e).app _)
-          (((hₚFunctor _).mapIso e).app _)
-          ((proj₂.isoWhiskerLeft ((HP.iso _) ≪≫
-            incl.isoWhiskerLeft ((hₚFunctor _).mapIso e) ≪≫
-            (HP'.iso _).symm)).app _)
+          ((hₚIsoOfIso e _).app _)
+          ((hₚIsoOfIso e _).app _)
+          ((proj₂.isoWhiskerLeft (hIsoOfIso e _)).app _)
           (by cat_disch)
           (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map, -Functor.isoWhiskerLeft_trans,
             Hom.w_app])
@@ -273,12 +278,9 @@ instance : IsClosedUnderIsomorphisms (hasPairSequence.{u} C c) where
       let pairSeq' := ComposableArrows.mk₂ ((HP'.δ i j).app X) ((HP'.H j).map X.map)
       have pairSeqIso : pairSeq ≅ pairSeq' :=
         ComposableArrows.isoMk₂
-          (((hₚFunctor _).mapIso e).app _)
-          ((proj₂.isoWhiskerLeft ((HP.iso _) ≪≫
-            incl.isoWhiskerLeft ((hₚFunctor _).mapIso e) ≪≫
-            (HP'.iso _).symm)).app _)
-          (((HP.iso _) ≪≫ incl.isoWhiskerLeft ((hₚFunctor _).mapIso e) ≪≫
-            (HP'.iso _).symm).app _)
+          ((hₚIsoOfIso e _).app _)
+          ((proj₂.isoWhiskerLeft (hIsoOfIso e _)).app _)
+          ((hIsoOfIso e _).app _)
           (by simp [pairSeq, pairSeq', -Functor.isoWhiskerLeft_trans, Hom.w_app])
           (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map])
       exact ComposableArrows.exact_of_iso pairSeqIso (hPS.exact_snd _ _ _ hij)
@@ -289,12 +291,9 @@ instance : IsClosedUnderIsomorphisms (hasPairSequence.{u} C c) where
         ((HP'.iso i).hom.app X.fst ≫ (HP'.Hₚ i).map X.j)
       have pairSeqIso : pairSeq ≅ pairSeq' :=
         ComposableArrows.isoMk₂
-          ((proj₂.isoWhiskerLeft ((HP.iso _) ≪≫
-            incl.isoWhiskerLeft ((hₚFunctor _).mapIso e) ≪≫
-            (HP'.iso _).symm)).app _)
-          (((HP.iso _) ≪≫ incl.isoWhiskerLeft ((hₚFunctor _).mapIso e) ≪≫
-            (HP'.iso _).symm).app _)
-          (((hₚFunctor _).mapIso e).app _)
+          ((proj₂.isoWhiskerLeft (hIsoOfIso e _)).app _)
+          ((hIsoOfIso e _).app _)
+          ((hₚIsoOfIso e _).app _)
           (by simp [pairSeq, pairSeq'])
           (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map, Hom.iso_comm_app_assoc])
       exact ComposableArrows.exact_of_iso pairSeqIso (hPS.exact_fst _ _)
