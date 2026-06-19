@@ -376,6 +376,9 @@ theorem mulEquivCongr_symm_apply_smul (g : G') (x : B) :
     (mulEquivCongr G G' A B).symm g • x = g • x := by
   rw [← mulEquivCongr_apply_smul G G' A B, MulEquiv.apply_symm_apply]
 
+@[deprecated (since := "2026-06-19")] alias mulEquivCongr' := mulEquivCongr
+@[deprecated (since := "2026-06-19")] alias mulEquivCongr'_apply_smul := mulEquivCongr_apply_smul
+
 end IsDomain
 
 variable (H H' : Subgroup G) (F F' : IntermediateField K L)
