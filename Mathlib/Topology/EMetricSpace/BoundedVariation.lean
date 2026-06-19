@@ -1024,20 +1024,33 @@ protected theorem antitoneOn (hf : LocallyBoundedVariationOn f s) {b : α} (bs :
   rw [← variationOnFromTo.add hf as cs bs]
   exact le_add_of_nonneg_left (variationOnFromTo.nonneg_of_le f s ac)
 
+lemma abs_sub_le_sub_of_le {f : α → ℝ} {s : Set α} (hf : LocallyBoundedVariationOn f s)
+    {a b c : α} (as : a ∈ s) (bs : b ∈ s) (cs : c ∈ s) (bc : b ≤ c) :
+    |f c - f b| ≤ variationOnFromTo f s a c - variationOnFromTo f s a b := calc
+  _ = dist (f b) (f c) := by rw [dist_comm, Real.dist_eq]
+  _ ≤ variationOnFromTo f s b c := by
+    rw [variationOnFromTo.eq_of_le f s bc, dist_edist]
+    apply ENNReal.toReal_mono (hf b c bs cs)
+    apply eVariationOn.edist_le f
+    exacts [⟨bs, le_rfl, bc⟩, ⟨cs, bc, le_rfl⟩]
+  _ = variationOnFromTo f s a c - variationOnFromTo f s a b := by
+    rw [← variationOnFromTo.add hf as bs cs, add_sub_cancel_left]
+
+protected theorem add_self_monotoneOn {f : α → ℝ} {s : Set α} (hf : LocallyBoundedVariationOn f s)
+    {a : α} (as : a ∈ s) : MonotoneOn (variationOnFromTo f s a + f) s := by
+  rintro b bs c cs bc
+  suffices f b - f c ≤ variationOnFromTo f s a c - variationOnFromTo f s a b by simp; linarith
+  calc
+    f b - f c ≤ |f c - f b| := by grw [le_abs_self (f b - f c), abs_sub_comm (f b) (f c)]
+    _ ≤ variationOnFromTo f s a c - variationOnFromTo f s a b := abs_sub_le_sub_of_le hf as bs cs bc
+
 protected theorem sub_self_monotoneOn {f : α → ℝ} {s : Set α} (hf : LocallyBoundedVariationOn f s)
     {a : α} (as : a ∈ s) : MonotoneOn (variationOnFromTo f s a - f) s := by
   rintro b bs c cs bc
   rw [Pi.sub_apply, Pi.sub_apply, le_sub_iff_add_le, add_comm_sub, ← le_sub_iff_add_le']
   calc
     f c - f b ≤ |f c - f b| := le_abs_self _
-    _ = dist (f b) (f c) := by rw [dist_comm, Real.dist_eq]
-    _ ≤ variationOnFromTo f s b c := by
-      rw [variationOnFromTo.eq_of_le f s bc, dist_edist]
-      apply ENNReal.toReal_mono (hf b c bs cs)
-      apply eVariationOn.edist_le f
-      exacts [⟨bs, le_rfl, bc⟩, ⟨cs, bc, le_rfl⟩]
-    _ = variationOnFromTo f s a c - variationOnFromTo f s a b := by
-      rw [← variationOnFromTo.add hf as bs cs, add_sub_cancel_left]
+    _ ≤ variationOnFromTo f s a c - variationOnFromTo f s a b := abs_sub_le_sub_of_le hf as bs cs bc
 
 protected theorem comp_eq_of_monotoneOn {β : Type*} [LinearOrder β] (f : α → E) {t : Set β}
     (φ : β → α) (hφ : MonotoneOn φ t) {x y : β} (hx : x ∈ t) (hy : y ∈ t) :
@@ -1075,15 +1088,39 @@ theorem _root_.BoundedVariationOn.continuousWithinAt_variationOnFromTo_rightLim_
 end variationOnFromTo
 
 /-- If a real-valued function has bounded variation on a set, then it is a difference of monotone
+functions there. Moreover, one can make sure that the two monotone functions add up to the
+variation of `f`. -/
+theorem LocallyBoundedVariationOn.exists_monotoneOn_sub_monotoneOn' {f : α → ℝ} {s : Set α}
+    (h : LocallyBoundedVariationOn f s) :
+    ∃ p q : α → ℝ, MonotoneOn p s ∧ MonotoneOn q s ∧ f = p - q ∧
+      ∀ x ∈ s, ∀ y ∈ s, (p y - p x) + (q y - q x) = variationOnFromTo f s x y := by
+  rcases eq_empty_or_nonempty s with (rfl | ⟨c, cs⟩)
+  · refine ⟨f, 0, subsingleton_empty.monotoneOn _, subsingleton_empty.monotoneOn _,
+      (sub_zero f).symm, fun x hx y hy ↦ by simp at hx⟩
+  refine ⟨fun x ↦ (variationOnFromTo f s c x + f x) / 2,
+    fun x ↦ (variationOnFromTo f s c x - f x) / 2, ?_, ?_, ?_, ?_⟩
+  · intro x hx y hy hxy
+    dsimp
+    gcongr 1
+    simpa using variationOnFromTo.add_self_monotoneOn h cs hx hy hxy
+  · intro x hx y hy hxy
+    dsimp
+    gcongr 1
+    simpa using variationOnFromTo.sub_self_monotoneOn h cs hx hy hxy
+  · ext
+    simp
+    ring
+  · intro x hx y hy
+    rw [← variationOnFromTo.add h hx cs hy, variationOnFromTo.eq_neg_swap]
+    ring
+
+/-- If a real-valued function has bounded variation on a set, then it is a difference of monotone
 functions there. -/
 theorem LocallyBoundedVariationOn.exists_monotoneOn_sub_monotoneOn {f : α → ℝ} {s : Set α}
     (h : LocallyBoundedVariationOn f s) :
     ∃ p q : α → ℝ, MonotoneOn p s ∧ MonotoneOn q s ∧ f = p - q := by
-  rcases eq_empty_or_nonempty s with (rfl | ⟨c, cs⟩)
-  · exact ⟨f, 0, subsingleton_empty.monotoneOn _, subsingleton_empty.monotoneOn _,
-      (sub_zero f).symm⟩
-  · exact ⟨_, _, variationOnFromTo.monotoneOn h cs, variationOnFromTo.sub_self_monotoneOn h cs,
-      (sub_sub_cancel _ _).symm⟩
+  rcases h.exists_monotoneOn_sub_monotoneOn' with ⟨p, q, hp, hq, h'f, -⟩
+  exact ⟨p, q, hp, hq, h'f⟩
 
 /-! ### Lipschitz functions and bounded variation -/
 
