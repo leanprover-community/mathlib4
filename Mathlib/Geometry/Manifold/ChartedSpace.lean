@@ -275,7 +275,7 @@ theorem ChartedSpace.locPathConnectedSpace [LocPathConnectedSpace H] : LocPathCo
     apply e.symm.image_mem_nhds (by simp [e])
     exact pathComponentIn_mem_nhds <| e.image_mem_nhds (mem_chart_source _ _) ht
   · refine (isPathConnected_pathComponentIn <| mem_image_of_mem e (mem_of_mem_nhds ht)).image' ?_
-    refine e.continuousOn_symm.mono <| subset_trans ?_ e.map_source''
+    refine e.continuousOn_symm.mono <| subset_trans ?_ e.image_source_subset
     exact (pathComponentIn_mono <| image_mono inter_subset_right).trans pathComponentIn_subset
   · exact (image_mono pathComponentIn_subset).trans
       (PartialEquiv.symm_image_image_of_subset_source _ inter_subset_right).subset

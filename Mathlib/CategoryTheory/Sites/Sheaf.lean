@@ -102,7 +102,7 @@ def conesEquivSieveCompatibleFamily :
   toFun π :=
     ⟨fun _ f h => π.app (op ⟨Over.mk f, h⟩), fun X Y f g hf => by
       let φ : S.arrows.categoryMk (g ≫ f) (S.downward_closed hf g) ⟶
-        S.arrows.categoryMk f hf := ObjectProperty.homMk (Over.homMk _ (by rfl))
+        S.arrows.categoryMk f hf := ObjectProperty.homMk (Over.homMk _ rfl)
       simpa using! π.naturality φ.op⟩
   invFun x :=
     { app := fun f => x.1 f.unop.1.hom f.unop.2

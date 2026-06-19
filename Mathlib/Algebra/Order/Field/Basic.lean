@@ -733,47 +733,72 @@ lemma zpow_zero_pos {α : Type*} [Semifield α] [PartialOrder α] [IsStrictOrder
 
 /-- The `positivity` extension which identifies expressions of the form `a / b`,
 such that `positivity` successfully recognises both `a` and `b`. -/
-@[positivity _ / _] meta def evalDiv : PositivityExt where eval {u α} zα pα e := do
+@[positivity _ / _] meta def evalDiv : PositivityExt where eval {u α} zα pα? e := do
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
     | throwError "not /"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
-  let _a ← synthInstanceQ q(GroupWithZero $α)
-  let _a ← synthInstanceQ q(PartialOrder $α)
-  let _a ← synthInstanceQ q(PosMulReflectLT $α)
-  assumeInstancesCommute
+  trace[Tactic.positivity.zeroness] "evalDiv: {a} divided by {b}"
+  let _a ← synthInstanceQ q(Semifield $α)
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(HDiv.hDiv)
-  let ra ← core zα pα a; let rb ← core zα pα b
-  match ra, rb with
-  | .positive pa, .positive pb => pure (.positive q(div_pos $pa $pb))
-  | .positive pa, .nonnegative pb => pure (.nonnegative q(div_nonneg_of_pos_of_nonneg $pa $pb))
-  | .nonnegative pa, .positive pb => pure (.nonnegative q(div_nonneg_of_nonneg_of_pos $pa $pb))
-  | .nonnegative pa, .nonnegative pb => pure (.nonnegative q(div_nonneg $pa $pb))
-  | .positive pa, .nonzero pb => pure (.nonzero q(div_ne_zero_of_pos_of_ne_zero $pa $pb))
-  | .nonzero pa, .positive pb => pure (.nonzero q(div_ne_zero_of_ne_zero_of_pos $pa $pb))
-  | .nonzero pa, .nonzero pb => pure (.nonzero q(div_ne_zero $pa $pb))
-  | _, _ => pure .none
+  match (dependent := true) pα? with
+  | none =>
+    match ← core zα pα? a, ← core zα pα? b with
+    | .nonzero pa, .nonzero pb =>
+      let _a ← synthInstanceQ q(GroupWithZero $α)
+      assumeInstancesCommute
+      pure (.nonzero q(div_ne_zero $pa $pb))
+    | _, _ => pure .none
+  | some pα =>
+    let _a ← synthInstanceQ q(GroupWithZero $α)
+    let _a ← synthInstanceQ q(PosMulReflectLT $α)
+    assumeInstancesCommute
+    let ra ← core zα pα a; let rb ← core zα pα b
+    match ra, rb with
+    | .positive pa, .positive pb => pure (.positive q(div_pos $pa $pb))
+    | .positive pa, .nonnegative pb => pure (.nonnegative q(div_nonneg_of_pos_of_nonneg $pa $pb))
+    | .nonnegative pa, .positive pb => pure (.nonnegative q(div_nonneg_of_nonneg_of_pos $pa $pb))
+    | .nonnegative pa, .nonnegative pb => pure (.nonnegative q(div_nonneg $pa $pb))
+    | .positive pa, .nonzero pb => pure (.nonzero q(div_ne_zero_of_pos_of_ne_zero $pa $pb))
+    | .nonzero pa, .positive pb => pure (.nonzero q(div_ne_zero_of_ne_zero_of_pos $pa $pb))
+    | .nonzero pa, .nonzero pb => pure (.nonzero q(div_ne_zero $pa $pb))
+    | _, _ => pure .none
 
 /-- The `positivity` extension which identifies expressions of the form `a⁻¹`,
 such that `positivity` successfully recognises `a`. -/
 @[positivity _⁻¹]
-meta def evalInv : PositivityExt where eval {u α} zα pα e := do
+meta def evalInv : PositivityExt where eval {u α} zα pα? e := do
   let .app (f : Q($α → $α)) (a : Q($α)) ← withReducible (whnf e) | throwError "not ⁻¹"
   let _e_eq : $e =Q $f $a := ⟨⟩
-  let _a ← synthInstanceQ q(GroupWithZero $α)
-  let _a ← synthInstanceQ q(PartialOrder $α)
-  let _a ← synthInstanceQ q(PosMulReflectLT $α)
-  assumeInstancesCommute
+  let _a ← synthInstanceQ q(Semifield $α)
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(Inv.inv)
-  let ra ← core zα pα a
-  match ra with
-  | .positive pa => pure (.positive q(inv_pos_of_pos $pa))
-  | .nonnegative pa => pure (.nonnegative q(inv_nonneg_of_nonneg $pa))
-  | .nonzero pa => pure (.nonzero q(inv_ne_zero $pa))
-  | .none => pure .none
+  match (dependent := true) pα? with
+  | none =>
+    match ← core zα pα? a with
+    | .nonzero pa =>
+      let _a ← synthInstanceQ q(GroupWithZero $α)
+      assumeInstancesCommute
+      pure (.nonzero q(inv_ne_zero $pa))
+    | _ => pure .none
+  | some pα =>
+    let _a ← synthInstanceQ q(GroupWithZero $α)
+    let _a ← synthInstanceQ q(PartialOrder $α)
+    let _a ← synthInstanceQ q(PosMulReflectLT $α)
+    assumeInstancesCommute
+    let ra ← core zα (some pα) a
+    match ra with
+    | .positive pa =>
+      assumeInstancesCommute
+      pure (.positive q(inv_pos_of_pos $pa))
+    | .nonnegative pa =>
+      assumeInstancesCommute
+      pure (.nonnegative q(inv_nonneg_of_nonneg $pa))
+    | .nonzero pa => pure (.nonzero q(inv_ne_zero $pa))
+    | .none => pure .none
 
 /-- The `positivity` extension which identifies expressions of the form `a ^ (0:ℤ)`. -/
 @[positivity _ ^ (0 : ℤ), Pow.pow _ (0 : ℤ)]
-meta def evalPowZeroInt : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalPowZeroInt : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
   let _a ← synthInstanceQ q(Semifield $α)
   let _a ← synthInstanceQ q(LinearOrder $α)

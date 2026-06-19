@@ -417,6 +417,7 @@ def map (f : A →ₐ[R] B) (S : Subalgebra R A) : Subalgebra R B :=
   { S.toSubsemiring.map (f : A →+* B) with
     algebraMap_mem' := fun r => f.commutes r ▸ Set.mem_image_of_mem _ (S.algebraMap_mem r) }
 
+@[gcongr]
 theorem map_mono {S₁ S₂ : Subalgebra R A} {f : A →ₐ[R] B} : S₁ ≤ S₂ → S₁.map f ≤ S₂.map f :=
   Set.image_mono
 

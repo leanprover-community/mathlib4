@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Logic.IsEmpty.Basic
 public import Mathlib.Order.OrderDual
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
@@ -266,6 +267,7 @@ theorem wellFoundedGT_dual_iff (α : Type*) [LT α] : WellFoundedGT αᵒᵈ ↔
   ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
 
 /-- A well order is a well-founded linear order. -/
+@[wikidata Q659746]
 class IsWellOrder (α : Type u) (r : α → α → Prop) : Prop
     extends IsWellFounded α r, Std.Trichotomous r
 

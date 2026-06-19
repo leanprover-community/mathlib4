@@ -19,7 +19,6 @@ This file demonstrates why `DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_
 take `Ring R` and not `Semiring R`.
 -/
 
-
 namespace Counterexample
 
 theorem UnitsInt.one_ne_neg_one : (1 : ℤˣ) ≠ -1 := by decide

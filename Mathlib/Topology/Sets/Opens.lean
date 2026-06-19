@@ -411,6 +411,7 @@ def comap (f : C(α, β)) : FrameHom (Opens β) (Opens α) where
 theorem comap_id : comap (ContinuousMap.id α) = FrameHom.id _ :=
   FrameHom.ext fun _ => ext rfl
 
+@[gcongr]
 theorem comap_mono (f : C(α, β)) {s t : Opens β} (h : s ≤ t) : comap f s ≤ comap f t :=
   OrderHomClass.mono (comap f) h
 

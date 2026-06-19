@@ -141,8 +141,12 @@ instance instZero [Zero A] : Zero (CStarMatrix m n A) :=
 instance instAddZeroClass [AddZeroClass A] : AddZeroClass (CStarMatrix m n A) :=
   inferInstanceAs <| AddZeroClass (Matrix m n A)
 
-instance instAddMonoid [AddMonoid A] : AddMonoid (CStarMatrix m n A) :=
-  inferInstanceAs <| AddMonoid (Matrix m n A)
+instance instSMul [SMul R A] : SMul R (CStarMatrix m n A) :=
+  inferInstanceAs <| SMul R (Matrix m n A)
+
+instance instAddMonoid [AddMonoid A] : AddMonoid (CStarMatrix m n A) where
+  nsmul := letI := instSMul (R := ℕ) (A := A) (m := m) (n := n); (· • · )
+  __ : AddMonoid (CStarMatrix m n A) := inferInstanceAs <| AddMonoid (Matrix m n A)
 
 instance instAddCommMonoid [AddCommMonoid A] : AddCommMonoid (CStarMatrix m n A) :=
   inferInstanceAs <| AddCommMonoid (Matrix m n A)
@@ -153,8 +157,9 @@ instance instNeg [Neg A] : Neg (CStarMatrix m n A) :=
 instance instSub [Sub A] : Sub (CStarMatrix m n A) :=
   inferInstanceAs <| Sub (Matrix m n A)
 
-instance instAddGroup [AddGroup A] : AddGroup (CStarMatrix m n A) :=
-  inferInstanceAs <| AddGroup (Matrix m n A)
+instance instAddGroup [AddGroup A] : AddGroup (CStarMatrix m n A) where
+  zsmul := letI := instSMul (R := ℤ) (A := A) (m := m) (n := n); (· • · )
+  __ : AddGroup (CStarMatrix m n A) := inferInstanceAs <| AddGroup (Matrix m n A)
 
 instance instAddCommGroup [AddCommGroup A] : AddCommGroup (CStarMatrix m n A) :=
   inferInstanceAs <| AddCommGroup (Matrix m n A)
@@ -167,9 +172,6 @@ instance instSubsingleton [Subsingleton A] : Subsingleton (CStarMatrix m n A) :=
 
 instance instNontrivial [Nonempty m] [Nonempty n] [Nontrivial A] : Nontrivial (CStarMatrix m n A) :=
   inferInstanceAs <| Nontrivial (Matrix m n A)
-
-instance instSMul [SMul R A] : SMul R (CStarMatrix m n A) :=
-  inferInstanceAs <| SMul R (Matrix m n A)
 
 instance instSMulCommClass [SMul R A] [SMul S A] [SMulCommClass R S A] :
     SMulCommClass R S (CStarMatrix m n A) :=

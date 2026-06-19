@@ -101,6 +101,12 @@ lean_exe autolabel where
 lean_exe cache where
   root := `Cache.Main
 
+/-- `lake exe cache-test` runs the cache tool's unit tests (container URL
+construction, per-repo trust-ordered allowlist, `--cache-from` parsing).
+Runnable standalone — does not require building Mathlib or `MathlibTest`. -/
+lean_exe «cache-test» where
+  root := `Cache.Test
+
 /-- `lake exe check-yaml` verifies that all declarations referred to in `docs/*.yaml` files exist. -/
 lean_exe «check-yaml» where
   srcDir := "scripts"
