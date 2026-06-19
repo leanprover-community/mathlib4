@@ -640,17 +640,17 @@ def monitorCurl (args : Array String) (size : Nat)
     IO.eprintln (mkStatus s)
   return (s, ← servedRef.get)
 
-/-- Run one container's download pass for the given hash map. Returns the set of
-hashes it fetched — so the caller can carry the rest to the next container — and
-the `TransferState` from `monitorCurl` (a synthesized empty state in serial
-mode). Side effect: any files successfully fetched are written to `CACHEDIR` with
-their final names. -/
+/-- Run one container's download pass for the given hash map. Returns the
+`TransferState` from `monitorCurl` (a synthesized empty state in serial mode) and
+the set of hashes it fetched, so the caller can carry the rest to the next
+container. Side effect: any files successfully fetched are written to `CACHEDIR`
+with their final names. -/
 private def downloadFilesFromContainer
     (container : Option Container) (repo containerURL : String)
     (hashMap : IO.ModuleHashMap)
     (parallel : Bool) (decompConfig : Option DecompConfig)
     (scope? : Option String) :
-    IO (Std.HashSet UInt64 × TransferState) := do
+    IO (TransferState × Std.HashSet UInt64) := do
   let size := hashMap.size
   if parallel then
     IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent container repo containerURL hashMap scope?)
@@ -666,14 +666,14 @@ private def downloadFilesFromContainer
     let (s, served) ← monitorCurl args size "Downloaded" "speed_download" (removeOnError := true)
       decompConfig (treatForbiddenAsMiss := treatForbiddenAsMiss)
     IO.FS.removeFile IO.CURLCFG
-    return (served, s)
+    return (s, served)
   else
     let r ← hashMap.foldM (init := []) fun acc _ hash => do
       pure <| (hash, ← IO.asTask do downloadFile container repo containerURL hash scope?) :: acc
     let served := r.foldl (init := (∅ : Std.HashSet UInt64)) fun acc (hash, t) =>
       if let .ok true := t.get then acc.insert hash else acc
     let emptyState : TransferState := ⟨0, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
-    return (served, emptyState)
+    return (emptyState, served)
 
 /-- Expand the trust-ordered container list into the concrete download rounds to
 run, each carrying the SHA scope to read at. A round is
@@ -767,7 +767,7 @@ def downloadFiles
     let scopeNote := match roundScope? with | some s => s!" (scope {s})" | none => ""
     IO.println s!"Attempting to download {remaining.size} file(s) from {repo} cache at {url}{scopeNote}"
     let before := remaining.size
-    let (served, s) ← downloadFilesFromContainer container? repo url remaining parallel decompConfig roundScope?
+    let (s, served) ← downloadFilesFromContainer container? repo url remaining parallel decompConfig roundScope?
     -- Keep the latest round's pipeline state and transfer-failure count for the
     -- finalization and exit-code logic below. Drop the files this round served so
     -- the next container only retries genuine misses, regardless of what is
