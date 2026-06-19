@@ -530,7 +530,7 @@ namespace AffineSubspace
 /-- The image of an affine subspace under an affine map as an affine subspace. -/
 def map (s : AffineSubspace k P₁) : AffineSubspace k P₂ where
   carrier := f '' s
-  smul_vsub_vadd_mem := by
+  smul_vsub_vadd_mem' := by
     rintro t - - - ⟨p₁, h₁, rfl⟩ ⟨p₂, h₂, rfl⟩ ⟨p₃, h₃, rfl⟩
     use t • (p₁ -ᵥ p₂) +ᵥ p₃
     suffices t • (p₁ -ᵥ p₂) +ᵥ p₃ ∈ s by
@@ -723,7 +723,7 @@ namespace AffineSubspace
 /-- The preimage of an affine subspace under an affine map as an affine subspace. -/
 def comap (f : P₁ →ᵃ[k] P₂) (s : AffineSubspace k P₂) : AffineSubspace k P₁ where
   carrier := f ⁻¹' s
-  smul_vsub_vadd_mem t p₁ p₂ p₃ (hp₁ : f p₁ ∈ s) (hp₂ : f p₂ ∈ s) (hp₃ : f p₃ ∈ s) :=
+  smul_vsub_vadd_mem' t p₁ p₂ p₃ (hp₁ : f p₁ ∈ s) (hp₂ : f p₂ ∈ s) (hp₃ : f p₃ ∈ s) :=
     show f _ ∈ s by
       rw [AffineMap.map_vadd, map_smul, AffineMap.linearMap_vsub]
       apply s.smul_vsub_vadd_mem _ hp₁ hp₂ hp₃
