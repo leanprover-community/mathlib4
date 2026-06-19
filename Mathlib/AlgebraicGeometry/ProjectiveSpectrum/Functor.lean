@@ -129,8 +129,7 @@ lemma germ_map_sectionInBasicOpen {p : ProjectiveSpectrum ℬ}
     RingEquiv.toCommRingCatIso_hom, CommRingCat.hom_comp]
   ext x : 2
   obtain ⟨c, rfl⟩ := x.mk_surjective
-  simp only [val_localRingHom, val_mk, RingHom.comp_apply]
-  simp only [GradedRingHom.toRingHom_eq_toRingHom, Localization.localRingHom_mk,
+  simp only [val_localRingHom, val_mk, RingHom.comp_apply, Localization.localRingHom_mk,
     GradedRingHom.coe_toRingHom]
   -- I sincerely apologise for your eyes.
   erw [stalkIso'_symm_mk]

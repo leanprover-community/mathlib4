@@ -219,9 +219,6 @@ lemma SurjectiveOnStalks.tensorProductMap
       (Algebra.TensorProduct.comm _ _ _).toRingEquiv.surjectiveOnStalks |>.comp <|
         RingHom.SurjectiveOnStalks.tensorProductMap_id (T := S) Hg |>.comp <|
           (Algebra.TensorProduct.comm _ _ _).toRingEquiv.surjectiveOnStalks
-  simp only [AlgHom.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe,
-    AlgEquiv.toRingEquiv_toRingHom, ← AlgEquiv.toAlgHom_toRingHom, ← AlgHom.comp_toRingHom]
-  congr
   ext <;> simp
 
 lemma surjectiveOnStalks_iff_of_isLocalHom [IsLocalRing S] [IsLocalHom f] :

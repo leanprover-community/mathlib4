@@ -127,9 +127,8 @@ theorem irreducible_minpolyX' (hf : ¬∃ c, f = C c) : Irreducible (f.minpolyX 
   let φ : K[X][X] := f.num.map (algebraMap ..) -
     Polynomial.C Polynomial.X * f.denom.map (algebraMap ..)
   have φ_map : φ.mapEquiv e.toRingEquiv = (f.minpolyX K[f]) := by
-    simp only [algebraMap_eq, map_sub, mapEquiv_apply,
-      AlgEquiv.toRingEquiv_toRingHom, algEquivOfTranscendental_coe, Polynomial.map_map, map_mul,
-      map_C, RingHom.coe_coe, aeval_X, e, φ]
+    simp only [algebraMap_eq, map_sub, mapEquiv_apply, algEquivOfTranscendental_coe,
+      Polynomial.map_map, map_mul, map_C, RingHom.coe_coe, aeval_X, e, φ]
     congr 2 <;> ext <;> simp
   rw [← φ_map, MulEquiv.irreducible_iff]
   have : φ = Bivariate.swap
