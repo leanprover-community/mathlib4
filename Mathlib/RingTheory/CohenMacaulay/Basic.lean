@@ -379,22 +379,6 @@ lemma isLocalize_at_prime_depth_eq_of_isCohenMacaulay [IsLocalRing Rₚ] [Module
 
 end IsLocalization
 
--- have some universe problem, should use `IsLocalizedModule` version
-lemma localize_at_prime_isCohenMacaulay_of_isCohenMacaulay [IsLocalRing R] [IsNoetherianRing R]
-    (p : Ideal R) [p.IsPrime] [Small.{v} R]
-    (M : ModuleCat.{v} R) [Module.Finite R M] [M.IsCohenMacaulay] :
-    (ModuleCat.of (Localization.AtPrime p) (LocalizedModule.AtPrime p M)).IsCohenMacaulay :=
-  isLocalize_at_prime_isCohenMacaulay_of_isCohenMacaulay p M _
-    (LocalizedModule.mkLinearMap p.primeCompl M)
-
--- have some universe problem, should use `IsLocalizedModule` version
-lemma localize_at_prime_depth_eq_of_isCohenMacaulay [IsLocalRing R] [IsNoetherianRing R]
-    (p : Ideal R) [p.IsPrime] [Small.{v} R] (M : ModuleCat.{v} R) [Module.Finite R M]
-    [M.IsCohenMacaulay] [Nontrivial (LocalizedModule.AtPrime p M)] : p.depth M =
-    IsLocalRing.depth (ModuleCat.of (Localization.AtPrime p) (LocalizedModule.AtPrime p M)) :=
-  isLocalize_at_prime_depth_eq_of_isCohenMacaulay p M _
-    (LocalizedModule.mkLinearMap p.primeCompl M)
-
 variable (R)
 
 /-- A local ring is Cohen Macaulay if `ringKrullDim R = IsLocalRing.depth (ModuleCat.of R R)`. -/
