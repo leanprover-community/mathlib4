@@ -33,14 +33,14 @@ defined using pentagonal numbers. We then show that this series is equal to both
     requiring topology.
 -/
 
-open Filter PowerSeries WithPiTopology
+open Filter PowerSeries WithPiTopology Topology
 variable (R : Type*) [CommRing R]
 
 namespace Pentagonal
 -- private auxiliary lemma
 
 theorem tendsto_order_powMulProdOneSubPow_X (k : ℕ) :
-    Tendsto (fun i ↦ (powMulProdOneSubPow k i (X : R⟦X⟧)).order) atTop (nhds ⊤) := by
+    Tendsto (fun i ↦ (powMulProdOneSubPow k i (X : R⟦X⟧)).order) atTop (𝓝 ⊤) := by
   nontriviality R using Subsingleton.eq_zero
   refine ENat.tendsto_nhds_top_iff_natCast_lt.mpr fun n ↦ eventually_atTop.mpr ⟨n + 1, ?_⟩
   intro m hm
@@ -50,7 +50,7 @@ theorem tendsto_order_powMulProdOneSubPow_X (k : ℕ) :
   grind
 
 theorem tendsto_order_neg_X_pow (k : ℕ) :
-    Tendsto (fun i ↦ (-(X : R⟦X⟧) ^ (i + k + 1)).order) atTop (nhds ⊤) := by
+    Tendsto (fun i ↦ (-(X : R⟦X⟧) ^ (i + k + 1)).order) atTop (𝓝 ⊤) := by
   nontriviality R using Subsingleton.eq_zero
   refine ENat.tendsto_nhds_top_iff_natCast_lt.mpr fun n ↦ eventually_atTop.mpr ⟨n, ?_⟩
   intro m hm
@@ -115,7 +115,7 @@ theorem pentagonalSeries_eq_tsum_pow_pentagonal_sub [T2Space R] :
   (hasSum_pow_pentagonal_sub_pentagonalSeries R).tsum_eq.symm
 
 /-- See the public version `PowerSeries.WithPiTopology.tprod_one_sub_X_pow` that removes
-  `IsTopologicalRing`. -/
+`IsTopologicalRing`. -/
 private theorem tprod_one_sub_X_pow' [IsTopologicalRing R] [T2Space R] :
     ∏' n, (1 - X ^ (n + 1) : R⟦X⟧) = pentagonalSeries R := by
   nontriviality R

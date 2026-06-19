@@ -29,7 +29,7 @@ https://math.stackexchange.com/questions/55738/how-to-prove-eulers-pentagonal-th
 -/
 
 namespace Pentagonal
-open Filter
+open Filter Topology
 variable {R : Type*} [CommRing R]
 
 /--
@@ -77,7 +77,7 @@ theorem tsum_powMulProdOneSubPow (k : ℕ) {x : R} (hx : IsTopologicallyNilpoten
   rw [((hsum _).add ((hsum _).mul_left _)).hasSum_iff_tendsto_nat]
   simp_rw [aux_sub_aux, Finset.sum_range_sub (aux k · x)]
   apply Tendsto.sub_const
-  rw [show nhds 0 = nhds (0 * (0 - 1) * ∏' i, (1 - x ^ (k + i + 2))) by simp]
+  rw [show 𝓝 0 = 𝓝 (0 * (0 - 1) * ∏' i, (1 - x ^ (k + i + 2))) by simp]
   refine (Tendsto.mul ?_ ?_).mul ?_
   · exact hx.comp (strictMono_mul_left_of_pos (by simp)).tendsto_atTop
   · exact (hx.comp (add_right_strictMono.add_monotone monotone_const).tendsto_atTop).sub_const _
@@ -147,7 +147,7 @@ public theorem tprod_one_sub_pow {x : R} (hx : IsTopologicallyNilpotent x)
     (hrhs : Summable fun (k : ℕ) ↦
       (-1) ^ k * (x ^ pentagonal (-k) - x ^ pentagonal (k + 1)))
     (htail : Tendsto (fun k ↦ (-1) ^ (k + 1) * x ^ ((k + 1) * (3 * k + 4) / 2) *
-      ∑' (n : ℕ), powMulProdOneSubPow k n x) atTop (nhds 0)) :
+      ∑' (n : ℕ), powMulProdOneSubPow k n x) atTop (𝓝 0)) :
     ∏' n, (1 - x ^ (n + 1)) =
     ∑' (k : ℕ), (-1) ^ k * (x ^ pentagonal (-k) - x ^ pentagonal (k + 1)) := by
   obtain h := fun n ↦ tprod_one_sub_pow_eq_powMulProdOneSubPow n hx hsum hlhs
