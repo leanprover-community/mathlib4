@@ -60,6 +60,7 @@ def evariance : ℝ≥0∞ := ∫⁻ ω, ‖X ω - μ[X]‖ₑ ^ 2 ∂μ
 variable (X μ) in
 /-- The `ℝ`-valued variance of a real-valued random variable defined by applying `ENNReal.toReal`
 to `evariance`. -/
+@[wikidata Q175199]
 def variance : ℝ := (evariance X μ).toReal
 
 /-- The `ℝ≥0∞`-valued variance of the real-valued random variable `X` according to the measure `μ`.
