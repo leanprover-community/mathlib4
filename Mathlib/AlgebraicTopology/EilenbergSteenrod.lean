@@ -374,7 +374,7 @@ class IsEilenbergSteenrod extends HP.IsExtraordinaryEilenbergSteenrod.{u} where
 attribute [instance] IsEilenbergSteenrod.hasDimensionAxiom
 
 variable (C) in
-/-- An abbreviation for `HomologyPretheory.HasPairSequence` as `ObjectProperty`. -/
+/-- An abbreviation for `HomologyPretheory.IsEilenbergSteenrod` as `ObjectProperty`. -/
 abbrev isEilenbergSteenrod : ObjectProperty (HomologyPretheory.{u} C (ComplexShape.down ℕ)) :=
   IsEilenbergSteenrod
 
