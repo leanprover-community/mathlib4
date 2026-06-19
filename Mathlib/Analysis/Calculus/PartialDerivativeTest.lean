@@ -48,10 +48,35 @@ open Nat ContinuousMultilinearMap Finset Function
 noncomputable def hessianBilinearCompanion {V : Type*} [NormedAddCommGroup V]
     [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) : V →ₗ[ℝ] V →ₗ[ℝ] ℝ :=
   LinearMap.mk₂ ℝ (fun a b => iteratedFDeriv ℝ 2 f x₀ ![a,b] + iteratedFDeriv ℝ 2 f x₀ ![b,a])
-    (fun _ _ _ ↦ by simp [Matrix.vecCons, ← curryLeft_apply]; abel)
-    (by simp [Matrix.vecCons, ← curryLeft_apply, mul_add])
-    (fun _ _ _ ↦ by simp [Matrix.vecCons, ← curryLeft_apply]; abel)
-    (by simp [Matrix.vecCons, ← curryLeft_apply, mul_add])
+    (fun _ _ _ ↦ by
+        simp_rw [Matrix.vecCons, succ_eq_add_one, reduceAdd, ← curryLeft_apply,
+          map_add]
+        simp only [curryLeft_apply, succ_eq_add_one, reduceAdd, Matrix.Fin.cons_vecEmpty,
+          ContinuousMultilinearMap.add_apply, Matrix.Fin.cons_vecCons]
+        abel
+    --     simp only [Matrix.vecCons, succ_eq_add_one, reduceAdd, ← curryLeft_apply,
+    --   map_add, add_apply]; abel
+    )
+    (by
+        simp_rw [Matrix.vecCons, ← curryLeft_apply]
+        simp only [map_smul, curryLeft_apply, succ_eq_add_one, reduceAdd, Matrix.Fin.cons_vecEmpty,
+          ContinuousMultilinearMap.smul_apply, Matrix.Fin.cons_vecCons, smul_eq_mul]
+        ring_nf
+        simp
+    )
+    (fun _ _ _ ↦ by
+        simp_rw [Matrix.vecCons, succ_eq_add_one, reduceAdd, ← curryLeft_apply,
+          map_add]
+        simp
+        abel
+    )
+    (by
+        simp_rw [Matrix.vecCons, ← curryLeft_apply]
+        simp only [map_smul, ContinuousMultilinearMap.smul_apply, curryLeft_apply, succ_eq_add_one,
+          reduceAdd, Matrix.Fin.cons_vecEmpty, Matrix.Fin.cons_vecCons, smul_eq_mul]
+        simp_rw [← mul_add]
+        simp
+    )
 
 
 /-- The second iterated Frechét derivative as a quadratic map. -/
@@ -119,6 +144,10 @@ theorem QuadraticMap.toMultilinearMap_continuous_half_strange {V : Type*}
   have h_multilinear : Continuous (fun (v : Fin 2 → V) => Q.polarBilin (v 0) (v 1)) := by
     fun_prop
   convert h_multilinear.const_smul ( 1 / 2 : ℝ ) using 1
+  simp only [toMultilinearMap_half, one_div, toMultilinearMap, Fin.isValue, polarBilin_apply_apply,
+    smul_eq_mul]
+  ext i
+  simp
 
 noncomputable def QuadraticMap.toMultilinearMapHALF {V : Type*} [AddCommGroup V] [Module ℝ V]
   (Q : QuadraticMap ℝ V ℝ) :
@@ -204,14 +233,14 @@ theorem QuadraticMap.toMultilinearMap_continuousHALF {V : Type*}
         simp_all only [one_div, polarBilin_apply_apply]
         ext i
         rw [hB (x+y) i]
-        simp only [polar_add_left, ContinuousLinearMap.add_apply]
+        simp only [polar_add_left, _root_.add_apply]
         rw [hB x i, hB y i]
         linarith
       intro m x
       ext y
       rw [hB (m • x)]
       simp only [one_div, map_smul, LinearMap.smul_apply, polarBilin_apply_apply, smul_eq_mul,
-        RingHom.id_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply]
+        RingHom.id_apply, FunLike.coe_smul', Pi.smul_apply]
       rw [hB]
       simp
       linarith
@@ -316,7 +345,7 @@ lemma coercive_of_posdef'_half {V : Type*} [NormedAddCommGroup V] [NormedSpace �
       unfold QuadraticMap.toContinuousMultilinearMap_half
         QuadraticMap.toMultilinearMap_half
       simp only [one_div, norm_zero, mul_zero, MultilinearMap.toFun_eq_coe,
-        MultilinearMap.smul_apply, smul_eq_mul, ContinuousLinearMap.coe_mk', LinearMap.coe_mk,
+        _root_.smul_apply, smul_eq_mul, ContinuousLinearMap.coe_mk', LinearMap.coe_mk,
         AddHom.coe_mk, inv_pos, ofNat_pos, mul_nonneg_iff_of_pos_left]
       exact le_of_eq F.toMultilinearMap.map_zero.symm
     · have h₁ : ‖u‖ * ‖u‖⁻¹ = 1 := CommGroupWithZero.mul_inv_cancel _ <| norm_ne_zero_iff.mpr hu
@@ -330,7 +359,8 @@ lemma coercive_of_posdef'_half {V : Type*} [NormedAddCommGroup V] [NormedSpace �
       simp only [MultilinearMap.toFun_eq_coe, coe_coe, smul_eq_mul] at h₂
       have : F.toContinuousMultilinearMap_half ![u, u] * ‖u‖⁻¹
            = F.toContinuousMultilinearMap_half ![‖u‖⁻¹ • u, u] := by
-        simp [Matrix.vecCons, ← curryLeft_apply, mul_comm]
+        simp_rw [Matrix.vecCons, ← curryLeft_apply, mul_comm]
+        simp
       rw [this, mul_comm, ← h₂]
       exact hm.2 (‖u‖⁻¹ • u) (by
         rw [← h₁, norm_smul, mul_comm]
@@ -395,7 +425,8 @@ lemma coercive_of_posdef'HALF {V : Type*} [NormedAddCommGroup V] [NormedSpace �
       simp only [MultilinearMap.toFun_eq_coe, coe_coe, smul_eq_mul] at h₂
       have : F.toContinuousMultilinearMapHALF ![u, u] * ‖u‖⁻¹
            = F.toContinuousMultilinearMapHALF ![‖u‖⁻¹ • u, u] := by
-        simp [Matrix.vecCons, ← curryLeft_apply, mul_comm]
+        simp_rw [Matrix.vecCons, ← curryLeft_apply, mul_comm]
+        simp
       rw [this, mul_comm, ← h₂]
       exact hm.2 (‖u‖⁻¹ • u) (by
         rw [← h₁, norm_smul, mul_comm]
@@ -498,7 +529,8 @@ lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
       simp only [MultilinearMap.toFun_eq_coe, coe_coe, smul_eq_mul] at h₂
       have : (iteratedFDeriv ℝ 2 f x₀) ![u, u] * ‖u‖⁻¹
            = (iteratedFDeriv ℝ 2 f x₀) ![‖u‖⁻¹ • u, u] := by
-        simp [Matrix.vecCons, ← curryLeft_apply, mul_comm]
+        simp_rw [Matrix.vecCons, ← curryLeft_apply, mul_comm]
+        simp
       rw [this, mul_comm, ← h₂]
       exact hm.2 (‖u‖⁻¹ • u) (by
         rw [← h₁, norm_smul, mul_comm]
@@ -584,8 +616,15 @@ theorem littleO_of_powerseries.calculation {V : Type*} [NormedAddCommGroup V]
     |f x - α| ≤ D * ‖x - x₀‖ ^ 2 := by
   simp only [Metric.mem_ball, lt_inf_iff, dist_zero_right, add_sub_cancel,
     Real.norm_eq_abs] at hx h₃ ⊢
-  specialize h₃ (by convert hx.1 using 1;exact mem_sphere_iff_norm.mp rfl)
-  apply h₃.trans <| aux hr ha hC (by convert hx.2 using 2)
+  specialize h₃ (by
+    convert hx.1 using 1
+    · rfl
+    · exact mem_sphere_iff_norm.mp rfl
+    )
+  apply h₃.trans <| aux hr ha hC (by
+    convert hx.2 using 2
+    simp
+    )
 
 /-- Having a power series implies quadratic approximation. -/
 lemma littleO_of_powerseries {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
