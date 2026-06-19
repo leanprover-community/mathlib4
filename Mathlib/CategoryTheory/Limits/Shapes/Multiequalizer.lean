@@ -35,6 +35,7 @@ namespace CategoryTheory.Limits
 
 universe t w w' v u
 
+set_option linter.checkUnivs false in
 /-- The shape of a multiequalizer diagram. It involves two types `L` and `R`,
 and two maps `R → L`. -/
 @[nolint checkUnivs]
@@ -58,6 +59,7 @@ def MulticospanShape.prod (ι : Type w) : MulticospanShape where
   fst := _root_.Prod.fst
   snd := _root_.Prod.snd
 
+set_option linter.checkUnivs false in
 /-- The shape of a multicoequalizer diagram. It involves two types `L` and `R`,
 and two maps `L → R`. -/
 @[nolint checkUnivs]
@@ -329,7 +331,6 @@ variable {C : Type u} [Category.{v} C] {J : MulticospanShape.{w, w'}}
   (I : MulticospanIndex J C)
 
 /-- The multicospan associated to `I : MulticospanIndex`. -/
-@[simps]
 def multicospan : WalkingMulticospan J ⥤ C where
   obj x :=
     match x with
@@ -344,6 +345,22 @@ def multicospan : WalkingMulticospan J ⥤ C where
     rintro (_ | _) <;> rfl
   map_comp := by
     rintro (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) <;> cat_disch
+
+@[simp]
+theorem multicospan_obj_left (a) : I.multicospan.obj (WalkingMulticospan.left a) = I.left a :=
+  rfl
+
+@[simp]
+theorem multicospan_obj_right (b) : I.multicospan.obj (WalkingMulticospan.right b) = I.right b :=
+  rfl
+
+@[simp]
+theorem multicospan_map_fst (a) : I.multicospan.map (WalkingMulticospan.Hom.fst a) = I.fst a :=
+  rfl
+
+@[simp]
+theorem multicospan_map_snd (a) : I.multicospan.map (WalkingMulticospan.Hom.snd a) = I.snd a :=
+  rfl
 
 /-- The induced map `∏ᶜ I.left ⟶ ∏ᶜ I.right` via `I.fst` for limiting fans. -/
 def fstPiMapOfIsLimit (c : Fan I.left) {d : Fan I.right} (hd : IsLimit d) : c.pt ⟶ d.pt :=

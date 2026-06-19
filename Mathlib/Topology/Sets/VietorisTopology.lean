@@ -268,18 +268,18 @@ private theorem isCompact_aux {K : Set α} (hK : IsCompact K)
     grw [← hLT]
     grind
   · -- Otherwise, the set `K \ ⋃ Uⱼ` intersects every `Lᵢ`, so it is in one of the covering sets.
-    simp_rw [← diff_nonempty] at hsu
+    simp_rw [← sdiff_nonempty] at hsu
     replace hsu L (h : L ∈ s) : (K \ ⋃₀ u ∩ L).Nonempty := (hsu L h).mono <| by grind
-    obtain ⟨_, hUS, hUu⟩ := mem_sUnion.mp <| hKS ⟨diff_subset, hsu⟩
+    obtain ⟨_, hUS, hUu⟩ := mem_sUnion.mp <| hKS ⟨sdiff_subset, hsu⟩
     rcases hS hUS with ⟨U, hU, rfl⟩ | ⟨U, hU, rfl⟩
     · /- If `K \ ⋃ Uⱼ ⊆ U`, then every subset of `K` is either a subset of `U` or intersects some
       `Uⱼ`. By the compactness of `K \ U`, `Uⱼ` can be chosen from a finite subfamily. -/
-      rw [mem_powerset_iff, diff_subset_comm, sUnion_eq_biUnion] at hUu
+      rw [mem_powerset_iff, sdiff_subset_comm, sUnion_eq_biUnion] at hUu
       obtain ⟨T, hTS, hT, hKT⟩ := (hK.diff hU).elim_finite_subcover_image (fun _ h => h.1) hUu
       refine ⟨insert U.powerset ((fun V => {s | (s ∩ V).Nonempty}) '' T),
         insert_subset hUS <| Set.image_subset_iff.mpr <| hTS.trans fun _ h => h.2,
         (hT.image _).insert _, ?_⟩
-      rw [sUnion_insert, ← diff_subset_iff, sUnion_image]
+      rw [sUnion_insert, ← sdiff_subset_iff, sUnion_image]
       rintro t ⟨⟨htK, -⟩, htU⟩
       rw [mem_powerset_iff, not_subset] at htU
       obtain ⟨x, hxt, hxU⟩ := htU
