@@ -54,6 +54,9 @@ def orthogonalBilin : Submodule R₂ M₂ where
 @[simp] theorem mem_orthogonalBilin {m : M₂} :
   m ∈ S.orthogonalBilin B ↔ ∀ n ∈ S, B n m = 0 := .rfl
 
+@[deprecated (since := "2026-06-19")]
+alias mem_orthogonalBilin_iff := mem_orthogonalBilin
+
 theorem mem_orthogonalBilin_iff_le_ker_flip {y : M₂} :
     y ∈ orthogonalBilin B S ↔ S ≤ ker (B.flip y) := .rfl
 
@@ -91,7 +94,7 @@ theorem ker_le_orthogonalBilin_flip (S) : ker B ≤ orthogonalBilin B.flip S := 
 theorem orthogonalBilin_span_singleton (x : M₁) : orthogonalBilin B (R₁ ∙ x) = ker (B x) := by
   ext x; simp
 
-@[deprecated (since := "2026-04-12")]
+@[deprecated (since := "2026-06-19")]
 alias _root_.LinearMap.orthogonal_span_singleton_eq_to_lin_ker := orthogonalBilin_span_singleton
 
 theorem orthogonalBilin_sSup (s : Set (Submodule R₁ M₁)) :
@@ -113,7 +116,7 @@ variable (B) in
     orthogonalBilin B (S ⊔ ker B) = orthogonalBilin B S := by
   simp [orthogonalBilin_sup]
 
-@[deprecated (since := "2026-04-12")]
+@[deprecated (since := "2026-06-19")]
 alias orthogonalBilin_le := orthogonalBilin_le_orthogonalBilin
 
 /-- Every submodule is contained in the orthogonal complement of its orthogonal complement. -/
