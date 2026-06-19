@@ -461,8 +461,14 @@ protected def congrₐ {c : RingCon M} {d : RingCon N} (e : M ≃ₐ[R] N) (h : 
   __ := RingCon.congr e h
   commutes' r := by simp [← coe_algebraMap]
 
+@[simp]
 theorem congrₐ_mk {c : RingCon M} {d : RingCon N} (e : M ≃ₐ[R] N) (h : c = d.comap e) (a : M) :
     RingCon.congrₐ R e h (a : c.Quotient) = (e a : d.Quotient) :=
+  rfl
+
+@[simp] theorem congrₐ_symm {c : RingCon M} {d : RingCon N} (e : M ≃ₐ[R] N) (h : c = d.comap e) :
+    (RingCon.congrₐ R e h).symm =
+      RingCon.congrₐ R e.symm (ext <| e.surjective.forall₂.2 fun x y => by simp [h]) :=
   rfl
 
 theorem range_mkₐ : AlgHom.range (mkₐ R c) = ⊤ :=
