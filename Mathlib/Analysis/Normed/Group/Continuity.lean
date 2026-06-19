@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
 public import Mathlib.Topology.Metrizable.Uniformity
 public import Mathlib.Topology.Sequences
 
@@ -67,6 +68,16 @@ theorem tendsto_iff_norm_inv_mul_tendsto_zero {f : α → E} {a : Filter α} {b 
 theorem tendsto_one_iff_norm_tendsto_zero {f : α → E} {a : Filter α} :
     Tendsto f a (𝓝 1) ↔ Tendsto (‖f ·‖) a (𝓝 0) :=
   tendsto_iff_norm_inv_mul_tendsto_zero.trans <| by simp
+
+@[to_additive]
+theorem tendsto_iff_enorm_inv_mul_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
+    Tendsto f a (𝓝 b) ↔ Tendsto (fun e => ‖(f e)⁻¹ * b‖ₑ) a (𝓝 0) := by
+  simp only [← edist_eq_enorm_inv_mul, ← tendsto_iff_edist_tendsto_0]
+
+@[to_additive]
+theorem tendsto_one_iff_enorm_tendsto_zero {f : α → E} {a : Filter α} :
+    Tendsto f a (𝓝 1) ↔ Tendsto (‖f ·‖ₑ) a (𝓝 0) :=
+  tendsto_iff_enorm_inv_mul_tendsto_zero.trans <| by simp
 
 @[to_additive (attr := simp 1100)]
 theorem comap_norm_nhds_one : comap norm (𝓝 0) = 𝓝 (1 : E) := by
