@@ -31,7 +31,7 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 
 @[expose] public section
 
-variable {α β R : Type*}
+variable {α β R R' : Type*}
 
 namespace RingCon
 
@@ -51,7 +51,7 @@ variable [SMul α R] [IsScalarTower α R R]
 variable [SMul β R] [IsScalarTower β R R]
 variable (c : RingCon R)
 
-instance : SMul α c.Quotient := inferInstanceAs (SMul α c.toCon.Quotient)
+instance : SMul α c.Quotient := ⟨c.smulAux (Con.smul c.toCon)⟩
 
 @[simp, norm_cast]
 theorem coe_smul (a : α) (x : R) : (↑(a • x) : c.Quotient) = a • (x : c.Quotient) :=
@@ -131,7 +131,7 @@ The API in this section is copied from `Mathlib/GroupTheory/Congruence/Defs.lean
 
 section Lattice
 
-variable [Add R] [Mul R] {c d : RingCon R}
+variable [Add R] [Mul R] [Add R'] [Mul R'] {c d : RingCon R}
 
 /-- For congruence relations `c, d` on a type `M` with multiplication and addition, `c ≤ d` iff
 `∀ x y ∈ M`, `x` is related to `y` by `d` if `x` is related to `y` by `c`. -/
@@ -142,7 +142,7 @@ instance : LE (RingCon R) where
 theorem le_def : c ≤ d ↔ ∀ {x y}, c x y → d x y := .rfl
 
 @[gcongr]
-theorem comap_mono {R' : Type*} [Add R'] [Mul R']
+theorem comap_mono
     {F : Type*} [FunLike F R R'] [AddHomClass F R R'] [MulHomClass F R R']
     {J J' : RingCon R'} {f : F} (h : J ≤ J') :
     J.comap f ≤ J'.comap f :=
@@ -324,23 +324,35 @@ theorem sSup_eq_ringConGen (S : Set (RingCon R)) :
   congr! with x y
   simp
 
-theorem le_comap_ringConGen {R' F} [Add R'] [Mul R'] [FunLike F R' R]
-    [MulHomClass F R' R] [AddHomClass F R' R] (r : R → R → Prop) (f : F) :
-    ringConGen (r.onFun f) ≤ (ringConGen r).comap f  := by
-  apply ringConGen_le.2 fun x y h => ?_
-  exact RingConGen.Rel.of _ _ h
+open scoped Function
 
-theorem comap_ringConGen_equiv {R S} [NonAssocSemiring R] [NonAssocSemiring S] (r : R → R → Prop)
-    (f : S ≃+* R) :
-    (ringConGen r).comap f = ringConGen (r.onFun f) := by
+theorem le_comap_ringConGen {F} [FunLike F R' R] [MulHomClass F R' R] [AddHomClass F R' R]
+    (r : R → R → Prop) (f : F) :
+    ringConGen (r on f) ≤ (ringConGen r).comap f :=
+  ringConGen_le.2 fun _ _ h => RingConGen.Rel.of _ _ h
+
+theorem comap_injective {F} [FunLike F R' R] [MulHomClass F R' R] [AddHomClass F R' R]
+    (f : F) (hf : Function.Surjective f) :
+    Function.Injective (comap · f) :=
+  .of_comp (f := toCon) <| (Con.comap_injective f hf <| map_mul f).comp toCon_injective
+
+theorem comap_ringConGen_ringEquiv {R R'} [NonAssocSemiring R] [NonAssocSemiring R']
+    (r : R' → R' → Prop) (f : R ≃+* R') :
+    (ringConGen r).comap f = ringConGen (r on f) := by
   refine le_antisymm ?_ (le_comap_ringConGen _ _)
-  trans ((ringConGen (Function.onFun r ⇑f)).comap f.symm.toRingHom).comap f.toRingHom
+  trans (ringConGen (r on ⇑f) |>.comap f.symm.toNonUnitalRingHom).comap f.toNonUnitalRingHom
   · apply comap_mono
     grw [← le_comap_ringConGen]
     gcongr
-    simp [Function.onFun]
-  · rw [← comap_ringHomComp]
+    simp [Function.onFun, RingEquiv.coe_toNonUnitalRingHom']
+  · rw [← comap_nonUnitalRingHomComp]
     simp
+
+-- This one probably needs the RingCon version of `Setoid.comap_surjective`
+proof_wanted comap_ringConGen_equiv
+    {F} [FunLike F R' R] [MulHomClass F R' R] [AddHomClass F R' R] [EquivLike F R' R]
+    (r : R → R → Prop) (f : F) :
+    (ringConGen r).comap f = ringConGen (r on f)
 
 end Lattice
 
