@@ -128,10 +128,15 @@ def AlgebraicClosure : Type u :=
 
 namespace AlgebraicClosure
 
-deriving instance CommRing, Inhabited for AlgebraicClosure
+deriving instance Inhabited for AlgebraicClosure
 
 instance {S : Type*} [DistribSMul S k] [IsScalarTower S k k] : SMul S (AlgebraicClosure k) :=
   inferInstanceAs <| SMul S (_ ⧸ _)
+
+instance : CommRing (AlgebraicClosure k) where
+  nsmul := letI := AlgebraicClosure.instSMulOfIsScalarTower k (S := ℕ); (· • · )
+  zsmul := letI := AlgebraicClosure.instSMulOfIsScalarTower k (S := ℤ); (· • · )
+  __ : CommRing (AlgebraicClosure k) := inferInstanceAs <| CommRing (_ ⧸ _)
 
 instance instAlgebra {R : Type*} [CommSemiring R] [Algebra R k] : Algebra R (AlgebraicClosure k) :=
   inferInstanceAs <| Algebra R (_ ⧸ _)
