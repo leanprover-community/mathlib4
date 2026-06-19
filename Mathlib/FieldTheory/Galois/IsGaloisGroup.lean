@@ -97,19 +97,24 @@ theorem IsGaloisGroup.of_algEquiv [hG : IsGaloisGroup G A B] (B' : Type*) [Semir
       simp [he, hx'])
     exact ⟨a, by rw [← e.commutes, ha, AlgEquiv.apply_symm_apply]⟩⟩
 
-theorem IsGaloisGroup.of_ringEquiv [hG : IsGaloisGroup G A B] [CommSemiring A'] [Algebra A' B]
-    (e : A ≃+* A') (he : ∀ a, algebraMap A' B (e a) = algebraMap A B a) :
-    IsGaloisGroup G A' B where
+theorem IsGaloisGroup.of_ringHom_surjective [hG : IsGaloisGroup G A B] [CommSemiring A']
+    [Algebra A' B] (e : A →+* A') (he : ∀ a, algebraMap A' B (e a) = algebraMap A B a)
+    (he' : Function.Surjective e) : IsGaloisGroup G A' B where
   faithful := hG.faithful
   commutes := ⟨by
     intro g a' b
-    obtain ⟨a, rfl⟩ : ∃ a, e a = a' := e.surjective a'
+    obtain ⟨a, rfl⟩ : ∃ a, e a = a' := he' a'
     rw [Algebra.smul_def, Algebra.smul_def, he, ← Algebra.smul_def, ← Algebra.smul_def]
     exact hG.commutes.smul_comm g a b⟩
   isInvariant := ⟨by
     intro b h
     obtain ⟨a, ha⟩ := hG.isInvariant.isInvariant b h
     exact ⟨e a, by rw [he, ha]⟩⟩
+
+theorem IsGaloisGroup.of_ringEquiv [hG : IsGaloisGroup G A B] [CommSemiring A'] [Algebra A' B]
+    (e : A ≃+* A') (he : ∀ a, algebraMap A' B (e a) = algebraMap A B a) :
+    IsGaloisGroup G A' B :=
+  .of_ringHom_surjective G A A' B e he e.surjective
 
 attribute [instance low] IsGaloisGroup.commutes IsGaloisGroup.isInvariant
 
@@ -180,6 +185,13 @@ variable (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [MulSemiringAct
   [Algebra A B] [Field K] [Field L] [Algebra K L] [Algebra A K] [Algebra B L] [Algebra A L]
   [IsFractionRing A K] [IsFractionRing B L] [IsScalarTower A K L] [IsScalarTower A B L]
   [MulSemiringAction G L] [SMulDistribClass G B L]
+
+instance [IsGaloisGroup G A B] : IsGaloisGroup G (algebraMap A B).range B where
+  faithful := IsGaloisGroup.faithful A
+  commutes := ⟨fun g ⟨a', ⟨a, ha⟩⟩ b ↦ by simp [Subring.smul_def, ← ha]⟩
+  isInvariant := ⟨fun b hb ↦ by
+    obtain ⟨a, ha⟩ := Algebra.IsInvariant.isInvariant (A := A) b hb
+    exact ⟨⟨algebraMap A B a, ⟨a, rfl⟩⟩, ha⟩⟩
 
 /-- `IsGaloisGroup` for rings implies `IsGaloisGroup` for their fraction fields. -/
 theorem IsGaloisGroup.to_isFractionRing_of_isIntegral
@@ -298,11 +310,14 @@ theorem card_eq_finrank [IsGaloisGroup G K L] : Nat.card G = Module.finrank K L 
 theorem finiteDimensional [Finite G] [IsGaloisGroup G K L] : FiniteDimensional K L :=
   FiniteDimensional.of_finrank_pos (card_eq_finrank G K L ▸ Nat.card_pos)
 
-protected theorem finite (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Module.Finite A B]
-    [IsDomain A] [IsDomain B] [FaithfulSMul A B] [MulSemiringAction G B] [IsGaloisGroup G A B] :
-    Finite G := by
+protected theorem finite (R B : Type*) [CommRing R] [CommRing B] [Algebra R B] [Module.Finite R B]
+  [IsDomain B] [MulSemiringAction G B] [IsGaloisGroup G R B] : Finite G := by
+  let A : Subring B := (algebraMap R B).range
   let := FractionRing.liftAlgebra A (FractionRing B)
   let := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
+  let : Algebra R A := (algebraMap R B).rangeRestrict.toAlgebra
+  have : IsScalarTower R A B := IsScalarTower.of_algebraMap_eq' rfl
+  have : Module.Finite A B := Module.Finite.of_restrictScalars_finite R A B
   have := IsGaloisGroup.to_isFractionRing_of_isIntegral G A B (FractionRing A) (FractionRing B)
   apply Nat.finite_of_card_ne_zero
   rw [card_eq_finrank G (FractionRing A) (FractionRing B)]
@@ -657,6 +672,7 @@ theorem isScalarTower_mulSemiringActionQuotient [MulSemiringAction G B] [SMulDis
   ⟨fun g q b ↦ Quotient.inductionOn' q fun h ↦ by
     simp [mul_smul, mulSemiringActionQuotient_smul_def]⟩
 
+set_option linter.defProp false in
 /-- If `G` acts on `C` commuting with `A`, then the action of `G ⧸ N` on `B` commutes with `A`. -/
 @[implicit_reducible]
 def smulCommClassQuotient [N.Normal] [Algebra A B] [IsScalarTower A B C] [SMulCommClass G A C]

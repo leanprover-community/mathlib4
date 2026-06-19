@@ -194,6 +194,12 @@ theorem LiesOver.trans [𝔓.LiesOver P] [P.LiesOver p] : 𝔓.LiesOver p where
 theorem LiesOver.tower_bot [hp : 𝔓.LiesOver p] [hP : 𝔓.LiesOver P] : P.LiesOver p where
   over := by rw [𝔓.over_def p, 𝔓.over_def P, under_under]
 
+instance [𝔓.LiesOver P] : 𝔓.LiesOver (P.under A) :=
+  .trans 𝔓 P (P.under A)
+
+instance [𝔓.LiesOver P] : P.LiesOver (𝔓.under A) :=
+  .tower_bot 𝔓 P (𝔓.under A)
+
 /--
 Consider the following commutative diagram of ring maps
 ```

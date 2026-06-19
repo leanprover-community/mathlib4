@@ -303,11 +303,11 @@ variable {t : Set M}
 
 @[to_additive] -- this must not be a simp-lemma as the conclusion applies to `hts`, causing loops
 lemma closure_sdiff_eq_closure (hts : t ⊆ closure (s \ t)) : closure (s \ t) = closure s := by
-  refine (closure_mono Set.diff_subset).antisymm <| closure_le.mpr <| fun x hxs ↦ ?_
+  refine (closure_mono Set.sdiff_subset).antisymm <| closure_le.mpr <| fun x hxs ↦ ?_
   by_cases hxt : x ∈ t
   · exact hts hxt
   · rw [SetLike.mem_coe, Submonoid.mem_closure]
-    exact fun N hN ↦ hN <| Set.mem_diff_of_mem hxs hxt
+    exact fun N hN ↦ hN <| Set.mem_sdiff_of_mem hxs hxt
 
 @[to_additive (attr := simp)]
 lemma closure_sdiff_singleton_one (s : Set M) : closure (s \ {1}) = closure s :=
