@@ -172,6 +172,8 @@ noncomputable def algEquiv : S ≃ₐ[R] Q :=
   { ringEquivOfRingEquiv S Q (RingEquiv.refl R) M.map_id with
     commutes' := ringEquivOfRingEquiv_eq _ }
 
+instance : CoeOut (S ≃ₐ[R] Q) (S →+* Q) where coe := RingHomClass.toRingHom
+
 end
 
 theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S Q (mk' S x y) = mk' Q x y := by
@@ -231,8 +233,8 @@ an isomorphism `h : R ≃ₐ[A] P` such that `h(M) = T` induces an isomorphism o
 @[simps!]
 noncomputable def algEquivOfAlgEquiv : S ≃ₐ[A] Q where
   __ := ringEquivOfRingEquiv S Q h.toRingEquiv H
-  commutes' _ := by dsimp; rw [IsScalarTower.algebraMap_apply A R S, map_eq,
-      RingHom.coe_coe]; sorry
+  commutes' _ := by
+    simp [IsScalarTower.algebraMap_apply A R S, IsScalarTower.algebraMap_apply A P Q]
 
 variable {S Q h}
 
@@ -422,7 +424,10 @@ variable (Rₘ Sₙ Rₘ' Sₙ' : Type*) [CommSemiring Rₘ] [CommSemiring Sₙ]
 theorem algEquiv_comp_algebraMap : (algEquiv N Sₙ Sₙ' : _ →+* Sₙ').comp (algebraMap Rₘ Sₙ) =
       (algebraMap Rₘ' Sₙ').comp (algEquiv M Rₘ Rₘ') := by
   refine IsLocalization.ringHom_ext M (RingHom.ext fun x => ?_)
-  sorry
+  simp only [RingHom.coe_comp, RingHom.coe_coe, RingEquiv.coe_mk, AlgEquiv.toEquiv_eq_coe,
+    EquivLike.coe_coe, comp_apply, AlgEquiv.commutes]
+  rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
+    ← AlgEquiv.restrictScalars_apply R, AlgEquiv.commutes]
 
 variable {Rₘ} in
 theorem algEquiv_comp_algebraMap_apply (x : Rₘ) :
