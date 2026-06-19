@@ -821,8 +821,8 @@ variable {k V₁ V₂ P₁ P₂ : Type*} [Ring k] [AddCommGroup V₁] [Module k 
 /-- The product of two affine subspaces is an affine subspace. -/
 def prod (s : AffineSubspace k P₁) (t : AffineSubspace k P₂) : AffineSubspace k (P₁ × P₂) where
   carrier := (s : Set P₁) ×ˢ (t : Set P₂)
-  smul_vsub_vadd_mem c _ _ _ hp₁ hp₂ hp₃ :=
-    ⟨s.smul_vsub_vadd_mem c hp₁.1 hp₂.1 hp₃.1, t.smul_vsub_vadd_mem c hp₁.2 hp₂.2 hp₃.2⟩
+  smul_vsub_vadd_mem' c _ _ _ hp₁ hp₂ hp₃ :=
+    ⟨s.smul_vsub_vadd_mem' c hp₁.1 hp₂.1 hp₃.1, t.smul_vsub_vadd_mem' c hp₁.2 hp₂.2 hp₃.2⟩
 
 @[simp]
 theorem prod_coe (s : AffineSubspace k P₁) (t : AffineSubspace k P₂) :
