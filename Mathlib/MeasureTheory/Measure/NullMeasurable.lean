@@ -101,6 +101,10 @@ theorem _root_.MeasurableSet.nullMeasurableSet (h : MeasurableSet s) : NullMeasu
   rw [nullMeasurableSet_iff_eventuallyMeasurableSet]
   exact h.eventuallyMeasurableSet
 
+theorem _root_.MeasureTheory.nullMeasurableSet_iff_eventuallyMeasurableSet (s : Set α) :
+    NullMeasurableSet s μ ↔ EventuallyMeasurableSet m0 (ae μ) s :=
+  Iff.rfl
+
 theorem nullMeasurableSet_empty : NullMeasurableSet ∅ μ :=
   MeasurableSet.empty
 
@@ -259,7 +263,7 @@ theorem measure_iUnion₀ [Countable ι] {f : ι → Set α} (hd : Pairwise (AED
 theorem measure_union₀_aux (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
     (hd : AEDisjoint μ s t) : μ (s ∪ t) = μ s + μ t := by
   rw [union_eq_iUnion, measure_iUnion₀, tsum_fintype, Fintype.sum_bool, cond, cond]
-  exacts [(pairwise_on_bool AEDisjoint.symmetric).2 hd, fun b => Bool.casesOn b ht hs]
+  exacts [pairwise_on_bool.mpr hd, fun b ↦ Bool.casesOn b ht hs]
 
 /-- A null measurable set `t` is Carathéodory measurable: for any `s`, we have
 `μ (s ∩ t) + μ (s \ t) = μ s`. -/
@@ -383,7 +387,7 @@ end
 
 section NullMeasurable
 
-variable [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ] {f : α → β} {μ : Measure α}
+variable [m : MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ] {f : α → β} {μ : Measure α}
 
 /-- A function `f : α → β` is null measurable if the preimage of a measurable set is a null
 measurable set.
@@ -392,6 +396,9 @@ A similar notion is `AEMeasurable`. That notion is equivalent to `NullMeasurable
 the σ-algebra on the codomain is countably generated, but stronger in general. -/
 def NullMeasurable (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∀ ⦃s : Set β⦄, MeasurableSet s → NullMeasurableSet (f ⁻¹' s) μ
+
+theorem _root_.MeasureTheory.nullMeasurable_iff_eventuallyMeasurable (f : α → β) :
+    NullMeasurable f μ ↔ EventuallyMeasurable m (ae μ) f := by rfl
 
 protected theorem _root_.Measurable.nullMeasurable (h : Measurable f) : NullMeasurable f μ :=
   h.eventuallyMeasurable
@@ -402,13 +409,13 @@ protected theorem NullMeasurable.measurable' (h : NullMeasurable f μ) :
 
 theorem Measurable.comp_nullMeasurable {g : β → γ} (hg : Measurable g) (hf : NullMeasurable f μ) :
     NullMeasurable (g ∘ f) μ := by
-  intro _ h
-  rw [preimage_comp]
-  exact hf <| h.preimage hg
+  rw [nullMeasurable_iff_eventuallyMeasurable]
+  exact hg.comp_eventuallyMeasurable hf
 
 theorem NullMeasurable.congr {g : α → β} (hf : NullMeasurable f μ) (hg : f =ᵐ[μ] g) :
-    NullMeasurable g μ :=
-  fun s hs ↦ NullMeasurableSet.congr (hf hs) <| hg.preimage s
+    NullMeasurable g μ := by
+  rw [nullMeasurable_iff_eventuallyMeasurable]
+  exact EventuallyMeasurable.congr hf hg.symm
 
 end NullMeasurable
 
