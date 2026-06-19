@@ -135,7 +135,7 @@ noncomputable def asPowersEquiv : asPowers R A ≃ₐ[R] FreeProduct R A :=
       simp [Function.onFun])
   |>.symm
 
-open RingQuot Function
+open Function
 
 local infixr:60 " ∘ₐ " => AlgHom.comp
 
