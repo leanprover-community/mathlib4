@@ -80,16 +80,16 @@ theorem comap_eq {g : N →+* M} :
     c.comap g = ker (c.mk'.comp g) := by
   rw [ker_comp, ker_mk'_eq]
 
-/-- Makes an isomorphism of quotients by two ring congruence
-relations, given that the relations are equal. -/
-protected def congr (h : c = d) :
-    c.Quotient ≃+* d.Quotient :=
-  { Quotient.congr (Equiv.refl M) <| by apply RingCon.ext_iff.mp h with
-    map_add' x y := by rcases x with ⟨⟩; rcases y with ⟨⟩; rfl
-    map_mul' x y := by rcases x with ⟨⟩; rcases y with ⟨⟩; rfl }
+/-- Makes an isomorphism of quotients by two ring congruence relations
+whose underlying rings are isomorphic, given that the relations are compatible. -/
+protected def congr {c : RingCon M} {d : RingCon N} (e : M ≃+* N) (h : c = d.comap e) :
+    c.Quotient ≃+* d.Quotient where
+  __ := Quotient.congr e <| by apply RingCon.ext_iff.mp h
+  map_mul' := by rintro ⟨x⟩ ⟨y⟩; exact congrArg toQuotient (e.map_mul x y)
+  map_add' := by rintro ⟨x⟩ ⟨y⟩; exact congrArg toQuotient (e.map_add x y)
 
-@[simp] theorem congr_mk (h : c = d) (a : M) :
-    RingCon.congr h (a : c.Quotient) = (a : d.Quotient) := rfl
+@[simp] theorem congr_mk {c : RingCon M} {d : RingCon N} (e : M ≃+* N) (h : c = d.comap e) (a : M) :
+    RingCon.congr e h (a : c.Quotient) = (e a : d.Quotient) := rfl
 
 /-- Given a function `f`, the smallest ring congruence relation containing the binary
 relation on `f`'s image defined by '`x ≈ y` iff the elements of `f⁻¹(x)` are related to
@@ -321,7 +321,7 @@ noncomputable def comapQuotientEquivOfSurj
     (c : RingCon M) (f : N →+* M) (hf : Function.Surjective f)
     {d : RingCon N} (hcd : d = c.comap f) :
     d.Quotient ≃+* c.Quotient :=
-  (RingCon.congr (hcd.trans c.comap_eq)).trans
+  (RingCon.congr (.refl _) (hcd.trans c.comap_eq)).trans
     <| RingCon.quotientKerEquivOfSurjective (c.mk'.comp f)
     (c.mk'_surjective.comp hf)
 
@@ -348,7 +348,7 @@ noncomputable def comapQuotientEquivOfSurj
 noncomputable def comapQuotientEquivRangeS (f : N →+* M)
     {d : RingCon N} (hcd : d = comap c f) :
     d.Quotient ≃+* RingHom.rangeS (c.mk'.comp f) :=
-  (RingCon.congr (hcd.trans comap_eq)).trans <| quotientKerEquivRangeS <| c.mk'.comp f
+  (RingCon.congr (.refl _) (hcd.trans comap_eq)).trans <| quotientKerEquivRangeS <| c.mk'.comp f
 
 @[simp] theorem comapQuotientEquivRangeS_mk (f : N →+* M)
     {d : RingCon N} (hcd : d = comap c f) (x : N) :
@@ -451,13 +451,13 @@ variable {c d : RingCon M} {f : M →ₐ[R] P}
 variable (R) in
 /-- Makes an algebra isomorphism of quotients by two ring congruence
 relations, given that the relations are equal. -/
-protected def congrₐ {c d : RingCon M} (h : c = d) :
-    c.Quotient ≃ₐ[R] d.Quotient :=
-  { RingCon.congr h with
-    commutes' _ := rfl }
+protected def congrₐ {c : RingCon M} {d : RingCon N} (e : M ≃ₐ[R] N) (h : c = d.comap e) :
+    c.Quotient ≃ₐ[R] d.Quotient where
+  __ := RingCon.congr e h
+  commutes' r := by simp [← coe_algebraMap]
 
-theorem congrₐ_mk {c d : RingCon M} (h : c = d) (a : M) :
-    RingCon.congrₐ R h (a : c.Quotient) = (a : d.Quotient) :=
+theorem congrₐ_mk {c : RingCon M} {d : RingCon N} (e : M ≃ₐ[R] N) (h : c = d.comap e) (a : M) :
+    RingCon.congrₐ R e h (a : c.Quotient) = (e a : d.Quotient) :=
   rfl
 
 theorem range_mkₐ : AlgHom.range (mkₐ R c) = ⊤ :=
@@ -570,7 +570,7 @@ theorem quotientKerEquivRangeₐ_comp_mkₐ (φ : M →ₐ[R] N) :
 /-- The **second isomorphism theorem for algebras**. -/
 noncomputable def comapQuotientEquivRangeₐ (f : N →ₐ[R] M) {d : RingCon N} (h : d = comap c f) :
     d.Quotient ≃ₐ[R] AlgHom.range ((c.mkₐ _).comp f) :=
-  (RingCon.congrₐ R (h.trans comap_eq)).trans <| quotientKerEquivRangeₐ ((c.mkₐ _).comp f)
+  (RingCon.congrₐ R .refl (h.trans comap_eq)).trans <| quotientKerEquivRangeₐ ((c.mkₐ _).comp f)
 
 theorem comapQuotientEquivRangeₐ_mk (f : N →ₐ[R] M) {d : RingCon N} (h : d = comap c f) (x : N) :
     c.comapQuotientEquivRangeₐ f h x = ⟨f x, AlgHom.mem_range_self _ x⟩ :=

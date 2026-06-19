@@ -63,17 +63,19 @@ def pi {ι : Type*} {f : ι → Type*} [∀ i, Mul (f i)] (C : ∀ i, Con (f i))
   { @piSetoid _ _ fun i => (C i).toSetoid with
     mul' := fun h1 h2 i => (C i).mul (h1 i) (h2 i) }
 
-/-- Makes an isomorphism of quotients by two congruence relations, given that the relations are
-equal. -/
-@[to_additive /-- Makes an additive isomorphism of quotients by two additive congruence relations,
-given that the relations are equal. -/]
-protected def congr {c d : Con M} (h : c = d) : c.Quotient ≃* d.Quotient :=
-  { Quotient.congr (Equiv.refl M) <| by apply Con.ext_iff.mp h with
-    map_mul' := fun x y => by rcases x with ⟨⟩; rcases y with ⟨⟩; rfl }
+/-- A multiplicative equivalence `e : α ≃* β` generates an equivalence between quotient spaces,
+if it is compatible with the relations. -/
+@[to_additive
+/-- An additive equivalence `e : α ≃+ β` generates an equivalence between quotient spaces,
+if it is compatible with the relations. -/]
+protected def congr {c : Con M} {d : Con N} (e : M ≃* N) (h : c = d.comap e (map_mul e)) :
+    c.Quotient ≃* d.Quotient where
+  __ := Quotient.congr e <| by apply Con.ext_iff.mp h
+  map_mul' := by rintro ⟨x⟩ ⟨y⟩; exact congrArg toQuotient (e.map_mul x y)
 
 @[to_additive (attr := simp)]
-theorem congr_mk {c d : Con M} (h : c = d) (a : M) :
-    Con.congr h (a : c.Quotient) = (a : d.Quotient) := rfl
+theorem congr_mk {c : Con M} {d : Con N} (e : M ≃* N) (h : c = d.comap e (map_mul e)) (a : M) :
+    Con.congr e h (a : c.Quotient) = (e a : d.Quotient) := rfl
 
 @[to_additive]
 theorem le_comap_conGen {M N : Type*} [Mul M] [Mul N] (f : M → N)
@@ -239,7 +241,7 @@ noncomputable def quotientKerEquivOfSurjective (f : M →* P) (hf : Surjective f
 AddCon N -/]
 noncomputable def comapQuotientEquivOfSurj (c : Con M) (f : N →* M) (hf : Function.Surjective f) :
     (Con.comap f f.map_mul c).Quotient ≃* c.Quotient :=
-  (Con.congr Con.comap_eq).trans <| Con.quotientKerEquivOfSurjective (c.mk'.comp f) <|
+  (Con.congr (.refl _) Con.comap_eq).trans <| Con.quotientKerEquivOfSurjective (c.mk'.comp f) <|
     Con.mk'_surjective.comp hf
 
 @[to_additive (attr := simp)]
@@ -263,7 +265,7 @@ lemma comapQuotientEquivOfSurj_symm_mk' (c : Con M) (f : N ≃* M) (x : N) :
 @[to_additive /-- The second isomorphism theorem for `AddMonoid`s. -/]
 noncomputable def comapQuotientEquiv (f : N →* M) :
     (comap f f.map_mul c).Quotient ≃* MonoidHom.mrange (c.mk'.comp f) :=
-  (Con.congr comap_eq).trans <| quotientKerEquivRange <| c.mk'.comp f
+  (Con.congr (.refl _) comap_eq).trans <| quotientKerEquivRange <| c.mk'.comp f
 
 /-- The **third isomorphism theorem for monoids**. -/
 @[to_additive /-- The third isomorphism theorem for `AddMonoid`s. -/]
