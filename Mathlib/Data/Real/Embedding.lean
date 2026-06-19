@@ -3,10 +3,12 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
-import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Data.Real.Archimedean
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
+public import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
+public import Mathlib.Algebra.Order.Hom.Monoid
+public import Mathlib.Algebra.Order.Module.Defs
 
 /-!
 # Embedding of archimedean groups into reals
@@ -19,6 +21,8 @@ This file provides embedding of any archimedean groups into reals.
 * `Archimedean.exists_orderAddMonoidHom_real_injective` states there exists an injective `M →+o ℝ`
   for any archimedean group `M` without specifying the `1` element in `M`.
 -/
+
+@[expose] public section
 
 
 variable {M : Type*}
@@ -68,8 +72,6 @@ theorem mkRat_mem_ratLt {num : ℤ} {den : ℕ} (hden : den ≠ 0) {x : M} :
     mkRat num den ∈ ratLt x ↔ num • 1 < den • x := by
   rw [Set.mem_setOf]
   obtain ⟨m, hm0, hnum, hden⟩ := Rat.mkRat_num_den hden (show mkRat num den = _ by rfl)
-  have hnum : num = (mkRat num den).num * m := hnum
-  have hden : den = (mkRat num den).den * m := hden
   conv in num • 1 => rw [hnum, mul_comm, ← smul_smul, natCast_zsmul]
   conv in den • x => rw [hden, mul_comm, ← smul_smul]
   exact (smul_lt_smul_iff_of_pos_left (Nat.zero_lt_of_ne_zero hm0)).symm
@@ -104,7 +106,7 @@ theorem ratLt_nonempty (x : M) : (ratLt x).Nonempty := by
     use Rat.mk' 1 (n + 1) (by simp) (by simp)
     simpa using hn.trans_lt <| (nsmul_lt_nsmul_iff_left hxpos).mpr (by simp)
 
-open Pointwise in
+open scoped Pointwise in
 theorem ratLt_add (x y : M) : ratLt (x + y) = ratLt x + ratLt y := by
   ext a
   rw [Set.mem_add]
@@ -130,7 +132,7 @@ theorem ratLt_add (x y : M) : ratLt (x + y) = ratLt x + ratLt y := by
     · have hk' : 1 + (k • a.num • 1 - k • a.den • y) ≤ k • a.den • x - 1 := by
         rw [smul_add, smul_sub, smul_add, le_sub_iff_add_le, ← sub_le_iff_le_add] at hk
         rw [le_sub_iff_add_le]
-        convert hk using 1
+        convert! hk using 1
         abel
       have : k • a.num • 1 - k • a.den • y < m • 1 :=
         lt_of_lt_of_le (lt_add_of_pos_left _ zero_lt_one) (by simpa using hk'.trans hm1)
@@ -149,7 +151,7 @@ theorem ratLt'_bddAbove (x : M) : BddAbove (ratLt' x) :=
 
 theorem ratLt'_nonempty (x : M) : (ratLt' x).Nonempty := Set.image_nonempty.mpr (ratLt_nonempty x)
 
-open Pointwise in
+open scoped Pointwise in
 theorem ratLt'_add (x y : M) : ratLt' (x + y) = ratLt' x + ratLt' y := by
   rw [ratLt', ratLt_add, Set.image_add]
 
@@ -168,7 +170,7 @@ theorem embedRealFun_zero : embedRealFun (0 : M) = 0 := by
     rw [mem_upperBounds]
     suffices (∀ (y : ℚ), y.num • (1 : M) < 0 → y ≤ x) → 0 ≤ x by simpa using this
     intro h
-    have h' (y : ℚ) (hy: y < 0) : y ≤ x := by
+    have h' (y : ℚ) (hy : y < 0) : y ≤ x := by
       exact h _ <| (smul_neg_iff_of_neg_left (by simpa using hy)).mpr zero_lt_one
     contrapose! h'
     obtain ⟨y, hxy, hy⟩ := exists_rat_btwn h'
@@ -199,7 +201,7 @@ def embedReal : M →+o ℝ where
   map_add' := embedRealFun_add
   monotone' := (embedRealFun_strictMono M).monotone
 
-theorem embedReal_apply (a : M) :  embedReal M a = embedRealFun a := by rfl
+theorem embedReal_apply (a : M) : embedReal M a = embedRealFun a := by rfl
 
 variable (M) in
 theorem embedReal_injective : Function.Injective (embedReal M) :=
@@ -229,10 +231,9 @@ omit [One M] [ZeroLEOneClass M] [NeZero (1 : M)] in
 variable (M) in
 theorem exists_orderAddMonoidHom_real_injective :
     ∃ f : M →+o ℝ, Function.Injective f := by
-  by_cases h : Subsingleton M
+  cases subsingleton_or_nontrivial M
   · exact ⟨0, Function.injective_of_subsingleton _⟩
-  · have : Nontrivial M := not_subsingleton_iff_nontrivial.mp h
-    obtain ⟨a, ha⟩ := exists_ne (0 : M)
+  · obtain ⟨a, ha⟩ := exists_ne (0 : M)
     let one : One M := ⟨|a|⟩
     have : ZeroLEOneClass M := ⟨abs_nonneg a⟩
     have : NeZero (1 : M) := ⟨abs_ne_zero.mpr ha⟩

@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Filter.Lift
-import Mathlib.Order.Interval.Set.Monotone
-import Mathlib.Topology.Separation.Basic
+module
+
+public import Mathlib.Order.Filter.Lift
+public import Mathlib.Order.Interval.Set.Monotone
+public import Mathlib.Topology.Separation.Basic
 
 /-!
 # Topology on the set of filters on a type
@@ -30,6 +32,8 @@ This topology has the following important properties.
 
 filter, topological space
 -/
+
+public section
 
 
 open Set Filter TopologicalSpace
@@ -125,7 +129,7 @@ protected theorem nhds_iInf (f : ι → Filter α) : 𝓝 (⨅ i, f i) = ⨅ i, 
 
 @[simp]
 protected theorem nhds_inf (l₁ l₂ : Filter α) : 𝓝 (l₁ ⊓ l₂) = 𝓝 l₁ ⊓ 𝓝 l₂ := by
-  simpa only [iInf_bool_eq] using Filter.nhds_iInf fun b => cond b l₁ l₂
+  simpa only [iInf_bool_eq] using! Filter.nhds_iInf fun b => cond b l₁ l₂
 
 theorem monotone_nhds : Monotone (𝓝 : Filter α → Filter (Filter α)) :=
   Monotone.of_map_inf Filter.nhds_inf

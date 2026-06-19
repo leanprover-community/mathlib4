@@ -3,13 +3,15 @@ Copyright (c) 2024 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
-import Mathlib.Init
-import Batteries.Data.Rat.Basic
-import Std.Data.HashMap.Basic
+module
+
+public import Mathlib.Init
 
 /-!
 # Datatypes for the Simplex Algorithm implementation
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Linarith.SimplexAlgorithm
 

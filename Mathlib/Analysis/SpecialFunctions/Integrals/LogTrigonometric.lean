@@ -3,7 +3,12 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
+
+import Mathlib.Analysis.Analytic.Order
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 /-!
 # Integral of `log ∘ sin`
@@ -11,6 +16,8 @@ import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
 This file computes special values of the integral of `log ∘ sin`. Given that the indefinite integral
 involves the dilogarithm, this can be seen as computing special values of `Li₂`.
 -/
+
+public section
 
 open Filter Interval Real
 
@@ -37,7 +44,7 @@ theorem integral_log_sin_zero_pi_div_two : ∫ x in 0..(π / 2), log (sin x) = -
   calc ∫ x in 0..(π / 2), log (sin x)
     _ = ∫ x in 0..(π / 2), (log (sin (2 * x)) - log 2 - log (cos x)) := by
       apply intervalIntegral.integral_congr_codiscreteWithin
-      apply Filter.codiscreteWithin.mono (by tauto : Ι 0 (π / 2) ⊆ Set.univ)
+      apply Filter.codiscreteWithin_mono (by tauto : Ι 0 (π / 2) ⊆ Set.univ)
       have t₀ : sin ⁻¹' {0}ᶜ ∈ Filter.codiscrete ℝ := by
         apply analyticOnNhd_sin.preimage_zero_mem_codiscrete (x := π / 2)
         simp

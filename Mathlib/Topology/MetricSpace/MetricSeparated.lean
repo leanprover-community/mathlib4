@@ -3,7 +3,11 @@ Copyright (c) 2021 Yury Kudryashov, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Topology.EMetricSpace.Defs
+module
+
+public import Mathlib.Data.Rel.Separated
+public import Mathlib.Topology.EMetricSpace.Defs
+public import Mathlib.Topology.MetricSpace.Antilipschitz
 
 /-!
 # Metric separation
@@ -11,21 +15,24 @@ import Mathlib.Topology.EMetricSpace.Defs
 This file defines a few notions of separations of sets in a metric space.
 
 
-The first notion (`Metric.IsSeparated`) is quantitative and about a single set: A set `s` is
-`ε`-separated if its elements are pairwise at distance at least `ε` from each other.
+The first notion (`Metric.IsSeparated`) is quantitative and describes a single set: a set `s` is
+`ε`-separated if the distance between any two distinct elements is strictly greater than `ε`
 
 The second notion (`Metric.AreSeparated`) is qualitative and about two sets: Two sets `s` and `t`
 are separated if the distance between `x ∈ s` and `y ∈ t` is bounded from below by a positive
 constant.
 -/
 
+@[expose] public section
+
 open EMetric Set
-open scoped ENNReal
+open scoped NNReal ENNReal
 
 noncomputable section
 
 namespace Metric
-variable {X : Type*} [PseudoEMetricSpace X] {s t : Set X} {ε δ : ℝ≥0∞} {x : X}
+variable {X Y : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
+variable {s t : Set X} {ε δ : ℝ≥0∞} {x : X} {y : Y}
 
 /-!
 ### Metric-separated sets
@@ -33,10 +40,15 @@ variable {X : Type*} [PseudoEMetricSpace X] {s t : Set X} {ε δ : ℝ≥0∞} {
 In this section we define the predicate `Metric.IsSeparated` for `ε`-separated sets.
 -/
 
-/-- A set `s` is `ε`-separated if its elements are pairwise at distance at least `ε` from each
-other. -/
+/-- A set `s` is `ε`-separated if the extended distance between any two distinct
+elements is strictly greater than `ε`. -/
 def IsSeparated (ε : ℝ≥0∞) (s : Set X) : Prop := s.Pairwise (ε < edist · ·)
 
+lemma isSeparated_iff_setRelIsSeparated :
+    IsSeparated ε s ↔ SetRel.IsSeparated {(x, y) | edist x y ≤ ε} s := by
+  simp [IsSeparated, SetRel.IsSeparated]
+
+@[grind .]
 protected lemma IsSeparated.empty : IsSeparated ε (∅ : Set X) := pairwise_empty _
 protected lemma IsSeparated.singleton : IsSeparated ε {x} := pairwise_singleton ..
 
@@ -51,17 +63,28 @@ lemma IsSeparated.subset (hst : s ⊆ t) (hs : IsSeparated ε t) : IsSeparated �
 
 lemma isSeparated_insert :
     IsSeparated ε (insert x s) ↔ IsSeparated ε s ∧ ∀ y ∈ s, x ≠ y → ε < edist x y :=
-  pairwise_insert_of_symmetric fun _ _ ↦ by simp [edist_comm]
+  have : Std.Symm (α := X) (ε < edist · ·) := by simp [symm_def, edist_comm]
+  pairwise_insert_of_symm
 
 lemma isSeparated_insert_of_notMem (hx : x ∉ s) :
     IsSeparated ε (insert x s) ↔ IsSeparated ε s ∧ ∀ y ∈ s, ε < edist x y :=
-  pairwise_insert_of_symmetric_of_notMem (fun _ _ ↦ by simp [edist_comm]) hx
-
-@[deprecated (since := "2025-05-23")]
-alias isSeparated_insert_of_not_mem := isSeparated_insert_of_notMem
+  have : Std.Symm (α := X) (ε < edist · ·) := by simp [symm_def, edist_comm]
+  pairwise_insert_of_symm_of_notMem hx
 
 protected lemma IsSeparated.insert (hs : IsSeparated ε s) (h : ∀ y ∈ s, x ≠ y → ε < edist x y) :
     IsSeparated ε (insert x s) := isSeparated_insert.2 ⟨hs, h⟩
+
+@[simp]
+lemma isSeparated_zero {X : Type*} [EMetricSpace X] (s : Set X) : IsSeparated 0 s := by
+  simp [IsSeparated, Set.Pairwise]
+
+lemma IsSeparated.image_antilipschitz {ε K₁ : ℝ≥0} {f : X → Y}
+    (hs : IsSeparated ε s) (hf : AntilipschitzWith K₁ f) (hK₁ : 0 < K₁) :
+    IsSeparated ↑(ε / K₁) (f '' s) := by
+  rintro x' ⟨x, hx, rfl⟩ y' ⟨y, hy, rfl⟩ hne
+  have hmul : (↑ε : ℝ≥0∞) < edist (f x) (f y) * ↑K₁ :=
+    lt_of_lt_of_le (hs hx hy (by grind)) (by rw [mul_comm]; exact hf x y)
+  exact ENNReal.coe_div hK₁.ne' ▸ ENNReal.div_lt_of_lt_mul hmul
 
 /-!
 ### Metric separated pairs of sets
@@ -101,7 +124,7 @@ protected theorem disjoint (h : AreSeparated s t) : Disjoint s t :=
 theorem subset_compl_right (h : AreSeparated s t) : s ⊆ tᶜ := fun _ hs ht =>
   h.disjoint.le_bot ⟨hs, ht⟩
 
-@[mono]
+@[gcongr, mono]
 theorem mono {s' t'} (hs : s ⊆ s') (ht : t ⊆ t') :
     AreSeparated s' t' → AreSeparated s t := fun ⟨r, r0, hr⟩ =>
   ⟨r, r0, fun x hx y hy => hr x (hs hx) y (ht hy)⟩

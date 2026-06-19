@@ -3,11 +3,13 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Subobject.Lattice
-import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
-import Mathlib.CategoryTheory.ObjectProperty.EpiMono
-import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
-import Mathlib.Order.OrderIsoNat
+module
+
+public import Mathlib.CategoryTheory.Subobject.Lattice
+public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
+public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
+public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
+public import Mathlib.Order.OrderIsoNat
 
 /-!
 # Noetherian objects
@@ -24,6 +26,8 @@ closed under subobjects.
   (TODO @joelriou)
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -80,6 +84,7 @@ lemma not_strictMono_of_isNoetherianObject
     ¬ StrictMono f :=
   (isNoetherianObject_iff_not_strictMono X).1 inferInstance f
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isNoetherianObject_iff_isEventuallyConstant :
     IsNoetherianObject X ↔ ∀ (F : ℕ ⥤ MonoOver X),
       IsFiltered.IsEventuallyConstant F := by
@@ -91,7 +96,7 @@ lemma isNoetherianObject_iff_isEventuallyConstant :
     exact hn m (leOfHom hm)
   · obtain ⟨n, hn⟩ := h (F.monotone.functor ⋙ Subobject.representative)
     refine ⟨n, fun m hm ↦ ?_⟩
-    simpa [← MonoOver.isIso_iff_isIso_left, isIso_iff_of_reflects_iso,
+    simpa [← MonoOver.isIso_iff_isIso_hom_left, isIso_iff_of_reflects_iso,
       PartialOrder.isIso_iff_eq] using hn (homOfLE hm)
 
 variable {X} in

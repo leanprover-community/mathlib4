@@ -3,8 +3,10 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
-import Mathlib.Algebra.Notation.Support
-import Mathlib.Data.Set.Piecewise
+module
+
+public import Mathlib.Algebra.Notation.Support
+public import Mathlib.Data.Set.Piecewise
 
 /-!
 # Indicator function
@@ -33,6 +35,8 @@ arguments. This is in contrast with the design of `Pi.single` or `Set.piecewise`
 
 indicator, characteristic
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -64,12 +68,6 @@ lemma mulIndicator_of_mem (h : a ∈ s) (f : α → M) : mulIndicator s f a = f 
 
 @[to_additive (attr := simp)]
 lemma mulIndicator_of_notMem (h : a ∉ s) (f : α → M) : mulIndicator s f a = 1 := if_neg h
-
-@[deprecated (since := "2025-05-23")]
-alias indicator_of_not_mem := indicator_of_notMem
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias mulIndicator_of_not_mem := mulIndicator_of_notMem
 
 @[to_additive]
 lemma mulIndicator_eq_one_or_self (s : Set α) (f : α → M) (a : α) :
@@ -206,7 +204,7 @@ lemma mulIndicator_inter_mulSupport (s : Set α) (f : α → M) :
 lemma comp_mulIndicator (h : M → β) (f : α → M) {s : Set α} {x : α} [DecidablePred (· ∈ s)] :
     h (s.mulIndicator f x) = s.piecewise (h ∘ f) (const α (h 1)) x := by
   letI := Classical.decPred (· ∈ s)
-  convert s.apply_piecewise f (const α 1) (fun _ => h) (x := x) using 2
+  convert! s.apply_piecewise f (const α 1) (fun _ => h) (x := x) using 2
 
 @[to_additive]
 lemma mulIndicator_comp_right {s : Set α} (f : β → α) {g : α → M} {x : β} :
@@ -248,7 +246,7 @@ lemma mulIndicator_const_preimage_eq_union (U : Set α) (s : Set M) (a : M) [Dec
     [Decidable ((1 : M) ∈ s)] : (U.mulIndicator fun _ => a) ⁻¹' s =
       (if a ∈ s then U else ∅) ∪ if (1 : M) ∈ s then Uᶜ else ∅ := by
   rw [mulIndicator_preimage, Pi.one_def, Set.preimage_const, preimage_const]
-  split_ifs <;> simp [← compl_eq_univ_diff]
+  split_ifs <;> simp [← compl_eq_univ_sdiff]
 
 @[to_additive]
 lemma mulIndicator_const_preimage (U : Set α) (s : Set M) (a : M) :
@@ -261,12 +259,6 @@ lemma mulIndicator_const_preimage (U : Set α) (s : Set M) (a : M) :
 lemma mulIndicator_preimage_of_notMem (s : Set α) (f : α → M) {t : Set M} (ht : (1 : M) ∉ t) :
     mulIndicator s f ⁻¹' t = f ⁻¹' t ∩ s := by
   simp [mulIndicator_preimage, Pi.one_def, Set.preimage_const_of_notMem ht]
-
-@[deprecated (since := "2025-05-23")]
-alias indicator_preimage_of_not_mem := indicator_preimage_of_notMem
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias mulIndicator_preimage_of_not_mem := mulIndicator_preimage_of_notMem
 
 @[to_additive]
 lemma mem_range_mulIndicator {r : M} {s : Set α} {f : α → M} :

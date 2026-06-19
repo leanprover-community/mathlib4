@@ -3,9 +3,11 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Order.CompleteSublattice
-import Mathlib.RingTheory.SimpleModule.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Order.CompleteSublattice
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Isotypic modules and isotypic components
@@ -40,6 +42,8 @@ isotypic component, fully invariant submodule
 
 -/
 
+@[expose] public section
+
 universe u
 
 variable (R₀ R : Type*) (M : Type u) (N S : Type*) [CommSemiring R₀]
@@ -67,11 +71,21 @@ theorem IsIsotypicOfType.of_subsingleton [Subsingleton M] : IsIsotypicOfType R M
   fun S ↦ (IsIsotypicOfType.of_subsingleton R M S).isIsotypic S
 
 theorem IsIsotypicOfType.of_isSimpleModule [IsSimpleModule R M] : IsIsotypicOfType R M M :=
-  fun S hS  ↦ by
+  fun S hS ↦ by
     rw [isSimpleModule_iff_isAtom, isAtom_iff_eq_top] at hS
     exact ⟨.trans (.ofEq _ _ hS) Submodule.topEquiv⟩
 
-variable {R M N S}
+variable {R}
+
+theorem IsIsotypic.of_self [IsSemisimpleRing R] (h : IsIsotypic R R) : IsIsotypic R M :=
+  fun m _ m' _ ↦
+    have ⟨_, ⟨e⟩⟩ := IsSemisimpleRing.exists_linearEquiv_ideal_of_isSimpleModule R m
+    have ⟨_, ⟨e'⟩⟩ := IsSemisimpleRing.exists_linearEquiv_ideal_of_isSimpleModule R m'
+    have := IsSimpleModule.congr e.symm
+    have := IsSimpleModule.congr e'.symm
+    ⟨e'.trans <| (h _ _).some.trans e.symm⟩
+
+variable {M N S}
 
 theorem IsIsotypicOfType.of_linearEquiv_type (h : IsIsotypicOfType R M S) (e : S ≃ₗ[R] N) :
     IsIsotypicOfType R M N := fun m _ ↦ ⟨(h m).some.trans e⟩
@@ -99,6 +113,7 @@ theorem LinearEquiv.isIsotypicOfType_iff_type (e : N ≃ₗ[R] S) :
 theorem LinearEquiv.isIsotypic_iff (e : M ≃ₗ[R] N) : IsIsotypic R M ↔ IsIsotypic R N :=
   ⟨(·.of_injective _ e.symm.injective), (·.of_injective _ e.injective)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isIsotypicOfType_submodule_iff {N : Submodule R M} :
     IsIsotypicOfType R N S ↔ ∀ m ≤ N, [IsSimpleModule R m] → Nonempty (m ≃ₗ[R] S) := by
   rw [Subtype.forall', ← (Submodule.MapSubtype.orderIso N).forall_congr_right]
@@ -106,6 +121,7 @@ theorem isIsotypicOfType_submodule_iff {N : Submodule R M} :
   simp_rw [Submodule.MapSubtype.orderIso, Equiv.coe_fn_mk, ← (e _).isSimpleModule_iff]
   exact forall₂_congr fun m _ ↦ ⟨fun ⟨e'⟩ ↦ ⟨(e m).symm.trans e'⟩, fun ⟨e'⟩ ↦ ⟨(e m).trans e'⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isIsotypic_submodule_iff {N : Submodule R M} :
     IsIsotypic R N ↔ ∀ m ≤ N, [IsSimpleModule R m] → IsIsotypicOfType R N m := by
   rw [Subtype.forall', ← (Submodule.MapSubtype.orderIso N).forall_congr_right]
@@ -205,7 +221,7 @@ theorem Submodule.le_linearEquiv_of_sSup_eq_top [IsSemisimpleModule R M]
   have := IsSimpleModule.nontrivial R N
   have ⟨_, compl⟩ := exists_isCompl N
   have ⟨m, hm, ne⟩ := exists_ne_zero_of_sSup_eq_top (ne_zero_of_surjective
-    (N.linearProjOfIsCompl_surjective compl)) _ hs
+    (projectionOnto_surjective compl)) _ hs
   have ⟨S, ⟨e⟩⟩ := linearEquiv_of_ne_zero ne
   exact ⟨m, hm, _, m.map_subtype_le S, ⟨e.trans (S.equivMapOfInjective _ m.subtype_injective)⟩⟩
 
@@ -320,7 +336,7 @@ def Submodule.IsFullyInvariant (N : Submodule R M) : Prop :=
 
 theorem isFullyInvariant_iff_isTwoSided {I : Ideal R} : I.IsFullyInvariant ↔ I.IsTwoSided := by
   simpa only [Submodule.IsFullyInvariant, ← MulOpposite.opEquiv.trans (RingEquiv.moduleEndSelf R
-    |>.toEquiv) |>.forall_congr_right, SetLike.le_def, I.isTwoSided_iff] using forall_comm
+    |>.toEquiv) |>.forall_congr_right, SetLike.le_def, I.isTwoSided_iff] using! forall_comm
 
 variable (R M) in
 /-- The fully invariant submodules of a module form a complete sublattice in the lattice of
@@ -453,7 +469,7 @@ theorem isFullyInvariant_iff_sSup_isotypicComponents {m : Submodule R M} :
     m.IsFullyInvariant ↔ ∃ s ⊆ isotypicComponents R M, m = sSup s := by
   refine ⟨fun h ↦ ⟨OrderIso.setIsotypicComponents.symm ⟨m, h⟩, ⟨?_, ?_⟩⟩, ?_⟩
   · rintro _ ⟨c, _, rfl⟩; exact c.2
-  · convert Subtype.ext_iff.mp (OrderIso.setIsotypicComponents.right_inv ⟨m, h⟩).symm
+  · convert! Subtype.ext_iff.mp (OrderIso.setIsotypicComponents.right_inv ⟨m, h⟩).symm
     simp [sSup_image, OrderIso.setIsotypicComponents, OrderIso.symm]
   · rintro ⟨_, hs, rfl⟩
     exact (fullyInvariantSubmodule R M).sSupClosed fun _ h ↦ .of_mem_isotypicComponents (hs h)

@@ -3,7 +3,9 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Analysis.Normed.Ring.Lemmas
+module
+
+public import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # The integers as normed ring
@@ -15,6 +17,8 @@ This norm is always nonnegative, so we can bundle the norm together with this fa
 to obtain a term of type `NNReal` (the nonnegative real numbers).
 The resulting nonnegative real number is denoted by `‖n‖₊`.
 -/
+
+public section
 
 
 namespace Int
@@ -38,7 +42,7 @@ theorem toNat_add_toNat_neg_eq_nnnorm (n : ℤ) : ↑n.toNat + ↑(-n).toNat = �
 
 @[simp]
 theorem toNat_add_toNat_neg_eq_norm (n : ℤ) : ↑n.toNat + ↑(-n).toNat = ‖n‖ := by
-  simpa only [NNReal.coe_natCast, NNReal.coe_add] using
+  simpa only [NNReal.coe_natCast, NNReal.coe_add] using!
     congrArg NNReal.toReal (toNat_add_toNat_neg_eq_nnnorm n)
 
 end Int

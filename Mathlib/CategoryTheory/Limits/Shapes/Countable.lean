@@ -3,10 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathlib.CategoryTheory.Countable
-import Mathlib.Data.Countable.Defs
+module
+
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+public import Mathlib.CategoryTheory.Countable
+public import Mathlib.Data.Countable.Defs
 /-!
 # Countable limits and colimits
 
@@ -24,9 +26,11 @@ limits, see `sequentialFunctor_initial`.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Opposite CountableCategory
 
-variable (C : Type*) [Category C] (J : Type*) [Countable J]
+variable (C : Type*) [Category* C] (J : Type*) [Countable J]
 
 namespace CategoryTheory.Limits
 
@@ -37,7 +41,7 @@ instance and `J : Type` has a limit.
 class HasCountableLimits : Prop where
   /-- `C` has all limits over any type `J` whose objects and morphisms lie in the same universe
   and which has countably many objects and morphisms -/
-  out (J : Type) [SmallCategory J] [CountableCategory J] : HasLimitsOfShape J C
+  out (J : Type) [SmallCategory J] [CountableCategory J] : HasLimitsOfShape J C := by infer_instance
 
 instance (priority := 100) hasFiniteLimits_of_hasCountableLimits [HasCountableLimits C] :
     HasFiniteLimits C where
@@ -153,7 +157,7 @@ noncomputable def sequentialFunctor : ℕ ⥤ J where
 theorem sequentialFunctor_final_aux (j : J) : ∃ (n : ℕ), j ≤ sequentialFunctor_obj J n := by
   obtain ⟨m, h⟩ := (exists_surjective_nat _).choose_spec j
   refine ⟨m + 1, ?_⟩
-  simpa only [h] using leOfHom (IsFilteredOrEmpty.cocone_objs ((exists_surjective_nat _).choose m)
+  simpa only [h] using! leOfHom (IsFilteredOrEmpty.cocone_objs ((exists_surjective_nat _).choose m)
     (sequentialFunctor_obj J m)).choose_spec.choose
 
 instance sequentialFunctor_final : (sequentialFunctor J).Final where
@@ -163,11 +167,11 @@ instance sequentialFunctor_final : (sequentialFunctor J).Final where
       ⟨StructuredArrow.mk (homOfLE g)⟩
     apply isConnected_of_zigzag
     refine fun i j ↦ ⟨[j], ?_⟩
-    simp only [List.chain_cons, Zag, List.Chain.nil, and_true, ne_eq, not_false_eq_true,
-      List.getLast_cons, List.getLast_singleton', reduceCtorEq]
+    simp only [List.isChain_cons_cons, Zag, List.isChain_singleton, and_true, ne_eq,
+      not_false_eq_true, List.getLast_cons, List.getLast_singleton', reduceCtorEq]
     clear! C
-    wlog h : j.right ≤ i.right
-    · exact or_comm.1 (this J d n g inferInstance j i (le_of_lt (not_le.mp h)))
+    wlog! h : j.right ≤ i.right
+    · exact or_comm.1 (this J d n g inferInstance j i (le_of_lt h))
     · right
       exact ⟨StructuredArrow.homMk (homOfLE h) rfl⟩
 
@@ -204,7 +208,7 @@ noncomputable def sequentialFunctor : ℕᵒᵖ ⥤ J where
 theorem sequentialFunctor_initial_aux (j : J) : ∃ (n : ℕ), sequentialFunctor_obj J n ≤ j := by
   obtain ⟨m, h⟩ := (exists_surjective_nat _).choose_spec j
   refine ⟨m + 1, ?_⟩
-  simpa only [h] using leOfHom (IsCofilteredOrEmpty.cone_objs ((exists_surjective_nat _).choose m)
+  simpa only [h] using! leOfHom (IsCofilteredOrEmpty.cone_objs ((exists_surjective_nat _).choose m)
     (sequentialFunctor_obj J m)).choose_spec.choose
 
 instance sequentialFunctor_initial : (sequentialFunctor J).Initial where
@@ -214,16 +218,16 @@ instance sequentialFunctor_initial : (sequentialFunctor J).Initial where
       ⟨CostructuredArrow.mk (homOfLE g)⟩
     apply isConnected_of_zigzag
     refine fun i j ↦ ⟨[j], ?_⟩
-    simp only [List.chain_cons, Zag, List.Chain.nil, and_true, ne_eq, not_false_eq_true,
-      List.getLast_cons, List.getLast_singleton', reduceCtorEq]
+    simp only [List.isChain_cons_cons, Zag, List.isChain_singleton, and_true, ne_eq,
+      not_false_eq_true, List.getLast_cons, List.getLast_singleton', reduceCtorEq]
     clear! C
-    wlog h : (unop i.left) ≤ (unop j.left)
-    · exact or_comm.1 (this J d n g inferInstance j i (le_of_lt (not_le.mp h)))
+    wlog! h : (unop i.left) ≤ (unop j.left)
+    · exact or_comm.1 (this J d n g inferInstance j i (le_of_lt h))
     · right
       exact ⟨CostructuredArrow.homMk (homOfLE h).op rfl⟩
 
 @[stacks 0032]
-proof_wanted preorder_of_cofiltered (J : Type*) [Category J] [IsCofiltered J] :
+proof_wanted preorder_of_cofiltered (J : Type*) [Category* J] [IsCofiltered J] :
     ∃ (I : Type*) (_ : Preorder I) (_ : IsCofiltered I) (F : I ⥤ J), F.Initial
 
 /--

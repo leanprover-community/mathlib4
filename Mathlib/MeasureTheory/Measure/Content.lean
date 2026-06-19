@@ -3,9 +3,11 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpace
-import Mathlib.MeasureTheory.Measure.Regular
-import Mathlib.Topology.Sets.Compacts
+module
+
+public import Mathlib.MeasureTheory.Measure.MeasureSpace
+public import Mathlib.MeasureTheory.Measure.Regular
+public import Mathlib.Topology.Sets.Compacts
 
 /-!
 # Contents
@@ -49,6 +51,8 @@ When the space is locally compact, `μ.measure` is also regular.
 * <https://en.wikipedia.org/wiki/Content_(measure_theory)>
 -/
 
+@[expose] public section
+
 
 universe u v w
 
@@ -83,7 +87,7 @@ namespace Content
 
 instance : FunLike (Content G) (Compacts G) ℝ≥0∞ where
   coe μ s := μ.toFun s
-  coe_injective' := by
+  coe_injective := by
     rintro ⟨μ, _, _⟩ ⟨v, _, _⟩ h; congr!; ext s : 1; exact ENNReal.coe_injective <| congr_fun h s
 
 variable (μ : Content G)
@@ -131,8 +135,7 @@ theorem innerContent_of_isCompact {K : Set G} (h1K : IsCompact K) (h2K : IsOpen 
   le_antisymm (iSup₂_le fun _ hK' => μ.mono _ ⟨K, h1K⟩ hK') (μ.le_innerContent _ _ Subset.rfl)
 
 theorem innerContent_bot : μ.innerContent ⊥ = 0 := by
-  refine le_antisymm ?_ (zero_le _)
-  rw [← μ.empty]
+  rw [← nonpos_iff_eq_zero, ← μ.empty]
   refine iSup₂_le fun K hK => ?_
   have : K = ⊥ := by
     ext1
@@ -163,15 +166,14 @@ theorem innerContent_iSup_nat [R1Space G] (U : ℕ → Opens G) :
     refine Finset.induction_on t ?_ ?_
     · simp only [μ.empty, nonpos_iff_eq_zero, Finset.sum_empty, Finset.sup_empty]
     · intro n s hn ih
-      rw [Finset.sup_insert, Finset.sum_insert hn]
-      exact le_trans (μ.sup_le _ _) (add_le_add_left ih _)
+      grw [Finset.sup_insert, Finset.sum_insert hn, μ.sup_le, ih]
   refine iSup₂_le fun K hK => ?_
   obtain ⟨t, ht⟩ :=
     K.isCompact.elim_finite_subcover _ (fun i => (U i).isOpen) (by rwa [← Opens.coe_iSup])
   rcases K.isCompact.finite_compact_cover t (SetLike.coe ∘ U) (fun i _ => (U i).isOpen) ht with
     ⟨K', h1K', h2K', h3K'⟩
   let L : ℕ → Compacts G := fun n => ⟨K' n, h1K' n⟩
-  convert le_trans (h3 t L) _
+  convert! le_trans (h3 t L) _
   · ext1
     rw [Compacts.coe_finset_sup, Finset.sup_eq_iSup]
     exact h3K'
@@ -198,15 +200,15 @@ theorem innerContent_comap (f : G ≃ₜ G) (h : ∀ ⦃K : Compacts G⦄, μ (K
   apply h
 
 @[to_additive]
-theorem is_mul_left_invariant_innerContent [Group G] [ContinuousMul G]
-    (h : ∀ (g : G) {K : Compacts G}, μ (K.map _ <| continuous_mul_left g) = μ K) (g : G)
+theorem is_mul_left_invariant_innerContent [Group G] [SeparatelyContinuousMul G]
+    (h : ∀ (g : G) {K : Compacts G}, μ (K.map _ <| continuous_const_mul g) = μ K) (g : G)
     (U : Opens G) :
     μ.innerContent (Opens.comap (Homeomorph.mulLeft g) U) = μ.innerContent U := by
-  convert μ.innerContent_comap (Homeomorph.mulLeft g) (fun K => h g) U
+  convert! μ.innerContent_comap (Homeomorph.mulLeft g) (fun K => h g) U
 
 @[to_additive]
 theorem innerContent_pos_of_is_mul_left_invariant [Group G] [IsTopologicalGroup G]
-    (h3 : ∀ (g : G) {K : Compacts G}, μ (K.map _ <| continuous_mul_left g) = μ K) (K : Compacts G)
+    (h3 : ∀ (g : G) {K : Compacts G}, μ (K.map _ <| continuous_const_mul g) = μ K) (K : Compacts G)
     (hK : μ K ≠ 0) (U : Opens G) (hU : (U : Set G).Nonempty) : 0 < μ.innerContent U := by
   have : (interior (U : Set G)).Nonempty := by rwa [U.isOpen.interior_eq]
   rcases compact_covered_by_mul_left_translates K.2 this with ⟨s, hs⟩
@@ -260,7 +262,7 @@ theorem outerMeasure_exists_compact {U : Opens G} (hU : μ.outerMeasure U ≠ �
     (hε : ε ≠ 0) : ∃ K : Compacts G, (K : Set G) ⊆ U ∧ μ.outerMeasure U ≤ μ.outerMeasure K + ε := by
   rw [μ.outerMeasure_opens] at hU ⊢
   rcases μ.innerContent_exists_compact hU hε with ⟨K, h1K, h2K⟩
-  exact ⟨K, h1K, le_trans h2K <| add_le_add_right (μ.le_outerMeasure_compacts K) _⟩
+  exact ⟨K, h1K, by grw [h2K, μ.le_outerMeasure_compacts K]⟩
 
 theorem outerMeasure_exists_open {A : Set G} (hA : μ.outerMeasure A ≠ ∞) {ε : ℝ≥0} (hε : ε ≠ 0) :
     ∃ U : Opens G, A ⊆ U ∧ μ.outerMeasure U ≤ μ.outerMeasure A + ε := by
@@ -274,7 +276,7 @@ theorem outerMeasure_preimage (f : G ≃ₜ G) (h : ∀ ⦃K : Compacts G⦄, μ
   refine inducedOuterMeasure_preimage _ μ.innerContent_iUnion_nat μ.innerContent_mono _
     (fun _ => f.isOpen_preimage) ?_
   intro s hs
-  convert μ.innerContent_comap f h ⟨s, hs⟩
+  convert! μ.innerContent_comap f h ⟨s, hs⟩
 
 theorem outerMeasure_lt_top_of_isCompact [WeaklyLocallyCompactSpace G]
     {K : Set G} (hK : IsCompact K) :
@@ -287,10 +289,10 @@ theorem outerMeasure_lt_top_of_isCompact [WeaklyLocallyCompactSpace G]
     _ < ⊤ := μ.lt_top _
 
 @[to_additive]
-theorem is_mul_left_invariant_outerMeasure [Group G] [ContinuousMul G]
-    (h : ∀ (g : G) {K : Compacts G}, μ (K.map _ <| continuous_mul_left g) = μ K) (g : G)
+theorem is_mul_left_invariant_outerMeasure [Group G] [SeparatelyContinuousMul G]
+    (h : ∀ (g : G) {K : Compacts G}, μ (K.map _ <| continuous_const_mul g) = μ K) (g : G)
     (A : Set G) : μ.outerMeasure ((g * ·) ⁻¹' A) = μ.outerMeasure A := by
-  convert μ.outerMeasure_preimage (Homeomorph.mulLeft g) (fun K => h g) A
+  convert! μ.outerMeasure_preimage (Homeomorph.mulLeft g) (fun K => h g) A
 
 theorem outerMeasure_caratheodory (A : Set G) :
     MeasurableSet[μ.outerMeasure.caratheodory] A ↔
@@ -302,9 +304,9 @@ theorem outerMeasure_caratheodory (A : Set G) :
 
 @[to_additive]
 theorem outerMeasure_pos_of_is_mul_left_invariant [Group G] [IsTopologicalGroup G]
-    (h3 : ∀ (g : G) {K : Compacts G}, μ (K.map _ <| continuous_mul_left g) = μ K) (K : Compacts G)
+    (h3 : ∀ (g : G) {K : Compacts G}, μ (K.map _ <| continuous_const_mul g) = μ K) (K : Compacts G)
     (hK : μ K ≠ 0) {U : Set G} (h1U : IsOpen U) (h2U : U.Nonempty) : 0 < μ.outerMeasure U := by
-  convert μ.innerContent_pos_of_is_mul_left_invariant h3 K hK ⟨U, h1U⟩ h2U
+  convert! μ.innerContent_pos_of_is_mul_left_invariant h3 K hK ⟨U, h1U⟩ h2U
   exact μ.outerMeasure_opens ⟨U, h1U⟩
 
 variable [S : MeasurableSpace G] [BorelSpace G]
@@ -324,13 +326,12 @@ theorem borel_le_caratheodory : S ≤ μ.outerMeasure.caratheodory := by
   refine iSup_le ?_
   rintro ⟨L, hL⟩
   let L' : Compacts G := ⟨closure L, L.isCompact.closure⟩
-  suffices μ L' + μ.outerMeasure (↑U' \ U) ≤ μ.outerMeasure U' by
-    have A : μ L ≤ μ L' := μ.mono _ _ subset_closure
-    exact (add_le_add_right A _).trans this
+  dsimp
+  grw [show μ L ≤ μ L' from μ.mono _ _ subset_closure]
   simp only [subset_inter_iff] at hL
   have hL'U : (L' : Set G) ⊆ U := IsCompact.closure_subset_of_isOpen L.2 hU hL.2
   have hL'U' : (L' : Set G) ⊆ (U' : Set G) := IsCompact.closure_subset_of_isOpen L.2 U'.2 hL.1
-  have : ↑U' \ U ⊆ U' \ L' := diff_subset_diff_right hL'U
+  have : ↑U' \ U ⊆ U' \ L' := sdiff_subset_sdiff_right hL'U
   grw [this]
   rw [μ.outerMeasure_of_isOpen (↑U' \ L') (IsOpen.sdiff U'.2 isClosed_closure)]
   simp only [innerContent, iSup_subtype']
@@ -340,17 +341,16 @@ theorem borel_le_caratheodory : S ≤ μ.outerMeasure.caratheodory := by
   refine iSup_le ?_
   rintro ⟨M, hM⟩
   let M' : Compacts G := ⟨closure M, M.isCompact.closure⟩
-  suffices μ L' + μ M' ≤ μ.outerMeasure U' by
-    have A : μ M ≤ μ M' := μ.mono _ _ subset_closure
-    exact (add_le_add_left A _).trans this
+  dsimp
+  grw [show μ M ≤ μ M' from μ.mono _ _ subset_closure]
   have hM' : (M' : Set G) ⊆ U' \ L' :=
     IsCompact.closure_subset_of_isOpen M.2 (IsOpen.sdiff U'.2 isClosed_closure) hM
   have : (↑(L' ⊔ M') : Set G) ⊆ U' := by
     simp only [Compacts.coe_sup, union_subset_iff, hL'U', true_and]
-    exact hM'.trans diff_subset
+    exact hM'.trans sdiff_subset
   rw [μ.outerMeasure_of_isOpen (↑U') U'.2]
   refine le_trans (ge_of_eq ?_) (μ.le_innerContent _ _ this)
-  exact μ.sup_disjoint L' M' (subset_diff.1 hM').2.symm isClosed_closure isClosed_closure
+  exact μ.sup_disjoint L' M' (subset_sdiff.1 hM').2.symm isClosed_closure isClosed_closure
 
 /-- The measure induced by the outer measure coming from a content, on the Borel sigma-algebra. -/
 protected def measure : Measure G :=

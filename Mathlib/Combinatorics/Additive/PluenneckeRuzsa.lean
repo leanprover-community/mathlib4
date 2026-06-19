@@ -3,13 +3,15 @@ Copyright (c) 2022 Yaël Dillies, George Shakan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, George Shakan
 -/
-import Mathlib.Algebra.Order.Field.Rat
-import Mathlib.Combinatorics.Enumerative.DoubleCounting
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Ring
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Algebra.Order.Field.Rat
+public import Mathlib.Combinatorics.Enumerative.DoubleCounting
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.Positivity
+public import Mathlib.Tactic.Ring
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # The Plünnecke-Ruzsa inequality
@@ -27,13 +29,15 @@ inequality.
 ## References
 
 * [Giorgis Petridis, *The Plünnecke-Ruzsa inequality: an overview*][petridis2014]
-* [Terrence Tao, Van Vu, *Additive Combinatorics][tao-vu]
+* [Terence Tao, Van Vu, *Additive Combinatorics*][tao-vu]
 
 ## See also
 
 In general non-abelian groups, small doubling doesn't imply small powers anymore, but small tripling
 does. See `Mathlib/Combinatorics/Additive/SmallTripling.lean`.
 -/
+
+public section
 
 open MulOpposite Nat
 open scoped Pointwise
@@ -132,16 +136,21 @@ theorem pluennecke_petridis_inequality_mul (C : Finset G)
       gcongr
       exact inter_subset_right
     have h₂ : {x} * A' * B ⊆ {x} * A * B := by gcongr; exact inter_subset_left
-    have h₃ : #(C' * A * B) ≤ #(C * A * B) + #(A * B) - #(A' * B) := by
-      rw [h₁]
-      refine (card_union_le _ _).trans_eq ?_
-      rw [card_sdiff h₂, ← add_tsub_assoc_of_le (card_le_card h₂), mul_assoc {_}, mul_assoc {_},
-        card_singleton_mul, card_singleton_mul]
-    refine (mul_le_mul_right' h₃ _).trans ?_
-    rw [tsub_mul, add_mul]
-    refine (tsub_le_tsub (add_le_add_right ih _) <| hA _ inter_subset_left).trans_eq ?_
-    rw [← mul_add, ← mul_tsub, ← hA', hC', insert_eq, union_mul, ← card_singleton_mul x A, ←
-      card_singleton_mul x A', add_comm #_, h₀, eq_tsub_of_add_eq (card_union_add_card_inter _ _)]
+    calc
+      #(C' * A * B) * #A
+      _ ≤ (#(C * A * B) + #(A * B) - #(A' * B)) * #A := by
+        gcongr
+        rw [h₁]
+        refine (card_union_le _ _).trans_eq ?_
+        rw [card_sdiff_of_subset h₂, ← add_tsub_assoc_of_le (card_le_card h₂), mul_assoc {_},
+          mul_assoc {_}, card_singleton_mul, card_singleton_mul]
+      _ = #(C * A * B) * #A + #(A * B) * #A - #(A' * B) * #A := by rw [tsub_mul, add_mul]
+      _ ≤ #(A * B) * #(C * A) + #(A * B) * #A - #(A * B) * #(A ∩ ({x}⁻¹ * C * A)) := by
+        gcongr ?_ + _ - ?_; exact hA _ inter_subset_left
+      _ = #(A * B) * #(C' * A) := by
+        rw [← mul_add, ← mul_tsub, ← hA', hC', insert_eq, union_mul, ← card_singleton_mul x A,
+          ← card_singleton_mul x A', add_comm #_, h₀,
+          eq_tsub_of_add_eq (card_union_add_card_inter _ _)]
 
 end Group
 
@@ -177,10 +186,7 @@ theorem ruzsa_triangle_inequality_mul_mul_mul (A B C : Finset G) :
   refine cast_le.1 (?_ : (_ : ℚ≥0) ≤ _)
   push_cast
   rw [← le_div_iff₀ (cast_pos.2 hB.card_pos), mul_div_right_comm, mul_comm _ B]
-  refine (Nat.cast_le.2 <| card_le_card_mul_left hU.1).trans ?_
-  refine le_trans ?_
-    (mul_le_mul (hUA _ hB') (cast_le.2 <| card_le_card <| mul_subset_mul_right hU.2)
-      (zero_le _) (zero_le _))
+  grw [card_le_card_mul_left hU.1, ← hUA _ hB', ← mul_subset_mul_right hU.2]
   rw [← mul_div_right_comm, ← mul_assoc, le_div_iff₀ (cast_pos.2 hU.1.card_pos), mul_comm _ C,
     ← mul_assoc, mul_comm _ C]
   exact mod_cast pluennecke_petridis_inequality_mul C (mul_aux hU.1 hU.2 hUA)
@@ -255,13 +261,13 @@ theorem pluennecke_ruzsa_inequality_pow_div_pow_div (hA : A.Nonempty) (B : Finse
 @[to_additive /-- Special case of the **Plünnecke-Ruzsa inequality**. Addition version. -/]
 theorem pluennecke_ruzsa_inequality_pow_mul (hA : A.Nonempty) (B : Finset G) (n : ℕ) :
     #(B ^ n) ≤ (#(A * B) / #A : ℚ≥0) ^ n * #A := by
-  simpa only [_root_.pow_zero, div_one] using pluennecke_ruzsa_inequality_pow_div_pow_mul hA _ _ 0
+  simpa only [_root_.pow_zero, div_one] using! pluennecke_ruzsa_inequality_pow_div_pow_mul hA _ _ 0
 
 /-- Special case of the **Plünnecke-Ruzsa inequality**. Division version. -/
 @[to_additive /-- Special case of the **Plünnecke-Ruzsa inequality**. Subtraction version. -/]
 theorem pluennecke_ruzsa_inequality_pow_div (hA : A.Nonempty) (B : Finset G) (n : ℕ) :
     #(B ^ n) ≤ (#(A / B) / #A : ℚ≥0) ^ n * #A := by
-  simpa only [_root_.pow_zero, div_one] using pluennecke_ruzsa_inequality_pow_div_pow_div hA _ _ 0
+  simpa only [_root_.pow_zero, div_one] using! pluennecke_ruzsa_inequality_pow_div_pow_div hA _ _ 0
 
 end CommGroup
 end Finset

@@ -3,9 +3,13 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.InnerProductSpace.Adjoint
-import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Analysis.Normed.Operator.Completeness
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
+public import Mathlib.Analysis.InnerProductSpace.ProdL2
+public import Mathlib.Analysis.Normed.Operator.Extend
+public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.LinearPMap
 
 /-!
 
@@ -25,6 +29,8 @@ We will develop the basics of the theory of unbounded operators on Hilbert space
 * `LinearPMap.IsFormalAdjoint.le_adjoint`: Every formal adjoint is contained in the adjoint
 * `ContinuousLinearMap.toPMap_adjoint_eq_adjoint_toPMap_of_dense`: The adjoint on
   `ContinuousLinearMap` and `LinearPMap` coincide.
+* `LinearPMap.adjoint_isClosed`: The adjoint is a closed operator.
+* `IsSelfAdjoint.isClosed`: Every self-adjoint operator is closed.
 
 ## Notation
 
@@ -46,10 +52,12 @@ We use the junk value pattern to define the adjoint for all `LinearPMap`s. In th
 Unbounded operators, closed operators
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
-open RCLike
+open RCLike LinearPMap WithLp
 
 open scoped ComplexConjugate
 
@@ -98,43 +106,44 @@ theorem adjointDomainMkCLM_apply (y : T.adjointDomain) (x : T.domain) :
     adjointDomainMkCLM T y x = ⟪(y : F), T x⟫ :=
   rfl
 
-variable {T}
-variable (hT : Dense (T.domain : Set E))
-
 /-- The unique continuous extension of the operator `adjointDomainMkCLM` to `E`. -/
 def adjointDomainMkCLMExtend (y : T.adjointDomain) : StrongDual 𝕜 E :=
-  (T.adjointDomainMkCLM y).extend (Submodule.subtypeL T.domain) hT.denseRange_val
-    isUniformEmbedding_subtype_val.isUniformInducing
+  (T.adjointDomainMkCLM y).extend (Submodule.subtypeL T.domain)
+
+variable {T}
 
 @[simp]
-theorem adjointDomainMkCLMExtend_apply (y : T.adjointDomain) (x : T.domain) :
-    adjointDomainMkCLMExtend hT y (x : E) = ⟪(y : F), T x⟫ :=
-  ContinuousLinearMap.extend_eq _ _ _ _ _
+theorem adjointDomainMkCLMExtend_apply (hT : Dense (T.domain : Set E)) (y : T.adjointDomain)
+    (x : T.domain) : adjointDomainMkCLMExtend T y (x : E) = ⟪(y : F), T x⟫ :=
+  ContinuousLinearMap.extend_eq _ hT.denseRange_val
+    isUniformEmbedding_subtype_val.isUniformInducing _
 
 variable [CompleteSpace E]
+
+variable (hT : Dense (T.domain : Set E))
 
 /-- The adjoint as a linear map from its domain to `E`.
 
 This is an auxiliary definition needed to define the adjoint operator as a `LinearPMap` without
 the assumption that `T.domain` is dense. -/
 def adjointAux : T.adjointDomain →ₗ[𝕜] E where
-  toFun y := (InnerProductSpace.toDual 𝕜 E).symm (adjointDomainMkCLMExtend hT y)
+  toFun y := (InnerProductSpace.toDual 𝕜 E).symm (adjointDomainMkCLMExtend T y)
   map_add' x y :=
-    hT.eq_of_inner_left fun _ => by
-      simp only [inner_add_left, Submodule.coe_add, InnerProductSpace.toDual_symm_apply,
-        adjointDomainMkCLMExtend_apply]
+    hT.eq_of_inner_left 𝕜 fun z zin => by
+      simp [InnerProductSpace.toDual_symm_apply, inner_add_left,
+        adjointDomainMkCLMExtend_apply hT _ ⟨z, zin⟩, inner_add_left]
   map_smul' _ _ :=
-    hT.eq_of_inner_left fun _ => by
-      simp only [inner_smul_left, Submodule.coe_smul_of_tower, RingHom.id_apply,
-        InnerProductSpace.toDual_symm_apply, adjointDomainMkCLMExtend_apply]
+    hT.eq_of_inner_left 𝕜 fun z zin => by
+      simp [inner_smul_left, RingHom.id_apply,
+        InnerProductSpace.toDual_symm_apply, adjointDomainMkCLMExtend_apply hT _ ⟨z, zin⟩]
 
 theorem adjointAux_inner (y : T.adjointDomain) (x : T.domain) :
     ⟪adjointAux hT y, x⟫ = ⟪(y : F), T x⟫ := by
-  simp [adjointAux]
+  simp [adjointAux, hT]
 
 theorem adjointAux_unique (y : T.adjointDomain) {x₀ : E}
     (hx₀ : ∀ x : T.domain, ⟪x₀, x⟫ = ⟪(y : F), T x⟫) : adjointAux hT y = x₀ :=
-  hT.eq_of_inner_left fun v => (adjointAux_inner hT _ _).trans (hx₀ v).symm
+  hT.eq_of_inner_left 𝕜 fun v vin => (adjointAux_inner hT _ _).trans (hx₀ ⟨v, vin⟩).symm
 
 variable (T)
 
@@ -157,7 +166,7 @@ theorem mem_adjoint_domain_of_exists (y : F) (h : ∃ w : E, ∀ x : T.domain, �
   obtain ⟨w, hw⟩ := h
   rw [T.mem_adjoint_domain_iff]
   have : Continuous ((innerSL 𝕜 w).comp T.domain.subtypeL) := by fun_prop
-  convert this using 1
+  convert this
   exact funext fun x => (hw x).symm
 
 theorem adjoint_apply_of_not_dense (hT : ¬Dense (T.domain : Set E)) (y : T†.domain) : T† y = 0 := by
@@ -203,7 +212,7 @@ theorem toPMap_adjoint_eq_adjoint_toPMap_of_dense (hp : Dense (p : Set E)) :
     (A.toPMap p).adjoint = A.adjoint.toPMap ⊤ := by
   ext x y hxy
   · simp only [LinearMap.toPMap_domain, Submodule.mem_top, iff_true,
-      LinearPMap.mem_adjoint_domain_iff, LinearMap.coe_comp, innerₛₗ_apply_coe]
+      LinearPMap.mem_adjoint_domain_iff]
     exact ((innerSL 𝕜 x).comp <| A.comp <| Submodule.subtypeL _).cont
   refine LinearPMap.adjoint_apply_eq hp _ fun v => ?_
   simp only [adjoint_inner_left, LinearMap.toPMap_apply, coe_coe]
@@ -243,3 +252,92 @@ theorem _root_.IsSelfAdjoint.dense_domain (hA : IsSelfAdjoint A) : Dense (A.doma
 end LinearPMap
 
 end Star
+
+/-! ### The graph of the adjoint -/
+
+namespace Submodule
+
+/-- The adjoint of a submodule
+
+Note that the adjoint is taken with respect to the L^2 inner product on `E × F`, which is defined
+as `WithLp 2 (E × F)`. -/
+protected noncomputable
+def adjoint (g : Submodule 𝕜 (E × F)) : Submodule 𝕜 (F × E) :=
+  (g.map ((LinearEquiv.skewSwap 𝕜 F E).symm.trans
+    (WithLp.linearEquiv 2 𝕜 (F × E)).symm).toLinearMap).orthogonal.map
+      (WithLp.linearEquiv 2 𝕜 (F × E) : WithLp 2 (F × E) →ₗ[𝕜] F × E)
+
+@[simp]
+theorem mem_adjoint_iff (g : Submodule 𝕜 (E × F)) (x : F × E) :
+    x ∈ g.adjoint ↔
+    ∀ a b, (a, b) ∈ g → inner 𝕜 b x.fst - inner 𝕜 a x.snd = 0 := by
+  simp only [Submodule.adjoint, mem_map, mem_orthogonal, LinearEquiv.coe_coe,
+    LinearEquiv.trans_apply, LinearEquiv.skewSwap_symm_apply, coe_symm_linearEquiv, Prod.exists,
+    prod_inner_apply, ofLp_fst, ofLp_snd, forall_exists_index, and_imp, coe_linearEquiv]
+  constructor
+  · rintro ⟨y, h1, h2⟩ a b hab
+    rw [← h2, WithLp.ofLp_fst, WithLp.ofLp_snd]
+    specialize h1 (toLp 2 (b, -a)) a b hab rfl
+    dsimp at h1
+    simp only [inner_neg_left, ← sub_eq_add_neg] at h1
+    exact h1
+  · intro h
+    refine ⟨toLp 2 x, ?_, rfl⟩
+    intro u a b hab hu
+    simp [← hu, ← sub_eq_add_neg, h a b hab]
+
+variable {T : E →ₗ.[𝕜] F} [CompleteSpace E]
+
+theorem _root_.LinearPMap.adjoint_graph_eq_graph_adjoint (hT : Dense (T.domain : Set E)) :
+    T†.graph = T.graph.adjoint := by
+  ext x
+  simp only [mem_graph_iff, Subtype.exists, exists_and_left, exists_eq_left, mem_adjoint_iff,
+    forall_exists_index, forall_apply_eq_imp_iff]
+  constructor
+  · rintro ⟨hx, h⟩ a ha
+    rw [← h, (adjoint_isFormalAdjoint hT).symm ⟨a, ha⟩ ⟨x.fst, hx⟩, sub_self]
+  · intro h
+    simp_rw [sub_eq_zero] at h
+    have hx : x.fst ∈ T†.domain := by
+      apply mem_adjoint_domain_of_exists
+      use x.snd
+      rintro ⟨a, ha⟩
+      rw [← inner_conj_symm, ← h a ha, inner_conj_symm]
+    use hx
+    apply hT.eq_of_inner_right 𝕜
+    rintro a ha
+    rw [← h a ha, (adjoint_isFormalAdjoint hT).symm ⟨a, ha⟩ ⟨x.fst, hx⟩]
+
+@[simp]
+theorem _root_.LinearPMap.graph_adjoint_toLinearPMap_eq_adjoint (hT : Dense (T.domain : Set E)) :
+    T.graph.adjoint.toLinearPMap = T† := by
+  apply eq_of_eq_graph
+  rw [adjoint_graph_eq_graph_adjoint hT]
+  apply Submodule.toLinearPMap_graph_eq
+  intro x hx hx'
+  simp only [mem_adjoint_iff, mem_graph_iff, Subtype.exists, exists_and_left, exists_eq_left, hx',
+    inner_zero_right, zero_sub, neg_eq_zero, forall_exists_index, forall_apply_eq_imp_iff] at hx
+  apply hT.eq_zero_of_inner_right 𝕜
+  exact fun a ha ↦ hx a ha
+
+end Submodule
+
+/-! ### Closedness -/
+
+namespace LinearPMap
+
+variable {T : E →ₗ.[𝕜] F} [CompleteSpace E]
+
+theorem adjoint_isClosed (hT : Dense (T.domain : Set E)) :
+    T†.IsClosed := by
+  rw [IsClosed, adjoint_graph_eq_graph_adjoint hT, Submodule.adjoint]
+  simp only [Submodule.map_coe]
+  rw [LinearEquiv.coe_coe, LinearEquiv.image_eq_preimage_symm]
+  exact (Submodule.isClosed_orthogonal _).preimage (WithLp.prod_continuous_toLp _ _ _)
+
+/-- Every self-adjoint `LinearPMap` is closed. -/
+theorem _root_.IsSelfAdjoint.isClosed {A : E →ₗ.[𝕜] E} (hA : IsSelfAdjoint A) : A.IsClosed := by
+  rw [← isSelfAdjoint_def.mp hA]
+  exact adjoint_isClosed hA.dense_domain
+
+end LinearPMap

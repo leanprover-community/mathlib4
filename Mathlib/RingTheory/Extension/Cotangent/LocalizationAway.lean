@@ -3,22 +3,36 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.Extension.Presentation.Basic
+module
+
+public import Mathlib.RingTheory.Extension.Presentation.Basic
+public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
+public import Mathlib.RingTheory.Kaehler.JacobiZariski
 
 /-!
 # Cotangent and localization away
 
 Let `R → S → T` be algebras such that `T` is the localization of `S` away from one
-element, where `S` is generated over `R` by `P` with kernel `I` and `Q` is the
-canonical `S`-presentation of `T`. Denote by `J` the kernel of the composition
-`R[X,Y] → T`.
+element, where `S` is generated over `R` by `P : R[X] → S` with kernel `I` and
+`Q : S[Y] → T` is the canonical `S`-presentation of `T` with kernel `K`.
+Denote by `J` the kernel of the composition `R[X,Y] → T`.
+
+This file proves `J/J² ≃ₗ[T] T ⊗[S] (I/I²) × K/K²`. For this we establish the exact sequence:
+```
+0 → T ⊗[S] (I/I²) → J/J² → K/K² → 0
+```
+and use that `K/K²` is free, so the sequence splits. The first part of the file
+shows the exactness on the left and the rest of the file deduces the exact sequence
+and the splitting from the Jacobi Zariski sequence.
 
 ## Main results
 
 - `Algebra.Generators.liftBaseChange_injective`:
   `T ⊗[S] (I/I²) → J/J²` is injective if `T` is the localization of `S` away from an element.
-
+- `Algebra.Generators.cotangentCompLocalizationAwayEquiv`: `J/J² ≃ₗ[T] T ⊗[S] (I/I²) × K/K²`.
 -/
+
+@[expose] public section
 
 open TensorProduct MvPolynomial
 
@@ -54,6 +68,7 @@ def compLocalizationAwayAlgHom : ((Generators.localizationAway T g).comp P).Ring
       (fun _ ↦ IsLocalization.Away.invSelf <| (Ideal.Quotient.mk (P.ker ^ 2) (P.σ g)))
       (fun i : ι ↦ algebraMap P.Ring _ (X i)))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma compLocalizationAwayAlgHom_toAlgHom_toComp (x : P.Ring) :
     compLocalizationAwayAlgHom T g P (((localizationAway T g).toComp P).toAlgHom x) =
@@ -102,6 +117,7 @@ lemma sq_ker_comp_le_ker_compLocalizationAwayAlgHom :
       intro x hx y hy
       simp [hsple hx]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `R → S → T` be algebras such that `T` is the localization of `S` away from one
 element, where `S` is generated over `R` by `P` with kernel `I` and `Q` is the
@@ -131,12 +147,98 @@ lemma liftBaseChange_injective_of_isLocalizationAway :
     simp only [Submonoid.smul_def]
     rw [show g = algebraMap P.Ring S (P.σ g) by simp, ← map_pow, algebraMap_smul, ← map_smul,
       Extension.Cotangent.mk_eq_zero_iff]
-    simpa using hm
+    simpa using! hm
   rw [← compLocalizationAwayAlgHom_toAlgHom_toComp (T := T)]
   apply sq_ker_comp_le_ker_compLocalizationAwayAlgHom
   simpa only [LinearEquiv.coe_coe, LinearMap.ringLmapEquivSelf_symm_apply,
     mk_apply, lift.tmul, LinearMap.coe_restrictScalars, LinearMap.coe_smulRight,
     Module.End.one_apply, LinearMap.smul_apply, one_smul, Algebra.Extension.Cotangent.map_mk,
-    Extension.Cotangent.mk_eq_zero_iff] using hx
+    Extension.Cotangent.mk_eq_zero_iff] using! hx
+
+/--
+In the notation of the module docstring: Since `T` is standard smooth
+of relative dimension one over `S`, `K/K²` is free of rank one generated
+by the image of `g * X - 1`.
+This is the section `K/K² → J/J²` defined by sending the image of `g * X - 1` to `x : J/J²`.
+-/
+noncomputable def cotangentCompAwaySec (x : ((localizationAway T g).comp P).toExtension.Cotangent) :
+    (localizationAway T g).toExtension.Cotangent →ₗ[T]
+      ((localizationAway T g).comp P).toExtension.Cotangent :=
+  (basisCotangentAway T g).constr T fun _ ↦ x
+
+variable (x : ((localizationAway T g).comp P).toExtension.Cotangent)
+
+/-- By construction, the section `cotangentCompAwaySec` sends `g * X - 1` to `x`. -/
+lemma cotangentCompAwaySec_apply :
+    cotangentCompAwaySec g P x (cMulXSubOneCotangent T g) = x := by
+  rw [← basisCotangentAway_apply _ (), cotangentCompAwaySec, Module.Basis.constr_basis]
+
+variable {x}
+  (hx : Extension.Cotangent.map ((localizationAway T g).ofComp P).toExtensionHom x =
+    cMulXSubOneCotangent T g)
+
+include hx in
+/-- The section `cotangentCompAwaySec` is indeed a section of the canonical map `J/J² → K/K²`. -/
+lemma map_comp_cotangentCompAwaySec :
+    (Extension.Cotangent.map ((localizationAway T g).ofComp P).toExtensionHom) ∘ₗ
+      cotangentCompAwaySec g P x = .id := by
+  refine (basisCotangentAway T g).ext fun r ↦ ?_
+  simpa only [LinearMap.coe_comp, Function.comp_apply, basisCotangentAway_apply,
+    cotangentCompAwaySec_apply]
+
+/--
+Let `S` be generated over `R` by `P : R[X] → S` with kernel `I` and let `T`
+be the localization of `S` away from `g` generated over `S` by `S[Y] → T` with
+kernel `K`.
+Denote by `J` the kernel of the induced `R[X, Y] → T`. Then
+`J/J² ≃ₗ[T] T ⊗[S] (I/I²) × (K/K²)`.
+
+This is the splitting characterised by `x ↦ (0, g * X - 1)`.
+-/
+@[stacks 08JZ "(1)"]
+noncomputable
+def cotangentCompLocalizationAwayEquiv :
+    ((localizationAway T g).comp P).toExtension.Cotangent ≃ₗ[T]
+      T ⊗[S] P.toExtension.Cotangent × (Generators.localizationAway T g).toExtension.Cotangent :=
+  ((Cotangent.exact (localizationAway g (S := T)) P).splitSurjectiveEquiv
+    (liftBaseChange_injective_of_isLocalizationAway _ P)
+    ⟨cotangentCompAwaySec g P x, map_comp_cotangentCompAwaySec g P hx⟩).1
+
+lemma cotangentCompLocalizationAwayEquiv_symm_inr :
+    (cotangentCompLocalizationAwayEquiv g P hx).symm
+      (0, cMulXSubOneCotangent T g) = x := by
+  simpa [cotangentCompLocalizationAwayEquiv, Function.Exact.splitSurjectiveEquiv] using
+    cotangentCompAwaySec_apply g P x
+
+lemma cotangentCompLocalizationAwayEquiv_symm_comp_inl :
+    (cotangentCompLocalizationAwayEquiv g P hx).symm.toLinearMap ∘ₗ
+      .inl T (T ⊗[S] P.toExtension.Cotangent) (localizationAway T g).toExtension.Cotangent =
+      .liftBaseChange T
+        (Extension.Cotangent.map ((localizationAway T g).toComp P).toExtensionHom) :=
+  ((Cotangent.exact (localizationAway g (S := T)) P).splitSurjectiveEquiv
+    (liftBaseChange_injective_of_isLocalizationAway _ P)
+    ⟨cotangentCompAwaySec g P x,
+      map_comp_cotangentCompAwaySec g P hx⟩).2.left.symm
+
+@[simp]
+lemma cotangentCompLocalizationAwayEquiv_symm_inl (a : T ⊗[S] P.toExtension.Cotangent) :
+    (cotangentCompLocalizationAwayEquiv g P hx).symm (a, 0) = LinearMap.liftBaseChange T
+        (Extension.Cotangent.map ((localizationAway T g).toComp P).toExtensionHom) a := by
+  simp [← cotangentCompLocalizationAwayEquiv_symm_comp_inl g P hx]
+
+lemma snd_comp_cotangentCompLocalizationAwayEquiv :
+    LinearMap.snd T (T ⊗[S] P.toExtension.Cotangent) (localizationAway T g).toExtension.Cotangent ∘ₗ
+      (cotangentCompLocalizationAwayEquiv g P hx).toLinearMap =
+      Extension.Cotangent.map ((localizationAway T g).ofComp P).toExtensionHom :=
+  ((Cotangent.exact (localizationAway T g) P).splitSurjectiveEquiv
+    (liftBaseChange_injective_of_isLocalizationAway _ P)
+    ⟨cotangentCompAwaySec g P x, map_comp_cotangentCompAwaySec g P hx⟩).2.right.symm
+
+@[simp]
+lemma snd_cotangentCompLocalizationAwayEquiv
+    (a : ((localizationAway T g).comp P).toExtension.Cotangent) :
+    (cotangentCompLocalizationAwayEquiv g P hx a).2 =
+      Extension.Cotangent.map ((localizationAway T g).ofComp P).toExtensionHom a := by
+  simp [← snd_comp_cotangentCompLocalizationAwayEquiv g P hx]
 
 end Algebra.Generators

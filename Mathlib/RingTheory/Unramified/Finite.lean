@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Ideal.IdempotentFG
-import Mathlib.RingTheory.Unramified.Basic
-import Mathlib.RingTheory.Flat.Stability
+module
+
+public import Mathlib.RingTheory.Ideal.IdempotentFG
+public import Mathlib.RingTheory.Unramified.Basic
+public import Mathlib.RingTheory.Flat.Stability
 
 /-!
 # Various results about unramified algebras
@@ -29,6 +31,8 @@ of formally unramified algebras which are essentially of finite type.
 - [B. Iversen, *Generic Local Structure of the Morphisms in Commutative Algebra*][iversen]
 
 -/
+
+@[expose] public section
 
 open Algebra Module
 open scoped TensorProduct
@@ -69,7 +73,7 @@ theorem iff_exists_tensorProduct [EssFiniteType R S] :
     rw [← sub_sub_self 1 t] at ht₁; generalize 1 - t = e at *
     constructor
     · suffices e ∈ (Submodule.span (S ⊗[R] S) {1 - e}).annihilator by
-        simpa [IsIdempotentElem, mul_sub, sub_eq_zero, eq_comm, -Ideal.submodule_span_eq,
+        simpa [IsIdempotentElem, mul_sub, sub_eq_zero, eq_comm,
           Submodule.mem_annihilator_span_singleton] using this
       exact (show Ideal.span _ ≤ _ by simpa only [Ideal.span_le, Set.range_subset_iff,
         Submodule.mem_annihilator_span_singleton, SetLike.mem_coe]) ht₂
@@ -99,11 +103,11 @@ lemma finite_of_free_aux (I) [DecidableEq I] (b : Basis I R S)
       (f.sum fun i y ↦ (b.repr y).sum fun j z ↦ a i k • z • b j ⊗ₜ[R] b k) := by
     intro i
     rw [Finsupp.sum_sum_index]
-    congr
-    ext j s
-    rw [Finsupp.sum_smul_index]
-    simp only [mul_smul, Finsupp.sum, ← Finset.smul_sum]
-    · intro; simp only [zero_smul]
+    · congr
+      ext j s
+      rw [Finsupp.sum_smul_index]
+      · simp only [mul_smul, Finsupp.sum, ← Finset.smul_sum]
+      intro; simp only [zero_smul]
     · intro; simp only [zero_smul]
     · intros; simp only [add_smul]
   have h₂ : ∀ (x : S), ((b.repr x).support.sum fun a ↦ b.repr x a • b a) = x := by
@@ -127,6 +131,7 @@ variable (R S) in
 A finite-type `R`-algebra `S` is (formally) unramified iff there exists a `t : S ⊗[R] S` satisfying
 1. `t` annihilates every `1 ⊗ s - s ⊗ 1`.
 2. the image of `t` is `1` under the map `S ⊗[R] S → S`.
+
 See `Algebra.FormallyUnramified.iff_exists_tensorProduct`.
 This is the choice of such a `t`.
 -/
@@ -192,22 +197,22 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
   -- Then `∑ Fᵢⱼ(bⱼ ⊗ bᵢ) = ∑ fⱼx ⊗ bᵢ = ∑ fⱼ ⊗ xbᵢ = ∑ aᵢⱼ(fⱼ ⊗ bᵢ) = ∑ Gᵢⱼ(bⱼ ⊗ bᵢ)`.
   -- Since `bⱼ ⊗ bᵢ` forms an `R`-basis of `S ⊗ S`, we conclude that `F = G`.
   have : F = G := by
-    apply Finsupp.finsuppProdEquiv.symm.injective
+    apply Finsupp.curryEquiv.symm.injective
     apply (Finsupp.equivCongrLeft (Equiv.prodComm I I)).injective
     apply (b.tensorProduct b).repr.symm.injective
     suffices (F.sum fun a f ↦ f.sum fun b' c ↦ c • b b' ⊗ₜ[R] b a) =
         G.sum fun a f ↦ f.sum fun b' c ↦ c • b b' ⊗ₜ[R] b a by
       simpa [Finsupp.linearCombination_apply, Finsupp.sum_uncurry_index]
-    rw [Finsupp.onFinset_sum, Finsupp.onFinset_sum]
     have : ∀ i, ((b.repr (x * f i)).sum fun j k ↦ k • b j ⊗ₜ[R] b i) = (x * f i) ⊗ₜ[R] b i := by
       intro i
       simp_rw [Finsupp.sum, TensorProduct.smul_tmul', ← TensorProduct.sum_tmul]
       congr 1
       exact b.linearCombination_repr _
-    trans (x ⊗ₜ 1) * elem R S
-    · simp_rw [this, hf, Finsupp.sum, Finset.mul_sum, TensorProduct.tmul_mul_tmul, one_mul]
-    · rw [← one_tmul_mul_elem, hf, finite_of_free_aux]
-      rfl
+    rw [Finsupp.onFinset_sum, Finsupp.onFinset_sum]
+    · trans (x ⊗ₜ 1) * elem R S
+      · simp_rw [this, hf, Finsupp.sum, Finset.mul_sum, TensorProduct.tmul_mul_tmul, one_mul]
+      · rw [← one_tmul_mul_elem, hf, finite_of_free_aux]
+        rfl
     · intro; simp
     · intro; simp
   -- In particular, `fⱼx = ∑ Fᵢⱼbⱼ = ∑ Gᵢⱼbⱼ = ∑ₛ aᵢⱼfᵢ` for all `j`.
@@ -227,8 +232,8 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
 
 /--
 Proposition I.2.3 of [iversen]
-If `S` is an unramified `R`-algebra, and `M` is a `S`-module, then the map
-`S ⊗[R] M →ₗ[S] M` taking `(b, m) ↦ b • m` admits a `S`-linear section. -/
+If `S` is an unramified `R`-algebra, and `M` is an `S`-module, then the map
+`S ⊗[R] M →ₗ[S] M` taking `(b, m) ↦ b • m` admits an `S`-linear section. -/
 noncomputable
 def sec :
     M →ₗ[S] S ⊗[R] M where

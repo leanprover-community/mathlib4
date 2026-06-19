@@ -3,7 +3,9 @@ Copyright (c) 2025 Yaël Dillies, Strahinja Gvozdić, Bhavik Mehta. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Strahinja Gvozdić, Bhavik Mehta
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Finset
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Finset
 
 /-!
 # Convolution
@@ -13,6 +15,8 @@ that maps `x ∈ G` to the number of distinct representations of `x` in the form
 `a ∈ A`, `b ∈ B`. It is shown how convolution behaves under the change of order of `A` and `B`, as
 well as under the left and right actions on `A`, `B`, and the function argument.
 -/
+
+@[expose] public section
 
 open MulOpposite MulAction
 open scoped Pointwise RightActions
@@ -46,6 +50,19 @@ lemma card_inter_smul (A B : Finset G) (x : G) : #(A ∩ (x • B)) = A.convolut
 lemma card_smul_inter (A B : Finset G) (x : G) : #((x • A) ∩ B) = A.convolution B⁻¹ x⁻¹ := by
   simpa using card_smul_inter_smul _ _ x 1
 
+@[to_additive]
+lemma card_inter_smul_inv (A B : Finset G) (x : G) : #(A ∩ (x • B⁻¹)) = A.convolution B x := by
+  simp [card_inter_smul]
+
+@[to_additive]
+lemma card_mul_eq (A B : Finset G) (x : G) :
+    #{ab ∈ A ×ˢ B | ab.1 * ab.2 = x} = A.convolution B x := rfl
+
+@[to_additive]
+lemma card_div_eq (A B : Finset G) (x : G) :
+    #{ab ∈ A ×ˢ B | ab.1 / ab.2 = x} = A.convolution B⁻¹ x :=
+  Finset.card_equiv ((Equiv.refl _).prodCongr (.inv _)) (by simp [div_eq_mul_inv])
+
 @[to_additive card_add_neg_eq_addConvolution_neg]
 lemma card_mul_inv_eq_convolution_inv (A B : Finset G) (x : G) :
     #{ab ∈ A ×ˢ B | ab.1 * ab.2⁻¹ = x} = A.convolution B⁻¹ x :=
@@ -60,7 +77,7 @@ lemma convolution_pos : 0 < A.convolution B x ↔ x ∈ A * B := by
 @[to_additive addConvolution_ne_zero]
 lemma convolution_ne_zero : A.convolution B x ≠ 0 ↔ x ∈ A * B := by
   suffices A.convolution B x ≠ 0 ↔ 0 < A.convolution B x by simp [this]
-  omega
+  lia
 
 @[to_additive (attr := simp) addConvolution_eq_zero]
 lemma convolution_eq_zero : A.convolution B x = 0 ↔ x ∉ A * B := by
@@ -100,5 +117,15 @@ lemma convolution_op_smul_eq_convolution_mul_inv (A B : Finset G) (s x : G) :
   nth_rw 2 [← inv_inv B]
   rw [← inv_inv (B <• s), inv_op_smul_finset_distrib, ← card_inter_smul, ← card_inter_smul,
     smul_smul]
+
+variable [Fintype G]
+
+@[to_additive (attr := simp) univ_addConvolution]
+lemma univ_convolution (B : Finset G) (a : G) : univ.convolution B a = #B := by
+  simp [← card_inter_smul_inv]
+
+@[to_additive (attr := simp) addConvolution_univ]
+lemma convolution_univ (A : Finset G) (a : G) : A.convolution univ a = #A := by
+  simp [← card_inter_smul_inv]
 
 end Finset

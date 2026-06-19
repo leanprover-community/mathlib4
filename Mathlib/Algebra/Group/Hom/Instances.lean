@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Hom.Basic
-import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Group.Hom.Basic
+public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Instances on spaces of monoid and group morphisms
@@ -22,30 +24,21 @@ operations.
 Finally, we provide the `Ring` structure on `AddMonoid.End`.
 -/
 
+@[expose] public section
+
 assert_not_exists AddMonoidWithOne Ring
 
 universe uM uN uP uQ
 
 variable {M : Type uM} {N : Type uN} {P : Type uP} {Q : Type uQ}
 
-instance ZeroHom.instNatSMul [Zero M] [AddMonoid N] : SMul ℕ (ZeroHom M N) where
-  smul a f :=
-    { toFun := a • f
-      map_zero' := by simp }
-
-instance AddMonoidHom.instNatSMul [AddZeroClass M] [AddCommMonoid N] : SMul ℕ (M →+ N) where
-  smul a f :=
-    { toFun := a • f
-      map_zero' := by simp
-      map_add' x y := by simp [nsmul_add] }
-
-@[to_additive existing ZeroHom.instNatSMul]
+@[to_additive]
 instance OneHom.instPow [One M] [Monoid N] : Pow (OneHom M N) ℕ where
   pow f n :=
     { toFun := f ^ n
       map_one' := by simp }
 
-@[to_additive existing AddMonoidHom.instNatSMul]
+@[to_additive]
 instance MonoidHom.instPow [MulOneClass M] [CommMonoid N] : Pow (M →* N) ℕ where
   pow f n :=
     { toFun := f ^ n
@@ -80,25 +73,14 @@ instance MonoidHom.instCommMonoid [MulOneClass M] [CommMonoid N] : CommMonoid (M
   fast_instance%
     DFunLike.coe_injective.commMonoid DFunLike.coe rfl (fun _ _ => rfl) (fun _ _ => rfl)
 
-instance ZeroHom.instIntSMul [Zero M] [AddGroup N] : SMul ℤ (ZeroHom M N) where
-  smul a f :=
-    { toFun := a • f
-      map_zero' := by simp [zsmul_zero] }
-
-instance AddMonoidHom.instIntSMul [AddZeroClass M] [AddCommGroup N] : SMul ℤ (M →+ N) where
-  smul a f :=
-    { toFun := a • f
-      map_zero' := by simp [zsmul_zero]
-      map_add' x y := by simp [zsmul_add] }
-
-@[to_additive existing ZeroHom.instIntSMul]
-instance OneHom.instIntPow [One M] [Group N] : Pow (OneHom M N) ℤ where
+@[to_additive]
+instance OneHom.instZPow [One M] [Group N] : Pow (OneHom M N) ℤ where
   pow f n :=
     { toFun := f ^ n
       map_one' := by simp }
 
-@[to_additive existing AddMonoidHom.instIntSMul]
-instance MonoidHom.instIntPow [MulOneClass M] [CommGroup N] : Pow (M →* N) ℤ where
+@[to_additive]
+instance MonoidHom.instZPow [MulOneClass M] [CommGroup N] : Pow (M →* N) ℤ where
   pow f n :=
     { toFun := f ^ n
       map_one' := by simp
@@ -161,7 +143,7 @@ instance [MulOneClass M] [CommMonoid N] [IsCancelMul N] : IsCancelMul (M →* N)
 section End
 
 instance AddMonoid.End.instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (AddMonoid.End M) :=
-  AddMonoidHom.instAddCommMonoid
+  inferInstanceAs <| AddCommMonoid (M →+ M)
 
 @[simp]
 theorem AddMonoid.End.zero_apply [AddCommMonoid M] (m : M) : (0 : AddMonoid.End M) m = 0 :=
@@ -172,10 +154,10 @@ theorem AddMonoid.End.one_apply [AddZeroClass M] (m : M) : (1 : AddMonoid.End M)
   rfl
 
 instance AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMonoid.End M) :=
-  AddMonoidHom.instAddCommGroup
+  inferInstanceAs <| AddCommGroup (M →+ M)
 
-instance AddMonoid.End.instIntCast [AddCommGroup M] : IntCast (AddMonoid.End M) :=
-  { intCast := fun z => z • (1 : AddMonoid.End M) }
+instance AddMonoid.End.instIntCast [AddCommGroup M] : IntCast (AddMonoid.End M) where
+  intCast := fun z => z • 1
 
 /-- See also `AddMonoid.End.intCast_def`. -/
 @[simp]

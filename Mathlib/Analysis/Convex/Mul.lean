@@ -3,10 +3,12 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Monovary
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Analysis.Convex.Function
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Algebra.Order.Monovary
+public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.Analysis.Convex.Function
+public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Product of convex functions
@@ -18,6 +20,8 @@ As corollaries, we also prove that `x ↦ x ^ n` is convex
 * `convexOn_pow`: over $[0, +∞)$ for `n : ℕ`.
 * `convexOn_zpow`: over $(0, +∞)$ For `n : ℤ`.
 -/
+
+public section
 
 open Set
 
@@ -143,7 +147,7 @@ lemma ConcaveOn.mul_convexOn' (hf : ConcaveOn 𝕜 s f) (hg : ConvexOn 𝕜 s g)
 
 lemma ConvexOn.pow (hf : ConvexOn 𝕜 s f) (hf₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ f x) :
     ∀ n, ConvexOn 𝕜 s (f ^ n)
-  | 0 => by simpa using convexOn_const 1 hf.1
+  | 0 => by simpa using! convexOn_const 1 hf.1
   | n + 1 => by
     rw [pow_succ']
     exact hf.mul (hf.pow hf₀ _) hf₀ (fun x hx ↦ pow_nonneg (hf₀ hx) _) <|
@@ -180,10 +184,7 @@ lemma convexOn_zpow : ∀ n : ℤ, ConvexOn 𝕜 (Ioi 0) fun x : 𝕜 ↦ x ^ n
     rintro x (hx : 0 < x) y (hy : 0 < y) a b ha hb hab
     simp only [smul_eq_mul]
     field_simp
-    rw [div_le_div_iff₀, ← sub_nonneg]
-    · calc
-        0 ≤ a * b * (x - y) ^ 2 := by positivity
-        _ = _ := by obtain rfl := eq_sub_of_add_eq hab; ring
-    all_goals positivity
+    have H : 0 ≤ a * b * (x - y) ^ 2 := by positivity
+    linear_combination H - x * y * (a + b + 1) * hab
 
 end LinearOrderedField

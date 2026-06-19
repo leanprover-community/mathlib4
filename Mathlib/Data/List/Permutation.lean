@@ -3,14 +3,17 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.List.Lemmas
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.List.Count
-import Mathlib.Data.List.Duplicate
-import Mathlib.Data.List.InsertIdx
-import Mathlib.Data.List.Induction
-import Batteries.Data.List.Perm
-import Mathlib.Data.List.Perm.Basic
+module
+
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Data.List.Count
+public import Mathlib.Data.List.Duplicate
+public import Mathlib.Data.List.InsertIdx
+public import Mathlib.Data.List.Induction
+public import Batteries.Data.List.Perm
+public import Mathlib.Data.List.Perm.Basic
+public import Mathlib.Order.Lattice
+public import Mathlib.Tactic.Finiteness.Attr
 
 /-!
 # Permutations of a list
@@ -44,6 +47,8 @@ all positions. Hence, to build `[0, 1, 2, 3].permutations'`, it does
    `[0, 3, 1, 2], [3, 0, 1, 2], [3, 1, 0, 2], [3, 1, 2, 0],`
    `[0, 3, 2, 1], [3, 0, 2, 1], [3, 2, 0, 1], [3, 2, 1, 0]]`
 -/
+
+public section
 
 -- Make sure we don't import algebra
 assert_not_exists Monoid
@@ -273,7 +278,7 @@ theorem length_permutationsAux :
   refine permutationsAux.rec (by simp) ?_
   intro t ts is IH1 IH2
   have IH2 : length (permutationsAux is nil) + 1 = is.length ! := by simpa using IH2
-  simp only [length, factorial, Nat.mul_comm, add_eq] at IH1
+  simp only [List.length_cons, factorial, Nat.mul_comm, add_eq] at IH1
   rw [permutationsAux_cons,
     length_foldr_permutationsAux2' _ _ _ _ _ fun l m => (perm_of_mem_permutations m).length_eq,
     permutations, length, length, IH2, Nat.succ_add, Nat.factorial_succ, Nat.mul_comm (_ + 1),
@@ -308,6 +313,17 @@ theorem mem_permutationsAux_of_perm :
 @[simp]
 theorem mem_permutations {s t : List α} : s ∈ permutations t ↔ s ~ t :=
   ⟨perm_of_mem_permutations, mem_permutations_of_perm_lemma mem_permutationsAux_of_perm⟩
+
+/-- A list is a permutation of the pair `[a, b]` if and only if it is equal to `[a, b]` or to
+`[b, a]`. -/
+theorem perm_pair {a b : α} {l : List α} : l ~ [a, b] ↔ l = [a, b] ∨ l = [b, a] := by
+  have : [a, b].permutations = [[a, b], [b, a]] := by cbv
+  grind [=_ mem_permutations]
+
+/-- The pair `[a, b]` is a permutation of a list if and only if that list is equal to `[a, b]` or
+to `[b, a]`. -/
+theorem pair_perm {a b : α} {l : List α} : [a, b] ~ l ↔ l = [a, b] ∨ l = [b, a] :=
+  perm_comm.trans perm_pair
 
 theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
     (permutations'Aux a l).flatMap (permutations'Aux b) ~
@@ -446,9 +462,6 @@ theorem nodup_permutations'Aux_of_notMem (s : List α) (x : α) (hx : x ∉ s) :
     rw [nodup_map_iff]
     · exact IH hx.right
     · simp
-
-@[deprecated (since := "2025-05-23")]
-alias nodup_permutations'Aux_of_not_mem := nodup_permutations'Aux_of_notMem
 
 theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'Aux x s) ↔ x ∉ s := by
   refine ⟨fun h H ↦ ?_, nodup_permutations'Aux_of_notMem _ _⟩

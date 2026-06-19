@@ -3,15 +3,17 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
-import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+module
+
+public import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
+public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 
 /-!
 # Relative cell complexes
 
 In this file, we define a structure `RelativeCellComplex` which expresses
 that a morphism `f : X ⟶ Y` is a transfinite composition of morphisms,
-all of which consists in attaching cells. Here, we allow a different
+all of which consist in attaching cells. Here, we allow a different
 family of authorized cells at each step. For example, (relative)
 CW-complexes are defined in the file `Mathlib/Topology/CWComplex/Abstract/Basic.lean`
 by requiring that at the `n`th step, we attach `n`-disks along their
@@ -25,6 +27,8 @@ see the file `Mathlib/CategoryTheory/SmallObject/IsCardinalForSmallObjectArgumen
 * https://ncatlab.org/nlab/show/small+object+argument
 
 -/
+
+@[expose] public section
 
 universe w w' t v u
 
@@ -70,6 +74,8 @@ variable {c} in
 def Cells.ι (γ : Cells c) : B γ.j γ.i ⟶ Y :=
   (c.attachCells γ.j γ.hj).cell γ.k ≫ c.incl.app (Order.succ γ.j)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma hom_ext {Z : C} {φ₁ φ₂ : Y ⟶ Z} (h₀ : f ≫ φ₁ = f ≫ φ₂)
     (h : ∀ (γ : Cells c), γ.ι ≫ φ₁ = γ.ι ≫ φ₂) :
     φ₁ = φ₂ := by
@@ -99,6 +105,25 @@ def transfiniteCompositionOfShape
     (coproducts.{w} (ofHoms g)).pushouts.TransfiniteCompositionOfShape J f where
   toTransfiniteCompositionOfShape := c.toTransfiniteCompositionOfShape
   map_mem j hj := (c.attachCells j hj).pushouts_coproducts
+
+open MorphismProperty in
+/-- If `f` is a relative cell complex, then `f` is a transfinite composition
+of pushouts of coproducts of morphisms in `I : MorphismProperty C` if
+for any `s : c.Cells`, the morphism `basicCell s.j s.i` belongs to `I`. -/
+@[simps toTransfiniteCompositionOfShape]
+def transfiniteCompositionOfShape' (c : RelativeCellComplex.{w} basicCell f)
+    {I : MorphismProperty C} (hc : ∀ (s : c.Cells), I (basicCell s.j s.i)) :
+    (coproducts.{w} I).pushouts.TransfiniteCompositionOfShape J f where
+  toTransfiniteCompositionOfShape := c.toTransfiniteCompositionOfShape
+  map_mem j hj := by
+    let a := c.attachCells j hj
+    exact ⟨_, _, _, _, _,
+      colimitsOfShape_le_coproducts _ a.ι _
+        (colimitsOfShape.mk' _ _ _ _ a.isColimit₁ a.isColimit₂
+        (Discrete.natTrans (fun _ ↦ basicCell _ _))
+        (fun ⟨k⟩ ↦ hc { j := j, hj := hj, k := k }) _
+        (fun _ ↦ a.hm _)),
+      a.isPushout⟩
 
 end RelativeCellComplex
 

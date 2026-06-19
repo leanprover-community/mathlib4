@@ -3,12 +3,16 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Group.Hom.Instances
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Group.Torsion
-import Mathlib.Data.Set.Piecewise
-import Mathlib.Logic.Pairwise
+module
+
+public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.Group.Hom.Instances
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Torsion
+public import Mathlib.Data.Set.Piecewise
+public import Mathlib.Logic.Pairwise
+
+import Mathlib.Util.Delaborators
 
 /-!
 # Extra lemmas about products of monoids and groups
@@ -17,13 +21,15 @@ This file proves lemmas about the instances defined in `Algebra.Group.Pi.Basic` 
 imports.
 -/
 
+@[expose] public section
+
 assert_not_exists AddMonoidWithOne MonoidWithZero
 
 universe u v w
 
 variable {ι α : Type*}
 variable {I : Type u}
-variable {f : I → Type v} {M : ι → Type*}
+variable {f : I → Type v} {M N : ι → Type*}
 
 variable (i : I)
 
@@ -60,40 +66,40 @@ end MulHom
 
 section MulHom
 
-/-- A family of MulHom's `f a : γ →ₙ* β a` defines a MulHom `Pi.mulHom f : γ →ₙ* Π a, β a`
-given by `Pi.mulHom f x b = f b x`. -/
+variable [(i : I) → Mul (f i)]
+
+/-- A family of MulHom's `f a : γ →ₙ* β a` defines a MulHom `MulHom.pi f : γ →ₙ* Π a, β a`
+given by `MulHom.pi f x b = f b x`. -/
 @[to_additive (attr := simps)
-  /-- A family of AddHom's `f a : γ → β a` defines an AddHom `Pi.addHom f : γ → Π a, β a` given by
-  `Pi.addHom f x b = f b x`. -/]
-def Pi.mulHom {γ : Type w} [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i) : γ →ₙ* ∀ i, f i where
+  /-- A family of AddHom's `f a : γ → β a` defines an AddHom `AddHom.pi f : γ → Π a, β a` given by
+  `AddHom.pi f x b = f b x`. -/]
+def MulHom.pi {γ : Type w} [Mul γ] (g : ∀ i, γ →ₙ* f i) : γ →ₙ* ∀ i, f i where
   toFun x i := g i x
   map_mul' x y := funext fun i => (g i).map_mul x y
 
+@[deprecated (since := "2026-05-29")] alias Pi.addHom := AddHom.pi
+@[to_additive existing (attr := deprecated MulHom.pi (since := "2026-05-29"))] alias
+  Pi.mulHom := MulHom.pi
+
+@[deprecated (since := "2026-05-29")] alias Pi.addHom_apply := AddHom.pi_apply
+@[to_additive existing (attr := deprecated MulHom.pi_apply (since := "2026-05-29"))] alias
+  Pi.mulHom_apply := MulHom.pi_apply
+
 @[to_additive]
-theorem Pi.mulHom_injective {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i)
-    (hg : ∀ i, Function.Injective (g i)) : Function.Injective (Pi.mulHom g) := fun _ _ h =>
+theorem MulHom.pi_injective {γ : Type w} [Nonempty I] [Mul γ] (g : ∀ i, γ →ₙ* f i)
+    (hg : ∀ i, Function.Injective (g i)) : Function.Injective (MulHom.pi g) := fun _ _ h =>
   let ⟨i⟩ := ‹Nonempty I›
   hg i ((funext_iff.mp h :) i)
 
-/-- A family of monoid homomorphisms `f a : γ →* β a` defines a monoid homomorphism
-`Pi.monoidHom f : γ →* Π a, β a` given by `Pi.monoidHom f x b = f b x`. -/
-@[to_additive (attr := simps)
-  /-- A family of additive monoid homomorphisms `f a : γ →+ β a` defines a monoid homomorphism
-  `Pi.addMonoidHom f : γ →+ Π a, β a` given by `Pi.addMonoidHom f x b = f b x`. -/]
-def Pi.monoidHom {γ : Type w} [∀ i, MulOneClass (f i)] [MulOneClass γ] (g : ∀ i, γ →* f i) :
-    γ →* ∀ i, f i :=
-  { Pi.mulHom fun i => (g i).toMulHom with
-    toFun := fun x i => g i x
-    map_one' := funext fun i => (g i).map_one }
+@[deprecated (since := "2026-05-29")] alias AddHom.injective_pi := AddHom.pi_injective
+@[to_additive existing (attr := deprecated MulHom.pi_injective (since := "2026-05-29"))] alias
+  MulHom.injective_pi := MulHom.pi_injective
 
-@[to_additive]
-theorem Pi.monoidHom_injective {γ : Type w} [Nonempty I] [∀ i, MulOneClass (f i)] [MulOneClass γ]
-    (g : ∀ i, γ →* f i) (hg : ∀ i, Function.Injective (g i)) :
-    Function.Injective (Pi.monoidHom g) :=
-  Pi.mulHom_injective (fun i => (g i).toMulHom) hg
+@[deprecated (since := "2026-05-29")] alias Pi.addHom_injective := AddHom.injective_pi
+@[to_additive existing (attr := deprecated MulHom.pi_injective (since := "2026-05-29"))] alias
+  Pi.mulHom_injective := MulHom.pi_injective
 
 variable (f)
-variable [(i : I) → Mul (f i)]
 
 /-- Evaluation of functions into an indexed collection of semigroups at a point is a semigroup
 homomorphism.
@@ -104,6 +110,17 @@ This is `Function.eval i` as a `MulHom`. -/
 def Pi.evalMulHom (i : I) : (∀ i, f i) →ₙ* f i where
   toFun g := g i
   map_mul' _ _ := Pi.mul_apply _ _ i
+
+/-- A family of MulHom's `f i : M i →ₙ* N i` defines a MulHom
+`MulHom.piMap f : (Π i, M i) →ₙ* (Π i, N i)`
+given by `MulHom.piMap f x i = f i x`. This is `Pi.map` for `MulHom`s. -/
+@[to_additive (attr := simps!)
+  /-- A family of AddHom's `f i : M i →ₙ+ N i` defines an AddHom
+  `AddHom.piMap f : (Π i, M i) →ₙ+ (Π i, N i)`
+  given by `AddHom.piMap f x i = f i x`. This is `Pi.map` for `AddHom`s. -/]
+def MulHom.piMap [Π i, Mul (M i)] [Π i, Mul (N i)] (g : Π i, M i →ₙ* N i) :
+    (Π i, M i) →ₙ* (Π i, N i) :=
+  .pi fun i ↦ (g i).comp (Pi.evalMulHom M i)
 
 /-- `Function.const` as a `MulHom`. -/
 @[to_additive (attr := simps) /-- `Function.const` as an `AddHom`. -/]
@@ -136,8 +153,42 @@ end MulHom
 
 section MonoidHom
 
-variable (f)
 variable [(i : I) → MulOneClass (f i)]
+
+/-- A family of monoid homomorphisms `f a : γ →* β a` defines a monoid homomorphism
+`Pi.monoidHom f : γ →* Π a, β a` given by `Pi.monoidHom f x b = f b x`. -/
+@[to_additive (attr := simps)
+  /-- A family of additive monoid homomorphisms `f a : γ →+ β a` defines a monoid homomorphism
+  `Pi.addMonoidHom f : γ →+ Π a, β a` given by `Pi.addMonoidHom f x b = f b x`. -/]
+def MonoidHom.pi {γ : Type w} [MulOneClass γ] (g : ∀ i, γ →* f i) :
+    γ →* ∀ i, f i :=
+  { MulHom.pi fun i => (g i).toMulHom with
+    toFun := fun x i => g i x
+    map_one' := funext fun i => (g i).map_one }
+
+@[deprecated (since := "2026-05-29")] alias Pi.addMonoidHom := AddMonoidHom.pi
+@[to_additive existing (attr := deprecated MonoidHom.pi (since := "2026-05-29"))] alias
+  Pi.monoidHom := MonoidHom.pi
+
+@[deprecated (since := "2026-05-29")] alias Pi.addMonoidHom_apply := AddMonoidHom.pi_apply
+@[to_additive existing (attr := deprecated MonoidHom.pi_apply (since := "2026-05-29"))] alias
+  Pi.monoidHom_apply := MonoidHom.pi_apply
+
+@[to_additive]
+theorem MonoidHom.pi_injective {γ : Type w} [Nonempty I] [MulOneClass γ]
+    (g : ∀ i, γ →* f i) (hg : ∀ i, Function.Injective (g i)) :
+    Function.Injective (MonoidHom.pi g) :=
+  MulHom.pi_injective (fun i => (g i).toMulHom) hg
+
+@[deprecated (since := "2026-05-29")] alias AddMonoidHom.injective_pi := AddMonoidHom.pi_injective
+@[to_additive existing (attr := deprecated MonoidHom.pi_injective (since := "2026-05-29"))] alias
+  MonoidHom.injective_pi := MonoidHom.pi_injective
+
+@[deprecated (since := "2026-05-29")] alias Pi.addMonoidHom_injective := AddMonoidHom.pi_injective
+@[to_additive existing (attr := deprecated MonoidHom.pi_injective (since := "2026-05-29"))] alias
+  Pi.monoidHom_injective := MonoidHom.pi_injective
+
+variable (f)
 
 /-- Evaluation of functions into an indexed collection of monoids at a point is a monoid
 homomorphism.
@@ -152,6 +203,17 @@ def Pi.evalMonoidHom (i : I) : (∀ i, f i) →* f i where
 
 @[simp, norm_cast]
 lemma Pi.coe_evalMonoidHom (i : I) : ⇑(evalMonoidHom f i) = Function.eval i := rfl
+
+/-- A family of monoid homomorphisms `f i : M i →* N i` defines a monoid homomorphism
+`MonoidHom.piMap f : (Π i, M i) →* (Π i, N i)`
+given by `MonoidHom.piMap f x i = f i x`. This is `Pi.map` for `MonoidHom`s. -/
+@[to_additive (attr := simps!)
+  /-- A family of additive monoid homomorphisms `f i : M i →+ N i` defines an additive monoid
+  homomorphism  `AddMonoidHom.piMap f : (Π i, M i) →+ (Π i, N i)`
+  given by `AddMonoidHom.piMap f x i = f i x`. This is `Pi.map` for `AddMonoidHom`s. -/]
+def MonoidHom.piMap [Π i, MulOneClass (M i)] [Π i, MulOneClass (N i)] (g : Π i, M i →* N i) :
+    (Π i, M i) →* (Π i, N i) :=
+  .pi fun i ↦ (g i).comp (Pi.evalMonoidHom M i)
 
 /-- `Function.const` as a `MonoidHom`. -/
 @[to_additive (attr := simps) /-- `Function.const` as an `AddMonoidHom`. -/]
@@ -280,10 +342,7 @@ For injections of commuting elements at the same index, see `Commute.map` -/
 theorem Pi.mulSingle_commute [∀ i, MulOneClass <| f i] :
     Pairwise fun i j => ∀ (x : f i) (y : f j), Commute (mulSingle i x) (mulSingle j y) := by
   intro i j hij x y; ext k
-  by_cases h1 : i = k
-  · subst h1
-    simp [hij]
-  simp_all
+  by_cases i = k <;> simp_all
 
 /-- The injection into a pi group with the same values commutes. -/
 @[to_additive /-- The injection into an additive pi group with the same values commutes. -/]
@@ -299,40 +358,20 @@ theorem Pi.update_eq_div_mul_mulSingle [∀ i, Group <| f i] (g : ∀ i : I, f i
   ext j
   rcases eq_or_ne i j with (rfl | h)
   · simp
-  · simp [Function.update_of_ne h.symm, h]
+  · simp [h, eqComm]
 
 @[to_additive]
 theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommMonoid M]
     {k l m n : I} {u v : M} (hu : u ≠ 1) (hv : v ≠ 1) :
     (mulSingle k u : I → M) * mulSingle l v = mulSingle m u * mulSingle n v ↔
       k = m ∧ l = n ∨ u = v ∧ k = n ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = n := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · have hk := congr_fun h k
     have hl := congr_fun h l
-    have hm := (congr_fun h m).symm
-    have hn := (congr_fun h n).symm
-    simp only [mul_apply, mulSingle_apply] at hk hl hm hn
-    rcases eq_or_ne k m with (rfl | hkm)
-    · refine Or.inl ⟨rfl, not_ne_iff.mp fun hln => (hv ?_).elim⟩
-      rcases eq_or_ne k l with (rfl | hkl)
-      · rwa [if_neg hln.symm, if_neg hln.symm, one_mul, one_mul] at hn
-      · rwa [if_neg hkl.symm, if_neg hln, one_mul, one_mul] at hl
-    · rcases eq_or_ne m n with (rfl | hmn)
-      · rcases eq_or_ne k l with (rfl | hkl)
-        · rw [if_neg hkm.symm, if_neg hkm.symm, one_mul, if_pos rfl] at hm
-          exact Or.inr (Or.inr ⟨hm, rfl, rfl⟩)
-        · simp only [if_neg hkm, if_neg hkl, mul_one] at hk
-          dsimp at hk
-          contradiction
-      · rw [if_neg hkm.symm, if_neg hmn, one_mul, mul_one] at hm
-        obtain rfl := (ite_ne_right_iff.mp (ne_of_eq_of_ne hm.symm hu)).1
-        rw [if_neg hkm, if_neg hkm, one_mul, mul_one] at hk
-        obtain rfl := (ite_ne_right_iff.mp (ne_of_eq_of_ne hk.symm hu)).1
-        exact Or.inr (Or.inl ⟨hk.trans (if_pos rfl), rfl, rfl⟩)
-  · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl, rfl⟩ | ⟨h, rfl, rfl⟩)
-    · rfl
-    · apply mul_comm
-    · simp_rw [← Pi.mulSingle_mul, h, mulSingle_one]
+    have hm := congr_fun h m
+    have hn := congr_fun h n
+    grind [mul_one, one_mul, mul_apply]
+  · aesop (add simp [mulSingle_apply])
 
 end Single
 

@@ -3,7 +3,9 @@ Copyright (c) 2025 Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Horner
 -/
-import Mathlib.Analysis.Convex.Function
+module
+
+public import Mathlib.Analysis.Convex.Function
 
 /-!
 # Convex and concave piecewise functions
@@ -25,6 +27,8 @@ This file proves convex and concave theorems for piecewise functions.
   See concave version(s) `concaveOn_univ_piecewise_Iic_of_monotoneOn_Iic_antitoneOn_Ici`
   and `concaveOn_univ_piecewise_Ici_of_antitoneOn_Ici_monotoneOn_Iic`.
 -/
+
+public section
 
 
 variable {𝕜 E β : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
@@ -51,34 +55,34 @@ theorem convexOn_univ_piecewise_Iic_of_antitoneOn_Iic_monotoneOn_Ici
     · rw [Set.piecewise_eq_of_mem (Set.Iic e) f g hc]
       have hc' : a • x + b • e ≤ a • x + b • y := by gcongr
       trans a • f x + b • f e
-      · exact (h_anti (hc'.trans hc) hc hc').trans (hf.2 hx Set.right_mem_Iic ha hb hab)
+      · exact (h_anti (hc'.trans hc) hc hc').trans (hf.2 hx Set.self_mem_Iic ha hb hab)
       · rw [h_eq]
         gcongr
-        exact h_mono Set.left_mem_Ici hy.le hy.le
+        exact h_mono Set.self_mem_Ici hy.le hy.le
     · rw [Set.piecewise_eq_of_notMem (Set.Iic e) f g (Set.notMem_Iic.mpr hc)]
       have hc' : a • x + b • y ≤ a • e + b • y := by gcongr
       trans a • g e + b • g y
-      · exact (h_mono hc.le (hc.le.trans hc') hc').trans (hg.2 Set.left_mem_Ici hy.le ha hb hab)
+      · exact (h_mono hc.le (hc.le.trans hc') hc').trans (hg.2 Set.self_mem_Ici hy.le ha hb hab)
       · rw [← h_eq]
         gcongr
-        exact h_anti hx Set.right_mem_Iic hx
+        exact h_anti hx Set.self_mem_Iic hx
   · rw [Set.piecewise_eq_of_notMem (Set.Iic e) f g (Set.notMem_Iic.mpr hx),
       Set.piecewise_eq_of_mem (Set.Iic e) f g hy]
     obtain hc | hc := le_or_gt (a • x + b • y) e
     · rw [Set.piecewise_eq_of_mem (Set.Iic e) f g hc]
       have hc' : a • e + b • y ≤ a • x + b • y := by gcongr
       trans a • f e + b • f y
-      · exact (h_anti (hc'.trans hc) hc hc').trans (hf.2 Set.right_mem_Iic hy ha hb hab)
+      · exact (h_anti (hc'.trans hc) hc hc').trans (hf.2 Set.self_mem_Iic hy ha hb hab)
       · rw [h_eq]
         gcongr
-        exact h_mono Set.left_mem_Ici hx.le hx.le
+        exact h_mono Set.self_mem_Ici hx.le hx.le
     · rw [Set.piecewise_eq_of_notMem (Set.Iic e) f g (Set.notMem_Iic.mpr hc)]
       have hc' : a • x + b • y ≤ a • x + b • e := by gcongr
       trans a • g x + b • g e
-      · exact (h_mono hc.le (hc.le.trans hc') hc').trans (hg.2 hx.le Set.left_mem_Ici ha hb hab)
+      · exact (h_mono hc.le (hc.le.trans hc') hc').trans (hg.2 hx.le Set.self_mem_Ici ha hb hab)
       · rw [← h_eq]
         gcongr
-        exact h_anti hy Set.right_mem_Iic hy
+        exact h_anti hy Set.self_mem_Iic hy
   · have hc : e < a • x + b • y :=
         (lt_min hx hy).trans_le (Convex.min_le_combo x y ha hb hab)
     rw [(Set.Iic e).piecewise_eq_of_notMem f g (Set.notMem_Iic.mpr hx),

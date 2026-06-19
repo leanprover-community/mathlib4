@@ -3,13 +3,17 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
 
 /-!
 # Algebraic functions
 
 This file defines algebraic functions as the image of the `algebraMap R[X] (R → S)`.
 -/
+
+@[expose] public section
 
 assert_not_exists IsIntegralClosure LinearIndependent IsLocalRing MvPolynomial
 
@@ -22,12 +26,14 @@ variable (R S T : Type*)
 /-- This is not an instance as it forms a diamond with `Pi.instSMul`.
 
 See the `instance_diamonds` test for details. -/
+@[instance_reducible]
 def Polynomial.hasSMulPi [Semiring R] [SMul R S] : SMul R[X] (R → S) :=
   ⟨fun p f x => eval x p • f x⟩
 
 /-- This is not an instance as it forms a diamond with `Pi.instSMul`.
 
 See the `instance_diamonds` test for details. -/
+@[instance_reducible]
 noncomputable def Polynomial.hasSMulPi' [CommSemiring R] [Semiring S] [Algebra R S]
     [SMul S T] : SMul R[X] (S → T) :=
   ⟨fun p f x => aeval x p • f x⟩
@@ -47,6 +53,7 @@ theorem polynomial_smul_apply' [CommSemiring R] [Semiring S] [Algebra R S] [SMul
 variable [CommSemiring R] [CommSemiring S] [CommSemiring T] [Algebra R S] [Algebra S T]
 
 /-- This is not an instance for the same reasons as `Polynomial.hasSMulPi'`. -/
+@[instance_reducible]
 noncomputable def Polynomial.algebraPi : Algebra R[X] (S → T) where
   __ := Polynomial.hasSMulPi' R S T
   algebraMap :=

@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Finset.Image
-import Mathlib.Data.Fintype.Defs
+module
+
+public import Mathlib.Data.Finset.Basic
+public import Mathlib.Data.Finset.Image
+public import Mathlib.Data.Fintype.Defs
 
 /-!
 # `Finset`s are a Boolean algebra
@@ -18,6 +20,8 @@ This file provides the `BooleanAlgebra (Finset α)` instance, under the assumpti
 * `Finset.boundedOrder`: `Finset.univ` is the top element of `Finset α`
 * `Finset.booleanAlgebra`: `Finset α` is a Boolean algebra if `α` is finite
 -/
+
+public section
 
 assert_not_exists Monoid
 
@@ -49,15 +53,23 @@ theorem univ_nonempty [Nonempty α] : (univ : Finset α).Nonempty :=
   univ_nonempty_iff.2 ‹_›
 
 theorem univ_eq_empty_iff : (univ : Finset α) = ∅ ↔ IsEmpty α := by
-  rw [← not_nonempty_iff, ← univ_nonempty_iff, not_nonempty_iff_eq_empty]
+  contrapose!; exact univ_nonempty_iff
 
 theorem univ_nontrivial_iff :
     (Finset.univ : Finset α).Nontrivial ↔ Nontrivial α := by
   rw [Finset.Nontrivial, Finset.coe_univ, Set.nontrivial_univ_iff]
 
+lemma univ_neq_empty (α : Type*) [Fintype α] [Nonempty α] :
+    (Finset.univ : Finset α) ≠ ∅ :=
+  fun h ↦ (Finset.univ_eq_empty_iff.1 h).elim (Classical.arbitrary _)
+
 theorem univ_nontrivial [h : Nontrivial α] :
     (Finset.univ : Finset α).Nontrivial :=
   univ_nontrivial_iff.mpr h
+
+@[simp] lemma singleton_ne_univ [Nontrivial α] (a : α) : {a} ≠ univ := by
+  apply SetLike.coe_ne_coe.1
+  simp
 
 @[simp]
 theorem univ_eq_empty [IsEmpty α] : (univ : Finset α) = ∅ :=
@@ -68,7 +80,7 @@ theorem univ_unique [Unique α] : (univ : Finset α) = {default} :=
   Finset.ext fun x => iff_of_true (mem_univ _) <| mem_singleton.2 <| Subsingleton.elim x default
 
 instance boundedOrder : BoundedOrder (Finset α) :=
-  { inferInstanceAs (OrderBot (Finset α)) with
+  { (inferInstance : OrderBot (Finset α)) with
     top := univ
     le_top := subset_univ }
 
@@ -95,6 +107,8 @@ instance booleanAlgebra [DecidableEq α] : BooleanAlgebra (Finset α) :=
 section BooleanAlgebra
 variable [DecidableEq α] {a : α}
 
+open symmDiff
+
 theorem sdiff_eq_inter_compl (s t : Finset α) : s \ t = s ∩ tᶜ :=
   sdiff_eq
 
@@ -106,7 +120,13 @@ theorem mem_compl : a ∈ sᶜ ↔ a ∉ s := by simp [compl_eq_univ_sdiff]
 
 theorem notMem_compl : a ∉ sᶜ ↔ a ∈ s := by rw [mem_compl, not_not]
 
-@[deprecated (since := "2025-05-23")] alias not_mem_compl := notMem_compl
+@[simp] theorem mem_himp_iff : a ∈ s ⇨ t ↔ a ∈ s → a ∈ t := by simp [himp_eq, imp_iff_or_not]
+
+protected theorem himp_def : s ⇨ t = t ∪ sᶜ := himp_eq ..
+
+@[simp] theorem mem_bihimp_iff : a ∈ s ⇔ t ↔ (a ∈ s ↔ a ∈ t) := by simp [bihimp, iff_def']
+
+protected theorem bihimp_def : s ⇔ t = (s ∪ tᶜ) ∩ (t ∪ sᶜ) := bihimp_eq ..
 
 @[simp, norm_cast]
 theorem coe_compl (s : Finset α) : ↑sᶜ = (↑s : Set α)ᶜ :=
@@ -263,8 +283,7 @@ section DecEq
 
 variable [Fintype α] [DecidableEq α]
 
-@[simp]
-lemma filter_univ_mem (s : Finset α) : univ.filter (· ∈ s) = s := by simp [filter_mem_eq_inter]
+lemma filter_univ_mem (s : Finset α) : univ.filter (· ∈ s) = s := by simp
 
 instance decidableCodisjoint : Decidable (Codisjoint s t) :=
   decidable_of_iff _ codisjoint_left.symm

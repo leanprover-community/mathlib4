@@ -3,8 +3,10 @@ Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales, Benjamin Davidson
 -/
-import Mathlib.Geometry.Euclidean.Sphere.Power
-import Mathlib.Geometry.Euclidean.Triangle
+module
+
+public import Mathlib.Geometry.Euclidean.Sphere.Power
+public import Mathlib.Geometry.Euclidean.Triangle
 
 /-!
 # Ptolemy's theorem
@@ -34,8 +36,11 @@ An API needs to be built around that concept, which would include:
 - a point P where the diagonals of a cyclic polygon cross exists (and is unique) with weak/strict
   betweenness depending on weak/strict cyclicity,
 - four points on a sphere with such a point P are cyclic in the appropriate order,
+
 and so on.
 -/
+
+public section
 
 
 open Real

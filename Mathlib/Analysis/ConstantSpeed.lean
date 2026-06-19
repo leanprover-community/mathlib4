@@ -3,9 +3,11 @@ Copyright (c) 2023 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Topology.EMetricSpace.BoundedVariation
+module
+
+public import Mathlib.Data.Set.Function
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Topology.EMetricSpace.BoundedVariation
 
 /-!
 # Constant speed
@@ -37,6 +39,8 @@ as a composite `φ ∘ (variationOnFromTo f s a)`, where `φ` has unit speed and
 
 arc-length, parameterization
 -/
+
+@[expose] public section
 
 
 open scoped NNReal ENNReal
@@ -150,19 +154,16 @@ theorem hasConstantSpeedOnWith_zero_iff :
   dsimp [HasConstantSpeedOnWith]
   simp only [zero_mul, ENNReal.ofReal_zero, ← eVariationOn.eq_zero_iff]
   constructor
-  · by_contra!
-    obtain ⟨h, hfs⟩ := this
+  · by_contra! ⟨h, hfs⟩
     simp_rw [ne_eq, eVariationOn.eq_zero_iff] at hfs h
-    push_neg at hfs
+    push Not at hfs
     obtain ⟨x, xs, y, ys, hxy⟩ := hfs
     rcases le_total x y with (xy | yx)
     · exact hxy (h xs ys x ⟨xs, le_rfl, xy⟩ y ⟨ys, xy, le_rfl⟩)
     · rw [edist_comm] at hxy
       exact hxy (h ys xs y ⟨ys, le_rfl, yx⟩ x ⟨xs, yx, le_rfl⟩)
   · rintro h x _ y _
-    refine le_antisymm ?_ zero_le'
-    rw [← h]
-    exact eVariationOn.mono f inter_subset_left
+    simpa [h] using eVariationOn.mono (s := s) f inter_subset_left
 
 theorem HasConstantSpeedOnWith.ratio {l' : ℝ≥0} (hl' : l' ≠ 0) {φ : ℝ → ℝ} (φm : MonotoneOn φ s)
     (hfφ : HasConstantSpeedOnWith (f ∘ φ) s l) (hf : HasConstantSpeedOnWith f (φ '' s) l') ⦃x : ℝ⦄
@@ -199,8 +200,8 @@ monotonically maps `s` onto `t`, then `φ` is just a translation (on `s`).
 theorem unique_unit_speed {φ : ℝ → ℝ} (φm : MonotoneOn φ s) (hfφ : HasUnitSpeedOn (f ∘ φ) s)
     (hf : HasUnitSpeedOn f (φ '' s)) ⦃x : ℝ⦄ (xs : x ∈ s) : EqOn φ (fun y => y - x + φ x) s := by
   dsimp only [HasUnitSpeedOn] at hf hfφ
-  convert HasConstantSpeedOnWith.ratio one_ne_zero φm hfφ hf xs using 3
-  norm_num
+  convert HasConstantSpeedOnWith.ratio one_ne_zero φm hfφ hf xs
+  simp
 
 /-- If both `f` and `f ∘ φ` have unit speed (on `Icc 0 t` and `Icc 0 s` respectively)
 and `φ` monotonically maps `Icc 0 s` onto `Icc 0 t`, then `φ` is the identity on `Icc 0 s`
@@ -210,7 +211,7 @@ theorem unique_unit_speed_on_Icc_zero {s t : ℝ} (hs : 0 ≤ s) (ht : 0 ≤ t) 
     (hfφ : HasUnitSpeedOn (f ∘ φ) (Icc 0 s)) (hf : HasUnitSpeedOn f (Icc 0 t)) :
     EqOn φ id (Icc 0 s) := by
   rw [← φst] at hf
-  convert unique_unit_speed φm hfφ hf ⟨le_rfl, hs⟩ using 1
+  convert unique_unit_speed φm hfφ hf ⟨le_rfl, hs⟩
   have : φ 0 = 0 := by
     have hm : 0 ∈ φ '' Icc 0 s := by simp only [φst, ht, mem_Icc, le_refl, and_self]
     obtain ⟨x, xs, hx⟩ := hm

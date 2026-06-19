@@ -3,13 +3,17 @@ Copyright (c) 2020 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, Anthony DeRossi
 -/
-import Mathlib.Data.List.Basic
+module
+
+public import Mathlib.Data.List.Basic
 
 /-!
 # Properties of `List.reduceOption`
 
 In this file we prove basic lemmas about `List.reduceOption`.
 -/
+
+public section
 
 namespace List
 
@@ -52,9 +56,7 @@ theorem reduceOption_eq_nil_iff (l : List (Option α)) :
   constructor
   · intro h
     exact ⟨l.length, eq_replicate_of_mem h⟩
-  · intro ⟨_, h⟩
-    simp_rw [h, mem_replicate]
-    tauto
+  · grind
 
 theorem reduceOption_eq_singleton_iff (l : List (Option α)) (a : α) :
     l.reduceOption = [a] ↔ ∃ m n, l = replicate m none ++ some a :: replicate n none := by

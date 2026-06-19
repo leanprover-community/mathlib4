@@ -3,13 +3,17 @@ Copyright (c) 2023 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Ashvni Narayanan, Michael Stoll
 -/
-import Mathlib.Algebra.BigOperators.Associated
-import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Coprime.Lemmas
+module
+
+public import Mathlib.Algebra.BigOperators.Associated
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.RingTheory.Coprime.Lemmas
 
 /-!
 # Lemmas about units in `ZMod`.
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -46,7 +50,7 @@ theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
     have ⟨k, hk⟩ := this x.val.val (val_coe_unit_coprime x)
     refine ⟨unitOfCoprime _ hk, Units.ext ?_⟩
     have : NeZero n := ⟨fun hn ↦ hm.out (eq_zero_of_zero_dvd (hn ▸ h))⟩
-    simp [unitsMap_def, - castHom_apply]
+    simp [unitsMap_def, -castHom_apply]
   intro x hx
   let ps : Finset ℕ := {p ∈ m.primeFactors | ¬p ∣ x}
   use ps.prod id
@@ -56,7 +60,7 @@ theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
   · have h := Nat.dvd_sub hp hpx
     rw [add_comm, Nat.add_sub_cancel] at h
     rcases pp.dvd_mul.mp h with h | h
-    · have ⟨q, hq, hq'⟩ := (pp.prime.dvd_finset_prod_iff id).mp h
+    · have ⟨q, hq, hq'⟩ := (pp.prime.dvd_finsetProd_iff id).mp h
       rw [Finset.mem_filter, Nat.mem_primeFactors,
         ← (Nat.prime_dvd_prime_iff_eq pp hq.1.1).mp hq'] at hq
       exact hq.2 hpx
@@ -73,6 +77,7 @@ lemma not_isUnit_of_mem_primeFactors {n p : ℕ} (h : p ∈ n.primeFactors) :
   rw [isUnit_iff_coprime]
   exact (Prime.dvd_iff_not_coprime <| prime_of_mem_primeFactors h).mp <| dvd_of_mem_primeFactors h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any element of `ZMod N` has the form `u * d` where `u` is a unit and `d` is a divisor of `N`. -/
 lemma eq_unit_mul_divisor {N : ℕ} (a : ZMod N) :
     ∃ d : ℕ, d ∣ N ∧ ∃ (u : ZMod N), IsUnit u ∧ a = u * d := by
@@ -147,5 +152,23 @@ theorem isUnit_inv {m : ℕ} {n : ℤ} (h : IsUnit (n : ZMod m)) :
     IsUnit (n : ZMod m)⁻¹ := by
   rw [isUnit_iff_exists]
   exact ⟨n, inv_mul_of_unit _ h, mul_inv_of_unit _ h⟩
+
+theorem coe_int_isUnit_iff_isCoprime (n : ℤ) (m : ℕ) :
+    IsUnit (n : ZMod m) ↔ IsCoprime (m : ℤ) n := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ⟨unitOfIsCoprime n (isCoprime_comm.mp h), by simp⟩⟩
+  obtain rfl | hm := eq_or_ne m 0
+  · rw [Nat.cast_zero, isCoprime_zero_left]
+    exact_mod_cast h
+  · have : NeZero m := ⟨hm⟩
+    obtain ⟨u, hu⟩ := h
+    have h_coprime := val_coe_unit_coprime u
+    rw [hu, Nat.coprime_iff_gcd_eq_one, ← Int.gcd_natCast_natCast,
+      val_intCast, Int.gcd_emod] at h_coprime
+    rwa [isCoprime_comm, Int.isCoprime_iff_gcd_eq_one]
+
+/-- For each `n ≥ 0`, the unit group of `ZMod n` is finite. -/
+instance instFiniteZModUnits : (n : ℕ) → Finite (ZMod n)ˣ
+  | 0 => Finite.of_fintype ℤˣ
+  | _ + 1 => inferInstance
 
 end ZMod

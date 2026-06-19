@@ -3,8 +3,10 @@ Copyright (c) 2024 Gabin Kolly. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Gabin Kolly, David Wärn
 -/
-import Mathlib.ModelTheory.DirectLimit
-import Mathlib.Order.Ideal
+module
+
+public import Mathlib.ModelTheory.DirectLimit
+public import Mathlib.Order.Ideal
 
 /-!
 # Partial Isomorphisms
@@ -33,6 +35,8 @@ This file defines partial isomorphisms between first-order structures.
   linear orders, a special case of this phenomenon in the case where `L = Language.order`.
 
 -/
+
+@[expose] public section
 
 universe u v w w'
 
@@ -134,6 +138,7 @@ theorem le_iff {f g : M ≃ₚ[L] N} : f ≤ g ↔
     rw [le_def]
     exact ⟨dom_le_dom, by ext; change subtype _ (g.toEquiv _) = _; rw [← h_eq]; rfl⟩
 
+-- probably the initial design intended this to be private, just like `le_refl` and `le_antisymm`?
 theorem le_trans (f g h : M ≃ₚ[L] N) : f ≤ g → g ≤ h → f ≤ h := by
   rintro ⟨le_fg, eq_fg⟩ ⟨le_gh, eq_gh⟩
   refine ⟨le_fg.trans le_gh, ?_⟩
@@ -147,13 +152,13 @@ private theorem le_antisymm (f g : M ≃ₚ[L] N) (le_fg : f ≤ g) (le_gf : g �
   let ⟨dom_f, cod_f, equiv_f⟩ := f
   cases _root_.le_antisymm (dom_le_dom le_fg) (dom_le_dom le_gf)
   cases _root_.le_antisymm (cod_le_cod le_fg) (cod_le_cod le_gf)
-  convert rfl
+  convert! rfl
   exact Equiv.injective_toEmbedding ((subtype _).comp_injective (subtype_toEquiv_inclusion le_fg))
 
 instance : PartialOrder (M ≃ₚ[L] N) where
-  le_refl := le_refl
+  le_refl := private le_refl
   le_trans := le_trans
-  le_antisymm := le_antisymm
+  le_antisymm := private le_antisymm
 
 @[gcongr] lemma symm_le_symm {f g : M ≃ₚ[L] N} (hfg : f ≤ g) : f.symm ≤ g.symm := by
   rw [le_iff]
@@ -302,7 +307,7 @@ namespace DirectLimit
 
 open PartialEquiv
 
-variable {ι : Type*} [Preorder ι] [Nonempty ι] [IsDirected ι (· ≤ ·)]
+variable {ι : Type*} [Preorder ι] [Nonempty ι] [IsDirectedOrder ι]
 variable (S : ι →o M ≃ₚ[L] N)
 
 instance : DirectedSystem (fun i ↦ (S i).dom)
@@ -322,18 +327,16 @@ noncomputable def partialEquivLimit : M ≃ₚ[L] N where
   toEquiv :=
     (Equiv_iSup {
       toFun := (fun i ↦ (S i).cod)
-      monotone' := monotone_cod.comp S.monotone}
-    ).comp
+      monotone' := monotone_cod.comp S.monotone }).comp
       ((DirectLimit.equiv_lift L ι (fun i ↦ (S i).dom)
         (fun _ _ hij ↦ Substructure.inclusion (dom_le_dom (S.monotone hij)))
         (fun i ↦ (S i).cod)
         (fun _ _ hij ↦ Substructure.inclusion (cod_le_cod (S.monotone hij)))
         (fun i ↦ (S i).toEquiv)
-        (fun _ _ hij _ ↦ toEquiv_inclusion_apply (S.monotone hij) _)
-      ).comp
+        (fun _ _ hij _ ↦ toEquiv_inclusion_apply (S.monotone hij) _)).comp
         (Equiv_iSup {
           toFun := (fun i ↦ (S i).dom)
-          monotone' := monotone_dom.comp S.monotone}).symm)
+          monotone' := monotone_dom.comp S.monotone }).symm)
 
 @[simp]
 theorem dom_partialEquivLimit : (partialEquivLimit S).dom = iSup (fun x ↦ (S x).dom) := rfl
@@ -341,6 +344,7 @@ theorem dom_partialEquivLimit : (partialEquivLimit S).dom = iSup (fun x ↦ (S x
 @[simp]
 theorem cod_partialEquivLimit : (partialEquivLimit S).cod = iSup (fun x ↦ (S x).cod) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma partialEquivLimit_comp_inclusion {i : ι} :
     (partialEquivLimit S).toEquiv.toEmbedding.comp (Substructure.inclusion (le_iSup _ i)) =
@@ -349,6 +353,7 @@ lemma partialEquivLimit_comp_inclusion {i : ι} :
   rw [Equiv_isup_symm_inclusion]
   congr
 
+set_option backward.isDefEq.respectTransparency false in
 theorem le_partialEquivLimit (i : ι) : S i ≤ partialEquivLimit S :=
   ⟨le_iSup (f := fun i ↦ (S i).dom) _, by
     #adaptation_note /-- https://github.com/leanprover/lean4/pull/5020
@@ -395,8 +400,7 @@ instance inhabited_self_FGEquiv : Inhabited (L.FGEquiv M M) :=
   ⟨⟨⟨⊥, ⊥, Equiv.refl L (⊥ : L.Substructure M)⟩, fg_bot⟩⟩
 
 instance inhabited_FGEquiv_of_IsEmpty_Constants_and_Relations
-    [IsEmpty L.Constants] [IsEmpty (L.Relations 0)] [L.Structure N] :
-    Inhabited (L.FGEquiv M N) :=
+    [IsEmpty L.Constants] [IsEmpty (L.Relations 0)] : Inhabited (L.FGEquiv M N) :=
   ⟨⟨⟨⊥, ⊥, {
       toFun := isEmptyElim
       invFun := isEmptyElim
@@ -485,7 +489,7 @@ theorem embedding_from_cg (M_cg : Structure.CG L M) (g : L.FGEquiv M N)
       (le_partialEquivLimit S (Encodable.encode (⟨x, hx⟩ : X) + 1)) this
   have isTop : F.dom = ⊤ := by rwa [← top_le_iff, ← X_gen, Substructure.closure_le]
   exact ⟨toEmbeddingOfEqTop isTop,
-        by convert (le_partialEquivLimit S 0); apply Embedding.toPartialEquiv_toEmbedding⟩
+        by convert! (le_partialEquivLimit S 0); apply Embedding.toPartialEquiv_toEmbedding⟩
 
 /-- For two countably generated structure `M` and `N`, if any PartialEquiv
 between finitely generated substructures can be extended to any element in the domain and to
@@ -520,7 +524,7 @@ theorem equiv_between_cg (M_cg : Structure.CG L M) (N_cg : Structure.CG L N)
   have dom_top : F.dom = ⊤ := by rwa [← top_le_iff, ← X_gen, Substructure.closure_le]
   have cod_top : F.cod = ⊤ := by rwa [← top_le_iff, ← Y_gen, Substructure.closure_le]
   refine ⟨toEquivOfEqTop dom_top cod_top, ?_⟩
-  convert le_partialEquivLimit S 0
+  convert! le_partialEquivLimit S 0
   rw [toEquivOfEqTop_toEmbedding]
   apply Embedding.toPartialEquiv_toEmbedding
 

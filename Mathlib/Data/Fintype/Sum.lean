@@ -3,15 +3,19 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Sum
-import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Logic.Embedding.Set
+module
+
+public import Mathlib.Data.Finset.Sum
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Logic.Embedding.Set
 
 /-!
 ## Instances
 
 We provide the `Fintype` instance for the sum of two fintypes.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -61,6 +65,7 @@ theorem Fintype.card_sum [Fintype α] [Fintype β] :
   card_disjSum _ _
 
 /-- If the subtype of all-but-one elements is a `Fintype` then the type itself is a `Fintype`. -/
+@[implicit_reducible]
 def fintypeOfFintypeNe (a : α) (_ : Fintype { b // b ≠ a }) : Fintype α :=
   Fintype.ofBijective (Sum.elim ((↑) : { b // b = a } → α) ((↑) : { b // b ≠ a } → α)) <| by
     classical exact (Equiv.sumCompl (· = a)).bijective
@@ -116,33 +121,34 @@ theorem Set.MapsTo.exists_equiv_extend_of_card_eq [Fintype α] {t : Finset β}
     (hfs : Set.InjOn f s) : ∃ g : α ≃ t, ∀ i ∈ s, (g i : β) = f i := by
   classical
     let s' : Finset α := s.toFinset
-    have hfst' : s'.image f ⊆ t := by simpa [s', ← Finset.coe_subset] using hfst
-    have hfs' : Set.InjOn f s' := by simpa [s'] using hfs
+    have hfst' : s'.image f ⊆ t := by simpa [s', ← Finset.coe_subset] using! hfst
+    have hfs' : Set.InjOn f s' := by simpa [s'] using! hfs
     obtain ⟨g, hg⟩ := Finset.exists_equiv_extend_of_card_eq hαt hfst' hfs'
     refine ⟨g, fun i hi => ?_⟩
     apply hg
-    simpa [s'] using hi
+    simpa [s'] using! hi
 
 theorem Fintype.card_subtype_or (p q : α → Prop) [Fintype { x // p x }] [Fintype { x // q x }]
     [Fintype { x // p x ∨ q x }] :
     Fintype.card { x // p x ∨ q x } ≤ Fintype.card { x // p x } + Fintype.card { x // q x } := by
   classical
-    convert Fintype.card_le_of_embedding (subtypeOrLeftEmbedding p q)
+    convert! Fintype.card_le_of_embedding (subtypeOrLeftEmbedding p q)
     rw [Fintype.card_sum]
 
 theorem Fintype.card_subtype_or_disjoint (p q : α → Prop) (h : Disjoint p q) [Fintype { x // p x }]
     [Fintype { x // q x }] [Fintype { x // p x ∨ q x }] :
     Fintype.card { x // p x ∨ q x } = Fintype.card { x // p x } + Fintype.card { x // q x } := by
   classical
-    convert Fintype.card_congr (subtypeOrEquiv p q h)
+    convert! Fintype.card_congr (subtypeOrEquiv p q h)
     simp
 
-section
+theorem Fintype.card_subtype_eq_or_eq_of_ne {α : Type*} [Fintype α] [DecidableEq α] {a b : α}
+    (h : a ≠ b) : Fintype.card { c : α // c = a ∨ c = b } = 2 :=
+  Fintype.card_subtype_or_disjoint _ _ fun _ ha hb _ hc ↦ ha _ hc ▸ hb _ hc ▸ h <| rfl
 
+attribute [local instance] Fintype.ofFinite in
 @[simp]
 theorem infinite_sum : Infinite (α ⊕ β) ↔ Infinite α ∨ Infinite β := by
   refine ⟨fun H => ?_, fun H => H.elim (@Sum.infinite_of_left α β) (@Sum.infinite_of_right α β)⟩
-  contrapose! H; haveI := fintypeOfNotInfinite H.1; haveI := fintypeOfNotInfinite H.2
-  exact Infinite.false
-
-end
+  contrapose! H; cases H
+  infer_instance

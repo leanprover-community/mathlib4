@@ -3,10 +3,12 @@ Copyright (c) 2023 Antoine Chambert-Loir and María Inés de Frutos-Fernández. 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Bhavik Mehta, Eric Wieser
 -/
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Data.Finset.Basic
-import Mathlib.Order.Interval.Finset.Defs
+module
+
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Order.Sub.Defs
+public import Mathlib.Data.Finset.Basic
+public import Mathlib.Order.Interval.Finset.Defs
 
 /-! # Antidiagonal with values in general types
 
@@ -47,6 +49,8 @@ def s : Multiset ℕ := {0, 0, 0}
   For `PNat`, we will recover the set of divisors of a strictly positive integer.
 -/
 
+@[expose] public section
+
 open Function
 
 namespace Finset
@@ -72,7 +76,8 @@ instance [AddMonoid A] : Subsingleton (HasAntidiagonal A) where
     rw [ha, hb]
 
 -- The goal of this lemma is to allow to rewrite antidiagonal
--- when the decidability instances obsucate Lean
+-- when the decidability instances obfuscate Lean
+set_option linter.overlappingInstances false in
 lemma hasAntidiagonal_congr (A : Type*) [AddMonoid A]
     [H1 : HasAntidiagonal A] [H2 : HasAntidiagonal A] :
     H1.antidiagonal = H2.antidiagonal := by congr!; subsingleton
@@ -163,10 +168,8 @@ theorem filter_fst_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable
 
 theorem filter_snd_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable (m ≤ n)] :
     {x ∈ antidiagonal n | x.snd = m} = if m ≤ n then {(n - m, m)} else ∅ := by
-  have : (fun x : A × A ↦ (x.snd = m)) ∘ Prod.swap = fun x : A × A ↦ x.fst = m := by
-    ext; simp
   rw [← map_swap_antidiagonal, filter_map]
-  simp [this, filter_fst_eq_antidiagonal, apply_ite (Finset.map _)]
+  simp [filter_fst_eq_antidiagonal, apply_ite (Finset.map _)]
 
 end OrderedSub
 

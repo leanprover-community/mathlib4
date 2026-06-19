@@ -3,12 +3,16 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Analysis.Complex.Norm
-import Mathlib.Algebra.Order.CauSeq.BigOperators
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Data.Complex.BigOperators
-import Mathlib.Data.Nat.Choose.Sum
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Analysis.Complex.Norm
+public import Mathlib.Algebra.Order.CauSeq.BigOperators
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Data.Complex.BigOperators
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.Tactic.NormNum.BigOperators
+public import Mathlib.Tactic.NormNum.NatFactorial
 
 /-!
 # Exponential Function
@@ -22,6 +26,8 @@ This file contains the definitions of the real and complex exponential function.
 * `Real.exp`: The real exponential function, defined as the real part of the complex exponential
 
 -/
+
+@[expose] public section
 
 open CauSeq Finset IsAbsoluteValue
 open scoped ComplexConjugate
@@ -53,7 +59,7 @@ def exp' (z : ℂ) : CauSeq ℂ (‖·‖) :=
 
 /-- The complex exponential function, defined via its Taylor series -/
 @[pp_nodot]
-def exp (z : ℂ) : ℂ :=
+irreducible_def exp (z : ℂ) : ℂ :=
   CauSeq.lim (exp' z)
 
 /-- scoped notation for the complex exponential function -/
@@ -70,7 +76,7 @@ open Complex
 noncomputable section
 
 /-- The real exponential function, defined as the real part of the complex exponential -/
-@[pp_nodot]
+@[pp_nodot, wikidata Q168698]
 nonrec def exp (x : ℝ) : ℝ :=
   (exp x).re
 
@@ -89,7 +95,7 @@ variable (x y : ℂ)
 theorem exp_zero : exp 0 = 1 := by
   rw [exp]
   refine lim_eq_of_equiv_const fun ε ε0 => ⟨1, fun j hj => ?_⟩
-  convert (config := .unfoldSameFun) ε0 -- ε0 : ε > 0 but goal is _ < ε
+  convert ε0.lt
   rcases j with - | j
   · exact absurd hj (not_le_of_gt zero_lt_one)
   · dsimp [exp']
@@ -139,7 +145,12 @@ theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℂ) :
   map_prod (M := Multiplicative ℂ) expMonoidHom f s
 
 lemma exp_nsmul (x : ℂ) (n : ℕ) : exp (n • x) = exp x ^ n :=
-  @MonoidHom.map_pow (Multiplicative ℂ) ℂ _ _  expMonoidHom _ _
+  @MonoidHom.map_pow (Multiplicative ℂ) ℂ _ _ expMonoidHom _ _
+
+/-- This is a useful version of `exp_nsmul` for q-expansions of modular forms. -/
+lemma exp_nsmul' (x a p : ℂ) (n : ℕ) : exp (a * n * x / p) = exp (a * x / p) ^ n := by
+  rw [← Complex.exp_nsmul]
+  ring_nf
 
 theorem exp_nat_mul (x : ℂ) : ∀ n : ℕ, exp (n * x) = exp x ^ n
   | 0 => by rw [Nat.cast_zero, zero_mul, exp_zero, pow_zero]
@@ -162,7 +173,7 @@ theorem exp_int_mul (z : ℂ) (n : ℤ) : Complex.exp (n * z) = Complex.exp z ^ 
 
 @[simp]
 theorem exp_conj : exp (conj x) = conj (exp x) := by
-  dsimp [exp]
+  simp only [exp]
   rw [← lim_conj]
   refine congr_arg CauSeq.lim (CauSeq.ext fun _ => ?_)
   dsimp [exp', Function.comp_def, cauSeqConj]
@@ -215,7 +226,7 @@ theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
   map_prod (M := Multiplicative ℝ) expMonoidHom f s
 
 lemma exp_nsmul (x : ℝ) (n : ℕ) : exp (n • x) = exp x ^ n :=
-  @MonoidHom.map_pow (Multiplicative ℝ) ℝ _ _  expMonoidHom _ _
+  @MonoidHom.map_pow (Multiplicative ℝ) ℝ _ _ expMonoidHom _ _
 
 nonrec theorem exp_nat_mul (x : ℝ) (n : ℕ) : exp (n * x) = exp x ^ n :=
   ofReal_injective (by simp [exp_nat_mul])
@@ -283,20 +294,17 @@ theorem abs_exp (x : ℝ) : |exp x| = exp x :=
 lemma exp_abs_le (x : ℝ) : exp |x| ≤ exp x + exp (-x) := by
   cases le_total x 0 <;> simp [abs_of_nonpos, abs_of_nonneg, exp_nonneg, *]
 
-@[mono]
+@[mono, gcongr]
 theorem exp_strictMono : StrictMono exp := fun x y h => by
   rw [← sub_add_cancel y x, Real.exp_add]
   exact (lt_mul_iff_one_lt_left (exp_pos _)).2
       (lt_of_lt_of_le (by linarith) (add_one_le_exp_of_nonneg (by linarith)))
 
-@[gcongr]
-theorem exp_lt_exp_of_lt {x y : ℝ} (h : x < y) : exp x < exp y := exp_strictMono h
-
-@[mono]
+@[gcongr, mono]
 theorem exp_monotone : Monotone exp :=
   exp_strictMono.monotone
 
-@[gcongr, bound]
+@[bound] -- temporary lemma for the `bound` tactic
 theorem exp_le_exp_of_le {x y : ℝ} (h : x ≤ y) : exp x ≤ exp y := exp_monotone h
 
 @[simp]
@@ -444,6 +452,13 @@ theorem norm_exp_sub_one_sub_id_le {x : ℂ} (hx : ‖x‖ ≤ 1) : ‖exp x - 1
     _ ≤ ‖x‖ ^ 2 * 1 := by gcongr; norm_num [Nat.factorial]
     _ = ‖x‖ ^ 2 := by rw [mul_one]
 
+theorem _root_.Real.norm_exp_sub_one_sub_id_le {x : ℝ} (hx : ‖x‖ ≤ 1) :
+    ‖Real.exp x - 1 - x‖ ≤ ‖x‖ ^ 2 := calc
+  _ = ‖((Real.exp x - 1 - x) : ℂ)‖ := by exact_mod_cast Complex.norm_real _
+  _ = ‖Complex.exp x - 1 - (x : ℂ)‖ := by simp
+  _ ≤ ‖(x : ℂ)‖ ^ 2 := Complex.norm_exp_sub_one_sub_id_le (by exact_mod_cast hx)
+  _ = ‖x‖ ^ 2 := by simp
+
 lemma norm_exp_sub_sum_le_exp_norm_sub_sum (x : ℂ) (n : ℕ) :
     ‖exp x - ∑ m ∈ range n, x ^ m / m.factorial‖
       ≤ Real.exp ‖x‖ - ∑ m ∈ range n, ‖x‖ ^ m / m.factorial := by
@@ -462,45 +477,30 @@ lemma norm_exp_sub_sum_le_exp_norm_sub_sum (x : ℂ) (n : ℕ) :
     exact Real.sum_le_exp_of_nonneg (norm_nonneg _) _
 
 lemma norm_exp_le_exp_norm (x : ℂ) : ‖exp x‖ ≤ Real.exp ‖x‖ := by
-  convert norm_exp_sub_sum_le_exp_norm_sub_sum x 0 using 1 <;> simp
+  convert norm_exp_sub_sum_le_exp_norm_sub_sum x 0 <;> simp
 
 lemma norm_exp_sub_sum_le_norm_mul_exp (x : ℂ) (n : ℕ) :
     ‖exp x - ∑ m ∈ range n, x ^ m / m.factorial‖ ≤ ‖x‖ ^ n * Real.exp ‖x‖ := by
   rw [← CauSeq.lim_const (abv := norm) (∑ m ∈ range n, _), Complex.exp, sub_eq_add_neg,
     ← CauSeq.lim_neg, CauSeq.lim_add, ← lim_norm]
   refine CauSeq.lim_le (CauSeq.le_of_exists ⟨n, fun j hj => ?_⟩)
-  simp_rw [← sub_eq_add_neg]
   change ‖(∑ m ∈ range j, x ^ m / m.factorial) - ∑ m ∈ range n, x ^ m / m.factorial‖ ≤ _
-  rw [sum_range_sub_sum_range hj]
+  rw [← sum_Ico_eq_sub _ hj]
   calc
-    ‖∑ m ∈ range j with n ≤ m, (x ^ m / m.factorial : ℂ)‖
-      = ‖∑ m ∈ range j with n ≤ m, (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)‖ := by
+    ‖∑ m ∈ Ico n j, (x ^ m / m.factorial : ℂ)‖
+      = ‖∑ m ∈ Ico n j, (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)‖ := by
       refine congr_arg norm (sum_congr rfl fun m hm => ?_)
-      rw [mem_filter, mem_range] at hm
-      rw [← mul_div_assoc, ← pow_add, add_tsub_cancel_of_le hm.2]
-    _ ≤ ∑ m ∈ range j with n ≤ m, ‖x ^ n * (x ^ (m - n) / m.factorial)‖ :=
+      rw [mem_Ico] at hm
+      rw [← mul_div_assoc, ← pow_add, add_tsub_cancel_of_le hm.1]
+    _ ≤ ∑ m ∈ Ico n j, ‖x ^ n * (x ^ (m - n) / m.factorial)‖ :=
       IsAbsoluteValue.abv_sum norm ..
-    _ ≤ ∑ m ∈ range j with n ≤ m, ‖x‖ ^ n * (‖x‖ ^ (m - n) / (m - n).factorial) := by
+    _ ≤ ∑ m ∈ Ico n j, ‖x‖ ^ n * (‖x‖ ^ (m - n) / (m - n).factorial) := by
       simp_rw [Complex.norm_mul, Complex.norm_pow, Complex.norm_div, norm_natCast]
       gcongr with i hi
       · rw [Complex.norm_pow]
       · simp
-    _ = ‖x‖ ^ n * ∑ m ∈ range j with n ≤ m, (‖x‖ ^ (m - n) / (m - n).factorial) := by
-      rw [← mul_sum]
     _ = ‖x‖ ^ n * ∑ m ∈ range (j - n), (‖x‖ ^ m / m.factorial) := by
-      congr 1
-      refine (sum_bij (fun m hm ↦ m + n) ?_ ?_ ?_ ?_).symm
-      · grind
-      · intro a ha b hb hab
-        simpa using hab
-      · intro b hb
-        simp only [mem_range, exists_prop]
-        simp only [mem_filter, mem_range] at hb
-        refine ⟨b - n, ?_, ?_⟩
-        · rw [tsub_lt_tsub_iff_right hb.2]
-          exact hb.1
-        · rw [tsub_add_cancel_of_le hb.2]
-      · simp
+      simp [← mul_sum, sum_Ico_eq_sum_range]
     _ ≤ ‖x‖ ^ n * Real.exp ‖x‖ := by
       gcongr
       refine Real.sum_le_exp_of_nonneg ?_ _
@@ -515,7 +515,7 @@ open Complex Finset
 nonrec theorem exp_bound {x : ℝ} (hx : |x| ≤ 1) {n : ℕ} (hn : 0 < n) :
     |exp x - ∑ m ∈ range n, x ^ m / m.factorial| ≤ |x| ^ n * (n.succ / (n.factorial * n)) := by
   have hxc : ‖(x : ℂ)‖ ≤ 1 := mod_cast hx
-  convert exp_bound hxc hn using 2 <;>
+  convert exp_bound hxc hn <;>
   norm_cast
 
 theorem exp_bound' {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) {n : ℕ} (hn : 0 < n) :
@@ -561,18 +561,19 @@ theorem expNear_sub (n x r₁ r₂) : expNear n x r₁ -
 theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) :
     |exp x - expNear m x 0| ≤ |x| ^ m / m.factorial * ((m + 1) / m) := by
   simp only [expNear, mul_zero, add_zero]
-  convert exp_bound (n := m) h ?_ using 1
+  convert! exp_bound (n := m) h ?_ using 1
   · simp [field]
-  · omega
+  · lia
 
 theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a₂ b₂ : ℝ)
     (e : |1 + x / m * a₂ - a₁| ≤ b₁ - |x| / m * b₂)
     (h : |exp x - expNear m x a₂| ≤ |x| ^ m / m.factorial * b₂) :
     |exp x - expNear n x a₁| ≤ |x| ^ n / n.factorial * b₁ := by
-  refine (abs_sub_le _ _ _).trans ((add_le_add_right h _).trans ?_)
+  grw [abs_sub_le, h]
   subst e₁; rw [expNear_succ, expNear_sub, abs_mul]
-  convert mul_le_mul_of_nonneg_left (a := |x| ^ n / ↑(Nat.factorial n))
-      (le_sub_iff_add_le'.1 e) ?_ using 1
+  convert!
+    mul_le_mul_of_nonneg_left (a := |x| ^ n / ↑(Nat.factorial n)) (le_sub_iff_add_le'.1 e) ?_
+      using 1
   · simp [mul_add, pow_succ', div_eq_mul_inv, abs_mul, abs_inv, Nat.factorial]
     ac_rfl
   · simp [div_nonneg, abs_nonneg]
@@ -588,7 +589,8 @@ theorem exp_1_approx_succ_eq {n} {a₁ b₁ : ℝ} {m : ℕ} (en : n + 1 = m) {r
     |exp 1 - expNear n 1 a₁| ≤ |1| ^ n / n.factorial * b₁ := by
   subst er
   refine exp_approx_succ _ en _ _ ?_ h
-  field_simp [show (m : ℝ) ≠ 0 by norm_cast; omega]
+  simp
+  field_simp [show (m : ℝ) ≠ 0 by norm_cast; lia]
   simp
 
 theorem exp_approx_start (x a b : ℝ) (h : |exp x - expNear 0 x a| ≤ |x| ^ 0 / Nat.factorial 0 * b) :
@@ -648,11 +650,40 @@ theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t 
       · exact one_sub_le_exp_neg _
     _ = rexp (-t) := by rw [← Real.exp_nat_mul, mul_neg, mul_comm, div_mul_cancel₀]; positivity
 
+lemma one_add_inv_pow_le_exp {n : ℕ} : (1 + (n : ℝ)⁻¹) ^ n ≤ exp 1 := by
+  convert one_sub_div_pow_le_exp_neg (n := n) (t := -1) (by grind) using 1
+  · field
+  · simp
+
 lemma le_inv_mul_exp (x : ℝ) {c : ℝ} (hc : 0 < c) : x ≤ c⁻¹ * exp (c * x) := by
   rw [le_inv_mul_iff₀ hc]
   calc c * x
   _ ≤ c * x + 1 := le_add_of_nonneg_right zero_le_one
   _ ≤ _ := Real.add_one_le_exp (c * x)
+
+lemma exp_lt_two_add_div_two_sub {x : ℝ} (hx : 0 < x) (hx' : x < 2) :
+    exp x < (2 + x) / (2 - x) := by calc
+  _ = exp (x / 2) ^ 2 := by grind [Real.exp_nat_mul (x / 2) 2]
+  _ ≤ _ := by
+    grw [Real.exp_bound' (x := x / 2) (by grind) (by grind) (n := 3) (by simp)]
+    apply Real.exp_nonneg
+  _ < (2 + x) / (2 - x) := by
+    rw [lt_div_iff₀ (by linarith), ← sub_pos]
+    simp only [Finset.sum_range_succ]
+    ring_nf
+    positivity
+
+lemma exp_le_two_add_div_two_sub {x : ℝ} (hx : 0 ≤ x) (hx' : x < 2) :
+    exp x ≤ (2 + x) / (2 - x) := by
+  obtain rfl | hx₀ := hx.eq_or_lt
+  · simp
+  · exact (exp_lt_two_add_div_two_sub hx₀ hx').le
+
+theorem prod_one_add_le_exp_sum {ι : Type*} (s : Finset ι) {f : ι → ℝ}
+    (hf : ∀ i, 0 ≤ f i) : ∏ i ∈ s, (1 + f i) ≤ exp (∑ i ∈ s, f i) :=
+  (Finset.prod_le_prod (fun i _ ↦ add_nonneg zero_le_one (hf i))
+    fun i _ ↦ (add_comm 1 (f i)).le.trans (add_one_le_exp _)).trans
+    (exp_sum s f).symm.le
 
 end Real
 
@@ -661,7 +692,8 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `Real.exp` is always positive. -/
 @[positivity Real.exp _]
-def evalExp : PositivityExt where eval {u α} _ _ e := do
+meta def evalExp : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.exp $a) =>
     assertInstancesCommute

@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.Hom.Monoid
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Canonical
+public import Mathlib.Algebra.Order.Hom.Monoid
 
 /-!
 # Ordered monoid and group homomorphisms
@@ -27,6 +29,8 @@ This file defines morphisms between (additive) ordered monoids with zero.
 
 monoid with zero
 -/
+
+@[expose] public section
 
 
 open Function
@@ -60,11 +64,15 @@ variable [FunLike F α β]
 /-- Turn an element of a type `F`
 satisfying `OrderHomClass F α β` and `MonoidWithZeroHomClass F α β`
 into an actual `OrderMonoidWithZeroHom`.
-This is declared as the default coercion from `F` to `α →+*₀o β`. -/
+This is declared as the default coercion from `F` to `α →+*₀o β`.
+TODO: Following [#mathlib4 > Mathlib's morphism hierarchy]
+(https://leanprover.zulipchat.com/#narrow/channel/287929-
+mathlib4/topic/Mathlib.27s.20morphism.20hierarchy/with/554383157),
+rename this to `OrderMonoidWithZeroHom.ofClass` and remove `@[coe]` tag. -/
 @[coe]
 def OrderMonoidWithZeroHomClass.toOrderMonoidWithZeroHom [OrderHomClass F α β]
     [MonoidWithZeroHomClass F α β] (f : F) : α →*₀o β :=
-{ (f : α →*₀ β) with monotone' := OrderHomClass.monotone f }
+{ (.ofClass f : α →*₀ β) with monotone' := OrderHomClass.monotone f }
 
 end
 
@@ -84,7 +92,7 @@ variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [MulZeroOneClas
 
 instance : FunLike (α →*₀o β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := g
     congr
@@ -112,14 +120,14 @@ theorem coe_mk (f : α →*₀ β) (h) : (OrderMonoidWithZeroHom.mk f h : α →
   rfl
 
 @[simp]
-theorem mk_coe (f : α →*₀o β) (h) : OrderMonoidWithZeroHom.mk (f : α →*₀ β) h = f := rfl
+theorem mk_coe (f : α →*₀o β) (h) : OrderMonoidWithZeroHom.mk (.ofClass f) h = f := rfl
 
 /-- Reinterpret an ordered monoid with zero homomorphism as an order monoid homomorphism. -/
 def toOrderMonoidHom (f : α →*₀o β) : α →*o β :=
   { f with }
 
 @[simp]
-theorem coe_monoidWithZeroHom (f : α →*₀o β) : ⇑(f : α →*₀ β) = f :=
+theorem coe_monoidWithZeroHom (f : α →*₀o β) : ⇑(.ofClass f : α →*₀ β) = f :=
   rfl
 
 @[simp]
@@ -127,10 +135,10 @@ theorem coe_orderMonoidHom (f : α →*₀o β) : ⇑(f : α →*o β) = f :=
   rfl
 
 theorem toOrderMonoidHom_injective : Injective (toOrderMonoidHom : _ → α →*o β) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h using 0
+  ext <| by convert! DFunLike.ext_iff.1 h using 0
 
 theorem toMonoidWithZeroHom_injective : Injective (toMonoidWithZeroHom : _ → α →*₀ β) :=
-  fun f g h => ext <| by convert DFunLike.ext_iff.1 h using 0
+  fun f g h => ext <| by convert! DFunLike.ext_iff.1 h using 0
 
 /-- Copy of an `OrderMonoidWithZeroHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
@@ -161,7 +169,7 @@ variable {α}
 
 /-- Composition of `OrderMonoidWithZeroHom`s as an `OrderMonoidWithZeroHom`. -/
 def comp (f : β →*₀o γ) (g : α →*₀o β) : α →*₀o γ :=
-  { f.toMonoidWithZeroHom.comp (g : α →*₀ β), f.toOrderMonoidHom.comp (g : α →*o β) with }
+  { (.ofClass f : β →*₀ γ).comp (.ofClass g), f.toOrderMonoidHom.comp (g : α →*o β) with }
 
 @[simp]
 theorem coe_comp (f : β →*₀o γ) (g : α →*₀o β) : (f.comp g : α → γ) = f ∘ g :=
@@ -171,8 +179,8 @@ theorem coe_comp (f : β →*₀o γ) (g : α →*₀o β) : (f.comp g : α → 
 theorem comp_apply (f : β →*₀o γ) (g : α →*₀o β) (a : α) : (f.comp g) a = f (g a) :=
   rfl
 
-theorem coe_comp_monoidWithZeroHom (f : β →*₀o γ) (g : α →*₀o β) :
-    (f.comp g : α →*₀ γ) = (f : β →*₀ γ).comp g :=
+theorem ofClass_comp_monoidWithZeroHom (f : β →*₀o γ) (g : α →*₀o β) :
+    .ofClass (f.comp g) = (.ofClass f : β →*₀ γ).comp (.ofClass g) :=
   rfl
 
 theorem coe_comp_orderMonoidHom (f : β →*₀o γ) (g : α →*₀o β) :
@@ -210,7 +218,8 @@ variable [LinearOrderedCommMonoidWithZero α] [LinearOrderedCommMonoidWithZero �
 /-- For two ordered monoid morphisms `f` and `g`, their product is the ordered monoid morphism
 sending `a` to `f a * g a`. -/
 instance : Mul (α →*₀o β) :=
-  ⟨fun f g => { (f * g : α →*₀ β) with monotone' := f.monotone'.mul' g.monotone' }⟩
+  ⟨ fun f g => {(.ofClass f : α →*₀ β) * (.ofClass g : α →*₀ β) with
+      monotone' := f.monotone'.mul' g.monotone'} ⟩
 
 @[simp]
 theorem coe_mul (f g : α →*₀o β) : ⇑(f * g) = f * g :=
@@ -234,17 +243,17 @@ variable {hα : Preorder α} {hα' : MulZeroOneClass α} {hβ : Preorder β} {h�
   {hγ : Preorder γ} {hγ' : MulZeroOneClass γ}
 
 @[simp]
-theorem toMonoidWithZeroHom_eq_coe (f : α →*₀o β) : f.toMonoidWithZeroHom = f := by
+theorem toMonoidWithZeroHom_eq_ofClass (f : α →*₀o β) : f.toMonoidWithZeroHom = .ofClass f := by
   rfl
 
 @[simp]
-theorem toMonoidWithZeroHom_mk (f : α →*₀ β) (hf : Monotone f) :
-    ((OrderMonoidWithZeroHom.mk f hf) : α →*₀ β) = f := by
+theorem ofClass_mk (f : α →*₀ β) (hf : Monotone f) :
+    .ofClass (OrderMonoidWithZeroHom.mk f hf) = f := by
   rfl
 
 @[simp]
-lemma toMonoidWithZeroHom_coe (f : β →*₀o γ) (g : α →*₀o β) :
-    (f.comp g : α →*₀ γ) = (f : β →*₀ γ).comp g :=
+lemma ofClass_comp (f : β →*₀o γ) (g : α →*₀o β) :
+    .ofClass (f.comp g) = (.ofClass f : β →*₀ γ).comp (.ofClass g) :=
   rfl
 
 @[simp]
@@ -261,7 +270,7 @@ end LinearOrderedCommMonoidWithZero
 end OrderMonoidWithZeroHom
 
 /-- Any ordered group is isomorphic to the units of itself adjoined with `0`. -/
-@[simps!]
+@[simps! -isSimp]
 def OrderMonoidIso.unitsWithZero {α : Type*} [Group α] [Preorder α] : (WithZero α)ˣ ≃*o α where
   toMulEquiv := WithZero.unitsWithZeroEquiv
   map_le_map_iff' {a b} := by simp [WithZero.unitsWithZeroEquiv]

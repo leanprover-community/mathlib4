@@ -3,7 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.MvPolynomial.Rename
+module
+
+public import Mathlib.Algebra.MvPolynomial.Rename
 
 /-!
 # `comap` operation on `MvPolynomial`
@@ -22,6 +24,8 @@ As in other polynomial files, we typically use the notation:
 + `R : Type*` `[CommSemiring R]` (the coefficients)
 
 -/
+
+@[expose] public section
 
 
 namespace MvPolynomial
@@ -74,7 +78,7 @@ theorem comap_comp (f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R)
 
 theorem comap_eq_id_of_eq_id (f : MvPolynomial σ R →ₐ[R] MvPolynomial σ R) (hf : ∀ φ, f φ = φ)
     (x : σ → R) : comap f x = x := by
-  convert comap_id_apply x
+  convert! comap_id_apply x
   ext1 φ
   simp [hf, AlgHom.id_apply]
 

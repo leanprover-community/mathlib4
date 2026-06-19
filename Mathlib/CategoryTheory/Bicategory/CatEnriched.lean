@@ -3,26 +3,28 @@ Copyright (c) 2025 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl
 -/
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
-import Mathlib.CategoryTheory.Enriched.Basic
-import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
+public import Mathlib.CategoryTheory.Enriched.Basic
+public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 
 /-!
 # The strict bicategory associated to a Cat-enriched category
 
-If `C` is a type with a `EnrichedCategory Cat C` structure, then it has hom-categories, whose
+If `C` is a type with an `EnrichedCategory Cat C` structure, then it has hom-categories, whose
 objects define 1-dimensional arrows on `C` and whose morphisms define 2-dimensional arrows between
 these. The enriched category axioms equip this data with the structure of a strict bicategory.
 
-We define a type alias `CatEnriched C` for a type `C` with a `EnrichedCategory Cat C` structure. We
+We define a type alias `CatEnriched C` for a type `C` with an `EnrichedCategory Cat C` structure. We
 provide this with an instance of a strict bicategory structure constructing
 `Bicategory.Strict (CatEnriched C)`.
 
-If `C` is a type with a `EnrichedOrdinaryCategory Cat C` structure, then it has an `Enrichred Cat C`
-structure, so the previous construction would again produce a strict bicategory. However, in this
-setting `C` is also given a `Category C` structure, together with an equivalence between this
-category and the underlying category of the `Enriched Cat C`, and in examples the given category
-structure is the preferred one.
+If `C` is a type with an `EnrichedOrdinaryCategory Cat C` structure, then it has an
+`EnrichedCategory Cat C` structure, so the previous construction would again produce a strict
+bicategory. However, in this setting `C` is also given a `Category C` structure, together with an
+equivalence between this category and the underlying category of the `EnrichedCategory Cat C`, and
+in examples the given category structure is the preferred one.
 
 Thus, we define a type alias `CatEnrichedOrdinary C` for a type `C` with an
 `EnrichedOrdinaryCategory Cat C` structure. We provide this with an instance of a strict bicategory
@@ -30,6 +32,8 @@ structure extending the category structure provided by the given instance `Categ
 `Bicategory.Strict (CatEnrichedOrdinary C)`.
 
 -/
+
+@[expose] public section
 
 universe u v u' v'
 namespace CategoryTheory
@@ -47,24 +51,24 @@ namespace CatEnriched
 instance : EnrichedCategory Cat (CatEnriched C) := inferInstanceAs (EnrichedCategory Cat C)
 
 /-- Any enriched category has an underlying category structure defined by `ForgetEnrichment`.
-This is equivalent but not definitionally equal the category structure constructed here, which is
+This is equivalent but not definitionally equal to the category structure constructed here, which is
 more canonically associated to the data of an `EnrichedCategory Cat` structure. -/
 instance : CategoryStruct (CatEnriched C) where
   Hom X Y := X ⟶[Cat] Y
-  id X := (eId Cat X).obj ⟨⟨()⟩⟩
-  comp {X Y Z} f g := (eComp Cat X Y Z).obj (f, g)
+  id X := (eId Cat X).toFunctor.obj ⟨⟨()⟩⟩
+  comp {X Y Z} f g := (eComp Cat X Y Z).toFunctor.obj (f, g)
 
-theorem id_eq (X : CatEnriched C) : 𝟙 X = (eId Cat X).obj ⟨⟨()⟩⟩ := rfl
+theorem id_eq (X : CatEnriched C) : 𝟙 X = (eId Cat X).toFunctor.obj ⟨⟨()⟩⟩ := rfl
 
 theorem comp_eq {X Y Z : CatEnriched C} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    f ≫ g = (eComp Cat X Y Z).obj (f, g) := rfl
+    f ≫ g = (eComp Cat X Y Z).toFunctor.obj (f, g) := rfl
 
 instance {X Y : CatEnriched C} : Category (X ⟶ Y) := inferInstanceAs (Category (X ⟶[Cat] Y).α)
 
 /-- The horizontal composition on 2-morphisms is defined using the action on arrows of the
 composition bifunctor from the enriched category structure. -/
 def hComp {a b c : CatEnriched C} {f f' : a ⟶ b} {g g' : b ⟶ c}
-    (η : f ⟶ f') (θ : g ⟶ g') : f ≫ g ⟶ f' ≫ g' := (eComp Cat a b c).map (η, θ)
+    (η : f ⟶ f') (θ : g ⟶ g') : f ≫ g ⟶ f' ≫ g' := (eComp Cat a b c).toFunctor.map (η, θ)
 
 @[simp]
 theorem id_hComp_id {a b c : CatEnriched C} (f : a ⟶ b) (g : b ⟶ c) :
@@ -80,25 +84,27 @@ theorem eqToHom_hComp_eqToHom {a b c : CatEnriched C}
 theorem hComp_comp {a b c : CatEnriched C} {f₁ f₂ f₃ : a ⟶ b} {g₁ g₂ g₃ : b ⟶ c}
     (η : f₁ ⟶ f₂) (η' : f₂ ⟶ f₃) (θ : g₁ ⟶ g₂) (θ' : g₂ ⟶ g₃) :
     hComp η θ ≫ hComp η' θ' = hComp (η ≫ η') (θ ≫ θ') :=
-  ((eComp Cat a b c).map_comp (Y := (_, _)) (_, _) (_, _)).symm
+  ((eComp Cat a b c).toFunctor.map_comp (Y := (_, _)) (_, _) (_, _)).symm
 
 /-- The action on objects of the `EnrichedCategory Cat` coherences proves the category axioms. -/
 instance : Category (CatEnriched C) where
-  id_comp {X Y} f := congrArg (·.obj f) (e_id_comp (V := Cat) X Y)
-  comp_id {X Y} f := congrArg (·.obj f) (e_comp_id (V := Cat) X Y)
-  assoc {X Y Z W} f g h := congrArg (·.obj (f, g, h)) (e_assoc (V := Cat) X Y Z W)
+  id_comp {X Y} f := congrArg (·.toFunctor.obj f) (e_id_comp (V := Cat) X Y)
+  comp_id {X Y} f := congrArg (·.toFunctor.obj f) (e_comp_id (V := Cat) X Y)
+  assoc {X Y Z W} f g h := congrArg (·.toFunctor.obj (f, g, h)) (e_assoc (V := Cat) X Y Z W)
 
 /-- The category instance on `CatEnriched C` promotes it to a `Cat` enriched ordinary
 category. -/
 instance : EnrichedOrdinaryCategory Cat (CatEnriched C) where
-  homEquiv := Cat.fromChosenTerminalEquiv.symm
-  homEquiv_comp _ _ := (Equiv.symm_apply_eq Cat.fromChosenTerminalEquiv).mpr rfl
-  homEquiv_id _ := (Equiv.symm_apply_eq Cat.fromChosenTerminalEquiv).mpr rfl
+  homEquiv := ((Cat.Hom.equivFunctor _ _).trans Cat.fromChosenTerminalEquiv).symm
+  homEquiv_comp _ _ :=
+    ((Cat.Hom.equivFunctor _ _).trans Cat.fromChosenTerminalEquiv).symm_apply_eq.mpr rfl
+  homEquiv_id _ :=
+    ((Cat.Hom.equivFunctor _ _).trans Cat.fromChosenTerminalEquiv).symm_apply_eq.mpr rfl
 
 theorem id_hComp_heq {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
     HEq (hComp (𝟙 (𝟙 a)) η) η := by
   rw [id_eq, ← Functor.map_id]
-  exact congr_arg_heq (·.map η) (e_id_comp (V := Cat) a b)
+  exact congr_arg_heq (·.toFunctor.map η) (e_id_comp (V := Cat) a b)
 
 theorem id_hComp {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
     hComp (𝟙 (𝟙 a)) η = eqToHom (id_comp f) ≫ η ≫ eqToHom (id_comp f').symm := by
@@ -107,7 +113,7 @@ theorem id_hComp {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
 theorem hComp_id_heq {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
     HEq (hComp η (𝟙 (𝟙 b))) η := by
   rw [id_eq, ← Functor.map_id]
-  exact congr_arg_heq (·.map η) (e_comp_id (V := Cat) a b)
+  exact congr_arg_heq (·.toFunctor.map η) (e_comp_id (V := Cat) a b)
 
 theorem hComp_id {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
     hComp η (𝟙 (𝟙 b)) = eqToHom (comp_id f) ≫ η ≫ eqToHom (comp_id f').symm := by
@@ -116,7 +122,8 @@ theorem hComp_id {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
 theorem hComp_assoc_heq {a b c d : CatEnriched C} {f f' : a ⟶ b} {g g' : b ⟶ c} {h h' : c ⟶ d}
     (η : f ⟶ f') (θ : g ⟶ g') (κ : h ⟶ h') :
     HEq (hComp (hComp η θ) κ) (hComp η (hComp θ κ)) :=
-  congr_arg_heq (·.map (X := (_, _, _)) (Y := (_, _, _)) (η, θ, κ)) (e_assoc (V := Cat) a b c d)
+  congr_arg_heq (·.toFunctor.map (X := (_, _, _)) (Y := (_, _, _)) (η, θ, κ))
+    (e_assoc (V := Cat) a b c d)
 
 theorem hComp_assoc {a b c d : CatEnriched C} {f f' : a ⟶ b} {g g' : b ⟶ c} {h h' : c ⟶ d}
     (η : f ⟶ f') (θ : g ⟶ g') (κ : h ⟶ h') :
@@ -176,7 +183,7 @@ def toBase (a : CatEnrichedOrdinary C) : CatEnriched C := a
 /-- The hom-types in a `Cat`-enriched ordinary category are equivalent to the types underlying the
 hom-categories. -/
 def homEquiv {a b : CatEnrichedOrdinary C} : (a ⟶ b) ≃ (a.toBase ⟶ b.toBase) :=
-  (eHomEquiv (V := Cat)).trans Cat.fromChosenTerminalEquiv
+  (eHomEquiv (V := Cat)).trans (Equiv.trans (Cat.Hom.equivFunctor _ _) Cat.fromChosenTerminalEquiv)
 
 theorem homEquiv_id {a : CatEnrichedOrdinary C} : homEquiv (𝟙 a) = 𝟙 a.toBase := by
   unfold homEquiv
@@ -289,7 +296,7 @@ theorem hComp_id {a b : CatEnrichedOrdinary C} {f f' : a ⟶ b} (η : f ⟶ f') 
 theorem hComp_id_heq {a b : CatEnrichedOrdinary C} {f f' : a ⟶ b} (η : f ⟶ f') :
     HEq (hComp η (𝟙 (𝟙 b))) η := by simp [hComp_id]
 
-theorem id_eq_eqToHom {C} [Category C] (X : C) : 𝟙 X = eqToHom rfl := rfl
+theorem id_eq_eqToHom {C} [Category* C] (X : C) : 𝟙 X = eqToHom rfl := rfl
 
 theorem hComp_assoc {a b c d : CatEnrichedOrdinary C} {f f' : a ⟶ b} {g g' : b ⟶ c} {h h' : c ⟶ d}
     (η : f ⟶ f') (θ : g ⟶ g') (κ : h ⟶ h') :
@@ -299,8 +306,8 @@ theorem hComp_assoc {a b c d : CatEnrichedOrdinary C} {f f' : a ⟶ b} {g g' : b
   simp only [hComp, base_mk, Hom.base_comp, Hom.base_eqToHom,
     ← heq_eq_eq, heq_eqToHom_comp_iff, heq_comp_eqToHom_iff,
     eqToHom_comp_heq_iff, comp_eqToHom_heq_iff]
-  conv => enter [1,2]; exact ((id_comp _).trans (comp_id _)).symm
-  conv => enter [2,1]; exact ((id_comp _).trans (comp_id _)).symm
+  conv => enter [1, 2]; exact ((id_comp _).trans (comp_id _)).symm
+  conv => enter [2, 1]; exact ((id_comp _).trans (comp_id _)).symm
   iterate 4 rw [← CatEnriched.hComp_comp, id_eq_eqToHom, CatEnriched.eqToHom_hComp_eqToHom]
   simp [CatEnriched.hComp_assoc_heq]
 

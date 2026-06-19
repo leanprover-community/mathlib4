@@ -3,9 +3,11 @@ Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Eval.Subring
-import Mathlib.Algebra.Polynomial.Monic
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Eval.Subring
+public import Mathlib.Algebra.Polynomial.Monic
 
 /-!
 # Polynomials that lift
@@ -31,13 +33,15 @@ and that a monic polynomial that lifts can be lifted to a monic polynomial (of t
 
 ## Implementation details
 
-In general `R` and `S` are semiring, so `lifts` is a semiring. In the case of rings, see
-`lifts_iff_lifts_ring`.
+In general `R` and `S` are semirings, so `lifts` is a semiring. In the case of rings, see
+`lifts_iff_liftsRing`.
 
 Since we do not assume `R` to be commutative, we cannot say in general that the set of polynomials
 that lift is a subalgebra. (By `lift_iff` this is true if `R` is commutative.)
 
 -/
+
+@[expose] public section
 
 
 open Polynomial
@@ -79,7 +83,10 @@ theorem lifts_iff_coeffs_subset_range (p : S[X]) :
   · intro h n
     by_cases hn : p.coeff n = 0
     · exact ⟨0, by simp [hn]⟩
-    · exact h <| coeff_mem_coeffs _ _ hn
+    · exact h <| coeff_mem_coeffs hn
+
+theorem mem_lifts_of_surjective (hf : Function.Surjective f) (p : S[X]) : p ∈ lifts f :=
+  (lifts_iff_coeff_lifts p).mpr fun n ↦ hf (p.coeff n)
 
 /-- If `(r : R)`, then `C (f r)` lifts. -/
 theorem C_mem_lifts (f : R →+* S) (r : R) : C (f r) ∈ lifts f :=
@@ -121,7 +128,7 @@ theorem erase_mem_lifts {p : S[X]} (n : ℕ) (h : p ∈ lifts f) : p.erase n ∈
   intro k
   by_cases hk : k = n
   · use 0
-    simp only [hk, RingHom.map_zero, erase_same]
+    simp only [hk, map_zero, erase_same]
   obtain ⟨i, hi⟩ := h k
   use i
   simp only [hi, hk, erase_ne, Ne, not_false_iff]
@@ -137,19 +144,32 @@ theorem monomial_mem_lifts_and_degree_eq {s : S} {n : ℕ} (hl : monomial n s �
   rw [degree_monomial, degree_monomial n h]
   exact mt (fun ha ↦ ha ▸ map_zero f) h
 
-/-- A polynomial lifts if and only if it can be lifted to a polynomial of the same degree. -/
-theorem mem_lifts_and_degree_eq {p : S[X]} (hlifts : p ∈ lifts f) :
-    ∃ q : R[X], map f q = p ∧ q.degree = p.degree := by
+/-- A polynomial that lifts can be lifted to a polynomial of the same support. -/
+theorem exists_support_eq_of_mem_lifts {p : S[X]} (hlifts : p ∈ lifts f) :
+    ∃ q : R[X], map f q = p ∧ q.support = p.support := by
   rw [lifts_iff_coeff_lifts] at hlifts
   let g : ℕ → R := fun k ↦ (hlifts k).choose
   have hg : ∀ k, f (g k) = p.coeff k := fun k ↦ (hlifts k).choose_spec
   let q : R[X] := ∑ k ∈ p.support, monomial k (g k)
   have hq : map f q = p := by simp_rw [q, Polynomial.map_sum, map_monomial, hg, ← as_sum_support]
   have hq' : q.support = p.support := by
-    simp_rw [Finset.ext_iff, mem_support_iff, q, finset_sum_coeff, coeff_monomial,
+    simp_rw [Finset.ext_iff, mem_support_iff, q, finsetSum_coeff, coeff_monomial,
       Finset.sum_ite_eq', ite_ne_right_iff, mem_support_iff, and_iff_left_iff_imp, not_imp_not]
     exact fun k h ↦ by rw [← hg, h, map_zero]
+  exact ⟨q, hq, hq'⟩
+
+/-- A polynomial lifts if and only if it can be lifted to a polynomial of the same degree. -/
+theorem exists_degree_eq_of_mem_lifts {p : S[X]} (hlifts : p ∈ lifts f) :
+    ∃ q : R[X], map f q = p ∧ q.degree = p.degree := by
+  obtain ⟨q, hq, hq'⟩ := exists_support_eq_of_mem_lifts hlifts
   exact ⟨q, hq, congrArg Finset.max hq'⟩
+
+theorem exists_natDegree_eq_of_mem_lifts {p : S[X]} (hlifts : p ∈ lifts f) :
+    ∃ q, map f q = p ∧ q.natDegree = p.natDegree :=
+  (exists_degree_eq_of_mem_lifts hlifts).imp fun _ ↦ And.imp_right natDegree_eq_of_degree_eq
+
+@[deprecated (since := "2026-02-11")]
+alias mem_lifts_and_degree_eq := exists_degree_eq_of_mem_lifts
 
 end LiftDeg
 

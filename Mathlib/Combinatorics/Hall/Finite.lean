@@ -3,9 +3,11 @@ Copyright (c) 2021 Alena Gusakov, Bhavik Mehta, Kyle Miller. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Data.Set.Finite.Basic
+module
+
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Hall's Marriage Theorem for finite index types
@@ -33,6 +35,8 @@ A description of this formalization is in [Gusakov2021].
 Hall's Marriage Theorem, indexed families
 -/
 
+public section
+
 
 open Finset
 
@@ -46,15 +50,16 @@ section Fintype
 
 variable [Fintype ι]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hall_cond_of_erase {x : ι} (a : α)
     (ha : ∀ s : Finset ι, s.Nonempty → s ≠ univ → #s < #(s.biUnion t))
     (s' : Finset { x' : ι | x' ≠ x }) : #s' ≤ #(s'.biUnion fun x' => (t x').erase a) := by
   haveI := Classical.decEq ι
   specialize ha (s'.image fun z => z.1)
   rw [image_nonempty, Finset.card_image_of_injective s' Subtype.coe_injective] at ha
-  by_cases he : s'.Nonempty
+  by_cases! he : s'.Nonempty
   · have ha' : #s' < #(s'.biUnion fun x => t x) := by
-      convert ha he fun h => by simpa [← h] using mem_univ x using 2
+      convert! ha he fun h => by simpa [← h] using mem_univ x using 2
       ext x
       simp only [mem_image, mem_biUnion, SetCoe.exists, exists_and_right,
         exists_eq_right]
@@ -64,8 +69,7 @@ theorem hall_cond_of_erase {x : ι} (a : α)
       exact Nat.le_sub_one_of_lt ha'
     · rw [erase_eq_of_notMem hb]
       exact Nat.le_of_lt ha'
-  · rw [nonempty_iff_ne_empty, not_not] at he
-    subst s'
+  · subst s'
     simp
 
 /-- First case of the inductive step: assuming that
@@ -122,7 +126,7 @@ theorem hall_cond_of_restrict {ι : Type u} {t : ι → Finset α} {s : Finset �
     #s' ≤ #(s'.biUnion fun a' => t a') := by
   classical
     rw [← card_image_of_injective s' Subtype.coe_injective]
-    convert ht (s'.image fun z => z.1) using 1
+    convert! ht (s'.image fun z => z.1) using 1
     apply congr_arg
     ext y
     simp
@@ -140,7 +144,7 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     simp [disj, card_image_of_injective _ Subtype.coe_injective, Nat.add_sub_cancel_left]
   rw [this, hus]
   refine (Nat.sub_le_sub_right (ht _) _).trans ?_
-  rw [← card_sdiff]
+  rw [← card_sdiff_of_subset]
   · gcongr
     intro t
     simp only [mem_biUnion, mem_sdiff, not_exists, mem_image, and_imp, mem_union,
@@ -220,10 +224,9 @@ theorem hall_hard_inductive (ht : ∀ s : Finset ι, #s ≤ #(s.biUnion t)) :
         ∃ f : ι' → α, Function.Injective f ∧ ∀ x, f x ∈ t' x := by
       intro ι' _ _ hι' ht'
       exact ih _ (Nat.lt_succ_of_le hι') ht' _ rfl
-    by_cases h : ∀ s : Finset ι, s.Nonempty → s ≠ univ → #s < #(s.biUnion t)
+    by_cases! h : ∀ s : Finset ι, s.Nonempty → s ≠ univ → #s < #(s.biUnion t)
     · refine hall_hard_inductive_step_A hn ht (@fun ι' => ih' ι') h
-    · push_neg at h
-      rcases h with ⟨s, sne, snu, sle⟩
+    · rcases h with ⟨s, sne, snu, sle⟩
       exact hall_hard_inductive_step_B hn ht (@fun ι' => ih' ι')
         s sne snu (Nat.le_antisymm (ht _) sle)
 

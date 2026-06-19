@@ -3,7 +3,9 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Dual
+module
+
+public import Mathlib.Combinatorics.Matroid.Dual
 
 /-!
 # Matroid Restriction
@@ -64,6 +66,8 @@ We define the restriction order `≤r` to give a `PartialOrder` instance on the 
 reserved for the more mathematically important 'minor' order; see `Matroid.IsMinor`.
 -/
 
+@[expose] public section
+
 assert_not_exists Field
 
 open Set
@@ -85,17 +89,17 @@ section restrict
     rw [isBasis'_iff_isBasis_inter_ground] at hIn hI'
     obtain ⟨B', hB', rfl⟩ := hI'.exists_isBase
     obtain ⟨B, hB, hIB, hBIB'⟩ := hI.exists_isBase_subset_union_isBase hB'
-    rw [hB'.inter_isBasis_iff_compl_inter_isBasis_dual, diff_inter_diff] at hI'
+    rw [hB'.inter_isBasis_iff_compl_inter_isBasis_dual, sdiff_inter_sdiff] at hI'
     have hss : M.E \ (B' ∪ (R ∩ M.E)) ⊆ M.E \ (B ∪ (R ∩ M.E)) := by
-      apply diff_subset_diff_right
+      apply sdiff_subset_sdiff_right
       rw [union_subset_iff, and_iff_left subset_union_right, union_comm]
       exact hBIB'.trans (union_subset_union_left _ (subset_inter hIY hI.subset_ground))
     have hi : M✶.Indep (M.E \ (B ∪ (R ∩ M.E))) := by
       rw [dual_indep_iff_exists]
       exact ⟨B, hB, disjoint_of_subset_right subset_union_left disjoint_sdiff_left⟩
     have h_eq := hI'.eq_of_subset_indep hi hss
-      (diff_subset_diff_right subset_union_right)
-    rw [h_eq, ← diff_inter_diff, ← hB.inter_isBasis_iff_compl_inter_isBasis_dual] at hI'
+      (sdiff_subset_sdiff_right subset_union_right)
+    rw [h_eq, ← sdiff_inter_sdiff, ← hB.inter_isBasis_iff_compl_inter_isBasis_dual] at hI'
     obtain ⟨J, hJ, hIJ⟩ := hI.subset_isBasis_of_subset
       (subset_inter hIB (subset_inter hIY hI.subset_ground))
     obtain rfl := hI'.indep.eq_of_isBasis hJ
@@ -118,7 +122,7 @@ but it is convenient not to require this. The elements of `R \ M.E` become 'loop
 def restrict (M : Matroid α) (R : Set α) : Matroid α := (M.restrictIndepMatroid R).matroid
 
 /-- `M ↾ R` means `M.restrict R`. -/
-scoped infixl:65  " ↾ " => Matroid.restrict
+scoped infixl:65 " ↾ " => Matroid.restrict
 
 @[simp] theorem restrict_indep_iff : (M ↾ R).Indep I ↔ M.Indep I ∧ I ⊆ R := Iff.rfl
 
@@ -222,10 +226,10 @@ def IsRestriction (N M : Matroid α) : Prop := ∃ R ⊆ M.E, N = M ↾ R
 def IsStrictRestriction (N M : Matroid α) : Prop := IsRestriction N M ∧ ¬ IsRestriction M N
 
 /-- `N ≤r M` means that `N` is a `Restriction` of `M`. -/
-scoped infix:50  " ≤r " => IsRestriction
+scoped infix:50 " ≤r " => IsRestriction
 
 /-- `N <r M` means that `N` is a `IsStrictRestriction` of `M`. -/
-scoped infix:50  " <r " => IsStrictRestriction
+scoped infix:50 " <r " => IsStrictRestriction
 
 /-- A type synonym for matroids with the isRestriction order.
 (The `PartialOrder` on `Matroid α` is reserved for the minor order) -/
@@ -237,8 +241,7 @@ instance {α : Type*} : CoeOut (Matroidᵣ α) (Matroid α) where
   coe := Matroidᵣ.toMatroid
 
 @[simp] theorem Matroidᵣ.coe_inj {M₁ M₂ : Matroidᵣ α} :
-    (M₁ : Matroid α) = (M₂ : Matroid α) ↔ M₁ = M₂ := by
-  cases M₁; cases M₂; simp
+    (M₁ : Matroid α) = (M₂ : Matroid α) ↔ M₁ = M₂ := Matroidᵣ.ext_iff.symm
 
 instance {α : Type*} : PartialOrder (Matroidᵣ α) where
   le := (· ≤r ·)
@@ -434,12 +437,15 @@ theorem IsBasis.isBase_of_isBase_subset (hIX : M.IsBasis I X) (hB : M.IsBase B) 
 
 theorem IsBasis.exchange (hIX : M.IsBasis I X) (hJX : M.IsBasis J X) (he : e ∈ I \ J) :
     ∃ f ∈ J \ I, M.IsBasis (insert f (I \ {e})) X := by
-  obtain ⟨y,hy, h⟩ := hIX.restrict_isBase.exchange hJX.restrict_isBase he
+  obtain ⟨y, hy, h⟩ := hIX.restrict_isBase.exchange hJX.restrict_isBase he
   exact ⟨y, hy, by rwa [isBase_restrict_iff] at h⟩
 
-theorem IsBasis.eq_exchange_of_diff_eq_singleton (hI : M.IsBasis I X) (hJ : M.IsBasis J X)
+theorem IsBasis.eq_exchange_of_sdiff_eq_singleton (hI : M.IsBasis I X) (hJ : M.IsBasis J X)
     (hIJ : I \ J = {e}) : ∃ f ∈ J \ I, J = insert f I \ {e} := by
-  rw [← isBase_restrict_iff] at hI hJ; exact hI.eq_exchange_of_diff_eq_singleton hJ hIJ
+  rw [← isBase_restrict_iff] at hI hJ; exact hI.eq_exchange_of_sdiff_eq_singleton hJ hIJ
+
+@[deprecated (since := "2026-06-03")]
+alias IsBasis.eq_exchange_of_diff_eq_singleton := IsBasis.eq_exchange_of_sdiff_eq_singleton
 
 theorem IsBasis'.encard_eq_encard (hI : M.IsBasis' I X) (hJ : M.IsBasis' J X) :
     I.encard = J.encard := by
@@ -453,7 +459,7 @@ theorem Indep.augment (hI : M.Indep I) (hJ : M.Indep J) (hIJ : I.encard < J.enca
     ∃ e ∈ J \ I, M.Indep (insert e I) := by
   by_contra! he
   have hb : M.IsBasis I (I ∪ J) := by
-    simp_rw [hI.isBasis_iff_forall_insert_dep subset_union_left, union_diff_left, mem_diff,
+    simp_rw [hI.isBasis_iff_forall_insert_dep subset_union_left, union_sdiff_left, mem_sdiff,
       and_imp, dep_iff, insert_subset_iff, and_iff_left hI.subset_ground]
     exact fun e heJ heI ↦ ⟨he e ⟨heJ, heI⟩, hJ.subset_ground heJ⟩
   obtain ⟨J', hJ', hJJ'⟩ := hJ.subset_isBasis_of_subset I.subset_union_right
@@ -463,7 +469,7 @@ theorem Indep.augment (hI : M.Indep I) (hJ : M.Indep J) (hIJ : I.encard < J.enca
 lemma Indep.augment_finset {I J : Finset α} (hI : M.Indep I) (hJ : M.Indep J)
     (hIJ : I.card < J.card) : ∃ e ∈ J, e ∉ I ∧ M.Indep (insert e I) := by
   obtain ⟨x, hx, hxI⟩ := hI.augment hJ (by simpa [encard_eq_coe_toFinset_card])
-  simp only [mem_diff, Finset.mem_coe] at hx
+  simp only [mem_sdiff, Finset.mem_coe] at hx
   exact ⟨x, hx.1, hx.2, hxI⟩
 
 end IsBasis

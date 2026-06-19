@@ -3,9 +3,11 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.LinearAlgebra.Matrix.Reindex
-import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
+module
+
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.LinearAlgebra.Matrix.Reindex
+public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 
 /-!
 # Lie algebras of matrices
@@ -25,6 +27,8 @@ primary value stems from their utility when constructing the classical Lie algeb
 lie algebra, matrix
 -/
 
+@[expose] public section
+
 
 universe u v w w₁ w₂
 
@@ -34,6 +38,8 @@ open scoped Matrix
 
 variable {R : Type u} [CommRing R]
 variable {n : Type w} [DecidableEq n] [Fintype n]
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- The natural equivalence between linear endomorphisms of finite free modules and square matrices
 is compatible with the Lie algebra structures. -/

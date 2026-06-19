@@ -3,17 +3,19 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
-import Mathlib.Algebra.Module.LinearMap.Prod
-import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.Analysis.Convex.Segment
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.Module
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
+public import Mathlib.Algebra.Module.LinearMap.Prod
+public import Mathlib.Algebra.Order.Module.Synonym
+public import Mathlib.Analysis.Convex.Segment
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.Module
 
 /-!
 # Star-convex sets
 
-This files defines star-convex sets (aka star domains, star-shaped set, radially convex set).
+This file defines star-convex sets (aka star domains, star-shaped set, radially convex set).
 
 A set is star-convex at `x` if every segment from `x` to a point in the set is contained in the set.
 
@@ -37,14 +39,14 @@ Concretely, the empty set is star-convex at every point.
 
 ## TODO
 
-Balanced sets are star-convex.
-
 The closure of a star-convex set is star-convex.
 
-Star-convex sets are contractible.
-
 A nonempty open star-convex set in `ℝ^n` is diffeomorphic to the entire space.
+
+Replace with `Convexity.IsStarConvexSet`.
 -/
+
+@[expose] public section
 
 
 open Set
@@ -152,7 +154,7 @@ variable [Module 𝕜 E] [Module 𝕜 F] {x y z : E} {s : Set E}
 
 theorem StarConvex.mem [ZeroLEOneClass 𝕜] (hs : StarConvex 𝕜 x s) (h : s.Nonempty) : x ∈ s := by
   obtain ⟨y, hy⟩ := h
-  convert hs hy zero_le_one le_rfl (add_zero 1)
+  convert! hs hy zero_le_one le_rfl (add_zero 1)
   rw [one_smul, zero_smul, add_zero]
 
 theorem starConvex_iff_forall_pos (hx : x ∈ s) : StarConvex 𝕜 x s ↔
@@ -365,7 +367,7 @@ variable [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E
 lemma starConvex_compl_Iic (h : x < y) : StarConvex 𝕜 y (Iic x)ᶜ := by
   refine (starConvex_iff_forall_pos <| by simp [h.not_ge]).mpr fun z hz a b ha hb hab ↦ ?_
   rw [mem_compl_iff, mem_Iic] at hz ⊢
-  contrapose! hz
+  contrapose hz
   refine (lt_of_smul_lt_smul_of_nonneg_left ?_ hb.le).le
   calc
     b • z ≤ (a + b) • x - a • y := by rwa [le_sub_iff_add_le', hab, one_smul]

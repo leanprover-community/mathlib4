@@ -3,11 +3,13 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.Notation.Pi.Basic
-import Mathlib.Data.Sum.Basic
-import Mathlib.Logic.Unique
-import Mathlib.Tactic.Spread
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Notation.Pi.Basic
+public import Mathlib.Data.Sum.Basic
+public import Mathlib.Logic.Unique
+public import Mathlib.Tactic.Spread
 
 /-!
 # Instances and theorems on pi types
@@ -22,6 +24,8 @@ comment `--pi_instance` is inserted before all fields which were previously deri
 `pi_instance`. See this Zulip discussion:
 [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/not.20porting.20pi_instance]
 -/
+
+@[expose] public section
 
 -- We enforce to only import `Algebra.Group.Defs` and basic logic
 assert_not_exists Set.range MonoidHom MonoidWithZero DenselyOrdered
@@ -40,12 +44,20 @@ variable (x y : ∀ i, f i) (i : I)
 namespace Pi
 
 @[to_additive]
+instance isMulCommutative [∀ i, Mul (f i)] [∀ i, IsMulCommutative (f i)] :
+    IsMulCommutative (∀ i, f i) where
+  is_comm.comm _ _ := by ext; apply mul_comm'
+
+@[to_additive]
+instance commMagma [∀ i, CommMagma (f i)] : CommMagma (∀ i, f i) where
+  mul_comm _ _ := by ext; apply mul_comm
+
+@[to_additive]
 instance semigroup [∀ i, Semigroup (f i)] : Semigroup (∀ i, f i) where
   mul_assoc := by intros; ext; exact mul_assoc _ _ _
 
 @[to_additive]
 instance commSemigroup [∀ i, CommSemigroup (f i)] : CommSemigroup (∀ i, f i) where
-  mul_comm := by intros; ext; exact mul_comm _ _
 
 @[to_additive]
 instance mulOneClass [∀ i, MulOneClass (f i)] : MulOneClass (∀ i, f i) where
@@ -65,8 +77,7 @@ instance monoid [∀ i, Monoid (f i)] : Monoid (∀ i, f i) where
   npow_succ := by intros; ext; exact Monoid.npow_succ _ _
 
 @[to_additive]
-instance commMonoid [∀ i, CommMonoid (f i)] : CommMonoid (∀ i, f i) :=
-  { monoid, commSemigroup with }
+instance commMonoid [∀ i, CommMonoid (f i)] : CommMonoid (∀ i, f i) where
 
 @[to_additive Pi.subNegMonoid]
 instance divInvMonoid [∀ i, DivInvMonoid (f i)] : DivInvMonoid (∀ i, f i) where
@@ -104,11 +115,11 @@ instance commGroup [∀ i, CommGroup (f i)] : CommGroup (∀ i, f i) := { group,
 
 @[to_additive] instance instIsLeftCancelMul [∀ i, Mul (f i)] [∀ i, IsLeftCancelMul (f i)] :
     IsLeftCancelMul (∀ i, f i) where
-  mul_left_cancel  _ _ _ h := funext fun _ ↦ mul_left_cancel (congr_fun h _)
+  mul_left_cancel _ _ _ h := funext fun _ ↦ mul_left_cancel (congr_fun h _)
 
 @[to_additive] instance instIsRightCancelMul [∀ i, Mul (f i)] [∀ i, IsRightCancelMul (f i)] :
     IsRightCancelMul (∀ i, f i) where
-  mul_right_cancel  _ _ _ h := funext fun _ ↦ mul_right_cancel (congr_fun h _)
+  mul_right_cancel _ _ _ h := funext fun _ ↦ mul_right_cancel (congr_fun h _)
 
 @[to_additive] instance instIsCancelMul [∀ i, Mul (f i)] [∀ i, IsCancelMul (f i)] :
     IsCancelMul (∀ i, f i) where
@@ -187,7 +198,8 @@ lemma comp_ne_one_iff [One β] [One γ] (f : α → β) {g : β → γ} (hg : In
 end Function
 
 /-- If the one function is surjective, the codomain is trivial. -/
-@[to_additive /-- If the zero function is surjective, the codomain is trivial. -/]
+@[to_additive (attr := implicit_reducible)
+  /-- If the zero function is surjective, the codomain is trivial. -/]
 def uniqueOfSurjectiveOne (α : Type*) {β : Type*} [One β] (h : Function.Surjective (1 : α → β)) :
     Unique β :=
   h.uniqueOfSurjectiveConst α (1 : β)

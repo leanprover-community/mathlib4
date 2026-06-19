@@ -3,14 +3,14 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Topology.Algebra.UniformMulAction
-import Mathlib.Topology.UniformSpace.Completion
-import Mathlib.Topology.Algebra.Group.Pointwise
+module
+
+public import Mathlib.Topology.Algebra.UniformMulAction
 
 /-!
 # Completion of topological groups:
 
-This files endows the completion of a topological abelian group with a group structure.
+This file endows the completion of a topological abelian group with a group structure.
 More precisely the instance `UniformSpace.Completion.addGroup` builds an abelian group structure
 on the completion of an abelian group endowed with a compatible uniform structure.
 Then the instance `UniformSpace.Completion.isUniformAddGroup` proves this group structure is
@@ -27,6 +27,8 @@ the main constructions deal with continuous group morphisms.
   from `G` to `H` into a continuous group morphism
   from `Completion G` to `Completion H`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -107,11 +109,8 @@ instance : AddMonoid (Completion α) :=
     add_assoc := fun a b c ↦
       Completion.induction_on₃ a b c
         (isClosed_eq
-          (continuous_map₂ (continuous_map₂ continuous_fst (continuous_fst.comp continuous_snd))
-            (continuous_snd.comp continuous_snd))
-          (continuous_map₂ continuous_fst
-            (continuous_map₂ (continuous_fst.comp continuous_snd)
-              (continuous_snd.comp continuous_snd))))
+          (continuous_map₂ (continuous_map₂ continuous_fst (by fun_prop)) (by fun_prop))
+          (continuous_map₂ continuous_fst (continuous_map₂ (by fun_prop) (by fun_prop))))
         fun a b c ↦
         show (a : Completion α) + b + c = a + (b + c) by repeat' rw_mod_cast [add_assoc]
     nsmul := (· • ·)
@@ -195,10 +194,9 @@ variable [UniformSpace α] [AddCommGroup α] [IsUniformAddGroup α]
 
 instance instAddCommGroup : AddCommGroup (Completion α) :=
   { (inferInstance : AddGroup <| Completion α) with
-    add_comm := fun a b ↦
+    add_comm a b :=
       Completion.induction_on₂ a b
-        (isClosed_eq (continuous_map₂ continuous_fst continuous_snd)
-          (continuous_map₂ continuous_snd continuous_fst))
+        (isClosed_eq (by fun_prop) (by fun_prop))
         fun x y ↦ by
         change (x : Completion α) + ↑y = ↑y + ↑x
         rw [← coe_add, ← coe_add, add_comm] }
@@ -229,11 +227,9 @@ def AddMonoidHom.extension [CompleteSpace β] [T0Space β] (f : α →+ β) (hf 
   have hf : UniformContinuous f := uniformContinuous_addMonoidHom_of_continuous hf
   { toFun := Completion.extension f
     map_zero' := by rw [← coe_zero, extension_coe hf, f.map_zero]
-    map_add' := fun a b ↦
+    map_add' a b :=
       Completion.induction_on₂ a b
-        (isClosed_eq (continuous_extension.comp continuous_add)
-          ((continuous_extension.comp continuous_fst).add
-            (continuous_extension.comp continuous_snd)))
+        (isClosed_eq (by fun_prop) (by fun_prop))
         fun a b ↦
         show Completion.extension f _ = Completion.extension f _ + Completion.extension f _ by
         rw_mod_cast [extension_coe hf, extension_coe hf, extension_coe hf, f.map_add] }
@@ -251,11 +247,12 @@ theorem AddMonoidHom.continuous_extension [CompleteSpace β] [T0Space β] (f : �
 def AddMonoidHom.completion (f : α →+ β) (hf : Continuous f) : Completion α →+ Completion β :=
   (toCompl.comp f).extension (continuous_toCompl.comp hf)
 
-@[continuity]
+@[continuity, fun_prop]
 theorem AddMonoidHom.continuous_completion (f : α →+ β) (hf : Continuous f) :
     Continuous (AddMonoidHom.completion f hf : Completion α → Completion β) :=
   continuous_map
 
+@[simp]
 theorem AddMonoidHom.completion_coe (f : α →+ β) (hf : Continuous f) (a : α) :
     AddMonoidHom.completion f hf a = f a :=
   map_coe (uniformContinuous_addMonoidHom_of_continuous hf) a

@@ -3,12 +3,16 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.RingTheory.SimpleModule.WedderburnArtin
+module
+
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.RingTheory.SimpleModule.WedderburnArtin
 
 /-!
 # Wedderburn–Artin Theorem over an algebraically closed field
 -/
+
+public section
 
 variable (F R : Type*) [Field F] [IsAlgClosed F] [Ring R] [Algebra F R]
 

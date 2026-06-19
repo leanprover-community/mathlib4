@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.Ring.Subsemiring.MulOpposite
-import Mathlib.Algebra.Ring.Subring.Basic
+module
+
+public import Mathlib.Algebra.Ring.Subsemiring.MulOpposite
+public import Mathlib.Algebra.Ring.Subring.Basic
 
 /-!
 
@@ -14,15 +16,17 @@ For every ring `R`, we construct an equivalence between subrings of `R` and that
 
 -/
 
+@[expose] public section
+
 namespace Subring
 
-variable {ι : Sort*} {R : Type*} [Ring R]
+variable {ι : Sort*} {R : Type*} [NonAssocRing R]
 
 /-- Pull a subring back to an opposite subring along `MulOpposite.unop` -/
 @[simps! coe toSubsemiring]
 protected def op (S : Subring R) : Subring Rᵐᵒᵖ where
   toSubsemiring := S.toSubsemiring.op
-  neg_mem' {x} hx := neg_mem (show x.unop ∈ S from hx)
+  neg_mem' := by simp
 
 attribute [norm_cast] coe_op
 
@@ -33,7 +37,7 @@ theorem mem_op {x : Rᵐᵒᵖ} {S : Subring R} : x ∈ S.op ↔ x.unop ∈ S :=
 @[simps! coe toSubsemiring]
 protected def unop (S : Subring Rᵐᵒᵖ) : Subring R where
   toSubsemiring := S.toSubsemiring.unop
-  neg_mem' {x} hx := neg_mem (show MulOpposite.op x ∈ S from hx)
+  neg_mem' := by simp
 
 attribute [norm_cast] coe_unop
 

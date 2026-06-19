@@ -3,11 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Connected
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.TransfiniteCompositionOfShape
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.Order.Interval.Set.SuccOrder
-import Mathlib.Order.Shrink
+module
+
+public import Mathlib.CategoryTheory.Limits.Connected
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.TransfiniteCompositionOfShape
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.Order.Interval.Set.SuccOrder
+public import Mathlib.Order.Shrink
 /-!
 # Classes of morphisms that are stable under transfinite composition
 
@@ -26,6 +28,8 @@ which says that `W.IsStableUnderTransfiniteCompositionOfShape J`
 holds for any well-ordered type `J` in a certain universe `w`.
 
 -/
+
+@[expose] public section
 
 universe w w' v v' u u'
 
@@ -86,7 +90,7 @@ def ofOrderIso {J' : Type w'} [LinearOrder J'] [OrderBot J']
       Arrow.mk (homOfLE (Order.le_succ (e j))) :=
         Arrow.ext rfl (e.map_succ j) rfl
     replace eq := congr_arg h.F.mapArrow.obj eq
-    convert this using 1
+    convert! this using 1
 
 /-- If `f` is a transfinite composition of shape `J` of morphisms
 in `W.inverseImage F`, then `F` is a transfinite composition of shape `J`
@@ -115,7 +119,7 @@ noncomputable def iic (j : J) :
       Arrow.mk (homOfLE (Order.le_succ i.1)) :=
         Arrow.ext rfl (Set.Iic.coe_succ_of_not_isMax hi) rfl
     replace eq := congr_arg h.F.mapArrow.obj eq
-    convert this using 1
+    convert! this using 1
 
 /-- A transfinite composition of shape `J` of morphisms in `W` induces a transfinite
 composition of shape `Set.Ici j` (for any `j : J`). -/
@@ -129,7 +133,7 @@ noncomputable def ici (j : J) :
       Arrow.mk (homOfLE (Order.le_succ i.1)) :=
         Arrow.ext rfl (coe_succ_of_mem (i.2.trans (Order.le_succ _))) rfl
     replace eq := congr_arg h.F.mapArrow.obj eq
-    convert this using 1
+    convert! this using 1
 
 end
 
@@ -149,7 +153,7 @@ def ofComposableArrows {n : ℕ} (F : ComposableArrows C n)
         Arrow.mk (homOfLE j.castSucc_le_succ) :=
           Arrow.ext rfl j.orderSucc_castSucc rfl
       replace eq := congr_arg F.mapArrow.obj eq
-      convert hF using 1
+      convert! hF using 1
     · rw [isMax_iff_eq_top] at hj
       exact (hj rfl).elim
 
@@ -259,6 +263,7 @@ lemma mem_map_bot_le {j : J} (g : ⊥ ⟶ j) : W (hf.F.map g) := by
     exact MorphismProperty.colimitsOfShape_le _
       (.of_isColimit (hf.F.isColimitOfIsWellOrderContinuous j hj) (fun k ↦ hj' _ k.2))
 
+set_option backward.isDefEq.respectTransparency false in
 include hf hJ in
 lemma mem [W.RespectsIso] : W f :=
   (MorphismProperty.arrow_mk_iso_iff _ (Arrow.isoMk hf.isoBot.symm (Iso.refl _))).2

@@ -3,8 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Data.Set.Insert
-import Mathlib.Tactic.ByContra
+module
+
+public import Mathlib.Data.Set.Insert
+public import Mathlib.Tactic.ByContra
 
 /-!
 # Subsingleton
@@ -15,6 +17,8 @@ Also defines `Nontrivial s : Prop` : the predicate saying that `s` has at least 
 elements.
 
 -/
+
+@[expose] public section
 
 assert_not_exists HeytingAlgebra RelIso
 
@@ -59,6 +63,9 @@ theorem subsingleton_iff_singleton {x} (hx : x ∈ s) : s.Subsingleton ↔ s = {
 theorem Subsingleton.eq_empty_or_singleton (hs : s.Subsingleton) : s = ∅ ∨ ∃ x, s = {x} :=
   s.eq_empty_or_nonempty.elim Or.inl fun ⟨x, hx⟩ => Or.inr ⟨x, hs.eq_singleton_of_mem hx⟩
 
+theorem subsingleton_iff_eq_empty_or_singleton : s.Subsingleton ↔ s = ∅ ∨ ∃ x, s = {x} :=
+  ⟨Subsingleton.eq_empty_or_singleton, by rintro (_ | ⟨_, rfl⟩) <;> simp_all⟩
+
 theorem Subsingleton.induction_on {p : Set α → Prop} (hs : s.Subsingleton) (he : p ∅)
     (h₁ : ∀ x, p {x}) : p s := by
   rcases hs.eq_empty_or_singleton with (rfl | ⟨x, rfl⟩)
@@ -80,14 +87,20 @@ lemma Subsingleton.inter_singleton : (s ∩ {a}).Subsingleton :=
 lemma Subsingleton.singleton_inter : ({a} ∩ s).Subsingleton :=
   Set.subsingleton_of_subset_singleton Set.inter_subset_left
 
-theorem subsingleton_of_subsingleton [Subsingleton α] {s : Set α} : Set.Subsingleton s :=
+lemma subsingleton_of_subsingleton_inter_left (h : (s ∪ t).Subsingleton) :
+    s.Subsingleton :=
+  fun _ h₁ _ h₂ ↦ h (.inl h₁) (.inl h₂)
+
+lemma subsingleton_of_subsingleton_inter_right (h : (s ∪ t).Subsingleton) :
+    t.Subsingleton :=
+  fun _ h₁ _ h₂ ↦ h (.inr h₁) (.inr h₂)
+
+theorem subsingleton_of_subsingleton [Subsingleton α] {s : Set α} : s.Subsingleton :=
   subsingleton_univ.anti (subset_univ s)
 
-theorem subsingleton_isTop (α : Type*) [PartialOrder α] : Set.Subsingleton { x : α | IsTop x } :=
+@[to_dual]
+theorem subsingleton_isTop (α : Type*) [PartialOrder α] : { x : α | IsTop x }.Subsingleton :=
   fun x hx _ hy => hx.isMax.eq_of_le (hy x)
-
-theorem subsingleton_isBot (α : Type*) [PartialOrder α] : Set.Subsingleton { x : α | IsBot x } :=
-  fun x hx _ hy => hx.isMin.eq_of_ge (hy x)
 
 theorem exists_eq_singleton_iff_nonempty_subsingleton :
     (∃ a : α, s = {a}) ↔ s.Nonempty ∧ s.Subsingleton := by
@@ -96,11 +109,19 @@ theorem exists_eq_singleton_iff_nonempty_subsingleton :
     exact ⟨singleton_nonempty a, subsingleton_singleton⟩
   · exact h.2.eq_empty_or_singleton.resolve_left h.1.ne_empty
 
+theorem eq_empty_or_singleton_of_subsingleton [Subsingleton α] (s : Set α) :
+    s = ∅ ∨ ∃ a, s = {a} :=
+  subsingleton_of_subsingleton.eq_empty_or_singleton
+
+theorem eq_empty_or_singleton_of_unique [Unique α] (s : Set α) :
+    s = ∅ ∨ s = {default} :=
+  s.eq_empty_or_singleton_of_subsingleton.imp_right fun ⟨a, ha⟩ => Unique.eq_default a ▸ ha
+
 /-- `s`, coerced to a type, is a subsingleton type if and only if `s` is a subsingleton set. -/
 @[simp, norm_cast]
 theorem subsingleton_coe (s : Set α) : Subsingleton s ↔ s.Subsingleton := by
   constructor
-  · refine fun h => fun a ha b hb => ?_
+  · intro h a ha b hb
     exact SetCoe.ext_iff.2 (@Subsingleton.elim s h ⟨a, ha⟩ ⟨b, hb⟩)
   · exact fun h => Subsingleton.intro fun a b => SetCoe.ext (h a.property b.property)
 
@@ -263,11 +284,11 @@ theorem nontrivial_mono {α : Type*} {s t : Set α} (hst : s ⊆ t) (hs : Nontri
     Nontrivial t :=
   Nontrivial.coe_sort <| (nontrivial_coe_sort.1 hs).mono hst
 
-@[simp]
+@[simp, push]
 theorem not_subsingleton_iff : ¬s.Subsingleton ↔ s.Nontrivial := by
   simp_rw [Set.Subsingleton, Set.Nontrivial, not_forall, exists_prop]
 
-@[simp]
+@[simp, push]
 theorem not_nontrivial_iff : ¬s.Nontrivial ↔ s.Subsingleton :=
   Iff.not_left not_subsingleton_iff.symm
 
@@ -297,7 +318,7 @@ theorem univ_set_of_isEmpty [IsEmpty α] : @univ (Set α) = {∅} :=
   subset_antisymm (fun S hS ↦ by simp [Set.eq_empty_of_isEmpty S]) (by simp)
 
 @[simp]
-theorem univ_set_eq_singleton_empty_iff : @Set.univ (Set α) = {∅} ↔ IsEmpty α  := by
+theorem univ_set_eq_singleton_empty_iff : @Set.univ (Set α) = {∅} ↔ IsEmpty α := by
   refine ⟨fun h ↦ ?_, fun _ ↦ by simp⟩
   suffices @univ α ∈ univ by aesop
   simp

@@ -3,11 +3,13 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Kim Morrison, Simon Hudon
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.CategoryTheory.Groupoid
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Algebra.Group.Units.Hom
+public import Mathlib.CategoryTheory.Groupoid
 
 /-!
 # Endomorphisms
@@ -17,6 +19,8 @@ Definition and basic properties of endomorphisms and automorphisms of an object 
 For each `X : C`, we provide `CategoryTheory.End X := X ⟶ X` with a monoid structure,
 and `CategoryTheory.Aut X := X ≅ X` with a group structure.
 -/
+
+@[expose] public section
 
 
 universe v v' u u'
@@ -44,11 +48,11 @@ protected instance mul : Mul (End X) := ⟨fun x y => y ≫ x⟩
 variable {X}
 
 /-- Assist the typechecker by expressing a morphism `X ⟶ X` as a term of `CategoryTheory.End X`. -/
-def of (f : X ⟶ X) : End X := f
+abbrev of (f : X ⟶ X) : End X := f
 
 /-- Assist the typechecker by expressing an endomorphism `f : CategoryTheory.End X` as a term of
 `X ⟶ X`. -/
-def asHom (f : End X) : X ⟶ X := f
+abbrev asHom (f : End X) : X ⟶ X := f
 
 -- TODO: to fix defeq abuse, this should be `(1 : End x) = of (𝟙 X)`.
 -- But that would require many more extra simp lemmas to get rid of the `of`.
@@ -59,6 +63,8 @@ theorem one_def : (1 : End X) = 𝟙 X := rfl
 -- But that would require many more extra simp lemmas to get rid of the `of`.
 @[simp]
 theorem mul_def (xs ys : End X) : xs * ys = ys ≫ xs := rfl
+
+lemma ext {x y : End X} (h : asHom x = asHom y) : x = y := h
 
 end Struct
 
@@ -195,5 +201,12 @@ noncomputable def autMulEquivOfFullyFaithful (X : C) :
 end FullyFaithful
 
 end Functor
+
+/-- The multiplicative bijection `End X ≃* End (F X)` when `X : InducedCategory C F`. -/
+@[simps!]
+def InducedCategory.endEquiv {D : Type*} {F : D → C}
+    {X : InducedCategory C F} : End X ≃* End (F X) where
+  toEquiv := InducedCategory.homEquiv
+  map_mul' _ _ := rfl
 
 end CategoryTheory

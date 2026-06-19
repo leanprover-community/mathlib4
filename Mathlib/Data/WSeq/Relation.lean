@@ -3,8 +3,10 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.WSeq.Basic
-import Mathlib.Logic.Relation
+module
+
+public import Mathlib.Data.WSeq.Basic
+public import Mathlib.Logic.Relation
 
 /-!
 # Relations between and equivalence of weak sequences
@@ -19,6 +21,8 @@ ignoring computation time (`none` elements). Equivalence is then defined in the 
   elements are `R`-related.
 * `Stream'.WSeq.Equiv`: Two sequences are equivalent if they are `LiftRel (· = ·)`-related.
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -87,7 +91,6 @@ theorem liftRel_destruct_iff {R : α → β → Prop} {s : WSeq α} {t : WSeq β
         · exact liftRel_destruct h
         · assumption
       apply Computation.LiftRel.imp _ _ _ h
-      intro a b
       apply LiftRelO.imp_right
       intro s t
       apply Or.inl⟩⟩
@@ -101,22 +104,25 @@ theorem LiftRel.swap_lem {R : α → β → Prop} {s1 s2} (h : LiftRel R s1 s2) 
 theorem LiftRel.swap (R : α → β → Prop) : swap (LiftRel R) = LiftRel (swap R) :=
   funext fun _ => funext fun _ => propext ⟨LiftRel.swap_lem, LiftRel.swap_lem⟩
 
-theorem LiftRel.refl (R : α → α → Prop) (H : Reflexive R) : Reflexive (LiftRel R) := fun s => by
-  refine ⟨(· = ·), rfl, fun {s t} (h : s = t) => ?_⟩
-  rw [← h]
-  apply Computation.LiftRel.refl
-  intro a
-  rcases a with - | a
-  · simp
-  · cases a
-    simp only [LiftRelO, and_true]
-    apply H
+instance LiftRelO.refl (R : α → α → Prop) [Std.Refl R] : Std.Refl <| LiftRelO R (· = ·) where
+  refl a := by
+    rcases a with - | a
+    · simp
+    · cases a
+      simp only [LiftRelO, and_true]
+      apply refl_of R
 
-theorem LiftRel.symm (R : α → α → Prop) (H : Symmetric R) : Symmetric (LiftRel R) :=
-  fun s1 s2 (h : Function.swap (LiftRel R) s2 s1) => by rwa [LiftRel.swap, H.swap_eq] at h
+instance LiftRel.refl (R : α → α → Prop) [Std.Refl R] : Std.Refl (LiftRel R) where
+  refl s := by
+    refine ⟨(· = ·), rfl, fun {s t} (h : s = t) => ?_⟩
+    rw [← h]
+    apply Computation.LiftRel.refl _ |>.refl
 
-theorem LiftRel.trans (R : α → α → Prop) (H : Transitive R) : Transitive (LiftRel R) :=
-  fun s t u h1 h2 => by
+instance LiftRel.symm (R : α → α → Prop) [Std.Symm R] : Std.Symm (LiftRel R) where
+  symm s1 s2 (h : Function.swap (LiftRel R) s2 s1) := by rwa [LiftRel.swap, Std.Symm.swap_eq] at h
+
+instance LiftRel.trans (R : α → α → Prop) [IsTrans α R] : IsTrans _ (LiftRel R) := by
+  refine ⟨fun s t u h1 h2 ↦ ?_⟩
   refine ⟨fun s u => ∃ t, LiftRel R s t ∧ LiftRel R t u, ⟨t, h1, h2⟩, fun {s u} h => ?_⟩
   rcases h with ⟨t, h1, h2⟩
   have h1 := liftRel_destruct h1
@@ -144,31 +150,33 @@ theorem LiftRel.trans (R : α → α → Prop) (H : Transitive R) : Transitive (
     obtain ⟨c, u⟩ := c
     obtain ⟨ab, st⟩ := t1
     obtain ⟨bc, tu⟩ := t2
-    exact ⟨H ab bc, t, st, tu⟩
+    exact ⟨trans_of R ab bc, t, st, tu⟩
 
-theorem LiftRel.equiv (R : α → α → Prop) : Equivalence R → Equivalence (LiftRel R)
-  | ⟨refl, symm, trans⟩ => ⟨LiftRel.refl R refl, @(LiftRel.symm R @symm), @(LiftRel.trans R @trans)⟩
+theorem LiftRel.equiv (R : α → α → Prop) (H : Equivalence R) : Equivalence (LiftRel R) where
+  refl := @LiftRel.refl α R H.stdRefl |>.refl
+  symm := @LiftRel.symm α R H.stdSymm |>.symm _ _
+  trans := @LiftRel.trans α R H.isTrans |>.trans _ _ _
 
 /-- If two sequences are equivalent, then they have the same values and
   the same computational behavior (i.e. if one loops forever then so does
   the other), although they may differ in the number of `think`s needed to
   arrive at the answer. -/
 def Equiv : WSeq α → WSeq α → Prop :=
-  LiftRel (· = ·)
+  LiftRel Eq
 
 @[inherit_doc] infixl:50 " ~ʷ " => Equiv
 
 @[refl]
 theorem Equiv.refl : ∀ s : WSeq α, s ~ʷ s :=
-  LiftRel.refl (· = ·) Eq.refl
+  LiftRel.refl Eq |>.refl
 
 @[symm]
 theorem Equiv.symm : ∀ {s t : WSeq α}, s ~ʷ t → t ~ʷ s :=
-  @(LiftRel.symm (· = ·) (@Eq.symm _))
+  LiftRel.symm Eq |>.symm _ _
 
 @[trans]
 theorem Equiv.trans : ∀ {s t u : WSeq α}, s ~ʷ t → t ~ʷ u → s ~ʷ u :=
-  @(LiftRel.trans (· = ·) (@Eq.trans _))
+  LiftRel.trans Eq |>.trans _ _ _
 
 theorem Equiv.equivalence : Equivalence (@Equiv α) :=
   ⟨@Equiv.refl _, @Equiv.symm _, @Equiv.trans _⟩
@@ -223,12 +231,12 @@ theorem liftRel_think_right (R : α → β → Prop) (s t) : LiftRel R s (think 
   rw [liftRel_destruct_iff, liftRel_destruct_iff]; simp
 
 theorem cons_congr {s t : WSeq α} (a : α) (h : s ~ʷ t) : cons a s ~ʷ cons a t := by
-  unfold Equiv; simpa using h
+  unfold Equiv; simpa using! h
 
-theorem think_equiv (s : WSeq α) : think s ~ʷ s := by unfold Equiv; simpa using Equiv.refl _
+theorem think_equiv (s : WSeq α) : think s ~ʷ s := by unfold Equiv; simpa using! Equiv.refl _
 
 theorem think_congr {s t : WSeq α} (h : s ~ʷ t) : think s ~ʷ think t := by
-  unfold Equiv; simpa using h
+  unfold Equiv; simpa using! h
 
 theorem head_congr : ∀ {s t : WSeq α}, s ~ʷ t → head s ~ head t := by
   suffices ∀ {s t : WSeq α}, s ~ʷ t → ∀ {o}, o ∈ head s → o ∈ head t from fun s t h o =>
@@ -387,7 +395,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
       simp only [destruct_join]
       exact ⟨none, mem_bind mT (ret_mem _), by rw [eq_of_pure_mem rs2.mem]; trivial⟩
     | some (s, S'), some (t, T'), ⟨st, ST'⟩, _, rs2, mT => by
-      simp? [destruct_append]  at rs2  says simp only [destruct_join.aux, destruct_append] at rs2
+      simp? [destruct_append] at rs2 says simp only [destruct_join.aux, destruct_append] at rs2
       exact
         let ⟨k1, rs3, ek⟩ := of_results_think rs2
         let ⟨o', m1, n1, rs4, rs5, ek1⟩ := of_results_bind rs3
@@ -407,7 +415,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
             apply mem_bind mt
             exact mb
         | some (a, s'), some (b, t'), ⟨ab, st'⟩, _, rs5, mt => by
-          simp?  at rs5  says simp only [destruct_append.aux] at rs5
+          simp only [destruct_append.aux] at rs5
           refine ⟨some (b, append t' (join T')), ?_, ?_⟩
           · simp +unfoldPartialApp only [destruct_join, destruct_join.aux]
             apply mem_bind mT

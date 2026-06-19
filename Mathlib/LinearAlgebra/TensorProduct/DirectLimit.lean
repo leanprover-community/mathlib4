@@ -3,9 +3,10 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.Algebra.Colimit.Module
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+public import Mathlib.Algebra.Colimit.Module
+public import Mathlib.LinearAlgebra.TensorProduct.Map
 
 /-!
 # Tensor product and direct limits commute with each other.
@@ -20,6 +21,8 @@ as `R`-modules.
 * `TensorProduct.directLimitRight : M ⊗[R] DirectLimit G f ≃ₗ[R] DirectLimit (M ⊗[R] G ·) (M ◁ f)`
 
 -/
+
+@[expose] public section
 
 open TensorProduct Module Module.DirectLimit
 
@@ -86,7 +89,7 @@ noncomputable def directLimitLeft :
 
 lemma directLimitLeft_rTensor_of {i : ι} (x : G i ⊗[R] M) :
     directLimitLeft f M (LinearMap.rTensor M (of ..) x) = of _ _ _ (f ▷ M) _ x :=
-  x.induction_on (by simp) (by simp+contextual) (by simp+contextual)
+  x.induction_on (by simp) (by simp +contextual) (by simp +contextual)
 
 /--
 `M ⊗ (limᵢ Gᵢ)` and `limᵢ (M ⊗ Gᵢ)` are isomorphic as modules
@@ -109,14 +112,14 @@ variable [DirectedSystem G (f · · ·)]
 
 instance : DirectedSystem (G · ⊗[R] M) (f ▷ M) where
   map_self i x := by
-    convert LinearMap.rTensor_id_apply M (G i) x; ext; apply DirectedSystem.map_self'
+    convert! LinearMap.rTensor_id_apply M (G i) x; ext; apply DirectedSystem.map_self'
   map_map _ _ _ _ _ x := by
-    convert ← (LinearMap.rTensor_comp_apply M _ _ x).symm; ext; apply DirectedSystem.map_map' f
+    convert! ← (LinearMap.rTensor_comp_apply M _ _ x).symm; ext; apply DirectedSystem.map_map' f
 
 instance : DirectedSystem (M ⊗[R] G ·) (M ◁ f) where
   map_self i x := by
-    convert LinearMap.lTensor_id_apply M _ x; ext; apply DirectedSystem.map_self'
+    convert! LinearMap.lTensor_id_apply M _ x; ext; apply DirectedSystem.map_self'
   map_map _ _ _ h₁ h₂ x := by
-    convert ← (LinearMap.lTensor_comp_apply M _ _ x).symm; ext; apply DirectedSystem.map_map' f
+    convert! ← (LinearMap.lTensor_comp_apply M _ _ x).symm; ext; apply DirectedSystem.map_map' f
 
 end TensorProduct

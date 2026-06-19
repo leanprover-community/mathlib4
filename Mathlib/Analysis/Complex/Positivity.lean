@@ -3,7 +3,9 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.Complex.TaylorSeries
+module
+
+public import Mathlib.Analysis.Complex.TaylorSeries
 
 /-!
 # Nonnegativity of values of holomorphic functions
@@ -12,8 +14,10 @@ We show that if `f` is holomorphic on an open disk `B(c,r)` and all iterated der
 at `c` are nonnegative real, then `f z ≥ 0` for all `z ≥ c` in the disk; see
 `DifferentiableOn.nonneg_of_iteratedDeriv_nonneg`. We also provide a
 variant `Differentiable.nonneg_of_iteratedDeriv_nonneg` for entire functions and versions
-showing `f z ≥ f c` when all iterated derivatives except `f` itseld are nonnegative.
+showing `f z ≥ f c` when all iterated derivatives except `f` itself are nonnegative.
 -/
+
+public section
 
 open Complex
 
@@ -35,8 +39,7 @@ theorem nonneg_of_iteratedDeriv_nonneg {f : ℂ → ℂ} {c : ℂ} {r : ℝ}
   rw [← ofReal_natCast, ← ofReal_pow, ← ofReal_inv, eq_re_of_ofReal_le (h n), ← ofReal_mul,
     ← ofReal_mul]
   norm_cast at hz₁ ⊢
-  have := zero_re ▸ (Complex.le_def.mp (h n)).1
-  positivity
+  positivity [zero_re ▸ (Complex.le_def.mp (h n)).1]
 
 end DifferentiableOn
 
@@ -50,7 +53,7 @@ theorem nonneg_of_iteratedDeriv_nonneg {f : ℂ → ℂ} (hf : Differentiable �
   refine hf.differentiableOn.nonneg_of_iteratedDeriv_nonneg (r := (z - c).re + 1) h hz ?_
   rw [← sub_nonneg] at hz
   rw [Metric.mem_ball, dist_eq, eq_re_of_ofReal_le hz]
-  simpa only [Complex.norm_of_nonneg (nonneg_iff.mp hz).1] using lt_add_one _
+  simpa only [Complex.norm_of_nonneg (nonneg_iff.mp hz).1] using! lt_add_one _
 
 /-- An entire function whose iterated derivatives at `c` are all nonnegative real (except
 possibly the value itself) has values of the form `f c + nonneg. real` on the set `c + ℝ≥0`. -/
@@ -72,8 +75,9 @@ set `c - ℝ≥0`. -/
 theorem apply_le_of_iteratedDeriv_alternating {f : ℂ → ℂ} {c : ℂ} (hf : Differentiable ℂ f)
     (h : ∀ n ≠ 0, 0 ≤ (-1) ^ n * iteratedDeriv n f c) ⦃z : ℂ⦄ (hz : z ≤ c) :
     f c ≤ f z := by
-  convert apply_le_of_iteratedDeriv_nonneg (f := fun z ↦ f (-z))
-    (hf.comp <| differentiable_neg) (fun n hn ↦ ?_) (neg_le_neg_iff.mpr hz) using 1
+  convert!
+    apply_le_of_iteratedDeriv_nonneg (f := fun z ↦ f (-z)) (hf.comp <| differentiable_neg)
+      (fun n hn ↦ ?_) (neg_le_neg_iff.mpr hz) using 1
   · simp only [neg_neg]
   · simp only [neg_neg]
   · simpa only [iteratedDeriv_comp_neg, neg_neg, smul_eq_mul] using h n hn

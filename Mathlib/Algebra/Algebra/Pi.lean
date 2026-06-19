@@ -3,9 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Algebra.Opposite
-import Mathlib.Algebra.Algebra.Prod
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.Algebra.Algebra.Opposite
+public import Mathlib.Algebra.Algebra.Prod
 
 /-!
 # The R-algebra structure on families of R-algebras
@@ -18,6 +20,8 @@ The R-algebra structure on `Π i : I, A i` when each `A i` is an R-algebra.
 * `Pi.evalAlgHom`
 * `Pi.constAlgHom`
 -/
+
+@[expose] public section
 
 namespace Pi
 
@@ -32,10 +36,11 @@ variable (A : ι → Type*)
 variable [CommSemiring R] [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)]
 
 instance algebra : Algebra R (Π i, A i) where
-  algebraMap := Pi.ringHom fun i ↦ algebraMap R (A i)
+  algebraMap := RingHom.pi fun i ↦ algebraMap R (A i)
   commutes' := fun a f ↦ by ext; simp [Algebra.commutes]
   smul_def' := fun a f ↦ by ext; simp [Algebra.smul_def]
 
+@[push ←]
 theorem algebraMap_def (a : R) : algebraMap R (Π i, A i) a = fun i ↦ algebraMap R (A i) a :=
   rfl
 
@@ -49,7 +54,7 @@ variable {ι} (R)
 `Pi.algHom g : B →ₐ[R] Π i, A i` given by `Pi.algHom g x i = g i x`. -/
 @[simps!]
 def algHom {B : Type*} [Semiring B] [Algebra R B] (g : ∀ i, B →ₐ[R] A i) : B →ₐ[R] Π i, A i where
-  __ := Pi.ringHom fun i ↦ (g i).toRingHom
+  __ := RingHom.pi fun i ↦ (g i).toRingHom
   commutes' r := by ext; simp
 
 /-- `Function.eval` as an `AlgHom`. The name matches `Pi.evalRingHom`, `Pi.evalMonoidHom`,
@@ -59,6 +64,8 @@ def evalAlgHom (i : ι) : (Π i, A i) →ₐ[R] A i :=
   { Pi.evalRingHom A i with
     toFun := fun f ↦ f i
     commutes' := fun _ ↦ rfl }
+
+lemma coe_evalAlgHom (i : ι) : evalAlgHom R A i = evalRingHom A i := rfl
 
 @[simp]
 theorem algHom_evalAlgHom : algHom R A (evalAlgHom R A) = AlgHom.id R (Π i, A i) := rfl
@@ -71,7 +78,7 @@ theorem algHom_comp {B C : Type*} [Semiring B] [Algebra R B] [Semiring C] [Algeb
 variable (S : ι → Type*) [∀ i, CommSemiring (S i)]
 
 instance [∀ i, Algebra (S i) (A i)] : Algebra (Π i, S i) (Π i, A i) where
-  algebraMap := Pi.ringHom fun _ ↦ (algebraMap _ _).comp (Pi.evalRingHom S _)
+  algebraMap := RingHom.pi fun _ ↦ (algebraMap _ _).comp (Pi.evalRingHom S _)
   commutes' _ _ := funext fun _ ↦ Algebra.commutes _ _
   smul_def' _ _ := funext fun _ ↦ Algebra.smul_def _ _
 
@@ -243,3 +250,10 @@ lemma sumArrowEquivProdArrow_symm_apply_inr (x : (α → S) × (β → S)) :
 end
 
 end AlgEquiv
+
+/-- Apply an algebra map component-wise along a vector. -/
+protected def Pi.algebraMap (ι R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] :
+    (ι → R) →ₗ[R] (ι → A) where
+  toFun v := algebraMap R A ∘ v
+  map_add' v w := by simp
+  map_smul' t v := by ext; simp [Algebra.smul_def]

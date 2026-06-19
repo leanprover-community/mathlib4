@@ -3,12 +3,14 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.LSeries.AbstractFuncEq
-import Mathlib.NumberTheory.ModularForms.JacobiTheta.Bounds
-import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
-import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
-import Mathlib.NumberTheory.LSeries.Basic
-import Mathlib.Analysis.Complex.RemovableSingularity
+module
+
+public import Mathlib.NumberTheory.LSeries.AbstractFuncEq
+public import Mathlib.NumberTheory.ModularForms.JacobiTheta.Bounds
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
+public import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
+public import Mathlib.NumberTheory.LSeries.Basic
+public import Mathlib.Analysis.Complex.RemovableSingularity
 
 /-!
 # Even Hurwitz zeta functions
@@ -44,6 +46,8 @@ multiples of `1 / s` and `1 / (1 - s)`.
 * `hasSum_int_hurwitzZetaEven` and `hasSum_nat_cosZeta`: relation between the zeta functions and
   the corresponding Dirichlet series for `1 < re s`.
 -/
+
+@[expose] public section
 noncomputable section
 
 open Complex Filter Topology Asymptotics Real Set MeasureTheory
@@ -140,7 +144,7 @@ lemma evenKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
     rw [div_eq_iff hx']
     ring
   have h3 : 1 / (-I * (I * x)) ^ (1 / 2 : ℂ) = 1 / ↑(x ^ (1 / 2 : ℝ)) := by
-    rw [neg_mul, ← mul_assoc, I_mul_I, neg_one_mul, neg_neg,ofReal_cpow hx.le, ofReal_div,
+    rw [neg_mul, ← mul_assoc, I_mul_I, neg_one_mul, neg_neg, ofReal_cpow hx.le, ofReal_div,
       ofReal_one, ofReal_ofNat]
   have h4 : -π * I * (a * I * x) ^ 2 / (I * x) = - (-π * a ^ 2 * x) := by
     rw [mul_pow, mul_pow, I_sq, div_eq_iff hx']
@@ -162,8 +166,7 @@ lemma hasSum_int_evenKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
   have (n : ℤ) : cexp (-(π * (n + a) ^ 2 * t)) = cexp (-(π * a ^ 2 * t)) *
       jacobiTheta₂_term n (a * I * t) (I * t) := by
     rw [jacobiTheta₂_term, ← Complex.exp_add]
-    ring_nf
-    simp
+    grind [I_sq]
   simpa [this] using (hasSum_jacobiTheta₂_term _ (by simpa)).mul_left _
 
 lemma hasSum_int_cosKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
@@ -244,7 +247,7 @@ end asymp
 
 section FEPair
 /-!
-## Construction of a FE-pair
+## Construction of an FE-pair
 -/
 
 /-- A `WeakFEPair` structure with `f = evenKernel a` and `g = cosKernel a`. -/
@@ -618,7 +621,7 @@ lemma differentiableAt_hurwitzZetaEven (a : UnitAddCircle) {s : ℂ} (hs' : s �
 lemma hurwitzZetaEven_residue_one (a : UnitAddCircle) :
     Tendsto (fun s ↦ (s - 1) * hurwitzZetaEven a s) (𝓝[≠] 1) (𝓝 1) := by
   have : Tendsto (fun s ↦ (s - 1) * completedHurwitzZetaEven a s / Gammaℝ s) (𝓝[≠] 1) (𝓝 1) := by
-    simpa only [Gammaℝ_one, inv_one, mul_one] using (completedHurwitzZetaEven_residue_one a).mul
+    simpa only [Gammaℝ_one, inv_one, mul_one] using! (completedHurwitzZetaEven_residue_one a).mul
       <| (differentiable_Gammaℝ_inv.continuous.tendsto _).mono_left nhdsWithin_le_nhds
   refine this.congr' ?_
   filter_upwards [eventually_ne_nhdsWithin one_ne_zero] with s hs
@@ -651,8 +654,10 @@ lemma differentiable_hurwitzZetaEven_sub_hurwitzZetaEven (a b : UnitAddCircle) :
   intro z
   rcases ne_or_eq z 1 with hz | rfl
   · exact (differentiableAt_hurwitzZetaEven a hz).sub (differentiableAt_hurwitzZetaEven b hz)
-  · convert (differentiableAt_hurwitzZetaEven_sub_one_div a).fun_sub
-      (differentiableAt_hurwitzZetaEven_sub_one_div b) using 2 with s
+  · convert!
+    (differentiableAt_hurwitzZetaEven_sub_one_div a).fun_sub
+      (differentiableAt_hurwitzZetaEven_sub_one_div b) using
+    2 with s
     abel
 
 /--

@@ -3,14 +3,18 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Tactic.FunProp.FunctionData
-import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+module
+
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+public import Mathlib.Tactic.FunProp.FunctionData
 
 /-!
 ## `funProp`
 
 this file defines environment extension for `funProp`
 -/
+
+public meta section
 
 
 namespace Mathlib
@@ -64,7 +68,7 @@ def FunctionData.getFnOrigin (fData : FunctionData) : Origin :=
 
 /-- Default names to be considered reducible by `fun_prop` -/
 def defaultNamesToUnfold : Array Name :=
-  #[`id, `Function.comp, `Function.HasUncurry.uncurry, `Function.uncurry]
+  #[`id, `Function.comp, `Function.const, `Function.HasUncurry.uncurry, `Function.uncurry]
 
 /-- `fun_prop` configuration -/
 structure Config where
@@ -85,7 +89,7 @@ deriving Inhabited, BEq
 
 /-- `fun_prop` context -/
 structure Context where
-  /-- fun_prop config -/
+  /-- `fun_prop` config -/
   config : Config := {}
   /-- Name to unfold -/
   constToUnfold : TreeSet Name Name.quickCmp :=

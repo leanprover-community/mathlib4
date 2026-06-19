@@ -3,15 +3,17 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.Hom.Basic
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Group.Torsion
-import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.Algebra.Notation.Pi.Defs
-import Mathlib.Algebra.Notation.Prod
-import Mathlib.Logic.Equiv.Prod
-import Mathlib.Tactic.TermCongr
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Hom.Basic
+public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Algebra.Group.Torsion
+public import Mathlib.Algebra.Group.Units.Hom
+public import Mathlib.Algebra.Notation.Pi.Defs
+public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Logic.Equiv.Prod
+public import Mathlib.Tactic.TermCongr
 
 /-!
 # Monoid, group etc. structures on `M × N`
@@ -35,6 +37,8 @@ We also prove trivial `simp` lemmas, and define the following operations on `Mon
   multiplicative/monoid homomorphism.
 * `divMonoidHom`: Division bundled as a monoid homomorphism.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered AddMonoidWithOne
 
@@ -61,12 +65,20 @@ instance [InvolutiveInv M] [InvolutiveInv N] : InvolutiveInv (M × N) :=
   { inv_inv := fun _ => Prod.ext (inv_inv _) (inv_inv _) }
 
 @[to_additive]
+instance isMulCommutative [Mul M] [Mul N] [IsMulCommutative M] [IsMulCommutative N] :
+    IsMulCommutative (M × N) where
+  is_comm.comm _ _ := by ext <;> apply mul_comm'
+
+@[to_additive]
+instance commMagma [CommMagma M] [CommMagma N] : CommMagma (M × N) where
+  mul_comm _ _ := by ext <;> apply mul_comm
+
+@[to_additive]
 instance instSemigroup [Semigroup M] [Semigroup N] : Semigroup (M × N) where
   mul_assoc _ _ _ := by ext <;> exact mul_assoc ..
 
 @[to_additive]
 instance instCommSemigroup [CommSemigroup G] [CommSemigroup H] : CommSemigroup (G × H) where
-  mul_comm _ _ := by ext <;> exact mul_comm ..
 
 @[to_additive]
 instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) where
@@ -134,15 +146,11 @@ instance [RightCancelSemigroup G] [RightCancelSemigroup H] : RightCancelSemigrou
 
 @[to_additive]
 instance [LeftCancelMonoid M] [LeftCancelMonoid N] : LeftCancelMonoid (M × N) :=
-  { mul_one := by simp,
-    one_mul := by simp
-    mul_left_cancel _ _ := by simp }
+  { mul_left_cancel _ _ := by simp }
 
 @[to_additive]
 instance [RightCancelMonoid M] [RightCancelMonoid N] : RightCancelMonoid (M × N) :=
-  { mul_one := by simp,
-    one_mul := by simp
-    mul_right_cancel _ _ := by simp }
+  { mul_right_cancel _ _ := by simp }
 
 @[to_additive]
 instance [CancelMonoid M] [CancelMonoid N] : CancelMonoid (M × N) :=
@@ -221,11 +229,11 @@ theorem coe_snd : ⇑(snd M N) = Prod.snd :=
       `f.prod g : AddHom M (N × P)` given by `(f.prod g) x = (f x, g x)` -/]
 protected def prod (f : M →ₙ* N) (g : M →ₙ* P) :
     M →ₙ* N × P where
-  toFun := Pi.prod f g
+  toFun := Function.prod f g
   map_mul' x y := Prod.ext (f.map_mul x y) (g.map_mul x y)
 
 @[to_additive coe_prod]
-theorem coe_prod (f : M →ₙ* N) (g : M →ₙ* P) : ⇑(f.prod g) = Pi.prod f g :=
+theorem coe_prod (f : M →ₙ* N) (g : M →ₙ* P) : ⇑(f.prod g) = Function.prod f g :=
   rfl
 
 @[to_additive (attr := simp) prod_apply]
@@ -387,12 +395,12 @@ given by `(f.prod g) x = (f x, g x)`. -/
       `f.prod g : M →+ N × P` given by `(f.prod g) x = (f x, g x)` -/]
 protected def prod (f : M →* N) (g : M →* P) :
     M →* N × P where
-  toFun := Pi.prod f g
+  toFun := Function.prod f g
   map_one' := Prod.ext f.map_one g.map_one
   map_mul' x y := Prod.ext (f.map_mul x y) (g.map_mul x y)
 
 @[to_additive coe_prod]
-theorem coe_prod (f : M →* N) (g : M →* P) : ⇑(f.prod g) = Pi.prod f g :=
+theorem coe_prod (f : M →* N) (g : M →* P) : ⇑(f.prod g) = Function.prod f g :=
   rfl
 
 @[to_additive (attr := simp) prod_apply]
@@ -409,7 +417,7 @@ theorem snd_comp_prod (f : M →* N) (g : M →* P) : (snd N P).comp (f.prod g) 
 
 @[to_additive (attr := simp) prod_unique]
 theorem prod_unique (f : M →* N × P) : ((fst N P).comp f).prod ((snd N P).comp f) = f :=
-  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
+  ext fun _ => by simp
 
 end Prod
 
@@ -558,7 +566,8 @@ def prodCongr (f : M ≃* M') (g : N ≃* N') : M × N ≃* M' × N' :=
 /-- Multiplying by the trivial monoid doesn't change the structure.
 
 This is the `MulEquiv` version of `Equiv.uniqueProd`. -/
-@[to_additive uniqueProd /-- Multiplying by the trivial monoid doesn't change the structure.
+@[to_additive (attr := simps!) uniqueProd /-- Multiplying by the trivial monoid doesn't change the
+structure.
 
 This is the `AddEquiv` version of `Equiv.uniqueProd`. -/]
 def uniqueProd [Unique N] : N × M ≃* M :=
@@ -567,7 +576,8 @@ def uniqueProd [Unique N] : N × M ≃* M :=
 /-- Multiplying by the trivial monoid doesn't change the structure.
 
 This is the `MulEquiv` version of `Equiv.prodUnique`. -/
-@[to_additive prodUnique /-- Multiplying by the trivial monoid doesn't change the structure.
+@[to_additive (attr := simps!) prodUnique /-- Multiplying by the trivial monoid doesn't change the
+structure.
 
 This is the `AddEquiv` version of `Equiv.prodUnique`. -/]
 def prodUnique [Unique N] : M × N ≃* M :=
@@ -594,12 +604,17 @@ def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ where
     simp only [Units.map, MonoidHom.coe_fst, Units.inv_eq_val_inv,
       MonoidHom.coe_snd, MonoidHom.prod_apply, Prod.mk.injEq]
     exact ⟨rfl, rfl⟩
-  map_mul' := MonoidHom.map_mul _
+  map_mul' := map_mul _
 
 @[to_additive]
 lemma _root_.Prod.isUnit_iff {x : M × N} : IsUnit x ↔ IsUnit x.1 ∧ IsUnit x.2 where
   mp h := ⟨(prodUnits h.unit).1.isUnit, (prodUnits h.unit).2.isUnit⟩
   mpr h := (prodUnits.symm (h.1.unit, h.2.unit)).isUnit
+
+@[to_additive]
+instance _root_.Prod.instSubsingletonUnits [Subsingleton Mˣ] [Subsingleton Nˣ] :
+    Subsingleton (M × N)ˣ :=
+  .units_of_isUnit <| by simp [Prod.isUnit_iff, Prod.ext_iff]
 
 end
 

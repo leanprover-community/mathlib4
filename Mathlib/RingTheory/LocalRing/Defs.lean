@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Algebra.Ring.Defs
+module
+
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Algebra.Ring.Defs
 
 /-!
 
@@ -20,8 +22,11 @@ Define local rings as commutative rings having a unique maximal ideal.
   `IsLocalRing.of_unique_max_ideal` and `IsLocalRing.maximal_ideal_unique`.
 
 -/
+
+public section
 /-- A semiring is local if it is nontrivial and `a` or `b` is a unit whenever `a + b = 1`.
 Note that `IsLocalRing` is a predicate. -/
+@[wikidata Q1142704]
 class IsLocalRing (R : Type*) [Semiring R] : Prop extends Nontrivial R where
   of_is_unit_or_is_unit_of_add_one ::
   /-- in a local ring `R`, if `a + b = 1`, then either `a` is a unit or `b` is a unit. In another

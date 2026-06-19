@@ -3,16 +3,18 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Algebra.CharP.Basic
-import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.Algebra.Ring.Regular
-import Mathlib.Data.Fintype.Units
-import Mathlib.GroupTheory.OrderOfElement
+module
+
+public import Mathlib.Algebra.CharP.Basic
+public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.Algebra.Group.Submonoid.Units
+public import Mathlib.Algebra.GroupWithZero.Units.Fintype
+public import Mathlib.GroupTheory.OrderOfElement
 
 /-!
 # Multiplicative characters of finite rings and fields
 
-Let `R` and `R'` be a commutative rings.
+Let `R` and `R'` be commutative rings.
 A *multiplicative character* of `R` with values in `R'` is a morphism of
 monoids from the multiplicative monoid of `R` into that of `R'`
 that sends non-units to zero.
@@ -35,6 +37,10 @@ character vanishes; see `MulChar.IsNontrivial.sum_eq_zero`.
 
 multiplicative character
 -/
+
+@[expose] public section
+
+open scoped Ring
 
 
 /-!
@@ -112,11 +118,7 @@ theorem coe_mk (f : R →* R') (hf) : (MulChar.mk f hf : R → R') = f :=
   rfl
 
 /-- Extensionality. See `ext` below for the version that will actually be used. -/
-theorem ext' {χ χ' : MulChar R R'} (h : ∀ a, χ a = χ' a) : χ = χ' := by
-  cases χ
-  cases χ'
-  congr
-  exact MonoidHom.ext h
+theorem ext' {χ χ' : MulChar R R'} (h : ∀ a, χ a = χ' a) : χ = χ' := DFunLike.ext _ _ h
 
 instance : MulCharClass (MulChar R R') R R' where
   map_mul χ := χ.map_mul'
@@ -208,6 +210,14 @@ theorem equivToUnitHom_symm_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : equivToUnitHom.s
 lemma coe_toMonoidHom (χ : MulChar R R')
     (x : R) : χ.toMonoidHom x = χ x := rfl
 
+theorem apply_ne_zero_iff [Nontrivial R'] {χ : MulChar R R'} {a : R} :
+    χ a ≠ 0 ↔ IsUnit a :=
+  ⟨by simpa using (map_nonunit χ).mt, fun h ↦ (h.map χ).ne_zero⟩
+
+theorem apply_eq_zero_iff [Nontrivial R'] {χ : MulChar R R'} {a : R} :
+    χ a = 0 ↔ ¬ IsUnit a := by
+  simpa using χ.apply_ne_zero_iff.not
+
 /-!
 ### Commutative group structure on multiplicative characters
 
@@ -283,7 +293,7 @@ noncomputable instance hasInv : Inv (MulChar R R') :=
   ⟨inv⟩
 
 /-- The inverse of a multiplicative character `χ`, applied to `a`, is the inverse of `χ a`. -/
-theorem inv_apply_eq_inv (χ : MulChar R R') (a : R) : χ⁻¹ a = Ring.inverse (χ a) :=
+theorem inv_apply_eq_inv (χ : MulChar R R') (a : R) : χ⁻¹ a = (χ a)⁻¹ʳ :=
   Eq.refl <| inv χ a
 
 /-- The inverse of a multiplicative character `χ`, applied to `a`, is the inverse of `χ a`.
@@ -295,7 +305,7 @@ theorem inv_apply_eq_inv' {R' : Type*} [CommGroupWithZero R'] (χ : MulChar R R'
 /-- When the domain has a zero, then the inverse of a multiplicative character `χ`,
 applied to `a`, is `χ` applied to the inverse of `a`. -/
 theorem inv_apply {R : Type*} [CommMonoidWithZero R] (χ : MulChar R R') (a : R) :
-    χ⁻¹ a = χ (Ring.inverse a) := by
+    χ⁻¹ a = χ a⁻¹ʳ := by
   by_cases ha : IsUnit a
   · rw [inv_apply_eq_inv]
     have h := IsUnit.map χ ha
@@ -321,21 +331,18 @@ theorem inv_mul (χ : MulChar R R') : χ⁻¹ * χ = 1 := by
   rw [one_apply_coe]
 
 /-- The commutative group structure on `MulChar R R'`. -/
-noncomputable instance commGroup : CommGroup (MulChar R R') :=
-  { one := 1
-    mul := (· * ·)
-    inv := Inv.inv
-    inv_mul_cancel := inv_mul
-    mul_assoc := by
-      intro χ₁ χ₂ χ₃
-      ext a
-      simp only [mul_assoc, Pi.mul_apply, MulChar.coeToFun_mul]
-    mul_comm := by
-      intro χ₁ χ₂
-      ext a
-      simp only [mul_comm, Pi.mul_apply, MulChar.coeToFun_mul]
-    one_mul := MulChar.one_mul
-    mul_one := MulChar.mul_one }
+noncomputable instance commGroup : CommGroup (MulChar R R') where
+  inv_mul_cancel := inv_mul
+  mul_assoc := by
+    intro χ₁ χ₂ χ₃
+    ext a
+    simp only [mul_assoc, Pi.mul_apply, MulChar.coeToFun_mul]
+  mul_comm := by
+    intro χ₁ χ₂
+    ext a
+    simp only [mul_comm, Pi.mul_apply, MulChar.coeToFun_mul]
+  one_mul := MulChar.one_mul
+  mul_one := MulChar.mul_one
 
 /-- If `a` is a unit and `n : ℕ`, then `(χ ^ n) a = (χ a) ^ n`. -/
 theorem pow_apply_coe (χ : MulChar R R') (n : ℕ) (a : Rˣ) : (χ ^ n) a = χ a ^ n := by
@@ -357,8 +364,8 @@ lemma equivToUnitHom_mul_apply (χ₁ χ₂ : MulChar R R') (a : Rˣ) :
 
 /-- The equivalence between multiplicative characters and homomorphisms of unit groups
 as a multiplicative equivalence. -/
-noncomputable
-def mulEquivToUnitHom : MulChar R R' ≃* (Rˣ →* R'ˣ) :=
+@[simps! apply symm_apply]
+noncomputable def mulEquivToUnitHom : MulChar R R' ≃* (Rˣ →* R'ˣ) :=
   { equivToUnitHom with
     map_mul' := by
       intro χ ψ
@@ -367,8 +374,28 @@ def mulEquivToUnitHom : MulChar R R' ≃* (Rˣ →* R'ˣ) :=
         MonoidHom.mul_apply, Units.val_mul]
   }
 
-end Group
+/--
+The restriction of a `MulChar` to a submonoid.
+-/
+@[simps! apply]
+noncomputable def restrict {S : Type*} [SetLike S R] [SubmonoidClass S R] (T : S)
+    (χ : MulChar R R') : MulChar T R' :=
+  ofUnitHom <| χ.toUnitHom.comp <| Units.map (SubmonoidClass.subtype T)
 
+/--
+The restriction of a `MulChar` to a submonoid as an homomorphism.
+-/
+@[simps]
+noncomputable def restrictHom {S : Type*} [SetLike S R] [SubmonoidClass S R] (T : S)
+    (R'' : Type*) [CommMonoidWithZero R''] :
+    (MulChar R R'') →* MulChar T R'' where
+  toFun := restrict T
+  map_one' := by
+    ext x
+    rw [restrict_apply, if_pos x.isUnit, MulChar.one_apply x.isUnit.coe, one_apply_coe]
+  map_mul' x y := by ext; simp
+
+end Group
 
 /-!
 ### Properties of multiplicative characters
@@ -391,6 +418,10 @@ lemma eq_one_iff {χ : MulChar R R'} : χ = 1 ↔ ∀ a : Rˣ, χ a = 1 := by
 
 lemma ne_one_iff {χ : MulChar R R'} : χ ≠ 1 ↔ ∃ a : Rˣ, χ a ≠ 1 := by
   simp only [Ne, eq_one_iff, not_forall]
+
+theorem restrict_eq_one_iff {S : Type*} [SetLike S R] [SubmonoidClass S R] {T : S}
+    {χ : MulChar R R'} : χ.restrict T = 1 ↔ ∀ x : Tˣ, χ x = 1 := by
+  simp [eq_one_iff]
 
 end nontrivial
 
@@ -437,6 +468,24 @@ lemma ringHomComp_pow (χ : MulChar R R') (f : R' →+* R'') (n : ℕ) :
   | zero => simp only [pow_zero, ringHomComp_one]
   | succ n ih => simp only [pow_succ, ih, ringHomComp_mul]
 
+/-- Bundled version of `MulChar.ringHomComp` as a `MonoidHom`. -/
+@[simps]
+def ringHomCompHom (f : R' →+* R'') : MulChar R R' →* MulChar R R'' where
+  toFun χ := χ.ringHomComp f
+  map_one' := ringHomComp_one f
+  map_mul' _ _ := ringHomComp_mul _ _ f
+
+lemma ringHomComp_zpow (χ : MulChar R R') (f : R' →+* R'') (n : ℤ) :
+    χ.ringHomComp f ^ n = (χ ^ n).ringHomComp f :=
+  ((ringHomCompHom f).map_zpow χ n).symm
+
+/-- If `a` is a unit and `n : ℤ`, then `(χ ^ n) a = χ (a ^ n)`. -/
+theorem zpow_apply_coe {R : Type*} [CommGroupWithZero R] {R' : Type*} [CommRing R']
+    (χ : MulChar R R') (n : ℤ) (a : Rˣ) : (χ ^ n) a = χ (a ^ n : Rˣ) := by
+  obtain ⟨m, rfl | rfl⟩ := Int.eq_nat_or_neg n
+  · simp [pow_apply_coe]
+  · simp [pow_apply_coe, inv_apply', ← inv_pow]
+
 lemma injective_ringHomComp {f : R' →+* R''} (hf : Function.Injective f) :
     Function.Injective (ringHomComp (R := R) · f) := by
   simpa
@@ -465,10 +514,9 @@ theorem IsQuadratic.inv {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ⁻¹ = �
   rcases hχ x with (h₀ | h₁ | h₂)
   · rw [h₀, Ring.inverse_zero]
   · rw [h₁, Ring.inverse_one]
-  · have : (-1 : R') = (-1 : R'ˣ) := by
-      simp -- Porting note: was `by norm_cast`
-    rw [h₂, this, Ring.inverse_unit (-1 : R'ˣ)]
-    rfl
+  · -- Porting note (#11573): was `by norm_cast`
+    have : (-1 : R') = (-1 : R'ˣ) := by norm_cast; simp
+    rw [h₂, this, Ring.inverse_unit (-1 : R'ˣ), inv_neg, inv_one]
 
 /-- The square of a quadratic character is the trivial character. -/
 theorem IsQuadratic.sq_eq_one {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ ^ 2 = 1 := by
@@ -501,7 +549,7 @@ theorem IsQuadratic.pow_odd {χ : MulChar R R'} (hχ : χ.IsQuadratic) {n : ℕ}
 if and only if `χ^2 = 1`. -/
 lemma isQuadratic_iff_sq_eq_one {M R : Type*} [CommMonoid M] [CommRing R] [NoZeroDivisors R]
     [Nontrivial R] {χ : MulChar M R} :
-    IsQuadratic χ ↔ χ ^ 2 = 1:= by
+    IsQuadratic χ ↔ χ ^ 2 = 1 := by
   refine ⟨fun h ↦ ext (fun x ↦ ?_), fun h x ↦ ?_⟩
   · rw [one_apply_coe, χ.pow_apply_coe]
     rcases h x with H | H | H

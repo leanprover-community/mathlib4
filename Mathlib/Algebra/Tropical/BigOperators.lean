@@ -3,10 +3,12 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.List.MinMax
-import Mathlib.Algebra.Tropical.Basic
-import Mathlib.Order.ConditionallyCompleteLattice.Finset
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.List.MinMax
+public import Mathlib.Algebra.Tropical.Basic
+public import Mathlib.Order.ConditionallyCompleteLattice.Finset
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 
@@ -31,6 +33,8 @@ directly transfer to minima over multisets or finsets.
 
 -/
 
+public section
+
 variable {R S : Type*}
 
 open Tropical Finset
@@ -46,7 +50,7 @@ theorem Multiset.trop_sum [AddCommMonoid R] (s : Multiset R) :
 
 theorem trop_sum [AddCommMonoid R] (s : Finset S) (f : S → R) :
     trop (∑ i ∈ s, f i) = ∏ i ∈ s, trop (f i) := by
-  convert Multiset.trop_sum (s.val.map f)
+  convert! Multiset.trop_sum (s.val.map f)
   simp only [Multiset.map_map, Function.comp_apply]
   rfl
 
@@ -62,7 +66,7 @@ theorem Multiset.untrop_prod [AddCommMonoid R] (s : Multiset (Tropical R)) :
 
 theorem untrop_prod [AddCommMonoid R] (s : Finset S) (f : S → Tropical R) :
     untrop (∏ i ∈ s, f i) = ∑ i ∈ s, untrop (f i) := by
-  convert Multiset.untrop_prod (s.val.map f)
+  convert! Multiset.untrop_prod (s.val.map f)
   simp only [Multiset.map_map, Function.comp_apply]
   rfl
 
@@ -80,7 +84,7 @@ theorem Multiset.trop_inf [LinearOrder R] [OrderTop R] (s : Multiset R) :
 
 theorem Finset.trop_inf [LinearOrder R] [OrderTop R] (s : Finset S) (f : S → R) :
     trop (s.inf f) = ∑ i ∈ s, trop (f i) := by
-  convert Multiset.trop_inf (s.val.map f)
+  convert! Multiset.trop_inf (s.val.map f)
   simp only [Multiset.map_map, Function.comp_apply]
   rfl
 
@@ -102,7 +106,7 @@ theorem Multiset.untrop_sum [LinearOrder R] [OrderTop R] (s : Multiset (Tropical
 
 theorem Finset.untrop_sum' [LinearOrder R] [OrderTop R] (s : Finset S) (f : S → Tropical R) :
     untrop (∑ i ∈ s, f i) = s.inf (untrop ∘ f) := by
-  convert Multiset.untrop_sum (s.val.map f)
+  convert! Multiset.untrop_sum (s.val.map f)
   simp only [Multiset.map_map, Function.comp_apply, inf_def]
 
 theorem untrop_sum_eq_sInf_image [ConditionallyCompleteLinearOrder R] (s : Finset S)

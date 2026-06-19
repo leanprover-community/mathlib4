@@ -15,7 +15,7 @@ $a = (a_1, a_2, \dots, a_n)$ of $\{1, 2, \dots, n\}$, define $S(a) = \sum_{i=1}^
 Prove that there exist two permutations $a ≠ b$ of $\{1, 2, \dots, n\}$ such that
 $n!$ is a divisor of $S(a) - S(b)$.
 
-# Solution
+## Solution
 
 Suppose for contradiction that all the $S(a)$ have distinct residues modulo $n!$, then
 $$\sum_{i=0}^{n!-1} i ≡ \sum_a S(a) = \sum_i c_i \sum_a a_i = (n-1)! \frac{n(n+1)}2 \sum_i c_i$$

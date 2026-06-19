@@ -3,17 +3,19 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Basic
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Int.Units
-import Mathlib.Data.List.Dedup
-import Mathlib.Data.List.Flatten
-import Mathlib.Data.List.Pairwise
-import Mathlib.Data.List.Perm.Basic
-import Mathlib.Data.List.Range
-import Mathlib.Data.List.Rotate
-import Mathlib.Data.List.ProdSigma
-import Mathlib.Algebra.Group.Opposite
+module
+
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
+public import Mathlib.Algebra.Divisibility.Basic
+public import Mathlib.Algebra.Group.Int.Units
+public import Mathlib.Data.List.Dedup
+public import Mathlib.Data.List.Flatten
+public import Mathlib.Data.List.Pairwise
+public import Mathlib.Data.List.Perm.Basic
+public import Mathlib.Data.List.Range
+public import Mathlib.Data.List.Rotate
+public import Mathlib.Data.List.ProdSigma
+public import Mathlib.Algebra.Group.Opposite
 
 /-!
 # Sums and products from lists
@@ -22,6 +24,8 @@ This file provides further results about `List.prod`, `List.sum`,
 which calculate the product and sum of elements of a list
 and `List.alternatingProd`, `List.alternatingSum`, their alternating counterparts.
 -/
+
+public section
 assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
 variable {ι α β M N P G : Type*}
@@ -54,14 +58,9 @@ depend on the order of elements. -/
 @[to_additive /-- If elements of a list additively commute with each other, then their sum does not
 depend on the order of elements. -/]
 lemma Perm.prod_eq' (h : l₁ ~ l₂) (hc : l₁.Pairwise Commute) : l₁.prod = l₂.prod := by
-  refine h.foldr_eq' ?_ _
-  apply Pairwise.forall_of_forall
-  · intro x y h z
-    exact (h z).symm
-  · intros; rfl
-  · apply hc.imp
-    intro a b h z
-    rw [← mul_assoc, ← mul_assoc, h]
+  have : Std.Symm fun x y ↦ ∀ z : M, y * (x * z) = x * (y * z) := { symm x y h z := h z |>.symm }
+  refine h.foldr_eq' (Pairwise.forall_of_forall (fun _ _ _ ↦ rfl) <| hc.imp fun {a b} h z ↦ ?_) 1
+  rw [← mul_assoc, ← mul_assoc, h]
 
 end Monoid
 
@@ -138,7 +137,7 @@ lemma drop_take_succ_flatten_eq_getElem (L : List (List α)) (i : Nat) (h : i < 
   have : (L.map length).take i = ((L.take (i + 1)).map length).take i := by
     simp [map_take, take_take, Nat.min_eq_left]
   simp only [this, take_sum_flatten, drop_sum_flatten,
-    drop_take_succ_eq_cons_getElem, h, flatten, append_nil]
+    drop_take_succ_eq_cons_getElem, h, flatten_nil, flatten_cons, append_nil]
 
 end List
 

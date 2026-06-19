@@ -3,13 +3,17 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Sym.Sym2.Order
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.Sym
+public import Mathlib.Data.Sym.Sym2.Order
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Lemmas on `Finset.sum` and `Finset.prod` involving `Finset.sym2` or `Finset.sym`.
 -/
+
+public section
 
 namespace Finset
 
@@ -28,4 +32,3 @@ theorem sum_count_of_mem_sym {α} [DecidableEq α] {m : ℕ} {k : Sym α m} {s :
   simp_all
 
 end Finset
-

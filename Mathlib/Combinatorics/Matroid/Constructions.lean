@@ -3,7 +3,9 @@ Copyright (c) 2024 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Minor.Restrict
+module
+
+public import Mathlib.Combinatorics.Matroid.Minor.Restrict
 
 /-!
 # Some constructions of matroids
@@ -28,6 +30,8 @@ we bootstrap the definitions starting with `emptyOn α` (which `simp` can prove 
 and then construct the other examples using duality and restriction.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -147,7 +151,7 @@ def freeOn (E : Set α) : Matroid α := (loopyOn E)✶
   simp [freeOn]
 
 @[simp] theorem freeOn_isBase_iff : (freeOn E).IsBase B ↔ B = E := by
-  simp only [freeOn, loopyOn_ground, dual_isBase_iff', loopyOn_isBase_iff, diff_eq_empty,
+  simp only [freeOn, loopyOn_ground, dual_isBase_iff', loopyOn_isBase_iff, sdiff_eq_empty,
     ← subset_antisymm_iff, eq_comm (a := E)]
 
 @[simp] theorem freeOn_indep_iff : (freeOn E).Indep I ↔ I ⊆ E := by
@@ -196,7 +200,7 @@ end FreeOn
 section uniqueBaseOn
 
 /-- The matroid on `E` whose unique base is the subset `I` of `E`.
-Intended for use when `I ⊆ E`; if this not not the case, then the base is `I ∩ E`. -/
+Intended for use when `I ⊆ E`; if this is not the case, then the base is `I ∩ E`. -/
 def uniqueBaseOn (I E : Set α) : Matroid α := freeOn I ↾ E
 
 @[simp] theorem uniqueBaseOn_ground : (uniqueBaseOn I E).E = E :=
@@ -230,15 +234,15 @@ theorem uniqueBaseOn_inter_isBasis (hX : X ⊆ E) : (uniqueBaseOn I E).IsBasis (
   rw [← uniqueBaseOn_inter_ground_eq]
   refine ext_isBase rfl (fun B (hB : B ⊆ E) ↦ ?_)
   rw [dual_isBase_iff, uniqueBaseOn_isBase_iff inter_subset_right,
-    uniqueBaseOn_isBase_iff diff_subset, uniqueBaseOn_ground]
-  exact ⟨fun h ↦ by rw [← diff_diff_cancel_left hB, h, diff_inter_self_eq_diff],
+    uniqueBaseOn_isBase_iff sdiff_subset, uniqueBaseOn_ground]
+  exact ⟨fun h ↦ by rw [← sdiff_sdiff_cancel_left hB, h, sdiff_inter_self_eq_sdiff],
     fun h ↦ by rw [h, inter_comm I]; simp⟩
 
 @[simp] theorem uniqueBaseOn_self (I : Set α) : uniqueBaseOn I I = freeOn I := by
   rw [uniqueBaseOn, freeOn_restrict rfl.subset]
 
 @[simp] theorem uniqueBaseOn_empty (I : Set α) : uniqueBaseOn ∅ I = loopyOn I := by
-  rw [← dual_inj, uniqueBaseOn_dual_eq, diff_empty, uniqueBaseOn_self, loopyOn_dual_eq]
+  rw [← dual_inj, uniqueBaseOn_dual_eq, sdiff_empty, uniqueBaseOn_self, loopyOn_dual_eq]
 
 theorem uniqueBaseOn_restrict' (I E R : Set α) :
     (uniqueBaseOn I E) ↾ R = uniqueBaseOn (I ∩ R ∩ E) R := by

@@ -3,7 +3,9 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
 
 /-!
 # Algebraic elements and algebraic extensions
@@ -25,6 +27,8 @@ An R-algebra is algebraic over R if and only if all its elements are algebraic o
   only the zero polynomial evaluates to 0 at `x`.
 * `Subalgebra.isAlgebraic_iff`: a subalgebra is algebraic iff it is algebraic as an algebra.
 -/
+
+@[expose] public section
 
 assert_not_exists IsIntegralClosure LinearIndependent IsLocalRing MvPolynomial
 
@@ -58,18 +62,21 @@ theorem transcendental_iff {x : A} :
 protected def Subalgebra.IsAlgebraic (S : Subalgebra R A) : Prop :=
   ∀ x ∈ S, IsAlgebraic R x
 
-variable (R A)
-
+variable (R A) in
 /-- An algebra is algebraic if all its elements are algebraic. -/
 @[stacks 09GC "Algebraic extensions"]
 protected class Algebra.IsAlgebraic : Prop where
   isAlgebraic : ∀ x : A, IsAlgebraic R x
 
+variable (R A) in
 /-- An algebra is transcendental if some element is transcendental. -/
 protected class Algebra.Transcendental : Prop where
   transcendental : ∃ x : A, Transcendental R x
 
-variable {R A}
+variable (R A) in
+lemma Algebra.nontrivial_of_isAlgebraic [Algebra.IsAlgebraic R A] : Nontrivial R := by
+  obtain ⟨p, hp, -⟩ := Algebra.IsAlgebraic.isAlgebraic (R := R) (0 : A)
+  exact .of_polynomial_ne hp
 
 lemma Algebra.isAlgebraic_def : Algebra.IsAlgebraic R A ↔ ∀ x : A, IsAlgebraic R x :=
   ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩

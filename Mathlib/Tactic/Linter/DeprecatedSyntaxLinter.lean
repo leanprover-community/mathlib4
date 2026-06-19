@@ -3,17 +3,20 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Jeremy Tan, Adomas Baliuka
 -/
+module
 
-import Lean.Elab.Command
+public meta import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Lean.Parser.Command
 
 /-!
 # Linter against deprecated syntax
 
-`refine'` and `cases'` provide backward-compatible implementations of their unprimed equivalents
-in Lean 3, `refine` and `cases`. They have been superseded by Lean 4 tactics:
+`refine'`, `cases'` and `induction'` provide backward-compatible implementations of their
+unprimed equivalents in Lean 3 –`refine`, `cases` and `induction` respectively.
+They have been superseded by Lean 4 tactics:
 
 * `refine` and `apply` replace `refine'`. While they are similar, they handle metavariables
   slightly differently; this means that they are not completely interchangeable, nor can one
@@ -21,6 +24,7 @@ in Lean 3, `refine` and `cases`. They have been superseded by Lean 4 tactics:
   tend to be more efficient on average.
 * `obtain`, `rcases` and `cases` replace `cases'`. Unlike the replacement tactics, `cases'`
   does not require the variables it introduces to be separated by case, which hinders readability.
+* `induction` replaces `induction'` for similar reasons to `cases` and `cases'`.
 
 The `admit` tactic is a synonym for the much more common `sorry`, so the latter should be preferred.
 
@@ -31,6 +35,8 @@ probably possible to prove `False` using `native_decide`.
 This linter is an incentive to discourage uses of such deprecated syntax, without being a ban.
 It is not inherently limited to tactics.
 -/
+
+meta section
 
 open Lean Elab Linter
 
@@ -44,7 +50,7 @@ differently. This means that they are not completely interchangeable, nor can on
 replace another. However, `refine` and `apply` are more readable and (heuristically) tend to be
 more efficient on average.
 -/
-register_option linter.style.refine : Bool := {
+public register_option linter.style.refine : Bool := {
   defValue := false
   descr := "enable the refine linter"
 }
@@ -54,14 +60,24 @@ the `cases'` tactic, which is a backward-compatible version of Lean 3's `cases` 
 Unlike `obtain`, `rcases` and Lean 4's `cases`, variables introduced by `cases'` are not
 required to be separated by case, which hinders readability.
 -/
-register_option linter.style.cases : Bool := {
+public register_option linter.style.cases : Bool := {
   defValue := false
   descr := "enable the cases linter"
 }
 
+/-- The option `linter.style.induction` of the deprecated syntax linter flags usages of
+the `induction'` tactic, which is a backward-compatible version of Lean 3's `induction` tactic.
+Unlike Lean 4's `induction`, variables introduced by `induction'` are not
+required to be separated by case, which hinders readability.
+-/
+public register_option linter.style.induction : Bool := {
+  defValue := false
+  descr := "enable the induction linter"
+}
+
 /-- The option `linter.style.admit` of the deprecated syntax linter flags usages of
 the `admit` tactic, which is a synonym for the much more common `sorry`. -/
-register_option linter.style.admit : Bool := {
+public register_option linter.style.admit : Bool := {
   defValue := false
   descr := "enable the admit linter"
 }
@@ -71,7 +87,7 @@ the `native_decide` tactic, which is disallowed in mathlib. -/
 -- Note: this linter is purely for user information. Running `lean4checker` in CI catches *any*
 -- additional axioms that are introduced (not just `ofReduceBool`): the point of this check is to
 -- alert the user quickly, not to be airtight.
-register_option linter.style.nativeDecide : Bool := {
+public register_option linter.style.nativeDecide : Bool := {
   defValue := false
   descr := "enable the nativeDecide linter"
 }
@@ -82,7 +98,7 @@ the reason for the modification of the `maxHeartbeats`.
 
 This includes `set_option maxHeartbeats n in` and `set_option synthInstance.maxHeartbeats n in`.
 -/
-register_option linter.style.maxHeartbeats : Bool := {
+public register_option linter.style.maxHeartbeats : Bool := {
   defValue := false
   descr := "enable the maxHeartbeats linter"
 }
@@ -95,7 +111,7 @@ where `<option>` contains `maxHeartbeats`, then it returns
 
 Otherwise, it returns `none`.
 -/
-def getSetOptionMaxHeartbeatsComment : Syntax → Option (Name × Nat × Substring)
+def getSetOptionMaxHeartbeatsComment : Syntax → Option (Name × Nat × Substring.Raw)
   | stx@`(command|set_option $mh $n:num in $_) =>
     let opt := mh.getId
     if !opt.components.contains `maxHeartbeats then
@@ -109,7 +125,7 @@ def getSetOptionMaxHeartbeatsComment : Syntax → Option (Name × Nat × Substri
   | _ => none
 
 /-- Whether a given piece of syntax represents a `decide` tactic call with the `native` option
-enabled. This may have false negatives for `decide (config := {<options>})` syntax). -/
+enabled. This may have false negatives for `decide (config := {<options>})` syntax. -/
 def isDecideNative (stx : Syntax ) : Bool :=
   match stx with
   | .node _ ``Lean.Parser.Tactic.decide args =>
@@ -143,6 +159,10 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
       rargs.push (kind, stx,
         "The `cases'` tactic is discouraged: \
          please strongly consider using `obtain`, `rcases` or `cases` instead.")
+    | `Mathlib.Tactic.induction' =>
+      rargs.push (kind, stx,
+        "The `induction'` tactic is discouraged: \
+         please strongly consider using `induction` instead.")
     | ``Lean.Parser.Tactic.tacticAdmit =>
       rargs.push (kind, stx,
         "The `admit` tactic is discouraged: \
@@ -166,7 +186,7 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
         -- we remove all subsequent potential flags and only decide whether to lint or not
         -- based on whether the current option has a comment.
         let rargs := rargs.filter (·.1 != `MaxHeartbeats)
-        if trailing.toString.trimLeft.isEmpty then
+        if trailing.toString.trimAsciiStart.isEmpty then
           rargs.push (`MaxHeartbeats, stx,
             s!"Please, add a comment explaining the need for modifying the maxHeartbeat limit, \
               as in\nset_option {opt} {n} in\n-- reason for change\n...")
@@ -180,6 +200,7 @@ replacement syntax. For each individual case, linting can be turned on or off se
 
 * `refine'`, superseded by `refine` and `apply` (controlled by `linter.style.refine`)
 * `cases'`, superseded by `obtain`, `rcases` and `cases` (controlled by `linter.style.cases`)
+* `induction'`, superseded by `induction` (controlled by `linter.style.induction`)
 * `admit`, superseded by `sorry` (controlled by `linter.style.admit`)
 * `set_option maxHeartbeats`, should contain an explanatory comment
   (controlled by `linter.style.maxHeartbeats`)
@@ -187,6 +208,7 @@ replacement syntax. For each individual case, linting can be turned on or off se
 def deprecatedSyntaxLinter : Linter where run stx := do
   unless getLinterValue linter.style.refine (← getLinterOptions) ||
       getLinterValue linter.style.cases (← getLinterOptions) ||
+      getLinterValue linter.style.induction (← getLinterOptions) ||
       getLinterValue linter.style.admit (← getLinterOptions) ||
       getLinterValue linter.style.maxHeartbeats (← getLinterOptions) ||
       getLinterValue linter.style.nativeDecide (← getLinterOptions) do
@@ -204,6 +226,7 @@ def deprecatedSyntaxLinter : Linter where run stx := do
       match kind with
       | ``Lean.Parser.Tactic.refine' => Linter.logLintIf linter.style.refine stx' msg
       | `Mathlib.Tactic.cases' => Linter.logLintIf linter.style.cases stx' msg
+      | `Mathlib.Tactic.induction' => Linter.logLintIf linter.style.induction stx' msg
       | ``Lean.Parser.Tactic.tacticAdmit => Linter.logLintIf linter.style.admit stx' msg
       | ``Lean.Parser.Tactic.nativeDecide | ``Lean.Parser.Tactic.decide =>
         Linter.logLintIf linter.style.nativeDecide stx' msg

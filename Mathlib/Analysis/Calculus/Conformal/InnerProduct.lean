@@ -3,8 +3,10 @@ Copyright (c) 2021 Yourong Zang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang
 -/
-import Mathlib.Analysis.Calculus.Conformal.NormedSpace
-import Mathlib.Analysis.InnerProductSpace.ConformalLinearMap
+module
+
+public import Mathlib.Analysis.Calculus.Conformal.NormedSpace
+public import Mathlib.Analysis.InnerProductSpace.ConformalLinearMap
 
 /-!
 # Conformal maps between inner product spaces
@@ -12,6 +14,8 @@ import Mathlib.Analysis.InnerProductSpace.ConformalLinearMap
 A function between inner product spaces which has a derivative at `x`
 is conformal at `x` iff the derivative preserves inner products up to a scalar multiple.
 -/
+
+@[expose] public section
 
 
 noncomputable section

@@ -3,9 +3,11 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
-import Mathlib.Algebra.Divisibility.Hom
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Ring.Defs
+module
+
+public import Mathlib.Algebra.Divisibility.Hom
+public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Lemmas about divisibility in rings
@@ -14,6 +16,8 @@ Note that this file is imported by basic tactics like `linarith` and so must hav
 imports. Further results about divisibility in rings may be found in
 `Mathlib/Algebra/Ring/Divisibility/Lemmas.lean` which is not subject to this import constraint.
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*}
@@ -178,7 +182,7 @@ variable [NonUnitalCommRing α]
 
 theorem dvd_mul_sub_mul {k a b x y : α} (hab : k ∣ a - b) (hxy : k ∣ x - y) :
     k ∣ a * x - b * y := by
-  convert dvd_add (hxy.mul_left a) (hab.mul_right y) using 1
+  convert dvd_add (hxy.mul_left a) (hab.mul_right y)
   rw [mul_sub_left_distrib, mul_sub_right_distrib]
   simp only [sub_eq_add_neg, add_assoc, neg_add_cancel_left]
 

@@ -3,9 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Contrapose
-import Mathlib.Data.Prod.PProd
+module
+
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.Contrapose
 
 /-!
 # Equivalence between product types
@@ -23,6 +24,8 @@ focusing on product types.
 equivalence, congruence, bijective map
 -/
 
+@[expose] public section
+
 open Function
 
 universe u
@@ -33,54 +36,42 @@ variable {α α₁ α₂ β β₁ β₂ γ δ : Sort*}
 namespace Equiv
 
 /-- `PProd α β` is equivalent to `α × β` -/
-@[simps apply symm_apply]
+@[simps (attr := grind =) apply symm_apply]
 def pprodEquivProd {α β} : PProd α β ≃ α × β where
   toFun x := (x.1, x.2)
   invFun x := ⟨x.1, x.2⟩
 
-attribute [grind =] pprodEquivProd_apply pprodEquivProd_symm_apply
-
 /-- Product of two equivalences, in terms of `PProd`. If `α ≃ β` and `γ ≃ δ`, then
 `PProd α γ ≃ PProd β δ`. -/
-@[simps apply symm_apply]
+@[simps (attr := grind =) apply symm_apply]
 def pprodCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : PProd α γ ≃ PProd β δ where
   toFun x := ⟨e₁ x.1, e₂ x.2⟩
   invFun x := ⟨e₁.symm x.1, e₂.symm x.2⟩
   left_inv := by grind
   right_inv := by grind
 
-attribute [grind =] pprodCongr_apply pprodCongr_symm_apply
-
 /-- Combine two equivalences using `PProd` in the domain and `Prod` in the codomain. -/
-@[simps! apply symm_apply]
+@[simps! (attr := grind =) apply symm_apply]
 def pprodProd {α₂ β₂} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
     PProd α₁ β₁ ≃ α₂ × β₂ :=
   (ea.pprodCongr eb).trans pprodEquivProd
 
-attribute [grind =] pprodProd_apply pprodProd_symm_apply
-
 /-- Combine two equivalences using `PProd` in the codomain and `Prod` in the domain. -/
-@[simps! apply symm_apply]
+@[simps! (attr := grind =) apply symm_apply]
 def prodPProd {α₁ β₁} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
     α₁ × β₁ ≃ PProd α₂ β₂ :=
   (ea.symm.pprodProd eb.symm).symm
 
-attribute [grind =] prodPProd_apply prodPProd_symm_apply
-
 /-- `PProd α β` is equivalent to `PLift α × PLift β` -/
-@[simps! apply symm_apply]
+@[simps! (attr := grind =) apply symm_apply]
 def pprodEquivProdPLift : PProd α β ≃ PLift α × PLift β :=
   Equiv.plift.symm.pprodProd Equiv.plift.symm
 
-attribute [grind =] pprodEquivProdPLift_apply pprodEquivProdPLift_symm_apply
-
 /-- Product of two equivalences. If `α₁ ≃ α₂` and `β₁ ≃ β₂`, then `α₁ × β₁ ≃ α₂ × β₂`. This is
 `Prod.map` as an equivalence. -/
-@[simps -fullyApplied apply]
+@[simps (attr := grind =) -fullyApplied apply]
 def prodCongr {α₁ α₂ β₁ β₂} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) : α₁ × β₁ ≃ α₂ × β₂ :=
   ⟨Prod.map e₁ e₂, Prod.map e₁.symm e₂.symm, fun ⟨a, b⟩ => by simp, fun ⟨a, b⟩ => by simp⟩
-
-attribute [grind =] prodCongr_apply
 
 @[simp, grind =]
 theorem prodCongr_symm {α₁ α₂ β₁ β₂} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) :
@@ -106,20 +97,16 @@ theorem prodComm_symm (α β) : (prodComm α β).symm = prodComm β α :=
   rfl
 
 /-- Type product is associative up to an equivalence. -/
-@[simps]
+@[simps (attr := grind =)]
 def prodAssoc (α β γ) : (α × β) × γ ≃ α × β × γ :=
   ⟨fun p => (p.1.1, p.1.2, p.2), fun p => ((p.1, p.2.1), p.2.2), fun ⟨⟨_, _⟩, _⟩ => rfl,
     fun ⟨_, ⟨_, _⟩⟩ => rfl⟩
 
-attribute [grind =] prodAssoc_apply prodAssoc_symm_apply
-
 /-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
-@[simps apply]
+@[simps (attr := grind =) apply]
 def prodProdProdComm (α β γ δ) : (α × β) × γ × δ ≃ (α × γ) × β × δ where
   toFun abcd := ((abcd.1.1, abcd.2.1), (abcd.1.2, abcd.2.2))
   invFun acbd := ((acbd.1.1, acbd.2.1), (acbd.1.2, acbd.2.2))
-
-attribute [grind =] prodProdProdComm_apply
 
 @[simp, grind =]
 theorem prodProdProdComm_symm (α β γ δ) :
@@ -127,45 +114,37 @@ theorem prodProdProdComm_symm (α β γ δ) :
   rfl
 
 /-- `γ`-valued functions on `α × β` are equivalent to functions `α → β → γ`. -/
-@[simps -fullyApplied]
+@[simps (attr := grind =) -fullyApplied]
 def curry (α β γ) : (α × β → γ) ≃ (α → β → γ) where
   toFun := Function.curry
   invFun := uncurry
   left_inv := uncurry_curry
   right_inv := curry_uncurry
 
-attribute [grind =] curry_apply curry_symm_apply
-
 section
 
 /-- `PUnit` is a right identity for type product up to an equivalence. -/
-@[simps]
+@[simps (attr := grind =)]
 def prodPUnit (α) : α × PUnit ≃ α where
   toFun := fun p => p.1
   invFun := fun a => (a, PUnit.unit)
 
-attribute [grind =] prodPUnit_apply prodPUnit_symm_apply
-
 /-- `PUnit` is a left identity for type product up to an equivalence. -/
-@[simps!]
+@[simps! (attr := grind =)]
 def punitProd (α) : PUnit × α ≃ α :=
   calc
     PUnit × α ≃ α × PUnit := prodComm _ _
     _ ≃ α := prodPUnit _
 
-attribute [grind =] punitProd_apply punitProd_symm_apply
-
 /-- `PUnit` is a right identity for dependent type product up to an equivalence. -/
-@[simps]
+@[simps (attr := grind =)]
 def sigmaPUnit (α) : (_ : α) × PUnit ≃ α where
   toFun := fun p => p.1
   invFun := fun a => ⟨a, PUnit.unit⟩
 
-attribute [grind =] sigmaPUnit_apply sigmaPUnit_symm_apply_fst sigmaPUnit_symm_apply_snd
-
 /-- Any `Unique` type is a right identity for type product up to equivalence. -/
 def prodUnique (α β) [Unique β] : α × β ≃ α :=
-  ((Equiv.refl α).prodCongr <| equivPUnit.{_,1} β).trans <| prodPUnit α
+  ((Equiv.refl α).prodCongr <| equivPUnit.{_, 1} β).trans <| prodPUnit α
 
 @[simp]
 theorem coe_prodUnique {α β} [Unique β] : (⇑(prodUnique α β) : α × β → α) = Prod.fst :=
@@ -180,7 +159,7 @@ theorem prodUnique_symm_apply {α β} [Unique β] (x : α) : (prodUnique α β).
 
 /-- Any `Unique` type is a left identity for type product up to equivalence. -/
 def uniqueProd (α β) [Unique β] : β × α ≃ α :=
-  ((equivPUnit.{_,1} β).prodCongr <| Equiv.refl α).trans <| punitProd α
+  ((equivPUnit.{_, 1} β).prodCongr <| Equiv.refl α).trans <| punitProd α
 
 @[simp]
 theorem coe_uniqueProd {α β} [Unique β] : (⇑(uniqueProd α β) : β × α → α) = Prod.snd :=
@@ -197,7 +176,7 @@ theorem uniqueProd_symm_apply {α β} [Unique β] (x : α) :
 /-- Any family of `Unique` types is a right identity for dependent type product up to
 equivalence. -/
 def sigmaUnique (α) (β : α → Type*) [∀ a, Unique (β a)] : (a : α) × (β a) ≃ α :=
-  (Equiv.sigmaCongrRight fun a ↦ equivPUnit.{_,1} (β a)).trans <| sigmaPUnit α
+  (Equiv.sigmaCongrRight fun a ↦ equivPUnit.{_, 1} (β a)).trans <| sigmaPUnit α
 
 @[simp]
 theorem coe_sigmaUnique {α} {β : α → Type*} [∀ a, Unique (β a)] :
@@ -215,7 +194,7 @@ theorem sigmaUnique_symm_apply {α} {β : α → Type*} [∀ a, Unique (β a)] (
 
 /-- Any `Unique` type is a left identity for type sigma up to equivalence. Compare with `uniqueProd`
 which is non-dependent. -/
-def uniqueSigma {α} (β : α → Type*) [Unique α] : (i:α) × β i ≃ β default where
+def uniqueSigma {α} (β : α → Type*) [Unique α] : (i : α) × β i ≃ β default where
   toFun := fun p ↦ (Unique.eq_default _).rec p.2
   invFun := fun b ↦ ⟨default, b⟩
   left_inv := fun _ ↦ Sigma.ext (Unique.default_eq _) (eqRec_heq _ _)
@@ -253,6 +232,7 @@ variable {α₁ α₂ β₁ β₂ : Type*} (e : α₁ → β₁ ≃ β₂)
 
 /-- A family of equivalences `∀ (a : α₁), β₁ ≃ β₂` generates an equivalence
 between `β₁ × α₁` and `β₂ × α₁`. -/
+@[simps apply_fst apply_snd]
 def prodCongrLeft : β₁ × α₁ ≃ β₂ × α₁ where
   toFun ab := ⟨e ab.2 ab.1, ab.2⟩
   invFun ab := ⟨(e ab.2).symm ab.1, ab.2⟩
@@ -264,12 +244,13 @@ theorem prodCongrLeft_apply (b : β₁) (a : α₁) : prodCongrLeft e (b, a) = (
   rfl
 
 theorem prodCongr_refl_right (e : β₁ ≃ β₂) :
-    prodCongr e (Equiv.refl α₁) = prodCongrLeft fun _ => e := by
-  ext ⟨a, b⟩ : 1
-  simp
+    prodCongr e (Equiv.refl α₁) = prodCongrLeft fun _ ↦ e := rfl
+
+@[simp] lemma prodCongrLeft_symm : (prodCongrLeft e).symm = prodCongrLeft (.symm ∘ e) := rfl
 
 /-- A family of equivalences `∀ (a : α₁), β₁ ≃ β₂` generates an equivalence
 between `α₁ × β₁` and `α₁ × β₂`. -/
+@[simps apply_fst apply_snd]
 def prodCongrRight : α₁ × β₁ ≃ α₁ × β₂ where
   toFun ab := ⟨ab.1, e ab.1 ab.2⟩
   invFun ab := ⟨ab.1, (e ab.1).symm ab.2⟩
@@ -281,9 +262,9 @@ theorem prodCongrRight_apply (a : α₁) (b : β₁) : prodCongrRight e (a, b) =
   rfl
 
 theorem prodCongr_refl_left (e : β₁ ≃ β₂) :
-    prodCongr (Equiv.refl α₁) e = prodCongrRight fun _ => e := by
-  ext ⟨a, b⟩ : 1
-  simp
+    prodCongr (Equiv.refl α₁) e = prodCongrRight fun _ ↦ e := rfl
+
+@[simp] lemma prodCongrRight_symm : (prodCongrRight e).symm = prodCongrRight (.symm ∘ e) := rfl
 
 @[simp]
 theorem prodCongrLeft_trans_prodComm :
@@ -367,7 +348,7 @@ open Sum
 
 /-- The type of dependent functions on a sum type `ι ⊕ ι'` is equivalent to the type of pairs of
 functions on `ι` and on `ι'`. This is a dependent version of `Equiv.sumArrowEquivProdArrow`. -/
-@[simps]
+@[simps (attr := grind =)]
 def sumPiEquivProdPi {ι ι'} (π : ι ⊕ ι' → Type*) :
     (∀ i, π i) ≃ (∀ i, π (inl i)) × ∀ i', π (inr i') where
   toFun f := ⟨fun i => f (inl i), fun i' => f (inr i')⟩
@@ -376,7 +357,7 @@ def sumPiEquivProdPi {ι ι'} (π : ι ⊕ ι' → Type*) :
 
 /-- The equivalence between a product of two dependent functions types and a single dependent
 function type. Basically a symmetric version of `Equiv.sumPiEquivProdPi`. -/
-@[simps!]
+@[simps! (attr := grind =)]
 def prodPiEquivSumPi {ι ι'} (π : ι → Type u) (π' : ι' → Type u) :
     ((∀ i, π i) × ∀ i', π' i') ≃ ∀ i, Sum.elim π π' i :=
   sumPiEquivProdPi (Sum.elim π π') |>.symm
@@ -388,22 +369,22 @@ def sumArrowEquivProdArrow (α β γ : Type*) : (α ⊕ β → γ) ≃ (α → �
     cases p
     rfl⟩
 
-@[simp]
+@[simp, grind =]
 theorem sumArrowEquivProdArrow_apply_fst {α β γ} (f : α ⊕ β → γ) (a : α) :
     (sumArrowEquivProdArrow α β γ f).1 a = f (inl a) :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem sumArrowEquivProdArrow_apply_snd {α β γ} (f : α ⊕ β → γ) (b : β) :
     (sumArrowEquivProdArrow α β γ f).2 b = f (inr b) :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem sumArrowEquivProdArrow_symm_apply_inl {α β γ} (f : α → γ) (g : β → γ) (a : α) :
     ((sumArrowEquivProdArrow α β γ).symm (f, g)) (inl a) = f a :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem sumArrowEquivProdArrow_symm_apply_inr {α β γ} (f : α → γ) (g : β → γ) (b : β) :
     ((sumArrowEquivProdArrow α β γ).symm (f, g)) (inr b) = g b :=
   rfl
@@ -414,34 +395,34 @@ def sumProdDistrib (α β γ) : (α ⊕ β) × γ ≃ α × γ ⊕ β × γ :=
     fun s => s.elim (Prod.map inl id) (Prod.map inr id), by
       rintro ⟨_ | _, _⟩ <;> rfl, by rintro (⟨_, _⟩ | ⟨_, _⟩) <;> rfl⟩
 
-@[simp]
+@[simp, grind =]
 theorem sumProdDistrib_apply_left {α β γ} (a : α) (c : γ) :
     sumProdDistrib α β γ (Sum.inl a, c) = Sum.inl (a, c) :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem sumProdDistrib_apply_right {α β γ} (b : β) (c : γ) :
     sumProdDistrib α β γ (Sum.inr b, c) = Sum.inr (b, c) :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem sumProdDistrib_symm_apply_left {α β γ} (a : α × γ) :
     (sumProdDistrib α β γ).symm (inl a) = (inl a.1, a.2) :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem sumProdDistrib_symm_apply_right {α β γ} (b : β × γ) :
     (sumProdDistrib α β γ).symm (inr b) = (inr b.1, b.2) :=
   rfl
 
 /-- The product of an indexed sum of types (formally, a `Sigma`-type `Σ i, α i`) by a type `β` is
 equivalent to the sum of products `Σ i, (α i × β)`. -/
-@[simps apply symm_apply]
-def sigmaProdDistrib {ι} (α : ι → Type*) (β) : (Σ i, α i) × β ≃ Σ i, α i × β :=
+@[simps (attr := grind =) apply symm_apply]
+def sigmaProdDistrib {ι : Type*} (α : ι → Type*) (β : Type*) : (Σ i, α i) × β ≃ Σ i, α i × β :=
   ⟨fun p => ⟨p.1.1, (p.1.2, p.2)⟩, fun p => (⟨p.1, p.2.1⟩, p.2.2), by grind, by grind⟩
 
 /-- The product `Bool × α` is equivalent to `α ⊕ α`. -/
-@[simps]
+@[simps (attr := grind =)]
 def boolProdEquivSum (α) : Bool × α ≃ α ⊕ α where
   toFun p := if p.1 then (inr p.2) else (inl p.2)
   invFun := Sum.elim (Prod.mk false) (Prod.mk true)
@@ -449,7 +430,7 @@ def boolProdEquivSum (α) : Bool × α ≃ α ⊕ α where
   right_inv := by rintro (_ | _) <;> rfl
 
 /-- The function type `Bool → α` is equivalent to `α × α`. -/
-@[simps]
+@[simps (attr := grind =)]
 def boolArrowEquivProd (α : Type*) : (Bool → α) ≃ α × α where
   toFun f := (f false, f true)
   invFun p b := if b then p.2 else p.1
@@ -520,3 +501,29 @@ def subsingletonProdSelfEquiv {α} [Subsingleton α] : α × α ≃ α where
   invFun a := (a, a)
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
+
+section
+
+variable {α β : Type*} (a : α) (b : β)
+
+/-- `(1 + α) × β = β + α × β` -/
+def optionProdEquiv : Option α × β ≃ β ⊕ α × β where
+  toFun x := x.1.casesOn (.inl x.2) (fun a ↦ .inr (a, x.2))
+  invFun x := x.casesOn (.mk none) (.map some id)
+  left_inv
+  | (none, _) => rfl
+  | (some _, _) => rfl
+  right_inv
+  | .inl _ => rfl
+  | .inr (_, _) => rfl
+
+@[simp] lemma optionProdEquiv_mk_none : optionProdEquiv (α := α) (.none, b) = .inl b := rfl
+
+@[simp] lemma optionProdEquiv_mk_some : optionProdEquiv (.some a, b) = .inr (a, b) := rfl
+
+@[simp] lemma optionProdEquiv_symm_inl : optionProdEquiv (α := α).symm (.inl b) = (.none, b) := rfl
+
+@[simp] lemma optionProdEquiv_symm_inr (p : α × β) :
+  optionProdEquiv.symm (.inr p) = p.map some id := rfl
+
+end

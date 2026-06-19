@@ -3,16 +3,18 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Algebra.Polynomial.Identities
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.NumberTheory.Padics.PadicIntegers
-import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Topology.MetricSpace.CauSeqFilter
+module
+
+public import Mathlib.Algebra.Polynomial.Identities
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.NumberTheory.Padics.PadicIntegers
+public import Mathlib.Topology.Algebra.Polynomial
+public import Mathlib.Topology.MetricSpace.CauSeqFilter
 
 /-!
-# Hensel's lemma on ℤ_p
+# Hensel's lemma on `ℤ_p`
 
-This file proves Hensel's lemma on ℤ_p, roughly following Keith Conrad's writeup:
+This file proves Hensel's lemma on `ℤ_p`, roughly following Keith Conrad's writeup:
 <http://www.math.uconn.edu/~kconrad/blurbs/gradnumthy/hensel.pdf>
 
 Hensel's lemma gives a simple condition for the existence of a root of a polynomial.
@@ -30,6 +32,8 @@ The proof and motivation are described in the paper
 
 p-adic, p adic, padic, p-adic integer
 -/
+
+public section
 
 
 noncomputable section
@@ -70,7 +74,7 @@ include ncs_der_val
 
 private theorem ncs_tendsto_const :
     Tendsto (fun i => ‖F.derivative.aeval (ncs i)‖) atTop (𝓝 ‖F.derivative.aeval a‖) := by
-  convert @tendsto_const_nhds ℝ _ ℕ _ _; rw [ncs_der_val]
+  convert! @tendsto_const_nhds ℝ _ ℕ _ _; rw [ncs_der_val]
 
 private theorem norm_deriv_eq : ‖F.derivative.aeval ncs.lim‖ = ‖F.derivative.aeval a‖ :=
   tendsto_nhds_unique ncs_tendsto_lim (ncs_tendsto_const ncs_der_val)
@@ -96,6 +100,26 @@ theorem limit_zero_of_norm_tendsto_zero : F.aeval ncs.lim = 0 := by
   simp
 
 end
+
+private theorem a_soln_is_unique {p : ℕ} [Fact p.Prime] {R : Type*} [CommSemiring R]
+    [Algebra R ℤ_[p]] {F : Polynomial R} {a : ℤ_[p]} (ha : F.aeval a = 0) (z' : ℤ_[p])
+    (hz' : F.aeval z' = 0) (hnormz' : ‖z' - a‖ < ‖F.derivative.aeval a‖) : z' = a := by
+  let h := z' - a
+  let ⟨q, hq⟩ := (F.map (algebraMap R ℤ_[p])).binomExpansion a h
+  simp only [Polynomial.eval_map_algebraMap, Polynomial.derivative_map] at hq
+  have : (F.derivative.aeval a + q * h) * h = 0 := by calc
+    _ = F.aeval (a + h) := by rw [hq, ha, zero_add, sq, right_distrib, mul_assoc]
+    _ = _ := show F.aeval (a + (z' - a)) = 0 by simp [hz']
+  have : h = 0 := by_contra fun hne ↦
+    have : F.derivative.aeval a + q * h = 0 :=
+      (eq_zero_or_eq_zero_of_mul_eq_zero this).resolve_right hne
+    have : F.derivative.aeval a = -q * h := by simpa using eq_neg_of_add_eq_zero_left this
+    lt_irrefl ‖F.derivative.aeval a‖
+      (calc
+        ‖F.derivative.aeval a‖ = ‖q‖ * ‖h‖ := by simp [this]
+        _ ≤ 1 * ‖h‖ := by gcongr; apply PadicInt.norm_le_one
+        _ < ‖F.derivative.aeval a‖ := by simpa)
+  exact eq_of_sub_eq_zero (by rw [← this])
 
 section Hensel
 
@@ -145,7 +169,7 @@ private theorem T_pow {n : ℕ} (hn : n ≠ 0) : T ^ n < 1 := pow_lt_one₀ T_no
 
 private theorem T_pow' (n : ℕ) : T ^ 2 ^ n < 1 := T_pow hnorm (pow_ne_zero _ two_ne_zero)
 
-/-- We will construct a sequence of elements of ℤ_p satisfying successive values of `ih`. -/
+/-- We will construct a sequence of elements of `ℤ_p` satisfying successive values of `ih`. -/
 private def ih_gen (n : ℕ) (z : ℤ_[p]) : Prop :=
   ‖F.derivative.aeval z‖ = ‖F.derivative.aeval a‖ ∧ ‖F.aeval z‖ ≤
     ‖F.derivative.aeval a‖ ^ 2 * T ^ 2 ^ n
@@ -203,6 +227,7 @@ private def calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n 
       _ = -F.aeval z := by simp only [mul_div_cancel₀ _ hdzne', Subtype.coe_eta]
   exact ⟨q, by simpa [sub_eq_add_neg, neg_mul_eq_mul_neg, this, hz'] using hq⟩
 
+set_option linter.defProp false in
 private def calc_eval_z'_norm {z z' z1 : ℤ_[p]} {n} (hz : ih n z) {q}
     (heq : F.aeval z' = q * z1 ^ 2)
     (h1 : ‖(↑(F.aeval z) : ℚ_[p]) / ↑(F.derivative.aeval z)‖ ≤ 1) (hzeq : z1 = ⟨_, h1⟩) :
@@ -279,7 +304,7 @@ private theorem newton_seq_dist_aux (n : ℕ) :
   | k + 1 =>
     have : 2 ^ n ≤ 2 ^ (n + k) := by
       apply pow_right_mono₀
-      · norm_num
+      · simp
       · apply Nat.le_add_right
     calc
       ‖newton_seq (n + (k + 1)) - newton_seq n‖ = ‖newton_seq (n + k + 1) - newton_seq n‖ := by
@@ -306,7 +331,7 @@ private theorem bound' : Tendsto (fun n : ℕ => ‖F.derivative.aeval a‖ * T 
   exact
     tendsto_const_nhds.mul
       (Tendsto.comp (tendsto_pow_atTop_nhds_zero_of_lt_one (norm_nonneg _) (T_lt_one hnorm))
-        (Nat.tendsto_pow_atTop_atTop_of_one_lt (by simp)))
+        (tendsto_pow_atTop_atTop_of_one_lt (by simp)))
 
 private theorem bound :
     ∀ {ε}, ε > 0 → ∃ N : ℕ, ∀ {n}, n ≥ N → ‖F.derivative.aeval a‖ * T ^ 2 ^ n < ε := fun hε ↦
@@ -407,67 +432,19 @@ private theorem soln_dist_to_a_lt_deriv : ‖soln - a‖ < ‖F.derivative.aeval
 
 private theorem soln_unique (z : ℤ_[p]) (hev : F.aeval z = 0)
     (hnlt : ‖z - a‖ < ‖F.derivative.aeval a‖) : z = soln := by
-  have soln_dist : ‖z - soln‖ < ‖F.derivative.aeval a‖ :=
+  have hsoln : ‖z - soln‖ < ‖F.derivative.aeval soln‖ := by
+    rw [soln_deriv_norm]
     calc
       ‖z - soln‖ = ‖z - a + (a - soln)‖ := by rw [sub_add_sub_cancel]
       _ ≤ max ‖z - a‖ ‖a - soln‖ := PadicInt.nonarchimedean _ _
       _ < ‖F.derivative.aeval a‖ :=
         max_lt hnlt ((norm_sub_rev soln a ▸ (soln_dist_to_a_lt_deriv hnorm)) hnsol)
-  let h := z - soln
-  let ⟨q, hq⟩ := (F.map (algebraMap R ℤ_[p])).binomExpansion soln h
-  simp only [Polynomial.eval_map_algebraMap, Polynomial.derivative_map] at hq
-  have : (F.derivative.aeval soln + q * h) * h = 0 :=
-    Eq.symm
-      (calc
-        0 = F.aeval (soln + h) := by simp [h, hev]
-        _ = F.derivative.aeval soln * h + q * h ^ 2 := by rw [hq, eval_soln, zero_add]
-        _ = (F.derivative.aeval soln + q * h) * h := by rw [sq, right_distrib, mul_assoc]
-        )
-  have : h = 0 :=
-    by_contra fun hne =>
-      have : F.derivative.aeval soln + q * h = 0 :=
-        (eq_zero_or_eq_zero_of_mul_eq_zero this).resolve_right hne
-      have : F.derivative.aeval soln = -q * h := by simpa using eq_neg_of_add_eq_zero_left this
-      lt_irrefl ‖F.derivative.aeval soln‖
-        (calc
-          ‖F.derivative.aeval soln‖ = ‖-q * h‖ := by rw [this]
-          _ ≤ 1 * ‖h‖ := by
-            rw [norm_mul]
-            exact mul_le_mul_of_nonneg_right (PadicInt.norm_le_one _) (norm_nonneg _)
-          _ = ‖z - soln‖ := by simp [h]
-          _ < ‖F.derivative.aeval soln‖ := by rw [soln_deriv_norm]; apply soln_dist
-          )
-  exact eq_of_sub_eq_zero (by rw [← this])
+  exact a_soln_is_unique (eval_soln hnorm) z hev hsoln
 
 end Hensel
 
 variable {p : ℕ} [Fact p.Prime] {R : Type*} [CommSemiring R] [Algebra R ℤ_[p]]
   {F : Polynomial R} {a : ℤ_[p]}
-
-private theorem a_soln_is_unique (ha : F.aeval a = 0) (z' : ℤ_[p]) (hz' : F.aeval z' = 0)
-    (hnormz' : ‖z' - a‖ < ‖F.derivative.aeval a‖) : z' = a := by
-  let h := z' - a
-  let ⟨q, hq⟩ := (F.map (algebraMap R ℤ_[p])).binomExpansion a h
-  simp only [Polynomial.eval_map_algebraMap, Polynomial.derivative_map] at hq
-  have : (F.derivative.aeval a + q * h) * h = 0 :=
-    Eq.symm
-      (calc
-        0 = F.aeval (a + h) := show 0 = F.aeval (a + (z' - a)) by simp [hz']
-        _ = F.derivative.aeval a * h + q * h ^ 2 := by rw [hq, ha, zero_add]
-        _ = (F.derivative.aeval a + q * h) * h := by rw [sq, right_distrib, mul_assoc]
-        )
-  have : h = 0 :=
-    by_contra fun hne =>
-      have : F.derivative.aeval a + q * h = 0 :=
-        (eq_zero_or_eq_zero_of_mul_eq_zero this).resolve_right hne
-      have : F.derivative.aeval a = -q * h := by simpa using eq_neg_of_add_eq_zero_left this
-      lt_irrefl ‖F.derivative.aeval a‖
-        (calc
-          ‖F.derivative.aeval a‖ = ‖q‖ * ‖h‖ := by simp [this]
-          _ ≤ 1 * ‖h‖ := by gcongr; apply PadicInt.norm_le_one
-          _ < ‖F.derivative.aeval a‖ := by simpa
-          )
-  exact eq_of_sub_eq_zero (by rw [← this])
 
 variable (hnorm : ‖F.aeval a‖ < ‖F.derivative.aeval a‖ ^ 2)
 include hnorm

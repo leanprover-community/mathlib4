@@ -3,15 +3,19 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Finset
-import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Finset
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Stabilizer of a set under a pointwise action
 
 This file characterises the stabilizer of a set/finset under the pointwise action of a group.
 -/
+
+public section
 
 open Function MulOpposite Set
 open scoped Pointwise
@@ -89,7 +93,7 @@ lemma stabilizer_union_eq_left (hdisj : Disjoint s t) (hstab : stabilizer G s �
       stabilizer G (s ∪ t)
         ≤ stabilizer G (s ∪ t) ⊓ stabilizer G t := by simpa
       _ ≤ stabilizer G ((s ∪ t) \ t) := stabilizer_inf_stabilizer_le_stabilizer_sdiff
-      _ = stabilizer G s := by rw [union_diff_cancel_right]; simpa [← disjoint_iff_inter_eq_empty]
+      _ = stabilizer G s := by rw [union_sdiff_cancel_right]; simpa [← disjoint_iff_inter_eq_empty]
   · calc
       stabilizer G s
         ≤ stabilizer G s ⊓ stabilizer G t := by simpa
@@ -155,7 +159,7 @@ lemma stabilizer_subgroup_op (s : Subgroup Gᵐᵒᵖ) : stabilizer G (s : Set G
   simp_rw [SetLike.ext_iff, mem_stabilizer_set]
   refine fun a ↦ ⟨fun h ↦ ?_, fun ha b ↦ s.mul_mem_cancel_right ha⟩
   have : 1 * MulOpposite.op a ∈ s := (h 1).2 s.one_mem
-  simpa only [op_smul_eq_mul, SetLike.mem_coe, one_mul] using this
+  simpa only [op_smul_eq_mul, SetLike.mem_coe, one_mul] using! this
 
 end Subgroup
 
@@ -238,8 +242,8 @@ variable {G : Type*} [CommGroup G] (s : Set G)
 @[to_additive (attr := simp)]
 lemma mul_stabilizer_self : s * stabilizer G s = s := by rw [mul_comm, stabilizer_mul_self]
 
-local notation " Q " => G ⧸ stabilizer G s
-local notation " q " => ((↑) : G → Q)
+local notation "Q" => G ⧸ stabilizer G s
+local notation "q" => ((↑) : G → Q)
 
 @[to_additive]
 lemma stabilizer_image_coe_quotient : stabilizer Q (q '' s) = ⊥ := by

@@ -3,14 +3,18 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Pointwise actions of finsets
 -/
+
+@[expose] public section
 
 -- TODO
 -- assert_not_exists MonoidWithZero
@@ -75,7 +79,7 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
 
 /-- A multiplicative action of a monoid `α` on a type `β` gives a multiplicative action of
 `Finset α` on `Finset β`. -/
-@[to_additive
+@[to_additive (attr := implicit_reducible)
       /-- An additive action of an additive monoid `α` on a type `β` gives an additive action
       of `Finset α` on `Finset β` -/]
 protected def mulAction [DecidableEq α] [Monoid α] [MulAction α β] :
@@ -85,7 +89,7 @@ protected def mulAction [DecidableEq α] [Monoid α] [MulAction α β] :
 
 /-- A multiplicative action of a monoid on a type `β` gives a multiplicative action on `Finset β`.
 -/
-@[to_additive
+@[to_additive (attr := implicit_reducible)
       /-- An additive action of an additive monoid on a type `β` gives an additive action
       on `Finset β`. -/]
 protected def mulActionFinset [Monoid α] [MulAction α β] : MulAction α (Finset β) :=
@@ -136,15 +140,15 @@ theorem op_smul_finset_mul_eq_mul_smul_finset (a : α) (s : Finset α) (t : Fins
 
 end Semigroup
 
-section IsLeftCancelMul
-variable [Mul α] [IsLeftCancelMul α] [DecidableEq α] {s t : Finset α} {a : α}
+section IsLeftCancelSMul
+variable [SMul α β] [IsLeftCancelSMul α β] [DecidableEq β]
 
 @[to_additive]
-theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset α} :
-    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t : Set (α × α)).InjOn fun p => p.1 * p.2 := by
+theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset β} :
+    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t : Set (α × β)).InjOn fun p => p.1 • p.2 := by
   simp_rw [← pairwiseDisjoint_coe, coe_smul_finset, Set.pairwiseDisjoint_smul_iff]
 
-end IsLeftCancelMul
+end IsLeftCancelSMul
 
 @[to_additive]
 theorem image_smul_distrib [DecidableEq α] [DecidableEq β] [Mul α] [Mul β] [FunLike F α β]
@@ -158,6 +162,10 @@ variable [DecidableEq β] [Group α] [MulAction α β] {s t : Finset β} {a : α
 @[to_additive (attr := simp)]
 theorem smul_mem_smul_finset_iff (a : α) : a • b ∈ a • s ↔ b ∈ s :=
   (MulAction.injective _).mem_finset_image
+
+@[to_additive (attr := simp)]
+lemma mul_mem_smul_finset_iff [DecidableEq α] (a : α) {b : α} {s : Finset α} :
+    a * b ∈ a • s ↔ b ∈ s := smul_mem_smul_finset_iff _
 
 @[to_additive]
 theorem inv_smul_mem_iff : a⁻¹ • b ∈ s ↔ b ∈ a • s := by
@@ -199,6 +207,10 @@ theorem smul_finset_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
 @[to_additive (attr := simp)]
 theorem smul_finset_univ [Fintype β] : a • (univ : Finset β) = univ :=
   image_univ_of_surjective <| MulAction.surjective a
+
+@[to_additive (attr := simp)]
+theorem smul_finset_eq_univ [Fintype β] : a • s = univ ↔ s = univ := by
+  rw [smul_eq_iff_eq_inv_smul, smul_finset_univ]
 
 @[to_additive (attr := simp)]
 theorem smul_univ [Fintype β] {s : Finset α} (hs : s.Nonempty) : s • (univ : Finset β) = univ :=

@@ -3,7 +3,9 @@ Copyright (c) 2022 Matej Penciak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matej Penciak, Moritz Doll, Fabien Clery
 -/
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+module
+
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 /-!
 # The Symplectic Group
@@ -19,6 +21,8 @@ This file defines the symplectic group and proves elementary properties.
 * Every symplectic matrix has determinant 1.
 * For `n = 1` the symplectic group coincides with the special linear group.
 -/
+
+@[expose] public section
 
 
 open Matrix

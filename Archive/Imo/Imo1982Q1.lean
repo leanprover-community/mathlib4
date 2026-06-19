@@ -45,7 +45,7 @@ namespace Imo1982Q1
 
 structure IsGood (f : ℕ+ → ℕ) : Prop where
   /-- The function satisfies the functional relation. -/
-  rel: ∀ m n : ℕ+, f (m + n) = f m + f n ∨ f (m + n) = f m + f n + 1
+  rel : ∀ m n : ℕ+, f (m + n) = f m + f n ∨ f (m + n) = f m + f n + 1
   f₂ : f 2 = 0
   hf₃ : 0 < f 3
   f_9999 : f 9999 = 3333
@@ -93,7 +93,7 @@ lemma part_1 : 660 ≤ f (1980) := by
 lemma part_2 : f 1980 ≤ 660 := by
   have h : 5 * f 1980 + 33 * f 3 ≤ 5 * 660 + 33 := by
     calc (5 : ℕ+) * f 1980 + (33 : ℕ+) * f 3 ≤ f (5 * 1980 + 33 * 3) := by apply hf.superlinear
-    _ = f 9999 := by rfl
+    _ = f 9999 := rfl
     _ = 5 * 660 + 33 := by rw [hf.f_9999]
   rw [hf.f₃, mul_one] at h
   -- from 5 * f 1980 + 33 ≤ 5 * 660 + 33 we show f 1980 ≤ 660
@@ -114,7 +114,7 @@ lemma imo1982_q1 {f : ℕ+ → ℕ} (hf : IsGood f) : f 1982 = 660 := by
   suffices h : 3334 ≤ 3333 by simp at h
   calc
     3334 = 5 * f 1982 + 29 * f 3 + f 2 := by rw [hf.f₃, hf.f₂, hr, add_zero, mul_one]
-    (5 : ℕ+) * f 1982 + (29 : ℕ+) * f 3 + f 2 ≤ f (5 * 1982 + 29 * 3) + f 2 :=
-      add_le_add_right hf.superlinear _
+    (5 : ℕ+) * f 1982 + (29 : ℕ+) * f 3 + f 2 ≤ f (5 * 1982 + 29 * 3) + f 2 := by
+      grw [hf.superlinear]
     _ ≤ f (5 * 1982 + 29 * 3 + 2) := hf.superadditive
     _ = 3333 := hf.f_9999
