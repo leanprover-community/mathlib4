@@ -97,6 +97,7 @@ variable
 /-- info: UniqueMDiffAt[s] : M → Prop -/
 #guard_msgs in
 #check UniqueMDiffWithinAt (𝕜 := ℝ) I s
+
 section ambiguity
 
 variable {g : E × E → M} in
