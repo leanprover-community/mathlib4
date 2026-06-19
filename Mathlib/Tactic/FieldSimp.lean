@@ -62,7 +62,7 @@ def onExponent (l : qNF M) (f : ℤ → ℤ) : qNF M :=
 
 /-- Build a transparent expression for the product of powers represented by `l : qNF M`. -/
 def evalPrettyMonomial (iM : Q(GroupWithZero $M)) (r : ℤ) (x : Q($M)) :
-    MetaM (Σ e : Q($M), Q(zpow' $x $r = $e)) := do
+    MetaM (Σ e : Q($M), Q(zpow' $x $r = $e)) :=
   match r with
   | 0 => /- If an exponent is zero then we must not have been able to prove that x is nonzero.  -/
     return ⟨q($x / $x), q(zpow'_zero_eq_div ..)⟩
@@ -111,10 +111,10 @@ def removeZeros
 of) the negative powers. -/
 def split (iM : Q(CommGroupWithZero $M)) (l : qNF M) :
     MetaM (Σ l_n l_d : qNF M, Q(NF.eval $(l.toNF)
-      = NF.eval $(l_n.toNF) / NF.eval $(l_d.toNF))) := do
+      = NF.eval $(l_n.toNF) / NF.eval $(l_d.toNF))) :=
   match l with
   | [] => return ⟨[], [], q(Eq.symm (div_one (1:$M)))⟩
-  | ((r, x), i) :: t =>
+  | ((r, x), i) :: t => do
     let ⟨t_n, t_d, pf⟩ ← split iM t
     if r > 0 then
       return ⟨((r, x), i) :: t_n, t_d, (q(NF.cons_eq_div_of_eq_div $r $x $pf):)⟩
@@ -125,13 +125,13 @@ def split (iM : Q(CommGroupWithZero $M)) (l : qNF M) :
       return ⟨t_n, ((r', x), i) :: t_d, (q(NF.cons_eq_div_of_eq_div' $r' $x $pf):)⟩
 
 private def evalPrettyAux (iM : Q(CommGroupWithZero $M)) (l : qNF M) :
-    MetaM (Σ e : Q($M), Q(NF.eval $(l.toNF) = $e)) := do
+    MetaM (Σ e : Q($M), Q(NF.eval $(l.toNF) = $e)) :=
   match l with
   | [] => return ⟨q(1), q(rfl)⟩
-  | [((r, x), _)] =>
+  | [((r, x), _)] => do
     let ⟨e, pf⟩ ← evalPrettyMonomial q(inferInstance) r x
     return ⟨e, q(by rw [NF.eval_cons]; exact Eq.trans (one_mul _) $pf)⟩
-  | ((r, x), k) :: t =>
+  | ((r, x), k) :: t => do
     let ⟨e, pf_e⟩ ← evalPrettyMonomial q(inferInstance) r x
     let ⟨t', pf⟩ ← evalPrettyAux iM t
     have pf'' : Q(NF.eval $(qNF.toNF (((r, x), k) :: t)) = (NF.eval $(qNF.toNF t)) * zpow' $x $r) :=
@@ -144,7 +144,7 @@ def evalPretty (iM : Q(CommGroupWithZero $M)) (l : qNF M) :
   let ⟨l_n, l_d, pf⟩ ← split iM l
   let ⟨num, pf_n⟩ ← evalPrettyAux q(inferInstance) l_n
   let ⟨den, pf_d⟩ ← evalPrettyAux q(inferInstance) l_d
-  match l_d with
+  match (dependent := true) l_d with
   | [] => return ⟨num, q(eq_div_of_eq_one_of_subst $pf $pf_n)⟩
   | _ =>
     let pf_n : Q(NF.eval $(l_n.toNF) = $num) := pf_n
@@ -281,14 +281,14 @@ def mkDenomConditionProofSucc {iM : Q(CommGroupWithZero $M)}
     (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
     {cond : DenomCondition (M := M) q(inferInstance)}
     {L : qNF M} (hL : cond.proof L) (e : Q($M)) (r : ℤ) (i : ℕ) :
-    MetaM (Q($e ≠ 0) × cond.proof (((r, e), i) :: L)) := do
+    MetaM (Q($e ≠ 0) × cond.proof (((r, e), i) :: L)) :=
   match cond with
   | .none => return (← disch q($e ≠ 0), Unit.unit)
-  | .nonzero =>
+  | .nonzero => do
     let pf ← disch q($e ≠ 0)
     let pf₀ : Q(NF.eval $(qNF.toNF L) ≠ 0) := hL
     return (pf, q(NF.cons_ne_zero $r $pf $pf₀))
-  | .positive _ _ _ _ =>
+  | .positive _ _ _ _ => do
     let pf ← disch q(0 < $e)
     let pf₀ : Q(0 < NF.eval $(qNF.toNF L)) := hL
     let pf' := q(NF.cons_pos $r (x := $e) $pf $pf₀)
@@ -301,14 +301,14 @@ def mkDenomConditionProofSucc' {iM : Q(CommGroupWithZero $M)}
     (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
     {cond : DenomCondition (M := M) q(inferInstance)}
     {L : qNF M} (hL : cond.proof L) (e : Q($M)) (r : ℤ) (i : ℕ) :
-    MetaM (cond.proof (((r, e), i) :: L)) := do
+    MetaM (cond.proof (((r, e), i) :: L)) :=
   match cond with
   | .none => return Unit.unit
-  | .nonzero =>
+  | .nonzero => do
     let pf ← disch q($e ≠ 0)
     let pf₀ : Q(NF.eval $(qNF.toNF L) ≠ 0) := hL
     return q(NF.cons_ne_zero $r $pf $pf₀)
-  | .positive _ _ _ _ =>
+  | .positive _ _ _ _ => do
     let pf ← disch q(0 < $e)
     let pf₀ : Q(0 < NF.eval $(qNF.toNF L)) := hL
     return q(NF.cons_pos $r (x := $e) $pf $pf₀)

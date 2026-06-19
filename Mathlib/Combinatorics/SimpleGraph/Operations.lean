@@ -195,6 +195,15 @@ lemma disjoint_edge {u v : V} : Disjoint G (edge u v) ↔ ¬G.Adj u v := by
 lemma sdiff_edge {u v : V} (h : ¬G.Adj u v) : G \ edge u v = G := by
   simp [disjoint_edge, h]
 
+theorem biSup_fromEdgeSet_singleton_eq : ⨆ e ∈ G.edgeSet, fromEdgeSet {e} = G := by
+  simp_rw [← edgeSet_inj, ← iSup_subtype'', edgeSet_iSup, edgeSet_fromEdgeSet, ← Set.iUnion_sdiff,
+    Set.iUnion_coe_set, Set.biUnion_of_singleton]
+  exact Set.disjoint_left.mpr G.edgeSet_subset_compl_diagSet |>.sdiff_eq_left
+
+theorem sSup_edge_eq : sSup { edge u v | (u : V) (v : V) (_ : G.Adj u v) } = G := by
+  refine .trans ?_ G.biSup_fromEdgeSet_singleton_eq
+  simp_rw [edge, ← iSup_subtype'', iSup, Set.range, Subtype.exists, Sym2.exists, mem_edgeSet]
+
 theorem Subgraph.spanningCoe_sup_edge_le {H : Subgraph (G ⊔ edge s t)} (h : ¬ H.Adj s t) :
     H.spanningCoe ≤ G := by
   intro v w hvw
