@@ -24,6 +24,9 @@ some `ring_nf` invocations.
 
 - Surface non-progress-related errors from `repeat`.
 - Allow `group`s `ifUnchanged` behavior to be configurable.
+- Use cycling to normalise expressions further. For instance:
+  `b ^ 17 * c⁻¹ * d * b ^ 3 = 1` to `b^20 * c⁻¹ * d = 1` and
+  `(a * b *c)^m * a * b * (c * a * b)^n * c = (a * b * c)^(n + m +1)`
 
 ## Tags
 
@@ -49,6 +52,90 @@ theorem _zpow_trick_one {G : Type*} [Group G] (a b : G) (m : ℤ) :
 @[to_additive _zsmul_trick_one']
 theorem _zpow_trick_one' {G : Type*} [Group G] (a b : G) (n : ℤ) :
     a * b ^ n * b = a * b ^ (n + 1) := by rw [mul_assoc, mul_zpow_self]
+
+-- The next lemmas are not general purpose lemmas, they are intended for use only by
+-- the `group` tactic. In particular, they deal with *left* and *right* cancellation.
+@[to_additive]
+theorem _mul_right_cancel_aux₁ {G : Type*} [Group G] (a b c : G) :
+   a * b = c * b ↔ a = c := mul_right_cancel_iff
+
+@[to_additive]
+theorem _mul_right_cancel_aux₂ {G : Type*} [Group G] (a b c : G) (n : ℤ) :
+    a * b = c * b ^ n ↔ a = c * b ^ (n - 1) := by
+  rw [zpow_sub_one, ← mul_assoc, ← eq_mul_inv_iff_mul_eq]
+
+@[to_additive]
+theorem _mul_right_cancel_aux₃ {G : Type*} [Group G] (a b c : G) (n : ℤ) :
+    a * b ^ n = c * b ↔ a = c * b ^ (-n + 1) := by
+  rw [← mul_self_zpow, zpow_neg, ← mul_assoc, eq_mul_inv_iff_mul_eq]
+
+@[to_additive]
+theorem _mul_right_cancel_aux₄ {G : Type*} [Group G] (a b c : G) (n m : ℤ) :
+    a * b ^ n = c * b ^ m ↔ a = c * b ^ (m - n) := by
+  rw [zpow_sub, ← mul_assoc, eq_mul_inv_iff_mul_eq]
+
+@[to_additive]
+theorem _mul_right_cancel_aux₅ {G : Type*} [Group G] (a b : G) :
+    a * b = b ↔ a = 1 := mul_eq_right
+
+@[to_additive]
+theorem _mul_right_cancel_aux₆ {G : Type*} [Group G] (a b : G) (n : ℤ) :
+    a * b = b ^ n ↔ a = b ^ (n - 1) := by rw [zpow_sub_one, eq_mul_inv_iff_mul_eq]
+
+@[to_additive]
+theorem _mul_right_cancel_aux₇ {G : Type*} [Group G] (a b : G) (n : ℤ) :
+    a * b ^ n = b ↔ a = b ^ (1 - n) := by rw [zpow_sub, eq_mul_inv_iff_mul_eq, zpow_one]
+
+@[to_additive]
+theorem _mul_right_cancel_aux₈ {G : Type*} [Group G] (a b : G) (n m : ℤ) :
+    a * b ^ n = b ^ m ↔ a = b ^ (m - n) := by rw [zpow_sub, eq_mul_inv_iff_mul_eq]
+
+@[to_additive]
+theorem _mul_left_cancel_aux₁ {G : Type*} [Group G] (a b c : G) :
+    b * a = b * c ↔ a = c := by rw [mul_left_cancel_iff]
+
+@[to_additive]
+theorem _mul_left_cancel_aux₂ {G : Type*} [Group G] (a b c : G) (n : ℤ) :
+    b * a = b ^ n * c  ↔ a = b ^ (n - 1) * c := by
+  rw [← eq_inv_mul_iff_mul_eq, ← mul_assoc, ← zpow_neg_one, zpow_mul_comm, zpow_sub_one,
+    zpow_neg_one]
+
+@[to_additive]
+theorem _mul_left_cancel_aux₃ {G : Type*} [Group G] (a b c : G) (n : ℤ) :
+    b ^ n * a = b * c ↔ a = b ^ (-n + 1) * c:= by
+  rw [← eq_inv_mul_iff_mul_eq, ← mul_assoc, ← zpow_neg, zpow_add, zpow_one]
+
+@[to_additive]
+theorem _mul_left_cancel_aux₄ {G : Type*} [Group G] (a b c : G) (n m : ℤ) :
+    b ^ n * a = b ^ m * c ↔ a = b ^ (m - n) * c := by
+  rw [zpow_sub, ← zpow_neg, zpow_mul_comm, mul_assoc, zpow_neg, eq_inv_mul_iff_mul_eq]
+
+@[to_additive]
+theorem _mul_left_cancel_aux₅ {G : Type*} [Group G] (a b : G) :
+    b * a = b ↔ a = 1 := mul_eq_left
+
+@[to_additive]
+theorem _mul_left_cancel_aux₆ {G : Type*} [Group G] (a b : G) (n : ℤ) :
+    b * a = b ^ n ↔ a = b ^ (n - 1) := by
+  rw [zpow_sub_one, ← zpow_neg_one, zpow_mul_comm, zpow_neg_one, eq_inv_mul_iff_mul_eq]
+
+@[to_additive]
+theorem _mul_left_cancel_aux₇ {G : Type*} [Group G] (a b : G) (n : ℤ) :
+    b ^ n * a = b ↔ a = b ^ (1 - n) := by
+  rw [zpow_sub, ← zpow_neg,zpow_mul_comm, zpow_neg, zpow_one, eq_inv_mul_iff_mul_eq]
+
+@[to_additive]
+theorem _mul_left_cancel_aux₈ {G : Type*} [Group G] (a b : G) (n m : ℤ) :
+    b ^ n * a = b ^ m ↔ a = b ^ (m - n) := by
+  rw [zpow_sub, ← zpow_neg, zpow_mul_comm, zpow_neg, eq_inv_mul_iff_mul_eq]
+
+@[to_additive]
+theorem _move_mul_left_neg {G : Type*} [Group G] (a b c : G) (n : ℤ) :
+  a = b ^ (- n) * c ↔ b ^ n * a = c := by rw [zpow_neg, eq_inv_mul_iff_mul_eq]
+
+@[to_additive]
+theorem _move_mul_right_neg {G : Type*} [Group G] (a b c : G) (n : ℤ) :
+  a = c * b ^ (- n) ↔ a * b ^ n = c := by rw [zpow_neg, eq_mul_inv_iff_mul_eq]
 
 /-- `group` normalizes expressions in multiplicative groups that occur in the goal. `group` does not
 assume commutativity, instead using only the group axioms without any information about which group
@@ -78,20 +165,27 @@ macro_rules
             Int.natCast_add, Int.natCast_mul,
             Int.mul_neg, Int.neg_mul, neg_neg,
             one_zpow, zpow_zero, zpow_one, mul_zpow_neg_one,
-            ← mul_assoc,
+            ← mul_assoc, ← sq,
             ← zpow_add, ← zpow_add_one, ← zpow_one_add,
             _zpow_trick, _zpow_trick_one, _zpow_trick_one',
             tsub_self, sub_self, add_neg_cancel, neg_add_cancel]
           $[$loc]?)
-  -- call the `ring_nf` tactic to simplify exponents
+  -- a tactic block calling the `ring_nf` tactic to simplify exponents
   let simpExpTac ← `(tactic |
     ring_nf (ifUnchanged := .silent) $[$loc]?)
   -- tactic block for applying cancellation on the *right*
-  let rightCancelTac ← `(tactic |
-    simp -decide -failIfUnchanged only [mul_left_inj] $[$loc]?)
+  let rightCancelAux₁ ← `(tactic |
+    simp -decide -failIfUnchanged only [_mul_right_cancel_aux₁, _mul_right_cancel_aux₂,
+      _mul_right_cancel_aux₃, _mul_right_cancel_aux₄, _mul_right_cancel_aux₅,
+      _mul_right_cancel_aux₆, _mul_right_cancel_aux₇, _mul_right_cancel_aux₈] $[$loc]?)
+  let rightCancelAux₂ ← `(tactic |
+      simp -decide -failIfUnchanged only [_move_mul_right_neg] $[$loc]?)
   -- tactic block for applying cancellation on the *left*
-  let leftCancelTac ← `(tactic |
-    simp -decide -failIfUnchanged only [↓mul_assoc, mul_right_inj] $[$loc]?)
+  let leftCancelAux₁ ← `(tactic |
+    simp -decide -failIfUnchanged only [↓mul_assoc, _mul_left_cancel_aux₁, _mul_left_cancel_aux₂,
+    _mul_left_cancel_aux₃, _mul_left_cancel_aux₄, _mul_left_cancel_aux₅,
+    _mul_left_cancel_aux₆, _mul_left_cancel_aux₇, _mul_left_cancel_aux₈] $[$loc]?)
+  let leftCancelAux₂ ← `(tactic | simp -decide -failIfUnchanged only [_move_mul_left_neg] $[$loc]?)
   -- post-processing tactic for cleaning up expressions of the form ( · )^(-1) to ( · )⁻¹
   let cleanUpTac ← `(tactic |
     simp -decide -failIfUnchanged only [zpow_neg _ 1, zpow_one, ↓← mul_assoc] $[$loc]?)
@@ -100,7 +194,9 @@ macro_rules
   `(tactic| first
     | fail_if_no_progress (
       repeat (fail_if_no_progress ($baseSimpTac <;> $simpExpTac));
-      <;> repeat (fail_if_no_progress ($rightCancelTac <;> $leftCancelTac));
+      <;> repeat (fail_if_no_progress ($rightCancelAux₁ <;> $simpExpTac <;> $rightCancelAux₂ <;>
+        $leftCancelAux₁ <;> $simpExpTac <;> $leftCancelAux₂));
+      -- <;> repeat ((fail_if_no_progress ($leftCancelAux₁ <;> $simpExpTac <;> $leftCancelAux₂)));
       <;> $cleanUpTac
     )
     | fail "`group` made no progress")
