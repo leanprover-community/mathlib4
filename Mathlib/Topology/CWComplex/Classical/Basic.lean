@@ -1117,7 +1117,7 @@ def CWComplex.OfDiscreteClosed (hD : IsDiscrete D) (Dc : IsClosed D) : CWComplex
     exact zero_le_one
 
 /-- A discrete space is a CW complex. -/
-instance CWComplex.of_discreteTopology {X : Type*} [TopologicalSpace X] [DiscreteTopology X] :
+instance CWComplex.ofDiscreteTopology {X : Type*} [TopologicalSpace X] [DiscreteTopology X] :
     CWComplex (univ : Set X) :=
   CWComplex.OfDiscreteClosed IsDiscrete.univ isClosed_univ
 
