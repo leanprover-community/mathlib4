@@ -538,7 +538,7 @@ theorem integral_comp_mul_deriv_of_deriv_nonneg {f f' g : ℝ → ℝ} (hf : Con
     (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt f (f' x) x)
     (hf' : ∀ x ∈ Ioo (min a b) (max a b), 0 ≤ f' x) :
     (∫ x in a..b, (g ∘ f) x * f' x) = ∫ u in f a..f b, g u := by
-  simpa [mul_comm] using integral_deriv_smul_comp_of_deriv_nonneg hf hff' hf'
+  simpa [mul_comm] using! integral_deriv_smul_comp_of_deriv_nonneg hf hff' hf'
 
 /-- Change of variables for monotone functions.
 If `f` is continuous on `[a, b]` and has a nonnegative derivative `f'` in `(a, b)`,
@@ -547,21 +547,21 @@ theorem integral_comp_mul_deriv_of_deriv_nonpos {f f' g : ℝ → ℝ} (hf : Con
     (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt f (f' x) x)
     (hf' : ∀ x ∈ Ioo (min a b) (max a b), f' x ≤ 0) :
     (∫ x in a..b, (g ∘ f) x * f' x) = ∫ u in f a..f b, g u := by
-  simpa [mul_comm] using integral_deriv_smul_comp_of_deriv_nonpos hf hff' hf'
+  simpa [mul_comm] using! integral_deriv_smul_comp_of_deriv_nonpos hf hff' hf'
 
 lemma integrable_comp_mul_deriv_iff_of_deriv_nonneg {f f' g : ℝ → ℝ} (hf : ContinuousOn f [[a, b]])
     (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt f (f' x) x)
     (hf' : ∀ x ∈ Ioo (min a b) (max a b), 0 ≤ f' x) :
     IntervalIntegrable (fun x ↦ (g ∘ f) x * f' x) volume a b ↔
       IntervalIntegrable g volume (f a) (f b) := by
-  simpa [mul_comm] using integrable_deriv_smul_comp_iff_of_deriv_nonneg hf hff' hf'
+  simpa [mul_comm] using! integrable_deriv_smul_comp_iff_of_deriv_nonneg hf hff' hf'
 
 lemma integrable_comp_mul_deriv_iff_of_deriv_nonpos {f f' g : ℝ → ℝ} (hf : ContinuousOn f [[a, b]])
     (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt f (f' x) x)
     (hf' : ∀ x ∈ Ioo (min a b) (max a b), f' x ≤ 0) :
     IntervalIntegrable (fun x ↦ (g ∘ f) x * f' x) volume a b ↔
       IntervalIntegrable g volume (f a) (f b) := by
-  simpa [mul_comm] using integrable_deriv_smul_comp_iff_of_deriv_nonpos hf hff' hf'
+  simpa [mul_comm] using! integrable_deriv_smul_comp_iff_of_deriv_nonpos hf hff' hf'
 
 theorem integral_deriv_comp_mul_deriv' {f f' g g' : ℝ → ℝ} (hf : ContinuousOn f [[a, b]])
     (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivWithinAt f (f' x) (Ioi x) x)

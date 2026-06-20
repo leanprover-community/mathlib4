@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Nat.Basic
 public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
@@ -31,6 +32,7 @@ see `Fintype.card_perm`.
 namespace Nat
 
 /-- `Nat.factorial n` is the factorial of `n`. -/
+@[wikidata Q120976]
 def factorial : ℕ → ℕ
   | 0 => 1
   | succ n => succ n * factorial n
@@ -288,6 +290,18 @@ theorem ascFactorial_le_pow_add (n : ℕ) : ∀ k : ℕ, (n + 1).ascFactorial k 
     rw [ascFactorial_succ, Nat.pow_succ, Nat.mul_comm, ← Nat.add_assoc, Nat.add_right_comm n 1 k]
     exact Nat.mul_le_mul_right _
       (Nat.le_trans (ascFactorial_le_pow_add _ k) (Nat.pow_le_pow_left (le_succ _) _))
+
+theorem ascFactorial_le_factorial_mul_pow (n k : ℕ) : n.ascFactorial k ≤ k ! * n ^ k :=
+  match k with
+  | 0 => by simp
+  | j + 1 => by
+    rcases n.eq_zero_or_pos with rfl | hn
+    · simp [zero_ascFactorial]
+    rw [ascFactorial_succ, factorial_succ, pow_succ',
+      Nat.mul_assoc (j + 1), Nat.mul_left_comm j !, ← Nat.mul_assoc (j + 1)]
+    refine Nat.mul_le_mul ?_ (ascFactorial_le_factorial_mul_pow n j)
+    rw [add_one_mul, Nat.add_comm, Nat.add_le_add_iff_right]
+    exact Nat.le_mul_of_pos_right j hn
 
 theorem ascFactorial_lt_pow_add (n : ℕ) : ∀ {k : ℕ}, 2 ≤ k → (n + 1).ascFactorial k < (n + k) ^ k
   | 0 => by rintro ⟨⟩

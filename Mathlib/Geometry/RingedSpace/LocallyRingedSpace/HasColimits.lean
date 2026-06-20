@@ -82,6 +82,7 @@ noncomputable def coproductCofan : Cocone F where
     { app j := LocallyRingedSpace.homMk (colimit.ι (F ⋙ forgetToSheafedSpace) j)
       naturality := fun ⟨j⟩ ⟨j'⟩ ⟨⟨(f : j = j')⟩⟩ => by subst f; simp }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The explicit coproduct cofan constructed in `coproductCofan` is indeed a colimit. -/
 noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
@@ -126,6 +127,7 @@ variable {X Y : LocallyRingedSpace.{v}} (f g : X ⟶ Y)
 
 namespace HasCoequalizer
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[instance]
 theorem coequalizer_π_app_isLocalHom
@@ -174,6 +176,7 @@ noncomputable def imageBasicOpen : Opens Y :=
     (show Y.presheaf.obj (op (unop _)) from
       ((coequalizer.π f.toShHom g.toShHom).hom.c.app (op U)) s)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem imageBasicOpen_image_preimage :
     (coequalizer.π f.toShHom g.toShHom).hom.base ⁻¹'

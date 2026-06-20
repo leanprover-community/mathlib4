@@ -1,0 +1,555 @@
+name: Lake cache shadow (master)
+
+# Shadow pipeline that exercises Lake's built-in artifact cache against
+# the live mathlib4 master branch, alongside (and independent of) the
+# regular master CI. Uploads to an isolated `mathlib4-master-shadow`
+# scope so no other consumer reads from it.
+#
+# Required repository configuration:
+#   Secrets:
+#     LAKE_CACHE_KEY                         — SigV4 credential for the cache
+#                                              bucket, as `<ACCESS_KEY_ID>:<SECRET_ACCESS_KEY>`
+#                                              (curl `--user`; region is `auto`).
+#     ZULIP_API_KEY                          — Zulip bot key, used by the `report` job.
+#   Variables:
+#     # Authenticated S3 endpoint, used by `upload` for PUTs.
+#     LAKE_CACHE_ARTIFACT_ENDPOINT           — e.g. https://<acct>.r2.cloudflarestorage.com/<bucket>/<prefix>/artifacts
+#     LAKE_CACHE_REVISION_ENDPOINT           — e.g. https://<acct>.r2.cloudflarestorage.com/<bucket>/<prefix>/revisions
+#     # Public read endpoint, used by `consume` for anonymous GETs (different
+#     # host than the S3 API endpoint; e.g. an R2 public r2.dev/custom domain).
+#     LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC    — e.g. https://pub-<hash>.r2.dev/<prefix>/artifacts
+#     LAKE_CACHE_REVISION_ENDPOINT_PUBLIC    — e.g. https://pub-<hash>.r2.dev/<prefix>/revisions
+#
+# Jobs:
+#   build_and_stage  Build mathlib + deps with Lake's artifact cache
+#                    enabled, then stage the resulting .ltar files.
+#   upload           Push staged artifacts to the cache bucket via
+#                    `lake cache put-staged`, then record a per-run manifest
+#                    under cache/analysis/ and report carryover vs the prior run.
+#   consume          Fresh checkout, fetch from the cache bucket via
+#                    `lake cache get`, run `lake build` against the
+#                    rehydrated cache, then verify with `--rehash`.
+#   report           Post a per-run summary to the `CI admins` Zulip
+#                    stream (topic `Lake cache shadow`).
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # 06:00 UTC daily, off-peak
+  workflow_dispatch:
+    inputs:
+      mathlib_ref:
+        description: ref to test (defaults to master)
+        required: false
+        type: string
+        default: master
+      targets:
+        description: >-
+          space-separated Lake targets to build, stage, and consume. Pass the
+          whole `Mathlib` library for a full run, or a smaller set for cheaper
+          experiments.
+        required: false
+        type: string
+        # Default: the full `Mathlib` library — the representative master shadow.
+        # For a cheaper experiment, pass a smaller set, e.g.
+        #   Mathlib.Topology.Basic Mathlib.Combinatorics.SimpleGraph.Basic Mathlib.RingTheory.Ideal.Basic
+        # or add `Archive Counterexamples` to also shadow those libraries.
+        default: Mathlib
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lake-cache-shadow-${{ inputs.mathlib_ref || 'master' }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
+
+env:
+  # Scope prefix for all puts and gets in this workflow. Namespaces the
+  # workflow's artifacts within the cache bucket.
+  SHADOW_SCOPE: mathlib4-master-shadow
+  # NOTE: STAGE_TARGETS is set per-job (not here) from the `targets` input, so
+  # it can be overridden per dispatch — see the `build_and_stage`/`consume` env.
+
+jobs:
+  build_and_stage:
+    name: Build + stage
+    if: ${{ github.repository == 'leanprover-community/mathlib4' }}
+    runs-on: pr
+    timeout-minutes: 90
+    outputs:
+      sha: ${{ steps.resolve.outputs.sha }}
+      toolchain: ${{ steps.resolve.outputs.toolchain }}
+    env:
+      LAKE_CACHE_DIR: .lake/cache
+      LAKE_NO_CACHE: true
+      STAGE_TARGETS: ${{ inputs.targets || 'Mathlib' }}
+    defaults:
+      run:
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_NO_CACHE --env STAGE_TARGETS --env SHADOW_SCOPE -- bash -euxo pipefail {0}
+    steps:
+      - name: job info
+        shell: bash -euo pipefail {0}
+        run: echo "::notice::Lake cache shadow on ref ${{ inputs.mathlib_ref || 'master' }} run ${{ github.run_id }}"
+
+      - name: Setup jq
+        uses: dcarbone/install-jq-action@b7ef57d46ece78760b4019dbc4080a1ba2a40b45 # v3.2.0
+
+      - name: Checkout tools branch
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          ref: master
+          path: tools-branch
+
+      - name: Checkout mathlib (pr-branch)
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          ref: ${{ inputs.mathlib_ref || 'master' }}
+          fetch-depth: 2
+          path: pr-branch
+
+      - name: Resolve sha & toolchain
+        id: resolve
+        shell: bash -euo pipefail {0}
+        run: |
+          cd pr-branch
+          SHA="$(git rev-parse HEAD)"
+          TC="$(cat lean-toolchain)"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "toolchain=$TC" >> "$GITHUB_OUTPUT"
+
+      - name: Create empty directories (landrun prerequisites)
+        shell: bash -euo pipefail {0}
+        run: |
+          mkdir -p pr-branch/.lake/
+          mkdir -p .cache/mathlib/
+          mkdir -p _work
+
+      - name: install elan
+        shell: bash -euo pipefail {0}
+        run: |
+          curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
+          chmod +x elan-init.sh
+          ./elan-init.sh -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      - name: set toolchain directory
+        shell: bash -euo pipefail {0}
+        run: |
+          cd pr-branch
+          LAKE_PATH=$(elan which lake)
+          TOOLCHAIN_DIR=$(dirname "$(dirname "$LAKE_PATH")")
+          echo "TOOLCHAIN_DIR=$TOOLCHAIN_DIR" >> "$GITHUB_ENV"
+
+      - name: set LEAN_SRC_PATH
+        shell: bash -euo pipefail {0}
+        run: |
+          cd pr-branch
+          LEAN_SRC_PATH=".:$TOOLCHAIN_DIR/src/lean/lake"
+          PACKAGE_NAMES=$(jq -r '.packages[].name' lake-manifest.json)
+          for pkg in $PACKAGE_NAMES; do
+            if [[ "$pkg" =~ ^[A-Za-z0-9_-]+$ ]]; then
+              LEAN_SRC_PATH="$LEAN_SRC_PATH:.lake/packages/$pkg"
+            fi
+          done
+          echo "LEAN_SRC_PATH=$LEAN_SRC_PATH" >> "$GITHUB_ENV"
+
+      - name: build tools-branch tools
+        shell: bash -euo pipefail {0}
+        run: |
+          cd tools-branch
+          lake build cache
+
+      - name: download dependencies
+        shell: landrun --unrestricted-network --rox /etc --rox /usr --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        run: |
+          cd pr-branch
+          lake env
+
+      - name: Hydrate .lake/build via legacy cache
+        shell: bash -euo pipefail {0}
+        run: |
+          cd pr-branch
+          ../tools-branch/.lake/build/bin/cache get
+
+      - name: Patch lakefile to enable Lake's artifact cache
+        shell: bash -euo pipefail {0}
+        run: |
+          cd pr-branch
+          if grep -q 'enableArtifactCache' lakefile.lean; then
+            echo "lakefile.lean already declares enableArtifactCache; nothing to patch"
+            exit 0
+          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("lakefile.lean")
+          src = p.read_text()
+          marker = '  restoreAllArtifacts := true'
+          inject = (
+              '  restoreAllArtifacts := true\n'
+              '  enableArtifactCache := true'
+          )
+          if marker not in src:
+              raise SystemExit("lakefile.lean shape changed; update the shadow patch in lake_cache_shadow.yml")
+          p.write_text(src.replace(marker, inject, 1))
+          PY
+          echo "::group::patched package block"
+          awk '/^package mathlib where/,/^$/' lakefile.lean
+          echo "::endgroup::"
+
+      # Incremental build: with the legacy cache having hydrated .lake/build/
+      # and the lakefile patched, Lake's pipeline runs to pack/cache any
+      # modules whose .ltar+mapping aren't yet in Lake's cache. Module
+      # source compilation is skipped where per-module traces match (which
+      # they do for the 3 knobs we set), so the "work" here is bounded to
+      # cache population, not lean recompilation. Deps build transitively
+      # but their mappings don't end up in the bundle (Lake's `-o` only
+      # writes root-package outputs).
+      - name: Incremental build (populate Lake's cache)
+        run: |
+          cd pr-branch
+          lake build $STAGE_TARGETS 2>&1 | tee .lake/lake-build.log
+          echo "::group::build summary"
+          # Replays aren't counted: a non-verbose `lake build` restores cached
+          # outputs silently (no "Replayed" lines to grep). 0 built is the
+          # healthy case here — legacy hydration already populated .lake/build.
+          echo "Built (pipeline ran):    $(grep -cE '^✔.*Built '    .lake/lake-build.log || true)"
+          echo "::endgroup::"
+
+      - name: Emit root-package mappings
+        run: |
+          cd pr-branch
+          lake build --no-build $STAGE_TARGETS -o .lake/outputs.jsonl
+          echo "mappings entries: $(wc -l < .lake/outputs.jsonl)"
+          head -3 .lake/outputs.jsonl
+
+      # Pre-create the staging dir outside landrun so the stage step can
+      # write to it. Same pattern as build_template.yml uses for the legacy
+      # cache-staging dir.
+      - name: Create staging directory
+        shell: bash -euo pipefail {0}
+        run: mkdir -p lake-cache-staging
+
+      - name: Stage cache for upload
+        # Override default landrun shell to add the staging dir as writable.
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw lake-cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_NO_CACHE -- bash -euxo pipefail {0}
+        run: |
+          cd pr-branch
+          lake cache stage .lake/outputs.jsonl ../lake-cache-staging
+          du -sh ../lake-cache-staging | awk '{print "staging total:", $1}'
+          echo "ltar count: $(find ../lake-cache-staging -name '*.ltar' | wc -l)"
+
+      # Safety valve: the staged bytes are what gets uploaded (GH artifact → R2).
+      # Bail before any upload if it would exceed the cap, to protect the R2
+      # free-tier / lifecycle budget. Logs the size first, so a trip still tells
+      # us how big the build got.
+      - name: Guard upload size (bail if staging > 1 GB)
+        shell: bash -euo pipefail {0}
+        run: |
+          MAX=$((1 * 1000 * 1000 * 1000))   # 1 GB — ~2.5x the measured ~389 MB full build (runaway guard)
+          BYTES=$(du -sb lake-cache-staging | cut -f1)
+          echo "staging size: $(du -sh lake-cache-staging | cut -f1) (${BYTES} bytes); cap: 1 GB (${MAX} bytes)"
+          if [ "$BYTES" -gt "$MAX" ]; then
+            echo "::error::staging is over 1 GB — bailing before upload to protect the R2 free-tier / lifecycle budget"
+            exit 1
+          fi
+
+      - name: Upload staging artifact for the next job
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: lake-cache-staging-${{ github.run_id }}
+          path: lake-cache-staging/
+          retention-days: 3
+          if-no-files-found: error
+
+  upload:
+    name: Upload to cache bucket
+    needs: build_and_stage
+    if: ${{ github.repository == 'leanprover-community/mathlib4' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      carryover: ${{ steps.carryover.outputs.summary }}
+      new_content: ${{ steps.carryover.outputs.new_content }}
+    env:
+      LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
+      LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT }}
+    steps:
+      - name: Checkout mathlib (for lean-toolchain pin)
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          ref: ${{ needs.build_and_stage.outputs.sha }}
+          path: pr-branch
+          fetch-depth: 1
+
+      - name: install elan + matching lake
+        run: |
+          curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
+          chmod +x elan-init.sh
+          ./elan-init.sh -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      - name: Download staging artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: lake-cache-staging-${{ github.run_id }}
+          path: lake-cache-staging
+
+      - name: Resolve LAKE_CACHE_KEY (trim whitespace)
+        env:
+          LAKE_CACHE_KEY_RAW: ${{ secrets.LAKE_CACHE_KEY }}
+        run: |
+          KEY="$(printf %s "$LAKE_CACHE_KEY_RAW" | sed -e 's/[[:space:]]*$//')"
+          echo "::add-mask::$KEY"
+          echo "LAKE_CACHE_KEY=$KEY" >> "$GITHUB_ENV"
+
+      - name: lake cache put-staged
+        run: |
+          cd pr-branch
+          # --toolchain is a no-op with the current `--scope=<string>` form
+          # (Lake's revisionUrl ignores it for `.str` scopes), but stays
+          # wired so the eventual migration to `--repo=` is a one-line
+          # change rather than re-plumbing outputs.
+          lake cache put-staged ../lake-cache-staging \
+            --scope="${{ env.SHADOW_SCOPE }}" \
+            --rev="${{ needs.build_and_stage.outputs.sha }}" \
+            --toolchain="${{ needs.build_and_stage.outputs.toolchain }}" 2>&1 | tee /tmp/put.log
+
+      # Cache carryover analysis: diff this run's uploaded artifact set against
+      # the previous run's, using a tiny per-run manifest kept in the bucket.
+      # Here:
+      #   carryover = artifacts also present last run;
+      #   new = this run's churn (≈ how much Mathlib changed since the last build).
+      # We also size the new artifacts (bytes of fresh content pushed to the
+      # bucket this run) by mapping each new content-hash back to its staged file.
+      - name: Cache carryover analysis
+        id: carryover
+        continue-on-error: true
+        env:
+          AUTH: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          base="${AUTH%/artifacts}/analysis"
+          sha="${{ needs.build_and_stage.outputs.sha }}"
+          sig=(--aws-sigv4 aws:amz:auto:s3 --user "$LAKE_CACHE_KEY")
+          # grep exits 1 on no match (handled by the total==0 branch); tolerate it under pipefail.
+          grep -oE 'uploaded artifact [0-9a-f]+' /tmp/put.log | awk '{print $3}' | sort -u > /tmp/today.txt || true
+          total=$(wc -l < /tmp/today.txt)
+          if [ "$total" -eq 0 ]; then
+            echo "::warning::no uploaded artifacts parsed from put.log — skipping carryover (manifest/pointer left unchanged)"
+            echo "summary=n/a (no artifacts uploaded)" >> "$GITHUB_OUTPUT"
+            echo "new_content=n/a (no artifacts uploaded)" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # Map staged artifact content-hash -> file size in bytes. Staging files
+          # are flat `<hash>.<ext>` (see Lake's `artifactPath`); the lone
+          # `outputs.jsonl` keys to "outputs" and never matches a hash.
+          declare -A SZ
+          while read -r fname fsize; do
+            SZ[${fname%%.*}]=$fsize
+          done < <(find lake-cache-staging -maxdepth 1 -type f -printf '%f %s\n')
+          sum_bytes() {  # sum staged sizes for the artifact hashes read from a file
+            local h tot=0
+            while read -r h; do tot=$((tot + ${SZ[$h]:-0})); done < "$1"
+            echo "$tot"
+          }
+          summary="n/a (baseline — no prior manifest)"
+          # Baseline: with no prior manifest, every uploaded artifact is "new".
+          new_bytes=$(sum_bytes /tmp/today.txt)
+          new_content="$(numfmt --to=iec-i --suffix=B "$new_bytes") across ${total} new artifact(s) (baseline — all new)"
+          prev="$(curl -fsS "${sig[@]}" "$base/_latest.txt" 2>/dev/null || true)"
+          if [ -n "$prev" ] && curl -fsS "${sig[@]}" "$base/$prev.txt" 2>/dev/null | sort -u > /tmp/prev.txt && [ -s /tmp/prev.txt ]; then
+            carry=$(comm -12 /tmp/today.txt /tmp/prev.txt | wc -l)
+            comm -23 /tmp/today.txt /tmp/prev.txt > /tmp/new.txt
+            new=$(wc -l < /tmp/new.txt)
+            new_bytes=$(sum_bytes /tmp/new.txt)
+            # Commit distance prev..sha on master, via the GitHub compare API
+            # (`.ahead_by`) — avoids deepening the shallow checkout across what
+            # can be hundreds of commits between daily runs.
+            dist=$(curl -fsS \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${REPO}/compare/${prev}...${sha}" \
+              2>/dev/null | jq -r '.ahead_by // empty' || true)
+            distnote=""
+            [ -n "$dist" ] && distnote=" (distance: ${dist} commits)"
+            new_content="$(numfmt --to=iec-i --suffix=B "$new_bytes") across ${new} new artifact(s) vs rev ${prev:0:12}${distnote}"
+            pct=$(awk "BEGIN{printf \"%.1f\", ($total>0)?100*$carry/$total:0}")
+            note=""
+            [ "$total" -gt 0 ] && [ "$new" -eq "$total" ] && note=" — full turnover, likely a toolchain/generation change, not source churn"
+            summary="${carry}/${total} (${pct}%) carried over, ${new} new vs rev ${prev:0:12}${note}"
+          fi
+          echo "::notice::cache carryover: ${summary}"
+          echo "::notice::new content uploaded: ${new_content}"
+          echo "summary=${summary}" >> "$GITHUB_OUTPUT"
+          echo "new_content=${new_content}" >> "$GITHUB_OUTPUT"
+          # Persist this run's manifest + advance the pointer (best-effort).
+          printf %s "$sha" > /tmp/latest.txt
+          curl -fsS "${sig[@]}" -X PUT -T /tmp/today.txt  "$base/${sha}.txt"   >/dev/null || echo "::warning::failed to store analysis manifest"
+          curl -fsS "${sig[@]}" -X PUT -T /tmp/latest.txt "$base/_latest.txt"  >/dev/null || echo "::warning::failed to advance analysis pointer"
+
+  consume:
+    name: Build from Lake cache (no hydration)
+    needs: [build_and_stage, upload]
+    if: ${{ github.repository == 'leanprover-community/mathlib4' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    outputs:
+      cache_health: ${{ steps.cachehealth.outputs.health }}
+    env:
+      # Must match the targets staged/uploaded by build_and_stage.
+      STAGE_TARGETS: ${{ inputs.targets || 'Mathlib' }}
+      # `lake cache get` issues unauthenticated GETs, so this job must read
+      # from a publicly-readable host. On R2 that is the bucket's public
+      # r2.dev (or custom-domain) URL, which is a different host than the
+      # authenticated S3 API endpoint used by the `upload` job's PUTs.
+      LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC }}
+      LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT_PUBLIC }}
+    steps:
+      - name: Checkout mathlib
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          ref: ${{ needs.build_and_stage.outputs.sha }}
+          path: pr-branch
+          fetch-depth: 1
+
+      - name: install elan
+        run: |
+          curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
+          chmod +x elan-init.sh
+          ./elan-init.sh -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      - name: download dependencies
+        run: |
+          cd pr-branch
+          lake env
+
+      - name: Patch lakefile (same shape as build_and_stage)
+        run: |
+          cd pr-branch
+          if grep -q 'enableArtifactCache' lakefile.lean; then exit 0; fi
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("lakefile.lean")
+          src = p.read_text()
+          marker = '  restoreAllArtifacts := true'
+          inject = (
+              '  restoreAllArtifacts := true\n'
+              '  enableArtifactCache := true'
+          )
+          if marker not in src:
+              raise SystemExit("lakefile.lean shape changed")
+          p.write_text(src.replace(marker, inject, 1))
+          PY
+
+      - name: lake cache get
+        run: |
+          cd pr-branch
+          lake cache get \
+            --scope="$SHADOW_SCOPE" \
+            --rev="${{ needs.build_and_stage.outputs.sha }}"
+          # Artifacts fetched here = the root-package outputs served from cache
+          # (a non-verbose build replays them silently). Hand the count to the
+          # provenance step.
+          # `|| true`: an informational count must not trip pipefail if find fails.
+          FETCHED=$(find ~/.elan/toolchains -name '*.ltar' 2>/dev/null | wc -l || true)
+          echo "ltar count after get: $FETCHED"
+          echo "FETCHED_ARTIFACTS=$FETCHED" >> "$GITHUB_ENV"
+
+      - name: lake build
+        run: |
+          cd pr-branch
+          read -ra TARGETS <<< "$STAGE_TARGETS"
+          lake build "${TARGETS[@]}" 2>&1 | tee .lake/consume-build.log
+
+      - name: Check cache provenance
+        id: cachehealth
+        run: |
+          cd pr-branch
+          log=.lake/consume-build.log
+          # "Served from cache" = the artifacts `lake cache get` fetched (replayed
+          # silently by a non-verbose build). "Built" = dependencies, which Lake
+          # never caches (`-o` records only `pkg.isRoot` outputs; only the root
+          # `mathlib` package sets `enableArtifactCache`) and always rebuilds.
+          echo "Served from cache (fetched): ${FETCHED_ARTIFACTS}"
+          echo "Built from source (deps, expected): $(grep -cE '^✔.*Built ' "$log" || true)"
+          # The cache invariant: every root-package module must be a cache HIT
+          # (no rebuild). Deps building is expected and excluded from the grep.
+          # Emit an explicit health line (consumed by the Zulip report) and fail
+          # the run if it's not a full hit.
+          BUILT_ROOT=$(grep -cE '^✔.*Built (Mathlib|Archive|Counterexamples)([. ]|$)' "$log" || true)
+          if [ "$BUILT_ROOT" -ne 0 ]; then
+            health="❌ NOT full cache hits — ${BUILT_ROOT} root-package module(s) rebuilt"
+            echo "health=${health}" >> "$GITHUB_OUTPUT"
+            echo "::error::${health}"
+            grep -E '^✔.*Built (Mathlib|Archive|Counterexamples)([. ]|$)' "$log" || true
+            exit 1
+          fi
+          health="✅ full cache hits — 0 root-package modules rebuilt (${FETCHED_ARTIFACTS} served from cache)"
+          echo "health=${health}" >> "$GITHUB_OUTPUT"
+          echo "::notice::${health}"
+
+      # Integrity check (not a cache-provenance check): re-derives artifact
+      # hashes from disk for the targets and confirms nothing is stale. Runs
+      # after the build, so dependency artifacts are already present; the
+      # cache-provenance assertion lives in the `lake build` step above.
+      - name: Verify with --rehash
+        run: |
+          cd pr-branch
+          read -ra TARGETS <<< "$STAGE_TARGETS"
+          lake build --no-build --rehash -v "${TARGETS[@]}"
+
+  report:
+    name: Post run summary to Zulip
+    needs: [build_and_stage, upload, consume]
+    if: ${{ always() && github.repository == 'leanprover-community/mathlib4' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Compose Zulip message
+        id: compose
+        env:
+          BUILD: ${{ needs.build_and_stage.result }}
+          UPLOAD: ${{ needs.upload.result }}
+          CONSUME: ${{ needs.consume.result }}
+          CARRYOVER: ${{ needs.upload.outputs.carryover }}
+          NEW_CONTENT: ${{ needs.upload.outputs.new_content }}
+          CACHE_HEALTH: ${{ needs.consume.outputs.cache_health }}
+          SHA: ${{ needs.build_and_stage.outputs.sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          emoji() {
+            case "$1" in
+              success) echo "✅" ;;
+              skipped) echo "⏭️" ;;
+              cancelled) echo "🟡" ;;
+              *) echo "❌" ;;
+            esac
+          }
+          {
+            echo "msg<<MSG_EOF"
+            echo "**Lake cache shadow** ([run](${RUN_URL}), rev \`${SHA:0:12}\`)"
+            echo ""
+            echo "- $(emoji "$BUILD") build_and_stage: \`$BUILD\`"
+            echo "- $(emoji "$UPLOAD") upload: \`$UPLOAD\`"
+            echo "- $(emoji "$CONSUME") consume: \`$CONSUME\`"
+            echo "- ${CACHE_HEALTH:-❓ cache hits: n/a (consume skipped)}"
+            echo "- 🔁 cache carryover: ${CARRYOVER:-n/a}"
+            echo "- 📦 new content uploaded: ${NEW_CONTENT:-n/a}"
+            echo "MSG_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Send to Zulip
+        uses: zulip/github-actions-zulip/send-message@bd8ec52de371d139ae8313661b7d8318c19266aa # v2.0.1
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'nightly-testing-mathlib'
+          type: 'stream'
+          topic: 'mathlib + lake cache shadow workflow'
+          content: ${{ steps.compose.outputs.msg }}

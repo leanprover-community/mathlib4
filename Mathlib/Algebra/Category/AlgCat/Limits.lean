@@ -19,6 +19,8 @@ Further, these limits are preserved by the forgetful functor --- that is,
 the underlying types are just the limits in the category of types.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 
@@ -99,7 +101,7 @@ def limitCone : Cone F where
     { app := fun j ↦ ofHom <| limitπAlgHom F j
       naturality := fun _ _ f => by
         ext
-        simpa using (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ }
+        simpa using! (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Witness that the limit cone in `AlgCat R` is a limit cone.

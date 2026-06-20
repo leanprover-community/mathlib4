@@ -235,7 +235,7 @@ lemma Ideal.one_le_height_span_singleton_of_mem_nonZeroDivisors
   rw [Ideal.height_eq_inf_minimalPrimes]
   refine le_iInf₂ fun q hq => ?_
   have : q.IsPrime := hq.isPrime
-  rw [ENat.one_le_iff_ne_zero, Ne, height_eq_zero_iff]
+  rw [Order.one_le_iff_ne_zero, Ne, height_eq_zero_iff]
   intro hmin
   exact absurd hx <| notMem_nonZeroDivisors_of_mem_mem_minimalPrimes
     (hq.1.2 <| Ideal.mem_span_singleton.mpr <| dvd_refl x) hmin
