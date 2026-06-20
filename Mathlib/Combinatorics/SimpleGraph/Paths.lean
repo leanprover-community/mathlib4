@@ -899,12 +899,12 @@ lemma bypass_eq_self_of_length_le_length_bypass (p : G.Walk u v) (h : p.length �
     p.bypass = p :=
   ext_support <| p.support_bypass_sublist_support.eq_of_length_le <| by simpa using h
 
+@[deprecated (since := "2026-05-25")]
+alias bypass_eq_self_of_length_le := bypass_eq_self_of_length_le_length_bypass
+
 @[grind →]
 lemma IsPath.bypass_eq_self {p : G.Walk u v} (hp : p.IsPath) : p.bypass = p := by
   induction p <;> simp_all [cons_isPath_iff, bypass]
-
-@[deprecated (since := "2026-05-25")]
-alias bypass_eq_self_of_length_le := bypass_eq_self_of_length_le_length_bypass
 
 theorem darts_toPath_subset_darts (p : G.Walk u v) : (p.toPath : G.Walk u v).darts ⊆ p.darts :=
   p.darts_bypass_subset_darts
