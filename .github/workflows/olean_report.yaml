@@ -48,7 +48,7 @@ jobs:
 
       - name: Checkout local actions
         if: steps.check_trigger.outputs.triggered == 'true'
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1
@@ -82,7 +82,7 @@ jobs:
       # We fetch full depth so that we can compute the merge base.
       - name: Checkout PR head
         if: steps.check_trigger.outputs.triggered == 'true'
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           repository: ${{ github.repository }}
           ref: refs/pull/${{ github.event.issue.number }}/head
@@ -95,7 +95,7 @@ jobs:
       # here so that a single binary can fetch oleans for both checkouts.
       - name: Checkout tools branch (master)
         if: steps.check_trigger.outputs.triggered == 'true'
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           repository: ${{ github.repository }}
           ref: master
@@ -117,7 +117,7 @@ jobs:
 
       - name: Checkout merge base
         if: steps.check_trigger.outputs.triggered == 'true'
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           repository: ${{ github.repository }}
           ref: ${{ steps.merge_base.outputs.sha }}
