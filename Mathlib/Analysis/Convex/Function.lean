@@ -166,22 +166,18 @@ theorem StrictConvexOn.comp (hg : StrictConvexOn 𝕜 (f '' s) g) (hf : StrictCo
           hf.2 hx hy hxy ha hb hab).trans <|
       hg.2 (mem_image_of_mem f hx) (mem_image_of_mem f hy) (mt (hf' hx hy) hxy) ha hb hab⟩
 
+theorem StrictConcaveOn.comp_strictConvexOn (hg : StrictConcaveOn 𝕜 (f '' s) g)
+    (hf : StrictConvexOn 𝕜 s f) (hg' : StrictAntiOn g (f '' s)) (hf' : s.InjOn f) :
+    StrictConcaveOn 𝕜 s (g ∘ f) :=
+  hg.dual.comp hf hg' hf'
+
 theorem StrictConcaveOn.comp (hg : StrictConcaveOn 𝕜 (f '' s) g) (hf : StrictConcaveOn 𝕜 s f)
     (hg' : StrictMonoOn g (f '' s)) (hf' : s.InjOn f) : StrictConcaveOn 𝕜 s (g ∘ f) :=
-  ⟨hf.1, fun _ hx _ hy hxy _ _ ha hb hab =>
-    (hg.2 (mem_image_of_mem f hx) (mem_image_of_mem f hy) (mt (hf' hx hy) hxy) ha hb hab).trans <|
-      hg' (hg.1 (mem_image_of_mem f hx) (mem_image_of_mem f hy) ha.le hb.le hab)
-          (mem_image_of_mem f <| hf.1 hx hy ha.le hb.le hab) <|
-        hf.2 hx hy hxy ha hb hab⟩
+  hg.comp_strictConvexOn (β := βᵒᵈ) hf hg'.dual hf'
 
 theorem StrictConvexOn.comp_strictConcaveOn (hg : StrictConvexOn 𝕜 (f '' s) g)
     (hf : StrictConcaveOn 𝕜 s f) (hg' : StrictAntiOn g (f '' s)) (hf' : s.InjOn f) :
     StrictConvexOn 𝕜 s (g ∘ f) :=
-  hg.dual.comp hf hg' hf'
-
-theorem StrictConcaveOn.comp_strictConvexOn (hg : StrictConcaveOn 𝕜 (f '' s) g)
-    (hf : StrictConvexOn 𝕜 s f) (hg' : StrictAntiOn g (f '' s)) (hf' : s.InjOn f) :
-    StrictConcaveOn 𝕜 s (g ∘ f) :=
   hg.dual.comp hf hg' hf'
 
 theorem ConvexOn.comp_strictConvexOn (hg : ConvexOn 𝕜 (f '' s) g) (hf : StrictConvexOn 𝕜 s f)
@@ -196,11 +192,8 @@ theorem ConcaveOn.comp_strictConvexOn (hg : ConcaveOn 𝕜 (f '' s) g) (hf : Str
   hg.dual.comp_strictConvexOn hf hg'
 
 theorem ConcaveOn.comp_strictConcaveOn (hg : ConcaveOn 𝕜 (f '' s) g) (hf : StrictConcaveOn 𝕜 s f)
-    (hg' : StrictMonoOn g (f '' s)) : StrictConcaveOn 𝕜 s (g ∘ f) := by
-  refine ⟨hf.left, fun x hx y hy hxy a b ha hb hab ↦ .trans_le' (b := g (a • f x + b • f y)) ?_ ?_⟩
-  · refine hg' ?_ (mem_image_of_mem f <| hf.1 hx hy ha.le hb.le hab) <| hf.2 hx hy hxy ha hb hab
-    exact (hg.left (mem_image_of_mem f hx) (mem_image_of_mem f hy) ha.le hb.le hab)
-  · exact hg.right (mem_image_of_mem f hx) (mem_image_of_mem f hy) ha.le hb.le hab
+    (hg' : StrictMonoOn g (f '' s)) : StrictConcaveOn 𝕜 s (g ∘ f) :=
+  hg.comp_strictConvexOn (β := βᵒᵈ) hf hg'.dual
 
 theorem ConvexOn.comp_strictConcaveOn (hg : ConvexOn 𝕜 (f '' s) g) (hf : StrictConcaveOn 𝕜 s f)
     (hg' : StrictAntiOn g (f '' s)) : StrictConvexOn 𝕜 s (g ∘ f) :=
