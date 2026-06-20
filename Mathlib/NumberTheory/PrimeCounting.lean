@@ -117,15 +117,15 @@ section PrimeSets
 
 variable {p k n : ℕ}
 
-/-- `primesBelow n` is the set of primes less than `n` as a `Finset`. -/
+/-- `n.primesBelow` is the set of primes less than `n` as a `Finset`. -/
 def primesBelow (n : ℕ) : Finset ℕ := {p ∈ range n | p.Prime}
 
-/-- `primesLE n` is the set of primes less than or equal to `n` as a `Finset`. -/
+/-- `n.primesLE` is the set of primes less than or equal to `n` as a `Finset`. -/
 def primesLE (n : ℕ) : Finset ℕ := primesBelow (n + 1)
 
-lemma primesBelow_eq_filter_range (n : ℕ) : primesBelow n = filter Prime (range n) := rfl
+lemma primesBelow_eq_filter_range (n : ℕ) : n.primesBelow = filter Prime (range n) := rfl
 
-lemma primesLE_eq_filter_range (n : ℕ) : primesLE n = filter Prime (range (n + 1)) := rfl
+lemma primesLE_eq_filter_range (n : ℕ) : n.primesLE = filter Prime (range (n + 1)) := rfl
 
 @[simp]
 lemma primesBelow_zero : primesBelow 0 = ∅ := by decide
@@ -142,58 +142,58 @@ lemma primesLE_zero : primesLE 0 = ∅ := primesBelow_one
 @[simp]
 lemma primesLE_one : primesLE 1 = ∅ := primesBelow_two
 
-theorem primesBelow_eq_primesLE_sub_one (n : ℕ) : primesBelow n = primesLE (n - 1) := by
+theorem primesBelow_eq_primesLE_sub_one (n : ℕ) : n.primesBelow = primesLE (n - 1) := by
   cases n <;> simp [primesLE]
 
 lemma mem_primesBelow : n ∈ primesBelow k ↔ n < k ∧ n.Prime := by simp [primesBelow]
 
-lemma mem_primesLE : p ∈ primesLE n ↔ p ≤ n ∧ p.Prime := by simp [primesLE, mem_primesBelow]
+lemma mem_primesLE : p ∈ n.primesLE ↔ p ≤ n ∧ p.Prime := by simp [primesLE, mem_primesBelow]
 
 lemma prime_of_mem_primesBelow (h : p ∈ n.primesBelow) : p.Prime := (mem_filter.mp h).2
 
-lemma prime_of_mem_primesLE (hp : p ∈ primesLE n) : p.Prime := prime_of_mem_primesBelow hp
+lemma prime_of_mem_primesLE (hp : p ∈ n.primesLE) : p.Prime := prime_of_mem_primesBelow hp
 
 lemma lt_of_mem_primesBelow (h : p ∈ n.primesBelow) : p < n := (mem_primesBelow.mp h).1
 
-lemma le_of_mem_primesLE (hp : p ∈ primesLE n) : p ≤ n := (mem_primesLE.mp hp).1
+lemma le_of_mem_primesLE (hp : p ∈ n.primesLE) : p ≤ n := (mem_primesLE.mp hp).1
 
-lemma one_lt_of_mem_primesBelow (hp : p ∈ primesBelow n) : 1 < p :=
+lemma one_lt_of_mem_primesBelow (hp : p ∈ n.primesBelow) : 1 < p :=
   (prime_of_mem_primesBelow hp).one_lt
 
-lemma one_lt_of_mem_primesLE (hp : p ∈ primesLE n) : 1 < p := one_lt_of_mem_primesBelow hp
+lemma one_lt_of_mem_primesLE (hp : p ∈ n.primesLE) : 1 < p := one_lt_of_mem_primesBelow hp
 
-lemma two_le_of_mem_primesBelow (hp : p ∈ primesBelow n) : 2 ≤ p := one_lt_of_mem_primesBelow hp
+lemma two_le_of_mem_primesBelow (hp : p ∈ n.primesBelow) : 2 ≤ p := one_lt_of_mem_primesBelow hp
 
-lemma two_le_of_mem_primesLE (hp : p ∈ primesLE n) : 2 ≤ p := two_le_of_mem_primesBelow hp
+lemma two_le_of_mem_primesLE (hp : p ∈ n.primesLE) : 2 ≤ p := two_le_of_mem_primesBelow hp
 
-lemma primesBelow_eq_filter_Ico_zero (n : ℕ) : primesBelow n = filter Prime (Ico 0 n) := by
+lemma primesBelow_eq_filter_Ico_zero (n : ℕ) : n.primesBelow = filter Prime (Ico 0 n) := by
   simp [primesBelow_eq_filter_range]
 
-lemma primesLE_eq_filter_Icc_zero (n : ℕ) : primesLE n = filter Prime (Icc 0 n) :=
+lemma primesLE_eq_filter_Icc_zero (n : ℕ) : n.primesLE = filter Prime (Icc 0 n) :=
   primesBelow_eq_filter_Ico_zero _
 
-lemma primesBelow_eq_filter_Ioo_zero (n : ℕ) : primesBelow n = filter Prime (Ioo 0 n) := by
+lemma primesBelow_eq_filter_Ioo_zero (n : ℕ) : n.primesBelow = filter Prime (Ioo 0 n) := by
   ext; simp +contextual [primesBelow_eq_filter_range, Prime.pos]
 
-lemma primesLE_eq_filter_Ioc_zero (n : ℕ) : primesLE n = filter Prime (Ioc 0 n) :=
+lemma primesLE_eq_filter_Ioc_zero (n : ℕ) : n.primesLE = filter Prime (Ioc 0 n) :=
   primesBelow_eq_filter_Ioo_zero _
 
-lemma primesBelow_eq_filter_Ico_one (n : ℕ) : primesBelow n = filter Prime (Ico 1 n) :=
+lemma primesBelow_eq_filter_Ico_one (n : ℕ) : n.primesBelow = filter Prime (Ico 1 n) :=
   primesBelow_eq_filter_Ioo_zero n
 
-lemma primesLE_eq_filter_Icc_one (n : ℕ) : primesLE n = filter Prime (Icc 1 n) :=
+lemma primesLE_eq_filter_Icc_one (n : ℕ) : n.primesLE = filter Prime (Icc 1 n) :=
   primesLE_eq_filter_Ioc_zero n
 
-lemma primesBelow_eq_filter_Ioo_one (n : ℕ) : primesBelow n = filter Prime (Ioo 1 n) := by
+lemma primesBelow_eq_filter_Ioo_one (n : ℕ) : n.primesBelow = filter Prime (Ioo 1 n) := by
   ext; simp +contextual [primesBelow_eq_filter_range, Prime.one_lt]
 
-lemma primesLE_eq_filter_Ioc_one (n : ℕ) : primesLE n = filter Prime (Ioc 1 n) :=
+lemma primesLE_eq_filter_Ioc_one (n : ℕ) : n.primesLE = filter Prime (Ioc 1 n) :=
   primesBelow_eq_filter_Ioo_one _
 
-lemma primesBelow_eq_filter_Ico_two (n : ℕ) : primesBelow n = filter Prime (Ico 2 n) :=
+lemma primesBelow_eq_filter_Ico_two (n : ℕ) : n.primesBelow = filter Prime (Ico 2 n) :=
   primesBelow_eq_filter_Ioo_one n
 
-lemma primesLE_eq_filter_Icc_two (n : ℕ) : primesLE n = filter Prime (Icc 2 n) :=
+lemma primesLE_eq_filter_Icc_two (n : ℕ) : n.primesLE = filter Prime (Icc 2 n) :=
   primesLE_eq_filter_Ioc_one n
 
 lemma primesBelow_mono : Monotone primesBelow := by intro _ _ _ _; grind [mem_primesBelow]
@@ -201,29 +201,29 @@ lemma primesBelow_mono : Monotone primesBelow := by intro _ _ _ _; grind [mem_pr
 lemma primesLE_mono : Monotone primesLE := by intro _ _ _ _; grind [mem_primesLE]
 
 lemma primesBelow_succ (n : ℕ) :
-    primesBelow (n + 1) = if n.Prime then insert n (primesBelow n) else primesBelow n := by
+    (n + 1).primesBelow = if n.Prime then insert n n.primesBelow else n.primesBelow := by
   rw [primesBelow, primesBelow, range_add_one, filter_insert]
 
 lemma primesLE_succ (n : ℕ) :
-    primesLE (n + 1) = if (n + 1).Prime then insert (n + 1) (primesLE n) else primesLE n :=
+    (n + 1).primesLE = if (n + 1).Prime then insert (n + 1) n.primesLE else n.primesLE :=
   primesBelow_succ _
 
-lemma notMem_primesBelow (n : ℕ) : n ∉ primesBelow n :=
+lemma notMem_primesBelow (n : ℕ) : n ∉ n.primesBelow :=
   fun hn ↦ (lt_of_mem_primesBelow hn).false
 
-lemma notMem_primesLE (n : ℕ) : n + 1 ∉ primesLE n := notMem_primesBelow _
+lemma notMem_primesLE (n : ℕ) : n + 1 ∉ n.primesLE := notMem_primesBelow _
 
 end PrimeSets
 
-/-- The cardinality of the finset `primesBelow n` equals the counting function
+/-- The cardinality of the finset `n.primesBelow` equals the counting function
 `primeCounting'` at `n`. -/
 theorem primesBelow_card_eq_primeCounting' (n : ℕ) : #n.primesBelow = π' n := by
   simpa [primesBelow, primeCounting'] using (count_eq_card_filter_range Prime n).symm
 
-/-- The cardinality of the finset `primesLE n` equals the counting function
+/-- The cardinality of the finset `n.primesLE` equals the counting function
 `primeCounting` at `n`. -/
 @[simp]
-theorem primesLE_card_eq_primeCounting (n : ℕ) : #(primesLE n) = π n := by
+theorem primesLE_card_eq_primeCounting (n : ℕ) : #n.primesLE = π n := by
   simp only [primesLE, primeCounting, primesBelow_card_eq_primeCounting']
 
 /-- A linear upper bound on the size of the `primeCounting'` function -/
