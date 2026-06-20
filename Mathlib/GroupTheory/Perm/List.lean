@@ -89,7 +89,7 @@ theorem zipWith_swap_prod_support [Fintype α] (l l' : List α) :
 
 theorem support_formPerm_le' : { x | formPerm l x ≠ x } ≤ l.toFinset := by
   refine (zipWith_swap_prod_support' l l.tail).trans ?_
-  simpa [Finset.subset_iff] using tail_subset l
+  simpa [Finset.subset_iff] using! tail_subset l
 
 theorem support_formPerm_le [Fintype α] : support (formPerm l) ≤ l.toFinset := by
   intro x hx
@@ -211,7 +211,7 @@ theorem support_formPerm_of_nodup' (l : List α) (h : Nodup l) (h' : ∀ x : α,
 theorem support_formPerm_of_nodup [Fintype α] (l : List α) (h : Nodup l) (h' : ∀ x : α, l ≠ [x]) :
     support (formPerm l) = l.toFinset := by
   rw [← Finset.coe_inj]
-  convert support_formPerm_of_nodup' _ h h'
+  convert! support_formPerm_of_nodup' _ h h'
   simp [Set.ext_iff]
 
 theorem formPerm_rotate_one (l : List α) (h : Nodup l) : formPerm (l.rotate 1) = formPerm l := by
@@ -263,7 +263,7 @@ theorem formPerm_pow_apply_getElem (l : List α) (w : Nodup l) (n : ℕ) (i : �
 theorem formPerm_pow_apply_head (x : α) (l : List α) (h : Nodup (x :: l)) (n : ℕ) :
     (formPerm (x :: l) ^ n) x =
       (x :: l)[(n % (x :: l).length)]'(Nat.mod_lt _ (Nat.zero_lt_succ _)) := by
-  convert formPerm_pow_apply_getElem _ h n 0 (Nat.succ_pos _)
+  convert! formPerm_pow_apply_getElem _ h n 0 (Nat.succ_pos _)
   simp
 
 theorem formPerm_ext_iff {x y x' y' : α} {l l' : List α} (hd : Nodup (x :: y :: l))

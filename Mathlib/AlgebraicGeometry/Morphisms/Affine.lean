@@ -75,7 +75,7 @@ instance {X : Scheme} (r : Γ(X, ⊤)) :
   constructor
   intro U hU
   fapply (Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion (X.basicOpen r).ι).mp
-  convert hU.basicOpen (X.presheaf.map (homOfLE le_top).op r)
+  convert! hU.basicOpen (X.presheaf.map (homOfLE le_top).op r)
   rw [X.basicOpen_res]
   ext1
   refine Set.image_preimage_eq_inter_range.trans ?_
@@ -126,7 +126,7 @@ lemma isAffine_of_isAffineOpen_basicOpen (s : Set Γ(X, ⊤))
     exact hs₂ _ i.2
   · simp only [Opens.map_top, morphismRestrict_app]
     refine IsIso.comp_isIso' ?_ inferInstance
-    convert isIso_ΓSpec_adjunction_unit_app_basicOpen i.1 using 0
+    convert! isIso_ΓSpec_adjunction_unit_app_basicOpen i.1 using 0
     exact congr(IsIso ((ΓSpec.adjunction.unit.app X).app $(by simp)))
 
 set_option backward.isDefEq.respectTransparency false in
@@ -161,7 +161,7 @@ instance : HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X where
       rw [Ideal.map_span, Ideal.map_top] at hS
       apply isAffine_of_isAffineOpen_basicOpen _ hS
       have : ∀ i : S, IsAffineOpen (f ⁻¹ᵁ Y.basicOpen i.1) := hS'
-      simpa [Scheme.preimage_basicOpen] using this
+      simpa [Scheme.preimage_basicOpen] using! this
   eq_targetAffineLocally' := by
     ext X Y f
     simp only [targetAffineLocally, Scheme.affineOpens, Set.coe_setOf, Set.mem_setOf_eq,
@@ -221,7 +221,7 @@ instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsAffineHom f] [IsAff
   have : IsAffine (f ⁻¹ᵁ W).toScheme := hW.preimage f
   have : IsAffine (g ⁻¹ᵁ W).toScheme := hW.preimage g
   let i : (f ⁻¹ᵁ W).toScheme ⨿ (g ⁻¹ᵁ W).toScheme ⟶ U ⨿ V := coprod.map (f ⁻¹ᵁ W).ι (g ⁻¹ᵁ W).ι
-  convert isAffineOpen_opensRange i
+  convert! isAffineOpen_opensRange i
   apply le_antisymm
   · intro x hx
     obtain ⟨(x | x), rfl⟩ := (coprodMk U V).surjective x
@@ -253,7 +253,7 @@ lemma isAffineHom_of_isInducing
       exact ⟨⟨U', hU'⟩ ⊓ U, inf_le_right, Opens.ext (by simpa [e] using hVU)⟩
     obtain ⟨r, hrU', hxr⟩ := hU.exists_basicOpen_le ⟨f x, hxV⟩ hxU
     refine ⟨_, hxr, hU.basicOpen r, ?_⟩
-    convert hV.basicOpen (f.app _ (Y.presheaf.map (homOfLE hU'U).op r)) using 1
+    convert hV.basicOpen (f.app _ (Y.presheaf.map (homOfLE hU'U).op r))
     simp only [Scheme.preimage_basicOpen, ← CommRingCat.comp_apply, f.naturality]
     simpa using ((Opens.map f.base).map (homOfLE hrU')).le
   · obtain ⟨_, ⟨U, hU, rfl⟩, hyU, hU'⟩ :=
@@ -275,7 +275,7 @@ lemma IsAffineOpen.isCompact_pullback_inf {X Y Z : Scheme.{u}} {f : X ⟶ Z} {g 
     IsOpenImmersion.lift W.ι (Scheme.Opens.ι _ ≫ g) <| by simpa [Set.range_comp]
   let p : pullback f' q ⟶ pullback f g :=
     pullback.map _ _ _ _ U.ι (Scheme.Opens.ι _) W.ι (by simp [f']) (by simp [q])
-  convert isCompact_range p.continuous
+  convert! isCompact_range p.continuous
   simp [p, Scheme.Pullback.range_map]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -303,7 +303,7 @@ theorem diagonal_isAffine_iff_forall_isAffineOpen_inf [IsAffine Y] (f : X ⟶ Y)
     exact .of_isIso this.isoPullback.hom
   · introv H h₁ h₂
     have : IsAffineOpen (pullback.fst f₁ f₂ ≫ f₁).opensRange := by
-      convert H _ _ (isAffineOpen_opensRange f₁) (isAffineOpen_opensRange f₂) using 1
+      convert! H _ _ (isAffineOpen_opensRange f₁) (isAffineOpen_opensRange f₂)
       exact Opens.ext (IsOpenImmersion.range_pullback_to_base_of_left _ _)
     change IsAffine _ at this
     exact .of_isIso (pullback.fst f₁ f₂ ≫ f₁).isoOpensRange.hom
