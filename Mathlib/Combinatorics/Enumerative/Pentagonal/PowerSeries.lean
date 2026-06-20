@@ -53,7 +53,7 @@ theorem tendsto_order_neg_X_pow (k : ℕ) :
     Tendsto (fun i ↦ (-(X : R⟦X⟧) ^ (i + k + 1)).order) atTop (𝓝 ⊤) := by
   nontriviality R using Subsingleton.eq_zero
   simp_rw [order_neg, order_X_pow, add_assoc]
-  exact ENat.tendsto_natCast_nhds_top.comp (Filter.tendsto_add_atTop_nat _)
+  exact ENat.tendsto_natCast_nhds_top.comp (tendsto_add_atTop_nat _)
 
 variable [TopologicalSpace R]
 
