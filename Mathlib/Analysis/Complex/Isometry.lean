@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Complex.Circle
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
+import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Isometries of the Complex Plane
@@ -17,6 +18,7 @@ Specifically, isometries with rotations but without translation.
 The proof involves:
 1. creating a linear isometry `g` with two fixed points, `g(0) = 0`, `g(1) = 1`
 2. applying `linear_isometry_complex_aux` to `g`
+
 The proof of `linear_isometry_complex_aux` is separated in the following parts:
 1. show that the real parts match up: `LinearIsometry.re_apply_eq_re`
 2. show that I maps to either I or -I
@@ -31,6 +33,7 @@ The proof of `linear_isometry_complex_aux` is separated in the following parts:
 
 
 noncomputable section
+suppress_compilation -- needed to avoid a panic!
 
 open Complex
 
@@ -98,21 +101,12 @@ theorem LinearIsometry.im_apply_eq_im_or_neg_of_re_apply_eq_re {f : ℂ →ₗ�
 
 theorem LinearIsometry.im_apply_eq_im {f : ℂ →ₗᵢ[ℝ] ℂ} (h : f 1 = 1) (z : ℂ) :
     z + conj z = f z + conj (f z) := by
-  have : ‖f z - 1‖ = ‖z - 1‖ := by rw [← f.norm_map (z - 1), f.map_sub, h]
-  apply_fun fun x => x ^ 2 at this
-  simp only [← normSq_eq_norm_sq] at this
-  rw [← ofReal_inj, ← mul_conj, ← mul_conj] at this
-  rw [map_sub, map_sub] at this
-  simp only [sub_mul, mul_sub, one_mul] at this
-  rw [mul_conj, normSq_eq_norm_sq, LinearIsometry.norm_map] at this
-  rw [mul_conj, normSq_eq_norm_sq] at this
-  simp only [sub_sub, sub_right_inj, mul_one, ofReal_pow, map_one] at this
-  simp only [add_sub, sub_left_inj] at this
-  rw [add_comm, ← this, add_comm]
+  have hsq : ‖f z - 1‖ ^ 2 = ‖z - 1‖ ^ 2 := by simpa [h] using f.norm_map (z - 1)
+  simp_rw [← normSq_eq_norm_sq, Complex.normSq_sub] at hsq
+  simpa [normSq_eq_norm_sq, Complex.add_conj, LinearIsometry.norm_map] using hsq.symm
 
 theorem LinearIsometry.re_apply_eq_re {f : ℂ →ₗᵢ[ℝ] ℂ} (h : f 1 = 1) (z : ℂ) : (f z).re = z.re := by
   apply LinearIsometry.re_apply_eq_re_of_add_conj_eq
-  intro z
   apply LinearIsometry.im_apply_eq_im h
 
 theorem linear_isometry_complex_aux {f : ℂ ≃ₗᵢ[ℝ] ℂ} (h : f 1 = 1) :

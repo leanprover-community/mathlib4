@@ -5,10 +5,10 @@ Authors: David Loeffler
 -/
 module
 
+public import Mathlib.Analysis.Complex.Polynomial.Basic
 public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 public import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
 public import Mathlib.RingTheory.RootsOfUnity.AlgebraicallyClosed
-public import Mathlib.Topology.Instances.AddCircle.Real
 
 /-!
 # Additive characters valued in the unit circle
@@ -101,7 +101,7 @@ noncomputable def rootsOfUnityAddChar (n : ℕ) [NeZero n] :
     AddChar (ZMod n) (rootsOfUnity n Circle) where
   toFun x := ⟨toUnits (ZMod.toCircle x), by ext; simp [← AddChar.map_nsmul_eq_pow]⟩
   map_zero_eq_one' := by simp
-  map_add_eq_mul' _ _:= by ext; simp [AddChar.map_add_eq_mul]
+  map_add_eq_mul' _ _ := by ext; simp [AddChar.map_add_eq_mul]
 
 @[simp] lemma rootsOfUnityAddChar_val (n : ℕ) [NeZero n] (x : ZMod n) :
     (rootsOfUnityAddChar n x).val = toCircle x := by

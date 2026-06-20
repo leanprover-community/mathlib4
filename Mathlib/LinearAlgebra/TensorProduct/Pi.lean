@@ -43,7 +43,8 @@ section
 
 variable {ι} (M : ι → Type*) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
-private def piRightHomBil : N →ₗ[S] (∀ i, M i) →ₗ[R] ∀ i, N ⊗[R] M i where
+/-- (Implementation): Bilinear map for defining `TensorProduct.piRightHom`. -/
+def piRightHomBil : N →ₗ[S] (∀ i, M i) →ₗ[R] ∀ i, N ⊗[R] M i where
   toFun n := LinearMap.pi (fun i ↦ mk R N (M i) n ∘ₗ LinearMap.proj i)
   map_add' _ _ := by
     ext
@@ -62,7 +63,7 @@ lemma piRightHom_tmul (x : N) (f : ∀ i, M i) :
 
 variable [Fintype ι] [DecidableEq ι]
 
-private
+/-- (Implementation): Inverse for `TensorProduct.piRight`. -/
 def piRightInv : (∀ i, N ⊗[R] M i) →ₗ[S] N ⊗[R] ∀ i, M i :=
   LinearMap.lsum S (fun i ↦ N ⊗[R] M i) S <| fun i ↦
     AlgebraTensorModule.map LinearMap.id (single R M i)
@@ -116,7 +117,9 @@ TODO: generalize to `S`-linear. -/
 
 end
 
-private def piScalarRightHomBil : N →ₗ[S] (ι → R) →ₗ[R] (ι → N) where
+set_option backward.defeqAttrib.useBackward true in
+/-- Internal implementation detail: we should make this `private`. -/
+def piScalarRightHomBil : N →ₗ[S] (ι → R) →ₗ[R] (ι → N) where
   toFun n := LinearMap.compLeft (toSpanSingleton R N n) ι
   map_add' x y := by
     ext i j
@@ -128,11 +131,15 @@ private def piScalarRightHomBil : N →ₗ[S] (ι → R) →ₗ[R] (ι → N) wh
     rw [← IsScalarTower.smul_assoc, _root_.Algebra.smul_def, mul_comm, mul_smul]
     simp
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- For any `R`-module `N` and index type `ι`, there is a natural
 linear map `N ⊗[R] (ι → R) →ₗ (ι → N)`. This map is an isomorphism if `ι` is finite. -/
 def piScalarRightHom : N ⊗[R] (ι → R) →ₗ[S] (ι → N) :=
   AlgebraTensorModule.lift <| piScalarRightHomBil R S N ι
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 lemma piScalarRightHom_tmul (x : N) (f : ι → R) :
     piScalarRightHom R S N ι (x ⊗ₜ f) = (fun j ↦ f j • x) := by
@@ -141,7 +148,7 @@ lemma piScalarRightHom_tmul (x : N) (f : ι → R) :
 
 variable [Fintype ι] [DecidableEq ι]
 
-private
+/-- (Implementation): Inverse for `TensorProduct.piScalarRight`. -/
 def piScalarRightInv : (ι → N) →ₗ[S] N ⊗[R] (ι → R) :=
   LinearMap.lsum S (fun _ ↦ N) S <| fun i ↦ {
     toFun := fun n ↦ n ⊗ₜ Pi.single i 1

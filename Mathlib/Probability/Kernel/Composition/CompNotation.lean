@@ -22,7 +22,7 @@ This file does not define composition but only introduces notation for
 * `κ ∘ₘ μ = MeasureTheory.Measure.bind μ κ`, for `κ` a kernel.
 -/
 
-@[expose] public section
+public section
 
 /- This file is only for lemmas that are direct specializations of `Measure.bind` to kernels,
 anything more involved should go elsewhere (for example the `MeasureComp` file). -/

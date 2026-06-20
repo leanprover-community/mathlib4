@@ -10,6 +10,6 @@ public import Mathlib.Init
 # Notation `ℤ` for the integers.
 -/
 
-@[expose] public section
+public section
 
 @[inherit_doc] notation "ℤ" => Int

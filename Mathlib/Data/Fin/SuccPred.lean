@@ -75,7 +75,7 @@ theorem succ_one_eq_two' [NeZero n] : Fin.succ (1 : Fin (n + 1)) = 2 := by
 The `Fin.le_zero_iff` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
-@[simp]
+@[deprecated "use `nonpos_iff_eq_zero`" (since := "2026-05-11")]
 theorem le_zero_iff' {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
   ⟨fun h => Fin.ext <| by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact Nat.le_refl _⟩
 
@@ -112,7 +112,7 @@ theorem range_castLE {n k : ℕ} (h : n ≤ k) : Set.range (castLE h) = { i : Fi
 @[simp]
 theorem coe_of_injective_castLE_symm {n k : ℕ} (h : n ≤ k) (i : Fin k) (hi) :
     ((Equiv.ofInjective _ (castLE_injective h)).symm ⟨i, hi⟩ : ℕ) = i := by
-  rw [← coe_castLE h]
+  rw [← val_castLE h]
   exact congr_arg Fin.val (Equiv.apply_ofInjective_symm _ _)
 
 theorem leftInverse_cast (eq : n = m) : LeftInverse (Fin.cast eq.symm) (Fin.cast eq) :=
@@ -134,12 +134,15 @@ theorem cast_le_cast (eq : n = m) {a b : Fin n} : a.cast eq ≤ b.cast eq ↔ a 
   Iff.rfl
 
 /-- The 'identity' equivalence between `Fin m` and `Fin n` when `m = n`. -/
-@[simps]
+@[simps apply]
 def _root_.finCongr (eq : n = m) : Fin n ≃ Fin m where
   toFun := Fin.cast eq
   invFun := Fin.cast eq.symm
   left_inv := leftInverse_cast eq
   right_inv := rightInverse_cast eq
+
+theorem _root_.finCongr_symm_apply (eq : n = m) (a : Fin m) :
+    (finCongr eq).symm a = a.cast eq.symm := rfl
 
 @[simp] lemma _root_.finCongr_apply_mk (h : m = n) (k : ℕ) (hk : k < m) :
     finCongr h ⟨k, hk⟩ = ⟨k, h ▸ hk⟩ := rfl
@@ -160,9 +163,7 @@ lemma _root_.finCongr_eq_equivCast (h : n = m) : finCongr h = .cast (h ▸ rfl) 
 /-- While in many cases `Fin.cast` is better than `Equiv.cast`/`cast`, sometimes we want to apply
 a generic theorem about `cast`. -/
 theorem cast_eq_cast (h : n = m) : (Fin.cast h : Fin n → Fin m) = _root_.cast (h ▸ rfl) := by
-  subst h
-  ext
-  rfl
+  grind
 
 theorem castSucc_le_succ {n} (i : Fin n) : i.castSucc ≤ i.succ := Nat.le_succ i
 
@@ -179,7 +180,8 @@ theorem le_of_castSucc_lt_of_succ_lt {a b : Fin (n + 1)} {i : Fin n}
   simp [Fin.lt_def, -val_fin_lt] at *; lia
 
 theorem castSucc_lt_or_lt_succ (p : Fin (n + 1)) (i : Fin n) : castSucc i < p ∨ p < i.succ := by
-  simpa [Fin.lt_def, -val_fin_lt] using by lia
+  simp [Fin.lt_def, -val_fin_lt]
+  lia
 
 theorem succ_le_or_le_castSucc (p : Fin (n + 1)) (i : Fin n) : succ i ≤ p ∨ p ≤ i.castSucc := by
   rw [le_castSucc_iff, ← castSucc_lt_iff_succ_le]
@@ -221,28 +223,16 @@ The `Fin.castSucc_pos` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis. -/
 alias ⟨_, castSucc_pos'⟩ := castSucc_pos_iff
 
-@[deprecated Fin.castSucc_eq_zero_iff (since := "2025-05-13")]
-theorem castSucc_eq_zero_iff' [NeZero n] (a : Fin n) : castSucc a = 0 ↔ a = 0 :=
-  Fin.ext_iff.trans <| (Fin.ext_iff.trans <| by simp).symm
-
-@[deprecated Fin.castSucc_ne_zero_iff (since := "2025-05-13")]
-theorem castSucc_ne_zero_iff' [NeZero n] (a : Fin n) : castSucc a ≠ 0 ↔ a ≠ 0 :=
-  not_iff_not.mpr <| castSucc_eq_zero_iff
-
 theorem castSucc_ne_zero_of_lt {p i : Fin n} (h : p < i) : castSucc i ≠ 0 := by
   cases n
   · exact i.elim0
-  · rw [castSucc_ne_zero_iff, Ne, Fin.ext_iff]
-    exact ((zero_le _).trans_lt h).ne'
+  · grind [castSucc_ne_zero_iff]
 
 theorem succ_ne_last_iff (a : Fin (n + 1)) : succ a ≠ last (n + 1) ↔ a ≠ last n :=
   not_iff_not.mpr <| succ_eq_last_succ
 
 theorem succ_ne_last_of_lt {p i : Fin n} (h : i < p) : succ i ≠ last n := by
-  cases n
-  · exact i.elim0
-  · rw [succ_ne_last_iff, Ne, Fin.ext_iff]
-    exact ((le_last _).trans_lt' h).ne
+  grind
 
 open Fin.NatCast in
 @[norm_cast, simp]
@@ -261,7 +251,7 @@ theorem range_castSucc {n : ℕ} : Set.range (castSucc : Fin n → Fin n.succ) =
 @[simp]
 theorem coe_of_injective_castSucc_symm {n : ℕ} (i : Fin n.succ) (hi) :
     ((Equiv.ofInjective castSucc (castSucc_injective _)).symm ⟨i, hi⟩ : ℕ) = i := by
-  rw [← coe_castSucc]
+  rw [← val_castSucc]
   exact congr_arg val (Equiv.apply_ofInjective_symm _ _)
 
 theorem castSucc_castAdd (i : Fin n) : castSucc (castAdd m i) = castAdd (m + 1) i := rfl
@@ -274,6 +264,13 @@ theorem succ_castAdd (i : Fin n) : succ (castAdd m i) =
 
 theorem succ_natAdd (i : Fin m) : succ (natAdd n i) = natAdd n (succ i) := rfl
 
+theorem sub_castAdd_eq_castAdd_sub_of_le {n : ℕ} {a b : Fin n} (h : b ≤ a) :
+    a.castAdd m - b.castAdd m = (a - b).castAdd m := by
+  grind [Fin.sub_val_of_le]
+
+theorem sub_castSucc_eq_castSucc_sub_of_le {n : ℕ} {a b : Fin n} (h : b ≤ a) :
+    a.castSucc - b.castSucc = (a - b).castSucc := sub_castAdd_eq_castAdd_sub_of_le h
+
 end Succ
 
 section Pred
@@ -284,7 +281,7 @@ section Pred
 
 theorem pred_one' [NeZero n] (h := (zero_ne_one' (n := n)).symm) :
     Fin.pred (1 : Fin (n + 1)) h = 0 := by
-  simp_rw [Fin.ext_iff, coe_pred, val_one', val_zero, Nat.sub_eq_zero_iff_le, Nat.mod_le]
+  simp_rw [Fin.ext_iff, val_pred, val_one', val_zero, Nat.sub_eq_zero_iff_le, Nat.mod_le]
 
 theorem pred_last (h := Fin.ext_iff.not.2 last_pos'.ne') :
     pred (last (n + 1)) h = last n := by simp_rw [← succ_last, pred_succ]
@@ -407,9 +404,6 @@ theorem castPred_inj {i j : Fin (n + 1)} {hi : i ≠ last n} {hj : j ≠ last n}
 theorem castPred_zero [NeZero n] :
     castPred (0 : Fin (n + 1)) (Fin.ext_iff.not.2 last_pos'.ne) = 0 := rfl
 
-@[deprecated (since := "2025-05-11")]
-alias castPred_zero' := castPred_zero
-
 @[simp]
 theorem castPred_eq_zero [NeZero n] {i : Fin (n + 1)} (h : i ≠ last n) :
     Fin.castPred i h = 0 ↔ i = 0 := by
@@ -469,6 +463,42 @@ theorem pred_lt_castPred_iff {a b : Fin (n + 1)} (ha : a ≠ 0) (hb : b ≠ last
 theorem pred_lt_castPred {a : Fin (n + 1)} (h₁ : a ≠ 0) (h₂ : a ≠ last n) :
     pred a h₁ < castPred a h₂ := by
   rw [pred_lt_castPred_iff, le_def]
+
+theorem val_sub_castLT_of_le {a b : Fin m} (ha : a.val < n) (h : b ≤ a) :
+    (a.castLT ha - b.castLT (lt_of_le_of_lt h ha)).val = (a - b).val := by
+  have : b.castLT (lt_of_le_of_lt h ha) ≤ a.castLT ha := by simpa [← val_fin_le] using h
+  simp [sub_val_of_le, h, this]
+
+theorem sub_castLT_eq_castLT_sub_of_le {a b : Fin m} (ha : a.val < n) (h : b ≤ a) :
+    a.castLT ha - b.castLT (lt_of_le_of_lt h ha) =
+      (a - b).castLT (val_sub_lt_of_lt_of_le ha h) := by
+  rw [Fin.ext_iff]
+  exact val_sub_castLT_of_le ha h
+
+theorem val_sub_castLT_of_lt {a b : Fin m} (hb : b < n) (h : a < b) :
+    (a.castLT (lt_trans h hb) - b.castLT hb).val = (a - b).val + n - m := by
+  simp only [val_sub, val_castLT]
+  repeat rw [Nat.mod_eq_of_lt (by omega)]
+  have h' : a.val < b.val := h
+  omega
+
+theorem val_sub_castPred_of_le {a b : Fin (n + 1)} (ha : a ≠ last n)
+    (h : b ≤ a) :
+    (a.castPred ha - b.castPred (ne_last_of_ne_last_of_le ha h)).val = (a - b).val :=
+  val_sub_castLT_of_le (lt_last_iff_ne_last.mpr ha) h
+
+theorem sub_castPred_eq_castPred_sub_of_le {a b : Fin (n + 1)} (ha : a ≠ last n)
+    (h : b ≤ a) :
+    a.castPred ha - b.castPred (ne_last_of_ne_last_of_le ha h) =
+      (a - b).castPred (sub_ne_last_of_ne_last_of_le ha h) :=
+  sub_castLT_eq_castLT_sub_of_le (lt_last_iff_ne_last.mpr ha) h
+
+theorem val_sub_castPred_of_ge {a b : Fin (n + 1)} (hb : b ≠ last n)
+    (h : a ≤ b) :
+    (a.castPred (ne_last_of_ne_last_of_le hb h) - b.castPred hb).val = (a - b).val - 1 := by
+  obtain (rfl | h') := Fin.eq_or_lt_of_le h
+  · simp [val_sub, Nat.sub_add_cancel a.is_le]
+  grind [castPred, val_sub_castLT_of_lt]
 
 end CastPred
 
@@ -911,9 +941,8 @@ theorem succAbove_succAbove_succAbove_predAbove {n : ℕ}
   by saying that both functions are strictly monotone and have the same range `{i, i.succAbove j}ᶜ`,
   we give a direct proof by case analysis to avoid extra dependencies. -/
   ext
-  simp? [succAbove, predAbove, lt_def, apply_dite Fin.val, apply_ite Fin.val] says
-    simp only [succAbove, predAbove, lt_def, coe_castSucc, apply_dite Fin.val, coe_pred,
-      coe_castPred, dite_eq_ite, apply_ite Fin.val, val_succ]
+  simp only [succAbove, predAbove, lt_def, val_castSucc, apply_dite Fin.val, val_pred, coe_castPred,
+    dite_eq_ite, apply_ite Fin.val, val_succ]
   split_ifs <;> lia
 
 end PredAbove

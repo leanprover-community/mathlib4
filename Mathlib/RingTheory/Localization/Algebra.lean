@@ -78,7 +78,7 @@ is localizing. In other words, localization commutes with taking kernels. -/
 lemma RingHom.toKerIsLocalization_isLocalizedModule (hT : Submonoid.map g M = T) :
     IsLocalizedModule M (toKerIsLocalization S Q g (hT.symm ▸ Submonoid.le_comap_map M)) := by
   let e := LinearEquiv.ofEq _ _ (IsLocalization.ker_map (S := S) Q g hT).symm
-  convert_to IsLocalizedModule M ((e.restrictScalars R).toLinearMap ∘ₗ
+  convert_to! IsLocalizedModule M ((e.restrictScalars R).toLinearMap ∘ₗ
     Algebra.idealMap S (RingHom.ker g))
   apply IsLocalizedModule.of_linearEquiv
 
@@ -112,7 +112,7 @@ noncomputable def mapₐ (f : A →ₐ[R] B) : Aₚ →ₐ[Rₚ] Bₚ :=
 
 @[simp]
 lemma mapₐ_coe (f : A →ₐ[R] B) :
-    (mapₐ M Rₚ Aₚ Bₚ f : Aₚ → Bₚ) = map Bₚ f.toRingHom (algebraMapSubmonoid_le_comap M f)  :=
+    (mapₐ M Rₚ Aₚ Bₚ f : Aₚ → Bₚ) = map Bₚ f.toRingHom (algebraMapSubmonoid_le_comap M f) :=
   rfl
 
 lemma mapₐ_injective_of_injective (f : A →ₐ[R] B) (hf : Function.Injective f) :
@@ -184,15 +184,13 @@ end Algebra
 
 namespace Polynomial
 
+attribute [local instance] Polynomial.algebra in
 /-- If `A` is the localization of `R` at a submonoid `S`, then `A[X]` is the localization of
 `R[X]` at `S.map Polynomial.C`.
 
 See also `MvPolynomial.isLocalization` for the multivariate case. -/
 lemma isLocalization {R} [CommSemiring R] (S : Submonoid R) (A) [CommSemiring A] [Algebra R A]
-    [IsLocalization S A] : letI := (mapRingHom (algebraMap R A)).toAlgebra
-    IsLocalization (S.map C) A[X] :=
-  letI := (mapRingHom (algebraMap R A)).toAlgebra
-  have : IsScalarTower R R[X] A[X] := .of_algebraMap_eq fun _ ↦ (map_C _).symm
+    [IsLocalization S A] : IsLocalization (S.map C) A[X] :=
   isLocalizedModule_iff_isLocalization.mp <| (isLocalizedModule_iff_isBaseChange S A _).mpr <|
     .of_equiv (polyEquivTensor' R A).symm.toLinearEquiv fun _ ↦ by simp
 

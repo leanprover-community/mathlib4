@@ -28,7 +28,7 @@ to call these lemmas, and give a straightforward proof by induction.
 
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 A : Type*}
 
@@ -39,7 +39,8 @@ section Unital
 section RCLike
 
 variable {p : A → Prop} [RCLike 𝕜] [Ring A] [StarRing A] [Algebra 𝕜 A]
-variable [TopologicalSpace A] [ContinuousFunctionalCalculus 𝕜 A p] [IsTopologicalRing A] [T2Space A]
+variable [TopologicalSpace A] [ContinuousFunctionalCalculus 𝕜 A p]
+  [IsSemitopologicalRing A] [T2Space A]
 
 open StarAlgebra.elemental in
 protected theorem Commute.cfcHom {a b : A} (ha : p a) (hb₁ : Commute a b)

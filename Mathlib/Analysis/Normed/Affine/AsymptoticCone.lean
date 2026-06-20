@@ -15,7 +15,7 @@ In this file, we prove that the asymptotic cone of a set is non-trivial if and o
 unbounded.
 -/
 
-@[expose] public section
+public section
 
 open AffineSpace Bornology Filter Topology
 

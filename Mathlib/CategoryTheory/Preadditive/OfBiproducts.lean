@@ -94,6 +94,7 @@ theorem distrib (f g h k : X ⟶ Y) : (f +ᵣ g) +ₗ h +ᵣ k = (f +ₗ h) +ᵣ
   rw [leftAdd, h₁, Category.assoc, h₂, rightAdd]
 
 /-- In a category with binary biproducts, the morphisms form a commutative monoid. -/
+@[instance_reducible]
 def addCommMonoidHomOfHasBinaryBiproducts : AddCommMonoid (X ⟶ Y) where
   add := (· +ᵣ ·)
   add_assoc :=

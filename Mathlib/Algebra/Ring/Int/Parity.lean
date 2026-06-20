@@ -15,7 +15,7 @@ public import Mathlib.Algebra.Group.Int.Even
 See note [foundational algebra order theory].
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists DenselyOrdered Set.Subsingleton
 
@@ -27,7 +27,7 @@ variable {m n : ℤ}
 
 @[grind =]
 lemma odd_iff : Odd n ↔ n % 2 = 1 where
-  mp := fun ⟨m, hm⟩ ↦ by simp [hm, add_emod]
+  mp := fun ⟨m, hm⟩ ↦ by grind
   mpr h := ⟨n / 2, by grind⟩
 
 lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by grind
@@ -42,13 +42,17 @@ lemma even_or_odd (n : ℤ) : Even n ∨ Odd n := by grind
 lemma even_or_odd' (n : ℤ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
   simpa only [two_mul, exists_or, Odd, Even] using even_or_odd n
 
-lemma even_xor'_odd (n : ℤ) : Xor' (Even n) (Odd n) := by
+lemma even_xor_odd (n : ℤ) : Xor (Even n) (Odd n) := by
   grind
 
-lemma even_xor'_odd' (n : ℤ) : ∃ k, Xor' (n = 2 * k) (n = 2 * k + 1) := by
+@[deprecated (since := "2026-04-27")] alias even_xor'_odd := even_xor_odd
+
+lemma even_xor_odd' (n : ℤ) : ∃ k, Xor (n = 2 * k) (n = 2 * k + 1) := by
   rcases even_or_odd n with (⟨k, rfl⟩ | ⟨k, rfl⟩) <;>
   · use k
     grind
+
+@[deprecated (since := "2026-04-27")] alias even_xor'_odd' := even_xor_odd'
 
 instance : DecidablePred (Odd : ℤ → Prop) := fun _ => decidable_of_iff _ not_even_iff_odd
 
@@ -106,15 +110,8 @@ lemma add_one_ediv_two_mul_two_of_odd : Odd n → 1 + n / 2 * 2 = n := by grind
 
 lemma two_mul_ediv_two_of_odd (h : Odd n) : 2 * (n / 2) = n - 1 := by grind
 
-@[simp, grind =]
-theorem even_sign_iff {z : ℤ} : Even z.sign ↔ z = 0 := by
-  induction z using wlog_sign with
-  | inv => simp
-  | w n =>
-    cases n
-    · simp
-    · norm_cast
-      simp
+@[simp]
+theorem even_sign_iff {z : ℤ} : Even z.sign ↔ z = 0 := by grind
 
 @[simp]
 theorem odd_sign_iff {z : ℤ} : Odd z.sign ↔ z ≠ 0 := by grind
@@ -130,4 +127,32 @@ theorem isSquare_ofNat_iff {n : ℕ} :
     IsSquare (ofNat(n) : ℤ) ↔ IsSquare (ofNat(n) : ℕ) :=
   isSquare_natCast_iff
 
+-- These next two don't make good `norm_cast` lemmas.
+theorem natCast_pow_pred (b p : ℕ) (w : 0 < b) : ((b ^ p - 1 : ℕ) : ℤ) = (b : ℤ) ^ p - 1 := by
+  have : 1 ≤ b ^ p := Nat.one_le_pow p b w
+  norm_cast
+
+theorem coe_nat_two_pow_pred (p : ℕ) : ((2 ^ p - 1 : ℕ) : ℤ) = (2 ^ p - 1 : ℤ) :=
+  natCast_pow_pred 2 p (by decide)
+
 end Int
+
+section DivisionMonoid
+
+variable {α : Type*} [DivisionMonoid α] [HasDistribNeg α] {n : ℤ}
+
+theorem Odd.neg_zpow (h : Odd n) (a : α) : (-a) ^ n = -a ^ n := by
+  obtain ⟨k, rfl⟩ := h
+  cases k with
+  | ofNat k =>
+    rw [Int.ofNat_eq_natCast]
+    norm_cast
+    simp [pow_add]
+  | negSucc k =>
+    simp_rw [Int.negSucc_eq, show 2 * -(↑k + 1) + (1 : ℤ) = - (1 + k*2) by grind, _root_.zpow_neg]
+    norm_cast
+    simp [pow_add]
+
+theorem Odd.neg_one_zpow (h : Odd n) : (-1 : α) ^ n = -1 := by rw [h.neg_zpow, one_zpow]
+
+end DivisionMonoid

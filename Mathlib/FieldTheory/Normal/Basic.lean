@@ -6,9 +6,9 @@ Authors: Kenny Lau, Thomas Browning, Patrick Lutz
 module
 
 public import Mathlib.FieldTheory.Extension
-public import Mathlib.FieldTheory.Normal.Defs
-public import Mathlib.GroupTheory.Solvable
+public import Mathlib.FieldTheory.Minpoly.Finite
 public import Mathlib.FieldTheory.SplittingField.Construction
+public import Mathlib.GroupTheory.Solvable
 
 /-!
 # Normal field extensions
@@ -71,7 +71,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
   have hx := IsIntegral.of_finite F x
   let L := (p * minpoly F x).SplittingField
   have hL := SplittingField.splits (p * minpoly F x)
-  rw [Polynomial.map_mul, splits_mul_iff _ (map_ne_zero (minpoly.ne_zero hx))] at hL
+  rw [Polynomial.map_mul, splits_mul _ (map_ne_zero (minpoly.ne_zero hx))] at hL
   · obtain ⟨hL1, hL2⟩ := hL
     let j : E →ₐ[F] L := IsSplittingField.lift E p hL1
     rw [← j.comp_algebraMap, ← Polynomial.map_map] at hL2
@@ -103,7 +103,7 @@ instance normal_iSup {ι : Type*} (t : ι → IntermediateField F K) [h : ∀ i,
     haveI : IsSplittingField F E (∏ i ∈ s, minpoly F i.snd) := by
       refine isSplittingField_iSup ?_ fun i _ => adjoin_rootSet_isSplittingField ?_
       · exact Finset.prod_ne_zero_iff.mpr fun i _ => minpoly.ne_zero ((h i.1).isIntegral i.2)
-      · simpa [Polynomial.map_map] using ((h i.1).splits i.2).map (algebraMap (t i.1) K)
+      · simpa [Polynomial.map_map] using! ((h i.1).splits i.2).map (algebraMap (t i.1) K)
     apply Normal.of_isSplittingField (∏ i ∈ s, minpoly F i.2)
   have hE : E ≤ ⨆ i, t i := by
     refine iSup_le fun i => iSup_le fun _ => le_iSup_of_le i.1 ?_
@@ -127,7 +127,7 @@ theorem splits_of_mem_adjoin {L} [Field L] [Algebra F L] {S : Set K}
   have : ∀ x ∈ S, ((minpoly F x).map (algebraMap F E)).Splits := fun x hx ↦ splits_of_splits
     (splits x hx).2 fun y hy ↦ (le_iSup _ ⟨x, hx⟩ : _ ≤ E) (subset_adjoin F _ <| by exact hy)
   obtain ⟨φ⟩ := nonempty_algHom_adjoin_of_splits fun x hx ↦ ⟨(splits x hx).1, this x hx⟩
-  convert (normal.splits <| φ ⟨x, hx⟩).map E.val.toRingHom
+  convert! (normal.splits <| φ ⟨x, hx⟩).map E.val.toRingHom
   simp [minpoly.algHom_eq _ φ.injective, ← minpoly.algHom_eq _ (adjoin F S).val.injective,
     Polynomial.map_map]
 
@@ -148,7 +148,7 @@ instance normal_iInf {ι : Type*} [hι : Nonempty ι]
       intro i
       rw [← minpoly.algHom_eq (inclusion (iInf_le t i)) (inclusion (iInf_le t i)).injective]
       exact (h i).splits' (inclusion (iInf_le t i) x)
-    simp only [splits_iff_mem (splits_of_isScalarTower K (hx hι.some))] at hx ⊢
+    simp only [splits_iff_mem (Splits.of_isScalarTower K (hx hι.some))] at hx ⊢
     rintro y hy - ⟨-, ⟨i, rfl⟩, rfl⟩
     exact hx i y hy
 
@@ -294,4 +294,5 @@ instance Algebra.IsQuadraticExtension.normal (F K : Type*) [Field F] [Field K] [
     intro x
     obtain h | h := le_iff_lt_or_eq.mp (finrank_eq_two F K ▸ minpoly.natDegree_le x)
     · exact Splits.of_natDegree_le_one <| natDegree_map_le.trans (by rwa [Nat.le_iff_lt_add_one])
-    · exact splits_of_natDegree_eq_two _ h (minpoly.aeval F x)
+    · exact Splits.of_natDegree_eq_two ((natDegree_map _).trans h)
+        ((eval_map_algebraMap _ _).trans (minpoly.aeval F x))

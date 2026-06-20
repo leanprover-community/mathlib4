@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Fintype.Option
 public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Sets.Opens
+import Mathlib.Topology.WithTopology
 
 /-!
 # The one-point compactification
@@ -156,17 +157,11 @@ instance canLift : CanLift (OnePoint X) X (↑) fun x => x ≠ ∞ :=
 theorem notMem_range_coe_iff {x : OnePoint X} : x ∉ range some ↔ x = ∞ := by
   rw [← mem_compl_iff, compl_range_coe, mem_singleton_iff]
 
-@[deprecated (since := "2025-05-23")] alias not_mem_range_coe_iff := notMem_range_coe_iff
-
 theorem infty_notMem_range_coe : ∞ ∉ range ((↑) : X → OnePoint X) :=
   notMem_range_coe_iff.2 rfl
 
-@[deprecated (since := "2025-05-23")] alias infty_not_mem_range_coe := infty_notMem_range_coe
-
 theorem infty_notMem_image_coe {s : Set X} : ∞ ∉ ((↑) : X → OnePoint X) '' s :=
   notMem_subset (image_subset_range _ _) infty_notMem_range_coe
-
-@[deprecated (since := "2025-05-23")] alias infty_not_mem_image_coe := infty_notMem_image_coe
 
 @[simp]
 theorem coe_preimage_infty : ((↑) : X → OnePoint X) ⁻¹' {∞} = ∅ := by
@@ -237,8 +232,6 @@ theorem isOpen_iff_of_mem (h : ∞ ∈ s) :
 theorem isOpen_iff_of_notMem (h : ∞ ∉ s) : IsOpen s ↔ IsOpen ((↑) ⁻¹' s : Set X) := by
   simp [isOpen_def, h]
 
-@[deprecated (since := "2025-05-23")] alias isOpen_iff_of_not_mem := isOpen_iff_of_notMem
-
 theorem isClosed_iff_of_mem (h : ∞ ∈ s) : IsClosed s ↔ IsClosed ((↑) ⁻¹' s : Set X) := by
   have : ∞ ∉ sᶜ := fun H => H h
   rw [← isOpen_compl_iff, isOpen_iff_of_notMem this, ← isOpen_compl_iff, preimage_compl]
@@ -246,8 +239,6 @@ theorem isClosed_iff_of_mem (h : ∞ ∈ s) : IsClosed s ↔ IsClosed ((↑) ⁻
 theorem isClosed_iff_of_notMem (h : ∞ ∉ s) :
     IsClosed s ↔ IsClosed ((↑) ⁻¹' s : Set X) ∧ IsCompact ((↑) ⁻¹' s : Set X) := by
   rw [← isOpen_compl_iff, isOpen_iff_of_mem (mem_compl h), ← preimage_compl, compl_compl]
-
-@[deprecated (since := "2025-05-23")] alias isClosed_iff_of_not_mem := isClosed_iff_of_notMem
 
 @[simp]
 theorem isOpen_image_coe {s : Set X} : IsOpen ((↑) '' s : Set (OnePoint X)) ↔ IsOpen s := by
@@ -304,7 +295,7 @@ theorem comap_coe_nhds (x : X) : comap ((↑) : X → OnePoint X) (𝓝 x) = �
 /-- If `x` is not an isolated point of `X`, then `x : OnePoint X` is not an isolated point
 of `OnePoint X`. -/
 instance nhdsNE_coe_neBot (x : X) [h : NeBot (𝓝[≠] x)] : NeBot (𝓝[≠] (x : OnePoint X)) := by
-  simpa [nhdsWithin_coe, preimage, coe_eq_coe] using h.map some
+  simpa [nhdsWithin_coe, preimage, coe_eq_coe] using! h.map some
 
 theorem nhdsNE_infty_eq : 𝓝[≠] (∞ : OnePoint X) = map (↑) (coclosedCompact X) := by
   refine (nhdsWithin_basis_open ∞ _).ext (hasBasis_coclosedCompact.map _) ?_ ?_
@@ -313,7 +304,7 @@ theorem nhdsNE_infty_eq : 𝓝[≠] (∞ : OnePoint X) = map (↑) (coclosedComp
     simp
   · rintro s ⟨h₁, h₂⟩
     refine ⟨_, ⟨mem_compl infty_notMem_image_coe, isOpen_compl_image_coe.2 ⟨h₁, h₂⟩⟩, ?_⟩
-    simp [compl_image_coe, ← diff_eq]
+    simp [compl_image_coe, ← sdiff_eq]
 
 /-- If `X` is a non-compact space, then `∞` is not an isolated point of `OnePoint X`. -/
 instance nhdsNE_infty_neBot [NoncompactSpace X] : NeBot (𝓝[≠] (∞ : OnePoint X)) := by
@@ -504,6 +495,7 @@ Finally, if the original space `X` is *not* compact and is a preconnected space,
 `OnePoint X` is a connected space.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any topological space `X`, its one point compactification is a compact space. -/
 instance : CompactSpace (OnePoint X) where
   isCompact_univ := by
@@ -559,8 +551,8 @@ theorem not_continuous_cofiniteTopology_of_symm [Infinite X] [DiscreteTopology X
   inhabit X
   simp only [continuous_iff_continuousAt, ContinuousAt, not_forall]
   use CofiniteTopology.of ↑(default : X)
-  simpa [nhds_coe_eq, nhds_discrete, CofiniteTopology.nhds_eq] using
-    (finite_singleton ((default : X) : OnePoint X)).infinite_compl
+  simpa [nhds_coe_eq, nhds_discrete, CofiniteTopology.nhds_eq, Equiv.symm_apply_eq,
+    Set.compl_def, Set.mem_singleton_iff] using (finite_singleton _).infinite_compl
 
 instance (X : Type*) [TopologicalSpace X] [DiscreteTopology X] :
     TotallySeparatedSpace (OnePoint X) where

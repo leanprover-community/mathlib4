@@ -16,7 +16,7 @@ This module defines the `CategoryTheory` Aesop rule set which is used by the
 they're declared is imported, so we must put this declaration into its own file.
 -/
 
-@[expose] public section
+public section
 
 declare_aesop_rule_sets [CategoryTheory]
 

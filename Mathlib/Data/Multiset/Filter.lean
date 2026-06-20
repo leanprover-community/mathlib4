@@ -277,7 +277,7 @@ theorem countP_filter (q) [DecidablePred q] (s : Multiset α) :
 theorem countP_eq_countP_filter_add (s) (p q : α → Prop) [DecidablePred p] [DecidablePred q] :
     countP p s = (filter q s).countP p + (filter (fun a => ¬q a) s).countP p :=
   Quot.inductionOn s fun l => by
-    convert l.countP_eq_countP_filter_add (p ·) (q ·)
+    convert! l.countP_eq_countP_filter_add (p ·) (q ·)
     simp
 
 theorem countP_map (f : α → β) (s : Multiset α) (p : β → Prop) [DecidablePred p] :
@@ -331,7 +331,7 @@ theorem count_map_eq_count [DecidableEq β] (f : α → β) (s : Multiset α)
     rw [count, countP_map, ← this]
     exact count_filter_of_pos <| rfl
   · rw [eq_replicate_card.2 fun b hb => (hf H (mem_filter.1 hb).left _).symm]
-    · simp only [count_replicate, if_true, card_replicate]
+    · simp
     · simp only [mem_filter, and_imp, @eq_comm _ (f x), imp_self, implies_true]
 
 /-- `Multiset.map f` preserves `count` if `f` is injective -/
@@ -441,7 +441,7 @@ theorem Nodup.filter (p : α → Prop) [DecidablePred p] {s} : Nodup s → Nodup
 theorem Nodup.erase_eq_filter [DecidableEq α] (a : α) {s} :
     Nodup s → s.erase a = Multiset.filter (· ≠ a) s :=
   Quot.induction_on s fun _ d =>
-    congr_arg ((↑) : List α → Multiset α) <| by simpa using List.Nodup.erase_eq_filter d a
+    congr_arg ((↑) : List α → Multiset α) <| by simpa using! List.Nodup.erase_eq_filter d a
 
 protected theorem Nodup.filterMap (f : α → Option β) (H : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') :
     Nodup s → Nodup (filterMap f s) :=
@@ -453,8 +453,6 @@ theorem Nodup.mem_erase_iff [DecidableEq α] {a b : α} {l} (d : Nodup l) :
 
 theorem Nodup.notMem_erase [DecidableEq α] {a : α} {s} (h : Nodup s) : a ∉ s.erase a := fun ha =>
   (h.mem_erase_iff.1 ha).1 rfl
-
-@[deprecated (since := "2025-05-23")] alias Nodup.not_mem_erase := Nodup.notMem_erase
 
 end Nodup
 

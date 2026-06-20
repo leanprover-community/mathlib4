@@ -77,7 +77,7 @@ instance : OverClass X X := ⟨𝟙 _⟩
 instance : IsIso (S ↘ S) := inferInstanceAs (IsIso (𝟙 S))
 
 namespace CanonicallyOverClass
--- This cannot be a simp lemma be cause it loops with `comp_over`.
+-- This cannot be a simp lemma because it loops with `comp_over`.
 @[simps -isSimp]
 instance (priority := 900) [CanonicallyOverClass X Y] [OverClass Y S] : OverClass X S :=
   ⟨X ↘ Y ≫ Y ↘ S⟩
@@ -155,8 +155,7 @@ instance (f : X ⟶ Y) [IsIso f] [HomIsOver f S] : IsIso (asOverHom S f) :=
 attribute [local simp] Iso.inv_comp_eq in
 instance {e : X ≅ Y} [HomIsOver e.hom S] : HomIsOver e.inv S where
 
--- FIXME: False positive from the linter
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in -- linter false positive
 attribute [local simp ←] Iso.eq_inv_comp in
 instance {e : X ≅ Y} [HomIsOver e.inv S] : HomIsOver e.hom S where
 

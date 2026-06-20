@@ -14,7 +14,7 @@ public import Mathlib.Order.SuccPred.Limit
 We establish some connections between initial segment embeddings and successors and predecessors.
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*} {a b : α} [PartialOrder α] [PartialOrder β]
 
@@ -49,7 +49,7 @@ theorem isSuccPrelimit_apply_iff (f : α ≤i β) : IsSuccPrelimit (f a) ↔ IsS
 
 @[simp]
 theorem isSuccLimit_apply_iff (f : α ≤i β) : IsSuccLimit (f a) ↔ IsSuccLimit a := by
-  simp [IsSuccLimit]
+  simp [isSuccLimit_iff]
 
 alias ⟨_, map_isSuccPrelimit⟩ := isSuccPrelimit_apply_iff
 alias ⟨_, map_isSuccLimit⟩ := isSuccLimit_apply_iff

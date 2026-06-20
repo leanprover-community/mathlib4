@@ -21,7 +21,7 @@ and `HasCompactSupport.contDiff_convolution_left`.
 Here we wrap these results removing measure-related arguments from the assumptions.
 -/
 
-@[expose] public section
+public section
 
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F] {f : E → F} {ε : ℝ}

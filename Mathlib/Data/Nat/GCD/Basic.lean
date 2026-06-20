@@ -23,7 +23,7 @@ Note that the global `IsCoprime` is not a straightforward generalization of `Nat
 Most of this file could be moved to batteries as well.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsOrderedMonoid
 
@@ -35,6 +35,9 @@ variable {a a₁ a₂ b b₁ b₂ c : ℕ}
 theorem gcd_greatest {a b d : ℕ} (hda : d ∣ a) (hdb : d ∣ b) (hd : ∀ e : ℕ, e ∣ a → e ∣ b → e ∣ d) :
     d = a.gcd b :=
   (dvd_antisymm (hd _ (gcd_dvd_left a b) (gcd_dvd_right a b)) (dvd_gcd hda hdb)).symm
+
+theorem gcd_right_comm (a b c : ℕ) : gcd (gcd a b) c = gcd (gcd a c) b := by
+  rw [gcd_assoc, gcd_assoc, gcd_comm b c]
 
 /-! Lemmas where one argument consists of addition of a multiple of the other -/
 
@@ -90,7 +93,10 @@ See also `Nat.coprime_of_dvd` and `Nat.coprime_of_dvd'` to prove `Nat.Coprime m 
 theorem Coprime.lcm_eq_mul {m n : ℕ} (h : Coprime m n) : lcm m n = m * n := by
   rw [← one_mul (lcm m n), ← h.gcd_eq_one, gcd_mul_lcm]
 
-theorem Coprime.symmetric : Symmetric Coprime := fun _ _ => Coprime.symm
+instance Coprime.stdSymm : Std.Symm Coprime where
+  symm _ _ := Coprime.symm
+
+@[deprecated (since := "2026-06-10")] alias Coprime.symmetric := Coprime.stdSymm
 
 theorem Coprime.dvd_mul_right {m n k : ℕ} (H : Coprime k n) : k ∣ m * n ↔ k ∣ m :=
   ⟨H.dvd_of_dvd_mul_right, fun h => dvd_mul_of_dvd_left h n⟩
@@ -206,7 +212,7 @@ theorem gcd_mul_of_coprime_of_dvd {a b c : ℕ} (hac : Coprime a c) (b_dvd_c : b
     gcd (a * b) c = b := by
   rcases exists_eq_mul_left_of_dvd b_dvd_c with ⟨d, rfl⟩
   rw [gcd_mul_right]
-  convert one_mul b
+  convert! one_mul b
   exact Coprime.coprime_mul_right_right hac
 
 theorem Coprime.eq_of_mul_eq_zero {m n : ℕ} (h : m.Coprime n) (hmn : m * n = 0) :

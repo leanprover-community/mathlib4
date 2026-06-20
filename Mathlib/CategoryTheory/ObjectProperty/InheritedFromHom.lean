@@ -17,11 +17,11 @@ for an object property `P` along a morphism property `Q`.
 `f : X ⟶ Y` with `Q f`, `P X` implies `P Y` (resp. `P Y` implies `P X`).
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 namespace ObjectProperty
 

@@ -227,14 +227,10 @@ lemma preΨ_even (m : ℤ) : W.preΨ (2 * m) =
       W.preΨ (m - 2) * W.preΨ m * W.preΨ (m + 1) ^ 2 :=
   preNormEDS_even ..
 
-@[deprecated (since := "2025-05-15")] alias preΨ_even_ofNat := preΨ_even
-
 lemma preΨ_odd (m : ℤ) : W.preΨ (2 * m + 1) =
     W.preΨ (m + 2) * W.preΨ m ^ 3 * (if Even m then W.Ψ₂Sq ^ 2 else 1) -
       W.preΨ (m - 1) * W.preΨ (m + 1) ^ 3 * (if Even m then 1 else W.Ψ₂Sq ^ 2) :=
   preNormEDS_odd ..
-
-@[deprecated (since := "2025-05-15")] alias preΨ_odd_ofNat := preΨ_odd
 
 end preΨ
 
@@ -279,14 +275,10 @@ lemma ΨSq_even (m : ℤ) : W.ΨSq (2 * m) =
       W.preΨ (m - 2) * W.preΨ m * W.preΨ (m + 1) ^ 2) ^ 2 * W.Ψ₂Sq := by
   rw [ΨSq, preΨ_even, if_pos <| even_two_mul m]
 
-@[deprecated (since := "2025-05-15")] alias ΨSq_even_ofNat := ΨSq_even
-
 lemma ΨSq_odd (m : ℤ) : W.ΨSq (2 * m + 1) =
     (W.preΨ (m + 2) * W.preΨ m ^ 3 * (if Even m then W.Ψ₂Sq ^ 2 else 1) -
       W.preΨ (m - 1) * W.preΨ (m + 1) ^ 3 * (if Even m then 1 else W.Ψ₂Sq ^ 2)) ^ 2 := by
   rw [ΨSq, preΨ_odd, if_neg m.not_even_two_mul_add_one, mul_one]
-
-@[deprecated (since := "2025-05-15")] alias ΨSq_odd_ofNat := ΨSq_odd
 
 end ΨSq
 
@@ -334,8 +326,6 @@ lemma Ψ_even (m : ℤ) : W.Ψ (2 * m) * W.ψ₂ =
     Int.not_even_one, iff_false]
   split_ifs <;> C_simp <;> ring1
 
-@[deprecated (since := "2025-05-15")] alias Ψ_even_ofNat := Ψ_even
-
 lemma Ψ_odd (m : ℤ) : W.Ψ (2 * m + 1) =
     W.Ψ (m + 2) * W.Ψ m ^ 3 - W.Ψ (m - 1) * W.Ψ (m + 1) ^ 3 +
       W.toAffine.polynomial * (16 * W.toAffine.polynomial - 8 * W.ψ₂ ^ 2) *
@@ -344,8 +334,6 @@ lemma Ψ_odd (m : ℤ) : W.Ψ (2 * m + 1) =
   simp_rw [Ψ, preΨ_odd, if_neg m.not_even_two_mul_add_one, Int.even_add, Int.even_sub, even_two,
     iff_true, Int.not_even_one, iff_false]
   split_ifs <;> C_simp <;> rw [C_Ψ₂Sq] <;> ring1
-
-@[deprecated (since := "2025-05-15")] alias Ψ_odd_ofNat := Ψ_odd
 
 lemma Affine.CoordinateRing.mk_Ψ_sq (n : ℤ) : mk W (W.Ψ n) ^ 2 = mk W (C <| W.ΨSq n) := by
   simp_rw [Ψ, ΨSq, map_mul, apply_ite C, apply_ite <| mk W, mul_pow, ite_pow, mk_ψ₂_sq, map_one,
@@ -443,13 +431,9 @@ lemma ψ_even (m : ℤ) : W.ψ (2 * m) * W.ψ₂ =
     W.ψ (m - 1) ^ 2 * W.ψ m * W.ψ (m + 2) - W.ψ (m - 2) * W.ψ m * W.ψ (m + 1) ^ 2 :=
   normEDS_even ..
 
-@[deprecated (since := "2025-05-15")] alias ψ_even_ofNat := ψ_even
-
 lemma ψ_odd (m : ℤ) : W.ψ (2 * m + 1) =
     W.ψ (m + 2) * W.ψ m ^ 3 - W.ψ (m - 1) * W.ψ (m + 1) ^ 3 :=
   normEDS_odd ..
-
-@[deprecated (since := "2025-05-15")] alias ψ_odd_ofNat := ψ_odd
 
 lemma Affine.CoordinateRing.mk_ψ (n : ℤ) : mk W (W.ψ n) = mk W (W.Ψ n) := by
   simp_rw [ψ, normEDS, Ψ, preΨ, map_mul, map_preNormEDS, map_pow, ← mk_ψ₂_sq, ← pow_mul]
@@ -566,37 +550,37 @@ section BaseChange
 variable [Algebra R S] {A : Type u} [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
   {B : Type v} [CommRing B] [Algebra R B] [Algebra S B] [IsScalarTower R S B] (f : A →ₐ[S] B)
 
-lemma baseChange_ψ₂ : (W.baseChange B).ψ₂ = (W.baseChange A).ψ₂.map (mapRingHom f) := by
+lemma baseChange_ψ₂ : (W⁄B).ψ₂ = (W⁄A).ψ₂.map (mapRingHom f) := by
   rw [← map_ψ₂, map_baseChange]
 
-lemma baseChange_Ψ₂Sq : (W.baseChange B).Ψ₂Sq = (W.baseChange A).Ψ₂Sq.map f := by
+lemma baseChange_Ψ₂Sq : (W⁄B).Ψ₂Sq = (W⁄A).Ψ₂Sq.map f := by
   rw [← map_Ψ₂Sq, map_baseChange]
 
-lemma baseChange_Ψ₃ : (W.baseChange B).Ψ₃ = (W.baseChange A).Ψ₃.map f := by
+lemma baseChange_Ψ₃ : (W⁄B).Ψ₃ = (W⁄A).Ψ₃.map f := by
   rw [← map_Ψ₃, map_baseChange]
 
-lemma baseChange_preΨ₄ : (W.baseChange B).preΨ₄ = (W.baseChange A).preΨ₄.map f := by
+lemma baseChange_preΨ₄ : (W⁄B).preΨ₄ = (W⁄A).preΨ₄.map f := by
   rw [← map_preΨ₄, map_baseChange]
 
-lemma baseChange_preΨ' (n : ℕ) : (W.baseChange B).preΨ' n = ((W.baseChange A).preΨ' n).map f := by
+lemma baseChange_preΨ' (n : ℕ) : (W⁄B).preΨ' n = ((W⁄A).preΨ' n).map f := by
   rw [← map_preΨ', map_baseChange]
 
-lemma baseChange_preΨ (n : ℤ) : (W.baseChange B).preΨ n = ((W.baseChange A).preΨ n).map f := by
+lemma baseChange_preΨ (n : ℤ) : (W⁄B).preΨ n = ((W⁄A).preΨ n).map f := by
   rw [← map_preΨ, map_baseChange]
 
-lemma baseChange_ΨSq (n : ℤ) : (W.baseChange B).ΨSq n = ((W.baseChange A).ΨSq n).map f := by
+lemma baseChange_ΨSq (n : ℤ) : (W⁄B).ΨSq n = ((W⁄A).ΨSq n).map f := by
   rw [← map_ΨSq, map_baseChange]
 
-lemma baseChange_Ψ (n : ℤ) : (W.baseChange B).Ψ n = ((W.baseChange A).Ψ n).map (mapRingHom f) := by
+lemma baseChange_Ψ (n : ℤ) : (W⁄B).Ψ n = ((W⁄A).Ψ n).map (mapRingHom f) := by
   rw [← map_Ψ, map_baseChange]
 
-lemma baseChange_Φ (n : ℤ) : (W.baseChange B).Φ n = ((W.baseChange A).Φ n).map f := by
+lemma baseChange_Φ (n : ℤ) : (W⁄B).Φ n = ((W⁄A).Φ n).map f := by
   rw [← map_Φ, map_baseChange]
 
-lemma baseChange_ψ (n : ℤ) : (W.baseChange B).ψ n = ((W.baseChange A).ψ n).map (mapRingHom f) := by
+lemma baseChange_ψ (n : ℤ) : (W⁄B).ψ n = ((W⁄A).ψ n).map (mapRingHom f) := by
   rw [← map_ψ, map_baseChange]
 
-lemma baseChange_φ (n : ℤ) : (W.baseChange B).φ n = ((W.baseChange A).φ n).map (mapRingHom f) := by
+lemma baseChange_φ (n : ℤ) : (W⁄B).φ n = ((W⁄A).φ n).map (mapRingHom f) := by
   rw [← map_φ, map_baseChange]
 
 end BaseChange

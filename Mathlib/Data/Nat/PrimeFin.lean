@@ -36,7 +36,7 @@ def primeFactors (n : ℕ) : Finset ℕ := n.primeFactorsList.toFinset
 
 @[simp] lemma toFinset_factors (n : ℕ) : n.primeFactorsList.toFinset = n.primeFactors := rfl
 
-@[simp] lemma mem_primeFactors : p ∈ n.primeFactors ↔ p.Prime ∧ p ∣ n ∧ n ≠ 0 := by
+@[simp, grind =] lemma mem_primeFactors : p ∈ n.primeFactors ↔ p.Prime ∧ p ∣ n ∧ n ≠ 0 := by
   simp_rw [← toFinset_factors, List.mem_toFinset, mem_primeFactorsList']
 
 lemma mem_primeFactors_of_ne_zero (hn : n ≠ 0) : p ∈ n.primeFactors ↔ p.Prime ∧ p ∣ n := by
@@ -103,7 +103,7 @@ lemma Coprime.primeFactors_mul {a b : ℕ} (hab : Coprime a b) :
 
 lemma primeFactors_gcd (ha : a ≠ 0) (hb : b ≠ 0) :
     (a.gcd b).primeFactors = a.primeFactors ∩ b.primeFactors := by
-  ext; simp [dvd_gcd_iff, ha, hb, gcd_ne_zero_left ha]; aesop
+  grind [dvd_gcd_iff]
 
 @[simp] lemma disjoint_primeFactors (ha : a ≠ 0) (hb : b ≠ 0) :
     Disjoint a.primeFactors b.primeFactors ↔ Coprime a b := by

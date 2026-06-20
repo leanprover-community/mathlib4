@@ -143,10 +143,10 @@ lemma reps_entries_le_m' {A : Δ m} (h : A ∈ reps m) (i j : Fin 2) :
   have h1 : 0 < |A.1 1 1| := (abs_nonneg _).trans_lt h11
   have h2 : 0 < |A.1 0 0| := abs_pos.mpr h00.ne'
   fin_cases i <;> fin_cases j
-  · simpa only [← abs_mul, A_c_eq_zero h10] using (le_mul_iff_one_le_right h2).mpr h1
-  · simpa only [← abs_mul, A_c_eq_zero h10] using h11.le.trans (le_mul_of_one_le_left h1.le h2)
+  · simpa only [← abs_mul, A_c_eq_zero h10] using! (le_mul_iff_one_le_right h2).mpr h1
+  · simpa only [← abs_mul, A_c_eq_zero h10] using! h11.le.trans (le_mul_of_one_le_left h1.le h2)
   · simp_all
-  · simpa only [← abs_mul, A_c_eq_zero h10] using (le_mul_iff_one_le_left h1).mpr h2
+  · simpa only [← abs_mul, A_c_eq_zero h10] using! (le_mul_iff_one_le_left h1).mpr h2
 
 @[simp]
 lemma reps_zero_empty : reps 0 = ∅ := by
@@ -229,7 +229,8 @@ private lemma prop_red_T_pow (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B 
   induction n with
   | zero => simp only [zpow_zero, one_smul]
   | succ n hn =>
-    simpa only [add_comm (n:ℤ), zpow_add _ 1, ← smul_eq_mul, zpow_one, smul_assoc, prop_red_T hS hT]
+    simpa only [add_comm (n : ℤ), zpow_add _ 1, ← smul_eq_mul, zpow_one, smul_assoc,
+      prop_red_T hS hT]
   | pred m hm =>
     rwa [sub_eq_neg_add, zpow_add, zpow_neg_one, ← prop_red_T hS hT, mul_smul, smul_inv_smul]
 

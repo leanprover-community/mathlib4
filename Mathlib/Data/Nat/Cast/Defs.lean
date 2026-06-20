@@ -43,7 +43,7 @@ instance (priority := 100) instOfNatAtLeastTwo {n : ℕ} [NatCast R] [Nat.AtLeas
     OfNat R n where
   ofNat := n.cast
 
-library_note2 «no_index around OfNat.ofNat»
+library_note «no_index around OfNat.ofNat»
 /--
 When writing lemmas about `OfNat.ofNat` that assume `Nat.AtLeastTwo`, the term needs to be wrapped
 in `no_index` so as not to confuse `simp`, as `no_index (OfNat.ofNat n)`.
@@ -86,27 +86,30 @@ theorem cast_zero : ((0 : ℕ) : R) = 0 :=
 theorem cast_succ (n : ℕ) : ((succ n : ℕ) : R) = n + 1 :=
   AddMonoidWithOne.natCast_succ _
 
-theorem cast_add_one (n : ℕ) : ((n + 1 : ℕ) : R) = n + 1 :=
-  cast_succ _
-
 @[simp, norm_cast]
 theorem cast_ite (P : Prop) [Decidable P] (m n : ℕ) :
     ((ite P m n : ℕ) : R) = ite P (m : R) (n : R) := by
   split_ifs <;> rfl
 
-end Nat
-
-namespace Nat
-
 @[simp, norm_cast]
-theorem cast_one [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := by
+theorem cast_one : ((1 : ℕ) : R) = 1 := by
   rw [cast_succ, Nat.cast_zero, zero_add]
 
 @[simp, norm_cast]
-theorem cast_add [AddMonoidWithOne R] (m n : ℕ) : ((m + n : ℕ) : R) = m + n := by
+theorem cast_add (m n : ℕ) : ((m + n : ℕ) : R) = m + n := by
   induction n with
   | zero => simp
   | succ n ih => rw [add_succ, cast_succ, ih, cast_succ, add_assoc]
+
+theorem cast_add_one (n : ℕ) : ((n + 1 : ℕ) : R) = n + 1 :=
+  cast_succ _
+
+theorem cast_one_add (n : ℕ) : ((1 + n : ℕ) : R) = 1 + n := by
+  rw [Nat.cast_add, Nat.cast_one]
+
+end Nat
+
+namespace Nat
 
 /-- Computationally friendlier cast than `Nat.unaryCast`, using binary representation. -/
 protected def binCast [Zero R] [One R] [Add R] : ℕ → R

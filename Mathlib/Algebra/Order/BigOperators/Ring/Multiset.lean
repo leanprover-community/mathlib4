@@ -5,7 +5,7 @@ Authors: Ruben Van de Velde
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 public import Mathlib.Algebra.Order.BigOperators.Ring.List
 
 /-!
@@ -15,7 +15,7 @@ This file contains the results concerning the interaction of multiset big operat
 rings.
 -/
 
-@[expose] public section
+public section
 
 open Multiset
 
@@ -44,12 +44,23 @@ theorem Multiset.le_prod_of_submultiplicative_on_pred_of_nonneg (f : α → β) 
     have hp_prod : p s.prod := prod_induction_nonempty p hp_mul hs0 hps
     rw [prod_cons, map_cons, prod_cons]
     exact (h_mul a s.prod (hpsa a (mem_cons_self a s)) hp_prod).trans
-      (mul_le_mul_of_nonneg_left (hs hps) (h0 _))
+      (by gcongr; exacts [h0 _, hs hps])
 
 theorem Multiset.le_prod_of_submultiplicative_of_nonneg (f : α → β) (h0 : ∀ a, 0 ≤ f a)
     (h_one : f 1 ≤ 1) (h_mul : ∀ a b, f (a * b) ≤ f a * f b) (s : Multiset α) :
     f s.prod ≤ (s.map f).prod :=
   le_prod_of_submultiplicative_on_pred_of_nonneg f (fun _ ↦ True) h0 h_one
     (fun x y _ _ ↦ h_mul x y) (by simp) s (by simp)
+
+omit [CommMonoid α] in
+lemma Multiset.mem_le_prod_of_one_le [ZeroLEOneClass β] {f : α → β} (h1 : ∀ a : α, 1 ≤ f a)
+    {s : Multiset α} {a : α} (ha : a ∈ s) : f a ≤ (s.map f).prod := by
+  obtain ⟨s', rfl⟩ := exists_cons_of_mem ha
+  rw [map_cons, prod_cons]
+  calc f a = f a * 1 := (mul_one (f a)).symm
+    _ ≤ f a * (s'.map f).prod := by
+      gcongr
+      · exact le_trans (zero_le_one' β) (h1 a)
+      · simp_all [one_le_prod]
 
 end OrderedCommSemiring

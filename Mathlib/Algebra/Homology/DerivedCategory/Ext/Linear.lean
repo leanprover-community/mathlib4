@@ -13,8 +13,8 @@ public import Mathlib.LinearAlgebra.BilinearMap
 /-!
 # Ext-modules in linear categories
 
-In this file, we show that if `C` is a `R`-linear abelian category,
-then there is a `R`-module structure on the groups `Ext X Y n`
+In this file, we show that if `C` is an `R`-linear abelian category,
+then there is an `R`-module structure on the groups `Ext X Y n`
 for `X` and `Y` in `C` and `n : ℕ`.
 
 -/

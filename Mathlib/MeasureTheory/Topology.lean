@@ -15,7 +15,7 @@ This file gathers theorems that combine measure theory and topology, and cannot 
 the existing files without introducing massive dependencies between the subjects.
 -/
 
-@[expose] public section
+public section
 open Filter MeasureTheory
 
 /-- Under reasonable assumptions, sets that are codiscrete within `U` are contained in the "almost

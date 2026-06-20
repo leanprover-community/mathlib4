@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.OreLocalization.Ring
 This file contains some results on cardinality of Ore localizations of rings.
 -/
 
-@[expose] public section
+public section
 
 universe u
 

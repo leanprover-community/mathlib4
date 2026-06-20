@@ -20,7 +20,7 @@ some `x` and `u n` belongs to a set `M` for `n` large enough then `x` is in the 
 which is a special case of `mem_closure_of_tendsto` from `Topology/Basic`.
 -/
 
-@[expose] public section
+public section
 
 open Set Filter
 
@@ -52,9 +52,6 @@ theorem not_tendsto_iff_exists_frequently_notMem {f : α → β} {l₁ : Filter 
     ¬Tendsto f l₁ l₂ ↔ ∃ s ∈ l₂, ∃ᶠ x in l₁, f x ∉ s := by
   simp only [tendsto_iff_forall_eventually_mem, not_forall, exists_prop, not_eventually]
 
-@[deprecated (since := "2025-05-24")]
-alias not_tendsto_iff_exists_frequently_nmem := not_tendsto_iff_exists_frequently_notMem
-
 theorem Tendsto.frequently {f : α → β} {l₁ : Filter α} {l₂ : Filter β} {p : β → Prop}
     (hf : Tendsto f l₁ l₂) (h : ∃ᶠ x in l₁, p (f x)) : ∃ᶠ y in l₂, p y :=
   mt hf.eventually h
@@ -66,6 +63,10 @@ theorem Tendsto.frequently_map {l₁ : Filter α} {l₂ : Filter β} {p : α →
 
 @[simp]
 theorem tendsto_bot {f : α → β} {l : Filter β} : Tendsto f ⊥ l := by simp [Tendsto]
+
+@[simp]
+theorem tendsto_bot_right_iff {f : α → β} {l : Filter α} : Tendsto f l ⊥ ↔ l = ⊥  := by
+  simp [Tendsto]
 
 theorem Tendsto.of_neBot_imp {f : α → β} {la : Filter α} {lb : Filter β}
     (h : NeBot la → Tendsto f la lb) : Tendsto f la lb := by
@@ -300,7 +301,7 @@ variable {F : Filter α} {G : Filter β}
 
 theorem Filter.map_mapsTo_Iic_iff_tendsto {m : α → β} :
     MapsTo (map m) (Iic F) (Iic G) ↔ Tendsto m F G :=
-  ⟨fun hm ↦ hm right_mem_Iic, fun hm _ ↦ hm.mono_left⟩
+  ⟨fun hm ↦ hm self_mem_Iic, fun hm _ ↦ hm.mono_left⟩
 
 alias ⟨_, Filter.Tendsto.map_mapsTo_Iic⟩ := Filter.map_mapsTo_Iic_iff_tendsto
 

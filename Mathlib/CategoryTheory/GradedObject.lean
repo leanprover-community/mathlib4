@@ -5,7 +5,6 @@ Authors: Kim Morrison, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public import Mathlib.CategoryTheory.Shift.Basic
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Algebra.Group.Int.Defs
@@ -104,7 +103,7 @@ end GradedObject
 
 namespace Iso
 
-variable {C D E J : Type*} [Category C] [Category D] [Category E]
+variable {C D E J : Type*} [Category* C] [Category* D] [Category* E]
   {X Y : GradedObject J C}
 
 @[reassoc (attr := simp)]
@@ -182,6 +181,7 @@ theorem eqToHom_apply {β : Type w} {X Y : β → C} (h : X = Y) (b : β) :
   subst h
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between β-graded objects and γ-graded objects,
 given an equivalence between β and γ.
 -/
@@ -196,6 +196,7 @@ def comapEquiv {β γ : Type w} (e : β ≃ γ) : GradedObject β C ≌ GradedOb
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 instance hasShift {β : Type*} [AddCommGroup β] (s : β) : HasShift (GradedObjectWithShift s C) ℤ :=
   hasShiftMk _ _
     { F := fun n => comap C fun b : β => b + n • s
@@ -277,23 +278,7 @@ end GradedObject
 
 namespace GradedObject
 
-noncomputable section
-
-variable (β : Type)
-variable (C : Type (u + 1)) [LargeCategory C] [HasForget C] [HasCoproducts.{0} C]
-  [HasZeroMorphisms C]
-
-instance : HasForget (GradedObject β C) where forget := total β C ⋙ forget C
-
-instance : HasForget₂ (GradedObject β C) C where forget₂ := total β C
-
-end
-
-end GradedObject
-
-namespace GradedObject
-
-variable {I J K : Type*} {C : Type*} [Category C]
+variable {I J K : Type*} {C : Type*} [Category* C]
   (X Y Z : GradedObject I C) (φ : X ⟶ Y) (e : X ≅ Y) (ψ : Y ⟶ Z) (p : I → J)
 
 /-- If `X : GradedObject I C` and `p : I → J`, `X.mapObjFun p j` is the family of objects `X i`
@@ -457,6 +442,7 @@ def cofanMapObjComp : X.CofanMapObjFun r k :=
     (c (p i) (by rw [hpqr, hi])).inj ⟨i, rfl⟩ ≫ c'.inj (⟨p i, by
       rw [Set.mem_preimage, Set.mem_singleton_iff, hpqr, hi]⟩))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given maps `p : I → J`, `q : J → K` and `r : I → K` such that `q.comp p = r`,
 `X : GradedObject I C`, `k : K`, the cofan constructed by `cofanMapObjComp` is a colimit.
 In other words, if we have, for all `j : J` such that `hj : q j = k`,
@@ -466,7 +452,7 @@ the point of this latter cofan computes the coproduct of the `X i` such that `r 
 @[simp]
 def isColimitCofanMapObjComp :
     IsColimit (cofanMapObjComp X p q r hpqr k c c') :=
-  mkCofanColimit _
+  Cofan.IsColimit.mk _
     (fun s => Cofan.IsColimit.desc hc'
       (fun ⟨j, (hj : q j = k)⟩ => Cofan.IsColimit.desc (hc j hj)
         (fun ⟨i, (hi : p i = j)⟩ => s.inj ⟨i, by

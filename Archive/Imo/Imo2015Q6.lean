@@ -85,18 +85,16 @@ lemma pool_subset_Icc : ∀ {t}, pool a t ⊆ Icc 0 2014
   | t + 1 => by
     intro x hx
     simp_rw [pool, mem_map, Equiv.coe_toEmbedding, Equiv.subRight_apply] at hx
-    obtain ⟨y, my, ey⟩ := hx
-    suffices y ∈ Icc 1 2015 by rw [mem_Icc] at this ⊢; lia
+    obtain ⟨y, my, rfl⟩ := hx
+    suffices y ∈ Icc 1 2015 by rw [mem_Icc] at this ⊢; grind
     rw [mem_insert, mem_erase] at my; rcases my with h | ⟨h₁, h₂⟩
     · exact h ▸ ha.1 t
-    · have := pool_subset_Icc h₂; rw [mem_Icc] at this ⊢; lia
+    · have := pool_subset_Icc h₂; rw [mem_Icc] at this ⊢; grind
 
 lemma notMem_pool_self : a t ∉ pool a t := by
   by_contra h
   obtain ⟨u, lu, hu⟩ := exists_add_eq_of_mem_pool h
   exact lu.ne (ha.2 hu)
-
-@[deprecated (since := "2025-05-23")] alias not_mem_pool_self := notMem_pool_self
 
 /-- The number of balls stays unchanged if there is a ball with height 0 and increases by 1
 otherwise. -/
@@ -163,7 +161,7 @@ lemma sum_telescope {m n : ℕ} (hm : N ≤ m) (hn : m < n) :
 
 include ht in
 lemma le_sum_pool : ∑ i ∈ range b, (i : ℤ) ≤ ∑ x ∈ pool a t, x := by
-  convert sum_range_le_sum fun x mx ↦ (mem_Icc.mp ((pool_subset_Icc ha) mx)).1
+  convert! sum_range_le_sum fun x mx ↦ (mem_Icc.mp ((pool_subset_Icc ha) mx)).1
   · rw [hbN _ ht]
   · rw [zero_add]
 
@@ -171,7 +169,7 @@ include ht in
 lemma sum_pool_le : ∑ x ∈ pool a t, x ≤ ∑ i ∈ range (b - 1), (2014 - i : ℤ) := by
   have zmp := zero_mem_pool ha hbN ht
   rw [← insert_erase zmp, sum_insert (notMem_erase _ _), zero_add]
-  convert sum_le_sum_range fun x mx ↦ ?_
+  convert! sum_le_sum_range fun x mx ↦ ?_
   · rw [card_erase_of_mem zmp, hbN _ ht]
   · exact (mem_Icc.mp ((pool_subset_Icc ha) (mem_erase.mp mx).2)).2
 

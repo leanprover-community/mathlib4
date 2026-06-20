@@ -70,7 +70,7 @@ theorem quadratic_eq_zero_iff_discrim_eq_sq [NeZero (2 : R)] [NoZeroDivisors R]
   linear_combination -h
 
 /-- A quadratic has no root if its discriminant has no square root. -/
-theorem quadratic_ne_zero_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s^2) (x : R) :
+theorem quadratic_ne_zero_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s ^ 2) (x : R) :
     a * (x * x) + b * x + c ≠ 0 :=
   mt discrim_eq_sq_of_quadratic_eq_zero (h _)
 
@@ -139,7 +139,7 @@ theorem discrim_le_zero (h : ∀ x : K, 0 ≤ a * (x * x) + b * x + c) : discrim
       linarith
   -- if a > 0
   · have ha' : 0 ≤ 4 * a := mul_nonneg zero_le_four ha.le
-    convert neg_nonpos.2 (mul_nonneg ha' (h (-b / (2 * a)))) using 1
+    convert neg_nonpos.2 (mul_nonneg ha' (h (-b / (2 * a))))
     field
 
 lemma discrim_le_zero_of_nonpos (h : ∀ x : K, a * (x * x) + b * x + c ≤ 0) : discrim a b c ≤ 0 :=

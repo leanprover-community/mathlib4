@@ -27,17 +27,17 @@ In this file, we define the concept of filtration for abelian groups, rings, and
   is in `F (i + j)`.
 
 * `IsModuleFiltration` : For `F` satisfying `IsRingFiltration F F_lt` in a semiring `R` and `σM` a
-  family of subsets of a `R` module `M`, an increasing series `FM` in `σM` is a module filtration
+  family of subsets of an `R`-module `M`, an increasing series `FM` in `σM` is a module filtration
   if `IsFiltration F F_lt` and the pointwise scalar multiplication of `F i` and `FM j`
   is in `F (i +ᵥ j)`.
 
 -/
 
-@[expose] public section
+public section
 
 section GeneralFiltration
 
-variable {ι A σ : Type*} [Preorder ι] [SetLike σ A]
+variable {ι A σ : Type*} [Preorder ι] [Preorder σ] [SetLike σ A]
 
 /-- For a family of subsets `σ` of `A`, an increasing series of `F` in `σ` is a filtration if
 there is another series `F_lt` in `σ` equal to the supremum of `F` with smaller index.
@@ -66,7 +66,7 @@ end GeneralFiltration
 
 section FilteredRing
 
-variable {ι R σ : Type*} [AddMonoid ι] [PartialOrder ι]
+variable {ι R σ : Type*} [AddMonoid ι] [PartialOrder ι] [Preorder σ]
   [Semiring R] [SetLike σ R]
 
 /-- For a family of subsets `σ` of semiring `R`, an increasing series `F` in `σ` is
@@ -85,10 +85,11 @@ end FilteredRing
 section FilteredModule
 
 variable {ι ιM R M σ σM : Type*} [AddMonoid ι] [PartialOrder ι] [PartialOrder ιM] [VAdd ι ιM]
-variable [Semiring R] [SetLike σ R] [AddCommMonoid M] [Module R M] [SetLike σM M]
+variable [Preorder σ] [Semiring R] [SetLike σ R]
+variable [Preorder σM] [AddCommMonoid M] [Module R M] [SetLike σM M]
 
 /-- For `F` satisfying `IsRingFiltration F F_lt` in a semiring `R` and `σM` a family of subsets of
-a `R` module `M`, an increasing series `FM` in `σM` is a module filtration if `IsFiltration F F_lt`
+an `R`-module `M`, an increasing series `FM` in `σM` is a module filtration if `IsFiltration F F_lt`
 and the pointwise scalar multiplication of `F i` and `FM j` is in `F (i +ᵥ j)`.
 
 The index set `ιM` for the module can be more general, however usually we take `ιM = ι`. -/

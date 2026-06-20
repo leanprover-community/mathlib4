@@ -58,6 +58,7 @@ variable [NonAssocSemiring α]
 
 variable (α) in
 /-- `Nat.cast : ℕ → α` as a `RingHom` -/
+@[implicit_reducible]
 def castRingHom : ℕ →+* α :=
   { castAddMonoidHom α with toFun := Nat.cast, map_one' := cast_one, map_mul' := cast_mul }
 
@@ -210,7 +211,7 @@ instance (priority := low) instOfNat (n : ℕ) [∀ i, OfNat (π i) n] : OfNat (
 theorem ofNat_apply (n : ℕ) [∀ i, OfNat (π i) n] (a : α) : (ofNat(n) : ∀ a, π a) a = ofNat(n) := rfl
 
 @[push ←]
-lemma ofNat_def (n : ℕ) [∀ i, OfNat (π i) n] : (ofNat(n) : ∀ a, π a) = fun _ ↦ ofNat(n) := rfl
+lemma ofNat_def (n : ℕ) [∀ i, OfNat (π i) n] : (OfNat.ofNat n : ∀ a, π a) = fun _ ↦ ofNat(n) := rfl
 
 end OfNat
 

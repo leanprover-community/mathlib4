@@ -47,31 +47,44 @@ number field, infinite places
 
 open scoped Finset Topology
 
-open NumberField Fintype Module
+namespace NumberField
 
-variable {k : Type*} [Field k] (K : Type*) [Field K] {F : Type*} [Field F]
+open Fintype Module
+
+variable (K : Type*) [Field K]
 
 /-- An infinite place of a number field `K` is a place associated to a complex embedding. -/
-def NumberField.InfinitePlace := { w : AbsoluteValue K ℝ // ∃ φ : K →+* ℂ, place φ = w }
+def InfinitePlace := { w : AbsoluteValue K ℝ // ∃ φ : K →+* ℂ, place φ = w }
 
-instance [Nonempty (K →+* ℂ)] : Nonempty (NumberField.InfinitePlace K) := Set.instNonemptyRange _
+instance [Nonempty (K →+* ℂ)] : Nonempty (InfinitePlace K) := Set.instNonemptyRange _
 
 variable {K}
 
 /-- Return the infinite place defined by a complex embedding `φ`. -/
-noncomputable def NumberField.InfinitePlace.mk (φ : K →+* ℂ) : NumberField.InfinitePlace K :=
+noncomputable def InfinitePlace.mk (φ : K →+* ℂ) : InfinitePlace K :=
   ⟨place φ, ⟨φ, rfl⟩⟩
 
-namespace NumberField.InfinitePlace
+/-- A predicate singling out infinite places among the absolute values on a number field `K`. -/
+def IsInfinitePlace (w : AbsoluteValue K ℝ) : Prop :=
+  ∃ φ : K →+* ℂ, place φ = w
 
-instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ where
+lemma InfinitePlace.isInfinitePlace (v : InfinitePlace K) : IsInfinitePlace v.val := by
+  simp [IsInfinitePlace, v.prop]
+
+lemma isInfinitePlace_iff (v : AbsoluteValue K ℝ) :
+    IsInfinitePlace v ↔ ∃ w : InfinitePlace K, w.val = v :=
+  ⟨fun H ↦ ⟨⟨v, H⟩, rfl⟩, fun ⟨w, hw⟩ ↦ hw ▸ w.isInfinitePlace⟩
+
+namespace InfinitePlace
+
+instance : FunLike (InfinitePlace K) K ℝ where
   coe w x := w.1 x
-  coe_injective' _ _ h := Subtype.ext (AbsoluteValue.ext fun x => congr_fun h x)
+  coe_injective _ _ h := Subtype.ext (AbsoluteValue.ext fun x => congr_fun h x)
 
-lemma coe_apply {K : Type*} [Field K] (v : InfinitePlace K) (x : K) : v x = v.1 x := rfl
+lemma coe_apply (v : InfinitePlace K) (x : K) : v x = v.1 x := rfl
 
 @[ext]
-lemma ext {K : Type*} [Field K] (v₁ v₂ : InfinitePlace K) (h : ∀ k, v₁ k = v₂ k) : v₁ = v₂ :=
+lemma ext (v₁ v₂ : InfinitePlace K) (h : ∀ k, v₁ k = v₂ k) : v₁ = v₂ :=
   Subtype.ext <| AbsoluteValue.ext h
 
 instance : MonoidWithZeroHomClass (InfinitePlace K) K ℝ where
@@ -139,11 +152,12 @@ theorem mk_eq_iff {φ ψ : K →+* ℂ} : mk φ = mk ψ ↔ φ = ψ ∨ ComplexE
       change LipschitzWith 1 (ψ ∘ ι.symm)
       apply LipschitzWith.of_dist_le_mul
       intro x y
-      rw [NNReal.coe_one, one_mul, NormedField.dist_eq, Function.comp_apply, Function.comp_apply,
+      rw [NNReal.coe_one, one_mul, dist_eq_norm, Function.comp_apply, Function.comp_apply,
         ← map_sub, ← map_sub]
       apply le_of_eq
       suffices ‖φ (ι.symm (x - y))‖ = ‖ψ (ι.symm (x - y))‖ by
-        rw [← this, ← RingEquiv.ofLeftInverse_apply hiφ _, RingEquiv.apply_symm_apply ι _]
+        rw [← this, ← RingEquiv.ofLeftInverse_apply hiφ _, RingEquiv.apply_symm_apply ι _,
+          dist_eq_norm]
         rfl
       exact congrFun (congrArg (↑) h₀) _
     cases
@@ -187,7 +201,7 @@ theorem isComplex_iff {w : InfinitePlace K} :
     IsComplex w ↔ ¬ComplexEmbedding.IsReal (embedding w) := by
   refine ⟨?_, fun h => ⟨embedding w, h, mk_embedding w⟩⟩
   rintro ⟨φ, ⟨hφ, rfl⟩⟩
-  contrapose! hφ
+  contrapose hφ
   cases mk_eq_iff.mp (mk_embedding (mk φ)) with
   | inl h => rwa [h] at hφ
   | inr h => rwa [← ComplexEmbedding.isReal_conjugate_iff, h] at hφ
@@ -232,7 +246,7 @@ theorem norm_embedding_of_isReal {w : InfinitePlace K} (hw : IsReal w) (x : K) :
 @[simp]
 theorem isReal_of_mk_isReal {φ : K →+* ℂ} (h : IsReal (mk φ)) :
     ComplexEmbedding.IsReal φ := by
-  contrapose! h
+  contrapose h
   rw [not_isReal_iff_isComplex]
   exact ⟨φ, h, rfl⟩
 
@@ -292,8 +306,11 @@ theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) : #{φ | mk φ =
     rwa [Ne, eq_comm, ← ComplexEmbedding.isReal_iff, ← isReal_iff]
 
 open scoped Classical in
-noncomputable instance NumberField.InfinitePlace.fintype [NumberField K] :
+protected noncomputable instance fintype [NumberField K] :
     Fintype (InfinitePlace K) := Set.fintypeRange _
+
+@[deprecated (since := "2026-05-24")]
+alias NumberField.InfinitePlace.fintype := InfinitePlace.fintype
 
 open scoped Classical in
 @[to_additive]
@@ -339,7 +356,7 @@ variable [NumberField K]
 theorem prod_eq_abs_norm (x : K) :
     ∏ w : InfinitePlace K, w x ^ mult w = abs (Algebra.norm ℚ x) := by
   classical
-  convert (congr_arg (‖·‖) (Algebra.norm_eq_prod_embeddings ℚ ℂ x)).symm
+  convert! (congr_arg (‖·‖) (Algebra.norm_eq_prod_embeddings ℚ ℂ x)).symm
   · rw [norm_prod, ← Fintype.prod_equiv RingHom.equivRatAlgHom (fun f => ‖f x‖)
       (fun φ => ‖φ x‖) fun _ => by simp [RingHom.equivRatAlgHom_apply]]
     rw [← Finset.prod_fiberwise Finset.univ mk (fun φ => ‖φ x‖)]
@@ -416,8 +433,9 @@ theorem card_real_embeddings :
 theorem card_eq_nrRealPlaces_add_nrComplexPlaces :
     Fintype.card (InfinitePlace K) = nrRealPlaces K + nrComplexPlaces K := by
   classical
-  convert Fintype.card_subtype_or_disjoint (IsReal (K := K)) (IsComplex (K := K))
-    (disjoint_isReal_isComplex K) using 1
+  convert!
+    Fintype.card_subtype_or_disjoint (IsReal (K := K)) (IsComplex (K := K))
+      (disjoint_isReal_isComplex K) using 1
   exact (Fintype.card_of_subtype _ (fun w ↦ ⟨fun _ ↦ isReal_or_isComplex w, fun _ ↦ by simp⟩)).symm
 
 open scoped Classical in
@@ -429,7 +447,7 @@ theorem card_complex_embeddings :
     simp_rw [Finset.sum_const, this, smul_eq_mul, mul_one, Fintype.card, Finset.card_eq_sum_ones,
       Finset.mul_sum, Finset.sum_const, smul_eq_mul, mul_one]
   rintro ⟨w, hw⟩
-  convert card_filter_mk_eq w
+  convert! card_filter_mk_eq w
   · rw [← Fintype.card_subtype, ← Fintype.card_subtype]
     refine Fintype.card_congr (Equiv.ofBijective ?_ ⟨fun _ _ h => ?_, fun ⟨φ, hφ⟩ => ?_⟩)
     · exact fun ⟨φ, hφ⟩ => ⟨φ.val, by rwa [Subtype.ext_iff] at hφ⟩
@@ -445,6 +463,7 @@ theorem card_add_two_mul_card_eq_rank :
     ← Embeddings.card K ℂ, Nat.add_sub_of_le]
   exact Fintype.card_subtype_le _
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /--
 The signature of the permutation on the complex embeddings of `K` defined by sending an embedding
@@ -498,7 +517,7 @@ theorem nrRealPlaces_eq_zero_of_two_lt (hk : 2 < k) (hζ : IsPrimitiveRoot ζ k)
   | inr hnegone =>
     replace hζ' := hζ'.eq_orderOf
     simp only [show f ζ = -1 from Complex.ext (by simp [hnegone]) (by simp [him]),
-      orderOf_neg_one, ringChar.eq_zero, OfNat.zero_ne_ofNat, ↓reduceIte] at hζ'
+      orderOf_neg_one, ringChar.eq_zero] at hζ'
     lia
 
 end IsPrimitiveRoot
@@ -526,6 +545,9 @@ lemma infinitePlace_apply (v : InfinitePlace ℚ) (x : ℚ) : v x = |x| := by
 
 instance : Subsingleton (InfinitePlace ℚ) where
   allEq a b := by ext; simp
+
+noncomputable instance : Unique (InfinitePlace ℚ) :=
+  ⟨⟨infinitePlace⟩, fun _ ↦ Subsingleton.elim _ infinitePlace⟩
 
 lemma isReal_infinitePlace : InfinitePlace.IsReal (infinitePlace) :=
   ⟨Rat.castHom ℂ, by ext; simp, rfl⟩
@@ -593,22 +615,25 @@ theorem denseRange_algebraMap_pi [NumberField K] :
   -- Define the sequence `yₙ = ∑ v, 1 / (1 + aᵥ⁻ⁿ) * zᵥ` in `K`
   let y := fun n ↦ ∑ v, (1 / (1 + (a v)⁻¹ ^ n)) * WithAbs.equiv v.1 (z v)
   -- We will show that this sequence converges to `z` in the product topology.
-  have : atTop.Tendsto (fun n v ↦ (WithAbs.equiv v.1).symm (y n)) (𝓝 z) := by
+  have : atTop.Tendsto
+      (fun n (v : InfinitePlace K) ↦ (WithAbs.equiv v.1).symm (y n)) (𝓝 z) := by
     -- At a fixed place `u`, the limit of `y` with respect to `u`'s topology is `zᵤ`.
     refine tendsto_pi_nhds.mpr fun u ↦ ?_
     simp_rw [← Fintype.sum_pi_single u z, y, map_sum, map_mul]
-    refine tendsto_finset_sum _ fun w _ ↦ ?_
+    refine tendsto_finsetSum _ fun w _ ↦ ?_
     by_cases hw : u = w
     · -- Because `1 / (1 + aᵤ⁻ⁿ) → 1` in `WithAbs u.1`.
-      rw [← hw, Pi.single_apply u (z u), if_pos rfl]
+      rw [← hw, Pi.single_eq_same]
       have : u (a u)⁻¹ < 1 := by simpa [← inv_pow, inv_lt_one_iff₀] using .inr (hx u).1
       simpa using (WithAbs.tendsto_one_div_one_add_pow_nhds_one this).mul_const (z u)
     · -- And `1 / (1 + aᵤ⁻ⁿ) → 0` in `WithAbs w.1` when `w ≠ u`.
-      simp only [Pi.single_apply w (z w), hw, if_false]
-      have : 1 < u (a w)⁻¹ := by simpa [one_lt_inv_iff₀] using
+      rw [Pi.single_eq_of_ne (M := fun v ↦ WithAbs v.1) hw (z w)]
+      have hu : 1 < u (a w)⁻¹ := by simpa [one_lt_inv_iff₀] using
         ⟨u.pos_iff.2 fun ha ↦ by linarith [map_zero w ▸ ha ▸ (hx w).1], (hx w).2 u hw⟩
-      simpa using (tendsto_zero_iff_norm_tendsto_zero.2 <|
-        u.1.tendsto_div_one_add_pow_nhds_zero this).mul_const ((WithAbs.equiv u.1).symm _)
+      have := u.1.tendsto_div_one_add_pow_nhds_zero hu
+      simp_rw [← WithAbs.norm_toAbs_eq] at this
+      simpa using (tendsto_zero_iff_norm_tendsto_zero.2 this).mul_const
+        ((WithAbs.equiv u.1).symm (WithAbs.equiv w.1 (z w)))
   -- So taking a sufficiently large index of the sequence `yₙ` gives the desired term.
   let ⟨N, h⟩ := Metric.tendsto_atTop.1 this r hr
   exact ⟨y N, dist_comm z (algebraMap K _ (y N)) ▸ h N le_rfl⟩

@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.Basis.Defs
 # Lemmas about bilinear maps with a basis over each argument
 -/
 
-@[expose] public section
+public section
 
 open Module
 
@@ -39,6 +39,14 @@ variable (b₁ : Basis ι₁ R M) (b₂ : Basis ι₂ S N) (b₁' : Basis ι₁ 
 theorem ext_basis {B B' : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (h : ∀ i j, B (b₁ i) (b₂ j) = B' (b₁ i) (b₂ j)) :
     B = B' :=
   b₁.ext fun i => b₂.ext fun j => h i j
+
+lemma ext_iff_basis {B B' : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} :
+    B = B' ↔ ∀ (i : ι₁) (j : ι₂), B (b₁ i) (b₂ j) = B' (b₁ i) (b₂ j) :=
+  ⟨fun h _ _ ↦ h ▸ rfl, ext_basis b₁ b₂⟩
+
+lemma BilinForm.ext_iff_basis {B B' : LinearMap.BilinForm Rₗ Mₗ} :
+    B = B' ↔ ∀ (i j : ι₁), B (b₁' i) (b₁' j) = B' (b₁' i) (b₁' j) :=
+  LinearMap.ext_iff_basis b₁' b₁'
 
 /-- Write out `B x y` as a sum over `B (b i) (b j)` if `b` is a basis.
 

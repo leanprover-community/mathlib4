@@ -32,7 +32,7 @@ is `nhds_basis_ball`, and the fact that this basis satisfies the monotonicity cr
 corresponds to `HasSolidNorm`.
 -/
 
-@[expose] public section
+public section
 
 open Filter Topology
 
@@ -56,7 +56,7 @@ lemma tendstoLocallyUniformly_of_forall_tendsto
   refine (atTop : Filter ι).eq_or_neBot.elim (fun h ↦ ?eq_bot) (fun _ ↦ ?_)
   case eq_bot => simp [h, tendstoLocallyUniformly_iff_forall_tendsto]
   have F_le_f (x : α) (n : ι) : F n x ≤ f x := by
-    refine ge_of_tendsto (h_tendsto x) ?_
+    refine _root_.ge_of_tendsto (h_tendsto x) ?_
     filter_upwards [Ici_mem_atTop n] with m hnm
     exact hF_mono hnm x
   simp_rw [Metric.tendstoLocallyUniformly_iff, dist_eq_norm']

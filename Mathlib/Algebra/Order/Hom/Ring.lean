@@ -88,7 +88,7 @@ This is declared as the default coercion from `F` to `α →+*o β`. -/
 @[coe]
 def OrderRingHomClass.toOrderRingHom [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β]
     [Preorder β] [OrderHomClass F α β] [RingHomClass F α β] (f : F) : α →+*o β :=
-{ (f : α →+* β) with monotone' := OrderHomClass.monotone f}
+  { (f : α →+* β) with monotone' := OrderHomClass.monotone f }
 
 /-- Any type satisfying `OrderRingHomClass` can be cast into `OrderRingHom` via
   `OrderRingHomClass.toOrderRingHom`. -/
@@ -108,7 +108,7 @@ This is declared as the default coercion from `F` to `α ≃+*o β`. -/
 @[coe]
 def OrderRingIsoClass.toOrderRingIso [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β]
     [OrderIsoClass F α β] [RingEquivClass F α β] (f : F) : α ≃+*o β :=
-{ (f : α ≃+* β) with map_le_map_iff' := map_le_map_iff f}
+  { (RingEquivClass.toRingEquiv f : α ≃+* β) with map_le_map_iff' := map_le_map_iff f }
 
 /-- Any type satisfying `OrderRingIsoClass` can be cast into `OrderRingIso` via
   `OrderRingIsoClass.toOrderRingIso`. -/
@@ -139,9 +139,9 @@ def toOrderMonoidWithZeroHom (f : α →+*o β) : α →*₀o β :=
 
 instance : FunLike (α →+*o β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f; cases g; congr
-    exact DFunLike.coe_injective' h
+    exact DFunLike.coe_injective h
 
 instance : OrderHomClass (α →+*o β) α β where
   map_rel f _ _ h := f.monotone' h
@@ -316,6 +316,8 @@ instance : RingEquivClass (α ≃+*o β) α β where
   map_mul f := f.map_mul'
   map_add f := f.map_add'
 
+instance : CoeOut (α ≃+*o β) (α ≃+* β) where coe := toRingEquiv
+
 theorem toFun_eq_coe (f : α ≃+*o β) : f.toFun = f :=
   rfl
 
@@ -331,7 +333,7 @@ theorem coe_mk (e : α ≃+* β) (h) : ⇑(⟨e, h⟩ : α ≃+*o β) = e :=
 theorem mk_coe (e : α ≃+*o β) (h) : (⟨e, h⟩ : α ≃+*o β) = e :=
   ext fun _ => rfl
 
-@[simp]
+@[deprecated "Now a syntactic equality" (since := "2026-04-09"), nolint synTaut]
 theorem toRingEquiv_eq_coe (f : α ≃+*o β) : f.toRingEquiv = f :=
   RingEquiv.ext fun _ => rfl
 
@@ -339,7 +341,7 @@ theorem toRingEquiv_eq_coe (f : α ≃+*o β) : f.toRingEquiv = f :=
 theorem toOrderIso_eq_coe (f : α ≃+*o β) : f.toOrderIso = f :=
   OrderIso.ext rfl
 
-@[simp, norm_cast]
+@[simp]
 theorem coe_toRingEquiv (f : α ≃+*o β) : ⇑(f : α ≃+* β) = f :=
   rfl
 
@@ -373,10 +375,7 @@ variable {α}
 
 /-- The inverse of an ordered ring isomorphism as an ordered ring isomorphism. -/
 @[symm]
-protected def symm (e : α ≃+*o β) : β ≃+*o α :=
-  ⟨e.toRingEquiv.symm, by
-    intro a b
-    erw [← map_le_map_iff e, e.1.apply_symm_apply, e.1.apply_symm_apply]⟩
+protected def symm (e : α ≃+*o β) : β ≃+*o α := ⟨e.toRingEquiv.symm, by simp [← e.map_le_map_iff']⟩
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : α ≃+*o β) : β → α :=
@@ -433,10 +432,10 @@ section Preorder
 variable {R S : Type*} [Mul R] [Add R] [Mul S] [Add S] [Preorder R] [Preorder S]
 
 theorem lt_symm_apply (e : R ≃+*o S) {x : R} {y : S} : x < e.symm y ↔ e x < y := by
-  simpa using e.toOrderIso.lt_symm_apply
+  simpa using! e.toOrderIso.lt_symm_apply
 
 theorem symm_apply_lt (e : R ≃+*o S) {x : R} {y : S} : e.symm y < x ↔ y < e x := by
-  simpa using e.toOrderIso.symm_apply_lt
+  simpa using! e.toOrderIso.symm_apply_lt
 
 end Preorder
 
@@ -461,7 +460,7 @@ theorem coe_toOrderRingHom_refl : (OrderRingIso.refl α : α →+*o α) = OrderR
   rfl
 
 theorem toOrderRingHom_injective : Injective (toOrderRingHom : α ≃+*o β → α →+*o β) :=
-  fun f g h => DFunLike.coe_injective <| by convert DFunLike.ext'_iff.1 h using 0
+  fun f g h => DFunLike.coe_injective <| by convert! DFunLike.ext'_iff.1 h using 0
 
 end NonAssocSemiring
 

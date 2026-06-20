@@ -26,7 +26,7 @@ We can then, first observe that the slash action just changes our `a` to `(a ᵥ
 we then use our bounds for Eisenstein series in these vertical strips to get the result.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -54,14 +54,14 @@ lemma norm_le_tsum_norm (N : ℕ) (a : Fin 2 → ZMod N) (k : ℤ) (hk : 3 ≤ k
       (summable_norm_eisSummand hk z))
 
 /-- Eisenstein series are bounded at infinity. -/
-theorem isBoundedAtImInfty_eisensteinSeries_SIF {N : ℕ} [NeZero N] (a : Fin 2 → ZMod N) {k : ℤ}
-    (hk : 3 ≤ k) (A : SL(2, ℤ)) : IsBoundedAtImInfty ((eisensteinSeries_SIF a k).toFun ∣[k] A) := by
-  simp_rw [UpperHalfPlane.isBoundedAtImInfty_iff, eisensteinSeries_SIF] at *
+theorem isBoundedAtImInfty_eisensteinSeriesSIF {N : ℕ} [NeZero N] (a : Fin 2 → ZMod N) {k : ℤ}
+    (hk : 3 ≤ k) (A : SL(2, ℤ)) : IsBoundedAtImInfty (eisensteinSeriesSIF a k ∣[k] A) := by
+  simp_rw [UpperHalfPlane.isBoundedAtImInfty_iff, eisensteinSeriesSIF] at *
   refine ⟨∑'(x : Fin 2 → ℤ), r ⟨⟨N, 2⟩, Nat.ofNat_pos⟩ ^ (-k) * ‖x‖ ^ (-k), 2, ?_⟩
   intro z hz
   obtain ⟨n, hn⟩ := (ModularGroup_T_zpow_mem_verticalStrip z (NeZero.pos N))
-  rw [eisensteinSeries_slash_apply, ← eisensteinSeries_SIF_apply,
-    ← T_zpow_width_invariant N k n (eisensteinSeries_SIF (a ᵥ* A) k) z]
+  rw [SlashInvariantForm.coe_mk, eisensteinSeries_slash_apply, ← eisensteinSeriesSIF_apply,
+    ← T_zpow_width_invariant N k n (eisensteinSeriesSIF (a ᵥ* A) k) z]
   apply le_trans (norm_le_tsum_norm N (a ᵥ* A) k hk _)
   have hk' : (2 : ℝ) < k := by norm_cast
   apply (summable_norm_eisSummand hk _).tsum_le_tsum _
@@ -71,5 +71,8 @@ theorem isBoundedAtImInfty_eisensteinSeries_SIF {N : ℕ} [NeZero N] (a : Fin 2 
     exact_mod_cast
       summand_bound_of_mem_verticalStrip (lt_trans two_pos hk').le x two_pos
       (verticalStrip_anti_right N hz hn)
+
+@[deprecated (since := "2026-02-10")]
+alias isBoundedAtImInfty_eisensteinSeries_SIF := isBoundedAtImInfty_eisensteinSeriesSIF
 
 end EisensteinSeries

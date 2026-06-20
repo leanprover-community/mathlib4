@@ -53,6 +53,8 @@ def extendFan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Fan fun i : Fin n => f i
       · intro i
         apply c₂.snd ≫ c₁.π.app ⟨i⟩)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Show that if the two given fans in `extendFan` are limits, then the constructed fan is also a
 limit.
 -/
@@ -88,7 +90,7 @@ variable [HasBinaryProducts C] [HasTerminal C]
 
 /-- If `C` has a terminal object and binary products, then it has a product for objects indexed by
 `Fin n`.
-This is a helper lemma for `hasFiniteProductsOfHasBinaryAndTerminal`, which is more general
+This is a helper lemma for `hasFiniteProducts_of_has_binary_and_terminal`, which is more general
 than this.
 -/
 private theorem hasProduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasProduct f
@@ -117,6 +119,7 @@ variable [PreservesLimitsOfShape (Discrete WalkingPair) F]
 variable [PreservesLimitsOfShape (Discrete.{0} PEmpty) F]
 variable [HasFiniteProducts.{v} C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `F` preserves the terminal object and binary products, then it preserves products indexed by
 `Fin n` for any `n`.
 -/
@@ -137,7 +140,7 @@ lemma preservesFinOfPreservesBinaryAndTerminal :
       extendFanIsLimit (fun i => F.obj (f i)) (isLimitOfHasProductOfPreservesLimit F _)
         (isLimitOfHasBinaryProductOfPreservesLimit F _ _)
     refine IsLimit.ofIsoLimit this ?_
-    apply Cones.ext _ _
+    apply Cone.ext _ _
     · apply Iso.refl _
     rintro ⟨j⟩
     refine Fin.inductionOn j ?_ ?_
@@ -157,11 +160,6 @@ lemma Limits.PreservesFiniteProducts.of_preserves_binary_and_terminal :
     haveI := preservesFinOfPreservesBinaryAndTerminal F n fun n => K.obj ⟨n⟩
     apply preservesLimit_of_iso_diagram F that
 
-@[deprecated PreservesFiniteProducts.of_preserves_binary_and_terminal (since := "2025-04-22")]
-lemma preservesShape_fin_of_preserves_binary_and_terminal (n : ℕ) :
-    PreservesLimitsOfShape (Discrete (Fin n)) F :=
-  have : PreservesFiniteProducts F := .of_preserves_binary_and_terminal _; inferInstance
-
 end Preserves
 
 /-- Given `n+1` objects of `C`, a cofan for the last `n` with point `c₁.pt`
@@ -180,6 +178,8 @@ def extendCofan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Cofan fun i : Fin n =>
       · intro i
         apply c₁.ι.app ⟨i⟩ ≫ c₂.inr)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Show that if the two given cofans in `extendCofan` are colimits,
 then the constructed cofan is also a colimit.
 -/
@@ -216,7 +216,7 @@ variable [HasBinaryCoproducts C] [HasInitial C]
 /--
 If `C` has an initial object and binary coproducts, then it has a coproduct for objects indexed by
 `Fin n`.
-This is a helper lemma for `hasCofiniteProductsOfHasBinaryAndTerminal`, which is more general
+This is a helper lemma for `hasFiniteCoproducts_of_has_binary_and_initial`, which is more general
 than this.
 -/
 private theorem hasCoproduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasCoproduct f
@@ -244,6 +244,7 @@ variable [PreservesColimitsOfShape (Discrete WalkingPair) F]
 variable [PreservesColimitsOfShape (Discrete.{0} PEmpty) F]
 variable [HasFiniteCoproducts.{v} C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `F` preserves the initial object and binary coproducts, then it preserves products indexed by
 `Fin n` for any `n`.
 -/
@@ -265,7 +266,7 @@ lemma preserves_fin_of_preserves_binary_and_initial :
         (isColimitOfHasCoproductOfPreservesColimit F _)
         (isColimitOfHasBinaryCoproductOfPreservesColimit F _ _)
     refine IsColimit.ofIsoColimit this ?_
-    apply Cocones.ext _ _
+    apply Cocone.ext _ _
     · apply Iso.refl _
     rintro ⟨j⟩
     refine Fin.inductionOn j ?_ ?_
@@ -285,11 +286,15 @@ lemma preservesShape_fin_of_preserves_binary_and_initial (n : ℕ) :
     apply preservesColimit_of_iso_diagram F that
 
 /-- If `F` preserves the initial object and binary coproducts then it preserves finite products. -/
-lemma preservesFiniteCoproductsOfPreservesBinaryAndInitial (J : Type*) [Finite J] :
+lemma PreservesFiniteCoproducts.of_preserves_binary_and_initial (J : Type*) [Finite J] :
     PreservesColimitsOfShape (Discrete J) F :=
   let ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin J
   have := preservesShape_fin_of_preserves_binary_and_initial F n
   preservesColimitsOfShape_of_equiv (Discrete.equivalence e).symm _
+
+@[deprecated (since := "2026-03-10")]
+alias preservesFiniteCoproductsOfPreservesBinaryAndInitial :=
+  PreservesFiniteCoproducts.of_preserves_binary_and_initial
 
 end Preserves
 

@@ -11,7 +11,7 @@ public import Mathlib.Algebra.MvPolynomial.Equiv
 # Some lemmas relating polynomials and multivariable polynomials.
 -/
 
-@[expose] public section
+public section
 
 namespace MvPolynomial
 

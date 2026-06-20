@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.ZMod.Basic
-public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
@@ -18,16 +17,11 @@ We show that for prime `p`, the image of an integer `a` in `ZMod p` vanishes if 
 `a` and `p` are not coprime.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists TwoSidedIdeal
 
 namespace ZMod
-
-theorem coe_int_isUnit_iff_isCoprime (n : ℤ) (m : ℕ) :
-    IsUnit (n : ZMod m) ↔ IsCoprime (m : ℤ) n := by
-  rw [Int.isCoprime_iff_nat_coprime, Nat.coprime_comm, ← isUnit_iff_coprime, Associated.isUnit_iff]
-  simpa only [eq_intCast, Int.cast_natCast] using (Int.associated_natAbs _).map (Int.castRingHom _)
 
 /-- If `p` is a prime and `a` is an integer, then `a : ZMod p` is zero if and only if
 `gcd a p ≠ 1`. -/

@@ -11,7 +11,7 @@ public import Mathlib.Order.UpperLower.Basic
 # Upper/lower sets and fibrations
 -/
 
-@[expose] public section
+public section
 
 open Set
 

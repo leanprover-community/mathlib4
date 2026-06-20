@@ -12,7 +12,7 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 # Measurability of scalar products
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*} {𝕜 : Type*} {E : Type*}

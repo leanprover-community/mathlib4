@@ -73,15 +73,22 @@ theorem birkhoffAverage_congr_ring' (S : Type*) [DivisionSemiring S] [Module S M
     birkhoffAverage (α := α) (M := M) R = birkhoffAverage S := by
   ext; apply birkhoffAverage_congr_ring
 
-theorem Function.IsFixedPt.birkhoffAverage_eq [CharZero R] {f : α → α} {x : α} (h : IsFixedPt f x)
-    (g : α → M) {n : ℕ} (hn : n ≠ 0) : birkhoffAverage R f g n x = g x := by
-  rw [birkhoffAverage, h.birkhoffSum_eq, ← Nat.cast_smul_eq_nsmul R, inv_smul_smul₀]
-  rwa [Nat.cast_ne_zero]
+theorem Function.IsFixedPt.birkhoffAverage_eq {f : α → α} {x : α} (h : IsFixedPt f x)
+    (g : α → M) {n : ℕ} (hn : (n : R) ≠ 0) : birkhoffAverage R f g n x = g x := by
+  rw [birkhoffAverage, h.birkhoffSum_eq, ← Nat.cast_smul_eq_nsmul R, inv_smul_smul₀ hn]
 
 lemma birkhoffAverage_add {f : α → α} {g g' : α → M} :
     birkhoffAverage R f (g + g') = birkhoffAverage R f g + birkhoffAverage R f g' := by
   funext _ x
   simp [birkhoffAverage, birkhoffSum, sum_add_distrib, smul_add]
+
+/-- If a function `g` is invariant under a function `f` (i.e., `g ∘ f = g`), then the Birkhoff
+average of `g` over `f` for `n` iterations is equal to `g`. Requires that `0 < n`. -/
+theorem birkhoffAverage_of_comp_eq {f : α → α} {g : α → M} (h : g ∘ f = g)
+    {n : ℕ} (hn : (n : R) ≠ 0) : birkhoffAverage R f g n = g := by
+  funext x
+  suffices (n : R)⁻¹ • n • g x = g x by simpa [birkhoffAverage, birkhoffSum_of_comp_eq h]
+  rw [← Nat.cast_smul_eq_nsmul (R := R), ← mul_smul, inv_mul_cancel₀ hn, one_smul]
 
 end birkhoffAverage
 
@@ -90,7 +97,7 @@ section AddCommGroup
 variable {R : Type*} {α M : Type*} [DivisionSemiring R] [AddCommGroup M] [Module R M]
 
 lemma birkhoffAverage_neg {f : α → α} {g : α → M} :
-    birkhoffAverage R f (-g) = - birkhoffAverage R f g := by
+    birkhoffAverage R f (-g) = -birkhoffAverage R f g := by
   funext _ x
   simp [birkhoffAverage, birkhoffSum]
 
@@ -106,13 +113,5 @@ theorem birkhoffAverage_apply_sub_birkhoffAverage (f : α → α) (g : α → M)
     birkhoffAverage R f g n (f x) - birkhoffAverage R f g n x =
       (n : R)⁻¹ • (g (f^[n] x) - g x) := by
   simp only [birkhoffAverage, birkhoffSum_apply_sub_birkhoffSum, ← smul_sub]
-
-/-- If a function `g` is invariant under a function `f` (i.e., `g ∘ f = g`), then the Birkhoff
-average of `g` over `f` for `n` iterations is equal to `g`. Requires that `0 < n`. -/
-theorem birkhoffAverage_of_comp_eq [CharZero R] {f : α → α} {g : α → M} (h : g ∘ f = g)
-    {n : ℕ} (hn : n ≠ 0) : birkhoffAverage R f g n = g := by
-  funext x
-  suffices (n : R)⁻¹ • n • g x = g x by simpa [birkhoffAverage, birkhoffSum_of_comp_eq h]
-  rw [← Nat.cast_smul_eq_nsmul (R := R), ← mul_smul, inv_mul_cancel₀ (by norm_cast), one_smul]
 
 end AddCommGroup

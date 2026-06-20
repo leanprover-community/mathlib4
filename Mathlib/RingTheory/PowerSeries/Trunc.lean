@@ -37,29 +37,32 @@ section Trunc
 variable [Semiring R]
 open Finset Nat
 
-private def trunc_aux (n : ℕ) (φ : R⟦X⟧) : R[X] :=
+set_option backward.privateInPublic true in
+private def truncAux (n : ℕ) (φ : R⟦X⟧) : R[X] :=
   ∑ m ∈ Ico 0 n, Polynomial.monomial m (coeff m φ)
 
-private theorem coeff_trunc_aux (m) (n) (φ : R⟦X⟧) :
-    (trunc_aux n φ).coeff m = if m < n then coeff m φ else 0 := by
-  simp [trunc_aux, Polynomial.coeff_monomial]
+private theorem coeff_truncAux (m) (n) (φ : R⟦X⟧) :
+    (truncAux n φ).coeff m = if m < n then coeff m φ else 0 := by
+  simp [truncAux, Polynomial.coeff_monomial]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The `n`th truncation of a formal power series to a polynomial. -/
 def trunc (n : ℕ) : R⟦X⟧ →ₗ[R] R[X] where
-  toFun := trunc_aux n
+  toFun := truncAux n
   map_add' φ ψ := Polynomial.ext fun m => by
-    simp only [coeff_trunc_aux, Polynomial.coeff_add]
+    simp only [coeff_truncAux, Polynomial.coeff_add]
     split_ifs with H
     · rfl
     · rw [zero_add]
-  map_smul' t φ := by ext; simp [trunc_aux, Polynomial.coeff_monomial]
+  map_smul' t φ := by ext; simp [truncAux, Polynomial.coeff_monomial]
 
 lemma trunc_apply (n : ℕ) (φ : R⟦X⟧) :
     trunc n φ = ∑ m ∈ Ico 0 n, Polynomial.monomial m (coeff m φ) := rfl
 
 theorem coeff_trunc (m) (n) (φ : R⟦X⟧) :
     (trunc n φ).coeff m = if m < n then coeff m φ else 0 := by
-  simp [trunc, coeff_trunc_aux]
+  simp [trunc, coeff_truncAux]
 
 @[simp]
 theorem trunc_one (n) : trunc (n + 1) (1 : R⟦X⟧) = 1 :=
@@ -77,7 +80,7 @@ theorem trunc_succ (f : R⟦X⟧) (n : ℕ) :
   rw [trunc_apply, Ico_zero_eq_range, sum_range_succ, trunc_apply, Ico_zero_eq_range]
 
 theorem natDegree_trunc_lt (f : R⟦X⟧) (n) : (trunc (n + 1) f).natDegree < n + 1 := by
-  simp +contextual [natDegree_le_iff_coeff_eq_zero, coeff_trunc, Nat.lt_add_one_iff]
+  simp +contextual [natDegree_le_iff_coeff_eq_zero, coeff_trunc]
 
 @[simp] lemma trunc_zero' {f : R⟦X⟧} : trunc 0 f = 0 := rfl
 

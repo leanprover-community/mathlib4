@@ -5,9 +5,7 @@ Authors: Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 module
 
-public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Pi.Basic
-public import Mathlib.Data.ULift
 
 /-!
 # Discrete categories
@@ -188,6 +186,7 @@ lemma functor_ext {I : Type u₁} {G F : Discrete I ⥤ C} (h : (i : I) → G.ob
   · intro I; rw [h]
   · intro ⟨X⟩ ⟨Y⟩ ⟨⟨p⟩⟩; simp only at p; induction p; simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The discrete functor induced by a composition of maps can be written as a
 composition of two discrete functors.
 -/
@@ -304,6 +303,7 @@ lemma Discrete.exists {α : Type*} {p : Discrete α → Prop} :
   rw [iff_iff_eq, discreteEquiv.exists_congr_left]
   simp [discreteEquiv]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories `(J → C) ≌ (Discrete J ⥤ C)`. -/
 @[simps]
 def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁} C] :
@@ -322,9 +322,16 @@ def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁
       obtain rfl : f = 𝟙 _ := rfl
       simp))) (by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
+/-- `piEquivalenceFunctorDiscrete` is compatible with `evaluation`. -/
+@[simps!]
+def piEquivalenceFunctorDiscreteCompEvaluationIso (C : Type*) [Category* C] {J : Type*} (j : J) :
+    (piEquivalenceFunctorDiscrete J C).functor ⋙ (evaluation _ _).obj ⟨j⟩ ≅ Pi.eval _ j :=
+  NatIso.ofComponents fun _ ↦ Iso.refl _
+
 /-- A category is discrete when there is at most one morphism between two objects,
 in which case they are equal. -/
-class IsDiscrete (C : Type*) [Category C] : Prop where
+class IsDiscrete (C : Type*) [Category* C] : Prop where
   subsingleton (X Y : C) : Subsingleton (X ⟶ Y) := by infer_instance
   eq_of_hom {X Y : C} (f : X ⟶ Y) : X = Y
 
@@ -335,7 +342,7 @@ instance Discrete.isDiscrete (C : Type*) : IsDiscrete (Discrete C) where
 
 section
 
-variable {C : Type*} [Category C] [IsDiscrete C]
+variable {C : Type*} [Category* C] [IsDiscrete C]
 
 lemma obj_ext_of_isDiscrete {X Y : C} (f : X ⟶ Y) : X = Y := IsDiscrete.eq_of_hom f
 

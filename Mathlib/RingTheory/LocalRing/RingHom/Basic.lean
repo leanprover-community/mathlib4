@@ -18,7 +18,7 @@ We prove basic properties of local rings homomorphisms.
 
 -/
 
-@[expose] public section
+public section
 
 variable {R S T : Type*}
 section
@@ -45,13 +45,12 @@ theorem isLocalHom_of_comp (f : R →+* S) (g : S →+* T) [IsLocalHom (g.comp f
   ⟨fun _ ha => (isUnit_map_iff (g.comp f) _).mp (g.isUnit_map ha)⟩
 
 /-- If `f : R →+* S` is a local ring hom, then `R` is a local ring if `S` is. -/
-theorem RingHom.domain_isLocalRing {R S : Type*} [Semiring R] [CommSemiring S] [IsLocalRing S]
-    (f : R →+* S) [IsLocalHom f] : IsLocalRing R := by
-  haveI : Nontrivial R := f.domain_nontrivial
-  apply IsLocalRing.of_nonunits_add
-  intro a b
-  simp_rw [← map_mem_nonunits_iff f, f.map_add]
-  exact IsLocalRing.nonunits_add
+theorem RingHom.domain_isLocalRing [IsLocalRing S] (f : R →+* S) [IsLocalHom f] :
+    IsLocalRing R where
+  toNontrivial := f.domain_nontrivial
+  isUnit_or_isUnit_of_add_one {a b} h := Or.imp
+    (isUnit_of_map_unit f a) (isUnit_of_map_unit f b)
+    (IsLocalRing.isUnit_or_isUnit_of_add_one (by rw [← map_add, h, map_one]))
 
 end
 
@@ -80,7 +79,7 @@ i.e. any preimage of a unit is still a unit. -/
 @[stacks 07BJ]
 theorem local_hom_TFAE (f : R →+* S) :
     List.TFAE
-      [IsLocalHom f, f '' (maximalIdeal R).1 ⊆ maximalIdeal S,
+      [IsLocalHom f, f '' maximalIdeal R ⊆ maximalIdeal S,
         (maximalIdeal R).map f ≤ maximalIdeal S, maximalIdeal R ≤ (maximalIdeal S).comap f,
         (maximalIdeal S).comap f = maximalIdeal R] := by
   tfae_have 1 → 2
@@ -92,6 +91,16 @@ theorem local_hom_TFAE (f : R →+* S) :
   | _ => by ext; exact not_iff_not.2 (isUnit_map_iff f _)
   tfae_have 5 → 4 := fun h ↦ le_of_eq h.symm
   tfae_finish
+
+lemma maximalIdeal_comap (f : R →+* S) [IsLocalHom f] : (maximalIdeal S).comap f = maximalIdeal R :=
+  ((local_hom_TFAE _).out 0 4).mp ‹_›
+
+theorem map_maximalIdeal_le (f : R →+* S) [IsLocalHom f] :
+    (maximalIdeal R).map f ≤ maximalIdeal S := by
+  rw [Ideal.map_le_iff_le_comap, IsLocalRing.maximalIdeal_comap]
+
+theorem map_maximalIdeal_lt_top (f : R →+* S) [IsLocalHom f] : (maximalIdeal R).map f < ⊤ :=
+  (map_maximalIdeal_le f).trans_lt (maximalIdeal.isMaximal S).lt_top
 
 end
 
@@ -132,6 +141,16 @@ local ring hom. -/
 instance (priority := 100) {K R} [DivisionRing K] [CommRing R] [Nontrivial R]
     (f : K →+* R) : IsLocalHom f where
   map_nonunit r hr := by simpa only [isUnit_iff_ne_zero, ne_eq, map_eq_zero] using hr.ne_zero
+
+lemma map_maximalIdeal_of_surjective [CommRing R] [CommRing S] [IsLocalRing R] [IsLocalRing S]
+    (f : R →+* S) (hf : Function.Surjective f) : (maximalIdeal R).map f = maximalIdeal S := by
+  let := IsLocalHom.of_surjective f hf
+  rw [← maximalIdeal_comap f, Ideal.map_comap_of_surjective f hf]
+
+@[simp]
+lemma map_ringEquiv_maximalIdeal [CommRing R] [CommRing S] [IsLocalRing R] [IsLocalRing S]
+    (e : R ≃+* S) : (maximalIdeal R).map e = maximalIdeal S :=
+  map_maximalIdeal_of_surjective (e : R →+* S) e.surjective
 
 end IsLocalRing
 

@@ -33,7 +33,7 @@ various versions of the Jacobi theta function.
 ## Main definitions and theorems
 
 * `completedHurwitzZetaOdd`: the completed Hurwitz zeta function
-* `completedSinZeta`: the completed cosine zeta function
+* `completedSinZeta`: the completed sine zeta function
 * `differentiable_completedHurwitzZetaOdd` and `differentiable_completedSinZeta`:
   differentiability on `ℂ`
 * `completedHurwitzZetaOdd_one_sub`: the functional equation

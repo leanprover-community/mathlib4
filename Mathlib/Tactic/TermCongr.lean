@@ -5,10 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public meta import Mathlib.Lean.Expr.Basic
-public meta import Mathlib.Lean.Meta.CongrTheorems
-public meta import Mathlib.Logic.Basic
-public meta import Mathlib.Tactic.CongrExclamation
+public import Mathlib.Lean.Meta.CongrTheorems
 
 /-! # `congr(...)` congruence quotations
 
@@ -108,7 +105,7 @@ We need to decouple these to support letting the proof's elaboration be deferred
 we know whether we want an iff, eq, or heq, while also allowing it to choose
 to elaborate as an iff, eq, or heq.
 Later, the congruence generator handles any discrepancies.
-See `Mathlib/Tactic/TermCongr/CongrResult.lean`. -/
+See `CongrResult` below. -/
 @[reducible, nolint unusedArguments, expose]
 def cHole {α : Sort u} (val : α) {p : Prop} (_pf : p) : α := val
 

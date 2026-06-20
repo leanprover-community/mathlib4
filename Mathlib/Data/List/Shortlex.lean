@@ -6,8 +6,8 @@ Authors: Hannah Fechtner
 module
 
 public import Mathlib.Data.List.Lex
-public import Mathlib.Tactic.Linarith
 public import Mathlib.Order.RelClasses
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Shortlex ordering of lists.
@@ -64,7 +64,7 @@ theorem shortlex_iff_lex {s t : List α} (h : s.length = t.length) :
     Shortlex r s t ↔ List.Lex r s t := by
   simp [shortlex_def, h]
 
-theorem shortlex_cons_iff [IsIrrefl α r] {a : α} {s t : List α} :
+theorem shortlex_cons_iff [Std.Irrefl r] {a : α} {s t : List α} :
     Shortlex r (a :: s) (a :: t) ↔ Shortlex r s t := by
   simp only [shortlex_def, length_cons, add_lt_add_iff_right, add_left_inj, List.lex_cons_iff]
 
@@ -72,10 +72,7 @@ alias ⟨Shortlex.of_cons, Shortlex.cons⟩ := shortlex_cons_iff
 
 @[simp]
 theorem not_shortlex_nil_right {s : List α} : ¬ Shortlex r s [] := by
-  rw [shortlex_def]
-  rintro (h1 | h2)
-  · simp only [List.length_nil, not_lt_zero'] at h1
-  · exact List.not_lex_nil h2.2
+  simp [shortlex_def]
 
 theorem shortlex_nil_or_eq_nil : ∀ s : List α, Shortlex r [] s ∨ s = []
   | [] => .inr rfl
@@ -88,11 +85,11 @@ theorem shortlex_singleton_iff (a b : α) : Shortlex r [a] [b] ↔ r a b := by
 
 namespace Shortlex
 
-instance isTrichotomous [IsTrichotomous α r] : IsTrichotomous (List α) (Shortlex r) :=
-  ⟨(InvImage.isTrichotomous (by simp [Function.Injective])).trichotomous⟩
+instance trichotomous [Std.Trichotomous r] : Std.Trichotomous (Shortlex r) :=
+  ⟨(InvImage.trichotomous (by simp [Function.Injective])).trichotomous⟩
 
-instance isAsymm [IsAsymm α r] : IsAsymm (List α) (Shortlex r) :=
-  inferInstanceAs <| IsAsymm (List α) (InvImage _ _)
+instance asymm [Std.Asymm r] : Std.Asymm (Shortlex r) :=
+  inferInstanceAs <| Std.Asymm (InvImage _ _)
 
 theorem append_right {s₁ s₂ : List α} (t : List α) (h : Shortlex r s₁ s₂) :
     Shortlex r s₁ (s₂ ++ t) := by

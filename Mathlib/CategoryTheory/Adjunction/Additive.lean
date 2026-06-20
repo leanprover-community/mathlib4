@@ -34,14 +34,17 @@ variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
   [Preadditive D] {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
 
 include adj
+
 lemma right_adjoint_additive [F.Additive] : G.Additive where
   map_add {X Y} f g := (adj.homEquiv _ _).symm.injective (by simp [homEquiv_counit])
 
+set_option backward.defeqAttrib.useBackward true in
 lemma left_adjoint_additive [G.Additive] : F.Additive where
   map_add {X Y} f g := (adj.homEquiv _ _).injective (by simp [homEquiv_unit])
 
 variable [F.Additive]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If we have an adjunction `adj : F ⊣ G` of functors between preadditive categories,
 and if `F` is additive, then the hom set equivalence upgrades to an `AddEquiv`.
 Note that `F` is additive if and only if `G` is, by `Adjunction.right_adjoint_additive` and
@@ -76,7 +79,7 @@ lemma homAddEquiv_sub (X : C) (Y : D) (f f' : F.obj X ⟶ Y) :
 
 @[simp]
 lemma homAddEquiv_neg (X : C) (Y : D) (f : F.obj X ⟶ Y) :
-    adj.homEquiv X Y (- f) = - adj.homEquiv X Y f := map_neg (adj.homAddEquiv X Y) _
+    adj.homEquiv X Y (-f) = - adj.homEquiv X Y f := map_neg (adj.homAddEquiv X Y) _
 
 @[simp]
 lemma homAddEquiv_symm_zero (X : C) (Y : D) :
@@ -94,7 +97,7 @@ lemma homAddEquiv_symm_sub (X : C) (Y : D) (f f' : X ⟶ G.obj Y) :
 
 @[simp]
 lemma homAddEquiv_symm_neg (X : C) (Y : D) (f : X ⟶ G.obj Y) :
-    (adj.homEquiv X Y).symm (- f) = - (adj.homEquiv X Y).symm f :=
+    (adj.homEquiv X Y).symm (-f) = - (adj.homEquiv X Y).symm f :=
   map_neg (adj.homAddEquiv X Y).symm _
 
 open Opposite in

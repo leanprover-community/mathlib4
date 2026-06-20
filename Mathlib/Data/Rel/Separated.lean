@@ -13,7 +13,7 @@ public import Mathlib.Data.Rel
 
 This file defines a notion of separation of a set relative to a relation.
 
-For a relation `R`, a `R`-separated set `s` is a set such that every pair of elements of `s` is
+For a relation `R`, an `R`-separated set `s` is a set such that every pair of elements of `s` is
 `R`-unrelated.
 
 The concept of uniformly separated sets is used to define two further notions of separation:
@@ -56,11 +56,17 @@ lemma isSeparated_insert' :
 
 lemma isSeparated_insert [R.IsSymm] :
     IsSeparated R (insert x s) ↔ IsSeparated R s ∧ ∀ y ∈ s, x ~[R] y → x = y := by
-  simpa [not_imp_not, IsSeparated] using pairwise_insert_of_symmetric fun _ _ ↦ mt R.symm
+  have : Std.Symm fun x y ↦ ¬(x, y) ∈ R := { symm _ _ := mt R.symm }
+  simpa [not_imp_not, IsSeparated] using pairwise_insert_of_symm (r := fun x y ↦ ¬(x, y) ∈ R)
 
 lemma isSeparated_insert_of_notMem [R.IsSymm] (hx : x ∉ s) :
     IsSeparated R (insert x s) ↔ IsSeparated R s ∧ ∀ y ∈ s, ¬ x ~[R] y :=
-  pairwise_insert_of_symmetric_of_notMem (fun _ _ ↦ mt R.symm) hx
+  have : Std.Symm fun x y ↦ ¬(x, y) ∈ R := { symm _ _ := mt R.symm }
+  pairwise_insert_of_symm_of_notMem hx
+
+protected lemma IsSeparated.insert' (hs : IsSeparated R s) (h : ∀ y ∈ s, x ~[R] y → x = y)
+    (h' : ∀ y ∈ s, y ~[R] x → x = y) : IsSeparated R (insert x s) :=
+  isSeparated_insert'.2 ⟨hs, h, h'⟩
 
 protected lemma IsSeparated.insert [R.IsSymm] (hs : IsSeparated R s)
     (h : ∀ y ∈ s, x ~[R] y → x = y) : IsSeparated R (insert x s) :=

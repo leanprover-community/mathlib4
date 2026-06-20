@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Opposites
 # Results about `IsRegular` and `MulOpposite`
 -/
 
-@[expose] public section
+public section
 
 variable {R} [Mul R]
 open MulOpposite

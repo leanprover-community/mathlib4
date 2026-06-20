@@ -42,8 +42,8 @@ in a style inspired by the [Flypitch project](https://flypitch.github.io/).
 ## References
 
 For the Flypitch project:
-- [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
-  [flypitch_cpp]
+- [J. Han, F. van Doorn, *A formal proof of the independence of the continuum
+  hypothesis*][flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
   the continuum hypothesis*][flypitch_itp]
 -/
@@ -127,6 +127,14 @@ theorem realize_subst {t : L.Term α} {tf : α → L.Term β} {v : β → M} :
   | var => rfl
   | func _ _ ih => simp [ih]
 
+theorem realize_substFunc [L'.Structure M] {c : {n : ℕ} → L.Functions n → L'.Term (Fin n)}
+    (hc : ∀ {n : ℕ} (g) (y : Fin n → M), g.term.realize y = (c g).realize y)
+    (v : β → M) (x : L.Term β) :
+    (x.substFunc c).realize v = x.realize v := by
+  induction x with
+  | var => simp
+  | func f ts ih => simp [← ih, ← hc]
+
 theorem realize_restrictVar [DecidableEq α] {t : L.Term α} {f : t.varFinset → β}
     {v : β → M} (v' : α → M) (hv' : ∀ a, v (f a) = v' a) :
     (t.restrictVar f).realize v = t.realize v' := by
@@ -160,6 +168,7 @@ theorem realize_restrictVarLeft' [DecidableEq α] {γ : Type*} {t : L.Term (α �
       t.realize (Sum.elim v xs) :=
   realize_restrictVarLeft _ (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem realize_constantsToVars [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
     {t : L[[α]].Term β} {v : β → M} :
@@ -180,6 +189,7 @@ theorem realize_constantsToVars [L[[α]].Structure M] [(lhomWithConstants L α).
         rw [withConstants_funMap_sumInl]
       · exact isEmptyElim f
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem realize_varsToConstants [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
     {t : L.Term (α ⊕ β)} {v : β → M} :
@@ -262,7 +272,7 @@ theorem realize_top : (⊤ : L.BoundedFormula α l).Realize v xs ↔ True := by 
 
 @[simp]
 theorem realize_inf : (φ ⊓ ψ).Realize v xs ↔ φ.Realize v xs ∧ ψ.Realize v xs := by
-  simp [Realize]
+  simp [Realize, Min.min]
 
 @[simp]
 theorem realize_foldr_inf (l : List (L.BoundedFormula α n)) (v : α → M) (xs : Fin n → M) :
@@ -399,7 +409,7 @@ theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M
       split_ifs <;> dsimp; lia
     · simp only [Function.comp_apply, Fin.snoc_castSucc]
       refine (congr rfl (Fin.ext ?_)).trans (snoc_castSucc _ _ _)
-      simp only [coe_castSucc, coe_cast]
+      simp only [val_castSucc, val_cast]
       split_ifs <;> simp
 
 theorem realize_liftAt_one {n m : ℕ} {φ : L.BoundedFormula α n} {v : α → M} {xs : Fin (n + 1) → M}
@@ -434,16 +444,16 @@ theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormul
   induction φ with
   | falsum => rfl
   | equal =>
-    simp only [Realize, restrictFreeVar, freeVarFinset.eq_2]
+    simp only [Realize, restrictFreeVar]
     rw [realize_restrictVarLeft v' (by simp [hv']), realize_restrictVarLeft v' (by simp [hv'])]
     simp
   | rel =>
-    simp only [Realize, freeVarFinset.eq_3, restrictFreeVar]
+    simp only [Realize, restrictFreeVar]
     congr!
     rw [realize_restrictVarLeft v' (by simp [hv'])]
     simp
   | imp _ _ ih1 ih2 =>
-    simp only [Realize, restrictFreeVar, freeVarFinset.eq_4]
+    simp only [Realize, restrictFreeVar]
     rw [ih1, ih2] <;> simp [hv']
   | all _ ih3 =>
     simp only [restrictFreeVar, Realize]
@@ -458,6 +468,8 @@ theorem realize_restrictFreeVar' [DecidableEq α] {n : ℕ} {φ : L.BoundedFormu
     (φ.restrictFreeVar (Set.inclusion h)).Realize (v ∘ (↑)) xs ↔ φ.Realize v xs :=
   realize_restrictFreeVar _ (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 theorem realize_constantsVarsEquiv [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
     {n} {φ : L[[α]].BoundedFormula β n} {v : β → M} {xs : Fin n → M} :
     (constantsVarsEquiv φ).Realize (Sum.elim (fun a => ↑(L.con a)) v) xs ↔ φ.Realize v xs := by
@@ -614,9 +626,39 @@ nonrec def Sentence.Realize (φ : L.Sentence) : Prop :=
 @[inherit_doc Sentence.Realize]
 infixl:51 " ⊨ " => Sentence.Realize
 
+namespace Sentence
+
+variable {φ ψ : L.Sentence}
+
 @[simp]
-theorem Sentence.realize_not {φ : L.Sentence} : M ⊨ φ.not ↔ ¬M ⊨ φ :=
+theorem realize_not : M ⊨ φ.not ↔ ¬M ⊨ φ :=
   Iff.rfl
+
+@[simp]
+theorem not_realize_bot : ¬(M ⊨ (⊥ : L.Sentence)) :=
+  False.elim
+
+@[simp]
+theorem realize_top : M ⊨ (⊤ : L.Sentence) :=
+  False.elim
+
+@[simp]
+theorem realize_inf : M ⊨ φ ⊓ ψ ↔ M ⊨ φ ∧ M ⊨ ψ :=
+  Formula.realize_inf
+
+@[simp]
+theorem realize_sup : M ⊨ φ ⊔ ψ ↔ M ⊨ φ ∨ M ⊨ ψ :=
+  Formula.realize_sup
+
+@[simp]
+theorem realize_imp : M ⊨ φ.imp ψ ↔ M ⊨ φ → M ⊨ ψ :=
+  Formula.realize_imp
+
+@[simp]
+theorem realize_iff : M ⊨ φ.iff ψ ↔ (M ⊨ φ ↔ M ⊨ ψ) :=
+  Formula.realize_iff
+
+end Sentence
 
 namespace Formula
 
@@ -740,7 +782,7 @@ variable (M N)
 theorem realize_iff_of_model_completeTheory [N ⊨ L.completeTheory M] (φ : L.Sentence) :
     N ⊨ φ ↔ M ⊨ φ := by
   refine ⟨fun h => ?_, (L.completeTheory M).realize_sentence_of_mem⟩
-  contrapose! h
+  contrapose h
   rw [← Sentence.realize_not] at *
   exact (L.completeTheory M).realize_sentence_of_mem (mem_completeTheory.2 h)
 
@@ -891,6 +933,45 @@ theorem realize_iExsUnique [Finite γ] {φ : L.Formula (α ⊕ γ)} {v : α → 
 
 end BoundedFormula
 
+namespace Formula
+
+@[simp]
+theorem realize_exClosure [DecidableEq α] (φ : L.Formula α) :
+    φ.exClosure.Realize M ↔
+      ∃ v : φ.freeVarFinset → M, Formula.Realize (φ.restrictFreeVar id) v := by
+  simp [Sentence.Realize, Formula.exClosure, Formula.realize_iExs]
+
+theorem realize_exClosure_of_realize_equivSentence [DecidableEq α] [L[[α]].Structure M]
+    [(L.lhomWithConstants α).IsExpansionOn M] {φ : L.Formula α}
+    (h : (Formula.equivSentence φ).Realize M) : φ.exClosure.Realize M := by
+  rw [Formula.realize_exClosure]
+  exists fun a => (L.con (a : α) : M)
+  simpa [Formula.Realize, BoundedFormula.realize_restrictFreeVar] using h
+
+theorem exists_realize_equivSentence_iff_realize_exClosure
+    [DecidableEq α] [Nonempty M] {φ : L.Formula α} :
+    (∃ v : α → M,
+      letI := (constantsOn.structure v);
+      (Formula.equivSentence φ).Realize M) ↔ (φ.exClosure.Realize M) := by
+  constructor
+  · rintro ⟨v, hv⟩
+    exact (Formula.realize_exClosure φ).mpr ⟨fun a => v a,
+      (BoundedFormula.realize_restrictFreeVar (φ := φ) (f := id) (v := fun a => v a) (v' := v)
+        (fun _ => rfl)).2
+        (by simpa [Formula.Realize]
+          using (realize_equivSentence_symm M (Formula.equivSentence φ) v).2 hv)⟩
+  · intro h
+    classical
+    obtain ⟨v, hv⟩ := (Formula.realize_exClosure φ).1 h
+    let v' := fun a => if hmem : a ∈ φ.freeVarFinset
+      then v ⟨a, hmem⟩ else Classical.choice inferInstance
+    exists v'
+    refine (Formula.realize_equivSentence_symm M (Formula.equivSentence φ) v').mp ?_
+    simpa [Equiv.symm_apply_apply, Formula.Realize] using
+      (BoundedFormula.realize_restrictFreeVar v' (by grind)).1 hv
+
+end Formula
+
 namespace StrongHomClass
 
 variable {F : Type*} [EquivLike F M N] [StrongHomClass L F M N] (g : F)
@@ -946,33 +1027,35 @@ open BoundedFormula
 variable {r : L.Relations 2}
 
 @[simp]
-theorem realize_reflexive : M ⊨ r.reflexive ↔ Reflexive fun x y : M => RelMap r ![x, y] :=
-  forall_congr' fun _ => realize_rel₂
+theorem realize_reflexive : M ⊨ r.reflexive ↔ Std.Refl fun x y : M => RelMap r ![x, y] := by
+  rw [refl_def]
+  exact forall_congr' fun _ ↦ realize_rel₂
 
 @[simp]
-theorem realize_irreflexive : M ⊨ r.irreflexive ↔ Irreflexive fun x y : M => RelMap r ![x, y] :=
-  forall_congr' fun _ => not_congr realize_rel₂
+theorem realize_irreflexive : M ⊨ r.irreflexive ↔ Std.Irrefl fun x y : M => RelMap r ![x, y] := by
+  rw [irrefl_def]
+  exact forall_congr' fun _ ↦ not_congr realize_rel₂
 
 @[simp]
-theorem realize_symmetric : M ⊨ r.symmetric ↔ Symmetric fun x y : M => RelMap r ![x, y] :=
-  forall_congr' fun _ => forall_congr' fun _ => imp_congr realize_rel₂ realize_rel₂
+theorem realize_symmetric : M ⊨ r.symmetric ↔ Std.Symm fun x y : M => RelMap r ![x, y] := by
+  rw [symm_def]
+  exact forall₂_congr fun _ _ ↦ imp_congr realize_rel₂ realize_rel₂
 
 @[simp]
 theorem realize_antisymmetric :
-    M ⊨ r.antisymmetric ↔ AntiSymmetric fun x y : M => RelMap r ![x, y] :=
-  forall_congr' fun _ =>
-    forall_congr' fun _ => imp_congr realize_rel₂ (imp_congr realize_rel₂ Iff.rfl)
+    M ⊨ r.antisymmetric ↔ Std.Antisymm fun x y : M => RelMap r ![x, y] := by
+  rw [antisymm_def]
+  exact forall₂_congr fun _ _ ↦ imp_congr realize_rel₂ <| imp_congr realize_rel₂ .rfl
 
 @[simp]
-theorem realize_transitive : M ⊨ r.transitive ↔ Transitive fun x y : M => RelMap r ![x, y] :=
-  forall_congr' fun _ =>
-    forall_congr' fun _ =>
-      forall_congr' fun _ => imp_congr realize_rel₂ (imp_congr realize_rel₂ realize_rel₂)
+theorem realize_transitive : M ⊨ r.transitive ↔ IsTrans M fun x y ↦ RelMap r ![x, y] := by
+  rw [isTrans_def]
+  exact forall₃_congr fun _ _ _ ↦ imp_congr realize_rel₂ <| imp_congr realize_rel₂ realize_rel₂
 
 @[simp]
-theorem realize_total : M ⊨ r.total ↔ Total fun x y : M => RelMap r ![x, y] :=
-  forall_congr' fun _ =>
-    forall_congr' fun _ => realize_sup.trans (or_congr realize_rel₂ realize_rel₂)
+theorem realize_total : M ⊨ r.total ↔ Std.Total fun x y : M ↦ RelMap r ![x, y] := by
+  rw [total_def]
+  exact forall₂_congr fun _ _ ↦ realize_sup.trans <| or_congr realize_rel₂ realize_rel₂
 
 end Relations
 
@@ -990,10 +1073,7 @@ theorem Sentence.realize_cardGe (n) : M ⊨ Sentence.cardGe L n ↔ ↑n ≤ #M 
   · rintro ⟨xs, h⟩
     refine ⟨⟨xs, fun i j ij => ?_⟩⟩
     contrapose! ij
-    have hij := h _ i j (by simpa using ij) rfl
-    simp only [BoundedFormula.realize_not, Term.realize, BoundedFormula.realize_bdEqual,
-      Sum.elim_inr] at hij
-    exact hij
+    exact h _ i j (by simpa using ij) rfl
   · rintro _ i j ij rfl
     simpa using ij
 
@@ -1007,7 +1087,7 @@ instance model_infiniteTheory [h : Infinite M] : M ⊨ L.infiniteTheory :=
 @[simp]
 theorem model_nonemptyTheory_iff : M ⊨ L.nonemptyTheory ↔ Nonempty M := by
   simp only [nonemptyTheory, Theory.model_iff, Set.mem_singleton_iff, forall_eq,
-    Sentence.realize_cardGe, Nat.cast_one, one_le_iff_ne_zero, mk_ne_zero_iff]
+    Sentence.realize_cardGe, Nat.cast_one, Cardinal.one_le_iff_ne_zero, mk_ne_zero_iff]
 
 instance model_nonempty [h : Nonempty M] : M ⊨ L.nonemptyTheory :=
   L.model_nonemptyTheory_iff.2 h

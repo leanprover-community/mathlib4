@@ -162,14 +162,16 @@ theorem range_polarization_domRestrict_le_span_coroot :
   simp
 
 theorem corootSpan_dualAnnihilator_le_ker_rootForm :
-    (P.corootSpan R).dualAnnihilator.map P.toPerfPair.symm ≤ LinearMap.ker P.RootForm := by
+    (P.corootSpan R).dualAnnihilator.map (P.toPerfPair.symm : Dual R N →ₗ[R] M) ≤
+      P.RootForm.ker := by
   rw [P.corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot']
   intro x hx
   ext y
   simp_all [coroot', rootForm_apply_apply]
 
 theorem rootSpan_dualAnnihilator_le_ker_rootForm :
-    (P.rootSpan R).dualAnnihilator.map P.flip.toPerfPair.symm ≤ LinearMap.ker P.CorootForm :=
+    (P.rootSpan R).dualAnnihilator.map (P.flip.toPerfPair.symm : Dual R M →ₗ[R] N) ≤
+      P.CorootForm.ker :=
   P.flip.corootSpan_dualAnnihilator_le_ker_rootForm
 
 end Fintype
@@ -217,6 +219,11 @@ lemma CoPolarizationIn_eq (x : P.corootSpan S) :
 commutative ring, where the root-coroot pairing takes values in that ring. -/
 def RootFormIn : LinearMap.BilinForm S (P.rootSpan S) :=
   ∑ i, (P.coroot'In S i).smulRight (P.coroot'In S i)
+
+omit [Module S N] [IsScalarTower S R N] in
+lemma rootFormIn_isSymm :
+    (P.RootFormIn S).IsSymm := by
+  simp [LinearMap.isSymm_def, mul_comm, RootFormIn]
 
 omit [Module S N] [IsScalarTower S R N] in
 @[simp]
@@ -389,7 +396,7 @@ lemma pairingIn_lt_zero_iff :
     P.pairingIn S i j < 0 ↔ P.pairingIn S j i < 0 := by
   simpa using P.zero_lt_pairingIn_iff' S (i := i) (j := P.reflectionPerm j j)
 
-lemma pairingIn_le_zero_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M] :
+lemma pairingIn_le_zero_iff [NeZero (2 : R)] [IsDomain R] [Module.IsTorsionFree R M] :
     P.pairingIn S i j ≤ 0 ↔ P.pairingIn S j i ≤ 0 := by
   rcases eq_or_ne (P.pairingIn S i j) 0 with hij | hij <;>
   rcases eq_or_ne (P.pairingIn S j i) 0 with hji | hji

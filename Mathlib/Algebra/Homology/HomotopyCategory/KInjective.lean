@@ -18,7 +18,6 @@ and show that bounded below complexes of injective objects are K-injective.
 
 ## TODO (@joelriou)
 * Provide an API for computing `Ext`-groups using an injective resolution
-* Dualize everything
 
 ## References
 * [N. Spaltenstein, *Resolutions of unbounded complexes*][spaltenstein1998]
@@ -31,7 +30,7 @@ namespace CochainComplex
 
 open CategoryTheory Limits HomComplex Preadditive
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 -- TODO (@joelriou): show that this definition is equivalent to the
 -- original definition by Spaltenstein saying that whenever `K`
@@ -107,7 +106,7 @@ lemma isKInjective_of_injective_aux {K L : CochainComplex C ℤ}
   subst hnm
   let u := f.f (n + 1) - α.v (n + 1) n (by lia) ≫ L.d n (n + 1) -
     K.d (n + 1) (n + 2) ≫ α.v (n + 2) (n + 1) (by lia)
-  have hu : K.d n (n+1) ≫ u = 0 := by
+  have hu : K.d n (n + 1) ≫ u = 0 := by
     have eq := hα n n (add_zero n) (by rfl)
     simp only [δ_v (-1) 0 (neg_add_cancel 1) α n n (add_zero _) (n - 1) (n + 1)
       (by lia) (by lia), Int.negOnePow_zero, one_smul, Cochain.ofHom_v] at eq
@@ -162,5 +161,34 @@ lemma isKInjective_of_injective (L : CochainComplex C ℤ) (d : ℤ)
       δ_v (-1) 0 (neg_add_cancel 1) _ n n (by lia) (n - 1) (n + 1) rfl (by lia),
       limitSequence_eqUpTo φ hφ x₀ k₀ n (n - 1) (by lia) (by lia),
       limitSequence_eqUpTo φ hφ x₀ k₀ (n + 1) n (by lia) (by lia)]
+
+instance (K : CochainComplex C ℕ) [∀ n, Injective (K.X n)] :
+    IsKInjective (K.extend ComplexShape.embeddingUpNat) :=
+  isKInjective_of_injective _ 0
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+lemma IsKInjective.eq_δ_of_cocycle {K L : CochainComplex C ℤ} {n : ℤ}
+    (z : Cocycle K L n) [L.IsKInjective] (hK : K.Acyclic) (m : ℤ) (hm : m + 1 = n) :
+    ∃ (α : Cochain K L m), δ m n α = z.1 := by
+  obtain ⟨φ, hφ⟩ := (Cocycle.equivHom ..).surjective (z.rightShift n 0 (zero_add n))
+  rw [Cocycle.ext_iff] at hφ
+  dsimp at hφ
+  obtain ⟨h⟩ := IsKInjective.nonempty_homotopy_zero φ hK
+  obtain ⟨f, hf⟩ := Cochain.equivHomotopy _ _ h
+  simp only [Int.reduceNeg, Cochain.ofHom_zero, add_zero] at hf
+  refine ⟨n.negOnePow • Cochain.rightUnshift f m (by lia), ?_⟩
+  apply (Cochain.rightShiftAddEquiv _ _ _ n 0 (by simp)).injective
+  dsimp
+  rw [← hφ, hf, δ_units_smul, Cochain.rightShift_units_smul,
+    Cochain.δ_rightUnshift _ _ _ _ 0 (by simp)]
+  simp [smul_smul]
+
+lemma IsKInjective.eq_δ_of_cocycle' {K L : CochainComplex C ℤ} {n : ℤ}
+    (z : Cocycle K L n) [L.IsKInjective] (hL : L.Acyclic) (m : ℤ) (hm : m + 1 = n) :
+    ∃ (α : Cochain K L m), δ m n α = z.1 := by
+  obtain ⟨β, hβ⟩ :=
+    IsKInjective.eq_δ_of_cocycle (Cocycle.ofHom (𝟙 L)) hL (-1) (by simp)
+  exact ⟨z.1.comp β (by lia), by simp [δ_comp z.1 β _ _ 0 _ hm rfl (by simp), hβ]⟩
 
 end CochainComplex

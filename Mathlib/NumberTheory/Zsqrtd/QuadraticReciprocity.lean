@@ -18,7 +18,7 @@ A prime natural number is prime in `ℤ[i]` if and only if it is `3` mod `4`
 
 -/
 
-@[expose] public section
+public section
 
 
 open Zsqrtd Complex
@@ -54,18 +54,18 @@ theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
         lt_irrefl (p * x : ℤ[i]).norm.natAbs <|
           calc
             (norm (p * x : ℤ[i])).natAbs = (Zsqrtd.norm ⟨k, -1⟩).natAbs := by rw [hx]
-            _ < (norm (p : ℤ[i])).natAbs := by simpa [add_comm, Zsqrtd.norm] using hkltp
+            _ < (norm (p : ℤ[i])).natAbs := by simpa [add_comm, Zsqrtd.norm] using! hkltp
             _ ≤ (norm (p * x : ℤ[i])).natAbs :=
               norm_le_norm_mul_left _ fun hx0 =>
-                show (-1 : ℤ) ≠ 0 by decide <| by simpa [hx0] using congr_arg Zsqrtd.im hx
+                show (-1 : ℤ) ≠ 0 by decide <| by simpa [hx0] using! congr_arg Zsqrtd.im hx
       have hpk₂ : ¬(p : ℤ[i]) ∣ ⟨k, 1⟩ := fun ⟨x, hx⟩ =>
         lt_irrefl (p * x : ℤ[i]).norm.natAbs <|
           calc
             (norm (p * x : ℤ[i])).natAbs = (Zsqrtd.norm ⟨k, 1⟩).natAbs := by rw [hx]
-            _ < (norm (p : ℤ[i])).natAbs := by simpa [add_comm, Zsqrtd.norm] using hkltp
+            _ < (norm (p : ℤ[i])).natAbs := by simpa [add_comm, Zsqrtd.norm] using! hkltp
             _ ≤ (norm (p * x : ℤ[i])).natAbs :=
               norm_le_norm_mul_left _ fun hx0 =>
-                show (1 : ℤ) ≠ 0 by decide <| by simpa [hx0] using congr_arg Zsqrtd.im hx
+                show (1 : ℤ) ≠ 0 by decide <| by simpa [hx0] using! congr_arg Zsqrtd.im hx
       obtain ⟨y, hy⟩ := hpk
       have := hpi.2.2 ⟨k, 1⟩ ⟨k, -1⟩ ⟨y, by rw [← hkmul, ← Nat.cast_mul p, ← hy]; simp⟩
       tauto

@@ -57,9 +57,6 @@ theorem pair_unpair (n : ℕ) : pair (unpair n).1 (unpair n).2 = n := by
 theorem pair_eq_of_unpair_eq {n a b} (H : unpair n = (a, b)) : pair a b = n := by
   simpa [H] using pair_unpair n
 
-@[deprecated (since := "2025-05-24")]
-alias pair_unpair' := pair_eq_of_unpair_eq
-
 @[simp]
 theorem unpair_pair (a b : ℕ) : unpair (pair a b) = (a, b) := by
   dsimp only [pair]; split_ifs with h
@@ -164,13 +161,10 @@ open Nat
 
 section CompleteLattice
 
+@[to_dual]
 theorem iSup_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
     ⨆ n : ℕ, f n.unpair.1 n.unpair.2 = ⨆ (i : ℕ) (j : ℕ), f i j := by
   rw [← (iSup_prod : ⨆ i : ℕ × ℕ, f i.1 i.2 = _), ← Nat.surjective_unpair.iSup_comp]
-
-theorem iInf_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
-    ⨅ n : ℕ, f n.unpair.1 n.unpair.2 = ⨅ (i : ℕ) (j : ℕ), f i j :=
-  iSup_unpair (show ℕ → ℕ → αᵒᵈ from f)
 
 end CompleteLattice
 

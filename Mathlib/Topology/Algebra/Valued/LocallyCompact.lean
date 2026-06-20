@@ -25,7 +25,7 @@ public import Mathlib.Topology.Algebra.Valued.ValuedField
 norm, nonarchimedean, rank one, compact, locally compact
 -/
 
-@[expose] public section
+public section
 
 open NNReal
 
@@ -51,14 +51,14 @@ lemma norm_le_one (x : 𝒪[K]) : ‖x‖ ≤ 1 := mem_iff.mp x.prop
 
 @[simp]
 lemma norm_coe_unit (u : 𝒪[K]ˣ) : ‖((u : 𝒪[K]) : K)‖ = 1 := by
-  simpa [← NNReal.coe_inj] using
+  simpa [← NNReal.coe_inj] using!
     (Valuation.integer.integers (NormedField.valuation (K := K))).valuation_unit u
 
 lemma norm_unit (u : 𝒪[K]ˣ) : ‖(u : 𝒪[K])‖ = 1 := by
   simp
 
 lemma isUnit_iff_norm_eq_one {u : 𝒪[K]} : IsUnit u ↔ ‖u‖ = 1 := by
-  simpa [← NNReal.coe_inj] using
+  simpa [← NNReal.coe_inj] using!
     (Valuation.integer.integers (NormedField.valuation (K := K))).isUnit_iff_valuation_eq_one
 
 lemma norm_irreducible_lt_one {ϖ : 𝒪[K]} (h : Irreducible ϖ) : ‖ϖ‖ < 1 :=
@@ -125,6 +125,7 @@ lemma finite_quotient_maximalIdeal_pow_of_finite_residueField [IsDiscreteValuati
         (Ideal.powQuotPowSuccEquivMapMkPowSuccPow _ n))
 
 open scoped Valued
+
 lemma totallyBounded_iff_finite_residueField [(Valued.v : Valuation K Γ₀).RankOne]
     [IsDiscreteValuationRing 𝒪[K]] :
     TotallyBounded (Set.univ (α := 𝒪[K])) ↔ Finite 𝓀[K] := by
@@ -143,12 +144,16 @@ lemma totallyBounded_iff_finite_residueField [(Valued.v : Valuation K Γ₀).Ran
     simp only [Submodule.Quotient.quot_mk_eq_mk, Ideal.Quotient.mk_eq_mk, Set.mem_univ,
       IsLocalRing.residue, Set.mem_image, true_implies]
     refine ⟨y, hy, ?_⟩
-    convert (Ideal.Quotient.mk_eq_mk_iff_sub_mem (I := 𝓂[K]) y x).mpr _
+    convert!
+      (Ideal.Quotient.mk_eq_mk_iff_sub_mem (I := 𝓂[K]) y x).mpr
+        _
+          -- TODO: make Valued.maximalIdeal abbreviations instead of def
+
     -- TODO: make Valued.maximalIdeal abbreviations instead of def
     rw [Valued.maximalIdeal, hp.maximalIdeal_eq, ← SetLike.mem_coe,
       (Valuation.integer.integers _).coe_span_singleton_eq_setOf_le_v_algebraMap]
     rw [dist_comm] at hy'
-    simpa [dist_eq_norm] using hy'.le
+    simpa [dist_eq_norm] using! hy'.le
   · intro H
     rw [Metric.totallyBounded_iff]
     intro ε εpos
@@ -158,7 +163,7 @@ lemma totallyBounded_iff_finite_residueField [(Valued.v : Valuation K Γ₀).Ran
       (toNormedField.norm_lt_one_iff.mpr hp')
     have hF := finite_quotient_maximalIdeal_pow_of_finite_residueField H n
     refine ⟨Quotient.out '' (Set.univ (α := 𝒪[K] ⧸ (𝓂[K] ^ n))), Set.toFinite _, ?_⟩
-    have : {y : 𝒪[K] | v (y : K) ≤ v (p : K) ^ n} = Metric.closedBall 0 (‖p‖ ^ n)  := by
+    have : {y : 𝒪[K] | v (y : K) ≤ v (p : K) ^ n} = Metric.closedBall 0 (‖p‖ ^ n) := by
       ext
       simp [← norm_pow]
     simp only [Ideal.univ_eq_iUnion_image_add (𝓂[K] ^ n), hp.maximalIdeal_pow_eq_setOf_le_v_coe_pow,
@@ -174,14 +179,19 @@ section CompactDVR
 open Valued
 
 lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K]) :
-    Nonempty (LocallyFiniteOrder (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ):= by
+    Nonempty (LocallyFiniteOrder (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ) := by
+  -- This `change` line will become unnecessary once `MonoidHom.mrange` accepts `MonoidHom`
+  -- directly instead of a `MonoidHomClass` instance.
+  change Nonempty (LocallyFiniteOrder (MonoidHom.mrange
+      (MonoidWithZeroHom.ofClass (Valued.v (R := K))))ˣ)
   -- TODO: generalize to `Valuation.Integer`, which will require showing that `IsCompact`
   -- pulls back across `TopologicalSpace.induced` from a `LocallyCompactSpace`.
   constructor
   refine LocallyFiniteOrder.ofFiniteIcc ?_
   -- We only need to show that we can construct a finite set for some set between
   -- a non-zero `z : Γ₀` and 1, because we can scale/invert this set to cover the whole group.
-  suffices ∀ z : (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ, (Set.Icc z 1).Finite by
+  suffices ∀ z : (MonoidHom.mrange (MonoidWithZeroHom.ofClass (Valued.v (R := K))))ˣ,
+      (Set.Icc z 1).Finite by
     rintro x y
     rcases lt_trichotomy y x with hxy | rfl | hxy
     · rw [Set.Icc_eq_empty_of_lt]
@@ -212,10 +222,10 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
   · rw [Set.Icc_eq_empty_of_lt]
     · exact Set.finite_empty
     · simp [hz1]
-  have z0' : 0 < (z : MonoidHom.mrange (Valued.v : Valuation K Γ₀)) := by simp
-  have z0 : 0 < ((z : MonoidHom.mrange (Valued.v : Valuation K Γ₀)) : Γ₀) :=
+  have z0' : 0 < (z : MonoidHom.mrange (MonoidWithZeroHom.ofClass (Valued.v (R := K)))) := by simp
+  have z0 : 0 < ((z : MonoidHom.mrange (MonoidWithZeroHom.ofClass (Valued.v (R := K)))) : Γ₀) :=
     Subtype.coe_lt_coe.mpr z0'
-  have a0 : 0 < v a := by simp [ha, z0]
+  have a0 : 0 < v a := by simpa [← ha] using z0
   -- Construct our cover, which has an inner closed ball, and spheres for each element
   -- outside of the closed ball. These are all open sets by the nonarchimedean property.
   let U : K → Set K := fun y ↦ if v (y : K) ≤ z
@@ -226,9 +236,16 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
   · intro w
     simp only [U]
     split_ifs with hw
-    · exact Valued.isOpen_closedBall _ z0.ne'
-    · refine Valued.isOpen_sphere _ ?_
-      push_neg at hw
+    · obtain ⟨b, hb⟩ := MonoidHom.mem_mrange.mp z.1.2
+      rw [← hb] at z0 ⊢
+      simp only [MonoidWithZeroHom.coe_ofClass, ← v.restrict_le_iff]
+      refine Valued.isOpen_closedBall _ ?_
+      rw [ne_eq, ← map_zero v.restrict, v.restrict_inj, map_zero]
+      exact z0.ne'
+    · simp_rw [← v.restrict_inj]
+      refine Valued.isOpen_sphere _ ?_
+      push Not at hw
+      rw [← map_zero v.restrict, ne_eq, v.restrict_inj]
       refine (hw.trans' ?_).ne'
       simp [z0]
   · intro w
@@ -244,7 +261,7 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
   classical
   refine (t.finite_toSet.dependent_image ?_).subset ?_
   · refine fun i hi ↦ if hi' : v i ≤ z then z else Units.mk0 ⟨(v i), by simp⟩ ?_
-    push_neg at hi'
+    push Not at hi'
     exact Subtype.coe_injective.ne_iff.mp (hi'.trans' z0).ne'
   · intro i
     simp only [Set.mem_Icc, Finset.mem_coe, exists_prop, Set.mem_setOf_eq, and_imp]
@@ -256,6 +273,7 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
     obtain ⟨j, hj, hj'⟩ := hj
     use j, hj
     -- and this `c` is either less than or greater than (or equal to) the threshold element
+    simp only [MonoidWithZeroHom.coe_ofClass] at hc
     split_ifs at hj' with hcj
     · simp only [Set.mem_setOf_eq, hc, Subtype.coe_le_coe, Units.val_le_val] at hj'
       simp [hcj, le_antisymm hj' hzi]

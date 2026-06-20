@@ -24,7 +24,7 @@ functions, started in `Mathlib/MeasureTheory/Function/StronglyMeasurable/Basic.l
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Filter Set ENNReal NNReal
 

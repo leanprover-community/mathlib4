@@ -85,6 +85,7 @@ def lieModuleOf [DecidableEq ι] (j : ι) : M j →ₗ⁅R,L⁆ ⨁ i, M i :=
         erw [AddHom.coe_mk]
         simp [h] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The projection map onto one component, as a morphism of Lie modules. -/
 def lieModuleComponent (j : ι) : (⨁ i, M i) →ₗ⁅R,L⁆ M j :=
   { component R ι M j with
@@ -155,6 +156,7 @@ def lieAlgebraOf [DecidableEq ι] (j : ι) : L j →ₗ⁅R⁆ ⨁ i, L i :=
     toFun := of L j
     map_lie' := fun {x y} => (lie_of_same L x y).symm }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The projection map onto one component, as a morphism of Lie algebras. -/
 @[simps]
 def lieAlgebraComponent (j : ι) : (⨁ i, L i) →ₗ⁅R⁆ L j :=
@@ -215,8 +217,7 @@ section Ideals
 variable {L : Type w} [LieRing L] [LieAlgebra R L] (I : ι → LieIdeal R L)
 
 /-- The fact that this instance is necessary seems to be a bug in typeclass inference. See
-[this Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/
-Typeclass.20resolution.20under.20binders/near/245151099). -/
+[this Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Typeclass.20resolution.20under.20binders/near/245151099). -/
 instance lieRingOfIdeals : LieRing (⨁ i, I i) :=
   DirectSum.lieRing fun i => ↥(I i)
 

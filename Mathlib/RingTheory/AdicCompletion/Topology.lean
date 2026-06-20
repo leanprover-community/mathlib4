@@ -20,7 +20,7 @@ public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
 
 -/
 
-@[expose] public section
+public section
 
 section TopologicalSpace
 
@@ -30,7 +30,7 @@ include hI in
 /-- `IsHausdorff I R` is equivalent to being Hausdorff in the adic topology. -/
 protected lemma IsAdic.isHausdorff_iff : IsHausdorff I R ↔ T2Space R := by
   rw [I.ringFilterBasis.t2Space_iff_sInter_subset hI.symm, isHausdorff_iff]
-  simp [SModEq.zero, Ideal.ringFilterBasis, RingSubgroupsBasis.toRingFilterBasis]
+  simp +instances [SModEq.zero, Ideal.ringFilterBasis, RingSubgroupsBasis.toRingFilterBasis]
 
 end TopologicalSpace
 
@@ -77,3 +77,26 @@ protected lemma IsAdic.isAdicComplete_iff : IsAdicComplete I R ↔ CompleteSpace
   rw [isAdicComplete_iff, hI.isHausdorff_iff, hI.isPrecomplete_iff, and_comm]
 
 end UniformSpace
+
+section congrRingEquiv
+
+variable {R S : Type*} [CommRing R] [CommRing S] (I : Ideal R) (e : R ≃+* S)
+
+theorem IsPrecomplete.congr_ringEquiv : IsPrecomplete (I.map e) S ↔ IsPrecomplete I R := by
+  let : WithIdeal R := ⟨I⟩
+  let : WithIdeal S := ⟨I.map e⟩
+  rw [iff_comm, IsAdic.isPrecomplete_iff (by rfl), IsAdic.isPrecomplete_iff (by rfl)]
+  exact completeSpace_congr (e := WithIdeal.uniformEquiv e rfl) (by
+    simpa using UniformEquiv.isUniformEmbedding ..)
+
+theorem IsHausdorff.congr_ringEquiv : IsHausdorff (I.map e) S ↔ IsHausdorff I R := by
+  let : WithIdeal R := ⟨I⟩
+  let : WithIdeal S := ⟨I.map e⟩
+  rw [iff_comm, IsAdic.isHausdorff_iff rfl, IsAdic.isHausdorff_iff rfl]
+  exact ⟨fun _ ↦ (WithIdeal.uniformEquiv e rfl).toHomeomorph.t2Space, fun _ ↦
+    (WithIdeal.uniformEquiv e rfl).toHomeomorph.symm.t2Space⟩
+
+theorem IsAdicComplete.congr_ringEquiv : IsAdicComplete (I.map e) S ↔ IsAdicComplete I R := by
+  simp [isAdicComplete_iff, IsHausdorff.congr_ringEquiv, IsPrecomplete.congr_ringEquiv]
+
+end congrRingEquiv

@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Trace.Defs
 # Relation between norms and traces
 -/
 
-@[expose] public section
+public section
 
 open Module
 

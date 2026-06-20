@@ -63,14 +63,17 @@ abbrev Module.compHom [Semiring S] (f : S →+* R) : Module S M :=
     -- TODO(jmc): there should be a rw-lemma `smul_comp` close to `SMulZeroClass.compFun`
     add_smul := fun r s x => show f (r + s) • x = f r • x + f s • x by simp [add_smul] }
 
-variable {M}
-
 end AddCommMonoid
 
 /-- A ring homomorphism `f : R →+* M` defines a module structure by `r • x = f r * x`.
 See note [reducible non-instances]. -/
 abbrev RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
   Module.compHom S f
+
+lemma RingHom.toModule_smul [Semiring R] [Semiring S] (f : R →+* S) (x : R) (y : S) :
+    letI := f.toModule
+    x • y = f x * y :=
+  rfl
 
 /-- If the module action of `R` on `S` is compatible with multiplication on `S`, then
 `fun x ↦ x • 1` is a ring homomorphism from `R` to `S`.

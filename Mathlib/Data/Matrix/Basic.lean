@@ -11,6 +11,7 @@ public import Mathlib.Algebra.BigOperators.RingEquiv
 public import Mathlib.Data.Finite.Prod
 public import Mathlib.Data.Matrix.Mul
 public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.GroupTheory.DedekindFinite
 
 /-!
 # Matrices
@@ -49,6 +50,8 @@ instance {n m} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] (α) [Fin
 
 instance {n m} [Finite m] [Finite n] (α) [Finite α] :
     Finite (Matrix m n α) := inferInstanceAs (Finite (m → n → α))
+
+instance (priority := low) [Semiring α] [Finite α] : IsStablyFiniteRing α := ⟨inferInstance⟩
 
 section
 variable (R)
@@ -153,12 +156,6 @@ theorem diag_sum {ι} [AddCommMonoid α] (s : Finset ι) (f : ι → Matrix n n 
 end Diag
 
 open Matrix
-
-section AddCommMonoid
-
-variable [AddCommMonoid α] [Mul α]
-
-end AddCommMonoid
 
 section NonAssocSemiring
 
@@ -646,7 +643,7 @@ open MulOpposite in
 For any ring `R`, we have ring isomorphism `Matₙₓₙ(Rᵒᵖ) ≅ (Matₙₓₙ(R))ᵒᵖ` given by transpose.
 -/
 @[simps apply symm_apply]
-def mopMatrix : Matrix m m αᵐᵒᵖ ≃+* (Matrix m m α)ᵐᵒᵖ where
+def mopMatrix {α} [Mul α] [AddCommMonoid α] : Matrix m m αᵐᵒᵖ ≃+* (Matrix m m α)ᵐᵒᵖ where
   toFun M := op (M.transpose.map unop)
   invFun M := M.unop.transpose.map op
   left_inv _ := by aesop
@@ -655,6 +652,19 @@ def mopMatrix : Matrix m m αᵐᵒᵖ ≃+* (Matrix m m α)ᵐᵒᵖ where
   map_add' _ _ := by aesop
 
 end RingEquiv
+
+instance (α) [MulOne α] [AddCommMonoid α] [IsStablyFiniteRing α] : IsStablyFiniteRing αᵐᵒᵖ where
+  isDedekindFiniteMonoid n := .of_injective (MonoidHom.mk
+    ⟨RingEquiv.mopMatrix, by simp⟩ RingEquiv.mopMatrix.map_mul) (RingEquiv.injective _)
+
+open MulOpposite in
+theorem MulOpposite.isStablyFiniteRing_iff (α) [MulOne α] [AddCommMonoid α] :
+    IsStablyFiniteRing αᵐᵒᵖ ↔ IsStablyFiniteRing α where
+  mp _ :=
+  ⟨fun n ↦ let f := MonoidHom.mk ⟨fun M : Matrix (Fin n) (Fin n) α ↦ M.map (op ∘ op), by aesop⟩
+               fun _ _ ↦ by ext; simp [mul_apply]
+  .of_injective f (map_injective (op_injective.comp op_injective))⟩
+  mpr _ := inferInstance
 
 namespace AlgHom
 
@@ -767,7 +777,7 @@ end Subsemiring
 
 namespace Subring
 
-variable {R : Type*} [Ring R]
+variable {R : Type*} [NonAssocRing R]
 variable [Fintype n] [DecidableEq n]
 
 /-- A version of `Set.matrix` for `Subring`s.
@@ -872,8 +882,9 @@ variable (m n R α)
 /-- `Matrix.transpose` as a `LinearMap` -/
 @[simps apply]
 def transposeLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
-    Matrix m n α ≃ₗ[R] Matrix n m α :=
-  { transposeAddEquiv m n α with map_smul' := transpose_smul }
+    Matrix m n α ≃ₗ[R] Matrix n m α where
+  __ := transposeAddEquiv m n α
+  map_smul' := transpose_smul
 
 @[simp]
 theorem transposeLinearEquiv_symm [Semiring R] [AddCommMonoid α] [Module R α] :
@@ -884,16 +895,11 @@ variable {m n R α}
 variable (m α)
 
 /-- `Matrix.transpose` as a `RingEquiv` to the opposite ring -/
-@[simps]
-def transposeRingEquiv [AddCommMonoid α] [CommSemigroup α] [Fintype m] :
-    Matrix m m α ≃+* (Matrix m m α)ᵐᵒᵖ :=
-  { (transposeAddEquiv m m α).trans MulOpposite.opAddEquiv with
-    toFun := fun M => MulOpposite.op Mᵀ
-    invFun := fun M => M.unopᵀ
-    map_mul' := fun M N =>
-      (congr_arg MulOpposite.op (transpose_mul M N)).trans (MulOpposite.op_mul _ _)
-    left_inv := fun M => transpose_transpose M
-    right_inv := fun M => MulOpposite.unop_injective <| transpose_transpose M.unop }
+@[simps!]
+def transposeRingEquiv [AddCommMonoid α] [CommMagma α] [Fintype m] :
+    Matrix m m α ≃+* (Matrix m m α)ᵐᵒᵖ where
+  __ := transposeAddEquiv m m α |>.trans MulOpposite.opAddEquiv
+  map_mul' M N := (congrArg MulOpposite.op <| transpose_mul M N).trans <| MulOpposite.op_mul ..
 
 variable {m α}
 
@@ -909,16 +915,11 @@ theorem transpose_list_prod [CommSemiring α] [Fintype m] [DecidableEq m] (l : L
 variable (R m α)
 
 /-- `Matrix.transpose` as an `AlgEquiv` to the opposite ring -/
-@[simps]
+@[simps!]
 def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableEq m] [Algebra R α] :
-    Matrix m m α ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ :=
-  { (transposeAddEquiv m m α).trans MulOpposite.opAddEquiv,
-    transposeRingEquiv m α with
-    toFun := fun M => MulOpposite.op Mᵀ
-    commutes' := fun r => by
-      simp only [algebraMap_eq_diagonal, diagonal_transpose, MulOpposite.algebraMap_apply] }
-
-variable {R m α}
+    Matrix m m α ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
+  __ := transposeRingEquiv m α
+  commutes' r := by simp [algebraMap_eq_diagonal]
 
 end Transpose
 

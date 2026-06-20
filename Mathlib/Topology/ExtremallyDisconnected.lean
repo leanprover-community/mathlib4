@@ -63,7 +63,7 @@ instance [ExtremallyDisconnected X] [T2Space X] : TotallySeparatedSpace X :=
       by simp only [isOpen_compl_iff, isClosed_closure], subset_closure hUV.2.2.1, ?_,
       by simp only [Set.union_compl_self, Set.subset_univ], disjoint_compl_right⟩
     rw [Set.mem_compl_iff, mem_closure_iff]
-    push_neg
+    push Not
     refine ⟨V, ⟨hUV.2.1, hUV.2.2.2.1, ?_⟩⟩
     rw [← Set.disjoint_iff_inter_eq_empty, disjoint_comm]
     exact hUV.2.2.2.2 }
@@ -150,7 +150,7 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {X : D 
     obtain ⟨E_closed, E_surj⟩ := E_min.prop
     refine ⟨E, isCompact_iff_compactSpace.mp E_closed.isCompact, E_surj, ?_⟩
     intro E₀ E₀_min E₀_closed
-    contrapose! E₀_min
+    contrapose E₀_min
     exact eq_univ_of_image_val_eq <|
       E_min.eq_of_subset ⟨E₀_closed.trans E_closed, image_image_val_eq_restrict_image ▸ E₀_min⟩
         image_val_subset
@@ -191,15 +191,15 @@ lemma image_subset_closure_compl_image_compl_of_isOpen {ρ : E → A} (ρ_cont :
     intro N N_open hN
     -- get $x \in A$ from nonempty open $G \cap \rho^{-1}(N)$
     rcases (G.mem_image ρ a).mp ha with ⟨e, he, rfl⟩
-    have nonempty : (G ∩ ρ⁻¹' N).Nonempty := ⟨e, mem_inter he <| mem_preimage.mpr hN⟩
-    have is_open : IsOpen <| G ∩ ρ⁻¹' N := hG.inter <| N_open.preimage ρ_cont
-    have ne_univ : ρ '' (G ∩ ρ⁻¹' N)ᶜ ≠ univ :=
+    have nonempty : (G ∩ ρ ⁻¹' N).Nonempty := ⟨e, mem_inter he <| mem_preimage.mpr hN⟩
+    have is_open : IsOpen <| G ∩ ρ ⁻¹' N := hG.inter <| N_open.preimage ρ_cont
+    have ne_univ : ρ '' (G ∩ ρ ⁻¹' N)ᶜ ≠ univ :=
       zorn_subset _ (compl_ne_univ.mpr nonempty) is_open.isClosed_compl
     rcases nonempty_compl.mpr ne_univ with ⟨x, hx⟩
     -- prove $x \in N \cap (A \setminus \rho(E \setminus G))$
     have hx' : x ∈ (ρ '' Gᶜ)ᶜ := fun h => hx <| image_mono (by simp) h
     rcases ρ_surj x with ⟨y, rfl⟩
-    have hy : y ∈ G ∩ ρ⁻¹' N := by simpa using mt (mem_image_of_mem ρ) <| mem_compl hx
+    have hy : y ∈ G ∩ ρ ⁻¹' N := by simpa using mt (mem_image_of_mem ρ) <| mem_compl hx
     exact ⟨ρ y, mem_inter (mem_preimage.mp <| mem_of_mem_inter_right hy) hx'⟩
 
 /-- Lemma 2.2 in [Gleason, *Projective topological spaces*][gleason1958]:
@@ -210,6 +210,7 @@ lemma ExtremallyDisconnected.disjoint_closure_of_disjoint_isOpen [ExtremallyDisc
     Disjoint (closure U₁) (closure U₂) :=
   (h.closure_right hU₁).closure_left <| open_closure U₂ hU₂
 
+set_option backward.privateInPublic true in
 private lemma ExtremallyDisconnected.homeoCompactToT2_injective [ExtremallyDisconnected A]
     [T2Space A] [T2Space E] [CompactSpace E] {ρ : E → A} (ρ_cont : Continuous ρ)
     (ρ_surj : ρ.Surjective) (zorn_subset : ∀ E₀ : Set E, E₀ ≠ univ → IsClosed E₀ → ρ '' E₀ ≠ univ) :
@@ -238,6 +239,8 @@ private lemma ExtremallyDisconnected.homeoCompactToT2_injective [ExtremallyDisco
     mem_image_of_mem ρ hx₂
   exact disj''.ne_of_mem hx₁' hx₂' hρx
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Lemma 2.3 in [Gleason, *Projective topological spaces*][gleason1958]:
 a continuous surjection from a compact Hausdorff space to an extremally disconnected Hausdorff space
 satisfying the "Zorn subset condition" is a homeomorphism. -/
@@ -305,5 +308,24 @@ instance instExtremallyDisconnected {ι : Type*} {X : ι → Type*} [∀ i, Topo
     · rw [sigma_mk_preimage_image' ij]
       exact isOpen_empty
   · fun_prop
+
+variable {X}
+
+/-- A preirreducible space is extremally disconnected. -/
+instance (priority := 100) [h : PreirreducibleSpace X] : ExtremallyDisconnected X where
+  open_closure U hU := by
+    by_cases! Un : U = ∅
+    · simp_all
+    · exact ((preirreducibleSpace_iff_open_dense X).mp h hU Un).closure_eq ▸ isOpen_univ
+
+/-- A (pre-)connected, extremally disconnected space is preirreducible. -/
+theorem ExtremallyDisconnected.toPreirreducibleSpace [h : ExtremallyDisconnected X]
+    [h' : PreconnectedSpace X] :
+    PreirreducibleSpace X := by
+  apply (preirreducibleSpace_iff_open_dense X).mpr (fun s hs sn ↦ ?_)
+  apply dense_iff_closure_eq.mpr
+  cases preconnectedSpace_iff_clopen.mp h' (closure s) ⟨isClosed_closure, h.open_closure s hs⟩
+  · simp_all
+  · assumption
 
 end

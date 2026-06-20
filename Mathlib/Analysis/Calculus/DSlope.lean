@@ -52,7 +52,7 @@ theorem ContinuousLinearMap.dslope_comp {F : Type*} [NormedAddCommGroup F] [Norm
   rcases eq_or_ne b a with (rfl | hne)
   · simp only [dslope_same]
     exact (f.hasFDerivAt.comp_hasDerivAt b (H rfl).hasDerivAt).deriv
-  · simpa only [dslope_of_ne _ hne] using f.toLinearMap.slope_comp g a b
+  · simpa only [dslope_of_ne _ hne] using! f.toLinearMap.slope_comp g a b
 
 theorem eqOn_dslope_slope (f : 𝕜 → E) (a : 𝕜) : EqOn (dslope f a) (slope f a) {a}ᶜ := fun _ =>
   dslope_of_ne f
@@ -138,9 +138,19 @@ theorem differentiableOn_dslope_of_notMem (h : a ∉ s) :
   forall_congr' fun _ =>
     forall_congr' fun hx => differentiableWithinAt_dslope_of_ne <| ne_of_mem_of_not_mem hx h
 
-@[deprecated (since := "2025-05-24")]
-alias differentiableOn_dslope_of_nmem := differentiableOn_dslope_of_notMem
-
 theorem differentiableAt_dslope_of_ne (h : b ≠ a) :
     DifferentiableAt 𝕜 (dslope f a) b ↔ DifferentiableAt 𝕜 f b := by
   simp only [← differentiableWithinAt_univ, differentiableWithinAt_dslope_of_ne h]
+
+lemma sub_smul_dslope_of_zero {f : 𝕜 → E} {a : 𝕜} (hf : f a = 0) (b : 𝕜) :
+    (b - a) • dslope f a b = f b := by
+  simp [hf]
+
+lemma pow_sub_smul_iterate_dslope_of_zero {f : 𝕜 → E} {a : 𝕜} (n : ℕ)
+    (hf : ∀ k < n, (Function.swap dslope a)^[k] f a = 0) (b : 𝕜) :
+    (b - a) ^ n • (Function.swap dslope a)^[n] f b = f b := by
+  induction n generalizing f with
+  | zero => simp
+  | succ n ih =>
+    rw [Function.iterate_succ_apply', pow_succ, mul_smul,
+      sub_smul_dslope_of_zero (hf n n.lt_succ_self), ih (by grind)]

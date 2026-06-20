@@ -76,6 +76,7 @@ theorem ihom_ev_app (M N : ModuleCat.{u} R) :
   apply TensorProduct.ext'
   apply monoidalClosed_uncurry
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Describes the unit of the adjunction `M ⊗ - ⊣ Hom(M, -)`. Given an `R`-module `N` this should
 define a map `N ⟶ Hom(M, M ⊗ N)`, which is given by flipping the arguments in the natural
 `R`-bilinear map `M ⟶ N ⟶ M ⊗ N`. -/

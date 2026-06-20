@@ -25,7 +25,7 @@ submonoid, then your localization is trivial (see `IsLocalization.uniqueOfZeroMe
 
 -/
 
-@[expose] public section
+public section
 
 
 open Cardinal nonZeroDivisors

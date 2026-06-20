@@ -23,13 +23,12 @@ The proof follows [ConradLinearChar] Keith Conrad, *Linear Independence of Chara
 
 -/
 
-@[expose] public section
-
 variable (K L : Type*) [Field K] [Field L] [Algebra K L]
 
+set_option backward.isDefEq.respectTransparency false in
 open Polynomial FiniteField Module Submodule LinearMap in
 -- [ConradLinearChar] Theorem 3.7.
-private theorem exists_linearIndependent_algEquiv_apply_of_finite [Finite L] :
+theorem exists_linearIndependent_algEquiv_apply_of_finite [Finite L] :
     ∃ x : L, LinearIndependent K fun σ : Gal(L/K) ↦ σ x := by
   have := Finite.of_injective _ (algebraMap K L).injective
   have := Fintype.ofFinite K
@@ -45,7 +44,8 @@ private theorem exists_linearIndependent_algEquiv_apply_of_finite [Finite L] :
     .ofBijective _ <| bijective_frobeniusAlgEquivOfAlgebraic_pow K L)]
   /- Therefore, `{Frⁱ | 0 ≤ i < [L : K]}` is linearly independent, which implies that
     `{Frⁱ(x) | 0 ≤ i < [L : K]}` is also linearly independent. -/
-  convert (AdjoinRoot.powerBasis (X_pow_sub_C_ne_zero Module.finrank_pos 1)).basis.linearIndependent
+  convert!
+    (AdjoinRoot.powerBasis (X_pow_sub_C_ne_zero Module.finrank_pos 1)).basis.linearIndependent
     |>.map' ((AEval'.of _).symm.toLinearMap ∘ₗ (liftQ _ _ hx.le).restrictScalars K) <| by
     exact congr($(ker_liftQ_eq_bot' _ _ hx).restrictScalars K)
   ext i
@@ -59,7 +59,7 @@ private theorem exists_linearIndependent_algEquiv_apply_of_finite [Finite L] :
 variable [FiniteDimensional K L]
 
 -- [ConradLinearChar] Theorem 3.6.
-private theorem exists_linearIndependent_algEquiv_apply_of_infinite [Infinite K] :
+theorem exists_linearIndependent_algEquiv_apply_of_infinite [Infinite K] :
     ∃ x : L, LinearIndependent K fun σ : Gal(L/K) ↦ σ x := by
   classical
   /- Choose a basis `e` of `L` over `K` and form the matrix `M` with entries
@@ -81,10 +81,10 @@ private theorem exists_linearIndependent_algEquiv_apply_of_infinite [Infinite K]
     refine ⟨g, congr(Matrix.det $(?_)).trans Matrix.det_one⟩
     ext i j
     simpa [M, Pi.single_apply, inv_mul_eq_one, mul_comm, Matrix.one_apply]
-      using congr($hg (i⁻¹ * j))
+      using! congr($hg (i⁻¹ * j))
   /- Therefore `det M` is nonzero. -/
   have hM : M.det ≠ 0 := fun h0 ↦ by
-    simpa [hc] using congr(($h0).eval c)
+    simpa [hc] using! congr(($h0).eval c)
   /- Since `K` is infinite, we may evaluate `det M` at some point with coordinates in `K`
     and get a nonzero value. The coordinates give rise to an element of `L` via the basis `e`. -/
   obtain ⟨b, hb⟩ : ∃ b : _ → K, M.det.eval (algebraMap K L ∘ b) ≠ 0 := by
@@ -92,7 +92,7 @@ private theorem exists_linearIndependent_algEquiv_apply_of_infinite [Infinite K]
     refine hM (MvPolynomial.funext_set _
       (fun _ ↦ Set.infinite_range_of_injective (algebraMap K L).injective) fun x hx ↦ ?_)
     obtain ⟨x, rfl⟩ := Set.range_piMap _ ▸ hx
-    simpa using h x
+    simpa using! h x
   /- This element of `L` is exactly what we want: we simply need to show the first row of the
     evaluated matrix is `K`-linearly independent. But since the other rows are obtained from the
     first row by applying a `K`-endomorphism, it suffices to show that the columns are linearly
@@ -105,7 +105,7 @@ private theorem exists_linearIndependent_algEquiv_apply_of_infinite [Infinite K]
   simp_rw [M, Pi.zero_apply, map_zero, ← ha]
   simp [Algebra.smul_def, Matrix.mulVec_eq_sum, mul_comm]
 
-theorem exists_linearIndependent_algEquiv_apply :
+public theorem exists_linearIndependent_algEquiv_apply :
     ∃ x : L, LinearIndependent K fun σ : Gal(L/K) ↦ σ x := by
   obtain h | h := finite_or_infinite K
   · have := Module.finite_of_finite K (M := L)
@@ -118,14 +118,14 @@ variable [IsGalois K L]
 
 /-- Given a finite Galois extension `L/K`, `normalBasis K L` is a basis of `L` over `K`
 that is an orbit under the Galois group action. -/
-noncomputable def normalBasis : Module.Basis Gal(L/K) K L :=
+public noncomputable def normalBasis : Module.Basis Gal(L/K) K L :=
   basisOfLinearIndependentOfCardEqFinrank
     (exists_linearIndependent_algEquiv_apply K L).choose_spec
     (Fintype.card_eq_nat_card.trans <| card_aut_eq_finrank K L)
 
 variable {K L}
 
-theorem normalBasis_apply (e : Gal(L/K)) : normalBasis K L e = e (normalBasis K L 1) := by
+public theorem normalBasis_apply (e : Gal(L/K)) : normalBasis K L e = e (normalBasis K L 1) := by
   rw [normalBasis, coe_basisOfLinearIndependentOfCardEqFinrank, AlgEquiv.one_apply]
 
 end IsGalois

@@ -6,9 +6,8 @@ Authors: Alex J. Best
 module
 
 public import Mathlib.Init
-public meta import Lean.Elab.Tactic.Basic
-public meta import Lean.Meta.Tactic.Simp.Rewrite
-public meta import Batteries.Tactic.Exact
+public import Batteries.Tactic.Exact
+public import Lean.Meta.Tactic.Simp
 
 /-!
 ## Dischargers for `simp` to tactics
@@ -26,7 +25,7 @@ so that it can be passed as an argument to `simp (discharger := foo)`.
 This is inverse to `mkDischargeWrapper`. -/
 def wrapSimpDischarger (dis : Simp.Discharge) : TacticM Unit := do
   let eS : Lean.Meta.Simp.State := {}
-  let eC : Lean.Meta.Simp.Context := ← Simp.mkContext {}
+  let eC : Lean.Meta.Simp.Context ← Simp.mkContext {}
   let eM : Lean.Meta.Simp.Methods := {}
   let (some a, _) ← liftM <| StateRefT'.run (ReaderT.run (ReaderT.run (dis <| ← getMainTarget)
     eM.toMethodsRef) eC) eS | failure

@@ -8,12 +8,14 @@ module
 public import Mathlib.RingTheory.Finiteness.Basic
 public import Mathlib.RingTheory.Nilpotent.Lemmas
 
+import Mathlib.Data.Fintype.Order
+
 /-!
 # Nilpotent maps on finite modules
 
 -/
 
-@[expose] public section
+public section
 
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 

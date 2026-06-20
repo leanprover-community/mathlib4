@@ -39,7 +39,7 @@ namespace CategoryTheory
 
 open Category
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 namespace ObjectProperty
 
@@ -80,17 +80,17 @@ lemma isoClosure_isLocal : P.isoClosure.isLocal = P.isLocal := by
       exact ⟨a ≫ e.inv, by simp only [reassoc_of% h, e.hom_inv_id, comp_id]⟩
 
 instance : P.isLocal.IsMultiplicative where
-  id_mem X Z _ := by simpa [id_comp] using Function.bijective_id
+  id_mem X Z _ := by simpa [id_comp] using! Function.bijective_id
   comp_mem f g hf hg Z hZ := by
-    simpa using Function.Bijective.comp (hf Z hZ) (hg Z hZ)
+    simpa using! Function.Bijective.comp (hf Z hZ) (hg Z hZ)
 
 instance : P.isLocal.HasTwoOutOfThreeProperty where
   of_postcomp f g hg hfg Z hZ := by
     rw [← Function.Bijective.of_comp_iff _ (hg Z hZ)]
-    simpa using hfg Z hZ
+    simpa using! hfg Z hZ
   of_precomp f g hf hfg Z hZ := by
     rw [← Function.Bijective.of_comp_iff' (hf Z hZ)]
-    simpa using hfg Z hZ
+    simpa using! hfg Z hZ
 
 lemma isLocal_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : P.isLocal f := fun Z _ => by
   constructor
@@ -160,19 +160,19 @@ lemma isoClosure_isColocal : P.isoClosure.isColocal = P.isColocal := by
       exact ⟨e.hom ≫ a, by simp [h]⟩
 
 instance : P.isColocal.IsMultiplicative where
-  id_mem _ _ _ := by simpa [id_comp] using Function.bijective_id
+  id_mem _ _ _ := by simpa [id_comp] using! Function.bijective_id
   comp_mem f g hf hg X hX := by
-    convert Function.Bijective.comp (hg X hX) (hf X hX)
+    convert! Function.Bijective.comp (hg X hX) (hf X hX)
     cat_disch
 
 instance : P.isColocal.HasTwoOutOfThreeProperty where
   of_postcomp f g hg hfg X hX := by
     rw [← Function.Bijective.of_comp_iff' (hg X hX)]
-    convert hfg X hX
+    convert! hfg X hX
     cat_disch
   of_precomp f g hf hfg X hX := by
     rw [← Function.Bijective.of_comp_iff _ (hf X hX)]
-    convert hfg X hX
+    convert! hfg X hX
     cat_disch
 
 lemma isColocal_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : P.isColocal f := fun Z _ => by
@@ -215,11 +215,13 @@ include adj
 
 lemma isLocal_adj_unit_app (X : D) : isLocal (· ∈ Set.range F.obj) (adj.unit.app X) := by
   rintro _ ⟨Y, rfl⟩
-  convert ((Functor.FullyFaithful.ofFullyFaithful F).homEquiv.symm.trans
-    (adj.homEquiv X Y)).bijective using 1
+  convert!
+    ((Functor.FullyFaithful.ofFullyFaithful F).homEquiv.symm.trans
+        (adj.homEquiv X Y)).bijective using 1
   dsimp [Adjunction.homEquiv]
   aesop
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isLocal_iff_isIso_map {X Y : D} (f : X ⟶ Y) :
     isLocal (· ∈ Set.range F.obj) f ↔ IsIso (G.map f) := by
   have := adj.unit.naturality f
@@ -248,11 +250,13 @@ include adj
 
 lemma isColocal_adj_counit_app (X : C) : isColocal (· ∈ Set.range G.obj) (adj.counit.app X) := by
   rintro _ ⟨Y, rfl⟩
-  convert ((Functor.FullyFaithful.ofFullyFaithful G).homEquiv.symm.trans
-    (adj.homEquiv Y X).symm).bijective using 1
+  convert!
+    ((Functor.FullyFaithful.ofFullyFaithful G).homEquiv.symm.trans
+        (adj.homEquiv Y X).symm).bijective using 1
   dsimp [Adjunction.homEquiv]
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isColocal_iff_isIso_map {X Y : C} (f : X ⟶ Y) :
     isColocal (· ∈ Set.range G.obj) f ↔ IsIso (F.map f) := by
   have := adj.counit.naturality f

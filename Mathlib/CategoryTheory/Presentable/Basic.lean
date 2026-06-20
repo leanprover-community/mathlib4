@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
@@ -21,7 +22,7 @@ a regular cardinal `κ` such that `Functor.IsCardinalAccessible`.
 
 An object `X` of a category is `κ`-presentable (`IsCardinalPresentable`)
 if the functor `Hom(X, _)` (i.e. `coyoneda.obj (op X)`) is `κ`-accessible.
-Similar as for accessible functors, we define a type class `IsAccessible`.
+Similarly as for accessible functors, we define a type class `IsAccessible`.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
@@ -93,6 +94,18 @@ instance {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
 
 instance [PreservesColimitsOfSize.{w, w} F] : F.IsCardinalAccessible κ where
 
+set_option backward.defeqAttrib.useBackward true in
+instance (A : C) : IsCardinalAccessible ((Functor.const C).obj A) κ where
+  preservesColimitOfShape J _ _ :=
+    { preservesColimit {F} :=
+        { preserves {c} hc := ⟨by
+            have h := isFiltered_of_isCardinalFiltered J κ
+            have (j : J) : IsIso ((((const C).obj A).mapCocone c).ι.app j) := by
+              dsimp
+              infer_instance
+            exact Functor.IsEventuallyConstantFrom.isColimitOfIsIso
+              (i₀ := h.nonempty.some) (fun _ _ ↦ by dsimp; infer_instance) _⟩ } }
+
 end
 
 section
@@ -108,6 +121,19 @@ class IsAccessible : Prop where
 lemma isAccessible_of_isCardinalAccessible (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalAccessible F κ] : IsAccessible.{w} F where
   exists_cardinal := ⟨κ, inferInstance, inferInstance⟩
+
+instance {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E) [IsAccessible.{w} F]
+    [IsAccessible.{w} G] : IsAccessible.{w} (F ⋙ G) := by
+  obtain ⟨κF, _, _⟩ := IsAccessible.exists_cardinal (F := F)
+  obtain ⟨κG, _, _⟩ := IsAccessible.exists_cardinal (F := G)
+  have : Fact (κF ⊔ κG).IsRegular := ⟨iteInduction (fun _ ↦ Fact.out) (fun _ ↦ Fact.out)⟩
+  have := isCardinalAccessible_of_le F (by simp : κF ≤ κF ⊔ κG)
+  have := isCardinalAccessible_of_le G (by simp : κG ≤ κF ⊔ κG)
+  exact isAccessible_of_isCardinalAccessible (F ⋙ G) (κF ⊔ κG)
+
+instance (A : C) : IsAccessible.{w} ((Functor.const C).obj A) := by
+  have : Fact Cardinal.aleph0.IsRegular := Cardinal.fact_isRegular_aleph0
+  exact ⟨Cardinal.aleph0, inferInstance, inferInstance⟩
 
 end
 
@@ -175,6 +201,7 @@ instance : (isCardinalPresentable C κ).IsClosedUnderIsomorphisms where
     rw [isCardinalPresentable_iff] at hX ⊢
     exact isCardinalPresentable_of_iso e _
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isCardinalPresentable_of_equivalence
     {C' : Type u₃} [Category.{v₃} C'] [IsCardinalPresentable X κ] (e : C ≌ C') :
     IsCardinalPresentable (e.functor.obj X) κ := by
@@ -189,7 +216,6 @@ lemma isCardinalPresentable_of_equivalence
       (Equiv.ulift.trans ((e.toAdjunction.homEquiv X Z).trans Equiv.ulift.symm)).toIso) (by
         intro _ _ f
         ext ⟨g⟩
-        apply Equiv.ulift.injective
         simp [Adjunction.homEquiv_unit])
   exact preservesColimit_of_natIso Y iso.symm
 

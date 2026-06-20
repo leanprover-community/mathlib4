@@ -163,7 +163,7 @@ lemma IsComplement.nonempty_right (hst : IsComplement S T) : T.Nonempty := by
 @[to_additive] lemma IsComplement.pairwiseDisjoint_smul (hst : IsComplement S T) :
     S.PairwiseDisjoint (· • T) := fun a ha b hb hab ↦ disjoint_iff_forall_ne.2 <| by
   rintro _ ⟨c, hc, rfl⟩ _ ⟨d, hd, rfl⟩
-  exact hst.1.ne (a₁ := (⟨a, ha⟩, ⟨c, hc⟩)) (a₂:= (⟨b, hb⟩, ⟨d, hd⟩)) (by simp [hab])
+  exact hst.1.ne (a₁ := (⟨a, ha⟩, ⟨c, hc⟩)) (a₂ := (⟨b, hb⟩, ⟨d, hd⟩)) (by simp [hab])
 
 @[to_additive AddSubgroup.IsComplement.card_mul_card]
 lemma IsComplement.card_mul_card (h : IsComplement S T) : Nat.card S * Nat.card T = Nat.card G :=
@@ -196,7 +196,7 @@ theorem isComplement'_top_right : IsComplement' H ⊤ ↔ H = ⊥ :=
 @[to_additive]
 lemma isComplement_iff_existsUnique_inv_mul_mem :
     IsComplement S T ↔ ∀ g, ∃! s : S, (s : G)⁻¹ * g ∈ T := by
-  convert isComplement_iff_existsUnique with g
+  convert! isComplement_iff_existsUnique with g
   constructor <;> rintro ⟨x, hx, hx'⟩
   · exact ⟨(x, ⟨_, hx⟩), by simp, by aesop⟩
   · exact ⟨x.1, by simp [← hx], fun y hy ↦ (Prod.ext_iff.1 <| by simpa using hx' (y, ⟨_, hy⟩)).1⟩
@@ -204,7 +204,7 @@ lemma isComplement_iff_existsUnique_inv_mul_mem :
 @[to_additive]
 lemma isComplement_iff_existsUnique_mul_inv_mem :
     IsComplement S T ↔ ∀ g, ∃! t : T, g * (t : G)⁻¹ ∈ S := by
-  convert isComplement_iff_existsUnique with g
+  convert! isComplement_iff_existsUnique with g
   constructor <;> rintro ⟨x, hx, hx'⟩
   · exact ⟨(⟨_, hx⟩, x), by simp, by aesop⟩
   · exact ⟨x.2, by simp [← hx], fun y hy ↦ (Prod.ext_iff.1 <| by simpa using hx' (⟨_, hy⟩, y)).2⟩
@@ -276,8 +276,7 @@ lemma exists_isComplement_left (H : Subgroup G) (g : G) : ∃ S, IsComplement S 
     QuotientGroup.mk g, Function.update_self (Quotient.mk'' g) g Quotient.out⟩
   by_cases hq : q = Quotient.mk'' g
   · exact hq.symm ▸ congr_arg _ (Function.update_self (Quotient.mk'' g) g Quotient.out)
-  · refine Function.update_of_ne ?_ g Quotient.out ▸ q.out_eq'
-    exact hq
+  · simp [Function.update, dif_neg hq, q.out_eq']
 
 @[to_additive]
 lemma exists_isComplement_right (H : Subgroup G) (g : G) :
@@ -287,8 +286,7 @@ lemma exists_isComplement_right (H : Subgroup G) (g : G) :
     Quotient.mk'' g, Function.update_self (Quotient.mk'' g) g Quotient.out⟩
   by_cases hq : q = Quotient.mk'' g
   · exact hq.symm ▸ congr_arg _ (Function.update_self (Quotient.mk'' g) g Quotient.out)
-  · refine Function.update_of_ne ?_ g Quotient.out ▸ q.out_eq'
-    exact hq
+  · simp [Function.update, dif_neg hq, q.out_eq']
 
 /-- Given two subgroups `H' ⊆ H`, there exists a left transversal to `H'` inside `H`. -/
 @[to_additive /-- Given two subgroups `H' ⊆ H`, there exists a transversal to `H'` inside `H` -/]
@@ -559,7 +557,8 @@ end IsComplement
 
 section Action
 
-open Pointwise MulAction
+open scoped Pointwise
+open MulAction
 
 /-- The collection of left transversals of a subgroup -/
 @[to_additive /-- The collection of left transversals of a subgroup. -/]
@@ -598,7 +597,7 @@ theorem smul_toLeftFun (f : F) (S : H.LeftTransversal) (g : G) :
 
 @[to_additive]
 theorem smul_leftQuotientEquiv (f : F) (S : H.LeftTransversal) (q : G ⧸ H) :
-    f • (S.2.leftQuotientEquiv  q : G) = (f • S).2.leftQuotientEquiv (f • q) :=
+    f • (S.2.leftQuotientEquiv q : G) = (f • S).2.leftQuotientEquiv (f • q) :=
   Quotient.inductionOn' q fun g => smul_toLeftFun f S g
 
 @[to_additive]
@@ -671,7 +670,7 @@ theorem isComplement'_iff_card_mul_and_disjoint [Finite G] :
 theorem isComplement'_of_coprime [Finite G]
     (h1 : Nat.card H * Nat.card K = Nat.card G)
     (h2 : Nat.Coprime (Nat.card H) (Nat.card K)) : IsComplement' H K :=
-  isComplement'_of_card_mul_and_disjoint h1 (disjoint_iff.mpr (inf_eq_bot_of_coprime h2))
+  isComplement'_of_card_mul_and_disjoint h1 <| disjoint_of_coprime_natCard h2
 
 theorem isComplement'_stabilizer {α : Type*} [MulAction G α] (a : α)
     (h1 : ∀ h : H, h • a = a → h = 1) (h2 : ∀ g : G, ∃ h : H, h • g • a = a) :

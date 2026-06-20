@@ -6,6 +6,7 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Data.Nat.ModEq
+import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 
@@ -24,14 +25,40 @@ modeq, congruence, mod, MOD, modulo, integers
 @[expose] public section
 
 
-namespace Int
-
 /-- `a ≡ b [ZMOD n]` when `a % n = b % n`. -/
-def ModEq (n a b : ℤ) :=
+@[wikidata Q3773677]
+def Int.ModEq (n a b : ℤ) :=
   a % n = b % n
 
 @[inherit_doc]
-notation:50 a " ≡ " b " [ZMOD " n "]" => ModEq n a b
+notation:50 a " ≡ " b " [ZMOD " n "]" => Int.ModEq n a b
+
+namespace AddCommGroup
+
+@[simp]
+theorem modEq_iff_intModEq {a b z : ℤ} : a ≡ b [PMOD z] ↔ a ≡ b [ZMOD z] := by
+  rw [modEq_comm]
+  simp [modEq_iff_zsmul', dvd_iff_exists_eq_mul_left, Int.ModEq,
+    Int.emod_eq_emod_iff_emod_sub_eq_zero, ← Int.dvd_iff_emod_eq_zero]
+
+@[deprecated (since := "2026-01-13")]
+alias modEq_iff_int_modEq := modEq_iff_intModEq
+
+variable {G : Type*} [AddCommGroupWithOne G] [CharZero G]
+
+@[simp, norm_cast]
+theorem intCast_modEq_intCast {a b z : ℤ} : a ≡ b [PMOD (z : G)] ↔ a ≡ b [PMOD z] :=
+  map_modEq_iff (Int.castAddHom G) Int.cast_injective
+
+@[simp, norm_cast]
+lemma intCast_modEq_intCast' {a b : ℤ} {n : ℕ} : a ≡ b [PMOD (n : G)] ↔ a ≡ b [PMOD (n : ℤ)] := by
+  simpa using intCast_modEq_intCast (G := G) (z := n)
+
+alias ⟨ModEq.of_intCast, ModEq.intCast⟩ := intCast_modEq_intCast
+
+end AddCommGroup
+
+namespace Int
 
 variable {m n a b c d : ℤ}
 
@@ -46,7 +73,7 @@ protected theorem refl (a : ℤ) : a ≡ a [ZMOD n] :=
 protected theorem rfl : a ≡ a [ZMOD n] :=
   ModEq.refl _
 
-instance : IsRefl _ (ModEq n) :=
+instance : Std.Refl (ModEq n) :=
   ⟨ModEq.refl⟩
 
 @[symm]
@@ -116,7 +143,7 @@ protected theorem mul_right' (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n * 
 
 @[gcongr]
 protected theorem add (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a + c ≡ b + d [ZMOD n] :=
-  modEq_iff_dvd.2 <| by convert Int.dvd_add h₁.dvd h₂.dvd using 1; lia
+  modEq_iff_dvd.2 <| by convert! Int.dvd_add h₁.dvd h₂.dvd using 1; lia
 
 protected theorem add_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c + a ≡ c + b [ZMOD n] :=
   ModEq.rfl.add h
@@ -193,7 +220,7 @@ theorem cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [ZMOD m]) : a ≡ 
   cancel_right_div_gcd hm <| by simpa [mul_comm] using h
 
 theorem of_div (h : a / c ≡ b / c [ZMOD m / c]) (ha : c ∣ a) (ha : c ∣ b) (ha : c ∣ m) :
-    a ≡ b [ZMOD m] := by convert h.mul_left' <;> rwa [Int.mul_ediv_cancel']
+    a ≡ b [ZMOD m] := by convert! h.mul_left' <;> rwa [Int.mul_ediv_cancel']
 
 /-- Cancel left multiplication on both sides of the `≡` and in the modulus.
 
@@ -224,6 +251,10 @@ theorem dvd_iff (h : a ≡ b [ZMOD n]) : n ∣ a ↔ n ∣ b := by
   exact ⟨fun ha ↦ h.symm.trans ha, h.trans⟩
 
 end ModEq
+
+@[simp]
+theorem abs_modEq_two : |a| ≡ a [ZMOD 2] := by
+  grind [Int.ModEq]
 
 @[simp]
 theorem modulus_modEq_zero : n ≡ 0 [ZMOD n] := by simp [ModEq]
@@ -332,20 +363,12 @@ theorem modEq_and_modEq_iff_modEq_lcm {a b m n : ℤ} :
 
 theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℤ} (hmn : m.natAbs.Coprime n.natAbs) :
     a ≡ b [ZMOD m] ∧ a ≡ b [ZMOD n] ↔ a ≡ b [ZMOD m * n] := by
-  convert ← modEq_and_modEq_iff_modEq_lcm using 1
+  convert! ← modEq_and_modEq_iff_modEq_lcm using 1
   rw [lcm_eq_mul_iff.mpr (.inr <| .inr hmn), ← natAbs_mul, modEq_natAbs]
 
 theorem gcd_a_modEq (a b : ℕ) : (a : ℤ) * Nat.gcdA a b ≡ Nat.gcd a b [ZMOD b] := by
   rw [← add_zero ((a : ℤ) * _), Nat.gcd_eq_gcd_ab]
   exact (dvd_mul_right _ _).zero_modEq_int.add_left _
-
-@[deprecated add_modulus_mul_modEq_iff (since := "2025-10-16")]
-theorem modEq_add_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a + n * c ≡ b [ZMOD n] := by
-  simpa
-
-@[deprecated sub_modulus_mul_modEq_iff (since := "2025-10-16")]
-theorem modEq_sub_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a - n * c ≡ b [ZMOD n] := by
-  simpa
 
 theorem modEq_add_fac_self {a t n : ℤ} : a + n * t ≡ a [ZMOD n] := by simp
 
@@ -374,5 +397,14 @@ theorem mod_mul_right_mod (a b c : ℤ) : a % (b * c) % b = a % b :=
 
 theorem mod_mul_left_mod (a b c : ℤ) : a % (b * c) % c = a % c :=
   (mod_modEq _ _).of_mul_left _
+
+theorem ext_ediv_modEq {n a b : ℤ} (h0 : a / n = b / n) (h1 : a ≡ b [ZMOD n]) : a = b :=
+  ext_ediv_emod h0 h1
+
+theorem ext_ediv_modEq_iff (n a b : ℤ) : a = b ↔ a / n = b / n ∧ a ≡ b [ZMOD n] :=
+  ext_ediv_emod_iff _ _ _
+
+theorem modEq_iff_eq_of_div_eq {n a b : ℤ} (h : a / n = b / n) :
+    a ≡ b [ZMOD n] ↔ a = b := by grind [ext_ediv_modEq_iff]
 
 end Int

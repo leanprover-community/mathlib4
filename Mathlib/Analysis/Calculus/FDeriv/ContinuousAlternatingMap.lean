@@ -18,7 +18,7 @@ In this file we prove formulas for the derivatives of
 - application of a `ContinuousAlternatingMap` as a function of both the map and the vectors.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 ι E F G H : Type*}
   [NontriviallyNormedField 𝕜]
@@ -26,7 +26,7 @@ variable {𝕜 ι E F G H : Type*}
   [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup H] [NormedSpace 𝕜 H]
 
 open ContinuousAlternatingMap
-open scoped Topology BigOperators
+open scoped Topology
 
 section CompContinuousLinearMap
 
@@ -86,16 +86,17 @@ theorem HasFDerivAt.continuousAlternatingMapCompContinuousLinearMap
     HasFDerivAt (fun x ↦ (f x).compContinuousLinearMap (g x))
       (compContinuousLinearMapCLM (g x) ∘L f' +
         (f x).fderivCompContinuousLinearMap (g x) ∘L g') x := by
-  convert hasStrictFDerivAt_compContinuousLinearMap (f x, (g x)) |>.hasFDerivAt
-    |>.comp x (hf.prodMk hg)
+  convert!
+    hasStrictFDerivAt_compContinuousLinearMap (f x, (g x)) |>.hasFDerivAt |>.comp x (hf.prodMk hg)
 
 theorem HasFDerivWithinAt.continuousAlternatingMapCompContinuousLinearMap
     (hf : HasFDerivWithinAt f f' s x) (hg : HasFDerivWithinAt g g' s x) :
     HasFDerivWithinAt (fun x ↦ (f x).compContinuousLinearMap (g x))
       (compContinuousLinearMapCLM (g x) ∘L f' +
         (f x).fderivCompContinuousLinearMap (g x) ∘L g') s x := by
-  convert hasStrictFDerivAt_compContinuousLinearMap (f x, (g x)) |>.hasFDerivAt
-    |>.comp_hasFDerivWithinAt x (hf.prodMk hg)
+  convert!
+    hasStrictFDerivAt_compContinuousLinearMap (f x, (g x)) |>.hasFDerivAt |>.comp_hasFDerivWithinAt
+      x (hf.prodMk hg)
 
 theorem fderivWithin_continuousAlternatingMapCompContinuousLinearMap
     (hf : DifferentiableWithinAt 𝕜 f s x) (hg : DifferentiableWithinAt 𝕜 g s x)
@@ -209,12 +210,26 @@ theorem fderivWithin_continuousAlternatingMap_apply (hf : DifferentiableWithinAt
   hf.hasFDerivWithinAt.continuousAlternatingMap_apply (fun i ↦ (hg i).hasFDerivWithinAt)
     |>.fderivWithin hs
 
+theorem fderivWithin_continuousAlternatingMap_apply_apply (hf : DifferentiableWithinAt 𝕜 f s x)
+    (hg : ∀ i, DifferentiableWithinAt 𝕜 (g i) s x) (hs : UniqueDiffWithinAt 𝕜 s x) (dx : E) :
+    fderivWithin 𝕜 (fun x ↦ f x (g · x)) s x dx =
+      fderivWithin 𝕜 f s x dx (g · x) +
+        ∑ i, f x (Function.update (g · x) i (fderivWithin 𝕜 (g i) s x dx)) := by
+  simp [fderivWithin_continuousAlternatingMap_apply, *]
+
 theorem fderiv_continuousAlternatingMap_apply (hf : DifferentiableAt 𝕜 f x)
     (hg : ∀ i, DifferentiableAt 𝕜 (g i) x) :
     fderiv 𝕜 (fun x ↦ f x (g · x)) x =
       apply 𝕜 F G (g · x) ∘L fderiv 𝕜 f x +
         ∑ i, (f x).toContinuousLinearMap (g · x) i ∘L fderiv 𝕜 (g i) x :=
   hf.hasFDerivAt.continuousAlternatingMap_apply (fun i ↦ (hg i).hasFDerivAt) |>.fderiv
+
+theorem fderiv_continuousAlternatingMap_apply_apply (hf : DifferentiableAt 𝕜 f x)
+    (hg : ∀ i, DifferentiableAt 𝕜 (g i) x) (dx : E) :
+    fderiv 𝕜 (fun x ↦ f x (g · x)) x dx =
+      fderiv 𝕜 f x dx (g · x) +
+        ∑ i, f x (Function.update (g · x) i (fderiv 𝕜 (g i) x dx)) := by
+  simp [fderiv_continuousAlternatingMap_apply, *]
 
 end HasFDerivAt
 

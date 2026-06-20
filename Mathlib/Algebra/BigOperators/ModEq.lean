@@ -18,7 +18,7 @@ and similarly for sums.
 We prove it for lists, multisets, and finsets, as well as for natural and integer numbers.
 -/
 
-@[expose] public section
+public section
 
 namespace Nat
 

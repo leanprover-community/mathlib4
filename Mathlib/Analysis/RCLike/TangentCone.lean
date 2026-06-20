@@ -15,7 +15,7 @@ A set of unique differentiability for `ℝ` is also a set of unique differentiab
 (or for a general field satisfying `IsRCLikeNormedField 𝕜`).
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [h𝕜 : IsRCLikeNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace ℝ E]

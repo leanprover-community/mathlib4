@@ -46,7 +46,7 @@ We also construct the canonical epimorphism `K.πTruncGE e : K ⟶ K.truncGE e`.
 open CategoryTheory Limits ZeroObject Category
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
-  {C : Type*} [Category C] [HasZeroMorphisms C]
+  {C : Type*} [Category* C] [HasZeroMorphisms C]
 
 namespace HomologicalComplex
 
@@ -234,6 +234,7 @@ noncomputable def f (i : ι) : (K.restriction e).X i ⟶ (K.truncGE' e).X i :=
   else
     (K.truncGE'XIso e rfl hi).inv
 
+set_option backward.defeqAttrib.useBackward true in
 lemma f_eq_iso_hom_pOpcycles_iso_inv {i : ι} {i' : ι'} (hi' : e.f i = i') (hi : e.BoundaryGE i) :
     f K e i = (K.restrictionXIso e hi').hom ≫ K.pOpcycles i' ≫
       (K.truncGE'XIsoOpcycles e hi' hi).inv := by
@@ -242,6 +243,7 @@ lemma f_eq_iso_hom_pOpcycles_iso_inv {i : ι} {i' : ι'} (hi' : e.f i = i') (hi 
   subst hi'
   simp [restrictionXIso]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma f_eq_iso_hom_iso_inv {i : ι} {i' : ι'} (hi' : e.f i = i') (hi : ¬ e.BoundaryGE i) :
     f K e i = (K.restrictionXIso e hi').hom ≫ (K.truncGE'XIso e hi' hi).inv := by
   dsimp [f]
@@ -249,6 +251,7 @@ lemma f_eq_iso_hom_iso_inv {i : ι} {i' : ι'} (hi' : e.f i = i') (hi : ¬ e.Bou
   subst hi'
   simp [restrictionXIso]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma comm (i j : ι) :
     f K e i ≫ (K.truncGE' e).d i j = (K.restriction e).d i j ≫ f K e j := by
@@ -270,6 +273,7 @@ end restrictionToTruncGE'
 noncomputable def restrictionToTruncGE' : K.restriction e ⟶ K.truncGE' e where
   f := restrictionToTruncGE'.f K e
 
+set_option backward.defeqAttrib.useBackward true in
 lemma restrictionToTruncGE'_hasLift : e.HasLift (K.restrictionToTruncGE' e) := by
   intro j hj i' _
   dsimp [restrictionToTruncGE']
@@ -294,6 +298,7 @@ lemma isIso_restrictionToTruncGE' (i : ι) (hi : ¬ e.BoundaryGE i) :
   rw [K.restrictionToTruncGE'_f_eq_iso_hom_iso_inv e rfl hi]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 variable {K L} in
 @[reassoc (attr := simp)]
 lemma restrictionToTruncGE'_naturality :
@@ -335,6 +340,7 @@ shapes which satisfy `e.IsTruncGE`. -/
 noncomputable def πTruncGE : K ⟶ K.truncGE e :=
   e.liftExtend (K.restrictionToTruncGE' e) (K.restrictionToTruncGE'_hasLift e)
 
+set_option backward.isDefEq.respectTransparency false in
 instance (i' : ι') : Epi ((K.πTruncGE e).f i') := by
   by_cases hi' : ∃ i, e.f i = i'
   · obtain ⟨i, hi⟩ := hi'
@@ -349,6 +355,8 @@ instance : (K.truncGE e).IsStrictlySupported e := by
   dsimp [truncGE]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 variable {K L} in
 @[reassoc (attr := simp)]
 lemma πTruncGE_naturality :
@@ -359,6 +367,7 @@ lemma πTruncGE_naturality :
   rw [e.homRestrict_comp_extendMap, e.homRestrict_liftExtend, e.homRestrict_precomp,
     e.homRestrict_liftExtend, restrictionToTruncGE'_naturality]
 
+set_option backward.isDefEq.respectTransparency false in
 instance {ι'' : Type*} {c'' : ComplexShape ι''} (e' : c''.Embedding c')
     [K.IsStrictlySupported e'] : (K.truncGE e).IsStrictlySupported e' where
   isZero := by
@@ -374,6 +383,7 @@ instance {ι'' : Type*} {c'' : ComplexShape ι''} (e' : c''.Embedding c')
           ((K.truncGE' e).extendXIso e hi ≪≫ K.truncGE'XIso e hi hi''')
     · exact (K.truncGE e).isZero_X_of_isStrictlySupported e _ (by simpa using hi'')
 
+set_option backward.isDefEq.respectTransparency false in
 instance [K.IsStrictlySupported e] : IsIso (K.πTruncGE e) := by
   suffices ∀ (i' : ι'), IsIso ((K.πTruncGE e).f i') by
     apply Hom.isIso_of_components
@@ -398,7 +408,7 @@ end HomologicalComplex
 namespace ComplexShape.Embedding
 
 variable (e : Embedding c c') [e.IsTruncGE]
-    (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C] [CategoryWithHomology C]
+    (C : Type*) [Category* C] [HasZeroMorphisms C] [HasZeroObject C] [CategoryWithHomology C]
 
 /-- Given an embedding `e : Embedding c c'` of complex shapes which satisfy `e.IsTruncGE`,
 this is the (canonical) truncation functor
@@ -409,6 +419,7 @@ noncomputable def truncGE'Functor :
   obj K := K.truncGE' e
   map φ := HomologicalComplex.truncGE'Map φ e
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `K.restriction e ⟶ K.truncGE' e` for all `K`. -/
 @[simps]
 noncomputable def restrictionToTruncGE'NatTrans :
@@ -424,6 +435,7 @@ noncomputable def truncGEFunctor :
   obj K := K.truncGE e
   map φ := HomologicalComplex.truncGEMap φ e
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `K.πTruncGE e : K ⟶ K.truncGE e` for all `K`. -/
 @[simps]
 noncomputable def πTruncGENatTrans : 𝟭 _ ⟶ e.truncGEFunctor C where

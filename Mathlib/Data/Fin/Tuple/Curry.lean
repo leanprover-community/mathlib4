@@ -35,6 +35,7 @@ namespace Function.FromTypes
 
 open Matrix (vecCons vecHead vecTail vecEmpty)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Uncurry all the arguments of `Function.FromTypes p τ` to get
 a function from a tuple.
 
@@ -44,6 +45,7 @@ def uncurry : {n : ℕ} → {p : Fin n → Type u} → {τ : Type u} →
   | 0    , _, _, f => fun _    => f
   | _ + 1, _, _, f => fun args => (f (args 0)).uncurry (args ∘' Fin.succ)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Curry all the arguments of `Function.FromTypes p τ` to get a function from a tuple. -/
 def curry : {n : ℕ} → {p : Fin n → Type u} → {τ : Type u} →
     (((i : Fin n) → p i) → τ) → Function.FromTypes p τ
@@ -63,7 +65,7 @@ theorem uncurry_apply_succ {n : ℕ} {p : Fin (n + 1) → Type u} {τ : Type u}
 @[simp]
 theorem curry_apply_cons {n : ℕ} {α} {p : Fin n → Type u} {τ : Type u}
     (f : ((i : Fin (n + 1)) → (vecCons α p) i) → τ) (a : α) :
-    curry f a = @curry _ p _ (f ∘' Fin.cons a) := rfl
+    curry f a = @curry _ p _ (f ∘' Fin.cons a :) := rfl
 
 @[simp low]
 theorem curry_apply_succ {n : ℕ} {p : Fin (n + 1) → Type u} {τ : Type u}

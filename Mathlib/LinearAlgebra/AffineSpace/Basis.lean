@@ -30,7 +30,7 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 
 * `fintypeAffineCoords`: the `AffineSubspace` of `ι → k` (for `Fintype ι`) where coordinates sum
   to `1`.
-* `finsuppAffineCoords`: the `AffineSubspace of `ι →₀ k` where coordinates sum to `1`.
+* `finsuppAffineCoords`: the `AffineSubspace` of `ι →₀ k` where coordinates sum to `1`.
 * `AffineBasis`: a structure representing an affine basis of an affine space.
 * `AffineBasis.coord`: the map `P →ᵃ[k] k` corresponding to `i : ι`.
 * `AffineBasis.coord_apply_eq`: the behaviour of `AffineBasis.coord i` on `p i`.
@@ -71,7 +71,7 @@ lemma AffineIndependent.injOn_affineCombination_fintypeAffineCoords [Fintype ι]
 
 variable (ι k) in
 /-- The space of coordinates for affine combinations indexed by a general type. -/
-def finsuppAffineCoords : AffineSubspace k (ι →₀ k) :=
+noncomputable def finsuppAffineCoords : AffineSubspace k (ι →₀ k) :=
   (affineSpan k {(1 : k)}).comap (Finsupp.linearCombination k (1 : ι → k)).toAffineMap
 
 lemma mem_finsuppAffineCoords_iff_linearCombination {w : ι →₀ k} :
@@ -106,7 +106,7 @@ instance : Inhabited (AffineBasis PUnit k PUnit) :=
 
 instance instFunLike : FunLike (AffineBasis ι k P) ι P where
   coe := AffineBasis.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[ext]
 theorem ext {b₁ b₂ : AffineBasis ι k P} (h : (b₁ : ι → P) = b₂) : b₁ = b₂ :=
@@ -213,16 +213,13 @@ theorem coord_apply_combination_of_notMem (hi : i ∉ s) {w : ι → k} (hw : s.
       mul_boole, hw, Function.comp_apply, smul_eq_mul, s.sum_ite_eq,
       s.map_affineCombination b w hw]
 
-@[deprecated (since := "2025-05-23")]
-alias coord_apply_combination_of_not_mem := coord_apply_combination_of_notMem
-
 @[simp]
 theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : ∑ i, b.coord i q = 1 := by
   have hq : q ∈ affineSpan k (range b) := by
     rw [b.tot]
     exact AffineSubspace.mem_top k V q
   obtain ⟨w, hw, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype hq
-  convert hw
+  convert! hw
   exact b.coord_apply_combination_of_mem (Finset.mem_univ _) hw
 
 @[simp]

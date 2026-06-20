@@ -17,7 +17,7 @@ convex spaces.
 
 -/
 
-@[expose] public section
+public section
 
 
 open Finset Metric
@@ -57,7 +57,7 @@ lemma StrictConvex.centerMass_mem_interior {s : Set V} {t : Finset ι} {w : ι �
         refine LT.lt.ne' ?_
         have hwi : 0 < w i := by grind
         grw [hwi]
-        simp only [lt_add_iff_pos_right, gt_iff_lt]
+        simp only [lt_add_iff_pos_right]
         exact (sum_nonneg hs₀).lt_of_ne' hsum_t
       simp only [hzi, ← add_smul, ← add_div, ne_eq, hwi, not_false_eq_true, div_self, one_smul]
       by_cases! hijt : ∃ i'' j'', i'' ∈ t ∧ j'' ∈ t ∧ z i'' ≠ z j'' ∧ w i'' ≠ 0 ∧ w j'' ≠ 0
@@ -138,16 +138,15 @@ lemma dist_lt_of_mem_closedInterior_of_strictConvexSpace {n : ℕ} (s : Simplex 
   obtain ⟨j, hij, hj⟩ : ∃ j, i ≠ j ∧ w j ≠ 0 := by
     by_contra! hij
     apply hp' i
-    rw [← Finset.univ.affineCombination_affineCombinationSingleWeights ℝ s.points
-      (Finset.mem_univ i)]
+    rw [← Finset.univ.affineCombination_piSingle ℝ s.points (Finset.mem_univ i)]
     congr 1
     ext j
-    by_cases hj : j = i
-    · simp only [hj, affineCombinationSingleWeights_apply_self]
+    obtain rfl | hj := eq_or_ne i j
+    · simp only [Pi.single_eq_same]
       rw [← hw, eq_comm]
       exact sum_eq_single i (fun k _ hk ↦ hij k hk.symm) (by simp)
-    · rw [affineCombinationSingleWeights_apply_of_ne _ hj]
-      exact hij j (Ne.symm hj)
+    · rw [Pi.single_eq_of_ne' hj]
+      exact hij j hj
   exact dist_affineCombination_lt_of_strictConvexSpace (fun k _ ↦ (hw01 k).1) hw
     (Finset.mem_univ i) (Finset.mem_univ j) (s.independent.injective.ne hij) hi hj (fun k _ ↦ hr k)
 

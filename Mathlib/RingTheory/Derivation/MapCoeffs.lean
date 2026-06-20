@@ -30,6 +30,8 @@ namespace Derivation
 variable {R A M : Type*} [CommRing R] [CommRing A] [Algebra R A] [AddCommGroup M]
   [Module A M] [Module R M] (d : Derivation R A M)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /--
 The `R`-derivation from `A[X]` to `M[X]` which applies the derivative to each
 of the coefficients.
@@ -98,7 +100,7 @@ theorem apply_aeval_eq [IsScalarTower R A B] [IsScalarTower A B M'] (d : Derivat
     (x : B) (p : A[X]) :
     d (aeval x p) = PolynomialModule.eval x ((d.compAlgebraMap A).mapCoeffs p) +
       aeval x (derivative p) • d x := by
-  convert apply_aeval_eq' (d.compAlgebraMap A) d LinearMap.id _ x p
+  convert! apply_aeval_eq' (d.compAlgebraMap A) d LinearMap.id _ x p
   · apply Finsupp.ext
     intro x
     rfl
@@ -115,6 +117,7 @@ namespace Differential
 
 variable {A : Type*} [CommRing A] [Differential A]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 A specialization of `Derivation.mapCoeffs` for the case of a differential ring.
 -/
@@ -142,7 +145,7 @@ variable {R : Type*} [CommRing R] [Differential R] [Algebra A R] [DifferentialAl
 
 theorem deriv_aeval_eq (x : R) (p : A[X]) :
     (aeval x p)′ = aeval x (mapCoeffs p) + aeval x (derivative p) * x′ := by
-  convert Derivation.apply_aeval_eq' Differential.deriv _ (Algebra.linearMap A R) ..
+  convert! Derivation.apply_aeval_eq' Differential.deriv _ (Algebra.linearMap A R) ..
   · simp [mapCoeffs]
   · simp [deriv_algebraMap]
 

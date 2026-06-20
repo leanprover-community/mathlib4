@@ -210,7 +210,7 @@ theorem bot_or_nontrivial (H : Subgroup G) : H = ⊥ ∨ Nontrivial H := by
 /-- A subgroup is either the trivial subgroup or contains a non-identity element. -/
 @[to_additive /-- A subgroup is either the trivial subgroup or contains a nonzero element. -/]
 theorem bot_or_exists_ne_one (H : Subgroup G) : H = ⊥ ∨ ∃ x ∈ H, x ≠ (1 : G) := by
-  convert H.bot_or_nontrivial
+  convert! H.bot_or_nontrivial
   rw [nontrivial_iff_exists_ne_one]
 
 @[to_additive]
@@ -248,8 +248,8 @@ theorem coe_sInf (H : Set (Subgroup G)) : ((sInf H : Subgroup G) : Set G) = ⋂ 
 theorem mem_sInf {S : Set (Subgroup G)} {x : G} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Set.mem_iInter₂
 
-@[to_additive]
-theorem mem_iInf {ι : Sort*} {S : ι → Subgroup G} {x : G} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+@[to_additive (attr := simp)]
+theorem mem_iInf {ι : Sort*} {S : ι → Subgroup G} {x : G} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[to_additive (attr := simp, norm_cast)]
@@ -346,12 +346,6 @@ theorem mem_closure_of_mem {s : Set G} {x : G} (hx : x ∈ s) : x ∈ closure s 
 @[to_additive]
 theorem notMem_of_notMem_closure {P : G} (hP : P ∉ closure k) : P ∉ k := fun h =>
   hP (subset_closure h)
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.AddSubgroup.not_mem_of_not_mem_closure := AddSubgroup.notMem_of_notMem_closure
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 open Set
 
@@ -511,8 +505,10 @@ theorem closure_union_one (s : Set G) : closure (s ∪ {1}) = closure s := by
   rw [union_singleton, closure_insert_one]
 
 @[to_additive (attr := simp)]
-theorem closure_diff_one (s : Set G) : closure (s \ {1}) = closure s := by
-  rw [← closure_union_one (s \ {1}), diff_union_self, closure_union_one]
+theorem closure_sdiff_one (s : Set G) : closure (s \ {1}) = closure s := by
+  rw [← closure_union_one (s \ {1}), sdiff_union_self, closure_union_one]
+
+@[deprecated (since := "2026-06-03")] alias closure_diff_one := closure_sdiff_one
 
 theorem toAddSubgroup_closure (S : Set G) :
     (Subgroup.closure S).toAddSubgroup = AddSubgroup.closure (Additive.toMul ⁻¹' S) :=
@@ -560,7 +556,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {K : ι → Subgroup G} (h
   rw [this, mem_biSup_of_directedOn trivial]
   · simp
   · simp only [setOf_true]
-    rw [directedOn_onFun_iff, Set.image_univ, ← directedOn_range]
+    rw [directedOn_onFun_iff, Set.image_univ, directedOn_range]
     -- `Directed.mono_comp` and much of the Set API requires `Type u` instead of `Sort u`
     intro i
     simp only [PLift.exists]
@@ -585,6 +581,23 @@ theorem mem_sSup_of_directedOn {K : Set (Subgroup G)} (Kne : K.Nonempty) (hK : D
     {x : G} : x ∈ sSup K ↔ ∃ s ∈ K, x ∈ s := by
   haveI : Nonempty K := Kne.to_subtype
   simp only [sSup_eq_iSup', mem_iSup_of_directed hK.directed_val, SetCoe.exists, exists_prop]
+
+@[to_additive]
+theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι]
+    {S : ι → Subgroup G} [hS : ∀ i, IsMulCommutative (S i)]
+    (dir : Directed (· ≤ ·) S) : IsMulCommutative (⨆ i, S i : Subgroup G) := by
+  refine .of_setLike_mul_comm ?_
+  simp_rw [← SetLike.mem_coe, coe_iSup_of_directed dir, Set.mem_iUnion,
+    SetLike.mem_coe, forall_exists_index]
+  intro a i ha b j hb
+  obtain ⟨k, hik, hjk⟩ := dir i j
+  exact setLike_mul_comm (hik ha) (hjk hb)
+
+@[to_additive]
+instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
+    {S : ι →o Subgroup G} [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : Subgroup G) :=
+  isMulCommutative_iSup S.monotone.directed_le
 
 variable {C : Type*} [CommGroup C] {s t : Subgroup C} {x : C}
 
@@ -612,8 +625,7 @@ variable {P : C → Prop}
 @[to_additive, simp high]
 lemma forall_mem_sup :
     (∀ x ∈ s ⊔ t, P x) ↔ (∀ x₁ ∈ s, ∀ x₂ ∈ t, P (x₁ * x₂)) := by
-  simp [mem_sup]
-  aesop
+  grind [mem_sup]
 
 @[to_additive, simp high]
 lemma exists_mem_sup :

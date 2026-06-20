@@ -26,7 +26,7 @@ endowed with a topology.
 interior, closure, frontier
 -/
 
-@[expose] public section
+public section
 
 open Set
 
@@ -52,6 +52,14 @@ theorem interior_maximal (h₁ : t ⊆ s) (h₂ : IsOpen t) : t ⊆ interior s :
 @[grind =]
 theorem IsOpen.interior_eq (h : IsOpen s) : interior s = s :=
   interior_subset.antisymm (interior_maximal (Subset.refl s) h)
+
+theorem forall_isOpen_iff {p : Set X → Prop} :
+    (∀ t, IsOpen t → p t) ↔ ∀ t, p (interior t) :=
+  ⟨fun h t ↦ h (interior t) isOpen_interior, fun h t ht ↦ ht.interior_eq ▸ h t⟩
+
+theorem exists_isOpen_iff {p : Set X → Prop} :
+    (∃ t, IsOpen t ∧ p t) ↔ ∃ t, p (interior t) :=
+  ⟨fun ⟨_, h⟩ ↦ ⟨_, h.1.interior_eq ▸ h.2⟩, fun ⟨_, h⟩ ↦ ⟨_, isOpen_interior, h⟩⟩
 
 theorem interior_eq_iff_isOpen : interior s = s ↔ IsOpen s :=
   ⟨fun h => h ▸ isOpen_interior, IsOpen.interior_eq⟩
@@ -188,8 +196,6 @@ theorem subset_closure : s ⊆ closure s :=
 theorem notMem_of_notMem_closure {P : X} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
-
 theorem closure_minimal (h₁ : s ⊆ t) (h₂ : IsClosed t) : closure s ⊆ t :=
   sInter_subset_of_mem ⟨h₂, h₁⟩
 
@@ -203,6 +209,14 @@ theorem Disjoint.closure_right (hd : Disjoint s t) (hs : IsOpen s) :
 
 @[simp] theorem IsClosed.closure_eq (h : IsClosed s) : closure s = s :=
   Subset.antisymm (closure_minimal (Subset.refl s) h) subset_closure
+
+theorem forall_isClosed_iff {p : Set X → Prop} :
+    (∀ t, IsClosed t → p t) ↔ ∀ t, p (closure t) :=
+  ⟨fun h t ↦ h (closure t) isClosed_closure, fun h t ht ↦ ht.closure_eq ▸ h t⟩
+
+theorem exists_isClosed_iff {p : Set X → Prop} :
+    (∃ t, IsClosed t ∧ p t) ↔ ∃ t, p (closure t) :=
+  ⟨fun ⟨_, h⟩ ↦ ⟨_, h.1.closure_eq ▸ h.2⟩, fun ⟨_, h⟩ ↦ ⟨_, isClosed_closure, h⟩⟩
 
 theorem IsClosed.closure_subset (hs : IsClosed s) : closure s ⊆ s :=
   closure_minimal (Subset.refl _) hs
@@ -224,8 +238,10 @@ theorem monotone_closure (X : Type*) [TopologicalSpace X] : Monotone (@closure X
 theorem closure_inter_subset : closure (s ∩ t) ⊆ closure s ∩ closure t :=
   subset_inter (closure_mono inter_subset_left) (closure_mono inter_subset_right)
 
-theorem diff_subset_closure_iff : s \ t ⊆ closure t ↔ s ⊆ closure t := by
-  rw [diff_subset_iff, union_eq_self_of_subset_left subset_closure]
+theorem sdiff_subset_closure_iff : s \ t ⊆ closure t ↔ s ⊆ closure t := by
+  rw [sdiff_subset_iff, union_eq_self_of_subset_left subset_closure]
+
+@[deprecated (since := "2026-06-03")] alias diff_subset_closure_iff := sdiff_subset_closure_iff
 
 theorem closure_inter_subset_inter_closure (s t : Set X) :
     closure (s ∩ t) ⊆ closure s ∩ closure t :=
@@ -413,7 +429,7 @@ theorem Dense.nonempty_iff (hs : Dense s) : s.Nonempty ↔ Nonempty X :=
 theorem Dense.nonempty [h : Nonempty X] (hs : Dense s) : s.Nonempty :=
   hs.nonempty_iff.2 h
 
-@[mono]
+@[mono, gcongr]
 theorem Dense.mono (h : s₁ ⊆ s₂) (hd : Dense s₁) : Dense s₂ := fun x =>
   closure_mono h (hd x)
 
@@ -458,39 +474,53 @@ end Closure
 section Frontier
 
 @[simp]
-theorem closure_diff_interior (s : Set X) : closure s \ interior s = frontier s :=
+theorem closure_sdiff_interior (s : Set X) : closure s \ interior s = frontier s :=
   rfl
+
+@[deprecated (since := "2026-06-03")] alias closure_diff_interior := closure_sdiff_interior
 
 /-- Interior and frontier are disjoint. -/
 lemma disjoint_interior_frontier : Disjoint (interior s) (frontier s) := by
-  rw [disjoint_iff_inter_eq_empty, ← closure_diff_interior, diff_eq,
+  rw [disjoint_iff_inter_eq_empty, ← closure_sdiff_interior, sdiff_eq,
     ← inter_assoc, inter_comm, ← inter_assoc, compl_inter_self, empty_inter]
 
 @[simp]
-theorem closure_diff_frontier (s : Set X) : closure s \ frontier s = interior s := by
-  rw [frontier, diff_diff_right_self, inter_eq_self_of_subset_right interior_subset_closure]
+theorem closure_sdiff_frontier (s : Set X) : closure s \ frontier s = interior s := by
+  rw [frontier, sdiff_sdiff_right_self, inter_eq_self_of_subset_right interior_subset_closure]
+
+@[deprecated (since := "2026-06-03")] alias closure_diff_frontier := closure_sdiff_frontier
 
 @[simp]
-theorem self_diff_frontier (s : Set X) : s \ frontier s = interior s := by
-  rw [frontier, diff_diff_right, diff_eq_empty.2 subset_closure,
+theorem self_sdiff_frontier (s : Set X) : s \ frontier s = interior s := by
+  rw [frontier, sdiff_sdiff_right, sdiff_eq_empty.2 subset_closure,
     inter_eq_self_of_subset_right interior_subset, empty_union]
 
+@[deprecated (since := "2026-06-03")] alias self_diff_frontier := self_sdiff_frontier
+
+lemma mem_interior_iff_notMem_frontier {s : Set X} {x : X} (hx : x ∈ s) :
+    x ∈ interior s ↔ x ∉ frontier s := by
+  simp [← self_sdiff_frontier, hx]
+
+lemma mem_frontier_iff_notMem_interior {s : Set X} {x : X} (hx : x ∈ s) :
+    x ∈ frontier s ↔ x ∉ interior s := by
+  simp [← self_sdiff_frontier, hx]
+
 theorem frontier_eq_closure_inter_closure : frontier s = closure s ∩ closure sᶜ := by
-  rw [closure_compl, frontier, diff_eq]
+  rw [closure_compl, frontier, sdiff_eq]
 
 theorem frontier_subset_closure : frontier s ⊆ closure s :=
-  diff_subset
+  sdiff_subset
 
 theorem frontier_subset_iff_isClosed : frontier s ⊆ s ↔ IsClosed s := by
-  rw [frontier, diff_subset_iff, union_eq_right.mpr interior_subset, closure_subset_iff_isClosed]
+  rw [frontier, sdiff_subset_iff, union_eq_right.mpr interior_subset, closure_subset_iff_isClosed]
 
 alias ⟨_, IsClosed.frontier_subset⟩ := frontier_subset_iff_isClosed
 
 theorem frontier_closure_subset : frontier (closure s) ⊆ frontier s :=
-  diff_subset_diff closure_closure.subset <| interior_mono subset_closure
+  sdiff_subset_sdiff closure_closure.subset <| interior_mono subset_closure
 
 theorem frontier_interior_subset : frontier (interior s) ⊆ frontier s :=
-  diff_subset_diff (closure_mono interior_subset) interior_interior.symm.subset
+  sdiff_subset_sdiff (closure_mono interior_subset) interior_interior.symm.subset
 
 /-- The complement of a set has the same frontier as the original set. -/
 @[simp]
@@ -521,7 +551,7 @@ theorem IsOpen.frontier_eq (hs : IsOpen s) : frontier s = closure s \ s := by
   rw [frontier, hs.interior_eq]
 
 theorem IsOpen.inter_frontier_eq (hs : IsOpen s) : s ∩ frontier s = ∅ := by
-  rw [hs.frontier_eq, inter_diff_self]
+  rw [hs.frontier_eq, inter_sdiff_self]
 
 theorem disjoint_frontier_iff_isOpen : Disjoint (frontier s) s ↔ IsOpen s := by
   rw [← isClosed_compl_iff, ← frontier_subset_iff_isClosed,
@@ -534,17 +564,17 @@ theorem isClosed_frontier : IsClosed (frontier s) := by
 /-- The frontier of a closed set has no interior point. -/
 theorem interior_frontier (h : IsClosed s) : interior (frontier s) = ∅ := by
   have A : frontier s = s \ interior s := h.frontier_eq
-  have B : interior (frontier s) ⊆ interior s := by rw [A]; exact interior_mono diff_subset
+  have B : interior (frontier s) ⊆ interior s := by rw [A]; exact interior_mono sdiff_subset
   have C : interior (frontier s) ⊆ frontier s := interior_subset
   have : interior (frontier s) ⊆ interior s ∩ (s \ interior s) :=
     subset_inter B (by simpa [A] using C)
-  rwa [inter_diff_self, subset_empty_iff] at this
+  rwa [inter_sdiff_self, subset_empty_iff] at this
 
 theorem closure_eq_interior_union_frontier (s : Set X) : closure s = interior s ∪ frontier s :=
-  (union_diff_cancel interior_subset_closure).symm
+  (union_sdiff_cancel interior_subset_closure).symm
 
 theorem closure_eq_self_union_frontier (s : Set X) : closure s = s ∪ frontier s :=
-  (union_diff_cancel' interior_subset subset_closure).symm
+  (union_sdiff_cancel' interior_subset subset_closure).symm
 
 theorem Disjoint.frontier_left (ht : IsOpen t) (hd : Disjoint s t) : Disjoint (frontier s) t :=
   subset_compl_iff_disjoint_right.1 <|
@@ -554,7 +584,7 @@ theorem Disjoint.frontier_right (hs : IsOpen s) (hd : Disjoint s t) : Disjoint s
   (hd.symm.frontier_left hs).symm
 
 theorem frontier_eq_inter_compl_interior : frontier s = (interior s)ᶜ ∩ (interior sᶜ)ᶜ := by
-  rw [← frontier_compl, ← closure_compl, ← diff_eq, closure_diff_interior]
+  rw [← frontier_compl, ← closure_compl, ← sdiff_eq, closure_sdiff_interior]
 
 theorem compl_frontier_eq_union_interior : (frontier s)ᶜ = interior s ∪ interior sᶜ := by
   rw [frontier_eq_inter_compl_interior]

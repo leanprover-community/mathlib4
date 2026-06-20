@@ -13,7 +13,7 @@ public import Mathlib.Topology.Algebra.MulAction
 # Continuous nonnegative scalar multiplication
 -/
 
-@[expose] public section
+public section
 
 variable {R α : Type*} [Semiring R] [PartialOrder R] [SMul R α] [TopologicalSpace α]
 
