@@ -84,9 +84,7 @@ theorem surjective_primeCounting' : Function.Surjective π' :=
 
 theorem surjective_primeCounting : Function.Surjective π := by
   suffices Function.Surjective (π ∘ fun n ↦ n - 1) from this.of_comp
-  convert! surjective_primeCounting'
-  ext
-  exact primeCounting_sub_one _
+  simpa [Function.comp_def] using surjective_primeCounting'
 
 open Filter
 
@@ -200,7 +198,7 @@ lemma primesLE_eq_filter_Icc_two (n : ℕ) : primesLE n = filter Prime (Icc 2 n)
 
 lemma primesBelow_mono : Monotone primesBelow := by intro _ _ _ _; grind [mem_primesBelow]
 
-lemma primesLE_mono : Monotone primesLE := by intros _ _ _ _; grind [mem_primesLE]
+lemma primesLE_mono : Monotone primesLE := by intro _ _ _ _; grind [mem_primesLE]
 
 lemma primesBelow_succ (n : ℕ) :
     primesBelow (n + 1) = if n.Prime then insert n (primesBelow n) else primesBelow n := by
@@ -208,12 +206,12 @@ lemma primesBelow_succ (n : ℕ) :
 
 lemma primesLE_succ (n : ℕ) :
     primesLE (n + 1) = if (n + 1).Prime then insert (n + 1) (primesLE n) else primesLE n :=
-  primesBelow_succ (n + 1)
+  primesBelow_succ _
 
 lemma notMem_primesBelow (n : ℕ) : n ∉ primesBelow n :=
   fun hn ↦ (lt_of_mem_primesBelow hn).false
 
-lemma notMem_primesLE (n : ℕ) : n + 1 ∉ primesLE n := notMem_primesBelow (n + 1)
+lemma notMem_primesLE (n : ℕ) : n + 1 ∉ primesLE n := notMem_primesBelow _
 
 end PrimeSets
 
@@ -247,8 +245,7 @@ theorem primeCounting'_add_le {a k : ℕ} (h0 : a ≠ 0) (h1 : a < k) (n : ℕ) 
 
 theorem primeCounting_add_le {a k : ℕ} (h0 : a ≠ 0) (h1 : a ≤ k) (n : ℕ) :
     π (k + n) ≤ π k + totient a * (n / a + 1) := by
-  rw [primeCounting_eq_primeCounting'_succ]
-  convert! primeCounting'_add_le h0 (Order.lt_add_one_iff.mpr h1) n using 2
-  omega
+  rw [primeCounting_eq_primeCounting'_succ, add_right_comm]
+  exact primeCounting'_add_le h0 (Order.lt_add_one_iff.mpr h1) n
 
 end Nat
