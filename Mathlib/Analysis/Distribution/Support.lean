@@ -319,7 +319,7 @@ theorem dsupport_delta [FiniteDimensional ℝ E] (x : E) (hx : x ∈ Ω) :
   have htx : x ∈ t := Set.mem_inter hxs hx
   obtain ⟨u, h₁, h₂, h₃, -, h₄⟩ :=
     exists_contDiff_tsupport_subset (n := n) ((IsOpen.mem_nhds_iff ht).mpr htx)
-  refine ⟨⟨u, h₃, h₂, by aesop⟩, ⟨by aesop, by simp [h₄]⟩⟩
+  exact ⟨⟨u, h₃, h₂, by aesop⟩, ⟨by aesop, by simp [h₄]⟩⟩
 
 end Support
 
