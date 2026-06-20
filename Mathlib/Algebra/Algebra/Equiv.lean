@@ -160,9 +160,7 @@ theorem toRingEquiv_eq_coe : e.toRingEquiv = e :=
 lemma toRingEquiv_toRingHom : ((e : A₁ ≃+* A₂) : A₁ →+* A₂) = e :=
   rfl
 
-@[simp]
-theorem coe_ringEquiv : ((e : A₁ ≃+* A₂) : A₁ → A₂) = e :=
-  rfl
+theorem coe_ringEquiv : ((e : A₁ ≃+* A₂) : A₁ → A₂) = e := by simp
 
 theorem coe_ringEquiv' : (e.toRingEquiv : A₁ → A₂) = e :=
   rfl
