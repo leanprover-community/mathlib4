@@ -66,12 +66,12 @@ variable {K : Type*} [Field K] (v : InfinitePlace K)
 
 theorem isometry_embedding : Isometry (v.embedding.comp (WithAbs.equiv v.1).toRingHom) :=
   AddMonoidHomClass.isometry_of_norm _ fun x ↦ by
-    simpa using v.norm_embedding_eq (WithAbs.equiv v.1 x)
+    simpa using! v.norm_embedding_eq (WithAbs.equiv v.1 x)
 
 theorem isometry_embedding_of_isReal (hv : v.IsReal) :
     Isometry ((v.embedding_of_isReal hv).comp (WithAbs.equiv v.1).toRingHom) :=
   AddMonoidHomClass.isometry_of_norm _ fun x ↦ by
-    simpa using v.norm_embedding_of_isReal hv (WithAbs.equiv v.1 x)
+    simpa using! v.norm_embedding_of_isReal hv (WithAbs.equiv v.1 x)
 
 /-- The completion of a number field at an infinite place. -/
 abbrev Completion := v.1.Completion
@@ -151,7 +151,7 @@ theorem isClosed_image_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : Is
 
 theorem subfield_ne_real_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
     (extensionEmbedding v).fieldRange ≠ Complex.ofRealHom.fieldRange := by
-  contrapose! hv
+  contrapose hv
   simp only [not_isComplex_iff_isReal, isReal_iff]
   ext x
   obtain ⟨r, hr⟩ := hv ▸ RingHom.mem_fieldRange_self (extensionEmbedding v) (x : v.Completion)
@@ -251,7 +251,7 @@ theorem liesOver_conjugate_extensionEmbedding [ContinuousSMul v.Completion w.Com
   over := by
     ext x
     induction x using induction_on
-    · simpa using isClosed_eq (.comp (by fun_prop)
+    · simpa using! isClosed_eq (.comp (by fun_prop)
         (continuous_extension.comp <| continuous_algebraMap v.Completion w.Completion))
         continuous_extension
     · simp [WithAbs.algebraMap_left_apply, WithAbs.algebraMap_right_apply,

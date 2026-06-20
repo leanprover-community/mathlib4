@@ -5,7 +5,7 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.LinearAlgebra.PiTensorProduct
+public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 public import Mathlib.Tactic.SuppressCompilation
 
 /-!
@@ -73,11 +73,12 @@ lemma smul (r : R) (x y : ⨂[R] _, M) (h : addConGen (Rel R ι M) x y) :
   | of x y h => cases h with
     | perm e f =>
       apply isEmpty_or_nonempty ι |>.elim <;> intro h
-      · convert addConGen (Rel R ι M) |>.refl _
+      · convert! addConGen (Rel R ι M) |>.refl _
       · let i := Nonempty.some h
         classical
-        convert AddConGen.Rel.of _ _ <| SymmetricPower.Rel.perm (R := R) (ι := ι) e
-          <| Function.update f i (r • f i)
+        convert!
+          AddConGen.Rel.of _ _ <|
+            SymmetricPower.Rel.perm (R := R) (ι := ι) e <| Function.update f i (r • f i)
         · rw [MultilinearMap.map_update_smul, Function.update_eq_self]
         · simp_rw [Function.update_apply_equiv_apply, MultilinearMap.map_update_smul,
               ← Function.update_comp_equiv, Function.update_eq_self]; rfl

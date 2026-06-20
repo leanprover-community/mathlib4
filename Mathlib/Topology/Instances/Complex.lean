@@ -47,7 +47,6 @@ theorem Complex.subfield_eq_of_closed {K : Subfield ℂ} (hc : IsClosed (K : Set
   simp only [image_univ]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `K` a subfield of `ℂ` and let `ψ : K →+* ℂ` a ring homomorphism. Assume that `ψ` is uniform
 continuous, then `ψ` is either the inclusion map or the composition of the inclusion map with the
 complex conjugation. -/
@@ -70,23 +69,17 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
       let j := RingEquiv.subfieldCongr h
       -- ψ₁ is the continuous ring hom `ℝ →+* ℂ` constructed from `j : closure (K) ≃+* ℝ`
       -- and `extψ : closure (K) →+* ℂ`
-      let ψ₁ := RingHom.comp extψ (RingHom.comp j.symm.toRingHom ofRealHom.rangeRestrict)
+      let ψ₁ := RingHom.comp extψ (RingHom.comp j.symm.toRingHom ofRealHom.rangeRestrictField)
       -- Porting note: was `by continuity!` and was used inline
       have hψ₁ : Continuous ψ₁ := by
-        simpa only [RingHom.coe_comp] using hψ.comp ((continuous_algebraMap ℝ ℂ).subtype_mk _)
+        simpa only [RingHom.coe_comp] using! hψ.comp ((continuous_algebraMap ℝ ℂ).subtype_mk _)
       ext1 x
-      rsuffices ⟨r, hr⟩ : ∃ r : ℝ, ofRealHom.rangeRestrict r = j (ι x)
-      · have :=
-          RingHom.congr_fun (ringHom_eq_ofReal_of_continuous hψ₁) r
-        rw [RingHom.comp_apply, RingHom.comp_apply] at this
-        -- In `this`, the `DFunLike.coe` thinks it is applying a `(ℝ →+* ↥ofRealHom.fieldRange)`,
-        -- while in `hr`, we have a `(ℝ →+* ↥ofRealHom.range)`.
-        -- We could add a `@[simp]` lemma fixing this, but it breaks later steps of the proof.
-        erw [hr] at this
-        rw [RingEquiv.toRingHom_eq_coe] at this
-        convert this using 1
+      rsuffices ⟨r, hr⟩ : ∃ r : ℝ, ofRealHom.rangeRestrictField r = j (ι x)
+      · have := RingHom.congr_fun (ringHom_eq_ofReal_of_continuous hψ₁) r
+        rw [RingHom.comp_apply, RingHom.comp_apply, hr, RingEquiv.toRingHom_eq_coe] at this
+        convert! this using 1
         · exact (IsDenseInducing.extend_eq di hc.continuous _).symm
-        · rw [← ofRealHom.coe_rangeRestrict, hr]
+        · rw [← ofRealHom.coe_rangeRestrictField, hr]
           rfl
       obtain ⟨r, hr⟩ := SetLike.coe_mem (j (ι x))
       exact ⟨r, Subtype.ext hr⟩
@@ -98,28 +91,29 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
             (@Subfield.topEquiv ℂ _).symm.toRingHom)
       -- Porting note: was `by continuity!` and was used inline
       have hψ₁ : Continuous ψ₁ := by
-        simpa only [RingHom.coe_comp] using hψ.comp (continuous_id.subtype_mk _)
+        simpa only [RingHom.coe_comp] using! hψ.comp (continuous_id.subtype_mk _)
       rcases ringHom_eq_id_or_conj_of_continuous hψ₁ with h | h
       · left
         ext1 z
-        convert RingHom.congr_fun h z using 1
+        convert! RingHom.congr_fun h z using 1
         exact (IsDenseInducing.extend_eq di hc.continuous z).symm
       · right
         ext1 z
-        convert RingHom.congr_fun h z using 1
+        convert! RingHom.congr_fun h z using 1
         exact (IsDenseInducing.extend_eq di hc.continuous z).symm
   · let j : { x // x ∈ closure (id '' K) } → (K.topologicalClosure : Set ℂ) :=
       fun x =>
       ⟨x, by
-        convert x.prop
+        convert! x.prop
         simp only [id, Set.image_id']
         rfl ⟩
-    convert DenseRange.comp (Function.Surjective.denseRange _)
-      (IsDenseEmbedding.id.subtype (· ∈ K)).dense (by fun_prop : Continuous j)
+    convert!
+      DenseRange.comp (Function.Surjective.denseRange _) (IsDenseEmbedding.id.subtype (· ∈ K)).dense
+        (by fun_prop : Continuous j)
     rintro ⟨y, hy⟩
     use
       ⟨y, by
-        convert hy
+        convert! hy
         simp only [id, Set.image_id']
         rfl ⟩
 

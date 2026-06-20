@@ -52,8 +52,8 @@ This file defines first-order terms, formulas, sentences, and theories in a styl
 ## References
 
 For the Flypitch project:
-- [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
-  [flypitch_cpp]
+- [J. Han, F. van Doorn, *A formal proof of the independence of the continuum
+  hypothesis*][flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
   the continuum hypothesis*][flypitch_itp]
 -/
@@ -784,6 +784,12 @@ noncomputable def iExsUnique [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formul
   iExs β <| φ ⊓ iAlls β
     ((φ.relabel (fun a => Sum.elim (.inl ∘ .inl) .inr a)).imp <|
       .iInf fun g => Term.equal (var (.inr g)) (var (.inl (.inr g))))
+
+variable [DecidableEq α] in
+/-- `exClosure φ` is the sentence asserting that there exist values for all free variables of `φ`
+such that `φ` holds. -/
+noncomputable def exClosure (φ : L.Formula α) : L.Sentence :=
+  iExs φ.freeVarFinset (Formula.relabel Sum.inr (φ.restrictFreeVar id))
 
 /-- The biimplication between formulas, as a formula. -/
 protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=

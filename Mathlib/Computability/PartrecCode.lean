@@ -481,7 +481,6 @@ def eval : Code → ℕ →. ℕ
 @[simp]
 theorem eval_prec_zero (cf cg : Code) (a : ℕ) : eval (prec cf cg) (Nat.pair a 0) = eval cf a := by
   rw [eval, Nat.unpaired, Nat.unpair_pair]
-  simp (config := { Lean.Meta.Simp.neutralConfig with proj := true }) only []
   rw [Nat.rec_zero]
 
 set_option linter.style.whitespace false in -- suggestion is not clearly better; ignore for now
@@ -1031,7 +1030,7 @@ end
 /-- There are only countably many partial recursive partial functions `ℕ →. ℕ`. -/
 instance : Countable {f : ℕ →. ℕ // Partrec f} := by
   apply Function.Surjective.countable (f := fun c => ⟨eval c, eval_part.comp (.const c) .id⟩)
-  intro ⟨f, hf⟩; simpa using exists_code.1 hf
+  intro ⟨f, hf⟩; simpa using! exists_code.1 hf
 
 /-- There are only countably many computable functions `ℕ → ℕ`. -/
 instance : Countable {f : ℕ → ℕ // Computable f} :=

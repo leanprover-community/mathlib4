@@ -6,7 +6,7 @@ Authors: Gregory Wickham
 module
 
 public import Mathlib.Topology.Algebra.GroupCompletion
-public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
 /-!
 # Completion of continuous (semi-)linear maps:
@@ -44,7 +44,6 @@ noncomputable def completion (f : α →SL[σ] β) : Completion α →SL[σ] Com
       exact isClosed_eq (continuous_map.comp <| continuous_const_smul r)
         (continuous_map.const_smul _)
     | ih x => simp [← Completion.coe_smul]
-  cont := continuous_map
 
 @[simp]
 lemma toAddMonoidHom_completion (f : α →SL[σ] β) :

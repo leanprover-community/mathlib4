@@ -24,7 +24,7 @@ When `R` has `UniformSpace R`, we define the corresponding uniform structure.
 This topology can be included by writing `open scoped PowerSeries.WithPiTopology`.
 
 When the type of coefficients has the discrete topology, it corresponds to the topology defined by
-[N. Bourbaki, *Algebra {II}*, Chapter 4, §4, n°2][bourbaki1981].
+[N. Bourbaki, *Algebra II*, Chapter 4, §4, n°2][bourbaki1981].
 
 It corresponds with the adic topology but this is not proved here.
 
@@ -103,10 +103,9 @@ theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type*}
     Tendsto f u (nhds g) ↔
     ∀ d : ℕ, Tendsto (fun i => coeff d (f i)) u (nhds (coeff d g)) := by
   rw [MvPowerSeries.WithPiTopology.tendsto_iff_coeff_tendsto]
-  apply (Finsupp.LinearEquiv.finsuppUnique ℕ ℕ Unit).toEquiv.forall_congr
+  apply (Finsupp.uniqueLinearEquiv ℕ ℕ ()).toEquiv.forall_congr
   intro d
-  simp only [LinearEquiv.coe_toEquiv, Finsupp.LinearEquiv.finsuppUnique_apply,
-    PUnit.default_eq_unit, coeff]
+  simp only [LinearEquiv.coe_toEquiv, Finsupp.uniqueLinearEquiv_apply, coeff]
   apply iff_of_eq
   congr
   · ext _; congr; ext; simp
@@ -207,7 +206,7 @@ theorem summable_prod_of_tendsto_order_atTop_nhds_top
   apply (Finset.Iio i).powerset.finite_toSet.subset
   suffices ∀ s : Finset ι, coeff n (∏ i ∈ s, f i) ≠ 0 → ↑s ⊆ Set.Iio i by simpa
   intro s hs
-  contrapose! hs
+  contrapose hs
   obtain ⟨x, hxs, hxi⟩ := Set.not_subset.mp hs
   rw [Set.mem_Iio, not_lt] at hxi
   refine coeff_of_lt_order _ <| (hi x hxi).trans_le <| le_trans ?_ (le_order_prod _ _)
@@ -303,7 +302,7 @@ theorem isTopologicallyNilpotent_of_constantCoeff_zero [CommSemiring R]
 
 /-- Assuming the base ring has a discrete topology, the powers of a `PowerSeries` converge to 0
 iff its constant coefficient is nilpotent.
-[N. Bourbaki, *Algebra {II}*, Chapter 4, §4, n°2, corollary of prop. 3][bourbaki1981] -/
+[N. Bourbaki, *Algebra II*, Chapter 4, §4, n°2, corollary of prop. 3][bourbaki1981] -/
 theorem isTopologicallyNilpotent_iff_constantCoeff_isNilpotent
     [CommRing R] [DiscreteTopology R] (f : PowerSeries R) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) ↔
@@ -322,14 +321,13 @@ open WithPiTopology MvPowerSeries.WithPiTopology
 
 variable {R}
 
--- NOTE : one needs an API to apply `Finsupp.LinearEquiv.finsuppUnique`
+-- NOTE : one needs an API to apply `Finsupp.uniqueLinearEquiv`
 /-- A power series is the sum (in the sense of summable families) of its monomials -/
 theorem hasSum_of_monomials_self (f : PowerSeries R) :
     HasSum (fun d : ℕ => monomial d (coeff d f)) f := by
-  rw [← (Finsupp.LinearEquiv.finsuppUnique ℕ ℕ Unit).toEquiv.hasSum_iff]
-  convert MvPowerSeries.WithPiTopology.hasSum_of_monomials_self f
-  simp only [LinearEquiv.coe_toEquiv, comp_apply, monomial, coeff,
-    Finsupp.LinearEquiv.finsuppUnique_apply, PUnit.default_eq_unit]
+  rw [← (Finsupp.uniqueLinearEquiv ℕ ℕ ()).toEquiv.hasSum_iff]
+  convert! MvPowerSeries.WithPiTopology.hasSum_of_monomials_self f
+  simp only [LinearEquiv.coe_toEquiv, comp_apply, monomial, coeff]
   congr
   all_goals { ext; simp }
 
