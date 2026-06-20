@@ -199,29 +199,25 @@ theorem ConvexOn.comp_strictConcaveOn (hg : ConvexOn 𝕜 (f '' s) g) (hf : Stri
     (hg' : StrictAntiOn g (f '' s)) : StrictConvexOn 𝕜 s (g ∘ f) :=
   hg.dual.comp_strictConcaveOn hf hg'
 
-theorem StrictConvexOn.comp_convexOn_monotoneOn (hg : StrictConvexOn 𝕜 (f '' s) g)
-    (hf : ConvexOn 𝕜 s f) (hg' : MonotoneOn g (f '' s)) (hf' : s.InjOn f) :
-    StrictConvexOn 𝕜 s (g ∘ f) := by
+theorem StrictConvexOn.comp_convexOn (hg : StrictConvexOn 𝕜 (f '' s) g) (hf : ConvexOn 𝕜 s f)
+    (hg' : MonotoneOn g (f '' s)) (hf' : s.InjOn f) : StrictConvexOn 𝕜 s (g ∘ f) := by
   refine ⟨hf.left, fun x hx y hy hxy a b ha hb hab ↦ .trans_le' (b := g (a • f x + b • f y)) ?_ ?_⟩
   · exact hg.right (mem_image_of_mem f hx) (mem_image_of_mem f hy) (hf'.ne hx hy hxy) ha hb hab
   · refine hg' ?_ ?_ <| hf.right hx hy ha.le hb.le hab
     · exact mem_image_of_mem f <| hf.left hx hy ha.le hb.le hab
     · exact hg.left (mem_image_of_mem f hx) (mem_image_of_mem f hy) ha.le hb.le hab
 
-theorem StrictConcaveOn.comp_convexOn_antitoneOn (hg : StrictConcaveOn 𝕜 (f '' s) g)
-    (hf : ConvexOn 𝕜 s f) (hg' : AntitoneOn g (f '' s)) (hf' : s.InjOn f) :
-    StrictConcaveOn 𝕜 s (g ∘ f) :=
-  hg.dual.comp_convexOn_monotoneOn hf hg' hf'
+theorem StrictConcaveOn.comp_convexOn (hg : StrictConcaveOn 𝕜 (f '' s) g) (hf : ConvexOn 𝕜 s f)
+    (hg' : AntitoneOn g (f '' s)) (hf' : s.InjOn f) : StrictConcaveOn 𝕜 s (g ∘ f) :=
+  hg.dual.comp_convexOn hf hg' hf'
 
-theorem StrictConvexOn.comp_concaveOn_antitoneOn (hg : StrictConvexOn 𝕜 (f '' s) g)
-    (hf : ConcaveOn 𝕜 s f) (hg' : AntitoneOn g (f '' s)) (hf' : s.InjOn f) :
-    StrictConvexOn 𝕜 s (g ∘ f) :=
-  hg.comp_convexOn_monotoneOn (β := βᵒᵈ) hf hg'.dual hf'
+theorem StrictConvexOn.comp_concaveOn (hg : StrictConvexOn 𝕜 (f '' s) g) (hf : ConcaveOn 𝕜 s f)
+    (hg' : AntitoneOn g (f '' s)) (hf' : s.InjOn f) : StrictConvexOn 𝕜 s (g ∘ f) :=
+  hg.comp_convexOn (β := βᵒᵈ) hf hg'.dual hf'
 
-theorem StrictConcaveOn.comp_concaveOn_monotoneOn (hg : StrictConcaveOn 𝕜 (f '' s) g)
-    (hf : ConcaveOn 𝕜 s f) (hg' : MonotoneOn g (f '' s)) (hf' : s.InjOn f) :
-    StrictConcaveOn 𝕜 s (g ∘ f) :=
-  hg.dual.comp_concaveOn_antitoneOn hf hg' hf'
+theorem StrictConcaveOn.comp_concaveOn (hg : StrictConcaveOn 𝕜 (f '' s) g) (hf : ConcaveOn 𝕜 s f)
+    (hg' : MonotoneOn g (f '' s)) (hf' : s.InjOn f) : StrictConcaveOn 𝕜 s (g ∘ f) :=
+  hg.dual.comp_concaveOn hf hg' hf'
 
 end SMul
 
