@@ -342,6 +342,40 @@ initialize_simps_projections ContinuousLinearEquiv (toFun → apply, invFun → 
 theorem symm_map_nhds_eq (e : M₁ ≃SL[σ₁₂] M₂) (x : M₁) : map e.symm (𝓝 (e x)) = 𝓝 x :=
   e.toHomeomorph.symm_map_nhds_eq x
 
+section
+
+variable (f : M₁ →SL[σ₁₂] M₂) (g : M₂ →SL[σ₂₁] M₁)
+
+/-- If a continuous linear map has a continuous inverse, it is a continuous linear equivalence. -/
+def ofContinuousLinear (h₁ : f.comp g = ContinuousLinearMap.id R₂ M₂)
+    (h₂ : g.comp f = ContinuousLinearMap.id R₁ M₁) : M₁ ≃SL[σ₁₂] M₂ :=
+  { f with
+    invFun := g
+    left_inv := ContinuousLinearMap.ext_iff.1 h₂
+    right_inv := ContinuousLinearMap.ext_iff.1 h₁ }
+
+@[simp]
+theorem ofContinuousLinear_apply {h₁ h₂} (x : M₁) :
+    (ofContinuousLinear f g h₁ h₂ : M₁ ≃SL[σ₁₂] M₂) x = f x :=
+  rfl
+
+@[simp]
+theorem ofContinuousLinear_symm_apply {h₁ h₂} (x : M₂) :
+    (ofContinuousLinear f g h₁ h₂ : M₁ ≃SL[σ₁₂] M₂).symm x = g x :=
+  rfl
+
+@[simp]
+theorem ofContinuousLinear_toLinearMap {h₁ h₂} :
+    (ofContinuousLinear f g h₁ h₂ : M₁ ≃SL[σ₁₂] M₂) = f :=
+  rfl
+
+@[simp]
+theorem ofContinuousLinear_symm_toContinuousLinearMap {h₁ h₂} :
+    (ofContinuousLinear f g h₁ h₂ : M₁ ≃SL[σ₁₂] M₂).symm = g :=
+  rfl
+
+end
+
 /-- The composition of two continuous linear equivalences as a continuous linear equivalence. -/
 @[trans]
 protected def trans (e₁ : M₁ ≃SL[σ₁₂] M₂) (e₂ : M₂ ≃SL[σ₂₃] M₃) : M₁ ≃SL[σ₁₃] M₃ where
