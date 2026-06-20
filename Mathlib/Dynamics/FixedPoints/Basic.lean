@@ -64,7 +64,7 @@ protected theorem map {x : α} (hx : IsFixedPt fa x) {g : α → β} (h : Semico
     fb (g x) = g (fa x) := (h.eq x).symm
     _ = g x := congr_arg g hx
 
-protected theorem apply {x : α} (hx : IsFixedPt f x) : IsFixedPt f (f x) := by convert hx
+protected theorem apply {x : α} (hx : IsFixedPt f x) : IsFixedPt f (f x) := by convert! hx
 
 theorem preimage_iterate {s : Set α} (h : IsFixedPt (Set.preimage f) s) (n : ℕ) :
     IsFixedPt (Set.preimage f^[n]) s := by
@@ -78,6 +78,10 @@ lemma image_iterate {s : Set α} (h : IsFixedPt (Set.image f) s) (n : ℕ) :
 protected theorem equiv_symm (h : IsFixedPt e x) : IsFixedPt e.symm x :=
   h.to_leftInverse e.leftInverse_symm
 
+@[simp]
+theorem equiv_symm_iff : IsFixedPt e.symm x ↔ IsFixedPt e x :=
+  ⟨fun h ↦ e.symm_symm ▸ h.equiv_symm, .equiv_symm⟩
+
 protected theorem perm_inv (h : IsFixedPt e x) : IsFixedPt (⇑e⁻¹) x :=
   h.equiv_symm
 
@@ -88,6 +92,10 @@ protected theorem perm_zpow (h : IsFixedPt e x) : ∀ n : ℤ, IsFixedPt (⇑(e 
   | Int.negSucc n => (h.perm_pow <| n + 1).perm_inv
 
 end IsFixedPt
+
+@[simp]
+theorem fixedPoints_symm : fixedPoints e.symm = fixedPoints e := by
+  simp [Set.ext_iff]
 
 @[simp]
 theorem Injective.isFixedPt_apply_iff (hf : Injective f) {x : α} :

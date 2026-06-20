@@ -30,6 +30,7 @@ class ChosenCoendsOfShape (J : Type*) [Category* J] (C : Type*) [Category* C] wh
   /-- The chosen cowedge is colimiting. -/
   isCoend (F : Jᵒᵖ ⥤ J ⥤ C) : IsColimit (cowedge F)
 
+set_option linter.checkUnivs false in
 /-- The data of chosen coends in `C`. -/
 @[nolint checkUnivs, pp_with_univ]
 abbrev ChosenCoends (C : Type*) [Category* C] :=
@@ -52,13 +53,14 @@ lemma chosenCoend.condition {i j : J} (f : i ⟶ j) :
 
 variable {F}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Morphisms out of the chosen coend are determined by their composites with `chosenCoend.ι`. -/
 @[ext]
 lemma chosenCoend.hom_ext {X : C} {f g : chosenCoend F ⟶ X}
     (h : ∀ j, chosenCoend.ι F j ≫ f = chosenCoend.ι F j ≫ g) : f = g := by
   apply (ChosenCoendsOfShape.isCoend F).hom_ext
   rintro (a | a)
-  · simpa using _ ≫= h _
+  · simpa using! _ ≫= h _
   · exact h _
 
 variable {X : C} (f : ∀ j, (F.obj (op j)).obj j ⟶ X)
@@ -103,6 +105,7 @@ class ChosenEndsOfShape (J : Type*) [Category* J] (C : Type*) [Category* C] wher
   /-- The chosen wedge is limiting. -/
   isEnd (F : Jᵒᵖ ⥤ J ⥤ C) : IsLimit (wedge F)
 
+set_option linter.checkUnivs false in
 /-- The data of chosen ends in `C`. -/
 @[nolint checkUnivs, pp_with_univ]
 abbrev ChosenEnds (C : Type*) [Category* C] :=
