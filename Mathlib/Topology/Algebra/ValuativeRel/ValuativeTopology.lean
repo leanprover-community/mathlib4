@@ -94,10 +94,11 @@ variable {K : Type*} [DivisionRing K] [ValuativeRel K] {Γ₀ : Type*}
 section TopologicalSpace
 
 variable [TopologicalSpace R] (v : Valuation R Γ₀) [v.Compatible]
+namespace IsValuativeTopology
 
 /-- If the neighborhoods of every point for a given topology are defined by a fixed valuation `v`,
-then it is a valuative topology. -/
-theorem IsValuativeTopology.mk_valuation
+then the topology is a valuative topology. -/
+theorem of_mem_nhds_iff_vle
     (H : ∀ {s : Set R} {x : R}, s ∈ 𝓝 x ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
     (fun (x₁ : R) ↦ x + x₁) '' {z : R | v.restrict z < γ} ⊆ s) :
     IsValuativeTopology R := by
@@ -109,11 +110,11 @@ theorem IsValuativeTopology.mk_valuation
 
 /-- In a topological group, if the neighborhoods of zero are defined by a fixed valuation `v`, then
 the underlying topology is valuative. -/
-theorem IsValuativeTopology.mk₀_valuation [IsTopologicalAddGroup R]
+theorem of_mem_nhds_zero_iff_vle [IsTopologicalAddGroup R]
     (H : ∀ {s : Set R}, s ∈ 𝓝 0 ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
     (fun (x₁ : R) ↦ x₁) '' {z : R | v.restrict z < γ} ⊆ s) :
     IsValuativeTopology R := by
-  apply IsValuativeTopology.mk_valuation v (fun {s x} ↦ ?_)
+  apply of_mem_nhds_iff_vle v (fun {s x} ↦ ?_)
   rw [← vadd_mem_nhds_vadd_iff (g := -x)]
   simp only [vadd_eq_add, neg_add_cancel, H, image_id', subset_vadd_set_iff, neg_neg,
     image_add_left, preimage_setOf_eq]
@@ -122,8 +123,6 @@ theorem IsValuativeTopology.mk₀_valuation [IsTopologicalAddGroup R]
   first | exact fun ⟨_, ⟨_, h⟩⟩ ↦ by simpa [← h] | exact fun h ↦ ⟨- x + a, ⟨h, by simp⟩⟩
 
 variable [IsValuativeTopology R]
-
-namespace IsValuativeTopology
 
 /-- A variant of `IsValuativeTopology.mem_nhds_iff` using subtraction. -/
 lemma mem_nhds_iff' {s : Set R} {x : R} :
@@ -164,7 +163,9 @@ end IsValuativeTopology
 
 open IsValuativeTopology
 
+variable [IsValuativeTopology R]
 namespace Valuation
+
 
 lemma mem_nhds_iff {s : Set R} {x : R} : s ∈ 𝓝 x ↔
     ∃ γ : (ValueGroup₀ (.ofClass v))ˣ, { z | v.restrict (z - x) < γ.val } ⊆ s := by
