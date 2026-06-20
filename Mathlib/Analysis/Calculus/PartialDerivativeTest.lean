@@ -471,79 +471,19 @@ theorem isLocalMin_of_posDef_of_littleo {V : Type*} [NormedAddCommGroup V]
   rw [← pow_two] at hx
   exact le_of_littleO hx <| sub_eq_zero.mp hx₀.symm
 
-/-- . -/
-theorem littleO_of_powerseries.inequality {z : ℝ} {r : ℝ} (hr : 0 < r)
-    {a : ℝ} (ha : 0 < a) {C : ℝ} (hC : 0 < C) {D : ℝ}
-    (hx : z ≤ D / (C * (a * r) ^ 3)) :
-    C * (a * (z * r)) ^ 3 ≤ D * z ^ 2 := by
-  rw [pow_succ, mul_pow, pow_two, pow_two] at hx ⊢
-  have : z * (C * (a * a * (r * r) * (a * r))) ≤ D := (le_div_iff₀ (by positivity)).mp hx
-  ring_nf at this ⊢
-  suffices z ^ 2 * (z * C * a ^ 3 * r ^ 3) ≤ z ^ 2 * D by linarith
-  gcongr
-
-/-- . -/
-theorem littleO_of_powerseries.aux
-    {V : Type*} [NormedAddCommGroup V]
-    {x₀ : V}
-    {r : NNReal} (hr : 0 < r) {a : ℝ} (ha : 0 < a) {C : ℝ} (hC : 0 < C)
-    {x : V} {D : ℝ}
-    (hx : x ∈ Metric.ball x₀ (D / (C * (a * (2 / r)) ^ 3))) :
-    C * (a * (‖x - x₀‖ / (r / 2))) ^ 3 ≤ D * ‖x - x₀‖ ^ 2 := by
-  convert @inequality ‖x-x₀‖ (2/r) (by aesop) a ha C hC D
-    (le_of_lt (by
-      rw [Metric.mem_ball, mem_sphere_iff_norm.mpr rfl] at hx
-      exact hx)) using 2
-  ring_nf
-
-/-- . -/
-theorem littleO_of_powerseries.calculation {V : Type*} [NormedAddCommGroup V]
-    {f : V → ℝ} {x₀ : V}
-    {r : NNReal} (hr : 0 < r) {a : ℝ} (ha : 0 < a) {C : ℝ} (hC : 0 < C)
-    (α : ℝ) {x : V}
-    (h₃ : x - x₀ ∈ Metric.ball 0 (r / 2) →
-        ‖f (x₀ + (x - x₀)) - α‖
-        ≤ C * (a * (‖x - x₀‖ / (r / 2))) ^ 3)
-    {D : ℝ}
-    (hx : x ∈ Metric.ball x₀ (min (r / 2) (D / (C * (a * (2 / r)) ^ 3)))) :
-    |f x - α| ≤ D * ‖x - x₀‖ ^ 2 := by
-  simp only [Metric.mem_ball, lt_inf_iff, dist_zero_right, add_sub_cancel,
-    Real.norm_eq_abs] at hx h₃ ⊢
-  specialize h₃ (by
-    convert hx.1 using 1
-    · rfl
-    · exact mem_sphere_iff_norm.mp rfl
-    )
-  apply h₃.trans <| aux hr ha hC (by
-    convert hx.2 using 2
-    simp
-    )
 
 /-- Having a power series implies quadratic approximation. -/
 lemma littleO_of_powerseries {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     {f : V → ℝ} {x₀ : V} {p : FormalMultilinearSeries ℝ V ℝ}
-    {r : NNReal} (hr : 0 < r) (h : HasFPowerSeriesOnBall f p x₀ r) :
+    {r : NNReal} (h : HasFPowerSeriesOnBall f p x₀ r) :
     (fun x => f x - p.partialSum 3 (x - x₀)) =o[nhds x₀] fun x => ‖x - x₀‖ ^ 2 := by
-  rw [Asymptotics.IsLittleO]
-  intro D hD
-  have : ENNReal.ofNNReal ((r / 2)) < r := by
-    norm_num
-    exact ENNReal.half_lt_self (fun hc => (lt_self_iff_false _).mp
-      (ENNReal.coe_eq_zero.mp hc ▸ hr)) (by simp)
-  obtain ⟨a,ha⟩ := HasFPowerSeriesOnBall.uniform_geometric_approx' h this
-  rw [Asymptotics.IsBigOWith]
-  apply eventually_nhds_iff.mpr
-  simp only [Real.norm_eq_abs, norm_pow]
-  obtain ⟨C,hC⟩ := ha.2
-  use Metric.ball x₀ (min (r/2) (D / (C * (a * (2/r))^3)))
-  constructor
-  · intro y h
-    rw [abs_norm]
-    exact littleO_of_powerseries.calculation hr ha.1.1
-      hC.1 (p.partialSum 3 (y - x₀)) (fun hy => hC.2 (y-x₀) hy 3) h
-  · constructor
-    · exact Metric.isOpen_ball
-    · simp_all
+      have hbig : (fun y => f (x₀ + y) - p.partialSum 3 y) =O[nhds 0] fun y => ‖y‖ ^ 3 :=
+        HasFPowerSeriesAt.isBigO_sub_partialSum_pow h.hasFPowerSeriesAt _
+      convert hbig.comp_tendsto (show Filter.Tendsto (fun x : V => x - x₀) (nhds x₀) (nhds 0) from
+        tendsto_sub_nhds_zero_iff.mpr Filter.tendsto_id) |> fun h => h.trans_isLittleO _ using 1
+      · aesop
+      · rw [Asymptotics.isLittleO_iff_tendsto'] <;> norm_num
+        simpa [pow_succ, mul_div_assoc] using tendsto_norm_sub_self x₀
 
 @[nontriviality]
 lemma isLocalMin.of_subsingleton {V : Type*} [TopologicalSpace V]
@@ -553,7 +493,8 @@ lemma isLocalMin.of_subsingleton {V : Type*} [TopologicalSpace V]
 /-- The second partial derivative test. -/
 theorem second_derivative_test {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
     [FiniteDimensional ℝ V] {f : V → ℝ} {x₀ : V} {p : FormalMultilinearSeries ℝ V ℝ}
-    (h₀ : gradient f x₀ = 0) {r : NNReal} (hr : 0 < r) (h₁ : HasFPowerSeriesOnBall f p x₀ r)
+    (h₀ : gradient f x₀ = 0) {r : NNReal}
+    (h₁ : HasFPowerSeriesOnBall f p x₀ r)
     (hf : (iteratedFDerivQuadraticMap f x₀).PosDef) : IsLocalMin f x₀ := by
   nontriviality V
   have h₂ (x : V) (i : ℕ) : p i (fun _ => x - x₀)
@@ -567,5 +508,5 @@ theorem second_derivative_test {V : Type*} [NormedAddCommGroup V] [InnerProductS
     ext
     rw [h₂]
   have h₄ (x : V) := congrArg (HSub.hSub (f x)) (h₃ x)
-  exact isLocalMin_of_posDef_of_littleo (funext_iff.mpr h₄ ▸ littleO_of_powerseries hr h₁) h₀
+  exact isLocalMin_of_posDef_of_littleo (funext_iff.mpr h₄ ▸ littleO_of_powerseries h₁) h₀
     h₁.analyticAt.contDiffAt hf
