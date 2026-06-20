@@ -135,7 +135,13 @@ instance inf (P Q : MorphismProperty C) [IsLocalAtTarget P K] [IsLocalAtTarget Q
 
 end IsLocalAtTarget
 
-alias of_zeroHypercover_target := IsLocalAtTarget.of_zeroHypercover
+set_option backward.defeqAttrib.useBackward true in
+lemma of_zeroHypercover_target {P : MorphismProperty C} {K : Precoverage C} [K.HasPullbacks]
+    [P.IsLocalAtTarget K] {X Y : C} {f : X ⟶ Y} (𝒰 : Precoverage.ZeroHypercover.{w} K Y)
+    [Precoverage.ZeroHypercover.Small.{v} 𝒰] (h : ∀ i, P (pullback.snd f (𝒰.f i))) :
+    P f := by
+  rw [IsLocalAtTarget.iff_of_zeroHypercover (P := P) 𝒰.restrictIndexOfSmall]
+  simp [h]
 
 alias iff_of_zeroHypercover_target := IsLocalAtTarget.iff_of_zeroHypercover
 
@@ -211,12 +217,19 @@ instance inf (P Q : MorphismProperty C) [IsLocalAtSource P K] [IsLocalAtSource Q
 
 end IsLocalAtSource
 
-alias of_zeroHypercover_source := IsLocalAtSource.of_zeroHypercover
+set_option backward.defeqAttrib.useBackward true in
+lemma of_zeroHypercover_source {P : MorphismProperty C} {K : Precoverage C}
+    [P.IsLocalAtSource K] {X Y : C} {f : X ⟶ Y} (𝒰 : Precoverage.ZeroHypercover.{w} K X)
+    [Precoverage.ZeroHypercover.Small.{v} 𝒰] (h : ∀ i, P (𝒰.f i ≫ f)) :
+    P f := by
+  rw [IsLocalAtSource.iff_of_zeroHypercover (P := P) 𝒰.restrictIndexOfSmall]
+  simp [h]
 
 alias iff_of_zeroHypercover_source := IsLocalAtSource.iff_of_zeroHypercover
 
 end MorphismProperty
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 Let `J` be a precoverage for which isomorphisms are local at the target. Let
 `f, g : X ⟶ Y` be two morphisms over `S` and `𝒰` a `J`-cover of `S`.

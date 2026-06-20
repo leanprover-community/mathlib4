@@ -120,7 +120,7 @@ maps to the minimal polynomial of `β mod m_S` over the residue field. -/
 lemma minpoly_map_residue [Algebra.Etale R S]
     {β : S} (hadj : Algebra.adjoin R {β} = ⊤) :
     (minpoly R β).map (residue R) = minpoly (ResidueField R) (residue S β) := by
-  have h := minpoly.monic <| Algebra.IsIntegral.isIntegral (R:=R) β
+  have h := minpoly.monic <| Algebra.IsIntegral.isIntegral (R := R) β
   -- Both monic, same degree, divisibility ⟹ equal
   refine eq_of_monic_of_dvd_of_natDegree_le
     (minpoly.monic <| Algebra.IsIntegral.isIntegral <| residue S β)

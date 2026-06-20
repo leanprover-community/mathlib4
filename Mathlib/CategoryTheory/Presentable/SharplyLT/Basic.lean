@@ -36,6 +36,7 @@ namespace SharplyLT
 
 lemma le (h : SharplyLT κ₁ κ₂) : κ₁ ≤ κ₂ := h.lt.le
 
+set_option backward.defeqAttrib.useBackward true in
 open CardinalFilteredPoset in
 lemma exists_cofinal_of_isCardinalAccessibleCategory_cardinalFilteredPoset
     (h : κ₁ ≤ κ₂) [IsCardinalAccessibleCategory (CardinalFilteredPoset κ₁) κ₂]
@@ -280,13 +281,14 @@ lemma colimit.w (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J))
   Limits.colimit.w ((Subtype.mono_coe A.val).functor ⋙ p.diag)
     (j := ⟨a, ha⟩) (j' := ⟨b, hb⟩) (homOfLE hab)
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def colimit.map
     {A₁ A₂ : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)} (hA : A₁ ≤ A₂) :
     colimit κ₁ κ₂ p A₁ ⟶ colimit κ₁ κ₂ p A₂ :=
   colimit.desc _ (Cocone.mk _
     { app j := colimit.ι κ₁ κ₂ p A₂ j.val (hA j.prop)
       naturality j₁ j₂ f := by
-        simpa using colimit.w κ₁ κ₂ p A₂ (leOfHom f) (hA j₁.prop) (hA j₂.prop) })
+        simpa using! colimit.w κ₁ κ₂ p A₂ (leOfHom f) (hA j₁.prop) (hA j₂.prop) })
 
 omit [Fact κ₂.IsRegular] in
 @[reassoc (attr := simp)]
@@ -306,6 +308,7 @@ lemma colimit.hom_ext
   ext
   apply h
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def colimit.π
     (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) : colimit κ₁ κ₂ p A ⟶ X :=
   colimit.desc _ (Cocone.mk _
@@ -334,6 +337,7 @@ noncomputable def functor :
   map_id _ := by ext; simp
   map_comp f g := by ext; simp
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 noncomputable def cocone : Cocone (functor κ₁ κ₂  p) where
   pt := X
@@ -343,6 +347,7 @@ namespace isColimit
 
 variable {κ₁ κ₂ p} (s : Cocone (functor κ₁ κ₂ p))
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 noncomputable def coconeDesc : Cocone p.diag where
   pt := s.pt
@@ -350,16 +355,18 @@ noncomputable def coconeDesc : Cocone p.diag where
   ι.naturality j j' f := by
     simpa [← s.w (homOfLE (le_pair κ₁ κ₂ (leOfHom f))),
         ← s.w (homOfLE (le_pair' κ₁ κ₂ (leOfHom f)))]
-      using colimit.w_assoc ..
+      using! colimit.w_assoc ..
 
 noncomputable def desc : X ⟶ s.pt := p.isColimit.desc (coconeDesc s)
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma fac (j : J) :
     dsimp% p.ι.app j ≫ desc s =
       colimit.ι _ _ _ _ _ (by simp) ≫ s.ι.app (singleton κ₁ κ₂ j) :=
   p.isColimit.fac (coconeDesc s) j
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma fac' (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) :
     colimit.π κ₁ κ₂ p A ≫ desc s = s.ι.app A := by
@@ -372,6 +379,7 @@ lemma fac' (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) :
 end isColimit
 
 open isColimit in
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def isColimit : IsColimit (cocone κ₁ κ₂ p) where
   desc s := desc s
   fac s A := fac' s A

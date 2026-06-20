@@ -81,7 +81,7 @@ instance (J : Type u) [SmallCategory J] [IsCardinalFiltered J κ] :
     simp only [(isCardinalFiltered κ).prop_iff_of_iso
       (p.isColimit.coconePointUniqueUpToIso
         (Limits.isColimitCocone (colimit.isColimit (p.diag ⋙ forget PartOrdEmb)))),
-      isCardinalFiltered_iff, Limits.cocone_pt_coe]
+      isCardinalFiltered_iff]
     exact Limits.CoconePt.isCardinalFiltered_pt _ p.prop_diag_obj
 
 end PartOrdEmb
@@ -150,6 +150,7 @@ variable {J : CardinalFilteredPoset κ} (P : Set J.obj → Prop)
   [IsDirectedOrder (Subtype P)] [Nonempty (Subtype P)]
   [∀ (S : Subtype P), IsCardinalFiltered S.val κ]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a predicate `P : Set J.obj → Prop` on the underlying type
 of `J : CardinalFilteredPoset κ` such that all the subsets satisfying `P`
 are `κ`-filtered, this is the functor `Subtype P ⥤ CardinalFilteredPoset κ`
@@ -206,6 +207,7 @@ instance : ObjectProperty.EssentiallySmall.{u} (hasCardinalLTWithTerminal κ) wh
       ⟨⟨IsCardinalFiltered.of_equivalence κ e'.symm.equivalence⟩⟩⟩⟩,
         ⟨CardinalFilteredPoset.ι.preimageIso (PartOrdEmb.Iso.mk (by exact e'.symm))⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isCardinalPresentable_of_hasCardinalLT_of_le (J : CardinalFilteredPoset κ)
     {κ' : Cardinal.{u}} [Fact κ'.IsRegular] (hJ : HasCardinalLT J.obj κ') (h : κ ≤ κ') :
@@ -228,12 +230,12 @@ lemma isCardinalPresentable_of_hasCardinalLT_of_le (J : CardinalFilteredPoset κ
           { toFun := φ
             inj' x y h := Hom.injective f (by simpa [hφ])
             map_rel_iff' {x y} := ?_ }), ?_⟩
-      · simp only [Function.Embedding.coeFn_mk,
-          ← Hom.le_iff_le f, hφ, Hom.le_iff_le (c.ι.app m)]
+      · simp [← Hom.le_iff_le f, hφ]
       · dsimp
         ext x
-        exact (hg x).symm.trans
-          (ConcreteCategory.congr_hom (c.w (IsCardinalFiltered.toMax j hJ x)).symm (g x))
+        trans c.ι.app (j x) (g x)
+        · exact (hg x).symm
+        · exact (ConcreteCategory.congr_hom (c.w (IsCardinalFiltered.toMax j hJ x)).symm (g x))
     · choose k a hk using fun (x : J.obj) ↦
         (Types.FilteredColimit.isColimit_eq_iff' hc _ _).1 (ConcreteCategory.congr_hom h x)
       dsimp at f g h k a hk ⊢
@@ -249,7 +251,7 @@ lemma isCardinalPresentable_of_hasCardinalLT_of_le (J : CardinalFilteredPoset κ
       ext x
       simpa only [← hl x, Functor.map_comp, ObjectProperty.FullSubcategory.comp_hom,
         PartOrdEmb.hom_comp, RelEmbedding.coe_trans, Function.comp_apply]
-          using congr_arg _ (hk x)⟩⟩⟩
+          using! congr_arg _ (hk x)⟩⟩⟩
 
 section
 

@@ -9,6 +9,8 @@ public meta import Lean.Elab.Command
 public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Meta.Tactic.TryThis
 public meta import Lean.Server.InfoUtils
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Parser.Term
 
@@ -312,6 +314,7 @@ def flexible : Std.HashSet Name :=
   { ``Lean.Parser.Tactic.simp,
     ``Lean.Parser.Tactic.simpAll,
     ``Lean.Parser.Tactic.simpa,
+    ``Lean.Parser.Tactic.simpaUsingBang,
     ``Lean.Parser.Tactic.dsimp,
     ``Lean.Parser.Tactic.constructor,
     ``Lean.Parser.Tactic.congr,

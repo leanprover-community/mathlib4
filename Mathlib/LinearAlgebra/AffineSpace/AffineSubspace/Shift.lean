@@ -56,7 +56,7 @@ theorem direction_shift (s : AffineSubspace k P) (c : P) (r : k) :
     (s.shift c r).direction = s.direction := by
   rcases s.eq_bot_or_nonempty with h | h
   · simp [shift, h]
-  have h : Nonempty s := by simpa using h
+  have h : Nonempty s := by simpa using! h
   simp [shift, h]
 
 @[simp]
@@ -94,7 +94,7 @@ theorem shift_zero (s : AffineSubspace k P) [h : Nonempty s] (c : P) :
 theorem shift_one (s : AffineSubspace k P) (c : P) : s.shift c 1 = s := by
   rcases s.eq_bot_or_nonempty with h | h
   · simp [h]
-  have h : Nonempty s := by simpa using h
+  have h : Nonempty s := by simpa using! h
   simp [shift, h]
 
 end Ring
@@ -108,7 +108,7 @@ theorem shift_eq_map_homothety (s : AffineSubspace k P) (c : P) {r : k} (hr : Is
   obtain ⟨t, ht⟩ := hr.exists_right_inv
   rcases s.eq_bot_or_nonempty with h | h
   · simp [h]
-  have h : Nonempty s := by simpa using h
+  have h : Nonempty s := by simpa using! h
   rw [s.shift_eq h.some]
   ext p
   suffices (∃ y ∈ s, (1 - r) • (c -ᵥ h.some) +ᵥ y = p) ↔ ∃ y ∈ s, r • (y -ᵥ c) +ᵥ c = p by

@@ -33,7 +33,7 @@ def fromSigma (x : Σ (κ' : Set.Iio κ), κ'.val.ord.ToType → X) : SetCardina
   ⟨Set.range x.2,
     HasCardinalLT.of_surjective
       (by simpa only [hasCardinalLT_iff_cardinal_mk_lt,
-        Cardinal.mk_toType, Cardinal.card_ord] using x.1.prop) _
+        Cardinal.mk_toType, Cardinal.card_ord] using! x.1.prop) _
       Set.rangeFactorization_surjective⟩
 
 lemma fromSigma_surjective : Function.Surjective (fromSigma κ X) := by
