@@ -263,6 +263,8 @@ def ofContinuousMulEquiv {G : ProfiniteGrp.{u}} {H : Type v} [TopologicalSpace H
 
 /-- Build an isomorphism in the category `ProfiniteGrp` from
 a `ContinuousMulEquiv` between `ProfiniteGrp`s. -/
+@[to_additive /-- Build an isomorphism in the category `ProfiniteAddGrp` from
+a `ContinuousAddEquiv` between `ProfiniteAddGrp`s. -/]
 def ContinuousMulEquiv.toProfiniteGrpIso {X Y : ProfiniteGrp} (e : X ≃ₜ* Y) : X ≅ Y where
   hom := ofHom e
   inv := ofHom e.symm
@@ -279,7 +281,7 @@ instance : (forget₂ ProfiniteGrp Profinite).Faithful := {
   map_injective := fun {_ _} _ _ h =>
     ConcreteCategory.hom_ext _ _ fun x ↦ CategoryTheory.congr_fun h x }
 
-
+@[to_additive]
 instance : (forget₂ ProfiniteGrp Profinite).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget₂ ProfiniteGrp Profinite).map f)
@@ -288,6 +290,7 @@ instance : (forget₂ ProfiniteGrp Profinite).ReflectsIsomorphisms where
           map_mul' := map_mul f.hom }
     exact (ContinuousMulEquiv.toProfiniteGrpIso e).isIso_hom
 
+@[to_additive]
 instance : (forget ProfiniteGrp.{u}).ReflectsIsomorphisms :=
   CategoryTheory.reflectsIsomorphisms_comp (forget₂ ProfiniteGrp Profinite) (forget Profinite)
 

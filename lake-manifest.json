@@ -65,7 +65,7 @@
    "type": "git",
    "subDir": null,
    "scope": "leanprover-community",
-   "rev": "864303395d8b71f151ad3cfa50a7426c80254311",
+   "rev": "bc131b461e6ab913748715757355a6502477795f",
    "name": "batteries",
    "manifestFile": "lake-manifest.json",
    "inputRev": "nightly-testing",
@@ -83,4 +83,4 @@
    "configFile": "lakefile.toml"}],
  "name": "mathlib",
  "lakeDir": ".lake",
- "fixedToolchain": false}
+ "fixedToolchain": true}
