@@ -322,8 +322,8 @@ protected theorem finite (R B : Type*) [CommRing R] [CommRing B] [Algebra R B] [
 section IsDomain
 
 variable (A B : Type*) [CommRing A] [CommRing B] [IsDomain B] [Algebra A B] [FaithfulSMul A B]
-  [Finite G] [Finite G'] [MulSemiringAction G B] [MulSemiringAction G' B]
-  [IsGaloisGroup G A B] [IsGaloisGroup G' A B]
+  [MulSemiringAction G B] [MulSemiringAction G' B] [IsGaloisGroup G A B] [IsGaloisGroup G' A B]
+  [Finite G] [Finite G']
 
 /-- The cardinality of a Galois group of `B/A` equals the rank of `B` as an `A`-module.
 
@@ -336,10 +336,6 @@ theorem card_eq_finrank' : Nat.card G = Module.finrank A B := by
   rw [IsGaloisGroup.card_eq_finrank G (FractionRing A) (FractionRing B),
     Algebra.IsAlgebraic.finrank_of_isFractionRing A (FractionRing A) B (FractionRing B)]
 
-theorem _root_.Function.Bijective.of_comp {X Y Z : Type*} {f : X → Y} {g : Y → Z}
-    (hgf : Function.Bijective (g ∘ f)) (hg : Function.Injective g) : Function.Bijective f :=
-  ⟨hgf.1.of_comp, hgf.2.of_comp_left hg⟩
-
 attribute [local instance] FractionRing.liftAlgebra in
 /-- If `G` is a finite Galois group for `B/A`, then `G` is isomorphic to `Gal(B/A)`. -/
 @[simps!] noncomputable def mulEquivAlgEquiv : G ≃* Gal(B/A) :=
@@ -350,8 +346,7 @@ attribute [local instance] FractionRing.liftAlgebra in
     letI := IsFractionRing.mulSemiringAction G B L
     have := isGalois G K L
     have := finiteDimensional G K L
-    suffices Function.Bijective (MulSemiringAction.toAlgAut G K L) from
-      .of_comp (by exact this) (IsFractionRing.fieldEquivOfAlgEquivHom_injective A B K L)
+    refine .of_comp ?_ (IsFractionRing.fieldEquivOfAlgEquivHom_injective A B K L)
     rw [Nat.bijective_iff_injective_and_card, card_eq_finrank G K L,
       IsGalois.card_aut_eq_finrank K L]
     exact ⟨fun _ _ ↦ (faithful K).eq_of_smul_eq_smul ∘ DFunLike.ext_iff.mp, rfl⟩)

@@ -348,9 +348,13 @@ theorem Bijective.of_comp_iff (f : α → β) {g : γ → α} (hg : Bijective g)
     Bijective (f ∘ g) ↔ Bijective f :=
   and_congr (Injective.of_comp_iff' _ hg) (Surjective.of_comp_iff _ hg.surjective)
 
-theorem Bijective.of_comp_iff' {f : α → β} (hf : Bijective f) (g : γ → α) :
+theorem Bijective.of_comp_iff' (hf : Bijective f) (g : γ → α) :
     Function.Bijective (f ∘ g) ↔ Function.Bijective g :=
   and_congr (Injective.of_comp_iff hf.injective _) (Surjective.of_comp_iff' hf _)
+
+theorem Bijective.of_comp {f : α → β} {g : γ → α} (hfg : Function.Bijective (f ∘ g))
+    (hf : Function.Injective f) : Function.Bijective g :=
+  ⟨hfg.1.of_comp, hfg.2.of_comp_left hf⟩
 
 /-- If `f : α → α → β` is surjective, then every endofunction on `β` has a fixed point.
 This is an instance of Lawvere's fixed-point theorem applied to the category of types
