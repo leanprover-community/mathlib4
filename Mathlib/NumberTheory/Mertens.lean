@@ -314,7 +314,7 @@ theorem E₁Λ_le_E₁p_add_E₁ {x : ℝ} (hx : 1 ≤ x) :
     simp only [primesLE_eq_filter_Ioc_zero]
     gcongr with k hk
     apply rpow_le_self_of_one_le hx
-    simp only [mem_Icc] at hk
+    rw [mem_Icc] at hk
     exact div_le_one₀ (by norm_cast; linarith)|>.mpr (mod_cast hk.1)
   _ ≤ ∑ k ∈ Icc 1 (max 1 ⌊log x / log 2⌋₊), ∑ p ∈ primesLE ⌊x⌋₊, log p / (p ^ k : ℕ) := by
     apply sum_le_sum_of_subset_of_nonneg _ (fun _ _ _ ↦ sum_nonneg fun _ _ ↦ (by positivity))
@@ -325,14 +325,12 @@ theorem E₁Λ_le_E₁p_add_E₁ {x : ℝ} (hx : 1 ≤ x) :
     simp [← add_sum_Ioc_eq_sum_Icc (le_max_left ..)]
   _ ≤ _ := by
     gcongr
-    rw [sum_comm]
-    conv => lhs; arg 2; ext p; arg 2; ext k; rw [← mul_one_div, cast_pow, ← one_div_pow]
-    simp_rw [← mul_sum]
     calc
     _ ≤ ∑ p ∈ primesLE ⌊x⌋₊, log p / (p * (p - 1)) := by
+      rw [sum_comm]
       gcongr with p hp
-      simp only [primesLE_eq_filter_Ioc_zero, mem_filter, mem_Ioc] at hp
-      conv => rhs; rw [← mul_one_div]
+      simp_rw [← mul_one_div (log p), cast_pow, ← one_div_pow, ← mul_sum]
+      rw [primesLE_eq_filter_Ioc_zero, mem_filter, mem_Ioc] at hp
       gcongr
       rw [(by rfl : Ioc 1 (max 1 ⌊log x / log 2⌋₊) = Ico 2 (max 1 ⌊log x / log 2⌋₊  + 1))]
       grw [geom_sum_Ico_le_of_lt_one (by simp)]
@@ -358,7 +356,7 @@ theorem E₁Λ_le {x : ℝ} (hx : 1 ≤ x) : E₁Λ x ≤ log 4 + 1 := by
 /-- A general lower bound for `E₁Λ`. -/
 theorem le_E₁Λ {x : ℝ} (hx : 1 ≤ x) : -2 ≤ E₁Λ x := by
   suffices x * (log x - 2) ≤ x * (log x + E₁Λ x) by
-    linarith [le_of_mul_le_mul_left this (by linarith)]
+     linarith [le_of_mul_le_mul_left this (by linarith)]
   grw [← le_mul_log_add_E₁Λ (by linarith), ← le_sum_log hx]
   linarith [log_le_self (by linarith : 0 ≤ x)]
 
