@@ -258,9 +258,9 @@ theorem IndepFun.integral_bilin_comp_comp
     (hf.comp_aemeasurable hX).isProbabilityMeasure_of_indepFun (f ∘ X) (g ∘ Y) h
       (hXY.comp₀ hX hY hf.1.aemeasurable hg.1.aemeasurable)
   rw [← integral_map (f := fun z ↦ B (f z.1) (g z.2)) (φ := fun ω ↦ (X ω, Y ω)) (by fun_prop),
-    (indepFun_iff_map_prod_eq_prod_map_map hX hY).1 hXY,
-    integral_prod_bilin _ hf hg, integral_map hX hf.1, integral_map hY hg.1]
-  rw [(indepFun_iff_map_prod_eq_prod_map_map hX hY).1 hXY]
+    hXY.map_prod_eq_prod_map_map hX hY, integral_prod_bilin _ hf hg, integral_map hX hf.1,
+    integral_map hY hg.1]
+  rw [hXY.map_prod_eq_prod_map_map hX hY]
   exact Continuous.comp_aestronglyMeasurable₂ (g := (B · ·)) (by fun_prop)
     hf.1.comp_fst hg.1.comp_snd
 
@@ -457,11 +457,11 @@ lemma iIndepFun.integral_fun_prod_comp (hX : iIndepFun X μ)
   have := hX.isProbabilityMeasure
   change ∫ ω, (fun x ↦ ∏ i, f i (x i)) (X · ω) ∂μ = _
   rw [← integral_map (f := fun x ↦ ∏ i, f i (x i)) (φ := fun ω ↦ (X · ω)),
-    (iIndepFun_iff_map_fun_eq_pi_map mX).1 hX, integral_fintype_prod_eq_prod]
+    hX.map_fun_eq_pi_map mX, integral_fintype_prod_eq_prod]
   · congr with i
     rw [integral_map (mX i) (hf i)]
   · fun_prop
-  rw [(iIndepFun_iff_map_fun_eq_pi_map mX).1 hX]
+  rw [hX.map_fun_eq_pi_map mX]
   exact Finset.aestronglyMeasurable_fun_prod Finset.univ fun i _ ↦
     (hf i).comp_quasiMeasurePreserving (Measure.quasiMeasurePreserving_eval _ i)
 
