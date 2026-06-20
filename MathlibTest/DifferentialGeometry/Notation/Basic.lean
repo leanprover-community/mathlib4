@@ -529,6 +529,71 @@ end
 
 end differentiability
 
+/-! Tests for the elaborators for `UniqueMDiff{WithinAt,On}`. -/
+section UniqueMDiff
+
+variable {s : Set M} {m : M}
+
+/-- info: UniqueMDiffOn I s : Prop -/
+#guard_msgs in
+#check UniqueMDiff[s]
+
+/-- info: UniqueMDiffOn (modelWithCornersSelf Real Real) (Set.Icc 0 1) : Prop -/
+#guard_msgs in
+#check UniqueMDiff[(Set.Icc 0 1 : Set ℝ)]
+
+/-- error: `Real` has type `Type` which is not of the form `Set α` for some `α`. -/
+#guard_msgs in
+#check UniqueMDiff[ℝ]
+
+/-- info: UniqueMDiffWithinAt I s : M → Prop -/
+#guard_msgs in
+#check UniqueMDiffAt[s]
+
+/-- info: UniqueMDiffWithinAt I s m : Prop -/
+#guard_msgs in
+#check UniqueMDiffAt[s] m
+
+/-- info: UniqueMDiffWithinAt I Set.univ m : Prop -/
+#guard_msgs in
+#check UniqueMDiffAt[(Set.univ : Set M)] m
+
+-- In the future, the elaborators should take the type of `m` into account.
+/--
+error: Could not find a model with corners for `?_`.
+
+Hint: the expected type contains metavariables, maybe you need to provide an implicit argument
+-/
+#guard_msgs in
+set_option pp.mvars.anonymous false in
+#check UniqueMDiffAt[Set.univ] m
+
+variable {s : TopologicalSpace.Opens M}
+
+/-- info: UniqueMDiffOn I s.carrier : Prop -/
+#guard_msgs in
+#check UniqueMDiff[s.carrier]
+
+/-- error: `s` has type `TopologicalSpace.Opens M` which is not of the form `Set α` for some `α`. -/
+#guard_msgs in
+#check UniqueMDiff[s]
+
+/--
+error: Application type mismatch: The argument
+  s
+has type
+  TopologicalSpace.Opens M
+but is expected to have type
+  Set ?_
+in the application
+  UniqueMDiffOn I s
+-/
+#guard_msgs in
+set_option pp.mvars.anonymous false in
+#check UniqueMDiffOn I s
+
+end UniqueMDiff
+
 /-! Tests for the custom elaborators for `ContMDiff{WithinAt,At,On}` -/
 section smoothness
 
@@ -931,7 +996,7 @@ info: ContMDiffWithinAt (modelWithCornersSelf 𝕜 E) (modelWithCornersSelf 𝕜
 
 end smoothness
 
--- Inferring the type of `x` for all ContMDiff/MDifferentiable{Within}At elaborators.
+/-! Inferring the type of `x` for all ContMDiff/MDifferentiable{Within}At elaborators. -/
 section
 
 variable {EM' : Type*} [NormedAddCommGroup EM']
@@ -967,6 +1032,33 @@ open ContDiff in -- for the ∞ notation
 /-- info: setOf fun x ↦ Surjective ⇑(mfderivWithin I I' f s x) : Set M -/
 #guard_msgs in
 #check {x | Function.Surjective (mfderiv[s] f x) }
+
+end
+
+/-! Tests for the elaborators for `tangentMap(Within)` and `TangentSpace` -/
+section
+
+variable {f : M → M} {s : Set M} {x : M} {X : TangentSpace% x}
+
+/-- info: TangentSpace I x : Type u_2 -/
+#guard_msgs in
+#check TangentSpace% x
+
+/-- info: tangentMap I I f : TangentBundle I M → TangentBundle I M -/
+#guard_msgs in
+#check tangentMap% f
+
+/-- info: tangentMapWithin I I f s : TangentBundle I M → TangentBundle I M -/
+#guard_msgs in
+#check tangentMap[s] f
+
+/-- info: tangentMap I I f { proj := x, snd := X } : TangentBundle I M -/
+#guard_msgs in
+#check tangentMap% f X
+
+/-- info: tangentMapWithin I I f s { proj := x, snd := X } : TangentBundle I M -/
+#guard_msgs in
+#check tangentMap[s] f X
 
 end
 
