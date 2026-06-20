@@ -97,20 +97,18 @@ theorem shift_one (s : AffineSubspace k P) (c : P) : s.shift c 1 = s := by
   have h : Nonempty s := by simpa using! h
   simp [shift, h]
 
-/-- For a point $A$ with barycentric coordinates associated with a collection of points $P$, if one
-of the coordinate associated with $P_i$ is $r$, then the point $A$ is on the span by the rest of
-$P_j$ shifted towards $P_i$ with parameter $(1 - r)$. -/
+/-- Consider a point `A` with barycentric coordinates associated to a collection of points `P`.
+If the coordinate associated to one of the points `Pᵢ` is `r`, then the point `A` is on the span
+of `P \ {Pᵢ}` shifted towards `Pᵢ` with parameter `1 - r`. -/
 theorem affineCombination_mem_shift {ι : Type*} [Fintype ι] [Nontrivial ι]
     (p : ι → P) (i : ι) {w : ι → k} (hw : ∑ i, w i = 1) :
     affineCombination k univ p w ∈ (affineSpan k <| p '' {i}ᶜ).shift (p i) (1 - w i) := by
-  rcases subsingleton_or_nontrivial k with _ | _
+  cases subsingleton_or_nontrivial k
   · suffices (affineSpan k <| p '' {i}ᶜ) = ⊤ by simp [this]
     have : Subsingleton P := (AddTorsor.subsingleton_iff V P).mp <| Module.subsingleton k V
     simp
   classical
-  obtain ⟨j, hj⟩ : Set.Nonempty {i}ᶜ := by
-    by_contra
-    simp at this
+  obtain ⟨j, hj⟩ := exists_ne i
   rw [shift_eq ⟨p j, mem_affineSpan k <| Set.mem_image_of_mem _ hj⟩]
   suffices ∃ q ∈ affineSpan k (p '' {i}ᶜ), w i • (p i -ᵥ p j) +ᵥ q = affineCombination k univ p w by
     simpa
@@ -118,7 +116,7 @@ theorem affineCombination_mem_shift {ι : Type*} [Fintype ι] [Nontrivial ι]
   rw [← affineCombination_piSingle k _ p (mem_univ i),
     ← affineCombination_piSingle k _ p (mem_univ j), affineCombination_vsub, ← map_smul, ← map_neg,
     weightedVSub_vadd_affineCombination]
-  refine affineCombination_mem_affineSpan_image ?_ (fun i' _ hi ↦ (by aesop)) _
+  refine affineCombination_mem_affineSpan_image ?_ (fun i' _ hi ↦ by aesop) _
   simp [sum_add_distrib, ← mul_sum, hw]
 
 /-- The iff version of `affineCombination_mem_shift` for affine independent points. -/
@@ -129,16 +127,13 @@ theorem _root_.AffineIndependent.affineCombination_mem_shift_iff
     w i = 1 - c := by
   classical
   refine ⟨?_, fun h ↦ by simpa [h] using affineCombination_mem_shift p i hw⟩
-  obtain ⟨j, hj⟩ : Set.Nonempty {i}ᶜ := by
-    by_contra
-    simp at this
+  obtain ⟨j, hj⟩ := exists_ne i
   rw [shift_eq ⟨p j, mem_affineSpan k <| Set.mem_image_of_mem _ hj⟩]
   suffices ∀ q ∈ affineSpan k (p '' {i}ᶜ),
     (1 - c) • (p i -ᵥ p j) +ᵥ q = affineCombination k univ p w → w i = 1 - c by simpa
   intro q hqmem heq
   obtain ⟨t, w', ht, hw', rfl⟩ := eq_affineCombination_of_mem_affineSpan_image hqmem
   have ht : (t : Set ι).indicator w' i = 0 := Set.indicator_of_notMem (by simpa using ht) w'
-  have hj : j ≠ i := by simpa using hj
   rw [affineCombination_indicator_subset _ _ t.subset_univ,
     ← affineCombination_piSingle k _ p (mem_univ i),
     ← affineCombination_piSingle k _ p (mem_univ j), affineCombination_vsub, ← map_smul,
@@ -186,21 +181,17 @@ section Ring
 variable [Ring k] [PartialOrder k] [IsOrderedAddMonoid k] [AddCommGroup V] [AddTorsor V P]
   [Module k V] {n : ℕ} [NeZero n] (s : Affine.Simplex k P n) (i : Fin (n + 1))
 
-/-- The base of a simplex shifted with parameter 0 intersects with the closed interior only at the
+/-- The base of a simplex shifted with parameter 0 intersects the closed interior only at the
 vertex. -/
 theorem closedInterior_inter_shift_zero [ZeroLEOneClass k] :
-    s.closedInterior ∩ (affineSpan k (Set.range (s.faceOpposite i).points)).shift (s.points i) 0 =
+    s.closedInterior ∩ (affineSpan k <| s.points '' {i}ᶜ).shift (s.points i) 0 =
     {s.points i} := by
-  refine Set.Subset.antisymm ?_ (by simp [s.point_mem_closedInterior i])
-  suffices ∀ p ∈ s.closedInterior, p ∈ (affineSpan k (s.points '' {i}ᶜ)).shift (s.points i) 0 →
-      p = s.points i by
-    simpa
-  intro p hp hshift
+  refine subset_antisymm (fun p ⟨hp, hshift⟩ ↦ ?_) (by simp [s.point_mem_closedInterior i])
   obtain ⟨w, hw, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype <|
-    Set.mem_of_mem_of_subset hp s.closedInterior_subset_affineSpan
+    s.closedInterior_subset_affineSpan hp
   suffices w = Pi.single i 1 by simp [this]
   rw [affineCombination_mem_closedInterior_iff hw] at hp
-  rw [s.independent.affineCombination_mem_shift_iff i hw, sub_zero] at hshift
+  rw [SetLike.mem_coe, s.independent.affineCombination_mem_shift_iff i hw, sub_zero] at hshift
   ext j
   by_cases hj : j = i
   · aesop
@@ -208,14 +199,14 @@ theorem closedInterior_inter_shift_zero [ZeroLEOneClass k] :
     sum_eq_zero_iff_of_nonneg fun j _ ↦ (hp j).1] at hw
   simp [hw j (by simpa using hj), hj]
 
-/-- The base of a simplex shifted with parameter outside $[0, 1]$ does not intersect with the closed
+/-- The base of a simplex shifted with parameter outside $[0, 1]$ does not intersect the closed
 interior. -/
 theorem disjoint_closedInterior_shift {x : k} (hx : x < 0 ∨ 1 < x) :
     Disjoint s.closedInterior <|
     (affineSpan k (Set.range (s.faceOpposite i).points)).shift (s.points i) x := by
   refine Set.disjoint_left.mpr fun p hleft hright ↦ ?_
   obtain ⟨w, hw, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype <|
-    Set.mem_of_mem_of_subset hleft s.closedInterior_subset_affineSpan
+    s.closedInterior_subset_affineSpan hleft
   rw [range_faceOpposite_points, SetLike.mem_coe,
     s.independent.affineCombination_mem_shift_iff i hw] at hright
   rw [affineCombination_mem_closedInterior_iff hw] at hleft
@@ -230,53 +221,42 @@ private theorem closedInterior_inter_shift_aux {n : ℕ} (i : Fin n) {x : k} (hx
     (hx1 : x ≤ 1) {w : Fin n → k} (hw : ∑ i, w i = 1) :
     (∀ j, w j ∈ Set.Icc 0 1) ∧ w i = 1 - x ↔
     (∀ j, j ≠ i → x⁻¹ * w j ∈ Set.Icc 0 1) ∧ x⁻¹ * (w i - 1) + 1 = 0 := by
-  have : x⁻¹ * (w i - 1) + 1 = 0 ↔ w i = 1 - x := by grind
-  rw [this]
+  rw [show x⁻¹ * (w i - 1) + 1 = 0 ↔ w i = 1 - x by grind]
   refine and_congr_left fun hi ↦ ⟨fun hj j hji ↦ ⟨?_, ?_⟩, fun hj ↦ ?_⟩
   · exact mul_nonneg (by simpa using hxpos.le) (hj j).1
   · rw [eq_sub_iff_add_eq, add_comm, ← eq_sub_iff_add_eq] at hi
     rw [inv_mul_le_one₀ hxpos, hi, le_sub_iff_add_le, ← hw]
     exact add_le_sum (fun i _ ↦ (hj i).1) (mem_univ j) (mem_univ i) hji
-  · suffices ∀ j, 0 ≤ w j by
-      refine fun j ↦ ⟨this j, ?_⟩
-      rw [← hw]
-      exact Finset.single_le_sum (fun j _ ↦ this j) (mem_univ j)
+  · suffices ∀ j, 0 ≤ w j from
+      fun j ↦ ⟨this j, hw ▸ Finset.single_le_sum (fun j _ ↦ this j) (mem_univ j)⟩
     intro j
     by_cases hji : j = i <;> aesop
 
-/-- The parallel cross-section of a simplex is the homothety of the base. -/
+/-- A parallel cross-section of a simplex is the image of the base under a homothety. -/
 theorem closedInterior_inter_shift {n : ℕ} [NeZero n] (s : Affine.Simplex k P n)
     (i : Fin (n + 1)) {x : k} (hx : x ∈ Set.Icc 0 1) :
-    s.closedInterior ∩ (affineSpan k (Set.range (s.faceOpposite i).points)).shift (s.points i) x =
+    s.closedInterior ∩ (affineSpan k (s.points '' {i}ᶜ)).shift (s.points i) x =
     homothety (s.points i) x '' (s.faceOpposite i).closedInterior := by
-  rcases eq_or_lt_of_le hx.1 with hx0 | hxpos
-  · simpa [hx0.symm, (s.faceOpposite i).nonempty_closedInterior]
-      using s.closedInterior_inter_shift_zero i
+  rcases hx.1.eq_or_lt with hx0 | hxpos
+  · simpa [hx0.symm, nonempty_closedInterior] using s.closedInterior_inter_shift_zero i
   ext p
-  by_cases hp : p ∈ affineSpan k (Set.range s.points)
+  by_cases hp : p ∈ affineSpan k (.range s.points)
   · obtain ⟨w, hw, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype hp
-    rw [Set.mem_inter_iff, range_faceOpposite_points, SetLike.mem_coe,
-      s.independent.affineCombination_mem_shift_iff i hw,
+    rw [Set.mem_inter_iff, SetLike.mem_coe, s.independent.affineCombination_mem_shift_iff i hw,
       affineCombination_mem_closedInterior_iff hw, Set.mem_image]
     simp_rw [AffineMap.homothety_eq_iff_of_mul_eq_one (mul_inv_cancel₀ hxpos.ne.symm),
       univ.homothety_affineCombination _ _ (mem_univ i)]
     simp only [↓existsAndEq, and_true]
-    rw [faceOpposite, affineCombination_mem_closedInterior_face_iff_mem_Icc _ _ ?_,
+    rw [faceOpposite, affineCombination_mem_closedInterior_face_iff_mem_Icc,
       closedInterior_inter_shift_aux i hxpos hx.2 hw]
     · simp only [mem_compl, mem_singleton, not_not, forall_eq]
       congrm (∀ j, (hj : _) → $(by simp [lineMap_apply, hj])) ∧ $(by simp [lineMap_apply])
     · simp [AffineMap.lineMap_apply, Finset.sum_add_distrib, ← Finset.mul_sum,
         Finset.sum_sub_distrib, hw]
-  · apply iff_of_false
-    · apply not_and_of_not_left
-      contrapose hp
-      exact Set.mem_of_mem_of_subset hp s.closedInterior_subset_affineSpan
-    · contrapose hp
-      rw [Set.mem_image] at hp
-      obtain ⟨q, hq, rfl⟩ := hp
-      apply homothety_mem (mem_affineSpan _ (by simp))
-      obtain hq := Set.mem_of_mem_of_subset hq (s.faceOpposite i).closedInterior_subset_affineSpan
-      exact Set.mem_of_mem_of_subset hq (affineSpan_mono _ (by simp))
+  · apply iff_of_false (hp <| s.closedInterior_subset_affineSpan ·.1)
+    rintro ⟨q, hq, rfl⟩
+    exact hp <| homothety_mem (mem_affineSpan _ (by simp)) _ <|
+      affineSpan_mono _ (by simp) ((s.faceOpposite i).closedInterior_subset_affineSpan hq)
 
 end Field
 end Affine.Simplex
