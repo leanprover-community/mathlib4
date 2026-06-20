@@ -131,14 +131,18 @@ variable (α)
 theorem ScatteredSpace.isScattered [ScatteredSpace α] (s : Set α) : IsScattered s :=
   ScatteredSpace.univ_isScattered.subset (subset_univ s)
 
-instance ScatteredSpace.subtype [ScatteredSpace α] (s : Set α) : ScatteredSpace s := by
+theorem Topology.IsEmbedding.scatteredSpace {β : Type*} [TopologicalSpace β] {f : β → α}
+    (hf : IsEmbedding f) [ScatteredSpace α] : ScatteredSpace β := by
   constructor
   intro t _ ht hp
-  have hne : (Subtype.val '' t).Nonempty := ht.image _
-  have hpre : Preperfect (Subtype.val '' t) := by
+  have hne : (f '' t).Nonempty := ht.image _
+  have hpre : Preperfect (f '' t) := by
     rw [preperfect_iff_subset_derivedSet] at hp ⊢
-    exact (Set.image_mono hp).trans (continuous_subtype_val.image_derivedSet Subtype.val_injective)
+    exact (Set.image_mono hp).trans (hf.continuous.image_derivedSet hf.injective)
   exact (ScatteredSpace.isScattered α _).not_preperfect_of_nonempty hne hpre
+
+instance ScatteredSpace.subtype [ScatteredSpace α] (s : Set α) : ScatteredSpace s :=
+  IsEmbedding.subtypeVal.scatteredSpace
 
 end ScatteredSpace
 
