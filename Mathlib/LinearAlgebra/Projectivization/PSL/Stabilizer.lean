@@ -9,6 +9,7 @@ module
 public import Mathlib.LinearAlgebra.Projectivization.Action
 
 /-!
+# Stabilizer of a line in PSL(n, F)
 This file contains key constructions to prove that `PSL(n, F)` is simple via
 showing it has an Iwasawa structure.
 
@@ -31,7 +32,7 @@ variable {F : Type*} [Field F] {ι : Type*} [DecidableEq ι] [Fintype ι]
 `SL ι F` consisting of matrices `A` such that `A - 1` sends every vector into `L`.
 When `L` is one-dimensional this is an abelian subgroup of the stabilizer of `L` in `SL`. -/
 def Matrix.SpecialLinearGroup.lineStab (L : Submodule F (ι → F)) :
-    Subgroup (Matrix.SpecialLinearGroup ι F) where
+    Subgroup (SpecialLinearGroup ι F) where
   carrier := {A | ∀ w : ι → F, A • w - w ∈ L}
   one_mem' := by simp
   mul_mem' {A B} hA hB := fun w ↦ by
@@ -44,8 +45,9 @@ def Matrix.SpecialLinearGroup.lineStab (L : Submodule F (ι → F)) :
     rw [← mul_smul, mul_inv_cancel, one_smul, neg_sub]
 
 @[simp]
-lemma mem_lineStab_iff (A : Matrix.SpecialLinearGroup ι F) (L : Submodule F (ι → F)) :
-    A ∈ Matrix.SpecialLinearGroup.lineStab L ↔ ∀ w : ι → F, A • w - w ∈ L := Iff.rfl
+lemma Matrix.SpecialLinearGroup.mem_lineStab_iff (A : SpecialLinearGroup ι F)
+    (L : Submodule F (ι → F)) : A ∈ lineStab L ↔ ∀ w : ι → F, A • w - w ∈ L :=
+  Iff.rfl
 
 open scoped LinearAlgebra.Projectivization
 
