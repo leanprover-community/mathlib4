@@ -402,7 +402,7 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0} (hpq : p < q) :
     _ < q * μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) := by
       gcongr
       suffices H : (ρ + μ) (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) ≠ ∞ by
-        simp only [not_or, ENNReal.add_eq_top, Pi.add_apply, Ne, coe_add] at H
+        simp only [not_or, ENNReal.add_eq_top, add_apply, Ne] at H
         exact H.2
       apply (lt_of_le_of_lt (measure_mono inter_subset_left) _).ne
       rw [measure_toMeasurable]
@@ -699,7 +699,7 @@ theorem ae_tendsto_rnDeriv :
   convert! Ax.add Cx using 1
   · ext1 a
     conv_lhs => rw [eq_add]
-    simp only [Pi.add_apply, coe_add, ENNReal.add_div]
+    simp only [add_apply, ENNReal.add_div]
   · simp only [Bx, zero_add]
 
 /-! ### Lebesgue density points -/

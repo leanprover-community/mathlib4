@@ -141,7 +141,7 @@ lemma bernoulliMeasure_real_apply_of_notMem_of_notMem (p : I) {s : Set X}
   simp_all [bernoulliMeasure_real_apply]
 
 instance : IsProbabilityMeasure Ber(x, y, p) where
-  measure_univ := by simp [bernoulliMeasure_def]
+  measure_univ := by simp [bernoulliMeasure_def, ← ENNReal.coe_add]
 
 @[simp]
 theorem bernoulliMeasure_self_eq_dirac (x : X) (p : I) :

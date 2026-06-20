@@ -1049,7 +1049,7 @@ theorem setToFun_congr_measure_of_integrable {μ' : Measure α} (c' : ℝ≥0∞
   · intro c s hs hμs
     have hμ's : μ' s ≠ ∞ := by
       refine ((hμ'_le s).trans_lt ?_).ne
-      rw [Measure.smul_apply, smul_eq_mul]
+      rw [smul_apply, smul_eq_mul]
       exact ENNReal.mul_lt_top hc'.lt_top hμs
     rw [setToFun_indicator_const hT hs hμs.ne, setToFun_indicator_const hT' hs hμ's]
   · intro f₂ g₂ _ hf₂ hg₂ h_eq_f h_eq_g
@@ -1134,9 +1134,9 @@ theorem setToFun_top_smul_measure (hT : DominatedFinMeasAdditive (∞ • μ) T 
     setToFun (∞ • μ) T hT f = 0 := by
   refine setToFun_measure_zero' hT fun s _ hμs => ?_
   rw [lt_top_iff_ne_top] at hμs
-  simp only [true_and, Measure.smul_apply, ENNReal.mul_eq_top,
+  simp only [true_and, smul_apply, ENNReal.mul_eq_top,
     top_ne_zero, Ne, not_false_iff, not_or, Classical.not_not, smul_eq_mul] at hμs
-  simp only [hμs.right, Measure.smul_apply, mul_zero, smul_eq_mul]
+  simp only [hμs.right, smul_apply, mul_zero, smul_eq_mul]
 
 theorem setToFun_congr_smul_measure (c : ℝ≥0∞) (hc_ne_top : c ≠ ∞)
     (hT : DominatedFinMeasAdditive μ T C) (hT_smul : DominatedFinMeasAdditive (c • μ) T C')

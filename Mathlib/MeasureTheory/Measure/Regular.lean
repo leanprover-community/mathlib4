@@ -770,7 +770,7 @@ protected theorem comap [BorelSpace α] {mβ : MeasurableSpace β} [TopologicalS
 instance {μ ν : Measure α} [InnerRegular μ] [InnerRegular ν] : InnerRegular (μ + ν) := by
   constructor
   intro s hs r hr
-  simp only [Measure.coe_add, Pi.add_apply] at hr
+  simp only [add_apply] at hr
   rcases eq_or_ne (μ s) 0 with h | h
   · simp only [h, zero_add] at hr
     rcases MeasurableSet.exists_lt_isCompact hs hr with ⟨K, Ks, hK, h'K⟩
@@ -784,7 +784,7 @@ instance {μ ν : Measure α} [InnerRegular μ] [InnerRegular ν] : InnerRegular
   rcases MeasurableSet.exists_lt_isCompact hs hv with ⟨K', K's, hK', h'K'⟩
   refine ⟨K ∪ K', union_subset Ks K's, hK.union hK', huv.trans_le ?_⟩
   apply (add_le_add h'K.le h'K'.le).trans
-  simp only [Measure.coe_add, Pi.add_apply]
+  simp only [add_apply]
   gcongr <;> simp
 
 instance {ι : Type*} {μ : ι → Measure α} [∀ i, InnerRegular (μ i)] (a : Finset ι) :
@@ -802,11 +802,11 @@ instance {ι : Type*} {μ : ι → Measure α} [∀ i, InnerRegular (μ i)] :
     simp only [hs, Measure.sum_apply]
     exact ENNReal.summable.hasSum
   obtain ⟨a, ha⟩ : ∃ (a : Finset ι), r < (∑ i ∈ a, μ i) s := by
-    simp only [coe_finsetSum, Finset.sum_apply]
+    simp only [_root_.sum_apply]
     exact ((tendsto_order.1 this).1 r hr).exists
   rcases MeasurableSet.exists_lt_isCompact hs ha with ⟨K, Ks, hK, h'K⟩
   refine ⟨K, Ks, hK, h'K.trans_le ?_⟩
-  simp only [coe_finsetSum, Finset.sum_apply]
+  simp only [_root_.sum_apply]
   exact (ENNReal.sum_le_tsum _).trans (le_sum_apply _ _)
 
 end InnerRegular

@@ -380,7 +380,7 @@ lemma pi_map_eval [DecidableEq ι] (i : ι) :
   ext s hs
   classical
   rw [Measure.map_apply (measurable_pi_apply i) hs, ← Set.univ_pi_update_univ, Measure.pi_pi,
-    Measure.smul_apply, smul_eq_mul, ← Finset.prod_erase_mul _ _ (a := i) (by simp)]
+    _root_.smul_apply, smul_eq_mul, ← Finset.prod_erase_mul _ _ (a := i) (by simp)]
   congrm ?_ * ?_
   swap; · simp
   refine Finset.prod_congr rfl fun j hj ↦ ?_

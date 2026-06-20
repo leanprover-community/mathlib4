@@ -979,7 +979,7 @@ theorem integral_add_measure {f : α → G} (hμ : Integrable f μ) (hν : Integ
     ∫ x, f x ∂(μ + ν) = ∫ x, f x ∂μ + ∫ x, f x ∂ν := by
   simp only [integral_eq_setToFun]
   apply setToFun_add_left'' (fun s hs h's ↦ ?_) hμ hν le_rfl zero_le_one zero_le_one zero_le_one
-  simp only [Measure.coe_add, Pi.add_apply, add_lt_top] at h's
+  simp only [_root_.add_apply, add_lt_top] at h's
   simp [weightedSMul, Measure.real, toReal_add, h's.1.ne, h's.2.ne, add_smul]
 
 @[simp]

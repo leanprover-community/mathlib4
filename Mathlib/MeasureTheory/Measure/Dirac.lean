@@ -90,8 +90,7 @@ theorem map_dirac' {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map 
 @[simp]
 lemma map_const (μ : Measure α) (c : β) : μ.map (fun _ ↦ c) = (μ Set.univ) • dirac c := by
   ext s hs
-  simp only [Measure.coe_smul, Pi.smul_apply,
-    dirac_apply' _ hs, smul_eq_mul]
+  simp only [smul_apply, dirac_apply' _ hs, smul_eq_mul]
   classical
   rw [Measure.map_apply measurable_const hs, Set.preimage_const]
   by_cases hsc : c ∈ s
@@ -156,7 +155,7 @@ lemma exists_sum_smul_dirac [Countable α] (μ : Measure α) :
   have h_points_mem (s : measurableAtoms) : points s ∈ s.1 := (h_nonempty s).some_mem
   refine ⟨Set.range points, ext_of_measurableAtoms fun x ↦ ?_⟩
   rw [sum_apply _ (MeasurableSet.measurableAtom_of_countable x)]
-  simp only [Measure.smul_apply, smul_eq_mul]
+  simp only [smul_apply, smul_eq_mul]
   simp_rw [dirac_apply' _ (MeasurableSet.measurableAtom_of_countable x)]
   rw [tsum_eq_single ⟨points ⟨measurableAtom x, by simp [measurableAtoms]⟩, by simp⟩]
   · rw [indicator_of_mem]
@@ -190,7 +189,7 @@ theorem tsum_indicator_apply_singleton [Countable α] [MeasurableSingletonClass 
   calc
     (∑' x : α, s.indicator (fun x => μ {x}) x) =
       Measure.sum (fun a => μ {a} • Measure.dirac a) s := by
-      simp only [Measure.sum_apply _ hs, Measure.smul_apply, smul_eq_mul, Measure.dirac_apply,
+      simp only [Measure.sum_apply _ hs, smul_apply, smul_eq_mul, Measure.dirac_apply,
         Set.indicator_apply, mul_ite, Pi.one_apply, mul_one, mul_zero]
     _ = μ s := by rw [μ.sum_smul_dirac]
 
@@ -358,7 +357,7 @@ lemma ae_mem_finset_iff : (∀ᵐ a ∂μ, a ∈ s) ↔ μ = ∑ a ∈ s, μ {a}
     simp_rw [Finset.mem_coe, Set.inter_iUnion]
     rw [measure_biUnion_finset (fun i hi j hj hij ↦ .inter_left' _ <| .inter_right' _ ?_)
       (by measurability)]
-    · simp only [coe_finsetSum, Finset.sum_apply, smul_apply]
+    · simp only [_root_.sum_apply, smul_apply]
       congr with a
       by_cases ha : a ∈ t <;> simp [*]
     simpa

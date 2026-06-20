@@ -221,8 +221,7 @@ theorem eLpNorm_const_lt_top_iff_enorm {c : ε''} (hc' : ‖c‖ₑ ≠ ∞)
     eLpNorm (fun _ : α ↦ c) p μ < ∞ ↔ ‖c‖ₑ = 0 ∨ μ Set.univ < ∞ := by
   have hp : 0 < p.toReal := ENNReal.toReal_pos hp_ne_zero hp_ne_top
   by_cases hμ : μ = 0
-  · simp only [hμ, Measure.coe_zero, Pi.zero_apply, or_true, ENNReal.zero_lt_top,
-      eLpNorm_measure_zero]
+  · simp only [hμ, zero_apply, or_true, ENNReal.zero_lt_top, eLpNorm_measure_zero]
   by_cases hc : ‖c‖ₑ = 0
   · rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp_ne_zero hp_ne_top]
     simp [hc, ENNReal.zero_rpow_of_pos hp]

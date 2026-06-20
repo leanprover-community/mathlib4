@@ -452,8 +452,8 @@ def normalize : ProbabilityMeasure Ω :=
     { val := μ.mass⁻¹ • (μ : Measure Ω)
       property := by
         refine ⟨?_⟩
-        simp only [Measure.coe_smul, Pi.smul_apply, Measure.nnreal_smul_coe_apply,
-          ENNReal.coe_inv zero, ennreal_mass]
+        simp only [_root_.smul_apply, Measure.nnreal_smul_coe_apply, ENNReal.coe_inv zero,
+          ennreal_mass]
         rw [← Ne, ← ENNReal.coe_ne_zero, ennreal_mass] at zero
         exact ENNReal.inv_mul_cancel zero μ.prop.measure_univ_lt_top.ne }
 

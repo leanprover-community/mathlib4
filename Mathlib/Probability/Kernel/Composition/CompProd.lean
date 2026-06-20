@@ -507,7 +507,7 @@ lemma compProd_add_right (μ : Kernel α β) (κ η : Kernel (α × β) γ)
   by_cases hμ : IsSFiniteKernel μ
   swap; · simp [hμ]
   ext a s hs
-  simp only [compProd_apply hs, coe_add, Pi.add_apply, Measure.coe_add]
+  simp only [compProd_apply hs, coe_add, Pi.add_apply, FunLike.coe_add]
   rw [lintegral_add_left]
   exact measurable_kernel_prodMk_left' hs a
 

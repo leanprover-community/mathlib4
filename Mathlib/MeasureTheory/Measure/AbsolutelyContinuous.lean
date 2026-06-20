@@ -103,7 +103,7 @@ protected theorem smul [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0�
 
 protected lemma add (h1 : μ₁ ≪ ν) (h2 : μ₂ ≪ ν') : μ₁ + μ₂ ≪ ν + ν' := by
   intro s hs
-  simp only [coe_add, Pi.add_apply, add_eq_zero] at hs ⊢
+  simp only [add_apply, add_eq_zero] at hs ⊢
   exact ⟨h1 hs.1, h2 hs.2⟩
 
 lemma add_left_iff {μ₁ μ₂ ν : Measure α} :
@@ -119,7 +119,7 @@ lemma add_left {μ₁ μ₂ ν : Measure α} (h₁ : μ₁ ≪ ν) (h₂ : μ₂
 
 lemma add_right (h1 : μ ≪ ν) (ν' : Measure α) : μ ≪ ν + ν' := by
   intro s hs
-  simp only [coe_add, Pi.add_apply, add_eq_zero] at hs ⊢
+  simp only [add_apply, add_eq_zero] at hs ⊢
   exact h1 hs.1
 
 lemma add_right' (h : μ ≪ ν') (ν : Measure α) : μ ≪ ν + ν' := by

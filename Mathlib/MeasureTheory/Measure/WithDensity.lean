@@ -102,7 +102,7 @@ lemma withDensity_mono {f g : α → ℝ≥0∞} (hfg : f ≤ᵐ[μ] g) :
 theorem withDensity_add_left {f : α → ℝ≥0∞} (hf : Measurable f) (g : α → ℝ≥0∞) :
     μ.withDensity (f + g) = μ.withDensity f + μ.withDensity g := by
   refine Measure.ext fun s hs => ?_
-  rw [withDensity_apply _ hs, Measure.add_apply, withDensity_apply _ hs, withDensity_apply _ hs,
+  rw [withDensity_apply _ hs, add_apply, withDensity_apply _ hs, withDensity_apply _ hs,
     ← lintegral_add_left hf]
   simp only [Pi.add_apply]
 
@@ -113,7 +113,7 @@ theorem withDensity_add_right (f : α → ℝ≥0∞) {g : α → ℝ≥0∞} (h
 theorem withDensity_add_measure {m : MeasurableSpace α} (μ ν : Measure α) (f : α → ℝ≥0∞) :
     (μ + ν).withDensity f = μ.withDensity f + ν.withDensity f := by
   ext1 s hs
-  simp only [withDensity_apply f hs, restrict_add, lintegral_add_measure, Measure.add_apply]
+  simp only [withDensity_apply f hs, restrict_add, lintegral_add_measure, add_apply]
 
 theorem withDensity_sum {ι : Type*} {m : MeasurableSpace α} (μ : ι → Measure α) (f : α → ℝ≥0∞) :
     (sum μ).withDensity f = sum fun n => (μ n).withDensity f := by
@@ -123,14 +123,14 @@ theorem withDensity_sum {ι : Type*} {m : MeasurableSpace α} (μ : ι → Measu
 theorem withDensity_smul (r : ℝ≥0∞) {f : α → ℝ≥0∞} (hf : Measurable f) :
     μ.withDensity (r • f) = r • μ.withDensity f := by
   refine Measure.ext fun s hs => ?_
-  rw [withDensity_apply _ hs, Measure.coe_smul, Pi.smul_apply, withDensity_apply _ hs,
+  rw [withDensity_apply _ hs, smul_apply, withDensity_apply _ hs,
     smul_eq_mul, ← lintegral_const_mul r hf]
   simp only [Pi.smul_apply, smul_eq_mul]
 
 theorem withDensity_smul' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r ≠ ∞) :
     μ.withDensity (r • f) = r • μ.withDensity f := by
   refine Measure.ext fun s hs => ?_
-  rw [withDensity_apply _ hs, Measure.coe_smul, Pi.smul_apply, withDensity_apply _ hs,
+  rw [withDensity_apply _ hs, smul_apply, withDensity_apply _ hs,
     smul_eq_mul, ← lintegral_const_mul' r f hr]
   simp only [Pi.smul_apply, smul_eq_mul]
 
@@ -726,7 +726,7 @@ theorem prod_withDensity {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} (hf : M
 -- we prove the instance that gives `SFinite (c • ν)`.
 lemma Measure.prod_smul_right (c : ℝ≥0∞) : μ.prod (c • ν) = c • (μ.prod ν) := by
   ext s hs
-  simp_rw [Measure.prod_apply hs, Measure.smul_apply, Measure.prod_apply hs, smul_eq_mul]
+  simp_rw [Measure.prod_apply hs, _root_.smul_apply, Measure.prod_apply hs, smul_eq_mul]
   rw [lintegral_const_mul]
   exact measurable_measure_prodMk_left hs
 

@@ -782,7 +782,7 @@ lemma eq_of_measure_of_eq (g : StieltjesFunction R) {y : R}
 @[simp]
 lemma measure_const (c : ℝ) : (StieltjesFunction.const R c).measure = 0 := by
   apply Measure.ext_of_Icc _ _ (fun a b hab ↦ ?_)
-  simp only [measure_Icc, const_apply, Measure.coe_zero, Pi.ofNat_apply, ofReal_eq_zero,
+  simp only [measure_Icc, const_apply, FunLike.coe_zero, Pi.ofNat_apply, ofReal_eq_zero,
     tsub_le_iff_right, zero_add]
   rw [ContinuousWithinAt.leftLim_eq]
   · simp
@@ -799,7 +799,7 @@ lemma measure_add (f g : StieltjesFunction R) : (f + g).measure = f.measure + g.
     · simp [leftLim_eq_of_eq_bot _ ha]
     · exact tendsto_nhds_unique ((f + g).mono.tendsto_leftLim a)
         ((f.mono.tendsto_leftLim a).add (g.mono.tendsto_leftLim a))
-  simp only [measure_Icc, add_apply, Measure.coe_add, Pi.add_apply, this]
+  simp only [measure_Icc, add_apply, _root_.add_apply, this]
   rw [← ENNReal.ofReal_add (sub_nonneg_of_le (f.mono.leftLim_le h))
     (sub_nonneg_of_le (g.mono.leftLim_le h))]
   ring_nf
@@ -807,7 +807,7 @@ lemma measure_add (f g : StieltjesFunction R) : (f + g).measure = f.measure + g.
 @[simp]
 lemma measure_smul (c : ℝ≥0) (f : StieltjesFunction R) : (c • f).measure = c • f.measure := by
   refine Measure.ext_of_Icc _ _ (fun a b h ↦ ?_)
-  simp only [measure_Icc, Measure.smul_apply]
+  simp only [measure_Icc, smul_apply]
   change ofReal (c * f b - leftLim (c • f) a) = c • ofReal (f b - leftLim f a)
   have : leftLim (c • f) a = c * leftLim f a := by
     rcases Filter.eq_or_neBot (𝓝[<] a) with ha | ha

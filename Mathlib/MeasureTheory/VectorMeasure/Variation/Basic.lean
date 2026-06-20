@@ -273,7 +273,7 @@ lemma variation_sub_le : (μ - ν).variation ≤ μ.variation + ν.variation := 
 private lemma variation_smul_le {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] {c : 𝕜} :
     (c • μ).variation ≤ ‖c‖₊ • μ.variation := by
   apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
-  simp only [smul_apply, enorm_smul, Measure.smul_apply, Measure.nnreal_smul_coe_apply]
+  simp only [smul_apply, enorm_smul, smul_apply, Measure.nnreal_smul_coe_apply]
   grw [enorm_measure_le_variation, enorm_eq_nnnorm]
 
 lemma variation_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] {c : 𝕜} :

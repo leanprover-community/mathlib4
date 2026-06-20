@@ -173,7 +173,7 @@ lemma variation_transpose_le :
   apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
   apply opENorm_le_bound _ (fun x ↦ ?_)
   simp only [transpose, mapRange_apply, LinearMap.toAddMonoidHom_coe, coe_coe, flip_apply,
-    Measure.smul_apply, Measure.nnreal_smul_coe_apply]
+    smul_apply, Measure.nnreal_smul_coe_apply]
   grw [le_opNorm_enorm, le_opNorm_enorm, enorm_measure_le_variation, ← enorm_eq_nnnorm]
   exact le_of_eq (by ring)
 
@@ -205,7 +205,7 @@ lemma variation_transpose_eq_smul [Nontrivial E] {C : ℝ≥0}
       rw [mul_right_comm, mul_le_mul_iff_left₀ (by simpa), ← le_div_iff₀' (by positivity),
         div_eq_inv_mul] at this
       exact ENNReal.coe_le_coe_of_le this
-    grw [this, enorm_measure_le_variation, Measure.smul_apply]
+    grw [this, enorm_measure_le_variation, smul_apply]
 
 lemma variation_transpose_eq [Nontrivial E] (hB : ∀ x y, ‖B x y‖₊ = ‖x‖₊ * ‖y‖₊) :
     (μ.transpose B).variation = μ.variation := by

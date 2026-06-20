@@ -137,7 +137,7 @@ theorem finsetSum_apply (I : Finset ι) (κ : ι → Kernel α β) (a : α) :
 @[deprecated (since := "2026-04-08")] alias finset_sum_apply := finsetSum_apply
 
 theorem finsetSum_apply' (I : Finset ι) (κ : ι → Kernel α β) (a : α) (s : Set β) :
-    (∑ i ∈ I, κ i) a s = ∑ i ∈ I, κ i a s := by rw [finsetSum_apply, Measure.finsetSum_apply]
+    (∑ i ∈ I, κ i) a s = ∑ i ∈ I, κ i a s := by rw [finsetSum_apply, sum_apply]
 
 @[deprecated (since := "2026-04-08")] alias finset_sum_apply' := finsetSum_apply'
 
@@ -323,7 +323,7 @@ theorem sum_apply' [Countable ι] (κ : ι → Kernel α β) (a : α) {s : Set �
 theorem sum_zero [Countable ι] : (Kernel.sum fun _ : ι => (0 : Kernel α β)) = 0 := by
   ext a s hs
   rw [sum_apply' _ a hs]
-  simp only [zero_apply, Measure.coe_zero, Pi.zero_apply, tsum_zero]
+  simp only [zero_apply, _root_.zero_apply, tsum_zero]
 
 theorem sum_comm [Countable ι] (κ : ι → ι → Kernel α β) :
     (Kernel.sum fun n => Kernel.sum (κ n)) = Kernel.sum fun m => Kernel.sum fun n => κ n m := by
@@ -337,8 +337,8 @@ theorem sum_fintype [Fintype ι] (κ : ι → Kernel α β) : Kernel.sum κ = �
 theorem sum_add [Countable ι] (κ η : ι → Kernel α β) :
     (Kernel.sum fun n => κ n + η n) = Kernel.sum κ + Kernel.sum η := by
   ext a s hs
-  simp only [coe_add, Pi.add_apply, sum_apply, Measure.sum_apply _ hs, Pi.add_apply,
-    Measure.coe_add, ENNReal.summable.tsum_add ENNReal.summable]
+  simp only [coe_add, Pi.add_apply, sum_apply, Measure.sum_apply _ hs, _root_.add_apply,
+    ENNReal.summable.tsum_add ENNReal.summable]
 
 end Sum
 

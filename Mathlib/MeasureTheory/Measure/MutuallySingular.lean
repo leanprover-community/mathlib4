@@ -168,7 +168,7 @@ lemma absolutelyContinuous_of_add_of_mutuallySingular {ν₁ ν₂ : Measure α}
     · exact hs.inter ht.compl
   rw [this]
   refine h ?_
-  simp only [Measure.coe_add, Pi.add_apply, add_eq_zero]
+  simp only [add_apply, add_eq_zero]
   exact ⟨measure_inter_null_of_null_left _ hs_zero, measure_inter_null_of_null_right _ htν₂⟩
 
 lemma _root_.MeasurableEmbedding.mutuallySingular_map {β : Type*} {_ : MeasurableSpace β}
@@ -226,7 +226,7 @@ lemma MutuallySingular.disjoint (h : μ ⟂ₘ ν) : Disjoint μ ν := by
   intro ξ hξμ hξν
   rw [h_bot_iff]
   ext s hs
-  simp only [Measure.coe_zero, Pi.zero_apply]
+  simp only [zero_apply]
   rw [← inter_union_compl s h.nullSet, measure_union, add_eq_zero]
   · exact ⟨measure_inter_null_of_null_right _ <| absolutelyContinuous_of_le hξμ h.measure_nullSet,
       measure_inter_null_of_null_right _ <| absolutelyContinuous_of_le hξν h.measure_compl_nullSet⟩
@@ -250,7 +250,7 @@ lemma disjoint_of_disjoint_ae (h : Disjoint (ae μ) (ae ν)) : Disjoint μ ν :=
   rw [disjoint_iff_inf_le]
   have : (⊥ : Measure α) = 0 := rfl
   refine Measure.le_intro fun u hu _ ↦ ?_
-  simp only [Measure.inf_apply hu, this, coe_zero, Pi.zero_apply, nonpos_iff_eq_zero]
+  simp only [Measure.inf_apply hu, this, zero_apply, nonpos_iff_eq_zero]
   refine csInf_eq_bot_of_bot_mem ⟨t, ?_⟩
   simp [measure_mono_null (inter_subset_left.trans hst.subset_compl_left) hs,
     measure_mono_null inter_subset_left ht]

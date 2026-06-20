@@ -444,7 +444,7 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
     rw [this]
     suffices (∑ i ∈ Finset.Ioc n m, ν i).toMeasure univ ≤ u n by
       apply le_trans _ this
-      simp only [toMeasure_sum, Measure.coe_finsetSum, Finset.sum_apply]
+      simp only [toMeasure_sum, _root_.sum_apply]
       gcongr
       simp
     suffices (∑ i ∈ Finset.Ioc n m, ν i).mass ≤ u n by
