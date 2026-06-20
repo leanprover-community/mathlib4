@@ -6,10 +6,9 @@ Authors: Yanxin Zhou
 module
 
 
-public import Mathlib.Probability.Moments.Variance
-public import Mathlib.MeasureTheory.Integral.Bochner.Set
-public import Mathlib.Analysis.Convex.Integral
-public import Mathlib.Analysis.Convex.Mul
+public import Mathlib.MeasureTheory.Function.L2Space
+
+import Mathlib.Analysis.Convex.Integral
 
 /-!
 
