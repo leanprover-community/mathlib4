@@ -36,7 +36,7 @@ theorem norm_le_totalVariation (s : SignedMeasure X) (i : Set X) :
   by_cases hi : MeasurableSet i
   · rw [s.apply_eq_posPart_real_sub_negPart_real hi, totalVariation, measureReal_add_apply]
     grind [measureReal_nonneg, Real.norm_eq_abs]
-  · simp [s.not_measurable' hi, measureReal_nonneg]
+  · simp [hi]
 
 /-- The pointwise bound `‖s i‖ₑ ≤ s.totalVariation i` for any signed measure. -/
 theorem enorm_le_totalVariation (s : SignedMeasure X) (i : Set X) :
