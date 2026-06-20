@@ -404,12 +404,11 @@ real absolute values on a field `F`, then the diagonal embedding
 This is the abstract weak approximation theorem; see
 `NumberField.InfinitePlace.denseRange_algebraMap_pi` for the number-field special case.
 -/
-theorem denseRange_algebraMap_pi {ι : Type*} [Finite ι] {v : ι → AbsoluteValue F ℝ}
+theorem denseRange_algebraMap_pi {ι : Type*} [Fintype ι] {v : ι → AbsoluteValue F ℝ}
     (h : ∀ i, (v i).IsNontrivial)
     (hv : Pairwise fun i j => ¬(v i).IsEquiv (v j)) :
     DenseRange <| algebraMap F ((i : ι) → WithAbs (v i)) := by
   classical
-  haveI : Fintype ι := Fintype.ofFinite ι
   refine Metric.denseRange_iff.mpr fun z r hr => ?_
   choose a hx using exists_one_lt_lt_one_pi_of_not_isEquiv h hv
   let y := fun n : ℕ => ∑ i, (1 / (1 + (a i)⁻¹ ^ n)) * WithAbs.equiv (v i) (z i)
