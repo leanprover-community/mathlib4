@@ -550,7 +550,7 @@ theorem x_mul_y_le_y_mul_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : 
 the `y`-coordinate remains nonnegative. -/
 theorem mul_inv_y_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x)
     (hay : 0 < a.y) : 0 ≤ (a * a₁⁻¹).y := by
-  simpa only [y_inv, mul_neg, y_mul, le_neg_add_iff_add_le, add_zero] using
+  simpa only [y_inv, mul_neg, y_mul, le_neg_add_iff_add_le, add_zero] using!
     h.x_mul_y_le_y_mul_x hax hay
 
 /-- If we multiply a positive solution with the inverse of a fundamental solution,
@@ -575,7 +575,7 @@ theorem mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solu
     _ = a.x * a₁.y * a₁.x := by ring
     _ ≤ a.y * a₁.x * a₁.x := by have := h.1; have := x_mul_y_le_y_mul_x h hax hay; gcongr
   rw [mul_assoc, ← sq, a₁.prop_x, ← sub_neg]
-  suffices a.y - a.x * a₁.y < 0 by convert this using 1; ring
+  suffices a.y - a.x * a₁.y < 0 by convert! this using 1; ring
   rw [sub_neg, ← abs_of_pos hay, ← abs_of_pos h.2.1, ← abs_of_pos <| zero_lt_one.trans hax, ←
     abs_mul, ← sq_lt_sq, mul_pow, a.prop_x]
   calc

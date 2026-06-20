@@ -104,9 +104,15 @@ theorem isReduced_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersi
 instance {X : Scheme} {U : X.Opens} [IsReduced X] : IsReduced U :=
     isReduced_of_isOpenImmersion U.ι
 
+instance {𝒰 : X.OpenCover} [IsReduced X] (i : 𝒰.I₀) : IsReduced (𝒰.X i) :=
+  isReduced_of_isOpenImmersion (𝒰.f i)
+
+instance : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) (IsReduced ·) :=
+  ⟨fun e _ ↦ isReduced_of_isOpenImmersion e.inv⟩
+
 instance {R : CommRingCat.{u}} [H : _root_.IsReduced R] : IsReduced (Spec R) := by
   apply +allowSynthFailures isReduced_of_isReduced_stalk
-  intro x; dsimp
+  intro x
   have : _root_.IsReduced (CommRingCat.of <| Localization.AtPrime (PrimeSpectrum.asIdeal x)) := by
     dsimp; infer_instance
   exact isReduced_of_injective (Spec.stalkIso R x).hom.hom
@@ -129,6 +135,9 @@ theorem IsReduced.of_openCover (𝒰 : X.OpenCover) [∀ i, IsReduced (𝒰.X i)
     exact isReduced_of_injective _
       (asIso <| (𝒰.f i).stalkMap x).commRingCatIsoToRingEquiv.injective
   exact isReduced_of_isReduced_stalk _
+
+theorem IsReduced.iff_of_openCover (𝒰 : X.OpenCover) : IsReduced X ↔ ∀ i, IsReduced (𝒰.X i) :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ of_openCover X 𝒰⟩
 
 /-- To show that a statement `P` holds for all open subsets of all schemes, it suffices to show that
 1. In any scheme `X`, if `P` holds for an open cover of `U`, then `P` holds for `U`.
@@ -161,7 +170,7 @@ theorem reduce_to_affine_nbhd (P : ∀ (X : Scheme) (_ : X), Prop)
     ∀ (X : Scheme) (x : X), P X x := by
   intro X x
   obtain ⟨y, e⟩ := X.affineCover.covers x
-  convert h₂ (X.affineCover.f (X.affineCover.idx x)) y _
+  convert! h₂ (X.affineCover.f (X.affineCover.idx x)) y _
   · rw [e]
   apply h₁
 
@@ -289,7 +298,7 @@ theorem isIntegral_of_irreducibleSpace_of_isReduced [IsReduced X] [H : Irreducib
     replace e := congr_arg (X.presheaf.germ U x hxU) e
     rw [map_mul, map_zero] at e
     refine zero_ne_one' (X.presheaf.stalk x) (isUnit_zero_iff.1 ?_)
-    convert hx₁.mul hx₂
+    convert! hx₁.mul hx₂
     exact e.symm
   exact NoZeroDivisors.to_isDomain _
 
@@ -315,7 +324,7 @@ lemma IsIntegral.of_isIso {X Y : Scheme.{u}} [h : IsIntegral X] (f : X ⟶ Y) [I
   exact Nonempty.map f inferInstance
 
 instance {R : CommRingCat} [IsDomain R] : IrreducibleSpace (Spec R) := by
-  convert PrimeSpectrum.irreducibleSpace (R := R)
+  convert! PrimeSpectrum.irreducibleSpace (R := R)
 
 instance {R : CommRingCat} [IsDomain R] : IsIntegral (Spec R) :=
   isIntegral_of_irreducibleSpace_of_isReduced _
@@ -354,10 +363,9 @@ lemma coheight_eq_of_isOpenImmersion {U X : Scheme} {x : U} (f : U ⟶ X) [IsOpe
 open Order in
 lemma idealHeight_eq_coheight (R : CommRingCat) (x : Spec R) :
     x.asIdeal.height = coheight x := by
-  rw [Ideal.height_eq_primeHeight x.asIdeal, Ideal.primeHeight,
+  rw [PrimeSpectrum.height_eq_orderHeight,
     ← Order.coheight_orderIso (specOrderIsoPrimeSpectrum R), ← height_ofDual,
     specOrderIsoPrimeSpectrum_apply, OrderDual.ofDual_toDual]
-  rfl
 
 open Order in
 @[stacks 02IZ]

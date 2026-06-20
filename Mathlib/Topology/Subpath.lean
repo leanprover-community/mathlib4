@@ -166,7 +166,7 @@ theorem concat_refl (n : ℕ) (x : X) :
   | zero => rw [concat_zero]
   | succ _ _ =>
     rw [concat_succ]
-    convert refl_trans_refl
+    convert! refl_trans_refl
 
 namespace Homotopy
 

@@ -113,14 +113,14 @@ lemma Ideal.comap_map_eq_self_of_faithfullyFlat (I : Ideal A) :
   have inj : Function.Injective
       ((quotIdealMapEquivTensorQuot B I).symm.toLinearMap.restrictScalars _ ∘ₗ
         TensorProduct.mk A B (A ⧸ I) 1) := by
-    rw [LinearMap.coe_comp]
-    exact (AlgEquiv.injective _).comp <|
+    rw [LinearMap.coe_comp, AlgEquiv.toLinearMap, ← LinearEquiv.restrictScalars_toLinearMap]
+    exact (LinearEquiv.injective _).comp <|
       Module.FaithfullyFlat.tensorProduct_mk_injective (A ⧸ I)
   intro x hx
   rw [Ideal.mem_comap] at hx
   rw [← Ideal.Quotient.eq_zero_iff_mem] at hx ⊢
   apply inj
-  have : ((quotIdealMapEquivTensorQuot B I).symm.toLinearMap.restrictScalars _ ∘ₗ
+  have : ((quotIdealMapEquivTensorQuot B I).symm.toLinearEquiv.toLinearMap.restrictScalars _ ∘ₗ
       TensorProduct.mk A B (A ⧸ I) 1) x = 0 := by
     simp [← Algebra.algebraMap_eq_smul_one, hx]
   simp [this]
@@ -154,3 +154,16 @@ lemma PrimeSpectrum.comap_surjective_of_faithfullyFlat :
 @[deprecated (since := "2025-12-10")]
 alias PrimeSpectrum.specComap_surjective_of_faithfullyFlat :=
   PrimeSpectrum.comap_surjective_of_faithfullyFlat
+
+section IsLocalRing
+
+variable (A B)
+
+instance Module.FaithfullyFlat.isLocalHom : IsLocalHom (algebraMap A B) :=
+  IsLocalHom.of_comap_surjective (algebraMap A B) PrimeSpectrum.comap_surjective_of_faithfullyFlat
+
+/-- Let `B` be a faithfully flat `A`-algebra, then `A` is a local ring if `B` is. -/
+theorem Module.FaithfullyFlat.isLocalRing [IsLocalRing B] : IsLocalRing A :=
+  (algebraMap A B).domain_isLocalRing
+
+end IsLocalRing

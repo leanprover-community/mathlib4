@@ -104,6 +104,10 @@ theorem normalizeObj_tensor (X Y : F C) (n : NormalMonoidalObject C) :
 /-- Auxiliary definition for `normalize`. -/
 def normalizeObj' (X : F C) : N C ⥤ N C := Discrete.functor fun n ↦ ⟨normalizeObj X n⟩
 
+@[simp]
+theorem as_obj_normalizeObj' (X : F C) (n : N C) :
+    ((normalizeObj' X).obj n).as = normalizeObj X n.as := rfl
+
 section
 
 open Hom
@@ -134,6 +138,7 @@ section
 
 variable (C)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Our normalization procedure works by first defining a functor `F C ⥤ (N C ⥤ N C)` (which turns
 out to be very easy), and then obtain a functor `F C ⥤ N C` by plugging in the normal object
 `𝟙_ C`. -/
@@ -184,7 +189,6 @@ def normalizeIsoApp :
 
 /-- Almost non-definitionally equal to `normalizeIsoApp`, but has a better definitional property
 in the proof of `normalize_naturality`. -/
-@[simp]
 def normalizeIsoApp' :
     ∀ (X : F C) (n : NormalMonoidalObject C), inclusionObj n ⊗ X ≅ inclusionObj (normalizeObj X n)
   | of _, _ => Iso.refl _
@@ -192,6 +196,15 @@ def normalizeIsoApp' :
   | tensor X Y, n =>
     (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIsoApp' X n) Y ≪≫ normalizeIsoApp' _ _
 
+@[simp] theorem normalizeIsoApp'_tensor (X Y : F C) (n : NormalMonoidalObject C) :
+    normalizeIsoApp' C (X ⊗ Y) n =
+      (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIsoApp' C X n) Y ≪≫
+        normalizeIsoApp' C Y _ := rfl
+
+@[simp] theorem normalizeIsoApp'_unit (n : NormalMonoidalObject C) :
+    normalizeIsoApp' C (𝟙_ (F C)) n = ρ_ _ := rfl
+
+set_option backward.defeqAttrib.useBackward true in
 theorem normalizeIsoApp_eq :
     ∀ (X : F C) (n : N C), normalizeIsoApp C X n = normalizeIsoApp' C X n.as
   | of _, _ => rfl
@@ -200,7 +213,7 @@ theorem normalizeIsoApp_eq :
       rw [normalizeIsoApp, normalizeIsoApp']
       rw [normalizeIsoApp_eq X n]
       rw [normalizeIsoApp_eq Y ⟨normalizeObj X n.as⟩]
-      rfl
+      simp
 
 @[simp]
 theorem normalizeIsoApp_tensor (X Y : F C) (n : N C) :
@@ -242,6 +255,7 @@ theorem normalizeObj_congr (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶ Y
       simp [congr_fun ih₁ n, congr_fun ih₂ (normalizeObj Y n)]
   | _ => funext; rfl
 
+set_option backward.defeqAttrib.useBackward true in
 theorem normalize_naturality (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶ Y) :
     inclusionObj n ◁ f ≫ (normalizeIsoApp' C Y n).hom =
       (normalizeIsoApp' C X n).hom ≫
@@ -251,13 +265,13 @@ theorem normalize_naturality (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶
   case comp f g ihf ihg => simp [ihg, reassoc_of% (ihf _)]
   case whiskerLeft X' X Y f ih =>
     intro n
-    dsimp only [normalizeObj_tensor, normalizeIsoApp', tensor_eq_tensor, Iso.trans_hom,
+    dsimp only [normalizeObj_tensor, normalizeIsoApp'_tensor, Iso.trans_hom,
       Iso.symm_hom, whiskerRightIso_hom, Function.comp_apply, inclusion_obj]
     rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc, ih]
     simp
   case whiskerRight X Y h η' ih =>
     intro n
-    dsimp only [normalizeObj_tensor, normalizeIsoApp', tensor_eq_tensor, Iso.trans_hom,
+    dsimp only [normalizeObj_tensor, normalizeIsoApp'_tensor, Iso.trans_hom,
       Iso.symm_hom, whiskerRightIso_hom, Function.comp_apply, inclusion_obj]
     rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc, ih]
     have := dcongr_arg (fun x => (normalizeIsoApp' C η' x).hom) (normalizeObj_congr n h)
@@ -266,7 +280,7 @@ theorem normalize_naturality (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between `n ⊗ X` and `normalize X n` is natural (in both `X` and `n`, but
 naturality in `n` is trivial and was "proved" in `normalizeIsoAux`). This is the real heart
 of our proof of the coherence theorem. -/
@@ -274,9 +288,10 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
   NatIso.ofComponents (normalizeIsoAux C) <| by
     intro X Y f
     ext ⟨n⟩
-    convert normalize_naturality n f using 1
+    convert! normalize_naturality n f using 1
     any_goals dsimp; rw [normalizeIsoApp_eq]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between an object and its normal form is natural. -/
 def fullNormalizeIso : 𝟭 (F C) ≅ fullNormalize C ⋙ inclusion :=
   NatIso.ofComponents
