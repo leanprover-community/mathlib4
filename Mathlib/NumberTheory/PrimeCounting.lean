@@ -169,14 +169,14 @@ lemma two_le_of_mem_primesLE (hp : p ∈ primesLE n) : 2 ≤ p := two_le_of_mem_
 lemma primesBelow_eq_filter_Ico_zero (n : ℕ) : primesBelow n = filter Prime (Ico 0 n) := by
   simp [primesBelow_eq_filter_range]
 
-lemma primesLE_eq_filter_Icc_zero (n : ℕ) : primesLE n = filter Prime (Icc 0 n) := by
-  ext; simp [primesLE_eq_filter_range]
+lemma primesLE_eq_filter_Icc_zero (n : ℕ) : primesLE n = filter Prime (Icc 0 n) :=
+  primesBelow_eq_filter_Ico_zero _
 
 lemma primesBelow_eq_filter_Ioo_zero (n : ℕ) : primesBelow n = filter Prime (Ioo 0 n) := by
   ext; simp +contextual [primesBelow_eq_filter_range, Prime.pos]
 
-lemma primesLE_eq_filter_Ioc_zero (n : ℕ) : primesLE n = filter Prime (Ioc 0 n) := by
-  ext; simp +contextual [primesLE_eq_filter_range, Prime.pos]
+lemma primesLE_eq_filter_Ioc_zero (n : ℕ) : primesLE n = filter Prime (Ioc 0 n) :=
+  primesBelow_eq_filter_Ioo_zero _
 
 lemma primesBelow_eq_filter_Ico_one (n : ℕ) : primesBelow n = filter Prime (Ico 1 n) :=
   primesBelow_eq_filter_Ioo_zero n
@@ -187,8 +187,8 @@ lemma primesLE_eq_filter_Icc_one (n : ℕ) : primesLE n = filter Prime (Icc 1 n)
 lemma primesBelow_eq_filter_Ioo_one (n : ℕ) : primesBelow n = filter Prime (Ioo 1 n) := by
   ext; simp +contextual [primesBelow_eq_filter_range, Prime.one_lt]
 
-lemma primesLE_eq_filter_Ioc_one (n : ℕ) : primesLE n = filter Prime (Ioc 1 n) := by
-  ext; simp +contextual [primesLE_eq_filter_range, Prime.one_lt]
+lemma primesLE_eq_filter_Ioc_one (n : ℕ) : primesLE n = filter Prime (Ioc 1 n) :=
+  primesBelow_eq_filter_Ioo_one _
 
 lemma primesBelow_eq_filter_Ico_two (n : ℕ) : primesBelow n = filter Prime (Ico 2 n) :=
   primesBelow_eq_filter_Ioo_one n
