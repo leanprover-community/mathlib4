@@ -5,6 +5,7 @@ Authors: Jiedong Jiang
 -/
 module
 
+public import Mathlib.Tactic.Peel
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 public import Mathlib.Topology.Algebra.Valued.ValuationTopology
 public import Mathlib.Topology.Algebra.WithZeroTopology
@@ -94,8 +95,8 @@ section TopologicalSpace
 
 variable [TopologicalSpace R] (v : Valuation R Γ₀) [v.Compatible]
 
-/-- If the topology on `R` is compatible with a fixed valuation `v`,
-then it is a valuative topology -/
+/-- If the neighborhoods of every point for a given topology are defined by a fixed valuation `v`,
+then it is a valuative topology. -/
 theorem IsValuativeTopology.mk_valuation
     (H : ∀ {s : Set R} {x : R}, s ∈ 𝓝 x ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
     (fun (x₁ : R) ↦ x + x₁) '' {z : R | v.restrict z < γ} ⊆ s) :
@@ -106,64 +107,23 @@ theorem IsValuativeTopology.mk_valuation
   obtain ⟨γ, hγ⟩ := H.mp h_mem
   exact ⟨Units.mk0 ((orderMonoidIso v).symm γ) (by simp), subset_trans (by simp) hγ⟩
 
-open Pointwise in
+/-- In a topological group, if the neighborhoods of zero are defined by a fixed valuation `v`, then
+the underlying topology is valuative. -/
 theorem IsValuativeTopology.mk₀_valuation [IsTopologicalAddGroup R]
     (H : ∀ {s : Set R}, s ∈ 𝓝 0 ↔ ∃ (γ : (ValueGroup₀ (.ofClass v))ˣ),
     (fun (x₁ : R) ↦ x₁) '' {z : R | v.restrict z < γ} ⊆ s) :
     IsValuativeTopology R := by
   apply IsValuativeTopology.mk_valuation v (fun {s x} ↦ ?_)
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · replace H := @H <| -x +ᵥ s
-    have := vadd_mem_nhds_vadd (t := s) (g := - x) (a := x) h
-    simp at this
-    simp [this] at H
-    obtain ⟨γ, hγ⟩ := H
-    use γ
-    simp [Set.subset_vadd_set_iff] at hγ ⊢
-    apply subset_of_eq_of_subset _ hγ
-    ext a
-    simp
-    rw [mem_vadd_set]
-    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · refine ⟨- x + a, ?_, by simp⟩
-      simpa
-    obtain ⟨y, hy1, hy2⟩ := h
-    rw [← hy2]
-    simp
-    simpa
-
-
-
-
-
-
-
-
-    -- rw [Set.subset_vadd_set_iff] at hγ
-
-
-
-
-
-    -- have (a : s) : a - x ∈ s - {x} := by
-    --   simp only [sub_singleton, mem_image, sub_left_inj, exists_eq_right, Subtype.coe_prop]
-    have : s - {x} ∈ 𝓝 x - 𝓝 0 := by
-      simp
-
-
-
-
-
-    rw [Filter.mem_sub] at H
-
-
-
-
+  rw [← vadd_mem_nhds_vadd_iff (g := -x)]
+  simp only [vadd_eq_add, neg_add_cancel, H, image_id', subset_vadd_set_iff, neg_neg,
+    image_add_left, preimage_setOf_eq]
+  refine ⟨fun ⟨γ, hγ⟩ ↦ ⟨γ, subset_of_eq_of_subset (ext (fun a ↦ ⟨?_, ?_⟩)) hγ⟩,
+    fun ⟨γ, hγ⟩ ↦ ⟨γ, subset_of_eq_of_subset (ext (fun a ↦ ⟨?_, ?_⟩)) hγ⟩⟩ <;>
+  first | exact fun ⟨_, ⟨_, h⟩⟩ ↦ by simpa [← h] | exact fun h ↦ ⟨- x + a, ⟨h, by simp⟩⟩
 
 variable [IsValuativeTopology R]
 
 namespace IsValuativeTopology
-
 
 /-- A variant of `IsValuativeTopology.mem_nhds_iff` using subtraction. -/
 lemma mem_nhds_iff' {s : Set R} {x : R} :
