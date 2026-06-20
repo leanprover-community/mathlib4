@@ -36,6 +36,8 @@ over a base `X`. Here `Q = ⊤`.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory.MorphismProperty
@@ -289,6 +291,7 @@ lemma inv_hom {X Y : P.Comma L R Q W} (f : X ⟶ Y) [IsIso f] : (inv f).hom = in
 
 variable (L R P Q W)
 
+set_option backward.defeqAttrib.useBackward true in
 instance [Q.RespectsIso] [W.RespectsIso] : (forget L R P Q W).ReflectsIsomorphisms where
   reflects f hf := by
     simp only [forget_obj, forget_map] at hf
@@ -785,6 +788,17 @@ variable {P Q F X} in
 lemma CostructuredArrow.Hom.ext {A B : P.CostructuredArrow Q F X} {f g : A ⟶ B}
     (h : f.left = g.left) : f = g := by
   ext <;> simp [h]
+
+variable {P Q F X} in
+/-- Construct an isomorphism in `P.CostructuredArrow Q F X` by giving the isomorphism
+on the underlying objects of `C`. -/
+@[simps]
+def CostructuredArrow.isoMk {A B : P.CostructuredArrow Q F X} (f : A.left ≅ B.left) (hf : Q f.hom)
+    (hf' : Q f.inv)
+    (w : F.map f.hom ≫ B.hom = A.hom := by cat_disch) :
+    A ≅ B where
+  hom := MorphismProperty.CostructuredArrow.homMk _ hf
+  inv := MorphismProperty.CostructuredArrow.homMk _ hf' (by simp [← w])
 
 /-- The forgetful functor from the subcategory `P.CostructuredArrow Q F X`. -/
 protected abbrev CostructuredArrow.forget :

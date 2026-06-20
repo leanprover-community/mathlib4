@@ -280,7 +280,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
     rwa [this] at Hg
   -- let `M` be the largest number such that `g` vanishes ae on `(0, M]`.
   let M : ℝ := sSup {s : ℝ | g =ᵐ[volume.restrict (Ioc (0 : ℝ) s)] 0}
-  have zero_mem : 0 ∈ {s : ℝ | g =ᵐ[volume.restrict (Ioc (0 : ℝ) s)] 0} := by simpa using trivial
+  have zero_mem : 0 ∈ {s : ℝ | g =ᵐ[volume.restrict (Ioc (0 : ℝ) s)] 0} := by simpa using! trivial
   have M_nonneg : 0 ≤ M := le_csSup M_bdd zero_mem
   -- Then the function `g` indeed vanishes ae on `(0, M]`.
   have hgM : g =ᵐ[volume.restrict (Ioc (0 : ℝ) M)] 0 := by
@@ -310,7 +310,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
         intro n
         have I : ν {a | f a ≤ M} = 0 := by
           rw [Measure.restrict_apply (measurableSet_le f_mble measurable_const)]
-          convert measure_empty (μ := μ)
+          convert! measure_empty (μ := μ)
           rw [← disjoint_iff_inter_eq_empty]
           exact disjoint_left.mpr (fun a ha ↦ by simpa using ha)
         have J : μ {a | u n < f a} < ∞ := by
@@ -523,7 +523,7 @@ theorem Integrable.integral_eq_integral_meas_lt
   have rhs_finite : ∫⁻ (t : ℝ) in Set.Ioi 0, μ {a | t < f a} < ∞ := by simp only [← key, lhs_finite]
   have rhs_integrand_finite : ∀ (t : ℝ), t > 0 → μ {a | t < f a} < ∞ :=
     fun t ht ↦ measure_gt_lt_top f_intble ht
-  convert (ENNReal.toReal_eq_toReal_iff' lhs_finite.ne rhs_finite.ne).mpr key
+  convert! (ENNReal.toReal_eq_toReal_iff' lhs_finite.ne rhs_finite.ne).mpr key
   · exact integral_eq_lintegral_of_nonneg_ae f_nn f_intble.aestronglyMeasurable
   · have aux := @integral_eq_lintegral_of_nonneg_ae _ _ ((volume : Measure ℝ).restrict (Set.Ioi 0))
       (fun t ↦ μ.real {a : α | t < f a}) ?_ ?_
@@ -548,10 +548,10 @@ lemma Integrable.integral_eq_integral_Ioc_meas_le {f : α → ℝ} {M : ℝ}
     (f_intble : Integrable f μ) (f_nn : 0 ≤ᵐ[μ] f) (f_bdd : f ≤ᵐ[μ] (fun _ ↦ M)) :
     ∫ ω, f ω ∂μ = ∫ t in Ioc 0 M, μ.real {a : α | t ≤ f a} := by
   rw [f_intble.integral_eq_integral_meas_le f_nn]
-  rw [setIntegral_eq_of_subset_of_ae_diff_eq_zero
+  rw [setIntegral_eq_of_subset_of_ae_sdiff_eq_zero
       nullMeasurableSet_Ioi Ioc_subset_Ioi_self ?_]
   apply Eventually.of_forall (fun t ht ↦ ?_)
-  have htM : M < t := by simp_all only [mem_diff, mem_Ioi, mem_Ioc, not_and, not_le]
+  have htM : M < t := by simp_all only [Set.mem_sdiff, mem_Ioi, mem_Ioc, not_and, not_le]
   have obs : μ {a | M < f a} = 0 := by
     rw [measure_eq_zero_iff_ae_notMem]
     filter_upwards [f_bdd] with a ha using not_lt.mpr ha

@@ -81,7 +81,7 @@ theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteTy
   introv R hs H
   algebraize [f]
   replace H : ∀ r ∈ s, Algebra.FiniteType R (Localization.Away (r : S)) := by
-    intro r hr; simp_rw [RingHom.FiniteType] at H; convert H ⟨r, hr⟩; ext
+    intro r hr; simp_rw [RingHom.FiniteType] at H; convert! H ⟨r, hr⟩; ext
     simp_rw [Algebra.smul_def]; rfl
   exact Algebra.FiniteType.of_span_eq_top_target s hs H
 

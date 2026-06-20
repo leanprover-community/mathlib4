@@ -73,7 +73,6 @@ lemma norm_apply_le_of_nonneg [StarOrderedRing B₂] (f : B₁ →ₚ[ℂ] B₂)
   rw [← Algebra.algebraMap_eq_smul_one]
   exact IsSelfAdjoint.le_algebraMap_norm_self <| .of_nonneg hx
 
-set_option backward.isDefEq.respectTransparency false in
 open Complex Filter in
 /--
 If `f` is a positive map, then it is bounded (and therefore continuous).
@@ -91,7 +90,6 @@ lemma exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a,
     simp only [norm_smul, norm_pow, norm_I, one_pow, one_mul]
     apply Finset.sum_le_sum (g := fun _ ↦ C * ‖x‖) (fun i _ ↦ ?_) |>.trans <| by simp [mul_assoc]
     apply hmain _ (hy_nonneg i) |>.trans
-    simp only
     gcongr
     exact hy_norm i
   -- Let's proceed by contradiction
@@ -132,7 +130,7 @@ instance {F : Type*} [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂] [Ord
     ContinuousLinearMapClass F ℂ A₁ A₂ where
   map_continuous f := by
     have hbound : ∃ C : ℝ, ∀ a, ‖f a‖ ≤ C * ‖a‖ := by
-      obtain ⟨C, h⟩ := exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂)
+      obtain ⟨C, h⟩ := exists_norm_apply_le (.ofClass f)
       exact ⟨C, h⟩
     exact (LinearMap.mkContinuousOfExistsBound (f : A₁ →ₗ[ℂ] A₂) hbound).continuous
 

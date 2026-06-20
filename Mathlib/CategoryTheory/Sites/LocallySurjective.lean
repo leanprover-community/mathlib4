@@ -224,7 +224,7 @@ lemma isLocallySurjective_of_isLocallySurjective_of_isLocallyInjective
     refine J.superset_covering ?_ (J.transitive (imageSieve_mem J (f₁ ≫ f₂) (f₂.app _ x))
       (Sieve.bind S.1 T) ?_)
     · rintro Y _ ⟨Z, a, g, hg, ha, rfl⟩
-      exact ⟨F₁.map a.op (localPreimage (f₁ ≫ f₂) _ _ hg), by simpa using ha⟩
+      exact ⟨F₁.map a.op (localPreimage (f₁ ≫ f₂) _ _ hg), by simpa using! ha⟩
     · intro Y f hf
       apply J.superset_covering (Sieve.le_pullback_bind _ _ _ hf)
       apply equalizerSieve_mem J f₂
@@ -295,7 +295,8 @@ instance isLocallySurjective_toPlus (P : Cᵒᵖ ⥤ Type (max u v)) :
     rw [toPlus_eq_mk, res_mk_eq_mk_pullback, eq_mk_iff_exists]
     refine ⟨S.pullback f, homOfLE le_top, 𝟙 _, ?_⟩
     ext ⟨Z, g, hg⟩
-    simpa using x.2 { fst.hf := hf, snd.hf := S.1.downward_closed hf g, r.g₁ := g, r.g₂ := 𝟙 Z, .. }
+    simpa using!
+      x.2 { fst.hf := hf, snd.hf := S.1.downward_closed hf g, r.g₁ := g, r.g₂ := 𝟙 Z, .. }
 
 set_option backward.isDefEq.respectTransparency false in
 instance isLocallySurjective_toSheafify (P : Cᵒᵖ ⥤ Type (max u v)) :
@@ -426,7 +427,7 @@ lemma imageSieve_cofanIsColimitDesc_shrinkYoneda_map
     obtain ⟨a : V ⟶ X i, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective a
     refine ⟨_, a, _, ⟨i⟩, shrinkYonedaObjObjEquiv.symm.injective ?_⟩
     rw [← shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm]
-    convert hw using 1
+    convert! hw using 1
     · exact (ConcreteCategory.congr_hom (NatTrans.congr_app
         ((Cofan.IsColimit.fac hc (fun i ↦ shrinkYoneda.{w}.map (f i))) i) (op V))
           (shrinkYonedaObjObjEquiv.symm a)).symm
