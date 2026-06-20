@@ -90,42 +90,5 @@ theorem paley_zygmund [IsProbabilityMeasure μ] {Z : Ω → ℝ} (hZ_nn : 0 ≤�
       apply pow_le_pow_left₀ (mul_nonneg (sub_nonneg.mpr hθ1) (integral_nonneg_of_ae hZ_nn)) h_lower
     _ ≤ (∫ ω, Z ω ^ 2 ∂μ ) * (μ S).toReal:= h_cs
 
-#check  NullMeasurableSet
-#check AEMeasurable
-#check tacticVolume_tac
-#check AEStronglyMeasurable
-#check setIntegral_mono_on₀
-#check IntegrableOn
-#check nullMeasurableSet_lt
-#check setIntegral_const
-#check mul_le_of_le_one_left
-#check prob_le_one
-#check measureReal_le_one
-#check smul_eq_mul
-#check mul_nonneg
-#check integral_nonneg_of_ae
-#check pow_le_pow_left₀
-#check sub_nonneg.mpr
-#check integral_indicator
-#check real_inner_le_norm
-#check integral_mul_le_Lp_mul_Lq_of_nonneg
-#check MemLp
-#check Measure.restrict_eq_zero
-#check ConvexOn.map_set_average_le
-#check even_two.convexOn_pow
-#check (continuous_pow 2).continuousOn
-#check setAverage_eq
-#check mul_le_mul_iff_of_pos_left
-#check mul_le_mul_of_nonneg_right
-#check mul_pow
-#check div_le_iff₀
-#check setIntegral_le_integral
-#check ENNReal.toReal_nonneg
-
-
-
-
-
-
 
 end ProbabilityTheory
