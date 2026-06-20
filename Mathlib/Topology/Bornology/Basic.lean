@@ -54,9 +54,6 @@ class Bornology (α : Type*) where
   /-- The cobounded filter in a bornology is smaller than the cofinite filter. -/
   le_cofinite (α) : cobounded ≤ cofinite
 
-@[deprecated (since := "2025-09-06")] alias Bornology.cobounded' := Bornology.cobounded
-@[deprecated (since := "2025-09-06")] alias Bornology.le_cofinite' := Bornology.le_cofinite
-
 @[ext]
 lemma Bornology.ext (t t' : Bornology α)
     (h_cobounded : @Bornology.cobounded α t = @Bornology.cobounded α t') :
@@ -253,6 +250,17 @@ theorem Filter.HasBasis.disjoint_cobounded_iff [Bornology α] {ι : Sort*} {p : 
     {s : ι → Set α} {l : Filter α} (h : l.HasBasis p s) :
     Disjoint l (cobounded α) ↔ ∃ i, p i ∧ Bornology.IsBounded (s i) :=
   h.disjoint_iff_left
+
+theorem Filter.disjoint_cobounded_iff [Bornology α] {l : Filter α} :
+    Disjoint l (cobounded α) ↔ ∃ s ∈ l, Bornology.IsBounded s :=
+  l.basis_sets.disjoint_cobounded_iff
+
+alias ⟨Disjoint.exists_isBounded, _⟩ := Filter.disjoint_cobounded_iff
+
+theorem Bornology.IsBounded.disjoint_cobounded [Bornology α]
+    {l : Filter α} {s : Set α} (hs : IsBounded s) (hl : s ∈ l) :
+    Disjoint l (cobounded α) :=
+  l.disjoint_cobounded_iff.mpr ⟨s, hl, hs⟩
 
 theorem Set.Finite.isBounded [Bornology α] {s : Set α} (hs : s.Finite) : IsBounded s :=
   Bornology.le_cofinite α hs.compl_mem_cofinite

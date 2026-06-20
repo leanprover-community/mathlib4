@@ -30,7 +30,7 @@ universe w v'' v' v u'' u' u
 
 namespace CategoryTheory
 
-open Limits Opposite
+open Limits Opposite ConcreteCategory
 
 namespace GrothendieckTopology.Point
 
@@ -64,22 +64,24 @@ lemma fiberMk_jointly_surjective {X : C} (x : (fiber.{w} p).obj X) :
   obtain ⟨f, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective f
   exact ⟨U.unop, f, rfl⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {p} in
 lemma exists_of_fiberMk_eq_fiberMk [IsCofiltered N]
     {U : N} {X : C} {f₁ f₂ : p.obj U ⟶ X} (hf : fiberMk f₁ = fiberMk f₂) :
     ∃ (V : N) (g : V ⟶ U), p.map g ≫ f₁ = p.map g ≫ f₂ := by
-  obtain ⟨V, g, hg⟩  :=
+  obtain ⟨V, g, hg⟩ :=
     (Types.FilteredColimit.isColimit_eq_iff'
       (colimit.isColimit (p.op ⋙ shrinkYoneda.{w}.obj X)) _ _).1 hf
   refine ⟨V.unop, g.unop, ?_⟩
   simpa [shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm.{w}] using hg
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma fiberMk_map_comp {U V : N} (g : V ⟶ U) {X : C} (f : p.obj U ⟶ X) :
     fiberMk.{w} (p.map g ≫ f) = fiberMk.{w} f := by
-  simp [fiberMk, ← dsimp% congr_fun (colimit.w (p.op ⋙ shrinkYoneda.{w}.obj X) g.op)
+  simp [fiberMk, ← dsimp% congr_hom (colimit.w (p.op ⋙ shrinkYoneda.{w}.obj X) g.op)
         (shrinkYonedaObjObjEquiv.symm f),
     fiber, shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm.{w}]
 
@@ -88,11 +90,12 @@ lemma fiberMk_map {U V : N} (g : V ⟶ U) :
     fiberMk.{w} (p.map g) = fiberMk.{w} (𝟙 (p.obj U)) := by
   simpa using fiberMk_map_comp (p := p) g (𝟙 (p.obj U))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma fiber_map_fiberMk {U : N} {X : C} (f : p.obj U ⟶ X) {Y : C} (g : X ⟶ Y) :
     (fiber p).map g (fiberMk.{w} f) = fiberMk.{w} (f ≫ g) :=
-  (congr_fun (ι_colimMap (p.op.whiskerLeft (shrinkYoneda.{w}.map g)) (op U))
+  (congr_hom (ι_colimMap (p.op.whiskerLeft (shrinkYoneda.{w}.map g)) (op U))
     (shrinkYonedaObjObjEquiv.symm f)).trans (by
       simp [fiberMk, shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w}])
 
@@ -103,6 +106,7 @@ noncomputable def functor : N ⥤ (fiber.{w} p).Elements where
   obj U := Functor.elementsMk _ (p.obj U) (fiberMk (𝟙 _))
   map {U V} f := CategoryOfElements.homMk _ _ (p.map f) (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 instance [IsCofiltered N] : (functor.{w} p).Initial := by
   refine Functor.initial_of_exists_of_isCofiltered _ ?_ ?_
   · rintro ⟨X, x⟩
@@ -114,7 +118,7 @@ instance [IsCofiltered N] : (functor.{w} p).Initial := by
       (show fiberMk.{w} φ₁ = fiberMk.{w} φ₂ by simpa using hφ₁.trans hφ₂.symm)
     exact ⟨_, g, by cat_disch⟩
 
-instance [IsCofiltered N] [InitiallySmall.{w} N] :
+instance [IsCofiltered N] :
     InitiallySmall.{w} (fiber.{w} p).Elements :=
   initiallySmall_of_initial_of_initiallySmall (functor.{w} p)
 
@@ -151,6 +155,8 @@ noncomputable def toPresheafFiberOfIsCofiltered (U : N) (P : Cᵒᵖ ⥤ A) :
     P.obj (op (p.obj U)) ⟶ (ofIsCofiltered p hp).presheafFiber.obj P :=
   (ofIsCofiltered p hp).toPresheafFiber _ (fiberMk (𝟙 _)) P
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toPresheafFiberOfIsCofiltered_w {V U : N} (f : V ⟶ U) (P : Cᵒᵖ ⥤ A) :
     P.map (p.map f).op ≫ toPresheafFiberOfIsCofiltered p hp V P =
@@ -164,6 +170,7 @@ lemma toPresheafFiberOfIsCofiltered_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ 
     g.app (op (p.obj U)) ≫ toPresheafFiberOfIsCofiltered p hp U Q := by
   simp [toPresheafFiberOfIsCofiltered]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The (colimit) cocone which, for a point constructed using `Point.ofIsCofiltered`
 and a functor `p : N ⥤ C` expresses the fiber of a presheaf as a colimit
 indexed indexed by `N`. -/

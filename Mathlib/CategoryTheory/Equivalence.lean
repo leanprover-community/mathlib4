@@ -58,6 +58,8 @@ We write `C ≌ D` (`\backcong`, not to be confused with `≅`/`\cong`) for a bu
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory
@@ -224,8 +226,9 @@ def functorFunctor : (C ≌ D) ⥤ C ⥤ D where
 
 end CategoryStructure
 
-/- While these abbreviations are convenient, they also cause some trouble,
+/-! While these abbreviations are convenient, they also cause some trouble,
 preventing structure projections from unfolding. -/
+
 @[simp, to_dual none]
 theorem Equivalence_mk'_unit (functor inverse unit_iso counit_iso f) :
     (⟨functor, inverse, unit_iso, counit_iso, f⟩ : C ≌ D).unit = unit_iso.hom :=
@@ -403,15 +406,9 @@ functor. -/
 def funInvIdAssoc (e : C ≌ D) (F : C ⥤ E) : e.functor ⋙ e.inverse ⋙ F ≅ F :=
   (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight e.unitIso.symm F ≪≫ F.leftUnitor
 
-@[simp]
+@[to_dual (attr := simp) funInvIdAssoc_inv_app]
 theorem funInvIdAssoc_hom_app (e : C ≌ D) (F : C ⥤ E) (X : C) :
     (funInvIdAssoc e F).hom.app X = F.map (e.unitInv.app X) := by
-  dsimp [funInvIdAssoc]
-  simp
-
-@[simp]
-theorem funInvIdAssoc_inv_app (e : C ≌ D) (F : C ⥤ E) (X : C) :
-    (funInvIdAssoc e F).inv.app X = F.map (e.unit.app X) := by
   dsimp [funInvIdAssoc]
   simp
 
@@ -420,15 +417,9 @@ functor. -/
 def invFunIdAssoc (e : C ≌ D) (F : D ⥤ E) : e.inverse ⋙ e.functor ⋙ F ≅ F :=
   (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight e.counitIso F ≪≫ F.leftUnitor
 
-@[simp]
+@[to_dual (attr := simp) invFunIdAssoc_inv_app]
 theorem invFunIdAssoc_hom_app (e : C ≌ D) (F : D ⥤ E) (X : D) :
     (invFunIdAssoc e F).hom.app X = F.map (e.counit.app X) := by
-  dsimp [invFunIdAssoc]
-  simp
-
-@[simp]
-theorem invFunIdAssoc_inv_app (e : C ≌ D) (F : D ⥤ E) (X : D) :
-    (invFunIdAssoc e F).inv.app X = F.map (e.counitInv.app X) := by
   dsimp [invFunIdAssoc]
   simp
 
@@ -653,7 +644,8 @@ noncomputable def inv (F : C ⥤ D) [F.IsEquivalence] : D ⥤ C where
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Interpret a functor that is an equivalence as an equivalence. -/
-@[simps functor, stacks 02C3]
+@[simps functor, simps -isSimp inverse, simps! -isSimp unitIso_hom_app unitIso_inv_app
+  counitIso_hom_app counitIso_inv_app, stacks 02C3]
 noncomputable def asEquivalence (F : C ⥤ D) [F.IsEquivalence] : C ≌ D where
   functor := F
   inverse := F.inv
@@ -674,10 +666,10 @@ instance isEquivalence_trans (F : C ⥤ D) (G : D ⥤ E) [IsEquivalence F] [IsEq
     IsEquivalence (F ⋙ G) where
 
 instance (F : C ⥤ D) [IsEquivalence F] : IsEquivalence ((whiskeringLeft C D E).obj F) :=
-  (inferInstance : IsEquivalence (Equivalence.congrLeft F.asEquivalence).inverse)
+  inferInstanceAs <| IsEquivalence (Equivalence.congrLeft F.asEquivalence).inverse
 
 instance (F : C ⥤ D) [IsEquivalence F] : IsEquivalence ((whiskeringRight E C D).obj F) :=
-  (inferInstance : IsEquivalence (Equivalence.congrRight F.asEquivalence).functor)
+  inferInstanceAs <| IsEquivalence (Equivalence.congrRight F.asEquivalence).functor
 
 end Functor
 
@@ -687,12 +679,12 @@ namespace Functor
 @[simp]
 theorem fun_inv_map (F : C ⥤ D) [IsEquivalence F] (X Y : D) (f : X ⟶ Y) :
     F.map (F.inv.map f) = F.asEquivalence.counit.app X ≫ f ≫ F.asEquivalence.counitInv.app Y := by
-  simpa using (NatIso.naturality_2 (α := F.asEquivalence.counitIso) (f := f)).symm
+  simpa using! (NatIso.naturality_2 (α := F.asEquivalence.counitIso) (f := f)).symm
 
 @[simp]
 theorem inv_fun_map (F : C ⥤ D) [IsEquivalence F] (X Y : C) (f : X ⟶ Y) :
     F.inv.map (F.map f) = F.asEquivalence.unitInv.app X ≫ f ≫ F.asEquivalence.unit.app Y := by
-  simpa using (NatIso.naturality_1 (α := F.asEquivalence.unitIso) (f := f)).symm
+  simpa using! (NatIso.naturality_1 (α := F.asEquivalence.unitIso) (f := f)).symm
 
 lemma isEquivalence_of_iso {F G : C ⥤ D} (e : F ≅ G) [F.IsEquivalence] : G.IsEquivalence :=
   ((asEquivalence F).changeFunctor e).isEquivalence_functor

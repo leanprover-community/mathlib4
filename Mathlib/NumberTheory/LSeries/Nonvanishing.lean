@@ -106,7 +106,7 @@ lemma zetaMul_nonneg {χ : DirichletCharacter ℂ N} (hχ : χ ^ 2 = 1) (n : ℕ
     0 ≤ zetaMul χ n := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp only [ArithmeticFunction.map_zero, le_refl]
-  · simpa only [χ.isMultiplicative_zetaMul.multiplicative_factorization _ hn] using
+  · simpa only [χ.isMultiplicative_zetaMul.multiplicative_factorization _ hn] using!
       Finset.prod_nonneg
         fun p hp ↦ zetaMul_prime_pow_nonneg hχ (Nat.prime_of_mem_primeFactors hp) _
 
@@ -234,7 +234,7 @@ private lemma re_log_comb_nonneg' {a : ℝ} (ha₀ : 0 ≤ a) (ha₁ : a < 1) {z
   · simp only [← mul_div_assoc, ← add_div]
     refine div_nonneg ?_ n.cast_nonneg
     rw [← pow_mul, pow_mul', sq, mul_re, ← sq, ← sq, ← sq_norm_sub_sq_re, norm_pow, hz]
-    convert (show 0 ≤ 2 * a ^ n * ((z ^ n).re + 1) ^ 2 by positivity) using 1
+    convert! (show 0 ≤ 2 * a ^ n * ((z ^ n).re + 1) ^ 2 by positivity) using 1
     ring
 
 -- This is the version of the technical positivity lemma for logarithms of Euler factors.
@@ -243,8 +243,7 @@ private lemma re_log_comb_nonneg {n : ℕ} (hn : 2 ≤ n) {x : ℝ} (hx : 1 < x)
           4 * (-log (1 - χ n * n ^ (-(x + I * y)))).re +
           (-log (1 - (χ n ^ 2) * n ^ (-(x + 2 * I * y)))).re := by
   by_cases hn' : IsUnit (n : ZMod N)
-  · have ha₀ : 0 ≤ (n : ℝ) ^ (-x) := Real.rpow_nonneg n.cast_nonneg _
-    have ha₁ : (n : ℝ) ^ (-x) < 1 := by
+  · have hn : (n : ℝ) ^ (-x) < 1 := by
       rw [Real.rpow_neg (Nat.cast_nonneg n), inv_lt_one_iff₀]
       exact .inr <| Real.one_lt_rpow (mod_cast one_lt_two.trans_le hn) <| zero_lt_one.trans hx
     have hz : ‖χ n * (n : ℂ) ^ (-(I * y))‖ = 1 := by
@@ -253,7 +252,7 @@ private lemma re_log_comb_nonneg {n : ℕ} (hn : 2 ≤ n) {x : ℝ} (hx : 1 < x)
       simp only [neg_re, mul_re, I_re, ofReal_re, zero_mul, I_im, ofReal_im, mul_zero, sub_self,
         neg_zero, Real.rpow_zero, one_mul]
     rw [MulChar.one_apply hn', one_mul]
-    convert re_log_comb_nonneg' ha₀ ha₁ hz using 6
+    convert! re_log_comb_nonneg' (by positivity) hn hz using 6
     · simp only [ofReal_cpow n.cast_nonneg (-x), ofReal_natCast, ofReal_neg]
     · congr 2
       rw [neg_add, cpow_add _ _ <| mod_cast by lia, ← ofReal_neg, ofReal_cpow n.cast_nonneg (-x),
@@ -318,7 +317,7 @@ lemma LFunctionTrivChar_isBigO_near_one_horizontal :
   have : (fun w : ℂ ↦ LFunctionTrivChar N (1 + w)) =O[𝓝[≠] 0] (1 / ·) := by
     have H : Tendsto (fun w ↦ w * LFunctionTrivChar N (1 + w)) (𝓝[≠] 0)
         (𝓝 <| ∏ p ∈ N.primeFactors, (1 - (p : ℂ)⁻¹)) := by
-      convert (LFunctionTrivChar_residue_one (N := N)).comp (f := fun w ↦ 1 + w) ?_ using 1
+      convert! (LFunctionTrivChar_residue_one (N := N)).comp (f := fun w ↦ 1 + w) ?_ using 1
       · simp only [Function.comp_def, add_sub_cancel_left]
       · simpa only [tendsto_iff_comap, Homeomorph.coe_addLeft, add_zero, map_le_iff_le_comap] using
           ((Homeomorph.addLeft (1 : ℂ)).map_punctured_nhds_eq 0).le

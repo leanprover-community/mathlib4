@@ -37,6 +37,9 @@ including inference of the model with corners.
 | `mfderiv% f x`           | `mfderiv I J f x`                   |
 | `HasMFDerivAt[s] f x f'` | `HasMFDerivWithinAt I J f s x f'`   |
 | `HasMFDerivAt% f x f'`   | `HasMFDerivAt I J f x f'`           |
+| `TangentSpace% x`        | `TangentSpace I x`                  |
+| `tangentMap[s] f`        | `tangentMapWithin I J f s`          |
+| `tangentMap% f`          | `tangentMap I J f`                  |
 
 In each of these cases, the models with corners are inferred from the domain and codomain of `f`.
 The search for models with corners uses the local context and is (almost) only based on expression
@@ -306,7 +309,7 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM FindModelRe
     TermElabM (Option FindModelResult) := do
   let s ← saveState
   try
-    withTraceNode `Elab.DiffGeo.MDiff (fun e => pure m!"{e.emoji} {strategyDescr}") do
+    withTraceNode `Elab.DiffGeo.MDiff (fun _ => pure m!"{strategyDescr}") do
       let e ←
         try
           Term.withoutErrToSorry <| Term.withSynthesize x
@@ -941,6 +944,29 @@ scoped elab:max "HasMFDerivAt%" ppSpace
   let (srcI, tgtI) ← findModels ef none
   mkAppM ``HasMFDerivAt #[srcI, tgtI, ef, ex, ef']
 
+/-- `TangentSpace% x` elaborates to `TangentSpace I x`,
+trying to determine `I` from the local context. -/
+scoped elab:max "TangentSpace%" ppSpace x:term:arg : term => do
+  let ex ← Term.elabTerm x none
+  let extype ← instantiateMVars <| ← inferType ex
+  let src ← findModel extype
+  mkAppM ``TangentSpace #[src, ex]
+
+/-- `tangentMap[s] f` elaborates to `tangentMapWithin I J f s`,
+trying to determine `I` and `J` from the local context. -/
+scoped elab:max "tangentMap[" s:term "]" ppSpace f:term:arg : term => do
+  let es ← Term.elabTerm s none
+  let ef ← ensureIsFunction <|← Term.elabTerm f none
+  let (srcI, tgtI) ← findModels ef none
+  mkAppM ``tangentMapWithin #[srcI, tgtI, ef, es]
+
+/-- `tangentMap% f` elaborates to `tangentMap I J f`,
+trying to determine `I` and `J` from the local context. -/
+scoped elab:max "tangentMap%" ppSpace f:term:arg : term => do
+  let ef ← ensureIsFunction <|← Term.elabTerm f none
+  let (srcI, tgtI) ← findModels ef none
+  mkAppM ``tangentMap #[srcI, tgtI, ef]
+
 end Manifold
 
 section trace
@@ -973,18 +999,20 @@ initialize registerTraceClass `Elab.DiffGeo.MDiff (inherited := true)
 
 end trace
 
-section delaborators
-
 /-!
 ### Delaborators
 
-In this section we make sure the infoview also uses those notations.
-Not all notations are supported yet.
+In this section we make sure the infoview also uses the above notation.
+Not all elaborators are supported yet.
 -/
+section delaborators
+
+namespace Manifold
+
 open Bundle PrettyPrinter Delaborator SubExpr
 
 /-- Delaborator for `Bundle.TotalSpace.mk` using anonymous constructor notation. -/
-@[app_delab TotalSpace.mk] meta def delabTotalSpace_mk : Delab := do
+@[app_delab TotalSpace.mk] meta def delabTotalSpaceMk : Delab := do
   whenPPOption getPPNotation do
   withOverApp 5 do
   let bd ← withNaryArg 3 <| delab
@@ -992,7 +1020,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
   `(⟨$bd, $vd⟩)
 
 /-- Delaborator for `Bundle.TotalSpace.mk'` using anonymous constructor notation. -/
-@[app_delab Bundle.TotalSpace.mk'] meta def delabTotalSpace_mk' : Delab := do
+@[app_delab Bundle.TotalSpace.mk'] meta def delabTotalSpaceMkPrime : Delab := do
   whenPPOption getPPNotation do
   withOverApp 5 do
   let bd ← withNaryArg 3 <| delab
@@ -1001,7 +1029,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
 
 /-- Delaborator for `mfderiv` using the custom elaborator, and special-casing
 arguments that can use the `T%` elaborator. -/
-@[app_delab mfderiv] meta def delab_mfderiv : Delab := do
+@[app_delab mfderiv] meta def delabMFDeriv : Delab := do
   whenPPOption getPPNotation do
   withOverApp 21 do
   try
@@ -1034,7 +1062,7 @@ arguments that can use the `T%` elaborator. -/
     let Tσs ← withAppArg do
       let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
       `((T% $σs)) >>= annotateGoToSyntaxDef
-    `(MDiffAt $Tσs) >>= annotateGoToSyntaxDef
+    `(MDiff $Tσs) >>= annotateGoToSyntaxDef
   catch _ =>
     let fs ← withAppArg delab
     `(MDiff $fs) >>= annotateGoToSyntaxDef
@@ -1102,5 +1130,7 @@ arguments that can use the `T%` elaborator. -/
 -- ContMDiff, ContMDiffOn, ContMDiffAt, ContMDiffWithinAt, HasMFDerivAt, HasMFDerivWithinAt
 
 -- TODO: when adding more elaborators, also add the corresponding delaborators
+
+end Manifold
 
 end delaborators

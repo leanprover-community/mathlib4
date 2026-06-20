@@ -241,9 +241,9 @@ def encodeSum : α ⊕ β → ℕ
 
 /-- Explicit decoding function for the sum of two encodable types. -/
 def decodeSum (n : ℕ) : Option (α ⊕ β) :=
-  match boddDiv2 n with
-  | (false, m) => (decode m : Option α).map Sum.inl
-  | (_, m) => (decode m : Option β).map Sum.inr
+  match bodd n, div2 n with
+  | false, m => (decode m : Option α).map Sum.inl
+  | _, m => (decode m : Option β).map Sum.inr
 
 /-- If `α` and `β` are encodable, then so is their sum. -/
 instance _root_.Sum.encodable : Encodable (α ⊕ β) :=
@@ -291,7 +291,7 @@ theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none := by
     rw [Nat.le_div_iff_mul_le]
     exacts [h, by decide]
   obtain ⟨m, e⟩ := exists_eq_succ_of_ne_zero (_root_.ne_of_gt this)
-  simp only [decodeSum, boddDiv2_eq, div2_val]; cases bodd n <;> simp [e]
+  simp only [decodeSum, div2_val]; cases bodd n <;> simp [e]
 
 noncomputable instance _root_.Prop.encodable : Encodable Prop :=
   ofEquiv Bool Equiv.propEquivBool
@@ -490,9 +490,9 @@ private def good : Option α → Prop
   | none => False
 
 set_option backward.privateInPublic true in
-private local instance decidable_good : DecidablePred (good p) :=
-  fun n => by
-    cases n <;> unfold good <;> dsimp <;> infer_instance
+private local instance decidable_good : DecidablePred (good p)
+  | some a => inferInstanceAs <| Decidable (p a)
+  | none => inferInstanceAs <| Decidable False
 
 open Encodable
 

@@ -24,7 +24,7 @@ it is shown that any nonzero Artinian object has a simple subobject.
 The Jordan-Hölder theorem, following https://stacks.math.columbia.edu/tag/0FCK.
 -/
 
-@[expose] public section
+public section
 
 
 namespace CategoryTheory

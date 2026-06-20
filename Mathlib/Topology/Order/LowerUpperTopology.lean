@@ -243,7 +243,7 @@ theorem isOpen_iff_generate_Ici_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (
 instance _root_.OrderDual.instIsUpper : IsUpper αᵒᵈ where
   topology_eq_upperTopology := topology_eq_lowerTopology (α := α)
 
-/-- Left-closed right-infinite intervals [a, ∞) are closed in the lower topology. -/
+/-- Left-closed right-infinite intervals $[a, ∞)$ are closed in the lower topology. -/
 instance : ClosedIciTopology α :=
   ⟨fun a ↦ isOpen_compl_iff.1 <| isOpen_iff_generate_Ici_compl.2 <| GenerateOpen.basic _ ⟨a, rfl⟩⟩
 
@@ -271,7 +271,7 @@ theorem tendsto_nhds_iff_not_le {β : Type*} {f : β → α} {l : Filter β} {x 
 
 /--
 The closure of a singleton `{a}` in the lower topology is the left-closed right-infinite interval
-[a, ∞).
+$[a, ∞)$.
 -/
 @[simp]
 theorem closure_singleton (a : α) : closure {a} = Ici a :=
@@ -279,7 +279,7 @@ theorem closure_singleton (a : α) : closure {a} = Ici a :=
     (isUpperSet_of_isClosed isClosed_closure).Ici_subset <| subset_closure rfl
 
 protected theorem isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by
-  convert isTopologicalBasis_of_subbasis (topology_eq α)
+  convert! isTopologicalBasis_of_subbasis (topology_eq α)
   simp_rw [lowerBasis, coe_upperClosure, compl_iUnion]
   ext s
   constructor
@@ -341,7 +341,7 @@ lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ ∃ a, (
   refine ⟨?_, isTopologicalBasis_insert_univ_subbasis.isOpen⟩
   intro hO
   apply Or.inr
-  convert IsTopologicalBasis.open_eq_sUnion isTopologicalBasis_insert_univ_subbasis hO
+  convert! IsTopologicalBasis.open_eq_sUnion isTopologicalBasis_insert_univ_subbasis hO
   constructor
   · intro ⟨a, ha⟩
     use {U}
@@ -403,7 +403,7 @@ theorem isOpen_iff_generate_Iic_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (
 instance _root_.OrderDual.instIsLower : IsLower αᵒᵈ where
   topology_eq_lowerTopology := topology_eq_upperTopology (α := α)
 
-/-- Left-infinite right-closed intervals (-∞,a] are closed in the upper topology. -/
+/-- Left-infinite right-closed intervals $(-∞,a]$ are closed in the upper topology. -/
 instance : ClosedIicTopology α :=
   ⟨fun a ↦ isOpen_compl_iff.1 <| isOpen_iff_generate_Iic_compl.2 <| GenerateOpen.basic _ ⟨a, rfl⟩⟩
 
@@ -424,7 +424,7 @@ theorem tendsto_nhds_iff_not_le {β : Type*} {f : β → α} {l : Filter β} {x 
 
 /--
 The closure of a singleton `{a}` in the upper topology is the left-infinite right-closed interval
-(-∞,a].
+$(-∞,a]$.
 -/
 @[simp]
 theorem closure_singleton (a : α) : closure {a} = Iic a :=
@@ -511,7 +511,7 @@ variable [CompleteLattice α] [CompleteLattice β] [TopologicalSpace α] [IsLowe
 
 protected lemma _root_.sInfHom.continuous (f : sInfHom α β) : Continuous f := by
   refine IsLower.continuous_iff_Ici.2 fun b => ?_
-  convert isClosed_Ici (a := sInf <| f ⁻¹' Ici b)
+  convert! isClosed_Ici (a := sInf <| f ⁻¹' Ici b)
   refine Subset.antisymm (fun a => sInf_le) fun a ha => le_trans ?_ <|
     OrderHomClass.mono (f : α →o β) ha
   refine LE.le.trans ?_ (map_sInf f _).ge

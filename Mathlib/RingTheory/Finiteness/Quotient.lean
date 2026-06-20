@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.Ideal.Over
 # Finiteness of quotient modules
 -/
 
-@[expose] public section
+public section
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 variable (P : Ideal B) (p : Ideal A) [P.LiesOver p]

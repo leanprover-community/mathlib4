@@ -69,20 +69,21 @@ theorem trinomial_natDegree (hkm : k < m) (hmn : m < n) (hw : w ≠ 0) :
     natDegree_eq_of_degree_eq_some
       ((Finset.sup_le fun i h => ?_).antisymm <|
         le_degree_of_ne_zero <| by rwa [trinomial_leading_coeff' hkm hmn])
-  replace h := support_trinomial' k m n u v w h
+  replace h := support_trinomial_subset k m n u v w h
   rw [mem_insert, mem_insert, mem_singleton] at h
   rcases h with (rfl | rfl | rfl)
   · exact WithBot.coe_le_coe.mpr (hkm.trans hmn).le
   · exact WithBot.coe_le_coe.mpr hmn.le
   · exact le_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem trinomial_natTrailingDegree (hkm : k < m) (hmn : m < n) (hu : u ≠ 0) :
     (trinomial k m n u v w).natTrailingDegree = k := by
   refine
     natTrailingDegree_eq_of_trailingDegree_eq_some
       ((Finset.le_inf fun i h => ?_).antisymm <|
           trailingDegree_le_of_ne_zero <| by rwa [trinomial_trailing_coeff' hkm hmn]).symm
-  replace h := support_trinomial' k m n u v w h
+  replace h := support_trinomial_subset k m n u v w h
   rw [mem_insert, mem_insert, mem_singleton] at h
   rcases h with (rfl | rfl | rfl)
   · exact le_rfl
@@ -144,7 +145,7 @@ theorem ne_zero (hp : p.IsUnitTrinomial) : p ≠ 0 := by
 theorem coeff_isUnit (hp : p.IsUnitTrinomial) {k : ℕ} (hk : k ∈ p.support) :
     IsUnit (p.coeff k) := by
   obtain ⟨k, m, n, hkm, hmn, u, v, w, rfl⟩ := hp
-  have := support_trinomial' k m n (u : ℤ) v w hk
+  have := support_trinomial_subset k m n (u : ℤ) v w hk
   rw [mem_insert, mem_insert, mem_singleton] at this
   rcases this with (rfl | rfl | rfl)
   · refine ⟨u, by rw [trinomial_trailing_coeff' hkm hmn]⟩

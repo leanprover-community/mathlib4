@@ -113,7 +113,8 @@ where
         return result
       | .ascend a? => return a?.getD empty
     | .compose a b => return combine (← go a) (← go b)
-    | .nest _ m | .group m | .tagged _ m | .withContext _ m | .withNamingContext _ m => go m
+    | .nest _ m | .group m | .tagged _ m | .withContext _ m | .withNamingContext _ m
+    | .ofOriginatingSyntax _ m => go m
     | .ofLazy _ _ | .ofWidget _ _ | .ofGoal _ | .ofFormatWithInfos _ => return empty
 
 /-- Convenience wrapper which accumulates the results of `visitM` across `arr`, attempting to
@@ -143,6 +144,7 @@ partial def withPPOptions (msg : MessageData) (modify : Options → Options) : M
   | .nest n m => .nest n (withPPOptions m modify)
   | .group m => .group (withPPOptions m modify)
   | .tagged t m => .tagged t (withPPOptions m modify)
+  | .ofOriginatingSyntax stx m => .ofOriginatingSyntax stx (withPPOptions m modify)
   | .withNamingContext nc m => .withNamingContext nc (withPPOptions m modify)
   | .trace td header children =>
     .trace td (withPPOptions header modify) (children.map (withPPOptions · modify))
@@ -165,26 +167,24 @@ namespace Mathlib.Tactic.DefEqAbuse
     f td header children
 
 /-- Find the deepest failing `Meta.isDefEq` trace nodes (leaf failures).
-Skips `onFailure` retry nodes and ignores ✅️ branches (recovered failures aren't root causes).
-Note: status is currently determined by parsing emoji from the rendered header string.
-Once https://github.com/leanprover/lean4/pull/12698 is available, use `td.result?` instead. -/
+Skips `onFailure` retry nodes and ignores ✅️ branches (recovered failures aren't root causes). -/
 partial def findLeafFailures (msg : MessageData) : BaseIO (Array MessageData) :=
   msg.visitTraceNodesM <| onlyOnDefEqNodes fun td header children => do
-    unless traceResultOf (← header.toString) matches some .failure do
+    unless td.result? matches some .failure do
       return .ascend
     let childFailures ← visitWithM children findLeafFailures
     -- Leaf failure: deepest `❌️` node with no deeper `❌️` children
     return .ascend <| if childFailures.isEmpty then #[header] else childFailures
 
 /-- Collect rendered check strings from `Meta.isDefEq` trace nodes matching a status predicate.
-Returns a `HashSet` of emoji-stripped header strings. -/
-partial def collectIsDefEqChecks (pred : TraceResult → Bool)
+Returns a `HashSet` of header strings. -/
+partial def collectIsDefEqChecks (pred : Lean.TraceResult → Bool)
     (msg : MessageData) : BaseIO (Std.HashSet String) :=
   msg.visitTraceNodesM <| onlyOnDefEqNodes fun td header children => do
-    let headerStr ← header.toString
-    if let some status := traceResultOf headerStr then
+    if let some status := td.result? then
       if pred status then
-        return .descend (butFirst := some {stripTraceResultPrefix headerStr})
+        let headerStr ← header.toString
+        return .descend (butFirst := some {headerStr})
     return .descend
 
 /-- Find the deepest `Meta.isDefEq` transition points: nodes that fail in the strict trace
@@ -198,10 +198,9 @@ partial def findTransitionFailures (permSuccesses : Std.HashSet String)
     (msg : MessageData) : BaseIO (Array MessageData) :=
   if permSuccesses.isEmpty then findLeafFailures msg
   else msg.visitTraceNodesM <| onlyOnDefEqNodes fun td header children => do
+    unless td.result? matches some .failure do return .descend
     let headerStr ← header.toString
-    unless traceResultOf headerStr matches some .failure do return .descend
-    let checkStr := stripTraceResultPrefix headerStr
-    if permSuccesses.contains checkStr && !permFailures.contains checkStr then
+    if permSuccesses.contains headerStr && !permFailures.contains headerStr then
       -- Transition point: fails strict, succeeds permissive, doesn't also fail permissive.
       -- Look for deeper transition points among children.
       let childTransitions ← visitWithM children <|
@@ -224,7 +223,7 @@ partial def findSynthAppFailures (permSuccesses permFailures : Std.HashSet Strin
     if td.cls == `Meta.isDefEq.onFailure then return .ascend
     if td.cls == `Meta.synthInstance then
       let headerStr ← header.toString
-      if traceResultOf headerStr matches some .failure && headerStr.contains "apply " then
+      if td.result? matches some .failure && headerStr.contains "apply " then
         let failures ← visitWithM children <|
           findTransitionFailures permSuccesses permFailures
         if !failures.isEmpty then
@@ -238,8 +237,7 @@ partial def findSynthFailures (permSuccesses permFailures : Std.HashSet String)
   msg.visitTraceNodesM fun td header children => do
     if td.cls == `Meta.isDefEq.onFailure then return .ascend
     if td.cls == `Meta.synthInstance then
-      let headerStr ← header.toString
-      if traceResultOf headerStr matches some .failure then
+      if td.result? matches some .failure then
         visitWithAndAscendM children <| findSynthAppFailures permSuccesses permFailures
       else return .ascend
     -- Skip isDefEq/synthInstance subtrees that aren't top-level synthesis
@@ -254,7 +252,7 @@ partial def findSynthSuccessApps (msg : MessageData) : BaseIO (Std.HashSet Strin
   msg.visitTraceNodesM fun td header children => do
     if td.cls == `Meta.synthInstance then
       let headerStr ← header.toString
-      if headerStr.contains "apply" && traceResultOf headerStr == some .success then
+      if headerStr.contains "apply" && td.result? == some .success then
         return .descend (butFirst := some {extractInstName headerStr})
     return .descend
 
@@ -294,17 +292,13 @@ def analyzeTraces (strictMsgs permMsgs : Array MessageData) (includeSynth : Bool
   return (uniqueFailures, dedupedResults)
 
 /-- Check whether a rendered isDefEq check string has syntactically identical LHS and RHS
-(e.g. `"❌️ ⊤ =?= ⊤"` or `"Quiver C =?= Quiver C"`).
+(e.g. `"⊤ =?= ⊤"` or `"Quiver C =?= Quiver C"`).
 Comparison is whitespace-insensitive to handle cases where LHS and RHS are semantically identical
 but rendered with different line breaks or spacing.
 TODO: once https://github.com/leanprover/lean4/pull/12698 is available, refactor to use
 `TraceData.result?` and compare the LHS/RHS `Expr`s structurally instead of string-matching. -/
-private def isIdenticalSidesStr (raw : String) : Bool :=
-  if let [lhsRaw, rhs] := raw.splitOn " =?= " then
-    -- Strip the leading status emoji/word (first whitespace-delimited token).
-    let lhs := match lhsRaw.splitOn " " with
-      | _ :: rest => " ".intercalate rest
-      | _ => lhsRaw
+def isIdenticalSidesStr (raw : String) : Bool :=
+  if let [lhs, rhs] := raw.splitOn " =?= " then
     -- Compare up to whitespace so that line-break differences don't cause false negatives.
     let tokenize (s : String) : List String :=
       (s.split Char.isWhitespace).toList.map (·.toString) |>.filter (· ≠ "")
@@ -315,7 +309,7 @@ private def isIdenticalSidesStr (raw : String) : Bool :=
 Each level adds more detail to pretty-printed expressions.
 We prefer symmetric options (`pp.universes`, `pp.explicit`) over `pp.analyze`,
 which is context-dependent and can add annotations to only one side. -/
-private def ppEscalations : List (Options → Options) :=
+def ppEscalations : List (Options → Options) :=
   [ fun o => o.setBool `pp.universes true
   , fun o => o.setBool `pp.explicit true
   ]
@@ -337,13 +331,14 @@ def disambiguateFailures (failures : Array MessageData) : BaseIO (Array MessageD
 def reportDefEqAbuse {m : Type → Type} [Monad m] [MonadLog m] [AddMessageContext m]
     [MonadOptions m] (kind : String) (uniqueFailures : Array MessageData)
     (synthResults : Array (MessageData × Array MessageData)) : m Unit := do
+  let failureEmoji := Lean.TraceResult.failure.toEmoji
   if !synthResults.isEmpty then
     -- Structured report: group by instance application
     let mut entries : Array MessageData := #[]
     for (app, failures) in synthResults do
       let failureList := joinSep
-        (failures.toList.map fun f => m!"    {f}") "\n"
-      entries := entries.push m!"  {app}\n{failureList}"
+        (failures.toList.map fun f => m!"    {failureEmoji} {f}") "\n"
+      entries := entries.push m!"  {failureEmoji} {app}\n{failureList}"
     let report := joinSep entries.toList "\n"
     logWarning
       m!"#defeq_abuse: {kind} fails with \
@@ -356,7 +351,7 @@ def reportDefEqAbuse {m : Type → Type} [Monad m] [MonadLog m] [AddMessageConte
         Could not identify specific failing isDefEq checks from traces."
   else
     let failureList := joinSep
-      (uniqueFailures.toList.map fun f => m!"  {f}") "\n"
+      (uniqueFailures.toList.map fun f => m!"  {failureEmoji} {f}") "\n"
     logWarning
       m!"#defeq_abuse: {kind} fails with \
         `backward.isDefEq.respectTransparency true` but succeeds with `false`.\n\

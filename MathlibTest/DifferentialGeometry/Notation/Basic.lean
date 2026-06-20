@@ -931,7 +931,7 @@ info: ContMDiffWithinAt (modelWithCornersSelf 𝕜 E) (modelWithCornersSelf 𝕜
 
 end smoothness
 
--- Inferring the type of `x` for all ContMDiff/MDifferentiable{Within}At elaborators.
+/-! Inferring the type of `x` for all ContMDiff/MDifferentiable{Within}At elaborators. -/
 section
 
 variable {EM' : Type*} [NormedAddCommGroup EM']
@@ -967,6 +967,33 @@ open ContDiff in -- for the ∞ notation
 /-- info: setOf fun x ↦ Surjective ⇑(mfderivWithin I I' f s x) : Set M -/
 #guard_msgs in
 #check {x | Function.Surjective (mfderiv[s] f x) }
+
+end
+
+/-! Tests for the elaborators for `tangentMap(Within)` and `TangentSpace` -/
+section
+
+variable {f : M → M} {s : Set M} {x : M} {X : TangentSpace% x}
+
+/-- info: TangentSpace I x : Type u_2 -/
+#guard_msgs in
+#check TangentSpace% x
+
+/-- info: tangentMap I I f : TangentBundle I M → TangentBundle I M -/
+#guard_msgs in
+#check tangentMap% f
+
+/-- info: tangentMapWithin I I f s : TangentBundle I M → TangentBundle I M -/
+#guard_msgs in
+#check tangentMap[s] f
+
+/-- info: tangentMap I I f { proj := x, snd := X } : TangentBundle I M -/
+#guard_msgs in
+#check tangentMap% f X
+
+/-- info: tangentMapWithin I I f s { proj := x, snd := X } : TangentBundle I M -/
+#guard_msgs in
+#check tangentMap[s] f X
 
 end
 
@@ -1305,47 +1332,47 @@ variable {f : Unit → Unit}
 error: Could not find a model with corners for `Unit`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `Unit`
-[Elab.DiffGeo.MDiff] ❌️ TotalSpace
+[Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a `Bundle.TotalSpace`.
-[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+[Elab.DiffGeo.MDiff] 💥️ TangentBundle
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a `TangentBundle`
-[Elab.DiffGeo.MDiff] ❌️ NormedSpace
+[Elab.DiffGeo.MDiff] 💥️ NormedSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find a `NormedSpace` structure on `Unit` among local instances.
-[Elab.DiffGeo.MDiff] ❌️ Manifold
+[Elab.DiffGeo.MDiff] 💥️ Manifold
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find a `ChartedSpace` structure on `Unit` among local instances, and `Unit` is not the charted space of some type in the local context either.
-[Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
+[Elab.DiffGeo.MDiff] 💥️ ContinuousLinearMap
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a space of continuous linear maps
-[Elab.DiffGeo.MDiff] ❌️ RealInterval
+[Elab.DiffGeo.MDiff] 💥️ RealInterval
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a coercion of a set to a type
-[Elab.DiffGeo.MDiff] ❌️ EuclideanSpace
+[Elab.DiffGeo.MDiff] 💥️ EuclideanSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a Euclidean space, half-space or quadrant
-[Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
+[Elab.DiffGeo.MDiff] 💥️ UpperHalfPlane
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not the complex upper half plane
-[Elab.DiffGeo.MDiff] ❌️ Units of algebra
+[Elab.DiffGeo.MDiff] 💥️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a set of units, in particular not of a complete normed algebra
-[Elab.DiffGeo.MDiff] ❌️ Complex unit circle
+[Elab.DiffGeo.MDiff] 💥️ Complex unit circle
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not the complex unit circle
-[Elab.DiffGeo.MDiff] ❌️ Sphere
+[Elab.DiffGeo.MDiff] 💥️ Sphere
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a coercion of a set to a type
-[Elab.DiffGeo.MDiff] ❌️ NormedField
+[Elab.DiffGeo.MDiff] 💥️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
       failed to synthesize instance of type class
         NontriviallyNormedField Unit
       ⏎
       Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
-[Elab.DiffGeo.MDiff] ❌️ InnerProductSpace
+[Elab.DiffGeo.MDiff] 💥️ InnerProductSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find an `InnerProductSpace` structure on `Unit` among local instances.
 -/

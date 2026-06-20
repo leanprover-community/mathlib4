@@ -7,6 +7,7 @@ module
 
 public import Mathlib.NumberTheory.RamificationInertia.Basic
 public import Mathlib.Order.Filter.Cofinite
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Finsupp
 
 /-!
 # Factorization of ideals and fractional ideals of Dedekind domains
@@ -40,7 +41,7 @@ prove some of its properties. If `I = 0`, we define `val_v(I) = 0`.
   maximal ideals of `R`.
 - `IsDedekindDomain.exists_sup_span_eq`: For all ideals `0 < I ≤ J`,
   there exists `a` such that `J = I + ⟨a⟩`.
-- `Ideal.map_algebraMap_eq_finset_prod_pow`: if `p` is a maximal ideal, then the lift of `p`
+- `Ideal.map_algebraMap_eq_finsetProd_pow`: if `p` is a maximal ideal, then the lift of `p`
   in an extension is the product of the primes over `p` to the power the ramification index.
 
 ## Implementation notes
@@ -265,8 +266,7 @@ theorem finprod_heightOneSpectrum_factorization {I : FractionalIdeal R⁰ K} (hI
   rw [haJ, ← div_spanSingleton, div_eq_mul_inv, ← coeIdeal_span_singleton, ← hJ, ← ha,
     ← finprod_inv_distrib]
   simp_rw [← zpow_neg]
-  rw [← finprod_mul_distrib (by fun_prop (disch := assumption))
-    (by fun_prop (disch := assumption))]
+  rw [← finprod_mul_distrib (by fun_prop) (by fun_prop)]
   apply finprod_congr
   intro v
   rw [← zpow_add₀ ((@coeIdeal_ne_zero R _ K _ _ _ _).mpr v.ne_bot), sub_eq_add_neg]
@@ -322,7 +322,7 @@ def count (I : FractionalIdeal R⁰ K) : ℤ :=
     ((Associates.mk v.asIdeal).count (Associates.mk J).factors -
         (Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {a})).factors : ℤ)
 
-/-- val_v(0) = 0. -/
+/-- `val_v(0) = 0`. -/
 lemma count_zero : count K v (0 : FractionalIdeal R⁰ K) = 0 := by simp only [count, dif_pos]
 
 open Classical in
@@ -403,7 +403,7 @@ theorem count_mul' (I I' : FractionalIdeal R⁰ K) [Decidable (I ≠ 0 ∧ I' �
   · rw [← mul_ne_zero_iff, not_ne_iff] at h
     rw [h, count_zero]
 
-/-- val_v(1) = 0. -/
+/-- `val_v(1) = 0`. -/
 theorem count_one : count K v (1 : FractionalIdeal R⁰ K) = 0 := by
   have h1 : (1 : FractionalIdeal R⁰ K) =
       spanSingleton R⁰ ((algebraMap R K) 1)⁻¹ * ↑(1 : Ideal R) := by
@@ -533,8 +533,8 @@ theorem count_finprod (exps : HeightOneSpectrum R → ℤ)
     (h_exps : ∀ᶠ v : HeightOneSpectrum R in Filter.cofinite, exps v = 0) :
     count K v (∏ᶠ v : HeightOneSpectrum R,
       (v.asIdeal : FractionalIdeal R⁰ K) ^ exps v) = exps v := by
-  convert count_finsuppProd K v (Finsupp.mk h_exps.toFinset exps (fun _ ↦ h_exps.mem_toFinset))
-  rw [finprod_eq_finset_prod_of_mulSupport_subset (s := h_exps.toFinset), Finsupp.prod]
+  convert! count_finsuppProd K v (Finsupp.mk h_exps.toFinset exps (fun _ ↦ h_exps.mem_toFinset))
+  rw [finprod_eq_finsetProd_of_mulSupport_subset (s := h_exps.toFinset), Finsupp.prod]
   · rfl
   · rw [Finite.coe_toFinset]
     intro v hv h
@@ -595,7 +595,7 @@ theorem finite_factors' {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
     have hv_irred : Irreducible v.asIdeal := v.irreducible
     by_contra h_notMem
     rw [mem_union, mem_setOf_eq, mem_setOf_eq] at h_notMem
-    push_neg at h_notMem
+    push Not at h_notMem
     rw [← Associates.count_ne_zero_iff_dvd ha_ne_zero hv_irred, not_not,
       ← Associates.count_ne_zero_iff_dvd hJ_ne_zero hv_irred, not_not] at h_notMem
     rw [mem_setOf_eq, h_notMem.1, h_notMem.2, sub_self] at hv
@@ -610,7 +610,7 @@ theorem finite_factors (I : FractionalIdeal R⁰ K) :
   by_cases hI : I = 0
   · simp only [hI, count_zero, Filter.eventually_cofinite, not_true_eq_false, setOf_false,
       finite_empty]
-  · convert finite_factors' hI (choose_spec (choose_spec (exists_eq_spanSingleton_mul I))).2
+  · convert! finite_factors' hI (choose_spec (choose_spec (exists_eq_spanSingleton_mul I))).2
     rw [count_ne_zero K _ hI]
 
 end FractionalIdeal
@@ -632,7 +632,7 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
   have : ∀ p ∈ s, J * ∏ q ∈ s, q.asIdeal < J * ∏ q ∈ s \ {p}, q.asIdeal := by
     intro p hps
     conv_rhs => rw [← mul_one (J * _)]
-    rw [Finset.prod_eq_mul_prod_diff_singleton_of_mem hps, ← mul_assoc,
+    rw [Finset.prod_eq_mul_prod_sdiff_singleton_of_mem hps, ← mul_assoc,
       mul_right_comm _ p.asIdeal]
     refine mul_lt_mul_of_pos_left ?_ ?_
     · rw [Ideal.one_eq_top, lt_top_iff_ne_top]
@@ -665,8 +665,8 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
   rintro ⟨q, hq⟩
   by_cases hqp : q = p'
   · subst hqp
-    convert sub_mem H₁ H₂
-    rw [Finset.sum_eq_add_sum_diff_singleton_of_mem hp's, add_sub_cancel_right]
+    convert! sub_mem H₁ H₂
+    rw [Finset.sum_eq_add_sum_sdiff_singleton_of_mem hp's, add_sub_cancel_right]
   · refine Ideal.mul_mono_right ?_ (ha p' hp's)
     exact Ideal.prod_le_inf.trans (Finset.inf_le (b := q) (by simpa [hq] using hqp))
 
@@ -742,8 +742,6 @@ lemma divMod_zero_of_not_le {a b c : FractionalIdeal R⁰ K} (hac : ¬ a ≤ c) 
     c.divMod b a = 0 := by
   simp [divMod, hac]
 
-set_option maxHeartbeats 212000 in
--- changed for new compiler
 /-- Let `I J I' J'` be nonzero fractional ideals in a Dedekind domain with `J ≤ I` and `J' ≤ I'`.
 If `I/J = I'/J'` in the group of fractional ideals (i.e. `I * J' = I' * J`),
 then `I/J ≃ I'/J'` as quotient `R`-modules. -/
@@ -786,7 +784,7 @@ def quotientEquiv (I J I' J' : FractionalIdeal R⁰ K)
     refine inf_le_inf ?_ le_rfl
     intro x hx
     rw [spanSingleton_inv]
-    convert mul_mem_mul (mem_spanSingleton_self _ _) hx
+    convert! mul_mem_mul (mem_spanSingleton_self _ _) hx
     simp [H']
   · have H : Submodule.map (Algebra.lsmul R R K (I'.divMod I J')) ↑I =
         (spanSingleton R⁰ (I'.divMod I J') * I) := by
@@ -820,14 +818,14 @@ open IsDedekindDomain Ideal.IsDedekindDomain HeightOneSpectrum
 If `p` is a maximal ideal, then the lift of `p` in an extension is the product of the primes
 over `p` to the power the ramification index.
 -/
-theorem Ideal.map_algebraMap_eq_finset_prod_pow {p : Ideal S} [p.IsMaximal] (hp : p ≠ 0) :
-    map (algebraMap S R) p = ∏ P ∈ p.primesOver R, P ^ p.ramificationIdx (algebraMap S R) P := by
+theorem Ideal.map_algebraMap_eq_finsetProd_pow {p : Ideal S} [p.IsMaximal] (hp : p ≠ 0) :
+    map (algebraMap S R) p = ∏ P ∈ p.primesOver R, P ^ p.ramificationIdx P := by
   classical
   have h : map (algebraMap S R) p ≠ 0 := map_ne_bot_of_ne_bot hp
   rw [← finprod_heightOneSpectrum_factorization (I := p.map (algebraMap S R)) h]
   let hF : Fintype {v : HeightOneSpectrum R | v.asIdeal ∣ map (algebraMap S R) p} :=
     (finite_factors h).fintype
-  rw [finprod_eq_finset_prod_of_mulSupport_subset
+  rw [finprod_eq_finsetProd_of_mulSupport_subset
     (s := {v | v.asIdeal ∣ p.map (algebraMap S R)}.toFinset), ← Finset.prod_set_coe,
     ← Finset.prod_set_coe]
   · let _ : Fintype {v : HeightOneSpectrum R // v.asIdeal ∣ map (algebraMap S R) p} := hF
@@ -838,4 +836,141 @@ theorem Ideal.map_algebraMap_eq_finset_prod_pow {p : Ideal S} [p.IsMaximal] (hp 
     simpa [maxPowDividing, Function.mem_mulSupport, IsPrime.ne_top _,
       Associates.count_ne_zero_iff_dvd h (irreducible v)] using hv
 
+@[deprecated (since := "2026-04-08")]
+alias Ideal.map_algebraMap_eq_finset_prod_pow := Ideal.map_algebraMap_eq_finsetProd_pow
+
 end primesOver
+
+/-!
+### Conversion between various multiplicities
+
+We provide some lemmas that convert various ways of expressing the multiplicity of
+a prime ideal `p` in the factorization of some ideal `I` into `multiplicity p.asIdeal I`.
+-/
+
+section conversion
+
+variable {R : Type*} [CommRing R] [IsDedekindDomain R]
+
+namespace IsDedekindDomain.HeightOneSpectrum
+
+variable {I : Ideal R} (hI : I ≠ ⊥) (p : HeightOneSpectrum R)
+include hI
+
+open UniqueFactorizationMonoid in
+/-- Normalize the multiplicity of a prime ideal `p` in the factorization of `I`
+as `multiplicity p.asIdeal I`. -/
+@[simp]
+lemma count_normalizedFactors_eq_multiplicity :
+    Multiset.count p.asIdeal (normalizedFactors I) = multiplicity p.asIdeal I := by
+  have := emultiplicity_eq_count_normalizedFactors (irreducible p) hI
+  rw [normalize_eq p.asIdeal] at this
+  apply_fun ((↑) : ℕ → ℕ∞) using CharZero.cast_injective
+  rw [← this]
+  exact (finiteMultiplicity_of_emultiplicity_eq_natCast this).emultiplicity_eq_multiplicity
+
+/-- Normalize the multiplicity of a prime ideal `p` in the factorization of `I`
+as `multiplicity p.asIdeal I`. -/
+lemma maxPowDividing_eq_pow_multiplicity :
+    p.maxPowDividing I = p.asIdeal ^ multiplicity p.asIdeal I := by
+  classical
+  rw [maxPowDividing_eq_pow_multiset_count _ hI, count_normalizedFactors_eq_multiplicity hI]
+
+/-- Normalize the multiplicity of a prime ideal `p` in the factorization of `I`
+as `multiplicity p.asIdeal I`. -/
+@[simp]
+lemma factorization_eq_multiplicity :
+    factorization I p.asIdeal = multiplicity p.asIdeal I := by
+  rw [factorization_eq_count, count_normalizedFactors_eq_multiplicity hI]
+
+end IsDedekindDomain.HeightOneSpectrum
+
+end conversion
+
+/-!
+### Lemmas about multiplicities
+
+We collect here lemmas about the multiplicity of a prime ideal `p` in the factorization
+of some ideal `I`.
+These are phrased in terms of `multiplicity p.asIdeal I`.
+-/
+
+section multiplicity
+
+@[simp]
+lemma Ideal.emultiplicity_bot {R : Type*} [CommSemiring R] (I : Ideal R) : emultiplicity I ⊥ = ⊤ :=
+  Submodule.zero_eq_bot (R := R) (M := R) ▸ emultiplicity_zero I
+
+variable {R : Type*} [CommRing R] [IsDedekindDomain R]
+
+lemma Ideal.finprod_heightOneSpectrum_pow_multiplicity {I : Ideal R} (hI : I ≠ ⊥) :
+    ∏ᶠ p : HeightOneSpectrum R, p.asIdeal ^ multiplicity p.asIdeal I = I := by
+  simpa only [maxPowDividing_eq_pow_multiplicity hI]
+    using finprod_heightOneSpectrum_factorization hI
+
+namespace IsDedekindDomain.HeightOneSpectrum
+
+variable (p : HeightOneSpectrum R) {I J : Ideal R}
+
+lemma multiplicity_le_of_ideal_ge (h : J ≤ I) (hJ : J ≠ ⊥) :
+    multiplicity p.asIdeal I ≤ multiplicity p.asIdeal J := by
+  rw [← count_normalizedFactors_eq_multiplicity hJ,
+    ← count_normalizedFactors_eq_multiplicity <| ne_bot_of_le_ne_bot hJ h]
+  exact Ideal.count_le_of_ideal_ge h hJ _
+
+open UniqueFactorizationMonoid Multiset in
+lemma multiplicity_sup (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
+    multiplicity p.asIdeal (I ⊔ J) = multiplicity p.asIdeal I ⊓ multiplicity p.asIdeal J := by
+  rw [Ideal.sup_eq_prod_inf_factors hI hJ, ← count_normalizedFactors_eq_multiplicity ?h,
+    ← count_normalizedFactors_eq_multiplicity hI, ← count_normalizedFactors_eq_multiplicity hJ]
+  case h => exact prod_inter_normalizedFactors_ne_zero I J
+  rw [normalizedFactors_prod_inter_eq_inter]
+  exact count_inter ..
+
+variable (I J) in
+lemma emultiplicity_sup :
+    emultiplicity p.asIdeal (I ⊔ J) = emultiplicity p.asIdeal I ⊓ emultiplicity p.asIdeal J := by
+  rcases eq_or_ne I ⊥ with rfl | hI
+  · simp
+  rcases eq_or_ne J ⊥ with rfl | hJ
+  · simp
+  have : I ⊔ J ≠ ⊥ := by grind
+  have H {I' : Ideal R} (h : I' ≠ ⊥) : FiniteMultiplicity p.asIdeal I' :=
+    FiniteMultiplicity.of_prime_left (prime p) h
+  rw [(H this).emultiplicity_eq_multiplicity, (H hI).emultiplicity_eq_multiplicity,
+    (H hJ).emultiplicity_eq_multiplicity, multiplicity_sup _ hI hJ]
+  norm_cast
+
+variable {ι : Type*} [Finite ι]
+
+lemma emultiplicity_iSup (I : ι → Ideal R) :
+    emultiplicity p.asIdeal (⨆ i, I i) = ⨅ i, emultiplicity p.asIdeal (I i) := by
+  induction ι using Finite.induction_empty_option with
+  | h_empty =>
+    rw [iSup_of_empty, iInf_of_empty]
+    exact emultiplicity_zero _
+  | of_equiv e ih =>
+    specialize ih (I ∘ e)
+    rw [← sSup_range, ← sInf_range] at ih ⊢
+    rw [EquivLike.range_comp I e] at ih
+    rw [ih]
+    exact congrArg _ <| EquivLike.range_comp (emultiplicity p.asIdeal <| I ·) e
+  | h_option ih =>
+    rw [iSup_option, emultiplicity_sup p .., ih, iInf_option]
+
+lemma multiplicity_iSup [Nonempty ι] {I : ι → Ideal R} (hI : ∀ i, I i ≠ ⊥) :
+    multiplicity p.asIdeal (⨆ i, I i) = ⨅ i, multiplicity p.asIdeal (I i) := by
+  have H i : FiniteMultiplicity p.asIdeal (I i) :=
+    FiniteMultiplicity.of_prime_left (prime p) <| hI i
+  have H' : FiniteMultiplicity p.asIdeal (⨆ i, I i) := by
+    refine FiniteMultiplicity.of_prime_left (prime p) ?_
+    contrapose! hI
+    rw [← bot_eq_zero, iSup_eq_bot] at hI
+    exact ⟨Classical.ofNonempty, hI _⟩
+  have := emultiplicity_iSup p I
+  simp only [H'.emultiplicity_eq_multiplicity, (H _).emultiplicity_eq_multiplicity] at this
+  exact_mod_cast this
+
+end IsDedekindDomain.HeightOneSpectrum
+
+end multiplicity

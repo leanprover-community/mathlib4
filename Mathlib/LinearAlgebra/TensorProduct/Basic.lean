@@ -59,7 +59,7 @@ def liftAddHom (f : M →+ N →+ P)
     (hf : ∀ (r : R) (m : M) (n : N), f (r • m) n = f m (r • n)) :
     M ⊗[R] N →+ P :=
   (addConGen (TensorProduct.Eqv R M N)).lift (FreeAddMonoid.lift (fun mn : M × N => f mn.1 mn.2)) <|
-    AddCon.addConGen_le fun x y hxy =>
+    AddCon.addConGen_le.2 fun x y hxy =>
       match x, y, hxy with
       | _, _, .of_zero_left n =>
         (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, map_zero,
@@ -92,6 +92,7 @@ variable {M N}
 variable (f : M →ₗ[R] N →ₗ[R] P)
 variable (f' : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary function to constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P`
 with the property that its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
@@ -328,6 +329,8 @@ def mapOfCompatibleSMul : M ⊗[A] N →ₗ[S] M ⊗[R] N where
 @[simp] theorem mapOfCompatibleSMul_tmul (m n) : mapOfCompatibleSMul R A S M N (m ⊗ₜ n) = m ⊗ₜ n :=
   rfl
 
+/- The map `mapOfCompatibleSMul` is surjective. Its kernel is characterized by the Lemma
+`TensorProduct.ker_mapOfCompatibleSMul`. -/
 theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMul R A S M N) :=
   fun x ↦ x.induction_on (⟨0, map_zero _⟩) (fun m n ↦ ⟨_, mapOfCompatibleSMul_tmul ..⟩)
     fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simpa using congr($hx + $hy)⟩
@@ -378,7 +381,7 @@ instance neg : Neg (M ⊗[R] N) where
 protected theorem neg_add_cancel (x : M ⊗[R] N) : -x + x = 0 :=
   x.induction_on
     (by rw [add_zero]; apply (Neg.aux R).map_zero)
-    (fun x y => by convert (add_tmul (R := R) (-x) x y).symm; rw [neg_add_cancel, zero_tmul])
+    (fun x y => by convert! (add_tmul (R := R) (-x) x y).symm; rw [neg_add_cancel, zero_tmul])
     fun x y hx hy => by
     suffices -x + x + (-y + y) = 0 by
       rw [← this]
@@ -388,17 +391,16 @@ protected theorem neg_add_cancel (x : M ⊗[R] N) : -x + x = 0 :=
       abel
     rw [hx, hy, add_zero]
 
-instance addCommGroup : AddCommGroup (M ⊗[R] N) :=
-  { TensorProduct.addCommMonoid with
-    neg_add_cancel := fun x => TensorProduct.neg_add_cancel x
-    zsmul := (· • ·)
-    zsmul_zero' := by simp
-    zsmul_succ' := by simp [add_comm, TensorProduct.add_smul]
-    zsmul_neg' := fun n x => by
-      change (-n.succ : ℤ) • x = -(((n : ℤ) + 1) • x)
-      rw [← zero_add (_ • x), ← TensorProduct.neg_add_cancel ((n.succ : ℤ) • x), add_assoc,
-        ← add_smul, ← sub_eq_add_neg, sub_self, zero_smul, add_zero]
-      rfl }
+instance addCommGroup : AddCommGroup (M ⊗[R] N) where
+  neg_add_cancel := fun x => TensorProduct.neg_add_cancel x
+  zsmul := (· • ·)
+  zsmul_zero' := by simp
+  zsmul_succ' := by simp [add_comm, TensorProduct.add_smul]
+  zsmul_neg' := fun n x => by
+    change (-n.succ : ℤ) • x = -(((n : ℤ) + 1) • x)
+    rw [← zero_add (_ • x), ← TensorProduct.neg_add_cancel ((n.succ : ℤ) • x), add_assoc,
+      ← add_smul, ← sub_eq_add_neg, sub_self, zero_smul, add_zero]
+    rfl
 
 theorem neg_tmul (m : M) (n : N) : (-m) ⊗ₜ n = -m ⊗ₜ[R] n :=
   rfl

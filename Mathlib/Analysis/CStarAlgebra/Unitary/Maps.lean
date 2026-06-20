@@ -46,7 +46,7 @@ lemma mulLeft_mul_apply (u v : unitary A) (x : A) :
     mulLeft R A (u * v) x = mulLeft R A u (mulLeft R A v x) := by simp
 
 @[simp] lemma toLinearEquiv_mulLeft (u : unitary A) :
-    (mulLeft R A u).toLinearMap = (toUnits u).mulLeftLinearEquiv R A := rfl
+    (mulLeft R A u).toLinearEquiv = (toUnits u).mulLeftLinearEquiv R A := rfl
 
 end mulLeft
 
@@ -77,14 +77,14 @@ lemma mulRight_trans_mulRight (u v : unitary A) :
 lemma mulRight_mul_apply (u v : unitary A) (x : A) :
     mulRight R (u * v) x = mulRight R v (mulRight R u x) := by simp [mul_assoc]
 
-@[simp] lemma toLinearMap_mulRight (u : unitary A) :
+lemma toLinearMap_mulRight (u : unitary A) :
     (mulRight R u).toLinearMap = LinearMap.mulRight R (u : A) := rfl
 
 @[simp] lemma mulRight_one : mulRight R 1 = .refl R A := by
   ext; simp
 
 @[simp] lemma toLinearEquiv_mulRight (u : unitary A) :
-    (mulRight R u).toLinearMap = (toUnits u).mulRightLinearEquiv R := rfl
+    (mulRight R u).toLinearEquiv = (toUnits u).mulRightLinearEquiv R := rfl
 
 end mulRight
 

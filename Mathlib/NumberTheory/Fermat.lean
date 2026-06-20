@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Moritz Firsching
+Authors: Moritz Firsching, Ralf Stephan
 -/
 module
 
@@ -51,7 +51,7 @@ lemma two_lt_fermatNumber (n : ℕ) : 2 < fermatNumber n := three_le_fermatNumbe
 lemma fermatNumber_ne_one (n : ℕ) : fermatNumber n ≠ 1 := by have := three_le_fermatNumber n; lia
 
 theorem odd_fermatNumber (n : ℕ) : Odd (fermatNumber n) :=
-  (even_pow.mpr ⟨even_two, (pow_pos two_pos n).ne'⟩).add_one
+  (even_two.pow_of_ne_zero (pow_pos two_pos n).ne').add_one
 
 theorem prod_fermatNumber (n : ℕ) : ∏ k ∈ range n, fermatNumber k = fermatNumber n - 2 := by
   induction n with | zero => rfl | succ n hn =>
@@ -175,7 +175,7 @@ lemma fermat_primeFactors_one_lt (n p : ℕ) (hn : 1 < n) (hp : p.Prime)
     ∃ k, p = k * 2 ^ (n + 2) + 1 := by
   have : Fact p.Prime := Fact.mk hp
   have hp2 : p ≠ 2 := by
-    exact ((even_pow.mpr ⟨even_two, pow_ne_zero n two_ne_zero⟩).add_one).ne_two_of_dvd_nat hpdvd
+    exact (even_two.pow_of_ne_zero <| pow_ne_zero n two_ne_zero).add_one.ne_two_of_dvd_nat hpdvd
   have hp8 : p % 8 = 1 := by
     obtain ⟨k, rfl⟩ := pow_pow_add_primeFactors_one_lt hp hp2 hpdvd
     obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le' hn

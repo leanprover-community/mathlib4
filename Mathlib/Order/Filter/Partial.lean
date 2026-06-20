@@ -34,6 +34,7 @@ functions and relations.
 `Set.preimage` can be generalized to relations in two ways:
 * `Rel.preimage` returns the image of the set under the inverse relation.
 * `Rel.core` returns the set of elements that are only related to those in the set.
+
 Both generalizations are sensible in the context of filters, so `Filter.comap` and `Filter.Tendsto`
 get two generalizations each.
 
@@ -63,7 +64,7 @@ def rmap (r : SetRel α β) (l : Filter α) : Filter β where
   sets_of_superset hs st := mem_of_superset hs (SetRel.core_mono st)
   inter_sets hs ht := by
     simp only [Set.mem_setOf_eq]
-    convert inter_mem hs ht
+    convert! inter_mem hs ht
     rw [← SetRel.core_inter]
 
 theorem rmap_sets (r : SetRel α β) (l : Filter α) : (l.rmap r).sets = r.core ⁻¹' l.sets :=

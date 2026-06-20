@@ -49,7 +49,7 @@ theorem sum_Ioc_by_parts (hmn : m < n) :
       f n • G (n + 1) - f (m + 1) • G (m + 1)
         - ∑ i ∈ Ioc m (n - 1), (f (i + 1) - f i) • G (i + 1) := by
   simpa only [← Ico_add_one_add_one_eq_Ioc, Nat.sub_add_cancel (Nat.one_le_of_lt hmn),
-    add_tsub_cancel_right] using sum_Ico_by_parts f g (Nat.succ_lt_succ hmn)
+    add_tsub_cancel_right] using! sum_Ico_by_parts f g (Nat.succ_lt_succ hmn)
 
 variable (n)
 
@@ -59,7 +59,8 @@ theorem sum_range_by_parts :
       f (n - 1) • G n - ∑ i ∈ range (n - 1), (f (i + 1) - f i) • G (i + 1) := by
   by_cases hn : n = 0
   · simp [hn]
-  · rw [range_eq_Ico, sum_Ico_by_parts f g (Nat.pos_of_ne_zero hn), sum_range_zero, smul_zero,
-      sub_zero, range_eq_Ico]
+  · simp only [range_eq_Ico]
+    rw [sum_Ico_by_parts f g (Nat.pos_of_ne_zero hn), sum_range_zero, smul_zero, sub_zero]
+    simp only [← range_eq_Ico]
 
 end Finset

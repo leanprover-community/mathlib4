@@ -7,6 +7,7 @@ module
 
 public import Mathlib.NumberTheory.LSeries.HurwitzZeta
 public import Mathlib.Analysis.PSeriesComplex
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Definition of the Riemann zeta function
@@ -137,6 +138,14 @@ lemma HurwitzZeta.expZeta_zero : expZeta 0 = riemannZeta := by
 theorem differentiableAt_riemannZeta {s : ℂ} (hs' : s ≠ 1) : DifferentiableAt ℂ riemannZeta s :=
   differentiableAt_hurwitzZetaEven _ hs'
 
+lemma differentiableOn_riemannZeta :
+    DifferentiableOn ℂ riemannZeta {1}ᶜ :=
+  fun _ hs ↦ (differentiableAt_riemannZeta hs).differentiableWithinAt
+
+lemma analyticOn_riemannZeta :
+    AnalyticOnNhd ℂ riemannZeta {1}ᶜ :=
+  differentiableOn_riemannZeta.analyticOnNhd isOpen_compl_singleton
+
 /-- We have `ζ(0) = -1 / 2`. -/
 theorem riemannZeta_zero : riemannZeta 0 = -1 / 2 := by
   simp_rw [riemannZeta, hurwitzZetaEven, Function.update_self, if_true]
@@ -144,6 +153,20 @@ theorem riemannZeta_zero : riemannZeta 0 = -1 / 2 := by
 lemma riemannZeta_def_of_ne_zero {s : ℂ} (hs : s ≠ 0) :
     riemannZeta s = completedRiemannZeta s / Gammaℝ s := by
   rw [riemannZeta, hurwitzZetaEven, Function.update_of_ne hs, completedHurwitzZetaEven_zero]
+
+/-- Definition of the zeta function in terms of `completedRiemannZeta₀`. -/
+lemma riemannZeta_eq_completedRiemannZeta₀ {s : ℂ} (hs : s ≠ 0) : riemannZeta s =
+    (completedRiemannZeta₀ s - 1 / s - 1 / (1 - s)) / (π ^ (-s / 2) * Gamma (s / 2)) := by
+  rw [riemannZeta_def_of_ne_zero hs, completedRiemannZeta_eq, Gammaℝ]
+
+/-- Version of `completedRiemannZeta₀` that avoids `s ≠ 0` -/
+lemma riemannZeta_eq_mul_completedRiemannZeta₀ (s : ℂ) :
+    riemannZeta s = (s * completedRiemannZeta₀ s - 1 - s / (1 - s)) /
+      (2 * π ^ (-s / 2) * Gamma (s / 2 + 1)) := by
+  rcases eq_or_ne s 0 with rfl | hs
+  · simp [riemannZeta_zero]
+  · rw [riemannZeta_eq_completedRiemannZeta₀ hs, Gamma_add_one (s / 2) (by grind)]
+    field
 
 /-- The trivial zeroes of the zeta function. -/
 theorem riemannZeta_neg_two_mul_nat_add_one (n : ℕ) : riemannZeta (-2 * (n + 1)) = 0 :=
@@ -157,6 +180,7 @@ theorem riemannZeta_one_sub {s : ℂ} (hs : ∀ n : ℕ, s ≠ -n) (hs' : s ≠ 
 
 /-- A formal statement of the **Riemann hypothesis** – constructing a term of this type is worth a
 million dollars. -/
+@[wikidata Q205966]
 def RiemannHypothesis : Prop :=
   ∀ (s : ℂ) (_ : riemannZeta s = 0) (_ : ¬∃ n : ℕ, s = -2 * (n + 1)) (_ : s ≠ 1), s.re = 1 / 2
 

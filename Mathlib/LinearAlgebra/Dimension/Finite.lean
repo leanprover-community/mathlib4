@@ -9,7 +9,7 @@ public import Mathlib.LinearAlgebra.Dimension.Constructions
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-public import Mathlib.SetTheory.Cardinal.Cofinality
+public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 
 /-!
 # Conditions for rank to be finite
@@ -187,17 +187,12 @@ theorem setFinite [Module.Finite R M] {b : Set M}
 
 end LinearIndependent
 
-lemma exists_set_linearIndependent_of_lt_rank {n : Cardinal} (hn : n < Module.rank R M) :
-    ∃ s : Set M, #s = n ∧ LinearIndepOn R id s := by
-  obtain ⟨⟨s, hs⟩, hs'⟩ := exists_lt_of_lt_ciSup' (hn.trans_eq (Module.rank_def R M))
-  obtain ⟨t, ht, ht'⟩ := le_mk_iff_exists_subset.mp hs'.le
-  exact ⟨t, ht', hs.mono ht⟩
-
 lemma exists_finset_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.rank R M) :
     ∃ s : Finset M, s.card = n ∧ LinearIndepOn R id (s : Set M) := by
   rcases hn.eq_or_lt with h | h
-  · obtain ⟨⟨s, hs⟩, hs'⟩ := Cardinal.exists_eq_natCast_of_iSup_eq _
-      (Cardinal.bddAbove_range _) _ (h.trans (Module.rank_def R M)).symm
+  · obtain ⟨⟨s, hs⟩, hs'⟩ := exists_eq_ciSup_of_not_isSuccLimit
+      Cardinal.bddAbove_of_small (h.trans (Module.rank_def R M) ▸ not_isSuccLimit_natCast n)
+    rw [← Module.rank_def, ← h] at hs'
     have : Finite s := lt_aleph0_iff_finite.mp (hs' ▸ natCast_lt_aleph0)
     cases nonempty_fintype s
     refine ⟨s.toFinset, by simpa using hs', by simpa⟩
@@ -205,6 +200,9 @@ lemma exists_finset_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.ra
     have : Finite s := lt_aleph0_iff_finite.mp (hs ▸ natCast_lt_aleph0)
     cases nonempty_fintype s
     exact ⟨s.toFinset, by simpa using hs, by simpa⟩
+
+@[deprecated (since := "2026-04-13")]
+alias exists_set_linearIndependent_of_lt_rank := Module.exists_set_linearIndependent_of_lt_rank
 
 lemma exists_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.rank R M) :
     ∃ f : Fin n → M, LinearIndependent R f :=
@@ -225,7 +223,7 @@ lemma exists_finset_linearIndependent_of_le_finrank {n : ℕ} (hn : n ≤ finran
     ∃ s : Finset M, s.card = n ∧ LinearIndependent R ((↑) : s → M) := by
   by_cases h : finrank R M = 0
   · rw [le_zero_iff.mp (hn.trans_eq h)]
-    exact ⟨∅, rfl, by convert linearIndependent_empty R M using 2 <;> aesop⟩
+    exact ⟨∅, rfl, by convert! linearIndependent_empty R M using 2 <;> aesop⟩
   exact exists_finset_linearIndependent_of_le_rank
     ((Nat.cast_le.mpr hn).trans_eq (cast_toNat_of_lt_aleph0 (toNat_ne_zero.mp h).2))
 
@@ -303,7 +301,7 @@ theorem Module.exists_nontrivial_relation_of_finrank_lt_card {t : Finset M}
   obtain ⟨g, sum, z, nonzero⟩ := Fintype.not_linearIndependent_iff.mp
     (mt LinearIndependent.finset_card_le_finrank h.not_ge)
   refine ⟨Subtype.val.extend g 0, ?_, z, z.2, by rwa [Subtype.val_injective.extend_apply]⟩
-  rw [← Finset.sum_finset_coe]; convert sum; apply Subtype.val_injective.extend_apply
+  rw [← Finset.sum_finset_coe]; convert! sum; apply Subtype.val_injective.extend_apply
 
 /-- If a finset has cardinality larger than `finrank + 1`,
 then there is a nontrivial linear relation amongst its elements,
@@ -478,7 +476,7 @@ theorem finrank_eq_zero_of_basis_imp_false (h : ∀ s : Finset M, Basis.{v} (s :
   finrank_eq_zero_of_basis_imp_not_finite fun s b hs =>
     h hs.toFinset
       (by
-        convert b
+        convert! b
         simp)
 
 theorem finrank_eq_zero_of_not_exists_basis

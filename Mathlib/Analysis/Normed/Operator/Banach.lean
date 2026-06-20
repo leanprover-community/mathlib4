@@ -188,7 +188,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
   have ule : ∀ n, ‖u n‖ ≤ (1 / 2) ^ n * (C * ‖y‖) := fun n ↦ by
     apply le_trans (hg _).2
     calc
-      C * ‖h^[n] y‖ ≤ C * ((1 / 2) ^ n * ‖y‖) := mul_le_mul_of_nonneg_left (hnle n) C0
+      C * ‖h^[n] y‖ ≤ C * ((1 / 2) ^ n * ‖y‖) := by gcongr; exact hnle n
       _ = (1 / 2) ^ n * (C * ‖y‖) := by ring
   have sNu : Summable fun n => ‖u n‖ := by
     refine .of_nonneg_of_le (fun n => norm_nonneg _) ule ?_
@@ -341,7 +341,6 @@ namespace ContinuousLinearMap
 
 variable [CompleteSpace E] [RingHomInvPair σ' σ] {f : E →SL[σ] F}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An injective continuous linear map with a closed range defines a continuous linear equivalence
 between its domain and its range. -/
 noncomputable def equivRange (hinj : Injective f) (hclo : IsClosed (range f)) :
@@ -415,7 +414,7 @@ noncomputable def leftInverse_of_injective_of_isClosed_range
     rintro ⟨y, x, rfl⟩
     have aux := hfK.le_mul_dist x 0
     simp only [dist_zero_right, map_zero] at aux
-    convert aux
+    convert! aux
     exact f.rangeRestrict.leftInverse_apply_of_inj
       (by rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf) x)
 
@@ -489,7 +488,6 @@ theorem spectrum_eq {f : E →L[𝕜] E} :
   rw [spectrum.mem_iff, spectrum.mem_iff, ContinuousLinearMap.isUnit_iff_isUnit_toLinearMap]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Intermediate definition used to show
 `ContinuousLinearMap.closed_complemented_range_of_isCompl_of_ker_eq_bot`.
 
@@ -500,20 +498,19 @@ noncomputable def coprodSubtypeLEquivOfIsCompl {F : Type*} [NormedAddCommGroup F
   ContinuousLinearEquiv.ofBijective (f.coprod G.subtypeL)
     (by
       rw [ker_coprod_of_disjoint_range]
-      · rw [hker, Submodule.ker_subtypeL, Submodule.prod_bot]
-      · rw [Submodule.range_subtypeL]
-        exact h.disjoint)
-    (by simp only [range_coprod, Submodule.range_subtypeL, h.sup_eq_top])
+      · simp [hker]
+      · simp [h.disjoint])
+    (by simp [LinearMap.range_coprod, h.sup_eq_top])
 
-set_option backward.isDefEq.respectTransparency false in
 theorem range_eq_map_coprodSubtypeLEquivOfIsCompl {F : Type*} [NormedAddCommGroup F]
     [NormedSpace 𝕜 F] [CompleteSpace F] (f : E →L[𝕜] F) {G : Submodule 𝕜 F}
     (h : IsCompl f.range G) [CompleteSpace G] (hker : f.ker = ⊥) :
     f.range =
       ((⊤ : Submodule 𝕜 E).prod (⊥ : Submodule 𝕜 G)).map
         (f.coprodSubtypeLEquivOfIsCompl h hker : E × G →ₗ[𝕜] F) := by
-  rw [coprodSubtypeLEquivOfIsCompl, ContinuousLinearEquiv.coe_ofBijective,
-    coe_coprod, LinearMap.coprod_map_prod, Submodule.map_bot, sup_bot_eq, Submodule.map_top]
+  rw [coprodSubtypeLEquivOfIsCompl, ← ContinuousLinearEquiv.toLinearMap_toContinuousLinearMap,
+    ContinuousLinearEquiv.coe_ofBijective, coe_coprod, LinearMap.coprod_map_prod, Submodule.map_bot,
+    sup_bot_eq, Submodule.map_top]
 
 /- TODO: remove the assumption `f.ker = ⊥` in the next lemma, by using the map induced by `f` on
 `E / f.ker`, once we have quotient normed spaces. -/
@@ -534,7 +531,6 @@ section ClosedGraphThm
 variable [CompleteSpace E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F] (g : E →ₗ[𝕜] F)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **closed graph theorem** : a linear map between two Banach spaces whose graph is closed
 is continuous. -/
 theorem LinearMap.continuous_of_isClosed_graph (hg : IsClosed (g.graph : Set <| E × F)) :
@@ -630,7 +626,7 @@ open Function
 lemma bijective_iff_dense_range_and_antilipschitz (f : E →SL[σ] F) :
     Bijective f ↔ f.range.topologicalClosure = ⊤ ∧ ∃ c, AntilipschitzWith c f := by
   refine ⟨fun h ↦ ⟨?eq_top, ?anti⟩, fun ⟨hd, c, hf⟩ ↦ ⟨hf.injective, ?surj⟩⟩
-  case eq_top => simpa [SetLike.ext'_iff] using h.2.denseRange.closure_eq
+  case eq_top => simpa [SetLike.ext'_iff] using! h.2.denseRange.closure_eq
   case anti =>
     refine ⟨_, ContinuousLinearEquiv.ofBijective f ?_ ?_ |>.antilipschitz⟩ <;>
     simp only [LinearMap.range_eq_top, LinearMap.ker_eq_bot, f.coe_coe, h.1, h.2]
