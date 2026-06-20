@@ -544,8 +544,8 @@ end CategoryTheory.Iso
 in `GrpCat` -/
 @[to_additive]
 def mulEquivIsoGroupIso {X Y : GrpCat.{u}} : (X ≃* Y) ≅ (X ≅ Y) where
-  hom := TypeCat.ofHom (fun e ↦ e.toGrpIso)
-  inv := TypeCat.ofHom (fun i ↦ i.groupIsoToMulEquiv)
+  hom := ↾fun e ↦ e.toGrpIso
+  inv := ↾fun i ↦ i.groupIsoToMulEquiv
 
 /-- Additive equivalences between `AddGroup`s are the same
 as (isomorphic to) isomorphisms in `AddGrpCat`. -/
@@ -555,8 +555,8 @@ add_decl_doc addEquivIsoAddGroupIso
 in `CommGrpCat`. -/
 @[to_additive]
 def mulEquivIsoCommGroupIso {X Y : CommGrpCat.{u}} : (X ≃* Y) ≅ (X ≅ Y) where
-  hom := TypeCat.ofHom (fun e ↦ e.toCommGrpIso)
-  inv := TypeCat.ofHom (fun i ↦ i.commGroupIsoToMulEquiv)
+  hom := ↾fun e ↦ e.toCommGrpIso
+  inv := ↾fun i ↦ i.commGroupIsoToMulEquiv
 
 /-- Additive equivalences between `AddCommGroup`s are
 the same as (isomorphic to) isomorphisms in `AddCommGrpCat`. -/
@@ -600,19 +600,24 @@ instance CommGrpCat.forget_reflects_isos : (forget CommGrpCat.{u}).ReflectsIsomo
 -- note: in the following definitions, there is a problem with `@[to_additive]`
 -- as the `Category` instance is not found on the additive variant
 -- this variant is then renamed with an `Aux` suffix
-
+set_option linter.checkUnivs false in
 /-- An alias for `GrpCat.{max u v}`, to deal around unification issues. -/
 @[to_additive (attr := nolint checkUnivs) GrpMaxAux
   /-- An alias for `AddGrpCat.{max u v}`, to deal around unification issues. -/]
 abbrev GrpMax.{u1, u2} := GrpCat.{max u1 u2}
+
+set_option linter.checkUnivs false in
 /-- An alias for `AddGrpCat.{max u v}`, to deal around unification issues. -/
 @[nolint checkUnivs]
 abbrev AddGrpMax.{u1, u2} := AddGrpCat.{max u1 u2}
 
+set_option linter.checkUnivs false in
 /-- An alias for `CommGrpCat.{max u v}`, to deal around unification issues. -/
 @[to_additive (attr := nolint checkUnivs) AddCommGrpMaxAux
   /-- An alias for `AddCommGrpCat.{max u v}`, to deal around unification issues. -/]
 abbrev CommGrpMax.{u1, u2} := CommGrpCat.{max u1 u2}
+
+set_option linter.checkUnivs false in
 /-- An alias for `AddCommGrpCat.{max u v}`, to deal around unification issues. -/
 @[nolint checkUnivs]
 abbrev AddCommGrpMax.{u1, u2} := AddCommGrpCat.{max u1 u2}

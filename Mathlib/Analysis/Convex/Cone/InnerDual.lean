@@ -106,7 +106,7 @@ theorem hyperplane_separation' (C : ProperCone ℝ E) (hx₀ : x₀ ∉ C) :
 /-- The inner dual of inner dual of a proper cone is itself. -/
 @[simp] theorem innerDual_innerDual (C : ProperCone ℝ E) :
     innerDual (innerDual (C : Set E)) = C := by
-  simpa using C.dual_flip_dual (innerₗ E)
+  simpa using! C.dual_flip_dual (innerₗ E)
 
 open scoped InnerProductSpace
 

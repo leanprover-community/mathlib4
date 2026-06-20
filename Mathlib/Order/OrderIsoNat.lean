@@ -5,11 +5,11 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Logic.Denumerable
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Order.Hom.Basic
-public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Order.Lattice.Nat
 
 /-!
 # Relation embeddings from the naturals
@@ -45,7 +45,6 @@ theorem coe_natLT {f : ℕ → α} {H : ∀ n : ℕ, r (f n) (f (n + 1))} : ⇑(
 
 /-- If `f` is a strictly `r`-decreasing sequence, then this returns `f` as an order embedding. -/
 def natGT (f : ℕ → α) (H : ∀ n : ℕ, r (f (n + 1)) (f n)) : ((· > ·) : ℕ → ℕ → Prop) ↪r r :=
-  haveI := IsStrictOrder.swap r
   RelEmbedding.swap (natLT f H)
 
 @[simp]
@@ -167,7 +166,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
         simp only [bad, exists_prop, not_not, Set.mem_setOf_eq, not_forall] at h
         obtain ⟨n', hn1, hn2⟩ := h
         refine ⟨n + n' - n - m, by lia, ?_⟩
-        convert hn2
+        convert! hn2
         lia
       let g' : ℕ → ℕ := @Nat.rec (fun _ => ℕ) m fun n gn => Nat.find (h gn)
       exact

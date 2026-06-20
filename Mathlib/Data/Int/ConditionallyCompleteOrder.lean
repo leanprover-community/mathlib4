@@ -14,7 +14,7 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Defs
 The integers form a conditionally complete linear order.
 -/
 
-@[expose] public section
+public section
 
 
 open Int
@@ -22,8 +22,10 @@ open Int
 
 noncomputable section
 
+namespace Int
+
 open scoped Classical in
-instance instConditionallyCompleteLinearOrder : ConditionallyCompleteLinearOrder ℤ where
+instance : ConditionallyCompleteLinearOrder ℤ where
   __ := instLinearOrder
   __ := LinearOrder.toLattice
   sSup s :=
@@ -43,13 +45,11 @@ instance instConditionallyCompleteLinearOrder : ConditionallyCompleteLinearOrder
   csSup_of_not_bddAbove := fun s hs ↦ by simp [hs]
   csInf_of_not_bddBelow := fun s hs ↦ by simp [hs]
 
-namespace Int
-
 theorem csSup_eq_greatestOfBdd {s : Set ℤ} [DecidablePred (· ∈ s)] (b : ℤ) (Hb : ∀ z ∈ s, z ≤ b)
     (Hinh : ∃ z : ℤ, z ∈ s) : sSup s = greatestOfBdd b Hb Hinh := by
   have : s.Nonempty ∧ BddAbove s := ⟨Hinh, b, Hb⟩
   simp only [sSup, dif_pos this]
-  convert (coe_greatestOfBdd_eq Hb (Classical.choose_spec (⟨b, Hb⟩ : BddAbove s)) Hinh).symm
+  convert! (coe_greatestOfBdd_eq Hb (Classical.choose_spec (⟨b, Hb⟩ : BddAbove s)) Hinh).symm
 
 @[deprecated (since := "2025-12-24")] alias csSup_eq_greatest_of_bdd := csSup_eq_greatestOfBdd
 
@@ -66,7 +66,7 @@ theorem csInf_eq_leastOfBdd {s : Set ℤ} [DecidablePred (· ∈ s)] (b : ℤ) (
     (Hinh : ∃ z : ℤ, z ∈ s) : sInf s = leastOfBdd b Hb Hinh := by
   have : s.Nonempty ∧ BddBelow s := ⟨Hinh, b, Hb⟩
   simp only [sInf, dif_pos this]
-  convert (coe_leastOfBdd_eq Hb (Classical.choose_spec (⟨b, Hb⟩ : BddBelow s)) Hinh).symm
+  convert! (coe_leastOfBdd_eq Hb (Classical.choose_spec (⟨b, Hb⟩ : BddBelow s)) Hinh).symm
 
 @[deprecated (since := "2025-12-24")] alias csInf_eq_least_of_bdd := csInf_eq_leastOfBdd
 
@@ -80,11 +80,11 @@ theorem csInf_of_not_bddBelow {s : Set ℤ} (h : ¬BddBelow s) : sInf s = 0 :=
 @[deprecated (since := "2025-12-24")] alias csInf_of_not_bdd_below := csInf_of_not_bddBelow
 
 theorem csSup_mem {s : Set ℤ} (h1 : s.Nonempty) (h2 : BddAbove s) : sSup s ∈ s := by
-  convert (greatestOfBdd _ (Classical.choose_spec h2) h1).2.1
+  convert! (greatestOfBdd _ (Classical.choose_spec h2) h1).2.1
   exact dif_pos ⟨h1, h2⟩
 
 theorem csInf_mem {s : Set ℤ} (h1 : s.Nonempty) (h2 : BddBelow s) : sInf s ∈ s := by
-  convert (leastOfBdd _ (Classical.choose_spec h2) h1).2.1
+  convert! (leastOfBdd _ (Classical.choose_spec h2) h1).2.1
   exact dif_pos ⟨h1, h2⟩
 
 end Int

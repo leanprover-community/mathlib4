@@ -17,7 +17,7 @@ This file is a place to collect base change results for linear independence.
 
 -/
 
-@[expose] public section
+public section
 
 open Function Set TensorProduct
 

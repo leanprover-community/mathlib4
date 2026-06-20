@@ -10,7 +10,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Cotangent
 public import Mathlib.NumberTheory.LSeries.Dirichlet
 public import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
-public import Mathlib.NumberTheory.ModularForms.LevelOne
+public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 import Mathlib.Topology.EMetricSpace.Paracompact
 
@@ -43,9 +43,9 @@ public section
 open Set Metric TopologicalSpace Function Filter Complex ArithmeticFunction
   ModularForm EisensteinSeries
 
-open scoped Topology Real Nat Complex Pointwise ArithmeticFunction.sigma
+open scoped Real Nat ArithmeticFunction.sigma
 
-open _root_.UpperHalfPlane hiding I
+open UpperHalfPlane hiding I
 
 local notation "ℍₒ" => upperHalfPlaneSet
 
@@ -70,8 +70,8 @@ private lemma aux_IsBigO_mul (k l : ℕ) (p : ℝ) {f : ℕ → ℂ}
       ring
     simpa [h1] using isBigO_ofReal_right.mp (Asymptotics.isBigO_const_mul_self
       ((2 * π * I / p) ^ k) (fun (n : ℕ) ↦ (↑(n ^ k) : ℝ)) atTop)
-  simp only [Nat.cast_pow]
-  convert hf.mul h0
+  push_cast
+  convert! hf.mul h0
   ring
 
 open BoundedContinuousFunction in
@@ -102,7 +102,7 @@ theorem summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp (k l : ℕ) {f 
     norm_natCast, abs_norm, ge_iff_le, r, c] at *
   rw [← mul_assoc]
   gcongr
-  convert h0
+  convert! h0
   rw [← norm_pow, ← exp_nsmul']
 
 /-- This is a version of `summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp` for level one
@@ -111,8 +111,7 @@ theorem summableLocallyUniformlyOn_iteratedDerivWithin_cexp (k : ℕ) :
     SummableLocallyUniformlyOn
       (fun n ↦ iteratedDerivWithin k (fun z ↦ cexp (2 * π * I * z) ^ n) ℍₒ) ℍₒ := by
   have h0 : (fun n : ℕ ↦ (1 : ℂ)) =O[atTop] fun n ↦ ((n ^ 1) : ℝ) := by
-    simp only [Asymptotics.isBigO_iff, norm_one, norm_pow, Real.norm_natCast,
-      eventually_atTop, ge_iff_le]
+    simp only [Asymptotics.isBigO_iff, norm_one, norm_pow, Real.norm_natCast, eventually_atTop]
     exact ⟨1, 1, fun b hb ↦ by norm_cast; simp [hb]⟩
   simpa using summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp k 1 (p := 1)
     (by norm_num) h0
@@ -276,8 +275,8 @@ lemma tsum_eisSummand_eq_riemannZeta_mul_eisensteinSeries {k : ℕ} (hk : 3 ≤ 
 lemma EisensteinSeries.q_expansion_riemannZeta {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
     E hk z = 1 + (riemannZeta k)⁻¹ * (-2 * π * I) ^ k / (k - 1)! *
     ∑' n : ℕ+, σ (k - 1) n * cexp (2 * π * I * z) ^ (n : ℤ) := by
-  have : eisensteinSeriesMF (Int.toNat_le.mp hk) 0 z = eisensteinSeriesSIF (N := 1) 0 k z := rfl
-  rw [E, ModularForm.IsGLPos.smul_apply, this, eisensteinSeriesSIF_apply 0 k z, eisensteinSeries]
+  rw [show E hk z = (1 / 2 : ℂ) • eisensteinSeriesSIF (N := 1) 0 k z from rfl,
+    eisensteinSeriesSIF_apply 0 k z, eisensteinSeries]
   have HE1 := tsum_eisSummand_eq_tsum_sigma_mul_cexp_pow hk hk2 z
   have HE2 := tsum_eisSummand_eq_riemannZeta_mul_eisensteinSeries hk z
   have z2 : riemannZeta k ≠ 0 := riemannZeta_ne_zero_of_one_lt_re <| by norm_cast; grind
@@ -299,7 +298,7 @@ private lemma eisensteinSeries_coeff_identity {k : ℕ} (hk2 : Even k) (hkn0 : k
 lemma EisensteinSeries.q_expansion_bernoulli {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
     E hk z = 1 - (2 * k / bernoulli k) *
     ∑' n : ℕ+, σ (k - 1) n * cexp (2 * π * I * z) ^ (n : ℤ) := by
-  convert q_expansion_riemannZeta hk hk2 z using 1
+  convert! q_expansion_riemannZeta hk hk2 z using 1
   rw [eisensteinSeries_coeff_identity hk2 (by grind), neg_mul, ← sub_eq_add_neg]
 
 section NonZero
@@ -327,7 +326,7 @@ lemma EisensteinSeries.E_qExpansion_coeff {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k
   set β : ℂ := -(2 * k / bernoulli k : ℂ)
   set c : ℕ → ℂ := fun m ↦ if m = 0 then 1 else β * ↑(σ (k - 1) m)
   suffices ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 (1 : ℝ) τ ^ m) (E hk τ) from
-    (qExpansion_coeff_unique one_pos one_mem_strictPeriods_SL2Z this m).symm
+    (ModularFormClass.qExpansion_coeff_unique one_pos one_mem_strictPeriods_SL this m).symm
   intro τ
   have hS : Summable fun n : ℕ ↦ (σ (k - 1) (n + 1) : ℂ) * cexp (2 * π * I * τ) ^ (n + 1) :=
     (summable_nat_add_iff 1).mpr (summable_sigma_mul_cexp_pow (by omega) τ)
@@ -340,7 +339,7 @@ lemma EisensteinSeries.E_qExpansion_coeff {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k
     rw [this, ← tsum_pnat_eq_tsum_succ (f := fun n ↦ (σ (k - 1) n : ℂ) * cexp (2 * π * I * τ) ^ n)]
     ring
   rw [hval]
-  convert (hS.mul_left β).hasSum using 1
+  convert! (hS.mul_left β).hasSum using 1
   · grind [Periodic.qParam, ofReal_one, div_one]
   · rw [tsum_mul_left]
 

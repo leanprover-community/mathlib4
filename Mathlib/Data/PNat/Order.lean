@@ -12,7 +12,7 @@ public import Mathlib.Data.PNat.Basic
 # Order related instances for `ℕ+`
 -/
 
-@[expose] public section
+public section
 
 namespace PNat
 open Nat

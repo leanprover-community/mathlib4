@@ -22,7 +22,7 @@ We show that this holds under certain universe assumptions.
 
 -/
 
-@[expose] public section
+public section
 
 universe w' w v' v u' u
 namespace CategoryTheory

@@ -139,6 +139,8 @@ lemma isQuotientMap_mk : IsQuotientMap (ZerothHomotopy.mk (X := X)) :=
 instance inhabited : Inhabited (ZerothHomotopy ℝ) :=
   ⟨@Quotient.mk' ℝ (pathSetoid ℝ) 0⟩
 
+instance [Nonempty X] : Nonempty (ZerothHomotopy X) := ⟨.mk (Classical.arbitrary _)⟩
+
 section
 
 variable {T : Type*} (f : X → T) (hf : ∀ ⦃x y : X⦄ (_ : Path x y), f x = f y)
@@ -363,7 +365,7 @@ monoid, as an additive submonoid. -/]
 def Submonoid.pathComponentOne (M : Type*) [Monoid M] [TopologicalSpace M] [ContinuousMul M] :
     Submonoid M where
   carrier := pathComponent (1 : M)
-  mul_mem' {m₁ m₂} hm₁ hm₂ := by simpa using hm₁.mul hm₂
+  mul_mem' {m₁ m₂} hm₁ hm₂ := by simpa using! hm₁.mul hm₂
   one_mem' := mem_pathComponent_self 1
 
 /-- The path component of the identity in a topological group, as a subgroup. -/
@@ -372,7 +374,7 @@ group, as an additive subgroup. -/]
 def Subgroup.pathComponentOne (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G] :
     Subgroup G where
   toSubmonoid := .pathComponentOne G
-  inv_mem' {g} hg := by simpa using hg.inv
+  inv_mem' {g} hg := by simpa using! hg.inv
 
 /-- The path component of the identity in a topological group is normal. -/
 @[to_additive]
@@ -562,6 +564,9 @@ variable [PathConnectedSpace X]
 /-- Use path-connectedness to build a path between two points. -/
 def somePath (x y : X) : Path x y :=
   Nonempty.some (joined x y)
+
+instance : Subsingleton (ZerothHomotopy X) :=
+  (pathConnectedSpace_iff_zerothHomotopy.1 inferInstance).2
 
 end PathConnectedSpace
 

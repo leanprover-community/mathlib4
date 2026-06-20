@@ -414,7 +414,7 @@ theorem Convex.smul_preimage (hs : Convex 𝕜 s) (c : 𝕜) : Convex 𝕜 ((fun
 
 theorem Convex.affinity (hs : Convex 𝕜 s) (z : E) (c : 𝕜) :
     Convex 𝕜 ((fun x => z + c • x) '' s) := by
-  simpa only [← image_smul, ← image_vadd, image_image] using (hs.smul c).vadd z
+  simpa only [← image_smul, ← image_vadd, image_image] using! (hs.smul c).vadd z
 
 end AddCommMonoid
 
@@ -447,7 +447,7 @@ theorem convex_vadd (a : E) : Convex 𝕜 (a +ᵥ s) ↔ Convex 𝕜 s :=
 
 /-- Affine subspaces are convex. -/
 theorem AffineSubspace.convex (Q : AffineSubspace 𝕜 E) : Convex 𝕜 (Q : Set E) :=
-  fun x hx y hy a b _ _ hab ↦ by simpa [Convex.combo_eq_smul_sub_add hab] using Q.2 _ hy hx hx
+  fun x hx y hy a b _ _ hab ↦ by simpa [Convex.combo_eq_smul_sub_add hab] using! Q.2 _ hy hx hx
 
 /-- The preimage of a convex set under an affine map is convex. -/
 theorem Convex.affine_preimage (f : E →ᵃ[𝕜] F) {s : Set F} (hs : Convex 𝕜 s) : Convex 𝕜 (f ⁻¹' s) :=
@@ -570,6 +570,11 @@ protected theorem Convex.add_smul (h_conv : Convex 𝕜 s) {p q : 𝕜} (hp : 0 
   rintro _ ⟨_, ⟨v₁, h₁, rfl⟩, _, ⟨v₂, h₂, rfl⟩, rfl⟩
   exact h_conv.exists_mem_add_smul_eq h₁ h₂ hp hq
 
+theorem Convex.add_half_self_eq_self (h_conv : Convex 𝕜 s) : (2 : 𝕜)⁻¹ • s + (2 : 𝕜)⁻¹ • s = s := by
+  rw [← h_conv.add_smul (by norm_num) (by norm_num)]
+  ring_nf
+  rw [one_smul]
+
 end AddCommGroup
 
 end LinearOrderedField
@@ -638,7 +643,7 @@ lemma convex_of_nonneg_surjective_algebraMap [FaithfulSMul R A] {s : Set M}
   intro u hu v hv a b ha hb hab
   obtain ⟨c, hc1, hc2⟩ := halg ha
   obtain ⟨d, hd1, hd2⟩ := halg hb
-  convert hs hu hv hc1 hd1 _ using 2
+  convert hs hu hv hc1 hd1 _
   · rw [← hc2, algebraMap_smul]
   · rw [← hd2, algebraMap_smul]
   rw [← hc2, ← hd2, ← algebraMap.coe_add] at hab

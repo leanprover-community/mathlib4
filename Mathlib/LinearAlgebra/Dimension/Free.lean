@@ -58,7 +58,7 @@ This is a simpler version of `lift_rank_mul_lift_rank` with `K` and `A` in the s
 theorem rank_mul_rank (A : Type v) [AddCommMonoid A]
     [Module K A] [Module F A] [IsScalarTower F K A] [Module.Free K A] :
     Module.rank F K * Module.rank K A = Module.rank F A := by
-  convert lift_rank_mul_lift_rank F K A <;> rw [lift_id]
+  convert! lift_rank_mul_lift_rank F K A <;> rw [lift_id]
 
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$. -/
@@ -263,7 +263,7 @@ lemma finrank_top_le_finrank_of_isScalarTower_of_free [Semiring S] [StrongRankCo
   · have := Module.Finite.trans (R := R) S M
     exact finrank_top_le_finrank_of_isScalarTower R S M
   · rw [finrank, Cardinal.toNat_eq_zero.mpr (.inr _)]
-    · exact zero_le _
+    · exact zero_le
     · rwa [← not_lt, Module.rank_lt_aleph0_iff]
 
 variable (R) in
@@ -277,7 +277,7 @@ lemma finrank_bot_le_finrank_of_isScalarTower_of_free (S T : Type*) [Semiring S]
   · have := Module.Finite.trans (R := R) S T
     exact finrank_bot_le_finrank_of_isScalarTower R S T
   · rw [finrank, Cardinal.toNat_eq_zero.mpr (.inr _)]
-    · exact zero_le _
+    · exact zero_le
     · rwa [← not_lt, Module.rank_lt_aleph0_iff]
 
 variable (R M)
@@ -366,8 +366,8 @@ end StrongRankCondition
 
 namespace Algebra
 
-instance (R S : Type*) [CommSemiring R] [StrongRankCondition R] [Semiring S] [Algebra R S]
-    [IsQuadraticExtension R S] :
+instance (priority := 100) (R S : Type*) [CommSemiring R] [StrongRankCondition R] [Semiring S]
+    [Algebra R S] [IsQuadraticExtension R S] :
     Module.Finite R S := finite_of_finrank_eq_succ <| IsQuadraticExtension.finrank_eq_two R S
 
 end Algebra
