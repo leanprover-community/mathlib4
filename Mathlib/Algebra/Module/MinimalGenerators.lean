@@ -28,10 +28,17 @@ local notation "𝓀" => ResidueField R
 
 lemma LinearMap.baseChange_bijective_of_spanRank_eq [Module.Finite R M]
     (f : F₁ →ₗ[R] M) (surj : Function.Surjective f)
-    (hrk1 : Module.rank R F₁ = (⊤ : Submodule R M).spanFinrank) :
+    (hrk : Module.rank R F₁ = (⊤ : Submodule R M).spanFinrank) :
     Function.Bijective (f.baseChange 𝓀) := by
-  --Module.finrank_eq_spanFinrank_of_free
-  sorry
+  have surj' := f.baseChange_surjective 𝓀 surj
+  have : Module.Finite R F₁ := by simp [← Module.rank_lt_aleph0_iff, hrk]
+  have : Module.finrank 𝓀 (TensorProduct R 𝓀 F₁) = Module.finrank 𝓀 (TensorProduct R 𝓀 M) := by
+    rw [Module.finrank_baseChange]
+    conv_lhs => simp only [Module.finrank, hrk, Cardinal.toNat_natCast]
+    rw [← TensorProduct.spanFinrank_top_eq_of_residueField ⊤ Module.Finite.fg_top,
+      ← Module.finrank_eq_spanFinrank_of_free,
+      (Submodule.topEquiv.baseChange (R := R) 𝓀).finrank_eq]
+  exact ⟨(injective_iff_surjective_of_finrank_eq_finrank this).mpr surj', surj'⟩
 
 lemma LinearMap.bijective_of_comp_eq_of_spanRank_eq_of_surjective [Module.Finite R M]
     (f : F₁ →ₗ[R] M) (surjf : Function.Surjective f)
@@ -47,8 +54,9 @@ lemma LinearMap.bijective_of_comp_eq_of_spanRank_eq_of_surjective [Module.Finite
     rw [← Function.Surjective.of_comp_iff' (g.baseChange_bijective_of_spanRank_eq surjg hrk2),
       ← LinearMap.coe_comp, ← LinearMap.baseChange_comp, eq]
     exact baseChange_surjective 𝓀 surjf
-
-  sorry
+  rw [← LinearMap.range_eq_top, ← IsLocalRing.map_tensorProduct_mk_eq_top, ← LinearMap.range_comp,
+    ← lTensor_comp_mk 𝓀 h 1, LinearMap.range_eq_top]
+  exact surjb.comp (TensorProduct.mk_surjective R F₁ 𝓀 IsLocalRing.residue_surjective)
 
 lemma LinearMap.bijective_of_comp_eq_of_spanRank_eq (N : Submodule R M) (fg : N.FG)
     (f : F₁ →ₗ[R] M) (g : F₂ →ₗ[R] M) (hrf : f.range = N) (hrg : g.range = N)
