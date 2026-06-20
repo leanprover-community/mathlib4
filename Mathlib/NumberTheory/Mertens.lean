@@ -64,8 +64,7 @@ TODO: add sharper bounds arising from the Euler-Maclaurin formula.
 -/
 
 /-- The partial sum of the logarithm is equal to the log of the factorial. -/
-theorem sum_log_eq_log_factorial (N : ℕ) :
-    ∑ n ∈ Ioc 0 N, log n = log N.factorial := by
+theorem sum_log_eq_log_factorial (N : ℕ) : ∑ n ∈ Ioc 0 N, log n = log N.factorial := by
   rw [← prod_Ico_id_eq_factorial, ← log_prod (by intros; simp; grind), prod_natCast]
   rfl
 
@@ -84,8 +83,7 @@ theorem sum_log_le {x : ℝ} (hx : 1 ≤ x) : ∑ n ∈ Ioc 0 ⌊x⌋₊, log n 
   _ = ⌊x⌋₊ * log x := by simp
   _ ≤ _ := by
     gcongr
-    · exact log_nonneg hx
-    · exact floor_le (by linarith)
+    exacts [log_nonneg hx, floor_le (by linarith)]
 
 /-- A crude lower bound on the partial sum of the logarithm. -/
 theorem le_sum_log {x : ℝ} (hx : 1 ≤ x) :
@@ -167,21 +165,17 @@ theorem E₁p_le_E₁Λ : E₁p x ≤ E₁Λ x := by
 /-- One can lower bound `E₁Λ x` using a partial sum of logarithms. -/
 theorem le_mul_log_add_E₁Λ {x : ℝ} (hx : 0 ≤ x) :
     ∑ n ∈ Ioc 0 ⌊x⌋₊, log n ≤ x * (log x + E₁Λ x) := calc
-  _ = ∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d * (x / d) := by
-    rw [←sum_mangoldt_div_eq, mul_sum]; ring_nf
+  _ = ∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d * (x / d) := by rw [←sum_mangoldt_div_eq, mul_sum]; ring_nf
   _ ≥ _ := by
     rw [sum_log_eq_sum_mangoldt]
-    gcongr
-    exacts [vonMangoldt_nonneg, floor_le <| div_nonneg (by linarith) (by linarith)]
+    gcongr; exacts [vonMangoldt_nonneg, floor_le <| div_nonneg (by linarith) (by linarith)]
 
 /-- One can upper bound `E₁Λ x` using a partial sum of logarithms. -/
 theorem mul_log_add_E₁Λ_le (x : ℝ) :
     x * (log x + E₁Λ x) ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, log n + ψ x := calc
-  _ = ∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d * (x / d) := by
-    rw [←sum_mangoldt_div_eq, mul_sum]; ring_nf
+  _ = ∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d * (x / d) := by rw [←sum_mangoldt_div_eq, mul_sum]; ring_nf
   _ ≤ ∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d * (⌊x / d⌋₊ + 1) := by
-    gcongr
-    exacts [vonMangoldt_nonneg, lt_floor_add_one _|>.le]
+    gcongr; exacts [vonMangoldt_nonneg, lt_floor_add_one _|>.le]
   _ = _ := by simp [psi, mul_add, sum_add_distrib, sum_log_eq_sum_mangoldt]
 
 /-- One can lower bound `E₁p x` using a partial sum of logarithms. -/
@@ -189,8 +183,7 @@ theorem mul_log_add_E₁p_le (x : ℝ) : x * (log x + E₁p x) ≤ ∑ n ∈ Ioc
   _ = ∑ p ∈ primesLE ⌊x⌋₊, log p * (x / p) := by
     rw [←sum_log_prime_div_eq, mul_sum]; ring_nf
   _ ≤ ∑ p ∈ primesLE ⌊x⌋₊, log p * (⌊x / p⌋₊ + 1) := by
-    gcongr
-    exact lt_floor_add_one _|>.le
+    gcongr; exact lt_floor_add_one _|>.le
   _ = ∑ p ∈ primesLE ⌊x⌋₊, log p * ⌊x / p⌋₊ + θ x := by
     simp [mul_add, sum_add_distrib, theta, primesLE_eq_filter_Ioc_zero]
   _ ≤ _ := by
@@ -221,8 +214,7 @@ theorem e₁_summable : Summable e₁ := by
   unfold e₁
   split_ifs with h
   · have : 2 ≤ (p : ℝ) := mod_cast h.two_le
-    have denom : (p : ℝ) * ((p : ℝ) - 1) ≥ p ^ 2 / 2 := by
-      rw [sq, mul_div_assoc]; gcongr; linarith
+    have denom : (p : ℝ) * ((p : ℝ) - 1) ≥ p ^ 2 / 2 := by nlinarith
     grw [log_le_rpow_div (cast_nonneg _) (by norm_num : 0 < (1 : ℝ) / 2), denom]
     · rw [← rpow_natCast]
       field_simp
@@ -239,7 +231,7 @@ theorem E₁_le : E₁ ≤ 1 := by
   have : ∑ n ∈ range (2 * N + 5), e₁ n = log 2 / 2 + log 3 / 6 + ∑ n ∈ .Ico 5 (2 * N + 5), e₁ n
       := by
     convert sum_union (s₁ := {0,1,2,3,4}) (s₂ := .Ico 5 (2 * N + 5)) (by grind [disjoint_left])
-    · ext n; simp; lia
+    · ext; simp; lia
     simp [e₁, Nat.prime_two, Nat.prime_three, (by decide : ¬ Nat.Prime 4)]
     ring_nf
   have : ∑ n ∈ .Ico 5 (2 * N + 5), e₁ n = ∑ n ∈ .range N, e₁ (2 * n + 5) := by
@@ -296,7 +288,7 @@ theorem E₁_le : E₁ ≤ 1 := by
         grind
       linarith
     have hN : 0 ≤ (N : ℝ) := cast_nonneg' N
-    rw [intervalIntegral.integral_eq_sub_of_hasDerivAt (f := f)]
+    rw [integral_eq_sub_of_hasDerivAt (f := f)]
     · have : 0 ≤ log (3 + N * 2) := log_nonneg (by norm_cast; linarith)
       simp [f]; field_simp; grind
     · grind [Set.uIcc_of_le]
@@ -350,7 +342,7 @@ theorem E₁Λ_le_E₁p_add_E₁ {x : ℝ} (hx : 1 ≤ x) :
       · simpa using inv_lt_one_of_one_lt₀ (mod_cast hp.2.one_lt)
     _ ≤ _ := by
       rw [primesLE_eq_filter_Ioc_zero, sum_filter]
-      exact e₁_summable.sum_le_tsum _ fun p hp ↦ e₁_nonneg p
+      exact e₁_summable.sum_le_tsum _ fun p _ ↦ e₁_nonneg p
 
 /-- A general upper bound for `E₁p`. -/
 theorem E₁p_le {x : ℝ} (hx : 1 ≤ x) : E₁p x ≤ log 4 := by
@@ -397,7 +389,7 @@ theorem sum_mangoldt_div_sub_log_bound {x : ℝ} (hx : 1 ≤ x) :
 
 theorem E₁Λ_bounded : E₁Λ =O[atTop] (fun _ ↦ (1 : ℝ)) := by
   simp only [isBigO_iff, norm_eq_abs, norm_one, mul_one, eventually_atTop]
-  exact ⟨log 4 + 1, 1, fun _ hx ↦ sum_mangoldt_div_sub_log_bound hx⟩
+  exact ⟨log 4 + 1, 1, fun _ ↦ sum_mangoldt_div_sub_log_bound⟩
 
 theorem sum_mangoldt_div_sim_log :
     (∑ d ∈ Ioc 0 ⌊·⌋₊, Λ d / d) ~[atTop] log :=
@@ -420,7 +412,7 @@ theorem sum_log_prime_div_sub_log_bound_nat (N : ℕ) :
 
 theorem E₁p_bounded : E₁p =O[atTop] (fun _ ↦ (1 : ℝ)) := by
   simp only [isBigO_iff, norm_eq_abs, norm_one, mul_one, eventually_atTop]
-  exact ⟨3, 1, fun _ hx ↦ sum_log_prime_div_sub_log_bound hx⟩
+  exact ⟨3, 1, fun _ ↦ sum_log_prime_div_sub_log_bound⟩
 
 theorem sum_log_prime_div_sim_log : (fun x ↦ ∑ p ∈ primesLE ⌊x⌋₊, log p / p)
     ~[atTop] log := by
