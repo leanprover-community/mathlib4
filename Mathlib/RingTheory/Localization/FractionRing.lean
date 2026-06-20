@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Field.Subfield.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Submonoid
 public import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Algebra.Ring.CompTypeclasses
-public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.SimpleRing.Basic
 
@@ -677,28 +676,6 @@ protected theorem smulCommClass [SMulCommClass G A B] : SMulCommClass G K L :=
     simp [Algebra.smul_def, map_div₀, ← IsScalarTower.algebraMap_apply A K L,
       IsScalarTower.algebraMap_apply A B L, smul_mul', smul_div₀',
       ← algebraMap.coe_smul', smul_algebraMap]⟩
-
-variable {A B} in
-/-- If `K` is the fraction field of `A` and `L` is the fraction field of `B` with `A ⊆ B`,
-then for `G` acting on `B` and `L`, the fixing subgroup of `A` in `B` equals the fixing subgroup
-of `K` in `L`. -/
-theorem fixingSubgroup_range_algebraMap :
-    fixingSubgroup G (Set.range (algebraMap A B)) =
-      fixingSubgroup G (Set.range (algebraMap K L)) := by
-  ext g
-  simp only [mem_fixingSubgroup_iff, Set.mem_range]
-  refine ⟨?_, ?_⟩
-  · rintro h _ ⟨x, rfl⟩
-    have {x} : g • (algebraMap A L) x = (algebraMap A L) x := by
-      rw [IsScalarTower.algebraMap_apply A B L, ← algebraMap.smul', h _ ⟨x, rfl⟩]
-    obtain ⟨a, b, _, rfl⟩ := IsFractionRing.div_surjective A x
-    simp only [map_div₀, ← IsScalarTower.algebraMap_apply, smul_div₀', this]
-  · rintro h _ ⟨x, rfl⟩
-    apply FaithfulSMul.algebraMap_injective B L
-    rw [algebraMap.smul']
-    apply h
-    use algebraMap A K x
-    rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
 
 end MulAction
 
