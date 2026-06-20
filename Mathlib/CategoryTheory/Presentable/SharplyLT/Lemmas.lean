@@ -64,15 +64,13 @@ lemma of_pow_lt {κ₁ κ₂ : Cardinal.{u}} [Fact κ₁.IsRegular] [Fact κ₂.
     · simpa [hasCardinalLT_iff_cardinal_mk_lt] using
         h _ _ hα (by rwa [hasCardinalLT_iff_cardinal_mk_lt] at hX))
 
-lemma of_le {κ₁ κ₂ : Cardinal.{u}} [Fact κ₁.IsRegular] [Fact κ₂.IsRegular]
-    (h₀ : κ₁ ≤ κ₂) :
-    letI hκ₂ : κ₂.IsRegular := Fact.out
+lemma of_le {κ₁ κ₂ : Cardinal.{u}} [Fact κ₁.IsRegular] --[Fact κ₂.IsRegular]
+    (h₀ : κ₁ ≤ κ₂) (hκ₂ : Cardinal.aleph0 ≤ κ₂) :
     letI : Fact (Cardinal.IsRegular (Order.succ (2 ^ κ₂))) :=
-      ⟨isRegular_succ (hκ₂.aleph0_le.trans (cantor _).le)⟩
+      ⟨isRegular_succ (hκ₂.trans (cantor _).le)⟩
     SharplyLT κ₁ (Order.succ (2 ^ κ₂)) := by
-  letI hκ₂ : κ₂.IsRegular := Fact.out
   letI : Fact (Cardinal.IsRegular (Order.succ (2 ^ κ₂))) :=
-    ⟨isRegular_succ (hκ₂.aleph0_le.trans (cantor _).le)⟩
+    ⟨isRegular_succ (hκ₂.trans (cantor _).le)⟩
   refine of_pow_lt ?_ (fun α β hα hβ ↦ ?_)
   · simp only [Order.lt_succ_iff]
     exact h₀.trans (cantor _).le
@@ -80,13 +78,29 @@ lemma of_le {κ₁ κ₂ : Cardinal.{u}} [Fact κ₁.IsRegular] [Fact κ₂.IsRe
     refine (power_le_power_right hβ).trans ?_
     rw [← power_mul]
     refine power_le_power_left (by simp) ?_
-    conv_rhs => rw [← mul_eq_self (c := κ₂) (IsRegular.aleph0_le Fact.out)]
+    conv_rhs => rw [← mul_eq_self hκ₂]
     exact mul_le_mul_right (hα.le.trans h₀) _
+
+-- to be moved
+lemma _root_.Cardinal.exists_le_of_small {ι : Type*} [Small.{u} ι]
+    (κ : ι → Cardinal.{u}) :
+    ∃ (κ' : Cardinal.{u}), ∀ (i : ι), κ i ≤ κ' := by
+  let T (i : Shrink.{u} ι) : Type u := (κ ((equivShrink _).symm i)).ord.ToType
+  refine ⟨Cardinal.mk (Sigma T), fun i ↦ ?_⟩
+  obtain ⟨i, rfl⟩ := (equivShrink.{u} _).symm.surjective i
+  simpa [T] using Cardinal.mk_le_of_injective
+    (sigma_mk_injective (β := fun i ↦ (κ ((equivShrink _).symm i)).ord.ToType))
 
 lemma exists_of_small {ι : Type*} [Small.{u} ι] (κ : ι → Cardinal.{u})
     [∀ i, Fact (κ i).IsRegular] :
     ∃ (κ' : Cardinal.{u}) (_ : Fact κ'.IsRegular),
-      ∀ i, SharplyLT (κ i) κ' := sorry
+      ∀ i, SharplyLT (κ i) κ' := by
+  obtain ⟨κ₀, hκ₀, h⟩ :
+      ∃ (κ₀ : Cardinal.{u}), Cardinal.aleph0 ≤ κ₀ ∧ ∀ (i : ι), κ i ≤ κ₀ := by
+    obtain ⟨κ', h⟩ := Cardinal.exists_le_of_small κ
+    exact ⟨max κ' .aleph0, by simp, fun i ↦ (h i).trans (by simp)⟩
+  exact ⟨Order.succ (2 ^ κ₀), ⟨isRegular_succ (hκ₀.trans (cantor _).le)⟩,
+    fun i ↦ of_le (h i) hκ₀⟩
 
 lemma exists_of_pair (κ₁ κ₂ : Cardinal.{u})
     [Fact κ₁.IsRegular] [Fact κ₂.IsRegular] :
