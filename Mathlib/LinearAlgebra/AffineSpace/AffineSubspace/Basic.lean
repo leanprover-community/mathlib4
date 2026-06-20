@@ -840,7 +840,7 @@ theorem prod_mono (s₁ s₂ : AffineSubspace k P₁) (t₁ t₂ : AffineSubspac
   Set.prod_mono hs ht
 
 @[simp]
-theorem prod_top : (⊤ : AffineSubspace k P₁).prod (⊤ : AffineSubspace k P₂) = ⊤ := by
+theorem prod_top_top : (⊤ : AffineSubspace k P₁).prod (⊤ : AffineSubspace k P₂) = ⊤ := by
   ext; simp
 
 @[simp]
