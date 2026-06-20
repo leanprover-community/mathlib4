@@ -435,13 +435,9 @@ theorem coeFn_smul (c : 𝕜) (f : Lp E p μ) : ⇑(c • f) =ᵐ[μ] c • ⇑f
 everywhere equal to the corresponding sum of those functions. -/
 theorem coeFn_finsetSum_smul {ι : Type*} (s : Finset ι) (c : ι → 𝕜) {h : ι → α → E}
     (hmem : ∀ i, MemLp (h i) p μ) :
-    ⇑(∑ i ∈ s, c i • (hmem i).toLp (h i)) =ᵐ[μ] ∑ i ∈ s, c i • h i := by
-  induction s using Finset.cons_induction with
-  | empty => simpa using coeFn_zero E p μ
-  | cons j t hjt ih =>
-    rw [Finset.sum_cons, Finset.sum_cons]
-    exact (coeFn_add _ _).trans
-      (((coeFn_smul _ _).trans ((hmem j).coeFn_toLp.const_smul (c j))).add ih)
+    ⇑(∑ i ∈ s, c i • (hmem i).toLp (h i)) =ᵐ[μ] ∑ i ∈ s, c i • h i :=
+  (coeFn_finsetSum s _).trans <|
+    eventuallyEq_sum fun i _ ↦ (coeFn_smul _ _).trans ((hmem i).coeFn_toLp.const_smul (c i))
 
 instance instIsCentralScalar [Module 𝕜ᵐᵒᵖ E] [IsBoundedSMul 𝕜ᵐᵒᵖ E] [IsCentralScalar 𝕜 E] :
     IsCentralScalar 𝕜 (Lp E p μ) where
