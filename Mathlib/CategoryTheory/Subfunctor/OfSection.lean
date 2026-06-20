@@ -69,7 +69,7 @@ variable {F : Cᵒᵖ ⥤ Type v}
 lemma ofSection_eq_range {X : Cᵒᵖ} (x : F.obj X) :
     ofSection x = range (yonedaEquiv.symm x) := by
   ext U y
-  simp only [ofSection_obj, Set.mem_setOf_eq, Opposite.op_unop, range_obj, yoneda_obj_obj,
+  simp only [ofSection_obj, Set.mem_setOf_eq, Opposite.op_unop, range_obj,
     Set.mem_range]
   constructor
   · rintro ⟨f, rfl⟩
@@ -87,6 +87,7 @@ section
 
 variable {F : Cᵒᵖ ⥤ Type max v w}
 
+set_option backward.defeqAttrib.useBackward true in
 lemma ofSection_eq_range' {X : Cᵒᵖ} (x : F.obj X) :
     ofSection x = range (uliftYonedaEquiv.symm x) := by
   ext U y

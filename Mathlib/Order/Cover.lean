@@ -165,10 +165,10 @@ theorem WCovBy.Icc_eq (h : a ⩿ b) : Icc a b = {a, b} := by
   exact h.le_and_le_iff
 
 theorem WCovBy.Ico_subset (h : a ⩿ b) : Ico a b ⊆ {a} := by
-  rw [← Icc_diff_right, h.Icc_eq, diff_singleton_subset_iff, pair_comm]
+  rw [← Icc_sdiff_right, h.Icc_eq, sdiff_singleton_subset_iff, pair_comm]
 
 theorem WCovBy.Ioc_subset (h : a ⩿ b) : Ioc a b ⊆ {b} := by
-  rw [← Icc_diff_left, h.Icc_eq, diff_singleton_subset_iff]
+  rw [← Icc_sdiff_left, h.Icc_eq, sdiff_singleton_subset_iff]
 
 end PartialOrder
 
@@ -233,6 +233,8 @@ end LT
 section Preorder
 
 variable [Preorder α] [Preorder β] {a b c : α}
+
+@[simp] lemma covBy_irrefl : ¬ a ⋖ a := by simp [CovBy]
 
 @[to_dual self]
 theorem not_covBy_iff_nonempty_Ioo (h : a < b) : ¬a ⋖ b ↔ (Ioo a b).Nonempty :=
@@ -462,7 +464,7 @@ variable {s t : Set α} {a : α}
   by_cases h : x ∈ t
   · exact Or.inr (subset_antisymm h2t <| insert_subset_iff.mpr ⟨h, hst⟩)
   · refine Or.inl (subset_antisymm ?_ hst)
-    rwa [← diff_singleton_eq_self h, diff_singleton_subset_iff]
+    rwa [← sdiff_singleton_eq_self h, sdiff_singleton_subset_iff]
 
 @[simp] lemma sdiff_singleton_wcovBy (s : Set α) (a : α) : s \ {a} ⩿ s := by
   by_cases ha : a ∈ s

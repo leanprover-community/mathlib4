@@ -41,7 +41,7 @@ subfield `F` is (isomorphic to) the maximal real subfield `K⁺` of `K`.
 
 * `NumberField.IsCMField.of_isMulCommutative`: A totally complex abelian extension of `ℚ` is CM.
 
-* `IsCyclotomicExtension.Rat.isCMField`: A nontrivial abelian extension of `ℚ` is CM.
+* `IsCyclotomicExtension.Rat.isCMField`: A nontrivial cyclotomic extension of `ℚ` is CM.
 
 ## Implementation note
 
@@ -496,7 +496,7 @@ theorem equivMaximalRealSubfield_apply (x : F) :
 theorem algebraMap_equivMaximalRealSubfield_symm_apply (x : maximalRealSubfield K) :
     algebraMap F K ((CMExtension.equivMaximalRealSubfield F K).symm x) =
       algebraMap (maximalRealSubfield K) K x := by
-  simpa using (equivMaximalRealSubfield_apply F K ((equivMaximalRealSubfield F K).symm x)).symm
+  simpa using! (equivMaximalRealSubfield_apply F K ((equivMaximalRealSubfield F K).symm x)).symm
 
 end CMExtension
 
@@ -561,7 +561,7 @@ variable (K : Type*) [Field K] [CharZero K]
 
 open IntermediateField in
 /--
-A nontrivial abelian extension of `ℚ` is CM.
+A nontrivial cyclotomic extension of `ℚ` is CM.
 -/
 theorem isCMField {S : Set ℕ} (hS : ∃ n ∈ S, 2 < n) [IsCyclotomicExtension S ℚ K] :
     IsCMField K := by

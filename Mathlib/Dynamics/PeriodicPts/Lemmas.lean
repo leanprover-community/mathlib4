@@ -6,14 +6,10 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.GCDMonoid.Finset
-public import Mathlib.Algebra.GCDMonoid.Nat
-public import Mathlib.Data.Fintype.Card
-public import Mathlib.Data.Fintype.EquivFin
-public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Data.PNat.Basic
-public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Dynamics.PeriodicPts.Defs
+public import Mathlib.Order.Lattice.Nat
 
 /-!
 # Extra lemmas about periodic points

@@ -177,17 +177,13 @@ end AddCommGroup
 
 @[to_additive]
 instance instIsScalarTower [SMul K K'] [SMul K V] [SMul K' V] [IsScalarTower K K' V] :
-    IsScalarTower K K' (WithLp p V) where
-  smul_assoc x y z := by
-    change toLp p ((x • y) • (ofLp z)) = toLp p (x • y • ofLp z)
-    simp
+    IsScalarTower K K' (WithLp p V) :=
+  (WithLp.equiv p V).isScalarTower K K'
 
 @[to_additive]
 instance instSMulCommClass [SMul K V] [SMul K' V] [SMulCommClass K K' V] :
-    SMulCommClass K K' (WithLp p V) where
-  smul_comm x y z := by
-    change toLp p (x • y • ofLp z) = toLp p (y • x • ofLp z)
-    rw [smul_comm]
+    SMulCommClass K K' (WithLp p V) :=
+  (WithLp.equiv p V).smulCommClass K K'
 
 variable (K V)
 

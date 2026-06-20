@@ -195,6 +195,7 @@ namespace IsKilling
 
 variable [FiniteDimensional K L] (H : LieSubalgebra K L) [H.IsCartanSubalgebra]
 variable [IsKilling K L]
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- If a Lie algebra `L` has non-degenerate Killing form, the only element of a Cartan subalgebra
 whose adjoint action on `L` is nilpotent, is the zero element.
@@ -523,7 +524,7 @@ lemma traceForm_eq_zero_of_mem_ker_of_mem_span_coroot {α : Weight K H L} {x y :
     refine le_antisymm (fun x hx ↦ ?_) (fun x hx y hy ↦ ?_)
     · simp only [LinearMap.BilinForm.mem_orthogonal_iff] at hx
       specialize hx (coroot α) (Submodule.mem_span_singleton_self _)
-      simp only [LinearMap.BilinForm.isOrtho_def, traceForm_coroot, smul_eq_mul, nsmul_eq_mul,
+      simp only [traceForm_coroot, smul_eq_mul, nsmul_eq_mul,
         Nat.cast_ofNat, mul_eq_zero, OfNat.ofNat_ne_zero, inv_eq_zero, false_or] at hx
       simpa using hx.resolve_left (root_apply_cartanEquivDual_symm_ne_zero hα)
     · have := traceForm_eq_zero_of_mem_ker_of_mem_span_coroot hx hy
@@ -608,8 +609,8 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
     finrank K (rootSpace H α) = 1 := by
   suffices ¬ 1 < finrank K (rootSpace H α) by
     have h₀ : finrank K (rootSpace H α) ≠ 0 := by
-      convert_to finrank K (rootSpace H α).toSubmodule ≠ 0
-      simpa using α.genWeightSpace_ne_bot
+      convert_to! finrank K (rootSpace H α).toSubmodule ≠ 0
+      simpa using! α.genWeightSpace_ne_bot
     lia
   intro contra
   obtain ⟨h, e, f, ht, heα, hfα⟩ := exists_isSl2Triple_of_weight_isNonZero hα
@@ -617,10 +618,10 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
   have hF : LinearMap.ker F ≠ ⊥ := F.ker_ne_bot_of_finrank_lt <| by rwa [finrank_self]
   obtain ⟨⟨y, hyα⟩, hy, hy₀⟩ := (Submodule.ne_bot_iff _).mp hF
   replace hy : ⁅y, f⁆ = 0 := by
-    have : killingForm K L y f = 0 := by simpa [F, traceForm_comm] using hy
-    simpa [this] using lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg hyα hfα
+    have : killingForm K L y f = 0 := by simpa [F, traceForm_comm] using! hy
+    simpa [this] using! lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg hyα hfα
   have P : ht.symm.HasPrimitiveVectorWith y (-2 : K) :=
-    { ne_zero := by simpa [LieSubmodule.mk_eq_zero] using hy₀
+    { ne_zero := by simpa [LieSubmodule.mk_eq_zero] using! hy₀
       lie_h := by simp only [neg_smul, neg_lie, ht.h_eq_coroot hα heα hfα,
         ← H.coe_bracket_of_module, lie_eq_smul_of_mem_rootSpace hyα (coroot α),
         root_apply_coroot hα]

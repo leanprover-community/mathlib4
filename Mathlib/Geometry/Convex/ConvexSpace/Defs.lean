@@ -527,13 +527,13 @@ lemma convexCombPair_iConvexComb_right (m : M) (g : StdSimplex R J) (e : J → M
 lemma convexCombPair_convexCombPair_left_eq_sConvexComb (m₁ m₂ m₃ : M) :
     convexCombPair s t hs ht h (convexCombPair s' t' hs' ht' h' m₁ m₂) m₃ =
       (convexCombPair s t hs ht h (duple m₁ m₂ hs' ht' h') (single m₃)).sConvexComb := by
-  simpa using convexCombPair_iConvexComb_left hs ht h (.duple m₁ m₂ hs' ht' h') id m₃
+  simpa using! convexCombPair_iConvexComb_left hs ht h (.duple m₁ m₂ hs' ht' h') id m₃
 
 /-- Flattening nested binary convex combination into a single convex combination. -/
 lemma convexCombPair_convexCombPair_right_eq_sConvexComb (m₁ m₂ m₃ : M) :
     convexCombPair s t hs ht h m₁ (convexCombPair s' t' hs' ht' h' m₂ m₃) =
       (convexCombPair s t hs ht h (.single m₁) (duple m₂ m₃ hs' ht' h')).sConvexComb := by
-  simpa using convexCombPair_iConvexComb_right hs ht h m₁ (.duple m₂ m₃ hs' ht' h') id
+  simpa using! convexCombPair_iConvexComb_right hs ht h m₁ (.duple m₂ m₃ hs' ht' h') id
 
 lemma convexCombPair_convexCombPair_assoc_left (H : t * s'' = s * t' * t'') (m₁ m₂ m₃ : M) :
     convexCombPair s t hs ht h (convexCombPair s' t' hs' ht' h' m₁ m₂) m₃ =
@@ -585,7 +585,7 @@ lemma iConvexComb_convexCombPair_comm_right (f : StdSimplex R I) (m : M) (e : I 
 
 lemma isAffineMap_convexCombPair (m : M) :
     IsAffineMap R (convexCombPair s t hs ht h m) :=
-  ⟨fun f ↦ by simpa using (iConvexComb_convexCombPair_comm_right hs ht h f m id).symm⟩
+  ⟨fun f ↦ by simpa using! (iConvexComb_convexCombPair_comm_right hs ht h f m id).symm⟩
 
 end CommSemiring
 

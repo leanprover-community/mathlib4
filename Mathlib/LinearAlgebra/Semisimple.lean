@@ -306,10 +306,10 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ K[f, g]) :
   rotate_left 1
   · rw [Ideal.span, ← minpoly.ker_aeval_eq_span_minpoly]; exact id
   · rintro ⟨p⟩; exact p.induction_on (fun k ↦ by simp [R, commute_algebraMap_left])
-      (fun p q hp hq ↦ by simpa [R] using hp.add_left hq)
-      fun n k ↦ by simpa [R, pow_succ, ← mul_assoc _ _ X] using (·.mul_left comm)
+      (fun p q hp hq ↦ by simpa [R] using! hp.add_left hq)
+      fun n k ↦ by simpa [R, pow_succ, ← mul_assoc _ _ X] using! (·.mul_left comm)
   · simpa only [RingHom.mem_ker, eval₂AlgHom_apply, eval₂_map, AlgHom.comp_algebraMap_of_tower]
-      using minpoly.aeval K g
+      using! minpoly.aeval K g
   have : K[f, g] ≤ φ.range := adjoin_le fun x ↦ by
     rintro (hx | hx) <;> rw [hx]
     · exact ⟨AdjoinRoot.of _ (AdjoinRoot.root _), (eval₂_C _ _).trans (aeval_X f)⟩

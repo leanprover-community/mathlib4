@@ -193,7 +193,7 @@ attribute [to_additive] IsUniformGroup
 theorem IsUniformGroup.mk' {α} [UniformSpace α] [Group α]
     (h₁ : UniformContinuous fun p : α × α => p.1 * p.2) (h₂ : UniformContinuous fun p : α => p⁻¹) :
     IsUniformGroup α :=
-  ⟨by simpa only [div_eq_mul_inv] using
+  ⟨by simpa only [div_eq_mul_inv] using!
     h₁.comp (uniformContinuous_fst.prodMk (h₂.comp uniformContinuous_snd))⟩
 
 variable [UniformSpace α] [Group α] [IsUniformGroup α]
@@ -270,7 +270,7 @@ theorem Filter.Tendsto.uniformity_mul {ι : Type*} {f g : ι → α × α} {l : 
     (hf : Tendsto f l (𝓤 α)) (hg : Tendsto g l (𝓤 α)) :
     Tendsto (f * g) l (𝓤 α) :=
   have : Tendsto (fun (p : (α × α) × (α × α)) ↦ p.1 * p.2) (𝓤 α ×ˢ 𝓤 α) (𝓤 α) := by
-    simpa [UniformContinuous, uniformity_prod_eq_prod] using uniformContinuous_mul (α := α)
+    simpa [UniformContinuous, uniformity_prod_eq_prod] using! uniformContinuous_mul (α := α)
   this.comp (hf.prodMk hg)
 
 @[to_additive]

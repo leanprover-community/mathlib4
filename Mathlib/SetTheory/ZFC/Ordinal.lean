@@ -161,15 +161,15 @@ theorem subset_iff_eq_or_mem (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ⊆ y ↔
     intro x y IH hx hy hxy
     by_cases hyx : y ⊆ x
     · exact Or.inl (subset_antisymm hxy hyx)
-    · obtain ⟨m, hm, hm'⟩ := mem_wf.has_min (y \ x) (Set.diff_nonempty.2 hyx)
-      have hmy : m ∈ y := by simp only [Set.mem_diff, SetLike.mem_coe] at hm; exact hm.1
+    · obtain ⟨m, hm, hm'⟩ := mem_wf.has_min (y \ x) (Set.sdiff_nonempty.2 hyx)
+      have hmy : m ∈ y := by simp only [Set.mem_sdiff, SetLike.mem_coe] at hm; exact hm.1
       have hmx : m ⊆ x := by
         intro z hzm
         by_contra hzx
         exact hm' _ ⟨hy.mem_trans hzm hmy, hzx⟩ hzm
       obtain rfl | H := IH m x (Sym2.GameAdd.fst_snd hmy) (hy.mem hmy) hx hmx
       · exact Or.inr hmy
-      · cases Set.notMem_of_mem_diff hm H
+      · cases Set.notMem_of_mem_sdiff hm H
   · rintro (rfl | h)
     · rfl
     · exact hy.subset_of_mem h

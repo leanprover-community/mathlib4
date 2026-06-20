@@ -702,7 +702,7 @@ theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) ×
   by_cases him : iv < m
   · conv in Sigma.mk _ _ =>
       equals ⟨Sum.inl ⟨iv, him⟩, j⟩ => simp [Fin.addCases, him]
-    simpa using ih _
+    simpa using! ih _
   · replace him := Nat.eq_of_lt_succ_of_not_lt hi him
     subst him
     conv in Sigma.mk _ _ =>
@@ -775,3 +775,28 @@ alias alternatingSum_eq_finset_sum := alternatingSum_eq_finsetSum
 alias alternatingProd_eq_finset_prod := alternatingProd_eq_finsetProd
 
 end List
+
+/-- This is a classic "telescoping sum" lemma. It says:
+`r₀ - (r₀ + r₁) + (r₁ + r₂) - (r₂+ r₃) + ⋯ ± (rₙ₋₁ + rₙ) ∓ rₙ = 0`.
+
+The chosen spelling, which gives definitional power over `d`, is influenced by downstream
+applications such as `Module.sum_neg_one_pow_finrank_eq_zero_of_exact`. -/
+lemma Fin.sum_neg_one_pow_eq_zero {α : Type*} [AddCommGroup α]
+    {n : ℕ} (d : Fin (n + 2) → α) (r : Fin (n + 1) → α)
+    (h_first : d 0 = r 0)
+    (h_mid : ∀ i : Fin n, d i.succ.castSucc = r i.castSucc + r i.succ)
+    (h_last : d (Fin.last _) = r (Fin.last _)) :
+    ∑ i, (-1) ^ i.val • d i = 0 := by
+  have h₁ : ∑ i : Fin (n + 2), (-1 : ℤ) ^ i.val • d i =
+      d 0 +
+      ∑ i : Fin n, (-1 : ℤ) ^ (i.val + 1) • (d (Fin.castSucc i).succ) +
+      (-1 : ℤ) ^ (n + 1) • d (Fin.last (n + 1)) := by
+    rw [Fin.sum_univ_succ, Fin.sum_univ_castSucc]
+    simp [add_assoc]
+  have h₂ : ∑ i : Fin n, (-1 : ℤ) ^ (i.val + 1) • (r (Fin.castSucc i) + r (Fin.succ i)) =
+      ∑ i : Fin n, (-1 : ℤ) ^ (i.val + 1) • r (Fin.castSucc i) +
+      ∑ i : Fin n, (-1 : ℤ) ^ (i.val + 1) • r (Fin.succ i) := by
+    simp_rw [zsmul_add, Finset.sum_add_distrib]
+  have h₃ := Fin.sum_univ_castSucc fun i ↦ (-1 : ℤ) ^ i.val • r i
+  simp_all [Fin.sum_univ_succ, pow_succ']
+  grind

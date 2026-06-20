@@ -69,8 +69,8 @@ lemma FormallyUnramified.isField_quotient_map_maximalIdeal [FormallyUnramified R
     IsField (S ⧸ (maximalIdeal R).map (algebraMap R S)) := by
   let mR := (maximalIdeal R).map (algebraMap R S)
   have hmR : mR ≤ maximalIdeal S := ((local_hom_TFAE (algebraMap R S)).out 0 2 rfl rfl).mp ‹_›
-  letI : Algebra (ResidueField R) (S ⧸ mR) := inferInstanceAs (Algebra (R ⧸ _) _)
-  have : IsScalarTower R (ResidueField R) (S ⧸ mR) := inferInstanceAs (IsScalarTower R (R ⧸ _) _)
+  letI : Algebra (ResidueField R) (S ⧸ mR) := (inferInstanceAs <| Algebra (R ⧸ _) _)
+  have : IsScalarTower R (ResidueField R) (S ⧸ mR) := (inferInstanceAs <| IsScalarTower R (R ⧸ _) _)
   have : FormallyUnramified (ResidueField R) (S ⧸ mR) := .of_restrictScalars R _ _
   have : EssFiniteType (ResidueField R) (S ⧸ mR) := .of_comp R _ _
   have : Module.Finite (ResidueField R) (S ⧸ mR) := FormallyUnramified.finite_of_free _ _
@@ -296,7 +296,7 @@ lemma exists_awayMap_bijective_of_residueField_surjective
     [Localization.AtPrime.IsLiesOverAlgebra p q]
     (H : Function.Surjective (algebraMap p.ResidueField q.ResidueField)) :
     ∃ r ∉ p, ∀ r', r ∣ r' → Function.Bijective (awayMap (algebraMap R S) r') :=
-  exists_awayMap_bijective_of_localRingHom_bijective hq (by simpa using Submodule.fg_bot)
+  exists_awayMap_bijective_of_localRingHom_bijective hq (by simpa using! Submodule.fg_bot)
     ⟨localRingHom_injective_of_primesOver_eq_singleton hq,
       localRingHom_surjective_of_primesOver_eq_singleton hq H⟩
 

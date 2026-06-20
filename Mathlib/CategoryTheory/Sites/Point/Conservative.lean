@@ -137,6 +137,7 @@ lemma jointly_reflect_isLocallySurjective
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma jointly_reflect_ofArrows_mem
     [HasSheafify J (Type w)] [J.WEqualsLocallyBijective (Type w)]
@@ -178,6 +179,7 @@ lemma jointly_reflect_ofArrows_mem_of_small
     · rw [hP.jointly_reflect_ofArrows_mem]
       exact fun Φ x ↦ ⟨_, _, hy ⟨Φ, x⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 private lemma mk'.isLocallySurjective
     (hP : ∀ ⦃X : C⦄ (S : Sieve X) (_ : ∀ (Φ : P.FullSubcategory) (x : Φ.obj.fiber.obj X),

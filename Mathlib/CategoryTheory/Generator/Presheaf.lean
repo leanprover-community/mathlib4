@@ -51,6 +51,7 @@ noncomputable def freeYonedaHomEquiv {X : C} {M : A} {F : Cᵒᵖ ⥤ A} :
     simpa using (Sigma.ι _ (𝟙 _) ≫= f.naturality φ.op).symm
   right_inv g := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma freeYonedaHomEquiv_comp {X : C} {M : A} {F G : Cᵒᵖ ⥤ A}
     (α : freeYoneda X M ⟶ F) (f : F ⟶ G) :
@@ -86,7 +87,7 @@ variable (A) in
 instance hasSeparator [HasSeparator A] [HasZeroMorphisms A] [HasCoproducts.{u} A] :
     HasSeparator (Cᵒᵖ ⥤ A) where
   hasSeparator := ⟨_, isSeparator C (S := fun (_ : Unit) ↦ separator A)
-      (by simpa using isSeparator_separator A)⟩
+      (by simpa using! isSeparator_separator A)⟩
 
 end Presheaf
 

@@ -32,6 +32,7 @@ def monoFactorisation {F G : C ⥤ Type u} (f : F ⟶ G) : MonoFactorisation f w
   m := (Subfunctor.range f).ι
   e := Subfunctor.toRange f
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The image of a natural transformation between type-valued functors satisfies the universal
 property of images -/
 noncomputable def monoFactorisationIsImage {F G : C ⥤ Type u} (f : F ⟶ G) :

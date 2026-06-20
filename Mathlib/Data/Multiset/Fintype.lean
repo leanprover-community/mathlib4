@@ -299,7 +299,7 @@ set_option backward.isDefEq.respectTransparency false in
 /--
 There is some equivalence between `m` and `m.map f` which respects `f`.
 -/
-def mapEquiv_aux (m : Multiset α) (f : α → β) :
+def mapEquivAux (m : Multiset α) (f : α → β) :
     Squash { v : m ≃ m.map f // ∀ a : m, v a = f a} :=
   Quotient.recOnSubsingleton m fun l ↦ .mk <|
     List.recOn l
@@ -310,14 +310,16 @@ def mapEquiv_aux (m : Multiset α) (f : α → β) :
             Equiv.coe_fn_symm_mk]
         split <;> simp_all⟩
 
+@[deprecated (since := "2026-06-06")] alias mapEquiv_aux := mapEquivAux
+
 /--
-One of the possible equivalences from `Multiset.mapEquiv_aux`, selected using choice.
+One of the possible equivalences from `Multiset.mapEquivAux`, selected using choice.
 -/
 noncomputable def mapEquiv (s : Multiset α) (f : α → β) : s ≃ s.map f :=
-  (Multiset.mapEquiv_aux s f).out.1
+  (Multiset.mapEquivAux s f).out.1
 
 @[simp]
 theorem mapEquiv_apply (s : Multiset α) (f : α → β) (v : s) : s.mapEquiv f v = f v :=
-  (Multiset.mapEquiv_aux s f).out.2 v
+  (Multiset.mapEquivAux s f).out.2 v
 
 end Multiset

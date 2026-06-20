@@ -56,6 +56,7 @@ def detRowAlternating : (n → R) [⋀^n]→ₗ[R] R :=
   MultilinearMap.alternatization ((MultilinearMap.mkPiAlgebra R n R).compLinearMap LinearMap.proj)
 
 /-- The determinant of a matrix given by the Leibniz formula. -/
+@[wikidata Q178546]
 def det (M : Matrix n n R) : R :=
   detRowAlternating M
 
@@ -629,7 +630,6 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
       simp only [prodCongrLeft_apply]
     · intro σ _ σ' _ eq
       ext x hx k
-      simp only at eq
       have :
         ∀ k x,
           prodCongrLeft (fun k => σ k (Finset.mem_univ _)) (k, x) =

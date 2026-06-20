@@ -98,7 +98,7 @@ theorem prod_of_support_subset [∀ i, Zero (β i)]
 
 /-- The product over two dfinsupps agree if the functions agree and are well-behaved within the
 shared support. -/
-@[to_additive (attr := gcongr)
+@[to_additive (attr := gcongr only)
 /-- The sum over two dfinsupps agree if the functions agree and are well-behaved within the
 shared support. -/]
 theorem prod_congr_of_eq_on_union

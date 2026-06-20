@@ -83,7 +83,7 @@ protected theorem induct (motive : ℤ → Prop)
     (neg_add_one : ∀ (n : ℕ), motive (-↑n) → motive (-↑n + 1) → motive (-↑n - 1)) :
     ∀ (a : ℤ), motive a :=
   T.induct motive zero one add_two fun n hn hnm => by
-    simpa only [Int.negSucc_eq, neg_add] using neg_add_one n hn hnm
+    simpa only [Int.negSucc_eq, neg_add] using! neg_add_one n hn hnm
 
 /-- Another induction principle used for proving facts about Chebyshev polynomials,
     which is sometimes easier to use -/

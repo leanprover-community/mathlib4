@@ -66,7 +66,7 @@ theorem integrableOn_exp_mul_complex_Ioi {a : ℂ} (ha : a.re < 0) (c : ℝ) :
   refine (integrable_norm_iff ?_).mp ?_
   · apply Continuous.aestronglyMeasurable
     fun_prop
-  · simpa [Complex.norm_exp] using
+  · simpa [Complex.norm_exp] using!
       (integrableOn_Ioi_comp_mul_left_iff (fun x => exp (-x)) c (a := -a.re) (by simpa)).mpr <|
         integrableOn_exp_neg_Ioi _
 
@@ -77,13 +77,13 @@ theorem integrableOn_exp_mul_complex_Iic {a : ℂ} (ha : 0 < a.re) (c : ℝ) :
 
 theorem integrableOn_exp_mul_Ioi {a : ℝ} (ha : a < 0) (c : ℝ) :
     IntegrableOn (fun x : ℝ => Real.exp (a * x)) (Ioi c) := by
-  have := Integrable.norm <| integrableOn_exp_mul_complex_Ioi (a := a) (by simpa using ha) c
-  simpa [Complex.norm_exp] using this
+  have := Integrable.norm <| integrableOn_exp_mul_complex_Ioi (a := a) (by simpa using! ha) c
+  simpa [Complex.norm_exp] using! this
 
 theorem integrableOn_exp_mul_Iic {a : ℝ} (ha : 0 < a) (c : ℝ) :
     IntegrableOn (fun x : ℝ => Real.exp (a * x)) (Iic c) := by
-  have := Integrable.norm <| integrableOn_exp_mul_complex_Iic (a := a) (by simpa using ha) c
-  simpa [Complex.norm_exp] using this
+  have := Integrable.norm <| integrableOn_exp_mul_complex_Iic (a := a) (by simpa using! ha) c
+  simpa [Complex.norm_exp] using! this
 
 theorem integral_exp_mul_complex_Ioi {a : ℂ} (ha : a.re < 0) (c : ℝ) :
     ∫ x : ℝ in Set.Ioi c, Complex.exp (a * x) = - Complex.exp (a * c) / a := by
@@ -197,6 +197,11 @@ theorem integrableOn_Ioi_norm_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
     IntegrableOn (fun x : ℝ ↦ ‖(x : ℂ) ^ s‖) (Ioi t) ↔ s.re < -1 := by
   refine ⟨fun h ↦ ?_, fun h ↦ integrableOn_Ioi_norm_cpow_of_lt h ht⟩
   refine (integrableOn_Ioi_rpow_iff ht).mp <| h.congr_fun (fun a ha ↦ ?_) measurableSet_Ioi
+  #adaptation_note /-- 2026-05-17(kmill) added `dsimp only` because a slightly different
+  instantiation order leads to a term with a beta redex.
+  https://github.com/leanprover/lean4/pull/13762
+  This will be removed once app elaboration itself does beta reduction. -/
+  dsimp only
   rw [Complex.norm_cpow_eq_rpow_re_of_pos (ht.trans ha)]
 
 theorem integrableOn_Ioi_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :

@@ -213,7 +213,7 @@ instance [Inhabited Y] : Inhabited (LocallyConstant X Y) :=
 
 instance : FunLike (LocallyConstant X Y) X Y where
   coe := LocallyConstant.toFun
-  coe_injective' := by rintro ⟨_, _⟩ ⟨_, _⟩ _; congr
+  coe_injective := by rintro ⟨_, _⟩ ⟨_, _⟩ _; congr
 
 /-- See Note [custom simps projections]. -/
 def Simps.apply (f : LocallyConstant X Y) : X → Y := f
@@ -446,7 +446,7 @@ variable {R : Type*} [One R] {U : Set X} (f : LocallyConstant X R)
 noncomputable def mulIndicator (hU : IsClopen U) : LocallyConstant X R where
   toFun := Set.mulIndicator U f
   isLocallyConstant := fun s => by
-    rw [mulIndicator_preimage, Set.ite, Set.diff_eq]
+    rw [mulIndicator_preimage, Set.ite, Set.sdiff_eq]
     exact ((f.2 s).inter hU.isOpen).union ((IsLocallyConstant.const 1 s).inter hU.compl.isOpen)
 
 variable (a : X)
@@ -572,7 +572,7 @@ def piecewise' {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : 
     LocallyConstant C₀ Z :=
   letI : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
   piecewise (h₁.preimage continuous_subtype_val) (h₂.preimage continuous_subtype_val)
-    (by simpa [eq_univ_iff_forall] using h₀)
+    (by simpa [eq_univ_iff_forall] using! h₀)
     (f₁.comap ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩)
     (f₂.comap ⟨(restrictPreimage C₂ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩) <| by
       rintro ⟨x, hx₀⟩ ⟨hx₁ : x ∈ C₁, hx₂ : x ∈ C₂⟩

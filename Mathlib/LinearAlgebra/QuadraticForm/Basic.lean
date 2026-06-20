@@ -173,7 +173,7 @@ variable {Q Q' : QuadraticMap R M N}
 
 instance instFunLike : FunLike (QuadraticMap R M N) M N where
   coe := toFun
-  coe_injective' x y h := by cases x; cases y; congr
+  coe_injective x y h := by cases x; cases y; congr
 
 variable (Q)
 
@@ -605,7 +605,7 @@ def _root_.LinearMap.compQuadraticMap' [CommSemiring S] [Algebra S R] [Module S 
 maps on `M` into `P`.
 
 See `LinearMap.BilinMap.congr₂` for the bilinear map version. -/
-@[simps]
+@[simps apply]
 def _root_.LinearEquiv.congrQuadraticMap (e : N ≃ₗ[R] P) :
     QuadraticMap R M N ≃ₗ[R] QuadraticMap R M P where
   toFun Q := e.compQuadraticMap Q
@@ -901,15 +901,14 @@ def associatedHom : QuadraticMap R M N →ₗ[S] (BilinMap R M N) where
 
 variable (Q : QuadraticMap R M N)
 
-@[simp]
 theorem associated_apply (x y : M) :
-    associatedHom S Q x y = ⅟(2 : Module.End R N) • (Q (x + y) - Q x - Q y) :=
-  rfl
+    associatedHom S Q x y = ⅟(2 : Module.End R N) • (Q (x + y) - Q x - Q y) := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Twice the associated bilinear map of `Q` is the same as the polar of `Q`. -/
 @[simp] theorem two_nsmul_associated : 2 • associatedHom S Q = Q.polarBilin := by
   ext
-  dsimp
+  dsimp [associated_apply]
   rw [← LinearMap.smul_apply, nsmul_eq_mul, Nat.cast_ofNat, mul_invOf_self', Module.End.one_apply,
     polar]
 
@@ -1026,9 +1025,10 @@ theorem associated_linMulLin [Invertible (2 : R)] (f g : M →ₗ[R] R) :
 
 open LinearMap in
 @[simp]
-lemma associated_sq [Invertible (2 : R)] : associated (R := R) sq = mul R R :=
-  (associated_linMulLin (id) (id)).trans <|
-    by simp only [smul_add, invOf_two_smul_add_invOf_two_smul]; rfl
+lemma associated_sq [Invertible (2 : R)] : associated (R := R) sq = mul R R := by
+  rw [sq, associated_linMulLin]
+  simp only [smul_add, invOf_two_smul_add_invOf_two_smul]
+  rfl
 
 end Associated
 
@@ -1063,9 +1063,9 @@ alias ⟨IsOrtho.symm, _⟩ := isOrtho_comm
 
 theorem _root_.LinearMap.BilinForm.toQuadraticMap_isOrtho [IsCancelAdd R]
     [NoZeroDivisors R] [CharZero R] {B : BilinMap R M R} {x y : M} (h : B.IsSymm) :
-    B.toQuadraticMap.IsOrtho x y ↔ B.IsOrtho x y := by
+    B.toQuadraticMap.IsOrtho x y ↔ B x y = 0 := by
   letI : AddCancelMonoid R := { ‹IsCancelAdd R›, (inferInstance : AddCommMonoid R) with }
-  simp_rw [isOrtho_def, LinearMap.isOrtho_def, B.toQuadraticMap_apply, map_add,
+  simp_rw [isOrtho_def, B.toQuadraticMap_apply, map_add,
     LinearMap.add_apply, add_comm _ (B y y), add_add_add_comm _ _ (B y y), add_comm (B y y)]
   rw [add_eq_left (a := B x x + B y y), ← h.eq, RingHom.id_apply, add_self_eq_zero]
 
@@ -1075,18 +1075,16 @@ section CommRing
 variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
   {Q : QuadraticMap R M N}
 
-@[simp]
-theorem isOrtho_polarBilin {x y : M} : Q.polarBilin.IsOrtho x y ↔ IsOrtho Q x y := by
-  simp_rw [isOrtho_def, LinearMap.isOrtho_def, polarBilin_apply_apply, polar, sub_sub, sub_eq_zero]
+theorem isOrtho_polarBilin {x y : M} : Q.polarBilin x y = 0 ↔ IsOrtho Q x y := by
+  simp_rw [isOrtho_def, polarBilin_apply_apply, polar, sub_sub, sub_eq_zero]
 
 theorem IsOrtho.polar_eq_zero {x y : M} (h : IsOrtho Q x y) : polar Q x y = 0 :=
   isOrtho_polarBilin.mpr h
 
 @[simp]
 theorem associated_isOrtho [Invertible (2 : R)] {x y : M} :
-    Q.associated.IsOrtho x y ↔ Q.IsOrtho x y := by
-  simp_rw [isOrtho_def, LinearMap.isOrtho_def, associated_apply, invOf_smul_eq_iff,
-    smul_zero, sub_sub, sub_eq_zero]
+    Q.associated x y = 0 ↔ Q.IsOrtho x y := by
+  simp_rw [isOrtho_def, associated_apply, invOf_smul_eq_iff, smul_zero, sub_sub, sub_eq_zero]
 
 end CommRing
 
@@ -1364,7 +1362,7 @@ variable [CommRing R] [AddCommGroup M] [Module R M]
 on a module `M` over a ring `R` with invertible `2`, i.e. there exists some
 `x : M` such that `B x x ≠ 0`. -/
 theorem exists_bilinForm_self_ne_zero [htwo : Invertible (2 : R)] {B : BilinForm R M}
-    (hB₁ : B ≠ 0) (hB₂ : B.IsSymm) : ∃ x, ¬B.IsOrtho x x := by
+    (hB₁ : B ≠ 0) (hB₂ : B.IsSymm) : ∃ x, B x x ≠ 0 := by
   lift B to QuadraticForm R M using hB₂ with Q
   obtain ⟨x, hx⟩ := QuadraticMap.exists_quadraticMap_ne_zero hB₁
   exact ⟨x, fun h => hx (Q.associated_eq_self_apply ℕ x ▸ h)⟩
@@ -1408,7 +1406,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinFo
         intro y
         refine ⟨-B x y / B x x, fun z hz => ?_⟩
         obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.1 hz
-        rw [IsOrtho, map_smul, smul_apply, map_add, map_smul, smul_eq_mul, smul_eq_mul,
+        rw [map_smul, smul_apply, map_add, map_smul, smul_eq_mul, smul_eq_mul,
           div_mul_cancel₀ _ hx, add_neg_cancel, mul_zero])
   refine ⟨b, ?_⟩
   rw [Basis.coe_mkFinCons]
@@ -1416,7 +1414,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinFo
   refine Fin.cases ?_ (fun i => ?_) i <;> refine Fin.cases ?_ (fun j => ?_) j <;> intro hij <;>
     simp only [Function.onFun, Fin.cons_zero, Fin.cons_succ, Function.comp_apply]
   · exact (hij rfl).elim
-  · rw [IsOrtho, ← hB₂.eq]
+  · rw [← hB₂.eq]
     exact (v' j).prop _ (Submodule.mem_span_singleton_self x)
   · exact (v' i).prop _ (Submodule.mem_span_singleton_self x)
   · exact hv₁ (ne_of_apply_ne _ hij)

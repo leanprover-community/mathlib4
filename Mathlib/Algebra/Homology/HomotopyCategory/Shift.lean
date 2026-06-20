@@ -38,6 +38,7 @@ namespace CochainComplex
 
 open HomologicalComplex
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The shift functor by `n : ℤ` on `CochainComplex C ℤ` which sends a cochain
 complex `K` to the complex which is `K.X (i + n)` in degree `i`, and which
 multiplies the differentials by `(-1)^n`. -/
@@ -82,6 +83,7 @@ variable (C)
 
 attribute [local simp] XIsoOfEq_hom_naturality
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The shift functor by `n` on `CochainComplex C ℤ` identifies to the identity
 functor when `n = 0`. -/
 @[simps!]
@@ -91,6 +93,7 @@ def shiftFunctorZero' (n : ℤ) (h : n = 0) :
     (fun i => K.shiftFunctorObjXIso _ _ _ (by lia))
     (fun _ _ _ => by simp [h])) (fun _ ↦ by ext; simp)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The compatibility of the shift functors on `CochainComplex C ℤ` with respect
 to the addition of integers. -/
@@ -108,6 +111,7 @@ def shiftFunctorAdd' (n₁ n₂ n₁₂ : ℤ) (h : n₁ + n₂ = n₁₂) :
 
 attribute [local simp] XIsoOfEq
 
+set_option backward.defeqAttrib.useBackward true in
 instance : HasShift (CochainComplex C ℤ) ℤ := hasShiftMk _ _
   { F := shiftFunctor C
     zero := shiftFunctorZero' C _ rfl
@@ -188,6 +192,7 @@ lemma shiftFunctorZero_eq :
 
 variable {C}
 
+set_option backward.defeqAttrib.useBackward true in
 lemma shiftFunctorComm_hom_app_f (K : CochainComplex C ℤ) (a b p : ℤ) :
     ((shiftFunctorComm (CochainComplex C ℤ) a b).hom.app K).f p =
       (K.XIsoOfEq (show p + b + a = p + a + b
@@ -201,6 +206,7 @@ variable (C)
 
 attribute [local simp] XIsoOfEq_hom_naturality
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Shifting cochain complexes by `n` and evaluating in a degree `i` identifies
 to the evaluation in degree `i'` when `n + i = i'`. -/
 @[simps!]
@@ -224,6 +230,7 @@ variable (F : C ⥤ D) [F.Additive]
 
 attribute [local simp] Functor.map_zsmul
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The commutation with the shift isomorphism for the functor on cochain complexes
 induced by an additive functor between preadditive categories. -/
@@ -234,6 +241,7 @@ def mapCochainComplexShiftIso (n : ℤ) :
   NatIso.ofComponents (fun K => HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
     (by simp)) (fun _ => by ext; dsimp; rw [id_comp, comp_id])
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance commShiftMapCochainComplex :
     (F.mapHomologicalComplex (ComplexShape.up ℤ)).CommShift ℤ where
@@ -273,6 +281,7 @@ namespace Homotopy
 
 variable {C}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `h : Homotopy φ₁ φ₂` and `n : ℤ`, this is the induced homotopy
 between `φ₁⟦n⟧'` and `φ₂⟦n⟧'`. -/

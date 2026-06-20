@@ -14,7 +14,7 @@ public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 
 ## Results
 
-- `Lp E p μ` is an `OrderedAddCommGroup` when `E` is a `NormedLatticeAddCommGroup`.
+- `Lp E p μ` is an ordered group when `E` is a `NormedLatticeAddCommGroup`.
 
 ## TODO
 
@@ -49,10 +49,7 @@ theorem coeFn_le (f g : Lp E p μ) : f ≤ᵐ[μ] g ↔ f ≤ g := by
 
 theorem coeFn_nonneg (f : Lp E p μ) : 0 ≤ᵐ[μ] f ↔ 0 ≤ f := by
   rw [← coeFn_le]
-  have h0 := Lp.coeFn_zero E p μ
-  constructor <;> intro h <;> filter_upwards [h, h0] with _ _ h2
-  · rwa [h2]
-  · rwa [← h2]
+  exact ⟨(Lp.coeFn_zero E p μ).trans_le, (Lp.coeFn_zero E p μ).symm.trans_le⟩
 
 variable [IsOrderedAddMonoid E]
 

@@ -84,6 +84,7 @@ section RightFullyFaithful
 
 variable [F.Full] [F.Faithful]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- For an adjoint quadruple `L ⊣ F ⊣ G ⊣ R` where `F` (and hence also `R`) is fully faithful, all
 components of the natural transformation `G ⟶ L` are epimorphisms iff all components of the natural
 transformation `F ⟶ R` are monomorphisms. -/
@@ -117,6 +118,7 @@ section LeftFullyFaithful
 
 variable [L.Full] [L.Faithful] [G.Full] [G.Faithful]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- For an adjoint quadruple `L ⊣ F ⊣ G ⊣ R` where `L` and `G` are fully faithful, all components
 of the natural transformation `L ⟶ G` are epimorphisms iff all components of the natural
 transformation `R ⟶ F` are monomorphisms. -/

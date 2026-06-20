@@ -72,7 +72,7 @@ theorem tail {n f} (hf : @Partrec' n f) : @Partrec' n.succ fun v => f v.tail :=
 protected theorem bind {n f g} (hf : @Partrec' n f) (hg : @Partrec' (n + 1) g) :
     @Partrec' n fun v => (f v).bind fun a => g (a ::ᵥ v) :=
   (@comp n (n + 1) g (Fin.cases f (fun i v => some (v.get i))) hg <|
-      Fin.cases (by simpa using hf) (fun i => by simpa using prim (Nat.Primrec'.get i))).of_eq
+      Fin.cases (by simpa using! hf) (fun i => by simpa using! prim (Nat.Primrec'.get i))).of_eq
     fun v => by simp [mOfFn, Part.bind_assoc, pure]
 
 protected theorem map {n f} {g : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec' n f)
@@ -90,7 +90,7 @@ protected theorem nil {n} : @Vec n 0 fun _ => nil := fun i => i.elim0
 
 protected theorem cons {n m} {f : List.Vector ℕ n → ℕ} {g} (hf : @Partrec' n f)
     (hg : @Vec n m g) : Vec fun v => f v ::ᵥ g v := fun i =>
-  Fin.cases (by simpa using hf) (fun i => by simp only [hg i, get_cons_succ]) i
+  Fin.cases (by simpa using! hf) (fun i => by simp only [hg i, get_cons_succ]) i
 
 theorem idv {n} : @Vec n n id :=
   Vec.prim Nat.Primrec'.idv

@@ -509,7 +509,7 @@ theorem fundamentalFrontier_subset : fundamentalFrontier G s ⊆ s :=
 
 @[to_additive MeasureTheory.addFundamentalInterior_subset]
 theorem fundamentalInterior_subset : fundamentalInterior G s ⊆ s :=
-  diff_subset
+  sdiff_subset
 
 variable (G s)
 
@@ -521,12 +521,12 @@ theorem disjoint_fundamentalInterior_fundamentalFrontier :
 @[to_additive (attr := simp) MeasureTheory.addFundamentalInterior_union_addFundamentalFrontier]
 theorem fundamentalInterior_union_fundamentalFrontier :
     fundamentalInterior G s ∪ fundamentalFrontier G s = s :=
-  diff_union_inter _ _
+  sdiff_union_inter _ _
 
 @[to_additive (attr := simp) MeasureTheory.addFundamentalFrontier_union_addFundamentalInterior]
 theorem fundamentalFrontier_union_fundamentalInterior :
     fundamentalFrontier G s ∪ fundamentalInterior G s = s :=
-  inter_union_diff _ _
+  inter_union_sdiff _ _
 
 @[to_additive (attr := simp) MeasureTheory.sdiff_addFundamentalInterior]
 theorem sdiff_fundamentalInterior : s \ fundamentalInterior G s = fundamentalFrontier G s :=
@@ -534,7 +534,7 @@ theorem sdiff_fundamentalInterior : s \ fundamentalInterior G s = fundamentalFro
 
 @[to_additive (attr := simp) MeasureTheory.sdiff_addFundamentalFrontier]
 theorem sdiff_fundamentalFrontier : s \ fundamentalFrontier G s = fundamentalInterior G s :=
-  diff_self_inter
+  sdiff_self_inter
 
 @[to_additive (attr := simp) MeasureTheory.addFundamentalFrontier_vadd]
 theorem fundamentalFrontier_smul [Group H] [MulAction H α] [SMulCommClass H G α] (g : H) :
@@ -583,11 +583,11 @@ section Group
 @[to_additive MeasureTheory.IsAddFundamentalDomain.measure_addFundamentalFrontier]
 theorem measure_fundamentalFrontier : μ (fundamentalFrontier G s) = 0 := by
   simpa only [fundamentalFrontier, iUnion₂_inter, one_smul, measure_iUnion_null_iff, inter_comm s,
-    Function.onFun] using fun g (hg : g ≠ 1) => hs.aedisjoint hg
+    Function.onFun] using! fun g (hg : g ≠ 1) => hs.aedisjoint hg
 
 @[to_additive MeasureTheory.IsAddFundamentalDomain.measure_addFundamentalInterior]
 theorem measure_fundamentalInterior : μ (fundamentalInterior G s) = μ s :=
-  measure_diff_null' hs.measure_fundamentalFrontier
+  measure_sdiff_null' hs.measure_fundamentalFrontier
 
 end Group
 
@@ -601,10 +601,10 @@ protected theorem fundamentalInterior : IsFundamentalDomain G (fundamentalInteri
     have :
       ((⋃ g : G, g⁻¹ • s) \ ⋃ g : G, g⁻¹ • fundamentalFrontier G s) ⊆
         ⋃ g : G, g⁻¹ • fundamentalInterior G s := by
-      simp_rw [diff_subset_iff, ← iUnion_union_distrib, ← smul_set_union (α := G) (β := α),
+      simp_rw [sdiff_subset_iff, ← iUnion_union_distrib, ← smul_set_union (α := G) (β := α),
         fundamentalFrontier_union_fundamentalInterior]; rfl
     refine eq_bot_mono (μ.mono <| compl_subset_compl.2 this) ?_
-    simp only [iUnion_inv_smul, compl_sdiff, ENNReal.bot_eq_zero, himp_eq, sup_eq_union,
+    simp only [iUnion_inv_smul, compl_sdiff, ENNReal.bot_eq_zero,
       @iUnion_smul_eq_setOf_exists _ _ _ _ s]
     exact measure_union_null
       (measure_iUnion_null fun _ => measure_smul_null hs.measure_fundamentalFrontier _) hs.ae_covers

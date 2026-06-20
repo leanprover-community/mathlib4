@@ -99,7 +99,7 @@ theorem one_lt_rank_of_one_lt_finrank (h : 1 < finrank R M) : 1 < Module.rank R 
 theorem finrank_le_finrank_of_rank_le_rank
     (h : lift.{w} (Module.rank R M) ≤ Cardinal.lift.{v} (Module.rank R N))
     (h' : Module.rank R N < ℵ₀) : finrank R M ≤ finrank R N := by
-  simpa only [toNat_lift] using toNat_le_toNat h (lift_lt_aleph0.mpr h')
+  simpa only [toNat_lift] using! toNat_le_toNat h (lift_lt_aleph0.mpr h')
 
 end Semiring
 
@@ -149,6 +149,6 @@ theorem finrank_eq_of_equiv_equiv {R₀ S₀ : Type*} [CommSemiring R₀] [Semir
     {R₁ S₁ : Type*} [CommSemiring R₁] [Semiring S₁] [Algebra R₁ S₁] (i : R₀ ≃+* R₁) (j : S₀ ≃+* S₁)
     (hc : (algebraMap R₁ S₁).comp i.toRingHom = j.toRingHom.comp (algebraMap R₀ S₀)) :
     Module.finrank R₀ S₀ = Module.finrank R₁ S₁ := by
-  simpa using (congr_arg Cardinal.toNat (lift_rank_eq_of_equiv_equiv i j hc))
+  simpa using! (congr_arg Cardinal.toNat (lift_rank_eq_of_equiv_equiv i j hc))
 
 end Algebra

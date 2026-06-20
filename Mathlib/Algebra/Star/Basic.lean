@@ -93,8 +93,14 @@ theorem star_inj [InvolutiveStar R] {x y : R} : star x = star y ↔ x = y :=
   star_injective.eq_iff
 
 /-- `star` as an equivalence when it is involutive. -/
-protected def Equiv.star [InvolutiveStar R] : Equiv.Perm R :=
+@[simps! apply]
+protected def Equiv.Perm.star [InvolutiveStar R] : Equiv.Perm R :=
   star_involutive.toPerm _
+
+@[simp]
+theorem Equiv.Perm.symm_star [InvolutiveStar R] :
+    (Equiv.Perm.star : R ≃ R).symm = Equiv.Perm.star :=
+  rfl
 
 theorem eq_star_of_eq_star [InvolutiveStar R] {r s : R} (h : r = star s) : s = star r := by
   simp [h]
@@ -232,11 +238,20 @@ export StarAddMonoid (star_add)
 attribute [simp] star_add
 
 /-- `star` as an `AddEquiv` -/
-@[simps apply]
-def starAddEquiv [AddMonoid R] [StarAddMonoid R] : R ≃+ R :=
-  { InvolutiveStar.star_involutive.toPerm star with
-    toFun := star
-    map_add' := star_add }
+@[simps! apply]
+def starAddEquiv [AddMonoid R] [StarAddMonoid R] : R ≃+ R where
+  toEquiv := Equiv.Perm.star
+  map_add' := star_add
+
+@[simp]
+theorem toEquiv_starAddEquiv [AddMonoid R] [StarAddMonoid R] :
+    (starAddEquiv : R ≃+ R) = (Equiv.Perm.star : R ≃ R) :=
+  rfl
+
+@[simp]
+theorem symm_starAddEquiv [AddMonoid R] [StarAddMonoid R] :
+    (starAddEquiv : R ≃+ R).symm = starAddEquiv :=
+  rfl
 
 variable (R) in
 @[simp]
@@ -519,6 +534,49 @@ theorem isRegular_star_iff [Mul R] [StarMul R] {x : R} :
 
 end Regular
 
+namespace Function.Injective
+
+variable {S : Type v} (f : R → S)
+
+/-- Given a type endowed with `star`, that `star` is involutive if it admits an injective map that
+preserves `star` to a type with whose `star` is involutive. See note [reducible non-instances]. -/
+protected abbrev involutiveStar [Star R] [InvolutiveStar S] (hf : Injective f)
+    (star : ∀ x, f (star x) = star (f x)) : InvolutiveStar R where
+  star_involutive r := hf <| by rw [star, star, star_star]
+
+/-- A type endowed with `star` and `*` is a star magma if it admits an injective map that
+preserves `star` and `*` to star magma.  See note [reducible non-instances]. -/
+protected abbrev starMul [Star R] [Mul R] [Mul S] [StarMul S] (hf : Injective f)
+    (star : ∀ x, f (star x) = star (f x)) (mul : ∀ x y, f (x * y) = f x * f y) :
+    StarMul R where
+  toInvolutiveStar := hf.involutiveStar _ star
+  star_mul x y := hf <| by rw [star, mul, star_mul, mul, star, star]
+
+/-- A additive monoid endowed with `star` is an additive star monoid if it admits an injective map
+that preserves `star` and `+` to an additive star monoid.  See note [reducible non-instances]. -/
+protected abbrev starAddMonoid [Star R] [AddMonoid R] [AddMonoid S] [StarAddMonoid S]
+    (hf : Injective f) (star : ∀ x, f (star x) = star (f x)) (add : ∀ x y, f (x + y) = f x + f y) :
+    StarAddMonoid R where
+  toInvolutiveStar := hf.involutiveStar f star
+  star_add x y := hf <| by rw [star, add, star_add, add, star, star]
+
+/-- A non-unital non-associative ring endowed with `star` is a star ring if it admits an injective
+map that preserves `star`, `*` and `+` to a star ring. See note [reducible non-instances]. -/
+protected abbrev starRing [Star R] [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
+    [StarRing S] (hf : Injective f) (star : ∀ x, f (star x) = star (f x))
+    (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y) :
+    StarRing R :=
+  { hf.starMul f star mul, hf.starAddMonoid f star add with }
+
+/-- A type endowed with `star` is a star module over some other type with `star` if it admits an
+injective map that preserves `star` and `•` to a star module. See note [reducible non-instances]. -/
+protected lemma starModule (𝕜 : Type*) [Star 𝕜] [SMul 𝕜 R]
+    [Star R] [SMul 𝕜 S] [Star S] [StarModule 𝕜 S] (hf : Injective f)
+    (star : ∀ x, f (star x) = star (f x)) (smul : ∀ (r : 𝕜) x, f (r • x) = r • f x) :
+    StarModule 𝕜 R where
+  star_smul r x := hf <| by rw [star, smul, star_smul, smul, star]
+
+end Function.Injective
 
 namespace MulOpposite
 

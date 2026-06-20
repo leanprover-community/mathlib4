@@ -446,7 +446,7 @@ def cosPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   continuousOn_invFun := continuous_arccos.continuousOn
 
 /-- `Real.cos` and `Real.arccos` as a (partial) equivalence from `[0, π]` to `[-1, 1]` -/
-@[simps, expose]
+@[simps]
 noncomputable def cosPartialEquiv : PartialEquiv ℝ ℝ where
   toFun θ := cos θ
   invFun x := arccos x

@@ -194,7 +194,7 @@ variable {f e}
 theorem extendOfNorm_eq (h_dense : DenseRange e) (h_norm : ∃ C, ∀ x, ‖f x‖ ≤ C * ‖e x‖)
     (x : E) : f.extendOfNorm e (e x) = f x := by
   have := (f.compLeftInverse e).extend_eq (e := (LinearMap.range e).subtypeL)
-    (by simpa using h_dense) isUniformEmbedding_subtype_val.isUniformInducing
+    (by simpa using! h_dense) isUniformEmbedding_subtype_val.isUniformInducing
   convert! this ⟨e x, LinearMap.mem_range_self e x⟩
   exact (compLeftInverse_apply_of_bdd _ _ h_norm _ _ rfl).symm
 
@@ -209,7 +209,7 @@ theorem norm_extendOfNorm_apply_le (h_dense : DenseRange e) (C : ℝ)
 theorem extendOfNorm_unique (h_dense : DenseRange e) (C : ℝ) (h_norm : ∀ (x : E), ‖f x‖ ≤ C * ‖e x‖)
     (g : Eₗ →SL[σ₁₂] F) (H : g.toLinearMap.comp e = f) : extendOfNorm f e = g := by
   apply ContinuousLinearMap.extend_unique
-  · simpa using h_dense
+  · simpa using! h_dense
   · exact isUniformEmbedding_subtype_val.isUniformInducing
   ext ⟨y, x, hxy⟩
   rw [compLeftInverse_apply_of_bdd _ _ ⟨C, h_norm⟩ x y hxy]

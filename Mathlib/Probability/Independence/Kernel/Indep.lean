@@ -322,6 +322,12 @@ theorem indep_of_indep_of_le_right {m₁ m₂ m₃ : MeasurableSpace Ω} {_mΩ :
     Indep m₁ m₃ κ μ :=
   fun t1 t2 ht1 ht2 => h_indep t1 t2 ht1 (h32 _ ht2)
 
+theorem indep_of_indep_of_le {m₁ m₂ m₃ m₄ : MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
+    {κ : Kernel α Ω} {μ : Measure α} (h_indep : Indep m₁ m₂ κ μ)
+    (h31 : m₃ ≤ m₁) (h42 : m₄ ≤ m₂) :
+    Indep m₃ m₄ κ μ :=
+  indep_of_indep_of_le_left (indep_of_indep_of_le_right h_indep h42) h31
+
 theorem iIndep_of_iIndep_of_le {m₁ m₂ : ι → MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} (h_indep : iIndep m₂ κ μ) (h_le : ∀ i, m₁ i ≤ m₂ i) :
     iIndep m₁ κ μ :=
@@ -478,8 +484,8 @@ theorem IndepSets.indep_aux {m₂ m : MeasurableSpace Ω}
   | basic u hu => exact hyp t1 u ht1 hu
   | compl u hu ihu =>
     filter_upwards [ihu] with a ha
-    rw [← Set.diff_eq, ← Set.diff_self_inter,
-      measure_diff inter_subset_left (ht1m.inter (h2 _ hu)).nullMeasurableSet (measure_ne_top _ _),
+    rw [← Set.sdiff_eq, ← Set.sdiff_self_inter,
+      measure_sdiff inter_subset_left (ht1m.inter (h2 _ hu)).nullMeasurableSet (measure_ne_top _ _),
       ha, measure_compl (h2 _ hu) (measure_ne_top _ _), measure_univ, ENNReal.mul_sub, mul_one]
     exact fun _ _ ↦ measure_ne_top _ _
   | iUnion f hfd hfm ihf =>
@@ -509,9 +515,9 @@ theorem IndepSets.indep {m1 m2 m : MeasurableSpace Ω} {κ : Kernel α Ω} {μ :
   | compl t ht iht =>
     filter_upwards [iht] with a ha
     have : tᶜ ∩ t2 = t2 \ (t ∩ t2) := by
-      rw [Set.inter_comm t, Set.diff_self_inter, Set.diff_eq_compl_inter]
+      rw [Set.inter_comm t, Set.sdiff_self_inter, Set.sdiff_eq_compl_inter]
     rw [this, Set.inter_comm t t2,
-      measure_diff Set.inter_subset_left ((h2 _ ht2).inter (h1 _ ht)).nullMeasurableSet
+      measure_sdiff Set.inter_subset_left ((h2 _ ht2).inter (h1 _ ht)).nullMeasurableSet
         (measure_ne_top (κ a) _),
       Set.inter_comm, ha, measure_compl (h1 _ ht) (measure_ne_top (κ a) t), measure_univ,
       mul_comm (1 - κ a t), ENNReal.mul_sub (fun _ _ ↦ measure_ne_top (κ a) _), mul_one, mul_comm]

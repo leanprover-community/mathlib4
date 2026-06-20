@@ -118,21 +118,17 @@ open Bicategory.Opposite
 variable {B : Type u} [Bicategory.{w, v} B]
 
 /-- A 2-isomorphism in `B` gives a 2-isomorphism in `Bᵒᵖ` -/
-@[simps!]
 abbrev op2 {a b : B} {f g : a ⟶ b} (η : f ≅ g) : f.op ≅ g.op := (opFunctor a b).mapIso η
 
 /-- A 2-isomorphism in `B` gives a 2-isomorphism in `Bᵒᵖ` -/
-@[simps!]
 abbrev op2_unop {a b : Bᵒᵖ} {f g : a ⟶ b} (η : f.unop ≅ g.unop) : f ≅ g :=
   (opFunctor b.unop a.unop).mapIso η
 
 /-- A 2-isomorphism in `Bᵒᵖ` gives a 2-isomorphism in `B` -/
-@[simps!]
 abbrev unop2 {a b : Bᵒᵖ} {f g : a ⟶ b} (η : f ≅ g) : f.unop ≅ g.unop :=
   (unopFunctor a b).mapIso η
 
 /-- A 2-isomorphism in `Bᵒᵖ` gives a 2-isomorphism in `B` -/
-@[simps!]
 abbrev unop2_op {a b : B} {f g : a ⟶ b} (η : f.op ≅ g.op) : f ≅ g :=
   (unopFunctor (op b) (op a)).mapIso η
 

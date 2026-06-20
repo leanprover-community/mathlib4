@@ -238,11 +238,11 @@ theorem add_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Langu
 
 theorem iSup_sub {ι : Sort v} (l : ι → Language α) (m : Language α) :
     (⨆ i, l i) - m = ⨆ i, l i - m :=
-  iUnion_diff _ _
+  iUnion_sdiff _ _
 
 theorem sub_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Language α) :
     (m - ⨆ i, l i) = ⨅ i, m - l i :=
-  diff_iUnion _ _
+  sdiff_iUnion _ _
 
 theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     x ∈ l ^ n ↔ ∃ S : List (List α), x = S.flatten ∧ S.length = n ∧ ∀ y ∈ S, y ∈ l := by

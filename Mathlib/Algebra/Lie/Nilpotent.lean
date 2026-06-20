@@ -475,6 +475,7 @@ theorem lowerCentralSeriesLast_le_of_not_isTrivial [IsNilpotent L M] (h : ¬ IsT
   · exact antitone_lowerCentralSeries _ _ _ (Nat.le_of_lt_succ h)
 
 variable [LieModule R L M]
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- For a nilpotent Lie module `M` of a Lie algebra `L`, the first term in the lower central series
 of `M` contains a non-zero element on which `L` acts trivially unless the entire action is trivial.
@@ -853,6 +854,8 @@ theorem LieEquiv.nilpotent_iff_equiv_nilpotent (e : L ≃ₗ⁅R⁆ L') :
 
 theorem LieHom.isNilpotent_range [IsNilpotent L] (f : L →ₗ⁅R⁆ L') : IsNilpotent f.range :=
   f.surjective_rangeRestrict.lieAlgebra_isNilpotent
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- Note that this result is not quite a special case of
 `LieModule.isNilpotent_range_toEnd_iff` which concerns nilpotency of the

@@ -34,6 +34,7 @@ namespace CochainComplex
 
 open HomologicalComplex
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The collection of all single functors `C ⥤ CochainComplex C ℤ` along with
 their compatibilities with shifts. (This definition has purposely no `simps`
 attribute, as the generated lemmas would not be very useful.) -/

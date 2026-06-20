@@ -187,7 +187,7 @@ abbrev NormedSpace.induced {F : Type*} (𝕜 E G : Type*) [NormedField 𝕜] [Ad
     [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [FunLike F E G] [LinearMapClass F 𝕜 E G] (f : F) :
     @NormedSpace 𝕜 E _ (SeminormedAddCommGroup.induced E G f) :=
   letI := SeminormedAddCommGroup.induced E G f
-  { norm_smul_le a b := by simpa only [← map_smul f a b] using norm_smul_le a (f b) }
+  { norm_smul_le a b := by simpa only [← map_smul f a b] using! norm_smul_le a (f b) }
 
 section NontriviallyNormedSpace
 

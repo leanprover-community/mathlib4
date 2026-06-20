@@ -10,6 +10,9 @@ public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.LinearAlgebra.Projectivization.Basic
 public import Mathlib.LinearAlgebra.SpecialLinearGroup
 public import Mathlib.LinearAlgebra.Transvection.Basic
+public import Mathlib.LinearAlgebra.Matrix.IsDiag
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Projective
+public import Mathlib.LinearAlgebra.Center
 
 /-!
 # Group actions on projectivization
@@ -182,6 +185,71 @@ instance : IsMultiplyPretransitive (Matrix.SpecialLinearGroup ι K) (ℙ K (ι �
 
 instance prePrimitive_SL : IsPreprimitive (Matrix.SpecialLinearGroup ι K) (ℙ K (ι → K)) :=
   isPreprimitive_of_is_two_pretransitive inferInstance
+
+lemma SL_mulAction_ker :
+    (MulAction.toPermHom (Matrix.SpecialLinearGroup ι K) (ℙ K (ι → K))).ker =
+      Subgroup.center (Matrix.SpecialLinearGroup ι K) := by
+  ext m
+  simp only [MonoidHom.mem_ker, toPermHom_apply, Equiv.Perm.one_def, DFunLike.ext_iff, toPerm_apply,
+    Equiv.refl_apply, Matrix.SpecialLinearGroup.mem_center_iff]
+  refine ⟨fun hm ↦ ?_, fun ⟨r, hr1, hr2⟩ l ↦ ?_⟩
+  · set f : (ι → K) →ₗ[K] ι → K := (Matrix.SpecialLinearGroup.toLin' m).toLinearMap with hf
+    obtain ⟨a, ha⟩ := f.exists_eq_smul_id_of_forall_notLinearIndependent fun (v : ι → K) ↦ by
+      by_cases hv : v = 0
+      · simp [hv, linearIndependent_fin2]
+      · simpa [LinearIndependent.pair_iff' hv, mk_eq_mk_iff'] using! hm (.mk K v hv)
+    have hscalar : m.1 = Matrix.scalar ι a := calc
+      m.1 = LinearMap.toMatrix' f := by
+        rw [hf, Matrix.SpecialLinearGroup.toLin'_to_linearMap, LinearMap.toMatrix'_toLin']
+      _ = (algebraMap K (Module.End K (ι → K)) a).toMatrix' := congrArg LinearMap.toMatrix' ha
+      _ = Matrix.scalar ι a := LinearMap.toMatrix'_algebraMap a
+    exact ⟨a, by simpa [hscalar] using m.2, hscalar.symm⟩
+  · induction l using Projectivization.ind with | _ v hv =>
+    simp only [smul_mk, mk_eq_mk_iff']
+    use r
+    change _ = m.1 • v
+    simp [← hr2]
+
+/-- The action of the special linear group on `ℙ F (ι → F)` factors through the
+projective special linear group `PSL = SL ⧸ Z(SL)`. -/
+def PSLAction.toPermHom :
+    Matrix.ProjectiveSpecialLinearGroup ι K →* Equiv.Perm (ℙ K (ι → K)) :=
+  QuotientGroup.lift _ (MulAction.toPermHom _ _) (le_of_eq SL_mulAction_ker.symm)
+
+instance : MulAction (Matrix.ProjectiveSpecialLinearGroup ι K) (ℙ K (ι → K)) :=
+  MulAction.compHom _ PSLAction.toPermHom
+
+lemma _root_.Matrix.ProjectiveSpecialLinearGroup.smul_proj_mk (g : Matrix.SpecialLinearGroup ι K)
+    (p : ℙ K (ι → K)) : (g : Matrix.ProjectiveSpecialLinearGroup ι K) • p = g • p := rfl
+
+theorem _root_.Matrix.ProjectiveSpecialLinearGroup.toPermHom_injective :
+    Function.Injective (PSLAction.toPermHom (K := K) (ι := ι)) := by
+  rw [injective_iff_map_eq_one]
+  intro g hg
+  rwa [← MonoidHom.mem_ker, PSLAction.toPermHom,
+    QuotientGroup.ker_lift, SL_mulAction_ker, QuotientGroup.map_mk'_self,
+    Subgroup.mem_bot] at hg
+
+instance : FaithfulSMul (Matrix.ProjectiveSpecialLinearGroup ι K) (ℙ K (ι → K)) :=
+  faithfulSMul_iff.2 fun g hg ↦
+    Matrix.ProjectiveSpecialLinearGroup.toPermHom_injective <| Equiv.ext fun x ↦ by
+      simpa using! hg x
+
+instance : IsPreprimitive (Matrix.ProjectiveSpecialLinearGroup ι K) (ℙ K (ι → K)) :=
+  @MulAction.IsPreprimitive.of_surjective _ _ _ _ _ _ _ _ (QuotientGroup.mk' _)
+    {toFun := id, map_smul' := by intros; simp; rfl} (prePrimitive_SL (ι := ι) (K := K))
+    Function.surjective_id
+
+open MatrixGroups Matrix.ProjGenLinGroup
+
+instance : MulAction PGL(ι, K) (ℙ K (ι → K)) :=
+  mulActionOfGL fun u ↦ ind fun v hv ↦ by
+    simp only [smul_mk, mk_eq_mk_iff]
+    exact ⟨u, by simp [Units.smul_def]⟩
+
+@[simp]
+lemma PGL.mk_smul_mk (g : GL ι K) {v : ι → K} (hv : v ≠ 0) :
+    (.mk g : PGL(ι, K)) • mk K v hv = mk K (g • v) (smul_ne_zero_iff_ne g|>.2 hv) := rfl
 
 end Field
 

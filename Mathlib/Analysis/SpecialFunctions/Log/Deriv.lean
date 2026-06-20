@@ -423,14 +423,4 @@ theorem hasSum_log_one_add {a : ℝ} (h : 0 ≤ a) :
   · convert! hasSum_log_one_add_inv (inv_pos.mpr (lt_of_le_of_ne h ha0.symm)) using 4
     all_goals simp [field, add_comm]
 
-lemma le_log_one_add_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 2 * x / (x + 2) ≤ log (1 + x) := by
-  convert! le_hasSum (hasSum_log_one_add hx) 0 (by intros; positivity) using 1
-  simp [field]
-
-lemma lt_log_one_add_of_pos {x : ℝ} (hx : 0 < x) : 2 * x / (x + 2) < log (1 + x) := by
-  convert!
-    lt_hasSum (hasSum_log_one_add hx.le) 0 (by intros; positivity) 1 (by positivity)
-      (by positivity) using 1
-  simp [field]
-
 end Real

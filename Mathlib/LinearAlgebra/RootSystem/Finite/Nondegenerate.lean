@@ -310,9 +310,9 @@ lemma ker_corootForm_eq_dualAnnihilator :
 instance : P.IsBalanced where
     isPerfectCompl :=
   { isCompl_left := by
-      simpa only [ker_rootForm_eq_dualAnnihilator] using P.isCompl_rootSpan_ker_rootForm
+      simpa only [ker_rootForm_eq_dualAnnihilator] using! P.isCompl_rootSpan_ker_rootForm
     isCompl_right := by
-      simpa only [ker_corootForm_eq_dualAnnihilator] using P.isCompl_corootSpan_ker_corootForm }
+      simpa only [ker_corootForm_eq_dualAnnihilator] using! P.isCompl_corootSpan_ker_corootForm }
 
 /-- See also `RootPairing.rootForm_restrict_nondegenerate_of_ordered`.
 
@@ -328,11 +328,11 @@ lemma orthogonal_rootSpan_eq :
   rw [← LinearMap.BilinForm.orthogonal_top_eq_ker P.rootForm_symmetric.isRefl]
   refine le_antisymm ?_ (by intro; simp_all)
   rintro x hx y -
-  simp only [LinearMap.BilinForm.mem_orthogonal_iff, LinearMap.BilinForm.IsOrtho] at hx ⊢
+  simp only [LinearMap.BilinForm.mem_orthogonal_iff] at hx ⊢
   obtain ⟨u, hu, v, hv, rfl⟩ : ∃ᵉ (u ∈ P.rootSpan R) (v ∈ LinearMap.ker P.RootForm), u + v = y := by
     rw [← Submodule.mem_sup, P.isCompl_rootSpan_ker_rootForm.sup_eq_top]; exact Submodule.mem_top
   simp only [LinearMap.mem_ker] at hv
-  simp [LinearMap.IsOrtho, hx _ hu, hv]
+  simp [hx _ hu, hv]
 
 @[simp]
 lemma orthogonal_corootSpan_eq :

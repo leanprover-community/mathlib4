@@ -228,8 +228,8 @@ lemma eventually_norm_trivializationAt_lt (x : B) :
       ((trivializationAt F E x).symmL ℝ x) = ContinuousLinearMap.id _ _ := by
     ext v
     have h'x : x ∈ (trivializationAt F E x).baseSet := FiberBundle.mem_baseSet_trivializationAt' x
-    simp only [coe_comp', Trivialization.continuousLinearMapAt_apply, Trivialization.symmL_apply,
-      Function.comp_apply, coe_id', id_eq]
+    simp only [Trivialization.continuousLinearMapAt_apply, Trivialization.symmL_apply, comp_apply,
+      id_apply]
     convert! ((trivializationAt F E x).continuousLinearEquivAt ℝ _ h'x).apply_symm_apply v
     simp [Trivialization.coe_continuousLinearEquivAt_eq _ h'x]
   have : (trivializationAt F E x).continuousLinearMapAt ℝ y =
@@ -333,8 +333,8 @@ lemma eventually_norm_symmL_trivializationAt_lt (x : B) :
       ((trivializationAt F E x).symmL ℝ x) = ContinuousLinearMap.id _ _ := by
     ext v
     have h'x : x ∈ (trivializationAt F E x).baseSet := FiberBundle.mem_baseSet_trivializationAt' x
-    simp only [coe_comp', Trivialization.continuousLinearMapAt_apply, Trivialization.symmL_apply,
-      Function.comp_apply, coe_id', id_eq]
+    simp only [Trivialization.continuousLinearMapAt_apply, Trivialization.symmL_apply, comp_apply,
+      id_apply]
     convert! ((trivializationAt F E x).continuousLinearEquivAt ℝ _ h'x).apply_symm_apply v
     simp [Trivialization.coe_continuousLinearEquivAt_eq _ h'x]
   have : (trivializationAt F E x).symmL ℝ y =

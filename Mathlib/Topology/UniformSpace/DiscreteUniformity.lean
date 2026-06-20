@@ -84,6 +84,6 @@ variable {x} in
 /-- On a space with a discrete uniformity, any function is uniformly continuous. -/
 theorem uniformContinuous {Y : Type*} [UniformSpace Y] (f : X → Y) :
     UniformContinuous f := by
-  simp only [uniformContinuous_iff, DiscreteUniformity.eq_bot, bot_le]
+  simp only [uniformContinuous_iff_le_comap, DiscreteUniformity.eq_bot, bot_le]
 
 end DiscreteUniformity

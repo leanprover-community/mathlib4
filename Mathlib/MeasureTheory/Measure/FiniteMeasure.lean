@@ -135,7 +135,7 @@ theorem toMeasure_injective : Function.Injective ((↑) : FiniteMeasure Ω → M
 
 instance instFunLike : FunLike (FiniteMeasure Ω) (Set Ω) ℝ≥0 where
   coe μ s := ((μ : Measure Ω) s).toNNReal
-  coe_injective' μ ν h := toMeasure_injective <| Measure.ext fun s _ ↦ by
+  coe_injective μ ν h := toMeasure_injective <| Measure.ext fun s _ ↦ by
     simpa [ENNReal.toNNReal_eq_toNNReal_iff, measure_ne_top] using congr_fun h s
 
 lemma coeFn_def (μ : FiniteMeasure Ω) : μ = fun s ↦ ((μ : Measure Ω) s).toNNReal := rfl
@@ -192,7 +192,7 @@ protected lemma tendsto_measure_iUnion_accumulate {ι : Type*} [Preorder ι]
 def mass (μ : FiniteMeasure Ω) : ℝ≥0 := μ univ
 
 @[simp] theorem apply_le_mass (μ : FiniteMeasure Ω) (s : Set Ω) : μ s ≤ μ.mass := by
-  simpa using apply_mono μ (subset_univ s)
+  simpa using! apply_mono μ (subset_univ s)
 
 @[simp]
 theorem ennreal_mass {μ : FiniteMeasure Ω} : (μ.mass : ℝ≥0∞) = (μ : Measure Ω) univ :=
@@ -411,7 +411,7 @@ theorem testAgainstNN_mono (μ : FiniteMeasure Ω) {f g : Ω →ᵇ ℝ≥0} (f_
 
 @[simp]
 theorem testAgainstNN_zero (μ : FiniteMeasure Ω) : μ.testAgainstNN 0 = 0 := by
-  simpa only [zero_mul] using μ.testAgainstNN_const 0
+  simpa only [zero_mul] using! μ.testAgainstNN_const 0
 
 @[simp]
 theorem testAgainstNN_one (μ : FiniteMeasure Ω) : μ.testAgainstNN 1 = μ.mass := by
@@ -558,7 +558,7 @@ theorem tendsto_zero_testAgainstNN_of_tendsto_zero_mass {γ : Type*} {F : Filter
   apply squeeze_zero (fun i ↦ NNReal.coe_nonneg _) obs
   have lim_pair : Tendsto (fun i ↦ (⟨nndist f 0, (μs i).mass⟩ : ℝ × ℝ)) F (𝓝 ⟨nndist f 0, 0⟩) :=
     (Prod.tendsto_iff _ _).mpr ⟨tendsto_const_nhds, (NNReal.continuous_coe.tendsto 0).comp mass_lim⟩
-  simpa using tendsto_mul.comp lim_pair
+  simpa using! tendsto_mul.comp lim_pair
 
 /-- If the total masses of finite measures tend to zero, then the measures tend to zero. -/
 theorem tendsto_zero_of_tendsto_zero_mass {γ : Type*} {F : Filter γ} {μs : γ → FiniteMeasure Ω}
@@ -720,7 +720,7 @@ theorem tendsto_of_forall_integral_tendsto {γ : Type*} {F : Filter γ} {μs : �
   have auxs := fun i ↦
     integral_eq_lintegral_of_nonneg_ae (f₀_ae_nns i) f₀.continuous.measurable.aestronglyMeasurable
   simp_rw [f₀_eq, Function.comp_apply, ENNReal.ofReal_coe_nnreal] at aux auxs
-  simpa only [← aux, ← auxs] using h f₀
+  simpa only [← aux, ← auxs] using! h f₀
 
 /-- A characterization of weak convergence in terms of integrals of bounded continuous
 real-valued functions. -/

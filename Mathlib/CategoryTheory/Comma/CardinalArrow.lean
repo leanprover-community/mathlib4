@@ -76,6 +76,7 @@ lemma locallySmall_of_small_arrow (C : Type u) [Category.{v} C] [Small.{w} (Arro
       change (Arrow.mk f).hom = (Arrow.mk g).hom
       congr)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `Arrow.{w} (ShrinkHoms C) ≃ Arrow C`. -/
 noncomputable def Arrow.shrinkHomsEquiv (C : Type u) [Category.{v} C] [LocallySmall.{w} C] :
@@ -85,6 +86,7 @@ noncomputable def Arrow.shrinkHomsEquiv (C : Type u) [Category.{v} C] [LocallySm
   left_inv _ := by simp
   right_inv _ := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The bijection `Arrow (Shrink C) ≃ Arrow C`. -/
 noncomputable def Arrow.shrinkEquiv (C : Type u) [Category.{v} C] [Small.{w} C] :
     Arrow (Shrink.{w} C) ≃ Arrow C where

@@ -43,6 +43,7 @@ instance hasCoequalizers_opposite [HasEqualizers C] : HasCoequalizers Cᵒᵖ :=
     hasLimitsOfShape_of_equivalence walkingParallelPairOpEquiv
   hasColimitsOfShape_op_of_hasLimitsOfShape
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism relating `parallelPair f.op g.op` and `(parallelPair f g).op` -/
 def parallelPairOpIso {X Y : C} (f g : X ⟶ Y) :
     parallelPair f.op g.op ≅ walkingParallelPairOpEquiv.functor ⋙ (parallelPair f g).op :=
@@ -79,21 +80,25 @@ def opParallelPairIso {X Y : C} (f g : X ⟶ Y) :
     _ ≅ walkingParallelPairOpEquiv.inverse ⋙ parallelPair f.op g.op :=
       isoWhiskerLeft _ (parallelPairOpIso f g).symm
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma opParallelPairIso_hom_app_zero {X Y : C} (f g : X ⟶ Y) :
     (opParallelPairIso f g).hom.app (op WalkingParallelPair.zero) = 𝟙 _ := by
   simp [opParallelPairIso]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma opParallelPairIso_hom_app_one {X Y : C} (f g : X ⟶ Y) :
     (opParallelPairIso f g).hom.app (op WalkingParallelPair.one) = 𝟙 _ := by
   simp [opParallelPairIso]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma opParallelPairIso_inv_app_zero {X Y : C} (f g : X ⟶ Y) :
     (opParallelPairIso f g).inv.app (op WalkingParallelPair.zero) = 𝟙 _ := by
   simp [opParallelPairIso]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma opParallelPairIso_inv_app_one {X Y : C} (f g : X ⟶ Y) :
     (opParallelPairIso f g).inv.app (op WalkingParallelPair.one) = 𝟙 _ := by
@@ -106,14 +111,17 @@ def unop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) : Fork f.unop g.unop :
    Cocone.unop ((Cocone.precompose (opParallelPairIso f.unop g.unop).hom).obj
       (Cocone.whisker walkingParallelPairOpEquiv.inverse c))
 
+set_option backward.defeqAttrib.useBackward true in
 lemma unop_π_app_one {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
     c.unop.π.app .one = Quiver.Hom.unop (c.ι.app .zero) := by
   simp [unop]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma unop_π_app_zero {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
     c.unop.π.app .zero = Quiver.Hom.unop (c.ι.app .one) := by
   simp [unop]
 
+set_option backward.defeqAttrib.useBackward true in
 theorem unop_ι {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
     c.unop.ι = c.π.unop := by simp [Cofork.unop, Fork.ι]
 
@@ -122,14 +130,17 @@ def op {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) : Fork f.op g.op :=
   (Cone.postcompose (parallelPairOpIso f g).symm.hom).obj
     (Cone.whisker walkingParallelPairOpEquiv.functor (Cocone.op c))
 
+set_option backward.defeqAttrib.useBackward true in
 lemma op_π_app_one {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) :
     c.op.π.app .one = Quiver.Hom.op (c.ι.app .zero) := by
   simp [op]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma op_π_app_zero {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) :
     c.op.π.app .zero = Quiver.Hom.op (c.ι.app .one) := by
   simp [op]
 
+set_option backward.defeqAttrib.useBackward true in
 theorem op_ι {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) :
     c.op.ι = c.π.op := by simp [Cofork.op, Fork.ι]
 
@@ -142,14 +153,17 @@ def unop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) : Cofork f.unop g.unop :
   Cone.unop ((Cone.postcompose (opParallelPairIso f.unop g.unop).symm.hom).obj
     (Cone.whisker walkingParallelPairOpEquiv.inverse c))
 
+set_option backward.defeqAttrib.useBackward true in
 lemma unop_ι_app_one {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
     c.unop.ι.app .one = Quiver.Hom.unop (c.π.app .zero) := by
   simp [unop]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma unop_ι_app_zero {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
     c.unop.ι.app .zero = Quiver.Hom.unop (c.π.app .one) := by
   simp [unop]
 
+set_option backward.defeqAttrib.useBackward true in
 theorem unop_π {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
     c.unop.π = c.ι.unop := by simp [Fork.unop, Cofork.π]
 
@@ -159,14 +173,17 @@ def op {X Y : C} {f g : X ⟶ Y} (c : Fork f g) : Cofork f.op g.op :=
   (Cocone.precompose (parallelPairOpIso f g).hom).obj
     (Cocone.whisker walkingParallelPairOpEquiv.functor (Cone.op c))
 
+set_option backward.defeqAttrib.useBackward true in
 lemma op_ι_app_one {X Y : C} {f g : X ⟶ Y} (c : Fork f g) :
     c.op.ι.app .one = Quiver.Hom.op (c.π.app .zero) := by
   simp [op]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma op_ι_app_zero {X Y : C} {f g : X ⟶ Y} (c : Fork f g) :
     c.op.ι.app .zero = Quiver.Hom.op (c.π.app .one) := by
   simp [op]
 
+set_option backward.defeqAttrib.useBackward true in
 theorem op_π {X Y : C} {f g : X ⟶ Y} (c : Fork f g) :
     c.op.π = c.ι.op := by simp [Fork.op, Cofork.π]
 
@@ -288,6 +305,7 @@ def isLimitEquivIsColimitUnop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
     IsLimit c ≃ IsColimit c.unop :=
   (IsLimit.equivIsoLimit c.unopOpIso).symm.trans c.unop.isColimitEquivIsLimitOp.symm
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism between `(Fork.ofι ι w).op` and `Cofork.ofπ ι.op w'`. -/
 def ofιOpIsoOfπ {X Y P : C} {f g : X ⟶ Y} (ι ι' : P ⟶ X) (w : ι ≫ f = ι ≫ g)
     (w' : f.op ≫ ι'.op = g.op ≫ ι'.op) (h : ι = ι') :
@@ -320,6 +338,7 @@ end Fork
 
 namespace Cofork
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Cofork.ofπ f pullback.condition` is a colimit cocone if and only if
 `Fork.ofι f.op pushout.condition` in the opposite category is a limit cone. -/
 def isColimitCoforkPushoutEquivIsColimitForkOpPullback
@@ -335,6 +354,7 @@ def isColimitCoforkPushoutEquivIsColimitForkOpPullback
   left_inv := by cat_disch
   right_inv := by cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Cofork.ofπ f pullback.condition` is a colimit cocone in `Cᵒᵖ` if and only if
 `Fork.ofι f.unop pushout.condition` in `C` is a limit cone. -/
 def isColimitCoforkPushoutEquivIsColimitForkUnopPullback
@@ -355,6 +375,7 @@ end Cofork
 
 namespace Fork
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Fork.ofι f pushout.condition` is a limit cone if and only if
 `Cofork.ofπ f.op pullback.condition` in the opposite category is a colimit cocone. -/
 def isLimitForkPushoutEquivIsColimitForkOpPullback
@@ -375,6 +396,7 @@ def isLimitForkPushoutEquivIsColimitForkOpPullback
   left_inv := by cat_disch
   right_inv := by cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Fork.ofι f pushout.condition` is a limit cone in `Cᵒᵖ` if and only if
 `Cofork.ofπ f.op pullback.condition` in `C` is a colimit cocone. -/
 def isLimitForkPushoutEquivIsColimitForkUnopPullback

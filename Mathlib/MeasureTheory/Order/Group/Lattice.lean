@@ -31,6 +31,12 @@ protected theorem Measurable.oneLePart [MeasurableSup α] (hf : Measurable f) :
     Measurable fun x ↦ oneLePart (f x) :=
   measurable_oneLePart.comp hf
 
+@[to_additive (attr := fun_prop)]
+protected theorem AEMeasurable.oneLePart {μ : MeasureTheory.Measure β} [MeasurableSup α]
+    (hf : AEMeasurable f μ) :
+    AEMeasurable (fun x ↦ oneLePart (f x)) μ :=
+  hf.sup_const 1
+
 variable [MeasurableInv α]
 
 @[to_additive]
@@ -41,6 +47,12 @@ theorem measurable_leOnePart [MeasurableSup α] : Measurable (leOnePart : α →
 protected theorem Measurable.leOnePart [MeasurableSup α] (hf : Measurable f) :
     Measurable fun x ↦ leOnePart (f x) :=
   measurable_leOnePart.comp hf
+
+@[to_additive (attr := fun_prop)]
+protected theorem AEMeasurable.leOnePart {μ : MeasureTheory.Measure β} [MeasurableSup α]
+    (hf : AEMeasurable f μ) :
+    AEMeasurable (fun x ↦ leOnePart (f x)) μ :=
+  hf.inv.sup_const 1
 
 variable [MeasurableSup₂ α]
 

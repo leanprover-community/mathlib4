@@ -161,7 +161,7 @@ noncomputable instance directSumDecomposition [hT : Fact T.IsSymmetric] :
 
 theorem directSum_decompose_apply [_hT : Fact T.IsSymmetric] (x : E) (μ : Eigenvalues T) :
     DirectSum.decompose (fun μ : Eigenvalues T => eigenspace T μ) x μ =
-      (eigenspace T μ).orthogonalProjection x :=
+      (eigenspace T μ).orthogonalProjectionOnto x :=
   rfl
 
 /-- The eigenspaces of a self-adjoint operator on a finite-dimensional inner product space `E` gives

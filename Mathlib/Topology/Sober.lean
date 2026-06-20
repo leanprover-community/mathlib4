@@ -142,7 +142,7 @@ noncomputable def genericPoint [QuasiSober α] [IrreducibleSpace α] : α :=
 
 theorem genericPoint_spec [QuasiSober α] [IrreducibleSpace α] :
     IsGenericPoint (genericPoint α) univ := by
-  simpa using (IrreducibleSpace.isIrreducible_univ α).isGenericPoint_genericPoint_closure
+  simpa using! (IrreducibleSpace.isIrreducible_univ α).isGenericPoint_genericPoint_closure
 
 @[simp]
 theorem genericPoint_closure [QuasiSober α] [IrreducibleSpace α] :
@@ -220,13 +220,13 @@ lemma TopologicalSpace.IsOpenCover.quasiSober_iff_forall {ι : Type*} {U : ι �
       ⟨⟨⟨x, hi⟩, hx⟩, h.preimage (U i).isOpenEmbedding'⟩
     use H.genericPoint
     apply le_antisymm
-    · simpa [h'.closure_subset_iff, h'.closure_eq] using
+    · simpa [h'.closure_subset_iff, h'.closure_eq] using!
         continuous_subtype_val.closure_preimage_subset _ H.isGenericPoint_genericPoint_closure.mem
     rw [← image_singleton, ← closure_image_closure continuous_subtype_val,
       H.isGenericPoint_genericPoint_closure.def]
     refine (subset_closure_inter_of_isPreirreducible_of_isOpen h (U i).isOpen ⟨x, ⟨hx, hi⟩⟩).trans
       (closure_mono ?_)
-    simpa only [inter_comm t, ← Subtype.image_preimage_coe] using Set.image_mono subset_closure
+    simpa only [inter_comm t, ← Subtype.image_preimage_coe] using! Set.image_mono subset_closure
 
 lemma TopologicalSpace.IsOpenCover.quasiSober {ι : Type*} {U : ι → Opens α}
     (hU : TopologicalSpace.IsOpenCover U) [∀ i, QuasiSober (U i)] : QuasiSober α :=

@@ -113,8 +113,7 @@ theorem tendsto_norm_le_and_mk_eq_div_atTop :
     ring_nf
     rw [mul_inv_cancel_right₀ h₃]
   · rwa [Set.mem_preimage, map_smul, smul_mem_iff_mem h.ne']
-  · dsimp only
-    rw [map_smul, mixedEmbedding.norm_smul, euclidean.finrank, abs_of_nonneg h]
+  · rw [map_smul, mixedEmbedding.norm_smul, euclidean.finrank, abs_of_nonneg h]
   · exact (toMixed K).continuous.measurable (measurableSet_normLeOne K)
   · rw [h₁, ← (toMixed K).coe_toHomeomorph, ← Homeomorph.preimage_frontier,
       (toMixed K).coe_toHomeomorph, (volumePreserving_toMixed K).measure_preimage

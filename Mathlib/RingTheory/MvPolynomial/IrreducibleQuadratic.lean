@@ -168,7 +168,7 @@ theorem coeff_sumSMulX (i : n) :
   rw [Finset.sum_eq_single i _ (by simp)]
   · simp
   intro j hj hji
-  rw [coeff_smul, coeff_X', if_neg]
+  rw [coeff_smul, coeff_X, if_neg]
   · simp
   · rwa [Finsupp.single_left_inj Nat.one_ne_zero]
 

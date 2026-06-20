@@ -38,6 +38,7 @@ section Equalizers
 
 variable {X Y Z : C} {f g : X ⟶ Y} {h : Z ⟶ X} (w : h ≫ f = h ≫ g)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The map of a fork is a limit iff the fork consisting of the mapped morphisms is a limit. This
 essentially lets us commute `Fork.ofι` with `Functor.mapCone`.
 -/
@@ -113,6 +114,7 @@ section Coequalizers
 
 variable {X Y Z : C} {f g : X ⟶ Y} {h : Y ⟶ Z} (w : f ≫ h = g ≫ h)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The map of a cofork is a colimit iff the cofork consisting of the mapped morphisms is a colimit.
 This essentially lets us commute `Cofork.ofπ` with `Functor.mapCocone`.
 -/

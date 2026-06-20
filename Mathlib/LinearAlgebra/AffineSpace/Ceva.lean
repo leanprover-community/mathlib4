@@ -94,8 +94,8 @@ lemma exists_affineCombination_eq_smul_eq {p : ι → P} (hp : AffineIndependent
   obtain ⟨r, hr⟩ := h.2.2 i
   refine ⟨r, fun j ↦ ?_⟩
   convert! hr j using 2
-  simp only [Set.indicator_apply, Set.mem_diff, SetLike.mem_coe, Set.mem_singleton_iff,
-    Finset.coe_insert, Set.insert_diff_of_mem, fsx, wx]
+  simp only [Set.indicator_apply, Set.mem_sdiff, SetLike.mem_coe, Set.mem_singleton_iff,
+    Finset.coe_insert, Set.insert_sdiff_of_mem, fsx, wx]
   grind
 
 /-- A version of **Ceva's theorem** for a finite indexed affinely independent family of points:

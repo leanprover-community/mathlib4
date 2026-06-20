@@ -144,7 +144,7 @@ theorem DirichletCharacter.LSeries_eulerProduct_exp_log {N : ℕ} (χ : Dirichle
     · simp only [ne_eq, hn, not_false_eq_true, term_of_ne_zero, div_eq_mul_inv,
         dirichletSummandHom, cpow_neg, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, f]
   simpa only [LSeries, h]
-    using exp_tsum_primes_log_eq_tsum (f := f) <| summable_dirichletSummand χ hs
+    using! exp_tsum_primes_log_eq_tsum (f := f) <| summable_dirichletSummand χ hs
 
 open DirichletCharacter
 

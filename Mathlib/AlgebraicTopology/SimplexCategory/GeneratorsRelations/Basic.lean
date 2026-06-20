@@ -145,13 +145,13 @@ lemma hom_induction (P : MorphismProperty SimplexCategoryGenRel)
   induction hf with
   | of f h =>
     rcases h with ⟨⟨i⟩⟩ | ⟨⟨i⟩⟩
-    · simpa using (comp_δ (𝟙 _) i id)
-    · simpa using (comp_σ (𝟙 _) i id)
+    · simpa using! (comp_δ (𝟙 _) i id)
+    · simpa using! (comp_σ (𝟙 _) i id)
   | id n => exact id
   | comp_of f g hf hg hrec =>
     rcases hg with ⟨⟨i⟩⟩ | ⟨⟨i⟩⟩
-    · simpa using (comp_δ f i hrec)
-    · simpa using (comp_σ f i hrec)
+    · simpa using! (comp_δ f i hrec)
+    · simpa using! (comp_σ f i hrec)
 
 /-- An induction principle for reasoning about morphisms in SimplexCategoryGenRel, where we compose
 with generators on the right. -/
@@ -171,13 +171,13 @@ lemma hom_induction' (P : MorphismProperty SimplexCategoryGenRel)
   induction hf with
   | of f h =>
     rcases h with ⟨⟨i⟩⟩ | ⟨⟨i⟩⟩
-    · simpa using (δ_comp (𝟙 _) i id)
-    · simpa using (σ_comp (𝟙 _) i id)
+    · simpa using! (δ_comp (𝟙 _) i id)
+    · simpa using! (σ_comp (𝟙 _) i id)
   | id n => exact id
   | of_comp f g hf hg hrec =>
     rcases hf with ⟨⟨i⟩⟩ | ⟨⟨i⟩⟩
-    · simpa using (δ_comp g i hrec)
-    · simpa using (σ_comp g i hrec)
+    · simpa using! (δ_comp g i hrec)
+    · simpa using! (σ_comp g i hrec)
 
 /-- An induction principle for reasoning about objects in `SimplexCategoryGenRel`. This should be
 used instead of identifying an object with `mk` of its `len`. -/

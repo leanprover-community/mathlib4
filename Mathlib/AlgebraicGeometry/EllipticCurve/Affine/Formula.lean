@@ -252,7 +252,6 @@ variable (W') in
 `(x₂, y₂)` on a Weierstrass curve `W`, where the line through them has a slope of `ℓ`.
 
 This depends on `W`, and has argument order: `x₁`, `x₂`, `y₁`, `ℓ`. -/
-@[simp]
 def addY (x₁ x₂ y₁ ℓ : R) : R :=
   W'.negY (W'.addX x₁ x₂ ℓ) (W'.negAddY x₁ x₂ y₁ ℓ)
 

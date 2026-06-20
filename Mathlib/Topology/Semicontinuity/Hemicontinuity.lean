@@ -286,7 +286,7 @@ lemma UpperHemicontinuous.isClosed_domain {α β : Type*} [TopologicalSpace α]
   simp only [← isOpen_compl_iff, compl_setOf, not_nonempty_iff_eq_empty, isOpen_iff_mem_nhds]
   intro x (hx : f x = ∅)
   simp_rw [upperHemicontinuous_iff, upperHemicontinuousAt_iff] at hf
-  simpa [hx, empty_mem_iff_bot, nhdsSet_eq_bot_iff] using hf x ∅
+  simpa [hx, empty_mem_iff_bot, nhdsSet_eq_bot_iff] using! hf x ∅
 
 /-! ### Sequential characterizations -/
 

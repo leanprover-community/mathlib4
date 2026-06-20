@@ -220,7 +220,7 @@ protected def pointwiseMulAction : MulAction α (Submonoid M) where
   smul a S := S.map (MulDistribMulAction.toMonoidEnd _ M a)
   one_smul S := by
     change S.map _ = S
-    simpa only [map_one] using S.map_id
+    simpa only [map_one] using! S.map_id
   mul_smul _ _ S :=
     (congr_arg (fun f : Monoid.End M => S.map f) (map_mul _ _ _)).trans
       (S.map_map _ _).symm

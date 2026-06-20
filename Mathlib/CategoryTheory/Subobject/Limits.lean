@@ -178,20 +178,24 @@ def kernelSubobjectMap (sq : Arrow.mk f ⟶ Arrow.mk f') :
   Subobject.factorThru _ ((kernelSubobject f).arrow ≫ sq.left)
     (kernelSubobject_factors _ _ (by simp))
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem kernelSubobjectMap_arrow (sq : Arrow.mk f ⟶ Arrow.mk f') :
     kernelSubobjectMap sq ≫ (kernelSubobject f').arrow = (kernelSubobject f).arrow ≫ sq.left := by
   simp [kernelSubobjectMap]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem kernelSubobjectMap_id : kernelSubobjectMap (𝟙 (Arrow.mk f)) = 𝟙 _ := by cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem kernelSubobjectMap_comp {X'' Y'' : C} {f'' : X'' ⟶ Y''} [HasKernel f'']
     (sq : Arrow.mk f ⟶ Arrow.mk f') (sq' : Arrow.mk f' ⟶ Arrow.mk f'') :
     kernelSubobjectMap (sq ≫ sq') = kernelSubobjectMap sq ≫ kernelSubobjectMap sq' := by
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 theorem kernel_map_comp_kernelSubobjectIso_inv (sq : Arrow.mk f ⟶ Arrow.mk f') :
     kernel.map f f' sq.1 sq.2 sq.3.symm ≫ (kernelSubobjectIso _).inv =
@@ -273,6 +277,7 @@ def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op 
       · rw [← Subobject.ofMkLEMk_comp h, Category.assoc, cokernel.condition, comp_zero]
       · exact Quiver.Hom.unop_inj (cokernel.π_desc _ _ _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Taking kernels is an order-reversing map from the quotient objects of `X` to the subobjects of
 `X`. -/
@@ -444,6 +449,7 @@ def imageSubobjectMap {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y ⟶ Z} [Ha
     (imageSubobject f : C) ⟶ (imageSubobject g : C) :=
   (imageSubobjectIso f).hom ≫ image.map sq ≫ (imageSubobjectIso g).inv
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 theorem imageSubobjectMap_arrow {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y ⟶ Z} [HasImage g]
     (sq : Arrow.mk f ⟶ Arrow.mk g) [HasImageMap sq] :
@@ -453,6 +459,7 @@ theorem imageSubobjectMap_arrow {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y 
   rw [dsimp% image.map_ι sq]
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 theorem image_map_comp_imageSubobjectIso_inv {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y ⟶ Z}
     [HasImage g] (sq : Arrow.mk f ⟶ Arrow.mk g) [HasImageMap sq] :
     image.map sq ≫ (imageSubobjectIso _).inv =
@@ -460,6 +467,7 @@ theorem image_map_comp_imageSubobjectIso_inv {W X Y Z : C} {f : W ⟶ X} [HasIma
   ext
   simpa using image.map_ι sq
 
+set_option backward.defeqAttrib.useBackward true in
 theorem imageSubobjectIso_comp_image_map {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y ⟶ Z}
     [HasImage g] (sq : Arrow.mk f ⟶ Arrow.mk g) [HasImageMap sq] :
     (imageSubobjectIso _).hom ≫ image.map sq =

@@ -148,7 +148,7 @@ elab "ghost_fun_tac " φ:term ", " fn:term : tactic => do
     HAdd.hAdd, Add.add, HSub.hSub, Sub.sub, Neg.neg, HMul.hMul, Mul.mul, HPow.hPow, Pow.pow,
     wittNSMul, wittZSMul, HSMul.hSMul, SMul.smul]
   simpa +unfoldPartialApp [WittVector.ghostFun, aeval_rename, aeval_bind₁,
-    comp, uncurry, peval, eval] using this
+    comp, uncurry, peval, eval] using! this
   )))
 
 end Tactic

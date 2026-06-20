@@ -350,7 +350,7 @@ lemma differentiable_LFunctionTrivChar₁ : Differentiable ℂ (LFunctionTrivCha
     ← differentiableOn_compl_singleton_and_continuousAt_iff (c := 1) Filter.univ_mem]
   refine ⟨DifferentiableOn.congr (f := fun s ↦ (s - 1) * LFunctionTrivChar n s)
     (fun _ hs ↦ DifferentiableAt.differentiableWithinAt <| by fun_prop (disch := simp_all))
-    fun _ hs ↦ Function.update_of_ne (Set.mem_diff_singleton.mp hs).2 ..,
+    fun _ hs ↦ Function.update_of_ne (Set.mem_sdiff_singleton.mp hs).2 ..,
     continuousWithinAt_compl_self.mp ?_⟩
   simpa using LFunctionTrivChar_residue_one
 
@@ -389,7 +389,7 @@ is continuous away from the zeros of the L-function. -/
 lemma continuousOn_neg_logDeriv_LFunction_of_nontriv (hχ : χ ≠ 1) :
     ContinuousOn (fun s ↦ -deriv (LFunction χ) s / LFunction χ s) {s | LFunction χ s ≠ 0} := by
   have h := differentiable_LFunction hχ
-  simpa [neg_div] using ((h.contDiff.continuous_deriv le_rfl).continuousOn.div
+  simpa [neg_div] using! ((h.contDiff.continuous_deriv le_rfl).continuousOn.div
     h.continuous.continuousOn fun _ hw ↦ hw).neg
 
 end nontrivial

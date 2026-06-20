@@ -38,6 +38,8 @@ variable {ι K M N : Type*} [Fintype ι] [DecidableEq ι] [Field K] [CharZero K]
   {P : RootPairing ι K M N} [P.IsReduced] [P.IsCrystallographic] [P.IsIrreducible] [P.IsRootSystem]
   (b : P.Base)
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-- The Geck construction yields a basis of the Lie algebra it constructs. -/
 def basis :
     LieAlgebra.Basis b.support K (lieAlgebra b) where
@@ -88,9 +90,6 @@ def basis :
 
 instance : (cartanSubalgebra' b).IsCartanSubalgebra :=
   inferInstanceAs (basis b).cartan.IsCartanSubalgebra
-
--- TODO drop this after: https://github.com/leanprover-community/mathlib4/issues/28713
-variable [Fact ((4 - b.cartanMatrix).det ≠ 0)]
 
 open LieAlgebra.IsKilling in
 /-- Up to equivalence, `LieAlgebra.IsKilling.rootSystem` is left inverse to

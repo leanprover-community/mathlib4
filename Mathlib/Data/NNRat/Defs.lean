@@ -80,7 +80,7 @@ instance instOrderBot : OrderBot ℚ≥0 where
 @[simp] lemma val_eq_cast (q : ℚ≥0) : q.1 = q := rfl
 
 instance instCharZero : CharZero ℚ≥0 where
-  cast_injective a b hab := by simpa using congr_arg num hab
+  cast_injective a b hab := by simpa using! congr_arg num hab
 
 instance canLift : CanLift ℚ ℚ≥0 (↑) fun q ↦ 0 ≤ q where
   prf q hq := ⟨⟨q, hq⟩, rfl⟩

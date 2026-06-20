@@ -208,6 +208,13 @@ lemma Hom.residueFieldMap_congr {f g : X ⟶ Y} (e : f = g) (x : X) :
     f.residueFieldMap x = (Y.residueFieldCongr (by subst e; rfl)).hom ≫ g.residueFieldMap x := by
   subst e; simp
 
+@[reassoc]
+lemma Hom.residueFieldMap_congr' {f : X ⟶ Y} {x₁ x₂ : X} (e : x₁ = x₂) :
+    f.residueFieldMap x₁ ≫ (X.residueFieldCongr e).hom =
+      (Y.residueFieldCongr (congrArg f e)).hom ≫ f.residueFieldMap x₂ := by
+  subst e
+  simp
+
 end congr
 
 section fromResidueField
@@ -317,6 +324,7 @@ lemma SpecToEquivOfField_eq_iff {K : Type*} [Field K] {X : Scheme}
 
 /-- For a field `K` and a scheme `X`, the morphisms `Spec K ⟶ X` bijectively correspond
 to pairs of points `x` of `X` and embeddings `κ(x) ⟶ K`. -/
+@[simps]
 def SpecToEquivOfField (K : Type u) [Field K] (X : Scheme.{u}) :
     (Spec (.of K) ⟶ X) ≃ Σ x, X.residueField x ⟶ .of K where
   toFun f :=
@@ -331,6 +339,12 @@ def SpecToEquivOfField (K : Type u) [Field K] (X : Scheme.{u}) :
     grind [Scheme.descResidueField_stalkClosedPointTo_fromSpecResidueField,
       Scheme.fromSpecResidueField_apply,
       Scheme.residueFieldCongr_fromSpecResidueField]
+
+@[simp]
+lemma descResidueField_stalkClosedPointTo_comp {K : Type u} [Field K] (g : Spec (.of K) ⟶ X) :
+    dsimp% descResidueField (stalkClosedPointTo (g ≫ f)) =
+      Hom.residueFieldMap f (g (closedPoint K)) ≫ descResidueField (stalkClosedPointTo g) := by
+  simp [← cancel_epi (Y.residue _), stalkClosedPointTo_comp, residue_residueFieldMap_assoc]
 
 end Scheme
 

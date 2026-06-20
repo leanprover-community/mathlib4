@@ -114,7 +114,6 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
     have : IntervalIntegrable (fun _ => 1 : ℝ → ℝ) μ 0 c := intervalIntegrable_const
     rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hc] at this ⊢
     refine IntegrableOn.congr_fun this (fun x hx => ?_) measurableSet_Ioc
-    dsimp only
     rw [Complex.norm_cpow_eq_rpow_re_of_pos hx.1, ← h', rpow_zero]
   · -- case `c < 0`: integrand is identically constant, *except* at `x = 0` if `r ≠ 0`.
     apply IntervalIntegrable.symm
@@ -162,6 +161,10 @@ theorem intervalIntegrable_cpow' {r : ℂ} (h : -1 < r.re) :
     have m := (this (-c) (by linarith)).const_mul (Complex.exp (π * Complex.I * r))
     rw [intervalIntegrable_iff, uIoc_of_le (by linarith : 0 ≤ -c)] at m ⊢
     refine m.congr_fun (fun x hx => ?_) measurableSet_Ioc
+    #adaptation_note /-- 2026-05-17(kmill) added `dsimp only` because a slightly different
+    instantiation order leads to a term with a beta redex.
+    https://github.com/leanprover/lean4/pull/13762
+    This will be removed once app elaboration itself does beta reduction. -/
     dsimp only
     have : -x ≤ 0 := by linarith [hx.1]
     rw [Complex.ofReal_cpow_of_nonpos this, mul_comm]
@@ -243,7 +246,7 @@ theorem intervalIntegrable_log' : IntervalIntegrable log volume a b := by
     · exact (continuous_mul_log.continuousOn.sub continuous_id.continuousOn).neg
     · intro s ⟨hs, _⟩
       norm_num at *
-      simpa using (hasDerivAt_id s).sub (hasDerivAt_mul_log hs.ne.symm)
+      simpa using! (hasDerivAt_id s).sub (hasDerivAt_mul_log hs.ne.symm)
     · intro s ⟨hs₁, hs₂⟩
       simp at *
       exact (log_nonpos_iff hs₁.le).mpr hs₂.le

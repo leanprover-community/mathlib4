@@ -139,6 +139,7 @@ theorem d_single (n : ℕ) (g : Fin (n + 1) → G) (a : A) :
 
 open ModuleCat.MonoidalCategory
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem d_eq [DecidableEq G] :
     d A n = (coinvariantsTensorFreeLEquiv A (Fin (n + 1) → G)).toModuleIso.inv ≫
@@ -159,7 +160,6 @@ noncomputable abbrev inhomogeneousChains :
   ChainComplex.of (fun n => ModuleCat.of k ((Fin n → G) →₀ A))
     (fun n => inhomogeneousChains.d A n) fun n => by
     classical
-    simp only
     rw [inhomogeneousChains.d_eq, inhomogeneousChains.d_eq]
     slice_lhs 3 4 => rw [Iso.hom_inv_id]
     slice_lhs 2 4 => rw [Category.id_comp, ((barComplex k G).coinvariantsTensorObj A).d_comp_d]
@@ -177,6 +177,7 @@ theorem inhomogeneousChains.d_def (n : ℕ) :
     (inhomogeneousChains A).d (n + 1) n = d A n := by
   simp [inhomogeneousChains]
 
+set_option backward.defeqAttrib.useBackward true in
 theorem inhomogeneousChains.d_comp_d :
     d A (n + 1) ≫ d A n = 0 := by
   simpa [ChainComplex.of.d] using ((inhomogeneousChains A).d_comp_d (n + 2) (n + 1) n)

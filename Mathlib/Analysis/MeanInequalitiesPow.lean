@@ -254,9 +254,9 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ 
         (fun i => (z i).toNNReal) ?_ hp
     -- verify the hypothesis `∑ i ∈ s, (w i).toNNReal = 1`, using `∑ i ∈ s, w i = 1` .
     have h_sum_nnreal : ∑ i ∈ s, w i = ↑(∑ i ∈ s, (w i).toNNReal) := by
-      rw [coe_finsetSum]
-      refine sum_congr rfl fun i hi => (coe_toNNReal ?_).symm
-      refine (lt_top_of_sum_ne_top ?_ hi).ne
+      push_cast
+      congr! with i hi
+      refine (coe_toNNReal (lt_top_of_sum_ne_top ?_ hi).ne).symm
       exact hw'.symm ▸ ENNReal.one_ne_top
     rwa [← coe_inj, ← h_sum_nnreal]
 
@@ -366,7 +366,7 @@ theorem rpow_add_le_mul_rpow_add_rpow'' (z₁ z₂ : ℝ≥0∞) {p : ℝ≥0∞
       LpAddConst p * (z₁ ^ p.toReal⁻¹ + z₂ ^ p.toReal⁻¹) := by
   by_cases p_zero : p = 0
   · simp [p_zero, LpAddConst_zero]
-  convert! rpow_add_le_mul_rpow_add_rpow' z₁ z₂ (p := p.toReal⁻¹) (by positivity) using 1
+  convert rpow_add_le_mul_rpow_add_rpow' z₁ z₂ (p := p.toReal⁻¹) (by positivity)
   rw [← ENNReal.toReal_inv, ENNReal.ofReal_toReal (by simpa), inv_inv]
 
 end ENNReal

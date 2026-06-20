@@ -96,7 +96,7 @@ theorem of_mul_inv_t (a : A) :
 /-- Define a function `HNNExtension G A B φ →* H`, by defining it on `G` and `t` -/
 def lift (f : G →* H) (x : H) (hx : ∀ a : A, x * f ↑a = f (φ a : G) * x) :
     HNNExtension G A B φ →* H :=
-  Con.lift _ (Coprod.lift f (zpowersHom H x)) (Con.conGen_le <| by
+  Con.lift _ (Coprod.lift f (zpowersHom H x)) (Con.conGen_le.2 <| by
     rintro _ _ ⟨a, rfl, rfl⟩
     simp [hx])
 
@@ -418,6 +418,7 @@ theorem unitsSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
   · simp only [unitsSMul, dif_neg h]
     simpa [Cancels] using h
 
+set_option backward.defeqAttrib.useBackward true in
 theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
     unitsSMul φ (-u) (unitsSMul φ u w) = w := by
   rw [unitsSMul]

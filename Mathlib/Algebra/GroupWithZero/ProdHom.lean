@@ -60,14 +60,14 @@ variable (G₀ H₀ : Type*) [GroupWithZero G₀] [GroupWithZero H₀]
 as their product. -/
 def inl [DecidablePred fun x : G₀ ↦ x = 0] : G₀ →*₀ WithZero (G₀ˣ × H₀ˣ) :=
   (WithZero.map' (.inl _ _)).comp
-    (MonoidWithZeroHomClass.toMonoidWithZeroHom WithZero.withZeroUnitsEquiv.symm)
+    (.ofClass WithZero.withZeroUnitsEquiv.symm)
 
 /-- Given groups with zero `G₀`, `H₀`, the natural inclusion ordered homomorphism from
 `H₀` to `WithZero (G₀ˣ × H₀ˣ)`, which is the group with zero that can be identified
 as their product. -/
 def inr [DecidablePred fun x : H₀ ↦ x = 0] : H₀ →*₀ WithZero (G₀ˣ × H₀ˣ) :=
   (WithZero.map' (.inr _ _)).comp
-    (MonoidWithZeroHomClass.toMonoidWithZeroHom WithZero.withZeroUnitsEquiv.symm)
+    (.ofClass WithZero.withZeroUnitsEquiv.symm)
 
 /-- Given groups with zero `G₀`, `H₀`, the natural projection homomorphism from
 `WithZero (G₀ˣ × H₀ˣ)` to `G₀`, which is the group with zero that can be identified
@@ -105,7 +105,7 @@ theorem fst_inl [DecidablePred fun x : G₀ ↦ x = 0] (x : G₀) :
 @[simp]
 theorem fst_comp_inl [DecidablePred fun x : G₀ ↦ x = 0] :
     (fst ..).comp (inl G₀ H₀) = .id _ :=
-  MonoidWithZeroHom.ext fun _ ↦ fst_inl _
+  ext fun _ ↦ fst_inl _
 
 @[simp]
 theorem snd_comp_inl [DecidablePred fun x : G₀ ↦ x = 0] :
@@ -116,7 +116,7 @@ theorem snd_comp_inl [DecidablePred fun x : G₀ ↦ x = 0] :
 
 theorem snd_inl_apply_of_ne_zero [DecidablePred fun x : G₀ ↦ x = 0] {x : G₀} (hx : x ≠ 0) :
     snd _ _ (inl _ H₀ x) = 1 := by
-  rw [← MonoidWithZeroHom.comp_apply, snd_comp_inl, one_apply_of_ne_zero hx]
+  rw [← comp_apply, snd_comp_inl, one_apply_of_ne_zero hx]
 
 @[simp]
 theorem fst_comp_inr [DecidablePred fun x : H₀ ↦ x = 0] :
@@ -127,7 +127,7 @@ theorem fst_comp_inr [DecidablePred fun x : H₀ ↦ x = 0] :
 
 theorem fst_inr_apply_of_ne_zero [DecidablePred fun x : H₀ ↦ x = 0] {x : H₀} (hx : x ≠ 0) :
     fst _ _ (inr G₀ _ x) = 1 := by
-  rw [← MonoidWithZeroHom.comp_apply, fst_comp_inr, one_apply_of_ne_zero hx]
+  rw [← comp_apply, fst_comp_inr, one_apply_of_ne_zero hx]
 
 @[simp]
 theorem snd_inr [DecidablePred fun x : H₀ ↦ x = 0] (x : H₀) :
@@ -138,17 +138,20 @@ theorem snd_inr [DecidablePred fun x : H₀ ↦ x = 0] (x : H₀) :
 @[simp]
 theorem snd_comp_inr [DecidablePred fun x : H₀ ↦ x = 0] :
     (snd ..).comp (inr G₀ H₀) = .id _ :=
-  MonoidWithZeroHom.ext fun _ ↦ snd_inr _
+  ext fun _ ↦ snd_inr _
 
 lemma inl_injective [DecidablePred fun x : G₀ ↦ x = 0] :
     Function.Injective (inl G₀ H₀) :=
   Function.HasLeftInverse.injective ⟨fst .., fun _ ↦ by simp⟩
+
 lemma inr_injective [DecidablePred fun x : H₀ ↦ x = 0] :
     Function.Injective (inr G₀ H₀) :=
   Function.HasLeftInverse.injective ⟨snd .., fun _ ↦ by simp⟩
+
 lemma fst_surjective : Function.Surjective (fst G₀ H₀) := by
   classical
   exact Function.HasRightInverse.surjective ⟨inl .., fun _ ↦ by simp⟩
+
 lemma snd_surjective : Function.Surjective (snd G₀ H₀) := by
   classical
   exact Function.HasRightInverse.surjective ⟨inr .., fun _ ↦ by simp⟩

@@ -377,6 +377,7 @@ theorem prodCongr_symm [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] 
 
 variable (R₁ M₁ M₂)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Product of modules is commutative up to continuous linear isomorphism. -/
 @[simps! apply toLinearEquiv]
 def prodComm [Module R₁ M₂] : (M₁ × M₂) ≃L[R₁] M₂ × M₁ where
@@ -456,6 +457,7 @@ variable (R M N : Type*) [Semiring R]
   [TopologicalSpace M] [AddCommMonoid M] [TopologicalSpace N] [AddCommMonoid N]
   [Unique N] [Module R M] [Module R N]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural equivalence `M × N ≃L[R] M` for any `Unique` type `N`.
 This is `Equiv.prodUnique` as a continuous linear equivalence. -/
 def prodUnique : (M × N) ≃L[R] M where
@@ -470,6 +472,7 @@ lemma prodUnique_apply (x : M × N) : prodUnique R M N x = x.1 := rfl
 @[simp]
 lemma prodUnique_symm_apply (x : M) : (prodUnique R M N).symm x = (x, default) := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural equivalence `N × M ≃L[R] M` for any `Unique` type `N`.
 This is `Equiv.uniqueProd` as a continuous linear equivalence. -/
 def uniqueProd : (N × M) ≃L[R] M where
@@ -911,6 +914,7 @@ variable {n : ℕ} {R : Type*} {M : Fin n.succ → Type*} {N : Type*}
 variable [Semiring R]
 variable [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] [∀ i, TopologicalSpace (M i)]
 
+set_option backward.defeqAttrib.useBackward true in
 variable (R M) in
 /-- `Fin.consEquiv` as a continuous linear equivalence. -/
 @[simps!]
@@ -1016,6 +1020,7 @@ end Ring
 
 section RestrictScalars
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If M is an `R`-module and `S`-module and `R`-module structure is defined by an action of `R` on
 `S` (formally, we have two scalar towers), then any `S`-linear equivalence on `M` is an `R`-linear
 equivalence. -/
@@ -1158,7 +1163,7 @@ lemma IsInvertible.inverse_comp_of_left {g : M₂ →L[R] M₃} {f : M →L[R] M
 
 lemma IsInvertible.inverse_comp_apply_of_left {g : M₂ →L[R] M₃} {f : M →L[R] M₂} {v : M₃}
     (hg : g.IsInvertible) : (g ∘L f).inverse v = f.inverse (g.inverse v) := by
-  simp only [hg.inverse_comp_of_left, coe_comp', Function.comp_apply]
+  simp only [hg.inverse_comp_of_left, comp_apply]
 
 lemma IsInvertible.inverse_comp_of_right {g : M₂ →L[R] M₃} {f : M →L[R] M₂}
     (hf : f.IsInvertible) : (g ∘L f).inverse = f.inverse ∘L g.inverse := by
@@ -1167,7 +1172,7 @@ lemma IsInvertible.inverse_comp_of_right {g : M₂ →L[R] M₃} {f : M →L[R] 
 
 lemma IsInvertible.inverse_comp_apply_of_right {g : M₂ →L[R] M₃} {f : M →L[R] M₂} {v : M₃}
     (hf : f.IsInvertible) : (g ∘L f).inverse v = f.inverse (g.inverse v) := by
-  simp only [hf.inverse_comp_of_right, coe_comp', Function.comp_apply]
+  simp only [hf.inverse_comp_of_right, comp_apply]
 
 @[simp]
 theorem ringInverse_equiv (e : M ≃L[R] M) : (↑e)⁻¹ʳ = inverse (e : M →L[R] M) := by

@@ -226,7 +226,7 @@ performance reasons, we define it explicitly below. -/
 instance leftHasSMul : SMul R' (M ⊗[R] N) :=
   ⟨fun r =>
     (addConGen (TensorProduct.Eqv R M N)).lift (SMul.aux r : _ →+ M ⊗[R] N) <|
-      AddCon.addConGen_le fun x y hxy =>
+      AddCon.addConGen_le.2 fun x y hxy =>
         match x, y, hxy with
         | _, _, .of_zero_left n =>
           (AddCon.ker_rel _).2 <| by simp_rw [map_zero, SMul.aux_of, smul_zero, zero_tmul]

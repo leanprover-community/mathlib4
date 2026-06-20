@@ -182,7 +182,7 @@ theorem Projective.of_equiv {R S} [Semiring R] [Semiring S] {M N}
     map_smul' := fun r v ↦ by ext i; simp [e₁, e₂.symm.map_smulₛₗ] }
   refine ⟨⟨g, fun x ↦ ?_⟩⟩
   replace hf := congr(e₂ $(hf (e₂.symm x)))
-  simpa [linearCombination_apply, sum_mapRange_index, g, map_finsuppSum, e₂.map_smulₛₗ] using hf
+  simpa [linearCombination_apply, sum_mapRange_index, g, map_finsuppSum, e₂.map_smulₛₗ] using! hf
 
 theorem Projective.of_equiv' [Module.Projective R M]
     (e : M ≃ₗ[R] P) : Module.Projective R P :=

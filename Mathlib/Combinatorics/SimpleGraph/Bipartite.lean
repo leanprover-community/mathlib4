@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Combinatorics.Enumerative.DoubleCounting
-public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
@@ -390,7 +390,7 @@ section Between
 set `t`. -/
 def between (s t : Set V) (G : SimpleGraph V) : SimpleGraph V where
   Adj v w := G.Adj v w ∧ (v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s)
-  symm v w := by tauto
+  symm.symm v w := by tauto
 
 lemma between_adj : (G.between s t).Adj v w ↔ G.Adj v w ∧ (v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s) := by rfl
 
@@ -487,13 +487,13 @@ theorem encard_edgeSet_completeBipartiteGraph :
 def IsBipartiteWith.edgeSetEmbeddingCompleteBipartiteGraph [DecidableRel (· ∈ · : V → Set V → _)]
     (hG : G.IsBipartiteWith s t) : G.edgeSet ↪ (completeBipartiteGraph s t).edgeSet where
   toFun := fun ⟨e, he⟩ ↦
-    e.hrec (fun u v h ↦ hG.mem_of_adj h |>.by_cases
+    e.fromRelNdrec he (sym := G.symm) (fun u v h ↦ hG.mem_of_adj h |>.by_cases
       (fun h ↦ ⟨s(.inl ⟨u, h.left⟩, .inr ⟨v, h.right⟩), .inl ⟨rfl, rfl⟩⟩)
       (fun h ↦ ⟨s(.inl ⟨v, h.right⟩, .inr ⟨u, h.left⟩), .inl ⟨rfl, rfl⟩⟩)
-    ) (fun _ _ ↦ Function.hfunext (by grind) <| by grind [Or.by_cases, hG.disjoint]) he
+    ) <| by grind [Or.by_cases, hG.disjoint]
   inj' := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
-    change (if _ : _ then _ else _) = (if _ : _ then _ else _) → _
+    change (dite ..) = (dite ..) → _
     grind
 
 end completeBipartiteGraph
@@ -528,7 +528,7 @@ such that `inl v` (`inr v`) is adjacent to `inr w` (`inl w`) iff `v` is adjacent
   Adj
   | .inl v', .inr w' | .inr v', .inl w' => G.Adj v' w'
   | _, _ => False
-  symm _ _ := by grind [adj_symm]
+  symm.symm _ _ := by grind [adj_symm]
 
 instance [h : DecidableRel G.Adj] : DecidableRel G.bipartiteDoubleCover.Adj
   | .inl _, .inr _ | .inr _, .inl _ => h _ _

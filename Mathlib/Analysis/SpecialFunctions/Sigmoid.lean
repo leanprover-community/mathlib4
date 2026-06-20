@@ -126,7 +126,7 @@ lemma range_sigmoid : range Real.sigmoid = Ioo 0 1 := by
 open Topology Filter
 
 lemma tendsto_sigmoid_atTop : Tendsto sigmoid atTop (𝓝 1) := by
-  simpa using Real.tendsto_exp_comp_nhds_zero.mpr tendsto_neg_atTop_atBot |>.const_add 1 |>.inv₀ <|
+  simpa using! Real.tendsto_exp_comp_nhds_zero.mpr tendsto_neg_atTop_atBot |>.const_add 1 |>.inv₀ <|
     by norm_num
 
 lemma tendsto_sigmoid_atBot : Tendsto sigmoid atBot (𝓝 0) :=

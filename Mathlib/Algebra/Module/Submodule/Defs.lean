@@ -53,7 +53,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 instance setLike : SetLike (Submodule R M) M where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+  coe_injective p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
 instance : PartialOrder (Submodule R M) := .ofSetLike (Submodule R M) M
 

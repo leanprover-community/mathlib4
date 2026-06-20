@@ -81,7 +81,7 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_isSeparable [IsPurelyIns
     contrapose
     refine fun hs ↦ (injective_iff_map_eq_zero _).mp (algebraMap F E).injective _ ?_
     rw [hlF, Finsupp.notMem_support_iff.1 hs, zero_pow this]
-  replace h := linearIndependent_iff.1 (h.map_pow_expChar_pow_of_isSeparable' q n hsep) lF₀ <| by
+  replace h := linearIndependent_iff.1 (h.map_pow_expChar_pow_of_isSeparable' q n hsep :) lF₀ <| by
     replace hl := congr($hl ^ q ^ n)
     rw [Finsupp.linearCombination_apply, Finsupp.sum, sum_pow_char_pow, zero_pow this] at hl
     rw [← hl, Finsupp.linearCombination_apply,
@@ -103,7 +103,7 @@ theorem IntermediateField.linearDisjoint_of_isPurelyInseparable_of_isSeparable
   .of_basis_left b <| b.linearIndependent.map' S.val.toLinearMap
     (LinearMap.ker_eq_bot_of_injective S.val.injective)
     |>.map_of_isPurelyInseparable_of_isSeparable E fun i ↦ by
-      simpa only [IsSeparable, minpoly_eq] using Algebra.IsSeparable.isSeparable F (b i)
+      simpa only [IsSeparable, minpoly_eq] using! Algebra.IsSeparable.isSeparable F (b i)
 
 namespace Field
 
@@ -207,7 +207,7 @@ inseparable degrees, as natural numbers, satisfy the tower law: $[E:F]_i [K:E]_i
 @[stacks 09HK "Part 2, `finInsepDegree` variant"]
 theorem finInsepDegree_mul_finInsepDegree_of_isAlgebraic [Algebra.IsAlgebraic F E] :
     finInsepDegree F E * finInsepDegree E K = finInsepDegree F K := by
-  simpa only [map_mul, Cardinal.toNat_lift] using
+  simpa only [map_mul, Cardinal.toNat_lift] using!
     congr(Cardinal.toNat $(lift_insepDegree_mul_lift_insepDegree_of_isAlgebraic F E K))
 
 end Field

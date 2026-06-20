@@ -863,7 +863,7 @@ lemma cfcₙHom_eq_cfcₙHom_of_cfcHom [ContinuousFunctionalCalculus R A p]
     [ContinuousMapZero.UniqueHom R A] {a : A} (ha : p a) :
     cfcₙHom ha = cfcₙHom_of_cfcHom R ha :=
   cfcₙHom_eq_of_continuous_of_map_id ha _ (continuous_cfcₙHom_of_cfcHom ha) <| by
-    simpa only [cfcₙHom_id ha] using cfcHom_id ha
+    simpa only [cfcₙHom_id ha] using! cfcHom_id ha
 
 /-- When `cfc` is applied to a function that maps zero to zero, it is equivalent to using
 `cfcₙ`. -/
@@ -873,7 +873,7 @@ lemma cfcₙ_eq_cfc [ContinuousFunctionalCalculus R A p] [ContinuousMapZero.Uniq
   by_cases ha : p a
   · have hf' := hf.mono <| spectrum_subset_quasispectrum R a
     rw [cfc_apply f a ha hf', cfcₙ_apply f a hf, cfcₙHom_eq_cfcₙHom_of_cfcHom, cfcₙHom_of_cfcHom]
-    dsimp only [NonUnitalStarAlgHom.comp_apply, toContinuousMapHom_apply,
+    dsimp only [NonUnitalStarAlgHom.comp_apply,
       NonUnitalStarAlgHom.coe_coe, compStarAlgHom'_apply]
     congr
   · simp [cfc_apply_of_not_predicate a ha, cfcₙ_apply_of_not_predicate (R := R) a ha]

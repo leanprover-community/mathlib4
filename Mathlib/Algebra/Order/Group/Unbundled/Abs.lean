@@ -297,11 +297,18 @@ lemma solidClosure_min (hst : s ⊆ t) (ht : IsSolid t) : solidClosure s ⊆ t :
 end LatticeOrderedAddCommGroup
 
 namespace Pi
-variable {ι : Type*} {α : ι → Type*} [∀ i, AddGroup (α i)] [∀ i, Lattice (α i)]
 
-@[simp] lemma abs_apply (f : ∀ i, α i) (i : ι) : |f| i = |f i| := rfl
+variable {ι : Type*} {α : ι → Type*} [∀ i, Group (α i)] (f : (i : ι) → α i)
 
-@[push ←]
-lemma abs_def (f : ∀ i, α i) : |f| = fun i ↦ |f i| := rfl
+@[to_additive (attr := simp)]
+lemma mabs_apply [∀ i, Lattice (α i)] (i : ι) : |f|ₘ i = |f i|ₘ := rfl
+
+@[to_additive (attr := push ←)]
+lemma mabs_def [∀ i, Lattice (α i)] : |f|ₘ = fun i ↦ |f i|ₘ := rfl
+
+@[to_additive (attr := simp)]
+lemma mabs_eq_one [∀ i, LinearOrder (α i)] [∀ i, MulLeftMono (α i)] [∀ i, MulRightMono (α i)] :
+    |f|ₘ = 1 ↔ f = 1 :=
+  ⟨fun h ↦ funext fun i ↦ by simpa using congr_fun h i, fun h ↦ funext fun i ↦ by simp [h]⟩
 
 end Pi

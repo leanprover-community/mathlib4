@@ -202,7 +202,7 @@ theorem linearIndependent_comp_subtype_iff :
 linearly independent family. -/
 theorem LinearIndependent.comp (h : LinearIndependent R v) (f : ι' → ι) (hf : Injective f) :
     LinearIndependent R (v ∘ f) := by
-  simpa [comp_def] using Injective.comp h (Finsupp.mapDomain_injective hf)
+  simpa [comp_def] using! Injective.comp h (Finsupp.mapDomain_injective hf)
 
 lemma LinearIndepOn.mono {t s : Set ι} (hs : LinearIndepOn R v s) (h : t ⊆ s) :
     LinearIndepOn R v t := hs.comp _ <| Set.inclusion_injective h
@@ -296,7 +296,7 @@ theorem linearIndependent_iff_finset_linearIndependent :
     LinearIndependent R v ↔ ∀ (s : Finset ι), LinearIndependent R (v ∘ (Subtype.val : s → ι)) :=
   ⟨fun H _ ↦ H.comp _ Subtype.val_injective, fun H ↦ linearIndependent_iff'ₛ.2 fun s f g eq i hi ↦
     Fintype.linearIndependent_iffₛ.1 (H s) (f ∘ Subtype.val) (g ∘ Subtype.val)
-      (by simpa only [← s.sum_coe_sort] using eq) ⟨i, hi⟩⟩
+      (by simpa only [← s.sum_coe_sort] using! eq) ⟨i, hi⟩⟩
 
 lemma linearIndepOn_iff_linearIndepOn_finset :
     LinearIndepOn R v s ↔ ∀ t : Finset ι, ↑t ⊆ s → LinearIndepOn R v t where
@@ -390,7 +390,7 @@ alias ⟨LinearIndependent.of_linearIndepOn_id_range, _⟩ := linearIndepOn_id_r
 
 theorem LinearIndependent.linearIndepOn_id (i : LinearIndependent R v) :
     LinearIndepOn R id (range v) := by
-  simpa using i.comp _ (rangeSplitting_injective v)
+  simpa using! i.comp _ (rangeSplitting_injective v)
 
 /-- A version of `LinearIndependent.linearIndepOn_id` with the set range equality as a hypothesis.
 -/
@@ -518,22 +518,22 @@ theorem LinearIndependent.eq_zero_of_smul_mem_span (hv : LinearIndependent R v) 
   rcases ha with ⟨l, hl, e⟩
   rw [linearIndependent_iffₛ.1 hv l (Finsupp.single i a) (by simp [e])] at hl
   by_contra hn
-  exact (notMem_of_mem_diff (hl <| by simp [hn])) (mem_singleton _)
+  exact (notMem_of_mem_sdiff (hl <| by simp [hn])) (mem_singleton _)
 
 nonrec lemma LinearIndepOn.eq_zero_of_smul_mem_span (hv : LinearIndepOn R v s) (hi : i ∈ s) (a : R)
     (ha : a • v i ∈ span R (v '' (s \ {i}))) : a = 0 :=
   hv.eq_zero_of_smul_mem_span ⟨i, hi⟩ _ <| by
-    simpa [← comp_def, image_comp, image_diff Subtype.val_injective]
+    simpa [← comp_def, image_comp, image_sdiff Subtype.val_injective]
 
 variable [Nontrivial R]
 
 lemma LinearIndependent.notMem_span (hv : LinearIndependent R v) (i : ι) :
     v i ∉ span R (v '' {i}ᶜ) := fun hi ↦
-  one_ne_zero <| hv.eq_zero_of_smul_mem_span i 1 <| by simpa [Set.compl_eq_univ_diff] using hi
+  one_ne_zero <| hv.eq_zero_of_smul_mem_span i 1 <| by simpa [Set.compl_eq_univ_sdiff] using hi
 
 lemma LinearIndepOn.notMem_span (hv : LinearIndepOn R v s) (hi : i ∈ s) :
     v i ∉ span R (v '' (s \ {i})) := fun hi' ↦
-  one_ne_zero <| hv.eq_zero_of_smul_mem_span hi 1 <| by simpa [Set.compl_eq_univ_diff] using hi'
+  one_ne_zero <| hv.eq_zero_of_smul_mem_span hi 1 <| by simpa [Set.compl_eq_univ_sdiff] using hi'
 
 lemma LinearIndepOn.notMem_span_of_insert (hv : LinearIndepOn R v (insert i s)) (hi : i ∉ s) :
     v i ∉ span R (v '' s) := by simpa [hi] using hv.notMem_span <| mem_insert ..
@@ -572,7 +572,6 @@ theorem LinearIndependent.maximal_iff {ι : Type w} {R : Type u} [Semiring R] [N
           ext
           simp)
     have q := congr_arg (fun s => ((↑) : w → M) '' s) p.range_eq
-    dsimp at q
     rw [← image_univ, image_image] at q
     simpa using q
 
@@ -872,7 +871,7 @@ theorem linearIndependent_iff_eq_zero_of_smul_mem_span :
         intro j hj
         have hij : j = i :=
           Classical.not_not.1 fun hij : j ≠ i =>
-            hj ((mem_diff _).2 ⟨mem_univ _, fun h => hij (eq_of_mem_singleton h)⟩)
+            hj ((mem_sdiff _).2 ⟨mem_univ _, fun h => hij (eq_of_mem_singleton h)⟩)
         simp [hij]
       · simp [hl]⟩
 
@@ -881,7 +880,7 @@ lemma LinearIndependent.of_subsingleton' [Subsingleton ι] (i : ι)
     (hi : ∀ r : R, r • v i = 0 → r = 0) : LinearIndependent R v := by
   let := uniqueOfSubsingleton i
   simpa [linearIndependent_iff, Finsupp.linearCombination_unique, Finsupp.ext_iff,
-    Unique.forall_iff] using fun _ ↦ hi _
+    Unique.forall_iff] using! fun _ ↦ hi _
 
 /-- Version of `LinearIndepOn.singleton` that works for the zero ring. -/
 @[simp]
@@ -925,6 +924,6 @@ lemma linearIndepOn_iff_notMem_span :
     LinearIndepOn K v s ↔ ∀ i ∈ s, v i ∉ span K (v '' (s \ {i})) := by
   rw [LinearIndepOn, linearIndependent_iff_notMem_span, ← Function.comp_def]
   simp_rw [Set.image_comp]
-  simp [Set.image_diff Subtype.val_injective]
+  simp [Set.image_sdiff Subtype.val_injective]
 
 end Module

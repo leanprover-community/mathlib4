@@ -147,6 +147,11 @@ theorem wellFoundedLT_iff_exists_minimal [Preorder α] :
 @[to_dual]
 alias ⟨_root_.WellFoundedLT.exists_minimal, _⟩ := wellFoundedLT_iff_exists_minimal
 
+@[to_dual]
+theorem minimal_wellFounded_lt_min [Preorder α] [WellFoundedLT α] {s : Set α} (h : s.Nonempty) :
+    Minimal (· ∈ s) (wellFounded_lt.min s h) := by
+  grind [Minimal, lt_iff_le_not_ge, WellFounded.min]
+
 theorem isWellOrder_iff_exists_not_lt_and_eq_or_gt :
     IsWellOrder α r ↔ ∀ s : Set α, s.Nonempty → ∃ m ∈ s, ∀ x ∈ s, ¬r x m ∧ (m = x ∨ r m x) := by
   refine ⟨fun h s hs ↦ ?_, fun h ↦ { wf := ?_, trichotomous a b := ?_ }⟩

@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Analysis.CStarAlgebra.Basic
 public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 public import Mathlib.Analysis.Normed.Ring.Finite
-public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Tactic.LinearCombination
 
 /-!
@@ -96,7 +96,7 @@ namespace RCLike
 /-- Coercion from `ℝ` to an `RCLike` field. -/
 @[coe] abbrev ofReal : ℝ → K := Algebra.cast
 
-/- The priority must be set at 900 to ensure that coercions are tried in the right order.
+/-- The priority must be set at 900 to ensure that coercions are tried in the right order.
 See Note [coercion into rings], or `Mathlib/Data/Nat/Cast/Basic.lean` for more details. -/
 noncomputable instance (priority := 900) algebraMapCoe : CoeTC ℝ K :=
   ⟨ofReal⟩
@@ -763,7 +763,22 @@ theorem isCauSeq_norm {f : ℕ → K} (hf : IsCauSeq norm f) : IsCauSeq abs (nor
   let ⟨i, hi⟩ := hf ε ε0
   ⟨i, fun j hj => lt_of_le_of_lt (abs_norm_sub_norm_le _ _) (hi j hj)⟩
 
+lemma I_mem_skewAdjoint : I ∈ skewAdjoint K := by simp [skewAdjoint.mem_iff]
+
 end RCLike
+
+section
+variable {A : Type*} [AddCommGroup A] [StarAddMonoid A] [Module K A] [StarModule K A] {a : A}
+
+open RCLike
+
+lemma IsSelfAdjoint.I_smul_mem_skewAdjoint (h : IsSelfAdjoint a) :
+    (I : K) • a ∈ skewAdjoint A := h.smul_mem_skewAdjoint I_mem_skewAdjoint
+
+lemma IsSelfAdjoint.I_smul_of_mem_skewAdjoint (h : a ∈ skewAdjoint A) :
+    IsSelfAdjoint ((I : K) • a) := isSelfAdjoint_smul_of_mem_skewAdjoint I_mem_skewAdjoint h
+
+end
 
 section Instances
 
@@ -797,11 +812,11 @@ include K
 
 variable (K) in
 lemma norm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖ = q • ‖x‖ := by
-  simpa [NNRat.cast_smul_eq_nnqsmul] using norm_smul (q : K) x
+  simpa [NNRat.cast_smul_eq_nnqsmul] using! norm_smul (q : K) x
 
 variable (K) in
 lemma nnnorm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖₊ = q • ‖x‖₊ := by
-  simpa [NNRat.cast_smul_eq_nnqsmul] using nnnorm_smul (q : K) x
+  simpa [NNRat.cast_smul_eq_nnqsmul] using! nnnorm_smul (q : K) x
 
 @[bound]
 lemma norm_expect_le {ι : Type*} {s : Finset ι} {f : ι → E} : ‖𝔼 i ∈ s, f i‖ ≤ 𝔼 i ∈ s, ‖f i‖ :=

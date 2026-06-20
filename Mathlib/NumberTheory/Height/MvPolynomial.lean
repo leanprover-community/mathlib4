@@ -80,7 +80,6 @@ lemma AbsoluteValue.iSup_abv_linearMap_apply_le (v : AbsoluteValue K ℝ) (A : �
   simp only [map_mul]
   grw [Finset.sum_le_sum (g := fun _ ↦ (⨆ ji, v (A ji)) * ⨆ i, v (x i)) fun i _ ↦ ?h]
   case h =>
-    dsimp only
     gcongr
     · exact Real.iSup_nonneg_of_nonnegHomClass v _
     · exact Finite.le_ciSup_of_le (j, i) le_rfl

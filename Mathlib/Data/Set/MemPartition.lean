@@ -71,7 +71,7 @@ lemma disjoint_memPartition (f : ℕ → Set α) (n : ℕ) {u v : Set α}
       exact fun huv' ↦ huv (huv' ▸ rfl)
     · exact Disjoint.mono_left inter_subset_right Set.disjoint_sdiff_right
     · exact Disjoint.mono_right inter_subset_right Set.disjoint_sdiff_left
-    · refine Disjoint.mono diff_subset diff_subset (ih hu' hv' ?_)
+    · refine Disjoint.mono sdiff_subset sdiff_subset (ih hu' hv' ?_)
       exact fun huv' ↦ huv (huv' ▸ rfl)
 
 @[simp]

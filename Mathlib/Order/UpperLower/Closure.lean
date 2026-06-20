@@ -246,8 +246,8 @@ lemma coe_erase (s : UpperSet α) (a : α) : s.erase a = (s : Set α) \ LowerSet
 lemma sdiff_singleton (s : UpperSet α) (a : α) : s.sdiff {a} = s.erase a := by
   simp [sdiff, erase]
 
-@[to_dual sdiff_le_left] lemma le_sdiff_left : s ≤ s.sdiff t := diff_subset
-@[to_dual erase_le] lemma le_erase : s ≤ s.erase a := diff_subset
+@[to_dual sdiff_le_left] lemma le_sdiff_left : s ≤ s.sdiff t := sdiff_subset
+@[to_dual erase_le] lemma le_erase : s ≤ s.erase a := sdiff_subset
 
 @[to_dual (attr := simp)]
 protected lemma sdiff_eq_left : s.sdiff t = s ↔ Disjoint ↑s t := by

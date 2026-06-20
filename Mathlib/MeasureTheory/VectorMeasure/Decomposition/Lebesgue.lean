@@ -234,15 +234,15 @@ theorem toJordanDecomposition_eq_of_eq_add_withDensity {f : α → ℝ} (hf : Me
   refine toJordanDecomposition_eq ?_
   simp_rw [JordanDecomposition.toSignedMeasure, hadd]
   ext i hi
-  rw [VectorMeasure.sub_apply, toSignedMeasure_apply_measurable hi,
+  rw [_root_.sub_apply, toSignedMeasure_apply_measurable hi,
       toSignedMeasure_apply_measurable hi, measureReal_add_apply, measureReal_add_apply,
       add_sub_add_comm, ← toSignedMeasure_apply_measurable hi,
-      ← toSignedMeasure_apply_measurable hi, ← VectorMeasure.sub_apply,
+      ← toSignedMeasure_apply_measurable hi, ← _root_.sub_apply,
       ← JordanDecomposition.toSignedMeasure, toSignedMeasure_toJordanDecomposition,
-      VectorMeasure.add_apply, ← toSignedMeasure_apply_measurable hi,
+      _root_.add_apply, ← toSignedMeasure_apply_measurable hi,
       ← toSignedMeasure_apply_measurable hi,
       withDensityᵥ_eq_withDensity_pos_part_sub_withDensity_neg_part hfi,
-      VectorMeasure.sub_apply]
+      _root_.sub_apply]
 
 private theorem haveLebesgueDecomposition_mk' (μ : Measure α) {f : α → ℝ} (hf : Measurable f)
     (hfi : Integrable f μ) (htμ : t ⟂ᵥ μ.toENNRealVectorMeasure) (hadd : s = t + μ.withDensityᵥ f) :
@@ -441,7 +441,7 @@ theorem singularPart_add_withDensity_rnDeriv_eq [c.HaveLebesgueDecomposition μ]
     c.singularPart μ + μ.withDensityᵥ (c.rnDeriv μ) = c := by
   conv_rhs => rw [← c.toComplexMeasure_to_signedMeasure]
   ext i hi : 1
-  rw [VectorMeasure.add_apply, SignedMeasure.toComplexMeasure_apply]
+  rw [add_apply, SignedMeasure.toComplexMeasure_apply]
   apply Complex.ext
   · rw [Complex.add_re, withDensityᵥ_apply (c.integrable_rnDeriv μ) hi, ← RCLike.re_eq_complex_re,
       ← integral_re (c.integrable_rnDeriv μ).integrableOn, RCLike.re_eq_complex_re,

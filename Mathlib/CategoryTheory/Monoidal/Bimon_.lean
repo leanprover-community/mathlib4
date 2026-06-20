@@ -25,6 +25,8 @@ We verify that this is equivalent to the monoid objects in the category of comon
   `C` is monoidally equivalent to the modules over that bimonoid.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 noncomputable section
@@ -96,6 +98,7 @@ def toComon : Bimon C ⥤ Comon C := (Mon.forget C).mapComon
 @[simp]
 theorem toComon_forget : toComon C ⋙ Comon.forget C = forget C := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {C} in
 /-- The object level part of the forward direction of `Comon (Mon C) ≌ Mon (Comon C)` -/

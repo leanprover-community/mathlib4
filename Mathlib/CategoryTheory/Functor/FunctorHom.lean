@@ -49,10 +49,10 @@ bijection with `F ⊗ A ⟶ G`. -/
 def homObjEquiv (F G A : C ⥤ Type w) : (HomObj F G A) ≃ (F ⊗ A ⟶ G) where
   toFun a := ⟨fun X ↦ ↾fun ⟨x, y⟩ ↦ a.app X y x, fun X Y f ↦ by
     ext ⟨x, y⟩
-    simpa using ConcreteCategory.congr_hom (a.naturality f y) x⟩
+    simpa using! ConcreteCategory.congr_hom (a.naturality f y) x⟩
   invFun a := ⟨fun X y ↦ ↾fun x ↦ a.app X (x, y), fun φ y ↦ by
     ext x
-    simpa using (a.naturality_apply φ) (x, y)⟩
+    simpa using! (a.naturality_apply φ) (x, y)⟩
   left_inv _ := by aesop
   right_inv _ := by aesop
 
@@ -111,6 +111,7 @@ lemma functorHom_ext {X : C} {x y : (F.functorHom G).obj X}
     (h : ∀ (Y : C) (f : X ⟶ Y), x.app Y f = y.app Y f) : x = y :=
   HomObj.ext (by ext; apply h)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence `(A ⟶ F.functorHom G) ≃ HomObj F G A`. -/
 @[simps]
@@ -132,6 +133,7 @@ def functorHomEquiv (A : C ⥤ Type (max u v v')) : (A ⟶ F.functorHom G) ≃ H
       (congr_arg ((φ.app X a).app Y) (by simp))
   right_inv x := by simp [functorHom, homObjFunctor]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {F G} in
 /-- Morphisms `(𝟙_ (C ⥤ Type max v' v u) ⟶ F.functorHom G)` are in bijection with

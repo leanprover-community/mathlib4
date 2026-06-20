@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Martin Zinkevich, Rémy Degenne
 -/
 module
 
-public import Mathlib.Data.Set.Dissipate
 public import Mathlib.Logic.Encodable.Lattice
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 public import Mathlib.Order.Disjointed
+public import Mathlib.Order.SetDissipate
 
 /-!
 # Induction principles for measurable sets, related to π-systems and λ-systems.
@@ -386,7 +386,7 @@ theorem piiUnionInter_singleton (π : ι → Set (Set α)) (i : ι) :
     · refine ⟨∅, ?_⟩
       simpa only [Finset.coe_empty, subset_singleton_iff, mem_empty_iff_false, IsEmpty.forall_iff,
         imp_true_iff, Finset.notMem_empty, iInter_false, iInter_univ, true_and,
-        exists_const] using hs
+        exists_const] using! hs
 
 theorem piiUnionInter_singleton_left (s : ι → Set α) (S : Set ι) :
     piiUnionInter (fun i => ({s i} : Set (Set α))) S =
@@ -551,11 +551,13 @@ theorem has_union {s₁ s₂ : Set α} (h₁ : d.Has s₁) (h₂ : d.Has s₂) (
   rw [union_eq_iUnion]
   exact d.has_iUnion (pairwise_disjoint_on_bool.2 h) (Bool.forall_bool.2 ⟨h₂, h₁⟩)
 
-theorem has_diff {s₁ s₂ : Set α} (h₁ : d.Has s₁) (h₂ : d.Has s₂) (h : s₂ ⊆ s₁) :
+theorem has_sdiff {s₁ s₂ : Set α} (h₁ : d.Has s₁) (h₂ : d.Has s₂) (h : s₂ ⊆ s₁) :
     d.Has (s₁ \ s₂) := by
   apply d.has_compl_iff.1
-  simp only [diff_eq, compl_inter, compl_compl]
+  simp only [sdiff_eq, compl_inter, compl_compl]
   exact d.has_union (d.has_compl h₁) h₂ (disjoint_compl_left.mono_right h)
+
+@[deprecated (since := "2026-06-03")] alias has_diff := has_sdiff
 
 instance instLEDynkinSystem : LE (DynkinSystem α) where le m₁ m₂ := m₁.Has ≤ m₂.Has
 
@@ -633,7 +635,7 @@ def restrictOn {s : Set α} (h : d.Has s) : DynkinSystem α where
     have : tᶜ ∩ s = (t ∩ s)ᶜ \ sᶜ := Set.ext fun x => by by_cases h : x ∈ s <;> simp [h]
     simp_rw [this]
     exact
-      d.has_diff (d.has_compl hts) (d.has_compl h)
+      d.has_sdiff (d.has_compl hts) (d.has_compl h)
         (compl_subset_compl.mpr inter_subset_right)
   has_iUnion_nat {f} hd hf := by
     rw [iUnion_inter]

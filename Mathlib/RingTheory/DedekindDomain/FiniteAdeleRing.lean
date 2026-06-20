@@ -101,7 +101,7 @@ instance : TopologicalSpace (FiniteAdeleRing R K) := inferInstanceAs <|
 
 instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion K) where
   coe a := a.1
-  coe_injective' _ _ := Subtype.ext
+  coe_injective _ _ := Subtype.ext
 
 namespace FiniteAdeleRing
 
@@ -157,7 +157,7 @@ theorem isUnit_iff {a : FiniteAdeleRing R K} :
   rw [RestrictedProduct.isUnit_iff]
   simp only [isUnit_iff_ne_zero, adicCompletionIntegers.isUnit_iff_valued_eq_one, exists_prop,
     Filter.eventually_cofinite, not_and_or, Set.setOf_or]
-  simpa using fun _ _ ↦ a.2
+  simpa using! fun _ _ ↦ a.2
 
 theorem unitsEquiv_finite_valued_eq_one (a : (FiniteAdeleRing R K)ˣ) :
     ∀ᶠ v in Filter.cofinite, Valued.v (RestrictedProduct.unitsEquiv _ a v).1 = 1 := by

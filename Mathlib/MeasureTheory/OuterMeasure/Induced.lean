@@ -279,7 +279,7 @@ theorem extend_mono {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁) (hs : s₁ 
   have :=
     extend_union MeasurableSet.empty m0 MeasurableSet.iUnion mU disjoint_sdiff_self_right h₁
       (h₂.diff h₁)
-  rw [union_diff_cancel hs] at this
+  rw [union_sdiff_cancel hs] at this
   rw [← extend_eq m]
   exact le_iff_exists_add.2 ⟨_, this⟩
 

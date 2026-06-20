@@ -257,7 +257,7 @@ theorem ChartedSpace.locallyConnectedSpace [LocallyConnectedSpace H] : LocallyCo
   refine locallyConnectedSpace_of_connected_bases (fun x s ↦ (e x).symm '' s)
       (fun x s ↦ (IsOpen s ∧ e x x ∈ s ∧ IsConnected s) ∧ s ⊆ (e x).target) ?_ ?_
   · intro x
-    simpa only [e, OpenPartialHomeomorph.symm_map_nhds_eq, mem_chart_source] using
+    simpa only [e, OpenPartialHomeomorph.symm_map_nhds_eq, mem_chart_source] using!
       ((LocallyConnectedSpace.open_connected_basis (e x x)).restrict_subset
         ((e x).open_target.mem_nhds (mem_chart_target H x))).map (e x).symm
   · rintro x s ⟨⟨-, -, hsconn⟩, hssubset⟩
@@ -275,7 +275,7 @@ theorem ChartedSpace.locPathConnectedSpace [LocPathConnectedSpace H] : LocPathCo
     apply e.symm.image_mem_nhds (by simp [e])
     exact pathComponentIn_mem_nhds <| e.image_mem_nhds (mem_chart_source _ _) ht
   · refine (isPathConnected_pathComponentIn <| mem_image_of_mem e (mem_of_mem_nhds ht)).image' ?_
-    refine e.continuousOn_symm.mono <| subset_trans ?_ e.map_source''
+    refine e.continuousOn_symm.mono <| subset_trans ?_ e.image_source_subset
     exact (pathComponentIn_mono <| image_mono inter_subset_right).trans pathComponentIn_subset
   · exact (image_mono pathComponentIn_subset).trans
       (PartialEquiv.symm_image_image_of_subset_source _ inter_subset_right).subset
@@ -590,6 +590,12 @@ def IsLocalHomeomorph.chartedSpace
     {f : M → M'} (hf : IsLocalHomeomorph f) (hf' : Function.Surjective f) :
     ChartedSpace H M' :=
   hf.chartedSpaceOfRightInverse hf'.hasRightInverse.choose_spec
+
+/-- Given a homeomorphism `f : M ≃ₜ M'`, endow `M'` with a `ChartedSpace` structure by pushing
+forward the `ChartedSpace` structure from `M`. -/
+@[implicit_reducible]
+def Homeomorph.chartedSpace (f : M ≃ₜ M') : ChartedSpace H M' :=
+  f.isLocalHomeomorph.chartedSpace f.surjective
 
 end IsLocalHomeomorph
 

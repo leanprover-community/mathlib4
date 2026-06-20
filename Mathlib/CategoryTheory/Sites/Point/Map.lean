@@ -35,6 +35,7 @@ variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
   {J : GrothendieckTopology C} (Φ : Point.{w} J) (F : C ⥤ D)
   (K : GrothendieckTopology D) [F.IsCocontinuous J K]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma map_aux ⦃X : D⦄ (R : Sieve X) (hR : R ∈ K X)
     ⦃u : Φ.fiber.Elements⦄ (f : (CategoryOfElements.π Φ.fiber ⋙ F).obj u ⟶ X) :
     ∃ (Y : D) (g : Y ⟶ X) (_ : R.arrows g) (v : Φ.fiber.Elements)
@@ -75,6 +76,7 @@ lemma toPresheafFiberMap_naturality {P Q : Dᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) 
       g.app _ ≫ Φ.toPresheafFiberMap F K Q X x :=
   toPresheafFiberOfIsCofiltered_naturality _ _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a cocontinuous functor `F : C ⥤ D` between sites `(C, J)` and `(D, K)`,
 `P` a presheaf on `D`, this is the (colimit) cocone which expresses
 `(Φ.map F K).presheafFiber.obj P` as a colimit of `P.obj (op (F.obj X))`
@@ -114,6 +116,7 @@ lemma toPresheafFiberMap_presheafFiberMapObjIso_hom (P : Dᵒᵖ ⥤ A) (X : C) 
   IsColimit.comp_coconePointUniqueUpToIso_hom
     (Φ.isColimitPresheafFiberMapCocone F K P) _ ⟨X, x⟩
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma toPresheafFiber_presheafFiberMapObjIso_inv (P : Dᵒᵖ ⥤ A) (X : C) (x : Φ.fiber.obj X) :
     Φ.toPresheafFiber X x (F.op ⋙ P) ≫ (Φ.presheafFiberMapObjIso F K P).inv =

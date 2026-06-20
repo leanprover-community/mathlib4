@@ -331,9 +331,12 @@ protected theorem ContDiffWithinAt.insert (h : ContDiffWithinAt 𝕜 n f s x) :
     ContDiffWithinAt 𝕜 n f (insert x s) x :=
   h.insert'
 
-theorem contDiffWithinAt_diff_singleton {y : E} :
+theorem contDiffWithinAt_sdiff_singleton {y : E} :
     ContDiffWithinAt 𝕜 n f (s \ {y}) x ↔ ContDiffWithinAt 𝕜 n f s x := by
-  rw [← contDiffWithinAt_insert, insert_diff_singleton, contDiffWithinAt_insert]
+  rw [← contDiffWithinAt_insert, insert_sdiff_singleton, contDiffWithinAt_insert]
+
+@[deprecated (since := "2026-06-03")]
+alias contDiffWithinAt_diff_singleton := contDiffWithinAt_sdiff_singleton
 
 /-- If a function is `C^n` within a set at a point, with `n ≥ 1`, then it is differentiable
 within this set at this point. -/
@@ -785,8 +788,8 @@ theorem ContDiffWithinAt.differentiableWithinAt_iteratedFDerivWithin {m : ℕ}
   set t := insert x s ∩ u
   have A : t =ᶠ[𝓝[≠] x] s := by
     simp only [set_eventuallyEq_iff_inf_principal, ← nhdsWithin_inter']
-    rw [← inter_assoc, nhdsWithin_inter_of_mem', ← diff_eq_compl_inter, insert_diff_of_mem,
-      diff_eq_compl_inter]
+    rw [← inter_assoc, nhdsWithin_inter_of_mem', ← sdiff_eq_compl_inter, insert_sdiff_of_mem,
+      sdiff_eq_compl_inter]
     exacts [rfl, mem_nhdsWithin_of_mem_nhds (uo.mem_nhds xu)]
   have B : iteratedFDerivWithin 𝕜 m f s =ᶠ[𝓝 x] iteratedFDerivWithin 𝕜 m f t :=
     iteratedFDerivWithin_eventually_congr_set' _ A.symm _
@@ -982,7 +985,7 @@ theorem AnalyticAt.contDiffAt [CompleteSpace F] (h : AnalyticAt 𝕜 f x) :
 @[simp]
 theorem contDiffWithinAt_compl_self :
     ContDiffWithinAt 𝕜 n f {x}ᶜ x ↔ ContDiffAt 𝕜 n f x := by
-  rw [compl_eq_univ_diff, contDiffWithinAt_diff_singleton, contDiffWithinAt_univ]
+  rw [compl_eq_univ_sdiff, contDiffWithinAt_sdiff_singleton, contDiffWithinAt_univ]
 
 /-- If a function is `C^n` with `n ≥ 1` at a point, then it is differentiable there. -/
 theorem ContDiffAt.differentiableAt (h : ContDiffAt 𝕜 n f x) (hn : n ≠ 0) :
@@ -1025,7 +1028,7 @@ theorem contDiffAt_succ_iff_hasFDerivAt {n : ℕ} :
 
 protected theorem ContDiffAt.eventually (h : ContDiffAt 𝕜 n f x) (h' : n ≠ ∞) :
     ∀ᶠ y in 𝓝 x, ContDiffAt 𝕜 n f y := by
-  simpa [nhdsWithin_univ] using ContDiffWithinAt.eventually h h'
+  simpa [nhdsWithin_univ] using! ContDiffWithinAt.eventually h h'
 
 theorem iteratedFDerivWithin_eq_iteratedFDeriv {n : ℕ}
     (hs : UniqueDiffOn 𝕜 s) (h : ContDiffAt 𝕜 n f x) (hx : x ∈ s) :

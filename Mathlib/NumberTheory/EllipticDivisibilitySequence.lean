@@ -452,7 +452,7 @@ lemma complEDS_even (m : ℤ) :
     rcases m with _ | _
     · simp
     norm_cast
-    simpa only [complEDS_ofNat] using complEDS'_even ..
+    simpa only [complEDS_ofNat] using! complEDS'_even ..
   | neg ih => simp_rw [mul_neg, complEDS_neg, ih, neg_mul, complEDS₂_neg]
 
 lemma complEDS_odd (m : ℤ) : complEDS b c d k (2 * m + 1) =
@@ -463,7 +463,7 @@ lemma complEDS_odd (m : ℤ) : complEDS b c d k (2 * m + 1) =
     rcases m with _ | _
     · simp
     norm_cast
-    simpa only [complEDS_ofNat] using complEDS'_odd ..
+    simpa only [complEDS_ofNat] using! complEDS'_odd ..
   | neg ih m =>
     rcases m with _ | m
     · simp

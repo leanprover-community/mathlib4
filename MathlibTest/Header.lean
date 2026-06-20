@@ -16,7 +16,7 @@ warning: In the past, importing 'Lake' in mathlib has led to dramatic slow-downs
 
 Note: This linter can be disabled with `set_option linter.style.header false`
 ---
-warning: Files in mathlib cannot import the whole tactic folder.
+warning: Files in mathlib cannot import the whole `Mathlib.Tactic` folder. Doing so would cause imports to be unnecessarily slow.
 
 Note: This linter can be disabled with `set_option linter.style.header false`
 ---

@@ -121,8 +121,13 @@ lemma essFiniteType_iff {K : IntermediateField F E} :
       ∃ t : Finset E, adjoin F ↑t = K by
     simpa [IntermediateField.FG, (Equiv.finsetSubtypeComm _).exists_congr_left,
       ← (IntermediateField.map_injective K.val).eq_iff, ← IntermediateField.fg_top_iff,
-      adjoin_map, ← Set.range_comp, Function.comp_def, ← AlgHom.fieldRange_eq_map] using this
+      adjoin_map, ← Set.range_comp, Function.comp_def, ← AlgHom.fieldRange_eq_map] using! this
   exact ⟨fun ⟨s, _, hs⟩ ↦ ⟨s, hs⟩, fun ⟨s, hs⟩ ↦ ⟨s, hs ▸ subset_adjoin _ _, hs⟩⟩
+
+/-- A field is finitely generated if and only if it is essentially of finite type over its prime
+subfield. -/
+theorem _root_.Field.fg_iff_essFiniteType : Field.FG F ↔ Algebra.EssFiniteType (⊥ : Subfield F) F :=
+  Field.fg_iff_fg_top_bot.trans fg_top_iff
 
 end FG
 

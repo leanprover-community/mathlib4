@@ -287,7 +287,7 @@ we prefer `1` as the simp-normal form. -/
 @[simp high, mfld_simps]
 theorem coordChange_model_space (b b' x : F) :
     (tangentBundleCore 𝓘(𝕜, F) F).coordChange (achart F b) (achart F b') x = 1 := by
-  simpa only [tangentBundleCore_coordChange, mfld_simps] using
+  simpa only [tangentBundleCore_coordChange, mfld_simps] using!
     fderivWithin_id uniqueDiffWithinAt_univ
 
 @[simp high, mfld_simps]
@@ -377,13 +377,13 @@ theorem tangentBundle_model_space_chartAt (p : TangentBundle I H) :
 @[simp, mfld_simps]
 theorem tangentBundle_model_space_coe_chartAt (p : TangentBundle I H) :
     ⇑(chartAt (ModelProd H E) p) = TotalSpace.toProd H E := by
-  rw [← OpenPartialHomeomorph.coe_coe, tangentBundle_model_space_chartAt]; rfl
+  rw [← OpenPartialHomeomorph.coe_toPartialEquiv, tangentBundle_model_space_chartAt]; rfl
 
 @[simp, mfld_simps]
 theorem tangentBundle_model_space_coe_chartAt_symm (p : TangentBundle I H) :
     ((chartAt (ModelProd H E) p).symm : ModelProd H E → TangentBundle I H) =
       (TotalSpace.toProd H E).symm := by
-  rw [← OpenPartialHomeomorph.coe_coe, OpenPartialHomeomorph.symm_toPartialEquiv,
+  rw [← OpenPartialHomeomorph.coe_toPartialEquiv, OpenPartialHomeomorph.symm_toPartialEquiv,
     tangentBundle_model_space_chartAt]; rfl
 
 theorem tangentBundleCore_coordChange_model_space (x x' z : H) :
@@ -437,7 +437,7 @@ theorem contMDiff_tangentBundleModelSpaceHomeomorph :
 
 set_option backward.isDefEq.respectTransparency false in
 theorem contMDiff_tangentBundleModelSpaceHomeomorph_symm :
-    ContMDiff (I.prod 𝓘(𝕜, E)) I.tangent n
+    ContMDiff I.tangent I.tangent n
     ((tangentBundleModelSpaceHomeomorph I).symm : ModelProd H E → TangentBundle I H) := by
   apply contMDiff_iff.2 ⟨Homeomorph.continuous _, fun x y ↦ ?_⟩
   apply contDiffOn_id.congr
@@ -451,8 +451,7 @@ variable (H I) in
 /-- In the tangent bundle to the model space, the second projection is `C^n`. -/
 lemma contMDiff_snd_tangentBundle_modelSpace :
     ContMDiff I.tangent 𝓘(𝕜, E) n (fun (p : TangentBundle I H) ↦ p.2) := by
-  change ContMDiff I.tangent 𝓘(𝕜, E) n
-    ((id Prod.snd : ModelProd H E → E) ∘ (tangentBundleModelSpaceHomeomorph I))
+  change CMDiff n ((id Prod.snd : ModelProd H E → E) ∘ (tangentBundleModelSpaceHomeomorph I))
   apply ContMDiff.comp (I' := I.prod 𝓘(𝕜, E))
   · convert! contMDiff_snd
     rw [chartedSpaceSelf_prod]

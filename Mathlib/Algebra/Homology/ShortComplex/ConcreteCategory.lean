@@ -112,6 +112,7 @@ noncomputable def cyclesMk [S.HasHomology] (x₂ : (forget₂ C Ab).obj S.X₂)
     (forget₂ C Ab).obj S.cycles :=
   (S.mapCyclesIso (forget₂ C Ab)).hom ((ShortComplex.abCyclesIso _).inv ⟨x₂, hx₂⟩)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma i_cyclesMk [S.HasHomology] (x₂ : (forget₂ C Ab).obj S.X₂)
@@ -175,13 +176,13 @@ lemma δ_apply' (x₃ : (forget₂ C Ab).obj D.L₀.X₃)
     (forget₂ C Ab).map D.δ x₃ = (forget₂ C Ab).map D.v₂₃.τ₁ x₁ := by
   have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
   apply (ofHom_mono_iff_injective (e.hom.app _)).1 inferInstance
-  exact (ConcreteCategory.congr_hom (e.hom.naturality D.δ) x₃).trans ((D.δ_apply _ _ _
+  refine ((ConcreteCategory.congr_hom (e.hom.naturality D.δ) x₃).trans ?_).trans
+    (ConcreteCategory.congr_hom (e.hom.naturality D.v₂₃.τ₁).symm x₁)
+  exact D.δ_apply _ _ _
     (((ConcreteCategory.congr_hom (e.hom.naturality D.L₁.g) x₂).symm.trans (by simp_all)).trans
       (ConcreteCategory.congr_hom (e.hom.naturality D.v₀₁.τ₃) x₃))
     (((ConcreteCategory.congr_hom (e.hom.naturality D.L₂.f) x₁).symm.trans (by simp_all)).trans
-      (ConcreteCategory.congr_hom (e.hom.naturality D.v₁₂.τ₂) x₂))).trans
-    (ConcreteCategory.congr_hom (e.hom.naturality D.v₂₃.τ₁).symm x₁))
-
+      (ConcreteCategory.congr_hom (e.hom.naturality D.v₁₂.τ₂) x₂))
 
 end SnakeInput
 

@@ -89,7 +89,7 @@ variable [PseudoEMetricSpace α] [PseudoEMetricSpace β]
 
 instance funLike : FunLike (α →ᵈ β) α β where
   coe := toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 instance toDilationClass : DilationClass (α →ᵈ β) α β where
   edist_eq' f := edist_eq' f
@@ -243,7 +243,7 @@ variable (f : F)
 @[simps]
 def _root_.Isometry.toDilation (f : α → β) (hf : Isometry f) : α →ᵈ β where
   toFun := f
-  edist_eq' := ⟨1, one_ne_zero, by simpa using hf⟩
+  edist_eq' := ⟨1, one_ne_zero, by simpa using! hf⟩
 
 @[simp]
 lemma _root_.Isometry.toDilation_ratio {f : α → β} {hf : Isometry f} : ratio hf.toDilation = 1 := by

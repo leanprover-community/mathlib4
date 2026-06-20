@@ -143,8 +143,8 @@ lemma Algebra.FormallySmooth.of_surjective_of_ker_eq_map_of_flat [Module.Flat R 
     have : x ∈ I • (J.restrictScalars R) := by
       change x ∈ I • (IsScalarTower.toAlgHom R P.Ring S).toLinearMap.ker
       rw [← LinearMap.ker_inf_smul_top_eq_smul_of_flat I _ surjP]
-      simpa using ⟨hx.2, hx.1⟩
-    simpa [← Ideal.smul_restrictScalars I J, Submodule.restrictScalars_mem] using this
+      simpa using! ⟨hx.2, hx.1⟩
+    simpa [← Ideal.smul_restrictScalars I J, Submodule.restrictScalars_mem] using! this
   have h : J'.comap (algebraMap P.Ring P'.Ring) = RingHom.ker (algebraMap P.Ring P'.Ring) ⊔ J :=
     comap_ker_eq_sup_of_ker_eq_map surjP (by simp [kerP, ← ISeq, eqmap, IS, I])
   have Jle : J ≤ J'.comap (algebraMap P.Ring P'.Ring) := le_of_le_of_eq le_sup_right h.symm
@@ -167,7 +167,7 @@ lemma Algebra.FormallySmooth.of_surjective_of_ker_eq_map_of_flat [Module.Flat R 
       ⟨(algebraMap P.Ring P'.Ring) y.1, Jle y.2⟩ =
       mapTen ((KaehlerDifferential.kerToTensor R P.Ring S) y) := by
       simp [KaehlerDifferential.kerToTensor, mapTen]
-    simpa [mapcot] using this
+    simpa [mapcot] using! this
   let ediff : Ω[P.Ring⁄R] ≃ₗ[P.Ring] S →₀ P.Ring := KaehlerDifferential.mvPolynomialEquiv R S
   let eTen : TensorProduct P.Ring S Ω[P.Ring⁄R] ≃ₗ[P.Ring] (S →₀ S) :=
     ((ediff.lTensor S).trans (TensorProduct.finsuppRight P.Ring P.Ring _ _ S)).trans
@@ -186,7 +186,7 @@ lemma Algebra.FormallySmooth.of_surjective_of_ker_eq_map_of_flat [Module.Flat R 
     simp only [LinearMap.comp_assoc, toJcot, Finsupp.lsum_comp_lsingle]
     rcases Ideal.Quotient.mk_surjective (eS.symm s) with ⟨p, hp⟩
     have (x : J.Cotangent) : mapcot (eS.symm s • x) = p • mapcot x := hp ▸ map_smul mapcot p x
-    have psmul : p • 1 = s := by simpa [Algebra.smul_def, eS] using eS.eq_symm_apply.mp hp
+    have psmul : p • 1 = s := by simpa [Algebra.smul_def, eS] using! eS.eq_symm_apply.mp hp
     simp [this, Classical.choose_spec (cotsurj (toJ'cot (Finsupp.single i 1))), ← map_smul, psmul]
   let σ' := toJcot.comp eTen.toLinearMap
   have σ'_spec' : mapcot.comp σ' = (σ.restrictScalars P.Ring).comp mapTen := by

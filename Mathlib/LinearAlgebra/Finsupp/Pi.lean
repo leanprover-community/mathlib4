@@ -57,13 +57,11 @@ noncomputable def LinearEquiv.finsuppUnique (α : Type*) [Unique α] : (α →�
 
 variable {R M}
 
-set_option linter.deprecated false in
 @[deprecated uniqueLinearEquiv_apply (since := "2026-05-06")]
 theorem LinearEquiv.finsuppUnique_apply (α : Type*) [Unique α] (f : α →₀ M) :
     LinearEquiv.finsuppUnique R M α f = f default :=
   rfl
 
-set_option linter.deprecated false in
 @[deprecated uniqueLinearEquiv_symm_apply (since := "2026-05-06")]
 theorem LinearEquiv.finsuppUnique_symm_apply (α : Type*) [Unique α] (m : M) :
     (LinearEquiv.finsuppUnique R M α).symm m = Finsupp.single default m := by
@@ -209,6 +207,27 @@ def submodule (S : α → Submodule R M) : Submodule R (α →₀ M) where
 lemma mem_submodule_iff (S : α → Submodule R M) (x : α →₀ M) :
     x ∈ submodule S ↔ ∀ i, x i ∈ S i := by
   rfl
+
+@[simp]
+lemma comap_lsingle_submodule (p : α → Submodule R M) (i : α) :
+    Submodule.comap (lsingle i) (submodule p) = p i := by
+  ext x
+  refine ⟨fun hx ↦ by simpa using hx i, fun hx j ↦ ?_⟩
+  rcases eq_or_ne i j with rfl|h <;> simp_all
+
+lemma submodule_eq_iSup (p : α → Submodule R M) :
+    Finsupp.submodule p = ⨆ i, Submodule.map (Finsupp.lsingle i) (p i) := by
+  refine le_antisymm ?_ ?_
+  · intro x hx
+    rw [← Finsupp.sum_single x]
+    refine Submodule.sum_mem _ (fun i _ ↦ ?_)
+    exact Submodule.mem_iSup_of_mem i (Submodule.mem_map_of_mem (hx i))
+  · simp [iSup_le_iff, Submodule.map_le_iff_le_comap]
+
+@[simp]
+lemma submodule_top : Finsupp.submodule (fun _ : α ↦ (⊤ : Submodule R M)) = ⊤ := by
+  ext
+  simp
 
 theorem ker_mapRange (f : M →ₗ[R] N) (I : Type*) :
     LinearMap.ker (mapRange.linearMap (α := I) f) = submodule (fun _ => LinearMap.ker f) := by

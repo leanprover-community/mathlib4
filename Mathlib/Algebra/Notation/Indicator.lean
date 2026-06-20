@@ -246,7 +246,7 @@ lemma mulIndicator_const_preimage_eq_union (U : Set α) (s : Set M) (a : M) [Dec
     [Decidable ((1 : M) ∈ s)] : (U.mulIndicator fun _ => a) ⁻¹' s =
       (if a ∈ s then U else ∅) ∪ if (1 : M) ∈ s then Uᶜ else ∅ := by
   rw [mulIndicator_preimage, Pi.one_def, Set.preimage_const, preimage_const]
-  split_ifs <;> simp [← compl_eq_univ_diff]
+  split_ifs <;> simp [← compl_eq_univ_sdiff]
 
 @[to_additive]
 lemma mulIndicator_const_preimage (U : Set α) (s : Set M) (a : M) :

@@ -8,8 +8,8 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Clique
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.Set.Card
+public import Mathlib.SetTheory.Cardinal.NatCard
 
-import Mathlib.Data.Finite.Card
 import Mathlib.Tactic.ENatToNat
 
 /-!
@@ -133,7 +133,7 @@ theorem vertexCoverNum_le_card_sub_one : vertexCoverNum G ≤ ENat.card V - 1 :=
   refine ENat.forall_natCast_le_iff_le.mp fun n hn ↦ ?_
   simp only [vertexCoverNum, le_iInf_iff] at hn
   have := hn (Set.univ \ {x}) (by grind [IsVertexCover, Adj.ne'])
-  simpa [Set.encard_diff_singleton_of_mem (Set.mem_univ _)] using this
+  simpa [Set.encard_sdiff_singleton_of_mem (Set.mem_univ _)] using this
 
 @[simp]
 theorem vertexCoverNum_ne_top_of_finite [Finite V] : vertexCoverNum G ≠ ⊤ :=
@@ -170,7 +170,7 @@ theorem vertexCoverNum_top : vertexCoverNum (completeGraph V) = ENat.card V - 1 
   obtain ⟨t, ht₁, ht₂⟩ := exists_of_le_vertexCoverNum (n - 1) (ENat.le_sub_one_of_lt hh) this
   have : 1 < (Set.univ \ t).encard := by
     refine ENat.add_one_le_iff (by simp) |>.mp ?_
-    rw [Set.encard_diff (by simp) (Set.finite_of_encard_eq_coe ht₁), Set.encard_univ]
+    rw [Set.encard_sdiff (by simp) (Set.finite_of_encard_eq_coe ht₁), Set.encard_univ]
     refine ENat.le_sub_of_add_le_left (by simp [ht₁]) ?_
     refine add_le_of_le_tsub_right_of_le (Order.add_one_le_of_lt ENat.one_lt_card) ?_
     grw [ht₁, ENat.coe_sub, hn]

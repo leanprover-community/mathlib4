@@ -54,6 +54,7 @@ attribute [inherit_doc NormalMono] NormalMono.Z NormalMono.g NormalMono.w Normal
 
 section
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is an equivalence and `F.map f` is a normal mono, then `f` is a normal mono. -/
 @[implicit_reducible]
 def equivalenceReflectsNormalMono {D : Type u₂} [Category.{v₁} D] [HasZeroMorphisms D] (F : C ⥤ D)
@@ -118,6 +119,7 @@ def normalOfIsPullbackFstOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h :
     NormalMono f :=
   normalOfIsPullbackSndOfNormal comm.symm (PullbackCone.flipIsLimit t)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Transport a `NormalMono` structure via an isomorphism of arrows. -/
 @[implicit_reducible]
@@ -176,6 +178,7 @@ attribute [inherit_doc NormalEpi] NormalEpi.W NormalEpi.g NormalEpi.w NormalEpi.
 
 section
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is an equivalence and `F.map f` is a normal epi, then `f` is a normal epi. -/
 @[implicit_reducible]
 def equivalenceReflectsNormalEpi {D : Type u₂} [Category.{v₁} D] [HasZeroMorphisms D] (F : C ⥤ D)
@@ -243,6 +246,7 @@ open Opposite
 
 variable [HasZeroMorphisms C]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Transport a `NormalEpi` structure via an isomorphism of arrows. -/
 @[implicit_reducible]
@@ -261,6 +265,7 @@ def NormalEpi.ofArrowIso {X Y : C} {f : X ⟶ Y}
     · exact Cofork.ext (Arrow.rightFunc.mapIso e) (by simp [Cofork.π])
 
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A normal mono becomes a normal epi in the opposite category. -/
 @[implicit_reducible]
 def normalEpiOfNormalMonoUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalMono f.unop) : NormalEpi f where
@@ -280,6 +285,7 @@ def normalEpiOfNormalMonoUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalMono f.un
         apply m.isLimit.uniq (KernelFork.ofι (m'.unop ≫ f.unop) _) m'.unop
         rintro (⟨⟩ | ⟨⟩) <;> simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A normal epi becomes a normal mono in the opposite category. -/
 @[implicit_reducible]
 def normalMonoOfNormalEpiUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalEpi f.unop) : NormalMono f where

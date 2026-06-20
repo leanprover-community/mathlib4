@@ -23,10 +23,13 @@ namespace TopologicalSpace
 
 variable {ι : Type*} [Preorder ι]
 
-@[nolint unusedArguments]
+@[nolint unusedArguments, to_dual]
 instance [TopologicalSpace ι] [OrderTopology ι] : TopologicalSpace (WithTop ι) :=
   Preorder.topology _
 
+attribute [nolint unusedArguments] instWithBotOfOrderTopology
+
+@[to_dual]
 instance [TopologicalSpace ι] [OrderTopology ι] : OrderTopology (WithTop ι) := ⟨rfl⟩
 
 instance [ts : TopologicalSpace ι] [ht : OrderTopology ι] [SecondCountableTopology ι] :
@@ -185,45 +188,54 @@ variable {ι : Type*} [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι]
 
 section Coe
 
+@[to_dual]
 lemma isEmbedding_coe : Topology.IsEmbedding ((↑) : ι → WithTop ι) := by
   refine WithTop.coe_strictMono.isEmbedding_of_ordConnected (α := ι) ?_
   rw [WithTop.range_coe]
   exact Set.ordConnected_Iio
 
+@[to_dual]
 lemma isOpenEmbedding_coe : Topology.IsOpenEmbedding ((↑) : ι → WithTop ι) :=
   ⟨isEmbedding_coe, by rw [WithTop.range_coe]; exact isOpen_Iio⟩
 
+@[to_dual]
 lemma nhds_coe {r : ι} : 𝓝 (r : WithTop ι) = (𝓝 r).map (↑) :=
   (isOpenEmbedding_coe.map_nhds_eq r).symm
 
-@[fun_prop, continuity]
+@[fun_prop, continuity, to_dual]
 lemma continuous_coe : Continuous ((↑) : ι → WithTop ι) := isEmbedding_coe.continuous
 
 end Coe
 
 section ContinuousUnTop
 
+@[to_dual]
 lemma tendsto_untopD (d : ι) {a : WithTop ι} (ha : a ≠ ⊤) :
     Tendsto (untopD d) (𝓝 a) (𝓝 (untopD d a)) := by
   lift a to ι using ha
   rw [nhds_coe, tendsto_map'_iff]
   exact tendsto_id
 
+@[to_dual]
 lemma continuousOn_untopD (d : ι) : ContinuousOn (untopD d) { a : WithTop ι | a ≠ ⊤ } :=
   fun _a ha ↦ ContinuousAt.continuousWithinAt (tendsto_untopD d ha)
 
+@[to_dual]
 lemma tendsto_untopA [Nonempty ι] {a : WithTop ι} (ha : a ≠ ⊤) :
     Tendsto untopA (𝓝 a) (𝓝 a.untopA) := tendsto_untopD _ ha
 
+@[to_dual]
 lemma continuousOn_untopA [Nonempty ι] : ContinuousOn untopA { a : WithTop ι | a ≠ ⊤ } :=
   continuousOn_untopD _
 
+@[to_dual]
 lemma tendsto_untop (a : {a : WithTop ι | a ≠ ⊤}) :
     Tendsto (fun x ↦ untop x.1 x.2) (𝓝 a) (𝓝 (untop a.1 a.2)) := by
   have : Nonempty ι := ⟨untop a.1 a.2⟩
   simp only [← untopA_eq_untop, ne_eq, coe_setOf, mem_setOf_eq]
   exact (tendsto_untopA a.2).comp <| tendsto_subtype_rng.mp tendsto_id
 
+@[to_dual]
 lemma continuous_untop : Continuous (fun x : {a : WithTop ι | a ≠ ⊤} ↦ untop x.1 x.2) :=
   continuous_iff_continuousAt.mpr tendsto_untop
 
@@ -231,6 +243,7 @@ end ContinuousUnTop
 
 variable (ι) in
 /-- Homeomorphism between the non-top elements of `WithTop ι` and `ι`. -/
+@[to_dual /-- Homeomorphism between the non-bot elements of `WithBot ι` and `ι`. -/]
 noncomputable
 def neTopHomeomorph : { a : WithTop ι | a ≠ ⊤ } ≃ₜ ι where
   toEquiv := Equiv.withTopSubtypeNe
@@ -239,6 +252,7 @@ def neTopHomeomorph : { a : WithTop ι | a ≠ ⊤ } ≃ₜ ι where
 
 variable (ι) in
 /-- If `ι` has a top element, then `WithTop ι` is homeomorphic to `ι ⊕ Unit`. -/
+@[to_dual /-- If `ι` has a bot element, then `WithBot ι` is homeomorphic to `ι ⊕ Unit`. -/]
 noncomputable
 def sumHomeomorph [OrderTop ι] : WithTop ι ≃ₜ ι ⊕ Unit where
   toFun x := if h : x = ⊤ then Sum.inr () else Sum.inl x.untopA
@@ -259,6 +273,7 @@ def sumHomeomorph [OrderTop ι] : WithTop ι ≃ₜ ι ⊕ Unit where
     exact Continuous.comp_continuousOn (by fun_prop) continuousOn_untopA
   continuous_invFun := continuous_sum_dom.mpr ⟨by fun_prop, by fun_prop⟩
 
+@[to_dual]
 lemma tendsto_nhds_top_iff {α : Type*} {f : Filter α} (x : α → WithTop ι) :
     Tendsto x f (𝓝 ⊤) ↔ ∀ (i : ι), ∀ᶠ (a : α) in f, i < x a := by
   obtain (h | h) := isEmpty_or_nonempty ι

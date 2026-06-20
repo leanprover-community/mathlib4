@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.AddTorsor.Defs
+public import Mathlib.Algebra.Torsor.Defs
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.Order.Filter.Pointwise
 public import Mathlib.Topology.Algebra.Constructions
@@ -260,7 +260,7 @@ theorem continuousSMul_iff_stabilizer_isOpen [DiscreteTopology X] :
       convert! (h x).preimage (by fun_prop : Continuous fun m' : M ↦ m' * m⁻¹)
       ext; simp [← smul_smul, U, eq_inv_smul_iff.mpr hm]
     simp_all
-  simpa using hU
+  simpa using! hU
 
 end IsTopologicalGroup
 
@@ -330,6 +330,7 @@ theorem continuousSMul_iInf {ts' : ι → TopologicalSpace X}
     (h : ∀ i, @ContinuousSMul M X _ _ (ts' i)) : @ContinuousSMul M X _ _ (⨅ i, ts' i) :=
   continuousSMul_sInf <| Set.forall_mem_range.mpr h
 
+set_option linter.overlappingInstances false in
 @[to_additive]
 theorem continuousSMul_inf {t₁ t₂ : TopologicalSpace X} [@ContinuousSMul M X _ _ t₁]
     [@ContinuousSMul M X _ _ t₂] : @ContinuousSMul M X _ _ (t₁ ⊓ t₂) := by

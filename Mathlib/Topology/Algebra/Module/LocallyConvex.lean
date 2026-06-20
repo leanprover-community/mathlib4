@@ -120,7 +120,7 @@ end Module
 
 section LinearOrderedField
 
-variable (𝕜 E : Type*) [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+variable (𝕜 E : Type*) [Field 𝕜] [PartialOrder 𝕜] [ZeroLEOneClass 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 

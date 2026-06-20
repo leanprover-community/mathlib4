@@ -87,7 +87,7 @@ lemma IsDynNetIn.card_le_card_of_isDynCoverOf {s t : Finset X}
     (hs : IsDynNetIn T F U n s) (ht : IsDynCoverOf T F U n t) :
     s.card ≤ t.card := by
   have (x : X) (x_s : x ∈ s) : ∃ z ∈ t, z ∈ ball x (dynEntourage T U n) := by
-    simpa using ht (hs.1 x_s)
+    simpa using! ht (hs.1 x_s)
   choose! F s_t using this
   apply Finset.card_le_card_of_injOn F fun x x_s ↦ (s_t x x_s).1
   exact fun x x_s y y_s Fx_Fy ↦
@@ -169,7 +169,7 @@ lemma netMaxcard_eq_zero_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ
 
 lemma one_le_netMaxcard_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     1 ≤ netMaxcard T F U n ↔ F.Nonempty := by
-  rw [ENat.one_le_iff_ne_zero, nonempty_iff_ne_empty]
+  rw [Order.one_le_iff_ne_zero, nonempty_iff_ne_empty]
   exact not_iff_not.2 (netMaxcard_eq_zero_iff T F U n)
 
 lemma netMaxcard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) : netMaxcard T F U 0 = 1 := by

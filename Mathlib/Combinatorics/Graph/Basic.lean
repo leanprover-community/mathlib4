@@ -97,7 +97,7 @@ structure Graph (α β : Type*) where
   /-- The edge set. -/
   edgeSet : Set β := {e | ∃ x y, IsLink e x y}
   /-- If `e` goes from `x` to `y`, it goes from `y` to `x`. -/
-  isLink_symm : ∀ ⦃e⦄, e ∈ edgeSet → (Symmetric <| IsLink e)
+  isLink_symm : ∀ ⦃e⦄, e ∈ edgeSet → Std.Symm (IsLink e)
   /-- An edge is incident with at most one pair of vertices. -/
   eq_or_eq_of_isLink_of_isLink : ∀ ⦃e x y v w⦄, IsLink e x y → IsLink e v w → x = v ∨ x = w
   /-- An edge `e` is incident to something if and only if `e` is in the edge set. -/
@@ -127,7 +127,7 @@ lemma not_isLink_of_notMem_edgeSet (he : e ∉ E(G)) : ¬ G.IsLink e x y :=
   mt IsLink.edge_mem he
 
 protected lemma IsLink.symm (h : G.IsLink e x y) : G.IsLink e y x :=
-  G.isLink_symm h.edge_mem h
+  G.isLink_symm h.edge_mem |>.symm x y h
 
 @[grind →]
 lemma IsLink.left_mem (h : G.IsLink e x y) : x ∈ V(G) :=
@@ -367,16 +367,16 @@ lemma ext_inc {G₁ G₂ : Graph α β} (hV : V(G₁) = V(G₂)) (h : ∀ e x, G
 /-- `Graph.copy` produces a graph equal to `G` but with provided definitional choices
 for `vertexSet`, `edgeSet`, and `IsLink`. This is mainly useful for improving
 definitional equalities while keeping the same underlying graph. -/
-@[simps]
+@[simps -isSimp]
 def copy (G : Graph α β) {vertexSet : Set α} {edgeSet : Set β} {IsLink : β → α → α → Prop}
     (hvertexSet : V(G) = vertexSet) (hedgeSet : E(G) = edgeSet)
     (hIsLink : ∀ e x y, G.IsLink e x y ↔ IsLink e x y) : Graph α β where
   vertexSet := vertexSet
   edgeSet := edgeSet
   IsLink := IsLink
-  isLink_symm e he x y := by
-    simp_rw [← hIsLink]
-    apply G.isLink_symm (hedgeSet ▸ he)
+  isLink_symm e he := by
+    simp_rw [symm_def, ← hIsLink]
+    exact (G.isLink_symm <| hedgeSet ▸ he).symm
   eq_or_eq_of_isLink_of_isLink := by
     simp_rw [← hIsLink]
     exact G.eq_or_eq_of_isLink_of_isLink
@@ -391,7 +391,7 @@ def copy (G : Graph α β) {vertexSet : Set α} {edgeSet : Set β} {IsLink : β 
 lemma copy_eq (G : Graph α β) {V : Set α} {E : Set β} {IsLink : β → α → α → Prop}
     (hV : V(G) = V) (hE : E(G) = E) (h_isLink : ∀ e x y, G.IsLink e x y ↔ IsLink e x y) :
     G.copy hV hE h_isLink = G := by
-  ext <;> simp_all
+  ext <;> simp_all [copy]
 
 /-! ### Sets of edges or loops incident to a vertex -/
 
@@ -469,7 +469,7 @@ lemma IsNonloopAt.of_compatible (hGH : G.Compatible H) (heH : e ∈ E(H)) (h : G
 /-! ### Graphs with no edges -/
 
 /-- The graph with vertex set `vertexSet` and no edges -/
-@[simps (attr := grind =)]
+@[simps (attr := grind =) vertexSet edgeSet]
 def noEdge (vertexSet : Set α) (β : Type*) : Graph α β where
   vertexSet := vertexSet
   edgeSet := ∅
@@ -477,6 +477,9 @@ def noEdge (vertexSet : Set α) (β : Type*) : Graph α β where
   isLink_symm := by simp
   eq_or_eq_of_isLink_of_isLink := by simp
   edge_mem_iff_exists_isLink := by simp
+
+theorem noEdge_isLink (vertexSet : Set α) (β : Type*) (e : β) (x y : α) :
+    (noEdge vertexSet β).IsLink e x y ↔ False := Iff.rfl
 
 variable {vertexSet : Set α} {edgeSet : Set β}
 
@@ -495,7 +498,7 @@ def banana (u v : α) (edgeSet : Set β) : Graph α β where
   vertexSet := {u, v}
   edgeSet := edgeSet
   IsLink e x y := e ∈ edgeSet ∧ ((x = u ∧ y = v) ∨ (x = v ∧ y = u))
-  isLink_symm _ _ _ := by aesop
+  isLink_symm := by aesop (add simp symm_def)
   eq_or_eq_of_isLink_of_isLink := by aesop
   edge_mem_iff_exists_isLink := by aesop
 

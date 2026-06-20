@@ -112,6 +112,7 @@ def toCostructuredArrow : P.I ⥤ CostructuredArrow yoneda A :=
 instance : P.toCostructuredArrow.Final :=
   Presheaf.final_toCostructuredArrow_comp_pre _ P.coconeIsColimit
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Representable presheaves are (trivially) ind-objects. -/
 @[simps]
 def yoneda (X : C) : IndObjectPresentation (yoneda.obj X) where

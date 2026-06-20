@@ -5,14 +5,14 @@ Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Semiconj
+public import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Algebra.Group.Commute.Units
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.GroupWithZero.Semiconj
 public import Mathlib.Data.Set.Operations
 public import Mathlib.Order.Basic
 public import Mathlib.Order.Bounds.Defs
-public import Mathlib.Algebra.Group.Int.Defs
-public import Mathlib.Algebra.Divisibility.Basic
-public import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # Extended GCD and divisibility over ℤ
@@ -41,19 +41,20 @@ namespace Nat
 
 /-- Helper function for the extended GCD algorithm (`Nat.xgcd`). -/
 def xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ :=
-  Nat.strongRec' fun n ih s t r' s' t' ↦ match n with
+  Nat.strongRec fun n ih s t r' s' t' ↦ match n with
   | 0 => (r', s', t')
   | succ k =>
     let q := r' / succ k
     ih (r' % succ k) (mod_lt _ <| (succ_pos _).gt) (s' - q * s) (t' - q * t) (succ k) s t
 
 @[simp]
-theorem xgcd_zero_left {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') := rfl
+theorem xgcd_zero_left {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') := by
+  rw [xgcdAux, Nat.strongRec_eq]
 
 theorem xgcdAux_rec {r s t r' s' t'} (h : 0 < r) :
     xgcdAux r s t r' s' t' = xgcdAux (r' % r) (s' - r' / r * s) (t' - r' / r * t) r s t := by
   obtain ⟨r, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h.ne'
-  rw [xgcdAux, Nat.strongRec'_spec]
+  rw [xgcdAux, Nat.strongRec_eq]
   rfl
 
 /-- Use the extended GCD algorithm to generate the `a` and `b` values
@@ -70,20 +71,22 @@ def gcdB (x y : ℕ) : ℤ :=
   (xgcd x y).2
 
 @[simp]
-theorem gcdA_zero_left {s : ℕ} : gcdA 0 s = 0 := rfl
+theorem gcdA_zero_left {s : ℕ} : gcdA 0 s = 0 := by
+  rw [gcdA, xgcd, xgcdAux, Nat.strongRec_eq]
 
 @[simp]
-theorem gcdB_zero_left {s : ℕ} : gcdB 0 s = 1 := rfl
+theorem gcdB_zero_left {s : ℕ} : gcdB 0 s = 1 := by
+  rw [gcdB, xgcd, xgcdAux, Nat.strongRec_eq]
 
 @[simp]
 theorem gcdA_zero_right {s : ℕ} (h : s ≠ 0) : gcdA s 0 = 1 := by
   obtain ⟨s, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
-  rfl
+  simp [gcdA, xgcd, xgcdAux, Nat.strongRec_eq]
 
 @[simp]
 theorem gcdB_zero_right {s : ℕ} (h : s ≠ 0) : gcdB s 0 = 0 := by
   obtain ⟨s, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
-  rfl
+  simp [gcdB, xgcd, xgcdAux, Nat.strongRec_eq]
 
 @[simp]
 theorem xgcdAux_fst (x y) : ∀ s t s' t', (xgcdAux x s t y s' t').1 = gcd x y :=

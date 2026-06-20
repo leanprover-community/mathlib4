@@ -267,7 +267,7 @@ theorem cond_add_cond_compl_eq (hms : MeasurableSet s) (μ : Measure Ω) [IsFini
     μ[t | s] * μ s + μ[t | sᶜ] * μ sᶜ = μ t := by
   rw [cond_mul_eq_inter hms, cond_mul_eq_inter hms.compl, Set.inter_comm _ t,
     Set.inter_comm _ t]
-  exact measure_inter_add_diff t hms
+  exact measure_inter_add_sdiff t hms
 
 /-- **Bayes' Theorem** -/
 theorem cond_eq_inv_mul_cond_mul (hms : MeasurableSet s) (hmt : MeasurableSet t) (μ : Measure Ω)

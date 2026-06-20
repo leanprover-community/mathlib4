@@ -54,7 +54,7 @@ lemma isIntegralCurveOn_comp_add {dt : ℝ} :
 
 lemma isIntegralCurveOn_comp_sub {dt : ℝ} :
     IsIntegralCurveOn (γ ∘ (· - dt)) (v ∘ (· - dt)) (dt +ᵥ s) ↔ IsIntegralCurveOn γ v s := by
-  simpa using isIntegralCurveOn_comp_add (dt := -dt)
+  simpa using! isIntegralCurveOn_comp_add (dt := -dt)
 
 lemma IsIntegralCurveOn.comp_sub (hγ : IsIntegralCurveOn γ v s) (dt : ℝ) :
     IsIntegralCurveOn (γ ∘ (· - dt)) (v ∘ (· - dt)) (dt +ᵥ s) :=
@@ -73,7 +73,7 @@ lemma IsIntegralCurveAt.comp_add (hγ : IsIntegralCurveAt γ v t₀) (dt : ℝ) 
 
 lemma isIntegralCurveAt_comp_sub {dt : ℝ} :
    IsIntegralCurveAt (γ ∘ (· - dt)) (v ∘ (· - dt)) (t₀ + dt) ↔ IsIntegralCurveAt γ v t₀ := by
-  simpa using isIntegralCurveAt_comp_add (dt := -dt)
+  simpa using! isIntegralCurveAt_comp_add (dt := -dt)
 
 lemma IsIntegralCurveAt.comp_sub (hγ : IsIntegralCurveAt γ v t₀) (dt : ℝ) :
     IsIntegralCurveAt (γ ∘ (· - dt)) (v ∘ (· - dt)) (t₀ + dt) :=
@@ -92,7 +92,7 @@ lemma isIntegralCurve_comp_add {dt : ℝ} :
 
 lemma isIntegralCurve_comp_sub {dt : ℝ} :
     IsIntegralCurve (γ ∘ (· - dt)) (v ∘ (· - dt)) ↔ IsIntegralCurve γ v := by
-  simpa using isIntegralCurve_comp_add (dt := -dt)
+  simpa using! isIntegralCurve_comp_add (dt := -dt)
 
 lemma IsIntegralCurve.comp_sub (hγ : IsIntegralCurve γ v) (dt : ℝ) :
     IsIntegralCurve (γ ∘ (· - dt)) (v ∘ (· - dt)) :=

@@ -767,7 +767,7 @@ def imageFactorisation (f : X ⟶ Y) (x : Subobject X) :
       (Image.imageFactorisation (x.arrow ≫ f))
       (existsIsoImage f x).symm
   ImageFactorisation.copy this ((«exists» f).obj x).arrow this.F.e (by
-    simpa [this, -Over.w] using (Over.w ((existsCompRepresentativeIso f).app x).hom.hom).symm)
+    simpa [this, -Over.w] using! (Over.w ((existsCompRepresentativeIso f).app x).hom.hom).symm)
 
 end Exists
 

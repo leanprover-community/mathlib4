@@ -493,7 +493,7 @@ theorem integral_sub_linear_isLittleO_of_tendsto_ae [FTCFilter a l l']
     (hfm : StronglyMeasurableAtFilter f l') (hf : Tendsto f (l' ⊓ ae volume) (𝓝 c)) {u v : ι → ℝ}
     (hu : Tendsto u lt l) (hv : Tendsto v lt l) :
     (fun t => (∫ x in u t..v t, f x) - (v t - u t) • c) =o[lt] (v - u) := by
-  simpa [integral_const] using measure_integral_sub_linear_isLittleO_of_tendsto_ae hfm hf hu hv
+  simpa [integral_const] using! measure_integral_sub_linear_isLittleO_of_tendsto_ae hfm hf hu hv
 
 /-- **Fundamental theorem of calculus-1**, strict differentiability at filter in both endpoints.
 
@@ -529,7 +529,7 @@ theorem integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_right
     (hab : IntervalIntegrable f volume a b) (hmeas : StronglyMeasurableAtFilter f lb')
     (hf : Tendsto f (lb' ⊓ ae volume) (𝓝 c)) (hu : Tendsto u lt lb) (hv : Tendsto v lt lb) :
     (fun t => ((∫ x in a..v t, f x) - ∫ x in a..u t, f x) - (v t - u t) • c) =o[lt] (v - u) := by
-  simpa only [integral_const, smul_eq_mul, mul_one] using
+  simpa only [integral_const, smul_eq_mul, mul_one] using!
     measure_integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_right hab hmeas hf hu hv
 
 /-- **Fundamental theorem of calculus-1**, strict differentiability at filter in both endpoints.
@@ -543,7 +543,7 @@ theorem integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_left
     (hab : IntervalIntegrable f volume a b) (hmeas : StronglyMeasurableAtFilter f la')
     (hf : Tendsto f (la' ⊓ ae volume) (𝓝 c)) (hu : Tendsto u lt la) (hv : Tendsto v lt la) :
     (fun t => ((∫ x in v t..b, f x) - ∫ x in u t..b, f x) + (v t - u t) • c) =o[lt] (v - u) := by
-  simpa only [integral_const, smul_eq_mul, mul_one] using
+  simpa only [integral_const, smul_eq_mul, mul_one] using!
     measure_integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_left hab hmeas hf hu hv
 
 open ContinuousLinearMap (fst snd smulRight sub_apply smulRight_apply coe_fst' coe_snd' map_sub)
@@ -1163,7 +1163,7 @@ theorem integral_eq_sub_of_hasDerivAt_of_tendsto (hab : a < b) {fa fb}
     unfold F
     rw [update_of_ne hy.2.ne, update_of_ne hy.1.ne']
   have hcont : ContinuousOn F (Icc a b) := by
-    rw [continuousOn_update_iff, continuousOn_update_iff, Icc_diff_right, Ico_diff_left]
+    rw [continuousOn_update_iff, continuousOn_update_iff, Icc_sdiff_right, Ico_sdiff_left]
     refine ⟨⟨fun z hz => (hderiv z hz).continuousAt.continuousWithinAt, ?_⟩, ?_⟩
     · exact fun _ => ha.mono_left (nhdsWithin_mono _ Ioo_subset_Ioi_self)
     · rintro -

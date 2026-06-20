@@ -713,7 +713,7 @@ theorem exists_iff_of_forall {p : Prop} {q : p → Prop} (h : ∀ h, q h) : (∃
 theorem exists_prop_of_false {p : Prop} {q : p → Prop} : ¬p → ¬∃ h' : p, q h' :=
   mt Exists.fst
 
-/- See `IsEmpty.exists_iff` for the `False` version of `exists_true_left`. -/
+/-! See `IsEmpty.exists_iff` for the `False` version of `exists_true_left`. -/
 
 theorem forall_prop_congr {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h ↔ q' h) (hp : p ↔ p') :
     (∀ h, q h) ↔ ∀ h : p', q' (hp.2 h) :=
@@ -1079,6 +1079,7 @@ theorem beq_ext {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
   funext x y
   exact h x y
 
+set_option linter.overlappingInstances false in
 theorem lawful_beq_subsingleton {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
     [@LawfulBEq α inst1] [@LawfulBEq α inst2] :
     inst1 = inst2 := by

@@ -116,7 +116,7 @@ theorem smul {c : ℝ} (hf : AbsolutelyMonotoneOn f s) (hc : 0 ≤ c) :
   have hcomp : (T ∘ f) = c • f := by ext x; simp [hT, smul_eq_mul]
   refine ⟨_, hcomp ▸ hp.continuousLinearMap_comp T, fun n x hx => ?_⟩
   simp only [ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply, hT,
-    ContinuousLinearMap.smul_apply, ContinuousLinearMap.id_apply, smul_eq_mul]
+    smul_apply, ContinuousLinearMap.id_apply, smul_eq_mul]
   exact mul_nonneg hc (hp_nn n hx)
 
 end AbsolutelyMonotoneOn

@@ -64,7 +64,7 @@ Each element of a reproducing kernel Hilbert space may be coerced into a functio
 -/
 instance instFunLike : FunLike H X V where
   coe f := coeCLM 𝕜 f
-  coe_injective' := coeCLM_injective
+  coe_injective := coeCLM_injective
 
 @[ext]
 lemma ext {f g : H} (h : ∀ x, f x = g x) : f = g := DFunLike.ext _ _ h
@@ -188,8 +188,8 @@ theorem posSemidef_tfae : List.TFAE [K.PosSemidef, K.IsHermitian ∧ ∀ (f : X 
   refine this fun hHerm ↦ ?_
   simp only [nonneg_iff_isPositive, isPositive_def', isSelfAdjoint_finsuppSum hHerm,
     reApplyInnerSelf_apply, true_and]
-  simp only [star_eq_adjoint, zero_apply, add_apply, implies_true, Finsupp.sum_apply'', coe_mul',
-    Function.comp_apply, Finsupp.sum_inner, adjoint_inner_left]
+  simp only [star_eq_adjoint, zero_apply, add_apply, implies_true, Finsupp.sum_apply'',
+    FunLike.coe_mul_eq_comp, Function.comp_apply, Finsupp.sum_inner, adjoint_inner_left]
   -- FIXME: nontriviality should work here
   refine (subsingleton_or_nontrivial V).elim (fun h ↦ ?_) fun _ ↦ ?_
   · have : ∀ v : V, v = 0 := fun v ↦ Subsingleton.elim v 0

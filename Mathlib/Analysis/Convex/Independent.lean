@@ -119,16 +119,19 @@ protected theorem ConvexIndependent.mem_convexHull_iff {p : ι → E} (hc : Conv
   ⟨hc _ _, fun hi => subset_convexHull 𝕜 _ (Set.mem_image_of_mem p hi)⟩
 
 /-- If a family is convex independent, a point in the family is not in the convex hull of the other
-points. See `convexIndependent_set_iff_notMem_convexHull_diff` for the `Set` version. -/
-theorem convexIndependent_iff_notMem_convexHull_diff {p : ι → E} :
+points. See `convexIndependent_set_iff_notMem_convexHull_sdiff` for the `Set` version. -/
+theorem convexIndependent_iff_notMem_convexHull_sdiff {p : ι → E} :
     ConvexIndependent 𝕜 p ↔ ∀ i s, p i ∉ convexHull 𝕜 (p '' (s \ {i})) := by
   refine ⟨fun hc i s h => ?_, fun h s i hi => ?_⟩
   · rw [hc.mem_convexHull_iff] at h
     exact h.2 (Set.mem_singleton _)
   · by_contra H
     refine h i s ?_
-    rw [Set.diff_singleton_eq_self H]
+    rw [Set.sdiff_singleton_eq_self H]
     exact hi
+
+@[deprecated (since := "2026-06-03")]
+alias convexIndependent_iff_notMem_convexHull_diff := convexIndependent_iff_notMem_convexHull_sdiff
 
 theorem convexIndependent_set_iff_inter_convexHull_subset {s : Set E} :
     ConvexIndependent 𝕜 ((↑) : s → E) ↔ ∀ t, t ⊆ s → s ∩ convexHull 𝕜 t ⊆ t := by
@@ -142,16 +145,20 @@ theorem convexIndependent_set_iff_inter_convexHull_subset {s : Set E} :
     exact hc (t.image ((↑) : s → E)) (Subtype.coe_image_subset s t) ⟨x.prop, h⟩
 
 /-- If a set is convex independent, a point in the set is not in the convex hull of the other
-points. See `convexIndependent_iff_notMem_convexHull_diff` for the indexed family version. -/
-theorem convexIndependent_set_iff_notMem_convexHull_diff {s : Set E} :
+points. See `convexIndependent_iff_notMem_convexHull_sdiff` for the indexed family version. -/
+theorem convexIndependent_set_iff_notMem_convexHull_sdiff {s : Set E} :
     ConvexIndependent 𝕜 ((↑) : s → E) ↔ ∀ x ∈ s, x ∉ convexHull 𝕜 (s \ {x}) := by
   rw [convexIndependent_set_iff_inter_convexHull_subset]
   constructor
   · rintro hs x hxs hx
-    exact (hs _ Set.diff_subset ⟨hxs, hx⟩).2 (Set.mem_singleton _)
+    exact (hs _ Set.sdiff_subset ⟨hxs, hx⟩).2 (Set.mem_singleton _)
   · rintro hs t ht x ⟨hxs, hxt⟩
     by_contra h
-    exact hs _ hxs (convexHull_mono (Set.subset_diff_singleton ht h) hxt)
+    exact hs _ hxs (convexHull_mono (Set.subset_sdiff_singleton ht h) hxt)
+
+@[deprecated (since := "2026-06-03")]
+alias convexIndependent_set_iff_notMem_convexHull_diff :=
+  convexIndependent_set_iff_notMem_convexHull_sdiff
 
 end OrderedSemiring
 
@@ -187,10 +194,10 @@ theorem convexIndependent_iff_finset {p : ι → E} :
 
 theorem Convex.convexIndependent_extremePoints (hs : Convex 𝕜 s) :
     ConvexIndependent 𝕜 ((↑) : s.extremePoints 𝕜 → E) :=
-  convexIndependent_set_iff_notMem_convexHull_diff.2 fun _ hx h =>
+  convexIndependent_set_iff_notMem_convexHull_sdiff.2 fun _ hx h =>
     (extremePoints_convexHull_subset
           (inter_extremePoints_subset_extremePoints_of_subset
-            (convexHull_min (Set.diff_subset.trans extremePoints_subset) hs) ⟨h, hx⟩)).2
+            (convexHull_min (Set.sdiff_subset.trans extremePoints_subset) hs) ⟨h, hx⟩)).2
       (Set.mem_singleton _)
 
 end LinearOrderedField

@@ -42,8 +42,8 @@ theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι �
     · simp [h]
     · simp only [dif_pos, Submodule.coe_mk]
   intro a t hat h ih
-  rw [Finset.coe_cons,
-    Set.pairwise_insert_of_symmetric fun i j (h : I i ⊔ I j = ⊤) ↦ (sup_comm _ _).trans h]
+  have : Std.Symm (I · ⊔ I · = ⊤) := { symm i j := sup_comm .. |>.trans }
+  rw [Finset.coe_cons, Set.pairwise_insert_of_symm]
   constructor
   · rintro ⟨μ, hμ⟩
     rw [Finset.sum_cons] at hμ

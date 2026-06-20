@@ -186,7 +186,7 @@ instance _root_.Pi.cstarRing : CStarRing (∀ i, R i) where
     simp only [norm, Pi.mul_apply, Pi.star_apply, nnnorm_star_mul_self, ← sq]
     norm_cast
     exact
-      (Finset.comp_sup_eq_sup_comp_of_is_total (fun x : NNReal => x ^ 2)
+      (Finset.apply_sup_eq_sup_comp_of_linearOrder (fun x : NNReal => x ^ 2)
           (fun x y h => by simpa only [sq] using mul_le_mul' h h) (by simp)).symm
 
 instance _root_.Pi.cstarRing' : CStarRing (ι → R₁) :=
@@ -288,9 +288,17 @@ theorem starₗᵢ_apply {x : E} : starₗᵢ 𝕜 x = star x :=
   rfl
 
 @[simp]
+theorem symm_starₗᵢ : (starₗᵢ 𝕜 : E ≃ₗᵢ⋆[𝕜] E).symm = starₗᵢ 𝕜 :=
+  rfl
+
+@[simp]
 theorem starₗᵢ_toContinuousLinearEquiv :
     (starₗᵢ 𝕜 : E ≃ₗᵢ⋆[𝕜] E).toContinuousLinearEquiv = (starL 𝕜 : E ≃L⋆[𝕜] E) :=
   ContinuousLinearEquiv.ext rfl
+
+@[simp]
+theorem toLinearEquiv_starₗᵢ : (starₗᵢ 𝕜 : E ≃ₗᵢ⋆[𝕜] E).toLinearEquiv = starLinearEquiv 𝕜 :=
+  rfl
 
 end starₗᵢ
 

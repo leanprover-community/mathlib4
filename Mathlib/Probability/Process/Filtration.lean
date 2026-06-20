@@ -168,6 +168,7 @@ noncomputable instance instPartialOrder : PartialOrder (Filtration ι m) where
   le_trans _ _ _ h_fg h_gh i := (h_fg i).trans (h_gh i)
   le_antisymm _ _ h_fg h_gf := Filtration.ext <| funext fun i => (h_fg i).antisymm (h_gf i)
 
+set_option linter.style.longLine false in
 noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) where
   sup := (· ⊔ ·)
   le_sup_left _ _ _ := le_sup_left
@@ -178,14 +179,14 @@ noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) w
   inf_le_right _ _ _ := inf_le_right
   le_inf _ _ _ h_fg h_fh i := le_inf (h_fg i) (h_fh i)
   isLUB_sSup _ :=
-    .of_image (f := seq) .rfl (by simpa only [isLUB_pi, Set.image_image] using fun _ ↦ isLUB_sSup _)
+    .of_image (f := seq) .rfl (by simpa only [isLUB_pi, Set.image_image] using! fun _ ↦ isLUB_sSup _)
   isGLB_sInf _ := by
     dsimp +instances [instInfSet]
     split_ifs with hn
     · refine .of_image (f := seq) .rfl ?_
-      simpa only [isGLB_pi, Set.image_image] using fun _ ↦ isGLB_sInf _
+      simpa only [isGLB_pi, Set.image_image] using! fun _ ↦ isGLB_sInf _
     · rw [Set.not_nonempty_iff_eq_empty] at hn
-      simpa [hn] using Filtration.le
+      simpa [hn] using! Filtration.le
   le_top f i := f.le' i
   bot_le _ _ := bot_le
 
@@ -398,6 +399,11 @@ def natural (u : (i : ι) → Ω → β i) (hum : ∀ i, StronglyMeasurable (u i
     refine iSup₂_le ?_
     rintro j _ s ⟨t, ht, rfl⟩
     exact (hum j).measurable ht
+
+lemma natural_eq_comap (u : (i : ι) → Ω → β i) (hum : ∀ (i : ι), StronglyMeasurable (u i)) (i : ι) :
+    natural u hum i = .comap (fun ω (j : Set.Iic i) ↦ u j ω) inferInstance := by
+  simp_rw [natural, MeasurableSpace.comap_process_pi, iSup_subtype']
+  rfl
 
 section
 

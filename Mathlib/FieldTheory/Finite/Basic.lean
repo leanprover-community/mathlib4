@@ -239,6 +239,16 @@ theorem pow_card_pow (n : ℕ) (a : K) : a ^ q ^ n = a := by
 
 end
 
+section
+
+variable [Field K] [Fintype K]
+
+open Lean in
+instance instGrindPowIdentity : Grind.PowIdentity K (Fintype.card K) where
+  pow_eq := pow_card
+
+end
+
 variable (K) [Field K] [Fintype K]
 
 /-- The cardinality `q` is a power of the characteristic of `K`. -/
@@ -311,7 +321,7 @@ theorem sum_pow_lt_card_sub_one (i : ℕ) (h : i < q - 1) : ∑ x : K, x ^ i = 0
     have : univ.map φ = univ \ {0} := by
       ext x
       simpa only [mem_map, mem_univ, Function.Embedding.coeFn_mk, true_and, mem_sdiff,
-        mem_singleton, φ] using isUnit_iff_ne_zero
+        mem_singleton, φ] using! isUnit_iff_ne_zero
     calc
       ∑ x : K, x ^ i = ∑ x ∈ univ \ {(0 : K)}, x ^ i := by
         rw [← sum_sdiff ({0} : Finset K).subset_univ, sum_singleton, zero_pow hi, add_zero]
@@ -385,7 +395,7 @@ theorem orderOf_frobeniusAlgHom : orderOf (frobeniusAlgHom K L) = Module.finrank
 
 theorem orderOf_frobeniusAlgEquivOfAlgebraic :
     orderOf (frobeniusAlgEquivOfAlgebraic K L) = Module.finrank K L := by
-  simpa [orderOf_eq_iff Module.finrank_pos, DFunLike.ext_iff] using orderOf_frobeniusAlgHom K L
+  simpa [orderOf_eq_iff Module.finrank_pos, DFunLike.ext_iff] using! orderOf_frobeniusAlgHom K L
 
 theorem bijective_frobeniusAlgHom_pow :
     Function.Bijective fun n : Fin (Module.finrank K L) ↦ frobeniusAlgHom K L ^ n.1 :=
@@ -397,7 +407,7 @@ theorem bijective_frobeniusAlgHom_pow :
 theorem bijective_frobeniusAlgEquivOfAlgebraic_pow :
     Function.Bijective fun n : Fin (Module.finrank K L) ↦ frobeniusAlgEquivOfAlgebraic K L ^ n.1 :=
   ((Algebra.IsAlgebraic.algEquivEquivAlgHom K L).bijective.of_comp_iff' _).mp <| by
-    simpa only [Function.comp_def, map_pow] using bijective_frobeniusAlgHom_pow K L
+    simpa only [Function.comp_def, map_pow] using! bijective_frobeniusAlgHom_pow K L
 
 instance (K L) [Finite L] [Field K] [Field L] [Algebra K L] : IsCyclic Gal(L/K) where
   exists_zpow_surjective :=
@@ -410,10 +420,11 @@ open Polynomial in
 theorem minpoly_frobeniusAlgHom :
     minpoly K (frobeniusAlgHom K L).toLinearMap = X ^ Module.finrank K L - 1 :=
   minpoly.eq_of_linearIndependent _ _ (leadingCoeff_X_pow_sub_one Module.finrank_pos)
-    (LinearMap.ext fun x ↦ by simpa [sub_eq_zero, Module.End.coe_pow, orderOf_frobeniusAlgHom] using
-      congr($(pow_orderOf_eq_one (frobeniusAlgHom K L)) x)) _
+    (LinearMap.ext fun x ↦ by
+      simpa [sub_eq_zero, Module.End.coe_pow, orderOf_frobeniusAlgHom] using!
+        congr($(pow_orderOf_eq_one (frobeniusAlgHom K L)) x)) _
     (degree_X_pow_sub_C Module.finrank_pos _) <| by
-      simpa [← AlgHom.toEnd_apply, ← map_pow] using (linearIndependent_algHom_toLinearMap K L L
+      simpa [← AlgHom.toEnd_apply, ← map_pow] using! (linearIndependent_algHom_toLinearMap K L L
         |>.restrict_scalars' K).comp _ (bijective_frobeniusAlgHom_pow K L).1
 
 end frobenius
@@ -523,7 +534,7 @@ theorem Nat.sq_add_sq_zmodEq (p : ℕ) [Fact p.Prime] (x : ℤ) :
 `ZMod.sq_add_sq` with estimates on `a` and `b`. -/
 theorem Nat.sq_add_sq_modEq (p : ℕ) [Fact p.Prime] (x : ℕ) :
     ∃ a b : ℕ, a ≤ p / 2 ∧ b ≤ p / 2 ∧ a ^ 2 + b ^ 2 ≡ x [MOD p] := by
-  simpa only [← Int.natCast_modEq_iff] using Nat.sq_add_sq_zmodEq p x
+  simpa only [← Int.natCast_modEq_iff] using! Nat.sq_add_sq_zmodEq p x
 
 namespace CharP
 
@@ -557,11 +568,6 @@ theorem Nat.ModEq.pow_totient {x n : ℕ} (h : Nat.Coprime x n) : x ^ φ n ≡ 1
   apply_fun ((fun (x : Units (ZMod n)) => (x : ZMod n)) : Units (ZMod n) → ZMod n) at this
   simpa only [Nat.succ_eq_add_one, Nat.cast_pow, Units.val_one, Nat.cast_one,
     coe_unitOfCoprime, Units.val_pow_eq_pow_val]
-
-/-- For each `n ≥ 0`, the unit group of `ZMod n` is finite. -/
-instance instFiniteZModUnits : (n : ℕ) → Finite (ZMod n)ˣ
-| 0 => Finite.of_fintype ℤˣ
-| _ + 1 => inferInstance
 
 open FiniteField
 

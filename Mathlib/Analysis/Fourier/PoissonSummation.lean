@@ -62,7 +62,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
   have eadd : ∀ (n : ℤ), e.comp (ContinuousMap.addRight n) = e := by
     intro n; ext1 x
     have : Periodic e 1 := Periodic.comp (fun x => AddCircle.coe_add_period 1 x) (fourier (-m))
-    simpa only [mul_one] using this.int_mul n x
+    simpa only [mul_one] using! this.int_mul n x
   -- Now the main argument. First unwind some definitions.
   calc
     fourierCoeff (Periodic.lift <| f.periodic_tsum_comp_add_zsmul 1) m =
@@ -141,7 +141,7 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   simp only [IsBigO, IsBigOWith, eventually_atTop] at hc' ⊢
   obtain ⟨d, hd⟩ := hc'
   refine ⟨c * (1 / 2) ^ (-b), ⟨max (1 + max 0 (-2 * R)) (d - R), fun x hx => ?_⟩⟩
-  rw [ge_iff_le, max_le_iff] at hx
+  rw [max_le_iff] at hx
   have hx' : max 0 (-2 * R) < x := by linarith
   rw [max_lt_iff] at hx'
   rw [norm_norm, ContinuousMap.norm_le _ (by positivity)]

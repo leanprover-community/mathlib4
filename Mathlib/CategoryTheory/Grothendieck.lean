@@ -115,6 +115,7 @@ def comp {X Y Z : Grothendieck F} (f : Hom X Y) (g : Hom Y Z) : Hom X Z where
 
 attribute [local simp] eqToHom_map
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Category (Grothendieck F) where
   Hom X Y := Grothendieck.Hom X Y
   id X := Grothendieck.id X
@@ -192,6 +193,7 @@ If `F : C ⥤ Cat` is a functor and `t : c ⟶ d` is a morphism in `C`, then `tr
 def toTransport (x : Grothendieck F) {c : C} (t : x.base ⟶ c) : x ⟶ x.transport t :=
   ⟨t, 𝟙 _⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 Construct an isomorphism in a Grothendieck construction from isomorphisms in its base and fiber.
 -/
@@ -232,6 +234,7 @@ section
 
 variable {G : C ⥤ Cat}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The Grothendieck construction is functorial: a natural transformation `α : F ⟶ G` induces
 a functor `Grothendieck.map : Grothendieck F ⥤ Grothendieck G`.
 -/
@@ -266,6 +269,7 @@ theorem map_map {α : F ⟶ G} {X Y : Grothendieck F} {f : X ⟶ Y} :
 theorem functor_comp_forget {α : F ⟶ G} :
     Grothendieck.map α ⋙ Grothendieck.forget G = Grothendieck.forget F := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem map_id_eq : map (𝟙 F) = Functor.id (Grothendieck <| F) := by
   fapply Functor.ext
@@ -282,6 +286,7 @@ def mapIdIso : (map (𝟙 F)).toCatHom ≅ 𝟙 (Cat.of <| Grothendieck <| F) :=
 
 variable {H : C ⥤ Cat}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem map_comp_eq (α : F ⟶ G) (β : G ⟶ H) :
     map (α ≫ β) = map α ⋙ map β := by
@@ -307,6 +312,7 @@ def compAsSmallFunctorEquivalenceInverse :
   obj X := ⟨X.base, AsSmall.up.obj X.fiber⟩
   map f := ⟨f.base, AsSmall.up.map f.fiber⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor to build the equivalence `compAsSmallFunctorEquivalence`. -/
 @[simps]
@@ -329,6 +335,7 @@ def compAsSmallFunctorEquivalence :
   counitIso := Iso.refl _
   unitIso := Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {F} in
 /-- Mapping a Grothendieck construction along the whiskering of any natural transformation
@@ -439,6 +446,7 @@ def pre (G : D ⥤ C) : Grothendieck (G ⋙ F) ⥤ Grothendieck F where
 @[simp]
 theorem pre_id : pre F (𝟭 C) = 𝟭 _ := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 A natural isomorphism between functors `G ≅ H` induces a natural isomorphism between the canonical
@@ -478,6 +486,7 @@ protected def preUnitIso (G : D ≌ C) :
     map (whiskerRight G.unitInv _) ≅ pre (G.functor ⋙ F) (G.functor ⋙ G.inverse) :=
   preNatIso _ G.unitIso.symm |>.symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 Given a functor `F : C ⥤ Cat` and an equivalence of categories `G : D ≌ C`, the functor
@@ -553,6 +562,7 @@ instance faithful_ι (c : C) : (ι F c).Faithful where
     injection f with _ f
     rwa [cancel_epi] at f
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Every morphism `f : X ⟶ Y` in the base category induces a natural transformation from the fiber
 inclusion `ι F X` to the composition `F.map f ⋙ ι F Y`. -/
@@ -580,6 +590,7 @@ def functorFrom : Grothendieck F ⥤ E where
   map_id X := by simp [hom_id]
   map_comp f g := by simp [hom_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Grothendieck.ι F c` composed with `Grothendieck.functorFrom` is isomorphic a functor on a fiber
 on `F` supplied as the first argument to `Grothendieck.functorFrom`. -/
 def ιCompFunctorFrom (c : C) : ι F c ⋙ (functorFrom fib hom hom_id hom_comp) ≅ fib c :=
@@ -587,6 +598,7 @@ def ιCompFunctorFrom (c : C) : ι F c ⋙ (functorFrom fib hom hom_id hom_comp)
 
 end FunctorFrom
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The fiber inclusion `ι F c` composed with `map α` is isomorphic to `α.app c ⋙ ι F' c`. -/
 @[simps!]

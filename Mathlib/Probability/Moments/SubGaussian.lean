@@ -247,7 +247,7 @@ protected lemma of_rat (h_int : ∀ t : ℝ, Integrable (fun ω ↦ exp (t * X �
 lemma fun_zero [IsFiniteMeasure ν] [IsZeroOrMarkovKernel κ] :
     HasSubgaussianMGF (fun _ ↦ 0) 0 κ ν where
   integrable_exp_mul := by simp
-  mgf_le := by simpa using ae_of_all _ fun _ ↦ measureReal_le_one
+  mgf_le := by simp
 
 @[simp]
 lemma zero [IsFiniteMeasure ν] [IsZeroOrMarkovKernel κ] : HasSubgaussianMGF 0 0 κ ν := fun_zero
@@ -690,7 +690,7 @@ protected lemma const_mul (h : HasSubgaussianMGF X c μ) (r : ℝ) :
 lemma integrableExpSet_eq_univ (hX : HasSubgaussianMGF X c μ) :
     integrableExpSet X μ = Set.univ := by
   ext t
-  simpa using hX.integrable_exp_mul t
+  simpa using! hX.integrable_exp_mul t
 
 lemma memLp (hX : HasSubgaussianMGF X c μ) (p : ℝ≥0) : MemLp X p μ :=
   memLp_of_mem_interior_integrableExpSet (by simp [integrableExpSet_eq_univ hX]) p

@@ -79,7 +79,7 @@ theorem ae_finite_setOf_mem {s : ι → Set α} (h : ∑' i, μ (s i) ≠ ∞) :
 theorem measure_setOf_frequently_eq_zero {p : ℕ → α → Prop} (hp : ∑' i, μ { x | p i x } ≠ ∞) :
     μ { x | ∃ᶠ n in atTop, p n x } = 0 := by
   simpa only [limsup_eq_iInf_iSup_of_nat, frequently_atTop, ← bex_def, setOf_forall,
-    setOf_exists] using measure_limsup_atTop_eq_zero hp
+    setOf_exists] using! measure_limsup_atTop_eq_zero hp
 
 /-- A version of the **Borel-Cantelli lemma**: if `sᵢ` is a sequence of sets such that
 `∑' i, μ sᵢ` is finite, then for almost all `x`, `x` does not belong to `sᵢ` for large `i`. -/

@@ -156,6 +156,7 @@ def id : StrictlyUnitaryLaxFunctor B B where
   map_id _ := rfl
   mapId_eq_eqToHom _ := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Composition of `StrictlyUnitaryLaxFunctor`. -/
 @[simps!]
@@ -171,6 +172,7 @@ def comp (F : StrictlyUnitaryLaxFunctor B C)
 section
 attribute [local ext] StrictlyUnitaryLaxFunctor
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Composition of `StrictlyUnitaryLaxFunctor` is strictly right unitary -/
 lemma comp_id (F : StrictlyUnitaryLaxFunctor B C) :
@@ -182,6 +184,7 @@ lemma comp_id (F : StrictlyUnitaryLaxFunctor B C) :
     ext
     simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Composition of `StrictlyUnitaryLaxFunctor` is strictly left unitary -/
 lemma id_comp (F : StrictlyUnitaryLaxFunctor B C) :
@@ -193,6 +196,7 @@ lemma id_comp (F : StrictlyUnitaryLaxFunctor B C) :
     ext
     simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Composition of `StrictlyUnitaryLaxFunctor` is strictly associative -/
 lemma comp_assoc {E : Type u₄} [Bicategory.{w₄, v₄} E]
@@ -299,6 +303,7 @@ def mk' (S : StrictlyUnitaryPseudofunctorCore B C) :
   map₂_whisker_right η f := by
     simpa using S.map₂_whisker_right η f
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- By forgetting the inverse to `mapComp`, a `StrictlyUnitaryPseudofunctor`
 is a `StrictlyUnitaryLaxFunctor`. -/
@@ -345,6 +350,7 @@ def id : StrictlyUnitaryPseudofunctor B B where
   map_id _ := rfl
   mapId_eq_eqToIso _ := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Composition of `StrictlyUnitaryPseudofunctor`. -/
 @[simps!]
