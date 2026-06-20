@@ -5,7 +5,6 @@ Authors: Thomas R. Murrills
 -/
 module
 
-public meta import Mathlib.Lean.String
 public meta import Lean.Elab.Command
 
 public meta section
