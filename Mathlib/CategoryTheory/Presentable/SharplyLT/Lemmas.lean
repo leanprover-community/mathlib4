@@ -83,4 +83,37 @@ lemma of_le {κ₁ κ₂ : Cardinal.{u}} [Fact κ₁.IsRegular] [Fact κ₂.IsRe
     conv_rhs => rw [← mul_eq_self (c := κ₂) (IsRegular.aleph0_le Fact.out)]
     exact mul_le_mul_right (hα.le.trans h₀) _
 
+lemma exists_of_small {ι : Type*} [Small.{u} ι] (κ : ι → Cardinal.{u})
+    [∀ i, Fact (κ i).IsRegular] :
+    ∃ (κ' : Cardinal.{u}) (_ : Fact κ'.IsRegular),
+      ∀ i, SharplyLT (κ i) κ' := sorry
+
+lemma exists_of_pair (κ₁ κ₂ : Cardinal.{u})
+    [Fact κ₁.IsRegular] [Fact κ₂.IsRegular] :
+    ∃ (κ' : Cardinal.{u}) (_ : Fact κ'.IsRegular),
+      SharplyLT κ₁ κ' ∧ SharplyLT κ₂ κ' := by
+  let f (i : Fin 2) : Cardinal.{u} := match i with
+    | 0 => κ₁
+    | 1 => κ₂
+  have (i : _) : Fact (f i).IsRegular := match i with
+    | 0 => by assumption
+    | 1 => by assumption
+  obtain ⟨κ', _, h₂⟩ := exists_of_small f
+  exact ⟨κ', inferInstance, h₂ 0, h₂ 1⟩
+
+lemma exists_of_triple (κ₁ κ₂ κ₃ : Cardinal.{u})
+    [Fact κ₁.IsRegular] [Fact κ₂.IsRegular] [Fact κ₃.IsRegular] :
+    ∃ (κ' : Cardinal.{u}) (_ : Fact κ'.IsRegular),
+      SharplyLT κ₁ κ' ∧ SharplyLT κ₂ κ' ∧ SharplyLT κ₃ κ':= by
+  let f (i : Fin 3) : Cardinal.{u} := match i with
+    | 0 => κ₁
+    | 1 => κ₂
+    | 2 => κ₃
+  have (i : _) : Fact (f i).IsRegular := match i with
+    | 0 => by assumption
+    | 1 => by assumption
+    | 2 => by assumption
+  obtain ⟨κ', _, h₂⟩ := exists_of_small f
+  exact ⟨κ', inferInstance, h₂ 0, h₂ 1, h₂ 2⟩
+
 end Cardinal.SharplyLT

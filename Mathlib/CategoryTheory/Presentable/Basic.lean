@@ -110,13 +110,13 @@ end
 
 section
 
-variable (F : C ⥤ D)
-
 /-- A functor is accessible relative to a universe `w` if
 it is `κ`-accessible for some regular `κ : Cardinal.{w}`. -/
 @[pp_with_univ]
-class IsAccessible : Prop where
-  exists_cardinal : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular), IsCardinalAccessible F κ
+class IsAccessible (F : C ⥤ D) : Prop where
+  exists_cardinal (F) : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular), IsCardinalAccessible F κ
+
+variable (F : C ⥤ D)
 
 lemma isAccessible_of_isCardinalAccessible (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalAccessible F κ] : IsAccessible.{w} F where
