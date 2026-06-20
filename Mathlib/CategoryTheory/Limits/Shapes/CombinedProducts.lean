@@ -57,7 +57,7 @@ def combPairIsLimit : IsLimit (Fan.mk bc.pt (combPairHoms c₁ c₂ bc)) :=
       cases w <;>
       · simp only [fan_mk_proj, combPairHoms]
         erw [← Category.assoc, h.fac]
-        simp only [pair_obj_left, mk_pt, mk_π_app, IsLimit.fac])
+        simp only [pair_obj_left, mk_π_app, IsLimit.fac])
     (fun s m hm ↦ Fan.IsLimit.hom_ext h _ _ <| fun w ↦ by
       cases w
       · refine Fan.IsLimit.hom_ext h₁ _ _ (fun a ↦ by aesop)

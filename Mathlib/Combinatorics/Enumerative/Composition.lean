@@ -446,6 +446,11 @@ theorem sigma_eq_iff_blocks_eq {c : Σ n, Composition n} {c' : Σ n, Composition
   ext1
   exact H
 
+@[to_additive]
+lemma prod_prod_apply_embedding {A : Type*} [CommMonoid A] (a : Fin n → A) (x : Composition n) :
+    ∏ i, ∏ j, a (x.embedding i j) = ∏ i, a i := by
+  simpa [Finset.prod_sigma', Finset.univ_sigma_univ] using! x.blocksFinEquiv.prod_comp a
+
 /-! ### The composition `Composition.ones` -/
 
 
@@ -831,9 +836,9 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       rintro i_mem ⟨j, rfl⟩ i_ne_last
       rcases Nat.exists_add_one_eq.mpr j.pos with ⟨n, rfl⟩
       obtain ⟨k, rfl⟩ : ∃ k : Fin n, k.castSucc = j := by
-        simpa [Fin.exists_castSucc_eq] using i_ne_last
+        simpa [Fin.exists_castSucc_eq] using! i_ne_last
       use k
-      simpa using i_mem
+      simpa using! i_mem
   right_inv := by
     intro s
     ext i

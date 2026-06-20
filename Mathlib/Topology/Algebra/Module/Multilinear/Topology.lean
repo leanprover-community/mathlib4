@@ -259,6 +259,11 @@ def compContinuousLinearMapL (f : ∀ i, E i →L[𝕜] E₁ i) :
       set φ : (∀ i, E i) →L[𝕜] (∀ i, E₁ i) := .piMap f
       exact ⟨(φ '' U, V), ⟨hU.image φ, hV⟩, fun g hg ↦ hg.comp (mapsTo_image _ _)⟩ }
 
+@[fun_prop]
+theorem continuous_precomp (f : ∀ i, E i →L[𝕜] E₁ i) :
+    Continuous fun g : ContinuousMultilinearMap 𝕜 E₁ F ↦ g.compContinuousLinearMap f :=
+  map_continuous (compContinuousLinearMapL f)
+
 end CompContinuousLinearMap
 
 variable [∀ i, ContinuousSMul 𝕜 (E i)]
@@ -385,6 +390,11 @@ def compContinuousMultilinearMapL :
 theorem compContinuousMultilinearMapL_apply (g : F →L[𝕜] G) (f : ContinuousMultilinearMap 𝕜 E F) :
     compContinuousMultilinearMapL 𝕜 E F G g f = g.compContinuousMultilinearMap f :=
   rfl
+
+@[fun_prop]
+theorem _root_.ContinuousLinearMap.continuous_postcomp_continuousMultilinearMap (g : F →L[𝕜] G) :
+    Continuous (g.compContinuousMultilinearMap (M₁ := E)) :=
+  map_continuous (compContinuousMultilinearMapL 𝕜 E F G g)
 
 end ContinuousLinearMap
 

@@ -38,8 +38,8 @@ theorem tan_add
       (∃ k : ℤ, x = (2 * k + 1) * π / 2) ∧ ∃ l : ℤ, y = (2 * l + 1) * π / 2) :
     tan (x + y) = (tan x + tan y) / (1 - tan x * tan y) := by
   simpa only [← Complex.ofReal_inj, Complex.ofReal_sub, Complex.ofReal_add, Complex.ofReal_div,
-    Complex.ofReal_mul, Complex.ofReal_tan] using
-    @Complex.tan_add (x : ℂ) (y : ℂ) (by convert! h <;> norm_cast)
+    Complex.ofReal_mul, Complex.ofReal_tan] using!
+    @Complex.tan_add (x : ℂ) (y : ℂ) (by convert h <;> norm_cast)
 
 theorem tan_add'
     (h : (∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) :
@@ -51,8 +51,8 @@ theorem tan_sub {x y : ℝ}
       (∃ k : ℤ, x = (2 * k + 1) * π / 2) ∧ ∃ l : ℤ, y = (2 * l + 1) * π / 2) :
     tan (x - y) = (tan x - tan y) / (1 + tan x * tan y) := by
   simpa only [← Complex.ofReal_inj, Complex.ofReal_sub, Complex.ofReal_add, Complex.ofReal_div,
-    Complex.ofReal_mul, Complex.ofReal_tan] using
-    @Complex.tan_sub (x : ℂ) (y : ℂ) (by convert! h <;> norm_cast)
+    Complex.ofReal_mul, Complex.ofReal_tan] using!
+    @Complex.tan_sub (x : ℂ) (y : ℂ) (by convert h <;> norm_cast)
 
 theorem tan_sub' {x y : ℝ}
     (h : (∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) :
@@ -399,21 +399,28 @@ open Lean Meta Qq
 
 /-- Extension for `Real.arctan`. -/
 @[positivity Real.arctan _]
-meta def evalRealArctan : PositivityExt where eval {u α} z p e := do
+meta def evalRealArctan : PositivityExt where eval {u α} z p e :=
+  match p with | none => pure .none | some p => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.arctan $a) =>
     let ra ← core z p a
-    assumeInstancesCommute
     match ra with
-    | .positive pa => return .positive q(Real.arctan_pos.mpr $pa)
-    | .nonnegative na => return .nonnegative q(Real.arctan_nonneg.mpr $na)
-    | .nonzero na => return .nonzero q(mt Real.arctan_eq_zero_iff.mp $na)
+    | .positive pa =>
+      assumeInstancesCommute
+      return .positive q(Real.arctan_pos.mpr $pa)
+    | .nonnegative na =>
+      assumeInstancesCommute
+      return .nonnegative q(Real.arctan_nonneg.mpr $na)
+    | .nonzero na =>
+      assumeInstancesCommute
+      return .nonzero q(mt Real.arctan_eq_zero_iff.mp $na)
     | .none => return .none
   | _ => throwError "not Real.arctan"
 
 /-- Extension for `Real.cos (Real.arctan _)`. -/
 @[positivity Real.cos (Real.arctan _)]
-meta def evalRealCosArctan : PositivityExt where eval {u α} _ _ e := do
+meta def evalRealCosArctan : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.cos (Real.arctan $a)) =>
     assumeInstancesCommute
@@ -422,14 +429,20 @@ meta def evalRealCosArctan : PositivityExt where eval {u α} _ _ e := do
 
 /-- Extension for `Real.sin (Real.arctan _)`. -/
 @[positivity Real.sin (Real.arctan _)]
-meta def evalRealSinArctan : PositivityExt where eval {u α} z p e := do
+meta def evalRealSinArctan : PositivityExt where eval {u α} z p e :=
+  match p with | none => pure .none | some p => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.sin (Real.arctan $a)) =>
-    assumeInstancesCommute
     match ← core z p a with
-    | .positive pa => return .positive q(Real.sin_arctan_pos.mpr $pa)
-    | .nonnegative na => return .nonnegative q(Real.sin_arctan_nonneg.mpr $na)
-    | .nonzero na => return .nonzero q(mt Real.sin_arctan_eq_zero.mp $na)
+    | .positive pa =>
+      assumeInstancesCommute
+      return .positive q(Real.sin_arctan_pos.mpr $pa)
+    | .nonnegative na =>
+      assumeInstancesCommute
+      return .nonnegative q(Real.sin_arctan_nonneg.mpr $na)
+    | .nonzero na =>
+      assumeInstancesCommute
+      return .nonzero q(mt Real.sin_arctan_eq_zero.mp $na)
     | .none => return .none
   | _ => throwError "not Real.sin (Real.arctan _)"
 
