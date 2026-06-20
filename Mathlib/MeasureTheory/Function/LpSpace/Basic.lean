@@ -431,8 +431,6 @@ instance instModule : Module 𝕜 (Lp E p μ) :=
 theorem coeFn_smul (c : 𝕜) (f : Lp E p μ) : ⇑(c • f) =ᵐ[μ] c • ⇑f :=
   AEEqFun.coeFn_smul _ _
 
-/-- The coercion of a finite sum of scalar multiples of `MemLp.toLp` functions is almost
-everywhere equal to the corresponding sum of those functions. -/
 theorem coeFn_finsetSum_smul {ι : Type*} (s : Finset ι) (c : ι → 𝕜) {h : ι → α → E}
     (hmem : ∀ i, MemLp (h i) p μ) :
     ⇑(∑ i ∈ s, c i • (hmem i).toLp (h i)) =ᵐ[μ] ∑ i ∈ s, c i • h i :=
