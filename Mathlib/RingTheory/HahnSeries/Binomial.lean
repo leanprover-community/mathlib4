@@ -267,7 +267,7 @@ end orderTopOneSubPos
 section BinomialPow
 
 variable [LinearOrder Γ] [AddCommGroup Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R] [BinomialRing R]
-[Module R Γ] [CommRing A] [Algebra R A]
+  [Module R Γ] [CommRing A] [Algebra R A]
 
 /-- A Hahn series formally expanding `(X g + a X g') ^ r` where `r` is an element of a binomial ring
 `R` and `a` is an element of an `R`-algebra. We require `g` and `g'` to lie in an ordered

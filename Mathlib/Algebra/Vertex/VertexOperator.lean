@@ -18,11 +18,11 @@ In this file we introduce vertex operators as linear maps to Laurent series.
 ## Definitions
 * `VertexOperator` is an `R`-linear map from an `R`-module `V` to `LaurentSeries V`.
 * `VertexOperator.ncoeff` is the coefficient of a vertex operator under normalized indexing.
+* `VertexOperator.hasseDeriv` : A divided-power derivative of a vertex operator.
+* `VertexOperator.resProd` : a family of products on `VertexOperator R V`, parametrized by integers.
 
 ## TODO
-* `HasseDerivative` : A divided-power derivative.
 * `Locality` : A weak form of commutativity.
-* `Residue products` : A family of products on `VertexOperator R V` parametrized by integers.
 
 ## References
 * [G. Mason, *Vertex rings and Pierce bundles*][mason2017]
@@ -98,7 +98,7 @@ theorem ncoeff_of_coeff (f : ℤ → Module.End R V)
   rw [ncoeff_apply, coeff_apply_apply, of_coeff_apply_coeff]
 
 set_option backward.isDefEq.respectTransparency false in
-instance [CommRing R] [AddCommGroup V] [Module R V] : One (VertexOperator R V) where
+instance : One (VertexOperator R V) where
   one := {
     toFun v := HahnModule.of R (HahnSeries.single 0 v)
     map_add' _ _ := by simp
@@ -244,7 +244,7 @@ theorem binomCompLeft_apply_coeff (k l n : ℤ) (v : V) :
     (compareOfLessAndEq_eq_lt.mp rfl)]
   refine finsum_congr fun m ↦ ?_
   congr 2
-  simp [show (ofLex (m : Lex (ℤ × ℤ))).2 = m by rfl, show (ofLex (m : Lex (ℤ × ℤ))).1 = m by rfl]
+  simp
   abel_nf
 
 -- TODO : replace 2nd term on right with a version of Ring.choose that takes integer inputs.
@@ -298,7 +298,7 @@ theorem binomCompRight_apply_coeff (k l n : ℤ) (v : V) :
   congr 1
   refine finsum_congr fun m ↦ ?_
   congr 2
-  simp [show (ofLex (m : Lex (ℤ × ℤ))).2 = m by rfl, show (ofLex (m : Lex (ℤ × ℤ))).1 = m by rfl]
+  simp
   abel_nf
 
 end BinomComp
@@ -629,9 +629,9 @@ theorem resProd_nat_one_right_apply (n : ℕ) (A : VertexOperator R V) :
     · rw [show n + (-m - 1) - (n - m).toNat = -1 by omega, one_ncoeff_neg_one, LinearMap.map_zero,
         Pi.zero_apply, LinearMap.zero_apply, sub_eq_zero, ← smul_assoc (n : ℤ).negOnePow]
       congr 2
-      · rw [Units.ext_iff, Units.val_smul, Units.smul_def, zsmul_eq_mul', Int.cast_eq,
-          ← Units.val_mul, ← Int.negOnePow_sub]
-        simp [h, hmn]
+      · rw [Units.ext_iff, Units.smul_eq_mul, ← Int.negOnePow_add, ← Units.ext_iff,
+          Int.negOnePow_eq_iff m.toNat ((n : ℤ) + (n - m).toNat)]
+        grind
       · rw [Ring.choose_natCast, Ring.choose_natCast]
         refine Int.ofNat_inj.mpr ?_
         rw [← Nat.choose_symm (by omega), show (n - m).toNat = n - m.toNat by omega]

@@ -249,10 +249,10 @@ lemma choose_mem_restrictedValue (i : σ) (n : ℕ) :
 set_option backward.isDefEq.respectTransparency false in
 lemma choose_eq (i : σ) (n : ℕ) :
     (Ring.choose (X i : MvPolynomial σ ℚ) n) =
-    (n.factorial : ℚ)⁻¹ • rename (fun () ↦ i) ((pUnitAlgEquiv ℚ).symm (descPochhammer ℚ n)) := by
+    (n.factorial : ℚ)⁻¹ • rename (fun () ↦ i) ((uniqueAlgEquiv ℚ _).symm (descPochhammer ℚ n)) := by
   have := IsAddTorsionFree.of_module_rat (MvPolynomial σ ℚ)
   apply (nsmul_right_inj (Nat.factorial_ne_zero n)).mp
-  rw [← Ring.descPochhammer_eq_factorial_smul_choose, pUnitAlgEquiv_symm_apply, ← smul_assoc]
+  rw [← Ring.descPochhammer_eq_factorial_smul_choose, uniqueAlgEquiv_symm_apply, ← smul_assoc]
   have : n.factorial • (n.factorial : ℚ)⁻¹ = 1 := by
     rw [nsmul_eq_mul', inv_mul_eq_div]
     field_simp
@@ -275,7 +275,7 @@ lemma choose_support [DecidableEq σ] (i : σ) (n : ℕ) :
     (Ring.choose (X i : MvPolynomial σ ℚ) n).support ⊆
       Finset.image (fun d ↦ Finsupp.single i d) (Finset.range (n + 1)) := by
   intro g hg
-  simp only [choose_eq, pUnitAlgEquiv_symm_apply, mem_support_iff, coeff_smul, smul_eq_mul, ne_eq,
+  simp only [choose_eq, uniqueAlgEquiv_symm_apply, mem_support_iff, coeff_smul, smul_eq_mul, ne_eq,
     mul_eq_zero, inv_eq_zero, Nat.cast_eq_zero, not_or] at hg
   let h := hg.2
   rw [← ne_eq, ← mem_support_iff, support_rename_of_injective (fun ⦃_ _⦄ ↦ congrFun rfl),
@@ -293,7 +293,7 @@ lemma choose_support [DecidableEq σ] (i : σ) (n : ℕ) :
     ext j
     by_cases hij : i = j
     · simp only [hij, Finsupp.single_eq_same, Finsupp.mapDomain, Finsupp.sum,
-        Finsupp.coe_finset_sum, Finset.sum_apply, Finsupp.single_eq_same]
+        Finsupp.coe_finsetSum, Finset.sum_apply, Finsupp.single_eq_same]
       rw [Finset.sum_eq_single () (fun _ _ h ↦ (by simp at h))]
       exact fun h ↦ Finsupp.notMem_support_iff.mp h
     · simp [hij, Finsupp.mapDomain]
@@ -307,9 +307,9 @@ lemma degree_choose (m : MonomialOrder σ) (i : σ) (n : ℕ) :
   induction n with
   | zero => simp
   | succ n ih =>
-    rw [descPochhammer_succ_right, pUnitAlgEquiv_symm_apply, Polynomial.eval₂_mul,
-      ← pUnitAlgEquiv_symm_apply, map_mul, MonomialOrder.degree_mul_of_mul_leadingCoeff_ne_zero, ih,
-      Finsupp.single_add, add_right_inj]
+    rw [descPochhammer_succ_right, uniqueAlgEquiv_symm_apply, Polynomial.eval₂_mul,
+      ← uniqueAlgEquiv_symm_apply, map_mul, MonomialOrder.degree_mul_of_mul_leadingCoeff_ne_zero,
+      ih, Finsupp.single_add, add_right_inj]
     · simp only [Polynomial.eval₂_sub, Polynomial.eval₂_X, Polynomial.eval₂_natCast, map_sub,
         rename_X, map_natCast]
       rw [sub_eq_add_neg, MonomialOrder.degree_add_of_lt, MonomialOrder.degree_X]
@@ -344,16 +344,18 @@ lemma leadingCoeff_choose (m : MonomialOrder σ) (i : σ) (n : ℕ) :
     simp only [MonomialOrder.Monic, descPochhammer_zero, map_one]
     exact MonomialOrder.leadingCoeff_one
   | succ n ih =>
-    simp only [descPochhammer_succ_right, pUnitAlgEquiv_symm_apply]
-    simp only [Polynomial.eval₂_mul, Polynomial.eval₂_sub, Polynomial.eval₂_X,
-      Polynomial.eval₂_natCast, map_mul, map_sub, rename_X, map_natCast]
+    simp only [descPochhammer_succ_right, uniqueAlgEquiv_symm_apply]
+    simp only [PUnit.default_eq_unit, Polynomial.eval₂_mul, Polynomial.eval₂_sub,
+      Polynomial.eval₂_X, Polynomial.eval₂_natCast, map_mul, map_sub, rename_X, map_natCast]
     refine MonomialOrder.Monic.mul ih ?_
     simp only [MonomialOrder.Monic, MonomialOrder.leadingCoeff, coeff_sub]
     have : m.degree (n : MvPolynomial σ ℚ) = 0 := by
       rw [MonomialOrder.degree_eq_zero_iff_totalDegree_eq_zero, ← map_natCast' (monomial 0) rfl n,
         monomial_zero', totalDegree_C]
+    classical
     rw [sub_eq_add_neg, sub_eq_add_neg, MonomialOrder.degree_add_of_lt, MonomialOrder.degree_X,
       coeff_X, MonomialOrder.coeff_eq_zero_of_lt (m := m), Rat.neg_zero, Rat.add_zero]
+    · simp
     · rw [this, AddEquiv.map_zero, MonomialOrder.toSyn_lt_iff_ne_zero]
       exact (AddEquiv.map_ne_zero_iff m.toSyn).mpr <| Finsupp.single_ne_zero.mpr Nat.one_ne_zero
     · rw [MonomialOrder.degree_neg, this, MonomialOrder.degree_X, AddEquiv.map_zero,

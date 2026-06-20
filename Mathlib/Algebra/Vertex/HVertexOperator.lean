@@ -185,7 +185,7 @@ end Products
 section binomialPow
 
 variable {S Γ₁ : Type*} [PartialOrder Γ₁] [CommRing S] [AddCommGroup Γ] [IsOrderedAddMonoid Γ]
-[Module S Γ] [AddAction Γ Γ₁] [IsOrderedCancelVAdd Γ Γ₁]
+  [Module S Γ] [AddAction Γ Γ₁] [IsOrderedCancelVAdd Γ Γ₁]
 
 theorem exists_binomialPow_smul_support_bound {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
     (A : HVertexOperator Γ₁ R V W) (v : V) :
@@ -196,8 +196,8 @@ theorem exists_binomialPow_smul_support_bound {g g' : Γ} (g₁ : Γ₁) (h : g 
       (sub_lt_sub_left (nsmul_lt_nsmul_left (sub_pos.mpr h) hkl) (-(n • g))) <| Preorder.le_refl g₁
 
 variable {Γ : Type*} [LinearOrder Γ] [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [AddAction Γ Γ₁]
-[IsOrderedCancelVAdd Γ Γ₁] [BinomialRing S] [Module S W] [Algebra S R] [IsScalarTower S R W]
-[Module S Γ]
+  [IsOrderedCancelVAdd Γ Γ₁] [BinomialRing S] [Module S W] [Algebra S R] [IsScalarTower S R W]
+  [Module S Γ]
 
 theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
     (A : HVertexOperator Γ₁ R V W) (v : V) :
@@ -214,7 +214,7 @@ theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
     · refine Finset.sum_of_injOn (fun k ↦ k) (Function.Injective.injOn fun ⦃x y⦄ a ↦ a) ?_ ?_ ?_
       · rw [Set.mapsTo_iff_image_subset, Set.image_id', Finset.coe_subset]
         intro ij hij
-        obtain ⟨h₁, h₂, h₃⟩ := (Finset.mem_vaddAntidiagonal _ _ _).mp hij
+        obtain ⟨h₁, h₂, h₃⟩ := (Finset.mem_vaddAntidiagonal _ _).mp hij
         rw [HahnSeries.mem_support] at h₁
         have hij1 : ∃ k : ℕ, (n • g + k • (g' - g)) = ij.1 := by
           contrapose! h₁
