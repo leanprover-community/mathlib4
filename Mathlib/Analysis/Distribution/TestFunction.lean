@@ -744,33 +744,45 @@ lemma integralAgainstBilinCLM_ofSupportedIn {B : F₁ →L[𝕜] F₂ →L[𝕜]
 
 end Integral
 
-section Multiplication
+-- section Multiplication
 
-section bilin
+-- section bilin
 
-variable {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃ G: Type*}
-  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
-  [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] [NormedSpace ℝ F₂]
-  [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃]
+-- variable {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃ G: Type*}
+--   [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
+--   [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] [NormedSpace ℝ F₂]
+--   [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃]
 
-variable [NormedAlgebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F₁] [NormedSpace ℝ F₃] [IsScalarTower ℝ 𝕜 F₃]
+-- variable [NormedAlgebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F₁] [NormedSpace ℝ F₃] [IsScalarTower ℝ 𝕜 F₃]
 
-theorem tsupport_bilinLeft (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (f : E → F₁) :
-    tsupport (fun x ↦ B (f x) (g x)) ⊆ tsupport f := by
-  apply closure_mono
-  aesop
+-- theorem tsupport_bilinLeft (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (g : E → F₂) (f : E → F₁) :
+--     tsupport (fun x ↦ B (f x) (g x)) ⊆ tsupport f := by
+--   apply closure_mono
+--   aesop
 
-def bilinLeft_toTestFunction (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g)
-    (φ : 𝓓^{n}(Ω, F₁)) :  𝓓^{n}(Ω, F₃) where
-  toFun := fun x ↦ B (φ x) (g x)
-  contDiff' :=
-    (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp ((φ.contDiff).prodMk hg)
-  hasCompactSupport' := by
-    apply φ.hasCompactSupport.of_isClosed_subset (isClosed_tsupport (fun x ↦ B (φ x) (g x)))
-    apply tsupport_bilinLeft
-  tsupport_subset' := le_trans (tsupport_bilinLeft B φ) φ.tsupport_subset
+-- noncomputable def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g):
+--     𝓓^{n}(Ω, F₁) →L[𝕜] 𝓓^{n}(Ω, F₃) :=
+--   TestFunction.mkCLM 𝕜
+--   (fun φ ↦ ⟨fun x ↦ B (φ x) (g x),
+--     ((B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp ((φ.contDiff).prodMk hg)),
+--     φ.hasCompactSupport.of_isClosed_subset
+--       (isClosed_tsupport (fun x ↦ B (φ x) (g x)))
+--       (tsupport_bilinLeft _ _ _),
+--     le_trans (tsupport_bilinLeft _ _ _) φ.tsupport_subset⟩)
+--   (by
+--     intro φ ψ
+--     simp only [_root_.add_apply, map_add]
+--     congr)
+--   (by
+--     intro c φ
+--     simp only [_root_.smul_apply, map_smul]
+--     congr)
+--   (by
+--     intro K hK
+--   )
 
-end bilin
+
+-- end bilin
 
 
 
