@@ -197,7 +197,7 @@ monotonically maps `s` onto `t`, then `φ` is just a translation (on `s`).
 theorem unique_unit_speed {φ : ℝ → ℝ} (φm : MonotoneOn φ s) (hfφ : HasUnitSpeedOn (f ∘ φ) s)
     (hf : HasUnitSpeedOn f (φ '' s)) ⦃x : ℝ⦄ (xs : x ∈ s) : EqOn φ (fun y => y - x + φ x) s := by
   dsimp only [HasUnitSpeedOn] at hf hfφ
-  convert! HasConstantSpeedOnWith.ratio one_ne_zero φm hfφ hf xs using 3
+  convert HasConstantSpeedOnWith.ratio one_ne_zero φm hfφ hf xs
   simp
 
 /-- If both `f` and `f ∘ φ` have unit speed (on `Icc 0 t` and `Icc 0 s` respectively)
@@ -208,11 +208,15 @@ theorem unique_unit_speed_on_Icc_zero {s t : ℝ} (hs : 0 ≤ s) (ht : 0 ≤ t) 
     (hfφ : HasUnitSpeedOn (f ∘ φ) (Icc 0 s)) (hf : HasUnitSpeedOn f (Icc 0 t)) :
     EqOn φ id (Icc 0 s) := by
   rw [← φst] at hf
-  convert unique_unit_speed φm hfφ hf ⟨le_rfl, hs⟩ using 1
-  have hφ0 : φ 0 = 0 :=
-    (φm.map_isLeast (isLeast_Icc hs)).unique <| by
-      simpa [φst] using (isLeast_Icc ht : IsLeast (Icc 0 t) 0)
-  exact funext fun y => by simp [hφ0]
+  convert unique_unit_speed φm hfφ hf ⟨le_rfl, hs⟩
+  have : φ 0 = 0 := by
+    have hm : 0 ∈ φ '' Icc 0 s := by simp only [φst, ht, mem_Icc, le_refl, and_self]
+    obtain ⟨x, xs, hx⟩ := hm
+    apply le_antisymm ((φm ⟨le_rfl, hs⟩ xs xs.1).trans_eq hx) _
+    have := φst ▸ mapsTo_image φ (Icc 0 s)
+    exact (mem_Icc.mp (@this 0 (by rw [mem_Icc]; exact ⟨le_rfl, hs⟩))).1
+  simp only [tsub_zero, this, add_zero]
+  rfl
 
 /-- The natural parameterization of `f` on `s`, which, if `f` has locally bounded variation on `s`,
 * has unit speed on `s` (by `has_unit_speed_naturalParameterization`).
