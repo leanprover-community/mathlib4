@@ -8,6 +8,8 @@ module
 public meta import Mathlib.Util.AtLocation
 public import Mathlib.Data.ZMod.Basic  -- shake: keep (Qq dependency)
 public import Mathlib.RingTheory.Polynomial.Basic  -- shake: keep (Qq dependency)
+public import Mathlib.Tactic.NormNum.DivMod
+import all Mathlib.Tactic.NormNum.DivMod
 public import Mathlib.Tactic.NormNum.PowMod
 public import Mathlib.Tactic.ReduceModChar.Ext
 
