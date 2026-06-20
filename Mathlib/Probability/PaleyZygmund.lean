@@ -77,8 +77,8 @@ theorem paley_zygmund [IsProbabilityMeasure μ] {Z : Ω → ℝ} (hZ_nn : 0 ≤�
             ENNReal.toReal_nonneg
   calc
     (1 - θ) ^ 2 * (∫ ω, Z ω ∂μ) ^ 2 = ((1 - θ) * (∫ ω, Z ω ∂μ)) ^ 2 := by ring
-    _ ≤ (∫ ω in S, Z ω ∂μ) ^ 2 := by
-      apply pow_le_pow_left₀ (mul_nonneg (sub_nonneg.mpr hθ1) hZ_int_nn) h_lower
+    _ ≤ (∫ ω in S, Z ω ∂μ) ^ 2 := 
+      pow_le_pow_left₀ (mul_nonneg (sub_nonneg.mpr hθ1) hZ_int_nn) h_lower 2
     _ ≤ (∫ ω, Z ω ^ 2 ∂μ ) * (μ S).toReal:= h_cs
 
 
