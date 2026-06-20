@@ -72,9 +72,8 @@ theorem paley_zygmund [IsProbabilityMeasure μ] {Z : Ω → ℝ} (hZ_nn : 0 ≤�
       calc
         (∫ ω in S, Z ω ∂μ) ^ 2 ≤ (∫ ω in S, Z ω ^ 2 ∂μ) * (μ S).toReal := h_jensen
         _ ≤ (∫ ω, Z ω ^ 2 ∂μ) * (μ S).toReal :=
-          mul_le_mul_of_nonneg_right
-            (setIntegral_le_integral hZ2.integrable_sq (ae_of_all μ (fun x => sq_nonneg (Z x))))
-            ENNReal.toReal_nonneg
+          gcongr ?_ * ?_
+          exact setIntegral_le_integral hZ2.integrable_sq (ae_of_all μ (fun x => sq_nonneg (Z x)))
   calc
     (1 - θ) ^ 2 * (∫ ω, Z ω ∂μ) ^ 2 = ((1 - θ) * (∫ ω, Z ω ∂μ)) ^ 2 := by ring
     _ ≤ (∫ ω in S, Z ω ∂μ) ^ 2 :=
