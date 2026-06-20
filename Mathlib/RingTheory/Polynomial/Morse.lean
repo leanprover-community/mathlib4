@@ -164,16 +164,15 @@ open scoped Pointwise
 
 #check IsPrimitive.irreducible_iff_irreducible_map_fraction_map
 
-theorem tada''' (f₀ : ℤ[X]) (hf₀ : Irreducible f₀) (hf₉' : f₀.Monic)
+theorem tada' (f₀ : ℤ[X]) (hf₀ : Irreducible f₀) (hf₉' : f₀.Monic)
     (h : ∀ (F : Type) [Field F], (f₀.map (algebraMap ℤ F)).Splits →
       f₀.natDegree ≤ (f₀.rootSet F).ncard + 1) :
-    Function.Surjective (MulAction.toPermHom (f₀.map (algebraMap ℤ ℚ)).Gal ((f₀.map (algebraMap ℤ ℚ)).rootSet ℂ)) := by
-  by_cases nd : f₀.natDegree = 0
-  · sorry
+    Function.Bijective (Gal.galActionHom (f₀.map (algebraMap ℤ ℚ)) ℂ) := by
+  -- by_cases nd : f₀.natDegree = 0
+  -- · sorry
   classical
   let f : ℚ[X] := f₀.map (algebraMap ℤ ℚ)
-  have hf' : Irreducible f :=
-    (hf₀.isPrimitive nd).irreducible_iff_irreducible_map_fraction_map.mp hf₀
+  have hf' : Irreducible f := hf₉'.irreducible_iff_irreducible_map_fraction_map.mp hf₀
   let K := f.SplittingField
   have : Fact (f.map (algebraMap ℚ K)).Splits := ⟨SplittingField.splits f⟩
   have : NumberField K := by constructor
@@ -190,7 +189,7 @@ theorem tada''' (f₀ : ℤ[X]) (hf₀ : Irreducible f₀) (hf₉' : f₀.Monic)
   have : MulAction.IsPretransitive G (f₀.rootSet R) := sorry
   let e := Polynomial.Gal.rootsEquivRoots f ℂ
   suffices Function.Surjective (MulAction.toPermHom G (f₀.rootSet R)) by
-    change Function.Surjective (MulAction.toPermHom G (f.rootSet ℂ))
+    use Polynomial.Gal.galActionHom_injective (f₀.map (algebraMap ℤ ℚ)) ℂ
     sorry
   have h1 : (f₀.map (algebraMap ℤ R)).Splits := by
     -- might require monic
@@ -202,13 +201,6 @@ theorem tada''' (f₀ : ℤ[X]) (hf₀ : Irreducible f₀) (hf₉' : f₀.Monic)
   refine le_trans (f₀.ncard_rootSet_le R) (h (R ⧸ m.asIdeal) ?_)
   rw [IsScalarTower.algebraMap_eq ℤ R, ← Polynomial.map_map]
   exact h1.map _
-
-theorem tada'' (f₀ : ℤ[X]) (hf₀ : Irreducible f₀) (hf₀' : f₀.Monic)
-    (h : ∀ (F : Type) [Field F], (f₀.map (algebraMap ℤ F)).Splits →
-      f₀.natDegree ≤ (f₀.rootSet F).ncard + 1) :
-    Function.Bijective (Gal.galActionHom (f₀.map (algebraMap ℤ ℚ)) ℂ) := by
-  use Polynomial.Gal.galActionHom_injective (f₀.map (algebraMap ℤ ℚ)) ℂ
-  exact tada''' f₀ hf₀ hf₀' h
 
 -- theorem tada'''' (f₀ : ℤ[X]) (hf₀ : Monic f₀) (hf₀' : Irreducible f₀)
 --     (h : ∀ (F : Type) [Field F], (f₀.map (algebraMap ℤ F)).Splits →
