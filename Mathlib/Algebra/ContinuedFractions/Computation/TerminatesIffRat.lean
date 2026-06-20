@@ -36,7 +36,7 @@ namespace GenContFract
 
 open GenContFract (of)
 
-variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
+variable {K : Type*} [Field K] [LinearOrder K] [FloorRing K]
 
 /-
 We will have to constantly coerce along our structures in the following proofs using their provided
@@ -150,7 +150,7 @@ the Computation first and then lift the results step-by-step.
 
 
 -- The lifting works for arbitrary linear ordered fields with a floor function.
-variable {v : K} {q : ℚ}
+variable [IsStrictOrderedRing K] {v : K} {q : ℚ}
 
 /-! First, we show the correspondence for the very basic functions in
 `GenContFract.IntFractPair`. -/
@@ -176,9 +176,7 @@ theorem coe_stream_nth_rat_eq (v_eq_q : v = (↑q : K)) (n : ℕ) :
       obtain ⟨b, fr⟩ := ifp_n
       rcases Decidable.em (fr = 0) with fr_zero | fr_ne_zero
       · simp [IntFractPair.stream, IH.symm, v_eq_q, stream_q_nth_eq, fr_zero]
-      · replace IH : some (IntFractPair.mk b (fr : K)) = IntFractPair.stream (↑q) n := by
-          rwa [stream_q_nth_eq] at IH
-        have : (fr : K)⁻¹ = ((fr⁻¹ : ℚ) : K) := by norm_cast
+      · have : (fr : K)⁻¹ = ((fr⁻¹ : ℚ) : K) := by norm_cast
         have coe_of_fr := coe_of_rat_eq this
         simpa [IntFractPair.stream, IH.symm, v_eq_q, stream_q_nth_eq, fr_ne_zero]
 
@@ -216,11 +214,8 @@ theorem coe_of_rat_eq (v_eq_q : v = (↑q : K)) :
 
 theorem of_terminates_iff_of_rat_terminates {v : K} {q : ℚ} (v_eq_q : v = (q : K)) :
     (of v).Terminates ↔ (of q).Terminates := by
-  constructor <;> intro h <;> obtain ⟨n, h⟩ := h <;> use n <;>
-    simp only [Stream'.Seq.TerminatedAt, (coe_of_s_get?_rat_eq v_eq_q n).symm] at h ⊢ <;>
-    cases h' : (of q).s.get? n <;>
-    simp only [h'] at h <;>
-    trivial
+  refine exists_congr fun n => ?_
+  rcases h : (of q).s.get? n <;> grind [Stream'.Seq.TerminatedAt, coe_of_s_get?_rat_eq v_eq_q n]
 
 end RatTranslation
 
@@ -313,10 +308,9 @@ theorem terminates_of_rat (q : ℚ) : (of q).Terminates :=
 end TerminatesOfRat
 
 /-- The continued fraction `GenContFract.of v` terminates if and only if `v ∈ ℚ`. -/
-theorem terminates_iff_rat (v : K) : (of v).Terminates ↔ ∃ q : ℚ, v = (q : K) :=
-  Iff.intro
-    (fun terminates_v : (of v).Terminates =>
-      show ∃ q : ℚ, v = (q : K) from exists_rat_eq_of_terminates terminates_v)
+theorem terminates_iff_rat [IsStrictOrderedRing K] (v : K) :
+    (of v).Terminates ↔ ∃ q : ℚ, v = (q : K) :=
+  Iff.intro exists_rat_eq_of_terminates
     fun exists_q_eq_v : ∃ q : ℚ, v = (↑q : K) =>
     Exists.elim exists_q_eq_v fun q => fun v_eq_q : v = ↑q =>
       have : (of q).Terminates := terminates_of_rat q

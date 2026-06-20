@@ -185,7 +185,7 @@ theorem isClosed_iUnion_of_finite [Finite ι] {s : ι → Set X} (h : ∀ i, IsC
 
 theorem isClosed_imp {p q : X → Prop} (hp : IsOpen { x | p x }) (hq : IsClosed { x | q x }) :
     IsClosed { x | p x → q x } := by
-  simpa only [imp_iff_not_or] using hp.isClosed_compl.union hq
+  simpa only [imp_iff_not_or] using! hp.isClosed_compl.union hq
 
 theorem IsClosed.not : IsClosed { a | p a } → IsOpen { a | ¬p a } :=
   isOpen_compl_iff.mpr
