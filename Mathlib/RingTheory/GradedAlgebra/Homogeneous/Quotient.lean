@@ -5,6 +5,8 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
+public import Mathlib.Algebra.Module.Congruence.Defs
+
 public import Mathlib.Algebra.RingQuot
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
@@ -49,36 +51,143 @@ open DirectSum Function
 
 namespace Rel
 
-open DirectSum Function
+section AddCommMonoid
 
-variable {R ι A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-  (𝒜 : ι → Submodule R A) (rel : A → A → Prop)
+variable {M ι : Type*} [AddCommMonoid M]
+    {σ : Type*} (ℳ : ι → σ) [SetLike σ M] [AddSubmonoidClass σ M]
+    (r : AddCon M)
 
-/-- The graded pieces of `RingQuot rel`. -/
-def quotSubmodule (i : ι) : Submodule R (RingQuot rel) :=
-  Submodule.map (RingQuot.mkAlgHom R rel).toLinearMap (𝒜 i)
+include ℳ in
+/-- The graded pieces of `r.Quotient` induced from the graduation `ℳ` of `M` -/
+def quotAddSubmonoid (i : ι) : AddSubmonoid r.Quotient :=
+  AddSubmonoid.map r.mk' (AddSubmonoid.ofClass (ℳ i))
 
-theorem mem_quotSubmodule_iff {x : RingQuot rel} {i : ι} :
-    x ∈ quotSubmodule 𝒜 rel i ↔ ∃ y ∈ 𝒜 i, RingQuot.mkAlgHom R rel y = x := by
-  simp [quotSubmodule]
+theorem mem_quotAddSubmonoid_iff {x : r.Quotient} {i : ι} :
+    x ∈ quotAddSubmonoid ℳ r i ↔ ∃ y ∈ ℳ i, r.mk' y = x := by
+  simp [quotAddSubmonoid, AddSubmonoid.ofClass]
 
-/-- The canonical `LinearMap` from the graded pieces of `A` to that of `RingQuot rel` . -/
-def quotSubmoduleMap (i : ι) : 𝒜 i →ₗ[R] quotSubmodule 𝒜 rel i :=
-  (RingQuot.mkAlgHom R rel).toLinearMap.submoduleMap (𝒜 i)
+/-- The canonical `AddMonoidHom` from the graded pieces of `M` to that of `r.Quotient` . -/
+def quotAddSubmonoidMap (i : ι) : ℳ i →+ quotAddSubmonoid ℳ r i :=
+  r.mk'.addSubmonoidMap (AddSubmonoid.ofClass (ℳ i))
 
 @[simp]
-theorem coe_quotSubmoduleMap (i : ι) (y : 𝒜 i) :
-    (quotSubmoduleMap 𝒜 rel i y : RingQuot rel) = RingQuot.mkAlgHom R rel y :=
-  LinearMap.submoduleMap_coe_apply _ y
+theorem coe_quotAddSubmonoidMap (i : ι) (y : ℳ i) :
+    (quotAddSubmonoidMap ℳ r i y : r.Quotient) = r.toQuotient y :=
+  r.mk'.addSubmonoidMap_apply_coe (AddSubmonoid.ofClass (ℳ i)) y
 
-theorem coeLinearMap_quotSubmodule_comp_lmap_quotSubmoduleMap [DecidableEq ι] :
-    (coeLinearMap (quotSubmodule 𝒜 rel)) ∘ₗ (lmap (quotSubmoduleMap 𝒜 rel)) =
-      (RingQuot.mkAlgHom R rel).toLinearMap ∘ₗ (coeLinearMap 𝒜) := by
+end AddCommMonoid
+
+section Module
+
+variable {R ι M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+    {σ : Type*} (ℳ : ι → σ) [SetLike σ M] [AddSubmonoidClass σ M] [SMulMemClass σ R M]
+    (r : ModuleCon R M)
+
+
+include ℳ in
+/-- The graded pieces of `r.Quotient` induced from the graduation `ℳ` of `M` -/
+def quotSubmodule (i : ι) : Submodule R r.Quotient :=
+  Submodule.map r.mk' (Submodule.ofClass (ℳ i))
+
+theorem mem_quotSubmodule_iff {x : r.Quotient} {i : ι} :
+    x ∈ quotSubmodule ℳ r i ↔ ∃ y ∈ ℳ i, r.mk' y = x := by
+  simp [quotSubmodule, Submodule.ofClass]
+
+/-- The canonical `LinearMap` from the graded pieces of `M` to that of `r.Quotient` . -/
+def quotSubmoduleMap (i : ι) : ℳ i →ₗ[R] quotSubmodule ℳ r i :=
+  r.mk'.submoduleMap (Submodule.ofClass (ℳ i))
+
+@[simp]
+theorem coe_quotSubmoduleMap (i : ι) (y : ℳ i) :
+    (quotSubmoduleMap ℳ r i y : r.Quotient) = r.toQuotient y :=
+  LinearMap.submoduleMap_coe_apply r.mk' (p := Submodule.ofClass (ℳ i)) y
+
+end Module
+
+section Semiring
+
+variable {R ι A : Type*} [Semiring A]
+    {σ : Type*} (𝒜 : ι → σ) [SetLike σ A] [AddSubmonoidClass σ A]
+    (r : RingCon A)
+
+include 𝒜 in
+/-- The graded pieces of `r.Quotient` induced from the graduation `𝒜` of `A` -/
+def quotAddSubmonoid' (i : ι) : AddSubmonoid r.Quotient :=
+  AddSubmonoid.map r.mk' (AddSubmonoid.ofClass (𝒜 i))
+
+theorem mem_quotAddSubmonoid_iff' {x : r.Quotient} {i : ι} :
+    x ∈ quotAddSubmonoid' 𝒜 r i ↔ ∃ y ∈ 𝒜 i, r.mk' y = x := by
+  simp [quotAddSubmonoid', AddSubmonoid.ofClass]
+
+/-- The canonical `AddMonoidHom` from the graded pieces of `A` to that of `r.Quotient` . -/
+def quotAddSubmonoidMap' (i : ι) : 𝒜 i →+ quotAddSubmonoid' 𝒜 r i :=
+  r.mk'.addSubmonoidMap (AddSubmonoid.ofClass (𝒜 i))
+
+@[simp]
+theorem coe_quotAddSubmonoidMap' (i : ι) (y : 𝒜 i) :
+    (quotAddSubmonoidMap' 𝒜 r i y : r.Quotient) = r.toQuotient y :=
+  r.mk'.addSubmonoidMap_apply_coe (AddSubmonoid.ofClass (𝒜 i)) y
+
+open SetLike in
+theorem GradedMonoid.addSubmonoidMap [AddMonoid ι] [GradedMonoid 𝒜]
+    {B : Type*} [Semiring B] (f : A →+* B) :
+    SetLike.GradedMonoid
+      (fun i ↦ AddSubmonoid.map f (AddSubmonoid.ofClass (𝒜 i))) where
+  one_mem := ⟨1, GradedOne.one_mem, by simp⟩
+  mul_mem i j x y := by
+    rintro ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩
+    exact ⟨a * b, ⟨GradedMul.mul_mem ha hb, by simp [map_mul]⟩⟩
+
+open SetLike in
+instance [AddMonoid ι] [GradedMonoid 𝒜] :
+    SetLike.GradedMonoid (quotAddSubmonoid' 𝒜 r) :=
+  GradedMonoid.addSubmonoidMap 𝒜 r.mk'
+
+end Semiring
+
+section Algebra
+
+/- Useless
+/-- A congruence relation that preserves an algebra structure. -/
+structure AlgebraCon (R A : Type*) [Add A] [Mul A] [SMul R A]
+  extends RingCon A, ModuleCon R A
+-/
+
+variable {R ι A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+  -- The `SubmoduleClass` variant
+  -- {σ : Type*} [SetLike σ A] [AddSubmonoidClass σ A] [SMulMemClass σ R A] (𝒜 : ι → σ)
+  (𝒜 : ι → Submodule R A)
+  (r : RingCon A)
+
+/-- The graded pieces of `RingCon.Quotient`. -/
+def quotSubmodule' (i : ι) : Submodule R r.Quotient :=
+  Submodule.map (r.mkₐ R).toLinearMap (𝒜 i)
+  -- could be: (Submodule.ofClass (𝒜 i))
+
+theorem mem_quotSubmodule'_iff {x : r.Quotient} {i : ι} :
+    x ∈ quotSubmodule' 𝒜 r i ↔ ∃ y ∈ 𝒜 i, r.toQuotient y = x := by
+  simp [quotSubmodule']
+  -- then add: Submodule.ofClass
+
+/-- The canonical `LinearMap` from the graded pieces of `A` to that of `RingCon r` . -/
+def quotSubmoduleMap' (i : ι) : 𝒜 i →ₗ[R] quotSubmodule' 𝒜 r i :=
+  (r.mkₐ R).toLinearMap.submoduleMap (𝒜 i)
+  -- could be: (Submodule.ofClass (𝒜 i))
+
+@[simp] theorem coe_quotSubmoduleMap' (i : ι) (y : 𝒜 i) :
+    (quotSubmoduleMap' 𝒜 r i y : r.Quotient) = r.toQuotient y :=
+  LinearMap.submoduleMap_coe_apply _ _
+
+-- TODO: Doesn't work for the `SubmoduleClass` variant,
+-- `coLinearMap` needs to be generalized
+theorem coeLinearMap_quotSubmodule_comp_lmap_quotSubmoduleMap' [DecidableEq ι] :
+    (coeLinearMap (quotSubmodule' 𝒜 r)) ∘ₗ (lmap (quotSubmoduleMap' 𝒜 r)) =
+      (r.mkₐ R).toLinearMap ∘ₗ (coeLinearMap 𝒜) := by
   ext; simp
 
 open SetLike in
 theorem GradedMonoid.submoduleMap {B : Type*} [Semiring B] [Algebra R B] (f : A →ₐ[R] B)
-    [AddMonoid ι] [SetLike.GradedMonoid 𝒜] :
+    [AddMonoid ι] [GradedMonoid 𝒜] :
     SetLike.GradedMonoid (fun i ↦ Submodule.map f.toLinearMap (𝒜 i)) where
   one_mem := ⟨1, GradedOne.one_mem, by simp⟩
   mul_mem i j x y := by
@@ -87,35 +196,32 @@ theorem GradedMonoid.submoduleMap {B : Type*} [Semiring B] [Algebra R B] (f : A 
 
 open SetLike in
 instance [AddMonoid ι] [GradedMonoid 𝒜] :
-    GradedMonoid (quotSubmodule 𝒜 rel) :=
+    SetLike.GradedMonoid (quotSubmodule' 𝒜 r) :=
   GradedMonoid.submoduleMap _ _
 
 @[simp]
 theorem coeLinearMap_quotSubmodule_lmap_quotSubmoduleMap_apply [DecidableEq ι] (x : ⨁ i, 𝒜 i) :
-    coeLinearMap (quotSubmodule 𝒜 rel) (lmap (quotSubmoduleMap 𝒜 rel) x) =
-      (RingQuot.mkAlgHom R rel) (coeLinearMap 𝒜 x) :=
-  DFunLike.congr_fun (coeLinearMap_quotSubmodule_comp_lmap_quotSubmoduleMap 𝒜 rel) x
+    coeLinearMap (quotSubmodule' 𝒜 r) (lmap (quotSubmoduleMap' 𝒜 r) x) =
+      (r.mkₐ R) (coeLinearMap 𝒜 x) :=
+  DFunLike.congr_fun (coeLinearMap_quotSubmodule_comp_lmap_quotSubmoduleMap' 𝒜 r) x
 
 section AddCommMonoid
 
 variable [AddMonoid ι] [DecidableEq ι] [GradedAlgebra 𝒜]
 
 lemma lmap_quotSubmoduleMap_apply (i : ι) (a : ⨁ i, 𝒜 i) :
-    lmap (quotSubmoduleMap 𝒜 rel) a i =
-      RingQuot.mkAlgHom R rel (decompose 𝒜 (coeLinearMap 𝒜 a) i) := by
+    lmap (quotSubmoduleMap' 𝒜 r) a i =
+      r.toQuotient (decompose 𝒜 (coeLinearMap 𝒜 a) i) := by
   have : decompose 𝒜 (DirectSum.coeLinearMap 𝒜 a) = a := DirectSum.Decomposition.right_inv a
-  simp only [lmap_apply, quotSubmoduleMap, this]
-  exact LinearMap.submoduleMap_coe_apply _ (a i)
+  simp [lmap_apply, this]
 
 theorem coeLinearMap_quotSubmodule_surjective :
-    Surjective (coeLinearMap (quotSubmodule 𝒜 rel)) := by
+    Surjective (coeLinearMap (quotSubmodule' 𝒜 r)) := by
   intro x
-  obtain ⟨a, rfl⟩ := RingQuot.mkAlgHom_surjective R rel x
-  have e : (coeLinearMap 𝒜) ((decomposeAlgEquiv 𝒜).toLinearMap a) = a :=
-    DirectSum.Decomposition.left_inv a
-  use (lmap (quotSubmoduleMap 𝒜 rel)) ((decomposeAlgEquiv 𝒜).toLinearMap a)
-  conv_rhs => rw [← e]
-  apply coeLinearMap_quotSubmodule_lmap_quotSubmoduleMap_apply
+  obtain ⟨a, rfl⟩ := RingCon.mkₐ_surjective r x (α := R)
+  have : (coeLinearMap 𝒜) ((decompose 𝒜) a) = a := DirectSum.Decomposition.left_inv a
+  exact ⟨(lmap (quotSubmoduleMap' 𝒜 r)) ((decomposeAlgEquiv 𝒜).toLinearMap a), by simp [this]⟩
+
 
 theorem coeLinearMap_quotSubmodule_injective (hrel : Rel.IsHomogeneous 𝒜 rel) :
     Injective (coeLinearMap (quotSubmodule 𝒜 rel)) := by
