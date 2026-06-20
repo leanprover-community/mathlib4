@@ -182,8 +182,7 @@ theorem mul_log_add_E₁Λ_le (x : ℝ) :
 theorem mul_log_add_E₁p_le (x : ℝ) : x * (log x + E₁p x) ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, log n + θ x := calc
   _ = ∑ p ∈ primesLE ⌊x⌋₊, log p * (x / p) := by
     rw [←sum_log_prime_div_eq, mul_sum]; ring_nf
-  _ ≤ ∑ p ∈ primesLE ⌊x⌋₊, log p * (⌊x / p⌋₊ + 1) := by
-    gcongr; exact lt_floor_add_one _|>.le
+  _ ≤ ∑ p ∈ primesLE ⌊x⌋₊, log p * (⌊x / p⌋₊ + 1) := by gcongr; exact lt_floor_add_one _|>.le
   _ = ∑ p ∈ primesLE ⌊x⌋₊, log p * ⌊x / p⌋₊ + θ x := by
     simp [mul_add, sum_add_distrib, theta, primesLE_eq_filter_Ioc_zero]
   _ ≤ _ := by
@@ -216,10 +215,9 @@ theorem e₁_summable : Summable e₁ := by
   · have : 2 ≤ (p : ℝ) := mod_cast h.two_le
     have denom : (p : ℝ) * ((p : ℝ) - 1) ≥ p ^ 2 / 2 := by nlinarith
     grw [log_le_rpow_div (cast_nonneg _) (by norm_num : 0 < (1 : ℝ) / 2), denom]
-    · rw [← rpow_natCast]
-      field_simp
+    · field_simp
       rw [mul_assoc, ← rpow_add (by positivity)]
-      ring_nf; rfl
+      ring_nf; norm_cast
     grind
   · positivity
 
@@ -262,7 +260,7 @@ theorem E₁_le : E₁ ≤ 1 := by
       have : (2 * t + 3) ≠ 0 := by linarith
       fun_prop (disch := grind)
     · refine fun t ht ↦ DifferentiableAt.differentiableWithinAt ?_
-      simp only [interior_Icc, Set.mem_Ioo] at ht
+      rw [interior_Icc, Set.mem_Ioo] at ht
       have : (2 * t + 3) ^ 2 ≠ 0 := by simp; linarith
       fun_prop (disch := grind)
     · intro t ht
@@ -309,7 +307,7 @@ theorem E₁Λ_le_E₁p_add_E₁ {x : ℝ} (hx : 1 ≤ x) :
   _ = ∑ k ∈ Icc 1 ⌊log x / log 2⌋₊, ∑ p ∈ primesLE ⌊x ^ (1 / (k : ℝ))⌋₊, log p / (p ^ k : ℕ) := by
     simp only [primesLE_eq_filter_Ioc_zero]
     refine sum_congr rfl fun k hk ↦ sum_congr rfl fun p hp ↦ ?_
-    rw [Prime.pow_minFac (by simp_all) (by simp_all; linarith)]
+    rw [Prime.pow_minFac (by simp_all) (by grind)]
   _ ≤ ∑ k ∈ Icc 1 ⌊log x / log 2⌋₊, ∑ p ∈ primesLE ⌊x⌋₊, log p / (p ^ k : ℕ) := by
     simp only [primesLE_eq_filter_Ioc_zero]
     gcongr with k hk
