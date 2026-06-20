@@ -46,6 +46,7 @@ set_option backward.privateInPublic true in
 private def lbp (m n : ℕ) : Prop :=
   m = n + 1 ∧ ∀ k ≤ n, false ∈ p k
 
+set_option linter.defProp false in
 set_option backward.privateInPublic true in
 private def wf_lbp (H : ∃ n, true ∈ p n ∧ ∀ k < n, (p k).Dom) : WellFounded (lbp p) :=
   ⟨by
@@ -236,6 +237,7 @@ def Partrec₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ] (f 
 
 /-- Computable functions `α → σ` between `Primcodable` types:
   a function is computable if and only if it is partially recursive (as a partial function) -/
+@[wikidata Q1148456]
 def Computable {α σ} [Primcodable α] [Primcodable σ] (f : α → σ) :=
   Partrec (f : α →. σ)
 
