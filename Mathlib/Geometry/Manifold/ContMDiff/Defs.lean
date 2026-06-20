@@ -281,36 +281,37 @@ theorem contMDiffAt_iff_target {x : M} :
       ContinuousAt f x ∧ ContMDiffAt I 𝓘(𝕜, E') n (extChartAt I' (f x) ∘ f) x := by
   rw [ContMDiffAt, ContMDiffAt, contMDiffWithinAt_iff_target, continuousWithinAt_univ]
 
+theorem continuousWithinAt_iff_source :
+    ContinuousWithinAt f s x ↔
+      ContinuousWithinAt (f ∘ (extChartAt I x).symm)
+        ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · apply h.comp_of_eq
+    · exact (continuousAt_extChartAt_symm x).continuousWithinAt
+    · exact (mapsTo_preimage _ _).mono_left inter_subset_left
+    · exact extChartAt_to_inv x
+  · rw [← continuousWithinAt_inter (extChartAt_source_mem_nhds (I := I) x)]
+    have : ContinuousWithinAt ((f ∘ ↑(extChartAt I x).symm) ∘ ↑(extChartAt I x))
+        (s ∩ (extChartAt I x).source) x := by
+      apply h.comp (continuousAt_extChartAt x).continuousWithinAt
+      intro y hy
+      have : (chartAt H x).symm ((chartAt H x) y) = y :=
+        OpenPartialHomeomorph.left_inv _ (by simpa using hy.2)
+      simpa [this] using hy.1
+    apply this.congr
+    · intro y hy
+      have : (chartAt H x).symm ((chartAt H x) y) = y :=
+        OpenPartialHomeomorph.left_inv _ (by simpa using hy.2)
+      simp [this]
+    · simp
+
 /-- One can reformulate being `Cⁿ` within a set at a point as being `Cⁿ` in the source space when
 composing with the extended chart. -/
 theorem contMDiffWithinAt_iff_source :
     ContMDiffWithinAt I I' n f s x ↔
       ContMDiffWithinAt 𝓘(𝕜, E) I' n (f ∘ (extChartAt I x).symm)
         ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x) := by
-  simp_rw [ContMDiffWithinAt, liftPropWithinAt_iff']
-  have : ContinuousWithinAt f s x
-      ↔ ContinuousWithinAt (f ∘ ↑(extChartAt I x).symm) (↑(extChartAt I x).symm ⁻¹' s ∩ range ↑I)
-        (extChartAt I x x) := by
-    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · apply h.comp_of_eq
-      · exact (continuousAt_extChartAt_symm x).continuousWithinAt
-      · exact (mapsTo_preimage _ _).mono_left inter_subset_left
-      · exact extChartAt_to_inv x
-    · rw [← continuousWithinAt_inter (extChartAt_source_mem_nhds (I := I) x)]
-      have : ContinuousWithinAt ((f ∘ ↑(extChartAt I x).symm) ∘ ↑(extChartAt I x))
-          (s ∩ (extChartAt I x).source) x := by
-        apply h.comp (continuousAt_extChartAt x).continuousWithinAt
-        intro y hy
-        have : (chartAt H x).symm ((chartAt H x) y) = y :=
-          OpenPartialHomeomorph.left_inv _ (by simpa using hy.2)
-        simpa [this] using hy.1
-      apply this.congr
-      · intro y hy
-        have : (chartAt H x).symm ((chartAt H x) y) = y :=
-          OpenPartialHomeomorph.left_inv _ (by simpa using hy.2)
-        simp [this]
-      · simp
-  rw [← this]
+  simp_rw [ContMDiffWithinAt, liftPropWithinAt_iff', ← continuousWithinAt_iff_source]
   simp only [ContDiffWithinAtProp, mfld_simps, preimage_comp, comp_assoc]
 
 /-- One can reformulate being `Cⁿ` at a point as being `Cⁿ` in the source space when
@@ -382,6 +383,23 @@ theorem contMDiffWithinAt_iff_of_mem_maximalAtlas (he : e ∈ maximalAtlas I n M
         ContDiffWithinAt 𝕜 n (e'.extend I' ∘ f ∘ (e.extend I).symm)
           ((e.extend I).symm ⁻¹' s ∩ range I) (e.extend I x) :=
   (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_indep_chart he hx he' hy
+
+/-- An alternative version of `contMDiffWithinAt_iff_of_mem_maximalAtlas` which takes a
+chart `e'` in the target in the maximal atlas, but uses the preferred chart on the domain. -/
+theorem contMDiffWithinAt_iff_of_mem_maximalAtlas'
+    (he' : e' ∈ maximalAtlas I' n M') (hy : f x ∈ e'.source) :
+    ContMDiffWithinAt I I' n f s x ↔
+      ContinuousWithinAt f s x ∧
+        ContDiffWithinAt 𝕜 n (e'.extend I' ∘ f ∘ (extChartAt I x).symm)
+          ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x) := by
+  rw [contMDiffWithinAt_iff_source,
+    contMDiffWithinAt_iff_target_of_mem_maximalAtlas he' (by simpa)]
+  apply and_congr continuousWithinAt_iff_source.symm
+  -- TODO: this is `contMDiffWithinAt_iff_contDiffWithinAt` copied,
+  -- which is not put here for import reasons
+  simp +contextual only [ContMDiffWithinAt, liftPropWithinAt_iff',
+    ContDiffWithinAtProp, iff_def, mfld_simps]
+  exact ContDiffWithinAt.continuousWithinAt
 
 /-- An alternative formulation of `contMDiffWithinAt_iff_of_mem_maximalAtlas`
 if the set `s` lies in `e.source`. -/
