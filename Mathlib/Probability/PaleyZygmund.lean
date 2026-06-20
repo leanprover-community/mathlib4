@@ -67,8 +67,8 @@ theorem paley_zygmund [IsProbabilityMeasure μ] {Z : Ω → ℝ} (hZ_nn : 0 ≤�
         rw [measureReal_def]
         exact ENNReal.toReal_pos hS (measure_ne_top μ S)
       rw [setAverage_eq, setAverage_eq, smul_eq_mul, smul_eq_mul, mul_pow, sq ((μ.real S)⁻¹),
-      mul_assoc, mul_le_mul_iff_of_pos_left (inv_pos.mpr hμS_pos), mul_comm,
-      ← div_eq_mul_inv, div_le_iff₀ hμS_pos, measureReal_def] at h_jensen
+        mul_assoc, mul_le_mul_iff_of_pos_left (inv_pos.mpr hμS_pos), mul_comm,
+        ← div_eq_mul_inv, div_le_iff₀ hμS_pos, measureReal_def] at h_jensen
       calc
         (∫ ω in S, Z ω ∂μ) ^ 2 ≤ (∫ ω in S, Z ω ^ 2 ∂μ) * (μ S).toReal := h_jensen
         _ ≤ (∫ ω, Z ω ^ 2 ∂μ) * (μ S).toReal :=
