@@ -844,12 +844,12 @@ theorem prod_top_top : (⊤ : AffineSubspace k P₁).prod (⊤ : AffineSubspace 
   ext; simp
 
 @[simp]
-theorem bot_prod (s : AffineSubspace k P₁) : s.prod (⊥ : AffineSubspace k P₂) = ⊥ := by
-  rw [AffineSubspace.ext_iff, prod_coe, bot_coe, bot_coe, Set.prod_empty]
+theorem prod_bot_right (s : AffineSubspace k P₁) : s.prod (⊥ : AffineSubspace k P₂) = ⊥ := by
+  rw [AffineSubspace.ext_iff, coe_prod, bot_coe, bot_coe, Set.prod_empty]
 
 @[simp]
-theorem prod_bot (t : AffineSubspace k P₂) : (⊥ : AffineSubspace k P₁).prod t = ⊥ := by
-  rw [AffineSubspace.ext_iff, prod_coe, bot_coe, bot_coe, Set.empty_prod]
+theorem prod_bot_left (t : AffineSubspace k P₂) : (⊥ : AffineSubspace k P₁).prod t = ⊥ := by
+  rw [AffineSubspace.ext_iff, coe_prod, bot_coe, bot_coe, Set.empty_prod]
 
 @[simp]
 theorem prod_inf_prod (s₁ s₂ : AffineSubspace k P₁) (t₁ t₂ : AffineSubspace k P₂) :
@@ -864,7 +864,7 @@ theorem _root_.vectorSpan_prod {s : Set P₁} {t : Set P₂} (hs : s.Nonempty) (
 theorem direction_prod {s : AffineSubspace k P₁} {t : AffineSubspace k P₂}
     (hs : s ≠ ⊥) (ht : t ≠ ⊥) :
     (s.prod t).direction = s.direction.prod t.direction := by
-  simp [direction, prod_coe, vectorSpan_prod ((nonempty_iff_ne_bot _).mpr hs)
+  simp [direction, coe_prod, vectorSpan_prod ((nonempty_iff_ne_bot _).mpr hs)
     ((nonempty_iff_ne_bot _).mpr ht)]
 
 theorem _root_.affineSpan_prod (s : Set P₁) (t : Set P₂) :
@@ -881,13 +881,13 @@ theorem _root_.affineSpan_prod (s : Set P₁) (t : Set P₂) :
   · obtain ⟨x, hx⟩ := hs
     obtain ⟨y, hy⟩ := ht
     use ⟨x, y⟩
-    simp only [coe_affineSpan, prod_coe, mem_inter_iff, Set.mem_prod]
+    simp only [coe_affineSpan, coe_prod, mem_inter_iff, Set.mem_prod]
     refine ⟨?_, ?_, ?_⟩ <;> apply mem_spanPoints <;> trivial
 
 theorem _root_.coe_affineSpan_prod (s : Set P₁) (t : Set P₂) :
     (affineSpan k (s ×ˢ t) : Set (P₁ × P₂)) =
       (affineSpan k s : Set P₁) ×ˢ (affineSpan k t : Set P₂) := by
-  simpa only [AffineSubspace.ext_iff, prod_coe] using (affineSpan_prod s t)
+  simpa only [AffineSubspace.ext_iff, coe_prod] using (affineSpan_prod s t)
 
 end AffineSubspace
 end Prod
