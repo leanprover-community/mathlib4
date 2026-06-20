@@ -233,17 +233,14 @@ theorem intrinsicInterior_prod_eq [AddCommGroup W] [Module 𝕜 W] [TopologicalS
   simp only [intrinsicInterior]; ext ⟨p1, p2⟩; simp only [mem_image, Set.mem_prod]
   constructor
   · rintro ⟨x, hx, hx_eq⟩
-    have hmem : e x ∈ interior (((↑) ⁻¹' s) ×ˢ ((↑) ⁻¹' t)) := by
-      rw [← himage, ← e.image_interior]; exact mem_image_of_mem e hx
-    rw [interior_prod_eq] at hmem
+    have hmem : e x ∈ interior ((↑) ⁻¹' s) ×ˢ interior ((↑) ⁻¹' t) := by
+      simp [← himage, ← e.image_interior, hx, ← interior_prod_eq]
     exact ⟨⟨(e x).1, hmem.1, by rw [hfst, hx_eq]⟩, ⟨(e x).2, hmem.2, by rw [hsnd, hx_eq]⟩⟩
   · rintro ⟨⟨a, ha, rfl⟩, ⟨b, hb, rfl⟩⟩
-    have hab : (a, b) ∈ interior (((↑) ⁻¹' s) ×ˢ ((↑) ⁻¹' t)) := by
-      rw [interior_prod_eq]; exact ⟨ha, hb⟩
-    rw [← himage, ← e.image_interior] at hab
-    obtain ⟨x, hx, hx_eq⟩ := hab
-    exact ⟨x, hx, Prod.ext (by rw [← hfst]; exact congrArg (Subtype.val ∘ Prod.fst) hx_eq)
-                             (by rw [← hsnd]; exact congrArg (Subtype.val ∘ Prod.snd) hx_eq)⟩
+    have hab : (a, b) ∈ interior (((↑) ⁻¹' s) ×ˢ ((↑) ⁻¹' t)) := by simp [interior_prod_eq, ha, hb]
+    obtain ⟨x, hx, hx_eq⟩ := by rwa [← himage, ← e.image_interior] at hab
+    exact ⟨x, hx, Prod.ext (by simp [← hfst, hx_eq]) (by simp [← hsnd, hx_eq])⟩
+
 section ImageOfHomeomorphAffineSpan
 
 variable [AddCommGroup W] [Module 𝕜 W] [TopologicalSpace Q] [AddTorsor W Q]
