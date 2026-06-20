@@ -250,13 +250,15 @@ theorem bell_eq_sum_erase {n : ℕ} (p : (n + 1).Partition) :
     left
     simpa [smul_eq_mul, p.parts_sum] using (Finset.sum_multiset_count p.parts).symm
 
-private def partitionWithPartEquiv {n a : ℕ} (ha1 : 1 ≤ a) (ha : a ≤ n + 1) :
-    {p : (n + 1).Partition // a ∈ p.parts} ≃ (n + 1 - a).Partition where
+private def partitionWithPartEquiv {n a : ℕ} (ha1 : 1 ≤ a) (ha : a ≤ n) :
+    {p : n.Partition // a ∈ p.parts} ≃ (n - a).Partition where
   toFun p := by
     refine ⟨p.1.parts.erase a, ?_, ?_⟩
     · intro _ hi
       exact p.1.parts_pos (p.1.parts.erase_subset a hi)
-    · have hs : a + (p.1.parts.erase a).sum = n + 1 := by
+    · cases n
+      · lia
+      have hs : a + (p.1.parts.erase a).sum = n + 1 := by
         simpa [p.1.parts_sum] using congrArg Multiset.sum (Multiset.cons_erase p.2)
       lia
   invFun q := ⟨⟨a ::ₘ q.parts, by grind, by simp [q.parts_sum, ha]⟩, by simp⟩
