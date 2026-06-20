@@ -1,0 +1,10 @@
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Tactic
+open Nat
+#check @Nat.gcd_rec
+#check @Nat.Coprime
+#check @Nat.coprime_iff_gcd_eq_one
+#check @Nat.gcd_zero_left
+#check @Nat.gcd_zero_right
+#check @Nat.gcd_comm
+#print Nat.Coprime

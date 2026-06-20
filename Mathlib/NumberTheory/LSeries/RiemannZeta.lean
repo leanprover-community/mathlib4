@@ -65,7 +65,6 @@ def completedRiemannZeta₀ (s : ℂ) : ℂ := completedHurwitzZetaEven₀ 0 s
 
 /-- The completed Riemann zeta function, `Λ(s)`, which satisfies
 `Λ(s) = π ^ (-s / 2) Γ(s / 2) ζ(s)` (up to a minor correction at `s = 0`). -/
-@[wikidata Q187235]
 def completedRiemannZeta (s : ℂ) : ℂ := completedHurwitzZetaEven 0 s
 
 lemma HurwitzZeta.completedHurwitzZetaEven_zero (s : ℂ) :

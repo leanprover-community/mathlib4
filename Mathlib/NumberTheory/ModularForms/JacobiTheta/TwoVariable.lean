@@ -249,7 +249,6 @@ end term_bounds
 /-- The two-variable Jacobi theta function,
 `θ z τ = ∑' (n : ℤ), cexp (2 * π * I * n * z + π * I * n ^ 2 * τ)`.
 -/
-@[wikidata Q1154787]
 def jacobiTheta₂ (z τ : ℂ) : ℂ := ∑' n : ℤ, jacobiTheta₂_term n z τ
 
 /-- Fréchet derivative of the two-variable Jacobi theta function. -/
