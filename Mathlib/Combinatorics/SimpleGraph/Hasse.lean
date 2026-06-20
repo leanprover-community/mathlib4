@@ -155,7 +155,7 @@ theorem preconnected_pathGraph (n : ℕ) : (pathGraph n).Preconnected :=
 @[deprecated (since := "2026-06-19")] alias pathGraph_preconnected := preconnected_pathGraph
 
 theorem connected_pathGraph_add_one (n : ℕ) : (pathGraph (n + 1)).Connected :=
-  ⟨pathGraph_preconnected _⟩
+  ⟨preconnected_pathGraph _⟩
 @[deprecated (since := "2026-06-19")] alias pathGraph_connected := connected_pathGraph_add_one
 
 theorem isAcyclic_pathGraph (n : ℕ) : (pathGraph n).IsAcyclic := isAcyclic_hasse_of_linearOrder _
