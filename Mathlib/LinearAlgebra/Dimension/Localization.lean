@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.LocalizedModule.Submodule
 public import Mathlib.LinearAlgebra.Dimension.DivisionRing
-public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.Localization.BaseChange
-public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.OreLocalization.OreSet
 
 /-!

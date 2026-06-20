@@ -5,12 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.CategoryTheory.Action.Basic
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.GroupTheory.GroupAction.Quotient
-public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
 # Constructors for `Action V G` for some concrete categories

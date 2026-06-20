@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Finset.Defs
 public import Mathlib.Data.Multiset.ZeroCons
-public import Aesop
 
 /-!
 # Empty and nonempty finite sets

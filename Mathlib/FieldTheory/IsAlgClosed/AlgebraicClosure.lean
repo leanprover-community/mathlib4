@@ -5,7 +5,6 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.Data.Multiset.Fintype
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.FieldTheory.SplittingField.Construction

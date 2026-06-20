@@ -9,7 +9,6 @@ public import Mathlib.MeasureTheory.Covering.VitaliFamily
 public import Mathlib.MeasureTheory.Function.AEMeasurableOrder
 public import Mathlib.MeasureTheory.Integral.Average
 public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
-public import Mathlib.MeasureTheory.Measure.Regular
 
 /-!
 # Differentiation of measures

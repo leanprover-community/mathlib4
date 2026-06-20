@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 module
 
 public import Mathlib.Data.Set.Image
-public import Mathlib.Data.SProd
 public import Mathlib.Data.Sum.Basic
 
 /-!

@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Topology.Algebra.Monoid.FunOnFinite
-public import Mathlib.Topology.UnitInterval
 
 /-!
 # The standard simplex

@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
-public import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
 # The category of presheaves of modules is abelian

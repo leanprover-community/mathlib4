@@ -5,7 +5,6 @@ Authors: Hanting Zhang, Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
 

@@ -5,7 +5,6 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Star.Basic
 
 /-!

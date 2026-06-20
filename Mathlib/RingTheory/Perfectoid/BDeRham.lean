@@ -5,8 +5,6 @@ Authors: Jiedong Jiang
 -/
 module
 
-public import Mathlib.RingTheory.AdicCompletion.Algebra
-public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.RingTheory.Perfectoid.FontaineTheta
 
 /-!

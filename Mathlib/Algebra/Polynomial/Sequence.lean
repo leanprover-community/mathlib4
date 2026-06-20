@@ -5,8 +5,6 @@ Authors: Aaron Hill, Julian Berman, Austin Letson, Matej Penciak
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Monic
-public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.RingTheory.Polynomial.Basic
 
 /-!

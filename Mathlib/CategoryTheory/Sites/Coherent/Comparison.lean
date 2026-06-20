@@ -6,7 +6,6 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.Sites.Coherent.Basic
-public import Mathlib.CategoryTheory.EffectiveEpi.Comp
 public import Mathlib.CategoryTheory.EffectiveEpi.Extensive
 /-!
 

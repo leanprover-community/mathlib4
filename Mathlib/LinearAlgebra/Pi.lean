@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Fin.Tuple
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-public import Mathlib.Algebra.BigOperators.Pi
-public import Mathlib.Algebra.Module.Prod
-public import Mathlib.Algebra.Module.Submodule.Ker
-public import Mathlib.Algebra.Module.Submodule.Range
-public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Data.Fintype.Option

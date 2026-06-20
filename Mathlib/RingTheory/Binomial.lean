@@ -6,7 +6,6 @@ Authors: Scott Carnahan
 module
 
 public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Module.Rat
 public import Mathlib.Algebra.Polynomial.Smeval
 public import Mathlib.Algebra.Ring.NegOnePow

@@ -5,7 +5,6 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Order.CompleteLattice.Basic
 public import Mathlib.Order.PiLex
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 

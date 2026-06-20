@@ -6,9 +6,6 @@ Authors: Jiedong Jiang
 module
 
 public import Mathlib.FieldTheory.Extension
-public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
-public import Mathlib.FieldTheory.Minpoly.Basic
-public import Mathlib.FieldTheory.Normal.Defs
 
 /-!
 # Conjugate roots

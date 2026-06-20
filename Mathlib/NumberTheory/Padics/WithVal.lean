@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.NumberTheory.Padics.PadicIntegers
-public import Mathlib.Topology.Algebra.Valued.ValuedField
 public import Mathlib.Topology.Algebra.Valued.WithVal
 public import Mathlib.Topology.GDelta.MetrizableSpace
 

@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.BilinearForm.Basic
-public import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Bilinear form and linear maps

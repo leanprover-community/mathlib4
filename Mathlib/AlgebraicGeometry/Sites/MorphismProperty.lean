@@ -6,7 +6,6 @@ Authors: Christian Merten, Joël Riou, Adam Topaz
 module
 
 public import Mathlib.AlgebraicGeometry.OpenImmersion
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.Sites.JointlySurjective
 public import Mathlib.CategoryTheory.Sites.MorphismProperty
 

@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Joseph Myers
 -/
 module
 
-public import Mathlib.Analysis.Complex.Exponential
 public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 
 /-!

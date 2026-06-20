@@ -8,8 +8,6 @@ module
 public import Mathlib.LinearAlgebra.TensorProduct.Quotient
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.RingTheory.Ideal.Over
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Interaction between quotients and tensor products for algebras

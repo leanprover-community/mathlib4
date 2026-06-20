@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.CategoryTheory.Groupoid.VertexGroup
 public import Mathlib.CategoryTheory.Groupoid.Basic
-public import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.Data.Set.Lattice
 
 /-!

@@ -6,7 +6,6 @@ Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Subspace
-public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 
 /-!

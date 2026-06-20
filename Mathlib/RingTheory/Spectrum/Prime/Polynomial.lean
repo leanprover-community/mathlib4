@@ -8,9 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 public import Mathlib.LinearAlgebra.Eigenspace.Zero
 public import Mathlib.RingTheory.AdjoinRoot
-public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
-public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
 

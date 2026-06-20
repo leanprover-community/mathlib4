@@ -5,7 +5,6 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.ConstantSheaf
 public import Mathlib.Condensed.Discrete.LocallyConstant
 public import Mathlib.Condensed.Light.Module
 public import Mathlib.Condensed.Module

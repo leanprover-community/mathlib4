@@ -7,7 +7,6 @@ module
 
 public meta import Mathlib.Lean.Expr.Basic
 public import Batteries.Tactic.Alias
-public import Lean.Exception
 public import Mathlib.Tactic.Core
 
 /-! ## The `@[alias_in]` attribute -/

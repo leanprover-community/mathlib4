@@ -10,8 +10,6 @@ public import Mathlib.LinearAlgebra.Dual.Defs
 public import Mathlib.LinearAlgebra.Finsupp.SumProd
 public import Mathlib.LinearAlgebra.LinearIndependent.Basic
 public import Mathlib.LinearAlgebra.Pi
-public import Mathlib.Logic.Equiv.Fin.Rotate
-public import Mathlib.Tactic.FinCases
 public import Mathlib.Tactic.Module
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.NormNum.Ineq

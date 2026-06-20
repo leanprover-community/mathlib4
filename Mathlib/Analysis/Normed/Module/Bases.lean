@@ -5,9 +5,7 @@ Authors: Michał Świętek
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!

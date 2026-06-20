@@ -8,11 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.FDeriv.Congr
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
-public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
-public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
-public import Mathlib.Topology.Algebra.Module.Determinant
 
 /-!
 # Change of variables in higher-dimensional integrals

@@ -5,8 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Localization.AtPrime.Basic
-public import Mathlib.RingTheory.Localization.BaseChange
 public import Mathlib.RingTheory.Localization.LocalizationLocalization
 public import Mathlib.RingTheory.Localization.Submodule
 public import Mathlib.RingTheory.LocalProperties.Submodule

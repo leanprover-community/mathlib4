@@ -7,7 +7,6 @@ module
 
 public import Mathlib.AlgebraicGeometry.Cover.Over
 public import Mathlib.AlgebraicGeometry.Sites.Pretopology
-public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 public import Mathlib.CategoryTheory.Sites.Over
 
 /-!

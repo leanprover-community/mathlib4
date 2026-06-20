@@ -9,7 +9,6 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public meta import Mathlib.Data.Nat.NthRoot.Defs
 public import Mathlib.Tactic.Rify
-public import Qq
 
 /-!
 # Power function on `ℝ≥0` and `ℝ≥0∞`

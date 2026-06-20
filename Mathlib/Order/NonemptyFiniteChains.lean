@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Order.Category.PartOrd
-public import Mathlib.Data.Finset.Empty
 public import Mathlib.Data.Finset.Image
 
 /-!

@@ -5,7 +5,6 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 public import Mathlib.Analysis.Real.Spectrum
 public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Analysis.Normed.Algebra.UnitizationL1

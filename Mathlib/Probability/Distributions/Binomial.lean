@@ -11,7 +11,6 @@ public import Mathlib.Probability.Distributions.SetBernoulli
 
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
 import Mathlib.Order.Interval.Set.Nat
-import Mathlib.Probability.Notation
 
 /-!
 # Binomial random variables

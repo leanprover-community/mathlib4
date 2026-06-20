@@ -6,8 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.AlgebraicGeometry.Spec
-public import Mathlib.Algebra.Category.Ring.Constructions
-public import Mathlib.CategoryTheory.Elementwise
 
 /-!
 # The category of schemes

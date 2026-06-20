@@ -5,13 +5,8 @@ Authors: Monica Omar
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Bilinear
-public import Mathlib.Algebra.WithConv
 public import Mathlib.Algebra.Star.Pi
-public import Mathlib.Algebra.Star.SelfAdjoint
-public import Mathlib.Algebra.Star.TensorProduct
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
-public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.RingTheory.Coalgebra.Convolution
 
 /-! # Intrinsic star operation on linear maps

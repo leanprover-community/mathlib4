@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Topology.MetricSpace.ProperSpace
 
 /-!
 # Proper nontrivially normed fields

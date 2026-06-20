@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Convex.Cone.Extension
 public import Mathlib.Analysis.Convex.Gauge
-public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.Analysis.RCLike.Extend
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.LocallyConvex

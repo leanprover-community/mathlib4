@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.Matrix.Normed
-public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.Topology.UniformSpace.Matrix
 
 /-!

@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Data.List.Lattice
-public import Mathlib.Data.Bool.Basic
 public import Mathlib.Order.Lattice
 
 /-!

@@ -5,11 +5,8 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.FieldTheory.Galois.Basic
 public import Mathlib.FieldTheory.Minpoly.MinpolyDiv
-public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
-public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 public import Mathlib.LinearAlgebra.Vandermonde
 public import Mathlib.RingTheory.Trace.Defs

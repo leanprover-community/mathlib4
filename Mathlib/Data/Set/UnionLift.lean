@@ -6,7 +6,6 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Data.Set.Lattice
-public import Mathlib.Order.Directed
 
 /-!
 # Union lift

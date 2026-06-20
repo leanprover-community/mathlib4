@@ -6,10 +6,8 @@ Authors: David Loeffler, Antoine Chambert-Loir
 module
 
 public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
-public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.LinearAlgebra.Projectivization.Basic
 public import Mathlib.LinearAlgebra.SpecialLinearGroup
-public import Mathlib.LinearAlgebra.Transvection.Basic
 public import Mathlib.LinearAlgebra.Matrix.IsDiag
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Projective
 public import Mathlib.LinearAlgebra.Center

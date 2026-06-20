@@ -6,9 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.DedekindDomain.Factorization
-public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.HopkinsLevitzki
-public import Mathlib.RingTheory.IntegralDomain
 public import Mathlib.RingTheory.LocalRing.Quotient
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 public import Mathlib.Topology.Algebra.Field

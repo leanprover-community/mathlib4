@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
-public import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 /-!

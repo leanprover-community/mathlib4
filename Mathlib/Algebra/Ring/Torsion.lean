@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.CharZero.Defs
 public import Mathlib.Algebra.Group.Torsion
-public import Mathlib.Algebra.GroupWithZero.Basic
 public import Mathlib.Algebra.Ring.Commute
 
 /-!

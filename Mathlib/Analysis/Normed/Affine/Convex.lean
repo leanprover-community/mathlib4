@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Convex.Between
 public import Mathlib.Analysis.Normed.Affine.AddTorsor
 public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
-public import Mathlib.Analysis.Normed.Module.Convex
 
 /-!
 # Simplices in normed affine spaces

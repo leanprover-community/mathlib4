@@ -8,7 +8,6 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
 public import Mathlib.Topology.Algebra.Algebra
-public import Mathlib.Topology.Algebra.Group.Pointwise
 public import Mathlib.Topology.Instances.Matrix
 
 /-!

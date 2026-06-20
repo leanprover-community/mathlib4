@@ -11,7 +11,6 @@ public import Mathlib.Analysis.Complex.Liouville
 public import Mathlib.Analysis.Complex.LocallyUniformLimit
 public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-public import Mathlib.Tactic.NormNum.NatFactorial
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 

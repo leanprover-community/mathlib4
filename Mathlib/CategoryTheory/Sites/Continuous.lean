@@ -6,13 +6,9 @@ Authors: Joël Riou, Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.Sites.Closed
-public import Mathlib.CategoryTheory.Sites.Localization
 public import Mathlib.CategoryTheory.Sites.Hypercover.IsSheaf
 public import Mathlib.CategoryTheory.Sites.PreservesSheafification
-public import Mathlib.CategoryTheory.Adjunction.Opposites
 public import Mathlib.CategoryTheory.Adjunction.Whiskering
-public import Mathlib.CategoryTheory.Subfunctor.Basic
-public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 public import Mathlib.CategoryTheory.Functor.KanExtension.Preserves
 
 /-!

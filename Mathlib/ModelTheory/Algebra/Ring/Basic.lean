@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.ModelTheory.Syntax
 public import Mathlib.ModelTheory.Semantics
 public import Mathlib.Algebra.Ring.Equiv
 

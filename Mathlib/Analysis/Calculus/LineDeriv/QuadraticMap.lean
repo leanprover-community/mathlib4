@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.LineDeriv.Basic
-public import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 /-!

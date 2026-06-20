@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
-public import Mathlib.CategoryTheory.Functor.FunctorHom
 
 /-!
 # The category of simplicial objects is simplicial

@@ -5,10 +5,7 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.RingTheory.SimpleRing.Basic
 public import Mathlib.FieldTheory.Normal.Basic
-public import Mathlib.Order.Closure
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 /-!
 # Normal closures
 

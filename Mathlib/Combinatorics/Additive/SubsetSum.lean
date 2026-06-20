@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Data.Finset.Powerset
 
-import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Data.Finset.Max

@@ -9,7 +9,6 @@ public import Mathlib.Analysis.Convolution
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
 public import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
-public import Mathlib.Analysis.Analytic.IsolatedZeros
 public import Mathlib.Analysis.Complex.CauchyIntegral
 
 /-!

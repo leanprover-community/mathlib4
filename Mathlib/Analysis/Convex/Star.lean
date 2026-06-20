@@ -5,12 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 public import Mathlib.Algebra.Module.LinearMap.Prod
 public import Mathlib.Algebra.Order.Module.Synonym
 public import Mathlib.Analysis.Convex.Segment
-public import Mathlib.Tactic.GCongr
-public import Mathlib.Tactic.Module
 
 /-!
 # Star-convex sets

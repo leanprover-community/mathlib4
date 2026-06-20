@@ -6,7 +6,6 @@ Authors: Joseph Myers, Manuel Candales
 module
 
 public import Mathlib.Geometry.Euclidean.PerpBisector
-public import Mathlib.Algebra.QuadraticDiscriminant
 
 /-!
 # Euclidean spaces

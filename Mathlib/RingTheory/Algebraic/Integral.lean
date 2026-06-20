@@ -8,7 +8,6 @@ module
 public import Mathlib.LinearAlgebra.Dimension.Localization
 public import Mathlib.RingTheory.Algebraic.Basic
 public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
-public import Mathlib.RingTheory.Localization.BaseChange
 
 import Mathlib.RingTheory.Polynomial.Subring
 

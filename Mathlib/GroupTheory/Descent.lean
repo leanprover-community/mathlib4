@@ -10,7 +10,6 @@ public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.GroupTheory.Index
 public import Mathlib.Order.Northcott
 
-import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 

@@ -6,8 +6,6 @@ Authors: Yaël Dillies, Christopher Hoskin
 module
 
 public import Mathlib.Data.Finset.Lattice.Prod
-public import Mathlib.Data.Finset.Powerset
-public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Order.Closure
 public import Mathlib.Order.ConditionallyCompleteLattice.Finset
 

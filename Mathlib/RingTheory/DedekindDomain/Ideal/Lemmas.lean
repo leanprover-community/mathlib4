@@ -5,8 +5,6 @@ Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.Algebra.Order.GroupWithZero.OrderIso
-public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.RingTheory.ChainOfDivisors
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Basic

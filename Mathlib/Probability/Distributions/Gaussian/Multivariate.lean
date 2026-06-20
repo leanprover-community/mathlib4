@@ -6,7 +6,6 @@ Authors: Rémy Degenne, Etienne Marion
 module
 
 public import Mathlib.Analysis.CStarAlgebra.Matrix
-public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.Probability.Distributions.Gaussian.Basic
 public import Mathlib.Probability.Moments.CovarianceBilin
 

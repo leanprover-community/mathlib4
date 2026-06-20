@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Ideal.IdempotentFG
 public import Mathlib.RingTheory.Idempotents
 public import Mathlib.RingTheory.Kaehler.Basic
 public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
-public import Mathlib.RingTheory.TensorProduct.Quotient
 public import Mathlib.Algebra.Algebra.Shrink
 
 /-!

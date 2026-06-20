@@ -5,10 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.ModelCategory.Basic
-public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 public import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Path objects

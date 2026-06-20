@@ -5,9 +5,6 @@ Authors: Michał Świętek, Yongxi Lin
 -/
 module
 
-public import Mathlib.Topology.Defs.Sequences
-public import Mathlib.Topology.Separation.Basic
-public import Mathlib.Topology.Compactness.Lindelof
 public import Mathlib.Topology.Sequences
 
 import Mathlib.Data.Fintype.Pigeonhole

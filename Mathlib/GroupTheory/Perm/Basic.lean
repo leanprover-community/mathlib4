@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Logic.Equiv.Set
-public import Mathlib.Tactic.Common
 
 /-!
 # Extra lemmas about permutations

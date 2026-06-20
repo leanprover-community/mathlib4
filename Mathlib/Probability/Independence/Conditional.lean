@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Probability.Independence.Kernel.IndepFun
 public import Mathlib.Probability.Kernel.CompProdEqIff
-public import Mathlib.Probability.Kernel.Composition.Lemmas
 public import Mathlib.Probability.Kernel.Condexp
 
 /-!

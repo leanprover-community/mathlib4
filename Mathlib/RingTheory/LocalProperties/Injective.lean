@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.Injective
-public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.LocalProperties.Exactness
 

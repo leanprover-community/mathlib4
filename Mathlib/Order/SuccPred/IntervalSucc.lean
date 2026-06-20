@@ -5,8 +5,6 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Set.Pairwise.Basic
-public import Mathlib.Data.Set.Lattice
 public import Mathlib.Order.SuccPred.Archimedean
 
 /-!

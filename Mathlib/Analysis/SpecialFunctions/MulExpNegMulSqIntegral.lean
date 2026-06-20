@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSq
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
 public import Mathlib.MeasureTheory.Measure.RegularityCompacts
 public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 

@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Groupoid.Grpd.Basic
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Homotopy.Path
-public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Fundamental groupoid of a space

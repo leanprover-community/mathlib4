@@ -6,7 +6,6 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
-public import Mathlib.CategoryTheory.Elementwise
 /-!
 
 # Compactly generated topological spaces

@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 public import Mathlib.MeasureTheory.Function.EssSup
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 
 /-!
 # ℒp space

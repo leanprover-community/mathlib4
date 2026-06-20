@@ -6,10 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.MvPolynomial.PDeriv
-public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Polynomial.Eval.SMul
-public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 public import Mathlib.RingTheory.Polynomial.Pochhammer
 

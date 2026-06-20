@@ -10,9 +10,7 @@ public import Mathlib.Algebra.Group.Subgroup.Lattice
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Data.Finset.Max
-public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.Hom.WithTopBot
-public import Mathlib.Order.UpperLower.CompleteLattice
 public import Mathlib.Order.UpperLower.Principal
 
 /-!

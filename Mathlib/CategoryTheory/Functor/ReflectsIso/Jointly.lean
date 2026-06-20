@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Limits.EpiMono
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
-public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Families of functors which jointly reflect isomorphisms

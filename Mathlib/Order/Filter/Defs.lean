@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Jeremy Avigad
 -/
 module
 
-public import Mathlib.Data.Set.Insert
 public import Mathlib.Order.SetNotation
 public import Mathlib.Order.BooleanAlgebra.Set
 public import Mathlib.Order.Bounds.Defs

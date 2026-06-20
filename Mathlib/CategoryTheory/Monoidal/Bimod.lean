@@ -5,7 +5,6 @@ Authors: Kim Morrison, Oleksandr Manzyuk
 -/
 module
 
-public import Mathlib.CategoryTheory.Bicategory.Basic
 public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 

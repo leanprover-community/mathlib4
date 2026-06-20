@@ -6,7 +6,6 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
-public import Mathlib.NumberTheory.NumberField.Units.Basic
 
 /-!
 # Basic results on integral ideals of a number field

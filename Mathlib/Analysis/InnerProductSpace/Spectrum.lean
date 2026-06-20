@@ -6,7 +6,6 @@ Authors: Heather Macbeth
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Rayleigh
-public import Mathlib.Analysis.Normed.Group.Submodule
 public import Mathlib.Analysis.Normed.Operator.Compact.FredholmAlternative
 public import Mathlib.Analysis.Normed.Operator.Compact.FiniteDimension
 public import Mathlib.LinearAlgebra.Eigenspace.Charpoly

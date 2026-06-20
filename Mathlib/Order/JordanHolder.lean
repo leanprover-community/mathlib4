@@ -5,11 +5,8 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Order.Lattice
-public import Mathlib.Data.List.Sort
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Logic.Equiv.Functor
-public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.Order.RelSeries
 
 /-!

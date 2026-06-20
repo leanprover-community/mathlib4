@@ -5,7 +5,6 @@ Authors: Thomas Browning, Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 public import Mathlib.AlgebraicGeometry.Noetherian
 
 /-!

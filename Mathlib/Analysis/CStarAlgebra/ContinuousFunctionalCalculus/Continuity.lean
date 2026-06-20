@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 public import Mathlib.Topology.MetricSpace.UniformConvergence
-public import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-! # Continuity of the continuous functional calculus in each variable
 

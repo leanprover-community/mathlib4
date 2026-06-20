@@ -6,7 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.Algebra.RingQuot
 public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 
 /-!

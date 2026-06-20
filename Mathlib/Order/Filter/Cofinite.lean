@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.FiniteSupport.Defs
 public import Mathlib.Data.Finite.Prod
-public import Mathlib.Data.Fintype.Pi
 public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Order.Filter.CountablyGenerated

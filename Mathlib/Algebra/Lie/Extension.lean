@@ -5,7 +5,6 @@ Authors: Scott Carnahan
 -/
 module
 
-public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Algebra.Lie.Cochain
 
 /-!

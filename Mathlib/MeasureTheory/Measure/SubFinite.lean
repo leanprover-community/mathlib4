@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.Measure.Sub
 
 import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
-public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
 public import Mathlib.MeasureTheory.Measure.WithDensity
 

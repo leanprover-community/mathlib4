@@ -7,7 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.MeasureTheory.Covering.VitaliFamily
-public import Mathlib.Data.Set.Pairwise.Lattice
 
 /-!
 # Vitali covering theorems

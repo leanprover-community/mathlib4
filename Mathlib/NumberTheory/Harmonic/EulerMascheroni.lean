@@ -6,7 +6,6 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.Complex.ExponentialBounds
-public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.NumberTheory.Harmonic.Defs
 

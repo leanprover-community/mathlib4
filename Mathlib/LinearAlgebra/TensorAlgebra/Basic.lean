@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.FreeAlgebra
 public import Mathlib.Algebra.RingQuot
 public import Mathlib.Algebra.TrivSqZeroExt.Basic
-public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!

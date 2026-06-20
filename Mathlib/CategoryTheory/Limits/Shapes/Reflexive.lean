@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Limits.ConeCategory
 public import Mathlib.CategoryTheory.Limits.Final
-public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 
 /-!

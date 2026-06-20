@@ -5,7 +5,6 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Topology.ContinuousMap.Algebra
 public import Mathlib.Topology.ContinuousMap.Compact
 
 /-!

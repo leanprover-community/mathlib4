@@ -6,7 +6,6 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.SetTheory.Ordinal.Enum
-public import Mathlib.Tactic.TFAE
 public import Mathlib.Topology.Order.IsNormal
 public import Mathlib.Topology.Order.Monotone
 public import Mathlib.Topology.Order.SuccPred

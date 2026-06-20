@@ -6,7 +6,6 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Logic.Function.Basic
-public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Tactic.Simps.Basic
 
 /-!

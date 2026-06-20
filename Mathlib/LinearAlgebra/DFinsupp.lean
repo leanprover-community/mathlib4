@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.DFinsupp.Submonoid
 public import Mathlib.Data.DFinsupp.Sigma
 public import Mathlib.Data.Finsupp.ToDFinsupp
-public import Mathlib.LinearAlgebra.Finsupp.SumProd
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 /-!

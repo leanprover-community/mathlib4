@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.DirectSum.Finsupp
 public import Mathlib.LinearAlgebra.DirectSum.TensorProduct
-public import Mathlib.LinearAlgebra.Finsupp.SumProd
 
 /-!
 # Results on finitely supported functions.

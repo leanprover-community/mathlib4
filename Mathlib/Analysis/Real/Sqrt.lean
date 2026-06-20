@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
 module
 
 public import Mathlib.Topology.Instances.NNReal.Lemmas
-public import Mathlib.Topology.Order.MonotoneContinuity
 
 /-!
 # Square root of a real number

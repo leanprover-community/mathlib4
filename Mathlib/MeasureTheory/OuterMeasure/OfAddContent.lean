@@ -5,7 +5,6 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 module
 
-public import Mathlib.MeasureTheory.SetSemiring
 public import Mathlib.MeasureTheory.Measure.AddContent
 public import Mathlib.MeasureTheory.Measure.Trim
 

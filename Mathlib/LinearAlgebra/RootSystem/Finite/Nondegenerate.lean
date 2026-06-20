@@ -5,7 +5,6 @@ Authors: Scott Carnahan
 -/
 module
 
-public import Mathlib.LinearAlgebra.BilinearForm.Basic
 public import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 public import Mathlib.LinearAlgebra.Dimension.Localization
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic

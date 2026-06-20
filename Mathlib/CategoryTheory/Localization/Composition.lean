@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Composition of localization functors

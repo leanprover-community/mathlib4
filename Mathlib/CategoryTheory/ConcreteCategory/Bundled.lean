@@ -6,7 +6,6 @@ Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather
 module
 
 public import Mathlib.Init
-public import Batteries.Tactic.Lint.Misc
 
 /-!
 # Bundled types

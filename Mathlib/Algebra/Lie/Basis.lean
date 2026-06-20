@@ -5,7 +5,6 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.Killing
 public import Mathlib.Algebra.Lie.Weights.RootSystem
 public import Mathlib.LinearAlgebra.RootSystem.BaseExists
 public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix

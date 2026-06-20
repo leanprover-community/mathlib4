@@ -6,10 +6,8 @@ Authors: Kexing Ying, Bhavik Mehta
 module
 
 public import Mathlib.Probability.ConditionalProbability
-public import Mathlib.MeasureTheory.Measure.Count
 public import Mathlib.MeasureTheory.Constructions.Pi
 
-import Mathlib.Data.Fintype.Pi
 
 /-!
 # Classical probability

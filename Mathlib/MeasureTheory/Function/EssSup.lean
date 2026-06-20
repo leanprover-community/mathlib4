@@ -5,8 +5,6 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-public import Mathlib.MeasureTheory.Measure.Count
 public import Mathlib.Order.Filter.ENNReal
 public import Mathlib.Probability.UniformOn
 

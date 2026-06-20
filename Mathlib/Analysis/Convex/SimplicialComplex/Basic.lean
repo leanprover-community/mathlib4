@@ -7,8 +7,6 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialComplex.Basic
 public import Mathlib.Analysis.Convex.Hull
-public import Mathlib.LinearAlgebra.AffineSpace.Independent
-public import Mathlib.Order.UpperLower.Relative
 
 /-!
 # Simplicial complexes

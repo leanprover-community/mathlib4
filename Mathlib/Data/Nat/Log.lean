@@ -9,7 +9,6 @@ public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Order.Monotone.Basic
 public import Mathlib.Tactic.Bound.Attribute
-public import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!

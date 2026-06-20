@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Logic.Embedding.Set
-public import Mathlib.Logic.Equiv.Option
 public import Mathlib.Data.Int.Init
-public import Batteries.Data.Fin.Lemmas
 
 /-!
 # Equivalences for `Fin n`

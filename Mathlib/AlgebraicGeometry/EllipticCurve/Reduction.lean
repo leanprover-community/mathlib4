@@ -6,8 +6,6 @@ Authors: Bryan Wang
 module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
-public import Mathlib.RingTheory.DiscreteValuationRing.Basic
-public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.Valuation.Discrete.IsDiscreteValuationRing
 public import Mathlib.GroupTheory.ArchimedeanDensely
 

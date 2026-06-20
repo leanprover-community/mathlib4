@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Order.Floor.Semiring
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.Field
 public import Mathlib.Tactic.Linarith
-public import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Lemmas on `Int.floor`, `Int.ceil` and `Int.fract`

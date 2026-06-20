@@ -5,12 +5,8 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 module
 
-public import Mathlib.Data.ENNReal.Real
-public import Mathlib.Tactic.Bound.Attribute
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Bornology.Basic
 public import Mathlib.Topology.EMetricSpace.Defs
-public import Mathlib.Topology.UniformSpace.Basic
 
 /-!
 ## Pseudo-metric spaces

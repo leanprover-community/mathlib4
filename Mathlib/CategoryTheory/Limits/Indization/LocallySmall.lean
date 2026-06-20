@@ -5,7 +5,6 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 public import Mathlib.CategoryTheory.Limits.IndYoneda
 public import Mathlib.CategoryTheory.Limits.Indization.IndObject
 

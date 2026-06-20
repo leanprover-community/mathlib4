@@ -6,7 +6,6 @@ Authors: Anatole Dedecker, Floris van Doorn
 module
 
 public import Mathlib.Algebra.CharP.Invertible
-public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Analysis.Normed.Module.Connected
 public import Mathlib.Topology.Algebra.ContinuousAffineEquiv
 

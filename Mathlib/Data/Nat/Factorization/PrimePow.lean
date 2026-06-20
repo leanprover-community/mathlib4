@@ -5,9 +5,7 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.IsPrimePow
 public import Mathlib.Data.Nat.Factorization.Basic
-public import Mathlib.Data.Nat.Prime.Pow
 public import Mathlib.NumberTheory.Divisors
 
 /-!

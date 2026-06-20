@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.TStructure
 public import Mathlib.Algebra.Homology.DerivedCategory.KInjective
-public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexCohomology
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexSingle
-public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 public import Mathlib.CategoryTheory.Abelian.Injective.Extend
 
 /-!

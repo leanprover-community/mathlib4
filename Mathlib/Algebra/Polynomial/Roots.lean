@@ -11,7 +11,6 @@ public import Mathlib.Data.Set.Card
 public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Theory of univariate polynomials

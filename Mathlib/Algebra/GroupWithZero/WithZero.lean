@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.WithOne.Defs
 public import Mathlib.Algebra.GroupWithZero.Equiv
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Data.Nat.Cast.Defs
-public import Mathlib.Data.Option.Basic
 public import Mathlib.Data.Option.NAry
 
 /-!

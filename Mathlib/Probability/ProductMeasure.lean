@@ -5,7 +5,6 @@ Authors: Etienne Marion
 -/
 module
 
-public import Mathlib.Probability.Kernel.Composition.MeasureComp
 public import Mathlib.Probability.Kernel.IonescuTulcea.Traj
 
 /-!

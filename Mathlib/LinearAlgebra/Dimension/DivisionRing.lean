@@ -7,7 +7,6 @@ Kim Morrison, Chris Hughes, Anne Baanen, Junyan Xu
 module
 
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
-public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.Dimension.RankNullity
 
 /-!

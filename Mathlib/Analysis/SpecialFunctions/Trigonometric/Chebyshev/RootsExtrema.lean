@@ -6,9 +6,7 @@ Authors: Yuval Filmus
 module
 
 public import Mathlib.RingTheory.Polynomial.Chebyshev
-public import Mathlib.Data.Real.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.NumberTheory.Real.Irrational
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Analysis.SpecialFunctions.Arcosh

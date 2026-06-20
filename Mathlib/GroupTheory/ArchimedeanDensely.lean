@@ -5,11 +5,9 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Units
 public import Mathlib.Algebra.Order.Monoid.LocallyFiniteOrder
 public import Mathlib.Data.Int.Interval
 public import Mathlib.GroupTheory.Archimedean
-public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 public import Mathlib.Order.Interval.Finset.DenselyOrdered
 

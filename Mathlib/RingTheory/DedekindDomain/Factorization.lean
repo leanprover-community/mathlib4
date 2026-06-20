@@ -6,7 +6,6 @@ Authors: María Inés de Frutos-Fernández
 module
 
 public import Mathlib.NumberTheory.RamificationInertia.Basic
-public import Mathlib.Order.Filter.Cofinite
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Finsupp
 
 /-!

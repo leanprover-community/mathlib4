@@ -5,11 +5,9 @@ Authors: Antoine Labelle
 -/
 module
 
-public import Mathlib.RepresentationTheory.FDRep
 public import Mathlib.LinearAlgebra.Trace
 public import Mathlib.RepresentationTheory.Invariants
 public import Mathlib.RepresentationTheory.Irreducible
-public import Mathlib.RepresentationTheory.Intertwining
 
 /-!
 # Characters of representations

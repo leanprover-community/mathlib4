@@ -6,8 +6,6 @@ Anatole Dedecker
 -/
 module
 
-public import Mathlib.Logic.Equiv.Fin.Basic
-public import Mathlib.Topology.UniformSpace.UniformEmbedding
 public import Mathlib.Topology.UniformSpace.Pi
 
 /-!

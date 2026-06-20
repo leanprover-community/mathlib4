@@ -6,8 +6,6 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Order.GaloisConnection.Basic
-public import Mathlib.Order.Interval.Set.Basic
-public import Mathlib.Order.WellFounded
 
 import Mathlib.Data.Set.Lattice
 

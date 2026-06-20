@@ -8,8 +8,6 @@ module
 public import Mathlib.Algebra.Order.Pi
 public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.LocallyConvex.Basic
-public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.Data.Real.Pointwise
 
 /-!
 # Seminorms

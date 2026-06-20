@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
-public import Mathlib.Algebra.Group.Indicator
 public import Mathlib.Data.Rat.BigOperators
 
 /-!

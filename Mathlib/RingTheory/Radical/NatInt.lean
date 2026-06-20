@@ -6,7 +6,6 @@ Authors: Bhavik Mehta, Arend Mellendijk, Jeremy Tan
 module
 
 public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Algebra.GCDMonoid.Nat
 public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.Nat.PrimeFin
 public import Mathlib.RingTheory.PrincipalIdealDomain

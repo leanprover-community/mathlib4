@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Instances.Rat
-public import Mathlib.Algebra.Module.Rat
 
 /-!
 # Continuous additive maps are `ℝ`-linear

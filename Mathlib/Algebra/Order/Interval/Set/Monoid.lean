@@ -5,7 +5,6 @@ Authors: Yury Kudryashov, Patrick Massot
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Data.Set.Function
 public import Mathlib.Order.Interval.Set.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs

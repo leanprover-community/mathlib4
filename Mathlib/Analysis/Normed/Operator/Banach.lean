@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
-public import Mathlib.Topology.Baire.Lemmas
 public import Mathlib.Topology.Baire.CompleteMetrizable
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Analysis.Normed.Group.InfiniteSum

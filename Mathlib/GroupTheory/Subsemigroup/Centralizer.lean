@@ -5,7 +5,6 @@ Authors: Thomas Browning, Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Group.Center
 public import Mathlib.Algebra.Group.Subsemigroup.Basic
 public import Mathlib.GroupTheory.Subsemigroup.Center
 

@@ -11,7 +11,6 @@ public meta import Mathlib.Data.List.Sigma
 public meta import Plausible.Functions
 public import Batteries.Data.MLList.Basic
 public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Data.DFinsupp.Defs
 public import Mathlib.Data.Finsupp.Defs
 public import Mathlib.Data.Int.Range

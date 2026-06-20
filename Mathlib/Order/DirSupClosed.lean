@@ -5,7 +5,6 @@ Authors: Christopher Hoskin, Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Order.UpperLower.Basic
 

@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Ring.Parity
-public import Mathlib.Order.BooleanAlgebra.Set
 
 /-!
 # The natural numbers form an ordered semiring

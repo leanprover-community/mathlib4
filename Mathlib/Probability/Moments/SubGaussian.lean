@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Kernel.Condexp
-public import Mathlib.Probability.Moments.MGFAnalytic
 public import Mathlib.Probability.Moments.Tilted
 
 /-!

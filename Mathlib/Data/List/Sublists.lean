@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Nat.Choose.Basic
-public import Mathlib.Data.List.Perm.Basic
 public import Mathlib.Data.List.Perm.Subperm
 public import Mathlib.Data.List.Lex
 public import Mathlib.Data.List.Induction

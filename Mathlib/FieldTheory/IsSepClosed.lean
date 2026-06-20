@@ -6,7 +6,6 @@ Authors: Jz Pan
 module
 
 public import Mathlib.FieldTheory.Galois.Basic
-public import Mathlib.FieldTheory.SeparableClosure
 
 /-!
 # Separably Closed Field

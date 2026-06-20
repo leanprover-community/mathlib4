@@ -9,8 +9,6 @@ public import Mathlib.Topology.Category.TopCat.EpiMono
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
-public import Mathlib.Data.Set.Subsingleton
-public import Mathlib.Tactic.CategoryTheory.Elementwise
 public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Tactic.ApplyFun
 

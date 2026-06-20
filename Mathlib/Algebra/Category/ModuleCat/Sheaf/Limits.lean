@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf
-public import Mathlib.CategoryTheory.Sites.Limits
 
 /-! # Limits in categories of sheaves of modules
 

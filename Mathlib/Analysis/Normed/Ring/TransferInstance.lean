@@ -5,7 +5,6 @@ Authors: Salvatore Mercuri
 -/
 module
 
-public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Ring.TransferInstance
 public import Mathlib.Analysis.Normed.Ring.Basic
 public import Mathlib.Data.EReal.Operations

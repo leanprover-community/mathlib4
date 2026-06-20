@@ -6,7 +6,6 @@ Authors: P. Michael Kielstra
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Mathlib.Tactic.Field
 
 /-!
 # The trapezoidal rule

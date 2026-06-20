@@ -5,9 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Order.Filter.AtTopBot.Archimedean
-public import Mathlib.Order.Filter.AtTopBot.Finite
-public import Mathlib.Order.Filter.AtTopBot.Prod
 public import Mathlib.Topology.Algebra.Ring.Real
 
 /-!

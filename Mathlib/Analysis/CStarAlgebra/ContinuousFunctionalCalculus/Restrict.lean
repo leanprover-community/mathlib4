@@ -5,7 +5,6 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Topology.Algebra.Algebra
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
 
 /-! # Restriction of the continuous functional calculus to a scalar subring

@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Category.Grp.LargeColimits
 public import Mathlib.Algebra.Category.Grp.Limits
-public import Mathlib.Algebra.Module.CharacterModule
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
 # Properties of the universe lift functor for groups

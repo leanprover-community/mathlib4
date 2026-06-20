@@ -6,7 +6,6 @@ Authors: Judith Ludwig, Christian Merten
 module
 
 public import Mathlib.RingTheory.AdicCompletion.AsTensorProduct
-public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.Smooth.AdicCompletion
 public import Mathlib.RingTheory.Smooth.NoetherianDescent
 public import Mathlib.RingTheory.RingHom.Flat

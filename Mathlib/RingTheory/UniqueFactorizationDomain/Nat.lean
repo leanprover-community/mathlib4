@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 module
 
-public import Mathlib.Data.ENat.Basic
 public import Mathlib.Data.Nat.Factors
 public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 

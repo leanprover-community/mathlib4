@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Action.Basic
-public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.GroupWithZero.Action.Hom
 public import Mathlib.Algebra.Ring.Defs

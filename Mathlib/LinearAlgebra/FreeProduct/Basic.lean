@@ -5,7 +5,6 @@ Authors: Robert Maxton
 -/
 module
 
-public import Mathlib.Algebra.DirectSum.Basic
 public import Mathlib.LinearAlgebra.TensorAlgebra.ToTensorPower
 
 /-!

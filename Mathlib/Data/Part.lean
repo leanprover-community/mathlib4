@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Data.Set.Subsingleton
-public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Partial values of a type

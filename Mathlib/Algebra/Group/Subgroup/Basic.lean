@@ -6,9 +6,7 @@ Authors: Kexing Ying
 module
 
 public import Mathlib.Algebra.Group.Conj
-public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Group.Subgroup.Ker
-public import Mathlib.Algebra.Group.Torsion
 
 /-!
 # Basic results on subgroups

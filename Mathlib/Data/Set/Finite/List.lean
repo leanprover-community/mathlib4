@@ -5,10 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Set.Finite.Lattice
-public import Mathlib.Data.Set.Finite.Range
-public import Mathlib.Data.Set.Lattice
 public import Mathlib.Data.Finite.Vector
 
 /-!

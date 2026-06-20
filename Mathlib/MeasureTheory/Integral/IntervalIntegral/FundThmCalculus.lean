@@ -5,7 +5,6 @@ Authors: Yury Kudryashov, Patrick Massot, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Add
 public import Mathlib.Analysis.Calculus.Deriv.Comp
 public import Mathlib.Analysis.Calculus.FDeriv.Measurable
 public import Mathlib.Analysis.Normed.Module.Dual

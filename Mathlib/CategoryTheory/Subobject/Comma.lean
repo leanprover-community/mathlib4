@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Subobject.WellPowered
 public import Mathlib.CategoryTheory.Comma.LocallySmall
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 public import Mathlib.CategoryTheory.Limits.Comma
 
 /-!

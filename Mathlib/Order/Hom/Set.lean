@@ -9,7 +9,6 @@ public import Mathlib.Logic.Equiv.Set
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Order.WellFounded
-public import Mathlib.Tactic.MinImports
 
 /-!
 # Order homomorphisms and sets

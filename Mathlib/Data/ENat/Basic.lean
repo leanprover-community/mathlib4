@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Nat.Units
-public import Mathlib.Algebra.Order.AddGroupWithTop
 public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Algebra.Order.Ring.WithTop
 public import Mathlib.Algebra.Order.Sub.WithTop

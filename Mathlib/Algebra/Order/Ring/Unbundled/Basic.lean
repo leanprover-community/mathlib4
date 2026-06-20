@@ -5,8 +5,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Units.Basic
-public import Mathlib.Algebra.GroupWithZero.NeZero
 public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE

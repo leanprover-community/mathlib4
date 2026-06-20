@@ -6,7 +6,6 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 /-!

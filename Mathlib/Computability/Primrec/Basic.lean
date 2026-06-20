@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Order.Ring.Nat
-public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Logic.Denumerable
 
 /-!

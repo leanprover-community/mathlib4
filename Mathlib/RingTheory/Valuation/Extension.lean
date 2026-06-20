@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Extension of Valuations

@@ -5,10 +5,7 @@ Authors: Fengyang Wang
 -/
 module
 
-public import Mathlib.Topology.Algebra.InfiniteSum.Basic
-public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
-public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Data.Set.MulAntidiagonal
 

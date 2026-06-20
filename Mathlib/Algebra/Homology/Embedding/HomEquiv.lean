@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Homology.Embedding.Restriction
 public import Mathlib.Algebra.Homology.Embedding.Extend
 public import Mathlib.Algebra.Homology.Embedding.Boundary
-public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Relations between `extend` and `restriction`

@@ -6,7 +6,6 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Analysis.AbsoluteValue.Equivalence
-public import Mathlib.Analysis.Normed.Field.WithAbs
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 public import Mathlib.NumberTheory.NumberField.Norm
 public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots

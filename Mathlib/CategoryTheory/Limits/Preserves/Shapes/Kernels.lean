@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 /-!
 # Preserving (co)kernels

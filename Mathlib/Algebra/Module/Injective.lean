@@ -6,7 +6,6 @@ Authors: Jujian Zhang
 
 module
 
-public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.LinearAlgebra.LinearPMap
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Small.Basic

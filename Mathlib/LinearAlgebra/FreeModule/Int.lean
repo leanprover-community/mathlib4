@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.Data.ZMod.QuotientGroup
-public import Mathlib.GroupTheory.Index
 public import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-! # Index of submodules of free ℤ-modules (considered as an `AddSubgroup`).

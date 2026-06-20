@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Algebra.Order.Hom.Basic
 public import Mathlib.Algebra.Order.Ring.Abs

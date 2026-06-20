@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
-public import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
 
 /-!

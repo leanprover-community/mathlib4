@@ -7,8 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.CategoryTheory.Adjunction.Mates
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 public import Mathlib.CategoryTheory.Monad.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso

@@ -8,7 +8,6 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 public meta import Mathlib.Data.Nat.NthRoot.Defs
-public import Qq
 
 /-! # Power function on `ℝ`
 

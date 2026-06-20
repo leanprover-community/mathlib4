@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 public import Mathlib.Algebra.Homology.ShortComplex.Abelian
-public import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 public import Mathlib.CategoryTheory.Abelian.Opposite
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
 /-!

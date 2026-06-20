@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.Artinian.Ring
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
-public import Mathlib.Topology.NoetherianSpace
 
 /-!
 This file proves additional properties of the prime spectrum a ring is Noetherian.

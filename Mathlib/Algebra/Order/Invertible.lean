@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Ring.Invertible
 public import Mathlib.Data.Nat.Cast.Order.Ring
 

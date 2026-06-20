@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mitchell Lee
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
-public import Mathlib.Algebra.FiniteSupport.Defs
 public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs

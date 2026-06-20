@@ -5,11 +5,9 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.Matrix
 public import Mathlib.Algebra.Lie.Semisimple.Lemmas
 public import Mathlib.Algebra.Lie.Weights.Linear
 public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
-public import Mathlib.RingTheory.Finiteness.Nilpotent
 
 /-!
 # Geck's construction of a Lie algebra associated to a root system yields semisimple algebras

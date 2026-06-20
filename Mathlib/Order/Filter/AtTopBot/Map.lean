@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 module
 
 public import Mathlib.Order.Filter.AtTopBot.Defs
-public import Mathlib.Order.Filter.Map
 public import Mathlib.Order.Filter.Tendsto
 public import Mathlib.Order.Interval.Set.OrderIso
 

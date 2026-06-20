@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.Archimedean.Class
 public import Mathlib.Algebra.Order.Group.DenselyOrdered
-public import Mathlib.Algebra.Order.Ring.Basic
 public import Mathlib.Algebra.Order.Hom.Ring
 public import Mathlib.RingTheory.Valuation.Basic
 

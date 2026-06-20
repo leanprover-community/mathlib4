@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Affine.Simplex
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
-public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
 
 /-!
 # Simplices in Euclidean spaces.

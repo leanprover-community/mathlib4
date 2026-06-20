@@ -9,7 +9,6 @@ public import Mathlib.Data.Fintype.Order
 public import Mathlib.MeasureTheory.Function.AEEqFun
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 public import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
 
 /-!
 # Basic theorems about ℒp space
