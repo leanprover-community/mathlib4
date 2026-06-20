@@ -483,7 +483,7 @@ variable (F)
 Let `D` be the decomposition field of `P` in `L/K` and let `F` be a subextension of `L/K`.
 Then, the decomposition field of `P` in `L/F` is the compositum `DF`.
 -/
-theorem isDecompositionField_sup [FaithfulSMul B L] [MulSemiringAction Gal(L/F) B]
+instance isDecompositionField_sup [FaithfulSMul B L] [MulSemiringAction Gal(L/F) B]
     [SMulDistribClass Gal(L/F) B L] [hD : IsDecompositionField K L P D] :
     IsDecompositionField F L P (D ⊔ F : IntermediateField K L) := by
   let H : Subgroup Gal(L/K) := stabilizer Gal(L/K) P ⊓ F.fixingSubgroup
@@ -502,7 +502,7 @@ theorem isDecompositionField_sup [FaithfulSMul B L] [MulSemiringAction Gal(L/F) 
 Let `E` be the inertia field of `P` in `L/K` and let `F` be a subextension of `L/K`.
 Then, the inertia field of `P` in `L/F` is the compositum `EF`.
 -/
-theorem isInertiaField_sup [FaithfulSMul B L] [MulSemiringAction Gal(L/F) B]
+instance isInertiaField_sup [FaithfulSMul B L] [MulSemiringAction Gal(L/F) B]
     [SMulDistribClass Gal(L/F) B L] [hE : IsInertiaField K L P E] :
     IsInertiaField F L P (E ⊔ F : IntermediateField K L) := by
   let H : Subgroup Gal(L/K) := inertia Gal(L/K) P ⊓ F.fixingSubgroup
@@ -571,7 +571,6 @@ theorem isInertiaField_le_iff [IsFractionRing 𝓞F F] [P.IsMaximal] [IsInertiaF
   obtain ⟨_, _, _⟩ := instances (B := B) A K L F 𝓞F
   let : Algebra F ↥(E ⊔ F) := (inclusion le_sup_right).toAlgebra
   have : IsScalarTower F ↥(E ⊔ F) L := IsScalarTower.of_algebraMap_eq' rfl
-  haveI : IsInertiaField F L P ↥(E ⊔ F) := isInertiaField_sup K L P F E
   have hPF : P.under 𝓞F ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp _
   rw [← sup_eq_right, eq_comm, eq_iff_finrank_eq_of_le' le_sup_right,
     IsInertiaField.rank_left 𝓞F F L P ↥(E ⊔ F) hPF,
@@ -593,7 +592,6 @@ theorem le_isDecompositionField_iff [IsFractionRing 𝓞F F] [IsDecompositionFie
   obtain ⟨_, _, _⟩ := instances (B := B) A K L F 𝓞F
   let : Algebra F ↥(D ⊔ F) := (inclusion le_sup_right).toAlgebra
   have : IsScalarTower F ↥(D ⊔ F) L := IsScalarTower.of_algebraMap_eq' rfl
-  haveI : IsDecompositionField F L P ↥(D ⊔ F) := isDecompositionField_sup K L P F D
   have : 𝓟F.LiesOver p := LiesOver.tower_bot P 𝓟F p
   have hPF : 𝓟F ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp _
   rw [← sup_eq_right, sup_comm, eq_comm, eq_iff_finrank_eq_of_le' le_sup_left,
@@ -617,7 +615,6 @@ theorem le_isInertiaField_iff [IsFractionRing 𝓞F F] [IsInertiaField K L P E] 
   obtain ⟨_, _, _⟩ := instances (B := B) A K L F 𝓞F
   have : 𝓟F.LiesOver p := LiesOver.tower_bot P 𝓟F p
   have hPF : 𝓟F ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp _
-  haveI : IsInertiaField F L P ↥(E ⊔ F) := isInertiaField_sup K L P F E
   rw [← sup_eq_right, sup_comm, eq_comm, eq_iff_finrank_eq_of_le' le_sup_left,
     IsInertiaField.rank_left A K L P E hp, IsInertiaField.rank_left 𝓞F F L P _ hPF,
     ramificationIdxIn_eq_ramificationIdx p P Gal(L/K),
@@ -640,11 +637,6 @@ theorem isDecompositionField_iff [IsFractionRing 𝓞F F] [p.IsMaximal] [P.IsMax
   rw [le_antisymm_iff, le_isDecompositionField_iff A K L P F D 𝓞F 𝓟F hp,
     isDecompositionField_le_iff K L P F D 𝓞F 𝓟F]
 
-/--
-An intermediate field `F` of `L/K` is the inertia field of `P` if and only if `𝓟F` is totally
-ramified in `L` (the ramification index of `P` over `𝓟F` equals `[L : F]`) and `𝓟F` is unramified
-over `p`, where `𝓟F` is the prime of `F` below `P`.
--/
 theorem isInertiaField_iff [IsFractionRing 𝓞F F] [P.IsMaximal] (hp : p ≠ ⊥) :
     IsInertiaField K L P F ↔ P.ramificationIdx' 𝓞F = Module.finrank F L
       ∧ 𝓟F.ramificationIdx' A = 1 := by
