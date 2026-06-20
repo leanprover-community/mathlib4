@@ -69,7 +69,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
     {t : Set N} {u : Set M}
     (hf : CMDiffAt[t ×ˢ u] n (Function.uncurry f) (x₀, g x₀))
     (hg : CMDiffAt[t] m g x₀) (hx₀ : x₀ ∈ t)
-    (hu : MapsTo g t u) (hmn : m + 1 ≤ n) (h'u : UniqueMDiffOn I u) :
+    (hu : MapsTo g t u) (hmn : m + 1 ≤ n) (h'u : UniqueMDiff[u]) :
     CMDiffAt[t] m (inTangentCoordinates I I' g (fun x ↦ f x (g x))
       (fun x ↦ mfderiv[u] (f x) (g x)) x₀) x₀ := by
   -- first localize the result to a smaller set, to make sure everything happens in chart domains
@@ -148,8 +148,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
   apply nhdsWithin_mono _ ht't
   filter_upwards [h2f, h4f, h2g, self_mem_nhdsWithin] with x hx h'x h2 hxt
   have h1 : g x ∈ u := hu hxt
-  have h3 : UniqueMDiffWithinAt 𝓘(𝕜, E)
-      ((extChartAt I (g x₀)).target ∩ (extChartAt I (g x₀)).symm ⁻¹' u)
+  have h3 : UniqueMDiffAt[(extChartAt I (g x₀)).target ∩ (extChartAt I (g x₀)).symm ⁻¹' u]
       ((extChartAt I (g x₀)) (g x)) := by
     apply UniqueDiffWithinAt.uniqueMDiffWithinAt
     apply UniqueMDiffOn.uniqueDiffOn_target_inter h'u
@@ -191,7 +190,7 @@ This is a special case of `ContMDiffWithinAt.mfderivWithin` where `f` does not c
 parameters and `g = id`.
 -/
 theorem ContMDiffWithinAt.mfderivWithin_const {x₀ : M} {f : M → M'}
-    (hf : CMDiffAt[s] n f x₀) (hmn : m + 1 ≤ n) (hx : x₀ ∈ s) (hs : UniqueMDiffOn I s) :
+    (hf : CMDiffAt[s] n f x₀) (hmn : m + 1 ≤ n) (hx : x₀ ∈ s) (hs : UniqueMDiff[s]) :
     CMDiffAt[s] m (inTangentCoordinates I I' id f (mfderiv[s] f) x₀) x₀ := by
   have : CMDiffAt[s ×ˢ s] n (fun x : M × M ↦ f x.2) (x₀, x₀) :=
     hf.comp (x₀, x₀) contMDiffWithinAt_snd mapsTo_snd_prod
@@ -210,7 +209,7 @@ theorem ContMDiffWithinAt.mfderivWithin_apply {x₀ : N'}
     (hf : CMDiffAt[t ×ˢ u] n (Function.uncurry f) (g₁ x₀, g (g₁ x₀)))
     (hg : CMDiffAt[t] m g (g₁ x₀)) (hg₁ : CMDiffAt[v] m g₁ x₀)
     (hg₂ : CMDiffAt[v] m g₂ x₀) (hmn : m + 1 ≤ n) (h'g₁ : MapsTo g₁ v t)
-    (hg₁x₀ : g₁ x₀ ∈ t) (h'g : MapsTo g t u) (hu : UniqueMDiffOn I u) :
+    (hg₁x₀ : g₁ x₀ ∈ t) (h'g : MapsTo g t u) (hu : UniqueMDiff[u]) :
     CMDiffAt[v] m (fun x ↦ (inTangentCoordinates I I' g (fun x ↦ f x (g x))
       (fun x ↦ mfderiv[u] (f x) (g x)) (g₁ x₀) (g₁ x)) (g₂ x)) x₀ :=
   ((hf.mfderivWithin hg hg₁x₀ h'g hmn hu).comp_of_eq hg₁ h'g₁ rfl).clm_apply hg₂
@@ -273,7 +272,7 @@ variable [Is : IsManifold I 1 M] [I's : IsManifold I' 1 M']
 /-- If a function is `C^n` on a domain with unique derivatives, then its bundled derivative
 is `C^m` when `m+1 ≤ n`. -/
 theorem ContMDiffOn.contMDiffOn_tangentMapWithin
-    (hf : CMDiff[s] n f) (hmn : m + 1 ≤ n) (hs : UniqueMDiffOn I s) :
+    (hf : CMDiff[s] n f) (hmn : m + 1 ≤ n) (hs : UniqueMDiff[s]) :
     CMDiff[(π E (TangentSpace I) ⁻¹' s)] m (tangentMap[s] f) := by
   intro x₀ hx₀
   let s' : Set (TangentBundle I M) := (π E (TangentSpace I) ⁻¹' s)
@@ -298,7 +297,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin
 /-- If a function is `C^n` on a domain with unique derivatives, with `1 ≤ n`, then its bundled
 derivative is continuous there. -/
 theorem ContMDiffOn.continuousOn_tangentMapWithin (hf : CMDiff[s] n f) (hmn : 1 ≤ n)
-    (hs : UniqueMDiffOn I s) :
+    (hs : UniqueMDiff[s]) :
     ContinuousOn (tangentMap[s] f) (π E (TangentSpace I) ⁻¹' s) := by
   have : CMDiff[π E (TangentSpace I) ⁻¹' s] 0 (tangentMap[s] f) :=
     hf.contMDiffOn_tangentMapWithin hmn hs
