@@ -332,7 +332,7 @@ private theorem image_optionElim_product_antidiagonal [DecidableEq σ]
   simp only [mem_antidiagonal, mem_image, mem_product, Prod.mk.injEq, Prod.exists]
   refine ⟨fun h ↦ ⟨u none, v none, u.some, v.some, ⟨?_, ?_⟩, by simp⟩,
     fun ⟨a, b, i, j, h1, h2, h3⟩ ↦ ?_⟩
-  · rw [← add_apply, h, optionElim_apply_none]
+  · rw [← Finsupp.add_apply, h, optionElim_apply_none]
   · rw [← some_add, h, some_optionElim]
   · rw [← h2, ← h3, ← optionElim_add, h1.left, h1.right]
 
