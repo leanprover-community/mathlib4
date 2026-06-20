@@ -15,7 +15,7 @@ This file contains basic results about cyclic linearly ordered groups and cyclic
 linearly ordered groups.
 
 The definitions `LinearOrderedCommGroup.Subgroup.genLTOne` (*resp.*
-`LinearOrderedCommGroup.genLTOone`) yields a generator of a non-trivial subgroup of a linearly
+`LinearOrderedCommGroup.genLTOne`) yields a generator of a non-trivial subgroup of a linearly
 ordered commutative group with (*resp.* of a non-trivial linearly ordered commutative group) that
 is strictly less than `1`. The corresponding additive definitions are also provided.
 -/
