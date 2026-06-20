@@ -54,8 +54,7 @@ theorem paley_zygmund [IsProbabilityMeasure μ] {Z : Ω → ℝ} (hZ_nn : 0 ≤�
             (fun ω hω => by simp only [S, Set.mem_compl_iff, Set.mem_setOf, not_lt] at hω; exact hω)
         _ ≤ θ * ∫ ω, Z ω ∂μ := by
           rw [setIntegral_const, smul_eq_mul]
-          apply mul_le_of_le_one_left (mul_nonneg hθ0 hZ_int_nn)
-            measureReal_le_one
+          apply mul_le_of_le_one_left (mul_nonneg hθ0 hZ_int_nn) measureReal_le_one
     linarith [h_split, h_bound_comp]
   have h_cs: (∫ ω in S, Z ω ∂μ) ^ 2 ≤
     (∫ ω, Z ω ^ 2 ∂μ ) * (μ S).toReal:= by
