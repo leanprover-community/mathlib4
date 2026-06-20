@@ -71,7 +71,7 @@ theorem paley_zygmund [IsProbabilityMeasure μ] {Z : Ω → ℝ} (hZ_nn : 0 ≤�
         ← div_eq_mul_inv, div_le_iff₀ hμS_pos, measureReal_def] at h_jensen
       calc
         (∫ ω in S, Z ω ∂μ) ^ 2 ≤ (∫ ω in S, Z ω ^ 2 ∂μ) * (μ S).toReal := h_jensen
-        _ ≤ (∫ ω, Z ω ^ 2 ∂μ) * (μ S).toReal :=
+        _ ≤ (∫ ω, Z ω ^ 2 ∂μ) * (μ S).toReal :=by
           gcongr ?_ * ?_
           exact setIntegral_le_integral hZ2.integrable_sq (ae_of_all μ (fun x => sq_nonneg (Z x)))
   calc
