@@ -125,7 +125,7 @@ private lemma finite_of_isArtinianRing_of_isLocalRing
     (Algebra.TensorProduct.congr (.symm <| .ofBijective _
       (Ideal.bijective_algebraMap_quotient_residueField (maximalIdeal R))) .refl).trans <|
     (Algebra.TensorProduct.comm _ _ _).trans
-    ((Algebra.TensorProduct.quotIdealMapEquivTensorQuot _ _).symm.restrictScalars _)
+    ((Algebra.TensorProduct.quotIdealMapEquivTensorQuot S (maximalIdeal R)).symm.restrictScalars _)
   have : Module.Finite R (S ⧸ (maximalIdeal R).map (algebraMap R S)) :=
     have : Module.Finite R ((maximalIdeal R).Fiber S) :=
       .trans (maximalIdeal R).ResidueField _
@@ -412,16 +412,15 @@ omit [Algebra S T] in
 lemma QuasiFiniteAt.eq_of_le_of_under_eq {P Q : Ideal S} [P.IsPrime] [Q.IsPrime]
     (h₁ : P ≤ Q) (h₂ : P.under R = Q.under R) [QuasiFiniteAt R Q] :
     P = Q := by
-  have : Disjoint (Q.primeCompl : Set S) P := by simpa [Set.disjoint_iff, Set.ext_iff, not_imp_comm]
-  have inst := IsLocalization.isPrime_of_isPrime_disjoint _ (Localization.AtPrime Q) P ‹_› this
+  have := Q.isPrime_map_of_isLocalizationAtPrime h₁ (S := Localization.AtPrime Q)
   have H := QuasiFinite.eq_of_le_of_under_eq (R := R)
     (Ideal.map (algebraMap S (Localization.AtPrime Q)) P) _
     (IsLocalRing.le_maximalIdeal_of_isPrime _) (by
       convert! h₂ <;> rw [← Ideal.under_under (B := S)]
-      · rw [IsLocalization.under_map_of_isPrime_disjoint Q.primeCompl _ ‹P.IsPrime› this]
+      · rw [Q.under_map_of_isLocalizationAtPrime h₁]
       · rw [Localization.AtPrime.under_maximalIdeal])
   rw [← Localization.AtPrime.under_maximalIdeal (I := Q), ← H,
-    IsLocalization.under_map_of_isPrime_disjoint Q.primeCompl _ ‹P.IsPrime› this]
+    Q.under_map_of_isLocalizationAtPrime h₁]
 
 instance (p : Ideal R) [p.IsPrime] (P : Ideal S) [P.IsPrime] [P.LiesOver p] [QuasiFiniteAt R P]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime P)]
