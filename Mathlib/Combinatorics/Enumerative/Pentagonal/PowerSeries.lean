@@ -52,10 +52,8 @@ theorem tendsto_order_powMulProdOneSubPow_X (k : ℕ) :
 theorem tendsto_order_neg_X_pow (k : ℕ) :
     Tendsto (fun i ↦ (-(X : R⟦X⟧) ^ (i + k + 1)).order) atTop (𝓝 ⊤) := by
   nontriviality R using Subsingleton.eq_zero
-  simp only [order_neg, order_X_pow, Nat.cast_add, Nat.cast_one]
-  refine ENat.tendsto_nhds_top_iff_natCast_lt.mpr fun n ↦ eventually_atTop.mpr ⟨n, ?_⟩
-  norm_cast
-  grind
+  simp_rw [order_neg, order_X_pow, add_assoc]
+  exact ENat.tendsto_natCast_nhds_top.comp (Filter.tendsto_add_atTop_nat _)
 
 variable [TopologicalSpace R]
 
