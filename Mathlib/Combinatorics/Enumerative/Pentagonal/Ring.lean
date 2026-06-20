@@ -12,7 +12,7 @@ public import Mathlib.Topology.Algebra.TopologicallyNilpotent
 /-!
 # Pentagonal number theorem
 
-This is an intermediate file that proves the pentagonal number theorem in general topological ring
+This is an intermediate file that proves the pentagonal number theorem in a general topological ring
 modulo summability and multipliability. The complete proof for formal power series is in
 `Mathlib/RingTheory/PowerSeries/Pentagonal.lean`. TODO: also prove for real/complex numbers.
 
@@ -137,7 +137,7 @@ theorem tprod_one_sub_pow_eq_powMulProdOneSubPow (j : ℕ) {x : R} (hx : IsTopol
     simp_rw [h]
     ring_nf
 
-/-- Pentagonal number theorem, assuming appropriate multipliability and summability.
+/-- **Pentagonal number theorem**, assuming appropriate multipliability and summability.
 
 $$ \prod_{n = 0}^{\infty} (1 - x^{n + 1}) =
 \sum_{k=0}^{\infty} (-1)^k \left(x^{k(3k+1)/2} - x^{(k+1)(3k+2)/2}\right) $$ -/

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.Data.Int.SuccPred
+import Mathlib.RingTheory.Nilpotent.Basic
 
 /-!
 # Pentagonal numbers
@@ -94,3 +95,11 @@ theorem pentagonalCoeff_eq_zero {n : ℕ} (h : n ∉ Set.range pentagonal) :
 theorem pentagonalCoeff_pentagonal (k : ℤ) :
     pentagonalCoeff R (pentagonal k) = Int.negOnePow k := by
   simp [pentagonalCoeff]
+
+theorem pentagonalCoeff_eq_zero_iff [Nontrivial R] {n : ℕ} :
+    pentagonalCoeff R n = 0 ↔ n ∉ Set.range pentagonal := by
+  refine ⟨fun h ↦ ?_, pentagonalCoeff_eq_zero R⟩
+  contrapose h
+  obtain ⟨k, rfl⟩ := h
+  rw [pentagonalCoeff_pentagonal, Int.coe_negOnePow]
+  apply neg_one_pow_ne_zero
