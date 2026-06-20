@@ -825,7 +825,7 @@ def prod (s : AffineSubspace k P₁) (t : AffineSubspace k P₂) : AffineSubspac
     ⟨s.smul_vsub_vadd_mem' c hp₁.1 hp₂.1 hp₃.1, t.smul_vsub_vadd_mem' c hp₁.2 hp₂.2 hp₃.2⟩
 
 @[simp]
-theorem prod_coe (s : AffineSubspace k P₁) (t : AffineSubspace k P₂) :
+theorem coe_prod (s : AffineSubspace k P₁) (t : AffineSubspace k P₂) :
     (s.prod t : Set (P₁ × P₂)) = (s : Set P₁) ×ˢ (t : Set P₂) :=
   rfl
 
