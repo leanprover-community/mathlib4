@@ -42,7 +42,7 @@ edge is removed if present. -/
 def replaceVertex : SimpleGraph V where
   Adj v w := if v = t then if w = t then False else G.Adj s w
                       else if w = t then G.Adj v s else G.Adj v w
-  symm v w := by dsimp only; split_ifs <;> simp [adj_comm]
+  symm.symm v w := by split_ifs <;> simp [adj_comm]
 
 /-- There is never an `s-t` edge in `G.replaceVertex s t`. -/
 lemma not_adj_replaceVertex_same : ¬(G.replaceVertex s t).Adj s t := by simp [replaceVertex]
@@ -71,13 +71,13 @@ variable {s}
 theorem edgeSet_replaceVertex_of_not_adj (hn : ¬G.Adj s t) : (G.replaceVertex s t).edgeSet =
     G.edgeSet \ G.incidenceSet t ∪ (s(·, t)) '' (G.neighborSet s) := by
   ext e; refine e.inductionOn ?_
-  simp only [replaceVertex, mem_edgeSet, Set.mem_union, Set.mem_diff, mk'_mem_incidenceSet_iff]
+  simp only [replaceVertex, mem_edgeSet, Set.mem_union, Set.mem_sdiff, mk'_mem_incidenceSet_iff]
   intros; split_ifs; exacts [by simp_all, by aesop, by rw [adj_comm]; aesop, by grind]
 
 theorem edgeSet_replaceVertex_of_adj (ha : G.Adj s t) : (G.replaceVertex s t).edgeSet =
     (G.edgeSet \ G.incidenceSet t ∪ (s(·, t)) '' (G.neighborSet s)) \ {s(t, t)} := by
   ext e; refine e.inductionOn ?_
-  simp only [replaceVertex, mem_edgeSet, Set.mem_union, Set.mem_diff, mk'_mem_incidenceSet_iff]
+  simp only [replaceVertex, mem_edgeSet, Set.mem_union, Set.mem_sdiff, mk'_mem_incidenceSet_iff]
   intros; split_ifs; exacts [by simp_all, by aesop, by rw [adj_comm]; aesop, by grind]
 
 variable [Fintype V] [DecidableRel G.Adj]
@@ -184,7 +184,7 @@ lemma sup_edge_of_adj (h : G.Adj s t) : G ⊔ edge s t = G := by
     mem_edgeSet]
 
 @[simp] lemma deleteEdges_edge {u v : V} {s : Set (Sym2 V)} (h : s(u, v) ∈ s) :
-    (edge u v).deleteEdges s = ⊥ := by simp [edge, Set.diff_subset_iff, h]
+    (edge u v).deleteEdges s = ⊥ := by simp [edge, Set.sdiff_subset_iff, h]
 
 lemma disjoint_edge {u v : V} : Disjoint G (edge u v) ↔ ¬G.Adj u v := by
   by_cases h : u = v
@@ -194,6 +194,15 @@ lemma disjoint_edge {u v : V} : Disjoint G (edge u v) ↔ ¬G.Adj u v := by
 
 lemma sdiff_edge {u v : V} (h : ¬G.Adj u v) : G \ edge u v = G := by
   simp [disjoint_edge, h]
+
+theorem biSup_fromEdgeSet_singleton_eq : ⨆ e ∈ G.edgeSet, fromEdgeSet {e} = G := by
+  simp_rw [← edgeSet_inj, ← iSup_subtype'', edgeSet_iSup, edgeSet_fromEdgeSet, ← Set.iUnion_sdiff,
+    Set.iUnion_coe_set, Set.biUnion_of_singleton]
+  exact Set.disjoint_left.mpr G.edgeSet_subset_compl_diagSet |>.sdiff_eq_left
+
+theorem sSup_edge_eq : sSup { edge u v | (u : V) (v : V) (_ : G.Adj u v) } = G := by
+  refine .trans ?_ G.biSup_fromEdgeSet_singleton_eq
+  simp_rw [edge, ← iSup_subtype'', iSup, Set.range, Subtype.exists, Sym2.exists, mem_edgeSet]
 
 theorem Subgraph.spanningCoe_sup_edge_le {H : Subgraph (G ⊔ edge s t)} (h : ¬ H.Adj s t) :
     H.spanningCoe ≤ G := by

@@ -108,6 +108,9 @@ theorem exists_length_eq_zero_iff {u v : V} : (∃ p : G.Walk u v, p.length = 0)
 lemma exists_length_eq_one_iff {u v : V} : (∃ (p : G.Walk u v), p.length = 1) ↔ G.Adj u v :=
   ⟨fun ⟨_, hp⟩ ↦ adj_of_length_eq_one hp, (⟨·.toWalk, by simp⟩)⟩
 
+theorem eq_of_length_le_one {p q : G.Walk u v} (hp : p.length ≤ 1) (hq : q.length ≤ 1) : p = q := by
+  grind [cases Walk, length_cons, Adj.ne]
+
 /-- The `support` of a walk is the list of vertices it visits in order. -/
 def support {u v : V} : G.Walk u v → List V
   | nil => [u]
@@ -169,6 +172,10 @@ theorem end_mem_tail_support_of_ne {u v : V} (h : u ≠ v) (p : G.Walk u v) : v 
   obtain ⟨_, _, _, rfl⟩ := exists_eq_cons_of_ne h p
   simp
 
+theorem support_suffix_support_cons (p : G.Walk v w) (hadj : G.Adj u v) :
+    p.support <:+ (p.cons hadj).support := by
+  simp
+
 theorem support_subset_support_cons {u v w : V} (p : G.Walk v w) (hadj : G.Adj u v) :
     p.support ⊆ (p.cons hadj).support := by
   simp
@@ -226,7 +233,7 @@ theorem map_fst_darts_append {u v : V} (p : G.Walk u v) :
   induction p <;> simp [*]
 
 theorem map_fst_darts {u v : V} (p : G.Walk u v) : p.darts.map (·.fst) = p.support.dropLast := by
-  simpa! using congr_arg List.dropLast (map_fst_darts_append p)
+  simpa! using! congr_arg List.dropLast (map_fst_darts_append p)
 
 @[simp]
 theorem edges_nil {u : V} : (nil : G.Walk u u).edges = [] := rfl
@@ -270,7 +277,7 @@ theorem mem_darts_iff_infix_support {u' v'} {p : G.Walk u v} (h : G.Adj u' v') :
     exact ⟨i, by grind, fun j hj ↦ by grind [fst_darts_getElem, snd_darts_getElem]⟩
   · have := h 0
     have := h 1
-    convert p.darts.getElem_mem (n := i) (by grind)
+    convert! p.darts.getElem_mem (n := i) (by grind)
       <;> grind [fst_darts_getElem, snd_darts_getElem]
 
 theorem mem_darts_iff_fst_snd_infix_support {p : G.Walk u v} {d : G.Dart} :
@@ -308,8 +315,7 @@ theorem edges_injective {u v : V} : Function.Injective (Walk.edges : G.Walk u v 
   | .nil, .cons _ _, h => by simp at h
   | .cons _ _, .nil, h => by simp at h
   | .cons' u v c h₁ w₁, .cons' _ v' _ h₂ w₂, h => by
-    have h₃ : u ≠ v' := by rintro rfl; exact G.loopless.irrefl _ h₂
-    obtain ⟨rfl, h₃⟩ : v = v' ∧ w₁.edges = w₂.edges := by simpa [h₁, h₃] using h
+    obtain ⟨rfl, h₃⟩ : v = v' ∧ w₁.edges = w₂.edges := by simpa [h₁, h₂.ne] using h
     rw [edges_injective h₃]
 
 theorem darts_injective {u v : V} : Function.Injective (Walk.darts : G.Walk u v → List G.Dart) :=

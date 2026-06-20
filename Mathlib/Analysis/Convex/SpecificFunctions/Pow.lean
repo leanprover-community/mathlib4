@@ -50,9 +50,9 @@ lemma strictConcaveOn_rpow {p : ℝ} (hp₀ : 0 < p) (hp₁ : p < 1) :
 lemma concaveOn_rpow {p : ℝ} (hp₀ : 0 ≤ p) (hp₁ : p ≤ 1) :
     ConcaveOn ℝ≥0 univ fun x : ℝ≥0 ↦ x ^ p := by
   rcases eq_or_lt_of_le hp₀ with (rfl | hp₀)
-  · simpa only [rpow_zero] using concaveOn_const (c := 1) convex_univ
+  · simpa only [rpow_zero] using! concaveOn_const (c := 1) convex_univ
   rcases eq_or_lt_of_le hp₁ with (rfl | hp₁)
-  · simpa only [rpow_one] using concaveOn_id convex_univ
+  · simpa only [rpow_one] using! concaveOn_id convex_univ
   exact (strictConcaveOn_rpow hp₀ hp₁).concaveOn
 
 lemma strictConcaveOn_sqrt : StrictConcaveOn ℝ≥0 univ NNReal.sqrt := by
@@ -82,9 +82,9 @@ lemma strictConcaveOn_rpow {p : ℝ} (hp₀ : 0 < p) (hp₁ : p < 1) :
 lemma concaveOn_rpow {p : ℝ} (hp₀ : 0 ≤ p) (hp₁ : p ≤ 1) :
     ConcaveOn ℝ (Set.Ici 0) fun x : ℝ ↦ x ^ p := by
   rcases eq_or_lt_of_le hp₀ with (rfl | hp₀)
-  · simpa only [rpow_zero] using concaveOn_const (c := 1) (convex_Ici _)
+  · simpa only [rpow_zero] using! concaveOn_const (c := 1) (convex_Ici _)
   rcases eq_or_lt_of_le hp₁ with (rfl | hp₁)
-  · simpa only [rpow_one] using concaveOn_id (convex_Ici _)
+  · simpa only [rpow_one] using! concaveOn_id (convex_Ici _)
   exact (strictConcaveOn_rpow hp₀ hp₁).concaveOn
 
 lemma strictConcaveOn_sqrt : StrictConcaveOn ℝ (Set.Ici 0) (√· : ℝ → ℝ) := by

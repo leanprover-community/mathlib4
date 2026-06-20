@@ -574,8 +574,8 @@ variable [TopologicalSpace M] [MulOneClass M] [ContinuousMul M]
 theorem exists_open_nhds_one_split {s : Set M} (hs : s ∈ 𝓝 (1 : M)) :
     ∃ V : Set M, IsOpen V ∧ (1 : M) ∈ V ∧ ∀ v ∈ V, ∀ w ∈ V, v * w ∈ s := by
   have : (fun a : M × M => a.1 * a.2) ⁻¹' s ∈ 𝓝 ((1, 1) : M × M) :=
-    tendsto_mul (by simpa only [one_mul] using hs)
-  simpa only [prod_subset_iff] using exists_nhds_square this
+    tendsto_mul (by simpa only [one_mul] using! hs)
+  simpa only [prod_subset_iff] using! exists_nhds_square this
 
 @[to_additive exists_nhds_zero_half]
 theorem exists_nhds_one_split {s : Set M} (hs : s ∈ 𝓝 (1 : M)) :
@@ -595,7 +595,7 @@ theorem exists_open_nhds_one_mul_subset {U : Set M} (hU : U ∈ 𝓝 (1 : M)) :
 theorem Filter.HasBasis.mul_self {p : ι → Prop} {s : ι → Set M} (h : (𝓝 1).HasBasis p s) :
     (𝓝 1).HasBasis p fun i => s i * s i := by
   rw [← nhds_mul_nhds_one, ← map₂_mul, ← map_uncurry_prod]
-  simpa only [← image_mul_prod] using h.prod_self.map _
+  simpa only [← image_mul_prod] using! h.prod_self.map _
 
 end MulOneClass
 
@@ -731,7 +731,7 @@ inverse images of compact sets are compact. -/
 theorem Filter.tendsto_cocompact_mul_left {a b : M} (ha : b * a = 1) :
     Filter.Tendsto (fun x : M => a * x) (Filter.cocompact M) (Filter.cocompact M) := by
   refine Filter.Tendsto.of_tendsto_comp ?_ (Filter.comap_cocompact_le (continuous_const_mul b))
-  convert Filter.tendsto_id
+  convert! Filter.tendsto_id
   ext x
   simp [← mul_assoc, ha]
 

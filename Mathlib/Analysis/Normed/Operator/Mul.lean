@@ -112,7 +112,7 @@ instance _root_.NormedAlgebra.instRegularNormedAlgebra {𝕜 R : Type*} [Nontriv
     [SeminormedRing R] [NormedAlgebra 𝕜 R] [NormOneClass R] : RegularNormedAlgebra 𝕜 R where
   isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 R) <|
     fun x => le_antisymm (opNorm_mul_apply_le _ _ _) <| by
-      convert ratio_le_opNorm ((mul 𝕜 R) x) (1 : R)
+      convert! ratio_le_opNorm ((mul 𝕜 R) x) (1 : R)
       simp [norm_one]
 
 variable [RegularNormedAlgebra 𝕜 R]
@@ -188,7 +188,7 @@ variable [NormedAlgebra 𝕜 R] [Module R E] [IsBoundedSMul R E] [IsScalarTower 
 /-- Scalar multiplication as a continuous bilinear map. -/
 def lsmul : R →L[𝕜] E →L[𝕜] E :=
   ((Algebra.lsmul 𝕜 𝕜 E).toLinearMap : R →ₗ[𝕜] E →ₗ[𝕜] E).mkContinuous₂ 1 fun c x => by
-    simpa only [one_mul] using norm_smul_le c x
+    simpa only [one_mul] using! norm_smul_le c x
 
 @[simp]
 theorem lsmul_apply (c : R) (x : E) : lsmul 𝕜 R c x = c • x :=
@@ -210,11 +210,16 @@ variable {R 𝕜}
 theorem opNorm_lsmul_apply_le (x : R) : ‖(lsmul 𝕜 R x : E →L[𝕜] E)‖ ≤ ‖x‖ :=
   ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg x) fun y => norm_smul_le x y
 
+theorem opNNNorm_lsmul_apply_le (x : R) : ‖(lsmul 𝕜 R x : E →L[𝕜] E)‖₊ ≤ ‖x‖₊ :=
+  ContinuousLinearMap.opNNNorm_le_bound _ _ fun y => nnnorm_smul_le x y
+
 /-- The norm of `lsmul` is at most 1 in any semi-normed group. -/
-theorem opNorm_lsmul_le : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖ ≤ 1 := by
-  refine ContinuousLinearMap.opNorm_le_bound _ zero_le_one fun x => ?_
-  simp_rw [one_mul]
-  exact opNorm_lsmul_apply_le _
+theorem opNorm_lsmul_le : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖ ≤ 1 :=
+  LinearMap.mkContinuous₂_norm_le _ zero_le_one _
+
+theorem opNNNorm_lsmul_le : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖₊ ≤ 1 := by
+  rw [← NNReal.coe_le_coe]
+  simpa using opNorm_lsmul_le
 
 end SMulLinear
 
@@ -238,11 +243,9 @@ variable [SMulCommClass 𝕜 R R] [RegularNormedAlgebra 𝕜 R] [Nontrivial R]
 theorem opNorm_mul : ‖mul 𝕜 R‖ = 1 :=
   (mulₗᵢ 𝕜 R).norm_toContinuousLinearMap
 
-
 @[simp]
 theorem opNNNorm_mul : ‖mul 𝕜 R‖₊ = 1 :=
   Subtype.ext <| opNorm_mul 𝕜 R
-
 
 end
 
@@ -258,6 +261,32 @@ theorem opNorm_lsmul [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Module R E] 
   obtain ⟨y, hy⟩ := exists_ne (0 : E)
   refine le_of_mul_le_mul_right ?_ (norm_pos_iff.mpr hy)
   simpa using le_of_opNorm_le _ (h 1) y
+
+@[simp]
+theorem opNNNorm_lsmul [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Module R E] [NormSMulClass R E]
+    [IsScalarTower 𝕜 R E] [Nontrivial E] : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖₊ = 1 := by
+  rw [← NNReal.coe_inj]
+  simp
+
+/-- The norm of `lsmul x` equals `‖x‖` in any nontrivial normed group.
+
+This is `ContinuousLinearMap.opNorm_lsmul_apply_le` as an equality. -/
+@[simp]
+theorem opNorm_lsmul_apply [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Module R E]
+    [NormSMulClass R E] [IsScalarTower 𝕜 R E] [Nontrivial E] {a : R} :
+    ‖(lsmul 𝕜 R a : E →L[𝕜] E)‖ = ‖a‖ := by
+  refine ContinuousLinearMap.opNorm_eq_of_bounds (norm_nonneg _) (fun x => ?_) fun N _ h => ?_
+  · simp [norm_smul]
+  obtain ⟨y, hy⟩ := exists_ne (0 : E)
+  refine le_of_mul_le_mul_right ?_ (norm_pos_iff.mpr hy)
+  simpa [norm_smul] using h y
+
+@[simp]
+theorem opNNNorm_lsmul_apply [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Module R E]
+    [NormSMulClass R E] [IsScalarTower 𝕜 R E] [Nontrivial E] {a : R} :
+    ‖(lsmul 𝕜 R a : E →L[𝕜] E)‖₊ = ‖a‖₊ := by
+  rw [← NNReal.coe_inj]
+  simp
 
 end ContinuousLinearMap
 
