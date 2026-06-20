@@ -132,7 +132,7 @@ variable (R L₁ L₂)
 
 theorem range_inl : range (inl R L₁ L₂) = ker (snd R L₁ L₂) := by
   rw [← LieSubalgebra.toSubmodule_inj, range_toSubmodule, LieIdeal.toLieSubalgebra_toSubmodule,
-   ker_toSubmodule]
+    ker_toSubmodule]
   exact LinearMap.range_inl R L₁ L₂
 
 theorem ker_snd : ker (snd R L₁ L₂) = range (inl R L₁ L₂) :=
@@ -140,7 +140,7 @@ theorem ker_snd : ker (snd R L₁ L₂) = range (inl R L₁ L₂) :=
 
 theorem range_inr : range (inr R L₁ L₂) = ker (fst R L₁ L₂) := by
   rw [← LieSubalgebra.toSubmodule_inj, range_toSubmodule, LieIdeal.toLieSubalgebra_toSubmodule,
-   ker_toSubmodule]
+    ker_toSubmodule]
   exact LinearMap.range_inr R L₁ L₂
 
 theorem ker_fst : ker (fst R L₁ L₂) = range (inr R L₁ L₂) :=
