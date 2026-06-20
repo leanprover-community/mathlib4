@@ -367,6 +367,12 @@ lemma restrictScalars_pow {A B C : Type*} [Semiring A] [Semiring B]
   | n + 2, _ => by
     simp [Submodule.pow_succ (n := n + 1), restrictScalars_mul, restrictScalars_pow n.succ_ne_zero]
 
+theorem pow_eq_bot [NoZeroDivisors A] {M : Submodule R A} :
+    ∀ {n : ℕ}, (hn : n ≠ 0) → M ^ n = ⊥ ↔ M = ⊥
+  | 1, _ => by simp [Submodule.pow_one]
+  | n + 2, _ => by
+    simp [Submodule.pow_succ (n := n + 1), mul_eq_bot, pow_eq_bot n.succ_ne_zero]
+
 end Module
 
 variable {ι : Sort uι}
