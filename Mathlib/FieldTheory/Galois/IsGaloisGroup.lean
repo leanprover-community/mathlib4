@@ -327,7 +327,7 @@ variable (A B : Type*) [CommRing A] [CommRing B] [IsDomain B] [Algebra A B] [Fai
 
 /-- The cardinality of a Galois group of `B/A` equals the rank of `B` as an `A`-module.
 
-See `IsGaloisGroup.card_eq_finrank` a field-theoretic version that does not assume finiteness. -/
+See `IsGaloisGroup.card_eq_finrank`, a field-theoretic version that does not assume finiteness. -/
 theorem card_eq_finrank' : Nat.card G = Module.finrank A B := by
   have := IsDomain.of_faithfulSMul A B
   let := FractionRing.liftAlgebra A (FractionRing B)
@@ -346,7 +346,7 @@ attribute [local instance] FractionRing.liftAlgebra in
     letI := IsFractionRing.mulSemiringAction G B L
     have := isGalois G K L
     have := finiteDimensional G K L
-    refine .of_comp ?_ (IsFractionRing.fieldEquivOfAlgEquivHom_injective A B K L)
+    refine .of_comp_left ?_ (IsFractionRing.fieldEquivOfAlgEquivHom_injective A B K L)
     rw [Nat.bijective_iff_injective_and_card, card_eq_finrank G K L,
       IsGalois.card_aut_eq_finrank K L]
     exact ⟨fun _ _ ↦ (faithful K).eq_of_smul_eq_smul ∘ DFunLike.ext_iff.mp, rfl⟩)

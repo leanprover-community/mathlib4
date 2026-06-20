@@ -352,7 +352,7 @@ theorem Bijective.of_comp_iff' {f : α → β} (hf : Bijective f) (g : γ → α
     Function.Bijective (f ∘ g) ↔ Function.Bijective g :=
   and_congr (Injective.of_comp_iff hf.injective _) (Surjective.of_comp_iff' hf _)
 
-theorem Bijective.of_comp {f : α → β} {g : γ → α} (hfg : Function.Bijective (f ∘ g))
+theorem Bijective.of_comp_left {f : α → β} {g : γ → α} (hfg : Function.Bijective (f ∘ g))
     (hf : Function.Injective f) : Function.Bijective g :=
   ⟨hfg.1.of_comp, hfg.2.of_comp_left hf⟩
 
