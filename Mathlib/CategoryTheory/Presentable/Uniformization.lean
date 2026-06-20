@@ -71,7 +71,6 @@ lemma uniformization'
       IsCardinalAccessibleCategory D κ ∧
       F.IsCardinalAccessible κ ∧
         isCardinalPresentable C κ ≤ (isCardinalPresentable D κ).inverseImage F := by
-  -- this should be a separate lemma
   obtain ⟨κ, _, _, _, _⟩ :
       ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
         IsCardinalAccessibleCategory C κ ∧ IsCardinalAccessibleCategory D κ ∧
