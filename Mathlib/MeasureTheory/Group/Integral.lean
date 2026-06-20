@@ -6,7 +6,6 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.MeasureTheory.Group.Measure
 
 /-!
 # Bochner Integration on Groups

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
-public import Mathlib.Topology.Algebra.UniformMulAction
 public import Mathlib.Topology.Order.LeftRightLim
 
 /-!

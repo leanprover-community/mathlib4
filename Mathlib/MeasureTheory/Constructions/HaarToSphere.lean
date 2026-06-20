@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Order.Field.Pointwise
 public import Mathlib.Analysis.Normed.Module.Ball.RadialEquiv
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.MeasureTheory.Integral.Prod
-public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
 # Generalized polar coordinate change

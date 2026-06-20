@@ -5,7 +5,6 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.MeasurableSpace.Basic
 public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 
 /-!

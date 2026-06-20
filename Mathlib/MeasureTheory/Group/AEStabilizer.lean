@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.MeasureTheory.Group.Action
-public import Mathlib.Order.Filter.EventuallyConst
 
 /-!
 # A.e. stabilizer of a set

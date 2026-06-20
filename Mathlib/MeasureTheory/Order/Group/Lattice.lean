@@ -5,7 +5,6 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.PosPart
 public import Mathlib.MeasureTheory.Group.Arithmetic
 public import Mathlib.MeasureTheory.Order.Lattice
 

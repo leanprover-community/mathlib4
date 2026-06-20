@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 public import Mathlib.MeasureTheory.Covering.Besicovitch
 public import Mathlib.Tactic.AdaptationNote
-public import Mathlib.Algebra.EuclideanDomain.Basic
 
 /-!
 # Satellite configurations for Besicovitch covering lemma in vector spaces

@@ -5,7 +5,6 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Unique
 public import Mathlib.MeasureTheory.Function.L2Space
 

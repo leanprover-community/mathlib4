@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 
 /-!
 # Finitely strongly measurable functions in `Lp`
