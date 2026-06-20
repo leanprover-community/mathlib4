@@ -255,6 +255,15 @@ instance decidableLeftInverseFintype [DecidableEq β] [Fintype β] (f : α → �
     Decidable (Function.LeftInverse f g) :=
   inferInstanceAs <| Decidable (∀ x, f (g x) = x)
 
+instance decidableWCovByFintype [Fintype α] [Preorder α] [DecidableLE α] :
+    DecidableRel (WCovBy : α → α → Prop) :=
+  have := decidableLTOfDecidableLE (α := α)
+  inferInstanceAs <| DecidableRel fun a b ↦ a ≤ b ∧ ∀ ⦃c : α⦄, a < c → ¬c < b
+
+instance decidableCovByFintype [Fintype α] [LT α] [DecidableLT α] :
+    DecidableRel (CovBy : α → α → Prop) :=
+  inferInstanceAs <| DecidableRel fun a b ↦ a < b ∧ ∀ ⦃c : α⦄, a < c → ¬c < b
+
 instance subsingleton (α : Type*) : Subsingleton (Fintype α) :=
   ⟨fun ⟨s₁, h₁⟩ ⟨s₂, h₂⟩ => by congr; simp [Finset.ext_iff, h₁, h₂]⟩
 

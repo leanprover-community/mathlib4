@@ -34,20 +34,20 @@ variable (α β : Type*)
 
 section Preorder
 
-instance [Fintype α] [LT α] [DecidableLT α] : DecidableRel (CovBy : α → α → Prop) :=
-  inferInstanceAs <| DecidableRel fun a b ↦ a < b ∧ ∀ ⦃c : α⦄, a < c → ¬c < b
-
 variable [Preorder α]
 
 /-- The Hasse diagram of an order as a simple graph. The graph of the covering relation. -/
 def hasse : SimpleGraph α where
   Adj a b := a ⋖ b ∨ b ⋖ a
 
-variable {α β} {a b : α}
+variable {α} {a b : α}
 
 @[simp]
 theorem hasse_adj : (hasse α).Adj a b ↔ a ⋖ b ∨ b ⋖ a :=
   Iff.rfl
+
+instance [Fintype α] [DecidableLT α] : DecidableRel (hasse α).Adj :=
+  fun _ _ ↦ decidable_of_iff' _ hasse_adj
 
 /-- `αᵒᵈ` and `α` have the same Hasse diagram. -/
 def hasseDualIso : hasse αᵒᵈ ≃g hasse α :=
@@ -119,6 +119,7 @@ theorem preconnected_hasse_of_succOrder [SuccOrder α] [IsSuccArchimedean α] :
   exact
     reflTransGen_of_succ _ (fun c hc => Or.inl <| covBy_succ_of_not_isMax hc.2.not_isMax)
       fun c hc => Or.inr <| covBy_succ_of_not_isMax hc.2.not_isMax
+
 @[deprecated (since := "2026-06-19")]
 alias hasse_preconnected_of_succ := preconnected_hasse_of_succOrder
 
@@ -129,6 +130,7 @@ theorem preconnected_hasse_of_predOrder [PredOrder α] [IsPredArchimedean α] :
   exact
     reflTransGen_of_pred _ (fun c hc => Or.inl <| pred_covBy_of_not_isMin hc.1.not_isMin)
       fun c hc => Or.inr <| pred_covBy_of_not_isMin hc.1.not_isMin
+
 @[deprecated (since := "2026-06-19")]
 alias hasse_preconnected_of_pred := preconnected_hasse_of_predOrder
 
@@ -156,10 +158,12 @@ theorem pathGraph_adj {n : ℕ} {u v : Fin n} :
 
 theorem preconnected_pathGraph (n : ℕ) : (pathGraph n).Preconnected :=
   preconnected_hasse_of_succOrder _
+
 @[deprecated (since := "2026-06-19")] alias pathGraph_preconnected := preconnected_pathGraph
 
 theorem connected_pathGraph_add_one (n : ℕ) : (pathGraph (n + 1)).Connected :=
   ⟨preconnected_pathGraph _⟩
+
 @[deprecated (since := "2026-06-19")] alias pathGraph_connected := connected_pathGraph_add_one
 
 theorem isAcyclic_pathGraph (n : ℕ) : (pathGraph n).IsAcyclic := isAcyclic_hasse_of_linearOrder _
@@ -171,9 +175,8 @@ theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
   ext u v
   fin_cases u <;> fin_cases v <;> simp [pathGraph]
 
-instance {n : ℕ} : LocallyFinite (pathGraph n) := by
-  unfold pathGraph hasse
-  infer_instance
+instance (n : ℕ) : DecidableRel (pathGraph n).Adj :=
+  inferInstanceAs <| DecidableRel (hasse _).Adj
 
 namespace Walk
 

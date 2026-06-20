@@ -137,10 +137,12 @@ theorem pathGraph_le_cycleGraph {n : ℕ} : pathGraph n ≤ cycleGraph n := by
 
 theorem preconnected_cycleGraph {n : ℕ} : (cycleGraph n).Preconnected :=
   (preconnected_pathGraph n).mono pathGraph_le_cycleGraph
+
 @[deprecated (since := "2026-06-19")] alias cycleGraph_preconnected := preconnected_cycleGraph
 
 theorem connected_cycleGraph_add_one {n : ℕ} : (cycleGraph (n + 1)).Connected :=
   (connected_pathGraph_add_one n).mono pathGraph_le_cycleGraph
+
 @[deprecated (since := "2026-06-19")] alias cycleGraph_connected := connected_cycleGraph_add_one
 
 section cycle
