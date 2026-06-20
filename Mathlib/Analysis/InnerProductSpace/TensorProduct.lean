@@ -669,8 +669,8 @@ open LinearMap
     [FiniteDimensional 𝕜 G] (f : E →ₗ[𝕜] F) :
     (f.lTensor G).adjoint = f.adjoint.lTensor G := by simp [lTensor]
 
-/-- If `M` and `P` are semilinearly equivalent and `N` and `Q` are semilinearly equivalent
-then `M ⊗ N` and `P ⊗ Q` are semilinearly equivalent. -/
+/-- If `E` and `F` are continuously and linearly equivalent and `G` and `H` are continuously and
+linearly equivalent, then `E ⊗ G` and `F ⊗ H` are continuously and linearly equivalent. -/
 noncomputable def congrL (f : E ≃L[𝕜] F) (g : G ≃L[𝕜] H) : E ⊗[𝕜] G ≃L[𝕜] F ⊗[𝕜] H :=
   ContinuousLinearEquiv.ofContinuousLinear (mapL f g) (mapL f.symm g.symm)
     (by ext; simp [← mapL_comp])
@@ -719,13 +719,15 @@ end congr_congr
 theorem congrL_mul (f : E ≃L[𝕜] E) (g : G ≃L[𝕜] G) (f' : E ≃L[𝕜] E) (g' : G ≃L[𝕜] G) :
     congrL (f * f') (g * g') = congrL f g * congrL f' g' := congrL_trans ..
 
-@[simp] theorem congrL_pow (f : E ≃L[𝕜] E) (g : G ≃L[𝕜] G) (n : ℕ) :
+@[simp]
+theorem congrL_pow (f : E ≃L[𝕜] E) (g : G ≃L[𝕜] G) (n : ℕ) :
     congrL f g ^ n = congrL (f ^ n) (g ^ n) := by
   induction n with
   | zero => exact congrL_refl_refl.symm
   | succ n ih => simp_rw [pow_succ, ih, congrL_mul]
 
-@[simp] theorem congrL_zpow (f : E ≃L[𝕜] E) (g : G ≃L[𝕜] G) (n : ℤ) :
+@[simp]
+theorem congrL_zpow (f : E ≃L[𝕜] E) (g : G ≃L[𝕜] G) (n : ℤ) :
     congrL f g ^ n = congrL (f ^ n) (g ^ n) := by
   cases n with
   | ofNat n => exact congrL_pow _ _ _
