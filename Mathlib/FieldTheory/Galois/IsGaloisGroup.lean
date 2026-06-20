@@ -247,9 +247,9 @@ a Galois group for `FractionRing B / FractionRing A` for the action defined by
 instance IsGaloisGroup.toFractionRing [IsDomain A] [IsDomain B] [IsTorsionFree A B] [Finite G]
     [IsGaloisGroup G A B] [Algebra (FractionRing A) (FractionRing B)]
     [IsScalarTower A (FractionRing A) (FractionRing B)] :
-    letI := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
+    letI := IsFractionRing.mulSemiringAction G B (FractionRing B)
     IsGaloisGroup G (FractionRing A) (FractionRing B) := by
-  let := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
+  let := IsFractionRing.mulSemiringAction G B (FractionRing B)
   apply IsGaloisGroup.to_isFractionRing G A B _ _
 
 open NumberField
@@ -314,7 +314,7 @@ protected theorem finite (R B : Type*) [CommRing R] [CommRing B] [Algebra R B] [
   let : Algebra R A := (algebraMap R B).rangeRestrict.toAlgebra
   have : IsScalarTower R A B := IsScalarTower.of_algebraMap_eq' rfl
   have : Module.Finite A B := Module.Finite.of_restrictScalars_finite R A B
-  have := IsGaloisGroup.to_isFractionRing_of_isIntegral G B (FractionRing B)
+  have := IsGaloisGroup.to_isFractionRing_of_isIntegral G A B (FractionRing A) (FractionRing B)
   apply Nat.finite_of_card_ne_zero
   rw [card_eq_finrank G (FractionRing A) (FractionRing B)]
   exact Module.finrank_pos.ne'
@@ -347,7 +347,7 @@ attribute [local instance] FractionRing.liftAlgebra in
     have := IsDomain.of_faithfulSMul A B
     letI K := FractionRing A
     letI L := FractionRing B
-    letI := IsFractionRing.mulSemiringAction G A B K L
+    letI := IsFractionRing.mulSemiringAction G B L
     have := isGalois G K L
     have := finiteDimensional G K L
     suffices Function.Bijective (MulSemiringAction.toAlgAut G K L) from
