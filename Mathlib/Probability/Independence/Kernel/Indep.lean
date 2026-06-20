@@ -224,7 +224,7 @@ lemma iIndepSets.precomp (hg : Function.Injective g) (h : iIndepSets π κ μ) :
 lemma iIndepSets.of_precomp (hg : Function.Surjective g) (h : iIndepSets (π ∘ g) κ μ) :
     iIndepSets π κ μ := by
   obtain ⟨g', hg'⟩ := hg.hasRightInverse
-  convert h.precomp hg'.injective
+  convert! h.precomp hg'.injective
   rw [Function.comp_assoc, hg'.comp_eq_id, Function.comp_id]
 
 lemma iIndepSets_precomp_of_bijective (hg : Function.Bijective g) :
@@ -322,6 +322,12 @@ theorem indep_of_indep_of_le_right {m₁ m₂ m₃ : MeasurableSpace Ω} {_mΩ :
     Indep m₁ m₃ κ μ :=
   fun t1 t2 ht1 ht2 => h_indep t1 t2 ht1 (h32 _ ht2)
 
+theorem indep_of_indep_of_le {m₁ m₂ m₃ m₄ : MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
+    {κ : Kernel α Ω} {μ : Measure α} (h_indep : Indep m₁ m₂ κ μ)
+    (h31 : m₃ ≤ m₁) (h42 : m₄ ≤ m₂) :
+    Indep m₃ m₄ κ μ :=
+  indep_of_indep_of_le_left (indep_of_indep_of_le_right h_indep h42) h31
+
 theorem iIndep_of_iIndep_of_le {m₁ m₂ : ι → MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} (h_indep : iIndep m₂ κ μ) (h_le : ∀ i, m₁ i ≤ m₂ i) :
     iIndep m₁ κ μ :=
@@ -360,8 +366,6 @@ theorem IndepSets.biUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : 
   simp_rw [Set.mem_iUnion] at ht1
   rcases ht1 with ⟨n, hpn, ht1⟩
   exact hyp n hpn t1 t2 ht1 ht2
-
-@[deprecated (since := "2025-11-02")] alias IndepSets.bUnion := IndepSets.biUnion
 
 theorem IndepSets.inter {s₁ s' : Set (Set Ω)} (s₂ : Set (Set Ω)) {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} (h₁ : IndepSets s₁ s' κ μ) :
@@ -480,8 +484,8 @@ theorem IndepSets.indep_aux {m₂ m : MeasurableSpace Ω}
   | basic u hu => exact hyp t1 u ht1 hu
   | compl u hu ihu =>
     filter_upwards [ihu] with a ha
-    rw [← Set.diff_eq, ← Set.diff_self_inter,
-      measure_diff inter_subset_left (ht1m.inter (h2 _ hu)).nullMeasurableSet (measure_ne_top _ _),
+    rw [← Set.sdiff_eq, ← Set.sdiff_self_inter,
+      measure_sdiff inter_subset_left (ht1m.inter (h2 _ hu)).nullMeasurableSet (measure_ne_top _ _),
       ha, measure_compl (h2 _ hu) (measure_ne_top _ _), measure_univ, ENNReal.mul_sub, mul_one]
     exact fun _ _ ↦ measure_ne_top _ _
   | iUnion f hfd hfm ihf =>
@@ -511,9 +515,9 @@ theorem IndepSets.indep {m1 m2 m : MeasurableSpace Ω} {κ : Kernel α Ω} {μ :
   | compl t ht iht =>
     filter_upwards [iht] with a ha
     have : tᶜ ∩ t2 = t2 \ (t ∩ t2) := by
-      rw [Set.inter_comm t, Set.diff_self_inter, Set.diff_eq_compl_inter]
+      rw [Set.inter_comm t, Set.sdiff_self_inter, Set.sdiff_eq_compl_inter]
     rw [this, Set.inter_comm t t2,
-      measure_diff Set.inter_subset_left ((h2 _ ht2).inter (h1 _ ht)).nullMeasurableSet
+      measure_sdiff Set.inter_subset_left ((h2 _ ht2).inter (h1 _ ht)).nullMeasurableSet
         (measure_ne_top (κ a) _),
       Set.inter_comm, ha, measure_compl (h1 _ ht) (measure_ne_top (κ a) t), measure_univ,
       mul_comm (1 - κ a t), ENNReal.mul_sub (fun _ _ ↦ measure_ne_top (κ a) _), mul_one, mul_comm]
@@ -642,14 +646,16 @@ theorem indep_iSup_of_directed_le {Ω} {m : ι → MeasurableSpace Ω} {m' m0 : 
 theorem iIndepSet.indep_generateFrom_lt [Preorder ι] {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (i : ι) :
     Indep (generateFrom {s i}) (generateFrom { t | ∃ j < i, s j = t }) κ μ := by
-  convert iIndepSet.indep_generateFrom_of_disjoint hsm hs {i} { j | j < i }
-    (Set.disjoint_singleton_left.mpr (lt_irrefl _)) using 1
+  convert!
+    iIndepSet.indep_generateFrom_of_disjoint hsm hs { i } {j | j < i}
+      (Set.disjoint_singleton_left.mpr (lt_irrefl _)) using 1
   simp only [Set.mem_singleton_iff, exists_eq_left, Set.setOf_eq_eq_singleton']
 
 theorem iIndepSet.indep_generateFrom_le [Preorder ι] {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (i : ι) {k : ι} (hk : i < k) :
     Indep (generateFrom {s k}) (generateFrom { t | ∃ j ≤ i, s j = t }) κ μ := by
-  convert iIndepSet.indep_generateFrom_of_disjoint hsm hs {k} { j | j ≤ i }
+  convert!
+    iIndepSet.indep_generateFrom_of_disjoint hsm hs { k } {j | j ≤ i}
       (Set.disjoint_singleton_left.mpr hk.not_ge) using 1
   simp only [Set.mem_singleton_iff, exists_eq_left, Set.setOf_eq_eq_singleton']
 

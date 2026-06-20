@@ -165,6 +165,12 @@ theorem projectionOnto_apply_left (h : IsCompl p q) (x : p) :
 theorem projection_apply_left (hpq : IsCompl p q) (x : p) :
     p.projection q hpq x = x := by simp [projection]
 
+lemma projectionOnto_apply_of_mem_left (hpq : IsCompl p q) {x : E} (hx : x ∈ p) :
+    p.projectionOnto q hpq x = ⟨x, hx⟩ := projectionOnto_apply_left hpq ⟨x, hx⟩
+
+lemma projection_apply_of_mem_left (hpq : IsCompl p q) {x : E} (hx : x ∈ p) :
+    p.projection q hpq x = x := projection_apply_left hpq ⟨x, hx⟩
+
 @[simp]
 theorem range_projectionOnto (h : IsCompl p q) : range (projectionOnto p q h) = ⊤ :=
   range_eq_of_proj (projectionOnto_apply_left h)
@@ -286,6 +292,10 @@ def quotientEquivOfIsCompl (h : IsCompl p q) : (E ⧸ p) ≃ₗ[R] q :=
     (by ext; simp)
     (by ext; simp [Quotient.eq, sub_mem_comm_iff, sub_projection_mem])
 
+theorem quotientEquivOfIsCompl_comp_mkQ (h : IsCompl p q) :
+    (quotientEquivOfIsCompl p q h : E ⧸ p →ₗ[R] q) ∘ₗ p.mkQ = q.projectionOnto p h.symm :=
+  rfl
+
 @[simp]
 theorem quotientEquivOfIsCompl_apply_mk (h : IsCompl p q) (x : E) :
     quotientEquivOfIsCompl p q h (Quotient.mk x) = q.projectionOnto p h.symm x :=
@@ -360,11 +370,11 @@ def ofIsCompl {p q : Submodule R E} (h : IsCompl p q) (φ : p →ₗ[R] F) (ψ :
 variable {p q}
 
 @[simp]
-theorem ofIsCompl_left_apply (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} (u : p) :
+theorem ofIsCompl_apply_left (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} (u : p) :
     ofIsCompl h φ ψ (u : E) = φ u := by simp [ofIsCompl]
 
 @[simp]
-theorem ofIsCompl_right_apply (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} (v : q) :
+theorem ofIsCompl_apply_right (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} (v : q) :
     ofIsCompl h φ ψ (v : E) = ψ v := by simp [ofIsCompl]
 
 theorem ofIsCompl_eq (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} {χ : E →ₗ[R] F}
@@ -448,8 +458,8 @@ def ofIsComplProdEquiv {p q : Submodule R₁ E} (h : IsCompl p q) :
     invFun := fun φ => ⟨φ.domRestrict p, φ.domRestrict q⟩
     left_inv := fun φ ↦ by
       ext x
-      · exact ofIsCompl_left_apply h x
-      · exact ofIsCompl_right_apply h x
+      · exact ofIsCompl_apply_left h x
+      · exact ofIsCompl_apply_right h x
     right_inv := fun φ ↦ by
       ext x
       obtain ⟨a, b, hab, _⟩ := existsUnique_add_of_isCompl h x
@@ -645,7 +655,7 @@ open LinearMap in
 its range along its kernel. -/
 theorem IsIdempotentElem.eq_projection {T : E →ₗ[R] E} (hT : IsIdempotentElem T) :
     T = T.range.projection T.ker hT.isCompl := by
-  convert ofIsCompl_subtype_zero_eq hT.isCompl
+  convert! ofIsCompl_subtype_zero_eq hT.isCompl
   exact ofIsCompl_eq _ (by simp [hT.isProj_range.map_id]) (by simp) |>.symm
 
 open LinearMap in
@@ -691,7 +701,7 @@ theorem IsIdempotentElem.range_eq_ker_one_sub {E : Type*} [AddCommGroup E] [Modu
 open LinearMap in
 theorem IsIdempotentElem.ker_eq_range {E : Type*} [AddCommGroup E] [Module S E]
     {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.ker p = LinearMap.range (id - p) := by
-  simpa using hp.one_sub.range_eq_ker_one_sub.symm
+  simpa using! hp.one_sub.range_eq_ker_one_sub.symm
 
 theorem IsIdempotentElem.ker_eq_range_one_sub {E : Type*} [AddCommGroup E] [Module S E]
     {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.ker p = LinearMap.range (1 - p) :=
@@ -829,5 +839,7 @@ namespace LinearMap
   surjective_comp_projectionOnto
 @[deprecated (since := "2026-05-04")] alias isIdempotentElem_iff_eq_isCompl_projection_range_ker :=
   isIdempotentElem_iff_eq_projection_range_ker
+@[deprecated (since := "2026-05-16")] alias ofIsCompl_left_apply := ofIsCompl_apply_left
+@[deprecated (since := "2026-05-16")] alias ofIsCompl_right_apply := ofIsCompl_apply_right
 
 end LinearMap

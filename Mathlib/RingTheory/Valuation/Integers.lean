@@ -33,7 +33,7 @@ def integer : Subring R where
   carrier := { x | v x ≤ 1 }
   one_mem' := le_of_eq v.map_one
   mul_mem' {x y} hx hy := by simp only [Set.mem_setOf_eq, map_mul, mul_le_one' hx hy]
-  zero_mem' := by simp only [Set.mem_setOf_eq, map_zero, zero_le']
+  zero_mem' := by simp
   add_mem' {x y} hx hy := le_trans (v.map_add x y) (max_le hx hy)
   neg_mem' {x} hx := by simp only [Set.mem_setOf_eq] at hx; simpa only [Set.mem_setOf_eq, map_neg]
 
@@ -432,8 +432,8 @@ lemma leIdeal_v_le_of_mem {K : Type*} [Field K] (v : Valuation K Γ₀)
   rcases eq_or_ne x 0 with rfl | hx0
   · simp
   intro y hy
-  have : v ((y : K) / x) ≤ 1 := by simpa using div_le_one_of_le₀ hy zero_le'
-  convert I.smul_mem ⟨_, this⟩ hx using 1
+  have : v ((y : K) / x) ≤ 1 := by simpa using div_le_one_of_le₀ hy zero_le
+  convert! I.smul_mem ⟨_, this⟩ hx using 1
   simp [Subtype.ext_iff, div_mul_cancel₀ _ (ZeroMemClass.coe_eq_zero.not.mpr hx0)]
 
 lemma ltIdeal_v_le_of_mem {K : Type*} [Field K] {v : Valuation K Γ₀}

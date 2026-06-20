@@ -9,7 +9,6 @@ public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 public import Mathlib.FieldTheory.Finite.Trace
 public import Mathlib.Algebra.Group.AddChar
 public import Mathlib.Data.ZMod.Units
-public import Mathlib.Analysis.Complex.Polynomial.Basic
 
 /-!
 # Additive characters of finite rings and fields
@@ -40,6 +39,7 @@ additive character
 
 @[expose] public section
 
+assert_not_exists MeasureTheory.integral
 
 universe u v
 
@@ -83,7 +83,7 @@ theorem to_mulShift_inj_of_isPrimitive {ψ : AddChar R R'} (hψ : IsPrimitive ψ
 /-- When `R` is a field `F`, then a nontrivial additive character is primitive -/
 theorem IsPrimitive.of_ne_one {F : Type u} [Field F] {ψ : AddChar F R'} (hψ : ψ ≠ 1) :
     IsPrimitive ψ :=
-  fun a ha h ↦ hψ <| by simpa [mulShift_mulShift, ha] using congr_arg (mulShift · a⁻¹) h
+  fun a ha h ↦ hψ <| by simpa [mulShift_mulShift, ha] using! congr_arg (mulShift · a⁻¹) h
 
 /-- If `r` is not a unit, then `e.mulShift r` is not primitive. -/
 lemma not_isPrimitive_mulShift [Finite R] (e : AddChar R R') {r : R}
@@ -173,7 +173,7 @@ theorem IsPrimitive.zmod_char_eq_one_iff (n : ℕ) [NeZero n]
 then it is primitive. -/
 theorem zmod_char_primitive_of_eq_one_only_at_zero (n : ℕ) (ψ : AddChar (ZMod n) C)
     (hψ : ∀ a, ψ a = 1 → a = 0) : IsPrimitive ψ := by
-  refine fun a ha hf => ?_
+  intro a ha hf
   have h : mulShift ψ a 1 = (1 : AddChar (ZMod n) C) (1 : ZMod n) :=
     congr_fun (congr_arg (↑) hf) 1
   rw [mulShift_apply, mul_one] at h; norm_cast at h
@@ -290,26 +290,5 @@ lemma starComp_apply (hR : 0 < ringChar R) {φ : AddChar R ℂ} (a : R) :
   rfl
 
 end Ring
-
-section Field
-
-variable (F : Type*) [Field F] [Finite F]
-
-private lemma ringChar_ne : ringChar ℂ ≠ ringChar F := by
-  simpa only [ringChar.eq_zero] using (CharP.ringChar_ne_zero_of_finite F).symm
-
-/-- A primitive additive character on the finite field `F` with values in `ℂ`. -/
-noncomputable def FiniteField.primitiveChar_to_Complex : AddChar F ℂ := by
-  letI ch := primitiveChar F ℂ <| by exact ringChar_ne F
-  refine MonoidHom.compAddChar ?_ ch.char
-  exact (IsCyclotomicExtension.algEquiv {(ch.n : ℕ)} ℂ (CyclotomicField ch.n ℂ) ℂ).toMonoidHom
-
-lemma FiniteField.primitiveChar_to_Complex_isPrimitive :
-    (primitiveChar_to_Complex F).IsPrimitive := by
-  refine IsPrimitive.compMulHom_of_isPrimitive (PrimitiveAddChar.prim _) ?_
-  let nn := (primitiveChar F ℂ <| ringChar_ne F).n
-  exact (IsCyclotomicExtension.algEquiv {(nn : ℕ)} ℂ (CyclotomicField nn ℂ) ℂ).injective
-
-end Field
 
 end AddChar

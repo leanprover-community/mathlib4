@@ -106,6 +106,12 @@ theorem sdiff_empty : s \ ∅ = s :=
 @[mono, gcongr]
 theorem sdiff_subset_sdiff (hst : s ⊆ t) (hvu : v ⊆ u) : s \ u ⊆ t \ v := by grind
 
+variable (u) in
+lemma sdiff_subset_sdiff_left (h : s ⊆ t) : s \ u ⊆ t \ u := by gcongr
+
+variable (u) in
+lemma sdiff_subset_sdiff_right (h : s ⊆ t) : u \ t ⊆ u \ s := by gcongr
+
 theorem sdiff_subset_sdiff_iff_subset {r : Finset α} (hs : s ⊆ r) (ht : t ⊆ r) :
     r \ s ⊆ r \ t ↔ t ⊆ s := by
   simpa only [← le_eq_subset] using sdiff_le_sdiff_iff_le hs ht
@@ -133,6 +139,14 @@ theorem union_sdiff_cancel_left (h : Disjoint s t) : (s ∪ t) \ s = t :=
 
 theorem union_sdiff_cancel_right (h : Disjoint s t) : (s ∪ t) \ t = s :=
   h.sup_sdiff_cancel_right
+
+/-- `· ∪ s` is injective on finsets disjoint from `s`. -/
+lemma disjoint_injOn_union_left (s : Finset α) : {t | Disjoint s t}.InjOn (· ∪ s) := by
+  grind [Set.InjOn, union_sdiff_cancel_right]
+
+/-- `· \ s` is injective on finsets containing `s`. -/
+lemma superset_injOn_sdiff (s : Finset α) : {t | s ⊆ t}.InjOn (· \ s) := by
+  grind [Set.InjOn, sdiff_union_of_subset]
 
 theorem union_sdiff_symm : s ∪ t \ s = t ∪ s \ t := by simp [union_comm]
 

@@ -362,14 +362,14 @@ theorem coeff_weightedHomogeneousComponent [DecidableEq M] (d : σ →₀ ℕ) :
     coeff d (weightedHomogeneousComponent w n φ) =
       if weight w d = n then coeff d φ else 0 :=
   letI := Classical.decEq M
-  Finsupp.filter_apply (fun d : σ →₀ ℕ => weight w d = n) φ d |>.trans <| by convert rfl
+  Finsupp.filter_apply (fun d : σ →₀ ℕ => weight w d = n) φ d |>.trans <| by convert! rfl
 
 set_option backward.isDefEq.respectTransparency false in
 theorem weightedHomogeneousComponent_apply [DecidableEq M] :
     weightedHomogeneousComponent w n φ =
       ∑ d ∈ φ.support with weight w d = n, monomial d (coeff d φ) :=
   letI := Classical.decEq M
-  Finsupp.filter_eq_sum (fun d : σ →₀ ℕ => weight w d = n) φ |>.trans <| by convert rfl
+  Finsupp.filter_eq_sum (fun d : σ →₀ ℕ => weight w d = n) φ |>.trans <| by convert! rfl
 
 /-- The `n` weighted homogeneous component of a polynomial is weighted homogeneous of
 weighted degree `n`. -/
@@ -415,7 +415,7 @@ theorem weightedHomogeneousComponent_finsupp :
   intro m hm
   by_contra hm'
   apply hm (weightedHomogeneousComponent_eq_zero' m φ _)
-  simpa only [Set.mem_image, not_exists, not_and] using hm'
+  simpa only [Set.mem_image, not_exists, not_and] using! hm'
 
 variable (w)
 
@@ -523,7 +523,7 @@ theorem weightedHomogeneousComponent_directSum [DecidableEq M]
       ((DirectSum.coeLinearMap fun i : M => weightedHomogeneousSubmodule R w i) x) = x m := by
   classical
   rw [DirectSum.coeLinearMap_eq_dfinsuppSum, DFinsupp.sum, map_sum]
-  convert @Finset.sum_eq_single M (MvPolynomial σ R) _ (DFinsupp.support x) _ m _ _
+  convert! @Finset.sum_eq_single M (MvPolynomial σ R) _ (DFinsupp.support x) _ m _ _
   · rw [IsWeightedHomogeneous.weightedHomogeneousComponent_same (x m).prop]
   · intro n _ hmn
     exact IsWeightedHomogeneous.weightedHomogeneousComponent_ne m (x n).prop hmn.symm
@@ -539,8 +539,8 @@ section OrderedAddCommMonoid
 variable [AddCommMonoid M] [PartialOrder M]
   {w : σ → M} (φ : MvPolynomial σ R)
 
-/-- If `M` is a canonically `OrderedAddCommMonoid`, then the `weightedHomogeneousComponent`
-  of weighted degree `0` of a polynomial is its constant coefficient. -/
+/-- If `M` is canonically ordered, then the `weightedHomogeneousComponent` of weighted degree `0`
+of a polynomial is its constant coefficient. -/
 @[simp]
 theorem weightedHomogeneousComponent_zero [CanonicallyOrderedAdd M] [IsAddTorsionFree M]
     (hw : ∀ i : σ, w i ≠ 0) :
