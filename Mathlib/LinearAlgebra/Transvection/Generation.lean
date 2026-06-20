@@ -80,7 +80,7 @@ theorem finrank_le_one_add_finrank_fixedSubmodule_dilatransvection
     (he : e ∈ dilatransvections K V) :
     finrank K V ≤ 1 + finrank K e.fixedSubmodule := by
   rw [fixedSubmodule_eq_ker, add_comm, ← Nat.add_le_add_iff_left,
-    ← add_assoc,finrank_range_add_finrank_ker, add_comm]
+    ← add_assoc, finrank_range_add_finrank_ker, add_comm]
   simpa [← mem_dilatransvections_iff_finrank]
 
 theorem le_one_add_finrank_fixedSubmodule_dilatransvection_mul (hf : f ∈ dilatransvections K V) :
@@ -93,7 +93,7 @@ theorem le_one_add_finrank_fixedSubmodule_dilatransvection_mul (hf : f ∈ dilat
 
 theorem finrank_fixedSubmodule_dilatransvection_mul_le (hf : f ∈ dilatransvections K V) :
      finrank K (f * e).fixedSubmodule ≤ 1 + finrank K e.fixedSubmodule := by
-  conv_rhs => rw [show e = f⁻¹ * (f * e) from by aesop]
+  conv_rhs => rw [show e = f⁻¹ * (f * e) by simp]
   rw [← inv_mem_dilatransvections_iff] at hf
   exact le_one_add_finrank_fixedSubmodule_dilatransvection_mul (f * e) f⁻¹ hf
 
@@ -107,7 +107,7 @@ theorem le_one_add_finrank_fixedSubmodule_mul_dilatransvection (hf : f ∈ dilat
 
 theorem finrank_fixedSubmodule_mul_dilatransvection_le (hf : f ∈ dilatransvections K V) :
     finrank K (e * f).fixedSubmodule ≤ 1 + finrank K e.fixedSubmodule := by
-  conv_rhs => rw [show e = (e * f) * f⁻¹ from by aesop]
+  conv_rhs => rw [show e = (e * f) * f⁻¹ by simp]
   rw [← inv_mem_dilatransvections_iff] at hf
   exact le_one_add_finrank_fixedSubmodule_mul_dilatransvection (e * f) f⁻¹ hf
 
@@ -203,7 +203,7 @@ and one dilatransvection.
 This is the first non-exceptional case in Dieudonné's theorem. -/
 theorem mem_transvections_pow_mul_dilatransvections_of_fixedReduce_eq_one
     {e : V ≃ₗ[K] V} (he : e.fixedReduce = 1) :
-    e ∈ transvections K V ^ (finrank K (V ⧸ e.fixedSubmodule) - 1)  * dilatransvections K V := by
+    e ∈ transvections K V ^ (finrank K (V ⧸ e.fixedSubmodule) - 1) * dilatransvections K V := by
   induction h : finrank K (V ⧸ e.fixedSubmodule) generalizing e he with
   | zero => simp [mem_dilatransvections_iff_finrank_quotient, h]
   | succ n hind =>
@@ -500,7 +500,7 @@ theorem mem_transvections_pow_mul_dilatransvections_of_fixedReduce_ne_smul_id
         · simp only [one_div, neg_smul, smul_add, smul_neg, hz, ← mul_smul]
           simp only [← mul_assoc c, neg_div, mul_neg, one_div]
           simp only [mul_inv_cancel₀ hc, one_smul, neg_one_mul]
-          -- Should be taken care of by a `module` tactic that handles noncommutatie
+          -- Should be taken care of by a `module` tactic that handles noncommutative
           -- rings
           rw [neg_sub, neg_smul, ← sub_eq_add_neg, sub_sub,
             ← smul_add]
