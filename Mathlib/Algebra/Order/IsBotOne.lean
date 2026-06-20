@@ -38,7 +38,7 @@ theorem isBot_one : IsBot (1 : α) :=
 theorem one_le {a : α} : 1 ≤ a :=
   isBot_one a
 
--- TODO: deprecate
+@[deprecated (since := "2026-05-27")]
 alias zero_le' := zero_le
 
 variable (α) in
