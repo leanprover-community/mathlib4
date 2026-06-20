@@ -335,14 +335,14 @@ def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   let some upTo := CommandStart.endPos stx | return
 
-  let fmt : Option Format := ←
+  let fmt : Option Format ←
       try
-        liftCoreM <| PrettyPrinter.ppCategory `command stx
+        liftCoreM <| some <$> PrettyPrinter.ppCategory `command stx
       catch _ =>
         Linter.logLintIf linter.style.whitespace.verbose (stx.getHead?.getD stx)
           m!"The `whitespace` linter had some parsing issues: \
             feel free to silence it and report this error!"
-        return none
+        pure none
   if let some fmt := fmt then
     let st := fmt.pretty
     let origSubstring := stx.getSubstring?.getD default
