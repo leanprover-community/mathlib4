@@ -138,6 +138,9 @@ theorem exists_le_of_sum_le {s : Finset α} (hs : s.Nonempty) {f g : α → ℝ�
   contrapose! Hle
   apply ENNReal.sum_lt_sum_of_nonempty hs Hle
 
+lemma sum_div (a : ℝ≥0∞) : (∑ i ∈ s, f i) / a = ∑ i ∈ s, f i / a := by
+  simp_rw [div_eq_mul_inv, Finset.sum_mul]
+
 end Sum
 
 section Inv
