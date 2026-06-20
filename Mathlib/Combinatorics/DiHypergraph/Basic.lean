@@ -1,10 +1,9 @@
 /-
-Copyright (c) 2025 Evan Spotte-Smith. All rights reserved.
+Copyright (c) 2026 Evan Spotte-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Evan Spotte-Smith
 -/
 module
-
 public import Mathlib.Data.Set.Basic
 public import Mathlib.Data.Set.Card
 
@@ -13,47 +12,51 @@ public import Mathlib.Data.Set.Card
 
 A *directed hypergraph* (here abbreviated as *dihypergraph*) `Dₕ` is a generalization of a directed
 graph (see `Mathlib.Combinatorics.Digraph`). It consists of a set of vertices, denoted `V` or
-`V(Dₕ)`, and a set of *directed (hyper)edges* (sometimes called *hyperarcs*), which we denote `E` or
+`V(Dₕ)`, and a set of *directed (hyper)edges* (sometimes called *hyperarcs*), denoted `E` or
 `E(Dₕ)`. Note that, when we refer to *edges* in this module, we are referring to directed edges
 unless otherwise specified.  While, in a digraph, directed edges connect pairs of vertices,
 directed edges in a dihypergraph can connect arbitrary numbers of vertices.
 
-This module defines `DiHypergraph α` for a vertex type `α`. We represent a directed edge `e`
+This module defines `DiHypergraph α` for a vertex type `α`. We represent an edge `e`
 as a pair of sets of vertices (i.e., `e : (Set α) × (Set α)`). Each of the two sets in a directed
 edge is called a *side* or a *limb*. The first side is called the *source* or the *tail*, and
 the second side is called the *destination* or *head* of the edge.
 
 ## Main definitions
 
-Basic directed hypergraph definitions:
+* `DiHypergraph α` is the type of dihypergraphs with vertices of type `α` and edges of type
+  `(Set α × Set α)`. In addition to vertices and edges, a `DiHypergraph` must have the property
+  that the sources and the destinations of all its edges are subsets of the vertex set.
 
-* `DiHypergraph α`
-* `IsBHypergraph`: A predicate defining a special case of dihypergraph where the destination of any
-    edge (*B-arc*) contains exactly one vertex.
+For `Dₕ : DiHypergraph α`:
+
+* `Dₕ.vertexSet` (abbrev. `V(Dₕ)`) denotes the vertex set of `Dₕ` as a term in `Set α`.
+* `Dₕ.edgeSet` (abbrev. `E(Dₕ)`) denotes the edge set of `Dₕ` as a term in `((Set α) × (Set α))`.
+* `Dₕ.IsBHypergraph`: A predicate defining a special case of dihypergraph where the destination of
+  any edge (*B-arc*) contains exactly one vertex.
 * `IsFHypergraph`: A predicate defining a special case of dihypergraph where the source of any edge
-    (*F-arc*) contains exactly one vertex.
+  (*F-arc*) contains exactly one vertex.
 * `IsBFHypergraph`: A predicate defining a special case of dihypergraph where all edges are either
-    B-arcs or F-arcs; i.e., either the source contains exactly one vertex or the destination
-    contains exactly one vertex.
+  B-arcs or F-arcs; i.e., either the source contains exactly one vertex or the destination
+  contains exactly one vertex.
 * `IsNonEndless`: A predicate defining a special case of dihypergraph where, for all edges, neither
-    the source nor the destination are empty.
+  the source nor the destination are empty.
 
 ## Implementation details
 
 Because `edgeSet` is a `Set((Set α) × (Set α))` rather than a multiset, here we are assuming that
 all dihypergraphs are *without repeated edge*. Further, a vertex cannot be present in an edge more
-than once; developing the theory of such *weighted directed edges* (treating the degeneracy of
-a vertex in a edge source/destination as a kind of weight) is a topic for future work.
+than once.
 -/
 
-@[expose] public section
+public section
 
 open Set
 
 variable {α : Type*} {x y z : α} {d d' s s' : Set α} {e f g : (Set α) × (Set α)}
 
 /--
-An directed hypergraph with vertices of type `α` and edges of type `((Set α) × (Set α))`, as
+A dihypergraph with vertices of type `α` and edges of type `((Set α) × (Set α))`, as
 described by vertex and edge sets `vertexSet : Set α` and `edgeSet : Set ((Set α) × (Set α))`.
 
 The requirement `subset_vertexSet_of_src_dst_of_mem_edgeSet` ensures that, for all edges, all
@@ -83,6 +86,11 @@ scoped notation "V(" Dₕ ")" => DiHypergraph.vertexSet Dₕ
 /-- `E(Dₕ)` denotes the `edgeSet` of a hypergraph `Dₕ` -/
 scoped notation "E(" Dₕ ")" => DiHypergraph.edgeSet Dₕ
 
+/-- TODO
+lemma sUnion_edgeSet_subset_vertexSet : ⋃₀ E(H) ⊆ V(H) :=
+  subset_powerset_iff.mp edgeSet_subset_powerset_vertexSet
+-/
+
 /-! ## DiHypergraph Basics -/
 
 lemma subset_vertexSet_of_src_dst_of_mem_edgeSet (he : e ∈ E(Dₕ)) : e.1 ⊆ V(Dₕ) ∧ e.2 ⊆ V(Dₕ) :=
@@ -96,12 +104,24 @@ lemma src_isSubset_vertexSet (he : e ∈ E(Dₕ)) : e.1 ⊆ V(Dₕ) :=
 lemma dst_isSubset_vertexSet (he : e ∈ E(Dₕ)) : e.2 ⊆ V(Dₕ) :=
   (Dₕ.subset_vertexSet_of_src_dst_of_mem_edgeSet he).2
 
-lemma _root_.Membership.mem.src_subset_vertexSet (he : e ∈ E(Dₕ)) : e.1 ⊆ V(Dₕ) :=
-  Dₕ.src_isSubset_vertexSet he
+alias _root_.Membership.mem.src_subset_vertexSet := src_isSubset_vertexSet
 
-lemma _root_.Membership.mem.dst_subset_vertexSet (he : e ∈ E(Dₕ)) : e.2 ⊆ V(Dₕ) :=
-  Dₕ.dst_isSubset_vertexSet he
+alias _root_.Membership.mem.dst_subset_vertexSet := dst_isSubset_vertexSet
 
+lemma mem_vertexSet_of_mem_src_edgeSet (he : e ∈ E(Dₕ)) (hx : x ∈ e.1) : x ∈ V(Dₕ) :=
+  Dₕ.src_isSubset_vertexSet he hx
+
+lemma mem_vertexSet_of_mem_dst_edgeSet (he : e ∈ E(Dₕ)) (hx : x ∈ e.2) : x ∈ V(Dₕ) :=
+  Dₕ.dst_isSubset_vertexSet he hx
+
+lemma edgeSet.ext_iff (he : e ∈ E(Dₕ)) (hf : f ∈ E(Dₕ)) :
+    e = f ↔ ∀ x ∈ V(Dₕ), (x ∈ e.1 ↔ x ∈ f.1) ∧ (x ∈ e.2 ↔ x ∈ f.2) := by
+  constructor
+  · intro heq
+    simp only [and_self, implies_true, heq]
+  · intro hx
+    grind only [Prod.ext_iff, mem_vertexSet_of_mem_src_edgeSet, mem_vertexSet_of_mem_dst_edgeSet]
+    
 lemma edgeSet_subset_powerset_vertexSet_vertexSet {Dₕ : DiHypergraph α} :
   E(Dₕ) ⊆ (V(Dₕ).powerset ×ˢ V(Dₕ).powerset) := by
     intro e he
