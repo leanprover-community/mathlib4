@@ -172,8 +172,7 @@ theorem le_mul_log_add_E₁Λ {x : ℝ} (hx : 0 ≤ x) :
   _ ≥ _ := by
     rw [sum_log_eq_sum_mangoldt]
     gcongr
-    · exact vonMangoldt_nonneg
-    · exact floor_le <| div_nonneg (by linarith) (by linarith)
+    exacts [vonMangoldt_nonneg, floor_le <| div_nonneg (by linarith) (by linarith)]
 
 /-- One can upper bound `E₁Λ x` using a partial sum of logarithms. -/
 theorem mul_log_add_E₁Λ_le (x : ℝ) :
@@ -182,8 +181,7 @@ theorem mul_log_add_E₁Λ_le (x : ℝ) :
     rw [←sum_mangoldt_div_eq, mul_sum]; ring_nf
   _ ≤ ∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d * (⌊x / d⌋₊ + 1) := by
     gcongr
-    · exact vonMangoldt_nonneg
-    · exact lt_floor_add_one _|>.le
+    exacts [vonMangoldt_nonneg, lt_floor_add_one _|>.le]
   _ = _ := by simp [psi, mul_add, sum_add_distrib, sum_log_eq_sum_mangoldt]
 
 /-- One can lower bound `E₁p x` using a partial sum of logarithms. -/
@@ -292,7 +290,7 @@ theorem E₁_le : E₁ ≤ 1 := by
       convert! HasDerivAt.comp x ?_ this (h₂ := fun t ↦ (-log t - 1) / (2 * t))
           (h₂' := log (2 * x + 3) / (2 * (2 * x + 3)^2)) using 1
       · grind
-      convert! HasDerivAt.fun_div (c' := -1 / (2 * x + 3)) _ (hasDerivAt_const_mul (2 :ℝ)) _ using 1
+      convert! HasDerivAt.fun_div (c' := -1 / (2 * x + 3)) _ (hasDerivAt_const_mul 2) _ using 1
       · field
       · convert! ((hasDerivAt_log (by linarith : 2 * x + 3 ≠ 0)).neg).sub_const _ using 1
         grind
@@ -332,8 +330,7 @@ theorem E₁Λ_le_E₁p_add_E₁ {x : ℝ} (hx : 1 ≤ x) :
     apply le_max_right
   _ = ∑ p ∈ primesLE ⌊x⌋₊, log p / p +
     ∑ k ∈ Ioc 1 (max 1 ⌊log x / log 2⌋₊), ∑ p ∈ primesLE ⌊x⌋₊, log p / (p ^ k : ℕ) := by
-    rw [← add_sum_Ioc_eq_sum_Icc (le_max_left ..)]
-    simp
+    simp [← add_sum_Ioc_eq_sum_Icc (le_max_left ..)]
   _ ≤ _ := by
     gcongr
     rw [sum_comm]
@@ -404,19 +401,19 @@ theorem E₁Λ_bounded : E₁Λ =O[atTop] (fun _ ↦ (1 : ℝ)) := by
 
 theorem sum_mangoldt_div_sim_log :
     (∑ d ∈ Ioc 0 ⌊·⌋₊, Λ d / d) ~[atTop] log :=
-  (E₁Λ_bounded.trans_isLittleO (isLittleO_const_log_atTop (c := 1))).isEquivalent
+  (E₁Λ_bounded.trans_isLittleO (isLittleO_const_log_atTop)).isEquivalent
 
 theorem sum_log_prime_div_sub_log_bound {x : ℝ} (hx : 1 ≤ x) :
     |∑ p ∈ primesLE ⌊x⌋₊, log p / p - log x| ≤ 3 := by
-  simp only [sum_log_prime_div_eq, add_sub_cancel_left]
-  rw [abs_le']; and_intros <;>
+  simp only [sum_log_prime_div_eq, add_sub_cancel_left, abs_le']
+  and_intros <;>
     linarith [le_E₁p hx, E₁_le, E₁p_le hx, sum_log_prime_div_eq, log_four_eq, log_two_lt_d9]
 
 theorem sum_log_prime_div_sub_log_bound_nat (N : ℕ) :
     |∑ p ∈ primesLE N, log p / p - log N| ≤ 2 := by
   by_cases! hN : N = 0
   · simp [hN]
-  have hx : 1 ≤ (N:ℝ) := mod_cast (by lia)
+  have hx : 1 ≤ (N : ℝ) := mod_cast (by lia)
   simp only [sum_log_prime_div_eq_nat, add_sub_cancel_left]
   rw [abs_le']; and_intros <;>
     linarith [le_E₁p_nat N, E₁_le, E₁p_le hx, sum_log_prime_div_eq, log_four_eq, log_two_lt_d9]
