@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Algebra.Order.Ring.Star
 public import Mathlib.Data.Real.Star
+public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
 public import Mathlib.LinearAlgebra.Matrix.Vec
@@ -467,19 +468,34 @@ theorem mul_conjTranspose_self [StarOrderedRing R] [NoZeroDivisors R] (A : Matri
   classical
   simpa using mul_mul_conjTranspose_same .one hA
 
-theorem of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
+theorem of_toQuadraticForm' {R : Type*} [CommRing R] [PartialOrder R] [StarRing R] [TrivialStar R]
+    [DecidableEq n] {M : Matrix n n R} (hM : M.IsSymm)
     (hMq : M.toQuadraticForm'.PosDef) : M.PosDef := by
-  refine of_dotProduct_mulVec_pos hM fun x hx ↦ ?_
-  simp only [toQuadraticForm', QuadraticMap.PosDef, LinearMap.BilinMap.toQuadraticMap_apply,
-    toLinearMap₂'_apply'] at hMq
-  apply hMq x hx
+  refine of_dotProduct_mulVec_pos (by simpa) fun x hx ↦ ?_
+  simpa [toQuadraticForm', toLinearMap₂'_apply'] using hMq x hx
 
-theorem toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) :
+theorem toQuadraticForm' {R : Type*} [CommRing R] [PartialOrder R] [StarRing R] [TrivialStar R]
+    [DecidableEq n] {M : Matrix n n R} (hM : M.PosDef) :
     M.toQuadraticForm'.PosDef := by
   intro x hx
-  simp only [Matrix.toQuadraticForm', LinearMap.BilinMap.toQuadraticMap_apply,
-    toLinearMap₂'_apply']
-  apply hM.dotProduct_mulVec_pos hx
+  simpa [Matrix.toQuadraticForm', toLinearMap₂'_apply'] using hM.dotProduct_mulVec_pos hx
+
+/-- See also `LinearMap.isPosSemidef_iff_posSemidef_toMatrix` for the semi-definite case. -/
+theorem _root_.LinearMap.BilinForm.posDef_toQuadraticMap_iff_matrix
+    {R M : Type*} [CommRing R] [PartialOrder R] [StarRing R] [TrivialStar R]
+    [AddCommGroup M] [Module R M] [DecidableEq n]
+    (b : Module.Basis n R M) (B : LinearMap.BilinForm R M) (hB_symm : B.IsSymm) :
+    B.toQuadraticMap.PosDef ↔ (B.toMatrix b).PosDef := by
+  have aux (i j : n) (s t : R) : t * B (b i) (b j) * s = t * (s * B (b j) (b i)) := by
+    grind [hB_symm.eq (b i) (b j)]
+  refine ⟨fun h ↦ ⟨?_, fun v hv ↦ ?_⟩, fun h v hv ↦ ?_⟩
+  · simp [isHermitian_iff_isSymm, IsSymm.ext_iff, hB_symm.eq (b _) (b _)]
+  · simpa [Finsupp.linearCombination_apply, map_finsuppSum, Finsupp.mul_sum, ← aux] using
+      h _ (b.repr.symm.map_ne_zero_iff.mpr hv)
+  · rw [B.toQuadraticMap_apply, ← b.linearCombination_repr (x := v)]
+    simpa [Finsupp.linearCombination_apply, map_finsuppSum, Finsupp.mul_sum, aux]
+      using h.2 (b.repr.map_ne_zero_iff.mpr hv)
+
 
 lemma trace_pos [Nontrivial R] [IsOrderedCancelAddMonoid R] [Nonempty n] {A : Matrix n n R}
     (hA : A.PosDef) : 0 < A.trace :=
@@ -568,7 +584,7 @@ theorem fromBlocks₂₂ [DecidableEq n] (A : Matrix m m R')
     (fromBlocks A B Bᴴ D).PosSemidef ↔ (A - B * D⁻¹ * Bᴴ).PosSemidef := by
   rw [← posSemidef_submatrix_equiv (Equiv.sumComm n m), Equiv.sumComm_apply,
     fromBlocks_submatrix_sum_swap_sum_swap]
-  convert fromBlocks₁₁ Bᴴ A hD <;> simp
+  convert! fromBlocks₁₁ Bᴴ A hD <;> simp
 
 end SchurComplement
 

@@ -195,12 +195,16 @@ theorem natDegree_pos [Nontrivial B] (hx : IsIntegral A x) : 0 < natDegree (minp
   have eq_one : minpoly A x = 1 := by
     rw [eq_C_of_natDegree_eq_zero ndeg_eq_zero]
     convert C_1 (R := A)
-    simpa only [ndeg_eq_zero.symm] using (monic hx).leadingCoeff
-  simpa only [eq_one, map_one, one_ne_zero] using aeval A x
+    simpa only [ndeg_eq_zero.symm] using! (monic hx).leadingCoeff
+  simpa only [eq_one, map_one, one_ne_zero] using! aeval A x
 
 /-- The degree of a minimal polynomial is positive. -/
 theorem degree_pos [Nontrivial B] (hx : IsIntegral A x) : 0 < degree (minpoly A x) :=
   natDegree_pos_iff_degree_pos.mp (natDegree_pos hx)
+
+@[simp]
+theorem aeval_modByMonic_minpoly (p : A[X]) (x : B) : (p %ₘ minpoly A x).aeval x = p.aeval x :=
+  aeval_modByMonic_eq_self_of_root (minpoly.aeval ..)
 
 section
 variable [Nontrivial B]

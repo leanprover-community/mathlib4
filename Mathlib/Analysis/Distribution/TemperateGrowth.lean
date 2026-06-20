@@ -208,7 +208,7 @@ theorem HasTemperateGrowth.add (hf : f.HasTemperateGrowth) (hg : g.HasTemperateG
 @[to_fun (attr := fun_prop)]
 theorem HasTemperateGrowth.sub (hf : f.HasTemperateGrowth) (hg : g.HasTemperateGrowth) :
     (f - g).HasTemperateGrowth := by
-  convert hf.add hg.neg using 1
+  convert hf.add hg.neg
   grind
 
 @[fun_prop]
@@ -218,8 +218,8 @@ theorem HasTemperateGrowth.sum {f : ι → E → F} {s : Finset ι}
   induction s using Finset.induction_on with
   | empty => simp
   | insert a s has ih =>
-    obtain ⟨hf, h⟩ := by simpa using hf
-    simpa [has] using hf.add (ih h)
+    obtain ⟨hf, h⟩ := by simpa using! hf
+    simpa [has] using! hf.add (ih h)
 
 end Addition
 
@@ -284,7 +284,7 @@ theorem HasTemperateGrowth.mul {f g : E → R} (hf : f.HasTemperateGrowth)
 theorem HasTemperateGrowth.pow {f : E → R} (hf : f.HasTemperateGrowth) (k : ℕ) :
     (f ^ k).HasTemperateGrowth := by
   induction k with
-  | zero => simpa only [pow_zero] using HasTemperateGrowth.const 1
+  | zero => simpa only [pow_zero] using! HasTemperateGrowth.const 1
   | succ k IH => rw [pow_succ]; fun_prop
 
 end Multiplication
@@ -326,7 +326,7 @@ variable (H) in
 theorem hasTemperateGrowth_norm_sq : (fun (x : H) ↦ ‖x‖ ^ 2).HasTemperateGrowth := by
   apply _root_.Function.HasTemperateGrowth.of_fderiv (C := 1) (k := 2)
   · rw [fderiv_norm_sq]
-    convert (2 • innerSL ℝ).hasTemperateGrowth
+    convert! (2 • innerSL ℝ).hasTemperateGrowth
   · exact .norm_sq ℝ differentiable_id
   · intro x
     rw [norm_pow, norm_norm, one_mul, add_pow_two]

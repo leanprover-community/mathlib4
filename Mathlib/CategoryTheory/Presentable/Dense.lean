@@ -55,6 +55,7 @@ instance final_toCostructuredArrow
       g₁.left.hom g₂.left.hom ((CostructuredArrow.w g₁).trans (CostructuredArrow.w g₂).symm)
     exact ⟨k, a, by cat_disch⟩
 
+set_option backward.defeqAttrib.useBackward true in
 instance [IsCardinalAccessibleCategory C κ] :
     (isCardinalPresentable C κ).ι.IsDense where
   isDenseAt X := by

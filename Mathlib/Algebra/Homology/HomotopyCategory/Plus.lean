@@ -32,6 +32,7 @@ open HomologicalComplex
 
 variable {C} [HasBinaryBiproducts C]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma plus_cylinder (K : CochainComplex C ℤ) (hK : CochainComplex.plus C K) :
     CochainComplex.plus C (cylinder K) := by
   obtain ⟨n, hn⟩ := hK
@@ -110,6 +111,7 @@ instance : (plus C).IsStableUnderShift ℤ where
           plus_quotient_obj_iff]
         exact ⟨q - n, K.isStrictlyGE_shift q n (q - n) (by lia)⟩ }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance [HasZeroObject C] [HasBinaryBiproducts C] :
     (plus C).IsTriangulatedClosed₃ where
@@ -202,13 +204,14 @@ section
 variable [HasZeroObject C] [HasBinaryBiproducts C]
 
 open HomologicalComplex in
+set_option backward.defeqAttrib.useBackward true in
 instance :
     (quotient C).IsLocalization
       ((homotopyEquivalences C (.up ℤ)).inverseImage (CochainComplex.Plus.ι C)) :=
   Functor.isLocalization_of_essSurj_of_full_of_exists_cylinders _ _
     (fun _ _ f hf ↦ by
       simpa [← isIso_iff_of_reflects_iso _ (HomotopyCategory.Plus.ι C),
-        ← inverseImage_quotient_isomorphisms] using hf) (by
+        ← inverseImage_quotient_isomorphisms] using! hf) (by
     rintro K L f₀ f₁ hf
     obtain ⟨f₀, rfl⟩ := ObjectProperty.homMk_surjective f₀
     obtain ⟨f₁, rfl⟩ := ObjectProperty.homMk_surjective f₁

@@ -74,7 +74,7 @@ include ncs_der_val
 
 private theorem ncs_tendsto_const :
     Tendsto (fun i => ‖F.derivative.aeval (ncs i)‖) atTop (𝓝 ‖F.derivative.aeval a‖) := by
-  convert @tendsto_const_nhds ℝ _ ℕ _ _; rw [ncs_der_val]
+  convert! @tendsto_const_nhds ℝ _ ℕ _ _; rw [ncs_der_val]
 
 private theorem norm_deriv_eq : ‖F.derivative.aeval ncs.lim‖ = ‖F.derivative.aeval a‖ :=
   tendsto_nhds_unique ncs_tendsto_lim (ncs_tendsto_const ncs_der_val)
@@ -227,6 +227,7 @@ private def calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n 
       _ = -F.aeval z := by simp only [mul_div_cancel₀ _ hdzne', Subtype.coe_eta]
   exact ⟨q, by simpa [sub_eq_add_neg, neg_mul_eq_mul_neg, this, hz'] using hq⟩
 
+set_option linter.defProp false in
 private def calc_eval_z'_norm {z z' z1 : ℤ_[p]} {n} (hz : ih n z) {q}
     (heq : F.aeval z' = q * z1 ^ 2)
     (h1 : ‖(↑(F.aeval z) : ℚ_[p]) / ↑(F.derivative.aeval z)‖ ≤ 1) (hzeq : z1 = ⟨_, h1⟩) :
