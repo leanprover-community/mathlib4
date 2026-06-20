@@ -400,7 +400,7 @@ theorem mem_roots_iff [IsDomain R] (h0 : P.toPoly ≠ 0) (x : R) :
 theorem card_roots_le [IsDomain R] [DecidableEq R] : P.roots.toFinset.card ≤ 3 := by
   apply (toFinset_card_le P.toPoly.roots).trans
   by_cases hP : P.toPoly = 0
-  · exact (card_roots' P.toPoly).trans (by rw [hP, natDegree_zero]; exact zero_le 3)
+  · simp [hP]
   · exact WithBot.coe_le_coe.1 ((card_roots hP).trans degree_cubic_le)
 
 end Extension
@@ -425,9 +425,9 @@ theorem splits_iff_roots_eq_three (ha : P.a ≠ 0) :
 theorem eq_prod_three_roots (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :
     (map φ P).toPoly = C (φ P.a) * (X - C x) * (X - C y) * (X - C z) := by
   rw [map_toPoly,
-    eq_prod_roots_of_splits <|
+    Splits.eq_prod_roots <|
       (splits_iff_roots_eq_three ha).mpr <| Exists.intro x <| Exists.intro y <| Exists.intro z h3,
-    leadingCoeff_of_a_ne_zero ha, ← map_roots, h3]
+    leadingCoeff_map, leadingCoeff_of_a_ne_zero ha, ← map_roots, h3]
   change C (φ P.a) * ((X - C x) ::ₘ (X - C y) ::ₘ {X - C z}).prod = _
   rw [prod_cons, prod_cons, prod_singleton, mul_assoc, mul_assoc]
 
@@ -464,7 +464,7 @@ def discr {R : Type*} [Ring R] (P : Cubic R) : R :=
 
 theorem discr_eq_prod_three_roots (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :
     φ P.discr = (φ P.a * φ P.a * (x - y) * (x - z) * (y - z)) ^ 2 := by
-  simp only [discr, RingHom.map_add, RingHom.map_sub, RingHom.map_mul, map_pow, map_ofNat]
+  simp only [discr, RingHom.map_add, map_sub, map_mul, map_pow, map_ofNat]
   rw [b_eq_three_roots ha h3, c_eq_three_roots ha h3, d_eq_three_roots ha h3]
   ring1
 
@@ -487,14 +487,6 @@ theorem card_roots_of_discr_ne_zero [DecidableEq K] (ha : P.a ≠ 0) (h3 : (P.to
     (hd : P.discr ≠ 0) : (map φ P).roots.toFinset.card = 3 := by
   rwa [toFinset_card_of_nodup <| (discr_ne_zero_iff_roots_nodup ha h3).mp hd,
     ← splits_iff_card_roots ha]
-
-@[deprecated (since := "2025-10-20")] alias disc := discr
-@[deprecated (since := "2025-10-20")] alias disc_eq_prod_three_roots := discr_eq_prod_three_roots
-@[deprecated (since := "2025-10-20")] alias disc_ne_zero_iff_roots_ne := discr_ne_zero_iff_roots_ne
-@[deprecated (since := "2025-10-20")] alias disc_ne_zero_iff_roots_nodup :=
-  discr_ne_zero_iff_roots_nodup
-@[deprecated (since := "2025-10-20")] alias card_roots_of_disc_ne_zero :=
-  card_roots_of_discr_ne_zero
 
 end Discriminant
 

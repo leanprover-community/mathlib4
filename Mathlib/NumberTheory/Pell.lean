@@ -67,7 +67,7 @@ on the set of all solutions to the Pell equation `x^2 - d*y^2 = 1`.
 The type of such solutions is `Pell.Solution₁ d`. It corresponds to a pair of integers `x` and `y`
 and a proof that `(x, y)` is indeed a solution.
 
-The multiplication is given by `(x, y) * (x', y') = (x*y' + d*y*y', x*y' + y*x')`.
+The multiplication is given by `(x, y) * (x', y') = (x*x' + d*y*y', x*y' + y*x')`.
 This is obtained by mapping `(x, y)` to `x + y*√d` and multiplying the results.
 In fact, we define `Pell.Solution₁ d` to be `↥(unitary (ℤ√d))` and transport
 the "commutative group with distributive negation" structure from `↥(unitary (ℤ√d))`.
@@ -215,7 +215,7 @@ theorem d_nonsquare_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : ¬IsSquare 
   have hp := a.prop
   rintro ⟨b, rfl⟩
   simp_rw [← sq, ← mul_pow, sq_sub_sq, Int.mul_eq_one_iff_eq_one_or_neg_one] at hp
-  cutsat
+  lia
 
 /-- A solution with `x = 1` is trivial. -/
 theorem eq_one_of_x_eq_one (h₀ : d ≠ 0) {a : Solution₁ d} (ha : a.x = 1) : a = 1 := by
@@ -346,7 +346,6 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     exact q.pos
   obtain ⟨m, hm⟩ : ∃ m : ℤ, {q : ℚ | q.1 ^ 2 - d * (q.den : ℤ) ^ 2 = m}.Infinite := by
     contrapose! hM
-    simp only [not_infinite] at hM ⊢
     refine (congr_arg _ (ext fun x => ?_)).mp (Finite.biUnion (finite_Ioo (-M) M) fun m _ => hM m)
     simp only [abs_lt, mem_setOf, mem_Ioo, mem_iUnion, exists_prop, exists_eq_right']
   have hm₀ : m ≠ 0 := by
@@ -498,7 +497,7 @@ theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
   · let m : ℤ := -n - 1
     have hm : n = -m - 1 := by simp only [m, neg_sub, sub_neg_eq_add, add_tsub_cancel_left]
     rw [hm, sub_add_cancel, ← neg_add', zpow_neg, zpow_neg, y_inv, y_inv, neg_lt_neg_iff]
-    exact H _ (by cutsat)
+    exact H _ (by lia)
 
 /-- If `a` is a fundamental solution, then `(a^m).y < (a^n).y` if and only if `m < n`. -/
 theorem zpow_y_lt_iff_lt {a : Solution₁ d} (h : IsFundamental a) (m n : ℤ) :
@@ -551,7 +550,7 @@ theorem x_mul_y_le_y_mul_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : 
 the `y`-coordinate remains nonnegative. -/
 theorem mul_inv_y_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x)
     (hay : 0 < a.y) : 0 ≤ (a * a₁⁻¹).y := by
-  simpa only [y_inv, mul_neg, y_mul, le_neg_add_iff_add_le, add_zero] using
+  simpa only [y_inv, mul_neg, y_mul, le_neg_add_iff_add_le, add_zero] using!
     h.x_mul_y_le_y_mul_x hax hay
 
 /-- If we multiply a positive solution with the inverse of a fundamental solution,
@@ -576,7 +575,7 @@ theorem mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solu
     _ = a.x * a₁.y * a₁.x := by ring
     _ ≤ a.y * a₁.x * a₁.x := by have := h.1; have := x_mul_y_le_y_mul_x h hax hay; gcongr
   rw [mul_assoc, ← sq, a₁.prop_x, ← sub_neg]
-  suffices a.y - a.x * a₁.y < 0 by convert this using 1; ring
+  suffices a.y - a.x * a₁.y < 0 by convert! this using 1; ring
   rw [sub_neg, ← abs_of_pos hay, ← abs_of_pos h.2.1, ← abs_of_pos <| zero_lt_one.trans hax, ←
     abs_mul, ← sq_lt_sq, mul_pow, a.prop_x]
   calc
@@ -595,15 +594,9 @@ theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : So
   rcases hay.eq_or_lt with hy | hy
   · -- case 1: `a = 1`
     refine ⟨0, ?_⟩
-    simp only [pow_zero]
-    ext <;> simp only [x_one, y_one]
-    · have prop := a.prop
-      rw [← hy, sq (0 : ℤ), zero_mul, mul_zero, sub_zero,
-        sq_eq_one_iff] at prop
-      refine prop.resolve_right fun hf => ?_
-      have := (hax.trans_eq hax').le.trans_eq hf
-      norm_num at this
-    · exact hy.symm
+    rcases eq_one_or_neg_one_iff_y_eq_zero.2 hy.symm with rfl | rfl
+    · simp
+    · simp at hax'
   · -- case 2: `a ≥ a₁`
     have hx₁ : 1 < a.x := by nlinarith [a.prop, h.d_pos]
     have hxx₁ := h.mul_inv_x_pos hx₁ hy

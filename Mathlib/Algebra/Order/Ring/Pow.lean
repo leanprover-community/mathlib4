@@ -19,7 +19,7 @@ which can be regarded as Bernoulli's inequality for `b / a` multiplied by `a ^ n
 Also, we prove versions for different typeclass assumptions on the (semi)ring.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*}
 
@@ -51,8 +51,7 @@ lemma Commute.pow_add_mul_le_add_pow_of_sq_nonneg (Hcomm : Commute a b) (ha : 0 
         abel
       _ ≤ (a + b) ^ 2 * (a + b) ^ (n + 1) := by
         gcongr
-        · assumption
-        · apply Commute.pow_add_mul_le_add_pow_of_sq_nonneg <;> assumption
+        apply Commute.pow_add_mul_le_add_pow_of_sq_nonneg <;> assumption
       _ = (a + b) ^ (n + 3) := by simp [pow_succ', mul_assoc]
 
 /-- **Bernoulli's inequality**. This version works for semirings but requires
@@ -61,13 +60,6 @@ lemma one_add_mul_le_pow_of_sq_nonneg (Hsq : 0 ≤ a ^ 2) (Hsq' : 0 ≤ (1 + a) 
     (n : ℕ) : 1 + n * a ≤ (1 + a) ^ n := by
   simpa using (Commute.one_left a).pow_add_mul_le_add_pow_of_sq_nonneg zero_le_one Hsq Hsq'
     (by simpa using H) n
-
-/-- **Bernoulli's inequality**. This version works for semirings but requires
-additional hypotheses `0 ≤ a * a` and `0 ≤ (1 + a) * (1 + a)`. -/
-@[deprecated one_add_mul_le_pow_of_sq_nonneg (since := "2025-11-11")]
-lemma one_add_mul_le_pow' (Hsq : 0 ≤ a * a) (Hsq' : 0 ≤ (1 + a) * (1 + a)) (H : 0 ≤ 2 + a) (n : ℕ) :
-    1 + n * a ≤ (1 + a) ^ n :=
-  one_add_mul_le_pow_of_sq_nonneg (by rwa [sq]) (by rwa [sq]) H n
 
 end OrderedSemiring
 

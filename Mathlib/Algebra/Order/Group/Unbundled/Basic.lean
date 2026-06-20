@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 public import Mathlib.Algebra.Order.Sub.Defs
-public import Mathlib.Util.AssertExists
 
 /-!
 # Ordered groups
@@ -21,7 +20,7 @@ may differ between the multiplicative and the additive version of a lemma.
 The reason is that we did not want to change existing names in the library.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsOrderedMonoid
 
@@ -729,7 +728,7 @@ theorem le_of_forall_one_lt_lt_mul (h : ∀ ε : α, 1 < ε → a < b * ε) : a 
 theorem le_iff_forall_one_lt_lt_mul : a ≤ b ↔ ∀ ε, 1 < ε → a < b * ε :=
   ⟨fun h _ => lt_mul_of_le_of_one_lt h, le_of_forall_one_lt_lt_mul⟩
 
-/-  I (DT) introduced this lemma to prove (the additive version `sub_le_sub_flip` of)
+/- I (DT) introduced this lemma to prove (the additive version `sub_le_sub_flip` of)
 `div_le_div_flip` below.  Now I wonder what is the point of either of these lemmas... -/
 @[to_additive]
 theorem div_le_inv_mul_iff [MulRightMono α] :

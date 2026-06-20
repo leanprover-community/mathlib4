@@ -90,13 +90,13 @@ instance : CoeSort (CompHausLike P) (Type u) :=
   ⟨fun X => X.toTop⟩
 
 instance category : Category (CompHausLike P) :=
-  InducedCategory.category toTop
+  inferInstanceAs <| Category (InducedCategory _ toTop)
 
 instance concreteCategory : ConcreteCategory (CompHausLike P) (C(·, ·)) :=
-  InducedCategory.concreteCategory toTop
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toTop) _
 
 instance hasForget₂ : HasForget₂ (CompHausLike P) TopCat :=
-  InducedCategory.hasForget₂ _
+  inferInstanceAs <| HasForget₂ (InducedCategory _ toTop) _
 
 variable (X : Type u) [TopologicalSpace X] [CompactSpace X] [T2Space X]
 
@@ -152,9 +152,9 @@ variable {P}
 def toCompHausLike {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     CompHausLike P ⥤ CompHausLike P' where
   obj X :=
-    have : HasProp P' X := ⟨(h _ X.prop)⟩
+    haveI : HasProp P' X := ⟨(h _ X.prop)⟩
     CompHausLike.of _ X
-  map f := f
+  map {X Y} f := ConcreteCategory.ofHom f.hom.hom
 
 section
 
@@ -162,8 +162,8 @@ variable {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P
 
 /-- If `P` implies `P'`, then the functor from `CompHausLike P` to `CompHausLike P'` is fully
 faithful. -/
-def fullyFaithfulToCompHausLike : (toCompHausLike h).FullyFaithful :=
-  fullyFaithfulInducedFunctor _
+def fullyFaithfulToCompHausLike : (toCompHausLike h).FullyFaithful where
+  preimage f := ConcreteCategory.ofHom f.hom.hom
 
 instance : (toCompHausLike h).Full := (fullyFaithfulToCompHausLike h).full
 
@@ -187,7 +187,7 @@ example {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P'
 def fullyFaithfulCompHausLikeToTop : (compHausLikeToTop P).FullyFaithful :=
   fullyFaithfulInducedFunctor _
 
-instance : (compHausLikeToTop P).Full  :=
+instance : (compHausLikeToTop P).Full :=
   inferInstanceAs (inducedFunctor _).Full
 
 instance : (compHausLikeToTop P).Faithful :=
@@ -203,7 +203,7 @@ variable {P}
 
 theorem epi_of_surjective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) (hf : Function.Surjective f) :
     Epi f := by
-  rw [← CategoryTheory.epi_iff_surjective] at hf
+  rw [← CategoryTheory.ofHom_epi_iff_surjective] at hf
   exact (forget (CompHausLike P)).epi_of_epi_map hf
 
 theorem mono_iff_injective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) :
@@ -214,12 +214,12 @@ theorem mono_iff_injective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) :
     let g₂ : X ⟶ X := ofHom _ ⟨fun _ => x₂, continuous_const⟩
     have : g₁ ≫ f = g₂ ≫ f := by ext; exact h
     exact CategoryTheory.congr_fun ((cancel_mono _).mp this) x₁
-  · rw [← CategoryTheory.mono_iff_injective]
+  · rw [← CategoryTheory.ofHom_mono_iff_injective]
     apply (forget (CompHausLike P)).mono_of_mono_map
 
 /-- Any continuous function on compact Hausdorff spaces is a closed map. -/
 theorem isClosedMap {X Y : CompHausLike.{u} P} (f : X ⟶ Y) : IsClosedMap f := fun _ hC =>
-  (hC.isCompact.image f.hom.continuous).isClosed
+  (hC.isCompact.image f.hom.hom.continuous).isClosed
 
 /-- Any continuous bijection of compact Hausdorff spaces is an isomorphism. -/
 theorem isIso_of_bijective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) (bij : Function.Bijective f) :

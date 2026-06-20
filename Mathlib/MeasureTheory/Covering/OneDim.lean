@@ -16,7 +16,7 @@ in `DensityTheorem.lean`. In this file, we expand the API for this theory in one
 by showing that intervals belong to the relevant Vitali family.
 -/
 
-@[expose] public section
+public section
 
 
 open Set MeasureTheory IsUnifLocDoublingMeasure Filter

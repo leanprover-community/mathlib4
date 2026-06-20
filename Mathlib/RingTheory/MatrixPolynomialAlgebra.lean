@@ -75,7 +75,7 @@ theorem matPolyEquiv_coeff_apply_aux_1 (i j : n) (k : ℕ) (x : R) :
     matPolyEquiv (single i j <| monomial k x) = monomial k (single i j x) := by
   simp only [matPolyEquiv, AlgEquiv.trans_apply, matrixEquivTensor_apply_single]
   apply (polyEquivTensor R (Matrix n n R)).injective
-  simp only [AlgEquiv.apply_symm_apply,Algebra.TensorProduct.comm_tmul,
+  simp only [AlgEquiv.apply_symm_apply, Algebra.TensorProduct.comm_tmul,
     polyEquivTensor_apply, eval₂_monomial]
   simp only [one_pow,
     Algebra.TensorProduct.tmul_pow]
@@ -87,7 +87,7 @@ theorem matPolyEquiv_coeff_apply_aux_2 (i j : n) (p : R[X]) (k : ℕ) :
   refine Polynomial.induction_on' p ?_ ?_
   · intro p q hp hq
     ext
-    simp [hp, hq, coeff_add, add_apply, single_add]
+    simp [hp, hq, coeff_add, Matrix.add_apply, single_add]
   · intro k x
     simp only [matPolyEquiv_coeff_apply_aux_1, coeff_monomial]
     split_ifs <;>
@@ -118,8 +118,9 @@ theorem matPolyEquiv_symm_apply_coeff (p : (Matrix n n R)[X]) (i j : n) (k : ℕ
 theorem matPolyEquiv_smul_one (p : R[X]) :
     matPolyEquiv (p • (1 : Matrix n n R[X])) = p.map (algebraMap R (Matrix n n R)) := by
   ext m i j
-  simp only [matPolyEquiv_coeff_apply, smul_apply, one_apply, smul_eq_mul, mul_ite, mul_one,
-    mul_zero, coeff_map, algebraMap_matrix_apply, Algebra.algebraMap_self, RingHom.id_apply]
+  simp only [matPolyEquiv_coeff_apply, Matrix.smul_apply, Matrix.one_apply, smul_eq_mul, mul_ite,
+    mul_one, mul_zero, coeff_map, algebraMap_matrix_apply, Algebra.algebraMap_self,
+    RingHom.id_apply]
   split_ifs <;> simp
 
 @[simp]
@@ -130,7 +131,7 @@ lemma matPolyEquiv_map_smul (p : R[X]) (M : Matrix n n R[X]) :
 theorem matPolyEquiv_symm_map_eval (M : (Matrix n n R)[X]) (r : R) :
     (matPolyEquiv.symm M).map (eval r) = M.eval (scalar n r) := by
   suffices ((aeval r).mapMatrix.comp matPolyEquiv.symm.toAlgHom : (Matrix n n R)[X] →ₐ[R] _) =
-      (eval₂AlgHom' (AlgHom.id R _) (scalar n r)
+      (eval₂AlgHom (AlgHom.id R _) (scalar n r)
         fun x => (scalar_commute _ (Commute.all _) _).symm) from
     DFunLike.congr_fun this M
   ext : 1
@@ -153,7 +154,7 @@ theorem support_subset_support_matPolyEquiv (m : Matrix n n R[X]) (i j : n) :
   contrapose
   simp only [notMem_support_iff]
   intro hk
-  rw [← matPolyEquiv_coeff_apply, hk, zero_apply]
+  rw [← matPolyEquiv_coeff_apply, hk, Matrix.zero_apply]
 
 theorem eval_det {R : Type*} [CommRing R] (M : Matrix n n R[X]) (r : R) :
     Polynomial.eval r M.det = (Polynomial.eval (scalar n r) (matPolyEquiv M)).det := by
@@ -175,7 +176,7 @@ variable {S : Type*} [CommSemiring S] (f : S →+* Matrix n n R)
 
 lemma evalRingHom_mapMatrix_comp_polyToMatrix :
     (evalRingHom 0).mapMatrix.comp f.polyToMatrix = f.comp (evalRingHom 0) := by
-  ext <;> simp [RingHom.polyToMatrix, - AlgEquiv.symm_toRingEquiv, diagonal, apply_ite]
+  ext <;> simp [RingHom.polyToMatrix, -AlgEquiv.symm_toRingEquiv, diagonal, apply_ite]
 
 lemma evalRingHom_mapMatrix_comp_compRingEquiv {m} [Fintype m] [DecidableEq m] :
     (evalRingHom 0).mapMatrix.comp (compRingEquiv m n R[X]) =

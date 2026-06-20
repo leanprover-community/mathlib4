@@ -5,7 +5,6 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 
 /-!
@@ -184,7 +183,7 @@ theorem IsTerminal.strict_hom_ext (hI : IsTerminal I) {A : C} (f g : I ⟶ A) : 
   haveI := hI.isIso_from g
   exact eq_of_inv_eq_inv (hI.hom_ext (inv f) (inv g))
 
-/-- If `X ⟶ Y` with `Y` being a strict terminal object, then `X` is also an terminal object. -/
+/-- If `X ⟶ Y` with `Y` being a strict terminal object, then `X` is also a terminal object. -/
 noncomputable
 def IsTerminal.ofStrict {X Y : C} (f : X ⟶ Y)
     (hY : IsTerminal X) : IsTerminal Y :=
@@ -196,6 +195,8 @@ theorem IsTerminal.subsingleton_to (hI : IsTerminal I) {A : C} : Subsingleton (I
 
 variable {J : Type v} [SmallCategory J]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- If all but one object in a diagram is strict terminal, then the limit is isomorphic to the
 said object via `limit.π`. -/
 theorem limit_π_isIso_of_is_strict_terminal (F : J ⥤ C) [HasLimit F] (i : J)

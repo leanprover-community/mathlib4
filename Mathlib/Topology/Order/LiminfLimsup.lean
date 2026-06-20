@@ -9,6 +9,9 @@ public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.Order.LiminfLimsup
 public import Mathlib.Topology.Order.Monotone
 
+import Mathlib.Data.Fintype.Order
+import Mathlib.Topology.Order.MonotoneConvergence
+
 /-!
 # Lemmas about liminf and limsup in an order topology.
 
@@ -23,7 +26,7 @@ The same lemmas are true in `ℝ`, `ℝ × ℝ`, `ι → ℝ`, `EuclideanSpace �
 duplication, we provide an ad hoc axiomatisation of the properties we need.
 -/
 
-@[expose] public section
+public section
 
 open Filter TopologicalSpace
 open scoped Topology
@@ -52,11 +55,11 @@ theorem isBounded_le_nhds (a : α) : (𝓝 a).IsBounded (· ≤ ·) :=
 theorem Filter.Tendsto.isBoundedUnder_le (h : Tendsto u f (𝓝 a)) : f.IsBoundedUnder (· ≤ ·) u :=
   (isBounded_le_nhds a).mono h
 
-theorem Filter.Tendsto.bddAbove_range_of_cofinite [IsDirected α (· ≤ ·)]
+theorem Filter.Tendsto.bddAbove_range_of_cofinite [IsDirectedOrder α]
     (h : Tendsto u cofinite (𝓝 a)) : BddAbove (Set.range u) :=
   h.isBoundedUnder_le.bddAbove_range_of_cofinite
 
-theorem Filter.Tendsto.bddAbove_range [IsDirected α (· ≤ ·)] {u : ℕ → α}
+theorem Filter.Tendsto.bddAbove_range [IsDirectedOrder α] {u : ℕ → α}
     (h : Tendsto u atTop (𝓝 a)) : BddAbove (Set.range u) :=
   h.isBoundedUnder_le.bddAbove_range
 
@@ -94,11 +97,11 @@ theorem isBounded_ge_nhds (a : α) : (𝓝 a).IsBounded (· ≥ ·) :=
 theorem Filter.Tendsto.isBoundedUnder_ge (h : Tendsto u f (𝓝 a)) : f.IsBoundedUnder (· ≥ ·) u :=
   (isBounded_ge_nhds a).mono h
 
-theorem Filter.Tendsto.bddBelow_range_of_cofinite [IsDirected α (· ≥ ·)]
+theorem Filter.Tendsto.bddBelow_range_of_cofinite [IsCodirectedOrder α]
     (h : Tendsto u cofinite (𝓝 a)) : BddBelow (Set.range u) :=
   h.isBoundedUnder_ge.bddBelow_range_of_cofinite
 
-theorem Filter.Tendsto.bddBelow_range [IsDirected α (· ≥ ·)] {u : ℕ → α}
+theorem Filter.Tendsto.bddBelow_range [IsCodirectedOrder α] {u : ℕ → α}
     (h : Tendsto u atTop (𝓝 a)) : BddBelow (Set.range u) :=
   h.isBoundedUnder_ge.bddBelow_range
 
@@ -179,6 +182,7 @@ theorem limsInf_eq_of_le_nhds {f : Filter α} {a : α} [NeBot f] (h : f ≤ 𝓝
       a = (𝓝 a).limsInf := (limsInf_nhds a).symm
       _ ≤ f.limsInf := limsInf_le_limsInf_of_le h (isBounded_ge_nhds a) hb_le.isCobounded_flip)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a filter is converging, its liminf coincides with its limit. -/
 theorem limsSup_eq_of_le_nhds {f : Filter α} {a : α} [NeBot f] (h : f ≤ 𝓝 a) : f.limsSup = a :=
   limsInf_eq_of_le_nhds (α := αᵒᵈ) h
@@ -192,6 +196,103 @@ theorem Filter.Tendsto.limsup_eq {f : Filter β} {u : β → α} {a : α} [NeBot
 theorem Filter.Tendsto.liminf_eq {f : Filter β} {u : β → α} {a : α} [NeBot f]
     (h : Tendsto u f (𝓝 a)) : liminf u f = a :=
   limsInf_eq_of_le_nhds h
+
+/-- The `limsSup` of a filter `f` is a cluster point of `f`. -/
+theorem ClusterPt.limsSup {f : Filter α} [NeBot f]
+    (hc : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
+    (hb : f.IsBounded (· ≤ ·) := by isBoundedDefault) : ClusterPt f.limsSup f := by
+  by_cases! hn : Nontrivial α
+  · by_cases! htop : ∀ x, x ≤ f.limsSup
+    · let : OrderTop α := { top := f.limsSup, le_top := htop }
+      exact nhds_top_basis.clusterPt_iff_frequently |>.mpr fun a => frequently_lt_of_lt_limsSup hc
+    · by_cases! hbot : ∀ x, f.limsSup ≤ x
+      · let : OrderBot α := { bot := f.limsSup, bot_le := hbot }
+        refine nhds_bot_basis.clusterPt_iff_frequently |>.mpr fun a h => ?_
+        exact lt_mem_sets_of_limsSup_lt hb h |>.frequently
+      · refine (nhds_basis_Ioo' hbot htop).clusterPt_iff_frequently |>.mpr fun a ⟨hl, hg⟩ => ?_
+        exact frequently_lt_of_lt_limsSup hc hl |>.and_eventually <| lt_mem_sets_of_limsSup_lt hb hg
+  · simp_all [ClusterPt, Filter.eq_top_of_neBot]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The `limsInf` of a filter `f` is a cluster point of `f`. -/
+theorem ClusterPt.limsInf {f : Filter α} [NeBot f]
+    (hc : f.IsCobounded (· ≥ ·) := by isBoundedDefault)
+    (hb : f.IsBounded (· ≥ ·) := by isBoundedDefault) : ClusterPt f.limsInf f :=
+  ClusterPt.limsSup (α := αᵒᵈ) hc hb
+
+/-- Every cluster point `x` of a filter `f` is less than or equal to `f.limsSup`. -/
+theorem ClusterPt.le_limsSup {f : Filter α} {x : α} (hx : ClusterPt x f)
+    (hb : f.IsBounded (· ≤ ·) := by isBoundedDefault) :
+    x ≤ f.limsSup := by
+  simp only [ClusterPt] at hx
+  have : (𝓝 x ⊓ f).limsSup = x := limsSup_eq_of_le_nhds inf_le_left
+  refine this ▸ limsSup_le_limsSup_of_le inf_le_right ?_ hb
+  exact (IsBounded.mono inf_le_left (isBounded_ge_nhds x)).isCobounded_le
+
+/-- Every cluster point `x` of a filter `f` is greater than or equal to `f.limsInf`. -/
+theorem ClusterPt.limsInf_le {f : Filter α} {x : α} (hx : ClusterPt x f)
+    (hb : f.IsBounded (· ≥ ·) := by isBoundedDefault) :
+    f.limsInf ≤ x :=
+  hx.le_limsSup (α := αᵒᵈ)
+
+/-- The `limsSup` of a filter `f` is the greatest cluster point of `f`. -/
+theorem isGreatest_clusterPt_limsSup {f : Filter α} [NeBot f]
+    (hc : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
+    (hb : f.IsBounded (· ≤ ·) := by isBoundedDefault) :
+    IsGreatest {x | ClusterPt x f} f.limsSup :=
+  ⟨ClusterPt.limsSup, fun a ha => ha.le_limsSup⟩
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The `limsInf` of a filter `f` is the least cluster point of `f`. -/
+theorem isLeast_clusterPt_limsInf {f : Filter α} [NeBot f]
+    (hc : f.IsCobounded (· ≥ ·) := by isBoundedDefault)
+    (hb : f.IsBounded (· ≥ ·) := by isBoundedDefault) :
+    IsLeast {x | ClusterPt x f} f.limsInf :=
+  isGreatest_clusterPt_limsSup (α := αᵒᵈ)
+
+/-- The `limsup` of a function `u` along a filter `f` is a cluster point of `u` along `f`. -/
+theorem MapClusterPt.limsup {u : β → α} {f : Filter β} [NeBot f]
+    (hc : IsCoboundedUnder (· ≤ ·) f u := by isBoundedDefault)
+    (hb : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
+    MapClusterPt (f.limsup u) f u :=
+  ClusterPt.limsSup
+
+/-- The `liminf` of a function `u` along a filter `f` is a cluster point of `u` along `f`. -/
+theorem MapClusterPt.liminf {u : β → α} {f : Filter β} [NeBot f]
+    (hc : IsCoboundedUnder (· ≥ ·) f u := by isBoundedDefault)
+    (hb : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
+    MapClusterPt (liminf u f) f u :=
+  ClusterPt.limsInf
+
+/-- Every cluster point `x` of a function `u` along a filter `f` is less than or equal to
+`limsup u f`. -/
+theorem MapClusterPt.le_limsup {u : β → α} {f : Filter β}
+    {x : α} (hx : MapClusterPt x f u) (hb : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
+    x ≤ f.limsup u :=
+  hx.le_limsSup
+
+/-- Every cluster point `x` of a function `u` along a filter `f` is greater than or equal to
+`liminf u f`. -/
+theorem MapClusterPt.liminf_le {u : β → α} {f : Filter β}
+    {x : α} (hx : MapClusterPt x f u) (hb : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
+    f.liminf u ≤ x :=
+  hx.limsInf_le
+
+/-- The `limsup` of a function `u` along a filter `f` is the greatest cluster point of `u` along
+`f`. -/
+theorem isGreatest_mapClusterPt_limsup {u : β → α} {f : Filter β} [NeBot f]
+    (hc : IsCoboundedUnder (· ≤ ·) f u := by isBoundedDefault)
+    (hb : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
+    IsGreatest {x | MapClusterPt x f u} (limsup u f) :=
+  isGreatest_clusterPt_limsSup
+
+/-- The `liminf` of a function `u` along a filter `f` is the least cluster point of `u` along
+`f`. -/
+theorem isLeast_mapClusterPt_liminf {u : β → α} {f : Filter β} [NeBot f]
+    (hc : IsCoboundedUnder (· ≥ ·) f u := by isBoundedDefault)
+    (hb : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
+    IsLeast {x | MapClusterPt x f u} (liminf u f) :=
+  isLeast_clusterPt_limsInf
 
 /-- If the liminf and the limsup of a function coincide, then the limit of the function
 exists and has the same value. -/
@@ -233,25 +334,40 @@ theorem tendsto_of_no_upcrossings [DenselyOrdered α] {f : Filter β} {u : β �
   have B : ∃ᶠ n in f, b < u n := frequently_lt_of_lt_limsup (IsBounded.isCobounded_le h') bu
   exact H a as b bs ab ⟨A, B⟩
 
-variable [FirstCountableTopology α] {f : Filter β} [CountableInterFilter f] {u : β → α}
+variable [FirstCountableTopology α] {f : Filter α}
+
+theorem exists_seq_tendsto_limsSup [NeBot f] [IsCountablyGenerated f]
+    (hc : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
+    (hb : f.IsBounded (· ≤ ·) := by isBoundedDefault) :
+    ∃ x : ℕ → α, Tendsto x atTop (𝓝 f.limsSup) ∧ Tendsto x atTop f :=
+  (ClusterPt.limsSup).exists_seq_tendsto
+
+theorem exists_seq_tendsto_limsInf [NeBot f] [IsCountablyGenerated f]
+    (hc : f.IsCobounded (· ≥ ·) := by isBoundedDefault)
+    (hb : f.IsBounded (· ≥ ·) := by isBoundedDefault) :
+    ∃ x : ℕ → α, Tendsto x atTop (𝓝 f.limsInf) ∧ Tendsto x atTop f :=
+  (ClusterPt.limsInf).exists_seq_tendsto
+
+variable {f : Filter β}
+
+theorem exists_seq_tendsto_limsup [NeBot f] [IsCountablyGenerated f] {u : β → α}
+    (hc : IsCoboundedUnder (· ≤ ·) f u := by isBoundedDefault)
+    (hb : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
+    ∃ x : ℕ → β, Tendsto (u ∘ x) atTop (𝓝 (limsup u f)) ∧ Tendsto x atTop f :=
+  (MapClusterPt.limsup).exists_seq_tendsto
+
+theorem exists_seq_tendsto_liminf [NeBot f] {u : β → α} [IsCountablyGenerated f]
+    (hc : IsCoboundedUnder (· ≥ ·) f u := by isBoundedDefault)
+    (hb : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
+    ∃ x : ℕ → β, Tendsto (u ∘ x) atTop (𝓝 (liminf u f)) ∧ Tendsto x atTop f :=
+  (MapClusterPt.liminf).exists_seq_tendsto
+
+variable [CountableInterFilter f] {u : β → α}
 
 theorem eventually_le_limsup (hf : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
     ∀ᶠ b in f, u b ≤ f.limsup u := by
-  obtain ha | ha := isTop_or_exists_gt (f.limsup u)
-  · exact Eventually.of_forall fun _ => ha _
-  by_cases H : IsGLB (Set.Ioi (f.limsup u)) (f.limsup u)
-  · obtain ⟨u, -, -, hua, hu⟩ := H.exists_seq_antitone_tendsto ha
-    have := fun n => eventually_lt_of_limsup_lt (hu n) hf
-    exact
-      (eventually_countable_forall.2 this).mono fun b hb =>
-        ge_of_tendsto hua <| Eventually.of_forall fun n => (hb _).le
-  · obtain ⟨x, hx, xa⟩ : ∃ x, (∀ ⦃b⦄, f.limsup u < b → x ≤ b) ∧ f.limsup u < x := by
-      simp only [IsGLB, IsGreatest, lowerBounds, upperBounds, Set.mem_Ioi, Set.mem_setOf_eq,
-        not_and, not_forall, not_le, exists_prop] at H
-      exact H fun x => le_of_lt
-    filter_upwards [eventually_lt_of_limsup_lt xa hf] with y hy
-    contrapose! hy
-    exact hx hy
+  rw [eventually_le_const_iff_forall_gt_eventually_lt_const]
+  exact fun _ hc ↦ eventually_lt_of_limsup_lt hc
 
 theorem eventually_liminf_le (hf : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
     ∀ᶠ b in f, f.liminf u ≤ u b :=
@@ -276,6 +392,96 @@ theorem limsup_eq_bot : f.limsup u = ⊥ ↔ u =ᶠ[f] ⊥ :=
 @[simp]
 theorem liminf_eq_top : f.liminf u = ⊤ ↔ u =ᶠ[f] ⊤ :=
   limsup_eq_bot (α := αᵒᵈ)
+
+/-- Let `u : ι → α → β` be a sequence of antitone functions `α → β` indexed by `ι`. Suppose that for
+all `i : ι`, `u i` tends to `c` at infinity, and that furthermore the limsup of `i ↦ u i r` along
+the cofinite filter tends to the same `c` as `r` tends to infinity.
+Then the supremum function `r ↦ ⨆ i, u i r` also tends to `c` at infinity. -/
+lemma tendsto_iSup_of_tendsto_limsup {α β : Type*} [ConditionallyCompleteLattice α]
+    [CompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
+    {u : ι → α → β} {c : β}
+    (h_all : ∀ i, Tendsto (u i) atTop (𝓝 c))
+    (h_limsup : Tendsto (fun r : α ↦ limsup (fun i ↦ u i r) cofinite) atTop (𝓝 c))
+    (h_anti : ∀ i, Antitone (u i)) :
+    Tendsto (fun r : α ↦ ⨆ i, u i r) atTop (𝓝 c) := by
+  classical
+  rcases isEmpty_or_nonempty ι with hι | ⟨⟨n0⟩⟩
+  · simpa using! h_limsup
+  refine tendsto_order.mpr ⟨fun b hb ↦ ?_, fun b hb ↦ ?_⟩
+  · filter_upwards with r
+    have : c ≤ u n0 r := (h_anti n0).le_of_tendsto (h_all n0) r
+    exact hb.trans_le (this.trans (le_iSup_iff.mpr fun b a ↦ a n0))
+  -- `⊢ ∀ᶠ (b_1 : α) in atTop, ⨆ i, u i b_1 < b` for `b > c`
+  let b' := if h : (Set.Ioo c b).Nonempty then h.some else c
+  have hb'b : b' < b := by
+    simp only [b']
+    split_ifs with h
+    exacts [h.some_mem.2, hb]
+  have : ∀ᶠ r in atTop, limsup (u · r) cofinite ≤ b' := by
+    simp only [b']
+    split_ifs with h
+    · filter_upwards [(tendsto_order.1 h_limsup).2 _ h.some_mem.1] with r hr using hr.le
+    · filter_upwards [(tendsto_order.1 h_limsup).2 b hb] with r hr
+      contrapose! h
+      exact ⟨limsup (u · r) cofinite, h, hr⟩
+  obtain ⟨r, hr⟩ : ∃ r, ∀ s ≥ r, limsup (u · s) cofinite ≤ b' := by simpa using! this
+  obtain ⟨b'', hb''b, hb''⟩ : ∃ b'' ∈ Set.Ico b' b, ∀ᶠ n in cofinite, u n r ≤ b'' := by
+    rcases Set.eq_empty_or_nonempty (Set.Ioo b' b) with h | ⟨b'', hb'b'', hb''b⟩
+    · refine ⟨b', ⟨le_rfl, hb'b⟩, ?_⟩
+      have h_lt := eventually_lt_of_limsup_lt ((hr r le_rfl).trans_lt hb'b)
+      filter_upwards [h_lt] with n hn
+      contrapose! h
+      exact ⟨u n r, h, hn⟩
+    · refine ⟨b'', ⟨hb'b''.le, hb''b⟩ , ?_⟩
+      have h_lt := eventually_lt_of_limsup_lt ((hr r le_rfl).trans_lt hb'b'')
+      filter_upwards [h_lt] with n hn using hn.le
+  have A (n) : ∃ r, ∀ s ≥ r, u n s ≤ b'' := by
+    suffices ∀ᶠ r in atTop, u n r ≤ b' by
+      simp only [eventually_atTop] at this
+      rcases this with ⟨r, hr⟩
+      exact ⟨r, fun s hs ↦ (hr s hs).trans hb''b.1⟩
+    simp only [b']
+    split_ifs with h
+    · filter_upwards [(tendsto_order.1 (h_all n)).2 _ h.some_mem.1] with r hr
+      exact hr.le
+    · filter_upwards [(tendsto_order.1 (h_all n)).2 b hb] with r hr
+      contrapose! h
+      exact ⟨u n r, h, hr⟩
+  choose rs hrs using A
+  simp only [eventually_atTop]
+  refine ⟨r ⊔ ⨆ n : {n | b'' < u n r}, rs n, fun v hv ↦ ?_⟩
+  -- `⊢ ⨆ i, u i v < b`
+  apply lt_of_le_of_lt (iSup_le fun n ↦ ?_) hb''b.2
+  -- `⊢ u n v ≤ b''` for `v` such that `r ⊔ (⨆ n, rs n) ≤ v`
+  by_cases hn : b'' < u n r
+  · refine hrs n v ?_
+    calc rs n
+    _ = rs (⟨n, by simp [hn]⟩ : {n | b'' < u n r}) := rfl
+    _ ≤ ⨆ n : {n | b'' < u n r}, rs n := by
+      refine le_ciSup (f := fun (x : {n | b'' < u n r}) ↦ rs x) ?_
+        (⟨n, by simp [hn]⟩ : {n | b'' < u n r})
+      have : Finite {n | b'' < u n r} := by simpa using! hb''
+      exact Finite.bddAbove_range _
+    _ ≤ r ⊔ ⨆ n : {n | b'' < u n r}, rs n := le_sup_right
+    _ ≤ v := hv
+  · refine (h_anti n ?_).trans (not_lt.mp hn)
+    calc r
+    _ ≤ r ⊔ ⨆ n : {n | b'' < u n r}, rs n := le_sup_left
+    _ ≤ v := hv
+
+/-- Let `u : ℕ → α → β` be a sequence of antitone functions `α → β` indexed by `ℕ`. Suppose that for
+all `n : ℕ`, `u n` tends to `c` at infinity, and that furthermore the limsup of `n ↦ u n r`
+tends to the same `c` as `r` tends to infinity.
+Then the supremum function `r ↦ ⨆ n, u n r` also tends to `c` at infinity. -/
+lemma Nat.tendsto_iSup_of_tendsto_limsup {α β : Type*} [ConditionallyCompleteLattice α]
+    [CompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
+    {u : ℕ → α → β} {c : β}
+    (h_all : ∀ n, Tendsto (u n) atTop (𝓝 c))
+    (h_limsup : Tendsto (fun r : α ↦ limsup (fun n ↦ u n r) atTop) atTop (𝓝 c))
+    (h_anti : ∀ n, Antitone (u n)) :
+    Tendsto (fun r : α ↦ ⨆ n, u n r) atTop (𝓝 c) := by
+  rw [← cofinite_eq_atTop] at h_limsup
+  exact _root_.tendsto_iSup_of_tendsto_limsup h_all h_limsup h_anti
 
 end CompleteLinearOrder
 
@@ -304,7 +510,7 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
       exists_lt_of_lt_csSup (bdd_above.recOn fun x hx ↦ ⟨f x, Set.mem_image_of_mem f hx⟩) hc
     apply lt_csSup_of_lt ?_ ?_ h'd
     · simpa only [BddAbove, upperBounds]
-        using Antitone.isCoboundedUnder_ge_of_isCobounded f_decr cobdd
+        using! Antitone.isCoboundedUnder_ge_of_isCobounded f_decr cobdd
     · rcases hd with ⟨e, ⟨he, fe_eq_d⟩⟩
       filter_upwards [he] with x hx using (fe_eq_d.symm ▸ f_decr hx)
   · by_cases! h' : ∃ c, c < F.limsSup ∧ Set.Ioo c F.limsSup = ∅
@@ -325,7 +531,7 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
     obtain ⟨l, l_lt, h'l⟩ :
         ∃ l < F.limsSup, Set.Ioc l F.limsSup ⊆ { x : R | f x < F.liminf f } := by
       apply exists_Ioc_subset_of_mem_nhds ((tendsto_order.1 f_cont.tendsto).2 _ H)
-      simpa [IsBot] using not_bot
+      simpa [IsBot] using! not_bot
     obtain ⟨m, l_m, m_lt⟩ : (Set.Ioo l F.limsSup).Nonempty := by
       contrapose! h'
       exact ⟨l, l_lt, h'⟩
@@ -347,6 +553,7 @@ theorem Antitone.map_limsup_of_continuousAt {f : R → S} (f_decr : Antitone f) 
     f (F.limsup a) = F.liminf (f ∘ a) :=
   f_decr.map_limsSup_of_continuousAt f_cont bdd_above cobdd
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An antitone function between (conditionally) complete linear ordered spaces sends a
 `Filter.limsInf` to the `Filter.limsup` of the image if the function is continuous at the `limsInf`
 (and the filter is bounded from below and frequently bounded from above). -/
@@ -385,6 +592,7 @@ theorem Monotone.map_limsup_of_continuousAt {f : R → S} (f_incr : Monotone f) 
     f (F.limsup a) = F.limsup (f ∘ a) :=
   f_incr.map_limsSup_of_continuousAt f_cont bdd_above cobdd
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A monotone function between (conditionally) complete linear ordered spaces sends a
 `Filter.limsInf` to the `Filter.liminf` of the image if the function is continuous at the `limsInf`
 (and the filter is bounded from below and frequently bounded from above). -/
@@ -405,3 +613,60 @@ theorem Monotone.map_liminf_of_continuousAt {f : R → S} (f_incr : Monotone f) 
   f_incr.map_limsInf_of_continuousAt f_cont cobdd bdd_below
 
 end Monotone
+
+section CompleteLattice
+
+variable [LinearOrder α] [TopologicalSpace α] [OrderTopology α] [DenselyOrdered α]
+  [CompleteLattice β] {f : α → β}
+
+lemma Antitone.liminf_nhdsGT_eq_iSup₂_of_exists_gt (hf : Antitone f) (a : α) (hb : ∃ b, a < b) :
+    (𝓝[>] a).liminf f = ⨆ r > a, f r := by
+  rw [(nhdsGT_basis_of_exists_gt hb).liminf_eq_iSup_iInf]
+  refine le_antisymm (iSup₂_mono' fun r hr ↦ ?_)
+    (iSup₂_mono' fun r hr ↦ ⟨r, hr, le_iInf₂ fun i hi ↦ hf (Set.mem_Ioo.1 hi).2.le⟩)
+  obtain ⟨b, hb⟩ := exists_between hr
+  exact ⟨b, hb.1, iInf₂_le b hb⟩
+
+lemma Antitone.liminf_nhdsGT_eq_iSup₂ [NoMaxOrder α] (hf : Antitone f) (a : α) :
+    (𝓝[>] a).liminf f = ⨆ r > a, f r :=
+  hf.liminf_nhdsGT_eq_iSup₂_of_exists_gt a (exists_gt a)
+
+lemma Monotone.liminf_nhdsLT_eq_iSup₂_of_exists_lt (hf : Monotone f) (a : α) (hb : ∃ b, b < a) :
+    (𝓝[<] a).liminf f = ⨆ r < a, f r := by
+  rw [(nhdsLT_basis_of_exists_lt hb).liminf_eq_iSup_iInf]
+  refine le_antisymm (iSup₂_mono' fun r hr ↦ ?_)
+    (iSup₂_mono' fun r hr ↦ ⟨r, hr, le_iInf₂ fun i hi ↦ hf (Set.mem_Ioo.1 hi).1.le⟩)
+  obtain ⟨b, hb⟩ := exists_between hr
+  exact ⟨b, hb.2, iInf₂_le b hb⟩
+
+lemma Monotone.liminf_nhdsLT_eq_iSup₂ [NoMinOrder α] (hf : Monotone f) (a : α) :
+    (𝓝[<] a).liminf f = ⨆ r < a, f r :=
+  hf.liminf_nhdsLT_eq_iSup₂_of_exists_lt a (exists_lt a)
+
+lemma Monotone.limsup_nhdsGT_eq_iInf₂_of_exists_gt (hf : Monotone f) (a : α) (hb : ∃ b, a < b) :
+    (𝓝[>] a).limsup f = ⨅ r > a, f r := by
+  rw [(nhdsGT_basis_of_exists_gt hb).limsup_eq_iInf_iSup]
+  refine le_antisymm
+    (iInf₂_mono' fun r hr ↦ ⟨r, hr, iSup₂_le fun i hi ↦ hf (Set.mem_Ioo.1 hi).2.le⟩)
+    (iInf₂_mono' fun r hr ↦ ?_)
+  obtain ⟨b, hb⟩ := exists_between hr
+  exact ⟨b, hb.1, le_iSup₂_of_le b hb le_rfl⟩
+
+lemma Monotone.limsup_nhdsGT_eq_iInf₂ [NoMaxOrder α] (hf : Monotone f) (a : α) :
+    (𝓝[>] a).limsup f = ⨅ r > a, f r :=
+  hf.limsup_nhdsGT_eq_iInf₂_of_exists_gt a (exists_gt a)
+
+lemma Antitone.limsup_nhdsLT_eq_iInf₂_of_exists_lt (hf : Antitone f) (a : α) (hb : ∃ b, b < a) :
+    (𝓝[<] a).limsup f = ⨅ r < a, f r := by
+  rw [(nhdsLT_basis_of_exists_lt hb).limsup_eq_iInf_iSup]
+  refine le_antisymm
+    (iInf₂_mono' fun r hr ↦ ⟨r, hr, iSup₂_le fun i hi ↦ hf (Set.mem_Ioo.1 hi).1.le⟩)
+    (iInf₂_mono' fun r hr ↦ ?_)
+  obtain ⟨b, hb⟩ := exists_between hr
+  exact ⟨b, hb.2, le_iSup₂_of_le b hb le_rfl⟩
+
+lemma Antitone.limsup_nhdsLT_eq_iInf₂ [NoMinOrder α] (hf : Antitone f) (a : α) :
+    (𝓝[<] a).limsup f = ⨅ r < a, f r :=
+  hf.limsup_nhdsLT_eq_iInf₂_of_exists_lt a (exists_lt a)
+
+end CompleteLattice

@@ -15,7 +15,7 @@ This file shows that non-empty finite sets in a preorder have minimal/maximal el
 contrapositively that non-empty sets without minimal or maximal elements are infinite.
 -/
 
-@[expose] public section
+public section
 
 variable {ι α β : Type*}
 
@@ -55,8 +55,6 @@ lemma exists_le_maximal (s : Finset α) (ha : a ∈ s) : ∃ b, a ≤ b ∧ Maxi
 lemma exists_le_minimal (s : Finset α) (ha : a ∈ s) : ∃ b ≤ a, Minimal (· ∈ s) b :=
   exists_le_maximal (α := αᵒᵈ) s ha
 
-@[deprecated (since := "2025-05-04")] alias exists_minimal_le := exists_le_minimal
-
 end Preorder
 end Finset
 
@@ -88,11 +86,6 @@ lemma Finite.exists_maximalFor' (f : ι → α) (s : Set ι) (h : (f '' s).Finit
 is finite rather than `s` itself. -/
 lemma Finite.exists_minimalFor' (f : ι → α) (s : Set ι) (h : (f '' s).Finite) (hs : s.Nonempty) :
     ∃ i, MinimalFor (· ∈ s) f i := h.exists_maximalFor' (α := αᵒᵈ) f s hs
-
-@[deprecated (since := "2025-05-04")] alias Finite.exists_maximal_wrt := Finite.exists_maximalFor
-@[deprecated (since := "2025-05-04")] alias Finite.exists_minimal_wrt := Finite.exists_minimalFor
-@[deprecated (since := "2025-05-04")] alias Finite.exists_maximal_wrt' := Finite.exists_maximalFor'
-@[deprecated (since := "2025-05-04")] alias Finite.exists_minimal_wrt' := Finite.exists_minimalFor'
 
 end IsTrans
 
@@ -140,6 +133,18 @@ lemma Finite.exists_lt_map_eq_of_forall_mem [Infinite α] (hf : ∀ a, f a ∈ t
   rw [← mapsTo_univ_iff] at hf
   obtain ⟨a, -, b, -, h⟩ := infinite_univ.exists_lt_map_eq_of_mapsTo hf ht
   exact ⟨a, b, h⟩
+
+/-- If the cofinality of a linear order is finite, it's at most one. -/
+theorem Finite.exists_subsingleton_isCofinal {s : Set α} (hs : s.Finite) (hs' : IsCofinal s) :
+    ∃ t : Set α, t.Subsingleton ∧ IsCofinal t := by
+  obtain rfl | hn := s.eq_empty_or_nonempty
+  · use ∅; simpa
+  · obtain ⟨a, ha⟩ := hs.exists_maximal hn
+    use {a}
+    suffices IsTop a by simpa [IsCofinal]
+    intro b
+    obtain ⟨c, hc, hbc⟩ := hs' b
+    exact hbc.trans (ha.le hc)
 
 end LinearOrder
 end Set

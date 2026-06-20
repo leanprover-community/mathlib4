@@ -25,7 +25,7 @@ sums to `a * b` (`HasSum.mul_of_nonarchimedean`).
 
 -/
 
-@[expose] public section
+public section
 
 open Filter Topology
 
@@ -73,17 +73,17 @@ lemma cauchySeq_of_tendsto_div_nhds_one {f : ℕ → G}
   intro s hs
   obtain ⟨t, ht⟩ := is_nonarchimedean s hs
   obtain ⟨N, hN⟩ : ∃ N : ℕ, ∀ b, N ≤ b → f (b + 1) / f b ∈ t := by
-    simpa using tendsto_def.mp hf t t.mem_nhds_one
+    simpa using! tendsto_def.mp hf t t.mem_nhds_one
   refine ⟨(N, N), ?_⟩
   rintro ⟨M, M'⟩ ⟨(hMN : N ≤ M), (hMN' : N ≤ M')⟩
   apply ht
   wlog h : M ≤ M' generalizing M M'
-  · simpa [inv_div] using t.inv_mem <| this _ _ hMN' hMN (le_of_not_ge h)
+  · simpa [inv_div] using! t.inv_mem <| this _ _ hMN' hMN (le_of_not_ge h)
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
   clear h hMN'
   induction k with
   | zero => simp
-  | succ k ih => simpa using t.mul_mem (hN _ (by cutsat : N ≤ M + k)) ih
+  | succ k ih => simpa using! t.mul_mem (hN _ (by lia : N ≤ M + k)) ih
 
 /-- Let `G` be a complete nonarchimedean multiplicative abelian group, and let `f : α → G` be a
 function that tends to one on the filter of cofinite sets. Then `f` is unconditionally
@@ -111,9 +111,9 @@ section NonarchimedeanRing
 variable {α β R : Type*}
 variable [Ring R] [UniformSpace R] [IsUniformAddGroup R] [NonarchimedeanRing R]
 
-/- Let `R` be a complete nonarchimedean ring. If functions `f : α → R` and `g : β → R` are summable,
-then so is `fun i : α × β ↦ f i.1 * g i.2`. We will prove later that the assumption that `R`
-is complete is not necessary. -/
+/-- Let `R` be a complete nonarchimedean ring. If functions `f : α → R` and `g : β → R` are
+summable, then so is `fun i : α × β ↦ f i.1 * g i.2`. We will prove later that the assumption that
+`R` is complete is not necessary. -/
 private theorem Summable.mul_of_complete_nonarchimedean [CompleteSpace R] {f : α → R} {g : β → R}
     (hf : Summable f) (hg : Summable g) : Summable (fun i : α × β ↦ f i.1 * g i.2) := by
   rw [NonarchimedeanAddGroup.summable_iff_tendsto_cofinite_zero] at *

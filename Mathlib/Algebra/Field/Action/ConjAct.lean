@@ -10,10 +10,10 @@ public import Mathlib.Algebra.GroupWithZero.Action.ConjAct
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 
 /-!
-# Conjugation action on a field on itself
+# Conjugation action of a field on itself
 -/
 
-@[expose] public section
+public section
 
 namespace ConjAct
 

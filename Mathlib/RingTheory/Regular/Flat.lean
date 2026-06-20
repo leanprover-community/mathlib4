@@ -19,7 +19,7 @@ public import Mathlib.RingTheory.Regular.RegularSequence
   `N`-sequence.
 -/
 
-@[expose] public section
+public section
 
 namespace RingTheory.Sequence
 

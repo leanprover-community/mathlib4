@@ -27,7 +27,7 @@ This file derives Hall's Marriage Theorem for bipartite graphs from the combinat
 Hall's Marriage Theorem
 -/
 
-@[expose] public section
+public section
 
 open Function
 
@@ -35,7 +35,7 @@ namespace SimpleGraph
 
 variable {V : Type*} {G : SimpleGraph V}
 
-/- Given a partition `p` and a function `f` mapping vertices in `p` to the other partition, create
+/-- Given a partition `p` and a function `f` mapping vertices in `p` to the other partition, create
 the subgraph including only the edges between `x` and `f x` for all `x` in `p`. -/
 private
 abbrev hall_subgraph {p : Set V} [DecidablePred (· ∈ p)] (f : p → V) (h₁ : ∀ x : p, f x ∉ p)
@@ -46,12 +46,11 @@ abbrev hall_subgraph {p : Set V} [DecidablePred (· ∈ p)] (f : p → V) (h₁ 
     else if h : w ∈ p then f ⟨w, h⟩ = v
     else False
   adj_sub {v w} h := by
-    repeat' split at h
+    split_ifs at h
     · exact h ▸ h₂ ⟨v, by assumption⟩
     · exact h ▸ h₂ ⟨w, by assumption⟩ |>.symm
-    · contradiction
-  edge_vert {v w} := by grind
-  symm {x y} := by grind
+  edge_vert := by grind
+  symm.symm := by grind
 
 variable [G.LocallyFinite] {p₁ p₂ : Set V}
 

@@ -11,6 +11,7 @@ public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 public import Mathlib.NumberTheory.NumberField.EquivReindex
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
+public import Mathlib.Analysis.SpecialFunctions.Log.Base
 
 /-!
 # Number field discriminant
@@ -28,7 +29,7 @@ This file defines the discriminant of a number field.
 number field, discriminant
 -/
 
-@[expose] public section
+public section
 
 -- TODO. Rewrite some of the FLT results on the discriminant using the definitions and results of
 -- this file
@@ -46,10 +47,11 @@ open MeasureTheory MeasureTheory.Measure ZSpan NumberField.mixedEmbedding
 
 theorem discr_eq_basisMatrix_det_sq [DecidableEq (K →+* ℂ)] :
     discr K = (basisMatrix K).det ^ 2 := by
-  rw [show (discr K : ℂ) = (discr K : ℚ) by rfl, coe_discr, basisMatrix_eq_embeddingsMatrixReindex,
+  rw [← Rat.cast_intCast, coe_discr, basisMatrix_eq_embeddingsMatrixReindex,
     ← Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two, ← (equivReindex K).symm_symm,
     Algebra.discr_reindex, eq_ratCast]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped ComplexConjugate ComplexOrder in
 theorem sign_discr :
     (discr K).sign = (-1) ^ nrComplexPlaces K := by
@@ -68,6 +70,20 @@ theorem sign_discr :
   · grind [discr_ne_zero]
   · rw [Int.sign_eq_neg_one_of_neg h, Odd.neg_one_pow]
     rwa [← Nat.not_even_iff_odd, ← this, Int.cast_nonneg_iff, not_le]
+
+section rootDiscr
+
+/-- The root discriminant of a number field `K`. -/
+noncomputable def rootDiscr : ℝ :=
+  |discr K| ^ (finrank ℚ K : ℝ)⁻¹
+
+theorem rootDiscr_def : rootDiscr K = |discr K| ^ (finrank ℚ K : ℝ)⁻¹ := by
+  rw [rootDiscr]
+
+theorem rootDiscr_rat : rootDiscr ℚ = 1 := by
+  simp [rootDiscr_def]
+
+end rootDiscr
 
 open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :
@@ -141,7 +157,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
       mul_one]
     · exact mul_ne_top (ne_of_lt (minkowskiBound_lt_top K I)) coe_ne_top
     · exact (Nat.cast_ne_zero.mpr (ne_of_gt finrank_pos))
-  convert exists_ne_zero_mem_ideal_of_norm_le K I h_le
+  convert! exists_ne_zero_mem_ideal_of_norm_le K I h_le
   rw [div_pow B, ← Real.rpow_natCast B, ← Real.rpow_mul (by positivity), div_mul_cancel₀ _
     (Nat.cast_ne_zero.mpr <| ne_of_gt finrank_pos), Real.rpow_one, mul_comm_div, mul_div_assoc']
   congr 1
@@ -226,7 +242,7 @@ variable {K}
 theorem abs_discr_ge (h : 1 < finrank ℚ K) :
     (4 / 9 : ℝ) * (3 * π / 4) ^ finrank ℚ K ≤ |discr K| := by
   refine le_trans ?_ (abs_discr_ge' K)
-  -- The sequence `a n` is a lower bound for `|discr K|`. We prove below by induction an uniform
+  -- The sequence `a n` is a lower bound for `|discr K|`. We prove below by induction a uniform
   -- lower bound for this sequence from which we deduce the result.
   rw [mul_comm 2 _]
   let a : ℕ → ℝ := fun n => (n : ℝ) ^ (n * 2) / ((4 / π) ^ n * (n.factorial : ℝ) ^ 2)
@@ -248,7 +264,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
           simp [field, div_pow]
           ring
         · rw [_root_.le_div_iff₀ (by positivity), pow_succ]
-          convert (mul_le_mul h_m this (by positivity) (by positivity)) using 1
+          convert! (mul_le_mul h_m this (by positivity) (by positivity)) using 1
           field
       refine le_trans (le_of_eq (by simp [field]; norm_num)) (one_add_mul_le_pow ?_ (2 * m))
       exact le_trans (by norm_num : (-2 : ℝ) ≤ 0) (by positivity)
@@ -286,7 +302,7 @@ Thus it follows from `mixedEmbedding.exists_primitive_element_lt_of_isComplex` a
 `x` of `K` such that `K = ℚ(x)` and the conjugates of `x` are all bounded by some quantity
 depending only on `N`.
 
-Since the primitive element `x` is constructed differently depending on whether `K` has a infinite
+Since the primitive element `x` is constructed differently depending on whether `K` has an infinite
 real place or not, the theorem is proved in two parts.
 -/
 
@@ -306,7 +322,7 @@ theorem finite_of_finite_generating_set {p : IntermediateField ℚ A → Prop}
   refine Set.finite_coe_iff.mp <| Finite.of_injective
     (fun ⟨F, hF⟩ ↦ (⟨(h F hF).choose, (h F hF).choose_spec.1⟩ : T)) (fun _ _ h_eq ↦ ?_)
   rw [Subtype.ext_iff, Subtype.ext_iff]
-  convert congr_arg (ℚ⟮·⟯) (Subtype.mk_eq_mk.mp h_eq)
+  convert! congr_arg (ℚ⟮·⟯) (Subtype.mk_eq_mk.mp h_eq)
   all_goals exact (h _ (Subtype.mem _)).choose_spec.2
 
 variable (N : ℕ)
@@ -376,6 +392,7 @@ theorem natDegree_le_rankOfDiscrBdd (a : 𝓞 K) (h : ℚ⟮(a : K)⟯ = ⊤) :
 
 variable (N)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finite_of_discr_bdd_of_isReal :
     {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
       haveI :  NumberField K := @NumberField.mk _ _ inferInstance K.prop
@@ -386,7 +403,7 @@ theorem finite_of_discr_bdd_of_isReal :
   -- The bound on the Minkowski bound
   let B := boundOfDiscBdd N
   -- The bound on the coefficients of the generating polynomials
-  let C := Nat.ceil ((max B 1) ^ D *  Nat.choose D (D / 2))
+  let C := Nat.ceil ((max B 1) ^ D * Nat.choose D (D / 2))
   refine finite_of_finite_generating_set A _ (bUnion_roots_finite (algebraMap ℤ A) D
       (Set.finite_Icc (-C : ℤ) C)) (fun ⟨K, hK₀⟩ ⟨hK₁, hK₂⟩ ↦ ?_)
   -- We now need to prove that each field is generated by an element of the union of the root set
@@ -416,7 +433,7 @@ theorem finite_of_discr_bdd_of_isReal :
     · refine mem_rootSet.mpr ⟨minpoly.ne_zero hx, ?_⟩
       exact (aeval_algebraMap_eq_zero_iff A (x : K) _).mpr (minpoly.aeval ℤ (x : K))
     · rw [← (IntermediateField.lift_injective _).eq_iff, eq_comm] at hx₁
-      convert hx₁
+      convert! hx₁
       · simp only [IntermediateField.lift_top]
       · simp only [IntermediateField.lift_adjoin, Set.image_singleton]
   calc
@@ -424,6 +441,7 @@ theorem finite_of_discr_bdd_of_isReal :
     _ = 1 * B := by rw [one_mul]
     _ ≤ convexBodyLTFactor K * B := by gcongr; exact mod_cast one_le_convexBodyLTFactor K
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finite_of_discr_bdd_of_isComplex :
     {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
       haveI :  NumberField K := @NumberField.mk _ _ inferInstance K.prop
@@ -465,7 +483,7 @@ theorem finite_of_discr_bdd_of_isComplex :
     · refine mem_rootSet.mpr ⟨minpoly.ne_zero hx, ?_⟩
       exact (aeval_algebraMap_eq_zero_iff A (x : K) _).mpr (minpoly.aeval ℤ (x : K))
     · rw [← (IntermediateField.lift_injective _).eq_iff, eq_comm] at hx₁
-      convert hx₁
+      convert! hx₁
       · simp only [IntermediateField.lift_top]
       · simp only [IntermediateField.lift_adjoin, Set.image_singleton]
   calc

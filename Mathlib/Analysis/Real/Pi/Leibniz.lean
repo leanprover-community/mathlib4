@@ -10,7 +10,7 @@ public import Mathlib.Analysis.SpecialFunctions.Complex.Arctan
 
 /-! ### Leibniz's series for `π` -/
 
-@[expose] public section
+public section
 
 namespace Real
 

@@ -20,7 +20,7 @@ Transferring (co)filteredness *along* representably (co)flat functors is given b
 representably coflat functor is initial.
 -/
 
-@[expose] public section
+public section
 
 universe v₁ v₂ u₁ u₂
 

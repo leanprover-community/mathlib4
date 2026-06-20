@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
 public import Mathlib.Data.Fintype.Sets
 public import Mathlib.Data.Multiset.Bind
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # Big operators
@@ -44,8 +45,7 @@ See the documentation of `to_additive.attr` for more information.
 
 @[expose] public section
 
--- TODO
--- assert_not_exists AddCommMonoidWithOne
+assert_not_exists AddCommMonoidWithOne
 assert_not_exists MonoidWithZero
 assert_not_exists MulAction
 assert_not_exists IsOrderedMonoid
@@ -79,7 +79,7 @@ theorem prod_val [CommMonoid M] (s : Finset M) : s.1.prod = s.prod id := by
 
 end Finset
 
-library_note2 «operator precedence of big operators» /--
+library_note «operator precedence of big operators» /--
 There is no established mathematical convention
 for the operator precedence of big operators like `∏` and `∑`.
 We will have to make a choice.
@@ -106,9 +106,9 @@ open Batteries.ExtendedBinder Lean Meta
 /-- A `bigOpBinder` is like an `extBinder` and has the form `x`, `x : ty`, or `x pred`
 where `pred` is a `binderPred` like `< 2`.
 Unlike `extBinder`, `x` is a term. -/
-syntax bigOpBinder := term:max ((" : " term) <|> binderPred)?
+syntax bigOpBinder := term:max((" : "term) <|> binderPred)?
 /-- A BigOperator binder in parentheses -/
-syntax bigOpBinderParenthesized := " (" bigOpBinder ")"
+syntax bigOpBinderParenthesized := " ("bigOpBinder")"
 /-- A list of parenthesized binders -/
 syntax bigOpBinderCollection := bigOpBinderParenthesized+
 /-- A single (unparenthesized) binder, or a list of parenthesized binders -/
@@ -265,7 +265,7 @@ to show the domain type when the product is over `Finset.univ`. -/
   whenPPOption getPPNotation <| withOverApp 5 do
   let #[_, _, _, _, f] := (← getExpr).getAppArgs | failure
   guard f.isLambda
-  let ppDomain ← getPPOption getPPFunBinderTypes
+  let ppDomain ← withAppArg <| getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return (⟨i⟩, ← delab)
   let res ← withNaryArg 3 <| delabFinsetArg i
@@ -296,7 +296,7 @@ to show the domain type when the sum is over `Finset.univ`. -/
   whenPPOption getPPNotation <| withOverApp 5 do
   let #[_, _, _, _, f] := (← getExpr).getAppArgs | failure
   guard f.isLambda
-  let ppDomain ← getPPOption getPPFunBinderTypes
+  let ppDomain ← withAppArg <| getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return ((⟨i⟩ : Ident), ← delab)
   let res ← withNaryArg 3 <| delabFinsetArg i
@@ -393,20 +393,20 @@ theorem prod_map_toList (s : Finset ι) (f : ι → M) : (s.toList.map f).prod =
 @[to_additive (attr := simp, grind =)]
 theorem prod_toList {M : Type*} [CommMonoid M] (s : Finset M) :
     s.toList.prod = ∏ x ∈ s, x := by
-  simpa using s.prod_map_toList id
+  simpa using! s.prod_map_toList id
 
 end ToList
 
 @[to_additive]
 theorem _root_.Equiv.Perm.prod_comp (σ : Equiv.Perm ι) (s : Finset ι) (f : ι → M)
     (hs : { a | σ a ≠ a } ⊆ s) : (∏ x ∈ s, f (σ x)) = ∏ x ∈ s, f x := by
-  convert (prod_map s σ.toEmbedding f).symm
+  convert! (prod_map s σ.toEmbedding f).symm
   exact (map_perm hs).symm
 
 @[to_additive]
 theorem _root_.Equiv.Perm.prod_comp' (σ : Equiv.Perm ι) (s : Finset ι) (f : ι → ι → M)
     (hs : { a | σ a ≠ a } ⊆ s) : (∏ x ∈ s, f (σ x) x) = ∏ x ∈ s, f x (σ.symm x) := by
-  convert σ.prod_comp s (fun x => f x (σ.symm x)) hs
+  convert! σ.prod_comp s (fun x => f x (σ.symm x)) hs
   rw [Equiv.symm_apply_apply]
 
 end CommMonoid
@@ -481,7 +481,7 @@ being allowed to use membership of the domain of the sum. -/]
 lemma prod_nbij (i : ι → κ) (hi : ∀ a ∈ s, i a ∈ t) (i_inj : (s : Set ι).InjOn i)
     (i_surj : (s : Set ι).SurjOn i t) (h : ∀ a ∈ s, f a = g (i a)) :
     ∏ x ∈ s, f x = ∏ x ∈ t, g x :=
-  prod_bij (fun a _ ↦ i a) hi i_inj (by simpa using i_surj) h
+  prod_bij (fun a _ ↦ i a) hi i_inj (by simpa using! i_surj) h
 
 /-- Reorder a product.
 
@@ -622,22 +622,30 @@ theorem prod_dvd_prod_of_subset {ι M : Type*} [CommMonoid M] (s t : Finset ι) 
 
 end CommMonoid
 
-section Opposite
+section MulOpposite
+variable [AddCommMonoid M] (s : Finset ι)
 
 open MulOpposite
 
 /-- Moving to the opposite additive commutative monoid commutes with summing. -/
-@[simp]
-theorem op_sum [AddCommMonoid M] {s : Finset ι} (f : ι → M) :
-    op (∑ x ∈ s, f x) = ∑ x ∈ s, op (f x) :=
-  map_sum (opAddEquiv : M ≃+ Mᵐᵒᵖ) _ _
+@[simp] lemma op_sum (f : ι → M) : op (∑ x ∈ s, f x) = ∑ x ∈ s, op (f x) := map_sum opAddEquiv ..
 
-@[simp]
-theorem unop_sum [AddCommMonoid M] {s : Finset ι} (f : ι → Mᵐᵒᵖ) :
-    unop (∑ x ∈ s, f x) = ∑ x ∈ s, unop (f x) :=
-  map_sum (opAddEquiv : M ≃+ Mᵐᵒᵖ).symm _ _
+@[simp] lemma unop_sum (f : ι → Mᵐᵒᵖ) : unop (∑ x ∈ s, f x) = ∑ x ∈ s, unop (f x) :=
+  map_sum opAddEquiv.symm ..
 
-end Opposite
+end MulOpposite
+
+section AddOpposite
+variable [CommMonoid M] (s : Finset ι)
+
+open AddOpposite
+
+@[simp] lemma op_prod (f : ι → M) : op (∏ i ∈ s, f i) = ∏ i ∈ s, op (f i) := map_prod opMulEquiv ..
+
+@[simp] lemma unop_prod (f : ι → Mᵐᵒᵖ) : unop (∏ i ∈ s, f i) = ∏ i ∈ s, unop (f i) :=
+  map_prod opMulEquiv.symm ..
+
+end AddOpposite
 
 section DivisionCommMonoid
 
@@ -694,7 +702,13 @@ lemma prod_bijective (e : ι → κ) (he : e.Bijective) (f : ι → M) (g : κ �
     (h : ∀ x, f x = g (e x)) : ∏ x, f x = ∏ x, g x :=
   prod_equiv (.ofBijective e he) (by simp) (by simp [h])
 
-@[to_additive] alias _root_.Function.Bijective.finset_prod := prod_bijective
+@[to_additive] alias _root_.Function.Bijective.finsetProd := prod_bijective
+
+@[deprecated (since := "2026-04-08")]
+alias _root_.Function.Bijective.finset_sum := _root_.Function.Bijective.finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias _root_.Function.Bijective.finset_prod := _root_.Function.Bijective.finsetProd
 
 /-- `Fintype.prod_equiv` is a specialization of `Finset.prod_bij` that
 automatically fills in most arguments.
@@ -766,14 +780,18 @@ theorem disjoint_sum_right {a : Multiset α} {i : Multiset (Multiset α)} :
     Disjoint a i.sum ↔ ∀ b ∈ i, Disjoint a b := by
   simpa only [disjoint_comm (a := a)] using disjoint_sum_left
 
-theorem disjoint_finset_sum_left {i : Finset ι} {f : ι → Multiset α} {a : Multiset α} :
+theorem disjoint_finsetSum_left {i : Finset ι} {f : ι → Multiset α} {a : Multiset α} :
     Disjoint (i.sum f) a ↔ ∀ b ∈ i, Disjoint (f b) a := by
-  convert @disjoint_sum_left _ a (map f i.val)
+  convert! @disjoint_sum_left _ a (map f i.val)
   simp
 
-theorem disjoint_finset_sum_right {i : Finset ι} {f : ι → Multiset α}
+@[deprecated (since := "2026-04-08")] alias disjoint_finset_sum_left := disjoint_finsetSum_left
+
+theorem disjoint_finsetSum_right {i : Finset ι} {f : ι → Multiset α}
     {a : Multiset α} : Disjoint a (i.sum f) ↔ ∀ b ∈ i, Disjoint a (f b) := by
-  simpa only [disjoint_comm] using disjoint_finset_sum_left
+  simpa only [disjoint_comm] using disjoint_finsetSum_left
+
+@[deprecated (since := "2026-04-08")] alias disjoint_finset_sum_right := disjoint_finsetSum_right
 
 variable [DecidableEq α]
 
@@ -805,9 +823,11 @@ section Monoid
 
 variable [Monoid M]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofMul_list_prod (s : List M) : ofMul s.prod = (s.map ofMul).sum := by simp [ofMul]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toMul_list_sum (s : List (Additive M)) : s.sum.toMul = (s.map toMul).prod := by
   simp [toMul, ofMul]; rfl
@@ -818,9 +838,11 @@ section AddMonoid
 
 variable [AddMonoid M]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofAdd_list_prod (s : List M) : ofAdd s.sum = (s.map ofAdd).prod := by simp [ofAdd]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toAdd_list_sum (s : List (Multiplicative M)) : s.prod.toAdd = (s.map toAdd).sum := by
   simp [toAdd, ofAdd]; rfl
@@ -831,10 +853,12 @@ section CommMonoid
 
 variable [CommMonoid M]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofMul_multiset_prod (s : Multiset M) : ofMul s.prod = (s.map ofMul).sum := by
   simp [ofMul]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toMul_multiset_sum (s : Multiset (Additive M)) : s.sum.toMul = (s.map toMul).prod := by
   simp [toMul, ofMul]; rfl
@@ -854,10 +878,12 @@ section AddCommMonoid
 
 variable [AddCommMonoid M]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofAdd_multiset_prod (s : Multiset M) : ofAdd s.sum = (s.map ofAdd).prod := by
   simp [ofAdd]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toAdd_multiset_sum (s : Multiset (Multiplicative M)) :
     s.prod.toAdd = (s.map toAdd).sum := by

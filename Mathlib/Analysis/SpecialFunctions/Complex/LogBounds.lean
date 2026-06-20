@@ -10,6 +10,8 @@ public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.Analysis.Calculus.Deriv.Shift
 public import Mathlib.Analysis.SpecificLimits.RCLike
 
+import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+
 /-!
 # Estimates for the complex logarithm
 
@@ -42,9 +44,11 @@ open intervalIntegral in
 /-- Represent `log (1 + z)` as an integral over the unit interval -/
 lemma log_eq_integral {z : ℂ} (hz : 1 + z ∈ slitPlane) :
     log (1 + z) = z * ∫ (t : ℝ) in (0 : ℝ)..1, (1 + t • z)⁻¹ := by
-  convert (integral_unitInterval_deriv_eq_sub (continuousOn_one_add_mul_inv hz)
-    (fun _ ht ↦ hasDerivAt_log <|
-      StarConvex.add_smul_mem starConvex_one_slitPlane hz ht.1 ht.2)).symm using 1
+  convert!
+    (integral_unitInterval_deriv_eq_sub (continuousOn_one_add_mul_inv hz)
+        (fun _ ht ↦
+          hasDerivAt_log <|
+            StarConvex.add_smul_mem starConvex_one_slitPlane hz ht.1 ht.2)).symm using 1
   simp only [log_one, sub_zero]
 
 /-- Represent `log (1 - z)⁻¹` as an integral over the unit interval -/
@@ -52,7 +56,7 @@ lemma log_inv_eq_integral {z : ℂ} (hz : 1 - z ∈ slitPlane) :
     log (1 - z)⁻¹ = z * ∫ (t : ℝ) in (0 : ℝ)..1, (1 - t • z)⁻¹ := by
   rw [sub_eq_add_neg 1 z] at hz ⊢
   rw [log_inv _ <| slitPlane_arg_ne_pi hz, neg_eq_iff_eq_neg, ← neg_mul]
-  convert log_eq_integral hz using 5
+  convert! log_eq_integral hz using 5
   rw [sub_eq_add_neg, smul_neg]
 
 /-!
@@ -71,7 +75,7 @@ lemma logTaylor_zero : logTaylor 0 = fun _ ↦ 0 := by
 lemma logTaylor_succ (n : ℕ) :
     logTaylor (n + 1) = logTaylor n + (fun z : ℂ ↦ (-1) ^ (n + 1) * z ^ n / n) := by
   funext
-  simpa only [logTaylor] using Finset.sum_range_succ ..
+  simpa only [logTaylor] using! Finset.sum_range_succ ..
 
 lemma logTaylor_at_zero (n : ℕ) : logTaylor n 0 = 0 := by
   induction n with
@@ -90,9 +94,9 @@ lemma hasDerivAt_logTaylor (n : ℕ) (z : ℂ) :
     simp only [mul_div_assoc]
     have : HasDerivAt (fun x : ℂ ↦ (x ^ (n + 1) / (n + 1))) (z ^ n) z := by
       simp_rw [div_eq_mul_inv]
-      convert HasDerivAt.mul_const (hasDerivAt_pow (n + 1) z) (((n : ℂ) + 1)⁻¹) using 1
+      convert! HasDerivAt.mul_const (hasDerivAt_pow (n + 1) z) (((n : ℂ) + 1)⁻¹) using 1
       simp [field]
-    convert HasDerivAt.const_mul _ this using 2
+    convert! HasDerivAt.const_mul _ this using 2
     ring
 
 /-!
@@ -101,7 +105,7 @@ lemma hasDerivAt_logTaylor (n : ℕ) (z : ℂ) :
 
 lemma hasDerivAt_log_sub_logTaylor (n : ℕ) {z : ℂ} (hz : 1 + z ∈ slitPlane) :
     HasDerivAt (fun z : ℂ ↦ log (1 + z) - logTaylor (n + 1) z) ((-z) ^ n * (1 + z)⁻¹) z := by
-  convert ((hasDerivAt_log hz).comp_const_add 1 z).sub (hasDerivAt_logTaylor n z) using 1
+  convert! ((hasDerivAt_log hz).comp_const_add 1 z).sub (hasDerivAt_logTaylor n z) using 1
   have hz' : -z ≠ 1 := by
     intro H
     rw [neg_eq_iff_eq_neg] at H
@@ -123,7 +127,7 @@ lemma norm_one_add_mul_inv_le {t : ℝ} (ht : t ∈ Set.Icc 0 1) {z : ℂ} (hz :
       rw [norm_mul, Complex.norm_of_nonneg ht.1]
     _ ≤ ‖1 + t * z‖ := by
       rw [← norm_neg (t * z), ← sub_neg_eq_add]
-      convert norm_sub_norm_le 1 (-(t * z))
+      convert! norm_sub_norm_le 1 (-(t * z))
       exact norm_one.symm
 
 lemma integrable_pow_mul_norm_one_add_mul_inv (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
@@ -151,7 +155,7 @@ lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
     exact (Continuous.continuousOn (by fun_prop)).mul <|
       continuousOn_one_add_mul_inv <| mem_slitPlane_of_norm_lt_one hz
   have H : f z = z * ∫ t in (0 : ℝ)..1, (-(t * z)) ^ n * (1 + t * z)⁻¹ := by
-    convert (integral_unitInterval_deriv_eq_sub hcont hderiv).symm using 1
+    convert! (integral_unitInterval_deriv_eq_sub hcont hderiv).symm using 1
     · simp only [f, zero_add, add_zero, log_one, logTaylor_at_zero, sub_self, sub_zero]
     · simp only [f', real_smul, zero_add,
         smul_eq_mul]
@@ -175,10 +179,11 @@ lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
 /-- The difference `log (1+z) - z` is bounded by `‖z‖^2/(2*(1-‖z‖))` when `‖z‖ < 1`. -/
 lemma norm_log_one_add_sub_self_le {z : ℂ} (hz : ‖z‖ < 1) :
     ‖log (1 + z) - z‖ ≤ ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 := by
-  convert norm_log_sub_logTaylor_le 1 hz using 2
+  convert! norm_log_sub_logTaylor_le 1 hz using 2
   · simp [logTaylor_succ, logTaylor_zero, sub_eq_add_neg]
   · norm_num
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 open scoped Topology in
 lemma log_sub_logTaylor_isBigO (n : ℕ) :
     (fun z ↦ log (1 + z) - logTaylor (n + 1) z) =O[𝓝 0] fun z ↦ z ^ (n + 1) := by
@@ -196,7 +201,7 @@ lemma log_sub_logTaylor_isBigO (n : ℕ) :
 open scoped Topology in
 lemma log_sub_self_isBigO :
     (fun z ↦ log (1 + z) - z) =O[𝓝 0] fun z ↦ z ^ 2 := by
-  convert log_sub_logTaylor_isBigO 1
+  convert! log_sub_logTaylor_isBigO 1
   simp [logTaylor_succ, logTaylor_zero]
 
 lemma norm_log_one_add_le {z : ℂ} (hz : ‖z‖ < 1) :
@@ -205,13 +210,13 @@ lemma norm_log_one_add_le {z : ℂ} (hz : ‖z‖ < 1) :
   exact norm_add_le_of_le (Complex.norm_log_one_add_sub_self_le hz) le_rfl
 
 /-- For `‖z‖ ≤ 1/2`, the complex logarithm is bounded by `(3/2) * ‖z‖`. -/
-lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1 / 2) : ‖log (1 + z)‖ ≤ (3/2) * ‖z‖ := by
+lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1 / 2) : ‖log (1 + z)‖ ≤ (3 / 2) * ‖z‖ := by
   apply le_trans (norm_log_one_add_le (lt_of_le_of_lt hz one_half_lt_one))
   have hz3 : (1 - ‖z‖)⁻¹ ≤ 2 := by
     rw [inv_eq_one_div, div_le_iff₀]
     · linarith
     · linarith
-  have hz4 : ‖z‖^2 * (1 - ‖z‖)⁻¹ / 2 ≤ ‖z‖/2 * 2 / 2 := by
+  have hz4 : ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 ≤ ‖z‖ / 2 * 2 / 2 := by
     gcongr
     · rw [inv_nonneg]
       linarith
@@ -228,12 +233,12 @@ lemma norm_log_one_sub_inv_add_logTaylor_neg_le (n : ℕ) {z : ℂ} (hz : ‖z�
   rw [sub_eq_add_neg,
     log_inv _ <| slitPlane_arg_ne_pi <| mem_slitPlane_of_norm_lt_one <| (norm_neg z).symm ▸ hz,
     ← sub_neg_eq_add, ← neg_sub', norm_neg]
-  convert norm_log_sub_logTaylor_le n <| (norm_neg z).symm ▸ hz using 4 <;> rw [norm_neg]
+  convert! norm_log_sub_logTaylor_le n <| (norm_neg z).symm ▸ hz using 4 <;> rw [norm_neg]
 
 /-- The difference `log (1-z)⁻¹ - z` is bounded by `‖z‖^2/(2*(1-‖z‖))` when `‖z‖ < 1`. -/
 lemma norm_log_one_sub_inv_sub_self_le {z : ℂ} (hz : ‖z‖ < 1) :
     ‖log (1 - z)⁻¹ - z‖ ≤ ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 := by
-  convert norm_log_one_sub_inv_add_logTaylor_neg_le 1 hz using 2
+  convert! norm_log_one_sub_inv_add_logTaylor_neg_le 1 hz using 2
   · simp [logTaylor_succ, logTaylor_zero, sub_eq_add_neg]
   · norm_num
 
@@ -269,7 +274,7 @@ lemma hasSum_taylorSeries_log {z : ℂ} (hz : ‖z‖ < 1) :
             · linarith
       exact (isBigOWith_of_le' atTop this).isBigO
     refine IsBigO.trans_isLittleO H ?_
-    convert isLittleO_pow_pow_of_lt_left (norm_nonneg z) hz
+    convert! isLittleO_pow_pow_of_lt_left (norm_nonneg z) hz
     exact (one_pow _).symm
 
 /-- The series `∑ z^n/n` converges to `-log (1-z)` on the open unit disk. -/
@@ -277,7 +282,7 @@ lemma hasSum_taylorSeries_neg_log {z : ℂ} (hz : ‖z‖ < 1) :
     HasSum (fun n : ℕ ↦ z ^ n / n) (-log (1 - z)) := by
   conv => enter [1, n]; rw [← neg_neg (z ^ n / n)]
   refine HasSum.neg ?_
-  convert hasSum_taylorSeries_log (z := -z) (norm_neg z ▸ hz) using 2 with n
+  convert! hasSum_taylorSeries_log (z := -z) (norm_neg z ▸ hz) using 2 with n
   rcases n.eq_zero_or_pos with rfl | hn
   · simp
   simp [field, pow_add, ← mul_pow]
@@ -358,6 +363,18 @@ lemma tendsto_one_add_div_pow_exp (t : ℂ) :
     Tendsto (fun n : ℕ ↦ (1 + t / n) ^ n) atTop (𝓝 (exp t)) :=
   tendsto_one_add_div_cpow_exp t |>.comp tendsto_natCast_atTop_atTop |>.congr (by simp)
 
+/-- `(1 + t/n + o(1/n)) ^ n → exp t` for `t ∈ ℂ`. -/
+lemma tendsto_pow_exp_of_isLittleO_sub_add_div {f : ℕ → ℂ} (t : ℂ)
+    (hf : (fun n ↦ f n - (1 + t / n)) =o[atTop] fun n ↦ 1 / (n : ℂ)) :
+    Tendsto (fun n ↦ f n ^ n) atTop (𝓝 (exp t)) := by
+  rw [show (fun n ↦ f n ^ n) = (fun n ↦ (1 + (f n - 1)) ^ n) by ext; simp]
+  refine tendsto_one_add_pow_exp_of_tendsto (tendsto_sub_nhds_zero_iff.1 ?_)
+  convert! hf.tendsto_inv_smul_nhds_zero.congr' ?_
+  filter_upwards [eventually_ne_atTop 0] with n h0
+  simp
+  field_simp [n.cast_ne_zero.2 h0]
+  ring
+
 end Complex
 
 namespace Real
@@ -382,9 +399,6 @@ theorem tendsto_mul_log_one_add_div_atTop (t : ℝ) :
       (EventuallyEq.div_mul_cancel_atTop tendsto_id).symm.trans <|
         .of_eq <| funext fun _ => mul_comm _ _
 
-@[deprecated (since := "2025-05-22")]
-alias tendsto_mul_log_one_plus_div_atTop := tendsto_mul_log_one_add_div_atTop
-
 /-- The limit of `(1 + g x) ^ x` as `(x : ℝ) → ∞` is `exp t`,
 where `t : ℝ` is the limit of `x * g x`. -/
 lemma tendsto_one_add_rpow_exp_of_tendsto {g : ℝ → ℝ} {t : ℝ}
@@ -406,9 +420,6 @@ lemma tendsto_one_add_div_rpow_exp (t : ℝ) :
   filter_upwards [eventually_ne_atTop 0] with x hx0
   exact mul_div_cancel₀ t (mod_cast hx0)
 
-@[deprecated (since := "2025-05-22")]
-alias tendsto_one_plus_div_rpow_exp := tendsto_one_add_div_rpow_exp
-
 /-- The limit of `n * log (1 + g n)` as `(n : ℝ) → ∞` is `t`,
 where `t : ℝ` is the limit of `n * g n`. -/
 lemma tendsto_nat_mul_log_one_add_of_tendsto {g : ℕ → ℝ} {t : ℝ}
@@ -429,9 +440,6 @@ lemma tendsto_one_add_pow_exp_of_tendsto {g : ℕ → ℝ} {t : ℝ}
 lemma tendsto_one_add_div_pow_exp (t : ℝ) :
     Tendsto (fun n : ℕ ↦ (1 + t / n) ^ n) atTop (𝓝 (exp t)) :=
   tendsto_one_add_div_rpow_exp t |>.comp tendsto_natCast_atTop_atTop |>.congr (by simp)
-
-@[deprecated (since := "2025-05-22")]
-alias tendsto_one_plus_div_pow_exp := tendsto_one_add_div_pow_exp
 
 end Real
 

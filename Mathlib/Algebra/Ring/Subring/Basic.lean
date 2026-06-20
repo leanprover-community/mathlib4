@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Algebra.Ring.Subring.Defs
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
-public import Mathlib.RingTheory.NonUnitalSubring.Defs
+public import Mathlib.RingTheory.NonUnitalSubring.Basic
 public import Mathlib.Data.Set.Finite.Basic
 
 /-!
@@ -66,9 +66,9 @@ assert_not_exists IsOrderedRing
 
 universe u v w
 
-variable {R : Type u} {S : Type v} {T : Type w} [Ring R]
+variable {R : Type u} {S : Type v} {T : Type w} [NonAssocRing R]
 
-variable [Ring S] [Ring T]
+variable [NonAssocRing S] [NonAssocRing T]
 
 namespace Subring
 variable {s t : Subring R}
@@ -81,12 +81,6 @@ theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : Subring R → Sub
 theorem toSubsemiring_mono : Monotone (toSubsemiring : Subring R → Subsemiring R) :=
   toSubsemiring_strictMono.monotone
 
-@[deprecated toSubsemiring_strictMono (since := "2025-10-20")]
-lemma toSubsemiring_lt_toSubsemiring (hst : s < t) : s.toSubsemiring < t.toSubsemiring := hst
-
-@[deprecated toSubsemiring_mono (since := "2025-10-20")]
-lemma toSubsemiring_le_toSubsemiring (hst : s ≤ t) : s.toSubsemiring ≤ t.toSubsemiring := hst
-
 @[gcongr, mono]
 theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → AddSubgroup R) :=
   fun _ _ => id
@@ -94,12 +88,6 @@ theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → Add
 @[gcongr, mono]
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Subring R → AddSubgroup R) :=
   toAddSubgroup_strictMono.monotone
-
-@[deprecated toAddSubgroup_strictMono (since := "2025-10-20")]
-lemma toAddSubgroup_lt_toAddSubgroup (hst : s < t) : s.toAddSubgroup < t.toAddSubgroup := hst
-
-@[deprecated toAddSubgroup_mono (since := "2025-10-20")]
-lemma toAddSubgroup_le_toAddSubgroup (hst : s ≤ t) : s.toAddSubgroup ≤ t.toAddSubgroup := hst
 
 @[mono]
 theorem toSubmonoid_strictMono : StrictMono (fun s : Subring R => s.toSubmonoid) := fun _ _ => id
@@ -115,8 +103,8 @@ namespace Subring
 variable (s : Subring R)
 
 /-- Product of a list of elements in a subring is in the subring. -/
-protected theorem list_prod_mem {l : List R} : (∀ x ∈ l, x ∈ s) → l.prod ∈ s :=
-  list_prod_mem
+protected theorem list_prod_mem {R} [Ring R] (s : Subring R) {l : List R} :
+    (∀ x ∈ l, x ∈ s) → l.prod ∈ s := list_prod_mem
 
 /-- Sum of a list of elements in a subring is in the subring. -/
 protected theorem list_sum_mem {l : List R} : (∀ x ∈ l, x ∈ s) → l.sum ∈ s :=
@@ -160,22 +148,31 @@ theorem mem_top (x : R) : x ∈ (⊤ : Subring R) :=
 theorem coe_top : ((⊤ : Subring R) : Set R) = Set.univ :=
   rfl
 
+@[simp] lemma toSubsemiring_top : (⊤ : Subring R).toSubsemiring = ⊤ := rfl
+@[simp] lemma toAddSubgroup_top : (⊤ : Subring R).toAddSubgroup = ⊤ := rfl
+
+@[simp] lemma toSubsemiring_eq_top {S : Subring R} : S.toSubsemiring = ⊤ ↔ S = ⊤ := by
+  simp [← SetLike.coe_set_eq]
+
+@[simp] lemma toAddSubgroup_eq_top {S : Subring R} : S.toAddSubgroup = ⊤ ↔ S = ⊤ := by
+  simp [← SetLike.coe_set_eq]
+
 /-- The ring equiv between the top element of `Subring R` and `R`. -/
 @[simps!]
 def topEquiv : (⊤ : Subring R) ≃+* R :=
   Subsemiring.topEquiv
 
-instance {R : Type*} [Ring R] [Fintype R] : Fintype (⊤ : Subring R) :=
-  inferInstanceAs (Fintype (⊤ : Set R))
+instance {R : Type*} [NonAssocRing R] [Fintype R] : Fintype (⊤ : Subring R) :=
+  inferInstanceAs <| Fintype (⊤ : Set R)
 
-theorem card_top (R) [Ring R] [Fintype R] : Fintype.card (⊤ : Subring R) = Fintype.card R :=
+theorem card_top (R) [NonAssocRing R] [Fintype R] : Fintype.card (⊤ : Subring R) = Fintype.card R :=
   Fintype.card_congr topEquiv.toEquiv
 
 /-! ## comap -/
 
 
 /-- The preimage of a subring along a ring homomorphism is a subring. -/
-def comap {R : Type u} {S : Type v} [Ring R] [Ring S] (f : R →+* S) (s : Subring S) : Subring R :=
+def comap (f : R →+* S) (s : Subring S) : Subring R :=
   { s.toSubmonoid.comap (f : R →* S), s.toAddSubgroup.comap (f : R →+ S) with
     carrier := f ⁻¹' s.carrier }
 
@@ -195,7 +192,7 @@ theorem comap_comap (s : Subring T) (g : S →+* T) (f : R →+* S) :
 
 
 /-- The image of a subring along a ring homomorphism is a subring. -/
-def map {R : Type u} {S : Type v} [Ring R] [Ring S] (f : R →+* S) (s : Subring R) : Subring S :=
+def map (f : R →+* S) (s : Subring R) : Subring S :=
   { s.toSubmonoid.map (f : R →* S), s.toAddSubgroup.map (f : R →+ S) with
     carrier := f '' s.carrier }
 
@@ -241,7 +238,7 @@ variable (g : S →+* T) (f : R →+* S)
 
 
 /-- The range of a ring homomorphism, as a subring of the target. See Note [range copy pattern]. -/
-def range {R : Type u} {S : Type v} [Ring R] [Ring S] (f : R →+* S) : Subring S :=
+def range (f : R →+* S) : Subring S :=
   ((⊤ : Subring R).map f).copy (Set.range f) Set.image_univ.symm
 
 @[simp]
@@ -313,6 +310,7 @@ instance : InfSet (Subring R) :=
 theorem coe_sInf (S : Set (Subring R)) : ((sInf S : Subring R) : Set R) = ⋂ s ∈ S, ↑s :=
   rfl
 
+@[simp]
 theorem mem_sInf {S : Set (Subring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Set.mem_iInter₂
 
@@ -320,7 +318,8 @@ theorem mem_sInf {S : Set (Subring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x
 theorem coe_iInf {ι : Sort*} {S : ι → Subring R} : (↑(⨅ i, S i) : Set R) = ⋂ i, S i := by
   simp only [iInf, coe_sInf, Set.biInter_range]
 
-theorem mem_iInf {ι : Sort*} {S : ι → Subring R} {x : R} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+@[simp]
+theorem mem_iInf {ι : Sort*} {S : ι → Subring R} {x : R} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp]
@@ -373,19 +372,20 @@ theorem center_toSubsemiring : (center R).toSubsemiring = Subsemiring.center R :
 
 variable {R}
 
-theorem mem_center_iff {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g :=
+theorem mem_center_iff {R : Type*} [Ring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g :=
   Subsemigroup.mem_center_iff
 
-instance decidableMemCenter [DecidableEq R] [Fintype R] : DecidablePred (· ∈ center R) := fun _ =>
-  decidable_of_iff' _ mem_center_iff
+instance decidableMemCenter {R} [Ring R] [DecidableEq R] [Fintype R] :
+    DecidablePred (· ∈ center R) := fun _ => decidable_of_iff' _ mem_center_iff
 
 @[simp]
 theorem center_eq_top (R) [CommRing R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
 
 /-- The center is commutative. -/
-instance : CommRing (center R) :=
-  { inferInstanceAs (CommSemiring (Subsemiring.center R)), (center R).toRing with }
+instance {R} [Ring R] : CommRing (center R) where
+  __ := (center R).toRing
+  __ : CommSemiring (center R) := inferInstanceAs <| CommSemiring (Subsemiring.center R)
 
 /-- The center of isomorphic (not necessarily associative) rings are isomorphic. -/
 @[simps!] def centerCongr (e : R ≃+* S) : center R ≃+* center S :=
@@ -427,36 +427,40 @@ end DivisionRing
 section Centralizer
 
 /-- The centralizer of a set inside a ring as a `Subring`. -/
-def centralizer (s : Set R) : Subring R :=
+def centralizer {R} [Ring R] (s : Set R) : Subring R :=
   { Subsemiring.centralizer s with neg_mem' := Set.neg_mem_centralizer }
 
 @[simp, norm_cast]
-theorem coe_centralizer (s : Set R) : (centralizer s : Set R) = s.centralizer :=
+theorem coe_centralizer {R} [Ring R] (s : Set R) : (centralizer s : Set R) = s.centralizer :=
   rfl
 
-theorem centralizer_toSubmonoid (s : Set R) :
+theorem centralizer_toSubmonoid {R} [Ring R] (s : Set R) :
     (centralizer s).toSubmonoid = Submonoid.centralizer s :=
   rfl
 
-theorem centralizer_toSubsemiring (s : Set R) :
+theorem centralizer_toSubsemiring {R} [Ring R] (s : Set R) :
     (centralizer s).toSubsemiring = Subsemiring.centralizer s :=
   rfl
 
-theorem mem_centralizer_iff {s : Set R} {z : R} : z ∈ centralizer s ↔ ∀ g ∈ s, g * z = z * g :=
-  Iff.rfl
+theorem centralizer_toNonUnitalSubring {R} [Ring R] (s : Set R) :
+    (centralizer s).toNonUnitalSubring = NonUnitalSubring.centralizer s :=
+  rfl
 
-theorem center_le_centralizer (s) : center R ≤ centralizer s :=
+theorem mem_centralizer_iff {R} [Ring R] {s : Set R} {z : R} :
+    z ∈ centralizer s ↔ ∀ g ∈ s, g * z = z * g := Iff.rfl
+
+theorem center_le_centralizer {R} [Ring R] (s) : center R ≤ centralizer s :=
   s.center_subset_centralizer
 
-theorem centralizer_le (s t : Set R) (h : s ⊆ t) : centralizer t ≤ centralizer s :=
+theorem centralizer_le {R} [Ring R] (s t : Set R) (h : s ⊆ t) : centralizer t ≤ centralizer s :=
   Set.centralizer_subset h
 
 @[simp]
-theorem centralizer_eq_top_iff_subset {s : Set R} : centralizer s = ⊤ ↔ s ⊆ center R :=
+theorem centralizer_eq_top_iff_subset {R} [Ring R] {s : Set R} : centralizer s = ⊤ ↔ s ⊆ center R :=
   SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
 
 @[simp]
-theorem centralizer_univ : centralizer Set.univ = center R :=
+theorem centralizer_univ {R} [Ring R] : centralizer Set.univ = center R :=
   SetLike.ext' (Set.centralizer_univ R)
 
 end Centralizer
@@ -480,8 +484,6 @@ theorem mem_closure_of_mem {s : Set R} {x : R} (hx : x ∈ s) : x ∈ closure s 
 
 theorem notMem_of_notMem_closure {s : Set R} {P : R} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 /-- A subring `t` includes `closure s` if and only if it includes `s`. -/
 @[simp]
@@ -576,25 +578,37 @@ theorem mem_closure_iff {s : Set R} {x} :
       | add _ _ _ _ h₁ h₂ => exact add_mem h₁ h₂
       | neg _ _ h => exact neg_mem h⟩
 
-lemma closure_le_centralizer_centralizer (s : Set R) :
+lemma closure_le_centralizer_centralizer {R} [Ring R] (s : Set R) :
     closure s ≤ centralizer (centralizer s) :=
   closure_le.mpr Set.subset_centralizer_centralizer
 
-/-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring. -/
-abbrev closureCommRingOfComm {s : Set R} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) :
-    CommRing (closure s) :=
-  { (closure s).toRing with
-    mul_comm := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦
-      have := closure_le_centralizer_centralizer s
-      Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
+/-- If all elements of `s : Set R` commute pairwise, then `closure s` is a commutative ring. -/
+theorem isMulCommutative_closure {R} [Ring R] {s : Set R}
+    (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) :
+    IsMulCommutative (closure s) :=
+  have := closure_le_centralizer_centralizer s
+  .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
+    Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
 
-theorem exists_list_of_mem_closure {s : Set R} {x : R} (hx : x ∈ closure s) :
+open scoped IsMulCommutative in
+/-- If all elements of `s : Set R` commute pairwise, then `closure s` is a commutative ring. -/
+@[deprecated isMulCommutative_closure (since := "2026-03-11")]
+abbrev closureCommRingOfComm {R} [Ring R] {s : Set R} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) :
+    CommRing (closure s) :=
+  have := isMulCommutative_closure hcomm
+  inferInstance
+
+instance instIsMulCommutative_closure {S R : Type*} [Ring R] [SetLike S R] [MulMemClass S R] (s : S)
+    [IsMulCommutative s] : IsMulCommutative (closure (s : Set R)) :=
+  isMulCommutative_closure fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
+
+theorem exists_list_of_mem_closure {R} [Ring R] {s : Set R} {x : R} (hx : x ∈ closure s) :
     ∃ L : List (List R), (∀ t ∈ L, ∀ y ∈ t, y ∈ s ∨ y = (-1 : R)) ∧ (L.map List.prod).sum = x := by
   rw [mem_closure_iff] at hx
   induction hx using AddSubgroup.closure_induction with
   | mem _ hx =>
     obtain ⟨l, hl, h⟩ := Submonoid.exists_list_of_mem_closure hx
-    exact ⟨[l], by simp [h]; clear_aux_decl; tauto⟩
+    exact ⟨[l], by simp_all⟩
   | zero => exact ⟨[], List.forall_mem_nil _, rfl⟩
   | add _ _ _ _ hL hM =>
     obtain ⟨⟨L, HL1, HL2⟩, ⟨M, HM1, HM2⟩⟩ := And.intro hL hM
@@ -733,6 +747,9 @@ theorem top_prod (s : Subring S) : (⊤ : Subring R).prod s = s.comap (RingHom.s
 theorem top_prod_top : (⊤ : Subring R).prod (⊤ : Subring S) = ⊤ :=
   (top_prod _).trans <| comap_top _
 
+protected theorem center_prod : center (R × S) = prod (center R) (center S) :=
+  SetLike.coe_injective Set.center_prod
+
 /-- Product of subrings is isomorphic to their product as rings. -/
 def prodEquiv (s : Subring R) (t : Subring S) : s.prod t ≃+* s × t :=
   { Equiv.Set.prod (s : Set R) (t : Set S) with
@@ -763,6 +780,17 @@ theorem mem_sSup_of_directedOn {S : Set (Subring R)} (Sne : S.Nonempty) (hS : Di
 theorem coe_sSup_of_directedOn {S : Set (Subring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set R) = ⋃ s ∈ S, ↑s :=
   Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
+
+theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι] {S : ι → Subring R}
+    [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
+    IsMulCommutative (⨆ i, S i : Subring R) := by
+  simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_directed dir,
+    Subsemigroup.coe_iSup_of_directed dir] using! Subsemigroup.isMulCommutative_iSup dir
+
+instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
+    {S : ι →o Subring R} [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : Subring R) :=
+  Subring.isMulCommutative_iSup S.monotone.directed_le
 
 theorem mem_map_equiv {f : R ≃+* S} {K : Subring R} {x : S} :
     x ∈ K.map (f : R →+* S) ↔ f.symm x ∈ K :=
@@ -808,6 +836,11 @@ theorem range_eq_top {f : R →+* S} :
 theorem range_eq_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
     f.range = (⊤ : Subring S) :=
   range_eq_top.2 hf
+
+@[simp]
+theorem domRestrict_comp_rangeRestrict (g : S →+* T) (f : R →+* S) :
+    (g.domRestrict f.range).comp (f.rangeRestrict) = g.comp f :=
+  rfl
 
 section eqLocus
 
@@ -867,6 +900,10 @@ def inclusion {S T : Subring R} (h : S ≤ T) : S →+* T :=
 theorem coe_inclusion {S T : Subring R} (h : S ≤ T) (x : S) :
     (Subring.inclusion h x : R) = x := by simp [Subring.inclusion]
 
+theorem inclusion_injective {S T : Subring R} (h : S ≤ T) :
+    Function.Injective (Subring.inclusion h) :=
+  RingHom.injective_codRestrict.mpr S.subtype_injective
+
 @[simp]
 theorem range_subtype (s : Subring R) : s.subtype.range = s :=
   SetLike.coe_injective <| (coe_rangeS _).trans Subtype.range_coe
@@ -898,6 +935,14 @@ def subringCongr (h : s = t) : s ≃+* t :=
     map_mul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 
+@[simp]
+theorem subringCongr_symm (h : s = t) :
+    (subringCongr h).symm = subringCongr h.symm := rfl
+
+@[simp]
+theorem coe_subringCongr_apply (h : s = t) (x : s) :
+    (subringCongr h x).val = x.val := rfl
+
 /-- Restrict a ring homomorphism with a left inverse to a ring isomorphism to its
 `RingHom.range`. -/
 def ofLeftInverse {g : S → R} {f : R →+* S} (h : Function.LeftInverse g f) : R ≃+* f.range :=
@@ -925,6 +970,19 @@ theorem ofLeftInverse_symm_apply {g : S → R} {f : R →+* S} (h : Function.Lef
 def subringMap (e : R ≃+* S) : s ≃+* s.map e.toRingHom :=
   e.subsemiringMap s.toSubsemiring
 
+/-- A ring isomorphism `e : R ≃+* S` descends to subrings `s' ≃+* s` provided
+`x ∈ s' ↔ e x ∈ s`. -/
+@[simps!]
+def restrict {R : Type u} {S : Type v} [NonAssocSemiring R] [NonAssocSemiring S]
+    {σR : Type*} {σS : Type*} [SetLike σR R] [SetLike σS S] [SubsemiringClass σR R]
+    [SubsemiringClass σS S] (e : R ≃+* S) (s' : σR) (s : σS) (h : ∀ x, x ∈ s' ↔ e x ∈ s) :
+    s' ≃+* s where
+  __ := RingHom.restrict e _ _ fun _ ↦ (h _).1
+  invFun := RingHom.restrict e.symm _ _ fun y hy ↦ by
+    obtain ⟨x, rfl⟩ := e.surjective y; simp [(h _).2 hy]
+  left_inv y := by simp [← Subtype.val_inj]
+  right_inv x := by simp [← Subtype.val_inj]
+
 end RingEquiv
 
 namespace Subring
@@ -932,7 +990,8 @@ namespace Subring
 variable {s : Set R}
 
 @[elab_as_elim]
-protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s) (h1 : C 1)
+protected theorem InClosure.recOn {R} [Ring R] {s : Set R}
+    {C : R → Prop} {x : R} (hx : x ∈ closure s) (h1 : C 1)
     (hneg1 : C (-1)) (hs : ∀ z ∈ s, ∀ n, C n → C (z * n)) (ha : ∀ {x y}, C x → C y → C (x + y)) :
     C x := by
   have h0 : C 0 := add_neg_cancel (1 : R) ▸ ha h1 hneg1
@@ -1002,63 +1061,66 @@ variable {α β : Type*}
 
 
 /-- The action by a subring is the action by the underlying ring. -/
-instance [SMul R α] (S : Subring R) : SMul S α :=
-  inferInstanceAs (SMul S.toSubsemiring α)
+example [SMul R α] (S : Subring R) : SMul S α := by infer_instance
 
 theorem smul_def [SMul R α] {S : Subring R} (g : S) (m : α) : g • m = (g : R) • m :=
   rfl
 
-instance smulCommClass_left [SMul R β] [SMul α β] [SMulCommClass R α β] (S : Subring R) :
-    SMulCommClass S α β :=
-  inferInstanceAs (SMulCommClass S.toSubsemiring α β)
+example [SMul R β] [SMul α β] [SMulCommClass R α β] (S : Subring R) :
+    SMulCommClass S α β := by infer_instance
 
-instance smulCommClass_right [SMul α β] [SMul R β] [SMulCommClass α R β] (S : Subring R) :
-    SMulCommClass α S β :=
-  inferInstanceAs (SMulCommClass α S.toSubsemiring β)
+example [SMul α β] [SMul R β] [SMulCommClass α R β] (S : Subring R) :
+    SMulCommClass α S β := by infer_instance
 
 /-- Note that this provides `IsScalarTower S R R` which is needed by `smul_mul_assoc`. -/
-instance [SMul α β] [SMul R α] [SMul R β] [IsScalarTower R α β] (S : Subring R) :
-    IsScalarTower S α β :=
-  inferInstanceAs (IsScalarTower S.toSubsemiring α β)
+example [SMul α β] [SMul R α] [SMul R β] [IsScalarTower R α β] (S : Subring R) :
+    IsScalarTower S α β := by infer_instance
 
-instance [SMul R α] [FaithfulSMul R α] (S : Subring R) : FaithfulSMul S α :=
-  inferInstanceAs (FaithfulSMul S.toSubsemiring α)
+example [SMul R α] [FaithfulSMul R α] (S : Subring R) : FaithfulSMul S α := by infer_instance
 
 /-- The action by a subring is the action by the underlying ring. -/
-instance [MulAction R α] (S : Subring R) : MulAction S α :=
-  inferInstanceAs (MulAction S.toSubsemiring α)
+example {R} [Ring R] [MulAction R α] (S : Subring R) : MulAction S α := by infer_instance
 
 /-- The action by a subring is the action by the underlying ring. -/
-instance [AddMonoid α] [DistribMulAction R α] (S : Subring R) : DistribMulAction S α :=
-  inferInstanceAs (DistribMulAction S.toSubsemiring α)
+example {R} [Ring R] [AddMonoid α] [DistribMulAction R α] (S : Subring R) :
+    DistribMulAction S α := by infer_instance
 
 /-- The action by a subring is the action by the underlying ring. -/
-instance [Monoid α] [MulDistribMulAction R α] (S : Subring R) : MulDistribMulAction S α :=
-  inferInstanceAs (MulDistribMulAction S.toSubsemiring α)
+example {R} [Ring R] [Monoid α] [MulDistribMulAction R α] (S : Subring R) :
+    MulDistribMulAction S α := by infer_instance
 
 /-- The action by a subring is the action by the underlying ring. -/
-instance [Zero α] [SMulWithZero R α] (S : Subring R) : SMulWithZero S α :=
-  inferInstanceAs (SMulWithZero S.toSubsemiring α)
+example [Zero α] [SMulWithZero R α] (S : Subring R) : SMulWithZero S α := by infer_instance
 
 /-- The action by a subring is the action by the underlying ring. -/
-instance [Zero α] [MulActionWithZero R α] (S : Subring R) : MulActionWithZero S α :=
-  inferInstanceAs (MulActionWithZero S.toSubsemiring α)
+example {R} [Ring R] [Zero α] [MulActionWithZero R α] (S : Subring R) :
+    MulActionWithZero S α := by infer_instance
 
 /-- The action by a subring is the action by the underlying ring. -/
-instance [AddCommMonoid α] [Module R α] (S : Subring R) : Module S α :=
-  inferInstanceAs (Module S.toSubsemiring α)
+example {R} [Ring R] [AddCommMonoid α] [Module R α] (S : Subring R) :
+    Module S α := by infer_instance
 
 /-- The action by a subsemiring is the action by the underlying ring. -/
-instance [Semiring α] [MulSemiringAction R α] (S : Subring R) : MulSemiringAction S α :=
-  inferInstanceAs (MulSemiringAction S.toSubmonoid α)
+example {R} [Ring R] [Semiring α] [MulSemiringAction R α] (S : Subring R) :
+    MulSemiringAction S α := by infer_instance
 
 /-- The center of a semiring acts commutatively on that semiring. -/
-instance center.smulCommClass_left : SMulCommClass (center R) R R :=
+instance center.smulCommClass_left {R} [Ring R] : SMulCommClass (center R) R R :=
   Subsemiring.center.smulCommClass_left
 
 /-- The center of a semiring acts commutatively on that semiring. -/
-instance center.smulCommClass_right : SMulCommClass R (center R) R :=
+instance center.smulCommClass_right {R} [Ring R] : SMulCommClass R (center R) R :=
   Subsemiring.center.smulCommClass_right
+
+/-- The center of a semiring acts commutatively on any `R`-module -/
+instance {R M : Type*} [Ring R] [MulAction R M] :
+    SMulCommClass R (Subring.center R) M :=
+  inferInstanceAs <| SMulCommClass R (Submonoid.center R) M
+
+/-- The center of a semiring acts commutatively on any `R`-module -/
+instance {R M : Type*} [Ring R] [MulAction R M] :
+    SMulCommClass (Subring.center R) R M :=
+  inferInstanceAs <| SMulCommClass (Submonoid.center R) R M
 
 end Subring
 
@@ -1093,7 +1155,7 @@ theorem comap_map_eq (f : R →+* S) (s : Subring R) :
 
 theorem comap_map_eq_self {f : R →+* S} {s : Subring R}
     (h : f ⁻¹' {0} ⊆ s) : (s.map f).comap f = s := by
-  convert comap_map_eq f s
+  convert! comap_map_eq f s
   rwa [left_eq_sup, closure_le]
 
 theorem comap_map_eq_self_of_injective
@@ -1104,5 +1166,5 @@ end Subring
 
 theorem AddSubgroup.int_mul_mem {G : AddSubgroup R} (k : ℤ) {g : R} (h : g ∈ G) :
     (k : R) * g ∈ G := by
-  convert AddSubgroup.zsmul_mem G h k using 1
+  convert AddSubgroup.zsmul_mem G h k
   rw [zsmul_eq_mul]

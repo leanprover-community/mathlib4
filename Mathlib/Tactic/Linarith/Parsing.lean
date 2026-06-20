@@ -5,7 +5,9 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public meta import Mathlib.Tactic.Linarith.Datatypes
+public meta import Mathlib.Algebra.GroupWithZero.Nat
+public meta import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Tactic.Linarith.Datatypes
 
 /-!
 # Parsing input expressions into linear form
@@ -32,29 +34,6 @@ This is ultimately converted into a `Linexp` in the obvious way.
 public meta section
 
 open Std (TreeMap)
-
-namespace Std.TreeMap
-
--- This will be replaced by a `BEq` instance implemented in the standard library,
--- likely in Q4 2025.
-
-/-- Returns true if the two maps have the same size and the same keys and values
-(with keys compared using the ordering, and values compared using `BEq`). -/
-def beq {α β : Type*} [BEq β] {c : α → α → Ordering} (m₁ m₂ : TreeMap α β c) : Bool :=
-  m₁.size == m₂.size && Id.run do
-    -- This could be made more efficient by simultaneously traversing both maps.
-    for (k, v) in m₁ do
-      if let some v' := m₂[k]? then
-        if v != v' then
-          return false
-      else
-        return false
-    return true
-
-instance {α β : Type*} [BEq β] {c : α → α → Ordering} : BEq (TreeMap α β c) := ⟨beq⟩
-
-end Std.TreeMap
-
 
 section
 open Lean Elab Tactic Meta

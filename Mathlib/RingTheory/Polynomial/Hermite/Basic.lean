@@ -143,7 +143,7 @@ theorem coeff_hermite_explicit :
     ∀ n k : ℕ, coeff (hermite (2 * n + k)) k = (-1) ^ n * (2 * n - 1)‼ * Nat.choose (2 * n + k) k
   | 0, _ => by simp
   | n + 1, 0 => by
-    convert coeff_hermite_succ_zero (2 * n + 1) using 1
+    convert! coeff_hermite_succ_zero (2 * n + 1) using 1
     rw [coeff_hermite_explicit n 1, (by grind : 2 * (n + 1) - 1 = 2 * n + 1),
       Nat.doubleFactorial_add_one, Nat.choose_zero_right,
       Nat.choose_one_right, pow_succ]
@@ -186,7 +186,7 @@ theorem coeff_hermite_of_even_add {n k : ℕ} (hnk : Even (n + k)) :
   rcases le_or_gt k n with h_le | h_lt
   · rw [Nat.even_add, ← Nat.even_sub h_le] at hnk
     obtain ⟨m, hm⟩ := hnk
-    rw [(by cutsat : n = 2 * m + k),
+    rw [(by lia : n = 2 * m + k),
       Nat.add_sub_cancel, Nat.mul_div_cancel_left _ (Nat.succ_pos 1), coeff_hermite_explicit]
   · simp [Nat.choose_eq_zero_of_lt h_lt, coeff_hermite_of_lt h_lt]
 

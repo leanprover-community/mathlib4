@@ -26,10 +26,10 @@ namespace WithLp
 instance measurableSpace : MeasurableSpace (WithLp p X) :=
   MeasurableSpace.comap ofLp inferInstance
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_ofLp : Measurable (@ofLp p X) := comap_measurable _
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_toLp : Measurable (@toLp p X) := fun s hs ↦ by
   obtain ⟨t, ht, rfl⟩ := hs
   simpa [Set.preimage_preimage]

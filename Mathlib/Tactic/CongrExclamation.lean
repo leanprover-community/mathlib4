@@ -5,12 +5,13 @@ Authors: Kyle Miller
 -/
 module
 
-public meta import Lean.Elab.Tactic.Config
+public meta import Lean.Elab.ConfigEval
 public meta import Lean.Elab.Tactic.RCases
 public meta import Lean.Meta.Tactic.Assumption
 public meta import Lean.Meta.Tactic.Rfl
 public meta import Mathlib.Lean.Meta.CongrTheorems
-public meta import Mathlib.Logic.Basic
+public import Mathlib.Logic.Basic
+public import Mathlib.Lean.Meta.CongrTheorems
 
 /-!
 # The `congr!` tactic
@@ -20,7 +21,73 @@ can apply to more situations. It is similar to the `congr'` tactic from Mathlib 
 
 The `congr!` tactic is used by the `convert` and `convert_to` tactics.
 
-See the syntax docstring for more details.
+## Detailed description
+
+`congr!` equates pieces of the left-hand side of a goal to corresponding pieces of the right-hand
+side by recursively applying congruence lemmas. For example, with `⊢ f as = g bs` we could get
+two goals `⊢ f = g` and `⊢ as = bs`.
+
+Syntax:
+```
+congr!
+congr! n
+congr! with x y z
+congr! n with x y z
+```
+Here, `n` is a natural number and `x`, `y`, `z` are `rintro` patterns (like `h`, `rfl`, `⟨x, y⟩`,
+`_`, `-`, `(h | h)`, etc.).
+
+The `congr!` tactic is similar to `congr` but is more insistent in trying to equate left-hand sides
+to right-hand sides of goals. Here is an exhaustive list of things it can try:
+
+- If `R` in `⊢ R x y` is a reflexive relation, it will convert the goal to `⊢ x = y` if possible.
+  The list of reflexive relations is maintained using the `@[refl]` attribute.
+  As a special case, `⊢ p ↔ q` is converted to `⊢ p = q` during congruence processing and then
+  returned to `⊢ p ↔ q` form at the end.
+
+- If there is a user congruence lemma associated to the goal (for instance, a `@[congr]`-tagged
+  lemma applying to `⊢ List.map f xs = List.map g ys`), then it will use that.
+
+- It uses a congruence lemma generator at least as capable as the one used by `congr` and `simp`.
+  If there is a subexpression that can be rewritten by `simp`, then `congr!` should be able
+  to generate an equality for it.
+
+- It can do congruences of pi types using lemmas like `implies_congr` and `pi_congr`.
+
+- Before applying congruences, it will run the `intros` tactic automatically.
+  The introduced variables can be given names using a `with` clause.
+  This helps when congruence lemmas provide additional assumptions in hypotheses.
+
+- When there is an equality between functions, so long as at least one is obviously a lambda, we
+  apply `funext` or `Function.hfunext`, which allows for congruence of lambda bodies.
+
+- It can try to close goals using a few strategies, including checking
+  definitional equality, trying to apply `Subsingleton.elim` or `proof_irrel_heq`, and using the
+  `assumption` tactic. Discharging is done at default transparency (unless specified otherwise),
+  but this will become reducible transparency in the future.
+
+The optional parameter is the depth of the recursive applications.
+This is useful when `congr!` is too aggressive in breaking down the goal.
+For example, given `⊢ f (g (x + y)) = f (g (y + x))`,
+`congr!` produces the goals `⊢ x = y` and `⊢ y = x`,
+while `congr! 2` produces the intended `⊢ x + y = y + x`.
+
+The `congr!` tactic also takes a configuration option, for example
+```lean
+congr! (transparency := .default) 2
+```
+This overrides the default, which is to apply congruence lemmas at reducible transparency.
+
+The `congr!` tactic is aggressive with equating two sides of everything. There is a predefined
+configuration that uses a different strategy:
+```lean
+congr! (config := .unfoldSameFun)
+```
+This only allows congruences between functions applications of definitionally equal functions,
+and it applies congruence lemmas at default transparency (rather than just reducible).
+This is somewhat like `congr`.
+
+See `Congr!.Config` for all options.
 -/
 
 public meta section
@@ -40,7 +107,8 @@ structure Congr!.Config where
   closePre : Bool := true
   /-- If `closePost := true`, then try to close goals that remain after no more congruence
   lemmas can be applied, using the same tactics as `closePre`. These tactics are applied
-  with current tactic transparency level. -/
+  with the transparency level specified by `postTransparency`, which is currently default
+  transparency but in the future will become `.reducible` by default. -/
   closePost : Bool := true
   /-- The transparency level to use when applying a congruence theorem.
   By default this is `.reducible`, which prevents unfolding of most definitions. -/
@@ -49,6 +117,12 @@ structure Congr!.Config where
   This includes trying to prove the goal by `rfl` and using the `assumption` tactic.
   By default this is `.reducible`, which prevents unfolding of most definitions. -/
   preTransparency : TransparencyMode := TransparencyMode.reducible
+  /-- The transparency level to use when trying to close goals after no more congruence lemmas can
+  be applied. This includes trying to prove the goal by `rfl` and using the `assumption` tactic.
+  For backwards compatibility this is set to `.default`, which will be changed in the future to
+  `.reducible`.
+  -/
+  postTransparency : TransparencyMode := TransparencyMode.default
   /-- For passes that synthesize a congruence lemma using one side of the equality,
   we run the pass both for the left-hand side and the right-hand side. If `preferLHS` is `true`
   then we start with the left-hand side.
@@ -119,11 +193,12 @@ structure Congr!.Config where
 /-- A configuration option that makes `congr!` do the sorts of aggressive unfoldings that `congr`
 does while also similarly preventing `congr!` from considering partial applications or congruences
 between different functions being applied. -/
-def Congr!.Config.unfoldSameFun : Congr!.Config where
+@[expose] def Congr!.Config.unfoldSameFun : Congr!.Config where
   partialApp := false
   sameFun := true
   transparency := .default
   preTransparency := .default
+  postTransparency := .default
 
 /-- Whether the given number of arguments is allowed to be considered. -/
 def Congr!.Config.numArgsOk (config : Config) (numArgs : Nat) : Bool :=
@@ -486,12 +561,12 @@ structure CongrState where
   /-- Accumulated goals that `congr!` could not handle. -/
   goals : Array MVarId
   /-- Patterns to use when doing intro. -/
-  patterns : List (TSyntax `rcasesPat)
+  patterns : List (TSyntax `rintroPat)
 
 abbrev CongrMetaM := StateRefT CongrState MetaM
 
 /-- Pop the next pattern from the current state. -/
-def CongrMetaM.nextPattern : CongrMetaM (Option (TSyntax `rcasesPat)) := do
+def CongrMetaM.nextPattern : CongrMetaM (Option (TSyntax `rintroPat)) := do
   modifyGet fun s =>
     if let p :: ps := s.patterns then
       (p, {s with patterns := ps})
@@ -610,7 +685,8 @@ def Lean.MVarId.congrCore! (config : Congr!.Config) (mvarId : MVarId) :
   return none
 
 /-- A pass to clean up after `Lean.MVarId.preCongr!` and `Lean.MVarId.congrCore!`. -/
-def Lean.MVarId.postCongr! (config : Congr!.Config) (mvarId : MVarId) : MetaM (Option MVarId) := do
+def Lean.MVarId.postCongr! (config : Congr!.Config) (mvarId : MVarId) : MetaM (Option MVarId) :=
+  withTransparency config.postTransparency do
   let some mvarId ← mvarId.preCongr! config.closePost | return none
   -- Convert `p = q` to `p ↔ q`, which is likely the more useful form:
   let mvarId ← mvarId.propext
@@ -631,7 +707,7 @@ The `depth?` argument controls the depth of the recursion. If `none`, then it us
 large bound that is linear in the expression depth. -/
 def Lean.MVarId.congrN! (mvarId : MVarId)
     (depth? : Option Nat := none) (config : Congr!.Config := {})
-    (patterns : List (TSyntax `rcasesPat) := []) :
+    (patterns : List (TSyntax `rintroPat) := []) :
     MetaM (List MVarId) := do
   let ty ← withReducible <| mvarId.getType'
   -- A reasonably large yet practically bounded default recursion depth.
@@ -666,71 +742,24 @@ namespace Congr!
 declare_config_elab elabConfig Config
 
 /--
-Equates pieces of the left-hand side of a goal to corresponding pieces of the right-hand side by
-recursively applying congruence lemmas. For example, with `⊢ f as = g bs` we could get
-two goals `⊢ f = g` and `⊢ as = bs`.
+`congr!` tries to prove the main goal by repeatedly applying congruence rules. For example, on a
+goal of the form `⊢ f a1 a2 ... = f b1 b2 ...`, `congr!` will make new goals `⊢ a1 = b1`,
+`⊢ a2 = b2`, ...
 
-Syntax:
-```
-congr!
-congr! n
-congr! with x y z
-congr! n with x y z
-```
-Here, `n` is a natural number and `x`, `y`, `z` are `rintro` patterns (like `h`, `rfl`, `⟨x, y⟩`,
-`_`, `-`, `(h | h)`, etc.).
+`congr!` is a more powerful version of the `congr` tactic that uses congruence lemmas (tagged with
+`@[congr]`), reflexivity rules (tagged with `@[refl]`) and proof discharging strategies. The full
+list of congruence proof strategies is documented in the module `Mathlib.Tactic.CongrExclamation`.
+The `congr!` tactic is used by the `convert` and `convert_to` tactics.
 
-The `congr!` tactic is similar to `congr` but is more insistent in trying to equate left-hand sides
-to right-hand sides of goals. Here is a list of things it can try:
-
-- If `R` in `⊢ R x y` is a reflexive relation, it will convert the goal to `⊢ x = y` if possible.
-  The list of reflexive relations is maintained using the `@[refl]` attribute.
-  As a special case, `⊢ p ↔ q` is converted to `⊢ p = q` during congruence processing and then
-  returned to `⊢ p ↔ q` form at the end.
-
-- If there is a user congruence lemma associated to the goal (for instance, a `@[congr]`-tagged
-  lemma applying to `⊢ List.map f xs = List.map g ys`), then it will use that.
-
-- It uses a congruence lemma generator at least as capable as the one used by `congr` and `simp`.
-  If there is a subexpression that can be rewritten by `simp`, then `congr!` should be able
-  to generate an equality for it.
-
-- It can do congruences of pi types using lemmas like `implies_congr` and `pi_congr`.
-
-- Before applying congruences, it will run the `intros` tactic automatically.
-  The introduced variables can be given names using a `with` clause.
-  This helps when congruence lemmas provide additional assumptions in hypotheses.
-
-- When there is an equality between functions, so long as at least one is obviously a lambda, we
-  apply `funext` or `Function.hfunext`, which allows for congruence of lambda bodies.
-
-- It can try to close goals using a few strategies, including checking
-  definitional equality, trying to apply `Subsingleton.elim` or `proof_irrel_heq`, and using the
-  `assumption` tactic.
-
-The optional parameter is the depth of the recursive applications.
-This is useful when `congr!` is too aggressive in breaking down the goal.
-For example, given `⊢ f (g (x + y)) = f (g (y + x))`,
-`congr!` produces the goals `⊢ x = y` and `⊢ y = x`,
-while `congr! 2` produces the intended `⊢ x + y = y + x`.
-
-The `congr!` tactic also takes a configuration option, for example
-```lean
-congr! (transparency := .default) 2
-```
-This overrides the default, which is to apply congruence lemmas at reducible transparency.
-
-The `congr!` tactic is aggressive with equating two sides of everything. There is a predefined
-configuration that uses a different strategy:
-Try
-```lean
-congr! (config := .unfoldSameFun)
-```
-This only allows congruences between functions applications of definitionally equal functions,
-and it applies congruence lemmas at default transparency (rather than just reducible).
-This is somewhat like `congr`.
-
-See `Congr!.Config` for all options.
+* `congr! n`, where `n` is a positive numeral, controls the depth with which congruence is
+  applied. For example, if the main goal is `n + n + 1 = 2 * n + 1`, then `congr! 1` results in one
+  goal, `⊢ n + n = 2 * n`, and `congr! 2` (or more) results in two (impossible) goals
+  `⊢ HAdd.hAdd = HMul.hMul` and `⊢ n = 2`.
+  By default, the depth is unlimited.
+* `congr! with x ⟨y₁, y₂⟩ (z₁ | z₂)` names or pattern-matches the variables introduced by
+  congruence rules, like `rintro x ⟨y₁, y₂⟩ (z₁ | z₂)` would.
+* `congr! (config := cfg)` uses the configuration options in `cfg` to control the congruence
+  rules (see `Congr!.Config`).
 -/
 syntax (name := congr!) "congr!" Parser.Tactic.optConfig (ppSpace num)?
   (" with" (ppSpace colGt rintroPat)*)? : tactic
@@ -738,7 +767,7 @@ syntax (name := congr!) "congr!" Parser.Tactic.optConfig (ppSpace num)?
 elab_rules : tactic
 | `(tactic| congr! $cfg:optConfig $[$n]? $[with $ps?*]?) => do
   let config ← elabConfig cfg
-  let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
+  let patterns := (ps?.getD #[]).toList
   liftMetaTactic fun g ↦
     let depth := n.map (·.getNat)
     g.congrN! depth config patterns

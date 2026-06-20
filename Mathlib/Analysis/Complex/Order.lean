@@ -13,9 +13,9 @@ public import Mathlib.Analysis.Complex.Norm
 This order is defined by `z ≤ w ↔ z.re ≤ w.re ∧ z.im = w.im`.
 
 This is a natural order on `ℂ` because, as is well-known, there does not exist an order on `ℂ`
-making it into a `LinearOrderedField`. However, the order described above is the canonical order
+making it into a linearly ordered field. However, the order described above is the canonical order
 stemming from the structure of `ℂ` as a ⋆-ring (i.e., it becomes a `StarOrderedRing`). Moreover,
-with this order `ℂ` is a `StrictOrderedCommRing` and the coercion `(↑) : ℝ → ℂ` is an order
+with this order `ℂ` satisfies `IsStrictOrderedRing` and the coercion `(↑) : ℝ → ℂ` is an order
 embedding.
 
 This file only provides `Complex.partialOrder` and lemmas about it. Further structural classes are
@@ -35,6 +35,7 @@ namespace Complex
 /-- We put a partial order on ℂ so that `z ≤ w` exactly if `w - z` is real and nonnegative.
 Complex numbers with different imaginary parts are incomparable.
 -/
+@[instance_reducible]
 protected def partialOrder : PartialOrder ℂ where
   le z w := z.re ≤ w.re ∧ z.im = w.im
   lt z w := z.re < w.re ∧ z.im = w.im
@@ -134,26 +135,19 @@ namespace Mathlib.Meta.Positivity
 open Lean Meta Qq Complex
 open scoped ComplexOrder
 
-private alias ⟨_, ofReal_pos⟩ := zero_lt_real
-private alias ⟨_, ofReal_nonneg⟩ := zero_le_real
-private alias ⟨_, ofReal_ne_zero_of_ne_zero⟩ := ofReal_ne_zero
+alias ⟨_, ofReal_pos⟩ := zero_lt_real
+alias ⟨_, ofReal_nonneg⟩ := zero_le_real
+alias ⟨_, ofReal_ne_zero_of_ne_zero⟩ := ofReal_ne_zero
 
 /-- Extension for the `positivity` tactic: `Complex.ofReal` is positive/nonnegative/nonzero if its
 input is. -/
 @[positivity Complex.ofReal _, Complex.ofReal _]
-meta def evalComplexOfReal : PositivityExt where eval {u α} _ _ e := do
-  -- TODO: Can we avoid duplicating the code?
+meta def evalComplexOfReal : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℂ), ~q(Complex.ofReal $a) =>
     assumeInstancesCommute
-    match ← core q(inferInstance) q(inferInstance) a with
-    | .positive pa => return .positive q(ofReal_pos $pa)
-    | .nonnegative pa => return .nonnegative q(ofReal_nonneg $pa)
-    | .nonzero pa => return .nonzero q(ofReal_ne_zero_of_ne_zero $pa)
-    | _ => return .none
-  | 0, ~q(ℂ), ~q(Complex.ofReal $a) =>
-    assumeInstancesCommute
-    match ← core q(inferInstance) q(inferInstance) a with
+    match ← core q(inferInstance) (some q(inferInstance)) a with
     | .positive pa => return .positive q(ofReal_pos $pa)
     | .nonnegative pa => return .nonnegative q(ofReal_nonneg $pa)
     | .nonzero pa => return .nonzero q(ofReal_ne_zero_of_ne_zero $pa)

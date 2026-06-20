@@ -8,6 +8,7 @@ import Lake.CLI.Main
 import Lean.Elab.ParseImportsFast
 import Batteries.Data.String.Basic
 import Mathlib.Tactic.Linter.TextBased
+import ImportGraph.Imports.FromSource
 import Cli.Basic
 
 /-!
@@ -53,7 +54,7 @@ instance : ToExpr LinterSets := inferInstanceAs <| ToExpr (NameMap _)
 
 /-- Return the linter sets defined at this point of elaborating the current file. -/
 elab "linter_sets%" : term => do
-  return toExpr <| linterSetsExt.getState (← getEnv)
+  return toExpr <| (linterSetsExt.getState (← getEnv)).merged
 
 end LinterSetsElab
 
@@ -104,44 +105,56 @@ def missingInitImports (opts : LinterOptions) : IO Nat := do
 
   -- Find any file in the Mathlib directory which does not contain any Mathlib import.
   -- We simply parse `Mathlib.lean`, as CI ensures this file is up to date.
-  let allModuleNames := eraseExplicitImports (← findImports "Mathlib.lean")
+  let allModuleNames := eraseExplicitImports (← findImportsFromSource "Mathlib.lean")
   let mut modulesWithoutMathlibImports := #[]
   let mut importsHeaderLinter := #[]
   for module in allModuleNames do
     let path := System.mkFilePath (module.components.map fun n ↦ n.toString)|>.addExtension "lean"
-    let imports ← findImports path
+    let imports ← findImportsFromSource path
     let hasNoMathlibImport := imports.all fun name ↦ name.getRoot != `Mathlib
     if hasNoMathlibImport then
       modulesWithoutMathlibImports := modulesWithoutMathlibImports.push module
     if imports.contains `Mathlib.Tactic.Linter.Header then
       importsHeaderLinter := importsHeaderLinter.push module
 
-  -- Every file importing the `header` linter should be imported in `Mathlib/Init.lean` itself.
+  -- Every file importing the `header` linter should be (transitively) imported by `Mathlib.Init`.
   -- (Downstream files should import `Mathlib.Init` and not the header linter.)
-  -- The only exception are auto-generated import-only files.
-  let initImports ← findImports ("Mathlib" / "Init.lean")
+  -- The only exceptions are auto-generated import-only files.
+  let initTransitiveImports ← findTransitiveImportsFromSource ("Mathlib" / "Init.lean") (some `Mathlib)
   let mismatch := importsHeaderLinter.filter (fun mod ↦
-    ![`Mathlib, `Mathlib.Tactic, `Mathlib.Init].contains mod && !initImports.contains mod)
-    -- These files are transitively imported by `Mathlib.Init`.
-    |>.erase `Mathlib.Tactic.DeclarationNames
-    |>.erase `Mathlib.Lean.Elab.Tactic.Meta
-    |>.erase `Mathlib.Lean.ContextInfo
-    |>.erase `Mathlib.Tactic.Linter.DirectoryDependency
+    ![`Mathlib, `Mathlib.Tactic, `Mathlib.Init].contains mod && !initTransitiveImports.contains mod)
   if mismatch.size > 0 then
     IO.eprintln s!"error: the following {mismatch.size} module(s) import the `header` linter \
-      directly, but should import Mathlib.Init instead: {mismatch}\n\
-      The `header` linter is included in Mathlib.Init, and every file in Mathlib \
-      should import Mathlib.Init.\nPlease adjust the imports accordingly."
+      directly, but should import Mathlib.Init instead: {mismatch}\n"
+    for mod in mismatch do
+      IO.eprintln s!"  • `{mod}` is NOT imported by `Mathlib.Init`.\n    \
+        Please replace `import Mathlib.Tactic.Linter.Header` with `import Mathlib.Init`."
     return mismatch.size
 
   -- Now, it only remains to check that every module (except for the Header linter itself)
   -- imports some file in Mathlib.
-  let missing := modulesWithoutMathlibImports.erase `Mathlib.Tactic.Linter.Header
+  -- Deprecated module files are exempt: they are just import-redirect stubs and may have
+  -- no Mathlib imports (the `deprecated_module` command is a core builtin).
+  let mut nonDeprecated := #[]
+  for module in modulesWithoutMathlibImports do
+    let path := System.mkFilePath (module.components.map fun n ↦ n.toString)|>.addExtension "lean"
+    let content ← IO.FS.readFile path
+    unless content.splitOn "\n" |>.any (·.trimAsciiStart.startsWith "deprecated_module") do
+      nonDeprecated := nonDeprecated.push module
+  let missing := nonDeprecated.erase `Mathlib.Tactic.Linter.Header
     -- This file is imported by `Mathlib/Tactic/Linter/Header.lean`.
     |>.erase `Mathlib.Tactic.Linter.DirectoryDependency
   if missing.size > 0 then
     IO.eprintln s!"error: the following {missing.size} module(s) do not import Mathlib.Init: \
-      {missing}"
+      {missing}\n"
+    for mod in missing do
+      if initTransitiveImports.contains mod then
+        -- Transitively imported by Init: just needs to import the Header linter
+        IO.eprintln s!"  • `{mod}` is transitively imported by `Mathlib.Init`.\n    \
+          Please add `import Mathlib.Tactic.Linter.Header` to `{mod}`."
+      else
+        IO.eprintln s!"  • `{mod}` is NOT imported by `Mathlib.Init`.\n    \
+          Please add `import Mathlib.Init` to `{mod}`."
     return missing.size
   return 0
 
@@ -164,7 +177,7 @@ def undocumentedScripts (opts : LinterOptions) : IO Nat := do
   -- These are data files for linter exceptions: don't complain about these *for now*.
   let dataFiles := #["noshake.json", "nolints-style.txt"]
   let undocumented := allScripts.filter fun script ↦
-    !readme.containsSubstr s!"`{script}`" && !dataFiles.contains script
+    !readme.contains s!"`{script}`" && !dataFiles.contains script
   if undocumented.size > 0 then
     IO.println s!"error: found {undocumented.size} undocumented script(s): \
       please describe the script(s) in 'scripts/README.md'\n  \
@@ -236,7 +249,7 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   let searchPath ← Lean.getSrcSearchPath
   let allModuleNames ← originModules.flatMapM fun mod => do
     let imports ← match ← searchPath.findWithExt "lean" mod with
-    | some file => findImports file
+    | some file => findImportsFromSource file
     | none => throw <| IO.userError s!"could not find module with name {mod}"
     pure <| imports.filter (·.components.head! ∈ pkgs)
 

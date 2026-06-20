@@ -22,10 +22,31 @@ namespace CategoryTheory
 
 open Limits Opposite
 
+namespace Functor.FullyFaithful
+
+variable {C : Type u} [Category.{v} C] [LocallySmall.{w} C]
+  {D : Type u'} [Category.{v'} D] [LocallySmall.{w} D]
+  {F : C ⥤ D} (hF : F.FullyFaithful)
+
+set_option backward.defeqAttrib.useBackward true in
+noncomputable def shrinkYonedaIso (X : C) :
+    shrinkYoneda.{w}.obj X ≅ F.op ⋙ shrinkYoneda.{w}.obj (F.obj X) :=
+  NatIso.ofComponents
+    (fun Y ↦ ((equivShrink _).symm.trans
+      (Equiv.trans hF.homEquiv (equivShrink _))).toIso)
+    (fun f ↦ by ext; simp [shrinkYoneda])
+
+@[simp]
+lemma shrinkYonedaIso_hom (X : C) :
+    (hF.shrinkYonedaIso X).hom = shrinkYonedaMap F X := rfl
+
+end Functor.FullyFaithful
+
 namespace Functor
 
 variable {C₁ C₂ C₃ C₄ : Type*} [Category C₁] [Category C₂] [Category C₃] [Category C₄]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 def whiskeringLeftObjCompWhiskeringRightObj (F : C₁ ⥤ C₂) (G : C₃ ⥤ C₄) :
     (whiskeringLeft C₁ C₂ C₃).obj F ⋙ (whiskeringRight C₁ C₃ C₄).obj G ≅
@@ -40,6 +61,7 @@ namespace Presheaf
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
   [LocallySmall.{w} D] (F : C ⥤ D)
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def shrinkYonedaCompWhiskeringRightUliftFunctorIso :
     shrinkYoneda.{w} (C := D) ⋙
       (Functor.whiskeringRight _ _ _).obj (uliftFunctor.{v', w}) ≅
@@ -85,6 +107,7 @@ variable (C : Type u) [Category.{v} C] (κ : Cardinal.{w}) [Fact κ.IsRegular]
   [IsCardinalLocallyPresentable C κ]
 
 open Functor in
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def toCardinalContinuous :
     C ⥤ (Functor.isCardinalContinuous
       (isCardinalPresentable C κ).FullSubcategoryᵒᵖ (Type w) κ).FullSubcategory :=
@@ -118,6 +141,8 @@ instance (X : C) [IsCardinalPresentable X κ] :
       (shrinkYonedaFlipObjCompUliftFunctorIso.{w} X).symm
     exact preservesColimitsOfShape_of_reflects_of_preserves _ uliftFunctor.{v}
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 instance : (toCardinalContinuous C κ).EssSurj where
   mem_essImage := by
     let P := (isCardinalPresentable C κ).FullSubcategory
@@ -127,7 +152,7 @@ instance : (toCardinalContinuous C κ).EssSurj where
       Presheaf.exists_presentation_of_isCardinalContinuous.{w} (fun J _ hJ ↦ by
         have := isClosedUnderColimitsOfShape_isCardinalPresentable C hJ
         infer_instance) F.2
-    let G₁ := (G ⋙ CostructuredArrow.proj _ _ ⋙ ObjectProperty.ι _)
+    let G₁ := G ⋙ CostructuredArrow.proj _ _ ⋙ ObjectProperty.ι _
     let G₂ := G ⋙ CostructuredArrow.proj _ _ ⋙ shrinkYoneda.{w}
     refine ⟨colimit G₁,
       ⟨(ObjectProperty.fullyFaithfulι _).preimageIso ?_⟩⟩
@@ -140,7 +165,8 @@ instance : (toCardinalContinuous C κ).EssSurj where
         ι.naturality j j' f := by
           ext
           dsimp [shrinkYoneda]
-          simp only [Equiv.symm_apply_apply, EmbeddingLike.apply_eq_iff_eq]
+          erw [Equiv.symm_apply_apply, Equiv.symm_apply_apply]
+          rw [EmbeddingLike.apply_eq_iff_eq]
           rw [← colimit.w G₁ f, ← Category.assoc]
           congr 1
           simp [G₁, G₂, shrinkYoneda]
@@ -148,15 +174,18 @@ instance : (toCardinalContinuous C κ).EssSurj where
     have h' : IsColimit c' := evaluationJointlyReflectsColimits _ (fun ⟨X⟩ ↦ by
       have := Functor.preservesColimitsOfShape_of_isCardinalAccessible
         (shrinkYoneda.{w}.flip.obj (op X.1)) κ J
-      refine IsColimit.ofIsoColimit (isColimitOfPreserves
-        (shrinkYoneda.{w}.flip.obj (op X.1)) (colimit.isColimit G₁))
-        (Cocones.ext (Iso.refl _) (fun j ↦ ?_))
-      ext f
-      obtain ⟨f, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective f
-      simp [c']
-      apply congr_arg
-      erw [Equiv.symm_apply_apply]
-      rfl)
+      refine (IsColimit.equivOfNatIsoOfIso
+        (NatIso.ofComponents
+          (fun j ↦ ((isCardinalPresentable C κ).fullyFaithfulι.shrinkYonedaIso
+            (G.obj j).left).app _) (fun _ ↦ ?_)) _ _ ?_).2
+        (isColimitOfPreserves
+          (shrinkYoneda.{w}.flip.obj (op X.1)) (colimit.isColimit G₁))
+      · ext
+        simp [shrinkYoneda, shrinkYonedaMap, G₁, G₂]
+        rfl
+      · refine (Cocone.ext (Iso.refl _) (fun j ↦ ?_))
+        simp [c', dsimp% ((isCardinalPresentable C κ).fullyFaithfulι.shrinkYonedaIso
+          (G.obj j).left).inv_hom_id_app_assoc (op X)])
     exact IsColimit.coconePointUniqueUpToIso h' h
 
 instance : (toCardinalContinuous C κ).IsEquivalence where

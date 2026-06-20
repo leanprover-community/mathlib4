@@ -18,7 +18,7 @@ In star-ordered rings, star projections are non-negative.
 (See `IsStarProjection.nonneg` in `Mathlib/Algebra/Order/Star/Basic.lean`.)
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*}
 
@@ -27,6 +27,9 @@ variable {R : Type*}
 structure IsStarProjection [Mul R] [Star R] (p : R) : Prop where
   protected isIdempotentElem : IsIdempotentElem p
   protected isSelfAdjoint : IsSelfAdjoint p
+
+attribute [grind →, aesop safe forward]
+  IsStarProjection.isIdempotentElem IsStarProjection.isSelfAdjoint
 
 namespace IsStarProjection
 
@@ -39,6 +42,12 @@ lemma _root_.isStarProjection_iff' [Mul R] [Star R] :
 theorem isStarNormal [Mul R] [Star R]
     (hp : IsStarProjection p) : IsStarNormal p :=
   hp.isSelfAdjoint.isStarNormal
+
+protected theorem map {A B : Type*} [Mul A] [Star A] [Mul B] [Star B]
+    {F : Type*} [FunLike F A B] [StarHomClass F A B] [MulHomClass F A B]
+    {x : A} (hx : IsStarProjection x) (f : F) : IsStarProjection (f x) where
+  isIdempotentElem := hx.isIdempotentElem.map f
+  isSelfAdjoint := hx.isSelfAdjoint.map f
 
 variable (R) in
 @[simp]

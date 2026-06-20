@@ -30,7 +30,7 @@ namespace SuccStruct
 
 open Category Limits
 
-variable {C : Type*} [Category C] (Φ : SuccStruct C)
+variable {C : Type*} [Category* C] (Φ : SuccStruct C)
   {J : Type u} [LinearOrder J] [OrderBot J] [SuccOrder J] [WellFoundedLT J]
   [HasIterationOfShape J C]
 
@@ -42,10 +42,12 @@ def mkOfBot : Φ.Iteration (⊥ : J) where
   F := (Functor.const _).obj Φ.X₀
   obj_bot := rfl
   arrowSucc_eq _ h := by simp at h
-  arrowMap_limit  _ h₁ h₂ := (h₁.not_isMin (by simpa using h₂)).elim
+  arrowMap_limit _ h₁ h₂ := (h₁.not_isMin (by simpa using h₂)).elim
 
 variable {Φ}
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 open Functor in
 /-- When `j : J` is not maximal, this is the extension in `Φ.Iteration (Order.succ j)`
 of any `iter : Φ.Iteration j`. -/
@@ -112,6 +114,7 @@ lemma arrowMap_functor_to_top (i : J) (hi : i < j) :
 
 end mkOfLimit
 
+set_option backward.defeqAttrib.useBackward true in
 open mkOfLimit in
 /-- When `j` is a limit element, this is the element in `Φ.Iteration j`
 that is constructed from elements in `Φ.Iteration i` for all `i < j`. -/

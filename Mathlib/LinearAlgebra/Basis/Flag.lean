@@ -46,7 +46,7 @@ theorem flag_le_iff (b : Basis (Fin n) R M) {k p} :
   span_le.trans forall_mem_image
 
 theorem flag_succ (b : Basis (Fin n) R M) (k : Fin n) :
-    b.flag k.succ = (R ∙ b k) ⊔ b.flag k.castSucc := by
+    b.flag k.succ = R ∙ b k ⊔ b.flag k.castSucc := by
   simp only [flag, Fin.castSucc_lt_castSucc_iff]
   simp [Fin.castSucc_lt_iff_succ_le, le_iff_eq_or_lt, setOf_or, image_insert_eq, span_insert]
 
@@ -69,12 +69,6 @@ theorem isChain_range_flag (b : Basis (Fin n) R M) : IsChain (· ≤ ·) (range 
 @[gcongr, mono]
 theorem flag_strictMono [Nontrivial R] (b : Basis (Fin n) R M) : StrictMono b.flag :=
   Fin.strictMono_iff_lt_succ.2 fun _ ↦ by simp [flag_succ]
-
-@[deprecated flag_mono (since := "2025-10-20")]
-lemma flag_le_flag (hij : i ≤ j) : b.flag i ≤ b.flag j := flag_mono _ hij
-
-@[deprecated flag_strictMono (since := "2025-10-20")]
-lemma flag_lt_flag [Nontrivial R] (hij : i < j) : b.flag i < b.flag j := flag_strictMono _ hij
 
 end Semiring
 

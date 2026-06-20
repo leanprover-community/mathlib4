@@ -14,36 +14,46 @@ public import Mathlib.RingTheory.Norm.Basic
 /-!
 # Kummer Extensions
 
+Let `K` be a field, `n` be an integer such that `K` contains a primitive `n`-th root of unity.
+Kummer theory is about the classification of finite extensions of `L` whose Galois group is cyclic
+of order `n`.
+
 ## Main result
 - `isCyclic_tfae`:
-Suppose `L/K` is a finite extension of dimension `n`, and `K` contains all `n`-th roots of unity.
-Then `L/K` is cyclic iff
-`L` is a splitting field of some irreducible polynomial of the form `Xⁿ - a : K[X]` iff
-`L = K[α]` for some `αⁿ ∈ K`.
+  Suppose `L/K` is a finite extension of dimension `n`
+  Then `L/K` is cyclic iff
+  `L` is a splitting field of some irreducible polynomial of the form `Xⁿ - a : K[X]` iff
+  `L = K[α]` for some `αⁿ ∈ K`.
 
 - `autEquivRootsOfUnity`:
-Given an instance `IsSplittingField K L (X ^ n - C a)`
-(perhaps via `isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top`),
-then the Galois group is isomorphic to `rootsOfUnity n K`, by sending
-`σ ↦ σ α / α` for `α ^ n = a`, and the inverse is given by `μ ↦ (α ↦ μ • α)`.
+  Given an instance `IsSplittingField K L (X ^ n - C a)`
+  (perhaps via `isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top`),
+  then the Galois group is isomorphic to `rootsOfUnity n K`, by sending
+  `σ ↦ σ α / α` for `α ^ n = a`, and the inverse is given by `μ ↦ (α ↦ μ • α)`.
 
 - `autEquivZmod`:
-Furthermore, given an explicit choice `ζ` of a primitive `n`-th root of unity, the Galois group is
-then isomorphic to `Multiplicative (ZMod n)` whose inverse is given by
-`i ↦ (α ↦ ζⁱ • α)`.
+  Furthermore, given an explicit choice `ζ` of a primitive `n`-th root of unity, the Galois group is
+  then isomorphic to `Multiplicative (ZMod n)` whose inverse is given by
+  `i ↦ (α ↦ ζⁱ • α)`.
 
 ## Other results
 Criteria for `X ^ n - C a` to be irreducible is given:
 - `X_pow_sub_C_irreducible_iff_of_prime_pow`:
-  For `n = p ^ k` an odd prime power, `X ^ n - C a` is irreducible iff `a` is not a `p`-power.
+  For `n = p ^ k` an odd prime power, `X ^ n - C a` is irreducible iff `a` is not a `p`-th power.
 - `X_pow_sub_C_irreducible_iff_forall_prime_of_odd`:
-  For `n` odd, `X ^ n - C a` is irreducible iff `a` is not a `p`-power for all prime `p ∣ n`.
+  For `n` odd, `X ^ n - C a` is irreducible iff `a` is not a `p`-th power for all prime `p ∣ n`.
 - `X_pow_sub_C_irreducible_iff_of_odd`:
-  For `n` odd, `X ^ n - C a` is irreducible iff `a` is not a `d`-power for `d ∣ n` and `d ≠ 1`.
+  For `n` odd, `X ^ n - C a` is irreducible iff `a` is not a `d`-th power for `d ∣ n` and `d ≠ 1`.
 
 TODO: criteria for even `n`. See [serge_lang_algebra] VI,§9.
 
 TODO: relate Kummer extensions of degree 2 with the class `Algebra.IsQuadraticExtension`.
+
+TODO: treat the case where the characteristic `p` of the field divides `n`, so that `K` never
+contains a primitive `n`-th root of unity.
+For the Galois group part, this is Artin-Schreier theory;
+it also holds that `X ^ p - C a` is irreducible iff `a` is not a `p`-th power in `K`.
+
 -/
 
 @[expose] public section
@@ -60,7 +70,7 @@ theorem X_pow_sub_C_splits_of_isPrimitiveRoot
     (X ^ n - C a).Splits := by
   cases n.eq_zero_or_pos with
   | inl hn =>
-    simp only [hn, pow_zero, ← C.map_one, ← map_sub, splits_C]
+    simp only [hn, pow_zero, ← C.map_one, ← map_sub, Splits.C]
   | inr hn =>
     rw [splits_iff_card_roots, ← nthRoots, hζ.card_nthRoots, natDegree_X_pow_sub_C, if_pos ⟨α, e⟩]
 
@@ -69,8 +79,8 @@ private
 theorem X_pow_sub_C_eq_prod'
     {n : ℕ} {ζ : K} (hζ : IsPrimitiveRoot ζ n) {α a : K} (hn : 0 < n) (e : α ^ n = a) :
     (X ^ n - C a) = ∏ i ∈ Finset.range n, (X - C (ζ ^ i * α)) := by
-  rw [eq_prod_roots_of_monic_of_splits_id (monic_X_pow_sub_C _ (Nat.pos_iff_ne_zero.mp hn))
-    (X_pow_sub_C_splits_of_isPrimitiveRoot hζ e), ← nthRoots, hζ.nthRoots_eq e, Multiset.map_map]
+  rw [(X_pow_sub_C_splits_of_isPrimitiveRoot hζ e).eq_prod_roots_of_monic
+    (monic_X_pow_sub_C _ hn.ne'), ← nthRoots, hζ.nthRoots_eq e, Multiset.map_map]
   rfl
 
 lemma X_pow_sub_C_eq_prod {R : Type*} [CommRing R] [IsDomain R]
@@ -262,7 +272,7 @@ def autAdjoinRootXPowSubCEquiv [NeZero n] :
     apply AlgEquiv.coe_algHom_injective
     apply AdjoinRoot.algHom_ext
     simp only [AdjoinRootXPowSubCEquivToRootsOfUnity, AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe,
-      MonoidHom.toOneHom_coe, AlgHom.coe_coe, autAdjoinRootXPowSubC_root, Algebra.smul_def]
+      MonoidHom.toOneHom_coe, AlgEquiv.coe_algHom, autAdjoinRootXPowSubC_root, Algebra.smul_def]
     rw [rootsOfUnityEquivOfPrimitiveRoots_symm_apply, rootsOfUnity.val_mkOfPowEq_coe]
     split_ifs with h
     · obtain rfl := not_imp_not.mp (fun hn ↦ ne_zero_of_irreducible_X_pow_sub_C' hn H) h
@@ -327,7 +337,7 @@ def adjoinRootXPowSubCEquiv (hζ : (primitiveRoots n K).Nonempty) (H : Irreducib
     letI := isSplittingField_AdjoinRoot_X_pow_sub_C hζ H
     refine ⟨(liftAlgHom (X ^ n - C a) _ α _).injective, ?_⟩
     rw [← AlgHom.range_eq_top, ← IsSplittingField.adjoin_rootSet _ (X ^ n - C a),
-      eq_comm, adjoin_rootSet_eq_range, IsSplittingField.adjoin_rootSet]
+      eq_comm, Splits.adjoin_rootSet_eq_range, IsSplittingField.adjoin_rootSet]
     exact IsSplittingField.splits _ _
 
 lemma adjoinRootXPowSubCEquiv_root :
@@ -346,7 +356,8 @@ lemma Algebra.adjoin_root_eq_top_of_isSplittingField :
     (adjoinRootXPowSubCEquiv hζ H hα).symm.injective
   rw [Algebra.map_top, (AlgHom.range_eq_top _).mpr
     (adjoinRootXPowSubCEquiv hζ H hα).symm.surjective, AlgHom.map_adjoin,
-    Set.image_singleton, AlgHom.coe_coe, adjoinRootXPowSubCEquiv_symm_eq_root, adjoinRoot_eq_top]
+    Set.image_singleton, AlgEquiv.coe_algHom, adjoinRootXPowSubCEquiv_symm_eq_root,
+      adjoinRoot_eq_top]
 
 include hζ H hα in
 lemma IntermediateField.adjoin_root_eq_top_of_isSplittingField :
@@ -360,14 +371,14 @@ variable (a) (L)
 noncomputable
 abbrev rootOfSplitsXPowSubC (hn : 0 < n) (a : K)
     (L) [Field L] [Algebra K L] [IsSplittingField K L (X ^ n - C a)] : L :=
-  (rootOfSplits _ (IsSplittingField.splits L (X ^ n - C a))
+  (rootOfSplits (IsSplittingField.splits L (X ^ n - C a))
       (by simpa [degree_X_pow_sub_C hn] using Nat.pos_iff_ne_zero.mp hn))
 
 lemma rootOfSplitsXPowSubC_pow [NeZero n] :
     (rootOfSplitsXPowSubC (NeZero.pos n) a L) ^ n = algebraMap K L a := by
-  have := map_rootOfSplits _ (IsSplittingField.splits L (X ^ n - C a))
-  simp only [eval₂_sub, eval₂_X_pow, eval₂_C, sub_eq_zero] at this
-  exact this _
+  have := eval_rootOfSplits (IsSplittingField.splits L (X ^ n - C a))
+    (by simp [degree_X_pow_sub_C (NeZero.pos n), NeZero.ne n])
+  simpa only [eval_map, eval₂_sub, eval₂_X_pow, eval₂_C, sub_eq_zero] using this
 
 variable {a}
 
@@ -405,7 +416,7 @@ lemma autEquivRootsOfUnity_smul [NeZero n] (σ : Gal(L/K)) :
     autEquivRootsOfUnity_apply_rootOfSplit hζ H L]
   exact smul_comm _ _ _
 
-/-- Suppose `L/K` is the splitting field of `Xⁿ - a`, and `ζ` is a `n`-th primitive root of unity
+/-- Suppose `L/K` is the splitting field of `Xⁿ - a`, and `ζ` is an `n`-th primitive root of unity
 in `K`, then `Gal(L/K)` is isomorphic to `ZMod n`. -/
 noncomputable
 def autEquivZmod [NeZero n] {ζ : K} (hζ : IsPrimitiveRoot ζ n) :
@@ -525,7 +536,7 @@ lemma isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top
     rw [mem_primitiveRoots finrank_pos] at hζ
     exact X_pow_sub_C_splits_of_isPrimitiveRoot (hζ.map_of_injective (algebraMap K _).injective) ha
   · rw [eq_top_iff, ← IntermediateField.top_toSubalgebra, ← hα,
-      IntermediateField.adjoin_simple_toSubalgebra_of_integral (IsIntegral.of_finite K α)]
+      IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic (IsAlgebraic.of_finite K α)]
     apply Algebra.adjoin_mono
     rw [Set.singleton_subset_iff, mem_rootSet_of_ne (X_pow_sub_C_ne_zero finrank_pos a),
       aeval_def, eval₂_sub, eval₂_X_pow, eval₂_C, ha, sub_self]
@@ -534,7 +545,8 @@ end IsCyclic
 
 open Module in
 /--
-Suppose `L/K` is a finite extension of dimension `n`, and `K` contains all `n`-th roots of unity.
+Suppose `L/K` is a finite extension of dimension `n`,
+and `K` contains a primitive`n`-th root of unity.
 Then `L/K` is cyclic iff
 `L` is a splitting field of some irreducible polynomial of the form `Xⁿ - a : K[X]` iff
 `L = K[α]` for some `αⁿ ∈ K`.

@@ -53,7 +53,7 @@ namespace NonUnitalStarSubsemiring
 instance instSetLike {R : Type v} [NonUnitalNonAssocSemiring R] [Star R] :
     SetLike (NonUnitalStarSubsemiring R) R where
   coe {s} := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
+  coe_injective p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
 initialize_simps_projections NonUnitalStarSubsemiring (carrier → coe, as_prefix coe)
 
@@ -117,7 +117,7 @@ section Center
 variable (R)
 
 /-- The center of a non-unital non-associative semiring `R` is the set of elements that
-commute and associate with everything in `R`, here realized as non-unital star
+commute and associate with everything in `R`, here realized as a non-unital star
 subsemiring. -/
 def center (R) [NonUnitalNonAssocSemiring R] [StarRing R] : NonUnitalStarSubsemiring R where
   toNonUnitalSubsemiring := NonUnitalSubsemiring.center R

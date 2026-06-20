@@ -18,12 +18,14 @@ a kernel from `α` to `γ`.
 * `comp (η : Kernel β γ) (κ : Kernel α β) : Kernel α γ`: composition of 2 kernels.
   We define a notation `η ∘ₖ κ = comp η κ`.
   `∫⁻ c, g c ∂((η ∘ₖ κ) a) = ∫⁻ b, ∫⁻ c, g c ∂(η b) ∂(κ a)`
+* The monoid structure on `Kernel α α` given by kernel composition.
 
 ## Main statements
 
 * `lintegral_comp`: Lebesgue integral of a function against a composition of kernels.
 * Instances stating that `IsMarkovKernel`, `IsZeroOrMarkovKernel`, `IsFiniteKernel` and
   `IsSFiniteKernel` are stable by composition.
+* `pow_add_apply_eq_lintegral`: Chapman-Kolmogorov equations.
 
 ## Notation
 
@@ -73,6 +75,16 @@ theorem comp_apply_univ_le (κ : Kernel α β) (η : Kernel β γ) (a : α) :
 
 @[simp] lemma comp_zero (κ : Kernel β γ) : κ ∘ₖ (0 : Kernel α β) = 0 := by ext; simp [comp_apply]
 
+@[simp] lemma id_comp (κ : Kernel α β) : Kernel.id ∘ₖ κ = κ := by
+  ext a s hs
+  simpa [comp_apply' _ _ _ hs, id_apply, Measure.dirac_apply' _ hs]
+    using lintegral_indicator_one hs
+
+@[simp] lemma comp_id (κ : Kernel β γ) : κ ∘ₖ Kernel.id = κ := by
+  ext a s hs
+  simp [comp_apply' _ _ _ hs, id_apply,
+    lintegral_dirac' a <| κ.measurable_coe hs]
+
 section Ae
 
 /-! ### `ae` filter of the composition -/
@@ -94,7 +106,7 @@ theorem ae_null_of_comp_null (h : (η ∘ₖ κ) a s = 0) : (η · s) =ᵐ[κ a]
   simp_rw [comp_null a mt] at ht
   rw [Filter.eventuallyLE_antisymm_iff]
   exact ⟨Filter.EventuallyLE.trans_eq (ae_of_all _ fun _ ↦ measure_mono hst) ht,
-    ae_of_all _ fun _ ↦ zero_le _⟩
+    ae_of_all _ fun _ ↦ zero_le⟩
 
 variable {p : γ → Prop}
 
@@ -135,7 +147,7 @@ theorem comp_assoc {δ : Type*} {mδ : MeasurableSpace δ} (ξ : Kernel γ δ)
 
 lemma comp_discard' (κ : Kernel α β) :
     discard β ∘ₖ κ =
-      { toFun a := κ a .univ • Measure.dirac ()
+      { toFun a := κ a .univ • Measure.dirac PUnit.unit
         measurable' := (κ.measurable_coe .univ).smul_measure _ } := by
   ext a s hs
   simp [comp_apply' _ _ _ hs, mul_comm]
@@ -185,6 +197,16 @@ lemma comp_sum_left {ι : Type*} [Countable ι] (κ : Kernel α β) (η : ι →
   rw [lintegral_tsum]
   exact fun _ ↦ (Kernel.measurable_coe _ hs).aemeasurable
 
+lemma copy_comp_apply_prod (κ : Kernel α β) (a : α) {s t : Set β} (hs : MeasurableSet s)
+    (ht : MeasurableSet t) : (copy β ∘ₖ κ) a (s ×ˢ t) = κ a (s ∩ t) := by
+  rw [comp_apply' _ _ _ <| hs.prod ht]
+  simp_rw [copy_apply, Measure.dirac_apply' _ <| hs.prod ht, Set.indicator_prod_one]
+  calc
+  _ = ∫⁻ b, (s ∩ t).indicator 1 b ∂κ a := by
+    congr with b
+    simp [Set.inter_indicator_one]
+  _ = κ a (s ∩ t) := lintegral_indicator_one <| hs.inter ht
+
 instance IsMarkovKernel.comp (η : Kernel β γ) [IsMarkovKernel η] (κ : Kernel α β)
     [IsMarkovKernel κ] : IsMarkovKernel (η ∘ₖ κ) where
   isProbabilityMeasure a := by
@@ -203,12 +225,43 @@ instance IsFiniteKernel.comp (η : Kernel β γ) [IsFiniteKernel η] (κ : Kerne
   refine ⟨⟨κ.bound * η.bound, ENNReal.mul_lt_top κ.bound_lt_top η.bound_lt_top, fun a ↦ ?_⟩⟩
   calc (η ∘ₖ κ) a Set.univ
   _ ≤ κ a Set.univ * η.bound := comp_apply_univ_le κ η a
-  _ ≤ κ.bound * η.bound := mul_le_mul (measure_le_bound κ a Set.univ) le_rfl zero_le' zero_le'
+  _ ≤ κ.bound * η.bound := by gcongr; exact measure_le_bound κ a Set.univ
 
 instance IsSFiniteKernel.comp (η : Kernel β γ) [IsSFiniteKernel η] (κ : Kernel α β)
     [IsSFiniteKernel κ] : IsSFiniteKernel (η ∘ₖ κ) := by
   simp_rw [← kernel_sum_seq κ, ← kernel_sum_seq η, comp_sum_left, comp_sum_right]
   infer_instance
+
+section Monoid
+
+noncomputable instance : Monoid (Kernel α α) where
+  mul η κ := η ∘ₖ κ
+  mul_assoc ξ η κ := comp_assoc _ _ _
+  one := Kernel.id
+  one_mul := id_comp
+  mul_one := comp_id
+
+/-! ### Chapman-Kolmogorov Equations -/
+
+/-- The **Chapman-Kolmogorov equation**, kernel composition version.
+The `n+m`-step transition kernel is the composition of the `n`-step and `m`-step kernels.
+Ref. *Meyn-Tweedie* Theorem 3.4.2, page 68 -/
+theorem pow_add (κ : Kernel α α) (m n : ℕ) :
+    κ ^ (m + n) = (κ ^ m) ∘ₖ (κ ^ n) := _root_.pow_add κ m n
+
+/-- The **Chapman-Kolmogorov equation**, integral version. -/
+theorem pow_add_apply_eq_lintegral (κ : Kernel α α) (m n : ℕ) (a : α) {s : Set α}
+    (hs : MeasurableSet s) :
+    (κ ^ (m + n)) a s = ∫⁻ b, (κ ^ n) b s ∂((κ ^ m) a) := by
+  rw [add_comm]; simp [pow_add, comp_apply' _ _ _ hs]
+
+/-- A version of the Chapman-Kolmogorov equation useful for paths. -/
+theorem pow_succ_apply_eq_lintegral (κ : Kernel α α) (n : ℕ) (a : α) {s : Set α}
+    (hs : MeasurableSet s) :
+    (κ ^ (n + 1)) a s = ∫⁻ b, κ b s ∂((κ ^ n) a) := by
+  simpa using pow_add_apply_eq_lintegral _ n 1 _ hs
+
+end Monoid
 
 end Kernel
 end ProbabilityTheory

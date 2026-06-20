@@ -17,7 +17,7 @@ concerning infinite unions in `Mathlib/Order/Interval/Set/Disjoint.lean` because
 `Finset.range`.
 -/
 
-@[expose] public section
+public section
 
 open Set
 

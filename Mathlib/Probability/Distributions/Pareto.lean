@@ -5,7 +5,6 @@ Authors: Alvan Caleb Arulandu
 -/
 module
 
-public import Mathlib.Probability.Notation
 public import Mathlib.Probability.CDF
 public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 
@@ -62,12 +61,12 @@ lemma lintegral_paretoPDF_of_le (hx : x ≤ t) :
     rw [if_neg (by linarith)]
 
 /-- The Pareto pdf is measurable. -/
-@[measurability, fun_prop]
+@[fun_prop]
 lemma measurable_paretoPDFReal (t r : ℝ) : Measurable (paretoPDFReal t r) :=
   Measurable.ite measurableSet_Ici ((measurable_id.pow_const _).const_mul _) measurable_const
 
 /-- The Pareto pdf is strongly measurable. -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma stronglyMeasurable_paretoPDFReal (t r : ℝ) :
     StronglyMeasurable (paretoPDFReal t r) :=
   (measurable_paretoPDFReal t r).stronglyMeasurable
@@ -136,16 +135,10 @@ lemma cdf_paretoMeasure_eq_integral (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
   · exact ae_of_all _ fun _ ↦ by simp only [Pi.zero_apply, paretoPDFReal_nonneg ht.le hr.le]
   · fun_prop
 
-@[deprecated (since := "2025-08-28")] alias paretoCDFReal_eq_integral :=
-  cdf_paretoMeasure_eq_integral
-
 lemma cdf_paretoMeasure_eq_lintegral (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
     cdf (paretoMeasure t r) x = ENNReal.toReal (∫⁻ x in Iic x, paretoPDF t r x) := by
   have : IsProbabilityMeasure (paretoMeasure t r) := isProbabilityMeasure_paretoMeasure ht hr
   rw [cdf_eq_real, paretoMeasure, measureReal_def, withDensity_apply _ measurableSet_Iic]
-
-@[deprecated (since := "2025-08-28")] alias paretoCDFReal_eq_lintegral :=
-  cdf_paretoMeasure_eq_lintegral
 
 end ParetoCDF
 end ProbabilityTheory

@@ -169,8 +169,6 @@ theorem erase_singleton (a : α) : ({a} : Multiset α).erase a = 0 :=
 theorem erase_of_notMem {a : α} {s : Multiset α} : a ∉ s → s.erase a = s :=
   Quot.inductionOn s fun _l h => congr_arg _ <| List.erase_of_not_mem h
 
-@[deprecated (since := "2025-05-23")] alias erase_of_not_mem := erase_of_notMem
-
 @[simp]
 theorem cons_erase {s : Multiset α} {a : α} : a ∈ s → a ::ₘ s.erase a = s :=
   Quot.inductionOn s fun _l h => Quot.sound (perm_cons_erase h).symm
@@ -260,13 +258,13 @@ theorem card_erase_eq_ite {a : α} {s : Multiset α} :
 @[simp]
 theorem count_erase_self (a : α) (s : Multiset α) : count a (erase s a) = count a s - 1 :=
   Quotient.inductionOn s fun l => by
-    convert List.count_erase_self (a := a) (l := l) <;> rw [← coe_count] <;> simp
+    convert! List.count_erase_self (a := a) (l := l) <;> rw [← coe_count] <;> simp
 
 @[simp]
 theorem count_erase_of_ne {a b : α} (ab : a ≠ b) (s : Multiset α) :
     count a (erase s b) = count a s :=
   Quotient.inductionOn s fun l => by
-    convert List.count_erase_of_ne ab (l := l) <;> rw [← coe_count] <;> simp
+    convert! List.count_erase_of_ne ab (l := l) <;> rw [← coe_count] <;> simp
 
 end Erase
 

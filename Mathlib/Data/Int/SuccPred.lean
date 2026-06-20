@@ -14,21 +14,19 @@ public import Mathlib.Data.Nat.SuccPred
 In this file, we show that `ℤ` is both an archimedean `SuccOrder` and an archimedean `PredOrder`.
 -/
 
-@[expose] public section
+public section
 
 
 open Function Order
 
 namespace Int
 
--- so that Lean reads `Int.succ` through `SuccOrder.succ`
-@[instance] abbrev instSuccOrder : SuccOrder ℤ :=
+instance instSuccOrder : SuccOrder ℤ :=
   { SuccOrder.ofSuccLeIff succ fun {_ _} => Iff.rfl with succ := succ }
 
 instance instSuccAddOrder : SuccAddOrder ℤ := ⟨fun _ => rfl⟩
 
--- so that Lean reads `Int.pred` through `PredOrder.pred`
-@[instance] abbrev instPredOrder : PredOrder ℤ where
+instance instPredOrder : PredOrder ℤ where
   pred := pred
   pred_le _ := (sub_one_lt_of_le le_rfl).le
   min_of_le_pred ha := ((sub_one_lt_of_le le_rfl).not_ge ha).elim

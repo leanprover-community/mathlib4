@@ -37,8 +37,8 @@ While we could implement this by filtering `(Fintype.PiFinset fun _ ↦ range (n
 this implementation would be much slower.
 
 In the future, we could consider generalizing `Finset.Nat.antidiagonalTuple` further to
-support finitely-supported functions, as is done with `cut` in
-`archive/100-theorems-list/45_partition.lean`.
+support finitely-supported functions, as in `Finset.finsuppAntidiag` from
+`Mathlib/Algebra/Order/Antidiag/Finsupp.lean`.
 -/
 
 @[expose] public section
@@ -155,14 +155,8 @@ theorem antidiagonalTuple_pairwise_pi_lex :
       rw [antidiagonal_zero]
       exact List.pairwise_singleton _ _
     | succ n n_ih =>
-      rw [antidiagonal_succ, List.pairwise_cons, List.pairwise_map]
-      refine ⟨fun p hp x hx y hy => ?_, ?_⟩
-      · rw [List.mem_map, Prod.exists] at hp
-        obtain ⟨a, b, _, rfl : (Nat.succ a, b) = p⟩ := hp
-        exact Or.inl (Nat.zero_lt_succ _)
-      dsimp
-      simp_rw [Nat.succ_inj, Nat.succ_lt_succ_iff]
-      exact n_ih
+      simp
+      grind
 
 end List.Nat
 

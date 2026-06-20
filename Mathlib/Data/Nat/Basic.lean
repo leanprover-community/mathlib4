@@ -10,7 +10,6 @@ public import Mathlib.Logic.Basic
 public import Mathlib.Logic.Nontrivial.Defs
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Tactic.GCongr.Core
-public import Mathlib.Util.AssertExists
 
 /-!
 # Basic operations on the natural numbers
@@ -21,7 +20,7 @@ depending on Mathlib definitions.
 See note [foundational algebra order theory].
 -/
 
-@[expose] public section
+public section
 
 /- We don't want to import the algebraic hierarchy in this file. -/
 assert_not_exists Monoid
@@ -39,7 +38,7 @@ instance instLinearOrder : LinearOrder ℕ where
   le_antisymm := @Nat.le_antisymm
   le_total := @Nat.le_total
   lt := Nat.lt
-  lt_iff_le_not_ge := @Nat.lt_iff_le_not_le
+  lt_iff_le_not_ge := @Nat.lt_iff_le_and_not_ge
   toDecidableLT := inferInstance
   toDecidableLE := inferInstance
   toDecidableEq := inferInstance
@@ -58,6 +57,9 @@ lemma succ_injective : Injective Nat.succ := @succ.inj
 
 /-! ### `div` -/
 
+protected theorem div_right_comm (a b c : ℕ) : a / b / c = a / c / b := by
+  rw [Nat.div_div_eq_div_mul, Nat.mul_comm, ← Nat.div_div_eq_div_mul]
+
 /-!
 ### `pow`
 -/
@@ -68,6 +70,9 @@ lemma pow_left_injective (hn : n ≠ 0) : Injective (fun a : ℕ ↦ a ^ n) := b
 protected lemma pow_right_injective (ha : 2 ≤ a) : Injective (a ^ ·) := by
   simp [Injective, le_antisymm_iff, Nat.pow_le_pow_iff_right ha]
 
+protected theorem pow_sub_one {x a : ℕ} (hx : x ≠ 0) (ha : a ≠ 0) :
+    x ^ (a - 1) = x ^ a / x := by
+  rw [← Nat.pow_div (one_le_iff_ne_zero.mpr ha) (Nat.pos_iff_ne_zero.mpr hx), Nat.pow_one]
 
 /-!
 ### Recursion and induction principles
@@ -135,5 +140,27 @@ protected lemma dvd_sub_self_right {n m : ℕ} :
   rcases le_or_gt m n with h | h
   · simp [h]
   · simp [dvd_sub_iff_left (le_of_lt h) (Nat.dvd_refl _), h.not_ge]
+
+/-! ### Miscellaneous -/
+
+lemma mul_le_pow {a : ℕ} (ha : a ≠ 1) (b : ℕ) :
+    a * b ≤ a ^ b := by
+  cases b with
+  | zero => exact Nat.zero_le _
+  | succ b =>
+      obtain rfl | ha0 : a = 0 ∨ a > 0 := a.eq_zero_or_pos
+      · rw [Nat.zero_mul]; exact Nat.zero_le _
+      · have ha1 : a > 1 := Nat.lt_of_le_of_ne ha0 ha.symm
+        rw [Nat.pow_succ']; exact Nat.mul_le_mul_left a (Nat.lt_pow_self ha1)
+
+lemma two_mul_sq_add_one_le_two_pow_two_mul (k : ℕ) : 2 * k ^ 2 + 1 ≤ 2 ^ (2 * k) := by
+  obtain rfl | hk : k = 0 ∨ k > 0 := k.eq_zero_or_pos
+  · decide
+  · have hk0 : 0 < 2 * k ^ 2 := Nat.mul_pos Nat.two_pos (Nat.pow_pos hk)
+    calc 2 * k ^ 2
+      _ < 2 * k ^ 2 + 2 * k ^ 2 := Nat.lt_add_of_pos_left hk0
+      _ = (2 * k) ^ 2 := by rw [Nat.mul_pow, ← Nat.add_mul]
+      _ ≤ (2 ^ k) ^ 2 := Nat.pow_le_pow_left (Nat.mul_le_pow (by decide : 2 ≠ 1) _) 2
+      _ = 2 ^ (2 * k) := (Nat.pow_mul' _ _ _).symm
 
 end Nat

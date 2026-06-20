@@ -47,7 +47,7 @@ Then we get the general result using that a torsion free module is free (which h
 Finitely generated module, principal ideal domain, classification, structure theorem
 -/
 
-@[expose] public section
+public section
 
 -- We shouldn't need to know about topology to prove
 -- the structure theorem for finitely generated modules over a PID.
@@ -74,13 +74,13 @@ variable [IsDomain R]
 
 /-- A finitely generated torsion module over a PID is an internal direct sum of its
 `p i ^ e i`-torsion submodules for some primes `p i` and numbers `e i`. -/
-theorem Submodule.isInternal_prime_power_torsion_of_pid [DecidableEq (Ideal R)] [Module.Finite R M]
+theorem Submodule.isInternal_prime_power_torsion_of_pid [Module.Finite R M]
     (hM : Module.IsTorsion R M) :
     DirectSum.IsInternal fun p : (factors (⊤ : Submodule R M).annihilator).toFinset =>
       torsionBy R M
         (IsPrincipal.generator (p : Ideal R) ^
           (factors (⊤ : Submodule R M).annihilator).count ↑p) := by
-  convert isInternal_prime_power_torsion hM
+  convert! isInternal_prime_power_torsion hM
   rw [← torsionBySet_span_singleton_eq, Ideal.submodule_span_eq, ← Ideal.span_singleton_pow,
     Ideal.span_singleton_generator]
 
@@ -120,8 +120,9 @@ theorem _root_.Ideal.torsionOf_eq_span_pow_pOrder (x : M) :
       (Associates.mk <| generator <| torsionOf R M x) ∣ Associates.mk p ^ n := by
     ext n; rw [← Associates.mk_pow, Associates.mk_dvd_mk, ← mem_iff_generator_dvd]; rfl
   have := (isTorsion'_powers_iff p).mp hM x; rw [prop] at this
-  convert Associates.eq_pow_find_of_dvd_irreducible_pow (Associates.irreducible_mk.mpr hp)
-    this.choose_spec
+  convert!
+    Associates.eq_pow_find_of_dvd_irreducible_pow (Associates.irreducible_mk.mpr hp)
+      this.choose_spec
 
 theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ pOrder hM y))
     (h : p ^ k • x ∈ R ∙ y) : ∃ a : R, p ^ k • x = p ^ k • a • y := by
@@ -132,7 +133,7 @@ theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ p
     · have : f.symm ⟨p ^ k • x, h⟩ ∈
           R ∙ Ideal.Quotient.mk (R ∙ p ^ (pOrder hM y - k) * p ^ k) (p ^ k) := by
         rw [← Quotient.torsionBy_eq_span_singleton, mem_torsionBy_iff, ← f.symm.map_smul]
-        · convert f.symm.map_zero; ext
+        · convert! f.symm.map_zero; ext
           rw [coe_smul_of_tower, coe_mk, coe_zero, smul_smul, ← pow_add, Nat.sub_add_cancel hk,
             @hM' x]
         · exact mem_nonZeroDivisors_of_ne_zero (pow_ne_zero _ hp.ne_zero)
@@ -141,7 +142,7 @@ theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ p
       dsimp only [smul_eq_mul, LinearEquiv.trans_apply, Submodule.quotEquivOfEq_mk,
         quotTorsionOfEquivSpanSingleton_apply_mk] at ha
       rw [smul_smul, mul_comm]; exact congr_arg ((↑) : _ → M) ha.symm
-    · symm; convert Ideal.torsionOf_eq_span_pow_pOrder hp hM y
+    · symm; convert! Ideal.torsionOf_eq_span_pow_pOrder hp hM y
       rw [← pow_add, Nat.sub_add_cancel hk]
   · use 0
     rw [zero_smul, smul_zero, ← Nat.sub_add_cancel hk.le, pow_add, mul_smul, hM',
@@ -155,8 +156,8 @@ theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ 
   have f1 := mk_surjective (R ∙ z) (f 1)
   have : p ^ k • f1.choose ∈ R ∙ z := by
     rw [← Quotient.mk_eq_zero, mk_smul, f1.choose_spec, ← f.map_smul]
-    convert f.map_zero; change _ • Submodule.Quotient.mk _ = _
-    rw [← mk_smul, Quotient.mk_eq_zero, Algebra.id.smul_eq_mul, mul_one]
+    convert! f.map_zero; change _ • Submodule.Quotient.mk _ = _
+    rw [← mk_smul, Quotient.mk_eq_zero, smul_eq_mul, mul_one]
     exact Submodule.mem_span_singleton_self _
   obtain ⟨a, ha⟩ := p_pow_smul_lift hp hM hz this
   refine ⟨f1.choose - a • z, by rw [smul_sub, sub_eq_zero, ha], ?_⟩
@@ -214,7 +215,7 @@ theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoi
           ext i : 3
           simp only [LinearMap.coe_comp, Function.comp_apply, mkQ_apply]
           rw [LinearEquiv.coe_toLinearMap, LinearMap.id_apply, DirectSum.toModule_lof,
-            liftQSpanSingleton_apply, LinearMap.toSpanSingleton_one, Ideal.Quotient.mk_eq_mk,
+            liftQSpanSingleton_apply, LinearMap.toSpanSingleton_apply_one, Ideal.Quotient.mk_eq_mk,
             map_one (Ideal.Quotient.mk _), (this i).choose_spec.right]
     · exact (mk_surjective _).forall.mpr fun x =>
         ⟨(@hM x).choose, by rw [← Quotient.mk_smul, (@hM x).choose_spec, Quotient.mk_zero]⟩
@@ -269,6 +270,7 @@ theorem equiv_free_prod_directSum [h' : Module.Finite R M] :
           (h.prodCongr g).trans <| LinearEquiv.prodComm.{u, u} R _ (Fin n →₀ R) ⟩⟩
   rw [range_subtype, ker_mkQ]
 
+set_option backward.isDefEq.respectTransparency false in
 open LinearMap in
 theorem exists_ker_toSpanSingleton_eq_annihilator [Module.Finite R M] :
     ∃ x : M, ker (toSpanSingleton R _ x) = annihilator R M := by

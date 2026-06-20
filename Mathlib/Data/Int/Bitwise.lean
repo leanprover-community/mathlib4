@@ -93,9 +93,9 @@ protected def xor : ℤ → ℤ → ℤ
 instance : ShiftLeft ℤ where
   shiftLeft
   | (m : ℕ), (n : ℕ) => Nat.shiftLeft' false m n
-  | (m : ℕ), -[n +1] => m >>> (Nat.succ n)
-  | -[m +1], (n : ℕ) => -[Nat.shiftLeft' true m n +1]
-  | -[m +1], -[n +1] => -[m >>> (Nat.succ n) +1]
+  | (m : ℕ), -[n+1] => m >>> (Nat.succ n)
+  | -[m+1], (n : ℕ) => -[Nat.shiftLeft' true m n+1]
+  | -[m+1], -[n+1] => -[m >>> (Nat.succ n)+1]
 
 /-- `m >>> n` produces an integer whose binary representation
   is obtained by right-shifting the binary representation of `m` by `n` places -/
@@ -203,9 +203,7 @@ theorem bodd_bit (b n) : bodd (bit b n) = b := by
 theorem testBit_bit_zero (b) : ∀ n, testBit (bit b n) 0 = b
   | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_bit_zero
   | -[n+1] => by
-    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_bit_zero]; clear testBit_bit_zero
-    cases b <;>
-      rfl
+    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_bit_zero, Bool.not_not]
 
 @[simp]
 theorem testBit_bit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
@@ -366,16 +364,29 @@ theorem shiftRight_add' : ∀ (m : ℤ) (n k : ℕ), m >>> (n + k : ℤ) = (m >>
 
 /-! ### bitwise ops -/
 
+/-- Connection of `HShiftLeft Int Int Int` and `HShiftLeft Int Nat Int`. -/
+lemma shiftLeft_natCast_right (m : ℤ) (n : ℕ) :
+    m <<< (n : ℤ) = m <<< n := by
+  rw [Int.shiftLeft_eq']
+  unfold_projs; cases m <;> simp only [Nat.shiftLeft'_false, natCast_shiftLeft, ofNat_eq_natCast,
+    Nat.pow_eq, Int.natCast_pow, Nat.cast_ofNat, mul_def]
+  · grind [Int.shiftLeft_eq']
+  · simp only [negSucc_eq, ← natCast_add_one, Nat.shiftLeft'_true_eq_mul_pow]
+    grind
+
+/-- Connection of `HShiftRight Int Int Int` and `HShiftRight Int Nat Int`. -/
+lemma shiftRight_natCast_right (m : ℤ) (n : ℕ) :
+    m >>> (n : ℤ) = m >>> n := by
+  cases m <;> simp
+
 theorem shiftLeft_add' : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<< (n : ℤ)) <<< k
   | (m : ℕ), n, (k : ℕ) =>
     congr_arg ofNat (by simp [Nat.shiftLeft_eq, Nat.pow_add, mul_assoc])
   | -[_+1], _, (k : ℕ) => congr_arg negSucc (Nat.shiftLeft'_add _ _ _ _)
   | (m : ℕ), n, -[k+1] =>
     subNatNat_elim n k.succ (fun n k i => (↑m) <<< i = (Nat.shiftLeft' false m n) >>> k)
-      (fun (i n : ℕ) =>
-        by simp [← Nat.shiftLeft_sub _, Nat.add_sub_cancel_left])
+      (fun (i n : ℕ) => by simp [← Nat.shiftLeft_sub _])
       fun i n => by
-        dsimp only [← Int.natCast_shiftRight]
         simp_rw [negSucc_eq, shiftLeft_neg, Nat.shiftLeft'_false, Nat.shiftRight_add,
           ← Nat.shiftLeft_sub _ le_rfl, Nat.sub_self, Nat.shiftLeft_zero, ← shiftRight_natCast,
           ← shiftRight_add', Nat.cast_one]
@@ -394,7 +405,7 @@ theorem shiftLeft_sub (m : ℤ) (n : ℕ) (k : ℤ) : m <<< (n - k) = (m <<< (n 
 
 theorem shiftLeft_eq_mul_pow : ∀ (m : ℤ) (n : ℕ), m <<< (n : ℤ) = m * (2 ^ n : ℕ)
   | (m : ℕ), _ => congr_arg ((↑) : ℕ → ℤ) (by simp [Nat.shiftLeft_eq])
-  | -[_+1], _ => @congr_arg ℕ ℤ _ _ (fun i => -i) (Nat.shiftLeft'_tt_eq_mul_pow _ _)
+  | -[_+1], _ => @congr_arg ℕ ℤ _ _ (fun i => -i) (Nat.shiftLeft'_true_eq_mul_pow _ _)
 
 theorem one_shiftLeft (n : ℕ) : 1 <<< (n : ℤ) = (2 ^ n : ℕ) :=
   congr_arg ((↑) : ℕ → ℤ) (by simp [Nat.shiftLeft_eq])

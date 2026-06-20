@@ -11,7 +11,7 @@ public import Mathlib.Data.Finsupp.Multiset
 
 /-! # Results on the cardinality of finitely supported functions and multisets. -/
 
-@[expose] public section
+public section
 
 universe u v
 
@@ -67,7 +67,5 @@ theorem mk_multiset_of_nonempty (α : Type u) [Nonempty α] : #(Multiset α) = m
   exact Multiset.toFinsupp.toEquiv.cardinal_eq.trans (mk_finsupp_nat α)
 
 theorem mk_multiset_of_infinite (α : Type u) [Infinite α] : #(Multiset α) = #α := by simp
-
-@[deprecated (since := "2025-10-06")] alias mk_multiset_of_countable := mk_eq_aleph0
 
 end Cardinal

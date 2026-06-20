@@ -38,7 +38,7 @@ The case for `Monotone`/`Antitone` pairs of functions over a `LinearOrder` is no
 file because it is easily deducible from the `Monovary` API.
 -/
 
-@[expose] public section
+public section
 
 
 open Equiv Equiv.Perm Finset Function OrderDual
@@ -173,4 +173,5 @@ theorem sum_div_card_sq_le_sum_sq_div_card :
   · simp
   rw [div_pow, div_le_div_iff₀ (by positivity) (by positivity), sq (#s : α), mul_left_comm,
     ← mul_assoc]
-  exact mul_le_mul_of_nonneg_right sq_sum_le_card_mul_sum_sq (by positivity)
+  gcongr
+  exact sq_sum_le_card_mul_sum_sq

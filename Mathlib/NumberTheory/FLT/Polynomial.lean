@@ -11,6 +11,7 @@ public import Mathlib.NumberTheory.FLT.Basic
 public import Mathlib.NumberTheory.FLT.MasonStothers
 public import Mathlib.RingTheory.Polynomial.Content
 public import Mathlib.Tactic.GCongr
+import Mathlib.RingTheory.Polynomial.IsIntegral
 
 /-!
 # Fermat's Last Theorem for polynomials over a field
@@ -30,7 +31,7 @@ The proof uses the Mason-Stothers theorem (Polynomial ABC theorem) and infinite 
 (in the characteristic p case).
 -/
 
-@[expose] public section
+public section
 
 open Polynomial UniqueFactorizationMonoid
 
@@ -53,7 +54,7 @@ private lemma rot_coprime
   rw [add_eq_zero_iff_neg_eq] at heq
   rw [← IsCoprime.pow_iff hq.bot_lt hr.bot_lt, ← isCoprime_mul_units_left hCv hCw,
     ← heq, IsCoprime.neg_right_iff]
-  convert IsCoprime.add_mul_left_right hab.symm 1 using 2
+  convert! IsCoprime.add_mul_left_right hab.symm 1 using 2
   rw [mul_one]
 
 private lemma ineq_pqr_contradiction {p q r a b c : ℕ}
@@ -185,10 +186,10 @@ private theorem Polynomial.flt_catalan_aux
       · apply (isCoprime_expand chn0).mp
         rwa [← eq_a, ← eq_b]
       · have _ : ch ≠ 1 := CharP.ringChar_ne_one
-        have hch2 : 2 ≤ ch := by omega
+        have hch2 : 2 ≤ ch := by lia
         rw [← add_le_add_iff_right 1, ← eq_d, eq_deg_a]
         grw [← hch2]
-        cutsat
+        lia
       · rw [eq_a, eq_b, eq_c, ← expand_C ch u, ← expand_C ch v, ← expand_C ch w] at heq
         simp_rw [← map_pow, ← map_mul, ← map_add] at heq
         rwa [Polynomial.expand_eq_zero (zero_lt_iff.mpr chn0)] at heq
@@ -245,12 +246,8 @@ theorem fermatLastTheoremWith'_polynomial {n : ℕ} (hn : 3 ≤ n) (chn : (n : k
   set d := gcd a b
   have hd : d ≠ 0 := gcd_ne_zero_of_left ha
   rw [eq_a, eq_b, mul_pow, mul_pow, ← mul_add] at heq
-  have hdc : d ∣ c := by
-    -- TODO: This is basically reproving `IsIntegrallyClosed.pow_dvd_pow_iff`
-    have hn : 0 < n := by omega
-    have hdncn : d ^ n ∣ c ^ n := ⟨_, heq.symm⟩
-    simpa [dvd_iff_normalizedFactors_le_normalizedFactors, Multiset.le_iff_count, *] using hdncn
-  obtain ⟨c', eq_c⟩ := hdc
+  obtain ⟨c', eq_c⟩ : ∃ c', c = d * c' :=
+    (IsIntegrallyClosed.pow_dvd_pow_iff (by lia)).mp ⟨_, heq.symm⟩
   rw [eq_a, mul_ne_zero_iff] at ha
   rw [eq_b, mul_ne_zero_iff] at hb
   rw [eq_c, mul_ne_zero_iff] at hc
@@ -266,7 +263,7 @@ theorem fermatLastTheoremWith'_polynomial {n : ℕ} (hn : 3 ≤ n) (chn : (n : k
     rw [← hc', C_ne_zero] at hc
     exact ⟨ha.right.isUnit_C, hb.right.isUnit_C, hc.right.isUnit_C⟩
   apply flt hn chn ha.right hb.right hc.right _ heq
-  convert isCoprime_div_gcd_div_gcd _
+  convert! isCoprime_div_gcd_div_gcd _
   · exact EuclideanDomain.eq_div_of_mul_eq_left ha.left eq_a.symm
   · exact EuclideanDomain.eq_div_of_mul_eq_left ha.left eq_b.symm
   · rw [eq_b]

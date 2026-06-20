@@ -72,6 +72,12 @@ lemma untop₀_add [AddZeroClass α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b
 lemma untop₀_natCast [AddMonoidWithOne α] (n : ℕ) : untop₀ (n : WithTop α) = n := rfl
 
 @[simp]
+theorem untop₀_one {α : Type*} [AddMonoidWithOne α] :
+    (1 : WithTop α).untop₀ = 1 := by
+  convert WithTop.untop₀_natCast 1
+  all_goals exact Nat.cast_one.symm
+
+@[simp]
 lemma untop₀_ofNat [AddMonoidWithOne α] (n : ℕ) [n.AtLeastTwo] :
     untop₀ (ofNat(n) : WithTop α) = ofNat(n) := rfl
 
@@ -80,17 +86,9 @@ lemma untop₀_neg [AddCommGroup α] : ∀ a : WithTop α, (-a).untop₀ = -a.un
   | ⊤ => by simp
   | (a : α) => rfl
 
-/-!
-## Simplifying Lemmas in cases where α is a MulZeroClass
--/
-
 @[simp]
 lemma untop₀_mul [DecidableEq α] [MulZeroClass α] (a b : WithTop α) :
     (a * b).untop₀ = a.untop₀ * b.untop₀ := untopD_zero_mul a b
-
-/-!
-## Simplifying Lemmas in cases where α is a OrderedAddCommGroup
--/
 
 section OrderedAddCommGroup
 
@@ -125,10 +123,6 @@ theorem untop₀_le_untop₀_iff (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
   simp
 
 end OrderedAddCommGroup
-
-/-!
-## Simplifying Lemmas in cases where α is a LinearOrderedAddCommGroup
--/
 
 section LinearOrderedAddCommGroup
 

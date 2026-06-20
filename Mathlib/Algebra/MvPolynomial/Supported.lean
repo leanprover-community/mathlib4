@@ -60,8 +60,9 @@ theorem supportedEquivMvPolynomial_symm_C (s : Set σ) (x : R) :
 
 @[simp]
 theorem supportedEquivMvPolynomial_symm_X (s : Set σ) (i : s) :
-    (↑((supportedEquivMvPolynomial s).symm (X i : MvPolynomial s R)) : MvPolynomial σ R) = X ↑i :=
-  by simp [supportedEquivMvPolynomial]
+    (↑((supportedEquivMvPolynomial s).symm (X i : MvPolynomial s R)) : MvPolynomial σ R) =
+      X ↑i := by
+  simp [supportedEquivMvPolynomial]
 
 variable {s t : Set σ}
 

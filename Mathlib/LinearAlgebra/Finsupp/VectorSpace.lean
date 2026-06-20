@@ -79,8 +79,9 @@ theorem linearIndependent_single {φ : ι → Type*} (f : ∀ i, φ i → M)
     (hf : ∀ i, LinearIndependent R (f i)) :
     LinearIndependent R fun ix : Σ i, φ i ↦ single ix.1 (f ix.1 ix.2) := by
   classical
-  convert (DFinsupp.linearIndependent_single _ hf).map_injOn
-    _ (finsuppLequivDFinsupp R).symm.injective.injOn
+  convert!
+    (DFinsupp.linearIndependent_single _ hf).map_injOn _
+      (finsuppLequivDFinsupp R).symm.injective.injOn
   simp
 
 lemma linearIndependent_single_iff {φ : ι → Type*} {f : ∀ i, φ i → M} :
@@ -140,15 +141,12 @@ lemma isCompl_range_lmapDomain_span {α β : Type*}
 end Semiring
 
 section Ring
+variable {R M ι : Type*} [Ring R] [AddCommGroup M]
 
-variable {R : Type*} {M : Type*} {ι : Type*}
-variable [Ring R] [AddCommGroup M] [Module R M]
-
-lemma linearIndependent_single_of_ne_zero [NoZeroSMulDivisors R M] {v : ι → M} (hv : ∀ i, v i ≠ 0) :
-    LinearIndependent R fun i : ι ↦ single i (v i) := by
+lemma linearIndependent_single_of_ne_zero [IsDomain R] [Module R M] [IsTorsionFree R M] {v : ι → M}
+    (hv : ∀ i, v i ≠ 0) : LinearIndependent R fun i : ι ↦ single i (v i) := by
   rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
-  exact linearIndependent_single (f := fun i (_ : Unit) ↦ v i) <| by
-    simp +contextual [Fintype.linearIndependent_iff, hv]
+  exact linearIndependent_single (f := fun i (_ : Unit) ↦ v i) <| by simp +contextual [hv]
 
 lemma lcomapDomain_eq_linearProjOfIsCompl {α β : Type*}
     {u : α → ι} {v : β → ι} (hu : u.Injective) (h : IsCompl (Set.range u) (Set.range v)) :
@@ -224,16 +222,16 @@ instance {σ : Type*} : Module.Free ℤ (FreeAbelianGroup σ) where
 end FreeAbelianGroup
 
 namespace AddMonoidAlgebra
-variable {ι R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
+variable {M R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
 
-instance : Module.Free R S[ι] := .finsupp ..
+instance : Module.Free R S[M] := .finsupp ..
 
 end AddMonoidAlgebra
 
 namespace MonoidAlgebra
-variable {ι R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
+variable {M R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
 
-instance : Module.Free R (MonoidAlgebra S ι) := .finsupp ..
+instance : Module.Free R S[M] := .finsupp ..
 
 end MonoidAlgebra
 

@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Init
-public import Lean.Meta.DiscrTree
 
 /-!
 # Additions to `Lean.Meta.DiscrTree`

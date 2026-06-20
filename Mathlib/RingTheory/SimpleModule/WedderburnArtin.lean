@@ -41,7 +41,7 @@ public import Mathlib.RingTheory.SimpleRing.Matrix
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 variable (R₀ : Type*) {R : Type u} [CommSemiring R₀] [Ring R] [Algebra R₀ R]
@@ -106,7 +106,7 @@ theorem exists_algEquiv_matrix_end_mulOpposite :
       Nonempty (R ≃ₐ[R₀] Matrix (Fin n) (Fin n) (Module.End R I)ᵐᵒᵖ) := by
   have ⟨n, hn, S, hS, ⟨e⟩⟩ := (isIsotypic R R).linearEquiv_fun
   refine ⟨n, hn, S, hS, ⟨.trans (.opOp R₀ R) <| .trans (.op ?_) (.symm .mopMatrix)⟩⟩
-  exact .trans (.moduleEndSelf R₀) <| .trans (e.algConj R₀) (endVecAlgEquivMatrixEnd ..)
+  exact .trans (.moduleEndSelf R₀) <| .trans (e.conjAlgEquiv R₀) (endVecAlgEquivMatrixEnd ..)
 
 /-- The **Wedderburn–Artin Theorem**, algebra form: an Artinian simple algebra is isomorphic
 to a matrix algebra over a division algebra. -/
@@ -143,7 +143,7 @@ theorem exists_end_algEquiv_pi_matrix_end :
   choose d pos S _ simple e using fun c : isotypicComponents R M ↦
     (IsIsotypic.isotypicComponents c.2).submodule_linearEquiv_fun
   classical exact ⟨_, _, _, fun _ ↦ simple _, fun _ ↦ pos _, ⟨.trans (endAlgEquiv R₀ R M) <| .trans
-    (.piCongrRight fun c ↦ ((e c).some.algConj R₀).trans (endVecAlgEquivMatrixEnd ..)) <|
+    (.piCongrRight fun c ↦ ((e c).some.conjAlgEquiv R₀).trans (endVecAlgEquivMatrixEnd ..)) <|
     (.piCongrLeft' R₀ _ (Finite.equivFin _))⟩⟩
 
 theorem exists_end_ringEquiv_pi_matrix_end :
@@ -234,7 +234,7 @@ instance (n) [Fintype n] [DecidableEq n] : IsSemisimpleRing (Matrix n n R) :=
     have ⟨_, _, _, _, _, ⟨e⟩⟩ := exists_ringEquiv_pi_matrix_divisionRing R
     (e.mapMatrix (m := n).trans Matrix.piRingEquiv).symm.isSemisimpleRing
 
-instance [IsSemisimpleRing R] : IsSemisimpleRing Rᵐᵒᵖ :=
+instance : IsSemisimpleRing Rᵐᵒᵖ :=
   have ⟨_, _, _, _, _, ⟨e⟩⟩ := exists_ringEquiv_pi_matrix_divisionRing R
   ((e.op.trans (.piMulOpposite _)).trans (.piCongrRight fun _ ↦ .symm .mopMatrix)).symm
     |>.isSemisimpleRing

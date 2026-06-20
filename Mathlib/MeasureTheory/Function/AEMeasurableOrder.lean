@@ -22,7 +22,7 @@ but the proof would be more painful. Since our only use for now is for `ℝ≥0�
 as possible.
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory Set TopologicalSpace
@@ -75,7 +75,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
     have : ∀ᵐ x ∂μ, x ∉ t := by
       have : μ t = 0 := le_antisymm μt bot_le
       change μ _ = 0
-      convert this
+      convert! this
       ext y
       simp only [mem_setOf_eq, mem_compl_iff, not_notMem]
     filter_upwards [this] with x hx

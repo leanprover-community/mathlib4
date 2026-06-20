@@ -46,18 +46,16 @@ lemma measurePreserving_coe : MeasurePreserving ((↑) : I → ℝ) volume (volu
 instance : NoAtoms (volume : Measure I) where
   measure_singleton x := by simp [volume_apply]
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem measurable_symm : Measurable σ := continuous_symm.measurable
 
 /-- `unitInterval.symm` bundled as a measurable equivalence. -/
-@[simps]
+@[simps apply]
 def symmMeasurableEquiv : I ≃ᵐ I where
   toFun := σ
   invFun := σ
   left_inv := symm_symm
   right_inv := symm_symm
-  measurable_toFun := measurable_symm
-  measurable_invFun := measurable_symm
 
 @[simp]
 lemma symm_symmMeasurableEquiv : symmMeasurableEquiv.symm = symmMeasurableEquiv := rfl

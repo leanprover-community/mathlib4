@@ -16,12 +16,9 @@ either use this equivalence to transport the monoidal structure from `Module ℤ
 or, having constructed that monoidal structure directly, show this functor is monoidal.
 -/
 
-@[expose] public section
-
+public section
 
 open CategoryTheory
-
-open CategoryTheory.Equivalence
 
 universe u
 
@@ -36,9 +33,9 @@ instance forget₂_addCommGroup_full : (forget₂ (ModuleCat ℤ) AddCommGrpCat.
     f := ⟨@ModuleCat.ofHom _ _ _ _ _ A.isModule _ B.isModule <|
             @LinearMap.mk _ _ _ _ _ _ _ _ _ A.isModule B.isModule
             { toFun := f,
-              map_add' := AddMonoidHom.map_add f.hom }
+              map_add' := map_add f.hom }
             (fun n x => by
-              convert AddMonoidHom.map_zsmul f.hom x n <;>
+              convert! AddMonoidHom.map_zsmul f.hom n x <;>
                 ext <;> apply int_smul_eq_zsmul), rfl⟩
 
 /-- The forgetful functor from `ℤ` modules to `AddCommGrpCat` is essentially surjective. -/

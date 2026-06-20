@@ -15,7 +15,7 @@ The `#find_syntax` command takes as input a string `str` and retrieves from the 
 all the candidates for `syntax` terms that contain the string `str`.
 
 It also makes a very crude effort at regenerating what the syntax looks like, by inspecting the
-`Expr`ession tree of the corresponding parser.
+`ParserDescr`iptor of the corresponding parser.
 -/
 
 public meta section
@@ -25,35 +25,26 @@ namespace Mathlib.FindSyntax
 open Lean Elab Command
 
 /--
-`extractSymbols expr` takes as input an `Expr`ession `expr`, assuming that it is the `value`
-of a "parser".
-It returns the array of all subterms of `expr` that are the `Expr.lit` argument to
-`Lean.ParserDescr.symbol` and `Lean.ParserDescr.nonReservedSymbol` applications.
+`extractSymbols descr acc` takes as input a `ParserDescr`iptor `descr` and an accumulator array
+`acc`. It accumulates all symbols in `descr` corresponding to `Lean.ParserDescr.symbol`,
+`Lean.ParserDescr.nonReservedSymbol` or `Lean.ParserDescr.unicodeSymbol`.
 
 The output array serves as a way of regenerating what the syntax tree of the input parser is.
 -/
-def extractSymbols : Expr → Array Expr
-  | .app a b =>
-    let rest := extractSymbols a ++ extractSymbols b
-    match a.constName with
-      | ``Lean.ParserDescr.symbol | ``Lean.ParserDescr.nonReservedSymbol => rest.push b
-      | _ => rest
-  | .letE _ a b c _ => extractSymbols a ++ extractSymbols b ++ extractSymbols c
-  | .lam _ a b _ => extractSymbols a ++ extractSymbols b
-  | .forallE _ a b _ => extractSymbols a ++ extractSymbols b
-  | .mdata _ a => extractSymbols a
-  | .proj _ _ a => extractSymbols a
-  | _ => #[]
-
-/--
-`litToString expr` converts the input `Expr`ession `expr` into the "natural" string that
-it corresponds to, in case `expr` is a `String`/`Nat`-literal, returning the empty string `""`
-otherwise.
--/
-def litToString : Expr → String
-  | .lit (.natVal v) => s!"{v}"
-  | .lit (.strVal v) => v
-  | _ => ""
+def extractSymbols : ParserDescr → Array String → Array String
+  | .symbol s, acc | .nonReservedSymbol s _, acc | .unicodeSymbol s _ _, acc =>
+    acc.push s
+  | .parser _, acc | .const _, acc | .cat _ _, acc =>
+    acc
+  | .node _ _ descr, acc
+  | .trailingNode _ _ _ descr, acc
+  | .nodeWithAntiquot _ _ descr, acc
+  | .unary _ descr, acc =>
+    extractSymbols descr acc
+  | .binary _ l r, acc =>
+    extractSymbols r (extractSymbols l acc)
+  | .sepBy p _ psep _, acc | .sepBy1 p _ psep _, acc =>
+    extractSymbols psep (extractSymbols p acc)
 
 /--
 The `#find_syntax` command takes as input a string `str` and retrieves from the environment
@@ -69,22 +60,25 @@ declarations, it returns its round-down to the previous multiple of 100.
 -/
 elab "#find_syntax " id:str d:(&" approx")? : command => do
   let prsr : Array Expr := #[.const ``ParserDescr [], .const ``TrailingParserDescr []]
-  let mut symbs : Std.HashSet (Name × Array Expr) := {}
+  let mut symbs : Std.HashSet (Name × List String) := {}
   -- We scan the environment in search of "parsers" whose name is not internal and that
   -- contain some `symbol` information and we store them in `symbs`
   for (declName, cinfo) in (← getEnv).constants do
-    if prsr.contains cinfo.type && cinfo.hasValue then
-      let ls := extractSymbols cinfo.value!
-      if !declName.isInternal && !ls.isEmpty then symbs := symbs.insert (declName, ls)
+    if prsr.contains cinfo.type && !declName.isInternal then
+      let descr ← unsafe evalConst ParserDescr declName
+      let ls := extractSymbols descr #[]
+      unless ls.isEmpty do
+        symbs := symbs.insert (declName, ls.toList)
   -- From among the parsers in `symbs`, we extract the ones whose `symbols` contain the input `str`
   let mut match_results : NameMap (Array (Name × String)) := {}
   for (nm, ar) in symbs.toList do
-    let rem : String := " _ ".intercalate (ar.map litToString).toList
+    let rem : String := " _ ".intercalate ar
     -- If either the name of the parser or the regenerated syntax stub contains the input string,
     -- then we include an entry into the final message.
     if 2 ≤ (nm.toString.splitOn id.getString).length || 2 ≤ (rem.splitOn id.getString).length then
       let mod := (← findModuleOf? nm).getD (← getMainModule)
-      match_results := match_results.insert mod <| (match_results.getD mod #[]).push (nm, rem.trim)
+      match_results := match_results.insert mod <| (match_results.getD mod #[]).push
+        (nm, rem.trimAscii.copy)
   -- We sort the messages to produce a more stable output.
   let sorted_results := match_results.toArray.qsort (·.1.lt ·.1)
   let sorted_results := sorted_results.map fun (mod, msgs) => (mod, msgs.qsort (·.1.lt ·.1))

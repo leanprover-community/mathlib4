@@ -12,7 +12,7 @@ public import Mathlib.Topology.Connected.TotallyDisconnected
 # Interaction of separation properties with connectedness properties
 -/
 
-@[expose] public section
+public section
 
 variable {X : Type*} [TopologicalSpace X]
 
@@ -29,8 +29,7 @@ instance (priority := 100) TotallyDisconnectedSpace.t1Space [h : TotallyDisconne
 
 theorem PreconnectedSpace.trivial_of_discrete [PreconnectedSpace X] [DiscreteTopology X] :
     Subsingleton X := by
-  by_contra! h
-  rcases h with ⟨x, y, hxy⟩
+  by_contra! ⟨x, y, hxy⟩
   rw [Ne, ← mem_singleton_iff, (isClopen_discrete _).eq_univ <| singleton_nonempty y] at hxy
   exact hxy (mem_univ x)
 
@@ -42,6 +41,10 @@ theorem IsPreconnected.infinite_of_nontrivial [T1Space X] {s : Set X} (h : IsPre
 
 theorem PreconnectedSpace.infinite [PreconnectedSpace X] [Nontrivial X] [T1Space X] : Infinite X :=
   infinite_univ_iff.mp <| isPreconnected_univ.infinite_of_nontrivial nontrivial_univ
+
+theorem subsingleton_iff_discrete_and_indiscrete :
+    Subsingleton X ↔ DiscreteTopology X ∧ IndiscreteTopology X :=
+  ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ PreconnectedSpace.trivial_of_discrete⟩
 
 /-- A non-trivial connected T1 space has no isolated points. -/
 instance (priority := 100) ConnectedSpace.neBot_nhdsWithin_compl_of_nontrivial_of_t1space

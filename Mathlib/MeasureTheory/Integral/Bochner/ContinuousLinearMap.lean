@@ -19,7 +19,7 @@ the composition, as we are dealing with classes of functions, but it has already
 as `ContinuousLinearMap.compLp`. We take advantage of this construction here.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory RCLike
 open scoped ENNReal NNReal
@@ -53,7 +53,7 @@ theorem integral_comp_commSL [CompleteSpace E] (hσ : ∀ (r : ℝ) (x : 𝕜), 
   apply φ_int.induction (P := fun φ => ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ))
   · intro e s s_meas _
     rw [integral_indicator_const e s_meas, ← @smul_one_smul E ℝ 𝕜 _ _ _ _ _ (μ.real s) e,
-      ContinuousLinearMap.map_smulₛₗ, hσ, map_one, smul_assoc, one_smul,
+      map_smulₛₗ, hσ, map_one, smul_assoc, one_smul,
       ← integral_indicator_const (L e) s_meas]
     congr 1 with a
     rw [← Function.comp_def L, Set.indicator_comp_of_zero L.map_zero, Function.comp_apply]
@@ -62,7 +62,7 @@ theorem integral_comp_commSL [CompleteSpace E] (hσ : ∀ (r : ℝ) (x : 𝕜), 
       integral_add (μ := μ) (L.integrable_comp f_int) (L.integrable_comp g_int), hf, hg]
   · exact isClosed_eq L.continuous_integral_comp_L1 (L.continuous.comp continuous_integral)
   · intro f g hfg _ hf
-    convert hf using 1 <;> clear hf
+    convert! hf using 1 <;> clear hf
     · exact integral_congr_ae (hfg.fun_comp L).symm
     · rw [integral_congr_ae hfg.symm]
 
@@ -73,7 +73,7 @@ theorem integral_apply {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {
     (φ_int : Integrable φ μ) (v : H) : (∫ x, φ x ∂μ) v = ∫ x, φ x v ∂μ := by
   by_cases hE : CompleteSpace E
   · exact ((ContinuousLinearMap.apply 𝕜 E v).integral_comp_comm φ_int).symm
-  · rcases subsingleton_or_nontrivial H with hH|hH
+  · rcases subsingleton_or_nontrivial H with hH | hH
     · simp [Subsingleton.eq_zero v]
     · have : ¬(CompleteSpace (H →L[𝕜] E)) := by
         rwa [SeparatingDual.completeSpace_continuousLinearMap_iff]
@@ -125,7 +125,7 @@ variable [NormedSpace ℝ F] [NormedSpace 𝕜 F] [NormedSpace ℝ E]
 theorem integral_comp_comm (L : E ≃L[𝕜] F) (φ : X → E) : ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) := by
   have : CompleteSpace E ↔ CompleteSpace F :=
     completeSpace_congr (e := L.toEquiv) L.isUniformEmbedding
-  obtain ⟨_, _⟩|⟨_, _⟩ := iff_iff_and_or_not_and_not.mp this
+  obtain ⟨_, _⟩ | ⟨_, _⟩ := iff_iff_and_or_not_and_not.mp this
   · exact L.toContinuousLinearMap.integral_comp_comm' L.antilipschitz _
   · simp [integral, *]
 
@@ -158,6 +158,7 @@ end ContinuousMap
 theorem integral_ofReal {f : X → ℝ} : ∫ x, (f x : 𝕜) ∂μ = ↑(∫ x, f x ∂μ) :=
   (@RCLike.ofRealLI 𝕜 _).integral_comp_comm f
 
+@[norm_cast]
 theorem integral_complex_ofReal {f : X → ℝ} : ∫ x, (f x : ℂ) ∂μ = ∫ x, f x ∂μ := integral_ofReal
 
 theorem integral_re {f : X → 𝕜} (hf : Integrable f μ) :
@@ -278,7 +279,7 @@ theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Meas
     have C2 : Continuous fun u : Lp E 1 (μ.withDensity fun x => f x) => ∫ x, f x • u x ∂μ := by
       have : Continuous ((fun u : Lp E 1 μ => ∫ x, u x ∂μ) ∘ withDensitySMulLI (E := E) μ f_meas) :=
         continuous_integral.comp (withDensitySMulLI (E := E) μ f_meas).continuous
-      convert this with u
+      convert! this with u
       simp only [Function.comp_apply, withDensitySMulLI_apply]
       exact integral_congr_ae (memL1_smul_of_L1_withDensity f_meas u).coeFn_toLp.symm
     exact isClosed_eq C1 C2

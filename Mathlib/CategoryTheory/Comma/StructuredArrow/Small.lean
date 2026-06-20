@@ -16,7 +16,7 @@ Here we prove a technical result about small sets in the category of structured 
 be used in the proof of the Special Adjoint Functor Theorem.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -46,8 +46,11 @@ instance small_inverseImage_proj_of_locallySmall
     Sigma.exists, Subtype.exists, exists_prop]
   exact ⟨fun h ↦ ⟨_, h, _, rfl⟩, by rintro ⟨_, h, _, rfl⟩; exact h⟩
 
-@[deprecated (since := "2025-10-07")] alias small_proj_preimage_of_locallySmall :=
-  small_inverseImage_proj_of_locallySmall
+instance essentiallySmall [EssentiallySmall.{w} C] [LocallySmall.{w} D] :
+    EssentiallySmall.{w} (StructuredArrow S T) := by
+  rw [← essentiallySmall_congr
+    (StructuredArrow.pre S (equivSmallModel.{w} C).inverse T).asEquivalence]
+  exact essentiallySmall_of_small_of_locallySmall _
 
 end StructuredArrow
 
@@ -72,8 +75,12 @@ instance small_inverseImage_proj_of_locallySmall
     Sigma.exists, Subtype.exists, exists_prop]
   exact ⟨fun h ↦ ⟨_, h, _, rfl⟩, by rintro ⟨_, h, _, rfl⟩; exact h⟩
 
-@[deprecated (since := "2025-10-07")] alias small_proj_preimage_of_locallySmall :=
-  small_inverseImage_proj_of_locallySmall
+instance essentiallySmall [EssentiallySmall.{w} C] [LocallySmall.{w} D] :
+    EssentiallySmall.{w} (CostructuredArrow S T) := by
+  rw [← essentiallySmall_congr
+    (CostructuredArrow.pre (equivSmallModel.{w} C).inverse S T).asEquivalence]
+  exact essentiallySmall_of_small_of_locallySmall _
+
 end CostructuredArrow
 
 end CategoryTheory

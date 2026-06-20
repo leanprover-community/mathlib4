@@ -15,7 +15,7 @@ public import Mathlib.Data.Num.Lemmas
 This file was split from `Mathlib/Data/Num/Lemmas.lean` to keep the former under 1500 lines.
 -/
 
-@[expose] public section
+public section
 
 open Int
 
@@ -279,7 +279,7 @@ theorem cast_add [AddGroupWithOne α] : ∀ m n, ((m + n : ZNum) : α) = m + n
   | 0, a => by cases a <;> exact (_root_.zero_add _).symm
   | b, 0 => by cases b <;> exact (_root_.add_zero _).symm
   | pos _, pos _ => PosNum.cast_add _ _
-  | pos a, neg b => by simpa only [sub_eq_add_neg] using PosNum.cast_sub' (α := α) _ _
+  | pos a, neg b => by simpa only [sub_eq_add_neg] using! PosNum.cast_sub' (α := α) _ _
   | neg a, pos b =>
     have : (↑b + -↑a : α) = -↑a + ↑b := by
       rw [← PosNum.cast_to_int a, ← PosNum.cast_to_int b, ← Int.cast_neg, ← Int.cast_add (-a)]
@@ -324,9 +324,7 @@ theorem to_int_inj {m n : ZNum} : (m : ℤ) = n ↔ m = n :=
 
 theorem cmp_to_int : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℤ) < n) (m = n) ((n : ℤ) < m) : Prop)
   | 0, 0 => rfl
-  | pos a, pos b => by
-    have := PosNum.cmp_to_nat a b; revert this; dsimp [cmp]
-    cases PosNum.cmp a b <;> [simp; exact congr_arg pos; simp]
+  | pos a, pos b => by simpa using! PosNum.cmp_to_nat a b
   | neg a, neg b => by
     have := PosNum.cmp_to_nat b a; revert this; dsimp [cmp]
     cases PosNum.cmp b a <;> [simp; simp +contextual; simp]
@@ -432,8 +430,11 @@ instance addMonoidWithOne : AddMonoidWithOne ZNum :=
 
 -- The next theorems are declared outside of the instance to prevent timeouts.
 
+set_option backward.privateInPublic true in
 private theorem mul_comm : ∀ (a b : ZNum), a * b = b * a := by transfer
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance commRing : CommRing ZNum :=
   { ZNum.addCommGroup, ZNum.addMonoidWithOne with
     mul_assoc a b c := by transfer
@@ -546,7 +547,7 @@ theorem divMod_to_nat (d n : PosNum) :
     simp only at IH ⊢
     apply divMod_to_nat_aux <;> simp only [Num.cast_bit1, cast_bit1]
     · rw [← two_mul, ← two_mul, add_right_comm, mul_left_comm, ← mul_add, IH.1]
-    · omega
+    · lia
   | bit0 n IH =>
     unfold divMod
     -- Porting note: `cases'` didn't rewrite at `this`, so `revert` & `intro` are required.

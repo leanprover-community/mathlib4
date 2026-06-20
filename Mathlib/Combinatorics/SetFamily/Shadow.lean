@@ -62,7 +62,7 @@ elements from any set in `𝒜`. -/
 def shadow (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
   𝒜.sup fun s => s.image (erase s)
 
-@[inherit_doc] scoped[FinsetFamily] notation:max "∂ " => Finset.shadow
+@[inherit_doc] scoped[FinsetFamily] notation:max "∂" => Finset.shadow
 
 open FinsetFamily
 
@@ -83,7 +83,7 @@ theorem shadow_singleton (a : α) : ∂ {{a}} = {∅} := by
   simp [shadow]
 
 /-- The shadow is monotone. -/
-@[mono]
+@[gcongr, mono]
 theorem shadow_monotone : Monotone (shadow : Finset (Finset α) → Finset (Finset α)) := fun _ _ =>
   sup_mono
 
@@ -195,7 +195,7 @@ theorem upShadow_empty : ∂⁺ (∅ : Finset (Finset α)) = ∅ :=
   rfl
 
 /-- The upper shadow is monotone. -/
-@[mono]
+@[gcongr, mono]
 theorem upShadow_monotone : Monotone (upShadow : Finset (Finset α) → Finset (Finset α)) :=
   fun _ _ => sup_mono
 
@@ -296,7 +296,7 @@ theorem mem_upShadow_iff_exists_mem_card_add :
       rfl
     · rintro ⟨t, ht, hts, hcard⟩
       obtain ⟨u, htu, hus, hu⟩ := Finset.exists_subsuperset_card_eq hts (Nat.le_add_right _ 1)
-        (by cutsat)
+        (by lia)
       refine ⟨u, mem_upShadow_iff_exists_mem_card_add_one.2 ⟨t, ht, htu, hu⟩, hus, ?_⟩
       rw [hu, ← hcard, add_right_comm]
       rfl

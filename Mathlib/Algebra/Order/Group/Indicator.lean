@@ -17,7 +17,7 @@ public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 This file relates the support of a function to order constructions.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 
@@ -109,7 +109,7 @@ lemma mulIndicator_le_mulIndicator' (h : a ∈ s → f a ≤ g a) :
     mulIndicator s f a ≤ mulIndicator s g a :=
   mulIndicator_rel_mulIndicator le_rfl h
 
-@[to_additive (attr := mono, gcongr)]
+@[to_additive (attr := mono, gcongr only)]
 lemma mulIndicator_le_mulIndicator (h : f a ≤ g a) : mulIndicator s f a ≤ mulIndicator s g a :=
   mulIndicator_rel_mulIndicator le_rfl fun _ ↦ h
 
@@ -182,7 +182,7 @@ lemma mulIndicator_iInter_apply (h1 : (⊥ : M) = 1) (s : ι → Set α) (f : α
     simpa [mulIndicator_of_notMem hj] using (iInf_le (fun i ↦ (s i).mulIndicator f) j) x
 
 @[to_additive]
-lemma iSup_mulIndicator {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {f : ι → α → M}
+lemma iSup_mulIndicator {ι : Type*} [Preorder ι] [IsDirectedOrder ι] {f : ι → α → M}
     {s : ι → Set α} (h1 : (⊥ : M) = 1) (hf : Monotone f) (hs : Monotone s) :
     ⨆ i, (s i).mulIndicator (f i) = (⋃ i, s i).mulIndicator (⨆ i, f i) := by
   simp only [le_antisymm_iff, iSup_le_iff]
@@ -207,17 +207,17 @@ variable [Monoid M] [PartialOrder M] [CanonicallyOrderedMul M]
 
 @[to_additive]
 lemma mulIndicator_le_self (s : Set α) (f : α → M) : mulIndicator s f ≤ f :=
-  mulIndicator_le_self' fun _ _ ↦ one_le _
+  mulIndicator_le_self' fun _ _ ↦ one_le
 
 @[to_additive]
 lemma mulIndicator_apply_le {a : α} {s : Set α} {f g : α → M} (hfg : a ∈ s → f a ≤ g a) :
     mulIndicator s f a ≤ g a :=
-  mulIndicator_apply_le' hfg fun _ ↦ one_le _
+  mulIndicator_apply_le' hfg fun _ ↦ one_le
 
 @[to_additive]
 lemma mulIndicator_le {s : Set α} {f g : α → M} (hfg : ∀ a ∈ s, f a ≤ g a) :
     mulIndicator s f ≤ g :=
-  mulIndicator_le' hfg fun _ _ ↦ one_le _
+  mulIndicator_le' hfg fun _ _ ↦ one_le
 
 end CanonicallyOrderedMul
 

@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Defs
 # Characteristic of quotient rings
 -/
 
-@[expose] public section
+public section
 
 theorem CharP.ker_intAlgebraMap_eq_span
     {R : Type*} [Ring R] (p : ℕ) [CharP R p] :

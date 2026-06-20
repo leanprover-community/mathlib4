@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Lie.Matrix
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.Algebra.Lie.Weights.Basic
 public import Mathlib.LinearAlgebra.Eigenspace.Matrix
+public import Mathlib.LinearAlgebra.LinearIndependent.BaseChange
 public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 
 /-!
@@ -27,7 +28,7 @@ reduced crystallographic root system. It follows [Geck](Geck2017) quite closely.
 
 ## Alternative approaches
 
-The are at least three ways to construct a Lie algebra from a root system:
+There are at least three ways to construct a Lie algebra from a root system:
 1. As a quotient of a free Lie algebra, using the Serre relations
 2. Directly defining the Lie bracket on $H ⊕ K^∣Φ|$
 3. The Geck construction
@@ -77,6 +78,22 @@ lemma h_def [DecidableEq ι] (i : b.support) :
 lemma h_eq_diagonal [DecidableEq ι] (i : b.support) :
     h i = .diagonal (Sum.elim 0 (P.pairingIn ℤ · i)) := by
   ext (j | j) (k | k) <;> simp [h, Matrix.diagonal_apply]
+
+variable (b) in
+lemma linearIndependent_h [Finite ι] [CharZero R] [IsDomain R] [P.IsRootSystem] :
+    LinearIndependent R (h (b := b)) := by
+  classical
+  have : Matrix.diagLinearMap (b.support ⊕ ι) R R ∘ h =
+      Sum.elimZeroLeft ∘ fun i : b.support ↦ algebraMap ℤ R ∘ (P.pairingIn ℤ · i) := by
+    ext; rw [comp_apply, h_def]; aesop
+  apply LinearIndependent.of_comp (Matrix.diagLinearMap _ _ _)
+  rw [this, LinearMap.linearIndependent_iff_of_injOn _ Sum.elim_injective'.injOn,
+    linearIndependent_algebraMap_comp_iff]
+  suffices LinearIndependent ℤ (fun i j : b.support ↦ P.pairingIn ℤ j i) from
+    this.of_linearIndependent_subset b.support
+  apply b.cartanMatrix.transpose.linearIndependent_rows_of_det_ne_zero
+  rw [Matrix.det_transpose, ← Matrix.nondegenerate_iff_det_ne_zero]
+  exact b.cartanMatrix_nondegenerate
 
 lemma span_range_h_le_range_diagonal [DecidableEq ι] :
     span R (range h) ≤ LinearMap.range (Matrix.diagonalLinearMap (b.support ⊕ ι) R R) := by
@@ -147,6 +164,8 @@ def ω :
   open scoped Classical in
   letI := P.indexNeg
   .fromBlocks 1 0 0 <| .of fun i j ↦ if i = -j then 1 else 0
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- Geck's construction of the Lie algebra associated to a root system with distinguished base.
 
@@ -311,13 +330,13 @@ instance : IsLieAbelian (cartanSubalgebra' b) := by
   refine ⟨fun ⟨⟨x, hx⟩, hx'⟩ ⟨⟨y, hy⟩, hy'⟩ ↦ ?_⟩
   let x' : cartanSubalgebra b := ⟨x, hx'⟩
   let y' : cartanSubalgebra b := ⟨y, hy'⟩
-  suffices ⁅x', y'⁆ = 0 by simpa [x', y', Subtype.ext_iff, -trivial_lie_zero] using this
-  simp
+  suffices ⁅x', y'⁆ = 0 by simpa [x', y', Subtype.ext_iff] using this
+  simp [trivial_lie_zero]
 
 instance : LieModule.IsTriangularizable R (cartanSubalgebra' b) (b.support ⊕ ι → R) := by
   refine ⟨fun ⟨⟨x, hx'⟩, hx⟩ ↦ ?_⟩
   obtain ⟨d, rfl⟩ : ∃ d : b.support ⊕ ι → R, Matrix.diagonal d = x :=
-    span_range_h_le_range_diagonal <| by simpa using hx
+    span_range_h_le_range_diagonal <| by simpa using! hx
   simp
 
 lemma cartanSubalgebra_le_lieAlgebra :

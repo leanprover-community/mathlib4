@@ -142,9 +142,9 @@ def MulAction.prodEquiv :
     letI := _insts.1; letI := _insts.2.1; have := _insts.2.2
     MulAction.prodOfSMulCommClass M N α
   left_inv := by
-    rintro ⟨-, hsmul⟩; dsimp only; ext ⟨m, n⟩ a
+    rintro ⟨_⟩; dsimp only; ext ⟨m, n⟩ a
     change (m, (1 : N)) • ((1 : M), n) • a = _
-    rw [← hsmul, Prod.mk_mul_mk, mul_one, one_mul]; rfl
+    rw [← mul_smul, Prod.mk_mul_mk, mul_one, one_mul]; rfl
   right_inv := by
     rintro ⟨hM, hN, -⟩
     dsimp only; congr 1

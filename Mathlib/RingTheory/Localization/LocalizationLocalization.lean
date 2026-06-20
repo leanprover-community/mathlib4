@@ -41,7 +41,7 @@ variable [Algebra S T] [IsScalarTower R S T]
 
 -- This should only be defined when `S` is the localization `M⁻¹R`, hence the nolint.
 /-- Localizing w.r.t. `M ⊆ R` and then w.r.t. `N ⊆ S = M⁻¹R` is equal to the localization of `R`
-w.r.t. this module. See `localization_localization_isLocalization`.
+w.r.t. this submonoid. See `localization_localization_isLocalization`.
 -/
 @[nolint unusedArguments]
 def localizationLocalizationSubmodule : Submonoid R :=
@@ -66,7 +66,7 @@ variable [IsLocalization M S]
 theorem localization_localization_map_units [IsLocalization N T]
     (y : localizationLocalizationSubmodule M N) : IsUnit (algebraMap R T y) := by
   obtain ⟨y', z, eq⟩ := mem_localizationLocalizationSubmodule.mp y.prop
-  rw [IsScalarTower.algebraMap_apply R S T, eq, RingHom.map_mul, IsUnit.mul_iff]
+  rw [IsScalarTower.algebraMap_apply R S T, eq, map_mul, IsUnit.mul_iff]
   exact ⟨IsLocalization.map_units T y', (IsLocalization.map_units _ z).map (algebraMap S T)⟩
 
 theorem localization_localization_surj [IsLocalization N T] (x : T) :
@@ -82,9 +82,8 @@ theorem localization_localization_surj [IsLocalization N T] (x : T) :
   refine ⟨⟨z * t', z' * t, ?_⟩, ?_⟩ -- x = y / s = (z * t') / (z' * t)
   · rw [mem_localizationLocalizationSubmodule]
     refine ⟨s, t * t', ?_⟩
-    rw [RingHom.map_mul, ← eq₃, mul_assoc, ← RingHom.map_mul, mul_comm t, Submonoid.coe_mul]
-  · simp only [RingHom.map_mul, IsScalarTower.algebraMap_apply R S T, ← eq₃, ← eq₂,
-      ← eq₁]
+    rw [map_mul, ← eq₃, mul_assoc, ← map_mul, mul_comm t, Submonoid.coe_mul]
+  · simp only [map_mul, IsScalarTower.algebraMap_apply R S T, ← eq₃, ← eq₂, ← eq₁]
     ring
 
 theorem localization_localization_exists_of_eq [IsLocalization N T] (x y : R) :
@@ -121,7 +120,7 @@ localization is a localization.
 -/
 theorem localization_localization_isLocalization_of_has_all_units [IsLocalization N T]
     (H : ∀ x : S, IsUnit x → x ∈ N) : IsLocalization (N.comap (algebraMap R S)) T := by
-  convert localization_localization_isLocalization M N T using 1
+  convert! localization_localization_isLocalization M N T using 1
   dsimp [localizationLocalizationSubmodule]
   congr
   symm
@@ -197,12 +196,12 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
     IsLocalization (N.map (algebraMap R S)) T where
   map_units := by
     rintro ⟨_, ⟨y, hy, rfl⟩⟩
-    convert IsLocalization.map_units T ⟨y, hy⟩
+    convert! IsLocalization.map_units T ⟨y, hy⟩
     exact (IsScalarTower.algebraMap_apply _ _ _ _).symm
   surj y := by
     obtain ⟨⟨x, s⟩, e⟩ := IsLocalization.surj N y
     refine ⟨⟨algebraMap R S x, _, _, s.prop, rfl⟩, ?_⟩
-    simpa [← IsScalarTower.algebraMap_apply] using e
+    simpa [← IsScalarTower.algebraMap_apply] using! e
   exists_of_eq {x₁ x₂} := by
     obtain ⟨⟨y₁, s₁⟩, e₁⟩ := IsLocalization.surj M x₁
     obtain ⟨⟨y₂, s₂⟩, e₂⟩ := IsLocalization.surj M x₂
@@ -221,10 +220,10 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
         (IsLocalization.map_units S s₁).mul_left_inj,
         (IsLocalization.map_units S s₂).mul_left_inj] at this
       rw [h₂, h₁] at this
-      simpa only [mul_comm] using this
+      simpa only [mul_comm] using! this
     simp_rw [IsLocalization.eq_iff_exists N T, IsLocalization.eq_iff_exists M S]
     intro ⟨a, e⟩
-    exact ⟨a, 1, by convert e using 1 <;> simp⟩
+    exact ⟨a, 1, by convert! e using 1 <;> simp⟩
 
 /-- If `M ≤ N` are submonoids of `R` such that `∀ x : N, ∃ m : R, m * x ∈ M`, then the
 localization at `N` is equal to the localization of `M`. -/

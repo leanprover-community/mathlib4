@@ -42,7 +42,7 @@ variable {R M}
 /-- The tensor algebra is graded by the powers of the submodule `(TensorAlgebra.ι R).range`. -/
 instance gradedAlgebra :
     GradedAlgebra ((LinearMap.range (ι R : M →ₗ[R] TensorAlgebra R M) ^ ·) : ℕ → Submodule R _) :=
-  GradedAlgebra.ofAlgHom _ (lift R <| GradedAlgebra.ι R M)
+  fast_instance% GradedAlgebra.ofAlgHom _ (lift R <| GradedAlgebra.ι R M)
     (by
       ext m
       dsimp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply, AlgHom.comp_apply,
@@ -55,7 +55,7 @@ instance gradedAlgebra :
     | algebraMap r =>
       rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
     | add x y i hx hy ihx ihy =>
-      rw [map_add, ihx, ihy, ← AddMonoidHom.map_add]
+      rw [map_add, ihx, ihy, ← map_add]
       rfl
     | mem_mul m hm i x hx ih =>
       obtain ⟨_, rfl⟩ := hm

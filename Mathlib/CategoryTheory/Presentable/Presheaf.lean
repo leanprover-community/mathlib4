@@ -20,7 +20,7 @@ pullbacks is automatically satisfied, as it is proven in the file
 
 -/
 
-@[expose] public section
+public section
 
 universe w v v' u u'
 
@@ -30,6 +30,7 @@ open Opposite Limits
 
 namespace Presheaf
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] freeYonedaHomEquiv_comp in
 instance {C : Type u} [Category.{v} C] {A : Type u'} [Category.{v'} A]
     [HasColimitsOfSize.{w, w} A] [HasCoproducts.{v} A]
@@ -44,6 +45,17 @@ instance {C : Type u} [Category.{v} C] {A : Type u'} [Category.{v'} A]
   have := preservesColimitsOfShape_of_isCardinalPresentable M κ J
   exact preservesColimitsOfShape_of_natIso e.symm
 
+-- TODO: add variants of this result for `yoneda` and `shrinkYoneda`
+instance {C : Type u} [SmallCategory C]
+    [HasColimitsOfSize.{w, w} (Type (max u u'))]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] (X : C) :
+    IsCardinalPresentable (uliftYoneda.{u'}.obj X) κ where
+  preservesColimitOfShape J _ _ := by
+    let e : (coyoneda.obj (op (uliftYoneda.{u'}.obj X))) ≅
+        (evaluation _ _).obj (op X) ⋙ uliftFunctor :=
+      NatIso.ofComponents (fun P ↦ Equiv.toIso (uliftYonedaEquiv.trans Equiv.ulift.symm))
+    exact preservesColimitsOfShape_of_natIso e.symm
+
 lemma isStrongGenerator
     {A : Type u'} [Category.{v'} A] {P : ObjectProperty A} (hP : P.IsStrongGenerator)
     [HasCoproducts.{w} A] [HasPullbacks A] (C : Type w) [SmallCategory C] :
@@ -54,19 +66,14 @@ lemma isStrongGenerator
   refine ⟨Presheaf.isSeparating (C := C) (ι := Subtype P) (S := Subtype.val)
     (by simpa using hP₁),
     fun P₁ P₂ i _ hi ↦ ?_⟩
-  · rw [NatTrans.isIso_iff_isIso_app]
-    rintro ⟨X⟩
-    refine hP₂ _ (fun G hG f ↦ ?_)
-    obtain ⟨y, rfl⟩ := freeYonedaHomEquiv.surjective f
-    obtain ⟨x, rfl⟩ := hi (freeYoneda X G)
-      (ObjectProperty.ofObj_apply (fun (T : C × (Subtype P)) ↦
-        freeYoneda T.1 T.2.1) ⟨X, G, hG⟩) y
-    exact ⟨freeYonedaHomEquiv x, by simp [freeYonedaHomEquiv_comp]⟩
-
-instance {A : Type u'} [Category.{v'} A] [LocallySmall.{w} A] (C : Type w) [SmallCategory C] :
-    LocallySmall.{w} (C ⥤ A) where
-  hom_small P Q :=
-    small_of_injective (f := NatTrans.app) (fun f g h ↦ by aesop)
+  rw [NatTrans.isIso_iff_isIso_app]
+  rintro ⟨X⟩
+  refine hP₂ _ (fun G hG f ↦ ?_)
+  obtain ⟨y, rfl⟩ := freeYonedaHomEquiv.surjective f
+  obtain ⟨x, rfl⟩ := hi (freeYoneda X G)
+    (ObjectProperty.ofObj_apply (fun (T : C × (Subtype P)) ↦
+      freeYoneda T.1 T.2.1) ⟨X, G, hG⟩) y
+  exact ⟨freeYonedaHomEquiv x, by simp [freeYonedaHomEquiv_comp]⟩
 
 instance {A : Type u'} [Category.{v'} A] (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalLocallyPresentable A κ] [HasPullbacks A]

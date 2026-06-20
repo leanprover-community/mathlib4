@@ -263,9 +263,8 @@ def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ�
   LinearMap.mkContinuous₂
     (LinearMap.mk₂'ₛₗ (RingHom.id 𝕜₃) σ₂₃ comp add_comp smul_comp comp_add fun c f g => by
       ext
-      simp only [ContinuousLinearMap.map_smulₛₗ, coe_smul', coe_comp', Function.comp_apply,
-        Pi.smul_apply])
-    1 fun f g => by simpa only [one_mul] using opNorm_comp_le f g
+      simp only [map_smulₛₗ, comp_apply, smul_apply])
+    1 fun f g => by simpa only [one_mul] using! opNorm_comp_le f g
 
 theorem norm_compSL_le : ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
@@ -403,9 +402,18 @@ space is the product of the non-negative norms. -/
 theorem nnnorm_smulRight_apply (c : StrongDual 𝕜 E) (f : Fₗ) : ‖smulRight c f‖₊ = ‖c‖₊ * ‖f‖₊ :=
   NNReal.eq <| c.norm_smulRight_apply f
 
+@[simp] theorem norm_toSpanSingleton (x : E) : ‖toSpanSingleton 𝕜 x‖ = ‖x‖ := by
+  simp [← smulRight_id, norm_id]
+
+@[simp] theorem nnnorm_toSpanSingleton (x : E) : ‖toSpanSingleton 𝕜 x‖₊ = ‖x‖₊ :=
+  NNReal.eq <| norm_toSpanSingleton _
+
 variable (𝕜 E Fₗ) in
 /-- `ContinuousLinearMap.smulRight` as a continuous trilinear map:
-`smulRightL (c : StrongDual 𝕜 E) (f : F) (x : E) = c x • f`. -/
+`smulRightL (c : StrongDual 𝕜 E) (f : F) (x : E) = c x • f`.
+
+This is also known as a rank-one operator.
+See also `InnerProductSpace.rankOne` for the rank-one operator on Hilbert spaces. -/
 @[simps! apply_apply]
 def smulRightL : StrongDual 𝕜 E →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ :=
   LinearMap.mkContinuous₂
@@ -415,16 +423,10 @@ def smulRightL : StrongDual 𝕜 E →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ 
         simp only [add_smul, coe_smulRightₗ, add_apply, smulRight_apply, LinearMap.add_apply]
       map_smul' := fun m c => by
         ext x
-        dsimp
-        rw [smul_smul] }
+        simp [smul_smul] }
     1 fun c x => by
       simp only [coe_smulRightₗ, one_mul, norm_smulRight_apply, LinearMap.coe_mk, AddHom.coe_mk,
         le_refl]
-
-@[deprecated norm_smulRight_apply (since := "2025-11-12")]
-theorem norm_smulRightL_apply (c : StrongDual 𝕜 E) (f : Fₗ) :
-    ‖smulRightL 𝕜 E Fₗ c f‖ = ‖c‖ * ‖f‖ := by
-  simp
 
 end ContinuousLinearMap
 

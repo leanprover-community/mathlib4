@@ -57,7 +57,7 @@ lemma mulSingle_ne_one_iff : mulSingle i x ≠ 1 ↔ x ≠ 1 :=
 @[to_additive]
 lemma apply_mulSingle (f' : ∀ i, M i → N i) (hf' : ∀ i, f' i 1 = 1) (i : ι) (x : M i) (j : ι) :
     f' j (mulSingle i x j) = mulSingle i (f' i x) j := by
-  simpa only [Pi.one_apply, hf', mulSingle] using Function.apply_update f' 1 i x j
+  simpa only [Pi.one_apply, hf', mulSingle] using! Function.apply_update f' 1 i x j
 
 @[to_additive apply_single₂]
 lemma apply_mulSingle₂ (f' : ∀ i, M i → N i → O i) (hf' : ∀ i, f' i 1 1 = 1) (i : ι)
@@ -88,8 +88,24 @@ lemma mulSingle_inj (i : ι) {x y : M i} : mulSingle i x = mulSingle i y ↔ x =
 
 variable {M : Type*} [One M]
 
+/--
+A congruence lemma for `Pi.mulSingle`, specialized for the non-dependent case. Without this,
+`simp` can't rewrite in the first and third argument (`i` and `j`) because of dependence.
+See also https://github.com/leanprover/lean4/issues/12478.
+-/
+@[to_additive (attr := congr) /--
+A congruence lemma for `Pi.single`, specialized for the non-dependent case. Without this,
+`simp` can't rewrite in the first and third argument (`i` and `j`) because of dependence.
+See also https://github.com/leanprover/lean4/issues/12478.
+-/]
+lemma mulSingle_congr {i₁ i₂ : ι} (hi : i₁ = i₂)
+    {x₁ x₂ : M} (hx : x₁ = x₂) {j₁ j₂ : ι} (hj : j₁ = j₂) :
+    (mulSingle i₁ x₁ : ι → M) j₁ = (mulSingle i₂ x₂ : ι → M) j₂ :=
+  update_congr rfl hi hx hj
+
 /-- On non-dependent functions, `Pi.mulSingle` can be expressed as an `ite` -/
-@[to_additive /-- On non-dependent functions, `Pi.single` can be expressed as an `ite` -/]
+@[to_additive (attr := grind =)
+  /-- On non-dependent functions, `Pi.single` can be expressed as an `ite` -/]
 lemma mulSingle_apply (i : ι) (x : M) (i' : ι) :
     (mulSingle i x : ι → M) i' = if i' = i then x else 1 :=
   Function.update_apply (1 : ι → M) i x i'

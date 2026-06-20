@@ -6,7 +6,6 @@ Authors: Anne Baanen, Alex J. Best
 module
 
 public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.Tactic.IntervalCases
 public import Mathlib.Algebra.Polynomial.FieldDivision
 
 /-!
@@ -15,7 +14,7 @@ public import Mathlib.Algebra.Polynomial.FieldDivision
 Facts about polynomials that have a specific integer degree.
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial
 

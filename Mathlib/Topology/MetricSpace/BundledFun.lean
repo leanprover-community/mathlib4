@@ -27,7 +27,7 @@ In most cases, the codomain will be a linear ordered additive monoid like
 
 -/
 
-@[expose] public section
+public section
 
 variable {X R : Type*}
 
@@ -52,7 +52,7 @@ variable [Zero R] [Add R] [LE R] (d : PseudoMetric X R)
 
 instance : FunLike (PseudoMetric X R) X (X → R) where
   coe := PseudoMetric.toFun
-  coe_injective' _ := by aesop
+  coe_injective _ := by aesop
 
 @[simp, norm_cast]
 lemma coe_mk (d : X → X → R) (refl symm triangle) : mk d refl symm triangle = d := rfl
@@ -142,9 +142,7 @@ instance : OrderBot (PseudoMetric X R) where
 lemma coe_finsetSup [IsOrderedAddMonoid R] {Y : Type*} {f : Y → PseudoMetric X R} {s : Finset Y}
     (hs : s.Nonempty) :
     ⇑(s.sup f) = s.sup' hs (f ·) := by
-  induction hs using Finset.Nonempty.cons_induction with
-  | singleton i => simp
-  | cons a s ha hs ih => simp [hs, ih]
+  simpa using (Finset.sup'_eq_sup hs (f ·)).symm
 
 lemma finsetSup_apply [IsOrderedAddMonoid R] {Y : Type*} {f : Y → PseudoMetric X R}
     {s : Finset Y} (hs : s.Nonempty) (x y : X) :
@@ -204,28 +202,19 @@ instance isSymm_ball [Add R] [Zero R] [Preorder R] (d : PseudoMetric X R) {ε : 
     SetRel.IsSymm {xy | d xy.1 xy.2 < ε} where
   symm := by simp [d.symm]
 
-@[deprecated (since := "2025-10-17")] alias isSymmetricRel_ball := isSymm_ball
-
 instance isSymm_closedBall [Add R] [Zero R] [LE R] (d : PseudoMetric X R) {ε : R} :
     SetRel.IsSymm {xy | d xy.1 xy.2 ≤ ε} where
   symm := by simp [d.symm]
-
-@[deprecated (since := "2025-10-17")] alias isSymmetricRel_closedBall := isSymm_closedBall
 
 instance IsUltra.isTrans_ball [Add R] [Zero R] [LinearOrder R] (d : PseudoMetric X R)
     [d.IsUltra] {ε : R} :
       SetRel.IsTrans {xy | d xy.1 xy.2 < ε} where
     trans _ _ _ hxy hyz := le_sup.trans_lt (max_lt hxy hyz)
 
-@[deprecated (since := "2025-10-17")] alias IsUltra.isTransitiveRel_ball := IsUltra.isTrans_ball
-
 instance IsUltra.isTrans_closedBall [Add R] [Zero R] [SemilatticeSup R] (d : PseudoMetric X R)
     [d.IsUltra] {ε : R} :
     SetRel.IsTrans {xy | d xy.1 xy.2 ≤ ε} where
   trans _ _ _ hxy hyz := le_sup.trans (sup_le hxy hyz)
-
-@[deprecated (since := "2025-10-17")]
-alias IsUltra.isTransitiveRel_closedBall := IsUltra.isTrans_closedBall
 
 end ball
 

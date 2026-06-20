@@ -17,7 +17,7 @@ In particular we can avoid some assumptions about types being `Inhabited`,
   and make more general statements about `head` and `tail`.
 -/
 
-@[expose] public section
+public section
 
 namespace List
 
@@ -37,16 +37,13 @@ theorem mem_iff_get (v : Vector α n) : a ∈ v.toList ↔ ∃ i, v.get i = a :=
 theorem notMem_nil : a ∉ (Vector.nil : Vector α 0).toList := by
   simp
 
-@[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
-
 theorem notMem_zero (v : Vector α 0) : a ∉ v.toList :=
   (Vector.eq_nil v).symm ▸ notMem_nil a
-
-@[deprecated (since := "2025-05-23")] alias not_mem_zero := notMem_zero
 
 theorem mem_cons_iff (v : Vector α n) : a' ∈ (a ::ᵥ v).toList ↔ a' = a ∨ a' ∈ v.toList := by
   rw [Vector.toList_cons, List.mem_cons]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_succ_iff (v : Vector α (n + 1)) : a ∈ v.toList ↔ a = v.head ∨ a ∈ v.tail.toList := by
   obtain ⟨a', v', h⟩ := exists_eq_cons v
   simp_rw [h, Vector.mem_cons_iff, Vector.head_cons, Vector.tail_cons]
@@ -72,8 +69,6 @@ theorem mem_map_iff (b : β) (v : Vector α n) (f : α → β) :
 
 theorem notMem_map_zero (b : β) (v : Vector α 0) (f : α → β) : b ∉ (v.map f).toList := by
   simpa only [Vector.eq_nil v, Vector.map_nil, Vector.toList_nil] using List.not_mem_nil
-
-@[deprecated (since := "2025-05-23")] alias not_mem_map_zero := notMem_map_zero
 
 theorem mem_map_succ_iff (b : β) (v : Vector α (n + 1)) (f : α → β) :
     b ∈ (v.map f).toList ↔ f v.head = b ∨ ∃ a : α, a ∈ v.tail.toList ∧ f a = b := by

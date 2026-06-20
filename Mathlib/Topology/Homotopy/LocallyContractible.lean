@@ -32,12 +32,12 @@ This file defines `LocallyContractibleSpace` and `StronglyLocallyContractibleSpa
   contractibility
 * `IsOpen.stronglyLocallyContractibleSpace`: open subsets of strongly locally contractible spaces
   are strongly locally contractible
+* Products of strongly locally contractible spaces are strongly locally contractible
 
 ## TODO
 
 * Define contractible components and prove they are open in strongly locally contractible spaces
 * Add examples: convex sets, real vector spaces, star-shaped sets
-* Products of strongly locally contractible spaces
 
 ## Notes
 
@@ -52,12 +52,13 @@ contractible** (SLC).
 * "Basis of contractible neighborhoods" (this file, SLC)
 * "Null-homotopic inclusions" (classical LC, weakest)
 
-This naming is not used uniformly: according to https://ncatlab.org/nlab/show/locally+contractible+space
+This naming is not used uniformly: according to
+https://ncatlab.org/nlab/show/locally+contractible+space
 the second and third notion here could also be called
 "locally contractible" and "semilocally contractible" respectively.
 We've enquired at
 https://math.stackexchange.com/questions/5109428/terminology-for-local-contractibility-locally-contractible-vs-strongly-local
-in the hope of gettting definitive naming advice.
+in the hope of getting definitive naming advice.
 
 The Borsuk-Mazurkiewicz counterexample [borsuk_mazurkiewicz1934] shows that classical LC does not
 imply SLC. Moreover, from a contractible neighborhood `S` one generally cannot shrink to an open
@@ -91,7 +92,9 @@ section StronglyLocallyContractibleSpace
 neighborhoods form a neighborhood basis. Here "contractible" means contractible as a subspace.
 
 This is strictly stronger than the classical notion of locally contractible, which only requires
-null-homotopic inclusions. -/
+null-homotopic inclusions.
+This distinction is witnessed by an example from Borsuk-Mazurkiewicz [borsuk_mazurkiewicz1934];
+see also [MO88628] for discussion and the Whitehead manifold example. -/
 class StronglyLocallyContractibleSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- Each neighborhood filter has a basis of contractible subspace neighborhoods. -/
   contractible_basis : ∀ x : X,
@@ -121,8 +124,8 @@ theorem contractible_subset_basis {U : Set X} (h : IsOpen U) (hx : x ∈ U) :
 /-- Strongly locally contractible spaces are locally path-connected. -/
 instance (priority := 100) instLocPathConnectedSpace : LocPathConnectedSpace X where
   path_connected_basis x := by
-    refine contractible_basis x |>.to_hasBasis' (fun s ⟨hs, hs'⟩ ↦ ⟨s, ⟨hs, ?_⟩, le_rfl⟩)
-      (fun s hs ↦ hs.1)
+    refine contractible_basis x |>.to_hasBasis'
+      (fun s ⟨hs, hs'⟩ ↦ ⟨s, ⟨hs, ?_⟩, le_rfl⟩) (fun s hs ↦ hs.1)
     rw [isPathConnected_iff_pathConnectedSpace]
     infer_instance
 
@@ -130,7 +133,8 @@ instance (priority := 100) instLocPathConnectedSpace : LocPathConnectedSpace X w
 and `e : Y → X` is an open embedding, then `Y` is strongly locally contractible. -/
 theorem Topology.IsOpenEmbedding.stronglyLocallyContractibleSpace {e : Y → X}
     (he : IsOpenEmbedding e) : StronglyLocallyContractibleSpace Y :=
-  .of_bases (fun _ ↦ he.basis_nhds <| contractible_subset_basis he.isOpen_range (mem_range_self _))
+  .of_bases
+    (fun _ ↦ he.basis_nhds <| contractible_subset_basis he.isOpen_range (mem_range_self _))
     fun _ _ ⟨_, hs, hse⟩ ↦
       (he.toIsEmbedding.homeomorphOfSubsetRange hse).contractibleSpace_iff.mpr hs
 
@@ -140,6 +144,25 @@ theorem IsOpen.stronglyLocallyContractibleSpace {U : Set X} (h : IsOpen U) :
   h.isOpenEmbedding_subtypeVal.stronglyLocallyContractibleSpace
 
 end StronglyLocallyContractibleSpace
+
+section Products
+
+/-- The product of two strongly locally contractible spaces is strongly locally contractible. -/
+instance [StronglyLocallyContractibleSpace X] [StronglyLocallyContractibleSpace Y] :
+    StronglyLocallyContractibleSpace (X × Y) := by
+  refine .of_bases (ι := Set X × Set Y)
+    (p := fun (x, y) (Ux, Uy) =>
+      (Ux ∈ 𝓝 x ∧ ContractibleSpace Ux) ∧ (Uy ∈ 𝓝 y ∧ ContractibleSpace Uy))
+    (s := fun _ (Ux, Uy) => Ux ×ˢ Uy) ?_ ?_
+  · intro (x, y)
+    rw [nhds_prod_eq]
+    exact (contractible_basis x).prod (contractible_basis y)
+  · intro (x, y) (Ux, Uy) ⟨hUx, hUy⟩
+    haveI : ContractibleSpace Ux := hUx.2
+    haveI : ContractibleSpace Uy := hUy.2
+    exact (Homeomorph.Set.prod Ux Uy).contractibleSpace
+
+end Products
 
 section Implications
 
@@ -156,7 +179,7 @@ theorem StronglyLocallyContractibleSpace.locallyContractible [StronglyLocallyCon
   obtain ⟨v₀, hid⟩ := id_nullhomotopic V
   -- The inclusion V ↪ U is homotopic to the constant map at (inclusion v₀)
   refine ⟨ContinuousMap.inclusion hVU v₀, ?_⟩
-  convert Homotopic.comp (.refl _) hid
+  convert! Homotopic.comp (.refl _) hid
   ext
   simp
 

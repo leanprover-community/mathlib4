@@ -141,7 +141,7 @@ lemma term_nonneg {a : ℕ → ℂ} {n : ℕ} (h : 0 ≤ a n) (x : ℝ) : 0 ≤ 
   exacts [le_rfl, mul_nonneg h (inv_natCast_cpow_ofReal_pos hn x).le]
 
 lemma term_pos {a : ℕ → ℂ} {n : ℕ} (hn : n ≠ 0) (h : 0 < a n) (x : ℝ) : 0 < term a x n := by
-  simpa only [term_of_ne_zero hn] using mul_pos h <| inv_natCast_cpow_ofReal_pos hn x
+  simpa only [term_of_ne_zero hn] using! mul_pos h <| inv_natCast_cpow_ofReal_pos hn x
 
 end positivity
 
@@ -187,8 +187,8 @@ lemma LSeriesSummable.congr' {f g : ℕ → ℂ} (s : ℂ) (h : f =ᶠ[atTop] g)
   have : term f s =ᶠ[cofinite] term g s := by
     rw [eventuallyEq_iff_exists_mem] at h ⊢
     obtain ⟨S, hS, hS'⟩ := h
-    refine ⟨S \ {0}, diff_mem hS <| (Set.finite_singleton 0).compl_mem_cofinite, fun n hn ↦ ?_⟩
-    rw [Set.mem_diff, Set.mem_singleton_iff] at hn
+    refine ⟨S \ {0}, sdiff_mem hS <| (Set.finite_singleton 0).compl_mem_cofinite, fun n hn ↦ ?_⟩
+    rw [Set.mem_sdiff, Set.mem_singleton_iff] at hn
     simp [hn.2, hS' hn.1]
   exact this.symm.mono fun n hn ↦ by simp [hn]
 
@@ -320,8 +320,8 @@ by a constant times `n^(re s)`. -/
 lemma LSeriesSummable.le_const_mul_rpow {f : ℕ → ℂ} {s : ℂ} (h : LSeriesSummable f s) :
     ∃ C, ∀ n ≠ 0, ‖f n‖ ≤ C * n ^ s.re := by
   replace h := h.norm
-  by_contra! H
-  obtain ⟨n, hn₀, hn⟩ := H (tsum fun n ↦ ‖term f s n‖)
+  use tsum fun n ↦ ‖term f s n‖
+  by_contra! ⟨n, hn₀, hn⟩
   have := h.le_tsum n fun _ _ ↦ norm_nonneg _
   rw [norm_term_eq, if_neg hn₀,
     div_le_iff₀ <| Real.rpow_pos_of_pos (Nat.cast_pos.mpr <| Nat.pos_of_ne_zero hn₀) _] at this
@@ -333,7 +333,7 @@ lemma LSeriesSummable.isBigO_rpow {f : ℕ → ℂ} {s : ℂ} (h : LSeriesSummab
     f =O[atTop] fun n ↦ (n : ℝ) ^ s.re := by
   obtain ⟨C, hC⟩ := h.le_const_mul_rpow
   refine Asymptotics.IsBigO.of_bound C <| eventually_atTop.mpr ⟨1, fun n hn ↦ ?_⟩
-  convert hC n (Nat.pos_iff_ne_zero.mp hn) using 2
+  convert! hC n (Nat.pos_iff_ne_zero.mp hn) using 2
   rw [Real.norm_eq_abs, Real.abs_rpow_of_nonneg n.cast_nonneg, abs_of_nonneg n.cast_nonneg]
 
 /-- If `f n` is bounded in absolute value by a constant times `n^(x-1)` and `re s > x`,

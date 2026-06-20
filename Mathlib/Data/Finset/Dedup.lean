@@ -61,7 +61,7 @@ theorem Nodup.toFinset_inj {l l' : Multiset α} (hl : Nodup l) (hl' : Nodup l')
     (h : l.toFinset = l'.toFinset) : l = l' := by
   simpa [← toFinset_eq hl, ← toFinset_eq hl'] using h
 
-@[simp]
+@[simp, grind =]
 theorem mem_toFinset {a : α} {s : Multiset α} : a ∈ s.toFinset ↔ a ∈ s :=
   mem_dedup
 
@@ -193,8 +193,6 @@ theorem exists_list_nodup_eq [DecidableEq α] (s : Finset α) :
 protected theorem perm_toList {f₁ f₂ : Finset α} : f₁.toList.Perm f₂.toList ↔ f₁ = f₂ where
   mp h := Finset.ext fun x => by simp [← Finset.mem_toList, h.mem_iff]
   mpr h := .of_eq <| congrArg Finset.toList h
-
-@[deprecated (since := "2025-08-05")] alias _root_.perm_toList := Finset.perm_toList
 
 end ToList
 

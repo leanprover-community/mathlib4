@@ -20,7 +20,7 @@ for any limit element `j : J`. It follows that if
 
 -/
 
-@[expose] public section
+public section
 
 universe w w' v v' v'' u' u u''
 
@@ -62,7 +62,7 @@ instance (G₁ : C ⥤ D) (G₂ : D ⥤ E)
     have := preservesColimitsOfShape_of_preservesWellOrderContinuousOfShape G₂ j hj
     infer_instance
 
-instance [HasIterationOfShape J C] (K : Type*) [Category K] (X : K) :
+instance [HasIterationOfShape J C] (K : Type*) [Category* K] (X : K) :
     PreservesWellOrderContinuousOfShape J ((evaluation K C).obj X) where
   preservesColimitsOfShape j hj := by
     have := hasColimitsOfShape_of_isSuccLimit C j hj

@@ -13,7 +13,7 @@ public import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

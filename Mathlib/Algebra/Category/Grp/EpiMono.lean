@@ -245,7 +245,7 @@ theorem h_apply_fromCoset_nin_range (x : B) (hx : x ∈ f.hom.range) (b : B) (hb
       (fromCoset ⟨b • ↑f.hom.range, b, rfl⟩) (fromCoset_ne_of_nin_range _ hb) (by simp)]
   simp only [g_apply_fromCoset, leftCoset_assoc]
   refine Equiv.swap_apply_of_ne_of_ne (fromCoset_ne_of_nin_range _ fun r => hb ?_) (by simp)
-  convert Subgroup.mul_mem _ (Subgroup.inv_mem _ hx) r
+  convert! Subgroup.mul_mem _ (Subgroup.inv_mem _ hx) r
   rw [← mul_assoc, inv_mul_cancel, one_mul]
 
 theorem agree : f.hom.range = { x | h x = g x } := by
@@ -290,7 +290,7 @@ end SurjectiveOfEpiAuxs
 
 theorem surjective_of_epi [Epi f] : Function.Surjective f := by
   dsimp [Function.Surjective]
-  by_contra! r; rcases r with ⟨b, hb⟩
+  by_contra! ⟨b, hb⟩
   exact
     SurjectiveOfEpiAuxs.g_ne_h f b (fun ⟨c, hc⟩ => hb _ hc)
       (congr_arg GrpCat.Hom.hom ((cancel_epi f).1 (SurjectiveOfEpiAuxs.comp_eq f)))
@@ -311,7 +311,6 @@ variable {A B : AddGrpCat.{u}} (f : A ⟶ B)
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
   have i1 : Epi f ↔ Epi (groupAddGroupEquivalence.inverse.map f) := by
     refine ⟨?_, groupAddGroupEquivalence.inverse.epi_of_epi_map⟩
-    intro e'
     apply groupAddGroupEquivalence.inverse.map_epi
   rwa [GrpCat.epi_iff_surjective] at i1
 
@@ -327,11 +326,11 @@ variable {A B : GrpCat.{u}} (f : A ⟶ B)
 
 @[to_additive AddGrpCat.forget_grp_preserves_mono]
 instance forget_grp_preserves_mono : (forget GrpCat).PreservesMonomorphisms where
-  preserves f e := by rwa [mono_iff_injective, ← CategoryTheory.mono_iff_injective] at e
+  preserves f e := by rwa [mono_iff_injective, ← CategoryTheory.ofHom_mono_iff_injective] at e
 
 @[to_additive AddGrpCat.forget_grp_preserves_epi]
 instance forget_grp_preserves_epi : (forget GrpCat).PreservesEpimorphisms where
-  preserves f e := by rwa [epi_iff_surjective, ← CategoryTheory.epi_iff_surjective] at e
+  preserves f e := by rwa [epi_iff_surjective, ← CategoryTheory.ofHom_epi_iff_surjective] at e
 
 end GrpCat
 
@@ -371,11 +370,11 @@ theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
 
 @[to_additive AddCommGrpCat.forget_commGrp_preserves_mono]
 instance forget_commGrp_preserves_mono : (forget CommGrpCat).PreservesMonomorphisms where
-  preserves f e := by rwa [mono_iff_injective, ← CategoryTheory.mono_iff_injective] at e
+  preserves f e := by rwa [mono_iff_injective, ← CategoryTheory.ofHom_mono_iff_injective] at e
 
 @[to_additive AddCommGrpCat.forget_commGrp_preserves_epi]
 instance forget_commGrp_preserves_epi : (forget CommGrpCat).PreservesEpimorphisms where
-  preserves f e := by rwa [epi_iff_surjective, ← CategoryTheory.epi_iff_surjective] at e
+  preserves f e := by rwa [epi_iff_surjective, ← CategoryTheory.ofHom_epi_iff_surjective] at e
 
 end CommGrpCat
 

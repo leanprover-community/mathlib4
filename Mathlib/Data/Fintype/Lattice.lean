@@ -12,7 +12,7 @@ public import Mathlib.Data.Fintype.Basic
 # Lemmas relating fintypes and order/lattice structure.
 -/
 
-@[expose] public section
+public section
 
 
 open Function

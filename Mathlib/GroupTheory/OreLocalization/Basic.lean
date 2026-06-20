@@ -33,6 +33,17 @@ a denominator `s : S`.
 ## Tags
 localization, Ore, non-commutative
 
+## Implementation detail
+
+Some of the declarations are marked reducible to avoid diamonds with
+`Mathlib/Algebra/Module/LocalizedModule/Basic.lean`. This causes a significant performance
+regression, most notably in `Mathlib/AlgebraicGeometry/AffineSpace.lean`.
+Also see https://github.com/leanprover-community/mathlib4/pull/31862.
+
+We shall investigate if there are ways to improve performances. For example by introducing
+typeclasses to unify the two constructions on this and `LocalizedModule`, or by marking some
+downstream constructions (e.g. `Spec.structureSheaf`) as irreducible.
+
 -/
 
 @[expose] public section
@@ -48,7 +59,8 @@ namespace OreLocalization
 variable {R : Type*} [Monoid R] (S : Submonoid R) [OreSet S] (X) [MulAction R X]
 
 /-- The setoid on `R × S` used for the Ore localization. -/
-@[to_additive AddOreLocalization.oreEqv /-- The setoid on `R × S` used for the Ore localization. -/]
+@[to_additive (attr := implicit_reducible) AddOreLocalization.oreEqv
+  /-- The setoid on `R × S` used for the Ore localization. -/]
 def oreEqv : Setoid (X × S) where
   r rs rs' := ∃ (u : S) (v : R), u • rs'.1 = v • rs.1 ∧ u * rs'.2 = v * rs.2
   iseqv := by
@@ -189,7 +201,6 @@ def lift₂Expand {C : Sort*} (P : X → S → X → S → C)
       simp [this])
     fun r₁ t₁ s₁ ht₁ => by
     ext x; cases x with | _ r₂ s₂
-    dsimp only
     rw [liftExpand_of, liftExpand_of, hP r₁ t₁ s₁ ht₁ r₂ 1 s₂ (by simp)]; simp
 
 @[to_additive (attr := simp)]
@@ -201,8 +212,10 @@ theorem lift₂Expand_of {C : Sort*} {P : X → S → X → S → C}
     (r₁ : X) (s₁ : S) (r₂ : X) (s₂ : S) : lift₂Expand P hP (r₁ /ₒ s₁) (r₂ /ₒ s₂) = P r₁ s₁ r₂ s₂ :=
   rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
-private def smul' (r₁ : R) (s₁ : S) (r₂ : X) (s₂ : S) : X[S⁻¹] :=
+private abbrev smul' (r₁ : R) (s₁ : S) (r₂ : X) (s₂ : S) : X[S⁻¹] :=
   oreNum r₁ s₂ • r₂ /ₒ (oreDenom r₁ s₂ * s₁)
 
 @[to_additive]
@@ -228,9 +241,10 @@ private theorem smul'_char (r₁ : R) (r₂ : X) (s₁ s₂ : S) (u : S) (v : R)
   · rw [← mul_assoc (b := (u₀ : R)), mul_assoc (c := (u₀ : R)), h₃]
     simp only [mul_assoc]
 
+set_option backward.privateInPublic true in
 /-- The multiplication on the Ore localization of monoids. -/
 @[to_additive]
-private def smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
+private abbrev smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
   liftExpand (smul' r s) fun r₁ r₂ s' hs => by
     rcases oreCondition r s' with ⟨r₁', s₁', h₁⟩
     rw [smul'_char _ _ _ _ _ _ h₁]
@@ -250,12 +264,13 @@ private def smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
     ext; simp only [Submonoid.coe_mul, ← mul_assoc]
     rw [mul_assoc (s₄' : R), h₃, ← mul_assoc]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The scalar multiplication on the Ore localization of monoids. -/
-@[to_additive (attr := irreducible)
+@[to_additive
   /-- the vector addition on the Ore localization of additive monoids. -/]
-protected def smul : R[S⁻¹] → X[S⁻¹] → X[S⁻¹] :=
-  liftExpand smul'' fun r₁ r₂ s hs => by
-    ext x
+protected abbrev smul (y : R[S⁻¹]) (x : X[S⁻¹]) : X[S⁻¹] :=
+  liftExpand (smul'' · · x) (fun r₁ r₂ s hs => by
     cases x with | _ x s₂
     change OreLocalization.smul' r₁ s x s₂ = OreLocalization.smul' (r₂ * r₁) ⟨_, hs⟩ x s₂
     rcases oreCondition r₁ s₂ with ⟨r₁', s₁', h₁⟩
@@ -273,7 +288,7 @@ protected def smul : R[S⁻¹] → X[S⁻¹] → X[S⁻¹] :=
     simp only [Submonoid.smul_def, Submonoid.coe_mul, smul_smul, mul_assoc, h₄]
     congr 1
     ext; simp only [Submonoid.coe_mul, ← mul_assoc]
-    rw [mul_assoc _ r₃', ← h₃, ← mul_assoc, ← mul_assoc]
+    rw [mul_assoc _ r₃', ← h₃, ← mul_assoc, ← mul_assoc]) y
 
 @[to_additive]
 instance : SMul R[S⁻¹] X[S⁻¹] :=
@@ -327,14 +342,14 @@ def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
 
 /-- `1` in the localization, defined as `1 /ₒ 1`. -/
 @[to_additive (attr := irreducible) /-- `0` in the additive localization, defined as `0 -ₒ 0`. -/]
-protected def one : R[S⁻¹] := 1 /ₒ 1
+protected def one [One X] : X[S⁻¹] := 1 /ₒ 1
 
 @[to_additive]
-instance : One R[S⁻¹] :=
+instance [One X] : One X[S⁻¹] :=
   ⟨OreLocalization.one⟩
 
 @[to_additive]
-protected theorem one_def : (1 : R[S⁻¹]) = 1 /ₒ 1 := by
+protected theorem one_def [One X] : (1 : X[S⁻¹]) = 1 /ₒ 1 := by
   with_unfolding_all rfl
 
 @[to_additive]
@@ -384,16 +399,25 @@ protected theorem mul_assoc (x y z : R[S⁻¹]) : x * y * z = x * (y * z) :=
   OreLocalization.mul_smul x y z
 
 /-- `npow` of `OreLocalization` -/
-@[to_additive (attr := irreducible) /-- `nsmul` of `AddOreLocalization` -/]
-protected def npow : ℕ → R[S⁻¹] → R[S⁻¹] := npowRec
+@[to_additive /-- `nsmul` of `AddOreLocalization` -/]
+protected abbrev npow : ℕ → R[S⁻¹] → R[S⁻¹] := npowRec
 
-unseal OreLocalization.npow in
 @[to_additive]
 instance : Monoid R[S⁻¹] where
   one_mul := OreLocalization.one_mul
   mul_one := OreLocalization.mul_one
   mul_assoc := OreLocalization.mul_assoc
   npow := OreLocalization.npow
+
+@[to_additive]
+theorem oreDiv_pow (r : R) (s : S) (n : ℕ) (h : Commute r (s : R)) :
+    (r /ₒ s) ^ n = (r ^ n) /ₒ (s ^ n) := by
+  induction n with
+  | zero =>
+    rw [pow_zero, pow_zero, pow_zero, OreLocalization.one_def]
+  | succ n ih =>
+    rw [pow_succ', pow_succ', pow_succ, ih, oreDiv_mul_char (r' := r) (s' := s ^ n)]
+    exact h.pow_right _ |>.symm
 
 @[to_additive]
 instance instMulActionOreLocalization : MulAction R[S⁻¹] X[S⁻¹] where
@@ -440,7 +464,7 @@ theorem mul_div_one {p r : R} {s : S} : (p /ₒ s) * (r /ₒ 1) = (p * r) /ₒ s
   simp [oreDiv_mul_char p r s 1 p 1 (by simp)]
 
 /-- The fraction `s /ₒ 1` as a unit in `R[S⁻¹]`, where `s : S`. -/
-@[to_additive /-- The difference `s -ₒ 0` as a an additive unit. -/]
+@[to_additive /-- The difference `s -ₒ 0` as an additive unit. -/]
 def numeratorUnit (s : S) : Units R[S⁻¹] where
   val := (s : R) /ₒ 1
   inv := (1 : R) /ₒ s
@@ -451,7 +475,7 @@ def numeratorUnit (s : S) : Units R[S⁻¹] where
 fraction `r /ₒ 1`. -/
 @[to_additive /-- The additive homomorphism from `R` to `AddOreLocalization R S`,
   mapping `r : R` to the difference `r -ₒ 0`. -/]
-def numeratorHom : R →* R[S⁻¹] where
+abbrev numeratorHom : R →* R[S⁻¹] where
   toFun r := r /ₒ 1
   map_one' := by with_unfolding_all rfl
   map_mul' _ _ := mul_div_one.symm
@@ -478,12 +502,12 @@ def universalMulHom (hf : ∀ s : S, f s = fS s) : R[S⁻¹] →* T where
     x.liftExpand (fun r s => ((fS s)⁻¹ : Units T) * f r) fun r t s ht => by
       simp only [smul_eq_mul]
       have : (fS ⟨t * s, ht⟩ : T) = f t * fS s := by
-        simp only [← hf, MonoidHom.map_mul]
+        simp only [← hf, map_mul]
       conv_rhs =>
-        rw [MonoidHom.map_mul, ← one_mul (f r), ← Units.val_one, ← mul_inv_cancel (fS s)]
+        rw [map_mul, ← one_mul (f r), ← Units.val_one, ← mul_inv_cancel (fS s)]
         rw [Units.val_mul, mul_assoc, ← mul_assoc _ (fS s : T), ← this, ← mul_assoc]
       simp only [one_mul, Units.inv_mul]
-  map_one' := by beta_reduce; rw [OreLocalization.one_def, liftExpand_of]; simp
+  map_one' := by rw [OreLocalization.one_def, liftExpand_of]; simp
   map_mul' x y := by
     cases x with | _ r₁ s₁
     cases y with | _ r₂ s₂
@@ -529,16 +553,16 @@ variable [SMul R R'] [IsScalarTower R R' M]
 protected def hsmul (c : R) :
     X[S⁻¹] → X[S⁻¹] :=
   liftExpand (fun m s ↦ oreNum (c • 1) s • m /ₒ oreDenom (c • 1) s) (fun r t s ht ↦ by
-    dsimp only
     rw [← mul_one (oreDenom (c • 1) s), ← oreDiv_smul_oreDiv, ← mul_one (oreDenom (c • 1) _),
       ← oreDiv_smul_oreDiv, ← OreLocalization.expand])
 
-/- Warning: This gives an diamond on `SMul R[S⁻¹] M[S⁻¹][S⁻¹]`, but we will almost never localize
+set_option linter.overlappingInstances false in
+/-- Warning: This gives a diamond on `SMul R[S⁻¹] M[S⁻¹][S⁻¹]`, but we will almost never localize
 at the same monoid twice. -/
 /- Although the definition does not require `IsScalarTower R M X`,
 it does not make sense without it. -/
 @[to_additive (attr := nolint unusedArguments)]
-instance [SMul R X] [SMul R M] [IsScalarTower R M X] [IsScalarTower R M M] : SMul R (X[S⁻¹]) where
+instance [IsScalarTower R M X] [IsScalarTower R M M] : SMul R (X[S⁻¹]) where
   smul := OreLocalization.hsmul
 
 @[to_additive]

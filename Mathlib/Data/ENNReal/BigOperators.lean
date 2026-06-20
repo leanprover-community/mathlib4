@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.BigOperators.WithTop
 public import Mathlib.Data.NNReal.Basic
 public import Mathlib.Data.ENNReal.Inv
@@ -16,9 +17,9 @@ In this file we prove elementary properties of sums and products on `ℝ≥0∞`
 interact with the order structure on `ℝ≥0∞`.
 -/
 
-@[expose] public section
+public section
 
-open Set NNReal ENNReal
+open Set NNReal
 
 namespace ENNReal
 
@@ -26,29 +27,43 @@ variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 
 section OperationsAndInfty
 
-variable {α : Type*}
+variable {ι M : Type*} [Zero M]
 
 @[simp, norm_cast]
-theorem coe_finset_sum {s : Finset α} {f : α → ℝ≥0} : ↑(∑ a ∈ s, f a) = ∑ a ∈ s, (f a : ℝ≥0∞) :=
-  map_sum ofNNRealHom f s
+lemma ofNNReal_finsetSum (s : Finset ι) (f : ι → ℝ≥0) : ↑(∑ i ∈ s, f i) = ∑ i ∈ s, ofNNReal (f i) :=
+  map_sum ofNNRealHom ..
+
+@[deprecated (since := "2026-06-04")] alias coe_finsetSum := ofNNReal_finsetSum
+@[deprecated (since := "2026-04-08")] alias coe_finset_sum := ofNNReal_finsetSum
 
 @[simp, norm_cast]
-theorem coe_finset_prod {s : Finset α} {f : α → ℝ≥0} : ↑(∏ a ∈ s, f a) = ∏ a ∈ s, (f a : ℝ≥0∞) :=
-  map_prod ofNNRealHom f s
+lemma ofNNReal_finsetProd (s : Finset ι) (f : ι → ℝ≥0) :
+    ↑(∏ i ∈ s, f i) = ∏ i ∈ s, ofNNReal (f i) := map_prod ofNNRealHom f s
+
+@[deprecated (since := "2026-06-04")] alias coe_finsetProd := ofNNReal_finsetProd
+@[deprecated (since := "2026-04-08")] alias coe_finset_prod := ofNNReal_finsetProd
+
+@[simp, norm_cast]
+lemma ofNNReal_finsuppSum (f : ι →₀ M) (g : ι → M → ℝ≥0) :
+    f.sum g = f.sum (fun i m ↦ ofNNReal (g i m)) := map_finsuppSum ofNNRealHom ..
+
+@[simp, norm_cast]
+lemma ofNNReal_finsuppProd (f : ι →₀ M) (g : ι → M → ℝ≥0) :
+    f.prod g = f.prod (fun i m ↦ ofNNReal (g i m)) := map_finsuppProd ofNNRealHom ..
 
 @[simp]
-theorem toNNReal_prod {ι : Type*} {s : Finset ι} {f : ι → ℝ≥0∞} :
+theorem toNNReal_prod (s : Finset ι) (f : ι → ℝ≥0∞) :
     (∏ i ∈ s, f i).toNNReal = ∏ i ∈ s, (f i).toNNReal :=
   map_prod toNNRealHom _ _
 
 @[simp]
-theorem toReal_prod {ι : Type*} {s : Finset ι} {f : ι → ℝ≥0∞} :
+theorem toReal_prod (s : Finset ι) (f : ι → ℝ≥0∞) :
     (∏ i ∈ s, f i).toReal = ∏ i ∈ s, (f i).toReal :=
   map_prod toRealHom _ _
 
 theorem ofReal_prod_of_nonneg {α : Type*} {s : Finset α} {f : α → ℝ} (hf : ∀ i, i ∈ s → 0 ≤ f i) :
     ENNReal.ofReal (∏ i ∈ s, f i) = ∏ i ∈ s, ENNReal.ofReal (f i) := by
-  simp_rw [ENNReal.ofReal, ← coe_finset_prod, coe_inj]
+  simp_rw [ENNReal.ofReal, ← ofNNReal_finsetProd, coe_inj]
   exact Real.toNNReal_prod_of_nonneg hf
 
 theorem iInf_sum {ι α : Type*} {f : ι → α → ℝ≥0∞} {s : Finset α} [Nonempty ι]
@@ -94,7 +109,7 @@ theorem lt_top_of_sum_ne_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∑ x 
 infinity -/
 theorem toNNReal_sum {s : Finset α} {f : α → ℝ≥0∞} (hf : ∀ a ∈ s, f a ≠ ∞) :
     ENNReal.toNNReal (∑ a ∈ s, f a) = ∑ a ∈ s, ENNReal.toNNReal (f a) := by
-  rw [← coe_inj, coe_toNNReal, coe_finset_sum, sum_congr rfl]
+  rw [← coe_inj, coe_toNNReal, ofNNReal_finsetSum, sum_congr rfl]
   · intro x hx
     exact (coe_toNNReal (hf x hx)).symm
   · exact sum_ne_top.2 hf
@@ -107,7 +122,7 @@ theorem toReal_sum {s : Finset α} {f : α → ℝ≥0∞} (hf : ∀ a ∈ s, f 
 
 theorem ofReal_sum_of_nonneg {s : Finset α} {f : α → ℝ} (hf : ∀ i, i ∈ s → 0 ≤ f i) :
     ENNReal.ofReal (∑ i ∈ s, f i) = ∑ i ∈ s, ENNReal.ofReal (f i) := by
-  simp_rw [ENNReal.ofReal, ← coe_finset_sum, coe_inj]
+  simp_rw [ENNReal.ofReal, ← ofNNReal_finsetSum, coe_inj]
   exact Real.toNNReal_sum_of_nonneg hf
 
 theorem sum_lt_sum_of_nonempty {s : Finset α} (hs : s.Nonempty) {f g : α → ℝ≥0∞}
@@ -127,8 +142,9 @@ end Sum
 
 section Inv
 
-lemma prod_inv_distrib {ι : Type*} {f : ι → ℝ≥0∞} {s : Finset ι}
-    (hf : (s : Set ι).Pairwise fun i j ↦ f i ≠ 0 ∨ f j ≠ ∞) :
+variable {ι : Type*} {f g : ι → ℝ≥0∞} {s : Finset ι}
+
+lemma prod_inv_distrib (hf : (s : Set ι).Pairwise fun i j ↦ f i ≠ 0 ∨ f j ≠ ∞) :
     (∏ i ∈ s, f i)⁻¹ = ∏ i ∈ s, (f i)⁻¹ := by
   induction s using Finset.cons_induction with
   | empty => simp
@@ -139,7 +155,19 @@ lemma prod_inv_distrib {ι : Type*} {f : ι → ℝ≥0∞} {s : Finset ι}
   · exact imp_iff_not_or.2 (hf (by simp) (by simp [hj]) <| .symm <| ne_of_mem_of_not_mem hj hi) hi₀
   · exact imp_iff_not_or.2 (hf (by simp [hj]) (by simp) <| ne_of_mem_of_not_mem hj hi).symm hi₀
 
-lemma finsetSum_iSup {α ι : Type*} {s : Finset α} {f : α → ι → ℝ≥0∞}
+lemma prod_div_distrib (hg : (s : Set ι).Pairwise fun i j ↦ g i ≠ 0 ∨ g j ≠ ∞) :
+    (∏ i ∈ s, f i / g i) = (∏ i ∈ s, f i) / (∏ i ∈ s, g i) := by
+  simp only [div_eq_mul_inv, prod_inv_distrib hg, ← Finset.prod_mul_distrib]
+
+lemma prod_div_distrib_of_ne_top (hg : ∀ i ∈ s, g i ≠ ∞) :
+    (∏ i ∈ s, f i / g i) = (∏ i ∈ s, f i) / (∏ i ∈ s, g i) :=
+  prod_div_distrib (by grind [Set.Pairwise])
+
+lemma prod_div_distrib_of_ne_zero (hg : ∀ i ∈ s, g i ≠ 0) :
+    (∏ i ∈ s, f i / g i) = (∏ i ∈ s, f i) / (∏ i ∈ s, g i) :=
+  prod_div_distrib (by grind [Set.Pairwise])
+
+lemma finsetSum_iSup {α : Type*} {s : Finset α} {f : α → ι → ℝ≥0∞}
     (hf : ∀ i j, ∃ k, ∀ a, f a i ≤ f a k ∧ f a j ≤ f a k) :
     ∑ a ∈ s, ⨆ i, f a i = ⨆ i, ∑ a ∈ s, f a i := by
   induction s using Finset.cons_induction with
@@ -150,7 +178,7 @@ lemma finsetSum_iSup {α ι : Type*} {s : Finset α} {f : α → ι → ℝ≥0�
     gcongr
     exacts [(hk a).1, (hk _).2]
 
-lemma finsetSum_iSup_of_monotone {α ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {s : Finset α}
+lemma finsetSum_iSup_of_monotone {α : Type*} [Preorder ι] [IsDirectedOrder ι] {s : Finset α}
     {f : α → ι → ℝ≥0∞} (hf : ∀ a, Monotone (f a)) : (∑ a ∈ s, iSup (f a)) = ⨆ n, ∑ a ∈ s, f a n :=
   finsetSum_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ a ↦ ⟨hf a hi, hf a hj⟩
 

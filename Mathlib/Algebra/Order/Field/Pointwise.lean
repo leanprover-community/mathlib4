@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
+public import Mathlib.Algebra.Order.GroupWithZero.OrderIso
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Order.Interval.Set.OrderIso
 
@@ -18,7 +18,7 @@ public import Mathlib.Order.Interval.Set.OrderIso
 This file contains lemmas about the effect of pointwise operations on sets with an order structure.
 -/
 
-@[expose] public section
+public section
 
 open Function Set
 open scoped Pointwise

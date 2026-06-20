@@ -16,7 +16,7 @@ public import Mathlib.Order.GaloisConnection.Basic
 This file proves order properties of pointwise operations of sets.
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 

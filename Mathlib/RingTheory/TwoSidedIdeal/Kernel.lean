@@ -13,13 +13,11 @@ public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 
 In this file we define the kernel of a ring homomorphism `f : R → S` as a two-sided ideal of `R`.
 
-We put this in a separate file so that we could import it in `SimpleRing/Basic.lean` without
-importing any finiteness result.
+We put this in a separate file so that we could import it in
+`Mathlib/RingTheory/SimpleRing/Basic.lean` without importing any finiteness result.
 -/
 
 @[expose] public section
-
-assert_not_exists Finset
 
 namespace TwoSidedIdeal
 

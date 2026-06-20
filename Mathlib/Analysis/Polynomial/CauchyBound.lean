@@ -62,7 +62,7 @@ lemma cauchyBound_X_sub_C (x : K) : cauchyBound (X - C x) = ‖x‖₊ + 1 := by
 
 @[simp]
 lemma cauchyBound_smul {x : K} (hx : x ≠ 0) (p : K[X]) : cauchyBound (x • p) = cauchyBound p := by
-  simp only [cauchyBound, (isRegular_of_ne_zero hx).left.isSMulRegular,
+  simp only [cauchyBound, (IsRegular.of_ne_zero hx).left.isSMulRegular,
     natDegree_smul_of_smul_regular, coeff_smul, smul_eq_mul, nnnorm_mul, ← mul_finset_sup,
     leadingCoeff_smul_of_smul_regular, add_left_inj]
   apply mul_div_mul_left

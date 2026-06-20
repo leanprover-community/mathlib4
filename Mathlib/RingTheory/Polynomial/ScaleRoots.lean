@@ -5,7 +5,7 @@ Authors: Anne Baanen, Devon Tuma
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Factors
+public import Mathlib.Algebra.Polynomial.Splits
 
 /-!
 # Scaling the roots of a polynomial
@@ -119,7 +119,7 @@ lemma one_scaleRoots (r : R) :
 @[simp]
 lemma X_add_C_scaleRoots (r s : R) : (X + C r).scaleRoots s = (X + C (r * s)) := by
   nontriviality R
-  ext (_|_|i) <;> simp
+  ext (_ | _ | i) <;> simp
 
 end Semiring
 
@@ -169,7 +169,7 @@ theorem scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero {p : S[X]} {f : S →+
     (hs : s ∈ nonZeroDivisors S) : eval₂ f (f r) (scaleRoots p s) = 0 := by
   -- if we don't specify the type with `(_ : S)`, the proof is much slower
   nontriviality S using Subsingleton.eq_zero (_ : S)
-  convert @scaleRoots_eval₂_eq_zero _ _ _ _ p f _ s hr
+  convert! @scaleRoots_eval₂_eq_zero _ _ _ _ p f _ s hr
   rw [← mul_div_assoc, mul_comm, mul_div_cancel_right₀]
   exact map_ne_zero_of_mem_nonZeroDivisors _ hf hs
 
@@ -282,13 +282,13 @@ lemma isCoprime_scaleRoots (p q : R[X]) (r : R) (hr : IsUnit r) (h : IsCoprime p
     rw [e, natDegree_one]
   use s ^ natDegree (a * p) • s ^ (natDegree a + natDegree p - natDegree (a * p)) • a.scaleRoots r
   use s ^ natDegree (a * p) • s ^ (natDegree b + natDegree q - natDegree (b * q)) • b.scaleRoots r
-  simp only [s, smul_mul_assoc, ← mul_scaleRoots, smul_smul, mul_assoc,
-    ← mul_pow, IsUnit.val_inv_mul, one_pow, mul_one, ← smul_add, one_smul, e, natDegree_one,
-    one_scaleRoots, ← add_scaleRoots_of_natDegree_eq _ _ _ this, tsub_zero]
+  simp only [smul_smul, smul_mul_assoc, ← mul_scaleRoots, mul_assoc, ← mul_pow, IsUnit.val_inv_mul,
+    one_pow, mul_one, ← smul_add, ← add_scaleRoots_of_natDegree_eq _ _ _ this, e, natDegree_one,
+    Nat.sub_zero, one_scaleRoots, one_smul, s]
 
 alias _root_.IsCoprime.scaleRoots := isCoprime_scaleRoots
 
-lemma Factors.scaleRoots {p : R[X]} (hp : p.Splits) (r : R) :
+lemma Splits.scaleRoots {p : R[X]} (hp : p.Splits) (r : R) :
     (p.scaleRoots r).Splits := by
   cases subsingleton_or_nontrivial R
   · rwa [Subsingleton.elim (p.scaleRoots r) p]
@@ -308,6 +308,8 @@ lemma Factors.scaleRoots {p : R[X]} (hp : p.Splits) (r : R) :
   · rw [(monic_multiset_prod_of_monic _ _ fun a _ ↦ monic_X_add_C _).leadingCoeff]
     simpa
 
+@[deprecated (since := "2025-12-09")] alias Factors.scaleRoots := Splits.scaleRoots
+
 end CommSemiring
 
 section Ring
@@ -316,7 +318,7 @@ section Ring
 lemma X_sub_C_scaleRoots [Ring R] (r s : R) :
     (X - C r).scaleRoots s = (X - C (r * s)) := by
   nontriviality R
-  ext (_|_|i) <;> simp
+  ext (_ | _ | i) <;> simp
 
 end Ring
 
@@ -331,7 +333,7 @@ lemma rootMultiplicity_scaleRoots (p : R[X]) {r a : R} (hr : IsLeftRegular r) :
   obtain rfl | hp := eq_or_ne p 0
   · simp
   obtain ⟨q, e, hq⟩ := exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp a
-  have hq0 : q ≠ 0 := by contrapose! hp; simp_all
+  have hq0 : q ≠ 0 := by contrapose hp; simp_all
   conv_lhs => rw [e]
   rw [mul_scaleRoots', pow_scaleRoots', X_sub_C_scaleRoots, mul_comm, mul_comm _ (q.scaleRoots r),
     rootMultiplicity_mul_X_sub_C_pow (q.scaleRoots_ne_zero hq0 _)]

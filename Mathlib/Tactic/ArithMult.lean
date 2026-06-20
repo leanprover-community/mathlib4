@@ -5,13 +5,12 @@ Authors: Arend Mellendijk
 -/
 module
 
-public meta import Mathlib.Tactic.Basic
-public meta import Mathlib.Tactic.ArithMult.Init
+public import Mathlib.Tactic.ArithMult.Init
 
 /-!
 # Multiplicativity
 
-We define the arith_mult tactic using aesop
+We define the `arith_mult` tactic using aesop
 
 -/
 
@@ -35,7 +34,7 @@ macro (name := arith_mult) "arith_mult" c:Aesop.tactic_clause* : tactic =>
       applyHypsTransparency := .default,
       introsTransparency? := some .reducible,
       enableSimp := false } )
-  (rule_sets := [$(Lean.mkIdent `IsMultiplicative):ident])})
+      (rule_sets := [$(Lean.mkIdent `IsMultiplicative):ident]) })
 
 /--
 `arith_mult` solves goals of the form `IsMultiplicative f` for `f : ArithmeticFunction R`

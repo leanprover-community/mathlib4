@@ -20,6 +20,8 @@ open CategoryTheory
 
 namespace CategoryTheory.prod
 
+open scoped Prod
+
 variable (C : Type u) [Category.{v} C]
 
 /-- The left unitor functor `1 × C ⥤ C` -/
@@ -38,14 +40,15 @@ def rightUnitor : C × Discrete (PUnit : Type w) ⥤ C where
 @[simps]
 def leftInverseUnitor : C ⥤ Discrete (PUnit : Type w) × C where
   obj X := ⟨⟨PUnit.unit⟩, X⟩
-  map f := ⟨𝟙 _, f⟩
+  map f := 𝟙 _ ×ₘ f
 
 /-- The right inverse unitor `C ⥤ C × 1` -/
 @[simps]
 def rightInverseUnitor : C ⥤ C × Discrete (PUnit : Type w) where
   obj X := ⟨X, ⟨PUnit.unit⟩⟩
-  map f := ⟨f, 𝟙 _⟩
+  map f := f ×ₘ 𝟙 _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories expressing left unity of products of categories. -/
 @[simps]
 def leftUnitorEquivalence : Discrete (PUnit : Type w) × C ≌ C where
@@ -54,6 +57,7 @@ def leftUnitorEquivalence : Discrete (PUnit : Type w) × C ≌ C where
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories expressing right unity of products of categories. -/
 @[simps]
 def rightUnitorEquivalence : C × Discrete (PUnit : Type w) ≌ C where

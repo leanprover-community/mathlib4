@@ -13,7 +13,7 @@ public import Mathlib.MeasureTheory.Measure.Prod
 
 -/
 
-@[expose] public section
+public section
 
 open scoped ENNReal
 

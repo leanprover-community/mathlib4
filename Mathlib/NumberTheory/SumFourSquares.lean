@@ -18,7 +18,7 @@ a proof that every natural number is the sum of four square numbers.
 The proof used is close to Lagrange's original proof.
 -/
 
-@[expose] public section
+public section
 
 
 open Finset Polynomial FiniteField Equiv
@@ -98,16 +98,16 @@ private theorem sum_four_squares_of_two_mul_sum_four_squares {m a b c d : ℤ}
   set σ := swap i 0
   obtain ⟨x, hx⟩ : (2 : ℤ) ∣ f (σ 0) ^ 2 + f (σ 1) ^ 2 :=
     (CharP.intCast_eq_zero_iff (ZMod 2) 2 _).1 <| by
-      simpa only [σ, Int.cast_pow, Int.cast_add, Equiv.swap_apply_right, ZMod.pow_card] using hσ.1
+      simpa only [σ, Int.cast_pow, Int.cast_add, Equiv.swap_apply_right, ZMod.pow_card] using! hσ.1
   obtain ⟨y, hy⟩ : (2 : ℤ) ∣ f (σ 2) ^ 2 + f (σ 3) ^ 2 :=
     (CharP.intCast_eq_zero_iff (ZMod 2) 2 _).1 <| by
-      simpa only [Int.cast_pow, Int.cast_add, ZMod.pow_card] using hσ.2
+      simpa only [Int.cast_pow, Int.cast_add, ZMod.pow_card] using! hσ.2
   refine ⟨(f (σ 0) - f (σ 1)) / 2, (f (σ 0) + f (σ 1)) / 2, (f (σ 2) - f (σ 3)) / 2,
     (f (σ 2) + f (σ 3)) / 2, ?_⟩
   rw [← Int.sq_add_sq_of_two_mul_sq_add_sq hx.symm, add_assoc,
     ← Int.sq_add_sq_of_two_mul_sq_add_sq hy.symm, ← mul_right_inj' two_ne_zero, ← h, mul_add]
   have : (∑ x, f (σ x) ^ 2) = ∑ x, f x ^ 2 := Equiv.sum_comp σ (f · ^ 2)
-  simpa only [← hx, ← hy, Fin.sum_univ_four, add_assoc] using this
+  simpa only [← hx, ← hy, Fin.sum_univ_four, add_assoc] using! this
 
 /-- Lagrange's **four squares theorem** for a prime number. Use `Nat.sum_four_squares` instead. -/
 protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :

@@ -11,7 +11,7 @@ public import Mathlib.Tactic.Set
 
 /-! ### List.takeWhile and List.dropWhile -/
 
-@[expose] public section
+public section
 
 namespace List
 
@@ -35,7 +35,7 @@ theorem length_dropWhile_le (l : List α) : (dropWhile p l).length ≤ l.length 
   | cons head tail ih =>
     simp only [dropWhile, length_cons]
     split
-    · cutsat
+    · lia
     · simp
 
 variable {p} {l : List α}
@@ -58,7 +58,7 @@ theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p
       replace h := congrArg length h
       have := length_dropWhile_le p tl
       simp at h
-      cutsat
+      lia
     · simp [h_p_hd]
 
 @[simp]
@@ -114,7 +114,7 @@ lemma find?_eq_head?_dropWhile_not :
 
 lemma find?_not_eq_head?_dropWhile :
     l.find? (fun x ↦ !(p x)) = (l.dropWhile p).head? := by
-  convert l.find?_eq_head?_dropWhile_not ?_
+  convert! l.find?_eq_head?_dropWhile_not ?_
   simp
 
 variable {p} {l}
@@ -125,7 +125,7 @@ lemma find?_eq_head_dropWhile_not (h : ∃ x ∈ l, p x) :
 
 lemma find?_not_eq_head_dropWhile (h : ∃ x ∈ l, ¬p x) :
     l.find? (fun x ↦ !(p x)) = some ((l.dropWhile p).head (by simpa using h)) := by
-  convert l.find?_eq_head_dropWhile_not ?_
+  convert! l.find?_eq_head_dropWhile_not ?_
   · simp
   · simpa using h
 

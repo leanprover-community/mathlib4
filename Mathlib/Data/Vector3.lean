@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Fin.Fin2
 public import Mathlib.Util.Notation3
-public import Mathlib.Tactic.TypeStar
 
 /-!
 # Alternate definition of `Vector` in terms of `Fin2`
@@ -52,12 +51,12 @@ open Lean
 
 scoped macro_rules | `([$l,*]) => `(expand_foldr% (h t => cons h t) nil [$(.ofElems l),*])
 
--- this is copied from `src/Init/NotationExtra.lean`
+-- this is copied from `Init/NotationExtra.lean` (Lean core)
 /-- Unexpander for `Vector3.nil` -/
 @[app_unexpander Vector3.nil] meta def unexpandNil : Lean.PrettyPrinter.Unexpander
   | `($(_)) => `([])
 
--- this is copied from `src/Init/NotationExtra.lean`
+-- this is copied from `Init/NotationExtra.lean` (Lean core)
 /-- Unexpander for `Vector3.cons` -/
 @[app_unexpander Vector3.cons] meta def unexpandCons : Lean.PrettyPrinter.Unexpander
   | `($(_) $x [])      => `([$x])
@@ -180,7 +179,7 @@ theorem append_insert (a : α) (t : Vector3 α m) (v : Vector3 α n) (i : Fin2 (
     insert a (t +-+ v) (Eq.recOn e (i.add m)) = Eq.recOn e (t +-+ insert a v i) := by
   refine Vector3.recOn t (fun e => ?_) (@fun k b t IH _ => ?_) e
   · rfl
-  have e' : (n + 1) + k = (n + k) + 1 := by omega
+  have e' : (n + 1) + k = (n + k) + 1 := by lia
   change
     insert a (b :: t +-+ v)
       (Eq.recOn (congr_arg (· + 1) e' : _ + 1 = _) (fs (add i k))) =

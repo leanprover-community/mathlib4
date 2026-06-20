@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Num.ZNum
-public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.NormNum.Inv
+public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # Primality for binary natural numbers
@@ -51,7 +52,7 @@ theorem minFacAux_to_nat {fuel : ℕ} {n k : PosNum} (h : Nat.sqrt n < fuel + k.
     simp_rw [← mul_to_nat]
     simp only [cast_lt, dvd_to_nat]
     split_ifs <;> try rfl
-    rw [ih] <;> [congr; convert Nat.lt_succ_of_lt h using 1] <;>
+    rw [ih] <;> [congr; convert! Nat.lt_succ_of_lt h using 1] <;>
       simp only [cast_bit1, cast_succ, Nat.succ_eq_add_one, add_assoc,
         add_left_comm, ← one_add_one_eq_two]
 
@@ -99,7 +100,7 @@ instance decidablePrime : DecidablePred PosNum.Prime
         refine Nat.prime_def_minFac.trans ((and_iff_right ?_).trans ?_)
         · simp only [cast_bit1]
           have := to_nat_pos n
-          omega
+          lia
         rw [← minFac_to_nat, to_nat_inj]; rfl
 
 end PosNum

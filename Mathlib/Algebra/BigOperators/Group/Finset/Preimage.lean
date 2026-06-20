@@ -12,7 +12,7 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 # Sums and products over preimages of finite sets.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
 

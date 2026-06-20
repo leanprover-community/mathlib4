@@ -33,7 +33,7 @@ There are, of course, also the dual notions of coseparating and codetecting sets
 We
 * define predicates `IsSeparating`, `IsCoseparating`, `IsDetecting` and `IsCodetecting` on
   `ObjectProperty C`;
-* show that equivalences of categories preserves these notions;
+* show that equivalences of categories preserve these notions;
 * show that separating and coseparating are dual notions;
 * show that detecting and codetecting are dual notions;
 * show that if `C` has equalizers, then detecting implies separating;
@@ -105,16 +105,19 @@ section Equivalence
 
 variable {P}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsSeparating.of_equivalence
-    (h : IsSeparating P) {D : Type*} [Category D] (α : C ≌ D) :
+    (h : IsSeparating P) {D : Type*} [Category* D] (α : C ≌ D) :
     IsSeparating (P.strictMap α.functor) := fun X Y f g H =>
   α.inverse.map_injective (h _ _ (fun Z hZ h ↦ by
     obtain ⟨h', rfl⟩ := (α.toAdjunction.homEquiv _ _).surjective h
     simp only [Adjunction.homEquiv_unit, Category.assoc, ← Functor.map_comp,
       H _ (P.strictMap_obj _ hZ) h']))
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma IsCoseparating.of_equivalence
-    (h : IsCoseparating P) {D : Type*} [Category D] (α : C ≌ D) :
+    (h : IsCoseparating P) {D : Type*} [Category* D] (α : C ≌ D) :
     IsCoseparating (P.strictMap α.functor) := fun X Y f g H =>
   α.inverse.map_injective (h _ _ (fun Z hZ h ↦ by
     obtain ⟨h', rfl⟩ := (α.symm.toAdjunction.homEquiv _ _).symm.surjective h
@@ -157,7 +160,7 @@ theorem isDetecting_op_iff : IsDetecting P.op ↔ IsCodetecting P := by
   · refine (isIso_unop_iff _).1 (hP _ fun G hG h => ?_)
     obtain ⟨t, ht, ht'⟩ := hf (op G) hG h.op
     refine ⟨t.unop, Quiver.Hom.op_inj ht, fun y hy => Quiver.Hom.op_inj (ht' _ ?_)⟩
-    exact Quiver.Hom.unop_inj (by simpa only using hy)
+    exact Quiver.Hom.unop_inj (by simpa only using! hy)
 
 theorem isCodetecting_op_iff : IsCodetecting P.op ↔ IsDetecting P := by
   refine ⟨fun hP X Y f hf => ?_, fun hP X Y f hf => ?_⟩
@@ -168,7 +171,7 @@ theorem isCodetecting_op_iff : IsCodetecting P.op ↔ IsDetecting P := by
   · refine (isIso_unop_iff _).1 (hP _ fun G hG h => ?_)
     obtain ⟨t, ht, ht'⟩ := hf (op G) hG h.op
     refine ⟨t.unop, Quiver.Hom.op_inj ht, fun y hy => Quiver.Hom.op_inj (ht' _ ?_)⟩
-    exact Quiver.Hom.unop_inj (by simpa only using hy)
+    exact Quiver.Hom.unop_inj (by simpa only using! hy)
 
 theorem isDetecting_unop_iff (P : ObjectProperty Cᵒᵖ) : IsDetecting P.unop ↔ IsCodetecting P :=
   P.unop.isCodetecting_op_iff.symm
@@ -193,6 +196,11 @@ lemma IsSeparating.mono_iff (hP : IsSeparating P) {X Y : C} (f : X ⟶ Y) :
     Mono f ↔ ∀ (G : C) (_ : P G), ∀ (g₁ g₂ : G ⟶ X), g₁ ≫ f = g₂ ≫ f → g₁ = g₂ :=
   ⟨fun _ _ _ _ _ h ↦ by simpa [cancel_mono] using h,
     fun hf ↦ ⟨fun g₁ g₂ h ↦ hP _ _  (fun G hG h' ↦ hf _ hG _ _ (by simp [h]))⟩⟩
+
+lemma IsCoseparating.epi_iff (hP : IsCoseparating P) {X Y : C} (f : X ⟶ Y) :
+    Epi f ↔ ∀ (G : C) (_ : P G), ∀ (g₁ g₂ : Y ⟶ G), f ≫ g₁ = f ≫ g₂ → g₁ = g₂ :=
+  ⟨fun _ _ _ _ _ h ↦ by simpa [cancel_epi] using h,
+    fun hf ↦ ⟨fun g₁ g₂ h ↦ hP _ _  (fun G hG h' ↦ hf _ hG _ _ (by simp [reassoc_of% h]))⟩⟩
 
 theorem IsSeparating.isDetecting [Balanced C] (hP : IsSeparating P) :
     IsDetecting P := by
@@ -359,6 +367,7 @@ noncomputable abbrev ιCoproductFrom {Y : C} (f : Y ⟶ X) (hY : P Y) :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 variable {P} in
 lemma IsSeparating.epi_coproductFrom (hP : P.IsSeparating)
     (X : C) [HasCoproduct (P.coproductFromFamily X)] :
@@ -397,6 +406,7 @@ noncomputable abbrev πProductTo {Y : C} (f : X ⟶ Y) (hY : P Y) :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 variable {P} in
 lemma IsCoseparating.mono_productTo (hP : P.IsCoseparating)
     (X : C) [HasProduct (P.productToFamily X)] :
@@ -499,7 +509,7 @@ namespace StructuredArrow
 variable (S : D) (T : C ⥤ D)
 
 theorem isCoseparating_inverseImage_proj {P : ObjectProperty C} (hP : P.IsCoseparating) :
-    (P.inverseImage (proj S T)).IsCoseparating  := by
+    (P.inverseImage (proj S T)).IsCoseparating := by
   refine fun X Y f g hfg => ext _ _ (hP _ _ fun G hG h => ?_)
   exact congr_arg CommaMorphism.right (hfg (mk (Y.hom ≫ T.map h)) hG (homMk h rfl))
 
@@ -510,7 +520,7 @@ namespace CostructuredArrow
 variable (S : C ⥤ D) (T : D)
 
 theorem isSeparating_inverseImage_proj {P : ObjectProperty C} (hP : P.IsSeparating) :
-    (P.inverseImage (proj S T)).IsSeparating  := by
+    (P.inverseImage (proj S T)).IsSeparating := by
   refine fun X Y f g hfg => ext _ _ (hP _ _ fun G hG h => ?_)
   exact congr_arg CommaMorphism.left (hfg (mk (S.map h ≫ X.hom)) hG (homMk h rfl))
 
@@ -536,11 +546,11 @@ section Equivalence
 
 theorem IsSeparator.of_equivalence {G : C} (h : IsSeparator G) (α : C ≌ D) :
     IsSeparator (α.functor.obj G) := by
-  simpa using ObjectProperty.IsSeparating.of_equivalence h α
+  simpa using! ObjectProperty.IsSeparating.of_equivalence h α
 
 theorem IsCoseparator.of_equivalence {G : C} (h : IsCoseparator G) (α : C ≌ D) :
     IsCoseparator (α.functor.obj G) := by
- simpa using ObjectProperty.IsCoseparating.of_equivalence h α
+ simpa using! ObjectProperty.IsCoseparating.of_equivalence h α
 
 end Equivalence
 
@@ -634,16 +644,20 @@ theorem IsCodetector.def {G : C} :
     IsCodetector G → ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ h : X ⟶ G, ∃! h', f ≫ h' = h) → IsIso f :=
   (isCodetector_def _).1
 
+open ConcreteCategory
+
 theorem isSeparator_iff_faithful_coyoneda_obj (G : C) :
     IsSeparator G ↔ (coyoneda.obj (op G)).Faithful :=
-  ⟨fun hG => ⟨fun hfg => hG.def _ _ (congr_fun hfg)⟩, fun _ =>
-    (isSeparator_def _).2 fun _ _ _ _ hfg => (coyoneda.obj (op G)).map_injective (funext hfg)⟩
+  ⟨fun hG => ⟨fun hfg => hG.def _ _ (congr_hom hfg)⟩, fun _ =>
+    (isSeparator_def _).2 fun _ _ _ _ hfg => (coyoneda.obj (op G)).map_injective
+      (by ext; apply hfg)⟩
 
 theorem isCoseparator_iff_faithful_yoneda_obj (G : C) : IsCoseparator G ↔ (yoneda.obj G).Faithful :=
-  ⟨fun hG => ⟨fun hfg => Quiver.Hom.unop_inj (hG.def _ _ (congr_fun hfg))⟩, fun _ =>
+  ⟨fun hG => ⟨fun hfg => Quiver.Hom.unop_inj (hG.def _ _ (congr_hom hfg))⟩, fun _ =>
     (isCoseparator_def _).2 fun _ _ _ _ hfg =>
-      Quiver.Hom.op_inj <| (yoneda.obj G).map_injective (funext hfg)⟩
+      Quiver.Hom.op_inj <| (yoneda.obj G).map_injective (by ext; apply hfg)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSeparator_iff_epi (G : C) [∀ A : C, HasCoproduct fun _ : G ⟶ A => G] :
     IsSeparator G ↔ ∀ A : C, Epi (Sigma.desc fun f : G ⟶ A => f) := by
   rw [isSeparator_def]
@@ -653,6 +667,7 @@ theorem isSeparator_iff_epi (G : C) [∀ A : C, HasCoproduct fun _ : G ⟶ A => 
     refine (cancel_epi (Sigma.desc fun f : G ⟶ X => f)).1 (colimit.hom_ext fun j => ?_)
     simpa using hh j.as
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isCoseparator_iff_mono (G : C) [∀ A : C, HasProduct fun _ : A ⟶ G => G] :
     IsCoseparator G ↔ ∀ A : C, Mono (Pi.lift fun f : A ⟶ G => f) := by
   rw [isCoseparator_def]
@@ -666,6 +681,7 @@ section ZeroMorphisms
 
 variable [HasZeroMorphisms C]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSeparator_of_isColimit_cofan {β : Type w} {f : β → C}
     (hf : ObjectProperty.IsSeparating (.ofObj f)) {c : Cofan f} (hc : IsColimit c) :
     IsSeparator c.pt := by
@@ -679,7 +695,7 @@ lemma isSeparator_iff_of_isColimit_cofan {β : Type w} {f : β → C}
     IsSeparator c.pt ↔ ObjectProperty.IsSeparating (.ofObj f) := by
   refine ⟨fun h X Y u v huv => ?_, fun h => isSeparator_of_isColimit_cofan h hc⟩
   refine h.def _ _ fun g => hc.hom_ext fun b => ?_
-  simpa using huv (f b.as) (by simp) (c.inj _ ≫ g)
+  simpa using! huv (f b.as) (by simp) (c.inj _ ≫ g)
 
 theorem isSeparator_sigma {β : Type w} (f : β → C) [HasCoproduct f] :
     IsSeparator (∐ f) ↔ ObjectProperty.IsSeparating (.ofObj f) :=
@@ -688,7 +704,7 @@ theorem isSeparator_sigma {β : Type w} (f : β → C) [HasCoproduct f] :
 theorem isSeparator_coprod (G H : C) [HasBinaryCoproduct G H] :
     IsSeparator (G ⨿ H) ↔ ObjectProperty.IsSeparating (.pair G H) := by
   refine (isSeparator_iff_of_isColimit_cofan (coprodIsCoprod G H)).trans ?_
-  convert Iff.rfl
+  convert! Iff.rfl
   ext X
   simp only [ObjectProperty.pair_iff, ObjectProperty.ofObj_iff]
   constructor
@@ -712,6 +728,7 @@ theorem isSeparator_sigma_of_isSeparator {β : Type w} (f : β → C) [HasCoprod
     (hb : IsSeparator (f b)) : IsSeparator (∐ f) :=
   (isSeparator_sigma _).2 <| ObjectProperty.IsSeparating.of_le hb <| by simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isCoseparator_of_isLimit_fan {β : Type w} {f : β → C}
     (hf : ObjectProperty.IsCoseparating (.ofObj f)) {c : Fan f} (hc : IsLimit c) :
     IsCoseparator c.pt := by
@@ -725,7 +742,7 @@ lemma isCoseparator_iff_of_isLimit_fan {β : Type w} {f : β → C}
     IsCoseparator c.pt ↔ ObjectProperty.IsCoseparating (.ofObj f) := by
   refine ⟨fun h X Y u v huv => ?_, fun h => isCoseparator_of_isLimit_fan h hc⟩
   refine h.def _ _ fun g => hc.hom_ext fun b => ?_
-  simpa using huv (f b.as) (by simp) (g ≫ c.proj _)
+  simpa using! huv (f b.as) (by simp) (g ≫ c.proj _)
 
 theorem isCoseparator_pi {β : Type w} (f : β → C) [HasProduct f] :
     IsCoseparator (∏ᶜ f) ↔ ObjectProperty.IsCoseparating (.ofObj f) :=
@@ -734,7 +751,7 @@ theorem isCoseparator_pi {β : Type w} (f : β → C) [HasProduct f] :
 theorem isCoseparator_prod (G H : C) [HasBinaryProduct G H] :
     IsCoseparator (G ⨯ H) ↔ ObjectProperty.IsCoseparating (.pair G H) := by
   refine (isCoseparator_iff_of_isLimit_fan (prodIsProd G H)).trans ?_
-  convert Iff.rfl
+  convert! Iff.rfl
   ext X
   simp only [ObjectProperty.pair_iff, ObjectProperty.ofObj_iff]
   constructor
@@ -966,80 +983,5 @@ theorem HasCodetector.hasDetector_of_hasCodetector_op [HasCodetector Cᵒᵖ] :
 end Dual
 
 end HasGenerator
-
-@[deprecated (since := "2025-10-06")] alias IsSeparating := ObjectProperty.IsSeparating
-@[deprecated (since := "2025-10-06")] alias IsCoseparating := ObjectProperty.IsCoseparating
-@[deprecated (since := "2025-10-06")] alias IsDetecting := ObjectProperty.IsDetecting
-@[deprecated (since := "2025-10-06")] alias IsCodetecting := ObjectProperty.IsCodetecting
-@[deprecated (since := "2025-10-06")] alias IsSeparating.of_equivalence :=
-  ObjectProperty.IsSeparating.of_equivalence
-@[deprecated (since := "2025-10-06")] alias IsCoseparating.of_equivalence :=
-  ObjectProperty.IsCoseparating.of_equivalence
-@[deprecated (since := "2025-10-06")] alias isSeparating_op_iff :=
-  ObjectProperty.isSeparating_op_iff
-@[deprecated (since := "2025-10-06")] alias isCoseparating_op_iff :=
-  ObjectProperty.isCoseparating_op_iff
-@[deprecated (since := "2025-10-06")] alias isSeparating_unop_iff :=
-  ObjectProperty.isSeparating_op_iff
-@[deprecated (since := "2025-10-06")] alias isCoseparating_unop_iff :=
-  ObjectProperty.isCoseparating_op_iff
-@[deprecated (since := "2025-10-06")] alias isDetecting_op_iff :=
-  ObjectProperty.isDetecting_op_iff
-@[deprecated (since := "2025-10-06")] alias isCodetecting_op_iff :=
-  ObjectProperty.isCodetecting_op_iff
-@[deprecated (since := "2025-10-06")] alias isDetecting_unop_iff :=
-  ObjectProperty.isDetecting_op_iff
-@[deprecated (since := "2025-10-06")] alias isCodetecting_unop_iff :=
-  ObjectProperty.isCodetecting_op_iff
-@[deprecated (since := "2025-10-06")] alias IsDetecting.isSeparating :=
-  ObjectProperty.IsDetecting.isSeparating
-@[deprecated (since := "2025-10-06")] alias IsCodetecting.isCoseparating :=
-  ObjectProperty.IsCodetecting.isCoseparating
-@[deprecated (since := "2025-10-06")] alias IsSeparating.isDetecting :=
-  ObjectProperty.IsSeparating.isDetecting
-@[deprecated (since := "2025-10-06")] alias IsDetecting.isIso_iff_of_mono :=
-  ObjectProperty.IsDetecting.isIso_iff_of_mono
-@[deprecated (since := "2025-10-06")] alias IsCodetecting.isIso_iff_of_epi :=
-  ObjectProperty.IsCodetecting.isIso_iff_of_epi
-@[deprecated (since := "2025-10-06")] alias IsCoseparating.isCodetecting :=
-  ObjectProperty.IsCoseparating.isCodetecting
-@[deprecated (since := "2025-10-06")] alias isDetecting_iff_isSeparating :=
-  ObjectProperty.isDetecting_iff_isSeparating
-@[deprecated (since := "2025-10-06")] alias isCodetecting_iff_isCoseparating :=
-  ObjectProperty.isCodetecting_iff_isCoseparating
-@[deprecated (since := "2025-10-06")] alias IsSeparating.mono :=
-  ObjectProperty.IsSeparating.of_le
-@[deprecated (since := "2025-10-06")] alias IsCoseparating.mono :=
-  ObjectProperty.IsCoseparating.of_le
-@[deprecated (since := "2025-10-06")] alias IsDetecting.mono :=
-  ObjectProperty.IsDetecting.of_le
-@[deprecated (since := "2025-10-06")] alias IsCodetecting.mono :=
-  ObjectProperty.IsCodetecting.of_le
-@[deprecated (since := "2025-10-06")] alias thin_of_isSeparating_empty :=
-  ObjectProperty.isThin_of_isSeparating_bot
-@[deprecated (since := "2025-10-06")] alias isSeparating_empty_of_thin :=
-  ObjectProperty.isSeparating_bot_of_isThin
-@[deprecated (since := "2025-10-06")] alias thin_of_isCoseparating_empty :=
-  ObjectProperty.isThin_of_isCoseparating_bot
-@[deprecated (since := "2025-10-06")] alias isCoseparating_empty_of_thin :=
-  ObjectProperty.isCoseparating_bot_of_isThin
-@[deprecated (since := "2025-10-06")] alias groupoid_of_isDetecting_empty :=
-  ObjectProperty.isGroupoid_of_isDetecting_bot
-@[deprecated (since := "2025-10-06")] alias isDetecting_empty_of_groupoid :=
-  ObjectProperty.isDetecting_bot_of_isGroupoid
-@[deprecated (since := "2025-10-06")] alias groupoid_of_isCodetecting_empty :=
-  ObjectProperty.isGroupoid_of_isCodetecting_bot
-@[deprecated (since := "2025-10-06")] alias isCodetecting_empty_of_groupoid :=
-  ObjectProperty.isCodetecting_bot_of_isGroupoid
-@[deprecated (since := "2025-10-07")] alias isSeparating_iff_epi :=
-  ObjectProperty.isSeparating_iff_epi
-@[deprecated (since := "2025-10-07")] alias isCoseparating_iff_mono :=
-  ObjectProperty.isCoseparating_iff_mono
-@[deprecated (since := "2025-10-07")] alias IsSeparating.isSeparator_coproduct :=
-  ObjectProperty.IsSeparating.isSeparator_coproduct
-@[deprecated (since := "2025-10-07")] alias StructuredArrow.isCoseparating_proj_preimage :=
-  StructuredArrow.isCoseparating_inverseImage_proj
-@[deprecated (since := "2025-10-07")] alias CostructuredArrow.isSeparating_proj_preimage :=
-  CostructuredArrow.isSeparating_inverseImage_proj
 
 end CategoryTheory

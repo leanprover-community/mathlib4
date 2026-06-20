@@ -31,7 +31,7 @@ namespace ComplexShape
 
 namespace Embedding
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   (e₁ : Embedding c₁ c) (e₂ : Embedding c₂ c)
 
 /-- Two embedding `e₁` and `e₂` into a complex shape `c : ComplexShape ι`
@@ -230,15 +230,15 @@ lemma exists₁ {i₁ : ι₁} (h : e₁.BoundaryLE i₁) :
     ∃ i₂, ac.Boundary i₁ i₂ := by
   obtain ⟨h₁, h₂⟩ := h
   obtain ⟨i₂, hi₂⟩ := ac.exists_i₂ (c.next (e₁.f i₁))
-    (fun i₁' hi₁' => h₂ i₁' (by simpa only [← hi₁'] using h₁))
-  exact ⟨i₂, by simpa only [hi₂] using h₁⟩
+    (fun i₁' hi₁' => h₂ i₁' (by simpa only [← hi₁'] using! h₁))
+  exact ⟨i₂, by simpa only [hi₂] using! h₁⟩
 
 lemma exists₂ {i₂ : ι₂} (h : e₂.BoundaryGE i₂) :
     ∃ i₁, ac.Boundary i₁ i₂ := by
   obtain ⟨h₁, h₂⟩ := h
   obtain ⟨i₁, hi₁⟩ := ac.exists_i₁ (c.prev (e₂.f i₂))
-    (fun i₂' hi₂' => h₂ i₂' (by simpa only [← hi₂'] using h₁))
-  exact ⟨i₁, by simpa only [hi₁] using h₁⟩
+    (fun i₂' hi₂' => h₂ i₂' (by simpa only [← hi₂'] using! h₁))
+  exact ⟨i₁, by simpa only [hi₁] using! h₁⟩
 
 /-- If `ac : AreComplementary e₁ e₂` (with `e₁ : ComplexShape.Embedding c₁ c` and
 `e₂ : ComplexShape.Embedding c₂ c`), and `i₁` belongs to `e₁.BoundaryLE`,
@@ -278,14 +278,15 @@ end Boundary
 
 end AreComplementary
 
+set_option backward.defeqAttrib.useBackward true in
 lemma embeddingUpInt_areComplementary (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     AreComplementary (embeddingUpIntLE n₀) (embeddingUpIntGE n₁) where
-  disjoint i₁ i₂ := by dsimp; omega
+  disjoint i₁ i₂ := by dsimp; lia
   union i := by
     by_cases hi : i ≤ n₀
     · obtain ⟨k, rfl⟩ := Int.exists_add_of_le hi
-      exact Or.inl ⟨k, by dsimp; omega⟩
-    · obtain ⟨k, rfl⟩ := Int.exists_add_of_le (show n₁ ≤ i by omega)
+      exact Or.inl ⟨k, by dsimp; lia⟩
+    · obtain ⟨k, rfl⟩ := Int.exists_add_of_le (show n₁ ≤ i by lia)
       exact Or.inr ⟨k, rfl⟩
 
 end Embedding
@@ -296,7 +297,7 @@ namespace HomologicalComplex
 
 section
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
   (K : HomologicalComplex C c) {e₁ : c₁.Embedding c} {e₂ : c₂.Embedding c}
   [e₁.IsTruncLE] [e₂.IsTruncGE] (ac : e₁.AreComplementary e₂)
 
@@ -313,6 +314,7 @@ lemma g_shortComplexTruncLEX₃ToTruncGE :
     (K.shortComplexTruncLE e₁).g ≫ K.shortComplexTruncLEX₃ToTruncGE ac = K.πTruncGE e₂ :=
   cokernel.π_desc _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 instance : QuasiIso (K.shortComplexTruncLEX₃ToTruncGE ac) where
   quasiIsoAt i := by
     obtain ⟨i₁, rfl⟩ | ⟨i₂, rfl⟩ := ac.union i

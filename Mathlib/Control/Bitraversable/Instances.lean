@@ -116,6 +116,7 @@ nonrec def Bicompl.bitraverse {m} [Applicative m] {α β α' β'} (f : α → m 
 
 instance : Bitraversable (bicompl t F G) where bitraverse := @Bicompl.bitraverse t _ F G _ _
 
+set_option backward.isDefEq.respectTransparency false in
 instance [LawfulTraversable F] [LawfulTraversable G] [LawfulBitraversable t] :
     LawfulBitraversable (bicompl t F G) := by
   constructor <;> intros <;>
@@ -138,6 +139,7 @@ nonrec def Bicompr.bitraverse {m} [Applicative m] {α β α' β'} (f : α → m 
 
 instance : Bitraversable (bicompr F t) where bitraverse := @Bicompr.bitraverse t _ F _
 
+set_option backward.isDefEq.respectTransparency false in
 instance [LawfulTraversable F] [LawfulBitraversable t] : LawfulBitraversable (bicompr F t) := by
   constructor <;> intros <;>
     simp [bitraverse, Bicompr.bitraverse, bitraverse_id_id, functor_norm]

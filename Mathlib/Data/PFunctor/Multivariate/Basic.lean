@@ -158,7 +158,7 @@ theorem liftP_iff' {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (a : P.A) (
   · rintro ⟨_, _, ⟨⟩, _⟩
     assumption
   · intro
-    repeat' first |constructor|assumption
+    repeat' first | constructor | assumption
 
 theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x y : P α) :
     LiftR @r x y ↔ ∃ a f₀ f₁, x = ⟨a, f₀⟩ ∧ y = ⟨a, f₁⟩ ∧ ∀ i j, r (f₀ i j) (f₁ i j) := by
@@ -175,11 +175,7 @@ theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x 
     intro i j
     exact (f i j).property
   rintro ⟨a, f₀, f₁, xeq, yeq, h⟩
-  use ⟨a, fun i j => ⟨(f₀ i j, f₁ i j), h i j⟩⟩
-  dsimp; constructor
-  · rw [xeq]
-    rfl
-  rw [yeq]; rfl
+  exact ⟨⟨a, fun i j => ⟨(f₀ i j, f₁ i j), h i j⟩⟩, xeq.symm, yeq.symm⟩
 
 open Set
 

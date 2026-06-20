@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Graded.External
 public import Mathlib.RingTheory.GradedAlgebra.Basic
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Graded tensor products over graded algebras
@@ -74,6 +75,7 @@ def GradedTensorProduct
     [GradedAlgebra 𝒜] [GradedAlgebra ℬ] :
     Type _ :=
   A ⊗[R] B
+deriving AddCommGroupWithOne, Module R
 
 namespace GradedTensorProduct
 
@@ -81,10 +83,6 @@ open TensorProduct
 
 @[inherit_doc GradedTensorProduct]
 scoped[TensorProduct] notation:100 𝒜 " ᵍ⊗[" R "] " ℬ:100 => GradedTensorProduct R 𝒜 ℬ
-
-instance instAddCommGroupWithOne : AddCommGroupWithOne (𝒜 ᵍ⊗[R] ℬ) :=
-  Algebra.TensorProduct.instAddCommGroupWithOne
-instance : Module R (𝒜 ᵍ⊗[R] ℬ) := TensorProduct.leftModule
 
 variable (R) in
 /-- The casting equivalence to move between regular and graded tensor products. -/
@@ -175,8 +173,6 @@ instance instMonoid : Monoid (𝒜 ᵍ⊗[R] ℬ) where
     rw [gradedMul_assoc]
 
 instance instRing : Ring (𝒜 ᵍ⊗[R] ℬ) where
-  __ := instAddCommGroupWithOne 𝒜 ℬ
-  __ := instMonoid 𝒜 ℬ
   right_distrib x y z := by simp_rw [mul_def, LinearMap.map_add₂]
   left_distrib x y z := by simp_rw [mul_def, map_add]
   mul_zero x := by simp_rw [mul_def, map_zero]
@@ -213,18 +209,19 @@ theorem tmul_coe_mul_zero_coe_tmul {j₁ : ι} (a₁ : A) (b₁ : ℬ j₁) (a�
 
 theorem tmul_one_mul_coe_tmul {i₂ : ι} (a₁ : A) (a₂ : 𝒜 i₂) (b₂ : B) :
     (a₁ ᵍ⊗ₜ[R] (1 : B) * (a₂ : A) ᵍ⊗ₜ[R] b₂ : 𝒜 ᵍ⊗[R] ℬ) = (a₁ * a₂ : A) ᵍ⊗ₜ (b₂ : B) := by
-  convert tmul_zero_coe_mul_coe_tmul 𝒜 ℬ a₁ (@GradedMonoid.GOne.one _ (ℬ ·) _ _) a₂ b₂
+  convert! tmul_zero_coe_mul_coe_tmul 𝒜 ℬ a₁ (@GradedMonoid.GOne.one _ (ℬ ·) _ _) a₂ b₂
   rw [SetLike.coe_gOne, one_mul]
 
 theorem tmul_coe_mul_one_tmul {j₁ : ι} (a₁ : A) (b₁ : ℬ j₁) (b₂ : B) :
     (a₁ ᵍ⊗ₜ[R] (b₁ : B) * (1 : A) ᵍ⊗ₜ[R] b₂ : 𝒜 ᵍ⊗[R] ℬ) = (a₁ : A) ᵍ⊗ₜ (b₁ * b₂ : B) := by
-  convert tmul_coe_mul_zero_coe_tmul 𝒜 ℬ a₁ b₁ (@GradedMonoid.GOne.one _ (𝒜 ·) _ _) b₂
+  convert! tmul_coe_mul_zero_coe_tmul 𝒜 ℬ a₁ b₁ (@GradedMonoid.GOne.one _ (𝒜 ·) _ _) b₂
   rw [SetLike.coe_gOne, mul_one]
 
 theorem tmul_one_mul_one_tmul (a₁ : A) (b₂ : B) :
     (a₁ ᵍ⊗ₜ[R] (1 : B) * (1 : A) ᵍ⊗ₜ[R] b₂ : 𝒜 ᵍ⊗[R] ℬ) = (a₁ : A) ᵍ⊗ₜ (b₂ : B) := by
-  convert tmul_coe_mul_zero_coe_tmul 𝒜 ℬ
-    a₁ (GradedMonoid.GOne.one (A := (ℬ ·))) (GradedMonoid.GOne.one (A := (𝒜 ·))) b₂
+  convert!
+    tmul_coe_mul_zero_coe_tmul 𝒜 ℬ a₁ (GradedMonoid.GOne.one (A := (ℬ ·)))
+      (GradedMonoid.GOne.one (A := (𝒜 ·))) b₂
   · rw [SetLike.coe_gOne, mul_one]
   · rw [SetLike.coe_gOne, one_mul]
 
@@ -244,6 +241,7 @@ def includeLeftRingHom : A →+* 𝒜 ᵍ⊗[R] ℬ where
     rw [← SetLike.coe_gOne ℬ, tmul_coe_mul_coe_tmul, zero_mul, uzpow_zero, one_smul,
       SetLike.coe_gOne, one_mul]
 
+set_option backward.defeqAttrib.useBackward true in
 instance instAlgebra : Algebra R (𝒜 ᵍ⊗[R] ℬ) where
   algebraMap := (includeLeftRingHom 𝒜 ℬ).comp (algebraMap R A)
   commutes' r x := by
@@ -296,6 +294,7 @@ lemma algebraMap_def' (r : R) : algebraMap R (𝒜 ᵍ⊗[R] ℬ) r = 1 ᵍ⊗�
 
 variable {C} [Ring C] [Algebra R C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The forwards direction of the universal property; an algebra morphism out of the graded tensor
 product can be assembled from maps on each component that (anti)commute on pure elements of the
 corresponding graded algebras. -/
@@ -332,6 +331,7 @@ theorem lift_tmul (f : A →ₐ[R] C) (g : B →ₐ[R] C)
     lift 𝒜 ℬ f g h_anti_commutes (a ᵍ⊗ₜ b) = f a * g b :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The universal property of the graded tensor product; every algebra morphism uniquely factors
 as a pair of algebra morphisms that anticommute with respect to the grading. -/
 def liftEquiv :

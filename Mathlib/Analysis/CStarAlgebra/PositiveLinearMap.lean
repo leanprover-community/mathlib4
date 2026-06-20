@@ -25,7 +25,7 @@ This file develops the API for positive linear maps over C⋆-algebras.
   https://math.stackexchange.com/questions/426487/why-is-every-positive-linear-map-between-c-algebras-bounded
 -/
 
-@[expose] public section
+public section
 
 open scoped NNReal
 
@@ -90,7 +90,6 @@ lemma exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a,
     simp only [norm_smul, norm_pow, norm_I, one_pow, one_mul]
     apply Finset.sum_le_sum (g := fun _ ↦ C * ‖x‖) (fun i _ ↦ ?_) |>.trans <| by simp [mul_assoc]
     apply hmain _ (hy_nonneg i) |>.trans
-    simp only
     gcongr
     exact hy_norm i
   -- Let's proceed by contradiction
@@ -121,7 +120,7 @@ lemma exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a,
   trans ‖f ((2 : ℝ) ^ (-n : ℤ) • x n)‖
   · have := hx n |>.le
     rw [pow_mul', sq] at this
-    simpa [norm_smul] using (le_inv_mul_iff₀' (show 0 < (2 : ℝ) ^ n by positivity)).mpr this
+    simpa [norm_smul] using (le_inv_mul_iff₀ (show 0 < (2 : ℝ) ^ n by positivity)).mpr this
   · have (m : ℕ) : 0 ≤ ((2 : ℝ) ^ (-(m : ℤ)) • x m) := smul_nonneg (by positivity) (hx_nonneg m)
     refine CStarAlgebra.norm_le_norm_of_nonneg_of_le (f.map_nonneg (this n)) ?_
     gcongr
@@ -131,7 +130,7 @@ instance {F : Type*} [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂] [Ord
     ContinuousLinearMapClass F ℂ A₁ A₂ where
   map_continuous f := by
     have hbound : ∃ C : ℝ, ∀ a, ‖f a‖ ≤ C * ‖a‖ := by
-      obtain ⟨C, h⟩ := exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂)
+      obtain ⟨C, h⟩ := exists_norm_apply_le (.ofClass f)
       exact ⟨C, h⟩
     exact (LinearMap.mkContinuousOfExistsBound (f : A₁ →ₗ[ℂ] A₂) hbound).continuous
 

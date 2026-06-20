@@ -260,7 +260,7 @@ attribute [to_additive] TwoUniqueProds
 lemma uniqueMul_of_twoUniqueMul {G} [Mul G] {A B : Finset G} (h : 1 < #A * #B →
     ∃ p1 ∈ A ×ˢ B, ∃ p2 ∈ A ×ˢ B, p1 ≠ p2 ∧ UniqueMul A B p1.1 p1.2 ∧ UniqueMul A B p2.1 p2.2)
     (hA : A.Nonempty) (hB : B.Nonempty) : ∃ a ∈ A, ∃ b ∈ B, UniqueMul A B a b := by
-  set_option push_neg.use_distrib true in by_cases! hc : #A ≤ 1 ∧ #B ≤ 1
+  by_cases! +distrib hc : #A ≤ 1 ∧ #B ≤ 1
   · exact UniqueMul.of_card_le_one hA hB hc.1 hc.2
   rw [← Finset.card_pos] at hA hB
   obtain ⟨p, hp, _, _, _, hu, _⟩ := h (Nat.one_lt_mul_iff.mpr ⟨hA, hB, hc⟩)
@@ -359,7 +359,7 @@ open MulOpposite in
   contains a unique pair with the `UniqueMul` property. Strojnowski showed that if `G` is
   a group, then we only need to check this when `A = B`.
   Here we generalize the result to cancellative semigroups.
-  Non-cancellative counterexample: the AddMonoid {0,1} with 1+1=1. -/
+  Non-cancellative counterexample: the AddMonoid `{0,1}` with 1+1=1. -/
 @[to_additive] theorem of_same {G} [Semigroup G] [IsCancelMul G]
     (h : ∀ {A : Finset G}, A.Nonempty → ∃ a1 ∈ A, ∃ a2 ∈ A, UniqueMul A A a1 a2) :
     UniqueProds G where
@@ -435,7 +435,7 @@ open UniqueMul in
     let _ := isWellFounded_ssubset (α := ∀ i, G i) -- why need this?
     apply IsWellFounded.induction (· ⊂ ·) A; intro A ihA B hA
     apply IsWellFounded.induction (· ⊂ ·) B; intro B ihB hB
-    set_option push_neg.use_distrib true in by_cases! hc : #A ≤ 1 ∧ #B ≤ 1
+    by_cases! +distrib hc : #A ≤ 1 ∧ #B ≤ 1
     · exact of_card_le_one hA hB hc.1 hc.2
     obtain ⟨i, hc⟩ := exists_or.mpr (hc.imp exists_of_one_lt_card_pi exists_of_one_lt_card_pi)
     obtain ⟨ai, hA, bi, hB, hi⟩ := uniqueMul_of_nonempty (hA.image (· i)) (hB.image (· i))
@@ -560,7 +560,7 @@ theorem of_mulOpposite (h : TwoUniqueProds Gᵐᵒᵖ) : TwoUniqueProds G where
     simp_rw [mem_product] at h1 h2 ⊢
     refine ⟨(_, _), ⟨?_, ?_⟩, (_, _), ⟨?_, ?_⟩, ?_, hu1.of_mulOpposite, hu2.of_mulOpposite⟩
     pick_goal 5
-    · contrapose! hne; rw [Prod.ext_iff] at hne ⊢
+    · contrapose hne; rw [Prod.ext_iff] at hne ⊢
       exact ⟨unop_injective hne.2, unop_injective hne.1⟩
     all_goals apply (mem_map' f).mp
     exacts [h1.2, h1.1, h2.2, h2.1]

@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Order.Monoid.Units
 # The units of an ordered commutative monoid form an ordered commutative group
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*}
@@ -21,6 +21,6 @@ variable {α : Type*}
 @[to_additive
       /-- The units of an ordered commutative additive monoid form an ordered commutative
       additive group. -/]
-instance Units.isOrderedMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+instance Units.isOrderedMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     IsOrderedMonoid αˣ where
   mul_le_mul_left _ _ h _ := mul_le_mul_left (α := α) h _

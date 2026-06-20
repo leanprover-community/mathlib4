@@ -25,7 +25,7 @@ we can equip bounded continuous functions with the corresponding operations.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped NNReal
 
@@ -34,7 +34,7 @@ section bounded_sub
 ### Bounded subtraction
 -/
 
-open Pointwise
+open scoped Pointwise
 
 /-- A typeclass saying that `(p : R × R) ↦ p.1 - p.2` maps any product of bounded sets to a bounded
 set. This property automatically holds for seminormed additive groups, but it also holds, e.g.,
@@ -65,7 +65,7 @@ lemma boundedSub_of_lipschitzWith_sub [PseudoMetricSpace R] [Sub R] {K : NNReal}
     BoundedSub R where
   isBounded_sub {s t} s_bdd t_bdd := by
     have bdd : Bornology.IsBounded (s ×ˢ t) := Bornology.IsBounded.prod s_bdd t_bdd
-    convert lip.isBounded_image bdd
+    convert! lip.isBounded_image bdd
     simp
 
 end bounded_sub
@@ -75,7 +75,8 @@ section bounded_mul
 ### Bounded multiplication and addition
 -/
 
-open Pointwise Set
+open scoped Pointwise
+open Set
 
 /-- A typeclass saying that `(p : R × R) ↦ p.1 + p.2` maps any product of bounded sets to a bounded
 set. This property follows from `LipschitzAdd`, and thus automatically holds, e.g., for seminormed
@@ -136,7 +137,7 @@ instance [PseudoMetricSpace R] [Monoid R] [LipschitzMul R] : BoundedMul R where
   isBounded_mul {s t} s_bdd t_bdd := by
     have bdd : Bornology.IsBounded (s ×ˢ t) := Bornology.IsBounded.prod s_bdd t_bdd
     obtain ⟨C, mul_lip⟩ := ‹LipschitzMul R›.lipschitz_mul
-    convert mul_lip.isBounded_image bdd
+    convert! mul_lip.isBounded_image bdd
     ext p
     simp only [Set.mem_image, Set.mem_prod, Prod.exists]
     constructor
@@ -156,7 +157,7 @@ variable {R : Type*} [SeminormedAddCommGroup R]
 
 lemma SeminormedAddCommGroup.lipschitzWith_sub :
     LipschitzWith 2 (fun (p : R × R) ↦ p.1 - p.2) := by
-  convert LipschitzWith.prod_fst.sub LipschitzWith.prod_snd
+  convert! LipschitzWith.prod_fst.sub LipschitzWith.prod_snd
   norm_num
 
 instance : BoundedSub R := boundedSub_of_lipschitzWith_sub SeminormedAddCommGroup.lipschitzWith_sub
@@ -176,7 +177,7 @@ lemma tendsto_add_const_cobounded (x : R) :
   rw [mem_map]
   rw [← isCobounded_def, ← isBounded_compl_iff] at hs ⊢
   rw [← Set.preimage_compl]
-  convert isBounded_sub hs (t := {x}) isBounded_singleton using 1
+  convert! isBounded_sub hs (t := { x }) isBounded_singleton using 1
   ext y
   simp [sub_eq_iff_eq_add]
 
@@ -187,7 +188,7 @@ lemma tendsto_const_add_cobounded (x : R) :
   rw [mem_map]
   rw [← isCobounded_def, ← isBounded_compl_iff] at hs ⊢
   rw [← Set.preimage_compl]
-  convert isBounded_add isBounded_singleton (s := {-x}) hs using 1
+  convert! isBounded_add isBounded_singleton (s := {-x}) hs using 1
   ext y
   simp
 
@@ -199,7 +200,7 @@ theorem tendsto_sub_const_cobounded (x : R) :
 @[simp]
 theorem tendsto_const_sub_cobounded (x : R) :
     Tendsto (x - ·) (cobounded R) (cobounded R) := by
-  simpa only [sub_eq_add_neg] using (tendsto_const_add_cobounded x).comp tendsto_neg_cobounded
+  simpa only [sub_eq_add_neg] using! (tendsto_const_add_cobounded x).comp tendsto_neg_cobounded
 
 end SeminormedAddCommGroup
 
@@ -210,6 +211,7 @@ section NonUnitalSeminormedRing
 
 variable {R : Type*} [NonUnitalSeminormedRing R]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance : BoundedMul R where
   isBounded_mul {s t} hs ht := by
     obtain ⟨Af, hAf⟩ := (Metric.isBounded_iff_subset_closedBall 0).mp hs
@@ -227,9 +229,9 @@ instance : BoundedMul R where
       · exact mem_closedBall_zero_iff.mp (hAf x_in_s)
       · exact mem_closedBall_zero_iff.mp (hAg y_in_t)
     calc ‖x₁ * y₁ - x₂ * y₂‖
-     _ ≤ ‖x₁ * y₁‖ + ‖x₂ * y₂‖        := norm_sub_le _ _
-     _ ≤ Af * Ag + Af * Ag            := add_le_add (aux hx₁ hy₁) (aux hx₂ hy₂)
-     _ = 2 * Af * Ag                  := by simp [← two_mul, mul_assoc]
+     _ ≤ ‖x₁ * y₁‖ + ‖x₂ * y₂‖ := norm_sub_le _ _
+     _ ≤ Af * Ag + Af * Ag     := add_le_add (aux hx₁ hy₁) (aux hx₂ hy₂)
+     _ = 2 * Af * Ag           := by simp [← two_mul, mul_assoc]
 
 end NonUnitalSeminormedRing
 

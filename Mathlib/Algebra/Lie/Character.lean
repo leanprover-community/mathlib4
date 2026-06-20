@@ -34,6 +34,7 @@ universe u v w w₁
 namespace LieAlgebra
 
 variable (R : Type u) (L : Type v) [CommRing R] [LieRing L] [LieAlgebra R L]
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- A character of a Lie algebra is a morphism to the scalars. -/
 abbrev LieCharacter :=
@@ -69,6 +70,6 @@ def lieCharacterEquivLinearDual [IsLieAbelian L] : LieCharacter R L ≃ Module.D
     { ψ with
       map_lie' := fun {x y} => by
         rw [LieModule.IsTrivial.trivial, LieRing.of_associative_ring_bracket, mul_comm, sub_self,
-          LinearMap.toFun_eq_coe, LinearMap.map_zero] }
+          LinearMap.toFun_eq_coe, map_zero] }
 
 end LieAlgebra

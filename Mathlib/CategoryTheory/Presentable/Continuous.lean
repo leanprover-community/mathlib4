@@ -122,6 +122,8 @@ lemma isCardinalContinuous_eq_isLocal :
       apply iInf_le
   · simp [preservesLimitsOfShape_eq_isLocal]
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 instance (X : C) : IsCardinalPresentable (shrinkYoneda.{w}.obj X) κ where
   preservesColimitOfShape J _ := ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨by
     have := isFiltered_of_isCardinalFiltered J κ
@@ -142,6 +144,7 @@ instance (X : C) : IsCardinalPresentable (shrinkYoneda.{w}.obj X) κ where
       refine ⟨l, a, ?_⟩
       rw [shrinkYonedaEquiv_symm_comp, shrinkYonedaEquiv_symm_comp, hl]⟩⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
 instance (J : SmallCategoryCardinalLT κ)
     (F : SmallCategoryCardinalLT.categoryFamily κ J ⥤ Cᵒᵖ) :
     IsCardinalPresentable (preservesLimitHomFamilySrc F) κ := by
@@ -181,6 +184,8 @@ instance : HasLimitsOfSize.{w, w} (isCardinalContinuous Cᵒᵖ (Type w) κ).Ful
   exact ⟨inferInstance⟩
 
 variable {C κ} in
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma isCardinalFiltered_costructuredArrow_yoneda
     {P : Cᵒᵖ ⥤ Type w} (hP : isCardinalContinuous Cᵒᵖ (Type w) κ P)
     (hC : ∀ (J : Type w) [SmallCategory J] (_ : HasCardinalLT (Arrow J) κ),
@@ -236,6 +241,7 @@ instance :
     ((isCardinalContinuousCongrLeft ((equivSmallModel.{w} Cᵒᵖ).op.symm.trans
       (opOpEquivalence C)) (Type w) κ).inverse)
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] shrinkYoneda in
 @[simps!]
 noncomputable def _root_.CategoryTheory.Equivalence.shrinkYonedaIsoConjugateYoneda
@@ -245,6 +251,8 @@ noncomputable def _root_.CategoryTheory.Equivalence.shrinkYonedaIsoConjugateYone
   NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦
     ((equivShrink _).symm.trans e.fullyFaithfulFunctor.homEquiv).toIso))
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 variable {C κ} in
 lemma exists_presentation_of_isCardinalContinuous
     (hC : ∀ (J : Type w) [SmallCategory J] (_ : HasCardinalLT (Arrow J) κ),
@@ -278,11 +286,11 @@ lemma exists_presentation_of_isCardinalContinuous
       { app X := shrinkYonedaEquiv.symm (yonedaEquiv X.hom)
         naturality X Y f := ?_ }
     apply shrinkYonedaEquiv.injective
-    have := congr_fun (Y.hom.naturality f.left.op) (𝟙 _)
+    have := ConcreteCategory.congr_hom (Y.hom.naturality f.left.op) (𝟙 Y.left)
     dsimp at this
     simp only [Category.comp_id] at this
-    simp [← CostructuredArrow.w f,
-      -CommaMorphism.w, shrinkYoneda, yonedaEquiv, shrinkYonedaEquiv, G, this]
+    dsimp [shrinkYonedaEquiv, shrinkYoneda, yonedaEquiv, G]
+    simp [this, ← CostructuredArrow.w f, -CommaMorphism.w, -CostructuredArrow.w]
   · have H := isColimitOfPreserves (e.op.congrLeft (E := Type w)).inverse
       ((isColimitTautologicalCocone (e.inverse.op ⋙ F)))
     refine (IsColimit.equivOfNatIsoOfIso
@@ -290,7 +298,7 @@ lemma exists_presentation_of_isCardinalContinuous
         isoWhiskerRight projIso.symm _ ≪≫ associator _ _ _) _ _ ?_).1
         (isColimitOfPreserves (e.op.congrLeft).inverse
           ((isColimitTautologicalCocone (e.inverse.op ⋙ F))))
-    refine Cocones.ext isoF ?_
+    refine Cocone.ext isoF ?_
     intro j
     dsimp
     obtain ⟨Y, f, rfl⟩ := j.mk_surjective
@@ -298,9 +306,12 @@ lemma exists_presentation_of_isCardinalContinuous
     ext X x
     dsimp at x
     obtain ⟨x, rfl⟩ := (equivShrink _).surjective x
-    simp [iso', isoF, projIso, shrinkYonedaEquiv]
-    erw [Equiv.apply_symm_apply]
-    simp [yonedaEquiv, ← FunctorToTypes.map_comp_apply, ← op_comp]
+    dsimp [iso', isoF, projIso, shrinkYonedaEquiv,
+      Equivalence.shrinkYonedaIsoConjugateYoneda]
+    simp only [map_id, NatTrans.id_app, Equiv.symm_apply_apply]
+    erw [Equiv.apply_symm_apply, Equiv.apply_symm_apply,
+      ← CategoryTheory.Functor.map_comp_apply]
+    cat_disch
 
 end EssentiallySmall
 

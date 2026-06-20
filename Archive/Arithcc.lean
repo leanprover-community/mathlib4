@@ -264,6 +264,8 @@ theorem write_eq_implies_stateEq {t : Register} {v : Word} {ζ₁ ζ₂ : State}
   specialize h r (lt_trans hr (Register.lt_succ_self _))
   rwa [if_neg (ne_of_lt hr)] at h
 
+set_option linter.flexible false in
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The main **compiler correctness theorem**.
 
 Unlike Theorem 1 in the paper, both `map` and the assumption on `t` are explicit.

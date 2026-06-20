@@ -5,9 +5,9 @@ Authors: Markus Himmel, Alex Keizer
 -/
 module
 
-public import Mathlib.Algebra.Group.Nat.Even
 public import Mathlib.Algebra.NeZero
 public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Data.Bool.Basic
 public import Mathlib.Data.List.GetD
 public import Mathlib.Data.Nat.Bits
@@ -42,7 +42,7 @@ should be connected.
 bitwise, and, or, xor
 -/
 
-@[expose] public section
+public section
 
 open Function
 
@@ -70,17 +70,12 @@ lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
   conv_lhs => unfold bitwise
   have mod_two_iff_bod x : (x % 2 = 1 : Bool) = bodd x := by
     simp only [mod_two_of_bodd]; cases bodd x <;> rfl
-  simp only [hn, hm, mod_two_iff_bod, ite_false, bit, two_mul, Bool.cond_eq_ite]
+  simp [hn, hm, mod_two_iff_bod, bit, two_mul]
 
 theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n → C (bit b n)) {n}
     (h : n ≠ 0) :
-    binaryRec z f n = bit_bodd_div2 n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
-  cases n using bitCasesOn with
-  | bit b n =>
-    rw [binaryRec_eq _ _ (by right; simpa [bit_eq_zero_iff] using h)]
-    generalize_proofs h; revert h
-    rw [bodd_bit, div2_bit]
-    simp
+    binaryRec z f n = n.bit_bodd_div2 ▸ f n.bodd n.div2 (binaryRec z f n.div2) := by
+  rw [binaryRec, dif_neg h, eqRec_eq_cast, eqRec_eq_cast]; rfl
 
 @[simp]
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
@@ -127,28 +122,7 @@ theorem testBit_land : ∀ m n k, testBit (m &&& n) k = (testBit m k && testBit 
 theorem testBit_ldiff : ∀ m n k, testBit (ldiff m n) k = (testBit m k && not (testBit n k)) :=
   testBit_bitwise rfl
 
-attribute [simp] testBit_xor
-
 end
-
-@[simp]
-theorem bit_false : bit false = (2 * ·) :=
-  rfl
-
-@[simp]
-theorem bit_true : bit true = (2 * · + 1) :=
-  rfl
-
-@[simp]
-theorem bit_false_apply (n) : bit false n = (2 * n) :=
-  rfl
-
-@[simp]
-theorem bit_true_apply (n) : bit true n = (2 * n + 1) :=
-  rfl
-
-theorem bit_ne_zero_iff {n : ℕ} {b : Bool} : n.bit b ≠ 0 ↔ n = 0 → b = true := by
-  simp
 
 /-- An alternative for `bitwise_bit` which replaces the `f false false = false` assumption
 with assumptions that neither `bit a m` nor `bit b n` are `0`
@@ -176,8 +150,8 @@ lemma bitwise_eq_binaryRec (f : Bool → Bool → Bool) :
     | zero => simp only [bitwise_zero_right, binaryRec_zero, Bool.cond_eq_ite]
     | bit yb y hyb =>
       rw [← bit_ne_zero_iff] at hyb
-      simp_rw [binaryRec_of_ne_zero _ _ hyb, bitwise_of_ne_zero hxb hyb, bodd_bit, ← div2_val,
-        div2_bit, eq_rec_constant, ih]
+      simp_rw [binaryRec_of_ne_zero _ _ hyb, bitwise_of_ne_zero hxb hyb, bodd_bit, div2_bit,
+        bit_div_two, eq_rec_constant, ih]
 
 theorem zero_of_testBit_eq_false {n : ℕ} (h : ∀ i, testBit n i = false) : n = 0 := by
   induction n using Nat.binaryRec with | zero => rfl | bit b n hn => ?_
@@ -230,26 +204,26 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
       · subst hi
         simp only [testBit_bit_zero] at hn hm
         have : n = m :=
-          eq_of_testBit_eq fun i => by convert hnm (i + 1) (Nat.zero_lt_succ _) using 1
+          eq_of_testBit_eq fun i => by convert! hnm (i + 1) (Nat.zero_lt_succ _) using 1
           <;> rw [testBit_bit_succ]
         rw [hn, hm, this, bit_false, bit_true]
         exact Nat.lt_succ_self _
       · obtain ⟨i', rfl⟩ := exists_eq_succ_of_ne_zero hi
         simp only [testBit_bit_succ] at hn hm
         have := hn' _ hn hm fun j hj => by
-          convert hnm j.succ (succ_lt_succ hj) using 1 <;> rw [testBit_bit_succ]
+          convert! hnm j.succ (succ_lt_succ hj) using 1 <;> rw [testBit_bit_succ]
         exact bit_lt_bit b b' this
 
 theorem bitwise_swap {f : Bool → Bool → Bool} :
     bitwise (Function.swap f) = Function.swap (bitwise f) := by
   funext m n
   simp only [Function.swap]
-  induction m using Nat.strongRecOn generalizing n with | ind m ih => ?_
-  rcases m with - | m
-  <;> rcases n with - | n
-  <;> try rw [bitwise_zero_left, bitwise_zero_right]
-  · specialize ih ((m + 1) / 2) (div_lt_self' ..)
-    simp [bitwise_of_ne_zero, ih]
+  induction m using Nat.binaryRec' generalizing n with
+  | zero => simp
+  | bit bm m hm ihm =>
+    induction n using Nat.binaryRec' with
+    | zero => simp
+    | bit bn n hn => rw [bitwise_bit' _ _ _ _ hm hn, bitwise_bit' _ _ _ _ hn hm, ihm]
 
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
 is also commutative. -/
@@ -288,18 +262,6 @@ macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
 theorem land_assoc (n m k : ℕ) : (n &&& m) &&& k = n &&& (m &&& k) := by bitwise_assoc_tac
 
 theorem lor_assoc (n m k : ℕ) : (n ||| m) ||| k = n ||| (m ||| k) := by bitwise_assoc_tac
-
-@[deprecated Nat.xor_xor_cancel_right (since := "2025-10-02")]
-theorem xor_cancel_right (n m : ℕ) : (m ^^^ n) ^^^ n = m := Nat.xor_xor_cancel_right ..
-
-@[deprecated Nat.xor_xor_cancel_left (since := "2025-10-02")]
-theorem xor_cancel_left (n m : ℕ) : n ^^^ (n ^^^ m) = m := Nat.xor_xor_cancel_left ..
-
-@[deprecated Nat.xor_eq_zero_iff (since := "2025-10-02")]
-theorem xor_eq_zero {n m : ℕ} : n ^^^ m = 0 ↔ n = m := Nat.xor_eq_zero_iff
-
-@[deprecated Nat.xor_ne_zero_iff (since := "2025-10-02")]
-theorem xor_ne_zero {n m : ℕ} : n ^^^ m ≠ 0 ↔ n ≠ m := Nat.xor_ne_zero_iff
 
 theorem xor_trichotomy {a b c : ℕ} (h : a ^^^ b ^^^ c ≠ 0) :
     b ^^^ c < a ∨ c ^^^ a < b ∨ a ^^^ b < c := by
@@ -340,18 +302,55 @@ theorem xor_mod_two_eq {m n : ℕ} : (m ^^^ n) % 2 = (m + n) % 2 := by
   by_cases h : (m + n) % 2 = 0
   · simp only [h, mod_two_eq_zero_iff_testBit_zero, testBit_zero, xor_mod_two_eq_one, decide_not,
       Bool.decide_iff_dist, Bool.not_eq_false', beq_iff_eq, decide_eq_decide]
-    cutsat
+    lia
   · simp only [mod_two_ne_zero] at h
     simp only [h, xor_mod_two_eq_one]
-    cutsat
+    lia
 
 @[simp]
 theorem even_xor {m n : ℕ} : Even (m ^^^ n) ↔ (Even m ↔ Even n) := by
   simp only [even_iff, xor_mod_two_eq]
-  cutsat
+  lia
 
-@[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
-  cases b <;> simp <;> omega
+@[simp]
+theorem xor_one_of_even {n : ℕ} (h : Even n) : n ^^^ 1 = n + 1 := by
+  cases n with
+  | zero => rfl
+  | succ n =>
+    simp +instances [HXor.hXor, instXorOp, xor, bitwise, even_iff.mp h, ← mul_two,
+      div_two_mul_two_of_even h]
+
+@[simp]
+theorem xor_one_of_odd {n : ℕ} (h : Odd n) : n ^^^ 1 = n - 1 := by
+  cases n with
+  | zero =>
+    exact not_odd_zero h |>.elim
+  | succ n =>
+    simp +instances only [HXor.hXor, instXorOp, xor, bitwise, reduceDiv, bitwise_zero_right]
+    grind
+
+/-- The xor of the numbers from 0 to n can be easily calculated using `n mod 4`. -/
+theorem xor_range (n : ℕ) : (List.range (n + 1)).foldl (· ^^^ ·) 0 =
+    match Fin.ofNat 4 n with | 0 => n | 1 => 1 | 2 => n + 1 | 3 => 0 := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    nth_rw 3 [← show Fin.ofNat 4 1 = (1 : ℕ) from Fin.val_ofNat ..]
+    rw [List.range_succ, List.foldl_append, ih, ← Fin.ofNat_add, List.foldl_cons, List.foldl_nil]
+    match h : Fin.ofNat 4 n with
+    | 0 =>
+      rw [Fin.zero_add, ← xor_one_of_even <| even_iff.mpr ?_, xor_xor_cancel_left]
+      rw [← @mod_mod_of_dvd _ 4 _ <| by simp, ← Fin.val_ofNat 4, h]
+      rfl
+    | 1 =>
+      rw [Nat.xor_comm]
+      refine xor_one_of_even <| even_iff.mpr ?_
+      rw [add_mod, ← @mod_mod_of_dvd _ 4 n <| by simp, ← Fin.val_ofNat 4, h]
+      rfl
+    | 2 =>
+      apply Nat.xor_self
+    | 3 =>
+      apply zero_xor
 
 lemma shiftLeft_lt {x n m : ℕ} (h : x < 2 ^ n) : x <<< m < 2 ^ (n + m) := by
   simp only [Nat.pow_add, shiftLeft_eq, Nat.mul_lt_mul_right (Nat.two_pow_pos _), h]

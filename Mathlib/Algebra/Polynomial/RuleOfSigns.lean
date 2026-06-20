@@ -64,7 +64,7 @@ theorem signVariations_monomial (d : ℕ) (c : R) : signVariations (monomial d c
   · simp [hcz]
   · simp [hcz, signVariations, coeffList_eraseLead (mt (monomial_eq_zero_iff c d).mp hcz)]
 
-/-- If the first two signs are the same, then sign_variations is unchanged by eraseLead -/
+/-- If the first two signs are the same, then `signVariations` is unchanged by `eraseLead` -/
 theorem signVariations_eraseLead (h : SignType.sign P.leadingCoeff = SignType.sign P.nextCoeff) :
     signVariations P.eraseLead = signVariations P := by
   by_cases hpz : P = 0
@@ -75,7 +75,7 @@ theorem signVariations_eraseLead (h : SignType.sign P.leadingCoeff = SignType.si
       coeffList_eraseLead hpz]
 
 /-- If we drop the leading coefficient, the sign changes drop by 0 or 1 depending on whether
-the first two nonzero coeffients match. -/
+the first two nonzero coefficients match. -/
 theorem signVariations_eq_eraseLead_add_ite {P : Polynomial R} (h : P ≠ 0) :
     signVariations P = signVariations P.eraseLead + if SignType.sign P.leadingCoeff
       = -SignType.sign P.eraseLead.leadingCoeff then 1 else 0 := by
@@ -102,7 +102,7 @@ theorem signVariations_eq_eraseLead_add_ite {P : Polynomial R} (h : P ≠ 0) :
   by_cases h₄ : SignType.sign P.leadingCoeff = SignType.sign P.eraseLead.leadingCoeff
   · grind [SignType.neg_eq_self_iff]
   rw [if_pos h₄, if_pos ?_]
-  · grind [Nat.sub_add_cancel, List.length_pos_of_ne_nil, List.destutter'_ne_nil ]
+  · grind [Nat.sub_add_cancel, List.length_pos_of_ne_nil, List.destutter'_ne_nil]
   cases _ : SignType.sign P.leadingCoeff
   <;> cases _ : SignType.sign P.eraseLead.leadingCoeff
   <;> grind [= SignType.neg_eq_neg_one, SignType.zero_eq_zero, SignType.pos_eq_one,
@@ -131,10 +131,10 @@ variable {R : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R] (P : Polynomial 
 theorem signVariations_neg : signVariations (-P) = signVariations P := by
   rw [signVariations, signVariations, coeffList_neg]
   simp only [List.map_map, List.filter_map]
-  have hsc : SignType.sign ∘ (fun (x:R) => -x) = (fun x => -x) ∘ SignType.sign := by
+  have hsc : SignType.sign ∘ (fun (x : R) => -x) = (fun x => -x) ∘ SignType.sign := by
     grind [Left.sign_neg]
   have h_neg_destutter (l : List SignType) :
-      (l.destutter (¬· = ·)).map (- ·) = (l.map (- ·)).destutter (¬· = ·)  := by
+      (l.destutter (¬· = ·)).map (- ·) = (l.map (- ·)).destutter (¬· = ·) := by
     grind [List.map_destutter, neg_inj]
   rw [hsc, List.comp_map, ← h_neg_destutter, List.length_map]
   congr 5
@@ -151,8 +151,8 @@ variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] {P : Polyn
 @[simp]
 theorem signVariations_C_mul (P : Polynomial R) (hx : η ≠ 0) :
     signVariations (C η * P) = signVariations P := by
-  wlog hx2 : 0 < η
-  · simpa [lt_of_le_of_ne (le_of_not_gt hx2), hx] using this (η := -η) (P := -P)
+  wlog! hx2 : 0 < η
+  · simpa [lt_of_le_of_ne hx2, hx] using this (η := -η) (P := -P)
   rw [signVariations, signVariations]
   rw [coeffList_C_mul _ (lt_or_lt_iff_ne.mp (.inr hx2)), ← List.comp_map]
   congr 5
@@ -192,7 +192,7 @@ lemma signVariations_eraseLead_mul_X_sub_C (hη : 0 < η) (hP₀ : 0 < leadingCo
     suffices (coeffList (eraseLead ((X - C η) * P))).map SignType.sign =
       (coeffList ((X - C η) * P.eraseLead)).map SignType.sign by
         rw [signVariations, signVariations, this]
-    have : 0 < natDegree ((X - C η) * P.eraseLead) := by omega
+    have : 0 < natDegree ((X - C η) * P.eraseLead) := by lia
     grind [leadingCoeff_mul, leadingCoeff_X_sub_C, one_mul, leadingCoeff_eraseLead_eq_nextCoeff,
       LT.lt.ne, sign_neg, coeffList_eraseLead, ne_zero_of_natDegree_gt,
       nextCoeff_eq_zero_of_eraseLead_eq_zero]
@@ -209,7 +209,7 @@ lemma signVariations_eraseLead_mul_X_sub_C (hη : 0 < η) (hP₀ : 0 < leadingCo
 lemma succ_signVariations_X_sub_C_mul_monomial {d c} (hc : c ≠ 0) (hη : 0 < η) :
     (monomial d c).signVariations + 1 ≤ ((X - C η) * monomial d c).signVariations := by
   have h₁ : nextCoeff ((X - C η) * monomial d c) = -(η * c) := by
-    convert coeff_mul_monomial (X - C η) d 0 c using 1
+    convert coeff_mul_monomial (X - C η) d 0 c
     · simp [hc, nextCoeff, natDegree_mul (X_sub_C_ne_zero η)]
     · simp
   have h₂ : eraseLead ((X - C η) * monomial d c) ≠ 0 := by
@@ -219,7 +219,7 @@ lemma succ_signVariations_X_sub_C_mul_monomial {d c} (hc : c ≠ 0) (hη : 0 < �
     simp [hη, hc, Left.sign_neg, sign_mul]
   simpa [h₁, h₂, h₃, hc, hη.ne', signVariations, List.destutter_cons_cons,
     ← leadingCoeff_cons_eraseLead, coeffList_eraseLead, leadingCoeff_eraseLead_eq_nextCoeff]
-  using List.length_pos_of_ne_nil (List.destutter'_ne_nil _ _)
+  using! List.length_pos_of_ne_nil (List.destutter'_ne_nil _ _)
 
 private lemma exists_cons_of_leadingCoeff_pos (η) (h₁ : 0 < leadingCoeff P) (h₂ : P.nextCoeff ≠ 0) :
     ∃ c₀ cs, ((X - C η) * P).coeffList = P.leadingCoeff :: c₀ :: cs ∧
@@ -257,9 +257,7 @@ private lemma exists_cons_of_leadingCoeff_pos (η) (h₁ : 0 < leadingCoeff P) (
         grind [leadingCoeff_mul, leadingCoeff_X_sub_C]
       suffices C η * monomial P.natDegree P.leadingCoeff = monomial P.natDegree P.nextCoeff by
         grind [X_mul_monomial, sub_mul, mul_sub, self_sub_monomial_natDegree_leadingCoeff]
-      rw [nextCoeff_of_natDegree_pos (h₇ ▸ P.natDegree.succ_pos), h₇] at h₉
-      grind [leadingCoeff, nextCoeff_of_natDegree_pos, C_mul_monomial, eq_of_sub_eq_zero,
-        coeff_X_sub_C_mul]
+      grind [leadingCoeff, nextCoeff_of_natDegree_pos, eq_of_sub_eq_zero, coeff_X_sub_C_mul]
     · suffices ((X - C η) * P).eraseLead.eraseLead = ((X - C η) * P.eraseLead).eraseLead by
         have := leadingCoeff_cons_eraseLead h₉
         have := coeffList_eraseLead (mt nextCoeff_eq_zero_of_eraseLead_eq_zero h₉)
@@ -268,8 +266,7 @@ private lemma exists_cons_of_leadingCoeff_pos (η) (h₁ : 0 < leadingCoeff P) (
           monomial P.natDegree P.nextCoeff - C η * monomial P.natDegree P.leadingCoeff by
         grind [X_mul_monomial, sub_mul, mul_sub, self_sub_monomial_natDegree_leadingCoeff,
           natDegree_eraseLead_add_one, leadingCoeff_eraseLead_eq_nextCoeff]
-      rw [nextCoeff_of_natDegree_pos (h₇ ▸ P.natDegree.succ_pos), h₇] at h₉
-      grind [coeff_X_sub_C_mul, C_mul_monomial, nextCoeff_of_natDegree_pos, leadingCoeff]
+      grind [coeff_X_sub_C_mul, nextCoeff_of_natDegree_pos, leadingCoeff]
   · rw [h_cons, leadingCoeff_mul, leadingCoeff_X_sub_C, one_mul, h₂]
 
 /-- If a polynomial starts with two positive coefficients, then the sign changes in the product
@@ -294,6 +291,8 @@ lemma signVariations_X_sub_C_mul_eraseLead_le (h : 0 < P.leadingCoeff) (h₂ : 0
   · rw [← List.destutter_cons', ← List.destutter_cons']
     grind [List.destutter_cons_cons]
 
+-- TODO: fix non-terminal simp below; simp followed by rfl
+set_option linter.flexible false in
 /-- Multiplying a polynomial by a linear term `X - η` adds at least one sign change. This is the
 basis for the induction in `roots_countP_pos_le_signVariations`. -/
 theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
@@ -301,41 +300,33 @@ theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
   -- do induction on the degree
   generalize hd : P.natDegree = d
   induction d using Nat.strong_induction_on generalizing P with | _ d ih =>
-
   -- can assume it starts positive, otherwise negate P
   wlog h_lC : 0 < leadingCoeff P generalizing P with H
   · simpa using @H (-P) (by simpa) (by simpa) (by grind [leadingCoeff_eq_zero, leadingCoeff_neg])
-
   --Adding a new root doesn't make the product zero, and increases degree by exactly one.
   have h_mul : (X - C η) * P ≠ 0 := mul_ne_zero (X_sub_C_ne_zero η) hP
   have h_deg_mul : natDegree ((X - C η) * P) = natDegree P + 1 := by
     rw [natDegree_mul (X_sub_C_ne_zero η) hP, natDegree_X_sub_C, add_comm]
-
   rcases d with _ | d
   · --P is zero degree, therefore a constant.
     have hcQ : 0 < coeff P 0 := by grind [leadingCoeff]
     have hxcQ : coeff ((X - C η) * P) 1 = coeff P 0 := by
-      grind [coeff_X_sub_C_mul, mul_zero, coeff_eq_zero_of_natDegree_lt]
+      simp_all [coeff_X_sub_C_mul, coeff_eq_zero_of_natDegree_lt]
     dsimp [signVariations, coeffList]
     rw [withBotSucc_degree_eq_natDegree_add_one hP, withBotSucc_degree_eq_natDegree_add_one h_mul]
     simp [h_deg_mul, hxcQ, hη, hcQ, hd, List.range_succ]
-
   -- P is positive degree. Set up some temporary variables for signs for the nextCoeffs.
   generalize hs_nC : SignType.sign P.nextCoeff = s_nC
   generalize hs_nC_mul : SignType.sign ((X - C η) * P).nextCoeff = s_nC_mul
-
   --We're really doing induction on `P.eraseLead` in a sense
   have h_ih : P.eraseLead.natDegree < d + 1 := by grind [eraseLead_natDegree_le]
-
   have h_mul_lC : SignType.sign ((X - C η) * P).leadingCoeff = 1 := by simp [h_lC]
   have h_ηP : 0 < η * coeff P (d + 1) := by grind [leadingCoeff, mul_pos]
-
   rcases s_nC.trichotomy with rfl | rfl | rfl; rotate_left
   · -- P starts with [+,0,...] so (X-C)*P starts with [+,-,...].
     obtain rfl : s_nC_mul = -1 := by
       have : coeff P d = 0 := by simpa [nextCoeff, hd] using hs_nC
       simp [*, ← hs_nC_mul, nextCoeff, coeff_X_sub_C_mul]
-
     /- We would like to just `have : eraseLead P ≠ 0`, so that we can use the inductive
       hypothesis on eraseLead P. but that isn't actually true: we could have P a monomial
       and then eraseLead P = 0, and then the inductive hypothesis doesn't hold. (It's only
@@ -357,15 +348,13 @@ theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
         rwa [← eraseLead_mul_eq_mul_eraseLead_of_nextCoeff_zero hη.ne']
         grind [sign_eq_zero_iff]
       grind [signVariations_le_eraseLead_succ]
-
   all_goals (
     have h₁ : nextCoeff P ≠ 0 := by simp [← sign_ne_zero, hs_nC]
     specialize ih _ h_ih (mt nextCoeff_eq_zero_of_eraseLead_eq_zero h₁) rfl
     have : P.signVariations = P.eraseLead.signVariations + ?_ := by
       simp [signVariations_eq_eraseLead_add_ite hP, leadingCoeff_eraseLead_eq_nextCoeff h₁,
         hs_nC, h_lC]
-      exact rfl
-  )
+      exact rfl)
   · /- P starts with [+,+,...]. (X-C)*P starts with [+,?,...]. After dropping the lead of P, this
       becomes [+,...] and [+,...]. So the sign variations on P are unchanged when we induct, while
       (X-C)*P can only lose at most one sign change. -/
@@ -389,8 +378,8 @@ variable {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] (P : P
 variations. -/
 theorem roots_countP_pos_le_signVariations : P.roots.countP (0 < ·) ≤ signVariations P := by
   generalize h : P.roots.countP (0 < ·) = num_pos_roots
-  induction num_pos_roots generalizing P --Induct on number of roots.
-  · exact zero_le _
+  induction num_pos_roots generalizing P -- Induct on number of roots.
+  · exact zero_le
   rename_i ih
   have hp : P ≠ 0 := by grind [roots_zero, Multiset.countP_zero]
   -- we can take a positive root, η, because the number of roots is positive

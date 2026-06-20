@@ -18,7 +18,7 @@ This file proves that `ℤ` is a `LocallyFiniteOrder` and calculates the cardina
 intervals as finsets and fintypes.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
@@ -38,34 +38,34 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℤ where
     simp_rw [mem_map, mem_range, Function.Embedding.trans_apply, Nat.castEmbedding_apply,
       addLeftEmbedding_apply]
     constructor
-    · omega
+    · lia
     · intro
       use (x - a).toNat
-      omega
+      lia
   finset_mem_Ico a b x := by
     simp_rw [mem_map, mem_range, Function.Embedding.trans_apply, Nat.castEmbedding_apply,
       addLeftEmbedding_apply]
     constructor
-    · omega
+    · lia
     · intro
       use (x - a).toNat
-      omega
+      lia
   finset_mem_Ioc a b x := by
     simp_rw [mem_map, mem_range, Function.Embedding.trans_apply, Nat.castEmbedding_apply,
       addLeftEmbedding_apply]
     constructor
-    · omega
+    · lia
     · intro
       use (x - (a + 1)).toNat
-      omega
+      lia
   finset_mem_Ioo a b x := by
     simp_rw [mem_map, mem_range, Function.Embedding.trans_apply, Nat.castEmbedding_apply,
       addLeftEmbedding_apply]
     constructor
-    · omega
+    · lia
     · intro
       use (x - (a + 1)).toNat
-      omega
+      lia
 
 variable (a b : ℤ)
 
@@ -189,12 +189,12 @@ lemma Finset.Ioc_succ_succ (m n : ℕ) :
     Ioc (-(m + 1) : ℤ) (n + 1) = Ioc (-m : ℤ) n ∪ {-(m : ℤ), (n + 1 : ℤ)} := by
   ext
   simp only [mem_Ioc, union_insert, union_singleton, mem_insert]
-  omega
+  lia
 
 lemma Finset.Ioo_succ_succ (m n : ℕ) :
     Ioo (-(m + 1) : ℤ) (n + 1) = Ioo (-m : ℤ) n ∪ {-(m : ℤ), (n : ℤ)} := by
   ext
   simp only [mem_Ioo, union_insert, union_singleton, mem_insert]
-  omega
+  lia
 
 end Nat

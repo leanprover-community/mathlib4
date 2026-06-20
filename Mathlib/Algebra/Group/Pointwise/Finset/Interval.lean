@@ -11,10 +11,10 @@ public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-! # Pointwise operations on intervals
 
-This should be kept in sync with `Mathlib/Data/Set/Pointwise/Interval.lean`.
+This should be kept in sync with `Mathlib/Algebra/Order/Group/Pointwise/Interval.lean`.
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

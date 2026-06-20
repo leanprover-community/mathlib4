@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Fourier.AddCircle
 public import Mathlib.Analysis.Fourier.FourierTransform
 public import Mathlib.Analysis.PSeries
-public import Mathlib.Analysis.Distribution.FourierSchwartz
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 public import Mathlib.Topology.ContinuousMap.Periodic
 
@@ -19,15 +19,15 @@ We prove Poisson's summation formula `∑ (n : ℤ), f n = ∑ (n : ℤ), 𝓕 f
 Fourier transform of `f`, under the following hypotheses:
 * `f` is a continuous function `ℝ → ℂ`.
 * The sum `∑ (n : ℤ), 𝓕 f n` is convergent.
-* For all compacts `K ⊂ ℝ`, the sum `∑ (n : ℤ), sup { ‖f(x + n)‖ | x ∈ K }` is convergent.
-  See `Real.tsum_eq_tsum_fourierIntegral` for this formulation.
+* For all compacts `K ⊂ ℝ`, the sum `∑ (n : ℤ), ‖f(x + n)‖` is uniformly convergent on `K`.
+  See `Real.tsum_eq_tsum_fourier` for this formulation.
 
 These hypotheses are potentially a little awkward to apply, so we also provide the less general but
 easier-to-use result `Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay`, in which we assume `f` and
 `𝓕 f` both decay as `|x| ^ (-b)` for some `b > 1`, and the even more specific result
 `SchwartzMap.tsum_eq_tsum_fourierIntegral`, where we assume that `f` is a Schwartz function. -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -62,7 +62,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
   have eadd : ∀ (n : ℤ), e.comp (ContinuousMap.addRight n) = e := by
     intro n; ext1 x
     have : Periodic e 1 := Periodic.comp (fun x => AddCircle.coe_add_period 1 x) (fourier (-m))
-    simpa only [mul_one] using this.int_mul n x
+    simpa only [mul_one] using! this.int_mul n x
   -- Now the main argument. First unwind some definitions.
   calc
     fourierCoeff (Periodic.lift <| f.periodic_tsum_comp_add_zsmul 1) m =
@@ -76,7 +76,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
     -- Swap sum and integral.
     _ = ∑' n : ℤ, ∫ x in (0 : ℝ)..1, (e * f.comp (ContinuousMap.addRight n)) x := by
       refine (intervalIntegral.tsum_intervalIntegral_eq_of_summable_norm ?_).symm
-      convert hf ⟨uIcc 0 1, isCompact_uIcc⟩ using 1
+      convert! hf ⟨uIcc 0 1, isCompact_uIcc⟩ using 1
       exact funext fun n => neK _ _
     _ = ∑' n : ℤ, ∫ x in (0 : ℝ)..1, (e * f).comp (ContinuousMap.addRight n) x := by
       simp only [mul_comp] at eadd ⊢
@@ -85,7 +85,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
     _ = ∫ x, e x * f x := by
       suffices Integrable (e * f) from this.hasSum_intervalIntegral_comp_add_int.tsum_eq
       apply integrable_of_summable_norm_Icc
-      convert hf ⟨Icc 0 1, isCompact_Icc⟩ using 1
+      convert! hf ⟨Icc 0 1, isCompact_Icc⟩ using 1
       simp_rw [mul_comp] at eadd ⊢
       simp_rw [eadd]
       exact funext fun n => neK ⟨Icc 0 1, isCompact_Icc⟩ _
@@ -107,9 +107,9 @@ theorem Real.tsum_eq_tsum_fourier {f : C(ℝ, ℂ)}
   let F : C(UnitAddCircle, ℂ) :=
     ⟨(f.periodic_tsum_comp_add_zsmul 1).lift, continuous_coinduced_dom.mpr (map_continuous _)⟩
   have : Summable (fourierCoeff F) := by
-    convert h_sum
+    convert! h_sum
     exact Real.fourierCoeff_tsum_comp_add h_norm _
-  convert (has_pointwise_sum_fourier_series_of_summable this x).tsum_eq.symm using 1
+  convert! (has_pointwise_sum_fourier_series_of_summable this x).tsum_eq.symm using 1
   · simpa only [F, coe_mk, ← QuotientAddGroup.mk_zero, Periodic.lift_coe, zsmul_one, comp_apply,
       coe_addRight, zero_add]
        using (hasSum_apply (summable_of_locally_summable_norm h_norm).hasSum x).tsum_eq
@@ -141,14 +141,14 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   simp only [IsBigO, IsBigOWith, eventually_atTop] at hc' ⊢
   obtain ⟨d, hd⟩ := hc'
   refine ⟨c * (1 / 2) ^ (-b), ⟨max (1 + max 0 (-2 * R)) (d - R), fun x hx => ?_⟩⟩
-  rw [ge_iff_le, max_le_iff] at hx
+  rw [max_le_iff] at hx
   have hx' : max 0 (-2 * R) < x := by linarith
   rw [max_lt_iff] at hx'
   rw [norm_norm, ContinuousMap.norm_le _ (by positivity)]
   refine fun y => (hd y.1 (by linarith [hx.1, y.2.1])).trans ?_
   have A : ∀ x : ℝ, 0 ≤ |x| ^ (-b) := fun x => by positivity
   rw [mul_assoc, mul_le_mul_iff_right₀ hc, norm_of_nonneg (A _), norm_of_nonneg (A _)]
-  convert claim x (by linarith only [hx.1]) y.1 y.2.1
+  convert! claim x (by linarith only [hx.1]) y.1 y.2.1
   · apply abs_of_nonneg; linarith [y.2.1]
   · exact abs_of_pos hx'.1
 
@@ -156,7 +156,7 @@ theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
     (hf : f =O[atBot] fun x : ℝ => |x| ^ (-b)) (R S : ℝ) :
     (fun x : ℝ => ‖f.restrict (Icc (x + R) (x + S))‖) =O[atBot] fun x : ℝ => |x| ^ (-b) := by
   have h1 : (f.comp (ContinuousMap.mk _ continuous_neg)) =O[atTop] fun x : ℝ => |x| ^ (-b) := by
-    convert hf.comp_tendsto tendsto_neg_atTop_atBot using 1
+    convert! hf.comp_tendsto tendsto_neg_atTop_atBot using 1
     ext1 x; simp only [Function.comp_apply, abs_neg]
   have h2 := (isBigO_norm_Icc_restrict_atTop hb h1 (-S) (-R)).comp_tendsto tendsto_neg_atBot_atTop
   have : (fun x : ℝ => |x| ^ (-b)) ∘ Neg.neg = fun x : ℝ => |x| ^ (-b) := by

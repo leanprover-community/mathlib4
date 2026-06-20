@@ -19,7 +19,7 @@ public import Mathlib.Order.Filter.AtTopBot.Monoid
 In this file we prove that `m ≡ d [MOD n]` frequently as `m → ∞`.
 -/
 
-@[expose] public section
+public section
 
 
 open Filter

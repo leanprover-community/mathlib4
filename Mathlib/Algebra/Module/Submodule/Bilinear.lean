@@ -20,8 +20,8 @@ This file provides `Submodule.map₂`, which is later used to implement `Submodu
 
 ## Notes
 
-This file is quite similar to the n-ary section of `Data.Set.Basic` and to `Order.Filter.NAry`.
-Please keep them in sync.
+This file is quite similar to the n-ary section of `Mathlib/Data/Set/Basic.lean` and to
+`Mathlib/Order/Filter/NAry.lean`. Please keep them in sync.
 
 ## TODO
 
@@ -30,12 +30,11 @@ Generalize this file to semilinear maps.
 
 @[expose] public section
 
-
 universe uι u v
 
 open Set
 
-open Pointwise
+open scoped Pointwise
 
 namespace Submodule
 
@@ -81,7 +80,7 @@ theorem map₂_bot_right (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) : m
   eq_bot_iff.2 <|
     map₂_le.2 fun m _hm n hn => by
       rw [Submodule.mem_bot] at hn
-      rw [hn, LinearMap.map_zero]; simp only [mem_bot]
+      rw [hn, map_zero]; simp only [mem_bot]
 
 @[simp]
 theorem map₂_bot_left (f : M →ₗ[R] N →ₗ[R] P) (q : Submodule R N) : map₂ f ⊥ q = ⊥ :=

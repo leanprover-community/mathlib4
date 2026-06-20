@@ -12,7 +12,7 @@ public import Mathlib.Order.Defs.Unbundled
 # Some `Ordering` lemmas
 -/
 
-@[expose] public section
+public section
 
 universe u
 

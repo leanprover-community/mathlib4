@@ -151,8 +151,8 @@ protected theorem Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (β a)} :
       refine (ht a <| mem_cons_self _ _).pairwise ?_
       exact fun b₁ _ b₂ _ neb =>
         disjoint_map_map.2 fun f _ g _ eq =>
-          have : Pi.cons s a b₁ f a (mem_cons_self _ _) = Pi.cons s a b₂ g a (mem_cons_self _ _) :=
-            by rw [eq]
+          have : Pi.cons s a b₁ f a (mem_cons_self _ _) =
+            Pi.cons s a b₂ g a (mem_cons_self _ _) := by rw [eq]
           neb <| show b₁ = b₂ by rwa [Pi.cons_same, Pi.cons_same] at this)
 
 theorem mem_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) (f : ∀ a ∈ m, β a) :

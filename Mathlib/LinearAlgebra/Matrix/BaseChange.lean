@@ -21,7 +21,7 @@ This file is a home for results about base change for matrices.
 
 -/
 
-@[expose] public section
+public section
 
 namespace Matrix
 
@@ -38,19 +38,19 @@ lemma mem_subfield_of_mul_eq_one_of_mem_subfield_right
   have hA' : A'.map K.subtype = A.submatrix id e := rfl
   have hA : IsUnit A' := by
     have h_unit : IsUnit (A.submatrix id e) :=
-      isUnit_of_right_inverse (B := B.submatrix e id) (by simpa)
+      .of_mul_eq_one (B.submatrix e id) (by simpa)
     have h_det : (A.submatrix id e).det = K.subtype A'.det := by
       simp [A', K.subtype.map_det, map, submatrix]
-    simpa [isUnit_iff_isUnit_det, h_det] using h_unit
-  obtain ⟨B', hB⟩ := exists_right_inverse_iff_isUnit.mpr hA
+    simpa [isUnit_iff_isUnit_det, h_det] using! h_unit
+  obtain ⟨B', hB⟩ := isUnit_iff_exists_inv.mp hA
   suffices (B'.submatrix e.symm id).map K.subtype = B by simp [← this]
   replace hB : A * (B'.submatrix e.symm id).map K.subtype = 1 := by
     replace hB := congr_arg (fun C ↦ C.map K.subtype) hB
     simp_rw [Matrix.map_mul] at hB
     rw [hA', ← e.symm_symm, ← submatrix_id_mul_left] at hB
-    simpa using hB
+    simpa using! hB
   classical
-  simpa [← Matrix.mul_assoc, (mul_eq_one_comm_of_equiv e).mp hAB] using congr_arg (B * ·) hB
+  simpa [← Matrix.mul_assoc, (mul_eq_one_comm_of_equiv e).mp hAB] using! congr_arg (B * ·) hB
 
 lemma mem_subfield_of_mul_eq_one_of_mem_subfield_left
     (h_mem : ∀ i j, B i j ∈ K) (i : m) (j : n) :

@@ -9,6 +9,7 @@ public import Mathlib.Data.List.TakeDrop
 public import Mathlib.Data.List.Induction
 public import Mathlib.Data.Nat.Basic
 public import Mathlib.Order.Basic
+public import Mathlib.Data.List.Basic
 
 /-!
 # Prefixes, suffixes, infixes
@@ -30,7 +31,7 @@ All those (except `insert`) are defined in `Mathlib/Data/List/Defs.lean`.
 * `l₁ <:+: l₂`: `l₁` is an infix of `l₂`.
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*}
 
@@ -115,7 +116,7 @@ theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.lengt
     x ++ [y.get ⟨x.length, hl⟩] <+: y := by
   use y.drop (x.length + 1)
   nth_rw 1 [List.prefix_iff_eq_take.mp h]
-  convert List.take_append_drop (x.length + 1) y using 2
+  convert! List.take_append_drop (x.length + 1) y using 2
   rw [← List.take_concat_get, List.concat_eq_append]; rfl
 
 theorem prefix_append_drop {l₁ l₂ : List α} (h : l₁ <+: l₂) :
@@ -168,6 +169,18 @@ lemma infix_antisymm {l₁ l₂ : List α} (h₁ : l₁ <:+: l₂) (h₂ : l₂ 
     l₁ = l₂ :=
   h₁.sublist.antisymm h₂.sublist
 
+protected theorem IsPrefix.nodup {l₁ l₂ : List α} (h : l₁ <+: l₂) (hn : l₂.Nodup) :
+    l₁.Nodup :=
+  hn.sublist h.sublist
+
+protected theorem IsInfix.nodup {l₁ l₂ : List α} (h : l₁ <:+: l₂) (hn : l₂.Nodup) :
+    l₁.Nodup :=
+  hn.sublist h.sublist
+
+protected theorem IsSuffix.nodup {l₁ l₂ : List α} (h : l₁ <:+ l₂) (hn : l₂.Nodup) :
+    l₁.Nodup :=
+  hn.sublist h.sublist
+
 instance : IsPartialOrder (List α) (· <+: ·) where
   refl _ := prefix_rfl
   trans _ _ _ := IsPrefix.trans
@@ -204,8 +217,8 @@ theorem mem_inits : ∀ s t : List α, s ∈ inits t ↔ s <+: t
       match s, mi with
       | [], ⟨_, rfl⟩ => Or.inl rfl
       | b :: s, ⟨r, hr⟩ =>
-        (List.noConfusion hr) fun ba (st : s ++ r = t) =>
-          Or.inr <| by rw [ba]; exact ⟨_, (mem_inits _ _).2 ⟨_, st⟩, rfl⟩⟩
+        (List.noConfusion rfl (heq_of_eq hr)) fun ba (st : s ++ r ≍ t) =>
+          Or.inr <| by rw [eq_of_heq ba]; exact ⟨_, (mem_inits _ _).2 ⟨_, eq_of_heq st⟩, rfl⟩⟩
 
 @[simp]
 theorem mem_tails : ∀ s t : List α, s ∈ tails t ↔ s <:+ t
@@ -222,7 +235,8 @@ theorem mem_tails : ∀ s t : List α, s ∈ tails t ↔ s <:+ t
           fun e =>
           match s, t, e with
           | _, t, ⟨[], rfl⟩ => Or.inl rfl
-          | s, t, ⟨b :: l, he⟩ => List.noConfusion he fun _ lt => Or.inr ⟨l, lt⟩⟩
+          | s, t, ⟨b :: l, he⟩ =>
+            List.noConfusion rfl (heq_of_eq he) fun _ lt => Or.inr ⟨l, eq_of_heq lt⟩⟩
 
 theorem inits_cons (a : α) (l : List α) : inits (a :: l) = [] :: l.inits.map fun t => a :: t := by
   simp
@@ -309,7 +323,7 @@ lemma map_tails {β : Type*} (g : α → β) : (l.map g).tails = l.tails.map (ma
   induction l using reverseRecOn <;> simp [*]
 
 lemma take_inits {n} : (l.take n).inits = l.inits.take (n + 1) := by
-  apply ext_getElem <;> (simp [take_take] <;> omega)
+  apply ext_getElem <;> (simp [take_take] <;> grind)
 
 end InitsTails
 

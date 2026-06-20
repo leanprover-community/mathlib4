@@ -19,7 +19,7 @@ are motivated by the proof of the von Neumann Mean Ergodic Theorem,
 see `LinearIsometry.tendsto_birkhoffAverage_orthogonalProjection`.
 -/
 
-@[expose] public section
+public section
 
 open Function Set Filter
 open scoped Topology ENNReal Uniformity
@@ -39,7 +39,7 @@ theorem Function.IsFixedPt.tendsto_birkhoffAverage
     {f : α → α} {x : α} (h : f.IsFixedPt x) (g : α → E) :
     Tendsto (birkhoffAverage R f g · x) atTop (𝓝 (g x)) :=
   tendsto_const_nhds.congr' <| (eventually_ne_atTop 0).mono fun _n hn ↦
-    (h.birkhoffAverage_eq R g hn).symm
+    (h.birkhoffAverage_eq R g (Nat.cast_ne_zero.mpr hn)).symm
 
 variable [NormedAddCommGroup E]
 

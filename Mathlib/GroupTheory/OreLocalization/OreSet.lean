@@ -121,6 +121,14 @@ instance (priority := 100) oreSetComm {R} [CommMonoid R] (S : Submonoid R) : Ore
   oreDenom _ s := s
   ore_eq r s := by rw [mul_comm]
 
+@[to_additive (attr := simp) AddOreLocalization.addOreSetComm_oreMin]
+lemma oreSetComm_oreNum {R : Type*} [CommMonoid R] (S : Submonoid R) (r : R) (s : S) :
+    oreNum r s = r := rfl
+
+@[to_additive (attr := simp) AddOreLocalization.addOreSetComm_oreSubtra]
+lemma oreSetComm_oreDenom {R : Type*} [CommMonoid R] (S : Submonoid R) (r : R) (s : S) :
+    oreDenom r s = s := rfl
+
 end Monoid
 
 end OreLocalization

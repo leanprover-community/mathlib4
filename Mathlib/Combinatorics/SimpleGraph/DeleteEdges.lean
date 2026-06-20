@@ -24,7 +24,7 @@ case.
 * `SimpleGraph.deleteIncidenceSet G v` is the simple graph `G` with the incidence set of `v`
   removed from the edge set.
 
-* `SimpleGraph.deleteFar G p r` is the predicate that a graph is `r`-*delete-far* from a property
+* `SimpleGraph.DeleteFar G p r` is the predicate that a graph is `r`-*delete-far* from a property
   `p`, that is, at least `r` edges must be deleted to satisfy `p`.
 -/
 
@@ -61,14 +61,21 @@ instance [DecidableRel G.Adj] [DecidablePred (· ∈ s)] [DecidableEq V] :
 theorem deleteEdges_deleteEdges (s s' : Set (Sym2 V)) :
     (G.deleteEdges s).deleteEdges s' = G.deleteEdges (s ∪ s') := by simp [deleteEdges, sdiff_sdiff]
 
-@[simp] lemma deleteEdges_empty : G.deleteEdges ∅ = G := by simp [deleteEdges]
+-- This is not marked `simp` since `deleteEdges_of_subset_diagSet` already proves it
+lemma deleteEdges_empty : G.deleteEdges ∅ = G := by simp [deleteEdges]
 @[simp] lemma deleteEdges_univ : G.deleteEdges Set.univ = ⊥ := by simp [deleteEdges]
+
+@[simp]
+theorem deleteEdges_le_iff (s : Set (Sym2 V)) (G' : SimpleGraph V) :
+    G.deleteEdges s ≤ G' ↔ G ≤ fromEdgeSet s ⊔ G' := by
+    rw [deleteEdges, sdiff_le_iff]
 
 lemma deleteEdges_le (s : Set (Sym2 V)) : G.deleteEdges s ≤ G := sdiff_le
 
-lemma deleteEdges_anti (h : s₁ ⊆ s₂) : G.deleteEdges s₂ ≤ G.deleteEdges s₁ :=
+@[gcongr] lemma deleteEdges_anti (h : s₁ ⊆ s₂) : G.deleteEdges s₂ ≤ G.deleteEdges s₁ :=
   sdiff_le_sdiff_left <| fromEdgeSet_mono h
 
+@[gcongr]
 lemma deleteEdges_mono (h : G ≤ H) : G.deleteEdges s ≤ H.deleteEdges s := sdiff_le_sdiff_right h
 
 @[simp] lemma deleteEdges_eq_self : G.deleteEdges s = G ↔ Disjoint G.edgeSet s := by
@@ -79,18 +86,30 @@ theorem deleteEdges_eq_inter_edgeSet (s : Set (Sym2 V)) :
   ext
   simp +contextual [imp_false]
 
+@[simp] lemma deleteEdges_of_subset_diagSet (G : SimpleGraph V) (hs : s ⊆ Sym2.diagSet) :
+    G.deleteEdges s = G := by ext u v; simpa using (·.ne <| hs ·)
+
 theorem deleteEdges_sdiff_eq_of_le {H : SimpleGraph V} (h : H ≤ G) :
     G.deleteEdges (G.edgeSet \ H.edgeSet) = H := by
   rw [← edgeSet_sdiff, deleteEdges_edgeSet, sdiff_sdiff_eq_self h]
 
+@[simp]
 theorem edgeSet_deleteEdges (s : Set (Sym2 V)) : (G.deleteEdges s).edgeSet = G.edgeSet \ s := by
   simp [deleteEdges]
 
-theorem edgeFinset_deleteEdges [DecidableEq V] [Fintype G.edgeSet] (s : Finset (Sym2 V))
+@[simp] theorem edgeFinset_deleteEdges [DecidableEq V] [Fintype G.edgeSet] (s : Finset (Sym2 V))
     [Fintype (G.deleteEdges s).edgeSet] :
     (G.deleteEdges s).edgeFinset = G.edgeFinset \ s := by
   ext e
   simp [edgeSet_deleteEdges]
+
+@[simp] lemma deleteEdges_sup (G H : SimpleGraph V) (s : Set (Sym2 V)) :
+    (G ⊔ H).deleteEdges s = G.deleteEdges s ⊔ H.deleteEdges s := sup_sdiff
+
+@[simp] lemma deleteEdges_fromEdgeSet (s t : Set (Sym2 V)) :
+    (fromEdgeSet s).deleteEdges t = fromEdgeSet (s \ t) := by ext; simp +contextual
+
+@[simp] lemma deleteEdges_eq_bot : G.deleteEdges s = ⊥ ↔ G.edgeSet ⊆ s := by simp [deleteEdges]
 
 end DeleteEdges
 
@@ -110,8 +129,8 @@ lemma deleteIncidenceSet_le (G : SimpleGraph V) (x : V) : G.deleteIncidenceSet x
 
 lemma edgeSet_fromEdgeSet_incidenceSet (G : SimpleGraph V) (x : V) :
     (fromEdgeSet (G.incidenceSet x)).edgeSet = G.incidenceSet x := by
-  rw [edgeSet_fromEdgeSet, sdiff_eq_left, ← Set.subset_compl_iff_disjoint_right, Set.compl_setOf]
-  exact (incidenceSet_subset G x).trans G.edgeSet_subset_setOf_not_isDiag
+  rw [edgeSet_fromEdgeSet, sdiff_eq_left, ← Set.subset_compl_iff_disjoint_right]
+  exact (incidenceSet_subset G x).trans G.edgeSet_subset_compl_diagSet
 
 /-- The edge set of `G.deleteIncidenceSet x` is the edge set of `G` set difference the incidence
 set of the vertex `x`. -/
@@ -133,9 +152,6 @@ theorem induce_deleteIncidenceSet_of_notMem (G : SimpleGraph V) {s : Set V} {x :
   simp_rw [comap_adj, Function.Embedding.coe_subtype, deleteIncidenceSet_adj, and_iff_left_iff_imp]
   exact fun _ ↦ ⟨v₁.prop.ne_of_notMem h, v₂.prop.ne_of_notMem h⟩
 
-@[deprecated (since := "2025-05-23")]
-alias induce_deleteIncidenceSet_of_not_mem := induce_deleteIncidenceSet_of_notMem
-
 variable [Fintype V] [DecidableEq V]
 
 instance {G : SimpleGraph V} [DecidableRel G.Adj] {x : V} :
@@ -147,19 +163,20 @@ subgraph of the vertices `{x}ᶜ`. -/
 theorem card_edgeFinset_induce_compl_singleton (G : SimpleGraph V) [DecidableRel G.Adj] (x : V) :
     #(G.induce {x}ᶜ).edgeFinset = #(G.deleteIncidenceSet x).edgeFinset := by
   have h_notMem : x ∉ ({x}ᶜ : Set V) := Set.notMem_compl_iff.mpr (Set.mem_singleton x)
-  simp_rw [Set.toFinset_card,
+  simp_rw [edgeFinset, Set.toFinset_card,
     ← G.induce_deleteIncidenceSet_of_notMem h_notMem, ← Set.toFinset_card]
   apply card_edgeFinset_induce_of_support_subset
   trans G.support \ {x}
   · exact support_deleteIncidenceSet_subset G x
-  · rw [Set.compl_eq_univ_diff]
-    exact Set.diff_subset_diff_left (Set.subset_univ G.support)
+  · rw [Set.compl_eq_univ_sdiff]
+    exact Set.sdiff_subset_sdiff_left (Set.subset_univ G.support)
 
 /-- The finite edge set of `G.deleteIncidenceSet x` is the finite edge set of the simple graph `G`
 set difference the finite incidence set of the vertex `x`. -/
 theorem edgeFinset_deleteIncidenceSet_eq_sdiff (G : SimpleGraph V) [DecidableRel G.Adj] (x : V) :
     (G.deleteIncidenceSet x).edgeFinset = G.edgeFinset \ G.incidenceFinset x := by
-  rw [incidenceFinset, ← Set.toFinset_diff, Set.toFinset_inj]
+  apply Finset.coe_injective
+  push_cast
   exact G.edgeSet_deleteIncidenceSet x
 
 /-- Deleting the incident set of the vertex `x` deletes exactly `G.degree x` edges from the edge
@@ -188,7 +205,7 @@ theorem card_support_deleteIncidenceSet
     card (G.deleteIncidenceSet x).support ≤ card G.support - 1 := by
   rw [← Set.singleton_subset_iff, ← Set.toFinset_subset_toFinset] at hx
   simp_rw [← Set.card_singleton x, ← Set.toFinset_card, ← card_sdiff_of_subset hx,
-    ← Set.toFinset_diff]
+    ← Set.toFinset_sdiff]
   apply card_le_card
   rw [Set.toFinset_subset_toFinset]
   exact G.support_deleteIncidenceSet_subset x

@@ -19,13 +19,13 @@ eigenspace, eigenvector, eigenvalue, spectrum, matrix
 
 -/
 
-@[expose] public section
+public section
 
-section SpectrumDiagonal
+open Matrix Module End
 
 variable {R n M : Type*} [DecidableEq n] [Fintype n]
 
-open Matrix Module End
+section SpectrumDiagonal
 
 section NontrivialCommRing
 
@@ -41,8 +41,10 @@ lemma hasEigenvector_toLin'_diagonal (d : n → R) (i : n) :
     HasEigenvector (toLin' (diagonal d)) (d i) (Pi.basisFun R n i) :=
   hasEigenvector_toLin_diagonal _ _ (Pi.basisFun R n)
 
+set_option linter.overlappingInstances false
+
 /-- Eigenvalues of a diagonal linear operator are the diagonal entries. -/
-lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} [NoZeroSMulDivisors R M]
+lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} [IsDomain R] [IsTorsionFree R M]
     (b : Basis n R M) : HasEigenvalue (toLin b b (diagonal d)) μ ↔ ∃ i, d i = μ := by
   have (i : n) : HasEigenvalue (toLin b b (diagonal d)) (d i) :=
     hasEigenvalue_of_hasEigenvector <| hasEigenvector_toLin_diagonal d i b
@@ -66,7 +68,7 @@ lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} [NoZeroSMulDivisor
 
 /-- Eigenvalues of a diagonal linear operator with respect to standard basis
 are the diagonal entries. -/
-lemma hasEigenvalue_toLin'_diagonal_iff [NoZeroDivisors R] (d : n → R) {μ : R} :
+lemma hasEigenvalue_toLin'_diagonal_iff [IsDomain R] (d : n → R) {μ : R} :
     HasEigenvalue (toLin' (diagonal d)) μ ↔ (∃ i, d i = μ) :=
   hasEigenvalue_toLin_diagonal_iff _ <| Pi.basisFun R n
 
@@ -75,6 +77,13 @@ end NontrivialCommRing
 namespace Matrix
 
 variable [CommRing R] [AddCommGroup M] [Module R M] (d : n → R) {μ : R} (b : Basis n R M)
+
+lemma _root_.Module.End.HasEigenvalue.nonempty
+    {A : Matrix n n R} {μ : R} (hμ : HasEigenvalue A.toLin' μ) :
+    Nonempty n := by
+  rw [hasEigenvalue_iff] at hμ
+  contrapose! hμ
+  exact Submodule.eq_bot_of_subsingleton
 
 @[simp]
 lemma iSup_eigenspace_toLin_diagonal_eq_top :
@@ -100,7 +109,7 @@ lemma maxGenEigenspace_toLin_diagonal_eq_eigenspace [IsDomain R] :
   have aux (j : n) : (b.repr x j * d j) • b j = μ • (b.repr x j • b j) := by
     rcases hk j with hj | hj
     · simp [hj]
-    · rw [← hj.1, mul_comm, MulAction.mul_smul]
+    · rw [← hj.1, mul_comm, mul_smul]
   simp [toLin_apply, mulVec_eq_sum, diagonal_apply, aux, ← Finset.smul_sum]
 
 @[simp]
