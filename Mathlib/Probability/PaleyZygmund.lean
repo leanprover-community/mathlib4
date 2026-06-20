@@ -34,8 +34,8 @@ variable {Ω : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω}
 `0 ≤ θ ≤ 1`, then `P(Z > θ * EZ) ≥ (1-θ)^2 (EZ)^2/E(Z^2)`.
 -/
 theorem paley_zygmund [IsProbabilityMeasure μ] {Z : Ω → ℝ} (hZ_nn : 0 ≤ᵐ[μ] Z) (hZ2 : MemLp Z 2 μ)
-    {θ : ℝ} (hθ0 : 0 ≤ θ) (hθ1 : θ ≤ 1) : 
-    (1 - θ) ^ 2 * (∫ ω, Z ω ∂μ) ^ 2 ≤ 
+    {θ : ℝ} (hθ0 : 0 ≤ θ) (hθ1 : θ ≤ 1) :
+    (1 - θ) ^ 2 * (∫ ω, Z ω ∂μ) ^ 2 ≤
       (∫ ω, Z ω ^ 2 ∂μ) * μ.real {ω | θ * ∫ ω, Z ω ∂μ < Z ω} := by
   let S := {ω | θ * (∫ ω', Z ω' ∂μ) < Z ω}
   have hZ_int := hZ2.integrable one_le_two
