@@ -1163,7 +1163,7 @@ theorem integral_eq_sub_of_hasDerivAt_of_tendsto (hab : a < b) {fa fb}
     unfold F
     rw [update_of_ne hy.2.ne, update_of_ne hy.1.ne']
   have hcont : ContinuousOn F (Icc a b) := by
-    rw [continuousOn_update_iff, continuousOn_update_iff, Icc_diff_right, Ico_diff_left]
+    rw [continuousOn_update_iff, continuousOn_update_iff, Icc_sdiff_right, Ico_sdiff_left]
     refine ⟨⟨fun z hz => (hderiv z hz).continuousAt.continuousWithinAt, ?_⟩, ?_⟩
     · exact fun _ => ha.mono_left (nhdsWithin_mono _ Ioo_subset_Ioi_self)
     · rintro -
