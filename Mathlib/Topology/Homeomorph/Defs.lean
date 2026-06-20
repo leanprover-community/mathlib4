@@ -364,7 +364,7 @@ theorem comap_nhds_eq (h : X ≃ₜ Y) (y : Y) : comap h (𝓝 y) = 𝓝 (h.symm
 
 theorem isClosed_setOf_iff {p : X → Prop} {q : Y → Prop} (f : X ≃ₜ Y) (hs : IsClopen {x | p x})
     (ht : IsClopen {y | q y}) : IsClosed { x : X | p x ↔ q (f x) } := by
-  simpa [iff_def] using (isClosed_imp hs.2 (f.isClosed_preimage.2 ht.1)).inter
+  simpa [iff_def] using! (isClosed_imp hs.2 (f.isClosed_preimage.2 ht.1)).inter
     (isClosed_imp (f.isOpen_preimage.2 ht.2) hs.1)
 
 end Homeomorph
@@ -499,10 +499,27 @@ protected theorem Homeomorph.isHomeomorph (h : X ≃ₜ Y) : IsHomeomorph h :=
 
 namespace IsHomeomorph
 
+/-- Bundled homeomorphism constructed from a map that is a homeomorphism. -/
+@[simps! toEquiv apply symm_apply]
+noncomputable def homeomorph (f : X → Y) (hf : IsHomeomorph f) : X ≃ₜ Y where
+  continuous_toFun := hf.1
+  continuous_invFun :=
+    Equiv.ofBijective f hf.bijective |>.continuous_symm_iff.2 hf.isOpenMap
+  toEquiv := Equiv.ofBijective f hf.bijective
+
 protected lemma injective (hf : IsHomeomorph f) : Function.Injective f := hf.bijective.injective
 protected lemma surjective (hf : IsHomeomorph f) : Function.Surjective f := hf.bijective.surjective
 
 protected lemma id : IsHomeomorph (@id X) := ⟨continuous_id, .id, Function.bijective_id⟩
+
+theorem image_interior (hf : IsHomeomorph f) (s : Set X) :
+  f '' interior s = interior (f '' s) := hf.homeomorph.image_interior s
+
+theorem image_closure (hf : IsHomeomorph f) (s : Set X) :
+  f '' closure s = closure (f '' s) := hf.homeomorph.image_closure s
+
+theorem image_frontier (hf : IsHomeomorph f) (s : Set X) :
+  f '' frontier s = frontier (f '' s) := hf.homeomorph.image_frontier s
 
 lemma comp {g : Y → Z} (hg : IsHomeomorph g) (hf : IsHomeomorph f) : IsHomeomorph (g ∘ f) :=
   ⟨hg.1.comp hf.1, hg.2.comp hf.2, hg.3.comp hf.3⟩
@@ -510,3 +527,24 @@ lemma comp {g : Y → Z} (hg : IsHomeomorph g) (hf : IsHomeomorph f) : IsHomeomo
 end IsHomeomorph
 
 end IsHomeomorph
+
+variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] in
+/-- Precomposing by a homeomorphism does not change the image of the interior of a preimage. -/
+theorem image_interior_preimage_comp (e : X → Y) (he : IsHomeomorph e) (f : Y → Z) (s : Set Z) :
+    (f ∘ e) '' interior ((f ∘ e) ⁻¹' s) = f '' interior (f ⁻¹' s) := by
+  simp only [Set.preimage_comp, Set.image_comp, he.image_interior,
+    Set.image_preimage_eq _ he.surjective]
+
+variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] in
+/-- Precomposing by a homeomorphism does not change the image of the frontier of a preimage. -/
+theorem image_frontier_preimage_comp (e : X → Y) (he : IsHomeomorph e) (f : Y → Z) (s : Set Z) :
+    (f ∘ e) '' frontier ((f ∘ e) ⁻¹' s) = f '' frontier (f ⁻¹' s) := by
+  simp only [Set.preimage_comp, Set.image_comp, he.image_frontier,
+    Set.image_preimage_eq _ he.surjective]
+
+variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] in
+/-- Precomposing by a homeomorphism does not change the image of the closure of a preimage. -/
+theorem image_closure_preimage_comp (e : X → Y) (he : IsHomeomorph e) (f : Y → Z) (s : Set Z) :
+    (f ∘ e) '' closure ((f ∘ e) ⁻¹' s) = f '' closure (f ⁻¹' s) := by
+  simp only [Set.preimage_comp, Set.image_comp, he.image_closure,
+    Set.image_preimage_eq _ he.surjective]

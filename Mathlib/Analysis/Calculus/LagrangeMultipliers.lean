@@ -119,7 +119,7 @@ theorem IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt {ι : Type*} [Fint
     ⟨Λ, Λ₀, h0, hsum⟩
   rcases (LinearEquiv.piRing ℝ ℝ ι ℝ).symm.surjective Λ with ⟨Λ, rfl⟩
   refine ⟨Λ, Λ₀, ?_, ?_⟩
-  · simpa only [Ne, Prod.ext_iff, LinearEquiv.map_eq_zero_iff, Prod.fst_zero] using h0
+  · simpa only [Ne, Prod.ext_iff, LinearEquiv.map_eq_zero_iff, Prod.fst_zero] using! h0
   · ext x; simpa [mul_comm] using hsum x
 
 /-- Lagrange multipliers theorem. Let `f : ι → E → ℝ` be a finite family of functions.
@@ -140,4 +140,4 @@ theorem IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt {ι : Type*} [Finite
   refine ⟨Option.elim' Λ₀ Λ, ?_, ?_⟩
   · simpa [add_comm] using hΛf
   · simpa only [funext_iff, not_and_or, or_comm, Option.exists, Prod.mk_eq_zero, Ne,
-      not_forall] using hΛ
+      not_forall] using! hΛ

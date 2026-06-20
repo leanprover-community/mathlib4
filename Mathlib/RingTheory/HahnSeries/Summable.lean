@@ -83,7 +83,7 @@ variable [PartialOrder Γ] [AddCommMonoid R]
 
 instance : FunLike (SummableFamily Γ R α) α R⟦Γ⟧ where
   coe := toFun
-  coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
+  coe_injective | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
 @[simp]
 theorem coe_mk (toFun : α → R⟦Γ⟧) (h1 h2) :

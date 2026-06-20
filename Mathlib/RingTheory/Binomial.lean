@@ -543,7 +543,7 @@ theorem add_choose_eq [Ring R] [BinomialRing R] {r s : R} (k : ℕ) (h : Commute
 lemma map_choose {R S F : Type*} [Ring R] [Ring S] [BinomialRing R] [BinomialRing S]
     [FunLike F R S] [RingHomClass F R S] (f : F) (a : R) (n : ℕ) :
     f (Ring.choose a n) = Ring.choose (f a) n := by
-  simpa using Ring.map_multichoose f (a - n + 1) n
+  simpa using! Ring.map_multichoose f (a - n + 1) n
 
 theorem choose_eq_sum_choose_smul [Ring R] [BinomialRing R] {r : R} {n k : ℕ} (h : k ≤ n) :
     choose r n = ∑ m ∈ range (k + 1), k.choose m • choose (r - k) (n - m) := by

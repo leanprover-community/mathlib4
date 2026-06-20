@@ -1103,8 +1103,6 @@ noncomputable
 abbrev «end» (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=
   b.linearMap b
 
-attribute [simp] end_repr_apply
-
 lemma end_apply (ij : ι × ι) : (b.end ij) = (Matrix.toLin b b) (Matrix.stdBasis R ι ι ij) :=
   linearMap_apply b b ij
 

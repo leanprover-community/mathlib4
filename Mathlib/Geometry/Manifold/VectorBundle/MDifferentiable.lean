@@ -17,9 +17,8 @@ import Mathlib.Geometry.Manifold.Notation
 
 public section
 
-open Bundle Set OpenPartialHomeomorph ContinuousLinearMap Pretrivialization Filter
-
-open scoped Manifold Bundle Topology
+open Bundle Set ContinuousLinearMap Pretrivialization Filter
+open scoped Manifold Topology
 
 section
 
@@ -54,7 +53,7 @@ theorem mdifferentiableWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M
     ((FiberBundle.continuous_proj F E).continuousWithinAt.comp hf (mapsTo_image f s))
       ((Trivialization.open_baseSet _).mem_nhds (mem_baseSet_trivializationAt F E _))
   refine EventuallyEq.mdifferentiableWithinAt_iff (eventually_of_mem h1 fun x hx => ?_) ?_
-  · simp_rw [Function.comp, OpenPartialHomeomorph.coe_coe, Trivialization.coe_coe]
+  · simp_rw [Function.comp, OpenPartialHomeomorph.coe_toPartialEquiv, Trivialization.coe_coe]
     rw [Trivialization.coe_fst']
     exact hx
   · simp only [mfld_simps]
@@ -463,9 +462,9 @@ lemma MDifferentiableWithinAt.sum_section {ι : Type*} {s : Finset ι} {t : ι �
     MDiffAt[u] (T% (fun x ↦ ∑ i ∈ s, (t i x))) x₀ := by
   classical
   induction s using Finset.induction_on with
-  | empty => simpa using (contMDiffWithinAt_zeroSection 𝕜 E).mdifferentiableWithinAt one_ne_zero
+  | empty => simpa using! (contMDiffWithinAt_zeroSection 𝕜 E).mdifferentiableWithinAt one_ne_zero
   | insert i s hi h =>
-    simpa [Finset.sum_insert hi] using mdifferentiableWithinAt_add_section (hs i) h
+    simpa [Finset.sum_insert hi] using! mdifferentiableWithinAt_add_section (hs i) h
 
 lemma MDifferentiableAt.sum_section {ι : Type*} {s : Finset ι} {t : ι → (x : B) → E x} {x₀ : B}
     (hs : ∀ i, MDiffAt (T% (t i ·)) x₀) :
@@ -716,6 +715,26 @@ lemma exists_mdifferentiableOn_extend [∀ x, Module 𝕜 (V x)] [VectorBundle �
 lemma mdifferentiableAt_extend {x : M} (σ₀ : V x) :
     MDiffAt (T% (extend F σ₀)) x :=
   (contMDiffAt_extend' (k := 1) I F σ₀).mdifferentiableAt one_ne_zero
+
+variable (V) in
+lemma _root_.VectorBundle.injective_eval_mdifferentiableAt_sec [∀ x, Module 𝕜 (V x)]
+    (W : Type*) [AddCommGroup W] [Module 𝕜 W] [TopologicalSpace W] (x : M) :
+    Function.Injective
+      (fun A : V x →L[𝕜] W ↦
+        fun (Z : Π x, V x) (_ : MDiffAt (T% Z) x) ↦ A (Z x)) := by
+  intro X X' h
+  ext σ₀
+  simpa using congr($h (extend F σ₀) (mdifferentiableAt_extend ..))
+
+variable (V) in
+lemma _root_.VectorBundle.injective_eval_contMDiffAt_sec {n : WithTop ℕ∞} [∀ x, Module 𝕜 (V x)]
+    (W : Type*) [AddCommGroup W] [Module 𝕜 W] [TopologicalSpace W] (x : M) :
+    Function.Injective
+      (fun A : V x →L[𝕜] W ↦
+        fun (Z : Π x, V x) (_ : CMDiffAt n (T% Z) x) ↦ A (Z x)) := by
+  intro X X' h
+  ext σ₀
+  simpa using congr($h (extend F σ₀) (contMDiffAt_extend' ..))
 
 end FiberBundle
 end extend

@@ -34,16 +34,16 @@ an ordered field.
 * IsOrderedCancelVAdd : inequalities are preserved and reflected by translation.
 
 ## Instances
-* OrderedCommMonoid.toIsOrderedSMul
-* OrderedAddCommMonoid.toIsOrderedVAdd
-* IsOrderedSMul.toCovariantClassLeft
-* IsOrderedVAdd.toCovariantClassLeft
-* IsOrderedCancelSMul.toCancelSMul
-* IsOrderedCancelVAdd.toCancelVAdd
-* OrderedCancelCommMonoid.toIsOrderedCancelSMul
-* OrderedCancelAddCommMonoid.toIsOrderedCancelVAdd
-* IsOrderedCancelSMul.toContravariantClassLeft
-* IsOrderedCancelVAdd.toContravariantClassLeft
+* `IsOrderedMonoid.toIsOrderedSMul`
+* `IsOrderedAddMonoid.toIsOrderedVAdd`
+* `IsOrderedSMul.toCovariantClassLeft`
+* `IsOrderedVAdd.toCovariantClassLeft`
+* `IsOrderedCancelSMul.toCancelSMul`
+* `IsOrderedCancelVAdd.toCancelVAdd`
+* `IsOrderedCancelMonoid.toIsOrderedCancelSMul`
+* `IsOrderedCancelAddMonoid.toIsOrderedCancelVAdd`
+* `IsOrderedCancelSMul.toContravariantClassLeft`
+* `IsOrderedCancelVAdd.toContravariantClassLeft`
 
 ## TODO
 * Pi instances
@@ -78,7 +78,7 @@ instance [CommMonoid G] [Preorder G] [IsOrderedMonoid G] : IsOrderedSMul G G whe
   smul_le_smul_left _ _ := mul_le_mul_right
   smul_le_smul_right _ _ := mul_le_mul_left
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem IsOrderedSMul.smul_le_smul [LE G] [Preorder P] [SMul G P] [IsOrderedSMul G P]
     {a b : G} {c d : P} (hab : a ≤ b) (hcd : c ≤ d) : a • c ≤ b • d :=
   (IsOrderedSMul.smul_le_smul_left _ _ hcd _).trans (IsOrderedSMul.smul_le_smul_right _ _ hab _)

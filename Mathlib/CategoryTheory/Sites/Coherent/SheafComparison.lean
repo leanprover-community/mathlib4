@@ -64,12 +64,14 @@ theorem exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
       EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a))) ↔
     (S ∈ F.inducedTopology (coherentTopology _) X) := by
   refine ⟨fun ⟨α, _, Y, π, ⟨H₁, H₂⟩⟩ ↦ ?_, fun hS ↦ ?_⟩
-  · apply (mem_sieves_iff_hasEffectiveEpiFamily (Sieve.functorPushforward _ S)).mpr
+  · rw [mem_inducedTopology_iff_of_isCoverDense]
+    apply (mem_sieves_iff_hasEffectiveEpiFamily (Sieve.functorPushforward _ S)).mpr
     refine ⟨α, inferInstance, fun i => F.obj (Y i),
       fun i => F.map (π i), ⟨?_,
       fun a => Sieve.image_mem_functorPushforward F S (H₂ a)⟩⟩
     exact F.map_finite_effectiveEpiFamily _ _
-  · obtain ⟨α, _, Y, π, ⟨H₁, H₂⟩⟩ := (mem_sieves_iff_hasEffectiveEpiFamily _).mp hS
+  · rw [mem_inducedTopology_iff_of_isCoverDense] at hS
+    obtain ⟨α, _, Y, π, ⟨H₁, H₂⟩⟩ := (mem_sieves_iff_hasEffectiveEpiFamily _).mp hS
     refine ⟨α, inferInstance, ?_⟩
     let Z : α → C := fun a ↦ (Functor.EffectivelyEnough.presentation (F := F) (Y a)).some.p
     let g₀ : (a : α) → F.obj (Z a) ⟶ Y a := fun a ↦ F.effectiveEpiOver (Y a)
@@ -92,9 +94,7 @@ lemma eq_induced : haveI := F.reflects_precoherent
 
 instance : haveI := F.reflects_precoherent;
     F.IsDenseSubsite (coherentTopology C) (coherentTopology D) where
-  functorPushforward_mem_iff := by
-    rw [eq_induced F]
-    rfl
+  functorPushforward_mem_iff := by simp [eq_induced F]
 
 lemma coverPreserving : haveI := F.reflects_precoherent
     CoverPreserving (coherentTopology _) (coherentTopology _) F :=
@@ -168,10 +168,12 @@ theorem exists_effectiveEpi_iff_mem_induced (X : C) (S : Sieve X) :
       EffectiveEpi π ∧ S.arrows π) ↔
     (S ∈ F.inducedTopology (regularTopology _) X) := by
   refine ⟨fun ⟨Y, π, ⟨H₁, H₂⟩⟩ ↦ ?_, fun hS ↦ ?_⟩
-  · apply (mem_sieves_iff_hasEffectiveEpi (Sieve.functorPushforward _ S)).mpr
+  · rw [mem_inducedTopology_iff_of_isCoverDense]
+    apply (mem_sieves_iff_hasEffectiveEpi (Sieve.functorPushforward _ S)).mpr
     refine ⟨F.obj Y, F.map π, ⟨?_, Sieve.image_mem_functorPushforward F S H₂⟩⟩
     exact F.map_effectiveEpi _
-  · obtain ⟨Y, π, ⟨H₁, H₂⟩⟩ := (mem_sieves_iff_hasEffectiveEpi _).mp hS
+  · rw [mem_inducedTopology_iff_of_isCoverDense] at hS
+    obtain ⟨Y, π, ⟨H₁, H₂⟩⟩ := (mem_sieves_iff_hasEffectiveEpi _).mp hS
     let g₀ := F.effectiveEpiOver Y
     refine ⟨_, F.preimage (g₀ ≫ π), ?_, (?_ : S.arrows (F.preimage _))⟩
     · refine F.effectiveEpi_of_map _ ?_
@@ -192,9 +194,7 @@ lemma eq_induced : haveI := F.reflects_preregular
 
 instance : haveI := F.reflects_preregular;
     F.IsDenseSubsite (regularTopology C) (regularTopology D) where
-  functorPushforward_mem_iff := by
-    rw [eq_induced F]
-    rfl
+  functorPushforward_mem_iff := by simp [eq_induced F]
 
 lemma coverPreserving : haveI := F.reflects_preregular
     CoverPreserving (regularTopology _) (regularTopology _) F :=
@@ -258,6 +258,7 @@ theorem isSheaf_iff_extensiveSheaf_of_projective [Preregular C] [FinitaryExtensi
     IsSheaf (coherentTopology C) F ↔ IsSheaf (extensiveTopology C) F := by
   rw [isSheaf_iff_preservesFiniteProducts_of_projective, isSheaf_iff_preservesFiniteProducts]
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 The categories of coherent sheaves and extensive sheaves on `C` are equivalent if `C` is
 preregular, finitary extensive, and every object is projective.
