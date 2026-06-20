@@ -46,9 +46,10 @@ open Limits
 namespace IsCardinalAccessibleCategory
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
-  (F : C ⥤ D)
 
-lemma uniformization
+
+lemma uniformization'
+    (F : C ⥤ D)
     {κ₁ κ₂ : Cardinal.{w}} [Fact κ₁.IsRegular] [Fact κ₂.IsRegular]
     [IsCardinalAccessibleCategory C κ₁] [IsCardinalAccessibleCategory D κ₁]
     [F.IsCardinalAccessible κ₁] (hκ : κ₁.SharplyLT κ₂)
@@ -63,7 +64,68 @@ lemma uniformization
   exact isCardinalPresentable_of_isColimit _ (isColimitOfPreserves F p.isColimit) _
     ((hasCardinalLT_arrow_iff_of_isThin _ _ (Cardinal.IsRegular.aleph0_le Fact.out)).2 hJ)
 
-lemma uniformization'
+lemma uniformization_of_small
+    [IsAccessibleCategory.{w} C] [IsAccessibleCategory.{w} D]
+    {ι : Type*} [Small.{w} ι] (F : ι → C ⥤ D)
+    [∀ i, Functor.IsAccessible.{w} (F i)] :
+    ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
+      IsCardinalAccessibleCategory C κ ∧
+      IsCardinalAccessibleCategory D κ ∧
+      (∀ i, (F i).IsCardinalAccessible κ) ∧
+        ∀ i, isCardinalPresentable C κ ≤ (isCardinalPresentable D κ).inverseImage (F i) := by
+  obtain ⟨κ, _, _, _, _⟩ :
+      ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
+        IsCardinalAccessibleCategory C κ ∧ IsCardinalAccessibleCategory D κ ∧
+          ∀ (i : ι), (F i).IsCardinalAccessible κ := by
+    obtain ⟨κ₁, _, _⟩  := IsAccessibleCategory.exists_cardinal C
+    obtain ⟨κ₂, _, _⟩  := IsAccessibleCategory.exists_cardinal D
+    choose κ₃ _ hκ₃ using fun i ↦ Functor.IsAccessible.exists_cardinal (F i)
+    obtain ⟨κ₃', hκ₃' , hκ₃''⟩ :=
+      HasCardinalLT.exists_regular_cardinal_forall (fun i ↦ (κ₃ i).ord.ToType)
+    have : Fact κ₃'.IsRegular := ⟨hκ₃'⟩
+    obtain ⟨κ, _, hκ₁, hκ₂, hκ₃⟩ := Cardinal.SharplyLT.exists_of_triple κ₁ κ₂ κ₃'
+    refine ⟨κ, inferInstance, hκ₁.isCardinalAccessibleCategory C,
+      hκ₂.isCardinalAccessibleCategory D,
+      fun i ↦ Functor.isCardinalAccessible_of_le _ (show κ₃ i ≤ κ from ?_)⟩
+    have := (hκ₃'' i)
+    simp only [hasCardinalLT_iff_cardinal_mk_lt, Cardinal.mk_toType, Cardinal.card_ord] at this
+    exact this.le.trans hκ₃.le
+  obtain ⟨κ₀, _, hκ₀⟩ : ∃ (κ₀ : Cardinal.{w}) (_ : Fact κ₀.IsRegular),
+      ∀ (i : ι), (isCardinalPresentable C κ).map (F i) ≤ isCardinalPresentable D κ₀ := by
+    choose κ' hκ' hκ'' using
+      fun i ↦ ObjectProperty.le_isCardinalPresentable.{w} ((isCardinalPresentable C κ).map (F i))
+    obtain ⟨κ'', h₁, h₂⟩ :=
+      HasCardinalLT.exists_regular_cardinal_forall (fun i ↦ (κ' i).ord.ToType)
+    have : Fact κ''.IsRegular := ⟨h₁⟩
+    refine ⟨κ'', inferInstance, fun i ↦ (hκ'' i).trans ?_⟩
+    have := h₂ i
+    simp only [hasCardinalLT_iff_cardinal_mk_lt, Cardinal.mk_toType, Cardinal.card_ord] at this
+    exact isCardinalPresentable_monotone _ this.le
+  obtain ⟨κ', _, h₁, h₂⟩ := Cardinal.SharplyLT.exists_of_pair κ κ₀
+  exact ⟨κ', inferInstance, h₁.isCardinalAccessibleCategory C,
+    h₁.isCardinalAccessibleCategory D,
+    fun i ↦ Functor.isCardinalAccessible_of_le _ h₁.le,
+    fun i ↦ uniformization' _ h₁
+      (fun X hX ↦ isCardinalPresentable_monotone _ h₂.le _
+        (hκ₀ i _ (ObjectProperty.prop_map_obj _ _ hX)))⟩
+
+lemma uniformization_pair (F₁ F₂ : C ⥤ D)
+    [IsAccessibleCategory.{w} C] [IsAccessibleCategory.{w} D]
+    [Functor.IsAccessible.{w} F₁] [Functor.IsAccessible.{w} F₂] :
+    ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
+      IsCardinalAccessibleCategory C κ ∧
+      IsCardinalAccessibleCategory D κ ∧
+      F₁.IsCardinalAccessible κ ∧ F₂.IsCardinalAccessible κ ∧
+        isCardinalPresentable C κ ≤ (isCardinalPresentable D κ).inverseImage F₁ ∧
+        isCardinalPresentable C κ ≤ (isCardinalPresentable D κ).inverseImage F₂ := by
+  let F (i : Fin 2) : C ⥤ D := match i with | 0 => F₁ | 1 => F₂
+  have (i : Fin 2) : Functor.IsAccessible.{w} (F i) := match i with
+    | 0 => by assumption
+    | 1 => by assumption
+  obtain ⟨κ, _, h₁, h₂, h₃, h₄⟩ := uniformization_of_small F
+  exact ⟨κ, inferInstance, h₁, h₂, h₃ 0, h₃ 1, h₄ 0, h₄ 1⟩
+
+lemma uniformization (F : C ⥤ D)
     [IsAccessibleCategory.{w} C] [IsAccessibleCategory.{w} D]
     [Functor.IsAccessible.{w} F] :
     ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
@@ -71,26 +133,8 @@ lemma uniformization'
       IsCardinalAccessibleCategory D κ ∧
       F.IsCardinalAccessible κ ∧
         isCardinalPresentable C κ ≤ (isCardinalPresentable D κ).inverseImage F := by
-  obtain ⟨κ, _, _, _, _⟩ :
-      ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
-        IsCardinalAccessibleCategory C κ ∧ IsCardinalAccessibleCategory D κ ∧
-        F.IsCardinalAccessible κ := by
-    obtain ⟨κ₁, _, _⟩  := IsAccessibleCategory.exists_cardinal C
-    obtain ⟨κ₂, _, _⟩  := IsAccessibleCategory.exists_cardinal D
-    obtain ⟨κ₃, _, _⟩  := Functor.IsAccessible.exists_cardinal F
-    obtain ⟨κ, _, h₁, h₂, h₃⟩ := Cardinal.SharplyLT.exists_of_triple κ₁ κ₂ κ₃
-    exact ⟨κ, inferInstance,
-      h₁.isCardinalAccessibleCategory C,
-      h₂.isCardinalAccessibleCategory D, Functor.isCardinalAccessible_of_le _ h₃.le⟩
-  obtain ⟨κ₀, _, hκ₀⟩ := ObjectProperty.le_isCardinalPresentable.{w}
-    ((isCardinalPresentable C κ).map F)
-  obtain ⟨κ', _, h₁, h₂⟩ := Cardinal.SharplyLT.exists_of_pair κ κ₀
-  exact ⟨κ', inferInstance, h₁.isCardinalAccessibleCategory C,
-    h₁.isCardinalAccessibleCategory D,
-    Functor.isCardinalAccessible_of_le _ h₁.le,
-    uniformization _ h₁
-      (fun X hX ↦ isCardinalPresentable_monotone _ h₂.le _
-        (hκ₀ _ (ObjectProperty.prop_map_obj _ _ hX)))⟩
+  obtain ⟨κ, _, h₁, h₂, h₃, h₄⟩ := uniformization_of_small (fun (_ : Fin 1) ↦ F)
+  exact ⟨κ, inferInstance, h₁, h₂, h₃ 0, h₄ 0⟩
 
 end IsCardinalAccessibleCategory
 
