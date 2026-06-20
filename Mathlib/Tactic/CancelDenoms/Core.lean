@@ -6,7 +6,6 @@ Authors: Robert Y. Lewis
 module
 
 public meta import Mathlib.Data.Tree.Basic
-public meta import Mathlib.Logic.Basic
 public import Mathlib.Algebra.Field.Basic
 public meta import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Order.Ring.Defs
