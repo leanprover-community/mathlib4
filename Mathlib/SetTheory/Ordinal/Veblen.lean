@@ -5,7 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Regular
+public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 public import Mathlib.SetTheory.Cardinal.Ordinal
 public import Mathlib.SetTheory.Ordinal.FixedPoint
 
@@ -728,26 +728,41 @@ section Countable
 
 open Cardinal
 
-variable {ι : Type*} [Small.{u} ι]
+universe v
 
-theorem countable_Iio_of_lt_omega_one (h : o < ω₁) : (Iio o).Countable := by
-  rw [← ord_aleph 1, lt_ord] at h
-  rw [← countable_coe_iff, ← mk_le_aleph0_iff, Cardinal.mk_Iio_ordinal,
-    lift_le_aleph0, ← succ_aleph0, Order.lt_succ_iff] at *
-  exact h
+variable {ι : Type v}
 
 theorem countable_toType_of_lt_omega_one (h : o < ω₁) : Countable (ToType o) := by
-  rw [← mk_le_aleph0_iff, mk_toType, ← lt_aleph_one_iff, ← lt_omega_iff_card_lt]
-  exact h
+  rwa [← mk_le_aleph0_iff, mk_toType, card_le_iff, succ_aleph0, ord_aleph]
 
-instance [h : Fact <| o < ω₁] : Countable (Iio o) := countable_Iio_of_lt_omega_one h.out
+theorem countable_Iio_of_lt_omega_one (h : o < ω₁) : (Iio o).Countable := by
+  rw [← countable_coe_iff, ← ToType.mk.symm.toEquiv.countable_iff]
+  exact countable_toType_of_lt_omega_one h
+
+theorem finite_toType_of_lt_omega0 (h : o < ω) : Finite (ToType o) := by
+  rwa [← mk_lt_aleph0_iff, mk_toType, card_lt_aleph0]
+
+theorem finite_Iio_of_lt_omega0 (h : o < ω) : (Iio o).Finite := by
+  rw [← finite_coe_iff, ← ToType.mk.symm.toEquiv.finite_iff]
+  exact finite_toType_of_lt_omega0 h
 
 instance [h : Fact <| o < ω₁] : Countable (ToType o) := countable_toType_of_lt_omega_one h.out
 
+instance [h : Fact <| o < ω₁] : Countable (Iio o) := countable_Iio_of_lt_omega_one h.out
+
+instance [h : Fact <| o < ω] : Finite (ToType o) := finite_toType_of_lt_omega0 h.out
+
+instance [h : Fact <| o < ω] : Finite (Iio o) := finite_Iio_of_lt_omega0 h.out
+
 theorem card_nfpFamily_le {f : ι → Ordinal → Ordinal}
-    {c : Cardinal} (hc : ℵ₀ ≤ c) (hι : #(Shrink ι) ≤ c)
+    {c : Cardinal} (hc : ℵ₀ ≤ c) (hι : Cardinal.lift.{u} #ι ≤ Cardinal.lift.{v} c)
     (hf : ∀ i x, (f i x).card ≤ max c x.card) (o : Ordinal) :
     (nfpFamily f o).card ≤ max c o.card := by
+  haveI : Small.{u} ι := HasCardinalLT.small <|
+    calc Cardinal.lift.{u} (#ι) ≤ Cardinal.lift.{v} c := hι
+      _ < Cardinal.lift.{v} (Order.succ c) := by
+        simpa only [Cardinal.lift_lt] using Order.lt_succ c
+  replace hι : #(Shrink.{u} ι) ≤ c := by rwa [← Cardinal.lift_le.{v}, Cardinal.lift_mk_shrink' ι]
   set σ := equivShrink (List ι) |>.symm
   rw [nfpFamily, ← Equiv.iSup_comp σ]
   apply card_iSup_le_sum_card (List.foldr f o <| σ ·) |>.trans <|
@@ -764,7 +779,7 @@ theorem card_nfpFamily_le {f : ι → Ordinal → Ordinal}
   · rw [Cardinal.mul_eq_max hc (le_trans hc (le_max_left _ _)), ← max_assoc, max_self]
 
 theorem card_derivFamily_le {f : ι → Ordinal → Ordinal}
-    {c : Cardinal} (hc : ℵ₀ ≤ c) (hι : #(Shrink ι) ≤ c)
+    {c : Cardinal} (hc : ℵ₀ ≤ c) (hι : Cardinal.lift.{u} #ι ≤ Cardinal.lift.{v} c)
     (hf : ∀ i x, (f i x).card ≤ max c x.card) (o : Ordinal) :
     (derivFamily f o).card ≤ max c o.card := by
   induction o using limitRecOn with
@@ -785,18 +800,12 @@ theorem card_derivFamily_le {f : ι → Ordinal → Ordinal}
     · grw [Cardinal.lift_id, ← sq, power_nat_le (by simp [hc])]
 
 theorem card_nfp_le_of_forall_le {f : Ordinal → Ordinal}
-    (hf : ∀ x, (f x).card ≤ max ℵ₀ x.card) :
-    (nfp f o).card ≤ max ℵ₀ o.card := by
-  apply card_nfpFamily_le (le_refl ℵ₀) ?_ (fun () => hf)
-  grw [← Cardinal.lift_le.{u, u}, lift_mk_shrink,
-    Cardinal.lift_id, mk_unit, Cardinal.lift_one, one_le_aleph0]
+    (hf : ∀ x, (f x).card ≤ max ℵ₀ x.card) : (nfp f o).card ≤ max ℵ₀ o.card :=
+  card_nfpFamily_le (le_refl ℵ₀) (by simp) (fun () => hf) o
 
 theorem card_deriv_le_of_forall_le {f : Ordinal → Ordinal}
-    (hf : ∀ x, (f x).card ≤ max ℵ₀ x.card) :
-    (deriv f o).card ≤ max ℵ₀ o.card := by
-  apply card_derivFamily_le (le_refl ℵ₀) ?_ (fun () => hf)
-  grw [← Cardinal.lift_le.{u, u}, lift_mk_shrink,
-    Cardinal.lift_id, mk_unit, Cardinal.lift_one, one_le_aleph0]
+    (hf : ∀ x, (f x).card ≤ max ℵ₀ x.card) : (deriv f o).card ≤ max ℵ₀ o.card :=
+  card_derivFamily_le (le_refl ℵ₀) (by simp) (fun () => hf) o
 
 theorem card_veblen_le (a b : Ordinal) : (veblen a b).card ≤ max ℵ₀ (max a.card b.card) := by
   induction a using WellFoundedLT.induction generalizing b with
@@ -804,28 +813,33 @@ theorem card_veblen_le (a b : Ordinal) : (veblen a b).card ≤ max ℵ₀ (max a
     obtain rfl | ha := eq_or_ne a 0
     · simpa using card_opow_le ω b
     rw [veblen_of_ne_zero ha, ← max_assoc]
-    apply card_derivFamily_le (le_max_left _ _)
-    · suffices #(Shrink (Iio a)) = a.card by simp [this]
-      convert lift_mk_shrink' (Iio a)
-      rw [Cardinal.mk_Iio_ordinal, Cardinal.lift_lift, Cardinal.lift_inj]
-    · intro i x
-      grw [ih i i.2 x, max_assoc]
-      apply sup_le_sup_left (c := ℵ₀) <| sup_le_sup_right ?_ x.card
-      simp [card_le_card i.2.le]
+    apply card_derivFamily_le (le_max_left _ _) (by simp)
+    intro i x
+    grw [ih i i.2 x, max_assoc]
+    apply sup_le_sup_left (c := ℵ₀) <| sup_le_sup_right ?_ x.card
+    simp [card_le_card i.2.le]
+
+theorem card_veblen_eq (a b : Ordinal) (h : a ≠ 0 ∨ b ≠ 0) :
+    (veblen a b).card = max ℵ₀ (max a.card b.card) := by
+  apply le_antisymm (card_veblen_le a b)
+  have hω : ω ≤ veblen a b := by
+    rcases eq_or_ne a 0 with rfl | ha
+    · calc ω = ω ^ 1 := opow_one _ |>.symm
+        _ ≤ ω ^ b :=
+          opow_le_opow_right omega0_pos <| Order.one_le_iff_ne_zero.mpr <|
+            h.resolve_left <| not_ne_iff.mpr rfl
+        _ = veblen 0 b := veblen_zero_apply b |>.symm
+    · calc ω ≤ veblen 1 b := omega0_lt_epsilon b |>.le
+        _ ≤ veblen a b := veblen_left_monotone b <| Order.one_le_iff_ne_zero.mpr ha
+  refine max_le (aleph0_le_card.mpr hω) (max_le ?_ ?_)
+  · exact card_le_card (left_le_veblen a b)
+  · exact card_le_card (right_le_veblen a b)
 
 theorem card_epsilon (o : Ordinal) : (ε_ o).card = max ℵ₀ o.card := by
-  apply le_antisymm
-  · rw [epsilon_eq_deriv]
-    apply card_deriv_le_of_forall_le
-    simpa using card_opow_le ω
-  apply max_le
-  · exact card_le_card <| omega0_lt_epsilon o |>.le
-  · exact card_le_card <| right_le_veblen 1 o
+  rw [card_veblen_eq 1 o (Or.inl one_ne_zero), card_one, ← max_assoc, max_eq_left one_le_aleph0]
 
 theorem card_gamma (o : Ordinal) : (Γ_ o).card = max ℵ₀ o.card := by
-  apply le_antisymm
-  · exact card_deriv_le_of_forall_le (by simpa using card_veblen_le · 0)
-  apply max_le
+  apply le_antisymm (card_deriv_le_of_forall_le (by simpa using card_veblen_le · 0)) (max_le ?_ ?_)
   · exact aleph0_le_card.mpr <| omega0_lt_gamma o |>.le
   · exact card_le_card isNormal_gamma.strictMono.le_apply
 
@@ -835,7 +849,7 @@ theorem epsilon_lt_omega_one_of_lt_omega_one (ho : o < ω₁) : ε_ o < ω₁ :=
 theorem epsilon_zero_lt_omega_one : ε₀ < ω₁ :=
   epsilon_lt_omega_one_of_lt_omega_one <| omega_pos 1
 
-theorem countable_toType_epsilon_zero : Countable (ToType ε₀) :=
+instance : Countable (ToType ε₀) :=
   countable_toType_of_lt_omega_one epsilon_zero_lt_omega_one
 
 theorem gamma_lt_omega_one_of_lt_omega_one (ho : o < ω₁) : Γ_ o < ω₁ := by
@@ -844,7 +858,7 @@ theorem gamma_lt_omega_one_of_lt_omega_one (ho : o < ω₁) : Γ_ o < ω₁ := b
 theorem gamma_zero_lt_omega_one : Γ₀ < ω₁ :=
   gamma_lt_omega_one_of_lt_omega_one <| omega_pos 1
 
-theorem countable_toType_gamma_zero : Countable (ToType Γ₀) :=
+instance : Countable (ToType Γ₀) :=
   countable_toType_of_lt_omega_one gamma_zero_lt_omega_one
 
 end Countable
