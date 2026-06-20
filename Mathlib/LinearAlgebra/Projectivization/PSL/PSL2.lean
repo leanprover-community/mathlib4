@@ -255,14 +255,15 @@ theorem Matrix.ProjectiveSpecialLinearGroup.rank_two_simple'
   MulAction.IwasawaStructure.isSimpleGroup
     (SL2Simple.PSL_commutator_eq_top hF) PSL2.Iwasawa inferInstance
 
-private lemma field_cond_of_four_le_card [Finite F] (hF : 4 ≤ Nat.card F) :
+private lemma field_cond_of_four_le_card (hF : 4 ≤ Nat.card F) :
     ∃ a : F, a ≠ 0 ∧ a ^ 2 ≠ 1 := by
+  have : Finite F := (Nat.card_pos_iff.1 (by omega)).2
   obtain ⟨x, hx⟩ : IsCyclic Fˣ := by infer_instance
   refine ⟨x, Units.ne_zero x, fun h ↦ ?_⟩
   grw [Nat.card_eq_card_units_add_one F, ← orderOf_eq_card_of_forall_mem_zpowers hx,
     orderOf_le_of_pow_eq_one zero_lt_two (Units.ext <| by simpa using h)] at hF
   omega
 
-theorem Matrix.ProjectiveSpecialLinearGroup.rank_two_simple [Finite F] (hF : 4 ≤ Nat.card F) :
+theorem Matrix.ProjectiveSpecialLinearGroup.rank_two_simple (hF : 4 ≤ Nat.card F) :
     IsSimpleGroup PSL(2, F) :=
   Matrix.ProjectiveSpecialLinearGroup.rank_two_simple' (field_cond_of_four_le_card hF)
