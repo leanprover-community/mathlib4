@@ -28,7 +28,7 @@ We prove that this is stable under composition and base change, and is right can
 - `AlgebraicGeometry.Scheme.Hom.isDiscrete_preimage_singleton`:
   Locally quasi-finite morphisms have discrete fibers.
 - `AlgebraicGeometry.Scheme.Hom.finite_preimage_singleton`:
-  Quasi-finite morphisms have finite fibers.
+  Quasi-finite, quasi-compact morphisms have finite fibers.
 - `AlgebraicGeometry.locallyQuasiFinite_iff_isFinite_fiber`: If `f` is quasi-compact,
   then `f` is locally quasi-finite iff all the fibers `f⁻¹(x)` are `κ(x)`-finite.
 - `AlgebraicGeometry.locallyQuasiFinite_iff_isDiscrete_preimage_singleton`:
@@ -56,16 +56,16 @@ quasi-finite (in the mathlib sense) for every pair of affine opens that `f` maps
 
 Note that this does not require `f` to be quasi-compact nor locally of finite type.
 
-Being locally quasi-finite implies that `f` has discrete and finite fibers
-(via `f.isDiscrete_preimage_singleton` and `f.finite_preimage_singleton`).
+Being locally quasi-finite implies that `f` has discrete fibers
+(via `f.isDiscrete_preimage_singleton`).
 The converse holds under various scenarios:
 
 - `locallyQuasiFinite_iff_isDiscrete_preimage_singleton`:
   If `f` is quasi-compact, this is equivalent to `f ⁻¹ {x}` being `κ(x)`-finite for all `x`.
 - `locallyQuasiFinite_iff_isDiscrete_preimage_singleton`:
   If `f` is locally of finite type, this is equivalent to `f` having discrete fibers.
-- `locallyQuasiFinite_iff_isDiscrete_preimage_singleton`:
-  If `f` is locally of finite type, this is equivalent to `f` having finite fibers.
+- `locallyQuasiFinite_iff_finite_preimage_singleton`:
+  If `f` is of finite type, this is equivalent to `f` having finite fibers.
 -/
 @[mk_iff]
 class LocallyQuasiFinite : Prop where
@@ -232,7 +232,7 @@ nonrec lemma LocallyQuasiFinite.of_fiberToSpecResidueField
     let g : (X.affineCover.f i ≫ f).fiber x ⟶ f.fiber x :=
       pullback.map _ _ _ _ (X.affineCover.f i) (𝟙 _) (𝟙 _) (by simp) (by simp)
     have : IsClosedImmersion g := .of_isPreimmersion _ (isClosed_discrete _)
-    convert! (inferInstance : LocallyQuasiFinite <| g ≫ f.fiberToSpecResidueField _) using 1
+    convert (inferInstance : LocallyQuasiFinite <| g ≫ f.fiberToSpecResidueField _)
     simp [g, Hom.fiberToSpecResidueField]
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f

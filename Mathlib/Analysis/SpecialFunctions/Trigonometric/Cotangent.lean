@@ -48,13 +48,13 @@ lemma Complex.cot_eq_exp_ratio (z : ℂ) :
   rw [h1, h2]
   field
 
-/- The version one probably wants to use more. -/
+/-- The version one probably wants to use more. -/
 lemma Complex.cot_pi_eq_exp_ratio (z : ℂ) :
     cot (π * z) = (Complex.exp (2 * π * I * z) + 1) / (I * (1 - Complex.exp (2 * π * I * z))) := by
   rw [cot_eq_exp_ratio (π * z)]
   ring_nf
 
-/- This is the version one probably wants, which is why the pi's are there. -/
+/-- This is the version one probably wants, which is why the pi's are there. -/
 theorem pi_mul_cot_pi_q_exp (z : ℍ) :
     π * cot (π * z) = π * I - 2 * π * I * ∑' n : ℕ, Complex.exp (2 * π * I * z) ^ n := by
   have h1 : π * ((exp (2 * π * I * z) + 1) / (I * (1 - exp (2 * π * I * z)))) =
