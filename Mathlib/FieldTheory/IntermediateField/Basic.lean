@@ -551,6 +551,8 @@ theorem mem_fieldRange {y : L'} : y ∈ f.fieldRange ↔ ∃ x, f x = y :=
 noncomputable def equivFieldRange : L ≃ₐ[K] f.fieldRange :=
   .ofBijective f.rangeRestrict ⟨f.rangeRestrict.injective, fun ⟨_, ⟨x, hx⟩⟩ ↦ ⟨x, Subtype.ext hx⟩⟩
 
+@[deprecated (since := "2026-06-20")] alias equivFieldRange_apply := equivFieldRange_apply_coe
+
 end AlgHom
 
 variable (K L L') in
