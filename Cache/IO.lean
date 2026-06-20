@@ -306,6 +306,8 @@ def mkBuildPaths (mod : Name) : CacheM <| List (FilePath × Bool) := do
     (packageDir / LIBDIR / path.withExtension "olean.private.hash", false),
     (packageDir / LIBDIR / path.withExtension "ilean", true),
     (packageDir / LIBDIR / path.withExtension "ilean.hash", true),
+    (packageDir / LIBDIR / path.withExtension "ir.sig", false),
+    (packageDir / LIBDIR / path.withExtension "ir.sig.hash", false),
     (packageDir / LIBDIR / path.withExtension "ir", false),
     (packageDir / LIBDIR / path.withExtension "ir.hash", false),
     (packageDir / IRDIR  / path.withExtension "c", true),
