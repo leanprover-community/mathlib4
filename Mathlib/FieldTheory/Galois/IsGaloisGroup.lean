@@ -481,7 +481,6 @@ theorem fixedPoints_le_of_le (h : H ≤ H') :
 
 end SMulCommClass
 
-
 section IsGaloisGroup
 
 variable [hGKL : IsGaloisGroup G K L]
