@@ -116,7 +116,7 @@ NOTE: making changes to the generated `.ltar` files invalidates them while it *d
 the file hash! This means any such change needs to be accompanied by a change
 to the root hash affecting *all* files
 (e.g. any modification to lakefile, lean-toolchain or manifest). -/
-def rootHashGeneration : UInt64 := 4
+def rootHashGeneration : UInt64 := 5
 
 /--
 `CacheM` stores the following information:
