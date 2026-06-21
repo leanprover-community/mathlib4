@@ -240,12 +240,22 @@ theorem StrictMono.le_id [WellFoundedGT β] {f : β → β} (hf : StrictMono f) 
 theorem StrictMono.apply_le [WellFoundedGT β] {f : β → β} (hf : StrictMono f) {x} : f x ≤ x :=
   StrictMono.le_apply (β := βᵒᵈ) hf.dual
 
+theorem StrictMono.isCofinal_range {f : β → β} [WellFoundedLT β] (hf : StrictMono f) :
+    IsCofinal (.range f) :=
+  fun a ↦ ⟨_, ⟨a, rfl⟩, hf.le_apply⟩
+
+theorem StrictMono.isCoinitial_range {f : β → β} [WellFoundedGT β] (hf : StrictMono f) :
+    IsCoinitial (.range f) :=
+  fun a ↦ ⟨_, ⟨a, rfl⟩, hf.apply_le⟩
+
+@[deprecated StrictMono.isCofinal_range (since := "2026-06-21")]
 theorem StrictMono.not_bddAbove_range_of_wellFoundedLT {f : β → β} [WellFoundedLT β] [NoMaxOrder β]
     (hf : StrictMono f) : ¬ BddAbove (Set.range f) := by
   rintro ⟨a, ha⟩
   obtain ⟨b, hb⟩ := exists_gt a
   exact ((hf.le_apply.trans_lt (hf hb)).trans_le <| ha (Set.mem_range_self _)).false
 
+@[deprecated StrictMono.isCoinitial_range (since := "2026-06-21")]
 theorem StrictMono.not_bddBelow_range_of_wellFoundedGT {f : β → β} [WellFoundedGT β] [NoMinOrder β]
     (hf : StrictMono f) : ¬ BddBelow (Set.range f) :=
   hf.dual.not_bddAbove_range_of_wellFoundedLT

@@ -126,7 +126,7 @@ theorem eq_enumOrd (f : Ordinal → Ordinal) (hs : ¬ BddAbove s) :
     rwa [← (enumOrd_strictMono hs).range_inj h₁, range_enumOrd hs, eq_comm]
 
 theorem enumOrd_range {f : Ordinal → Ordinal} (hf : StrictMono f) : enumOrd (range f) = f :=
-  (eq_enumOrd _ hf.not_bddAbove_range_of_wellFoundedLT).2 ⟨hf, rfl⟩
+  (eq_enumOrd _ hf.isCofinal_range.not_bddAbove).2 ⟨hf, rfl⟩
 
 /-- If `s` is closed under nonempty suprema, then its enumerator function is normal.
 See also `enumOrd_isNormal_iff_isClosed`. -/
