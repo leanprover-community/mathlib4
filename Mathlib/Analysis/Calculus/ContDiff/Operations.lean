@@ -819,7 +819,7 @@ theorem ContDiff.inv {f : E → 𝕜'} (hf : ContDiff 𝕜 n f) (h : ∀ x, f x 
 theorem ContDiffWithinAt.div {f g : E → 𝕜} {n} (hf : ContDiffWithinAt 𝕜 n f s x)
     (hg : ContDiffWithinAt 𝕜 n g s x) (hx : g x ≠ 0) :
     ContDiffWithinAt 𝕜 n (fun x => f x / g x) s x := by
-  simpa only [div_eq_mul_inv] using hf.mul (hg.inv hx)
+  simpa only [div_eq_mul_inv] using hf.mul (hg.fun_inv hx)
 
 @[fun_prop]
 theorem ContDiffOn.div {f g : E → 𝕜} {n} (hf : ContDiffOn 𝕜 n f s)
