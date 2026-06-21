@@ -5,6 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Order.Cofinal
 public import Mathlib.SetTheory.Ordinal.Family
 
 /-!
