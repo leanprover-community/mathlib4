@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Nilpotent.Lemmas
 public section
 
 theorem Ideal.isRadical_iff_quotient_reduced {R : Type*} [CommRing R] (I : Ideal R) :
-    I.IsRadical ↔ _root_.IsReduced (R ⧸ I) := by
+    I.IsRadical ↔ IsReduced (R ⧸ I) := by
   conv_lhs => rw [← @Ideal.mk_ker R _ I]
   exact RingHom.ker_isRadical_iff_reduced_of_surjective Quotient.mk_surjective
 

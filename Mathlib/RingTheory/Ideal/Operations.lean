@@ -400,7 +400,7 @@ theorem mul_eq_bot [NoZeroDivisors R] : I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ := S
 theorem pow_eq_bot [IsReduced R] {n : ℕ} (hn : n ≠ 0) : I ^ n = ⊥ ↔ I = ⊥ :=
   Submodule.pow_eq_bot hn
 
-instance IsReduced [IsReduced R] : IsReduced (Ideal R) := Submodule.IsReduced
+instance instIsReduced [IsReduced R] : IsReduced (Ideal R) := Submodule.instIsReduced
 
 instance {S A : Type*} [Semiring S] [SMul R S] [AddCommMonoid A] [Module R A] [Module S A]
     [IsScalarTower R S A] [IsTorsionFree R A] {I : Submodule S A} : IsTorsionFree R I :=
@@ -891,11 +891,11 @@ variable {I J} in
 theorem IsRadical.inf (hI : IsRadical I) (hJ : IsRadical J) : IsRadical (I ⊓ J) := by
   rw [IsRadical, radical_inf]; exact inf_le_inf hI hJ
 
-lemma isRadical_bot_iff : (⊥ : Ideal R).IsRadical ↔ _root_.IsReduced R := by
+lemma isRadical_bot_iff : (⊥ : Ideal R).IsRadical ↔ IsReduced R := by
   simp only [IsRadical, SetLike.le_def, Ideal.mem_radical_iff, Ideal.mem_bot,
     forall_exists_index, isReduced_iff, IsNilpotent]
 
-lemma isRadical_bot [_root_.IsReduced R] : (⊥ : Ideal R).IsRadical := by rwa [isRadical_bot_iff]
+lemma isRadical_bot [IsReduced R] : (⊥ : Ideal R).IsRadical := by rwa [isRadical_bot_iff]
 
 /-- `Ideal.radical` as an `InfTopHom`, bundling in that it distributes over `inf`. -/
 def radicalInfTopHom : InfTopHom (Ideal R) (Ideal R) where
