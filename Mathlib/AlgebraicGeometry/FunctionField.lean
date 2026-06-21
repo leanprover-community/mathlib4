@@ -79,10 +79,8 @@ theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenI
   · exact ⟨_, trivial, Set.mem_range_self hX.2.some⟩
 
 noncomputable instance stalkFunctionFieldAlgebra [IrreducibleSpace X] (x : X) :
-    Algebra (X.presheaf.stalk x) X.functionField := by
-  -- TODO: can we write this normally after the refactor finishes?
-  apply RingHom.toAlgebra
-  exact (X.presheaf.stalkSpecializes ((genericPoint_spec X).specializes trivial)).hom
+    Algebra (X.presheaf.stalk x) X.functionField :=
+  RingHom.toAlgebra <| (X.presheaf.stalkSpecializes ((genericPoint_spec X).specializes trivial)).hom
 
 instance functionField_isScalarTower [IrreducibleSpace X] (U : X.Opens) (x : U)
     [Nonempty U] : IsScalarTower Γ(X, U) (X.presheaf.stalk x) X.functionField := by
@@ -93,26 +91,24 @@ instance functionField_isScalarTower [IrreducibleSpace X] (U : X.Opens) (x : U)
 
 noncomputable instance (R : CommRingCat.{u}) [IsDomain R] :
     Algebra R (Spec R).functionField :=
-  -- TODO: can we write this normally after the refactor finishes?
-  RingHom.toAlgebra <| by apply CommRingCat.Hom.hom; apply StructureSheaf.toStalk
+  RingHom.toAlgebra <| CommRingCat.Hom.hom (StructureSheaf.toStalk R _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
     genericPoint (Spec R) = (⊥ : PrimeSpectrum R) := by
   apply (genericPoint_spec (Spec R)).eq
-  rw [isGenericPoint_def]
-  rw [← PrimeSpectrum.zeroLocus_vanishingIdeal_eq_closure, PrimeSpectrum.vanishingIdeal_singleton]
-  rw [← PrimeSpectrum.zeroLocus_singleton_zero]
-  rfl
+  simp_rw [Spec_carrier, isGenericPoint_def]
+  trans @closure (PrimeSpectrum ↑R) PrimeSpectrum.zariskiTopology {⊥}
+  · rfl
+  rw [← PrimeSpectrum.zeroLocus_vanishingIdeal_eq_closure (t := {⊥}),
+    PrimeSpectrum.vanishingIdeal_singleton, PrimeSpectrum.asIdeal_bot,
+    ← PrimeSpectrum.zeroLocus_singleton_zero (R := R), Submodule.bot_coe]
 
 instance functionField_isFractionRing_of_affine (R : CommRingCat.{u}) [IsDomain R] :
     IsFractionRing R (Spec R).functionField := by
   convert! StructureSheaf.IsLocalization.to_stalk R (genericPoint (Spec R))
   delta IsFractionRing IsLocalization.AtPrime
-  -- Porting note: `congr` does not work for `Iff`
-  apply Eq.to_iff
-  congr 1
+  congr! 1
   rw [genericPoint_eq_bot_of_affine]
   ext
   exact mem_nonZeroDivisors_iff_ne_zero
@@ -121,7 +117,6 @@ instance {X : Scheme} [IsIntegral X] {U : X.Opens} [Nonempty U] :
     IsIntegral U :=
   isIntegral_of_isOpenImmersion U.ι
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : X.Opens}
     (hU : IsAffineOpen U) [h : Nonempty U] :
     hU.primeIdealOf
@@ -129,14 +124,8 @@ theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : 
           ((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using h)⟩ =
       genericPoint (Spec Γ(X, U)) := by
   delta IsAffineOpen.primeIdealOf
-  convert!
-    genericPoint_eq_of_isOpenImmersion
-      (U.toScheme.isoSpec.hom ≫ Spec.map (X.presheaf.map (eqToHom U.isOpenEmbedding_obj_top).op))
-        -- Porting note: this was `ext1`
-
-  -- Porting note: this was `ext1`
-  apply Subtype.ext
-  exact (genericPoint_eq_of_isOpenImmersion U.ι).symm
+  simp_rw [← genericPoint_eq_of_isOpenImmersion U.ι, Scheme.Opens.ι_apply, Subtype.coe_eta,
+    genericPoint_eq_of_isOpenImmersion]
 
 theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : X.Opens)
     (hU : IsAffineOpen U) [Nonempty U] :
