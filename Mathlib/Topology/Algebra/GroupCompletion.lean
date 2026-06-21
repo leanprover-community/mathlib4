@@ -167,8 +167,8 @@ instance {M} [Monoid M] [DistribMulAction M α] [UniformContinuousConstSMul M α
   { (inferInstance : MulAction M <| Completion α) with
     smul_add := fun r x y ↦
       induction_on₂ x y
-        (isClosed_eq ((continuous_fst.add continuous_snd).fun_const_smul _)
-          ((continuous_fst.const_smul _).fun_add (continuous_snd.const_smul _)))
+        (isClosed_eq ((continuous_fst.fun_add continuous_snd).fun_const_smul _)
+          ((continuous_fst.fun_const_smul _).fun_add (continuous_snd.fun_const_smul _)))
         fun a b ↦ by simp only [← coe_add, ← coe_smul, smul_add]
     smul_zero := fun r ↦ by rw [← coe_zero, ← coe_smul, smul_zero r] }
 
@@ -206,7 +206,7 @@ instance instModule [Semiring R] [Module R α] [UniformContinuousConstSMul R α]
   { (inferInstance : DistribMulAction R <| Completion α),
     (inferInstance : MulActionWithZero R <| Completion α) with
     add_smul := fun a b ↦
-      ext' (continuous_const_smul _) ((continuous_const_smul _).fun_add (continuous_const_smul _))
+      ext' (continuous_const_smul _) ((continuous_const_smul _).add (continuous_const_smul _))
         fun x ↦ by
           rw [← coe_smul, add_smul, coe_add, coe_smul, coe_smul] }
 
