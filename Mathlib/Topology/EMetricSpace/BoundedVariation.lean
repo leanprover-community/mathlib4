@@ -1306,6 +1306,18 @@ theorem tendsto_right {E : Type*} [PseudoMetricSpace E] [TopologicalSpace α] [O
   rw [dist_edist]
   exact (ENNReal.tendsto_toReal (by simp)).comp (hf.tendsto_eVariationOn_Icc_right h'f hb)
 
+#check Function.leftLim
+
+theorem leftLim_eq {E : Type*} [PseudoMetricSpace E]
+    {f : α → E} {l : E} {a b : α} (hf : BoundedVariationOn f univ) {a b : α} :
+    (variationOnFromTo f univ a).leftLim b =
+      variationOnFromTo f s a b - dist (f b) (f.leftLim b) := by
+  let : TopologicalSpace α := Preorder.topology α
+  have : OrderTopology α := ⟨rfl⟩
+
+
+
+
 #exit
 
 theorem _root_.BoundedVariationOn.continuousWithinAt_variationOnFromTo_Ici
