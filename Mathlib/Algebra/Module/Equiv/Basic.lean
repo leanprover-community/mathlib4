@@ -483,9 +483,7 @@ variable (f : M →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₁] M)
 /-- If a linear map has an inverse, it is a linear equivalence. -/
 def ofLinearMap (h₁ : f.comp g = .id) (h₂ : g.comp f = .id) : M ≃ₛₗ[σ₁₂] M₂
   where
-    toFun := f
-    map_add' := f.map_add'
-    map_smul' := f.map_smul'
+    __ := f
     invFun := g
     left_inv := LinearMap.ext_iff.1 h₂
     right_inv := LinearMap.ext_iff.1 h₁
