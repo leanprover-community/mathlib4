@@ -349,12 +349,12 @@ section Inv
 variable {G α : Type*} [Inv G] [MeasurableSpace G] [MeasurableInv G] {m : MeasurableSpace α}
   {f : α → G} {μ : Measure α}
 
-@[to_additive (attr := fun_prop)]
-theorem Measurable.inv (hf : Measurable f) : Measurable fun x => (f x)⁻¹ :=
+@[to_fun (attr := to_additive (attr := fun_prop))]
+theorem Measurable.inv (hf : Measurable f) : Measurable f⁻¹ :=
   measurable_inv.comp hf
 
-@[to_additive (attr := fun_prop)]
-theorem AEMeasurable.inv (hf : AEMeasurable f μ) : AEMeasurable (fun x => (f x)⁻¹) μ :=
+@[to_fun (attr := to_additive (attr := fun_prop))]
+theorem AEMeasurable.inv (hf : AEMeasurable f μ) : AEMeasurable f⁻¹ μ :=
   measurable_inv.comp_aemeasurable hf
 
 @[to_additive (attr := simp)]
