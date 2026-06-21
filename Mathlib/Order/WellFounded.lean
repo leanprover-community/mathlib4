@@ -224,7 +224,7 @@ theorem Set.range_injOn_strictMono_of_wellFoundedLT [WellFoundedLT β] :
     rw [IH c this] at hc
     cases (hg.injective hc).not_lt this
 
-@[deprecated (since := "2026-05-15")]
+@[deprecated (since := "2026-06-21")]
 alias Set.range_injOn_strictMono := Set.range_injOn_strictMono_of_wellFoundedLT
 
 @[to_dual]
@@ -232,7 +232,7 @@ theorem Set.range_injOn_strictAnti_of_wellFoundedGT [WellFoundedGT β] :
     Set.InjOn Set.range { f : β → γ | StrictAnti f } :=
   fun _ hf _ hg ↦ Set.range_injOn_strictMono_of_wellFoundedLT (β := βᵒᵈ) hf.dual hg.dual
 
-@[deprecated (since := "2026-05-15")]
+@[deprecated (since := "2026-06-21")]
 alias Set.range_injOn_strictAnti := Set.range_injOn_strictAnti_of_wellFoundedGT
 
 @[to_dual]
@@ -240,7 +240,7 @@ theorem StrictMono.range_inj_of_wellFoundedLT [WellFoundedLT β] {f g : β → �
     (hf : StrictMono f) (hg : StrictMono g) : Set.range f = Set.range g ↔ f = g :=
   Set.range_injOn_strictMono_of_wellFoundedLT.eq_iff hf hg
 
-@[deprecated (since := "2026-05-15")]
+@[deprecated (since := "2026-06-21")]
 alias StrictMono.range_inj := StrictMono.range_inj_of_wellFoundedLT
 
 @[to_dual]
@@ -248,7 +248,7 @@ theorem StrictAnti.range_inj_of_wellFoundedGT [WellFoundedGT β] {f g : β → �
     (hf : StrictAnti f) (hg : StrictAnti g) : Set.range f = Set.range g ↔ f = g :=
   Set.range_injOn_strictAnti_of_wellFoundedGT.eq_iff hf hg
 
-@[deprecated (since := "2026-05-15")]
+@[deprecated (since := "2026-06-21")]
 alias StrictAnti.range_inj := StrictAnti.range_inj_of_wellFoundedGT
 
 /-- A strictly monotone function `f` on a well-order satisfies `x ≤ f x` for all `x`. -/
@@ -336,7 +336,7 @@ theorem argmin_le (a : α) [Nonempty α] : f (argmin f) ≤ f a :=
 theorem minimalFor_argmin [Nonempty α] : MinimalFor (fun _ ↦ True) f (argmin f) :=
   ⟨trivial, fun a _ _ ↦ argmin_le f a⟩
 
-@[deprecated (since := "2026-05-15")] alias isMinimalFor_argmin := minimalFor_argmin
+@[deprecated (since := "2026-06-21")] alias isMinimalFor_argmin := minimalFor_argmin
 
 @[to_dual le_argmaxOn]
 theorem argminOn_le (s : Set α) {a : α} (ha : a ∈ s) : f (argminOn f s ⟨a, ha⟩) ≤ f a :=
@@ -347,7 +347,7 @@ theorem minimalFor_argminOn (s : Set α) (hs : s.Nonempty) :
     MinimalFor (· ∈ s) f (argminOn f s hs) :=
   ⟨argminOn_mem f s hs, fun _ h _ ↦ argminOn_le f s h⟩
 
-@[deprecated (since := "2026-05-15")] alias isMinimalFor_argminOn := minimalFor_argminOn
+@[deprecated (since := "2026-06-21")] alias isMinimalFor_argminOn := minimalFor_argminOn
 
 end LinearOrder
 
