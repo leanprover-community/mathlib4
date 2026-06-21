@@ -118,38 +118,34 @@ open IsDedekindDomain.HeightOneSpectrum Set in
 private lemma sur [Fact (Monoid.IsTorsion (ClassGroup R))] :
     ∀ z : S.integer K, ∃ x : R × S.Submonoid,
     z * (algebraMap R (S.integer K)) x.2 = (algebraMap R (S.integer K)) x.1 := by
-  intro r
+  intro z
   simp only [Prod.exists, Subtype.exists, exists_prop]
-  -- We know that v(r) ≥ 0 for all ν ∉ S.
-  have h_outside : ∀ v ∉ S, v.valuation K r ≤ 1 := fun _ h ↦ integer_valuation_le_one S K r h
+  -- We know that `v(z) ≤ 1` for all `ν ∉ S`.
+  have h_outside : ∀ v ∉ S, v.valuation K z ≤ 1 := fun _ h ↦ integer_valuation_le_one S K z h
+  -- Let T be the finite set of places in S that have `v(z) > 1`.
   let T : Finset (HeightOneSpectrum R) :=
-    (HeightOneSpectrum.Support.finite (R := R) (K := K) (k := (r : K))).toFinset
-  have hT : ∀ v ∈ S \ T, v.valuation K (r : K) ≤ 1 := fun v hv ↦
-    le_of_not_gt (by simpa [T, HeightOneSpectrum.Support] using hv.2)
-  have hT_subset : ∀ v ∈ T, v ∈ S := fun v hvT ↦ by
-    by_contra hvS
-    exact not_lt_of_ge (h_outside v hvS) (by
-      simpa [T, HeightOneSpectrum.Support] using hvT)
+    (HeightOneSpectrum.Support.finite (R := R) (K := K) (k := (z : K))).toFinset
+  have hT_subset : ∀ v ∈ T, v ∈ S := by
+    intro v hv
+    contrapose! hv
+    simpa [T, HeightOneSpectrum.Support] using h_outside v hv
+  -- I is the product of the prime ideals that divide the denominator of z.
   let I : Ideal R := ∏ v ∈ T, v.asIdeal
-
   have hI_ne_zero : I ≠ 0 := by
-    change (∏ v ∈ T, v.asIdeal) ≠ 0
-    simpa only [Finset.prod_ne_zero_iff, bot_eq_zero] using fun v (_ : v ∈ T) ↦ v.ne_bot
-  -- There exist n > 0 and α such that I^n = (α).
+    simpa only [I, Finset.prod_ne_zero_iff, bot_eq_zero] using fun v _ ↦ v.ne_bot
+  -- Here we use the fact that the ClassGroup has finite order, so there exist n > 0 and α such that
+  -- I^n = (α).
   obtain ⟨n, hn, ⟨α, hα⟩⟩ : ∃ n : ℕ, 0 < n ∧ (I ^ n).IsPrincipal := by
     let I₀ : (Ideal R)⁰ := ⟨I, mem_nonZeroDivisors_iff_ne_zero.mpr hI_ne_zero⟩
-    obtain ⟨n, hn, hI'⟩ := isOfFinOrder_iff_pow_eq_one.1
+    obtain ⟨n, hn, _⟩ := isOfFinOrder_iff_pow_eq_one.1
       ((Fact.out : Monoid.IsTorsion (ClassGroup R)) (ClassGroup.mk0 I₀))
     refine ⟨n, hn, ?_⟩
-    rw [← MonoidHom.map_pow ClassGroup.mk0 I₀ n, ClassGroup.mk0_eq_one_iff] at hI'
-    simpa [I₀] using hI'
+    simp_all [← MonoidHom.map_pow ClassGroup.mk0 I₀ n, ClassGroup.mk0_eq_one_iff, I₀]
   have hα_ne_zero : α ≠ 0 := by
-    rintro rfl
-    apply hI_ne_zero
-    simp at hα
-    rw [Ideal.zero_eq_bot, ← Ideal.pow_eq_bot, ← hα]
-    congr
-    omega
+    contrapose! hI_ne_zero
+    subst hI_ne_zero
+    rw [Submodule.span_zero_singleton, ← Ideal.zero_eq_bot] at hα
+    exact eq_zero_of_pow_eq_zero hα
 
   -- This α : R has to satisfy v(α) ≥ 1 if v ∈ T [and v(α) ≥ 0 elsewise].
   have h1 : ∀ v ∈ T, v.valuation K (algebraMap R K α) < 1 := by
@@ -162,14 +158,14 @@ private lemma sur [Fact (Monoid.IsTorsion (ClassGroup R))] :
         (Finset.inf_le hv)
 
   obtain ⟨m, hm⟩ : ∃ m : ℕ, ∀ v ∈ T,
-      v.valuation K ((algebraMap R K α ^ m) * r) ≤ 1 := by
-    let m : ℕ := ∑ v ∈ T, (WithZero.log (v.valuation K (r : K))).toNat
+      v.valuation K ((algebraMap R K α ^ m) * z) ≤ 1 := by
+    let m : ℕ := ∑ v ∈ T, (WithZero.log (v.valuation K (z : K))).toNat
     refine ⟨m, ?_⟩
     intro v hv
     let a : WithZero (Multiplicative ℤ) := v.valuation K (algebraMap R K α)
-    let b : WithZero (Multiplicative ℤ) := v.valuation K (r : K)
+    let b : WithZero (Multiplicative ℤ) := v.valuation K (z : K)
     have hval :
-        v.valuation K ((algebraMap R K α ^ m) * r) = a ^ m * b := by
+        v.valuation K ((algebraMap R K α ^ m) * z) = a ^ m * b := by
       simp [a, b, Valuation.map_mul]
     rw [hval]
     by_cases hb : b = 0
@@ -186,7 +182,7 @@ private lemma sur [Fact (Monoid.IsTorsion (ClassGroup R))] :
       dsimp [b, m]
       exact_mod_cast Finset.single_le_sum
         (s := T) (f := fun w : HeightOneSpectrum R =>
-          (WithZero.log (w.valuation K (r : K))).toNat)
+          (WithZero.log (w.valuation K (z : K))).toNat)
         (fun w hw => Nat.zero_le _) hv
     have hlog : WithZero.log (a ^ m * b) ≤ 0 := by
       rw [WithZero.log_mul (pow_ne_zero m ha) hb, WithZero.log_pow]
@@ -194,20 +190,20 @@ private lemma sur [Fact (Monoid.IsTorsion (ClassGroup R))] :
     rw [← WithZero.log_le_log (mul_ne_zero (pow_ne_zero m ha) hb) one_ne_zero]
     simpa using hlog
 
-  obtain ⟨β, hβ⟩ : ∃ β : R, (algebraMap R K β) = ((algebraMap R K α ^ m) * r) := by
-    have hx : ∀ v : HeightOneSpectrum R, v.valuation K ((algebraMap R K α ^ m) * r) ≤ 1 := by
+  obtain ⟨β, hβ⟩ : ∃ β : R, (algebraMap R K β) = ((algebraMap R K α ^ m) * z) := by
+    have hx : ∀ v : HeightOneSpectrum R, v.valuation K ((algebraMap R K α ^ m) * z) ≤ 1 := by
       intro v
       by_cases hvT : v ∈ T
       · exact hm v hvT
-      · have hrle : v.valuation K r ≤ 1 := by
+      · have hzle : v.valuation K z ≤ 1 := by
           by_cases hvS : v ∈ S
-          · exact hT v ⟨hvS, hvT⟩
+          · exact le_of_not_gt (by simpa [T, HeightOneSpectrum.Support] using hvT)
           · exact h_outside v hvS
         simpa [Valuation.map_mul] using
-          mul_le_mul' (by simpa [map_pow] using (v.valuation_le_one (K := K) (α ^ m))) hrle
+          mul_le_mul' (by simpa [map_pow] using (v.valuation_le_one (K := K) (α ^ m))) hzle
     simpa [Set.mem_range] using
       (HeightOneSpectrum.mem_integers_of_valuation_le_one (R := R) (K := K)
-        ((algebraMap R K α ^ m) * r) hx)
+        ((algebraMap R K α ^ m) * z) hx)
   refine ⟨β, α ^ m, ?_, ?_⟩
   · refine Submonoid.pow_mem S.Submonoid ?_ m
     simp only [Set.Submonoid, Submodule.carrier_eq_coe, Submonoid.mem_mk, Subsemigroup.mem_mk,
