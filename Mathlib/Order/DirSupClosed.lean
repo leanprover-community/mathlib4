@@ -274,21 +274,29 @@ theorem DirSupInacc.mem_iff_of_antisymmRel (hs : DirSupInacc s) {a b : α}
     (h : AntisymmRel (· ≤ ·) a b) : a ∈ s ↔ b ∈ s := by
   simpa [not_iff_not] using hs.compl.mem_iff_of_antisymmRel h
 
-lemma dirSupClosed_Iic (a : α) : DirSupClosed (Iic a) :=
+protected lemma DirSupClosed.Iic (a : α) : DirSupClosed (Iic a) :=
   fun _d h _ _ _a ha ↦ (isLUB_le_iff ha).2 h
 
-lemma dirSupClosedOn_Iic (a : α) : DirSupClosedOn D (Iic a) :=
-  (dirSupClosed_Iic a).dirSupClosedOn
+@[deprecated (since := "2026-05-24")] alias dirSupClosed_Iic := DirSupClosed.Iic
 
-lemma dirSupInacc_Iic (a : α) : DirSupInacc (Iic a) :=
+protected lemma DirSupClosedOn.Iic (a : α) : DirSupClosedOn D (Iic a) :=
+  (DirSupClosed.Iic a).dirSupClosedOn
+
+@[deprecated (since := "2026-05-24")] alias dirSupClosedOn_Iic := DirSupClosedOn.Iic
+
+protected lemma DirSupInacc.Iic (a : α) : DirSupInacc (Iic a) :=
   (isLowerSet_Iic a).dirSupInacc
 
-lemma dirSupInaccOn_Iic (a : α) : DirSupInaccOn D (Iic a) :=
+@[deprecated (since := "2026-05-24")] alias dirSupInacc_Iic := DirSupInacc.Iic
+
+protected lemma DirSupInaccOn.Iic (a : α) : DirSupInaccOn D (Iic a) :=
   (isLowerSet_Iic a).dirSupInaccOn
+
+@[deprecated (since := "2026-05-24")] alias dirSupInaccOn_Iic := DirSupInaccOn.Iic
 
 end Preorder
 
-namespace PartialOrder
+section PartialOrder
 variable [PartialOrder α]
 
 theorem dirSupClosed_singleton (a : α) : DirSupClosed {a} := by
@@ -321,6 +329,24 @@ theorem dirSupInaccOn_iff_of_linearOrder :
 theorem dirSupInacc_iff_of_linearOrder :
     DirSupInacc s ↔ ∀ ⦃d⦄, d.Nonempty → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty := by
   simp [DirSupInacc]
+
+protected lemma DirSupClosed.Ioi (a : α) : DirSupClosed (Ioi a) := by
+  simpa using (DirSupInacc.Iic a).compl
+
+protected lemma DirSupClosedOn.Ioi (a : α) : DirSupClosedOn D (Ioi a) := by
+  simpa using (DirSupInaccOn.Iic a).compl
+
+protected lemma DirSupInacc.Ioi (a : α) : DirSupInacc (Ioi a) := by
+  simpa using (DirSupClosed.Iic a).compl
+
+protected lemma DirSupInaccOn.Ioi (a : α) : DirSupInaccOn D (Ioi a) := by
+  simpa using (DirSupClosedOn.Iic a).compl
+
+protected lemma DirSupClosed.Ici (a : α) : DirSupClosed (Ici a) := by
+  simpa using (DirSupClosed.Ioi a).union (dirSupClosed_singleton a)
+
+protected lemma DirSupClosedOn.Ici (a : α) : DirSupClosedOn D (Ici a) :=
+  (DirSupClosed.Ici a).dirSupClosedOn
 
 end LinearOrder
 

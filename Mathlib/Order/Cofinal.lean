@@ -52,6 +52,11 @@ theorem IsCofinal.mono {s t : Set α} (h : s ⊆ t) (hs : IsCofinal s) : IsCofin
   obtain ⟨b, hb, hb'⟩ := hs a
   exact ⟨b, h hb, hb'⟩
 
+theorem IsCofinal.nonempty [Nonempty α] {s : Set α} (h : IsCofinal s) : s.Nonempty := by
+  inhabit α
+  obtain ⟨x, hx, _⟩ := h default
+  exact ⟨x, hx⟩
+
 end LE
 
 section Preorder
@@ -114,6 +119,12 @@ theorem isCofinal_iff_iUnion_Iio_eq_univ [NoMaxOrder α] {s : Set α} :
     obtain ⟨z, hz, hz'⟩ := hs y
     exact ⟨z, hz, hy.trans_le hz'⟩
 
+@[simp]
+theorem not_isCofinal_Iio (x : α) : ¬ IsCofinal (Iio x) := by
+  intro hx
+  have := hx x
+  grind
+
 end Preorder
 
 section PartialOrder
@@ -158,6 +169,27 @@ theorem not_isCofinal_iff_bddAbove [NoMaxOrder α] {s : Set α} : ¬ IsCofinal s
 /-- In a linear order with no maximum, cofinal sets are the same as unbounded sets. -/
 theorem not_bddAbove_iff_isCofinal [NoMaxOrder α] {s : Set α} : ¬ BddAbove s ↔ IsCofinal s :=
   not_iff_comm.1 not_isCofinal_iff_bddAbove
+
+theorem IsCofinal.inter_of_isUpperSet_left {s t : Set α} (hs : IsCofinal s) (ht : IsUpperSet t)
+    (ht₀ : t.Nonempty) : IsCofinal (s ∩ t) := by
+  intro y
+  obtain ⟨x, hx⟩ := ht₀
+  obtain ⟨z, hz, hyz⟩ := hs (max x y)
+  exact ⟨z, ⟨hz, ht ((le_max_left ..).trans hyz) hx⟩, (le_max_right ..).trans hyz⟩
+
+theorem IsCofinal.inter_of_isUpperSet_right {s t : Set α} (hs : IsCofinal s) (ht : IsUpperSet t)
+    (ht₀ : t.Nonempty) : IsCofinal (t ∩ s) := by
+  rw [inter_comm]
+  exact hs.inter_of_isUpperSet_left ht ht₀
+
+theorem IsUpperSet.isCofinal {s : Set α} (hs : IsUpperSet s) (hs₀ : s.Nonempty) : IsCofinal s := by
+  simpa using IsCofinal.univ.inter_of_isUpperSet_left hs hs₀
+
+@[simp] protected theorem IsCofinal.Ici (x : α) : IsCofinal (Ici x) := by
+  simpa using (isUpperSet_Ici x).isCofinal
+
+@[simp] protected theorem IsCofinal.Ioi [NoMaxOrder α] (x : α) : IsCofinal (Ioi x) := by
+  simpa using (isUpperSet_Ioi x).isCofinal
 
 /-- The set of "records" (the smallest inputs yielding the highest values) with respect to a
 well-ordering of `α` is a cofinal set. -/
