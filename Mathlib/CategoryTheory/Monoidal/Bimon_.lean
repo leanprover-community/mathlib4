@@ -172,7 +172,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps!]
 def equivMonComonUnitIsoAppX (M : Bimon C) :
     M.X ≅ ((toMonComon C ⋙ ofMonComon C).obj M).X :=
- Mon.mkIso (equivMonComonUnitIsoAppXAux M)
+  Mon.mkIso (equivMonComonUnitIsoAppXAux M)
 
 set_option backward.isDefEq.respectTransparency false in
 instance (M : Bimon C) : IsComonHom (equivMonComonUnitIsoAppX M).hom where
@@ -216,7 +216,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps!]
 def equivMonComonCounitIsoApp (M : Mon (Comon C)) :
     (ofMonComon C ⋙ toMonComon C).obj M ≅ M :=
- Mon.mkIso <| (equivMonComonCounitIsoAppX M)
+  Mon.mkIso <| (equivMonComonCounitIsoAppX M)
 
 /-- The equivalence `Comon (Mon C) ≌ Mon (Comon C)` -/
 def equivMonComon : Bimon C ≌ Mon (Comon C) where

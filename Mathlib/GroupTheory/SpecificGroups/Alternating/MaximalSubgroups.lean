@@ -260,7 +260,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl {s : Set α}
     IsBlock.subsingleton_of_ssubset_compl_of_stabilizer_alternatingGroup_le h0
       (hBsc.ssubset_of_ne (by aesop)) -- uses Step 1
       hG.le hB
- -- Step 3 : A block contained in `s` is a subsingleton
+  -- Step 3 : A block contained in `s` is a subsingleton
   have hB_not_le_s (B : Set α) (hB : IsBlock G B) (hBs : B ⊆ s) :
       B.Subsingleton :=
     have : IsPreprimitive (stabilizer G s) s :=

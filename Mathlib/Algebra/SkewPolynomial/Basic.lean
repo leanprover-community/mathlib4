@@ -187,7 +187,7 @@ lemma smul_monomial {S} [Semiring S] [Module S R] (a : S) (b : R) :
 
 @[simp]
 lemma sum_monomial (f : SkewPolynomial R) : f.sum (fun (a : ℕ) ↦ monomial a) = f :=
- SkewMonoidAlgebra.sum_single _
+  SkewMonoidAlgebra.sum_single _
 
 @[simp]
 lemma sum_monomial_index {N} [AddCommMonoid N] {n : ℕ} {b : R} {h : ℕ → R → N}

@@ -474,7 +474,7 @@ and `S` that appear are comparable, in the sense that either `R` is an `S`-algeb
 
 * `algebra with R` uses the term `R` as the scalar ring, instead of attempting to infer it
 automatically.
- -/
+-/
 elab (name := algebra) "algebra":tactic =>
   withMainContext do
     liftMetaTactic' preprocess

@@ -287,8 +287,8 @@ instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTop
 @[to_additive]
 lemma Subgroup.tendsto_coe_cofinite_of_discrete [T2Space G] (H : Subgroup G)
     (hH : IsDiscrete (H : Set G)) : Tendsto ((↑) : H → G) cofinite (cocompact _) :=
- haveI : DiscreteTopology H := isDiscrete_iff_discreteTopology.mp hH
- IsClosed.tendsto_coe_cofinite_of_isDiscrete isClosed_of_discrete hH
+  haveI : DiscreteTopology H := isDiscrete_iff_discreteTopology.mp hH
+  IsClosed.tendsto_coe_cofinite_of_isDiscrete isClosed_of_discrete hH
 
 @[to_additive]
 lemma MonoidHom.tendsto_coe_cofinite_of_discrete [T2Space G] {H : Type*} [Group H] {f : H →* G}

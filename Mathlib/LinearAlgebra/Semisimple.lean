@@ -17,8 +17,8 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 
 Given an `R`-module `M` together with an `R`-linear endomorphism `f : M → M`, the following two
 conditions are equivalent:
- 1. Every `f`-invariant submodule of `M` has an `f`-invariant complement.
- 2. `M` is a semisimple `R[X]`-module, where the action of the polynomial ring is induced by `f`.
+1. Every `f`-invariant submodule of `M` has an `f`-invariant complement.
+2. `M` is a semisimple `R[X]`-module, where the action of the polynomial ring is induced by `f`.
 
 A linear endomorphism `f` satisfying these equivalent conditions is known as a *semisimple*
 endomorphism. We provide basic definitions and results about such endomorphisms in this file.

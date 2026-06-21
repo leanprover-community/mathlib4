@@ -656,7 +656,7 @@ theorem separable_cyclotomic (n : ℕ) (K : Type*) [Field K] [NeZero (n : K)] :
 
 theorem squarefree_cyclotomic (n : ℕ) (K : Type*) [Field K] [NeZero (n : K)] :
     Squarefree (cyclotomic n K) :=
- (separable_cyclotomic n K).squarefree
+  (separable_cyclotomic n K).squarefree
 
 end miscellaneous
 

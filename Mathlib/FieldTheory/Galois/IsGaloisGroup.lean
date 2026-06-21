@@ -156,7 +156,7 @@ noncomputable def IsGaloisGroup.ringEquivFixedPoints :
 @[simp]
 theorem IsGaloisGroup.algebraMap_ringEquivFixedPoints_symm_apply (x : FixedPoints.subsemiring B G) :
     algebraMap A B ((ringEquivFixedPoints G A B).symm x) = x :=
- (hA.isInvariant.isInvariant x x.prop).choose_spec
+  (hA.isInvariant.isInvariant x x.prop).choose_spec
 
 variable [CommSemiring A'] [Algebra A' B] [FaithfulSMul A' B] [hA' : IsGaloisGroup G A' B]
 

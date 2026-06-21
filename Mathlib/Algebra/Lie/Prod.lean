@@ -25,8 +25,8 @@ This file defines the Lie algebra structure the Product of two Lie algebras
   - `LieHom.prodMap` the `Prod.map` of two Lie algebra homomorphisms is a Lie algebra homomorphism.
 
 ## Todo: Extend to further functionality from LinearMap.prod e.g.
- - Lie Equivalences related to products
- - Lie Submodule statements
+- Lie Equivalences related to products
+- Lie Submodule statements
 
 -/
 

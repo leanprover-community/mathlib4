@@ -337,7 +337,7 @@ def map (f : α ≃o β) : UpperSet α ≃o UpperSet β where
 
 @[to_dual (attr := simp)]
 theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm := by
- ext; simp [map, OrderIso.symm_apply_eq]
+  ext; simp [map, OrderIso.symm_apply_eq]
 
 @[to_dual (attr := simp)]
 theorem mem_map : b ∈ map f s ↔ f.symm b ∈ s := by

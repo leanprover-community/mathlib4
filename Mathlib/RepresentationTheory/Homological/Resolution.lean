@@ -54,10 +54,10 @@ computing group (co)homology.
 
 ## Main definitions
 
- * `groupCohomology.resolution.ofMulActionBasis`
- * `classifyingSpaceUniversalCover`
- * `Rep.standardComplex.forget₂ToModuleCatHomotopyEquiv`
- * `Rep.standardResolution`
+* `groupCohomology.resolution.ofMulActionBasis`
+* `classifyingSpaceUniversalCover`
+* `Rep.standardComplex.forget₂ToModuleCatHomotopyEquiv`
+* `Rep.standardResolution`
 
 TODO: There's bad DefEq abuses in `Action` and the way we do `Rep.standardComplex` should be
   unified with continuous cohomology, therefore we should remove the use of `Action` in `Rep` which
