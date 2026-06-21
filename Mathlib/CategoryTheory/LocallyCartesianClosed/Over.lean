@@ -302,9 +302,9 @@ def forgetAdjToOver (X : C) : Over.forget X ⊣ toOver X where
   counit.app Z := fst Z X
 
 theorem forgetAdjToOver.homEquiv_symm {X : C} (Z : Over X) (A : C) (f : Z ⟶ (toOver X).obj A) :
-     ((forgetAdjToOver X).homEquiv Z A).symm f = f.left ≫ (fst _ _) := by
-   rw [Adjunction.homEquiv_counit, forgetAdjToOver_counit_app]
-   simp
+    ((forgetAdjToOver X).homEquiv Z A).symm f = f.left ≫ (fst _ _) := by
+  rw [Adjunction.homEquiv_counit, forgetAdjToOver_counit_app]
+  simp
 
 /-- The isomorphism of functors `toOver (𝟙_ C)` and `toOverUnit C`. -/
 @[simps!]

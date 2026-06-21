@@ -1243,8 +1243,7 @@ lemma toAddMonoidHom_linearMapOfLE (h : p ≤ q) :
   ext; rfl
 
 lemma linearMapOfLE_comp (hpq : p ≤ q) (hqr : q ≤ r) :
-   (linearMapOfLE 𝕜 E hqr).comp (linearMapOfLE 𝕜 E hpq) =
-     linearMapOfLE 𝕜 E (hpq.trans hqr) := by
+    (linearMapOfLE 𝕜 E hqr).comp (linearMapOfLE 𝕜 E hpq) = linearMapOfLE 𝕜 E (hpq.trans hqr) := by
   ext; rfl
 
 end OfLE

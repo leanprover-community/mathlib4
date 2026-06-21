@@ -72,7 +72,7 @@ lemma IsIntegralCurveAt.comp_add (hγ : IsIntegralCurveAt γ v t₀) (dt : ℝ) 
   isIntegralCurveAt_comp_add.mpr hγ
 
 lemma isIntegralCurveAt_comp_sub {dt : ℝ} :
-   IsIntegralCurveAt (γ ∘ (· - dt)) (v ∘ (· - dt)) (t₀ + dt) ↔ IsIntegralCurveAt γ v t₀ := by
+    IsIntegralCurveAt (γ ∘ (· - dt)) (v ∘ (· - dt)) (t₀ + dt) ↔ IsIntegralCurveAt γ v t₀ := by
   simpa using! isIntegralCurveAt_comp_add (dt := -dt)
 
 lemma IsIntegralCurveAt.comp_sub (hγ : IsIntegralCurveAt γ v t₀) (dt : ℝ) :

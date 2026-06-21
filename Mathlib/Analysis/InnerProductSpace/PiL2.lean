@@ -1332,7 +1332,7 @@ def orthonormalBasisSingleton : OrthonormalBasis ι 𝕜 E :=
 
 @[simp]
 theorem orthonormalBasisSingleton_apply (i : ι) :
-   orthonormalBasisSingleton ι 𝕜 h v hv i = v := by
+    orthonormalBasisSingleton ι 𝕜 h v hv i = v := by
   simp [orthonormalBasisSingleton]
 
 @[simp]

@@ -158,13 +158,13 @@ def tensorDesc {F G H : C ⊛⥤ V}
 
 lemma η_comp_tensorDec {F G H : C ⊛⥤ V}
     (α : F.functor ⊠ G.functor ⟶ tensor C ⋙ H.functor) :
-   η F G ≫ Functor.whiskerLeft _ (tensorDesc α).natTrans = α :=
+    η F G ≫ Functor.whiskerLeft _ (tensorDesc α).natTrans = α :=
   Functor.descOfIsLeftKanExtension_fac _ _ _ _
 
 @[reassoc (attr := simp)]
 lemma η_comp_tensorDesc_app {F G H : C ⊛⥤ V}
     (α : F.functor ⊠ G.functor ⟶ tensor C ⋙ H.functor) (x y : C) :
-   (η F G).app (x, y) ≫ (tensorDesc α).natTrans.app (x ⊗ y) = α.app (x, y) :=
+    (η F G).app (x, y) ≫ (tensorDesc α).natTrans.app (x ⊗ y) = α.app (x, y) :=
   Functor.descOfIsLeftKanExtension_fac_app _ _ _ _ _
 
 open LawfulDayConvolutionMonoidalCategoryStruct

@@ -42,7 +42,7 @@ Furthermore, with this notation `φ^[n](a) = (ofAdd n) • a`, see `φ_iterate_a
 * `SkewPolynomial.monomial n a` is the skew polynomial `a X ^ n`. Note that
   `SkewPolynomial.monomial n` is defined as an `R`-linear map.
 * `SkewPolynomial.C a` is the constant skew polynomial `a`. Note that `C` is defined as an additive
-   homomorphism.
+  homomorphism.
 * `SkewPolynomial.CRingHom a` is the constant skew polynomial `a`, as a ring homomorphism. This
   requires to assume `[MulSemiringAction (Multiplicative ℕ) R]`.
 * `SkewPolynomial.X` is the skew polynomial `X`, i.e., `SkewPolynomial.monomial 1 1`.

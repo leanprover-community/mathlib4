@@ -189,7 +189,7 @@ lemma ContDiff.sigmoid (hf : ContDiff ℝ ω f) : ContDiff ℝ ω (sigmoid ∘ f
 
 @[fun_prop]
 lemma differentiable_sigmoid : Differentiable ℝ sigmoid :=
-   contDiff_sigmoid.of_le le_top |>.differentiable_one
+  contDiff_sigmoid.of_le le_top |>.differentiable_one
 
 @[fun_prop]
 lemma Differentiable.sigmoid (hf : Differentiable ℝ f) : Differentiable ℝ (sigmoid ∘ f) :=
