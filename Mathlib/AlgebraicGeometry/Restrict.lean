@@ -59,6 +59,8 @@ instance : IsOpenImmersion U.ι := inferInstanceAs (IsOpenImmersion (X.ofRestric
 @[simps! over] instance : U.toScheme.CanonicallyOver X where
   hom := U.ι
 
+lemma ι_comp_over (S : Scheme.{u}) [X.Over S] : U.ι ≫ X ↘ S = U.toScheme ↘ S := rfl
+
 instance (U : X.Opens) : U.ι.IsOver X where
 
 lemma toScheme_carrier : (U : Type u) = (U : Set X) := rfl
@@ -191,10 +193,17 @@ def Scheme.openCoverOfIsOpenCover {s : Type*} (X : Scheme.{u}) (U : s → X.Open
     simpa
 
 /-- The open sets of an open subscheme corresponds to the open sets containing in the subset. -/
-@[simps!]
 def opensRestrict :
     Scheme.Opens U ≃ { V : X.Opens // V ≤ U } :=
   (IsOpenImmersion.opensEquiv (U.ι)).trans (Equiv.subtypeEquivProp (by simp))
+
+@[simp]
+lemma opensRestrict_apply_coe (V : Scheme.Opens U) :
+    (opensRestrict U V : X.Opens) = U.ι ''ᵁ V := rfl
+
+@[simp]
+lemma opensRestrict_symm_apply (V : { V : X.Opens // V ≤ U }) :
+    (opensRestrict U).symm V = U.ι ⁻¹ᵁ V := rfl
 
 instance ΓRestrictAlgebra {X : Scheme.{u}} (U : X.Opens) :
     Algebra Γ(X, ⊤) Γ(U, ⊤) :=
@@ -600,6 +609,11 @@ theorem morphismRestrict_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (
 theorem morphismRestrict_homOfLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U V : Y.Opens) (e : U ≤ V) :
     (f ∣_ U) ≫ Y.homOfLE e = X.homOfLE (f.preimage_mono e) ≫ (f ∣_ V) := by
   simp [← cancel_mono V.ι]
+
+@[simp]
+lemma Scheme.Opens.morphismRestrict_ι {X : Scheme.{u}} (U : X.Opens) :
+    U.ι ∣_ U = Scheme.homOfLE _ U.ι_preimage_self.le ≫ (⊤ : Opens U).ι := by
+  simp [← cancel_mono U.ι]
 
 @[reassoc (attr := simp)]
 lemma Scheme.Hom.isoImage_preimage_hom_homOfLE {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f]
