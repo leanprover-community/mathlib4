@@ -11,6 +11,7 @@ public import Mathlib.Analysis.PSeries
 public import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.Analysis.SpecialFunctions.Stirling
+public import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 public import Mathlib.Analysis.SumIntegralComparisons
 public import Mathlib.NumberTheory.Chebyshev
 
@@ -31,6 +32,7 @@ theorem.
 
 - Mertens' first theorem: `|E₁Λ x|` and `|E₁p x|` are both bounded (by `log 4 + 1` and `3`
 respectively).  For natural numbers `N`, we obtain the improvement `|E₁p x| ≤ 2`.
+- Abstract conversion from first theorem to second theorem
 
 ## TODO
 
@@ -429,5 +431,256 @@ theorem sum_log_prime_div_sim_log : (fun x ↦ ∑ p ∈ primesLE ⌊x⌋₊, lo
   convert! E₁p_bounded using 1
 
 end FirstTheorem
+
+section AbstractSecondTheorem
+
+/-!
+## An abstract version of Mertens' second theorem
+
+Given a function `f : ℕ → ℝ`, we can define a first Mertens error
+`E₁f f x = ∑ d ∈ Ioc 0 ⌊x⌋₊, f d - log x` and a second Mertens error
+`E₂f f x = ∑ d ∈ Ioc 0 ⌊x⌋₊, (log d)⁻¹ * f d - log (log x) - γf` where
+`γf = (∫ t in .Ioi 2, (t * log t^2)⁻¹ * E₁f f t) + 1 - log (log 2)`.
+
+Here we give some API for converting bounds on first Mertens errors to bounds on second
+Mertens errors.
+
+-/
+open intervalIntegral
+
+variable (f : ℕ → ℝ) (x : ℝ) {C_lo C_hi : ℝ}
+
+noncomputable def E₁f := ∑ n ∈ Icc 0 ⌊x⌋₊, f n - log x
+
+/- Move? -/
+attribute [fun_prop] measurable_from_top
+
+lemma sum_f_eq : ∑ n ∈ Icc 0 ⌊x⌋₊, f n = log x + E₁f f x := by grind [E₁f]
+
+noncomputable def γf := (∫ t in .Ioi 2, (t * log t^2)⁻¹ * E₁f f t) + 1 - log (log 2)
+
+noncomputable def E₂f := ∑ n ∈ Icc 0 ⌊x⌋₊, (log n)⁻¹ * f n - log (log x) - γf f
+
+lemma sum_f_div_log_eq : ∑ n ∈ Icc 0 ⌊x⌋₊, (log n)⁻¹ * f n = log (log x) + γf f + E₂f f x := by
+  grind [E₂f]
+
+private noncomputable def inv : ℝ → ℝ := (·⁻¹)
+private noncomputable def inv_log : ℝ → ℝ := inv ∘ log
+
+lemma deriv_log_log {x : ℝ} (hx : 1 < x) :
+    deriv (fun t ↦ log (log t)) x = (x * (log x)^2)⁻¹ * log x := by
+  rw [deriv.log (differentiableAt_log (by linarith)) (by simp; grind), deriv_log]
+  field
+
+@[fun_prop]
+private lemma ContinuousOn.log_Ioi_one : ContinuousOn log (.Ioi 1) :=
+  continuousOn_log.mono (by grind)
+
+@[fun_prop]
+private lemma ContinuousOn.log_inv_Ioi_one : ContinuousOn inv_log (.Ioi 1) :=
+  log_Ioi_one.inv₀ (by simp; grind)
+
+@[fun_prop]
+private lemma ContinuousOn.inv_Ioi_one : ContinuousOn inv (.Ioi 1) :=
+  continuousOn_inv₀.mono (by grind)
+
+/-- Remove after #40872 lands -/
+@[fun_prop]
+theorem ContinuousOn.const_smul' {M : Type*} {α : Type*} {β : Type*} [TopologicalSpace α]
+    [SMul M α] [ContinuousConstSMul M α] [TopologicalSpace β] {g : β → α} {s : Set β}
+    (hg : ContinuousOn g s) (c : M) : ContinuousOn (c • g) s := hg.const_smul c
+
+/-- Remove after #40872 lands -/
+@[to_additive (attr := fun_prop)]
+theorem ContinuousOn.inv' {G : Type*} {X : Type*} [TopologicalSpace X] [TopologicalSpace G] [Inv G]
+[ContinuousInv G] {f : X → G} {s : Set X}
+    (hf : ContinuousOn f s) : ContinuousOn f⁻¹ s := hf.inv
+
+/-- Remove after #40872 lands -/
+@[fun_prop]
+theorem ContinuousOn.pow' {M : Type*} {X : Type*} [TopologicalSpace X] [TopologicalSpace M]
+    [Monoid M] [ContinuousMul M] {f : X → M} {s : Set X} (hf : ContinuousOn f s) (n : ℕ) :
+    ContinuousOn (f^n) s := hf.pow n
+
+private lemma integral_one_div_mul_log {x : ℝ} (hx : 2 ≤ x) :
+    ∫ t in 2..x, (t * (log t)^2)⁻¹ * log t = log (log x) - log (log 2) := by
+  rw [← integral_deriv_eq_sub (f := fun t ↦ log (log t))]
+  · refine intervalIntegral.integral_congr fun t ht ↦ ?_
+    rw [Set.uIcc_of_le hx, Set.mem_Icc] at ht
+    rw [deriv_log_log (by linarith)]
+  · intro t ht
+    rw [Set.uIcc_of_le hx, Set.mem_Icc] at ht
+    have : log t ≠ 0 := by simp; grind
+    fun_prop (disch := grind)
+  · refine (ContinuousOn.congr (f := (fun t ↦ (t * (log t)^2)⁻¹ * log t)) ?_ ?_).intervalIntegrable
+    · apply ContinuousOn.mono (s := .Ioi 1) _ (by grind [Set.uIcc_of_le hx])
+      convert (by fun_prop : ContinuousOn (inv * inv_log^2 * log) (.Ioi 1)) using 2
+      simp [inv, inv_log, field]
+    · intro t ht
+      rw [Set.uIcc_of_le hx, Set.mem_Icc] at ht
+      exact deriv_log_log (by linarith)
+
+private theorem integrable_const_div_mul_log_sq {x : ℝ} (c : ℝ) (hx : 2 ≤ x) :
+    IntegrableOn (fun x ↦ c / (x * log x ^ 2)) (.Ioi x) volume := by
+  conv => arg 1; ext t; rw [← mul_one_div]
+  apply Integrable.const_mul
+  refine integrableOn_Ioi_deriv_of_nonneg' ?_ ?_ tendsto_log_atTop.inv_tendsto_atTop.neg
+  · intro t ht
+    simp only [Set.mem_Ici] at ht
+    have : log t ≠ 0 := by simp; grind
+    have : DifferentiableAt ℝ (fun t ↦ -(log t)⁻¹) t := by
+      fun_prop (disch := grind)
+    convert! this.hasDerivAt using 1
+    simp [deriv_inv_log]
+    field
+  · intro t ht
+    simp only [Set.mem_Ioi] at ht
+    exact one_div_nonneg.mpr <| mul_nonneg (by linarith) (sq_nonneg _)
+
+private theorem E₁f_bound {f : ℕ → ℝ}
+    (h_lo : ∀ t ≥ 1, C_lo ≤ E₁f f t) (h_hi : ∀ t ≥ 1, E₁f f t ≤ C_hi) :
+    ∀ t ≥ 1, |E₁f f t| ≤ max (-C_lo) C_hi := by
+  intro t ht; grw [abs_le, ←h_lo t ht, h_hi t ht]; grind
+
+theorem E₁f_div_integrable {f : ℕ → ℝ} {x : ℝ} (hx : 2 ≤ x)
+    (h_lo : ∀ t ≥ 1, C_lo ≤ E₁f f t) (h_hi : ∀ t ≥ 1, E₁f f t ≤ C_hi) :
+    IntegrableOn (fun t ↦ (t * log t^2)⁻¹ * E₁f f t) (.Ioi x) volume := by
+  have hbound := E₁f_bound h_lo h_hi
+  set C := max (-C_lo) C_hi
+  apply Integrable.mono (integrable_const_div_mul_log_sq C hx)
+  · exact Measurable.aestronglyMeasurable (by unfold E₁f; fun_prop)
+  filter_upwards [ae_restrict_mem (by measurability)] with t ht
+  simp only [Set.mem_Ioi, mul_inv_rev, norm_mul, norm_inv, norm_pow, norm_eq_abs, sq_abs,
+    norm_div] at ht ⊢
+  have : 0 < log t := log_pos (by linarith)
+  grw [hbound t (by linarith), le_abs_self C]
+  simp [field]
+
+theorem E₂f_eq {x : ℝ} (hx : 2 ≤ x)
+    (h_lo : ∀ t ≥ 1, C_lo ≤ E₁f f t) (h_hi : ∀ t ≥ 1, E₁f f t ≤ C_hi)
+    (h0 : f 0 = 0) (h1 : f 1 = 0) :
+    E₂f f x = (log x)⁻¹ * E₁f f x - ∫ t in .Ioi x, (t * log t^2)⁻¹ * E₁f f t := by
+  have hbound := E₁f_bound h_lo h_hi
+  set C := max (-C_lo) C_hi
+  have : 0 < log x := log_pos (by linarith)
+  suffices ∫ t in 2..x, (t * log t^2)⁻¹ * E₁f f t = ∑ n ∈ Icc 0 ⌊x⌋₊, (log n)⁻¹ * f n -
+    (log x)⁻¹ * (∑ n ∈ Icc 0 ⌊x⌋₊, f n) - log (log x) + log (log 2) by
+    have : (∫ t in 2..x, (t * log t^2)⁻¹ * E₁f f t) + ∫ t in .Ioi x, (t * log t ^ 2)⁻¹ * E₁f f t
+      = ∫ t in .Ioi 2, (t * log t^2)⁻¹ * E₁f f t := integral_interval_add_Ioi
+        (E₁f_div_integrable (by rfl) h_lo h_hi) (E₁f_div_integrable hx h_lo h_hi)
+    have : (log x)⁻¹ * E₁f f x = (log x)⁻¹ * (∑ n ∈ Icc 0 ⌊x⌋₊, f n) - 1 := by
+      unfold E₁f; field_simp
+    unfold E₂f γf; linarith
+  have : ∫ (t : ℝ) in 2..x, (t * log t ^ 2)⁻¹ * ∑ n ∈ Icc 0 ⌊t⌋₊, f n =
+      (∫ (t : ℝ) in 2..x, (t * log t ^ 2)⁻¹ * log t)
+      + ∫ (t : ℝ) in 2..x, (t * log t ^ 2)⁻¹ * (E₁f f t) := by
+    simp only [mul_inv_rev, sum_f_eq, mul_add]
+    apply intervalIntegral.integral_add
+    <;> rw [intervalIntegrable_iff, Set.uIoc_of_le hx]
+    · apply (ContinuousOn.integrableOn_Icc _).mono_set Set.Ioc_subset_Icc_self
+      apply ContinuousOn.mono (s := .Ioi 1) _ (by grind)
+      convert (by fun_prop : ContinuousOn (inv * inv_log * inv_log * log) (.Ioi 1)) using 2
+      simp [inv, inv_log, field]
+    apply Integrable.mono (g := fun t ↦ (log 2 ^ 2)⁻¹ * t⁻¹ * C)
+    · apply (ContinuousOn.integrableOn_Icc _).mono_set Set.Ioc_subset_Icc_self
+      apply ContinuousOn.mono (s := .Ioi 1) _ (by grind)
+      convert (by fun_prop : ContinuousOn (((log 2 ^ 2)⁻¹ * C) • inv) (.Ioi (1:ℝ))) using 2
+      simp [inv, field]
+    · exact Measurable.aestronglyMeasurable (by unfold E₁f; fun_prop)
+    filter_upwards [ae_restrict_mem (by measurability)] with t ht
+    simp [Set.mem_Ioc] at ht
+    simp only [norm_mul, norm_inv, norm_pow, norm_eq_abs, sq_abs]
+    grw [hbound t (by linarith), le_abs_self C]; gcongr; order
+  rw [integral_one_div_mul_log hx] at this
+  rw [sum_mul_eq_sub_integral_mul₁ _ h0 h1 x (f := fun t ↦ (log t)⁻¹)]
+  · suffices ∫ t in .Ioc 2 x, deriv (fun t ↦ (log t)⁻¹) t * ∑ k ∈ Icc 0 ⌊t⌋₊, f k =
+        - ∫ t in 2..x, (t * log t ^ 2)⁻¹ * ∑ n ∈ Icc 0 ⌊t⌋₊, f n by linarith
+    rw [← intervalIntegral.integral_neg, intervalIntegral.integral_of_le hx]
+    apply setIntegral_congr_fun (by measurability)
+    intro t ht
+    simp [field]
+  · intro t ht
+    simp at ht
+    exact DifferentiableAt.fun_inv (by simp; linarith) (by simp; grind)
+  · apply (ContinuousOn.mono (s := .Ioi 1) _ (by grind)).integrableOn_Icc
+    rw [deriv_inv_log']
+    convert (by fun_prop : ContinuousOn (-inv * inv_log^2) (.Ioi (1:ℝ))) using 2
+    simp [inv, inv_log, field]
+
+private theorem integ_div_mul_log_sq {x : ℝ} (C : ℝ) (hx : 2 ≤ x) :
+    ∫ (t : ℝ) in .Ioi x, (t * log t ^ 2)⁻¹ * C = C / log x := by
+    convert! integral_Ioi_of_hasDerivAt_of_tendsto' (m := 0) (f := (- C / log ·)) ?_
+      (integrable_const_div_mul_log_sq C hx) ?_ using 1
+    · grind
+    · field
+    · intro t ht; simp at ht
+      convert! (hasDerivAt_const _ (-C)).fun_div (hasDerivAt_log (by linarith)) ?_ using 1
+      · grind
+      simp; grind
+    convert! tendsto_log_atTop.inv_tendsto_atTop.const_mul (-C) using 1
+    simp
+
+theorem E₂f_abs_le {x : ℝ} (hx : 2 ≤ x) (h_lo : ∀ t ≥ 1, C_lo ≤ E₁f f t)
+ (h_hi : ∀ t ≥ 1, E₁f f t ≤ C_hi) (h0 : f 0 = 0) (h1 : f 1 = 0) :
+    |E₂f f x| ≤ (C_hi - C_lo) / log x := by
+  have : 0 < log x := log_pos (by linarith)
+  have := E₁f_div_integrable hx h_lo h_hi
+  have hinteg (C : ℝ) : IntegrableOn (fun t ↦ (t * log t ^ 2)⁻¹ * C) (.Ioi x) volume := by
+    convert integrable_const_div_mul_log_sq C hx using 1; grind
+  have : NullMeasurableSet (.Ioi x) volume := by measurability
+  rw [E₂f_eq f hx h_lo h_hi h0 h1, abs_le]
+  constructor
+  · calc
+      _ ≥ (log x)⁻¹ * C_lo - ∫ t in .Ioi x, (t * log t ^ 2)⁻¹ * C_hi := by
+        gcongr with t ht
+        · exact h_lo _ (by linarith)
+        · exact hinteg C_hi
+        · simp at ht
+          have : 0 < t := by linarith
+          have : 0 < log t := log_pos (by linarith)
+          positivity
+        simp at ht
+        exact h_hi _ (by linarith)
+      _ = _ := by rw [integ_div_mul_log_sq C_hi hx]; simp [field]
+  · calc
+      _ ≤ (log x)⁻¹ * C_hi - ∫ t in .Ioi x, (t * log t ^ 2)⁻¹ * C_lo := by
+        gcongr with t ht
+        · exact h_hi _ (by linarith)
+        · exact hinteg C_lo
+        · simp at ht
+          have : 0 < t := by linarith
+          have : 0 < log t := log_pos (by linarith)
+          positivity
+        simp at ht
+        exact h_lo _ (by linarith)
+      _ = _ := by rw [integ_div_mul_log_sq C_lo hx]; simp [field]
+
+theorem γf_bounds (h_lo : ∀ t ≥ 1, C_lo ≤ E₁f f t) (h_hi : ∀ t ≥ 1, E₁f f t ≤ C_hi) :
+    γf f ≤ C_hi / (log 2) + 1 - log (log 2) ∧ C_lo / (log 2) + 1 - log (log 2) ≤ γf f := by
+  have hbound : ∀ t ≥ 1, |E₁f f t| ≤ max (-C_lo) C_hi := by
+    intro t ht; grw [abs_le, ←h_lo t ht, h_hi t ht]; grind
+  unfold γf
+  rw [← integ_div_mul_log_sq C_hi (by rfl), ← integ_div_mul_log_sq C_lo (by rfl)]
+  have := E₁f_div_integrable (by rfl) h_lo h_hi
+  have hinteg (C : ℝ) : IntegrableOn (fun t ↦ (t * log t ^ 2)⁻¹ * C) (.Ioi 2) volume := by
+    convert integrable_const_div_mul_log_sq C (by rfl) using 1; grind
+  have : NullMeasurableSet (.Ioi (2 : ℝ)) volume := by measurability
+  constructor
+  · gcongr with t ht
+    · exact hinteg C_hi
+    · simp at ht
+      have : 0 < log t := log_pos (by grind)
+      positivity
+    simp at ht
+    exact h_hi _ (by linarith)
+  · gcongr with t ht
+    · exact hinteg C_lo
+    · simp at ht
+      have : 0 < log t := log_pos (by grind)
+      positivity
+    simp at ht
+    exact h_lo _ (by linarith)
+
+end AbstractSecondTheorem
 
 end Mertens
