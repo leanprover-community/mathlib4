@@ -281,6 +281,9 @@ theorem ChartedSpace.locallyPathConnectedSpace [LocallyPathConnectedSpace H] :
   · exact (image_mono pathComponentIn_subset).trans
       (PartialEquiv.symm_image_image_of_subset_source _ inter_subset_right).subset
 
+@[deprecated (since := "2026-06-21")]
+alias ChartedSpace.locPathConnectedSpace := ChartedSpace.locallyPathConnectedSpace
+
 /-- If `M` is modelled on `H'` and `H'` is itself modelled on `H`, then we can consider `M` as being
 modelled on `H`. -/
 @[implicit_reducible]

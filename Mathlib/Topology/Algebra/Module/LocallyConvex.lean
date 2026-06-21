@@ -116,6 +116,9 @@ theorem Convex.locallyPathConnectedSpace [Module ℝ E] [ContinuousSMul ℝ E] [
   · refine Subtype.preimage_coe_self_inter _ _ ▸ IsPathConnected.preimage_coe ?_ inter_subset_left
     exact (hS.inter ht'.1.2).isPathConnected ⟨x, x.2, mem_of_mem_nhds ht'.1.1⟩
 
+@[deprecated (since := "2026-06-21")]
+alias Convex.locPathConnectedSpace := Convex.locallyPathConnectedSpace
+
 end Module
 
 section LinearOrderedField

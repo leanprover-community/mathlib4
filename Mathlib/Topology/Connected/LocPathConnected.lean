@@ -56,6 +56,11 @@ class LocallyPathConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- Each neighborhood filter has a basis of path-connected neighborhoods. -/
   path_connected_basis : ∀ x : X, (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ IsPathConnected s) id
 
+@[deprecated (since := "2026-06-21")] alias LocPathConnectedSpace := LocallyPathConnectedSpace
+@[deprecated (since := "2026-06-21")]
+alias LocPathConnectedSpace.path_connected_basis :=
+  LocallyPathConnectedSpace.path_connected_basis
+
 export LocallyPathConnectedSpace (path_connected_basis)
 
 theorem LocallyPathConnectedSpace.of_bases {p : X → ι → Prop} {s : X → ι → Set X}
@@ -66,6 +71,9 @@ theorem LocallyPathConnectedSpace.of_bases {p : X → ι → Prop} {s : X → ι
     intro t ht
     rcases (h x).mem_iff.mp ht with ⟨i, hpi, hi⟩
     exact ⟨s x i, (h x).mem_of_mem hpi, h' x i hpi, hi⟩
+
+@[deprecated (since := "2026-06-21")]
+alias LocPathConnectedSpace.of_bases := LocallyPathConnectedSpace.of_bases
 
 variable [LocallyPathConnectedSpace X]
 
@@ -101,6 +109,9 @@ lemma pathComponentIn_mem_nhds (hF : F ∈ 𝓝 x) : pathComponentIn F x ∈ �
 
 theorem PathConnectedSpace.of_locallyPathConnectedSpace [ConnectedSpace X] : PathConnectedSpace X :=
   ⟨inferInstance, by simp [← mem_pathComponent_iff, IsClopen.pathComponent _ |>.eq_univ]⟩
+
+@[deprecated (since := "2026-06-21")]
+alias PathConnectedSpace.of_locPathConnectedSpace := PathConnectedSpace.of_locallyPathConnectedSpace
 
 theorem pathConnectedSpace_iff_connectedSpace : PathConnectedSpace X ↔ ConnectedSpace X :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ .of_locallyPathConnectedSpace⟩
@@ -157,8 +168,15 @@ theorem Topology.IsOpenEmbedding.locallyPathConnectedSpace {e : Y → X} (he : I
   .of_bases this fun x s ⟨_, hs, hse⟩ ↦ by
     rwa [he.isPathConnected_iff, image_preimage_eq_of_subset hse]
 
+@[deprecated (since := "2026-06-21")]
+alias Topology.IsOpenEmbedding.locPathConnectedSpace :=
+  Topology.IsOpenEmbedding.locallyPathConnectedSpace
+
 theorem IsOpen.locallyPathConnectedSpace {U : Set X} (h : IsOpen U) : LocallyPathConnectedSpace U :=
   h.isOpenEmbedding_subtypeVal.locallyPathConnectedSpace
+
+@[deprecated (since := "2026-06-21")]
+alias IsOpen.locPathConnectedSpace := IsOpen.locallyPathConnectedSpace
 
 theorem IsOpen.isConnected_iff_isPathConnected {U : Set X} (U_op : IsOpen U) :
     IsConnected U ↔ IsPathConnected U := by
@@ -182,6 +200,10 @@ lemma locallyPathConnectedSpace_iff_isOpen_pathComponentIn {X : Type*} [Topologi
     exact ⟨pathComponentIn u x, ⟨(h x u hu.2.1).mem_nhds (mem_pathComponentIn_self hu.2.2),
       isPathConnected_pathComponentIn hu.2.2⟩, pathComponentIn_subset.trans hu.1⟩⟩⟩⟩
 
+@[deprecated (since := "2026-06-21")]
+alias locPathConnectedSpace_iff_isOpen_pathComponentIn :=
+  locallyPathConnectedSpace_iff_isOpen_pathComponentIn
+
 /-- A space is locally path-connected iff all path components of open subsets are neighbourhoods. -/
 lemma locallyPathConnectedSpace_iff_pathComponentIn_mem_nhds {X : Type*} [TopologicalSpace X] :
     LocallyPathConnectedSpace X ↔
@@ -192,6 +214,10 @@ lemma locallyPathConnectedSpace_iff_pathComponentIn_mem_nhds {X : Type*} [Topolo
   exact ⟨fun h x hxu ↦ (h x).mem_nhds (mem_pathComponentIn_self hxu),
     fun h x ↦ isOpen_iff_mem_nhds.mpr fun y hy ↦
       pathComponentIn_congr hy ▸ h y <| pathComponentIn_subset hy⟩
+
+@[deprecated (since := "2026-06-21")]
+alias locPathConnectedSpace_iff_pathComponentIn_mem_nhds :=
+  locallyPathConnectedSpace_iff_pathComponentIn_mem_nhds
 
 /-- Any topology coinduced by a locally path-connected topology is locally path-connected. -/
 lemma LocallyPathConnectedSpace.coinduced {Y : Type*} (f : X → Y) :
@@ -207,19 +233,32 @@ lemma LocallyPathConnectedSpace.coinduced {Y : Type*} (f : X → Y) :
     ⟨x, mem_pathComponentIn_self hx', rfl⟩ <|
     (image_mono pathComponentIn_subset).trans <| u.image_preimage_subset f
 
+@[deprecated (since := "2026-06-21")]
+alias LocPathConnectedSpace.coinduced := LocallyPathConnectedSpace.coinduced
+
 /-- Quotients of locally path-connected spaces are locally path-connected. -/
 lemma Topology.IsQuotientMap.locallyPathConnectedSpace {f : X → Y} (h : IsQuotientMap f) :
     LocallyPathConnectedSpace Y :=
   h.isCoinducing.eq_coinduced ▸ LocallyPathConnectedSpace.coinduced f
 
+@[deprecated (since := "2026-06-21")]
+alias Topology.IsQuotientMap.locPathConnectedSpace :=
+  Topology.IsQuotientMap.locallyPathConnectedSpace
+
 /-- Quotients of locally path-connected spaces are locally path-connected. -/
 instance Quot.locallyPathConnectedSpace {r : X → X → Prop} : LocallyPathConnectedSpace (Quot r) :=
   isQuotientMap_quot_mk.locallyPathConnectedSpace
+
+@[deprecated (since := "2026-06-21")]
+alias Quot.locPathConnectedSpace := Quot.locallyPathConnectedSpace
 
 /-- Quotients of locally path-connected spaces are locally path-connected. -/
 instance Quotient.locallyPathConnectedSpace {s : Setoid X} :
     LocallyPathConnectedSpace (Quotient s) :=
   isQuotientMap_quotient_mk'.locallyPathConnectedSpace
+
+@[deprecated (since := "2026-06-21")]
+alias Quotient.locPathConnectedSpace := Quotient.locallyPathConnectedSpace
 
 /-- Disjoint unions of locally path-connected spaces are locally path-connected. -/
 instance Sum.locallyPathConnectedSpace [LocallyPathConnectedSpace Y] :
@@ -241,6 +280,9 @@ instance Sum.locallyPathConnectedSpace [LocallyPathConnectedSpace Y] :
     · exact isOpenMap_inr _ <| (hu.preimage continuous_inr).pathComponentIn _
     · exact ⟨y, mem_pathComponentIn_self hxu, rfl⟩
 
+@[deprecated (since := "2026-06-21")]
+alias Sum.locPathConnectedSpace := Sum.locallyPathConnectedSpace
+
 /-- Disjoint unions of locally path-connected spaces are locally path-connected. -/
 instance Sigma.locallyPathConnectedSpace {X : ι → Type*}
     [(i : ι) → TopologicalSpace (X i)] [(i : ι) → LocallyPathConnectedSpace (X i)] :
@@ -254,6 +296,9 @@ instance Sigma.locallyPathConnectedSpace {X : ι → Type*}
   · exact isOpenMap_sigmaMk _ <| (hu.preimage continuous_sigmaMk).pathComponentIn _
   · exact ⟨x.2, mem_pathComponentIn_self hxu, rfl⟩
 
+@[deprecated (since := "2026-06-21")]
+alias Sigma.locPathConnectedSpace := Sigma.locallyPathConnectedSpace
+
 instance AlexandrovDiscrete.locallyPathConnectedSpace [AlexandrovDiscrete X] :
     LocallyPathConnectedSpace X := by
   apply LocallyPathConnectedSpace.of_bases nhds_basis_nhdsKer_singleton
@@ -263,6 +308,9 @@ instance AlexandrovDiscrete.locallyPathConnectedSpace [AlexandrovDiscrete X] :
   intro y hy
   symm
   apply hy.joinedIn <;> rewrite [mem_nhdsKer_singleton] <;> [assumption; rfl]
+
+@[deprecated (since := "2026-06-21")]
+alias AlexandrovDiscrete.locPathConnectedSpace := AlexandrovDiscrete.locallyPathConnectedSpace
 
 /-- If a space is locally path-connected, the topology of its path components is discrete. -/
 instance : DiscreteTopology <| ZerothHomotopy X := by
