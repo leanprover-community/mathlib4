@@ -8,9 +8,9 @@ module
 public import Mathlib.Algebra.Homology.DerivedCategory.Minus
 public import Mathlib.Algebra.Homology.DerivedCategory.KProjective
 public import Mathlib.Algebra.Homology.ModelCategory.Projective
+public import Mathlib.Algebra.Homology.FullSubcategory
 public import Mathlib.AlgebraicTopology.ModelCategory.DerivabilityStructureCofibrant
 public import Mathlib.CategoryTheory.GuitartExact.Quotient
-public import Mathlib.CategoryTheory.ObjectProperty.HomologicalComplex
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfLocalizedEquivalences
 
 /-!
