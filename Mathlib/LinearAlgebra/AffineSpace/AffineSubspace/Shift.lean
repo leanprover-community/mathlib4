@@ -202,13 +202,11 @@ theorem closedInterior_inter_shift_zero [ZeroLEOneClass k] :
 /-- The base of a simplex shifted with parameter outside $[0, 1]$ does not intersect the closed
 interior. -/
 theorem disjoint_closedInterior_shift {x : k} (hx : x < 0 ∨ 1 < x) :
-    Disjoint s.closedInterior <|
-    (affineSpan k (Set.range (s.faceOpposite i).points)).shift (s.points i) x := by
+    Disjoint s.closedInterior <| (affineSpan k (s.points '' {i}ᶜ)).shift (s.points i) x := by
   refine Set.disjoint_left.mpr fun p hleft hright ↦ ?_
   obtain ⟨w, hw, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype <|
     s.closedInterior_subset_affineSpan hleft
-  rw [range_faceOpposite_points, SetLike.mem_coe,
-    s.independent.affineCombination_mem_shift_iff i hw] at hright
+  rw [SetLike.mem_coe, s.independent.affineCombination_mem_shift_iff i hw] at hright
   rw [affineCombination_mem_closedInterior_iff hw] at hleft
   grind
 
