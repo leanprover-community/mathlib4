@@ -232,8 +232,7 @@ instance of_preservesColimits_in_each_variable
           apply (P j₁).hom_ext
           intro j₂
           haveI := (P j₁).fac s j₂
-          simp only [Functor.mapCocone_pt,
-            Functor.const_obj_obj, Functor.mapCocone_ι_app, Q₀, s] at this
+          simp only [Functor.mapCocone_pt, Functor.mapCocone_ι_app, Q₀, s] at this
           simp only [Functor.mapCocone_pt,
             Functor.mapCocone_ι_app, NatTrans.naturality, this, Q₀, s])
     ⟨IsColimit.ofCoconeUncurry P <| IsColimit.precomposeHomEquiv E₀ _ <|

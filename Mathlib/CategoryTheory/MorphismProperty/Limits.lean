@@ -600,6 +600,7 @@ class IsStableUnderColimitsOfShape : Prop where
     (h₁ : IsColimit c₁) (h₁ : IsColimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f)
     (φ : c₁.pt ⟶ c₂.pt) (hφ : ∀ j, c₁.ι.app j ≫ φ = f.app j ≫ c₂.ι.app j) : W φ
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isStableUnderColimitsOfShape_iff_colimitsOfShape_le :
     W.IsStableUnderColimitsOfShape J ↔ W.colimitsOfShape J ≤ W := by
   constructor
