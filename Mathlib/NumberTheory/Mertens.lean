@@ -112,7 +112,7 @@ theorem le_sum_log {x : ℝ} (hx : 1 ≤ x) :
   _ ≥ (∫ t in 1..x, log t) - ∫ t in ⌊x⌋₊..x, log x := by
     gcongr
     apply integral_mono_on (floor_le (by linarith)) intervalIntegrable_log'
-      intervalIntegral.intervalIntegrable_const
+      intervalIntegrable_const
     intro _ _; rify at this; gcongr <;> grind
   _ ≥ _ := by
     have : 0 ≤ log x := log_nonneg hx
@@ -227,7 +227,7 @@ theorem e₁_summable : Summable e₁ := by
   unfold e₁
   split_ifs with h
   · have : 2 ≤ (p : ℝ) := mod_cast h.two_le
-    have denom : (p : ℝ) * ((p : ℝ) - 1) ≥ p ^ 2 / 2 := by nlinarith
+    have denom : p * ((p : ℝ) - 1) ≥ p ^ 2 / 2 := by nlinarith
     grw [log_le_rpow_div (cast_nonneg _) (by norm_num : 0 < (1 : ℝ) / 2), denom]
     · field_simp
       rw [mul_assoc, ← rpow_add (by positivity)]
@@ -244,7 +244,7 @@ theorem E₁_le : E₁ ≤ 1 := by
       := by
     convert sum_union (s₁ := {0,1,2,3,4}) (s₂ := .Ico 5 (2 * N + 5)) (by grind [disjoint_left])
     · ext; simp; lia
-    simp [e₁, Nat.prime_two, Nat.prime_three, (by decide : ¬ Nat.Prime 4)]
+    simp [e₁, prime_two, prime_three, not_prime_four]
     ring_nf
   have : ∑ n ∈ .Ico 5 (2 * N + 5), e₁ n = ∑ n ∈ .range N, e₁ (2 * n + 5) := by
     apply (sum_of_injOn (2 * · + 5) (by intro; grind) (by intro; grind) _ (by simp)).symm
@@ -311,8 +311,7 @@ theorem E₁_le : E₁ ≤ 1 := by
 
 theorem E₁_nonneg : 0 ≤ E₁ := tsum_nonneg e₁_nonneg
 
-theorem E₁Λ_le_E₁p_add_E₁ {x : ℝ} (hx : 1 ≤ x) :
-    E₁Λ x ≤ E₁p x + E₁ := by
+theorem E₁Λ_le_E₁p_add_E₁ {x : ℝ} (hx : 1 ≤ x) : E₁Λ x ≤ E₁p x + E₁ := by
   unfold E₁Λ E₁p
   suffices ∑ d ∈ Ioc 0 ⌊x⌋₊, Λ d / d ≤ ∑ p ∈ primesLE ⌊x⌋₊, log p / p + E₁ by linarith
   simp_rw [vonMangoldt_apply, ite_div, zero_div, ← sum_filter, sum_PrimePow_eq_sum_sum _

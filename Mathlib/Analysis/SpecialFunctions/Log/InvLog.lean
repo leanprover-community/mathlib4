@@ -59,4 +59,8 @@ theorem deriv_inv_log {x : ℝ} :
       mt DifferentiableAt.continuousAt not_continuousAt_inv_log_neg_one
   simp_all
 
+@[simp]
+theorem deriv_inv_log' : deriv (fun x ↦ (log x)⁻¹) = fun x ↦ -x⁻¹ / (log x ^ 2) :=
+  funext fun _ ↦ deriv_inv_log
+
 end Real
