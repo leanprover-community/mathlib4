@@ -45,6 +45,7 @@ general $R$-algebras.
 -/
 
 @[expose] public section
+
 universe u v w w'
 
 namespace DirectSum
@@ -63,43 +64,6 @@ theorem induction_lon {R : Type*} [Semiring R] {ι : Type*} [DecidableEq ι]
   | add x y hx hy => exact add x y hx hy
 
 end DirectSum
-
-namespace RingQuot
-universe uS uA uB
-
-open scoped Function -- required for scoped `on` notation
-
-/-- If two `R`-algebras are `R`-equivalent and their quotients by a relation `rel` are defined,
-then their quotients are also `R`-equivalent.
-
-(Special case of the third isomorphism theorem.) -/
-def algEquivQuotAlgEquiv
-    {R : Type u} [CommSemiring R] {A B : Type v} [Semiring A] [Semiring B]
-    [Algebra R A] [Algebra R B] (f : A ≃ₐ[R] B) (rel : A → A → Prop) :
-    RingQuot rel ≃ₐ[R] RingQuot (rel on f.symm) :=
-  AlgEquiv.ofAlgHom
-    (RingQuot.liftAlgHom R (s := rel)
-      ⟨AlgHom.comp (RingQuot.mkAlgHom R (rel on f.symm)) f,
-      fun x y h_rel ↦ by
-        apply RingQuot.mkAlgHom_rel
-        simpa [Function.onFun]⟩)
-    ((RingQuot.liftAlgHom R (s := rel on f.symm)
-      ⟨AlgHom.comp (RingQuot.mkAlgHom R rel) f.symm,
-      fun x y h ↦ by apply RingQuot.mkAlgHom_rel; simpa⟩))
-    (by ext b; simp) (by ext a; simp)
-
-/-- If two (semi)rings are equivalent and their quotients by a relation `rel` are defined,
-then their quotients are also equivalent.
-
-(Special case of `algEquiv_quot_algEquiv` when `R = ℕ`, which in turn is a special
-case of the third isomorphism theorem.) -/
-def equivQuotEquiv {A B : Type v} [Semiring A] [Semiring B] (f : A ≃+* B) (rel : A → A → Prop) :
-    RingQuot rel ≃+* RingQuot (rel on f.symm) :=
-  let f_alg : A ≃ₐ[ℕ] B :=
-    AlgEquiv.ofRingEquiv (f := f) (fun n ↦ by simp)
-  algEquivQuotAlgEquiv f_alg rel |>.toRingEquiv
-
-end RingQuot
 
 open TensorAlgebra DirectSum TensorPower
 
@@ -189,7 +153,7 @@ the same `i` is just the injection of multiplication `aᵢ * aᵢ'` in `A i`. -/
 theorem mul_injections (a₁ a₂ : A i) :
     ι' R A (DirectSum.lof R I A i a₁) * ι' R A (DirectSum.lof R I A i a₂)
       = ι' R A (DirectSum.lof R I A i (a₁ * a₂)) := by
-  convert RingQuot.mkAlgHom_rel R <| rel.prod
+  convert! RingQuot.mkAlgHom_rel R <| rel.prod
   simp
 
 /-- The `i`th canonical injection, from `A i` to the free product, as

@@ -559,7 +559,7 @@ theorem subtypeVal_nil {α : TypeVec.{u} 0} (ps : α ⟹ «repeat» 0 Prop) :
 theorem diag_sub_val {n} {α : TypeVec.{u} n} : subtypeVal (repeatEq α) ⊚ diagSub = prod.diag := by
   ext i x
   induction i with
-  | fz => simp only [comp, subtypeVal, repeatEq.eq_2, diagSub, prod.diag]
+  | fz => simp only [comp, subtypeVal, diagSub, prod.diag]
   | fs _ i_ih => apply @i_ih (drop α)
 
 theorem prod_id : ∀ {n} {α β : TypeVec.{u} n}, (id ⊗' id) = (id : α ⊗ β ⟹ _) := by

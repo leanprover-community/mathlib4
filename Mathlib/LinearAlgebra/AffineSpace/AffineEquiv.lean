@@ -350,7 +350,7 @@ def linearHom : (P₁ ≃ᵃ[k] P₁) →* V₁ ≃ₗ[k] V₁ where
 /-- The group of `AffineEquiv`s are equivalent to the group of units of `AffineMap`.
 
 This is the affine version of `LinearMap.GeneralLinearGroup.generalLinearEquiv`. -/
-@[simps]
+@[simps -isSimp]
 def equivUnitsAffineMap : (P₁ ≃ᵃ[k] P₁) ≃* (P₁ →ᵃ[k] P₁)ˣ where
   toFun e :=
     { val := e, inv := e.symm,
@@ -509,7 +509,8 @@ variable {P₁}
 
 open Function
 
-/-- Point reflection in `x` as a permutation. -/
+/-- The affine equivalence given by reflection about the point `x`.
+This is `Equiv.pointReflection` as an `AffineEquiv`. -/
 def pointReflection (x : P₁) : P₁ ≃ᵃ[k] P₁ :=
   (constVSub k x).trans (vaddConst k x)
 
