@@ -141,6 +141,18 @@ def mk' [Semiring S] [AddCommMonoid M] [Module S M] (c : ModuleCon S M) :
     simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, RingHom.id_apply]
     rfl
 
+@[simp]
+theorem coe_mk' [Semiring S] [AddCommMonoid M] [Module S M] (c : ModuleCon S M) :
+    (c.mk' : M → c.Quotient) = c.toQuotient :=
+  rfl
+
+@[simp]
+theorem eq {S M : Type*} [Semiring S] [AddCommMonoid M] [Module S M] (c : ModuleCon S M) (x y : M) :
+    (c.mk' x = c.mk' y) ↔ c.r x y := by
+  simp only [coe_mk', AddCon.rel_eq_coe, ← c.toAddCon.eq]
+  -- This is bizarre
+  exact Iff.rfl
+
 end ModuleCon
 
 section ker

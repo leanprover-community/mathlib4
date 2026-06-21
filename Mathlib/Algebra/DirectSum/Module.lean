@@ -395,12 +395,14 @@ section Semiring
 variable {R : Type u} [Semiring R]
 variable {ι : Type v} [dec_ι : DecidableEq ι]
 variable {M : Type*} [AddCommMonoid M] [Module R M]
-variable (A : ι → Submodule R M)
+variable {σ : Type*} [SetLike σ M] [AddSubmonoidClass σ M] [SMulMemClass σ R M] (A : ι → σ)
+-- variable (A : ι → Submodule R M)
 
 /-- The canonical linear map from `⨁ i, A i` to `M` where `A` is a collection of `Submodule R M`
 indexed by `ι`. This is `DirectSum.coeAddMonoidHom` as a `LinearMap`. -/
 def coeLinearMap : (⨁ i, A i) →ₗ[R] M :=
-  toModule R ι M fun i ↦ (A i).subtype
+  toModule R ι M fun i ↦ SMulMemClass.subtype (A i)
+    -- (A i).subtype
 
 set_option backward.isDefEq.respectTransparency false in
 theorem coeLinearMap_eq_dfinsuppSum [DecidableEq M] (x : DirectSum ι fun i => A i) :
@@ -408,12 +410,13 @@ theorem coeLinearMap_eq_dfinsuppSum [DecidableEq M] (x : DirectSum ι fun i => A
   simp only [coeLinearMap, toModule, DFinsupp.lsum, LinearEquiv.coe_mk, LinearMap.coe_mk,
     AddHom.coe_mk]
   rw [DFinsupp.sumAddHom_apply]
-  simp only [LinearMap.toAddMonoidHom_coe, Submodule.coe_subtype]
+  simp
+  --  simp only [LinearMap.toAddMonoidHom_coe, Submodule.coe_subtype]
 
 @[simp]
 theorem coeLinearMap_of (i : ι) (x : A i) : DirectSum.coeLinearMap A (of (fun i ↦ A i) i x) = x :=
   -- Porting note: spelled out arguments. (I don't know how this works.)
-  toAddMonoid_of (β := fun i => A i) (fun i ↦ ((A i).subtype : A i →+ M)) i x
+  toAddMonoid_of (β := fun i => A i) (fun i ↦ AddSubmonoidClass.subtype (A i)) i x
 
 @[simp] lemma coeLinearMap_lof (i : ι) (x : A i) :
     DirectSum.coeLinearMap A (lof R ι (fun i ↦ A i) i x) = x :=
@@ -421,8 +424,8 @@ theorem coeLinearMap_of (i : ι) (x : A i) : DirectSum.coeLinearMap A (of (fun i
 
 variable {A}
 
-theorem range_coeLinearMap : LinearMap.range (coeLinearMap A) = ⨆ i, A i :=
-  (Submodule.iSup_eq_range_dfinsupp_lsum _).symm
+theorem range_coeLinearMap : LinearMap.range (coeLinearMap A) = ⨆ i, Submodule.ofClass (A i) :=
+  (Submodule.iSup_eq_range_dfinsupp_lsum fun i ↦ Submodule.ofClass (A i)).symm
 
 @[simp]
 theorem IsInternal.ofBijective_coeLinearMap_same (h : IsInternal A)
@@ -447,12 +450,14 @@ theorem IsInternal.ofBijective_coeLinearMap_of_mem_ne (h : IsInternal A)
   h.ofBijective_coeLinearMap_of_ne hij ⟨x, hx⟩
 
 /-- If a direct sum of submodules is internal then the submodules span the module. -/
-theorem IsInternal.submodule_iSup_eq_top (h : IsInternal A) : iSup A = ⊤ := by
+theorem IsInternal.submodule_iSup_eq_top (h : IsInternal A) :
+    iSup (fun i ↦ Submodule.ofClass (A i)) = ⊤ := by
   rw [Submodule.iSup_eq_range_dfinsupp_lsum, LinearMap.range_eq_top]
   exact Function.Bijective.surjective h
 
 /-- If a direct sum of submodules is internal then the submodules are independent. -/
-theorem IsInternal.submodule_iSupIndep (h : IsInternal A) : iSupIndep A :=
+theorem IsInternal.submodule_iSupIndep (h : IsInternal A) :
+    iSupIndep (fun i ↦ Submodule.ofClass (A i)) :=
   iSupIndep_of_dfinsupp_lsum_injective _ h.injective
 
 /-- Given an internal direct sum decomposition of a module `M`, and a basis for each of the
@@ -493,6 +498,7 @@ theorem IsInternal.isCompl {A : ι → Submodule R M} {i j : ι} (hij : i ≠ j)
     (h : (Set.univ : Set ι) = {i, j}) (hi : IsInternal A) : IsCompl (A i) (A j) :=
   ⟨hi.submodule_iSupIndep.pairwiseDisjoint hij,
     codisjoint_iff.mpr <| Eq.symm <| hi.submodule_iSup_eq_top.symm.trans <| by
+      simp  only [Submodule.submodule_ofClass]
       rw [← sSup_pair, iSup, ← Set.image_univ, h, Set.image_insert_eq, Set.image_singleton]⟩
 
 end Semiring

@@ -47,11 +47,10 @@ Let `I` be an homogeneous ideal of a ring `A`.
 
 @[expose] public section
 
-open DirectSum Function
 
-namespace Rel
+namespace AddCon
 
-section AddCommMonoid
+open DirectSum Function Rel
 
 variable {M ι : Type*} [AddCommMonoid M]
     {σ : Type*} (ℳ : ι → σ) [SetLike σ M] [AddSubmonoidClass σ M]
@@ -75,58 +74,178 @@ theorem coe_quotAddSubmonoidMap (i : ι) (y : ℳ i) :
     (quotAddSubmonoidMap ℳ r i y : r.Quotient) = r.toQuotient y :=
   r.mk'.addSubmonoidMap_apply_coe (AddSubmonoid.ofClass (ℳ i)) y
 
-end AddCommMonoid
+theorem coeAddMonoidHom_quotAddSubmonoid_comp_map_quotAddSubmonoidMap [DecidableEq ι] :
+    (DirectSum.coeAddMonoidHom (quotAddSubmonoid ℳ r)).comp
+      (DirectSum.map (quotAddSubmonoidMap ℳ r)) =
+        r.mk'.comp (DirectSum.coeAddMonoidHom ℳ) := by
+  ext; simp
 
-section Module
+@[simp]
+theorem coeAddMonoidHom_quotAddSubmonoid_map_quotAddSubmonoidMap_apply
+    [DecidableEq ι] (x : ⨁ i, ℳ i) :
+    DirectSum.coeAddMonoidHom (quotAddSubmonoid ℳ r) (DirectSum.map (quotAddSubmonoidMap ℳ r) x) =
+      r.mk' (DirectSum.coeAddMonoidHom ℳ x) :=
+  DFunLike.congr_fun (coeAddMonoidHom_quotAddSubmonoid_comp_map_quotAddSubmonoidMap ℳ r) x
+
+variable [DecidableEq ι] [DirectSum.Decomposition ℳ]
+
+lemma map_quotAddSubmonoidMap_apply (i : ι) (m : ⨁ i, ℳ i) :
+    DirectSum.map (quotAddSubmonoidMap ℳ r) m i =
+      r.toQuotient (decompose ℳ (DirectSum.coeAddMonoidHom ℳ m) i) := by
+  simp [← Decomposition.decompose'_eq, Decomposition.right_inv m]
+
+lemma quotAddSubmonoid_bijective (hrel : Rel.IsHomogeneous ℳ r) :
+    Function.Bijective (DirectSum.coeAddMonoidHom (quotAddSubmonoid ℳ r)) := by
+  refine ⟨fun x y hxy ↦ ?_, fun x ↦ ?_⟩
+  · have surj : Surjective (DirectSum.map (quotAddSubmonoidMap ℳ r)) := by
+      rw [map_surjective]
+      exact fun _ ↦ AddMonoidHom.addSubmonoidMap_surjective _ _
+    obtain ⟨a, ha, rfl⟩ := surj x
+    obtain ⟨b, hb, rfl⟩ := surj y
+    replace hxy : r (DirectSum.coeAddMonoidHom ℳ a) (DirectSum.coeAddMonoidHom ℳ b) := by
+      simpa using hxy
+    ext i
+    suffices r.mk' (decompose ℳ (DirectSum.coeAddMonoidHom ℳ a) i) =
+        r.mk' (decompose ℳ (DirectSum.coeAddMonoidHom ℳ b) i) by
+      simpa [← map_quotAddSubmonoidMap_apply] using this
+    simpa using hrel hxy i
+  · obtain ⟨a, rfl⟩ := r.mk'_surjective x
+    have : (DirectSum.coeAddMonoidHom ℳ) ((decompose ℳ) a) = a := DirectSum.Decomposition.left_inv a
+    exact ⟨DirectSum.map (quotAddSubmonoidMap ℳ r) (decompose ℳ a), by simp [this]⟩
+
+/-- For a homogeneous `AddCon` `r` on an additive monoid with `Decomposition 𝒜`,
+the graded monoid structure on `AddCon.Quotient r`. -/
+@[implicit_reducible]
+noncomputable def quotGradedAlgebra (hrel : Rel.IsHomogeneous ℳ r) :
+    Decomposition (quotAddSubmonoid ℳ r) where
+  decompose' := Function.invFun (DirectSum.coeAddMonoidHom (quotAddSubmonoid ℳ r))
+  left_inv := rightInverse_invFun (quotAddSubmonoid_bijective ℳ r hrel).surjective
+  right_inv := leftInverse_invFun (quotAddSubmonoid_bijective ℳ r hrel).injective
+
+end AddCon
+
+namespace ModuleCon
+
+open DirectSum LinearMap Submodule DirectSum
 
 variable {R ι M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
     {σ : Type*} (ℳ : ι → σ) [SetLike σ M] [AddSubmonoidClass σ M] [SMulMemClass σ R M]
     (r : ModuleCon R M)
 
-
 include ℳ in
 /-- The graded pieces of `r.Quotient` induced from the graduation `ℳ` of `M` -/
 def quotSubmodule (i : ι) : Submodule R r.Quotient :=
-  Submodule.map r.mk' (Submodule.ofClass (ℳ i))
+  map r.mk' (ofClass (ℳ i))
 
 theorem mem_quotSubmodule_iff {x : r.Quotient} {i : ι} :
     x ∈ quotSubmodule ℳ r i ↔ ∃ y ∈ ℳ i, r.mk' y = x := by
-  simp [quotSubmodule, Submodule.ofClass]
+  simp [quotSubmodule, ofClass]
 
 /-- The canonical `LinearMap` from the graded pieces of `M` to that of `r.Quotient` . -/
 def quotSubmoduleMap (i : ι) : ℳ i →ₗ[R] quotSubmodule ℳ r i :=
-  r.mk'.submoduleMap (Submodule.ofClass (ℳ i))
+  r.mk'.submoduleMap (ofClass (ℳ i))
 
 @[simp]
 theorem coe_quotSubmoduleMap (i : ι) (y : ℳ i) :
     (quotSubmoduleMap ℳ r i y : r.Quotient) = r.toQuotient y :=
-  LinearMap.submoduleMap_coe_apply r.mk' (p := Submodule.ofClass (ℳ i)) y
+  submoduleMap_coe_apply r.mk' (p := ofClass (ℳ i)) y
 
-end Module
+theorem coeLinearMap_quotSubmodule_comp_lmap_quotSubmoduleMap
+    [DecidableEq ι] :
+    (coeLinearMap (quotSubmodule ℳ r)) ∘ₗ (lmap (quotSubmoduleMap ℳ r)) =
+      r.mk' ∘ₗ (coeLinearMap ℳ) := by
+  ext i x; simp
 
-section Semiring
+theorem coeLinearMap_quotSubmodule_comp_lmap_quotSubmoduleMap_apply
+    [DecidableEq ι] (m) :
+    (coeLinearMap (quotSubmodule ℳ r)) (lmap (quotSubmoduleMap ℳ r) m) =
+      r.mk' ((coeLinearMap ℳ) m) := by
+  simp [← LinearMap.comp_apply, coeLinearMap_quotSubmodule_comp_lmap_quotSubmoduleMap]
 
-variable {R ι A : Type*} [Semiring A]
+variable [DecidableEq ι] [DirectSum.Decomposition ℳ]
+
+lemma lmap_quotSubmoduleMap_apply (i : ι) (m : ⨁ i, ℳ i) :
+    DirectSum.lmap (quotSubmoduleMap ℳ r) m i =
+      r.mk' (decompose ℳ (DirectSum.coeLinearMap ℳ m) i) := by
+  have : decompose ℳ (DirectSum.coeLinearMap ℳ m) = m :=
+    (decompose ℳ).eq_symm_apply.mp rfl
+  simp [lmap_apply, this]
+
+-- There should be ModuleCon → Rel, with notation ⇑, given by .r
+open Function in
+lemma quotSubmodule_bijective (hrel : Rel.IsHomogeneous ℳ r.r) :
+    Function.Bijective (DirectSum.coeLinearMap (quotSubmodule ℳ r)) := by
+  refine ⟨fun x y hxy ↦ ?_, fun x ↦ ?_⟩
+  · have surj : Surjective (DirectSum.lmap (quotSubmoduleMap ℳ r)) := by
+      rw [lmap_surjective]
+      exact fun _ ↦ AddMonoidHom.addSubmonoidMap_surjective _ _
+    obtain ⟨a, ha, rfl⟩ := surj x
+    obtain ⟨b, hb, rfl⟩ := surj y
+    simp only [coeLinearMap_quotSubmodule_comp_lmap_quotSubmoduleMap_apply] at hxy
+    ext i
+    suffices r.mk' (decompose ℳ (DirectSum.coeLinearMap ℳ a) i) =
+        r.mk' (decompose ℳ (DirectSum.coeLinearMap ℳ b) i) by
+      simpa [← lmap_quotSubmoduleMap_apply] using this
+    rw [ModuleCon.eq]
+    exact hrel (Quotient.exact hxy) i
+  · obtain ⟨a, rfl⟩ := r.mk'_surjective x
+    have : (DirectSum.coeLinearMap ℳ) ((decompose ℳ) a) = a := DirectSum.Decomposition.left_inv a
+    exact ⟨DirectSum.lmap (quotSubmoduleMap ℳ r) (decompose ℳ a), by
+      simp [coeLinearMap_quotSubmodule_comp_lmap_quotSubmoduleMap_apply, this]⟩
+
+open Function in
+/-- For a homogeneous `ModuleCon` `r` on a graded module,
+the graded module structure on `ModuleCon.Quotient r`. -/
+@[implicit_reducible]
+noncomputable def quotGradedModule (hrel : Rel.IsHomogeneous ℳ r.r) :
+    Decomposition (quotSubmodule ℳ r)  where
+  decompose' := Function.invFun (DirectSum.coeLinearMap (quotSubmodule ℳ r))
+  left_inv := rightInverse_invFun (quotSubmodule_bijective ℳ r hrel).surjective
+  right_inv := leftInverse_invFun (quotSubmodule_bijective ℳ r hrel).injective
+
+end ModuleCon
+
+namespace RingCon
+
+open DirectSum LinearMap DirectSum
+
+variable {ι A : Type*} [Semiring A]
     {σ : Type*} (𝒜 : ι → σ) [SetLike σ A] [AddSubmonoidClass σ A]
     (r : RingCon A)
 
+section Semiring
+
+open AddSubmonoid
+
 include 𝒜 in
 /-- The graded pieces of `r.Quotient` induced from the graduation `𝒜` of `A` -/
-def quotAddSubmonoid' (i : ι) : AddSubmonoid r.Quotient :=
-  AddSubmonoid.map r.mk' (AddSubmonoid.ofClass (𝒜 i))
+def quotAddSubmonoid (i : ι) : AddSubmonoid r.Quotient :=
+  map r.mk' (ofClass (𝒜 i))
 
 theorem mem_quotAddSubmonoid_iff' {x : r.Quotient} {i : ι} :
-    x ∈ quotAddSubmonoid' 𝒜 r i ↔ ∃ y ∈ 𝒜 i, r.mk' y = x := by
-  simp [quotAddSubmonoid', AddSubmonoid.ofClass]
+    x ∈ quotAddSubmonoid 𝒜 r i ↔ ∃ y ∈ 𝒜 i, r.mk' y = x := by
+  simp [quotAddSubmonoid, ofClass]
 
 /-- The canonical `AddMonoidHom` from the graded pieces of `A` to that of `r.Quotient` . -/
-def quotAddSubmonoidMap' (i : ι) : 𝒜 i →+ quotAddSubmonoid' 𝒜 r i :=
-  r.mk'.addSubmonoidMap (AddSubmonoid.ofClass (𝒜 i))
+def quotAddSubmonoidMap (i : ι) : 𝒜 i →+ quotAddSubmonoid 𝒜 r i :=
+  r.mk'.addSubmonoidMap (ofClass (𝒜 i))
 
 @[simp]
-theorem coe_quotAddSubmonoidMap' (i : ι) (y : 𝒜 i) :
-    (quotAddSubmonoidMap' 𝒜 r i y : r.Quotient) = r.toQuotient y :=
-  r.mk'.addSubmonoidMap_apply_coe (AddSubmonoid.ofClass (𝒜 i)) y
+theorem coe_quotAddSubmonoidMap (i : ι) (y : 𝒜 i) :
+    (quotAddSubmonoidMap 𝒜 r i y : r.Quotient) = r.toQuotient y :=
+  r.mk'.addSubmonoidMap_apply_coe (ofClass (𝒜 i)) y
+
+theorem coeAddMonoidHom_quotAddSubmonoid_comp_map_quotAddSubmonoidMap [DecidableEq ι] :
+    (DirectSum.coeAddMonoidHom (quotAddSubmonoid 𝒜 r)).comp (map (quotAddSubmonoidMap 𝒜 r)) =
+      r.mk'.toAddMonoidHom.comp (DirectSum.coeAddMonoidHom 𝒜) := by
+  ext; simp
+
+@[simp]
+theorem coeAddMonoidHom_quotAddSubmonoid_map_quotAddSubmonoidMap_apply
+    [DecidableEq ι] (x : ⨁ i, 𝒜 i) :
+    (DirectSum.coeAddMonoidHom (quotAddSubmonoid 𝒜 r)) (map (quotAddSubmonoidMap 𝒜 r) x) =
+      r.mk' (DirectSum.coeAddMonoidHom 𝒜 x) :=
+  DFunLike.congr_fun (coeAddMonoidHom_quotAddSubmonoid_comp_map_quotAddSubmonoidMap 𝒜 r) x
 
 open SetLike in
 theorem GradedMonoid.addSubmonoidMap [AddMonoid ι] [GradedMonoid 𝒜]
@@ -140,55 +259,95 @@ theorem GradedMonoid.addSubmonoidMap [AddMonoid ι] [GradedMonoid 𝒜]
 
 open SetLike in
 instance [AddMonoid ι] [GradedMonoid 𝒜] :
-    SetLike.GradedMonoid (quotAddSubmonoid' 𝒜 r) :=
+    GradedMonoid (quotAddSubmonoid 𝒜 r) :=
   GradedMonoid.addSubmonoidMap 𝒜 r.mk'
+
+variable [AddMonoid ι] [DecidableEq ι] [GradedRing 𝒜]
+
+lemma map_quotAddSubmonoidMap_apply (i : ι) (a : ⨁ i, 𝒜 i) :
+    map (quotAddSubmonoidMap 𝒜 r) a i =
+      r.toQuotient (decompose 𝒜 (DirectSum.coeAddMonoidHom 𝒜 a) i) := by
+  simp [← Decomposition.decompose'_eq, Decomposition.right_inv a]
+
+open Function in
+/-- The decomposition of the quotient ring is an internal direct sum -/
+lemma quotDecomposition_isInternal (hrel : Rel.IsHomogeneous 𝒜 r) :
+    IsInternal (quotAddSubmonoid 𝒜 r) := by
+  change Bijective (DirectSum.coeAddMonoidHom (quotAddSubmonoid 𝒜 r))
+  refine ⟨fun x y hxy ↦ ?_, fun x ↦ ?_⟩
+  · have surj : Surjective (DirectSum.map (quotAddSubmonoidMap 𝒜 r)) := by
+      rw [map_surjective]
+      exact fun _ ↦ AddMonoidHom.addSubmonoidMap_surjective _ _
+    obtain ⟨a, ha, rfl⟩ := surj x
+    obtain ⟨b, hb, rfl⟩ := surj y
+    replace hxy : r (DirectSum.coeAddMonoidHom 𝒜 a) (DirectSum.coeAddMonoidHom 𝒜 b) := by
+      simpa using hxy
+    ext i
+    suffices r.mk' (decompose 𝒜 (DirectSum.coeAddMonoidHom 𝒜 a) i) =
+        r.mk' (decompose 𝒜 (DirectSum.coeAddMonoidHom 𝒜 b) i) by
+      simpa [← map_quotAddSubmonoidMap_apply] using this
+    simpa using hrel hxy i
+  · obtain ⟨a, rfl⟩ := RingCon.mk'_surjective r x
+    have : (DirectSum.coeAddMonoidHom 𝒜) ((decompose 𝒜) a) = a := DirectSum.Decomposition.left_inv a
+    exact ⟨map (quotAddSubmonoidMap 𝒜 r) (decompose 𝒜 a), by simp [this]⟩
+
+/-- For a homogeneous `RingCon` `r` on a semiring with `GradedRing 𝒜`, the decomposition
+of `RingCon.Quotient r` as a direct sum of its graded pieces given by `Rel.quotSubmodule'` . -/
+@[implicit_reducible]
+noncomputable def quotDecomposition (hrel : Rel.IsHomogeneous 𝒜 r) :
+    Decomposition (quotAddSubmonoid 𝒜 r) :=
+  IsInternal.chooseDecomposition _ (quotDecomposition_isInternal _ _ hrel)
+
+/-- For a homogeneous `RingCon` `r` on a semiring with `Decomposition 𝒜`,
+the graded algebra structure on `RingCon.Quotient r`. -/
+@[implicit_reducible]
+noncomputable def quotGradedAlgebra (hrel : Rel.IsHomogeneous 𝒜 r) :
+    GradedRing (quotAddSubmonoid 𝒜 r) where
+  toDecomposition := quotDecomposition 𝒜 r hrel
+
 
 end Semiring
 
 section Algebra
 
-/- Useless
-/-- A congruence relation that preserves an algebra structure. -/
-structure AlgebraCon (R A : Type*) [Add A] [Mul A] [SMul R A]
-  extends RingCon A, ModuleCon R A
--/
+open Submodule
 
-variable {R ι A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-  -- The `SubmoduleClass` variant
-  -- {σ : Type*} [SetLike σ A] [AddSubmonoidClass σ A] [SMulMemClass σ R A] (𝒜 : ι → σ)
-  (𝒜 : ι → Submodule R A)
+variable {R : Type*} [CommSemiring R] [Algebra R A]
+  {σ : Type*} [SetLike σ A] [AddSubmonoidClass σ A] [SMulMemClass σ R A] (𝒜 : ι → σ)
   (r : RingCon A)
 
 /-- The graded pieces of `RingCon.Quotient`. -/
-def quotSubmodule' (i : ι) : Submodule R r.Quotient :=
-  Submodule.map (r.mkₐ R).toLinearMap (𝒜 i)
-  -- could be: (Submodule.ofClass (𝒜 i))
+def quotSubmodule (i : ι) : Submodule R r.Quotient :=
+  map (r.mkₐ R).toLinearMap (ofClass (𝒜 i))
 
-theorem mem_quotSubmodule'_iff {x : r.Quotient} {i : ι} :
-    x ∈ quotSubmodule' 𝒜 r i ↔ ∃ y ∈ 𝒜 i, r.toQuotient y = x := by
-  simp [quotSubmodule']
+theorem mem_quotSubmodule_iff {x : r.Quotient} {i : ι} :
+    x ∈ quotSubmodule 𝒜 r i ↔ ∃ y ∈ 𝒜 i, r.toQuotient y = x := by
+  simp [quotSubmodule, ofClass]
   -- then add: Submodule.ofClass
 
 /-- The canonical `LinearMap` from the graded pieces of `A` to that of `RingCon r` . -/
-def quotSubmoduleMap' (i : ι) : 𝒜 i →ₗ[R] quotSubmodule' 𝒜 r i :=
-  (r.mkₐ R).toLinearMap.submoduleMap (𝒜 i)
-  -- could be: (Submodule.ofClass (𝒜 i))
+def quotSubmoduleMap (i : ι) : 𝒜 i →ₗ[R] quotSubmodule 𝒜 r i :=
+  (r.mkₐ R).toLinearMap.submoduleMap (ofClass (𝒜 i))
 
-@[simp] theorem coe_quotSubmoduleMap' (i : ι) (y : 𝒜 i) :
-    (quotSubmoduleMap' 𝒜 r i y : r.Quotient) = r.toQuotient y :=
+@[simp] theorem coe_quotSubmoduleMap (i : ι) (y : 𝒜 i) :
+    (quotSubmoduleMap 𝒜 r i y : r.Quotient) = r.toQuotient y :=
   LinearMap.submoduleMap_coe_apply _ _
 
--- TODO: Doesn't work for the `SubmoduleClass` variant,
--- `coLinearMap` needs to be generalized
-theorem coeLinearMap_quotSubmodule_comp_lmap_quotSubmoduleMap' [DecidableEq ι] :
-    (coeLinearMap (quotSubmodule' 𝒜 r)) ∘ₗ (lmap (quotSubmoduleMap' 𝒜 r)) =
+theorem coeLinearMap_quotSubmodule_comp_lmap_quotSubmoduleMap [DecidableEq ι] :
+    (coeLinearMap (quotSubmodule 𝒜 r)) ∘ₗ (lmap (quotSubmoduleMap 𝒜 r)) =
       (r.mkₐ R).toLinearMap ∘ₗ (coeLinearMap 𝒜) := by
   ext; simp
+
+@[simp]
+theorem coeLinearMap_quotSubmodule_lmap_quotSubmoduleMap_apply [DecidableEq ι] (x : ⨁ i, 𝒜 i) :
+    coeLinearMap (quotSubmodule 𝒜 r) (lmap (quotSubmoduleMap 𝒜 r) x) =
+      (r.mkₐ R) (coeLinearMap 𝒜 x) :=
+  DFunLike.congr_fun (coeLinearMap_quotSubmodule_comp_lmap_quotSubmoduleMap 𝒜 r) x
 
 open SetLike in
 theorem GradedMonoid.submoduleMap {B : Type*} [Semiring B] [Algebra R B] (f : A →ₐ[R] B)
     [AddMonoid ι] [GradedMonoid 𝒜] :
-    SetLike.GradedMonoid (fun i ↦ Submodule.map f.toLinearMap (𝒜 i)) where
+    SetLike.GradedMonoid (fun i ↦ map f.toLinearMap (ofClass (𝒜 i))) where
   one_mem := ⟨1, GradedOne.one_mem, by simp⟩
   mul_mem i j x y := by
     rintro ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩
@@ -196,77 +355,56 @@ theorem GradedMonoid.submoduleMap {B : Type*} [Semiring B] [Algebra R B] (f : A 
 
 open SetLike in
 instance [AddMonoid ι] [GradedMonoid 𝒜] :
-    SetLike.GradedMonoid (quotSubmodule' 𝒜 r) :=
+    SetLike.GradedMonoid (quotSubmodule 𝒜 r) :=
   GradedMonoid.submoduleMap _ _
 
-@[simp]
-theorem coeLinearMap_quotSubmodule_lmap_quotSubmoduleMap_apply [DecidableEq ι] (x : ⨁ i, 𝒜 i) :
-    coeLinearMap (quotSubmodule' 𝒜 r) (lmap (quotSubmoduleMap' 𝒜 r) x) =
-      (r.mkₐ R) (coeLinearMap 𝒜 x) :=
-  DFunLike.congr_fun (coeLinearMap_quotSubmodule_comp_lmap_quotSubmoduleMap' 𝒜 r) x
-
-section AddCommMonoid
-
-variable [AddMonoid ι] [DecidableEq ι] [GradedAlgebra 𝒜]
+variable [AddMonoid ι] [DecidableEq ι] [GradedRing 𝒜]
 
 lemma lmap_quotSubmoduleMap_apply (i : ι) (a : ⨁ i, 𝒜 i) :
-    lmap (quotSubmoduleMap' 𝒜 r) a i =
-      r.toQuotient (decompose 𝒜 (coeLinearMap 𝒜 a) i) := by
+    lmap (quotSubmoduleMap 𝒜 r) a i =
+      r.mk' (decompose 𝒜 (coeLinearMap 𝒜 a) i) := by
   have : decompose 𝒜 (DirectSum.coeLinearMap 𝒜 a) = a := DirectSum.Decomposition.right_inv a
   simp [lmap_apply, this]
 
-theorem coeLinearMap_quotSubmodule_surjective :
-    Surjective (coeLinearMap (quotSubmodule' 𝒜 r)) := by
-  intro x
-  obtain ⟨a, rfl⟩ := RingCon.mkₐ_surjective r x (α := R)
-  have : (coeLinearMap 𝒜) ((decompose 𝒜) a) = a := DirectSum.Decomposition.left_inv a
-  exact ⟨(lmap (quotSubmoduleMap' 𝒜 r)) ((decomposeAlgEquiv 𝒜).toLinearMap a), by simp [this]⟩
-
-
-theorem coeLinearMap_quotSubmodule_injective (hrel : Rel.IsHomogeneous 𝒜 rel) :
-    Injective (coeLinearMap (quotSubmodule 𝒜 rel)) := by
-  have surj : Surjective (lmap (quotSubmoduleMap 𝒜 rel)) := by
-    rw [lmap_surjective]
-    exact fun _ ↦ LinearMap.submoduleMap_surjective _ _
-  intro x y hxy
-  obtain ⟨a, ha, rfl⟩ := surj x
-  obtain ⟨b, hb, rfl⟩ := surj y
-  simp only [coeLinearMap_quotSubmodule_lmap_quotSubmoduleMap_apply] at hxy
-  ext i
-  suffices RingQuot.mkAlgHom R rel (decompose 𝒜 (coeLinearMap 𝒜 a) i) =
-      RingQuot.mkAlgHom R rel (decompose 𝒜 (coeLinearMap 𝒜 b) i) by
-    simpa [← lmap_quotSubmoduleMap_apply] using this
-  replace hxy : RingConGen.Rel rel (coeLinearMap 𝒜 a) (coeLinearMap 𝒜 b) := by
-    simpa [← AlgHom.coe_toRingHom, RingQuot.mkAlgHom_coe, RingQuot.mkRingHom,
-      Quot.eq, RingQuot.eqvGen_rel_eq] using hxy
-  simpa [← AlgHom.coe_toRingHom, RingQuot.mkAlgHom_coe, RingQuot.mkRingHom,
-      Quot.eq, RingQuot.eqvGen_rel_eq]
-    using RingConGen.Rel.isHomogeneous_of 𝒜 hrel hxy i
-
-lemma coeLinearMap_quotSubmodule_bijective (hrel : Rel.IsHomogeneous 𝒜 rel) :
-    Bijective (coeLinearMap (quotSubmodule 𝒜 rel)) :=
-  ⟨coeLinearMap_quotSubmodule_injective 𝒜 rel hrel, coeLinearMap_quotSubmodule_surjective 𝒜 rel⟩
-
+open Function in
 /-- The decomposition of the quotient ring is an internal direct sum -/
-lemma quotDecomposition_isInternal (hrel : Rel.IsHomogeneous 𝒜 rel) :
-    IsInternal (quotSubmodule 𝒜 rel) :=
-  coeLinearMap_quotSubmodule_bijective 𝒜 rel hrel
+lemma quotDecomposition_isInternal' (hrel : Rel.IsHomogeneous 𝒜 r) :
+    IsInternal (quotSubmodule 𝒜 r) := by
+  change Bijective (coeLinearMap (quotSubmodule 𝒜 r))
+  refine ⟨fun x y hxy ↦ ?_, fun x ↦ ?_⟩
+  · have surj : Surjective (lmap (quotSubmoduleMap 𝒜 r)) := by
+      rw [lmap_surjective]
+      exact fun _ ↦ LinearMap.submoduleMap_surjective _ _
+    obtain ⟨a, ha, rfl⟩ := surj x
+    obtain ⟨b, hb, rfl⟩ := surj y
+    replace hxy : r (coeLinearMap 𝒜 a) (coeLinearMap 𝒜 b) := by
+      simpa using hxy
+    ext i
+    suffices r.mk' (decompose 𝒜 (coeLinearMap 𝒜 a) i) =
+        r.mk' (decompose 𝒜 (coeLinearMap 𝒜 b) i) by
+      simpa [← lmap_quotSubmoduleMap_apply] using this
+    simpa using hrel hxy i
+  · obtain ⟨a, rfl⟩ := RingCon.mkₐ_surjective r x (α := R)
+    have : (coeLinearMap 𝒜) ((decompose 𝒜) a) = a := DirectSum.Decomposition.left_inv a
+    exact ⟨lmap (quotSubmoduleMap 𝒜 r) (decompose 𝒜 a), by simp [this]⟩
 
-/-- The decomposition of `RingQuot rel` as a direct sum of its graded pieces. -/
+/-- For a homogeneous `RingCon` `r` on a semiring with `GradedAlgebra 𝒜`, the decomposition
+of `RingCon.Quotient r` as a direct sum of its graded pieces given by `Rel.quotSubmodule'` . -/
 @[implicit_reducible]
-noncomputable def quotDecomposition (hrel : Rel.IsHomogeneous 𝒜 rel) :
-    Decomposition (quotSubmodule 𝒜 rel) :=
+noncomputable def quotDecomposition' (hrel : Rel.IsHomogeneous 𝒜 r) :
+    Decomposition (quotSubmodule 𝒜 r) :=
   IsInternal.chooseDecomposition _ (quotDecomposition_isInternal _ _ hrel)
 
-/-- The graded algebra structure on `RingQuot rel`. -/
+/-- For a homogeneous `RingCon` `r` on a semiring with `Decomposition 𝒜`,
+the graded algebra structure on `RingCon.Quotient r`. -/
 @[implicit_reducible]
-noncomputable def quotGradedAlgebra (hrel : Rel.IsHomogeneous 𝒜 rel) :
-    GradedAlgebra (quotSubmodule 𝒜 rel) where
-  toDecomposition := quotDecomposition 𝒜 rel hrel
+noncomputable def quotGradedAlgebra' (hrel : Rel.IsHomogeneous 𝒜 r) :
+    GradedAlgebra (quotSubmodule 𝒜 r) where
+  toDecomposition := quotDecomposition' 𝒜 r hrel
 
-end AddCommMonoid
+end Algebra
 
-end Rel
+end RingCon
 
 section Submodule
 
@@ -276,6 +414,8 @@ variable {R : Type*} [Ring R]
   (P : Submodule R M)
 
 namespace IsHomogeneous.Submodule
+
+open DirectSum
 
 /-- The graded pieces of `M ⧸ P` under a graduation `ℳ` of `M`.
 
@@ -341,8 +481,8 @@ include hP in
 def quotDecomposition : Decomposition (quotSubmodule ℳ P) := by
   apply DirectSum.Decomposition.ofLinearMap _ (quotDecompose ℳ hP)
   · ext m
-    simp only [LinearMap.coe_comp, comp_apply, Submodule.mkQ_apply, quotDecompose_apply_quotient,
-      LinearMap.id_comp]
+    simp only [LinearMap.coe_comp, Function.comp_apply, Submodule.mkQ_apply,
+      quotDecompose_apply_quotient, LinearMap.id_comp]
     suffices coeLinearMap (quotSubmodule ℳ P) ∘ₗlmap (toQuotSubmodule ℳ P) =
       P.mkQ ∘ₗcoeLinearMap ℳ  by
       simp [← LinearMap.comp_apply, this, coeLinearMap_apply]
@@ -350,7 +490,7 @@ def quotDecomposition : Decomposition (quotSubmodule ℳ P) := by
   · ext i ⟨x, hx⟩ j
     simp only [quotSubmodule, Submodule.mem_map, Submodule.mkQ_apply] at hx
     obtain ⟨m, hm, rfl⟩ := hx
-    simp only [LinearMap.coe_comp, comp_apply, coeLinearMap_lof, LinearMap.id_comp,
+    simp only [LinearMap.coe_comp, Function.comp_apply, coeLinearMap_lof, LinearMap.id_comp,
       SetLike.coe_eq_coe]
     rw [quotDecompose_apply_quotient, lmap_apply, ← Subtype.coe_inj, Subtype.coe_mk]
     by_cases h : j = i
@@ -361,6 +501,8 @@ def quotDecomposition : Decomposition (quotSubmodule ℳ P) := by
 end IsHomogeneous.Submodule
 
 section Ideal
+
+open DirectSum
 
 variable {R : Type*} [CommRing R]
   {A : Type*} [Ring A] [Algebra R A]
