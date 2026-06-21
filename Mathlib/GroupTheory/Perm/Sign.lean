@@ -551,6 +551,10 @@ theorem sign_prodCongrLeft (σ : α → Perm β) : sign (prodCongrLeft σ) = ∏
 theorem sign_permCongr (e : α ≃ β) (p : Perm α) : sign (e.permCongr p) = sign p :=
   sign_eq_sign_of_equiv _ _ e.symm (by simp)
 
+@[simp] theorem sign_equivCongr (f g : α ≃ β) (p : Perm α) :
+    sign (f.equivCongr g p) = sign p * sign (f.symm.trans g) := by
+  rw [← sign_permCongr g, ← sign_mul]; congr; ext; simp
+
 @[simp]
 theorem sign_sumCongr (σa : Perm α) (σb : Perm β) : sign (sumCongr σa σb) = sign σa * sign σb := by
   suffices sign (sumCongr σa (1 : Perm β)) = sign σa ∧ sign (sumCongr (1 : Perm α) σb) = sign σb

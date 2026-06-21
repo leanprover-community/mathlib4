@@ -10,6 +10,7 @@ public import Mathlib.Data.Matrix.Mul
 public import Mathlib.GroupTheory.Perm.Sign
 
 import Mathlib.Algebra.Module.End
+import Mathlib.GroupTheory.Perm.Option
 
 /-!
 # Nonsingular inverses over semirings
@@ -28,8 +29,12 @@ variable (s : ℤˣ) (A B : Matrix n n R) (i j : n)
 
 namespace Matrix
 
-/-- The determinant, but only the terms of a given sign. -/
+/-- The determinant, but only the terms of a given sign.
+`A.detp 1` is written `|A|⁺` in the literature and `A.detp (-1)` is written `|A|⁻`. -/
 def detp : R := ∑ σ ∈ ofSign s, ∏ k, A k (σ k)
+
+@[simp] lemma detp_transpose : A.transpose.detp s = A.detp s :=
+  sum_equiv (.inv _) (by simp) fun σ _ ↦ prod_equiv σ (by simp) (by simp)
 
 @[simp]
 lemma detp_one_diagonal (d : n → R) : detp 1 (diagonal d) = ∏ i, d i := by
@@ -59,6 +64,39 @@ lemma detp_neg_one_diagonal (d : n → R) : detp (-1) (diagonal d) = 0 := by
 lemma detp_neg_one_one : detp (-1) (1 : Matrix n n R) = 0 := by
   rw [← diagonal_one, detp_neg_one_diagonal]
 
+@[simp] lemma detp_one_of_isEmpty [IsEmpty n] : A.detp 1 = 1 := by
+  rw [detp, sum_unique_nonempty _ _ ⟨1, _⟩] <;> simp
+
+@[simp] lemma detp_neg_one_of_isEmpty [IsEmpty n] : A.detp (-1) = 0 := by
+  rw [detp, ofSign, univ_unique]
+  convert sum_empty
+  simp +decide
+
+@[simp] lemma detp_submatrix_equiv_equiv (f g : m ≃ n) :
+    (A.submatrix f g).detp s = A.detp (s * sign (f.symm.trans g)) :=
+  sum_equiv (equivCongr f g) (by simp) fun _ _ ↦ prod_equiv f (by simp) fun _ _ ↦ by simp
+
+lemma detp_submatrix_equiv (e : m ≃ n) : (A.submatrix e e).detp s = A.detp s := by
+  simp
+
+variable {A}
+
+lemma detp_eq_of_row_eq {p q : n} (hpq : p ≠ q) (hrow : A p = A q) : A.detp 1 = A.detp (-1) :=
+  sum_equiv (.mulRight <| swap p q) (by simp [hpq]) fun _ _ ↦
+    prod_equiv (swap p q) (by simp) (by aesop)
+
+lemma detp_eq_of_col_eq {p q : n} (hpq : p ≠ q) (hcol : A.col p = A.col q) :
+    A.detp 1 = A.detp (-1) := by
+  simp_rw [← A.detp_transpose]; exact detp_eq_of_row_eq hpq hcol
+
+lemma detp_eq_of_row_eq_zero {p : n} (hrow : A p = 0) : A.detp s = 0 :=
+  sum_eq_zero fun _ _ ↦ prod_eq_zero (mem_univ p) congr($hrow _)
+
+lemma detp_eq_of_col_eq_zero {p : n} (hcol : A.col p = 0) : A.detp s = 0 := by
+  simpa only [detp_transpose] using detp_eq_of_row_eq_zero (A := Aᵀ) s hcol
+
+variable (A)
+
 /-- The adjugate matrix, but only the terms of a given sign. -/
 def adjp : Matrix n n R :=
   of fun i j ↦ ∑ σ ∈ (ofSign s).filter (· j = i), ∏ k ∈ {j}ᶜ, A k (σ k)
@@ -66,6 +104,42 @@ def adjp : Matrix n n R :=
 lemma adjp_apply (i j : n) :
     adjp s A i j = ∑ σ ∈ (ofSign s).filter (· j = i), ∏ k ∈ {j}ᶜ, A k (σ k) :=
   rfl
+
+lemma adjp_transpose : A.transpose.adjp s = (A.adjp s).transpose := by
+  ext; exact sum_equiv (.inv _) (by aesop) fun σ hσ ↦
+    prod_equiv σ (by simp [← (mem_filter.mp hσ).2]) (by simp)
+
+private lemma adjp_none_right (A : Matrix (Option n) (Option n) R) (i : Option n) :
+    A.adjp s i none = (A.submatrix some <| swap none i ∘ some).detp (sign (swap none i) * s) := by
+  rw [adjp, of_apply, detp]
+  convert sum_image (g := fun σ ↦ decomposeOption.symm (i, σ))
+    ((Equiv.injective _).comp (Prod.mk_right_injective i)).injOn
+  · ext σ; simp only [mem_filter, mem_ofSign, mem_image]
+    refine ⟨fun h ↦ ⟨σ.removeNone, ?_⟩, ?_⟩
+    · rw [← optionCongr_sign, map_equiv_removeNone, map_mul, h.1, h.2, mul_comm]
+      use rfl; rw [← h.2]; exact decomposeOption.left_inv σ
+    · rintro ⟨σ, h, rfl⟩
+      rw [decomposeOption_symm_apply, map_mul, optionCongr_sign, h, ← mul_assoc, Int.units_mul_self]
+      simp
+  convert (prod_image (Option.some_injective n).injOn).symm
+  · rfl
+  · apply SetLike.coe_injective; simp [← Set.compl_range_some]
+
+lemma adjp_none_none (A : Matrix (Option n) (Option n) R) :
+    A.adjp s none none = (A.submatrix some some).detp s := by
+  simp [adjp_none_right]
+
+lemma adjp_some_none (A : Matrix (Option n) (Option n) R) :
+    A.adjp s (some i) none = (A.submatrix some (Function.update some i none)).detp (-s) := by
+  rw [adjp_none_right]; congr
+  · simp
+  · ext1; aesop
+
+lemma adjp_none_some (A : Matrix (Option n) (Option n) R) :
+    A.adjp s none (some i) = (A.submatrix (Function.update some i none) some).detp (-s) := by
+  convert A.transpose.adjp_some_none s i using 1
+  · rw [adjp_transpose]; rfl
+  · rw [← detp_transpose]; rfl
 
 theorem detp_mul :
     detp 1 (A * B) + (detp 1 A * detp (-1) B + detp (-1) A * detp 1 B) =
@@ -115,38 +189,34 @@ theorem mul_adjp_apply_eq : (A * adjp s A) i i = detp s A := by
   rw [← prod_mul_prod_compl ({i} : Finset n), prod_singleton, (mem_filter.mp hσ).2]
 
 theorem mul_adjp_apply_ne (h : i ≠ j) : (A * adjp 1 A) i j = (A * adjp (-1) A) i j := by
-  simp_rw [mul_apply, adjp_apply, mul_sum, sum_sigma']
-  let f : (Σ x : n, Perm n) → (Σ x : n, Perm n) := fun ⟨x, σ⟩ ↦ ⟨σ i, σ * swap i j⟩
-  let t s : Finset (Σ x : n, Perm n) := univ.sigma fun x ↦ (ofSign s).filter fun σ ↦ σ j = x
-  have hf {s} : ∀ p ∈ t s, f (f p) = p := by
-    intro ⟨x, σ⟩ hp
-    rw [mem_sigma, mem_filter, mem_ofSign] at hp
-    simp_rw [f, Perm.mul_apply, swap_apply_left, hp.2.2, mul_swap_mul_self]
-  refine sum_bij' (fun p _ ↦ f p) (fun p _ ↦ f p) ?_ ?_ hf hf ?_
-  · intro ⟨x, σ⟩ hp
-    rw [mem_sigma, mem_filter, mem_ofSign] at hp ⊢
-    rw [Perm.mul_apply, sign_mul, hp.2.1, sign_swap h, swap_apply_right]
-    exact ⟨mem_univ (σ i), rfl, rfl⟩
-  · intro ⟨x, σ⟩ hp
-    rw [mem_sigma, mem_filter, mem_ofSign] at hp ⊢
-    rw [Perm.mul_apply, sign_mul, hp.2.1, sign_swap h, swap_apply_right]
-    exact ⟨mem_univ (σ i), rfl, rfl⟩
-  · intro ⟨x, σ⟩ hp
-    rw [mem_sigma, mem_filter, mem_ofSign] at hp
-    have key : ({j}ᶜ : Finset n) = disjUnion ({i} : Finset n) ({i, j} : Finset n)ᶜ (by simp) := by
-      rw [singleton_disjUnion, cons_eq_insert, compl_insert, insert_erase]
-      rwa [mem_compl, mem_singleton]
-    simp_rw [key, prod_disjUnion, prod_singleton, f, Perm.mul_apply, swap_apply_left, ← mul_assoc]
-    rw [mul_comm (A i x) (A i (σ i)), hp.2.2]
-    refine congr_arg _ (prod_congr rfl fun x hx ↦ ?_)
-    rw [mem_compl, mem_insert, mem_singleton, not_or] at hx
-    rw [swap_apply_of_ne_of_ne hx.1 hx.2]
+  let A' : Matrix n n R := of <| Function.update A j (A i)
+  have h' s : (A * adjp s A) i j = (A' * adjp s A') j j := sum_congr rfl fun _ _ ↦
+    congr_arg₂ (· * ·) (by simp [A']) <| sum_congr rfl fun σ hσ ↦ prod_congr rfl fun k hk ↦ by
+      rw [mem_compl, mem_singleton] at hk
+      simp [A', hk]
+  simp_rw [h', mul_adjp_apply_eq]
+  apply detp_eq_of_row_eq h
+  ext; simp [A', h]
+
+theorem adjp_mul_apply_eq : (adjp s A * A) i i = detp s A := by
+  rw [← detp_transpose, ← mul_adjp_apply_eq _ _ i, adjp_transpose, ← transpose_mul]; rfl
+
+theorem adjp_mul_apply_ne (h : i ≠ j) : (adjp 1 A * A) i j = (adjp (-1) A * A) i j := by
+  simp_rw [← transpose_apply (_ * _) j i, transpose_mul,
+    ← adjp_transpose, mul_adjp_apply_ne _ _ _ h.symm]
 
 theorem mul_adjp_add_detp : A * adjp 1 A + detp (-1) A • 1 = A * adjp (-1) A + detp 1 A • 1 := by
   ext i j
   rcases eq_or_ne i j with rfl | h <;> simp_rw [add_apply, smul_apply, smul_eq_mul]
   · simp_rw [mul_adjp_apply_eq, one_apply_eq, mul_one, add_comm]
   · simp_rw [mul_adjp_apply_ne A i j h, one_apply_ne h, mul_zero]
+
+/-- Laplace expansion of `detp` along the `none` row of an `Option`-indexed matrix. -/
+lemma detp_option_expand_row_none (A : Matrix (Option n) (Option n) R) :
+    A.detp s = A none none * (A.submatrix some some).detp s +
+      ∑ k : n, A none (some k) * (A.submatrix some (Function.update some k none)).detp (-s) := by
+  simp_rw [← A.mul_adjp_apply_eq s none, mul_apply,
+    Fintype.sum_option, adjp_none_none, adjp_some_none]
 
 variable {A B}
 
