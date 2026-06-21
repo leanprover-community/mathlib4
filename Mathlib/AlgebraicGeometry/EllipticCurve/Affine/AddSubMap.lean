@@ -131,9 +131,9 @@ end WeierstrassCurve
 /-!
 ### The symmetric square of the x-coordinate map
 
-We define `Weierstrass.Affine.Point.sym2x`, which sends a pair `P`, `Q` of affine points on a
-Weierstrass curve to a triple projectively equal to `(x(P)*x(Q), x(P)+x(Q), 1)`, and provide
-some API.
+We define `Weierstrass.Affine.Point.sym2x`, which sends a pair `P`, `Q` of nonsingular points in
+affine coordinates on a Weierstrass curve to a triple projectively equal to
+`(x(P)*x(Q), x(P)+x(Q), 1)`, and provide some API.
 -/
 
 namespace WeierstrassCurve.Affine.Point
