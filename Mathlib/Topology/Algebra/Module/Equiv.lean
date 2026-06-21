@@ -356,11 +356,13 @@ def ofContinuousLinear (h₁ : f ∘SL g = .id R₂ M₂) (h₂ : g ∘SL f = .i
 theorem coe_ofContinuousLinear (h₁ h₂) : ⇑(ofContinuousLinear f g h₁ h₂) = f := rfl
 
 @[simp]
-theorem coe_ofContinuousLinear_symm (h₁ h₂) : ⇑(ofContinuousLinear f g h₁ h₂).symm = g := rfl
-
-@[simp]
 theorem ofContinuousLinear_symm (h₁ h₂) :
     (ofContinuousLinear f g h₁ h₂).symm = (ofContinuousLinear g f h₂ h₁) :=
+  rfl
+
+@[simp]
+theorem toContinuousLinearMap_ofContinuousLinearMap (h₁ h₂) :
+    (ofContinuousLinear f g h₁ h₂ : M₁ ≃SL[σ₁₂] M₂) = f :=
   rfl
 
 end ofContinuousLinearMap
