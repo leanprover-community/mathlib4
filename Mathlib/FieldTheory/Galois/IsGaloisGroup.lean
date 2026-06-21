@@ -447,6 +447,27 @@ theorem of_isScalarTower [Finite G] [IsGaloisGroup G K L] (E : Type*) [Field E] 
     (AlgHom.equivFieldRange (IsScalarTower.toAlgHom K E L)).toRingEquiv.symm fun ⟨_, ⟨x, rfl⟩⟩ ↦ ?_
   simp [AlgEquiv.symm_apply_eq, Subtype.ext_iff]
 
+attribute [local instance] FractionRing.liftAlgebra in
+/-- If `G` is a Galois group for `B / R` and `R ⊆ A ⊆ B` is a tower of commutative domains with
+`B / A` integral and `A` integrally closed, then the fixing subgroup of the image of `A` in `B`
+is a Galois group for `B / A`. -/
+theorem of_isScalarTower' [Finite G] (R A B : Type*) [CommRing R] [CommRing A] [CommRing B]
+    [IsDomain B] [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
+    [FaithfulSMul R A] [FaithfulSMul A B] [MulSemiringAction G B] [IsGaloisGroup G R B]
+    [IsIntegrallyClosed A] [Algebra.IsIntegral A B] :
+    IsGaloisGroup (fixingSubgroup G (Set.range (algebraMap A B))) A B := by
+  have : IsDomain A := IsDomain.of_faithfulSMul A B
+  have : IsDomain R := IsDomain.of_faithfulSMul R A
+  have : FaithfulSMul R B := FaithfulSMul.trans R A B
+  let F := FractionRing A
+  let K := FractionRing R
+  let L := FractionRing B
+  let : MulSemiringAction G L := IsFractionRing.mulSemiringAction G B L
+  rw [IsFractionRing.fixingSubgroup_range_algebraMap G F L]
+  have : IsGaloisGroup (fixingSubgroup G (Set.range (algebraMap F L))) F L :=
+    of_isScalarTower G K L F
+  exact IsGaloisGroup.of_isFractionRing _ A B F L
+
 @[simp]
 theorem card_fixingSubgroup_eq_finrank [Finite G] [IsGaloisGroup G K L] :
     Nat.card (fixingSubgroup G (F : Set L)) = Module.finrank F L :=
