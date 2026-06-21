@@ -160,8 +160,10 @@ theorem integral_cos_pow_eq (n : ℕ) :
     (∫ x in (0 : ℝ)..π / 2, cos x ^ n) = 1 / 2 * ∫ x in (0 : ℝ)..π, sin x ^ n := by
   rw [mul_comm (1 / 2 : ℝ), ← div_eq_iff (one_div_ne_zero (two_ne_zero' ℝ)), ← div_mul, div_one,
     mul_two]
-  have L : IntervalIntegrable _ volume 0 (π / 2) := (continuous_sin.fun_pow n).intervalIntegrable _ _
-  have R : IntervalIntegrable _ volume (π / 2) π := (continuous_sin.fun_pow n).intervalIntegrable _ _
+  have L : IntervalIntegrable _ volume 0 (π / 2) :=
+    (continuous_sin.fun_pow n).intervalIntegrable _ _
+  have R : IntervalIntegrable _ volume (π / 2) π :=
+    (continuous_sin.fun_pow n).intervalIntegrable _ _
   rw [← integral_add_adjacent_intervals L R]
   congr 1
   · nth_rw 1 [(by ring : 0 = π / 2 - π / 2)]
