@@ -130,11 +130,7 @@ def CotangentSpace.compEquiv :
   (Q.comp P).cotangentSpaceBasis.repr.trans
     (Q.cotangentSpaceBasis.prod (P.cotangentSpaceBasis.baseChange T)).repr.symm
 
-section instanceProblem
-
--- Note: these instances are needed to prevent instance search timeouts.
-attribute [local instance 999999] Zero.toOfNat0 SemilinearMapClass.distribMulActionSemiHomClass
-  SemilinearEquivClass.instSemilinearMapClass instAddZeroClassTensorProduct AddZero.toZero
+-- section instanceProblem
 
 lemma CotangentSpace.compEquiv_symm_inr :
     (compEquiv Q P).symm.toLinearMap ∘ₗ
@@ -447,8 +443,6 @@ lemma exact_map_δ' (f : Hom W Q) :
   exact exact_map_δ Q P
 
 end H1Cotangent
-
-end instanceProblem
 
 end Generators
 
