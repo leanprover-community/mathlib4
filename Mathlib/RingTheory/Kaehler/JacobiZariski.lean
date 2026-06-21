@@ -14,17 +14,22 @@ public import Mathlib.RingTheory.Flat.Basic
 
 # The Jacobi-Zariski exact sequence
 
-Given `R → S → T`, the Jacobi-Zariski exact sequence is
+Given algebras `R → S → T`, the Jacobi-Zariski exact sequence is a long exact sequence
+relating the first homology of the naive cotangent complexes and Kaehler differentials of
+the respective algebras.
+
+It takes the form:
 ```
-H¹(L_{T/R}) → H¹(L_{T/S}) → T ⊗[S] Ω[S/R] → Ω[T/R] → Ω[T/S] → 0
+H¹(L_{T/R}) → H¹(L_{T/S}) → T ⊗[S] Ω[S/R] → Ω[T/R] → Ω[T/S] → 0`
 ```
-The maps are
+
+The maps in the sequence are
 - `Algebra.H1Cotangent.map`
 - `Algebra.H1Cotangent.δ`
 - `KaehlerDifferential.mapBaseChange`
 - `KaehlerDifferential.map`
 
-and the exactness lemmas are
+The exactness lemmas are
 - `Algebra.H1Cotangent.exact_map_δ`
 - `Algebra.H1Cotangent.exact_δ_mapBaseChange`
 - `KaehlerDifferential.exact_mapBaseChange_map`
