@@ -366,6 +366,11 @@ theorem toContinuousLinearMap_ofContinuousLinearMap (h₁ h₂) :
     (ofContinuousLinearMap f g h₁ h₂ : M₁ ≃SL[σ₁₂] M₂) = f :=
   rfl
 
+@[simp]
+theorem toLinearEquiv_ofContinuousLinearMap (h₁ h₂) :
+    (ofContinuousLinearMap f g h₁ h₂ : M₁ ≃ₛₗ[σ₁₂] M₂) =
+      .ofLinear f g ((f ∘SL g).coe_inj.mpr h₁) ((g ∘SL f).coe_inj.mpr h₂) := rfl
+
 end ofContinuousLinearMap
 
 /-- The composition of two continuous linear equivalences as a continuous linear equivalence. -/
