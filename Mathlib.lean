@@ -573,6 +573,7 @@ public import Mathlib.Algebra.Homology.ComplexShape
 public import Mathlib.Algebra.Homology.ComplexShapeSigns
 public import Mathlib.Algebra.Homology.ConcreteCategory
 public import Mathlib.Algebra.Homology.DerivedCategory.Basic
+public import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructureInjectives
 public import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
@@ -589,6 +590,7 @@ public import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
 public import Mathlib.Algebra.Homology.DerivedCategory.KInjective
 public import Mathlib.Algebra.Homology.DerivedCategory.KProjective
 public import Mathlib.Algebra.Homology.DerivedCategory.Linear
+public import Mathlib.Algebra.Homology.DerivedCategory.Plus
 public import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 public import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
 public import Mathlib.Algebra.Homology.DerivedCategory.SmallShiftedHom
@@ -618,6 +620,7 @@ public import Mathlib.Algebra.Homology.ExactSequenceFour
 public import Mathlib.Algebra.Homology.Factorizations.Basic
 public import Mathlib.Algebra.Homology.Factorizations.CM5a
 public import Mathlib.Algebra.Homology.Factorizations.CM5b
+public import Mathlib.Algebra.Homology.FullSubcategory
 public import Mathlib.Algebra.Homology.Functor
 public import Mathlib.Algebra.Homology.GrothendieckAbelian
 public import Mathlib.Algebra.Homology.HasNoLoop

@@ -193,4 +193,19 @@ lemma exists_iso_singleFunctor_obj_of_isGE_of_isLE
   obtain ⟨Y, ⟨e'⟩⟩ := CochainComplex.exists_iso_single K n
   exact ⟨Y, ⟨e ≪≫ Q.mapIso e'⟩⟩
 
+
+open DerivedCategory.TStructure
+
+variable (C)
+
+abbrev Minus := (t : TStructure (DerivedCategory C)).minus.FullSubcategory
+abbrev Plus := (t : TStructure (DerivedCategory C)).plus.FullSubcategory
+abbrev Bounded := (t : TStructure (DerivedCategory C)).bounded.FullSubcategory
+
+variable {C}
+
+noncomputable abbrev Minus.ι : Minus C ⥤ DerivedCategory C := t.minus.ι
+noncomputable abbrev Plus.ι : Plus C ⥤ DerivedCategory C := t.plus.ι
+noncomputable abbrev Bounded.ι : Bounded C ⥤ DerivedCategory C := t.bounded.ι
+
 end DerivedCategory
