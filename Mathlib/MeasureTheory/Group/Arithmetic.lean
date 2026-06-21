@@ -360,12 +360,12 @@ theorem AEMeasurable.inv (hf : AEMeasurable f μ) : AEMeasurable f⁻¹ μ :=
 @[to_additive (attr := simp)]
 theorem measurable_inv_iff {G : Type*} [InvolutiveInv G] [MeasurableSpace G] [MeasurableInv G]
     {f : α → G} : (Measurable fun x => (f x)⁻¹) ↔ Measurable f :=
-  ⟨fun h => by simpa only [inv_inv] using h.inv, fun h => h.inv⟩
+  ⟨fun h => by simpa only [inv_inv] using h.fun_inv, fun h => h.inv⟩
 
 @[to_additive (attr := simp)]
 theorem aemeasurable_inv_iff {G : Type*} [InvolutiveInv G] [MeasurableSpace G] [MeasurableInv G]
     {f : α → G} : AEMeasurable (fun x => (f x)⁻¹) μ ↔ AEMeasurable f μ :=
-  ⟨fun h => by simpa only [inv_inv] using h.inv, fun h => h.inv⟩
+  ⟨fun h => by simpa only [inv_inv] using h.fun_inv, fun h => h.inv⟩
 
 @[to_additive]
 instance Pi.measurableInv {ι : Type*} {α : ι → Type*} [∀ i, Inv (α i)]
