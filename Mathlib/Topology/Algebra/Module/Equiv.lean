@@ -346,7 +346,8 @@ section ofContinuousLinearMap
 
 variable (f : M₁ →SL[σ₁₂] M₂) (g : M₂ →SL[σ₂₁] M₁)
 
-/-- If a continuous linear map has a continuous inverse, it is a continuous linear equivalence. -/
+/-- If a continuous linear map has a continuous inverse, then it is a continuous linear equivalence.
+This is the continuous version of `LinearEquiv.ofLinear`. -/
 def ofContinuousLinearMap (h₁ : f ∘SL g = .id R₂ M₂) (h₂ : g ∘SL f = .id R₁ M₁) :
     M₁ ≃SL[σ₁₂] M₂ where
   toLinearEquiv := .ofLinear f g
