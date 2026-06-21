@@ -491,7 +491,7 @@ variable {ι F : Type*} [DecidableEq ι] [Fintype ι] [CommRing F]
 as an element of `SL ι F`, when `i ≠ j`. -/
 def SpecialLinearGroup.transvection {i j : ι} (hij : i ≠ j) (b : F) :
     Matrix.SpecialLinearGroup ι F :=
-  ⟨(1 : Matrix ι ι F) + single i j b, Matrix.det_transvection_of_ne i j hij b⟩
+  ⟨Matrix.transvection i j b, Matrix.det_transvection_of_ne i j hij b⟩
 
 namespace SpecialLinearGroup
 
@@ -623,15 +623,15 @@ section induction
 variable {ι R : Type*} [Fintype ι] [DecidableEq ι] [CommRing R]
 
 /-- the coercion to `Matrix ι ι R` as a monoid homomorphism -/
-def coeHom : SpecialLinearGroup ι R →* Matrix ι ι R where
+def coeMonoidHom : SpecialLinearGroup ι R →* Matrix ι ι R where
   toFun := Subtype.val
   map_one' := rfl
   map_mul' _ _ := rfl
 
 @[simp]
-lemma coeHom_apply (g : SpecialLinearGroup ι R) : coeHom g = (g : Matrix ι ι R) := rfl
+lemma coeMonoidHom_apply (g : SpecialLinearGroup ι R) : coeMonoidHom g = (g : Matrix ι ι R) := rfl
 
-lemma coeHom_injective : Function.Injective (coeHom : SpecialLinearGroup ι R →* Matrix ι ι R) :=
+lemma coeMonoidHom_injective : Function.Injective (coeMonoidHom : SpecialLinearGroup ι R → _) :=
   Subtype.val_injective
 
 private lemma diag_decompose {ι : Type*} [Fintype ι] [DecidableEq ι] (i₀ : ι) (D : ι → F)
@@ -669,9 +669,9 @@ lemma diag_eq_diag2n_prod {ι : Type*} [Fintype ι] [DecidableEq ι] (i₀ : ι)
       diag2n hi (D i) (diagonal_neZero D hD i) else 1) (junkProof.comm i₀ D hD) := by
   classical
   set g : ι → ι → F := fun i k ↦ if k = i then D i else if k = i₀ then (D i)⁻¹ else 1 with hg_def
-  apply coeHom_injective
+  apply coeMonoidHom_injective
   rw [Finset.map_noncommProd]
-  simp_rw [coeHom_apply, apply_dite, coe_one]
+  simp_rw [coeMonoidHom_apply, apply_dite, coe_one]
   rw [Finset.noncommProd_congr (s₂ := {i | i ≠ i₀}) rfl (fun i hi ↦
       (dif_pos (Finset.mem_filter.1 hi).2 : _ = (diag2n (Finset.mem_filter.1 hi).2 _ _).1))]
   convert_to! _ = Finset.noncommProd {i | i ≠ i₀} (fun x ↦ diagonal (g x)) _
@@ -690,8 +690,8 @@ theorem exists_list_transvec_mul_diagonal_mul_list_transvec {ι : Type*} [Fintyp
         (L'.map TransvectionStruct.toSpecialLinearGroup).prod := by
   obtain ⟨L, L', D, hM⟩ := Pivot.exists_list_transvec_mul_diagonal_mul_list_transvec M.1
   refine ⟨L, L', D, by simpa [hM] using M.2, Subtype.ext <| ?_⟩
-  simp_rw [coe_mul, ← coeHom_apply, map_list_prod, List.map_map, Function.comp_def, coeHom_apply,
-    TransvectionStruct.toSpecialLinearGroup_coe, hM]
+  simp_rw [coe_mul, ← coeMonoidHom_apply, map_list_prod, List.map_map, Function.comp_def,
+    coeMonoidHom_apply, TransvectionStruct.toSpecialLinearGroup_coe, hM]
 
 theorem diagonal_transvection_induction' {ι : Type*} [Fintype ι] [DecidableEq ι] [Nontrivial ι]
     (P : SpecialLinearGroup ι F → Prop) (M : SpecialLinearGroup ι F)
