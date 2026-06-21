@@ -10,13 +10,38 @@ public import Mathlib.Algebra.Order.Archimedean.Class
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.Order.Quotient
 
-/-! # Convex subgroups of a linearly ordered abelian group -/
+/-! # Convex subgroups of a linearly ordered abelian group
+
+A subgroup of a linearly ordered abelian group is convex if every element that lies between two
+elements of the subgroup is also in the subgroup. This is directly captured by the predicate
+`Set.OrdConnected`.
+
+## Main definitions
+
+* `ConvexSubgroup` is the type of convex subgroups of a linearly ordered abelian group.
+  We show that convex subgroups form a complete linear order, and the quotient of a linearly
+  ordered abelian group by a convex subgroup is again a linearly ordered abelian group.
+
+* `ConvexSubgroup.orderIsoUpperSet`: the convex subgroups of a linearly ordered abelian group `α`
+  are in order-reversing bijection with upper sets in `FiniteMulArchimedeanClass α`.
+
+## Main results
+
+Equivalent characterizations of convex subgroups:
+
+* `Subgroup.ordConnected_iff_mem_of_le_one`: a subgroup is convex if and only if every element
+  that lies between an element of the subgroup and 1 is also in the subgroup.
+
+* `Subgroup.ordConnected_iff_mem_and_mem_of_mul_mem`: a subgroup `H` is convex if and only if
+  `a * b ∈ H` and `a, b ≤ 1` implies that `a, b ∈ H`.
+
+-/
 
 public section
 
 variable {α β : Type*}
 
-section
+section OrdConnected
 
 variable [Preorder α] [CommGroup α] [IsOrderedMonoid α] [PartialOrder β] [Monoid β]
 variable {S : Type*} [SetLike S α] [SubgroupClass S α] {H : S}
@@ -48,7 +73,7 @@ variable {S : Type*} [SetLike S α] [SubgroupClass S α] {H : S}
   Subgroup.ordConnected_iff_mem_of_le_one.mpr fun a b aleb ble1 fa1 ↦
     le_antisymm (by simpa using f.monotone' ble1) <| by rw [← fa1]; exact f.monotone' aleb
 
-end
+end OrdConnected
 
 variable [CommGroup α] [LinearOrder α]
 
@@ -74,7 +99,7 @@ variable (α) in
 
 @[to_additive] instance : SetLike (ConvexSubgroup α) α where
   coe G := G.toSubgroup
-  coe_injective' _ := by aesop
+  coe_injective _ := by aesop
 
 @[to_additive] instance : PartialOrder (ConvexSubgroup α) := .ofSetLike ..
 
