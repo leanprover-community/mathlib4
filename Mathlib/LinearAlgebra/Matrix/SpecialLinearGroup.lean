@@ -622,6 +622,7 @@ section induction
 
 variable {ι R : Type*} [Fintype ι] [DecidableEq ι] [CommRing R]
 
+/-- the coercion to `Matrix ι ι R` as a monoid homomorphism -/
 def coeHom : SpecialLinearGroup ι R →* Matrix ι ι R where
   toFun := Subtype.val
   map_one' := rfl
