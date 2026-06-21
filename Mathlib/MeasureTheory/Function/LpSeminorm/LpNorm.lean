@@ -229,7 +229,7 @@ lemma lpNorm_expect_le [Module ℚ≥0 E] [NormedSpace ℝ E] {ι : Type*} {s : 
 theorem eLpNorm_sum_smul_le [NormedSpace ℝ E] {ι : Type*} {s : Finset ι} {w : ι → ℝ}
     (hw₀ : ∀ i ∈ s, 0 ≤ w i) (hw₁ : ∑ i ∈ s, w i = 1) {f : ι → α → E}
     (hf : ∀ i, AEStronglyMeasurable (f i) μ) {B : ℝ≥0∞} (hB : ∀ i, eLpNorm (f i) 1 μ ≤ B) :
-    eLpNorm (∑ i ∈ s, w i • f i) 1 μ ≤ B := 
+    eLpNorm (∑ i ∈ s, w i • f i) 1 μ ≤ B :=
   calc eLpNorm (∑ i ∈ s, w i • f i) 1 μ
       ≤ ∑ i ∈ s, eLpNorm (w i • f i) 1 μ :=
         eLpNorm_sum_le (fun i _ ↦ (hf i).const_smul _) le_rfl
