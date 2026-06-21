@@ -75,15 +75,25 @@ theorem sum_log_eq_sum_mangoldt {x : ℝ} :
   simp_rw [this, sum_Ioc_mul_zeta_eq_sum, ← floor_div_natCast]
 
 /-- A crude upper bound on the partial sum of the logarithm. -/
-theorem sum_log_le {x : ℝ} (hx : 1 ≤ x) : ∑ n ∈ Ioc 0 ⌊x⌋₊, log n ≤ x * log x := calc
-  _ ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, log x := by
-    refine sum_le_sum fun n hn ↦ ?_
-    simp only [mem_Ioc] at hn
-    exact log_le_log (mod_cast hn.1) (le_floor_iff (by linarith)|>.mp hn.2)
-  _ = ⌊x⌋₊ * log x := by simp
-  _ ≤ _ := by
-    gcongr
-    exacts [log_nonneg hx, floor_le (by linarith)]
+theorem sum_log_le {x : ℝ} (hx : 1 ≤ x) : ∑ n ∈ Ioc 0 ⌊x⌋₊, log n ≤ x * log x - x + log x + 1
+    := by
+  have h1 := floor_le (by linarith : 0 ≤ x)
+  have h2 : 1 ≤ ⌊x⌋₊ := by simpa
+  calc
+    _ = ∑ n ∈ Icc 1 ⌊x⌋₊, log n := by rfl
+    _ ≤ (∫ t in (1:ℕ)..⌊x⌋₊, log t) + log x := by
+      rw [← sum_Ico_add_eq_sum_Icc (by simpa)]
+      gcongr
+      exact (strictMonoOn_log.monotoneOn.mono (by grind)).sum_le_integral_Ico (f := log) h2
+    _ ≤ (∫ t in 1..x, log t) + log x := by
+      norm_cast; gcongr
+      apply integral_mono_interval (by rfl) (mod_cast h2) h1 _ intervalIntegrable_log'
+      exact ae_restrict_of_forall_mem (by measurability) (fun _ _ ↦ (Real.log_pos (by grind)).le)
+    _ = _ := by simp; ring
+
+/-- An even cruder upper bound on the partial sum of the logarithm. -/
+theorem sum_log_le' {x : ℝ} (hx : 1 ≤ x) : ∑ n ∈ Ioc 0 ⌊x⌋₊, log n ≤ x * log x := by
+  linarith [sum_log_le hx, log_le_sub_one_of_pos (by linarith)]
 
 /-- A crude lower bound on the partial sum of the logarithm. -/
 theorem le_sum_log {x : ℝ} (hx : 1 ≤ x) :
@@ -109,6 +119,10 @@ theorem le_sum_log {x : ℝ} (hx : 1 ≤ x) :
     have : x - ⌊x⌋₊ ≤ 1 := by linarith [lt_floor_add_one x]
     grw [integral_log, log_one, intervalIntegral.integral_const, smul_eq_mul, this]
     linarith
+
+/-- An even cruder lower bound on the partial sum of the logarithm. -/
+theorem le_sum_log' {x : ℝ} (hx : 1 ≤ x) : x * log x - 2 * x ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, log n := by
+  linarith [le_sum_log hx, log_le_self (by linarith)]
 
 /-- A sharper bound on the partial sum of the logarithm in the natural number case. -/
 theorem le_sum_log_nat {N : ℕ} : N * log N - N ≤ ∑ n ∈ Ioc 0 N, log n := by
@@ -344,7 +358,7 @@ theorem E₁Λ_le_E₁p_add_E₁ {x : ℝ} (hx : 1 ≤ x) :
 theorem E₁p_le {x : ℝ} (hx : 1 ≤ x) : E₁p x ≤ log 4 := by
   suffices x * (log x + E₁p x) ≤ x * (log x + log 4) by
     linarith [le_of_mul_le_mul_left this (by linarith)]
-  grw [mul_log_add_E₁p_le x, theta_le_log4_mul_x (by linarith), sum_log_le hx]
+  grw [mul_log_add_E₁p_le x, theta_le_log4_mul_x (by linarith), sum_log_le' hx]
   ring_nf; rfl
 
 /-- A general upper bound for `E₁Λ`. -/
@@ -355,7 +369,7 @@ theorem E₁Λ_le {x : ℝ} (hx : 1 ≤ x) : E₁Λ x ≤ log 4 + 1 := by
 theorem le_E₁Λ {x : ℝ} (hx : 1 ≤ x) : -2 ≤ E₁Λ x := by
   suffices x * (log x - 2) ≤ x * (log x + E₁Λ x) by
      linarith [le_of_mul_le_mul_left this (by linarith)]
-  grw [← le_mul_log_add_E₁Λ (by linarith), ← le_sum_log hx]
+  grw [← le_mul_log_add_E₁Λ (by linarith), ← le_sum_log' hx]
   linarith [log_le_self (by linarith : 0 ≤ x)]
 
 /-- A sharper lower bound for `E₁Λ` in the natural number case. -/
