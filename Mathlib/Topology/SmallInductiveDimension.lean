@@ -55,6 +55,7 @@ variable (X) in
 abbrev HasSmallInductiveDimensionLE (n : ℕ) :=
   HasSmallInductiveDimensionLT X (n + 1)
 
+variable (X) in
 /-- The small inductive dimension of a topological space. -/
 noncomputable def smallInductiveDimension : WithBot ℕ∞ :=
   sInf {n : WithBot ℕ∞ | ∀ (i : ℕ), n < i → HasSmallInductiveDimensionLT X i}
