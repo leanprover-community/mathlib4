@@ -969,7 +969,7 @@ private theorem tendsto_iSup_eLpNorm_indicator_atTop_le_iff_lt :
     have hupper : Tendsto
         (fun C : ℝ≥0 ↦ ⨆ i, eLpNorm ({x | C - 1 < ‖f i x‖₊}.indicator (f i)) p μ) atTop (𝓝 0) :=
       hlt.comp hsub
-    refine tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds hupper 
+    refine tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds hupper
       (.of_forall fun _ ↦ zero_le) ?_
     filter_upwards [eventually_gt_atTop 0] with C hC
     refine iSup_mono fun i ↦ eLpNorm_mono fun x ↦ ?_
