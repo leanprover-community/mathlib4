@@ -44,7 +44,7 @@ that $x = y \circ a$ and $a \circ f = 0$. We recover the usual equational criter
 $K = R$ and $N = R^l$. This is used in the proof of Lazard's theorem.
 
 We conclude that every linear map from a finitely presented module to a flat module factors
-through a finite free module (`Module.Flat.exists_factorization_of_isFinitelyPresented`), and
+through a finite free module (`Module.Flat.exists_factorization_of_finitePresentation`), and
 every finitely presented flat module is projective (`Module.Flat.projective_of_finitePresentation`).
 
 ## References
@@ -178,7 +178,7 @@ If $M$ is flat, then every relation $\sum_i f_i x_i = 0$ in $M$ is trivial. -/
 theorem isTrivialRelation_of_sum_smul_eq_zero [Flat R M] {ι : Type*} [Fintype ι] {f : ι → R}
     {x : ι → M} (h : ∑ i, f i • x i = 0) : IsTrivialRelation f x :=
   (Fintype.equivFin ι).symm.isTrivialRelation_comp.mp <| iff_forall_isTrivialRelation.mp ‹_› <| by
-    simpa only [← (Fintype.equivFin ι).symm.sum_comp] using h
+    simpa only [← (Fintype.equivFin ι).symm.sum_comp] using! h
 
 /-- **Equational criterion for flatness**, backward direction.
 
@@ -245,7 +245,7 @@ private theorem exists_factorization_of_comp_eq_zero_of_free_aux [Flat R M] {K :
       use k₂, a₂ ∘ₗ a₁, y₂
       simp_rw [comp_assoc]
       exact ⟨trivial, sup_le (ha₁.trans (ker_le_ker_comp _ _)) ha₂⟩
-  convert this ⊤ Finite.fg_top
+  convert! this ⊤ Finite.fg_top
   simp only [top_le_iff, ker_eq_top]
 
 /-- Let $M$ be a flat module. Let $K$ and $N$ be finite $R$-modules with $N$
@@ -268,9 +268,9 @@ theorem exists_factorization_of_comp_eq_zero_of_free [Flat R M] {K N : Type*} [A
 /-- Every homomorphism from a finitely presented module to a flat module factors through a finite
 free module. -/
 @[stacks 058E "only if"]
-theorem exists_factorization_of_isFinitelyPresented [Flat R M] {P : Type*} [AddCommGroup P]
+theorem exists_factorization_of_finitePresentation [Flat R M] {P : Type*} [AddCommGroup P]
     [Module R P] [FinitePresentation R P] (h₁ : P →ₗ[R] M) :
-      ∃ (k : ℕ) (h₂ : P →ₗ[R] (Fin k →₀ R)) (h₃ : (Fin k →₀ R) →ₗ[R] M), h₁ = h₃ ∘ₗ h₂ := by
+    ∃ (k : ℕ) (h₂ : P →ₗ[R] (Fin k →₀ R)) (h₃ : (Fin k →₀ R) →ₗ[R] M), h₁ = h₃ ∘ₗ h₂ := by
   have ⟨_, K, ϕ, hK⟩ := FinitePresentation.exists_fin R P
   haveI : Module.Finite R K := .of_fg hK
   have : (h₁ ∘ₗ ϕ.symm ∘ₗ K.mkQ) ∘ₗ K.subtype = 0 := by
@@ -281,9 +281,12 @@ theorem exists_factorization_of_isFinitelyPresented [Flat R M] {P : Type*} [AddC
   apply (cancel_right K.mkQ_surjective).mp
   simpa [comp_assoc]
 
+@[deprecated (since := "2026-05-23")]
+alias exists_factorization_of_isFinitelyPresented := exists_factorization_of_finitePresentation
+
 @[stacks 00NX "(1) → (2)"]
 theorem projective_of_finitePresentation [Flat R M] [FinitePresentation R M] : Projective R M :=
-  have ⟨_, f, g, eq⟩ := exists_factorization_of_isFinitelyPresented (.id (R := R) (M := M))
+  have ⟨_, f, g, eq⟩ := exists_factorization_of_finitePresentation (.id (R := R) (M := M))
   .of_split f g eq.symm
 
 end Module.Flat

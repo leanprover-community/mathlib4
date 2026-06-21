@@ -174,32 +174,20 @@ theorem LinearIsometryEquiv.contDiff (f : E ≃ₗᵢ[𝕜] F) : ContDiff 𝕜 n
   (f : E →L[𝕜] F).contDiff
 
 /-- The identity is `C^n`. -/
+@[to_fun (attr := fun_prop) contDiff_fun_id]
 theorem contDiff_id : ContDiff 𝕜 n (id : E → E) :=
   IsBoundedLinearMap.id.contDiff
 
-@[fun_prop]
-theorem contDiff_fun_id : ContDiff 𝕜 n (fun x : E => x) :=
-  IsBoundedLinearMap.id.contDiff
-
+@[to_fun (attr := fun_prop) contDiffWithinAt_fun_id]
 theorem contDiffWithinAt_id {s x} : ContDiffWithinAt 𝕜 n (id : E → E) s x :=
   contDiff_id.contDiffWithinAt
 
-@[fun_prop]
-theorem contDiffWithinAt_fun_id {s x} : ContDiffWithinAt 𝕜 n (fun x : E => x) s x :=
-  contDiff_id.contDiffWithinAt
-
+@[to_fun (attr := fun_prop) contDiffAt_fun_id]
 theorem contDiffAt_id {x} : ContDiffAt 𝕜 n (id : E → E) x :=
   contDiff_id.contDiffAt
 
-@[fun_prop]
-theorem contDiffAt_fun_id {x} : ContDiffAt 𝕜 n (fun x : E => x) x :=
-  contDiff_id.contDiffAt
-
+@[to_fun (attr := fun_prop) contDiffOn_fun_id]
 theorem contDiffOn_id {s} : ContDiffOn 𝕜 n (id : E → E) s :=
-  contDiff_id.contDiffOn
-
-@[fun_prop]
-theorem contDiffOn_fun_id {s} : ContDiffOn 𝕜 n (fun x : E => x) s :=
   contDiff_id.contDiffOn
 
 /-- Bilinear functions are `C^n`. -/
@@ -289,10 +277,7 @@ theorem ContinuousLinearEquiv.iteratedFDerivWithin_comp_left (g : F ≃L[𝕜] G
       fderivWithin_congr' (@IH) hx
     simp_rw [Z]
     rw [(g.continuousMultilinearMapCongrRight fun _ : Fin i => E).comp_fderivWithin (hs x hx)]
-    simp only [ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe, comp_apply,
-      ContinuousLinearEquiv.continuousMultilinearMapCongrRight_apply,
-      ContinuousLinearMap.compContinuousMultilinearMap_coe, EmbeddingLike.apply_eq_iff_eq]
-    rw [iteratedFDerivWithin_succ_apply_left]
+    simp [iteratedFDerivWithin_succ_apply_left]
 
 /-- Iterated derivatives commute with left composition by continuous linear equivalences. -/
 theorem ContinuousLinearEquiv.iteratedFDeriv_comp_left {f : E → F} {x : E} (g : F ≃L[𝕜] G) {i : ℕ} :
@@ -384,7 +369,8 @@ theorem HasFTaylorSeriesUpToOn.comp_continuousAffineMap
     rw [map_zero]
     rfl
   · intro m hm x hx
-    convert (hA m).hasFDerivAt.comp_hasFDerivWithinAt x
+    convert!
+      (hA m).hasFDerivAt.comp_hasFDerivWithinAt x
         ((hf.fderivWithin m hm (g x) hx).comp x g.hasFDerivWithinAt (Subset.refl _))
     ext y v
     change p (g x) (Nat.succ m) (g.contLinear ∘ cons y v)
@@ -463,11 +449,11 @@ theorem ContinuousLinearEquiv.iteratedFDerivWithin_comp_right (g : G ≃L[𝕜] 
             (iteratedFDerivWithin 𝕜 i f s ∘ g)) (g ⁻¹' s) x :=
       fderivWithin_congr' (@IH) hx
     rw [this, ContinuousLinearEquiv.comp_fderivWithin _ (g.uniqueDiffOn_preimage_iff.2 hs x hx)]
-    simp only [ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe, comp_apply,
+    simp only [ContinuousLinearMap.comp_apply, ContinuousLinearEquiv.coe_coe,
       ContinuousLinearEquiv.continuousMultilinearMapCongrLeft_apply,
       ContinuousMultilinearMap.compContinuousLinearMap_apply]
     rw [ContinuousLinearEquiv.comp_right_fderivWithin _ (g.uniqueDiffOn_preimage_iff.2 hs x hx),
-      ContinuousLinearMap.coe_comp', coe_coe, comp_apply, tail_def, tail_def]
+      ContinuousLinearMap.comp_apply, coe_coe, tail_def, tail_def]
 
 /-- The iterated derivative of the composition with a linear map on the right is
 obtained by composing the iterated derivative with the linear map. -/
@@ -542,7 +528,8 @@ theorem HasFTaylorSeriesUpToOn.prodMk {n : ℕ∞ω}
   constructor
   · intro x hx; rw [← hf.zero_eq x hx, ← hg.zero_eq x hx]; rfl
   · intro m hm x hx
-    convert (L m).hasFDerivAt.comp_hasFDerivWithinAt x
+    convert!
+      (L m).hasFDerivAt.comp_hasFDerivWithinAt x
         ((hf.fderivWithin m hm x hx).prodMk (hg.fderivWithin m hm x hx))
   · intro m hm
     exact (L m).continuous.comp_continuousOn ((hf.cont m hm).prodMk (hg.cont m hm))

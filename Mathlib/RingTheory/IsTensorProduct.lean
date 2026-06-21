@@ -32,7 +32,6 @@ public import Mathlib.RingTheory.TensorProduct.Maps
 
 @[expose] public section
 
-
 universe u v₁ v₂ v₃ v₄
 
 open TensorProduct
@@ -175,6 +174,7 @@ variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
  [Module R M₁₂] [Module S M₁₂] [IsScalarTower R S M₁₂]
  [Module R M₂₃] [Module S M₂₃] [IsScalarTower R S M₂₃]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- (Implementation): Use the more linear `IsTensorProduct.assoc`. -/
 private noncomputable def assocAux
     (f : M₁ →ₗ[R] M₂ →ₗ[S] M₁₂) (hf : IsTensorProduct (f.restrictScalars₁₂ R R))
@@ -214,6 +214,7 @@ private lemma assocAux_tmul (x₁ : M₁) (x₂ : M₂) (x₃ : M₃) :
   have : hf.equiv.symm (f x₁ x₂) = x₁ ⊗ₜ x₂ := hf.equiv_symm_apply _ _
   simp [IsTensorProduct.assocAux, this]
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 This is the canonical isomorphism `(M₁ ⊗[R] M₂) ⊗[S] M₃ ≃ₗ[T] M₁ ⊗[R] (M₂ ⊗[S] M₃)`.
 We state this for a general `M₁₂ = M₁ ⊗[R] M₂` and `M₂₃ = M₂ ⊗[R] M₃`.
@@ -292,7 +293,7 @@ lemma compr₂_linearEquiv (ist : IsTensorProduct f) (e : M ≃ₗ[R] M') :
   exact e.bijective.comp ist
 
 lemma compl₂_comp_linearEquiv (ist : IsTensorProduct f) (e₁ : N₁ ≃ₗ[R] M₁) (e₂ : N₂ ≃ₗ[R] M₂) :
-    IsTensorProduct ((f.comp e₁.toLinearMap).compl₂ e₂.toLinearMap):= by
+    IsTensorProduct ((f.comp e₁.toLinearMap).compl₂ e₂.toLinearMap) := by
   simp only [IsTensorProduct] at ist ⊢
   rw [← TensorProduct.lift_comp_map, ← LinearMap.rTensor_comp_lTensor]
   exact ist.comp ((e₁.rTensor M₂).bijective.comp (e₂.lTensor N₁).bijective)
@@ -350,7 +351,7 @@ noncomputable nonrec def IsBaseChange.lift (g : M →ₗ[R] Q) : N →ₗ[S] Q :
 
 nonrec theorem IsBaseChange.lift_eq (g : M →ₗ[R] Q) (x : M) : h.lift g (f x) = g x := by
   have hF : ∀ (s : S) (m : M), h.lift g (s • f m) = s • g m := h.lift_eq _
-  convert hF 1 x <;> rw [one_smul]
+  convert! hF 1 x <;> rw [one_smul]
 
 theorem IsBaseChange.lift_comp (g : M →ₗ[R] Q) : ((h.lift g).restrictScalars R).comp f = g :=
   LinearMap.ext (h.lift_eq g)
@@ -386,7 +387,7 @@ variable (R M N S)
 
 theorem TensorProduct.isBaseChange : IsBaseChange S (TensorProduct.mk R S M 1) := by
   delta IsBaseChange
-  convert TensorProduct.isTensorProduct R S M using 1
+  convert! TensorProduct.isTensorProduct R S M using 1
   ext s x
   change s • (1 : S) ⊗ₜ[R] x = s ⊗ₜ[R] x
   rw [TensorProduct.smul_tmul']
@@ -434,11 +435,11 @@ lemma IsBaseChange.iff_of_equiv_comm (eM : M ≃ₗ[R] P) (eN : N ≃ₗ[S] Q)
   simp only [IsBaseChange]
   have (m : M) : f' (eM m) = eN (f m) := LinearMap.congr_fun comm m
   refine ⟨fun ist ↦ ?_, fun ist ↦ ?_⟩
-  · convert (ist.compl₂_linearEquiv eM.symm).compr₂_linearEquiv (eN.restrictScalars R)
+  · convert! (ist.compl₂_linearEquiv eM.symm).compr₂_linearEquiv (eN.restrictScalars R)
     ext s m'
     obtain ⟨m, rfl⟩ := eM.surjective m'
     simp [this]
-  · convert (ist.compl₂_linearEquiv eM).compr₂_linearEquiv (eN.symm.restrictScalars R)
+  · convert! (ist.compl₂_linearEquiv eM).compr₂_linearEquiv (eN.symm.restrictScalars R)
     ext s m
     simp [this]
 
@@ -687,7 +688,7 @@ lemma Algebra.IsPushout.tensorProduct_tensorProduct
       Algebra.TensorProduct.includeRight.toRingHom) :
     Algebra.IsPushout A B (A ⊗[R] S) (B ⊗[R] S) := by
   constructor
-  convert isBaseChange_tensorProduct_map (R := R) (P := S) _ (IsBaseChange.linearMap A B)
+  convert! isBaseChange_tensorProduct_map (R := R) (P := S) _ (IsBaseChange.linearMap A B)
   ext s
   simpa using congr($H s)
 

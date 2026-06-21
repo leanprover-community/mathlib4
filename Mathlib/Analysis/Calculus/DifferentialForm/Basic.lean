@@ -250,7 +250,7 @@ theorem extDerivWithin_pullback {ω : F → F [⋀^Fin n]→L[𝕜] G} {f : E �
   rw [extDerivWithin,
     fderivWithin_continuousAlternatingMapCompContinuousLinearMap (by exact hω.comp x hdf hst) hd2f
       (hs x hxs),
-    alternatizeUncurryFin_add, fderivWithin_comp' _ hω hdf hst (hs x hxs), extDerivWithin,
+    alternatizeUncurryFin_add, fderivWithin_fun_comp _ hω hdf hst (hs x hxs), extDerivWithin,
     alternatizeUncurryFin_fderivCompContinuousLinearMap_eq_zero, add_zero]
   · ext v
     simp +unfoldPartialApp [alternatizeUncurryFin_apply, Fin.removeNth, Function.comp_def]

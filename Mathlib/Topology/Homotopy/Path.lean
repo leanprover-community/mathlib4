@@ -379,21 +379,19 @@ theorem cast_cast {x y : X} (γ : Homotopic.Quotient x y) {x' y'} (hx : x' = x) 
   induction γ using Quotient.ind with | mk γ =>
   rfl
 
+theorem cast_heq {x y x' y' : X} (hx : x' = x) (hy : y' = y) {γ : Homotopic.Quotient x y} :
+    γ.cast hx hy ≍ γ := by
+  cases hx; cases hy; exact heq_of_eq γ.cast_rfl_rfl
+
 /-- The composition of path homotopy classes. This is `Path.trans` descended to the quotient. -/
 def trans (P₀ : Path.Homotopic.Quotient x₀ x₁) (P₁ : Path.Homotopic.Quotient x₁ x₂) :
     Path.Homotopic.Quotient x₀ x₂ :=
   Quotient.map₂ Path.trans (fun (_ : Path x₀ x₁) _ hp (_ : Path x₁ x₂) _ hq => hcomp hp hq) P₀ P₁
 
-@[deprecated (since := "2025-11-13")]
-noncomputable alias _root_.Path.Homotopic.Quotient.comp := Quotient.trans
-
 @[simp, grind =]
 theorem mk_trans (P₀ : Path x₀ x₁) (P₁ : Path x₁ x₂) :
     mk (P₀.trans P₁) = Quotient.trans (mk P₀) (mk P₁) :=
   rfl
-
-@[deprecated (since := "2025-11-13")]
-noncomputable alias _root_.Path.Homotopic.comp_lift := Quotient.mk_trans
 
 /-- The image of a path homotopy class `P₀` under a map `f`.
 This is `Path.map` descended to the quotient. -/
@@ -402,22 +400,24 @@ def map (P₀ : Path.Homotopic.Quotient x₀ x₁) (f : C(X, Y)) :
   _root_.Quotient.map
     (fun q : Path x₀ x₁ => q.map f.continuous) (fun _ _ h => Path.Homotopic.map h f) P₀
 
-@[deprecated (since := "2025-11-13")]
-noncomputable alias _root_.Path.Homotopic.Quotient.mapFn := Quotient.map
-
 theorem mk_map (P₀ : Path x₀ x₁) (f : C(X, Y)) : mk (P₀.map f.continuous) = map (mk P₀) f :=
   rfl
 
-@[deprecated (since := "2025-11-13")]
-noncomputable alias _root_.Path.Homotopic.map_lift := Quotient.mk_map
+theorem map_comp {Z} [TopologicalSpace Z] {p : Path.Homotopic.Quotient x₀ x₁}
+    {f : C(X, Y)} {g : C(Y, Z)} : p.map (g.comp f) = (p.map f).map g := by
+  rcases p; rfl
+
+theorem map_cast {x y : X} (p : Homotopic.Quotient x y) {x' y'} {hx : x' = x} {hy : y' = y}
+    {f : C(X, Y)} : (p.cast hx hy).map f = (p.map f).cast congr(f $hx) congr(f $hy) := by
+  rcases p; rfl
 
 end Quotient
 
 -- Porting note: we didn't previously need the `α := ...` and `β := ...` hints.
 theorem hpath_hext {p₁ : Path x₀ x₁} {p₂ : Path x₂ x₃} (hp : ∀ t, p₁ t = p₂ t) :
     HEq (α := Path.Homotopic.Quotient _ _) ⟦p₁⟧ (β := Path.Homotopic.Quotient _ _) ⟦p₂⟧ := by
-  obtain rfl : x₀ = x₂ := by convert hp 0 <;> simp
-  obtain rfl : x₁ = x₃ := by convert hp 1 <;> simp
+  obtain rfl : x₀ = x₂ := by convert! hp 0 <;> simp
+  obtain rfl : x₁ = x₃ := by convert! hp 1 <;> simp
   rw [heq_iff_eq]; congr; ext t; exact hp t
 
 end Homotopic

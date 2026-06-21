@@ -354,6 +354,7 @@ noncomputable def getFunctorPushforwardStructure {F : C ⥤ D} {S : Presieve X} 
   choose Z f' g h₁ h using h
   exact ⟨Z, f', g, h₁, h⟩
 
+set_option backward.defeqAttrib.useBackward true in
 theorem functorPushforward_comp (R : Presieve X) :
     R.functorPushforward (F ⋙ G) = (R.functorPushforward F).functorPushforward G := by
   funext x
@@ -429,11 +430,17 @@ lemma functorPullback_map_functorPullback {X : C} (R : Presieve (F.obj X)) :
 lemma map_id {X : C} (R : Presieve X) : R.map (𝟭 C) = R :=
   le_antisymm (fun _ _ ⟨hg⟩ ↦ hg) fun _ _ hg ↦ ⟨hg⟩
 
+@[gcongr]
 lemma map_monotone : Monotone (map (X := X) F) :=
   (galoisConnection_map_functorPullback _ _).monotone_l
 
+@[gcongr]
 lemma functorPullback_monotone {X : C} : Monotone (Presieve.functorPullback (X := X) F) :=
-  (Presieve.galoisConnection_map_functorPullback F X).monotone_u
+  (galoisConnection_map_functorPullback F X).monotone_u
+
+@[simp]
+lemma map_bot : map F (⊥ : Presieve X) = ⊥ :=
+  (galoisConnection_map_functorPullback _ _).l_bot
 
 end
 
@@ -707,7 +714,7 @@ lemma generate_eq_bot_iff (R : Presieve X) : generate R = ⊥ ↔ R = ⊥ := by
 lemma comp_mem_iff (i : X ⟶ Y) (f : Y ⟶ Z) [IsIso i] (S : Sieve Z) :
     S (i ≫ f) ↔ S f := by
   refine ⟨fun H ↦ ?_, fun H ↦ S.downward_closed H _⟩
-  convert S.downward_closed H (inv i)
+  convert! S.downward_closed H (inv i)
   simp
 
 section
@@ -859,6 +866,10 @@ lemma pullback_ofObjects {I : Type*} (X : I → C) {Y Z : C} (f : Z ⟶ Y) :
     (ofObjects X Y).pullback f = ofObjects X Z := by
   ext
   simp [Sieve.ofObjects]
+
+@[simp]
+lemma ofObjects_id (X : C) : Sieve.ofObjects id X = ⊤ :=
+  Sieve.pullback_ofObjects_eq_top _ (𝟙 _)
 
 /-- Push a sieve `R` on `Y` forward along an arrow `f : Y ⟶ X`: `gf : Z ⟶ X` is in the sieve if `gf`
 factors through some `g : Z ⟶ Y` which is in `R`.
@@ -1127,6 +1138,7 @@ lemma functorPullback_functorPushforward_eq {X : C} {S : Sieve X} [F.Full] [F.Fa
     Sieve.functorPullback F (Sieve.functorPushforward F S) = S :=
   (Sieve.fullyFaithfulFunctorGaloisCoinsertion _ _).u_l_eq _
 
+set_option backward.defeqAttrib.useBackward true in
 lemma functorPushforward_functor (S : Sieve X) (e : C ≌ D) :
     S.functorPushforward e.functor = (S.pullback (e.unitInv.app X)).functorPullback e.inverse := by
   ext Y iYX
@@ -1217,6 +1229,7 @@ theorem natTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
 
 open ConcreteCategory
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The presheaf induced by a sieve is a subobject of the yoneda embedding. -/
 instance functorInclusion_is_mono : Mono S.functorInclusion :=
   ⟨fun f g h => by
@@ -1260,19 +1273,20 @@ def uliftNatTransOfLe {S T : Sieve X} (h : S ≤ T) :
 /-- A variant of `Sieve.functorInclusion` with universe lifting. -/
 @[simps! app]
 def uliftFunctorInclusion (S : Sieve X) :
-    S.uliftFunctor ⟶ uliftYoneda.obj.{w} X :=
+    S.uliftFunctor ⟶ uliftYoneda.{w}.obj X :=
   Functor.whiskerRight S.functorInclusion CategoryTheory.uliftFunctor
 
 /-- A variant of `Sieve.toFunctor` with universe lifting. -/
 @[simps]
 def toUliftFunctor (S : Sieve X) {Y : C} (f : Y ⟶ X) (hf : S f) :
-    uliftYoneda.obj.{w} Y ⟶ Sieve.uliftFunctor.{w} S where
+    uliftYoneda.{w}.obj Y ⟶ Sieve.uliftFunctor.{w} S where
   app Z := ↾fun g ↦ ⟨g.down ≫ f, S.downward_closed hf g.down⟩
 
 theorem uliftNatTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
     uliftNatTransOfLe.{w} h ≫ uliftFunctorInclusion.{w} _ = uliftFunctorInclusion.{w} _ :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The presheaf induced by a sieve is a subobject of the yoneda embedding. -/
 instance uliftFunctorInclusion_is_mono (S : Sieve X) :
     Mono (Sieve.uliftFunctorInclusion.{w} S) :=
@@ -1283,7 +1297,7 @@ instance uliftFunctorInclusion_is_mono (S : Sieve X) :
 
 /-- A variant of `Sieve.sieveOfSubfunctor` with universe lifting. -/
 @[simps]
-def sieveOfUliftSubfunctor {R : Cᵒᵖ ⥤ Type (max w v₁)} (f : R ⟶ uliftYoneda.obj.{w} X) :
+def sieveOfUliftSubfunctor {R : Cᵒᵖ ⥤ Type max w v₁} (f : R ⟶ uliftYoneda.{w}.obj X) :
     Sieve X where
   arrows Y g := ∃ t, f.app (Opposite.op Y) t = { down := g }
   downward_closed := by
@@ -1291,6 +1305,7 @@ def sieveOfUliftSubfunctor {R : Cᵒᵖ ⥤ Type (max w v₁)} (f : R ⟶ uliftY
     refine ⟨R.map g.op t, ?_⟩
     simp [ht]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem sieveOfUliftSubfunctor_uliftFunctorInclusion {S : Sieve X} :
     Sieve.sieveOfUliftSubfunctor.{w} (S.uliftFunctorInclusion) = S := by
@@ -1320,6 +1335,7 @@ def shrinkFunctor [LocallySmall.{w} C] {X : C} (S : Sieve X) :
   map {Y Z} g f hf := by
     simpa [shrinkYonedaObjObjEquiv_obj_map] using S.downward_closed hf _
 
+set_option backward.defeqAttrib.useBackward true in
 variable (S) in
 /-- `Sieve.shrinkFunctor` is compatible with universe lifting. -/
 noncomputable
@@ -1346,6 +1362,7 @@ lemma shrinkFunctorUliftFunctorIso_inv_ι [LocallySmall.{w} C] [LocallySmall.{ma
       shrinkYonedaUliftFunctorIso.{w, w'}.inv.app X :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 variable (S) in
 /-- Shrinking does nothing for the same universe level. -/
 @[simps! hom_app inv_app]

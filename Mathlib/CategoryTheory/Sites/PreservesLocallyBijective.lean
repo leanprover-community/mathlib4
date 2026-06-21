@@ -36,6 +36,7 @@ lemma isLocallyInjective_whisker [H.IsCocontinuous J K] [IsLocallyInjective K f]
     IsLocallyInjective J (whiskerLeft H.op f) where
   equalizerSieve_mem x y h := H.cover_lift J K (equalizerSieve_mem K f x y h)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isLocallyInjective_of_whisker (hH : CoverPreserving J K H)
     [H.IsCoverDense K] [IsLocallyInjective J (whiskerLeft H.op f)] : IsLocallyInjective K f where
   equalizerSieve_mem {X} a b h := by
@@ -73,7 +74,7 @@ lemma isLocallySurjective_of_whisker (hH : CoverPreserving J K H)
     refine K.superset_covering (Sieve.functorPushforward_monotone H _ ?_) hh
     intro W q ⟨x, h⟩
     simp only [Sieve.functorPullback_apply, Presieve.functorPullback_mem, Sieve.pullback_apply]
-    exact ⟨x, by simpa using h⟩
+    exact ⟨x, by simpa using! h⟩
 
 lemma isLocallySurjective_whisker_iff (hH : CoverPreserving J K H) [H.IsCocontinuous J K]
     [H.IsCoverDense K] : IsLocallySurjective J (whiskerLeft H.op f) ↔ IsLocallySurjective K f :=

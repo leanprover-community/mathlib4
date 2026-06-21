@@ -28,6 +28,7 @@ open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D] (F : C ⥤ D)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If a span is the pullback span over the terminal object, then it is a binary product. -/
 def isBinaryProductOfIsTerminalIsPullback (F : Discrete WalkingPair ⥤ C) (c : Cone F) {X : C}
     (hX : IsTerminal X) (f : F.obj ⟨WalkingPair.left⟩ ⟶ X) (g : F.obj ⟨WalkingPair.right⟩ ⟶ X)
@@ -64,9 +65,9 @@ def isPullbackOfIsTerminalIsProduct {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (h
     IsLimit (PullbackCone.mk _ _ (show h ≫ f = k ≫ g from H₁.hom_ext _ _)) := by
   apply PullbackCone.isLimitAux'
   intro s
-  use H₂.lift (BinaryFan.mk s.fst s.snd)
-  use H₂.fac (BinaryFan.mk s.fst s.snd) ⟨WalkingPair.left⟩
-  use H₂.fac (BinaryFan.mk s.fst s.snd) ⟨WalkingPair.right⟩
+  use BinaryFan.IsLimit.lift H₂ s.fst s.snd
+  use BinaryFan.IsLimit.lift_fst _ _ _
+  use BinaryFan.IsLimit.lift_snd _ _ _
   intro m h₁ h₂
   apply H₂.hom_ext
   rintro ⟨⟨⟩⟩
@@ -130,6 +131,7 @@ lemma prodIsoPullback_inv_snd [HasTerminal C] [HasPullbacks C] (X Y : C)
     [HasBinaryProduct X Y] : (prodIsoPullback X Y).inv ≫ prod.snd = pullback.snd _ _ :=
   limit.isoLimitCone_inv_π (limitConeOfTerminalAndPullbacks _) ⟨.right⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If a cospan is the pushout cospan under the initial object, then it is a binary coproduct. -/
 def isBinaryCoproductOfIsInitialIsPushout (F : Discrete WalkingPair ⥤ C) (c : Cocone F) {X : C}
@@ -171,9 +173,9 @@ def isPushoutOfIsInitialIsCoproduct {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (h
     IsColimit (PushoutCocone.mk _ _ (show h ≫ f = k ≫ g from H₁.hom_ext _ _)) := by
   apply PushoutCocone.isColimitAux'
   intro s
-  use H₂.desc (BinaryCofan.mk s.inl s.inr)
-  use H₂.fac (BinaryCofan.mk s.inl s.inr) ⟨WalkingPair.left⟩
-  use H₂.fac (BinaryCofan.mk s.inl s.inr) ⟨WalkingPair.right⟩
+  use BinaryCofan.IsColimit.desc H₂ s.inl s.inr
+  use BinaryCofan.IsColimit.inl_desc H₂ _ _
+  use BinaryCofan.IsColimit.inr_desc H₂ _ _
   intro m h₁ h₂
   apply H₂.hom_ext
   rintro ⟨⟨⟩⟩

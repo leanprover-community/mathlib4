@@ -189,7 +189,7 @@ def prodIso : CategoryTheory.Grpd.of (πₓ A × πₓ B) ≅ πₓ (TopCat.of (
     apply CategoryTheory.Functor.hext
     · intros; apply FundamentalGroupoid.ext; apply Prod.ext <;> simp <;> rfl
     rintro ⟨x₀, x₁⟩ ⟨y₀, y₁⟩ f
-    simpa [-Path.Homotopic.prod_projLeft_projRight] using Path.Homotopic.prod_projLeft_projRight f
+    simpa [-Path.Homotopic.prod_projLeft_projRight] using! Path.Homotopic.prod_projLeft_projRight f
 
 end Prod
 
