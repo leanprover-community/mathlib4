@@ -58,7 +58,7 @@ noncomputable def quotientTensorQuotientEquiv (m : Submodule R M) (n : Submodule
     (M ⊗[R] N) ⧸
       (LinearMap.range (map m.subtype LinearMap.id) ⊔
         LinearMap.range (map LinearMap.id n.subtype)) :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (lift <| Submodule.liftQ _ (LinearMap.flip <| Submodule.liftQ _
       ((mk R (M := M) (N := N)).flip.compr₂ (Submodule.mkQ _)) fun x hx => by
       ext y

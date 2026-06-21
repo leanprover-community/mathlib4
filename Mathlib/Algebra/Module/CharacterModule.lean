@@ -107,7 +107,7 @@ lemma dual_surjective_of_injective (f : A →ₗ[R] B) (hf : Function.Injective 
 Two isomorphic modules have isomorphic character modules.
 -/
 def congr (e : A ≃ₗ[R] B) : CharacterModule A ≃ₗ[R] CharacterModule B :=
-  .ofLinear (dual e.symm) (dual e)
+  .ofLinearMap (dual e.symm) (dual e)
     (by ext c _; exact congr(c $(e.right_inv _)))
     (by ext c _; exact congr(c $(e.left_inv _)))
 
@@ -141,7 +141,7 @@ Linear maps into a character module are exactly characters of the tensor product
 -/
 @[simps!] noncomputable def homEquiv :
     (A →ₗ[R] CharacterModule B) ≃ₗ[R] CharacterModule (A ⊗[R] B) :=
-  .ofLinear uncurry curry (by ext _ z; refine z.induction_on ?_ ?_ ?_ <;> aesop) (by aesop)
+  .ofLinearMap uncurry curry (by ext _ z; refine z.induction_on ?_ ?_ ?_ <;> aesop) (by aesop)
 
 theorem dual_rTensor_conj_homEquiv (f : A →ₗ[R] A') :
     homEquiv.symm.toLinearMap ∘ₗ dual (f.rTensor B) ∘ₗ homEquiv.toLinearMap = f.lcomp R _ := rfl

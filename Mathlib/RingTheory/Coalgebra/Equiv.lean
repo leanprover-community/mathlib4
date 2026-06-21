@@ -174,7 +174,7 @@ def symm (e : A ≃ₗc[R] B) : B ≃ₗc[R] A :=
         = comul ∘ₗ (e : A ≃ₗ[R] B).symm
       rw [LinearEquiv.toLinearMap_symm_comp_eq]
       simp only [TensorProduct.congr, toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe,
-        LinearEquiv.toLinearMap_ofLinear, ← LinearMap.comp_assoc, CoalgHomClass.map_comp_comul]
+        LinearEquiv.toLinearMap_ofLinearMap, ← LinearMap.comp_assoc, CoalgHomClass.map_comp_comul]
       rw [← toLinearEquiv_toLinearMap, LinearEquiv.comp_symm_cancel_right] }
 
 /-- See Note [custom simps projection] -/

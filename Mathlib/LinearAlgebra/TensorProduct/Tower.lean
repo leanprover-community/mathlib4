@@ -355,7 +355,7 @@ variable (R A M)
 
 /-- Heterobasic version of `TensorProduct.rid`. -/
 protected def rid : M ⊗[R] R ≃ₗ[A] M :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (lift <| Algebra.lsmul _ _ _ |>.toLinearMap |>.flip)
     (mk R A M R |>.flip 1)
     (LinearMap.ext <| one_smul _)
@@ -400,7 +400,7 @@ variable [Algebra A B] [IsScalarTower A B M]
 Note this is especially useful with `A = R` (where it is a "more linear" version of
 `TensorProduct.assoc`), or with `B = A`. -/
 def assoc : (M ⊗[A] P) ⊗[R] Q ≃ₗ[B] M ⊗[A] (P ⊗[R] Q) :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (lift <| lift <| lcurry R A B P Q _ ∘ₗ mk A B M (P ⊗[R] Q))
     (lift <| uncurry R A B P Q _ ∘ₗ curry (mk R B _ Q))
     (by ext; rfl)
@@ -531,7 +531,7 @@ and a `B`-module `M`, `S`-module `P`, `R`-module `Q`, then
 ```
 -/
 def rightComm : (M ⊗[S] P) ⊗[R] Q ≃ₗ[B] (M ⊗[R] Q) ⊗[S] P :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (lift (lift (LinearMap.lflip.toLinearMap ∘ₗ
       (AlgebraTensorModule.mk _ _ _ _).compr₂ (AlgebraTensorModule.mk _ _ _ _))))
     (lift (lift (LinearMap.lflip.toLinearMap ∘ₗ

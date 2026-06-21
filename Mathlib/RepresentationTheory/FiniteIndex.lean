@@ -172,7 +172,7 @@ The forward map sends `(⟦g ⊗ₜ[k] a⟧, sg) ↦ ρ(s)(a)`, and the inverse 
 @[simps! hom_hom_toLinearMap inv_hom_toLinearMap]
 noncomputable def indCoindIso (A : Rep.{max w u} k S) :
     ind S.subtype A ≅ coind S.subtype A :=
-  mkIso (.mk (.ofLinear (indToCoind A) (coindToInd A)
+  mkIso (.mk (.ofLinearMap (indToCoind A) (coindToInd A)
     (coindToInd_indToCoind A) (indToCoind_coindToInd A)) <| fun g ↦ by ext; simp)
 
 variable (k S)

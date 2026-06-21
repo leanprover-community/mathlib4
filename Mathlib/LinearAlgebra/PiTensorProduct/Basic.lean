@@ -598,7 +598,7 @@ This is the n-ary version of `TensorProduct.congr`
 -/
 noncomputable def congr (f : Π i, s i ≃ₗ[R] t i) :
     (⨂[R] i, s i) ≃ₗ[R] ⨂[R] i, t i :=
-  .ofLinear
+  .ofLinearMap
     (map (fun i ↦ f i))
     (map (fun i ↦ (f i).symm))
     (by ext; simp)
@@ -803,7 +803,7 @@ variable [Subsingleton ι] (i₀ : ι)
 
 /-- Tensor product over a singleton type with element `i₀` is equivalent to `s i₀`. -/
 def subsingletonEquiv : (⨂[R] i : ι, s i) ≃ₗ[R] s i₀ :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (lift
       { toFun f := f i₀
         map_update_add' m i := by rw [Subsingleton.elim i i₀]; simp
@@ -842,7 +842,7 @@ variable (N : ι ⊕ ι₂ → Type*) [∀ i, AddCommMonoid (N i)] [∀ i, Modul
 modules, use the non-dependent version `PiTensorProduct.tmulEquiv` instead. -/
 def tmulEquivDep :
     (⨂[R] i₁, N (.inl i₁)) ⊗[R] (⨂[R] i₂, N (.inr i₂)) ≃ₗ[R] ⨂[R] i, N i :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (TensorProduct.lift
       { toFun a := PiTensorProduct.lift (PiTensorProduct.lift
           (MultilinearMap.currySumEquiv (tprod R)) a)

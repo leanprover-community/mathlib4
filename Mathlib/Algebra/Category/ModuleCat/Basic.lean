@@ -288,7 +288,7 @@ variable {X Y : ModuleCat R}
 
 /-- Build a `LinearEquiv` from an isomorphism in the category `ModuleCat R`. -/
 def toLinearEquiv (i : X ≅ Y) : X ≃ₗ[R] Y :=
-  .ofLinear i.hom.hom i.inv.hom (by aesop) (by aesop)
+  .ofLinearMap i.hom.hom i.inv.hom (by aesop) (by aesop)
 
 @[simp] lemma toLinearEquiv_apply (i : X ≅ Y) (x : X) : i.toLinearEquiv x = i.hom x := rfl
 @[simp] lemma toLinearEquiv_symm (i : X ≅ Y) : i.toLinearEquiv.symm = i.symm.toLinearEquiv := rfl

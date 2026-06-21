@@ -409,6 +409,6 @@ lemma Module.Free.bijective_algebraMap_of_finrank_eq_one {R S : Type*} [CommRing
   have h2 : (f ∘ₗ Algebra.linearMap R S) ∘ₗ LinearMap.trace R S = LinearMap.id :=
     b.ext fun i ↦
       (basisUnique Unit h).ext fun j ↦ (by simp [f, b, Basis.tensorProduct])
-  let eq : R ≃ₗ[R] End R S := .ofLinear (f ∘ₗ Algebra.linearMap R S) (.trace R S) h2 h1
+  let eq : R ≃ₗ[R] End R S := .ofLinearMap (f ∘ₗ Algebra.linearMap R S) (.trace R S) h2 h1
   have hf : Function.Bijective f := ⟨Algebra.lmul_injective, .of_comp eq.surjective⟩
   exact (Function.Bijective.of_comp_iff' hf _).mp eq.bijective

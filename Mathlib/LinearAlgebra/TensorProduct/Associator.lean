@@ -39,7 +39,8 @@ variable (R M)
 /-- The base ring is a left identity for the tensor product of modules, up to linear equivalence.
 -/
 protected def lid : R ⊗[R] M ≃ₗ[R] M :=
-  LinearEquiv.ofLinearMap (lift <| LinearMap.lsmul R M) (mk R R M 1) (LinearMap.ext fun _ => by simp)
+  LinearEquiv.ofLinearMap (lift <| LinearMap.lsmul R M) (mk R R M 1)
+    (LinearMap.ext fun _ => by simp)
     (ext' fun r m => by simp [← tmul_smul, ← smul_tmul, smul_eq_mul, mul_one])
 
 end
@@ -69,7 +70,7 @@ variable (R M)
 /-- The base ring is a right identity for the tensor product of modules, up to linear equivalence.
 -/
 protected def rid : M ⊗[R] R ≃ₗ[R] M :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (lift <| .flip (LinearMap.lsmul R M))
     (mk R M R |>.flip 1)
     (LinearMap.ext <| one_smul _)
@@ -134,7 +135,7 @@ variable (R M N P)
 attribute [local ext high] ext in
 /-- The associator for tensor product of R-modules, as a linear equivalence. -/
 protected def assoc : M ⊗[R] N ⊗[R] P ≃ₗ[R] M ⊗[R] (N ⊗[R] P) :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (lift <| lift <| lcurry _ _ _ _ ∘ₗ mk _ _ _)
     (lift <| uncurry _ _ _ _ ∘ₗ curry (mk R _ _))
     (by ext; rfl)
@@ -237,7 +238,7 @@ variable (M N P) in
 attribute [local ext high] ext in
 /-- A tensor product analogue of `mul_right_comm`. -/
 def rightComm : M ⊗[R] N ⊗[R] P ≃ₗ[R] M ⊗[R] P ⊗[R] N :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (lift (lift (LinearMap.lflip.toLinearMap ∘ₗ (mk _ _ _).compr₂ (mk _ _ _))))
     (lift (lift (LinearMap.lflip.toLinearMap ∘ₗ (mk _ _ _).compr₂ (mk _ _ _))))
   (by ext; rfl) (by ext; rfl)

@@ -365,7 +365,7 @@ variable {solution' : relations.Solution N} (h' : solution'.IsPresentation)
 
 /-- Uniqueness (up to a unique linear equivalence) of the module defined
 by generators and relations. -/
-def uniq : M ≃ₗ[A] N := LinearEquiv.ofLinear
+def uniq : M ≃ₗ[A] N := LinearEquiv.ofLinearMap
   (h.desc solution') (h'.desc solution)
     (h'.postcomp_injective (by simp))
     (h.postcomp_injective (by simp))

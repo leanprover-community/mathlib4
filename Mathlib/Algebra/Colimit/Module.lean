@@ -242,7 +242,7 @@ open _root_.DirectLimit
 /-- The direct limit constructed as a quotient of the direct sum is isomorphic to
 the direct limit constructed as a quotient of the disjoint union. -/
 def linearEquiv : DirectLimit G f ≃ₗ[R] _root_.DirectLimit G f :=
-  .ofLinear
+  .ofLinearMap
     (lift _ _ _ _ (Module.of _ _ _ _) fun _ _ _ _ ↦ .symm <| eq_of_le ..)
     (Module.lift _ _ _ _ (of _ _ _ _) fun _ _ _ _ ↦ of_f ..)
     (by ext; simp)

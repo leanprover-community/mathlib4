@@ -38,7 +38,7 @@ attribute [ext] TensorProduct.ext
 
 /-- Tensor products distribute over a product on the right. -/
 def prodRight : M₁ ⊗[R] (M₂ × M₃) ≃ₗ[S] (M₁ ⊗[R] M₂) × (M₁ ⊗[R] M₃) :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (TensorProduct.AlgebraTensorModule.lift <|
       LinearMap.prodMapLinear R M₂ M₃ (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₃) S ∘ₗ
         LinearMap.prod (AlgebraTensorModule.mk R S M₁ M₂) (AlgebraTensorModule.mk R S M₁ M₃))

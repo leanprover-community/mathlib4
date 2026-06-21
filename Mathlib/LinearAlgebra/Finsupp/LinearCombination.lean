@@ -529,7 +529,7 @@ variable {R M ι : Type*} [Ring R] [AddCommGroup M] [Module R M] (i : ι) (c : �
 the `j`-th standard basis vector to itself plus `c j` multiplied with the `i`-th standard basis
 vector (in particular, the `i`-th standard basis vector is kept invariant). -/
 def Finsupp.addSingleEquiv : (ι →₀ R) ≃ₗ[R] (ι →₀ R) := by
-  refine .ofLinear (linearCombination _ fun j ↦ single j 1 + single i (c j))
+  refine .ofLinearMap (linearCombination _ fun j ↦ single j 1 + single i (c j))
     (linearCombination _ fun j ↦ single j 1 - single i (c j)) ?_ ?_ <;>
   ext j k <;> obtain rfl | hk := eq_or_ne i k
   · simp [h₀]

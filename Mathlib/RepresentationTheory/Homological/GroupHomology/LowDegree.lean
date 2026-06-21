@@ -1014,7 +1014,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps! -isSimp]
 def H1AddEquivOfIsTrivial :
     H1 A ≃+ (Additive <| Abelianization G) ⊗[ℤ] A :=
-  LinearEquiv.toAddEquiv <| LinearEquiv.ofLinear
+  LinearEquiv.toAddEquiv <| LinearEquiv.ofLinearMap
     (H1ToTensorOfIsTrivial A) (lift <| mkH1OfIsTrivial A)
     (ext <| LinearMap.toAddMonoidHom_injective <| by
       ext g a
