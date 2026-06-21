@@ -123,7 +123,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
     use p.2
     apply Set.mem_image_of_mem
     -- After all, we assumed that the exceptional locus is empty.
-    rwa [exceptional_empty, Set.diff_empty]
+    rwa [exceptional_empty, Set.sdiff_empty]
   -- We are now set for an infinite descent argument.
   -- Let m be the smallest element of the nonempty set S.
   let m : ℕ := WellFounded.min Nat.lt_wfRel.wf S S_nonempty
@@ -168,10 +168,10 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   -- We do that, by showing that it lies in the upper branch
   -- (which is sufficient, because we assumed that the exceptional locus is empty).
   apply Set.mem_image_of_mem
-  rw [exceptional_empty, Set.diff_empty]
+  rw [exceptional_empty, Set.sdiff_empty]
   -- Now we are ready to prove that p' = (c, m_x) lies on the upper branch.
   -- We need to check two conditions: H(c, m_x) and c < m_x.
-  constructor <;> dsimp only
+  constructor
   · -- The first condition is not so hard. After all, c is the other root of the quadratic equation.
     rw [H_symm, H_quad]
     simpa using h_root

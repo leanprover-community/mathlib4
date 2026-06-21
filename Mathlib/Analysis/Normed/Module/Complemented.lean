@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
+Authors: Yury Kudryashov, Sharvil Kesarwani
 -/
 module
 
@@ -10,17 +10,29 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.Complement
 
 /-!
-# Complemented subspaces of normed vector spaces
+# Complemented subspaces of Banach spaces
 
-A submodule `p` of a topological module `E` over `R` is called *complemented* if there exists
-a continuous linear projection `f : E →ₗ[R] p`, `∀ x : p, f x = x`. We prove that for
-a closed subspace of a normed space this condition is equivalent to existence of a closed
-subspace `q` such that `p ⊓ q = ⊥`, `p ⊔ q = ⊤`. We also prove that a subspace of finite codimension
-is always a complemented subspace.
+A submodule `p` of a topological module `E` over `R` is called *complemented*
+(`Submodule.ClosedComplemented`) if there exists a continuous linear projection `f : E →ₗ[R] p`,
+`∀ x : p, f x = x`.
+
+All results in this file rely on the open mapping theorem, hence the Banach space assumption.
+
+## Main results
+
+* `Submodule.isTopCompl_iff_isCompl_isClosed`: in a Banach space, two submodules are topological
+  complements (`Submodule.IsTopCompl`) if and only if they are algebraic complements (`IsCompl`)
+* `Submodule.closedComplemented_iff_isClosed_exists_isClosed_isCompl`: in a Banach space. a
+  submodule is complemented if and only if it is closed and admits a closed algebraic complement.
+
+## TODO
+
+Generalize these results to metrizable complete topological vector spaces, once the open mapping
+theorem is available in that setting.
 
 ## Tags
 
-complemented subspace, normed vector space
+complemented subspace, Banach space
 -/
 
 @[expose] public section
@@ -65,10 +77,24 @@ end ContinuousLinearMap
 
 namespace Submodule
 
-variable [CompleteSpace E] (p q : Subspace 𝕜 E)
+variable [CompleteSpace E] {p q : Subspace 𝕜 E}
+
+theorem IsCompl.isTopCompl_of_isClosed (h : IsCompl p q) (hp : IsClosed (p : Set E))
+    (hq : IsClosed (q : Set E)) : IsTopCompl p q := by
+  haveI := hp.completeSpace_coe; haveI := hq.completeSpace_coe
+  rw [isTopCompl_iff_continuous_symm_prodEquivOfIsCompl h]
+  exact (p.prodEquivOfIsCompl q h).continuous_symm (continuous_prodEquivOfIsCompl h)
+
+open Submodule in
+theorem isTopCompl_iff_isCompl_isClosed :
+    IsTopCompl p q ↔ IsCompl p q ∧ IsClosed (p : Set E) ∧ IsClosed (q : Set E) :=
+  ⟨fun h ↦ ⟨h.isCompl, h.isClosed, h.isClosed'⟩, fun h ↦ h.1.isTopCompl_of_isClosed h.2.1 h.2.2⟩
+
+variable (p q)
 
 /-- If `q` is a closed complement of a closed subspace `p`, then `p × q` is continuously
 isomorphic to `E`. -/
+@[deprecated prodEquivOfIsTopCompl (since := "2026-06-07")]
 def prodEquivOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) : (p × q) ≃L[𝕜] E := by
   haveI := hp.completeSpace_coe; haveI := hq.completeSpace_coe
@@ -76,35 +102,36 @@ def prodEquivOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
   exact (p.subtypeL.coprod q.subtypeL).continuous
 
 /-- Projection to a closed submodule along a closed complement. -/
+@[deprecated projectionOntoL (since := "2026-06-07")]
 def linearProjOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) : E →L[𝕜] p :=
   ContinuousLinearMap.fst 𝕜 p q ∘L ↑(prodEquivOfClosedCompl p q h hp hq).symm
 
 variable {p q}
 
-@[simp]
+@[deprecated "Use `coe_prodEquivOfIsTopCompl` instead" (since := "2026-06-07")]
 theorem coe_prodEquivOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
     ⇑(p.prodEquivOfClosedCompl q h hp hq) = p.prodEquivOfIsCompl q h := rfl
 
-@[simp]
+@[deprecated "Use `coe_symm_prodEquivOfIsTopCompl` instead" (since := "2026-06-07")]
 theorem coe_prodEquivOfClosedCompl_symm (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
     ⇑(p.prodEquivOfClosedCompl q h hp hq).symm = (p.prodEquivOfIsCompl q h).symm := rfl
 
-@[simp]
+@[deprecated "Use `toLinearMap_projectionOntoL` instead" (since := "2026-06-07")]
 theorem coe_continuous_linearProjOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
     (p.linearProjOfClosedCompl q h hp hq : E →ₗ[𝕜] p) = p.projectionOnto q h := rfl
 
-@[simp]
+@[deprecated "Use `coe_projectionOntoL` instead" (since := "2026-06-07")]
 theorem coe_continuous_linearProjOfClosedCompl' (h : IsCompl p q) (hp : IsClosed (p : Set E))
-    (hq : IsClosed (q : Set E)) :
-    ⇑(p.linearProjOfClosedCompl q h hp hq) = p.projectionOnto q h := rfl
+    (hq : IsClosed (q : Set E)) : ⇑(p.linearProjOfClosedCompl q h hp hq) = p.projectionOnto q h :=
+  rfl
 
 theorem ClosedComplemented.of_isCompl_isClosed (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) : p.ClosedComplemented :=
-  ⟨p.linearProjOfClosedCompl q h hp hq, Submodule.projectionOnto_apply_left h⟩
+  (IsCompl.isTopCompl_of_isClosed h hp hq).closedComplemented
 
 alias IsCompl.closedComplemented_of_isClosed := ClosedComplemented.of_isCompl_isClosed
 
