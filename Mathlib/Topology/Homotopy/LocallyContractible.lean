@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Topology.Homotopy.Contractible
 public import Mathlib.Topology.Homotopy.Basic
-public import Mathlib.Topology.Connected.LocallyPathConnected
+public import Mathlib.Topology.Connected.LocPathConnected
 public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!

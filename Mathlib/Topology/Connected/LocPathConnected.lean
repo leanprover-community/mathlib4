@@ -217,11 +217,13 @@ instance Quot.locallyPathConnectedSpace {r : X → X → Prop} : LocallyPathConn
   isQuotientMap_quot_mk.locallyPathConnectedSpace
 
 /-- Quotients of locally path-connected spaces are locally path-connected. -/
-instance Quotient.locallyPathConnectedSpace {s : Setoid X} : LocallyPathConnectedSpace (Quotient s) :=
+instance Quotient.locallyPathConnectedSpace {s : Setoid X} :
+    LocallyPathConnectedSpace (Quotient s) :=
   isQuotientMap_quotient_mk'.locallyPathConnectedSpace
 
 /-- Disjoint unions of locally path-connected spaces are locally path-connected. -/
-instance Sum.locallyPathConnectedSpace [LocallyPathConnectedSpace Y] : LocallyPathConnectedSpace (X ⊕ Y) := by
+instance Sum.locallyPathConnectedSpace [LocallyPathConnectedSpace Y] :
+    LocallyPathConnectedSpace (X ⊕ Y) := by
   rw [locallyPathConnectedSpace_iff_pathComponentIn_mem_nhds]; intro x u hu hxu; rw [mem_nhds_iff]
   obtain x | y := x
   · refine ⟨Sum.inl '' pathComponentIn (Sum.inl ⁻¹' u) x, ?_, ?_, ?_⟩
