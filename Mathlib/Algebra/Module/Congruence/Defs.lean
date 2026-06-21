@@ -147,7 +147,7 @@ theorem coe_mk' [Semiring S] [AddCommMonoid M] [Module S M] (c : ModuleCon S M) 
   rfl
 
 theorem eq {S M : Type*} [Semiring S] [AddCommMonoid M] [Module S M] (c : ModuleCon S M) (x y : M) :
-    (c.mk' x = c.mk' y) ↔ c.r x y := by
+    c.mk' x = c.mk' y ↔ c.r x y := by
   simp only [coe_mk', AddCon.rel_eq_coe, ← c.toAddCon.eq]
   -- This is bizarre
   exact Iff.rfl
