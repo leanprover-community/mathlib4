@@ -326,7 +326,7 @@ def δ :
   SnakeLemma.δ'
     (P.toExtension.cotangentComplex.baseChange T)
     (Q.comp P).toExtension.cotangentComplex
-    Q.toExtension.cotangentC  omplex
+    Q.toExtension.cotangentComplex
     ((Extension.Cotangent.map (toComp Q P).toExtensionHom).liftBaseChange T)
     (Extension.Cotangent.map (ofComp Q P).toExtensionHom)
     (Cotangent.exact Q P)
