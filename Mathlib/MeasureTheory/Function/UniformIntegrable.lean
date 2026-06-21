@@ -689,8 +689,7 @@ private theorem forall_exists_eLpNorm_indicator_le_iff_lt {f : ι → α → β}
   · obtain ⟨C, hC⟩ := h ε hε
     refine ⟨C + 1, fun i ↦ (eLpNorm_mono fun x ↦ ?_).trans (hC i)⟩
     by_cases hx : C + 1 ≤ ‖f i x‖₊
-    · have hx' : C < ‖f i x‖₊ := (lt_add_of_pos_right C zero_lt_one).trans_le hx
-      simp [hx, hx']
+    · simp [hx, (lt_add_of_pos_right C zero_lt_one).trans_le hx]
     · simp [hx]
 
 /-- A version of `unifIntegrable_of` with a strict inequality in the tail condition. -/
@@ -933,11 +932,7 @@ theorem UniformIntegrable.spec (hp' : p ≠ ∞) (hfu : UniformIntegrable f p μ
 theorem UniformIntegrable.spec_lt (hp' : p ≠ ∞) (hfu : UniformIntegrable f p μ) {ε : ℝ}
     (hε : 0 < ε) :
     ∃ C : ℝ≥0, ∀ i, eLpNorm ({x | C < ‖f i x‖₊}.indicator (f i)) p μ ≤ ENNReal.ofReal ε := by
-  obtain ⟨C, hC⟩ := hfu.spec hp' hε
-  refine ⟨C, fun i ↦ (eLpNorm_mono fun x ↦ ?_).trans (hC i)⟩
-  by_cases hx : C < ‖f i x‖₊
-  · simp [hx, hx.le]
-  · simp [hx]
+  forall_exists_eLpNorm_indicator_le_iff_lt.1 (fun _ => hfu.spec hp') ε hε
 
 /-- For a uniformly integrable family `f`, the `eLpNorm` of the tail
 `{x | C ≤ ‖f i x‖₊}.indicator (f i)` tends to `0` uniformly in `i` as the level `C` tends to
@@ -961,27 +956,25 @@ theorem UniformIntegrable.tendsto_iSup_eLpNorm_indicator_atTop (hp' : p ≠ ∞)
 private theorem tendsto_iSup_eLpNorm_indicator_atTop_le_iff_lt :
     Tendsto (fun C : ℝ≥0 ↦ ⨆ i, eLpNorm ({x | C ≤ ‖f i x‖₊}.indicator (f i)) p μ) atTop (𝓝 0) ↔
       Tendsto (fun C : ℝ≥0 ↦ ⨆ i, eLpNorm ({x | C < ‖f i x‖₊}.indicator (f i)) p μ)
-        atTop (𝓝 0) := by
-  constructor
-  · intro hle
+        atTop (𝓝 0) where
+  mp hle := by
     refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hle
       (fun _ ↦ zero_le) fun C ↦ iSup_mono fun i ↦ eLpNorm_mono fun x ↦ ?_
     by_cases hx : C < ‖f i x‖₊
     · simp [hx, hx.le]
     · simp [hx]
-  · intro hlt
+  mpr hlt := by
     have hsub : Tendsto (fun C : ℝ≥0 ↦ C - 1) atTop atTop :=
       tendsto_atTop_atTop.2 fun b ↦ ⟨b + 1, fun C hC ↦ le_tsub_of_add_le_right hC⟩
     have hupper : Tendsto
         (fun C : ℝ≥0 ↦ ⨆ i, eLpNorm ({x | C - 1 < ‖f i x‖₊}.indicator (f i)) p μ) atTop (𝓝 0) :=
       hlt.comp hsub
-    refine tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds hupper
-      (Eventually.of_forall fun _ ↦ zero_le) ?_
+    refine tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds hupper 
+      (.of_forall fun _ ↦ zero_le) ?_
     filter_upwards [eventually_gt_atTop 0] with C hC
     refine iSup_mono fun i ↦ eLpNorm_mono fun x ↦ ?_
     by_cases hx : C ≤ ‖f i x‖₊
-    · have hx' : C - 1 < ‖f i x‖₊ := (tsub_lt_self hC one_pos).trans_le hx
-      simp [hx, hx']
+    · simp [hx, (tsub_lt_self hC one_pos).trans_le hx]
     · simp [hx]
 
 /-- The strict-inequality analogue of `UniformIntegrable.tendsto_iSup_eLpNorm_indicator_atTop`:
