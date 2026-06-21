@@ -506,12 +506,24 @@ open OrderDual
   convert! comp_eq_of_antitoneOn f ofDual fun _ _ _ _ => id
   simp only [Equiv.image_preimage]
 
-lemma _root_.BoundedVariationOn.ofDual {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) :
+protected lemma _root_.BoundedVariationOn.ofDual
+    {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) :
     BoundedVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) := by
   simpa [BoundedVariationOn] using hf
 
 @[simp] lemma boundedVariation_ofDual {f : α → E} {s : Set α} :
     BoundedVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) ↔ BoundedVariationOn f s :=
+  ⟨fun h ↦ h.ofDual, fun h ↦ h.ofDual⟩
+
+protected lemma _root_.LocallyBoundedVariationOn.ofDual {f : α → E} {s : Set α}
+    (hf : LocallyBoundedVariationOn f s) :
+    LocallyBoundedVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) := by
+  intro x y hx hy
+  rw [← toDual_ofDual x, ← toDual_ofDual y, Icc_toDual, ← preimage_inter]
+  apply BoundedVariationOn.ofDual (hf (ofDual y) (ofDual x) hy hx)
+
+@[simp] lemma locallyBoundedVariation_ofDual {f : α → E} {s : Set α} :
+    LocallyBoundedVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) ↔ LocallyBoundedVariationOn f s :=
   ⟨fun h ↦ h.ofDual, fun h ↦ h.ofDual⟩
 
 end Monotone
@@ -849,6 +861,42 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Icc_right
   rw [this]
   exact hf.ofDual.tendsto_eVariationOn_Icc_left h'f hx
 
+/-- If a function has locally bounded variation, then the variation on
+small closed intervals to the left of this point tends to the contribution of the point, i.e.,
+the distance between the left limit and the value at the point -/
+theorem _root_.LocallyBoundedVariationOn.tendsto_eVariationOn_Icc_left
+    [TopologicalSpace α] [OrderTopology α] {f : α → E} {s : Set α} {l : E}
+    (hf : LocallyBoundedVariationOn f s) {x : α}
+    (h'f : Tendsto f (𝓝[s ∩ Iio x] x) (𝓝 l)) (hx : x ∈ s) :
+    Tendsto (fun y ↦ eVariationOn f (s ∩ Icc y x)) (𝓝[s ∩ Iio x] x) (𝓝 (edist (f x) l)) := by
+  rcases eq_or_neBot (𝓝[s ∩ Iio x] x) with h | h
+  · simp [h]
+  obtain ⟨y, hy⟩ : (s ∩ Iio x).Nonempty := by contrapose! h; simp [h]
+  have : 𝓝[s ∩ Iio x] x = 𝓝[(s ∩ Icc y x) ∩ Iio x] x := by
+    rw [show (s ∩ Icc y x) ∩ Iio x = (s ∩ Iio x) ∩ Icc y x by grind, eq_comm]
+    apply nhdsWithin_inter_of_mem' (nhdsWithin_mono _ inter_subset_right (Icc_mem_nhdsLT hy.2))
+  rw [this] at h'f ⊢
+  have : BoundedVariationOn f (s ∩ Icc y x) := hf _ _ hy.1 hx
+  apply Tendsto.congr' _ (this.tendsto_eVariationOn_Icc_left h'f ⟨hx, by grind⟩)
+  filter_upwards [self_mem_nhdsWithin] with z hz
+  congr 1
+  grind
+
+/-- If a function has locally bounded variation, then the variation on
+small closed intervals to the right of this point tends to the contribution of the point, i.e.,
+the distance between the right limit and the value at the point -/
+theorem _root_.LocallyBoundedVariationOn.tendsto_eVariationOn_Icc_right
+    [TopologicalSpace α] [OrderTopology α] {f : α → E} {s : Set α} {l : E}
+    (hf : LocallyBoundedVariationOn f s) {x : α}
+    (h'f : Tendsto f (𝓝[s ∩ Ioi x] x) (𝓝 l)) (hx : x ∈ s) :
+    Tendsto (fun y ↦ eVariationOn f (s ∩ Icc x y)) (𝓝[s ∩ Ioi x] x) (𝓝 (edist (f x) l)) := by
+  have : (fun y ↦ eVariationOn f (s ∩ Icc x y)) =
+      (fun y ↦ eVariationOn (f ∘ ofDual) (ofDual ⁻¹' s ∩ Icc (toDual y) (toDual x))) := by
+    ext y
+    rw [Icc_toDual, ← preimage_inter, comp_ofDual]
+  rw [this]
+  exact hf.ofDual.tendsto_eVariationOn_Icc_left h'f hx
+
 /-- If a function has bounded variation and is left-continuous at a point, then the variation on
 small closed intervals to the left of this point tends to `0`. -/
 theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Icc_zero_left
@@ -1114,6 +1162,16 @@ protected theorem add {f : α → E} {s : Set α} (hf : LocallyBoundedVariationO
       variationOnFromTo.eq_of_le f s (xy.trans yz),
       ← ENNReal.toReal_add (hf x y xs ys) (hf y z ys zs), eVariationOn.Icc_add_Icc f xy yz ys]
 
+protected theorem sub_right {f : α → E} {s : Set α} (hf : LocallyBoundedVariationOn f s) {a b c : α}
+    (ha : a ∈ s) (hb : b ∈ s) (hc : c ∈ s) :
+    variationOnFromTo f s a b - variationOnFromTo f s a c = variationOnFromTo f s c b := by
+  rw [← variationOnFromTo.add hf ha hc hb, add_sub_cancel_left]
+
+protected theorem sub_left {f : α → E} {s : Set α} (hf : LocallyBoundedVariationOn f s) {a b c : α}
+    (ha : a ∈ s) (hb : b ∈ s) (hc : c ∈ s) :
+    variationOnFromTo f s a b - variationOnFromTo f s c b = variationOnFromTo f s a c := by
+  rw [← variationOnFromTo.add hf ha hc hb, add_sub_cancel_right]
+
 variable {f s} in
 protected theorem edist_zero_of_eq_zero (hf : LocallyBoundedVariationOn f s)
     {a b : α} (ha : a ∈ s) (hb : b ∈ s) (h : variationOnFromTo f s a b = 0) :
@@ -1207,6 +1265,48 @@ protected theorem comp_eq_of_monotoneOn {β : Type*} [LinearOrder β] (f : α �
       eVariationOn.comp_inter_Icc_eq_of_monotoneOn f φ hφ hx hy]
   · rw [variationOnFromTo.eq_of_ge _ _ h, variationOnFromTo.eq_of_ge _ _ (hφ hy hx h),
       eVariationOn.comp_inter_Icc_eq_of_monotoneOn f φ hφ hy hx]
+
+/-- The jump of `variationOnFromTo` on the left of a point is given by the distance between the
+left limit and the value of the function. -/
+theorem tendsto_left {E : Type*} [PseudoMetricSpace E] [TopologicalSpace α] [OrderTopology α]
+    {f : α → E} {l : E} {a b : α} (ha : a ∈ s) (hb : b ∈ s)
+    (hf : LocallyBoundedVariationOn f s) (h'f : Tendsto f (𝓝[s ∩ Iio b] b) (𝓝 l)) :
+    Tendsto (variationOnFromTo f s a) (𝓝[s ∩ Iio b] b)
+      (𝓝 (variationOnFromTo f s a b - dist (f b) l)) := by
+  suffices H : Tendsto (fun x ↦ variationOnFromTo f s a b - variationOnFromTo f s x b)
+      (𝓝[s ∩ Iio b] b) (𝓝 (variationOnFromTo f s a b - dist (f b) l)) by
+    apply Tendsto.congr' _ H
+    filter_upwards [self_mem_nhdsWithin] with x hx
+    rw [variationOnFromTo.sub_left hf ha hb hx.1]
+  apply Tendsto.const_sub
+  suffices H : Tendsto (fun x ↦ (eVariationOn f (s ∩ Icc x b)).toReal) (𝓝[s ∩ Iio b] b)
+      (𝓝 (dist (f b) l)) by
+    apply Tendsto.congr' _ H
+    filter_upwards [self_mem_nhdsWithin] with x hx using by simp [variationOnFromTo, hx.2.le]
+  rw [dist_edist]
+  exact (ENNReal.tendsto_toReal (by simp)).comp (hf.tendsto_eVariationOn_Icc_left h'f hb)
+
+/-- The jump of `variationOnFromTo` on the right of a point is given by the distance between the
+right limit and the value of the function. -/
+theorem tendsto_right {E : Type*} [PseudoMetricSpace E] [TopologicalSpace α] [OrderTopology α]
+    {f : α → E} {l : E} {a b : α} (ha : a ∈ s) (hb : b ∈ s)
+    (hf : LocallyBoundedVariationOn f s) (h'f : Tendsto f (𝓝[s ∩ Ioi b] b) (𝓝 l)) :
+    Tendsto (variationOnFromTo f s a) (𝓝[s ∩ Ioi b] b)
+      (𝓝 (variationOnFromTo f s a b + dist (f b) l)) := by
+  suffices H : Tendsto (fun x ↦ variationOnFromTo f s a b + variationOnFromTo f s b x)
+      (𝓝[s ∩ Ioi b] b) (𝓝 (variationOnFromTo f s a b + dist (f b) l)) by
+    apply Tendsto.congr' _ H
+    filter_upwards [self_mem_nhdsWithin] with x hx
+    rw [variationOnFromTo.add hf ha hb hx.1]
+  apply Tendsto.const_add
+  suffices H : Tendsto (fun x ↦ (eVariationOn f (s ∩ Icc b x)).toReal) (𝓝[s ∩ Ioi b] b)
+      (𝓝 (dist (f b) l)) by
+    apply Tendsto.congr' _ H
+    filter_upwards [self_mem_nhdsWithin] with x hx using by simp [variationOnFromTo, hx.2.le]
+  rw [dist_edist]
+  exact (ENNReal.tendsto_toReal (by simp)).comp (hf.tendsto_eVariationOn_Icc_right h'f hb)
+
+#exit
 
 theorem _root_.BoundedVariationOn.continuousWithinAt_variationOnFromTo_Ici
     [TopologicalSpace α] [OrderTopology α] (hf : BoundedVariationOn f univ) {a x : α}
