@@ -285,7 +285,7 @@ variable [LT β] [WellFoundedLT β]
 whose image under `f` is minimal in the sense of `Function.not_lt_argmin`.
 
 See also `Set.Finite.exists_minimalFor` and related lemmas for the case when `α` is finite. -/
-@[to_dual argmax
+@[to_dual
 /-- Given a function `f : α → β` where `β` carries a well-founded `>`, this is an element of `α`
 whose image under `f` is maximal in the sense of `Function.not_argmax_lt`.
 
@@ -304,7 +304,7 @@ of `α`, this is an element of `s` whose image under `f` is minimal in the sense
 See also `Set.Finite.exists_minimalFor` and related lemmas for the case when `α` or `s` is finite.
 
 TODO Consider removing this definition in favour of `exists_minimalFor_of_wellFoundedLT`. -/
-@[to_dual argmaxOn
+@[to_dual
 /-- Given a function `f : α → β` where `β` carries a well-founded `>`, and a non-empty subset `s`
 of `α`, this is an element of `s` whose image under `f` is maximal in the sense of
 `Function.not_argmaxOn_lt`.
@@ -314,7 +314,7 @@ See also `Set.Finite.exists_minimalFor` and related lemmas for the case when `α
 noncomputable def argminOn (s : Set α) (hs : s.Nonempty) : α :=
   WellFounded.min (InvImage.wf f wellFounded_lt) s hs
 
-@[to_dual (attr := simp) argmaxOn_mem]
+@[to_dual (attr := simp)]
 theorem argminOn_mem (s : Set α) (hs : s.Nonempty) : argminOn f s hs ∈ s :=
   WellFounded.min_mem _ _ _
 
@@ -332,7 +332,7 @@ variable [LinearOrder β] [WellFoundedLT β]
 theorem argmin_le (a : α) [Nonempty α] : f (argmin f) ≤ f a :=
   not_lt.mp <| not_lt_argmin f a
 
-@[to_dual maximalFor_argmax]
+@[to_dual]
 theorem minimalFor_argmin [Nonempty α] : MinimalFor (fun _ ↦ True) f (argmin f) :=
   ⟨trivial, fun a _ _ ↦ argmin_le f a⟩
 
@@ -342,7 +342,7 @@ theorem minimalFor_argmin [Nonempty α] : MinimalFor (fun _ ↦ True) f (argmin 
 theorem argminOn_le (s : Set α) {a : α} (ha : a ∈ s) : f (argminOn f s ⟨a, ha⟩) ≤ f a :=
   not_lt.mp <| not_lt_argminOn f s ha
 
-@[to_dual maximalFor_argmaxOn]
+@[to_dual]
 theorem minimalFor_argminOn (s : Set α) (hs : s.Nonempty) :
     MinimalFor (· ∈ s) f (argminOn f s hs) :=
   ⟨argminOn_mem f s hs, fun _ h _ ↦ argminOn_le f s h⟩

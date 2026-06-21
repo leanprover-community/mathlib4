@@ -159,6 +159,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("ssup", ["SInf"]),
   ("min", ["Max"]),
   ("max", ["Min"]),
+  ("argmin", ["Argmax"]),
+  ("argmax", ["Argmin"]),
   ("untop", ["Unbot"]),
   ("unbot", ["Untop"]),
   ("minimal", ["Maximal"]),
