@@ -486,27 +486,27 @@ lemma mvfderivWithin_const (c : F) {x : M} : d[s] (fun _ : M ↦ c) x = 0 := by
 
 @[simp, to_fun mvfderivWithin_fun_add]
 lemma mvfderivWithin_add {g g' : M → F} {x : M}
-    (hg : MDiffAt[s] g x) (hg' : MDiffAt[s] g' x) (hs : UniqueMDiffWithinAt I s x) :
+    (hg : MDiffAt[s] g x) (hg' : MDiffAt[s] g' x) (hs : UniqueMDiffAt[s] x) :
     d[s](g + g') x = d[s]g x + d[s]g' x := by
   simp [mvfderivWithin, mfderivWithin_add hg hg' hs]
   rfl
 
 @[simp, to_fun mvfderivWithin_fun_sub]
 lemma mvfderivWithin_sub {g g' : M → F} {x : M}
-    (hg : MDiffAt[s] g x) (hg' : MDiffAt[s] g' x) (hs : UniqueMDiffWithinAt I s x) :
+    (hg : MDiffAt[s] g x) (hg' : MDiffAt[s] g' x) (hs : UniqueMDiffAt[s] x) :
     d[s](g - g') x = d[s]g x - d[s]g' x := by
   simp [mvfderivWithin, mfderivWithin_sub hg hg' hs]
   rfl
 
 @[simp, to_fun mvfderivWithin_fun_neg]
-lemma mvfderivWithin_neg {g : M → F} {x : M} (hs : UniqueMDiffWithinAt I s x) :
+lemma mvfderivWithin_neg {g : M → F} {x : M} (hs : UniqueMDiffAt[s] x) :
     d[s](-g) x = -d[s]g x := by
   simp [mvfderivWithin, mfderivWithin_neg hs]
   rfl
 
 @[simp, to_fun mvfderivWithin_fun_smul]
 lemma mvfderivWithin_smul {a : M → 𝕜} (ha : MDiffAt[s] a x) {g : M → F} (hg : MDiffAt[s] g x)
-    (hs : UniqueMDiffWithinAt I s x) :
+    (hs : UniqueMDiffAt[s] x) :
     d[s](a • g) x =
       a x • d[s] g x + (d[s] a x).smulRight (g x) := by
   refine HasMFDerivWithinAt.mfderivWithin ⟨ha.1.smul hg.1, ?_⟩ hs
@@ -516,14 +516,14 @@ lemma mvfderivWithin_smul {a : M → 𝕜} (ha : MDiffAt[s] a x) {g : M → F} (
 
 @[simp, to_fun mvfderivWithin_fun_mul]
 lemma mvfderivWithin_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x)
-    (hs : UniqueMDiffWithinAt I s x) :
+    (hs : UniqueMDiffAt[s] x) :
     d[s](f * g) x = f x • d[s]g x + (g x) • (d[s]f x) := by
   convert! mvfderivWithin_smul hf hg hs
   ext v
   simp [mul_comm]
 
 @[simp]
-lemma mvfderivWithin_zero {s : Set M} (hs : UniqueMDiffWithinAt I s x) :
+lemma mvfderivWithin_zero {s : Set M} (hs : UniqueMDiffAt[s] x) :
     d[s] (0 : M → F) x = 0 := by
   have : d[s] (0 : M → F) x + d[s] (0 : M → F) x = d[s] (0 : M → F) x := by
     rw [← mvfderivWithin_add (by exact mdifferentiableWithinAt_const)
