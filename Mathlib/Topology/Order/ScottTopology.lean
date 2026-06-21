@@ -5,7 +5,7 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Order.DirSupClosed
+public import Mathlib.Order.DirSupClosed.Basic
 public import Mathlib.Order.ScottContinuity
 public import Mathlib.Topology.Order.UpperLowerSetTopology
 
