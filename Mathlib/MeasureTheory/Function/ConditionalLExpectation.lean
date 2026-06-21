@@ -78,7 +78,7 @@ noncomputable irreducible_def condLExp (mΩ : MeasurableSpace Ω) (P : Measure[m
   else 0
 
 @[inherit_doc MeasureTheory.condLExp]
-scoped macro:max P:term noWs "⁻[" X:term "|" mΩ:term "]" : term =>
+scoped macro:max P:term noWs "⁻[" X:term " | " mΩ:term "]" : term =>
   `(MeasureTheory.condLExp $mΩ $P $X)
 
 /-- Unexpander for `μ⁻[f|m]` notation. -/
@@ -87,10 +87,10 @@ meta def condLExpUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $mΩ $P $X) => `($P⁻[$X|$mΩ])
   | _ => throw ()
 
-/-- info: P⁻[X|mΩ] : Ω → ℝ≥0∞ -/
+/-- info: P⁻[X | mΩ] : Ω → ℝ≥0∞ -/
 #guard_msgs in
 #check P⁻[X|mΩ]
-/-- info: P⁻[X|mΩ] sorry : ℝ≥0∞ -/
+/-- info: P⁻[X | mΩ] sorry : ℝ≥0∞ -/
 #guard_msgs in
 #check P⁻[X|mΩ] (sorry : Ω)
 
@@ -171,7 +171,7 @@ theorem ae_eq_condLExp₀ {P : Measure[mΩ₀] Ω} [hσ : SigmaFinite (P.trim hm
   rw [setLIntegral_trim_ae hm hY hs, setLIntegral_condLExp_trim _ _ _ hs]
   exact hXY s hs
 
-/- The conditional (Lebesgue) expectation `P⁻[X|mΩ]` is defined uniquely as an `mΩ`-measurable
+/-- The conditional (Lebesgue) expectation `P⁻[X|mΩ]` is defined uniquely as an `mΩ`-measurable
 function up to `P`-ae equality by its (Lebesgue) integral over all `mΩ`-measurable sets. -/
 theorem ae_eq_condLExp (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)]
     (X : Ω → ℝ≥0∞) (hY : Measurable[mΩ] Y)

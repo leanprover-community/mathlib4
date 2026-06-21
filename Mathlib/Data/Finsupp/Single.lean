@@ -91,7 +91,7 @@ theorem single_eq_update [DecidableEq α] (a : α) (b : M) :
 @[simp, grind =]
 theorem single_zero (a : α) : (single a 0 : α →₀ M) = 0 :=
   DFunLike.coe_injective <| by
-    classical simpa only [single_eq_update, coe_zero] using Function.update_eq_self a (0 : α → M)
+    classical simpa only [single_eq_update, coe_zero] using! Function.update_eq_self a (0 : α → M)
 
 theorem single_of_single_apply (a a' : α) (b : M) :
     single a ((single a' b) a) = single a' (single a' b) a := by
@@ -162,7 +162,7 @@ lemma apply_surjective (a : α) : Surjective fun f : α →₀ M ↦ f a :=
   RightInverse.surjective fun _ ↦ single_eq_same
 
 theorem support_single_ne_bot (i : α) (h : b ≠ 0) : (single i b).support ≠ ⊥ := by
-  simpa only [support_single _ h] using singleton_ne_empty _
+  simpa only [support_single _ h] using! singleton_ne_empty _
 
 theorem support_single_disjoint {b' : M} (hb : b ≠ 0) (hb' : b' ≠ 0) {i j : α} :
     Disjoint (single i b).support (single j b').support ↔ i ≠ j := by

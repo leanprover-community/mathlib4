@@ -151,7 +151,7 @@ theorem _root_.Order.IsNormal.isClub_fixedPoints {f : α → α} (hα : cof α �
   refine ⟨fun s hs hs₀ _ a ha ↦ (hf.map_isLUB ha hs₀).unique ?_, fun a ↦ ?_⟩
   · rwa [image_congr hs, image_id']
   · cases topOrderOrNoTopOrder α with
-    | inl => use ⊤; simpa using hf.strictMono.id_le ⊤
+    | inl => use ⊤; simpa using! hf.strictMono.id_le ⊤
     | inr h =>
       rw [noTopOrder_iff_noMaxOrder] at h
       suffices BddAbove (.range fun n ↦ f^[n] a) from

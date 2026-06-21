@@ -121,7 +121,7 @@ instance : IsGalois K (FractionRing T) := by
     (f := (FractionRing.algEquiv R K).symm.toRingEquiv)
     (g := (FractionRing.algEquiv T E).symm.toRingEquiv) ?_
   ext
-  simpa using IsFractionRing.algEquiv_commutes (FractionRing.algEquiv R K).symm
+  simpa using! IsFractionRing.algEquiv_commutes (FractionRing.algEquiv R K).symm
     (FractionRing.algEquiv T E).symm _
 
 variable [IsDedekindDomain S]
