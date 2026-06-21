@@ -471,7 +471,7 @@ theorem _root_.AlgebraicGeometry.isIso_iff_isIso_stalkMap {X Y : Scheme.{u}} (f 
     IsOpenImmersion.iff_isIso_stalkMap, and_comm, ← and_assoc]
   refine and_congr ⟨?_, ?_⟩ Iff.rfl
   · rintro ⟨h₁, h₂⟩
-    convert_to
+    convert_to!
       IsIso
         (TopCat.isoOfHomeo
           (Equiv.toHomeomorphOfContinuousOpen

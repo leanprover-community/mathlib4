@@ -339,7 +339,7 @@ variable {s t : L.DefinableSet A α} {x : α → M}
 
 instance instSetLike : SetLike (L.DefinableSet A α) (α → M) where
   coe := Subtype.val
-  coe_injective' := Subtype.val_injective
+  coe_injective := Subtype.val_injective
 
 instance : PartialOrder (L.DefinableSet A α) := .ofSetLike (L.DefinableSet A α) (α → M)
 
