@@ -379,6 +379,7 @@ theorem contMDiffOn (h : IsSubmersionAtOfComplement F I J n f x) :
     rw [contMDiff_iff_contDiff]
     exact contDiff_fst
   exact this.contMDiffOn.congr h.writtenInCharts
+
 /-- A `C^n` submersion at `x` is `C^n` at `x`. -/
 theorem contMDiffAt (h : IsSubmersionAtOfComplement F I J n f x) : CMDiffAt n f x :=
   h.contMDiffOn.contMDiffAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
@@ -525,7 +526,7 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
 /-- If `f` is a submersion at `x`, then `f` is `C^n` on its domain chart's source,
 in particular on an open neighbourhood of `x`.`
 
-Prefer using `IsSubmersionAt.contMDiffOn` instead -/
+Prefer using `IsSubmersionAt.contMDiffAt` instead -/
 theorem contMDiffOn (h : IsSubmersionAt I J n f x) : CMDiff[h.domChart.source] n f :=
   h.isSubmersionAtOfComplement_complement.contMDiffOn
 
