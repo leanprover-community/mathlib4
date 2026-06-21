@@ -41,7 +41,7 @@ naturally extends via a base change map. The exactness lemma is
 `Algebra.Generators.H1Cotangent.exact_liftBaseChange_map_of_flat`. Globally, this extends
 the Jacobi-Zariski exact sequence to the left via the map `(map R R S T).liftBaseChange T`,
 taking the form `T ⊗[S] H₁(L_{S/R}) → H₁(L_{T/R}) → H₁(L_{T/S})`.
-The exactness lemma is `Algebra.H1Cotangent.exact_liftBaseChange_map_of_flat`
+The exactness lemma is `Algebra.H1Cotangent.exact_liftBaseChange_map_of_flat`.
 
 # TODO
 
