@@ -1306,19 +1306,37 @@ theorem tendsto_right {E : Type*} [PseudoMetricSpace E] [TopologicalSpace α] [O
   rw [dist_edist]
   exact (ENNReal.tendsto_toReal (by simp)).comp (hf.tendsto_eVariationOn_Icc_right h'f hb)
 
-#check Function.leftLim
-
-theorem leftLim_eq {E : Type*} [PseudoMetricSpace E]
-    {f : α → E} {l : E} {a b : α} (hf : BoundedVariationOn f univ) {a b : α} :
+/-- The jump of `variationOnFromTo` on the left of a point is given by the distance between the
+left limit and the value of the function. -/
+theorem leftLim_eq {E : Type*} [PseudoMetricSpace E] [CompleteSpace E]
+    {f : α → E} {a b : α} (hf : BoundedVariationOn f univ) :
     (variationOnFromTo f univ a).leftLim b =
-      variationOnFromTo f s a b - dist (f b) (f.leftLim b) := by
+      variationOnFromTo f univ a b - dist (f b) (f.leftLim b) := by
   let : TopologicalSpace α := Preorder.topology α
   have : OrderTopology α := ⟨rfl⟩
+  rcases eq_or_neBot (𝓝[<] b) with hb | hb
+  · simp [leftLim_eq_of_eq_bot _ hb]
+  apply leftLim_eq_of_tendsto
+  have := variationOnFromTo.tendsto_left (f := f) (l := f.leftLim b) (mem_univ a) (mem_univ b)
+    hf.locallyBoundedVariationOn
+  simp only [univ_inter] at this
+  exact this (hf.tendsto_leftLim _)
 
-
-
-
-#exit
+/-- The jump of `variationOnFromTo` on the right of a point is given by the distance between the
+right limit and the value of the function. -/
+theorem rightLim_eq {E : Type*} [PseudoMetricSpace E] [CompleteSpace E]
+    {f : α → E} {a b : α} (hf : BoundedVariationOn f univ) :
+    (variationOnFromTo f univ a).rightLim b =
+      variationOnFromTo f univ a b + dist (f b) (f.rightLim b) := by
+  let : TopologicalSpace α := Preorder.topology α
+  have : OrderTopology α := ⟨rfl⟩
+  rcases eq_or_neBot (𝓝[>] b) with hb | hb
+  · simp [rightLim_eq_of_eq_bot _ hb]
+  apply rightLim_eq_of_tendsto
+  have := variationOnFromTo.tendsto_right (f := f) (l := f.rightLim b) (mem_univ a) (mem_univ b)
+    hf.locallyBoundedVariationOn
+  simp only [univ_inter] at this
+  exact this (hf.tendsto_rightLim _)
 
 theorem _root_.BoundedVariationOn.continuousWithinAt_variationOnFromTo_Ici
     [TopologicalSpace α] [OrderTopology α] (hf : BoundedVariationOn f univ) {a x : α}
