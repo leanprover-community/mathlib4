@@ -607,12 +607,13 @@ noncomputable def congr (f : Π i, s i ≃ₗ[R] t i) :
 @[simp]
 theorem congr_tprod (f : Π i, s i ≃ₗ[R] t i) (m : Π i, s i) :
     congr f (tprod R m) = tprod R (fun (i : ι) ↦ (f i) (m i)) := by
-  simp only [congr, LinearEquiv.ofLinear_apply, map_tprod, LinearEquiv.coe_coe]
+  simp only [congr, LinearEquiv.coe_ofLinear, map_tprod, LinearEquiv.coe_coe]
 
 @[simp]
 theorem congr_symm_tprod (f : Π i, s i ≃ₗ[R] t i) (p : Π i, t i) :
     (congr f).symm (tprod R p) = tprod R (fun (i : ι) ↦ (f i).symm (p i)) := by
-  simp only [congr, LinearEquiv.ofLinear_symm_apply, map_tprod, LinearEquiv.coe_coe]
+  simp only [congr, LinearEquiv.ofLinear_symm, LinearEquiv.coe_ofLinear, map_tprod,
+    LinearEquiv.coe_coe]
 
 /--
 Let `sᵢ`, `tᵢ` and `t'ᵢ` be families of `R`-modules, then `f : Πᵢ sᵢ → tᵢ → t'ᵢ` induces an
