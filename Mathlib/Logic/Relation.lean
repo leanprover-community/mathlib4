@@ -9,7 +9,6 @@ public import Mathlib.Logic.Relator
 public import Mathlib.Tactic.Use
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.SimpRw
-public import Mathlib.Order.Defs.Prop
 public import Mathlib.Order.Defs.Unbundled
 public import Batteries.Logic
 public import Batteries.Tactic.Trans
@@ -54,7 +53,7 @@ the bundled version, see `Rel`.
 
 open Function
 
-variable {α β γ δ ε ζ : Type*}
+variable {α β γ δ ε ζ : Sort*}
 
 section NeImp
 
@@ -281,8 +280,9 @@ lemma map_equivalence {r : α → α → Prop} (hr : Equivalence r) (f : α → 
   symm := @(hr.stdSymm.map f |>.symm)
   trans := @(hr.isTrans.map hf_ker |>.trans)
 
-lemma map_mono {r s : α → β → Prop} {f : α → γ} {g : β → δ} (h : r ≤ s) :
-    Relation.Map r f g ≤ Relation.Map s f g :=
+-- TODO: state this using `≤`, after adjusting imports.
+lemma map_mono {r s : α → β → Prop} {f : α → γ} {g : β → δ} (h : ∀ x y, r x y → s x y) :
+    ∀ x y, Relation.Map r f g x y → Relation.Map s f g x y :=
   fun _ _ ⟨x, y, hxy, hx, hy⟩ => ⟨x, y, h _ _ hxy, hx, hy⟩
 
 lemma le_onFun_map {r : α → α → Prop} (f : α → β) : Subrelation r (Relation.Map r f f on f) := by
