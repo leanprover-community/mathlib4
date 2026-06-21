@@ -637,15 +637,15 @@ theorem npowRec_eq_npowBinRec : @npowRecAuto = @npowBinRecAuto := by
   iterate 2 rw [← npowBinRecAuto, ← npowRec_eq_npowBinRec]
   rfl
 
-/-- `NSMul` is an implementation detail of `AddMonoid`. It is necessary because it is not
-possible to extend `SMUl ℕ M` and `SMul ℤ M` at the same time. -/
+/-- `NSMul` is an implementation detail of `AddMonoid`. It is needed because it is
+impossible to extend `SMUl ℕ M` and `SMul ℤ M` at the same time. -/
 class NSMul (M : Type u) where
   /-- Multiplication by a natural number.
   Set this to `nsmulRec` unless `Module` diamonds are possible. -/
   protected nsmul : ℕ → M → M
 
-/-- `NPow` is an implementation detail of `Monoid`. It is necessary because it is not
-possible to extend `Pow M ℕ` and `Pow M ℤ` at the same time. -/
+/-- `NPow` is an implementation detail of `Monoid`. It is needed because it is
+impossible to extend `Pow M ℕ` and `Pow M ℤ` at the same time. -/
 @[to_additive]
 class NPow (M : Type u) where
   /-- Raising to the power of a natural number. -/
@@ -954,15 +954,15 @@ field of individual `DivInvMonoid`s constructed using that default value will no
 `.instance` transparency. -/
 def DivInvMonoid.div' {G : Type u} [Monoid G] [Inv G] (a b : G) : G := a * b⁻¹
 
-/-- `ZSMul` is an implementation detail of `SubNegMonoid`. It is necessary because it is not
-possible to extend `SMUl ℕ M` and `SMul ℤ M` at the same time. -/
+/-- `ZSMul` is an implementation detail of `SubNegMonoid`. It is needed because it is
+impossible to extend `SMUl ℕ M` and `SMul ℤ M` at the same time. -/
 class ZSMul (G : Type u) where
   /-- Multiplication by an integer.
   Set this to `zsmulRec` unless `Module` diamonds are possible. -/
   protected zsmul : ℤ → G → G
 
-/-- `ZPow` is an implementation detail of `DivInvMonoid`. It is necessary because it is not
-possible to extend `Pow M ℕ` and `Pow M ℤ` at the same time. -/
+/-- `ZPow` is an implementation detail of `DivInvMonoid`. It is needed because it is
+impossible to extend `Pow M ℕ` and `Pow M ℤ` at the same time. -/
 @[to_additive]
 class ZPow (G : Type u) where
   /-- The power operation: `a ^ n = a * ··· * a`; `a ^ (-n) = a⁻¹ * ··· a⁻¹` (`n` times) -/

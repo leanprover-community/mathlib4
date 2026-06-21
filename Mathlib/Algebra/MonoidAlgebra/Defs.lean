@@ -269,7 +269,7 @@ instance smulZeroClass : SMulZeroClass A R[M] :=
 
 section
 -- Ensure that the different smul instances do not create a diamond.
-example : (smulZeroClass (A := ℕ) (R := R) (M := M)).toSMul = addCommMonoid.toSMul := by
+example : (smulZeroClass (A := ℕ) (R := R) (M := M)).smul = addCommMonoid.nsmul := by
   with_reducible_and_instances rfl
 
 -- Ensure that smul has good defeq properties
