@@ -20,7 +20,7 @@ the respective algebras.
 
 It takes the form:
 ```
-H¹(L_{T/R}) → H¹(L_{T/S}) → T ⊗[S] Ω[S/R] → Ω[T/R] → Ω[T/S] → 0`
+H¹(L_{T/R}) → H¹(L_{T/S}) → T ⊗[S] Ω[S/R] → Ω[T/R] → Ω[T/S] → 0
 ```
 
 The maps in the sequence are
