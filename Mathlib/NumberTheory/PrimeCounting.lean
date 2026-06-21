@@ -44,6 +44,8 @@ namespace Nat
 
 open Finset Filter Order Function
 
+variable {a p k n : ℕ}
+
 /-- A variant of the traditional prime counting function which gives the number of primes
 *strictly* less than the input. More convenient for avoiding off-by-one errors.
 
@@ -98,11 +100,11 @@ theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
   nth_mem_of_infinite infinite_setOf_prime _
 
 @[simp]
-lemma primeCounting'_eq_zero_iff {n : ℕ} : π' n = 0 ↔ n ≤ 2 := by
+lemma primeCounting'_eq_zero_iff : π' n = 0 ↔ n ≤ 2 := by
   rw [primeCounting', Nat.count_eq_zero ⟨_, prime_two⟩, nth_prime_zero_eq_two]
 
 @[simp]
-lemma primeCounting_eq_zero_iff {n : ℕ} : π n = 0 ↔ n ≤ 1 := by
+lemma primeCounting_eq_zero_iff : π n = 0 ↔ n ≤ 1 := by
   simp [primeCounting, -Order.add_one_le_iff]
 
 @[simp]
@@ -112,8 +114,6 @@ lemma primeCounting_zero : π 0 = 0 := primeCounting_eq_zero_iff.mpr zero_le_one
 lemma primeCounting_one : π 1 = 0 := primeCounting_eq_zero_iff.mpr le_rfl
 
 section PrimeSets
-
-variable {p k n : ℕ}
 
 /-- `n.primesBelow` is the set of primes less than `n` as a `Finset`. -/
 def primesBelow (n : ℕ) : Finset ℕ := {p ∈ range n | p.Prime}
@@ -143,7 +143,7 @@ lemma primesLE_one : primesLE 1 = ∅ := primesBelow_two
 theorem primesBelow_eq_primesLE_sub_one (n : ℕ) : n.primesBelow = primesLE (n - 1) := by
   cases n <;> simp [primesLE]
 
-lemma mem_primesBelow : n ∈ primesBelow k ↔ n < k ∧ n.Prime := by simp [primesBelow]
+lemma mem_primesBelow : p ∈ primesBelow n ↔ p < n ∧ p.Prime := by simp [primesBelow]
 
 lemma mem_primesLE : p ∈ n.primesLE ↔ p ≤ n ∧ p.Prime := by simp [primesLE, mem_primesBelow]
 
@@ -164,52 +164,52 @@ lemma two_le_of_mem_primesBelow (hp : p ∈ n.primesBelow) : 2 ≤ p := one_lt_o
 
 lemma two_le_of_mem_primesLE (hp : p ∈ n.primesLE) : 2 ≤ p := two_le_of_mem_primesBelow hp
 
-lemma primesBelow_eq_filter_Ico_zero (n : ℕ) : n.primesBelow = filter Prime (Ico 0 n) := by
-  simp [primesBelow_eq_filter_range]
+variable (n : ℕ)
 
-lemma primesLE_eq_filter_Icc_zero (n : ℕ) : n.primesLE = filter Prime (Icc 0 n) :=
+lemma primesBelow_eq_filter_Ico_zero : n.primesBelow = filter Prime (Ico 0 n) := by
+  simp [primesBelow]
+
+lemma primesLE_eq_filter_Icc_zero : n.primesLE = filter Prime (Icc 0 n) :=
   primesBelow_eq_filter_Ico_zero _
 
-lemma primesBelow_eq_filter_Ioo_zero (n : ℕ) : n.primesBelow = filter Prime (Ioo 0 n) := by
+lemma primesBelow_eq_filter_Ioo_zero : n.primesBelow = filter Prime (Ioo 0 n) := by
   ext; simp +contextual [primesBelow_eq_filter_range, Prime.pos]
 
-lemma primesLE_eq_filter_Ioc_zero (n : ℕ) : n.primesLE = filter Prime (Ioc 0 n) :=
+lemma primesLE_eq_filter_Ioc_zero : n.primesLE = filter Prime (Ioc 0 n) :=
   primesBelow_eq_filter_Ioo_zero _
 
-lemma primesBelow_eq_filter_Ico_one (n : ℕ) : n.primesBelow = filter Prime (Ico 1 n) :=
+lemma primesBelow_eq_filter_Ico_one : n.primesBelow = filter Prime (Ico 1 n) :=
   primesBelow_eq_filter_Ioo_zero n
 
-lemma primesLE_eq_filter_Icc_one (n : ℕ) : n.primesLE = filter Prime (Icc 1 n) :=
+lemma primesLE_eq_filter_Icc_one : n.primesLE = filter Prime (Icc 1 n) :=
   primesLE_eq_filter_Ioc_zero n
 
-lemma primesBelow_eq_filter_Ioo_one (n : ℕ) : n.primesBelow = filter Prime (Ioo 1 n) := by
-  ext; simp +contextual [primesBelow_eq_filter_range, Prime.one_lt]
+lemma primesBelow_eq_filter_Ioo_one : n.primesBelow = filter Prime (Ioo 1 n) := by
+  ext; simp +contextual [primesBelow, Prime.one_lt]
 
-lemma primesLE_eq_filter_Ioc_one (n : ℕ) : n.primesLE = filter Prime (Ioc 1 n) :=
+lemma primesLE_eq_filter_Ioc_one : n.primesLE = filter Prime (Ioc 1 n) :=
   primesBelow_eq_filter_Ioo_one _
 
-lemma primesBelow_eq_filter_Ico_two (n : ℕ) : n.primesBelow = filter Prime (Ico 2 n) :=
+lemma primesBelow_eq_filter_Ico_two : n.primesBelow = filter Prime (Ico 2 n) :=
   primesBelow_eq_filter_Ioo_one n
 
-lemma primesLE_eq_filter_Icc_two (n : ℕ) : n.primesLE = filter Prime (Icc 2 n) :=
+lemma primesLE_eq_filter_Icc_two : n.primesLE = filter Prime (Icc 2 n) :=
   primesLE_eq_filter_Ioc_one n
 
 lemma primesBelow_mono : Monotone primesBelow := by intro _ _ _ _; grind [mem_primesBelow]
 
 lemma primesLE_mono : Monotone primesLE := by intro _ _ _ _; grind [mem_primesLE]
 
-lemma primesBelow_succ (n : ℕ) :
-    (n + 1).primesBelow = if n.Prime then insert n n.primesBelow else n.primesBelow := by
+lemma primesBelow_succ : (n + 1).primesBelow =
+    if n.Prime then insert n n.primesBelow else n.primesBelow := by
   simp [primesBelow, range_add_one, filter_insert]
 
-lemma primesLE_succ (n : ℕ) :
-    (n + 1).primesLE = if (n + 1).Prime then insert (n + 1) n.primesLE else n.primesLE :=
-  primesBelow_succ _
+lemma primesLE_succ : (n + 1).primesLE =
+    if (n + 1).Prime then insert (n + 1) n.primesLE else n.primesLE := primesBelow_succ _
 
-lemma notMem_primesBelow (n : ℕ) : n ∉ n.primesBelow :=
-  fun hn ↦ (lt_of_mem_primesBelow hn).false
+lemma notMem_primesBelow : n ∉ n.primesBelow := fun hn ↦ (lt_of_mem_primesBelow hn).false
 
-lemma notMem_primesLE (n : ℕ) : n + 1 ∉ n.primesLE := notMem_primesBelow _
+lemma notMem_primesLE : n + 1 ∉ n.primesLE := notMem_primesBelow _
 
 end PrimeSets
 
@@ -225,7 +225,7 @@ theorem primesLE_card_eq_primeCounting (n : ℕ) : #n.primesLE = π n :=
   primesBelow_card_eq_primeCounting' _
 
 /-- A linear upper bound on the size of the `primeCounting'` function -/
-theorem primeCounting'_add_le {a k : ℕ} (h0 : a ≠ 0) (h1 : a < k) (n : ℕ) :
+theorem primeCounting'_add_le (h0 : a ≠ 0) (h1 : a < k) (n : ℕ) :
     π' (k + n) ≤ π' k + a.totient * (n / a + 1) :=
   calc
     _ ≤ #{p ∈ range k | p.Prime} + #{p ∈ Ico k (k + n) | p.Prime} := by
@@ -239,7 +239,7 @@ theorem primeCounting'_add_le {a k : ℕ} (h0 : a ≠ 0) (h1 : a < k) (n : ℕ) 
       exact coprime_of_lt_prime h0 <| h1.trans_le (mem_Ico.1 hp).1
     _ ≤ _ := by simpa using Ico_filter_coprime_le k n h0
 
-theorem primeCounting_add_le {a k : ℕ} (h0 : a ≠ 0) (h1 : a ≤ k) (n : ℕ) :
+theorem primeCounting_add_le (h0 : a ≠ 0) (h1 : a ≤ k) (n : ℕ) :
     π (k + n) ≤ π k + a.totient * (n / a + 1) := by
   rw [primeCounting_eq_primeCounting'_succ, add_right_comm]
   exact primeCounting'_add_le h0 (lt_add_one_iff.mpr h1) n
