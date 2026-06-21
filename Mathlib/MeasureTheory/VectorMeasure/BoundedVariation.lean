@@ -335,9 +335,65 @@ private lemma bloub (hf : BoundedVariationOn f univ) {a b : α} (h : a ≤ b) :
     hf.variationAux (Ioc a b) = hf.vectorMeasure.variation (Ioc a b) :=
   le_antisymm (by grw [bar hf h, baz hf]) (foo _ _)
 
+#check ENNReal.continuous_ofReal
+
 private lemma bloub2 (hf : BoundedVariationOn f univ) {a : α} :
     hf.variationAux {a} = hf.vectorMeasure.variation {a} := by
-  rw [variation_singleton]
+  classical
+  have hα : Nonempty α := ⟨a⟩
+  rw [variation_apply_singleton]
+  simp [vectorMeasure_singleton, variationAux]
+  by_cases ha : IsBot a
+  · have hx : ∃ x, IsBot x := ⟨a, ha⟩
+    have A : hx.choose = a := le_antisymm (hx.choose_spec _) (ha _)
+    suffices hf.measureAux {a} = 0 by simpa [hx, A, leftLim_eq_of_isBot ha, ← enorm_eq_nnnorm]
+    simp [measureAux, hα, leftLim_eq_of_isBot ha]
+  have : (𝓝[<] a).NeBot := nhdsLT_neBot_of_exists_lt (by simpa [IsBot] using ha)
+  have : (if h : ∃ x, IsBot x then ‖Function.rightLim f h.choose - f h.choose‖₊
+      • Measure.dirac h.choose else 0) {a} = 0 := by
+    split_ifs with h
+    · have : h.choose ≠ a := by grind
+      simp [this]
+    · simp
+  simp only [measureAux, hα, ↓reduceDIte, StieltjesFunction.measure_singleton, this, add_zero]
+  simp [stieltjesFunctionRightLim]
+  have A : Tendsto (fun x ↦ variationOnFromTo (Function.rightLim f) univ hα.some a -
+        variationOnFromTo (Function.rightLim f) univ hα.some x)
+      (𝓝[<] a) (𝓝 (variationOnFromTo (Function.rightLim f) univ hα.some a -
+        Function.leftLim (fun x ↦ variationOnFromTo (Function.rightLim f) univ hα.some x) a)) := by
+    apply tendsto_const_nhds.sub
+    apply Monotone.tendsto_leftLim
+    rw [← monotoneOn_univ]
+    exact variationOnFromTo.monotoneOn hf.rightLim.locallyBoundedVariationOn (mem_univ _)
+  apply tendsto_nhds_unique (ENNReal.tendsto_ofReal A)
+  have B x : variationOnFromTo (Function.rightLim f) univ hα.some a -
+        variationOnFromTo (Function.rightLim f) univ hα.some x =
+        variationOnFromTo (Function.rightLim f) univ x a := by
+    rw [← variationOnFromTo.add hf.rightLim.locallyBoundedVariationOn (mem_univ hα.some)
+      (mem_univ x) (mem_univ a), add_sub_cancel_left]
+  simp_rw [B]
+  suffices Tendsto (fun x ↦ eVariationOn f.rightLim (Icc x a)) (𝓝[<] a)
+      (𝓝 ‖Function.rightLim f a - Function.leftLim f a‖ₑ) by
+    apply Tendsto.congr' _ this
+    filter_upwards [self_mem_nhdsWithin] with x (hx : x < a)
+    simp [variationOnFromTo, hx.le]
+    rw [ENNReal.ofReal_toReal (hf.rightLim.mono (subset_univ _))]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #exit
