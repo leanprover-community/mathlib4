@@ -516,8 +516,7 @@ lemma transvection_smul_single_snd {i j : ι} (hij : i ≠ j) (b : F) :
 
 /-- Inverse of a transvection: `transvection i j hij b * transvection i j hij (-b) = 1`. -/
 lemma transvection_mul_neg {i j : ι} (hij : i ≠ j) (b : F) :
-    transvection hij b * transvection hij (-b) = 1 := by
-  ext
+    transvection hij b * transvection hij (-b) = 1 := Subtype.ext <| by
   simp [transvection_coe, mul_add, add_mul,
     single_mul_single_of_ne _ _ _ _ hij.symm, ← single_neg]
 
@@ -704,7 +703,6 @@ theorem diagonal_transvection_induction' {ι : Type*} [Fintype ι] [DecidableEq 
     rw [diag_eq_diag2n_prod i₀ D hD]
     refine Finset.noncommProd_induction _ _ _ P hmul hP1 fun i hi => ?_
     simp [(Finset.mem_filter.1 hi).2, hdiag]
-  -- `P` holds for any product of transvections (in `SL`), by induction on the list.
   have hlist (L : List (TransvectionStruct ι F)) :
       P (L.map TransvectionStruct.toSpecialLinearGroup).prod := by
     induction L with
