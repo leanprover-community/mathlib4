@@ -101,9 +101,10 @@ end GaussSumDef
 
 section GaussSumTrivial
 
-variable {R : Type u} [CommRing R] [Fintype R] {R' : Type v} [CommRing R']
+variable {R R' : Type*} [CommRing R] [Fintype R] [CommRing R']
 
 /-- The Gauss sum of the two trivial characters is the cardinality of the unit group of `R`. -/
+@[simp]
 theorem gaussSum_one_one : gaussSum (1 : MulChar R R') (1 : AddChar R R') = Nat.card Rˣ := by
   classical
   simp [gaussSum, MulChar.sum_one_eq_card_units]
@@ -118,20 +119,22 @@ end GaussSumTrivial
 
 section GaussSumTrivialField
 
-variable {R : Type u} [Field R] [Fintype R] {R' : Type v} [CommRing R'] [IsDomain R']
+variable {R R' : Type*} [Field R] [Fintype R] [CommRing R'] [IsDomain R']
 
 /-- The Gauss sum of the trivial multiplicative character and a nontrivial additive character,
 over a finite field, is `-1`. -/
 theorem gaussSum_one_left {ψ : AddChar R R'} (hψ : ψ ≠ 1) :
     gaussSum (1 : MulChar R R') ψ = -1 := by
   classical
-  rw [gaussSum, ← Finset.univ.add_sum_erase _ (Finset.mem_univ 0), MulChar.map_zero, zero_mul,
-    zero_add]
-  have : ∀ x ∈ Finset.univ.erase (0 : R), (1 : MulChar R R') x = 1 :=
-    fun x hx ↦ MulChar.one_apply <| isUnit_iff_ne_zero.mpr <| Finset.ne_of_mem_erase hx
-  simp_rw +contextual [this, one_mul]
-  rw [Finset.sum_erase_eq_sub (Finset.mem_univ 0), AddChar.map_zero_eq_one, AddChar.sum_eq_ite,
-    ite_sub, zero_sub, if_neg (by rwa [← AddChar.one_eq_zero])]
+  simp only [gaussSum, ← add_eq_zero_iff_eq_neg]
+  calc ∑ a, (1 : MulChar R R') a * ψ a + 1
+  _ = ∑ a ∈ {0}ᶜ, (1 : MulChar R R') a * ψ a + 1 := by
+    simp [← ({0} : Finset R).sum_compl_add_sum]
+  _ = ∑ a ∈ {0}ᶜ, ψ a + ψ 0 := by
+    congr! <;> aesop (add simp MulChar.one_apply)
+  _ = 0 := by
+    rw [← AddChar.sum_eq_zero_of_ne_one hψ, ← Finset.sum_compl_add_sum (s := {0})]
+    simp
 
 end GaussSumTrivialField
 
