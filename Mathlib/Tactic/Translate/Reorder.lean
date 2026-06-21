@@ -241,7 +241,7 @@ private def decomposePerm {n} (map : Vector (Option (Fin n)) n) : Permutation :=
       map := map.set! j none
       if j' = i then break
       j := j'
-      cycle := ⟨cycle.1 ++ [↑j], by grind⟩
+      cycle := ⟨cycle.1 ++ [j.val], by grind⟩
     perm := cycle :: perm
   return perm
 
