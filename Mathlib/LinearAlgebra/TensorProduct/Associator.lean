@@ -39,7 +39,7 @@ variable (R M)
 /-- The base ring is a left identity for the tensor product of modules, up to linear equivalence.
 -/
 protected def lid : R ⊗[R] M ≃ₗ[R] M :=
-  LinearEquiv.ofLinear (lift <| LinearMap.lsmul R M) (mk R R M 1) (LinearMap.ext fun _ => by simp)
+  LinearEquiv.ofLinearMap (lift <| LinearMap.lsmul R M) (mk R R M 1) (LinearMap.ext fun _ => by simp)
     (ext' fun r m => by simp [← tmul_smul, ← smul_tmul, smul_eq_mul, mul_one])
 
 end

@@ -481,7 +481,7 @@ variable (f : M →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₁] M)
 
 
 /-- If a linear map has an inverse, it is a linear equivalence. -/
-def ofLinear (h₁ : f.comp g = .id) (h₂ : g.comp f = .id) : M ≃ₛₗ[σ₁₂] M₂
+def ofLinearMap (h₁ : f.comp g = .id) (h₂ : g.comp f = .id) : M ≃ₛₗ[σ₁₂] M₂
   where
     toFun := f
     map_add' := f.map_add'
@@ -491,15 +491,15 @@ def ofLinear (h₁ : f.comp g = .id) (h₂ : g.comp f = .id) : M ≃ₛₗ[σ₁
     right_inv := LinearMap.ext_iff.1 h₁
 
 @[simp]
-theorem coe_ofLinear (h₁ h₂) : ⇑(ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) = f := rfl
+theorem coe_ofLinearMap (h₁ h₂) : ⇑(ofLinearMap f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) = f := rfl
 
 @[simp]
-theorem ofLinear_symm {h₁ h₂} :
-    (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂).symm = (ofLinear g f h₂ h₁) :=
+theorem ofLinearMap_symm {h₁ h₂} :
+    (ofLinearMap f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂).symm = (ofLinearMap g f h₂ h₁) :=
   rfl
 
 @[simp]
-theorem toLinearMap_ofLinear {h₁ h₂} : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) = f := rfl
+theorem toLinearMap_ofLinearMap {h₁ h₂} : (ofLinearMap f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) = f := rfl
 
 end
 
@@ -831,7 +831,7 @@ open LinearMap
 /-- Given an `R`-module `M` and an equivalence `m ≃ n` between arbitrary types,
 construct a linear equivalence `(n → M) ≃ₗ[R] (m → M)` -/
 def funCongrLeft (e : m ≃ n) : (n → M) ≃ₗ[R] m → M :=
-  LinearEquiv.ofLinear (funLeft R M e) (funLeft R M e.symm)
+  LinearEquiv.ofLinearMap (funLeft R M e) (funLeft R M e.symm)
     (LinearMap.ext fun x ↦
       funext fun i ↦ by rw [id_apply, ← funLeft_comp, Equiv.symm_comp_self, LinearMap.funLeft_id])
     (LinearMap.ext fun x ↦

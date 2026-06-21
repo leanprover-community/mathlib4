@@ -460,7 +460,7 @@ lemma isPresentation {solution : relations.Solution M}
     solution.IsPresentation where
   bijective := by
     let e : relations.Quotient ≃ₗ[A] M :=
-      LinearEquiv.ofLinear solution.fromQuotient
+      LinearEquiv.ofLinearMap solution.fromQuotient
       ((down.{v} h).desc (ofQuotient relations))
       ((down.{max u w₀} h).postcomp_injective (by aesop)) (by aesop)
     exact e.bijective

@@ -246,7 +246,7 @@ variable {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁] [RingHomIn
 /-- If `M` and `P` are semilinearly equivalent and `N` and `Q` are semilinearly equivalent
 then `M ⊗ N` and `P ⊗ Q` are semilinearly equivalent. -/
 def congr (f : M ≃ₛₗ[σ₁₂] M₂) (g : N ≃ₛₗ[σ₁₂] N₂) : M ⊗[R] N ≃ₛₗ[σ₁₂] M₂ ⊗[R₂] N₂ :=
-  LinearEquiv.ofLinear (map f g) (map f.symm g.symm)
+  LinearEquiv.ofLinearMap (map f g) (map f.symm g.symm)
     (ext' fun m n => by simp)
     (ext' fun m n => by simp)
 

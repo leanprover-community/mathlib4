@@ -127,7 +127,7 @@ attribute [-ext] AlgebraTensorModule.curry_injective in
 provides this equivalence in return for a basis of `M`. -/
 -- We manually create simp-lemmas because `@[simps]` generates a malformed lemma
 noncomputable def dualTensorHomEquivOfBasis : Module.Dual R M ⊗[R] N ≃ₗ[R] M →ₗ[R] N :=
-  LinearEquiv.ofLinear (dualTensorHom R M N)
+  LinearEquiv.ofLinearMap (dualTensorHom R M N)
     (∑ i, TensorProduct.mk R _ N (b.dualBasis i) ∘ₗ (LinearMap.applyₗ (R := R) (b i)))
     (by
       ext f m

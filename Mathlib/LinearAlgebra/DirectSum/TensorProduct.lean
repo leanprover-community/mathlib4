@@ -49,7 +49,7 @@ variable [Module S M₁'] [IsScalarTower R S M₁']
 "tensor product distributes over direct sum". -/
 protected def directSum :
     ((⨁ i₁, M₁ i₁) ⊗[R] ⨁ i₂, M₂ i₂) ≃ₗ[S] ⨁ i : ι₁ × ι₂, M₁ i.1 ⊗[R] M₂ i.2 := by
-  refine LinearEquiv.ofLinear ?toFun ?invFun ?left ?right
+  refine LinearEquiv.ofLinearMap ?toFun ?invFun ?left ?right
   · exact AlgebraTensorModule.lift <|
       toModule S _ _ fun i₁ => flip <| toModule R _ _ fun i₂ => flip <| AlgebraTensorModule.curry <|
       DirectSum.lof S (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂)

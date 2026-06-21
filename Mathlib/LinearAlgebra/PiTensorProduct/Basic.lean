@@ -607,12 +607,12 @@ noncomputable def congr (f : Π i, s i ≃ₗ[R] t i) :
 @[simp]
 theorem congr_tprod (f : Π i, s i ≃ₗ[R] t i) (m : Π i, s i) :
     congr f (tprod R m) = tprod R (fun (i : ι) ↦ (f i) (m i)) := by
-  simp only [congr, LinearEquiv.coe_ofLinear, map_tprod, LinearEquiv.coe_coe]
+  simp only [congr, LinearEquiv.coe_ofLinearMap, map_tprod, LinearEquiv.coe_coe]
 
 @[simp]
 theorem congr_symm_tprod (f : Π i, s i ≃ₗ[R] t i) (p : Π i, t i) :
     (congr f).symm (tprod R p) = tprod R (fun (i : ι) ↦ (f i).symm (p i)) := by
-  simp only [congr, LinearEquiv.ofLinear_symm, LinearEquiv.coe_ofLinear, map_tprod,
+  simp only [congr, LinearEquiv.ofLinearMap_symm, LinearEquiv.coe_ofLinearMap, map_tprod,
     LinearEquiv.coe_coe]
 
 /--
@@ -678,7 +678,7 @@ variable (s) in
 def reindex (e : ι ≃ ι₂) : (⨂[R] i : ι, s i) ≃ₗ[R] ⨂[R] i : ι₂, s (e.symm i) :=
   let f := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι₂), s (e.symm i)) e
   let g := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι), s i) e
-  LinearEquiv.ofLinear (lift <| f.symm <| tprod R) (lift <| g <| tprod R) (by aesop) (by aesop)
+  LinearEquiv.ofLinearMap (lift <| f.symm <| tprod R) (lift <| g <| tprod R) (by aesop) (by aesop)
 
 end
 
