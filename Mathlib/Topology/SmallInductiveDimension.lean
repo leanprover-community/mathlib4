@@ -48,8 +48,9 @@ class inductive HasSmallInductiveDimensionLT.{u} :
       (h : ∀ U ∈ s, HasSmallInductiveDimensionLT ↑(frontier U) n) :
       HasSmallInductiveDimensionLT X (n + 1)
 
-variable (X : Type) [TopologicalSpace X]
+variable {X : Type*} [TopologicalSpace X]
 
+variable (X) in
 /-- A topological space has dimension `≤ n` if it has dimension `< n + 1`. -/
 abbrev HasSmallInductiveDimensionLE (n : ℕ) :=
   HasSmallInductiveDimensionLT X (n + 1)
@@ -58,11 +59,13 @@ abbrev HasSmallInductiveDimensionLE (n : ℕ) :=
 noncomputable def smallInductiveDimension : WithBot ℕ∞ :=
   sInf {n : WithBot ℕ∞ | ∀ (i : ℕ), n < i → HasSmallInductiveDimensionLT X i}
 
-lemma HasSmallInductiveDimensionLT_zero_iff :
-    HasSmallInductiveDimensionLT X 0 ↔ IsEmpty X :=
+lemma hasSmallInductiveDimensionLT_zero_iff : HasSmallInductiveDimensionLT X 0 ↔ IsEmpty X :=
   ⟨fun h ↦ by cases h; assumption, fun _ ↦ .zero⟩
 
-lemma HasSmallInductiveDimensionLT_one_iff :
+@[deprecated (since := "2026-06-21")]
+alias HasSmallInductiveDimensionLT_zero_iff := hasSmallInductiveDimensionLT_zero_iff
+
+lemma hasSmallInductiveDimensionLT_one_iff :
     HasSmallInductiveDimensionLT X 1 ↔ IsTopologicalBasis { s : Set X | IsClopen s } := by
   constructor
   · intro (.succ _ s hs h)
@@ -71,5 +74,33 @@ lemma HasSmallInductiveDimensionLT_one_iff :
     cases h U hU
     rwa [isEmpty_coe_sort, (hs.isOpen hU).frontier_eq, sdiff_eq_empty] at ‹_›
   · exact fun h ↦ .succ 0 _ h fun _ hU ↦ hU.frontier_eq ▸ .zero
+
+@[deprecated (since := "2026-06-21")]
+alias HasSmallInductiveDimensionLT_one_iff := hasSmallInductiveDimensionLT_one_iff
+
+theorem HasSmallInductiveDimensionLT.mono {m n : ℕ} (hmn : m ≤ n)
+    (H : HasSmallInductiveDimensionLT X m) : HasSmallInductiveDimensionLT X n := by
+  induction n generalizing m X with
+  | zero => simp_all
+  | succ m IH =>
+    cases H with
+    | zero => exact .succ _ ∅ (by simpa) (by simp)
+    | succ n s hs h =>
+      refine .succ _ s hs fun U hU ↦ IH ?_ (h U hU)
+      rwa [add_le_add_iff_right] at hmn
+
+theorem HasSmallInductiveDimensionLE.mono {m n : ℕ} (hmn : m ≤ n)
+    (H : HasSmallInductiveDimensionLE X m) : HasSmallInductiveDimensionLE X n := by
+  apply HasSmallInductiveDimensionLT.mono _ H
+  rwa [add_le_add_iff_right]
+
+instance hasSmallInductiveDimensionLT_one_of_discreteTopology [DiscreteTopology X] :
+    HasSmallInductiveDimensionLT X 1 := by
+  rw [hasSmallInductiveDimensionLT_one_iff]
+  simpa using isTopologicalBasis_opens (α := X)
+
+instance hasSmallInductiveDimensionLE_zero_of_discreteTopology [DiscreteTopology X] :
+    HasSmallInductiveDimensionLE X 0 :=
+  inferInstanceAs (HasSmallInductiveDimensionLT X 1)
 
 end
