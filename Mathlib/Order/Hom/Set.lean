@@ -155,7 +155,8 @@ theorem orderIsoOfSurjective_self_symm_apply (b : β) :
 end StrictMono
 
 /-- Two order embeddings on a well-order are equal provided that their ranges are equal. -/
-@[to_dual]
+@[to_dual
+/-- Two order embeddings on a well-order are equal provided that their ranges are equal. -/]
 lemma OrderEmbedding.range_inj_of_wellFoundedLT [LinearOrder α] [WellFoundedLT α] [Preorder β]
     {f g : α ↪o β} : Set.range f = Set.range g ↔ f = g := by
   rw [f.strictMono.range_inj_of_wellFoundedLT g.strictMono, DFunLike.coe_fn_eq]
