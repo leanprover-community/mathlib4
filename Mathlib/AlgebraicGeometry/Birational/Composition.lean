@@ -54,17 +54,6 @@ noncomputable def comp (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.PartialMap
       f.hom.denseRange.inter_open_nonempty _ g.domain.2 g.dense_domain.nonempty
   hom := (f.domain.ι.isoImage _).inv ≫ (f.hom ∣_ g.domain) ≫ g.hom
 
-@[simps]
-noncomputable def restrictHomTarget (f : X.PartialMap Y) [IsDominant f.hom]
-    (U : Opens Y) (hU : (U : Set Y).Nonempty) : PartialMap X U where
-  domain := f.domain.ι ''ᵁ f.hom ⁻¹ᵁ U
-  dense_domain := (f.domain.ι ''ᵁ f.hom ⁻¹ᵁ U).2.dense <| by
-    simpa [← Set.nonempty_preimage_iff] using f.hom.denseRange.inter_open_nonempty _ U.2 hU
-  hom := (f.domain.ι.isoImage _).inv ≫ (f.hom ∣_ U)
-
-lemma restrictHomTarget_compHom (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.PartialMap Z) :
-    (f.restrictHomTarget g.domain g.dense_domain.nonempty).compHom g.hom = f.comp g := rfl
-
 set_option backward.defeqAttrib.useBackward true in
 lemma comp_restrict_left (f : X.PartialMap Y) [IsDominant f.hom] (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) (g : Y.PartialMap Z) :

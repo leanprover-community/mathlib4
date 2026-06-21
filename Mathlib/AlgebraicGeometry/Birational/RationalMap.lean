@@ -153,6 +153,24 @@ instance (f : X ⟶ Y) [IsDominant f] : IsDominant f.toPartialMap.hom := by
   infer_instance
 
 set_option backward.defeqAttrib.useBackward true in
+instance (f : X ⟶ Y) [IsDominant f] : IsDominant f.toPartialMap.hom := by
+  dsimp
+  have := Opens.isDominant_ι (X := X) (U := ⊤) dense_univ
+  infer_instance
+
+lemma _root_.AlgebraicGeometry.Scheme.Hom.toPartialMap_compHom (f : X ⟶ Y) (g : Y ⟶ Z) :
+    f.toPartialMap.compHom g = (f ≫ g).toPartialMap := rfl
+
+variable (X) in
+/-- The identity partial map. -/
+protected abbrev id : X.PartialMap X := (𝟙 X : X ⟶ X).toPartialMap
+
+@[simp]
+lemma id_compHom (f : X ⟶ Y) : (PartialMap.id X).compHom f = f.toPartialMap := by
+  apply PartialMap.ext _ _ rfl
+  simp
+
+set_option backward.defeqAttrib.useBackward true in
 instance [X.Over S] [Y.Over S] (f : X ⟶ Y) [f.IsOver S] : f.toPartialMap.IsOver S where
 
 set_option backward.defeqAttrib.useBackward true in
