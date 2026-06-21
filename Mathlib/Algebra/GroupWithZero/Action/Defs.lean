@@ -428,7 +428,7 @@ lemma smul_ne_zero_iff_ne (a : α) {x : β} : a • x ≠ 0 ↔ x ≠ 0 :=
 
 end DistribMulAction
 
-section MulDistribMulAction
+section MonoidWithZero
 variable [Group α] [MonoidWithZero β] [MulDistribMulAction α β]
 
 instance MulDistribMulAction.instSMulZeroClass : SMulZeroClass α β where
@@ -438,7 +438,7 @@ instance MulDistribMulAction.instSMulZeroClass : SMulZeroClass α β where
       rw [smul_mul', smul_inv_smul]
     exact h.trans (mul_zero _)
 
-end MulDistribMulAction
+end MonoidWithZero
 
 section MulDistribMulAction
 variable [Group α] [GroupWithZero β] [MulDistribMulAction α β]

@@ -433,23 +433,19 @@ section MulDistribMulAction
 variable {G M₀ : Type*} [Group G] [MonoidWithZero M₀] [MulDistribMulAction G M₀]
 
 theorem smul_mem_nonZeroDivisorsLeft (g : G) {m : M₀} (hm : m ∈ nonZeroDivisorsLeft M₀) :
-    g • m ∈ nonZeroDivisorsLeft M₀ := fun y hy => by
-  have h : m * (g⁻¹ • y) = 0 := by
-    have := congr_arg (g⁻¹ • ·) hy
-    rwa [smul_zero, smul_mul', inv_smul_smul] at this
-  have h0 := hm _ h
+    g • m ∈ nonZeroDivisorsLeft M₀ := by
+  intro y hy
   calc y = g • (g⁻¹ • y) := (smul_inv_smul g y).symm
-    _ = g • (0 : M₀) := by rw [h0]
+    _ = g • (0 : M₀) := congr_arg (g • ·) <| hm _ <| by
+      simpa [smul_zero, smul_mul', inv_smul_smul] using congr_arg (g⁻¹ • ·) hy
     _ = 0 := smul_zero g
 
 theorem smul_mem_nonZeroDivisorsRight (g : G) {m : M₀} (hm : m ∈ nonZeroDivisorsRight M₀) :
-    g • m ∈ nonZeroDivisorsRight M₀ := fun y hy => by
-  have h : (g⁻¹ • y) * m = 0 := by
-    have := congr_arg (g⁻¹ • ·) hy
-    rwa [smul_zero, smul_mul', inv_smul_smul] at this
-  have h0 := hm _ h
+    g • m ∈ nonZeroDivisorsRight M₀ := by
+  intro y hy
   calc y = g • (g⁻¹ • y) := (smul_inv_smul g y).symm
-    _ = g • (0 : M₀) := by rw [h0]
+    _ = g • (0 : M₀) := congr_arg (g • ·) <| hm _ <| by
+      simpa [smul_zero, smul_mul', inv_smul_smul] using congr_arg (g⁻¹ • ·) hy
     _ = 0 := smul_zero g
 
 theorem smul_mem_nonZeroDivisors (g : G) {m : M₀} (hm : m ∈ nonZeroDivisors M₀) :
