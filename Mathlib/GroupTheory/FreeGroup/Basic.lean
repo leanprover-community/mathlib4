@@ -930,7 +930,7 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
     rintro ⟨L⟩
     simp only [quot_mk_eq_mk, map.mk, sum_mk, List.map_map]
     exact List.recOn L
-     (by rfl)
+     rfl
      (fun ⟨⟨⟩, b⟩ tl ih => by
         cases b <;> simp [zpow_add, ih] <;> rfl)
   right_inv x :=
