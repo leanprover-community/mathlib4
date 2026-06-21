@@ -331,17 +331,17 @@ theorem coe_Ico (a b : α) : (Ico a b : Set α) = Set.Ico a b :=
 theorem coe_Ioo (a b : α) : (Ioo a b : Set α) = Set.Ioo a b :=
   Set.ext fun _ => mem_Ioo
 
-@[simp, to_dual self]
+@[to_dual self]
 theorem _root_.Fintype.card_Icc (a b : α) [Fintype (Set.Icc a b)] :
     Fintype.card (Set.Icc a b) = #(Icc a b) :=
   Fintype.card_of_finset' _ fun _ ↦ by simp
 
-@[to_dual (reorder := a b) (attr := simp)]
+@[to_dual (reorder := a b)]
 theorem _root_.Fintype.card_Ico (a b : α) [Fintype (Set.Ico a b)] :
     Fintype.card (Set.Ico a b) = #(Ico a b) :=
   Fintype.card_of_finset' _ fun _ ↦ by simp
 
-@[simp, to_dual self]
+@[to_dual self]
 theorem _root_.Fintype.card_Ioo (a b : α) [Fintype (Set.Ioo a b)] :
     Fintype.card (Set.Ioo a b) = #(Ioo a b) :=
   Fintype.card_of_finset' _ fun _ ↦ by simp
@@ -380,12 +380,12 @@ theorem coe_Ici (a : α) : (Ici a : Set α) = Set.Ici a :=
 theorem coe_Ioi (a : α) : (Ioi a : Set α) = Set.Ioi a :=
   Set.ext fun _ => mem_Ioi
 
-@[to_dual (attr := simp)]
+@[to_dual]
 theorem _root_.Fintype.card_Ici (a : α) [Fintype (Set.Ici a)] :
     Fintype.card (Set.Ici a) = #(Ici a) :=
   Fintype.card_of_finset' _ fun _ ↦ by simp
 
-@[to_dual (attr := simp)]
+@[to_dual]
 theorem _root_.Fintype.card_Ioi (a : α) [Fintype (Set.Ioi a)] :
     Fintype.card (Set.Ioi a) = #(Ioi a) :=
   Fintype.card_of_finset' _ fun _ ↦ by simp
@@ -438,7 +438,6 @@ theorem mem_uIcc : x ∈ uIcc a b ↔ a ⊓ b ≤ x ∧ x ≤ a ⊔ b :=
 theorem coe_uIcc (a b : α) : (Finset.uIcc a b : Set α) = Set.uIcc a b :=
   coe_Icc _ _
 
-@[simp]
 theorem _root_.Fintype.card_uIcc (a b : α) [Fintype (Set.uIcc a b)] :
     Fintype.card (Set.uIcc a b) = #(uIcc a b) :=
   Fintype.card_of_finset' _ fun _ ↦ by simp [Set.uIcc]
@@ -1084,11 +1083,11 @@ instance (priority := low) [DecidableLT α] [LocallyFiniteOrder α] :
 
 @[to_dual]
 instance [LocallyFiniteOrderBot α] : Finite { x : α // x ≤ y } := by
-  simpa only [coe_Iic] using (Finset.Iic y).finite_toSet
+  simpa only [coe_Iic] using! (Finset.Iic y).finite_toSet
 
 @[to_dual]
 instance [LocallyFiniteOrderBot α] : Finite { x : α // x < y } := by
-  simpa only [coe_Iio] using (Finset.Iio y).finite_toSet
+  simpa only [coe_Iio] using! (Finset.Iio y).finite_toSet
 
 @[to_dual]
 instance (priority := low) [LocallyFiniteOrderBot α] : WellFoundedLT α := by

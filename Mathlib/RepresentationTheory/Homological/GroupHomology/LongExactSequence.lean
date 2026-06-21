@@ -39,6 +39,7 @@ variable {k G : Type u} [CommRing k] [Group G] {X : ShortComplex (Rep k G)} (hX 
 
 include hX
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma map_chainsFunctor_shortExact :
     ShortExact (X.map (chainsFunctor k G)) :=
@@ -112,8 +113,8 @@ noncomputable abbrev cyclesMkOfCompEqD {i j : ℕ} {y : (Fin i → G) →₀ X.X
     (hx : mapRange.linearMap X.f.hom.toLinearMap x = (inhomogeneousChains X.X₂).d i j y) :
     cycles X.X₁ j :=
   cyclesMk j _ rfl x <| by
-    simpa using (map_chainsFunctor_shortExact hX).d_eq_zero_of_f_eq_d_apply i j y x
-      (by simpa using hx) _
+    simpa using! (map_chainsFunctor_shortExact hX).d_eq_zero_of_f_eq_d_apply i j y x
+      (by simpa using! hx) _
 
 set_option backward.isDefEq.respectTransparency false in
 theorem δ_apply {i j : ℕ} (hij : j + 1 = i)
@@ -126,9 +127,9 @@ theorem δ_apply {i j : ℕ} (hij : j + 1 = i)
     (x : (Fin j → G) →₀ X.X₁)
     -- Then `x` is an `j`-cycle and `δ z = x` in `Hⱼ(X₁)`.
     (hx : mapRange.linearMap X.f.hom.toLinearMap x = (inhomogeneousChains X.X₂).d i j y) :
-    δ hX i j hij (π X.X₃ i <| cyclesMk i j (by simp [← hij]) z (by simpa using hz)) =
+    δ hX i j hij (π X.X₃ i <| cyclesMk i j (by simp [← hij]) z (by simpa using! hz)) =
       π X.X₁ j (cyclesMkOfCompEqD hX hx) := by
-  exact (map_chainsFunctor_shortExact hX).δ_apply i j hij z hz y hy x (by simpa using hx) _ rfl
+  exact (map_chainsFunctor_shortExact hX).δ_apply i j hij z hz y hy x (by simpa using! hx) _ rfl
 
 theorem δ₀_apply
     -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
@@ -140,7 +141,7 @@ theorem δ₀_apply
     δ hX 1 0 rfl (H1π X.X₃ z) = H0π X.X₁ x := by
   simpa only [H1π, ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply, H0π,
     ← cyclesMk₀_eq X.X₁, ← cyclesMk₁_eq X.X₃]
-  using δ_apply hX (i := 1) (j := 0) rfl ((chainsIso₁ X.X₃).inv z.1) (by
+  using! δ_apply hX (i := 1) (j := 0) rfl ((chainsIso₁ X.X₃).inv z.1) (by
     rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₁₀_comp_inv]; simp)
     ((chainsIso₁ X.X₂).inv y) (Finsupp.ext fun _ => by simp [chainsIso₁, ← hy])
     ((chainsIso₀ X.X₁).inv x) (Finsupp.ext fun _ => by
@@ -166,11 +167,16 @@ theorem δ₁_apply
     δ hX 2 1 rfl (H2π X.X₃ z) = H1π X.X₁ ⟨x, mem_cycles₁_of_comp_eq_d₂₁ hX hx⟩ := by
   simpa only [H2π, ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply, H1π,
     ← cyclesMk₂_eq X.X₃, ← cyclesMk₁_eq X.X₁]
-  using δ_apply hX (i := 2) (j := 1) rfl ((chainsIso₂ X.X₃).inv z.1) (by
+  using! δ_apply hX (i := 2) (j := 1) rfl ((chainsIso₂ X.X₃).inv z.1) (by
     rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₂₁_comp_inv]; simp)
     ((chainsIso₂ X.X₂).inv y) (Finsupp.ext fun _ => by simp [chainsIso₂, ← hy])
     ((chainsIso₁ X.X₁).inv x) (Finsupp.ext fun _ => by
     conv_rhs => rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₂₁_comp_inv]
     simp [← hx, chainsIso₁])
+
+/-- `S.map (chainsFunctor k G)` is short exact in each degree. -/
+lemma map_chainsFunctor_eval_shortExact (n : ℕ) :
+    ShortExact (X.map <| chainsFunctor k G ⋙ HomologicalComplex.eval (ModuleCat k) (.down ℕ) n) :=
+  (map_chainsFunctor_shortExact hX).map_of_exact (HomologicalComplex.eval ..)
 
 end groupHomology

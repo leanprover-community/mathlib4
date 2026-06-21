@@ -83,7 +83,7 @@ theorem MulAction.isClosedMap_quotient [CompactSpace α] :
   intro t ht
   rw [← isQuotientMap_quotient_mk'.isClosed_preimage,
     MulAction.quotient_preimage_image_eq_union_mul]
-  convert ht.smul_left_of_isCompact (isCompact_univ (X := α))
+  convert! ht.smul_left_of_isCompact (isCompact_univ (X := α))
   rw [← biUnion_univ, ← iUnion_smul_left_image]
   simp only [image_smul]
 
@@ -142,6 +142,44 @@ theorem mul_singleton_mem_nhds_of_nhds_one (a : α) (h : s ∈ 𝓝 (1 : α)) : 
   simpa only [one_mul] using mul_singleton_mem_nhds a h
 
 end ContinuousConstSMulOp
+
+section SeparatelyContinuousMul
+
+variable [TopologicalSpace G] [Group G] [SeparatelyContinuousMul G]
+
+@[to_additive]
+theorem closure_subset_mul_left_of_mem_nhds_one_of_inv {s : Set G} (s' : Set G)
+    (hs₀ : s ∈ 𝓝 1) (h_symm : ∀ x ∈ s, x⁻¹ ∈ s) :
+    closure s' ⊆ s * s' := by
+  intro y hy
+  obtain ⟨_, ⟨b, hb, rfl⟩, hc⟩ :=
+    mem_closure_iff_nhds.mp hy ((· * y) '' s)
+      (by simpa using (isOpenMap_mul_right y).image_mem_nhds hs₀)
+  simpa using Set.mul_mem_mul (h_symm b hb) hc
+
+@[to_additive]
+theorem closure_subset_mul_right_of_mem_nhds_one_of_inv (s : Set G) {s' : Set G}
+    (hs'₀ : s' ∈ 𝓝 1) (h_symm : ∀ x ∈ s', x⁻¹ ∈ s') :
+    closure s ⊆ s * s' := by
+  intro y hy
+  obtain ⟨_, ⟨b, hb, rfl⟩, hc⟩ :=
+    mem_closure_iff_nhds.mp hy ((y * ·) '' s')
+      (by simpa using (isOpenMap_mul_left y).image_mem_nhds hs'₀)
+  simpa using Set.mul_mem_mul hc (h_symm b hb)
+
+@[to_additive]
+theorem closure_subset_of_mem_nhds_one_of_inv_mul_left_subset {s s' t : Set G}
+    (hs₀ : s ∈ 𝓝 1) (h_symm : ∀ x ∈ s, x⁻¹ ∈ s) (hs : s * s' ⊆ t) :
+    closure s' ⊆ t :=
+  closure_subset_mul_left_of_mem_nhds_one_of_inv s' hs₀ h_symm |>.trans hs
+
+@[to_additive]
+theorem closure_subset_of_mem_nhds_one_of_inv_mul_right_subset {s s' t : Set G}
+    (hs'₀ : s' ∈ 𝓝 1) (h_symm : ∀ x ∈ s', x⁻¹ ∈ s') (hs : s * s' ⊆ t) :
+    closure s ⊆ t :=
+  closure_subset_mul_right_of_mem_nhds_one_of_inv s hs'₀ h_symm |>.trans hs
+
+end SeparatelyContinuousMul
 
 section IsTopologicalGroup
 
