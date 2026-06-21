@@ -905,6 +905,19 @@ theorem toContinuousAddMonoidHom_sub (f g : M →SL[σ₁₂] M₂) :
 
 end
 
+section toSpanSingleton
+
+variable [TopologicalSpace R] [IsTopologicalAddGroup M] [ContinuousSMul R M]
+
+theorem toSpanSingleton_neg (x : M) : toSpanSingleton R (-x) = -toSpanSingleton R x := by
+  ext; simp
+
+theorem toSpanSingleton_sub (x y : M) :
+    toSpanSingleton R (x - y) = toSpanSingleton R x - toSpanSingleton R y := by
+  ext; simp
+
+end toSpanSingleton
+
 @[simp]
 theorem comp_neg [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [IsTopologicalAddGroup M₂]
     [IsTopologicalAddGroup M₃] (g : M₂ →SL[σ₂₃] M₃) (f : M →SL[σ₁₂] M₂) :

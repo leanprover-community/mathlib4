@@ -144,12 +144,13 @@ variable {f f₁ f₂ : ℂ → E} {γ : Path a b} {t : ℝ}
 protected theorem ContourIntegrable.add (h₁ : ContourIntegrable f₁ γ)
     (h₂ : ContourIntegrable f₂ γ) :
     ContourIntegrable (f₁ + f₂) γ := by
-  simpa [ContourIntegrable, Function.comp_def, ContinuousLinearMap.toSpanSingleton_add]
+  simpa [ContourIntegrable, Function.comp_def, ContinuousLinearMap.toSpanSingleton_add, Pi.add_def]
     using CurveIntegrable.add h₁ h₂
 
 theorem contourIntegral_add (h₁ : ContourIntegrable f₁ γ) (h₂ : ContourIntegrable f₂ γ) :
     contourIntegral (f₁ + f₂) γ = ∫ꟲ x in γ, f₁ x + ∫ꟲ x in γ, f₂ x := by
-  simpa [contourIntegral, ContinuousLinearMap.toSpanSingleton_add] using curveIntegral_add h₁ h₂
+  simpa [contourIntegral, ContinuousLinearMap.toSpanSingleton_add, Pi.add_def]
+    using curveIntegral_add h₁ h₂
 
 theorem contourIntegral_fun_add (h₁ : ContourIntegrable f₁ γ) (h₂ : ContourIntegrable f₂ γ) :
     ∫ꟲ x in γ, (f₁ x + f₂ x) = ∫ꟲ x in γ, f₁ x + ∫ꟲ x in γ, f₂ x :=
