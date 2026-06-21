@@ -347,12 +347,10 @@ section ofContinuousLinearMap
 variable (f : M₁ →SL[σ₁₂] M₂) (g : M₂ →SL[σ₂₁] M₁)
 
 /-- If a continuous linear map has a continuous inverse, it is a continuous linear equivalence. -/
-def ofContinuousLinear (h₁ : f.comp g = ContinuousLinearMap.id R₂ M₂)
-    (h₂ : g.comp f = ContinuousLinearMap.id R₁ M₁) : M₁ ≃SL[σ₁₂] M₂ :=
-  { f with
-    invFun := g
-    left_inv := ContinuousLinearMap.ext_iff.1 h₂
-    right_inv := ContinuousLinearMap.ext_iff.1 h₁ }
+def ofContinuousLinear (h₁ : f ∘SL g = .id R₂ M₂) (h₂ : g ∘SL f = .id R₁ M₁) :
+    M₁ ≃SL[σ₁₂] M₂ where
+  toLinearEquiv := .ofLinear f g
+    (ContinuousLinearMap.coe_inj.mpr h₁) (ContinuousLinearMap.coe_inj.mpr h₂)
 
 @[simp]
 theorem coe_ofContinuousLinear (h₁ h₂) : ⇑(ofContinuousLinear f g h₁ h₂) = f := rfl
