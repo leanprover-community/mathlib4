@@ -175,6 +175,11 @@ instance (f : X ⤏ Y) [f.IsDominant] (g : Y ⤏ Z) [g.IsDominant] : (f.comp g).
   rw [← g.toRationalMap_representative, RationalMap.comp_def]
   infer_instance
 
+lemma comp_toRationalMap (f : X ⤏ Y) [f.IsDominant] (h : Y ⟶ Z) :
+    f.comp h.toRationalMap = f.compHom h := by
+  simp [comp_def, PartialMap.comp_toPartialMap]
+
+@[grind _=_]
 lemma comp_assoc {X₁ X₂ X₃ Y : Scheme.{u}} [PreirreducibleSpace X₁] [IrreducibleSpace X₂]
     [Nonempty X₃] (f₁ : X₁ ⤏ X₂) [f₁.IsDominant] (f₂ : X₂ ⤏ X₃) [f₂.IsDominant] (f₃ : X₃ ⤏ Y) :
     (f₁.comp f₂).comp f₃ = f₁.comp (f₂.comp f₃) := by
@@ -185,6 +190,12 @@ lemma comp_assoc {X₁ X₂ X₃ Y : Scheme.{u}} [PreirreducibleSpace X₁] [Irr
   apply (f₁.representative.comp f₂.representative).representative_toRationalMap_equiv.trans
   apply PartialMap.comp_equiv_of_equiv_right
   rw [toRationalMap_representative]
+
+instance isOver_comp {S : Scheme.{u}} [IrreducibleSpace Y] [Nonempty Z] [X.Over S] [Y.Over S]
+    [Z.Over S] (f : X ⤏ Y) [f.IsDominant] [f.IsOver S] (g : Y ⤏ Z) [g.IsDominant] [g.IsOver S] :
+    (f.comp g).IsOver S := by
+  rw [isOver_iff, ← comp_toRationalMap, comp_assoc, comp_toRationalMap,
+    isOver_iff.mp ‹g.IsOver S›, comp_toRationalMap, RationalMap.isOver_iff.mp ‹f.IsOver S›]
 
 end RationalMap
 
@@ -203,8 +214,8 @@ lemma PartialMap.id_comp {X Y : Scheme.{u}} [IrreducibleSpace X] (f : X.PartialM
       Iso.inv_hom_id_assoc]
     rfl
 
-@[simp]
-lemma RationalMap.id_comp {X Y : Scheme.{u}} [IrreducibleSpace X] (f : X ⤏ Y) [f.IsDominant] :
+@[simp, grind =]
+lemma RationalMap.id_comp {X Y : Scheme.{u}} [IrreducibleSpace X] (f : X ⤏ Y) :
     (RationalMap.id X).comp f = f := by
   rw [← f.toRationalMap_representative, toRationalMap_comp, PartialMap.id_comp]
 
