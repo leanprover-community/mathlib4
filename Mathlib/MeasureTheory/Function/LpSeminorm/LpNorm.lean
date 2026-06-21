@@ -224,22 +224,6 @@ lemma lpNorm_expect_le [Module ℚ≥0 E] [NormedSpace ℝ E] {ι : Type*} {s : 
   rw [Nat.cast_smul_eq_nsmul, ← lpNorm_nsmul, Finset.card_smul_expect]
   exact lpNorm_sum_le hf hp
 
-/-- The `L¹`-seminorm of a convex combination `∑ i ∈ s, w i • f i` (with `w i ≥ 0` and
-`∑ i ∈ s, w i = 1`) of functions each of `L¹`-seminorm at most `B` is itself at most `B`. -/
-theorem eLpNorm_sum_smul_le [NormedSpace ℝ E] {ι : Type*} {s : Finset ι} {w : ι → ℝ}
-    (hw₀ : ∀ i ∈ s, 0 ≤ w i) (hw₁ : ∑ i ∈ s, w i = 1) {f : ι → α → E}
-    (hf : ∀ i, AEStronglyMeasurable (f i) μ) {B : ℝ≥0∞} (hB : ∀ i, eLpNorm (f i) 1 μ ≤ B) :
-    eLpNorm (∑ i ∈ s, w i • f i) 1 μ ≤ B :=
-  calc eLpNorm (∑ i ∈ s, w i • f i) 1 μ
-      ≤ ∑ i ∈ s, eLpNorm (w i • f i) 1 μ :=
-        eLpNorm_sum_le (fun i _ ↦ (hf i).const_smul _) le_rfl
-    _ ≤ ∑ i ∈ s, ENNReal.ofReal (w i) * B :=
-        Finset.sum_le_sum fun i hi ↦ by
-          rw [eLpNorm_const_smul, Real.enorm_eq_ofReal (hw₀ i hi)]
-          exact mul_le_mul_right (hB i) _
-    _ = B := by
-        rw [← Finset.sum_mul, ← ENNReal.ofReal_sum_of_nonneg hw₀, hw₁, ENNReal.ofReal_one, one_mul]
-
 lemma lpNorm_mono_real {g : α → ℝ} (hg : MemLp g p μ) (h : ∀ x, ‖f x‖ ≤ g x) :
     lpNorm f p μ ≤ lpNorm g p μ := by
   by_cases hf : AEStronglyMeasurable f μ
