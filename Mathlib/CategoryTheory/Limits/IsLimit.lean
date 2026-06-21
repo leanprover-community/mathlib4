@@ -77,7 +77,7 @@ structure IsColimit (t : Cocone F) where
 
 attribute [reassoc (attr := simp)] IsLimit.fac IsColimit.fac
 
-to_dual_name_hint Lift Desc
+to_dual_name_hint Lift Desc, Left Right
 
 namespace IsLimit
 
@@ -93,7 +93,8 @@ of a colimit cocone over `F` to the cocone point of any cocone over `G`. -/]
 def map {F G : J ⥤ C} (s : Cone F) {t : Cone G} (P : IsLimit t) (α : F ⟶ G) : s.pt ⟶ t.pt :=
   P.lift ((Cone.postcompose α).obj s)
 
-set_option backward.isDefEq.respectTransparency false in -- needed to make reassoc work
+-- The `set_option` is needed to make reassoc generate the right theorem
+set_option backward.isDefEq.respectTransparency false in
 @[to_dual (attr := reassoc (attr := simp)) (reorder := c hd d) ι_map]
 theorem map_π {F G : J ⥤ C} (c : Cone F) {d : Cone G} (hd : IsLimit d) (α : F ⟶ G) (j : J) :
     hd.map c α ≫ d.π.app j = c.π.app j ≫ α.app j :=
@@ -248,10 +249,13 @@ lemma nonempty_isLimit_iff_isIso_lift {s t : Cone F} (hs : IsLimit s) :
     Nonempty (IsLimit t) ↔ IsIso (hs.lift t) :=
   ⟨fun ⟨ht⟩ ↦ ⟨ht.lift s, ht.hom_ext (by simp), hs.hom_ext (by simp)⟩, fun h ↦ ⟨hs.ofPointIso⟩⟩
 
--- `Adjunction` still needs `to_dual` tagging
 /-- Given a right adjoint functor between categories of cones,
 the image of a limit cone is a limit cone.
 -/
+@[to_dual
+/-- Given a left adjoint functor between categories of cocones,
+the image of a colimit cocone is a colimit cocone.
+-/]
 def ofRightAdjoint {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} {left : Cone F ⥤ Cone G}
     {right : Cone G ⥤ Cone F}
     (adj : left ⊣ right) {c : Cone G} (t : IsLimit c) : IsLimit (right.obj c) :=
@@ -268,32 +272,56 @@ def ofConeEquiv {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} (h : Cone G �
   left_inv := by cat_disch
   right_inv := by cat_disch
 
--- TODO: this and the following have the wrong name
-@[simp]
-theorem ofConeEquiv_apply_desc {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} (h : Cone G ≌ Cone F)
+/-- Given two functors which have equivalent categories of cocones,
+we can transport a colimiting cocone across the equivalence.
+-/
+@[to_dual existing]
+def _root_.CategoryTheory.Limits.IsColimit.ofCoconeEquiv {D : Type u₄} [Category.{v₄} D]
+    {G : K ⥤ D} (h : Cocone G ≌ Cocone F) {c : Cocone G} :
+    IsColimit (h.functor.obj c) ≃ IsColimit c where
+  toFun P := IsColimit.ofIsoColimit (IsColimit.ofLeftAdjoint h.symm.toAdjunction P)
+    (h.unitIso.symm.app c)
+  invFun := IsColimit.ofLeftAdjoint h.toAdjunction
+  left_inv := by cat_disch
+  right_inv := by cat_disch
+
+@[to_dual (attr := simp)]
+theorem ofConeEquiv_apply_lift {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} (h : Cone G ≌ Cone F)
     {c : Cone G} (P : IsLimit (h.functor.obj c)) (s) :
     (ofConeEquiv h P).lift s =
       ((h.unitIso.hom.app s).hom ≫ (h.inverse.map (P.liftConeMorphism (h.functor.obj s))).hom) ≫
         (h.unitIso.inv.app c).hom :=
   rfl
 
-@[simp]
-theorem ofConeEquiv_symm_apply_desc {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D}
+@[to_dual (attr := simp)]
+theorem ofConeEquiv_symm_apply_lift {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D}
     (h : Cone G ≌ Cone F) {c : Cone G} (P : IsLimit c) (s) :
     ((ofConeEquiv h).symm P).lift s =
       (h.counitIso.inv.app s).hom ≫ (h.functor.map (P.liftConeMorphism (h.inverse.obj s))).hom :=
   rfl
 
-/--
-A cone postcomposed with a natural isomorphism is a limit cone if and only if the original cone is.
+@[deprecated (since := "2026-06-21")] alias ofConeEquiv_apply_desc := ofConeEquiv_apply_lift
+@[deprecated (since := "2026-06-21")]
+alias ofConeEquiv_symm_apply_desc := ofConeEquiv_symm_apply_lift
+
+/-- A cone postcomposed with a natural isomorphism is a limit cone
+if and only if the original cone is.
 -/
+@[to_dual precomposeInvEquiv
+/-- A cocone precomposed with the inverse of a natural isomorphism is a colimit cocone
+if and only if the original cocone is.
+-/]
 def postcomposeHomEquiv {F G : J ⥤ C} (α : F ≅ G) (c : Cone F) :
     IsLimit ((Cone.postcompose α.hom).obj c) ≃ IsLimit c :=
   ofConeEquiv (Cone.postcomposeEquivalence α)
 
-/-- A cone postcomposed with the inverse of a natural isomorphism is a limit cone if and only if
-the original cone is.
+/-- A cone postcomposed with the inverse of a natural isomorphism is a limit cone
+if and only if the original cone is.
 -/
+@[to_dual precomposeHomEquiv
+/-- A cocone precomposed with a natural isomorphism is a colimit cocone
+if and only if the original cocone is.
+-/]
 def postcomposeInvEquiv {F G : J ⥤ C} (α : F ≅ G) (c : Cone G) :
     IsLimit ((Cone.postcompose α.inv).obj c) ≃ IsLimit c :=
   postcomposeHomEquiv α.symm c
@@ -301,6 +329,10 @@ def postcomposeInvEquiv {F G : J ⥤ C} (α : F ≅ G) (c : Cone G) :
 /-- Constructing an equivalence `IsLimit c ≃ IsLimit d` from a natural isomorphism
 between the underlying functors, and then an isomorphism between `c` transported along this and `d`.
 -/
+@[to_dual
+/-- Constructing an equivalence `isColimit c ≃ isColimit d` from a natural isomorphism
+between the underlying functors, and then an isomorphism between `c` transported along this and `d`.
+-/]
 def equivOfNatIsoOfIso {F G : J ⥤ C} (α : F ≅ G) (c : Cone F) (d : Cone G)
     (w : (Cone.postcompose α.hom).obj c ≅ d) : IsLimit c ≃ IsLimit d :=
   (postcomposeHomEquiv α _).symm.trans (equivIsoLimit w)
@@ -309,7 +341,10 @@ set_option backward.defeqAttrib.useBackward true in
 /-- The cone points of two limit cones for naturally isomorphic functors
 are themselves isomorphic.
 -/
-@[simps]
+@[to_dual (attr := simps)
+/-- The cocone points of two colimit cocones for naturally isomorphic functors
+are themselves isomorphic.
+-/]
 def conePointsIsoOfNatIso {F G : J ⥤ C} {s : Cone F} {t : Cone G} (P : IsLimit s) (Q : IsLimit t)
     (w : F ≅ G) : s.pt ≅ t.pt where
   hom := Q.map s w.hom
@@ -317,25 +352,32 @@ def conePointsIsoOfNatIso {F G : J ⥤ C} {s : Cone F} {t : Cone G} (P : IsLimit
   hom_inv_id := P.hom_ext (by simp)
   inv_hom_id := Q.hom_ext (by simp)
 
-@[reassoc]
+set_option linter.translateOverwrite false in
+set_option linter.existingAttributeWarning false in
+attribute [to_dual existing IsColimit.coconePointsIsoOfNatIso_inv] conePointsIsoOfNatIso_hom
+set_option linter.translateOverwrite false in
+set_option linter.existingAttributeWarning false in
+attribute [to_dual existing IsColimit.coconePointsIsoOfNatIso_hom] conePointsIsoOfNatIso_inv
+
+@[to_dual (attr := reassoc) comp_coconePointsIsoOfNatIso_inv]
 theorem conePointsIsoOfNatIso_hom_comp {F G : J ⥤ C} {s : Cone F} {t : Cone G} (P : IsLimit s)
     (Q : IsLimit t) (w : F ≅ G) (j : J) :
     (conePointsIsoOfNatIso P Q w).hom ≫ t.π.app j = s.π.app j ≫ w.hom.app j := by simp
 
-@[reassoc]
+@[to_dual (attr := reassoc) comp_coconePointsIsoOfNatIso_hom]
 theorem conePointsIsoOfNatIso_inv_comp {F G : J ⥤ C} {s : Cone F} {t : Cone G} (P : IsLimit s)
     (Q : IsLimit t) (w : F ≅ G) (j : J) :
     (conePointsIsoOfNatIso P Q w).inv ≫ s.π.app j = t.π.app j ≫ w.inv.app j := by simp
 
 set_option backward.defeqAttrib.useBackward true in
-@[reassoc]
+@[to_dual (attr := reassoc) coconePointsIsoOfNatIso_inv_desc]
 theorem lift_comp_conePointsIsoOfNatIso_hom {F G : J ⥤ C} {r s : Cone F} {t : Cone G}
     (P : IsLimit s) (Q : IsLimit t) (w : F ≅ G) :
     P.lift r ≫ (conePointsIsoOfNatIso P Q w).hom = Q.map r w.hom :=
   Q.hom_ext (by simp)
 
 set_option backward.defeqAttrib.useBackward true in
-@[reassoc]
+@[to_dual (attr := reassoc) coconePointsIsoOfNatIso_hom_desc]
 theorem lift_comp_conePointsIsoOfNatIso_inv {F G : J ⥤ C} {r s : Cone G} {t : Cone F}
     (P : IsLimit t) (Q : IsLimit s) (w : F ≅ G) :
     Q.lift r ≫ (conePointsIsoOfNatIso P Q w).inv = P.map r w.inv :=
@@ -345,33 +387,48 @@ section Equivalence
 
 open CategoryTheory.Equivalence
 
-/-- If `s : Cone F` is a limit cone, so is `s` whiskered by an equivalence `e`.
--/
+/-- If `s : Cone F` is a limit cone, so is `s` whiskered by an equivalence `e`. -/
 def whiskerEquivalence {s : Cone F} (P : IsLimit s) (e : K ≌ J) : IsLimit (s.whisker e.functor) :=
   ofRightAdjoint (Cone.whiskeringEquivalence e).symm.toAdjunction P
 
-/-- If `s : Cone F` whiskered by an equivalence `e` is a limit cone, so is `s`.
--/
+/-- If `s : Cocone F` is a colimit cocone, so is `s` whiskered by an equivalence `e`. -/
+@[to_dual existing]
+def _root_.CategoryTheory.Limits.IsColimit.whiskerEquivalence {s : Cocone F}
+    (P : IsColimit s) (e : K ≌ J) : IsColimit (s.whisker e.functor) :=
+  IsColimit.ofLeftAdjoint (Cocone.whiskeringEquivalence e).toAdjunction P
+
+/-- If `s : Cone F` whiskered by an equivalence `e` is a limit cone, so is `s`. -/
 def ofWhiskerEquivalence {s : Cone F} (e : K ≌ J) (P : IsLimit (s.whisker e.functor)) : IsLimit s :=
   equivIsoLimit ((Cone.whiskeringEquivalence e).unitIso.app s).symm
     (ofRightAdjoint (Cone.whiskeringEquivalence e).toAdjunction P)
 
-/-- Given an equivalence of diagrams `e`, `s` is a limit cone iff `s.whisker e.functor` is.
--/
+/-- If `s : Cocone F` whiskered by an equivalence `e` is a colimit cocone, so is `s`. -/
+@[to_dual existing]
+def _root_.CategoryTheory.Limits.IsColimit.ofWhiskerEquivalence {s : Cocone F} (e : K ≌ J)
+    (P : IsColimit (s.whisker e.functor)) : IsColimit s :=
+  IsColimit.equivIsoColimit ((Cocone.whiskeringEquivalence e).unitIso.app s).symm
+    (IsColimit.ofLeftAdjoint (Cocone.whiskeringEquivalence e).symm.toAdjunction P)
+
+/-- Given an equivalence of diagrams `e`, `s` is a limit cone iff `s.whisker e.functor` is. -/
+@[to_dual
+/-- Given an equivalence of diagrams `e`, `s` is a colimit cocone iff `s.whisker e.functor` is. -/]
 def whiskerEquivalenceEquiv {s : Cone F} (e : K ≌ J) : IsLimit s ≃ IsLimit (s.whisker e.functor) :=
   ⟨fun h => h.whiskerEquivalence e, ofWhiskerEquivalence e, by cat_disch, by cat_disch⟩
 
 /-- A limit cone extended by an isomorphism is a limit cone. -/
+@[to_dual /-- A colimit cocone extended by an isomorphism is a colimit cocone. -/]
 def extendIso {s : Cone F} {X : C} (i : X ⟶ s.pt) [IsIso i] (hs : IsLimit s) :
     IsLimit (s.extend i) :=
   IsLimit.ofIsoLimit hs (Cone.extendIso s (asIso' i))
 
 /-- A cone is a limit cone if its extension by an isomorphism is. -/
+@[to_dual /-- A cocone is a colimit cocone if its extension by an isomorphism is. -/]
 def ofExtendIso {s : Cone F} {X : C} (i : X ⟶ s.pt) [IsIso i] (hs : IsLimit (s.extend i)) :
     IsLimit s :=
   IsLimit.ofIsoLimit hs (Cone.extendIso s (asIso' i)).symm
 
 /-- A cone is a limit cone iff its extension by an isomorphism is. -/
+@[to_dual /-- A cocone is a colimit cocone iff its extension by an isomorphism is. -/]
 def extendIsoEquiv {s : Cone F} {X : C} (i : X ⟶ s.pt) [IsIso i] :
     IsLimit s ≃ IsLimit (s.extend i) :=
   equivOfSubsingletonOfSubsingleton (extendIso i) (ofExtendIso i)
@@ -387,7 +444,16 @@ This is the most general form of uniqueness of cone points,
 allowing relabelling of both the indexing category (up to equivalence)
 and the functor (up to natural isomorphism).
 -/
-@[simps]
+@[to_dual (attr := simps)
+/-- We can prove two cocone points `(s : Cocone F).pt` and `(t : Cocone G).pt` are isomorphic if
+* both cocones are colimit cocones
+* their indexing categories are equivalent via some `e : J ≌ K`,
+* the triangle of functors commutes up to a natural isomorphism: `e.functor ⋙ G ≅ F`.
+
+This is the most general form of uniqueness of cocone points,
+allowing relabelling of both the indexing category (up to equivalence)
+and the functor (up to natural isomorphism).
+-/]
 def conePointsIsoOfEquivalence {F : J ⥤ C} {s : Cone F} {G : K ⥤ C} {t : Cone G} (P : IsLimit s)
     (Q : IsLimit t) (e : J ≌ K) (w : e.functor ⋙ G ≅ F) : s.pt ≅ t.pt :=
   let w' : e.inverse ⋙ F ≅ G := (isoWhiskerLeft e.inverse w).symm ≪≫ invFunIdAssoc e G
@@ -398,14 +464,20 @@ def conePointsIsoOfEquivalence {F : J ⥤ C} {s : Cone F} {G : K ⥤ C} {t : Con
       dsimp [w']
       simp only [Limits.Cone.whisker_π, Limits.Cone.postcompose_obj_π, fac, whiskerLeft_app,
         assoc, id_comp, invFunIdAssoc_hom_app, fac_assoc, NatTrans.comp_app]
-      rw [counit_app_functor, ← Functor.comp_map]
-      have l :
-        NatTrans.app w.hom j = NatTrans.app w.hom ((𝟭 J).obj j) := by dsimp
-      rw [l, w.hom.naturality]
+      rw [counit_app_functor, ← Functor.comp_map, ← w.inv.naturality_assoc]
       simp
     inv_hom_id := by
       apply hom_ext Q
       cat_disch }
+
+set_option linter.translateOverwrite false in
+set_option linter.existingAttributeWarning false in
+attribute [to_dual existing IsColimit.coconePointsIsoOfEquivalence_inv]
+  conePointsIsoOfEquivalence_hom
+set_option linter.translateOverwrite false in
+set_option linter.existingAttributeWarning false in
+attribute [to_dual existing IsColimit.coconePointsIsoOfEquivalence_hom]
+  conePointsIsoOfEquivalence_inv
 
 end Equivalence
 
@@ -436,7 +508,8 @@ lemma homEquiv_symm_naturality (h : IsLimit t) {W W' : C}
 
 /-- The universal property of a limit cone: a map `W ⟶ X` is the same as
 a cone on `F` with cone point `W`. -/
-@[to_dual /-- The universal property of a colimit cocone: a map `X ⟶ W` is the same as
+@[to_dual
+/-- The universal property of a colimit cocone: a map `X ⟶ W` is the same as
 a cocone on `F` with cone point `W`. -/]
 def homIso (h : IsLimit t) (W : C) : ULift.{u₁} (W ⟶ t.pt : Type v₃) ≅ (const J).obj W ⟶ F :=
   Equiv.toIso (Equiv.ulift.trans h.homEquiv)
@@ -466,12 +539,12 @@ def homIso' (h : IsLimit t) (W : C) :
         { app := fun j => p.1 j
           naturality := fun j j' f => by dsimp; rw [id_comp]; exact (p.2 f).symm } }
 
-/-- If G : C → D is a faithful functor which sends t to a limit cone,
+/-- If `G : C → D` is a faithful functor which sends t to a limit cone,
 then it suffices to check that the induced maps for the image of t
-can be lifted to maps of C. -/
-@[to_dual /-- If G : C → D is a faithful functor which sends t to a colimit cocone,
+can be lifted to maps of `C`. -/
+@[to_dual /-- If `G : C → D` is a faithful functor which sends t to a colimit cocone,
 then it suffices to check that the induced maps for the image of t
-can be lifted to maps of C. -/]
+can be lifted to maps of `C`. -/]
 def ofFaithful {t : Cone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) [G.Faithful]
     (ht : IsLimit (mapCone G t)) (lift : ∀ s : Cone F, s.pt ⟶ t.pt)
     (h : ∀ s, G.map (lift s) = ht.lift (mapCone G s)) : IsLimit t :=
@@ -486,11 +559,16 @@ def ofFaithful {t : Cone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) [G
 /-- If `F` and `G` are naturally isomorphic, then `F.mapCone c` being a limit implies
 `G.mapCone c` is also a limit.
 -/
+@[to_dual
+/-- If `F` and `G` are naturally isomorphic, then `F.mapCocone c` being a colimit implies
+`G.mapCocone c` is also a colimit.
+-/]
 def mapConeEquiv {D : Type u₄} [Category.{v₄} D] {K : J ⥤ C} {F G : C ⥤ D} (h : F ≅ G) {c : Cone K}
     (t : IsLimit (mapCone F c)) : IsLimit (mapCone G c) := by
   apply postcomposeInvEquiv (isoWhiskerLeft K h :) (mapCone G c) _
   apply t.ofIsoLimit (postcomposeWhiskerLeftMapCone h.symm c).symm
 
+-- TODO: `to_dual` doesn't yet know that it shouldn't translate the category on `Type _`.
 /-- A cone is a limit cone exactly if
 there is a unique cone morphism from any other cone.
 -/
@@ -591,167 +669,6 @@ namespace IsColimit
 
 variable {t : Cocone F}
 
-/-- Given a left adjoint functor between categories of cocones,
-the image of a colimit cocone is a colimit cocone.
--/
-def ofLeftAdjoint {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} {left : Cocone G ⥤ Cocone F}
-    {right : Cocone F ⥤ Cocone G} (adj : left ⊣ right) {c : Cocone G} (t : IsColimit c) :
-    IsColimit (left.obj c) :=
-  mkCoconeMorphism
-    (fun s => (adj.homEquiv c s).symm (t.descCoconeMorphism _)) fun _ _ =>
-    (Adjunction.homEquiv_apply_eq _ _ _).1 t.uniq_cocone_morphism
-
-/-- Given two functors which have equivalent categories of cocones,
-we can transport a colimiting cocone across the equivalence.
--/
-def ofCoconeEquiv {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} (h : Cocone G ≌ Cocone F)
-    {c : Cocone G} : IsColimit (h.functor.obj c) ≃ IsColimit c where
-  toFun P := ofIsoColimit (ofLeftAdjoint h.symm.toAdjunction P) (h.unitIso.symm.app c)
-  invFun := ofLeftAdjoint h.toAdjunction
-  left_inv := by cat_disch
-  right_inv := by cat_disch
-
-@[simp]
-theorem ofCoconeEquiv_apply_desc {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D}
-    (h : Cocone G ≌ Cocone F) {c : Cocone G} (P : IsColimit (h.functor.obj c)) (s) :
-    (ofCoconeEquiv h P).desc s =
-      (h.unit.app c).hom ≫
-        (h.inverse.map (P.descCoconeMorphism (h.functor.obj s))).hom ≫ (h.unitInv.app s).hom :=
-  rfl
-
-@[simp]
-theorem ofCoconeEquiv_symm_apply_desc {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D}
-    (h : Cocone G ≌ Cocone F) {c : Cocone G} (P : IsColimit c) (s) :
-    ((ofCoconeEquiv h).symm P).desc s =
-      (h.functor.map (P.descCoconeMorphism (h.inverse.obj s))).hom ≫ (h.counit.app s).hom :=
-  rfl
-
-/-- A cocone precomposed with the inverse of a natural isomorphism is a colimit cocone
-if and only if the original cocone is.
--/
-def precomposeInvEquiv {F G : J ⥤ C} (α : F ≅ G) (c : Cocone F) :
-    IsColimit ((Cocone.precompose α.inv).obj c) ≃ IsColimit c :=
-  ofCoconeEquiv (Cocone.precomposeEquivalence α)
-
-/-- A cocone precomposed with a natural isomorphism is a colimit cocone
-if and only if the original cocone is.
--/
-def precomposeHomEquiv {F G : J ⥤ C} (α : F ≅ G) (c : Cocone G) :
-    IsColimit ((Cocone.precompose α.hom).obj c) ≃ IsColimit c :=
-  precomposeInvEquiv α.symm c
-
-/-- Constructing an equivalence `is_colimit c ≃ is_colimit d` from a natural isomorphism
-between the underlying functors, and then an isomorphism between `c` transported along this and `d`.
--/
-def equivOfNatIsoOfIso {F G : J ⥤ C} (α : F ≅ G) (c : Cocone F) (d : Cocone G)
-    (w : (Cocone.precompose α.inv).obj c ≅ d) : IsColimit c ≃ IsColimit d :=
-  (precomposeInvEquiv α _).symm.trans (equivIsoColimit w)
-
-set_option backward.isDefEq.respectTransparency false in
-/-- The cocone points of two colimit cocones for naturally isomorphic functors
-are themselves isomorphic.
--/
-@[simps]
-def coconePointsIsoOfNatIso {F G : J ⥤ C} {s : Cocone F} {t : Cocone G} (P : IsColimit s)
-    (Q : IsColimit t) (w : F ≅ G) : s.pt ≅ t.pt where
-  hom := P.map t w.hom
-  inv := Q.map s w.inv
-  hom_inv_id := P.hom_ext (by simp)
-  inv_hom_id := Q.hom_ext (by simp)
-
-set_option backward.isDefEq.respectTransparency false in
-@[reassoc]
-theorem comp_coconePointsIsoOfNatIso_hom {F G : J ⥤ C} {s : Cocone F} {t : Cocone G}
-    (P : IsColimit s) (Q : IsColimit t) (w : F ≅ G) (j : J) :
-    s.ι.app j ≫ (coconePointsIsoOfNatIso P Q w).hom = w.hom.app j ≫ t.ι.app j := by simp
-
-set_option backward.isDefEq.respectTransparency false in
-@[reassoc]
-theorem comp_coconePointsIsoOfNatIso_inv {F G : J ⥤ C} {s : Cocone F} {t : Cocone G}
-    (P : IsColimit s) (Q : IsColimit t) (w : F ≅ G) (j : J) :
-    t.ι.app j ≫ (coconePointsIsoOfNatIso P Q w).inv = w.inv.app j ≫ s.ι.app j := by simp
-
-set_option backward.isDefEq.respectTransparency false in
-@[reassoc]
-theorem coconePointsIsoOfNatIso_hom_desc {F G : J ⥤ C} {s : Cocone F} {r t : Cocone G}
-    (P : IsColimit s) (Q : IsColimit t) (w : F ≅ G) :
-    (coconePointsIsoOfNatIso P Q w).hom ≫ Q.desc r = P.map _ w.hom :=
-  P.hom_ext (by simp)
-
-set_option backward.isDefEq.respectTransparency false in
-@[reassoc]
-theorem coconePointsIsoOfNatIso_inv_desc {F G : J ⥤ C} {s : Cocone G} {r t : Cocone F}
-    (P : IsColimit t) (Q : IsColimit s) (w : F ≅ G) :
-    (coconePointsIsoOfNatIso P Q w).inv ≫ P.desc r = Q.map _ w.inv :=
-  Q.hom_ext (by simp)
-
-section Equivalence
-
-open CategoryTheory.Equivalence
-
-/-- If `s : Cocone F` is a colimit cocone, so is `s` whiskered by an equivalence `e`.
--/
-def whiskerEquivalence {s : Cocone F} (P : IsColimit s) (e : K ≌ J) :
-    IsColimit (s.whisker e.functor) :=
-  ofLeftAdjoint (Cocone.whiskeringEquivalence e).toAdjunction P
-
-/-- If `s : Cocone F` whiskered by an equivalence `e` is a colimit cocone, so is `s`.
--/
-def ofWhiskerEquivalence {s : Cocone F} (e : K ≌ J) (P : IsColimit (s.whisker e.functor)) :
-    IsColimit s :=
-  equivIsoColimit ((Cocone.whiskeringEquivalence e).unitIso.app s).symm
-    (ofLeftAdjoint (Cocone.whiskeringEquivalence e).symm.toAdjunction P)
-
-/-- Given an equivalence of diagrams `e`, `s` is a colimit cocone iff `s.whisker e.functor` is.
--/
-def whiskerEquivalenceEquiv {s : Cocone F} (e : K ≌ J) :
-    IsColimit s ≃ IsColimit (s.whisker e.functor) :=
-  ⟨fun h => h.whiskerEquivalence e, ofWhiskerEquivalence e, by cat_disch, by cat_disch⟩
-
-/-- A colimit cocone extended by an isomorphism is a colimit cocone. -/
-def extendIso {s : Cocone F} {X : C} (i : s.pt ⟶ X) [IsIso i] (hs : IsColimit s) :
-    IsColimit (s.extend i) :=
-  IsColimit.ofIsoColimit hs (Cocone.extendIso s (asIso i))
-
-/-- A cocone is a colimit cocone if its extension by an isomorphism is. -/
-def ofExtendIso {s : Cocone F} {X : C} (i : s.pt ⟶ X) [IsIso i] (hs : IsColimit (s.extend i)) :
-    IsColimit s :=
-  IsColimit.ofIsoColimit hs (Cocone.extendIso s (asIso i)).symm
-
-/-- A cocone is a colimit cocone iff its extension by an isomorphism is. -/
-def extendIsoEquiv {s : Cocone F} {X : C} (i : s.pt ⟶ X) [IsIso i] :
-    IsColimit s ≃ IsColimit (s.extend i) :=
-  equivOfSubsingletonOfSubsingleton (extendIso i) (ofExtendIso i)
-
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-/-- We can prove two cocone points `(s : Cocone F).pt` and `(t : Cocone G).pt` are isomorphic if
-* both cocones are colimit cocones
-* their indexing categories are equivalent via some `e : J ≌ K`,
-* the triangle of functors commutes up to a natural isomorphism: `e.functor ⋙ G ≅ F`.
-
-This is the most general form of uniqueness of cocone points,
-allowing relabelling of both the indexing category (up to equivalence)
-and the functor (up to natural isomorphism).
--/
-@[simps]
-def coconePointsIsoOfEquivalence {F : J ⥤ C} {s : Cocone F} {G : K ⥤ C} {t : Cocone G}
-    (P : IsColimit s) (Q : IsColimit t) (e : J ≌ K) (w : e.functor ⋙ G ≅ F) : s.pt ≅ t.pt :=
-  let w' : e.inverse ⋙ F ≅ G := (isoWhiskerLeft e.inverse w).symm ≪≫ invFunIdAssoc e G
-  { hom := P.desc ((Cocone.equivalenceOfReindexing e w).functor.obj t)
-    inv := Q.desc ((Cocone.equivalenceOfReindexing e.symm w').functor.obj s)
-    hom_inv_id := by
-      apply hom_ext P; intro j
-      dsimp [w']
-      simp only [Limits.Cocone.whisker_ι, fac, invFunIdAssoc_inv_app, whiskerLeft_app, assoc,
-        comp_id, Limits.Cocone.precompose_obj_ι, fac_assoc, NatTrans.comp_app]
-      rw [counitInv_app_functor, ← Functor.comp_map, ← w.inv.naturality_assoc]
-      simp
-    inv_hom_id := by
-      apply hom_ext Q
-      cat_disch }
-
-end Equivalence
 
 @[simp]
 theorem homIso_hom (h : IsColimit t) {W : C} :
@@ -777,13 +694,6 @@ def homIso' (h : IsColimit t) (W : C) :
         { app := fun j => p.1 j
           naturality := fun j j' f => by dsimp; rw [comp_id]; exact p.2 f } }
 
-/-- If `F` and `G` are naturally isomorphic, then `F.mapCocone c` being a colimit implies
-`G.mapCocone c` is also a colimit.
--/
-def mapCoconeEquiv {D : Type u₄} [Category.{v₄} D] {K : J ⥤ C} {F G : C ⥤ D} (h : F ≅ G)
-    {c : Cocone K} (t : IsColimit (mapCocone F c)) : IsColimit (mapCocone G c) := by
-  apply IsColimit.ofIsoColimit _ (precomposeWhiskerLeftMapCocone h c)
-  apply (precomposeInvEquiv (isoWhiskerLeft K h :) _).symm t
 
 set_option backward.defeqAttrib.useBackward true in
 /-- A cocone is a colimit cocone exactly if
