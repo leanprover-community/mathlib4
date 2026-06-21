@@ -76,8 +76,9 @@ public theorem Nonsingular.of_linearIndependent_col (ind : LinearIndependent R A
   let Ai := A.submatrix (Option.rec i f) (Option.rec j₀ g)
   have (s : ℤˣ) : Ai.detp s = ∑ j, detp (-s) (Aj j) * A.col (g j) i + detp s D * A.col j₀ i := by
     simp_rw [mul_comm]; rw [detp_option_expand_row_none, add_comm]
-    congr!; ext; simp only [submatrix_apply, Ai, Aj]
-    congr; simp_rw [Function.update]; split_ifs <;> simp
+    congr!; ext
+    simp only [submatrix_apply, Ai, Aj, Function.update]
+    split_ifs <;> simp
   have (a b : R) : (v a b).linearCombination R A.col i = a * Ai.detp 1 + b * Ai.detp (-1) := by
     simp_rw [v, map_add, map_sum, Finsupp.linearCombination_single, Pi.add_apply, Finset.sum_apply,
       add_smul, Pi.add_apply, Finset.sum_add_distrib, Pi.smul_apply, smul_eq_mul, mul_assoc,
