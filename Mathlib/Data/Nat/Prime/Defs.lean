@@ -166,7 +166,11 @@ theorem prime_two : Prime 2 := by decide
 
 theorem prime_three : Prime 3 := by decide
 
+theorem not_prime_four : ¬ Prime 4 := by decide
+
 theorem prime_five : Prime 5 := by decide
+
+theorem not_prime_six : ¬ Prime 6 := by decide
 
 theorem prime_seven : Prime 7 := by decide
 
