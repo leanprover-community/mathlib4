@@ -42,7 +42,7 @@ function (and `π'` to represent the reindexed version).
 
 namespace Nat
 
-open Finset
+open Finset Filter Order Function
 
 /-- A variant of the traditional prime counting function which gives the number of primes
 *strictly* less than the input. More convenient for avoiding off-by-one errors.
@@ -66,9 +66,9 @@ theorem primeCounting_eq_primeCounting'_succ (n : ℕ) : π n = π' (n + 1) := r
 @[simp]
 theorem primeCounting_sub_one (n : ℕ) : π (n - 1) = π' n := by cases n <;> rfl
 
-theorem monotone_primeCounting' : Monotone primeCounting' := count_monotone Prime
+theorem monotone_primeCounting' : Monotone π' := count_monotone Prime
 
-theorem monotone_primeCounting : Monotone primeCounting :=
+theorem monotone_primeCounting : Monotone π :=
   monotone_primeCounting'.comp (monotone_id.add_const _)
 
 @[simp]
@@ -79,14 +79,12 @@ theorem primeCounting'_nth_eq (n : ℕ) : π' (nth Prime n) = n :=
 theorem add_two_le_nth_prime (n : ℕ) : n + 2 ≤ nth Prime n :=
   nth_prime_zero_eq_two ▸ (nth_strictMono infinite_setOf_prime).add_le_nat n 0
 
-theorem surjective_primeCounting' : Function.Surjective π' :=
+theorem surjective_primeCounting' : Surjective π' :=
   surjective_count_of_infinite_setOf infinite_setOf_prime
 
-theorem surjective_primeCounting : Function.Surjective π := by
-  suffices Function.Surjective (π ∘ fun n ↦ n - 1) from this.of_comp
-  simpa [Function.comp_def] using surjective_primeCounting'
-
-open Filter
+theorem surjective_primeCounting : Surjective π := by
+  suffices Surjective (π ∘ (· - 1)) from this.of_comp
+  simpa [comp_def] using surjective_primeCounting'
 
 theorem tendsto_primeCounting' : Tendsto π' atTop atTop := by
   apply tendsto_atTop_atTop_of_monotone' monotone_primeCounting'
@@ -100,18 +98,18 @@ theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
   nth_mem_of_infinite infinite_setOf_prime _
 
 @[simp]
-lemma primeCounting'_eq_zero_iff {n : ℕ} : n.primeCounting' = 0 ↔ n ≤ 2 := by
+lemma primeCounting'_eq_zero_iff {n : ℕ} : π' n = 0 ↔ n ≤ 2 := by
   rw [primeCounting', Nat.count_eq_zero ⟨_, prime_two⟩, nth_prime_zero_eq_two]
 
 @[simp]
-lemma primeCounting_eq_zero_iff {n : ℕ} : n.primeCounting = 0 ↔ n ≤ 1 := by
+lemma primeCounting_eq_zero_iff {n : ℕ} : π n = 0 ↔ n ≤ 1 := by
   simp [primeCounting, -Order.add_one_le_iff]
 
 @[simp]
-lemma primeCounting_zero : primeCounting 0 = 0 := primeCounting_eq_zero_iff.mpr zero_le_one
+lemma primeCounting_zero : π 0 = 0 := primeCounting_eq_zero_iff.mpr zero_le_one
 
 @[simp]
-lemma primeCounting_one : primeCounting 1 = 0 := primeCounting_eq_zero_iff.mpr le_rfl
+lemma primeCounting_one : π 1 = 0 := primeCounting_eq_zero_iff.mpr le_rfl
 
 section PrimeSets
 
@@ -202,7 +200,7 @@ lemma primesLE_mono : Monotone primesLE := by intro _ _ _ _; grind [mem_primesLE
 
 lemma primesBelow_succ (n : ℕ) :
     (n + 1).primesBelow = if n.Prime then insert n n.primesBelow else n.primesBelow := by
-  rw [primesBelow, primesBelow, range_add_one, filter_insert]
+  simp [primesBelow, range_add_one, filter_insert]
 
 lemma primesLE_succ (n : ℕ) :
     (n + 1).primesLE = if (n + 1).Prime then insert (n + 1) n.primesLE else n.primesLE :=
@@ -223,29 +221,27 @@ theorem primesBelow_card_eq_primeCounting' (n : ℕ) : #n.primesBelow = π' n :=
 /-- The cardinality of the finset `n.primesLE` equals the counting function
 `primeCounting` at `n`. -/
 @[simp]
-theorem primesLE_card_eq_primeCounting (n : ℕ) : #n.primesLE = π n := by
-  simp only [primesLE, primeCounting, primesBelow_card_eq_primeCounting']
+theorem primesLE_card_eq_primeCounting (n : ℕ) : #n.primesLE = π n :=
+  primesBelow_card_eq_primeCounting' _
 
 /-- A linear upper bound on the size of the `primeCounting'` function -/
 theorem primeCounting'_add_le {a k : ℕ} (h0 : a ≠ 0) (h1 : a < k) (n : ℕ) :
-    π' (k + n) ≤ π' k + totient a * (n / a + 1) :=
+    π' (k + n) ≤ π' k + a.totient * (n / a + 1) :=
   calc
-    π' (k + n) ≤ #{p ∈ range k | p.Prime} + #{p ∈ Ico k (k + n) | p.Prime} := by
-      rw [primeCounting', count_eq_card_filter_range, range_eq_Ico, range_eq_Ico, ←
-        Ico_union_Ico_eq_Ico (zero_le k) le_self_add, filter_union]
+    _ ≤ #{p ∈ range k | p.Prime} + #{p ∈ Ico k (k + n) | p.Prime} := by
+      simp_rw [primeCounting', count_eq_card_filter_range, range_eq_Ico,
+      ← Ico_union_Ico_eq_Ico (zero_le k) le_self_add, filter_union]
       apply card_union_le
-    _ ≤ π' k + #{p ∈ Ico k (k + n) | p.Prime} := by
-      rw [primeCounting', count_eq_card_filter_range]
+    _ ≤ π' k + #{p ∈ Ico k (k + n) | p.Prime} := by rw [primeCounting', count_eq_card_filter_range]
     _ ≤ π' k + #{b ∈ Ico k (k + n) | a.Coprime b} := by
       gcongr with p hp
       rw [coprime_comm]
       exact coprime_of_lt_prime h0 <| h1.trans_le (mem_Ico.1 hp).1
-    _ ≤ π' k + totient a * (n / a + 1) := by
-      simpa using Ico_filter_coprime_le k n h0
+    _ ≤ _ := by simpa using Ico_filter_coprime_le k n h0
 
 theorem primeCounting_add_le {a k : ℕ} (h0 : a ≠ 0) (h1 : a ≤ k) (n : ℕ) :
-    π (k + n) ≤ π k + totient a * (n / a + 1) := by
+    π (k + n) ≤ π k + a.totient * (n / a + 1) := by
   rw [primeCounting_eq_primeCounting'_succ, add_right_comm]
-  exact primeCounting'_add_le h0 (Order.lt_add_one_iff.mpr h1) n
+  exact primeCounting'_add_le h0 (lt_add_one_iff.mpr h1) n
 
 end Nat
