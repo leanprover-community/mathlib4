@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Category.GaloisConnection
 public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.Topology.Category.TopCat.EpiMono
 public import Mathlib.Topology.Sets.Opens
+public import Mathlib.CategoryTheory.Limits.Preserves.Lattice
 
 /-!
 # The category of open sets in a topological space.
@@ -34,7 +35,7 @@ Beyond that, there's a collection of simp lemmas for working with these construc
 
 open CategoryTheory TopologicalSpace Opposite Topology
 
-universe u
+universe u w w'
 
 namespace TopologicalSpace.Opens
 
@@ -144,11 +145,22 @@ def inclusionTopIso (X : TopCat.{u}) : (toTopCat X).obj ⊤ ≅ X where
   hom := inclusion' ⊤
   inv := TopCat.ofHom ⟨fun x => ⟨x, trivial⟩, continuous_def.2 fun _ ⟨_, hS, hSU⟩ => hSU ▸ hS⟩
 
+/-- The FrameHom sending an open in `Y` to its preimage in `X` -/
+@[simps]
+def _root_.TopCat.Hom.frameHom (f : X ⟶ Y) : FrameHom (Opens Y) (Opens X) where
+  toFun U := ⟨f ⁻¹' (U : Set Y), U.isOpen.preimage f.hom.continuous⟩
+  map_inf' _ _ := rfl
+  map_top' := rfl
+  map_sSup' _ := by ext; simp
+
 /-- `Opens.map f` gives the functor from open sets in Y to open set in X,
 given by taking preimages under f. -/
-def map (f : X ⟶ Y) : Opens Y ⥤ Opens X where
-  obj U := ⟨f ⁻¹' (U : Set Y), U.isOpen.preimage f.hom.continuous⟩
-  map i := ⟨⟨fun _ h => i.le h⟩⟩
+def map (f : X ⟶ Y) : Opens Y ⥤ Opens X :=
+  (OrderHomClass.toOrderHom f.frameHom).toFunctor
+
+lemma map_def (f : X ⟶ Y) : map f =
+  { obj U := ⟨f ⁻¹' (U : Set Y), U.isOpen.preimage f.hom.continuous⟩
+    map i := ⟨⟨fun _ h => i.le h⟩⟩ } := rfl
 
 @[simp]
 theorem map_coe (f : X ⟶ Y) (U : Opens Y) : ((map f).obj U : Set X) = f ⁻¹' (U : Set Y) :=
@@ -295,6 +307,27 @@ lemma mapMapIso_unitIso {X Y : TopCat.{u}} (H : X ≅ Y) :
 lemma mapMapIso_counitIso {X Y : TopCat.{u}} (H : X ≅ Y) :
     (mapMapIso H).counitIso = NatIso.ofComponents (fun U ↦ eqToIso (by cat_disch))
     (by cat_disch) := rfl
+
+instance (f : X ⟶ Y) {J : Type w} [SmallCategory J] [FinCategory J] (K : J ⥤ (Opens Y)) :
+    Limits.PreservesLimit K (map f) :=
+  inferInstanceAs <| Limits.PreservesLimit K (OrderHomClass.toOrderHom f.frameHom).toFunctor
+
+instance (f : X ⟶ Y) {J : Type w} [SmallCategory J] [FinCategory J] :
+    Limits.PreservesLimitsOfShape J (map f) where
+
+instance (f : X ⟶ Y) : Limits.PreservesFiniteLimits (map f) where
+  preservesFiniteLimits _ _ _ := inferInstance
+
+instance (f : X ⟶ Y) {J : Type w} [Category.{w'} J] (K : J ⥤ (Opens Y)) :
+    Limits.PreservesColimit K (map f) :=
+  inferInstanceAs <| Limits.PreservesColimit K (OrderHomClass.toOrderHom f.frameHom).toFunctor
+
+instance (f : X ⟶ Y) {J : Type w} [Category.{w'} J] :
+    Limits.PreservesColimitsOfShape J (map f) where
+
+instance (f : X ⟶ Y) : Limits.PreservesColimitsOfSize.{w', w} (map f) where
+
+instance (f : X ⟶ Y) : Limits.PreservesColimits (map f) where
 
 end TopologicalSpace.Opens
 

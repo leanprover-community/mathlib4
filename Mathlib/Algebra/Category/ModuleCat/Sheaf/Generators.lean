@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Free
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
 public import Mathlib.CategoryTheory.Sites.CoversTop.Basic
+public import Mathlib.CategoryTheory.Sites.CoversTop.Over
 
 /-!
 # Generating sections of sheaves of modules
@@ -193,6 +194,10 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
   [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}] [HasBinaryProducts C]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
 
+/-- The restriction of generating sections to `Over X` -/
+abbrev GeneratingSections.over {M : SheafOfModules.{u} R} (G : M.GeneratingSections) (X : C) :
+    (M.over X).GeneratingSections := G.map (pushforward (𝟙 (R.over X))) (Iso.refl _)
+
 /-- Given `G : M.GeneratingSections`, we naturally obtain `M.LocalGeneratorsData` using the
 trivial cover of `C`. -/
 @[simps]
@@ -200,8 +205,32 @@ def GeneratingSections.localGeneratorsData {M : SheafOfModules.{u} R} (G : M.Gen
     M.LocalGeneratorsData where
   I := C
   X := id
-  coversTop _ := GrothendieckTopology.covering_of_eq_top J <| by simp
-  generators x := G.map (pushforward (𝟙 (R.over x))) (Iso.refl _)
+  coversTop x := GrothendieckTopology.covering_of_eq_top J <| by
+    rw [Sieve.ext_iff]
+    intro _ f
+    simpa [Sieve.top_apply, iff_true] using ⟨x, Nonempty.intro f⟩
+  generators x := G.over x
+
+variable [∀ X Y, ((J.over X).over Y).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  [∀ X Y, HasSheafify ((J.over X).over Y) AddCommGrpCat.{u}]
+  [∀ X Y, ((J.over X).over Y).WEqualsLocallyBijective AddCommGrpCat.{u}]
+
+/-- Given a cover `X` and local generators for `M` restricted onto each `Mᵢ`, we may glue them
+into local generators of `M` itself. -/
+@[simps]
+noncomputable def LocalGeneratorsData.bind (M : SheafOfModules.{u} R) {I : Type w}
+    (X : I → C) (hX : J.CoversTop X) (D : Π i, LocalGeneratorsData (M.over (X i))) :
+    M.LocalGeneratorsData where
+  I := (i : I) × (D i).I
+  X ij := ((D ij.1).X ij.2).left
+  coversTop := hX.over (fun i ↦ (D i).coversTop)
+  generators i :=
+    letI e := pushforwardPushforwardEquivalence (Over.iteratedSliceEquiv ((D i.1).X i.2))
+      (S := (R.over _).over _) (R := R.over _) (𝟙 _) (𝟙 _)
+      (by ext : 2; exact R.1.map_id _) (by ext : 2; exact R.1.map_id _)
+    (((D i.1).generators i.2).map e.inverse (.refl _)).ofEpi
+      (e.fullyFaithfulFunctor.preimageIso
+      (by exact e.counitIso.app ((M.over (X i.1)).over ((D i.1).X i.2)))).hom
 
 end
 

@@ -6,6 +6,7 @@ Authors: Brian Nugent
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackRestrict
 
 /-!
 # Locally Free Sheaves
@@ -25,7 +26,7 @@ A sheaf of modules is locally free if it is locally isomorphic to a free module.
 
 public section
 
-universe u v₁ u₁
+universe u v₁ u₁ v₂ u₂ w
 
 open CategoryTheory Limits
 
@@ -64,6 +65,13 @@ class IsLocallyFree (M : SheafOfModules.{u} R) : Prop where
 
 theorem LocalGeneratorsData.isLocallyFree {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData)
     [q.IsLocallyFreeData] : M.IsLocallyFree := ⟨q.shrink, inferInstance⟩
+
+/-- Locally free data for `M` when `M` is locally free. -/
+def locallyFreeData (M : SheafOfModules.{u} R) [M.IsLocallyFree] : M.LocalGeneratorsData :=
+    IsLocallyFree.exists_locallyFreeData.choose
+
+instance (M : SheafOfModules.{u} R) [M.IsLocallyFree] : M.locallyFreeData.IsLocallyFreeData :=
+    IsLocallyFree.exists_locallyFreeData.choose_spec
 
 end
 
@@ -137,9 +145,76 @@ lemma quasiCoherentData_localGeneratorsData {M : SheafOfModules.{u} R}
 end LocalGeneratorsData
 
 instance (priority := 100) (M : SheafOfModules.{u} R) [h : M.IsLocallyFree] : M.IsQuasicoherent :=
-  have := h.exists_isLocallyFreeData.choose_spec
-  h.exists_isLocallyFreeData.choose.quasiCoherentData.isQuasicoherent
+  have := h.exists_locallyFreeData.choose_spec
+  h.exists_locallyFreeData.choose.quasiCoherentData.isQuasicoherent
 
 end
+
+section
+
+variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}]
+  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
+  [∀ X Y, ((J.over X).over Y).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  [∀ X Y, HasSheafify ((J.over X).over Y) AddCommGrpCat.{u}]
+  [∀ X Y, ((J.over X).over Y).WEqualsLocallyBijective AddCommGrpCat.{u}]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Being locally free is local -/
+theorem LocalGenertorsData.IsLocallFreeData.of_coversTop (M : SheafOfModules.{u} R) {I : Type w}
+    (X : I → C) (hX : J.CoversTop X) (D : Π i, LocalGeneratorsData (M.over (X i)))
+    [h : ∀ i, (D i).IsLocallyFreeData] : (LocalGeneratorsData.bind M X hX D).IsLocallyFreeData where
+  iso i := by
+    rw [LocalGeneratorsData.bind_generators, GeneratingSections.ofEpi_π,
+      GeneratingSections.map_π_eq]
+    infer_instance
+
+theorem IsLocallyFree.of_coversTop (M : SheafOfModules.{u} R) {I : Type w} (X : I → C)
+    (hX : J.CoversTop X) [h : ∀ i, (M.over (X i)).IsLocallyFree] :
+    M.IsLocallyFree :=
+  have := fun i => (h i).1.choose_spec
+  have := LocalGenertorsData.IsLocallFreeData.of_coversTop M X hX (fun i => (h i).1.choose)
+  (LocalGeneratorsData.bind M X hX (fun i => (h i).1.choose)).isLocallyFree
+
+end
+
+section Pullback
+
+variable {D : Type u₂} [Category.{v₂} D] [HasBinaryProducts C] [HasBinaryProducts D]
+  {K : GrothendieckTopology D} {F : C ⥤ D}
+  [Functor.PreservesOneHypercovers F J K] [Limits.PreservesLimitsOfShape (Discrete WalkingPair) F]
+  {S : Sheaf J RingCat.{u}} {R : Sheaf K RingCat.{u}}
+  (φ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R)
+
+variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}]
+  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
+  [∀ X, (K.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  [∀ X, HasSheafify (K.over X) AddCommGrpCat.{u}]
+  [∀ X, (K.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
+  [∀ X, (pushforward.{u} (StructureHomOver φ X)).IsRightAdjoint]
+  [F.Final] [(pushforward.{u} φ).IsRightAdjoint]
+
+/-- The pullback of local generator data. -/
+@[expose, simps]
+protected def LocalGeneratorsData.pullback {M : SheafOfModules.{u} S} (q : M.LocalGeneratorsData) :
+    ((pullback φ).obj M).LocalGeneratorsData where
+  I := q.I
+  X i := F.obj (q.X i)
+  coversTop := q.coversTop.map J _ K CoverPreserving.of_preservesOneHypercovers
+  generators i := ((q.generators i).map _ (asIso (pullbackObjUnitToUnit _)).symm).ofEpi
+    (M.overPullbackIso φ (q.X i)).hom
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+protected instance (priority := 100) LocalGeneratorsData.IsLocallyFreeData.pullback
+    {M : SheafOfModules.{u} S} (q : M.LocalGeneratorsData) [q.IsLocallyFreeData] :
+    (q.pullback φ).IsLocallyFreeData where
+  iso i := by simpa [GeneratingSections.map_π_eq] using (by infer_instance)
+
+protected instance IsLocallyFree.pullback {M : SheafOfModules.{u} S} [M.IsLocallyFree] :
+    ((pullback φ).obj M).IsLocallyFree := (M.locallyFreeData.pullback φ).isLocallyFree
+
+end Pullback
 
 end SheafOfModules
