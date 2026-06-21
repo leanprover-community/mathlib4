@@ -107,7 +107,7 @@ is a continuous image of the positive real line). -/
 theorem isConnected_T : IsConnected T := by
   rw [← closure_S]
   refine (isConnected_Ioi.image _ <| continuousOn_id.prodMk ?_).closure
-  exact continuous_sin.comp_continuousOn <| continuousOn_inv₀.mono fun _ hx ↦ hx.ne'
+  fun_prop (discharger := grind)
 
 /-!
 ## `T` is not path-connected
