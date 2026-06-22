@@ -9,15 +9,14 @@ public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.CategoryTheory.Preadditive.Basic
 
 /-!
-# The category of arrows
+# The category of arrows of a preadditive category is preadditive
 
-The category of arrows, with morphisms commutative squares.
-We set this up as a specialization of the comma category `Comma L R`,
-where `L` and `R` are both the identity functor.
+If `T` is a preadditive category, then there is a structure of preadditive category on `Arrow T`
+such that addition commutes with the left and right projections of arrows.
 
 ## Tags
 
-comma, arrow
+arrow, preadditive
 -/
 
 @[expose] public section
@@ -71,3 +70,5 @@ instance {u v : Arrow T} : AddCommGroup (u ⟶ v) where
 instance : Preadditive (Arrow T) where
 
 end CategoryTheory
+
+#min_imports
