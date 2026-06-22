@@ -39,8 +39,8 @@ instance CauchyFilter.isTrans_gen {s : SetRel X X} [s.IsTrans] : (gen s).IsTrans
 instance IsUltraUniformity.cauchyFilter [IsUltraUniformity X] :
     IsUltraUniformity (CauchyFilter X) := by
   apply mk_of_hasBasis (CauchyFilter.basis_uniformity IsUltraUniformity.hasBasis)
-  · exact fun _ ⟨_, hU, _⟩ ↦ by rw [Function.comp_apply, id_eq]; exact CauchyFilter.isSymm_gen
-  · exact fun _ ⟨_, _, hU⟩ ↦ by rw [Function.comp_apply, id_eq]; exact CauchyFilter.isTrans_gen
+  · exact fun _ ⟨_, hU, _⟩ ↦ by simpa using CauchyFilter.isSymm_gen
+  · exact fun _ ⟨_, _, hU⟩ ↦ by simpa using CauchyFilter.isTrans_gen
 
 @[simp] lemma IsUltraUniformity.cauchyFilter_iff :
     IsUltraUniformity (CauchyFilter X) ↔ IsUltraUniformity X :=
