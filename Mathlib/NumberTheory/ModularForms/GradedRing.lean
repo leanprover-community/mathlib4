@@ -241,8 +241,8 @@ theorem evalE₄E₆_surjective : Function.Surjective evalE₄E₆ := by
 
 private lemma weight_fin2 (w : Fin 2 → ℕ) (d : Fin 2 →₀ ℕ) :
     Finsupp.weight w d = d 0 * w 0 + d 1 * w 1 := by
-  rw [Finsupp.weight_apply, d.sum_fintype (fun i c ↦ c • w i) fun _ ↦ zero_smul _ _]
-  simp [Fin.sum_univ_two, mul_comm]
+  rw [Finsupp.weight_eq_sum]
+  simp [Fin.sum_univ_two, smul_eq_mul, mul_comm]
 
 private lemma weight_eq_4a_6b (d : Fin 2 →₀ ℕ) :
     Finsupp.weight (![4, 6] : Fin 2 → ℕ) d = d 0 * 4 + d 1 * 6 := by

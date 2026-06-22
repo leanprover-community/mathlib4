@@ -222,6 +222,20 @@ theorem isWeightedHomogeneous_X (w : σ → M) (i : σ) :
   apply isWeightedHomogeneous_monomial
   simp only [weight, LinearMap.toAddMonoidHom_coe, linearCombination_single, one_nsmul]
 
+/-- A polynomial all of whose support degrees equal a fixed `d₀` is the single monomial
+`monomial d₀ (coeff d₀ φ)`. -/
+theorem eq_monomial_of_support_subset_singleton {R : Type*} [CommSemiring R]
+    {φ : MvPolynomial σ R} {d₀ : σ →₀ ℕ} (h : ∀ d ∈ φ.support, d = d₀) :
+    φ = monomial d₀ (coeff d₀ φ) := by
+  classical
+  ext d
+  rw [coeff_monomial]
+  by_cases hd : d = d₀
+  · simp [hd]
+  · rw [if_neg (Ne.symm hd)]
+    by_contra hc
+    exact hd (h d (mem_support_iff.mpr hc))
+
 namespace IsWeightedHomogeneous
 
 variable {R}
@@ -262,14 +276,8 @@ theorem eq_zero_of_no_monomials {w : σ → M} (hφ : IsWeightedHomogeneous w φ
 /-- A weighted homogeneous polynomial of degree `n` whose support degrees are all equal to a
 fixed `d₀` is a single monomial. -/
 theorem eq_monomial_of_unique_weight {w : σ → M} (hφ : IsWeightedHomogeneous w φ n) (d₀ : σ →₀ ℕ)
-    (huniq : ∀ d, weight w d = n → d = d₀) : φ = monomial d₀ (coeff d₀ φ) := by
-  classical
-  ext d
-  rw [coeff_monomial]
-  by_cases hd : d = d₀
-  · simp [hd]
-  rw [if_neg (Ne.symm hd)]
-  exact hφ.coeff_eq_zero d fun h ↦ hd (huniq d h)
+    (huniq : ∀ d, weight w d = n → d = d₀) : φ = monomial d₀ (coeff d₀ φ) :=
+  eq_monomial_of_support_subset_singleton fun d hd ↦ huniq d (hφ (mem_support_iff.mp hd))
 
 /-- The sum of weighted homogeneous polynomials of degree `n` is weighted homogeneous of
   weighted degree `n`. -/
