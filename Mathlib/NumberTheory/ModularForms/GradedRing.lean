@@ -31,13 +31,11 @@ open UpperHalfPlane ModularForm ModularFormClass MatrixGroups EisensteinSeries
 
 namespace ModularForm
 
-/-- Transport a `DirectSum.of` along an equality of indices. -/
 private theorem of_eq_of_eq {ι : Type*} [DecidableEq ι] {β : ι → Type*}
     [∀ i, AddCommMonoid (β i)] {i j : ι} (h : i = j) (x : β i) :
     DirectSum.of β i x = DirectSum.of β j (h ▸ x) := by
   subst h; rfl
 
-/-- Split off a scalar multiple of `DirectSum.of M i g` from `DirectSum.of M i f`. -/
 private theorem of_eq_sub_add_smul {ι : Type*} [DecidableEq ι] {R : Type*} [Semiring R]
     {M : ι → Type*} [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)] {i : ι} (f g : M i) (c : R) :
     DirectSum.of M i f = DirectSum.of M i (f - c • g) + c • DirectSum.of M i g := by
